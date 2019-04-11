@@ -23,6 +23,7 @@ package loon.geom;
 import loon.action.map.Config;
 import loon.action.map.Field2D;
 import loon.utils.MathUtils;
+import loon.utils.NumberUtils;
 import loon.utils.TArray;
 
 public class Line extends Shape {
@@ -334,6 +335,15 @@ public class Line extends Shape {
 		return false;
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + NumberUtils.floatToIntBits(start.hashCode());
+		result = prime * result + NumberUtils.floatToIntBits(end.hashCode());
+		return result;
+	}
+	
 	@Override
 	public final String toString() {
 		return "(" + getX1() + "," + getY1() + "," + getX2() + "," + getY2() + ")";

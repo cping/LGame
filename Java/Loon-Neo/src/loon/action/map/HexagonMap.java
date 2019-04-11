@@ -22,7 +22,6 @@ package loon.action.map;
 
 import java.util.Iterator;
 
-
 import loon.LObject;
 import loon.LSystem;
 import loon.LTexture;
@@ -50,8 +49,7 @@ import loon.opengl.GLEx;
 import loon.opengl.LTexturePack;
 import loon.opengl.LTexturePackClip;
 import loon.utils.CollectionUtils;
-import loon.utils.IntHashMap;
-import loon.utils.IntHashMap.Entry;
+import loon.utils.IntMap;
 import loon.utils.MathUtils;
 import loon.utils.SortedList;
 import loon.utils.StringUtils;
@@ -122,7 +120,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 
 	private boolean playAnimation;
 
-	private IntHashMap textureCaches = new IntHashMap();
+	private IntMap<LTexture> textureCaches = new IntMap<LTexture>();
 
 	private boolean roll;
 
@@ -1837,14 +1835,10 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 			texturePack.close();
 		}
 		if (textureCaches != null) {
-			for (int i = 0; i < textureCaches.size(); i++) {
-				Entry entry = textureCaches.getEntry(i);
-				if (entry != null) {
-					LTexture texture = (LTexture) entry.getValue();
-					if (texture != null) {
-						texture.close();
-						texture = null;
-					}
+			for (LTexture texture : textureCaches.values()) {
+				if (texture != null) {
+					texture.close();
+					texture = null;
 				}
 			}
 		}

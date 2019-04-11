@@ -26,24 +26,119 @@ import loon.LSystem;
 import loon.geom.RectBox;
 
 public class MathUtils {
-	final static public Random random = new Random();
+	
+	public static final Random random = new Random();
 
+	public static final float FLOAT_ROUNDING_ERROR = 0.000001f;
+
+	public static final int ZERO_FIXED = 0;
+
+	public static final int ONE_FIXED = 1 << 16;
+
+	public static final float EPSILON = 0.001f;
+
+	public static final int PI_FIXED = 205887;
+
+	public static final int PI_OVER_2_FIXED = PI_FIXED / 2;
+
+	public static final int E_FIXED = 178145;
+
+	public static final int HALF_FIXED = 2 << 15;
+
+	private	 static  final String[] ZEROS = { "", "0", "00", "000", "0000", "00000", "000000", "0000000", "00000000",
+			"000000000", "0000000000" };
+	
 	private static final int[] SHIFT = { 0, 1144, 2289, 3435, 4583, 5734, 6888, 8047, 9210, 10380, 11556, 12739, 13930,
 			15130, 16340, 17560, 18792, 20036, 21294, 22566, 23853, 25157, 26478, 27818, 29179, 30560, 31964, 33392,
 			34846, 36327, 37837, 39378, 40951, 42560, 44205, 45889, 47615, 49385, 51202, 53070, 54991, 56970, 59009,
 			61113, 63287, 65536 };
 
-	public static int ifloor(float v) {
+	public static final float PI_OVER2 = 1.5708f;
+
+	public static final float PI_OVER4 = 0.785398f;
+
+	public static final float PHI = 0.618f;
+
+	private static final float CEIL = 0.9999999f;
+
+	private static final int BIG_ENOUGH_INT = 16384;
+
+	private static final float BIG_ENOUGH_CEIL = 16384.998f;
+
+	private static final float BIG_ENOUGH_ROUND = BIG_ENOUGH_INT + 0.5f;
+
+	private static final float BIG_ENOUGH_FLOOR = BIG_ENOUGH_INT;
+
+	private static final int ATAN2_BITS = 7;
+
+	private static final int ATAN2_BITS2 = ATAN2_BITS << 1;
+
+	private static final int ATAN2_MASK = ~(-1 << ATAN2_BITS2);
+
+	private static final int ATAN2_COUNT = ATAN2_MASK + 1;
+
+	public static final int ATAN2_DIM = 128;
+
+	private static final float INV_ATAN2_DIM_MINUS_1 = 1.0f / (ATAN2_DIM - 1);
+
+	private static final float[] ATAN2 = new float[ATAN2_COUNT];
+
+	public static final float PI = 3.1415927f;
+
+	public static final float TWO_PI = 6.28319f;
+
+	private static final int SIN_BITS = 13;
+
+	private static final int SIN_MASK = ~(-1 << SIN_BITS);
+
+	private static final int SIN_COUNT = SIN_MASK + 1;
+
+	private static final float RAD_FULL = PI * 2;
+
+	private static final float DEG_FULL = 360;
+
+	private static final float RAD_TO_INDEX = SIN_COUNT / RAD_FULL;
+
+	private static final float DEG_TO_INDEX = SIN_COUNT / DEG_FULL;
+
+	public static final float RAD_TO_DEG = 180.0f / PI;
+
+	public static final float DEG_TO_RAD = PI / 180.0f;
+
+	public static final float[] SIN_LIST = new float[SIN_COUNT];
+
+	public static final float[] COS_LIST = new float[SIN_COUNT];
+
+	static {
+		for (int i = 0; i < SIN_COUNT; i++) {
+			float a = (i + 0.5f) / SIN_COUNT * RAD_FULL;
+			SIN_LIST[i] = (float) Math.sin(a);
+			COS_LIST[i] = (float) Math.cos(a);
+		}
+		for (int i = 0; i < 360; i += 90) {
+			SIN_LIST[(int) (i * DEG_TO_INDEX) & SIN_MASK] = (float) Math.sin(i * DEG_TO_RAD);
+			COS_LIST[(int) (i * DEG_TO_INDEX) & SIN_MASK] = (float) Math.cos(i * DEG_TO_RAD);
+		}
+		for (int i = 0; i < ATAN2_DIM; i++) {
+			for (int j = 0; j < ATAN2_DIM; j++) {
+				float x0 = (float) i / ATAN2_DIM;
+				float y0 = (float) j / ATAN2_DIM;
+				ATAN2[j * ATAN2_DIM + i] = (float) Math.atan2(y0, x0);
+			}
+		}
+	}
+
+	public static final int ifloor(float v) {
 		int iv = (int) v;
 		return (v >= 0f || iv == v || iv == Integer.MIN_VALUE) ? iv : (iv - 1);
 	}
 
-	public static int iceil(float v) {
+	public static final int iceil(float v) {
 		int iv = (int) v;
 		return (v <= 0f || iv == v || iv == Integer.MAX_VALUE) ? iv : (iv + 1);
 	}
 
-	public static RectBox getBounds(float x, float y, float width, float height, float rotate, RectBox result) {
+	public static final RectBox getBounds(float x, float y, float width, float height, float rotate, RectBox result) {
 		if (rotate == 0) {
 			if (result == null) {
 				result = new RectBox(x, y, width, height);
@@ -61,25 +156,24 @@ public class MathUtils {
 		return result;
 	}
 
-	public static RectBox getBounds(float x, float y, float width, float height, float rotate) {
+	public static final RectBox getBounds(float x, float y, float width, float height, float rotate) {
 		return getBounds(x, y, width, height, rotate, null);
 	}
 
-	static public boolean isZero(float value, float tolerance) {
+	public final static boolean isZero(float value, float tolerance) {
 		return Math.abs(value) <= tolerance;
 	}
 
-	static public boolean isEqual(float a, float b) {
+	public final static boolean isEqual(float a, float b) {
 		return Math.abs(a - b) <= FLOAT_ROUNDING_ERROR;
 	}
 
-	static public boolean isEqual(float a, float b, float tolerance) {
+	public final static boolean isEqual(float a, float b, float tolerance) {
 		return Math.abs(a - b) <= tolerance;
 	}
 
-	public static final float FLOAT_ROUNDING_ERROR = 0.000001f;
 
-	static public int nextPowerOfTwo(int value) {
+	public final static int nextPowerOfTwo(int value) {
 		if (value == 0)
 			return 1;
 		value--;
@@ -91,7 +185,7 @@ public class MathUtils {
 		return value + 1;
 	}
 
-	public static int[] getLimit(float x, float y, float width, float height, float rotate) {
+	public static final int[] getLimit(float x, float y, float width, float height, float rotate) {
 		float rotation = MathUtils.toRadians(rotate);
 		float angSin = MathUtils.sin(rotation);
 		float angCos = MathUtils.cos(rotation);
@@ -104,8 +198,6 @@ public class MathUtils {
 		return new int[] { newX, newY, newW, newH };
 	}
 
-	final static private String[] zeros = { "", "0", "00", "000", "0000", "00000", "000000", "0000000", "00000000",
-			"000000000", "0000000000" };
 
 	/**
 	 * 为指定数值补足位数
@@ -114,7 +206,7 @@ public class MathUtils {
 	 * @param numDigits
 	 * @return
 	 */
-	public static String addZeros(long number, int numDigits) {
+	public static final String addZeros(long number, int numDigits) {
 		return addZeros(String.valueOf(number), numDigits);
 	}
 
@@ -125,11 +217,11 @@ public class MathUtils {
 	 * @param numDigits
 	 * @return
 	 */
-	public static String addZeros(String number, int numDigits) {
+	public static final String addZeros(String number, int numDigits) {
 		int length = numDigits - number.length();
 		if (length > -1) {
-			if (length - 1 < zeros.length) {
-				number = zeros[length] + number;
+			if (length - 1 < ZEROS.length) {
+				number = ZEROS[length] + number;
 			} else {
 				StringBuilder sbr = new StringBuilder();
 				for (int i = 0; i < length; i++) {
@@ -147,7 +239,7 @@ public class MathUtils {
 	 * @param num
 	 * @return
 	 */
-	public static int getBitSize(int num) {
+	public static final int getBitSize(int num) {
 		int numBits = 0;
 		if (num < 10l) {
 			numBits = 1;
@@ -179,7 +271,7 @@ public class MathUtils {
 	 * @param param
 	 * @return
 	 */
-	public static boolean isNan(String str) {
+	public static final boolean isNan(String str) {
 		if (StringUtils.isEmpty(str)) {
 			return false;
 		}
@@ -254,105 +346,16 @@ public class MathUtils {
 		return !allowSigns && foundDigit;
 	}
 
-	public static final float PI_OVER2 = 1.5708f;
-
-	public static final float PI_OVER4 = 0.785398f;
-
-	public static final float PHI = 0.618f;
-
-	static private final float CEIL = 0.9999999f;
-
-	static private final int BIG_ENOUGH_INT = 16384;
-
-	static private final float BIG_ENOUGH_CEIL = 16384.998f;
-
-	static private final float BIG_ENOUGH_ROUND = BIG_ENOUGH_INT + 0.5f;
-
-	static private final float BIG_ENOUGH_FLOOR = BIG_ENOUGH_INT;
-
-	static private final int ATAN2_BITS = 7;
-
-	static private final int ATAN2_BITS2 = ATAN2_BITS << 1;
-
-	static private final int ATAN2_MASK = ~(-1 << ATAN2_BITS2);
-
-	static private final int ATAN2_COUNT = ATAN2_MASK + 1;
-
-	public static final int ATAN2_DIM = 128;
-
-	static private final float INV_ATAN2_DIM_MINUS_1 = 1.0f / (ATAN2_DIM - 1);
-
-	static private final float[] atan2 = new float[ATAN2_COUNT];
-
-	public static final float PI = 3.1415927f;
-
-	public static final float TWO_PI = 6.28319f;
-
-	static private final int SIN_BITS = 13;
-
-	static private final int SIN_MASK = ~(-1 << SIN_BITS);
-
-	static private final int SIN_COUNT = SIN_MASK + 1;
-
-	static private final float radFull = PI * 2;
-
-	static private final float degFull = 360;
-
-	static private final float radToIndex = SIN_COUNT / radFull;
-
-	static private final float degToIndex = SIN_COUNT / degFull;
-
-	public static final float RAD_TO_DEG = 180.0f / PI;
-
-	public static final float DEG_TO_RAD = PI / 180.0f;
-
-	public static final float[] sin = new float[SIN_COUNT];
-
-	public static final float[] cos = new float[SIN_COUNT];
-
-	static {
-		for (int i = 0; i < SIN_COUNT; i++) {
-			float a = (i + 0.5f) / SIN_COUNT * radFull;
-			sin[i] = (float) Math.sin(a);
-			cos[i] = (float) Math.cos(a);
-		}
-		for (int i = 0; i < 360; i += 90) {
-			sin[(int) (i * degToIndex) & SIN_MASK] = (float) Math.sin(i * DEG_TO_RAD);
-			cos[(int) (i * degToIndex) & SIN_MASK] = (float) Math.cos(i * DEG_TO_RAD);
-		}
-		for (int i = 0; i < ATAN2_DIM; i++) {
-			for (int j = 0; j < ATAN2_DIM; j++) {
-				float x0 = (float) i / ATAN2_DIM;
-				float y0 = (float) j / ATAN2_DIM;
-				atan2[j * ATAN2_DIM + i] = (float) Math.atan2(y0, x0);
-			}
-		}
-	}
-
-	public static final int ZERO_FIXED = 0;
-
-	public static final int ONE_FIXED = 1 << 16;
-
-	public static final float EPSILON = 0.001f;
-
-	public static final int PI_FIXED = 205887;
-
-	public static final int PI_OVER_2_FIXED = PI_FIXED / 2;
-
-	public static final int E_FIXED = 178145;
-
-	public static final int HALF_FIXED = 2 << 15;
-
-	public static boolean isZero(float value) {
+	public static final boolean isZero(float value) {
 		return Math.abs(value) <= 0.00000001;
 	}
 
-	public static int mul(int x, int y) {
+	public static final int mul(int x, int y) {
 		long z = (long) x * (long) y;
 		return ((int) (z >> 16));
 	}
 
-	public static float mul(float x, float y) {
+	public static final float mul(float x, float y) {
 		long z = (long) x * (long) y;
 		return ((float) (z >> 16));
 	}
@@ -365,21 +368,21 @@ public class MathUtils {
 		return f1 * f2 / f3;
 	}
 
-	public static int mid(int i, int min, int max) {
+	public static final int mid(int i, int min, int max) {
 		return MathUtils.max(i, MathUtils.min(min, max));
 	}
 
-	public static int div(int x, int y) {
+	public static final int div(int x, int y) {
 		long z = (((long) x) << 32);
 		return (int) ((z / y) >> 16);
 	}
 
-	public static float div(float x, float y) {
+	public static final float div(float x, float y) {
 		long z = (((long) x) << 32);
 		return (float) ((z / (long) y) >> 16);
 	}
 
-	public static int sqrt(int n) {
+	public static final int sqrt(int n) {
 		int s = (n + 65536) >> 1;
 		for (int i = 0; i < 8; i++) {
 			s = (s + div(n, s)) >> 1;
@@ -387,7 +390,7 @@ public class MathUtils {
 		return s;
 	}
 
-	public static int round(int n) {
+	public static final int round(int n) {
 		if (n > 0) {
 			if ((n & 0x8000) != 0) {
 				return (((n + 0x10000) >> 16) << 16);
@@ -406,14 +409,14 @@ public class MathUtils {
 		}
 	}
 
-	public static boolean equal(int a, int b) {
+	public static final boolean equal(int a, int b) {
 		if (a > b)
 			return a - b <= EPSILON;
 		else
 			return b - a <= EPSILON;
 	}
 
-	public static boolean equal(float a, float b) {
+	public static final boolean equal(float a, float b) {
 		if (a > b)
 			return a - b <= EPSILON;
 		else
@@ -424,7 +427,7 @@ public class MathUtils {
 
 	static final int SK2 = 10882;
 
-	public static int sin(int f) {
+	public static final int sin(int f) {
 		int sign = 1;
 		if ((f > PI_OVER_2_FIXED) && (f <= PI_FIXED)) {
 			f = PI_FIXED - f;
@@ -449,7 +452,7 @@ public class MathUtils {
 
 	static final int CK2 = 32551;
 
-	public static int cos(int f) {
+	public static final int cos(int f) {
 		int sign = 1;
 		if ((f > PI_OVER_2_FIXED) && (f <= PI_FIXED)) {
 			f = PI_FIXED - f;
@@ -473,7 +476,7 @@ public class MathUtils {
 
 	static final int TK2 = 20810;
 
-	public static int tan(int f) {
+	public static final int tan(int f) {
 		int sqr = mul(f, f);
 		int result = TK1;
 		result = mul(result, sqr);
@@ -484,7 +487,7 @@ public class MathUtils {
 		return result;
 	}
 
-	public static int atan(int f) {
+	public static final int atan(int f) {
 		int sqr = mul(f, f);
 		int result = 1365;
 		result = mul(result, sqr);
@@ -507,7 +510,7 @@ public class MathUtils {
 
 	static final int AS4 = 102939;
 
-	public static int asin(int f) {
+	public static final int asin(int f) {
 		int fRoot = sqrt(ONE_FIXED - f);
 		int result = AS1;
 		result = mul(result, f);
@@ -520,7 +523,7 @@ public class MathUtils {
 		return result;
 	}
 
-	public static int acos(int f) {
+	public static final int acos(int f) {
 		int fRoot = sqrt(ONE_FIXED - f);
 		int result = AS1;
 		result = mul(result, f);
@@ -531,29 +534,6 @@ public class MathUtils {
 		result += AS4;
 		result = mul(fRoot, result);
 		return result;
-	}
-
-	static int log2arr[] = { 26573, 14624, 7719, 3973, 2017, 1016, 510, 256, 128, 64, 32, 16, 8, 4, 2, 1, 0, 0, 0 };
-
-	static int lnscale[] = { 0, 45426, 90852, 136278, 181704, 227130, 272557, 317983, 363409, 408835, 454261, 499687,
-			545113, 590539, 635965, 681391, 726817 };
-
-	public static int ln(int x) {
-		int shift = 0;
-		while (x > 1 << 17) {
-			shift++;
-			x >>= 1;
-		}
-		int g = 0;
-		int d = HALF_FIXED;
-		for (int i = 1; i < 16; i++) {
-			if (x > (ONE_FIXED + d)) {
-				x = div(x, (ONE_FIXED + d));
-				g += log2arr[i - 1];
-			}
-			d >>= 1;
-		}
-		return g + lnscale[shift];
 	}
 
 	public static final float tan(float angle) {
@@ -648,15 +628,15 @@ public class MathUtils {
 		return (a <= b) ? a : b;
 	}
 
-	public static int min(int a, int b) {
+	public static final int min(int a, int b) {
 		return (a <= b) ? a : b;
 	}
 
-	public static float mix(final float x, final float y, final float m) {
+	public static final float mix(final float x, final float y, final float m) {
 		return x * (1 - m) + y * m;
 	}
 
-	public static int mix(final int x, final int y, final float m) {
+	public static final int mix(final int x, final int y, final float m) {
 		return Math.round(x * (1 - m) + y * m);
 	}
 
@@ -669,19 +649,19 @@ public class MathUtils {
 	}
 
 	public static final float sin(float rad) {
-		return sin[(int) (rad * radToIndex) & SIN_MASK];
+		return SIN_LIST[(int) (rad * RAD_TO_INDEX) & SIN_MASK];
 	}
 
 	public static final float cos(float rad) {
-		return cos[(int) (rad * radToIndex) & SIN_MASK];
+		return COS_LIST[(int) (rad * RAD_TO_INDEX) & SIN_MASK];
 	}
 
 	public static final float sinDeg(float deg) {
-		return sin[(int) (deg * degToIndex) & SIN_MASK];
+		return SIN_LIST[(int) (deg * DEG_TO_INDEX) & SIN_MASK];
 	}
 
 	public static final float cosDeg(float deg) {
-		return cos[(int) (deg * degToIndex) & SIN_MASK];
+		return COS_LIST[(int) (deg * DEG_TO_INDEX) & SIN_MASK];
 	}
 
 	public static final float atan2(float y, float x) {
@@ -705,14 +685,14 @@ public class MathUtils {
 		float invDiv = 1 / ((x < y ? y : x) * INV_ATAN2_DIM_MINUS_1);
 		int xi = (int) (x * invDiv);
 		int yi = (int) (y * invDiv);
-		return (atan2[yi * ATAN2_DIM + xi] + add) * mul;
+		return (ATAN2[yi * ATAN2_DIM + xi] + add) * mul;
 	}
 
-	public static float toDegrees(final float radians) {
+	public static final float toDegrees(final float radians) {
 		return radians * RAD_TO_DEG;
 	}
 
-	public static float toRadians(final float degrees) {
+	public static final float toRadians(final float degrees) {
 		return degrees * DEG_TO_RAD;
 	}
 
@@ -764,35 +744,35 @@ public class MathUtils {
 		return start + random.nextFloat() * (end - start);
 	}
 
-	public static int floor(float x) {
+	public static final int floor(float x) {
 		return (int) (x + BIG_ENOUGH_FLOOR) - BIG_ENOUGH_INT;
 	}
 
-	public static int floorPositive(float x) {
+	public static final int floorPositive(float x) {
 		return (int) x;
 	}
 
-	public static int ceil(float x) {
+	public static final int ceil(float x) {
 		return (int) (x + BIG_ENOUGH_CEIL) - BIG_ENOUGH_INT;
 	}
 
-	public static int ceilPositive(float x) {
+	public static final int ceilPositive(float x) {
 		return (int) (x + CEIL);
 	}
 
-	public static int round(float x) {
+	public static final int round(float x) {
 		return (int) (x + BIG_ENOUGH_ROUND) - BIG_ENOUGH_INT;
 	}
 
-	public static int roundPositive(float x) {
+	public static final int roundPositive(float x) {
 		return (int) (x + 0.5f);
 	}
 
-	public static float barycentric(float value1, float value2, float value3, float amount1, float amount2) {
+	public static final float barycentric(float value1, float value2, float value3, float amount1, float amount2) {
 		return value1 + (value2 - value1) * amount1 + (value3 - value1) * amount2;
 	}
 
-	public static float catmullRom(float value1, float value2, float value3, float value4, float amount) {
+	public static final float catmullRom(float value1, float value2, float value3, float value4, float amount) {
 		double amountSquared = amount * amount;
 		double amountCubed = amountSquared * amount;
 		return (float) (0.5 * (2.0 * value2 + (value3 - value1) * amount
@@ -806,21 +786,21 @@ public class MathUtils {
 		return value;
 	}
 
-	public static float clamp(float value, float min, float max) {
+	public static final float clamp(float value, float min, float max) {
 		value = (value > max) ? max : value;
 		value = (value < min) ? min : value;
 		return value;
 	}
 
-	public static float clamp(final float v) {
+	public static final float clamp(final float v) {
 		return v < 0f ? 0f : (v > 1f ? 1f : v);
 	}
 
-	public static float distance(float value1, float value2) {
+	public static final float distance(float value1, float value2) {
 		return Math.abs(value1 - value2);
 	}
 
-	public static float hermite(float value1, float tangent1, float value2, float tangent2, float amount) {
+	public static final float hermite(float value1, float tangent1, float value2, float tangent2, float amount) {
 		double v1 = value1, v2 = value2, t1 = tangent1, t2 = tangent2, s = amount, result;
 		double sCubed = s * s * s;
 		double sSquared = s * s;
@@ -835,17 +815,17 @@ public class MathUtils {
 		return (float) result;
 	}
 
-	public static float lerp(float value1, float value2, float amount) {
+	public static final float lerp(float value1, float value2, float amount) {
 		return value1 + (value2 - value1) * amount;
 	}
 
-	public static float smoothStep(float value1, float value2, float amount) {
+	public static final float smoothStep(float value1, float value2, float amount) {
 		float result = clamp(amount, 0f, 1f);
 		result = hermite(value1, 0f, value2, 0f, result);
 		return result;
 	}
 
-	public static float wrapAngle(float angle) {
+	public static final float wrapAngle(float angle) {
 		angle = (float) IEEEremainder((double) angle, 6.2831854820251465d);
 		if (angle <= -3.141593f) {
 			angle += 6.283185f;
@@ -857,7 +837,7 @@ public class MathUtils {
 		return angle;
 	}
 
-	public static double normalizeLon(double lon) {
+	public static final double normalizeLon(double lon) {
 		if (lon == lon) {
 			while ((lon < -180d) || (lon > 180d)) {
 				lon = IEEEremainder(lon, 360d);
@@ -866,7 +846,7 @@ public class MathUtils {
 		return lon;
 	}
 
-	public static double IEEEremainder(double f1, double f2) {
+	public static final double IEEEremainder(double f1, double f2) {
 		double r = Math.abs(f1 % f2);
 		if (Double.isNaN(r) || r == f2 || r <= Math.abs(f2) / 2.0) {
 			return r;
@@ -926,7 +906,7 @@ public class MathUtils {
 		return MathUtils.arraySum(values) / values.length;
 	}
 
-	public static float[] scaleAroundCenter(final float[] vertices, final float scaleX, final float scaleY,
+	public static final float[] scaleAroundCenter(final float[] vertices, final float scaleX, final float scaleY,
 			final float scaleCenterX, final float scaleCenterY) {
 		if (scaleX != 1 || scaleY != 1) {
 			for (int i = vertices.length - 2; i >= 0; i -= 2) {
@@ -947,15 +927,15 @@ public class MathUtils {
 
 	protected static int TO_STRING_DECIMAL_PLACES = 3;
 
-	public static String toString(float value) {
+	public static final String toString(float value) {
 		return toString(value, TO_STRING_DECIMAL_PLACES);
 	}
 
-	public static String toString(float value, int decimalPlaces) {
+	public static final String toString(float value, int decimalPlaces) {
 		return toString(value, decimalPlaces, false);
 	}
 
-	public static String toString(float value, int decimalPlaces, boolean showTag) {
+	public static final String toString(float value, int decimalPlaces, boolean showTag) {
 		if (Float.isNaN(value))
 			return "NaN";
 
@@ -1042,7 +1022,7 @@ public class MathUtils {
 		}
 	}
 
-	public static float bezierAt(float a, float b, float c, float d, float t) {
+	public static final float bezierAt(float a, float b, float c, float d, float t) {
 		return (MathUtils.pow(1 - t, 3) * a + 3 * t * (MathUtils.pow(1 - t, 2)) * b
 				+ 3 * MathUtils.pow(t, 2) * (1 - t) * c + MathUtils.pow(t, 3) * d);
 	}
@@ -1077,7 +1057,7 @@ public class MathUtils {
 		}
 	}
 
-	public static int numberOfTrailingZeros(long i) {
+	public static final int numberOfTrailingZeros(long i) {
 		int x, y;
 		if (i == 0) {
 			return 64;
@@ -1113,11 +1093,11 @@ public class MathUtils {
 
 	}
 
-	public static float maxAbs(float x, float y) {
+	public static final float maxAbs(float x, float y) {
 		return MathUtils.abs(x) >= MathUtils.abs(y) ? x : y;
 	}
 
-	public static float minAbs(float x, float y) {
+	public static final float minAbs(float x, float y) {
 		return MathUtils.abs(x) <= MathUtils.abs(y) ? x : y;
 	}
 

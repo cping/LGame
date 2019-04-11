@@ -22,6 +22,7 @@
 package loon.geom;
 
 import loon.utils.MathUtils;
+import loon.utils.NumberUtils;
 import loon.utils.StringKeyValue;
 
 /*最简化的浮点体积处理类,以减少对象大小*/
@@ -435,6 +436,17 @@ public class RectF implements XY {
 
 	public float getHeight() {
 		return height;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + NumberUtils.floatToIntBits(x);
+		result = prime * result + NumberUtils.floatToIntBits(y);
+		result = prime * result + NumberUtils.floatToIntBits(width);
+		result = prime * result + NumberUtils.floatToIntBits(height);
+		return result;
 	}
 	
 	@Override

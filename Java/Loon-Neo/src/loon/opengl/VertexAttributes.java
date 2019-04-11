@@ -160,17 +160,20 @@ public final class VertexAttributes implements Iterable<VertexAttribute> {
 
 		@Override
 		public boolean hasNext() {
-			if (!valid)
-				throw LSystem.runThrow("#iterator() cannot be used nested.");
+			if (!valid){
+				throw LSystem.runThrow("iterator() cannot be used nested.");
+			}
 			return index < array.length;
 		}
 
 		@Override
 		public T next() {
-			if (index >= array.length)
+			if (index >= array.length){
 				throw new NoSuchElementException(String.valueOf(index));
-			if (!valid)
-				throw LSystem.runThrow("#iterator() cannot be used nested.");
+			}
+			if (!valid){
+				throw LSystem.runThrow("iterator() cannot be used nested.");
+			}
 			return array[index++];
 		}
 

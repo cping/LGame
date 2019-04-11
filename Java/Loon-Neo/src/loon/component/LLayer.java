@@ -242,6 +242,7 @@ public class LLayer extends ActorLayer {
 		if (!isVisible()) {
 			return;
 		}
+		int tint = g.color();
 		paintObjects(g, x, y, x + w, y + h);
 		if (x == 0 && y == 0) {
 			paint(g);
@@ -259,6 +260,7 @@ public class LLayer extends ActorLayer {
 				g.translate(-x, -y);
 			}
 		}
+		g.setTint(tint);
 	}
 
 	public void paint(GLEx g) {
@@ -273,6 +275,7 @@ public class LLayer extends ActorLayer {
 				if (!thing.visible) {
 					continue;
 				}
+
 				isListener = (thing.actorListener != null);
 
 				if (isVSync) {
@@ -291,6 +294,9 @@ public class LLayer extends ActorLayer {
 						|| actorY + actorHeight < minY || actorY > maxY) {
 					continue;
 				}
+				int tint  = g.getTint();
+				float alpha = g.alpha();
+				
 				LTexture actorImage = thing.getImage();
 				if (actorImage != null) {
 					width = actorImage.getWidth();
@@ -333,6 +339,8 @@ public class LLayer extends ActorLayer {
 						}
 					}
 				}
+				g.setTint(tint);
+				g.setAlpha(alpha);
 			}
 
 		}

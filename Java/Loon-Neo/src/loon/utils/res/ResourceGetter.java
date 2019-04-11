@@ -34,9 +34,11 @@ public abstract class ResourceGetter extends EventDispatcher {
 	abstract public Json.Object getJson(String name);
 
 	abstract public XMLDocument getXml(String name);
+
+	abstract public String getText(String name);
 	
 	abstract public Texture getTexture(String name);
-
+	
 	abstract public Image getImage(String name);
 
 	abstract public Pixmap getPixmap(String name);

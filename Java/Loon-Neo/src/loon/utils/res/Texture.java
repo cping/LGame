@@ -43,7 +43,7 @@ public class Texture {
 	}
 
 	public TextureData getTextureData() {
-		if (_img == null || _img.disposed()) {
+		if (isClosed()) {
 			_img = LTextures.loadTexture(_path);
 			_texData.w = _img.getWidth();
 			_texData.h = _img.getHeight();
@@ -54,7 +54,7 @@ public class Texture {
 	}
 
 	public LTexture img() {
-		if (_img == null || _img.disposed()) {
+		if (isClosed()) {
 			_img = LTextures.loadTexture(_path);
 			_texData.w = _img.getWidth();
 			_texData.h = _img.getHeight();
@@ -66,6 +66,10 @@ public class Texture {
 
 	public TextureData data() {
 		return _texData;
+	}
+
+	public boolean isClosed() {
+		return _img == null || _img.isClosed();
 	}
 
 	public void close() {

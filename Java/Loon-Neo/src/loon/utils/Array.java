@@ -32,7 +32,7 @@ public class Array<T> implements IArray, LRelease {
 	public static final <T> Array<T> at(Array<T> data) {
 		return new Array<T>(data);
 	}
-	
+
 	public static class ArrayNode<T> {
 
 		public ArrayNode<T> next;
@@ -619,6 +619,17 @@ public class Array<T> implements IArray, LRelease {
 		_close = true;
 		_length = 0;
 		_items = null;
+	}
+
+	@Override
+	public int hashCode() {
+		int hashCode = 1;
+		for (; hashNext();) {
+			Object obj = next();
+			hashCode = 31 * hashCode + (obj == null ? 0 : obj.hashCode());
+		}
+		stopNext();
+		return hashCode;
 	}
 
 	@Override

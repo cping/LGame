@@ -286,6 +286,7 @@ public class ListMap<K, V> implements IArray {
 		return values[size - 1];
 	}
 
+	@Override
 	public void clear() {
 		K[] keys = this.keys;
 		V[] values = this.values;

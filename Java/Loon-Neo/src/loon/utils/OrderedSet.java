@@ -1,131 +1,22 @@
 package loon.utils;
 
-import java.util.NoSuchElementException;
-
-import loon.LSystem;
-
-@SuppressWarnings({ "rawtypes", "unchecked" })
-public class OrderedSet<T> extends ObjectSet<T> implements IArray {
-	
-	final TArray<T> items;
-	OrderedSetIterator iterator1, iterator2;
-
-	public OrderedSet() {
-		items = new TArray();
-	}
+public class OrderedSet<E> extends ObjectSet<E> {
 
 	public OrderedSet(int initialCapacity, float loadFactor) {
-		super(initialCapacity, loadFactor);
-		items = new TArray(capacity);
+		super(initialCapacity, loadFactor, true);
 	}
 
 	public OrderedSet(int initialCapacity) {
-		super(initialCapacity);
-		items = new TArray(capacity);
+		super(initialCapacity, 0.85f, true);
 	}
 
-	public OrderedSet(OrderedSet set) {
-		super(set);
-		items = new TArray(capacity);
-		items.addAll(set.items);
+	public OrderedSet() {
+		super(CollectionUtils.INITIAL_CAPACITY, 0.85f, true);
 	}
 
-	@Override
-	public boolean add(T key) {
-		if (!contains(key))
-			items.add(key);
-		return super.add(key);
-	}
-	
-	@Override
-	public boolean remove(T key) {
-		items.removeValue(key, false);
-		return super.remove(key);
-	}
-	
-	@Override
-	public void clear(int maximumCapacity) {
-		items.clear();
-		super.clear(maximumCapacity);
-	}
-	
-	@Override
-	public void clear() {
-		items.clear();
-		super.clear();
-	}
-	
-	public TArray<T> orderedItems() {
-		return items;
-	}
-	
-	@Override
-	public OrderedSetIterator<T> iterator() {
-		if (iterator1 == null) {
-			iterator1 = new OrderedSetIterator(this);
-			iterator2 = new OrderedSetIterator(this);
-		}
-		if (!iterator1.valid) {
-			iterator1.reset();
-			iterator1.valid = true;
-			iterator2.valid = false;
-			return iterator1;
-		}
-		iterator2.reset();
-		iterator2.valid = true;
-		iterator1.valid = false;
-		return iterator2;
-	}
-	
-	@Override
-	public String toString() {
-		if (size == 0)
-			return "{}";
-		StringBuilder buffer = new StringBuilder(32);
-		buffer.append('{');
-		TArray<T> keys = this.items;
-		for (int i = 0, n = keys.size; i < n; i++) {
-			T key = keys.get(i);
-			if (i > 0)
-				buffer.append(", ");
-			buffer.append(key);
-		}
-		buffer.append('}');
-		return buffer.toString();
-	}
-
-	static public class OrderedSetIterator<T> extends ObjectSetIterator<T> {
-		private TArray<T> items;
-
-		public OrderedSetIterator(OrderedSet<T> set) {
-			super(set);
-			items = set.items;
-		}
-
-		public void reset() {
-			nextIndex = 0;
-			hasNext = set.size > 0;
-		}
-		
-		@Override
-		public T next() {
-			if (!hasNext)
-				throw new NoSuchElementException();
-			if (!valid)
-				throw LSystem.runThrow("#iterator() cannot be used nested.");
-			T key = items.get(nextIndex);
-			nextIndex++;
-			hasNext = nextIndex < set.size;
-			return key;
-		}
-		
-		@Override
-		public void remove() {
-			if (nextIndex < 0)
-				throw new IllegalStateException(
-						"next must be called before remove.");
-			nextIndex--;
-			set.remove(items.get(nextIndex));
-		}
+	public OrderedSet(OrderedSet<? extends E> c) {
+		super(MathUtils.max((int) (c.size() / 0.85f) + 1, CollectionUtils.INITIAL_CAPACITY),
+				0.85f, true);
+		addAll(c);
 	}
 }

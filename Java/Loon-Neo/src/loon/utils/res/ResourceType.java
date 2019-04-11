@@ -31,6 +31,8 @@ public class ResourceType extends EventDispatcher {
 	public final static String TYPE_JSON = "json";
 
 	public final static String TYPE_XML = "xml";
+
+	public final static String TYPE_TXT = "txt";
 	
 	public final static String TYPE_SHEET = "sheet";
 

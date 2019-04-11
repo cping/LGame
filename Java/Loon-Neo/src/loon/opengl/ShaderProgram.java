@@ -34,7 +34,7 @@ import loon.geom.Matrix3;
 import loon.geom.Matrix4;
 import loon.geom.Vector2f;
 import loon.geom.Vector3f;
-import loon.utils.ObjectIntMap;
+import loon.utils.IntMap;
 import loon.utils.ObjectMap;
 import loon.utils.TArray;
 
@@ -60,19 +60,19 @@ public class ShaderProgram implements LRelease {
 
 	private boolean isCompiled;
 
-	private final ObjectIntMap<String> uniforms = new ObjectIntMap<String>();
+	private final IntMap<Integer> uniforms = new IntMap<Integer>();
 
-	private final ObjectIntMap<String> uniformTypes = new ObjectIntMap<String>();
+	private final IntMap<Integer> uniformTypes = new IntMap<Integer>();
 
-	private final ObjectIntMap<String> uniformSizes = new ObjectIntMap<String>();
+	private final IntMap<Integer> uniformSizes = new IntMap<Integer>();
 
 	private String[] uniformNames;
 
-	private final ObjectIntMap<String> attributes = new ObjectIntMap<String>();
+	private final IntMap<Integer> attributes = new IntMap<Integer>();
 
-	private final ObjectIntMap<String> attributeTypes = new ObjectIntMap<String>();
+	private final IntMap<Integer> attributeTypes = new IntMap<Integer>();
 
-	private final ObjectIntMap<String> attributeSizes = new ObjectIntMap<String>();
+	private final IntMap<Integer> attributeSizes = new IntMap<Integer>();
 
 	private String[] attributeNames;
 

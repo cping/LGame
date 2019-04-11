@@ -22,6 +22,7 @@ package loon.geom;
 
 import loon.LObject;
 import loon.utils.MathUtils;
+import loon.utils.NumberUtils;
 import loon.utils.StringKeyValue;
 
 public class RectBox extends Shape implements BoxSize {
@@ -342,11 +343,6 @@ public class RectBox extends Shape implements BoxSize {
 	@Override
 	public void setWidth(float width) {
 		this.width = (int) width;
-	}
-
-	@Override
-	public int hashCode() {
-		return super.hashCode();
 	}
 
 	@Override
@@ -775,6 +771,17 @@ public class RectBox extends Shape implements BoxSize {
 		return (int) (this.y + this.height);
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + NumberUtils.floatToIntBits(x);
+		result = prime * result + NumberUtils.floatToIntBits(y);
+		result = prime * result + NumberUtils.floatToIntBits(width);
+		result = prime * result + NumberUtils.floatToIntBits(height);
+		return result;
+	}
+	
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("RectBox");

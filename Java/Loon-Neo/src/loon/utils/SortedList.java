@@ -529,6 +529,7 @@ public class SortedList<E> implements Iterable<E>,IArray {
 		}
 	}
 
+	@Override
 	public boolean isEmpty() {
 		return size == 0;
 	}
@@ -541,5 +542,14 @@ public class SortedList<E> implements Iterable<E>,IArray {
 		return result;
 	}
 
+	@Override
+	public int hashCode() {
+		int hashCode = 1;
+		for (Node<E> x = first; x != null; x = x.next){
+			hashCode = 31 * hashCode + (x.item == null ? 0 : x.item.hashCode());
+		}
+		return hashCode;
+	}
+	
 
 }

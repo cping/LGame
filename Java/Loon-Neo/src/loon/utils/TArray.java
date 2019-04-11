@@ -556,19 +556,21 @@ public class TArray<T> implements Iterable<T>, IArray {
 			this.allowRemove = allowRemove;
 		}
 
+		@Override
 		public boolean hasNext() {
 			if (!valid) {
-				throw LSystem.runThrow("#iterator() cannot be used nested.");
+				throw LSystem.runThrow("iterator() cannot be used nested.");
 			}
 			return index < array.size;
 		}
 
+		@Override
 		public T next() {
 			if (index >= array.size) {
 				throw new NoSuchElementException(String.valueOf(index));
 			}
 			if (!valid) {
-				throw LSystem.runThrow("#iterator() cannot be used nested.");
+				throw LSystem.runThrow("iterator() cannot be used nested.");
 			}
 			return array.items[index++];
 		}
@@ -586,6 +588,7 @@ public class TArray<T> implements Iterable<T>, IArray {
 			index = 0;
 		}
 
+		@Override
 		public Iterator<T> iterator() {
 			return this;
 		}
@@ -634,6 +637,7 @@ public class TArray<T> implements Iterable<T>, IArray {
 			this.allowRemove = allowRemove;
 		}
 
+		@Override
 		public Iterator<T> iterator() {
 			if (iterator1 == null) {
 				iterator1 = new ArrayIterator(array, allowRemove);
@@ -650,6 +654,18 @@ public class TArray<T> implements Iterable<T>, IArray {
 			iterator1.valid = false;
 			return iterator2;
 		}
+	}
+
+	@Override
+	public int hashCode() {
+		if(!ordered){
+			return super.hashCode();
+		}
+		int hashCode = 1;
+		for (int i = size - 1; i > -1; i--) {
+			hashCode = 31 * hashCode + (items[i] == null ? 0 : items[i].hashCode());
+		}
+		return hashCode;
 	}
 
 	@Override

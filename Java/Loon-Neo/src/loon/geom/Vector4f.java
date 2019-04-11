@@ -24,6 +24,7 @@ import java.io.Serializable;
 
 import loon.utils.Array;
 import loon.utils.MathUtils;
+import loon.utils.NumberUtils;
 
 public class Vector4f implements Serializable, XY {
 
@@ -1046,6 +1047,17 @@ public class Vector4f implements Serializable, XY {
 		return new Vector3f(w, w, w);
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + NumberUtils.floatToIntBits(x);
+		result = prime * result + NumberUtils.floatToIntBits(y);
+		result = prime * result + NumberUtils.floatToIntBits(z);
+		result = prime * result + NumberUtils.floatToIntBits(w);
+		return result;
+	}
+	
 	@Override
 	public String toString() {
 		return "(" + x + ", " + y + ", " + z + ", " + w + ")";

@@ -26,6 +26,7 @@ import java.io.Serializable;
 import loon.action.sprite.ShapeEntity;
 import loon.canvas.LColor;
 import loon.utils.MathUtils;
+import loon.utils.NumberUtils;
 import loon.utils.StringKeyValue;
 import loon.utils.StringUtils;
 
@@ -624,6 +625,21 @@ public abstract class Shape implements Serializable, XY {
 		return entity;
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 17;
+		result = prime * result + NumberUtils.floatToIntBits(x);
+		result = prime * result + NumberUtils.floatToIntBits(y);
+		result = prime * result + NumberUtils.floatToIntBits(scaleX);
+		result = prime * result + NumberUtils.floatToIntBits(scaleY);
+		for (int j = 0; j < points.length; j++) {
+			final long val = NumberUtils.floatToIntBits(this.points[j]);
+			result += 31 * result + (int) (val ^ (val >>> 32));
+		}
+		return result;
+	}
+	
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("Shape");

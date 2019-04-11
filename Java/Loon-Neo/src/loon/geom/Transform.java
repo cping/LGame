@@ -20,7 +20,7 @@
  */
 package loon.geom;
 
-public class Transform implements XY{
+public class Transform implements XY {
 
 	private Matrix4 _matrix4;
 
@@ -165,6 +165,11 @@ public class Transform implements XY{
 	}
 
 	@Override
+	public int hashCode() {
+		return _matrix4.hashCode();
+	}
+
+	@Override
 	public float getX() {
 		return _matrix4.getX();
 	}
@@ -172,5 +177,10 @@ public class Transform implements XY{
 	@Override
 	public float getY() {
 		return _matrix4.getY();
+	}
+	
+	@Override
+	public String toString(){
+		return _matrix4.toString();
 	}
 }

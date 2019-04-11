@@ -22,6 +22,7 @@
 package loon.geom;
 
 import loon.utils.MathUtils;
+import loon.utils.NumberUtils;
 
 public class Point extends Shape {
 	/**
@@ -135,7 +136,11 @@ public class Point extends Shape {
 
 	@Override
 	public int hashCode() {
-		return super.hashCode();
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + NumberUtils.floatToIntBits(x);
+		result = prime * result + NumberUtils.floatToIntBits(y);
+		return result;
 	}
 
 	@Override

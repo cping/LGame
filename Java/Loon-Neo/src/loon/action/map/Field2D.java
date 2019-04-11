@@ -26,10 +26,10 @@ import loon.action.map.colider.Tile;
 import loon.action.map.colider.TileHelper;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
+import loon.utils.ArrayMap;
 import loon.utils.CollectionUtils;
 import loon.utils.IArray;
 import loon.utils.MathUtils;
-import loon.utils.ObjectMap;
 import loon.utils.TArray;
 
 /**
@@ -39,7 +39,7 @@ public class Field2D implements IArray, Config {
 
 	private final static float ANGULAR = 0.706F;
 
-	final static private ObjectMap<Vector2f, Integer> directions = new ObjectMap<Vector2f, Integer>(9);
+	final static private ArrayMap directions = new ArrayMap(9);
 
 	static {
 		directions.put(new Vector2f(0, 0), Config.EMPTY);
@@ -168,7 +168,7 @@ public class Field2D implements IArray, Config {
 		} else {
 			_tempDir.set(newX, newY);
 		}
-		Integer result = directions.get(_tempDir);
+		Integer result = (Integer) directions.get(_tempDir);
 		if (result != null) {
 			return result;
 		} else {

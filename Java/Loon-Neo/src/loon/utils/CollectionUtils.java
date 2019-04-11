@@ -34,7 +34,7 @@ import loon.physics.PSortableObject;
 
 final public class CollectionUtils {
 
-	final static public int INITIAL_CAPACITY = 12;
+	final static public int INITIAL_CAPACITY = 16;
 
 	protected CollectionUtils() {
 		super();
@@ -606,16 +606,6 @@ final public class CollectionUtils {
 		return copyOf(data, data.length);
 	}
 
-	public static final IntHashMap.Entry[] copyOf(IntHashMap.Entry[] data, int newSize) {
-		IntHashMap.Entry tempArr[] = new IntHashMap.Entry[newSize];
-		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
-		return tempArr;
-	}
-
-	public static final IntHashMap.Entry[] copyOf(IntHashMap.Entry[] data) {
-		return copyOf(data, data.length);
-	}
-
 	/**
 	 * 反转数组自身
 	 * 
@@ -972,5 +962,79 @@ final public class CollectionUtils {
 			return arrays[randomIndex];
 		}
 		return null;
+	}
+
+	/**
+	 * 返回一个有界限的hashCode,避免重复
+	 * 
+	 * @param hashCode
+	 * @return
+	 */
+	public static final int getLimitHash(int hashCode) {
+		hashCode ^= (hashCode >>> 20) ^ (hashCode >>> 12);
+		return hashCode ^ (hashCode >>> 7) ^ (hashCode >>> 4);
+	}
+
+	/**
+	 * 获得hashCode
+	 * 
+	 * @param key
+	 * @return
+	 */
+	public static final long getHashKey(int key) {
+		int hash = getLimitHash(key);
+		if (hash == 0) {
+			hash = 1;
+		}
+		return ((long) key << 32) | (hash & 0xFFFFFFFFL);
+	}
+
+	/**
+	 * 检查数组长度是否越界
+	 * 
+	 * @param arrayLength
+	 * @param fromIndex
+	 * @param toIndex
+	 */
+	public static void rangeCheck(int arrayLength, int fromIndex, int toIndex) {
+		if (fromIndex > toIndex) {
+			throw new IllegalArgumentException("fromIndex(" + fromIndex + ") > toIndex(" + toIndex + ")");
+		}
+		if (fromIndex < 0) {
+			throw new ArrayIndexOutOfBoundsException(fromIndex);
+		}
+		if (toIndex > arrayLength) {
+			throw new ArrayIndexOutOfBoundsException(toIndex);
+		}
+	}
+
+	/**
+	 * 填充指定整型数组
+	 * 
+	 * @param arrays
+	 * @param fromIndex
+	 * @param toIndex
+	 * @param val
+	 */
+	public static void fill(int[] arrays, int fromIndex, int toIndex, int val) {
+		rangeCheck(arrays.length, fromIndex, toIndex);
+		for (int i = fromIndex; i < toIndex; i++) {
+			arrays[i] = val;
+		}
+	}
+
+	/**
+	 * 填充指定对象数组
+	 * 
+	 * @param arrays
+	 * @param fromIndex
+	 * @param toIndex
+	 * @param data
+	 */
+	public static void fill(Object[] arrays, int fromIndex, int toIndex, Object data) {
+		rangeCheck(arrays.length, fromIndex, toIndex);
+		for (int i = fromIndex; i < toIndex; i++) {
+			arrays[i] = data;
+		}
 	}
 }

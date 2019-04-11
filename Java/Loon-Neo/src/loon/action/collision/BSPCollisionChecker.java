@@ -428,7 +428,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 		synchronized (cacheSet) {
 			cacheSet.clear();
 			this.getIntersectingObjects(r, query, cacheSet, this.bspTree);
-			TArray<CollisionObject> l = new TArray<CollisionObject>(cacheSet.size);
+			TArray<CollisionObject> l = new TArray<CollisionObject>(cacheSet.size());
 			for (LIterator<CollisionObject> it = cacheSet.iterator(); it.hasNext();) {
 				l.add(it.next());
 			}
@@ -731,7 +731,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 					cacheNodeStack.add(right);
 				}
 			}
-			TArray<CollisionObject> result = new TArray<CollisionObject>(cacheSet.size);
+			TArray<CollisionObject> result = new TArray<CollisionObject>(cacheSet.size());
 			for (LIterator<CollisionObject> it = cacheSet.iterator(); it.hasNext();) {
 				result.add(it.next());
 			}

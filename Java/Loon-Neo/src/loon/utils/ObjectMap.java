@@ -1,764 +1,1119 @@
+/**
+ * Copyright 2008 - 2019 The Loon Game Engine Authors
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ * 
+ * @project loon
+ * @author cping
+ * @email：javachenpeng@yahoo.com
+ * @version 0.5
+ */
 package loon.utils;
 
-import java.util.NoSuchElementException;
-
 import loon.LSystem;
+import loon.utils.CollectionUtils;
+import loon.utils.IArray;
+import loon.utils.LIterator;
+import loon.utils.MathUtils;
 
-@SuppressWarnings({ "rawtypes", "unchecked" })
 public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray {
-
-	private static final int PRIME2 = 0xb4b82e39;
-	private static final int PRIME3 = 0xced1c241;
-
-	public int size;
-
-	K[] keyTable;
-	V[] valueTable;
-	int capacity, stashSize;
-
-	private float loadFactor;
-	private int hashShift, mask, threshold;
-	private int stashCapacity;
-	private int pushIterations;
-
-	private Entries entries1, entries2;
-	private Values values1, values2;
-	private Keys keys1, keys2;
-
-	public ObjectMap() {
-		this(32, 0.8f);
+	
+	private Values<V> values1, values2;
+	
+	public Values<V> values() {
+		if (values1 == null) {
+			values1 = new Values<V>(this);
+			values2 = new Values<V>(this);
+		}
+		if (!values1._valid) {
+			values1.reset();
+			values1._valid = true;
+			values2._valid = false;
+			return values1;
+		}
+		values2.reset();
+		values2._valid = true;
+		values1._valid = false;
+		return values2;
 	}
 
-	public ObjectMap(int initialCapacity) {
-		this(initialCapacity, 0.8f);
-	}
+	public static final class Values<V> implements Iterable<V>, LIterator<V> {
 
-	public ObjectMap(int initialCapacity, float loadFactor) {
-		if (initialCapacity < 0)
-			throw new IllegalArgumentException("initialCapacity must be >= 0: " + initialCapacity);
-		if (initialCapacity > 1 << 30)
-			throw new IllegalArgumentException("initialCapacity is too large: " + initialCapacity);
-		capacity = MathUtils.nextPowerOfTwo(initialCapacity);
+		public boolean _valid;
+		boolean _simpleOrder;
+		int _nextIndex;
+		int _lastIndex;
+		int _expectedModCount;
+		ObjectMap<?, V> _map;
 
-		if (loadFactor <= 0)
-			throw new IllegalArgumentException("loadFactor must be > 0: " + loadFactor);
-		this.loadFactor = loadFactor;
-
-		threshold = (int) (capacity * loadFactor);
-		mask = capacity - 1;
-		hashShift = 31 - Integer.numberOfTrailingZeros(capacity);
-		stashCapacity = MathUtils.max(3, (int) MathUtils.ceil(MathUtils.log(capacity)) * 2);
-		pushIterations = MathUtils.max(MathUtils.min(capacity, 8), (int) MathUtils.sqrt(capacity) / 8);
-
-		keyTable = (K[]) new Object[capacity + stashCapacity];
-		valueTable = (V[]) new Object[keyTable.length];
-	}
-
-	public ObjectMap(ObjectMap<? extends K, ? extends V> map) {
-		this(map.capacity, map.loadFactor);
-		stashSize = map.stashSize;
-		System.arraycopy(map.keyTable, 0, keyTable, 0, map.keyTable.length);
-		System.arraycopy(map.valueTable, 0, valueTable, 0, map.valueTable.length);
-		size = map.size;
-	}
-
-	public V put(K key, V value) {
-		if (key == null)
-			throw new IllegalArgumentException("key cannot be null.");
-		return put_internal(key, value);
-	}
-
-	private V put_internal(K key, V value) {
-		K[] keyTable = this.keyTable;
-
-		int hashCode = key.hashCode();
-		int index1 = hashCode & mask;
-		K key1 = keyTable[index1];
-		if (key.equals(key1)) {
-			V oldValue = valueTable[index1];
-			valueTable[index1] = value;
-			return oldValue;
+		Values(ObjectMap<?, V> map) {
+			this._map = map;
 		}
 
-		int index2 = hash2(hashCode);
-		K key2 = keyTable[index2];
-		if (key.equals(key2)) {
-			V oldValue = valueTable[index2];
-			valueTable[index2] = value;
-			return oldValue;
+		public void reset() {
+			this._simpleOrder = !(_map instanceof OrderedMap<?, ?>);
+			this._nextIndex = _map.iterateFirst();
+			this._lastIndex = NO_INDEX;
+			this._expectedModCount = _map.modCount;
 		}
 
-		int index3 = hash3(hashCode);
-		K key3 = keyTable[index3];
-		if (key.equals(key3)) {
-			V oldValue = valueTable[index3];
-			valueTable[index3] = value;
-			return oldValue;
-		}
-
-		for (int i = capacity, n = i + stashSize; i < n; i++) {
-			if (key.equals(keyTable[i])) {
-				V oldValue = valueTable[i];
-				valueTable[i] = value;
-				return oldValue;
+		@Override
+		public final boolean hasNext() {
+			if(!_valid){
+				return false;
 			}
+			return _nextIndex != NO_INDEX && _nextIndex < _map.firstUnusedIndex;
 		}
 
-		if (key1 == null) {
-			keyTable[index1] = key;
-			valueTable[index1] = value;
-			if (size++ >= threshold)
-				resize(capacity << 1);
-			return null;
-		}
-
-		if (key2 == null) {
-			keyTable[index2] = key;
-			valueTable[index2] = value;
-			if (size++ >= threshold)
-				resize(capacity << 1);
-			return null;
-		}
-
-		if (key3 == null) {
-			keyTable[index3] = key;
-			valueTable[index3] = value;
-			if (size++ >= threshold)
-				resize(capacity << 1);
-			return null;
-		}
-
-		push(key, value, index1, key1, index2, key2, index3, key3);
-		return null;
-	}
-
-	public void putAll(ObjectMap<K, V> map) {
-		ensureCapacity(map.size);
-		for (Entry<K, V> entry : map)
-			put(entry.key, entry.value);
-	}
-
-	private void putResize(K key, V value) {
-		int hashCode = key.hashCode();
-		int index1 = hashCode & mask;
-		K key1 = keyTable[index1];
-		if (key1 == null) {
-			keyTable[index1] = key;
-			valueTable[index1] = value;
-			if (size++ >= threshold)
-				resize(capacity << 1);
-			return;
-		}
-
-		int index2 = hash2(hashCode);
-		K key2 = keyTable[index2];
-		if (key2 == null) {
-			keyTable[index2] = key;
-			valueTable[index2] = value;
-			if (size++ >= threshold)
-				resize(capacity << 1);
-			return;
-		}
-
-		int index3 = hash3(hashCode);
-		K key3 = keyTable[index3];
-		if (key3 == null) {
-			keyTable[index3] = key;
-			valueTable[index3] = value;
-			if (size++ >= threshold)
-				resize(capacity << 1);
-			return;
-		}
-
-		push(key, value, index1, key1, index2, key2, index3, key3);
-	}
-
-	private void push(K insertKey, V insertValue, int index1, K key1, int index2, K key2, int index3, K key3) {
-		K[] keyTable = this.keyTable;
-		V[] valueTable = this.valueTable;
-		int mask = this.mask;
-
-		K evictedKey;
-		V evictedValue;
-		int i = 0, pushIterations = this.pushIterations;
-		do {
-			switch (MathUtils.random(2)) {
-			case 0:
-				evictedKey = key1;
-				evictedValue = valueTable[index1];
-				keyTable[index1] = insertKey;
-				valueTable[index1] = insertValue;
-				break;
-			case 1:
-				evictedKey = key2;
-				evictedValue = valueTable[index2];
-				keyTable[index2] = insertKey;
-				valueTable[index2] = insertValue;
-				break;
-			default:
-				evictedKey = key3;
-				evictedValue = valueTable[index3];
-				keyTable[index3] = insertKey;
-				valueTable[index3] = insertValue;
-				break;
+		@SuppressWarnings("unchecked")
+		public final V next() {
+			if(!_valid){
+				return null;
 			}
+			if (_map.modCount != _expectedModCount) {
+				return null;
+			}
+			if (_nextIndex == NO_INDEX || _nextIndex >= _map.firstUnusedIndex) {
+				return null;
+			}
+			_lastIndex = _nextIndex;
+			if (_simpleOrder) {
+				do {
+					_nextIndex++;
+				} while (_map.firstDeletedIndex >= 0 && _nextIndex < _map.firstUnusedIndex
+						&& _map.keyValueTable[(_nextIndex << _map.keyIndexShift) + 1] == null);
+			} else {
+				_nextIndex = _map.iterateNext(_nextIndex);
+			}
+			if (_lastIndex == NULL_INDEX) {
+				return null;
+			}
+			return ((V) (_map.keyValueTable[(_lastIndex << 1) + 2]));
+		}
 
-			int hashCode = evictedKey.hashCode();
-			index1 = hashCode & mask;
-			key1 = keyTable[index1];
-			if (key1 == null) {
-				keyTable[index1] = evictedKey;
-				valueTable[index1] = evictedValue;
-				if (size++ >= threshold)
-					resize(capacity << 1);
+		@Override
+		public final void remove() {
+			if(!_valid){
 				return;
 			}
-
-			index2 = hash2(hashCode);
-			key2 = keyTable[index2];
-			if (key2 == null) {
-				keyTable[index2] = evictedKey;
-				valueTable[index2] = evictedValue;
-				if (size++ >= threshold)
-					resize(capacity << 1);
+			if (_lastIndex == NO_INDEX) {
 				return;
 			}
-
-			index3 = hash3(hashCode);
-			key3 = keyTable[index3];
-			if (key3 == null) {
-				keyTable[index3] = evictedKey;
-				valueTable[index3] = evictedValue;
-				if (size++ >= threshold)
-					resize(capacity << 1);
+			if (_map.modCount != _expectedModCount) {
 				return;
 			}
-
-			if (++i == pushIterations)
-				break;
-
-			insertKey = evictedKey;
-			insertValue = evictedValue;
-		} while (true);
-
-		putStash(evictedKey, evictedValue);
-	}
-
-	private void putStash(K key, V value) {
-		if (stashSize == stashCapacity) {
-			resize(capacity << 1);
-			put_internal(key, value);
-			return;
+			_map.removeKey(_lastIndex == NULL_INDEX ? null : _map.keyValueTable[(_lastIndex << _map.keyIndexShift) + 1],
+					_lastIndex);
+			_lastIndex = NO_INDEX;
+			_expectedModCount = _map.modCount;
 		}
-		int index = capacity + stashSize;
-		keyTable[index] = key;
-		valueTable[index] = value;
-		stashSize++;
-		size++;
+
+		@Override
+		public Values<V> iterator() {
+			return this;
+		}
 	}
 
-	public V get(K key) {
-		int hashCode = key.hashCode();
-		int index = hashCode & mask;
-		if (!key.equals(keyTable[index])) {
-			index = hash2(hashCode);
-			if (!key.equals(keyTable[index])) {
-				index = hash3(hashCode);
-				if (!key.equals(keyTable[index]))
-					return getStash(key);
+	private Keys<K> keys1, keys2;
+
+	public Keys<K> keys() {
+		if (keys1 == null) {
+			keys1 = new Keys<K>(this);
+			keys2 = new Keys<K>(this);
+		}
+		if (!keys1._valid) {
+			keys1.reset();
+			keys1._valid = true;
+			keys2._valid = false;
+			return keys1;
+		}
+		keys2.reset();
+		keys2._valid = true;
+		keys1._valid = false;
+		return keys2;
+	}
+
+	public static final class Keys<K> implements Iterable<K>, LIterator<K> {
+
+		public boolean _valid;
+		boolean _simpleOrder;
+		int _nextIndex;
+		int _lastIndex;
+		int _expectedModCount;
+		ObjectMap<K, ?> _map;
+
+		Keys(ObjectMap<K, ?> map) {
+			this._map = map;
+		}
+
+		public void reset() {
+			this._simpleOrder = !(_map instanceof OrderedMap<?, ?>);
+			this._nextIndex = _map.iterateFirst();
+			this._lastIndex = NO_INDEX;
+			this._expectedModCount = _map.modCount;
+		}
+
+		@Override
+		public final boolean hasNext() {
+			if(!_valid){
+				return false;
 			}
+			return _nextIndex != NO_INDEX && _nextIndex < _map.firstUnusedIndex;
 		}
-		return valueTable[index];
-	}
 
-	private V getStash(K key) {
-		K[] keyTable = this.keyTable;
-		for (int i = capacity, n = i + stashSize; i < n; i++)
-			if (key.equals(keyTable[i]))
-				return valueTable[i];
-		return null;
-	}
-
-	public V get(K key, V defaultValue) {
-		int hashCode = key.hashCode();
-		int index = hashCode & mask;
-		if (!key.equals(keyTable[index])) {
-			index = hash2(hashCode);
-			if (!key.equals(keyTable[index])) {
-				index = hash3(hashCode);
-				if (!key.equals(keyTable[index]))
-					return getStash(key, defaultValue);
+		@SuppressWarnings("unchecked")
+		public final K next() {
+			if(!_valid){
+				return null;
 			}
-		}
-		return valueTable[index];
-	}
-
-	private V getStash(K key, V defaultValue) {
-		K[] keyTable = this.keyTable;
-		for (int i = capacity, n = i + stashSize; i < n; i++)
-			if (key.equals(keyTable[i]))
-				return valueTable[i];
-		return defaultValue;
-	}
-
-	public V remove(K key) {
-		int hashCode = key.hashCode();
-		int index = hashCode & mask;
-		if (key.equals(keyTable[index])) {
-			keyTable[index] = null;
-			V oldValue = valueTable[index];
-			valueTable[index] = null;
-			size--;
-			return oldValue;
-		}
-
-		index = hash2(hashCode);
-		if (key.equals(keyTable[index])) {
-			keyTable[index] = null;
-			V oldValue = valueTable[index];
-			valueTable[index] = null;
-			size--;
-			return oldValue;
-		}
-
-		index = hash3(hashCode);
-		if (key.equals(keyTable[index])) {
-			keyTable[index] = null;
-			V oldValue = valueTable[index];
-			valueTable[index] = null;
-			size--;
-			return oldValue;
-		}
-
-		return removeStash(key);
-	}
-
-	V removeStash(K key) {
-		K[] keyTable = this.keyTable;
-		for (int i = capacity, n = i + stashSize; i < n; i++) {
-			if (key.equals(keyTable[i])) {
-				V oldValue = valueTable[i];
-				removeStashIndex(i);
-				size--;
-				return oldValue;
+			if (_map.modCount != _expectedModCount) {
+				return null;
 			}
-		}
-		return null;
-	}
-
-	void removeStashIndex(int index) {
-		stashSize--;
-		int lastIndex = capacity + stashSize;
-		if (index < lastIndex) {
-			keyTable[index] = keyTable[lastIndex];
-			valueTable[index] = valueTable[lastIndex];
-			valueTable[lastIndex] = null;
-		} else
-			valueTable[index] = null;
-	}
-
-	public void shrink(int maximumCapacity) {
-		if (maximumCapacity < 0)
-			throw new IllegalArgumentException("maximumCapacity must be >= 0: " + maximumCapacity);
-		if (size > maximumCapacity)
-			maximumCapacity = size;
-		if (capacity <= maximumCapacity)
-			return;
-		maximumCapacity = MathUtils.nextPowerOfTwo(maximumCapacity);
-		resize(maximumCapacity);
-	}
-
-	public void clear(int maximumCapacity) {
-		if (capacity <= maximumCapacity) {
-			clear();
-			return;
-		}
-		size = 0;
-		resize(maximumCapacity);
-	}
-
-	public void clear() {
-		if (size == 0)
-			return;
-		K[] keyTable = this.keyTable;
-		V[] valueTable = this.valueTable;
-		for (int i = capacity + stashSize; i-- > 0;) {
-			keyTable[i] = null;
-			valueTable[i] = null;
-		}
-		size = 0;
-		stashSize = 0;
-	}
-
-	public boolean containsValue(Object value) {
-		return containsValue(value, false);
-	}
-
-	public boolean containsValue(Object value, boolean identity) {
-		V[] valueTable = this.valueTable;
-		if (value == null) {
-			K[] keyTable = this.keyTable;
-			for (int i = capacity + stashSize; i-- > 0;)
-				if (keyTable[i] != null && valueTable[i] == null)
-					return true;
-		} else if (identity) {
-			for (int i = capacity + stashSize; i-- > 0;)
-				if (valueTable[i] == value)
-					return true;
-		} else {
-			for (int i = capacity + stashSize; i-- > 0;)
-				if (value.equals(valueTable[i]))
-					return true;
-		}
-		return false;
-	}
-
-	public boolean containsKey(K key) {
-		int hashCode = key.hashCode();
-		int index = hashCode & mask;
-		if (!key.equals(keyTable[index])) {
-			index = hash2(hashCode);
-			if (!key.equals(keyTable[index])) {
-				index = hash3(hashCode);
-				if (!key.equals(keyTable[index]))
-					return containsKeyStash(key);
+			if (_nextIndex == NO_INDEX || _nextIndex >= _map.firstUnusedIndex) {
+				return null;
 			}
-		}
-		return true;
-	}
-
-	private boolean containsKeyStash(K key) {
-		K[] keyTable = this.keyTable;
-		for (int i = capacity, n = i + stashSize; i < n; i++)
-			if (key.equals(keyTable[i]))
-				return true;
-		return false;
-	}
-
-	public K findKey(Object value, boolean identity) {
-		V[] valueTable = this.valueTable;
-		if (value == null) {
-			K[] keyTable = this.keyTable;
-			for (int i = capacity + stashSize; i-- > 0;)
-				if (keyTable[i] != null && valueTable[i] == null)
-					return keyTable[i];
-		} else if (identity) {
-			for (int i = capacity + stashSize; i-- > 0;)
-				if (valueTable[i] == value)
-					return keyTable[i];
-		} else {
-			for (int i = capacity + stashSize; i-- > 0;)
-				if (value.equals(valueTable[i]))
-					return keyTable[i];
-		}
-		return null;
-	}
-
-	public void ensureCapacity(int additionalCapacity) {
-		int sizeNeeded = size + additionalCapacity;
-		if (sizeNeeded >= threshold)
-			resize(MathUtils.nextPowerOfTwo((int) (sizeNeeded / loadFactor)));
-	}
-
-	private void resize(int newSize) {
-		int oldEndIndex = capacity + stashSize;
-
-		capacity = newSize;
-		threshold = (int) (newSize * loadFactor);
-		mask = newSize - 1;
-		hashShift = 31 - Integer.numberOfTrailingZeros(newSize);
-		stashCapacity = MathUtils.max(3, (int) MathUtils.ceil(MathUtils.log(newSize)) * 2);
-		pushIterations = MathUtils.max(MathUtils.min(newSize, 8), (int) MathUtils.sqrt(newSize) / 8);
-
-		K[] oldKeyTable = keyTable;
-		V[] oldValueTable = valueTable;
-
-		keyTable = (K[]) new Object[newSize + stashCapacity];
-		valueTable = (V[]) new Object[newSize + stashCapacity];
-
-		int oldSize = size;
-		size = 0;
-		stashSize = 0;
-		if (oldSize > 0) {
-			for (int i = 0; i < oldEndIndex; i++) {
-				K key = oldKeyTable[i];
-				if (key != null)
-					putResize(key, oldValueTable[i]);
+			_lastIndex = _nextIndex;
+			if (_simpleOrder) {
+				do {
+					_nextIndex++;
+				} while (_map.firstDeletedIndex >= 0 && _nextIndex < _map.firstUnusedIndex
+						&& _map.keyValueTable[(_nextIndex << _map.keyIndexShift) + 1] == null);
+			} else {
+				_nextIndex = _map.iterateNext(_nextIndex);
 			}
+
+			return _lastIndex == NULL_INDEX ? null : (K) _map.keyValueTable[(_lastIndex << _map.keyIndexShift) + 1];
+
+		}
+
+		@Override
+		public final void remove() {
+			if(!_valid){
+				return;
+			}
+			if (_lastIndex == NO_INDEX) {
+				return;
+			}
+			if (_map.modCount != _expectedModCount) {
+				return;
+			}
+			_map.removeKey(_lastIndex == NULL_INDEX ? null : _map.keyValueTable[(_lastIndex << _map.keyIndexShift) + 1],
+					_lastIndex);
+			_lastIndex = NO_INDEX;
+			_expectedModCount = _map.modCount;
+		}
+
+		@Override
+		public Keys<K> iterator() {
+			return this;
 		}
 	}
 
-	private int hash2(int h) {
-		h *= PRIME2;
-		return (h ^ h >>> hashShift) & mask;
-	}
+	private Entries<K, V> entries1, entries2;
 
-	private int hash3(int h) {
-		h *= PRIME3;
-		return (h ^ h >>> hashShift) & mask;
-	}
-
-	public String toString(String separator) {
-		return toString(separator, false);
-	}
-
-	public String toString() {
-		return toString(", ", true);
-	}
-
-	private String toString(String separator, boolean braces) {
-		if (size == 0)
-			return braces ? "{}" : "";
-		StringBuilder buffer = new StringBuilder(32);
-		if (braces)
-			buffer.append('{');
-		K[] keyTable = this.keyTable;
-		V[] valueTable = this.valueTable;
-		int i = keyTable.length;
-		while (i-- > 0) {
-			K key = keyTable[i];
-			if (key == null)
-				continue;
-			buffer.append(key);
-			buffer.append('=');
-			buffer.append(valueTable[i]);
-			break;
-		}
-		while (i-- > 0) {
-			K key = keyTable[i];
-			if (key == null)
-				continue;
-			buffer.append(separator);
-			buffer.append(key);
-			buffer.append('=');
-			buffer.append(valueTable[i]);
-		}
-		if (braces)
-			buffer.append('}');
-		return buffer.toString();
-	}
-
+	@Override
 	public Entries<K, V> iterator() {
 		return entries();
 	}
 
 	public Entries<K, V> entries() {
 		if (entries1 == null) {
-			entries1 = new Entries(this);
-			entries2 = new Entries(this);
+			entries1 = new Entries<K, V>(this);
+			entries2 = new Entries<K, V>(this);
 		}
-		if (!entries1.valid) {
+		if (!entries1._valid) {
 			entries1.reset();
-			entries1.valid = true;
-			entries2.valid = false;
+			entries1._valid = true;
+			entries2._valid = false;
 			return entries1;
 		}
 		entries2.reset();
-		entries2.valid = true;
-		entries1.valid = false;
+		entries2._valid = true;
+		entries1._valid = false;
 		return entries2;
 	}
 
-	public Values<V> values() {
-		if (values1 == null) {
-			values1 = new Values(this);
-			values2 = new Values(this);
-		}
-		if (!values1.valid) {
-			values1.reset();
-			values1.valid = true;
-			values2.valid = false;
-			return values1;
-		}
-		values2.reset();
-		values2.valid = true;
-		values1.valid = false;
-		return values2;
-	}
+	public static class Entries<K, V> implements Iterable<Entry<K, V>>, LIterator<Entry<K, V>> {
 
-	public Keys<K> keys() {
-		if (keys1 == null) {
-			keys1 = new Keys(this);
-			keys2 = new Keys(this);
-		}
-		if (!keys1.valid) {
-			keys1.reset();
-			keys1.valid = true;
-			keys2.valid = false;
-			return keys1;
-		}
-		keys2.reset();
-		keys2.valid = true;
-		keys1.valid = false;
-		return keys2;
-	}
+		public boolean _valid;
+		boolean _simpleOrder;
+		int _nextIndex;
+		int _lastIndex;
+		int _expectedModCount;
+		ObjectMap<K, V> _map;
 
-	public boolean isEmpty() {
-		return this.size == 0 || keyTable == null || valueTable == null;
-	}
-
-	static public class Entry<K, V> {
-		public K key;
-		public V value;
-
-		public String toString() {
-			return key + "=" + value;
-		}
-	}
-
-	static private abstract class MapIterator<K, V, I> implements Iterable<I>, LIterator<I> {
-		public boolean hasNext;
-
-		final ObjectMap<K, V> map;
-		int nextIndex, currentIndex;
-		boolean valid = true;
-
-		public MapIterator(ObjectMap<K, V> map) {
-			this.map = map;
-			reset();
+		public Entries(ObjectMap<K, V> map) {
+			this._map = map;
 		}
 
 		public void reset() {
-			currentIndex = -1;
-			nextIndex = -1;
-			findNextIndex();
+			this._simpleOrder = !(_map instanceof OrderedMap<?, ?>);
+			this._nextIndex = _map.iterateFirst();
+			this._lastIndex = NO_INDEX;
+			this._expectedModCount = _map.modCount;
 		}
 
-		void findNextIndex() {
-			hasNext = false;
-			K[] keyTable = map.keyTable;
-			for (int n = map.capacity + map.stashSize; ++nextIndex < n;) {
-				if (keyTable[nextIndex] != null) {
-					hasNext = true;
-					break;
-				}
+		@Override
+		public final boolean hasNext() {
+			if (!_valid) {
+				return false;
 			}
+			return _nextIndex != NO_INDEX && _nextIndex < _map.firstUnusedIndex;
 		}
 
-		public void remove() {
-			if (currentIndex < 0)
-				throw new IllegalStateException("next must be called before remove.");
-			if (currentIndex >= map.capacity) {
-				map.removeStashIndex(currentIndex);
-				nextIndex = currentIndex - 1;
-				findNextIndex();
+		@Override
+		public final Entry<K, V> next() {
+			if (!_valid) {
+				return null;
+			}
+			if (_map.modCount != _expectedModCount) {
+				return null;
+			}
+			if (_nextIndex == NO_INDEX || _nextIndex >= _map.firstUnusedIndex) {
+				return null;
+			}
+			_lastIndex = _nextIndex;
+			if (_simpleOrder) {
+				do {
+					_nextIndex++;
+				} while (_map.firstDeletedIndex >= 0 && _nextIndex < _map.firstUnusedIndex
+						&& _map.keyValueTable[(_nextIndex << _map.keyIndexShift) + 1] == null);
 			} else {
-				map.keyTable[currentIndex] = null;
-				map.valueTable[currentIndex] = null;
+				_nextIndex = _map.iterateNext(_nextIndex);
 			}
-			currentIndex = -1;
-			map.size--;
-		}
-	}
-
-	static public class Entries<K, V> extends MapIterator<K, V, Entry<K, V>> {
-		Entry<K, V> entry = new Entry();
-
-		public Entries(ObjectMap<K, V> map) {
-			super(map);
+			return new Entry<K, V>(_lastIndex, _map);
 		}
 
-		public Entry<K, V> next() {
-			if (!hasNext)
-				throw new NoSuchElementException();
-			if (!valid)
-				throw LSystem.runThrow("#iterator() cannot be used nested.");
-			K[] keyTable = map.keyTable;
-			entry.key = keyTable[nextIndex];
-			entry.value = map.valueTable[nextIndex];
-			currentIndex = nextIndex;
-			findNextIndex();
-			return entry;
+		@Override
+		public final void remove() {
+			if(!_valid){
+				return;
+			}
+			if (_lastIndex == NO_INDEX) {
+				return;
+			}
+			if (_map.modCount != _expectedModCount) {
+				return;
+			}
+			_map.removeKey(_lastIndex == NULL_INDEX ? null : _map.keyValueTable[(_lastIndex << _map.keyIndexShift) + 1],
+					_lastIndex);
+			_lastIndex = NO_INDEX;
+			_expectedModCount = _map.modCount;
 		}
 
-		public boolean hasNext() {
-			if (!valid)
-				throw LSystem.runThrow("#iterator() cannot be used nested.");
-			return hasNext;
-		}
-
+		@Override
 		public Entries<K, V> iterator() {
 			return this;
 		}
 	}
 
-	static public class Values<V> extends MapIterator<Object, V, V> {
-		public Values(ObjectMap<?, V> map) {
-			super((ObjectMap<Object, V>) map);
+	private static final int MAP_BITS = 0xC0000000;
+
+	private static final int MAP_EMPTY = 0;
+
+	private static final int MAP_NEXT = 0x40000000;
+
+	private static final int MAP_OVERFLOW = 0x80000000;
+
+	private static final int MAP_END = 0xC0000000;
+
+	private static final int AVAILABLE_BITS = 0x3FFFFFFF;
+
+	private static final Object EMPTY_OBJECT = new Object();
+
+	protected static final Object FINAL_VALUE = new Object();
+
+	public static class Entry<K, V> {
+		final int index;
+		public final K key;
+		public V value;
+		ObjectMap<K, V> map;
+
+		@SuppressWarnings("unchecked")
+		Entry(int index, ObjectMap<K, V> map) {
+			this.map = map;
+			this.index = index;
+			this.key = index == NULL_INDEX ? null : (K) map.keyValueTable[(index << map.keyIndexShift) + 1];
+			this.value = (V) (map.keyIndexShift == 0 ? FINAL_VALUE
+					: map.keyValueTable[(index << map.keyIndexShift) + 2]);
 		}
 
-		public boolean hasNext() {
-			if (!valid)
-				throw LSystem.runThrow("#iterator() cannot be used nested.");
-			return hasNext;
-		}
-
-		public V next() {
-			if (!hasNext)
-				throw new NoSuchElementException();
-			if (!valid)
-				throw LSystem.runThrow("#iterator() cannot be used nested.");
-			V value = map.valueTable[nextIndex];
-			currentIndex = nextIndex;
-			findNextIndex();
-			return value;
-		}
-
-		public Values<V> iterator() {
-			return this;
-		}
-
-		public TArray<V> toArray() {
-			return toArray(new TArray(true, map.size));
-		}
-
-		public TArray<V> toArray(TArray<V> array) {
-			while (hasNext)
-				array.add(next());
-			return array;
-		}
-	}
-
-	static public class Keys<K> extends MapIterator<K, Object, K> {
-		public Keys(ObjectMap<K, ?> map) {
-			super((ObjectMap<K, Object>) map);
-		}
-
-		public boolean hasNext() {
-			if (!valid)
-				throw LSystem.runThrow("#iterator() cannot be used nested.");
-			return hasNext;
-		}
-
-		public K next() {
-			if (!hasNext)
-				throw new NoSuchElementException();
-			if (!valid)
-				throw LSystem.runThrow("#iterator() cannot be used nested.");
-			K key = map.keyTable[nextIndex];
-			currentIndex = nextIndex;
-			findNextIndex();
+		public final K getKey() {
 			return key;
 		}
 
-		public Keys<K> iterator() {
-			return this;
+		@SuppressWarnings("unchecked")
+		public final V getValue() {
+			if (index == NULL_INDEX ? map.nullKeyPresent : map.keyValueTable[(index << 1) + 1] == key) {
+				value = (V) map.keyValueTable[(index << 1) + 2];
+			}
+			return value;
 		}
 
-		public TArray<K> toArray() {
-			return toArray(new TArray(true, map.size));
+		public final V setValue(V newValue) {
+			if (index == NULL_INDEX ? map.nullKeyPresent : map.keyValueTable[(index << 1) + 1] == key) {
+				@SuppressWarnings("unchecked")
+				V oldValue = (V) map.keyValueTable[(index << 1) + 2];
+				map.keyValueTable[(index << 1) + 2] = value = newValue;
+				return oldValue;
+			}
+			V oldValue = value;
+			value = newValue;
+			return oldValue;
 		}
 
-		public TArray<K> toArray(TArray<K> array) {
-			while (hasNext)
-				array.add(next());
-			return array;
+		@Override
+		public boolean equals(Object o) {
+			if (!(o instanceof Entry)) {
+				return false;
+			}
+			@SuppressWarnings("unchecked")
+			Entry<K, V> that = (Entry<K, V>) o;
+			K key2 = that.getKey();
+			if (key == key2 || (key != null && key.equals(key2))) {
+				V value2 = that.getValue();
+				return getValue() == value2 || (value != null && value.equals(value2));
+			}
+			return false;
 		}
+
+		@Override
+		public int hashCode() {
+			return (key == null ? 0 : key.hashCode()) ^ (getValue() == null ? 0 : value.hashCode());
+		}
+
+		@Override
+		public String toString() {
+			return key + "=" + getValue();
+		}
+	}
+
+	private boolean nullKeyPresent;
+
+	public int size = 0;
+
+	protected Object[] keyValueTable;
+
+	protected int keyIndexShift;
+
+	protected int threshold;
+
+	private int[] indexTable;
+
+	private int firstUnusedIndex = 0;
+
+	private int firstDeletedIndex = -1;
+
+	private int capacity;
+
+	private final float load_factor;
+
+	protected int modCount;
+
+	public ObjectMap() {
+		this(true);
+	}
+
+	ObjectMap(boolean withValues) {
+		this(CollectionUtils.INITIAL_CAPACITY * 2, 0.85f, withValues);
+	}
+
+	public ObjectMap(int initialCapacity, float factor) {
+		this(initialCapacity, 0.85f, true);
+	}
+
+	public ObjectMap(int initialCapacity) {
+		this(initialCapacity, 0.85f, true);
+	}
+
+	ObjectMap(int initialCapacity, boolean withValues) {
+		this(initialCapacity, 0.85f, withValues);
+	}
+
+	public ObjectMap(ObjectMap<? extends K, ? extends V> map) {
+		this(MathUtils.max((int) (map.size() / 0.85f) + 1, CollectionUtils.INITIAL_CAPACITY), 0.85f);
+		for (Entry<? extends K, ? extends V> e : map) {
+			put(e.getKey(), e.getValue());
+		}
+	}
+
+	ObjectMap(int initialCapacity, float factor, boolean withValues) {
+		if (initialCapacity < 0) {
+			throw LSystem.runThrow("initialCapacity must be >= 0: " + initialCapacity);
+		}
+		if (initialCapacity > 1 << 30) {
+			throw LSystem.runThrow("initialCapacity is too large: " + initialCapacity);
+		}
+		this.capacity = MathUtils.nextPowerOfTwo(initialCapacity);
+		if (factor <= 0) {
+			throw LSystem.runThrow("loadFactor must be > 0: " + factor);
+		}
+		this.load_factor = MathUtils.min(factor, 1f);
+		this.threshold = (int) (capacity * load_factor);
+		if (threshold < 1) {
+			throw LSystem.runThrow("illegal load factor: " + load_factor);
+		}
+		this.keyIndexShift = withValues ? 1 : 0;
+		init();
+	}
+
+	void init() {
+	}
+
+	void resize(int newCapacity) {
+		int newValueLen = (int) (newCapacity * load_factor);
+		if (keyValueTable != null) {
+			keyValueTable = CollectionUtils.copyOf(keyValueTable, (newValueLen << keyIndexShift) + 1);
+		} else {
+			keyValueTable = new Object[(newValueLen << keyIndexShift) + 1];
+		}
+		int[] newIndices = new int[newCapacity + newValueLen];
+		if (indexTable != null) {
+			int mask = AVAILABLE_BITS ^ (capacity - 1);
+			int newMask = AVAILABLE_BITS ^ (newCapacity - 1);
+			for (int i = capacity - 1; i >= 0; i--) {
+				int j = indexTable[i];
+				if ((j & MAP_BITS) == MAP_EMPTY) {
+					continue;
+				}
+				if ((j & MAP_BITS) == MAP_NEXT) {
+					int i2 = (i + 1) & (capacity - 1);
+					int j2 = indexTable[i2];
+					int arrayIndex1 = j & (capacity - 1);
+					int arrayIndex2 = j2 & (capacity - 1);
+					int newHashIndex1 = i | (j & (newMask ^ mask));
+					int newHashIndex2 = i | (j2 & (newMask ^ mask));
+					if (newHashIndex1 == newHashIndex2) {
+						newIndices[newHashIndex1] = arrayIndex1 | (j & newMask) | MAP_NEXT;
+						newIndices[(newHashIndex1 + 1) & (newCapacity - 1)] = arrayIndex2 | (j2 & newMask);
+					} else {
+						newIndices[newHashIndex1] = arrayIndex1 | (j & newMask) | MAP_END;
+						newIndices[newHashIndex2] = arrayIndex2 | (j2 & newMask) | MAP_END;
+					}
+				} else {
+					int next1i = -1, next1v = 0, next1n = 0;
+					int next2i = -1, next2v = 0, next2n = 0;
+					for (;;) {
+						int arrayIndex = j & (capacity - 1);
+						int newHashIndex = i | (j & (newMask ^ mask));
+						if (newHashIndex == i) {
+							if (next1i >= 0) {
+								newIndices[next1i] = next1v | MAP_OVERFLOW;
+								next1i = newCapacity + (next1v & (newCapacity - 1));
+								next1n++;
+							} else {
+								next1i = newHashIndex;
+							}
+							next1v = arrayIndex | (j & newMask);
+						} else if (newHashIndex == i + capacity) {
+							if (next2i >= 0) {
+								newIndices[next2i] = next2v | MAP_OVERFLOW;
+								next2i = newCapacity + (next2v & (newCapacity - 1));
+								next2n++;
+							} else {
+								next2i = newHashIndex;
+							}
+							next2v = arrayIndex | (j & newMask);
+						} else {
+							int newIndex = arrayIndex | (j & newMask);
+							int oldIndex = newIndices[newHashIndex];
+							if ((oldIndex & MAP_BITS) != MAP_EMPTY) {
+								newIndices[newCapacity + arrayIndex] = oldIndex;
+								newIndex |= MAP_OVERFLOW;
+							} else {
+								newIndex |= MAP_END;
+							}
+							newIndices[newHashIndex] = newIndex;
+						}
+						if ((j & MAP_BITS) == MAP_END) {
+							break;
+						}
+						j = indexTable[capacity + arrayIndex];
+					}
+					if (next1i >= 0) {
+						if (next1n == 1 && i != capacity - 1 && (next1v & (capacity - 1)) != 0
+								&& newIndices[i + 1] == 0) {
+							newIndices[i] ^= MAP_OVERFLOW ^ MAP_NEXT;
+							newIndices[i + 1] = next1v;
+						} else {
+							newIndices[next1i] = next1v | MAP_END;
+						}
+					}
+					if (next2i >= 0) {
+						if (next2n == 1 && i != capacity - 1 && (next2v & (capacity - 1)) != 0
+								&& newIndices[i + capacity + 1] == 0) {
+							newIndices[i + capacity] ^= MAP_OVERFLOW ^ MAP_NEXT;
+							newIndices[i + capacity + 1] = next2v;
+						} else {
+							newIndices[next2i] = next2v | MAP_END;
+						}
+					}
+				}
+			}
+			for (int i = firstDeletedIndex; i >= 0; i = (newIndices[newCapacity + i] = indexTable[capacity + i])) {
+				;
+			}
+		}
+		capacity = newCapacity;
+		threshold = newValueLen;
+		indexTable = newIndices;
+	}
+
+	static final int NULL_INDEX = -1;
+
+	static final int NO_INDEX = -2;
+
+	final int positionOf(Object key) {
+		if (key == null) {
+			return nullKeyPresent ? NULL_INDEX : NO_INDEX;
+		}
+		if (indexTable == null) {
+			return NO_INDEX;
+		}
+		int hc = CollectionUtils.getLimitHash(key.hashCode());
+		int index = indexTable[hc & (capacity - 1)];
+		int MAP = index & MAP_BITS;
+		if (MAP == MAP_EMPTY) {
+			return NO_INDEX;
+		}
+		int mask = AVAILABLE_BITS ^ (capacity - 1);
+		for (;;) {
+			int position = index & (capacity - 1);
+			if ((index & mask) == (hc & mask)) {
+				Object key1 = keyValueTable[(position << keyIndexShift) + 1];
+				if (key == key1 || key.equals(key1)) {
+					return position;
+				}
+			}
+			if (MAP == MAP_END) {
+				return NO_INDEX;
+			} else if (MAP == MAP_OVERFLOW) {
+				index = indexTable[capacity + position];
+			} else if (MAP == MAP_NEXT) {
+				index = indexTable[(hc + 1) & (capacity - 1)];
+			} else {
+				return NO_INDEX;
+			}
+			MAP = index & MAP_BITS;
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public V get(Object key) {
+		if (key == null) {
+			return nullKeyPresent ? (V) keyValueTable[0] : null;
+		}
+		if (indexTable == null) {
+			return null;
+		}
+		int hc = CollectionUtils.getLimitHash(key.hashCode());
+		int index = indexTable[hc & (capacity - 1)];
+		int MAP = index & MAP_BITS;
+		if (MAP == MAP_EMPTY) {
+			return null;
+
+		}
+		int mask = AVAILABLE_BITS ^ (capacity - 1);
+		for (;;) {
+			int position = index & (capacity - 1);
+			if ((index & mask) == (hc & mask)) {
+				Object key1 = keyValueTable[(position << 1) + 1];
+				if (key == key1 || key.equals(key1)) {
+					return (V) keyValueTable[(position << 1) + 2];
+				}
+			}
+			if (MAP == MAP_END) {
+				return null;
+			} else if (MAP == MAP_OVERFLOW) {
+				index = indexTable[capacity + position];
+			} else if (MAP == MAP_NEXT) {
+				index = indexTable[(hc + 1) & (capacity - 1)];
+			} else {
+				return null;
+			}
+			MAP = index & MAP_BITS;
+		}
+	}
+
+	final boolean isEmpty(int i) {
+		return i == NULL_INDEX ? !nullKeyPresent
+				: firstDeletedIndex >= 0 && keyValueTable[(i << keyIndexShift) + 1] == null;
+	}
+
+	public V put(K key, V value) {
+		return put(key, value, true);
+	}
+
+	@SuppressWarnings("unchecked")
+	final V put(K key, V value, boolean searchForExistingKey) {
+		boolean callback = this instanceof OrderedMap;
+		if (key == null) {
+			Object oldValue;
+			if (keyIndexShift > 0) {
+				if (keyValueTable == null) {
+					keyValueTable = new Object[(threshold << keyIndexShift) + 1];
+				}
+				oldValue = keyValueTable[0];
+				keyValueTable[0] = value;
+			} else
+				oldValue = nullKeyPresent ? FINAL_VALUE : null;
+			if (nullKeyPresent) {
+				if (callback) {
+					updateBind(NULL_INDEX);
+				}
+			} else {
+				nullKeyPresent = true;
+				size++;
+				if (callback) {
+					addBind(NULL_INDEX);
+				}
+			}
+			return (V) oldValue;
+		}
+		int hc = CollectionUtils.getLimitHash(key.hashCode());
+		int i = hc & (capacity - 1);
+		int head;
+		if (indexTable != null) {
+			head = indexTable[i];
+		} else {
+			head = 0;
+			indexTable = new int[capacity + threshold];
+			if (keyValueTable == null) {
+				keyValueTable = new Object[(threshold << keyIndexShift) + 1];
+			}
+		}
+		int depth = 1;
+		int mask = AVAILABLE_BITS ^ (capacity - 1);
+		int MAP = head & MAP_BITS;
+		if (MAP != MAP_EMPTY && searchForExistingKey) {
+			int index = head;
+			for (;;) {
+				int cur = index & (capacity - 1);
+				if ((index & mask) == (hc & mask)) {
+					Object key1 = keyValueTable[(cur << keyIndexShift) + 1];
+					if (key == key1 || key.equals(key1)) {
+						Object oldValue;
+						if (keyIndexShift > 0) {
+							oldValue = keyValueTable[(cur << keyIndexShift) + 2];
+							keyValueTable[(cur << keyIndexShift) + 2] = value;
+						} else {
+							oldValue = FINAL_VALUE;
+						}
+						if (callback) {
+							updateBind(cur);
+						}
+						return (V) oldValue;
+					}
+				}
+				depth++;
+				if ((index & MAP_BITS) == MAP_END) {
+					break;
+				} else if ((index & MAP_BITS) == MAP_OVERFLOW) {
+					index = indexTable[capacity + cur];
+				} else if ((index & MAP_BITS) == MAP_NEXT) {
+					index = indexTable[(i + 1) & (capacity - 1)];
+				} else {
+					break;
+				}
+			}
+		}
+		boolean defragment = depth > 2 && firstUnusedIndex + depth <= threshold;
+		if (size >= threshold) {
+			resize(capacity << 1);
+			i = hc & (capacity - 1);
+			mask = AVAILABLE_BITS ^ (capacity - 1);
+			head = indexTable[i];
+			MAP = head & MAP_BITS;
+			defragment = false;
+		}
+		if (MAP == MAP_EMPTY && head != 0) {
+			int i2 = (hc - 1) & (capacity - 1);
+			int head2 = indexTable[i2];
+			int j2 = head2 & (capacity - 1);
+			indexTable[i2] = (head2 & AVAILABLE_BITS) | MAP_OVERFLOW;
+			indexTable[capacity + j2] = head | MAP_END;
+			head = 0;
+		}
+		int newIndex;
+		if (firstDeletedIndex >= 0 && !defragment) {
+			newIndex = firstDeletedIndex;
+			firstDeletedIndex = indexTable[capacity + firstDeletedIndex];
+			modCount++;
+		} else {
+			newIndex = firstUnusedIndex;
+			firstUnusedIndex++;
+		}
+		if (defragment) {
+			int j = head;
+			head = (j & ~(capacity - 1)) | firstUnusedIndex;
+			for (;;) {
+				int k = j & (capacity - 1);
+				Object tmp = keyValueTable[(k << keyIndexShift) + 1];
+				keyValueTable[(firstUnusedIndex << keyIndexShift) + 1] = tmp;
+				keyValueTable[(k << keyIndexShift) + 1] = null;
+				if (keyIndexShift > 0) {
+					tmp = keyValueTable[(k << keyIndexShift) + 2];
+					keyValueTable[(firstUnusedIndex << keyIndexShift) + 2] = tmp;
+					keyValueTable[(k << keyIndexShift) + 2] = null;
+				}
+				int _nextIndex, n;
+				if ((j & MAP_BITS) == MAP_END) {
+					_nextIndex = -1;
+					n = 0;
+				} else if ((j & MAP_BITS) == MAP_OVERFLOW) {
+					_nextIndex = capacity + k;
+					n = indexTable[_nextIndex];
+				} else if ((j & MAP_BITS) == MAP_NEXT) {
+					_nextIndex = (i + 1) & (capacity - 1);
+					n = indexTable[_nextIndex] | MAP_END;
+					indexTable[_nextIndex] = 0;
+					head = (head & AVAILABLE_BITS) | MAP_OVERFLOW;
+					MAP = MAP_OVERFLOW;
+				} else {
+					_nextIndex = -1;
+					n = 0;
+				}
+				indexTable[capacity + k] = firstDeletedIndex;
+				firstDeletedIndex = k;
+				if (callback) {
+					relocateBind(firstUnusedIndex, k);
+				}
+				firstUnusedIndex++;
+				if (_nextIndex < 0) {
+					break;
+				}
+				j = n;
+				indexTable[capacity + firstUnusedIndex - 1] = (j & ~(capacity - 1)) | firstUnusedIndex;
+			}
+		}
+		keyValueTable[(newIndex << keyIndexShift) + 1] = key;
+		if (keyIndexShift > 0) {
+			keyValueTable[(newIndex << keyIndexShift) + 2] = value;
+		}
+		if (MAP == MAP_EMPTY) {
+			indexTable[i] = newIndex | (hc & mask) | MAP_END;
+		} else if (MAP == MAP_END && newIndex != 0 && indexTable[(i + 1) & (capacity - 1)] == 0) {
+			indexTable[i] = (head & AVAILABLE_BITS) | MAP_NEXT;
+			indexTable[(i + 1) & (capacity - 1)] = newIndex | (hc & mask);
+		} else if (MAP == MAP_NEXT) {
+			int i2 = (i + 1) & (capacity - 1);
+			int head2 = indexTable[i2];
+			indexTable[i2] = 0;
+			indexTable[capacity + (head & (capacity - 1))] = head2 | MAP_END;
+			indexTable[capacity + newIndex] = (head & AVAILABLE_BITS) | MAP_OVERFLOW;
+			indexTable[i] = newIndex | (hc & mask) | MAP_OVERFLOW;
+		} else {
+			indexTable[capacity + newIndex] = head;
+			indexTable[i] = newIndex | (hc & mask) | MAP_OVERFLOW;
+		}
+		size++;
+		modCount++;
+		if (callback) {
+			addBind(newIndex);
+		}
+		return null;
+	}
+
+	public V remove(Object key) {
+		V result = removeKey(key, NO_INDEX);
+		return result == EMPTY_OBJECT ? null : result;
+	}
+
+	@SuppressWarnings("unchecked")
+	final V removeKey(Object key, int index) {
+		if (key == null) {
+			if (nullKeyPresent) {
+				nullKeyPresent = false;
+				size--;
+				if (this instanceof OrderedMap) {
+					removeBind(NULL_INDEX);
+				}
+				if (keyIndexShift > 0) {
+					V oldValue = (V) keyValueTable[0];
+					keyValueTable[0] = null;
+					return oldValue;
+				} else {
+					return (V) FINAL_VALUE;
+				}
+			} else {
+				return (V) EMPTY_OBJECT;
+			}
+		}
+		if (indexTable == null) {
+			return (V) EMPTY_OBJECT;
+		}
+		int hc = CollectionUtils.getLimitHash(key.hashCode());
+		int prev = -1;
+		int curr = hc & (capacity - 1);
+		int i = indexTable[curr];
+		if ((i & MAP_BITS) == MAP_EMPTY) {
+			return (V) EMPTY_OBJECT;
+		}
+		int mask = AVAILABLE_BITS ^ (capacity - 1);
+		for (;;) {
+			int j = i & (capacity - 1);
+			int k = capacity + j;
+			if ((hc & mask) == (i & mask)) {
+				boolean found;
+				if (index == NO_INDEX) {
+					Object o = keyValueTable[(j << keyIndexShift) + 1];
+					found = key == o || key.equals(o);
+				} else {
+					found = j == index;
+				}
+				if (found) {
+					size--;
+					if ((i & MAP_BITS) == MAP_END) {
+						if (prev >= 0)
+							indexTable[prev] |= MAP_END;
+						else {
+							indexTable[curr] = 0;
+						}
+					} else if ((i & MAP_BITS) == MAP_OVERFLOW) {
+						indexTable[curr] = indexTable[k];
+					} else if ((i & MAP_BITS) == MAP_NEXT) {
+						int c2 = (curr + 1) & (capacity - 1);
+						int i2 = indexTable[c2];
+						indexTable[curr] = i2 | MAP_END;
+						indexTable[c2] = 0;
+					} else {
+						indexTable[prev] |= MAP_END;
+						indexTable[curr] = 0;
+					}
+					if (size == 0) {
+						firstUnusedIndex = 0;
+						firstDeletedIndex = -1;
+					} else if (j == firstUnusedIndex - 1) {
+						firstUnusedIndex = j;
+					} else {
+						indexTable[k] = firstDeletedIndex;
+						firstDeletedIndex = j;
+					}
+					Object oldValue = index != NO_INDEX ? null
+							: keyIndexShift == 0 ? FINAL_VALUE : keyValueTable[(j << keyIndexShift) + 2];
+					keyValueTable[(j << keyIndexShift) + 1] = null;
+					if (keyIndexShift > 0) {
+						keyValueTable[(j << keyIndexShift) + 2] = null;
+					}
+					modCount++;
+					if (this instanceof OrderedMap) {
+						removeBind(j);
+					}
+					return (V) oldValue;
+				}
+			}
+			prev = curr;
+			if ((i & MAP_BITS) == MAP_END) {
+				break;
+			} else if ((i & MAP_BITS) == MAP_OVERFLOW) {
+				curr = k;
+			} else if ((i & MAP_BITS) == MAP_NEXT) {
+				curr = (curr + 1) & (capacity - 1);
+			} else {
+				break;
+			}
+			i = indexTable[curr];
+		}
+		return (V) EMPTY_OBJECT;
+	}
+
+	@Override
+	public void clear() {
+		if (indexTable != null) {
+			CollectionUtils.fill(indexTable, 0, capacity + firstUnusedIndex, 0);
+		}
+		if (keyValueTable != null) {
+			CollectionUtils.fill(keyValueTable, 0, (firstUnusedIndex << keyIndexShift) + 1, null);
+		}
+		size = 0;
+		firstUnusedIndex = 0;
+		firstDeletedIndex = -1;
+		modCount++;
+		nullKeyPresent = false;
 	}
 
 	@Override
 	public int size() {
 		return size;
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return size == 0;
+	}
+
+	public boolean containsKey(Object key) {
+		return positionOf(key) != NO_INDEX;
+	}
+
+	public void putAll(ObjectMap<? extends K, ? extends V> m) {
+		int mSize = m.size();
+		if (mSize == 0) {
+			return;
+		}
+		if (mSize > threshold) {
+			int newCapacity = capacity;
+			int newThreshold;
+			do {
+				newCapacity <<= 1;
+				newThreshold = (int) (newCapacity * load_factor);
+			} while (newThreshold < mSize);
+			resize(newCapacity);
+		}
+		if (m instanceof ObjectMap<?, ?>) {
+			@SuppressWarnings("unchecked")
+			ObjectMap<K, V> fm = (ObjectMap<K, V>) m;
+			for (int i = fm.iterateFirst(); i != NO_INDEX; i = fm.iterateNext(i)) {
+				@SuppressWarnings("unchecked")
+				K key = (K) fm.keyValueTable[(i << fm.keyIndexShift) + 1];
+				@SuppressWarnings("unchecked")
+				V value = (V) (fm.keyIndexShift > 0 ? fm.keyValueTable[(i << fm.keyIndexShift) + 2] : FINAL_VALUE);
+				put(key, value);
+			}
+		} else {
+			for (Entry<? extends K, ? extends V> e : m) {
+				put(e.getKey(), e.getValue());
+			}
+		}
+	}
+
+	public boolean containsValue(Object value) {
+		if (keyValueTable == null || size == 0) {
+			return false;
+		}
+		if (keyIndexShift == 0) {
+			return size > 0 && value == FINAL_VALUE;
+		}
+		for (int i = NULL_INDEX; i < firstUnusedIndex; i++) {
+			if (!isEmpty(i)) {
+				Object o = keyValueTable[(i << keyIndexShift) + 2];
+				if (o == value || o != null && o.equals(value)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	int iterateFirst() {
+		if (size == 0) {
+			return NO_INDEX;
+		}
+		if (nullKeyPresent) {
+			return NULL_INDEX;
+		}
+		int i = 0;
+		while (isEmpty(i)) {
+			i++;
+		}
+		return i;
+	}
+
+	int iterateNext(int i) {
+		do {
+			i++;
+		} while (i < firstUnusedIndex && isEmpty(i));
+		return i < firstUnusedIndex ? i : NO_INDEX;
+	}
+
+	
+	int capacity() {
+		return capacity;
+	}
+
+	float load_factor() {
+		return load_factor;
+	}
+
+	void addBind(int i) {
+	}
+
+	void updateBind(int i) {
+	}
+
+	void removeBind(int i) {
+	}
+
+	void relocateBind(int newIndex, int oldIndex) {
+	}
+
+	@Override
+	public int hashCode() {
+		int hashCode = 1;
+		for (int i = NULL_INDEX; i < firstUnusedIndex; i++)
+			if (!isEmpty(i)) {
+				int hc = i == NULL_INDEX ? 0 : keyValueTable[(i << keyIndexShift) + 1].hashCode();
+				Object value = keyIndexShift > 0 ? keyValueTable[(i << keyIndexShift) + 2] : FINAL_VALUE;
+				if (value != null) {
+					hc ^= value.hashCode();
+				}
+				hashCode += hc;
+			}
+		return hashCode;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o == this) {
+			return true;
+		}
+		if (!(o instanceof ObjectMap)) {
+			return false;
+		}
+		@SuppressWarnings("unchecked")
+		ObjectMap<K, V> m = (ObjectMap<K, V>) o;
+		if (m.size() != size) {
+			return false;
+		}
+		for (int i = NULL_INDEX; i < firstUnusedIndex; i++)
+			if (!isEmpty(i)) {
+				Object key = i == NULL_INDEX ? null : keyValueTable[(i << keyIndexShift) + 1];
+				Object value = keyIndexShift > 0 ? keyValueTable[(i << keyIndexShift) + 2] : FINAL_VALUE;
+				if (value == null) {
+					if (!(m.get(key) == null && m.containsKey(key))) {
+						return false;
+					}
+				} else {
+					Object value2 = m.get(key);
+					if (value != value2 && !value.equals(value2)) {
+						return false;
+					}
+				}
+			}
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		if (size == 0) {
+			return "[]";
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.append('[');
+		boolean first = true;
+		for (int i = iterateFirst(); i != NO_INDEX; i = iterateNext(i)) {
+			if (first) {
+				first = false;
+			} else {
+				sb.append(", ");
+			}
+			Object key = i == NULL_INDEX ? null : keyValueTable[(i << keyIndexShift) + 1];
+			Object value = keyIndexShift > 0 ? keyValueTable[(i << keyIndexShift) + 2] : FINAL_VALUE;
+			sb.append(key == this ? "(this Map)" : key);
+			sb.append('=');
+			sb.append(value == this ? "(this Map)" : value);
+		}
+		return sb.append(']').toString();
 	}
 
 }

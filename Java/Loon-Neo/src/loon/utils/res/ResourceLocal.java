@@ -31,6 +31,7 @@ import loon.canvas.Pixmap;
 import loon.event.EventDispatcher;
 import loon.event.IEventListener;
 import loon.font.BMFont;
+import loon.utils.ArrayMap;
 import loon.utils.ObjectMap;
 import loon.utils.ObjectMap.Keys;
 import loon.utils.StringUtils;
@@ -45,7 +46,7 @@ public class ResourceLocal extends ResourceGetter implements IEventListener {
 
 	private ObjectMap<String, ResourceItem> _resourceTable;
 
-	private ObjectMap<String, Object> _dataTable;
+	private ArrayMap _dataTable;
 
 	private boolean _initFlag = false;
 
@@ -57,8 +58,8 @@ public class ResourceLocal extends ResourceGetter implements IEventListener {
 	}
 
 	public ResourceLocal() {
+		_dataTable = new ArrayMap();
 		_resourceTable = new ObjectMap<String, ResourceItem>();
-		_dataTable = new ObjectMap<String, Object>();
 		_groupTable = new ObjectMap<String, TArray<String>>();
 	}
 
@@ -115,10 +116,12 @@ public class ResourceLocal extends ResourceGetter implements IEventListener {
 		}
 	}
 
+	@Override
 	public TArray<String> getGroupKeys(String name) {
 		return _groupTable.get(name);
 	}
 
+	@Override
 	public Keys<String> getGroupNames(String name) {
 		return _groupTable.keys();
 	}
@@ -128,14 +131,39 @@ public class ResourceLocal extends ResourceGetter implements IEventListener {
 		init();
 		XMLDocument obj = null;
 		ResourceItem item = getResItem(name, ResourceType.TYPE_XML);
-		if (false == _dataTable.containsKey(name)) {
-			String url = item.url();
-			obj = XMLParser.parse(url);
+		if (!_dataTable.containsKey(name)) {
+			obj = loadXML(item);
 			_dataTable.put(name, obj);
 		} else {
 			obj = (XMLDocument) _dataTable.get(name);
+			if (obj == null || obj.isClosed()) {
+				obj = loadXML(item);
+				_dataTable.put(name, obj);
+			}
 		}
 		return obj;
+	}
+	
+	protected XMLDocument loadXML(ResourceItem item){
+		return XMLParser.parse(item.url());
+	}
+
+	@Override
+	public String getText(String name) {
+		init();
+		String context = null;
+		ResourceItem item = getResItem(name, ResourceType.TYPE_TXT);
+		if (!_dataTable.containsKey(name)) {
+			context = BaseIO.loadText(item.url());
+			_dataTable.put(name, context);
+		} else {
+			context = (String) _dataTable.get(name);
+			if (context == null) {
+				context = BaseIO.loadText(item.url());
+				_dataTable.put(name, context);
+			}
+		}
+		return context;
 	}
 
 	@Override
@@ -143,14 +171,21 @@ public class ResourceLocal extends ResourceGetter implements IEventListener {
 		init();
 		Json.Object obj = null;
 		ResourceItem item = getResItem(name, ResourceType.TYPE_JSON);
-		if (false == _dataTable.containsKey(name)) {
-			String url = item.url();
-			obj = LSystem.base().json().parse(BaseIO.loadText(url));
+		if (!_dataTable.containsKey(name)) {
+			obj = loadJsonObject(item);
 			_dataTable.put(name, obj);
 		} else {
 			obj = (Json.Object) _dataTable.get(name);
+			if (obj == null) {
+				obj = loadJsonObject(item);
+				_dataTable.put(name, obj);
+			}
 		}
 		return obj;
+	}
+
+	protected Json.Object loadJsonObject(ResourceItem item) {
+		return LSystem.base().json().parse(BaseIO.loadText(item.url()));
 	}
 
 	@Override
@@ -158,14 +193,21 @@ public class ResourceLocal extends ResourceGetter implements IEventListener {
 		init();
 		Image image = null;
 		ResourceItem item = getResItem(name, ResourceType.TYPE_IMAGE);
-		if (false == _dataTable.containsKey(name)) {
-			String url = item.url();
-			image = Image.createImage(url);
+		if (!_dataTable.containsKey(name)) {
+			image = loadImage(item);
 			_dataTable.put(name, image);
 		} else {
 			image = (Image) _dataTable.get(name);
+			if (image == null || image.isClosed()) {
+				image = loadImage(item);
+				_dataTable.put(name, image);
+			}
 		}
 		return image;
+	}
+
+	protected Image loadImage(ResourceItem item) {
+		return BaseIO.loadImage(item.url());
 	}
 
 	@Override
@@ -173,16 +215,25 @@ public class ResourceLocal extends ResourceGetter implements IEventListener {
 		init();
 		Pixmap pixmap = null;
 		ResourceItem item = getResItem(name, ResourceType.TYPE_PIXMAP);
-		if (false == _dataTable.containsKey(name)) {
-			String url = item.url();
-			Image img = Image.createImage(url);
-			pixmap = img.getPixmap();
+		if (!_dataTable.containsKey(name)) {
+			pixmap = loadPixmap(item);
 			_dataTable.put(name, pixmap);
-			img.close();
-			img = null;
 		} else {
 			pixmap = (Pixmap) _dataTable.get(name);
+			if (pixmap == null || pixmap.isClosed()) {
+				pixmap = loadPixmap(item);
+				_dataTable.put(name, pixmap);
+			}
 		}
+		return pixmap;
+	}
+
+	protected Pixmap loadPixmap(ResourceItem item) {
+		String url = item.url();
+		Image img = Image.createImage(url);
+		Pixmap pixmap = img.getPixmap();
+		img.close();
+		img = null;
 		return pixmap;
 	}
 
@@ -195,14 +246,21 @@ public class ResourceLocal extends ResourceGetter implements IEventListener {
 		init();
 		Texture tex = null;
 		ResourceItem item = getResItem(name, ResourceType.TYPE_TEXTURE);
-		if (false == _dataTable.containsKey(name)) {
-			tex = new Texture(item.url());
+		if (!_dataTable.containsKey(name)) {
+			tex = loadTexture(item);
 			_dataTable.put(name, tex);
-
 		} else {
 			tex = (Texture) _dataTable.get(name);
+			if (tex == null || tex.isClosed()) {
+				tex = loadTexture(item);
+				_dataTable.put(name, tex);
+			}
 		}
 		return tex;
+	}
+
+	protected Texture loadTexture(ResourceItem item) {
+		return new Texture(item.url());
 	}
 
 	@Override
@@ -210,27 +268,37 @@ public class ResourceLocal extends ResourceGetter implements IEventListener {
 		init();
 		MovieSpriteSheet sset = null;
 		ResourceItem item = getResItem(name, ResourceType.TYPE_SHEET);
-		if (false == _dataTable.containsKey(name)) {
-			String url = item.url();
-			Json.Object jsonObj = LSystem.base().json().parse(BaseIO.loadText(url));
-			String imagePath = url;
-			String ext = LSystem.getExtension(imagePath);
-			LTexture sheet = null;
-			if (!LSystem.isImage(ext)) {
-				sheet = LTextures.loadTexture(StringUtils.replaceIgnoreCase(imagePath, ext, "png"));
-			} else if (StringUtils.isEmpty(ext)) {
-				sheet = LTextures.loadTexture(imagePath + ".png");
-			} else {
-				sheet = LTextures.loadTexture(imagePath);
-			}
-			if (item.subkeys != null) {
-				sset = new MovieSpriteSheet(jsonObj, StringUtils.split(item.subkeys, ','), sheet);
-			} else {
-				sset = new MovieSpriteSheet(jsonObj, sheet);
-			}
+		if (!_dataTable.containsKey(name)) {
+			sset = loadSpriteSheet(item);
 			_dataTable.put(name, sset);
 		} else {
 			sset = (MovieSpriteSheet) _dataTable.get(name);
+			if (sset == null || sset.isClosed()) {
+				sset = loadSpriteSheet(item);
+				_dataTable.put(name, sset);
+			}
+		}
+		return sset;
+	}
+
+	protected MovieSpriteSheet loadSpriteSheet(ResourceItem item) {
+		MovieSpriteSheet sset = null;
+		String url = item.url();
+		Json.Object jsonObj = LSystem.base().json().parse(BaseIO.loadText(url));
+		String imagePath = url;
+		String ext = LSystem.getExtension(imagePath);
+		LTexture sheet = null;
+		if (!LSystem.isImage(ext)) {
+			sheet = LTextures.loadTexture(StringUtils.replaceIgnoreCase(imagePath, ext, "png"));
+		} else if (StringUtils.isEmpty(ext)) {
+			sheet = LTextures.loadTexture(imagePath + ".png");
+		} else {
+			sheet = LTextures.loadTexture(imagePath);
+		}
+		if (item.subkeys != null) {
+			sset = new MovieSpriteSheet(jsonObj, StringUtils.split(item.subkeys, ','), sheet);
+		} else {
+			sset = new MovieSpriteSheet(jsonObj, sheet);
 		}
 		return sset;
 	}
@@ -240,15 +308,25 @@ public class ResourceLocal extends ResourceGetter implements IEventListener {
 		init();
 		BMFont fs = null;
 		ResourceItem item = getResItem(name, ResourceType.TYPE_BMFNT);
-		if (false == _dataTable.containsKey(name)) {
-			try {
-				fs = new BMFont(item.url());
-			} catch (Exception e) {
-				LSystem.error("BMFont " + item.url() + " not found!", e);
-			}
+		if (!_dataTable.containsKey(name)) {
+			fs = loadBMFont(item);
 			_dataTable.put(name, fs);
 		} else {
 			fs = (BMFont) _dataTable.get(name);
+			if (fs == null || fs.isClosed()) {
+				fs = loadBMFont(item);
+				_dataTable.put(name, fs);
+			}
+		}
+		return fs;
+	}
+
+	protected BMFont loadBMFont(ResourceItem item) {
+		BMFont fs = null;
+		try {
+			fs = new BMFont(item.url());
+		} catch (Exception e) {
+			LSystem.error("BMFont " + item.url() + " not found!", e);
 		}
 		return fs;
 	}
@@ -258,25 +336,42 @@ public class ResourceLocal extends ResourceGetter implements IEventListener {
 		init();
 		FontSheet fs = null;
 		ResourceItem item = getResItem(name, ResourceType.TYPE_FONT);
-		if (false == _dataTable.containsKey(name)) {
-			fs = new FontSheet(item.url());
+		if (!_dataTable.containsKey(name)) {
+			fs = loadFontSheet(item);
 			_dataTable.put(name, fs);
 		} else {
 			fs = (FontSheet) _dataTable.get(name);
+			if (fs == null || fs.isClosed()) {
+				fs = loadFontSheet(item);
+				_dataTable.put(name, fs);
+			}
 		}
 		return fs;
+	}
+
+	protected FontSheet loadFontSheet(ResourceItem item) {
+		return new FontSheet(item.url());
 	}
 
 	public Sound getSound(String name, String type) {
 		init();
 		Sound sound = null;
 		ResourceItem item = getResItem(name, ResourceType.TYPE_SOUND);
-		if (_dataTable.containsKey(name)) {
-			sound = LSystem.base().assets().getSound(item.url());
+		if (!_dataTable.containsKey(name)) {
+			sound = loadSound(item);
+			_dataTable.put(name, sound);
 		} else {
 			sound = (Sound) _dataTable.get(name);
+			if (sound == null) {
+				sound = loadSound(item);
+				_dataTable.put(name, sound);
+			}
 		}
 		return sound;
+	}
+
+	protected Sound loadSound(ResourceItem item) {
+		return LSystem.base().assets().getSound(item.url());
 	}
 
 	@Override

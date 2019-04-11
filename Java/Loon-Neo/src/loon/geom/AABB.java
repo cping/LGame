@@ -20,6 +20,7 @@
  */
 package loon.geom;
 
+import loon.utils.NumberUtils;
 import loon.utils.StringKeyValue;
 
 /**
@@ -116,6 +117,17 @@ public class AABB implements XY, BoxSize {
 				&& ((ymin > minY && ymin < minY + maxY) && (ymax > minY && ymax < minY + maxY));
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + NumberUtils.floatToIntBits(minX);
+		result = prime * result + NumberUtils.floatToIntBits(minY);
+		result = prime * result + NumberUtils.floatToIntBits(maxX);
+		result = prime * result + NumberUtils.floatToIntBits(maxY);
+		return result;
+	}
+	
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("AABB");

@@ -451,6 +451,15 @@ public class ArrayByte implements IArray, LRelease {
 	}
 
 	@Override
+	public int hashCode() {
+		int hashCode = 1;
+		for (int i = data.length - 1; i > -1; i--) {
+			hashCode = 31 * hashCode + data[i];
+		}
+		return hashCode;
+	}
+	
+	@Override
 	public void close() {
 		data = null;
 	}

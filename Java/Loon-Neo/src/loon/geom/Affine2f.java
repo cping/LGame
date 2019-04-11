@@ -23,6 +23,7 @@ package loon.geom;
 import loon.LSystem;
 import loon.LTrans;
 import loon.utils.MathUtils;
+import loon.utils.NumberUtils;
 import loon.utils.StringKeyValue;
 
 /**
@@ -957,6 +958,19 @@ public class Affine2f implements LTrans, XY {
 		return this;
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 17;
+		result = prime * result + NumberUtils.floatToIntBits(m00);
+		result = prime * result + NumberUtils.floatToIntBits(m11);
+		result = prime * result + NumberUtils.floatToIntBits(m01);
+		result = prime * result + NumberUtils.floatToIntBits(m10);
+		result = prime * result + NumberUtils.floatToIntBits(tx);
+		result = prime * result + NumberUtils.floatToIntBits(ty);
+		return result;
+	}
+	
 	@Override
 	public float getX() {
 		return tx();

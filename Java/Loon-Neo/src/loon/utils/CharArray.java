@@ -490,6 +490,15 @@ public class CharArray implements IArray {
 	}
 
 	@Override
+	public int hashCode() {
+		int hashCode = 1;
+		for (int i = length - 1; i > -1; i--) {
+			hashCode = 31 * hashCode + items[i];
+		}
+		return hashCode;
+	}
+	
+	@Override
 	public String toString() {
 		return toString(',');
 	}

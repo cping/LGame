@@ -1,260 +1,188 @@
+/**
+ * Copyright 2008 - 2019 The Loon Game Engine Authors
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ * 
+ * @project loon
+ * @author cping
+ * @email：javachenpeng@yahoo.com
+ * @version 0.5
+ */
 package loon.utils;
 
-import java.util.NoSuchElementException;
+public class OrderedMap<K,V> extends ObjectMap<K, V> {
 
-import loon.LSystem;
+	protected final boolean ordered;
 
-@SuppressWarnings({ "rawtypes", "unchecked" })
-public class OrderedMap<K, V> extends ObjectMap<K, V> implements IArray {
-	final TArray<K> keys;
+	protected int[] prevNext;
 
-	private Entries entries1, entries2;
-	private Values values1, values2;
-	private Keys keys1, keys2;
+	protected int headIndex;
 
-	public OrderedMap() {
-		keys = new TArray();
+	protected Entry<K, V> headEntry;
+
+	public OrderedMap(int initialCapacity, float loadFactor) {
+		super(initialCapacity, loadFactor);
+		ordered = false;
 	}
 
 	public OrderedMap(int initialCapacity) {
 		super(initialCapacity);
-		keys = new TArray(capacity);
+		ordered = false;
 	}
 
-	public OrderedMap(int initialCapacity, float loadFactor) {
+	public OrderedMap() {
+		super();
+		ordered = false;
+	}
+
+	public OrderedMap(ObjectMap<? extends K, ? extends V> m) {
+		super(m);
+		ordered = false;
+	}
+
+	public OrderedMap(int initialCapacity, float loadFactor, boolean ordered) {
 		super(initialCapacity, loadFactor);
-		keys = new TArray(capacity);
+		this.ordered = ordered;
 	}
 
-	public OrderedMap(OrderedMap<? extends K, ? extends V> map) {
-		super(map);
-		keys = new TArray(map.keys);
+	OrderedMap(int initialCapacity, float loadFactor, boolean ordered, boolean withValues) {
+		super(initialCapacity, loadFactor, withValues);
+		this.ordered = ordered;
 	}
 
-	public V put(K key, V value) {
-		if (!containsKey(key))
-			keys.add(key);
-		return super.put(key, value);
+	@SuppressWarnings("unchecked")
+	public V get(Object key) {
+		int i = positionOf(key);
+		if (i == NO_INDEX) {
+			return null;
+		}
+		updateIndex(i);
+		return (V) (keyIndexShift > 0 ? keyValueTable[(i << keyIndexShift) + 2] : FINAL_VALUE);
 	}
 
-	@Override
-	public V remove(K key) {
-		keys.removeValue(key, false);
-		return super.remove(key);
-	}
-
-	@Override
-	public void clear(int maximumCapacity) {
-		keys.clear();
-		super.clear(maximumCapacity);
-	}
-
-	@Override
 	public void clear() {
-		keys.clear();
 		super.clear();
-	}
-
-	public TArray<K> orderedKeys() {
-		return keys;
-	}
-
-	@Override
-	public Entries<K, V> iterator() {
-		return entries();
+		headIndex = NO_INDEX;
+		headEntry = null;
 	}
 
 	@Override
-	public Entries<K, V> entries() {
-		if (entries1 == null) {
-			entries1 = new OrderedMapEntries(this);
-			entries2 = new OrderedMapEntries(this);
+	void resize(int newCapacity) {
+		super.resize(newCapacity);
+		if (prevNext != null) {
+			prevNext = CollectionUtils.copyOf(prevNext, (threshold + 1) << 1);
+		} else if (threshold > 0) {
+			prevNext = new int[(threshold + 1) << 1];
 		}
-		if (!entries1.valid) {
-			entries1.reset();
-			entries1.valid = true;
-			entries2.valid = false;
-			return entries1;
-		}
-		entries2.reset();
-		entries2.valid = true;
-		entries1.valid = false;
-		return entries2;
+	}
+
+	protected boolean removeEldestEntry(Entry<K, V> eldest) {
+		return false;
 	}
 
 	@Override
-	public Values<V> values() {
-		if (values1 == null) {
-			values1 = new OrderedMapValues(this);
-			values2 = new OrderedMapValues(this);
+	void init() {
+		if (threshold > 0) {
+			prevNext = new int[(threshold + 1) << 1];
 		}
-		if (!values1.valid) {
-			values1.reset();
-			values1.valid = true;
-			values2.valid = false;
-			return values1;
-		}
-		values2.reset();
-		values2.valid = true;
-		values1.valid = false;
-		return values2;
+		headIndex = NO_INDEX;
+		headEntry = null;
 	}
 
 	@Override
-	public Keys<K> keys() {
-		if (keys1 == null) {
-			keys1 = new OrderedMapKeys(this);
-			keys2 = new OrderedMapKeys(this);
+	void addBind(int i) {
+		insertIndex(i);
+		if (headEntry == null) {
+			headEntry = new Entry<K, V>(headIndex, this);
 		}
-		if (!keys1.valid) {
-			keys1.reset();
-			keys1.valid = true;
-			keys2.valid = false;
-			return keys1;
+		if (removeEldestEntry(headEntry)) {
+			removeKey(headEntry.key, headIndex);
 		}
-		keys2.reset();
-		keys2.valid = true;
-		keys1.valid = false;
-		return keys2;
 	}
 
 	@Override
-	public String toString() {
+	void removeBind(int i) {
+		removeIndex(i);
+	}
+
+	@SuppressWarnings("unchecked")
+	void updateBind(int i) {
+		updateIndex(i);
+		if (headEntry != null && headIndex == i && keyIndexShift > 0)
+			headEntry.value = (V) keyValueTable[(i << keyIndexShift) + 2];
+	}
+
+	@Override
+	void relocateBind(int newIndex, int oldIndex) {
+		if (size == 1) {
+			prevNext[(newIndex << 1) + 2] = prevNext[(newIndex << 1) + 3] = newIndex;
+		} else {
+			int prev = prevNext[(oldIndex << 1) + 2];
+			int next = prevNext[(oldIndex << 1) + 3];
+			prevNext[(newIndex << 1) + 2] = prev;
+			prevNext[(newIndex << 1) + 3] = next;
+			prevNext[(prev << 1) + 3] = prevNext[(next << 1) + 2] = newIndex;
+		}
+		if (headIndex == oldIndex) {
+			headIndex = newIndex;
+			headEntry = null;
+		}
+	}
+
+	final void insertIndex(int i) {
+		if (headIndex == NO_INDEX) {
+			prevNext[(i << 1) + 2] = prevNext[(i << 1) + 3] = headIndex = i;
+		} else {
+			int last = prevNext[(headIndex << 1) + 2];
+			prevNext[(i << 1) + 2] = last;
+			prevNext[(i << 1) + 3] = headIndex;
+			prevNext[(headIndex << 1) + 2] = prevNext[(last << 1) + 3] = i;
+		}
+	}
+
+	final void updateIndex(int i) {
+		if (ordered) {
+			removeIndex(i);
+			insertIndex(i);
+			modCount++;
+		}
+	}
+
+	final void removeIndex(int i) {
 		if (size == 0) {
-			return "{}";
-		}
-		StringBuilder buffer = new StringBuilder(32);
-		buffer.append('{');
-		TArray<K> keys = this.keys;
-		for (int i = 0, n = keys.size; i < n; i++) {
-			K key = keys.get(i);
-			if (i > 0)
-				buffer.append(", ");
-			buffer.append(key);
-			buffer.append('=');
-			buffer.append(get(key));
-		}
-		buffer.append('}');
-		return buffer.toString();
-	}
-
-	static public class OrderedMapEntries<K, V> extends Entries<K, V> {
-		private TArray<K> keys;
-
-		public OrderedMapEntries(OrderedMap<K, V> map) {
-			super(map);
-			keys = map.keys;
-		}
-
-		@Override
-		public void reset() {
-			nextIndex = 0;
-			hasNext = map.size > 0;
-		}
-
-		@Override
-		public Entry next() {
-			if (!hasNext) {
-				throw new NoSuchElementException();
+			headIndex = NO_INDEX;
+			headEntry = null;
+		} else {
+			int prev = prevNext[(i << 1) + 2];
+			int next = prevNext[(i << 1) + 3];
+			prevNext[(next << 1) + 2] = prev;
+			prevNext[(prev << 1) + 3] = next;
+			if (headIndex == i) {
+				headIndex = next;
+				headEntry = null;
 			}
-			if (!valid) {
-				throw LSystem.runThrow("#iterator() cannot be used nested.");
-			}
-			entry.key = keys.get(nextIndex);
-			entry.value = map.get(entry.key);
-			nextIndex++;
-			hasNext = nextIndex < map.size;
-			return entry;
-		}
-
-		@Override
-		public void remove() {
-			if (currentIndex < 0)
-				throw new IllegalStateException(
-						"next must be called before remove.");
-			map.remove(entry.key);
-			nextIndex--;
 		}
 	}
 
-	static public class OrderedMapKeys<K> extends Keys<K> {
-		private TArray<K> keys;
-
-		public OrderedMapKeys(OrderedMap<K, ?> map) {
-			super(map);
-			keys = map.keys;
-		}
-
-		@Override
-		public void reset() {
-			nextIndex = 0;
-			hasNext = map.size > 0;
-		}
-
-		@Override
-		public K next() {
-			if (!hasNext) {
-				throw new NoSuchElementException();
-			}
-			if (!valid) {
-				throw LSystem.runThrow("#iterator() cannot be used nested.");
-			}
-			K key = keys.get(nextIndex);
-			currentIndex = nextIndex;
-			nextIndex++;
-			hasNext = nextIndex < map.size;
-			return key;
-		}
-
-		@Override
-		public void remove() {
-			if (currentIndex < 0)
-				throw new IllegalStateException(
-						"next must be called before remove.");
-			map.remove(keys.get(nextIndex - 1));
-			nextIndex = currentIndex;
-			currentIndex = -1;
-		}
+	@Override
+	final int iterateFirst() {
+		return headIndex;
 	}
 
-	static public class OrderedMapValues<V> extends Values<V> {
-		private TArray keys;
-
-		public OrderedMapValues(OrderedMap<?, V> map) {
-			super(map);
-			keys = map.keys;
-		}
-
-		@Override
-		public void reset() {
-			nextIndex = 0;
-			hasNext = map.size > 0;
-		}
-
-		@Override
-		public V next() {
-			if (!hasNext) {
-				throw new NoSuchElementException();
-			}
-			if (!valid) {
-				throw LSystem.runThrow("#iterator() cannot be used nested.");
-			}
-			V value = (V) map.get(keys.get(nextIndex));
-			currentIndex = nextIndex;
-			nextIndex++;
-			hasNext = nextIndex < map.size;
-			return value;
-		}
-
-		@Override
-		public void remove() {
-			if (currentIndex < 0) {
-				throw new IllegalStateException(
-						"next must be called before remove.");
-			}
-			map.remove(keys.get(currentIndex));
-			nextIndex = currentIndex;
-			currentIndex = -1;
-		}
+	@Override
+	final int iterateNext(int i) {
+		i = prevNext[(i << 1) + 3];
+		return i == headIndex ? NO_INDEX : i;
 	}
+
 }
