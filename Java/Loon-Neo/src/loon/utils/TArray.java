@@ -143,19 +143,19 @@ public class TArray<T> implements Iterable<T>, IArray {
 
 	public T get(int index) {
 		if (index >= size)
-			throw new IndexOutOfBoundsException("index can't be >= size: " + index + " >= " + size);
+			throw LSystem.runThrow("index can't be >= size: " + index + " >= " + size);
 		return items[index];
 	}
 
 	public void set(int index, T value) {
 		if (index >= size)
-			throw new IndexOutOfBoundsException("index can't be >= size: " + index + " >= " + size);
+			throw LSystem.runThrow("index can't be >= size: " + index + " >= " + size);
 		items[index] = value;
 	}
 
 	public void insert(int index, T value) {
 		if (index > size)
-			throw new IndexOutOfBoundsException("index can't be > size: " + index + " > " + size);
+			throw LSystem.runThrow("index can't be > size: " + index + " > " + size);
 		T[] items = this.items;
 		if (size == items.length)
 			items = resize(MathUtils.max(8, (int) (size * 1.75f)));
@@ -169,9 +169,9 @@ public class TArray<T> implements Iterable<T>, IArray {
 
 	public void swap(int first, int second) {
 		if (first >= size)
-			throw new IndexOutOfBoundsException("first can't be >= size: " + first + " >= " + size);
+			throw LSystem.runThrow("first can't be >= size: " + first + " >= " + size);
 		if (second >= size)
-			throw new IndexOutOfBoundsException("second can't be >= size: " + second + " >= " + size);
+			throw LSystem.runThrow("second can't be >= size: " + second + " >= " + size);
 		T[] items = this.items;
 		T firstValue = items[first];
 		items[first] = items[second];
@@ -262,7 +262,7 @@ public class TArray<T> implements Iterable<T>, IArray {
 
 	public T removeIndex(int index) {
 		if (index >= size)
-			throw new IndexOutOfBoundsException("index can't be >= size: " + index + " >= " + size);
+			throw LSystem.runThrow("index can't be >= size: " + index + " >= " + size);
 		T[] items = this.items;
 		T value = (T) items[index];
 		size--;
@@ -276,9 +276,9 @@ public class TArray<T> implements Iterable<T>, IArray {
 
 	public void removeRange(int start, int end) {
 		if (end >= size)
-			throw new IndexOutOfBoundsException("end can't be >= size: " + end + " >= " + size);
+			throw LSystem.runThrow("end can't be >= size: " + end + " >= " + size);
 		if (start > end)
-			throw new IndexOutOfBoundsException("start can't be > end: " + start + " > " + end);
+			throw LSystem.runThrow("start can't be > end: " + start + " > " + end);
 		T[] items = this.items;
 		int count = end - start + 1;
 		if (ordered)

@@ -20,6 +20,8 @@
  */
 package loon.utils;
 
+import loon.LSystem;
+
 public class UNByte {
 
 	private short unByte;
@@ -94,5 +96,12 @@ public class UNByte {
 
 	public void setValue(short value) {
 		unByte = value;
+	}
+	
+	@Override
+	public int hashCode() {
+		int hashCode = 17;
+		hashCode = LSystem.unite(hashCode, unByte);
+		return hashCode;
 	}
 }

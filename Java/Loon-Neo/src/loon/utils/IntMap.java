@@ -26,8 +26,8 @@ public class IntMap<T> implements IArray, Iterable<T> {
 
 	public static class Entry<T> {
 
-		protected final long key;
-		protected T value;
+		public final long key;
+		public T value;
 
 		public Entry(long k, T v) {
 			key = k;
@@ -155,37 +155,7 @@ public class IntMap<T> implements IArray, Iterable<T> {
 	}
 
 	public Iterable<T> values() {
-		return new Iterable<T>() {
-			@Override
-			public Iterator<T> iterator() {
-				return new Iterator<T>() {
-					int index = 0;
-					int found = 0;
-
-					@Override
-					public boolean hasNext() {
-						return found < size;
-					}
-
-					@Override
-					public T next() {
-						for (; index < capacity; ++index) {
-							final T value = valuesTable[index];
-							if (value != null) {
-								++index;
-								++found;
-								return value;
-							}
-						}
-						return null;
-					}
-
-					@Override
-					public void remove() {
-					}
-				};
-			}
-		};
+		return new IntMapIterator<T>(this);
 	}
 
 	@Override
@@ -238,10 +208,13 @@ public class IntMap<T> implements IArray, Iterable<T> {
 		@SuppressWarnings("unchecked")
 		final Entry<T>[] entrys = new Entry[size];
 		int found = 0;
-		for (int i = 0; found < size; ++i) {
-			final long key = keysTable[i];
-			entrys[i] = new Entry<T>(key, valuesTable[i]);
-		}
+			for (int i = 0; i < capacity; i++) {
+				final long key = keysTable[i];
+				if (key != EMPTY) {
+					entrys[found] = new Entry<T>(key, valuesTable[i]);
+					found++;
+				}
+			}
 		return entrys;
 	}
 
@@ -401,43 +374,45 @@ public class IntMap<T> implements IArray, Iterable<T> {
 
 	@Override
 	public Iterator<T> iterator() {
-		return new IntMapIterator();
+		return new IntMapIterator<T>(this);
 	}
 
-	final class IntMapIterator implements LIterator<T> {
+	public static final class IntMapIterator<T> implements LIterator<T>, Iterable<T> {
 
-		private T cur;
+		int _index = 0;
+		int _found = 0;
+		IntMap<T> _map;
 
-		private int idx = 0;
-
-		public IntMapIterator() {
-			cur = valuesTable[0];
-			idx = 0;
+		IntMapIterator(IntMap<T> map) {
+			this._map = map;
 		}
 
 		@Override
 		public boolean hasNext() {
-			return idx < size;
+			return _found < _map.size;
 		}
 
 		@Override
 		public T next() {
-			if (idx >= size) {
-				return null;
+			for (; _index < _map.capacity; ++_index) {
+				final T value = _map.valuesTable[_index];
+				if (value != null) {
+					++_index;
+					++_found;
+					return value;
+				}
 			}
-			cur = valuesTable[idx];
-			idx++;
-			return cur;
-		}
-		
-		public T getCurrent(){
-			return cur;
+			return null;
 		}
 
 		@Override
 		public void remove() {
 		}
 
+		@Override
+		public Iterator<T> iterator() {
+			return this;
+		}
 	}
 
 	@Override

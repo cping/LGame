@@ -20,6 +20,8 @@
  */
 package loon.utils;
 
+import loon.LSystem;
+
 public class UNInt {
 
 	private long unInt;
@@ -71,10 +73,10 @@ public class UNInt {
 
 	public void read(byte[] bytes, int offset) {
 
-		int firstByte = (0x000000FF & ((int) bytes[offset]));
-		int secondByte = (0x000000FF & ((int) bytes[offset]));
-		int thirdByte = (0x000000FF & ((int) bytes[offset]));
-		int fourthByte = (0x000000FF & ((int) bytes[offset]));
+		int firstByte = (0x000000FF & ((int) bytes[offset + 0]));
+		int secondByte = (0x000000FF & ((int) bytes[offset + 1]));
+		int thirdByte = (0x000000FF & ((int) bytes[offset + 2]));
+		int fourthByte = (0x000000FF & ((int) bytes[offset + 3]));
 
 		unInt = ((long) (firstByte << 24 | secondByte << 16 | thirdByte << 8 | fourthByte)) & 0xFFFFFFFFL;
 	}
@@ -126,5 +128,12 @@ public class UNInt {
 
 	public void setValue(long value) {
 		unInt = value;
+	}
+
+	@Override
+	public int hashCode() {
+		int hashCode = 17;
+		hashCode = LSystem.unite(hashCode, unInt);
+		return hashCode;
 	}
 }

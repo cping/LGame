@@ -32,9 +32,9 @@ public class ArrayMap implements IArray {
 
 		protected int hashCode;
 
-		protected Object key;
+		public Object key;
 
-		protected Object value;
+		public Object value;
 
 		protected Entry next;
 

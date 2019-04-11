@@ -274,6 +274,16 @@ public class TreeNode<T> implements Iterable<TreeNode<T>> {
 	}
 
 	@Override
+	public int hashCode() {
+		int hashCode = 1;
+		for (int i = children.size - 1; i > -1; i--) {
+			TreeNode<T> node = children.get(i);
+			hashCode = 31 * hashCode + (node == null ? 0 : node.hashCode());
+		}
+		return hashCode;
+	}
+	
+	@Override
 	public String toString() {
 		StringBuilder sbr = new StringBuilder();
 		sbr.append("\n" + this.name);

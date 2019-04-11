@@ -478,6 +478,15 @@ public class FloatArray implements IArray {
 		return false;
 	}
 
+	@Override
+	public int hashCode() {
+		int hashCode = 1;
+		for (int i = length - 1; i > -1; i--) {
+			hashCode = 31 * hashCode + NumberUtils.floatToIntBits(items[i]);
+		}
+		return hashCode;
+	}
+
 	public String toString(char split) {
 		if (length == 0) {
 			return "[]";
