@@ -26,7 +26,7 @@ package loon.utils;
  */
 public class Calculator {
 
-	private final static int ADD = 0, SUBTRACT = 1, MULTIPLY = 2, DIVIDE = 3, EQUAL = 4;
+	private final static int ADD = 0, SUBTRACT = 1, MULTIPLY = 2, DIVIDE = 3, MODULO = 4, EQUAL = 5;
 
 	private float currentTotal;
 
@@ -76,6 +76,10 @@ public class Calculator {
 		return div(convertObjectToFloat(num));
 	}
 
+	public Calculator mod(Object num) {
+		return mod(convertObjectToFloat(num));
+	}
+
 	public Calculator equal(Object num) {
 		return div(convertObjectToFloat(num));
 	}
@@ -96,6 +100,10 @@ public class Calculator {
 		return convertToFloat(num, DIVIDE);
 	}
 
+	public Calculator mod(String num) {
+		return convertToFloat(num, MODULO);
+	}
+
 	private Calculator convertToFloat(String num, int operator) {
 		if (MathUtils.isNan(num)) {
 			float dblNumber = Float.parseFloat(num);
@@ -108,6 +116,8 @@ public class Calculator {
 				return mul(dblNumber);
 			case DIVIDE:
 				return div(dblNumber);
+			case MODULO:
+				return mod(dblNumber);
 			case EQUAL:
 				return equal(dblNumber);
 			default:
@@ -134,6 +144,11 @@ public class Calculator {
 
 	public Calculator div(float num) {
 		currentTotal /= num % 1f == 0 ? (int) num : num;
+		return this;
+	}
+
+	public Calculator mod(float num) {
+		currentTotal %= num % 1f == 0 ? (int) num : num;
 		return this;
 	}
 

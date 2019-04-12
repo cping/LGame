@@ -30,15 +30,15 @@ public class TriangleEffect extends Entity implements BaseEffect {
 
 	private float[][] delta;
 
-	private float[] pos;
+	private float[] currentPos;
 
-	private float[] move;
+	private float[] movePos;
 
 	private float[] avg;
 
 	private float vector;
 
-	private float v_speed;
+	private float viewSpeed;
 
 	private LTimer timer;
 
@@ -57,11 +57,11 @@ public class TriangleEffect extends Entity implements BaseEffect {
 	public TriangleEffect(float w, float h, float[][] res, float[] ads,
 			float x, float y, float speed) {
 		this.setDelta(res);
-		this.v_speed = speed;
-		this.pos = new float[2];
-		this.move = new float[2];
-		this.move[0] = x;
-		this.move[1] = y;
+		this.viewSpeed = speed;
+		this.currentPos = new float[2];
+		this.movePos = new float[2];
+		this.movePos[0] = x;
+		this.movePos[1] = y;
 		if (ads == null) {
 			this.resetAverage();
 		} else {
@@ -98,11 +98,11 @@ public class TriangleEffect extends Entity implements BaseEffect {
 	}
 
 	public void setPosX(float x) {
-		this.pos[0] = x;
+		this.currentPos[0] = x;
 	}
 
 	public void setPosY(float y) {
-		this.pos[1] = y;
+		this.currentPos[1] = y;
 	}
 
 	public void setPos(float x, float y) {
@@ -111,11 +111,11 @@ public class TriangleEffect extends Entity implements BaseEffect {
 	}
 
 	public float getPosX() {
-		return pos[0];
+		return currentPos[0];
 	}
 
 	public float getPosY() {
-		return pos[1];
+		return currentPos[1];
 	}
 
 	public void setVector(float v) {
@@ -123,15 +123,15 @@ public class TriangleEffect extends Entity implements BaseEffect {
 	}
 
 	public void setVectorSpeed(float v) {
-		this.v_speed = v;
+		this.viewSpeed = v;
 	}
 
 	public void setMoveX(float x) {
-		this.move[0] = x;
+		this.movePos[0] = x;
 	}
 
 	public void setMoveY(float y) {
-		this.move[1] = y;
+		this.movePos[1] = y;
 	}
 
 	public void setMove(int x, int y) {
@@ -140,9 +140,9 @@ public class TriangleEffect extends Entity implements BaseEffect {
 	}
 
 	public float next() {
-		pos[0] += move[0];
-		pos[1] += move[1];
-		vector += v_speed;
+		currentPos[0] += movePos[0];
+		currentPos[1] += movePos[1];
+		vector += viewSpeed;
 		vector %= 360f;
 		if (vector < 0f) {
 			vector += 360f;
@@ -156,9 +156,9 @@ public class TriangleEffect extends Entity implements BaseEffect {
 			float d = getLine(delta[i][0] - avg[0], delta[i][1] - avg[1]);
 			float d1 = getDegrees(delta[i][0] - avg[0], delta[i][1] - avg[1]);
 			float d2 = MathUtils.cos(MathUtils.toRadians(vector + d1)) * d
-					+ avg[0] + pos[0] + x;
+					+ avg[0] + currentPos[0] + x;
 			float d3 = MathUtils.sin(MathUtils.toRadians(vector + d1)) * d
-					+ avg[1] + pos[1] + y;
+					+ avg[1] + currentPos[1] + y;
 			location[i][0] = (d2 + 0.5f);
 			location[i][1] = (d3 + 0.5f);
 		}

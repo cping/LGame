@@ -25,9 +25,9 @@ import loon.canvas.LColor;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 
-public class PixelWindEffect extends PixelBaseEffect{
+public class PixelWindEffect extends PixelBaseEffect {
 
-	private int rand;
+	private int randSeed;
 
 	private TriangleEffect[] sd;
 
@@ -38,10 +38,13 @@ public class PixelWindEffect extends PixelBaseEffect{
 	}
 
 	public PixelWindEffect(LColor color, int s, int r, int time) {
-		super(color, 0, 0, LSystem.viewSize.getWidth(), LSystem.viewSize
-				.getHeight());
-		this.rand = r;
-		this.limit = 160;
+		this(color, s, r, time, 160);
+	}
+
+	public PixelWindEffect(LColor color, int s, int r, int time, int limit) {
+		super(color, 0, 0, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
+		this.randSeed = r;
+		this.limit = limit;
 		this.sd = new TriangleEffect[s];
 		this.colors = new LColor[s];
 		this.triangleEffects.add(sd);
@@ -63,7 +66,7 @@ public class PixelWindEffect extends PixelBaseEffect{
 			if (sd[i] != null) {
 				continue;
 			}
-			if (MathUtils.random(100) >= rand) {
+			if (MathUtils.random(100) >= randSeed) {
 				break;
 			}
 			float[][] res = { { 0.0f, 10f }, { 8f, -5f }, { -8f, -5f } };
@@ -78,8 +81,7 @@ public class PixelWindEffect extends PixelBaseEffect{
 			sd[i] = new TriangleEffect(res, x, y, MathUtils.random(24) + 24);
 			sd[i].setPosY(MathUtils.random(_height));
 			sd[i].setPosX(0f);
-			colors[i] = new LColor(_baseColor.getRed(),
-					(int) (_baseColor.g * (128 + MathUtils.random(128))),
+			colors[i] = new LColor(_baseColor.getRed(), (int) (_baseColor.g * (128 + MathUtils.random(128))),
 					(int) (_baseColor.b * MathUtils.random(128)));
 		}
 

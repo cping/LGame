@@ -25,9 +25,9 @@ import loon.opengl.GLEx;
 
 public class PixelChopEffect extends PixelBaseEffect {
 
-	private float t_x, t_y;
+	private float viewX, viewY;
 
-	private float width = 3;
+	private float width;
 
 	public PixelChopEffect(LColor color, float x, float y) {
 		this(color, x, y, 3);
@@ -36,8 +36,8 @@ public class PixelChopEffect extends PixelBaseEffect {
 	public PixelChopEffect(LColor color, float x, float y, float width) {
 		super(color, x, y, 0, 0);
 		this.width = width;
-		this.t_x = x;
-		this.t_y = y;
+		this.viewX = x;
+		this.viewY = y;
 		this.limit = 25;
 		setDelay(0);
 		setEffectDelay(0);
@@ -50,8 +50,8 @@ public class PixelChopEffect extends PixelBaseEffect {
 		}
 		int tmp = g.color();
 		g.setColor(_baseColor);
-		float x = t_x - tx;
-		float y = t_y - ty;
+		float x = viewX - tx;
+		float y = viewY - ty;
 		int f = super.frame;
 		if (f > 25) {
 			f = 25 - f;

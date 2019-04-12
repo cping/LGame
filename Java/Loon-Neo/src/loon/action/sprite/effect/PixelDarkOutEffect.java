@@ -26,9 +26,9 @@ import loon.opengl.GLEx;
 
 public class PixelDarkOutEffect extends PixelBaseEffect {
 
-	private float t_x;
+	private float viewX;
 
-	private float t_y;
+	private float viewY;
 
 	private TriangleEffect[] de;
 	
@@ -39,8 +39,8 @@ public class PixelDarkOutEffect extends PixelBaseEffect {
 
 	public PixelDarkOutEffect(LColor color, float x, float y,float w,float h) {
 		super(color, x, y, w, h);
-		this.t_x = x;
-		this.t_y = y;
+		this.viewX = x;
+		this.viewY = y;
 		float[][] res1 = { { 0.0f, 30f }, { 24f, -15f }, { -24f, -15f } };
 		float[][] res2 = { { 24f, 15f }, { -24f, 15f }, { 0.0f, -30f } };
 		this.de = new TriangleEffect[4];
@@ -59,8 +59,8 @@ public class PixelDarkOutEffect extends PixelBaseEffect {
 		if (super.completed) {
 			return;
 		}
-		float x = t_x - tx;
-		float y = t_y - ty;
+		float x = viewX - tx;
+		float y = viewY - ty;
 		int tmp = g.color();
 		g.setColor(_baseColor);
 		if (super.frame == 40) {

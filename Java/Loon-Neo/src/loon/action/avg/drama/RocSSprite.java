@@ -20,13 +20,13 @@ import loon.utils.timer.LTimer;
  */
 public class RocSSprite extends LObject<ISprite> implements ISprite {
 
-	private boolean _visible = true, _loopScript = false;
+	private boolean _visible, _loopScript;
 
 	private RocScript _script;
 
-	private long _delay = 0;
+	private long _delay;
 
-	private LTimer _waitTimer = new LTimer(_delay);
+	private LTimer _waitTimer;
 
 	private Object _result = null;
 
@@ -45,12 +45,21 @@ public class RocSSprite extends LObject<ISprite> implements ISprite {
 	}
 
 	public RocSSprite(String script, boolean useScriptFile, boolean debug) {
+		this(script, useScriptFile, debug, 0);
+	}
+
+	public RocSSprite(String script, boolean useScriptFile, boolean debug, long delay) {
 		try {
-			_script = new RocScript(script, useScriptFile);
-			_script.call(debug);
-			setName("RocSSprite");
-		} catch (ScriptException e) {
-			e.printStackTrace();
+			this._script = new RocScript(script, useScriptFile);
+			this._script.call(debug);
+			this._delay = delay;
+			this._waitTimer = new LTimer(_delay);
+			this._visible = true;
+			this._loopScript = false;
+			this.setDelay(delay);
+			this.setName("RocSSprite");
+		} catch (ScriptException ex) {
+			throw LSystem.runThrow(ex.getMessage(), ex);
 		}
 	}
 

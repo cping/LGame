@@ -33,21 +33,38 @@ import loon.utils.timer.LTimer;
  */
 public abstract class PixelBaseEffect extends Entity {
 
+	protected TArray<TriangleEffect[]> triangleEffects = new TArray<TriangleEffect[]>();
+	
 	protected boolean completed;
 
-	protected TArray<TriangleEffect[]> triangleEffects = new TArray<TriangleEffect[]>();
+	protected float[] startLocation;
 
-	protected float[] start;
-
-	protected float[] target;
+	protected float[] targetLocation;
 
 	protected int frame;
 
 	protected LTimer timer;
 
-	protected int limit = 90;
+	protected int limit;
 
 	public abstract void draw(GLEx g, float tx, float ty);
+
+	public PixelBaseEffect(LColor c, float x1, float y1, float x2, float y2) {
+		this(c, x1, y1, x2, y2, 10, 90);
+	}
+
+	public PixelBaseEffect(LColor c, float x1, float y1, float x2, float y2, long delay, int limit) {
+		this.reset();
+		this.setEffectPosition(x1, y1, x2, y2);
+		this.setSize(x2, y2);
+		this.setColor(c);
+		this.timer = new LTimer(delay);
+		this.limit = limit;
+		this.frame = 0;
+		this.completed = false;
+		this.setRepaint(true);
+		this.setDeform(false);
+	}
 
 	public void setDelay(long delay) {
 		timer.setDelay(delay);
@@ -55,18 +72,6 @@ public abstract class PixelBaseEffect extends Entity {
 
 	public long getDelay() {
 		return timer.getDelay();
-	}
-
-	public PixelBaseEffect(LColor c, float x1, float y1, float x2, float y2) {
-		this.reset();
-		this.setEffectPosition(x1, y1, x2, y2);
-		this.setSize(x2,y2);
-		this.setColor(c);
-		this.timer = new LTimer(10);
-		this.frame = 0;
-		this.completed = false;
-		this.setRepaint(true);
-		this.setDeform(false);
 	}
 
 	public void setEffectDelay(long timer) {
@@ -85,16 +90,16 @@ public abstract class PixelBaseEffect extends Entity {
 	@Override
 	public void reset() {
 		super.reset();
-		this.start = new float[2];
-		this.target = new float[2];
+		this.startLocation = new float[2];
+		this.targetLocation = new float[2];
 		this.frame = 0;
 	}
 
 	public void setEffectPosition(float x1, float y1, float x2, float y2) {
-		this.start[0] = x1;
-		this.start[1] = y1;
-		this.target[0] = x2;
-		this.target[1] = y2;
+		this.startLocation[0] = x1;
+		this.startLocation[1] = y1;
+		this.targetLocation[0] = x2;
+		this.targetLocation[1] = y2;
 	}
 
 	public float next() {
@@ -103,8 +108,9 @@ public abstract class PixelBaseEffect extends Entity {
 			if (ts != null) {
 				int size = ts.length;
 				for (int i = 0; i < size; i++) {
-					if (ts[i] != null) {
-						_rotation = ts[i].next();
+					TriangleEffect te = ts[i];
+					if (te != null) {
+						_rotation = te.next();
 					}
 				}
 			}

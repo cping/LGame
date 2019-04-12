@@ -257,13 +257,13 @@ public class LSystem {
 		return new Vector3f(0, 5, 0);
 	}
 
-	static LGame _base;
+	protected static LGame _base;
 
-	static LProcess _process;
+	protected static LProcess _process;
 
-	static Platform _platform;
+	protected static Platform _platform;
 
-	static JsonImpl _json_instance;
+	protected static JsonImpl _json_instance;
 
 	public static Platform platform() {
 		return _platform;
@@ -281,7 +281,7 @@ public class LSystem {
 	public final static boolean landscape() {
 		return viewSize.height < viewSize.width;
 	}
-	
+
 	public static void resetTextureRes() {
 		resetTextureRes(base());
 	}

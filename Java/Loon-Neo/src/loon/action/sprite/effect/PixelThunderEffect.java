@@ -26,23 +26,23 @@ import loon.opengl.GLEx;
 
 public class PixelThunderEffect extends PixelBaseEffect {
 
-	private float t_x, t_y;
+	private float viewX, viewY;
 
-	private float width = 3;
+	private float width;
 
 	public PixelThunderEffect(LColor color) {
-		this(color, LSystem.viewSize.width/2,LSystem.viewSize.height-100);
-	}
-	
-	public PixelThunderEffect(LColor color, float x, float y) {
-		this(color, x, y,LSystem.viewSize.width,LSystem.viewSize.height, 3);
+		this(color, LSystem.viewSize.width / 2, LSystem.viewSize.height - 100);
 	}
 
-	public PixelThunderEffect(LColor color, float x, float y,float w,float h, float width) {
+	public PixelThunderEffect(LColor color, float x, float y) {
+		this(color, x, y, LSystem.viewSize.width, LSystem.viewSize.height, 3);
+	}
+
+	public PixelThunderEffect(LColor color, float x, float y, float w, float h, float width) {
 		super(color, x, y, w, h);
 		this.width = width;
-		this.t_x = x;
-		this.t_y = y;
+		this.viewX = x;
+		this.viewY = y;
 		this.limit = 50;
 		this.setDelay(0);
 		setEffectDelay(0);
@@ -55,8 +55,8 @@ public class PixelThunderEffect extends PixelBaseEffect {
 		}
 		int tmp = g.color();
 		g.setColor(_baseColor);
-		float x = t_x - tx;
-		float y = t_y - ty;
+		float x = viewX - tx;
+		float y = viewY - ty;
 		int f = super.frame;
 		g.setColor(_baseColor);
 		if (f <= 20) {

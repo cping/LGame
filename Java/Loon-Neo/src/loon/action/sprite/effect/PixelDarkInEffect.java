@@ -26,7 +26,7 @@ import loon.opengl.GLEx;
 
 public class PixelDarkInEffect extends PixelBaseEffect {
 
-	private float t_x, t_y;
+	private float viewX, viewY;
 
 	private TriangleEffect[] ts;
 
@@ -37,8 +37,8 @@ public class PixelDarkInEffect extends PixelBaseEffect {
 
 	public PixelDarkInEffect(LColor color, float x, float y, float w, float h) {
 		super(color, x, y, w, h);
-		t_x = x;
-		t_y = y;
+		viewX = x;
+		viewY = y;
 		float[][][] res = { { { 0.0f, 30f }, { 24f, -15f }, { -24f, -15f } },
 				{ { -120f, 30f }, { -96f, -15f }, { -144f, -15f } },
 				{ { 120f, 30f }, { 144f, -15f }, { 96f, -15f } },
@@ -61,8 +61,8 @@ public class PixelDarkInEffect extends PixelBaseEffect {
 		if (super.completed) {
 			return;
 		}
-		float x = t_x - tx;
-		float y = t_y - ty;
+		float x = viewX - tx;
+		float y = viewY - ty;
 		int tmp = g.color();
 		g.setColor(_baseColor);
 		if (super.frame < 40) {

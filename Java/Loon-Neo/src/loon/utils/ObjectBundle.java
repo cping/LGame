@@ -77,8 +77,22 @@ public class ObjectBundle extends MapBundle<Object> {
 		return this;
 	}
 
+	public ObjectBundle mod(String key, Object value) {
+		Object data = _mapBundle.get(key);
+		Calculator calculator = new Calculator(data);
+		if (calculator.getFloat() != -1f) {
+			_mapBundle.put(key, calculator.mod(value).getFloat());
+		}
+		return this;
+	}
+
 	public Calculator calc(String key) {
 		Object data = _mapBundle.get(key);
 		return new Calculator(data);
+	}
+
+	@Override
+	public String toString() {
+		return _mapBundle.toString();
 	}
 }

@@ -34,6 +34,15 @@ import loon.utils.NumberUtils;
  */
 public class Duration implements Comparable<Duration> {
 
+	protected static Duration _instance = null;
+	
+	public static Duration getInstance() {
+		if (_instance == null) {
+			_instance = new Duration();
+		}
+		return _instance;
+	}
+	
 	public static final Duration ZERO = new Duration(0);
 
 	public static final Duration HALF_ONE = new Duration(0.5f);
@@ -45,6 +54,10 @@ public class Duration implements Comparable<Duration> {
 	}
 
 	private float _millisTime;
+
+	public Duration() {
+		this(0f);
+	}
 
 	public Duration(float ms) {
 		set(ms);

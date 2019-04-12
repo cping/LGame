@@ -27,7 +27,7 @@ import loon.utils.MathUtils;
 
 public class PixelSnowEffect extends PixelBaseEffect {
 
-	private float t_x, t_y;
+	private float viewX, viewY;
 
 	private TriangleEffect first;
 
@@ -57,8 +57,8 @@ public class PixelSnowEffect extends PixelBaseEffect {
 
 	public PixelSnowEffect(LColor color, float x, float y, float w, float h) {
 		super(color, x, y, w, h);
-		this.t_x = x;
-		this.t_y = y;
+		this.viewX = x;
+		this.viewY = y;
 		this.first = new TriangleEffect(w, h, fdelta, 0.0f, 0.0f, 3f);
 		float[][] vector = { { 8f, 0.0f }, { -4f, 6f }, { -4f, -6f } };
 		this.force = new TriangleEffect[32];
@@ -108,8 +108,8 @@ public class PixelSnowEffect extends PixelBaseEffect {
 		if (super.completed) {
 			return;
 		}
-		float x = t_x - tx;
-		float y = t_y - ty;
+		float x = viewX - tx;
+		float y = viewY - ty;
 		int tmp = g.color();
 		g.setColor(_baseColor);
 		if (onlySnow) {
