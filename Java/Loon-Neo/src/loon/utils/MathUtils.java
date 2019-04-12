@@ -717,7 +717,7 @@ public class MathUtils {
 	public static final int nextInt(int start, int end) {
 		return end <= 0 ? 0 : start + random.nextInt(end - start);
 	}
-	
+
 	public static final int random(int range) {
 		return random.nextInt(range + 1);
 	}
@@ -927,6 +927,10 @@ public class MathUtils {
 
 	public static final String toString(float value) {
 		return toString(value, TO_STRING_DECIMAL_PLACES);
+	}
+
+	public static final String toString(float value, boolean showTag) {
+		return toString(value, TO_STRING_DECIMAL_PLACES, showTag);
 	}
 
 	public static final String toString(float value, int decimalPlaces) {

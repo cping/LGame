@@ -36,7 +36,7 @@ public class LTimer {
 		return _instance;
 	}
 
-	private boolean active = true;
+	private boolean active;
 
 	private long delay;
 
@@ -50,12 +50,22 @@ public class LTimer {
 		return new LTimer(delay);
 	}
 
+	public static LTimer at(Duration delay) {
+		return new LTimer(delay);
+	}
+
 	public LTimer() {
 		this(450);
 	}
 
+	public LTimer(Duration d) {
+		this(d == null ? 0 : d.toMillisLong());
+	}
+
 	public LTimer(long delay) {
 		this.delay = delay;
+		this.active = true;
+		currentTick = 0;
 	}
 
 	public boolean action(long elapsedTime) {
@@ -124,6 +134,10 @@ public class LTimer {
 
 	public long getDelay() {
 		return this.delay;
+	}
+
+	public LTimer setDelay(Duration d) {
+		return setDelay(d == null ? 0 : d.toMillisLong());
 	}
 
 	public LTimer setDelay(long delay) {
