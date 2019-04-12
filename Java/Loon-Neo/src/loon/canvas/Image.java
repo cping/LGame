@@ -163,12 +163,12 @@ public abstract class Image extends TextureSource implements Canvas.Drawable, LR
 
 	public LTexture createTexture(LTexture.Format config) {
 		if (!isLoaded()) {
-			throw new IllegalStateException("Cannot create texture from unready image: " + this);
+			throw LSystem.runThrow("Cannot create texture from unready image: " + this);
 		}
 		int texWidth = config.toTexWidth(pixelWidth());
 		int texHeight = config.toTexHeight(pixelHeight());
 		if (texWidth <= 0 || texHeight <= 0) {
-			throw new IllegalArgumentException(
+			throw LSystem.runThrow(
 					"Invalid texture size: " + texWidth + "x" + texHeight + " from: " + this);
 		}
 		this.isTexture = true;

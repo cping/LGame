@@ -478,6 +478,20 @@ public class FloatArray implements IArray {
 		return false;
 	}
 
+	public byte[] getBytes() {
+		return getBytes(0);
+	}
+
+	public byte[] getBytes(int order) {
+		float[] items = this.items;
+		ArrayByte bytes = new ArrayByte(items.length * 4);
+		bytes.setOrder(order);
+		for (int i = 0; i < items.length; i++) {
+			bytes.writeFloat(items[i]);
+		}
+		return bytes.getBytes();
+	}
+
 	@Override
 	public int hashCode() {
 		int hashCode = 1;

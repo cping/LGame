@@ -29,6 +29,7 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.Support;
 import loon.canvas.NinePatchAbstract.Repeat;
+import loon.geom.Limit;
 import loon.geom.Polygon;
 import loon.geom.RectI;
 import loon.geom.Shape;
@@ -2351,7 +2352,7 @@ public class Pixmap extends Limit implements LRelease {
 	public String toString() {
 		StringBuilder sbr = new StringBuilder();
 		for (int y = 0; y < _height; y++) {
-			sbr.append('{');
+			sbr.append('[');
 			for (int x = 0; x < _width; x++) {
 				int p = getData(x, y);
 				sbr.append(p);
@@ -2359,7 +2360,7 @@ public class Pixmap extends Limit implements LRelease {
 					sbr.append(',');
 				}
 			}
-			sbr.append('}');
+			sbr.append(']');
 			sbr.append(",\n");
 		}
 		return sbr.toString();

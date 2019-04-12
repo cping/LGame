@@ -32,12 +32,14 @@ import loon.utils.timer.LTimer;
  */
 public class ArcEffect extends Entity implements BaseEffect {
 
+	private final int arcDiv;
+	
 	private int step;
 
-	private int div = 10;
+	private int curTurn = 1;
 
-	private int turn = 1;
-
+	private int tmpColor;
+	
 	private int[] sign = { 1, -1 };
 
 	private boolean completed;
@@ -49,11 +51,16 @@ public class ArcEffect extends Entity implements BaseEffect {
 	}
 
 	public ArcEffect(LColor c, int x, int y, int width, int height) {
+		this(c, x, y, width, height, 10);
+	}
+	
+	public ArcEffect(LColor c, int x, int y, int width, int height,int div) {
 		this.setLocation(x, y);
 		this.setSize(width, height);
 		this.timer = new LTimer(200);
 		this.setColor(c == null ? LColor.black : c);
 		this.setRepaint(true);
+		arcDiv = div;
 	}
 
 	public void setDelay(long delay) {
@@ -74,7 +81,7 @@ public class ArcEffect extends Entity implements BaseEffect {
 		if (completed) {
 			return;
 		}
-		if (this.step >= this.div) {
+		if (this.step >= this.arcDiv) {
 			this.completed = true;
 		}
 		if (timer.action(elapsedTime)) {
@@ -82,7 +89,6 @@ public class ArcEffect extends Entity implements BaseEffect {
 		}
 	}
 
-	private int tmpColor;
 
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
@@ -99,14 +105,14 @@ public class ArcEffect extends Entity implements BaseEffect {
 		if (step <= 1) {
 			g.fillRect(drawX(offsetX), drawY(offsetY), _width, _height);
 		} else {
-			float deg = 360f / this.div * this.step;
+			float deg = 360f / this.arcDiv * this.step;
 			if (deg < 360) {
 				float length = MathUtils.sqrt(MathUtils.pow(_width / 2, 2.0f) + MathUtils.pow(_height / 2, 2.0f));
 				float x = getX() + (_width / 2 - length);
 				float y = getY() + (_height / 2 - length);
 				float w = _width / 2 + length - x;
 				float h = _height / 2 + length - y;
-				g.fillArc(x + offsetX + _offset.x, y + offsetY + _offset.y, w, h, 20, 0, this.sign[this.turn] * deg);
+				g.fillArc(x + offsetX + _offset.x, y + offsetY + _offset.y, w, h, 20, 0, this.sign[this.curTurn] * deg);
 			}
 		}
 		if (useTex) {
@@ -120,15 +126,15 @@ public class ArcEffect extends Entity implements BaseEffect {
 		super.reset();
 		this.completed = false;
 		this.step = 0;
-		this.turn = 1;
+		this.curTurn = 1;
 	}
 
 	public int getTurn() {
-		return turn;
+		return curTurn;
 	}
 
 	public void setTurn(int turn) {
-		this.turn = turn;
+		this.curTurn = turn;
 	}
 
 	@Override

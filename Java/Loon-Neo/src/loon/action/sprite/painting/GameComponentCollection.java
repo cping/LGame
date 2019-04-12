@@ -36,6 +36,7 @@ public final class GameComponentCollection {
 	private TArray<IGameComponent> collectionsToDraw;
 
 	private final static Comparator<IGameComponent> igameDrawComparator = new Comparator<IGameComponent>() {
+		@Override
 		public int compare(IGameComponent one, IGameComponent two) {
 			if (one instanceof DrawableGameComponent
 					&& two instanceof DrawableGameComponent) {
@@ -47,6 +48,7 @@ public final class GameComponentCollection {
 	};
 
 	private final static Comparator<IGameComponent> igameUpdateComparator = new Comparator<IGameComponent>() {
+		@Override
 		public int compare(IGameComponent one, IGameComponent two) {
 			if (one instanceof GameComponent && two instanceof GameComponent) {
 				return ((GameComponent) one).getUpdateOrder()

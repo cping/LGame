@@ -26,7 +26,7 @@ import loon.LSystem;
 import loon.geom.RectBox;
 
 public class MathUtils {
-	
+
 	public static final Random random = new Random();
 
 	public static final float FLOAT_ROUNDING_ERROR = 0.000001f;
@@ -45,9 +45,9 @@ public class MathUtils {
 
 	public static final int HALF_FIXED = 2 << 15;
 
-	private	 static  final String[] ZEROS = { "", "0", "00", "000", "0000", "00000", "000000", "0000000", "00000000",
+	private static final String[] ZEROS = { "", "0", "00", "000", "0000", "00000", "000000", "0000000", "00000000",
 			"000000000", "0000000000" };
-	
+
 	private static final int[] SHIFT = { 0, 1144, 2289, 3435, 4583, 5734, 6888, 8047, 9210, 10380, 11556, 12739, 13930,
 			15130, 16340, 17560, 18792, 20036, 21294, 22566, 23853, 25157, 26478, 27818, 29179, 30560, 31964, 33392,
 			34846, 36327, 37837, 39378, 40951, 42560, 44205, 45889, 47615, 49385, 51202, 53070, 54991, 56970, 59009,
@@ -172,7 +172,6 @@ public class MathUtils {
 		return Math.abs(a - b) <= tolerance;
 	}
 
-
 	public final static int nextPowerOfTwo(int value) {
 		if (value == 0)
 			return 1;
@@ -197,7 +196,6 @@ public class MathUtils {
 		int newY = (centerY - (newH / 2));
 		return new int[] { newX, newY, newW, newH };
 	}
-
 
 	/**
 	 * 为指定数值补足位数
@@ -719,7 +717,7 @@ public class MathUtils {
 	public static final int nextInt(int start, int end) {
 		return end <= 0 ? 0 : start + random.nextInt(end - start);
 	}
-
+	
 	public static final int random(int range) {
 		return random.nextInt(range + 1);
 	}
@@ -1124,4 +1122,33 @@ public class MathUtils {
 		return (x < y) ? -1 : ((x == y) ? 0 : 1);
 	}
 
+	public static final int longOfZeros(long i) {
+		if (i == 0) {
+			return 64;
+		}
+		int n = 1;
+		int x = (int) (i >>> 32);
+		if (x == 0) {
+			n += 32;
+			x = (int) i;
+		}
+		if (x >>> 16 == 0) {
+			n += 16;
+			x <<= 16;
+		}
+		if (x >>> 24 == 0) {
+			n += 8;
+			x <<= 8;
+		}
+		if (x >>> 28 == 0) {
+			n += 4;
+			x <<= 4;
+		}
+		if (x >>> 30 == 0) {
+			n += 2;
+			x <<= 2;
+		}
+		n -= x >>> 31;
+		return n;
+	}
 }

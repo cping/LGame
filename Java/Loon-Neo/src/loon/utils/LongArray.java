@@ -20,7 +20,6 @@
  */
 package loon.utils;
 
-import java.math.BigInteger;
 import java.util.Arrays;
 
 import loon.LSystem;
@@ -451,11 +450,11 @@ public class LongArray implements IArray {
 
 	public byte[] getBytes() {
 		long[] items = this.items;
-		byte[] bytes = new byte[this.length];
-		for (int i = 0; i < bytes.length; i++) {
-			bytes[i] = BigInteger.valueOf(items[i]).byteValue();
+		ArrayByte bytes = new ArrayByte(items.length * 8);
+		for (int i = 0; i < items.length; i++) {
+			bytes.writeLong(items[i]);
 		}
-		return bytes;
+		return bytes.getBytes();
 	}
 
 	public String toString(char split) {

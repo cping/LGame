@@ -28,7 +28,7 @@ public class LoopStringBuilder {
 
 	LoopStringBuilder(int size) {
 		this.size = size;
-		pos = 0;
+		this.pos = 0;
 		chars = new char[size];
 	}
 

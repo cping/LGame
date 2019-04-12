@@ -26,45 +26,45 @@ import loon.utils.IntMap;
 
 public class LColorPool implements LRelease {
 
-	private static LColorPool pool;
+	private static LColorPool colorPool;
 
 	public static LColorPool get() {
 		synchronized (LColorPool.class) {
-			if (pool == null) {
-				pool = new LColorPool();
+			if (colorPool == null) {
+				colorPool = new LColorPool();
 			}
 		}
-		return pool;
+		return colorPool;
 	}
 
-	private final LColor AlphaColor = new LColor(0f, 0f, 0f, 0f);
+	private final LColor alphaColor = new LColor(0f, 0f, 0f, 0f);
 
-	private IntMap<LColor> ColorMap = new IntMap<LColor>();
+	private IntMap<LColor> colorMap = new IntMap<LColor>();
 	
 	private boolean closed;
 
 	public LColor getColor(float r, float g, float b, float a) {
 		if (a <= 0.1f) {
-			return AlphaColor;
+			return alphaColor;
 		}
 		int hashCode = 1;
 		hashCode = LSystem.unite(hashCode, r);
 		hashCode = LSystem.unite(hashCode, g);
 		hashCode = LSystem.unite(hashCode, b);
 		hashCode = LSystem.unite(hashCode, a);
-		LColor color = ColorMap.get(hashCode);
+		LColor color = colorMap.get(hashCode);
 		if (color == null) {
 			color = new LColor(r, g, b, a);
-			ColorMap.put(hashCode, color);
+			colorMap.put(hashCode, color);
 		}
 		return color;
 	}
 
 	public LColor getColor(int c) {
-		LColor color = ColorMap.get(c);
+		LColor color = colorMap.get(c);
 		if (color == null) {
 			color = new LColor(c);
-			ColorMap.put(c, color);
+			colorMap.put(c, color);
 		}
 		return color;
 	}
@@ -75,17 +75,17 @@ public class LColorPool implements LRelease {
 
 	public LColor getColor(int r, int g, int b, int a) {
 		if (a <= 10) {
-			return AlphaColor;
+			return alphaColor;
 		}
 		int hashCode = 1;
 		hashCode = LSystem.unite(hashCode, r);
 		hashCode = LSystem.unite(hashCode, g);
 		hashCode = LSystem.unite(hashCode, b);
 		hashCode = LSystem.unite(hashCode, a);
-		LColor color = ColorMap.get(hashCode);
+		LColor color = colorMap.get(hashCode);
 		if (color == null) {
 			color = new LColor(r, g, b, a);
-			ColorMap.put(hashCode, color);
+			colorMap.put(hashCode, color);
 		}
 		return color;
 	}
@@ -96,8 +96,8 @@ public class LColorPool implements LRelease {
 
 	@Override
 	public void close() {
-		if (ColorMap != null) {
-			ColorMap.clear();
+		if (colorMap != null) {
+			colorMap.clear();
 		}
 		closed = true;
 	}

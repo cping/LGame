@@ -227,9 +227,9 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	// 附注用的Tag标记对象(加上什么都可以,传参也行,标记对象也行)
 	public Object Tag;
 
-	protected float _alpha = 1f;
-
 	private Object _collisionData;
+	
+	protected float _alpha = 1f;
 
 	protected RectBox _rect;
 
@@ -307,7 +307,10 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	}
 
 	public void setAlpha(float a) {
-		this._alpha = a;
+		if (a < 0) {
+			a = 0;
+		}
+		this._alpha = MathUtils.min(1f, a);
 	}
 
 	public float getAlpha() {
@@ -355,8 +358,8 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	public RectBox getCollisionArea() {
 		return getRect(getX(), getY(), getWidth(), getHeight());
 	}
-	
-	protected RectBox setRect(RectBox rect){
+
+	protected RectBox setRect(RectBox rect) {
 		if (_rect == null) {
 			_rect = rect;
 		} else {
@@ -402,11 +405,10 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 		if (_name == null) {
 			_name = getClass().getName();
 			int idx = _name.lastIndexOf('.');
-			if(idx!=-1 && idx>0){
-			    _name = _name.substring(idx + 1).intern();
-			}
-			else{
-				_name="LObject";
+			if (idx != -1 && idx > 0) {
+				_name = _name.substring(idx + 1).intern();
+			} else {
+				_name = "LObject";
 			}
 		}
 		return _name;
@@ -661,14 +663,13 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	public int hashCode() {
 		return _seqNo;
 	}
-	
+
 	@Override
-	public String toString(){
-		StringKeyValue builder = new StringKeyValue("LObject");
-		builder
-		.kv("sequence", _seqNo)
+	public String toString() {
+		return new StringKeyValue("LObject")
+	    .kv("sequence", _seqNo)
 		.comma()
-		.kv("name",getName())
+		.kv("name", getName())
 		.comma()
 		.kv("state", _state.get())
 		.comma()
@@ -676,7 +677,7 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 		.comma()
 		.kv("pos", _location)
 		.comma()
-		.kv("size",_rect)
+		.kv("size", _rect)
 		.comma()
 		.kv("alpha", _alpha)
 		.comma()
@@ -684,8 +685,8 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 		.comma()
 		.kv("layer", _layer)
 		.comma()
-		.kv("tag", Tag);
-		return builder.toString();
+		.kv("tag", Tag)
+		.toString();
 	}
 
 }

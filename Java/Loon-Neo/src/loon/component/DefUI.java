@@ -561,6 +561,9 @@ public class DefUI {
 	private LTexture lastTexture;
 
 	public final LTexture getDefaultTextures(int index) {
+		if (LSystem.base() == null) {
+			return null;
+		}
 		if (defaultTextures == null || defaultTextures.size == 0) {
 			if (defaultTextures == null) {
 				defaultTextures = new TArray<LTexture>();

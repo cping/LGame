@@ -105,9 +105,8 @@ public class LLayer extends ActorLayer {
 
 	private void allocateSprites() {
 		if (_layerSprites == null) {
-			this._layerSprites = new Sprites(getScreen() == null ? LSystem
-					.getProcess().getScreen() : getScreen(), getWidth(),
-					getHeight());
+			this._layerSprites = new Sprites(getScreen() == null ? LSystem.getProcess().getScreen() : getScreen(),
+					getWidth(), getHeight());
 		}
 	}
 
@@ -290,13 +289,10 @@ public class LLayer extends ActorLayer {
 				actorY = minY + thing.getY();
 				actorWidth = rect.width;
 				actorHeight = rect.height;
-				if (actorX + actorWidth < minX || actorX > maxX
-						|| actorY + actorHeight < minY || actorY > maxY) {
+				if (actorX + actorWidth < minX || actorX > maxX || actorY + actorHeight < minY || actorY > maxY) {
 					continue;
 				}
-				int tint  = g.getTint();
 				float alpha = g.alpha();
-				
 				LTexture actorImage = thing.getImage();
 				if (actorImage != null) {
 					width = actorImage.getWidth();
@@ -306,15 +302,10 @@ public class LLayer extends ActorLayer {
 					if (colorAlpha != 1f) {
 						g.setAlpha(colorAlpha);
 					}
-					g.draw(actorImage,
-							actorX,
-							actorY,
-							width,
-							height,
-							_component_baseColor == null ? thing.filterColor : _component_baseColor
-									.mul(thing.filterColor), thing
-									.getRotation(), thing.scaleX, thing.scaleY,
-							thing.flipX, thing.flipY);
+					g.draw(actorImage, actorX, actorY, width, height,
+							_component_baseColor == null ? thing.filterColor
+									: _component_baseColor.mul(thing.filterColor),
+							thing.getRotation(), thing.scaleX, thing.scaleY, thing.flipX, thing.flipY);
 					if (colorAlpha != 1f) {
 						g.setAlpha(1f);
 					}
@@ -339,7 +330,6 @@ public class LLayer extends ActorLayer {
 						}
 					}
 				}
-				g.setTint(tint);
 				g.setAlpha(alpha);
 			}
 
@@ -351,8 +341,7 @@ public class LLayer extends ActorLayer {
 	}
 
 	public void centerOn(final Actor object) {
-		object.setLocation(getWidth() / 2 - object.getWidth() / 2, getHeight()
-				/ 2 - object.getHeight() / 2);
+		object.setLocation(getWidth() / 2 - object.getWidth() / 2, getHeight() / 2 - object.getHeight() / 2);
 	}
 
 	public void topOn(final Actor object) {
@@ -364,21 +353,18 @@ public class LLayer extends ActorLayer {
 	}
 
 	public void rightOn(final Actor object) {
-		object.setLocation(getWidth() - object.getWidth(), getHeight() / 2
-				- object.getHeight() / 2);
+		object.setLocation(getWidth() - object.getWidth(), getHeight() / 2 - object.getHeight() / 2);
 	}
 
 	public void bottomOn(final Actor object) {
-		object.setLocation(getWidth() / 2 - object.getWidth() / 2, getHeight()
-				- object.getHeight());
+		object.setLocation(getWidth() / 2 - object.getWidth() / 2, getHeight() - object.getHeight());
 	}
 
 	public void setField2DBackground(Field2D field, ArrayMap pathMap) {
 		setField2DBackground(field, pathMap, null);
 	}
 
-	public void setField2DBackground(Field2D field, ArrayMap pathMap,
-			String fileName) {
+	public void setField2DBackground(Field2D field, ArrayMap pathMap, String fileName) {
 		setField2D(field);
 		Image background = null;
 		if (fileName != null) {
@@ -398,11 +384,9 @@ public class LLayer extends ActorLayer {
 				Object o = pathMap.get(index);
 				if (o != null) {
 					if (o instanceof Image) {
-						g.draw(((Image) o), field.tilesToWidthPixels(i),
-								field.tilesToHeightPixels(j));
+						g.draw(((Image) o), field.tilesToWidthPixels(i), field.tilesToHeightPixels(j));
 					} else if (o instanceof Actor) {
-						addObject(((Actor) o), field.tilesToWidthPixels(i),
-								field.tilesToHeightPixels(j));
+						addObject(((Actor) o), field.tilesToWidthPixels(i), field.tilesToHeightPixels(j));
 					}
 				}
 			}
@@ -465,8 +449,7 @@ public class LLayer extends ActorLayer {
 		} else if (direction > 0) {
 			scrollPos = visibleRect.getMaxY();
 		}
-		int increment = MathUtils.abs((int) MathUtils.IEEEremainder(scrollPos,
-				cellSize));
+		int increment = MathUtils.abs((int) MathUtils.IEEEremainder(scrollPos, cellSize));
 		if (increment == 0) {
 			increment = cellSize;
 		}
@@ -649,17 +632,16 @@ public class LLayer extends ActorLayer {
 		this.isTouchClick = isTouchClick;
 	}
 
-	public int getLayerTouchX() {
-		return this.input.getTouchX() - this.getScreenX();
+	public float getLayerTouchX() {
+		return (this.input.getTouchX() - this.getScreenX() / _scaleX);
 	}
 
-	public int getLayerTouchY() {
-		return this.input.getTouchY() - this.getScreenY();
+	public float getLayerTouchY() {
+		return (this.input.getTouchY() - this.getScreenY() / _scaleY);
 	}
 
 	@Override
-	public void createUI(GLEx g, int x, int y, LComponent component,
-			LTexture[] buttonImage) {
+	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
 
 	}
 

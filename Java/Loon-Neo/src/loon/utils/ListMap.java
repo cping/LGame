@@ -356,6 +356,16 @@ public class ListMap<K, V> implements IArray {
 	}
 
 	@Override
+	public int hashCode() {
+		int hashCode = 1;
+		for (int i = size - 1; i > -1; i--) {
+			hashCode = 31 * hashCode + (keys[i] == null ? 0 : keys[i].hashCode());
+			hashCode = 31 * hashCode + (values[i] == null ? 0 : values[i].hashCode());
+		}
+		return hashCode;
+	}
+
+	@Override
 	public int size() {
 		return size;
 	}
@@ -367,11 +377,11 @@ public class ListMap<K, V> implements IArray {
 
 	public String toString() {
 		if (size == 0)
-			return "{}";
+			return "[]";
 		K[] keys = this.keys;
 		V[] values = this.values;
 		StringBuilder buffer = new StringBuilder(32);
-		buffer.append('{');
+		buffer.append('[');
 		buffer.append(keys[0]);
 		buffer.append('=');
 		buffer.append(values[0]);
@@ -381,7 +391,7 @@ public class ListMap<K, V> implements IArray {
 			buffer.append('=');
 			buffer.append(values[i]);
 		}
-		buffer.append('}');
+		buffer.append(']');
 		return buffer.toString();
 	}
 

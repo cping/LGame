@@ -36,7 +36,7 @@ import loon.utils.timer.LTimer;
  */
 public class StringEffect extends Entity implements BaseEffect {
 
-	public final static float MoveDefaultValue = 1.5f;
+	public final static float MOVE_VALUE = 1.5f;
 	
 	private LTimer delayTimer = new LTimer(0);
 	
@@ -93,7 +93,7 @@ public class StringEffect extends Entity implements BaseEffect {
 	 * @return
 	 */
 	public final static StringEffect m45Ddown(IFont font, String mes, Vector2f pos, LColor color) {
-		return new StringEffect(font, mes, pos, Vector2f.at(-MoveDefaultValue, MoveDefaultValue), color);
+		return new StringEffect(font, mes, pos, Vector2f.at(-MOVE_VALUE, MOVE_VALUE), color);
 	}
 
 	/**
@@ -118,7 +118,7 @@ public class StringEffect extends Entity implements BaseEffect {
 	 * @return
 	 */
 	public final static StringEffect m45Dup(IFont font, String mes, Vector2f pos, LColor color) {
-		return new StringEffect(font, mes, pos, Vector2f.at(MoveDefaultValue, -MoveDefaultValue), color);
+		return new StringEffect(font, mes, pos, Vector2f.at(MOVE_VALUE, -MOVE_VALUE), color);
 	}
 
 	/**
@@ -143,7 +143,7 @@ public class StringEffect extends Entity implements BaseEffect {
 	 * @return
 	 */
 	public final static StringEffect m45Dright(IFont font, String mes, Vector2f pos, LColor color) {
-		return new StringEffect(font, mes, pos, Vector2f.at(MoveDefaultValue, MoveDefaultValue), color);
+		return new StringEffect(font, mes, pos, Vector2f.at(MOVE_VALUE, MOVE_VALUE), color);
 	}
 
 	/**
@@ -168,7 +168,7 @@ public class StringEffect extends Entity implements BaseEffect {
 	 * @return
 	 */
 	public final static StringEffect m45Dleft(IFont font, String mes, Vector2f pos, LColor color) {
-		return new StringEffect(font, mes, pos, Vector2f.at(-MoveDefaultValue, -MoveDefaultValue), color);
+		return new StringEffect(font, mes, pos, Vector2f.at(-MOVE_VALUE, -MOVE_VALUE), color);
 	}
 
 	/**
@@ -193,7 +193,7 @@ public class StringEffect extends Entity implements BaseEffect {
 	 * @return
 	 */
 	public final static StringEffect right(IFont font, String mes, Vector2f pos, LColor color) {
-		return new StringEffect(font, mes, pos, Vector2f.at(MoveDefaultValue, 0), color);
+		return new StringEffect(font, mes, pos, Vector2f.at(MOVE_VALUE, 0), color);
 	}
 
 	/**
@@ -218,7 +218,7 @@ public class StringEffect extends Entity implements BaseEffect {
 	 * @return
 	 */
 	public final static StringEffect left(IFont font, String mes, Vector2f pos, LColor color) {
-		return new StringEffect(font, mes, pos, Vector2f.at(-MoveDefaultValue, 0), color);
+		return new StringEffect(font, mes, pos, Vector2f.at(-MOVE_VALUE, 0), color);
 	}
 
 	/**
@@ -243,7 +243,7 @@ public class StringEffect extends Entity implements BaseEffect {
 	 * @return
 	 */
 	public final static StringEffect up(IFont font, String mes, Vector2f pos, LColor color) {
-		return new StringEffect(font, mes, pos, Vector2f.at(0, -MoveDefaultValue), color);
+		return new StringEffect(font, mes, pos, Vector2f.at(0, -MOVE_VALUE), color);
 	}
 
 	/**
@@ -268,7 +268,7 @@ public class StringEffect extends Entity implements BaseEffect {
 	 * @return
 	 */
 	public final static StringEffect down(IFont font, String mes, Vector2f pos, LColor color) {
-		return new StringEffect(font, mes, pos, Vector2f.at(0, MoveDefaultValue), color);
+		return new StringEffect(font, mes, pos, Vector2f.at(0, MOVE_VALUE), color);
 	}
 
 	public final static StringEffect move(int dir, IFont font, String mes, Vector2f pos, LColor color) {

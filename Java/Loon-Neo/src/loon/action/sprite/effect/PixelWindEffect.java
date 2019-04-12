@@ -45,7 +45,7 @@ public class PixelWindEffect extends PixelBaseEffect{
 		this.sd = new TriangleEffect[s];
 		this.colors = new LColor[s];
 		this.triangleEffects.add(sd);
-		setDelay(0);
+		this.setDelay(0);
 		setEffectDelay(0);
 	}
 

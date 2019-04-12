@@ -22,6 +22,7 @@ package loon.utils.xml;
 
 import java.util.Iterator;
 
+import loon.LSystem;
 import loon.utils.Base64Coder;
 import loon.utils.ObjectMap;
 import loon.utils.TArray;
@@ -88,7 +89,7 @@ public class XMLElement {
 
 	public XMLAttribute getAttribute(String name) {
 		if (!this.attributes.containsKey(name))
-			throw new Error("Unknown attribute name '" + name + "' in element '" + this.name + "' !");
+			throw LSystem.runThrow("Unknown attribute name '" + name + "' in element '" + this.name + "' !");
 		return this.attributes.get(name);
 	}
 

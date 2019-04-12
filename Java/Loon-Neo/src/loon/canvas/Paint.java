@@ -23,16 +23,16 @@ package loon.canvas;
 import loon.LSystem;
 import loon.font.IFont;
 import loon.font.LFont;
-import loon.utils.ObjectMap;
+import loon.utils.IntMap;
 
 public class Paint {
 
+	private static IntMap<LFont> PAINT_SIZES = new IntMap<LFont>(
+			10);
+	
 	public enum Style {
 		FILL, STROKE, FILL_AND_STROKE
 	}
-
-	private static ObjectMap<String, LFont> _paintTexts = new ObjectMap<String, LFont>(
-			10);
 
 	private int textSize = 20;
 
@@ -91,11 +91,10 @@ public class Paint {
 	}
 
 	public void setTextSize(int size) {
-		String key = String.valueOf(size);
-		LFont font = _paintTexts.get(key);
+		LFont font = PAINT_SIZES.get(size);
 		if (font == null) {
 			font = LFont.getFont(size);
-			_paintTexts.put(key, font);
+			PAINT_SIZES.put(size, font);
 		}
 		this.textFont = font;
 		this.textSize = size;

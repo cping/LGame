@@ -2,42 +2,43 @@ package loon.utils;
 
 import loon.BaseIO;
 
-/*
+/**
  * 工具类，用来解析python游戏的配置数据 
  */
 public class ParsePythonData {
 
-	static ObjectMap<Object, Object> cache;
+	static ObjectMap<String, Object> CACHE_DATA;
 
+	private StringBuffer buf = new StringBuffer();
+
+	private int lineNo = 1, pos;
+	
 	final static char EOF = (char) -1;
 
 	public synchronized static Object parseString(String str) throws Exception {
-		if (cache == null) {
-			cache = new ObjectMap<Object, Object>();
+		if (CACHE_DATA == null) {
+			CACHE_DATA = new ObjectMap<String, Object>();
 		}
-		Object o = cache.get(str);
+		Object o = CACHE_DATA.get(str);
 		if (o == null) {
 			o = new ParsePythonData().parseAll(new ArrayByte(str.getBytes()));
-			cache.put(str, o);
+			CACHE_DATA.put(str, o);
 		}
 		return o;
 	}
 
 	public synchronized static Object parseFile(String file) throws Exception {
-		if (cache == null) {
-			cache = new ObjectMap<Object, Object>();
+		if (CACHE_DATA == null) {
+			CACHE_DATA = new ObjectMap<String, Object>();
 		}
-		Object o = cache.get(file);
+		Object o = CACHE_DATA.get(file);
 		if (o == null) {
 			o = new ParsePythonData().parseAll(BaseIO.loadArrayByte(file));
-			cache.put(file, o);
+			CACHE_DATA.put(file, o);
 		}
 		return o;
 	}
 
-	private StringBuffer buf = new StringBuffer();
-
-	private int lineNo = 1, pos;
 
 	private Object parse(ArrayByte in) throws Exception {
 		char i = readA(in);

@@ -22,11 +22,22 @@ package loon.utils;
 
 public class CharUtils {
 
-	public static final char[] HEX_CHARS = new char[] { '0', '1', '2', '3',
-			'4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+	public static final char[] HEX_CHARS = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C',
+			'D', 'E', 'F' };
 
 	public static char toChar(byte b) {
 		return (char) (b & 0xFF);
+	}
+
+	public static int toUnsignedLong(long val, int shift, char[] buf, int offset, int len) {
+		int charPos = len;
+		int radix = 1 << shift;
+		int mask = radix - 1;
+		do {
+			buf[offset + --charPos] = HEX_CHARS[((int) val) & mask];
+			val >>>= shift;
+		} while (val != 0 && charPos > 0);
+		return charPos;
 	}
 
 	public static byte[] toSimpleByteArray(char[] carr) {
@@ -174,8 +185,7 @@ public class CharUtils {
 	}
 
 	public static boolean isPropertyNameChar(char c) {
-		return isDigit(c) || isAlpha(c) || (c == '_') || (c == '.')
-				|| (c == '[') || (c == ']');
+		return isDigit(c) || isAlpha(c) || (c == '_') || (c == '.') || (c == '[') || (c == ']');
 	}
 
 	public static boolean isAlpha(char c) {
@@ -187,8 +197,7 @@ public class CharUtils {
 	}
 
 	public static boolean isHexDigit(char c) {
-		return (c >= '0' && c <= '9') || ((c >= 'a') && (c <= 'f'))
-				|| ((c >= 'A') && (c <= 'F'));
+		return (c >= '0' && c <= '9') || ((c >= 'a') && (c <= 'f')) || ((c >= 'A') && (c <= 'F'));
 	}
 
 	public static boolean isGenericDelimiter(int c) {
@@ -230,8 +239,7 @@ public class CharUtils {
 	}
 
 	protected static boolean isUnreserved(char c) {
-		return isAlpha(c) || isDigit(c) || c == '-' || c == '.' || c == '_'
-				|| c == '~';
+		return isAlpha(c) || isDigit(c) || c == '-' || c == '.' || c == '_' || c == '~';
 	}
 
 	protected static boolean isPchar(char c) {
@@ -239,8 +247,7 @@ public class CharUtils {
 	}
 
 	protected static boolean isLetterOrDigit(char ch) {
-		return (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z')
-				|| (ch >= '0' && ch <= '9');
+		return (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || (ch >= '0' && ch <= '9');
 	}
 
 	protected static boolean isEscapeExempt(char c) {

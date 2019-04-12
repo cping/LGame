@@ -33,7 +33,7 @@ import loon.utils.timer.LTimer;
 
 public class SplitEffect extends Entity implements BaseEffect {
 
-	private Vector2f v1, v2;
+	private Vector2f movePosOne, movePosTwo;
 
 	private int halfWidth, halfHeight, multiples, direction;
 
@@ -61,24 +61,24 @@ public class SplitEffect extends Entity implements BaseEffect {
 		this.direction = d;
 		this.limit = limit;
 		this.timer = new LTimer(10);
-		this.v1 = new Vector2f();
-		this.v2 = new Vector2f();
+		this.movePosOne = new Vector2f();
+		this.movePosTwo = new Vector2f();
 		switch (direction) {
 		case Config.UP:
 		case Config.DOWN:
 			special = true;
 		case Config.TLEFT:
 		case Config.TRIGHT:
-			v1.set(0, 0);
-			v2.set(halfWidth, 0);
+			movePosOne.set(0, 0);
+			movePosTwo.set(halfWidth, 0);
 			break;
 		case Config.LEFT:
 		case Config.RIGHT:
 			special = true;
 		case Config.TUP:
 		case Config.TDOWN:
-			v1.set(0, 0);
-			v2.set(0, halfHeight);
+			movePosOne.set(0, 0);
+			movePosTwo.set(0, halfHeight);
 			break;
 		}
 	}
@@ -100,26 +100,26 @@ public class SplitEffect extends Entity implements BaseEffect {
 				case Config.RIGHT:
 				case Config.TLEFT:
 				case Config.TRIGHT:
-					v1.move_multiples(Field2D.TLEFT, multiples);
-					v2.move_multiples(Field2D.TRIGHT, multiples);
+					movePosOne.move_multiples(Field2D.TLEFT, multiples);
+					movePosTwo.move_multiples(Field2D.TRIGHT, multiples);
 					break;
 				case Config.UP:
 				case Config.DOWN:
 				case Config.TUP:
 				case Config.TDOWN:
-					v1.move_multiples(Field2D.TUP, multiples);
-					v2.move_multiples(Field2D.TDOWN, multiples);
+					movePosOne.move_multiples(Field2D.TUP, multiples);
+					movePosTwo.move_multiples(Field2D.TDOWN, multiples);
 					break;
 				}
 
 				if (special) {
-					if (!limit.intersects(v1.x, v1.y, halfHeight, halfWidth)
-							&& !limit.intersects(v2.x, v2.y, halfHeight,
+					if (!limit.intersects(movePosOne.x, movePosOne.y, halfHeight, halfWidth)
+							&& !limit.intersects(movePosTwo.x, movePosTwo.y, halfHeight,
 									halfWidth)) {
 						this.completed = true;
 					}
-				} else if (!limit.intersects(v1.x, v1.y, halfWidth, halfHeight)
-						&& !limit.intersects(v2.x, v2.y, halfWidth, halfHeight)) {
+				} else if (!limit.intersects(movePosOne.x, movePosOne.y, halfWidth, halfHeight)
+						&& !limit.intersects(movePosTwo.x, movePosTwo.y, halfWidth, halfHeight)) {
 					this.completed = true;
 				}
 			}
@@ -129,11 +129,11 @@ public class SplitEffect extends Entity implements BaseEffect {
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
 		if (!completed) {
-			final float x1 = v1.x + getX() + offsetX + _offset.x;
-			final float y1 = v1.y + getY() + offsetY + _offset.y;
+			final float x1 = movePosOne.x + getX() + offsetX + _offset.x;
+			final float y1 = movePosOne.y + getY() + offsetY + _offset.y;
 
-			final float x2 = v2.x + getX() + offsetX + _offset.x;
-			final float y2 = v2.y + getY() + offsetY + _offset.y;
+			final float x2 = movePosTwo.x + getX() + offsetX + _offset.x;
+			final float y2 = movePosTwo.y + getY() + offsetY + _offset.y;
 
 			switch (direction) {
 			case Config.LEFT:

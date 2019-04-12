@@ -46,7 +46,7 @@ public class ArrayByte implements IArray, LRelease {
 	private boolean expandArray = true;
 
 	public ArrayByte() {
-		this(4096 * 10);
+		this(4096);
 	}
 
 	public ArrayByte(int length) {
@@ -189,13 +189,21 @@ public class ArrayByte implements IArray, LRelease {
 		return (readByte() != 0);
 	}
 
-	public short readShort() throws IndexOutOfBoundsException {
+	protected int read2Byte() throws IndexOutOfBoundsException {
 		checkAvailable(2);
 		if (byteOrder == LITTLE_ENDIAN) {
-			return (short) ((data[position++] & 0xff) | ((data[position++] & 0xff) << 8));
+			return ((data[position++] & 0xff) | ((data[position++] & 0xff) << 8));
 		} else {
-			return (short) (((data[position++] & 0xff) << 8) | (data[position++] & 0xff));
+			return (((data[position++] & 0xff) << 8) | (data[position++] & 0xff));
 		}
+	}
+
+	public char readChar() throws IndexOutOfBoundsException {
+		return (char) read2Byte();
+	}
+
+	public short readShort() throws IndexOutOfBoundsException {
+		return (short) read2Byte();
 	}
 
 	public int readInt() throws IndexOutOfBoundsException {
@@ -297,6 +305,10 @@ public class ArrayByte implements IArray, LRelease {
 
 	public void writeBoolean(boolean v) {
 		writeByte(v ? -1 : 0);
+	}
+
+	public void writeChar(char v) {
+		writeShort(v);
 	}
 
 	public void writeShort(int v) {
@@ -429,6 +441,14 @@ public class ArrayByte implements IArray, LRelease {
 		}
 	}
 
+	public ArrayByte cryptARC4Data(String privateKey) {
+		return ARC4.cryptData(privateKey, this);
+	}
+
+	public String cryptMD5Data() {
+		return MD5.get().encryptBytes(this);
+	}
+
 	@Override
 	public int size() {
 		return length();
@@ -458,7 +478,7 @@ public class ArrayByte implements IArray, LRelease {
 		}
 		return hashCode;
 	}
-	
+
 	@Override
 	public void close() {
 		data = null;

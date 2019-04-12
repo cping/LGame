@@ -26,6 +26,13 @@ import loon.utils.IArray;
 import loon.utils.LIterator;
 import loon.utils.MathUtils;
 
+/**
+ * key-value形式的数据集合,无序排列,作用近似于HashMap,在大数据存储上性能比HashMap更好<br>
+ * (所有Key统一建立有序索引,查表时更容易定位,百万以上数据读写能明显看出差别,百万以内差别不大,还略慢一些-_-)
+ * 
+ * @param <K>
+ * @param <V>
+ */
 public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray {
 	
 	private Values<V> values1, values2;

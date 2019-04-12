@@ -83,9 +83,10 @@ public abstract class ImageImpl extends Image {
 	protected ImageImpl(Graphics gfx, Scale scale, int pixelWidth,
 			int pixelHeight, String source, Object bitmap) {
 		super(gfx);
-		if (pixelWidth == 0 || pixelHeight == 0)
-			throw new IllegalArgumentException("Invalid size for ready image: "
+		if (pixelWidth == 0 || pixelHeight == 0){
+			throw LSystem.runThrow("Invalid size for ready image: "
 					+ pixelWidth + "x" + pixelHeight + " bitmap: " + bitmap);
+		}
 		this.source = source;
 		this.scale = scale;
 		this.pixelWidth = pixelWidth;
@@ -126,6 +127,7 @@ public abstract class ImageImpl extends Image {
 		return canvas.image;
 	}
 
+	@Override
 	public String getSource() {
 		return this.source;
 	}

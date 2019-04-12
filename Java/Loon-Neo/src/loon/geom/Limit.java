@@ -18,7 +18,7 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.canvas;
+package loon.geom;
 
 import loon.geom.PointI;
 import loon.geom.RectF;

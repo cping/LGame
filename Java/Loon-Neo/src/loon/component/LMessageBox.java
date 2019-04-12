@@ -271,14 +271,14 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 
 	}
 
-	private final static ObjectMap<String, LTexture> facepools = new ObjectMap<String, LTexture>();
+	private final static ObjectMap<String, LTexture> FACE_POOL = new ObjectMap<String, LTexture>();
 
 	public static void addFaceImage(String name, LTexture tex) {
-		facepools.put(name, tex);
+		FACE_POOL.put(name, tex);
 	}
 
 	public static LTexture getFaceImage(String name) {
-		return facepools.get(name);
+		return FACE_POOL.get(name);
 	}
 
 	public static class Message {
@@ -714,11 +714,11 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 		int size = result.length;
 		if (size > 0) {
 			if (3 == size) {
-				setFaceImage(facepools.get(result[0]), Float.valueOf(result[1]), Float.valueOf(result[2]));
+				setFaceImage(FACE_POOL.get(result[0]), Float.valueOf(result[1]), Float.valueOf(result[2]));
 			} else if (2 == size) {
-				setFaceImage(facepools.get(result[0]), Float.valueOf(result[1]), Float.valueOf(result[1]));
+				setFaceImage(FACE_POOL.get(result[0]), Float.valueOf(result[1]), Float.valueOf(result[1]));
 			} else {
-				setFaceImage(facepools.get(result[0]));
+				setFaceImage(FACE_POOL.get(result[0]));
 			}
 		}
 	}

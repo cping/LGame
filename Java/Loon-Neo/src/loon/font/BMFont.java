@@ -96,7 +96,7 @@ public class BMFont implements IFont {
 
 	private float fontScaleX = 1f, fontScaleY = 1f;
 
-	private ObjectMap<String, Display> displays;
+	private IntMap<Display> displays;
 
 	private int lazyHashCode = 1;
 
@@ -197,7 +197,7 @@ public class BMFont implements IFont {
 
 	private void parse(String text) throws Exception {
 		if (displays == null) {
-			displays = new ObjectMap<String, Display>(DEFAULT_MAX_CHAR);
+			displays = new IntMap<Display>(DEFAULT_MAX_CHAR);
 		} else {
 			displays.clear();
 		}
@@ -368,9 +368,11 @@ public class BMFont implements IFont {
 			lazyHashCode = LSystem.unite(lazyHashCode, c.a);
 		}
 
-		String key = text + lazyHashCode;
+		int keyCode = 1;
+		keyCode = LSystem.unite(keyCode, text.hashCode());
+		keyCode = LSystem.unite(keyCode, lazyHashCode);
 
-		Display display = displays.get(key);
+		Display display = displays.get(keyCode);
 
 		if (display == null) {
 
@@ -425,7 +427,7 @@ public class BMFont implements IFont {
 			display.width = 0;
 			display.height = 0;
 
-			displays.put(key, display);
+			displays.put(keyCode, display);
 
 		} else if (display.cache != null) {
 			display.cache.x = tx + _offset.x;

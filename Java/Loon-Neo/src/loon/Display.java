@@ -199,8 +199,8 @@ public class Display extends LSystemView {
 				this.logo.loadTexture();
 			}
 			if (centerX == 0 || centerY == 0) {
-				this.centerX =  (LSystem.viewSize.getWidth()) / 2 - logo.getWidth() / 2;
-				this.centerY =  (LSystem.viewSize.getHeight()) / 2 - logo.getHeight() / 2;
+				this.centerX = (LSystem.viewSize.getWidth()) / 2 - logo.getWidth() / 2;
+				this.centerY = (LSystem.viewSize.getHeight()) / 2 - logo.getHeight() / 2;
 			}
 			if (logo == null || !logo.isLoaded()) {
 				return;
@@ -453,9 +453,13 @@ public class Display extends LSystemView {
 	}
 
 	private void tickFrames() {
-		long time = TimeUtils.millis();
+		final long time = TimeUtils.millis();
 		if (time - frameCount > 1000L) {
-			frameRate = MathUtils.min(_setting.fps, frames);
+			final int settingFPS = _setting.fps;
+			frameRate = MathUtils.min(settingFPS, frames);
+			if (frameRate == settingFPS - 1) {
+				frameRate = MathUtils.max(settingFPS, frames);
+			}
 			frames = 0;
 			frameCount = time;
 		}

@@ -47,6 +47,9 @@ public class Desktop implements Visible, LRelease {
 	private final static TArray<Desktop> DESKTOP_CACHE = new TArray<Desktop>(8);
 
 	public final static int allDesktopCount() {
+		if (LSystem.base() == null) {
+			return 0;
+		}
 		int size = 0;
 		for (int i = 0, len = DESKTOP_CACHE.size; i < len; i++) {
 			size += DESKTOP_CACHE.get(i).size();

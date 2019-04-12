@@ -1,6 +1,5 @@
 package loon.utils;
 
-import java.math.BigInteger;
 import java.util.Arrays;
 
 import loon.LSystem;
@@ -430,12 +429,18 @@ public class CharArray implements IArray {
 	}
 
 	public byte[] getBytes() {
+		return getBytes(0);
+	}
+
+	public byte[] getBytes(int order) {
 		char[] items = this.items;
-		byte[] bytes = new byte[this.length];
-		for (int i = 0; i < bytes.length; i++) {
-			bytes[i] = BigInteger.valueOf(items[i]).byteValue();
+		int size = items.length;
+		ArrayByte bytes = new ArrayByte(size * 2);
+		bytes.setOrder(order);
+		for (int i = 0; i < size; i++) {
+			bytes.writeChar(items[i]);
 		}
-		return bytes;
+		return bytes.getBytes();
 	}
 
 	public CharArray where(QueryEvent<Character> test) {
@@ -497,7 +502,7 @@ public class CharArray implements IArray {
 		}
 		return hashCode;
 	}
-	
+
 	@Override
 	public String toString() {
 		return toString(',');

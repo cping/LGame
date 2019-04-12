@@ -49,9 +49,8 @@ public class PixelDarkOutEffect extends PixelBaseEffect {
 		this.de[2] = new TriangleEffect(w,h,res1, 0,0, -9f);
 		this.de[3] = new TriangleEffect(w,h,res2, 0, 0, -9f);
 		this.limit = 90;
-		
-		triangleEffects.add(de);
-		setDelay(0);
+		this.triangleEffects.add(de);
+		this.setDelay(0);
 		setEffectDelay(0);
 	}
 

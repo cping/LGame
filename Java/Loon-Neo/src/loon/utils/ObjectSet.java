@@ -20,6 +20,12 @@
  */
 package loon.utils;
 
+/**
+ * 存储单独value的线性数据集合,内部数据无序排列,不允许重复
+ * 
+ * @param <K>
+ * @param <V>
+ */
 public class ObjectSet<E> implements Iterable<E>, IArray {
 
 	private ObjectMap<E, Object> _map;

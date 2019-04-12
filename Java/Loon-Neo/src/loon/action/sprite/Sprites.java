@@ -47,6 +47,9 @@ public class Sprites implements IArray, Visible, LRelease {
 	private final static TArray<Sprites> SPRITES_CACHE = new TArray<Sprites>(8);
 
 	public final static int allSpritesCount() {
+		if (LSystem.base() == null) {
+			return 0;
+		}
 		int size = 0;
 		for (int i = 0, len = SPRITES_CACHE.size; i < len; i++) {
 			size += SPRITES_CACHE.get(i).size();

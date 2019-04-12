@@ -34,7 +34,7 @@ import loon.utils.timer.LTimer;
  */
 public class FadeTileEffect extends Entity implements BaseEffect {
 
-	private int tilewidth, tileheight;
+	private int tileWidth, tileHeight;
 
 	private boolean completed;
 
@@ -76,10 +76,10 @@ public class FadeTileEffect extends Entity implements BaseEffect {
 		this.speed = speed;
 		this.setSize(w, h);
 		this.timer = new LTimer(60);
-		this.tilewidth = (int) (((LSystem.viewSize.getWidth() / w)) + 1);
-		this.tileheight = (int) (((LSystem.viewSize.getHeight() / h)) + 1);
-		this.conversions = new boolean[tilewidth][tileheight];
-		this.temp = new boolean[tilewidth][tileheight];
+		this.tileWidth = (int) (((LSystem.viewSize.getWidth() / w)) + 1);
+		this.tileHeight = (int) (((LSystem.viewSize.getHeight() / h)) + 1);
+		this.conversions = new boolean[tileWidth][tileHeight];
+		this.temp = new boolean[tileWidth][tileHeight];
 		this.back = back;
 		this.fore = fore;
 		this.setRepaint(true);
@@ -91,7 +91,7 @@ public class FadeTileEffect extends Entity implements BaseEffect {
 			if (conversions[x - 1][y]) {
 				return true;
 			}
-		} else if (x < tilewidth - 1) {
+		} else if (x < tileWidth - 1) {
 			if (conversions[x + 1][y]) {
 				return true;
 			}
@@ -99,7 +99,7 @@ public class FadeTileEffect extends Entity implements BaseEffect {
 			if (conversions[x][y - 1]) {
 				return true;
 			}
-		} else if (y < tileheight - 1) {
+		} else if (y < tileHeight - 1) {
 			if (conversions[x][y + 1]) {
 				return true;
 			}
@@ -128,13 +128,13 @@ public class FadeTileEffect extends Entity implements BaseEffect {
 			int count = 0;
 			if (ISprite.TYPE_FADE_OUT == type) {
 				for (int i = 0; i < speed; i++) {
-					for (int x = 0; x < tilewidth; x++) {
-						for (int y = 0; y < tileheight; y++) {
+					for (int x = 0; x < tileWidth; x++) {
+						for (int y = 0; y < tileHeight; y++) {
 							temp[x][y] = false;
 						}
 					}
-					for (int x = 0; x < tilewidth; x++) {
-						for (int y = 0; y < tileheight; y++) {
+					for (int x = 0; x < tileWidth; x++) {
+						for (int y = 0; y < tileHeight; y++) {
 							if (!temp[x][y] && conversions[x][y]) {
 								temp[x][y] = true;
 								if (x > 0 && !(MathUtils.random(1, 2) == 1)) {
@@ -143,7 +143,7 @@ public class FadeTileEffect extends Entity implements BaseEffect {
 										temp[x - 1][y] = true;
 									}
 								}
-								if (x < tilewidth - 1
+								if (x < tileWidth - 1
 										&& !(MathUtils.random(1, 2) == 1)) {
 									if (!conversions[x + 1][y]) {
 										conversions[x + 1][y] = true;
@@ -156,7 +156,7 @@ public class FadeTileEffect extends Entity implements BaseEffect {
 										temp[x][y - 1] = true;
 									}
 								}
-								if (y < tileheight - 1
+								if (y < tileHeight - 1
 										&& !(MathUtils.random(1, 2) == 1)) {
 									if (!conversions[x][y + 1]) {
 										conversions[x][y + 1] = true;
@@ -169,8 +169,8 @@ public class FadeTileEffect extends Entity implements BaseEffect {
 					}
 				}
 
-				for (int x = 0; x < tilewidth; x++) {
-					for (int y = 0; y < tileheight; y++) {
+				for (int x = 0; x < tileWidth; x++) {
+					for (int y = 0; y < tileHeight; y++) {
 						if (!conversions[x][y]) {
 							count++;
 							break;
@@ -182,13 +182,13 @@ public class FadeTileEffect extends Entity implements BaseEffect {
 				}
 			} else {
 				for (int i = 0; i < speed; i++) {
-					for (int x = 0; x < tilewidth; x++) {
-						for (int y = 0; y < tileheight; y++) {
+					for (int x = 0; x < tileWidth; x++) {
+						for (int y = 0; y < tileHeight; y++) {
 							temp[x][y] = true;
 						}
 					}
-					for (int x = 0; x < tilewidth; x++) {
-						for (int y = 0; y < tileheight; y++) {
+					for (int x = 0; x < tileWidth; x++) {
+						for (int y = 0; y < tileHeight; y++) {
 							if (temp[x][y] && !conversions[x][y]) {
 								temp[x][y] = false;
 								if (x > 0 && !(MathUtils.random(1, 2) == 1)) {
@@ -197,7 +197,7 @@ public class FadeTileEffect extends Entity implements BaseEffect {
 										temp[x - 1][y] = false;
 									}
 								}
-								if (x < tilewidth - 1
+								if (x < tileWidth - 1
 										&& !(MathUtils.random(1, 2) == 1)) {
 									if (conversions[x + 1][y]) {
 										conversions[x + 1][y] = false;
@@ -210,7 +210,7 @@ public class FadeTileEffect extends Entity implements BaseEffect {
 										temp[x][y - 1] = false;
 									}
 								}
-								if (y < tileheight - 1
+								if (y < tileHeight - 1
 										&& !(MathUtils.random(1, 2) == 1)) {
 									if (conversions[x][y + 1]) {
 										conversions[x][y + 1] = false;
@@ -222,18 +222,18 @@ public class FadeTileEffect extends Entity implements BaseEffect {
 						}
 					}
 				}
-				for (int x = 0; x < tilewidth; x++) {
-					for (int y = 0; y < tileheight; y++) {
+				for (int x = 0; x < tileWidth; x++) {
+					for (int y = 0; y < tileHeight; y++) {
 						if (!conversions[x][y]) {
 							count++;
 							break;
 						}
 					}
 				}
-				if (tmpflag >= tileheight) {
+				if (tmpflag >= tileHeight) {
 					completed = true;
 				}
-				if (count >= tilewidth) {
+				if (count >= tileWidth) {
 					tmpflag++;
 				}
 
@@ -248,8 +248,8 @@ public class FadeTileEffect extends Entity implements BaseEffect {
 		}
 		int tmp = g.color();
 		g.setColor(back);
-		for (int x = 0; x < tilewidth; x++) {
-			for (int y = 0; y < tileheight; y++) {
+		for (int x = 0; x < tileWidth; x++) {
+			for (int y = 0; y < tileHeight; y++) {
 				if (usefore) {
 					if (conversions[x][y]) {
 						g.setColor(back);
@@ -277,26 +277,26 @@ public class FadeTileEffect extends Entity implements BaseEffect {
 		this.completed = false;
 		this.tmpflag = 0;
 		if (ISprite.TYPE_FADE_OUT == type) {
-			for (int x = 0; x < tilewidth; x++) {
-				for (int y = 0; y < tileheight; y++) {
+			for (int x = 0; x < tileWidth; x++) {
+				for (int y = 0; y < tileHeight; y++) {
 					conversions[x][y] = false;
 					temp[x][y] = false;
 				}
 			}
 			for (int i = 0; i < count; i++) {
-				conversions[MathUtils.random(1, tilewidth) - 1][MathUtils
-						.random(1, tileheight) - 1] = true;
+				conversions[MathUtils.random(1, tileWidth) - 1][MathUtils
+						.random(1, tileHeight) - 1] = true;
 			}
 		} else {
-			for (int x = 0; x < tilewidth; x++) {
-				for (int y = 0; y < tileheight; y++) {
+			for (int x = 0; x < tileWidth; x++) {
+				for (int y = 0; y < tileHeight; y++) {
 					conversions[x][y] = true;
 					temp[x][y] = true;
 				}
 			}
 			for (int i = 0; i < count; i++) {
-				conversions[MathUtils.random(1, tilewidth) - 1][MathUtils
-						.random(1, tileheight) - 1] = false;
+				conversions[MathUtils.random(1, tileWidth) - 1][MathUtils
+						.random(1, tileHeight) - 1] = false;
 			}
 		}
 	}

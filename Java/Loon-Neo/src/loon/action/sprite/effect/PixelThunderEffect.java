@@ -44,7 +44,7 @@ public class PixelThunderEffect extends PixelBaseEffect {
 		this.t_x = x;
 		this.t_y = y;
 		this.limit = 50;
-		setDelay(0);
+		this.setDelay(0);
 		setEffectDelay(0);
 	}
 

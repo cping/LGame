@@ -24,6 +24,9 @@ import loon.LRelease;
 import loon.action.sprite.SpriteBatch;
 import loon.utils.timer.GameTime;
 
+/**
+ * 仿XNA的GameComponent实现
+ */
 public class GameComponent implements IGameComponent, IUpdateable,
 		Comparable<GameComponent>, LRelease {
 

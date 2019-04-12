@@ -93,6 +93,9 @@ public class Text implements LRelease {
 	}
 
 	public void setText(final CharSequence chars) {
+		if (LSystem.base() == null) {
+			return;
+		}
 		this._chars = chars != null ? chars : "";
 		final IFont font = this._font;
 		this._lines.clear();

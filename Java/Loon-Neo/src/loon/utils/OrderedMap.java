@@ -20,6 +20,12 @@
  */
 package loon.utils;
 
+/**
+ * key-value形式的数据集合,有序排列,作用近似于HashMap
+ * 
+ * @param <K>
+ * @param <V>
+ */
 public class OrderedMap<K,V> extends ObjectMap<K, V> {
 
 	protected final boolean ordered;

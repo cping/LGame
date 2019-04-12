@@ -42,7 +42,7 @@ public class ScrollEffect extends Entity implements BaseEffect {
 
 	private LTimer timer;
 
-	private int code;
+	private int model;
 
 	public ScrollEffect(String fileName) {
 		this(LTextures.loadTexture(fileName));
@@ -79,7 +79,7 @@ public class ScrollEffect extends Entity implements BaseEffect {
 		this.setSize(w, h);
 		this.count = 1;
 		this.timer = new LTimer(10);
-		this.code = d;
+		this.model = d;
 	}
 
 	public void setDelay(long delay) {
@@ -96,7 +96,7 @@ public class ScrollEffect extends Entity implements BaseEffect {
 			return;
 		}
 		if (timer.action(elapsedTime)) {
-			switch (code) {
+			switch (model) {
 			case Config.DOWN:
 			case Config.TDOWN:
 			case Config.UP:
@@ -114,8 +114,9 @@ public class ScrollEffect extends Entity implements BaseEffect {
 	}
 
 	
+	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
-		switch (code) {
+		switch (model) {
 		case Config.DOWN:
 		case Config.TDOWN:
 			for (int i = -1; i < 1; i++) {

@@ -58,9 +58,9 @@ public class PetalKernel implements IKernel {
 	}
 
 	public void make() {
-		exist = true;
-		x = MathUtils.random() * width;
-		y = -sakuraHeight;
+		this.exist = true;
+		this.x = MathUtils.random() * width;
+		this.y = -sakuraHeight;
 	}
 
 	@Override

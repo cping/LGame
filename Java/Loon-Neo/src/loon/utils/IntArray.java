@@ -20,14 +20,13 @@
  */
 package loon.utils;
 
-import java.math.BigInteger;
 import java.util.Arrays;
 
 import loon.LSystem;
 import loon.event.QueryEvent;
 
 public class IntArray implements IArray {
-	
+
 	public static IntArray range(int start, int end) {
 		IntArray array = new IntArray(end - start);
 		for (int i = start; i < end; i++) {
@@ -35,7 +34,7 @@ public class IntArray implements IArray {
 		}
 		return array;
 	}
-	
+
 	public int[] items;
 	public int length;
 	public boolean ordered;
@@ -102,8 +101,7 @@ public class IntArray implements IArray {
 	public void addAll(IntArray array, int offset, int length) {
 		if (offset + length > array.length)
 			throw new IllegalArgumentException(
-					"offset + length must be <= length: " + offset + " + "
-							+ length + " <= " + array.length);
+					"offset + length must be <= length: " + offset + " + " + length + " <= " + array.length);
 		addAll(array.items, offset, length);
 	}
 
@@ -142,22 +140,19 @@ public class IntArray implements IArray {
 
 	public void incr(int index, int value) {
 		if (index >= length)
-			throw new IndexOutOfBoundsException("index can't be >= length: "
-					+ index + " >= " + length);
+			throw new IndexOutOfBoundsException("index can't be >= length: " + index + " >= " + length);
 		items[index] += value;
 	}
 
 	public void mul(int index, int value) {
 		if (index >= length)
-			throw new IndexOutOfBoundsException("index can't be >= length: "
-					+ index + " >= " + length);
+			throw new IndexOutOfBoundsException("index can't be >= length: " + index + " >= " + length);
 		items[index] *= value;
 	}
 
 	public void insert(int index, int value) {
 		if (index > length) {
-			throw new IndexOutOfBoundsException("index can't be > length: "
-					+ index + " > " + length);
+			throw new IndexOutOfBoundsException("index can't be > length: " + index + " > " + length);
 		}
 		int[] items = this.items;
 		if (length == items.length)
@@ -172,11 +167,9 @@ public class IntArray implements IArray {
 
 	public void swap(int first, int second) {
 		if (first >= length)
-			throw new IndexOutOfBoundsException("first can't be >= length: "
-					+ first + " >= " + length);
+			throw new IndexOutOfBoundsException("first can't be >= length: " + first + " >= " + length);
 		if (second >= length)
-			throw new IndexOutOfBoundsException("second can't be >= length: "
-					+ second + " >= " + length);
+			throw new IndexOutOfBoundsException("second can't be >= length: " + second + " >= " + length);
 		int[] items = this.items;
 		int firstValue = items[first];
 		items[first] = items[second];
@@ -221,8 +214,7 @@ public class IntArray implements IArray {
 
 	public int removeIndex(int index) {
 		if (index >= length) {
-			throw new IndexOutOfBoundsException("index can't be >= length: "
-					+ index + " >= " + length);
+			throw new IndexOutOfBoundsException("index can't be >= length: " + index + " >= " + length);
 		}
 		int[] items = this.items;
 		int value = items[index];
@@ -237,18 +229,15 @@ public class IntArray implements IArray {
 
 	public void removeRange(int start, int end) {
 		if (end >= length) {
-			throw new IndexOutOfBoundsException("end can't be >= length: "
-					+ end + " >= " + length);
+			throw new IndexOutOfBoundsException("end can't be >= length: " + end + " >= " + length);
 		}
 		if (start > end) {
-			throw new IndexOutOfBoundsException("start can't be > end: "
-					+ start + " > " + end);
+			throw new IndexOutOfBoundsException("start can't be > end: " + start + " > " + end);
 		}
 		int[] items = this.items;
 		int count = end - start + 1;
 		if (ordered) {
-			System.arraycopy(items, start + count, items, start, length
-					- (start + count));
+			System.arraycopy(items, start + count, items, start, length - (start + count));
 		} else {
 			int lastIndex = this.length - 1;
 			for (int i = 0; i < count; i++)
@@ -293,6 +282,7 @@ public class IntArray implements IArray {
 		return items[0];
 	}
 
+	@Override
 	public void clear() {
 		length = 0;
 	}
@@ -313,8 +303,7 @@ public class IntArray implements IArray {
 	protected int[] relength(int newlength) {
 		int[] newItems = new int[newlength];
 		int[] items = this.items;
-		System.arraycopy(items, 0, newItems, 0,
-				MathUtils.min(length, newItems.length));
+		System.arraycopy(items, 0, newItems, 0, MathUtils.min(length, newItems.length));
 		this.items = newItems;
 		return newItems;
 	}
@@ -362,6 +351,7 @@ public class IntArray implements IArray {
 		return array;
 	}
 
+	@Override
 	public boolean equals(Object object) {
 		if (object == this)
 			return true;
@@ -458,14 +448,19 @@ public class IntArray implements IArray {
 	public boolean isEmpty() {
 		return length == 0 || items == null;
 	}
-	
+
 	public byte[] getBytes() {
+		return getBytes(0);
+	}
+
+	public byte[] getBytes(int order) {
 		int[] items = this.items;
-		byte[] bytes = new byte[this.length];
-		for (int i = 0; i < bytes.length; i++) {
-			bytes[i] = BigInteger.valueOf(items[i]).byteValue();
+		ArrayByte bytes = new ArrayByte(items.length * 4);
+		bytes.setOrder(order);
+		for (int i = 0; i < items.length; i++) {
+			bytes.writeInt(items[i]);
 		}
-		return bytes;
+		return bytes.getBytes();
 	}
 
 	public IntArray where(QueryEvent<Integer> test) {
@@ -498,14 +493,13 @@ public class IntArray implements IArray {
 		}
 		return false;
 	}
-	
+
 	public String toString(char split) {
 		if (length == 0) {
 			return "[]";
 		}
 		int[] items = this.items;
-		StringBuilder buffer = new StringBuilder(
-				CollectionUtils.INITIAL_CAPACITY);
+		StringBuilder buffer = new StringBuilder(CollectionUtils.INITIAL_CAPACITY);
 		buffer.append('[');
 		buffer.append(items[0]);
 		for (int i = 1; i < length; i++) {

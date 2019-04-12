@@ -27,8 +27,8 @@ import loon.geom.PointI;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.opengl.LSTRDictionary;
+import loon.utils.IntMap;
 import loon.utils.MathUtils;
-import loon.utils.ObjectMap;
 import loon.utils.StringKeyValue;
 import loon.utils.StringUtils;
 
@@ -72,7 +72,7 @@ public class LFont implements IFont {
 		defaultFont = font;
 	}
 
-	private ObjectMap<String, Vector2f> fontSizes = new ObjectMap<String, Vector2f>(50);
+	private IntMap<Vector2f> fontSizes = new IntMap<Vector2f>(50);
 
 	private final static String tmp = "H";
 
@@ -202,6 +202,9 @@ public class LFont implements IFont {
 	}
 
 	private void initLayout(String text) {
+		if (LSystem.base() == null) {
+			return;
+		}
 		if (text == null || textLayout == null || !text.equals(lastText)) {
 			textLayout = LSystem.base().graphics().layoutText(tmp, this.textFormat);
 		}

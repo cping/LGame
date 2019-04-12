@@ -47,7 +47,7 @@ public class RippleEffect extends Entity implements LTouchArea, BaseEffect {
 
 	private Model model;
 
-	private int existTime = 25;
+	private int existTime;
 
 	public RippleEffect() {
 		this(Model.OVAL, LColor.blue);
@@ -62,10 +62,15 @@ public class RippleEffect extends Entity implements LTouchArea, BaseEffect {
 	}
 
 	public RippleEffect(Model m, LColor c) {
-		model = m;
-		setColor(c);
-		ripples = new TArray<RippleKernel>();
-		timer = new LTimer(60);
+		this(m, c, 25);
+	}
+
+	public RippleEffect(Model m, LColor c, int time) {
+		this.model = m;
+		this.ripples = new TArray<RippleKernel>();
+		this.existTime = time;
+		this.timer = new LTimer(60);
+		this.setColor(c);
 		setRepaint(true);
 	}
 

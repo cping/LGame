@@ -36,7 +36,6 @@ import loon.geom.PointI;
 import loon.utils.GLUtils;
 import loon.utils.IntMap;
 import loon.utils.MathUtils;
-import loon.utils.ObjectMap;
 import loon.utils.StringUtils;
 
 public class LSTRFont implements IFont {
@@ -204,7 +203,7 @@ public class LSTRFont implements IFont {
 
 	private float offsetX = 1, offsetY = 1;
 
-	private ObjectMap<String, Cache> displays;
+	private IntMap<Cache> displays;
 
 	private int totalCharSet = 256;
 
@@ -280,7 +279,7 @@ public class LSTRFont implements IFont {
 
 	public LSTRFont(LFont font, char[] charMessage, boolean asyn) {
 		CharSequence chs = " " + StringUtils.unificationChars(charMessage);
-		this.displays = new ObjectMap<String, Cache>(totalCharSet);
+		this.displays = new IntMap<Cache>(totalCharSet);
 		this.useCache = true;
 		this.font = font;
 		this.isasyn = asyn;

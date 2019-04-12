@@ -32,7 +32,7 @@ public class OutEffect extends Entity implements BaseEffect {
 
 	private boolean completed;
 
-	private int type, multiples;
+	private int model, multiples;
 
 	private RectBox limit;
 
@@ -48,7 +48,7 @@ public class OutEffect extends Entity implements BaseEffect {
 		this.setTexture(t);
 		this.setSize(t.width(), t.height());
 		this.setRepaint(true);
-		this.type = code;
+		this.model = code;
 		this.multiples = 1;
 		this.limit = limit;
 	}
@@ -56,7 +56,7 @@ public class OutEffect extends Entity implements BaseEffect {
 	@Override
 	public void onUpdate(long elapsedTime) {
 		if (!completed) {
-			switch (type) {
+			switch (model) {
 			case Config.DOWN:
 				move_45D_down(multiples);
 				break;
