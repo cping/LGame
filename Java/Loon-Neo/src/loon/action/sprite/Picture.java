@@ -33,11 +33,11 @@ public class Picture extends Entity {
 		this(fileName, 0, 0);
 	}
 
-	public Picture(int x, int y) {
+	public Picture(float x, float y) {
 		this((LTexture) null, x, y);
 	}
 
-	public Picture(String fileName, int x, int y) {
+	public Picture(String fileName, float x, float y) {
 		this(LTextures.loadTexture(fileName), x, y);
 	}
 
@@ -49,7 +49,7 @@ public class Picture extends Entity {
 		this(image, 0, 0);
 	}
 
-	public Picture(LTexture image, int x, int y) {
+	public Picture(LTexture image, float x, float y) {
 		super(image);
 		this.setLocation(x, y);
 	}

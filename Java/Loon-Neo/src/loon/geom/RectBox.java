@@ -31,11 +31,15 @@ public class RectBox extends Shape implements BoxSize {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
-	public final static RectBox at(int x, int y, int w, int h){
+
+	public final static RectBox at(int x, int y, int w, int h) {
 		return new RectBox(x, y, w, h);
 	}
 
+	public final static RectBox at(float x, float y, float w, float h) {
+		return new RectBox(x, y, w, h);
+	}
+	
 	public int width;
 
 	public int height;
@@ -699,6 +703,50 @@ public class RectBox extends Shape implements BoxSize {
 		return this;
 	}
 
+	public RectBox inc(RectBox view) {
+		if (view == null) {
+			return cpy();
+		}
+		return new RectBox(x + view.x, y + view.y, width + view.width, height + view.height);
+	}
+
+	public RectBox sub(RectBox view) {
+		if (view == null) {
+			return cpy();
+		}
+		return new RectBox(x - view.x, y - view.y, width - view.width, height - view.height);
+	}
+
+	public RectBox mul(RectBox view) {
+		if (view == null) {
+			return cpy();
+		}
+		return new RectBox(x * view.x, y * view.y, width * view.width, height * view.height);
+	}
+
+	public RectBox div(RectBox view) {
+		if (view == null) {
+			return cpy();
+		}
+		return new RectBox(x / view.x, y / view.y, width / view.width, height / view.height);
+	}
+	
+	public RectBox inc(float v) {
+		return new RectBox(x + v, y + v, width + v, height + v);
+	}
+
+	public RectBox sub(float v) {
+		return new RectBox(x - v, y - v, width - v, height - v);
+	}
+
+	public RectBox mul(float v) {
+		return new RectBox(x * v, y * v, width * v, height * v);
+	}
+
+	public RectBox div(float v) {
+		return new RectBox(x / v, y / v, width / v, height / v);
+	}
+
 	public RectBox add(float px, float py) {
 		float x1 = MathUtils.min(x, px);
 		float x2 = MathUtils.max(x + width, px);
@@ -781,25 +829,13 @@ public class RectBox extends Shape implements BoxSize {
 		result = prime * result + NumberUtils.floatToIntBits(height);
 		return result;
 	}
-	
+
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("RectBox");
-		builder.kv("x", x)
-		.comma()
-		.kv("y", y)
-		.comma()
-		.kv("width", width)
-		.comma()
-		.kv("height", height)
-		.comma()
-		.kv("left", Left())
-		.comma()
-		.kv("right", Right())
-		.comma()
-		.kv("top", Top())
-		.comma()
-		.kv("bottom", Bottom());
+		builder.kv("x", x).comma().kv("y", y).comma().kv("width", width).comma().kv("height", height).comma()
+				.kv("left", Left()).comma().kv("right", Right()).comma().kv("top", Top()).comma()
+				.kv("bottom", Bottom());
 		return builder.toString();
 	}
 

@@ -1618,7 +1618,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 * @param mode
 	 * @return
 	 */
-	private GLEx beginRenderer(GLType mode) {
+	protected GLRenderer beginRenderer(GLType mode) {
 		end();
 		GLUtils.disableTextures(batch.gl);
 		if (glRenderer == null) {
@@ -1627,7 +1627,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		saveTx();
 		this.glRenderer.begin(lastTrans, mode);
 		this.useBegin = true;
-		return this;
+		return glRenderer;
 	}
 
 	/**
@@ -1635,10 +1635,10 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 * 
 	 * @return
 	 */
-	private GLEx endRenderer() {
+	protected GLRenderer endRenderer() {
 		if (!useBegin) {
 			useBegin = false;
-			return this;
+			return null;
 		}
 		try {
 			glRenderer.end();
@@ -1646,7 +1646,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			restoreTx();
 			useBegin = false;
 		}
-		return this;
+		return glRenderer;
 	}
 
 	public GLEx drawLine(float x1, float y1, float x2, float y2) {

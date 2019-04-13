@@ -693,6 +693,14 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		return y + getY();
 	}
 
+	public float getCurrentX(){
+		return this._location.x + _offset.x;
+	}
+
+	public float getCurrentY(){
+		return this._location.y + _offset.y;
+	}
+	
 	protected void prePaint(final GLEx g) {
 
 	}

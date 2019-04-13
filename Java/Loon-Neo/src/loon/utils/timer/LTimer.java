@@ -41,6 +41,8 @@ public class LTimer {
 	private long delay;
 
 	private long currentTick;
+	
+	private float speedFactor;
 
 	public static LTimer at() {
 		return new LTimer();
@@ -65,23 +67,17 @@ public class LTimer {
 	public LTimer(long delay) {
 		this.delay = delay;
 		this.active = true;
-		currentTick = 0;
-	}
-
-	public boolean action(long elapsedTime) {
-		if (this.active) {
-			this.currentTick += elapsedTime;
-			if (this.currentTick >= this.delay) {
-				this.currentTick -= this.delay;
-				return true;
-			}
-		}
-		return false;
+		this.currentTick = 0;
+		speedFactor = 1f;
 	}
 
 	public boolean action(LTimerContext context) {
+		return action(context.timeSinceLastUpdate);
+	}
+	
+	public boolean action(long elapsedTime) {
 		if (this.active) {
-			this.currentTick += context.timeSinceLastUpdate;
+			this.currentTick += (elapsedTime * speedFactor);
 			if (this.currentTick >= this.delay) {
 				this.currentTick -= this.delay;
 				return true;
@@ -102,6 +98,7 @@ public class LTimer {
 
 	public LTimer refresh() {
 		this.currentTick = 0;
+		this.speedFactor = 1f;
 		return this;
 	}
 
@@ -163,6 +160,10 @@ public class LTimer {
 		return (float) (this.delay - this.currentTick);
 	}
 
+	public boolean checkInterval(long interval) {
+		return (currentTick / interval) > ((currentTick - delay) / interval);
+	}
+
 	public LTimer clamp() {
 		if (this.currentTick > this.delay) {
 			currentTick = delay;
@@ -174,6 +175,14 @@ public class LTimer {
 		return this.currentTick >= this.delay;
 	}
 
+	public float getSpeedFactor() {
+		return speedFactor;
+	}
+
+	public void setSpeedFactor(float factor) {
+		this.speedFactor = factor;
+	}
+	
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("LTimer");
@@ -181,7 +190,10 @@ public class LTimer {
 		.comma()
 		.kv("delay", delay)
 		.comma()
+		.kv("factor", speedFactor)
+		.comma()
 		.kv("active", active);
 		return builder.toString();
 	}
+
 }

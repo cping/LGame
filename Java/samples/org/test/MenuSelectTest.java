@@ -37,7 +37,7 @@ public class MenuSelectTest extends Stage {
 		// 选中行的选择外框渲染颜色,不设置不显示
 		// ms.setSelectRectColor(LColor.red);
 		// 选中行所用的图像标记(箭头图之类),不设置使用默认样式
-		ms.setImageFlag(LSystem.FRAMEWORK_IMG_NAME + "creese.png");
+		ms.setImageFlag(LSystem.getSystemImagePath() + "creese.png");
 		//选择框菜单所用的背景图,不设置使用默认样式
 		ms.setBackground(getGameWinFrame(ms.width(), ms.height(), LColor.black, LColor.blue, false));
 		ms.setMenuListener(new LMenuSelect.ClickEvent() {

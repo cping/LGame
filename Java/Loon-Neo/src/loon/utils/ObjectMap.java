@@ -432,7 +432,7 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray 
 	}
 
 	ObjectMap(boolean withValues) {
-		this(CollectionUtils.INITIAL_CAPACITY * 2, 0.85f, withValues);
+		this(CollectionUtils.INITIAL_CAPACITY, 0.85f, withValues);
 	}
 
 	public ObjectMap(int initialCapacity, float factor) {

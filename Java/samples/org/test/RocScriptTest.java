@@ -23,7 +23,7 @@ public class RocScriptTest extends Stage {
 		.line("print 789")
 		.line("print testvar")
 		.line("if testvar == 'ABCDEFG' then")
-		.line("print 'abcdefg'")
+		.line("print 'abcdefg123'")
 		.line("else")
 		.line("print 'gfedcba'")
 		.line("end")
