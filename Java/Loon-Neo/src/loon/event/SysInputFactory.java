@@ -125,6 +125,8 @@ public class SysInputFactory {
 	private EmulatorButtons ebuttons;
 
 	public void callMouse(MouseMake.ButtonEvent event) {
+		
+		final boolean stopMoveDrag = LSystem.getNotAllowDragAndMove(); 
 		final Vector2f pos = _handler.convertXY(event.getX(), event.getY());
 		final float touchX = pos.x;
 		final float touchY = pos.y;
@@ -191,7 +193,7 @@ public class SysInputFactory {
 							LTouchLocationState.Dragged, finalTouch.x,
 							finalTouch.y);
 				}
-				if (!LSystem.NOT_MOVE) {
+				if (!stopMoveDrag) {
 					_handler.mouseMoved(finalTouch);
 				}
 			}
@@ -214,7 +216,7 @@ public class SysInputFactory {
 						.update(finalTouch.id, LTouchLocationState.Dragged,
 								finalTouch.x, finalTouch.y);
 			}
-			if (!LSystem.NOT_DRAG) {
+			if (!stopMoveDrag) {
 				_handler.mouseDragged(finalTouch);
 			}
 			if (ebuttons != null && ebuttons.isVisible()) {
@@ -237,9 +239,11 @@ public class SysInputFactory {
 
 	public void callTouch(TouchMake.Event[] events) {
 
-		ebuttons = _handler.getEmulatorButtons();
+		final boolean stopMoveDrag = LSystem.getNotAllowDragAndMove(); 
 		int size = events.length;
-
+		
+		ebuttons = _handler.getEmulatorButtons();
+		
 		for (int i = 0; i < size; i++) {
 			TouchMake.Event e = events[i];
 			float touchX = (e.getX() - _handler.getX())
@@ -290,10 +294,10 @@ public class SysInputFactory {
 					}
 
 					// a few platforms no such behavior (ios or android)
-					if (!LSystem.NOT_MOVE) {
+					if (!stopMoveDrag) {
 						_handler.mouseMoved(finalTouch);
 					}
-					if (!LSystem.NOT_DRAG) {
+					if (!stopMoveDrag) {
 						_handler.mouseDragged(finalTouch);
 					}
 					_isDraging = true;

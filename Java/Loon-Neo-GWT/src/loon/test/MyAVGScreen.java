@@ -84,11 +84,11 @@ public class MyAVGScreen extends AVGScreen {
 			messageUI.setVisible(false);
 			setScrFlag(true);
 			// 强行锁定脚本
-			setLocked(true);
+			setScriptLocked(true);
 			LButton yes = new LButton("assets/dialog_yes.png", 112, 33) {
 				public void doClick() {
 					// 解除锁定
-					setLocked(false);
+					setScriptLocked(false);
 					// 触发事件
 					// click();
 					// 删除当前按钮

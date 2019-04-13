@@ -41,11 +41,11 @@ public class SRPGActorStatusView extends SRPGDrawView {
 					255), color2 = new LColor(192, 192, 192),
 			color3 = new LColor(255, 192, 192);
 
-	private static final LFont statusFont = LFont.getFont(LSystem.FONT_NAME, Style.PLAIN,
+	private static final LFont statusFont = LFont.getFont(LSystem.getSystemGameFontName(), Style.PLAIN,
 			12);
 
 	private static final LFont bigFont = LFont
-			.getFont(LSystem.FONT_NAME, Style.PLAIN, 14);
+			.getFont(LSystem.getSystemGameFontName(), Style.PLAIN, 14);
 
 	private String[][] cstatus;
 

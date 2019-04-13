@@ -128,7 +128,7 @@ public abstract class Log {
 	}
 
 	protected void log(Level level, String msg, Throwable e) {
-		if (LSystem.USE_LOG) {
+		if (LSystem.isConsoleLog()) {
 			if (collector != null) {
 				collector.logged(level, msg, e);
 			}

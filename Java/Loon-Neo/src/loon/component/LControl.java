@@ -78,8 +78,8 @@ public class LControl extends LComponent {
 	}
 
 	public LControl(int x, int y, int bw, int bh, int dw, int dh) {
-		this(x, y, LTextures.loadTexture(LSystem.FRAMEWORK_IMG_NAME + "control_base.png"),
-				LTextures.loadTexture(LSystem.FRAMEWORK_IMG_NAME + "control_dot.png"), bw, bh, dw, dh);
+		this(x, y, LTextures.loadTexture(LSystem.getSystemImagePath() + "control_base.png"),
+				LTextures.loadTexture(LSystem.getSystemImagePath() + "control_dot.png"), bw, bh, dw, dh);
 	}
 
 	public LControl(int x, int y, String basename, String dot, int bw, int bh, int dw, int dh) {

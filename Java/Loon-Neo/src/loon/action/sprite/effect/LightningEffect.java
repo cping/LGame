@@ -157,7 +157,7 @@ public class LightningEffect extends Entity {
 	}
 
 	public void loadLightning() {
-		loadLightning(new LTexturePack(LSystem.FRAMEWORK_IMG_NAME + "natural.txt"));
+		loadLightning(new LTexturePack(LSystem.getSystemImagePath() + "natural.txt"));
 	}
 
 	public void loadLightning(LTexturePack p) {

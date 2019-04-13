@@ -251,7 +251,7 @@ public class NaturalEffect extends Entity implements BaseEffect {
 		} else {
 			this.timer = new LTimer(80);
 		}
-		this.pack = new LTexturePack(LSystem.FRAMEWORK_IMG_NAME + "natural.txt");
+		this.pack = new LTexturePack(LSystem.getSystemImagePath() + "natural.txt");
 		switch (ntype) {
 		case Petal:
 			this.kernels = new PetalKernel[count];

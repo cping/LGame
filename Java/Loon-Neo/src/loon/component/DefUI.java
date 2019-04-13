@@ -56,7 +56,7 @@ public class DefUI {
 		}
 	}
 
-	public final static String win_frame_UI = LSystem.FRAMEWORK_IMG_NAME + "wbar.png";
+	public final static String win_frame_UI = LSystem.getSystemImagePath() + "wbar.png";
 
 	private TArray<LTexture> defaultTextures;
 
@@ -575,7 +575,7 @@ public class DefUI {
 				lastTexture.close(true);
 				lastTexture = null;
 			}
-			lastTexture = LTextures.newTexture(LSystem.FRAMEWORK_IMG_NAME + "ui.png");
+			lastTexture = LTextures.newTexture(LSystem.getSystemImagePath() + "ui.png");
 			lastTexture.setDisabledTexture(true);
 			LSubTexture windowbar = new LSubTexture(lastTexture, 0, 0, 512, 32);
 			LSubTexture panelbody = new LSubTexture(lastTexture, 1, 41 - 8, 17, 57 - 8);

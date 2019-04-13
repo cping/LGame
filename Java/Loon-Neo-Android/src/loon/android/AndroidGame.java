@@ -155,7 +155,7 @@ public class AndroidGame extends LGame {
 
 	static void debugLog(String message) {
 		if (DEBUG_LOGS) {
-			Log.d(LSystem.APP_NAME, message);
+			Log.d(LSystem.getSystemAppName(), message);
 		}
 	}
 

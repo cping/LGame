@@ -29,24 +29,36 @@ import loon.utils.NumberUtils;
 public class LSetting {
 
 	/**
+	 * Loon自带的模拟按键的缩放比率(Screen实现EmulatorListener接口自动出现,8个按钮)
+	 */
+	public float emulatorScale = 1f;
+
+	/**
 	 * 如果此项为true,则Loon会检查resize缩放行为,原本宽高比例是横屏，改成竖屏，或者竖屏改成横屏的resize将不被允许
 	 */
 	public boolean isCheckReisze = false;
+	
 	/**
 	 * 如果此项为true,则Loon中的缓动动画会和图像渲染同步(为false时缓动刷新次数会比画面渲染次数少),true时缓动动画会更加流畅,
 	 * <p>
 	 * 但是缓动资源较多则可能延迟画面渲染(因为都卡在一起执行了)
 	 */
 	public boolean isSyncTween = false;
+	
 	/**
 	 * 若此处true,则fps,memory以及sprite数量之类数据
 	 */
 	public boolean isDebug = false;
 
 	/**
-	 * 此项为true时,log信息也将同时打印到游戏窗体中
+	 * 是否显示viewlog,此项为true时,log信息也将同时打印到游戏窗体中
 	 */
 	public boolean isDisplayLog = false;
+
+	/**
+	 * 是否显示consolelog,此项为false时,关闭所有后台log信息
+	 */
+	public boolean isConsoleLog = true;
 
 	/**
 	 * 是否显示FPS帧率
@@ -67,6 +79,11 @@ public class LSetting {
 	 * 是否显示logo（替换logo使用logoPath指定地址）
 	 */
 	public boolean isLogo = false;
+
+	/**
+	 * 生成系统默认的LFont时,是否使用剪切生成
+	 */
+	public boolean useTrueFontClip = true;
 
 	/**
 	 * 帧率
@@ -113,7 +130,7 @@ public class LSetting {
 	/**
 	 * 当前游戏或应用名
 	 */
-	public String appName = LSystem.APP_NAME;
+	public String appName = LSystem._app_name;
 
 	/**
 	 * 使用的初始化logo
@@ -123,7 +140,7 @@ public class LSetting {
 	/**
 	 * 当前字体名
 	 */
-	public String fontName = LSystem.FONT_NAME;
+	public String fontName = LSystem._font_name;
 
 	/**
 	 * 当前应用版本号
@@ -144,11 +161,19 @@ public class LSetting {
 	 * 当前游戏类型，默认为"未知"
 	 */
 	public GameType gameType = GameType.UNKOWN;
+	
+	/**
+	 * 此项为true时,drag与move事件全游戏无效
+	 */
+	public boolean notAllowDragAndMove = false;
 
 	public void copy(LSetting setting) {
 		this.isSyncTween = setting.isSyncTween;
 		this.isFPS = setting.isFPS;
 		this.isLogo = setting.isLogo;
+		this.isCheckReisze = setting.isCheckReisze;
+		this.isConsoleLog = setting.isConsoleLog;
+		this.disposeTexture = setting.disposeTexture;
 		this.fps = setting.fps;
 		this.width = setting.width;
 		this.height = setting.height;
@@ -158,11 +183,15 @@ public class LSetting {
 		this.emulateTouch = setting.emulateTouch;
 		this.activationKey = setting.activationKey;
 		this.convertImagesOnLoad = setting.convertImagesOnLoad;
+		this.saveTexturePixels = setting.saveTexturePixels;
 		this.appName = setting.appName;
+		this.gameType = setting.gameType;
 		this.logoPath = setting.logoPath;
 		this.fontName = setting.fontName;
 		this.version = setting.version;
-		this.isCheckReisze = setting.isCheckReisze;
+		this.useTrueFontClip = setting.useTrueFontClip;
+		this.emulatorScale = setting.emulatorScale;
+		this.notAllowDragAndMove = setting.notAllowDragAndMove;
 	}
 
 	/**

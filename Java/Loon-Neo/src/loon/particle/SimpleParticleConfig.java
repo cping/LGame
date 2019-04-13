@@ -73,7 +73,7 @@ public class SimpleParticleConfig {
 			}
 
 			if (system == null) {
-				system = new SimpleParticleSystem(LSystem.FRAMEWORK_IMG_NAME + "par.png", 2000, mask);
+				system = new SimpleParticleSystem(LSystem.getSystemImagePath() + "par.png", 2000, mask);
 			}
 			boolean additive = docElement.getBoolAttribute("additive", false);
 			if (additive) {

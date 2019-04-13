@@ -44,7 +44,7 @@ public class LFont implements IFont {
 	}
 
 	public static LFont newFont(int size) {
-		return LFont.getFont(LSystem.FONT_NAME, Style.PLAIN, size);
+		return LFont.getFont(LSystem.getSystemGameFontName(), Style.PLAIN, size);
 	}
 
 	/*
@@ -63,7 +63,7 @@ public class LFont implements IFont {
 
 	public static LFont getDefaultFont(int size) {
 		if (defaultFont == null || defaultFont.getSize() != size) {
-			defaultFont = LFont.getFont(LSystem.FONT_NAME, Style.PLAIN, size);
+			defaultFont = LFont.getFont(LSystem.getSystemGameFontName(), Style.PLAIN, size);
 		}
 		return defaultFont;
 	}
@@ -99,7 +99,7 @@ public class LFont implements IFont {
 	}
 
 	LFont() {
-		this(LSystem.FONT_NAME, Style.PLAIN, 20, true);
+		this(LSystem.getSystemGameFontName(), Style.PLAIN, 20, true);
 	}
 
 	LFont(String name, Style style, int size, boolean antialias) {
@@ -107,7 +107,7 @@ public class LFont implements IFont {
 	}
 
 	public static LFont getFont(int size) {
-		return LFont.getFont(LSystem.FONT_NAME, size);
+		return LFont.getFont(LSystem.getSystemGameFontName(), size);
 	}
 
 	public static LFont getFont(String familyName, int size) {

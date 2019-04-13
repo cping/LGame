@@ -118,7 +118,7 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 		this.delay = new LTimer(150);
 		this.autoAlpha = 0.25F;
 		this.isAutoAlpha = true;
-		this.setCursor(LSystem.FRAMEWORK_IMG_NAME + "creese.png");
+		this.setCursor(LSystem.getSystemImagePath() + "creese.png");
 		this.setElastic(true);
 		this.setLocked(true);
 	}

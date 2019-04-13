@@ -126,7 +126,7 @@ public class I18N implements LRelease {
 	}
 
 	public String getText(String res, String value) {
-		return getText(LSystem.APP_NAME, res, value);
+		return getText(LSystem.getSystemAppName(), res, value);
 	}
 
 	public String getText(Object obj, String res, String value) {

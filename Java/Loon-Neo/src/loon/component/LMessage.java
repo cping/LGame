@@ -99,7 +99,7 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 			}
 		}
 		this.print = new Print(getLocation(), messageFont, width, height);
-		this.setTipIcon(LSystem.FRAMEWORK_IMG_NAME + "creese.png");
+		this.setTipIcon(LSystem.getSystemImagePath() + "creese.png");
 		this.totalDuration = 80;
 		this.customRendering = true;
 		this.setWait(false);

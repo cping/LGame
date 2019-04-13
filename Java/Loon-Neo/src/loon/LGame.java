@@ -60,22 +60,22 @@ public abstract class LGame {
 		this.setting = config;
 		String appName = config.appName;
 		if (appName != null) {
-			LSystem.APP_NAME = appName;
-		} else if (LSystem.APP_NAME != null) {
-			appName = LSystem.APP_NAME;
+			LSystem._app_name = appName;
+		} else if (LSystem._app_name != null) {
+			appName = LSystem._app_name;
 		} else {
 			appName = "loon";
-			LSystem.APP_NAME = appName;
+			LSystem._app_name = appName;
 		}
 		setting.appName = appName;
 		String fontName = config.fontName;
 		if (fontName != null) {
-			LSystem.FONT_NAME = fontName;
-		} else if (LSystem.FONT_NAME != null) {
-			fontName = LSystem.FONT_NAME;
+			LSystem._font_name = fontName;
+		} else if (LSystem._font_name != null) {
+			fontName = LSystem._font_name;
 		} else {
 			fontName = "Dialog";
-			LSystem.FONT_NAME = fontName;
+			LSystem._font_name = fontName;
 		}
 		setting.fontName = fontName;
 	}
@@ -131,7 +131,8 @@ public abstract class LGame {
 
 	public boolean isMobile() {
 		Type type = this.type();
-		return (type == LGame.Type.ANDROID || type == LGame.Type.IOS || type == LGame.Type.WP);
+		return (type == LGame.Type.ANDROID || type == LGame.Type.IOS || type == LGame.Type.WP
+				|| type == LGame.Type.SWITCH);
 	}
 
 	public boolean isHTML5() {

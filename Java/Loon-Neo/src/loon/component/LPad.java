@@ -75,7 +75,7 @@ public class LPad extends LComponent {
 	}
 
 	public LPad(int x, int y, float scale) {
-		this(x, y, LSystem.FRAMEWORK_IMG_NAME + "pad_ui.txt", scale);
+		this(x, y, LSystem.getSystemImagePath() + "pad_ui.txt", scale);
 	}
 
 	public LPad(int x, int y, String config, float scale) {

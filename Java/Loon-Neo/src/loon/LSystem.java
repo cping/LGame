@@ -27,7 +27,6 @@ import loon.event.Updateable;
 import loon.font.IFont;
 import loon.font.LFont;
 import loon.geom.Dimension;
-import loon.geom.Vector3f;
 import loon.opengl.GLEx;
 import loon.opengl.LSTRFont;
 import loon.opengl.Mesh;
@@ -42,7 +41,7 @@ import loon.utils.json.JsonImpl;
 public class LSystem {
 
 	// 版本号(正在不断完善中,试图把此版做成API以及功能基本稳定的版本,以后只优化与扩展api,而不替换删除api,所以0.5会持续的比较长……)
-	public static final String version = "0.5";
+	private static final String _version = "0.5-beta";
 
 	// 默认的字符串打印完毕flag
 	public static String FLAG_TAG = "▼";
@@ -115,44 +114,23 @@ public class LSystem {
 	// 理论上一年
 	public static final long YEAR = DAY * 365;
 
-	// 是否使用了HTML5环境
-	private static boolean _USE_HTML5 = false;
-
-	private static boolean _USE_MOBILE = false;
-
-	public static String FONT_NAME = "Dialog";
-
 	public static String ENCODING = "UTF-8";
-
-	public static String APP_NAME = "Loon";
-
-	public static boolean NOT_DRAG = false;
-
-	public static boolean NOT_MOVE = false;
-
-	public static float EMULATOR_BUTTIN_SCALE = 1f;
-
-	private static float scaleWidth = 1f;
-
-	private static float scaleHeight = 1f;
 
 	public static boolean PAUSED = false;
 
 	public static boolean AUTO_REPAINT = true;
-
-	public static boolean USE_LOG = true;
-
-	// 是否单独切分渲染用字体
-	public static boolean USE_TRUEFONT_CLIP = true;
-
 	// 包内默认的图片路径
-	public static String FRAMEWORK_IMG_NAME = "loon_";
+	private static String _systemDefaultImgPath = "loon_";
+
+	private static float _scaleWidth = 1f;
+
+	private static float _scaleHeight = 1f;
 
 	private static IFont _defaultLogFont = null;
 
 	private static IFont _defaultGameFont = null;
 
-	public final static String getGLExVertexShader() {
+	public static final String getGLExVertexShader() {
 		ShaderCmd cmd = ShaderCmd.getCmd("glex_vertex");
 		if (cmd.isCache()) {
 			return cmd.getShader();
@@ -171,7 +149,7 @@ public class LSystem {
 		}
 	}
 
-	public final static String getGLExFragmentShader() {
+	public static final String getGLExFragmentShader() {
 		ShaderCmd cmd = ShaderCmd.getCmd("glex_fragment");
 		if (cmd.isCache()) {
 			return cmd.getShader();
@@ -184,7 +162,7 @@ public class LSystem {
 		}
 	}
 
-	public final static String getColorFragmentShader() {
+	public static final String getColorFragmentShader() {
 		ShaderCmd cmd = ShaderCmd.getCmd("color_fragment");
 		if (cmd.isCache()) {
 			return cmd.getShader();
@@ -197,12 +175,68 @@ public class LSystem {
 		}
 	}
 
+	protected static LGame _base = null;
+
+	protected static LProcess _process = null;
+
+	protected static Platform _platform = null;
+
+	protected static JsonImpl _json_instance = null;
+
+	// 是否手机环境
+	protected static boolean _on_mobile = false;
+
+	// 是否HTML5环境
+	protected static boolean _on_html5 = false;
+
+	// 游戏字体(仅限LFont实现IFont接口时有效)
+	protected static String _font_name = "Dialog";
+
+	// 当前应用名称
+	protected static String _app_name = "Loon";
+
+	public static Platform platform() {
+		return _platform;
+	}
+
+	public static LGame base() {
+		if (_base != null) {
+			return _base;
+		} else if (_platform != null) {
+			_base = _platform.getGame();
+		}
+		return _base;
+	}
+
+	public static final boolean landscape() {
+		return viewSize.height < viewSize.width;
+	}
+
+	/**
+	 * 获得Loon系统自带的默认文件前缀
+	 * 
+	 * @return
+	 */
+	public static final String getSystemImagePath() {
+		return _systemDefaultImgPath;
+	}
+
+	/**
+	 * 获得Loon系统自带的默认文件前缀
+	 * 
+	 * @param path
+	 * @return
+	 */
+	public static final String getSystemImagePath(String path) {
+		return _systemDefaultImgPath + path;
+	}
+
 	/**
 	 * 获得系统画面log中显示的字体(如果未设置则默认为本地字体渲染,字体大小16)
 	 * 
 	 * @return
 	 */
-	public final static IFont getSystemLogFont() {
+	public static final IFont getSystemLogFont() {
 		if (_defaultLogFont == null) {
 			_defaultLogFont = LSTRFont.getFont(LSystem.isDesktop() ? 16 : 20);
 		}
@@ -223,7 +257,7 @@ public class LSystem {
 	 * 
 	 * @return
 	 */
-	public final static IFont getSystemGameFont() {
+	public static final IFont getSystemGameFont() {
 		if (_defaultGameFont == null) {
 			_defaultGameFont = LFont.getDefaultFont();
 		}
@@ -249,39 +283,53 @@ public class LSystem {
 		LSystem.setSystemGameFont(font);
 	}
 
-	public final String getVersionString() {
-		return version;
-	}
-
-	public final static Vector3f getVersion() {
-		return new Vector3f(0, 5, 0);
-	}
-
-	protected static LGame _base;
-
-	protected static LProcess _process;
-
-	protected static Platform _platform;
-
-	protected static JsonImpl _json_instance;
-
-	public static Platform platform() {
-		return _platform;
-	}
-
-	public static LGame base() {
+	public static final boolean getNotAllowDragAndMove() {
 		if (_base != null) {
-			return _base;
-		} else if (_platform != null) {
-			_base = _platform.getGame();
+			return _base.setting.notAllowDragAndMove;
 		}
-		return _base;
+		return false;
+
 	}
 
-	public final static boolean landscape() {
-		return viewSize.height < viewSize.width;
+	public static final float getEmulatorScale() {
+		if (_base != null) {
+			return _base.setting.emulatorScale;
+		}
+		return 1f;
 	}
 
+	public static final boolean isTrueFontClip() {
+		if (_base != null) {
+			return _base.setting.useTrueFontClip;
+		}
+		return true;
+	}
+
+	public static final boolean isConsoleLog() {
+		if (_base != null) {
+			return _base.setting.isConsoleLog;
+		}
+		return true;
+	}
+
+	public static final String getSystemGameFontName() {
+		if (_base != null) {
+			return _base.setting.fontName;
+		}
+		return _font_name;
+	}
+
+	public static final String getSystemAppName() {
+		if (_base != null) {
+			return _base.setting.appName;
+		}
+		return _app_name;
+	}
+
+	public static final String getVersion() {
+		return _version;
+	}
+	
 	public static void resetTextureRes() {
 		resetTextureRes(base());
 	}
@@ -303,8 +351,8 @@ public class LSystem {
 		setting.updateScale();
 		LSystem.viewSize.setSize(setting.width, setting.height);
 		_process = new LProcess(game);
-		_USE_HTML5 = (_base.type() == LGame.Type.HTML5);
-		_USE_MOBILE = (_base.isMobile());
+		_on_html5 = (_base.type() == LGame.Type.HTML5);
+		_on_mobile = _base.isMobile();
 		_base.log().debug("The Loon Game Engine is Begin");
 	}
 
@@ -334,31 +382,31 @@ public class LSystem {
 	}
 
 	public static boolean isHTML5() {
-		return LSystem._USE_HTML5;
+		return _on_html5;
 	}
 
 	public static boolean isMobile() {
-		return LSystem._USE_MOBILE;
+		return _on_mobile;
 	}
 
 	public static boolean isDesktop() {
-		return !_USE_MOBILE && !_USE_HTML5;
+		return !_on_mobile && !_on_html5;
 	}
 
 	public static float getScaleWidth() {
-		return LSystem.scaleWidth;
+		return LSystem._scaleWidth;
 	}
 
 	public static float getScaleHeight() {
-		return LSystem.scaleHeight;
+		return LSystem._scaleHeight;
 	}
 
 	public static void setScaleWidth(float sx) {
-		LSystem.scaleWidth = sx;
+		LSystem._scaleWidth = sx;
 	}
 
 	public static void setScaleHeight(float sy) {
-		LSystem.scaleHeight = sy;
+		LSystem._scaleHeight = sy;
 	}
 
 	public static Scale getScale() {
@@ -452,7 +500,7 @@ public class LSystem {
 		}
 	}
 
-	public final static void close(LRelease rel) {
+	public static final void close(LRelease rel) {
 		if (rel != null) {
 			try {
 				rel.close();
@@ -462,17 +510,17 @@ public class LSystem {
 		}
 	}
 
-	public final static LProcess getProcess() {
+	public static final LProcess getProcess() {
 		return _process;
 	}
 
-	public final static void load(Updateable u) {
+	public static final void load(Updateable u) {
 		if (_process != null) {
 			_process.addLoad(u);
 		}
 	}
 
-	public final static void unload(Updateable u) {
+	public static final void unload(Updateable u) {
 		if (_process != null) {
 			_process.addUnLoad(u);
 		}
@@ -486,31 +534,31 @@ public class LSystem {
 		return shader;
 	}
 
-	public final static String format(float value) {
+	public static final String format(float value) {
 		String fmt = String.valueOf(value);
 		return fmt.indexOf('.') == -1 ? (fmt + ".0") : fmt;
 	}
 
-	public final static int unite(int hashCode, boolean value) {
+	public static final int unite(int hashCode, boolean value) {
 		int v = value ? 1231 : 1237;
 		return unite(hashCode, v);
 	}
 
-	public final static int unite(int hashCode, long value) {
+	public static final int unite(int hashCode, long value) {
 		int v = (int) (value ^ (value >>> 32));
 		return unite(hashCode, v);
 	}
 
-	public final static int unite(int hashCode, float value) {
+	public static final int unite(int hashCode, float value) {
 		int v = NumberUtils.floatToIntBits(value);
 		return unite(hashCode, v);
 	}
 
-	public final static int unite(int hashCode, Object value) {
+	public static final int unite(int hashCode, Object value) {
 		return unite(hashCode, value.hashCode());
 	}
 
-	public final static int unite(int hashCode, int value) {
+	public static final int unite(int hashCode, int value) {
 		return 31 * hashCode + value;
 	}
 
@@ -531,154 +579,154 @@ public class LSystem {
 		return extension.equals("mp3") || extension.equals("ogg") || extension.equals("wav") || extension.equals("mid");
 	}
 
-	public final static void debug(String msg) {
+	public static final void debug(String msg) {
 		if (LSystem._base != null) {
 			LSystem._base.log().debug(msg);
 		}
 	}
 
-	public final static void debug(String msg, Object... args) {
+	public static final void debug(String msg, Object... args) {
 		if (LSystem._base != null) {
 			LSystem._base.log().debug(msg, args);
 		}
 	}
 
-	public final static void debug(String msg, Throwable throwable) {
+	public static final void debug(String msg, Throwable throwable) {
 		if (LSystem._base != null) {
 			LSystem._base.log().debug(msg, throwable);
 		}
 	}
 
-	public final static void info(String msg) {
+	public static final void info(String msg) {
 		if (LSystem._base != null) {
 			LSystem._base.log().info(msg);
 		}
 	}
 
-	public final static void info(String msg, Object... args) {
+	public static final void info(String msg, Object... args) {
 		if (LSystem._base != null) {
 			LSystem._base.log().info(msg, args);
 		}
 	}
 
-	public final static void info(String msg, Throwable throwable) {
+	public static final void info(String msg, Throwable throwable) {
 		if (LSystem._base != null) {
 			LSystem._base.log().info(msg, throwable);
 		}
 	}
 
-	public final static void warn(String msg) {
+	public static final void warn(String msg) {
 		if (LSystem._base != null) {
 			LSystem._base.log().warn(msg);
 		}
 	}
 
-	public final static void warn(String msg, Object... args) {
+	public static final void warn(String msg, Object... args) {
 		if (LSystem._base != null) {
 			LSystem._base.log().warn(msg, args);
 		}
 	}
 
-	public final static void warn(String msg, Throwable throwable) {
+	public static final void warn(String msg, Throwable throwable) {
 		if (LSystem._base != null) {
 			LSystem._base.log().warn(msg, throwable);
 		}
 	}
 
-	public final static void error(String msg) {
+	public static final void error(String msg) {
 		if (LSystem._base != null) {
 			LSystem._base.log().error(msg);
 		}
 	}
 
-	public final static void error(String msg, Object... args) {
+	public static final void error(String msg, Object... args) {
 		if (LSystem._base != null) {
 			LSystem._base.log().error(msg, args);
 		}
 	}
 
-	public final static void error(String msg, Throwable throwable) {
+	public static final void error(String msg, Throwable throwable) {
 		if (LSystem._base != null) {
 			LSystem._base.log().error(msg, throwable);
 		}
 	}
 
-	public final static RuntimeException runThrow(String msg) {
+	public static final RuntimeException runThrow(String msg) {
 		error(msg);
 		return new RuntimeException(msg);
 	}
 
-	public final static RuntimeException runThrow(String msg, Throwable thr) {
+	public static final RuntimeException runThrow(String msg, Throwable thr) {
 		error(msg, thr);
 		return new RuntimeException(msg, thr);
 	}
 
-	public final static RuntimeException runThrow(String msg, Object... args) {
+	public static final RuntimeException runThrow(String msg, Object... args) {
 		error(msg, args);
 		return new RuntimeException(StringUtils.format(msg, args));
 	}
 
-	public final static void d(String msg) {
+	public static final void d(String msg) {
 		debug(msg);
 	}
 
-	public final static void d(String msg, Object... args) {
+	public static final void d(String msg, Object... args) {
 		debug(msg, args);
 	}
 
-	public final static void d(String msg, Throwable throwable) {
+	public static final void d(String msg, Throwable throwable) {
 		debug(msg, throwable);
 	}
 
-	public final static void i(String msg) {
+	public static final void i(String msg) {
 		info(msg);
 	}
 
-	public final static void i(String msg, Object... args) {
+	public static final void i(String msg, Object... args) {
 		info(msg, args);
 	}
 
-	public final static void i(String msg, Throwable throwable) {
+	public static final void i(String msg, Throwable throwable) {
 		info(msg, throwable);
 	}
 
-	public final static void w(String msg) {
+	public static final void w(String msg) {
 		warn(msg);
 	}
 
-	public final static void w(String msg, Object... args) {
+	public static final void w(String msg, Object... args) {
 		warn(msg, args);
 	}
 
-	public final static void w(String msg, Throwable throwable) {
+	public static final void w(String msg, Throwable throwable) {
 		warn(msg, throwable);
 	}
 
-	public final static void e(String msg) {
+	public static final void e(String msg) {
 		error(msg);
 	}
 
-	public final static void e(String msg, Object... args) {
+	public static final void e(String msg, Object... args) {
 		error(msg, args);
 	}
 
-	public final static void e(String msg, Throwable throwable) {
+	public static final void e(String msg, Throwable throwable) {
 		error(msg, throwable);
 	}
 
-	public final static RuntimeException re(String msg) {
+	public static final RuntimeException re(String msg) {
 		return runThrow(msg);
 	}
 
-	public final static RuntimeException re(String msg, Throwable thr) {
+	public static final RuntimeException re(String msg, Throwable thr) {
 		return runThrow(msg, thr);
 	}
 
-	public final static RuntimeException re(String msg, Object... args) {
+	public static final RuntimeException re(String msg, Object... args) {
 		return runThrow(msg, args);
 	}
 
-	public final static void setLogMinLevel(Level level) {
+	public static final void setLogMinLevel(Level level) {
 		if (LSystem._base != null) {
 			LSystem._base.log().setMinLevel(level);
 		}

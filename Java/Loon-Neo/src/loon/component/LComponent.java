@@ -899,9 +899,9 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public LComponent setBackground(String fileName) {
-		return this.setBackground(LTextures.newTexture(fileName));
+		return this.setBackground(LTextures.loadTexture(fileName));
 	}
-
+	
 	public LComponent setBackground(LColor color) {
 		return setBackground(TextureUtils.createTexture(1, 1, color));
 	}

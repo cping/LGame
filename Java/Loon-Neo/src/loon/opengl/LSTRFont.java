@@ -88,7 +88,7 @@ public class LSTRFont implements IFont {
 			if (fixSize % 2 != 0) {
 				fixSize -= 1;
 			}
-			final boolean clipFont = LSystem.USE_TRUEFONT_CLIP && strfont.fontSize < 20 && LSystem.isMobile();
+			final boolean clipFont = LSystem.isTrueFontClip() && strfont.fontSize < 20 && LSystem.isMobile();
 			// 本地字体怎么都不如ttf或者fnt字体清晰准确,差异太大，只能尽量保证显示效果……
 			for (int i = 0, size = strfont.totalCharSet + customCharsLength; i < size; i++) {
 				char ch = (i < strfont.totalCharSet) ? (char) i : strfont.additionalChars[i - strfont.totalCharSet];

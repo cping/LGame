@@ -330,7 +330,7 @@ public abstract class STGScreen extends Screen {
 			plane = new STGPlane();
 			this.planes.put(index, plane);
 		}
-		plane.font = LFont.getFont(LSystem.FONT_NAME, planeFontSize);
+		plane.font = LFont.getFont(LSystem.getSystemGameFontName(), planeFontSize);
 		plane.color = new LColor(0, 0, 0);
 		plane.str = mes;
 		plane.planeMode = STR_MODE;
@@ -348,7 +348,7 @@ public abstract class STGScreen extends Screen {
 			plane = new STGPlane();
 			this.planes.put(index, plane);
 		}
-		plane.font = LFont.getFont(LSystem.FONT_NAME,  planeFontSize);
+		plane.font = LFont.getFont(LSystem.getSystemGameFontName(),  planeFontSize);
 		plane.color = new LColor(0, 0, 0);
 		plane.str = mes;
 		plane.planeMode = CENTER_STR_MODE;
@@ -368,7 +368,7 @@ public abstract class STGScreen extends Screen {
 			return false;
 		} else {
 			if (font == null) {
-				font = LSystem.FONT_NAME;
+				font = LSystem.getSystemGameFontName();
 			}
 
 			if (size < 0) {

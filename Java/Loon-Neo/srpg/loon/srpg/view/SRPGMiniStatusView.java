@@ -35,7 +35,7 @@ import loon.srpg.actor.SRPGStatus;
 
 public class SRPGMiniStatusView extends SRPGDrawView {
 
-	private final static LFont deffont = LFont.getFont(LSystem.FONT_NAME, Style.PLAIN, 15);
+	private final static LFont deffont = LFont.getFont(LSystem.getSystemGameFontName(), Style.PLAIN, 15);
 
 	private SRPGStatus status;
 

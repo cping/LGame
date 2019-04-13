@@ -61,8 +61,8 @@ public class BMFont implements IFont {
 	public static BMFont getDefaultFont() {
 		if (_font == null) {
 			try {
-				_font = new BMFont(LSystem.FRAMEWORK_IMG_NAME + DEF_BMF_ONT + ".txt",
-						LSystem.FRAMEWORK_IMG_NAME + DEF_BMF_ONT + ".png");
+				_font = new BMFont(LSystem.getSystemImagePath() + DEF_BMF_ONT + ".txt",
+						LSystem.getSystemImagePath() + DEF_BMF_ONT + ".png");
 			} catch (Exception e) {
 				LSystem.error("BMFont error!", e);
 			}

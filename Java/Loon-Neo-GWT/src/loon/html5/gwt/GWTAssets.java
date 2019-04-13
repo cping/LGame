@@ -152,7 +152,7 @@ public class GWTAssets extends Assets {
 			return new GWTSound(url);
 		}
 		path = getPath(path);
-		if (path.startsWith(LSystem.FRAMEWORK_IMG_NAME)) {
+		if (path.startsWith(LSystem.getSystemImagePath())) {
 			path = GWT_DEF_RES + path;
 		}
 		GWTResourcesLoader gwtFile = Loon.self.resources.internal(path);
@@ -162,7 +162,7 @@ public class GWTAssets extends Assets {
 	@Override
 	public String getTextSync(String path) throws Exception {
 		path = getPath(path);
-		if (path.startsWith(LSystem.FRAMEWORK_IMG_NAME)) {
+		if (path.startsWith(LSystem.getSystemImagePath())) {
 			path = GWT_DEF_RES + path;
 		}
 		GWTResourcesLoader gwtFile = Loon.self.resources.internal(path);
@@ -192,7 +192,7 @@ public class GWTAssets extends Assets {
 	public GoFuture<String> getText(String path) {
 		GoPromise<String> result = GoPromise.create();
 		path = getPath(path);
-		if (path.startsWith(LSystem.FRAMEWORK_IMG_NAME)) {
+		if (path.startsWith(LSystem.getSystemImagePath())) {
 			path = GWT_DEF_RES + path;
 		}
 		try {
@@ -251,7 +251,7 @@ public class GWTAssets extends Assets {
 	@Override
 	public GoFuture<byte[]> getBytes(final String path) {
 		String fullpath = getPath(path);
-		if (fullpath.startsWith(LSystem.FRAMEWORK_IMG_NAME)) {
+		if (fullpath.startsWith(LSystem.getSystemImagePath())) {
 			fullpath = GWT_DEF_RES + path;
 		}
 		if (!TypedArrays.isSupported()) {
@@ -290,7 +290,7 @@ public class GWTAssets extends Assets {
 	@Override
 	public byte[] getBytesSync(String path) throws Exception {
 		path = getPath(path);
-		if (path.startsWith(LSystem.FRAMEWORK_IMG_NAME)) {
+		if (path.startsWith(LSystem.getSystemImagePath())) {
 			path = GWT_DEF_RES + path;
 		}
 		GWTResourcesLoader gwtFile = Loon.self.resources.internal(path);
@@ -319,7 +319,7 @@ public class GWTAssets extends Assets {
 	@Override
 	protected ImageImpl.Data load(String path) throws Exception {
 		path = getPath(path);
-		if (path.startsWith(LSystem.FRAMEWORK_IMG_NAME)) {
+		if (path.startsWith(LSystem.getSystemImagePath())) {
 			path = GWT_DEF_RES + path;
 		}
 		Exception error = null;
@@ -457,7 +457,7 @@ public class GWTAssets extends Assets {
 
 	private GWTImage localImage(String path, Scale scale) {
 		path = getPath(path);
-		if (path.startsWith(LSystem.FRAMEWORK_IMG_NAME)) {
+		if (path.startsWith(LSystem.getSystemImagePath())) {
 			path = GWT_DEF_RES + path;
 		}
 		GWTResourcesLoader files = Loon.self.resources.internal(path);
@@ -487,7 +487,7 @@ public class GWTAssets extends Assets {
 
 	private ImageElement localImageElement(String path) {
 		path = getPath(path);
-		if (path.startsWith(LSystem.FRAMEWORK_IMG_NAME)) {
+		if (path.startsWith(LSystem.getSystemImagePath())) {
 			path = GWT_DEF_RES + path;
 		}
 		GWTResourcesLoader files = Loon.self.resources.internal(path);

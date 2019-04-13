@@ -83,7 +83,7 @@ public class LProgress extends LComponent {
 		this._component_baseColor = _component_baseColor;
 		switch (progressType) {
 		case GAME:
-			this.texture = new LTextureRegion(LSystem.FRAMEWORK_IMG_NAME + "bar.png");
+			this.texture = new LTextureRegion(LSystem.getSystemImagePath() + "bar.png");
 			this.bgTexture = new LTextureRegion(texture.getTexture(), texture.getRegionX() + 3, texture.getRegionY(), 1,
 					texture.getRegionHeight() - 2);
 			this.bgProgressTexture = new LTextureRegion(texture.getTexture(), texture.getRegionX() + 1,

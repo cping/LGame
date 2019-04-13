@@ -47,19 +47,19 @@ public class EmulatorButtons implements LRelease {
 	private LTexturePack pack;
 
 	public EmulatorButtons(EmulatorListener el) {
-		this(el, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), LSystem.EMULATOR_BUTTIN_SCALE);
+		this(el, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), LSystem.getEmulatorScale());
 	}
 
 	public EmulatorButtons(EmulatorListener el, int w, int h) {
-		this(el, w, h, LSystem.EMULATOR_BUTTIN_SCALE);
+		this(el, w, h, LSystem.getEmulatorScale());
 	}
 
 	public EmulatorButtons(EmulatorListener el, int w, int h, float scale) {
 		this.emulatorListener = el;
 		if (pack == null) {
 			pack = new LTexturePack();
-			pack.putImage(LSystem.FRAMEWORK_IMG_NAME + "e1.png");
-			pack.putImage(LSystem.FRAMEWORK_IMG_NAME + "e2.png");
+			pack.putImage(LSystem.getSystemImagePath() + "e1.png");
+			pack.putImage(LSystem.getSystemImagePath() + "e2.png");
 			pack.pack(Format.LINEAR);
 
 		}

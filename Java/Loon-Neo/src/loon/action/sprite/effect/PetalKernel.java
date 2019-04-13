@@ -37,7 +37,7 @@ public class PetalKernel implements IKernel {
 	private int id;
 
 	public PetalKernel(LTexturePack pack, int n, int w, int h) {
-		this(pack.getTexture(LSystem.FRAMEWORK_IMG_NAME + "sakura_" + n), n, w, h);
+		this(pack.getTexture(LSystem.getSystemImagePath() + "sakura_" + n), n, w, h);
 	}
 
 	public PetalKernel(LTexture texture, int n, int w, int h) {

@@ -74,9 +74,9 @@ public interface SRPGType {
 			{ "End of turn ?", "Restart ?" } };
 
 	// 默认文字
-	final static public LFont DEFAULT_FONT = LFont.getFont(LSystem.FONT_NAME, Style.PLAIN, 20);
+	final static public LFont DEFAULT_FONT = LFont.getFont(LSystem.getSystemGameFontName(), Style.PLAIN, 20);
 
-	final static public LFont DEFAULT_BIG_FONT = LFont.getFont(LSystem.FONT_NAME, Style.BOLD, 35);
+	final static public LFont DEFAULT_BIG_FONT = LFont.getFont(LSystem.getSystemGameFontName(), Style.BOLD, 35);
 
 	// ---- 默认的地形 ----//
 	// 平地

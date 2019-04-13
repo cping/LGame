@@ -158,7 +158,7 @@ public class RoboVMAssets extends Assets {
 		File file = new File(assetRoot, path);
 		if (!file.exists()) {
 			path = getPath(path);
-			if (path.startsWith(LSystem.FRAMEWORK_IMG_NAME)) {
+			if (path.startsWith(LSystem.getSystemImagePath())) {
 				path = IOS_DEF_RES + path;
 			}
 			file = new File(assetRoot, path);

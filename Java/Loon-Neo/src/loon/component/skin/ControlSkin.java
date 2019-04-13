@@ -35,9 +35,9 @@ public class ControlSkin {
 	}
 
 	public ControlSkin() {
-		this(LTextures.loadTexture(LSystem.FRAMEWORK_IMG_NAME
+		this(LTextures.loadTexture(LSystem.getSystemImagePath()
 				+ "control_base.png"), LTextures
-				.loadTexture(LSystem.FRAMEWORK_IMG_NAME + "control_dot.png"));
+				.loadTexture(LSystem.getSystemImagePath() + "control_dot.png"));
 	}
 
 	public ControlSkin(LTexture basetex, LTexture dottex) {

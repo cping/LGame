@@ -47,7 +47,7 @@ public class SRPGMessage {
 		this.print = new Print(new Vector2f(x, y), font, w, h);
 		this.print.setWait(false);
 		this.setMessage(s);
-		this.setTipIcon(LSystem.FRAMEWORK_IMG_NAME + "creese.png");
+		this.setTipIcon(LSystem.getSystemImagePath() + "creese.png");
 		this.setDelay(100);
 	}
 

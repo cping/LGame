@@ -217,7 +217,7 @@ public abstract class SRPGScreen extends Screen implements SRPGType, Runnable {
 	private String fileName;
 
 	private LFont choiceFont = LFont
-			.getFont(LSystem.FONT_NAME, Style.PLAIN, 22);
+			.getFont(LSystem.getSystemGameFontName(), Style.PLAIN, 22);
 
 	private LFont simpleFont = LFont.getFont("Dialog", Style.PLAIN, 12);
 
@@ -2755,6 +2755,7 @@ public abstract class SRPGScreen extends Screen implements SRPGType, Runnable {
 
 		}
 
+		int tint = g.color();
 		if (srpgPosition.counter && procFlag == PROC_COUNTER) {
 			if (srpgChoiceView.isExist()
 					&& srpgPosition.ability != srpgChoiceView.getJointContent()
@@ -2769,6 +2770,8 @@ public abstract class SRPGScreen extends Screen implements SRPGType, Runnable {
 					.getPosX(), srpgActors.find(srpgPosition.enemy).getPosY());
 
 		}
+		g.setTint(tint);
+		
 		if (procFlag == PROC_CHANGEVECTOR) {
 			SRPGActor actor = srpgActors.find(srpgPosition.number);
 			int x = actor.getPosX();
@@ -2825,6 +2828,7 @@ public abstract class SRPGScreen extends Screen implements SRPGType, Runnable {
 			g.resetColor();
 		}
 
+		 tint = g.color();
 		// 绘制伤害
 		for (int i = 0; i < srpgActors.size(); i++) {
 			SRPGActor actor = srpgActors.find(i);
@@ -2857,6 +2861,7 @@ public abstract class SRPGScreen extends Screen implements SRPGType, Runnable {
 				g.setFont(old);
 			}
 		}
+		g.setTint(tint);
 
 		if ((procFlag == PROC_MOVEVIEW || procFlag == PROC_ABILITYTARGET || procFlag == PROC_CHANGEVECTOR)
 				&& !srpgChoiceView.isExist()
@@ -2873,6 +2878,8 @@ public abstract class SRPGScreen extends Screen implements SRPGType, Runnable {
 			}
 		}
 
+		
+		tint = g.color();
 		if (srpgAvgView.isExist()) {
 			srpgAvgView.draw(g);
 		} else {
@@ -2890,6 +2897,7 @@ public abstract class SRPGScreen extends Screen implements SRPGType, Runnable {
 				srpgHelper.draw(g);
 			}
 		}
+		g.setTint(tint);
 
 		// 前景
 		foreground(g);

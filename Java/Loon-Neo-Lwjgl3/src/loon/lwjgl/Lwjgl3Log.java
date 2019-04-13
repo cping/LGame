@@ -32,7 +32,7 @@ class Lwjgl3Log extends Log {
 
 	public boolean init() {
 		if (!isInit) {
-			log = LogFactory.getInstance(LSystem.APP_NAME);
+			log = LogFactory.getInstance(LSystem.getSystemAppName());
 			isInit = true;
 		}
 		return isInit;

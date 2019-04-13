@@ -556,7 +556,7 @@ public class JavaSEAssets extends Assets {
 		File file = new File(path);
 		if (!file.exists()) {
 			path = getPath(path);
-			if (path.startsWith(LSystem.FRAMEWORK_IMG_NAME)) {
+			if (path.startsWith(LSystem.getSystemImagePath())) {
 				path = DEF_RES + path;
 			}
 			file = new File(path);
