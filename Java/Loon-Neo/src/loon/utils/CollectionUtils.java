@@ -415,6 +415,17 @@ final public class CollectionUtils {
 		return newArrays;
 	}
 
+	public static final byte[] expand(byte[] objs, int size) {
+		return expand(objs, size, true);
+	}
+
+	public static final byte[] expand(byte[] objs, int i, boolean flag) {
+		int size = objs.length;
+		byte[] newArrays = new byte[size + i];
+		System.arraycopy(objs, 0, newArrays, flag ? 0 : i, size);
+		return newArrays;
+	}
+
 	public static final float[] expand(float[] objs, int size) {
 		return expand(objs, size, true);
 	}

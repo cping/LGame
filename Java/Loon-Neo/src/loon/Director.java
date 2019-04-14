@@ -22,6 +22,8 @@ import loon.geom.Affine2f;
 import loon.geom.Dimension;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
+import loon.utils.Calculator;
+import loon.utils.MathUtils;
 import loon.utils.TArray;
 
 /**
@@ -241,11 +243,11 @@ public class Director extends SoundBox {
 			return false;
 		}
 	}
-	
+
 	public final static EmptyObject newEmptyObject() {
 		return new EmptyObject();
 	}
-	
+
 	public final static Vector2f makeOrigin(LObject<?> o, Origin origin) {
 		return createOrigin(o, origin);
 	}
@@ -425,6 +427,18 @@ public class Director extends SoundBox {
 			return resultPoint;
 		}
 		return resultPoint;
+	}
+
+	public final static float random() {
+		return MathUtils.random();
+	}
+
+	public final static float random(float start, float end) {
+		return MathUtils.random(start, end);
+	}
+
+	public final static Calculator newCalculator() {
+		return new Calculator();
 	}
 
 	public final static Counter newCounter() {

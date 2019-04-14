@@ -30,8 +30,10 @@ public class GridTest extends Stage {
 	public void create() {
 
 		setBackground("back1.png");
+		//注入网格,坐标0,0,大小480x320,每个网格瓦片32x32,绿色
 		add(new GridEntity(0, 0, 480, 320, 32, 32, LColor.green));
 
+		add(MultiScreenTest.getBackButton(this, 1));
 	}
 
 }

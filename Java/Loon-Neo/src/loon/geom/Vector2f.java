@@ -83,12 +83,20 @@ public class Vector2f implements Serializable, XY {
 		return new Vector2f(this);
 	}
 
-	public float len() {
+	public final float length() {
 		return MathUtils.sqrt(x * x + y * y);
 	}
 
+	public final float lengthSquared() {
+		return (x * x + y * y);
+	}
+	
+	public float len() {
+		return length();
+	}
+
 	public float len2() {
-		return x * x + y * y;
+		return lengthSquared();
 	}
 
 	public Vector2f nor() {
@@ -110,6 +118,16 @@ public class Vector2f implements Serializable, XY {
 
 	public final Vector2f mul(float sx, float sy) {
 		return new Vector2f(x * sx, y * sy);
+	}
+
+	public final Vector2f mulSelf(float scale) {
+		return mulSelf(scale);
+	}
+	
+	public final Vector2f mulSelf(float sx, float sy) {
+		this.x *= sx;
+		this.y *= sy;
+		return this;
 	}
 
 	public Vector2f mulSelf(Matrix3 mat) {
@@ -666,13 +684,6 @@ public class Vector2f implements Serializable, XY {
 		return this;
 	}
 
-	public final float length() {
-		return MathUtils.sqrt(x * x + y * y);
-	}
-
-	public final float lengthSquared() {
-		return (x * x + y * y);
-	}
 
 	public final float normalize() {
 		float length = length();

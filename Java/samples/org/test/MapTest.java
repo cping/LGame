@@ -11,6 +11,7 @@ import loon.action.map.Config;
 import loon.action.map.Field2D;
 import loon.action.map.TileMap;
 import loon.action.sprite.AnimatedEntity;
+import loon.action.sprite.GridEntity;
 import loon.action.sprite.AnimatedEntity.PlayIndex;
 import loon.action.sprite.MoveControl;
 import loon.action.sprite.effect.RippleEffect;
@@ -41,6 +42,7 @@ public class MapTest extends Stage {
 			add(ripple);
 			// 构建数组地图精灵
 			final TileMap map = new TileMap("assets/rpg/map.txt", 32, 32);
+			
 			// 设置切图方式
 			/*TArray<LTexturePackClip> clips = new TArray<LTexturePackClip>(10);
 			// 索引,名称,开始切图的x,y位置,以及切下来多少
@@ -264,6 +266,8 @@ public class MapTest extends Stage {
 		//禁止触屏点击到click位置，也就是防止点击back时自动寻径
 		addTouchLimit(click);
 		add(click);
+		//插入网格GridEntity
+		//add(new GridEntity());
 	}
 
 }

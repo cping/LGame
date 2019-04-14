@@ -125,8 +125,12 @@ public class SysInputFactory {
 	private EmulatorButtons ebuttons;
 
 	public void callMouse(MouseMake.ButtonEvent event) {
+	
+		if(LSystem.isLockAllTouchEvent()){
+			return;
+		}
 		
-		final boolean stopMoveDrag = LSystem.getNotAllowDragAndMove(); 
+		final boolean stopMoveDrag = LSystem.isNotAllowDragAndMove(); 
 		final Vector2f pos = _handler.convertXY(event.getX(), event.getY());
 		final float touchX = pos.x;
 		final float touchY = pos.y;
@@ -238,8 +242,12 @@ public class SysInputFactory {
 	}
 
 	public void callTouch(TouchMake.Event[] events) {
+		
+		if(LSystem.isLockAllTouchEvent()){
+			return;
+		}
 
-		final boolean stopMoveDrag = LSystem.getNotAllowDragAndMove(); 
+		final boolean stopMoveDrag = LSystem.isNotAllowDragAndMove(); 
 		int size = events.length;
 		
 		ebuttons = _handler.getEmulatorButtons();

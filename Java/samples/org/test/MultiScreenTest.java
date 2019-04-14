@@ -151,8 +151,9 @@ public class MultiScreenTest extends Screen {
 			"Canvas", "GameMap", "MoveClip", "TextureImage", "Session" };
 
 	final String[] page1 = { "Screen", "Slider", "Alert", "Animation", "FrameLoop", "Script", "SText", "Light",
-			"Countdown", "AVG", "Layer", "LLK", "TextField", "SRPG", "PShadow", "Array2DMap", "Image", "Natural","MenuSelect","CheckBox","TextTree","SLG","I18N","Buttle"
-			,"HexagonMap","Label"};
+			"Countdown", "AVG", "Layer", "LLK", "TextField", "SRPG", "PShadow", "Array2DMap", "Image", "Natural",
+			"MenuSelect", "CheckBox", "TextTree", "SLG", "I18N", "Buttle", "HexagonMap", "Label", "Grid", "Elements"
+			,"QRCode"};
 
 	static BMFont info_font;
 
@@ -163,7 +164,7 @@ public class MultiScreenTest extends Screen {
 		// 也可以设置全局的缓动动画延迟
 		// delayTween(10);
 		// 创建一个普通的Entity
-		
+
 		String[][] pages = { page0, page1 };
 		// 使用图片字体(如果不设置，则loon默认使用当前系统字体)
 		if (info_font == null) {
@@ -186,7 +187,6 @@ public class MultiScreenTest extends Screen {
 		} else {
 			page = screen.index;
 		}
-		
 
 		if (page == 0) {
 			addScreen(page0[index++], new LMessageBoxTest());
@@ -256,6 +256,9 @@ public class MultiScreenTest extends Screen {
 			addScreen(page1[index++], new ButtleTest());
 			addScreen(page1[index++], new HexagonMapTest());
 			addScreen(page1[index++], new LabelTest());
+			addScreen(page1[index++], new GridTest());
+			addScreen(page1[index++], new ElementsOrderTest());
+			addScreen(page1[index++], new QRCodeTest());
 		}
 
 		// 默认按钮大小为100x25
@@ -307,7 +310,7 @@ public class MultiScreenTest extends Screen {
 		// 偏移Screen大小-按钮大小-5
 		nextClick.setX(getWidth() - nextClick.getWidth() - 5);
 		nextClick.setY(getHeight() - nextClick.getHeight() - 24);
-		//监听next按钮
+		// 监听next按钮
 		nextClick.S(new ClickListener() {
 
 			@Override

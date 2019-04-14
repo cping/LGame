@@ -39,7 +39,7 @@ public class LColor implements Serializable {
 	// 默认色彩
 	public static final int DEF_COLOR = 0xFFFFFFFF;
 
-	// 默认黑色透明区域                                                                  
+	// 默认黑色透明区域
 	public static final int TRANSPARENT = 0xFF000000;
 
 	/**
@@ -48,10 +48,10 @@ public class LColor implements Serializable {
 	 * @param colorString
 	 * @return
 	 */
-	public static final LColor decode(String colorString){
+	public static final LColor decode(String colorString) {
 		return new LColor(colorString);
 	}
-	
+
 	/**
 	 * 转化像素为浮点的r,g,b,a数组
 	 * 
@@ -356,7 +356,7 @@ public class LColor implements Serializable {
 			setColor(LColor.white);
 			return;
 		}
-		//识别字符串格式颜色
+		// 识别字符串格式颜色
 		if (c.startsWith("#")) {
 			setColor(hexToColor(c));
 		} else if (c.startsWith("rgb")) {
@@ -523,7 +523,7 @@ public class LColor implements Serializable {
 	}
 
 	public LColor darker(float scale) {
-		scale = 1 - scale;
+		scale = 1f - scale;
 		LColor temp = new LColor(r * scale, g * scale, b * scale, a);
 		return temp;
 	}
@@ -533,10 +533,10 @@ public class LColor implements Serializable {
 	}
 
 	public LColor setColorValue(int r, int g, int b, int a) {
-		this.r = r > 1 ? (float) r / 255.0f : r;
-		this.g = g > 1 ? (float) g / 255.0f : g;
-		this.b = b > 1 ? (float) b / 255.0f : b;
-		this.a = a > 1 ? (float) a / 255.0f : a;
+		this.r = r > 1 ? (float) r / 255f : r;
+		this.g = g > 1 ? (float) g / 255f : g;
+		this.b = b > 1 ? (float) b / 255f : b;
+		this.a = a > 1 ? (float) a / 255f : a;
 		return this;
 	}
 
@@ -549,10 +549,10 @@ public class LColor implements Serializable {
 	}
 
 	public LColor setColor(float r, float g, float b, float a) {
-		this.r = r > 1 ? r / 255.0f : r;
-		this.g = g > 1 ? g / 255.0f : g;
-		this.b = b > 1 ? b / 255.0f : b;
-		this.a = a > 1 ? a / 255.0f : a;
+		this.r = r > 1f ? r / 255f : r;
+		this.g = g > 1f ? g / 255f : g;
+		this.b = b > 1f ? b / 255f : b;
+		this.a = a > 1f ? a / 255f : a;
 		return this;
 	}
 
@@ -673,8 +673,27 @@ public class LColor implements Serializable {
 	}
 
 	public LColor mulAlpha(LColor c) {
-		this.a *= c.a;
+		return mulAlpha(c.a);
+	}
+
+	public LColor div(LColor c) {
+		this.r /= c.r;
+		this.g /= c.g;
+		this.b /= c.b;
+		this.a /= c.a;
 		return this;
+	}
+
+	public LColor divAlpha(float a) {
+		if (a <= 0) {
+			a = 0.01f;
+		}
+		this.a /= a;
+		return this;
+	}
+
+	public LColor divAlpha(LColor c) {
+		return divAlpha(c.a);
 	}
 
 	/**
@@ -1009,6 +1028,48 @@ public class LColor implements Serializable {
 			return new LColor(r, g, b, getAlpha());
 		}
 		return new LColor(getRed(), getGreen(), getBlue(), getAlpha());
+	}
+
+	/**
+	 * 返回一组随机的RGB色彩
+	 * 
+	 * @param startColor
+	 * @param endColor
+	 * @return
+	 */
+	public static LColor getRandomRGBColor(float startColor, float endColor) {
+		return new LColor(MathUtils.random(startColor, endColor), MathUtils.random(startColor, endColor),
+				MathUtils.random(startColor, endColor));
+	}
+
+	/**
+	 * 返回一组随机的RGBA色彩
+	 * 
+	 * @param startColor
+	 * @param endColor
+	 * @return
+	 */
+	public static LColor getRandomRGBAColor(float startColor, float endColor) {
+		return new LColor(MathUtils.random(startColor, endColor), MathUtils.random(startColor, endColor),
+				MathUtils.random(startColor, endColor), MathUtils.random(startColor, endColor));
+	}
+
+	/**
+	 * 返回一组随机的RGB色彩
+	 * 
+	 * @return
+	 */
+	public static LColor getRandomRGBColor() {
+		return getRandomRGBColor(0f, 1f);
+	}
+
+	/**
+	 * 返回一组随机的RGBA色彩
+	 * 
+	 * @return
+	 */
+	public static LColor getRandomRGBAColor() {
+		return getRandomRGBAColor(0f, 1f);
 	}
 
 	@Override

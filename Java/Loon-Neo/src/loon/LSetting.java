@@ -158,15 +158,25 @@ public class LSetting {
 	public boolean saveTexturePixels = true;
 
 	/**
+	 * 此项为true时,drag与move事件全游戏无效
+	 */
+	public boolean notAllowDragAndMove = false;
+	
+	/**
+	 * 锁定全部Touch事件,此项为true时,Loon中所有触屏(鼠标)事件不生效
+	 */
+	public boolean lockAllTouchEvent = false;
+	
+	/**
 	 * 当前游戏类型，默认为"未知"
 	 */
 	public GameType gameType = GameType.UNKOWN;
 	
 	/**
-	 * 此项为true时,drag与move事件全游戏无效
+	 * 复制setting设置到自身
+	 * 
+	 * @param setting
 	 */
-	public boolean notAllowDragAndMove = false;
-
 	public void copy(LSetting setting) {
 		this.isSyncTween = setting.isSyncTween;
 		this.isFPS = setting.isFPS;
@@ -192,6 +202,7 @@ public class LSetting {
 		this.useTrueFontClip = setting.useTrueFontClip;
 		this.emulatorScale = setting.emulatorScale;
 		this.notAllowDragAndMove = setting.notAllowDragAndMove;
+		this.lockAllTouchEvent = setting.lockAllTouchEvent;
 	}
 
 	/**

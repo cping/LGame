@@ -367,7 +367,7 @@ public abstract class LContainer extends LComponent implements IArray {
 			if (comp instanceof ActionBind) {
 				removeActionEvents((ActionBind) comp);
 			}
-			// comp.dispose();
+			// comp.close();
 		}
 		this._childs = CollectionUtils.cut(this._childs, index);
 		this.childCount--;
@@ -384,7 +384,7 @@ public abstract class LContainer extends LComponent implements IArray {
 				if (comp instanceof ActionBind) {
 					removeActionEvents((ActionBind) comp);
 				}
-				// comp.dispose();
+				// comp.close();
 			}
 		}
 		this._childs = new LComponent[0];

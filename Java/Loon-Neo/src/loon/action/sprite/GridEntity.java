@@ -56,6 +56,10 @@ public class GridEntity extends Entity {
 
 	private boolean alltextures;
 
+	public GridEntity() {
+		this(LColor.green);
+	}
+	
 	public GridEntity(LColor color) {
 		this(LSystem.viewSize.getRect(), 32, 32, 0f, 0f, 1f, 1f, color);
 	}
@@ -86,6 +90,7 @@ public class GridEntity extends Entity {
 		this.setOffset(offsetX, offsetY);
 		this.setLocation(viewRect.x, viewRect.y);
 		this.setSize(viewRect.width, viewRect.height);
+		this.setColor(color);
 		this.cellWidth = cellWidth;
 		this.cellHeight = cellHeight;
 		this.gridRect = new RectBox(viewRect.x / cellWidth, viewRect.y / cellHeight, viewRect.width / cellWidth,
@@ -95,7 +100,6 @@ public class GridEntity extends Entity {
 		this.drawCache = true;
 		this.alltextures = true;
 		this._repaintDraw = true;
-		this._baseColor = color;
 		drity = true;
 	}
 

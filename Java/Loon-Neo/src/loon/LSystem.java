@@ -40,6 +40,9 @@ import loon.utils.json.JsonImpl;
 
 public class LSystem {
 
+	private LSystem() {
+	}
+
 	// 版本号(正在不断完善中,试图把此版做成API以及功能基本稳定的版本,以后只优化与扩展api,而不替换删除api,所以0.5会持续的比较长……)
 	private static final String _version = "0.5-beta";
 
@@ -283,7 +286,15 @@ public class LSystem {
 		LSystem.setSystemGameFont(font);
 	}
 
-	public static final boolean getNotAllowDragAndMove() {
+	public static final boolean isLockAllTouchEvent() {
+		if (_base != null) {
+			return _base.setting.lockAllTouchEvent;
+		}
+		return false;
+
+	}
+	
+	public static final boolean isNotAllowDragAndMove() {
 		if (_base != null) {
 			return _base.setting.notAllowDragAndMove;
 		}

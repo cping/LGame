@@ -33,6 +33,7 @@ import loon.action.ActionBind;
 import loon.action.ActionListener;
 import loon.action.ActionTween;
 import loon.action.collision.CollisionObject;
+import loon.action.collision.Gravity;
 import loon.action.map.Field2D;
 import loon.canvas.LColor;
 import loon.geom.Affine2f;
@@ -693,14 +694,14 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		return y + getY();
 	}
 
-	public float getCurrentX(){
+	public float getCurrentX() {
 		return this._location.x + _offset.x;
 	}
 
-	public float getCurrentY(){
+	public float getCurrentY() {
 		return this._location.y + _offset.y;
 	}
-	
+
 	protected void prePaint(final GLEx g) {
 
 	}
@@ -1260,6 +1261,10 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	@Override
 	public boolean intersects(RectBox rect) {
 		return getCollisionBox().intersects(rect);
+	}
+
+	public Gravity getGravity() {
+		return new Gravity("Entity", this);
 	}
 
 	public boolean isClosed() {
