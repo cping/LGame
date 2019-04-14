@@ -23,6 +23,7 @@ package org.test;
 import loon.Stage;
 import loon.action.sprite.Picture;
 import loon.canvas.LColor;
+import loon.component.LLabel;
 import loon.utils.qrcode.QRCode;
 import loon.utils.qrcode.QRErrorLevel;
 
@@ -30,16 +31,28 @@ public class QRCodeTest extends Stage {
 
 	@Override
 	public void create() {
-
+		
 		setBackground("back1.png");
 
-		addLabel("扫描我,打开GITHUB", 155, 50);
+		LLabel label = LLabel.make("扫描我,打开GITHUB");
+		label.setLocation(155, 50);
+		add(label);
 
-		// 添加一个二维码Picture,容错等级高,大小200x200,黑色
+		//添加一个二维码Picture,容错等级高,大小200x200,黑色
 		Picture pic = QRCode.getQRCode("https://github.com", QRErrorLevel.H)
 				.createPicture(200, 200, LColor.black);
+		
+		//以指定图片为素材,构建二维码Picture,容错等级高,大小200x200(彩图二维码,部分程序可能读不出来.....) 
+		//Picture pic = QRCode.getQRCode("https://github.com", QRErrorLevel.H)
+			//	.createPicture(200, 200, "ccc.png");
+
+		//添加一个二维码Picture,容错等级高,大小200x200,黑色二维码,以ccc.png为logo图像.
+		//ps:加logo识别肯定没问题,几乎所有程序都认,但是,识别速度会比纯黑白的慢,需要频繁换姿势……
+		//Picture pic = QRCode.getQRCode("https://github.com", QRErrorLevel.H)
+				//	.createPictureLogo(200, 200, "ccc.png",LColor.black);
 		add(pic);
 		centerOn(pic);
+	
 
 		add(MultiScreenTest.getBackButton(this, 1));
 	}

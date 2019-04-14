@@ -50,7 +50,7 @@ public class QRECI extends QRData {
 	@Override
 	public int getLength() {
 		try {
-			return getData().getBytes(QRUtil.getEncoding()).length;
+			return QRUtil.getEncodeBytes(getData()).length;
 		} catch (Throwable e) {
 			throw LSystem.runThrow(e.getMessage(), e);
 		}

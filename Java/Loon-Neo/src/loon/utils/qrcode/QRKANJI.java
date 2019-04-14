@@ -31,7 +31,7 @@ public class QRKANJI extends QRData {
 	@Override
 	public void write(QRBitBuffer buffer) {
 		try {
-			byte[] data = getData().getBytes(QRUtil.getEncoding());
+			byte[] data = QRUtil.getEncodeBytes(getData());
 			int i = 0;
 			while (i + 1 < data.length) {
 				int c = ((0xff & data[i]) << 8) | (0xff & data[i + 1]);
@@ -57,7 +57,7 @@ public class QRKANJI extends QRData {
 	@Override
 	public int getLength() {
 		try {
-			return getData().getBytes(QRUtil.getEncoding()).length / 2;
+			return QRUtil.getEncodeBytes(getData()).length / 2;
 		} catch (Throwable e) {
 			throw LSystem.runThrow(e.getMessage(), e);
 		}

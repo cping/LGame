@@ -31,7 +31,7 @@ public class QR8BitByte extends QRData {
 	@Override
 	public void write(QRBitBuffer buffer) {
 		try {
-			byte[] data = getData().getBytes(QRUtil.getEncoding());
+			byte[] data = QRUtil.getEncodeBytes(getData());
 			for (int i = 0; i < data.length; i++) {
 				buffer.put(data[i], 8);
 			}
@@ -43,7 +43,7 @@ public class QR8BitByte extends QRData {
 	@Override
 	public int getLength() {
 		try {
-			return getData().getBytes(QRUtil.getEncoding()).length;
+			return QRUtil.getEncodeBytes(getData()).length;
 		} catch (Throwable e) {
 			throw LSystem.runThrow(e.getMessage(), e);
 		}

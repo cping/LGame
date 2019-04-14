@@ -20,6 +20,7 @@
  */
 package loon.utils.qrcode;
 
+import loon.BaseIO;
 import loon.LSystem;
 import loon.LTexture;
 import loon.action.sprite.Picture;
@@ -124,6 +125,140 @@ public class QRCode {
 			for (int col = 0; col < count; col++) {
 				boolean b = isDark(row, col);
 				if (b) {
+					pixmap.fillRect(col * newWidth, row * newHeight, newWidth, newHeight);
+				}
+			}
+		}
+		return pixmap;
+	}
+
+	public LPaper createPaper(int width, int height, Image img) {
+		return createPaper(width, height, img);
+	}
+
+	public LPaper createPaper(int width, int height, String path) {
+		return new LPaper(createTexture(width, height, path));
+	}
+
+	public Picture createPicture(int width, int height, Image img) {
+		return createPicture(width, height, img);
+	}
+
+	public Picture createPicture(int width, int height, String path) {
+		return new Picture(createTexture(width, height, path));
+	}
+
+	public LTexture createTexture(int width, int height, String path) {
+		return createPixmap(width, height, BaseIO.loadImage(path).getPixmap()).texture();
+	}
+
+	public LTexture createTexture(int width, int height, Image img) {
+		return createPixmap(width, height, img.getPixmap(), false).texture();
+	}
+
+	public Pixmap createPixmap(int width, int height, String path) {
+		return createPixmap(width, height, BaseIO.loadImage(path).getPixmap(), false);
+	}
+
+	public LTexture createPixmap(int width, int height, Pixmap backPixmap) {
+		return createPixmap(width, height, backPixmap, false).texture();
+	}
+
+	public LTexture createPixmap(int width, int height, Image img, boolean trans) {
+		return createPixmap(width, height, img.getPixmap(), trans).texture();
+	}
+
+	public Pixmap createPixmap(int width, int height, String path, boolean trans) {
+		return createPixmap(width, height, BaseIO.loadImage(path).getPixmap(), trans);
+	}
+
+	public Pixmap createPixmap(int width, int height, Pixmap backPixmap, boolean trans) {
+		int count = getModuleCount();
+		int newWidth = MathUtils.floor(width / count);
+		int newHeight = MathUtils.floor(height / count);
+		int curWidth = newWidth * count;
+		int curHeight = newHeight * count;
+		Pixmap pixmap = new Pixmap(curWidth, curHeight, false);
+		Pixmap newBack = Pixmap.getResize(backPixmap, curWidth, curHeight);
+		if (!trans) {
+			pixmap.setColor(LColor.white);
+			pixmap.fillRect(0, 0, curWidth, curHeight);
+		}
+		for (int row = 0; row < count; row++) {
+			for (int col = 0; col < count; col++) {
+				boolean b = isDark(row, col);
+				if (b) {
+					pixmap.drawPixmap(newBack, col * newWidth, row * newHeight, newWidth, newHeight, col * newWidth,
+							row * newHeight, newWidth, newHeight);
+				}
+			}
+		}
+		return pixmap;
+	}
+
+	public LPaper createPaperLogo(int width, int height, String path, LColor color) {
+		return new LPaper(createTextureLogo(width, height, path, color));
+	}
+
+	public LPaper createPaperLogo(int width, int height, Image img, LColor color) {
+		return new LPaper(createTextureLogo(width, height, img, color));
+	}
+
+	public Picture createPictureLogo(int width, int height, String path, LColor color) {
+		return new Picture(createTextureLogo(width, height, path, color));
+	}
+
+	public Picture createPictureLogo(int width, int height, Image img, LColor color) {
+		return new Picture(createTextureLogo(width, height, img, color));
+	}
+
+	public LTexture createTextureLogo(int width, int height, String path, LColor color) {
+		return createTextureLogo(width, height, path, color, false);
+	}
+
+	public LTexture createTextureLogo(int width, int height, Image img, LColor color) {
+		return createTextureLogo(width, height, img, color, false);
+	}
+
+	public LTexture createTextureLogo(int width, int height, String path, LColor color, boolean trans) {
+		return createPixmapLogo(width, height, path, color, trans).texture();
+	}
+
+	public LTexture createTextureLogo(int width, int height, Image img, LColor color, boolean trans) {
+		return createPixmapLogo(width, height, img, color, trans).texture();
+	}
+
+	public Pixmap createPixmapLogo(int width, int height, String path, LColor color, boolean trans) {
+		return createPixmapLogo(width, height, BaseIO.loadImage(path).getPixmap(), color, trans);
+	}
+
+	public Pixmap createPixmapLogo(int width, int height, Image img, LColor color, boolean trans) {
+		return createPixmapLogo(width, height, img.getPixmap(), color, trans);
+	}
+
+	public Pixmap createPixmapLogo(int width, int height, Pixmap logoPixmap, LColor color, boolean trans) {
+		int count = getModuleCount();
+		int newWidth = MathUtils.floor(width / count);
+		int newHeight = MathUtils.floor(height / count);
+		int curWidth = newWidth * count;
+		int curHeight = newHeight * count;
+		Pixmap pixmap = new Pixmap(curWidth, curHeight, true);
+		Pixmap newLogo = logoPixmap;
+		if (logoPixmap.getWidth() >= curWidth || logoPixmap.getHeight() >= curHeight) {
+			newLogo = Pixmap.getResize(logoPixmap, curWidth, curHeight);
+		}
+		newLogo.filter(0);
+		if (!trans) {
+			pixmap.setColor(LColor.white);
+			pixmap.fillRect(0, 0, curWidth, curHeight);
+		}
+		pixmap.drawPixmap(newLogo, (curWidth - newLogo.getWidth()) / 2, (curHeight - newLogo.getHeight()) / 2);
+		pixmap.setColor(color);
+		for (int row = 0; row < count; row++) {
+			for (int col = 0; col < count; col++) {
+				boolean b = isDark(row, col);
+				if (b) {
+		
 					pixmap.fillRect(col * newWidth, row * newHeight, newWidth, newHeight);
 				}
 			}
@@ -580,8 +715,8 @@ public class QRCode {
 			int dcCount = rsBlocks[r].getDataCount();
 			int ecCount = rsBlocks[r].getTotalCount() - dcCount;
 
-			maxDcCount = Math.max(maxDcCount, dcCount);
-			maxEcCount = Math.max(maxEcCount, ecCount);
+			maxDcCount = MathUtils.max(maxDcCount, dcCount);
+			maxEcCount = MathUtils.max(maxEcCount, ecCount);
 
 			dcdata[r] = new int[dcCount];
 			for (int i = 0; i < dcdata[r].length; i++) {

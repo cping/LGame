@@ -266,7 +266,7 @@ public class MultiScreenTest extends Screen {
 		int btnHeight = 25;
 		// 添加一组按钮布局，并返回按钮对象
 		TArray<LClickButton> clicks = LayoutManager.elementButtons(this, pages[page], 15, 25, btnWidth, btnHeight,
-				clickListener, LSystem.viewSize.getHeight() - btnHeight);
+				clickListener, getHeight() - btnHeight);
 
 		// final TArray<ActionTween> tweens = new TArray<ActionTween>();
 

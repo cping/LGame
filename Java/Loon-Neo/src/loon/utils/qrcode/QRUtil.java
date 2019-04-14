@@ -20,7 +20,6 @@
  */
 package loon.utils.qrcode;
 
-
 import loon.LSystem;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
@@ -104,6 +103,14 @@ public class QRUtil {
 
 	public static String getEncoding() {
 		return LSystem.ENCODING;
+	}
+
+	public static byte[] getEncodeBytes(String data) {
+		try {
+			return data.getBytes(getEncoding());
+		} catch (Throwable e) {
+			return data.getBytes();
+		}
 	}
 
 	public static int[] getPatternPosition(int typeNumber) {
@@ -213,7 +220,7 @@ public class QRUtil {
 				}
 			}
 		}
-		int ratio = Math.abs(100 * darkCount / moduleCount / moduleCount - 50) / 5;
+		int ratio = MathUtils.abs(100 * darkCount / moduleCount / moduleCount - 50) / 5;
 		lostPoint += ratio * 10;
 		return lostPoint;
 	}
@@ -231,10 +238,9 @@ public class QRUtil {
 		}
 	}
 
-
 	private static boolean isCKJ(String s) {
 		try {
-			byte[] data = s.getBytes(QRUtil.getEncoding());
+			byte[] data = QRUtil.getEncodeBytes(s);
 			int i = 0;
 			while (i + 1 < data.length) {
 				int c = ((0xff & data[i]) << 8) | (0xff & data[i + 1]);

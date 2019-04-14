@@ -284,6 +284,33 @@ public class Pixmap extends Limit implements LRelease {
 	}
 
 	/**
+	 * 过滤指定颜色为目标颜色
+	 * 
+	 * @param src
+	 * @param dst
+	 * @return
+	 */
+	public Pixmap filter(int src, int dst) {
+		for (int i = 0; i < size; i++) {
+			if (_drawPixels[i] == src) {
+				_drawPixels[i] = dst;
+			}
+		}
+		_dirty = true;
+		return this;
+	}
+
+	/**
+	 * 过滤透明色为指定颜色
+	 * 
+	 * @param dst
+	 * @return
+	 */
+	public Pixmap filter(int dst) {
+		return filter(LColor.TRANSPARENT, dst);
+	}
+
+	/**
 	 * 向指定坐标插入像素
 	 * 
 	 * @param x
@@ -1605,10 +1632,9 @@ public class Pixmap extends Limit implements LRelease {
 		}
 		int maxX = MathUtils.min(x + width - 1 + _translateX, clip.x + clip.width - 1);
 		int maxY = MathUtils.min(y + height - 1 + _translateY, clip.y + clip.height - 1);
-		for (int row = MathUtils.max(y + _translateY, clip.y), rowOffset = row
-				* width; row <= maxY; row++, rowOffset += width) {
+		for (int row = MathUtils.max(y + _translateY, clip.y); row <= maxY; row++) {
 			for (int col = MathUtils.max(x + _translateX, clip.x); col <= maxX; col++) {
-				drawPoint(_drawPixels, col + rowOffset);
+				drawPoint(col, row, _baseColor);
 			}
 		}
 		return this;
