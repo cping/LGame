@@ -173,7 +173,7 @@ public class AnimationData {
 				firstFrameIndex, loopCount);
 
 		if ((firstFrameIndex + 1) > lastFrameIndex) {
-			throw new IllegalArgumentException(
+			throw LSystem.runThrow(
 					"An animation needs at least two tiles to animate between.");
 		}
 	}
@@ -203,7 +203,7 @@ public class AnimationData {
 	private void set(final long[] frameDurations, final int frameCount,
 			final int[] frames, final int firstFrameIndex, final int loopCount) {
 		if (frameDurations.length != frameCount) {
-			throw new IllegalArgumentException(
+			throw LSystem.runThrow(
 					"frameDurations does not equal frameCount!");
 		}
 

@@ -286,7 +286,7 @@ public class TGA {
 
 		// 不支持的格式
 		if ((orgWidth <= 0) || (orgHeight <= 0) || ((pixelDepth != 24) && (pixelDepth != 32))) {
-			throw new IOException("Invalid texture information !");
+			throw LSystem.runThrow("Invalid texture information !");
 		}
 
 		int bytesPerPixel = (pixelDepth / 8);
@@ -315,7 +315,7 @@ public class TGA {
 		}
 
 		if ((orgWidth <= 0) || (orgHeight <= 0) || ((pixelDepth != 24) && (pixelDepth != 32))) {
-			throw new IOException("Invalid texture information !");
+			throw LSystem.runThrow("Invalid texture information !");
 		}
 
 		int bytesPerPixel = (pixelDepth / 8);
@@ -374,7 +374,7 @@ public class TGA {
 				currentPixel++;
 
 				if (currentPixel > pixelCount) {
-					throw new IOException("Too many pixels read !");
+					throw LSystem.runThrow("Too many pixels read !");
 				}
 			}
 		} while (currentPixel < pixelCount);
@@ -415,7 +415,7 @@ public class TGA {
 		} else if (headerType == TGA_HEADER_COMPRESSED) {
 			loadCompressed(header, tga, in, acceptAlpha, flipVertically);
 		} else {
-			throw new IOException("State file be type 2 or type 10 !");
+			throw LSystem.runThrow("State file be type 2 or type 10 !");
 		}
 		return tga;
 	}

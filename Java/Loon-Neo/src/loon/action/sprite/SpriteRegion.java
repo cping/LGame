@@ -20,6 +20,7 @@
  */
 package loon.action.sprite;
 
+import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
 import loon.LTexture.Format;
@@ -112,7 +113,7 @@ public class SpriteRegion extends LTextureRegion {
 	public SpriteRegion(LTexture texture, int srcX, int srcY, int srcWidth,
 			int srcHeight) {
 		if (texture == null) {
-			throw new IllegalArgumentException("texture cannot be null.");
+			throw LSystem.runThrow("texture cannot be null.");
 		}
 		this.texture = texture;
 		setRegion(srcX, srcY, srcWidth, srcHeight);
@@ -143,7 +144,7 @@ public class SpriteRegion extends LTextureRegion {
 
 	public void set(SpriteRegion sprite) {
 		if (sprite == null) {
-			throw new IllegalArgumentException("sprite cannot be null.");
+			throw LSystem.runThrow("sprite cannot be null.");
 		}
 		System.arraycopy(sprite.vertices, 0, vertices, 0,
 				SpriteRegion.SPRITE_SIZE);

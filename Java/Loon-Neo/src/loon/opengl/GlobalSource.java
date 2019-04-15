@@ -1,5 +1,5 @@
 /**
- * Copyright 2008 - 2015 The Loon Game Engine Authors
+ * Copyright 2008 - 2019 The Loon Game Engine Authors
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -20,45 +20,22 @@
  */
 package loon.opengl;
 
-import loon.LRelease;
 import loon.LSystem;
+import loon.opengl.ShaderSource;
 
-public abstract class GLBase implements LRelease {
+public class GlobalSource extends ShaderSource {
 
-	public boolean begun;
-
-	public abstract void init();
-
-	public boolean running() {
-		return begun;
+	public GlobalSource() {
+		this(LSystem.getGLExVertexShader(), LSystem.getGLExFragmentShader());
 	}
 
-	public void begin(float fbufWidth, float fbufHeight, boolean flip) {
-		if (begun) {
-			throw LSystem.runThrow(getClass().getSimpleName() + " mismatched begin()");
-		}
-		begun = true;
-	}
-
-	public void flush() {
-
-	}
-
-	public void end() {
-		try {
-			flush();
-		} catch (Exception ex) {
-			throw LSystem.runThrow(ex.getMessage(),ex);
-		} finally {
-			begun = false;
-		}
-
+	public GlobalSource(String vertex, String frament) {
+		super(vertex, frament);
 	}
 
 	@Override
-	public void close() {
-		if (begun) {
-			throw LSystem.runThrow(getClass().getSimpleName() + " close() without end()");
-		}
+	public void setupShader(ShaderProgram program) {
+		
 	}
+
 }

@@ -20,6 +20,8 @@
  */
 package loon.utils.reply;
 
+import loon.LSystem;
+
 public class GoPromise<T> extends GoFuture<T> {
 
 	protected final Var<Try<T>> _result;
@@ -66,7 +68,7 @@ public class GoPromise<T> extends GoFuture<T> {
 			protected synchronized Try<T> updateAndNotify(Try<T> value,
 					boolean force) {
 				if (_value != null){
-					throw new IllegalStateException("Already completed");
+					throw LSystem.runThrow("already completed");
 				}
 				try {
 					return super.updateAndNotify(value, force);

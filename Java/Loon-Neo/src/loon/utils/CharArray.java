@@ -80,7 +80,7 @@ public class CharArray implements IArray {
 
 	public void addAll(CharArray array, int offset, int length) {
 		if (offset + length > array.length)
-			throw new IllegalArgumentException(
+			throw LSystem.runThrow(
 					"offset + length must be <= length: " + offset + " + " + length + " <= " + array.length);
 		addAll(array.items, offset, length);
 	}
@@ -120,19 +120,19 @@ public class CharArray implements IArray {
 
 	public void incr(int index, char value) {
 		if (index >= length)
-			throw new IndexOutOfBoundsException("index can't be >= length: " + index + " >= " + length);
+			throw LSystem.runThrow("index can't be >= length: " + index + " >= " + length);
 		items[index] += value;
 	}
 
 	public void mul(int index, char value) {
 		if (index >= length)
-			throw new IndexOutOfBoundsException("index can't be >= length: " + index + " >= " + length);
+			throw LSystem.runThrow("index can't be >= length: " + index + " >= " + length);
 		items[index] *= value;
 	}
 
 	public void insert(int index, char value) {
 		if (index > length) {
-			throw new IndexOutOfBoundsException("index can't be > length: " + index + " > " + length);
+			throw LSystem.runThrow("index can't be > length: " + index + " > " + length);
 		}
 		char[] items = this.items;
 		if (length == items.length)
@@ -147,9 +147,9 @@ public class CharArray implements IArray {
 
 	public void swap(int first, int second) {
 		if (first >= length)
-			throw new IndexOutOfBoundsException("first can't be >= length: " + first + " >= " + length);
+			throw LSystem.runThrow("first can't be >= length: " + first + " >= " + length);
 		if (second >= length)
-			throw new IndexOutOfBoundsException("second can't be >= length: " + second + " >= " + length);
+			throw LSystem.runThrow("second can't be >= length: " + second + " >= " + length);
 		char[] items = this.items;
 		char firstValue = items[first];
 		items[first] = items[second];
@@ -194,7 +194,7 @@ public class CharArray implements IArray {
 
 	public int removeIndex(int index) {
 		if (index >= length) {
-			throw new IndexOutOfBoundsException("index can't be >= length: " + index + " >= " + length);
+			throw LSystem.runThrow("index can't be >= length: " + index + " >= " + length);
 		}
 		char[] items = this.items;
 		char value = items[index];
@@ -209,10 +209,10 @@ public class CharArray implements IArray {
 
 	public void removeRange(int start, int end) {
 		if (end >= length) {
-			throw new IndexOutOfBoundsException("end can't be >= length: " + end + " >= " + length);
+			throw LSystem.runThrow("end can't be >= length: " + end + " >= " + length);
 		}
 		if (start > end) {
-			throw new IndexOutOfBoundsException("start can't be > end: " + start + " > " + end);
+			throw LSystem.runThrow("start can't be > end: " + start + " > " + end);
 		}
 		char[] items = this.items;
 		int count = end - start + 1;

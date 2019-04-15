@@ -60,7 +60,7 @@ public class ListMap<K, V> implements IArray {
 
 	public void putAll(ListMap<K, V> map, int offset, int length) {
 		if (offset + length > map.size)
-			throw new IllegalArgumentException(
+			throw LSystem.runThrow(
 					"offset + length must be <= size: " + offset + " + "
 							+ length + " <= " + map.size);
 		int sizeNeeded = size + length - offset;

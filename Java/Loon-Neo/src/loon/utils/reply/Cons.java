@@ -20,6 +20,7 @@
  */
 package loon.utils.reply;
 
+import loon.LSystem;
 import loon.utils.StringKeyValue;
 import loon.utils.reply.Bypass.GoListener;
 
@@ -64,7 +65,7 @@ class Cons extends Connection {
 	@Override
 	public Connection setPriority(int priority) {
 		if (_owner == null) {
-			throw new IllegalStateException("Cannot change priority of disconnected connection.");
+			throw LSystem.runThrow("cannot change priority of disconnected connection.");
 		}
 		_owner.disconnect(this);
 		next = null;

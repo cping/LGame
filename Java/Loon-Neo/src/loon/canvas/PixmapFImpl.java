@@ -536,7 +536,7 @@ public abstract class PixmapFImpl {
 
 	protected final void drawRoundRectImpl(float x, float y, float width, float height, float radius) {
 		if (radius < 0) {
-			throw new IllegalArgumentException("radius > 0");
+			throw LSystem.runThrow("radius > 0");
 		}
 		if (radius == 0) {
 			drawRectImpl(x, y, width, height);
@@ -560,7 +560,7 @@ public abstract class PixmapFImpl {
 
 	protected void fillRoundRectImpl(float x, float y, float width, float height, float radius) {
 		if (radius < 0) {
-			throw new IllegalArgumentException("radius > 0");
+			throw LSystem.runThrow("radius > 0");
 		}
 		if (radius == 0) {
 			fillRectNative(x, y, width, height);

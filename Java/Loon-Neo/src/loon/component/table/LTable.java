@@ -649,7 +649,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 
 	public LTable distributeColumnWidthsEqually() {
 		if (model == null) {
-			throw new IllegalStateException("The table has no model!");
+			throw LSystem.runThrow("The table has no model!");
 		}
 		for (int i = 0; i < columns.length; i++) {
 			columns[i].setWidth((int) (getWidth() / columns.length));
@@ -738,7 +738,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 
 	private void assertModel() {
 		if (model == null) {
-			throw new IllegalStateException("No table model set!");
+			throw LSystem.runThrow("No table model set!");
 		}
 	}
 

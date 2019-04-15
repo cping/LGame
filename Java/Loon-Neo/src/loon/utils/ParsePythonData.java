@@ -1,6 +1,7 @@
 package loon.utils;
 
 import loon.BaseIO;
+import loon.LSystem;
 
 /**
  * 工具类，用来解析python游戏的配置数据 
@@ -97,7 +98,7 @@ public class ParsePythonData {
 
 	private void confirm(char i, char c) throws Exception {
 		if (i != c) {
-			throw new Exception("Expected to read " + c + " but " + i + "("
+			throw LSystem.runThrow("Expected to read " + c + " but " + i + "("
 					+ ((int) i) + ") found" + at());
 		}
 	}
@@ -159,7 +160,7 @@ public class ParsePythonData {
 		for (;;) {
 			char i = readA(in);
 			if (i == EOF) {
-				throw new Exception("Expected to read " + end
+				throw LSystem.runThrow("Expected to read " + end
 						+ " but EOF found" + at());
 			}
 			if (i == end) {
@@ -181,7 +182,7 @@ public class ParsePythonData {
 		for (;;) {
 			char i = readA(in);
 			if (i == EOF) {
-				throw new Exception("Expected to read " + end
+				throw LSystem.runThrow("Expected to read " + end
 						+ " but EOF found" + at());
 			}
 			if (i == end) {
@@ -219,7 +220,7 @@ public class ParsePythonData {
 				i = xread(in);
 			}
 			if (i == EOF) {
-				throw new Exception("Expected to read " + end
+				throw LSystem.runThrow("Expected to read " + end
 						+ " but EOF found" + at());
 			}
 			sb.append(i);

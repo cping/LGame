@@ -290,7 +290,7 @@ public class GLRenderer implements LRelease {
 
 	public void oval(float x, float y, float radius, int segments) {
 		if (segments <= 0)
-			throw new IllegalArgumentException("segments must be >= 0.");
+			throw LSystem.runThrow("segments must be >= 0.");
 		if (_currType != GLType.Filled && _currType != GLType.Line)
 			throw LSystem.runThrow("Must call begin(GLType.Filled) or begin(GLType.Line)");
 		checkFlush(segments * 2 + 2);
@@ -341,10 +341,10 @@ public class GLRenderer implements LRelease {
 		}
 		if (vertices.length < 6) {
 
-			throw new IllegalArgumentException("Polygons must contain at least 3 points.");
+			throw LSystem.runThrow("Polygons must contain at least 3 points.");
 		}
 		if (vertices.length % 2 != 0) {
-			throw new IllegalArgumentException("Polygons must have a pair number of vertices.");
+			throw LSystem.runThrow("Polygons must have a pair number of vertices.");
 		}
 		final int numFloats = vertices.length;
 
@@ -381,10 +381,10 @@ public class GLRenderer implements LRelease {
 			throw LSystem.runThrow("Must call begin(GLType.Line)");
 		}
 		if (xs.length < 3 || ys.length < 3) {
-			throw new IllegalArgumentException("Polygons must contain at least 3 points.");
+			throw LSystem.runThrow("Polygons must contain at least 3 points.");
 		}
 		if (xs.length % 2 != 0 || ys.length % 2 != 0) {
-			throw new IllegalArgumentException("Polygons must have a pair number of vertices.");
+			throw LSystem.runThrow("Polygons must have a pair number of vertices.");
 		}
 		final int numFloats = size;
 
@@ -429,10 +429,10 @@ public class GLRenderer implements LRelease {
 				line(vertices[0], vertices[1], vertices[0] + 1, vertices[1] + 1);
 				return;
 			}
-			throw new IllegalArgumentException("Polylines must contain at least 2 points.");
+			throw LSystem.runThrow("Polylines must contain at least 2 points.");
 		}
 		if (count % 2 != 0) {
-			throw new IllegalArgumentException("Polylines must have an even number of vertices.");
+			throw LSystem.runThrow("Polylines must have an even number of vertices.");
 		}
 		checkFlush(count);
 
@@ -502,7 +502,7 @@ public class GLRenderer implements LRelease {
 
 	public void arc(float x, float y, float radius, float start, float end, int segments) {
 		if (segments <= 0) {
-			throw new IllegalArgumentException("segments must be >= 0.");
+			throw LSystem.runThrow("segments must be >= 0.");
 		}
 		if (_currType != GLType.Filled && _currType != GLType.Line) {
 			throw LSystem.runThrow("Must call begin(GLType.Filled) or begin(GLType.Line)");

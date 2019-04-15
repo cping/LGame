@@ -275,7 +275,7 @@ public class MovieClip extends DisplayObject {
 				break;
 			}
 			default:
-				throw new IllegalArgumentException("Bad transform");
+				throw LSystem.runThrow("Bad transform");
 			}
 			float r = rotate + _rotation;
 			if (r > 360) {

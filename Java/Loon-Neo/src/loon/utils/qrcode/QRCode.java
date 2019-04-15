@@ -180,6 +180,7 @@ public class QRCode {
 		int curHeight = newHeight * count;
 		Pixmap pixmap = new Pixmap(curWidth, curHeight, false);
 		Pixmap newBack = Pixmap.getResize(backPixmap, curWidth, curHeight);
+		newBack.filter(LColor.black);
 		if (!trans) {
 			pixmap.setColor(LColor.white);
 			pixmap.fillRect(0, 0, curWidth, curHeight);

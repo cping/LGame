@@ -29,19 +29,11 @@ import loon.LSystem;
 
 public class TrilateralBatch extends BaseBatch {
 
-	public static class Source extends LTextureBind.Source {
+	public final static GlobalSource DEF_SOURCE = new GlobalSource();
 
-		@Override
-		public String fragmentShader() {
-			return LSystem.getGLExFragmentShader();
-		}
+	private final static String _batch_name = "trilbatch";
 
-		@Override
-		public String vertexShader() {
-			return LSystem.getGLExVertexShader();
-		}
-
-	}
+	private final Matrix4 viewMatrix;
 
 	private final ExpandVertices expandVertices;
 
@@ -101,13 +93,13 @@ public class TrilateralBatch extends BaseBatch {
 			} else {
 				GLUtils.setBlendMode(gl, LSystem.MODE_SPEED);
 			}
-			mesh.post(name, expandVertices.getSize(), shader, expandVertices.getVertices(), idx, count);
+			mesh.post(_batch_name, expandVertices.getSize(), shader, expandVertices.getVertices(), idx, count);
 			GLUtils.setBlendMode(gl, tmp);
 		} catch (Exception e) {
 			throw LSystem.runThrow(e.getMessage());
 		} finally {
 			if (expandVertices.expand(this.idx)) {
-				mesh.reset(name, expandVertices.length());
+				mesh.reset(_batch_name, expandVertices.length());
 			}
 			if (!lockSubmit) {
 				idx = 0;
@@ -115,33 +107,26 @@ public class TrilateralBatch extends BaseBatch {
 		}
 	}
 
-	private final static String name = "trilbatch";
-
-	private final Matrix4 viewMatrix;
-
 	private void setupMatrices() {
 		if (shader != null) {
 			shader.setUniformMatrix("u_projTrans", viewMatrix);
 			shader.setUniformi("u_texture", 0);
+			_shader_source.setupShader(shader);
 		}
 	}
-
-	public final static Source DEF_SOURCE = new Source();
-
-	private Source source;
 
 	public TrilateralBatch(GL20 gl) {
 		this(gl, DEF_SOURCE);
 	}
 
-	public TrilateralBatch(GL20 gl, Source src) {
+	public TrilateralBatch(GL20 gl, ShaderSource src) {
 		this(gl, 512, src);
 	}
 
-	public TrilateralBatch(GL20 gl, int maxSize, Source src) {
+	public TrilateralBatch(GL20 gl, int maxSize, ShaderSource src) {
 		super(gl);
 		this.expandVertices = new ExpandVertices(maxSize);
-		this.source = src;
+		this._shader_source = src;
 		this.viewMatrix = new Matrix4();
 		this.init();
 	}
@@ -206,7 +191,9 @@ public class TrilateralBatch extends BaseBatch {
 	}
 
 	private float ubufWidth = 0;
+
 	private float ubufHeight = 0;
+
 	private boolean uflip = true;
 
 	@Override
@@ -229,9 +216,14 @@ public class TrilateralBatch extends BaseBatch {
 				this.viewMatrix.mul(a2f);
 			}
 		}
-		if (!isLoaded) {
-			if (shader == null) {
-				shader = LSystem.createShader(source.vertexShader(), source.fragmentShader());
+		if (!isLoaded || isShaderDirty()) {
+			if (shader == null || isShaderDirty()) {
+				if (shader != null) {
+					shader.close();
+					shader = null;
+				}
+				shader = LSystem.createShader(_shader_source.vertexShader(), _shader_source.fragmentShader());
+				setShaderDirty(false);
 			}
 			isLoaded = true;
 		}

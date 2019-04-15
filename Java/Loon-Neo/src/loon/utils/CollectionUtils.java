@@ -21,6 +21,7 @@
  */
 package loon.utils;
 
+import loon.LSystem;
 import loon.LTexture;
 import loon.action.sprite.ISprite;
 import loon.component.Actor;
@@ -729,7 +730,7 @@ final public class CollectionUtils {
 			if (startIndex < 0 || startIndex > len || endIndex >= len || startIndex >= endIndex
 					|| startIndex + endIndex > len) {
 				if (checkThrow) {
-					throw new IndexOutOfBoundsException(StringUtils.format(
+					throw LSystem.runThrow(StringUtils.format(
 							"Range startIndex:{0} endIndex:{1} length:{2}, Values outside acceptable range.",
 							startIndex, endIndex, len));
 				}
@@ -740,7 +741,7 @@ final public class CollectionUtils {
 		} else {
 			if (startIndex < 0 || startIndex > len || endIndex >= len) {
 				if (checkThrow) {
-					throw new IndexOutOfBoundsException(StringUtils.format(
+					throw LSystem.runThrow(StringUtils.format(
 							"Range startIndex:{0} endIndex:{1} length:{2}, Values outside acceptable range.",
 							startIndex, endIndex, len));
 				}
@@ -1009,13 +1010,13 @@ final public class CollectionUtils {
 	 */
 	public static void rangeCheck(int arrayLength, int fromIndex, int toIndex) {
 		if (fromIndex > toIndex) {
-			throw new IllegalArgumentException("fromIndex(" + fromIndex + ") > toIndex(" + toIndex + ")");
+			throw LSystem.runThrow("fromIndex(" + fromIndex + ") > toIndex(" + toIndex + ")");
 		}
 		if (fromIndex < 0) {
-			throw new ArrayIndexOutOfBoundsException(fromIndex);
+			throw LSystem.runThrow("fromIndex < 0");
 		}
 		if (toIndex > arrayLength) {
-			throw new ArrayIndexOutOfBoundsException(toIndex);
+			throw LSystem.runThrow("toIndex > arrayLength");
 		}
 	}
 

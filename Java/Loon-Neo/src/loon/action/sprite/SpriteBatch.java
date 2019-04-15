@@ -35,8 +35,8 @@ import loon.opengl.GL20;
 import loon.opengl.LTextureRegion;
 import loon.opengl.MeshDefault;
 import loon.opengl.ShaderProgram;
+import loon.opengl.ShaderSource;
 import loon.opengl.TrilateralBatch;
-import loon.opengl.TrilateralBatch.Source;
 import loon.utils.GLUtils;
 import loon.utils.IntMap;
 import loon.utils.MathUtils;
@@ -84,7 +84,7 @@ public class SpriteBatch extends PixmapFImpl {
 
 	private IFont font;
 
-	private final Source source;
+	private final ShaderSource source;
 
 	private LTexture colorTexture;
 
@@ -188,14 +188,14 @@ public class SpriteBatch extends PixmapFImpl {
 		this(TrilateralBatch.DEF_SOURCE, size);
 	}
 
-	public SpriteBatch(Source src, int size) {
+	public SpriteBatch(ShaderSource src, int size) {
 		this(src, size, null);
 	}
 
-	public SpriteBatch(final Source src, final int size, final ShaderProgram defaultShader) {
+	public SpriteBatch(final ShaderSource src, final int size, final ShaderProgram defaultShader) {
 		super(0, 0, LSystem.viewSize.getRect(), LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), 4);
 		if (size > 5460) {
-			throw new IllegalArgumentException("Can't have more than 5460 sprites per batch: " + size);
+			throw LSystem.runThrow("Can't have more than 5460 sprites per batch: " + size);
 		}
 		this.name = "spritebatch";
 		this.source = src;
@@ -584,9 +584,11 @@ public class SpriteBatch extends PixmapFImpl {
 		if (customShader != null) {
 			customShader.setUniformMatrix("u_projTrans", view);
 			customShader.setUniformi("u_texture", 0);
+			source.setupShader(customShader);
 		} else {
 			shader.setUniformMatrix("u_projTrans", view);
 			shader.setUniformi("u_texture", 0);
+			source.setupShader(shader);
 		}
 	}
 

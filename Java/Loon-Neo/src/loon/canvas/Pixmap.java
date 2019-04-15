@@ -301,6 +301,17 @@ public class Pixmap extends Limit implements LRelease {
 	}
 
 	/**
+	 * 过滤指定颜色为目标颜色
+	 * 
+	 * @param src
+	 * @param dst
+	 * @return
+	 */
+	public Pixmap filter(LColor src, LColor dst) {
+		return filter(src.getARGB(), dst.getARGB());
+	}
+
+	/**
 	 * 过滤透明色为指定颜色
 	 * 
 	 * @param dst
@@ -308,6 +319,16 @@ public class Pixmap extends Limit implements LRelease {
 	 */
 	public Pixmap filter(int dst) {
 		return filter(LColor.TRANSPARENT, dst);
+	}
+
+	/**
+	 * 过滤透明色为指定颜色
+	 * 
+	 * @param dst
+	 * @return
+	 */
+	public Pixmap filter(LColor dst) {
+		return filter(LColor.TRANSPARENT, dst.getARGB());
 	}
 
 	/**
@@ -1347,7 +1368,7 @@ public class Pixmap extends Limit implements LRelease {
 
 	public Pixmap fillRoundRect(int x, int y, int width, int height, int radius) {
 		if (radius < 0) {
-			throw new IllegalArgumentException("radius > 0");
+			throw LSystem.runThrow("radius > 0");
 		}
 		if (radius == 0) {
 			fillRect(x, y, width, height);
@@ -1628,6 +1649,10 @@ public class Pixmap extends Limit implements LRelease {
 
 	public Pixmap fillRect(int x, int y, int width, int height) {
 		if (_isClosed) {
+			return this;
+		}
+		if (x == 0 && y == 0 && width == _width && height == _height) {
+			clearDraw(_baseColor);
 			return this;
 		}
 		int maxX = MathUtils.min(x + width - 1 + _translateX, clip.x + clip.width - 1);

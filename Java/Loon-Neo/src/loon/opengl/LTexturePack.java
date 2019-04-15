@@ -305,10 +305,10 @@ public class LTexturePack implements LRelease {
 	public synchronized int putImage(String name, Image image) {
 		checkPacked();
 		if (image == null) {
-			throw new NullPointerException();
+			throw LSystem.runThrow("name :"+name+" the image is null");
 		}
 		if (image.width() <= 0 || image.height() <= 0) {
-			throw new IllegalArgumentException("width and height must be positive");
+			throw LSystem.runThrow("width and height must be positive");
 		}
 		this.temps.put(name, new PackEntry(image));
 		this.packing = true;
@@ -370,7 +370,7 @@ public class LTexturePack implements LRelease {
 		checkPacked();
 		if (packing) {
 			if (temps.isEmpty()) {
-				throw new IllegalStateException("Nothing to Pack !");
+				throw LSystem.runThrow("Nothing to Pack !");
 			}
 			int maxWidth = 0;
 			int maxHeight = 0;
@@ -788,7 +788,7 @@ public class LTexturePack implements LRelease {
 
 	private void checkPacked() {
 		if (packed) {
-			throw new IllegalStateException("the packed !");
+			throw LSystem.runThrow("the packed !");
 		}
 	}
 

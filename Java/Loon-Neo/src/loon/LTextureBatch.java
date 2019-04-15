@@ -28,8 +28,8 @@ import loon.opengl.ExpandVertices;
 import loon.opengl.GL20;
 import loon.opengl.MeshDefault;
 import loon.opengl.ShaderProgram;
+import loon.opengl.ShaderSource;
 import loon.opengl.TrilateralBatch;
-import loon.opengl.TrilateralBatch.Source;
 import loon.utils.GLUtils;
 import loon.utils.IntMap;
 import loon.utils.MathUtils;
@@ -41,11 +41,11 @@ import loon.utils.NumberUtils;
  */
 public class LTextureBatch implements LRelease {
 
-	private final static String defName = "texbatch";
+	private final static String _batch_name = "texbatch";
 
-	private String name = defName;
+	private String name = _batch_name;
 
-	private final Source source;
+	private final ShaderSource source;
 
 	private boolean isClosed;
 
@@ -249,17 +249,17 @@ public class LTextureBatch implements LRelease {
 		this(tex, 256, TrilateralBatch.DEF_SOURCE, null);
 	}
 
-	public LTextureBatch(LTexture tex, final Source src) {
+	public LTextureBatch(LTexture tex, final ShaderSource src) {
 		this(tex, src, 256);
 	}
 
-	public LTextureBatch(LTexture tex, final Source src, int size) {
+	public LTextureBatch(LTexture tex, final ShaderSource src, int size) {
 		this(tex, size, src, null);
 	}
 
-	public LTextureBatch(LTexture tex, final int size, final Source src, final ShaderProgram defaultShader) {
+	public LTextureBatch(LTexture tex, final int size, final ShaderSource src, final ShaderProgram defaultShader) {
 		if (size > 5460) {
-			throw new IllegalArgumentException("Can't have more than 5460 sprites per batch: " + size);
+			throw LSystem.runThrow("Can't have more than 5460 sprites per batch: " + size);
 		}
 		this.setTexture(tex);
 		this.source = src;
@@ -317,7 +317,7 @@ public class LTextureBatch implements LRelease {
 			isLoaded = true;
 		}
 		if (drawing) {
-			throw new IllegalStateException("SpriteBatch.end must be called before begin.");
+			throw LSystem.runThrow("SpriteBatch.end must be called before begin.");
 		}
 		LSystem.mainEndDraw();
 		if (!isCacheLocked) {
@@ -340,7 +340,7 @@ public class LTextureBatch implements LRelease {
 			return;
 		}
 		if (!drawing) {
-			throw new IllegalStateException("SpriteBatch.begin must be called before end.");
+			throw LSystem.runThrow("SpriteBatch.begin must be called before end.");
 		}
 		if (vertexIdx > 0) {
 			if (tx != 0 || ty != 0) {
@@ -391,7 +391,7 @@ public class LTextureBatch implements LRelease {
 
 	private void checkDrawing() {
 		if (!drawing) {
-			throw new IllegalStateException("Not implemented begin !");
+			throw LSystem.runThrow("Not implemented begin !");
 		}
 	}
 
@@ -496,9 +496,11 @@ public class LTextureBatch implements LRelease {
 		if (customShader != null) {
 			customShader.setUniformMatrix("u_projTrans", combinedMatrix);
 			customShader.setUniformi("u_texture", 0);
+			source.setupShader(customShader);
 		} else {
 			shader.setUniformMatrix("u_projTrans", combinedMatrix);
 			shader.setUniformi("u_texture", 0);
+			source.setupShader(shader);
 		}
 	}
 
@@ -1271,7 +1273,7 @@ public class LTextureBatch implements LRelease {
 		if (lastCache != null) {
 			lastCache.close();
 		}
-		if (!defName.equals(name)) {
+		if (!_batch_name.equals(name)) {
 			mesh.dispose(name, expandVertices.getSize());
 		}
 		disposeBatchCache(this, false);

@@ -55,11 +55,11 @@ public class XMLElement {
 
 	public int readBinHex(byte[] buffer, int offset, int length) {
 		if (offset < 0) {
-			throw new IllegalArgumentException("Offset must be non-negative integer.");
+			throw LSystem.runThrow("Offset must be non-negative integer.");
 		} else if (length < 0) {
-			throw new IllegalArgumentException("Length must be non-negative integer.");
+			throw LSystem.runThrow("Length must be non-negative integer.");
 		} else if (buffer.length < offset + length) {
-			throw new IllegalArgumentException("buffer length is smaller than the sum of offset and length.");
+			throw LSystem.runThrow("buffer length is smaller than the sum of offset and length.");
 		}
 		if (length == 0) {
 			return 0;

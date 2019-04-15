@@ -21,7 +21,6 @@
 package loon.utils;
 
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 
 import loon.LSystem;
 import loon.event.QueryEvent;
@@ -121,7 +120,7 @@ public class TArray<T> implements Iterable<T>, IArray {
 
 	public void addAll(TArray<? extends T> array, int start, int count) {
 		if (start + count > array.size) {
-			throw new IllegalArgumentException(
+			throw LSystem.runThrow(
 					"start + count must be <= size: " + start + " + " + count + " <= " + array.size);
 		}
 		addAll((T[]) array.items, start, count);
@@ -358,7 +357,7 @@ public class TArray<T> implements Iterable<T>, IArray {
 
 	public T pop() {
 		if (size == 0)
-			throw new IllegalStateException("TArray is empty.");
+			throw LSystem.runThrow("TArray is empty.");
 		--size;
 		T item = items[size];
 		items[size] = null;
@@ -367,13 +366,13 @@ public class TArray<T> implements Iterable<T>, IArray {
 
 	public T peek() {
 		if (size == 0)
-			throw new IllegalStateException("TArray is empty.");
+			throw LSystem.runThrow("TArray is empty.");
 		return items[size - 1];
 	}
 
 	public T first() {
 		if (size == 0)
-			throw new IllegalStateException("TArray is empty.");
+			throw LSystem.runThrow("TArray is empty.");
 		return items[0];
 	}
 
@@ -567,7 +566,7 @@ public class TArray<T> implements Iterable<T>, IArray {
 		@Override
 		public T next() {
 			if (index >= array.size) {
-				throw new NoSuchElementException(String.valueOf(index));
+				return null;
 			}
 			if (!valid) {
 				throw LSystem.runThrow("iterator() cannot be used nested.");

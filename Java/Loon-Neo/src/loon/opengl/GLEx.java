@@ -107,9 +107,9 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	private Affine2f lastTrans;
 
 	private BrushSave lastBrush;
-	
+
 	private float triangleValue = 0.5235988f;
-	
+
 	private float scaleX = 1f, scaleY = 1f;
 
 	private float offsetStringX = 0, offsetStringY = 0;
@@ -203,6 +203,36 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		return batch;
 	}
 
+	/**
+	 * 替换当前Batch的着色器设置
+	 * 
+	 * @param source
+	 * @return
+	 */
+	public GLEx setShaderSource(ShaderSource source) {
+		if (batch != null) {
+			batch.setShaderSource(source);
+		}
+		return this;
+	}
+
+	/**
+	 * 获得当前Batch的着色器设置
+	 * 
+	 * @return
+	 */
+	public ShaderSource getShaderSource() {
+		if (batch != null) {
+			return batch.getShaderSource();
+		}
+		return null;
+	}
+
+	/**
+	 * 判断当前GLEx的Batch是否正在运行
+	 * 
+	 * @return
+	 */
 	public boolean running() {
 		if (isClosed) {
 			return false;
@@ -1874,7 +1904,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		fillPolygon(xpos, ypos, 3);
 		return this;
 	}
-	
+
 	/**
 	 * 绘制倒三角
 	 * 
@@ -2490,7 +2520,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			drawRoundRectImpl(x, y, width, height, radius);
 		} else {
 			if (radius < 0) {
-				throw new IllegalArgumentException("radius > 0");
+				throw LSystem.runThrow("radius > 0");
 			}
 			if (radius == 0) {
 				drawRect(x, y, width, height);
@@ -2544,7 +2574,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			fillRoundRectImpl(x, y, width, height, radius);
 		} else {
 			if (radius < 0) {
-				throw new IllegalArgumentException("radius > 0");
+				throw LSystem.runThrow("radius > 0");
 			}
 			if (radius == 0) {
 				fillRect(x, y, width, height);
@@ -2883,7 +2913,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		}
 		if (x_src + width > texture.width() || y_src + height > texture.height() || width < 0 || height < 0 || x_src < 0
 				|| y_src < 0) {
-			throw new IllegalArgumentException("Area out of texture");
+			throw LSystem.runThrow("Area out of texture");
 		}
 		int dW = width, dH = height;
 
@@ -2934,7 +2964,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			break;
 		}
 		default:
-			throw new IllegalArgumentException("Bad transform");
+			throw LSystem.runThrow("Bad transform");
 		}
 
 		boolean badAnchor = false;
@@ -2979,7 +3009,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			badAnchor = true;
 		}
 		if (badAnchor) {
-			throw new IllegalArgumentException("Bad Anchor");
+			throw LSystem.runThrow("Bad Anchor");
 		}
 
 		return draw(texture, x_dst, y_dst, width, height, x_src, y_src, x_src + width, y_src + height, c, rotate, sx,

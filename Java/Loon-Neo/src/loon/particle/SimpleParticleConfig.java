@@ -69,7 +69,7 @@ public class SimpleParticleConfig {
 			XMLElement docElement = doc.getRoot();
 
 			if (!docElement.getName().equals("system")) {
-				throw new IOException("Not a particle system file");
+				throw LSystem.runThrow("Not a particle system file");
 			}
 
 			if (system == null) {
@@ -96,10 +96,8 @@ public class SimpleParticleConfig {
 
 			system.setRemoveCompletedEmitters(false);
 			return system;
-		} catch (IOException e) {
-			throw LSystem.runThrow(e.getMessage());
-		} catch (Exception e) {
-			throw LSystem.runThrow("Unable to load particle system config");
+		} catch (Throwable e) {
+			throw LSystem.runThrow(e.getMessage(), e);
 		}
 	}
 
@@ -122,17 +120,15 @@ public class SimpleParticleConfig {
 			XMLElement docElement = doc.getRoot();
 
 			if (!docElement.getName().equals("emitter")) {
-				throw new IOException("Not a particle emitter file");
+				throw LSystem.runThrow("Not a particle emitter file");
 			}
 
 			SimpleConfigurableEmitter emitter = factory.createEmitter("new");
 			elementToEmitter(docElement, emitter);
 
 			return emitter;
-		} catch (IOException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new IOException("Unable to load emitter");
+		} catch (Throwable e) {
+			throw LSystem.runThrow("Unable to load emitter");
 		}
 	}
 

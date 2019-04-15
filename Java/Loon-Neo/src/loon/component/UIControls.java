@@ -23,6 +23,7 @@
  */
 package loon.component;
 
+import loon.LSystem;
 import loon.LTexture;
 import loon.PlayerUtils;
 import loon.action.ActionBind;
@@ -101,7 +102,7 @@ public class UIControls {
 
 	public UIControls add(LComponent comp) {
 		if (comp == null) {
-			throw new IllegalArgumentException("LComponent cannot be null.");
+			throw LSystem.runThrow("LComponent cannot be null.");
 		}
 		_comps.add(comp);
 		return this;
@@ -113,7 +114,7 @@ public class UIControls {
 
 	public UIControls add(TArray<LComponent> comps) {
 		if (comps == null) {
-			throw new IllegalArgumentException("LComponents cannot be null.");
+			throw LSystem.runThrow("LComponents cannot be null.");
 		}
 		_comps.addAll(comps);
 		return this;
@@ -121,7 +122,7 @@ public class UIControls {
 
 	public UIControls remove(LComponent comp) {
 		if (comp == null) {
-			throw new IllegalArgumentException("LComponent cannot be null.");
+			throw LSystem.runThrow("LComponent cannot be null.");
 		}
 		_comps.remove(comp);
 		return this;
@@ -129,7 +130,7 @@ public class UIControls {
 
 	public UIControls remove(LComponent... comps) {
 		if (comps == null) {
-			throw new IllegalArgumentException("LComponents cannot be null.");
+			throw LSystem.runThrow("LComponents cannot be null.");
 		}
 		for (int i = 0, n = comps.length; i < n; i++) {
 			remove(comps[i]);

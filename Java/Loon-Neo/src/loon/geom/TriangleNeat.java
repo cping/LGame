@@ -20,6 +20,8 @@
  */
 package loon.geom;
 
+import loon.LSystem;
+
 public class TriangleNeat implements Triangle {
 	/**
 	 * 
@@ -121,7 +123,7 @@ public class TriangleNeat implements Triangle {
 	void markSuspect(int i, int j, boolean flag) throws Exception {
 		int k;
 		if (0 > (k = findEdge(i, j))) {
-			throw new Exception("Attempt to mark unknown edge");
+			throw LSystem.runThrow("Attempt to mark unknown edge");
 		} else {
 			edges[k].suspect = flag;
 			return;
@@ -200,7 +202,7 @@ public class TriangleNeat implements Triangle {
 		int i1 = i - 1;
 		while (i > 2) {
 			if (0 >= k1--) {
-				throw new Exception("Bad polygon");
+				throw LSystem.runThrow("Bad polygon");
 			}
 
 			int j = i1;

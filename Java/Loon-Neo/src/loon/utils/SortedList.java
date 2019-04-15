@@ -21,7 +21,6 @@
 package loon.utils;
 
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 
 import loon.LSystem;
 
@@ -61,7 +60,7 @@ public class SortedList<E> implements Iterable<E>,IArray {
 		public E next() {
 			checkForComodification();
 			if (!hasNext()) {
-				throw new NoSuchElementException();
+				return null;
 			}
 			lastReturned = next;
 			next = next.next;
@@ -72,8 +71,9 @@ public class SortedList<E> implements Iterable<E>,IArray {
 		@Override
 		public void remove() {
 			checkForComodification();
-			if (lastReturned == null)
-				throw new IllegalStateException();
+			if (lastReturned == null){
+				return;
+			}
 
 			Node<E> lastNext = lastReturned.next;
 			unlink(lastReturned);
@@ -376,12 +376,12 @@ public class SortedList<E> implements Iterable<E>,IArray {
 
 	private void checkElementIndex(int index) {
 		if (!isElementIndex(index))
-			throw new IndexOutOfBoundsException(outOfBoundsMsg(index));
+			throw LSystem.runThrow(outOfBoundsMsg(index));
 	}
 
 	private void checkPositionIndex(int index) {
 		if (!isPositionIndex(index))
-			throw new IndexOutOfBoundsException(outOfBoundsMsg(index));
+			throw LSystem.runThrow(outOfBoundsMsg(index));
 	}
 
 	Node<E> node(int index) {

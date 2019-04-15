@@ -22,6 +22,7 @@ package loon.utils;
 
 import java.util.Random;
 
+import loon.LSystem;
 import loon.LTextures;
 import loon.action.sprite.Sprites;
 import loon.component.Desktop;
@@ -50,7 +51,7 @@ public class UUID {
 			case 18:
 			case 23:
 				if (id.charAt(i) != '-') {
-					throw new NumberFormatException(
+					throw LSystem.runThrow(
 							"UUID has to be represented by the standard 36-char representation");
 				}
 				++i;
@@ -65,7 +66,7 @@ public class UUID {
 			} else if (c >= 'A' && c <= 'F') {
 				curr = (c - 'A' + 10);
 			} else {
-				throw new NumberFormatException(
+				throw LSystem.runThrow(
 						"Non-hex character at #" + i + ": '" + c + "' (value 0x" + Integer.toHexString(c) + ")");
 			}
 			curr = (curr << 4);
@@ -79,7 +80,7 @@ public class UUID {
 			} else if (c >= 'A' && c <= 'F') {
 				curr |= (c - 'A' + 10);
 			} else {
-				throw new NumberFormatException(
+				throw LSystem.runThrow(
 						"Non-hex character at #" + i + ": '" + c + "' (value 0x" + Integer.toHexString(c) + ")");
 			}
 			if (j < 8) {
@@ -138,13 +139,13 @@ public class UUID {
 
 	protected void checkUUIDByteArray(byte[] bytes, int offset) {
 		if (bytes == null) {
-			throw new IllegalArgumentException("Invalid byte[] passed: can not be null");
+			throw LSystem.runThrow("Invalid byte[] passed: can not be null");
 		}
 		if (offset < 0) {
-			throw new IllegalArgumentException("Invalid offset (" + offset + ") passed: can not be negative");
+			throw LSystem.runThrow("Invalid offset (" + offset + ") passed: can not be negative");
 		}
 		if ((offset + 16) > bytes.length) {
-			throw new IllegalArgumentException(
+			throw LSystem.runThrow(
 					"Invalid offset (" + offset + ") passed: not enough room in byte array (need 16 bytes)");
 		}
 	}

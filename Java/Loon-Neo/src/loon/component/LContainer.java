@@ -111,7 +111,7 @@ public abstract class LContainer extends LComponent implements IArray {
 
 	public LComponent add(LComponent comp, int index) {
 		if (comp.getContainer() != null) {
-			throw new IllegalStateException(comp + " already reside in another container!!!");
+			throw LSystem.runThrow(comp + " already reside in another container!!!");
 		}
 		comp.setContainer(this);
 		comp.setState(State.ADDED);

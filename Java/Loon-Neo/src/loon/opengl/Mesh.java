@@ -135,13 +135,13 @@ public class Mesh implements LRelease {
 
 	public static Mesh create(boolean isStatic, final Mesh[] meshes, final Matrix4[] transformations) {
 		if (transformations != null && transformations.length < meshes.length)
-			throw new IllegalArgumentException("Not enough transformations specified");
+			throw LSystem.runThrow("Not enough transformations specified");
 		final VertexAttributes attributes = meshes[0].getVertexAttributes();
 		int vertCount = meshes[0].getNumVertices();
 		int idxCount = meshes[0].getNumIndices();
 		for (int i = 1; i < meshes.length; i++) {
 			if (!meshes[i].getVertexAttributes().equals(attributes))
-				throw new IllegalArgumentException("Inconsistent VertexAttributes");
+				throw LSystem.runThrow("Inconsistent VertexAttributes");
 			vertCount += meshes[i].getNumVertices();
 			idxCount += meshes[i].getNumIndices();
 		}
@@ -222,10 +222,10 @@ public class Mesh implements LRelease {
 		}
 		if (srcOffset < 0 || count <= 0 || (srcOffset + count) > max || destOffset < 0
 				|| destOffset >= vertices.length) {
-			throw new IndexOutOfBoundsException();
+			throw LSystem.runThrow("your offset size >= vertices length !");
 		}
 		if ((vertices.length - destOffset) < count) {
-			throw new IllegalArgumentException(
+			throw LSystem.runThrow(
 					"not enough room in vertices array, has " + vertices.length + " floats, needs " + count);
 		}
 		int pos = getVerticesBuffer().position();
@@ -264,10 +264,10 @@ public class Mesh implements LRelease {
 		if (count < 0)
 			count = max - srcOffset;
 		if (srcOffset < 0 || srcOffset >= max || srcOffset + count > max)
-			throw new IllegalArgumentException(
+			throw LSystem.runThrow(
 					"Invalid range specified, offset: " + srcOffset + ", count: " + count + ", max: " + max);
 		if ((indices.length - destOffset) < count)
-			throw new IllegalArgumentException(
+			throw LSystem.runThrow(
 					"not enough room in indices array, has " + indices.length + " shorts, needs " + count);
 		int pos = getIndicesBuffer().position();
 		getIndicesBuffer().position(srcOffset);
@@ -682,9 +682,9 @@ public class Mesh implements LRelease {
 	public static void transform(final Matrix4 matrix, final float[] vertices, int vertexSize, int offset,
 			int dimensions, int start, int count) {
 		if (offset < 0 || dimensions < 1 || (offset + dimensions) > vertexSize)
-			throw new IndexOutOfBoundsException();
+			throw LSystem.runThrow("offset > vertexSize !");
 		if (start < 0 || count < 1 || ((start + count) * vertexSize) > vertices.length)
-			throw new IndexOutOfBoundsException("start = " + start + ", count = " + count + ", vertexSize = "
+			throw LSystem.runThrow("start = " + start + ", count = " + count + ", vertexSize = "
 					+ vertexSize + ", length = " + vertices.length);
 
 		final Vector3f tmp = new Vector3f();
@@ -739,7 +739,7 @@ public class Mesh implements LRelease {
 	public static void transformUV(final Matrix3 matrix, final float[] vertices, int vertexSize, int offset, int start,
 			int count) {
 		if (start < 0 || count < 1 || ((start + count) * vertexSize) > vertices.length) {
-			throw new IndexOutOfBoundsException("start = " + start + ", count = " + count + ", vertexSize = "
+			throw LSystem.runThrow("start = " + start + ", count = " + count + ", vertexSize = "
 					+ vertexSize + ", length = " + vertices.length);
 		}
 		int idx = offset + (start * vertexSize);

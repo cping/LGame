@@ -25,13 +25,6 @@ import loon.utils.GLUtils;
 
 public class LTextureBind extends GLBase {
 
-	public static abstract class Source {
-
-		public abstract String fragmentShader() ;
-		
-		public abstract String vertexShader() ;
-		
-	}
 
 	public final GL20 gl;
 	protected int curTexId = -1;

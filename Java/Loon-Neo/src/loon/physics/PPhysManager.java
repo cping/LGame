@@ -1,5 +1,6 @@
 package loon.physics;
 
+import loon.LSystem;
 import loon.LTexture;
 import loon.action.collision.CollisionMask;
 import loon.canvas.Image;
@@ -200,7 +201,7 @@ public class PPhysManager {
 		Image image = shape.getImage();
 		Polygon polygon = null;
 		if (image == null) {
-			throw new Exception("the texture are image is null");
+			throw LSystem.runThrow("the texture are image is null.");
 		} else {
 			polygon = CollisionMask.makePolygon(image);
 		}

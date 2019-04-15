@@ -834,7 +834,7 @@ public class Matrix3 implements Serializable, XY {
 
 		final float det = det();
 		if (MathUtils.abs(det) <= MathUtils.EPSILON) {
-			throw new ArithmeticException("This matrix cannot be inverted !");
+			throw LSystem.runThrow("This matrix cannot be inverted !");
 		}
 
 		final float temp00 = this.val[4] * this.val[8] - this.val[5] * this.val[7];

@@ -21,6 +21,7 @@
  */
 package loon.geom;
 
+import loon.LSystem;
 import loon.physics.PPolygon;
 import loon.utils.StringKeyValue;
 import loon.utils.StringUtils;
@@ -89,11 +90,11 @@ public class Polygon extends Shape implements BoxSize {
 
 	public Polygon(float[] xpoints, float[] ypoints, int npoints) {
 		if (npoints > xpoints.length || npoints > ypoints.length) {
-			throw new IndexOutOfBoundsException("npoints > xpoints.length || "
+			throw LSystem.runThrow("npoints > xpoints.length || "
 					+ "npoints > ypoints.length");
 		}
 		if (npoints < 0) {
-			throw new NegativeArraySizeException("npoints < 0");
+			throw LSystem.runThrow("npoints < 0");
 		}
 		points = new float[0];
 		maxX = -Float.MIN_VALUE;
@@ -107,11 +108,11 @@ public class Polygon extends Shape implements BoxSize {
 
 	public Polygon(int[] xpoints, int[] ypoints, int npoints) {
 		if (npoints > xpoints.length || npoints > ypoints.length) {
-			throw new IndexOutOfBoundsException("npoints > xpoints.length || "
+			throw LSystem.runThrow("npoints > xpoints.length || "
 					+ "npoints > ypoints.length");
 		}
 		if (npoints < 0) {
-			throw new NegativeArraySizeException("npoints < 0");
+			throw LSystem.runThrow("npoints < 0");
 		}
 		points = new float[0];
 		maxX = -Float.MIN_VALUE;

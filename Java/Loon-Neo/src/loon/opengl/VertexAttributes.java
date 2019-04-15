@@ -21,7 +21,6 @@
 package loon.opengl;
 
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 
 import loon.LSystem;
 
@@ -49,9 +48,10 @@ public final class VertexAttributes implements Iterable<VertexAttribute> {
 	private ReadonlyIterable<VertexAttribute> iterable;
 
 	public VertexAttributes(VertexAttribute... attributes) {
-		if (attributes.length == 0)
-			throw new IllegalArgumentException("attributes must be >= 1");
-
+		if (attributes.length == 0){
+			throw LSystem.runThrow("attributes must be >= 1 !");
+		}
+		
 		VertexAttribute[] list = new VertexAttribute[attributes.length];
 		for (int i = 0; i < attributes.length; i++)
 			list[i] = attributes[i];
@@ -169,7 +169,7 @@ public final class VertexAttributes implements Iterable<VertexAttribute> {
 		@Override
 		public T next() {
 			if (index >= array.length){
-				throw new NoSuchElementException(String.valueOf(index));
+				throw LSystem.runThrow("index >= array.length.");
 			}
 			if (!valid){
 				throw LSystem.runThrow("iterator() cannot be used nested.");

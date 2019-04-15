@@ -832,7 +832,7 @@ public class Actor extends LObject<Actor>
 
 	private void failIfNotInLayer() {
 		if (this.gameLayer == null) {
-			throw new IllegalStateException(
+			throw LSystem.runThrow(
 					"The actor has not been inserted into a Layer so it has no _location yet !");
 		}
 	}

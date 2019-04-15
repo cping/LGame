@@ -20,6 +20,7 @@
  */
 package loon.utils.reply;
 
+import loon.LSystem;
 import loon.event.Updateable;
 
 public abstract class Bypass {
@@ -38,7 +39,7 @@ public abstract class Bypass {
 
 	public synchronized void clearConnections() {
 		if (isDispatching()) {
-			throw new IllegalStateException("System dispatching");
+			throw LSystem.runThrow("system dispatching");
 		}
 		_listeners = null;
 	}
@@ -47,7 +48,7 @@ public abstract class Bypass {
 
 	protected synchronized Cons addConnection(GoListener listener) {
 		if (listener == null)
-			throw new NullPointerException("Null listener");
+			throw LSystem.runThrow("null listener");
 		return addCons(new Cons(this, listener));
 	}
 

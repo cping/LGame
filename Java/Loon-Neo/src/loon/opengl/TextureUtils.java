@@ -165,7 +165,7 @@ public class TextureUtils {
 	public static LTexture[] getDivide(String fileName, int count, int[] width,
 			int[] height) {
 		if (count <= 0) {
-			throw new IllegalArgumentException();
+			throw LSystem.runThrow("count <= 0 !");
 		}
 		LTexture image = LTextures.loadTexture(fileName);
 		if (image == null) {

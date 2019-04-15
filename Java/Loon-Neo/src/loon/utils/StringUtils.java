@@ -438,7 +438,7 @@ final public class StringUtils extends CharUtils {
 			return new String[] { str };
 		}
 		if (size <= 0) {
-			throw new IllegalArgumentException("The size parameter must be more than 0.");
+			throw LSystem.runThrow("The size parameter must be more than 0.");
 		}
 		int num = str.length() / size;
 		int mod = str.length() % size;

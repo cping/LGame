@@ -20,6 +20,8 @@
  */
 package loon.utils;
 
+import loon.LSystem;
+
 public class CharUtils {
 
 	public static final char[] HEX_CHARS = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C',
@@ -307,7 +309,7 @@ public class CharUtils {
 		case 'f':
 			return c - 87;
 		default:
-			throw new IllegalArgumentException("Not a hex: " + c);
+			throw LSystem.runThrow("Not a hex: " + c);
 		}
 	}
 

@@ -20,6 +20,7 @@
  */
 package loon.component.table;
 
+import loon.LSystem;
 import loon.font.IFont;
 import loon.geom.Alignment;
 import loon.utils.MathUtils;
@@ -108,7 +109,7 @@ public class TableColumn {
 
 	public void setCellRenderer(ICellRenderer cellRenderer) {
 		if (cellRenderer == null) {
-			throw new IllegalArgumentException("cellRenderer == null");
+			throw LSystem.runThrow("cellRenderer == null");
 		}
 		this.cellRenderer = cellRenderer;
 	}
