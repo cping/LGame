@@ -987,7 +987,7 @@ final public class StringUtils extends CharUtils {
 				sb.append(c);
 			} else {
 				int i1 = raw.codePointAt(i - 1);
-				String escape = Integer.toHexString(i1);
+				String escape = CharUtils.toHex(i1);
 
 				sb.append('%');
 

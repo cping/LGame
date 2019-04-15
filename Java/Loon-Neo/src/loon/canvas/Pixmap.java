@@ -332,6 +332,116 @@ public class Pixmap extends Limit implements LRelease {
 	}
 
 	/**
+	 * 灰化Pixmap
+	 * 
+	 * @param mix
+	 * @return
+	 */
+	public Pixmap greyScale(float mix) {
+		mix = MathUtils.min(MathUtils.max(mix, 0f), 1f);
+		for (int i = 0; i < size; i++) {
+			int color = _drawPixels[i];
+			if (color != LColor.TRANSPARENT) {
+				int[] rgba = LColor.getRGBAs(color);
+				int r = rgba[0];
+				int g = rgba[1];
+				int b = rgba[2];
+				float a = rgba[3] / 255f;
+				float v = LColor.getLuminanceRGB(r, g, b);
+				_drawPixels[i] = LColor.argb(a, v * mix + r * (1 - mix), v * mix + g * (1 - mix),
+						v * mix + b * (1 - mix));
+			} else {
+				_drawPixels[i] = _transparent;
+			}
+		}
+		return this;
+	}
+
+	/**
+	 * 灰化
+	 * 
+	 * @return
+	 */
+	public Pixmap greyScale() {
+		return greyScale(1f);
+	}
+	/**
+	 * 过滤指定像素阀值
+	 * 
+	 * @param threshold
+	 * @return
+	 */
+	public Pixmap threshold(int threshold) {
+		threshold = (threshold | 127);
+		for (int i = 0; i < size; i++) {
+			int color = _drawPixels[i];
+			if (color != LColor.TRANSPARENT) {
+				int[] rgba = LColor.getRGBAs(color);
+				int r = rgba[0];
+				int g = rgba[1];
+				int b = rgba[2];
+				float a = rgba[3] / 255f;
+				float v = LColor.getLuminanceRGB(r, g, b) > threshold ? 255f : 0f;
+				_drawPixels[i] = LColor.argb(a, v, v, v);
+			} else {
+				_drawPixels[i] = _transparent;
+			}
+		}
+		return this;
+	}
+
+	/**
+	 * 反色
+	 * 
+	 * @param mix
+	 * @return
+	 */
+	public Pixmap invert(float mix) {
+		mix = MathUtils.min(MathUtils.max(mix, 0f), 1f);
+		for (int i = 0; i < size; i++) {
+			int color = _drawPixels[i];
+			if (color != LColor.TRANSPARENT) {
+				int[] rgba = LColor.getRGBAs(color);
+				int r = rgba[0];
+				int g = rgba[1];
+				int b = rgba[2];
+				float a = rgba[3] / 255f;
+				_drawPixels[i] = LColor.argb(a, (255 - r) * mix + r * (1 - mix), (255 - g) * mix + g * (1 - mix),
+						(255 - b) * mix + b * (1 - mix));
+			} else {
+				_drawPixels[i] = _transparent;
+			}
+		}
+		return this;
+	}
+	
+	/**
+	 * 墨化
+	 * 
+	 * @param mix
+	 * @return
+	 */
+	public Pixmap sepia(float mix) {
+		mix = MathUtils.min(MathUtils.max(mix, 0f), 1f);
+		for (int i = 0; i < size; i++) {
+			int color = _drawPixels[i];
+			if (color != LColor.TRANSPARENT) {
+				int[] rgba = LColor.getRGBAs(color);
+				float r = rgba[0]/ 255f;
+				float g = rgba[1]/ 255f;
+				float b = rgba[2]/ 255f;
+				float a = rgba[3] / 255f;
+				float nr = (0.393f * r + 0.769f * g + 0.189f * b) * mix + r * (1f - mix);
+				float ng = (0.349f * r + 0.686f * g + 0.168f * b) * mix + g * (1f - mix);
+				float nb = (0.272f * r + 0.534f * g + 0.131f * b) * mix + b * (1f - mix);
+				_drawPixels[i] = LColor.argb(a, nr, ng, nb);
+			} else {
+				_drawPixels[i] = _transparent;
+			}
+		}
+		return this;
+	}
+	/**
 	 * 向指定坐标插入像素
 	 * 
 	 * @param x

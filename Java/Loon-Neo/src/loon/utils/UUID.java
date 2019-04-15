@@ -67,7 +67,7 @@ public class UUID {
 				curr = (c - 'A' + 10);
 			} else {
 				throw LSystem.runThrow(
-						"Non-hex character at #" + i + ": '" + c + "' (value 0x" + Integer.toHexString(c) + ")");
+						"Non-hex character at #" + i + ": '" + c + "' (value 0x" + CharUtils.toHex(c) + ")");
 			}
 			curr = (curr << 4);
 
@@ -81,7 +81,7 @@ public class UUID {
 				curr |= (c - 'A' + 10);
 			} else {
 				throw LSystem.runThrow(
-						"Non-hex character at #" + i + ": '" + c + "' (value 0x" + Integer.toHexString(c) + ")");
+						"Non-hex character at #" + i + ": '" + c + "' (value 0x" + CharUtils.toHex(c) + ")");
 			}
 			if (j < 8) {
 				hi = (hi << 8) | curr;

@@ -50,7 +50,7 @@ public class MD5 {
 		md5Final();
 		StringBuffer buf = new StringBuffer();
 		for (int i = 0; i < 16; i++) {
-			buf.append(getByteToHexString(digest[i]));
+			buf.append(CharUtils.toHex(digest[i]));
 		}
 		return buf.toString();
 	}
@@ -65,7 +65,7 @@ public class MD5 {
 		md5Final();
 		StringBuffer buf = new StringBuffer();
 		for (int i = 0; i < 16; i++) {
-			buf.append(getByteToHexString(digest[i]));
+			buf.append(CharUtils.toHex(digest[i]));
 		}
 		return buf.toString();
 	}
@@ -365,24 +365,12 @@ public class MD5 {
 	private void decode(long[] output, byte[] input, int len) {
 		int i, j;
 		for (i = 0, j = 0; j < len; i++, j += 4) {
-			output[i] = b2iu(input[j]) | (b2iu(input[j + 1]) << 8)
-					| (b2iu(input[j + 2]) << 16) | (b2iu(input[j + 3]) << 24);
+			output[i] = CharUtils.b2iu(input[j]) | (CharUtils.b2iu(input[j + 1]) << 8)
+					| (CharUtils.b2iu(input[j + 2]) << 16) | (CharUtils.b2iu(input[j + 3]) << 24);
 		}
 		return;
 	}
 
-	public long b2iu(byte b) {
-		return b < 0 ? b & 0x7F + 128 : b;
-	}
-
-	public String getByteToHexString(byte ib) {
-		char[] digitNormal = { '0', '1', '2', '3', '4', '5', '6', '7', '8',
-				'9', 'a', 'b', 'c', 'd', 'e', 'f' };
-		char[] ob = new char[2];
-		ob[0] = digitNormal[(ib >>> 4) & 0X0F];
-		ob[1] = digitNormal[ib & 0X0F];
-		return new String(ob);
-	}
 
 	public byte[] makeMD5(byte[] data1, byte[] data2) {
 		md5Init();

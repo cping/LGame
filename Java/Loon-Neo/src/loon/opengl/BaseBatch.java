@@ -30,6 +30,12 @@ public abstract class BaseBatch extends LTextureBind {
 	private boolean _shader_ditry = true;
 
 	public void setShaderSource(ShaderSource source) {
+		if (source == null) {
+			return;
+		}
+		if (source.equals(_shader_source)) {
+			return;
+		}
 		this._shader_source = source;
 		this._shader_ditry = true;
 	}

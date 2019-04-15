@@ -24,13 +24,66 @@ import loon.LSystem;
 
 public class CharUtils {
 
-	public static final char[] HEX_CHARS = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C',
-			'D', 'E', 'F' };
+	public static final char[] HEX_CHARS = new char[] {  '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
 
 	public static char toChar(byte b) {
 		return (char) (b & 0xFF);
 	}
 
+	public static String toHex(int value) {
+		byte[] bytes = new byte[4];
+		bytes[0] = (byte) (value >>> 24);
+		bytes[1] = (byte) ((value >> 16) & 0xff);
+		bytes[2] = (byte) ((value >> 8) & 0xff);
+		bytes[3] = (byte) (value & 0xff);
+		return toHex(bytes, true);
+	}
+
+	public static String toHex(byte[] bytes) {
+		return toHex(bytes, false);
+	}
+
+	public static String toHex(byte[] bytes, boolean removeZero) {
+		if (bytes == null) {
+			return "";
+		}
+		char[] hexChars = new char[bytes.length * 2];
+		int v;
+		for (int j = 0; j < bytes.length; j++) {
+			v = bytes[j] & 0xFF;
+			hexChars[j * 2] = HEX_CHARS[v >>> 4];
+			hexChars[j * 2 + 1] = HEX_CHARS[v & 0x0F];
+		}
+		if (removeZero) {
+			StringBuilder sbr = new StringBuilder(hexChars.length);
+			final char tag = '0';
+			boolean flag = false;
+			for (int i = 0; i < hexChars.length; i++) {
+				char ch = hexChars[i];
+				if (ch != tag) {
+					flag = true;
+				}
+				if (flag) {
+					sbr.append(ch);
+				}
+			}
+			return sbr.toString();
+		} else {
+			return new String(hexChars);
+		}
+	}
+
+	public static String toHex(byte ib) {
+		char[] ob = new char[2];
+		ob[0] = HEX_CHARS[(ib >>> 4) & 0X0F];
+		ob[1] = HEX_CHARS[ib & 0X0F];
+		return new String(ob);
+	}
+	
+	public static long b2iu(byte b) {
+		return b < 0 ? b & 0x7F + 128 : b;
+	}
+	
 	public static int toUnsignedLong(long val, int shift, char[] buf, int offset, int len) {
 		int charPos = len;
 		int radix = 1 << shift;

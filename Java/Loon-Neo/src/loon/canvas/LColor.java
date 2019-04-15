@@ -24,6 +24,7 @@ import java.io.Serializable;
 
 import loon.geom.Vector3f;
 import loon.geom.Vector4f;
+import loon.utils.CharUtils;
 import loon.utils.ListMap;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
@@ -137,6 +138,32 @@ public class LColor implements Serializable {
 		return ((int) (r * 255) << 24) | ((int) (g * 255) << 16) | ((int) (b * 255) << 8) | (int) (a * 255);
 	}
 
+	/**
+	 * 获得ARGB格式数据
+	 * 
+	 * @param a
+	 * @param r
+	 * @param g
+	 * @param b
+	 * @return
+	 */
+	public static final int argb(float a, float r, float g, float b) {
+		int alpha = (int) (a * 255);
+		int red = (int) (r * 255);
+		int green = (int) (g * 255);
+		int blue = (int) (b * 255);
+		return argb(alpha, red, green, blue);
+	}
+
+	/**
+	 * 获得ARGB格式数据
+	 * 
+	 * @param a
+	 * @param r
+	 * @param g
+	 * @param b
+	 * @return
+	 */
 	public static final int argb(int a, int r, int g, int b) {
 		return (a << 24) | (r << 16) | (g << 8) | b;
 	}
@@ -1072,10 +1099,143 @@ public class LColor implements Serializable {
 		return getRandomRGBAColor(0f, 1f);
 	}
 
+	/**
+	 * 返回一个符合CIE标准的色彩Luminance(亮度)值
+	 * 
+	 * @param r
+	 * @param g
+	 * @param b
+	 * @return
+	 */
+	public static float getLuminanceRGB(float r, float g, float b) {
+		return 0.2126f * r + 0.7152f * g + 0.0722f * b;
+	}
+
+	/**
+	 * 返回一个符合CIE标准的色彩Luminance(亮度)值
+	 * 
+	 * @param r
+	 * @param g
+	 * @param b
+	 * @return
+	 */
+	public static float getLuminanceRGB(int r, int g, int b) {
+		return 0.2126f * ((float) r / 255f) + 0.7152f * ((float) g / 255f) + 0.0722f * ((float) b / 255f);
+	}
+
+	/**
+	 * 返回一个符合CIE标准的色彩Luminance(亮度)值
+	 * 
+	 * @return
+	 */
+	public float getLuminanceRGB() {
+		return getLuminanceRGB(r, g, b);
+	}
+
+	/**
+	 * 返回一个符合CIE标准的色彩Luminance(亮度)值
+	 * 
+	 * @return
+	 */
+	public LColor getLuminanceRGBColor() {
+		return new LColor(0.2126f * r, 0.7152f * g, 0.0722f * b);
+	}
+
+	/**
+	 * 获得当前色彩的HSL值
+	 * 
+	 * @return
+	 */
+	public LColor getRGBtoHSL() {
+		return getRGBtoHSL(r, g, b);
+	}
+
+	/**
+	 * 获得指定float形式RGB值的HSL值
+	 * 
+	 * @param r
+	 * @param g
+	 * @param b
+	 * @return
+	 */
+	public static LColor getRGBtoHSL(float r, float g, float b) {
+		int max = (int) MathUtils.max(r, g, b);
+		int min = (int) MathUtils.min(r, g, b);
+		float h = 0, s = 0, l = (max + min) / 2;
+		if (max == min) {
+			h = s = 0;
+		} else {
+			float d = max - min;
+			s = l > 0.5f ? d / (2 - max - min) : d / (max + min);
+			final int ir = (int) r;
+			final int ig = (int) g;
+			final int ib = (int) b;
+			if (max == ir) {
+				h = (g - b) / d + (g < b ? 6 : 0);
+			} else if (max == ig) {
+				h = (b - r) / d + 2;
+			} else if (max == ib) {
+				h = (r - g) / d + 4;
+			}
+		}
+		h /= 6;
+		return new LColor(h, s, l);
+	}
+
+	protected static float hue2rgb(float p, float q, float t) {
+		if (t < 0) {
+			t += 1;
+		}
+		if (t > 1) {
+			t -= 1;
+		}
+		if (t < 1 / 6) {
+			return p + (q - p) * 6 * t;
+		}
+		if (t < 1 / 2) {
+			return q;
+		}
+		if (t < 2 / 3) {
+			return p + (q - p) * (2 / 3 - t) * 6;
+		}
+		return p;
+	}
+
+	/**
+	 * 转化HSL值为RGB值
+	 * 
+	 * @param h
+	 * @param s
+	 * @param l
+	 * @return
+	 */
+	public static LColor getHSLtoRGB(float h, float s, float l) {
+		float r, g, b;
+		if (s == 0) {
+			r = g = b = l;
+		} else {
+			float q = l < 0.5f ? l * (1 + s) : l + s - l * s;
+			float p = 2 * l - q;
+			r = hue2rgb(p, q, h + 1 / 3);
+			g = hue2rgb(p, q, h);
+			b = hue2rgb(p, q, h - 1 / 3);
+		}
+		return new LColor(r, g, b);
+	}
+
+	/**
+	 * 转化当前Color的HSL值为RGB值
+	 * 
+	 * @return
+	 */
+	public LColor getHSLtoRGB() {
+		return getHSLtoRGB(r, g, b);
+	}
+
 	@Override
 	public String toString() {
-		String value = Integer.toHexString(
-				((int) (255 * r) << 24) | ((int) (255 * g) << 16) | ((int) (255 * b) << 8) | ((int) (255 * a)));
+		String value = CharUtils
+				.toHex(((int) (255 * r) << 24) | ((int) (255 * g) << 16) | ((int) (255 * b) << 8) | ((int) (255 * a)));
 		for (; value.length() < 8;) {
 			value = "0" + value;
 		}

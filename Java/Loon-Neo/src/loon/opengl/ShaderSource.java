@@ -32,27 +32,49 @@ public abstract class ShaderSource {
 		this._vertexShader = vertex;
 		this._framentShader = frament;
 	}
-	
+
 	/**
 	 * 于此动态设置着色器参数
 	 */
 	public abstract void setupShader(ShaderProgram program);
 
-	public String vertexShader(){
+	public String vertexShader() {
 		return _vertexShader;
 	}
-	
-	public String fragmentShader(){
+
+	public String fragmentShader() {
 		return _framentShader;
 	}
-	
+
 	@Override
-	public String toString(){
+	public boolean equals(Object o) {
+		if (o == null) {
+			return false;
+		}
+		if (o == this) {
+			return true;
+		}
+		if (o instanceof ShaderSource) {
+			ShaderSource other = (ShaderSource) o;
+			if (_vertexShader.length() != other._vertexShader.length()) {
+				return false;
+			}
+			if (_framentShader.length() != other._framentShader.length()) {
+				return false;
+			}
+			if (other._vertexShader.equals(_vertexShader) && other._framentShader.equals(_framentShader)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public String toString() {
 		StringKeyValue builder = new StringKeyValue("ShaderSource");
-		builder.newLine()
-		.kv("vertexShader", _vertexShader)
-		.newLine()
-		.kv("framentShader", _framentShader)
+		builder
+		.newLine().kv("vertexShader", _vertexShader)
+		.newLine().kv("framentShader", _framentShader)
 		.newLine();
 		return builder.toString();
 	}

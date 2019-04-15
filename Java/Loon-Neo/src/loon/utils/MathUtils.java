@@ -161,15 +161,15 @@ public class MathUtils {
 	}
 
 	public final static boolean isZero(float value, float tolerance) {
-		return Math.abs(value) <= tolerance;
+		return MathUtils.abs(value) <= tolerance;
 	}
 
 	public final static boolean isEqual(float a, float b) {
-		return Math.abs(a - b) <= FLOAT_ROUNDING_ERROR;
+		return MathUtils.abs(a - b) <= FLOAT_ROUNDING_ERROR;
 	}
 
 	public final static boolean isEqual(float a, float b, float tolerance) {
-		return Math.abs(a - b) <= tolerance;
+		return MathUtils.abs(a - b) <= tolerance;
 	}
 
 	public final static int nextPowerOfTwo(int value) {
@@ -345,7 +345,7 @@ public class MathUtils {
 	}
 
 	public static final boolean isZero(float value) {
-		return Math.abs(value) <= 0.00000001;
+		return MathUtils.abs(value) <= 0.00000001;
 	}
 
 	public static final int mul(int x, int y) {
@@ -635,7 +635,7 @@ public class MathUtils {
 	}
 
 	public static final int mix(final int x, final int y, final float m) {
-		return Math.round(x * (1 - m) + y * m);
+		return MathUtils.round(x * (1 - m) + y * m);
 	}
 
 	public static final float norm(float value, float start, float stop) {
@@ -646,16 +646,24 @@ public class MathUtils {
 		return ostart + (ostop - ostart) * ((value - istart) / (istop - istart));
 	}
 
+	public static final float sin(float n, float angle, float arc, boolean plus) {
+		return plus ? n + MathUtils.sin(angle) + arc : n - MathUtils.sin(angle) * arc;
+	}
+
 	public static final float sin(float rad) {
 		return SIN_LIST[(int) (rad * RAD_TO_INDEX) & SIN_MASK];
 	}
 
-	public static final float cos(float rad) {
-		return COS_LIST[(int) (rad * RAD_TO_INDEX) & SIN_MASK];
-	}
-
 	public static final float sinDeg(float deg) {
 		return SIN_LIST[(int) (deg * DEG_TO_INDEX) & SIN_MASK];
+	}
+
+	public static final float cos(float n, float angle, float arc, boolean plus) {
+		return plus ? n + MathUtils.cos(angle) + arc : n - MathUtils.cos(angle) * arc;
+	}
+
+	public static final float cos(float rad) {
+		return COS_LIST[(int) (rad * RAD_TO_INDEX) & SIN_MASK];
 	}
 
 	public static final float cosDeg(float deg) {
@@ -696,6 +704,50 @@ public class MathUtils {
 
 	public static final float degToRad(float deg) {
 		return deg * 360 / TWO_PI;
+	}
+
+	public static final float safeAdd(float left, float right) {
+		if (right > 0 ? left > Long.MAX_VALUE - right : left < Long.MIN_VALUE - right) {
+			throw LSystem.runThrow("Integer overflow");
+		}
+		return left + right;
+	}
+
+	public static final float safeSubtract(float left, float right) {
+		if (right > 0 ? left < Long.MIN_VALUE + right : left > Long.MAX_VALUE + right) {
+			throw LSystem.runThrow("Integer overflow");
+		}
+		return left - right;
+	}
+
+	public static final float safeMultiply(float left, float right) {
+		if (right > 0 ? left > Long.MAX_VALUE / right || left < Long.MIN_VALUE / right
+				: (right < -1 ? left > Long.MIN_VALUE / right || left < Long.MAX_VALUE / right
+						: right == -1 && left == Long.MIN_VALUE)) {
+			throw LSystem.runThrow("Integer overflow");
+		}
+		return left * right;
+	}
+
+	public static final float safeDivide(float left, float right) {
+		if ((left == Float.MIN_VALUE) && (right == -1)) {
+			throw LSystem.runThrow("Integer overflow");
+		}
+		return left / right;
+	}
+
+	public static final float safeNegate(float a) {
+		if (a == Long.MIN_VALUE) {
+			throw LSystem.runThrow("Integer overflow");
+		}
+		return -a;
+	}
+
+	public static final float safeAbs(float a) {
+		if (a == Long.MIN_VALUE) {
+			throw LSystem.runThrow("Integer overflow");
+		}
+		return MathUtils.abs(a);
 	}
 
 	public static final int bringToBounds(final int minValue, final int maxValue, final int v) {
@@ -740,6 +792,10 @@ public class MathUtils {
 
 	public static final float random(float start, float end) {
 		return start + random.nextFloat() * (end - start);
+	}
+
+	public static final float randomFloor(float start, float end) {
+		return MathUtils.floor(random(start, end));
 	}
 
 	public static final int floor(float x) {
@@ -1155,4 +1211,5 @@ public class MathUtils {
 		n -= x >>> 31;
 		return n;
 	}
+
 }
