@@ -37,13 +37,13 @@ import loon.utils.timer.LTimer;
 public class StringEffect extends Entity implements BaseEffect {
 
 	public final static float MOVE_VALUE = 1.5f;
-	
+
 	private LTimer delayTimer = new LTimer(0);
-	
+
 	private Vector2f updatePos;
-	
+
 	private Text _font;
-	
+
 	private boolean _completed;
 
 	/**
@@ -308,11 +308,17 @@ public class StringEffect extends Entity implements BaseEffect {
 			this._alpha -= 0.0125f;
 			if (_alpha <= 0) {
 				_completed = true;
+			}
+			if (_completed) {
 				if (LSystem.getProcess() != null && LSystem.getProcess().getScreen() != null) {
 					LSystem.getProcess().getScreen().remove(this);
+				} 
+				if (getSprites() != null) {
+					getSprites().remove(this);
 				}
 			}
 		}
+	
 	}
 
 	@Override

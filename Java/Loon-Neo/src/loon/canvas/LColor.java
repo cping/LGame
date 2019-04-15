@@ -192,6 +192,16 @@ public class LColor implements Serializable {
 		return (color & 0x00ffffff) | (alpha << 24);
 	}
 
+	private static final int convertInt(String value) {
+		if (!MathUtils.isNan(value)) {
+			return 0;
+		}
+		if (value.indexOf('.') == -1) {
+			return Integer.parseInt(value);
+		}
+		return (int) Double.parseDouble(value);
+	}
+
 	public static final float encode(float upper, float lower) {
 		int upquant = (int) (upper * 255), lowquant = (int) (lower * 255);
 		return (float) (upquant * 256 + lowquant);
@@ -383,6 +393,7 @@ public class LColor implements Serializable {
 			setColor(LColor.white);
 			return;
 		}
+		c = c.toLowerCase();
 		// 识别字符串格式颜色
 		if (c.startsWith("#")) {
 			setColor(hexToColor(c));
@@ -393,14 +404,16 @@ public class LColor implements Serializable {
 				String result = c.substring(start + 1, end).trim();
 				String[] list = StringUtils.split(result, ',');
 				if (list.length == 3) {
-					setColor(Integer.parseInt(list[0]), Integer.parseInt(list[1]), Integer.parseInt(list[2]));
+					setColor(convertInt(list[0].trim()), convertInt(list[1].trim()), convertInt(list[2].trim()));
 				} else if (list.length == 4) {
-					setColor(Integer.parseInt(list[0]), Integer.parseInt(list[1]), Integer.parseInt(list[2]),
-							Integer.parseInt(list[3]));
+					setColor(convertInt(list[0].trim()), convertInt(list[1].trim()), convertInt(list[2].trim()),
+							convertInt(list[3].trim()));
 				}
 			}
+		} else if (c.startsWith("transparent")) {
+			setColor(TRANSPARENT);
 		} else if (MathUtils.isNan(c)) {
-			setColor((int) Double.parseDouble(c));
+			setColor(convertInt(c));
 		} else {
 			synchronized (this) {
 				if (colorMap == null) {
@@ -439,7 +452,7 @@ public class LColor implements Serializable {
 					colorMap.put("lightyellow", lightYellow);
 					colorMap.put("transparent", transparent);
 				}
-				LColor color = colorMap.get(c.trim().toLowerCase());
+				LColor color = colorMap.get(c.trim());
 				if (color != null) {
 					setColor(color);
 				} else {

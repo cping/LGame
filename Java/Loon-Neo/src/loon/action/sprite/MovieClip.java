@@ -187,6 +187,8 @@ public class MovieClip extends DisplayObject {
 	protected void removedFromStage() {
 		if (LSystem.getProcess() != null && LSystem.getProcess().getScreen() != null) {
 			LSystem.getProcess().getScreen().remove(this);
+		} else if (_sprites != null) {
+			_sprites.remove(this);
 		}
 	}
 

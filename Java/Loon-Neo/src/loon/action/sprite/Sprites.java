@@ -213,7 +213,7 @@ public class Sprites implements IArray, Visible, LRelease {
 	 */
 	private void compressCapacity(int capacity) {
 		if (capacity + this._size < _sprites.length) {
-			ISprite[] newArray = new ISprite[this._size + 2];
+			ISprite[] newArray = new ISprite[this._size + capacity];
 			System.arraycopy(_sprites, 0, newArray, 0, this._size);
 			_sprites = newArray;
 		}
@@ -558,7 +558,7 @@ public class Sprites implements IArray, Visible, LRelease {
 				if (_size == 0) {
 					_sprites = new ISprite[0];
 				} else {
-					compressCapacity(2);
+					compressCapacity(CollectionUtils.INITIAL_CAPACITY);
 				}
 				return removed;
 			}
@@ -595,7 +595,7 @@ public class Sprites implements IArray, Visible, LRelease {
 				if (_size == 0) {
 					_sprites = new ISprite[0];
 				} else {
-					compressCapacity(2);
+					compressCapacity(CollectionUtils.INITIAL_CAPACITY);
 				}
 				return removed;
 			}

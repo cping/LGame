@@ -1180,6 +1180,9 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 				if (getScreen() != null) {
 					getScreen().remove((ISprite) o);
 				}
+				if (_sprites != null) {
+					_sprites.remove((ISprite) o);
+				}
 				close();
 			}
 

@@ -902,7 +902,7 @@ public abstract class LComponent extends LObject<LContainer>
 	public LComponent setBackground(String fileName) {
 		return this.setBackground(LTextures.loadTexture(fileName));
 	}
-	
+
 	public LComponent setBackground(LColor color) {
 		return setBackground(TextureUtils.createTexture(1, 1, color));
 	}
@@ -1130,6 +1130,9 @@ public abstract class LComponent extends LObject<LContainer>
 		if (getScreen().contains(this)) {
 			getScreen().remove(this);
 		}
+		if (_desktop != null) {
+			_desktop.remove(this);
+		}
 		return this;
 	}
 
@@ -1198,6 +1201,9 @@ public abstract class LComponent extends LObject<LContainer>
 				}
 				if (getScreen() != null) {
 					getScreen().remove((LComponent) o);
+				}
+				if (_desktop != null) {
+					_desktop.remove((LComponent) o);
 				}
 				close();
 			}
@@ -1367,7 +1373,7 @@ public abstract class LComponent extends LObject<LContainer>
 	public Gravity getGravity() {
 		return new Gravity(getUIName(), this);
 	}
-	
+
 	@Override
 	public RectBox getBoundingRect() {
 		return getCollisionBox();

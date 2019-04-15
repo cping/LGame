@@ -34,7 +34,7 @@ import loon.utils.timer.LTimer;
 public abstract class PixelBaseEffect extends Entity {
 
 	protected TArray<TriangleEffect[]> triangleEffects = new TArray<TriangleEffect[]>();
-	
+
 	protected boolean completed;
 
 	protected float[] startLocation;
@@ -136,6 +136,13 @@ public abstract class PixelBaseEffect extends Entity {
 		if (!completed) {
 			if (timer.action(elapsedTime)) {
 				next();
+			}
+		} else {
+			if (LSystem.getProcess() != null && LSystem.getProcess().getScreen() != null) {
+				LSystem.getProcess().getScreen().remove(this);
+			} 
+			if (getSprites() != null) {
+				getSprites().remove(this);
 			}
 		}
 	}

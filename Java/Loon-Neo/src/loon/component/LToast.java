@@ -240,6 +240,9 @@ public class LToast extends LComponent implements FontSet<LToast> {
 					close();
 					if (getScreen() != null) {
 						getScreen().remove(this);
+					} 
+					if (_desktop != null) {
+						_desktop.remove(this);
 					}
 				}
 			}

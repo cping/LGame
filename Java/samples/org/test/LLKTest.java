@@ -842,6 +842,7 @@ public class LLKTest extends Screen {
 		} else {
 			wingame = false;
 			removeAll();
+			add(MultiScreenTest.getBackButton(this,1,getWidth() - 100,25));
 			stage(stageNo + 1);
 		}
 	}

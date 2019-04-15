@@ -56,6 +56,12 @@ public abstract class ShaderSource {
 		}
 		if (o instanceof ShaderSource) {
 			ShaderSource other = (ShaderSource) o;
+			if (other._vertexShader == null) {
+				return false;
+			}
+			if (other._framentShader == null) {
+				return false;
+			}
 			if (_vertexShader.length() != other._vertexShader.length()) {
 				return false;
 			}

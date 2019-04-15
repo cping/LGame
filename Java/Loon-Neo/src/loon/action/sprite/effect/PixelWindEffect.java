@@ -25,6 +25,9 @@ import loon.canvas.LColor;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 
+/**
+ * 像素化风
+ */
 public class PixelWindEffect extends PixelBaseEffect {
 
 	private int randSeed;

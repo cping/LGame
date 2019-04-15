@@ -23,6 +23,14 @@ package loon.action.sprite.effect;
 import loon.canvas.LColor;
 import loon.opengl.GLEx;
 
+/**
+ * 以指定坐标为中心点,出现像素风斩击效果
+ * 
+ * <pre>
+ * // 构建一个斩击效果,中心点200,200,宽2,长25
+ * add(new PixelChopEffect(LColor.red, 200, 200, 2, 25));
+ * </pre>
+ */
 public class PixelChopEffect extends PixelBaseEffect {
 
 	private float viewX, viewY;
@@ -30,15 +38,19 @@ public class PixelChopEffect extends PixelBaseEffect {
 	private float width;
 
 	public PixelChopEffect(LColor color, float x, float y) {
-		this(color, x, y, 3);
+		this(color, x, y, 2);
 	}
 
-	public PixelChopEffect(LColor color, float x, float y, float width) {
+	public PixelChopEffect(LColor color, float x, float y, int frameLimit) {
+		this(color, x, y, 2, 25);
+	}
+
+	public PixelChopEffect(LColor color, float x, float y, float width, int frameLimit) {
 		super(color, x, y, 0, 0);
 		this.width = width;
 		this.viewX = x;
 		this.viewY = y;
-		this.limit = 25;
+		this.limit = frameLimit;
 		setDelay(0);
 		setEffectDelay(0);
 	}
@@ -53,8 +65,8 @@ public class PixelChopEffect extends PixelBaseEffect {
 		float x = viewX - tx;
 		float y = viewY - ty;
 		int f = super.frame;
-		if (f > 25) {
-			f = 25 - f;
+		if (f > limit) {
+			f = limit - f;
 		}
 		float x1 = x - f;
 		float y1 = y - f;

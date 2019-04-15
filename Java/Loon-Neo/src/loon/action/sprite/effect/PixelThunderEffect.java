@@ -24,6 +24,9 @@ import loon.LSystem;
 import loon.canvas.LColor;
 import loon.opengl.GLEx;
 
+/**
+ * 像素画闪电
+ */
 public class PixelThunderEffect extends PixelBaseEffect {
 
 	private float viewX, viewY;

@@ -24,6 +24,9 @@ import loon.LSystem;
 import loon.canvas.LColor;
 import loon.opengl.GLEx;
 
+/**
+ * 像素化三角旋转效果(进入画面),用来代表技能释放
+ */
 public class PixelDarkInEffect extends PixelBaseEffect {
 
 	private float viewX, viewY;

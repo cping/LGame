@@ -24,6 +24,9 @@ import loon.LSystem;
 import loon.canvas.LColor;
 import loon.opengl.GLEx;
 
+/**
+ * 像素化三角旋转效果(离开画面),用来代表技能释放
+ */
 public class PixelDarkOutEffect extends PixelBaseEffect {
 
 	private float viewX;
@@ -31,23 +34,22 @@ public class PixelDarkOutEffect extends PixelBaseEffect {
 	private float viewY;
 
 	private TriangleEffect[] de;
-	
+
 	public PixelDarkOutEffect(LColor color) {
-		this(color,0, 0, LSystem.viewSize.getWidth() / 2, LSystem.viewSize
-				.getHeight() / 2);
+		this(color, 0, 0, LSystem.viewSize.getWidth() / 2, LSystem.viewSize.getHeight() / 2);
 	}
 
-	public PixelDarkOutEffect(LColor color, float x, float y,float w,float h) {
+	public PixelDarkOutEffect(LColor color, float x, float y, float w, float h) {
 		super(color, x, y, w, h);
 		this.viewX = x;
 		this.viewY = y;
 		float[][] res1 = { { 0.0f, 30f }, { 24f, -15f }, { -24f, -15f } };
 		float[][] res2 = { { 24f, 15f }, { -24f, 15f }, { 0.0f, -30f } };
 		this.de = new TriangleEffect[4];
-		this.de[0] = new TriangleEffect(w,h,res1, 0, 0, -9f);
-		this.de[1] = new TriangleEffect(w,h,res2,0, 0, -9f);
-		this.de[2] = new TriangleEffect(w,h,res1, 0,0, -9f);
-		this.de[3] = new TriangleEffect(w,h,res2, 0, 0, -9f);
+		this.de[0] = new TriangleEffect(w, h, res1, 0, 0, -9f);
+		this.de[1] = new TriangleEffect(w, h, res2, 0, 0, -9f);
+		this.de[2] = new TriangleEffect(w, h, res1, 0, 0, -9f);
+		this.de[3] = new TriangleEffect(w, h, res2, 0, 0, -9f);
 		this.limit = 90;
 		this.triangleEffects.add(de);
 		this.setDelay(0);

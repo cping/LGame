@@ -25,6 +25,9 @@ import loon.canvas.LColor;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 
+/**
+ * 像素化雪
+ */
 public class PixelSnowEffect extends PixelBaseEffect {
 
 	private float viewX, viewY;

@@ -78,7 +78,7 @@ public class Desktop implements Visible, LRelease {
 	private boolean dvisible;
 
 	private boolean dclosed;
-	
+
 	private final String desktop_name;
 
 	/**
@@ -171,6 +171,9 @@ public class Desktop implements Visible, LRelease {
 	}
 
 	public int remove(LComponent comp) {
+		if (comp == null) {
+			return -1;
+		}
 		int removed = this.removeComponent(this.contentPane, comp);
 		if (removed != -1) {
 			this.processTouchMotionEvent();
