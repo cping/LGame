@@ -32,6 +32,8 @@ import loon.canvas.Pixmap;
 import loon.opengl.GL20;
 
 public class GLUtils {
+	
+	private GLUtils(){}
 
 	private static int currentHardwareBufferID = -1;
 

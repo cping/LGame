@@ -35,14 +35,14 @@ import loon.utils.NumberUtils;
 public class Duration implements Comparable<Duration> {
 
 	protected static Duration _instance = null;
-	
+
 	public static Duration getInstance() {
 		if (_instance == null) {
 			_instance = new Duration();
 		}
 		return _instance;
 	}
-	
+
 	public static final Duration ZERO = new Duration(0);
 
 	public static final Duration HALF_ONE = new Duration(0.5f);
@@ -51,6 +51,14 @@ public class Duration implements Comparable<Duration> {
 
 	public final static Duration at(float ms) {
 		return new Duration(ms);
+	}
+
+	public final static Duration atSecond(float sec) {
+		return new Duration(sec * LSystem.SECOND);
+	}
+
+	public final static Duration atMinute(float min) {
+		return new Duration(min * LSystem.MINUTE);
 	}
 
 	private float _millisTime;
@@ -64,14 +72,15 @@ public class Duration implements Comparable<Duration> {
 	}
 
 	public Duration set(float ms) {
-		if (ms < -LSystem.YEAR) {
-			this._millisTime = -LSystem.YEAR;
+		long year = 100 * LSystem.YEAR;
+		if (ms < -year) {
+			this._millisTime = -year;
 		} else if (Float.isNaN(ms)) {
 			this._millisTime = 0;
 		} else if (ms == NumberUtils.intBitsToFloat(0x7f800000)) {
 			this._millisTime = 0;
-		} else if (ms > LSystem.YEAR) {
-			this._millisTime = LSystem.YEAR;
+		} else if (ms > year) {
+			this._millisTime = year;
 		} else {
 			this._millisTime = ms;
 		}
@@ -227,6 +236,32 @@ public class Duration implements Comparable<Duration> {
 
 	public float toYear() {
 		return _millisTime / (float) LSystem.YEAR;
+	}
+
+	public String formatTime(String format) {
+		return formatTime(this, format);
+	}
+
+	public String formatTime() {
+		return formatTime(":");
+	}
+
+	protected static String formatTime(Duration timer, String format) {
+		String str = "";
+		int minute = MathUtils.floor(timer.toMinute());
+		if (minute < 10) {
+			str = "0" + minute;
+		} else {
+			str = "" + minute;
+		}
+		str += format;
+		int second = MathUtils.floor(timer.toSeconds() % 60f);
+		if (second < 10) {
+			str += "0" + second;
+		} else {
+			str += "" + second;
+		}
+		return str;
 	}
 
 	@Override

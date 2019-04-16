@@ -24,7 +24,7 @@ import loon.utils.timer.LTimer;
 
 /** 全局生效的动作控制类（在Loon中任何场景都适用），所有实现了ActionBind的类都可以被此类控制 **/
 public class ActionControl {
-
+	
 	public static final ActionLinear LINEAR = new ActionLinear();
 	public static final ActionSmooth SMOOTH = new ActionSmooth();
 

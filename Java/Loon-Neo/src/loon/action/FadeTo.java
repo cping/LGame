@@ -83,6 +83,13 @@ public class FadeTo extends ActionEvent {
 			}
 		}
 		original.setAlpha(currentFrame / time);
+		if (_isCompleted) {
+			if (type == ISprite.TYPE_FADE_OUT) {
+				original.setAlpha(0f);
+			} else {
+				original.setAlpha(1f);
+			}
+		}
 	}
 
 	@Override
@@ -112,12 +119,10 @@ public class FadeTo extends ActionEvent {
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue(getName());
-		if(original != null){
+		if (original != null) {
 			builder.kv("alpha", original.getAlpha()).comma();
 		}
-		builder.kv("speed", time)
-		.comma()
-		.kv("currentFrame",currentFrame);
+		builder.kv("speed", time).comma().kv("currentFrame", currentFrame);
 		return builder.toString();
 	}
 }

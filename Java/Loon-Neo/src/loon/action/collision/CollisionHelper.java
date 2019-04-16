@@ -36,6 +36,8 @@ import loon.utils.MathUtils;
  */
 public final class CollisionHelper extends ShapeUtils {
 
+	private CollisionHelper(){}
+	
 	private static final RectBox rectTemp1 = new RectBox();
 
 	private static final RectBox rectTemp2 = new RectBox();

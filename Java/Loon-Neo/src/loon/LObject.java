@@ -228,7 +228,7 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	public Object Tag;
 
 	private Object _collisionData;
-	
+
 	protected float _alpha = 1f;
 
 	protected RectBox _rect;
@@ -307,10 +307,13 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	}
 
 	public void setAlpha(float a) {
-		if (a < 0) {
-			a = 0;
+		if (a < 0f) {
+			a = 0f;
 		}
-		this._alpha = MathUtils.min(1f, a);
+		if (a > 1f) {
+			a = 1f;
+		}
+		this._alpha = a;
 	}
 
 	public float getAlpha() {
@@ -666,27 +669,10 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 
 	@Override
 	public String toString() {
-		return new StringKeyValue("LObject")
-	    .kv("sequence", _seqNo)
-		.comma()
-		.kv("name", getName())
-		.comma()
-		.kv("state", _state.get())
-		.comma()
-		.kv("super", _super)
-		.comma()
-		.kv("pos", _location)
-		.comma()
-		.kv("size", _rect)
-		.comma()
-		.kv("alpha", _alpha)
-		.comma()
-		.kv("rotation", _rotation)
-		.comma()
-		.kv("layer", _layer)
-		.comma()
-		.kv("tag", Tag)
-		.toString();
+		return new StringKeyValue("LObject").kv("sequence", _seqNo).comma().kv("name", getName()).comma()
+				.kv("state", _state.get()).comma().kv("super", _super).comma().kv("pos", _location).comma()
+				.kv("size", _rect).comma().kv("alpha", _alpha).comma().kv("rotation", _rotation).comma()
+				.kv("layer", _layer).comma().kv("tag", Tag).toString();
 	}
 
 }

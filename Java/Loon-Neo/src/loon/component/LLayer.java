@@ -292,22 +292,24 @@ public class LLayer extends ActorLayer {
 				if (actorX + actorWidth < minX || actorX > maxX || actorY + actorHeight < minY || actorY > maxY) {
 					continue;
 				}
+				int tint = g.color();
 				float alpha = g.alpha();
 				LTexture actorImage = thing.getImage();
 				if (actorImage != null) {
 					width = actorImage.getWidth();
 					height = actorImage.getHeight();
 					thing.setLastPaintSeqNum(paintSeq++);
+					float oldAlpha = g.alpha();
 					colorAlpha = thing.getAlpha();
-					if (colorAlpha != 1f) {
+					if (colorAlpha != oldAlpha) {
 						g.setAlpha(colorAlpha);
 					}
 					g.draw(actorImage, actorX, actorY, width, height,
 							_component_baseColor == null ? thing.filterColor
 									: _component_baseColor.mul(thing.filterColor),
 							thing.getRotation(), thing.scaleX, thing.scaleY, thing.flipX, thing.flipY);
-					if (colorAlpha != 1f) {
-						g.setAlpha(1f);
+					if (colorAlpha != oldAlpha) {
+						g.setAlpha(oldAlpha);
 					}
 				}
 				if (thing.isConsumerDrawing) {
@@ -331,6 +333,7 @@ public class LLayer extends ActorLayer {
 					}
 				}
 				g.setAlpha(alpha);
+				g.setTint(tint);
 			}
 
 		}

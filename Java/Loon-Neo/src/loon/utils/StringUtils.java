@@ -112,11 +112,11 @@ final public class StringUtils extends CharUtils {
 		return off > 0 ? s.substring(off) : s;
 	}
 
-	public final static boolean startsWith(String n, char tag) {
+	public static final boolean startsWith(String n, char tag) {
 		return n.charAt(0) == tag;
 	}
 
-	public final static boolean endsWith(String n, char tag) {
+	public static final boolean endsWith(String n, char tag) {
 		return n.charAt(n.length() - 1) == tag;
 	}
 
@@ -714,7 +714,7 @@ final public class StringUtils extends CharUtils {
 	 * @param value
 	 * @return
 	 */
-	public final static boolean isAlphabet(String value) {
+	public static final boolean isAlphabet(String value) {
 		if (value == null || value.length() == 0) {
 			return false;
 		}
@@ -736,15 +736,15 @@ final public class StringUtils extends CharUtils {
 	 * @param letter
 	 * @return
 	 */
-	public final static boolean isAlphabetUpper(char letter) {
+	public static final boolean isAlphabetUpper(char letter) {
 		return ('A' <= letter && letter <= 'Z');
 	}
 
-	public final static boolean isAlphabetLower(char letter) {
+	public static final boolean isAlphabetLower(char letter) {
 		return ('a' <= letter && letter <= 'z');
 	}
 
-	public final static boolean isAlphabet(char letter) {
+	public static final boolean isAlphabet(char letter) {
 		return isAlphabetUpper(letter) || isAlphabetLower(letter);
 	}
 
@@ -756,6 +756,56 @@ final public class StringUtils extends CharUtils {
 	 */
 	public static final boolean isNumeric(char letter) {
 		return ('0' > letter || letter > '9');
+	}
+
+	/**
+	 * 变更数字字符串格式为指定分隔符货币格式(比如100000000用分隔符","分割后就是100,000,000)
+	 * 
+	 * @param value
+	 * @return
+	 */
+	public static final String changFormatToMoney(String value) {
+		return changFormatToMoney(value, ",", false);
+	}
+
+	/**
+	 * 变更数字字符串格式为指定分隔符货币格式
+	 * 
+	 * @param value
+	 * @param split
+	 * @param tag
+	 * @return
+	 */
+	public static final String changFormatToMoney(String value, String split, boolean tag) {
+		if (!MathUtils.isNan(value)) {
+			return value;
+		}
+		int count = 0;
+		String sbr = "";
+		if (tag) {
+			if (value.charAt(0) >= 48 && value.charAt(0) <= 57) {
+				value = "+" + value;
+			}
+		}
+		for (int i = value.length() - 1; i > -1; i--) {
+			sbr = value.charAt(i) + sbr;
+			int charCode = value.charAt(i);
+			if (charCode >= 48 && charCode <= 57) {
+				if (i > 0) {
+					charCode = value.charAt(i - 1);
+					if (charCode >= 48 && charCode <= 57) {
+						count++;
+						if (count == 3) {
+							sbr = split + sbr;
+							count = 0;
+						}
+					}
+				}
+			} else {
+				count = 0;
+			}
+		}
+		return sbr;
 	}
 
 	/**
@@ -1018,11 +1068,11 @@ final public class StringUtils extends CharUtils {
 		}
 	}
 
-	private final static boolean unificationAllow(char ch) {
+	private static final boolean unificationAllow(char ch) {
 		return ch != '\n' && ch != '\t' && ch != '\r' && ch != ' ';
 	}
 
-	public final static String merge(String[] messages) {
+	public static final String merge(String[] messages) {
 		StringBuilder sbr = new StringBuilder();
 		for (String mes : messages) {
 			if (mes != null) {
@@ -1032,7 +1082,7 @@ final public class StringUtils extends CharUtils {
 		return sbr.toString().trim();
 	}
 
-	public final static String merge(CharSequence[] messages) {
+	public static final String merge(CharSequence[] messages) {
 		StringBuilder sbr = new StringBuilder();
 		for (CharSequence mes : messages) {
 			if (mes != null) {
@@ -1042,19 +1092,19 @@ final public class StringUtils extends CharUtils {
 		return sbr.toString().trim();
 	}
 
-	public final static String unificationStrings(String mes) {
+	public static final String unificationStrings(String mes) {
 		return unificationStrings(mes, null);
 	}
 
-	public final static String unificationStrings(String mes, CharSequence limit) {
+	public static final String unificationStrings(String mes, CharSequence limit) {
 		return unificationStrings(new CharArray(128), mes, limit);
 	}
 
-	public final static String unificationStrings(CharArray tempChars, String mes) {
+	public static final String unificationStrings(CharArray tempChars, String mes) {
 		return unificationStrings(tempChars, mes, null);
 	}
 
-	public final static String unificationStrings(CharArray tempChars, String mes, CharSequence limit) {
+	public static final String unificationStrings(CharArray tempChars, String mes, CharSequence limit) {
 		if (isEmpty(mes)) {
 			return "";
 		}
@@ -1089,19 +1139,19 @@ final public class StringUtils extends CharUtils {
 		}
 	}
 
-	public final static String unificationCharSequence(CharSequence[] messages) {
+	public static final String unificationCharSequence(CharSequence[] messages) {
 		return unificationCharSequence(messages, null);
 	}
 
-	public final static String unificationCharSequence(CharArray tempChars, CharSequence[] messages) {
+	public static final String unificationCharSequence(CharArray tempChars, CharSequence[] messages) {
 		return unificationCharSequence(tempChars, messages, null);
 	}
 
-	public final static String unificationCharSequence(CharSequence[] messages, CharSequence limit) {
+	public static final String unificationCharSequence(CharSequence[] messages, CharSequence limit) {
 		return unificationCharSequence(new CharArray(128), messages, limit);
 	}
 
-	public final static String unificationCharSequence(CharArray tempChars, CharSequence[] messages,
+	public static final String unificationCharSequence(CharArray tempChars, CharSequence[] messages,
 			CharSequence limit) {
 		if (messages == null || messages.length == 0) {
 			return "";
@@ -1143,19 +1193,19 @@ final public class StringUtils extends CharUtils {
 		}
 	}
 
-	public final static String unificationStrings(String[] messages) {
+	public static final String unificationStrings(String[] messages) {
 		return unificationStrings(messages, null);
 	}
 
-	public final static String unificationStrings(CharArray tempChars, String[] messages) {
+	public static final String unificationStrings(CharArray tempChars, String[] messages) {
 		return unificationStrings(tempChars, messages, null);
 	}
 
-	public final static String unificationStrings(String[] messages, CharSequence limit) {
+	public static final String unificationStrings(String[] messages, CharSequence limit) {
 		return unificationStrings(new CharArray(128), messages, limit);
 	}
 
-	public final static String unificationStrings(CharArray tempChars, String[] messages, CharSequence limit) {
+	public static final String unificationStrings(CharArray tempChars, String[] messages, CharSequence limit) {
 		if (isEmpty(messages)) {
 			return "";
 		}
@@ -1196,19 +1246,19 @@ final public class StringUtils extends CharUtils {
 		}
 	}
 
-	public final static String unificationChars(char[] messages) {
+	public static final String unificationChars(char[] messages) {
 		return unificationChars(messages, null);
 	}
 
-	public final static String unificationChars(CharArray tempChars, char[] messages) {
+	public static final String unificationChars(CharArray tempChars, char[] messages) {
 		return unificationChars(tempChars, messages, null);
 	}
 
-	public final static String unificationChars(char[] messages, CharSequence limit) {
+	public static final String unificationChars(char[] messages, CharSequence limit) {
 		return unificationChars(new CharArray(128), messages, null);
 	}
 
-	public final static String unificationChars(CharArray tempChars, char[] messages, CharSequence limit) {
+	public static final String unificationChars(CharArray tempChars, char[] messages, CharSequence limit) {
 		if (messages == null || messages.length == 0) {
 			return "";
 		}
@@ -1382,7 +1432,7 @@ final public class StringUtils extends CharUtils {
 		return characters;
 	}
 
-	public final static String notLineBreaks(String text) {
+	public static final String notLineBreaks(String text) {
 		final int h = text.indexOf('\n');
 		if (h >= 0) {
 			return text.substring(0, h);
@@ -1390,7 +1440,13 @@ final public class StringUtils extends CharUtils {
 		return text;
 	}
 
-	public final static String notEmptyOne(String... texts) {
+	/**
+	 * 返回一个非空的集合
+	 * 
+	 * @param texts
+	 * @return
+	 */
+	public static final String notEmptyOne(String... texts) {
 		TArray<String> list = notEmpty(texts);
 		if (list.size > 0) {
 			return list.get(0);
@@ -1398,7 +1454,13 @@ final public class StringUtils extends CharUtils {
 		return null;
 	}
 
-	public final static TArray<String> notEmpty(String... texts) {
+	/**
+	 * 添加所有非空的字符串到集合
+	 * 
+	 * @param texts
+	 * @return
+	 */
+	public static final TArray<String> notEmpty(String... texts) {
 		TArray<String> list = new TArray<String>(10);
 		for (String text : texts) {
 			if (!StringUtils.isEmpty(text)) {
@@ -1407,5 +1469,5 @@ final public class StringUtils extends CharUtils {
 		}
 		return list;
 	}
-
+	  
 }

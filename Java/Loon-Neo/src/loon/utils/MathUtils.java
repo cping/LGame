@@ -27,6 +27,8 @@ import loon.geom.RectBox;
 
 public class MathUtils {
 
+	private MathUtils(){}
+	
 	public static final Random random = new Random();
 
 	public static final float FLOAT_ROUNDING_ERROR = 0.000001f;
