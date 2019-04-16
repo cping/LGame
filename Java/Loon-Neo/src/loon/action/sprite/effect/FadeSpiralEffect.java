@@ -27,6 +27,9 @@ import loon.canvas.LColor;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimer;
 
+/**
+ * 黑幕过渡效果,瓦片从向中心处螺旋集中或向外螺旋扩散最终消失
+ */
 public class FadeSpiralEffect extends Entity implements BaseEffect {
 
 	private boolean finished;

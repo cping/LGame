@@ -27,6 +27,9 @@ import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.timer.LTimer;
 
+/**
+ * 黑幕过渡效果,画面变成圆形扩散或由圆形向中心集中最终消失
+ */
 public class FadeOvalEffect extends Entity implements BaseEffect {
 
 	private static final LColor[] OVAL_COLORS = new LColor[5];

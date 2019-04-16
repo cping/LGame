@@ -26,6 +26,9 @@ import loon.opengl.GLEx;
 import loon.opengl.LTexturePack;
 import loon.utils.MathUtils;
 
+/**
+ * 图片飘雪
+ */
 public class SnowKernel implements IKernel {
 
 	private boolean exist;

@@ -26,6 +26,9 @@ import loon.opengl.GLEx;
 import loon.opengl.LTexturePack;
 import loon.utils.MathUtils;
 
+/**
+ * 图片雨的具体实现效果
+ */
 public class RainKernel implements IKernel {
 
 	private boolean exist;

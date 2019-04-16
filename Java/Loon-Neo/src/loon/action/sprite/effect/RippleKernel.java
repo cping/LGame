@@ -22,20 +22,26 @@ package loon.action.sprite.effect;
 
 import loon.action.sprite.effect.RippleEffect.Model;
 import loon.canvas.LColor;
+import loon.geom.Triangle2f;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimer;
 
+/**
+ * 波纹扩散效果具体实现类
+ */
 public class RippleKernel {
 
 	protected LColor color;
-	
+
 	protected float x, y;
-	
+
 	protected int existTime;
-	
+
 	protected int limit;
-	
+
 	protected LTimer timer = new LTimer(0);
+
+	private Triangle2f tempTriangle;
 
 	public RippleKernel(float x, float y) {
 		this(x, y, 25);
@@ -56,6 +62,14 @@ public class RippleKernel {
 			break;
 		case RECT:
 			g.drawRect(mx + x - span / 2, my + y - span / 2, span, span);
+			break;
+		case TRIANGLE:
+			if (tempTriangle == null) {
+				tempTriangle = new Triangle2f(span, span);
+			} else {
+				tempTriangle.set(span, span);
+			}
+			g.drawTriangle(tempTriangle, mx + x - span / 2, my + y - span / 2);
 			break;
 		}
 		existTime++;

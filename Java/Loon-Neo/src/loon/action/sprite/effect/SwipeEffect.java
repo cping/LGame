@@ -26,6 +26,9 @@ import loon.canvas.LColor;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimer;
 
+/**
+ * 折角样黑幕过渡效果
+ */
 public class SwipeEffect extends Entity implements BaseEffect {
 
 	private LTimer timer = new LTimer(450);

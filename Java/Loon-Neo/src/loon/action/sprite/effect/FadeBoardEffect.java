@@ -261,7 +261,7 @@ public class FadeBoardEffect extends Entity implements BaseEffect {
 			return;
 		}
 		for (int i = 0; i < paintBlocks.size; i++) {
-			paintBlocks.get(i).paint(g, offsetX + _location.x, offsetY + _location.y);
+			paintBlocks.get(i).paint(g, drawX(offsetX), drawY(offsetY));
 		}
 	}
 

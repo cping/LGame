@@ -28,6 +28,9 @@ import loon.action.sprite.Entity;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
 
+/**
+ * 图片从指定方向离开画面的过渡效果
+ */
 public class OutEffect extends Entity implements BaseEffect {
 
 	private boolean completed;

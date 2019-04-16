@@ -31,6 +31,9 @@ import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimer;
 
+/**
+ * 图片拆分样黑幕过渡效果
+ */
 public class SplitEffect extends Entity implements BaseEffect {
 
 	private Vector2f movePosOne, movePosTwo;

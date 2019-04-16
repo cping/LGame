@@ -26,6 +26,9 @@ import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.timer.LTimer;
 
+/**
+ * 像素风三角风格渲染具体实现用类(就是画各种成片的三角形)
+ */
 public class TriangleEffect extends Entity implements BaseEffect {
 
 	private float[][] delta;

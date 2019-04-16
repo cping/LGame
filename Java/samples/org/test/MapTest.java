@@ -15,6 +15,7 @@ import loon.action.sprite.GridEntity;
 import loon.action.sprite.AnimatedEntity.PlayIndex;
 import loon.action.sprite.MoveControl;
 import loon.action.sprite.effect.RippleEffect;
+import loon.action.sprite.effect.RippleEffect.Model;
 import loon.canvas.LColor;
 import loon.component.LClickButton;
 import loon.component.LPad;
@@ -34,7 +35,7 @@ public class MapTest extends Stage {
 	public void create() {
 		try {
 			// 点击处波纹效果
-			RippleEffect ripple = new RippleEffect();
+			RippleEffect ripple = RippleEffect.at(Model.OVAL);
 			// 红色
 			ripple.setColor(LColor.red);
 			// 设置一个高的z值,避免被精灵遮挡

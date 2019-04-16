@@ -29,6 +29,9 @@ import loon.utils.MathUtils;
 import loon.utils.TArray;
 import loon.utils.timer.LTimer;
 
+/**
+ * 黑幕过渡效果,一组圆形逐渐染黑屏幕或者黑幕逐渐缩小为一群圆并最终缩小不见
+ */
 public class FadeDotEffect extends Entity implements BaseEffect {
 
 	private int countCompleted = 0;

@@ -198,7 +198,7 @@ public class PixelFireEffect extends Entity implements BaseEffect {
 		}
 		int tint = g.color();
 		for (int i = 0; i < _fireBlocks.size; i++) {
-			_fireBlocks.get(i).paint(g, offsetX + _location.x, offsetY + _location.y);
+			_fireBlocks.get(i).paint(g, drawX(offsetX), drawY(offsetY));
 		}
 		g.setTint(tint);
 	}

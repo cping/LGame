@@ -33,10 +33,17 @@ import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.timer.LTimer;
 import loon.utils.timer.LTimerContext;
 
+/**
+ * 指定位置出现波纹,可以选择椭圆或方形乃至三角扩散
+ */
 public class RippleEffect extends Entity implements LTouchArea, BaseEffect {
 
+	public static RippleEffect at(Model model) {
+		return new RippleEffect(model);
+	}
+
 	public enum Model {
-		OVAL, RECT;
+		OVAL, RECT, TRIANGLE;
 	}
 
 	private TArray<RippleKernel> ripples;
@@ -126,6 +133,18 @@ public class RippleEffect extends Entity implements LTouchArea, BaseEffect {
 				}
 			}
 		}
+		if (completed) {
+			if (LSystem.getProcess() != null && LSystem.getProcess().getScreen() != null) {
+				LSystem.getProcess().getScreen().remove(this);
+			}
+			if (getSprites() != null) {
+				getSprites().remove(this);
+			}
+		}
+	}
+
+	public boolean checkCompleted() {
+		return completed = (ripples.size == 0);
 	}
 
 	@Override

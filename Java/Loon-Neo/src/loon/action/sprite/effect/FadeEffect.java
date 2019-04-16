@@ -25,6 +25,9 @@ import loon.action.sprite.Entity;
 import loon.canvas.LColor;
 import loon.opengl.GLEx;
 
+/**
+ * 最基础的画面淡入淡出
+ */
 public class FadeEffect extends Entity implements BaseEffect {
 
 	public float time;
