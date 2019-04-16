@@ -6,9 +6,13 @@
 
 [免费的游戏素材可见此](https://github.com/cping/LGame/blob/master/dev-res/README.md "Game Source of Free")
 
-*干眼症（角膜干燥综合症）基本控制住了（用了两年环孢素+各种中药-_-|||），2019年复活继续更新 - 2019-03-08。
+*2019年复活继续更新 - 2019-03-08。
 
-*目前的0.5版已经初步可用，我会逐渐增加测试用例和文档，然后据此改出C++，C#(基于MonoGame，Unity3D之类，反正底层都是Mono库，基于第三方架构开发是因为不用自己适配多平台)之类其它语法版本，当然核心还是Java，方便Java版一键语法转换和平台迁移而已。顺便我会出一个API精简的"非OpenGL"Java版封装(其实就是把最古老的AWT版重写一次)，这个封装会基于Android和JavaScript的Canvas进行渲染(而不是像现在一样渲染和主窗口是默认绑定的)，方便用户把Loon功能嵌入一些非游戏应用中(比如直接添加成一个TextureView，给应用加缓动动画特效什么的)，或者一些更轻度的小游戏开发，这个精简版本只会支持JavaSE，JavaFX，Android，JavaScript(HTML5)。
+*虽然基于标准OpeglES API开发,但项目0.1版最早脱胎于AWT Java2D时代,所以采用了AWT Graphics2D的坐标系（画布左上角为原点,Y轴向下为正值,与JavaFx或Android,JavaScript的Canvas渲染坐标一致），渲染接口也都被保存下来，Graphics2D以及Android Canvas的大部分API可以在GLEx这一全局渲染类中直接使用。
+
+*有完善的组件库支持，并且针对不同游戏特性开发，无论是ACT，RPG或者AVG(Galgame)游戏都可以直接套用现成组件构建。
+
+*目前的0.5版已经初步可用。
 _________
 
 源自中國本土的Java遊戲引擎項目
