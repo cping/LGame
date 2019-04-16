@@ -36,8 +36,8 @@ public class QRCodeTest extends Stage {
 		addLabel("扫描我,打开GITHUB", 155, 50);
 
 		// 添加一个二维码Picture,容错等级高,大小200x200,黑色
-		Picture pic = QRCode.getQRCode("https://github.com", QRErrorLevel.H)
-				.createPicture(200, 200, LColor.black);
+	//	Picture pic = QRCode.getQRCode("https://github.com", QRErrorLevel.H)
+			//	.createPicture(200, 200, LColor.black);
 
 		// 以指定图片为素材,构建二维码Picture,容错等级高,大小200x200(彩图二维码,部分程序可能读不出来.....)
 		// Picture pic = QRCode.getQRCode("https://github.com", QRErrorLevel.H)
@@ -45,10 +45,12 @@ public class QRCodeTest extends Stage {
 
 		// 添加一个二维码Picture,容错等级高,大小200x200,黑色二维码,以ccc.png为logo图像.
 		// ps:加logo识别肯定没问题,几乎所有程序都认,但是,识别速度会比纯黑白的慢,手机扫需要频繁换姿势……
-		// Picture pic = QRCode.getQRCode("https://github.com", QRErrorLevel.H)
-		// .createPictureLogo(200, 200, "ccc.png",LColor.black);
+		 Picture pic = QRCode.getQRCode("https://github.com", QRErrorLevel.H)
+		 .createPictureLogo(200, 200, "ccc.png",LColor.black);
 		add(pic);
 		centerOn(pic);
+		
+		add(MultiScreenTest.getBackButton(this,1));
 	}
 
 }

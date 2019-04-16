@@ -34,9 +34,9 @@ import loon.utils.MathUtils;
  * @param <V>
  */
 public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray {
-	
+
 	private Values<V> values1, values2;
-	
+
 	public Values<V> values() {
 		if (values1 == null) {
 			values1 = new Values<V>(this);
@@ -76,7 +76,7 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray 
 
 		@Override
 		public final boolean hasNext() {
-			if(!_valid){
+			if (!_valid) {
 				return false;
 			}
 			return _nextIndex != NO_INDEX && _nextIndex < _map.firstUnusedIndex;
@@ -84,7 +84,7 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray 
 
 		@SuppressWarnings("unchecked")
 		public final V next() {
-			if(!_valid){
+			if (!_valid) {
 				return null;
 			}
 			if (_map.modCount != _expectedModCount) {
@@ -110,7 +110,7 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray 
 
 		@Override
 		public final void remove() {
-			if(!_valid){
+			if (!_valid) {
 				return;
 			}
 			if (_lastIndex == NO_INDEX) {
@@ -172,7 +172,7 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray 
 
 		@Override
 		public final boolean hasNext() {
-			if(!_valid){
+			if (!_valid) {
 				return false;
 			}
 			return _nextIndex != NO_INDEX && _nextIndex < _map.firstUnusedIndex;
@@ -180,7 +180,7 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray 
 
 		@SuppressWarnings("unchecked")
 		public final K next() {
-			if(!_valid){
+			if (!_valid) {
 				return null;
 			}
 			if (_map.modCount != _expectedModCount) {
@@ -205,7 +205,7 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray 
 
 		@Override
 		public final void remove() {
-			if(!_valid){
+			if (!_valid) {
 				return;
 			}
 			if (_lastIndex == NO_INDEX) {
@@ -303,7 +303,7 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray 
 
 		@Override
 		public final void remove() {
-			if(!_valid){
+			if (!_valid) {
 				return;
 			}
 			if (_lastIndex == NO_INDEX) {
@@ -658,6 +658,9 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray 
 	}
 
 	public V put(K key, V value) {
+		if (key == null) {
+			return null;
+		}
 		return put(key, value, true);
 	}
 
@@ -832,6 +835,9 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray 
 	}
 
 	public V remove(Object key) {
+		if (key == null) {
+			return null;
+		}
 		V result = removeKey(key, NO_INDEX);
 		return result == EMPTY_OBJECT ? null : result;
 	}
@@ -1033,7 +1039,6 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray 
 		return i < firstUnusedIndex ? i : NO_INDEX;
 	}
 
-	
 	int capacity() {
 		return capacity;
 	}

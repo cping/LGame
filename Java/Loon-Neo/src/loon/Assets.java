@@ -22,6 +22,7 @@ package loon;
 
 import loon.canvas.Image;
 import loon.canvas.ImageImpl;
+import loon.utils.ArrayByte;
 import loon.utils.TArray;
 import loon.utils.reply.GoFuture;
 import loon.utils.reply.GoPromise;
@@ -112,8 +113,7 @@ public abstract class Assets {
 
 	public void setPathPrefix(String prefix) {
 		if (prefix.startsWith("/") || prefix.endsWith("/")) {
-			throw LSystem.runThrow(
-					"Prefix must not start or end with '/'.");
+			throw LSystem.runThrow("Prefix must not start or end with '/'.");
 		}
 		pathPrefix = (prefix.length() == 0) ? prefix : (prefix + "/");
 	}
@@ -151,9 +151,7 @@ public abstract class Assets {
 	}
 
 	public Image getRemoteImage(String url, int width, int height) {
-		Exception error = new Exception(
-				"Remote image loading not yet supported: " + url + "@" + width
-						+ "x" + height);
+		Exception error = new Exception("Remote image loading not yet supported: " + url + "@" + width + "x" + height);
 		ImageImpl image = createImage(false, width, height, url);
 		image.fail(error);
 		return image;
@@ -175,6 +173,10 @@ public abstract class Assets {
 		return result;
 	}
 
+	public ArrayByte getArrayByte(String path) throws Exception {
+		return new ArrayByte(getBytesSync(path));
+	}
+
 	public abstract byte[] getBytesSync(String path) throws Exception;
 
 	public GoFuture<byte[]> getBytes(final String path) {
@@ -189,8 +191,7 @@ public abstract class Assets {
 
 	protected abstract ImageImpl.Data load(String path) throws Exception;
 
-	protected abstract ImageImpl createImage(boolean async, int rawWidth,
-			int rawHeight, String source);
+	protected abstract ImageImpl createImage(boolean async, int rawWidth, int rawHeight, String source);
 
 	protected static String getPath(String path) {
 		if (path.indexOf(pathPrefix) == -1) {

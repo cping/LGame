@@ -31,16 +31,21 @@ public class ChopTest extends Stage {
 
 	@Override
 	public void create() {
+		//监听Screen的up事件
 		up(new Touched() {
 
 			@Override
 			public void on(float x, float y) {
-				// 斩击效果
-				add(new PixelChopEffect(LColor.red, x, y, 2));
+				// 斩击效果,斩击线粗2,长30
+				add(new PixelChopEffect(LColor.red, x, y, 2 , 30));
 				// 文字上浮
 				add(StringEffect.up("9999", Vector2f.at(x, y), LColor.red));
+				// 文字下浮
+				add(StringEffect.down("9999", Vector2f.at(x, y), LColor.red));
 			}
 		});
+
+		add(MultiScreenTest.getBackButton(this,1));
 	}
 
 }

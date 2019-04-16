@@ -34,20 +34,24 @@ import loon.action.map.Field2D;
  */
 public class ConfigReader implements Expression, Bundle<String>, LRelease {
 
+	private final static ObjectMap<String, ConfigReader> CONFIG_CACHE = new ObjectMap<String, ConfigReader>();
+
 	private String FLAG_L_TAG = "//";
 
 	private String FLAG_C_TAG = "#";
 
 	private String FLAG_I_TAG = "'";
 
-	private final static ObjectMap<String, ConfigReader> CONFIG_CACHE = new ObjectMap<String, ConfigReader>();
+	public static ConfigReader at(final String path) {
+		return getInstance(path);
+	}
 
 	public static ConfigReader getInstance(final String path) {
 		synchronized (CONFIG_CACHE) {
 			ConfigReader reader = CONFIG_CACHE.get(path);
 			if (reader == null || reader._closed) {
 				reader = new ConfigReader(path);
-				CONFIG_CACHE.put(path, reader);
+				CONFIG_CACHE.put(filter(path), reader);
 			}
 			return reader;
 		}
@@ -63,16 +67,22 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 
 	private final StringBuffer template_values = new StringBuffer();
 
-	public ObjectMap<String, String> getContent() {
-		return new ObjectMap<String, String>(_configItems);
-	}
-
 	public ConfigReader(final String resName) {
+		if (StringUtils.isEmpty(resName)) {
+			throw LSystem.runThrow("Resource path cannot be Empty!");
+		}
 		this._path = resName;
 		parseMap(resName);
 	}
 
+	public ObjectMap<String, String> getContent() {
+		return new ObjectMap<String, String>(_configItems);
+	}
+
 	public void parseMap(final String path) {
+		if (StringUtils.isEmpty(path)) {
+			throw LSystem.runThrow("Resource path cannot be Empty!");
+		}
 		if (_loaders == null) {
 			_loaders = new TArray<StringKeyValue>();
 		}
@@ -83,7 +93,7 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 		String result = null;
 		try {
 			for (; reader.hasMoreTokens();) {
-				result = reader.nextToken().trim();
+				result = filter(reader.nextToken());
 				if (StringUtils.isEmpty(result)) {
 					continue;
 				}
@@ -94,7 +104,7 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 					if (!curTemplate.equals("") && curBuffer != null) {
 						_loaders.add(curBuffer);
 					}
-					curTemplate = result.substring(1).trim();
+					curTemplate = filter(result.substring(1));
 					curBuffer = new StringKeyValue(curTemplate);
 				} else {
 					if (curBuffer != null) {
@@ -127,6 +137,13 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 		}
 	}
 
+	private final static String filter(String v) {
+		if (StringUtils.isEmpty(v)) {
+			return "";
+		}
+		return v.trim();
+	}
+
 	public void parseData(final String text) {
 		_configItems.clear();
 		if (StringUtils.isEmpty(text)) {
@@ -138,12 +155,12 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 		boolean mapFlag = false;
 		String mapName = null;
 		for (; reader.hasMoreTokens();) {
-			record = reader.nextToken().trim();
+			record = filter(reader.nextToken());
 			if (record.length() > 0 && !record.startsWith(FLAG_L_TAG) && !record.startsWith(FLAG_C_TAG)
 					&& !record.startsWith(FLAG_I_TAG)) {
 				if (record.startsWith("begin")) {
 					mapBuffer.delete(0, mapBuffer.length());
-					String mes = record.substring(5, record.length()).trim();
+					String mes = filter(record.substring(5, record.length()));
 					if (mes.startsWith("name")) {
 						mapName = loadItem(mes, false);
 					}
@@ -151,7 +168,7 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 				} else if (record.startsWith("end")) {
 					mapFlag = false;
 					if (mapName != null) {
-						_configItems.put(mapName, mapBuffer.toString());
+						_configItems.put(filter(mapName), filter(mapBuffer.toString()));
 					}
 				} else if (mapFlag) {
 					mapBuffer.append(record);
@@ -163,6 +180,9 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 	}
 
 	private final String loadItem(final String mes, final boolean save) {
+		if (StringUtils.isEmpty(mes)) {
+			return "";
+		}
 		char[] chars = mes.toCharArray();
 		int size = chars.length;
 		StringBuffer sbr = template_values.delete(0, template_values.length());
@@ -199,19 +219,25 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 		if (key != null) {
 			value = sbr.toString();
 			if (save) {
-				_configItems.put(key.trim(), value.trim());
+				_configItems.put(filter(key), filter(value));
 			}
 		}
-		return value.trim();
+		return filter(value);
 	}
 
 	public void putItem(String key, String value) {
+		if (StringUtils.isEmpty(key) || StringUtils.isEmpty(value)) {
+			return;
+		}
 		synchronized (_configItems) {
-			_configItems.put(key, value);
+			_configItems.put(filter(key), filter(value));
 		}
 	}
 
 	public void removeItem(String key) {
+		if (StringUtils.isEmpty(key)) {
+			return;
+		}
 		synchronized (_configItems) {
 			_configItems.remove(key);
 		}
@@ -222,9 +248,12 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 	}
 
 	public boolean getBoolValue(String name, boolean fallback) {
+		if (StringUtils.isEmpty(name)) {
+			return fallback;
+		}
 		String v = null;
 		synchronized (_configItems) {
-			v = _configItems.get(name);
+			v = _configItems.get(filter(name));
 		}
 		if (v == null) {
 			return fallback;
@@ -237,9 +266,12 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 	}
 
 	public int getIntValue(String name, int fallback) {
+		if (StringUtils.isEmpty(name)) {
+			return fallback;
+		}
 		String v = null;
 		synchronized (_configItems) {
-			v = _configItems.get(name);
+			v = _configItems.get(filter(name));
 		}
 		if (v == null) {
 			return fallback;
@@ -252,9 +284,12 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 	}
 
 	public float getFloatValue(String name, float fallback) {
+		if (StringUtils.isEmpty(name)) {
+			return fallback;
+		}
 		String v = null;
 		synchronized (_configItems) {
-			v = _configItems.get(name);
+			v = _configItems.get(filter(name));
 		}
 		if (v == null) {
 			return fallback;
@@ -267,9 +302,12 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 	}
 
 	public String getValue(String name, String fallback) {
+		if (StringUtils.isEmpty(name)) {
+			return fallback;
+		}
 		String v = null;
 		synchronized (_configItems) {
-			v = _configItems.get(name);
+			v = _configItems.get(filter(name));
 		}
 		if (v == null) {
 			return fallback;
@@ -322,9 +360,12 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 	}
 
 	public int[][] getArray2D(String name, int[][] fallback) {
+		if (StringUtils.isEmpty(name)) {
+			return fallback;
+		}
 		String v = null;
 		synchronized (_configItems) {
-			v = _configItems.get(name);
+			v = _configItems.get(filter(name));
 		}
 		if (v != null) {
 			boolean pFlag = false;
