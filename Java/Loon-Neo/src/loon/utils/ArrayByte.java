@@ -436,7 +436,7 @@ public class ArrayByte implements IArray, LRelease {
 		byte[] buffer = getData();
 		try {
 			return new String(buffer, LSystem.ENCODING);
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			return new String(buffer);
 		}
 	}

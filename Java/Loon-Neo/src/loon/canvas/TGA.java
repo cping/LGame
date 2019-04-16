@@ -398,7 +398,8 @@ public class TGA {
 			try {
 				in.close();
 				in = null;
-			} catch (Exception e) {
+			} catch (Throwable e) {
+				LSystem.error(e.getMessage(), e);
 			}
 		}
 		return tga;

@@ -198,7 +198,7 @@ public class XMLParser {
 					}
 				}
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			throw LSystem.runThrow("Cannot parse element '" + context + "' - (" + e + ")", e);
 		}
 	}

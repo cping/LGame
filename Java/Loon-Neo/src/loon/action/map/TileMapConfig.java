@@ -143,7 +143,8 @@ public class TileMapConfig {
 					resArr[i][j] = stingToInt(strPrms[j]);
 				}
 			}
-		} catch (Exception ex) {
+		} catch (Throwable ex) {
+			LSystem.error(ex.getMessage(), ex);
 		}
 		return resArr;
 	}
@@ -153,7 +154,8 @@ public class TileMapConfig {
 		if (MathUtils.isNan(srcStr)) {
 			try {
 				resNo = Integer.parseInt(srcStr);
-			} catch (Exception ex) {
+			} catch (Throwable ex) {
+				LSystem.error(ex.getMessage(), ex);
 			}
 		}
 		return resNo;

@@ -44,7 +44,7 @@ abstract class ActionTweenPool<T> {
 		T obj = null;
 		try {
 			obj = _objects.isEmpty() ? create() : _objects.removeIndex(0);
-		} catch (Exception e) {}
+		} catch (Throwable e) {}
 		if (obj == null) {
 			obj = create();
 		}

@@ -20,7 +20,6 @@
  */
 package loon.html5.gwt;
 
-import loon.LSystem;
 import loon.Log;
 
 public class GWTLog extends Log {
@@ -66,7 +65,7 @@ public class GWTLog extends Log {
 
 	@Override
 	public void onError(Throwable e) {
-		LSystem.AUTO_REPAINT = false;
+		//LSystem.AUTO_REPAINT = false;
 	}
 
 }

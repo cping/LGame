@@ -52,7 +52,7 @@ public abstract class Assets {
 		public void run() {
 			try {
 				_impl.succeed(_assets.load(_path));
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				_impl.fail(e);
 			}
 		}
@@ -134,7 +134,7 @@ public abstract class Assets {
 		ImageImpl image = createImage(false, 0, 0, path);
 		try {
 			image.succeed(load(path));
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			image.fail(e);
 		}
 		return image;

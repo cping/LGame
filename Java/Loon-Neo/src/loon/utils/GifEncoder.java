@@ -909,7 +909,7 @@ class NeuQuant {
 					p[0] -= (a * (p[0] - b)) / alpharadbias;
 					p[1] -= (a * (p[1] - g)) / alpharadbias;
 					p[2] -= (a * (p[2] - r)) / alpharadbias;
-				} catch (Exception e) {
+				} catch (Throwable e) {
 				} // prevents 1.3 miscompilation
 			}
 			if (k > lo) {
@@ -918,7 +918,7 @@ class NeuQuant {
 					p[0] -= (a * (p[0] - b)) / alpharadbias;
 					p[1] -= (a * (p[1] - g)) / alpharadbias;
 					p[2] -= (a * (p[2] - r)) / alpharadbias;
-				} catch (Exception e) {
+				} catch (Throwable e) {
 				}
 			}
 		}

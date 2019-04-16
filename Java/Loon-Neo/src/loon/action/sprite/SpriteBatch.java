@@ -551,8 +551,8 @@ public class SpriteBatch extends PixmapFImpl {
 			}
 			mesh.post(name, expandVertices.getSize(), customShader != null ? customShader : shader,
 					expandVertices.getVertices(), idx, count);
-		} catch (Exception e) {
-			throw LSystem.runThrow(e.getMessage());
+		} catch (Throwable e) {
+			throw LSystem.runThrow(e.getMessage(),e);
 		} finally {
 			if (expandVertices.expand(this.idx)) {
 				mesh.reset(name, expandVertices.length());

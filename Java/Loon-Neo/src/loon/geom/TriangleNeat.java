@@ -245,7 +245,7 @@ public class TriangleNeat implements Triangle {
 		try {
 			basicTriangulation();
 			return true;
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			numEdges = 0;
 		}
 		return false;

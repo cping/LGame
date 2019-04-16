@@ -92,7 +92,7 @@ public class LGradation implements LRelease {
 				}
 			}
 			g.draw(drawTexWidth, x, y);
-		} catch (Exception ex) {
+		} catch (Throwable ex) {
 			for (int i = 0; i < width; i++) {
 				g.setColor((startColor.getRed() * (width - i)) / width + (endColor.getRed() * i) / width,
 						(startColor.getGreen() * (width - i)) / width + (endColor.getGreen() * i) / width,
@@ -118,7 +118,7 @@ public class LGradation implements LRelease {
 				}
 			}
 			g.draw(drawTexHeight, x, y);
-		} catch (Exception ex) {
+		} catch (Throwable ex) {
 			for (int i = 0; i < height; i++) {
 				g.setColor((startColor.getRed() * (height - i)) / height + (endColor.getRed() * i) / height,
 						(startColor.getGreen() * (height - i)) / height + (endColor.getGreen() * i) / height,
@@ -143,7 +143,7 @@ public class LGradation implements LRelease {
 				gl = null;
 			}
 			g.draw(drawImgWidth, x, y);
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			for (int i = 0; i < width; i++) {
 				g.setColor((startColor.getRed() * (width - i)) / width + (endColor.getRed() * i) / width,
 						(startColor.getGreen() * (width - i)) / width + (endColor.getGreen() * i) / width,
@@ -168,7 +168,7 @@ public class LGradation implements LRelease {
 				gl = null;
 			}
 			g.draw(drawImgHeight, x, y);
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			for (int i = 0; i < height; i++) {
 				g.setColor((startColor.getRed() * (height - i)) / height + (endColor.getRed() * i) / height,
 						(startColor.getGreen() * (height - i)) / height + (endColor.getGreen() * i) / height,
@@ -189,7 +189,7 @@ public class LGradation implements LRelease {
 				}
 				drawImgWidth = g.getImage();
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			for (int i = 0; i < width; i++) {
 				g.setColor((startColor.getRed() * (width - i)) / width + (endColor.getRed() * i) / width,
 						(startColor.getGreen() * (width - i)) / width + (endColor.getGreen() * i) / width,
@@ -210,7 +210,7 @@ public class LGradation implements LRelease {
 				}
 				drawImgHeight = g.getImage();
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			for (int i = 0; i < height; i++) {
 				g.setColor((startColor.getRed() * (height - i)) / height + (endColor.getRed() * i) / height,
 						(startColor.getGreen() * (height - i)) / height + (endColor.getGreen() * i) / height,

@@ -47,7 +47,7 @@ public abstract class BaseIO extends DefUI {
 		if (base != null) {
 			try {
 				return base.assets().getText(path);
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				return null;
 			}
 		}
@@ -59,7 +59,7 @@ public abstract class BaseIO extends DefUI {
 		if (base != null) {
 			try {
 				return base.assets().getTextSync(path);
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				return null;
 			}
 		}
@@ -152,7 +152,7 @@ public abstract class BaseIO extends DefUI {
 		if (base != null) {
 			try {
 				return base.assets().getBytes(path);
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				return null;
 			}
 		}
@@ -164,7 +164,7 @@ public abstract class BaseIO extends DefUI {
 		if (base != null) {
 			try {
 				return base.assets().getBytesSync(path);
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				return null;
 			}
 		}

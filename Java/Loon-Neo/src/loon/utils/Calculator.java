@@ -26,7 +26,17 @@ package loon.utils;
  */
 public class Calculator {
 
-	private final static int ADD = 0, SUBTRACT = 1, MULTIPLY = 2, DIVIDE = 3, MODULO = 4, EQUAL = 5;
+	public static final int ADD = 1;
+
+	public static final int SUBTRACT = 2;
+
+	public static final int MULTIPLY = 3;
+
+	public static final int DIVIDE = 4;
+
+	public static final int MODULO = 5;
+
+	public static final int EQUAL = 6;
 
 	private float currentTotal;
 

@@ -58,7 +58,7 @@ public abstract class LSystemView extends BaseIO {
 	}
 
 	private void onFrame() {
-		if(!LSystem.AUTO_REPAINT){
+		if(!LSystem._auto_repaint){
 			return;
 		}
 		int nextUpdate = this.nextUpdate;

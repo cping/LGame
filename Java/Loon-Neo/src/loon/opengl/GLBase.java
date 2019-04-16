@@ -47,8 +47,8 @@ public abstract class GLBase implements LRelease {
 	public void end() {
 		try {
 			flush();
-		} catch (Exception ex) {
-			throw LSystem.runThrow(ex.getMessage(),ex);
+		} catch (Throwable ex) {
+			LSystem.error(ex.getMessage(), ex);
 		} finally {
 			begun = false;
 		}
@@ -58,7 +58,7 @@ public abstract class GLBase implements LRelease {
 	@Override
 	public void close() {
 		if (begun) {
-			throw LSystem.runThrow(getClass().getSimpleName() + " close() without end()");
+			LSystem.error(getClass().getSimpleName() + " close() without end()");
 		}
 	}
 }

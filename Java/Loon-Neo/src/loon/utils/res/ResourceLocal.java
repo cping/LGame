@@ -325,7 +325,7 @@ public class ResourceLocal extends ResourceGetter implements IEventListener {
 		BMFont fs = null;
 		try {
 			fs = new BMFont(item.url());
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			LSystem.error("BMFont " + item.url() + " not found!", e);
 		}
 		return fs;

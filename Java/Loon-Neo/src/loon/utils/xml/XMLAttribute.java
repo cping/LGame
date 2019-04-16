@@ -47,7 +47,7 @@ public class XMLAttribute {
 	public int getIntValue() {
 		try {
 			return Integer.parseInt(this.value);
-		} catch (Exception ex) {
+		} catch (Throwable ex) {
 			throw LSystem.runThrow("Attribute '" + this.name
 					+ "' has value '" + this.value
 					+ "' which is not an integer !");
@@ -57,7 +57,7 @@ public class XMLAttribute {
 	public float getFloatValue() {
 		try {
 			return Float.parseFloat(this.value);
-		} catch (Exception ex) {
+		} catch (Throwable ex) {
 			throw LSystem.runThrow("Attribute '" + this.name
 					+ "' has value '" + this.value
 					+ "' which is not an float !");
@@ -70,7 +70,7 @@ public class XMLAttribute {
 				this.value = value.replace("b", "");
 			}
 			return Double.parseDouble(this.value);
-		} catch (Exception ex) {
+		} catch (Throwable ex) {
 			throw LSystem.runThrow("Attribute '" + this.name
 					+ "' has value '" + this.value
 					+ "' which is not an double !");

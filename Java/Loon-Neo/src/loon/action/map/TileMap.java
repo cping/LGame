@@ -846,7 +846,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 			if (_mapSprites != null) {
 				_mapSprites.paintPos(g, moveX, moveY);
 			}
-		} catch (Exception ex) {
+		} catch (Throwable ex) {
 			LSystem.error("Array2D TileMap error !", ex);
 		} finally {
 			if (update) {

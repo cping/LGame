@@ -196,7 +196,7 @@ public abstract class NinePatchAbstract<K, V> {
 				startX = 0;
 				startY += preRowHeight;
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			throw LSystem.runThrow(e.getMessage(), e);
 		} finally {
 			pos(g2d, -x, -y);

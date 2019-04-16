@@ -254,7 +254,7 @@ public class SimpleParticleSystem extends Entity {
 			} else {
 				sprite = LTextures.loadTexture(defaultImageName);
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			LSystem.error(e.getMessage(), e);
 			defaultImageName = null;
 		}

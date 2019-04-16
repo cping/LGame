@@ -236,7 +236,7 @@ public class GifDecoder implements LRelease {
 		}
 		try {
 			is.close();
-		} catch (Exception e) {
+		} catch (Throwable e) {
 		}
 		return status;
 	}
@@ -363,7 +363,7 @@ public class GifDecoder implements LRelease {
 		int curByte = 0;
 		try {
 			curByte = buffer.read();
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			status = STATUS_FORMAT_ERROR;
 		}
 		return curByte;
@@ -381,7 +381,7 @@ public class GifDecoder implements LRelease {
 						break;
 					n += count;
 				}
-			} catch (Exception e) {
+			} catch (Throwable e) {
 			}
 			if (n < blockSize) {
 				status = STATUS_FORMAT_ERROR;
@@ -397,7 +397,7 @@ public class GifDecoder implements LRelease {
 		int n = 0;
 		try {
 			n = buffer.read(c);
-		} catch (Exception e) {
+		} catch (Throwable e) {
 		}
 		if (n < nbytes) {
 			status = STATUS_FORMAT_ERROR;

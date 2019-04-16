@@ -22,6 +22,7 @@ package loon.action.avg.drama;
 
 import loon.LRelease;
 import loon.LSystem;
+import loon.utils.Calculator;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
 import loon.utils.StringUtils;
@@ -40,16 +41,6 @@ public abstract class Conversion implements Expression {
 	public static final int STACK_RAND = -1;
 
 	public static final int STACK_NUM = 0;
-
-	public static final int PLUS = 1;
-
-	public static final int MINUS = 2;
-
-	public static final int MULTIPLE = 3;
-
-	public static final int DIVISION = 4;
-
-	public static final int MODULO = 5;
 
 	final Exp exp = new Exp();
 
@@ -163,7 +154,7 @@ public abstract class Conversion implements Expression {
 				if (MathUtils.isNan(v)) {
 					return Float.parseFloat(v);
 				} else {
-					throw LSystem.runThrow(v + " not parse !");
+					LSystem.error(v + " not parse !");
 				}
 			}
 			return eval(v);
@@ -220,17 +211,17 @@ public abstract class Conversion implements Expression {
 					case '*':
 						evalExp(compute, stIdx, op[0]);
 						evalExp(compute, op[0] + 1, edIdx);
-						compute.setOperator(MULTIPLE);
+						compute.setOperator(Calculator.MULTIPLY);
 						break;
 					case '/':
 						evalExp(compute, stIdx, op[0]);
 						evalExp(compute, op[0] + 1, edIdx);
-						compute.setOperator(DIVISION);
+						compute.setOperator(Calculator.DIVIDE);
 						break;
 					case '%':
 						evalExp(compute, stIdx, op[0]);
 						evalExp(compute, op[0] + 1, edIdx);
-						compute.setOperator(MODULO);
+						compute.setOperator(Calculator.MODULO);
 						break;
 					}
 				}
@@ -249,12 +240,12 @@ public abstract class Conversion implements Expression {
 					case '+':
 						evalExp(compute, stIdx, op[1]);
 						evalExp(compute, op[1] + 1, edIdx);
-						compute.setOperator(PLUS);
+						compute.setOperator(Calculator.ADD);
 						break;
 					case '-':
 						evalExp(compute, stIdx, op[1]);
 						evalExp(compute, op[1] + 1, edIdx);
-						compute.setOperator(MINUS);
+						compute.setOperator(Calculator.SUBTRACT);
 						break;
 					}
 				}
@@ -320,15 +311,15 @@ public abstract class Conversion implements Expression {
 
 			private float calcOp(int op, float n1, float n2) {
 				switch (op) {
-				case PLUS:
+				case Calculator.ADD:
 					return n1 + n2;
-				case MINUS:
+				case Calculator.SUBTRACT:
 					return n1 - n2;
-				case MULTIPLE:
+				case Calculator.MULTIPLY:
 					return n1 * n2;
-				case DIVISION:
+				case Calculator.DIVIDE:
 					return n1 / n2;
-				case MODULO:
+				case Calculator.MODULO:
 					return n1 % n2;
 				}
 				return 0;

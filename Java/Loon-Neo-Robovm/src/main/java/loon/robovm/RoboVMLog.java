@@ -23,7 +23,6 @@ package loon.robovm;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import loon.LSystem;
 import loon.Log;
 
 import org.robovm.apple.foundation.Foundation;
@@ -48,6 +47,5 @@ public class RoboVMLog extends Log {
 
 	@Override
 	public void onError(Throwable e) {
-		LSystem.AUTO_REPAINT = false;
 	}
 }

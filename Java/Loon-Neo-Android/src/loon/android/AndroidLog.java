@@ -20,7 +20,6 @@
  */
 package loon.android;
 
-import loon.LSystem;
 import android.util.Log;
 
 public class AndroidLog extends loon.Log {
@@ -62,6 +61,6 @@ public class AndroidLog extends loon.Log {
 	@Override
 	public void onError(Throwable e) {
 		// stop the game repaint
-		LSystem.AUTO_REPAINT = false;
+		// LSystem.AUTO_REPAINT = false;
 	}
 }

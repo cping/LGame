@@ -134,8 +134,9 @@ public abstract class Log {
 			}
 			if (level.id >= minLevel.id) {
 				callNativeLog(level, msg, e);
-				if (LSystem._base != null) {
-					LSetting setting = LSystem._base.setting;
+				LGame game = LSystem._base;
+				if (game != null) {
+					LSetting setting = game.setting;
 					LProcess process = LSystem.getProcess();
 					if (process != null && (setting.isDebug || setting.isDisplayLog)) {
 						LColor color = LColor.white;

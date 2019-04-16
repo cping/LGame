@@ -525,19 +525,19 @@ public class Field2D implements IArray, Config {
 		return result;
 	}
 
-	private int get(int[][] mapArrays, int px, int py) {
+	protected int get(int[][] mapArrays, int px, int py) {
 		try {
 			if (allowLimit(px, py)) {
 				return mapArrays[py][px];
 			} else {
 				return -1;
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			return -1;
 		}
 	}
 
-	private int get(int[][] mapArrays, Vector2f point) {
+	protected int get(int[][] mapArrays, Vector2f point) {
 		return get(mapArrays, point.x(), point.y());
 	}
 

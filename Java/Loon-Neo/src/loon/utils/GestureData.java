@@ -216,7 +216,7 @@ public class GestureData {
 			if (!curTemplate.equals("") && curPoints != null) {
 				loaders.add(new GestureLoader(curTemplate, curPoints, resampledFirst));
 			}
-		} catch (Exception ex) {
+		} catch (Throwable ex) {
 			throw LSystem.runThrow(ex.getMessage(), ex);
 		}
 		ObjectMap<String, TArray<PointF>> points = new ObjectMap<String, TArray<PointF>>();

@@ -61,7 +61,8 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 			try {
 				obj.reset();
 				onSuccess(obj);
-			} catch (Exception ex) {
+			} catch (Throwable ex) {
+				LSystem.error(ex.getMessage(), ex);
 				onFailure(ex);
 			}
 		}

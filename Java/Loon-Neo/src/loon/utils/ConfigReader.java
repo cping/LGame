@@ -116,7 +116,7 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 			if (!curTemplate.equals("") && curBuffer != null) {
 				_loaders.add(curBuffer);
 			}
-		} catch (Exception ex) {
+		} catch (Throwable ex) {
 			throw LSystem.runThrow(ex.getMessage(), ex);
 		}
 		if (_loaders != null && _loaders.size > 0) {

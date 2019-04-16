@@ -17,7 +17,7 @@ public class GLRenderer implements LRelease {
 		public static final GLType Line = new GLType(GL20.GL_LINES);
 
 		public static final GLType LineStrip = new GLType(GL20.GL_LINE_STRIP);
-		
+
 		public static final GLType Filled = new GLType(GL20.GL_TRIANGLES);
 
 		public static final GLType FillStrip = new GLType(GL20.GL_TRIANGLE_STRIP);
@@ -584,8 +584,8 @@ public class GLRenderer implements LRelease {
 				if (!LColor.white.equals(_color)) {
 					_gl.setBlendMode(LSystem.MODE_SPEED);
 				}
-			} catch (Exception ex) {
-				throw LSystem.runThrow(ex.getMessage(), ex);
+			} catch (Throwable ex) {
+				LSystem.error(ex.getMessage(), ex);
 			} finally {
 				_renderer.end();
 				_gl.setBlendMode(tmp);

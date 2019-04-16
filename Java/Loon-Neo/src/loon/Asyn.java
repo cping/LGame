@@ -79,7 +79,7 @@ public abstract class Asyn {
 				Runnable action = running.get(ii);
 				try {
 					action.run();
-				} catch (Exception e) {
+				} catch (Throwable e) {
 					log.warn("invokeLater Runnable failed: " + action, e);
 				}
 			}

@@ -48,7 +48,7 @@ public class ARC4 {
 		try {
 			ARC4 rc4 = new ARC4(key);
 			return rc4.getCrypt(value);
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			return value;
 		}
 	}
@@ -64,7 +64,7 @@ public class ARC4 {
 		try {
 			ARC4 rc4 = new ARC4(key);
 			return rc4.getCrypt(value.getBytes(LSystem.ENCODING));
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			return new ArrayByte(value.getBytes());
 		}
 	}

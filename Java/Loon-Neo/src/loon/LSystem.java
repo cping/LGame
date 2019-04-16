@@ -121,7 +121,8 @@ public class LSystem {
 
 	public static boolean PAUSED = false;
 
-	public static boolean AUTO_REPAINT = true;
+	// 是否允许屏幕画面刷新
+	protected static boolean _auto_repaint = true;
 	// 包内默认的图片路径
 	private static String _systemDefaultImgPath = "loon_";
 
@@ -516,7 +517,7 @@ public class LSystem {
 			try {
 				rel.close();
 				rel = null;
-			} catch (Exception e) {
+			} catch (Throwable e) {
 			}
 		}
 	}
@@ -588,6 +589,14 @@ public class LSystem {
 
 	public static boolean isAudio(String extension) {
 		return extension.equals("mp3") || extension.equals("ogg") || extension.equals("wav") || extension.equals("mid");
+	}
+
+	public static void stopRepaint() {
+		LSystem._auto_repaint = false;
+	}
+
+	public static void startRepaint() {
+		LSystem._auto_repaint = true;
 	}
 
 	public static final void debug(String msg) {
@@ -662,6 +671,12 @@ public class LSystem {
 		}
 	}
 
+	public static final void reportError(String msg, Throwable throwable) {
+		if (LSystem._base != null) {
+			LSystem._base.reportError(msg, throwable);
+		}
+	}
+	
 	public static final RuntimeException runThrow(String msg) {
 		error(msg);
 		return new RuntimeException(msg);

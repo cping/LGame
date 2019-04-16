@@ -1019,7 +1019,7 @@ public class LColor implements Serializable {
 				return new LColor(Integer.parseInt(c.substring(0, 2), 16), Integer.parseInt(c.substring(2, 4), 16),
 						Integer.parseInt(c.substring(4, 6), 16));
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			return new LColor();
 		}
 	}

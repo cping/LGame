@@ -95,8 +95,8 @@ public class TrilateralBatch extends BaseBatch {
 			}
 			mesh.post(_batch_name, expandVertices.getSize(), shader, expandVertices.getVertices(), idx, count);
 			GLUtils.setBlendMode(gl, tmp);
-		} catch (Exception e) {
-			throw LSystem.runThrow(e.getMessage());
+		} catch (Throwable ex) {
+			LSystem.error(ex.getMessage(), ex);
 		} finally {
 			if (expandVertices.expand(this.idx)) {
 				mesh.reset(_batch_name, expandVertices.length());

@@ -141,8 +141,14 @@ public abstract class LGame {
 	}
 
 	public LGame reportError(String message, Throwable cause) {
+		return reportError(message, cause, true);
+	}
+
+	public LGame reportError(String message, Throwable cause, boolean logError) {
 		errors.emit(new Error(message, cause));
-		log().warn(message, cause);
+		if (logError) {
+			log().error(message, cause);
+		}
 		return this;
 	}
 
@@ -158,7 +164,8 @@ public abstract class LGame {
 		try {
 			frame.emit(this);
 		} catch (Throwable cause) {
-			log().warn("Frame tick exception", cause);
+			log().error("Frame tick exception :", cause);
+			LSystem.stopRepaint();
 		}
 	}
 

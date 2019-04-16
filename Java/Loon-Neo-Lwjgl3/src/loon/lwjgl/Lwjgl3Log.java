@@ -48,6 +48,6 @@ class Lwjgl3Log extends Log {
 	@Override
 	public void onError(Throwable e) {
 		// if happen error the game repaint have to stop here
-		LSystem.AUTO_REPAINT = false;
+		// LSystem.AUTO_REPAINT = false;
 	}
 }

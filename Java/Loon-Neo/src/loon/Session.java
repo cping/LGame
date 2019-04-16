@@ -45,7 +45,7 @@ public class Session implements Bundle<String> {
 		if (Base64Coder.isBase64(result)) {
 			try {
 				result = new String(Base64Coder.decode(result), LSystem.ENCODING);
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				result = new String(Base64Coder.decode(result));
 			}
 		}
@@ -59,7 +59,7 @@ public class Session implements Bundle<String> {
 		if (!Base64Coder.isBase64(result)) {
 			try {
 				result = new String(Base64Coder.encode(result.getBytes()), LSystem.ENCODING);
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				result = new String(Base64Coder.encode(result.getBytes()));
 			}
 		}
@@ -171,7 +171,7 @@ public class Session implements Bundle<String> {
 		try {
 			this._save = LSystem._base.save();
 			isPersisted = true;
-		} catch (Exception ex) {
+		} catch (Throwable ex) {
 			isPersisted = false;
 		}
 		this.name = name;
@@ -528,7 +528,7 @@ public class Session implements Bundle<String> {
 				recordsList.clear();
 			}
 			removeData();
-		} catch (Exception e) {
+		} catch (Throwable e) {
 		}
 	}
 

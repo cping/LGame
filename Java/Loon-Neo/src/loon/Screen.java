@@ -606,12 +606,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * try { this.wait(); } catch (InterruptedException ex) { } } }
 	 * 
 	 * @Deprecated public synchronized void waitFrame(int i) { for (int wait =
-	 * frame + i; frame < wait;) { try { super.wait(); } catch (Exception ex) {
+	 * frame + i; frame < wait;) { try { super.wait(); } catch (Throwable ex) {
 	 * } } }
 	 * 
 	 * @Deprecated public synchronized void waitTime(long i) { for (long time =
 	 * System.currentTimeMillis() + i; System .currentTimeMillis() < time;) try
-	 * { super.wait(time - System.currentTimeMillis()); } catch (Exception ex) {
+	 * { super.wait(time - System.currentTimeMillis()); } catch (Throwable ex) {
 	 * } }
 	 */
 	/** 受限函数结束 **/
@@ -686,11 +686,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	public void stopRepaint() {
-		LSystem.AUTO_REPAINT = false;
+		LSystem.stopRepaint();
 	}
 
 	public void startRepaint() {
-		LSystem.AUTO_REPAINT = true;
+		LSystem.startRepaint();
 	}
 
 	public void stopProcess() {
@@ -1896,7 +1896,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			try {
 				EmulatorButtons es = LSystem._process.getEmulatorButtons();
 				es.setVisible(visible);
-			} catch (Exception e) {
+			} catch (Throwable e) {
 			}
 		}
 		return this;
@@ -3240,7 +3240,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			keyType[type] = true;
 			keyButtonPressed = code;
 			keyButtonReleased = SysInput.NO_KEY;
-		} catch (Exception ex) {
+		} catch (Throwable ex) {
 			keyButtonPressed = SysInput.NO_KEY;
 			keyButtonReleased = SysInput.NO_KEY;
 			error(ex.getMessage());
@@ -3257,7 +3257,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		try {
 			keyButtonPressed = button;
 			keyButtonReleased = SysInput.NO_KEY;
-		} catch (Exception e) {
+		} catch (Throwable e) {
 		}
 	}
 
@@ -3287,7 +3287,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			keyType[type] = false;
 			keyButtonReleased = code;
 			keyButtonPressed = SysInput.NO_KEY;
-		} catch (Exception ex) {
+		} catch (Throwable ex) {
 			keyButtonPressed = SysInput.NO_KEY;
 			keyButtonReleased = SysInput.NO_KEY;
 			error(ex.getMessage());
@@ -3300,7 +3300,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		try {
 			keyButtonReleased = button;
 			keyButtonPressed = SysInput.NO_KEY;
-		} catch (Exception e) {
+		} catch (Throwable e) {
 		}
 	}
 
@@ -3344,7 +3344,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 					_clickListener.DownClick(getDesktop().getSelectedComponent(), e.getX(), e.getY());
 				}
 			}
-		} catch (Exception ex) {
+		} catch (Throwable ex) {
 			touchButtonPressed = SysInput.NO_BUTTON;
 			touchButtonReleased = SysInput.NO_BUTTON;
 			error(ex.getMessage());
@@ -3375,7 +3375,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 					_clickListener.UpClick(getDesktop().getSelectedComponent(), e.getX(), e.getY());
 				}
 			}
-		} catch (Exception ex) {
+		} catch (Throwable ex) {
 			touchButtonPressed = SysInput.NO_BUTTON;
 			touchButtonReleased = SysInput.NO_BUTTON;
 			error(ex.getMessage());
@@ -4495,8 +4495,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @param h
 	 * @return
 	 */
-	public final Screen elementsTriangle(final TArray<ActionBind> objs, float x, float y, float w,
-			float h) {
+	public final Screen elementsTriangle(final TArray<ActionBind> objs, float x, float y, float w, float h) {
 		LayoutManager.elementsTriangle(this, objs, x, y, w, h);
 		return this;
 	}
@@ -4509,8 +4508,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @param stepRate
 	 * @return
 	 */
-	public final Screen elementsTriangle(final TArray<ActionBind> objs, Triangle2f triangle,
-			int stepRate) {
+	public final Screen elementsTriangle(final TArray<ActionBind> objs, Triangle2f triangle, int stepRate) {
 		LayoutManager.elementsTriangle(this, objs, triangle, stepRate);
 		return this;
 	}
@@ -4687,6 +4685,18 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	public final TArray<LClickButton> elementButtons(final String[] names, int sx, int sy, int cellWidth,
 			int cellHeight, int offsetX, int offsetY, ClickListener listener, int maxHeight) {
 		return LayoutManager.elementButtons(this, names, sx, sy, cellWidth, cellHeight, listener, maxHeight);
+	}
+
+	/**
+	 * 向Loon系统上报一个错误
+	 * 
+	 * @param msg
+	 * @param throwable
+	 * @return
+	 */
+	public Screen reportError(String msg, Throwable throwable) {
+		LSystem.reportError(msg, throwable);
+		return this;
 	}
 
 	/**

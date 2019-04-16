@@ -63,7 +63,7 @@ public class BMFont implements IFont {
 			try {
 				_font = new BMFont(LSystem.getSystemImagePath() + DEF_BMF_ONT + ".txt",
 						LSystem.getSystemImagePath() + DEF_BMF_ONT + ".png");
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				LSystem.error("BMFont error!", e);
 			}
 		}
@@ -451,7 +451,7 @@ public class BMFont implements IFont {
 		if (!_initParse) {
 			try {
 				this.parse(BaseIO.loadText(_texPath));
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				LSystem.error("BMFont error!", e);
 			}
 			_initParse = true;
