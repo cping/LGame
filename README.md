@@ -8,7 +8,7 @@
 
 *2019年复活继续更新 - 2019-03-08。
 
-*LGame目前版本虽然基于标准OpeglES API开发,但项目0.1版最早脱胎于AWT Java2D时代,所以采用了AWT Graphics2D的坐标系（画布左上角为原点(x=0,y=0),Y轴向下为正值,与JavaFx或Android,JavaScript的Canvas渲染坐标一致），渲染接口也都被保存下来，Graphics2D以及Android Canvas的大部分API可以在GLEx这一全局渲染类中直接使用，甚至连J2ME时代的游戏你都能无缝移植过来(有完整API支持)。
+*LGame目前版本虽然基于标准OpenGLES API开发,但项目0.1版最早脱胎于AWT Java2D时代,所以采用了AWT Graphics2D的坐标系（画布左上角为原点(x=0,y=0),Y轴向下为正值,与JavaFx或Android,JavaScript的Canvas渲染坐标一致），渲染接口也都被保存下来，Graphics2D以及Android Canvas的大部分API可以在GLEx这一全局渲染类中直接使用，甚至连J2ME时代的游戏你都能无缝移植过来(有完整API支持)。
 
 *LGame在设计上追求一切从简，能自己实现的，绝不依赖第三方类库(One jar)，所以无论是XML或Json解析，TMX地图构建，物理引擎，游戏脚本，抑或二维码构建，都有自己的完整实现（当然，肯定也允许使用第三方的），并且能自然和游戏组件绑定。所以学习难度低(很多事情后台都自动做了)，上手容易，堪称学习难度最低的Java游戏引擎，没有之一。
 
