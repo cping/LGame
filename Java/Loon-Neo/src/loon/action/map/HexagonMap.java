@@ -1416,7 +1416,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 
 	public int getTileID(int x, int y) {
 		if (x >= 0 && x < field2dMap.getWidth() && y >= 0 && y < field2dMap.getHeight()) {
-			return field2dMap.getType(y, x);
+			return field2dMap.getTileType(x, y);
 		} else {
 			return -1;
 		}

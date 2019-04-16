@@ -751,7 +751,7 @@ public class SLGTest extends Stage {
 	}
 
 	public int getMapCost(int x, int y) {
-		int type = map.getField().getType(x, y);
+		int type = map.getField().getTileType(x, y);
 
 		switch (type) {
 		case 0:

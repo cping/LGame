@@ -20,6 +20,9 @@
  */
 package loon.action.map.colider;
 
+/**
+ * 六边形瓦片碰撞器
+ */
 public class HexagonalTileColider extends TileColider {
 
 	public HexagonalTileColider(int tileWidth, int tileHeight) {

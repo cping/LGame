@@ -155,8 +155,8 @@ public class TileRoom {
 	public TileRoom convert(Field2D field, int in, int out) {
 		for (int xp = 0; xp < this.width; xp++) {
 			for (int yp = 0; yp < this.height; yp++) {
-				if (field.getType(this.x + xp, this.y + yp) == in) {
-					field.setType(this.x + xp, this.y + yp, out);
+				if (field.getTileType(this.x + xp, this.y + yp) == in) {
+					field.setTileType(this.x + xp, this.y + yp, out);
 				}
 			}
 		}

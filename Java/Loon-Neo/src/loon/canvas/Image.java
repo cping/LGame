@@ -37,6 +37,9 @@ import loon.utils.TArray;
 import loon.utils.reply.Function;
 import loon.utils.reply.GoFuture;
 
+/**
+ * 图像加载与处理的基础类,Texture由此类排生,内部为具体运行环境的等效对象封装.
+ */
 public abstract class Image extends TextureSource implements Canvas.Drawable, LRelease {
 
 	private boolean isTexture = false;

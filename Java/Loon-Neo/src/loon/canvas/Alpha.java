@@ -20,6 +20,9 @@
  */
 package loon.canvas;
 
+/**
+ * Alpha处理用类
+ */
 public class Alpha {
 	
 	public static final Alpha ZERO = new Alpha(0.0f);

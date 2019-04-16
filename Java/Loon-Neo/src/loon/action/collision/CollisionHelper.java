@@ -189,7 +189,7 @@ public final class CollisionHelper extends ShapeUtils {
 					} else if (getPixelData(src, nx, ny)[0] != 0 && getPixelData(dest, nx1, ny1)[0] != 0) {
 						return true;
 					}
-				} catch (Exception e) {
+				} catch (Throwable e) {
 
 				}
 			}

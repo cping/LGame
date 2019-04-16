@@ -568,7 +568,7 @@ public class TDTest extends Screen {
 			int newX = x / field.getTileWidth();
 			int newY = y / field.getTileHeight();
 			// 当选中炮塔(参数不为-1)且数组地图参数为-1(不可通过)并且无其它角色在此时
-			if ((o = getClickActor()) == null && selectTurret != -1 && field.getType(newY, newX) == -1) {
+			if ((o = getClickActor()) == null && selectTurret != -1 && field.getTileType(newX,newY) == -1) {
 				// 添加炮塔
 				addObject(new Turret(turrets[selectTurret]), newX * field.getTileWidth(), newY * field.getTileHeight());
 			}

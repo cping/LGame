@@ -28,6 +28,10 @@ import loon.canvas.Paint.Style;
 import loon.font.LFont;
 import loon.font.TextLayout;
 
+/**
+ * Canvas渲染用类,作为Image的渲染器封装而存在,随着平台不同,在后台渲染上可能存在一定差异.<br>
+ * 如果要统一效果,可以使用Pixmap进行像素处理.
+ */
 public abstract class Canvas implements LRelease {
 
 	protected LFont _font;

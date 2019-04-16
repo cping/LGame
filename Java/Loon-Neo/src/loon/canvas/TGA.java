@@ -27,6 +27,9 @@ import loon.LRelease;
 import loon.LSystem;
 import loon.utils.ArrayByte;
 
+/**
+ * TGA图片解码器
+ */
 public class TGA {
 
 	private static final int TGA_HEADER_SIZE = 18;

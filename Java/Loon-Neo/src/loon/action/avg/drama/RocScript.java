@@ -201,7 +201,7 @@ public class RocScript {
 
 	private final boolean DEBUG_E = false;
 
-	public class ScriptException extends Exception {
+	public class ScriptException extends Throwable {
 
 		/**
 		 * 
@@ -387,7 +387,7 @@ public class RocScript {
 				String text = BaseIO.loadText(script);
 				charlist = filtrScript(text).toCharArray();
 				size = charlist.length;
-			} catch (Exception exc) {
+			} catch (Throwable exc) {
 				handleError(FILEIOERROR);
 			}
 			// 当读取到文件尾部时，后退一位
@@ -1946,7 +1946,7 @@ public class RocScript {
 							int idx = 0;
 							try {
 								idx = (int) Double.parseDouble(idxName);
-							} catch (Exception ex) {
+							} catch (Throwable ex) {
 								idx = 0;
 							}
 							if (idx < arrays.length()) {
@@ -1974,7 +1974,7 @@ public class RocScript {
 											int idx = 0;
 											try {
 												idx = (int) Double.parseDouble(idxName);
-											} catch (Exception ex) {
+											} catch (Throwable ex) {
 												idx = 0;
 											}
 											if (idx < arrays.length()) {
@@ -2026,7 +2026,7 @@ public class RocScript {
 											int idx = 0;
 											try {
 												idx = (int) Double.parseDouble(idxName);
-											} catch (Exception ex) {
+											} catch (Throwable ex) {
 												idx = 0;
 											}
 											if (idx < arrays.length()) {

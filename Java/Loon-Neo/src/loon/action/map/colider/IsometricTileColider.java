@@ -20,6 +20,9 @@
  */
 package loon.action.map.colider;
 
+/**
+ * 斜45度瓦片碰撞器
+ */
 public class IsometricTileColider extends TileColider {
 
 	public IsometricTileColider(int tileWidth, int tileHeight) {

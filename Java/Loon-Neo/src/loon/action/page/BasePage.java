@@ -22,6 +22,9 @@ package loon.action.page;
 
 import loon.Screen;
 
+/**
+ * 多个Screen之间转换效果的基础封装用类
+ */
 public abstract class BasePage {
 
 	public abstract void onTransform(Screen screen, float position);

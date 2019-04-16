@@ -26,6 +26,9 @@ import loon.LTexture;
 import loon.opengl.GLEx;
 import loon.utils.IntMap;
 
+/**
+ * Color渲染Image的简单渐变实现
+ */
 public class LGradation implements LRelease {
 
 	private static IntMap<LGradation> COLOR_GRADATIONS;

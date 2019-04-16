@@ -30,6 +30,9 @@ import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 import loon.utils.StringUtils;
 
+/**
+ * 色彩处理用类,Loon中所有组件色彩设置此类皆可通用
+ */
 public class LColor implements Serializable {
 
 	/**

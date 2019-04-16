@@ -266,7 +266,7 @@ public class Command extends Conversion implements LRelease {
 				try {
 					// 尝试四则运算公式匹配
 					valueB = exp.parse(valueB);
-				} catch (Exception e) {
+				} catch (Throwable e) {
 				}
 			}
 			// 无法判定
@@ -304,7 +304,7 @@ public class Command extends Conversion implements LRelease {
 				float numberB = Float.parseFloat(valueB.toString());
 				conditionEnvironmentList.put(nowPosFlagName, Boolean.valueOf(result = numberA <= numberB));
 			}
-		} catch (Exception ex) {
+		} catch (Throwable ex) {
 			throw LSystem.runThrow(ex.getMessage(), ex);
 		}
 		return result;
@@ -374,7 +374,7 @@ public class Command extends Conversion implements LRelease {
 	public String getRead(int index) {
 		try {
 			return getReads()[index];
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			return null;
 		}
 	}
@@ -958,7 +958,7 @@ public class Command extends Conversion implements LRelease {
 					}
 				}
 			}
-		} catch (Exception ex) {
+		} catch (Throwable ex) {
 			throw LSystem.runThrow("Command error!", ex);
 		} finally {
 			if (!isInnerCommand) {
@@ -1157,7 +1157,7 @@ public class Command extends Conversion implements LRelease {
 					}
 				}
 				result = CollectionUtils.copyOf(result, index);
-			} catch (Exception ex) {
+			} catch (Throwable ex) {
 				throw LSystem.runThrow("Command error!", ex);
 			}
 			scriptLazy.put(key, result);
@@ -1229,7 +1229,7 @@ public class Command extends Conversion implements LRelease {
 			try {
 				temps.clear();
 				temps = null;
-			} catch (Exception e) {
+			} catch (Throwable e) {
 			}
 		}
 		if (printTags != null) {

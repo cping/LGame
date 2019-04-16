@@ -66,7 +66,7 @@ public class TMXTileSet {
 				XMLDocument doc = XMLParser.parse(tilesLocation + "/" + source);
 				XMLElement docElement = doc.getRoot();
 				element = docElement;
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				throw LSystem.runThrow(tilesLocation + "/" + source);
 			}
 		}

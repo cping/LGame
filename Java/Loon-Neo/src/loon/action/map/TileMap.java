@@ -394,7 +394,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	public int getTileID(int x, int y) {
 		if (x >= 0 && x < field.getWidth() && y >= 0 && y < field.getHeight()) {
-			return field.getType(y, x);
+			return field.getTileType(x, y);
 		} else {
 			return -1;
 		}
@@ -402,7 +402,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	public TileMap setTileID(int x, int y, int id) {
 		if (x >= 0 && x < field.getWidth() && y >= 0 && y < field.getHeight()) {
-			field.setType(y, x, id);
+			field.setTileType(x, y, id);
 		}
 		return this;
 	}

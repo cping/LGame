@@ -27,6 +27,9 @@ import loon.canvas.Canvas;
 import loon.canvas.Image;
 import loon.utils.ObjectMap;
 
+/**
+ * 一个专门解析RMXP素材对话框的专用类
+ */
 final public class AVGDialog {
 
 	private static ObjectMap<String, LTexture> lazyImages;
@@ -105,7 +108,7 @@ final public class AVGDialog {
 				}
 				lazy.setDisabledTexture(true);
 				lazyImages.put(keyName, lazy);
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				return null;
 			} finally {
 				left = null;
@@ -237,7 +240,7 @@ final public class AVGDialog {
 				rightDown = null;
 
 				LSystem.debug("Converted image to RMXP dialog image:" + rmxpImage);
-			} catch (Exception e) {
+			} catch (Throwable e) {
 
 			}
 		}

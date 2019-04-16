@@ -472,7 +472,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 					}
 					idx++;
 				}
-			} catch (Exception e) {
+			} catch (Throwable e) {
 			}
 		}
 	}

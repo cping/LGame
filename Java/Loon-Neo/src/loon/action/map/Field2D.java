@@ -408,18 +408,28 @@ public class Field2D implements IArray, Config {
 		this.moveLimited = limit;
 	}
 
-	public int getType(int x, int y) {
+	private final boolean allowLimit(int x, int y) {
+		return x >= 0 && x < width && y >= 0 && y < height;
+	}
+
+	public int getTileType(int x, int y) {
 		try {
-			return mapArrays[x][y];
-		} catch (Exception e) {
+			if (!allowLimit(x, y)) {
+				return -1;
+			}
+			return mapArrays[y][x];
+		} catch (Throwable e) {
 			return -1;
 		}
 	}
 
-	public void setType(int x, int y, int tile) {
+	public void setTileType(int x, int y, int tile) {
 		try {
-			this.mapArrays[x][y] = tile;
-		} catch (Exception e) {
+			if (!allowLimit(x, y)) {
+				return;
+			}
+			this.mapArrays[y][x] = tile;
+		} catch (Throwable e) {
 		}
 	}
 
@@ -517,7 +527,7 @@ public class Field2D implements IArray, Config {
 
 	private int get(int[][] mapArrays, int px, int py) {
 		try {
-			if (px >= 0 && px < width && py >= 0 && py < height) {
+			if (allowLimit(px, py)) {
 				return mapArrays[py][px];
 			} else {
 				return -1;
@@ -528,15 +538,7 @@ public class Field2D implements IArray, Config {
 	}
 
 	private int get(int[][] mapArrays, Vector2f point) {
-		try {
-			if (point.x() >= 0 && point.x() < width && point.y() >= 0 && point.y() < height) {
-				return mapArrays[point.y()][point.x()];
-			} else {
-				return -1;
-			}
-		} catch (Exception e) {
-			return -1;
-		}
+		return get(mapArrays, point.x(), point.y());
 	}
 
 	public RectBox getRect() {

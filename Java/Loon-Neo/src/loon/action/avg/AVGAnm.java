@@ -93,7 +93,7 @@ public class AVGAnm implements Expression, LRelease {
 					}
 				}
 			}
-		} catch (Exception ex) {
+		} catch (Throwable ex) {
 			this.load = false;
 			LSystem.error(ex.getMessage(), ex);
 			return;

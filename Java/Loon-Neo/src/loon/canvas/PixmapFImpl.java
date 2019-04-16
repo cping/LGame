@@ -28,6 +28,9 @@ import loon.geom.Shape;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 
+/**
+ * Pixmap的Float抽象实现
+ */
 public abstract class PixmapFImpl {
 
 	protected final static int def_skip = 2;

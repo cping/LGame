@@ -113,7 +113,7 @@ public class TMXTileLayer extends TMXMapLayer {
 		case BASE64:
 			try {
 				parseBase64(dataElement.getContents());
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				LSystem.error(e.getMessage(),e);
 			}
 			break;
