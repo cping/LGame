@@ -22,7 +22,6 @@ package loon.action.sprite.effect;
 
 import loon.LSystem;
 import loon.LTexture;
-import loon.LTextures;
 import loon.action.map.Config;
 import loon.action.map.Field2D;
 import loon.action.sprite.Entity;
@@ -47,7 +46,7 @@ public class SplitEffect extends Entity implements BaseEffect {
 	private LTimer timer;
 
 	public SplitEffect(String fileName, int d) {
-		this(LTextures.loadTexture(fileName), d);
+		this(LSystem.loadTexture(fileName), d);
 	}
 
 	public SplitEffect(LTexture t, int d) {

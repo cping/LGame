@@ -51,15 +51,15 @@ import static loon.opengl.GL20.*;
 public class LTexture extends Painter implements LRelease {
 
 	public static LTexture createTexture(int w, int h, Format config) {
-		return LTextures.createTexture(w, h, config);
+		return LSystem.createTexture(w, h, config);
 	}
 
 	public static LTexture createTexture(int w, int h) {
-		return LTextures.createTexture(w, h, Format.DEFAULT);
+		return LSystem.createTexture(w, h, Format.DEFAULT);
 	}
 
 	public static LTexture createTexture(final String path) {
-		return LTextures.loadTexture(path);
+		return LSystem.loadTexture(path);
 	}
 
 	private boolean _disabledTexture = false;
@@ -214,7 +214,7 @@ public class LTexture extends Painter implements LRelease {
 		this.displayWidth = dispWidth;
 		this.displayHeight = dispHeight;
 		this._isLoaded = false;
-		LTextures.putTexture(this);
+		LSystem.putTexture(this);
 		_countTexture++;
 	}
 
@@ -1029,7 +1029,7 @@ public class LTexture extends Painter implements LRelease {
 			return;
 		}
 		final int textureId = id;
-		if (!LTextures.contains(textureId)) {
+		if (!LSystem.containsTexture(textureId)) {
 			return;
 		}
 		if (parent != null) {
@@ -1037,7 +1037,7 @@ public class LTexture extends Painter implements LRelease {
 			return;
 		}
 		synchronized (LTextures.class) {
-			LTextures.removeTexture(this);
+			LSystem.removeTexture(this);
 			if (batch != null) {
 				LSystem.disposeBatchCache(batch, false);
 			}
@@ -1046,7 +1046,7 @@ public class LTexture extends Painter implements LRelease {
 				@Override
 				public void action(Object a) {
 					synchronized (LTexture.class) {
-						if (LTextures.delTexture(textureId)) {
+						if (LSystem.delTexture(textureId)) {
 							if (LSystem._base.setting.disposeTexture && !_disposed && _closed) {
 								GLUtils.deleteTexture(gfx.gl, textureId);
 								_disposed = true;
@@ -1220,7 +1220,7 @@ public class LTexture extends Painter implements LRelease {
 				_countTexture--;
 				free();
 			}
-		} else if (refCount <= 0 && LTextures.getRefCount(getSource()) <= 0) {
+		} else if (refCount <= 0 && LSystem.getRefTextureCount(getSource()) <= 0) {
 			if (parent != null && parent.isChildAllClose()) {
 				parent.close();
 			} else {

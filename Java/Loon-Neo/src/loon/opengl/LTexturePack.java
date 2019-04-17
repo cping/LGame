@@ -25,7 +25,6 @@ import loon.LRelease;
 import loon.LSystem;
 import loon.LTexture;
 import loon.LTextureBatch;
-import loon.LTextures;
 import loon.LTexture.Format;
 import loon.action.sprite.SpriteRegion;
 import loon.canvas.Canvas;
@@ -431,7 +430,7 @@ public class LTexturePack implements LRelease {
 			_glex = LSystem.base().display().GL();
 		}
 		if (fileName != null) {
-			texture = LTextures.loadTexture(fileName, format);
+			texture = LSystem.loadTexture(fileName, format);
 		} else {
 			Image image = packImage();
 			if (image == null) {

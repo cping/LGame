@@ -21,7 +21,7 @@
 package loon.action.sprite;
 
 import loon.LTexture;
-import loon.LTextures;
+import loon.LSystem;
 
 public class ImageBackground extends Background {
 
@@ -32,11 +32,11 @@ public class ImageBackground extends Background {
 	}
 
 	public ImageBackground(String path, float x, float y, float w, float h) {
-		this(LTextures.loadTexture(path), x, y, w, h);
+		this(LSystem.loadTexture(path), x, y, w, h);
 	}
 
 	public ImageBackground(String path) {
-		this(LTextures.loadTexture(path));
+		this(LSystem.loadTexture(path));
 	}
 
 	public ImageBackground(LTexture texture) {

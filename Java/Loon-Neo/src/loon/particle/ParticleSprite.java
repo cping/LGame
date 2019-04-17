@@ -21,7 +21,7 @@
 package loon.particle;
 
 import loon.LTexture;
-import loon.LTextures;
+import loon.LSystem;
 import loon.action.ColorTo;
 import loon.action.sprite.Entity;
 import loon.canvas.LColor;
@@ -35,7 +35,7 @@ public class ParticleSprite extends Entity {
 	private ColorTo colorEffects;
 
 	public ParticleSprite(String path, float lifespan) {
-		this(LTextures.loadTexture(path), lifespan);
+		this(LSystem.loadTexture(path), lifespan);
 	}
 
 	public ParticleSprite(LTexture texture, float lifespan) {

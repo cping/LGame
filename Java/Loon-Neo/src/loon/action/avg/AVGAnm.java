@@ -26,7 +26,6 @@ import loon.BaseIO;
 import loon.LRelease;
 import loon.LSystem;
 import loon.LTexture;
-import loon.LTextures;
 import loon.action.avg.drama.Expression;
 import loon.canvas.LColor;
 import loon.geom.PointI;
@@ -125,7 +124,7 @@ public class AVGAnm implements Expression, LRelease {
 					texture.close();
 					texture = null;
 				}
-				texture = LTextures.loadTexture(path);
+				texture = LSystem.loadTexture(path);
 				imageWidth = texture.getWidth();
 				imageHeight = texture.getHeight();
 

@@ -26,9 +26,17 @@ public class GameTime {
 
 	protected static GameTime _instance = null;
 
+	public static GameTime get() {
+		return getInstance();
+	}
+	
 	public static GameTime getInstance() {
 		if (_instance == null) {
-			_instance = new GameTime();
+			synchronized (GameTime.class) {
+				if (_instance == null) {
+					_instance = new GameTime();
+				}
+			}
 		}
 		return _instance;
 	}
@@ -89,11 +97,7 @@ public class GameTime {
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("GameTime");
-		builder.kv("elapsedTime", _elapsedTime)
-		.comma()
-		.kv("totalTime", _totalTime)
-		.comma()
-		.kv("running", _running);
+		builder.kv("elapsedTime", _elapsedTime).comma().kv("totalTime", _totalTime).comma().kv("running", _running);
 		return builder.toString();
 	}
 }

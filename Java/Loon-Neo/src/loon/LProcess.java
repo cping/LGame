@@ -320,7 +320,7 @@ public class LProcess {
 
 					@Override
 					public void run(LTimerContext time) {
-						if (!LSystem._base.display().showLogo) {
+						if (LSystem._base != null && !LSystem._base.display().showLogo) {
 							try {
 								startTransition();
 								screen.setClose(false);
@@ -331,9 +331,10 @@ public class LProcess {
 								screen.setOnLoadState(true);
 								screen.resume();
 								endTransition();
-								kill();
 							} catch (Throwable cause) {
-								LSystem.error("Screen onLoad failure", cause);
+								LSystem.error("Screen onLoad dispatch failed: " + screen, cause);
+							} finally {
+								kill();
 							}
 						}
 					}
@@ -348,7 +349,7 @@ public class LProcess {
 				_loadingScreen = null;
 			}
 		} catch (Throwable cause) {
-			LSystem.error("Update screen failure", cause);
+			LSystem.error("Update Screen failed: " + screen, cause);
 		}
 	}
 
@@ -415,7 +416,7 @@ public class LProcess {
 			}
 			RealtimeProcessManager.get().dispose();
 			LSTRDictionary.get().dispose();
-			LTextures.dispose();
+			LSystem.disposeTextureAll();
 		}
 		LSystem.debug("The Loon Game Engine is End");
 	}

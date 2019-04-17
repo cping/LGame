@@ -21,7 +21,7 @@
 package loon.utils.res;
 
 import loon.LTexture;
-import loon.LTextures;
+import loon.LSystem;
 
 public class Texture {
 
@@ -44,7 +44,7 @@ public class Texture {
 
 	public TextureData getTextureData() {
 		if (isClosed()) {
-			_img = LTextures.loadTexture(_path);
+			_img = LSystem.loadTexture(_path);
 			_texData.w = _img.getWidth();
 			_texData.h = _img.getHeight();
 			_texData.sourceW = _texData.w;
@@ -55,7 +55,7 @@ public class Texture {
 
 	public LTexture img() {
 		if (isClosed()) {
-			_img = LTextures.loadTexture(_path);
+			_img = LSystem.loadTexture(_path);
 			_texData.w = _img.getWidth();
 			_texData.h = _img.getHeight();
 			_texData.sourceW = _texData.w;

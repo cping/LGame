@@ -53,7 +53,7 @@ public class EmulatorButton {
 	}
 
 	public EmulatorButton(String fileName, int w, int h, int x, int y) {
-		this(LTextures.loadTexture(fileName), w, h, x, y, true);
+		this(LSystem.loadTexture(fileName), w, h, x, y, true);
 	}
 
 	public EmulatorButton(LTexture img, int w, int h, int x, int y) {
@@ -61,7 +61,7 @@ public class EmulatorButton {
 	}
 
 	public EmulatorButton(String fileName, int x, int y) {
-		this(LTextures.loadTexture(fileName), 0, 0, x, y, false);
+		this(LSystem.loadTexture(fileName), 0, 0, x, y, false);
 	}
 
 	public EmulatorButton(LTexture img, int x, int y) {

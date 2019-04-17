@@ -23,7 +23,6 @@ package loon.utils;
 import java.util.Random;
 
 import loon.LSystem;
-import loon.LTextures;
 import loon.action.sprite.Sprites;
 import loon.component.Desktop;
 
@@ -156,8 +155,8 @@ public class UUID {
 			long millis = TimeUtils.millis();
 			mostSigBits = mostSigBits + ((millis / 2) + MathUtils.nextInt((int) leastSigBits));
 			leastSigBits = leastSigBits + ((millis / 3) + MathUtils.nextInt((int) mostSigBits));
-			mostSigBits += MathUtils.max(LTextures.getMemSize(), MathUtils.random(10)) * MathUtils.random(986429531);
-			leastSigBits += MathUtils.max(LTextures.count(), MathUtils.random(10)) * MathUtils.random(895318642);
+			mostSigBits += MathUtils.max(LSystem.getTextureMemSize(), MathUtils.random(10)) * MathUtils.random(986429531);
+			leastSigBits += MathUtils.max(LSystem.countTexture(), MathUtils.random(10)) * MathUtils.random(895318642);
 			mostSigBits += Sprites.allSpritesCount() * MathUtils.random(135799876);
 			leastSigBits += Desktop.allDesktopCount() * MathUtils.random(246805432);
 			uuidString = (digits(mostSigBits >> 32, 8) + "-" + digits(mostSigBits >> 16, 4) + "-"

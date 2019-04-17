@@ -897,7 +897,8 @@ public class Desktop implements Visible, LRelease {
 
 	@Override
 	public String toString() {
-		return super.toString() + " " + "[name=" + desktop_name + ", total=" + size() + "]";
+		return super.toString() + " " + "[name=" + desktop_name + ", total=" + size() + ", content=" + contentPane
+				+ "]";
 	}
 
 	public boolean isClosed() {

@@ -1,7 +1,7 @@
 package loon.opengl;
 
 import loon.LTexture;
-import loon.LTextures;
+import loon.LSystem;
 import loon.geom.RectBox;
 import loon.utils.TArray;
 
@@ -9,11 +9,11 @@ public class LTexturePackClip {
 
 	public static final TArray<LTexturePackClip> getTextureSplit(String path, int tileWidth, int tileHeight,
 			int offsetX, int offsetY) {
-		return getTextureSplit(LTextures.loadTexture(path), tileWidth, tileHeight, offsetX, offsetY);
+		return getTextureSplit(LSystem.loadTexture(path), tileWidth, tileHeight, offsetX, offsetY);
 	}
 
 	public static final TArray<LTexturePackClip> getTextureSplit(String path, int tileWidth, int tileHeight) {
-		return getTextureSplit(LTextures.loadTexture(path), tileWidth, tileHeight, 0, 0);
+		return getTextureSplit(LSystem.loadTexture(path), tileWidth, tileHeight, 0, 0);
 	}
 
 	public static final TArray<LTexturePackClip> getTextureSplit(LTexture texture, int tileWidth, int tileHeight) {

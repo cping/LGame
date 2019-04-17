@@ -22,7 +22,6 @@ package loon.action.sprite.effect;
 
 import loon.LSystem;
 import loon.LTexture;
-import loon.LTextures;
 import loon.action.map.Config;
 import loon.action.sprite.Entity;
 import loon.geom.RectBox;
@@ -40,7 +39,7 @@ public class OutEffect extends Entity implements BaseEffect {
 	private RectBox limit;
 
 	public OutEffect(String fileName, int code) {
-		this(LTextures.loadTexture(fileName), code);
+		this(LSystem.loadTexture(fileName), code);
 	}
 
 	public OutEffect(LTexture t, int code) {

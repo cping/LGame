@@ -22,7 +22,6 @@ package loon.component;
 
 import loon.LSystem;
 import loon.LTexture;
-import loon.LTextures;
 import loon.action.sprite.Animation;
 import loon.canvas.LColor;
 import loon.component.skin.MessageSkin;
@@ -61,7 +60,7 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 	}
 
 	public LMessage(IFont font, String fileName, int x, int y) {
-		this(font, LTextures.loadTexture(fileName), x, y);
+		this(font, LSystem.loadTexture(fileName), x, y);
 	}
 
 	public LMessage(LTexture formImage, int x, int y) {
@@ -144,7 +143,7 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 	}
 
 	public void setTipIcon(String fileName) {
-		setTipIcon(LTextures.loadTexture(fileName));
+		setTipIcon(LSystem.loadTexture(fileName));
 	}
 
 	public void setTipIcon(LTexture icon) {

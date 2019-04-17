@@ -21,7 +21,7 @@
 package loon.component;
 
 import loon.LTexture;
-import loon.LTextures;
+import loon.LSystem;
 import loon.action.sprite.Animation;
 import loon.opengl.GLEx;
 
@@ -48,7 +48,7 @@ public class LPaper extends LContainer {
 	}
 
 	public LPaper(String fileName, int x, int y) {
-		this(LTextures.loadTexture(fileName), x, y);
+		this(LSystem.loadTexture(fileName), x, y);
 	}
 
 	public LPaper(String fileName) {

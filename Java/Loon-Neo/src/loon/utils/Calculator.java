@@ -141,7 +141,7 @@ public class Calculator {
 		currentTotal += num % 1f == 0 ? (int) num : num;
 		return this;
 	}
-
+	
 	public Calculator sub(float num) {
 		currentTotal -= num % 1f == 0 ? (int) num : num;
 		return this;

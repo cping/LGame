@@ -730,9 +730,6 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	public GLEx setTint(int c) {
-		if (this.lastBrush.baseColor != c) {
-			end();
-		}
 		if (this.lastBrush.baseAlpha != 1f) {
 			this.lastBrush.baseColor = c;
 			int ialpha = (int) (0xFF * MathUtils.clamp(this.lastBrush.baseAlpha, 0, 1));

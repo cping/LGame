@@ -24,7 +24,6 @@ package loon.action.avg;
 import loon.LRelease;
 import loon.LSystem;
 import loon.LTexture;
-import loon.LTextures;
 import loon.Visible;
 import loon.action.sprite.ISprite;
 import loon.geom.XY;
@@ -99,7 +98,7 @@ public class AVGChara implements Visible, XY, LRelease {
 			this.maxWidth = w;
 			this.maxHeight = h;
 		} else {
-			this.load(LTextures.loadTexture(path), x, y);
+			this.load(LSystem.loadTexture(path), x, y);
 		}
 	}
 

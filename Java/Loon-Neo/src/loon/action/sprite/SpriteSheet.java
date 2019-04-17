@@ -24,7 +24,6 @@ package loon.action.sprite;
 import loon.LRelease;
 import loon.LSystem;
 import loon.LTexture;
-import loon.LTextures;
 import loon.LTextureBatch.Cache;
 import loon.canvas.LColor;
 import loon.event.Updateable;
@@ -43,11 +42,11 @@ public class SpriteSheet implements LRelease {
 	private LTexture target;
 
 	public SpriteSheet(String fileName, int tw, int th, int s, int m) {
-		this(LTextures.loadTexture(fileName), tw, th, s, m);
+		this(LSystem.loadTexture(fileName), tw, th, s, m);
 	}
 
 	public SpriteSheet(String fileName, int tw, int th) {
-		this(LTextures.loadTexture(fileName), tw, th, 0, 0);
+		this(LSystem.loadTexture(fileName), tw, th, 0, 0);
 	}
 
 	public SpriteSheet(LTexture image, int tw, int th) {

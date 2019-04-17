@@ -56,7 +56,7 @@ public class MeshDefault {
 		LSystem.resetIndices(size, mesh);
 	}
 
-	public synchronized void post(final String name, final int size, ShaderProgram shader, float[] vertices,
+	public void post(final String name, final int size, ShaderProgram shader, float[] vertices,
 			int vertexIdx, int count) {
 		// 防止与主画面渲染器GLEx冲突
 		this.running = LSystem.mainDrawRunning();

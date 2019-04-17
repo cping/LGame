@@ -27,26 +27,26 @@ import loon.utils.reply.Port;
 
 public abstract class Asyn {
 
-	public static class Default extends Asyn {
+	/** 为了语法转换到C#和C++，只能忍痛放弃匿名构造类了…… **/
+	private static class CallDefaultPort<T> extends Port<T>{
+		
+		private Default _def;
+		
+		CallDefaultPort(Default d){
+			this._def = d;
+		}
 
-		/** 为了语法转换到C#和C++，只能忍痛放弃匿名构造类了…… **/
-		private static class CallDefaultPort<T> extends Port<T>{
-			
-			private Default _def;
-			
-			CallDefaultPort(Default d){
-				this._def = d;
-			}
-
-			@Override
-			public void onEmit(Object event) {
-				_def.dispatch();
-			}
-			
+		@Override
+		public void onEmit(Object event) {
+			_def.dispatch();
 		}
 		
-		private final TArray<Runnable> pending = new TArray<>();
-		private final TArray<Runnable> running = new TArray<>();
+	}
+	
+	public static class Default extends Asyn {
+
+		private final TArray<Runnable> pending = new TArray<Runnable>();
+		private final TArray<Runnable> running = new TArray<Runnable>();
 		protected final Log log;
 
 		public Default(Log log, Act<? extends Object> frame) {
@@ -74,7 +74,6 @@ public abstract class Asyn {
 				running.addAll(pending);
 				pending.clear();
 			}
-
 			for (int ii = 0, ll = running.size; ii < ll; ii++) {
 				Runnable action = running.get(ii);
 				try {

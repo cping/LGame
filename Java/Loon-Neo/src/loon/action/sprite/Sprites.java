@@ -145,6 +145,9 @@ public class Sprites implements IArray, Visible, LRelease {
 	 * @param sprite
 	 */
 	public void sendToFront(ISprite sprite) {
+		if (_closed) {
+			return;
+		}
 		if (this._size <= 1 || this._sprites[0] == sprite) {
 			return;
 		}
@@ -168,6 +171,9 @@ public class Sprites implements IArray, Visible, LRelease {
 	 * @param sprite
 	 */
 	public void sendToBack(ISprite sprite) {
+		if (_closed) {
+			return;
+		}
 		if (this._size <= 1 || this._sprites[this._size - 1] == sprite) {
 			return;
 		}
@@ -190,6 +196,9 @@ public class Sprites implements IArray, Visible, LRelease {
 	 * 
 	 */
 	public void sortSprites() {
+		if (_closed) {
+			return;
+		}
 		spriteSorter.sort(this._sprites);
 	}
 
@@ -227,6 +236,9 @@ public class Sprites implements IArray, Visible, LRelease {
 	 * @return
 	 */
 	public ISprite find(int x, int y) {
+		if (_closed) {
+			return null;
+		}
 		ISprite[] snapshot = _sprites;
 		for (int i = snapshot.length - 1; i >= 0; i--) {
 			ISprite child = snapshot[i];
@@ -245,6 +257,9 @@ public class Sprites implements IArray, Visible, LRelease {
 	 * @return
 	 */
 	public ISprite find(String name) {
+		if (_closed) {
+			return null;
+		}
 		ISprite[] snapshot = _sprites;
 		for (int i = snapshot.length - 1; i >= 0; i--) {
 			ISprite child = snapshot[i];
@@ -264,6 +279,9 @@ public class Sprites implements IArray, Visible, LRelease {
 	 * @return
 	 */
 	public boolean add(int index, ISprite sprite) {
+		if (_closed) {
+			return false;
+		}
 		if (sprite == null) {
 			return false;
 		}
@@ -293,6 +311,9 @@ public class Sprites implements IArray, Visible, LRelease {
 	}
 
 	public void addAt(ISprite child, float x, float y) {
+		if (_closed) {
+			return;
+		}
 		if (child != null) {
 			child.setLocation(x, y);
 			add(child);
@@ -300,6 +321,9 @@ public class Sprites implements IArray, Visible, LRelease {
 	}
 
 	public ISprite getSprite(int index) {
+		if (_closed) {
+			return null;
+		}
 		if (index < 0 || index > _size || index >= _sprites.length) {
 			return null;
 		}
@@ -312,6 +336,9 @@ public class Sprites implements IArray, Visible, LRelease {
 	 * @return
 	 */
 	public ISprite getTopSprite() {
+		if (_closed) {
+			return null;
+		}
 		if (_size > 0) {
 			return _sprites[0];
 		}
@@ -324,6 +351,9 @@ public class Sprites implements IArray, Visible, LRelease {
 	 * @return
 	 */
 	public ISprite getBottomSprite() {
+		if (_closed) {
+			return null;
+		}
 		if (_size > 0) {
 			return _sprites[_size - 1];
 		}
@@ -337,6 +367,9 @@ public class Sprites implements IArray, Visible, LRelease {
 	 * @return
 	 */
 	public boolean add(ISprite sprite) {
+		if (_closed) {
+			return false;
+		}
 		if (contains(sprite)) {
 			return false;
 		}
@@ -373,6 +406,9 @@ public class Sprites implements IArray, Visible, LRelease {
 	 * @return
 	 */
 	public TArray<ISprite> findTags(Object... tags) {
+		if (_closed) {
+			return null;
+		}
 		TArray<ISprite> list = new TArray<ISprite>();
 		final int size = this._size;
 		for (Object tag : tags) {
@@ -395,6 +431,9 @@ public class Sprites implements IArray, Visible, LRelease {
 	 * @return
 	 */
 	public TArray<ISprite> findNotTags(Object... tags) {
+		if (_closed) {
+			return null;
+		}
 		TArray<ISprite> list = new TArray<ISprite>();
 		final int size = this._size;
 		for (Object tag : tags) {
@@ -417,6 +456,9 @@ public class Sprites implements IArray, Visible, LRelease {
 	 * @return
 	 */
 	public TArray<ISprite> findNames(String... names) {
+		if (_closed) {
+			return null;
+		}
 		TArray<ISprite> list = new TArray<ISprite>();
 		final int size = this._size;
 		for (String name : names) {
@@ -439,6 +481,9 @@ public class Sprites implements IArray, Visible, LRelease {
 	 * @return
 	 */
 	public TArray<ISprite> findNotNames(String... names) {
+		if (_closed) {
+			return null;
+		}
 		TArray<ISprite> list = new TArray<ISprite>();
 		final int size = this._size;
 		for (String name : names) {
@@ -461,6 +506,9 @@ public class Sprites implements IArray, Visible, LRelease {
 	 * @return
 	 */
 	public boolean contains(ISprite sprite) {
+		if (_closed) {
+			return false;
+		}
 		if (sprite == null) {
 			return false;
 		}
@@ -501,6 +549,9 @@ public class Sprites implements IArray, Visible, LRelease {
 	 * @return
 	 */
 	public ISprite remove(int index) {
+		if (_closed) {
+			return null;
+		}
 		ISprite removed = this._sprites[index];
 		if (removed != null) {
 			removed.setState(State.REMOVED);
@@ -525,6 +576,9 @@ public class Sprites implements IArray, Visible, LRelease {
 	 * 
 	 */
 	public void removeAll() {
+		if (_closed) {
+			return;
+		}
 		clear();
 		this._sprites = new ISprite[0];
 	}
@@ -536,6 +590,9 @@ public class Sprites implements IArray, Visible, LRelease {
 	 * @return
 	 */
 	public boolean remove(ISprite sprite) {
+		if (_closed) {
+			return false;
+		}
 		if (sprite == null) {
 			return false;
 		}
@@ -573,6 +630,9 @@ public class Sprites implements IArray, Visible, LRelease {
 	 * @return
 	 */
 	public boolean removeName(String name) {
+		if (_closed) {
+			return false;
+		}
 		if (name == null) {
 			return false;
 		}
@@ -610,6 +670,9 @@ public class Sprites implements IArray, Visible, LRelease {
 	 * @param endIndex
 	 */
 	public void remove(int startIndex, int endIndex) {
+		if (_closed) {
+			return;
+		}
 		if (endIndex - startIndex > 0) {
 			for (int i = startIndex; i < endIndex && i < _sprites.length; i++) {
 				ISprite spr = _sprites[i];
@@ -634,6 +697,9 @@ public class Sprites implements IArray, Visible, LRelease {
 	}
 
 	public PointI getMinPos() {
+		if (_closed) {
+			return new PointI(0, 0);
+		}
 		PointI p = new PointI(0, 0);
 		for (int i = 0; i < _size; i++) {
 			ISprite sprite = _sprites[i];
@@ -644,6 +710,9 @@ public class Sprites implements IArray, Visible, LRelease {
 	}
 
 	public PointI getMaxPos() {
+		if (_closed) {
+			return new PointI(0, 0);
+		}
 		PointI p = new PointI(0, 0);
 		for (int i = 0; i < _size; i++) {
 			ISprite sprite = _sprites[i];
@@ -658,6 +727,9 @@ public class Sprites implements IArray, Visible, LRelease {
 	 * 
 	 */
 	public void clear() {
+		if (_closed) {
+			return;
+		}
 		for (int i = 0; i < _sprites.length; i++) {
 			ISprite removed = _sprites[i];
 			if (removed != null) {
@@ -723,6 +795,12 @@ public class Sprites implements IArray, Visible, LRelease {
 	}
 
 	public void paintPos(final GLEx g, final float offsetX, final float offsetY) {
+		if (_closed) {
+			return;
+		}
+		if (!_visible) {
+			return;
+		}
 		for (int i = 0; i < this._size; i++) {
 			ISprite spr = this._sprites[i];
 			if (spr != null && spr.isVisible()) {
@@ -746,6 +824,9 @@ public class Sprites implements IArray, Visible, LRelease {
 	 * @param g
 	 */
 	public void createUI(final GLEx g, final int x, final int y) {
+		if (_closed) {
+			return;
+		}
 		if (!_visible) {
 			return;
 		}
@@ -820,6 +901,9 @@ public class Sprites implements IArray, Visible, LRelease {
 	}
 
 	public SpriteControls createSpriteControls() {
+		if (_closed) {
+			return new SpriteControls();
+		}
 		SpriteControls controls = null;
 		if (_sprites != null) {
 			controls = new SpriteControls(_sprites);
@@ -830,6 +914,9 @@ public class Sprites implements IArray, Visible, LRelease {
 	}
 
 	public SpriteControls findNamesToSpriteControls(String... names) {
+		if (_closed) {
+			return new SpriteControls();
+		}
 		SpriteControls controls = null;
 		if (_sprites != null) {
 			TArray<ISprite> sps = findNames(names);
@@ -841,6 +928,9 @@ public class Sprites implements IArray, Visible, LRelease {
 	}
 
 	public SpriteControls findNotNamesToSpriteControls(String... names) {
+		if (_closed) {
+			return new SpriteControls();
+		}
 		SpriteControls controls = null;
 		if (_sprites != null) {
 			TArray<ISprite> sps = findNotNames(names);
@@ -852,6 +942,9 @@ public class Sprites implements IArray, Visible, LRelease {
 	}
 
 	public SpriteControls findTagsToSpriteControls(Object... o) {
+		if (_closed) {
+			return new SpriteControls();
+		}
 		SpriteControls controls = null;
 		if (_sprites != null) {
 			TArray<ISprite> sps = findTags(o);
@@ -863,6 +956,9 @@ public class Sprites implements IArray, Visible, LRelease {
 	}
 
 	public SpriteControls findNotTagsToSpriteControls(Object... o) {
+		if (_closed) {
+			return new SpriteControls();
+		}
 		SpriteControls controls = null;
 		if (_sprites != null) {
 			TArray<ISprite> sps = findNotTags(o);
@@ -874,6 +970,9 @@ public class Sprites implements IArray, Visible, LRelease {
 	}
 
 	public ISprite[] getSprites() {
+		if (_sprites == null) {
+			return null;
+		}
 		return CollectionUtils.copyOf(this._sprites, this._size);
 	}
 
@@ -931,6 +1030,9 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	@Override
 	public void close() {
+		if (_closed) {
+			return;
+		}
 		this._visible = false;
 		for (ISprite spr : _sprites) {
 			if (spr != null) {
@@ -938,6 +1040,7 @@ public class Sprites implements IArray, Visible, LRelease {
 			}
 		}
 		clear();
+		this._sprites = null;
 		this._closed = true;
 		SPRITES_CACHE.remove(this);
 	}

@@ -21,7 +21,7 @@
 package loon.component;
 
 import loon.LTexture;
-import loon.LTextures;
+import loon.LSystem;
 import loon.canvas.LColor;
 import loon.component.skin.ScrollBarSkin;
 import loon.component.skin.SkinManager;
@@ -78,7 +78,7 @@ public class LScrollBar extends LComponent {
 	}
 
 	public LScrollBar(String patha, String pathb, int orientation, int x, int y, int width, int height) {
-		this(LTextures.loadTexture(patha), LTextures.loadTexture(pathb), orientation, x, y, width, height);
+		this(LSystem.loadTexture(patha), LSystem.loadTexture(pathb), orientation, x, y, width, height);
 	}
 
 	public LScrollBar(ScrollBarSkin skin, int orientation, int x, int y, int width, int height) {

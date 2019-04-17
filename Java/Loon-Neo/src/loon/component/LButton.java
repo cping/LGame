@@ -23,7 +23,6 @@ package loon.component;
 
 import loon.LSystem;
 import loon.LTexture;
-import loon.LTextures;
 import loon.canvas.LColor;
 import loon.event.CallFunction;
 import loon.font.FontSet;
@@ -53,7 +52,7 @@ public class LButton extends LComponent implements FontSet<LButton> {
 	}
 
 	public LButton(String fileName, String text, int row, int col) {
-		this(LTextures.loadTexture(fileName), text, row, col, 0, 0);
+		this(LSystem.loadTexture(fileName), text, row, col, 0, 0);
 	}
 
 	public LButton(String fileName, int row, int col) {
@@ -61,7 +60,7 @@ public class LButton extends LComponent implements FontSet<LButton> {
 	}
 
 	public LButton(String fileName, String text, int row, int col, int x, int y) {
-		this(LTextures.loadTexture(fileName), text, row, col, x, y);
+		this(LSystem.loadTexture(fileName), text, row, col, x, y);
 	}
 
 	public LButton(LTexture img, String text, int row, int col, int x, int y) {

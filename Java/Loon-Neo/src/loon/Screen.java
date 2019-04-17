@@ -92,6 +92,7 @@ import loon.utils.GLUtils;
 import loon.utils.MathUtils;
 import loon.utils.ObjectBundle;
 import loon.utils.Resolution;
+import loon.utils.StringKeyValue;
 import loon.utils.TArray;
 import loon.utils.processes.GameProcess;
 import loon.utils.processes.RealtimeProcess;
@@ -1003,13 +1004,18 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 				@Override
 				public void run(LTimerContext time) {
-					screen.onCreate(LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
-					screen.setClose(false);
-					screen.onLoad();
-					screen.setRepaintMode(SCREEN_NOT_REPAINT);
-					screen.onLoaded();
-					screen.setOnLoadState(true);
-					kill();
+					try {
+						screen.onCreate(LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
+						screen.setClose(false);
+						screen.onLoad();
+						screen.setRepaintMode(SCREEN_NOT_REPAINT);
+						screen.onLoaded();
+						screen.setOnLoadState(true);
+					} catch (Throwable cause) {
+						LSystem.error("Replace screen dispatch failure", cause);
+					} finally {
+						kill();
+					}
 				}
 			});
 
@@ -1080,14 +1086,18 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 				@Override
 				public void run(LTimerContext time) {
-					screen.onCreate(LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
-					screen.setClose(false);
-					screen.onLoad();
-					screen.setRepaintMode(SCREEN_NOT_REPAINT);
-					screen.onLoaded();
-					screen.setOnLoadState(true);
-
-					kill();
+					try {
+						screen.onCreate(LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
+						screen.setClose(false);
+						screen.onLoad();
+						screen.setRepaintMode(SCREEN_NOT_REPAINT);
+						screen.onLoaded();
+						screen.setOnLoadState(true);
+					} catch (Throwable cause) {
+						LSystem.error("Replace screen dispatch failure", cause);
+					} finally {
+						kill();
+					}
 				}
 			});
 
@@ -1294,6 +1304,16 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		this._isExistCamera = false;
 	}
 
+	public Screen invokeAsync(Runnable runnable) {
+		LSystem.invokeAsync(runnable);
+		return this;
+	}
+
+	public Screen invokeLater(Runnable runnable) {
+		LSystem.invokeLater(runnable);
+		return this;
+	}
+	
 	public Screen addLoad(Updateable u) {
 		if (handler != null) {
 			handler.addLoad(u);
@@ -1921,7 +1941,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * 设定背景图像
 	 */
 	public Screen setBackground(String fileName) {
-		return this.setBackground(LTextures.loadTexture(fileName));
+		return this.setBackground(LSystem.loadTexture(fileName));
 	}
 
 	/**
@@ -4691,75 +4711,87 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return LayoutManager.elementButtons(this, names, sx, sy, cellWidth, cellHeight, listener, maxHeight);
 	}
 
+	@Override
+	public String toString() {
+		StringKeyValue sbr = new StringKeyValue(getClass().getName());
+		sbr.newLine().kv("Sprites", sprites).newLine().kv("Desktop", desktop).newLine();
+		return sbr.toString();
+	}
+
 	/**
 	 * 注销Screen
 	 */
 	public final void destroy() {
-		synchronized (this) {
-			index = 0;
-			_rotation = 0;
-			_scaleX = _scaleY = _alpha = 1f;
-			_baseColor = null;
-			_visible = false;
-			_clickListener = null;
-			_touchListener = null;
-			_limits.clear();
-			_touchAreas.clear();
-			touchButtonPressed = SysInput.NO_BUTTON;
-			touchButtonReleased = SysInput.NO_BUTTON;
-			keyButtonPressed = SysInput.NO_KEY;
-			keyButtonReleased = SysInput.NO_KEY;
-			replaceLoading = false;
-			replaceDelay.setDelay(10);
-			tx = ty = 0;
-			isClose = true;
-			isTranslate = false;
-			isNext = false;
-			isGravity = false;
-			isLock = true;
-			_isExistCamera = false;
-			if (sprites != null) {
-				sprites.close();
-				sprites.clear();
-				sprites = null;
-			}
-			if (desktop != null) {
-				desktop.close();
-				desktop.clear();
-				desktop = null;
-			}
-			if (gravityHandler != null) {
-				gravityHandler.close();
-				gravityHandler = null;
-			}
-			clearTouched();
-			clearFrameLoop();
-			if (_screenAction != null) {
-				removeAllActions(_screenAction);
-			}
-			if (releases != null) {
-				for (LRelease r : releases) {
-					if (r != null) {
-						r.close();
-					}
+		synchronized (Screen.class) {
+			try {
+				index = 0;
+				_rotation = 0;
+				_scaleX = _scaleY = _alpha = 1f;
+				_baseColor = null;
+				_visible = false;
+				_clickListener = null;
+				_touchListener = null;
+				_limits.clear();
+				_touchAreas.clear();
+				touchButtonPressed = SysInput.NO_BUTTON;
+				touchButtonReleased = SysInput.NO_BUTTON;
+				keyButtonPressed = SysInput.NO_KEY;
+				keyButtonReleased = SysInput.NO_KEY;
+				replaceLoading = false;
+				replaceDelay.setDelay(10);
+				tx = ty = 0;
+				isClose = true;
+				isTranslate = false;
+				isNext = false;
+				isGravity = false;
+				isLock = true;
+				_isExistCamera = false;
+				if (sprites != null) {
+					sprites.close();
+					sprites.clear();
+					sprites = null;
 				}
-				releases.clear();
+				if (desktop != null) {
+					desktop.close();
+					desktop.clear();
+					desktop = null;
+				}
+				if (gravityHandler != null) {
+					gravityHandler.close();
+					gravityHandler = null;
+				}
+				clearTouched();
+				clearFrameLoop();
+				if (_screenAction != null) {
+					removeAllActions(_screenAction);
+				}
+				if (releases != null) {
+					for (LRelease r : releases) {
+						if (r != null) {
+							r.close();
+						}
+					}
+					releases.clear();
+				}
+				_conns.close();
+				release();
+				_keyActions.clear();
+				if (currentScreenBackground != null) {
+					currentScreenBackground.close();
+					currentScreenBackground = null;
+				}
+				if (_closeUpdate != null) {
+					_closeUpdate.action(this);
+				}
+				disposeCollision();
+				_closeUpdate = null;
+				screenSwitch = null;
+				DefUI.self().clearDefaultUI();
+			} catch (Throwable cause) {
+				LSystem.error("Screen destroy() dispatch exception", cause);
+			} finally {
+				close();
 			}
-			_conns.close();
-			release();
-			_keyActions.clear();
-			if (currentScreenBackground != null) {
-				currentScreenBackground.close();
-				currentScreenBackground = null;
-			}
-			if (_closeUpdate != null) {
-				_closeUpdate.action(this);
-			}
-			disposeCollision();
-			_closeUpdate = null;
-			screenSwitch = null;
-			DefUI.self().clearDefaultUI();
-			close();
 		}
 	}
 

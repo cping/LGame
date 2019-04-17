@@ -24,7 +24,6 @@ import java.util.Iterator;
 
 import loon.LSystem;
 import loon.LTexture;
-import loon.LTextures;
 import loon.action.sprite.Entity;
 import loon.canvas.LColor;
 import loon.opengl.BlendState;
@@ -252,7 +251,7 @@ public class SimpleParticleSystem extends Entity {
 			if (mask != null) {
 				sprite = TextureUtils.filterColor(defaultImageName, mask);
 			} else {
-				sprite = LTextures.loadTexture(defaultImageName);
+				sprite = LSystem.loadTexture(defaultImageName);
 			}
 		} catch (Throwable e) {
 			LSystem.error("Particle System load exception", e);

@@ -23,7 +23,6 @@ package loon.opengl;
 import loon.BaseIO;
 import loon.LSystem;
 import loon.LTexture;
-import loon.LTextures;
 import loon.LTexture.Format;
 import loon.canvas.Canvas;
 import loon.canvas.Image;
@@ -99,7 +98,7 @@ public class TextureUtils {
 
 	public static LTexture[] getSplitTextures(String fileName, int tileWidth,
 			int tileHeight) {
-		return getSplitTextures(LTextures.loadTexture(fileName), tileWidth,
+		return getSplitTextures(LSystem.loadTexture(fileName), tileWidth,
 				tileHeight);
 	}
 
@@ -132,7 +131,7 @@ public class TextureUtils {
 
 	public static LTexture[][] getSplit2Textures(String fileName,
 			int tileWidth, int tileHeight) {
-		return getSplit2Textures(LTextures.loadTexture(fileName), tileWidth,
+		return getSplit2Textures(LSystem.loadTexture(fileName), tileWidth,
 				tileHeight);
 	}
 
@@ -167,7 +166,7 @@ public class TextureUtils {
 		if (count <= 0) {
 			throw LSystem.runThrow("count <= 0 !");
 		}
-		LTexture image = LTextures.loadTexture(fileName);
+		LTexture image = LSystem.loadTexture(fileName);
 		if (image == null) {
 			return null;
 		}

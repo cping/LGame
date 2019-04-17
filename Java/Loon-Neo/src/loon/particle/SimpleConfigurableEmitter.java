@@ -21,7 +21,7 @@
 package loon.particle;
 
 import loon.LTexture;
-import loon.LTextures;
+import loon.LSystem;
 import loon.canvas.LColor;
 import loon.geom.Vector2f;
 import loon.utils.MathUtils;
@@ -216,7 +216,7 @@ public class SimpleConfigurableEmitter implements SimpleEmitter {
 		if (updateImage) {
 			updateImage = false;
 
-			image = LTextures.loadTexture(relativePath + imageName);
+			image = LSystem.loadTexture(relativePath + imageName);
 
 		}
 

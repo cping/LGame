@@ -22,7 +22,6 @@ package loon.component.table;
 
 import loon.LSystem;
 import loon.LTexture;
-import loon.LTextures;
 import loon.canvas.LColor;
 import loon.component.LComponent;
 import loon.component.LContainer;
@@ -185,7 +184,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 
 	public LTable bindIcon(String name, String fileName) {
 		bindIcons
-				.put(name, new BindIcon(name, LTextures.loadTexture(fileName)));
+				.put(name, new BindIcon(name, LSystem.loadTexture(fileName)));
 		return this;
 	}
 

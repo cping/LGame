@@ -32,7 +32,6 @@ package loon.component;
 
 import loon.LSystem;
 import loon.LTexture;
-import loon.LTextures;
 import loon.canvas.LColor;
 import loon.component.skin.MessageSkin;
 import loon.component.skin.SkinManager;
@@ -117,7 +116,7 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 
 	public LTextArea(int x, int y, int w, int h, String bgFile) {
 		this(LTextArea.TYPE_DOWN, w, SkinManager.get().getMessageSkin().getFont(), x, y, w, h,
-				LTextures.loadTexture(bgFile));
+				LSystem.loadTexture(bgFile));
 	}
 
 	public LTextArea(int x, int y, int w, int h, LTexture bg) {
@@ -568,7 +567,7 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 
 	@Override
 	public LComponent setBackground(String path) {
-		return setBackground(LTextures.loadTexture(path));
+		return setBackground(LSystem.loadTexture(path));
 	}
 
 	private void drawString(GLEx g, String str, int x, int y, LColor color) {

@@ -22,7 +22,6 @@ package loon.action.sprite;
 
 import loon.LSystem;
 import loon.LTexture;
-import loon.LTextures;
 import loon.action.collision.CollisionManager;
 import loon.action.collision.CollisionObject;
 import loon.geom.Vector2f;
@@ -83,7 +82,7 @@ public class BulletEntity extends Entity {
 	}
 
 	public BulletEntity addBullet(String path, float x, float y, int dir) {
-		return addBullet(easingMode, LTextures.loadTexture(path), x, y, dir);
+		return addBullet(easingMode, LSystem.loadTexture(path), x, y, dir);
 	}
 
 	public BulletEntity addBullet(Animation ani, float x, float y, int dir, int initSpeed, float duration) {
@@ -107,7 +106,7 @@ public class BulletEntity extends Entity {
 	}
 
 	public BulletEntity addBullet(EasingMode easing, String path, float x, float y, int dir) {
-		return addBullet(new Bullet(easing, LTextures.loadTexture(path), x, y, dir));
+		return addBullet(new Bullet(easing, LSystem.loadTexture(path), x, y, dir));
 	}
 
 	public BulletEntity addBullet(EasingMode easing, Animation ani, float x, float y, int dir, int initSpeed,
@@ -120,12 +119,12 @@ public class BulletEntity extends Entity {
 	}
 
 	public BulletEntity addBullet(EasingMode easing, String path, float x, float y, int dir, int initSpeed) {
-		return addBullet(new Bullet(easing, LTextures.loadTexture(path), x, y, dir, initSpeed));
+		return addBullet(new Bullet(easing, LSystem.loadTexture(path), x, y, dir, initSpeed));
 	}
 	
 	public BulletEntity addBullet(EasingMode easing, String path, float x, float y, int dir, int initSpeed,
 			float duration) {
-		return addBullet(new Bullet(easing, LTextures.loadTexture(path), x, y, dir, initSpeed, duration));
+		return addBullet(new Bullet(easing, LSystem.loadTexture(path), x, y, dir, initSpeed, duration));
 	}
 
 	public BulletEntity addBullet(Bullet bullet) {

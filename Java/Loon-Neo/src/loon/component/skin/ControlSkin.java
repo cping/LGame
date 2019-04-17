@@ -22,7 +22,6 @@ package loon.component.skin;
 
 import loon.LSystem;
 import loon.LTexture;
-import loon.LTextures;
 
 public class ControlSkin {
 
@@ -35,8 +34,8 @@ public class ControlSkin {
 	}
 
 	public ControlSkin() {
-		this(LTextures.loadTexture(LSystem.getSystemImagePath()
-				+ "control_base.png"), LTextures
+		this(LSystem.loadTexture(LSystem.getSystemImagePath()
+				+ "control_base.png"), LSystem
 				.loadTexture(LSystem.getSystemImagePath() + "control_dot.png"));
 	}
 

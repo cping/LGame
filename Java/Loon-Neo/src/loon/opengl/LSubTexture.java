@@ -1,7 +1,7 @@
 package loon.opengl;
 
 import loon.LTexture;
-import loon.LTextures;
+import loon.LSystem;
 
 public class LSubTexture {
 
@@ -18,7 +18,7 @@ public class LSubTexture {
 	}
 
 	public LSubTexture(String path) {
-		this.parent = LTextures.loadTexture(path);
+		this.parent = LSystem.loadTexture(path);
 		this.x = 0;
 		this.y = 0;
 		this.x2 = parent.getWidth();

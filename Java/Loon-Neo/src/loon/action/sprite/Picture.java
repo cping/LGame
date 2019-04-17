@@ -21,7 +21,7 @@
 package loon.action.sprite;
 
 import loon.LTexture;
-import loon.LTextures;
+import loon.LSystem;
 import loon.canvas.Image;
 
 /**
@@ -38,7 +38,7 @@ public class Picture extends Entity {
 	}
 
 	public Picture(String fileName, float x, float y) {
-		this(LTextures.loadTexture(fileName), x, y);
+		this(LSystem.loadTexture(fileName), x, y);
 	}
 
 	public Picture(Image image) {

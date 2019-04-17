@@ -25,7 +25,6 @@ import loon.LObject;
 import loon.LRelease;
 import loon.LSystem;
 import loon.LTexture;
-import loon.LTextures;
 import loon.PlayerUtils;
 import loon.Visible;
 import loon.action.ActionBind;
@@ -125,7 +124,7 @@ public class Actor extends LObject<Actor>
 	}
 
 	public Actor(String fileName, int x, int y) {
-		this(LTextures.loadTexture(fileName), x, y);
+		this(LSystem.loadTexture(fileName), x, y);
 	}
 
 	public Actor(String fileName) {
@@ -681,7 +680,7 @@ public class Actor extends LObject<Actor>
 	}
 
 	public void setImage(String filename) {
-		this.setImage(LTextures.loadTexture(filename));
+		this.setImage(LSystem.loadTexture(filename));
 	}
 
 	public void setImage(LTexture img) {

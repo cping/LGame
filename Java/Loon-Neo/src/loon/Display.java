@@ -110,9 +110,6 @@ public class Display extends LSystemView {
 		return gifEncoder;
 	}
 
-	private final RealtimeProcessManager _manager;
-
-	private final ActionControl _action_control;
 
 	// 为了方便直接转码到C#和C++，无法使用匿名内部类(也就是在构造内直接构造实现的方式)，只能都写出具体类来……
 	// PS:别提delegate，委托那玩意写出来太不优雅了(对于凭空实现某接口或抽象，而非局部重载来说)，而且大多数J2C#的工具也不能直接转换过去……
@@ -128,7 +125,7 @@ public class Display extends LSystemView {
 		public void onEmit(LTimerContext clock) {
 			synchronized (clock) {
 				if (!LSystem.PAUSED) {
-					_manager.tick(clock);
+					RealtimeProcessManager.get().tick(clock);
 					_display.draw(clock);
 				}
 			}
@@ -148,8 +145,8 @@ public class Display extends LSystemView {
 		public void onEmit(LTimerContext clock) {
 			synchronized (clock) {
 				if (!LSystem.PAUSED) {
-					_manager.tick(clock);
-					_action_control.call(clock.timeSinceLastUpdate);
+					RealtimeProcessManager.get().tick(clock);
+					ActionControl.get().call(clock.timeSinceLastUpdate);
 					_display.draw(clock);
 				}
 			}
@@ -166,7 +163,7 @@ public class Display extends LSystemView {
 		public void onEmit(LTimerContext clock) {
 			synchronized (clock) {
 				if (!LSystem.PAUSED) {
-					_action_control.call(clock.timeSinceLastUpdate);
+					ActionControl.get().call(clock.timeSinceLastUpdate);
 				}
 			}
 		}
@@ -272,8 +269,6 @@ public class Display extends LSystemView {
 		super(game, updateRate);
 		_setting = LSystem._base.setting;
 		_process = LSystem._process;
-		_manager = RealtimeProcessManager.get();
-		_action_control = ActionControl.get();
 		GL20 gl = game.graphics().gl;
 		_glEx = new GLEx(game.graphics(), game.graphics().defaultRenderTarget, gl);
 		_glEx.update();

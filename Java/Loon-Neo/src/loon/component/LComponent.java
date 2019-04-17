@@ -26,7 +26,6 @@ import loon.LObject;
 import loon.LRelease;
 import loon.LSystem;
 import loon.LTexture;
-import loon.LTextures;
 import loon.PlayerUtils;
 import loon.Screen;
 import loon.Visible;
@@ -900,7 +899,7 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public LComponent setBackground(String fileName) {
-		return this.setBackground(LTextures.loadTexture(fileName));
+		return this.setBackground(LSystem.loadTexture(fileName));
 	}
 
 	public LComponent setBackground(LColor color) {

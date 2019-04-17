@@ -23,7 +23,6 @@ package loon.action.avg;
 import loon.LRelease;
 import loon.LSystem;
 import loon.LTexture;
-import loon.LTextures;
 import loon.Screen;
 import loon.action.sprite.ISprite;
 import loon.action.sprite.Sprites;
@@ -88,7 +87,7 @@ public class AVGCG implements LRelease {
 	}
 
 	public void setBackgroundCG(final String resName) {
-		this.setBackgroundCG(LTextures.loadTexture(_update(resName)));
+		this.setBackgroundCG(LSystem.loadTexture(_update(resName)));
 	}
 
 	public void add(final String resName, AVGChara chara) {

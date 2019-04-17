@@ -29,9 +29,17 @@ public class LTimer {
 
 	protected static LTimer _instance = null;
 
+	public static LTimer get() {
+		return getInstance();
+	}
+	
 	public static LTimer getInstance() {
 		if (_instance == null) {
-			_instance = new LTimer(0);
+			synchronized (LTimer.class) {
+				if (_instance == null) {
+					_instance = new LTimer(0);
+				}
+			}
 		}
 		return _instance;
 	}
@@ -41,7 +49,7 @@ public class LTimer {
 	private long delay;
 
 	private long currentTick;
-	
+
 	private float speedFactor;
 
 	public static LTimer at() {
@@ -74,7 +82,7 @@ public class LTimer {
 	public boolean action(LTimerContext context) {
 		return action(context.timeSinceLastUpdate);
 	}
-	
+
 	public boolean action(long elapsedTime) {
 		if (this.active) {
 			this.currentTick += (elapsedTime * speedFactor);
@@ -182,17 +190,12 @@ public class LTimer {
 	public void setSpeedFactor(float factor) {
 		this.speedFactor = factor;
 	}
-	
+
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("LTimer");
-		builder.kv("currentTick", currentTick)
-		.comma()
-		.kv("delay", delay)
-		.comma()
-		.kv("factor", speedFactor)
-		.comma()
-		.kv("active", active);
+		builder.kv("currentTick", currentTick).comma().kv("delay", delay).comma().kv("factor", speedFactor).comma()
+				.kv("active", active);
 		return builder.toString();
 	}
 

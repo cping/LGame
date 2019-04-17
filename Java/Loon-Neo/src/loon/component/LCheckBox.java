@@ -22,7 +22,7 @@
 package loon.component;
 
 import loon.LTexture;
-import loon.LTextures;
+import loon.LSystem;
 import loon.canvas.LColor;
 import loon.component.skin.CheckBoxSkin;
 import loon.component.skin.SkinManager;
@@ -112,7 +112,7 @@ public class LCheckBox extends LComponent implements FontSet<LCheckBox> {
 
 	public LCheckBox(String txt, int x, int y, String uncheckedFile, String checkedFile, int boxsize,
 			boolean boxtoleftoftext, LColor textcolor, IFont font) {
-		this(txt, x, y, LTextures.loadTexture(uncheckedFile), LTextures.loadTexture(checkedFile), boxsize,
+		this(txt, x, y, LSystem.loadTexture(uncheckedFile), LSystem.loadTexture(checkedFile), boxsize,
 				boxtoleftoftext, textcolor, font);
 	}
 

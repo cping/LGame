@@ -24,7 +24,6 @@ package loon.component;
 import loon.BaseIO;
 import loon.LSystem;
 import loon.LTexture;
-import loon.LTextures;
 import loon.canvas.Canvas;
 import loon.canvas.Canvas.Composite;
 import loon.canvas.Image;
@@ -45,15 +44,14 @@ public class DefUI {
 	}
 
 	public final static DefUI self() {
-		if (instance != null) {
-			return instance;
-		}
-		synchronized (DefUI.class) {
-			if (instance == null) {
-				instance = make();
+		if (instance == null) {
+			synchronized (DefUI.class) {
+				if (instance == null) {
+					instance = make();
+				}
 			}
-			return instance;
 		}
+		return instance;
 	}
 
 	public final static String win_frame_UI = LSystem.getSystemImagePath() + "wbar.png";
@@ -89,7 +87,7 @@ public class DefUI {
 	 * @param strokeWidth
 	 * @return
 	 */
-	public  final static Image getRoundImage(String path, int strokeWidth) {
+	public final static Image getRoundImage(String path, int strokeWidth) {
 		return getRoundImage(path, 128, strokeWidth);
 	}
 
@@ -371,7 +369,8 @@ public class DefUI {
 		return getGameWinFrame(width, height, LColor.blue, LColor.black, true);
 	}
 
-	public final static LTexture getGameWinPixelFrame(int width, int height, LColor start, LColor end, boolean drawHeigth) {
+	public final static LTexture getGameWinPixelFrame(int width, int height, LColor start, LColor end,
+			boolean drawHeigth) {
 		Canvas g = LSystem.base().graphics().createCanvas(width, height);
 		DefUI tool = new DefUI();
 		Pixmap pix = Pixmap.createImage(width, height);
@@ -509,7 +508,8 @@ public class DefUI {
 		g.setAlpha(1f);
 	}
 
-	public final static Image[] getWindow(String fileName, int frameSize, int cornerSize, int wholeSize, int borderLength) {
+	public final static Image[] getWindow(String fileName, int frameSize, int cornerSize, int wholeSize,
+			int borderLength) {
 		Image[] texs = new Image[8];
 		Image tmp = BaseIO.loadImage(fileName);
 		int[] pixels = tmp.getPixels();
@@ -548,7 +548,7 @@ public class DefUI {
 	}
 
 	public final Image getDefaultWindow(String name) {
-		if (defaultWindowHash == null) {
+		if (defaultWindowHash == null || defaultWindowHash.size() == 0) {
 			Image[] texs = getWindow(win_frame_UI, 6, 14, 64, 8);
 			defaultWindowHash = new ArrayMap(texs.length);
 			for (int i = 0; i < texs.length; i++) {
@@ -575,7 +575,7 @@ public class DefUI {
 				lastTexture.close(true);
 				lastTexture = null;
 			}
-			lastTexture = LTextures.newTexture(LSystem.getSystemImagePath() + "ui.png");
+			lastTexture = LSystem.newTexture(LSystem.getSystemImagePath() + "ui.png");
 			lastTexture.setDisabledTexture(true);
 			LSubTexture windowbar = new LSubTexture(lastTexture, 0, 0, 512, 32);
 			LSubTexture panelbody = new LSubTexture(lastTexture, 1, 41 - 8, 17, 57 - 8);

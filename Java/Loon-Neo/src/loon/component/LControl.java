@@ -22,7 +22,6 @@ package loon.component;
 
 import loon.LSystem;
 import loon.LTexture;
-import loon.LTextures;
 import loon.action.collision.CollisionHelper;
 import loon.action.map.Config;
 import loon.component.skin.ControlSkin;
@@ -78,12 +77,12 @@ public class LControl extends LComponent {
 	}
 
 	public LControl(int x, int y, int bw, int bh, int dw, int dh) {
-		this(x, y, LTextures.loadTexture(LSystem.getSystemImagePath() + "control_base.png"),
-				LTextures.loadTexture(LSystem.getSystemImagePath() + "control_dot.png"), bw, bh, dw, dh);
+		this(x, y, LSystem.loadTexture(LSystem.getSystemImagePath() + "control_base.png"),
+				LSystem.loadTexture(LSystem.getSystemImagePath() + "control_dot.png"), bw, bh, dw, dh);
 	}
 
 	public LControl(int x, int y, String basename, String dot, int bw, int bh, int dw, int dh) {
-		this(x, y, LTextures.loadTexture(basename), LTextures.loadTexture(dot), bw, bh, dw, dh);
+		this(x, y, LSystem.loadTexture(basename), LSystem.loadTexture(dot), bw, bh, dw, dh);
 	}
 
 	public LControl(ControlSkin skin, int x, int y, int bw, int bh, int dw, int dh) {

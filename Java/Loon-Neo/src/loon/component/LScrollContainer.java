@@ -21,7 +21,7 @@
 package loon.component;
 
 import loon.LTexture;
-import loon.LTextures;
+import loon.LSystem;
 import loon.canvas.LColor;
 import loon.component.skin.MessageSkin;
 import loon.component.skin.SkinManager;
@@ -55,7 +55,7 @@ public class LScrollContainer extends LContainer {
 	}
 
 	public LScrollContainer(String path, int x, int y, int w, int h) {
-		this(LTextures.loadTexture(path), x, y, w, h);
+		this(LSystem.loadTexture(path), x, y, w, h);
 	}
 
 	public LScrollContainer(MessageSkin skin, int x, int y, int w, int h) {

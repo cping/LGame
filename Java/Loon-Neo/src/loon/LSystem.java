@@ -20,7 +20,9 @@
  */
 package loon;
 
+import loon.LTexture.Format;
 import loon.Log.Level;
+import loon.canvas.NinePatchAbstract.Repeat;
 import loon.event.KeyMake;
 import loon.event.SysInput;
 import loon.event.Updateable;
@@ -36,6 +38,7 @@ import loon.utils.NumberUtils;
 import loon.utils.Scale;
 import loon.utils.StringUtils;
 import loon.utils.json.JsonImpl;
+import loon.utils.reply.Act;
 
 public class LSystem {
 
@@ -198,11 +201,11 @@ public class LSystem {
 	// 当前应用名称
 	protected static String _app_name = "Loon";
 
-	public static Platform platform() {
+	public static final Platform platform() {
 		return _platform;
 	}
 
-	public static LGame base() {
+	public static final LGame base() {
 		if (_base != null) {
 			return _base;
 		} else if (_platform != null) {
@@ -353,11 +356,14 @@ public class LSystem {
 		Mesh.invalidateAllMeshes(loonMain);
 		ShaderProgram.invalidateAllShaderPrograms(loonMain);
 		disposeMeshPool();
-		LTextures.reload();
+		disposeTextureAll();
 	}
 
 	protected static void initProcess(LGame game) {
 		_base = game;
+		if (_base == null && _platform != null) {
+			_base = _platform.getGame();
+		}
 		LSetting setting = _base.setting;
 		setting.updateScale();
 		LSystem.viewSize.setSize(setting.width, setting.height);
@@ -586,52 +592,77 @@ public class LSystem {
 				|| extension.equals("cfg") || extension.equals("cvs");
 	}
 
-	public static boolean isAudio(String extension) {
+	public static final boolean isAudio(String extension) {
 		return extension.equals("mp3") || extension.equals("ogg") || extension.equals("wav") || extension.equals("mid");
 	}
 
-	public static void stopRepaint() {
+	public static final void stopRepaint() {
 		LSystem._auto_repaint = false;
 	}
 
-	public static void startRepaint() {
+	public static final void startRepaint() {
 		LSystem._auto_repaint = true;
 	}
 
+	public static final <E> void dispatchEvent(Act<E> signal, E event) {
+		if (_base != null) {
+			_base.dispatchEvent(signal, event);
+		}
+	}
+
+	public static final void invokeLater(Runnable runnable) {
+		if (_base != null) {
+			_base.invokeLater(runnable);
+		}
+	}
+
+	public static final boolean isAsyncSupported() {
+		return _base != null ? false : _base.isAsyncSupported();
+	}
+
+	public static final void invokeAsync(Runnable action) {
+		if (_base != null) {
+			_base.invokeAsync(action);
+		}
+	}
+
 	public static final int batchCacheSize() {
-		if (LSystem._base != null) {
-			return LSystem._base.batchCacheSize();
+		if (_base != null) {
+			return _base.batchCacheSize();
 		}
 		return 0;
 	}
 
 	public static final void clearBatchCaches() {
-		if (LSystem._base != null) {
-			LSystem._base.clearBatchCaches();
+		if (_base != null) {
+			_base.clearBatchCaches();
 		}
 	}
 
 	public static final LTextureBatch getBatchCache(LTexture texture) {
-		if (LSystem._base != null) {
-			return LSystem._base.getBatchCache(texture);
+		if (_base != null) {
+			return _base.getBatchCache(texture);
 		}
 		return null;
 	}
 
 	public static final LTextureBatch bindBatchCache(LTextureBatch batch) {
-		if (LSystem._base != null) {
-			return LSystem._base.bindBatchCache(batch);
+		if (_base != null) {
+			return _base.bindBatchCache(batch);
 		}
 		return null;
 	}
 
 	public static final LTextureBatch disposeBatchCache(LTextureBatch batch) {
-		return disposeBatchCache(batch, true);
+		if (_base != null) {
+			return _base.disposeBatchCache(batch);
+		}
+		return null;
 	}
 
 	public static final LTextureBatch disposeBatchCache(LTextureBatch batch, boolean closed) {
-		if (LSystem._base != null) {
-			return LSystem._base.disposeBatchCache(batch, closed);
+		if (_base != null) {
+			return _base.disposeBatchCache(batch, closed);
 		}
 		return null;
 	}
@@ -652,112 +683,246 @@ public class LSystem {
 	}
 
 	public static final Mesh getMeshPool(String n, int size) {
-		if (LSystem._base != null) {
-			return LSystem._base.getMeshPool(n, size);
+		if (_base != null) {
+			return _base.getMeshPool(n, size);
 		}
 		return null;
 	}
 
 	public static final void resetMeshPool(String n, int size) {
-		if (LSystem._base != null) {
-			LSystem._base.resetMeshPool(n, size);
+		if (_base != null) {
+			_base.resetMeshPool(n, size);
 		}
 	}
 
 	public static final int getMeshPoolSize() {
-		if (LSystem._base != null) {
-			LSystem._base.getMeshPoolSize();
+		if (_base != null) {
+			_base.getMeshPoolSize();
 		}
 		return 0;
 	}
 
 	public static final void disposeMeshPool(String name, int size) {
-		if (LSystem._base != null) {
-			LSystem._base.disposeMeshPool(name, size);
+		if (_base != null) {
+			_base.disposeMeshPool(name, size);
 		}
 	}
 
 	public static final void disposeMeshPool() {
-		if (LSystem._base != null) {
-			LSystem._base.disposeMeshPool();
+		if (_base != null) {
+			_base.disposeMeshPool();
 		}
 	}
 
+	public static final boolean containsTexture(int id) {
+		if (_base != null) {
+			return _base.containsTexture(id);
+		}
+		return false;
+	}
+
+	public static final void reloadTexture() {
+		if (_base != null) {
+			_base.reloadTexture();
+		}
+	}
+
+	public static final int getTextureMemSize() {
+		if (_base != null) {
+			return _base.getTextureMemSize();
+		}
+		return 0;
+	}
+
+	public static final void closeAllTexture() {
+		if (_base != null) {
+			_base.closeAllTexture();
+		}
+	}
+
+	public static final int countTexture() {
+		if (_base != null) {
+			return _base.countTexture();
+		}
+		return 0;
+	}
+
+	public static final boolean containsTextureValue(LTexture texture) {
+		if (_base != null) {
+			return _base.containsTextureValue(texture);
+		}
+		return false;
+	}
+
+	public static final int getRefTextureCount(String fileName) {
+		if (_base != null) {
+			return _base.getRefTextureCount(fileName);
+		}
+		return 0;
+	}
+
+	public static final LTexture createTexture(int width, int height, Format config) {
+		if (_base != null) {
+			return _base.createTexture(width, height, config);
+		}
+		return null;
+	}
+
+	public static final LTexture newTexture(String path) {
+		if (_base != null) {
+			return _base.newTexture(path);
+		}
+		return null;
+	}
+
+	public static final LTexture newTexture(String path, Format config) {
+		if (_base != null) {
+			return _base.newTexture(path, config);
+		}
+		return null;
+	}
+
+	public static final LTexture loadNinePatchTexture(String fileName, int x, int y, int w, int h) {
+		if (_base != null) {
+			return _base.loadNinePatchTexture(fileName, x, y, w, h);
+		}
+		return null;
+	}
+
+	public static final LTexture loadNinePatchTexture(String fileName, Repeat repeat, int x, int y, int w, int h,
+			Format config) {
+		if (_base != null) {
+			return _base.loadNinePatchTexture(fileName, repeat, x, y, w, h, config);
+		}
+		return null;
+	}
+
+	public static final LTexture loadTexture(String fileName, Format config) {
+		if (_base != null) {
+			return _base.loadTexture(fileName, config);
+		}
+		return null;
+	}
+
+	public static final LTexture loadTexture(String fileName) {
+		if (_base != null) {
+			return _base.loadTexture(fileName);
+		}
+		return null;
+	}
+
+	public static final void destroySourceAllCache() {
+		if (_base != null) {
+			_base.destroySourceAllCache();
+		}
+	}
+
+	public static final void destroyAllCache() {
+		if (_base != null) {
+			_base.destroyAllCache();
+		}
+	}
+
+	public static final void disposeTextureAll() {
+		if (_base != null) {
+			_base.disposeTextureAll();
+		}
+	}
+
+	protected static final void putTexture(LTexture texture) {
+		if (_base != null) {
+			_base.putTexture(texture);
+		}
+	}
+
+	protected static final void removeTexture(LTexture texture) {
+		if (_base != null) {
+			_base.removeTexture(texture);
+		}
+	}
+
+	protected static final boolean delTexture(int texID) {
+		if (_base != null) {
+			return _base.delTexture(texID);
+		}
+		return false;
+	}
+
 	public static final void debug(String msg) {
-		if (LSystem._base != null) {
-			LSystem._base.log().debug(msg);
+		if (_base != null) {
+			_base.log().debug(msg);
 		}
 	}
 
 	public static final void debug(String msg, Object... args) {
-		if (LSystem._base != null) {
-			LSystem._base.log().debug(msg, args);
+		if (_base != null) {
+			_base.log().debug(msg, args);
 		}
 	}
 
 	public static final void debug(String msg, Throwable throwable) {
-		if (LSystem._base != null) {
-			LSystem._base.log().debug(msg, throwable);
+		if (_base != null) {
+			_base.log().debug(msg, throwable);
 		}
 	}
 
 	public static final void info(String msg) {
-		if (LSystem._base != null) {
-			LSystem._base.log().info(msg);
+		if (_base != null) {
+			_base.log().info(msg);
 		}
 	}
 
 	public static final void info(String msg, Object... args) {
-		if (LSystem._base != null) {
-			LSystem._base.log().info(msg, args);
+		if (_base != null) {
+			_base.log().info(msg, args);
 		}
 	}
 
 	public static final void info(String msg, Throwable throwable) {
-		if (LSystem._base != null) {
-			LSystem._base.log().info(msg, throwable);
+		if (_base != null) {
+			_base.log().info(msg, throwable);
 		}
 	}
 
 	public static final void warn(String msg) {
-		if (LSystem._base != null) {
-			LSystem._base.log().warn(msg);
+		if (_base != null) {
+			_base.log().warn(msg);
 		}
 	}
 
 	public static final void warn(String msg, Object... args) {
-		if (LSystem._base != null) {
-			LSystem._base.log().warn(msg, args);
+		if (_base != null) {
+			_base.log().warn(msg, args);
 		}
 	}
 
 	public static final void warn(String msg, Throwable throwable) {
-		if (LSystem._base != null) {
-			LSystem._base.log().warn(msg, throwable);
+		if (_base != null) {
+			_base.log().warn(msg, throwable);
 		}
 	}
 
 	public static final void error(String msg) {
-		if (LSystem._base != null) {
-			LSystem._base.log().error(msg);
+		if (_base != null) {
+			_base.log().error(msg);
 		}
 	}
 
 	public static final void error(String msg, Object... args) {
-		if (LSystem._base != null) {
-			LSystem._base.log().error(msg, args);
+		if (_base != null) {
+			_base.log().error(msg, args);
 		}
 	}
 
 	public static final void error(String msg, Throwable throwable) {
-		if (LSystem._base != null) {
-			LSystem._base.log().error(msg, throwable);
+		if (_base != null) {
+			_base.log().error(msg, throwable);
 		}
 	}
 
 	public static final void reportError(String msg, Throwable throwable) {
-		if (LSystem._base != null) {
-			LSystem._base.reportError(msg, throwable);
+		if (_base != null) {
+			_base.reportError(msg, throwable);
 		}
 	}
 
@@ -837,8 +1002,8 @@ public class LSystem {
 	}
 
 	public static final void setLogMinLevel(Level level) {
-		if (LSystem._base != null) {
-			LSystem._base.log().setMinLevel(level);
+		if (_base != null) {
+			_base.log().setMinLevel(level);
 		}
 	}
 

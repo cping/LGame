@@ -20,8 +20,8 @@
  */
 package loon.action.map.tmx;
 
+import loon.LSystem;
 import loon.LTexture;
-import loon.LTextures;
 import loon.canvas.LColor;
 import loon.utils.xml.XMLElement;
 
@@ -57,7 +57,7 @@ public class TMXImage {
 			trans = new LColor(Integer.parseInt(color, 16));
 		}
 		if (width == 0 || height == 0) {
-			LTexture image = LTextures.loadTexture(source);
+			LTexture image = LSystem.loadTexture(source);
 			if (width == 0) {
 				width = image.getWidth();
 			}

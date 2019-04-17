@@ -23,7 +23,6 @@ package loon.action.avg;
 import loon.LObject;
 import loon.LSystem;
 import loon.LTexture;
-import loon.LTextures;
 import loon.LTransition;
 import loon.Screen;
 import loon.action.ActionBind;
@@ -495,7 +494,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	}
 
 	public AVGScreen(final String initscript, final String initdialog) {
-		this(initscript, LTextures.loadTexture(initdialog));
+		this(initscript, LSystem.loadTexture(initdialog));
 	}
 
 	public AVGScreen(final String initscript, final LTexture img) {
@@ -613,11 +612,11 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 			if (result.length > 1) {
 				// 只有单图时,全部按钮为一张图片(索引0存放跳转点，非按钮图)
 				if (result.length == 2) {
-					click.setTexture(LTextures.loadTexture(result[1]));
+					click.setTexture(LSystem.loadTexture(result[1]));
 					click.setGrayButton(true);
 				} else if (result.length == 3) { // 有两张图时
-					LTexture texIdle = LTextures.loadTexture(result[1]);
-					LTexture texClick = LTextures.loadTexture(result[2]);
+					LTexture texIdle = LSystem.loadTexture(result[1]);
+					LTexture texClick = LSystem.loadTexture(result[2]);
 					// 空闲时
 					click.setIdleClick(texIdle);
 					// 鼠标徘徊
@@ -625,9 +624,9 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 					// 鼠标按下
 					click.setClickedClick(texClick);
 				} else if (result.length == 4) { // 有三张图时
-					LTexture texIdle = LTextures.loadTexture(result[1]);
-					LTexture texHover = LTextures.loadTexture(result[2]);
-					LTexture texClick = LTextures.loadTexture(result[3]);
+					LTexture texIdle = LSystem.loadTexture(result[1]);
+					LTexture texHover = LSystem.loadTexture(result[2]);
+					LTexture texClick = LSystem.loadTexture(result[3]);
 					// 空闲时
 					click.setIdleClick(texIdle);
 					// 鼠标徘徊
@@ -638,7 +637,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 			}
 			click.SetClick(new OptClick(this, result[0]));
 		} else {
-			click.setTexture(LTextures.loadTexture(order));
+			click.setTexture(LSystem.loadTexture(order));
 			click.setGrayButton(true);
 		}
 	}
@@ -648,7 +647,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		this.setRepaintMode(Screen.SCREEN_NOT_REPAINT);
 		this._plapDelay = 60;
 		if (_dialogTexture == null && _dialogFileName != null) {
-			this._dialogTexture = LTextures.loadTexture(_dialogFileName);
+			this._dialogTexture = LSystem.loadTexture(_dialogFileName);
 		}
 		this.isGameRunning = true;
 	}

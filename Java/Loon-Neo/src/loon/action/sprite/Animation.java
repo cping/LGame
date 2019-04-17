@@ -22,7 +22,7 @@ package loon.action.sprite;
 
 import loon.LRelease;
 import loon.LTexture;
-import loon.LTextures;
+import loon.LSystem;
 import loon.canvas.LColor;
 import loon.opengl.TextureUtils;
 import loon.utils.CollectionUtils;
@@ -85,7 +85,7 @@ public class Animation implements LRelease {
 	}
 
 	public static Animation getDefaultAnimation(String fileName) {
-		return Animation.getDefaultAnimation(LTextures.loadTexture(fileName));
+		return Animation.getDefaultAnimation(LSystem.loadTexture(fileName));
 	}
 
 	public static Animation getDefaultAnimation(final LTexture texture) {
@@ -174,7 +174,7 @@ public class Animation implements LRelease {
 	public static Animation getDefaultAnimation(String[] paths, int maxFrame, int timer) {
 		LTexture[] res = new LTexture[paths.length];
 		for (int i = 0; i < paths.length; i++) {
-			res[i] = LTextures.loadTexture(paths[i]);
+			res[i] = LSystem.loadTexture(paths[i]);
 		}
 		return getDefaultAnimation(res, maxFrame, timer);
 	}
@@ -228,7 +228,7 @@ public class Animation implements LRelease {
 	 * @param timer
 	 */
 	public synchronized void addFrame(String fileName, long timer) {
-		addFrame(LTextures.loadTexture(fileName), timer);
+		addFrame(LSystem.loadTexture(fileName), timer);
 	}
 
 	/**

@@ -22,7 +22,7 @@ package loon.action.sprite;
 
 import loon.LRelease;
 import loon.LTexture;
-import loon.LTextures;
+import loon.LSystem;
 import loon.canvas.LColor;
 import loon.geom.RectI;
 
@@ -45,7 +45,7 @@ public class SpriteBatchSheet implements LRelease {
 	private RectI.Range spriteRect, destRect;
 
 	public SpriteBatchSheet(String fileName, int hFrames, int vFrames, float r) {
-		this(LTextures.loadTexture(fileName), hFrames, vFrames, r);
+		this(LSystem.loadTexture(fileName), hFrames, vFrames, r);
 	}
 
 	public SpriteBatchSheet(LTexture image, int hFrames, int vFrames, float r) {

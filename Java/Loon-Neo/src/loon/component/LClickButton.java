@@ -23,7 +23,6 @@ package loon.component;
 
 import loon.LSystem;
 import loon.LTexture;
-import loon.LTextures;
 import loon.canvas.LColor;
 import loon.component.skin.ClickButtonSkin;
 import loon.component.skin.SkinManager;
@@ -59,7 +58,7 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 	private String text = null;
 
 	public static LClickButton makePath(String path) {
-		LTexture tex = LTextures.loadTexture(path);
+		LTexture tex = LSystem.loadTexture(path);
 		return new LClickButton(null, SkinManager.get().getClickButtonSkin().getFont(),
 				SkinManager.get().getClickButtonSkin().getFontColor(), 0, 0, tex.getWidth(), tex.getHeight(), tex, tex,
 				tex);
@@ -67,8 +66,8 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 
 	public static LClickButton make(int width, int height, String idle, String hover, String clicked) {
 		return new LClickButton(null, SkinManager.get().getClickButtonSkin().getFont(),
-				SkinManager.get().getClickButtonSkin().getFontColor(), 0, 0, width, height, LTextures.loadTexture(idle),
-				LTextures.loadTexture(hover), LTextures.loadTexture(clicked));
+				SkinManager.get().getClickButtonSkin().getFontColor(), 0, 0, width, height, LSystem.loadTexture(idle),
+				LSystem.loadTexture(hover), LSystem.loadTexture(clicked));
 	}
 
 	public static LClickButton make(int width, int height, LTexture idle, LTexture hover, LTexture clicked) {
@@ -95,7 +94,7 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 	}
 
 	public static LClickButton make(String text, int width, int height, String clickPath) {
-		LTexture texture = LTextures.loadTexture(clickPath);
+		LTexture texture = LSystem.loadTexture(clickPath);
 		return new LClickButton(text, SkinManager.get().getClickButtonSkin().getFont(),
 				SkinManager.get().getClickButtonSkin().getFontColor(), 0, 0, width, height, texture, texture, texture);
 	}
@@ -141,14 +140,14 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 	}
 
 	public LClickButton(String text, IFont font, LColor color, int x, int y, int width, int height, String path) {
-		this(text, font, color, x, y, width, height, LTextures.loadTexture(path), LTextures.loadTexture(path),
-				LTextures.loadTexture(path));
+		this(text, font, color, x, y, width, height, LSystem.loadTexture(path), LSystem.loadTexture(path),
+				LSystem.loadTexture(path));
 	}
 
 	public LClickButton(String text, IFont font, LColor color, int x, int y, int width, int height, String a, String b,
 			String c) {
-		this(text, font, color, x, y, width, height, LTextures.loadTexture(a), LTextures.loadTexture(b),
-				LTextures.loadTexture(c));
+		this(text, font, color, x, y, width, height, LSystem.loadTexture(a), LSystem.loadTexture(b),
+				LSystem.loadTexture(c));
 	}
 
 	public LClickButton(ClickButtonSkin skin, String text, int x, int y, int width, int height) {
@@ -405,7 +404,7 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 	}
 
 	public LClickButton setTexture(String path) {
-		setTexture(LTextures.loadTexture(path));
+		setTexture(LSystem.loadTexture(path));
 		return this;
 	}
 

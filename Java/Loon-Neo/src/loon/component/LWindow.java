@@ -24,7 +24,6 @@ package loon.component;
 
 import loon.LSystem;
 import loon.LTexture;
-import loon.LTextures;
 import loon.Screen;
 import loon.action.sprite.Animation;
 import loon.canvas.LColor;
@@ -71,8 +70,8 @@ public class LWindow extends LContainer implements FontSet<LWindow> {
 	public static LWindow alert(String barPath, String backgroundPath, String btnPath, String title, String firstButton,
 			String secondButton, String closeButton, float x, float y, float width, float height, float barheight,
 			CallFunction first, CallFunction second, CallFunction close, LColor fontColor, boolean vertical) {
-		return alert(LTextures.loadTexture(barPath), LTextures.loadTexture(backgroundPath),
-				LTextures.loadTexture(btnPath), title, firstButton, secondButton, closeButton, x, y, width, height,
+		return alert(LSystem.loadTexture(barPath), LSystem.loadTexture(backgroundPath),
+				LSystem.loadTexture(btnPath), title, firstButton, secondButton, closeButton, x, y, width, height,
 				barheight, first, second, close, fontColor, vertical);
 	}
 
@@ -80,8 +79,8 @@ public class LWindow extends LContainer implements FontSet<LWindow> {
 			String firstButton, String secondButton, String closeButton, float x, float y, float width, float height,
 			float barheight, CallFunction first, CallFunction second, CallFunction close, LColor fontColor,
 			boolean vertical) {
-		return alert(font, LTextures.loadTexture(barPath), LTextures.loadTexture(backgroundPath),
-				LTextures.loadTexture(btnPath), title, firstButton, secondButton, closeButton, x, y, width, height,
+		return alert(font, LSystem.loadTexture(barPath), LSystem.loadTexture(backgroundPath),
+				LSystem.loadTexture(btnPath), title, firstButton, secondButton, closeButton, x, y, width, height,
 				barheight, first, second, close, fontColor, vertical);
 	}
 
@@ -327,7 +326,7 @@ public class LWindow extends LContainer implements FontSet<LWindow> {
 
 	public LWindow(String title, float x, float y, float width, float height, String barFile, String backgroundFile) {
 		this(SkinManager.get().getWindowSkin().getFont(), title, SkinManager.get().getWindowSkin().getFontColor(),
-				LTextures.loadTexture(barFile), LTextures.loadTexture(backgroundFile), x, y, width, height, 40);
+				LSystem.loadTexture(barFile), LSystem.loadTexture(backgroundFile), x, y, width, height, 40);
 	}
 
 	public LWindow(String txt, LColor color, LTexture bar, LTexture background, float x, float y, float width,
@@ -449,7 +448,7 @@ public class LWindow extends LContainer implements FontSet<LWindow> {
 
 	@Override
 	public LComponent setBackground(String path) {
-		return setBackground(LTextures.loadTexture(path));
+		return setBackground(LSystem.loadTexture(path));
 	}
 
 	public LTexture getBarTexture() {
@@ -462,7 +461,7 @@ public class LWindow extends LContainer implements FontSet<LWindow> {
 	}
 
 	public void setBarTexture(String path) {
-		setBarTexture(LTextures.loadTexture(path));
+		setBarTexture(LSystem.loadTexture(path));
 	}
 
 	@Override

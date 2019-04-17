@@ -24,7 +24,6 @@ import loon.Director.Origin;
 import loon.LObject;
 import loon.LSystem;
 import loon.LTexture;
-import loon.LTextures;
 import loon.LTrans;
 import loon.PlayerUtils;
 import loon.Screen;
@@ -219,7 +218,7 @@ public class Sprite extends LObject<ISprite>
 	 * @param fileName
 	 */
 	public Sprite(String fileName) {
-		this(LTextures.loadTexture(fileName));
+		this(LSystem.loadTexture(fileName));
 	}
 
 	/**

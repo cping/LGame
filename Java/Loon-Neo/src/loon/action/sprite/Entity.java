@@ -26,7 +26,6 @@ import loon.Director.Origin;
 import loon.LObject;
 import loon.LSystem;
 import loon.LTexture;
-import loon.LTextures;
 import loon.PlayerUtils;
 import loon.Screen;
 import loon.action.ActionBind;
@@ -99,7 +98,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	}
 
 	public Entity(final String path) {
-		this(LTextures.loadTexture(path));
+		this(LSystem.loadTexture(path));
 	}
 
 	public Entity(final LTexture texture) {
@@ -122,7 +121,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	}
 
 	public static Entity make(String path, final float x, final float y) {
-		return new Entity(LTextures.loadTexture(path), x, y);
+		return new Entity(LSystem.loadTexture(path), x, y);
 	}
 
 	protected void onUpdateColor() {
@@ -130,7 +129,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	}
 
 	public void setTexture(String path) {
-		setTexture(LTextures.loadTexture(path));
+		setTexture(LSystem.loadTexture(path));
 	}
 
 	public void setTexture(LTexture tex) {

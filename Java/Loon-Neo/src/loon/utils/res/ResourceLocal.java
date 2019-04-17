@@ -24,7 +24,6 @@ import loon.BaseIO;
 import loon.Json;
 import loon.LSystem;
 import loon.LTexture;
-import loon.LTextures;
 import loon.Sound;
 import loon.canvas.Image;
 import loon.canvas.Pixmap;
@@ -289,11 +288,11 @@ public class ResourceLocal extends ResourceGetter implements IEventListener {
 		String ext = LSystem.getExtension(imagePath);
 		LTexture sheet = null;
 		if (!LSystem.isImage(ext)) {
-			sheet = LTextures.loadTexture(StringUtils.replaceIgnoreCase(imagePath, ext, "png"));
+			sheet = LSystem.loadTexture(StringUtils.replaceIgnoreCase(imagePath, ext, "png"));
 		} else if (StringUtils.isEmpty(ext)) {
-			sheet = LTextures.loadTexture(imagePath + ".png");
+			sheet = LSystem.loadTexture(imagePath + ".png");
 		} else {
-			sheet = LTextures.loadTexture(imagePath);
+			sheet = LSystem.loadTexture(imagePath);
 		}
 		if (item.subkeys != null) {
 			sset = new MovieSpriteSheet(jsonObj, StringUtils.split(item.subkeys, ','), sheet);

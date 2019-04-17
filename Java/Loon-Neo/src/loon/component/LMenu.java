@@ -24,7 +24,6 @@ package loon.component;
 import loon.LRelease;
 import loon.LSystem;
 import loon.LTexture;
-import loon.LTextures;
 import loon.canvas.LColor;
 import loon.component.skin.MenuSkin;
 import loon.component.skin.SkinManager;
@@ -400,13 +399,13 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 	}
 
 	public LMenu(int move_type, IFont font, String label, int width, int height, String tabfile, String mainfile) {
-		this(move_type, font, label, width, height, LTextures.loadTexture(tabfile), LTextures.loadTexture(mainfile), 0,
+		this(move_type, font, label, width, height, LSystem.loadTexture(tabfile), LSystem.loadTexture(mainfile), 0,
 				0, false);
 	}
 
 	public LMenu(int move_type, IFont font, String label, int width, int height, String tabfile, String mainfile,
 			int taby, int mainsize) {
-		this(move_type, font, label, width, height, LTextures.loadTexture(tabfile), LTextures.loadTexture(mainfile),
+		this(move_type, font, label, width, height, LSystem.loadTexture(tabfile), LSystem.loadTexture(mainfile),
 				taby, mainsize, false);
 	}
 
@@ -513,7 +512,7 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 	}
 
 	public MenuItem add(String label, String file, MenuItemClick click) {
-		return add(new LMenu.MenuItem(this, LTextures.loadTexture(file), label, click));
+		return add(new LMenu.MenuItem(this, LSystem.loadTexture(file), label, click));
 	}
 
 	public MenuItem add(String label, LTexture texture, MenuItemClick click) {

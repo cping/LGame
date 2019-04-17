@@ -21,7 +21,7 @@
 package loon.action.sprite.effect;
 
 import loon.LTexture;
-import loon.LTextures;
+import loon.LSystem;
 import loon.action.sprite.Entity;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimer;
@@ -50,11 +50,11 @@ public class CrossEffect extends Entity implements BaseEffect {
 	private LTexture tmp;
 
 	public CrossEffect(int c, String fileName) {
-		this(c, LTextures.loadTexture(fileName));
+		this(c, LSystem.loadTexture(fileName));
 	}
 
 	public CrossEffect(int c, String oldImgPath, String newImgPath) {
-		this(c, LTextures.loadTexture(oldImgPath), LTextures.loadTexture(newImgPath));
+		this(c, LSystem.loadTexture(oldImgPath), LSystem.loadTexture(newImgPath));
 	}
 
 	public CrossEffect(int c, LTexture o) {

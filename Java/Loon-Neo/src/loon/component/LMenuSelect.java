@@ -22,7 +22,6 @@ package loon.component;
 
 import loon.LSystem;
 import loon.LTexture;
-import loon.LTextures;
 import loon.canvas.LColor;
 import loon.event.ActionKey;
 import loon.event.CallFunction;
@@ -161,7 +160,7 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 	}
 
 	public LMenuSelect(IFont font, String[] labels, String path, int x, int y) {
-		this(font, labels, LTextures.loadTexture(path), x, y);
+		this(font, labels, LSystem.loadTexture(path), x, y);
 	}
 
 	public LMenuSelect(IFont font, String[] labels, LTexture bg, int x, int y) {
@@ -208,7 +207,7 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 	}
 
 	public LMenuSelect setImageFlag(String path) {
-		return setImageFlag(LTextures.loadTexture(path));
+		return setImageFlag(LSystem.loadTexture(path));
 	}
 
 	public LMenuSelect setLabels(String labels) {

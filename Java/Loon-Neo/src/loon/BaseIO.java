@@ -67,27 +67,27 @@ public abstract class BaseIO extends DefUI {
 	}
 
 	public final static LTexture newTexture(String path) {
-		return LTextures.newTexture(path);
+		return LSystem.newTexture(path);
 	}
 
 	public final static LTexture newTexture(String path, Format config) {
-		return LTextures.newTexture(path, config);
+		return LSystem.newTexture(path, config);
 	}
 
 	public final static LTexture loadTexture(String path) {
-		return LTextures.loadTexture(path);
+		return LSystem.loadTexture(path);
 	}
 
 	public final static LTexture loadTexture(String path, Format config) {
-		return LTextures.loadTexture(path, config);
+		return LSystem.loadTexture(path, config);
 	}
 
 	public final static LTexture loadNinePatchTexture(String path, int x, int y, int w, int h) {
-		return LTextures.loadNinePatchTexture(path, x, y, w, h);
+		return LSystem.loadNinePatchTexture(path, x, y, w, h);
 	}
 
 	public final static LTexture loadNinePatchTexture(String path, Repeat repeat, int x, int y, int w, int h, Format config) {
-		return LTextures.loadNinePatchTexture(path, repeat, x, y, w, h, config);
+		return LSystem.loadNinePatchTexture(path, repeat, x, y, w, h, config);
 	}
 
 	public final static Image loadImage(String path) {

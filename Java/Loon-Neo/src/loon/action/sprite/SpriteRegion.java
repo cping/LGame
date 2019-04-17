@@ -22,7 +22,6 @@ package loon.action.sprite;
 
 import loon.LSystem;
 import loon.LTexture;
-import loon.LTextures;
 import loon.LTexture.Format;
 import loon.canvas.LColor;
 import loon.geom.RectBox;
@@ -90,11 +89,11 @@ public class SpriteRegion extends LTextureRegion {
 	}
 
 	public SpriteRegion(String file) {
-		this(LTextures.loadTexture(file));
+		this(LSystem.loadTexture(file));
 	}
 
 	public SpriteRegion(String file, Format format) {
-		this(LTextures.loadTexture(file, format));
+		this(LSystem.loadTexture(file, format));
 	}
 
 	public SpriteRegion(LTexture texture) {
@@ -107,7 +106,7 @@ public class SpriteRegion extends LTextureRegion {
 
 	public SpriteRegion(String file, int srcX, int srcY, int srcWidth,
 			int srcHeight) {
-		this(LTextures.loadTexture(file), srcX, srcY, srcWidth, srcHeight);
+		this(LSystem.loadTexture(file), srcX, srcY, srcWidth, srcHeight);
 	}
 
 	public SpriteRegion(LTexture texture, int srcX, int srcY, int srcWidth,

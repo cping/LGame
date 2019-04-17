@@ -23,7 +23,6 @@ package loon.action.map.tmx.renderers;
 import loon.LObject;
 import loon.LSystem;
 import loon.LTexture;
-import loon.LTextures;
 import loon.PlayerUtils;
 import loon.Screen;
 import loon.action.ActionTween;
@@ -99,7 +98,7 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 		for (TMXTileSet tileSet : map.getTileSets()) {
 			String path = tileSet.getImage().getSource();
 			if (!textureMap.containsKey(path)) {
-				textureMap.put(path, LTextures.loadTexture(path));
+				textureMap.put(path, LSystem.loadTexture(path));
 			}
 			for (TMXTile tile : tileSet.getTiles()) {
 				if (tile.isAnimated()) {
@@ -112,7 +111,7 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 		for (TMXImageLayer imageLayer : map.getImageLayers()) {
 			String path = imageLayer.getImage().getSource();
 			if (!textureMap.containsKey(path)) {
-				textureMap.put(path, LTextures.loadTexture(path));
+				textureMap.put(path, LSystem.loadTexture(path));
 			}
 		}
 	}

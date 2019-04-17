@@ -22,7 +22,6 @@ package loon.action.sprite.effect;
 
 import loon.LSystem;
 import loon.LTexture;
-import loon.LTextures;
 import loon.action.map.Config;
 import loon.action.sprite.Entity;
 import loon.geom.RectBox;
@@ -45,11 +44,11 @@ public class ScrollEffect extends Entity implements BaseEffect {
 	private int model;
 
 	public ScrollEffect(String fileName) {
-		this(LTextures.loadTexture(fileName));
+		this(LSystem.loadTexture(fileName));
 	}
 
 	public ScrollEffect(String fileName, RectBox rect) {
-		this(Config.DOWN, LTextures.loadTexture(fileName), rect);
+		this(Config.DOWN, LSystem.loadTexture(fileName), rect);
 	}
 
 	public ScrollEffect(LTexture tex2d) {
@@ -57,7 +56,7 @@ public class ScrollEffect extends Entity implements BaseEffect {
 	}
 
 	public ScrollEffect(int d, String fileName) {
-		this(d, LTextures.loadTexture(fileName));
+		this(d, LSystem.loadTexture(fileName));
 	}
 
 	public ScrollEffect(int d, LTexture tex2d) {
@@ -65,7 +64,7 @@ public class ScrollEffect extends Entity implements BaseEffect {
 	}
 
 	public ScrollEffect(int d, String fileName, RectBox limit) {
-		this(d, LTextures.loadTexture(fileName), limit);
+		this(d, LSystem.loadTexture(fileName), limit);
 	}
 
 	public ScrollEffect(int d, LTexture tex2d, RectBox limit) {

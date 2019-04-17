@@ -233,7 +233,7 @@ public abstract class Graphics {
 
 	public int createTexture(LTexture.Format config, int count) {
 		int id = gl.glGenTexture() + count;
-		if (LTextures.contains(id)) {
+		if (LSystem.containsTexture(id)) {
 			return createTexture(config, 1);
 		}
 		if (GLUtils.getCurrentHardwareTextureID() == id) {

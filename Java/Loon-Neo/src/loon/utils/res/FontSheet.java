@@ -25,7 +25,6 @@ import loon.Json;
 import loon.LRelease;
 import loon.LSystem;
 import loon.LTexture;
-import loon.LTextures;
 
 public class FontSheet implements LRelease {
 
@@ -45,7 +44,7 @@ public class FontSheet implements LRelease {
 	protected FontSheet(String url) {
 		Json.Object jsonObj = LSystem.base().json().parse(BaseIO.loadText(url));
 		String imagePath = url;
-		LTexture sheet = LTextures.loadTexture(imagePath);
+		LTexture sheet = LSystem.loadTexture(imagePath);
 		init(jsonObj, sheet);
 	}
 

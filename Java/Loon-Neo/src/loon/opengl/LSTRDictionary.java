@@ -44,15 +44,14 @@ public final class LSTRDictionary implements LRelease {
 	}
 
 	public final static LSTRDictionary get() {
-		if (instance != null) {
-			return instance;
-		}
-		synchronized (LSTRDictionary.class) {
-			if (instance == null || instance.isClosed()) {
-				instance = make();
+		if (instance == null) {
+			synchronized (LSTRDictionary.class) {
+				if (instance == null) {
+					instance = make();
+				}
 			}
-			return instance;
 		}
+		return instance;
 	}
 
 	public void setAsyn(boolean asyn) {
@@ -81,8 +80,6 @@ public final class LSTRDictionary implements LRelease {
 	private final static char[] checkMessage = ADDED.toCharArray();
 
 	public final static char split = '$';
-
-	private boolean _closed = false;
 
 	private Dict _lastDict;
 
@@ -455,11 +452,6 @@ public final class LSTRDictionary implements LRelease {
 		cacheList.clear();
 		clearStringLazy();
 		clearEnglishLazy();
-		_closed = true;
-	}
-
-	public boolean isClosed() {
-		return _closed;
 	}
 
 	@Override

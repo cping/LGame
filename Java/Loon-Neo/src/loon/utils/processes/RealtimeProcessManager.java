@@ -34,13 +34,15 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, LRelease {
 
 	private SortedList<GameProcess> processes;
 
-	public static RealtimeProcessManager get() {
-		synchronized (RealtimeProcessManager.class) {
-			if (instance == null) {
-				instance = new RealtimeProcessManager();
+	public static final RealtimeProcessManager get() {
+		if (instance == null) {
+			synchronized (RealtimeProcessManager.class) {
+				if (instance == null) {
+					instance = new RealtimeProcessManager();
+				}
 			}
-			return instance;
 		}
+		return instance;
 	}
 
 	private RealtimeProcessManager() {

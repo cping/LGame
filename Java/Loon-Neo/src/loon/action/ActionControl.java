@@ -42,21 +42,27 @@ public class ActionControl implements LRelease {
 
 	private boolean pause;
 
-	private boolean closed;
+	/**
+	 * 构建一个单独的缓动动画控制器
+	 * 
+	 * @return
+	 */
+	public final static ActionControl make() {
+		return new ActionControl();
+	}
 
 	/**
 	 * 获得缓动动画控制器实例
 	 */
 	public static final ActionControl get() {
-		if (instanceAction != null) {
-			return instanceAction;
-		}
-		synchronized (ActionControl.class) {
-			if (instanceAction == null || instanceAction.isClosed()) {
-				instanceAction = new ActionControl();
+		if (instanceAction == null) {
+			synchronized (ActionControl.class) {
+				if (instanceAction == null) {
+					instanceAction = new ActionControl();
+				}
 			}
-			return instanceAction;
 		}
+		return instanceAction;
 	}
 
 	/**
@@ -199,7 +205,7 @@ public class ActionControl implements LRelease {
 		actions = new Actions();
 		delayTimer = new LTimer(0);
 		bindDatas = new Array<ActionBindData>();
-		closed = pause = false;
+		pause = false;
 	}
 
 	public void addAction(ActionEvent action, ActionBind obj, boolean paused) {
@@ -282,13 +288,8 @@ public class ActionControl implements LRelease {
 		pause = true;
 	}
 
-	public boolean isClosed() {
-		return closed;
-	}
-
 	@Override
 	public void close() {
-		closed = true;
 		actions.clear();
 		bindDatas.clear();
 	}

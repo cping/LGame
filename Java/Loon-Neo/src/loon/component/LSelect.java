@@ -22,7 +22,6 @@ package loon.component;
 
 import loon.LSystem;
 import loon.LTexture;
-import loon.LTextures;
 import loon.canvas.LColor;
 import loon.component.skin.MessageSkin;
 import loon.component.skin.SkinManager;
@@ -77,7 +76,7 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 	}
 
 	public LSelect(IFont font, String fileName, int x, int y) {
-		this(font, LTextures.loadTexture(fileName), x, y);
+		this(font, LSystem.loadTexture(fileName), x, y);
 	}
 
 	public LSelect(IFont font, LTexture formImage) {
@@ -104,7 +103,7 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 	public LSelect(IFont font, LTexture formImage, int x, int y, int width, int height, LColor fontColor) {
 		super(x, y, width, height);
 		if (formImage == null) {
-			this.setBackground(LTextures.createTexture(width, height, LTexture.Format.LINEAR));
+			this.setBackground(LSystem.createTexture(width, height, LTexture.Format.LINEAR));
 			this.setAlpha(0.3F);
 		} else {
 			this.setBackground(formImage);
@@ -334,7 +333,7 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 	}
 
 	public LSelect setCursor(String fileName) {
-		setCursor(LTextures.loadTexture(fileName));
+		setCursor(LSystem.loadTexture(fileName));
 		return this;
 	}
 
@@ -353,7 +352,7 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 	}
 
 	public LSelect setBuoyage(String fileName) {
-		setBuoyage(LTextures.loadTexture(fileName));
+		setBuoyage(LSystem.loadTexture(fileName));
 		return this;
 	}
 

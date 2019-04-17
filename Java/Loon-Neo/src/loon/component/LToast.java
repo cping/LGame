@@ -22,7 +22,6 @@ package loon.component;
 
 import loon.LSystem;
 import loon.LTexture;
-import loon.LTextures;
 import loon.action.sprite.ISprite;
 import loon.canvas.LColor;
 import loon.component.skin.MessageSkin;
@@ -217,7 +216,7 @@ public class LToast extends LComponent implements FontSet<LToast> {
 
 	@Override
 	public LComponent setBackground(String filePath) {
-		setBackground(LTextures.loadTexture(filePath));
+		setBackground(LSystem.loadTexture(filePath));
 		return this;
 	}
 
