@@ -498,6 +498,24 @@ public abstract class ActorLayer extends LContainer {
 	}
 
 	/**
+	 * 查看Layer是否包含object
+	 * 
+	 * @param object
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public boolean containsObject(Actor object) {
+		if (_component_isClose) {
+			return false;
+		}
+		if (object == null) {
+			return false;
+		}
+		return objects.contains(object);
+	}
+
+	/**
 	 * 添加角色到Layer(在Layer中添加的角色将自动赋予碰撞检查)
 	 * 
 	 * @param object

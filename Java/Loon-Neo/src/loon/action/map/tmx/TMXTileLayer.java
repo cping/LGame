@@ -51,8 +51,7 @@ public class TMXTileLayer extends TMXMapLayer {
 	private Compression compression;
 
 	public TMXTileLayer(TMXMap map) {
-		super(map, "", 0, 0, map.getWidth(), map.getHeight(), 1.0f, true,
-				TmxLayerType.TILE);
+		super(map, "", 0, 0, map.getWidth(), map.getHeight(), 1.0f, true, TmxLayerType.TILE);
 
 		encoding = Encoding.XML;
 		compression = Compression.NONE;
@@ -77,8 +76,7 @@ public class TMXTileLayer extends TMXMapLayer {
 		XMLElement dataElement = element.getChildrenByName("data");
 
 		if (dataElement.hasAttribute("encoding")) {
-			switch (dataElement.getAttribute("encoding", "").trim()
-					.toLowerCase()) {
+			switch (dataElement.getAttribute("encoding", "").trim().toLowerCase()) {
 			case "base64":
 				encoding = Encoding.BASE64;
 				break;
@@ -92,8 +90,7 @@ public class TMXTileLayer extends TMXMapLayer {
 		}
 
 		if (dataElement.hasAttribute("compression")) {
-			switch (dataElement.getAttribute("compression", "").trim()
-					.toLowerCase()) {
+			switch (dataElement.getAttribute("compression", "").trim().toLowerCase()) {
 			case "gzip":
 				compression = Compression.GZIP;
 				break;
@@ -114,7 +111,7 @@ public class TMXTileLayer extends TMXMapLayer {
 			try {
 				parseBase64(dataElement.getContents());
 			} catch (Throwable e) {
-				LSystem.error(e.getMessage(),e);
+				LSystem.error("TMXTile parse base64 exception", e);
 			}
 			break;
 
@@ -130,15 +127,13 @@ public class TMXTileLayer extends TMXMapLayer {
 		for (int tileCount = 0; tileCount < list.size; tileCount++) {
 			XMLElement tileElement = list.get(tileCount);
 
-			int gid = MathUtils.parseUnsignedInt(tileElement.getAttribute(
-					"gid", "-1"));
+			int gid = MathUtils.parseUnsignedInt(tileElement.getAttribute("gid", "-1"));
 
 			int tileSetIndex = map.findTileSetIndex(gid);
 
 			if (tileSetIndex != -1) {
 				TMXTileSet tileSet = map.getTileset(tileSetIndex);
-				tileMap[tileCount] = new TMXMapTile(gid, tileSet.getFirstGID(),
-						tileSetIndex);
+				tileMap[tileCount] = new TMXMapTile(gid, tileSet.getFirstGID(), tileSetIndex);
 			} else
 				tileMap[tileCount] = new TMXMapTile(gid, 0, -1);
 		}
@@ -154,11 +149,9 @@ public class TMXTileLayer extends TMXMapLayer {
 		if (compression == null || compression == Compression.NONE) {
 			is = new ByteArrayInputStream(bytes);
 		} else if (compression == Compression.GZIP) {
-			is = new BufferedInputStream(new GZIPInputStream(
-					new ByteArrayInputStream(bytes), bytes.length));
+			is = new BufferedInputStream(new GZIPInputStream(new ByteArrayInputStream(bytes), bytes.length));
 		} else if (compression == Compression.ZLIB) {
-			is = new BufferedInputStream(new InflaterInputStream(
-					new ByteArrayInputStream(bytes)));
+			is = new BufferedInputStream(new InflaterInputStream(new ByteArrayInputStream(bytes)));
 		}
 		byte[] temp = new byte[4];
 		for (int y = 0; y < height; y++) {
@@ -171,18 +164,16 @@ public class TMXTileLayer extends TMXMapLayer {
 					read += curr;
 				}
 				if (read != temp.length) {
-					throw LSystem.runThrow(
-							"Error Reading TMX Layer Data: Premature end of tile data");
+					throw LSystem.runThrow("Error Reading TMX Layer Data: Premature end of tile data");
 				}
-				int gid = byteToInt(temp[0]) | byteToInt(temp[1]) << 8
-						| byteToInt(temp[2]) << 16 | byteToInt(temp[3]) << 24;
+				int gid = byteToInt(temp[0]) | byteToInt(temp[1]) << 8 | byteToInt(temp[2]) << 16
+						| byteToInt(temp[3]) << 24;
 
 				int tileSetIndex = map.findTileSetIndex(gid);
 
 				if (tileSetIndex != -1) {
 					TMXTileSet tileSet = map.getTileset(tileSetIndex);
-					tileMap[y * width + x] = new TMXMapTile(gid,
-							tileSet.getFirstGID(), tileSetIndex);
+					tileMap[y * width + x] = new TMXMapTile(gid, tileSet.getFirstGID(), tileSetIndex);
 				} else {
 					tileMap[y * width + x] = new TMXMapTile(gid, 0, -1);
 				}
@@ -201,8 +192,7 @@ public class TMXTileLayer extends TMXMapLayer {
 
 			if (tileSetIndex != -1) {
 				TMXTileSet tileSet = map.getTileset(tileSetIndex);
-				tileMap[tileCount] = new TMXMapTile(gid, tileSet.getFirstGID(),
-						tileSetIndex);
+				tileMap[tileCount] = new TMXMapTile(gid, tileSet.getFirstGID(), tileSetIndex);
 			} else {
 				tileMap[tileCount] = new TMXMapTile(gid, 0, -1);
 			}
@@ -215,8 +205,7 @@ public class TMXTileLayer extends TMXMapLayer {
 		int tileSetIndex = map.findTileSetIndex(gid);
 		if (tileSetIndex != -1) {
 			TMXTileSet tileSet = map.getTileset(tileSetIndex);
-			tileMap[y * width + x] = new TMXMapTile(gid, tileSet.getFirstGID(),
-					tileSetIndex);
+			tileMap[y * width + x] = new TMXMapTile(gid, tileSet.getFirstGID(), tileSetIndex);
 		} else {
 			tileMap[y * width + x] = new TMXMapTile(gid, 0, -1);
 		}
@@ -287,8 +276,8 @@ public class TMXTileLayer extends TMXMapLayer {
 				}
 			}
 		}
-		Field2D field2d = new Field2D(TileMapConfig.reversalXandY(tmp),
-				getMap().getTileWidth(), getMap().getTileHeight());
+		Field2D field2d = new Field2D(TileMapConfig.reversalXandY(tmp), getMap().getTileWidth(),
+				getMap().getTileHeight());
 		field2d.setName(name);
 		field2d.Tag = this;
 		return field2d;

@@ -22,6 +22,7 @@
 package loon.utils.processes;
 
 import loon.LRelease;
+import loon.LSystem;
 import loon.utils.LIterator;
 import loon.utils.SortedList;
 import loon.utils.TArray;
@@ -63,7 +64,7 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, LRelease {
 			return this.processes.contains(realtimeProcess);
 		}
 	}
-	
+
 	@Override
 	public void tick(LTimerContext time) {
 		if (processes.size > 0) {
@@ -72,29 +73,33 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, LRelease {
 				toBeUpdated = new SortedList<GameProcess>(this.processes);
 			}
 			final SortedList<GameProcess> deadProcesses = new SortedList<GameProcess>();
-			for (LIterator<GameProcess> it = toBeUpdated.listIterator(); it.hasNext();) {
-				GameProcess realtimeProcess = it.next();
-				if (realtimeProcess != null) {
-					synchronized (realtimeProcess) {
-						realtimeProcess.tick(time);
-						if (realtimeProcess.isDead()) {
-							deadProcesses.add(realtimeProcess);
-						}
-					}
-				}
-			}
-			if (deadProcesses.size > 0) {
-				for (LIterator<GameProcess> it = deadProcesses.listIterator(); it.hasNext();) {
+			try {
+				for (LIterator<GameProcess> it = toBeUpdated.listIterator(); it.hasNext();) {
 					GameProcess realtimeProcess = it.next();
 					if (realtimeProcess != null) {
 						synchronized (realtimeProcess) {
-							realtimeProcess.finish();
+							realtimeProcess.tick(time);
+							if (realtimeProcess.isDead()) {
+								deadProcesses.add(realtimeProcess);
+							}
 						}
 					}
 				}
-				synchronized (this.processes) {
-					this.processes.removeAll(deadProcesses);
+				if (deadProcesses.size > 0) {
+					for (LIterator<GameProcess> it = deadProcesses.listIterator(); it.hasNext();) {
+						GameProcess realtimeProcess = it.next();
+						if (realtimeProcess != null) {
+							synchronized (realtimeProcess) {
+								realtimeProcess.finish();
+							}
+						}
+					}
+					synchronized (this.processes) {
+						this.processes.removeAll(deadProcesses);
+					}
 				}
+			} catch (Throwable cause) {
+				LSystem.error("Process dispatch failure", cause);
 			}
 		}
 	}

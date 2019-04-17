@@ -469,7 +469,7 @@ public class LTextureBatch implements LRelease {
 			mesh.post(name, expandVertices.getSize(), customShader != null ? customShader : shader,
 					expandVertices.getVertices(), vertexIdx, count);
 		} catch (Throwable e) {
-			LSystem.error(e.getMessage(), e);
+			LSystem.error("TextureBatch submit() exception", e);
 		} finally {
 			if (expandVertices.expand(this.vertexIdx)) {
 				mesh.reset(name, expandVertices.length());

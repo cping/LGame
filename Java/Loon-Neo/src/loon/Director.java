@@ -489,6 +489,10 @@ public class Director extends SoundBox {
 		LSystem.error(msg, throwable);
 	}
 
+	public final static void reportError(String msg, Throwable throwable) {
+		LSystem.reportError(msg, throwable);
+	}
+
 	public final static RuntimeException runThrow(String msg) {
 		return LSystem.runThrow(msg);
 	}

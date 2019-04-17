@@ -48,7 +48,7 @@ public abstract class GLBase implements LRelease {
 		try {
 			flush();
 		} catch (Throwable ex) {
-			LSystem.error(ex.getMessage(), ex);
+			LSystem.error("GL error end()", ex);
 		} finally {
 			begun = false;
 		}

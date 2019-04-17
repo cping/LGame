@@ -399,7 +399,7 @@ public class TGA {
 				in.close();
 				in = null;
 			} catch (Throwable e) {
-				LSystem.error(e.getMessage(), e);
+				LSystem.error("TGA image load exception", e);
 			}
 		}
 		return tga;

@@ -62,21 +62,23 @@ public class FadeTo extends ActionEvent {
 		}
 	}
 
+	@Override
 	public void onLoad() {
 
 	}
 
+	@Override
 	public void update(long elapsedTime) {
 		if (type == ISprite.TYPE_FADE_OUT) {
 			currentFrame--;
-			if (currentFrame == 0) {
+			if (currentFrame <= 0) {
 				original.setAlpha(0f);
 				_isCompleted = true;
 				return;
 			}
 		} else {
 			currentFrame++;
-			if (currentFrame == time) {
+			if (currentFrame >= time) {
 				original.setAlpha(1f);
 				_isCompleted = true;
 				return;

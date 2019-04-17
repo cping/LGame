@@ -207,7 +207,7 @@ public class GLBatch implements LRelease {
 			mesh.setVertices(expandVertices.getVertices(), 0, vertexIdx);
 			mesh.render(shader, primitiveType);
 		} catch (Throwable ex) {
-			LSystem.error(ex.getMessage(), ex);
+			LSystem.error("Batch error flush()", ex);
 		} finally {
 			shader.end();
 		}

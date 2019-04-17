@@ -154,7 +154,7 @@ public abstract class Conversion implements Expression {
 				if (MathUtils.isNan(v)) {
 					return Float.parseFloat(v);
 				} else {
-					LSystem.error(v + " not parse !");
+					LSystem.error("Conversion " + v + " not parse !");
 				}
 			}
 			return eval(v);

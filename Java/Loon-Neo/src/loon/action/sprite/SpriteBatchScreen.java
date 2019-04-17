@@ -42,7 +42,8 @@ import loon.utils.TArray;
 import loon.utils.timer.LTimerContext;
 
 /**
- * 该类为0.3.3版最新增加的Screen类，图形渲染使用单一的SpriteBatch，相较于使用GLEx，更适合多纹理渲染。<p>
+ * 该类为0.3.3版最新增加的Screen类，图形渲染使用单一的SpriteBatch，相较于使用GLEx，更适合多纹理渲染。
+ * <p>
  * 
  * 并且支持直接绑定Loon的物理引擎。
  * 
@@ -89,12 +90,10 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 	private void limitWorld(boolean _fixed) {
 		if (_fixed) {
 			if (this._box == null) {
-				this._box = new PWorldBox(_manager, 0f, 0f, getWidth(),
-						getHeight());
+				this._box = new PWorldBox(_manager, 0f, 0f, getWidth(), getHeight());
 			}
 			if (_physicsRect != null) {
-				this._box.set(_physicsRect.x, _physicsRect.y,
-						_physicsRect.width, _physicsRect.height);
+				this._box.set(_physicsRect.x, _physicsRect.y, _physicsRect.width, _physicsRect.height);
 			}
 			this._box.build();
 		} else {
@@ -266,8 +265,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 
 	public ActionObject findObject(float x, float y) {
 		for (ActionObject o : objects) {
-			if ((o.getX() == x && o.getY() == y)
-					|| o.getRectBox().contains(x, y)) {
+			if ((o.getX() == x && o.getY() == y) || o.getRectBox().contains(x, y)) {
 				return o;
 			}
 		}
@@ -287,13 +285,16 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 	}
 
 	public final void onLoad() {
-		init();
-		if (_batch == null) {
-			_batch = new SpriteBatch(512);
+		try {
+			init();
+			if (_batch == null) {
+				_batch = new SpriteBatch(512);
+			}
+			_batch.setBlendState(BlendState.Null);
+			onLoading();
+		} catch (Throwable cause) {
+			LSystem.error("SpriteBatchScreen onLoad exception", cause);
 		}
-		_batch.setBlendState(BlendState.Null);
-
-		onLoading();
 	}
 
 	protected void onLoading() {
@@ -334,8 +335,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		add(o);
 	}
 
-	public JumpObject addJumpObject(float x, float y, float w, float h,
-			Animation a) {
+	public JumpObject addJumpObject(float x, float y, float w, float h, Animation a) {
 		JumpObject o = null;
 		if (indexTile != null) {
 			o = new JumpObject(x, y, w, h, a, indexTile);
@@ -348,8 +348,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		return o;
 	}
 
-	public MoveObject addMoveObject(float x, float y, float w, float h,
-			Animation a) {
+	public MoveObject addMoveObject(float x, float y, float w, float h, Animation a) {
 		MoveObject o = null;
 		if (indexTile != null) {
 			o = new MoveObject(x, y, w, h, a, indexTile);
@@ -393,20 +392,17 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		return bindPhysics(fix, add(o), 1F);
 	}
 
-	public PBody addTexturePhysics(boolean fix, ActionObject o, float density)
-			throws Exception {
+	public PBody addTexturePhysics(boolean fix, ActionObject o, float density) throws Exception {
 		return bindTexturePhysics(fix, add(o), density);
 	}
 
-	public PBody addTexturePhysics(boolean fix, ActionObject o)
-			throws Exception {
+	public PBody addTexturePhysics(boolean fix, ActionObject o) throws Exception {
 		return bindTexturePhysics(fix, add(o), 1F);
 	}
 
 	public PBody bindPhysics(boolean fix, ActionObject o, float density) {
 		if (usePhysics) {
-			PBody body = _manager.addBox(fix, o.getRectBox(),
-					MathUtils.toRadians(o.getRotation()), density);
+			PBody body = _manager.addBox(fix, o.getRectBox(), MathUtils.toRadians(o.getRotation()), density);
 			body.setTag(o);
 			_bodys.put(o, body);
 			return body;
@@ -431,8 +427,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		if (usePhysics) {
 			RectBox rect = o.getRectBox();
 			float r = (rect.width + rect.height) / 4;
-			PBody body = _manager.addCircle(fix, o.x(), o.y(), r,
-					MathUtils.toRadians(o.getRotation()), density);
+			PBody body = _manager.addCircle(fix, o.x(), o.y(), r, MathUtils.toRadians(o.getRotation()), density);
 			body.setTag(o);
 			_bodys.put(o, body);
 			return body;
@@ -441,15 +436,12 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		}
 	}
 
-	public PBody bindTexturePhysics(boolean fix, ActionObject o, float density)
-			throws Exception {
+	public PBody bindTexturePhysics(boolean fix, ActionObject o, float density) throws Exception {
 		if (usePhysics) {
-			PBody body = _manager.addShape(fix, o.getAnimation()
-					.getSpriteImage(), MathUtils.toRadians(o.getRotation()),
+			PBody body = _manager.addShape(fix, o.getAnimation().getSpriteImage(), MathUtils.toRadians(o.getRotation()),
 					density);
 			if (body.size() > 0) {
-				body.inner_shapes()[0].setPosition(o.x() / _manager.scale,
-						o.y() / _manager.scale);
+				body.inner_shapes()[0].setPosition(o.x() / _manager.scale, o.y() / _manager.scale);
 			}
 			body.setTag(o);
 			_bodys.put(o, body);
@@ -459,8 +451,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		}
 	}
 
-	public PBody bindTexturePhysics(boolean fix, ActionObject o)
-			throws Exception {
+	public PBody bindTexturePhysics(boolean fix, ActionObject o) throws Exception {
 		return bindTexturePhysics(fix, o, 1F);
 	}
 
@@ -506,8 +497,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 
 				float offsetY = getHalfHeight() - follow.getY();
 				offsetY = MathUtils.min(offsetY, 0);
-				offsetY = MathUtils
-						.max(offsetY, getHeight() - tile.getHeight());
+				offsetY = MathUtils.max(offsetY, getHeight() - tile.getHeight());
 
 				setOffset(tile, offsetX, offsetY);
 				tile.update(elapsedTime);
@@ -523,8 +513,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 						final float rotation = (shape.getAngle() * MathUtils.RAD_TO_DEG) % 360;
 						AABB aabb = shape.getAABB();
 
-						o.setLocation(_manager.getScreenX(aabb.minX),
-								_manager.getScreenY(aabb.minY));
+						o.setLocation(_manager.getScreenX(aabb.minX), _manager.getScreenY(aabb.minY));
 						o.setRotation(rotation);
 					}
 				}
@@ -552,8 +541,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 				for (ActionObject o : objects) {
 					objX = o.getX() + offset.x;
 					objY = o.getY() + offset.y;
-					if (intersects(objX, objY, o.getWidth(), o.getHeight())
-							|| contains(objX, objY)) {
+					if (intersects(objX, objY, o.getWidth(), o.getHeight()) || contains(objX, objY)) {
 						o.draw(g, offset.x, offset.y);
 					}
 				}
@@ -569,9 +557,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 						for (ActionObject o : objects) {
 							objX = o.getX() + offset.x;
 							objY = o.getY() + offset.y;
-							if (intersects(objX, objY, o.getWidth(),
-									o.getHeight())
-									|| contains(objX, objY)) {
+							if (intersects(objX, objY, o.getWidth(), o.getHeight()) || contains(objX, objY)) {
 								o.draw(_batch, offset.x, offset.y);
 							}
 						}

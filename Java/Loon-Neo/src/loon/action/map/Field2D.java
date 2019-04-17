@@ -78,6 +78,12 @@ public class Field2D implements IArray, Config {
 
 	private int width, height;
 
+	public static final float rotation(Vector2f source, Vector2f target) {
+		int nx = MathUtils.floor(target.getX() - source.getX());
+		int ny = MathUtils.floor(target.getY() - source.getY());
+		return MathUtils.toDegrees(MathUtils.atan2(ny, nx));
+	}
+
 	public static final int angle(Vector2f source, Vector2f target) {
 		int nx = target.x() - source.x();
 		int ny = target.y() - source.y();

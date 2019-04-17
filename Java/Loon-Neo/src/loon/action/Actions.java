@@ -36,6 +36,17 @@ public class Actions {
 		actions.clear();
 	}
 
+	public TArray<ActionBind> keys() {
+		TArray<ActionBind> list = new TArray<ActionBind>(actions.size());
+		for (int i = 0; i < actions.size(); i++) {
+			Object key = actions.getKey(i);
+			if (key != null && key instanceof ActionBind) {
+				list.add((ActionBind) key);
+			}
+		}
+		return list;
+	}
+
 	public boolean stopNames(ActionBind k, String name) {
 		ActionElement eles = (ActionElement) actions.getValue(k);
 		if (eles == null || name == null) {
@@ -103,8 +114,7 @@ public class Actions {
 		return actions.containsValue(v);
 	}
 
-	public void addAction(ActionEvent action, ActionBind actObject,
-			boolean paused) {
+	public void addAction(ActionEvent action, ActionBind actObject, boolean paused) {
 		ActionElement element = (ActionElement) actions.get(actObject);
 		if (element == null) {
 			element = new ActionElement(actObject, paused);
@@ -166,8 +176,7 @@ public class Actions {
 		if (action == null) {
 			return;
 		}
-		ActionElement element = (ActionElement) actions.get(action
-				.getOriginal());
+		ActionElement element = (ActionElement) actions.get(action.getOriginal());
 		if (element != null) {
 			int i = element.actions.indexOf(action);
 			if (i != -1) {
@@ -201,8 +210,7 @@ public class Actions {
 			synchronized (currentTarget) {
 				if (!currentTarget.paused) {
 					for (currentTarget.actionIndex = 0; currentTarget.actionIndex < currentTarget.actions.size; currentTarget.actionIndex++) {
-						currentTarget.currentAction = currentTarget.actions
-								.get(currentTarget.actionIndex);
+						currentTarget.currentAction = currentTarget.actions.get(currentTarget.actionIndex);
 						if (currentTarget.currentAction == null) {
 							continue;
 						}
@@ -271,8 +279,7 @@ public class Actions {
 		private ActionEvent currentAction;
 
 		public ActionElement(ActionBind k, boolean v) {
-			this.actions = new TArray<ActionEvent>(
-					CollectionUtils.INITIAL_CAPACITY);
+			this.actions = new TArray<ActionEvent>(CollectionUtils.INITIAL_CAPACITY);
 			this.key = k;
 			this.paused = v;
 		}

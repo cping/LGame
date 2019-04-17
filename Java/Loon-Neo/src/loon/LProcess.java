@@ -144,7 +144,11 @@ public class LProcess {
 			for (int i = 0, size = loadCache.size; i < size; i++) {
 				Updateable _running = loadCache.get(i);
 				synchronized (_running) {
-					_running.action(null);
+					try {
+						_running.action(null);
+					} catch (Throwable cause) {
+						LSystem.error("Updateable dispatch failure", cause);
+					}
 				}
 			}
 			loadCache = null;
@@ -233,124 +237,135 @@ public class LProcess {
 		if (_loadingScreen != null && _loadingScreen.isOnLoadComplete()) {
 			return;
 		}
-		synchronized (this) {
-			if (screen == null) {
-				this.isInstance = false;
-				throw LSystem.re("Cannot create a [Screen] instance !");
-			}
-			if (!_game.display().showLogo) {
-				if (_currentScreen != null) {
-					setTransition(screen.onTransition());
+		try {
+			synchronized (this) {
+				if (screen == null) {
+					this.isInstance = false;
+					throw LSystem.re("Cannot create a [Screen] instance !");
+				}
+				if (!_game.display().showLogo) {
+					if (_currentScreen != null) {
+						setTransition(screen.onTransition());
+					} else {
+						// * 为了防止画面单调,Loon默认为未设定Transition时,让首个Screen随机使用一次渐变
+						// * 不想使用,或者需要自行设定的话，请重载Screen的onTransition函数。
+						// * 不使用,返回: LTransition.newEmpty()
+						// * 使用,返回: 设定或者自定义一个LTransition对象.
+						LTransition _transition = screen.onTransition();
+						if (_transition == null) {
+							int rad = MathUtils.random(0, 12);
+							switch (rad) {
+							case 0:
+								_transition = LTransition.newFadeIn();
+								break;
+							case 1:
+								_transition = LTransition.newArc();
+								break;
+							case 2:
+								_transition = LTransition.newSplitRandom(LColor.black);
+								break;
+							case 3:
+								_transition = LTransition.newCrossRandom(LColor.black);
+								break;
+							case 4:
+								_transition = LTransition.newFadeOvalIn(LColor.black);
+								break;
+							case 5:
+								_transition = LTransition.newPixelWind(LColor.white);
+								break;
+							case 6:
+								_transition = LTransition.newPixelDarkOut(LColor.black);
+								break;
+							case 7:
+								_transition = LTransition.newPixelThunder(LColor.black);
+								break;
+							case 8:
+								_transition = LTransition.newFadeDotIn(LColor.black);
+								break;
+							case 9:
+								_transition = LTransition.newFadeTileIn(LColor.black);
+								break;
+							case 10:
+								_transition = LTransition.newFadeSpiralIn(LColor.black);
+								break;
+							case 11:
+								_transition = LTransition.newFadeSwipeIn(LColor.black);
+								break;
+							case 12:
+								_transition = LTransition.newFadeBoardIn(LColor.black);
+								break;
+							}
+						}
+						setTransition(_transition);
+					}
+				}
+				clearLog();
+				screen.setOnLoadState(false);
+				if (_currentScreen == null) {
+					_currentScreen = screen;
 				} else {
-					// * 为了防止画面单调,Loon默认为未设定Transition时,让首个Screen随机使用一次渐变
-					// * 不想使用,或者需要自行设定的话，请重载Screen的onTransition函数。
-					// * 不使用,返回: LTransition.newEmpty()
-					// * 使用,返回: 设定或者自定义一个LTransition对象.
-					LTransition _transition = screen.onTransition();
-					if (_transition == null) {
-						int rad = MathUtils.random(0, 12);
-						switch (rad) {
-						case 0:
-							_transition = LTransition.newFadeIn();
-							break;
-						case 1:
-							_transition = LTransition.newArc();
-							break;
-						case 2:
-							_transition = LTransition.newSplitRandom(LColor.black);
-							break;
-						case 3:
-							_transition = LTransition.newCrossRandom(LColor.black);
-							break;
-						case 4:
-							_transition = LTransition.newFadeOvalIn(LColor.black);
-							break;
-						case 5:
-							_transition = LTransition.newPixelWind(LColor.white);
-							break;
-						case 6:
-							_transition = LTransition.newPixelDarkOut(LColor.black);
-							break;
-						case 7:
-							_transition = LTransition.newPixelThunder(LColor.black);
-							break;
-						case 8:
-							_transition = LTransition.newFadeDotIn(LColor.black);
-							break;
-						case 9:
-							_transition = LTransition.newFadeTileIn(LColor.black);
-							break;
-						case 10:
-							_transition = LTransition.newFadeSpiralIn(LColor.black);
-							break;
-						case 11:
-							_transition = LTransition.newFadeSwipeIn(LColor.black);
-							break;
-						case 12:
-							_transition = LTransition.newFadeBoardIn(LColor.black);
-							break;
+					killScreen(screen);
+				}
+				this.isInstance = true;
+
+				if (screen instanceof EmulatorListener) {
+					setEmulatorListener((EmulatorListener) screen);
+				} else {
+					setEmulatorListener(null);
+				}
+
+				screen.onCreate(LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
+
+				RealtimeProcess process = new RealtimeProcess() {
+
+					@Override
+					public void run(LTimerContext time) {
+						if (!LSystem._base.display().showLogo) {
+							try {
+								startTransition();
+								screen.setClose(false);
+								screen.resetOrder();
+								screen.resetSize();
+								screen.onLoad();
+								screen.onLoaded();
+								screen.setOnLoadState(true);
+								screen.resume();
+								endTransition();
+								kill();
+							} catch (Throwable cause) {
+								LSystem.error("Screen onLoad failure", cause);
+							}
 						}
 					}
-					setTransition(_transition);
+				};
+				process.setDelay(0);
+
+				RealtimeProcessManager.get().addProcess(process);
+
+				if (put) {
+					_screens.add(screen);
 				}
+				_loadingScreen = null;
 			}
-			clearLog();
-			screen.setOnLoadState(false);
-			if (_currentScreen == null) {
-				_currentScreen = screen;
-			} else {
-				killScreen(screen);
-			}
-			this.isInstance = true;
-
-			if (screen instanceof EmulatorListener) {
-				setEmulatorListener((EmulatorListener) screen);
-			} else {
-				setEmulatorListener(null);
-			}
-
-			screen.onCreate(LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
-
-			RealtimeProcess process = new RealtimeProcess() {
-
-				@Override
-				public void run(LTimerContext time) {
-					if (!LSystem._base.display().showLogo) {
-						startTransition();
-						screen.setClose(false);
-						screen.resetOrder();
-						screen.resetSize();
-						screen.onLoad();
-						screen.onLoaded();
-						screen.setOnLoadState(true);
-						screen.resume();
-						endTransition();
-						kill();
-					}
-				}
-			};
-			process.setDelay(0);
-
-			RealtimeProcessManager.get().addProcess(process);
-
-			if (put) {
-				_screens.add(screen);
-			}
-			_loadingScreen = null;
-
+		} catch (Throwable cause) {
+			LSystem.error("Update screen failure", cause);
 		}
 	}
 
 	private void killScreen(Screen screen) {
-		synchronized (_currentScreen) {
-			if (_currentScreen != null) {
-				_currentScreen.destroy();
+		try {
+			synchronized (_currentScreen) {
+				if (_currentScreen != null) {
+					_currentScreen.destroy();
+				}
+				if (screen == _currentScreen) {
+					screen.pause();
+				}
+				screen.destroy();
+				_currentScreen = screen;
 			}
-			if (screen == _currentScreen) {
-				screen.pause();
-			}
-			screen.destroy();
-			_currentScreen = screen;
+		} catch (Throwable cause) {
+			LSystem.error("Destroy screen failure", cause);
 		}
 	}
 

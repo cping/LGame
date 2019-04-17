@@ -150,6 +150,7 @@ public abstract class Log {
 								process.addLog(msg + " [ " + e.getMessage() + " ] ", color);
 							}
 						}
+
 					}
 				}
 			}

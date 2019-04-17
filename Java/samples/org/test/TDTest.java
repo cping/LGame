@@ -15,8 +15,11 @@ import loon.component.Actor;
 import loon.component.ActorLayer;
 import loon.component.LLayer;
 import loon.component.LPaper;
+import loon.event.ActionUpdate;
+import loon.event.FrameLoopEvent;
 import loon.event.GameTouch;
 import loon.font.LFont;
+import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.utils.ArrayMap;
 import loon.utils.ConfigReader;
@@ -197,11 +200,29 @@ public class TDTest extends Screen {
 			// 当敌人存在
 			if (!es.isEmpty()) {
 				Enemy target = (Enemy) es.get(0);
-				// 删除原有炮台事件
-				removeActionEvents();
+
+				// 添加一个循环体,0.5秒循环一次
+				addFrameLoop(0.5f, new FrameLoopEvent() {
+
+					@Override
+					public void invoke(long elapsedTime, Screen e) {
+						// 当炮台完全显示出来后
+						if ((getAlpha() == 1f)) {
+							// 删除原有炮台事件
+							removeActionEvents();
+							// 删除这个循环体
+							kill();
+						}
+					}
+
+					@Override
+					public void completed() {
+
+					}
+				});
+
 				// 旋转炮台对准Enemy坐标
-				setRotation(MathUtils
-						.toDegrees(MathUtils.atan2((target.getY() - this.getY()), (target.getX() - this.getX()))));
+				setRotation(Field2D.rotation(Vector2f.at(this.getX(), this.getY()), Vector2f.at(target.getX(), target.getY())));
 
 			}
 			// 延迟炮击
@@ -568,7 +589,7 @@ public class TDTest extends Screen {
 			int newX = x / field.getTileWidth();
 			int newY = y / field.getTileHeight();
 			// 当选中炮塔(参数不为-1)且数组地图参数为-1(不可通过)并且无其它角色在此时
-			if ((o = getClickActor()) == null && selectTurret != -1 && field.getTileType(newX,newY) == -1) {
+			if ((o = getClickActor()) == null && selectTurret != -1 && field.getTileType(newX, newY) == -1) {
 				// 添加炮塔
 				addObject(new Turret(turrets[selectTurret]), newX * field.getTileWidth(), newY * field.getTileHeight());
 			}

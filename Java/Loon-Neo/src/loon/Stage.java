@@ -75,7 +75,11 @@ public abstract class Stage extends Screen {
 
 	@Override
 	public void onLoad() {
-		create();
+		try {
+			create();
+		} catch (Throwable cause) {
+			LSystem.error("Screen create failure", cause);
+		}
 	}
 
 	@Override

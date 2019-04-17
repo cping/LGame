@@ -1203,7 +1203,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 				_mapSprites.paintPos(g, moveX, moveY);
 			}
 		} catch (Throwable ex) {
-			LSystem.error("Array2D TileMap error !", ex);
+			LSystem.error("Array2D HexagonMap error !", ex);
 		} finally {
 			if (update) {
 				g.restoreTx();

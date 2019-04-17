@@ -2896,19 +2896,23 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 					toUpdated = new TArray<FrameLoopEvent>(this.loopEvents);
 				}
 				final TArray<FrameLoopEvent> deadEvents = new TArray<FrameLoopEvent>();
-				for (FrameLoopEvent eve : toUpdated) {
-					eve.call(elapsedTime, this);
-					if (eve.isDead()) {
-						deadEvents.add(eve);
+				try {
+					for (FrameLoopEvent eve : toUpdated) {
+						eve.call(elapsedTime, this);
+						if (eve.isDead()) {
+							deadEvents.add(eve);
+						}
 					}
-				}
-				if (deadEvents.size > 0) {
-					for (FrameLoopEvent dead : deadEvents) {
-						dead.completed();
+					if (deadEvents.size > 0) {
+						for (FrameLoopEvent dead : deadEvents) {
+							dead.completed();
+						}
+						synchronized (this.loopEvents) {
+							this.loopEvents.removeAll(deadEvents);
+						}
 					}
-					synchronized (this.loopEvents) {
-						this.loopEvents.removeAll(deadEvents);
-					}
+				} catch (Throwable cause) {
+					LSystem.error("FrameLoopEvent dispatch failure", cause);
 				}
 			}
 		}
@@ -4685,18 +4689,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	public final TArray<LClickButton> elementButtons(final String[] names, int sx, int sy, int cellWidth,
 			int cellHeight, int offsetX, int offsetY, ClickListener listener, int maxHeight) {
 		return LayoutManager.elementButtons(this, names, sx, sy, cellWidth, cellHeight, listener, maxHeight);
-	}
-
-	/**
-	 * 向Loon系统上报一个错误
-	 * 
-	 * @param msg
-	 * @param throwable
-	 * @return
-	 */
-	public Screen reportError(String msg, Throwable throwable) {
-		LSystem.reportError(msg, throwable);
-		return this;
 	}
 
 	/**

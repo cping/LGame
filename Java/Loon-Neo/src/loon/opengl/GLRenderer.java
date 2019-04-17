@@ -585,7 +585,7 @@ public class GLRenderer implements LRelease {
 					_gl.setBlendMode(LSystem.MODE_SPEED);
 				}
 			} catch (Throwable ex) {
-				LSystem.error(ex.getMessage(), ex);
+				LSystem.error("GLRenderer end() error", ex);
 			} finally {
 				_renderer.end();
 				_gl.setBlendMode(tmp);

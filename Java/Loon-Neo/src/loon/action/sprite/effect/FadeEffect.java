@@ -121,13 +121,13 @@ public class FadeEffect extends Entity implements BaseEffect {
 	public void onUpdate(long timer) {
 		if (type == TYPE_FADE_IN) {
 			currentFrame--;
-			if (currentFrame == 0) {
+			if (currentFrame <= 0) {
 				setAlpha(0);
 				finished = true;
 			}
 		} else {
 			currentFrame++;
-			if (currentFrame == time) {
+			if (currentFrame >= time) {
 				setAlpha(0);
 				finished = true;
 			}

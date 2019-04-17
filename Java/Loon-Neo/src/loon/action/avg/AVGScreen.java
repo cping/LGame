@@ -638,9 +638,13 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 
 			@Override
 			public void action(Object a) {
-				defTask();
-				initAVG();
-				onLoading();
+				try {
+					defTask();
+					initAVG();
+					onLoading();
+				} catch (Throwable cause) {
+					LSystem.error("AVGScreen init exception", cause);
+				}
 			}
 		});
 		this.avgProcess = new RealtimeProcess() {

@@ -383,7 +383,7 @@ public class LLayer extends ActorLayer {
 		Canvas g = background.getCanvas();
 		for (int i = 0; i < field.getWidth(); i++) {
 			for (int j = 0; j < field.getHeight(); j++) {
-				int index = field.getTileType(i,j);
+				int index = field.getTileType(i, j);
 				Object o = pathMap.get(index);
 				if (o != null) {
 					if (o instanceof Image) {

@@ -144,7 +144,7 @@ public class TileMapConfig {
 				}
 			}
 		} catch (Throwable ex) {
-			LSystem.error(ex.getMessage(), ex);
+			LSystem.error("TileMapConfig stringToIntArrays exception", ex);
 		}
 		return resArr;
 	}
@@ -155,7 +155,7 @@ public class TileMapConfig {
 			try {
 				resNo = Integer.parseInt(srcStr);
 			} catch (Throwable ex) {
-				LSystem.error(ex.getMessage(), ex);
+				LSystem.error("TileMapConfig stringToInt exception", ex);
 			}
 		}
 		return resNo;
