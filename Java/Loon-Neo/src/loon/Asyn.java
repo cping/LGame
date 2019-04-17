@@ -30,7 +30,7 @@ public abstract class Asyn {
 	public static class Default extends Asyn {
 
 		/** 为了语法转换到C#和C++，只能忍痛放弃匿名构造类了…… **/
-		private class CallDefaultPort<T> extends Port<T>{
+		private static class CallDefaultPort<T> extends Port<T>{
 			
 			private Default _def;
 			
@@ -121,7 +121,7 @@ public abstract class Asyn {
 	}
 
 	/** 为了语法转换到C#和C++，只能忍痛放弃匿名构造类了…… **/
-	private class CallDeferredPromise<T> extends GoPromise<T> {
+	private static class CallDeferredPromise<T> extends GoPromise<T> {
 
 		private Asyn _asyn;
 

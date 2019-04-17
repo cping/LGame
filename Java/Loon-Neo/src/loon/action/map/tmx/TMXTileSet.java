@@ -67,7 +67,7 @@ public class TMXTileSet {
 				XMLElement docElement = doc.getRoot();
 				element = docElement;
 			} catch (Throwable e) {
-				throw LSystem.runThrow(tilesLocation + "/" + source);
+				LSystem.error(tilesLocation + "/" + source);
 			}
 		}
 

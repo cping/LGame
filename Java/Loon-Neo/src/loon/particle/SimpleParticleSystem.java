@@ -42,7 +42,7 @@ public class SimpleParticleSystem extends Entity {
 
 	private TArray<SimpleEmitter> removeMe = new TArray<SimpleEmitter>();
 
-	private class ParticlePool {
+	private static class ParticlePool {
 		public SimpleParticle[] particles;
 		public TArray<SimpleParticle> available;
 
@@ -51,7 +51,7 @@ public class SimpleParticleSystem extends Entity {
 			available = new TArray<SimpleParticle>();
 
 			for (int i = 0; i < particles.length; i++) {
-				particles[i] = createParticle(system);
+				particles[i] = system.createParticle(system);
 			}
 
 			reset(system);

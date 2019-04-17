@@ -34,7 +34,7 @@ public class EmptyGame extends LGame {
 
 	// 为了方便直接转码到C#和C++，无法使用匿名内部类(也就是在构造内直接构造实现的方式)，只能都写出类来.
 	// PS:别提delegate，委托那玩意写出来太不优雅了，而且大多数J2C#的工具也不能直接转换过去……
-	private class SaveEmpty implements Save {
+	private static class SaveEmpty implements Save {
 
 		private final ObjectMap<String, String> _data = new ObjectMap<String, String>();
 
@@ -74,7 +74,7 @@ public class EmptyGame extends LGame {
 
 	private InputMake input = new InputMakeImpl();
 
-	private class LogEmpty extends Log {
+	private static class LogEmpty extends Log {
 
 		@Override
 		public void onError(Throwable e) {
@@ -94,7 +94,7 @@ public class EmptyGame extends LGame {
 
 	private Log log = new LogEmpty();
 
-	private class AsynEmpty extends Asyn.Default {
+	private static class AsynEmpty extends Asyn.Default {
 
 		public AsynEmpty(Log log, Act<? extends Object> frame) {
 			super(log, frame);

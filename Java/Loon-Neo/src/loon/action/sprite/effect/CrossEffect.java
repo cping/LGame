@@ -100,6 +100,11 @@ public class CrossEffect extends Entity implements BaseEffect {
 		if (timer.action(elapsedTime)) {
 			count++;
 		}
+		if (this.completed) {
+			if (getSprites() != null) {
+				getSprites().remove(this);
+			}
+		}
 	}
 
 	@Override

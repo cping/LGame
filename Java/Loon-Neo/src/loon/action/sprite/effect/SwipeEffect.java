@@ -115,6 +115,11 @@ public class SwipeEffect extends Entity implements BaseEffect {
 		if (timer.action(elapsedTime)) {
 			finished = true;
 		}
+		if (this.finished) {
+			if (getSprites() != null) {
+				getSprites().remove(this);
+			}
+		}
 	}
 
 	public int getFadeType() {

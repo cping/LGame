@@ -36,6 +36,10 @@ public class LightningEffect extends Entity {
 	private LTexture lightningSegment, halfCircle, pixel;
 	private LTexturePack pack;
 
+	private int _countCompleted;
+
+	private boolean _completed;
+
 	private static LightningEffect instance;
 
 	final static LightningEffect make() {
@@ -47,7 +51,7 @@ public class LightningEffect extends Entity {
 			return instance;
 		}
 		synchronized (LightningEffect.class) {
-			if (instance == null) {
+			if (instance == null || instance.isClosed()) {
 				instance = make();
 			}
 			return instance;
@@ -57,8 +61,16 @@ public class LightningEffect extends Entity {
 	private SpriteBatch _batch;
 	private TArray<ILightning> lists = new TArray<ILightning>(10);
 
-	LightningEffect() {
+	private LightningEffect() {
+	}
 
+	public void loadLightning(LTexturePack p) {
+		this._countCompleted = 0;
+		this._completed = false;
+		this.pack = p;
+		this.lightningSegment = pack.getTexture("loon_lightning");
+		this.halfCircle = pack.getTexture("loon_halfcircle");
+		this.pixel = pack.getTexture("loon_pixel");
 	}
 
 	public static LightningEffect addBolt(Vector2f s, Vector2f e, LColor c) {
@@ -116,6 +128,17 @@ public class LightningEffect extends Entity {
 	public void onUpdate(long elapsedTime) {
 		for (ILightning bolt : lists) {
 			bolt.update(elapsedTime);
+			if (bolt.isComplete()) {
+				_countCompleted++;
+			}
+		}
+		if (_countCompleted >= lists.size) {
+			_completed = true;
+		}
+		if (_completed) {
+			if (getSprites() != null) {
+				getSprites().remove(this);
+			}
 		}
 	}
 
@@ -133,6 +156,10 @@ public class LightningEffect extends Entity {
 			bolt.draw(_batch, drawX(offsetX), drawY(offsetY));
 		}
 		_batch.end();
+	}
+
+	public boolean isCompleted() {
+		return _completed;
 	}
 
 	public LTexture getLightningSegment() {
@@ -160,16 +187,10 @@ public class LightningEffect extends Entity {
 		loadLightning(new LTexturePack(LSystem.getSystemImagePath() + "natural.txt"));
 	}
 
-	public void loadLightning(LTexturePack p) {
-		this.pack = p;
-		this.lightningSegment = pack.getTexture("loon_lightning");
-		this.halfCircle = pack.getTexture("loon_halfcircle");
-		this.pixel = pack.getTexture("loon_pixel");
-	}
-
 	@Override
 	public void close() {
 		super.close();
+		_completed = true;
 		if (lists != null) {
 			for (ILightning light : lists) {
 				if (light != null) {

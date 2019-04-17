@@ -548,13 +548,13 @@ public class Array<T> implements IArray, LRelease {
 
 	public LIterator<T> listIterator() {
 		if (iterator == null) {
-			iterator = new ListItr(this);
+			iterator = new ListItr<T>(this);
 		}
 		this.stopNext();
 		return iterator;
 	}
 
-	private class ListItr implements LIterator<T> {
+	private static class ListItr<T> implements LIterator<T> {
 
 		private Array<T> list;
 

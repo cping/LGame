@@ -52,7 +52,7 @@ public abstract class Graphics {
 	// 用以提供GL渲染服务
 	public final GL20 gl;
 
-	private class DefaultRender extends RenderTarget {
+	private static class DefaultRender extends RenderTarget {
 
 		private final Graphics _graphics;
 
@@ -150,7 +150,7 @@ public abstract class Graphics {
 
 	public abstract TextLayout[] layoutText(String text, TextFormat format, TextWrap wrap);
 
-	private class DisposePort extends UnitPort {
+	private static class DisposePort extends UnitPort {
 
 		private final LRelease _release;
 

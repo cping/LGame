@@ -107,6 +107,11 @@ public class FadeOvalEffect extends Entity implements BaseEffect {
 				}
 			}
 		}
+		if (this.finished) {
+			if (getSprites() != null) {
+				getSprites().remove(this);
+			}
+		}
 	}
 
 	@Override

@@ -239,6 +239,11 @@ public class FadeTileEffect extends Entity implements BaseEffect {
 
 			}
 		}
+		if (this.completed) {
+			if (getSprites() != null) {
+				getSprites().remove(this);
+			}
+		}
 	}
 
 	@Override

@@ -400,7 +400,7 @@ public class Animation implements LRelease {
 		return getDelay();
 	}
 
-	private class AnimationFrame implements LRelease {
+	private static class AnimationFrame implements LRelease {
 
 		LTexture image;
 

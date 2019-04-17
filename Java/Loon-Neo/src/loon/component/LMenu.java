@@ -58,7 +58,7 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 		public void onClick(MenuItem item);
 	}
 
-	private class ClickMenu implements Updateable {
+	private static class ClickMenu implements Updateable {
 
 		private MenuItemClick click;
 

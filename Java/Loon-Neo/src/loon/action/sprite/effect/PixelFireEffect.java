@@ -52,7 +52,7 @@ public class PixelFireEffect extends Entity implements BaseEffect {
 
 	private boolean _dirty;
 
-	class FireBlock {
+	private static class FireBlock {
 
 		int _id;
 		float _x;
@@ -63,7 +63,10 @@ public class PixelFireEffect extends Entity implements BaseEffect {
 
 		boolean _init;
 
-		public FireBlock(int id, float x, float y, float vx, float vy, float alpha) {
+		PixelFireEffect _effect;
+
+		public FireBlock(PixelFireEffect effect, int id, float x, float y, float vx, float vy, float alpha) {
+			this._effect = effect;
 			this._id = id;
 			this._x = x;
 			this._y = y;
@@ -74,14 +77,15 @@ public class PixelFireEffect extends Entity implements BaseEffect {
 		}
 
 		void update(long elapsedTime) {
-			float delta = MathUtils.max(elapsedTime / 1000f, 0.001f) * _speed;
+			float delta = MathUtils.max(elapsedTime / 1000f, 0.001f) * _effect._speed;
 			_y -= _vy;
 			if (_id % 2 == 0) {
-				_x = MathUtils.sin(_x, _angle, 1f, true);
+				_x += MathUtils.sin(_vx, _effect._angle, 1f, true);
 			} else {
-				_x = MathUtils.cos(_x, _angle, 0.5f, true);
+				_x += MathUtils.cos(_vx, _effect._angle, 0.5f, true) ;
 			}
-			_angle += delta;
+			_x = MathUtils.max(_x, _effect.getWidth());
+			_effect._angle += delta;
 			if (_init) {
 				_alpha -= delta;
 			} else {
@@ -108,11 +112,16 @@ public class PixelFireEffect extends Entity implements BaseEffect {
 
 		void paint(GLEx g, float offsetX, float offsetY) {
 			if (_id % 2 == 0) {
-				g.setColor(_baseColor.setColor(_baseColor.r, _baseColor.g / 2, _baseColor.b / 3).setAlpha(_alpha));
-				g.fillRect(offsetX + _x, offsetY + _y, _size, _size);
+				g.setColor(_effect._baseColor
+						.setColor(_effect._baseColor.r, _effect._baseColor.g / 2, _effect._baseColor.b / 3)
+						.setAlpha(_alpha));
+				g.fillRect(offsetX + _x, offsetY + _y, _effect._size, _effect._size);
 			} else {
-				g.setColor(_baseColor.setColor(_baseColor.r, _baseColor.g / 3, _baseColor.b / 3).setAlpha(_alpha));
-				g.fillOval(offsetX + _x, offsetY + _y, MathUtils.random(1, _size * 2), MathUtils.random(1, _size * 2));
+				g.setColor(_effect._baseColor
+						.setColor(_effect._baseColor.r, _effect._baseColor.g / 3, _effect._baseColor.b / 3)
+						.setAlpha(_alpha));
+				g.fillOval(offsetX + _x, offsetY + _y, MathUtils.random(1, _effect._size * 2),
+						MathUtils.random(1, _effect._size * 2));
 			}
 		}
 
@@ -161,7 +170,7 @@ public class PixelFireEffect extends Entity implements BaseEffect {
 			float vx = MathUtils.randomFloor(0.5f, 1.5f);
 			float vy = MathUtils.randomFloor(0.1f, 0.5f);
 			float alpha = MathUtils.randomFloor(0.001f, 1f);
-			FireBlock fire = new FireBlock(i, x, y, vx, vy, alpha);
+			FireBlock fire = new FireBlock(this, i, x, y, vx, vy, alpha);
 			_fireBlocks.add(fire);
 		}
 	}
@@ -213,6 +222,13 @@ public class PixelFireEffect extends Entity implements BaseEffect {
 	@Override
 	public boolean isCompleted() {
 		return _completed;
+	}
+	
+	@Override
+	public void close(){
+		super.close();
+		_completed = true;
+		_fireBlocks.clear();
 	}
 
 }

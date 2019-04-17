@@ -36,8 +36,9 @@ import loon.utils.MathUtils;
  */
 public final class CollisionHelper extends ShapeUtils {
 
-	private CollisionHelper(){}
-	
+	private CollisionHelper() {
+	}
+
 	private static final RectBox rectTemp1 = new RectBox();
 
 	private static final RectBox rectTemp2 = new RectBox();
@@ -71,6 +72,41 @@ public final class CollisionHelper extends ShapeUtils {
 		final float xdiff = box1.x - box2.x;
 		final float ydiff = box1.y - box2.y;
 		return MathUtils.sqrt(xdiff * xdiff + ydiff * ydiff);
+	}
+
+	/**
+	 * 获得多个点间距离
+	 * 
+	 * @param target
+	 * @param beforePlace
+	 * @param afterPlace
+	 * @param distance
+	 * @return
+	 */
+	public static final float getDistance(Vector2f target, Vector2f beforePlace, Vector2f afterPlace, float distance) {
+		return getDistance(target, beforePlace, afterPlace, distance, false);
+	}
+
+	/**
+	 * 获得多个点间距离
+	 * 
+	 * @param target
+	 * @param beforePlace
+	 * @param afterPlace
+	 * @param distance
+	 * @param limit
+	 * @return
+	 */
+	public static final float getDistance(Vector2f target, Vector2f beforePlace, Vector2f afterPlace, float distance,
+			boolean limit) {
+		float before = MathUtils.abs(target.getX() - beforePlace.getX())
+				+ MathUtils.abs(target.getY() - beforePlace.getY());
+		float after = MathUtils.abs(target.getX() - afterPlace.getX())
+				+ MathUtils.abs(target.getY() - afterPlace.getY());
+		if (limit && before > distance) {
+			return 0;
+		}
+		return 1f * (before - after) / after;
 	}
 
 	/**

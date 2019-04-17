@@ -40,7 +40,7 @@ public class PShadowEffect extends Entity {
 
 	private int indexD, indexW, block;
 
-	private boolean flag = true, isCompleted = false;
+	private boolean flag = true, completed = false;
 
 	private static int[] deasilTrans, widdershinTrans;
 
@@ -95,7 +95,7 @@ public class PShadowEffect extends Entity {
 		this.indexD = 255;
 		this.indexW = 0;
 		this.block = 8;
-		this.isCompleted = false;
+		this.completed = false;
 		img.close();
 		img = null;
 		return this;
@@ -136,10 +136,15 @@ public class PShadowEffect extends Entity {
 				setTexture(_pixmap.getImage(false).texture());
 			}
 		}
+		if (this.completed) {
+			if (getSprites() != null) {
+				getSprites().remove(this);
+			}
+		}
 	}
 
 	public boolean isComplete() {
-		return isCompleted || (flag ? (indexW >= 255) : (indexD <= 0));
+		return completed || (flag ? (indexW >= 255) : (indexD <= 0));
 	}
 
 	public void setDelay(long delay) {
@@ -169,7 +174,7 @@ public class PShadowEffect extends Entity {
 			_pixmap.close();
 			_pixmap = null;
 		}
-		isCompleted = true;
+		completed = true;
 	}
 
 }

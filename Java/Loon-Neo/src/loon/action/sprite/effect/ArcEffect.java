@@ -33,13 +33,13 @@ import loon.utils.timer.LTimer;
 public class ArcEffect extends Entity implements BaseEffect {
 
 	private final int arcDiv;
-	
+
 	private int step;
 
 	private int curTurn = 1;
 
 	private int tmpColor;
-	
+
 	private int[] sign = { 1, -1 };
 
 	private boolean completed;
@@ -53,8 +53,8 @@ public class ArcEffect extends Entity implements BaseEffect {
 	public ArcEffect(LColor c, int x, int y, int width, int height) {
 		this(c, x, y, width, height, 10);
 	}
-	
-	public ArcEffect(LColor c, int x, int y, int width, int height,int div) {
+
+	public ArcEffect(LColor c, int x, int y, int width, int height, int div) {
 		this.setLocation(x, y);
 		this.setSize(width, height);
 		this.timer = new LTimer(200);
@@ -87,8 +87,12 @@ public class ArcEffect extends Entity implements BaseEffect {
 		if (timer.action(elapsedTime)) {
 			step++;
 		}
+		if (this.completed) {
+			if (getSprites() != null) {
+				getSprites().remove(this);
+			}
+		}
 	}
-
 
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {

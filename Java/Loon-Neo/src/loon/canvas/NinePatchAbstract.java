@@ -197,7 +197,7 @@ public abstract class NinePatchAbstract<K, V> {
 				startY += preRowHeight;
 			}
 		} catch (Throwable e) {
-			throw LSystem.runThrow(e.getMessage(), e);
+			throw LSystem.runThrow("drawNinePatch() exception", e);
 		} finally {
 			pos(g2d, -x, -y);
 		}
@@ -371,33 +371,33 @@ public abstract class NinePatchAbstract<K, V> {
 	}
 
 	protected void allPatch(K image) {
-   
-        int width = getImageWidth(image) - 2;
-        int height = getImageHeight(image) - 2;
 
-        int[] row = null;
-        int[] column = null;
+		int width = getImageWidth(image) - 2;
+		int height = getImageHeight(image) - 2;
 
-        column = getPixels(image, 0, 1, 1, height);
+		int[] row = null;
+		int[] column = null;
 
-        NinePatchRegion left = getPatches(column);
+		column = getPixels(image, 0, 1, 1, height);
 
-        row = getPixels(image, 1, 0, width, 1);
+		NinePatchRegion left = getPatches(column);
 
-        NinePatchRegion top = getPatches(row);
+		row = getPixels(image, 1, 0, width, 1);
 
-        this._horizontalPatchNum = top.getPatchRegions().size();
-        this._verticalPatchNum = left.getPatchRegions().size();
-        this.columns = allColumn(top, left);
+		NinePatchRegion top = getPatches(row);
 
-        row = getPixels(image, 1, height + 1, width, 1);
-        column = getPixels(image, width + 1, 1, 1, height);
+		this._horizontalPatchNum = top.getPatchRegions().size();
+		this._verticalPatchNum = left.getPatchRegions().size();
+		this.columns = allColumn(top, left);
 
-        NinePatchRegion bottom = getPatches(row);
-        NinePatchRegion right = getPatches(column);
+		row = getPixels(image, 1, height + 1, width, 1);
+		column = getPixels(image, width + 1, 1, 1, height);
 
-        this.padding = getPadding(width, height, bottom.getPatchRegions(), right.getPatchRegions());
-    }
+		NinePatchRegion bottom = getPatches(row);
+		NinePatchRegion right = getPatches(column);
+
+		this.padding = getPadding(width, height, bottom.getPatchRegions(), right.getPatchRegions());
+	}
 
 	protected K toImage(K image) {
 		return image;

@@ -46,7 +46,7 @@ public class FadeDotEffect extends Entity implements BaseEffect {
 
 	private LTimer timer = new LTimer(0);
 
-	private class Dot {
+	private static class Dot {
 
 		private float x;
 
@@ -182,6 +182,11 @@ public class FadeDotEffect extends Entity implements BaseEffect {
 				finished = true;
 			}
 		}
+		if (this.finished) {
+			if (getSprites() != null) {
+				getSprites().remove(this);
+			}
+		}
 	}
 
 	@Override
@@ -220,6 +225,7 @@ public class FadeDotEffect extends Entity implements BaseEffect {
 	public void close() {
 		super.close();
 		finished = true;
+		dots.clear();
 	}
 
 }

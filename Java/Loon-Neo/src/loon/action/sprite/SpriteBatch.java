@@ -59,7 +59,7 @@ public class SpriteBatch extends PixmapFImpl {
 	private float alpha = 1f;
 
 	private final ExpandVertices expandVertices;
-	
+
 	protected int idx = 0;
 	protected LTexture lastTexture = null;
 	protected float invTexWidth = 0, invTexHeight = 0;
@@ -552,7 +552,7 @@ public class SpriteBatch extends PixmapFImpl {
 			mesh.post(name, expandVertices.getSize(), customShader != null ? customShader : shader,
 					expandVertices.getVertices(), idx, count);
 		} catch (Throwable e) {
-			throw LSystem.runThrow(e.getMessage(),e);
+			LSystem.error("Spritebatch submit() exception", e);
 		} finally {
 			if (expandVertices.expand(this.idx)) {
 				mesh.reset(name, expandVertices.length());

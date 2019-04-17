@@ -218,7 +218,7 @@ public class TriangleBasic implements Triangle {
 		return true;
 	}
 
-	private class Point {
+	private static class Point {
 
 		private float x;
 
@@ -258,7 +258,7 @@ public class TriangleBasic implements Triangle {
 		}
 	}
 
-	private class PointList {
+	private static class PointList {
 
 		private TArray<Point> points = new TArray<Point>();
 

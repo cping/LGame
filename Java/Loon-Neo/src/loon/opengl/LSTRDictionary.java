@@ -31,7 +31,7 @@ import loon.utils.ArrayMap.Entry;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
-public final class LSTRDictionary {
+public final class LSTRDictionary implements LRelease {
 
 	private final CharArray templateChars = new CharArray(256);
 
@@ -48,7 +48,7 @@ public final class LSTRDictionary {
 			return instance;
 		}
 		synchronized (LSTRDictionary.class) {
-			if (instance == null) {
+			if (instance == null || instance.isClosed()) {
 				instance = make();
 			}
 			return instance;
@@ -81,6 +81,8 @@ public final class LSTRDictionary {
 	private final static char[] checkMessage = ADDED.toCharArray();
 
 	public final static char split = '$';
+
+	private boolean _closed = false;
 
 	private Dict _lastDict;
 
@@ -453,6 +455,16 @@ public final class LSTRDictionary {
 		cacheList.clear();
 		clearStringLazy();
 		clearEnglishLazy();
+		_closed = true;
+	}
+
+	public boolean isClosed() {
+		return _closed;
+	}
+
+	@Override
+	public void close() {
+		dispose();
 	}
 
 }

@@ -215,6 +215,11 @@ public class FadeSpiralEffect extends Entity implements BaseEffect {
 				finished = true;
 			}
 		}
+		if (this.finished) {
+			if (getSprites() != null) {
+				getSprites().remove(this);
+			}
+		}
 	}
 
 	@Override

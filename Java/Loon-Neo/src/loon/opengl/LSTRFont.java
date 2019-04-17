@@ -20,6 +20,7 @@
  */
 package loon.opengl;
 
+import loon.LRelease;
 import loon.LSystem;
 import loon.LTexture;
 import loon.LTextureBatch;
@@ -38,7 +39,7 @@ import loon.utils.IntMap;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 
-public class LSTRFont implements IFont {
+public class LSTRFont implements IFont,LRelease {
 
 	/*
 	 * 获得一个默认的LSTRFont.
@@ -58,9 +59,19 @@ public class LSTRFont implements IFont {
 		return new LSTRFont(LFont.getFont(size), LSTRDictionary.getAddedString(), true);
 	}
 
-	private PointI _offset = new PointI();
+	private static class IntObject {
 
-	private class UpdateStringFont implements Updateable {
+		public int width;
+
+		public int height;
+
+		public int storedX;
+
+		public int storedY;
+
+	}
+
+	private static class UpdateStringFont implements Updateable {
 
 		private LSTRFont strfont;
 
@@ -124,7 +135,7 @@ public class LSTRFont implements IFont {
 				if (clipFont) {
 					// 发现部分环境字体如果整体渲染到canvas的话，会导致纹理切的不整齐(实际上就是间距和从系统获取的不符合),
 					// 保险起见一个个字体粘贴……
-					Image image = getFontImage(layout, ch, charwidth, charheight);
+					Image image = strfont.getFontImage(layout, ch, charwidth, charheight);
 					canvas.draw(image, positionX, positionY);
 					image.close();
 					image = null;
@@ -188,6 +199,7 @@ public class LSTRFont implements IFont {
 		return canvas.image;
 
 	}
+	private PointI _offset = new PointI();
 
 	private boolean _isClose = false;
 
@@ -236,18 +248,6 @@ public class LSTRFont implements IFont {
 	private int fontHeight = 0;
 
 	private LTextureBatch fontBatch;
-
-	private class IntObject {
-
-		public int width;
-
-		public int height;
-
-		public int storedX;
-
-		public int storedY;
-
-	}
 
 	private boolean _initChars = false;
 
@@ -926,6 +926,10 @@ public class LSTRFont implements IFont {
 			texture.close(true);
 		}
 		fontBatch = null;
+		texture = null;
+		customChars.clear();
+		customChars = null;
+		charArray = null;
 		isDrawing = false;
 		_initChars = false;
 		_initDraw = -1;

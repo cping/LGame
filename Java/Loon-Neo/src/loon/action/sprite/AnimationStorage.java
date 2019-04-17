@@ -28,7 +28,7 @@ public class AnimationStorage extends Animation {
 
 	private int animationIndexLocked = -1;
 
-	private class AnimationStorageListener implements AnimationListener {
+	private static class AnimationStorageListener implements AnimationListener {
 
 		private AnimationStorage store;
 
@@ -41,21 +41,21 @@ public class AnimationStorage extends Animation {
 				store.currentFrameIndex = store.animationIndexLocked;
 			} else {
 				if (store.loopOverToRemove) {
-					if (Listener != null) {
-						Listener.onComplete(store);
+					if (store.Listener != null) {
+						store.Listener.onComplete(store);
 					}
 					store.playAnimations.remove(animation);
 					store.size = store.playAnimations.size;
 					store.loopPlay++;
 				} else {
-					if (currentFrameIndex < size - 1) {
-						if (Listener != null) {
-							Listener.onComplete(store);
+					if (store.currentFrameIndex < store.size - 1) {
+						if (store.Listener != null) {
+							store.Listener.onComplete(store);
 						}
 						store.currentFrameIndex++;
 						store.loopPlay++;
 					} else {
-						if (loopOverToPlay) {
+						if (store.loopOverToPlay) {
 							store.currentFrameIndex = 0;
 						} else {
 							store.currentFrameIndex = 0;

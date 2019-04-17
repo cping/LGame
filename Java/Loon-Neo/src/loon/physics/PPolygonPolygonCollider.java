@@ -38,7 +38,7 @@ public class PPolygonPolygonCollider implements PCollider {
 		}
 	}
 
-	private class PWDistanceData {
+	private static class PWDistanceData {
 
 		float dist;
 		int edge;

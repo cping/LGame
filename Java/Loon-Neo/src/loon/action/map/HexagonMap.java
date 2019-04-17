@@ -1780,7 +1780,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 				}
 			}
 		} catch (Throwable thr) {
-			throw LSystem.runThrow(thr.getMessage(), thr);
+			 LSystem.error("HexagonMap draw() exception", thr);
 		} finally {
 			g.setFont(tmpFont);
 		}

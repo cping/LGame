@@ -110,7 +110,7 @@ public class BMFont implements IFont {
 
 	private String info, common, page;
 
-	private class Display {
+	private static class Display {
 
 		String text;
 
@@ -121,7 +121,7 @@ public class BMFont implements IFont {
 		int height;
 	}
 
-	private class CharDef {
+	private static class CharDef {
 
 		int id;
 
@@ -140,22 +140,28 @@ public class BMFont implements IFont {
 		short advance;
 
 		short[] kerning;
+		
+		BMFont _bmFont;
+		
+		public CharDef(BMFont font){
+			this._bmFont = font;
+		}
 
 		public void draw(float x, float y, LColor c) {
-			if (_isClose) {
+			if (_bmFont._isClose) {
 				return;
 			}
-			displayList.draw((x + xoffset) * fontScaleX, (y + yoffset) * fontScaleY, width * fontScaleX,
-					height * fontScaleY, tx, ty, tx + width, ty + height, c);
+			_bmFont.displayList.draw((x + xoffset) * _bmFont.fontScaleX, (y + yoffset) * _bmFont.fontScaleY, width * _bmFont.fontScaleX,
+					height * _bmFont.fontScaleY, tx, ty, tx + width, ty + height, c);
 		}
 
 		public void draw(GLEx g, float sx, float sy, float x, float y, LColor c) {
-			if (_isClose) {
+			if (_bmFont._isClose) {
 				return;
 			}
 
-			g.draw(displayList, sx + (x + xoffset) * fontScaleX, sy + (y + yoffset) * fontScaleX, width * fontScaleX,
-					height * fontScaleY, tx, ty, width, height, c);
+			g.draw(_bmFont.displayList, sx + (x + xoffset) * _bmFont.fontScaleX, sy + (y + yoffset) * _bmFont.fontScaleX, width * _bmFont.fontScaleX,
+					height * _bmFont.fontScaleY, tx, ty, width, height, c);
 		}
 
 		public int getKerning(int point) {
@@ -297,7 +303,7 @@ public class BMFont implements IFont {
 	}
 
 	private CharDef parseChar(final String line) throws Exception {
-		CharDef def = new CharDef();
+		CharDef def = new CharDef(this);
 		StringTokenizer tokens = new StringTokenizer(line, " =");
 		tokens.nextToken();
 		tokens.nextToken();

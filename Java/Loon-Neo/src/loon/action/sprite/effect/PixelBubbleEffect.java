@@ -44,10 +44,9 @@ public class PixelBubbleEffect extends Entity implements BaseEffect {
 
 	private float _moveSpeed;
 
-	class Block {
+	private static class Block {
 
 		float _speed;
-		float _width;
 		float _x;
 		float _y;
 		float _sign;
@@ -58,9 +57,11 @@ public class PixelBubbleEffect extends Entity implements BaseEffect {
 
 		float _cellHeight;
 
-		public Block(float speed, float width, float x, float y) {
+		PixelBubbleEffect _effect;
+
+		public Block(PixelBubbleEffect effect, float speed, float width, float x, float y) {
+			this._effect = effect;
 			this._speed = speed;
-			this._width = width;
 			this._x = x;
 			this._y = y;
 			this._alpha = 0.05f + MathUtils.random() * 0.8f;
@@ -81,9 +82,10 @@ public class PixelBubbleEffect extends Entity implements BaseEffect {
 		}
 
 		void paint(GLEx g, float offsetX, float offsetY) {
-			g.setColor(_baseColor.setAlpha(_alpha));
-			g.fillOval(this._x + offsetX + MathUtils.cos(this._amount / getWidth()) * _radius,
-					this._y + offsetY + MathUtils.sin(this._amount / getHeight()) * _radius, _cellWidth, _cellHeight);
+			g.setColor(_effect._baseColor.setAlpha(_alpha));
+			g.fillOval(this._x + offsetX + MathUtils.cos(this._amount / _effect.getWidth()) * _effect._radius,
+					this._y + offsetY + MathUtils.sin(this._amount / _effect.getHeight()) * _effect._radius, _cellWidth,
+					_cellHeight);
 
 		}
 
@@ -127,14 +129,14 @@ public class PixelBubbleEffect extends Entity implements BaseEffect {
 
 	protected void createFireBlocks() {
 		if (_bubbleBlocks == null) {
-			_bubbleBlocks = new TArray<PixelBubbleEffect.Block>(_bubbleSize);
+			_bubbleBlocks = new TArray<Block>(_bubbleSize);
 		}
 		for (int i = 0; i < _bubbleSize; i++) {
 			float randomX = MathUtils.round(MathUtils.random() * getWidth());
 			float randomY = MathUtils.round(MathUtils.random() * getHeight());
 			float speed = _moveSpeed + 0.2f + MathUtils.random() * 3;
 			float size = MathUtils.random() * _bubbleSize;
-			Block circle = new PixelBubbleEffect.Block(speed, size, randomX, randomY);
+			Block circle = new Block(this, speed, size, randomX, randomY);
 			_bubbleBlocks.add(circle);
 		}
 	}
@@ -180,6 +182,13 @@ public class PixelBubbleEffect extends Entity implements BaseEffect {
 	@Override
 	public boolean isCompleted() {
 		return _completed;
+	}
+	
+	@Override
+	public void close(){
+		super.close();
+		_completed = true;
+		_bubbleBlocks.clear();
 	}
 
 }

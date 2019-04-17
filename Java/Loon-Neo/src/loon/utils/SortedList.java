@@ -24,7 +24,7 @@ import java.util.Iterator;
 
 import loon.LSystem;
 
-public class SortedList<E> implements Iterable<E>,IArray {
+public class SortedList<E> implements Iterable<E>, IArray {
 
 	public LIterator<E> listIterator() {
 		return listIterator(0);
@@ -32,28 +32,31 @@ public class SortedList<E> implements Iterable<E>,IArray {
 
 	public LIterator<E> listIterator(int index) {
 		checkPositionIndex(index);
-		return new ListItr(index);
+		return new ListItr<E>(this, index);
 	}
-	
+
 	@Override
 	public Iterator<E> iterator() {
 		return listIterator();
 	}
 
-	private class ListItr implements LIterator<E> {
+	private static class ListItr<E> implements LIterator<E> {
 		private Node<E> lastReturned;
 		private Node<E> next;
 		private int nextIndex;
-		private int expectedModCount = modCount;
+		private int expectedModCount;
+		private SortedList<E> _list;
 
-		ListItr(int idx) {
-			next = (idx == size) ? null : node(idx);
-			nextIndex = idx;
+		ListItr(SortedList<E> l, int idx) {
+			this._list = l;
+			this.next = (idx == _list.size) ? null : _list.node(idx);
+			this.nextIndex = idx;
+			expectedModCount = _list.modCount;
 		}
 
 		@Override
 		public boolean hasNext() {
-			return nextIndex < size;
+			return nextIndex < _list.size;
 		}
 
 		@Override
@@ -71,12 +74,12 @@ public class SortedList<E> implements Iterable<E>,IArray {
 		@Override
 		public void remove() {
 			checkForComodification();
-			if (lastReturned == null){
+			if (lastReturned == null) {
 				return;
 			}
 
 			Node<E> lastNext = lastReturned.next;
-			unlink(lastReturned);
+			_list.unlink(lastReturned);
 			if (next == lastReturned)
 				next = lastNext;
 			else
@@ -86,7 +89,7 @@ public class SortedList<E> implements Iterable<E>,IArray {
 		}
 
 		final void checkForComodification() {
-			if (modCount != expectedModCount)
+			if (_list.modCount != expectedModCount)
 				throw LSystem.runThrow("SortedList error!");
 		}
 	}
@@ -545,11 +548,10 @@ public class SortedList<E> implements Iterable<E>,IArray {
 	@Override
 	public int hashCode() {
 		int hashCode = 1;
-		for (Node<E> x = first; x != null; x = x.next){
+		for (Node<E> x = first; x != null; x = x.next) {
 			hashCode = 31 * hashCode + (x.item == null ? 0 : x.item.hashCode());
 		}
 		return hashCode;
 	}
-	
 
 }

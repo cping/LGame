@@ -120,6 +120,9 @@ public abstract class PixelBaseEffect extends Entity {
 
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
+		if(!isVisible()){
+			return;
+		}
 		int tmp = g.getPixSkip();
 		boolean useTex = g.isAlltextures() && LSystem.isHTML5();
 		if (useTex) {
@@ -138,9 +141,6 @@ public abstract class PixelBaseEffect extends Entity {
 				next();
 			}
 		} else {
-			if (LSystem.getProcess() != null && LSystem.getProcess().getScreen() != null) {
-				LSystem.getProcess().getScreen().remove(this);
-			} 
 			if (getSprites() != null) {
 				getSprites().remove(this);
 			}
@@ -163,6 +163,9 @@ public abstract class PixelBaseEffect extends Entity {
 	public void close() {
 		super.close();
 		completed = true;
+		triangleEffects.clear();
+		startLocation = null;
+		targetLocation = null;
 	}
 
 }

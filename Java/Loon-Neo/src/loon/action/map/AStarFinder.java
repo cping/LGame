@@ -323,7 +323,7 @@ public class AStarFinder extends TileImplPathFind implements Updateable, LReleas
 		}
 	}
 
-	private class ScoredPath {
+	private static class ScoredPath {
 
 		private float score;
 

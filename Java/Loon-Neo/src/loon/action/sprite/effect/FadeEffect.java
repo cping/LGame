@@ -132,6 +132,11 @@ public class FadeEffect extends Entity implements BaseEffect {
 				finished = true;
 			}
 		}
+		if (this.finished) {
+			if (getSprites() != null) {
+				getSprites().remove(this);
+			}
+		}
 	}
 
 	public int getFadeType() {

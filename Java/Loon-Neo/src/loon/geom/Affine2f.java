@@ -43,40 +43,33 @@ import loon.utils.StringKeyValue;
 public class Affine2f implements LTrans, XY {
 
 	public final static Affine2f multiply(Affine2f a, Affine2f b, Affine2f into) {
-		return multiply(a.m00, a.m01, a.m10, a.m11, a.tx, a.ty, b.m00, b.m01,
-				b.m10, b.m11, b.tx, b.ty, into);
+		return multiply(a.m00, a.m01, a.m10, a.m11, a.tx, a.ty, b.m00, b.m01, b.m10, b.m11, b.tx, b.ty, into);
 	}
 
-	public final static Affine2f multiply(Affine2f a, float m00, float m01,
-			float m10, float m11, float tx, float ty, Affine2f into) {
-		return multiply(a.m00, a.m01, a.m10, a.m11, a.tx, a.ty, m00, m01, m10,
-				m11, tx, ty, into);
+	public final static Affine2f multiply(Affine2f a, float m00, float m01, float m10, float m11, float tx, float ty,
+			Affine2f into) {
+		return multiply(a.m00, a.m01, a.m10, a.m11, a.tx, a.ty, m00, m01, m10, m11, tx, ty, into);
 	}
 
-	public final static Affine2f multiply(float m00, float m01, float m10,
-			float m11, float tx, float ty, Affine2f b, Affine2f into) {
-		return multiply(m00, m01, m10, m11, tx, ty, b.m00, b.m01, b.m10, b.m11,
-				b.tx, b.ty, into);
+	public final static Affine2f multiply(float m00, float m01, float m10, float m11, float tx, float ty, Affine2f b,
+			Affine2f into) {
+		return multiply(m00, m01, m10, m11, tx, ty, b.m00, b.m01, b.m10, b.m11, b.tx, b.ty, into);
 	}
 
-	public final static Affine2f multiply(float am00, float am01, float am10,
-			float am11, float atx, float aty, float bm00, float bm01,
-			float bm10, float bm11, float btx, float bty, Affine2f into) {
-		into.setTransform(am00 * bm00 + am10 * bm01, am01 * bm00 + am11 * bm01,
-				am00 * bm10 + am10 * bm11, am01 * bm10 + am11 * bm11, am00
-						* btx + am10 * bty + atx, am01 * btx + am11 * bty + aty);
+	public final static Affine2f multiply(float am00, float am01, float am10, float am11, float atx, float aty,
+			float bm00, float bm01, float bm10, float bm11, float btx, float bty, Affine2f into) {
+		into.setTransform(am00 * bm00 + am10 * bm01, am01 * bm00 + am11 * bm01, am00 * bm10 + am10 * bm11,
+				am01 * bm10 + am11 * bm11, am00 * btx + am10 * bty + atx, am01 * btx + am11 * bty + aty);
 		return into;
 	}
 
 	private static Matrix4 projectionMatrix = null;
 
 	protected Affine2f(Affine2f other) {
-		this(other.scaleX(), other.scaleY(), other.rotation(), other.tx(),
-				other.ty());
+		this(other.scaleX(), other.scaleY(), other.rotation(), other.tx(), other.ty());
 	}
 
-	public static Affine2f transform(Affine2f tx, float x, float y,
-			int transform) {
+	public static Affine2f transform(Affine2f tx, float x, float y, int transform) {
 		switch (transform) {
 		case TRANS_ROT90: {
 			tx.translate(x, y);
@@ -129,8 +122,7 @@ public class Affine2f implements LTrans, XY {
 		return tx;
 	}
 
-	public static Affine2f transform(Affine2f tx, float x, float y,
-			int transform, float width, float height) {
+	public static Affine2f transform(Affine2f tx, float x, float y, int transform, float width, float height) {
 		switch (transform) {
 		case TRANS_ROT90: {
 			float w = x + width / 2;
@@ -199,8 +191,7 @@ public class Affine2f implements LTrans, XY {
 		return tx;
 	}
 
-	public static Affine2f transformRegion(Affine2f tx, float x, float y,
-			int transform, float width, float height) {
+	public static Affine2f transformRegion(Affine2f tx, float x, float y, int transform, float width, float height) {
 		switch (transform) {
 		case TRANS_ROT90: {
 			float w = height;
@@ -271,10 +262,8 @@ public class Affine2f implements LTrans, XY {
 		float m00 = m[Matrix4.M00] * this.m00 + m[Matrix4.M01] * this.m10;
 		float m01 = m[Matrix4.M00] * this.m11 + m[Matrix4.M11] * this.m10;
 		float tx = m[Matrix4.M00] * this.m01 + m[Matrix4.M01] * this.m11;
-		float m10 = m[Matrix4.M00] * this.tx + m[Matrix4.M01] * this.ty
-				+ m[Matrix4.M02];
-		float m11 = m[Matrix4.M10] * this.tx + m[Matrix4.M11] * this.ty
-				+ m[Matrix4.M12];
+		float m10 = m[Matrix4.M00] * this.tx + m[Matrix4.M01] * this.ty + m[Matrix4.M02];
+		float m11 = m[Matrix4.M10] * this.tx + m[Matrix4.M11] * this.ty + m[Matrix4.M12];
 
 		m[Matrix4.M00] = m00;
 		m[Matrix4.M01] = m01;
@@ -293,10 +282,8 @@ public class Affine2f implements LTrans, XY {
 		float m00 = m[Matrix4.M00] * this.m00 + m[Matrix4.M01] * this.m10;
 		float m01 = m[Matrix4.M00] * this.m11 + m[Matrix4.M11] * this.m10;
 		float tx = m[Matrix4.M00] * this.m01 + m[Matrix4.M01] * this.m11;
-		float m10 = m[Matrix4.M00] * this.tx + m[Matrix4.M01] * this.ty
-				+ m[Matrix4.M02];
-		float m11 = m[Matrix4.M10] * this.tx + m[Matrix4.M11] * this.ty
-				+ m[Matrix4.M12];
+		float m10 = m[Matrix4.M00] * this.tx + m[Matrix4.M01] * this.ty + m[Matrix4.M02];
+		float m11 = m[Matrix4.M10] * this.tx + m[Matrix4.M11] * this.ty + m[Matrix4.M12];
 
 		m[Matrix4.M00] = m00;
 		m[Matrix4.M01] = m01;
@@ -350,8 +337,7 @@ public class Affine2f implements LTrans, XY {
 		}
 		if (o instanceof Affine2f) {
 			Affine2f a2f = (Affine2f) o;
-			if (a2f.m00 == m00 && a2f.m01 == m01 && a2f.tx == tx
-					&& a2f.ty == ty && a2f.m10 == m10 && a2f.m11 == m11) {
+			if (a2f.m00 == m00 && a2f.m01 == m01 && a2f.tx == tx && a2f.ty == ty && a2f.m10 == m10 && a2f.m11 == m11) {
 				return true;
 			}
 		}
@@ -362,8 +348,7 @@ public class Affine2f implements LTrans, XY {
 		if (a2f == null) {
 			return false;
 		}
-		return a2f.m00 == m00 && a2f.m01 == m01 && a2f.tx == tx && a2f.ty == ty
-				&& a2f.m10 == m10 && a2f.m11 == m11;
+		return a2f.m00 == m00 && a2f.m01 == m01 && a2f.tx == tx && a2f.ty == ty && a2f.m10 == m10 && a2f.m11 == m11;
 	}
 
 	public Affine2f set(Matrix3 matrix) {
@@ -431,8 +416,7 @@ public class Affine2f implements LTrans, XY {
 		this.ty = ty;
 	}
 
-	public Affine2f(float m00, float m01, float m10, float m11, float tx,
-			float ty) {
+	public Affine2f(float m00, float m01, float m10, float m11, float tx, float ty) {
 		this.m00 = m00;
 		this.m01 = m01;
 		this.m10 = m10;
@@ -442,8 +426,7 @@ public class Affine2f implements LTrans, XY {
 	}
 
 	public Affine2f set(Affine2f other) {
-		return setTransform(other.m00, other.m01, other.m10, other.m11,
-				other.tx, other.ty);
+		return setTransform(other.m00, other.m01, other.m10, other.m11, other.tx, other.ty);
 	}
 
 	public float uniformScale() {
@@ -467,7 +450,7 @@ public class Affine2f implements LTrans, XY {
 			float o01 = n01, o11 = n11;
 			float det = o00 * o11 - o10 * o01;
 			if (MathUtils.abs(det) == 0f) {
-				throw LSystem.runThrow(this.toString());
+				throw LSystem.runThrow("Affine2f exception " + this.toString());
 			}
 			float hrdet = 0.5f / det;
 			n00 = +o11 * hrdet + o00 * 0.5f;
@@ -616,13 +599,11 @@ public class Affine2f implements LTrans, XY {
 		return this;
 	}
 
-	public Affine2f setTo(float m00, float m01, float m10, float m11, float tx,
-			float ty) {
+	public Affine2f setTo(float m00, float m01, float m10, float m11, float tx, float ty) {
 		return setTransform(m00, m01, m10, m11, tx, ty);
 	}
 
-	public Affine2f setTransform(float m00, float m01, float m10, float m11,
-			float tx, float ty) {
+	public Affine2f setTransform(float m00, float m01, float m10, float m11, float tx, float ty) {
 		this.m00 = m00;
 		this.m01 = m01;
 		this.m10 = m10;
@@ -780,8 +761,8 @@ public class Affine2f implements LTrans, XY {
 			throw LSystem.runThrow(this.toString());
 		}
 		float rdet = 1f / det;
-		return new Affine2f(+m11 * rdet, -m10 * rdet, -m01 * rdet, +m00 * rdet,
-				(m10 * ty - m11 * tx) * rdet, (m01 * tx - m00 * ty) * rdet);
+		return new Affine2f(+m11 * rdet, -m10 * rdet, -m01 * rdet, +m00 * rdet, (m10 * ty - m11 * tx) * rdet,
+				(m01 * tx - m00 * ty) * rdet);
 	}
 
 	public Affine2f concatenate(Affine2f other) {
@@ -812,8 +793,8 @@ public class Affine2f implements LTrans, XY {
 		return postConcatenate(t.m00, t.m01, t.m10, t.m11, t.tx, t.ty);
 	}
 
-	public Affine2f postConcatenate(final float ma, final float mb,
-			final float mc, final float md, final float mx, final float my) {
+	public Affine2f postConcatenate(final float ma, final float mb, final float mc, final float md, final float mx,
+			final float my) {
 		final float m00 = this.m00;
 		final float m01 = this.m01;
 		final float m10 = this.m10;
@@ -835,22 +816,18 @@ public class Affine2f implements LTrans, XY {
 			return other.lerp(this, -t);
 		}
 
-		Affine2f ot = (other instanceof Affine2f) ? (Affine2f) other
-				: new Affine2f(other);
-		return new Affine2f(m00 + t * (ot.m00 - m00), m01 + t * (ot.m01 - m01),
-				m10 + t * (ot.m10 - m10), m11 + t * (ot.m11 - m11), tx + t
-						* (ot.tx - tx), ty + t * (ot.ty - ty));
+		Affine2f ot = (other instanceof Affine2f) ? (Affine2f) other : new Affine2f(other);
+		return new Affine2f(m00 + t * (ot.m00 - m00), m01 + t * (ot.m01 - m01), m10 + t * (ot.m10 - m10),
+				m11 + t * (ot.m11 - m11), tx + t * (ot.tx - tx), ty + t * (ot.ty - ty));
 	}
 
-	public void transform(Vector2f[] src, int srcOff, Vector2f[] dst,
-			int dstOff, int count) {
+	public void transform(Vector2f[] src, int srcOff, Vector2f[] dst, int dstOff, int count) {
 		for (int ii = 0; ii < count; ii++) {
 			transform(src[srcOff++], dst[dstOff++]);
 		}
 	}
 
-	public void transform(float[] src, int srcOff, float[] dst, int dstOff,
-			int count) {
+	public void transform(float[] src, int srcOff, float[] dst, int dstOff, int count) {
 		for (int ii = 0; ii < count; ii++) {
 			float x = src[srcOff++], y = src[srcOff++];
 			dst[dstOff++] = m00 * x + m10 * y + tx;
@@ -890,8 +867,7 @@ public class Affine2f implements LTrans, XY {
 		return new PointF(x, y);
 	}
 
-	public Vector2f transformPoint(float pointX, float pointY,
-			Vector2f resultPoint) {
+	public Vector2f transformPoint(float pointX, float pointY, Vector2f resultPoint) {
 		float x = this.m00 * pointX + this.m01 * pointY + this.tx;
 		float y = this.m10 * pointX + this.m11 * pointY + this.ty;
 		if (resultPoint != null) {
@@ -900,7 +876,7 @@ public class Affine2f implements LTrans, XY {
 		}
 		return new Vector2f(x, y);
 	}
-	
+
 	public Vector2f transformPoint(Vector2f v, Vector2f into) {
 		float x = v.x(), y = v.y();
 		return into.set(m00 * x + m10 * y + tx, m01 * x + m11 * y + ty);
@@ -916,7 +892,7 @@ public class Affine2f implements LTrans, XY {
 		float det = m00 * m11 - m01 * m10;
 		if (MathUtils.abs(det) == 0f) {
 			// 行列式为零时，矩阵将不可逆，无法还原所以报错
-			throw LSystem.runThrow(this.toString());
+			throw LSystem.runThrow("Affine2f exception " + this.toString());
 		}
 		float rdet = 1 / det;
 		return into.set((x * m11 - y * m10) * rdet, (y * m00 - x * m01) * rdet);
@@ -927,9 +903,7 @@ public class Affine2f implements LTrans, XY {
 		if (projectionMatrix == null) {
 			projectionMatrix = new Matrix4();
 		}
-		projectionMatrix.setToOrtho2D(0, 0,
-				dim.width * LSystem.getScaleWidth(),
-				dim.height * LSystem.getScaleHeight());
+		projectionMatrix.setToOrtho2D(0, 0, dim.width * LSystem.getScaleWidth(), dim.height * LSystem.getScaleHeight());
 		projectionMatrix.thisCombine(this);
 		return projectionMatrix;
 	}
@@ -970,7 +944,7 @@ public class Affine2f implements LTrans, XY {
 		result = prime * result + NumberUtils.floatToIntBits(ty);
 		return result;
 	}
-	
+
 	@Override
 	public float getX() {
 		return tx();
@@ -985,27 +959,11 @@ public class Affine2f implements LTrans, XY {
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("Affine");
-		builder
-		.newLine()
-		.pushBracket()
-		.addValue(MathUtils.toString((m00)))
-		.comma()
-		.addValue(MathUtils.toString(m10))
-		.comma()
-		.addValue(MathUtils.toString(tx))
-		.popBracket()
-		.newLine()
-		.pushBracket()
-		.addValue(MathUtils.toString(m01))
-		.comma()
-		.addValue(MathUtils.toString(m11))
-		.comma()
-		.addValue(MathUtils.toString(ty))
-		.popBracket()
-		.newLine()
-		.addValue("[0.0,0.0,1.0]")
-		.newLine();
+		builder.newLine().pushBracket().addValue(MathUtils.toString((m00))).comma().addValue(MathUtils.toString(m10))
+				.comma().addValue(MathUtils.toString(tx)).popBracket().newLine().pushBracket()
+				.addValue(MathUtils.toString(m01)).comma().addValue(MathUtils.toString(m11)).comma()
+				.addValue(MathUtils.toString(ty)).popBracket().newLine().addValue("[0.0,0.0,1.0]").newLine();
 		return builder.toString();
 	}
-	
+
 }

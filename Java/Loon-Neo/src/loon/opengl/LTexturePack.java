@@ -849,7 +849,7 @@ public class LTexturePack implements LRelease {
 		}
 	}
 
-	private class Node {
+	private static class Node {
 
 		private final Node[] child = new Node[2];
 

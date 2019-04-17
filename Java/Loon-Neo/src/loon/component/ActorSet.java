@@ -204,7 +204,7 @@ public class ActorSet {
 		return new ActorSet.ActorSetIterator(this);
 	}
 
-	private class ListNode {
+	private static class ListNode {
 
 		Actor actor;
 
@@ -250,7 +250,7 @@ public class ActorSet {
 		}
 	}
 
-	private class ActorSetIterator implements LIterator<Actor> {
+	private static class ActorSetIterator implements LIterator<Actor> {
 
 		ActorSet.ListNode currentNode;
 

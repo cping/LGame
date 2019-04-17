@@ -59,7 +59,7 @@ public class RocSSprite extends LObject<ISprite> implements ISprite {
 			this.setDelay(delay);
 			this.setName("RocSSprite");
 		} catch (ScriptException ex) {
-			throw LSystem.runThrow(ex.getMessage(), ex);
+			throw LSystem.runThrow("ROC Script load exception", ex);
 		}
 	}
 

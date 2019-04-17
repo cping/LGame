@@ -34,7 +34,7 @@ public abstract class Assets {
 
 	// 为了方便直接转码到C#和C++，无法使用匿名内部类(也就是在构造内直接构造实现的方式)，只能都写出类来……
 	// PS:别提delegate，委托那玩意写出来太不优雅了，而且大多数J2C#的工具也不能直接转换过去……
-	private class ImageRunnable implements Runnable {
+	private static class ImageRunnable implements Runnable {
 
 		private ImageImpl _impl;
 
@@ -59,7 +59,7 @@ public abstract class Assets {
 
 	}
 
-	private class TextRunnable implements Runnable {
+	private static class TextRunnable implements Runnable {
 
 		private GoPromise<String> _result;
 
@@ -84,7 +84,7 @@ public abstract class Assets {
 
 	}
 
-	private class ByteRunnable implements Runnable {
+	private static class ByteRunnable implements Runnable {
 
 		private GoPromise<byte[]> _result;
 

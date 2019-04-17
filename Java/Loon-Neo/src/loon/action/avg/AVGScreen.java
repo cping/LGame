@@ -142,7 +142,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	 * PS : 再次强调，Task不执行完，是不能继续触发脚本的
 	 *
 	 */
-	public interface Task {
+	public static interface Task {
 
 		void parameters(String[] pars);
 
@@ -155,7 +155,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	}
 
 	// AVG文字显示速度
-	public enum SpeedMode {
+	public static enum SpeedMode {
 		SuperSlow, // 超级慢
 		Slow, // 慢
 		FewSlow, // 慢一点点
@@ -166,14 +166,39 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	}
 
 	/**
+	 * 传递AVGScreen对象的Process
+	 */
+	public static class AVGProcess extends RealtimeProcess {
+
+		protected AVGScreen _screen;
+
+		public AVGProcess(AVGScreen screen) {
+			this._screen = screen;
+		}
+
+		public AVGScreen getScreen() {
+			return this._screen;
+		}
+
+		@Override
+		public void run(LTimerContext time) {
+
+		}
+
+	}
+
+	/**
 	 * 选择UI监听
 	 *
 	 */
-	private class SelectClick implements ClickListener {
+	private static class SelectClick implements ClickListener {
 
 		private TArray<String> _items;
 
-		public SelectClick(TArray<String> items) {
+		private AVGScreen _screen;
+
+		public SelectClick(AVGScreen screen, TArray<String> items) {
+			this._screen = screen;
 			_items = items;
 		}
 
@@ -188,22 +213,23 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 
 		@Override
 		public void UpClick(LComponent comp, float x, float y) {
-			if (tasking()) {
+			if (_screen.tasking()) {
 				return;
 			}
-			if (_items != null && command != null && selectUI != null) {
+			if (_items != null && _screen.command != null && _screen.selectUI != null) {
 				if (((LSystem.base() != null && (LSystem.base().isMobile() || LSystem.base().setting.emulateTouch))
-						? _clickcount++ >= _mobile_select_valid_limit : _clickcount > -1) && selectUI.isClick()) {
-					int idx = selectUI.getResultIndex();
+						? _screen._clickcount++ >= _screen._mobile_select_valid_limit : _screen._clickcount > -1)
+						&& _screen.selectUI.isClick()) {
+					int idx = _screen.selectUI.getResultIndex();
 					if (idx != -1) {
 						String gotoFlag = _items.get(idx);
 						if (MathUtils.isNan(gotoFlag)) {
-							command.gotoIndex((int) Double.parseDouble(gotoFlag));
+							_screen.command.gotoIndex((int) Double.parseDouble(gotoFlag));
 						} else {
-							command.gotoIndex(gotoFlag);
+							_screen.command.gotoIndex(gotoFlag);
 						}
-						clearSelectMessage();
-						nextScript();
+						_screen.clearSelectMessage();
+						_screen.nextScript();
 					}
 				}
 			}
@@ -496,21 +522,24 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	 * 选项监听
 	 *
 	 */
-	private class OptClick implements ClickListener {
+	private static class OptClick implements ClickListener {
 
 		private String label;
 
-		public OptClick(String gotoFlag) {
+		private AVGScreen _screen;
+
+		public OptClick(AVGScreen screen, String gotoFlag) {
+			this._screen = screen;
 			label = gotoFlag;
 		}
 
 		@Override
 		public void UpClick(LComponent comp, float x, float y) {
-			if (command != null && label != null) {
-				command.gotoIndex(label);
+			if (_screen.command != null && label != null) {
+				_screen.command.gotoIndex(label);
 				// 跳转后清除选择框,防止opt命令和select命令产生组件重叠时产生重复点击
-				clearSelectMessage();
-				nextScript();
+				_screen.clearSelectMessage();
+				_screen.nextScript();
 			}
 		}
 
@@ -607,7 +636,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 					click.setClickedClick(texClick);
 				}
 			}
-			click.SetClick(new OptClick(result[0]));
+			click.SetClick(new OptClick(this, result[0]));
 		} else {
 			click.setTexture(LTextures.loadTexture(order));
 			click.setGrayButton(true);
@@ -1272,11 +1301,12 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 								}
 							}
 							selectUI.setMessage(messageInfo, selects);
-							addProcess(new RealtimeProcess() {
+
+							addProcess(new AVGProcess(this) {
 
 								@Override
 								public void run(LTimerContext time) {
-									selectUI.SetClick(new SelectClick(items));
+									selectUI.SetClick(new SelectClick(getScreen(), items));
 									kill();
 								}
 							});
@@ -1862,7 +1892,9 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 			}
 		}
 		_currentTasks.clear();
+		_currentTasks = null;
 		_tasks.clear();
+		_tasks = null;
 	}
 
 }

@@ -55,7 +55,7 @@ public class FadeBoardEffect extends Entity implements BaseEffect {
 
 	private boolean _dirty;
 
-	class Block {
+	private static class Block {
 
 		float _x, _y, _width, _height;
 
@@ -77,8 +77,11 @@ public class FadeBoardEffect extends Entity implements BaseEffect {
 
 		boolean _finished;
 
-		Block(float x, float y, float width, float height, float angle, float scaleX, float scaleY, float alpha,
-				float delay) {
+		FadeBoardEffect _effect;
+
+		Block(FadeBoardEffect effect, float x, float y, float width, float height, float angle, float scaleX,
+				float scaleY, float alpha, float delay) {
+			this._effect = effect;
 			this._x = x;
 			this._y = y;
 			this._width = width;
@@ -86,12 +89,12 @@ public class FadeBoardEffect extends Entity implements BaseEffect {
 			this._angle = angle;
 			this._scaleX = scaleX;
 			this._scaleY = scaleY;
-			if (fadeType == TYPE_FADE_OUT) {
-				this._deltaScaleX = targetScaleX - _scaleX;
-				this._deltaScaleY = targetScaleY - _scaleY;
+			if (_effect.fadeType == TYPE_FADE_OUT) {
+				this._deltaScaleX = _effect.targetScaleX - _scaleX;
+				this._deltaScaleY = _effect.targetScaleY - _scaleY;
 			} else {
-				this._deltaScaleX = targetScaleX + _scaleX;
-				this._deltaScaleY = targetScaleY + _scaleY;
+				this._deltaScaleX = _effect.targetScaleX + _scaleX;
+				this._deltaScaleY = _effect.targetScaleY + _scaleY;
 				this._currentScaleX = scaleX;
 				this._currentScaleY = scaleY;
 			}
@@ -110,8 +113,8 @@ public class FadeBoardEffect extends Entity implements BaseEffect {
 			_delayCount += elapsedTime;
 			if (_delayCount >= _delayTimer) {
 				_currentDelta += MathUtils.max(elapsedTime / 1000f, 0.01f);
-				float delta = MathUtils.sin(_currentDelta / blocDuration * 1.5707964f);
-				if (fadeType == TYPE_FADE_OUT) {
+				float delta = MathUtils.sin(_currentDelta / _effect.blocDuration * 1.5707964f);
+				if (_effect.fadeType == TYPE_FADE_OUT) {
 					_angle += (delta * 100f);
 					_alpha += delta;
 					if (_alpha > 1f) {
@@ -119,14 +122,14 @@ public class FadeBoardEffect extends Entity implements BaseEffect {
 					}
 					_currentScaleX += (_scaleX + (_deltaScaleX * delta));
 					_currentScaleY += (_scaleY + (_deltaScaleY * delta));
-					if (_currentScaleX > targetScaleX) {
-						_currentScaleX = targetScaleX;
+					if (_currentScaleX > _effect.targetScaleX) {
+						_currentScaleX = _effect.targetScaleX;
 					}
-					if (_currentScaleY > targetScaleY) {
-						_currentScaleY = targetScaleY;
+					if (_currentScaleY > _effect.targetScaleY) {
+						_currentScaleY = _effect.targetScaleY;
 					}
-					if (_currentScaleX >= targetScaleX && _currentScaleY >= targetScaleY && _alpha == 1f
-							&& _angle >= targetAngle) {
+					if (_currentScaleX >= _effect.targetScaleX && _currentScaleY >= _effect.targetScaleY && _alpha == 1f
+							&& _angle >= _effect.targetAngle) {
 						_finished = true;
 					}
 				} else {
@@ -154,8 +157,8 @@ public class FadeBoardEffect extends Entity implements BaseEffect {
 		}
 
 		void paint(GLEx g, float offX, float offY) {
-			g.draw(blockTexture, offX + _x, offY + _y, _width, _height, _baseColor.setAlpha(_alpha), _angle,
-					_currentScaleX, _currentScaleY, false, false);
+			g.draw(_effect.blockTexture, offX + _x, offY + _y, _width, _height, _effect._baseColor.setAlpha(_alpha),
+					_angle, _currentScaleX, _currentScaleY, false, false);
 		}
 
 	}
@@ -205,10 +208,10 @@ public class FadeBoardEffect extends Entity implements BaseEffect {
 		for (int x = 0; x < blockWidth; x++) {
 			for (int y = 0; y < blockHeight; y++) {
 				if (fadeType == TYPE_FADE_OUT) {
-					blocks.add(new Block(newX + (x * cellWidth), newY + (y * cellHeight), cellWidth, cellHeight, 0f, 0f,
-							0f, 0f, x * blockDelay));
+					blocks.add(new Block(this, newX + (x * cellWidth), newY + (y * cellHeight), cellWidth, cellHeight,
+							0f, 0f, 0f, 0f, x * blockDelay));
 				} else {
-					blocks.add(new Block(newX + (x * cellWidth), newY + (y * cellHeight), cellWidth, cellHeight,
+					blocks.add(new Block(this, newX + (x * cellWidth), newY + (y * cellHeight), cellWidth, cellHeight,
 							targetAngle, targetScaleX, targetScaleY, 1f, x * blockDelay));
 				}
 			}
@@ -249,6 +252,11 @@ public class FadeBoardEffect extends Entity implements BaseEffect {
 		if (countCompleted >= paintBlocks.size) {
 			_completed = true;
 		}
+		if (this._completed) {
+			if (getSprites() != null) {
+				getSprites().remove(this);
+			}
+		}
 	}
 
 	@Override
@@ -277,10 +285,8 @@ public class FadeBoardEffect extends Entity implements BaseEffect {
 		super.close();
 		this._completed = true;
 		this._dirty = true;
-		
-		if (blockTexture != null) {
-			blockTexture.close();
-		}
+		this.paintBlocks.clear();
+		this.paintBlocks = null;
 	}
 
 }

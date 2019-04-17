@@ -20,12 +20,13 @@
  */
 package loon.action;
 
+import loon.LRelease;
 import loon.utils.Array;
 import loon.utils.TArray;
 import loon.utils.timer.LTimer;
 
 /** 全局生效的动作控制类（在Loon中任何场景都适用），所有实现了ActionBind的类都可以被此类控制 **/
-public class ActionControl {
+public class ActionControl implements LRelease {
 
 	public static final ActionLinear LINEAR = new ActionLinear();
 
@@ -41,6 +42,8 @@ public class ActionControl {
 
 	private boolean pause;
 
+	private boolean closed;
+
 	/**
 	 * 获得缓动动画控制器实例
 	 */
@@ -49,7 +52,7 @@ public class ActionControl {
 			return instanceAction;
 		}
 		synchronized (ActionControl.class) {
-			if (instanceAction == null) {
+			if (instanceAction == null || instanceAction.isClosed()) {
 				instanceAction = new ActionControl();
 			}
 			return instanceAction;
@@ -105,7 +108,8 @@ public class ActionControl {
 	 * 读取指定缓动动画对象已保存的历史动作
 	 * 
 	 * @param bind
-	 * @param resetData true时还原数据,false时仅读取出历史记录数据
+	 * @param resetData
+	 *            true时还原数据,false时仅读取出历史记录数据
 	 * @return
 	 */
 	public TArray<ActionBindData> loadActionData(ActionBind bind, boolean resetData) {
@@ -194,7 +198,8 @@ public class ActionControl {
 	private ActionControl() {
 		actions = new Actions();
 		delayTimer = new LTimer(0);
-        bindDatas = new Array<ActionBindData>();
+		bindDatas = new Array<ActionBindData>();
+		closed = pause = false;
 	}
 
 	public void addAction(ActionEvent action, ActionBind obj, boolean paused) {
@@ -275,6 +280,17 @@ public class ActionControl {
 
 	public void pause() {
 		pause = true;
+	}
+
+	public boolean isClosed() {
+		return closed;
+	}
+
+	@Override
+	public void close() {
+		closed = true;
+		actions.clear();
+		bindDatas.clear();
 	}
 
 }

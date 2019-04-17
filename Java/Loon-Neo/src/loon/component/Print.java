@@ -174,7 +174,7 @@ public class Print implements FontSet<Print>, LRelease {
 		setMessage(context, font, false);
 	}
 
-	private class PrintUpdate implements Updateable {
+	private static class PrintUpdate implements Updateable {
 
 		Print _print;
 
@@ -231,7 +231,7 @@ public class Print implements FontSet<Print>, LRelease {
 			_print.onComplete = false;
 			_print.newLine = false;
 			_print.messageCount = 0;
-			_print.messageBuffer.delete(0, messageBuffer.length());
+			_print.messageBuffer.delete(0, _print.messageBuffer.length());
 			if (_isComplete) {
 				_print.complete();
 			}
@@ -782,6 +782,10 @@ public class Print implements FontSet<Print>, LRelease {
 				strings.close();
 				strings = null;
 			}
+		}
+		if (creeseIcon != null) {
+			creeseIcon.close();
+			creeseIcon = null;
 		}
 		closed = true;
 	}

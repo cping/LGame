@@ -54,7 +54,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	/*
 	 * 内部类，用来保存与复位GLEx的基本渲染参数
 	 */
-	private class BrushSave {
+	private static class BrushSave {
 		int baseColor = LColor.DEF_COLOR;
 		int fillColor = LColor.DEF_COLOR;
 		int pixSkip = def_skip;

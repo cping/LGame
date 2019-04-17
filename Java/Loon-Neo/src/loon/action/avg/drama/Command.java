@@ -305,7 +305,7 @@ public class Command extends Conversion implements LRelease {
 				conditionEnvironmentList.put(nowPosFlagName, Boolean.valueOf(result = numberA <= numberB));
 			}
 		} catch (Throwable ex) {
-			throw LSystem.runThrow(ex.getMessage(), ex);
+			LSystem.error("Command parse exception", ex);
 		}
 		return result;
 	}
@@ -959,7 +959,7 @@ public class Command extends Conversion implements LRelease {
 				}
 			}
 		} catch (Throwable ex) {
-			throw LSystem.runThrow("Command error!", ex);
+			throw LSystem.runThrow("Command read error !", ex);
 		} finally {
 			if (!isInnerCommand) {
 				offsetPos++;
@@ -1158,7 +1158,7 @@ public class Command extends Conversion implements LRelease {
 				}
 				result = CollectionUtils.copyOf(result, index);
 			} catch (Throwable ex) {
-				throw LSystem.runThrow("Command error!", ex);
+				throw LSystem.runThrow("Command load error !", ex);
 			}
 			scriptLazy.put(key, result);
 			return result;

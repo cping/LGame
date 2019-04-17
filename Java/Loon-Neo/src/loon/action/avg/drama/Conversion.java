@@ -295,7 +295,7 @@ public abstract class Conversion implements Expression {
 			return compute.calc();
 		}
 
-		final private class Compute {
+		final private static class Compute {
 
 			private float[] num = new float[MAX_LENGTH];
 
