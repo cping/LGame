@@ -98,6 +98,7 @@ public class AnimationStorage extends Animation {
 		this(new TArray<Animation>(CollectionUtils.INITIAL_CAPACITY));
 	}
 
+	@Override
 	public Object clone() {
 		return new AnimationStorage(playAnimations);
 	}
@@ -145,6 +146,7 @@ public class AnimationStorage extends Animation {
 		}
 	}
 
+	@Override
 	public LTexture getSpriteImage() {
 		if (currentFrameIndex > -1 && currentFrameIndex < size) {
 			Animation animation = playAnimations.get(currentFrameIndex);
@@ -154,6 +156,7 @@ public class AnimationStorage extends Animation {
 		}
 	}
 
+	@Override
 	public LTexture getSpriteImage(int idx) {
 		if (currentFrameIndex > -1 && currentFrameIndex < size) {
 			Animation animation = playAnimations.get(currentFrameIndex);
@@ -186,6 +189,7 @@ public class AnimationStorage extends Animation {
 		}
 	}
 
+	@Override
 	public void reset() {
 		super.reset();
 		loopOverToPlay = true;

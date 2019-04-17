@@ -26,9 +26,10 @@ import loon.geom.Dimension;
 import loon.opengl.GLEx;
 
 public class TextureCellRenderer implements ICellRenderer {
-	
+
 	private boolean scaleTexture = true;
 
+	@Override
 	public void paint(GLEx g, Object value, int x, int y, int width, int height) {
 
 		if (!(value instanceof LTexture)) {
@@ -36,16 +37,12 @@ public class TextureCellRenderer implements ICellRenderer {
 		}
 
 		LTexture textire = (LTexture) value;
-
-		int tmp = g.color();
-
-		g.setColor(LColor.white);
 		if (scaleTexture) {
-			g.draw(textire, x, y, width, height);
+			g.draw(textire, x, y, width, height, LColor.white);
 		} else {
-			g.draw(textire, x, y);
+			g.draw(textire, x, y, LColor.white);
 		}
-		g.setColor(tmp);
+
 	}
 
 	public void setScaleTexture(boolean s) {

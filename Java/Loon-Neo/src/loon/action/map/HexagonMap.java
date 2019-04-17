@@ -214,13 +214,15 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		public int cost;
 	}
 
-	protected class CellIterator implements Iterator<TileVisit<TileImpl>> {
+	protected static class CellIterator implements Iterator<TileVisit<TileImpl>> {
 
 		protected int m, n;
 		protected int cols, rows;
 		protected int i, j, k;
+		protected HexagonMap map;
 
-		protected CellIterator(int m, int n, int cols, int rows) {
+		protected CellIterator(HexagonMap map, int m, int n, int cols, int rows) {
+			this.map = map;
 			this.m = m;
 			this.n = n;
 			this.cols = cols;
@@ -236,7 +238,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		@Override
 		public TileVisit<TileImpl> next() {
 			TileVisit<TileImpl> tileVisit = new TileVisit<TileImpl>();
-			tileVisit.tile = (TileImpl) tiles[i + m][j + n];
+			tileVisit.tile = (TileImpl) map.tiles[i + m][j + n];
 			tileVisit.position[0] = i + m - k;
 			tileVisit.position[1] = j + n;
 			if (++i >= cols) {
@@ -253,7 +255,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	}
 
 	public Iterator<TileVisit<TileImpl>> iterator() {
-		return new CellIterator(0, 0, cols, rows);
+		return new CellIterator(this, 0, 0, cols, rows);
 	}
 
 	public Iterable<TileVisit<TileImpl>> allTiles(RectBox inRect) {
@@ -273,7 +275,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		if (n + rows >= this.rows) {
 			rows = this.rows - n;
 		}
-		final CellIterator iterator = new CellIterator(m, n, cols, rows);
+		final CellIterator iterator = new CellIterator(this, m, n, cols, rows);
 		return new Iterable<TileVisit<TileImpl>>() {
 
 			@Override
@@ -1780,7 +1782,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 				}
 			}
 		} catch (Throwable thr) {
-			 LSystem.error("HexagonMap draw() exception", thr);
+			LSystem.error("HexagonMap draw() exception", thr);
 		} finally {
 			g.setFont(tmpFont);
 		}

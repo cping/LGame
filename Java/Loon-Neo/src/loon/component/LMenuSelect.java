@@ -68,7 +68,7 @@ import loon.utils.timer.LTimer;
  */
 public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 
-	public interface ClickEvent {
+	public static interface ClickEvent {
 
 		public void onSelected(int index, String context);
 

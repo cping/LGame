@@ -78,7 +78,7 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 
 	}
 
-	public class MenuItem implements LRelease {
+	public static class MenuItem implements LRelease {
 		LTexture texture;
 		LMenu parent;
 		int index;
@@ -163,7 +163,7 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 			if (tex == null) {
 				this.keep = false;
 			}
-			freeRes().add(texture);
+			this.parent.freeRes().add(texture);
 		}
 
 		public boolean isVisible() {

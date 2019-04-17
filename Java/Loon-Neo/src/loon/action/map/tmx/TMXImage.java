@@ -27,7 +27,7 @@ import loon.utils.xml.XMLElement;
 
 public class TMXImage {
 	
-	public enum Format {
+	public static enum Format {
 		PNG, GIF, JPG, BMP, OTHER
 	}
 

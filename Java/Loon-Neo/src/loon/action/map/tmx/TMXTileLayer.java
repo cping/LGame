@@ -37,11 +37,11 @@ import loon.utils.xml.XMLElement;
 
 public class TMXTileLayer extends TMXMapLayer {
 
-	public enum Encoding {
+	public static enum Encoding {
 		XML, BASE64, CSV
 	}
 
-	public enum Compression {
+	public static enum Compression {
 		NONE, GZIP, ZLIB
 	}
 

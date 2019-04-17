@@ -60,7 +60,7 @@ public class LTransition {
 	/**
 	 * 常用特效枚举列表
 	 */
-	public enum TransType {
+	public static enum TransType {
 		FadeIn, FadeOut, FadeBoardIn, FadeBoardOut, FadeOvalIn, FadeOvalOut, FadeDotIn, FadeDotOut, FadeTileIn, FadeTileOut, FadeSpiralIn, FadeSpiralOut, FadeSwipeIn, FadeSwipeOut, PixelDarkIn, PixelDarkOut, CrossRandom, SplitRandom, PixelWind, PixelThunder
 	}
 

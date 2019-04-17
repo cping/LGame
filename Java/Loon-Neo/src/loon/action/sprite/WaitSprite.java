@@ -33,7 +33,7 @@ import loon.utils.timer.LTimer;
  */
 public class WaitSprite extends Entity {
 
-	private final class DrawWait {
+	private static class DrawWait {
 
 		private final float sx = 1.0f, sy = 1.0f;
 

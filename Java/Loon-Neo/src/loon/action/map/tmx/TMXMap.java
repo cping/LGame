@@ -38,28 +38,28 @@ public class TMXMap {
 	/**
 	 * 该TiledMap类的渲染（瓦片显示方向）模式
 	 */
-	public enum Orientation {
+	public static enum Orientation {
 		ORTHOGONAL, ISOMETRIC, STAGGERED, HEXAGONAL
 	}
 
 	/**
 	 * 该TiledMap类的渲染呈现顺序
 	 */
-	public enum RenderOrder {
+	public static enum RenderOrder {
 		RIGHT_DOWN, RIGHT_UP, LEFT_DOWN, LEFT_UP
 	}
 
 	/**
 	 * 此地图的交错轴（地图不是六角形时生效）
 	 */
-	public enum StaggerAxis {
+	public static enum StaggerAxis {
 		AXIS_X, AXIS_Y, NONE
 	}
 
 	/**
 	 * 此地图的错开模式。适用于六边形和等距交错地图。
 	 */
-	public enum StaggerIndex {
+	public static enum StaggerIndex {
 		NONE, EVEN, ODD
 	}
 

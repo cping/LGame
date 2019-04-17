@@ -21,9 +21,6 @@
 package loon.opengl;
 
 import loon.LSystem;
-import loon.opengl.Mesh.VertexDataType;
-import loon.opengl.VertexAttributes.Usage;
-import loon.utils.ObjectMap;
 
 public class MeshDefault {
 
@@ -33,37 +30,12 @@ public class MeshDefault {
 
 	private boolean stop_main_readering = false;
 
-	private final static ObjectMap<String, Mesh> meshLazy = new ObjectMap<String, Mesh>(10);
-
 	public Mesh getMesh(String n, int size) {
-		final String name = n + size;
-		synchronized (meshLazy) {
-			Mesh mesh = meshLazy.get(name);
-			if (mesh == null || mesh.isClosed()) {
-				mesh = new Mesh(VertexDataType.VertexArray, false, size * 4, size * 6,
-						new VertexAttribute(Usage.Position, 2, ShaderProgram.POSITION_ATTRIBUTE),
-						new VertexAttribute(Usage.ColorPacked, 4, ShaderProgram.COLOR_ATTRIBUTE),
-						new VertexAttribute(Usage.TextureCoordinates, 2, ShaderProgram.TEXCOORD_ATTRIBUTE + "0"));
-				resetIndices(size, mesh);
-				meshLazy.put(name, mesh);
-			}
-			return mesh;
-		}
+		return LSystem.getMeshPool(n, size);
 	}
 
-	private void resetIndices(int size, Mesh mesh) {
-		int len = size * 6;
-		short[] indices = new short[len];
-		short j = 0;
-		for (int i = 0; i < len; i += 6, j += 4) {
-			indices[i] = j;
-			indices[i + 1] = (short) (j + 1);
-			indices[i + 2] = (short) (j + 2);
-			indices[i + 3] = (short) (j + 2);
-			indices[i + 4] = (short) (j + 3);
-			indices[i + 5] = j;
-		}
-		mesh.setIndices(indices);
+	public void reset(String n, int size) {
+		LSystem.resetMeshPool(n, size);
 	}
 
 	public void setGLType(int type) {
@@ -81,27 +53,7 @@ public class MeshDefault {
 
 	public void resetIndices(String name, int size) {
 		Mesh mesh = getMesh(name, size);
-		resetIndices(size, mesh);
-	}
-
-	public void reset(String n, int size) {
-		final String name = n + size;
-		synchronized (meshLazy) {
-			Mesh mesh = meshLazy.get(name);
-			if (mesh != null) {
-				mesh.close();
-				mesh = null;
-			}
-			meshLazy.remove(name);
-			if (mesh == null || mesh.isClosed()) {
-				mesh = new Mesh(VertexDataType.VertexArray, false, size * 4, size * 6,
-						new VertexAttribute(Usage.Position, 2, ShaderProgram.POSITION_ATTRIBUTE),
-						new VertexAttribute(Usage.ColorPacked, 4, ShaderProgram.COLOR_ATTRIBUTE),
-						new VertexAttribute(Usage.TextureCoordinates, 2, ShaderProgram.TEXCOORD_ATTRIBUTE + "0"));
-				resetIndices(size, mesh);
-				meshLazy.put(name, mesh);
-			}
-		}
+		LSystem.resetIndices(size, mesh);
 	}
 
 	public synchronized void post(final String name, final int size, ShaderProgram shader, float[] vertices,
@@ -115,6 +67,14 @@ public class MeshDefault {
 			stop_main_readering = true;
 		}
 		Mesh mesh = getMesh(name, size);
+		if (mesh == null) {
+			if (!running) {
+				shader.glUseProgramUnBind();
+			} else if (stop_main_readering) {
+				LSystem.mainBeginDraw();
+			}
+			return;
+		}
 		mesh.setVertices(vertices, 0, vertexIdx);
 		mesh.getIndicesBuffer().position(0);
 		mesh.getIndicesBuffer().limit(count);
@@ -127,28 +87,15 @@ public class MeshDefault {
 	}
 
 	public int size() {
-		return meshLazy.size;
+		return LSystem.getMeshPoolSize();
 	}
 
-	public synchronized void dispose(String name, int size) {
-		final String key = name + size;
-		synchronized (meshLazy) {
-			Mesh mesh = meshLazy.remove(key);
-			if (mesh != null) {
-				mesh.close();
-			}
-		}
+	public void dispose(String name, int size) {
+		LSystem.disposeMeshPool(name, size);
 	}
 
 	public static void dispose() {
-		synchronized (meshLazy) {
-			for (Mesh mesh : meshLazy.values()) {
-				if (mesh != null) {
-					mesh.close();
-				}
-			}
-		}
-		meshLazy.clear();
+		LSystem.disposeMeshPool();
 	}
 
 }

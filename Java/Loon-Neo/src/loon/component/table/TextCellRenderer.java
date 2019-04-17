@@ -35,6 +35,7 @@ public class TextCellRenderer implements ICellRenderer, FontSet<TextCellRenderer
 	private LColor textColor = LColor.white;
 	private Alignment alignment = Alignment.LEFT;
 
+	@Override
 	public void paint(GLEx g, Object value, int x, int y, int width, int height) {
 		if (value instanceof BindIcon) {
 			int size = font.getHeight() - 4;

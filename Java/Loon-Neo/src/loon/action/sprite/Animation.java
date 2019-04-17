@@ -32,7 +32,7 @@ import loon.utils.timer.LTimer;
 
 public class Animation implements LRelease {
 
-	public interface AnimationListener {
+	public static interface AnimationListener {
 		public void onComplete(Animation animation);
 	}
 

@@ -81,7 +81,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 
 	private ArrayMap bindIcons = new ArrayMap();
 
-	protected class BindIcon {
+	protected static class BindIcon {
 
 		protected String name = "...";
 
@@ -93,7 +93,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 		}
 	}
 
-	class HeaderControl {
+	static class HeaderControl {
 		int headerY;
 		int mouseX = 0;
 		int columnResizeIndex = 0;

@@ -703,13 +703,13 @@ public class LTexture extends Painter implements LRelease {
 
 	protected void makeBatch(String name, ShaderSource source, int size) {
 		if (!checkExistBatch()) {
-			batch = LTextureBatch.getBatchCache(this);
+			batch = LSystem.getBatchCache(this);
 			if (batch == null || batch.closed()) {
 				batch = new LTextureBatch(this, source, size);
 				if (!StringUtils.isEmpty(name)) {
 					batch.setTextureBatchName(name);
 				}
-				LTextureBatch.bindBatchCache(batch);
+				LSystem.bindBatchCache(batch);
 				_isBatch = true;
 			}
 		}
@@ -1039,7 +1039,7 @@ public class LTexture extends Painter implements LRelease {
 		synchronized (LTextures.class) {
 			LTextures.removeTexture(this);
 			if (batch != null) {
-				LTextureBatch.disposeBatchCache(batch, false);
+				LSystem.disposeBatchCache(batch, false);
 			}
 			final Updateable update = new Updateable() {
 

@@ -31,6 +31,7 @@ public class VerticalLayout extends LayoutManager {
 		return new VerticalLayout();
 	}
 	
+	@Override
 	public LayoutManager layoutElements(final LayoutPort root,
 			final LayoutPort... children) {
 		if (isInvalid(root, children)) {

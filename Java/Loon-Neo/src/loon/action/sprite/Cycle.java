@@ -161,7 +161,7 @@ public class Cycle extends Entity {
 
 	protected float displayWidth, displayHeight;
 
-	class Progress {
+	static class Progress {
 
 		float x;
 

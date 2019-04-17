@@ -31,7 +31,6 @@ import loon.opengl.ShaderProgram;
 import loon.opengl.ShaderSource;
 import loon.opengl.TrilateralBatch;
 import loon.utils.GLUtils;
-import loon.utils.IntMap;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 
@@ -52,71 +51,6 @@ public class LTextureBatch implements LRelease {
 	public boolean isCacheLocked;
 
 	public boolean quad = true;
-
-	private final static IntMap<LTextureBatch> BATCH_POOLS = new IntMap<LTextureBatch>(10);
-
-	public final static int batchCacheSize() {
-		return BATCH_POOLS.size;
-	}
-
-	public final static void clearBatchCaches() {
-		if (BATCH_POOLS == null || BATCH_POOLS.size == 0) {
-			return;
-		}
-		IntMap<LTextureBatch> batchCaches;
-		synchronized (BATCH_POOLS) {
-			batchCaches = new IntMap<LTextureBatch>(BATCH_POOLS);
-		}
-		for (LTextureBatch bt : batchCaches.values()) {
-			if (bt != null) {
-				synchronized (bt) {
-					bt.close();
-					bt = null;
-				}
-			}
-		}
-		BATCH_POOLS.clear();
-		batchCaches = null;
-	}
-
-	public final static LTextureBatch getBatchCache(LTexture texture) {
-		if (texture == null) {
-			return null;
-		}
-		return BATCH_POOLS.get(texture.getID());
-	}
-
-	public final static LTextureBatch bindBatchCache(LTextureBatch batch) {
-		if (BATCH_POOLS.size > LSystem.DEFAULT_MAX_CACHE_SIZE) {
-			clearBatchCaches();
-		}
-		int key = batch.getTextureID();
-		LTextureBatch pBatch = BATCH_POOLS.get(key);
-		if (pBatch == null) {
-			pBatch = batch;
-			synchronized (BATCH_POOLS) {
-				BATCH_POOLS.put(key, pBatch);
-			}
-		}
-		return pBatch;
-	}
-
-	public final static LTextureBatch disposeBatchCache(LTextureBatch batch) {
-		return disposeBatchCache(batch, true);
-	}
-
-	public final static LTextureBatch disposeBatchCache(LTextureBatch batch, boolean closed) {
-		synchronized (BATCH_POOLS) {
-			LTextureBatch pBatch = BATCH_POOLS.remove(batch.getTextureID());
-			if (closed && pBatch != null) {
-				synchronized (pBatch) {
-					pBatch.close();
-					pBatch = null;
-				}
-			}
-			return pBatch;
-		}
-	}
 
 	private Cache lastCache;
 
@@ -1276,7 +1210,7 @@ public class LTextureBatch implements LRelease {
 		if (!_batch_name.equals(name)) {
 			mesh.dispose(name, expandVertices.getSize());
 		}
-		disposeBatchCache(this, false);
+		LSystem.disposeBatchCache(this, false);
 		runningCache = false;
 	}
 

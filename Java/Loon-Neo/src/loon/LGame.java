@@ -21,12 +21,23 @@
 package loon;
 
 import loon.event.InputMake;
+import loon.opengl.Mesh;
+import loon.opengl.ShaderProgram;
+import loon.opengl.VertexAttribute;
+import loon.opengl.Mesh.VertexDataType;
+import loon.opengl.VertexAttributes.Usage;
+import loon.utils.IntMap;
+import loon.utils.ObjectMap;
 import loon.utils.reply.Act;
 
 /**
  * 此类为最主要的游戏功能类集合对象，所有Loon初始化由此开始，其中涵盖了Loon的基础对象实例。
  */
 public abstract class LGame {
+
+	private IntMap<LTextureBatch> _batch_pools;
+
+	private ObjectMap<String, Mesh> _mesh_pools;
 
 	/**
 	 * 支持的运行库(Java版不支持的会由C++版和C#版实现)
@@ -40,7 +51,17 @@ public abstract class LGame {
 	 */
 	public static enum Status {
 		PAUSE, RESUME, EXIT
-	};
+	}
+
+	public static class Error {
+		public String message;
+		public Throwable cause;
+
+		public Error(String message, Throwable cause) {
+			this.message = message;
+			this.cause = cause;
+		}
+	}
 
 	public Act<Error> errors = Act.create();
 
@@ -54,6 +75,8 @@ public abstract class LGame {
 
 	public LGame(LSetting config, Platform plat) {
 		LSystem._platform = plat;
+		_batch_pools = new IntMap<LTextureBatch>(10);
+		_mesh_pools = new ObjectMap<String, Mesh>(10);
 		if (config == null) {
 			config = new LSetting();
 		}
@@ -80,16 +103,6 @@ public abstract class LGame {
 		setting.fontName = fontName;
 	}
 
-	public static class Error {
-		public final String message;
-		public final Throwable cause;
-
-		public Error(String message, Throwable cause) {
-			this.message = message;
-			this.cause = cause;
-		}
-	}
-
 	public Display register(Screen screen) {
 		this.display = new Display(this, setting.fps);
 		this.display.setScreen(screen);
@@ -106,22 +119,21 @@ public abstract class LGame {
 	 * 不让用户有机会使用自定义的类操作。
 	 */
 	/*
-	 * private static Class<?> getType(Object o) { if (o instanceof Integer) {
-	 * return Integer.TYPE; } else if (o instanceof Float) { return Float.TYPE;
-	 * } else if (o instanceof Double) { return Double.TYPE; } else if (o
-	 * instanceof Long) { return Long.TYPE; } else if (o instanceof Short) {
-	 * return Short.TYPE; } else if (o instanceof Short) { return Short.TYPE; }
-	 * else if (o instanceof Boolean) { return Boolean.TYPE; } else { return
+	 * private Class<?> getType(Object o) { if (o instanceof Integer) { return
+	 * Integer.TYPE; } else if (o instanceof Float) { return Float.TYPE; } else
+	 * if (o instanceof Double) { return Double.TYPE; } else if (o instanceof
+	 * Long) { return Long.TYPE; } else if (o instanceof Short) { return
+	 * Short.TYPE; } else if (o instanceof Short) { return Short.TYPE; } else if
+	 * (o instanceof Boolean) { return Boolean.TYPE; } else { return
 	 * o.getClass(); } }
 	 * 
 	 * public Display register(Class<? extends Screen> clazz, Object... args) {
 	 * LSystem.viewSize.setSize(setting.width, setting.height); this.display =
 	 * new Display(this, setting.fps); if (args == null) { args = new Object[0];
-	 * } if (clazz != null) { if (args != null) { try { final int funs =
-	 * args.length; if (funs == 0) {
-	 * display.setScreen(ClassReflection.newInstance(clazz)); } else {
-	 * Class<?>[] functions = new Class<?>[funs]; for (int i = 0; i < funs; i++)
-	 * { functions[i] = getType(args[i]); } Constructor constructor =
+	 * } if (clazz != null) { if (args != null) { try { int funs = args.length;
+	 * if (funs == 0) { display.setScreen(ClassReflection.newInstance(clazz)); }
+	 * else { Class<?>[] functions = new Class<?>[funs]; for (int i = 0; i <
+	 * funs; i++) { functions[i] = getType(args[i]); } Constructor constructor =
 	 * ClassReflection .getConstructor(clazz, functions); Object o =
 	 * constructor.newInstance(args);
 	 * 
@@ -183,6 +195,130 @@ public abstract class LGame {
 		return this;
 	}
 
+	public int batchCacheSize() {
+		return _batch_pools.size;
+	}
+
+	public void clearBatchCaches() {
+		if (_batch_pools == null || _batch_pools.size == 0) {
+			return;
+		}
+		IntMap<LTextureBatch> batchCaches;
+		synchronized (_batch_pools) {
+			batchCaches = new IntMap<LTextureBatch>(_batch_pools);
+		}
+		for (LTextureBatch bt : batchCaches.values()) {
+			if (bt != null) {
+				synchronized (bt) {
+					bt.close();
+					bt = null;
+				}
+			}
+		}
+		_batch_pools.clear();
+		batchCaches = null;
+	}
+
+	public LTextureBatch getBatchCache(LTexture texture) {
+		if (texture == null) {
+			return null;
+		}
+		return _batch_pools.get(texture.getID());
+	}
+
+	public LTextureBatch bindBatchCache(LTextureBatch batch) {
+		if (_batch_pools.size > LSystem.DEFAULT_MAX_CACHE_SIZE) {
+			clearBatchCaches();
+		}
+		int key = batch.getTextureID();
+		LTextureBatch pBatch = _batch_pools.get(key);
+		if (pBatch == null) {
+			pBatch = batch;
+			synchronized (_batch_pools) {
+				_batch_pools.put(key, pBatch);
+			}
+		}
+		return pBatch;
+	}
+
+	public LTextureBatch disposeBatchCache(LTextureBatch batch) {
+		return disposeBatchCache(batch, true);
+	}
+
+	public LTextureBatch disposeBatchCache(LTextureBatch batch, boolean closed) {
+		synchronized (_batch_pools) {
+			LTextureBatch pBatch = _batch_pools.remove(batch.getTextureID());
+			if (closed && pBatch != null) {
+				synchronized (pBatch) {
+					pBatch.close();
+					pBatch = null;
+				}
+			}
+			return pBatch;
+		}
+	}
+
+	public void resetMeshPool(String n, int size) {
+		String name = n + size;
+		synchronized (_mesh_pools) {
+			Mesh mesh = _mesh_pools.get(name);
+			if (mesh != null) {
+				mesh.close();
+				mesh = null;
+			}
+			_mesh_pools.remove(name);
+			if (mesh == null || mesh.isClosed()) {
+				mesh = new Mesh(VertexDataType.VertexArray, false, size * 4, size * 6,
+						new VertexAttribute(Usage.Position, 2, ShaderProgram.POSITION_ATTRIBUTE),
+						new VertexAttribute(Usage.ColorPacked, 4, ShaderProgram.COLOR_ATTRIBUTE),
+						new VertexAttribute(Usage.TextureCoordinates, 2, ShaderProgram.TEXCOORD_ATTRIBUTE + "0"));
+				LSystem.resetIndices(size, mesh);
+				_mesh_pools.put(name, mesh);
+			}
+		}
+	}
+
+	public Mesh getMeshPool(String n, int size) {
+		String name = n + size;
+		synchronized (_mesh_pools) {
+			Mesh mesh = _mesh_pools.get(name);
+			if (mesh == null || mesh.isClosed()) {
+				mesh = new Mesh(VertexDataType.VertexArray, false, size * 4, size * 6,
+						new VertexAttribute(Usage.Position, 2, ShaderProgram.POSITION_ATTRIBUTE),
+						new VertexAttribute(Usage.ColorPacked, 4, ShaderProgram.COLOR_ATTRIBUTE),
+						new VertexAttribute(Usage.TextureCoordinates, 2, ShaderProgram.TEXCOORD_ATTRIBUTE + "0"));
+				LSystem.resetIndices(size, mesh);
+				_mesh_pools.put(name, mesh);
+			}
+			return mesh;
+		}
+	}
+
+	public int getMeshPoolSize() {
+		return _mesh_pools.size;
+	}
+
+	public void disposeMeshPool(String name, int size) {
+		String key = name + size;
+		synchronized (_mesh_pools) {
+			Mesh mesh = _mesh_pools.remove(key);
+			if (mesh != null) {
+				mesh.close();
+			}
+		}
+	}
+
+	public void disposeMeshPool() {
+		synchronized (_mesh_pools) {
+			for (Mesh mesh : _mesh_pools.values()) {
+				if (mesh != null) {
+					mesh.close();
+				}
+			}
+		}
+		_mesh_pools.clear();
+	}
+
 	public abstract LGame.Type type();
 
 	public abstract double time();
@@ -211,7 +347,7 @@ public abstract class LGame {
 		return LSystem.json();
 	}
 
-	public final Display display() {
+	public Display display() {
 		return display;
 	}
 

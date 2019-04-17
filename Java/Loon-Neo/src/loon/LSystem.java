@@ -30,7 +30,6 @@ import loon.geom.Dimension;
 import loon.opengl.GLEx;
 import loon.opengl.LSTRFont;
 import loon.opengl.Mesh;
-import loon.opengl.MeshDefault;
 import loon.opengl.ShaderCmd;
 import loon.opengl.ShaderProgram;
 import loon.utils.NumberUtils;
@@ -294,7 +293,7 @@ public class LSystem {
 		return false;
 
 	}
-	
+
 	public static final boolean isNotAllowDragAndMove() {
 		if (_base != null) {
 			return _base.setting.notAllowDragAndMove;
@@ -341,7 +340,7 @@ public class LSystem {
 	public static final String getVersion() {
 		return _version;
 	}
-	
+
 	public static void resetTextureRes() {
 		resetTextureRes(base());
 	}
@@ -353,7 +352,7 @@ public class LSystem {
 		}
 		Mesh.invalidateAllMeshes(loonMain);
 		ShaderProgram.invalidateAllShaderPrograms(loonMain);
-		MeshDefault.dispose();
+		disposeMeshPool();
 		LTextures.reload();
 	}
 
@@ -599,6 +598,91 @@ public class LSystem {
 		LSystem._auto_repaint = true;
 	}
 
+	public static final int batchCacheSize() {
+		if (LSystem._base != null) {
+			return LSystem._base.batchCacheSize();
+		}
+		return 0;
+	}
+
+	public static final void clearBatchCaches() {
+		if (LSystem._base != null) {
+			LSystem._base.clearBatchCaches();
+		}
+	}
+
+	public static final LTextureBatch getBatchCache(LTexture texture) {
+		if (LSystem._base != null) {
+			return LSystem._base.getBatchCache(texture);
+		}
+		return null;
+	}
+
+	public static final LTextureBatch bindBatchCache(LTextureBatch batch) {
+		if (LSystem._base != null) {
+			return LSystem._base.bindBatchCache(batch);
+		}
+		return null;
+	}
+
+	public static final LTextureBatch disposeBatchCache(LTextureBatch batch) {
+		return disposeBatchCache(batch, true);
+	}
+
+	public static final LTextureBatch disposeBatchCache(LTextureBatch batch, boolean closed) {
+		if (LSystem._base != null) {
+			return LSystem._base.disposeBatchCache(batch, closed);
+		}
+		return null;
+	}
+
+	public static final void resetIndices(int size, Mesh mesh) {
+		int len = size * 6;
+		short[] indices = new short[len];
+		short j = 0;
+		for (int i = 0; i < len; i += 6, j += 4) {
+			indices[i] = j;
+			indices[i + 1] = (short) (j + 1);
+			indices[i + 2] = (short) (j + 2);
+			indices[i + 3] = (short) (j + 2);
+			indices[i + 4] = (short) (j + 3);
+			indices[i + 5] = j;
+		}
+		mesh.setIndices(indices);
+	}
+
+	public static final Mesh getMeshPool(String n, int size) {
+		if (LSystem._base != null) {
+			return LSystem._base.getMeshPool(n, size);
+		}
+		return null;
+	}
+
+	public static final void resetMeshPool(String n, int size) {
+		if (LSystem._base != null) {
+			LSystem._base.resetMeshPool(n, size);
+		}
+	}
+
+	public static final int getMeshPoolSize() {
+		if (LSystem._base != null) {
+			LSystem._base.getMeshPoolSize();
+		}
+		return 0;
+	}
+
+	public static final void disposeMeshPool(String name, int size) {
+		if (LSystem._base != null) {
+			LSystem._base.disposeMeshPool(name, size);
+		}
+	}
+
+	public static final void disposeMeshPool() {
+		if (LSystem._base != null) {
+			LSystem._base.disposeMeshPool();
+		}
+	}
+
 	public static final void debug(String msg) {
 		if (LSystem._base != null) {
 			LSystem._base.log().debug(msg);
@@ -676,7 +760,7 @@ public class LSystem {
 			LSystem._base.reportError(msg, throwable);
 		}
 	}
-	
+
 	public static final RuntimeException runThrow(String msg) {
 		error(msg);
 		return new RuntimeException(msg);
