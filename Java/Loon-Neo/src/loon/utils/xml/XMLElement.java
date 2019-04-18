@@ -22,7 +22,7 @@ package loon.utils.xml;
 
 import java.util.Iterator;
 
-import loon.LSystem;
+import loon.LSysException;
 import loon.utils.Base64Coder;
 import loon.utils.ObjectMap;
 import loon.utils.TArray;
@@ -55,11 +55,11 @@ public class XMLElement {
 
 	public int readBinHex(byte[] buffer, int offset, int length) {
 		if (offset < 0) {
-			throw LSystem.runThrow("Offset must be non-negative integer.");
+			throw new LSysException("Offset must be non-negative integer.");
 		} else if (length < 0) {
-			throw LSystem.runThrow("Length must be non-negative integer.");
+			throw new LSysException("Length must be non-negative integer.");
 		} else if (buffer.length < offset + length) {
-			throw LSystem.runThrow("buffer length is smaller than the sum of offset and length.");
+			throw new LSysException("buffer length is smaller than the sum of offset and length.");
 		}
 		if (length == 0) {
 			return 0;
@@ -89,7 +89,7 @@ public class XMLElement {
 
 	public XMLAttribute getAttribute(String name) {
 		if (!this.attributes.containsKey(name))
-			throw LSystem.runThrow("Unknown attribute name '" + name + "' in element '" + this.name + "' !");
+			throw new LSysException("Unknown attribute name '" + name + "' in element '" + this.name + "' !");
 		return this.attributes.get(name);
 	}
 

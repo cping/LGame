@@ -42,14 +42,7 @@ public class RocScript {
 
 	private final IScriptLog scriptLog;
 
-	private static ArrayMap waitTimes = new ArrayMap();
-	static {
-		waitTimes.put("mesc", LSystem.MSEC);
-		waitTimes.put("second", LSystem.SECOND);
-		waitTimes.put("minute", LSystem.MINUTE);
-		waitTimes.put("hour", LSystem.HOUR);
-		waitTimes.put("day", LSystem.DAY);
-	}
+	private ArrayMap waitTimes = new ArrayMap();
 
 	private void handleError(int error) throws ScriptException {
 		String[] errors = new String[UNKNOWN + 1];
@@ -1392,7 +1385,7 @@ public class RocScript {
 					if (isNumber(item)) {
 						sleep = (long) Double.parseDouble(item);
 					} else {
-						sleep = (long) waitTimes.get(item.toLowerCase());
+						sleep = getWaitTime(item);
 					}
 					if (sleep <= 0) {
 						sleep = 1;
@@ -1403,6 +1396,20 @@ public class RocScript {
 				return true;
 			}
 		}
+	}
+
+	public long getWaitTime(String item) {
+		if (waitTimes == null) {
+			waitTimes = new ArrayMap();
+		}
+		if (waitTimes.size() == 0) {
+			waitTimes.put("mesc", LSystem.MSEC);
+			waitTimes.put("second", LSystem.SECOND);
+			waitTimes.put("minute", LSystem.MINUTE);
+			waitTimes.put("hour", LSystem.HOUR);
+			waitTimes.put("day", LSystem.DAY);
+		}
+		return (long) waitTimes.get(item.toLowerCase());
 	}
 
 	public long waitSleep() {

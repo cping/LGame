@@ -25,6 +25,7 @@ import java.io.OutputStream;
 import java.io.UTFDataFormatException;
 
 import loon.LRelease;
+import loon.LSysException;
 import loon.LSystem;
 import loon.utils.MathUtils;
 
@@ -55,7 +56,7 @@ public class ArrayByte implements IArray, LRelease {
 
 	public ArrayByte(String base64) {
 		if (!Base64Coder.isBase64(base64)) {
-			throw LSystem.runThrow("it is not base64 :" + base64);
+			throw new LSysException("it is not base64 :" + base64);
 		}
 		this.data = Base64Coder.decodeBase64(base64.toCharArray());
 		reset();
@@ -162,7 +163,7 @@ public class ArrayByte implements IArray, LRelease {
 		return length;
 	}
 
-	public long skip(long n) throws IOException {
+	public long skip(long n) {
 		long remaining = n;
 		int nr;
 		if (n <= 0) {
@@ -180,7 +181,7 @@ public class ArrayByte implements IArray, LRelease {
 		return n - remaining;
 	}
 
-	public void read(OutputStream out) throws IOException {
+	public void read(OutputStream out) throws IOException  {
 		out.write(data, position, data.length - position);
 		position = data.length;
 	}

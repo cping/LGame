@@ -89,6 +89,7 @@ import loon.utils.Calculator;
 import loon.utils.CollectionUtils;
 import loon.utils.ConfigReader;
 import loon.utils.GLUtils;
+import loon.utils.IntMap;
 import loon.utils.MathUtils;
 import loon.utils.ObjectBundle;
 import loon.utils.Resolution;
@@ -244,7 +245,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	public long elapsedTime;
 
-	private final static boolean[] touchType, keyType;
+	private final IntMap<Boolean> keyType = new IntMap<Boolean>();
+
+	private final IntMap<Boolean> touchType = new IntMap<Boolean>();
 
 	private int touchButtonPressed = SysInput.NO_BUTTON, touchButtonReleased = SysInput.NO_BUTTON;
 
@@ -288,7 +291,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	public int index = 0;
 
-	public final class PaintOrder {
+	public static final class PaintOrder {
 
 		private byte type;
 
@@ -305,17 +308,17 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 				screen.draw(g);
 				break;
 			case DRAW_SPRITE:
-				if (spriteRun) {
-					sprites.createUI(g);
-				} else if (spriteRun = (sprites != null && sprites.size() > 0)) {
-					sprites.createUI(g);
+				if (screen.spriteRun) {
+					screen.sprites.createUI(g);
+				} else if (screen.spriteRun = (screen.sprites != null && screen.sprites.size() > 0)) {
+					screen.sprites.createUI(g);
 				}
 				break;
 			case DRAW_DESKTOP:
-				if (desktopRun) {
-					desktop.createUI(g);
-				} else if (desktopRun = (desktop != null && desktop.size() > 0)) {
-					desktop.createUI(g);
+				if (screen.desktopRun) {
+					screen.desktop.createUI(g);
+				} else if (screen.desktopRun = (screen.desktop != null && screen.desktop.size() > 0)) {
+					screen.desktop.createUI(g);
 				}
 				break;
 			case DRAW_EMPTY:
@@ -330,15 +333,15 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 				screen.alter(c);
 				break;
 			case DRAW_SPRITE:
-				spriteRun = (sprites != null && sprites.size() > 0);
-				if (spriteRun) {
-					sprites.update(c.timeSinceLastUpdate);
+				screen.spriteRun = (screen.sprites != null && screen.sprites.size() > 0);
+				if (screen.spriteRun) {
+					screen.sprites.update(c.timeSinceLastUpdate);
 				}
 				break;
 			case DRAW_DESKTOP:
-				desktopRun = (desktop != null && desktop.size() > 0);
-				if (desktopRun) {
-					desktop.update(c.timeSinceLastUpdate);
+				screen.desktopRun = (screen.desktop != null && screen.desktop.size() > 0);
+				if (screen.desktopRun) {
+					screen.desktop.update(c.timeSinceLastUpdate);
 				}
 				break;
 			case DRAW_EMPTY:
@@ -773,7 +776,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public Screen add(Port<LTimerContext> timer, boolean paint) {
-		LGame game = LSystem._base;
+		LGame game = LSystem.base();
 		if (game != null && game.display() != null) {
 			if (paint) {
 				_conns.add(game.display().paint.connect(timer));
@@ -802,7 +805,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public Screen remove(Port<LTimerContext> timer, boolean paint) {
-		LGame game = LSystem._base;
+		LGame game = LSystem.base();
 		if (game != null && game.display() != null) {
 			if (paint) {
 				_conns.remove(game.display().paint.connect(timer));
@@ -820,7 +823,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public Screen syncTween(boolean sync) {
-		LGame game = LSystem._base;
+		LGame game = LSystem.base();
 		if (game != null && game.display() != null) {
 			game.display().updateSyncTween(sync);
 		}
@@ -881,7 +884,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	public LGame getGame() {
-		return LSystem._base;
+		return LSystem.base();
 	}
 
 	public final boolean isSpriteRunning() {
@@ -1209,17 +1212,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return desktopOrder;
 	}
 
-	static {
-		keyType = new boolean[255];
-		touchType = new boolean[15];
-	}
-
 	final public void resetSize() {
 		resetSize(0, 0);
 	}
 
 	final public void resetSize(int w, int h) {
-		this.handler = LSystem._process;
+		this.handler = LSystem.getProcess();
 		this.width = (w <= 0 ? LSystem.viewSize.getWidth() : w);
 		this.height = (h <= 0 ? LSystem.viewSize.getHeight() : h);
 		this.halfWidth = width / 2;
@@ -1886,8 +1884,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 */
 
 	public Screen setEmulatorListener(EmulatorListener emulator) {
-		if (LSystem._process != null) {
-			LSystem._process.setEmulatorListener(emulator);
+		if (LSystem.getProcess() != null) {
+			LSystem.getProcess().setEmulatorListener(emulator);
 		}
 		return this;
 	}
@@ -1899,8 +1897,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 */
 
 	public EmulatorButtons getEmulatorButtons() {
-		if (LSystem._process != null) {
-			return LSystem._process.getEmulatorButtons();
+		if (LSystem.getProcess() != null) {
+			return LSystem.getProcess().getEmulatorButtons();
 		}
 		return null;
 	}
@@ -1912,9 +1910,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 */
 
 	public Screen emulatorButtonsVisible(boolean visible) {
-		if (LSystem._process != null) {
+		if (LSystem.getProcess() != null) {
 			try {
-				EmulatorButtons es = LSystem._process.getEmulatorButtons();
+				EmulatorButtons es = LSystem.getProcess().getEmulatorButtons();
 				es.setVisible(visible);
 			} catch (Throwable e) {
 			}
@@ -2656,10 +2654,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	protected LTextureImage createTextureImage(float width, float height) {
-		if (LSystem._base == null) {
+		if (LSystem.base() == null) {
 			return null;
 		}
-		return new LTextureImage(LSystem._base.graphics(), LSystem._base.display().GL().batch(), width, height, true);
+		return new LTextureImage(LSystem.base().graphics(), LSystem.base().display().GL().batch(), width, height, true);
 	}
 
 	protected void afterUI(GLEx g) {
@@ -3148,13 +3146,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 */
 	@Override
 	public void refresh() {
-		for (int i = 0; i < touchType.length; i++) {
-			touchType[i] = false;
-		}
+		touchType.clear();
+		keyType.clear();
 		touchDX = touchDY = 0;
-		for (int i = 0; i < keyType.length; i++) {
-			keyType[i] = false;
-		}
 	}
 
 	public abstract void resize(int width, int height);
@@ -3211,7 +3205,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	@Override
 	public boolean isTouchType(int type) {
-		return touchType[type];
+		Boolean bn = touchType.get(type);
+		if (bn == null) {
+			return false;
+		}
+		return bn.booleanValue();
 	}
 
 	@Override
@@ -3236,7 +3234,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	@Override
 	public boolean isKeyType(int type) {
-		return keyType[type];
+		Boolean bn = keyType.get(type);
+		if (bn == null) {
+			return false;
+		}
+		return bn.booleanValue();
 	}
 
 	public final void keyPressed(GameKey e) {
@@ -3261,14 +3263,13 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			if (desktop != null) {
 				desktop.keyPressed(e);
 			}
-			keyType[type] = true;
+			keyType.put(type, Boolean.valueOf(true));
 			keyButtonPressed = code;
 			keyButtonReleased = SysInput.NO_KEY;
 		} catch (Throwable ex) {
 			keyButtonPressed = SysInput.NO_KEY;
 			keyButtonReleased = SysInput.NO_KEY;
-			error(ex.getMessage());
-			ex.printStackTrace();
+			error("Screen keyPressed() exception", ex);
 		}
 	}
 
@@ -3278,11 +3279,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @param code
 	 */
 	public void setKeyDown(int button) {
-		try {
-			keyButtonPressed = button;
-			keyButtonReleased = SysInput.NO_KEY;
-		} catch (Throwable e) {
-		}
+		keyButtonPressed = button;
+		keyButtonReleased = SysInput.NO_KEY;
 	}
 
 	public final void keyReleased(GameKey e) {
@@ -3308,24 +3306,20 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 				desktop.keyReleased(e);
 			}
 			this.releaseActionKeys();
-			keyType[type] = false;
+			keyType.put(type, Boolean.valueOf(false));
 			keyButtonReleased = code;
 			keyButtonPressed = SysInput.NO_KEY;
 		} catch (Throwable ex) {
 			keyButtonPressed = SysInput.NO_KEY;
 			keyButtonReleased = SysInput.NO_KEY;
-			error(ex.getMessage());
-			ex.printStackTrace();
+			error("Screen keyReleased() exception", ex);
 		}
 	}
 
 	@Override
 	public void setKeyUp(int button) {
-		try {
-			keyButtonReleased = button;
-			keyButtonPressed = SysInput.NO_KEY;
-		} catch (Throwable e) {
-		}
+		keyButtonReleased = button;
+		keyButtonPressed = SysInput.NO_KEY;
 	}
 
 	public void keyTyped(GameKey e) {
@@ -3358,7 +3352,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		int button = e.getButton();
 
 		try {
-			touchType[type] = true;
+			touchType.put(type, Boolean.valueOf(true));
 			touchButtonPressed = button;
 			touchButtonReleased = SysInput.NO_BUTTON;
 			if (!isClickLimit(e)) {
@@ -3371,8 +3365,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		} catch (Throwable ex) {
 			touchButtonPressed = SysInput.NO_BUTTON;
 			touchButtonReleased = SysInput.NO_BUTTON;
-			error(ex.getMessage());
-			ex.printStackTrace();
+			error("Screen mousePressed() exception", ex);
 		}
 	}
 
@@ -3389,7 +3382,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		int button = e.getButton();
 
 		try {
-			touchType[type] = false;
+			touchType.put(type, Boolean.valueOf(false));
 			touchButtonReleased = button;
 			touchButtonPressed = SysInput.NO_BUTTON;
 			if (!isClickLimit(e)) {
@@ -3402,8 +3395,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		} catch (Throwable ex) {
 			touchButtonPressed = SysInput.NO_BUTTON;
 			touchButtonReleased = SysInput.NO_BUTTON;
-			error(ex.getMessage());
-			ex.printStackTrace();
+			error("Screen mouseReleased() exception", ex);
 		}
 	}
 
@@ -3589,7 +3581,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	public Display getDisplay() {
-		return LSystem._base.display();
+		return LSystem.base().display();
 	}
 
 	/**
@@ -3626,10 +3618,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public ResourceLocal getResourceConfig(String path) {
-		if (LSystem._base == null) {
+		if (LSystem.base() == null) {
 			return new ResourceLocal(path);
 		}
-		return LSystem._base.assets().getJsonResource(path);
+		return LSystem.base().assets().getJsonResource(path);
 	}
 
 	/**
@@ -4102,8 +4094,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public ArrayByte getVideoCache() {
-		if (LSystem._base != null && LSystem._base.display() != null) {
-			return LSystem._base.display().getVideoCache();
+		if (LSystem.base() != null && LSystem.base().display() != null) {
+			return LSystem.base().display().getVideoCache();
 		}
 		return new ArrayByte();
 	}
@@ -4114,8 +4106,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public Screen startVideo() {
-		if (LSystem._base != null && LSystem._base.display() != null) {
-			LSystem._base.display().startVideo();
+		if (LSystem.base() != null && LSystem.base().display() != null) {
+			LSystem.base().display().startVideo();
 		}
 		return this;
 	}
@@ -4127,8 +4119,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public Screen startVideo(OutputStream output) {
-		if (LSystem._base != null && LSystem._base.display() != null) {
-			LSystem._base.display().startVideo(output);
+		if (LSystem.base() != null && LSystem.base().display() != null) {
+			LSystem.base().display().startVideo(output);
 		}
 		return this;
 	}
@@ -4141,8 +4133,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public Screen startVideo(OutputStream output, long delay) {
-		if (LSystem._base != null && LSystem._base.display() != null) {
-			LSystem._base.display().startVideo(output, delay);
+		if (LSystem.base() != null && LSystem.base().display() != null) {
+			LSystem.base().display().startVideo(output, delay);
 		}
 		return this;
 	}
@@ -4153,8 +4145,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public Screen stopVideo() {
-		if (LSystem._base != null && LSystem._base.display() != null) {
-			LSystem._base.display().startVideo();
+		if (LSystem.base() != null && LSystem.base().display() != null) {
+			LSystem.base().display().startVideo();
 		}
 		return this;
 	}
@@ -4491,7 +4483,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			return null;
 		}
 		if (distance < 0) {
-			throw LSystem.runThrow("distance < 0");
+			throw new LSysException("distance < 0");
 		} else {
 			return _collisionManager.getNeighbours(obj, distance, d, objFlag);
 		}

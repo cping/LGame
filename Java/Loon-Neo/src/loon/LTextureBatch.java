@@ -193,7 +193,7 @@ public class LTextureBatch implements LRelease {
 
 	public LTextureBatch(LTexture tex, final int size, final ShaderSource src, final ShaderProgram defaultShader) {
 		if (size > 5460) {
-			throw LSystem.runThrow("Can't have more than 5460 sprites per batch: " + size);
+			throw new LSysException("Can't have more than 5460 sprites per batch: " + size);
 		}
 		this.setTexture(tex);
 		this.source = src;
@@ -251,7 +251,7 @@ public class LTextureBatch implements LRelease {
 			isLoaded = true;
 		}
 		if (drawing) {
-			throw LSystem.runThrow("SpriteBatch.end must be called before begin.");
+			throw new LSysException("SpriteBatch.end must be called before begin.");
 		}
 		LSystem.mainEndDraw();
 		if (!isCacheLocked) {
@@ -274,7 +274,7 @@ public class LTextureBatch implements LRelease {
 			return;
 		}
 		if (!drawing) {
-			throw LSystem.runThrow("SpriteBatch.begin must be called before end.");
+			throw new LSysException("SpriteBatch.begin must be called before end.");
 		}
 		if (vertexIdx > 0) {
 			if (tx != 0 || ty != 0) {
@@ -325,7 +325,7 @@ public class LTextureBatch implements LRelease {
 
 	private void checkDrawing() {
 		if (!drawing) {
-			throw LSystem.runThrow("Not implemented begin !");
+			throw new LSysException("Not implemented begin !");
 		}
 	}
 

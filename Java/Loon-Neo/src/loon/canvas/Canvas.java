@@ -22,7 +22,7 @@ package loon.canvas;
 
 import loon.Graphics;
 import loon.LRelease;
-import loon.LSystem;
+import loon.LSysException;
 import loon.LTexture;
 import loon.canvas.Paint.Style;
 import loon.font.LFont;
@@ -281,7 +281,7 @@ public abstract class Canvas implements LRelease {
 		this.width = image.width();
 		this.height = image.height();
 		if (width <= 0 || height <= 0) {
-			throw LSystem.runThrow(
+			throw new LSysException(
 					"Canvas must be > 0 in width and height: " + width + "x"
 							+ height);
 		}

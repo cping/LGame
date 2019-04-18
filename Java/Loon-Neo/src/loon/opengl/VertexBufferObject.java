@@ -24,6 +24,7 @@ import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
+import loon.LSysException;
 import loon.LSystem;
 
 public class VertexBufferObject implements VertexData {
@@ -85,7 +86,7 @@ public class VertexBufferObject implements VertexData {
 	protected void setBuffer(Buffer data, boolean ownsBuffer,
 			VertexAttributes value) {
 		if (isBound) {
-			throw LSystem.runThrow(
+			throw new LSysException(
 					"Cannot change attributes while VBO is bound");
 		}
 		if (this.ownsBuffer && byteBuffer != null) {
@@ -95,7 +96,7 @@ public class VertexBufferObject implements VertexData {
 		if (data instanceof ByteBuffer) {
 			byteBuffer = (ByteBuffer) data;
 		} else {
-			throw LSystem.runThrow("Only ByteBuffer is currently supported");
+			throw new LSysException("Only ByteBuffer is currently supported");
 		}
 		this.ownsBuffer = ownsBuffer;
 		final int l = byteBuffer.limit();
@@ -145,8 +146,9 @@ public class VertexBufferObject implements VertexData {
 	}
 
 	protected void setUsage(int value) {
-		if (isBound)
-			throw LSystem.runThrow("Cannot change usage while VBO is bound");
+		if (isBound){
+			throw new LSysException("Cannot change usage while VBO is bound");
+		}
 		usage = value;
 	}
 

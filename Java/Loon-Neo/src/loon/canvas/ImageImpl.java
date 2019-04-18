@@ -22,6 +22,7 @@ package loon.canvas;
 
 import loon.Graphics;
 import loon.LGame;
+import loon.LSysException;
 import loon.LSystem;
 import loon.utils.Scale;
 import loon.utils.reply.GoFuture;
@@ -84,7 +85,7 @@ public abstract class ImageImpl extends Image {
 			int pixelHeight, String source, Object bitmap) {
 		super(gfx);
 		if (pixelWidth == 0 || pixelHeight == 0){
-			throw LSystem.runThrow("Invalid size for ready image: "
+			throw new LSysException("Invalid size for ready image: "
 					+ pixelWidth + "x" + pixelHeight + " bitmap: " + bitmap);
 		}
 		this.source = source;

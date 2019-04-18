@@ -1,6 +1,6 @@
 package loon.physics;
 
-import loon.LSystem;
+import loon.LSysException;
 import loon.geom.FloatValue;
 
 public class PWorldBox {
@@ -48,7 +48,7 @@ public class PWorldBox {
 
 	public void build() {
 		if (build) {
-			throw LSystem.runThrow("Build Error !");
+			throw new LSysException("Build Error !");
 		}
 		this.manager.addBox(true, 0f, 0f, mw, thick, 0, density.result());
 		this.manager.addBox(true, 0f, mh, mw, thick, 0, density.result());

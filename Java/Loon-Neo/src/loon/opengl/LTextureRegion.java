@@ -17,7 +17,7 @@ package loon.opengl;
 
 import loon.BaseIO;
 import loon.LRelease;
-import loon.LSystem;
+import loon.LSysException;
 import loon.LTexture;
 
 public class LTextureRegion implements LRelease {
@@ -41,7 +41,7 @@ public class LTextureRegion implements LRelease {
 
 	public LTextureRegion(LTexture texture) {
 		if (texture == null) {
-			throw LSystem.runThrow("texture cannot be null.");
+			throw new LSysException("texture cannot be null.");
 		}
 		this.texture = texture;
 		setRegion(0, 0, texture.width(), texture.height());
@@ -49,7 +49,7 @@ public class LTextureRegion implements LRelease {
 
 	public LTextureRegion(LTexture texture, int width, int height) {
 		if (texture == null) {
-			throw LSystem.runThrow("texture cannot be null.");
+			throw new LSysException("texture cannot be null.");
 		}
 		this.texture = texture;
 		setRegion(0, 0, width, height);
@@ -57,7 +57,7 @@ public class LTextureRegion implements LRelease {
 
 	public LTextureRegion(LTexture texture, int x, int y, int width, int height) {
 		if (texture == null) {
-			throw LSystem.runThrow("texture cannot be null.");
+			throw new LSysException("texture cannot be null.");
 		}
 		this.texture = texture;
 		setRegion(x, y, width, height);

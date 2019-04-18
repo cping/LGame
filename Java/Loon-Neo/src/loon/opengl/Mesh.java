@@ -24,6 +24,7 @@ import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 
 import loon.LRelease;
+import loon.LSysException;
 import loon.LSystem;
 import loon.LGame;
 import loon.geom.BoundingBox;
@@ -135,13 +136,13 @@ public class Mesh implements LRelease {
 
 	public static Mesh create(boolean isStatic, final Mesh[] meshes, final Matrix4[] transformations) {
 		if (transformations != null && transformations.length < meshes.length)
-			throw LSystem.runThrow("Not enough transformations specified");
+			throw new LSysException("Not enough transformations specified");
 		final VertexAttributes attributes = meshes[0].getVertexAttributes();
 		int vertCount = meshes[0].getNumVertices();
 		int idxCount = meshes[0].getNumIndices();
 		for (int i = 1; i < meshes.length; i++) {
 			if (!meshes[i].getVertexAttributes().equals(attributes))
-				throw LSystem.runThrow("Inconsistent VertexAttributes");
+				throw new LSysException("Inconsistent VertexAttributes");
 			vertCount += meshes[i].getNumVertices();
 			idxCount += meshes[i].getNumIndices();
 		}
@@ -222,10 +223,10 @@ public class Mesh implements LRelease {
 		}
 		if (srcOffset < 0 || count <= 0 || (srcOffset + count) > max || destOffset < 0
 				|| destOffset >= vertices.length) {
-			throw LSystem.runThrow("your offset size >= vertices length !");
+			throw new LSysException("your offset size >= vertices length !");
 		}
 		if ((vertices.length - destOffset) < count) {
-			throw LSystem.runThrow(
+			throw new LSysException(
 					"not enough room in vertices array, has " + vertices.length + " floats, needs " + count);
 		}
 		int pos = getVerticesBuffer().position();
@@ -264,10 +265,10 @@ public class Mesh implements LRelease {
 		if (count < 0)
 			count = max - srcOffset;
 		if (srcOffset < 0 || srcOffset >= max || srcOffset + count > max)
-			throw LSystem.runThrow(
+			throw new LSysException(
 					"Invalid range specified, offset: " + srcOffset + ", count: " + count + ", max: " + max);
 		if ((indices.length - destOffset) < count)
-			throw LSystem.runThrow(
+			throw new LSysException(
 					"not enough room in indices array, has " + indices.length + " shorts, needs " + count);
 		int pos = getIndicesBuffer().position();
 		getIndicesBuffer().position(srcOffset);
@@ -410,7 +411,7 @@ public class Mesh implements LRelease {
 	public void calculateBoundingBox(BoundingBox bbox) {
 		final int numVertices = getNumVertices();
 		if (numVertices == 0) {
-			throw LSystem.runThrow("No vertices defined");
+			throw new LSysException("No vertices defined");
 		}
 
 		final FloatBuffer verts = vertices.getBuffer();
@@ -459,7 +460,7 @@ public class Mesh implements LRelease {
 	public BoundingBox extendBoundingBox(final BoundingBox out, int offset, int count, final Matrix4 transform) {
 		int numIndices = getNumIndices();
 		if (offset < 0 || count < 1 || offset + count > numIndices) {
-			throw LSystem.runThrow(
+			throw new LSysException(
 					"Not enough indices ( offset=" + offset + ", count=" + count + ", max=" + numIndices + " )");
 		}
 
@@ -506,7 +507,7 @@ public class Mesh implements LRelease {
 			int count, final Matrix4 transform) {
 		int numIndices = getNumIndices();
 		if (offset < 0 || count < 1 || offset + count > numIndices) {
-			throw LSystem.runThrow("Not enough indices");
+			throw new LSysException("Not enough indices");
 		}
 
 		final FloatBuffer verts = vertices.getBuffer();
@@ -682,9 +683,9 @@ public class Mesh implements LRelease {
 	public static void transform(final Matrix4 matrix, final float[] vertices, int vertexSize, int offset,
 			int dimensions, int start, int count) {
 		if (offset < 0 || dimensions < 1 || (offset + dimensions) > vertexSize)
-			throw LSystem.runThrow("offset > vertexSize !");
+			throw new LSysException("offset > vertexSize !");
 		if (start < 0 || count < 1 || ((start + count) * vertexSize) > vertices.length)
-			throw LSystem.runThrow("start = " + start + ", count = " + count + ", vertexSize = "
+			throw new LSysException("start = " + start + ", count = " + count + ", vertexSize = "
 					+ vertexSize + ", length = " + vertices.length);
 
 		final Vector3f tmp = new Vector3f();
@@ -739,7 +740,7 @@ public class Mesh implements LRelease {
 	public static void transformUV(final Matrix3 matrix, final float[] vertices, int vertexSize, int offset, int start,
 			int count) {
 		if (start < 0 || count < 1 || ((start + count) * vertexSize) > vertices.length) {
-			throw LSystem.runThrow("start = " + start + ", count = " + count + ", vertexSize = "
+			throw new LSysException("start = " + start + ", count = " + count + ", vertexSize = "
 					+ vertexSize + ", length = " + vertices.length);
 		}
 		int idx = offset + (start * vertexSize);

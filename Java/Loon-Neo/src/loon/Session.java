@@ -166,10 +166,10 @@ public class Session implements Bundle<String> {
 
 	public Session(String name, boolean gain) {
 		if (name == null) {
-			throw LSystem.runThrow("session name can not exist !");
+			throw new LSysException("session name can not exist !");
 		}
 		try {
-			this._save = LSystem._base.save();
+			this._save = LSystem.base().save();
 			isPersisted = true;
 		} catch (Throwable ex) {
 			isPersisted = false;

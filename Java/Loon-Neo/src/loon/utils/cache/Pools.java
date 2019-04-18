@@ -18,42 +18,40 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.utils.qrcode;
+package loon.utils.cache;
 
-import loon.LSysException;
+import loon.utils.ObjectMap;
 
-public abstract class QRData {
+public class Pools<T> {
 
-	private final int mode;
+	private final ObjectMap<String, Pool<T>> _inPoolDic;
 
-	private final String data;
-
-	protected QRData(int mode, String data) {
-		this.mode = mode;
-		this.data = data;
+	public Pools() {
+		_inPoolDic = new ObjectMap<String, Pool<T>>();
+	}
+	
+	public Pools<T> recover(String sign, Pool<T> item) {
+		_inPoolDic.put(sign, item);
+		return this;
 	}
 
-	public int getMode() {
-		return mode;
+	public Pool<T> getBySign(String sign) {
+		return _inPoolDic.get(sign);
 	}
 
-	public String getData() {
-		return data;
+	public boolean clearBySign(String sign) {
+		return _inPoolDic.remove(sign) != null;
 	}
 
-	public abstract int getLength();
+	public void clear() {
+		_inPoolDic.clear();
+	}
 
-	public abstract void write(QRBitBuffer buffer);
-
-	public int getLengthInBits(int type) {
-		if (type >= 0 && type < 10) {
-			return QRMode.getMode(mode).getBits(1);
-		} else if (type < 27) {
-			return QRMode.getMode(mode).getBits(2);
-		} else if (type < 41) {
-			return QRMode.getMode(mode).getBits(3);
-		} else {
-			throw new LSysException("type:" + type);
+	public int getFreeAll() {
+		int count = 0;
+		for (Pool<T> p : _inPoolDic.values()) {
+			count += p.getFree();
 		}
+		return count;
 	}
 }

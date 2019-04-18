@@ -24,6 +24,7 @@ import java.util.StringTokenizer;
 
 import loon.BaseIO;
 import loon.LRelease;
+import loon.LSysException;
 import loon.LSystem;
 import loon.Session;
 import loon.utils.ArrayMap;
@@ -959,7 +960,7 @@ public class Command extends Conversion implements LRelease {
 				}
 			}
 		} catch (Throwable ex) {
-			throw LSystem.runThrow("Command read error !", ex);
+			throw new LSysException("Command read error !", ex);
 		} finally {
 			if (!isInnerCommand) {
 				offsetPos++;
@@ -1158,7 +1159,7 @@ public class Command extends Conversion implements LRelease {
 				}
 				result = CollectionUtils.copyOf(result, index);
 			} catch (Throwable ex) {
-				throw LSystem.runThrow("Command load error !", ex);
+				throw new LSysException("Command load error !", ex);
 			}
 			scriptLazy.put(key, result);
 			return result;

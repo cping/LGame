@@ -35,7 +35,7 @@ public abstract class SoundBox extends BaseIO {
 	public void playSound(String path, boolean loop) {
 		Sound sound = SOUND_CACHE.get(path);
 		if (sound == null) {
-			sound = LSystem._base.assets().getSound(path);
+			sound = LSystem.base().assets().getSound(path);
 			SOUND_CACHE.put(path, sound);
 		} else {
 			sound.stop();

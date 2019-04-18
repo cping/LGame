@@ -23,6 +23,7 @@ package loon.canvas;
 import loon.BaseIO;
 import loon.Graphics;
 import loon.LRelease;
+import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.NinePatchAbstract.Repeat;
@@ -166,12 +167,12 @@ public abstract class Image extends TextureSource implements Canvas.Drawable, LR
 
 	public LTexture createTexture(LTexture.Format config) {
 		if (!isLoaded()) {
-			throw LSystem.runThrow("Cannot create texture from unready image: " + this);
+			throw new LSysException("Cannot create texture from unready image: " + this);
 		}
 		int texWidth = config.toTexWidth(pixelWidth());
 		int texHeight = config.toTexHeight(pixelHeight());
 		if (texWidth <= 0 || texHeight <= 0) {
-			throw LSystem.runThrow(
+			throw new LSysException(
 					"Invalid texture size: " + texWidth + "x" + texHeight + " from: " + this);
 		}
 		this.isTexture = true;

@@ -264,8 +264,8 @@ public class Display extends LSystemView {
 
 	public Display(LGame game, int updateRate) {
 		super(game, updateRate);
-		_setting = LSystem._base.setting;
-		_process = LSystem._process;
+		_setting = LSystem.base().setting;
+		_process = LSystem.getProcess();
 		GL20 gl = game.graphics().gl;
 		_glEx = new GLEx(game.graphics(), game.graphics().defaultRenderTarget, gl);
 		_glEx.update();

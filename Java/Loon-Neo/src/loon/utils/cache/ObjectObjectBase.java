@@ -18,38 +18,8 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.utils;
+package loon.utils.cache;
 
-public class Pools<T> {
+public class ObjectObjectBase {
 
-	private final ObjectMap<String, Pool<T>> _inPoolDic;
-
-	public Pools() {
-		_inPoolDic = new ObjectMap<String, Pool<T>>();
-	}
-	
-	public Pools<T> recover(String sign, Pool<T> item) {
-		_inPoolDic.put(sign, item);
-		return this;
-	}
-
-	public Pool<T> getBySign(String sign) {
-		return _inPoolDic.get(sign);
-	}
-
-	public boolean clearBySign(String sign) {
-		return _inPoolDic.remove(sign) != null;
-	}
-
-	public void clear() {
-		_inPoolDic.clear();
-	}
-
-	public int getFreeAll() {
-		int count = 0;
-		for (Pool<T> p : _inPoolDic.values()) {
-			count += p.getFree();
-		}
-		return count;
-	}
 }

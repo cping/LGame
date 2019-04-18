@@ -18,34 +18,23 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.utils.qrcode;
+package loon;
 
-import loon.LSysException;
+public class LSysException extends RuntimeException {
+	
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -3689299562639868277L;
 
-public class QR8BitByte extends QRData {
-
-	public QR8BitByte(String data) {
-		super(QRMode.MODE_8BIT_BYTE, data);
-	}
-
-	@Override
-	public void write(QRBitBuffer buffer) {
-		try {
-			byte[] data = QRUtil.getEncodeBytes(getData());
-			for (int i = 0; i < data.length; i++) {
-				buffer.put(data[i], 8);
-			}
-		} catch (Throwable e) {
-			throw new LSysException(e.getMessage(), e);
-		}
-	}
-
-	@Override
-	public int getLength() {
-		try {
-			return QRUtil.getEncodeBytes(getData()).length;
-		} catch (Throwable e) {
-			throw new LSysException(e.getMessage(), e);
-		}
-	}
+	public LSysException(String message) {
+        super(message);
+        LSystem.error(message);
+    }
+	
+	public LSysException(String message, Throwable cause) {
+        super(message, cause);
+        LSystem.error(message, cause);
+    }
+    
 }

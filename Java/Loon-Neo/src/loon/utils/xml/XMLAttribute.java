@@ -20,7 +20,7 @@
  */
 package loon.utils.xml;
 
-import loon.LSystem;
+import loon.LSysException;
 import loon.utils.StringUtils;
 
 public class XMLAttribute {
@@ -48,7 +48,7 @@ public class XMLAttribute {
 		try {
 			return Integer.parseInt(this.value);
 		} catch (Throwable ex) {
-			throw LSystem.runThrow("Attribute '" + this.name
+			throw new LSysException("Attribute '" + this.name
 					+ "' has value '" + this.value
 					+ "' which is not an integer !");
 		}
@@ -58,7 +58,7 @@ public class XMLAttribute {
 		try {
 			return Float.parseFloat(this.value);
 		} catch (Throwable ex) {
-			throw LSystem.runThrow("Attribute '" + this.name
+			throw new LSysException("Attribute '" + this.name
 					+ "' has value '" + this.value
 					+ "' which is not an float !");
 		}
@@ -71,7 +71,7 @@ public class XMLAttribute {
 			}
 			return Double.parseDouble(this.value);
 		} catch (Throwable ex) {
-			throw LSystem.runThrow("Attribute '" + this.name
+			throw new LSysException("Attribute '" + this.name
 					+ "' has value '" + this.value
 					+ "' which is not an double !");
 		}

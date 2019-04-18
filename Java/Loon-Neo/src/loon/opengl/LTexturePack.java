@@ -22,6 +22,7 @@ package loon.opengl;
 
 import loon.BaseIO;
 import loon.LRelease;
+import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
 import loon.LTextureBatch;
@@ -201,7 +202,7 @@ public class LTexturePack implements LRelease {
 
 	public LTexturePack(String path) {
 		if (path == null || "".equals(path)) {
-			throw LSystem.runThrow(path + " not found !");
+			throw new LSysException(path + " not found !");
 		}
 		set(path);
 	}
@@ -304,10 +305,10 @@ public class LTexturePack implements LRelease {
 	public synchronized int putImage(String name, Image image) {
 		checkPacked();
 		if (image == null) {
-			throw LSystem.runThrow("name :" + name + " the image is null");
+			throw new LSysException("name :" + name + " the image is null");
 		}
 		if (image.width() <= 0 || image.height() <= 0) {
-			throw LSystem.runThrow("width and height must be positive");
+			throw new LSysException("width and height must be positive");
 		}
 		this.temps.put(name, new PackEntry(image));
 		this.packing = true;
@@ -369,7 +370,7 @@ public class LTexturePack implements LRelease {
 		checkPacked();
 		if (packing) {
 			if (temps.isEmpty()) {
-				throw LSystem.runThrow("Nothing to Pack !");
+				throw new LSysException("Nothing to Pack !");
 			}
 			int maxWidth = 0;
 			int maxHeight = 0;
@@ -793,7 +794,7 @@ public class LTexturePack implements LRelease {
 
 	private void checkPacked() {
 		if (packed) {
-			throw LSystem.runThrow("the packed !");
+			throw new LSysException("the packed !");
 		}
 	}
 

@@ -71,6 +71,8 @@ public class LFont implements IFont {
 
 	private boolean initTempFontPack = false;
 
+	private boolean tooManyChars = false;
+
 	private int fontPackCharsCount;
 
 	private int fontPackMaxCache;
@@ -108,10 +110,12 @@ public class LFont implements IFont {
 	}
 
 	LFont(String name, Style style, int size, boolean antialias) {
-		this.textFormat = new TextFormat(new Font(name, style, size), antialias);
-		this.fontPackMaxCache = 1024 / size;
+		this.textFormat = new TextFormat(new Font(name, style, MathUtils.max(1, size)), antialias);
+		this.supportCacheFontPack = LSystem.isSupportTempFont();
+		this.fontPackMaxCache = (LSystem.isDesktop() ? 4096 : 2048) / size;
 		this.fontPackCharsLimit = 2;
 		this.fontPackCharsCount = 0;
+		this.tooManyChars = false;
 		LSystem.pushFontPool(this);
 	}
 
@@ -209,9 +213,9 @@ public class LFont implements IFont {
 	}
 
 	protected boolean drawStringTemp(GLEx g, String text, float x, float y, float rotation, LColor c) {
-		if (supportCacheFontPack && fontPackCharsCount < fontPackMaxCache && text.length() > fontPackCharsLimit
-				&& text.indexOf('\n') == -1) {
-		
+
+		if (!tooManyChars && supportCacheFontPack && text.length() > fontPackCharsLimit && text.indexOf('\n') == -1) {
+
 			if (!initTempFontPack) {
 
 				if (fontTempPack != null) {
@@ -227,7 +231,12 @@ public class LFont implements IFont {
 
 			if (entry != null) {
 
+				int tint = g.color();
+				g.setTint(c);
+
 				fontTempPack.draw(entry, g, x, y, rotation, c);
+
+				g.setTint(tint);
 
 				return true;
 
@@ -241,8 +250,19 @@ public class LFont implements IFont {
 				canvas.fillText(newLayout, 0, 0);
 				fontTempPack.putImage(text, canvas.image);
 				canvas = null;
+
+			} else {
+
+				tooManyChars = true;
+
+				// clear template font
+				if (fontTempPack != null) {
+					fontTempPack.close();
+					fontTempPack = null;
+				}
+				initTempFontPack = false;
 			}
-		
+
 		}
 
 		return false;
@@ -494,13 +514,14 @@ public class LFont implements IFont {
 		builder.addValue(textFormat.toString());
 		return builder.toString();
 	}
-	
-	public void closeTempTexture(){
+
+	public void closeTempTexture() {
 		if (fontTempPack != null) {
 			fontTempPack.close();
 			fontTempPack = null;
 		}
 		initTempFontPack = false;
+		tooManyChars = false;
 		fontPackCharsCount = 0;
 	}
 

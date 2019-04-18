@@ -20,7 +20,7 @@
  */
 package loon.utils;
 
-import loon.LSystem;
+import loon.LSysException;
 import loon.utils.CollectionUtils;
 import loon.utils.IArray;
 import loon.utils.LIterator;
@@ -456,19 +456,19 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray 
 
 	ObjectMap(int initialCapacity, float factor, boolean withValues) {
 		if (initialCapacity < 0) {
-			throw LSystem.runThrow("initialCapacity must be >= 0: " + initialCapacity);
+			throw new LSysException("initialCapacity must be >= 0: " + initialCapacity);
 		}
 		if (initialCapacity > 1 << 30) {
-			throw LSystem.runThrow("initialCapacity is too large: " + initialCapacity);
+			throw new LSysException("initialCapacity is too large: " + initialCapacity);
 		}
 		this.capacity = MathUtils.nextPowerOfTwo(initialCapacity);
 		if (factor <= 0) {
-			throw LSystem.runThrow("loadFactor must be > 0: " + factor);
+			throw new LSysException("loadFactor must be > 0: " + factor);
 		}
 		this.load_factor = MathUtils.min(factor, 1f);
 		this.threshold = (int) (capacity * load_factor);
 		if (threshold < 1) {
-			throw LSystem.runThrow("illegal load factor: " + load_factor);
+			throw new LSysException("illegal load factor: " + load_factor);
 		}
 		this.keyIndexShift = withValues ? 1 : 0;
 		init();

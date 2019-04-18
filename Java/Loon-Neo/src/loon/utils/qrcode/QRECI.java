@@ -20,7 +20,7 @@
  */
 package loon.utils.qrcode;
 
-import loon.LSystem;
+import loon.LSysException;
 
 public class QRECI extends QRData {
 
@@ -52,7 +52,7 @@ public class QRECI extends QRData {
 		try {
 			return QRUtil.getEncodeBytes(getData()).length;
 		} catch (Throwable e) {
-			throw LSystem.runThrow(e.getMessage(), e);
+			throw new LSysException(e.getMessage(), e);
 		}
 	}
 }

@@ -23,7 +23,7 @@ package loon.component;
 
 import java.util.Iterator;
 
-import loon.LSystem;
+import loon.LSysException;
 import loon.action.ActionBind;
 import loon.action.ArrowTo;
 import loon.action.CircleTo;
@@ -596,7 +596,7 @@ public abstract class ActorLayer extends LContainer {
 			return null;
 		}
 		if (count <= 0) {
-			throw LSystem.runThrow("count <= 0 !");
+			throw new LSysException("count <= 0 !");
 		}
 		int layerWidth = (int) getWidth();
 		int layerHeight = (int) getHeight();
@@ -900,7 +900,7 @@ public abstract class ActorLayer extends LContainer {
 			return null;
 		}
 		if (distance < 0) {
-			throw LSystem.runThrow("distance < 0");
+			throw new LSysException("distance < 0");
 		} else {
 			return collisionObjectToActors(this.collisionChecker.getNeighbours(actor, distance, d, flag));
 		}

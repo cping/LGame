@@ -113,7 +113,7 @@ public abstract class Assets {
 
 	public void setPathPrefix(String prefix) {
 		if (prefix.startsWith("/") || prefix.endsWith("/")) {
-			throw LSystem.runThrow("Prefix must not start or end with '/'.");
+			throw new LSysException("Prefix must not start or end with '/'.");
 		}
 		pathPrefix = (prefix.length() == 0) ? prefix : (prefix + "/");
 	}

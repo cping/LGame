@@ -20,7 +20,7 @@
  */
 package loon.event;
 
-import loon.LSystem;
+import loon.LSysException;
 import loon.geom.Vector2f;
 import loon.utils.LIterator;
 import loon.utils.RefObject;
@@ -111,7 +111,7 @@ public class LTouchCollection extends SortedList<LTouchLocation> {
 	public final void update(int id, LTouchLocationState state, float posX,
 			float posY) {
 		if (state == LTouchLocationState.Pressed) {
-			throw LSystem.runThrow(
+			throw new LSysException(
 					"Argument 'state' cannot be TouchLocationState.Pressed.");
 		}
 
@@ -130,7 +130,7 @@ public class LTouchCollection extends SortedList<LTouchLocation> {
 	public final void update(int id, LTouchLocationState state,
 			Vector2f position) {
 		if (state == LTouchLocationState.Pressed) {
-			throw LSystem.runThrow(
+			throw new LSysException(
 					"Argument 'state' cannot be TouchLocationState.Pressed.");
 		}
 

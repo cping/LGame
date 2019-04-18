@@ -21,6 +21,7 @@
  */
 package loon.component;
 
+import loon.LSysException;
 import loon.LSystem;
 import loon.action.ActionBind;
 import loon.component.layout.LayoutManager;
@@ -123,7 +124,7 @@ public abstract class LContainer extends LComponent implements IArray {
 			return null;
 		}
 		if (comp.getContainer() != null) {
-			throw LSystem.runThrow(comp + " already reside in another container!!!");
+			throw new LSysException(comp + " already reside in another container!!!");
 		}
 		comp.setContainer(this);
 		comp.setState(State.ADDED);

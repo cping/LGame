@@ -25,7 +25,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Iterator;
 
-import loon.LSystem;
+import loon.LSysException;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
 
@@ -88,7 +88,7 @@ public class XMLOutput extends Writer {
 
 	public XMLOutput start_attr(String name, Object value) throws IOException {
 		if (_currentElement == null){
-			throw LSystem.runThrow("current element is null");
+			throw new LSysException("current element is null");
 		}
 		_writer.write(' ');
 		_writer.write(name);

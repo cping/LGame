@@ -25,6 +25,7 @@ import java.nio.IntBuffer;
 
 import loon.Graphics;
 import loon.LRelease;
+import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
 import loon.Support;
@@ -1478,7 +1479,7 @@ public class Pixmap extends Limit implements LRelease {
 
 	public Pixmap fillRoundRect(int x, int y, int width, int height, int radius) {
 		if (radius < 0) {
-			throw LSystem.runThrow("radius > 0");
+			throw new LSysException("radius > 0");
 		}
 		if (radius == 0) {
 			fillRect(x, y, width, height);

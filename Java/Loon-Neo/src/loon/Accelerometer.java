@@ -29,7 +29,7 @@ public interface Accelerometer {
 		EMPTY, LEFT, RIGHT, UP, DOWN;
 	}
 
-	public interface Event {
+	public static interface Event {
 
 		public void onDirection(SensorDirection direction, float x, float y,
 				float z);

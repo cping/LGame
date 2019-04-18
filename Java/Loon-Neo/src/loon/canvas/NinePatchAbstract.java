@@ -22,7 +22,7 @@ package loon.canvas;
 
 import java.util.Comparator;
 
-import loon.LSystem;
+import loon.LSysException;
 import loon.canvas.Row.RowType;
 import loon.geom.Padding;
 import loon.geom.RectI;
@@ -197,7 +197,7 @@ public abstract class NinePatchAbstract<K, V> {
 				startY += preRowHeight;
 			}
 		} catch (Throwable e) {
-			throw LSystem.runThrow("drawNinePatch() exception", e);
+			throw new LSysException("drawNinePatch() exception", e);
 		} finally {
 			pos(g2d, -x, -y);
 		}

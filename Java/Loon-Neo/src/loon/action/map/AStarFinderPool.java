@@ -114,7 +114,7 @@ public class AStarFinderPool {
 		return result;
 	}
 
-	class TaskQueue {
+	static class TaskQueue {
 
 		private SortedList<AStarFinder> queue = new SortedList<AStarFinder>();
 

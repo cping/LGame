@@ -27,6 +27,7 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import loon.LRelease;
+import loon.LSysException;
 import loon.LSystem;
 import loon.LGame;
 import loon.canvas.LColor;
@@ -102,10 +103,10 @@ public class ShaderProgram implements LRelease {
 
 	public ShaderProgram(String vertexShader, String fragmentShader) {
 		if (vertexShader == null) {
-			throw LSystem.runThrow("vertex shader must not be null");
+			throw new LSysException("vertex shader must not be null");
 		}
 		if (fragmentShader == null) {
-			throw LSystem.runThrow("fragment shader must not be null");
+			throw new LSysException("fragment shader must not be null");
 		}
 		String glslVersion = "#version 100\n";
 		if (LSystem.base() != null && LSystem.base().graphics() != null) {
@@ -221,7 +222,7 @@ public class ShaderProgram implements LRelease {
 		if ((location = uniforms.get(name, -2)) == -2) {
 			location = gl.glGetUniformLocation(program, name);
 			if (location == -1 && pedantic) {
-				throw LSystem.runThrow("no uniform with name '" + name + "' in shader");
+				throw new LSysException("no uniform with name '" + name + "' in shader");
 			}
 			uniforms.put(name, location);
 		}

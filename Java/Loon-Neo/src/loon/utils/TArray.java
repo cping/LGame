@@ -22,7 +22,7 @@ package loon.utils;
 
 import java.util.Iterator;
 
-import loon.LSystem;
+import loon.LSysException;
 import loon.event.QueryEvent;
 import loon.utils.ObjectMap.Keys;
 import loon.utils.ObjectMap.Values;
@@ -120,7 +120,7 @@ public class TArray<T> implements Iterable<T>, IArray {
 
 	public void addAll(TArray<? extends T> array, int start, int count) {
 		if (start + count > array.size) {
-			throw LSystem.runThrow(
+			throw new LSysException(
 					"start + count must be <= size: " + start + " + " + count + " <= " + array.size);
 		}
 		addAll((T[]) array.items, start, count);
@@ -142,19 +142,19 @@ public class TArray<T> implements Iterable<T>, IArray {
 
 	public T get(int index) {
 		if (index >= size)
-			throw LSystem.runThrow("index can't be >= size: " + index + " >= " + size);
+			throw new LSysException("index can't be >= size: " + index + " >= " + size);
 		return items[index];
 	}
 
 	public void set(int index, T value) {
 		if (index >= size)
-			throw LSystem.runThrow("index can't be >= size: " + index + " >= " + size);
+			throw new LSysException("index can't be >= size: " + index + " >= " + size);
 		items[index] = value;
 	}
 
 	public void insert(int index, T value) {
 		if (index > size)
-			throw LSystem.runThrow("index can't be > size: " + index + " > " + size);
+			throw new LSysException("index can't be > size: " + index + " > " + size);
 		T[] items = this.items;
 		if (size == items.length)
 			items = resize(MathUtils.max(8, (int) (size * 1.75f)));
@@ -168,9 +168,9 @@ public class TArray<T> implements Iterable<T>, IArray {
 
 	public void swap(int first, int second) {
 		if (first >= size)
-			throw LSystem.runThrow("first can't be >= size: " + first + " >= " + size);
+			throw new LSysException("first can't be >= size: " + first + " >= " + size);
 		if (second >= size)
-			throw LSystem.runThrow("second can't be >= size: " + second + " >= " + size);
+			throw new LSysException("second can't be >= size: " + second + " >= " + size);
 		T[] items = this.items;
 		T firstValue = items[first];
 		items[first] = items[second];
@@ -261,7 +261,7 @@ public class TArray<T> implements Iterable<T>, IArray {
 
 	public T removeIndex(int index) {
 		if (index >= size)
-			throw LSystem.runThrow("index can't be >= size: " + index + " >= " + size);
+			throw new LSysException("index can't be >= size: " + index + " >= " + size);
 		T[] items = this.items;
 		T value = (T) items[index];
 		size--;
@@ -275,9 +275,9 @@ public class TArray<T> implements Iterable<T>, IArray {
 
 	public void removeRange(int start, int end) {
 		if (end >= size)
-			throw LSystem.runThrow("end can't be >= size: " + end + " >= " + size);
+			throw new LSysException("end can't be >= size: " + end + " >= " + size);
 		if (start > end)
-			throw LSystem.runThrow("start can't be > end: " + start + " > " + end);
+			throw new LSysException("start can't be > end: " + start + " > " + end);
 		T[] items = this.items;
 		int count = end - start + 1;
 		if (ordered)
@@ -357,7 +357,7 @@ public class TArray<T> implements Iterable<T>, IArray {
 
 	public T pop() {
 		if (size == 0)
-			throw LSystem.runThrow("TArray is empty.");
+			throw new LSysException("TArray is empty.");
 		--size;
 		T item = items[size];
 		items[size] = null;
@@ -366,13 +366,13 @@ public class TArray<T> implements Iterable<T>, IArray {
 
 	public T peek() {
 		if (size == 0)
-			throw LSystem.runThrow("TArray is empty.");
+			throw new LSysException("TArray is empty.");
 		return items[size - 1];
 	}
 
 	public T first() {
 		if (size == 0)
-			throw LSystem.runThrow("TArray is empty.");
+			throw new LSysException("TArray is empty.");
 		return items[0];
 	}
 
@@ -558,7 +558,7 @@ public class TArray<T> implements Iterable<T>, IArray {
 		@Override
 		public boolean hasNext() {
 			if (!valid) {
-				throw LSystem.runThrow("iterator() cannot be used nested.");
+				throw new LSysException("iterator() cannot be used nested.");
 			}
 			return index < array.size;
 		}
@@ -569,7 +569,7 @@ public class TArray<T> implements Iterable<T>, IArray {
 				return null;
 			}
 			if (!valid) {
-				throw LSystem.runThrow("iterator() cannot be used nested.");
+				throw new LSysException("iterator() cannot be used nested.");
 			}
 			return array.items[index++];
 		}
@@ -577,7 +577,7 @@ public class TArray<T> implements Iterable<T>, IArray {
 		@Override
 		public void remove() {
 			if (!allowRemove) {
-				throw LSystem.runThrow("Remove not allowed.");
+				throw new LSysException("Remove not allowed.");
 			}
 			index--;
 			array.removeIndex(index);

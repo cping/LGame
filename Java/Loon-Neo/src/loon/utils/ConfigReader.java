@@ -4,6 +4,7 @@ import java.util.StringTokenizer;
 
 import loon.BaseIO;
 import loon.LRelease;
+import loon.LSysException;
 import loon.LSystem;
 import loon.action.avg.drama.Expression;
 import loon.action.map.Field2D;
@@ -69,7 +70,7 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 
 	public ConfigReader(final String resName) {
 		if (StringUtils.isEmpty(resName)) {
-			throw LSystem.runThrow("Resource path cannot be Empty!");
+			throw new LSysException("Resource path cannot be Empty!");
 		}
 		this._path = resName;
 		parseMap(resName);
@@ -81,7 +82,7 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 
 	public void parseMap(final String path) {
 		if (StringUtils.isEmpty(path)) {
-			throw LSystem.runThrow("Resource path cannot be Empty!");
+			throw new LSysException("Resource path cannot be Empty!");
 		}
 		if (_loaders == null) {
 			_loaders = new TArray<StringKeyValue>();
@@ -117,7 +118,7 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 				_loaders.add(curBuffer);
 			}
 		} catch (Throwable ex) {
-			throw LSystem.runThrow(ex.getMessage(), ex);
+			throw new LSysException(ex.getMessage(), ex);
 		}
 		if (_loaders != null && _loaders.size > 0) {
 			loadMapKey(_loaders.get(0).getKey());

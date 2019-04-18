@@ -20,6 +20,7 @@
  */
 package loon.action.sprite;
 
+import loon.LSysException;
 import loon.LSystem;
 import loon.LTrans;
 import loon.PlayerUtils;
@@ -277,7 +278,7 @@ public class MovieClip extends DisplayObject {
 				break;
 			}
 			default:
-				throw LSystem.runThrow("Bad transform");
+				throw new LSysException("Bad transform");
 			}
 			float r = rotate + _rotation;
 			if (r > 360) {

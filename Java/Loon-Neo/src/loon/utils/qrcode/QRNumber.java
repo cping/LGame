@@ -20,7 +20,7 @@
  */
 package loon.utils.qrcode;
 
-import loon.LSystem;
+import loon.LSysException;
 
 public class QRNumber extends QRData {
 
@@ -67,6 +67,6 @@ public class QRNumber extends QRData {
 		if ('0' <= c && c <= '9') {
 			return c - '0';
 		}
-		throw LSystem.runThrow("illegal char :" + c);
+		throw new LSysException("illegal char :" + c);
 	}
 }

@@ -20,6 +20,7 @@
  */
 package loon.utils.qrcode;
 
+import loon.LSysException;
 import loon.LSystem;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
@@ -77,7 +78,7 @@ public class QRUtil {
 			e = 3;
 			break;
 		default:
-			throw LSystem.runThrow("e:" + errorLevel);
+			throw new LSysException("e:" + errorLevel);
 		}
 		switch (mode) {
 		case QRMode.MODE_NUMBER:
@@ -96,7 +97,7 @@ public class QRUtil {
 			m = 3;
 			break;
 		default:
-			throw LSystem.runThrow("m:" + mode);
+			throw new LSysException("m:" + mode);
 		}
 		return MAX_LENGTH[t][e][m];
 	}
@@ -144,7 +145,7 @@ public class QRUtil {
 		case QRMaskPattern.PATTERN111:
 			return ((i * j) % 3 + (i + j) % 2) % 2 == 0;
 		default:
-			throw LSystem.runThrow("mask:" + maskPattern);
+			throw new LSysException("mask:" + maskPattern);
 		}
 	}
 
@@ -254,7 +255,7 @@ public class QRUtil {
 			}
 			return true;
 		} catch (Throwable e) {
-			throw LSystem.runThrow(e.getMessage(), e);
+			throw new LSysException(e.getMessage(), e);
 		}
 	}
 

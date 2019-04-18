@@ -1,6 +1,7 @@
 package loon.opengl;
 
 import loon.LRelease;
+import loon.LSysException;
 import loon.LSystem;
 import loon.canvas.LColor;
 import loon.geom.Affine2f;
@@ -55,7 +56,7 @@ public class GLRenderer implements LRelease {
 
 	public void begin(Affine2f affine, GLType type) {
 		if (_currType != null) {
-			throw LSystem.runThrow("Call end() before beginning a new shape batch !");
+			throw new LSysException("Call end() before beginning a new shape batch !");
 		}
 		_currType = type;
 		_affine = affine;
@@ -83,7 +84,7 @@ public class GLRenderer implements LRelease {
 
 	public void point(float x, float y, float z) {
 		if (_currType != GLType.Point) {
-			throw LSystem.runThrow("Must call begin(GLType.Point)");
+			throw new LSysException("Must call begin(GLType.Point)");
 		}
 		checkFlush(1);
 		_renderer.color(_color);
@@ -92,7 +93,7 @@ public class GLRenderer implements LRelease {
 
 	public void line(float x, float y, float z, float x2, float y2, float z2) {
 		if (_currType != GLType.Line) {
-			throw LSystem.runThrow("Must call begin(GLType.Line)");
+			throw new LSysException("Must call begin(GLType.Line)");
 		}
 		checkFlush(2);
 		float colorFloat = _color.toFloatBits();
@@ -104,7 +105,7 @@ public class GLRenderer implements LRelease {
 
 	public void line(float x, float y, float x2, float y2) {
 		if (_currType != GLType.Line) {
-			throw LSystem.runThrow("Must call begin(GLType.Line)");
+			throw new LSysException("Must call begin(GLType.Line)");
 		}
 		checkFlush(2);
 		float colorFloat = _color.toFloatBits();
@@ -117,7 +118,7 @@ public class GLRenderer implements LRelease {
 	public void curve(float x1, float y1, float cx1, float cy1, float cx2, float cy2, float x2, float y2,
 			int segments) {
 		if (_currType != GLType.Line) {
-			throw LSystem.runThrow("Must call begin(GLType.Line)");
+			throw new LSysException("Must call begin(GLType.Line)");
 		}
 		checkFlush(segments * 2 + 2);
 		float subdiv_step = 1f / segments;
@@ -168,7 +169,7 @@ public class GLRenderer implements LRelease {
 
 	public void triangle(float x1, float y1, float x2, float y2, float x3, float y3) {
 		if (_currType != GLType.Filled && _currType != GLType.Line) {
-			throw LSystem.runThrow("Must call begin(GLType.Filled) or begin(GLType.Line)");
+			throw new LSysException("Must call begin(GLType.Filled) or begin(GLType.Line)");
 		}
 		checkFlush(6);
 		float colorFloat = _color.toFloatBits();
@@ -199,7 +200,7 @@ public class GLRenderer implements LRelease {
 
 	public void rect(float x, float y, float width, float height) {
 		if (_currType != GLType.Filled && _currType != GLType.Line) {
-			throw LSystem.runThrow("Must call begin(GLType.Filled) or begin(GLType.Line)");
+			throw new LSysException("Must call begin(GLType.Filled) or begin(GLType.Line)");
 		}
 
 		checkFlush(8);
@@ -243,7 +244,7 @@ public class GLRenderer implements LRelease {
 
 	public void rect(float x, float y, float width, float height, LColor col1, LColor col2, LColor col3, LColor col4) {
 		if (_currType != GLType.Filled && _currType != GLType.Line) {
-			throw LSystem.runThrow("Must call begin(GLType.Filled) or begin(GLType.Line)");
+			throw new LSysException("Must call begin(GLType.Filled) or begin(GLType.Line)");
 		}
 		checkFlush(8);
 
@@ -290,9 +291,9 @@ public class GLRenderer implements LRelease {
 
 	public void oval(float x, float y, float radius, int segments) {
 		if (segments <= 0)
-			throw LSystem.runThrow("segments must be >= 0.");
+			throw new LSysException("segments must be >= 0.");
 		if (_currType != GLType.Filled && _currType != GLType.Line)
-			throw LSystem.runThrow("Must call begin(GLType.Filled) or begin(GLType.Line)");
+			throw new LSysException("Must call begin(GLType.Filled) or begin(GLType.Line)");
 		checkFlush(segments * 2 + 2);
 		float angle = 2 * 3.1415926f / segments;
 		float cos = MathUtils.cos(angle);
@@ -337,14 +338,14 @@ public class GLRenderer implements LRelease {
 
 	public void polygon(float[] vertices) {
 		if (_currType != GLType.Line) {
-			throw LSystem.runThrow("Must call begin(GLType.Line)");
+			throw new LSysException("Must call begin(GLType.Line)");
 		}
 		if (vertices.length < 6) {
 
-			throw LSystem.runThrow("Polygons must contain at least 3 points.");
+			throw new LSysException("Polygons must contain at least 3 points.");
 		}
 		if (vertices.length % 2 != 0) {
-			throw LSystem.runThrow("Polygons must have a pair number of vertices.");
+			throw new LSysException("Polygons must have a pair number of vertices.");
 		}
 		final int numFloats = vertices.length;
 
@@ -378,13 +379,13 @@ public class GLRenderer implements LRelease {
 
 	public void polygon(float[] xs, float[] ys, int size) {
 		if (_currType != GLType.Line) {
-			throw LSystem.runThrow("Must call begin(GLType.Line)");
+			throw new LSysException("Must call begin(GLType.Line)");
 		}
 		if (xs.length < 3 || ys.length < 3) {
-			throw LSystem.runThrow("Polygons must contain at least 3 points.");
+			throw new LSysException("Polygons must contain at least 3 points.");
 		}
 		if (xs.length % 2 != 0 || ys.length % 2 != 0) {
-			throw LSystem.runThrow("Polygons must have a pair number of vertices.");
+			throw new LSysException("Polygons must have a pair number of vertices.");
 		}
 		final int numFloats = size;
 
@@ -422,17 +423,17 @@ public class GLRenderer implements LRelease {
 
 	public void polyline(float[] vertices, int offset, int count) {
 		if (_currType != GLType.Line) {
-			throw LSystem.runThrow("Must call begin(GLType.Line)");
+			throw new LSysException("Must call begin(GLType.Line)");
 		}
 		if (count < 4) {
 			if (count == 2) {
 				line(vertices[0], vertices[1], vertices[0] + 1, vertices[1] + 1);
 				return;
 			}
-			throw LSystem.runThrow("Polylines must contain at least 2 points.");
+			throw new LSysException("Polylines must contain at least 2 points.");
 		}
 		if (count % 2 != 0) {
-			throw LSystem.runThrow("Polylines must have an even number of vertices.");
+			throw new LSysException("Polylines must have an even number of vertices.");
 		}
 		checkFlush(count);
 
@@ -456,7 +457,7 @@ public class GLRenderer implements LRelease {
 
 	public void polyline(float[] xs, float[] ys, int count) {
 		if (_currType != GLType.Line) {
-			throw LSystem.runThrow("Must call begin(GLType.Line)");
+			throw new LSysException("Must call begin(GLType.Line)");
 		}
 		checkFlush(count);
 		float colorFloat = _color.toFloatBits();
@@ -502,10 +503,10 @@ public class GLRenderer implements LRelease {
 
 	public void arc(float x, float y, float radius, float start, float end, int segments) {
 		if (segments <= 0) {
-			throw LSystem.runThrow("segments must be >= 0.");
+			throw new LSysException("segments must be >= 0.");
 		}
 		if (_currType != GLType.Filled && _currType != GLType.Line) {
-			throw LSystem.runThrow("Must call begin(GLType.Filled) or begin(GLType.Line)");
+			throw new LSysException("Must call begin(GLType.Filled) or begin(GLType.Line)");
 		}
 		float arcAngle = end - start;
 		if (arcAngle < 0) {

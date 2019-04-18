@@ -22,6 +22,7 @@
 package loon.component;
 
 import loon.LRelease;
+import loon.LSysException;
 import loon.LSystem;
 import loon.Screen;
 import loon.Visible;
@@ -839,7 +840,7 @@ public class Desktop implements Visible, LRelease {
 
 	public void setModal(LComponent comp) {
 		if (comp != null && !comp.isVisible()) {
-			throw LSystem.runThrow("Can't set invisible component as modal component!");
+			throw new LSysException("Can't set invisible component as modal component!");
 		}
 		this.modal = comp;
 	}

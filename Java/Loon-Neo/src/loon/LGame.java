@@ -50,6 +50,12 @@ public abstract class LGame {
 
 	protected static final String APP_NAME = "Loon";
 
+	protected static LGame _base = null;
+
+	protected static LProcess _process = null;
+
+	protected static Platform _platform = null;
+
 	private final IntMap<LTextureBatch> _texture_batch_pools;
 
 	private final ObjectMap<String, Mesh> _texture_mesh_pools;
@@ -101,7 +107,7 @@ public abstract class LGame {
 	private JsonImpl jsonImpl;
 
 	public LGame(LSetting config, Platform plat) {
-		LSystem._platform = plat;
+		LGame._platform = plat;
 		this._texture_batch_pools = new IntMap<LTextureBatch>(12);
 		this._texture_mesh_pools = new ObjectMap<String, Mesh>(12);
 		this._texture_lazys = new ObjectMap<String, LTexture>(128);
@@ -129,8 +135,20 @@ public abstract class LGame {
 		return display;
 	}
 
+	protected final static void initProcess(LGame game) {
+		_base = game;
+		if (_base == null && _platform != null) {
+			_base = _platform.getGame();
+		}
+		LSetting setting = _base.setting;
+		setting.updateScale();
+		LSystem.viewSize.setSize(setting.width, setting.height);
+		_process = new LProcess(game);
+		_base.log().debug("The Loon Game Engine is Begin");
+	}
+
 	public LGame initProcess() {
-		LSystem.initProcess(this);
+		initProcess(this);
 		if (setting.defaultGameFont == null) {
 			setting.defaultGameFont = LFont.getFont(setting.fontName, 20);
 		}
@@ -141,6 +159,22 @@ public abstract class LGame {
 			jsonImpl = new JsonImpl();
 		}
 		return this;
+	}
+
+	protected final void checkBaseGame(LGame game) {
+		LGame oldGame = _base;
+		if (game != oldGame && game != null) {
+			oldGame = game;
+		} else if (game == null) {
+			if (oldGame != null && _platform != null && _platform.getGame() != null) {
+				if (oldGame != _platform.getGame()) {
+					oldGame = _platform.getGame();
+				}
+			}
+		}
+		if (_base == null || _base != oldGame) {
+			_base = oldGame;
+		}
 	}
 
 	/**
@@ -703,7 +737,7 @@ public abstract class LGame {
 		for (int i = _font_pools.size - 1; i > -1; i--) {
 			IFont font = _font_pools.get(i);
 			if (font != null && font instanceof LFont) {
-				((LFont)font).closeTempTexture();
+				((LFont) font).closeTempTexture();
 			}
 		}
 	}

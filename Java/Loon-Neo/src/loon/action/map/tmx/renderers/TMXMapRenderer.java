@@ -21,6 +21,7 @@
 package loon.action.map.tmx.renderers;
 
 import loon.LObject;
+import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
 import loon.PlayerUtils;
@@ -125,8 +126,7 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 		default:
 			break;
 		}
-		throw LSystem
-				.runThrow("A TmxMapRenderer has not yet been implemented for " + map.getOrientation() + " orientation");
+		throw new LSysException("A TmxMapRenderer has not yet been implemented for " + map.getOrientation() + " orientation");
 	}
 
 	public void update(long delta) {

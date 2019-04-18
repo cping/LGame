@@ -22,6 +22,7 @@
 package loon.action.sprite;
 
 import loon.LRelease;
+import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
 import loon.LTextureBatch.Cache;
@@ -107,20 +108,20 @@ public class SpriteSheet implements LRelease {
 	private void checkImage(int x, int y) {
 		update();
 		if ((x < 0) || (x >= subImages.length)) {
-			throw LSystem.runThrow("SubImage out of sheet bounds " + x + "," + y);
+			throw new LSysException("SubImage out of sheet bounds " + x + "," + y);
 		}
 		if ((y < 0) || (y >= subImages[0].length)) {
-			throw LSystem.runThrow("SubImage out of sheet bounds " + x + "," + y);
+			throw new LSysException("SubImage out of sheet bounds " + x + "," + y);
 		}
 	}
 
 	public LTexture getImage(int x, int y) {
 		checkImage(x, y);
 		if ((x < 0) || (x >= subImages.length)) {
-			throw LSystem.runThrow("SubTexture2D out of sheet bounds: " + x + "," + y);
+			throw new LSysException("SubTexture2D out of sheet bounds: " + x + "," + y);
 		}
 		if ((y < 0) || (y >= subImages[0].length)) {
-			throw LSystem.runThrow("SubTexture2D out of sheet bounds: " + x + "," + y);
+			throw new LSysException("SubTexture2D out of sheet bounds: " + x + "," + y);
 		}
 		return target.copy(x * (tw + spacing) + margin, y * (th + spacing) + margin, tw, th);
 	}

@@ -21,7 +21,7 @@
 package loon.utils;
 
 import loon.BaseIO;
-import loon.LSystem;
+import loon.LSysException;
 import loon.geom.PointF;
 
 public class GestureData {
@@ -217,7 +217,7 @@ public class GestureData {
 				loaders.add(new GestureLoader(curTemplate, curPoints, resampledFirst));
 			}
 		} catch (Throwable ex) {
-			throw LSystem.runThrow(ex.getMessage(), ex);
+			throw new LSysException(ex.getMessage(), ex);
 		}
 		ObjectMap<String, TArray<PointF>> points = new ObjectMap<String, TArray<PointF>>();
 		for (GestureLoader glr : loaders) {

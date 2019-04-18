@@ -20,8 +20,7 @@
  */
 package loon.particle;
 
-import java.io.IOException;
-
+import loon.LSysException;
 import loon.LSystem;
 import loon.canvas.LColor;
 import loon.geom.Vector2f;
@@ -41,21 +40,20 @@ public class SimpleParticleConfig {
 		public SimpleConfigurableEmitter createEmitter(String name);
 	}
 
-	public static SimpleParticleSystem loadConfiguredSystem(String path, LColor mask) throws IOException {
+	public static SimpleParticleSystem loadConfiguredSystem(String path, LColor mask) {
 		return loadConfiguredSystem(path, null, null, mask);
 	}
 
-	public static SimpleParticleSystem loadConfiguredSystem(String path) throws IOException {
+	public static SimpleParticleSystem loadConfiguredSystem(String path) {
 		return loadConfiguredSystem(path, null, null, null);
 	}
 
-	public static SimpleParticleSystem loadConfiguredSystem(String path, ConfigurableEmitterFactory factory)
-			throws IOException {
+	public static SimpleParticleSystem loadConfiguredSystem(String path, ConfigurableEmitterFactory factory) {
 		return loadConfiguredSystem(path, factory, null, null);
 	}
 
 	public static SimpleParticleSystem loadConfiguredSystem(String path, ConfigurableEmitterFactory factory,
-			SimpleParticleSystem system, LColor mask) throws IOException {
+			SimpleParticleSystem system, LColor mask) {
 		if (factory == null) {
 			factory = new ConfigurableEmitterFactory() {
 				public SimpleConfigurableEmitter createEmitter(String name) {
@@ -69,7 +67,7 @@ public class SimpleParticleConfig {
 			XMLElement docElement = doc.getRoot();
 
 			if (!docElement.getName().equals("system")) {
-				throw LSystem.runThrow("Not a particle system file");
+				throw new LSysException("Not a particle system file");
 			}
 
 			if (system == null) {
@@ -97,16 +95,15 @@ public class SimpleParticleConfig {
 			system.setRemoveCompletedEmitters(false);
 			return system;
 		} catch (Throwable e) {
-			throw LSystem.runThrow(e.getMessage(), e);
+			throw new LSysException(e.getMessage(), e);
 		}
 	}
 
-	public static SimpleConfigurableEmitter loadEmitter(String path) throws IOException {
+	public static SimpleConfigurableEmitter loadEmitter(String path) {
 		return loadEmitter(path, null);
 	}
 
-	public static SimpleConfigurableEmitter loadEmitter(String path, ConfigurableEmitterFactory factory)
-			throws IOException {
+	public static SimpleConfigurableEmitter loadEmitter(String path, ConfigurableEmitterFactory factory) {
 		if (factory == null) {
 			factory = new ConfigurableEmitterFactory() {
 				public SimpleConfigurableEmitter createEmitter(String name) {
@@ -120,7 +117,7 @@ public class SimpleParticleConfig {
 			XMLElement docElement = doc.getRoot();
 
 			if (!docElement.getName().equals("emitter")) {
-				throw LSystem.runThrow("Not a particle emitter file");
+				throw new LSysException("Not a particle emitter file");
 			}
 
 			SimpleConfigurableEmitter emitter = factory.createEmitter("new");
@@ -128,7 +125,7 @@ public class SimpleParticleConfig {
 
 			return emitter;
 		} catch (Throwable e) {
-			throw LSystem.runThrow("Unable to load emitter");
+			throw new LSysException("Unable to load emitter");
 		}
 	}
 

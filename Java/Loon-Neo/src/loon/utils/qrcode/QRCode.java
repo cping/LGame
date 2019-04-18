@@ -21,7 +21,7 @@
 package loon.utils.qrcode;
 
 import loon.BaseIO;
-import loon.LSystem;
+import loon.LSysException;
 import loon.LTexture;
 import loon.action.sprite.Picture;
 import loon.canvas.Canvas;
@@ -416,7 +416,7 @@ public class QRCode {
 			addData(new QRECI(data));
 			break;
 		default:
-			throw LSystem.runThrow("mode:" + mode);
+			throw new LSysException("mode:" + mode);
 		}
 	}
 
@@ -674,8 +674,7 @@ public class QRCode {
 		}
 
 		if (buffer.getLengthInBits() > totalDataCount * 8) {
-			throw LSystem
-					.runThrow("code length overflow. (" + buffer.getLengthInBits() + ">" + totalDataCount * 8 + ")");
+			throw new LSysException("code length overflow. (" + buffer.getLengthInBits() + ">" + totalDataCount * 8 + ")");
 		}
 
 		if (buffer.getLengthInBits() + 4 <= totalDataCount * 8) {

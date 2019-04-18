@@ -29,6 +29,19 @@ import loon.utils.NumberUtils;
 public class LSetting {
 
 	/**
+	 * 是否支持临时系统字体(此项为true时,本地字体渲染不会直接建字典表,而是优先将drawString提交的信息完整渲染到屏幕)<br>
+	 * , 只有当文字较多时才会切换到建立字典表查询。(两者区别在于,建表是"活字印刷",每次打印默认都是单字拼句子,100个<br>
+	 * 字就是100次查字运算,而直接渲染就是提交什么显示什么,100个字1000个字都是一次运算,但是对系统资源占用比较多(因<br>
+	 * 为是整句存储,大量重复的单字空间被浪费了))
+	 * 
+	 * 默认为true,如果字太多(默认为LFont生成的桌面环境图片超过512x512,其它环境超过256x256,设定太大的话系统无法预估LFont数量,<br>
+	 * 担心用户反复构建新的文字渲染导致缓存图太多带崩程序),则删除所有缓存,转化为字典模式<br>
+	 * 
+	 * 如果为false,则直接建立字典表存单字到大图然后查表渲染单字(字典也可以缓存信息然后一次性提交显示,但是全局缓存资源占用太大,所以默认是不缓存数据的).
+	 */
+	public boolean supportTempSysFont = true;
+	
+	/**
 	 * 默认游戏字体设置
 	 */
 	public IFont defaultGameFont;
@@ -251,8 +264,8 @@ public class LSetting {
 			LSystem.setScaleWidth((float) width_zoom / (float) width);
 			LSystem.setScaleHeight((float) height_zoom / (float) height);
 			LSystem.viewSize.setSize(width, height);
-			if (LSystem._process != null) {
-				LSystem._process.resize(width, height);
+			if (LSystem.getProcess() != null) {
+				LSystem.getProcess().resize(width, height);
 			}
 		}
 	}

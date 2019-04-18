@@ -43,7 +43,7 @@ import loon.utils.reply.GoFuture;
 public abstract class BaseIO extends DefUI {
 
 	public final static GoFuture<String> loadAsynText(String path) {
-		final LGame base = LSystem._base;
+		final LGame base = LSystem.base();
 		if (base != null) {
 			try {
 				return base.assets().getText(path);
@@ -55,7 +55,7 @@ public abstract class BaseIO extends DefUI {
 	}
 
 	public final static String loadText(String path) {
-		final LGame base = LSystem._base;
+		final LGame base = LSystem.base();
 		if (base != null) {
 			try {
 				return base.assets().getTextSync(path);
@@ -95,7 +95,7 @@ public abstract class BaseIO extends DefUI {
 	}
 
 	public final static Image loadImage(String path, boolean syn) {
-		final LGame base = LSystem._base;
+		final LGame base = LSystem.base();
 		if (base != null) {
 			String ext = LSystem.getExtension(path);
 			if ("tga".equalsIgnoreCase(ext)) {
@@ -109,7 +109,7 @@ public abstract class BaseIO extends DefUI {
 						tga = null;
 					}
 				} catch (IOException e) {
-					throw LSystem.runThrow(e.getMessage());
+					throw new LSysException(e.getMessage());
 				}
 				return tmp;
 			}
@@ -148,7 +148,7 @@ public abstract class BaseIO extends DefUI {
 	}
 
 	public final static GoFuture<byte[]> loadAsynBytes(String path) {
-		final LGame base = LSystem._base;
+		final LGame base = LSystem.base();
 		if (base != null) {
 			try {
 				return base.assets().getBytes(path);
@@ -160,7 +160,7 @@ public abstract class BaseIO extends DefUI {
 	}
 
 	public final static byte[] loadBytes(String path) {
-		final LGame base = LSystem._base;
+		final LGame base = LSystem.base();
 		if (base != null) {
 			try {
 				return base.assets().getBytesSync(path);
@@ -172,7 +172,7 @@ public abstract class BaseIO extends DefUI {
 	}
 
 	public final static Sound loadSound(String path) {
-		final LGame base = LSystem._base;
+		final LGame base = LSystem.base();
 		if (base != null) {
 			return base.assets().getSound(path);
 		}
@@ -180,7 +180,7 @@ public abstract class BaseIO extends DefUI {
 	}
 
 	public final static Sound loadMusic(String path) {
-		final LGame base = LSystem._base;
+		final LGame base = LSystem.base();
 		if (base != null) {
 			return base.assets().getMusic(path);
 		}
@@ -192,7 +192,7 @@ public abstract class BaseIO extends DefUI {
 	}
 
 	public final static Image loadRemoteImage(String url, int w, int h) {
-		final LGame base = LSystem._base;
+		final LGame base = LSystem.base();
 		if (base != null) {
 			return base.assets().getRemoteImage(url, w, h);
 		}

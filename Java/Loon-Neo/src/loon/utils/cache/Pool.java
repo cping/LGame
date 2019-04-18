@@ -18,9 +18,11 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.utils;
+package loon.utils.cache;
 
-import loon.LSystem;
+import loon.LSysException;
+import loon.utils.Array;
+import loon.utils.MathUtils;
 
 public abstract class Pool<T> {
 	
@@ -46,7 +48,7 @@ public abstract class Pool<T> {
 	}
 
 	public void free (T object) {
-		if (object == null) throw LSystem.runThrow("object cannot be null.");
+		if (object == null) throw new LSysException("object cannot be null.");
 		if (freeObjects.size() < max) {
 			freeObjects.add(object);
 			peak = MathUtils.max(peak, freeObjects.size());
@@ -56,7 +58,7 @@ public abstract class Pool<T> {
 
 	public void freeAll (Array<T> objects) {
 		if (objects == null){
-			throw LSystem.runThrow("object cannot be null.");
+			throw new LSysException("object cannot be null.");
 		}
 		for (;objects.hashNext();) {
 			T object = objects.next();

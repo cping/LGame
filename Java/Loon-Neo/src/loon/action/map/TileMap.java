@@ -23,6 +23,7 @@ package loon.action.map;
 import java.io.IOException;
 
 import loon.LObject;
+import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
 import loon.PlayerUtils;
@@ -270,7 +271,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 			dirty = true;
 			return tile.imgId;
 		} else {
-			throw LSystem.runThrow("Map is no longer active, you can not add new tiles !");
+			throw new LSysException("Map is no longer active, you can not add new tiles !");
 		}
 	}
 
@@ -291,7 +292,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 			dirty = true;
 			return tile.imgId;
 		} else {
-			throw LSystem.runThrow("Map is no longer active, you can not add new tiles !");
+			throw new LSysException("Map is no longer active, you can not add new tiles !");
 		}
 	}
 
@@ -308,7 +309,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 			dirty = true;
 			return tile.imgId;
 		} else {
-			throw LSystem.runThrow("Map is no longer active, you can not add new tiles !");
+			throw new LSysException("Map is no longer active, you can not add new tiles !");
 		}
 	}
 
@@ -325,7 +326,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 			dirty = true;
 			return tile.imgId;
 		} else {
-			throw LSystem.runThrow("Map is no longer active, you can not add new tiles !");
+			throw new LSysException("Map is no longer active, you can not add new tiles !");
 		}
 	}
 
@@ -341,7 +342,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 			arrays.add(tile);
 			dirty = true;
 		} else {
-			LSystem.runThrow("Map is no longer active, you can not add new tiles !");
+			new LSysException("Map is no longer active, you can not add new tiles !");
 		}
 		return this;
 	}
@@ -486,7 +487,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 			}
 		} else {
 			if (arrays.size == 0) {
-				throw LSystem.runThrow("Not to add any tiles !");
+				throw new LSysException("Not to add any tiles !");
 			}
 
 			texturePack.glBegin();

@@ -20,6 +20,7 @@
  */
 package loon.component.table;
 
+import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
@@ -648,7 +649,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 
 	public LTable distributeColumnWidthsEqually() {
 		if (model == null) {
-			throw LSystem.runThrow("The table has no model!");
+			throw new LSysException("The table has no model!");
 		}
 		for (int i = 0; i < columns.length; i++) {
 			columns[i].setWidth((int) (getWidth() / columns.length));
@@ -737,7 +738,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 
 	private void assertModel() {
 		if (model == null) {
-			throw LSystem.runThrow("No table model set!");
+			throw new LSysException("No table model set!");
 		}
 	}
 

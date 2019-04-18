@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.StringTokenizer;
 
 import loon.BaseIO;
+import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
 import loon.LTextureBatch.Cache;
@@ -209,7 +210,7 @@ public class BMFont implements IFont {
 			displays.clear();
 		}
 		if (StringUtils.isEmpty(text)) {
-			throw LSystem.runThrow("BMFont resource is null !");
+			throw new LSysException("BMFont resource is null !");
 		}
 		StringTokenizer br = new StringTokenizer(text, LSystem.NL);
 		info = br.nextToken();

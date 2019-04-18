@@ -23,6 +23,7 @@ package loon.action.map;
 import java.util.Iterator;
 
 import loon.LObject;
+import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
 import loon.PlayerUtils;
@@ -1496,7 +1497,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 			dirty = true;
 			return tile.imgId;
 		} else {
-			throw LSystem.runThrow("Map is no longer active, you can not add new tiles !");
+			throw new LSysException("Map is no longer active, you can not add new tiles !");
 		}
 	}
 
@@ -1525,7 +1526,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 			dirty = true;
 			return tile.imgId;
 		} else {
-			throw LSystem.runThrow("Map is no longer active, you can not add new tiles !");
+			throw new LSysException("Map is no longer active, you can not add new tiles !");
 		}
 	}
 
@@ -1542,7 +1543,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 			dirty = true;
 			return tile.imgId;
 		} else {
-			throw LSystem.runThrow("Map is no longer active, you can not add new tiles !");
+			throw new LSysException("Map is no longer active, you can not add new tiles !");
 		}
 	}
 
@@ -1559,7 +1560,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 			dirty = true;
 			return tile.imgId;
 		} else {
-			throw LSystem.runThrow("Map is no longer active, you can not add new tiles !");
+			throw new LSysException("Map is no longer active, you can not add new tiles !");
 		}
 	}
 
@@ -1575,7 +1576,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 			tileBinds.add(tile);
 			dirty = true;
 		} else {
-			LSystem.runThrow("Map is no longer active, you can not add new tiles !");
+			new LSysException("Map is no longer active, you can not add new tiles !");
 		}
 		return this;
 	}

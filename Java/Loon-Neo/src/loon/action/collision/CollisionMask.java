@@ -21,7 +21,7 @@
 package loon.action.collision;
 
 import loon.BaseIO;
-import loon.LSystem;
+import loon.LSysException;
 import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.canvas.Pixmap;
@@ -52,14 +52,14 @@ public class CollisionMask {
 
 	public static Polygon makePolygon(Image image) {
 		if (image == null) {
-			throw LSystem.runThrow("Image is null !");
+			throw new LSysException("Image is null !");
 		}
 		return makePolygon(image.getPixels(), (int) image.width(), (int) image.height());
 	}
 
 	public static Polygon makePolygon(Pixmap image) {
 		if (image == null) {
-			throw LSystem.runThrow("Image is null !");
+			throw new LSysException("Image is null !");
 		}
 		return makePolygon(image.getData(), image.getWidth(), image.getHeight());
 	}

@@ -20,7 +20,7 @@
  */
 package loon.geom;
 
-import loon.LSystem;
+import loon.LSysException;
 
 public class TriangleNeat implements Triangle {
 	/**
@@ -123,7 +123,7 @@ public class TriangleNeat implements Triangle {
 	void markSuspect(int i, int j, boolean flag) throws Exception {
 		int k;
 		if (0 > (k = findEdge(i, j))) {
-			throw LSystem.runThrow("Attempt to mark unknown edge");
+			throw new LSysException("Attempt to mark unknown edge");
 		} else {
 			edges[k].suspect = flag;
 			return;
@@ -202,18 +202,20 @@ public class TriangleNeat implements Triangle {
 		int i1 = i - 1;
 		while (i > 2) {
 			if (0 >= k1--) {
-				throw LSystem.runThrow("Bad polygon");
+				throw new LSysException("Bad polygon");
 			}
-
 			int j = i1;
-			if (i <= j)
+			if (i <= j){
 				j = 0;
+			}
 			i1 = j + 1;
-			if (i <= i1)
+			if (i <= i1){
 				i1 = 0;
+			}
 			int j1 = i1 + 1;
-			if (i <= j1)
+			if (i <= j1){
 				j1 = 0;
+			}
 			if (snip(j, i1, j1, i)) {
 				int l1 = sV[j];
 				int i2 = sV[i1];
@@ -241,6 +243,7 @@ public class TriangleNeat implements Triangle {
 		sV = null;
 	}
 
+	@Override
 	public boolean triangulate() {
 		try {
 			basicTriangulation();
@@ -251,6 +254,7 @@ public class TriangleNeat implements Triangle {
 		return false;
 	}
 
+	@Override
 	public void addPolyPoint(float x, float y) {
 		for (int i = 0; i < numPoints; i++) {
 			if ((pointsX[i] == x) && (pointsY[i] == y)) {
@@ -273,7 +277,7 @@ public class TriangleNeat implements Triangle {
 		numPoints++;
 	}
 
-	class Triangle {
+	static class Triangle {
 		int[] v;
 
 		Triangle(int i, int j, int k) {
@@ -284,7 +288,7 @@ public class TriangleNeat implements Triangle {
 		}
 	}
 
-	class Edge {
+	static class Edge {
 
 		int v0;
 

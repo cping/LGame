@@ -134,7 +134,7 @@ public abstract class Log {
 			}
 			if (level.id >= minLevel.id) {
 				callNativeLog(level, msg, e);
-				LGame game = LSystem._base;
+				LGame game = LSystem.base();
 				if (game != null) {
 					LSetting setting = game.setting;
 					LProcess process = LSystem.getProcess();

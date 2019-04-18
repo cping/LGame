@@ -23,6 +23,7 @@ package loon.component;
 
 import loon.LObject;
 import loon.LRelease;
+import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
 import loon.PlayerUtils;
@@ -98,7 +99,7 @@ public class Actor extends LObject<Actor>
 
 	public Actor(Animation animation, int x, int y) {
 		if (animation == null) {
-			throw LSystem.runThrow("Animation is null !");
+			throw new LSysException("Animation is null !");
 		}
 		this.noSequenceNumber = sequenceNumber++;
 		this.animation = animation;
@@ -831,7 +832,7 @@ public class Actor extends LObject<Actor>
 
 	private void failIfNotInLayer() {
 		if (this.gameLayer == null) {
-			throw LSystem.runThrow(
+			throw new LSysException(
 					"The actor has not been inserted into a Layer so it has no _location yet !");
 		}
 	}
@@ -1030,7 +1031,7 @@ public class Actor extends LObject<Actor>
 
 	public void setAnimation(Animation animation) {
 		if (animation == null) {
-			throw LSystem.runThrow("Animation is null !");
+			throw new LSysException("Animation is null !");
 		}
 		this.animation = animation;
 		this.isAnimation = true;

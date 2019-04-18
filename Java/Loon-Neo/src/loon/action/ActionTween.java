@@ -20,6 +20,7 @@
  */
 package loon.action;
 
+import loon.LSysException;
 import loon.LSystem;
 import loon.action.map.Field2D;
 import loon.action.sprite.ISprite;
@@ -914,7 +915,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 
 	private void setup(ActionBind target, int tweenType, float duration) {
 		if (duration < 0) {
-			throw LSystem.runThrow("Duration can't be negative .");
+			throw new LSysException("Duration can't be negative .");
 		}
 		this._target = target;
 		this.type = tweenType;

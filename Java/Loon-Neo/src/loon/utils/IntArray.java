@@ -22,7 +22,7 @@ package loon.utils;
 
 import java.util.Arrays;
 
-import loon.LSystem;
+import loon.LSysException;
 import loon.event.QueryEvent;
 
 public class IntArray implements IArray {
@@ -100,7 +100,7 @@ public class IntArray implements IArray {
 
 	public void addAll(IntArray array, int offset, int length) {
 		if (offset + length > array.length)
-			throw LSystem.runThrow(
+			throw new LSysException(
 					"offset + length must be <= length: " + offset + " + " + length + " <= " + array.length);
 		addAll(array.items, offset, length);
 	}
@@ -140,19 +140,19 @@ public class IntArray implements IArray {
 
 	public void incr(int index, int value) {
 		if (index >= length)
-			throw LSystem.runThrow("index can't be >= length: " + index + " >= " + length);
+			throw new LSysException("index can't be >= length: " + index + " >= " + length);
 		items[index] += value;
 	}
 
 	public void mul(int index, int value) {
 		if (index >= length)
-			throw LSystem.runThrow("index can't be >= length: " + index + " >= " + length);
+			throw new LSysException("index can't be >= length: " + index + " >= " + length);
 		items[index] *= value;
 	}
 
 	public void insert(int index, int value) {
 		if (index > length) {
-			throw LSystem.runThrow("index can't be > length: " + index + " > " + length);
+			throw new LSysException("index can't be > length: " + index + " > " + length);
 		}
 		int[] items = this.items;
 		if (length == items.length)
@@ -167,9 +167,9 @@ public class IntArray implements IArray {
 
 	public void swap(int first, int second) {
 		if (first >= length)
-			throw LSystem.runThrow("first can't be >= length: " + first + " >= " + length);
+			throw new LSysException("first can't be >= length: " + first + " >= " + length);
 		if (second >= length)
-			throw LSystem.runThrow("second can't be >= length: " + second + " >= " + length);
+			throw new LSysException("second can't be >= length: " + second + " >= " + length);
 		int[] items = this.items;
 		int firstValue = items[first];
 		items[first] = items[second];
@@ -214,7 +214,7 @@ public class IntArray implements IArray {
 
 	public int removeIndex(int index) {
 		if (index >= length) {
-			throw LSystem.runThrow("index can't be >= length: " + index + " >= " + length);
+			throw new LSysException("index can't be >= length: " + index + " >= " + length);
 		}
 		int[] items = this.items;
 		int value = items[index];
@@ -229,10 +229,10 @@ public class IntArray implements IArray {
 
 	public void removeRange(int start, int end) {
 		if (end >= length) {
-			throw LSystem.runThrow("end can't be >= length: " + end + " >= " + length);
+			throw new LSysException("end can't be >= length: " + end + " >= " + length);
 		}
 		if (start > end) {
-			throw LSystem.runThrow("start can't be > end: " + start + " > " + end);
+			throw new LSysException("start can't be > end: " + start + " > " + end);
 		}
 		int[] items = this.items;
 		int count = end - start + 1;
@@ -277,7 +277,7 @@ public class IntArray implements IArray {
 
 	public int first() {
 		if (length == 0) {
-			throw LSystem.runThrow("Array is empty.");
+			throw new LSysException("Array is empty.");
 		}
 		return items[0];
 	}
@@ -398,7 +398,7 @@ public class IntArray implements IArray {
 
 	public static int[] slice(int[] array, int begin, int end) {
 		if (begin > end) {
-			throw LSystem.runThrow("IntArray begin > end");
+			throw new LSysException("IntArray begin > end");
 		}
 		if (begin < 0) {
 			begin = array.length + begin;

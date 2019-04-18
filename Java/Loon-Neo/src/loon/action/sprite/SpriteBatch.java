@@ -20,6 +20,7 @@
  */
 package loon.action.sprite;
 
+import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
@@ -195,7 +196,7 @@ public class SpriteBatch extends PixmapFImpl {
 	public SpriteBatch(final ShaderSource src, final int size, final ShaderProgram defaultShader) {
 		super(0, 0, LSystem.viewSize.getRect(), LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), 4);
 		if (size > 5460) {
-			throw LSystem.runThrow("Can't have more than 5460 sprites per batch: " + size);
+			throw new LSysException("Can't have more than 5460 sprites per batch: " + size);
 		}
 		this.name = "spritebatch";
 		this.source = src;
@@ -439,7 +440,7 @@ public class SpriteBatch extends PixmapFImpl {
 		}
 		LSystem.mainEndDraw();
 		if (drawing) {
-			throw LSystem.runThrow("SpriteBatch.end must be called before begin.");
+			throw new LSysException("SpriteBatch.end must be called before begin.");
 		}
 		LSystem.base().graphics().gl.glDepthMask(false);
 		if (customShader != null) {
@@ -464,7 +465,7 @@ public class SpriteBatch extends PixmapFImpl {
 			return;
 		}
 		if (!drawing) {
-			throw LSystem.runThrow("SpriteBatch.begin must be called before end.");
+			throw new LSysException("SpriteBatch.begin must be called before end.");
 		}
 		if (idx > 0) {
 			submit();

@@ -22,7 +22,7 @@ package loon.utils;
 
 import java.util.Locale;
 
-import loon.LSystem;
+import loon.LSysException;
 
 public class Language {
 
@@ -30,7 +30,7 @@ public class Language {
 
 	public static Locale newLocaleFromCode(String value) {
 		if (StringUtils.isEmpty(value)) {
-			throw LSystem.runThrow("'value' must be present");
+			throw new LSysException("'value' must be present");
 		}
 		String[] parameters = StringUtils.split(value, '_');
 		if (parameters.length == 0) {
@@ -40,7 +40,7 @@ public class Language {
 			parameters = StringUtils.split(value, '-');
 		}
 		if (parameters.length == 0) {
-			throw LSystem.runThrow("'value' must not be empty");
+			throw new LSysException("'value' must not be empty");
 		}
 		final Locale newLocale;
 		switch (parameters.length) {
@@ -54,7 +54,7 @@ public class Language {
 			newLocale = new Locale(parameters[0], parameters[1], parameters[2]);
 			break;
 		default:
-			throw LSystem.runThrow("Unknown locale descriptor: " + value);
+			throw new LSysException("Unknown locale descriptor: " + value);
 		}
 		return newLocale;
 	}

@@ -23,18 +23,26 @@ package loon.opengl;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
+import loon.LSysException;
 import loon.LSystem;
 
 public class VertexBufferObjectSubData implements VertexData {
-	final VertexAttributes attributes;
-	final FloatBuffer buffer;
-	final ByteBuffer byteBuffer;
-	int bufferHandle;
-	final boolean isDirect;
-	final boolean isStatic;
-	final int usage;
-	boolean isDirty = false;
-	boolean isBound = false;
+	
+	protected final VertexAttributes attributes;
+	
+	protected final FloatBuffer buffer;
+	
+	protected final ByteBuffer byteBuffer;
+	
+	protected int bufferHandle;
+	
+	protected final boolean isDirect;
+	protected final boolean isStatic;
+	
+	protected final int usage;
+	
+	protected boolean isDirty = false;
+	protected boolean isBound = false;
 
 	public VertexBufferObjectSubData(boolean isStatic, int numVertices,
 			VertexAttribute... attributes) {
@@ -117,9 +125,7 @@ public class VertexBufferObjectSubData implements VertexData {
 			LSystem.base().support().copy(vertices, sourceOffset, byteBuffer, count);
 			byteBuffer.position(pos);
 		} else {
-			throw LSystem.runThrow("Buffer must be allocated direct."); // Should
-																			// never
-																			// happen
+			throw new LSysException("Buffer must be allocated direct.");
 		}
 		bufferChanged();
 	}
@@ -204,7 +210,6 @@ public class VertexBufferObjectSubData implements VertexData {
 	public int getBufferHandle() {
 		return bufferHandle;
 	}
-	
 
 	@Override
 	public void close() {

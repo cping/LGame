@@ -23,6 +23,7 @@ package loon.geom;
 import java.io.Serializable;
 import java.nio.FloatBuffer;
 
+import loon.LSysException;
 import loon.LSystem;
 import loon.Support;
 import loon.utils.MathUtils;
@@ -366,7 +367,7 @@ public class Matrix4 implements Serializable, XY {
 				* val[M22] * val[M33] + val[M00] * val[M11] * val[M22]
 				* val[M33];
 		if (l_det == 0f) {
-			throw LSystem.runThrow("non-invertible matrix");
+			throw new LSysException("non-invertible matrix");
 		}
 		float inv_det = 1.0f / l_det;
 		tmp[M00] = val[M12] * val[M23] * val[M31] - val[M13] * val[M22]

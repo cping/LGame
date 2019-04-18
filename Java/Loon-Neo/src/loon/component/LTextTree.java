@@ -22,6 +22,7 @@ package loon.component;
 
 import java.util.Iterator;
 
+import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
@@ -422,7 +423,7 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 
 	public TreeElement addElement(TreeElement me) {
 		if (me == null) {
-			throw LSystem.runThrow("TreeElement cannot be null!");
+			throw new LSysException("TreeElement cannot be null!");
 		}
 		elements.add(me);
 		updateElements();

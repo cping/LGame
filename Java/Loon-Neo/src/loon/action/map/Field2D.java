@@ -26,7 +26,6 @@ import loon.action.map.colider.Tile;
 import loon.action.map.colider.TileHelper;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
-import loon.utils.ArrayMap;
 import loon.utils.CollectionUtils;
 import loon.utils.IArray;
 import loon.utils.MathUtils;
@@ -38,21 +37,7 @@ import loon.utils.TArray;
 public class Field2D implements IArray, Config {
 
 	private final static float ANGULAR = 0.706F;
-
-	final static private ArrayMap directions = new ArrayMap(9);
-
-	static {
-		directions.put(new Vector2f(0, 0), Config.EMPTY);
-		directions.put(new Vector2f(1, -1), Config.UP);
-		directions.put(new Vector2f(-1, -1), Config.LEFT);
-		directions.put(new Vector2f(1, 1), Config.RIGHT);
-		directions.put(new Vector2f(-1, 1), Config.DOWN);
-		directions.put(new Vector2f(0, -1), Config.TUP);
-		directions.put(new Vector2f(-1, 0), Config.TLEFT);
-		directions.put(new Vector2f(1, 0), Config.TRIGHT);
-		directions.put(new Vector2f(0, 1), Config.TDOWN);
-	}
-
+	
 	private String _objectName = "Field2D";
 
 	private Vector2f _offset = new Vector2f();
@@ -60,8 +45,6 @@ public class Field2D implements IArray, Config {
 	private RectBox _rectTemp = null;
 
 	private Tile _tileImpl;
-
-	private static Vector2f _tempDir;
 
 	public Object Tag;
 
@@ -169,17 +152,30 @@ public class Field2D implements IArray, Config {
 		} else if (y < 0) {
 			newY = -1;
 		}
-		if (_tempDir == null) {
-			_tempDir = new Vector2f(newX, newY);
-		} else {
-			_tempDir.set(newX, newY);
+		return getDirectionImpl(newX, newY);
+	}
+
+	private static final int getDirectionImpl(int x, int y) {
+		if (x == 0 && y == 0) {
+			return Config.EMPTY;
+		} else if (x == 1 && y == -1) {
+			return Config.UP;
+		} else if (x == -1 && y == -1) {
+			return Config.LEFT;
+		} else if (x == 1 && y == 1) {
+			return Config.RIGHT;
+		} else if (x == -1 && y == 1) {
+			return Config.DOWN;
+		} else if (x == 0 && y == -1) {
+			return Config.TUP;
+		} else if (x == -1 && y == 0) {
+			return Config.TLEFT;
+		} else if (x == 1 && y == 0) {
+			return Config.TRIGHT;
+		} else if (x == 0 && y == 1) {
+			return Config.TDOWN;
 		}
-		Integer result = (Integer) directions.get(_tempDir);
-		if (result != null) {
-			return result;
-		} else {
-			return value;
-		}
+		return Config.EMPTY;
 	}
 
 	public static final Vector2f getDirection(int type) {

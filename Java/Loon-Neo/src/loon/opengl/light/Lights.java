@@ -20,7 +20,7 @@
  */
 package loon.opengl.light;
 
-import loon.LSystem;
+import loon.LSysException;
 import loon.canvas.LColor;
 import loon.utils.TArray;
 
@@ -75,7 +75,7 @@ public class Lights {
 			pointLights.add((PointLight)light);
 		}
 		else{
-			throw LSystem.runThrow("Unknown light type");
+			throw new LSysException("Unknown light type");
 		}
 		return this;
 	}

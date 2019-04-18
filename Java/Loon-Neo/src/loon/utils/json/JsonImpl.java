@@ -21,7 +21,7 @@
 package loon.utils.json;
 
 import loon.Json;
-import loon.LSystem;
+import loon.LSysException;
 
 public class JsonImpl implements Json {
 
@@ -61,7 +61,7 @@ public class JsonImpl implements Json {
 				|| value instanceof Boolean || value instanceof Number){
 			return;
 		}
-		throw LSystem.runThrow("Invalid JSON type [value=" + value
+		throw new LSysException("Invalid JSON type [value=" + value
 				+ ", class=" + value.getClass() + "]");
 	}
 

@@ -23,7 +23,7 @@ package loon.component;
 
 import java.util.Arrays;
 
-import loon.LSystem;
+import loon.LSysException;
 import loon.utils.CollectionUtils;
 import loon.utils.LIterator;
 import loon.utils.SortedList;
@@ -112,7 +112,7 @@ public class ActorTreeSet {
 
 	public boolean add(Actor o) {
 		if (o == null) {
-			throw LSystem.runThrow("Null actor !");
+			throw new LSysException("Null actor !");
 		} else {
 			return this.generalSet.add(o);
 		}

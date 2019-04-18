@@ -22,6 +22,7 @@ package loon.action.sprite;
 
 import java.util.Arrays;
 
+import loon.LSysException;
 import loon.LSystem;
 import loon.utils.MathUtils;
 
@@ -173,7 +174,7 @@ public class AnimationData {
 				firstFrameIndex, loopCount);
 
 		if ((firstFrameIndex + 1) > lastFrameIndex) {
-			throw LSystem.runThrow(
+			throw new LSysException(
 					"An animation needs at least two tiles to animate between.");
 		}
 	}
@@ -203,7 +204,7 @@ public class AnimationData {
 	private void set(final long[] frameDurations, final int frameCount,
 			final int[] frames, final int firstFrameIndex, final int loopCount) {
 		if (frameDurations.length != frameCount) {
-			throw LSystem.runThrow(
+			throw new LSysException(
 					"frameDurations does not equal frameCount!");
 		}
 

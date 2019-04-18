@@ -20,7 +20,7 @@
  */
 package loon.utils;
 
-import loon.LSystem;
+import loon.LSysException;
 
 /**
  * 自0.3.2版起新增类，用以统一跨平台的BASE64处理方法
@@ -296,7 +296,7 @@ public class Base64Coder {
 		}
 
 		if (index != out.length) {
-			throw LSystem.runThrow("index != " + out.length);
+			throw new LSysException("index != " + out.length);
 		}
 
 		return out;

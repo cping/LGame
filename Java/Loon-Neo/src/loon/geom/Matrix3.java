@@ -24,6 +24,7 @@ import java.io.Serializable;
 import java.nio.FloatBuffer;
 import java.util.Collection;
 
+import loon.LSysException;
 import loon.LSystem;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
@@ -270,7 +271,7 @@ public class Matrix3 implements Serializable, XY {
 	public Matrix3 inv() {
 		float det = det();
 		if (det == 0) {
-			throw LSystem.runThrow("Can't invert a singular matrix");
+			throw new LSysException("Can't invert a singular matrix");
 		}
 
 		float inv_det = 1.0f / det;
@@ -834,7 +835,7 @@ public class Matrix3 implements Serializable, XY {
 
 		final float det = det();
 		if (MathUtils.abs(det) <= MathUtils.EPSILON) {
-			throw LSystem.runThrow("This matrix cannot be inverted !");
+			throw new LSysException("This matrix cannot be inverted !");
 		}
 
 		final float temp00 = this.val[4] * this.val[8] - this.val[5] * this.val[7];

@@ -241,7 +241,7 @@ public class LProcess {
 			synchronized (this) {
 				if (screen == null) {
 					this.isInstance = false;
-					throw LSystem.re("Cannot create a [Screen] instance !");
+					throw new LSysException("Cannot create a [Screen] instance !");
 				}
 				if (!_game.display().showLogo) {
 					if (_currentScreen != null) {
@@ -320,7 +320,7 @@ public class LProcess {
 
 					@Override
 					public void run(LTimerContext time) {
-						if (LSystem._base != null && !LSystem._base.display().showLogo) {
+						if (LSystem.base() != null && !LSystem.base().display().showLogo) {
 							try {
 								startTransition();
 								screen.setClose(false);
@@ -881,14 +881,14 @@ public class LProcess {
 
 	public boolean containsScreen(final Screen screen) {
 		if (screen == null) {
-			throw LSystem.runThrow("Cannot create a [IScreen] instance !");
+			throw new LSysException("Cannot create a [IScreen] instance !");
 		}
 		return _screens.contains(screen);
 	}
 
 	public void addScreen(final Screen screen) {
 		if (screen == null) {
-			throw LSystem.runThrow("Cannot create a [IScreen] instance !");
+			throw new LSysException("Cannot create a [IScreen] instance !");
 		}
 		if (!_screens.contains(screen)) {
 			_screens.add(screen);

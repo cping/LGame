@@ -327,7 +327,7 @@ public class LTexture extends Painter implements LRelease {
 
 	public void update(final Image image, final boolean closed, final boolean updated) {
 		if (image == null) {
-			throw LSystem.runThrow("the image is null, can not conversion it into texture .");
+			throw new LSysException("the image is null, can not conversion it into texture .");
 		}
 		if (parent != null) {
 			parent.update(image, closed);
@@ -1047,7 +1047,7 @@ public class LTexture extends Painter implements LRelease {
 				public void action(Object a) {
 					synchronized (LTexture.class) {
 						if (LSystem.delTexture(textureId)) {
-							if (LSystem._base.setting.disposeTexture && !_disposed && _closed) {
+							if (LSystem.base().setting.disposeTexture && !_disposed && _closed) {
 								GLUtils.deleteTexture(gfx.gl, textureId);
 								_disposed = true;
 							}

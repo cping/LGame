@@ -38,7 +38,6 @@ import loon.opengl.ShaderCmd;
 import loon.opengl.ShaderProgram;
 import loon.utils.NumberUtils;
 import loon.utils.Scale;
-import loon.utils.StringUtils;
 import loon.utils.json.JsonImpl;
 import loon.utils.reply.Act;
 
@@ -177,35 +176,18 @@ public class LSystem {
 		}
 	}
 
-	protected static LGame _base = null;
-
-	protected static LProcess _process = null;
-
-	protected static Platform _platform = null;
-
 	public static final Platform platform() {
-		return _platform;
+		return LGame._platform;
 	}
 
 	public static final LGame base() {
-		if (_base != null) {
-			return _base;
-		} else if (_platform != null) {
-			_base = _platform.getGame();
+		LGame game = LGame._base;
+		if (game != null) {
+			return game;
+		} else if (platform() != null) {
+			game = platform().getGame();
 		}
-		return _base;
-	}
-
-	protected static final void checkBaseGame(LGame game) {
-		if (game != _base && game != null) {
-			_base = game;
-		} else if (game == null) {
-			if (_base != null && _platform != null && _platform.getGame() != null) {
-				if (_base != _platform.getGame()) {
-					_base = _platform.getGame();
-				}
-			}
-		}
+		return game;
 	}
 
 	public static final boolean landscape() {
@@ -218,8 +200,8 @@ public class LSystem {
 	 * @return
 	 */
 	public static final String getSystemImagePath() {
-		if (_base != null) {
-			return _base.setting.systemImgPath;
+		if (base() != null) {
+			return base().setting.systemImgPath;
 		}
 		return "loon_";
 	}
@@ -240,11 +222,11 @@ public class LSystem {
 	 * @return
 	 */
 	public static final IFont getSystemLogFont() {
-		if (_base != null) {
-			if (_base.setting.defaultLogFont == null) {
-				_base.setting.defaultLogFont = LSTRFont.getFont(LSystem.isDesktop() ? 16 : 20);
+		if (base() != null) {
+			if (base().setting.defaultLogFont == null) {
+				base().setting.defaultLogFont = LSTRFont.getFont(LSystem.isDesktop() ? 16 : 20);
 			}
-			return _base.setting.defaultLogFont;
+			return base().setting.defaultLogFont;
 		}
 		return LSTRFont.getFont(LSystem.isDesktop() ? 16 : 20);
 	}
@@ -255,8 +237,8 @@ public class LSystem {
 	 * @param font
 	 */
 	public static void setSystemLogFont(IFont font) {
-		if (_base != null) {
-			_base.setting.defaultLogFont = font;
+		if (base() != null) {
+			base().setting.defaultLogFont = font;
 		}
 	}
 
@@ -266,11 +248,11 @@ public class LSystem {
 	 * @return
 	 */
 	public static final IFont getSystemGameFont() {
-		if (_base != null) {
-			if (_base.setting.defaultGameFont == null) {
-				_base.setting.defaultGameFont = LFont.getFont(20);
+		if (base() != null) {
+			if (base().setting.defaultGameFont == null) {
+				base().setting.defaultGameFont = LFont.getFont(20);
 			}
-			return _base.setting.defaultGameFont;
+			return base().setting.defaultGameFont;
 		}
 		return LFont.getFont(20);
 	}
@@ -281,8 +263,8 @@ public class LSystem {
 	 * @param font
 	 */
 	public static void setSystemGameFont(IFont font) {
-		if (_base != null) {
-			_base.setting.defaultGameFont = font;
+		if (base() != null) {
+			base().setting.defaultGameFont = font;
 		}
 	}
 
@@ -297,52 +279,52 @@ public class LSystem {
 	}
 
 	public static final boolean isLockAllTouchEvent() {
-		if (_base != null) {
-			return _base.setting.lockAllTouchEvent;
+		if (base() != null) {
+			return base().setting.lockAllTouchEvent;
 		}
 		return false;
 
 	}
 
 	public static final boolean isNotAllowDragAndMove() {
-		if (_base != null) {
-			return _base.setting.notAllowDragAndMove;
+		if (base() != null) {
+			return base().setting.notAllowDragAndMove;
 		}
 		return false;
 
 	}
 
 	public static final float getEmulatorScale() {
-		if (_base != null) {
-			return _base.setting.emulatorScale;
+		if (base() != null) {
+			return base().setting.emulatorScale;
 		}
 		return 1f;
 	}
 
 	public static final boolean isTrueFontClip() {
-		if (_base != null) {
-			return _base.setting.useTrueFontClip;
+		if (base() != null) {
+			return base().setting.useTrueFontClip;
 		}
 		return true;
 	}
 
 	public static final boolean isConsoleLog() {
-		if (_base != null) {
-			return _base.setting.isConsoleLog;
+		if (base() != null) {
+			return base().setting.isConsoleLog;
 		}
 		return true;
 	}
 
 	public static final String getSystemGameFontName() {
-		if (_base != null) {
-			return _base.setting.fontName;
+		if (base() != null) {
+			return base().setting.fontName;
 		}
 		return LGame.FONT_NAME;
 	}
 
 	public static final String getSystemAppName() {
-		if (_base != null) {
-			return _base.setting.appName;
+		if (base() != null) {
+			return base().setting.appName;
 		}
 		return LGame.APP_NAME;
 	}
@@ -366,60 +348,55 @@ public class LSystem {
 		disposeTextureAll();
 	}
 
-	protected static void initProcess(LGame game) {
-		_base = game;
-		if (_base == null && _platform != null) {
-			_base = _platform.getGame();
-		}
-		LSetting setting = _base.setting;
-		setting.updateScale();
-		LSystem.viewSize.setSize(setting.width, setting.height);
-		_process = new LProcess(game);
-		_base.log().debug("The Loon Game Engine is Begin");
-	}
-
 	public static void exit() {
-		if (_platform != null) {
-			_platform.close();
+		if (platform() != null) {
+			platform().close();
 		}
 	}
 
 	public static void sysText(SysInput.TextEvent event, KeyMake.TextType textType, String label, String initialValue) {
-		if (_platform != null) {
-			_platform.sysText(event, textType, label, initialValue);
+		if (platform() != null) {
+			platform().sysText(event, textType, label, initialValue);
 		}
 	}
 
 	public static void sysDialog(SysInput.ClickEvent event, String title, String text, String ok, String cancel) {
-		if (_platform != null) {
-			_platform.sysDialog(event, title, text, ok, cancel);
+		if (platform() != null) {
+			platform().sysDialog(event, title, text, ok, cancel);
 		}
 	}
 
 	public static Json json() {
-		if (_base != null) {
-			return _base.json();
+		if (base() != null) {
+			return base().json();
 		}
 		return new JsonImpl();
 	}
 
 	public static boolean isHTML5() {
-		if (_base != null) {
-			return _base.isHTML5();
+		if (base() != null) {
+			return base().isHTML5();
 		}
 		return false;
 	}
 
 	public static boolean isMobile() {
-		if (_base != null) {
-			return _base.isMobile();
+		if (base() != null) {
+			return base().isMobile();
 		}
 		return false;
 	}
 
 	public static boolean isDesktop() {
-		if (_base != null) {
-			return _base.isDesktop();
+		if (base() != null) {
+			return base().isDesktop();
+		}
+		return false;
+	}
+
+	public static boolean isSupportTempFont() {
+		if (base() != null) {
+			return base().setting.supportTempSysFont;
 		}
 		return false;
 	}
@@ -494,10 +471,10 @@ public class LSystem {
 	}
 
 	public static boolean mainDrawRunning() {
-		if (_base == null) {
+		if (base() == null) {
 			return false;
 		}
-		Display game = _base.display();
+		Display game = base().display();
 		if (game != null) {
 			GLEx gl = game.GL();
 			return gl.running();
@@ -506,10 +483,10 @@ public class LSystem {
 	}
 
 	public static void mainBeginDraw() {
-		if (_base == null) {
+		if (base() == null) {
 			return;
 		}
-		Display game = _base.display();
+		Display game = base().display();
 		if (game != null) {
 			GLEx gl = game.GL();
 			if (!gl.running()) {
@@ -519,10 +496,10 @@ public class LSystem {
 	}
 
 	public static void mainEndDraw() {
-		if (_base == null) {
+		if (base() == null) {
 			return;
 		}
-		Display game = _base.display();
+		Display game = base().display();
 		if (game != null) {
 			GLEx gl = game.GL();
 			if (gl.running()) {
@@ -542,18 +519,18 @@ public class LSystem {
 	}
 
 	public static final LProcess getProcess() {
-		return _process;
+		return LGame._process;
 	}
 
 	public static final void load(Updateable u) {
-		if (_process != null) {
-			_process.addLoad(u);
+		if (getProcess() != null) {
+			getProcess().addLoad(u);
 		}
 	}
 
 	public static final void unload(Updateable u) {
-		if (_process != null) {
-			_process.addUnLoad(u);
+		if (getProcess() != null) {
+			getProcess().addUnLoad(u);
 		}
 	}
 
@@ -619,64 +596,64 @@ public class LSystem {
 	}
 
 	public static final <E> void dispatchEvent(Act<E> signal, E event) {
-		if (_base != null) {
-			_base.dispatchEvent(signal, event);
+		if (base() != null) {
+			base().dispatchEvent(signal, event);
 		}
 	}
 
 	public static final void invokeLater(Runnable runnable) {
-		if (_base != null) {
-			_base.invokeLater(runnable);
+		if (base() != null) {
+			base().invokeLater(runnable);
 		}
 	}
 
 	public static final boolean isAsyncSupported() {
-		return _base != null ? false : _base.isAsyncSupported();
+		return base() != null ? false : base().isAsyncSupported();
 	}
 
 	public static final void invokeAsync(Runnable action) {
-		if (_base != null) {
-			_base.invokeAsync(action);
+		if (base() != null) {
+			base().invokeAsync(action);
 		}
 	}
 
 	public static final int batchCacheSize() {
-		if (_base != null) {
-			return _base.batchCacheSize();
+		if (base() != null) {
+			return base().batchCacheSize();
 		}
 		return 0;
 	}
 
 	public static final void clearBatchCaches() {
-		if (_base != null) {
-			_base.clearBatchCaches();
+		if (base() != null) {
+			base().clearBatchCaches();
 		}
 	}
 
 	public static final LTextureBatch getBatchCache(LTexture texture) {
-		if (_base != null) {
-			return _base.getBatchCache(texture);
+		if (base() != null) {
+			return base().getBatchCache(texture);
 		}
 		return null;
 	}
 
 	public static final LTextureBatch bindBatchCache(LTextureBatch batch) {
-		if (_base != null) {
-			return _base.bindBatchCache(batch);
+		if (base() != null) {
+			return base().bindBatchCache(batch);
 		}
 		return null;
 	}
 
 	public static final LTextureBatch disposeBatchCache(LTextureBatch batch) {
-		if (_base != null) {
-			return _base.disposeBatchCache(batch);
+		if (base() != null) {
+			return base().disposeBatchCache(batch);
 		}
 		return null;
 	}
 
 	public static final LTextureBatch disposeBatchCache(LTextureBatch batch, boolean closed) {
-		if (_base != null) {
-			return _base.disposeBatchCache(batch, closed);
+		if (base() != null) {
+			return base().disposeBatchCache(batch, closed);
 		}
 		return null;
 	}
@@ -697,364 +674,349 @@ public class LSystem {
 	}
 
 	public static final Mesh getMeshPool(String n, int size) {
-		if (_base != null) {
-			return _base.getMeshPool(n, size);
+		if (base() != null) {
+			return base().getMeshPool(n, size);
 		}
 		return null;
 	}
 
 	public static final void resetMeshPool(String n, int size) {
-		if (_base != null) {
-			_base.resetMeshPool(n, size);
+		if (base() != null) {
+			base().resetMeshPool(n, size);
 		}
 	}
 
 	public static final int getMeshPoolSize() {
-		if (_base != null) {
-			_base.getMeshPoolSize();
+		if (base() != null) {
+			base().getMeshPoolSize();
 		}
 		return 0;
 	}
 
 	public static final void disposeMeshPool(String name, int size) {
-		if (_base != null) {
-			_base.disposeMeshPool(name, size);
+		if (base() != null) {
+			base().disposeMeshPool(name, size);
 		}
 	}
 
 	public static final void disposeMeshPool() {
-		if (_base != null) {
-			_base.disposeMeshPool();
+		if (base() != null) {
+			base().disposeMeshPool();
 		}
 	}
 
 	public static final boolean containsTexture(int id) {
-		if (_base != null) {
-			return _base.containsTexture(id);
+		if (base() != null) {
+			return base().containsTexture(id);
 		}
 		return false;
 	}
 
 	public static final void reloadTexture() {
-		if (_base != null) {
-			_base.reloadTexture();
+		if (base() != null) {
+			base().reloadTexture();
 		}
 	}
 
 	public static final int getTextureMemSize() {
-		if (_base != null) {
-			return _base.getTextureMemSize();
+		if (base() != null) {
+			return base().getTextureMemSize();
 		}
 		return 0;
 	}
 
 	public static final void closeAllTexture() {
-		if (_base != null) {
-			_base.closeAllTexture();
+		if (base() != null) {
+			base().closeAllTexture();
 		}
 	}
 
 	public static final int countTexture() {
-		if (_base != null) {
-			return _base.countTexture();
+		if (base() != null) {
+			return base().countTexture();
 		}
 		return 0;
 	}
 
 	public static final boolean containsTextureValue(LTexture texture) {
-		if (_base != null) {
-			return _base.containsTextureValue(texture);
+		if (base() != null) {
+			return base().containsTextureValue(texture);
 		}
 		return false;
 	}
 
 	public static final int getRefTextureCount(String fileName) {
-		if (_base != null) {
-			return _base.getRefTextureCount(fileName);
+		if (base() != null) {
+			return base().getRefTextureCount(fileName);
 		}
 		return 0;
 	}
 
 	public static final LTexture createTexture(int width, int height, Format config) {
-		if (_base != null) {
-			return _base.createTexture(width, height, config);
+		if (base() != null) {
+			return base().createTexture(width, height, config);
 		}
 		return null;
 	}
 
 	public static final LTexture newTexture(String path) {
-		if (_base != null) {
-			return _base.newTexture(path);
+		if (base() != null) {
+			return base().newTexture(path);
 		}
 		return null;
 	}
 
 	public static final LTexture newTexture(String path, Format config) {
-		if (_base != null) {
-			return _base.newTexture(path, config);
+		if (base() != null) {
+			return base().newTexture(path, config);
 		}
 		return null;
 	}
 
 	public static final LTexture loadNinePatchTexture(String fileName, int x, int y, int w, int h) {
-		if (_base != null) {
-			return _base.loadNinePatchTexture(fileName, x, y, w, h);
+		if (base() != null) {
+			return base().loadNinePatchTexture(fileName, x, y, w, h);
 		}
 		return null;
 	}
 
 	public static final LTexture loadNinePatchTexture(String fileName, Repeat repeat, int x, int y, int w, int h,
 			Format config) {
-		if (_base != null) {
-			return _base.loadNinePatchTexture(fileName, repeat, x, y, w, h, config);
+		if (base() != null) {
+			return base().loadNinePatchTexture(fileName, repeat, x, y, w, h, config);
 		}
 		return null;
 	}
 
 	public static final LTexture loadTexture(String fileName, Format config) {
-		if (_base != null) {
-			return _base.loadTexture(fileName, config);
+		if (base() != null) {
+			return base().loadTexture(fileName, config);
 		}
 		return null;
 	}
 
 	public static final LTexture loadTexture(String fileName) {
-		if (_base != null) {
-			return _base.loadTexture(fileName);
+		if (base() != null) {
+			return base().loadTexture(fileName);
 		}
 		return null;
 	}
 
 	public static final void destroySourceAllCache() {
-		if (_base != null) {
-			_base.destroySourceAllCache();
+		if (base() != null) {
+			base().destroySourceAllCache();
 		}
 	}
 
 	public static final void destroyAllCache() {
-		if (_base != null) {
-			_base.destroyAllCache();
+		if (base() != null) {
+			base().destroyAllCache();
 		}
 	}
 
 	public static final void disposeTextureAll() {
-		if (_base != null) {
-			_base.disposeTextureAll();
+		if (base() != null) {
+			base().disposeTextureAll();
 		}
 	}
 
 	protected static final void putTexture(LTexture texture) {
-		if (_base != null) {
-			_base.putTexture(texture);
+		if (base() != null) {
+			base().putTexture(texture);
 		}
 	}
 
 	protected static final void removeTexture(LTexture texture) {
-		if (_base != null) {
-			_base.removeTexture(texture);
+		if (base() != null) {
+			base().removeTexture(texture);
 		}
 	}
 
 	protected static final boolean delTexture(int texID) {
-		if (_base != null) {
-			return _base.delTexture(texID);
+		if (base() != null) {
+			return base().delTexture(texID);
 		}
 		return false;
 	}
 
 	public static final int getSpritesSize() {
-		if (_base != null) {
-			return _base.getSpritesSize();
+		if (base() != null) {
+			return base().getSpritesSize();
 		}
 		return 0;
 	}
 
 	public static final int allSpritesCount() {
-		if (_base != null) {
-			return _base.allSpritesCount();
+		if (base() != null) {
+			return base().allSpritesCount();
 		}
 		return 0;
 	}
 
 	public static final boolean pushSpritesPool(Sprites sprites) {
-		if (_base != null) {
-			return _base.pushSpritesPool(sprites);
+		if (base() != null) {
+			return base().pushSpritesPool(sprites);
 		}
 		return false;
 	}
 
 	public static final boolean popSpritesPool(Sprites sprites) {
-		if (_base != null) {
-			return _base.popSpritesPool(sprites);
+		if (base() != null) {
+			return base().popSpritesPool(sprites);
 		}
 		return false;
 	}
 
 	public static final void closeSpritesPool() {
-		if (_base != null) {
-			_base.closeSpritesPool();
+		if (base() != null) {
+			base().closeSpritesPool();
 		}
 	}
 
 	public static final int allDesktopCount() {
-		if (_base != null) {
-			return _base.allDesktopCount();
+		if (base() != null) {
+			return base().allDesktopCount();
 		}
 		return 0;
 	}
 
 	public static final boolean pushDesktopPool(Desktop desktop) {
-		if (_base != null) {
-			return _base.pushDesktopPool(desktop);
+		if (base() != null) {
+			return base().pushDesktopPool(desktop);
 		}
 		return false;
 	}
 
 	public static final boolean popDesktopPool(Desktop desktop) {
-		if (_base != null) {
-			return _base.popDesktopPool(desktop);
+		if (base() != null) {
+			return base().popDesktopPool(desktop);
 		}
 		return false;
 	}
 
 	public static final int getDesktopSize() {
-		if (_base != null) {
-			return _base.getDesktopSize();
+		if (base() != null) {
+			return base().getDesktopSize();
 		}
 		return 0;
 	}
 
 	public static final void closeDesktopPool() {
-		if (_base != null) {
-			_base.closeDesktopPool();
+		if (base() != null) {
+			base().closeDesktopPool();
 		}
 	}
 
 	public static final int getFontSize() {
-		if (_base != null) {
-			return _base.getFontSize();
+		if (base() != null) {
+			return base().getFontSize();
 		}
 		return 0;
 	}
 
 	public static final boolean pushFontPool(IFont font) {
-		if (_base != null) {
-			return _base.pushFontPool(font);
+		if (base() != null) {
+			return base().pushFontPool(font);
 		}
 		return false;
 	}
 
 	public static final boolean popFontPool(IFont font) {
-		if (_base != null) {
-			return _base.popFontPool(font);
+		if (base() != null) {
+			return base().popFontPool(font);
 		}
 		return false;
 	}
 
 	public static final void closeFontPool() {
-		if (_base != null) {
-			_base.closeFontPool();
+		if (base() != null) {
+			base().closeFontPool();
 		}
 	}
 
 	public static final IFont serachFontPool(String className, String fontName, int size) {
-		if (_base != null) {
-			return _base.serachFontPool(className, fontName, size);
+		if (base() != null) {
+			return base().serachFontPool(className, fontName, size);
 		}
 		return null;
 	}
 
 	public static final void debug(String msg) {
-		if (_base != null) {
-			_base.log().debug(msg);
+		if (base() != null) {
+			base().log().debug(msg);
 		}
 	}
 
 	public static final void debug(String msg, Object... args) {
-		if (_base != null) {
-			_base.log().debug(msg, args);
+		if (base() != null) {
+			base().log().debug(msg, args);
 		}
 	}
 
 	public static final void debug(String msg, Throwable throwable) {
-		if (_base != null) {
-			_base.log().debug(msg, throwable);
+		if (base() != null) {
+			base().log().debug(msg, throwable);
 		}
 	}
 
 	public static final void info(String msg) {
-		if (_base != null) {
-			_base.log().info(msg);
+		if (base() != null) {
+			base().log().info(msg);
 		}
 	}
 
 	public static final void info(String msg, Object... args) {
-		if (_base != null) {
-			_base.log().info(msg, args);
+		if (base() != null) {
+			base().log().info(msg, args);
 		}
 	}
 
 	public static final void info(String msg, Throwable throwable) {
-		if (_base != null) {
-			_base.log().info(msg, throwable);
+		if (base() != null) {
+			base().log().info(msg, throwable);
 		}
 	}
 
 	public static final void warn(String msg) {
-		if (_base != null) {
-			_base.log().warn(msg);
+		if (base() != null) {
+			base().log().warn(msg);
 		}
 	}
 
 	public static final void warn(String msg, Object... args) {
-		if (_base != null) {
-			_base.log().warn(msg, args);
+		if (base() != null) {
+			base().log().warn(msg, args);
 		}
 	}
 
 	public static final void warn(String msg, Throwable throwable) {
-		if (_base != null) {
-			_base.log().warn(msg, throwable);
+		if (base() != null) {
+			base().log().warn(msg, throwable);
 		}
 	}
 
 	public static final void error(String msg) {
-		if (_base != null) {
-			_base.log().error(msg);
+		if (base() != null) {
+			base().log().error(msg);
 		}
 	}
 
 	public static final void error(String msg, Object... args) {
-		if (_base != null) {
-			_base.log().error(msg, args);
+		if (base() != null) {
+			base().log().error(msg, args);
 		}
 	}
 
 	public static final void error(String msg, Throwable throwable) {
-		if (_base != null) {
-			_base.log().error(msg, throwable);
+		if (base() != null) {
+			base().log().error(msg, throwable);
 		}
 	}
 
 	public static final void reportError(String msg, Throwable throwable) {
-		if (_base != null) {
-			_base.reportError(msg, throwable);
+		if (base() != null) {
+			base().reportError(msg, throwable);
 		}
-	}
-
-	public static final RuntimeException runThrow(String msg) {
-		error(msg);
-		return new RuntimeException(msg);
-	}
-
-	public static final RuntimeException runThrow(String msg, Throwable thr) {
-		error(msg, thr);
-		return new RuntimeException(msg, thr);
-	}
-
-	public static final RuntimeException runThrow(String msg, Object... args) {
-		error(msg, args);
-		return new RuntimeException(StringUtils.format(msg, args));
 	}
 
 	public static final void d(String msg) {
@@ -1105,21 +1067,9 @@ public class LSystem {
 		error(msg, throwable);
 	}
 
-	public static final RuntimeException re(String msg) {
-		return runThrow(msg);
-	}
-
-	public static final RuntimeException re(String msg, Throwable thr) {
-		return runThrow(msg, thr);
-	}
-
-	public static final RuntimeException re(String msg, Object... args) {
-		return runThrow(msg, args);
-	}
-
 	public static final void setLogMinLevel(Level level) {
-		if (_base != null) {
-			_base.log().setMinLevel(level);
+		if (base() != null) {
+			base().log().setMinLevel(level);
 		}
 	}
 

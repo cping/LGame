@@ -21,6 +21,7 @@
 package loon.action.sprite;
 
 import loon.LObject;
+import loon.LSysException;
 import loon.LSystem;
 import loon.Screen;
 import loon.action.map.Config;
@@ -105,7 +106,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 
 	public PPhysManager getPhysicsManager() {
 		if (!usePhysics) {
-			throw LSystem.runThrow("You do not set the physics engine !");
+			throw new LSysException("You do not set the physics engine !");
 		}
 		return _manager;
 	}
@@ -370,7 +371,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 			PBody body = _bodys.get(o);
 			return body;
 		} else {
-			throw LSystem.runThrow("You do not set the physics engine !");
+			throw new LSysException("You do not set the physics engine !");
 		}
 	}
 
@@ -407,7 +408,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 			_bodys.put(o, body);
 			return body;
 		} else {
-			throw LSystem.runThrow("You do not set the physics engine !");
+			throw new LSysException("You do not set the physics engine !");
 		}
 	}
 
@@ -432,7 +433,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 			_bodys.put(o, body);
 			return body;
 		} else {
-			throw LSystem.runThrow("You do not set the physics engine !");
+			throw new LSysException("You do not set the physics engine !");
 		}
 	}
 
@@ -447,7 +448,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 			_bodys.put(o, body);
 			return body;
 		} else {
-			throw LSystem.runThrow("You do not set the physics engine !");
+			throw new LSysException("You do not set the physics engine !");
 		}
 	}
 
@@ -466,7 +467,7 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 			_bodys.put(o, body);
 			return body;
 		} else {
-			throw LSystem.runThrow("You do not set the physics engine !");
+			throw new LSysException("You do not set the physics engine !");
 		}
 	}
 

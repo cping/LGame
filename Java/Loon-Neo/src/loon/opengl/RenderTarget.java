@@ -23,7 +23,7 @@ package loon.opengl;
 import static loon.opengl.GL20.*;
 import loon.Graphics;
 import loon.LRelease;
-import loon.LSystem;
+import loon.LSysException;
 import loon.LTexture;
 
 public abstract class RenderTarget implements LRelease {
@@ -32,7 +32,7 @@ public abstract class RenderTarget implements LRelease {
 		GL20 gl = gfx.gl;
 		final int fb = gl.glGenFramebuffer();
 		if (fb == 0) {
-			throw LSystem.runThrow("Failed to gen framebuffer: " + gl.glGetError());
+			throw new LSysException("Failed to gen framebuffer: " + gl.glGetError());
 		}
 		gl.glBindFramebuffer(GL_FRAMEBUFFER, fb);
 		gl.glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tex.getID(), 0);

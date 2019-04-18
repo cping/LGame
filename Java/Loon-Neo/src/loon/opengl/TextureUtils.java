@@ -21,6 +21,7 @@
 package loon.opengl;
 
 import loon.BaseIO;
+import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
 import loon.LTexture.Format;
@@ -164,7 +165,7 @@ public class TextureUtils {
 	public static LTexture[] getDivide(String fileName, int count, int[] width,
 			int[] height) {
 		if (count <= 0) {
-			throw LSystem.runThrow("count <= 0 !");
+			throw new LSysException("count <= 0 !");
 		}
 		LTexture image = LSystem.loadTexture(fileName);
 		if (image == null) {

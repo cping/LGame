@@ -22,7 +22,7 @@ package loon.utils;
 
 import java.util.Iterator;
 
-import loon.LSystem;
+import loon.LSysException;
 
 public class SortedList<E> implements Iterable<E>, IArray {
 
@@ -90,7 +90,7 @@ public class SortedList<E> implements Iterable<E>, IArray {
 
 		final void checkForComodification() {
 			if (_list.modCount != expectedModCount)
-				throw LSystem.runThrow("SortedList error!");
+				throw new LSysException("SortedList error!");
 		}
 	}
 
@@ -204,28 +204,28 @@ public class SortedList<E> implements Iterable<E>, IArray {
 	public E getFirst() {
 		final Node<E> f = first;
 		if (f == null)
-			throw LSystem.runThrow("SortedList error!");
+			throw new LSysException("SortedList error!");
 		return f.item;
 	}
 
 	public E getLast() {
 		final Node<E> l = last;
 		if (l == null)
-			throw LSystem.runThrow("SortedList error!");
+			throw new LSysException("SortedList error!");
 		return l.item;
 	}
 
 	public E removeFirst() {
 		final Node<E> f = first;
 		if (f == null)
-			throw LSystem.runThrow("SortedList error!");
+			throw new LSysException("SortedList error!");
 		return unlinkFirst(f);
 	}
 
 	public E removeLast() {
 		final Node<E> l = last;
 		if (l == null)
-			throw LSystem.runThrow("SortedList error!");
+			throw new LSysException("SortedList error!");
 		return unlinkLast(l);
 	}
 
@@ -379,12 +379,12 @@ public class SortedList<E> implements Iterable<E>, IArray {
 
 	private void checkElementIndex(int index) {
 		if (!isElementIndex(index))
-			throw LSystem.runThrow(outOfBoundsMsg(index));
+			throw new LSysException(outOfBoundsMsg(index));
 	}
 
 	private void checkPositionIndex(int index) {
 		if (!isPositionIndex(index))
-			throw LSystem.runThrow(outOfBoundsMsg(index));
+			throw new LSysException(outOfBoundsMsg(index));
 	}
 
 	Node<E> node(int index) {

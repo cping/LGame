@@ -21,7 +21,7 @@
 package loon.action.collision;
 
 import loon.geom.Vector2f;
-import loon.utils.Pool.Poolable;
+import loon.utils.cache.Pool.Poolable;
 
 public class GravityResult implements Poolable {
 

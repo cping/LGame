@@ -21,7 +21,7 @@
 package loon.action.sprite;
 
 import loon.LObject;
-import loon.LSystem;
+import loon.LSysException;
 import loon.PlayerUtils;
 import loon.action.ActionBind;
 import loon.action.ActionTween;
@@ -95,7 +95,7 @@ public class SpriteControls {
 
 	public SpriteControls add(ISprite spr) {
 		if (spr == null) {
-			throw LSystem.runThrow("ISprite cannot be null.");
+			throw new LSysException("ISprite cannot be null.");
 		}
 		_sprs.add(spr);
 		return this;
@@ -103,7 +103,7 @@ public class SpriteControls {
 
 	public SpriteControls add(TArray<ISprite> comps) {
 		if (comps == null) {
-			throw LSystem.runThrow("Sprites cannot be null.");
+			throw new LSysException("Sprites cannot be null.");
 		}
 		_sprs.addAll(comps);
 		return this;
@@ -111,7 +111,7 @@ public class SpriteControls {
 
 	public SpriteControls remove(ISprite spr) {
 		if (spr == null) {
-			throw LSystem.runThrow("ISprite cannot be null.");
+			throw new LSysException("ISprite cannot be null.");
 		}
 		_sprs.remove(spr);
 		return this;
@@ -119,7 +119,7 @@ public class SpriteControls {
 
 	public SpriteControls add(ISprite... comps) {
 		if (comps == null) {
-			throw LSystem.runThrow("Sprites cannot be null.");
+			throw new LSysException("Sprites cannot be null.");
 		}
 		for (int i = 0, n = comps.length; i < n; i++) {
 			add(comps[i]);
@@ -129,7 +129,7 @@ public class SpriteControls {
 
 	public SpriteControls remove(ISprite... comps) {
 		if (comps == null) {
-			throw LSystem.runThrow("Sprites cannot be null.");
+			throw new LSysException("Sprites cannot be null.");
 		}
 		for (int i = 0, n = comps.length; i < n; i++) {
 			remove(comps[i]);

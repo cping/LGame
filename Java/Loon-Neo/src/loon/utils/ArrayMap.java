@@ -21,7 +21,7 @@
  */
 package loon.utils;
 
-import loon.LSystem;
+import loon.LSysException;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 
@@ -269,7 +269,7 @@ public class ArrayMap implements IArray {
 
 	public final Entry getEntry(final int index) {
 		if (index >= size) {
-			throw LSystem.runThrow("Index:" + index + ", Size:" + size);
+			throw new LSysException("Index:" + index + ", Size:" + size);
 		}
 		return valuesTable[index];
 	}

@@ -21,7 +21,7 @@
  */
 package loon.action.collision;
 
-import loon.LSystem;
+import loon.LSysException;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.utils.LIterator;
@@ -74,7 +74,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 		}
 		size = MathUtils.min(size + 1, MAX_SIZE);
 		if (node.getLeft() != null || node.getRight() != null) {
-			throw LSystem.runThrow("Size Error !");
+			throw new LSysException("Size Error !");
 		}
 	}
 

@@ -21,6 +21,7 @@
 package loon.opengl;
 
 import loon.LRelease;
+import loon.LSysException;
 import loon.LSystem;
 
 public abstract class GLBase implements LRelease {
@@ -35,7 +36,7 @@ public abstract class GLBase implements LRelease {
 
 	public void begin(float fbufWidth, float fbufHeight, boolean flip) {
 		if (begun) {
-			throw LSystem.runThrow(getClass().getSimpleName() + " mismatched begin()");
+			throw new LSysException(getClass().getSimpleName() + " mismatched begin()");
 		}
 		begun = true;
 	}

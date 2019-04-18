@@ -22,13 +22,14 @@ package loon.utils;
 
 import java.util.Random;
 
-import loon.LSystem;
+import loon.LSysException;
 import loon.geom.RectBox;
 
 public class MathUtils {
 
-	private MathUtils(){}
-	
+	private MathUtils() {
+	}
+
 	public static final Random random = new Random();
 
 	public static final float FLOAT_ROUNDING_ERROR = 0.000001f;
@@ -83,8 +84,6 @@ public class MathUtils {
 
 	private static final float INV_ATAN2_DIM_MINUS_1 = 1.0f / (ATAN2_DIM - 1);
 
-	private static final float[] ATAN2 = new float[ATAN2_COUNT];
-
 	public static final float PI = 3.1415927f;
 
 	public static final float TWO_PI = 6.28319f;
@@ -107,25 +106,32 @@ public class MathUtils {
 
 	public static final float DEG_TO_RAD = PI / 180.0f;
 
-	public static final float[] SIN_LIST = new float[SIN_COUNT];
+	static private class SinCos {
 
-	public static final float[] COS_LIST = new float[SIN_COUNT];
+		static final float[] SIN_LIST = new float[SIN_COUNT];
 
-	static {
-		for (int i = 0; i < SIN_COUNT; i++) {
-			float a = (i + 0.5f) / SIN_COUNT * RAD_FULL;
-			SIN_LIST[i] = (float) Math.sin(a);
-			COS_LIST[i] = (float) Math.cos(a);
+		static final float[] COS_LIST = new float[SIN_COUNT];
+
+		static {
+			for (int i = 0; i < SIN_COUNT; i++) {
+				float a = (i + 0.5f) / SIN_COUNT * RAD_FULL;
+				SIN_LIST[i] = (float) Math.sin(a);
+				COS_LIST[i] = (float) Math.cos(a);
+			}
 		}
-		for (int i = 0; i < 360; i += 90) {
-			SIN_LIST[(int) (i * DEG_TO_INDEX) & SIN_MASK] = (float) Math.sin(i * DEG_TO_RAD);
-			COS_LIST[(int) (i * DEG_TO_INDEX) & SIN_MASK] = (float) Math.cos(i * DEG_TO_RAD);
-		}
-		for (int i = 0; i < ATAN2_DIM; i++) {
-			for (int j = 0; j < ATAN2_DIM; j++) {
-				float x0 = (float) i / ATAN2_DIM;
-				float y0 = (float) j / ATAN2_DIM;
-				ATAN2[j * ATAN2_DIM + i] = (float) Math.atan2(y0, x0);
+	}
+
+	static private class Atan2 {
+
+		static final float[] TABLE = new float[ATAN2_COUNT];
+
+		static {
+			for (int i = 0; i < ATAN2_DIM; i++) {
+				for (int j = 0; j < ATAN2_DIM; j++) {
+					float x0 = (float) i / ATAN2_DIM;
+					float y0 = (float) j / ATAN2_DIM;
+					TABLE[j * ATAN2_DIM + i] = (float) Math.atan2(y0, x0);
+				}
 			}
 		}
 	}
@@ -653,11 +659,11 @@ public class MathUtils {
 	}
 
 	public static final float sin(float rad) {
-		return SIN_LIST[(int) (rad * RAD_TO_INDEX) & SIN_MASK];
+		return SinCos.SIN_LIST[(int) (rad * RAD_TO_INDEX) & SIN_MASK];
 	}
 
 	public static final float sinDeg(float deg) {
-		return SIN_LIST[(int) (deg * DEG_TO_INDEX) & SIN_MASK];
+		return SinCos.SIN_LIST[(int) (deg * DEG_TO_INDEX) & SIN_MASK];
 	}
 
 	public static final float cos(float n, float angle, float arc, boolean plus) {
@@ -665,11 +671,11 @@ public class MathUtils {
 	}
 
 	public static final float cos(float rad) {
-		return COS_LIST[(int) (rad * RAD_TO_INDEX) & SIN_MASK];
+		return SinCos.COS_LIST[(int) (rad * RAD_TO_INDEX) & SIN_MASK];
 	}
 
 	public static final float cosDeg(float deg) {
-		return COS_LIST[(int) (deg * DEG_TO_INDEX) & SIN_MASK];
+		return SinCos.COS_LIST[(int) (deg * DEG_TO_INDEX) & SIN_MASK];
 	}
 
 	public static final float atan2(float y, float x) {
@@ -693,7 +699,7 @@ public class MathUtils {
 		float invDiv = 1 / ((x < y ? y : x) * INV_ATAN2_DIM_MINUS_1);
 		int xi = (int) (x * invDiv);
 		int yi = (int) (y * invDiv);
-		return (ATAN2[yi * ATAN2_DIM + xi] + add) * mul;
+		return (Atan2.TABLE[yi * ATAN2_DIM + xi] + add) * mul;
 	}
 
 	public static final float toDegrees(final float radians) {
@@ -710,14 +716,14 @@ public class MathUtils {
 
 	public static final float safeAdd(float left, float right) {
 		if (right > 0 ? left > Long.MAX_VALUE - right : left < Long.MIN_VALUE - right) {
-			throw LSystem.runThrow("Integer overflow");
+			throw new LSysException("Integer overflow");
 		}
 		return left + right;
 	}
 
 	public static final float safeSubtract(float left, float right) {
 		if (right > 0 ? left < Long.MIN_VALUE + right : left > Long.MAX_VALUE + right) {
-			throw LSystem.runThrow("Integer overflow");
+			throw new LSysException("Integer overflow");
 		}
 		return left - right;
 	}
@@ -726,28 +732,28 @@ public class MathUtils {
 		if (right > 0 ? left > Long.MAX_VALUE / right || left < Long.MIN_VALUE / right
 				: (right < -1 ? left > Long.MIN_VALUE / right || left < Long.MAX_VALUE / right
 						: right == -1 && left == Long.MIN_VALUE)) {
-			throw LSystem.runThrow("Integer overflow");
+			throw new LSysException("Integer overflow");
 		}
 		return left * right;
 	}
 
 	public static final float safeDivide(float left, float right) {
 		if ((left == Float.MIN_VALUE) && (right == -1)) {
-			throw LSystem.runThrow("Integer overflow");
+			throw new LSysException("Integer overflow");
 		}
 		return left / right;
 	}
 
 	public static final float safeNegate(float a) {
 		if (a == Long.MIN_VALUE) {
-			throw LSystem.runThrow("Integer overflow");
+			throw new LSysException("Integer overflow");
 		}
 		return -a;
 	}
 
 	public static final float safeAbs(float a) {
 		if (a == Long.MIN_VALUE) {
-			throw LSystem.runThrow("Integer overflow");
+			throw new LSysException("Integer overflow");
 		}
 		return MathUtils.abs(a);
 	}
@@ -1093,13 +1099,13 @@ public class MathUtils {
 
 	public static final int parseUnsignedInt(String s, int radix) {
 		if (s == null) {
-			throw LSystem.runThrow("null");
+			throw new LSysException("null");
 		}
 		int len = s.length();
 		if (len > 0) {
 			char firstChar = s.charAt(0);
 			if (firstChar == '-') {
-				throw LSystem.runThrow("on unsigned string %s.");
+				throw new LSysException("on unsigned string %s.");
 			} else {
 				if (len <= 5 || (radix == 10 && len <= 9)) {
 					return Integer.parseInt(s, radix);
@@ -1108,12 +1114,12 @@ public class MathUtils {
 					if ((ell & 0xffff_ffff_0000_0000L) == 0) {
 						return (int) ell;
 					} else {
-						throw LSystem.runThrow("range of unsigned int.");
+						throw new LSysException("range of unsigned int.");
 					}
 				}
 			}
 		} else {
-			throw LSystem.runThrow(s);
+			throw new LSysException(s);
 		}
 	}
 

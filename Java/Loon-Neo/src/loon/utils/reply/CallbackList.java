@@ -20,7 +20,7 @@
  */
 package loon.utils.reply;
 
-import loon.LSystem;
+import loon.LSysException;
 import loon.utils.TArray;
 
 public class CallbackList<T> implements Callback<T> {
@@ -58,7 +58,7 @@ public class CallbackList<T> implements Callback<T> {
 
 	protected void checkState() {
 		if (callbacks == null) {
-			throw LSystem.runThrow("callbackList has already fired !");
+			throw new LSysException("callbackList has already fired !");
 		}
 	}
 

@@ -23,16 +23,21 @@ package loon.opengl;
 import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
 
+import loon.LSysException;
 import loon.LSystem;
 
 public class IndexBufferObject implements IndexData {
-	ShortBuffer buffer;
-	ByteBuffer byteBuffer;
-	int bufferHandle;
-	final boolean isDirect;
-	boolean isDirty = true;
-	boolean isBound = false;
-	final int usage;
+	
+	protected ShortBuffer buffer;
+	protected ByteBuffer byteBuffer;
+	
+	protected int bufferHandle;
+	protected final boolean isDirect;
+	
+	protected boolean isDirty = true;
+	protected boolean isBound = false;
+	
+	protected final int usage;
 
 	private final boolean empty;
 
@@ -110,7 +115,7 @@ public class IndexBufferObject implements IndexData {
 	@Override
 	public void bind() {
 		if (bufferHandle == 0){
-			throw LSystem.runThrow("No buffer allocated!");
+			throw new LSysException("No buffer allocated!");
 		}
 		LSystem.base().graphics().gl.glBindBuffer(GL20.GL_ELEMENT_ARRAY_BUFFER,
 				bufferHandle);

@@ -22,6 +22,7 @@ package loon.opengl;
 
 import loon.Graphics;
 import loon.LRelease;
+import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
 import loon.LTrans;
@@ -2517,7 +2518,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			drawRoundRectImpl(x, y, width, height, radius);
 		} else {
 			if (radius < 0) {
-				throw LSystem.runThrow("radius > 0");
+				throw new LSysException("radius > 0");
 			}
 			if (radius == 0) {
 				drawRect(x, y, width, height);
@@ -2571,7 +2572,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			fillRoundRectImpl(x, y, width, height, radius);
 		} else {
 			if (radius < 0) {
-				throw LSystem.runThrow("radius > 0");
+				throw new LSysException("radius > 0");
 			}
 			if (radius == 0) {
 				fillRect(x, y, width, height);
@@ -2910,7 +2911,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		}
 		if (x_src + width > texture.width() || y_src + height > texture.height() || width < 0 || height < 0 || x_src < 0
 				|| y_src < 0) {
-			throw LSystem.runThrow("Area out of texture");
+			throw new LSysException("Area out of texture");
 		}
 		int dW = width, dH = height;
 
@@ -2961,7 +2962,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			break;
 		}
 		default:
-			throw LSystem.runThrow("Bad transform");
+			throw new LSysException("Bad transform");
 		}
 
 		boolean badAnchor = false;
@@ -3006,7 +3007,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			badAnchor = true;
 		}
 		if (badAnchor) {
-			throw LSystem.runThrow("Bad Anchor");
+			throw new LSysException("Bad Anchor");
 		}
 
 		return draw(texture, x_dst, y_dst, width, height, x_src, y_src, x_src + width, y_src + height, c, rotate, sx,

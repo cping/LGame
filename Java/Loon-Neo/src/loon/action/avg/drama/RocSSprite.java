@@ -1,6 +1,7 @@
 package loon.action.avg.drama;
 
 import loon.LObject;
+import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
 import loon.PlayerUtils;
@@ -59,7 +60,7 @@ public class RocSSprite extends LObject<ISprite> implements ISprite {
 			this.setDelay(delay);
 			this.setName("RocSSprite");
 		} catch (ScriptException ex) {
-			throw LSystem.runThrow("ROC Script load exception", ex);
+			throw new LSysException("ROC Script load exception", ex);
 		}
 	}
 

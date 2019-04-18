@@ -24,6 +24,7 @@ import java.io.IOException;
 
 import loon.BaseIO;
 import loon.LRelease;
+import loon.LSysException;
 import loon.LSystem;
 import loon.utils.ArrayByte;
 
@@ -141,7 +142,7 @@ public class TGA {
 		case 1:
 			hasPalette = true;
 			result = TGA_HEADER_UNCOMPRESSED;
-			throw LSystem.runThrow("Indexed State is not yet supported !");
+			throw new LSysException("Indexed State is not yet supported !");
 		case 2:
 			result = TGA_HEADER_UNCOMPRESSED;
 			break;
@@ -151,7 +152,7 @@ public class TGA {
 		case 9:
 			hasPalette = true;
 			result = TGA_HEADER_COMPRESSED;
-			throw LSystem.runThrow("Indexed State is not yet supported !");
+			throw new LSysException("Indexed State is not yet supported !");
 		case 10:
 			result = TGA_HEADER_COMPRESSED;
 			break;
@@ -197,7 +198,7 @@ public class TGA {
 		case 8:
 		case 15:
 		case 16:
-			throw LSystem.runThrow("this State with non RGB or RGBA pixels are not yet supported.");
+			throw new LSysException("this State with non RGB or RGBA pixels are not yet supported.");
 		case 24:
 		case 32:
 			break;
@@ -289,7 +290,7 @@ public class TGA {
 
 		// 不支持的格式
 		if ((orgWidth <= 0) || (orgHeight <= 0) || ((pixelDepth != 24) && (pixelDepth != 32))) {
-			throw LSystem.runThrow("Invalid texture information !");
+			throw new LSysException("Invalid texture information !");
 		}
 
 		int bytesPerPixel = (pixelDepth / 8);
@@ -318,7 +319,7 @@ public class TGA {
 		}
 
 		if ((orgWidth <= 0) || (orgHeight <= 0) || ((pixelDepth != 24) && (pixelDepth != 32))) {
-			throw LSystem.runThrow("Invalid texture information !");
+			throw new LSysException("Invalid texture information !");
 		}
 
 		int bytesPerPixel = (pixelDepth / 8);
@@ -377,7 +378,7 @@ public class TGA {
 				currentPixel++;
 
 				if (currentPixel > pixelCount) {
-					throw LSystem.runThrow("Too many pixels read !");
+					throw new LSysException("Too many pixels read !");
 				}
 			}
 		} while (currentPixel < pixelCount);
@@ -419,7 +420,7 @@ public class TGA {
 		} else if (headerType == TGA_HEADER_COMPRESSED) {
 			loadCompressed(header, tga, in, acceptAlpha, flipVertically);
 		} else {
-			throw LSystem.runThrow("State file be type 2 or type 10 !");
+			throw new LSysException("State file be type 2 or type 10 !");
 		}
 		return tga;
 	}

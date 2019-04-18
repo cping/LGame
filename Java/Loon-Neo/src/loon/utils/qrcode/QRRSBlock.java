@@ -20,7 +20,7 @@
  */
 package loon.utils.qrcode;
 
-import loon.LSystem;
+import loon.LSysException;
 import loon.utils.TArray;
 
 public class QRRSBlock {
@@ -195,6 +195,6 @@ public class QRRSBlock {
 			}
 		} catch (Throwable t) {
 		}
-		throw LSystem.runThrow("typeNumber: " + typeNumber + "/errorLevel: " + errorLevel);
+		throw new LSysException("typeNumber: " + typeNumber + "/errorLevel: " + errorLevel);
 	}
 }

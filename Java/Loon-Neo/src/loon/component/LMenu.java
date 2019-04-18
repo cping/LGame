@@ -22,6 +22,7 @@
 package loon.component;
 
 import loon.LRelease;
+import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
@@ -451,7 +452,7 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 		this.main_panel_size += this.cellWidth + this.paddingx;
 		this._defUI = defUI;
 		if (type > MOVE_RIGHT) {
-			throw LSystem.runThrow("Type:" + type + ", The Menu display mode is not supported !");
+			throw new LSysException("Type:" + type + ", The Menu display mode is not supported !");
 		}
 	}
 

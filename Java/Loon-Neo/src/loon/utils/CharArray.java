@@ -2,7 +2,7 @@ package loon.utils;
 
 import java.util.Arrays;
 
-import loon.LSystem;
+import loon.LSysException;
 import loon.event.QueryEvent;
 
 public class CharArray implements IArray {
@@ -80,7 +80,7 @@ public class CharArray implements IArray {
 
 	public void addAll(CharArray array, int offset, int length) {
 		if (offset + length > array.length)
-			throw LSystem.runThrow(
+			throw new LSysException(
 					"offset + length must be <= length: " + offset + " + " + length + " <= " + array.length);
 		addAll(array.items, offset, length);
 	}
@@ -120,19 +120,19 @@ public class CharArray implements IArray {
 
 	public void incr(int index, char value) {
 		if (index >= length)
-			throw LSystem.runThrow("index can't be >= length: " + index + " >= " + length);
+			throw new LSysException("index can't be >= length: " + index + " >= " + length);
 		items[index] += value;
 	}
 
 	public void mul(int index, char value) {
 		if (index >= length)
-			throw LSystem.runThrow("index can't be >= length: " + index + " >= " + length);
+			throw new LSysException("index can't be >= length: " + index + " >= " + length);
 		items[index] *= value;
 	}
 
 	public void insert(int index, char value) {
 		if (index > length) {
-			throw LSystem.runThrow("index can't be > length: " + index + " > " + length);
+			throw new LSysException("index can't be > length: " + index + " > " + length);
 		}
 		char[] items = this.items;
 		if (length == items.length)
@@ -147,9 +147,9 @@ public class CharArray implements IArray {
 
 	public void swap(int first, int second) {
 		if (first >= length)
-			throw LSystem.runThrow("first can't be >= length: " + first + " >= " + length);
+			throw new LSysException("first can't be >= length: " + first + " >= " + length);
 		if (second >= length)
-			throw LSystem.runThrow("second can't be >= length: " + second + " >= " + length);
+			throw new LSysException("second can't be >= length: " + second + " >= " + length);
 		char[] items = this.items;
 		char firstValue = items[first];
 		items[first] = items[second];
@@ -194,7 +194,7 @@ public class CharArray implements IArray {
 
 	public int removeIndex(int index) {
 		if (index >= length) {
-			throw LSystem.runThrow("index can't be >= length: " + index + " >= " + length);
+			throw new LSysException("index can't be >= length: " + index + " >= " + length);
 		}
 		char[] items = this.items;
 		char value = items[index];
@@ -209,10 +209,10 @@ public class CharArray implements IArray {
 
 	public void removeRange(int start, int end) {
 		if (end >= length) {
-			throw LSystem.runThrow("end can't be >= length: " + end + " >= " + length);
+			throw new LSysException("end can't be >= length: " + end + " >= " + length);
 		}
 		if (start > end) {
-			throw LSystem.runThrow("start can't be > end: " + start + " > " + end);
+			throw new LSysException("start can't be > end: " + start + " > " + end);
 		}
 		char[] items = this.items;
 		int count = end - start + 1;
@@ -377,7 +377,7 @@ public class CharArray implements IArray {
 
 	public static char[] slice(char[] array, int begin, int end) {
 		if (begin > end) {
-			throw LSystem.runThrow("CharArray begin > end");
+			throw new LSysException("CharArray begin > end");
 		}
 		if (begin < 0) {
 			begin = array.length + begin;

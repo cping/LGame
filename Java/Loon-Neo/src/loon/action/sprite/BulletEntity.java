@@ -20,6 +20,7 @@
  */
 package loon.action.sprite;
 
+import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
 import loon.action.collision.CollisionManager;
@@ -367,7 +368,7 @@ public class BulletEntity extends Entity {
 			return null;
 		}
 		if (distance < 0) {
-			throw LSystem.runThrow("distance < 0");
+			throw new LSysException("distance < 0");
 		} else {
 			return collisionManager.getNeighbours(obj, distance, d, objFlag);
 		}

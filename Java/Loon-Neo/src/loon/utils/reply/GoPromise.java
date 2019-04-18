@@ -20,7 +20,7 @@
  */
 package loon.utils.reply;
 
-import loon.LSystem;
+import loon.LSysException;
 
 public class GoPromise<T> extends GoFuture<T> {
 
@@ -68,7 +68,7 @@ public class GoPromise<T> extends GoFuture<T> {
 			protected synchronized Try<T> updateAndNotify(Try<T> value,
 					boolean force) {
 				if (_value != null){
-					throw LSystem.runThrow("already completed");
+					throw new LSysException("already completed");
 				}
 				try {
 					return super.updateAndNotify(value, force);

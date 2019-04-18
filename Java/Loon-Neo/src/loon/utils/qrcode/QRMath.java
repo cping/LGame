@@ -20,7 +20,7 @@
  */
 package loon.utils.qrcode;
 
-import loon.LSystem;
+import loon.LSysException;
 
 public class QRMath {
 
@@ -46,7 +46,7 @@ public class QRMath {
 	public static int glog(int n) {
 		init();
 		if (n < 1) {
-			throw LSystem.runThrow("log(" + n + ")");
+			throw new LSysException("log(" + n + ")");
 		}
 		return LOG_TABLE[n];
 	}

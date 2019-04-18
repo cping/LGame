@@ -55,7 +55,7 @@ public class AStarFinder extends TileImplPathFind implements Updateable, LReleas
 
 	public final static AStarFindHeuristic ASTAR_DIAGONAL_SHORT = new DiagonalShort();
 
-	private final static IntMap<TArray<Vector2f>> finderLazy = new IntMap<TArray<Vector2f>>(100);
+	private final static IntMap<TArray<Vector2f>> FINDER_LAZY = new IntMap<TArray<Vector2f>>(100);
 
 	private final static int makeLazyKey(AStarFindHeuristic heuristic, int[][] map, int[] limits, int sx, int sy,
 			int ex, int ey, boolean flag) {
@@ -84,12 +84,12 @@ public class AStarFinder extends TileImplPathFind implements Updateable, LReleas
 	public static TArray<Vector2f> find(AStarFindHeuristic heuristic, int[][] maps, int[] limits, int x1, int y1,
 			int x2, int y2, boolean flag) {
 		heuristic = (heuristic == null ? ASTAR_MANHATTAN : heuristic);
-		synchronized (finderLazy) {
-			if (finderLazy.size >= LSystem.DEFAULT_MAX_CACHE_SIZE * 10) {
-				finderLazy.clear();
+		synchronized (FINDER_LAZY) {
+			if (FINDER_LAZY.size >= LSystem.DEFAULT_MAX_CACHE_SIZE * 10) {
+				FINDER_LAZY.clear();
 			}
 			int key = makeLazyKey(heuristic, maps, limits, x1, y1, x2, y2, flag);
-			TArray<Vector2f> result = finderLazy.get(key);
+			TArray<Vector2f> result = FINDER_LAZY.get(key);
 			if (result == null) {
 				AStarFinder astar = new AStarFinder(heuristic);
 				Field2D fieldMap = new Field2D(maps);
@@ -99,7 +99,7 @@ public class AStarFinder extends TileImplPathFind implements Updateable, LReleas
 				Vector2f start = new Vector2f(x1, y1);
 				Vector2f over = new Vector2f(x2, y2);
 				result = astar.calc(fieldMap, start, over, flag);
-				finderLazy.put(key, result);
+				FINDER_LAZY.put(key, result);
 				astar.close();
 			}
 			if (result != null) {

@@ -20,7 +20,7 @@
  */
 package loon.utils.qrcode;
 
-import loon.LSystem;
+import loon.LSysException;
 import loon.utils.CharUtils;
 
 public class QRKANJI extends QRData {
@@ -41,17 +41,17 @@ public class QRKANJI extends QRData {
 				} else if (0xE040 <= c && c <= 0xEBBF) {
 					c -= 0xC140;
 				} else {
-					throw LSystem.runThrow("illegal char at " + (i + 1) + "/" + CharUtils.toHex(c));
+					throw new LSysException("illegal char at " + (i + 1) + "/" + CharUtils.toHex(c));
 				}
 				c = ((c >>> 8) & 0xff) * 0xC0 + (c & 0xff);
 				buffer.put(c, 13);
 				i += 2;
 			}
 			if (i < data.length) {
-				throw LSystem.runThrow("illegal char at " + (i + 1));
+				throw new LSysException("illegal char at " + (i + 1));
 			}
 		} catch (Throwable e) {
-			throw LSystem.runThrow(e.getMessage(), e);
+			throw new LSysException(e.getMessage(), e);
 		}
 	}
 
@@ -60,7 +60,7 @@ public class QRKANJI extends QRData {
 		try {
 			return QRUtil.getEncodeBytes(getData()).length / 2;
 		} catch (Throwable e) {
-			throw LSystem.runThrow(e.getMessage(), e);
+			throw new LSysException(e.getMessage(), e);
 		}
 	}
 }

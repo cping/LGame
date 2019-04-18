@@ -20,7 +20,7 @@
  */
 package loon.utils;
 
-import loon.LSystem;
+import loon.LSysException;
 
 public class CharUtils {
 	
@@ -362,7 +362,7 @@ public class CharUtils {
 		case 'f':
 			return c - 87;
 		default:
-			throw LSystem.runThrow("Not a hex: " + c);
+			throw new LSysException("Not a hex: " + c);
 		}
 	}
 

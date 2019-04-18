@@ -20,6 +20,7 @@
  */
 package loon.canvas;
 
+import loon.LSysException;
 import loon.LSystem;
 import loon.geom.Limit;
 import loon.geom.RectBox;
@@ -539,7 +540,7 @@ public abstract class PixmapFImpl {
 
 	protected final void drawRoundRectImpl(float x, float y, float width, float height, float radius) {
 		if (radius < 0) {
-			throw LSystem.runThrow("radius > 0");
+			throw new LSysException("radius > 0");
 		}
 		if (radius == 0) {
 			drawRectImpl(x, y, width, height);
@@ -563,7 +564,7 @@ public abstract class PixmapFImpl {
 
 	protected void fillRoundRectImpl(float x, float y, float width, float height, float radius) {
 		if (radius < 0) {
-			throw LSystem.runThrow("radius > 0");
+			throw new LSysException("radius > 0");
 		}
 		if (radius == 0) {
 			fillRectNative(x, y, width, height);

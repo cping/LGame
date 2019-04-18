@@ -228,7 +228,7 @@ public class LTransition {
 	 */
 	public static final LTransition newCombinedTransition(final TArray<LTransition> transitions) {
 
-		if (LSystem._base != null) {
+		if (LSystem.base() != null) {
 
 			final LTransition transition = new LTransition();
 
@@ -309,7 +309,7 @@ public class LTransition {
 	 */
 	public static final LTransition newCross(final int c, final LTexture texture) {
 
-		if (LSystem._base != null) {
+		if (LSystem.base() != null) {
 
 			final LTransition transition = new LTransition();
 
@@ -366,7 +366,7 @@ public class LTransition {
 	 */
 	public static final LTransition newArc(final LColor c) {
 
-		if (LSystem._base != null) {
+		if (LSystem.base() != null) {
 
 			final LTransition transition = new LTransition();
 
@@ -436,7 +436,7 @@ public class LTransition {
 	 */
 	public static final LTransition newSplit(final int d, final LTexture texture) {
 
-		if (LSystem._base != null) {
+		if (LSystem.base() != null) {
 
 			final LTransition transition = new LTransition();
 
@@ -534,7 +534,7 @@ public class LTransition {
 	 * @return
 	 */
 	public static final LTransition newFade(final int type, final LColor c) {
-		if (LSystem._base != null) {
+		if (LSystem.base() != null) {
 			final LTransition transition = new LTransition();
 
 			transition.setTransitionListener(new TransitionListener() {
@@ -583,7 +583,7 @@ public class LTransition {
 	}
 
 	public static final LTransition newFadeDot(final int type, final LColor c) {
-		if (LSystem._base != null) {
+		if (LSystem.base() != null) {
 			final LTransition transition = new LTransition();
 
 			transition.setTransitionListener(new TransitionListener() {
@@ -632,7 +632,7 @@ public class LTransition {
 	}
 
 	public static final LTransition newFadeTile(final int type, final LColor c) {
-		if (LSystem._base != null) {
+		if (LSystem.base() != null) {
 			final LTransition transition = new LTransition();
 
 			transition.setTransitionListener(new TransitionListener() {
@@ -680,7 +680,7 @@ public class LTransition {
 	}
 
 	public static final LTransition newFadeSpiral(final int type, final LColor c) {
-		if (LSystem._base != null) {
+		if (LSystem.base() != null) {
 			final LTransition transition = new LTransition();
 
 			transition.setTransitionListener(new TransitionListener() {
@@ -747,7 +747,7 @@ public class LTransition {
 	 * @return
 	 */
 	public static final LTransition newFadeSwipe(final int type, final LColor c) {
-		if (LSystem._base != null) {
+		if (LSystem.base() != null) {
 			final LTransition transition = new LTransition();
 
 			transition.setTransitionListener(new TransitionListener() {
@@ -814,7 +814,7 @@ public class LTransition {
 	 * @return
 	 */
 	public static final LTransition newFadeBoard(final int type, final LColor c) {
-		if (LSystem._base != null) {
+		if (LSystem.base() != null) {
 			final LTransition transition = new LTransition();
 
 			transition.setTransitionListener(new TransitionListener() {
@@ -872,7 +872,7 @@ public class LTransition {
 	}
 
 	public static final LTransition newOvalFade(final int type, final LColor c) {
-		if (LSystem._base != null) {
+		if (LSystem.base() != null) {
 			final LTransition transition = new LTransition();
 
 			transition.setTransitionListener(new TransitionListener() {
@@ -912,7 +912,7 @@ public class LTransition {
 	}
 
 	public static final LTransition newPixelWind(final LColor c) {
-		if (LSystem._base != null) {
+		if (LSystem.base() != null) {
 			final LTransition transition = new LTransition();
 
 			transition.setTransitionListener(new TransitionListener() {
@@ -952,7 +952,7 @@ public class LTransition {
 	}
 
 	public static final LTransition newPixelDarkIn(final LColor c) {
-		if (LSystem._base != null) {
+		if (LSystem.base() != null) {
 			final LTransition transition = new LTransition();
 
 			transition.setTransitionListener(new TransitionListener() {
@@ -992,7 +992,7 @@ public class LTransition {
 	}
 
 	public static final LTransition newPixelDarkOut(final LColor c) {
-		if (LSystem._base != null) {
+		if (LSystem.base() != null) {
 			final LTransition transition = new LTransition();
 
 			transition.setTransitionListener(new TransitionListener() {
@@ -1032,7 +1032,7 @@ public class LTransition {
 	}
 
 	public static final LTransition newPixelThunder(final LColor c) {
-		if (LSystem._base != null) {
+		if (LSystem.base() != null) {
 			final LTransition transition = new LTransition();
 
 			transition.setTransitionListener(new TransitionListener() {

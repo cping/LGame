@@ -1,6 +1,6 @@
 package loon.utils;
 
-import loon.LSystem;
+import loon.LSysException;
 
 public class ListMap<K, V> implements IArray {
 
@@ -60,7 +60,7 @@ public class ListMap<K, V> implements IArray {
 
 	public void putAll(ListMap<K, V> map, int offset, int length) {
 		if (offset + length > map.size)
-			throw LSystem.runThrow(
+			throw new LSysException(
 					"offset + length must be <= size: " + offset + " + "
 							+ length + " <= " + map.size);
 		int sizeNeeded = size + length - offset;
@@ -109,14 +109,14 @@ public class ListMap<K, V> implements IArray {
 
 	public K getKeyAt(int index) {
 		if (index >= size) {
-			throw LSystem.runThrow(String.valueOf(index));
+			throw new LSysException(String.valueOf(index));
 		}
 		return keys[index];
 	}
 
 	public V getValueAt(int index) {
 		if (index >= size) {
-			throw LSystem.runThrow(String.valueOf(index));
+			throw new LSysException(String.valueOf(index));
 		}
 		return values[index];
 	}
@@ -135,19 +135,19 @@ public class ListMap<K, V> implements IArray {
 
 	public void setKey(int index, K key) {
 		if (index >= size)
-			throw LSystem.runThrow(String.valueOf(index));
+			throw new LSysException(String.valueOf(index));
 		keys[index] = key;
 	}
 
 	public void setValue(int index, V value) {
 		if (index >= size)
-			throw LSystem.runThrow(String.valueOf(index));
+			throw new LSysException(String.valueOf(index));
 		values[index] = value;
 	}
 
 	public void insert(int index, K key, V value) {
 		if (index > size)
-			throw LSystem.runThrow(String.valueOf(index));
+			throw new LSysException(String.valueOf(index));
 		if (size == keys.length)
 			resize(MathUtils.max(8, (int) (size * 1.75f)));
 		if (ordered) {
@@ -264,7 +264,7 @@ public class ListMap<K, V> implements IArray {
 
 	public void removeIndex(int index) {
 		if (index >= size)
-			throw LSystem.runThrow(String.valueOf(index));
+			throw new LSysException(String.valueOf(index));
 		Object[] keys = this.keys;
 		size--;
 		if (ordered) {

@@ -26,8 +26,8 @@ import loon.action.ActionBind;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.utils.MathUtils;
-import loon.utils.Pool;
 import loon.utils.TArray;
+import loon.utils.cache.Pool;
 
 /**
  * 简单的重力控制器,使用时需要绑定Gravity
