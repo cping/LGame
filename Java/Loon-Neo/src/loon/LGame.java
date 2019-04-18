@@ -21,9 +21,14 @@
 package loon;
 
 import loon.LTexture.Format;
+import loon.action.sprite.Sprites;
 import loon.canvas.Image;
 import loon.canvas.NinePatchAbstract.Repeat;
+import loon.component.Desktop;
 import loon.event.InputMake;
+import loon.font.IFont;
+import loon.font.LFont;
+import loon.opengl.LSTRFont;
 import loon.opengl.Mesh;
 import loon.opengl.ShaderProgram;
 import loon.opengl.VertexAttribute;
@@ -33,6 +38,7 @@ import loon.utils.IntMap;
 import loon.utils.ObjectMap;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
+import loon.utils.json.JsonImpl;
 import loon.utils.reply.Act;
 
 /**
@@ -40,13 +46,23 @@ import loon.utils.reply.Act;
  */
 public abstract class LGame {
 
-	private final TArray<LTexture> _texture_all_list;
+	protected static final String FONT_NAME = "Dialog";
+
+	protected static final String APP_NAME = "Loon";
 
 	private final IntMap<LTextureBatch> _texture_batch_pools;
 
 	private final ObjectMap<String, Mesh> _texture_mesh_pools;
 
 	private final ObjectMap<String, LTexture> _texture_lazys;
+
+	private final TArray<LTexture> _texture_all_list;
+
+	private final TArray<Sprites> _sprites_pools;
+
+	private final TArray<Desktop> _desktop_pools;
+
+	private final TArray<IFont> _font_pools;
 
 	/**
 	 * 支持的运行库(Java版不支持的会由C++版和C#版实现)
@@ -82,36 +98,29 @@ public abstract class LGame {
 
 	private Display display;
 
+	private JsonImpl jsonImpl;
+
 	public LGame(LSetting config, Platform plat) {
 		LSystem._platform = plat;
-		_texture_batch_pools = new IntMap<LTextureBatch>(12);
-		_texture_mesh_pools = new ObjectMap<String, Mesh>(12);
-		_texture_all_list = new TArray<LTexture>(128);
-		_texture_lazys = new ObjectMap<String, LTexture>(128);
+		this._texture_batch_pools = new IntMap<LTextureBatch>(12);
+		this._texture_mesh_pools = new ObjectMap<String, Mesh>(12);
+		this._texture_lazys = new ObjectMap<String, LTexture>(128);
+		this._texture_all_list = new TArray<LTexture>(128);
+		this._sprites_pools = new TArray<Sprites>(12);
+		this._desktop_pools = new TArray<Desktop>(12);
+		this._font_pools = new TArray<IFont>(12);
 		if (config == null) {
 			config = new LSetting();
 		}
 		this.setting = config;
 		String appName = config.appName;
-		if (appName != null) {
-			LSystem._app_name = appName;
-		} else if (LSystem._app_name != null) {
-			appName = LSystem._app_name;
-		} else {
-			appName = "loon";
-			LSystem._app_name = appName;
+		if (StringUtils.isEmpty(appName)) {
+			setting.appName = APP_NAME;
 		}
-		setting.appName = appName;
 		String fontName = config.fontName;
-		if (fontName != null) {
-			LSystem._font_name = fontName;
-		} else if (LSystem._font_name != null) {
-			fontName = LSystem._font_name;
-		} else {
-			fontName = "Dialog";
-			LSystem._font_name = fontName;
+		if (StringUtils.isEmpty(fontName)) {
+			setting.fontName = FONT_NAME;
 		}
-		setting.fontName = fontName;
 	}
 
 	public Display register(Screen screen) {
@@ -122,6 +131,15 @@ public abstract class LGame {
 
 	public LGame initProcess() {
 		LSystem.initProcess(this);
+		if (setting.defaultGameFont == null) {
+			setting.defaultGameFont = LFont.getFont(setting.fontName, 20);
+		}
+		if (setting.defaultLogFont == null) {
+			setting.defaultLogFont = LSTRFont.getFont(LSystem.isDesktop() ? 16 : 20);
+		}
+		if (jsonImpl == null) {
+			jsonImpl = new JsonImpl();
+		}
 		return this;
 	}
 
@@ -161,6 +179,10 @@ public abstract class LGame {
 	public boolean isHTML5() {
 		Type type = this.type();
 		return type == LGame.Type.HTML5;
+	}
+
+	public boolean isDesktop() {
+		return !isMobile() && !isHTML5();
 	}
 
 	public LGame reportError(String message, Throwable cause) {
@@ -582,6 +604,120 @@ public abstract class LGame {
 		closeAllTexture();
 	}
 
+	public int getSpritesSize() {
+		return _sprites_pools.size;
+	}
+
+	public int allSpritesCount() {
+		int size = 0;
+		for (int i = _sprites_pools.size - 1; i > -1; i--) {
+			size += _sprites_pools.get(i).size();
+		}
+		return size;
+	}
+
+	public boolean pushSpritesPool(Sprites sprites) {
+		if (!_sprites_pools.contains(sprites)) {
+			return _sprites_pools.add(sprites);
+		}
+		return false;
+	}
+
+	public boolean popSpritesPool(Sprites sprites) {
+		return _sprites_pools.remove(sprites);
+	}
+
+	public void closeSpritesPool() {
+		for (int i = _sprites_pools.size - 1; i > -1; i--) {
+			Sprites sprites = _sprites_pools.get(i);
+			if (sprites != null) {
+				sprites.close();
+			}
+		}
+		_sprites_pools.clear();
+	}
+
+	public int getDesktopSize() {
+		return _desktop_pools.size;
+	}
+
+	public int allDesktopCount() {
+		int size = 0;
+		for (int i = _desktop_pools.size - 1; i > -1; i--) {
+			size += _desktop_pools.get(i).size();
+		}
+		return size;
+	}
+
+	public boolean pushDesktopPool(Desktop desktop) {
+		if (!_desktop_pools.contains(desktop)) {
+			return _desktop_pools.add(desktop);
+		}
+		return false;
+	}
+
+	public boolean popDesktopPool(Desktop desktop) {
+		return _desktop_pools.remove(desktop);
+	}
+
+	public void closeDesktopPool() {
+		for (int i = _desktop_pools.size - 1; i > -1; i--) {
+			Desktop desktop = _desktop_pools.get(i);
+			if (desktop != null) {
+				desktop.close();
+			}
+		}
+		_desktop_pools.clear();
+	}
+
+	public int getFontSize() {
+		return _font_pools.size;
+	}
+
+	public boolean pushFontPool(IFont font) {
+		if (!_font_pools.contains(font)) {
+			return _font_pools.add(font);
+		}
+		return false;
+	}
+
+	public boolean popFontPool(IFont font) {
+		return _font_pools.remove(font);
+	}
+
+	public IFont serachFontPool(String className, String fontName, int size) {
+		if (className == null) {
+			return null;
+		}
+		for (int i = _font_pools.size - 1; i > -1; i--) {
+			IFont font = _font_pools.get(i);
+			if (font != null && font.getSize() == size && font.getClass().getName().equals(className)
+					&& font.getFontName().equals(fontName)) {
+				return font;
+			}
+		}
+		return null;
+	}
+
+	protected final void closeFontTempTexture() {
+		for (int i = _font_pools.size - 1; i > -1; i--) {
+			IFont font = _font_pools.get(i);
+			if (font != null && font instanceof LFont) {
+				((LFont)font).closeTempTexture();
+			}
+		}
+	}
+
+	public void closeFontPool() {
+		for (int i = _font_pools.size - 1; i > -1; i--) {
+			IFont font = _font_pools.get(i);
+			if (font != null) {
+				font.close();
+			}
+		}
+		_font_pools.clear();
+	}
+
 	public abstract LGame.Type type();
 
 	public abstract double time();
@@ -607,7 +743,7 @@ public abstract class LGame {
 	public abstract Support support();
 
 	public Json json() {
-		return LSystem.json();
+		return jsonImpl;
 	}
 
 	public Display display() {

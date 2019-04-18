@@ -44,18 +44,6 @@ import loon.utils.TArray;
  */
 public class Sprites implements IArray, Visible, LRelease {
 
-	private final static TArray<Sprites> SPRITES_CACHE = new TArray<Sprites>(8);
-
-	public final static int allSpritesCount() {
-		if (LSystem.base() == null) {
-			return 0;
-		}
-		int size = 0;
-		for (int i = 0, len = SPRITES_CACHE.size; i < len; i++) {
-			size += SPRITES_CACHE.get(i).size();
-		}
-		return size;
-	}
 
 	public static interface SpriteListener {
 
@@ -107,9 +95,9 @@ public class Sprites implements IArray, Visible, LRelease {
 		this._screen = screen;
 		this._visible = true;
 		this._sprites = new ISprite[CollectionUtils.INITIAL_CAPACITY];
-		this._sprites_name = StringUtils.isEmpty(name) ? "Sprites" + SPRITES_CACHE.size() : name;
+		this._sprites_name = StringUtils.isEmpty(name) ? "Sprites" + LSystem.getSpritesSize() : name;
 		this.setSize(w, h);
-		SPRITES_CACHE.add(this);
+		LSystem.pushSpritesPool(this);
 	}
 
 	/**
@@ -1042,6 +1030,6 @@ public class Sprites implements IArray, Visible, LRelease {
 		clear();
 		this._sprites = null;
 		this._closed = true;
-		SPRITES_CACHE.remove(this);
+		LSystem.popSpritesPool(this);
 	}
 }

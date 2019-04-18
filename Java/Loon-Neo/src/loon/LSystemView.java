@@ -39,9 +39,11 @@ public abstract class LSystemView extends BaseIO {
 	public LGame getGame() {
 		return game;
 	}
+	
 	public LSystemView(LGame g, long updateRate) {
 		this.updateRate = updateRate;
 		this.game = g;
+		LSystem.checkBaseGame(g);
 		game.frame.connect(new Port<LGame>() {
 			public void onEmit(LGame game) {
 				onFrame();

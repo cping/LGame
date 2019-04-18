@@ -22,7 +22,9 @@ package loon;
 
 import loon.LTexture.Format;
 import loon.Log.Level;
+import loon.action.sprite.Sprites;
 import loon.canvas.NinePatchAbstract.Repeat;
+import loon.component.Desktop;
 import loon.event.KeyMake;
 import loon.event.SysInput;
 import loon.event.Updateable;
@@ -49,15 +51,15 @@ public class LSystem {
 	private static final String _version = "0.5-beta";
 
 	// 默认的字符串打印完毕flag
-	public static String FLAG_TAG = "▼";
+	public static final String FLAG_TAG = "▼";
 
-	public static String FLAG_SELECT_TAG = "◆";
+	public static final String FLAG_SELECT_TAG = "◆";
 
 	// 默认缓存数量
-	public static int DEFAULT_MAX_CACHE_SIZE = 32;
+	public static final int DEFAULT_MAX_CACHE_SIZE = 32;
 
 	// 默认缓动函数延迟
-	public static float DEFAULT_EASE_DELAY = 1f / 60f;
+	public static final float DEFAULT_EASE_DELAY = 1f / 60f;
 
 	// 行分隔符
 	public static final String LS = System.getProperty("line.separator", "\n");
@@ -119,22 +121,16 @@ public class LSystem {
 	// 理论上一年
 	public static final long YEAR = DAY * 365;
 
-	public static String ENCODING = "UTF-8";
+	public static final String ENCODING = "UTF-8";
 
 	public static boolean PAUSED = false;
 
 	// 是否允许屏幕画面刷新
 	protected static boolean _auto_repaint = true;
-	// 包内默认的图片路径
-	private static String _systemDefaultImgPath = "loon_";
 
 	private static float _scaleWidth = 1f;
 
 	private static float _scaleHeight = 1f;
-
-	private static IFont _defaultLogFont = null;
-
-	private static IFont _defaultGameFont = null;
 
 	public static final String getGLExVertexShader() {
 		ShaderCmd cmd = ShaderCmd.getCmd("glex_vertex");
@@ -187,20 +183,6 @@ public class LSystem {
 
 	protected static Platform _platform = null;
 
-	protected static JsonImpl _json_instance = null;
-
-	// 是否手机环境
-	protected static boolean _on_mobile = false;
-
-	// 是否HTML5环境
-	protected static boolean _on_html5 = false;
-
-	// 游戏字体(仅限LFont实现IFont接口时有效)
-	protected static String _font_name = "Dialog";
-
-	// 当前应用名称
-	protected static String _app_name = "Loon";
-
 	public static final Platform platform() {
 		return _platform;
 	}
@@ -214,6 +196,18 @@ public class LSystem {
 		return _base;
 	}
 
+	protected static final void checkBaseGame(LGame game) {
+		if (game != _base && game != null) {
+			_base = game;
+		} else if (game == null) {
+			if (_base != null && _platform != null && _platform.getGame() != null) {
+				if (_base != _platform.getGame()) {
+					_base = _platform.getGame();
+				}
+			}
+		}
+	}
+
 	public static final boolean landscape() {
 		return viewSize.height < viewSize.width;
 	}
@@ -224,7 +218,10 @@ public class LSystem {
 	 * @return
 	 */
 	public static final String getSystemImagePath() {
-		return _systemDefaultImgPath;
+		if (_base != null) {
+			return _base.setting.systemImgPath;
+		}
+		return "loon_";
 	}
 
 	/**
@@ -234,7 +231,7 @@ public class LSystem {
 	 * @return
 	 */
 	public static final String getSystemImagePath(String path) {
-		return _systemDefaultImgPath + path;
+		return getSystemImagePath() + path;
 	}
 
 	/**
@@ -243,10 +240,13 @@ public class LSystem {
 	 * @return
 	 */
 	public static final IFont getSystemLogFont() {
-		if (_defaultLogFont == null) {
-			_defaultLogFont = LSTRFont.getFont(LSystem.isDesktop() ? 16 : 20);
+		if (_base != null) {
+			if (_base.setting.defaultLogFont == null) {
+				_base.setting.defaultLogFont = LSTRFont.getFont(LSystem.isDesktop() ? 16 : 20);
+			}
+			return _base.setting.defaultLogFont;
 		}
-		return _defaultLogFont;
+		return LSTRFont.getFont(LSystem.isDesktop() ? 16 : 20);
 	}
 
 	/**
@@ -255,7 +255,9 @@ public class LSystem {
 	 * @param font
 	 */
 	public static void setSystemLogFont(IFont font) {
-		_defaultLogFont = font;
+		if (_base != null) {
+			_base.setting.defaultLogFont = font;
+		}
 	}
 
 	/**
@@ -264,10 +266,13 @@ public class LSystem {
 	 * @return
 	 */
 	public static final IFont getSystemGameFont() {
-		if (_defaultGameFont == null) {
-			_defaultGameFont = LFont.getDefaultFont();
+		if (_base != null) {
+			if (_base.setting.defaultGameFont == null) {
+				_base.setting.defaultGameFont = LFont.getFont(20);
+			}
+			return _base.setting.defaultGameFont;
 		}
-		return _defaultGameFont;
+		return LFont.getFont(20);
 	}
 
 	/**
@@ -276,7 +281,9 @@ public class LSystem {
 	 * @param font
 	 */
 	public static void setSystemGameFont(IFont font) {
-		_defaultGameFont = font;
+		if (_base != null) {
+			_base.setting.defaultGameFont = font;
+		}
 	}
 
 	/**
@@ -330,14 +337,14 @@ public class LSystem {
 		if (_base != null) {
 			return _base.setting.fontName;
 		}
-		return _font_name;
+		return LGame.FONT_NAME;
 	}
 
 	public static final String getSystemAppName() {
 		if (_base != null) {
 			return _base.setting.appName;
 		}
-		return _app_name;
+		return LGame.APP_NAME;
 	}
 
 	public static final String getVersion() {
@@ -368,8 +375,6 @@ public class LSystem {
 		setting.updateScale();
 		LSystem.viewSize.setSize(setting.width, setting.height);
 		_process = new LProcess(game);
-		_on_html5 = (_base.type() == LGame.Type.HTML5);
-		_on_mobile = _base.isMobile();
 		_base.log().debug("The Loon Game Engine is Begin");
 	}
 
@@ -392,22 +397,31 @@ public class LSystem {
 	}
 
 	public static Json json() {
-		if (_json_instance == null) {
-			_json_instance = new JsonImpl();
+		if (_base != null) {
+			return _base.json();
 		}
-		return _json_instance;
+		return new JsonImpl();
 	}
 
 	public static boolean isHTML5() {
-		return _on_html5;
+		if (_base != null) {
+			return _base.isHTML5();
+		}
+		return false;
 	}
 
 	public static boolean isMobile() {
-		return _on_mobile;
+		if (_base != null) {
+			return _base.isMobile();
+		}
+		return false;
 	}
 
 	public static boolean isDesktop() {
-		return !_on_mobile && !_on_html5;
+		if (_base != null) {
+			return _base.isDesktop();
+		}
+		return false;
 	}
 
 	public static float getScaleWidth() {
@@ -846,6 +860,108 @@ public class LSystem {
 			return _base.delTexture(texID);
 		}
 		return false;
+	}
+
+	public static final int getSpritesSize() {
+		if (_base != null) {
+			return _base.getSpritesSize();
+		}
+		return 0;
+	}
+
+	public static final int allSpritesCount() {
+		if (_base != null) {
+			return _base.allSpritesCount();
+		}
+		return 0;
+	}
+
+	public static final boolean pushSpritesPool(Sprites sprites) {
+		if (_base != null) {
+			return _base.pushSpritesPool(sprites);
+		}
+		return false;
+	}
+
+	public static final boolean popSpritesPool(Sprites sprites) {
+		if (_base != null) {
+			return _base.popSpritesPool(sprites);
+		}
+		return false;
+	}
+
+	public static final void closeSpritesPool() {
+		if (_base != null) {
+			_base.closeSpritesPool();
+		}
+	}
+
+	public static final int allDesktopCount() {
+		if (_base != null) {
+			return _base.allDesktopCount();
+		}
+		return 0;
+	}
+
+	public static final boolean pushDesktopPool(Desktop desktop) {
+		if (_base != null) {
+			return _base.pushDesktopPool(desktop);
+		}
+		return false;
+	}
+
+	public static final boolean popDesktopPool(Desktop desktop) {
+		if (_base != null) {
+			return _base.popDesktopPool(desktop);
+		}
+		return false;
+	}
+
+	public static final int getDesktopSize() {
+		if (_base != null) {
+			return _base.getDesktopSize();
+		}
+		return 0;
+	}
+
+	public static final void closeDesktopPool() {
+		if (_base != null) {
+			_base.closeDesktopPool();
+		}
+	}
+
+	public static final int getFontSize() {
+		if (_base != null) {
+			return _base.getFontSize();
+		}
+		return 0;
+	}
+
+	public static final boolean pushFontPool(IFont font) {
+		if (_base != null) {
+			return _base.pushFontPool(font);
+		}
+		return false;
+	}
+
+	public static final boolean popFontPool(IFont font) {
+		if (_base != null) {
+			return _base.popFontPool(font);
+		}
+		return false;
+	}
+
+	public static final void closeFontPool() {
+		if (_base != null) {
+			_base.closeFontPool();
+		}
+	}
+
+	public static final IFont serachFontPool(String className, String fontName, int size) {
+		if (_base != null) {
+			return _base.serachFontPool(className, fontName, size);
+		}
+		return null;
 	}
 
 	public static final void debug(String msg) {

@@ -50,6 +50,8 @@ public interface IFont extends LRelease {
 
 	void setAssent(float assent);
 
+	String getFontName();
+	
 	float getAscent();
 
 	void setSize(int size);

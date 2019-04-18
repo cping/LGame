@@ -39,7 +39,7 @@ import loon.utils.IntMap;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 
-public class LSTRFont implements IFont,LRelease {
+public class LSTRFont implements IFont, LRelease {
 
 	/*
 	 * 获得一个默认的LSTRFont.
@@ -191,7 +191,7 @@ public class LSTRFont implements IFont,LRelease {
 
 	}
 
-	private Image getFontImage(TextLayout layout, char ch, int w, int h) {
+	private final Image getFontImage(TextLayout layout, char ch, int w, int h) {
 		Canvas canvas = Image.createCanvas(w, h);
 		canvas.setColor(LColor.white);
 		canvas.fillText(layout, 0, 0);
@@ -199,6 +199,7 @@ public class LSTRFont implements IFont,LRelease {
 		return canvas.image;
 
 	}
+
 	private PointI _offset = new PointI();
 
 	private boolean _isClose = false;
@@ -505,7 +506,11 @@ public class LSTRFont implements IFont,LRelease {
 		if (StringUtils.isEmpty(chars)) {
 			return;
 		}
+
+		int charsSize = chars.length();
+
 		make();
+
 		if (processing()) {
 			return;
 		}
@@ -552,8 +557,7 @@ public class LSTRFont implements IFont,LRelease {
 					xf.translate(ax, ay);
 				}
 			}
-			int size = chars.length();
-			for (int i = 0; i < size; i++) {
+			for (int i = 0; i < charsSize; i++) {
 				charCurrent = chars.charAt(i);
 				if (charCurrent < totalCharSet) {
 					intObject = charArray[charCurrent];
@@ -904,38 +908,6 @@ public class LSTRFont implements IFont,LRelease {
 		this.isasyn = a;
 	}
 
-	public boolean isClosed() {
-		return _isClose;
-	}
-
-	@Override
-	public synchronized void close() {
-		if (_isClose) {
-			return;
-		}
-		for (Cache c : displays.values()) {
-			if (c != null) {
-				c.close();
-			}
-		}
-		displays.clear();
-		if (fontBatch != null) {
-			fontBatch.close();
-		}
-		if (texture != null) {
-			texture.close(true);
-		}
-		fontBatch = null;
-		texture = null;
-		customChars.clear();
-		customChars = null;
-		charArray = null;
-		isDrawing = false;
-		_initChars = false;
-		_initDraw = -1;
-		_isClose = true;
-	}
-
 	@Override
 	public int stringWidth(String width) {
 		return getWidth(width);
@@ -997,4 +969,47 @@ public class LSTRFont implements IFont,LRelease {
 	public String getText() {
 		return text;
 	}
+
+	public int getTextSize() {
+		return text.length();
+	}
+
+	@Override
+	public String getFontName() {
+		return font.getFontName();
+	}
+
+	public boolean isClosed() {
+		return _isClose;
+	}
+
+	@Override
+	public synchronized void close() {
+		if (_isClose) {
+			return;
+		}
+		for (Cache c : displays.values()) {
+			if (c != null) {
+				c.close();
+			}
+		}
+		displays.clear();
+		displays = null;
+		if (fontBatch != null) {
+			fontBatch.close();
+			fontBatch = null;
+		}
+		if (texture != null) {
+			texture.close(true);
+			texture = null;
+		}
+		customChars.clear();
+		customChars = null;
+		charArray = null;
+		isDrawing = false;
+		_initChars = false;
+		_initDraw = -1;
+		_isClose = true;
+	}
+
 }

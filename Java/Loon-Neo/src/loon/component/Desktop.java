@@ -43,23 +43,7 @@ import loon.utils.TArray;
  * 
  */
 public class Desktop implements Visible, LRelease {
-
-	private final static TArray<Desktop> DESKTOP_CACHE = new TArray<Desktop>(8);
-
-	public final static int allDesktopCount() {
-		if (LSystem.base() == null) {
-			return 0;
-		}
-		int size = 0;
-		for (int i = 0, len = DESKTOP_CACHE.size; i < len; i++) {
-			size += DESKTOP_CACHE.get(i).size();
-		}
-		return size;
-	}
-
-	// 空桌面布局
-	public static final Desktop EMPTY_DESKTOP = new Desktop();
-
+	
 	// 输入设备监听
 	protected final Screen input;
 
@@ -71,7 +55,7 @@ public class Desktop implements Visible, LRelease {
 
 	private LComponent selectedComponent;
 
-	private LComponent[] clickComponent = new LComponent[1];
+	private LComponent[] clickComponent;
 
 	private LToolTip tooltip;
 
@@ -127,7 +111,8 @@ public class Desktop implements Visible, LRelease {
 	 * @param height
 	 */
 	public Desktop(String name, Screen screen, int width, int height) {
-		this.desktop_name = StringUtils.isEmpty(name) ? "Desktop" + DESKTOP_CACHE.size() : name;
+		this.clickComponent = new LComponent[1];
+		this.desktop_name = StringUtils.isEmpty(name) ? "Desktop" + LSystem.getDesktopSize() : name;
 		this.dvisible = true;
 		this.contentPane = new LPanel(0, 0, (int) width, (int) height);
 		this.contentPane.desktopContainer = true;
@@ -136,7 +121,7 @@ public class Desktop implements Visible, LRelease {
 		this.contentPane.add(this.tooltip);
 		this.contentPane.setDesktop(this);
 		this.setDesktop(this.contentPane);
-		DESKTOP_CACHE.add(this);
+		LSystem.pushDesktopPool(this);
 	}
 
 	public int size() {
@@ -595,6 +580,9 @@ public class Desktop implements Visible, LRelease {
 	 * @return
 	 */
 	boolean selectComponent(LComponent comp) {
+		if (comp == null) {
+			return false;
+		}
 		if (!comp.isVisible() || !comp.isEnabled() || !comp.isFocusable()) {
 			return false;
 		}
@@ -610,6 +598,9 @@ public class Desktop implements Visible, LRelease {
 	}
 
 	void setDesktop(LComponent comp) {
+		if (comp == null) {
+			return;
+		}
 		if (comp.isContainer()) {
 			LComponent[] child = ((LContainer) comp)._childs;
 			for (int i = 0; i < child.length; i++) {
@@ -620,7 +611,7 @@ public class Desktop implements Visible, LRelease {
 	}
 
 	void setComponentStat(LComponent comp, boolean active) {
-		if (this == Desktop.EMPTY_DESKTOP) {
+		if (comp == null) {
 			return;
 		}
 
@@ -653,7 +644,7 @@ public class Desktop implements Visible, LRelease {
 	}
 
 	void clearComponentsStat(LComponent[] comp) {
-		if (this == Desktop.EMPTY_DESKTOP) {
+		if (comp == null) {
 			return;
 		}
 
@@ -912,7 +903,7 @@ public class Desktop implements Visible, LRelease {
 			contentPane.close();
 		}
 		this.dclosed = true;
-		DESKTOP_CACHE.remove(this);
+		LSystem.popDesktopPool(this);
 	}
 
 }

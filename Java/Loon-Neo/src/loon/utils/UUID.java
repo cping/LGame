@@ -23,8 +23,6 @@ package loon.utils;
 import java.util.Random;
 
 import loon.LSystem;
-import loon.action.sprite.Sprites;
-import loon.component.Desktop;
 
 /**
  * 一个UUID生成器,作用是在没有UUID支持的环境获得UUID(为了算法通用,方便移植)
@@ -157,8 +155,8 @@ public class UUID {
 			leastSigBits = leastSigBits + ((millis / 3) + MathUtils.nextInt((int) mostSigBits));
 			mostSigBits += MathUtils.max(LSystem.getTextureMemSize(), MathUtils.random(10)) * MathUtils.random(986429531);
 			leastSigBits += MathUtils.max(LSystem.countTexture(), MathUtils.random(10)) * MathUtils.random(895318642);
-			mostSigBits += Sprites.allSpritesCount() * MathUtils.random(135799876);
-			leastSigBits += Desktop.allDesktopCount() * MathUtils.random(246805432);
+			mostSigBits += LSystem.allSpritesCount() * MathUtils.random(135799876);
+			leastSigBits += LSystem.allDesktopCount() * MathUtils.random(246805432);
 			uuidString = (digits(mostSigBits >> 32, 8) + "-" + digits(mostSigBits >> 16, 4) + "-"
 					+ digits(mostSigBits, 4) + "-" + digits(leastSigBits >> 48, 4) + "-" + digits(leastSigBits, 12));
 			dirty = false;

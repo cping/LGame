@@ -304,7 +304,7 @@ public class LTexturePack implements LRelease {
 	public synchronized int putImage(String name, Image image) {
 		checkPacked();
 		if (image == null) {
-			throw LSystem.runThrow("name :"+name+" the image is null");
+			throw LSystem.runThrow("name :" + name + " the image is null");
 		}
 		if (image.width() <= 0 || image.height() <= 0) {
 			throw LSystem.runThrow("width and height must be positive");
@@ -642,6 +642,12 @@ public class LTexturePack implements LRelease {
 		}
 	}
 
+	public void draw(PackEntry entry, GLEx gl, float x, float y, float rotation, LColor color) {
+		this.pack();
+		gl.draw(texture, x, y, entry.bounds.width(), entry.bounds.height(), entry.bounds.left, entry.bounds.top,
+				entry.bounds.right - entry.bounds.left, entry.bounds.bottom - entry.bounds.top, color, rotation);
+	}
+
 	public PointI draw(String name, float x, float y, float rotation, LColor color) {
 		this.pack();
 		PackEntry entry = getEntry(name);
@@ -795,8 +801,8 @@ public class LTexturePack implements LRelease {
 		this.packed(Format.DEFAULT);
 		return this;
 	}
-	
-	public boolean isPacked(){
+
+	public boolean isPacked() {
 		return packed;
 	}
 
@@ -990,5 +996,6 @@ public class LTexturePack implements LRelease {
 			texture.close();
 			texture = null;
 		}
+		temps.clear();
 	}
 }

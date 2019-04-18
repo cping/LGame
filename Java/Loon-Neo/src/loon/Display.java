@@ -23,10 +23,8 @@ package loon;
 import java.io.OutputStream;
 
 import loon.action.ActionControl;
-import loon.action.sprite.Sprites;
 import loon.canvas.Image;
 import loon.canvas.LColor;
-import loon.component.Desktop;
 import loon.font.IFont;
 import loon.opengl.GL20;
 import loon.opengl.GLEx;
@@ -109,7 +107,6 @@ public class Display extends LSystemView {
 		videoScreenToGif = false;
 		return gifEncoder;
 	}
-
 
 	// 为了方便直接转码到C#和C++，无法使用匿名内部类(也就是在构造内直接构造实现的方式)，只能都写出具体类来……
 	// PS:别提delegate，委托那玩意写出来太不优雅了(对于凭空实现某接口或抽象，而非局部重载来说)，而且大多数J2C#的工具也不能直接转换过去……
@@ -255,8 +252,8 @@ public class Display extends LSystemView {
 
 	private UpdatePort updatePort;
 
-	private void newDefView(boolean show) {
-		if (show && fpsFont == null) {
+	protected void newDefView(boolean show) {
+		if (show && (fpsFont == null || (fpsFont != LSystem.getSystemLogFont()))) {
 			this.fpsFont = LSystem.getSystemLogFont();
 		}
 		showLogo = _setting.isLogo;
@@ -400,8 +397,8 @@ public class Display extends LSystemView {
 			}
 			if (debug || _setting.isSprites) {
 				fpsFont.drawString(_glEx,
-						"SPRITE:" + Sprites.allSpritesCount() + "," + " DESKTOP:" + Desktop.allDesktopCount(), 5, 45, 0,
-						LColor.white);
+						"SPRITE:" + getGame().allSpritesCount() + "," + " DESKTOP:" + getGame().allDesktopCount(), 5,
+						45, 0, LColor.white);
 			}
 			// 若打印日志到界面,很可能挡住游戏界面内容,所以isDisplayLog为true并且debug才显示
 			if (debug && _setting.isDisplayLog) {

@@ -20,6 +20,7 @@
  */
 package loon.action.sprite;
 
+import loon.LSystem;
 import loon.canvas.LColor;
 import loon.font.IFont;
 import loon.geom.Affine2f;
@@ -54,6 +55,8 @@ public class SpriteSheetFont implements IFont {
 	private float fontScaleX = 1f, fontScaleY = 1f;
 
 	private PointI _offset = new PointI();
+	
+	private boolean _closed;
 
 	public SpriteSheetFont(String fileName, int tileWidth, int tileHeight) {
 		this(new SpriteSheet(fileName, tileWidth, tileHeight), ' ');
@@ -71,6 +74,7 @@ public class SpriteSheetFont implements IFont {
 		this.charWidth = font.getTileWidth();
 		this.charHeight = font.getTileHeight();
 		this.numChars = horizontalCount * verticalCount;
+		LSystem.pushFontPool(this);
 	}
 
 	public void drawString(String text, float x, float y) {
@@ -82,10 +86,9 @@ public class SpriteSheetFont implements IFont {
 	}
 
 	public void drawString(String text, float x, float y, LColor col, int startIndex, int endIndex) {
-		if (StringUtils.isEmpty(text)) {
+		if(_closed){
 			return;
 		}
-
 		if (StringUtils.isEmpty(text)) {
 			return;
 		}
@@ -132,6 +135,9 @@ public class SpriteSheetFont implements IFont {
 
 	public void drawString(GLEx gl, String text, final float x, final float y, LColor col, int startIndex,
 			int endIndex) {
+		if(_closed){
+			return;
+		}
 		if (StringUtils.isEmpty(text)) {
 			return;
 		}
@@ -168,6 +174,9 @@ public class SpriteSheetFont implements IFont {
 
 	@Override
 	public void drawString(GLEx g, String text, float x, float y, float rotation, LColor c) {
+		if(_closed){
+			return;
+		}
 		if (StringUtils.isEmpty(text)) {
 			return;
 		}
@@ -189,6 +198,9 @@ public class SpriteSheetFont implements IFont {
 	@Override
 	public void drawString(GLEx gl, String text, float x, float y, float sx, float sy, float ax, float ay,
 			float rotation, LColor c) {
+		if(_closed){
+			return;
+		}
 		if (StringUtils.isEmpty(text)) {
 			return;
 		}
@@ -339,16 +351,24 @@ public class SpriteSheetFont implements IFont {
 	}
 
 	public boolean isClosed() {
-		return _font == null || _font.isClosed();
+		return _closed;
 	}
 
 	@Override
 	public void close() {
 		if (_font != null) {
 			_font.close();
+			_font = null;
 		}
+		_closed = true;
+		LSystem.popFontPool(this);
 	}
 
+	@Override
+	public String getFontName() {
+		return "SpriteSheetFont";
+	}
+	
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("SpriteSheetFont");
@@ -365,4 +385,5 @@ public class SpriteSheetFont implements IFont {
 		.kv("numChars", numChars);
 		return builder.toString();
 	}
+
 }

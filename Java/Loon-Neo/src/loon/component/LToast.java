@@ -46,7 +46,7 @@ import loon.utils.timer.LTimer;
  */
 public class LToast extends LComponent implements FontSet<LToast> {
 
-	public enum Style {
+	public static enum Style {
 		NORMAL, SUCCESS, ERROR
 	};
 
@@ -129,8 +129,7 @@ public class LToast extends LComponent implements FontSet<LToast> {
 	private int mDuration;
 	private LTimer timer = new LTimer();
 	private LTimer lock = new LTimer(LSystem.SECOND * 2);
-	private LColor mBackgroundColor = LColor.orange;
-	private LColor mForegroundColor = LColor.white;
+	private LColor mBackgroundColor;
 	private IFont font;
 	private int displayX = 0;
 	private int displayY = 0;
@@ -155,7 +154,7 @@ public class LToast extends LComponent implements FontSet<LToast> {
 			int height) {
 		super(x, y, width, height);
 		this.onlyBackground(bg);
-		this.mForegroundColor = fontColor;
+		this._component_baseColor = fontColor;
 		this.mType = ISprite.TYPE_FADE_IN;
 		this.opacity = 0f;
 		this.mDuration = duration;
@@ -198,10 +197,11 @@ public class LToast extends LComponent implements FontSet<LToast> {
 			if (_background == null) {
 				g.fillRoundRect(displayX, displayY, w, h, _frame_radius);
 			} else {
-				g.draw(_background, displayX, displayY, w, h, _component_baseColor);
+				g.draw(_background, displayX, displayY, w, h);
 			}
-			font.drawString(g, mText, displayX + (cellWidth - font.stringWidth(mText)) / 2, displayY + 2,
-					mForegroundColor.cpy().setAlpha(getAlpha()));
+			g.setColor(_component_baseColor);
+			g.setAlpha(opacity);
+			font.drawString(g, mText, displayX + (cellWidth - font.stringWidth(mText)) / 2, displayY + 2);
 		} finally {
 			g.setColor(oc);
 			g.setAlpha(alpha);
@@ -239,7 +239,7 @@ public class LToast extends LComponent implements FontSet<LToast> {
 					close();
 					if (getScreen() != null) {
 						getScreen().remove(this);
-					} 
+					}
 					if (_desktop != null) {
 						_desktop.remove(this);
 					}
@@ -270,7 +270,7 @@ public class LToast extends LComponent implements FontSet<LToast> {
 	}
 
 	public LComponent setForeground(LColor foregroundColor) {
-		mForegroundColor = foregroundColor;
+		_component_baseColor = foregroundColor;
 		return this;
 	}
 
@@ -299,13 +299,13 @@ public class LToast extends LComponent implements FontSet<LToast> {
 
 	@Override
 	public LToast setFontColor(LColor color) {
-		this.mForegroundColor = color;
+		this._component_baseColor = color;
 		return null;
 	}
 
 	@Override
 	public LColor getFontColor() {
-		return mForegroundColor.cpy();
+		return _component_baseColor.cpy();
 	}
 
 	public LToast setAutoClose(boolean autoClose) {

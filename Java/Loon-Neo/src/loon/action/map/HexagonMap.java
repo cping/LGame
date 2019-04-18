@@ -1835,6 +1835,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		animations.clear();
 		if (texturePack != null) {
 			texturePack.close();
+			texturePack = null;
 		}
 		if (textureCaches != null) {
 			for (LTexture texture : textureCaches.values()) {
@@ -1846,10 +1847,13 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		}
 		if (_mapSprites != null) {
 			_mapSprites.close();
+			_mapSprites = null;
 		}
 		if (_background != null) {
 			_background.close();
+			_background = null;
 		}
+		removeActionEvents(this);
 		setState(State.DISPOSED);
 	}
 

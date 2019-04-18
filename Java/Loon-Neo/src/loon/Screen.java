@@ -1313,7 +1313,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		LSystem.invokeLater(runnable);
 		return this;
 	}
-	
+
 	public Screen addLoad(Updateable u) {
 		if (handler != null) {
 			handler.addLoad(u);
@@ -4787,6 +4787,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 				_closeUpdate = null;
 				screenSwitch = null;
 				DefUI.self().clearDefaultUI();
+				if (LSystem.base() != null) {
+					LSystem.base().closeFontTempTexture();
+				}
 			} catch (Throwable cause) {
 				LSystem.error("Screen destroy() dispatch exception", cause);
 			} finally {

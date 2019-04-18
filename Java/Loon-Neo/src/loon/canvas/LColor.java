@@ -57,6 +57,16 @@ public class LColor implements Serializable {
 	}
 
 	/**
+	 * 解码字符串为color对象
+	 * 
+	 * @param colorString
+	 * @return
+	 */
+	public static final LColor valueOf(String colorString) {
+		return new LColor(colorString);
+	}
+
+	/**
 	 * 转化像素为浮点的r,g,b,a数组
 	 * 
 	 * @param pixel

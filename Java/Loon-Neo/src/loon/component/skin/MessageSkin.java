@@ -27,7 +27,7 @@ import loon.component.DefUI;
 import loon.font.FontSet;
 import loon.font.IFont;
 
-public class MessageSkin implements FontSet<MessageSkin>{
+public class MessageSkin implements FontSet<MessageSkin> {
 
 	private IFont font;
 
@@ -35,17 +35,20 @@ public class MessageSkin implements FontSet<MessageSkin>{
 
 	private LColor fontColor;
 
+	private LColor backColor;
+
 	public final static MessageSkin def() {
 		return new MessageSkin();
 	}
 
 	public MessageSkin() {
-		this(LSystem.getSystemGameFont(), LColor.white.cpy(), DefUI.self().getDefaultTextures(2));
+		this(LSystem.getSystemGameFont(), LColor.white.cpy(), LColor.white, DefUI.self().getDefaultTextures(2));
 	}
 
-	public MessageSkin(IFont font, LColor fontColor, LTexture back) {
+	public MessageSkin(IFont font, LColor fontColor, LColor backColor, LTexture back) {
 		this.font = font;
 		this.fontColor = fontColor;
+		this.backColor = backColor;
 		this.backgroundTexture = back;
 	}
 
@@ -66,6 +69,14 @@ public class MessageSkin implements FontSet<MessageSkin>{
 
 	public void setBackground(LTexture background) {
 		this.backgroundTexture = background;
+	}
+
+	public LColor getBackgroundColor() {
+		return backColor.cpy();
+	}
+
+	public void setBackgroundColor(LColor color) {
+		this.backColor = color;
 	}
 
 	@Override

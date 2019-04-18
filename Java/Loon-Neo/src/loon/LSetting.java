@@ -29,6 +29,21 @@ import loon.utils.NumberUtils;
 public class LSetting {
 
 	/**
+	 * 默认游戏字体设置
+	 */
+	public IFont defaultGameFont;
+
+	/**
+	 * 默认log字体设置
+	 */
+	public IFont defaultLogFont;
+	
+	/**
+	 * loon自带图的存放路径和文件前缀(默认assets起,不用写)
+	 */
+	public String systemImgPath = "loon_";
+	
+	/**
 	 * Loon自带的模拟按键的缩放比率(Screen实现EmulatorListener接口自动出现,8个按钮)
 	 */
 	public float emulatorScale = 1f;
@@ -130,7 +145,7 @@ public class LSetting {
 	/**
 	 * 当前游戏或应用名
 	 */
-	public String appName = LSystem._app_name;
+	public String appName = "Loon";
 
 	/**
 	 * 使用的初始化logo
@@ -140,7 +155,7 @@ public class LSetting {
 	/**
 	 * 当前字体名
 	 */
-	public String fontName = LSystem._font_name;
+	public String fontName = "Dialog";
 
 	/**
 	 * 当前应用版本号
@@ -209,21 +224,22 @@ public class LSetting {
 	 * 全局的log显示用字体,不设置则默认使用LFont贴图本地字体
 	 */
 	public void setSystemLogFont(IFont font) {
-		LSystem.setSystemLogFont(font);
+		defaultLogFont = font;
 	}
 
 	/**
 	 * 全局的游戏画面用字体,不设置则默认使用LFont贴图本地字体
 	 */
 	public void setSystemGameFont(IFont font) {
-		LSystem.setSystemGameFont(font);
+		defaultGameFont = font;
 	}
 
 	/**
 	 * loon中一切字体的统一设置
 	 */
 	public void setSystemGlobalFont(IFont font) {
-		LSystem.setSystemGlobalFont(font);
+		setSystemLogFont(font);
+		setSystemGameFont(font);
 	}
 
 	public boolean landscape() {

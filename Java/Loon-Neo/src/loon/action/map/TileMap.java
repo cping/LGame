@@ -1153,13 +1153,17 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		animations.clear();
 		if (texturePack != null) {
 			texturePack.close();
+			texturePack = null;
 		}
 		if (_mapSprites != null) {
 			_mapSprites.close();
+			_mapSprites = null;
 		}
 		if (_background != null) {
 			_background.close();
+			_background = null;
 		}
+		removeActionEvents(this);
 		setState(State.DISPOSED);
 	}
 

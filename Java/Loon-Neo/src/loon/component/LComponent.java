@@ -262,7 +262,7 @@ public abstract class LComponent extends LObject<LContainer>
 
 	protected LColor _component_baseColor = null;
 
-	protected Desktop _desktop = Desktop.EMPTY_DESKTOP;
+	protected Desktop _desktop;
 
 	protected boolean _isLimitMove = false, _drawBackground = true;
 
@@ -555,7 +555,9 @@ public abstract class LComponent extends LObject<LContainer>
 			return this;
 		}
 		this._component_enabled = b;
-		this._desktop.setComponentStat(this, this._component_enabled);
+		if (_desktop != null) {
+			this._desktop.setComponentStat(this, this._component_enabled);
+		}
 		return this;
 	}
 
@@ -569,7 +571,10 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public boolean requestFocus() {
-		return this._desktop.selectComponent(this);
+		if (_desktop != null) {
+			return this._desktop.selectComponent(this);
+		}
+		return false;
 	}
 
 	public LComponent transferFocus() {
@@ -1393,11 +1398,12 @@ public abstract class LComponent extends LObject<LContainer>
 		}
 		this._component_visible = false;
 		this._component_isClose = true;
-		this._desktop.setComponentStat(this, false);
+		if (_desktop != null) {
+			this._desktop.setComponentStat(this, false);
+		}
 		if (this._super != null) {
 			this._super.remove(this);
 		}
-		this._desktop = Desktop.EMPTY_DESKTOP;
 		this._super = null;
 		if (_imageUI != null) {
 			for (int i = 0, size = _imageUI.length; i < size; i++) {

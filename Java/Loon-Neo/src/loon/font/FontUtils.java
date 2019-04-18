@@ -104,6 +104,10 @@ public class FontUtils {
 		}
 	}
 
+	public static PointF getTextWidthAndHeight(IFont font, String message) {
+		return getTextWidthAndHeight(font, message, 1f, 1f);
+	}
+
 	public static PointF getTextWidthAndHeight(IFont font, String message, float defWidth, float defHeight) {
 		if (font != null && message != null) {
 			TArray<CharSequence> result = new TArray<CharSequence>();

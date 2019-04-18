@@ -2632,75 +2632,75 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	/**
 	 * 输出字符串
 	 * 
-	 * @param string
+	 * @param text
 	 * @param position
 	 */
-	public GLEx drawString(String string, Vector2f position) {
-		return drawString(string, position.x, position.y, tmpColor.setColor(this.lastBrush.baseColor));
+	public GLEx drawString(String text, Vector2f position) {
+		return drawString(text, position.x, position.y, tmpColor.setColor(this.lastBrush.baseColor));
 	}
 
 	/**
 	 * 输出字符串
 	 * 
-	 * @param string
+	 * @param text
 	 * @param position
 	 * @param color
 	 */
-	public GLEx drawString(String string, Vector2f position, LColor color) {
-		return drawString(string, position.x, position.y, color);
+	public GLEx drawString(String text, Vector2f position, LColor color) {
+		return drawString(text, position.x, position.y, color);
 	}
 
 	/**
 	 * 输出字符串
 	 * 
-	 * @param string
+	 * @param text
 	 * @param x
 	 * @param y
 	 */
-	public GLEx drawString(String string, float x, float y) {
-		return drawString(string, x, y, tmpColor.setColor(this.lastBrush.baseColor));
+	public GLEx drawString(String text, float x, float y) {
+		return drawString(text, x, y, tmpColor.setColor(this.lastBrush.baseColor));
 	}
 
 	/**
 	 * 输出字符串
 	 * 
-	 * @param string
+	 * @param text
 	 * @param x
 	 * @param y
 	 * @param color
 	 */
-	public GLEx drawString(String string, float x, float y, LColor color) {
-		return drawString(string, x, y, 0, color);
+	public GLEx drawString(String text, float x, float y, LColor color) {
+		return drawString(text, x, y, 0, color);
 	}
 
 	/**
 	 * 输出字符串
 	 * 
-	 * @param string
+	 * @param text
 	 * @param x
 	 * @param y
 	 * @param rotation
 	 */
-	public GLEx drawString(String string, float x, float y, float rotation) {
-		return drawString(string, x, y, rotation, tmpColor.setColor(this.lastBrush.baseColor));
+	public GLEx drawString(String text, float x, float y, float rotation) {
+		return drawString(text, x, y, rotation, tmpColor.setColor(this.lastBrush.baseColor));
 	}
 
 	/**
 	 * 输出字符串
 	 * 
-	 * @param string
+	 * @param text
 	 * @param x
 	 * @param y
 	 * @param rotation
 	 * @param c
 	 * @param check
 	 */
-	public GLEx drawString(String string, float x, float y, float rotation, LColor c) {
+	public GLEx drawString(String text, float x, float y, float rotation, LColor c) {
 		if (isClosed) {
 			return this;
 		}
 		if (this.lastBrush.font != null) {
-			this.lastBrush.font.drawString(this, string, x + offsetStringX, y + offsetStringY, rotation, c);
+			this.lastBrush.font.drawString(this, text, x + offsetStringX, y + offsetStringY, rotation, c);
 		}
 		return this;
 	}

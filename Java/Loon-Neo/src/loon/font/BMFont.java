@@ -108,7 +108,7 @@ public class BMFont implements IFont {
 
 	private boolean _isClose;
 
-	private String info, common, page;
+	private String info, common, page, face,charset;
 
 	private static class Display {
 
@@ -140,10 +140,10 @@ public class BMFont implements IFont {
 		short advance;
 
 		short[] kerning;
-		
+
 		BMFont _bmFont;
-		
-		public CharDef(BMFont font){
+
+		public CharDef(BMFont font) {
 			this._bmFont = font;
 		}
 
@@ -151,8 +151,8 @@ public class BMFont implements IFont {
 			if (_bmFont._isClose) {
 				return;
 			}
-			_bmFont.displayList.draw((x + xoffset) * _bmFont.fontScaleX, (y + yoffset) * _bmFont.fontScaleY, width * _bmFont.fontScaleX,
-					height * _bmFont.fontScaleY, tx, ty, tx + width, ty + height, c);
+			_bmFont.displayList.draw((x + xoffset) * _bmFont.fontScaleX, (y + yoffset) * _bmFont.fontScaleY,
+					width * _bmFont.fontScaleX, height * _bmFont.fontScaleY, tx, ty, tx + width, ty + height, c);
 		}
 
 		public void draw(GLEx g, float sx, float sy, float x, float y, LColor c) {
@@ -160,8 +160,9 @@ public class BMFont implements IFont {
 				return;
 			}
 
-			g.draw(_bmFont.displayList, sx + (x + xoffset) * _bmFont.fontScaleX, sy + (y + yoffset) * _bmFont.fontScaleX, width * _bmFont.fontScaleX,
-					height * _bmFont.fontScaleY, tx, ty, width, height, c);
+			g.draw(_bmFont.displayList, sx + (x + xoffset) * _bmFont.fontScaleX,
+					sy + (y + yoffset) * _bmFont.fontScaleX, width * _bmFont.fontScaleX, height * _bmFont.fontScaleY,
+					tx, ty, width, height, c);
 		}
 
 		public int getKerning(int point) {
@@ -226,14 +227,19 @@ public class BMFont implements IFont {
 					if (list.length == 2) {
 						if (list[0].equals("size")) {
 							_size = (int) Float.parseFloat(list[1]);
-							break;
+							continue;
+						} else if (list[0].equals("face")) {
+							face = list[1];
+							continue;
+						} else if(list[1].equals("charset")){
+							charset = list[1];
+							continue;
 						}
 					}
 					sbr.delete(0, sbr.length());
 				}
 				sbr.append(ch);
 			}
-
 		}
 
 		ObjectMap<Short, TArray<Short>> kerning = new ObjectMap<Short, TArray<Short>>(64);
@@ -300,6 +306,7 @@ public class BMFont implements IFont {
 				customChars.get((int) first).kerning = valueArray;
 			}
 		}
+		LSystem.pushFontPool(this);
 	}
 
 	private CharDef parseChar(final String line) throws Exception {
@@ -307,9 +314,9 @@ public class BMFont implements IFont {
 		StringTokenizer tokens = new StringTokenizer(line, " =");
 		tokens.nextToken();
 		tokens.nextToken();
-		
+
 		def.id = Integer.parseInt(tokens.nextToken());
-		
+
 		if (def.id < 0) {
 			return null;
 		}
@@ -792,6 +799,19 @@ public class BMFont implements IFont {
 		this._size = size;
 	}
 
+	public String getFace() {
+		return face;
+	}
+
+	public String getCharset() {
+		return charset;
+	}
+
+	@Override
+	public String getFontName() {
+		return getFace();
+	}
+
 	public boolean isClosed() {
 		return _isClose;
 	}
@@ -816,17 +836,15 @@ public class BMFont implements IFont {
 		}
 		_initDraw = -1;
 		_initParse = false;
+		LSystem.popFontPool(this);
 	}
 
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("BMFont");
-		builder.kv("info", info)
-		.comma()
-		.kv("common", common)
-		.comma()
-		.kv("page", page);
+		builder.kv("info", info).comma().kv("common", common).comma().kv("page", page);
 		return builder.toString();
 	}
+
 
 }
