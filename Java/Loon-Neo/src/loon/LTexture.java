@@ -20,6 +20,8 @@
  */
 package loon;
 
+import java.util.Arrays;
+
 import loon.LTextureBatch.Cache;
 import loon.canvas.Canvas;
 import loon.canvas.Image;
@@ -1008,7 +1010,7 @@ public class LTexture extends Painter implements LRelease {
 					&& this.displayWidth == tmp.displayWidth && this.displayHeight == tmp.displayHeight
 					&& this.pixelWidth == tmp.pixelWidth && this.pixelHeight == tmp.pixelHeight) {
 				if (_image != null && tmp._image != null) {
-					return CollectionUtils.equals(_image.getPixels(), tmp._image.getPixels());
+					return Arrays.equals(_image.getPixels(), tmp._image.getPixels());
 				}
 				return true;
 			}
@@ -1073,14 +1075,14 @@ public class LTexture extends Painter implements LRelease {
 
 					@Override
 					public void run(LTimerContext time) {
-						gfx.game.processImpl.addLoad(update);
+						LSystem.load(update);
 						kill();
 					}
 				};
 				process.setDelay(LSystem.SECOND);
 				RealtimeProcessManager.get().addProcess(process);
 			} else {
-				gfx.game.processImpl.addLoad(update);
+				LSystem.load(update);
 			}
 		}
 	}

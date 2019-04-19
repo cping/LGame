@@ -28,10 +28,10 @@ import loon.LSystem;
 
 public class IndexArray implements IndexData {
 
-	private static IntBuffer tmpHandle;
+	static IntBuffer tmpHandle;
 
-	private ShortBuffer buffer;
-	private ByteBuffer byteBuffer;
+	ShortBuffer buffer;
+	ByteBuffer byteBuffer;
 
 	private final boolean empty;
 

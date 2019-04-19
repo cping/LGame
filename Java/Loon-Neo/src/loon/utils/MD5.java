@@ -5,47 +5,45 @@ package loon.utils;
  */
 public class MD5 {
 
-	private static MD5 _instance;
+	private static MD5 _instance ;
 
 	public static MD5 get() {
-		if (_instance == null) {
-			synchronized (MD5.class) {
-				if (_instance == null) {
-					_instance = new MD5();
-				}
-			}
+		if (_instance != null) {
+			return _instance;
 		}
-		return _instance;
+		synchronized (MD5.class) {
+			if (_instance == null) {
+				_instance = new MD5();
+			}
+			return _instance;
+		}
 	}
 
-	final static int S11 = 7;
-	final static int S12 = 12;
-	final static int S13 = 17;
-	final static int S14 = 22;
-	final static int S21 = 5;
-	final static int S22 = 9;
-	final static int S23 = 14;
-	final static int S24 = 20;
-	final static int S31 = 4;
-	final static int S32 = 11;
-	final static int S33 = 16;
-	final static int S34 = 23;
-	final static int S41 = 6;
-	final static int S42 = 10;
-	final static int S43 = 15;
-	final static int S44 = 21;
+	final static  int S11 = 7;
+	final static  int S12 = 12;
+	final static  int S13 = 17;
+	final static  int S14 = 22;
+	final static  int S21 = 5;
+	final static  int S22 = 9;
+	final static  int S23 = 14;
+	final static  int S24 = 20;
+	final static  int S31 = 4;
+	final static  int S32 = 11;
+	final static  int S33 = 16;
+	final static  int S34 = 23;
+	final static  int S41 = 6;
+	final static  int S42 = 10;
+	final static  int S43 = 15;
+	final static  int S44 = 21;
+	final static  byte[] PADDING = { -128, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0 };
 
-	private final static class Padding {
-
-		final static byte[] TABLE = { -128, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				0, 0, 0 };
-	}
-
-	private long[] state = new long[4];
-	private long[] count = new long[2];
+	private long[] state = new long[4]; 
+	private long[] count = new long[2]; 
 	private byte[] digest = new byte[16];
-
+	
 	public String encryptString(String buffer) {
 		md5Init();
 		md5Update(buffer.getBytes(), buffer.length());
@@ -60,7 +58,7 @@ public class MD5 {
 	public String encryptBytes(ArrayByte arrays) {
 		return encryptBytes(arrays.getData());
 	}
-
+	
 	public String encryptBytes(byte[] buffer) {
 		md5Init();
 		md5Update(buffer, buffer.length);
@@ -166,7 +164,7 @@ public class MD5 {
 			index = 0;
 
 		} else {
-			i = 0;
+			i = 0; 
 		}
 		md5Memcpy(buffer, buffer, index, i, inputLen - i);
 
@@ -184,7 +182,7 @@ public class MD5 {
 
 		padLen = (index < 56) ? (56 - index) : (120 - index);
 
-		md5Update(Padding.TABLE, padLen);
+		md5Update(PADDING, padLen);
 
 		md5Update(bits, 8);
 
@@ -192,7 +190,8 @@ public class MD5 {
 
 	}
 
-	private void md5Memcpy(byte[] output, byte[] input, int outpos, int inpos, int len) {
+	private void md5Memcpy(byte[] output, byte[] input, int outpos, int inpos,
+			int len) {
 		int i;
 
 		for (i = 0; i < len; i++) {
@@ -208,7 +207,7 @@ public class MD5 {
 		decode(x, block, 64);
 
 		/* Round 1 */
-
+		
 		a = FF(a, b, c, d, x[0], S11, 0xd76aa478L); /* 1 */
 
 		d = FF(d, a, b, c, x[1], S12, 0xe8c7b756L); /* 2 */
@@ -371,6 +370,7 @@ public class MD5 {
 		}
 		return;
 	}
+
 
 	public byte[] makeMD5(byte[] data1, byte[] data2) {
 		md5Init();

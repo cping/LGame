@@ -48,7 +48,7 @@ final public class CollectionUtils {
 	 * @param data
 	 * @return
 	 */
-	public static int indexOf(Object[] arrays, Object data) {
+	public static final int indexOf(Object[] arrays, Object data) {
 		int len = arrays.length - 1;
 		int count = 0;
 		for (int i = len; i >= 0; i--) {
@@ -67,7 +67,7 @@ final public class CollectionUtils {
 	 * @param arrays
 	 * @return
 	 */
-	public static int hashCode(int[][] arrays) {
+	public static final int hashCode(int[][] arrays) {
 		if (arrays == null) {
 			return 0;
 		}
@@ -91,7 +91,7 @@ final public class CollectionUtils {
 	 * @param data
 	 * @return
 	 */
-	public static int[][] copyOf(int[][] data) {
+	public static final int[][] copyOf(int[][] data) {
 		int size = data.length;
 		int[][] copy = new int[size][];
 		for (int i = 0; i < size; i++) {
@@ -109,7 +109,7 @@ final public class CollectionUtils {
 	 * @param data
 	 * @return
 	 */
-	public static LComponent[] copyOf(LComponent[] data) {
+	public static final LComponent[] copyOf(LComponent[] data) {
 		return copyOf(data, data.length);
 	}
 
@@ -120,7 +120,7 @@ final public class CollectionUtils {
 	 * @param newSize
 	 * @return
 	 */
-	public static LComponent[] copyOf(LComponent[] data, int newSize) {
+	public static final LComponent[] copyOf(LComponent[] data, int newSize) {
 		LComponent tempArr[] = new LComponent[newSize];
 		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
@@ -132,7 +132,7 @@ final public class CollectionUtils {
 	 * @param data
 	 * @return
 	 */
-	public static String[] copyOf(String[] data) {
+	public static final String[] copyOf(String[] data) {
 		return copyOf(data, data.length);
 	}
 
@@ -143,7 +143,7 @@ final public class CollectionUtils {
 	 * @param newSize
 	 * @return
 	 */
-	public static String[] copyOf(String[] data, int newSize) {
+	public static final String[] copyOf(String[] data, int newSize) {
 		String tempArr[] = new String[newSize];
 		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
@@ -156,7 +156,7 @@ final public class CollectionUtils {
 	 * @param newSize
 	 * @return
 	 */
-	public static ISprite[] copyOf(ISprite[] data, int newSize) {
+	public static final ISprite[] copyOf(ISprite[] data, int newSize) {
 		ISprite tempArr[] = new ISprite[newSize];
 		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
@@ -169,7 +169,7 @@ final public class CollectionUtils {
 	 * @param newSize
 	 * @return
 	 */
-	public static Actor[] copyOf(Actor[] data, int newSize) {
+	public static final Actor[] copyOf(Actor[] data, int newSize) {
 		Actor tempArr[] = new Actor[newSize];
 		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
@@ -182,7 +182,7 @@ final public class CollectionUtils {
 	 * @param newSize
 	 * @return
 	 */
-	public static Object[] copyOf(Object[] data, int newSize) {
+	public static final Object[] copyOf(Object[] data, int newSize) {
 		Object tempArr[] = new Object[newSize];
 		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
@@ -194,7 +194,7 @@ final public class CollectionUtils {
 	 * @param data
 	 * @return
 	 */
-	public static int[] copyOf(int[] data) {
+	public static final int[] copyOf(int[] data) {
 		return copyOf(data, data.length);
 	}
 
@@ -205,7 +205,7 @@ final public class CollectionUtils {
 	 * @param newSize
 	 * @return
 	 */
-	public static int[] copyOf(int[] data, int newSize) {
+	public static final int[] copyOf(int[] data, int newSize) {
 		int tempArr[] = new int[newSize];
 		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
@@ -217,7 +217,7 @@ final public class CollectionUtils {
 	 * @param data
 	 * @return
 	 */
-	public static double[] copyOf(double[] data) {
+	public static final double[] copyOf(double[] data) {
 		return copyOf(data, data.length);
 	}
 
@@ -228,7 +228,7 @@ final public class CollectionUtils {
 	 * @param newSize
 	 * @return
 	 */
-	public static double[] copyOf(double[] data, int newSize) {
+	public static final double[] copyOf(double[] data, int newSize) {
 		double tempArr[] = new double[newSize];
 		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
@@ -240,7 +240,7 @@ final public class CollectionUtils {
 	 * @param data
 	 * @return
 	 */
-	public static float[] copyOf(float[] data) {
+	public static final float[] copyOf(float[] data) {
 		return copyOf(data, data.length);
 	}
 
@@ -251,7 +251,7 @@ final public class CollectionUtils {
 	 * @param newSize
 	 * @return
 	 */
-	public static float[] copyOf(float[] data, int newSize) {
+	public static final float[] copyOf(float[] data, int newSize) {
 		float tempArr[] = new float[newSize];
 		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
@@ -263,7 +263,7 @@ final public class CollectionUtils {
 	 * @param data
 	 * @return
 	 */
-	public static byte[] copyOf(byte[] data) {
+	public static final byte[] copyOf(byte[] data) {
 		return copyOf(data, data.length);
 	}
 
@@ -274,7 +274,7 @@ final public class CollectionUtils {
 	 * @param newSize
 	 * @return
 	 */
-	public static byte[] copyOf(byte[] data, int newSize) {
+	public static final byte[] copyOf(byte[] data, int newSize) {
 		byte tempArr[] = new byte[newSize];
 		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
@@ -286,7 +286,7 @@ final public class CollectionUtils {
 	 * @param data
 	 * @return
 	 */
-	public static char[] copyOf(char[] data) {
+	public static final char[] copyOf(char[] data) {
 		return copyOf(data, data.length);
 	}
 
@@ -297,7 +297,7 @@ final public class CollectionUtils {
 	 * @param newSize
 	 * @return
 	 */
-	public static char[] copyOf(char[] data, int newSize) {
+	public static final char[] copyOf(char[] data, int newSize) {
 		char tempArr[] = new char[newSize];
 		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
@@ -309,7 +309,7 @@ final public class CollectionUtils {
 	 * @param data
 	 * @return
 	 */
-	public static long[] copyOf(long[] data) {
+	public static final long[] copyOf(long[] data) {
 		return copyOf(data, data.length);
 	}
 
@@ -320,7 +320,7 @@ final public class CollectionUtils {
 	 * @param newSize
 	 * @return
 	 */
-	public static long[] copyOf(long[] data, int newSize) {
+	public static final long[] copyOf(long[] data, int newSize) {
 		long tempArr[] = new long[newSize];
 		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
@@ -332,7 +332,7 @@ final public class CollectionUtils {
 	 * @param data
 	 * @return
 	 */
-	public static boolean[] copyOf(boolean[] data) {
+	public static final boolean[] copyOf(boolean[] data) {
 		return copyOf(data, data.length);
 	}
 
@@ -343,7 +343,7 @@ final public class CollectionUtils {
 	 * @param newSize
 	 * @return
 	 */
-	public static boolean[] copyOf(boolean[] data, int newSize) {
+	public static final boolean[] copyOf(boolean[] data, int newSize) {
 		boolean tempArr[] = new boolean[newSize];
 		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
@@ -352,20 +352,20 @@ final public class CollectionUtils {
 	// --为了兼容GWT，尽量减少反射的使用，所以只好针对不同类分别处理了……--//
 	/**
 	 * 
-	 * public static Object expand(Object data, int i, boolean flag) { int
+	 * public static final Object expand(Object data, int i, boolean flag) { int
 	 * j = ArrayReflection.getLength(data); Object obj1 =
 	 * ArrayReflection.newInstance(data.getClass().getComponentType(), j + i);
 	 * System.arraycopy(data, 0, obj1, flag ? 0 : i, j); return obj1; }
 	 * 
-	 * public static Object expand(Object data, int size) { return
+	 * public static final Object expand(Object data, int size) { return
 	 * expand(data, size, true); }
 	 * 
-	 * public static Object expand(Object data, int size, boolean flag,
+	 * public static final Object expand(Object data, int size, boolean flag,
 	 * Class<?> class1) { if (data == null) { return
 	 * ArrayReflection.newInstance(class1, 1); } else { return expand(data,
 	 * size, flag); } }
 	 * 
-	 * public static Object cut(Object data, int size) { int j; if ((j =
+	 * public static final Object cut(Object data, int size) { int j; if ((j =
 	 * ArrayReflection.getLength(data)) == 1) { return
 	 * ArrayReflection.newInstance(data.getClass().getComponentType(), 0); } int
 	 * k; if ((k = j - size - 1) > 0) { System.arraycopy(data, size + 1, data,
@@ -373,7 +373,7 @@ final public class CollectionUtils {
 	 * ArrayReflection.newInstance(data.getClass().getComponentType(), j);
 	 * System.arraycopy(data, 0, obj1, 0, j); return obj1; }
 	 * 
-	 * public static Object copyOf(Object src) { int srcLength =
+	 * public static final Object copyOf(Object src) { int srcLength =
 	 * ArrayReflection.getLength(src); Class<?> srcComponentType =
 	 * src.getClass().getComponentType(); Object dest =
 	 * ArrayReflection.newInstance(srcComponentType, srcLength); if
@@ -383,10 +383,10 @@ final public class CollectionUtils {
 	 * dest, 0, srcLength); } return dest; }
 	 * 
 	 * 
-	 * public static Object[] copyOf(Object[] original, int newLength) {
+	 * public static final Object[] copyOf(Object[] original, int newLength) {
 	 * return copyOf(original, newLength, original.getClass()); }
 	 * 
-	 * public static Object[] copyOf(Object[] original, int newLength,
+	 * public static final Object[] copyOf(Object[] original, int newLength,
 	 * Class<?> newType) { Object[] copy = (newType == Object[].class) ? new
 	 * Object[newLength] : (Object[])
 	 * ArrayReflection.newInstance(newType.getComponentType(), newLength);
@@ -394,94 +394,73 @@ final public class CollectionUtils {
 	 * newLength)); return copy; }
 	 */
 
-	public static String[] expand(String[] objs, int size) {
+	public static final String[] expand(String[] objs, int size) {
 		return expand(objs, size, true);
 	}
 
-	public static String[] expand(String[] objs, int i, boolean flag) {
+	public static final String[] expand(String[] objs, int i, boolean flag) {
 		int size = objs.length;
 		String[] newArrays = new String[size + i];
 		System.arraycopy(objs, 0, newArrays, flag ? 0 : i, size);
 		return newArrays;
 	}
 
-	public static int[] expand(int[] objs, int size) {
+	public static final int[] expand(int[] objs, int size) {
 		return expand(objs, size, true);
 	}
 
-	public static int[] expand(int[] objs, int i, boolean flag) {
+	public static final int[] expand(int[] objs, int i, boolean flag) {
 		int size = objs.length;
 		int[] newArrays = new int[size + i];
 		System.arraycopy(objs, 0, newArrays, flag ? 0 : i, size);
 		return newArrays;
 	}
 
-	public static byte[] expand(byte[] objs, int size) {
+	public static final byte[] expand(byte[] objs, int size) {
 		return expand(objs, size, true);
 	}
 
-	public static byte[] expand(byte[] objs, int i, boolean flag) {
+	public static final byte[] expand(byte[] objs, int i, boolean flag) {
 		int size = objs.length;
 		byte[] newArrays = new byte[size + i];
 		System.arraycopy(objs, 0, newArrays, flag ? 0 : i, size);
 		return newArrays;
 	}
 
-	public static float[] expand(float[] objs, int size) {
+	public static final float[] expand(float[] objs, int size) {
 		return expand(objs, size, true);
 	}
 
-	public static float[] expand(float[] objs, int i, boolean flag) {
+	public static final float[] expand(float[] objs, int i, boolean flag) {
 		int size = objs.length;
 		float[] newArrays = new float[size + i];
 		System.arraycopy(objs, 0, newArrays, flag ? 0 : i, size);
 		return newArrays;
 	}
 
-	public static boolean[] expand(boolean[] objs, int size) {
+	public static final boolean[] expand(boolean[] objs, int size) {
 		return expand(objs, size, true);
 	}
 
-	public static boolean[] expand(boolean[] objs, int i, boolean flag) {
+	public static final boolean[] expand(boolean[] objs, int i, boolean flag) {
 		int size = objs.length;
 		boolean[] newArrays = new boolean[size + i];
 		System.arraycopy(objs, 0, newArrays, flag ? 0 : i, size);
 		return newArrays;
 	}
 
-	public static ISprite[] expand(ISprite[] objs, int size) {
+	public static final ISprite[] expand(ISprite[] objs, int size) {
 		return expand(objs, size, true);
 	}
 
-	public static ISprite[] expand(ISprite[] objs, int i, boolean flag) {
+	public static final ISprite[] expand(ISprite[] objs, int i, boolean flag) {
 		int size = objs.length;
 		ISprite[] newArrays = new ISprite[size + i];
 		System.arraycopy(objs, 0, newArrays, flag ? 0 : i, size);
 		return newArrays;
 	}
 
-	public static boolean equals(int[] a1, int[] a2) {
-		if (a1 == a2) {
-			return true;
-		}
-		if (a1 == null || a2 == null) {
-			return false;
-		}
-		
-		int length = a1.length;
-		if (a2.length != length) {
-			return false;
-		}
-		
-		for (int i = 0; i < length; i++) {
-			if (a1[i] != a2[i]) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	public static ISprite[] cut(ISprite[] objs, int size) {
+	public static final ISprite[] cut(ISprite[] objs, int size) {
 		int j;
 		if ((j = objs.length) == 1) {
 			return new ISprite[0];
@@ -496,7 +475,7 @@ final public class CollectionUtils {
 		return newArrays;
 	}
 
-	public static Object[] cutObject(Object[] objs, int size) {
+	public static final Object[] cutObject(Object[] objs, int size) {
 		int j;
 		if ((j = objs.length) == 1) {
 			return new Object[0];
@@ -511,14 +490,14 @@ final public class CollectionUtils {
 		return newArrays;
 	}
 
-	public static Actor[] expand(Actor[] objs, int i, boolean flag) {
+	public static final Actor[] expand(Actor[] objs, int i, boolean flag) {
 		int size = objs.length;
 		Actor[] newArrays = new Actor[size + i];
 		System.arraycopy(objs, 0, newArrays, flag ? 0 : i, size);
 		return newArrays;
 	}
 
-	public static Actor[] cut(Actor[] objs, int size) {
+	public static final Actor[] cut(Actor[] objs, int size) {
 		int j;
 		if ((j = objs.length) == 1) {
 			return new Actor[0];
@@ -533,18 +512,18 @@ final public class CollectionUtils {
 		return newArrays;
 	}
 
-	public static LComponent[] expand(LComponent[] objs, int size) {
+	public static final LComponent[] expand(LComponent[] objs, int size) {
 		return expand(objs, size, true);
 	}
 
-	public static LComponent[] expand(LComponent[] objs, int i, boolean flag) {
+	public static final LComponent[] expand(LComponent[] objs, int i, boolean flag) {
 		int size = objs.length;
 		LComponent[] newArrays = new LComponent[size + i];
 		System.arraycopy(objs, 0, newArrays, flag ? 0 : i, size);
 		return newArrays;
 	}
 
-	public static LComponent[] cut(LComponent[] objs, int size) {
+	public static final LComponent[] cut(LComponent[] objs, int size) {
 		int j;
 		if ((j = objs.length) == 1) {
 			return new LComponent[0];
@@ -559,83 +538,83 @@ final public class CollectionUtils {
 		return newArrays;
 	}
 
-	public static PConvexPolygonShape[] copyOf(PConvexPolygonShape[] data, int newSize) {
+	public static final PConvexPolygonShape[] copyOf(PConvexPolygonShape[] data, int newSize) {
 		PConvexPolygonShape tempArr[] = new PConvexPolygonShape[newSize];
 		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
 	}
 
-	public static PConvexPolygonShape[] copyOf(PConvexPolygonShape[] data) {
+	public static final PConvexPolygonShape[] copyOf(PConvexPolygonShape[] data) {
 		return copyOf(data, data.length);
 	}
 
-	public static PBody[] copyOf(PBody[] data, int newSize) {
+	public static final PBody[] copyOf(PBody[] data, int newSize) {
 		PBody tempArr[] = new PBody[newSize];
 		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
 	}
 
-	public static PBody[] copyOf(PBody[] data) {
+	public static final PBody[] copyOf(PBody[] data) {
 		return copyOf(data, data.length);
 	}
 
-	public static PJoint[] copyOf(PJoint[] data) {
+	public static final PJoint[] copyOf(PJoint[] data) {
 		return copyOf(data, data.length);
 	}
 
-	public static PJoint[] copyOf(PJoint[] data, int newSize) {
+	public static final PJoint[] copyOf(PJoint[] data, int newSize) {
 		PJoint tempArr[] = new PJoint[newSize];
 		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
 	}
 
-	public static PSolver[] copyOf(PSolver[] data) {
+	public static final PSolver[] copyOf(PSolver[] data) {
 		return copyOf(data, data.length);
 	}
 
-	public static PSolver[] copyOf(PSolver[] data, int newSize) {
+	public static final PSolver[] copyOf(PSolver[] data, int newSize) {
 		PSolver tempArr[] = new PSolver[newSize];
 		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
 	}
 
-	public static PShape[] copyOf(PShape[] data) {
+	public static final PShape[] copyOf(PShape[] data) {
 		return copyOf(data, data.length);
 	}
 
-	public static PShape[] copyOf(PShape[] data, int newSize) {
+	public static final PShape[] copyOf(PShape[] data, int newSize) {
 		PShape tempArr[] = new PShape[newSize];
 		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
 	}
 
-	public static PSortableObject[] copyOf(PSortableObject[] data) {
+	public static final PSortableObject[] copyOf(PSortableObject[] data) {
 		return copyOf(data, data.length);
 	}
 
-	public static PSortableObject[] copyOf(PSortableObject[] data, int newSize) {
+	public static final PSortableObject[] copyOf(PSortableObject[] data, int newSize) {
 		PSortableObject tempArr[] = new PSortableObject[newSize];
 		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
 	}
 
-	public static LTexture[] copyOf(LTexture[] data, int newSize) {
+	public static final LTexture[] copyOf(LTexture[] data, int newSize) {
 		LTexture tempArr[] = new LTexture[newSize];
 		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
 	}
 
-	public static LTexture[] copyOf(LTexture[] data) {
+	public static final LTexture[] copyOf(LTexture[] data) {
 		return copyOf(data, data.length);
 	}
 
-	public static ArrayMap.Entry[] copyOf(ArrayMap.Entry[] data, int newSize) {
+	public static final ArrayMap.Entry[] copyOf(ArrayMap.Entry[] data, int newSize) {
 		ArrayMap.Entry tempArr[] = new ArrayMap.Entry[newSize];
 		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
 	}
 
-	public static ArrayMap.Entry[] copyOf(ArrayMap.Entry[] data) {
+	public static final ArrayMap.Entry[] copyOf(ArrayMap.Entry[] data) {
 		return copyOf(data, data.length);
 	}
 
@@ -644,7 +623,7 @@ final public class CollectionUtils {
 	 * 
 	 * @param arrays
 	 */
-	public static <T> void reverse(T[] arrays) {
+	public static final <T> void reverse(T[] arrays) {
 		for (int i = 0, size = arrays.length; i < size; i++) {
 			int idx = i;
 			int last = size - 1 - i;
@@ -665,7 +644,7 @@ final public class CollectionUtils {
 	 * @param index
 	 * @return
 	 */
-	public static Object spliceObjectOne(Object[] arrays, int index) {
+	public static final Object spliceObjectOne(Object[] arrays, int index) {
 		if (index >= arrays.length) {
 			return null;
 		}
@@ -685,7 +664,7 @@ final public class CollectionUtils {
 	 * @param data1
 	 * @param data2
 	 */
-	public static void swapObject(Object[] arrays, Object data1, Object data2) {
+	public static final void swapObject(Object[] arrays, Object data1, Object data2) {
 		if (data1 == data2) {
 			return;
 		}
@@ -707,7 +686,7 @@ final public class CollectionUtils {
 	 * @param newChild
 	 * @return
 	 */
-	public static boolean replaceObject(Object[] arrays, Object oldChild, Object newChild) {
+	public static final boolean replaceObject(Object[] arrays, Object oldChild, Object newChild) {
 		int index1 = indexOf(arrays, oldChild);
 		int index2 = indexOf(arrays, newChild);
 		if (index1 != -1 && index2 == -1) {
@@ -724,7 +703,7 @@ final public class CollectionUtils {
 	 * @param arrays
 	 * @return
 	 */
-	public static Object[] shuffle(Object[] arrays) {
+	public static final Object[] shuffle(Object[] arrays) {
 		for (int i = arrays.length - 1; i > -1; i--) {
 			int j = MathUtils.floor(MathUtils.random() * (i + 1));
 			Object temp = arrays[i];
@@ -744,7 +723,7 @@ final public class CollectionUtils {
 	 * @param checkThrow
 	 * @return
 	 */
-	public static boolean safeRange(Object[] arrays, int startIndex, int endIndex, boolean checkLimit,
+	public static final boolean safeRange(Object[] arrays, int startIndex, int endIndex, boolean checkLimit,
 			boolean checkThrow) {
 		int len = arrays.length;
 		if (checkLimit) {
@@ -783,7 +762,7 @@ final public class CollectionUtils {
 	 * @param checkThrow
 	 * @return
 	 */
-	public static boolean safeRange(Object[] arrays, int startIndex, int endIndex, boolean checkThrow) {
+	public static final boolean safeRange(Object[] arrays, int startIndex, int endIndex, boolean checkThrow) {
 		return safeRange(arrays, startIndex, endIndex, false, checkThrow);
 	}
 
@@ -794,7 +773,7 @@ final public class CollectionUtils {
 	 * @param index
 	 * @return
 	 */
-	public static boolean safeRange(Object[] arrays, int index) {
+	public static final boolean safeRange(Object[] arrays, int index) {
 		return safeRange(arrays, index, index, false, false);
 	}
 
@@ -806,7 +785,7 @@ final public class CollectionUtils {
 	 * @param endIndex
 	 * @return
 	 */
-	public static boolean safeRange(Object[] arrays, int startIndex, int endIndex) {
+	public static final boolean safeRange(Object[] arrays, int startIndex, int endIndex) {
 		return safeRange(arrays, startIndex, endIndex, false);
 	}
 
@@ -819,7 +798,7 @@ final public class CollectionUtils {
 	 * @param endIndex
 	 * @return
 	 */
-	public static Object[] setAll(Object[] arrays, Object data, int startIndex, int endIndex) {
+	public static final Object[] setAll(Object[] arrays, Object data, int startIndex, int endIndex) {
 		if (startIndex < 0) {
 			startIndex = 0;
 		}
@@ -841,7 +820,7 @@ final public class CollectionUtils {
 	 * @param values
 	 * @return
 	 */
-	public static Object[] unshift(Object[] arrays, Object... values) {
+	public static final Object[] unshift(Object[] arrays, Object... values) {
 		int len = arrays.length;
 		int dataLen = values.length;
 		Object[] newItems = new Object[len + dataLen];
@@ -860,7 +839,7 @@ final public class CollectionUtils {
 	 * @param index
 	 * @return
 	 */
-	public static Object[] shiftCut(Object[] arrays, int index) {
+	public static final Object[] shiftCut(Object[] arrays, int index) {
 		if (arrays == null || arrays.length == 0) {
 			return null;
 		}
@@ -877,7 +856,7 @@ final public class CollectionUtils {
 	 * @param index
 	 * @return
 	 */
-	public static Object shift(Object[] arrays, int index) {
+	public static final Object shift(Object[] arrays, int index) {
 		if (arrays == null || arrays.length == 0) {
 			return null;
 		}
@@ -895,7 +874,7 @@ final public class CollectionUtils {
 	 * @param arrays
 	 * @return
 	 */
-	public static Object shift(Object[] arrays) {
+	public static final Object shift(Object[] arrays) {
 		return shift(arrays, 0);
 	}
 
@@ -908,7 +887,7 @@ final public class CollectionUtils {
 	 * @param cutData
 	 * @return
 	 */
-	public static Object[] removeCutObject(Object[] arrays, int startIndex, int size, boolean cutData) {
+	public static final Object[] removeCutObject(Object[] arrays, int startIndex, int size, boolean cutData) {
 		if (safeRange(arrays, startIndex, size, false, true)) {
 			int len = arrays.length;
 			int count = size - startIndex + 1;
@@ -938,7 +917,7 @@ final public class CollectionUtils {
 	 * @param size
 	 * @return
 	 */
-	public static Object[] removeCutObject(Object[] arrays, int startIndex, int size) {
+	public static final Object[] removeCutObject(Object[] arrays, int startIndex, int size) {
 		return removeCutObject(arrays, startIndex, size, true);
 	}
 
@@ -950,7 +929,7 @@ final public class CollectionUtils {
 	 * @param size
 	 * @return
 	 */
-	public static Object[] splice(Object[] arrays, int index, int size) {
+	public static final Object[] splice(Object[] arrays, int index, int size) {
 		return removeCutObject(arrays, index, index + size - 1, true);
 	}
 
@@ -961,7 +940,7 @@ final public class CollectionUtils {
 	 * @param index
 	 * @return
 	 */
-	public static Object[] splice(Object[] arrays, int index) {
+	public static final Object[] splice(Object[] arrays, int index) {
 		return splice(arrays, index, 1);
 	}
 
@@ -972,7 +951,7 @@ final public class CollectionUtils {
 	 * @param data
 	 * @return
 	 */
-	public static Object[] sendToBack(Object[] arrays, Object data) {
+	public static final Object[] sendToBack(Object[] arrays, Object data) {
 		int currentIndex = indexOf(arrays, data);
 		if (currentIndex != -1 && currentIndex > 0) {
 			arrays = splice(arrays, currentIndex);
@@ -989,7 +968,7 @@ final public class CollectionUtils {
 	 * @param length
 	 * @return
 	 */
-	public static Object getRandom(Object[] arrays, int startIndex, int length) {
+	public static final Object getRandom(Object[] arrays, int startIndex, int length) {
 		if (safeRange(arrays, startIndex, length, false, true)) {
 			int randomIndex = startIndex + MathUtils.floor(MathUtils.random() * length);
 			return arrays[randomIndex];
@@ -1003,7 +982,7 @@ final public class CollectionUtils {
 	 * @param hashCode
 	 * @return
 	 */
-	public static int getLimitHash(int hashCode) {
+	public static final int getLimitHash(int hashCode) {
 		hashCode ^= (hashCode >>> 20) ^ (hashCode >>> 12);
 		return hashCode ^ (hashCode >>> 7) ^ (hashCode >>> 4);
 	}
@@ -1014,7 +993,7 @@ final public class CollectionUtils {
 	 * @param key
 	 * @return
 	 */
-	public static long getHashKey(int key) {
+	public static final long getHashKey(int key) {
 		int hash = getLimitHash(key);
 		if (hash == 0) {
 			hash = 1;

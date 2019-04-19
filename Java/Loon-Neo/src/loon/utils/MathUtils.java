@@ -106,7 +106,7 @@ public class MathUtils {
 
 	public static final float DEG_TO_RAD = PI / 180.0f;
 
-	static final private class SinCos {
+	static private class SinCos {
 
 		static final float[] SIN_LIST = new float[SIN_COUNT];
 
@@ -121,7 +121,7 @@ public class MathUtils {
 		}
 	}
 
-	static final private class Atan2 {
+	static private class Atan2 {
 
 		static final float[] TABLE = new float[ATAN2_COUNT];
 
