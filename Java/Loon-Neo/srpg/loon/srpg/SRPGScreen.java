@@ -23,6 +23,7 @@ package loon.srpg;
 import loon.EmulatorButton;
 import loon.EmulatorButtons;
 import loon.EmulatorListener;
+import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
@@ -3706,7 +3707,7 @@ public abstract class SRPGScreen extends Screen implements SRPGType, Runnable {
 
 	public final SRPGActors getSRPGActors() {
 		if (srpgActors == null) {
-			LSystem.runThrow("SRPGActors is NULL !");
+			throw new LSysException("SRPGActors is NULL !");
 		}
 		return srpgActors;
 	}

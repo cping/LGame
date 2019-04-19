@@ -23,6 +23,7 @@ package loon.srpg.view;
 import java.util.List;
 
 import loon.LRelease;
+import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
 import loon.action.avg.AVGCG;
@@ -708,7 +709,7 @@ public class SRPGAvgView extends SRPGView implements LRelease {
 				}
 			}
 		} catch (Exception ex) {
-			LSystem.runThrow("SRPGAvgView error!",ex);
+			throw new LSysException("SRPGAvgView error!",ex);
 		}
 	}
 
