@@ -85,6 +85,9 @@ public class LProcess {
 		this._screens = new TArray<Screen>();
 		this._screenMap = new ListMap<CharSequence, Screen>();
 		this.clear();
+		LSetting setting = _game.setting;
+		setting.updateScale();
+		LSystem.viewSize.setSize(setting.width, setting.height);
 		InputMake input = game.input();
 		if (input != null) {
 			if (!game.setting.emulateTouch && !game.isMobile()) {

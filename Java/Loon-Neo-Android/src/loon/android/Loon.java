@@ -26,7 +26,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Hashtable;
 
+import loon.Display;
+import loon.Json;
 import loon.LGame;
+import loon.LProcess;
 import loon.LSetting;
 import loon.LSystem;
 import loon.LazyLoading;
@@ -622,7 +625,15 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 
 	@Override
 	protected void onResume() {
+
+		Loon.self = this;
+
+		if (game != null) {
+			game.setPlatform(this);
+		}
+
 		AndroidGame.debugLog("onResume");
+		
 		if (setting != null && setting.listener != null) {
 			setting.listener.onResume();
 		}
@@ -671,6 +682,22 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 	@Override
 	public LGame getGame() {
 		return game;
+	}
+
+	public LSetting getSetting() {
+		return setting;
+	}
+
+	public LProcess getProcess() {
+		return game.process();
+	}
+
+	public Json getJson() {
+		return game.json();
+	}
+
+	public Display getDisplay() {
+		return game.display();
 	}
 
 	protected AndroidGame initialize() {

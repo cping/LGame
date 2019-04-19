@@ -519,7 +519,10 @@ public class LSystem {
 	}
 
 	public static final LProcess getProcess() {
-		return LGame._process;
+		if (base() != null) {
+			return base().processImpl;
+		}
+		return null;
 	}
 
 	public static final void load(Updateable u) {
@@ -769,6 +772,13 @@ public class LSystem {
 	public static final LTexture newTexture(String path, Format config) {
 		if (base() != null) {
 			return base().newTexture(path, config);
+		}
+		return null;
+	}
+
+	public LTexture loadNinePatchTexture(String fileName, int w, int h) {
+		if (base() != null) {
+			return base().loadNinePatchTexture(fileName, w, h);
 		}
 		return null;
 	}
