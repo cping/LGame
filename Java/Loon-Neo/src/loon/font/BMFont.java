@@ -109,7 +109,7 @@ public class BMFont implements IFont {
 
 	private boolean _isClose;
 
-	private String info, common, page, face,charset;
+	private String info, common, page, face, charset;
 
 	private static class Display {
 
@@ -188,22 +188,22 @@ public class BMFont implements IFont {
 		}
 	}
 
-	public BMFont(String file, LTexture image) throws Exception {
+	public BMFont(String file, LTexture image) throws LSysException {
 		this._imagePath = image.getSource();
 		this._texPath = file;
 		this.displayList = image;
 	}
 
-	public BMFont(String file, String imgFile) throws Exception {
+	public BMFont(String file, String imgFile) throws LSysException {
 		this._texPath = file;
 		this._imagePath = imgFile;
 	}
 
-	public BMFont(String file) throws Exception {
+	public BMFont(String file) throws LSysException {
 		this(file, LSystem.getAllFileName(file) + ".png");
 	}
 
-	private void parse(String text) throws Exception {
+	private void parse(String text) throws LSysException {
 		if (displays == null) {
 			displays = new IntMap<Display>(DEFAULT_MAX_CHAR);
 		} else {
@@ -232,7 +232,7 @@ public class BMFont implements IFont {
 						} else if (list[0].equals("face")) {
 							face = list[1];
 							continue;
-						} else if(list[1].equals("charset")){
+						} else if (list[1].equals("charset")) {
 							charset = list[1];
 							continue;
 						}
@@ -310,7 +310,7 @@ public class BMFont implements IFont {
 		LSystem.pushFontPool(this);
 	}
 
-	private CharDef parseChar(final String line) throws Exception {
+	private CharDef parseChar(final String line) throws LSysException {
 		CharDef def = new CharDef(this);
 		StringTokenizer tokens = new StringTokenizer(line, " =");
 		tokens.nextToken();
@@ -350,7 +350,7 @@ public class BMFont implements IFont {
 	}
 
 	public void drawString(String text, float x, float y, LColor col) {
-		drawBatchString(text, x, y, col, 0, text.length() - 1);
+		drawBatchString(text, x, y, col, 0, text.length());
 	}
 
 	private void drawBatchString(String text, float tx, float ty, LColor c, int startIndex, int endIndex) {
@@ -400,7 +400,7 @@ public class BMFont implements IFont {
 			}
 
 			CharDef lastCharDef = null;
-			for (int i = 0, size = text.length(); i < size; i++) {
+			for (int i = startIndex; i < endIndex; i++) {
 				int id = text.charAt(i);
 				if (id == '\n') {
 					x = 0;
@@ -419,12 +419,9 @@ public class BMFont implements IFont {
 				if (lastCharDef != null) {
 					x += lastCharDef.getKerning(id);
 				}
+
 				lastCharDef = charDef;
-
-				if ((i >= startIndex) && (i <= endIndex)) {
-					charDef.draw(x, y, c);
-				}
-
+				charDef.draw(x, y, c);
 				x += charDef.advance;
 			}
 
@@ -458,7 +455,7 @@ public class BMFont implements IFont {
 
 	@Override
 	public void drawString(GLEx g, String text, float x, float y, LColor col) {
-		drawString(g, text, x, y, col, 0, text.length() - 1);
+		drawString(g, text, x, y, col, 0, text.length());
 	}
 
 	private void make() {
@@ -490,7 +487,7 @@ public class BMFont implements IFont {
 		}
 		int x = 0, y = 0;
 		CharDef lastCharDef = null;
-		for (int i = 0, size = text.length(); i < size; i++) {
+		for (int i = startIndex; i < endIndex; i++) {
 			int id = text.charAt(i);
 			if (id == '\n') {
 				x = 0;
@@ -510,9 +507,7 @@ public class BMFont implements IFont {
 				x += lastCharDef.getKerning(id);
 			}
 			lastCharDef = charDef;
-			if ((i >= startIndex) && (i <= endIndex)) {
-				charDef.draw(g, tx + _offset.x, ty + _offset.y, x, y, c);
-			}
+			charDef.draw(g, tx + _offset.x, ty + _offset.y, x, y, c);
 			x += charDef.advance;
 		}
 	}
@@ -846,6 +841,5 @@ public class BMFont implements IFont {
 		builder.kv("info", info).comma().kv("common", common).comma().kv("page", page);
 		return builder.toString();
 	}
-
 
 }

@@ -24,7 +24,7 @@ import loon.LSysException;
 import loon.utils.StringUtils;
 import loon.utils.TimeUtils;
 
-public abstract class CacheObject {
+public abstract class CacheObject<T> {
 
 	protected final String _name;
 
@@ -36,24 +36,31 @@ public abstract class CacheObject {
 
 	protected long _lastUseTime;
 
+	protected boolean _customFlag;
+
+	public CacheObject(Object target) {
+		this(null, target, false, 0);
+	}
+
 	public CacheObject(String name, Object target, boolean locked, int priority) {
-
 		if (target == null) {
-			throw new LSysException("target is null !");
+			throw new LSysException("Target is null");
 		}
-
 		_name = StringUtils.isEmpty(name) ? "unkown" : name;
 		_target = target;
 		_locked = locked;
 		_priority = priority;
 		_lastUseTime = TimeUtils.millis();
+		_customFlag = false;
 	}
 
-	protected abstract void onSpawn();
+	protected abstract boolean isUse();
 
-	protected abstract void onUnspawn();
+	protected abstract T onSpawn();
 
-	protected abstract void disposed(boolean isShutdown);
+	protected abstract T onUnspawn();
+
+	protected abstract T disposed(boolean isShutdown);
 
 	public boolean isLocked() {
 		return _locked;
@@ -63,8 +70,20 @@ public abstract class CacheObject {
 		this._locked = locked;
 	}
 
+	public boolean getCustomFlag() {
+		return _customFlag;
+	}
+
+	public void setCustomFlag(boolean flag) {
+		this._customFlag = flag;
+	}
+
 	public int getPriority() {
 		return _priority;
+	}
+
+	public void setPriority(int priority) {
+		this._priority = priority;
 	}
 
 	public long getLastUseTime() {

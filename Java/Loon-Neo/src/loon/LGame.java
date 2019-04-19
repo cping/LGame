@@ -46,6 +46,35 @@ import loon.utils.reply.Act;
  */
 public abstract class LGame {
 
+	/**
+	 * 支持的运行库(Java版不支持的会由C++版和C#版实现)
+	 */
+	public static enum Type {
+		JAVASE, ANDROID, IOS, WP, HTML5, UNITY, SWITCH, STUB
+	}
+
+	/**
+	 * 基本游戏状态
+	 */
+	public static enum Status {
+		PAUSE, RESUME, EXIT
+	}
+
+	/**
+	 * 简单的错误信息存储
+	 *
+	 */
+	public static class Error {
+		
+		public String message;
+		public Throwable cause;
+
+		public Error(String message, Throwable cause) {
+			this.message = message;
+			this.cause = cause;
+		}
+	}
+	
 	protected static final String FONT_NAME = "Dialog";
 
 	protected static final String APP_NAME = "Loon";
@@ -67,30 +96,6 @@ public abstract class LGame {
 	private final TArray<Desktop> _desktop_pools;
 
 	private final TArray<IFont> _font_pools;
-
-	/**
-	 * 支持的运行库(Java版不支持的会由C++版和C#版实现)
-	 */
-	public static enum Type {
-		JAVASE, ANDROID, IOS, WP, HTML5, UNITY, SWITCH, STUB
-	}
-
-	/**
-	 * 基本游戏状态
-	 */
-	public static enum Status {
-		PAUSE, RESUME, EXIT
-	}
-
-	public static class Error {
-		public String message;
-		public Throwable cause;
-
-		public Error(String message, Throwable cause) {
-			this.message = message;
-			this.cause = cause;
-		}
-	}
 
 	public Act<Error> errors = Act.create();
 

@@ -12,8 +12,8 @@ import loon.opengl.d3d.models.NodeKeyframe;
 import loon.opengl.d3d.models.NodePart;
 import loon.utils.ListMap;
 import loon.utils.ObjectMap;
-import loon.utils.Pool;
 import loon.utils.TArray;
+import loon.utils.cache.Pool;
 
 public class ModelInstance implements RenderableProvider {
 

@@ -1,7 +1,7 @@
 package loon.opengl.d3d;
 
-import loon.utils.Pool;
 import loon.utils.TArray;
+import loon.utils.cache.Pool;
 
 public interface RenderableProvider {
 

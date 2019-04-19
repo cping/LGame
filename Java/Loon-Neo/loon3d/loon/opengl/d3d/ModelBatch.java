@@ -4,8 +4,8 @@ import loon.LRelease;
 import loon.action.camera.BaseCamera;
 import loon.opengl.light.Lights;
 import loon.utils.Array;
-import loon.utils.Pool;
 import loon.utils.TArray;
+import loon.utils.cache.Pool;
 
 public class ModelBatch implements LRelease{
 	protected BaseCamera camera;

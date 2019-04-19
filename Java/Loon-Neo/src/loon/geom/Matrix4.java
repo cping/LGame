@@ -78,7 +78,8 @@ public class Matrix4 implements Serializable, XY {
 
 	public static final int M33 = 15;
 
-	public static final float tmp[] = new float[16];
+	public final float tmp[] = new float[16];
+	
 	public final float val[] = new float[16];
 
 	private Support support;
