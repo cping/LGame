@@ -27,6 +27,7 @@ import loon.Screen;
 import loon.Visible;
 import loon.action.ActionBind;
 import loon.action.ActionControl;
+import loon.event.QueryEvent;
 import loon.geom.PointI;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
@@ -969,6 +970,102 @@ public class Sprites implements IArray, Visible, LRelease {
 		return CollectionUtils.copyOf(this._sprites, this._size);
 	}
 
+	/**
+	 * 删除符合指定条件的精灵并返回操作的集合
+	 * 
+	 * @param query
+	 * @return
+	 */
+	public TArray<ISprite> remove(QueryEvent<ISprite> query) {
+
+		TArray<ISprite> result = new TArray<ISprite>();
+
+		for (int i = _sprites.length - 1; i > -1; i--) {
+			ISprite sprite = _sprites[i];
+			if (sprite != null) {
+				if (query.hit(sprite)) {
+					result.add(sprite);
+					remove(i);
+				}
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * 查找符合指定条件的精灵并返回操作的集合
+	 * 
+	 * @param query
+	 * @return
+	 */
+	public TArray<ISprite> find(QueryEvent<ISprite> query) {
+
+		TArray<ISprite> result = new TArray<ISprite>();
+
+		for (int i = _sprites.length - 1; i > -1; i--) {
+			ISprite sprite = _sprites[i];
+			if (sprite != null) {
+				if (query.hit(sprite)) {
+					result.add(sprite);
+				}
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * 删除指定条件的精灵并返回操作的集合
+	 * 
+	 * @param query
+	 * @return
+	 */
+	public <T extends ISprite> TArray<T> delete(QueryEvent<T> query) {
+
+		TArray<T> result = new TArray<T>();
+
+		for (int i = _sprites.length - 1; i > -1; i--) {
+			ISprite sprite = _sprites[i];
+			if (sprite != null) {
+
+				@SuppressWarnings("unchecked")
+				T v = (T) sprite;
+				if (query.hit(v)) {
+					result.add(v);
+					remove(i);
+				}
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * 查找符合指定条件的精灵并返回操作的集合
+	 * 
+	 * @param query
+	 * @return
+	 */
+	public <T extends ISprite> TArray<T> select(QueryEvent<T> query) {
+
+		TArray<T> result = new TArray<T>();
+
+		for (int i = _sprites.length - 1; i > -1; i--) {
+			ISprite sprite = _sprites[i];
+
+			if (sprite != null) {
+				@SuppressWarnings("unchecked")
+				T v = (T) sprite;
+				if (query.hit(v)) {
+					result.add(v);
+				}
+			}
+		}
+		return result;
+	}
+
+	@Override
 	public int size() {
 		return this._size;
 	}

@@ -65,6 +65,7 @@ import loon.event.GameKey;
 import loon.event.GameTouch;
 import loon.event.LTouchArea;
 import loon.event.LTouchLocation;
+import loon.event.QueryEvent;
 import loon.event.SysInput;
 import loon.event.SysTouch;
 import loon.event.Touched;
@@ -4705,6 +4706,110 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	public final TArray<LClickButton> elementButtons(final String[] names, int sx, int sy, int cellWidth,
 			int cellHeight, int offsetX, int offsetY, ClickListener listener, int maxHeight) {
 		return LayoutManager.elementButtons(this, names, sx, sy, cellWidth, cellHeight, listener, maxHeight);
+	}
+
+	/**
+	 * 删除符合指定条件的精灵并返回操作的集合
+	 * 
+	 * @param query
+	 * @return
+	 */
+	public TArray<ISprite> removeSprite(QueryEvent<ISprite> query) {
+		if (sprites != null) {
+			return sprites.remove(query);
+		}
+		return new TArray<ISprite>();
+	}
+
+	/**
+	 * 查找符合指定条件的精灵并返回操作的集合
+	 * 
+	 * @param query
+	 * @return
+	 */
+	public TArray<ISprite> findSprite(QueryEvent<ISprite> query) {
+		if (sprites != null) {
+			return sprites.find(query);
+		}
+		return new TArray<ISprite>();
+	}
+
+	/**
+	 * 删除指定条件的精灵并返回操作的集合
+	 * 
+	 * @param query
+	 * @return
+	 */
+	public <T extends ISprite> TArray<T> deleteSprite(QueryEvent<T> query) {
+		if (sprites != null) {
+			return sprites.delete(query);
+		}
+		return new TArray<T>();
+	}
+
+	/**
+	 * 查找符合指定条件的精灵并返回操作的集合
+	 * 
+	 * @param query
+	 * @return
+	 */
+	public <T extends ISprite> TArray<T> selectSprite(QueryEvent<T> query) {
+		if (sprites != null) {
+			return sprites.select(query);
+		}
+		return new TArray<T>();
+	}
+
+	/**
+	 * 删除符合指定条件的组件并返回操作的集合
+	 * 
+	 * @param query
+	 * @return
+	 */
+	public TArray<LComponent> removeComponent(QueryEvent<LComponent> query) {
+		if (desktop == null) {
+			return new TArray<LComponent>();
+		}
+		return desktop.remove(query);
+	}
+
+	/**
+	 * 查找符合指定条件的组件并返回操作的集合
+	 * 
+	 * @param query
+	 * @return
+	 */
+	public TArray<LComponent> findComponent(QueryEvent<LComponent> query) {
+		if (desktop == null) {
+			return new TArray<LComponent>();
+		}
+		return desktop.find(query);
+	}
+
+	/**
+	 * 删除指定条件的组件并返回操作的集合
+	 * 
+	 * @param query
+	 * @return
+	 */
+	public <T extends LComponent> TArray<T> deleteComponent(QueryEvent<T> query) {
+		if (desktop == null) {
+			return new TArray<T>();
+		}
+		return desktop.delete(query);
+	}
+
+	/**
+	 * 查找符合指定条件的组件并返回操作的集合
+	 * 
+	 * @param query
+	 * @return
+	 */
+	public <T extends LComponent> TArray<T> selectComponent(QueryEvent<T> query) {
+		if (desktop == null) {
+			return new TArray<T>();
+		}
+		return desktop.select(query);
 	}
 
 	@Override

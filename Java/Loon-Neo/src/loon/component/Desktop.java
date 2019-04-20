@@ -31,6 +31,7 @@ import loon.component.layout.LayoutConstraints;
 import loon.component.layout.LayoutManager;
 import loon.component.layout.LayoutPort;
 import loon.event.GameKey;
+import loon.event.QueryEvent;
 import loon.event.SysInput;
 import loon.event.SysTouch;
 import loon.geom.RectBox;
@@ -871,6 +872,46 @@ public class Desktop implements Visible, LRelease {
 		if (contentPane != null) {
 			contentPane.processResize();
 		}
+	}
+
+	/**
+	 * 删除符合指定条件的组件并返回操作的集合
+	 * 
+	 * @param query
+	 * @return
+	 */
+	public TArray<LComponent> remove(QueryEvent<LComponent> query) {
+		return contentPane.remove(query);
+	}
+
+	/**
+	 * 查找符合指定条件的组件并返回操作的集合
+	 * 
+	 * @param query
+	 * @return
+	 */
+	public TArray<LComponent> find(QueryEvent<LComponent> query) {
+		return contentPane.find(query);
+	}
+
+	/**
+	 * 删除指定条件的组件并返回操作的集合
+	 * 
+	 * @param query
+	 * @return
+	 */
+	public <T extends LComponent> TArray<T> delete(QueryEvent<T> query) {
+		return contentPane.delete(query);
+	}
+
+	/**
+	 * 查找符合指定条件的组件并返回操作的集合
+	 * 
+	 * @param query
+	 * @return
+	 */
+	public <T extends LComponent> TArray<T> select(QueryEvent<T> query) {
+		return contentPane.select(query);
 	}
 
 	public Screen getInput() {

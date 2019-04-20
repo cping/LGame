@@ -26,17 +26,16 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
+import loon.LGame;
 import loon.LRelease;
 import loon.LSysException;
 import loon.LSystem;
-import loon.LGame;
 import loon.canvas.LColor;
 import loon.geom.Matrix3;
 import loon.geom.Matrix4;
 import loon.geom.Vector2f;
 import loon.geom.Vector3f;
 import loon.utils.IntMap;
-import loon.utils.ObjectMap;
 import loon.utils.TArray;
 
 public class ShaderProgram implements LRelease {
@@ -54,8 +53,6 @@ public class ShaderProgram implements LRelease {
 	public static final String BINORMAL_ATTRIBUTE = "a_binormal";
 
 	public static boolean pedantic = true;
-
-	private final static ObjectMap<LGame, TArray<ShaderProgram>> shaders = new ObjectMap<LGame, TArray<ShaderProgram>>();
 
 	private String log = LSystem.EMPTY;
 
@@ -118,7 +115,7 @@ public class ShaderProgram implements LRelease {
 		compileShaders(glslVersion + vertexShader, glslVersion + fragmentShader);
 		if (isCompiled()) {
 			fetchAttributesAndUniforms();
-			addManagedShader(LSystem.base(), this);
+			addManagedShader(this);
 		}
 	}
 
@@ -536,9 +533,7 @@ public class ShaderProgram implements LRelease {
 			gl.glDeleteShader(vertexShaderHandle);
 			gl.glDeleteShader(fragmentShaderHandle);
 			gl.glDeleteProgram(program);
-			if (shaders.get(LSystem.base()) != null) {
-				shaders.get(LSystem.base()).removeValue(this, true);
-			}
+			LSystem.removeShader(this);
 		}
 	}
 
@@ -581,23 +576,12 @@ public class ShaderProgram implements LRelease {
 		}
 	}
 
-	private void addManagedShader(LGame self, ShaderProgram shaderProgram) {
-		TArray<ShaderProgram> managedResources = shaders.get(self);
-		if (managedResources == null) {
-			managedResources = new TArray<ShaderProgram>();
-		}
-		managedResources.add(shaderProgram);
-		shaders.put(self, managedResources);
+	private void addManagedShader(ShaderProgram shaderProgram) {
+		LSystem.addShader(shaderProgram);
 	}
 
-	public static void invalidateAllShaderPrograms(LGame self) {
-		if (shaders == null || shaders.size == 0) {
-			return;
-		}
-		if (LSystem.base().graphics().gl == null) {
-			return;
-		}
-		TArray<ShaderProgram> shaderArray = shaders.get(self);
+	public static void invalidateAllShaderPrograms(LGame game) {
+		TArray<ShaderProgram> shaderArray = game.getShaderAll();
 		if (shaderArray == null) {
 			return;
 		}
@@ -607,19 +591,8 @@ public class ShaderProgram implements LRelease {
 		}
 	}
 
-	public static void clearAllShaderPrograms(LGame self) {
-		shaders.remove(self);
-	}
-
-	public static String getManagedStatus() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("Managed shaders/self: { ");
-		for (LGame self : shaders.keys()) {
-			builder.append(shaders.get(self).size);
-			builder.append(" ");
-		}
-		builder.append("}");
-		return builder.toString();
+	public static void clearAllShaderPrograms() {
+		LSystem.clearShader();
 	}
 
 	public void setAttributef(String name, float value1, float value2, float value3, float value4) {

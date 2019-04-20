@@ -38,6 +38,7 @@ import loon.opengl.ShaderCmd;
 import loon.opengl.ShaderProgram;
 import loon.utils.NumberUtils;
 import loon.utils.Scale;
+import loon.utils.TArray;
 import loon.utils.json.JsonImpl;
 import loon.utils.reply.Act;
 
@@ -336,19 +337,69 @@ public class LSystem {
 		return _version;
 	}
 
+	public static final void addMesh(Mesh mesh) {
+		if (base() != null) {
+			base().addMesh(mesh);
+		}
+	}
+
+	public static final void removeMesh(Mesh mesh) {
+		if (base() != null) {
+			base().removeMesh(mesh);
+		}
+	}
+
+	public static final TArray<Mesh> getMeshAll() {
+		if (base() != null) {
+			return base().getMeshAll();
+		}
+		return null;
+	}
+
+	public static final void clearMesh() {
+		if (base() != null) {
+			base().clearMesh();
+		}
+	}
+
+	public static final void addShader(ShaderProgram shader) {
+		if (base() != null) {
+			base().addShader(shader);
+		}
+	}
+
+	public static final void removeShader(ShaderProgram mesh) {
+		if (base() != null) {
+			base().removeShader(mesh);
+		}
+	}
+
+	public static final TArray<ShaderProgram> getShaderAll() {
+		if (base() != null) {
+			return base().getShaderAll();
+		}
+		return null;
+	}
+
+	public static final void clearShader() {
+		if (base() != null) {
+			base().clearShader();
+		}
+	}
+
 	public static void resetTextureRes() {
 		resetTextureRes(base());
 	}
 
 	public static void resetTextureRes(final LGame game) {
-		LGame loonMain = game;
-		if (loonMain == null) {
-			loonMain = base();
-		}
-		Mesh.invalidateAllMeshes(loonMain);
-		ShaderProgram.invalidateAllShaderPrograms(loonMain);
+		resetShader(game);
 		disposeMeshPool();
 		disposeTextureAll();
+	}
+
+	public static void resetShader(final LGame game) {
+		Mesh.invalidateAllMeshes(game);
+		ShaderProgram.invalidateAllShaderPrograms(game);
 	}
 
 	public static void exit() {

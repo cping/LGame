@@ -27,6 +27,7 @@ import loon.action.ActionBind;
 import loon.component.layout.LayoutManager;
 import loon.component.layout.LayoutPort;
 import loon.event.GameKey;
+import loon.event.QueryEvent;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
@@ -794,6 +795,100 @@ public abstract class LContainer extends LComponent implements IArray {
 		}
 	}
 
+	/**
+	 * 删除符合指定条件的组件并返回操作的集合
+	 * 
+	 * @param query
+	 * @return
+	 */
+	public TArray<LComponent> remove(QueryEvent<LComponent> query) {
+
+		TArray<LComponent> result = new TArray<LComponent>();
+
+		for (int i = _childs.length - 1; i > -1; i--) {
+			LComponent comp = _childs[i];
+			if (comp != null) {
+				if (query.hit(comp)) {
+					result.add(comp);
+					remove(i);
+				}
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * 查找符合指定条件的组件并返回操作的集合
+	 * 
+	 * @param query
+	 * @return
+	 */
+	public TArray<LComponent> find(QueryEvent<LComponent> query) {
+
+		TArray<LComponent> result = new TArray<LComponent>();
+
+		for (int i = _childs.length - 1; i > -1; i--) {
+			LComponent comp = _childs[i];
+			if (comp != null) {
+				if (query.hit(comp)) {
+					result.add(comp);
+				}
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * 删除指定条件的组件并返回操作的集合
+	 * 
+	 * @param query
+	 * @return
+	 */
+	public <T extends LComponent> TArray<T> delete(QueryEvent<T> query) {
+
+		TArray<T> result = new TArray<T>();
+
+		for (int i = _childs.length - 1; i > -1; i--) {
+			LComponent comp = _childs[i];
+
+			if (comp != null) {
+				@SuppressWarnings("unchecked")
+				T v = (T) comp;
+				if (query.hit(v)) {
+					result.add(v);
+					remove(i);
+				}
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * 查找符合指定条件的组件并返回操作的集合
+	 * 
+	 * @param query
+	 * @return
+	 */
+	public <T extends LComponent> TArray<T> select(QueryEvent<T> query) {
+
+		TArray<T> result = new TArray<T>();
+
+		for (int i = _childs.length - 1; i > -1; i--) {
+			LComponent comp = _childs[i];
+
+			if (comp != null) {
+				@SuppressWarnings("unchecked")
+				T v = (T) comp;
+				if (query.hit(v)) {
+					result.add(v);
+				}
+			}
+		}
+		return result;
+	}
+	
 	@Override
 	public LComponent in() {
 		if (_component_isClose) {

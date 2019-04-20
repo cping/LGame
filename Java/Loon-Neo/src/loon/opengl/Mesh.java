@@ -23,10 +23,10 @@ package loon.opengl;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 
+import loon.LGame;
 import loon.LRelease;
 import loon.LSysException;
 import loon.LSystem;
-import loon.LGame;
 import loon.geom.BoundingBox;
 import loon.geom.Matrix3;
 import loon.geom.Matrix4;
@@ -34,16 +34,13 @@ import loon.geom.Vector2f;
 import loon.geom.Vector3f;
 import loon.opengl.VertexAttributes.Usage;
 import loon.utils.MathUtils;
-import loon.utils.ObjectMap;
 import loon.utils.TArray;
 
 public class Mesh implements LRelease {
 
-	public enum VertexDataType {
+	public static enum VertexDataType {
 		VertexArray, VertexBufferObject, VertexBufferObjectSubData,
 	}
-
-	static final ObjectMap<LGame, TArray<Mesh>> gmeshes = new ObjectMap<LGame, TArray<Mesh>>();
 
 	private final VertexData vertices;
 	private final IndexData indices;
@@ -56,7 +53,7 @@ public class Mesh implements LRelease {
 		this.indices = indices;
 		this.isVertexArray = isVertexArray;
 
-		addManagedMesh(LSystem.base(), this);
+		addManagedMesh(this);
 	}
 
 	public Mesh(boolean isStatic, int maxVertices, int maxIndices, VertexAttribute... attributes) {
@@ -64,7 +61,7 @@ public class Mesh implements LRelease {
 		indices = new IndexBufferObject(isStatic, maxIndices);
 		isVertexArray = false;
 
-		addManagedMesh(LSystem.base(), this);
+		addManagedMesh(this);
 	}
 
 	public Mesh(boolean isStatic, int maxVertices, int maxIndices, VertexAttributes attributes) {
@@ -72,7 +69,7 @@ public class Mesh implements LRelease {
 		indices = new IndexBufferObject(isStatic, maxIndices);
 		isVertexArray = false;
 
-		addManagedMesh(LSystem.base(), this);
+		addManagedMesh(this);
 	}
 
 	public Mesh(boolean staticVertices, boolean staticIndices, int maxVertices, int maxIndices,
@@ -81,7 +78,7 @@ public class Mesh implements LRelease {
 		indices = new IndexBufferObject(staticIndices, maxIndices);
 		isVertexArray = false;
 
-		addManagedMesh(LSystem.base(), this);
+		addManagedMesh(this);
 	}
 
 	public Mesh(VertexDataType type, boolean isStatic, int maxVertices, int maxIndices, VertexAttribute... attributes) {
@@ -98,7 +95,7 @@ public class Mesh implements LRelease {
 			indices = new IndexArray(maxIndices);
 			isVertexArray = true;
 		}
-		addManagedMesh(LSystem.base(), this);
+		addManagedMesh(this);
 	}
 
 	public static Mesh create(boolean isStatic, final Mesh base, final Matrix4[] transformations) {
@@ -368,12 +365,7 @@ public class Mesh implements LRelease {
 		if (closed) {
 			return;
 		}
-		TArray<Mesh> mesh = gmeshes.get(LSystem.base());
-		if (mesh != null) {
-			synchronized (Mesh.class) {
-				mesh.removeValue(this);
-			}
-		}
+		LSystem.removeMesh(this);
 		this.vertices.close();
 		this.indices.close();
 		this.closed = true;
@@ -586,20 +578,12 @@ public class Mesh implements LRelease {
 		return indices.getBuffer();
 	}
 
-	private static void addManagedMesh(LGame self, Mesh mesh) {
-		TArray<Mesh> managedResources = gmeshes.get(self);
-		if (managedResources == null) {
-			managedResources = new TArray<Mesh>();
-		}
-		managedResources.add(mesh);
-		gmeshes.put(self, managedResources);
+	private static void addManagedMesh(Mesh mesh) {
+		LSystem.addMesh(mesh);
 	}
 
-	public static void invalidateAllMeshes(LGame self) {
-		if (gmeshes == null || gmeshes.size == 0) {
-			return;
-		}
-		TArray<Mesh> meshesArray = gmeshes.get(self);
+	public static void invalidateAllMeshes(LGame game) {
+		TArray<Mesh> meshesArray = game.getMeshAll();
 		if (meshesArray == null) {
 			return;
 		}
@@ -609,19 +593,8 @@ public class Mesh implements LRelease {
 		}
 	}
 
-	public static void clearAllMeshes(LGame self) {
-		gmeshes.remove(self);
-	}
-
-	public static String getManagedStatus() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("Managed meshes/self: { ");
-		for (LGame self : gmeshes.keys()) {
-			builder.append(gmeshes.get(self).size);
-			builder.append(" ");
-		}
-		builder.append("}");
-		return builder.toString();
+	public static void clearAllMeshes() {
+		LSystem.clearMesh();
 	}
 
 	public void scale(float scaleX, float scaleY, float scaleZ) {
@@ -685,8 +658,8 @@ public class Mesh implements LRelease {
 		if (offset < 0 || dimensions < 1 || (offset + dimensions) > vertexSize)
 			throw new LSysException("offset > vertexSize !");
 		if (start < 0 || count < 1 || ((start + count) * vertexSize) > vertices.length)
-			throw new LSysException("start = " + start + ", count = " + count + ", vertexSize = "
-					+ vertexSize + ", length = " + vertices.length);
+			throw new LSysException("start = " + start + ", count = " + count + ", vertexSize = " + vertexSize
+					+ ", length = " + vertices.length);
 
 		final Vector3f tmp = new Vector3f();
 
@@ -735,13 +708,13 @@ public class Mesh implements LRelease {
 		setVertices(vertices, 0, vertices.length);
 	}
 
-	final static Vector2f tmp = new Vector2f();
+	private final static Vector2f tmp = new Vector2f();
 
 	public static void transformUV(final Matrix3 matrix, final float[] vertices, int vertexSize, int offset, int start,
 			int count) {
 		if (start < 0 || count < 1 || ((start + count) * vertexSize) > vertices.length) {
-			throw new LSysException("start = " + start + ", count = " + count + ", vertexSize = "
-					+ vertexSize + ", length = " + vertices.length);
+			throw new LSysException("start = " + start + ", count = " + count + ", vertexSize = " + vertexSize
+					+ ", length = " + vertices.length);
 		}
 		int idx = offset + (start * vertexSize);
 		for (int i = 0; i < count; i++) {
@@ -844,10 +817,5 @@ public class Mesh implements LRelease {
 
 	public Mesh copy(boolean isStatic) {
 		return copy(isStatic, false, null);
-	}
-
-	@Override
-	public String toString() {
-		return super.toString() + " " + getManagedStatus();
 	}
 }

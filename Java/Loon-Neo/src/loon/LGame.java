@@ -65,7 +65,7 @@ public abstract class LGame {
 	 *
 	 */
 	public static class Error {
-		
+
 		public String message;
 		public Throwable cause;
 
@@ -74,7 +74,7 @@ public abstract class LGame {
 			this.cause = cause;
 		}
 	}
-	
+
 	protected static final String FONT_NAME = "Dialog";
 
 	protected static final String APP_NAME = "Loon";
@@ -83,37 +83,41 @@ public abstract class LGame {
 
 	protected static Platform _platform = null;
 
-	//单独纹理批处理缓存
+	private final TArray<Mesh> _mesh_all_pools;
+
+	private final TArray<ShaderProgram> _shader_all_pools;
+
+	// 单独纹理批处理缓存
 	private final IntMap<LTextureBatch> _texture_batch_pools;
 
-	//mesh缓存
+	// mesh缓存
 	private final ObjectMap<String, Mesh> _texture_mesh_pools;
 
-	//纹理惰性加载缓存
+	// 纹理惰性加载缓存
 	private final ObjectMap<String, LTexture> _texture_lazys;
 
-	//全部纹理数据
+	// 全部纹理数据
 	private final TArray<LTexture> _texture_all_list;
 
-	//精灵group缓存
+	// 精灵group缓存
 	private final TArray<Sprites> _sprites_pools;
 
-	//桌面group缓存
+	// 桌面group缓存
 	private final TArray<Desktop> _desktop_pools;
 
-	//ifnot缓存
+	// ifnot缓存
 	private final TArray<IFont> _font_pools;
 
-	//错误接口
+	// 错误接口
 	public Act<Error> errors = Act.create();
 
-	//状态接口
+	// 状态接口
 	public Act<Status> status = Act.create();
 
-	//游戏窗体刷新接口
+	// 游戏窗体刷新接口
 	public Act<LGame> frame = Act.create();
 
-	//游戏基本设置
+	// 游戏基本设置
 	public LSetting setting;
 
 	protected LProcess processImpl;
@@ -124,6 +128,8 @@ public abstract class LGame {
 
 	public LGame(LSetting config, Platform plat) {
 		LGame._platform = plat;
+		this._mesh_all_pools = new TArray<Mesh>(128);
+		this._shader_all_pools = new TArray<ShaderProgram>(128);
 		this._texture_batch_pools = new IntMap<LTextureBatch>(12);
 		this._texture_mesh_pools = new ObjectMap<String, Mesh>(12);
 		this._texture_lazys = new ObjectMap<String, LTexture>(128);
@@ -194,7 +200,18 @@ public abstract class LGame {
 		if (plat != null) {
 			_platform = plat;
 			_base = plat.getGame();
+			_base.resetShader();
 		}
+	}
+
+	/**
+	 * 刷新Shader数据
+	 * 
+	 * @param game
+	 */
+	public void resetShader() {
+		Mesh.invalidateAllMeshes(this);
+		ShaderProgram.invalidateAllShaderPrograms(this);
 	}
 
 	/**
@@ -744,7 +761,7 @@ public abstract class LGame {
 		log().debug("Texture : New " + path + " Loaded");
 		return BaseIO.loadImage(path).onHaveToClose(true).createTexture(config);
 	}
-	
+
 	/**
 	 * 加载9.png图片
 	 * 
@@ -756,15 +773,20 @@ public abstract class LGame {
 	public LTexture loadNinePatchTexture(String fileName, int w, int h) {
 		return loadNinePatchTexture(fileName, null, 0, 0, w, h, Format.LINEAR);
 	}
-	
+
 	/**
 	 * 加载9.png图片
 	 * 
-	 * @param fileName 图片位置
-	 * @param x 贴图初始x位置
-	 * @param y 贴图初始y位置
-	 * @param w 预计把9.png扩展的width大小
-	 * @param h 预计把9.png扩展的height大小
+	 * @param fileName
+	 *            图片位置
+	 * @param x
+	 *            贴图初始x位置
+	 * @param y
+	 *            贴图初始y位置
+	 * @param w
+	 *            预计把9.png扩展的width大小
+	 * @param h
+	 *            预计把9.png扩展的height大小
 	 * @return
 	 */
 	public LTexture loadNinePatchTexture(String fileName, int x, int y, int w, int h) {
@@ -774,13 +796,20 @@ public abstract class LGame {
 	/**
 	 * 加载9.png图片
 	 * 
-	 * @param fileName 文件名
-	 * @param repeat 9.png图片延展模式
-	 * @param x 贴图初始x位置
-	 * @param y 贴图初始y位置
-	 * @param w 预计把9.png扩展的width大小
-	 * @param h 预计把9.png扩展的height大小
-	 * @param config 纹理格式
+	 * @param fileName
+	 *            文件名
+	 * @param repeat
+	 *            9.png图片延展模式
+	 * @param x
+	 *            贴图初始x位置
+	 * @param y
+	 *            贴图初始y位置
+	 * @param w
+	 *            预计把9.png扩展的width大小
+	 * @param h
+	 *            预计把9.png扩展的height大小
+	 * @param config
+	 *            纹理格式
 	 * @return
 	 */
 	public LTexture loadNinePatchTexture(String fileName, Repeat repeat, int x, int y, int w, int h, Format config) {
@@ -917,6 +946,38 @@ public abstract class LGame {
 	public void disposeTextureAll() {
 		destroyAllCache();
 		closeAllTexture();
+	}
+
+	public void addMesh(Mesh mesh) {
+		_mesh_all_pools.add(mesh);
+	}
+
+	public void removeMesh(Mesh mesh) {
+		_mesh_all_pools.remove(mesh);
+	}
+
+	public TArray<Mesh> getMeshAll() {
+		return _mesh_all_pools;
+	}
+
+	public void clearMesh() {
+		_mesh_all_pools.clear();
+	}
+
+	public void addShader(ShaderProgram shader) {
+		_shader_all_pools.add(shader);
+	}
+
+	public void removeShader(ShaderProgram shader) {
+		_shader_all_pools.remove(shader);
+	}
+
+	public TArray<ShaderProgram> getShaderAll() {
+		return _shader_all_pools;
+	}
+
+	public void clearShader() {
+		_shader_all_pools.clear();
 	}
 
 	public int getSpritesSize() {
