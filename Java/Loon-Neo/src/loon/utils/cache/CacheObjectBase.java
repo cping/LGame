@@ -50,7 +50,7 @@ public abstract class CacheObjectBase {
 
 	public abstract float getAutoReleaseInterval();
 
-	public abstract void setAutoReleaseInterval(float interval);
+	public abstract void setAutoReleaseInterval(long interval);
 
 	public int getCapacity() {
 		return _capacity;
@@ -96,9 +96,19 @@ public abstract class CacheObjectBase {
 
 	public abstract CacheObjectInfo[] getAllObjectInfos();
 
-	public abstract void update(long elapseSeconds, long realElapseSeconds);
+	public abstract void update(long elapsedTime);
 
 	public abstract void shutdown();
+
+	public abstract boolean canSpawn() ;
+	
+	public abstract boolean canSpawn(String name);
+
+	public abstract void unspawn(Object target);
+
+	public abstract void setLocked(Object target, boolean locked);
+	
+	public abstract void setPriority(Object target, int priority);
 
 	public String getName() {
 		return _name;

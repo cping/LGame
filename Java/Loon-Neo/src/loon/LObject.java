@@ -669,10 +669,17 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 
 	@Override
 	public String toString() {
-		return new StringKeyValue("LObject").kv("sequence", _seqNo).comma().kv("name", getName()).comma()
-				.kv("state", _state.get()).comma().kv("super", _super).comma().kv("pos", _location).comma()
-				.kv("size", _rect).comma().kv("alpha", _alpha).comma().kv("rotation", _rotation).comma()
-				.kv("layer", _layer).comma().kv("tag", Tag).toString();
+		return new StringKeyValue("LObject")
+				.kv("sequence", _seqNo).comma()
+				.kv("name", getName()).comma()
+				.kv("state", _state.get()).comma()
+				.kv("super", _super==null ? "empty":_super.getClass()).comma()
+				.kv("pos", _location).comma()
+				.kv("size", _rect).comma()
+				.kv("alpha", _alpha).comma()
+				.kv("rotation", _rotation).comma()
+				.kv("layer", _layer)
+				.comma().kv("tag", Tag).toString();
 	}
 
 }

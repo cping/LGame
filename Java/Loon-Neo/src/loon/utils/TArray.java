@@ -20,6 +20,7 @@
  */
 package loon.utils;
 
+import java.util.Comparator;
 import java.util.Iterator;
 
 import loon.LSysException;
@@ -120,8 +121,7 @@ public class TArray<T> implements Iterable<T>, IArray {
 
 	public void addAll(TArray<? extends T> array, int start, int count) {
 		if (start + count > array.size) {
-			throw new LSysException(
-					"start + count must be <= size: " + start + " + " + count + " <= " + array.size);
+			throw new LSysException("start + count must be <= size: " + start + " + " + count + " <= " + array.size);
 		}
 		addAll((T[]) array.items, start, count);
 	}
@@ -655,9 +655,13 @@ public class TArray<T> implements Iterable<T>, IArray {
 		}
 	}
 
+	public void sort(Comparator<T> compar) {
+		SortUtils.quickSort(items, compar);
+	}
+
 	@Override
 	public int hashCode() {
-		if(!ordered){
+		if (!ordered) {
 			return super.hashCode();
 		}
 		int hashCode = 1;

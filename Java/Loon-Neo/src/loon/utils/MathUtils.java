@@ -272,6 +272,45 @@ public class MathUtils {
 	}
 
 	/**
+	 * 返回浮点数'.'后长度
+	 * 
+	 * @param num
+	 * @return
+	 */
+	public static final int getFloatDotBackSize(float num) {
+		if (num < 0f) {
+			num = -num;
+		}
+		if (num < 1f) {
+			int numBits = 1;
+			if (num >= 1f - 0.01f) {
+				numBits = 1;
+			} else if (num >= 1f - 0.001f) {
+				numBits = 2;
+			} else if (num >= 1f - 0.0001f) {
+				numBits = 3;
+			} else if (num >= 1f - 0.00001f) {
+				numBits = 4;
+			} else if (num >= 1f - 0.000001f) {
+				numBits = 5;
+			} else if (num >= 1f - 0.0000001f) {
+				numBits = 6;
+			} else if (num >= 1f - 0.00000001f) {
+				numBits = 7;
+			} else if (num >= 1f - 0.000000001f) {
+				numBits = 8;
+			} else if (num >= 1f - 0.0000000001f) {
+				numBits = 9;
+			} else {
+				String v = String.valueOf(num);
+				numBits = v.substring(v.indexOf('.'), v.length()).length() - 1;
+			}
+			return numBits;
+		}
+		return 0;
+	}
+
+	/**
 	 * 判断是否为数字
 	 * 
 	 * @param param

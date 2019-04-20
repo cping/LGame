@@ -194,8 +194,39 @@ public class Duration implements Comparable<Duration> {
 		return _millisTime;
 	}
 
+	public long getMillis() {
+		return toMillisLong();
+	}
+
 	public long toMillisLong() {
-		return (long) (_millisTime * LSystem.SECOND);
+		int bit = MathUtils.getFloatDotBackSize(_millisTime);
+		long numBits = 0l;
+		if (bit < 1) {
+			numBits = 1l;
+		} else if (bit < 2) {
+			numBits = 10l;
+		} else if (bit < 3) {
+			numBits = 100l;
+		} else if (bit < 4) {
+			numBits = 1000l;
+		} else if (bit < 5) {
+			numBits = 10000l;
+		} else if (bit < 6) {
+			numBits = 100000l;
+		} else if (bit < 7) {
+			numBits = 1000000l;
+		} else if (bit < 8) {
+			numBits = 10000000l;
+		} else if (bit < 9) {
+			numBits = 100000000l;
+		} else if (bit < 10) {
+			numBits = 1000000000l;
+		} else if (bit < 11) {
+			numBits = 10000000000l;
+		} else {
+			// float显示不了那么多位,判断不判断都一样,游戏精度也没必要到double……
+		}
+		return (long) (numBits * _millisTime);
 	}
 
 	public Duration seconds(float s) {

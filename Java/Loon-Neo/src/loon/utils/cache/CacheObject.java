@@ -24,7 +24,14 @@ import loon.LSysException;
 import loon.utils.StringUtils;
 import loon.utils.TimeUtils;
 
-public abstract class CacheObject<T> {
+/**
+ * 缓存对象要被CacheObjectPool管理，需要继承此对象
+ * 
+ * @param <T>
+ */
+public abstract class CacheObject {
+
+	private Object _tempTag;
 
 	protected final String _name;
 
@@ -39,10 +46,10 @@ public abstract class CacheObject<T> {
 	protected boolean _customFlag;
 
 	public CacheObject(Object target) {
-		this(null, target, false, 0);
+		this(null, target, false, true, 0);
 	}
 
-	public CacheObject(String name, Object target, boolean locked, int priority) {
+	public CacheObject(String name, Object target, boolean locked, boolean closeFlag, int priority) {
 		if (target == null) {
 			throw new LSysException("Target is null");
 		}
@@ -51,16 +58,16 @@ public abstract class CacheObject<T> {
 		_locked = locked;
 		_priority = priority;
 		_lastUseTime = TimeUtils.millis();
-		_customFlag = false;
+		_customFlag = closeFlag;
 	}
 
-	protected abstract boolean isUse();
+	public abstract boolean isUse();
 
-	protected abstract T onSpawn();
+	public abstract void onSpawn();
 
-	protected abstract T onUnspawn();
+	public abstract void onUnspawn();
 
-	protected abstract T disposed(boolean isShutdown);
+	public abstract void disposed(boolean isShutdown);
 
 	public boolean isLocked() {
 		return _locked;
@@ -96,5 +103,13 @@ public abstract class CacheObject<T> {
 
 	public Object getTarget() {
 		return _target;
+	}
+
+	public Object getTempTag() {
+		return _tempTag == null ? "unkown" : _tempTag;
+	}
+
+	public void setTempTag(Object tag) {
+		this._tempTag = tag;
 	}
 }

@@ -505,7 +505,11 @@ public class LLayer extends ActorLayer {
 					}
 				}
 			}
-			this.downClick(dx, dy);
+			try {
+				this.downClick(dx, dy);
+			} catch (Throwable e) {
+				LSystem.error("Layer downClick() exception", e);
+			}
 		}
 	}
 
@@ -527,7 +531,11 @@ public class LLayer extends ActorLayer {
 					}
 				}
 			}
-			this.upClick(dx, dy);
+			try {
+				this.upClick(dx, dy);
+			} catch (Throwable e) {
+				LSystem.error("Layer upClick() exception", e);
+			}
 			this.dragActor = null;
 		}
 	}
@@ -573,8 +581,12 @@ public class LLayer extends ActorLayer {
 					if (getContainer() != null) {
 						getContainer().sendToFront(this);
 					}
-					this.move(dropX, dropY);
-					this.drag(dropX, dropY);
+					try {
+						this.move(dropX, dropY);
+						this.drag(dropX, dropY);
+					} catch (Throwable e) {
+						LSystem.error("Layer drag() exception", e);
+					}
 				}
 			}
 		} else {
@@ -604,7 +616,11 @@ public class LLayer extends ActorLayer {
 				}
 			}
 		}
-		super.dragClick();
+		try {
+			super.dragClick();
+		} catch (Throwable e) {
+			LSystem.error("Layer dragClick() exception", e);
+		}
 	}
 
 	public boolean isTouchPressed() {

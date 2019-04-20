@@ -22,18 +22,18 @@ package loon.utils;
 
 import java.util.Comparator;
 
-public class SortUtils {
+public class SortUtils<T> {
+	
+	private Comparator<T> _comparator;
+	private T[] _heap;
+	private int _num;
+	private int _target;
 
-	private static Comparator<Object> _comparator;
-	private static Object[] _heap;
-	private static int _num;
-	private static int _target;
-
-	public static void msort(Object[] srcArray, Object[] dest, Comparator<Object> compar) {
+	public static <T> void msort(T[] srcArray, T[] dest, Comparator<T> compar) {
 		msort(srcArray, dest, 0, srcArray.length - 1, compar);
 	}
 
-	public static void msort(Object[] srcArray, Object[] dest, int low, int high, Comparator<Object> compar) {
+	public static <T> void msort(T[] srcArray, T[] dest, int low, int high, Comparator<T> compar) {
 		if (low < high) {
 			int center = (low + high) / 2;
 			msort(srcArray, dest, low, center, compar);
@@ -42,8 +42,7 @@ public class SortUtils {
 		}
 	}
 
-	private static void merge(Object[] srcArray, Object[] dest, int low, int middle, int high,
-			Comparator<Object> compar) {
+	private static <T> void merge(T[] srcArray, T[] dest, int low, int middle, int high, Comparator<T> compar) {
 		int leftEnd = middle - 1;
 		int pos = low;
 		int numElements = high - low + 1;
@@ -69,15 +68,15 @@ public class SortUtils {
 		}
 	}
 
-	public static void quickSort(Object[] a, Comparator<Object> compar) {
+	public static <T> void quickSort(T[] a, Comparator<T> compar) {
 		quickSort(a, 0, a.length - 1, compar);
 	}
 
-	public static void quickSort(Object[] a, int lo0, int hi0, Comparator<Object> compar) {
+	public static <T> void quickSort(T[] a, int lo0, int hi0, Comparator<T> compar) {
 		if (hi0 <= lo0) {
 			return;
 		}
-		Object t;
+		T t;
 		if (hi0 - lo0 == 1) {
 			if (compar.compare(a[hi0], a[lo0]) < 0) {
 				t = a[lo0];
@@ -86,7 +85,7 @@ public class SortUtils {
 			}
 			return;
 		}
-		Object mid = a[(lo0 + hi0) / 2];
+		T mid = a[(lo0 + hi0) / 2];
 		int lo = lo0 - 1, hi = hi0 + 1;
 		for (;;) {
 			for (; compar.compare(a[++lo], mid) < 0;)
@@ -109,7 +108,7 @@ public class SortUtils {
 		}
 	}
 
-	public static void gnomeSort(Object[] srcArray, Comparator<Object> compar) {
+	public static <T> void gnomeSort(T[] srcArray, Comparator<T> compar) {
 		int pos = 1;
 		int last = 0;
 		int length = srcArray.length;
@@ -121,7 +120,7 @@ public class SortUtils {
 				}
 				pos++;
 			} else {
-				Object tmp = srcArray[pos];
+				T tmp = srcArray[pos];
 				srcArray[pos] = srcArray[pos - 1];
 				srcArray[pos - 1] = tmp;
 				if (pos > 1) {
@@ -134,14 +133,15 @@ public class SortUtils {
 				}
 			}
 		}
+
 	}
 
-	public static void insert(Object obj) {
+	protected void insert(T obj) {
 		_heap[(_num++)] = obj;
 		int i = _num;
 		int j = i / 2;
 		for (; (i > 1) && (_comparator.compare(_heap[(i - 1)], _heap[(j - 1)]) < 0);) {
-			Object tgt = _heap[(i - 1)];
+			T tgt = _heap[(i - 1)];
 			_heap[(i - 1)] = _heap[(j - 1)];
 			_heap[(j - 1)] = tgt;
 			i = j;
@@ -149,8 +149,8 @@ public class SortUtils {
 		}
 	}
 
-	public static Object getResult() {
-		Object res = _heap[0];
+	protected T getResult() {
+		T res = _heap[0];
 		_heap[0] = _heap[(--_num)];
 		int i = 1;
 		int j = i * 2;
@@ -158,7 +158,7 @@ public class SortUtils {
 			if ((j + 1 <= _num) && (_comparator.compare(_heap[(j - 1)], _heap[j]) > 0))
 				j++;
 			if (_comparator.compare(_heap[(i - 1)], _heap[(j - 1)]) > 0) {
-				Object tgt = _heap[(i - 1)];
+				T tgt = _heap[(i - 1)];
 				_heap[(i - 1)] = _heap[(j - 1)];
 				_heap[(j - 1)] = tgt;
 			}
@@ -168,9 +168,10 @@ public class SortUtils {
 		return res;
 	}
 
-	public static void sort(Object[] srcArray, Comparator<Object> compar) {
+	@SuppressWarnings("unchecked")
+	public void sort(T[] srcArray, Comparator<T> compar) {
 		_comparator = compar;
-		_heap = new Object[srcArray.length];
+		_heap = (T[]) new Object[srcArray.length];
 		_num = 0;
 		for (_target = 0; _target < srcArray.length; _target += 1) {
 			insert(srcArray[_target]);

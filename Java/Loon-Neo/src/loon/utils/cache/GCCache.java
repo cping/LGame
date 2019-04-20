@@ -23,7 +23,7 @@ package loon.utils.cache;
 import loon.LSysException;
 import loon.utils.TimeUtils;
 
-public class GCCache<T extends CacheObject<T>> extends CacheObject<T> {
+public class GCCache<T extends CacheObject> extends CacheObject {
 
 	private T _gc_object;
 
@@ -94,16 +94,14 @@ public class GCCache<T extends CacheObject<T>> extends CacheObject<T> {
 		_gc_object._customFlag = flag;
 	}
 
-	@Override
-	protected T onSpawn() {
+	public T spawn() {
 		_gc_spawnCount++;
 		_gc_object._lastUseTime = TimeUtils.millis();
 		_gc_object.onSpawn();
 		return _gc_object;
 	}
 
-	@Override
-	protected T onUnspawn() {
+	public T unspawn() {
 		_gc_object.onUnspawn();
 		_gc_object._lastUseTime = TimeUtils.millis();
 		_gc_spawnCount--;
@@ -113,10 +111,24 @@ public class GCCache<T extends CacheObject<T>> extends CacheObject<T> {
 		return _gc_object;
 	}
 
-	@Override
-	protected T disposed(boolean isShutdown) {
+	public T close(boolean isShutdown) {
 		_gc_object.disposed(isShutdown);
 		return _gc_object;
+	}
+
+	@Override
+	public void onSpawn() {
+		spawn();
+	}
+
+	@Override
+	public void onUnspawn() {
+		unspawn();
+	}
+
+	@Override
+	public void disposed(boolean isShutdown) {
+		close(isShutdown);
 	}
 
 }

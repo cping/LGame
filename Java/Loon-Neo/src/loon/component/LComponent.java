@@ -776,25 +776,41 @@ public abstract class LComponent extends LObject<LContainer>
 
 	public void doClick() {
 		if (Click != null) {
-			Click.DoClick(this);
+			try {
+				Click.DoClick(this);
+			} catch (Throwable cause) {
+				LSystem.error("Component doClick() exception", cause);
+			}
 		}
 	}
 
 	public void downClick() {
 		if (Click != null) {
-			Click.DownClick(this, getUITouchX(), getUITouchY());
+			try {
+				Click.DownClick(this, getUITouchX(), getUITouchY());
+			} catch (Throwable cause) {
+				LSystem.error("Component downClick() exception", cause);
+			}
 		}
 	}
 
 	public void dragClick() {
 		if (Click != null) {
-			Click.DragClick(this, getUITouchX(), getUITouchY());
+			try {
+				Click.DragClick(this, getUITouchX(), getUITouchY());
+			} catch (Throwable cause) {
+				LSystem.error("Component dragClick() exception", cause);
+			}
 		}
 	}
 
 	public void upClick() {
 		if (Click != null) {
-			Click.UpClick(this, getUITouchX(), getUITouchY());
+			try {
+				Click.UpClick(this, getUITouchX(), getUITouchY());
+			} catch (Throwable cause) {
+				LSystem.error("Component upClick() exception", cause);
+			}
 		}
 	}
 
@@ -809,21 +825,37 @@ public abstract class LComponent extends LObject<LContainer>
 				this.move(getUITouchX(), getUITouchY());
 			}
 		}
-		this.dragClick();
+		try {
+			this.dragClick();
+		} catch (Throwable e) {
+			LSystem.error("Component dragClick() exception", e);
+		}
 	}
 
 	protected void processTouchClicked() {
-		this.doClick();
+		try {
+			this.doClick();
+		} catch (Throwable e) {
+			LSystem.error("Component doClick() exception", e);
+		}
 	}
 
 	protected void processTouchPressed() {
-		this.downClick();
+		try {
+			this.downClick();
+		} catch (Throwable e) {
+			LSystem.error("Component downClick() exception", e);
+		}
 		this._downClick = true;
 	}
 
 	protected void processTouchReleased() {
 		if (this._downClick) {
-			this.upClick();
+			try {
+				this.upClick();
+			} catch (Throwable e) {
+				LSystem.error("Component upClick() exception", e);
+			}
 			this._downClick = false;
 		}
 	}

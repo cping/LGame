@@ -66,6 +66,10 @@ import android.widget.FrameLayout;
 
 public abstract class Loon extends Activity implements AndroidBase, Platform, LazyLoading {
 
+	private String btnOKText = "OK";
+
+	private String btnCancelText = "Cancel";
+
 	public static void setOnscreenKeyboardVisible(final boolean visible) {
 		if (Loon.self == null) {
 			return;
@@ -633,7 +637,7 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 		}
 
 		AndroidGame.debugLog("onResume");
-		
+
 		if (setting != null && setting.listener != null) {
 			setting.listener.onResume();
 		}
@@ -1135,14 +1139,14 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 				input.setText(initVal);
 				alert.setView(input);
 
-				alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+				alert.setPositiveButton(btnOKText, new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int whichButton) {
 						event.input(input.getText().toString());
 					}
 				});
 
-				alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+				alert.setNegativeButton(btnCancelText, new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int whichButton) {
 						event.cancel();
@@ -1151,6 +1155,27 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 				alert.show();
 			}
 		});
+	}
+
+	public String getBtnOKText() {
+		return btnOKText;
+	}
+
+	public void setBtnOKText(String btnOKText) {
+		this.btnOKText = btnOKText;
+	}
+
+	public String getBtnCancelText() {
+		return btnCancelText;
+	}
+
+	public void setBtnCancelText(String btnCancelText) {
+		this.btnCancelText = btnCancelText;
+	}
+
+	public void setBtn(String ok, String cancel) {
+		setBtnOKText(ok);
+		setBtnCancelText(cancel);
 	}
 
 	@Override
@@ -1220,4 +1245,5 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 		rect.height = heightPixels;
 		return rect;
 	}
+
 }

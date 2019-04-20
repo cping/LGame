@@ -18,27 +18,13 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.utils.cache;
+package loon.event;
 
-public class CacheType {
-	
-	public final static CacheType TYPE_POOL = new CacheType("POOL", 0);
+public interface CacheListener {
 
-	private final String _name;
+	public void onSpawn();
 
-	private final int _code;
+	public void onUnspawn();
 
-	public CacheType(String name, int code) {
-		this._name = name;
-		this._code = code;
-	}
-
-	public String getName() {
-		return _name;
-	}
-
-	public int getTypeCode() {
-		return _code;
-	}
-
+	public void disposed(boolean close);
 }

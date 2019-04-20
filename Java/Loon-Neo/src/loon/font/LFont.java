@@ -111,7 +111,7 @@ public class LFont implements IFont {
 
 	LFont(String name, Style style, int size, boolean antialias) {
 		this.textFormat = new TextFormat(new Font(name, style, MathUtils.max(1, size)), antialias);
-		this.supportCacheFontPack = LSystem.isSupportTempFont();
+		this.supportCacheFontPack = LSystem.isSupportTempFont() && !LSystem.isHTML5();
 		this.fontPackMaxCache = (LSystem.isDesktop() ? 4096 : 2048) / size;
 		this.fontPackCharsLimit = 2;
 		this.fontPackCharsCount = 0;

@@ -104,6 +104,10 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 				SkinManager.get().getClickButtonSkin().getFontColor(), 0, 0, width, height, clicked, clicked, clicked);
 	}
 
+	public static LClickButton make(IFont font, String text, int width, int height) {
+		return new LClickButton(text, font, SkinManager.get().getClickButtonSkin().getFontColor(), 0, 0, width, height);
+	}
+	
 	public static LClickButton make(IFont font, String text, int width, int height, LTexture clicked) {
 		return new LClickButton(text, font, SkinManager.get().getClickButtonSkin().getFontColor(), 0, 0, width, height,
 				clicked, clicked, clicked);

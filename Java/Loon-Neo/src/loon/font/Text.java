@@ -145,7 +145,7 @@ public class Text implements LRelease {
 	}
 
 	private void initLFont() {
-		if(_closed){
+		if (_closed) {
 			return;
 		}
 		if (!_initNativeDraw) {
@@ -166,10 +166,11 @@ public class Text implements LRelease {
 			}
 			_initNativeDraw = true;
 		}
+
 	}
 
 	public void paintNonStyleString(GLEx g, String mes, float offsetX, float offsetY, LColor color) {
-		if(_closed){
+		if (_closed) {
 			return;
 		}
 		initLFont();
@@ -177,7 +178,7 @@ public class Text implements LRelease {
 	}
 
 	public void paintString(GLEx g, String mes, float offsetX, float offsetY, LColor color) {
-		if(_closed){
+		if (_closed) {
 			return;
 		}
 		initLFont();
@@ -261,7 +262,7 @@ public class Text implements LRelease {
 	}
 
 	public void paintString(GLEx g, float offsetX, float offsetY, LColor color) {
-		if(_closed){
+		if (_closed) {
 			return;
 		}
 		initLFont();

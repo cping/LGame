@@ -23,11 +23,13 @@ package loon.utils.cache;
 import java.util.Iterator;
 
 import loon.LSysException;
+import loon.LSystem;
 import loon.utils.OrderedSet;
 import loon.utils.TArray;
 import loon.utils.TimeUtils;
+import loon.utils.timer.Duration;
 
-public class CacheObjectPool<T extends GCCache<T>> extends CacheObjectBase {
+public class CacheObjectPool<T extends CacheObject> extends CacheObjectBase {
 
 	private final OrderedSet<GCCache<T>> _objects;
 
@@ -41,7 +43,7 @@ public class CacheObjectPool<T extends GCCache<T>> extends CacheObjectBase {
 
 	private long _expireTime;
 
-	private float _autoInterval;
+	private long _autoInterval;
 
 	private int _capacity;
 
@@ -49,8 +51,19 @@ public class CacheObjectPool<T extends GCCache<T>> extends CacheObjectBase {
 
 	private CacheType _type;
 
+	public CacheObjectPool(String name, boolean allowMultiSpawn, Duration autoReleaseInterval, int capacity,
+			Duration expireTime, int priority) {
+		this(CacheType.TYPE_POOL, name, allowMultiSpawn, autoReleaseInterval.toMillisLong(), capacity,
+				expireTime.toMillisLong(), priority);
+	}
+
 	public CacheObjectPool(String name, boolean allowMultiSpawn, long autoReleaseInterval, int capacity,
 			long expireTime, int priority) {
+		this(CacheType.TYPE_POOL, name, allowMultiSpawn, autoReleaseInterval, capacity, expireTime, priority);
+	}
+
+	public CacheObjectPool(CacheType cacheType, String name, boolean allowMultiSpawn, long autoReleaseInterval,
+			int capacity, long expireTime, int priority) {
 		super(name, capacity, expireTime);
 		this._objects = new OrderedSet<GCCache<T>>();
 		this._releaseObjects = new TArray<T>();
@@ -59,7 +72,8 @@ public class CacheObjectPool<T extends GCCache<T>> extends CacheObjectBase {
 		this._priority = priority;
 		this._autoTime = 0l;
 		this._autoInterval = autoReleaseInterval;
-		this._type = new CacheType("CachePool", 0);
+		this._expireTime = expireTime;
+		this._type = cacheType;
 	}
 
 	@Override
@@ -88,7 +102,7 @@ public class CacheObjectPool<T extends GCCache<T>> extends CacheObjectBase {
 	}
 
 	@Override
-	public void setAutoReleaseInterval(float interval) {
+	public void setAutoReleaseInterval(long interval) {
 		this._autoInterval = interval;
 	}
 
@@ -102,20 +116,26 @@ public class CacheObjectPool<T extends GCCache<T>> extends CacheObjectBase {
 		this._priority = priority;
 	}
 
+	public void register(T obj) {
+		register(obj, false);
+	}
+
 	public void register(T obj, boolean spawned) {
 		if (obj == null) {
-			throw new LSysException("GCCache is null");
+			throw new LSysException("Object is null");
 		}
 		_objects.add(new GCCache<T>(obj, spawned));
 		release();
 	}
 
+	@Override
 	public boolean canSpawn() {
 		return canSpawn("unkown");
 	}
 
+	@Override
 	public boolean canSpawn(String name) {
-		for (CacheObject<T> obj : _objects) {
+		for (GCCache<T> obj : _objects) {
 			if (!obj.getName().equals(name)) {
 				continue;
 			}
@@ -128,17 +148,17 @@ public class CacheObjectPool<T extends GCCache<T>> extends CacheObjectBase {
 		return false;
 	}
 
-	public CacheObject<T> onSpawn() {
+	public T onSpawn() {
 		return onSpawn("unkown");
 	}
 
-	public CacheObject<T> onSpawn(String name) {
-		for (CacheObject<T> obj : _objects) {
+	public T onSpawn(String name) {
+		for (GCCache<T> obj : _objects) {
 			if (!obj.getName().equals(name)) {
 				continue;
 			}
 			if (_allowSpawn || !obj.isUse()) {
-				return obj.onSpawn();
+				return obj.spawn();
 			}
 		}
 		return null;
@@ -146,7 +166,7 @@ public class CacheObjectPool<T extends GCCache<T>> extends CacheObjectBase {
 
 	public void unspawn(T obj) {
 		if (obj == null) {
-			throw new LSysException("GCCache is null");
+			throw new LSysException("Object is null");
 		}
 
 		unspawn(obj.getTarget());
@@ -162,6 +182,7 @@ public class CacheObjectPool<T extends GCCache<T>> extends CacheObjectBase {
 		return null;
 	}
 
+	@Override
 	public void unspawn(Object target) {
 		if (target == null) {
 			throw new LSysException("Target is invalid");
@@ -185,6 +206,7 @@ public class CacheObjectPool<T extends GCCache<T>> extends CacheObjectBase {
 		setLocked(obj.getTarget(), locked);
 	}
 
+	@Override
 	public void setLocked(Object target, boolean locked) {
 		if (target == null) {
 			throw new LSysException("Target is null");
@@ -206,9 +228,10 @@ public class CacheObjectPool<T extends GCCache<T>> extends CacheObjectBase {
 		setPriority(obj.getTarget(), priority);
 	}
 
+	@Override
 	public void setPriority(Object target, int priority) {
 		if (target == null) {
-			throw new LSysException("Target is invalid.");
+			throw new LSysException("Target is null");
 		}
 
 		GCCache<T> obj = getObject(target);
@@ -219,17 +242,19 @@ public class CacheObjectPool<T extends GCCache<T>> extends CacheObjectBase {
 		}
 	}
 
+	@Override
 	public void release() {
 		release(_objects.size() - _capacity);
 	}
 
-	private void getCanReleaseObjects(TArray<T> results) {
+	private void canReleaseObjects(TArray<T> results) {
 		if (results == null) {
 			throw new LSysException("Results is null");
 		}
 
 		results.clear();
 		for (GCCache<T> obj : _objects) {
+
 			if (obj.isUse() || obj.isLocked() || !obj.getCustomFlag()) {
 				continue;
 			}
@@ -240,12 +265,16 @@ public class CacheObjectPool<T extends GCCache<T>> extends CacheObjectBase {
 
 	private TArray<T> getDefaultReleaseObjectFilterCallback(TArray<T> candidateObjects, int toReleaseCount,
 			long expireTime) {
+
 		_cachedObjects.clear();
 
-		if (expireTime > Long.MIN_VALUE) {
+		if (expireTime > 0) {
+
 			for (int i = candidateObjects.size - 1; i >= 0; i--) {
-				if (candidateObjects.items[i].getLastUseTime() <= expireTime) {
-					_cachedObjects.add(candidateObjects.items[i]);
+
+				if (candidateObjects.get(i).getLastUseTime() <= expireTime) {
+
+					_cachedObjects.add(candidateObjects.get(i));
 					candidateObjects.removeIndex(i);
 					continue;
 				}
@@ -256,33 +285,41 @@ public class CacheObjectPool<T extends GCCache<T>> extends CacheObjectBase {
 
 		for (int i = 0; toReleaseCount > 0 && i < candidateObjects.size; i++) {
 			for (int j = i + 1; j < candidateObjects.size; j++) {
-				if (candidateObjects.items[i].getPriority() > candidateObjects.items[j].getPriority()
-						|| candidateObjects.items[i].getPriority() == candidateObjects.items[j].getPriority()
-								&& candidateObjects.items[i].getLastUseTime() > candidateObjects.items[j]
-										.getLastUseTime()) {
-					T temp = candidateObjects.items[i];
-					candidateObjects.items[i] = candidateObjects.items[j];
-					candidateObjects.items[j] = temp;
+				if (candidateObjects.get(i).getPriority() > candidateObjects.get(j).getPriority() || candidateObjects
+						.get(i).getPriority() == candidateObjects.get(j).getPriority()
+						&& candidateObjects.get(i).getLastUseTime() > candidateObjects.get(j).getLastUseTime()) {
+					T temp = candidateObjects.get(i);
+
+					candidateObjects.set(i, candidateObjects.get(j));
+					candidateObjects.set(j, temp);
 				}
 			}
 
-			_cachedObjects.add(candidateObjects.items[i]);
+			_cachedObjects.add(candidateObjects.get(i));
 			toReleaseCount--;
 		}
+
 		return _cachedObjects;
 	}
 
 	public void release(int toReleaseCount) {
-
+		if (_autoTime < _autoInterval) {
+			return;
+		}
 		_autoTime = 0l;
 		if (toReleaseCount < 0) {
 			toReleaseCount = 0;
 		}
+		long expireTime = 0;
 
-		long expireTime = TimeUtils.millis() - _expireTime;
+		if (_expireTime < LSystem.YEAR) {
+			expireTime = TimeUtils.millis() - _expireTime;
+		}
 
-		getCanReleaseObjects(_releaseObjects);
+		canReleaseObjects(_releaseObjects);
+
 		TArray<T> toReleaseObjects = getDefaultReleaseObjectFilterCallback(_releaseObjects, toReleaseCount, expireTime);
+
 		if (toReleaseObjects == null || toReleaseObjects.size <= 0) {
 			return;
 		}
@@ -294,6 +331,7 @@ public class CacheObjectPool<T extends GCCache<T>> extends CacheObjectBase {
 
 			boolean found = false;
 			for (GCCache<T> obj : _objects) {
+
 				if (obj.peek() != toReleaseObject) {
 					continue;
 				}
@@ -335,8 +373,8 @@ public class CacheObjectPool<T extends GCCache<T>> extends CacheObjectBase {
 	}
 
 	@Override
-	public void update(long elapseSeconds, long realElapseSeconds) {
-		_autoTime += realElapseSeconds;
+	public void update(long elapsedTime) {
+		_autoTime += elapsedTime;
 		if (_autoTime < _autoInterval) {
 			return;
 		}
