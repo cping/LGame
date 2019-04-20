@@ -30,6 +30,7 @@ import loon.component.skin.SkinManager;
 import loon.component.skin.TableSkin;
 import loon.font.FontSet;
 import loon.font.IFont;
+import loon.font.LFont;
 import loon.geom.Dimension;
 import loon.opengl.GLEx;
 import loon.utils.TArray;
@@ -43,22 +44,13 @@ import loon.utils.MathUtils;
  * 
  * TArray<ListItem> list=new TArray<ListItem>();
  * 
- * ListItem item=new ListItem(); 
- * item.name="test1"; 
- * item.list.add("ffffff");
- * item.list.add("gggggggg"); 
- * item.list.add("hhhhhhhhh"); 
- * list.add(item);
+ * ListItem item=new ListItem(); item.name="test1"; item.list.add("ffffff");
+ * item.list.add("gggggggg"); item.list.add("hhhhhhhhh"); list.add(item);
  * 
- * ListItem item2=new ListItem(); 
- * item2.name="test2";
- * item2.list.add("ffffff");
- * item2.list.add("gggggggg");
- * item2.list.add("hhhhhhhhh");
- * list.add(item2);
+ * ListItem item2=new ListItem(); item2.name="test2"; item2.list.add("ffffff");
+ * item2.list.add("gggggggg"); item2.list.add("hhhhhhhhh"); list.add(item2);
  * LTable table=new LTable(IFont.getDefaultFont(), 60,60, 300, 300);
- * table.setData(list, 100); 
- * add(table);
+ * table.setData(list, 100); add(table);
  * 
  */
 public class LTable extends LContainer implements FontSet<LTable> {
@@ -127,42 +119,35 @@ public class LTable extends LContainer implements FontSet<LTable> {
 	private LTexture backgroundTexture;
 
 	public LTable(int x, int y) {
-		this(SkinManager.get().getTableSkin().getFont(), x, y, LSystem.viewSize
-				.getWidth(), LSystem.viewSize.getHeight());
+		this(SkinManager.get().getTableSkin().getFont(), x, y, LSystem.viewSize.getWidth(),
+				LSystem.viewSize.getHeight());
 	}
 
 	public LTable(int x, int y, int width, int height) {
-		this(SkinManager.get().getTableSkin().getFont(), SkinManager.get()
-				.getTableSkin().getHeaderTexture(), SkinManager.get()
-				.getTableSkin().getBackgroundTexture(), x, y, width, height);
+		this(SkinManager.get().getTableSkin().getFont(), SkinManager.get().getTableSkin().getHeaderTexture(),
+				SkinManager.get().getTableSkin().getBackgroundTexture(), x, y, width, height);
 	}
 
 	public LTable(IFont font, int x, int y, int width, int height) {
 		this(font, SkinManager.get().getTableSkin().getHeaderTexture(),
-				SkinManager.get().getTableSkin().getBackgroundTexture(), x, y,
-				width, height);
+				SkinManager.get().getTableSkin().getBackgroundTexture(), x, y, width, height);
 	}
 
-	public LTable(LTexture headerTexture, LTexture backgroundTexture, int x,
-			int y, int width, int height) {
-		this(SkinManager.get().getTableSkin().getFont(), headerTexture,
-				backgroundTexture, x, y, width, height);
+	public LTable(LTexture headerTexture, LTexture backgroundTexture, int x, int y, int width, int height) {
+		this(SkinManager.get().getTableSkin().getFont(), headerTexture, backgroundTexture, x, y, width, height);
 	}
 
-	public LTable(IFont font, LTexture headerTexture,
-			LTexture backgroundTexture, int x, int y, int width, int height) {
+	public LTable(IFont font, LTexture headerTexture, LTexture backgroundTexture, int x, int y, int width, int height) {
 		this(font, headerTexture, backgroundTexture, x, y, width, height,
 				SkinManager.get().getTableSkin().getFontColor());
 	}
 
 	public LTable(TableSkin skin, int x, int y, int width, int height) {
-		this(skin.getFont(), skin.getHeaderTexture(), skin
-				.getBackgroundTexture(), x, y, width, height, skin
-				.getFontColor());
+		this(skin.getFont(), skin.getHeaderTexture(), skin.getBackgroundTexture(), x, y, width, height,
+				skin.getFontColor());
 	}
 
-	public LTable(IFont font, LTexture headerTexture,
-			LTexture backgroundTexture, int x, int y, int width, int height,
+	public LTable(IFont font, LTexture headerTexture, LTexture backgroundTexture, int x, int y, int width, int height,
 			LColor fontColor) {
 		super(x, y, width, height);
 		this.font = font;
@@ -184,8 +169,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 	}
 
 	public LTable bindIcon(String name, String fileName) {
-		bindIcons
-				.put(name, new BindIcon(name, LSystem.loadTexture(fileName)));
+		bindIcons.put(name, new BindIcon(name, LSystem.loadTexture(fileName)));
 		return this;
 	}
 
@@ -219,18 +203,15 @@ public class LTable extends LContainer implements FontSet<LTable> {
 		if (tableHeaderVisible) {
 			numberOfRows++;
 		}
-		return new Dimension(100, numberOfRows * rowHeight + numberOfRows
-				* cellSpacing);
+		return new Dimension(100, numberOfRows * rowHeight + numberOfRows * cellSpacing);
 	}
 
 	public LTable mouseDragged(float x, float y) {
 		if (isTableHeadVisible()) {
 			if (header.columnResizeIndex > -1) {
 				int newWidth = (int) (header.columnWidthBuffer + (x - header.mouseX));
-				int sum = getColumnWidth(header.columnResizeIndex)
-						+ getColumnWidth(header.columnResizeIndex + 1);
-				if (newWidth < getColumnMinWidth()
-						|| sum - newWidth < getColumnMinWidth()) {
+				int sum = getColumnWidth(header.columnResizeIndex) + getColumnWidth(header.columnResizeIndex + 1);
+				if (newWidth < getColumnMinWidth() || sum - newWidth < getColumnMinWidth()) {
 					return this;
 				}
 				columns[header.columnResizeIndex].setWidth(newWidth);
@@ -240,7 +221,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 		return this;
 	}
 
-	public LTable mouseExited(float x, float y) {
+	public LTable mouseReleased(float x, float y) {
 		if (header.columnResizeIndex > -1) {
 			header.columnResizeIndex = -1;
 		}
@@ -331,13 +312,21 @@ public class LTable extends LContainer implements FontSet<LTable> {
 	@Override
 	protected void processTouchPressed() {
 		super.processTouchPressed();
-		mousePressed(getUITouchX(), getUITouchY());
+		try {
+			mousePressed(getUITouchX(), getUITouchY());
+		} catch (Throwable t) {
+			LSystem.error("LTable mousePressed() exception", t);
+		}
 	}
 
 	@Override
 	protected void processTouchReleased() {
 		super.processTouchReleased();
-		mouseExited(getUITouchX(), getUITouchY());
+		try {
+			mouseReleased(getUITouchX(), getUITouchY());
+		} catch (Throwable t) {
+			LSystem.error("LTable mouseReleased() exception", t);
+		}
 	}
 
 	@Override
@@ -368,8 +357,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 	}
 
 	@Override
-	public void createUI(GLEx g, int displayX, int displayY,
-			LComponent component, LTexture[] buttonImage) {
+	public void createUI(GLEx g, int displayX, int displayY, LComponent component, LTexture[] buttonImage) {
 		if (!isVisible()) {
 			return;
 		}
@@ -392,8 +380,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 			for (int i = 0; i < model.getRowCount(); i++) {
 				hei += (cellHeight + cellSpacing);
 			}
-			if (wid != getWidth()
-					|| hei + (cellHeight + cellSpacing) != getHeight()) {
+			if (wid != getWidth() || hei + (cellHeight + cellSpacing) != getHeight()) {
 				setSize(wid, hei + (cellHeight + cellSpacing));
 			}
 			if (gridVisible) {
@@ -402,6 +389,17 @@ public class LTable extends LContainer implements FontSet<LTable> {
 			if (backgroundTexture != null) {
 				g.draw(backgroundTexture, x, y, wid, hei, LColor.white);
 			}
+			
+
+			boolean useLFont = (font instanceof LFont);
+			boolean supportPack = false;
+
+			if (useLFont) {
+				LFont newFont = (LFont) font;
+				supportPack = newFont.isSupportCacheFontPack();
+				newFont.setSupportCacheFontPack(false);
+			}
+
 			for (int row = 0; row < size && row < model.getRowCount(); row++) {
 				x = displayX;
 				if (isSelected(row)) {
@@ -415,44 +413,31 @@ public class LTable extends LContainer implements FontSet<LTable> {
 					Object value = model.getValue(row, columnIndex);
 
 					if (value != null) {
-						ICellRenderer cellRenderer = getColumn(columnIndex)
-								.getCellRenderer();
-						Dimension contentDimension = cellRenderer
-								.getCellContentSize(value);
+						ICellRenderer cellRenderer = getColumn(columnIndex).getCellRenderer();
+						Dimension contentDimension = cellRenderer.getCellContentSize(value);
 						if (contentDimension == null) {
-							contentDimension = new Dimension(
-									getColumnWidth(columnIndex), cellHeight);
+							contentDimension = new Dimension(getColumnWidth(columnIndex), cellHeight);
 						}
-						int alignedX = x
-								+ getColumn(columnIndex).getEntryAlignment()
-										.alignX(getColumnWidth(columnIndex),
-												contentDimension.getWidth());
-						int alignedY = y
-								+ getColumn(columnIndex).getEntryAlignment()
-										.alignY(cellHeight,
-												contentDimension.getHeight());
+						int alignedX = x + getColumn(columnIndex).getEntryAlignment()
+								.alignX(getColumnWidth(columnIndex), contentDimension.getWidth());
+						int alignedY = y + getColumn(columnIndex).getEntryAlignment().alignY(cellHeight,
+								contentDimension.getHeight());
 
 						if (bindIcons.size() == 0) {
-							cellRenderer.paint(g, value, alignedX, alignedY,
-									getColumnWidth(columnIndex), cellHeight);
+							cellRenderer.paint(g, value, alignedX, alignedY, getColumnWidth(columnIndex), cellHeight);
 						} else {
 							if (value instanceof String) {
 								String v = (String) value;
 								BindIcon icon = containsBindIcon(v);
 								if (icon != null) {
-									cellRenderer.paint(g, icon, alignedX,
-											alignedY,
-											getColumnWidth(columnIndex),
+									cellRenderer.paint(g, icon, alignedX, alignedY, getColumnWidth(columnIndex),
 											cellHeight);
 								} else {
-									cellRenderer.paint(g, value, alignedX,
-											alignedY,
-											getColumnWidth(columnIndex),
+									cellRenderer.paint(g, value, alignedX, alignedY, getColumnWidth(columnIndex),
 											cellHeight);
 								}
 							} else {
-								cellRenderer.paint(g, value, alignedX,
-										alignedY, getColumnWidth(columnIndex),
+								cellRenderer.paint(g, value, alignedX, alignedY, getColumnWidth(columnIndex),
 										cellHeight);
 							}
 						}
@@ -460,8 +445,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 
 					if (gridVisible) {
 						g.setColor(gridColor);
-						g.drawRect(x, y, getColumnWidth(columnIndex),
-								cellHeight);
+						g.drawRect(x, y, getColumnWidth(columnIndex), cellHeight);
 						g.setColor(LColor.white);
 					}
 
@@ -472,8 +456,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 			if (tableHeaderVisible) {
 				header.headerY = displayY;
 				if (headerTexture != null) {
-					g.draw(headerTexture, displayX, displayY, wid, cellHeight,
-							headerBackgroundColor);
+					g.draw(headerTexture, displayX, displayY, wid, cellHeight, headerBackgroundColor);
 					if (gridVisible) {
 						g.setColor(gridColor);
 						g.drawRect(displayX, displayY, wid, cellHeight);
@@ -490,16 +473,19 @@ public class LTable extends LContainer implements FontSet<LTable> {
 					String s = model.getColumnName(columnIndex);
 					int columnWidth = getColumnWidth(columnIndex);
 					s = font.confineLength(s, columnWidth - OFFSET);
-					int entryOffset = OFFSET
-							+ getColumn(columnIndex).getHeaderAlignment()
-									.alignX(columnWidth - OFFSET,
-											font.stringWidth(s));
+					int entryOffset = OFFSET + getColumn(columnIndex).getHeaderAlignment().alignX(columnWidth - OFFSET,
+							font.stringWidth(s));
 
-					font.drawString(g, s, x + entryOffset, header.headerY
-							+ font.getAscent() / 2 - 4, headTextColor);
+					font.drawString(g, s, x + entryOffset, header.headerY + font.getAscent() / 2 - 4, headTextColor);
 					x += columnWidth + cellSpacing;
 				}
 			}
+
+			if (useLFont && supportPack) {
+				LFont newFont = (LFont) font;
+				newFont.setSupportCacheFontPack(supportPack);
+			}
+			
 		} finally {
 			g.restoreBrush();
 		}
@@ -790,11 +776,10 @@ public class LTable extends LContainer implements FontSet<LTable> {
 	public LColor getFontColor() {
 		return textColor.cpy();
 	}
-	
+
 	@Override
 	public String getUIName() {
 		return "Table";
 	}
-
 
 }

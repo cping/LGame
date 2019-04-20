@@ -51,7 +51,7 @@ public class LPad extends LComponent {
 	}
 
 	public ClickListener listener;
-	
+
 	private int lastDir = -1;
 
 	private float centerX, centerY;
@@ -83,8 +83,7 @@ public class LPad extends LComponent {
 	}
 
 	public LPad(int x, int y, LTexturePack p, float scale) {
-		super(x, y, (int) (p.getEntry("fore").width() * scale), (int) (p
-				.getEntry("fore").height() * scale));
+		super(x, y, (int) (p.getEntry("fore").width() * scale), (int) (p.getEntry("fore").height() * scale));
 		this.offsetX = 6 * scale;
 		this.offsetY = 6 * scale;
 		this.pack = p;
@@ -124,70 +123,65 @@ public class LPad extends LComponent {
 
 	@Override
 	protected void processTouchPressed() {
-		final float x = MathUtils.bringToBounds(0, baseWidth, SysTouch.getX()
-				- getScreenX())
-				/ baseWidth - 0.5f;
-		final float y = MathUtils.bringToBounds(0, baseHeight, SysTouch.getY()
-				- getScreenY())
-				/ baseHeight - 0.5f;
+		final float x = MathUtils.bringToBounds(0, baseWidth, SysTouch.getX() - getScreenX()) / baseWidth - 0.5f;
+		final float y = MathUtils.bringToBounds(0, baseHeight, SysTouch.getY() - getScreenY()) / baseHeight - 0.5f;
 		if (x == 0 && y == 0) {
 			return;
 		}
-		if (MathUtils.abs(x) > MathUtils.abs(y)) {
-			if (x > 0) {
-				this.isRight = true;
-				this.isClick = true;
-				this.centerX = offsetX + x + (baseWidth - dotWidth) / 2
-						+ dotWidth * 0.75f;
-				this.centerY = offsetY + y + (baseHeight - dotHeight) / 2;
-				if (listener != null) {
-					listener.right();
+		try {
+			if (MathUtils.abs(x) > MathUtils.abs(y)) {
+				if (x > 0) {
+					this.isRight = true;
+					this.isClick = true;
+					this.centerX = offsetX + x + (baseWidth - dotWidth) / 2 + dotWidth * 0.75f;
+					this.centerY = offsetY + y + (baseHeight - dotHeight) / 2;
+					if (listener != null) {
+						listener.right();
+					}
+					this.lastDir = Config.TRIGHT;
+				} else if (x < 0) {
+					this.isLeft = true;
+					this.isClick = true;
+					this.centerX = offsetX + x + (baseWidth - dotWidth) / 2 - dotWidth * 0.75f;
+					this.centerY = offsetY + y + (baseHeight - dotHeight) / 2;
+					if (listener != null) {
+						listener.left();
+					}
+					this.lastDir = Config.TLEFT;
+				} else if (x == 0) {
+					freeClick();
 				}
-				this.lastDir = Config.TRIGHT;
-			} else if (x < 0) {
-				this.isLeft = true;
-				this.isClick = true;
-				this.centerX = offsetX + x + (baseWidth - dotWidth) / 2
-						- dotWidth * 0.75f;
-				this.centerY = offsetY + y + (baseHeight - dotHeight) / 2;
-				if (listener != null) {
-					listener.left();
+			} else {
+				if (y > 0) {
+					this.isDown = true;
+					this.isClick = true;
+					this.centerX = offsetX + x + (baseWidth - dotWidth) / 2 - 1;
+					this.centerY = offsetY + y + (baseHeight - dotHeight) / 2 + dotHeight * 0.75f;
+					if (listener != null) {
+						listener.down();
+					}
+					this.lastDir = Config.TDOWN;
+				} else if (y < 0) {
+					this.isUp = true;
+					this.isClick = true;
+					this.centerX = offsetX + x + (baseWidth - dotWidth) / 2 - 1;
+					this.centerY = offsetY + y + (baseHeight - dotHeight) / 2 - dotHeight * 0.75f;
+					if (listener != null) {
+						listener.up();
+					}
+					this.lastDir = Config.TUP;
+				} else if (y == 0) {
+					freeClick();
 				}
-				this.lastDir = Config.TLEFT;
-			} else if (x == 0) {
-				freeClick();
 			}
-		} else {
-			if (y > 0) {
-				this.isDown = true;
-				this.isClick = true;
-				this.centerX = offsetX + x + (baseWidth - dotWidth) / 2 - 1;
-				this.centerY = offsetY + y + (baseHeight - dotHeight) / 2
-						+ dotHeight * 0.75f;
-				if (listener != null) {
-					listener.down();
-				}
-				this.lastDir = Config.TDOWN;
-			} else if (y < 0) {
-				this.isUp = true;
-				this.isClick = true;
-				this.centerX = offsetX + x + (baseWidth - dotWidth) / 2 - 1;
-				this.centerY = offsetY + y + (baseHeight - dotHeight) / 2
-						- dotHeight * 0.75f;
-				if (listener != null) {
-					listener.up();
-				}
-				this.lastDir = Config.TUP;
-			} else if (y == 0) {
-				freeClick();
-			}
+		} catch (Throwable t) {
+			LSystem.error("LPad click exception", t);
 		}
 		super.processTouchPressed();
 	}
 
 	@Override
-	public void createUI(GLEx g, int x, int y, LComponent component,
-			LTexture[] buttonImage) {
+	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
 		if (SysTouch.isUp()) {
 			freeClick();
 		}
@@ -199,32 +193,30 @@ public class LPad extends LComponent {
 			} else {
 				angle = 0;
 			}
-			pack.draw(2, x + centerX, y + centerY, dotWidth, dotHeight, angle,
-					_component_baseColor);
+			pack.draw(2, x + centerX, y + centerY, dotWidth, dotHeight, angle, _component_baseColor);
 		}
-		pack.draw(1, x + (backWidth - baseWidth) * 0.5f, y
-				+ (backHeight - baseHeight) * 0.5f, baseWidth, baseHeight,
+		pack.draw(1, x + (backWidth - baseWidth) * 0.5f, y + (backHeight - baseHeight) * 0.5f, baseWidth, baseHeight,
 				_component_baseColor);
 		pack.glEnd();
 	}
-	
-	public boolean isLastLeft(){
+
+	public boolean isLastLeft() {
 		return lastDir == Config.TLEFT;
 	}
 
-	public boolean isLastRight(){
+	public boolean isLastRight() {
 		return lastDir == Config.TRIGHT;
 	}
-	
-	public boolean isLastUp(){
+
+	public boolean isLastUp() {
 		return lastDir == Config.TUP;
 	}
-	
-	public boolean isLastDown(){
+
+	public boolean isLastDown() {
 		return lastDir == Config.TDOWN;
 	}
-	
-	public int getDirection(){
+
+	public int getDirection() {
 		return lastDir;
 	}
 

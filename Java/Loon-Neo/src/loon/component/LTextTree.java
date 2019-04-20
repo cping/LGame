@@ -235,10 +235,25 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 		if (!_component_visible) {
 			return;
 		}
+
+		boolean useLFont = (_font instanceof LFont);
+		boolean supportPack = false;
+
+		if (useLFont) {
+			LFont newFont = (LFont) _font;
+			supportPack = newFont.isSupportCacheFontPack();
+			newFont.setSupportCacheFontPack(false);
+		}
+
 		IFont tmp = g.getFont();
 		g.setFont(_font);
 		renderSub(g, offsetX, offsetY, x, y);
 		g.setFont(tmp);
+
+		if (useLFont && supportPack) {
+			LFont newFont = (LFont) _font;
+			newFont.setSupportCacheFontPack(supportPack);
+		}
 	}
 
 	private void renderSub(GLEx g, float offsetX, float offsetY, float x, float y) {

@@ -1490,9 +1490,6 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		} else {
 			command.formatCommand(fileName);
 		}
-		/*if (messageUI.getFont() instanceof LFont) {
-			LSTRDictionary.get().bind((LFont) messageUI.getFont(), command.getCommands());
-		}*/
 		initCommandConfig(command);
 		nextScript();
 		return this;

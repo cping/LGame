@@ -261,8 +261,10 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 				maxHeight += height;
 			}
 			setSize(maxWidth + _flag_text_space * 2, maxHeight + _flag_text_space * 2);
-			if (_font instanceof LFont) {
-				LSTRDictionary.get().bind((LFont) _font, _labels);
+			if (!LSystem.isSupportTempFont()) {
+				if (_font instanceof LFont) {
+					LSTRDictionary.get().bind((LFont) _font, _labels);
+				}
 			}
 		}
 		return this;
@@ -426,7 +428,11 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 		if (_touchEvent.isPressed()) {
 			this._pressed = false;
 			if (_menuSelectedEvent != null && _labels != null && _labels.length > 0) {
-				_menuSelectedEvent.onSelected(_selected, _labels[_selected]);
+				try {
+					_menuSelectedEvent.onSelected(_selected, _labels[_selected]);
+				} catch (Throwable thr) {
+					LSystem.error("LMenuSelect onSelected() exception", thr);
+				}
 			}
 			super.processTouchReleased();
 			if (_function != null) {
@@ -469,7 +475,11 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 					}
 				}
 				if (_menuSelectedEvent != null && _labels != null && _labels.length > 0) {
-					_menuSelectedEvent.onSelected(_selected, _labels[_selected]);
+					try {
+						_menuSelectedEvent.onSelected(_selected, _labels[_selected]);
+					} catch (Throwable t) {
+						LSystem.error("LMenuSelect onSelected() exception", t);
+					}
 				}
 				this.doClick();
 				_keyEvent.press();

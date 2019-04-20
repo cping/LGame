@@ -134,36 +134,39 @@ public class LControl extends LComponent {
 	private void position(final float x, final float y, final int direction) {
 		this.centerX = dotWidth * 0.5f + x * baseWidth;
 		this.centerY = dotHeight * 0.5f + y * baseHeight;
-
-		if (control != null) {
-			switch (direction) {
-			case Config.TUP:
-				control.up();
-				break;
-			case Config.UP:
-				control.up45();
-				break;
-			case Config.TRIGHT:
-				control.right();
-				break;
-			case Config.RIGHT:
-				control.right45();
-				break;
-			case Config.TDOWN:
-				control.down();
-				break;
-			case Config.DOWN:
-				control.down45();
-				break;
-			case Config.TLEFT:
-				control.left();
-				break;
-			case Config.LEFT:
-				control.left45();
-				break;
-			default:
-				break;
+		try {
+			if (control != null) {
+				switch (direction) {
+				case Config.TUP:
+					control.up();
+					break;
+				case Config.UP:
+					control.up45();
+					break;
+				case Config.TRIGHT:
+					control.right();
+					break;
+				case Config.RIGHT:
+					control.right45();
+					break;
+				case Config.TDOWN:
+					control.down();
+					break;
+				case Config.DOWN:
+					control.down45();
+					break;
+				case Config.TLEFT:
+					control.left();
+					break;
+				case Config.LEFT:
+					control.left45();
+					break;
+				default:
+					break;
+				}
 			}
+		} catch (Throwable t) {
+			LSystem.error("LControl click exception", t);
 		}
 	}
 

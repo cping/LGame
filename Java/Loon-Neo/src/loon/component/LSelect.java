@@ -48,7 +48,7 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 	private int left, top, type, nTop;
 
 	private int sizeFont, doubleSizeFont, tmpOffset, messageLeft, nLeft, messageTop, selectSize, selectFlag;
-	
+
 	private int space;
 
 	private float autoAlpha;
@@ -64,7 +64,7 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 	private boolean isAutoAlpha, isSelect;
 
 	private boolean clicked;
-	
+
 	private ActionKey eventClick = new ActionKey();
 
 	public LSelect(IFont font, int x, int y, int width, int height) {
@@ -184,8 +184,10 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 		if (doubleSizeFont == 0) {
 			doubleSizeFont = 20;
 		}
-		if (messageFont instanceof LFont) {
-			LSTRDictionary.get().bind((LFont) messageFont, selects);
+		if (!LSystem.isSupportTempFont()) {
+			if (messageFont instanceof LFont) {
+				LSTRDictionary.get().bind((LFont) messageFont, selects);
+			}
 		}
 	}
 

@@ -64,7 +64,7 @@ public class LFont implements IFont {
 	 * LSystem.setSystemGameFont(LFont.getDefaultFont());
 	 * 
 	 */
-
+	
 	private LTexturePack fontTempPack;
 
 	private boolean supportCacheFontPack = true;
@@ -251,16 +251,11 @@ public class LFont implements IFont {
 				fontTempPack.putImage(text, canvas.image);
 				canvas = null;
 
+				return true;
+
 			} else {
-
 				tooManyChars = true;
-
-				// clear template font
-				if (fontTempPack != null) {
-					fontTempPack.close();
-					fontTempPack = null;
-				}
-				initTempFontPack = false;
+				clearPack();
 			}
 
 		}
@@ -268,12 +263,21 @@ public class LFont implements IFont {
 		return false;
 	}
 
+	protected void clearPack() {
+		// clear template font
+		if (fontTempPack != null) {
+			fontTempPack.close();
+			fontTempPack = null;
+		}
+		initTempFontPack = false;
+	}
+
 	public boolean isSupportCacheFontPack() {
 		return supportCacheFontPack;
 	}
 
-	public void setSupportCacheFontPack(boolean supportCacheFontPack) {
-		this.supportCacheFontPack = supportCacheFontPack;
+	public void setSupportCacheFontPack(boolean support) {
+		this.supportCacheFontPack = support;
 	}
 
 	public int getFontPackCharsLimit() {
@@ -516,11 +520,7 @@ public class LFont implements IFont {
 	}
 
 	public void closeTempTexture() {
-		if (fontTempPack != null) {
-			fontTempPack.close();
-			fontTempPack = null;
-		}
-		initTempFontPack = false;
+		clearPack();
 		tooManyChars = false;
 		fontPackCharsCount = 0;
 	}

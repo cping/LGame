@@ -107,7 +107,7 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 	public static LClickButton make(IFont font, String text, int width, int height) {
 		return new LClickButton(text, font, SkinManager.get().getClickButtonSkin().getFontColor(), 0, 0, width, height);
 	}
-	
+
 	public static LClickButton make(IFont font, String text, int width, int height, LTexture clicked) {
 		return new LClickButton(text, font, SkinManager.get().getClickButtonSkin().getFontColor(), 0, 0, width, height,
 				clicked, clicked, clicked);
@@ -283,7 +283,11 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 	protected void processTouchReleased() {
 		super.processTouchReleased();
 		if (_function != null) {
-			_function.call(this);
+			try {
+				_function.call(this);
+			} catch (Throwable t) {
+				LSystem.error("LClickButton call() exception", t);
+			}
 		}
 		this.pressed = false;
 	}
@@ -323,8 +327,10 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 			return this;
 		}
 		this.text = t;
-		if (font instanceof LFont) {
-			LSTRDictionary.get().bind((LFont) font, text);
+		if (!LSystem.isSupportTempFont()) {
+			if (font instanceof LFont) {
+				LSTRDictionary.get().bind((LFont) font, text);
+			}
 		}
 		return this;
 	}

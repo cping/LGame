@@ -213,7 +213,11 @@ public class LButton extends LComponent implements FontSet<LButton> {
 	protected void processTouchReleased() {
 		super.processTouchReleased();
 		if (_function != null) {
-			_function.call(this);
+			try {
+				_function.call(this);
+			} catch (Throwable t) {
+				LSystem.error("LButton call() exception", t);
+			}
 		}
 		this.pressed = false;
 	}

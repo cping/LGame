@@ -258,9 +258,11 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 	private void putOne(String mes) {
 		this.over = false;
 		this.numBak = this.num;
+
 		if (font != null && font instanceof LFont) {
 			LSTRDictionary.get().bind((LFont) font, mes);
 		}
+
 		this.message[this.num] = mes;
 		if ((this.cr[this.num] == 0) && (this.cg[this.num] == 0) && (this.cb[this.num] == 0)) {
 			this.cr[this.num] = this.default_cr;
@@ -370,6 +372,16 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 		if (_background != null) {
 			g.draw(_background, dx, dy, getWidth(), getHeight(), _component_baseColor);
 		}
+
+		boolean useLFont = (font instanceof LFont);
+		boolean supportPack = false;
+
+		if (useLFont) {
+			LFont newFont = (LFont) font;
+			supportPack = newFont.isSupportCacheFontPack();
+			newFont.setSupportCacheFontPack(false);
+		}
+
 		int oldColor = g.color();
 		this.countFrame += 1;
 		int index = num;
@@ -484,6 +496,12 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 			this.num = (this.max - 1);
 		}
 		g.setColor(oldColor);
+
+		if (useLFont && supportPack) {
+			LFont newFont = (LFont) font;
+			newFont.setSupportCacheFontPack(supportPack);
+		}
+
 		return this;
 	}
 

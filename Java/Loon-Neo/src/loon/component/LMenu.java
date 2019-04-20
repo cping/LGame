@@ -72,7 +72,11 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 		@Override
 		public void action(Object a) {
 			if (click != null && item != null) {
-				click.onClick(item);
+				try {
+					click.onClick(item);
+				} catch (Throwable thr) {
+					LSystem.error("LMenu click() exception", thr);
+				}
 			}
 		}
 
@@ -400,14 +404,14 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 	}
 
 	public LMenu(int move_type, IFont font, String label, int width, int height, String tabfile, String mainfile) {
-		this(move_type, font, label, width, height, LSystem.loadTexture(tabfile), LSystem.loadTexture(mainfile), 0,
-				0, false);
+		this(move_type, font, label, width, height, LSystem.loadTexture(tabfile), LSystem.loadTexture(mainfile), 0, 0,
+				false);
 	}
 
 	public LMenu(int move_type, IFont font, String label, int width, int height, String tabfile, String mainfile,
 			int taby, int mainsize) {
-		this(move_type, font, label, width, height, LSystem.loadTexture(tabfile), LSystem.loadTexture(mainfile),
-				taby, mainsize, false);
+		this(move_type, font, label, width, height, LSystem.loadTexture(tabfile), LSystem.loadTexture(mainfile), taby,
+				mainsize, false);
 	}
 
 	public LMenu(int move_type, IFont font, String label, int width, int height, LTexture tab, LTexture main,
@@ -538,8 +542,10 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 		item.yslot = this.yslot;
 		this.items.add(item);
 		this.xslot += 1;
-		if (item._font != null && item._font instanceof LFont) {
-			LSTRDictionary.get().bind((LFont) item._font, item.label);
+		if (!LSystem.isSupportTempFont()) {
+			if (item._font != null && item._font instanceof LFont) {
+				LSTRDictionary.get().bind((LFont) item._font, item.label);
+			}
 		}
 		return item;
 	}

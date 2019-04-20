@@ -154,6 +154,16 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 			if (this.drawFace) {
 				drawFace(g, this._boxX + offsetX, this._boxY + offsetY);
 			}
+
+			boolean useLFont = (font instanceof LFont);
+			boolean supportPack = false;
+
+			if (useLFont) {
+				LFont newFont = (LFont) font;
+				supportPack = newFont.isSupportCacheFontPack();
+				newFont.setSupportCacheFontPack(false);
+			}
+
 			drawMessage(g, message, this._boxX + this.messageX + offsetX, this._boxY + this.messageY + offsetY);
 			if (isPage && flagType != null) {
 				int size = StringUtils.charCount(message, '\n');
@@ -168,6 +178,11 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 									+ this.font.stringHeight(message) + this.offsetY + (this.font.getSize() * 0.10f),
 							this.fontColor);
 				}
+			}
+
+			if (useLFont && supportPack) {
+				LFont newFont = (LFont) font;
+				newFont.setSupportCacheFontPack(supportPack);
 			}
 		}
 
@@ -504,7 +519,7 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 		}
 		return LColor.white.cpy();
 	}
-	
+
 	@Override
 	public LMessageBox setFontColor(LColor color) {
 		if (_box != null) {
