@@ -27,8 +27,7 @@ import loon.opengl.GLEx;
 
 public class EmulatorButton {
 
-	private final LColor color = new LColor(LColor.gray.r, LColor.gray.g,
-			LColor.gray.b, 0.5f);
+	private final LColor color = new LColor(LColor.gray.r, LColor.gray.g, LColor.gray.b, 0.5f);
 
 	private boolean disabled;
 
@@ -72,8 +71,7 @@ public class EmulatorButton {
 		this(img, w, h, x, y, flag, img.getWidth(), img.getHeight());
 	}
 
-	public EmulatorButton(LTexture img, int w, int h, int x, int y,
-			boolean flag, int sizew, int sizeh) {
+	public EmulatorButton(LTexture img, int w, int h, int x, int y, boolean flag, int sizew, int sizeh) {
 		if (flag) {
 			this.bitmap = img.copy(x, y, w, h);
 		} else {
@@ -93,7 +91,7 @@ public class EmulatorButton {
 	}
 
 	public EmulatorButton hit(int nid, float x, float y) {
-		if(disabled){
+		if (disabled) {
 			return this;
 		}
 		hit(nid, x, y, false);
@@ -101,7 +99,7 @@ public class EmulatorButton {
 	}
 
 	public EmulatorButton hit(int nid, float x, float y, boolean flag) {
-		if(disabled){
+		if (disabled) {
 			return this;
 		}
 		if (flag) {
@@ -126,35 +124,43 @@ public class EmulatorButton {
 	}
 
 	public EmulatorButton hit(float x, float y) {
-		if(disabled){
+		if (disabled) {
 			return this;
 		}
 		if (!onClick) {
 			onClick = bounds.contains(x, y);
 			id = 0;
 			if (onClick && _monitor != null) {
-				_monitor.call();
+				try {
+					_monitor.call();
+				} catch (Throwable t) {
+					LSystem.error("EmulatorButton call() exception", t);
+				}
 			}
 		}
 		return this;
 	}
 
 	public EmulatorButton unhit(int nid, float x, float y) {
-		if(disabled){
+		if (disabled) {
 			return this;
 		}
 		if (onClick && nid == id) {
 			onClick = false;
 			id = 0;
 			if (_monitor != null) {
-				_monitor.free();
+				try {
+					_monitor.free();
+				} catch (Throwable t) {
+					LSystem.error("EmulatorButton free() exception", t);
+				}
 			}
 		}
 		return this;
 	}
 
 	public EmulatorButton unhit() {
-		if(disabled){
+		if (disabled) {
 			return this;
 		}
 		if (onClick) {
@@ -256,8 +262,7 @@ public class EmulatorButton {
 	public void draw(GLEx g) {
 		if (!disabled) {
 			if (onClick) {
-				g.draw(bitmap, bounds.x, bounds.y, scaleWidth, scaleHeight,
-						color);
+				g.draw(bitmap, bounds.x, bounds.y, scaleWidth, scaleHeight, color);
 			} else {
 				g.draw(bitmap, bounds.x, bounds.y, scaleWidth, scaleHeight);
 			}

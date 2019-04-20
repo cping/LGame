@@ -37,10 +37,10 @@ public abstract class AbstractBox implements XY {
 	protected float _boxX;
 	protected float _boxY;
 	protected float _borderW;
-	protected LColor borderColor = new LColor(LColor.white);
+	protected LColor borderColor = LColor.white.cpy();
 	protected float _alpha = 1f;
 	protected IFont font;
-	protected LColor fontColor = new LColor(LColor.white);
+	protected LColor fontColor = LColor.white.cpy();
 	protected LTexture _textureBox;
 	protected int _radius;
 
@@ -120,6 +120,10 @@ public abstract class AbstractBox implements XY {
 		this.fontColor = color;
 	}
 
+	public LColor getBorderColor() {
+		return this.borderColor.cpy();
+	}
+	
 	public void setBorderColor(LColor color) {
 		this.borderColor = color;
 	}
