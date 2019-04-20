@@ -29,6 +29,11 @@ import loon.utils.TArray;
 import loon.utils.TimeUtils;
 import loon.utils.timer.Duration;
 
+/**
+ * 缓存池的具体实现
+ * 
+ * @param <T>
+ */
 public class CacheObjectPool<T extends CacheObject> extends CacheObjectBase {
 
 	private final OrderedSet<GCCache<T>> _objects;

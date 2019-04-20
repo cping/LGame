@@ -23,11 +23,20 @@ package loon.utils.cache;
 import loon.LSysException;
 import loon.utils.TimeUtils;
 
+/**
+ * 一个缓存对象的二次封装,用于统一注入缓存池中的对象形式
+ * 
+ * @param <T>
+ */
 public class GCCache<T extends CacheObject> extends CacheObject {
 
 	private T _gc_object;
 
 	private int _gc_spawnCount;
+
+	public GCCache(T obj) {
+		this(obj, false);
+	}
 
 	public GCCache(T obj, boolean spawned) {
 		super(obj);

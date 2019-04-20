@@ -34,6 +34,9 @@ import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.timer.Duration;
 import loon.utils.timer.LTimerContext;
 
+/**
+ * 缓存池管理器
+ */
 public class CacheObjectManager {
 
 	private static class SortCacheComparator implements Comparator<CacheObjectBase> {
@@ -72,7 +75,7 @@ public class CacheObjectManager {
 	public CacheObjectManager(long delay) {
 		this.objectPools = new ObjectMap<String, CacheObjectBase>();
 		this.sortCacheComparator = new SortCacheComparator();
-		this.defCapacity = 128;
+		this.defCapacity = Integer.MAX_VALUE;
 		this.defExpireTime = LSystem.YEAR;
 		this.defPriority = 0;
 		process = new RealtimeProcess() {

@@ -21,70 +21,133 @@
 package loon.utils.cache;
 
 import loon.LSysException;
+import loon.event.QueryEvent;
 import loon.utils.Array;
 import loon.utils.MathUtils;
+import loon.utils.TArray;
 
+/**
+ * 一个简单的缓存池对象抽象,没有生命周期也没有引用计数, 其中对象都需要手动释放,只能单纯的提取和存储缓存对象,<br>
+ * 只适合实现简单的缓存逻辑.复杂缓存池存储,请使用CacheObjectManger实现.
+ * 
+ * @param <T>
+ */
 public abstract class Pool<T> {
-	
+
 	public final int max;
 
 	public int peak;
 
-	private final Array<T> freeObjects;
-	
-	public Pool () {
+	private final TArray<T> freeObjects;
+
+	public Pool() {
 		this(Integer.MAX_VALUE);
 	}
-	
-	public Pool (int max) {
-		this.freeObjects = new Array<T>();
+
+	public Pool(int max) {
+		this.freeObjects = new TArray<T>();
 		this.max = max;
+		peak = 0;
 	}
 
-	abstract protected T newObject ();
+	abstract protected T newObject();
 
-	public T obtain () {
+	public T obtain() {
 		return freeObjects.size() == 0 ? newObject() : freeObjects.pop();
 	}
 
-	public void free (T object) {
-		if (object == null) throw new LSysException("object cannot be null.");
-		if (freeObjects.size() < max) {
-			freeObjects.add(object);
-			peak = MathUtils.max(peak, freeObjects.size());
-		}
-		if (object instanceof Poolable) ((Poolable)object).reset();
+	public void push(T o) {
+		free(o);
 	}
 
-	public void freeAll (Array<T> objects) {
-		if (objects == null){
-			throw new LSysException("object cannot be null.");
+	public T pop() {
+		return freeObjects.pop();
+	}
+
+	public TArray<T> select(QueryEvent<T> event) {
+		TArray<T> result = new TArray<T>();
+		for (int i = freeObjects.size - 1; i > -1; i--) {
+			T v = result.get(i);
+			if (event.hit(v)) {
+				result.add(v);
+			}
 		}
-		for (;objects.hashNext();) {
-			T object = objects.next();
-			if (object == null){
+		return result;
+	}
+
+	public void delete(QueryEvent<T> event) {
+		for (int i = freeObjects.size - 1; i > -1; i--) {
+			T v = freeObjects.get(i);
+			if (event.hit(v)) {
+				freeObjects.remove(v);
+			}
+		}
+	}
+
+	public void free(T o) {
+		if (o == null)
+			throw new LSysException("Object cannot be null.");
+		if (freeObjects.size() < max) {
+			freeObjects.add(o);
+			peak = MathUtils.max(peak, freeObjects.size());
+		}
+		if (o instanceof Poolable)
+			((Poolable) o).reset();
+	}
+
+	public void freeAll(TArray<T> objects) {
+		if (objects == null) {
+			throw new LSysException("Object cannot be null.");
+		}
+		for (int i = objects.size - 1; i > -1; i--) {
+			T o = objects.get(i);
+			if (o == null) {
 				continue;
 			}
 			if (freeObjects.size() < max) {
-				freeObjects.add(object);
+				freeObjects.add(o);
 			}
-			if (object instanceof Poolable){
-				((Poolable)object).reset();
+			if (o instanceof Poolable) {
+				((Poolable) o).reset();
+			}
+		}
+		peak = MathUtils.max(peak, freeObjects.size());
+	}
+
+	public void freeAll(Array<T> objects) {
+		if (objects == null) {
+			throw new LSysException("Object cannot be null.");
+		}
+		for (; objects.hashNext();) {
+			T o = objects.next();
+			if (o == null) {
+				continue;
+			}
+			if (freeObjects.size() < max) {
+				freeObjects.add(o);
+			}
+			if (o instanceof Poolable) {
+				((Poolable) o).reset();
 			}
 		}
 		objects.stopNext();
 		peak = MathUtils.max(peak, freeObjects.size());
 	}
 
-	public void clear () {
+	public void clear() {
 		freeObjects.clear();
+		peak = 0;
 	}
 
-	public int getFree () {
+	public int getPeak() {
+		return peak;
+	}
+
+	public int getFree() {
 		return freeObjects.size();
 	}
 
 	static public interface Poolable {
-		public void reset ();
+		public void reset();
 	}
 }

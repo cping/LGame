@@ -24,6 +24,9 @@ import loon.LSysException;
 import loon.event.CacheListener;
 import loon.utils.TimeUtils;
 
+/**
+ * 缓存监听,用于监听具体的缓存操作行为,也可以利用缓存的引用与释放特性进行一些其他操作
+ */
 public class ListenerCache extends CacheObject {
 
 	private int _gc_spawnCount;

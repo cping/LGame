@@ -22,6 +22,11 @@ package loon.utils.cache;
 
 import loon.utils.ObjectMap;
 
+/**
+ * 用于同时存储多个简单缓存池Pool类
+ * 
+ * @param <T>
+ */
 public class Pools<T> {
 
 	private final ObjectMap<String, Pool<T>> _inPoolDic;

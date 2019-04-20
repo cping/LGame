@@ -24,6 +24,9 @@ import loon.LSysException;
 import loon.LTexture;
 import loon.utils.TimeUtils;
 
+/**
+ * 纹理的缓存对象实现
+ */
 public class TextureCache extends CacheObject {
 
 	private int _gc_spawnCount;

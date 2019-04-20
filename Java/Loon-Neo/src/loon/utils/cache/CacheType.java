@@ -20,6 +20,9 @@
  */
 package loon.utils.cache;
 
+/**
+ * 具体的缓存类型,标识用,用户可以自行扩展
+ */
 public class CacheType {
 	
 	public final static CacheType TYPE_POOL = new CacheType("POOL", 0);

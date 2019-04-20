@@ -23,6 +23,9 @@ package loon.utils.cache;
 import loon.LSysException;
 import loon.utils.StringUtils;
 
+/**
+ * 缓存池的抽象,可以根据此类自行扩展自己需要的缓存池
+ */
 public abstract class CacheObjectBase {
 
 	private final String _name;

@@ -25,6 +25,9 @@ import loon.action.ActionBind;
 import loon.action.ActionControl;
 import loon.utils.TimeUtils;
 
+/**
+ * ActionBind对象的缓存实现(复杂业务,用户可以根据需求具体扩展)
+ */
 public class ActionBindCache extends CacheObject {
 
 	private int _gc_spawnCount;
