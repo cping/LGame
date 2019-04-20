@@ -75,7 +75,7 @@ public class TileMapConfig {
 		StringTokenizer br = new StringTokenizer(result, LSystem.NL);
 		TArray<int[]> records = new TArray<int[]>(CollectionUtils.INITIAL_CAPACITY);
 		for (; br.hasMoreTokens();) {
-			result = StringUtils.replace(br.nextToken().trim(), LSystem.LS, "");
+			result = StringUtils.replace(br.nextToken().trim(), LSystem.LS, LSystem.EMPTY);
 			if (!StringUtils.isEmpty(result)) {
 				String[] stringArray = result.split(",");
 				int size = stringArray.length;

@@ -20,6 +20,7 @@
  */
 package loon.component;
 
+import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
 import loon.font.FontSet;
@@ -202,7 +203,7 @@ public class BaseBox extends AbstractBox {
 	public BaseBox(IFont font, int w, int h) {
 		super(font);
 		this.numberOfMenus = 1;
-		this.menuItems = new BoxItem[] { new BoxItem(font, "") };
+		this.menuItems = new BoxItem[] { new BoxItem(font, LSystem.EMPTY) };
 		init(w, h);
 	}
 

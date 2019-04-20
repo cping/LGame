@@ -22,6 +22,7 @@
  */
 package loon.component;
 
+import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
 import loon.component.skin.SkinManager;
@@ -316,7 +317,7 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 		if (idx != -1) {
 			return name[idx];
 		}
-		return "unkown";
+		return LSystem.UNKOWN;
 	}
 
 	/**

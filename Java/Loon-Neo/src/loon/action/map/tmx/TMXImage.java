@@ -44,13 +44,13 @@ public class TMXImage {
 	private int height;
 
 	public void parse(XMLElement element, String tmxPath) {
-		String sourcePath = element.getAttribute("source", "");
+		String sourcePath = element.getAttribute("source", LSystem.EMPTY);
 		source = sourcePath.trim();
 		width = element.getIntAttribute("width", 0);
 		height = element.getIntAttribute("height", 0);
 		trans = new LColor(LColor.TRANSPARENT);
 		if (element.hasAttribute("trans")) {
-			String color = element.getAttribute("trans", "").trim();
+			String color = element.getAttribute("trans", LSystem.EMPTY).trim();
 			if (color.startsWith("#")) {
 				color = color.substring(1);
 			}

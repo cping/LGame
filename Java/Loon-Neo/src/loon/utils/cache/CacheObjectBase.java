@@ -21,6 +21,7 @@
 package loon.utils.cache;
 
 import loon.LSysException;
+import loon.LSystem;
 import loon.utils.StringUtils;
 
 /**
@@ -36,7 +37,7 @@ public abstract class CacheObjectBase {
 
 	public CacheObjectBase(String name, int cap, long time) {
 		if (StringUtils.isEmpty(name)) {
-			name = "unkown";
+			name = LSystem.UNKOWN;
 		}
 		this._name = name;
 		this._capacity = cap;

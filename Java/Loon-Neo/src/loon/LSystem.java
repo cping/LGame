@@ -54,6 +54,9 @@ public class LSystem {
 
 	public static final String FLAG_SELECT_TAG = "◆";
 
+	public static final String EMPTY = "";
+
+	public static final String UNKOWN = "unkown";
 	// 默认缓存数量
 	public static final int DEFAULT_MAX_CACHE_SIZE = 32;
 

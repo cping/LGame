@@ -2,6 +2,7 @@ package loon.utils;
 
 import loon.BaseIO;
 import loon.LRelease;
+import loon.LSystem;
 import loon.action.sprite.Animation;
 import loon.canvas.Canvas;
 import loon.canvas.Image;
@@ -14,7 +15,7 @@ import loon.geom.RectBox;
  */
 public class GifDecoder implements LRelease {
 
-	private String gifVersion = "unkown";
+	private String gifVersion = LSystem.UNKOWN;
 
 	public static final int STATUS_OK = 0;
 

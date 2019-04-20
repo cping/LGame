@@ -20,6 +20,7 @@
  */
 package loon.action.map.tmx.objects;
 
+import loon.LSystem;
 import loon.action.map.tmx.TMXProperties;
 import loon.utils.xml.XMLElement;
 
@@ -52,8 +53,8 @@ public class TMXObject
     public void parse(XMLElement element)
     {
     	
-        name = element.hasAttribute("name") ? element.getAttribute("name","") : "TmxObject";
-        type = element.hasAttribute("type") ? element.getAttribute("name","") : "TmxObject";
+        name = element.hasAttribute("name") ? element.getAttribute("name",LSystem.EMPTY) : "TmxObject";
+        type = element.hasAttribute("type") ? element.getAttribute("name",LSystem.EMPTY) : "TmxObject";
 
         id = element.getIntAttribute("id",0);
         x = element.getIntAttribute("x",0);

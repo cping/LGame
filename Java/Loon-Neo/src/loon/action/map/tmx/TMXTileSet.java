@@ -60,8 +60,8 @@ public class TMXTileSet {
 	public void parse(XMLElement element, String tilesLocation) {
 
 		this.firstGID = element.getIntAttribute("firstgid", 1);
-		String source = element.getAttribute("source", "");
-		if (!"".equals(source)) {
+		String source = element.getAttribute("source", LSystem.EMPTY);
+		if (!LSystem.EMPTY.equals(source)) {
 			try {
 				XMLDocument doc = XMLParser.parse(tilesLocation + "/" + source);
 				XMLElement docElement = doc.getRoot();
@@ -76,7 +76,7 @@ public class TMXTileSet {
 		margin = element.getIntAttribute("margin", 0);
 		spacing = element.getIntAttribute("spacing", 0);
 
-		name = element.getAttribute("name", "");
+		name = element.getAttribute("name", LSystem.EMPTY);
 
 		XMLElement nodes = element.getChildrenByName("tileoffset");
 

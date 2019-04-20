@@ -1,6 +1,7 @@
 package loon.opengl;
 
 import loon.BaseIO;
+import loon.LSystem;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
@@ -19,7 +20,7 @@ public class ShaderUtils {
 		if (lines != null) {
 			for (int line = 0; line < lines.length; line++) {
 				if (lines[line].trim().startsWith("//@include once")) {
-					String include = lines[line].replace("//@include once", "")
+					String include = lines[line].replace("//@include once", LSystem.EMPTY)
 							.trim();
 
 					if (!included.contains(include)) {
@@ -32,7 +33,7 @@ public class ShaderUtils {
 						included.add(include);
 					}
 				} else if (lines[line].trim().startsWith("//@include")) {
-					String include = lines[line].replace("//@include", "")
+					String include = lines[line].replace("//@include", LSystem.EMPTY)
 							.trim();
 					builder.append(process(BaseIO.loadText(include), included));
 					builder.append("\n#line ").append(line + 1).append("\n");

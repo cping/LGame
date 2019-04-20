@@ -21,6 +21,7 @@
 package loon.utils.cache;
 
 import loon.LSysException;
+import loon.LSystem;
 import loon.utils.StringUtils;
 import loon.utils.TimeUtils;
 
@@ -53,7 +54,7 @@ public abstract class CacheObject {
 		if (target == null) {
 			throw new LSysException("Target is null");
 		}
-		_name = StringUtils.isEmpty(name) ? "unkown" : name;
+		_name = StringUtils.isEmpty(name) ? LSystem.UNKOWN : name;
 		_target = target;
 		_locked = locked;
 		_priority = priority;
@@ -106,7 +107,7 @@ public abstract class CacheObject {
 	}
 
 	public Object getTempTag() {
-		return _tempTag == null ? "unkown" : _tempTag;
+		return _tempTag == null ? LSystem.UNKOWN : _tempTag;
 	}
 
 	public void setTempTag(Object tag) {

@@ -21,6 +21,7 @@
 package loon.action.map.tmx;
 
 import loon.LSysException;
+import loon.LSystem;
 import loon.action.map.Field2D;
 import loon.action.map.tmx.renderers.TMXHexagonalMapRenderer;
 import loon.action.map.tmx.renderers.TMXIsometricMapRenderer;
@@ -303,7 +304,7 @@ public class TMXMap {
 						.trim().toUpperCase());
 
 		if (element.hasAttribute("renderorder")) {
-			switch (element.getAttribute("renderorder", "").trim()
+			switch (element.getAttribute("renderorder", LSystem.EMPTY).trim()
 					.toLowerCase()) {
 			case "right-down":
 				renderOrder = RenderOrder.RIGHT_DOWN;
@@ -333,7 +334,7 @@ public class TMXMap {
 		}
 
 		if (element.hasAttribute("staggerindex")) {
-			switch (element.getAttribute("staggerindex", "").trim()
+			switch (element.getAttribute("staggerindex", LSystem.EMPTY).trim()
 					.toLowerCase()) {
 			case "even":
 				staggerIndex = StaggerIndex.EVEN;

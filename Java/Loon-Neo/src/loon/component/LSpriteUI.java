@@ -20,6 +20,7 @@
  */
 package loon.component;
 
+import loon.LSystem;
 import loon.LTexture;
 import loon.action.sprite.ISprite;
 import loon.opengl.GLEx;
@@ -130,7 +131,7 @@ public class LSpriteUI extends LContainer {
 
 	@Override
 	public String getUIName() {
-		return "LSprite:" + _sprite == null ? "unkown" : _sprite.getName();
+		return "LSprite:" + _sprite == null ? LSystem.UNKOWN : _sprite.getName();
 	}
 
 	@Override

@@ -52,7 +52,7 @@ public class TMXTileLayer extends TMXMapLayer {
 	private Compression compression;
 
 	public TMXTileLayer(TMXMap map) {
-		super(map, "", 0, 0, map.getWidth(), map.getHeight(), 1.0f, true, TmxLayerType.TILE);
+		super(map, LSystem.EMPTY, 0, 0, map.getWidth(), map.getHeight(), 1.0f, true, TmxLayerType.TILE);
 
 		encoding = Encoding.XML;
 		compression = Compression.NONE;
@@ -60,7 +60,7 @@ public class TMXTileLayer extends TMXMapLayer {
 
 	public void parse(XMLElement element) {
 
-		name = element.getAttribute("name", "");
+		name = element.getAttribute("name", LSystem.EMPTY);
 
 		x = element.getIntAttribute("x", 0);
 		y = element.getIntAttribute("y", 0);
@@ -77,7 +77,7 @@ public class TMXTileLayer extends TMXMapLayer {
 		XMLElement dataElement = element.getChildrenByName("data");
 
 		if (dataElement.hasAttribute("encoding")) {
-			switch (dataElement.getAttribute("encoding", "").trim().toLowerCase()) {
+			switch (dataElement.getAttribute("encoding", LSystem.EMPTY).trim().toLowerCase()) {
 			case "base64":
 				encoding = Encoding.BASE64;
 				break;
@@ -91,7 +91,7 @@ public class TMXTileLayer extends TMXMapLayer {
 		}
 
 		if (dataElement.hasAttribute("compression")) {
-			switch (dataElement.getAttribute("compression", "").trim().toLowerCase()) {
+			switch (dataElement.getAttribute("compression", LSystem.EMPTY).trim().toLowerCase()) {
 			case "gzip":
 				compression = Compression.GZIP;
 				break;

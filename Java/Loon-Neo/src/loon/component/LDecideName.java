@@ -31,6 +31,7 @@
  */
 package loon.component;
 
+import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
 import loon.component.skin.MessageSkin;
@@ -96,16 +97,16 @@ public class LDecideName extends LComponent implements FontSet<LDecideName> {
 	}
 
 	public LDecideName(String label, TArray<String> mes, int x, int y, int width, int height) {
-		this(label, "", mes, SkinManager.get().getMessageSkin().getFont(), x, y, width, height,
+		this(label, LSystem.EMPTY, mes, SkinManager.get().getMessageSkin().getFont(), x, y, width, height,
 				SkinManager.get().getMessageSkin().getBackgroundTexture());
 	}
 
 	public LDecideName(String label, TArray<String> mes, int x, int y, int width, int height, LTexture bg) {
-		this(label, "", mes, SkinManager.get().getMessageSkin().getFont(), x, y, width, height, bg);
+		this(label, LSystem.EMPTY, mes, SkinManager.get().getMessageSkin().getFont(), x, y, width, height, bg);
 	}
 
 	public LDecideName(TArray<String> mes, int x, int y, int width, int height) {
-		this("Name:", "", mes, SkinManager.get().getMessageSkin().getFont(), x, y, width, height,
+		this("Name:", LSystem.EMPTY, mes, SkinManager.get().getMessageSkin().getFont(), x, y, width, height,
 				SkinManager.get().getMessageSkin().getBackgroundTexture());
 	}
 
@@ -205,14 +206,14 @@ public class LDecideName extends LComponent implements FontSet<LDecideName> {
 
 	public int pushEnter() {
 		if (getArrays(this.cursorY, this.cursorX) == enterFlagString) {
-			if (this.name.equals("")) {
+			if (this.name.equals(LSystem.EMPTY)) {
 				return -2;
 			}
 			enterFlag = "Enter";
 			return -1;
 		}
 		if (getArrays(this.cursorY, this.cursorX) == clearFlagString) {
-			if (!this.name.equals("")) {
+			if (!this.name.equals(LSystem.EMPTY)) {
 				this.name = this.name.substring(0, this.name.length() - 1);
 			}
 			enterFlag = "Clear";

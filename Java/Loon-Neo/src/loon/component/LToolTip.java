@@ -20,6 +20,7 @@
  */
 package loon.component;
 
+import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
 import loon.component.skin.SkinManager;
@@ -46,7 +47,7 @@ public class LToolTip extends LComponent {
 
 	private LComponent tooltip;
 
-	private String tipText = "";
+	private String tipText = LSystem.EMPTY;
 
 	public boolean tooltipChanged, dismissing;
 
@@ -61,7 +62,7 @@ public class LToolTip extends LComponent {
 	private LColor _fontColor;
 
 	public LToolTip() {
-		this("");
+		this(LSystem.EMPTY);
 	}
 
 	public LToolTip(String text) {

@@ -96,7 +96,7 @@ public class Text implements LRelease {
 		if (LSystem.base() == null) {
 			return;
 		}
-		this._chars = chars != null ? chars : "";
+		this._chars = chars != null ? chars : LSystem.EMPTY;
 		final IFont font = this._font;
 		this._lines.clear();
 		this._lineWidths.clear();

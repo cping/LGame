@@ -20,6 +20,7 @@
  */
 package loon.action.map.tmx;
 
+import loon.LSystem;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
 import loon.utils.ObjectMap.Entries;
@@ -89,8 +90,8 @@ public class TMXProperties {
 		}
 		for (int p = 0; p < properties.size; p++) {
 			XMLElement property = properties.get(p);
-			String name = property.getAttribute("name", "");
-			String value = property.getAttribute("value", "");
+			String name = property.getAttribute("name", LSystem.EMPTY);
+			String value = property.getAttribute("value", LSystem.EMPTY);
 			if (MathUtils.isNan(value)) {
 				if (value.indexOf('.') != -1) {
 					put(name, Float.parseFloat(value));

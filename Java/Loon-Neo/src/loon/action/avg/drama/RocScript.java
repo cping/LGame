@@ -412,7 +412,7 @@ public class RocScript {
 
 	private void debug(String[] strs) {
 		if (debug) {
-			String str = "";
+			String str = LSystem.EMPTY;
 			if (commands != null) {
 				for (int i = 0; i < commands.size(); i++)
 					str += "\t";
@@ -728,7 +728,7 @@ public class RocScript {
 
 	private void println() throws ScriptException {
 		debug("Println");
-		String lastDelim = "";
+		String lastDelim = LSystem.EMPTY;
 		while (nextItem() && itemType != EOL && itemType != EOP) {
 			scriptLog.info(analysis());
 			lastDelim = item;
@@ -746,7 +746,7 @@ public class RocScript {
 
 	private void print() throws ScriptException {
 		debug("Print");
-		String lastDelim = "";
+		String lastDelim = LSystem.EMPTY;
 		while (nextItem() && itemType != EOL && itemType != EOP) {
 			scriptLog.line(analysis());
 			lastDelim = item;
@@ -1015,7 +1015,7 @@ public class RocScript {
 				return null;
 			}
 			nextItem();
-			String value = "";
+			String value = LSystem.EMPTY;
 
 			if (!item.equals(")")) {
 				while (item.indexOf(")") == -1) {
@@ -1032,7 +1032,7 @@ public class RocScript {
 			if (value.length() > 0 && value.indexOf(",") == -1) {
 				if (value.indexOf("\"") == -1 && value.indexOf("/") == -1 && !isNumber(value)) {
 					String tmp = getVarVal(value).toString();
-					if (!"unkown".equalsIgnoreCase(tmp)) {
+					if (!LSystem.UNKOWN.equalsIgnoreCase(tmp)) {
 						value = tmp;
 					}
 				}
@@ -1042,7 +1042,7 @@ public class RocScript {
 				for (String s : split) {
 					if (s.indexOf("\"") == -1 && value.indexOf("/") == -1 && !isNumber(s)) {
 						String tmp = getVarVal(s).toString();
-						if (!"unkown".equalsIgnoreCase(tmp)) {
+						if (!LSystem.UNKOWN.equalsIgnoreCase(tmp)) {
 							sbr.append(tmp.toString());
 						} else {
 							sbr.append(s);
@@ -1059,7 +1059,7 @@ public class RocScript {
 
 			}
 			Object reuslt = _rocFunctions.getValue(this, key, value);
-			return reuslt == null ? "unkown" : reuslt;
+			return reuslt == null ? LSystem.UNKOWN : reuslt;
 		}
 
 		Function f = (Function) functs.get(item.toLowerCase());
@@ -1257,7 +1257,7 @@ public class RocScript {
 
 		char ch = ' ';
 
-		item = "";
+		item = LSystem.EMPTY;
 		itemType = NONE;
 		commType = UNKNCOM;
 		macroType = -1;
@@ -1366,7 +1366,7 @@ public class RocScript {
 					itemType = VARIABLE;
 				}
 				if (commType == WAIT) {
-					item = "";
+					item = LSystem.EMPTY;
 					int count = 0;
 					while (textIdx < _temp_contexts.length) {
 						ch = _temp_contexts[textIdx];
@@ -1933,7 +1933,7 @@ public class RocScript {
 		if (!vname.equals(method)) {
 			start = vname.indexOf(method);
 			int size = start + method.length() + 1;
-			String packName = "";
+			String packName = LSystem.EMPTY;
 			if (size >= vname.length()) {
 				packName = method;
 			} else {
@@ -2141,7 +2141,7 @@ public class RocScript {
 		}
 
 		if (o == null) {
-			o = "unkown";
+			o = LSystem.UNKOWN;
 		}
 		debug("Get var: " + o);
 		return o;

@@ -164,8 +164,8 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 		this.slideX = new int[this.max];
 		this.num = 0;
 		for (int i = 0; i < this.max; i++) {
-			this.message[i] = "";
-			this.getMessage[i] = "";
+			this.message[i] = LSystem.EMPTY;
+			this.getMessage[i] = LSystem.EMPTY;
 			this.getMessageLength[i] = 0;
 			this.bright[i] = (this.brightMax * i / this.max);
 		}
@@ -320,7 +320,7 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 		this.cb[this.num] = this.default_cb;
 
 		this.getMessageLength[this.num] = 0;
-		this.getMessage[this.num] = "";
+		this.getMessage[this.num] = LSystem.EMPTY;
 
 		this.drawNew[this.num] = false;
 

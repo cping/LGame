@@ -21,6 +21,7 @@
 package loon.utils.xml;
 
 import loon.LSysException;
+import loon.LSystem;
 import loon.utils.StringUtils;
 
 public class XMLAttribute {
@@ -67,7 +68,7 @@ public class XMLAttribute {
 	public double getDoubleValue() {
 		try {
 			if (this.value.indexOf('b') != -1) {
-				this.value = value.replace("b", "");
+				this.value = value.replace("b", LSystem.EMPTY);
 			}
 			return Double.parseDouble(this.value);
 		} catch (Throwable ex) {

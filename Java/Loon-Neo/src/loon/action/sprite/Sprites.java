@@ -44,7 +44,6 @@ import loon.utils.TArray;
  */
 public class Sprites implements IArray, Visible, LRelease {
 
-
 	public static interface SpriteListener {
 
 		public void update(ISprite spr);
@@ -356,6 +355,9 @@ public class Sprites implements IArray, Visible, LRelease {
 	 */
 	public boolean add(ISprite sprite) {
 		if (_closed) {
+			return false;
+		}
+		if (sprite == null) {
 			return false;
 		}
 		if (contains(sprite)) {
@@ -742,13 +744,16 @@ public class Sprites implements IArray, Visible, LRelease {
 			return;
 		}
 		boolean listerner = (sprListerner != null);
-		for (int i = _size - 1; i >= 0; i--) {
-
+		for (int i = _size - 1; i > -1; i--) {
 			ISprite child = _sprites[i];
 			if (child.isVisible()) {
-				child.update(elapsedTime);
-				if (listerner) {
-					sprListerner.update(child);
+				try {
+					child.update(elapsedTime);
+					if (listerner) {
+						sprListerner.update(child);
+					}
+				} catch (Throwable cause) {
+					LSystem.error("Sprites update() exception", cause);
 				}
 			}
 		}

@@ -20,6 +20,7 @@
  */
 package loon.action.map.tmx;
 
+import loon.LSystem;
 import loon.action.map.tmx.objects.TMXObject;
 import loon.canvas.LColor;
 import loon.utils.TArray;
@@ -32,7 +33,7 @@ public class TMXObjectLayer extends TMXMapLayer {
 	private TArray<TMXObject> objects;
 
 	public TMXObjectLayer(TMXMap map) {
-		super(map, "", 0, 0, map.getWidth(), map.getHeight(), 1.0f, true,
+		super(map, LSystem.EMPTY, 0, 0, map.getWidth(), map.getHeight(), 1.0f, true,
 				TmxLayerType.OBJECT);
 
 		objects = new TArray<>();
@@ -56,7 +57,7 @@ public class TMXObjectLayer extends TMXMapLayer {
 	}
 
 	public void parse(XMLElement element) {
-		name = element.getAttribute("name", "");
+		name = element.getAttribute("name", LSystem.EMPTY);
 		if (element.hasAttribute("color")) {
 			String colorString = element.getAttribute("color",
 					LColor.white.toString()).trim();

@@ -81,7 +81,7 @@ public class AVGCG implements LRelease {
 	private final static String _update(final String n) {
 		String name = n;
 		if (StringUtils.startsWith(name, '"')) {
-			name = StringUtils.replace(name, "\"", "");
+			name = StringUtils.replace(name, "\"", LSystem.EMPTY);
 		}
 		return name;
 	}
@@ -97,7 +97,7 @@ public class AVGCG implements LRelease {
 		String path = _update(resName);
 		synchronized (charas) {
 			chara.setFlag(ISprite.TYPE_FADE_OUT, charaShowDelay);
-			this.charas.put(path.replaceAll(" ", "").toLowerCase(), chara);
+			this.charas.put(path.replaceAll(" ", LSystem.EMPTY).toLowerCase(), chara);
 		}
 	}
 
@@ -112,7 +112,7 @@ public class AVGCG implements LRelease {
 	public void add(final String resName, int x, int y, int w, int h) {
 		String path = _update(resName);
 		synchronized (charas) {
-			String keyName = path.replaceAll(" ", "").toLowerCase();
+			String keyName = path.replaceAll(" ", LSystem.EMPTY).toLowerCase();
 			AVGChara chara = (AVGChara) charas.get(keyName);
 			if (chara == null) {
 				chara = new AVGChara(path, x, y, w, h);
@@ -129,7 +129,7 @@ public class AVGCG implements LRelease {
 	public AVGChara remove(final String resName) {
 		String path = _update(resName);
 		synchronized (charas) {
-			final String name = path.replaceAll(" ", "").toLowerCase();
+			final String name = path.replaceAll(" ", LSystem.EMPTY).toLowerCase();
 			AVGChara chara = null;
 			if (style) {
 				chara = (AVGChara) charas.get(name);
@@ -150,7 +150,7 @@ public class AVGCG implements LRelease {
 		String path1 = _update(res1);
 		String path2 = _update(res2);
 		synchronized (charas) {
-			final String name = path1.replaceAll(" ", "").toLowerCase();
+			final String name = path1.replaceAll(" ", LSystem.EMPTY).toLowerCase();
 			AVGChara old = null;
 			if (style) {
 				old = (AVGChara) charas.get(name);

@@ -3,6 +3,7 @@ package loon.utils;
 import java.io.IOException;
 
 import loon.LRelease;
+import loon.LSystem;
 
 public class ArrayByteReader implements LRelease {
 
@@ -52,7 +53,7 @@ public class ArrayByteReader implements LRelease {
 
 	public String readLine() throws IOException {
 		if (in == null) {
-			return "";
+			return LSystem.EMPTY;
 		}
 		if (in.available() <= 0) {
 			return null;

@@ -1,6 +1,7 @@
 package loon.action.avg.drama;
 
 import loon.BaseIO;
+import loon.LSystem;
 import loon.utils.StringKeyValue;
 
 public class CommandLink {
@@ -10,7 +11,7 @@ public class CommandLink {
 	private int _lineCount = 0;
 
 	public CommandLink(String path) {
-		this(path, "unkown");
+		this(path, LSystem.UNKOWN);
 	}
 
 	public CommandLink(String path, String name) {
@@ -21,7 +22,7 @@ public class CommandLink {
 	}
 
 	public CommandLink() {
-		_commands = new StringKeyValue(1024, "unkown");
+		_commands = new StringKeyValue(1024, LSystem.UNKOWN);
 	}
 
 	public CommandLink line(CharSequence c) {

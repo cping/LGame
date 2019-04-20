@@ -247,7 +247,7 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 		}
 
 		public void setFaceImage(LTexture face) {
-			String path = "";
+			String path = LSystem.EMPTY;
 			if (this.imgFace != null) {
 				path = this.imgFace.getSource();
 			}

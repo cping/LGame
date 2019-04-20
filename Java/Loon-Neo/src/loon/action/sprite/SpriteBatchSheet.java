@@ -215,8 +215,8 @@ public class SpriteBatchSheet implements LRelease {
 	}
 
 	public String framesToString() {
-		String v = vFrames < 10 ? "0" + vFrames : "" + vFrames;
-		String h = hFrames < 10 ? "0" + hFrames : "" + hFrames;
+		String v = vFrames < 10 ? "0" + vFrames : LSystem.EMPTY + vFrames;
+		String h = hFrames < 10 ? "0" + hFrames : LSystem.EMPTY + hFrames;
 		return v + h;
 	}
 

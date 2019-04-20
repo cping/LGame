@@ -119,7 +119,7 @@ public class AVGAnm implements Expression, LRelease {
 			final String key = op[0].trim();
 			final String value = op[1].trim();
 			if ("path".equalsIgnoreCase(key)) {
-				path = StringUtils.replace(value, "\"", "");
+				path = StringUtils.replace(value, "\"", LSystem.EMPTY);
 				if (texture != null) {
 					texture.close();
 					texture = null;
@@ -145,7 +145,7 @@ public class AVGAnm implements Expression, LRelease {
 				String[] p = value.split(",");
 				if (p.length > 2 && p.length < 5) {
 					for (int i = 0; i < p.length; i++) {
-						p[i] = p[i].replaceAll("^[\\t ]*", "").replaceAll("[\\t ]*$", "");
+						p[i] = p[i].replaceAll("^[\\t ]*", "").replaceAll("[\\t ]*$", LSystem.EMPTY);
 					}
 					if (p.length == 3) {
 						color = new LColor(Integer.parseInt(p[0]), Integer.parseInt(p[1]), Integer.parseInt(p[2]));
@@ -173,7 +173,7 @@ public class AVGAnm implements Expression, LRelease {
 			} else if ("pos".equalsIgnoreCase(key)) {
 				String[] p = value.split(",");
 				for (int i = 0; i < p.length; i++) {
-					p[i] = p[i].replaceAll("^[\\t ]*", "").replaceAll("[\\t ]*$", "");
+					p[i] = p[i].replaceAll("^[\\t ]*", "").replaceAll("[\\t ]*$", LSystem.EMPTY);
 				}
 				switch (p.length) {
 				case 1:

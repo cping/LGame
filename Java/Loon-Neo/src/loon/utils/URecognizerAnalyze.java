@@ -20,6 +20,7 @@
  */
 package loon.utils;
 
+import loon.LSystem;
 import loon.geom.PointF;
 import loon.geom.RectF;
 
@@ -35,7 +36,7 @@ public class URecognizerAnalyze {
 
 	protected TArray<PointF> points = new TArray<PointF>(256);
 
-	protected URecognizerResult result = new URecognizerResult("unkown", 0, -1);
+	protected URecognizerResult result = new URecognizerResult(LSystem.UNKOWN, 0, -1);
 
 	protected boolean active = false;
 

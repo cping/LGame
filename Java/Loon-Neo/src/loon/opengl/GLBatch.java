@@ -252,7 +252,7 @@ public class GLBatch implements LRelease {
 				cmd.putVaryingVec2("v_tex" + i);
 			}
 			String mainCmd = "   gl_Position = u_projModelView * " + ShaderProgram.POSITION_ATTRIBUTE + ";\n"
-					+ (hasColors ? "   v_col = " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" : "");
+					+ (hasColors ? "   v_col = " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" : LSystem.EMPTY);
 			for (int i = 0; i < numTexCoords; i++) {
 				mainCmd += "   v_tex" + i + " = " + ShaderProgram.TEXCOORD_ATTRIBUTE + i + ";\n";
 			}

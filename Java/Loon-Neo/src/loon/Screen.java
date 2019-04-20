@@ -328,25 +328,29 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		}
 
 		void update(LTimerContext c) {
-			switch (type) {
-			case DRAW_USER:
-				screen.alter(c);
-				break;
-			case DRAW_SPRITE:
-				screen.spriteRun = (screen.sprites != null && screen.sprites.size() > 0);
-				if (screen.spriteRun) {
-					screen.sprites.update(c.timeSinceLastUpdate);
+			try {
+				switch (type) {
+				case DRAW_USER:
+					screen.alter(c);
+					break;
+				case DRAW_SPRITE:
+					screen.spriteRun = (screen.sprites != null && screen.sprites.size() > 0);
+					if (screen.spriteRun) {
+						screen.sprites.update(c.timeSinceLastUpdate);
+					}
+					break;
+				case DRAW_DESKTOP:
+					screen.desktopRun = (screen.desktop != null && screen.desktop.size() > 0);
+					if (screen.desktopRun) {
+						screen.desktop.update(c.timeSinceLastUpdate);
+					}
+					break;
+				case DRAW_EMPTY:
+				default:
+					break;
 				}
-				break;
-			case DRAW_DESKTOP:
-				screen.desktopRun = (screen.desktop != null && screen.desktop.size() > 0);
-				if (screen.desktopRun) {
-					screen.desktop.update(c.timeSinceLastUpdate);
-				}
-				break;
-			case DRAW_EMPTY:
-			default:
-				break;
+			} catch (Throwable cause) {
+				LSystem.error("Screen update() dispatch failure", cause);
 			}
 		}
 	}
@@ -360,11 +364,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	public Screen(int w, int h) {
-		this("unkown", w, h);
+		this(LSystem.UNKOWN, w, h);
 	}
 
 	public Screen() {
-		this("unkown", 0, 0);
+		this(LSystem.UNKOWN, 0, 0);
 	}
 
 	protected void init(String name, int w, int h) {

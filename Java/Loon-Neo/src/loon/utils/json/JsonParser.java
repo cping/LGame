@@ -22,6 +22,7 @@ package loon.utils.json;
 
 import java.math.BigInteger;
 
+import loon.LSystem;
 import loon.utils.MathUtils;
 
 final class JsonParser {
@@ -400,14 +401,14 @@ final class JsonParser {
 			throws JsonParserException {
 
 		StringBuilder errorToken = new StringBuilder(
-				first + (expected == null ? "" : new String(expected, 0, failurePosition)));
+				first + (expected == null ? LSystem.EMPTY : new String(expected, 0, failurePosition)));
 
 		while (isAsciiLetter(peekChar()) && errorToken.length() < 15) {
 			errorToken.append((char) advanceChar());
 		}
 
 		return createParseException(null, "Unexpected token '" + errorToken + "'"
-				+ (expected == null ? "" : ". Did you mean '" + first + new String(expected) + "'?"), true);
+				+ (expected == null ? LSystem.EMPTY : ". Did you mean '" + first + new String(expected) + "'?"), true);
 	}
 
 	private JsonParserException createParseException(Exception e, String message, boolean tokenPos) {

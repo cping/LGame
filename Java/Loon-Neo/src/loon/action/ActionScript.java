@@ -64,7 +64,7 @@ public class ActionScript {
 	public TweenTo<ActionTween> start() {
 		if (_tween != null) {
 			if (_src != null) {
-				String result = StringUtils.replace(_src, LSystem.LS, "");
+				String result = StringUtils.replace(_src, LSystem.LS, LSystem.EMPTY);
 				String[] list = StringUtils.split(result, "->");
 				for (String cmd : list) {
 					if (cmd.length() > 0) {

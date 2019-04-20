@@ -273,7 +273,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 
 			@Override
 			public void parameters(String[] pars) {
-				parameter = StringUtils.replace(pars[0], "\"", "");
+				parameter = StringUtils.replace(pars[0], "\"", LSystem.EMPTY);
 			}
 		});
 		/**
@@ -1024,7 +1024,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 									}
 								}
 							} else {
-								text = StringUtils.replace(mesFlag, "\"", "");
+								text = StringUtils.replace(mesFlag, "\"", LSystem.EMPTY);
 								if (orderFlag != null) {
 									String[] optSize = StringUtils.split(orderFlag, ',');
 									if (optSize.length == 4) {

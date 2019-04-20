@@ -20,6 +20,7 @@
  */
 package loon.action.map.tmx.tiles;
 
+import loon.LSystem;
 import loon.action.map.tmx.TMXProperties;
 import loon.utils.xml.XMLElement;
 
@@ -36,7 +37,7 @@ public class TMXTerrain {
 	}
 
 	public void parse(XMLElement element) {
-		name = element.getAttribute("name", "");
+		name = element.getAttribute("name", LSystem.EMPTY);
 		tileID = element.getIntAttribute("tile", 0);
 		XMLElement nodes = element.getChildrenByName("properties");
 		if (nodes != null) {

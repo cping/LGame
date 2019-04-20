@@ -23,6 +23,7 @@ package loon.utils.xml;
 import java.util.Iterator;
 
 import loon.LSysException;
+import loon.LSystem;
 import loon.utils.Base64Coder;
 import loon.utils.ObjectMap;
 import loon.utils.TArray;
@@ -252,7 +253,7 @@ public class XMLElement {
 	public String toString() {
 		String str1 = null;
 		if (this.name == null) {
-			str1 = "";
+			str1 = LSystem.EMPTY;
 		} else {
 			str1 = "<" + this.name;
 		}

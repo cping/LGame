@@ -44,7 +44,7 @@ import loon.utils.TArray;
  * 
  */
 public class Desktop implements Visible, LRelease {
-	
+
 	// 输入设备监听
 	protected final Screen input;
 
@@ -259,7 +259,7 @@ public class Desktop implements Visible, LRelease {
 	 * 刷新当前桌面
 	 * 
 	 */
-	public void update(long timer) {
+	public void update(long elapsedTime) {
 		if (!this.dvisible) {
 			return;
 		}
@@ -267,8 +267,12 @@ public class Desktop implements Visible, LRelease {
 			return;
 		}
 		this.processEvents();
-		// 刷新桌面中子容器组件
-		this.contentPane.update(timer);
+		try {
+			// 刷新桌面中子容器组件
+			this.contentPane.update(elapsedTime);
+		} catch (Throwable cause) {
+			LSystem.error("Desktop update() exception", cause);
+		}
 	}
 
 	public LayoutConstraints getRootConstraints() {

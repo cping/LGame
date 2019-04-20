@@ -20,6 +20,7 @@
  */
 package loon.utils.res;
 
+import loon.LSystem;
 import loon.geom.XY;
 
 public class TextureData implements XY {
@@ -36,7 +37,7 @@ public class TextureData implements XY {
 
 	protected int offY = 0;
 
-	protected String name = "unkown";
+	protected String name = LSystem.UNKOWN;
 
 	protected TextureData() {
 

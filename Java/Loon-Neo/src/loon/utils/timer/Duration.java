@@ -69,6 +69,14 @@ public class Duration implements Comparable<Duration> {
 		return new Duration(min * LSystem.MINUTE);
 	}
 
+	public final static Duration atHour(float hour) {
+		return new Duration(hour * LSystem.HOUR);
+	}
+
+	public final static Duration atDay(float day) {
+		return new Duration(day * LSystem.DAY);
+	}
+
 	private float _millisTime;
 
 	public Duration() {
@@ -286,19 +294,19 @@ public class Duration implements Comparable<Duration> {
 	}
 
 	protected static String formatTime(Duration timer, String format) {
-		String str = "";
+		String str = LSystem.EMPTY;
 		int minute = MathUtils.floor(timer.toMinute());
 		if (minute < 10) {
 			str = "0" + minute;
 		} else {
-			str = "" + minute;
+			str = LSystem.EMPTY + minute;
 		}
 		str += format;
 		int second = MathUtils.floor(timer.toSeconds() % 60f);
 		if (second < 10) {
 			str += "0" + second;
 		} else {
-			str += "" + second;
+			str += LSystem.EMPTY + second;
 		}
 		return str;
 	}

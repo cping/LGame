@@ -20,6 +20,7 @@
  */
 package loon.opengl;
 
+import loon.LSystem;
 import loon.utils.ObjectMap;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
@@ -257,9 +258,9 @@ public class ShaderCmd {
 		if (StringUtils.isEmpty(cacheCommand)) {
 			if (flag) {
 				cacheCommand = (StringUtils.isEmpty(define) ? IF_DEF_GLES : define)
-						+ (getVarShader() + (command == null ? "" : command));
+						+ (getVarShader() + (command == null ? LSystem.EMPTY : command));
 			} else {
-				cacheCommand = (getVarShader() + (command == null ? "" : command));
+				cacheCommand = (getVarShader() + (command == null ? LSystem.EMPTY : command));
 			}
 		}
 		return cacheCommand;

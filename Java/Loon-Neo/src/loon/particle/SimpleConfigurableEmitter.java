@@ -30,9 +30,9 @@ import loon.utils.TArray;
 
 public class SimpleConfigurableEmitter implements SimpleEmitter {
 
-	private static String relativePath = "";
+	private String relativePath = "";
 
-	public static void setRelativePath(String path) {
+	public void setRelativePath(String path) {
 		if (!path.endsWith("/")) {
 			path += "/";
 		}

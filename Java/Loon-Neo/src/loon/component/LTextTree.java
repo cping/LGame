@@ -111,7 +111,7 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 		}
 
 		public String getText() {
-			return StringUtils.replace(message, "\n", "");
+			return StringUtils.replace(message, "\n", LSystem.EMPTY);
 		}
 
 		public int getLevel() {

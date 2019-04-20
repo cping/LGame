@@ -21,6 +21,7 @@
 package loon.utils;
 
 import loon.LSysException;
+import loon.LSystem;
 
 public class CharUtils {
 
@@ -50,7 +51,7 @@ public class CharUtils {
 
 	public static String toHex(byte[] bytes, boolean removeZero) {
 		if (bytes == null) {
-			return "";
+			return LSystem.EMPTY;
 		}
 		char[] hexChars = new char[bytes.length * 2];
 		int v;

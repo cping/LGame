@@ -57,7 +57,7 @@ public class ShaderProgram implements LRelease {
 
 	private final static ObjectMap<LGame, TArray<ShaderProgram>> shaders = new ObjectMap<LGame, TArray<ShaderProgram>>();
 
-	private String log = "";
+	private String log = LSystem.EMPTY;
 
 	private boolean isCompiled;
 

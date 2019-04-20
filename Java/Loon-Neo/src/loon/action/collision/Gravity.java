@@ -21,6 +21,7 @@
 package loon.action.collision;
 
 import loon.LRelease;
+import loon.LSystem;
 import loon.action.ActionBind;
 import loon.geom.RectBox;
 
@@ -58,7 +59,7 @@ public class Gravity implements LRelease {
 	public RectBox bounds = new RectBox();
 
 	public Gravity(ActionBind o) {
-		this("unkown", o);
+		this(LSystem.UNKOWN, o);
 	}
 
 	public Gravity(String name, ActionBind o) {

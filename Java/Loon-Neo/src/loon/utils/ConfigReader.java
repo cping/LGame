@@ -89,7 +89,7 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 		}
 		String context = BaseIO.loadText(path);
 		StringTokenizer reader = new StringTokenizer(context, LSystem.NL);
-		String curTemplate = "";
+		String curTemplate = LSystem.EMPTY;
 		StringKeyValue curBuffer = null;
 		String result = null;
 		try {
@@ -102,7 +102,7 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 					continue;
 				}
 				if (result.charAt(0) == '$') {
-					if (!curTemplate.equals("") && curBuffer != null) {
+					if (!curTemplate.equals(LSystem.EMPTY) && curBuffer != null) {
 						_loaders.add(curBuffer);
 					}
 					curTemplate = filter(result.substring(1));
@@ -114,7 +114,7 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 					}
 				}
 			}
-			if (!curTemplate.equals("") && curBuffer != null) {
+			if (!curTemplate.equals(LSystem.EMPTY) && curBuffer != null) {
 				_loaders.add(curBuffer);
 			}
 		} catch (Throwable ex) {
@@ -140,7 +140,7 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 
 	private final static String filter(String v) {
 		if (StringUtils.isEmpty(v)) {
-			return "";
+			return LSystem.EMPTY;
 		}
 		return v.trim();
 	}
@@ -182,7 +182,7 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 
 	private final String loadItem(final String mes, final boolean save) {
 		if (StringUtils.isEmpty(mes)) {
-			return "";
+			return LSystem.EMPTY;
 		}
 		char[] chars = mes.toCharArray();
 		int size = chars.length;

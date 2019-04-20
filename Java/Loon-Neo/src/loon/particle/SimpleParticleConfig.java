@@ -139,10 +139,10 @@ public class SimpleParticleConfig {
 
 	private static void elementToEmitter(XMLElement element, SimpleConfigurableEmitter emitter) {
 
-		emitter.name = element.getAttribute("name", "");
-		emitter.setImageName(element.getAttribute("imageName", ""));
+		emitter.name = element.getAttribute("name", LSystem.EMPTY);
+		emitter.setImageName(element.getAttribute("imageName", LSystem.EMPTY));
 
-		String renderType = element.getAttribute("renderType", "");
+		String renderType = element.getAttribute("renderType", LSystem.EMPTY);
 		emitter.usePoints = SimpleParticle.INHERIT_POINTS;
 		if (renderType.equals("quads")) {
 			emitter.usePoints = SimpleParticle.USE_QUADS;

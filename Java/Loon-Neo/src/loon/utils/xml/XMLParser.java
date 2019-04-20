@@ -22,6 +22,7 @@ package loon.utils.xml;
 
 import loon.BaseIO;
 import loon.LSysException;
+import loon.LSystem;
 import loon.utils.TArray;
 
 public class XMLParser {
@@ -66,7 +67,7 @@ public class XMLParser {
 	}
 
 	private void newElement(String context, XMLListener l, int index) {
-		String o = "";
+		String o = LSystem.EMPTY;
 		int i;
 		String str1;
 		if (context.endsWith("/>")) {

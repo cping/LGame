@@ -3,6 +3,7 @@ package loon.utils;
 import java.util.Arrays;
 
 import loon.LSysException;
+import loon.LSystem;
 import loon.event.QueryEvent;
 
 public class CharArray implements IArray {
@@ -348,7 +349,7 @@ public class CharArray implements IArray {
 
 	public String toString(String separator) {
 		if (length == 0)
-			return "";
+			return LSystem.EMPTY;
 		char[] items = this.items;
 		StringBuilder buffer = new StringBuilder(32);
 		buffer.append(items[0]);

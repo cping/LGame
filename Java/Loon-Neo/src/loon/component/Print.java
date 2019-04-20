@@ -73,7 +73,7 @@ public class Print implements FontSet<Print>, LRelease {
 		char c1 = '〜';
 		char c2 = 65374;
 		String str = text.replace(c1, c2);
-		String line = "";
+		String line = LSystem.EMPTY;
 
 		int i = 0;
 
@@ -99,7 +99,7 @@ public class Print implements FontSet<Print>, LRelease {
 				}
 				i += (c == '\n' ? 1 : 0);
 				list.add(line);
-				line = "";
+				line = LSystem.EMPTY;
 				str = str.substring(i);
 				i = 0;
 			} else {
@@ -155,7 +155,7 @@ public class Print implements FontSet<Print>, LRelease {
 	private Mode dirmode = Mode.NONE;
 
 	public Print(Vector2f vector, IFont font, int width, int height) {
-		this("", font, vector, width, height);
+		this(LSystem.EMPTY, font, vector, width, height);
 	}
 
 	public Print(String context, IFont font, Vector2f vector, int width, int height) {

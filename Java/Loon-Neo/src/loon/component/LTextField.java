@@ -21,11 +21,11 @@
  * 
  * Example1:
  * 
- *          new LTextField("", 0, 0,35);
+ *          new LTextField(LSystem.EMPTY, 0, 0,35);
  *          
  *  Example3:
  *           
- *          LTextField field = new LTextField("", 0,0,35);
+ *          LTextField field = new LTextField(LSystem.EMPTY, 0,0,35);
  *  		field.setFontColor(LColor.white);
  *  		field.setHideBackground(true);
  * 
@@ -53,7 +53,7 @@ import loon.utils.StringUtils;
 public class LTextField extends LTextBar {
 
 	public static LTextField at(int x, int y) {
-		return new LTextField("", x, y);
+		return new LTextField(LSystem.EMPTY, x, y);
 	}
 
 	@Override

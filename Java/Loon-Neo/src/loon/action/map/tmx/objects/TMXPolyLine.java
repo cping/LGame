@@ -20,6 +20,7 @@
  */
 package loon.action.map.tmx.objects;
 
+import loon.LSystem;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 import loon.utils.xml.XMLElement;
@@ -45,7 +46,7 @@ public class TMXPolyLine {
 	}
 
 	public void parse(XMLElement element) {
-		String pointsLine = element.getAttribute("points", "").trim();
+		String pointsLine = element.getAttribute("points", LSystem.EMPTY).trim();
 
 		for (String token : pointsLine.split(" ")) {
 			String[] subTokens = token.split(",");

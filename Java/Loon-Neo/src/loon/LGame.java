@@ -83,26 +83,37 @@ public abstract class LGame {
 
 	protected static Platform _platform = null;
 
+	//单独纹理批处理缓存
 	private final IntMap<LTextureBatch> _texture_batch_pools;
 
+	//mesh缓存
 	private final ObjectMap<String, Mesh> _texture_mesh_pools;
 
+	//纹理惰性加载缓存
 	private final ObjectMap<String, LTexture> _texture_lazys;
 
+	//全部纹理数据
 	private final TArray<LTexture> _texture_all_list;
 
+	//精灵group缓存
 	private final TArray<Sprites> _sprites_pools;
 
+	//桌面group缓存
 	private final TArray<Desktop> _desktop_pools;
 
+	//ifnot缓存
 	private final TArray<IFont> _font_pools;
 
+	//错误接口
 	public Act<Error> errors = Act.create();
 
+	//状态接口
 	public Act<Status> status = Act.create();
 
+	//游戏窗体刷新接口
 	public Act<LGame> frame = Act.create();
 
+	//游戏基本设置
 	public LSetting setting;
 
 	protected LProcess processImpl;

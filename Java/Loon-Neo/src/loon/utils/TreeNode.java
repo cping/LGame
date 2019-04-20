@@ -22,6 +22,8 @@ package loon.utils;
 
 import java.util.Iterator;
 
+import loon.LSystem;
+
 public class TreeNode<T> implements Iterable<TreeNode<T>> {
 
 	private final String name;
@@ -35,11 +37,11 @@ public class TreeNode<T> implements Iterable<TreeNode<T>> {
 	private T data = null;
 
 	public TreeNode() {
-		this("unkown", null);
+		this(LSystem.UNKOWN, null);
 	}
 
 	public TreeNode(T data) {
-		this("unkown", data);
+		this(LSystem.UNKOWN, data);
 	}
 
 	public TreeNode(String name, T data) {

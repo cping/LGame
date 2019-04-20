@@ -20,6 +20,8 @@
  */
 package loon.utils;
 
+import loon.LSystem;
+
 public class URecognizerResult {
 
 	protected String _name;
@@ -31,7 +33,7 @@ public class URecognizerResult {
 	protected float _theta;
 
 	public URecognizerResult() {
-		this("unkown", 0, 0);
+		this(LSystem.UNKOWN, 0, 0);
 	}
 
 	public URecognizerResult(String name, float score, int index) {
