@@ -59,7 +59,10 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 	private String[] message;
 	private int[] bright;
 	private int[] brightType;
+
 	private boolean[] drawNew;
+	private boolean useLFont;
+
 	private int[] drawNewCr;
 	private int[] drawNewCg;
 	private int[] drawNewCb;
@@ -130,7 +133,7 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 	public LTextArea(int type, int max, IFont font, int x, int y, int w, int h, LTexture bg) {
 		super(x, y, w, h);
 		this.showType = type;
-		this.font = font;
+		this.setFont(font);
 		this.postLine = (h / font.getHeight());
 		if (max < 0) {
 			this.set(LSystem.isDesktop() ? postLine - 1 : postLine + 1);
@@ -190,8 +193,12 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 	}
 
 	@Override
-	public LTextArea setFont(IFont changeFont) {
-		this.font = changeFont;
+	public LTextArea setFont(IFont fn) {
+		if (fn == null) {
+			return this;
+		}
+		this.font = fn;
+		this.useLFont = (this.font instanceof LFont);
 		return this;
 	}
 
@@ -259,7 +266,7 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 		this.over = false;
 		this.numBak = this.num;
 
-		if (font != null && font instanceof LFont) {
+		if (font != null && useLFont) {
 			LSTRDictionary.get().bind((LFont) font, mes);
 		}
 
@@ -373,7 +380,6 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 			g.draw(_background, dx, dy, getWidth(), getHeight(), _component_baseColor);
 		}
 
-		boolean useLFont = (font instanceof LFont);
 		boolean supportPack = false;
 
 		if (useLFont) {

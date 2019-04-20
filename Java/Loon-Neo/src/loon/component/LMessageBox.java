@@ -98,7 +98,7 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 		protected DrawMessageBox(IFont font, LTexture face, LTexture box, int w, int h) {
 			super(font);
 			super.init(w, h);
-
+            
 			this.DEFAULT_WIDTH = w;
 			this.DEFAULT_HEIGHT = h;
 
@@ -155,7 +155,6 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 				drawFace(g, this._boxX + offsetX, this._boxY + offsetY);
 			}
 
-			boolean useLFont = (font instanceof LFont);
 			boolean supportPack = false;
 
 			if (useLFont) {

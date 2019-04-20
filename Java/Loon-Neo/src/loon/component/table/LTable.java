@@ -102,6 +102,8 @@ public class LTable extends LContainer implements FontSet<LTable> {
 
 	private boolean tableHeaderVisible = true;
 
+	private boolean useLFont;
+
 	private LColor headerBackgroundColor = LColor.gray.cpy();
 
 	private LColor gridColor = LColor.gray.cpy();
@@ -150,7 +152,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 	public LTable(IFont font, LTexture headerTexture, LTexture backgroundTexture, int x, int y, int width, int height,
 			LColor fontColor) {
 		super(x, y, width, height);
-		this.font = font;
+		this.setFont(font);
 		this.cellHeight = (int) (font.getHeight() + font.getAscent());
 		this.headerTexture = headerTexture;
 		this.backgroundTexture = backgroundTexture;
@@ -389,9 +391,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 			if (backgroundTexture != null) {
 				g.draw(backgroundTexture, x, y, wid, hei, LColor.white);
 			}
-			
 
-			boolean useLFont = (font instanceof LFont);
 			boolean supportPack = false;
 
 			if (useLFont) {
@@ -485,7 +485,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 				LFont newFont = (LFont) font;
 				newFont.setSupportCacheFontPack(supportPack);
 			}
-			
+
 		} finally {
 			g.restoreBrush();
 		}
@@ -500,8 +500,14 @@ public class LTable extends LContainer implements FontSet<LTable> {
 	}
 
 	@Override
-	public LTable setFont(IFont font) {
-		this.font = font;
+	public LTable setFont(IFont fn) {
+		if (fn == null) {
+			return this;
+		}
+		this.font = fn;
+		if (this.font instanceof LFont) {
+			useLFont = true;
+		}
 		this.cellHeight = font.getHeight();
 		return this;
 	}

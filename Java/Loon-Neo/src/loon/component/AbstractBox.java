@@ -20,10 +20,11 @@
  */
 package loon.component;
 
+import loon.LSysException;
 import loon.LTexture;
 import loon.canvas.LColor;
 import loon.font.IFont;
-import loon.font.ShadowFont;
+import loon.font.LFont;
 import loon.geom.Vector2f;
 import loon.geom.XY;
 import loon.opengl.GLEx;
@@ -43,9 +44,13 @@ public abstract class AbstractBox implements XY {
 	protected LColor fontColor = LColor.white.cpy();
 	protected LTexture _textureBox;
 	protected int _radius;
+	protected boolean useLFont;
 
 	protected AbstractBox(IFont font) {
-		this.font = font;
+		if (font == null) {
+			throw new LSysException("IFont is null");
+		}
+		this.setFont(font);
 	}
 
 	protected void init(int w, int h) {
@@ -59,8 +64,12 @@ public abstract class AbstractBox implements XY {
 
 	public abstract void dirty();
 
-	public void setFont(ShadowFont font) {
-		this.font = font;
+	public void setFont(IFont fn) {
+		if (fn == null) {
+			return;
+		}
+		this.font = fn;
+		this.useLFont = (this.font instanceof LFont);
 		dirty();
 	}
 
@@ -106,16 +115,16 @@ public abstract class AbstractBox implements XY {
 		this._boxY = pos.y;
 	}
 
-	protected void drawBorder(GLEx g, float x, float y,LColor c) {
+	protected void drawBorder(GLEx g, float x, float y, LColor c) {
 		if (this._textureBox != null) {
 			g.draw(_textureBox, x, y, c);
 		}
 	}
-	
+
 	public LColor getFontColor() {
 		return this.fontColor.cpy();
 	}
-	
+
 	public void setFontColor(LColor color) {
 		this.fontColor = color;
 	}
@@ -123,7 +132,7 @@ public abstract class AbstractBox implements XY {
 	public LColor getBorderColor() {
 		return this.borderColor.cpy();
 	}
-	
+
 	public void setBorderColor(LColor color) {
 		this.borderColor = color;
 	}
