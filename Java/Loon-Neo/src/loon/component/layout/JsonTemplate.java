@@ -60,8 +60,14 @@ public class JsonTemplate {
 
 	public final static String COMP_MENU_SELECT = "menu.select";
 
+	public final static String COMP_TEXTAREA = "textarea";
+	
 	public final static String COMP_CHECK = "check";
 
+	public final static String COMP_MESSAGE = "message";
+
+	public final static String COMP_MESSAGEBOX = "message.box";
+	
 	public final static String SPR_SPRITE = "sprite";
 
 	public final static String SPR_ENTITY = "entity";

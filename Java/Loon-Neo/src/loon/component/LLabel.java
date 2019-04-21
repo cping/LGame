@@ -32,6 +32,7 @@ import loon.font.LFont;
 import loon.font.Text;
 import loon.font.TextOptions;
 import loon.opengl.GLEx;
+import loon.utils.MathUtils;
 
 /**
  * 该类用以创建单独的标签组件(LLables为成批渲染文字，此类为单独渲染，效率上较慢)
@@ -187,10 +188,10 @@ public class LLabel extends LComponent implements FontSet<LLabel> {
 		this._text = new Text(font, mes, opt);
 		this.setBackground(bg);
 		opt.setHorizontalAlign(alignment);
-		if (bg == null) {
-			setWidth(_text.getWidth());
-			setHeight(_text.getHeight());
-		}
+
+		setWidth(MathUtils.max(_text.getWidth(), width));
+		setHeight(MathUtils.max(_text.getHeight(), height));
+
 	}
 
 	@Override

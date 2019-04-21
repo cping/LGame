@@ -97,6 +97,7 @@ public class ShadowFont implements IFont {
 		strfont.drawString(g, string, x + _offset.x, y + _offset.y, rotation, c);
 	}
 
+	@Override
 	public void drawString(GLEx g, String string, float x, float y, float sx, float sy, float ax, float ay,
 			float rotation, LColor c) {
 		if (this.withShadow) {

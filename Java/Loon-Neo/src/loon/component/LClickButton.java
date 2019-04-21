@@ -148,6 +148,16 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 				LSystem.loadTexture(path));
 	}
 
+	public LClickButton(String text, LColor color, int x, int y, int width, int height, LTexture idle, LTexture hover,
+			LTexture clicked) {
+		this(text, SkinManager.get().getClickButtonSkin().getFont(), color, x, y, width, height, idle, hover, clicked);
+	}
+
+	public LClickButton(String text, LColor color, int x, int y, int width, int height, String a, String b, String c) {
+		this(text, SkinManager.get().getClickButtonSkin().getFont(), color, x, y, width, height, LSystem.loadTexture(a),
+				LSystem.loadTexture(b), LSystem.loadTexture(c));
+	}
+
 	public LClickButton(String text, IFont font, LColor color, int x, int y, int width, int height, String a, String b,
 			String c) {
 		this(text, font, color, x, y, width, height, LSystem.loadTexture(a), LSystem.loadTexture(b),
@@ -157,6 +167,13 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 	public LClickButton(ClickButtonSkin skin, String text, int x, int y, int width, int height) {
 		this(text, skin.getFont(), skin.getFontColor(), x, y, width, height, skin.getIdleClickTexture(),
 				skin.getHoverClickTexture(), skin.getClickedTexture());
+	}
+
+	public LClickButton(String text, LColor color, int x, int y, int width, int height) {
+		this(text, SkinManager.get().getClickButtonSkin().getFont(), color, x, y, width, height,
+				SkinManager.get().getClickButtonSkin().getIdleClickTexture(),
+				SkinManager.get().getClickButtonSkin().getHoverClickTexture(),
+				SkinManager.get().getClickButtonSkin().getClickedTexture());
 	}
 
 	public LClickButton(String text, IFont font, LColor color, int x, int y, int width, int height, LTexture idle,
@@ -184,7 +201,10 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 	}
 
 	public void autoSize() {
-		if (getWidth() <= 1f || getHeight() <= 1f) {
+		if (StringUtils.isEmpty(text) && idleClick != null && getWidth() <= 1 && getHeight() <= 1) {
+			this.setWidth(MathUtils.max(getWidth(), idleClick.getWidth()));
+			this.setHeight(MathUtils.max(getHeight(), idleClick.getHeight()));
+		} else if (getWidth() <= 1f || getHeight() <= 1f) {
 			PointF size = FontUtils.getTextWidthAndHeight(font, text, getWidth(), getHeight());
 			this.setWidth(MathUtils.max(getWidth(), size.x));
 			this.setHeight(MathUtils.max(getHeight(), size.y));

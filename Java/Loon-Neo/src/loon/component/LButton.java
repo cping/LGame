@@ -47,32 +47,37 @@ public class LButton extends LComponent implements FontSet<LButton> {
 
 	private CallFunction _function;
 
-	public LButton(String fileName) {
-		this(fileName, null, 0, 0);
+	public LButton(String fileName, LColor color) {
+		this(fileName, null, color, 0, 0);
 	}
 
-	public LButton(String fileName, String text, int row, int col) {
-		this(LSystem.loadTexture(fileName), text, row, col, 0, 0);
+	public LButton(String fileName, String text, LColor color, int row, int col) {
+		this(LSystem.loadTexture(fileName), text, color, row, col, 0, 0);
 	}
 
 	public LButton(String fileName, int row, int col) {
-		this(fileName, null, row, col, 0, 0);
+		this(fileName, null, LColor.white, row, col, 0, 0);
 	}
 
-	public LButton(String fileName, String text, int row, int col, int x, int y) {
-		this(LSystem.loadTexture(fileName), text, row, col, x, y);
+	public LButton(String fileName, LColor color, int row, int col) {
+		this(fileName, null, color, row, col, 0, 0);
 	}
 
-	public LButton(LTexture img, String text, int row, int col, int x, int y) {
-		this(TextureUtils.getSplitTextures(img, row, col), text, row, col, x, y);
+	public LButton(String fileName, String text, LColor color, int row, int col, int x, int y) {
+		this(LSystem.loadTexture(fileName), text, color, row, col, x, y);
 	}
 
-	public LButton(LTexture[] img, String text, int row, int col, int x, int y) {
-		this(LSystem.getSystemGameFont(), img, text, row, col, x, y);
+	public LButton(LTexture img, String text, LColor color, int row, int col, int x, int y) {
+		this(TextureUtils.getSplitTextures(img, row, col), text, color, row, col, x, y);
 	}
 
-	public LButton(IFont font, LTexture[] img, String text, int row, int col, int x, int y) {
+	public LButton(LTexture[] img, String text, LColor color, int row, int col, int x, int y) {
+		this(LSystem.getSystemGameFont(), img, text, color, row, col, x, y);
+	}
+
+	public LButton(IFont font, LTexture[] img, String text, LColor color, int row, int col, int x, int y) {
 		super(x, y, row, col);
+		this.setFontColor(color);
 		this.font = font;
 		this.text = text;
 		if (img != null) {
@@ -86,7 +91,12 @@ public class LButton extends LComponent implements FontSet<LButton> {
 	}
 
 	public LButton(IFont font, String text, int x, int y, int w, int h) {
+		this(font, text, LColor.white, x, y, w, h);
+	}
+
+	public LButton(IFont font, String text, LColor color, int x, int y, int w, int h) {
 		super(x, y, w, h);
+		this.setFontColor(color);
 		this.font = font;
 		this.text = text;
 	}
@@ -141,7 +151,8 @@ public class LButton extends LComponent implements FontSet<LButton> {
 				g.draw(buttonImage[1], x, y, _component_baseColor);
 			} else {
 				if (type == 1) {
-					g.draw(buttonImage[0], x, y, _component_baseColor == null ? LColor.gray : _component_baseColor.mul(LColor.gray));
+					g.draw(buttonImage[0], x, y,
+							_component_baseColor == null ? LColor.gray : _component_baseColor.mul(LColor.gray));
 				} else {
 					g.draw(buttonImage[0], x, y, _component_baseColor);
 				}
@@ -302,6 +313,5 @@ public class LButton extends LComponent implements FontSet<LButton> {
 	public void setOffsetTop(int offsetTop) {
 		this.offsetTop = offsetTop;
 	}
-
 
 }

@@ -27,38 +27,38 @@ import loon.HorizontalAlign;
  */
 public class TextOptions {
 
-	//默认行间间隔
+	// 默认行间间隔
 	public static float LEADING_DEFAULT = 5;
-	
+
 	protected AutoWrap _autoWrap;
 	protected float _autoWrapWidth;
 	protected float _leading;
 	protected HorizontalAlign _horizontalAlign;
-	
-	public static TextOptions LEFT(){
+
+	public static TextOptions LEFT() {
 		return new TextOptions(HorizontalAlign.LEFT);
 	}
 
-	public static TextOptions RIGHT(){
+	public static TextOptions RIGHT() {
 		return new TextOptions(HorizontalAlign.RIGHT);
 	}
 
-	public static TextOptions CENTER(){
+	public static TextOptions CENTER() {
 		return new TextOptions(HorizontalAlign.CENTER);
 	}
-	
-	public static TextOptions VERTICAL_CENTER(){
+
+	public static TextOptions VERTICAL_CENTER() {
 		return new TextOptions(AutoWrap.VERTICAL, 0, HorizontalAlign.CENTER, LEADING_DEFAULT);
 	}
 
-	public static TextOptions VERTICAL_LEFT(){
+	public static TextOptions VERTICAL_LEFT() {
 		return new TextOptions(AutoWrap.VERTICAL, 0, HorizontalAlign.LEFT, LEADING_DEFAULT);
 	}
 
-	public static TextOptions VERTICAL_RIGHT(){
+	public static TextOptions VERTICAL_RIGHT() {
 		return new TextOptions(AutoWrap.VERTICAL, 0, HorizontalAlign.RIGHT, LEADING_DEFAULT);
 	}
-	
+
 	public TextOptions() {
 		this(AutoWrap.NONE, 0, HorizontalAlign.LEFT, LEADING_DEFAULT);
 	}
@@ -75,8 +75,8 @@ public class TextOptions {
 		this(autoWrap, autoWrapWidth, horizontalAlign, LEADING_DEFAULT);
 	}
 
-	public TextOptions(final AutoWrap autoWrap, final float autoWrapWidth,
-			final HorizontalAlign horizontalAlign, final float leading) {
+	public TextOptions(final AutoWrap autoWrap, final float autoWrapWidth, final HorizontalAlign horizontalAlign,
+			final float leading) {
 		this._autoWrap = autoWrap;
 		this._autoWrapWidth = autoWrapWidth;
 		this._horizontalAlign = horizontalAlign;
@@ -113,7 +113,11 @@ public class TextOptions {
 	}
 
 	public void setHorizontalAlign(final HorizontalAlign horizontalAlign) {
-		this._horizontalAlign = horizontalAlign;
+		if (horizontalAlign == null) {
+			this._horizontalAlign = HorizontalAlign.LEFT;
+		} else {
+			this._horizontalAlign = horizontalAlign;
+		}
 	}
 
 }

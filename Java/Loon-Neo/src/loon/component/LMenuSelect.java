@@ -121,6 +121,8 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 
 	private LColor selectBackgroundColor;
 
+	private LColor selectFlagColor;
+
 	private LTimer colorUpdate;
 
 	public static LMenuSelect make(String labels) {
@@ -165,10 +167,11 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 
 	public LMenuSelect(IFont font, String[] labels, LTexture bg, int x, int y) {
 		this(x, y, 1, 1);
-		this.selectRectColor = LColor.white.cpy();
-		this.selectedFillColor = LColor.blue.cpy();
+		this.selectRectColor = LColor.white;
+		this.selectedFillColor = LColor.blue;
 		this.selectBackgroundColor = LColor.blue.darker();
-		this.fontColor = LColor.white.cpy();
+		this.selectFlagColor = LColor.orange;
+		this.fontColor = LColor.white;
 		this.colorUpdate = new LTimer(LSystem.SECOND * 2);
 		this._flag_text_space = 10;
 		this._showRect = false;
@@ -332,7 +335,7 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 						if (_selected == i) {
 							if (_flag_image == null) {
 								g.drawString(_flag, _offsetFont.x + x + rect.x + _flagWidth / 2,
-										_offsetFont.y + y + rect.y + _flagHeight / 8, LColor.yellow);
+										_offsetFont.y + y + rect.y + _flagHeight / 8, selectFlagColor);
 							} else {
 								g.draw(_flag_image, _offsetFont.x + x + rect.x + _flagWidth / 2,
 										_offsetFont.y + y + rect.y + _flagHeight / 8);
@@ -578,7 +581,10 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 	public LMenuSelect noneBackground() {
 		this._drawBackground = false;
 		this._showBackground = false;
-		this._background = null;
+		if (_background != null) {
+			this._background.close();
+			this._background = null;
+		}
 		return this;
 	}
 
@@ -609,8 +615,17 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 		this.selectBackgroundColor = selectBackgroundColor;
 	}
 
+	public LColor getSelectFlagColor() {
+		return selectFlagColor.cpy();
+	}
+
+	public void setSelectFlagColor(LColor selectFlagColor) {
+		this.selectFlagColor = selectFlagColor;
+	}
+
 	@Override
 	public String getUIName() {
 		return "MenuSelect";
 	}
+
 }

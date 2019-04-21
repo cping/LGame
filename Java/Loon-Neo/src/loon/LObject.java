@@ -591,7 +591,23 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	}
 
 	public static void topOn(final LObject<?> object, float w, float h) {
-		object.setLocation(w / 2 - h / 2, 0);
+		object.setLocation(w / 2 - object.getWidth() / 2, 0);
+	}
+
+	public static void topLeftOn(final LObject<?> object, float w, float h) {
+		object.setLocation(0, 0);
+	}
+
+	public static void topRightOn(final LObject<?> object, float w, float h) {
+		object.setLocation(w - object.getWidth(), 0);
+	}
+
+	public static void bottomLeftOn(final LObject<?> object, float w, float h) {
+		object.setLocation(0, h - object.getHeight());
+	}
+
+	public static void bottomRightOn(final LObject<?> object, float w, float h) {
+		object.setLocation(w - object.getWidth(), h - object.getHeight());
 	}
 
 	public static void leftOn(final LObject<?> object, float w, float h) {
@@ -624,6 +640,22 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 
 	public void bottomOn(final LObject<?> object) {
 		bottomOn(object, getWidth(), getHeight());
+	}
+
+	public void topLeftOn(final LObject<?> object) {
+		topLeftOn(object, getWidth(), getHeight());
+	}
+
+	public void topRightOn(final LObject<?> object) {
+		topRightOn(object, getWidth(), getHeight());
+	}
+
+	public void bottomLeftOn(final LObject<?> object) {
+		bottomLeftOn(object, getWidth(), getHeight());
+	}
+
+	public void bottomRightOn(final LObject<?> object) {
+		bottomRightOn(object, getWidth(), getHeight());
 	}
 
 	public final void setCollisionData(Object data) {
@@ -669,17 +701,10 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 
 	@Override
 	public String toString() {
-		return new StringKeyValue("LObject")
-				.kv("sequence", _seqNo).comma()
-				.kv("name", getName()).comma()
-				.kv("state", _state.get()).comma()
-				.kv("super", _super==null ? "empty":_super.getClass()).comma()
-				.kv("pos", _location).comma()
-				.kv("size", _rect).comma()
-				.kv("alpha", _alpha).comma()
-				.kv("rotation", _rotation).comma()
-				.kv("layer", _layer)
-				.comma().kv("tag", Tag).toString();
+		return new StringKeyValue("LObject").kv("sequence", _seqNo).comma().kv("name", getName()).comma()
+				.kv("state", _state.get()).comma().kv("super", _super == null ? "empty" : _super.getClass()).comma()
+				.kv("pos", _location).comma().kv("size", _rect).comma().kv("alpha", _alpha).comma()
+				.kv("rotation", _rotation).comma().kv("layer", _layer).comma().kv("tag", Tag).toString();
 	}
 
 }

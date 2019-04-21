@@ -29,6 +29,7 @@ import loon.component.skin.SkinManager;
 import loon.event.CallFunction;
 import loon.font.FontSet;
 import loon.font.IFont;
+import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 
@@ -66,6 +67,8 @@ public class LCheckBox extends LComponent implements FontSet<LCheckBox> {
 	private long pressedTime = 0;
 
 	private String text;
+
+	private Vector2f offset = new Vector2f();
 
 	private CallFunction _function;
 
@@ -112,8 +115,8 @@ public class LCheckBox extends LComponent implements FontSet<LCheckBox> {
 
 	public LCheckBox(String txt, int x, int y, String uncheckedFile, String checkedFile, int boxsize,
 			boolean boxtoleftoftext, LColor textcolor, IFont font) {
-		this(txt, x, y, LSystem.loadTexture(uncheckedFile), LSystem.loadTexture(checkedFile), boxsize,
-				boxtoleftoftext, textcolor, font);
+		this(txt, x, y, LSystem.loadTexture(uncheckedFile), LSystem.loadTexture(checkedFile), boxsize, boxtoleftoftext,
+				textcolor, font);
 	}
 
 	public LCheckBox(CheckBoxSkin skin, String txt, int x, int y, int boxsize, boolean boxtoleftoftext) {
@@ -140,7 +143,8 @@ public class LCheckBox extends LComponent implements FontSet<LCheckBox> {
 		g.setFont(font);
 		if (boxtoleftoftext) {
 			if (showtext && text != null) {
-				g.drawString(text, x + boxsize, y + (font.getHeight() - boxsize) / 2 + fontSpace, fontColor);
+				g.drawString(text, 2 + offset.x + x + boxsize,
+						offset.y + y + (font.getHeight() - boxsize) / 2 + fontSpace, fontColor);
 			}
 			if (!ticked) {
 				g.draw(unchecked, x, y, boxsize, boxsize, _component_baseColor);
@@ -149,8 +153,8 @@ public class LCheckBox extends LComponent implements FontSet<LCheckBox> {
 			}
 		} else {
 			if (showtext && text != null) {
-				g.drawString(text, x + boxsize + fontSpace, y + (font.getHeight() - boxsize) / 2 + fontSpace,
-						fontColor);
+				g.drawString(text, 2 + offset.x + x + boxsize + fontSpace,
+						offset.y + y + (font.getHeight() - boxsize) / 2 + fontSpace, fontColor);
 			}
 			if (!ticked) {
 				g.draw(unchecked, x + font.stringWidth(text) + boxsize + fontSpace,
@@ -291,6 +295,14 @@ public class LCheckBox extends LComponent implements FontSet<LCheckBox> {
 
 	public void setBoxtoleftofText(boolean b) {
 		this.boxtoleftoftext = b;
+	}
+
+	public Vector2f getOffset() {
+		return offset;
+	}
+
+	public void setOffset(Vector2f offset) {
+		this.offset = offset;
 	}
 
 	@Override

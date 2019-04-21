@@ -1,0 +1,16 @@
+{"type":"View",
+"child":[
+{"props":{"x":403,"y":10,"skin":"btn_pause.png","var":"pauseBtn"},"type":"Button"},
+{"props":{"x":203,"y":109,"text":"CheckBox","var":"check1"},"type":"Check"},
+{"props":{"x":0,"y":0,"skin":"back1.png","bound":"false","var":"layer1"},"type":"Layer"},
+{"props":{"x":355,"y":65,"skin":"ccc.png","var":"image1"},"type":"Paper"},
+{"props":{"x":165,"y":55,"width":165,"height":90,"text":"今朝有酒今朝休,天道茫茫何所求。|非人非物我非我,魑魅魍魉鬼见愁。","var":"box1"},"type":"Message.Box"},
+{"props":{"x":125,"y":200,"text":"传说中的信息框,作用就是显示信息","width":240,"height":100,"var":"area1"},"type":"TextArea"},
+{"props":{"type":0,"x":25,"y":100,"text":"选项一,选项二,选项三","var":"textarea"},"type":"Menu.Select"},
+{"props":{"x":60,"y":104,"width":191,"height":57,"skin":"avg/title_start.png","align":"center","var":"titleBtn"},"type":"Button.Image"},
+{"props":{"x":107,"y":24,"text":"Level:50","color":"#f3e9e9","width":91,"height":25,"fontSize":20,"var":"levelLabel"},"type":"Label"},
+{"props":{"x":210,"y":24,"text":"Score:100","color":"#f8dd18","width":154,"height":25,"fontSize":20,"var":"scoreLabel"},"type":"Label"},
+{"props":{"x":24,"y":24,"text":"HP:10","color":"#62f81c","width":74,"height":25,"fontSize":20,"var":"hpLabel"},"type":"Label"},
+{"props":{"x":44,"y":408,"text":"游戏开始","var":"infoLabel","align":"center","color":"rgb(255,255,255)","fontSize":30},"type":"Label"}
+],
+"props":{"width":480,"height":320}}

@@ -132,8 +132,8 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 
 	public LTextArea(int type, int max, IFont font, int x, int y, int w, int h, LTexture bg) {
 		super(x, y, w, h);
-		this.showType = type;
 		this.setFont(font);
+		this.showType = type;
 		this.postLine = (h / font.getHeight());
 		if (max < 0) {
 			this.set(LSystem.isDesktop() ? postLine - 1 : postLine + 1);

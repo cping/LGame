@@ -26,6 +26,7 @@ import loon.LTexture;
 import loon.canvas.LColor;
 import loon.event.Updateable;
 import loon.font.FontSet;
+import loon.font.FontUtils;
 import loon.font.IFont;
 import loon.font.LFont;
 import loon.geom.Vector2f;
@@ -64,10 +65,18 @@ public class Print implements FontSet<Print>, LRelease {
 	 * @return
 	 */
 	public static TArray<String> formatMessage(String text, IFont font, int width) {
-		TArray<String> list = new TArray<String>();
 
+		TArray<String> list = new TArray<String>();
 		if (text == null) {
 			return list;
+		}
+
+		if (width <= 1) {
+			if (text.indexOf('\n') == -1) {
+				width = (int) FontUtils.measureText(font, text);
+			} else {
+				width = (int) FontUtils.measureText(font, StringUtils.split(text, '\n')[0]);
+			}
 		}
 
 		char c1 = '〜';

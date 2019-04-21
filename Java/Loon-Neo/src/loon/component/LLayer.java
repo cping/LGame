@@ -101,6 +101,7 @@ public class LLayer extends ActorLayer {
 		this.isVSync = true;
 		this.setElastic(true);
 		this.setLocked(true);
+		this.setLayer(-10000);
 	}
 
 	private void allocateSprites() {

@@ -83,8 +83,10 @@ public abstract class LGame {
 
 	protected static Platform _platform = null;
 
+	// 全部mesh
 	private final TArray<Mesh> _mesh_all_pools;
 
+	// 全部shader
 	private final TArray<ShaderProgram> _shader_all_pools;
 
 	// 单独纹理批处理缓存
@@ -164,9 +166,9 @@ public abstract class LGame {
 	}
 
 	protected final void initProcess(LGame game) {
-		_base = game;
-		if (_base == null && _platform != null) {
-			_base = _platform.getGame();
+		LGame._base = game;
+		if (LGame._base == null && LGame._platform != null) {
+			LGame._base =LGame._platform.getGame();
 		}
 		processImpl = new LProcess(game);
 		log().debug("The Loon Game Engine is Begin");
@@ -198,9 +200,9 @@ public abstract class LGame {
 	 */
 	public void setPlatform(Platform plat) {
 		if (plat != null) {
-			_platform = plat;
-			_base = plat.getGame();
-			_base.resetShader();
+			LGame._platform = plat;
+			LGame._base = plat.getGame();
+			LGame._base.resetShader();
 		}
 	}
 

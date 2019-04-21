@@ -91,6 +91,9 @@ public class FontUtils {
 	}
 
 	public static float measureText(final IFont font, final CharSequence chars, final int start, final int end) {
+		if (font == null) {
+			return 0f;
+		}
 		final int textLength = end - start;
 		if (textLength <= 0) {
 			return 0;

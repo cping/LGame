@@ -22,6 +22,7 @@ package loon.font;
 
 import loon.HorizontalAlign;
 import loon.LRelease;
+import loon.LSysException;
 import loon.LSystem;
 import loon.canvas.LColor;
 import loon.opengl.GLEx;
@@ -58,9 +59,12 @@ public class Text implements LRelease {
 	}
 
 	public Text(final IFont font, final CharSequence chars, final TextOptions opt) {
-		this._font = font;
-		this._textOptions = opt;
-		this.setText(chars);
+		if (opt != null) {
+			this._textOptions = opt;
+		} else {
+			this._textOptions = new TextOptions();
+		}
+		this.setText(font, chars);
 	}
 
 	public float getWidth() {
@@ -88,12 +92,15 @@ public class Text implements LRelease {
 	}
 
 	public void setText(final IFont font, final CharSequence chars) {
+		if (font == null) {
+			throw new LSysException("IFont is null!");
+		}
 		this._font = font;
 		this.setText(chars);
 	}
 
 	public void setText(final CharSequence chars) {
-		if (LSystem.base() == null) {
+		if (LSystem.base() == null || chars == null) {
 			return;
 		}
 		this._chars = chars != null ? chars : LSystem.EMPTY;
@@ -182,6 +189,7 @@ public class Text implements LRelease {
 			return;
 		}
 		initLFont();
+
 		if (_textOptions._autoWrap != AutoWrap.VERTICAL) {
 			switch (_textOptions._horizontalAlign) {
 			case CENTER:

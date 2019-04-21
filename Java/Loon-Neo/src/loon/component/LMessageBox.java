@@ -98,7 +98,7 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 		protected DrawMessageBox(IFont font, LTexture face, LTexture box, int w, int h) {
 			super(font);
 			super.init(w, h);
-            
+
 			this.DEFAULT_WIDTH = w;
 			this.DEFAULT_HEIGHT = h;
 
@@ -366,6 +366,8 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 
 	private String _tmpString;
 
+	private boolean _showShadow = false;
+
 	public LMessageBox(TArray<Message> messages, int x, int y, int width, int height) {
 		this(messages, null, SkinManager.get().getMessageSkin().getFont(), null, x, y, width, height);
 	}
@@ -402,8 +404,14 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 
 	public LMessageBox(TArray<Message> messages, String typeFlag, IFont font, LTexture box, int x, int y, int width,
 			int height, LColor color) {
+		this(messages, typeFlag, font, box, x, y, width, height, color, false);
+	}
+
+	public LMessageBox(TArray<Message> messages, String typeFlag, IFont font, LTexture box, int x, int y, int width,
+			int height, LColor color, boolean shadow) {
 		super(x, y, width, height);
 		this._component_baseColor = color;
+		this._showShadow = shadow;
 		if (box != null && width == 0 && height == 0) {
 			this.setSize(box.getWidth(), box.getHeight());
 		}
@@ -416,9 +424,8 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 		}
 		this._tmpString = sbr.toString();
 		if (font instanceof LFont) {
-			this._box = new DrawMessageBox(
-					new ShadowFont((LFont) font, _tmpString, typeFlag == null ? LSystem.FLAG_TAG : typeFlag, true),
-					null, box, width(), height());
+			this._box = new DrawMessageBox(new ShadowFont((LFont) font, _tmpString,
+					typeFlag == null ? LSystem.FLAG_TAG : typeFlag, _showShadow), null, box, width(), height());
 		} else {
 			this._box = new DrawMessageBox(font, null, box, width(), height());
 		}
@@ -455,20 +462,25 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 	public LMessageBox(String[] messages, String typeFlag, IFont font, String face, LTexture box, int x, int y,
 			int width, int height) {
 		super(x, y, width, height);
-		if (box != null && width == 0 && height == 0) {
+
+		if (box != null && width <= 1 && height <= 1) {
 			this.setSize(box.getWidth(), box.getHeight());
 		}
+
 		if (messages != null) {
 			_messageList = new TArray<LMessageBox.Message>();
 			for (String text : messages) {
+
 				_messageList.add(new Message(text, null, face, Print.formatMessage(text, font, width())));
+
 				_tmpString += text;
 			}
 		}
+
 		if (font instanceof LFont) {
 			this._box = new DrawMessageBox(
-					new ShadowFont((LFont) font, messages, typeFlag == null ? LSystem.FLAG_TAG : typeFlag, true), null,
-					box, width(), height());
+					new ShadowFont((LFont) font, messages, typeFlag == null ? LSystem.FLAG_TAG : typeFlag, _showShadow),
+					null, box, width(), height());
 		} else {
 			this._box = new DrawMessageBox(font, null, box, width(), height());
 		}
@@ -772,6 +784,14 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 	public LMessageBox setDelay(int time) {
 		this.delay = time;
 		return this;
+	}
+
+	public boolean isShowShadowFont() {
+		return _showShadow;
+	}
+
+	public void setShowShadowFont(boolean s) {
+		this._showShadow = s;
 	}
 
 	@Override

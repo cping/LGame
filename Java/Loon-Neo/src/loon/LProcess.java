@@ -323,7 +323,7 @@ public class LProcess {
 
 					@Override
 					public void run(LTimerContext time) {
-						if (LSystem.base() != null && !LSystem.base().display().showLogo) {
+						if (_game != null && !_game.display().showLogo) {
 							try {
 								startTransition();
 								screen.setClose(false);
