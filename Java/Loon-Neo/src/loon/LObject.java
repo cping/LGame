@@ -26,6 +26,7 @@ import loon.action.ActionEvent;
 import loon.action.collision.CollisionHelper;
 import loon.action.map.Field2D;
 import loon.canvas.Alpha;
+import loon.component.layout.LayoutAlign;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.geom.XY;
@@ -620,6 +621,40 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 
 	public static void bottomOn(final LObject<?> object, float w, float h) {
 		object.setLocation(w / 2 - object.getWidth() / 2, h - object.getHeight());
+	}
+
+	public void moveOn(final LayoutAlign align, final LObject<?> obj) {
+		if (align != null && obj != null) {
+			switch (align) {
+			case Left:
+				this.leftOn(obj);
+				break;
+			case Right:
+				this.rightOn(obj);
+				break;
+			case Center:
+				this.centerOn(obj);
+				break;
+			case Top:
+				this.topOn(obj);
+				break;
+			case Bottom:
+				this.bottomOn(obj);
+				break;
+			case TopLeft:
+				this.topLeftOn(obj);
+				break;
+			case TopRight:
+				this.topRightOn(obj);
+				break;
+			case BottomLeft:
+				this.bottomLeftOn(obj);
+				break;
+			case BottomRight:
+				this.bottomRightOn(obj);
+				break;
+			}
+		}
 	}
 
 	public void centerOn(final LObject<?> object) {

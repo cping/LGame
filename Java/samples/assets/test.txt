@@ -2,6 +2,7 @@
 "child":[
 {"props":{"x":403,"y":10,"skin":"btn_pause.png","var":"pauseBtn"},"type":"Button"},
 {"props":{"x":203,"y":109,"text":"CheckBox","var":"check1"},"type":"Check"},
+{"props":{"x":55,"y":55,"width":45,"height":29,"frame":20,"skin":"dog.png","var":"spritetest"},"type":"Sprite"},
 {"props":{"x":0,"y":0,"skin":"back1.png","bound":"false","var":"layer1"},"type":"Layer"},
 {"props":{"x":355,"y":65,"skin":"ccc.png","var":"image1"},"type":"Paper"},
 {"props":{"width":120,"height":55,"text":"testabc","var":"menua"},"type":"Menu"},

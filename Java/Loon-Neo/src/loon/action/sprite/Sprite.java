@@ -453,7 +453,7 @@ public class Sprite extends LObject<ISprite>
 	private void setAnimation(Animation myAnimation, LTexture[] images, int max, long timer) {
 		this._maxFrame = max;
 		if (_maxFrame != -1) {
-			for (int i = 0; i < _maxFrame; i++) {
+			for (int i = 0; i < _maxFrame && i < images.length; i++) {
 				myAnimation.addFrame(images[i], timer);
 			}
 		} else {
@@ -1148,7 +1148,7 @@ public class Sprite extends LObject<ISprite>
 	public Gravity getGravity() {
 		return new Gravity("Sprite", this);
 	}
-	
+
 	public boolean isClosed() {
 		return isDisposed();
 	}

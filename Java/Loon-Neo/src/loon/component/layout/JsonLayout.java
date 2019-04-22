@@ -30,7 +30,9 @@ import loon.PlayerUtils;
 import loon.Screen;
 import loon.action.ActionScript;
 import loon.action.ActionTween;
+import loon.action.sprite.Entity;
 import loon.action.sprite.ISprite;
+import loon.action.sprite.Sprite;
 import loon.canvas.LColor;
 import loon.component.DefUI;
 import loon.component.LButton;
@@ -66,16 +68,123 @@ import loon.utils.TArray;
 /**
  * Json布局器,用于解析组件和精灵配置到窗口显示
  */
-@SuppressWarnings("unchecked")
 public class JsonLayout {
 
-	private static enum LayoutAlign {
+	public static class SpriteParameter {
 
-		Left, Center, Right, Top, Bottom, TopLeft, TopRight, BottomLeft, BottomRight;
+		public float x = 0f;
+		public float y = 0f;
+		public int z = -1;
+		public float alpha = 0f;
+		public float rotation = 0f;
+		public float scaleX = 1f;
+		public float scaleY = 1f;
+		public int width = 1;
+		public int height = 1;
+
+		public int code = 0;
+
+		public String path = null;
+
+		public boolean visible = false;
+
+		public LColor color = null;
+
+		public LayoutAlign layoutAlgin;
+
+		public String alignString;
+
+		public SpriteParameter(JsonLayout layout, Json.Object props) {
+
+			if (props.containsKey("code")) {
+				code = props.getInt("code", code);
+			} else if (props.containsKey("stateNum")) {
+				code = props.getInt("stateNum", code);
+			} else if (props.containsKey("state")) {
+				code = props.getInt("state", code);
+			} else if (props.containsKey("number")) {
+				code = props.getInt("number", code);
+			}
+
+			if (props.containsKey("x")) {
+				x = props.getNumber("x", x);
+			} else if (props.containsKey("left")) {
+				x = props.getNumber("left", x);
+			}
+
+			if (props.containsKey("y")) {
+				y = props.getNumber("y", y);
+			} else if (props.containsKey("top")) {
+				y = props.getNumber("top", y);
+			}
+
+			if (props.containsKey("z")) {
+				z = props.getInt("z", z);
+			} else if (props.containsKey("layer")) {
+				z = props.getInt("layer", z);
+			}
+
+			if (props.containsKey("width")) {
+				width = props.getInt("width", width);
+			} else if (props.containsKey("right")) {
+				width = props.getInt("right", width);
+			}
+
+			if (props.containsKey("height")) {
+				height = props.getInt("height", height);
+			} else if (props.containsKey("bottom")) {
+				height = props.getInt("bottom", height);
+			}
+
+			if (props.containsKey("path")) {
+				path = props.getString("path");
+			} else if (props.containsKey("skin")) {
+				path = props.getString("skin");
+			} else if (props.containsKey("texture")) {
+				path = props.getString("texture");
+			} else if (props.containsKey("img")) {
+				path = props.getString("img");
+			}
+
+			this.alignString = props.getString("align", "").trim().toLowerCase();
+
+			if ("right".equals(alignString)) {
+				this.layoutAlgin = LayoutAlign.Right;
+			} else if ("center".equals(alignString)) {
+				this.layoutAlgin = LayoutAlign.Center;
+			} else if ("left".equals(alignString)) {
+				this.layoutAlgin = LayoutAlign.Left;
+			} else if ("bottom".equals(alignString)) {
+				this.layoutAlgin = LayoutAlign.Bottom;
+			} else if ("top".equals(alignString)) {
+				this.layoutAlgin = LayoutAlign.Top;
+			} else if ("topleft".equals(alignString)) {
+				this.layoutAlgin = LayoutAlign.TopLeft;
+			} else if ("topright".equals(alignString)) {
+				this.layoutAlgin = LayoutAlign.TopRight;
+			} else if ("bottomleft".equals(alignString)) {
+				this.layoutAlgin = LayoutAlign.BottomLeft;
+			} else if ("bottomright".equals(alignString)) {
+				this.layoutAlgin = LayoutAlign.BottomRight;
+			}
+
+			this.alpha = props.getNumber("alpha", 1f);
+
+			this.rotation = props.getNumber("rotation", 0f);
+
+			this.scaleX = props.getNumber("scaleX", 1f);
+			this.scaleY = props.getNumber("scaleX", 1f);
+
+			String colorString = props.getString("color");
+
+			this.color = StringUtils.isEmpty(colorString) ? LColor.white.cpy() : LColor.valueOf(colorString);
+
+			this.visible = props.getBoolean("visible", true);
+		}
 
 	}
 
-	private static class BaseParameter {
+	public static class BaseParameter {
 
 		public int x = 0;
 
@@ -153,6 +262,8 @@ public class JsonLayout {
 				path = props.getString("skin");
 			} else if (props.containsKey("texture")) {
 				path = props.getString("texture");
+			} else if (props.containsKey("img")) {
+				path = props.getString("img");
 			}
 
 			if (props.containsKey("text")) {
@@ -261,11 +372,15 @@ public class JsonLayout {
 	}
 
 	public void pack(Screen screen) {
-		for (ISprite s : sprites.values()) {
-			screen.add(s);
+		if (sprites.size > 0) {
+			for (ISprite s : sprites.values()) {
+				screen.add(s);
+			}
 		}
-		for (LContainer c : container) {
-			screen.add(c);
+		if (container.size > 0) {
+			for (LContainer c : container) {
+				screen.add(c);
+			}
 		}
 	}
 
@@ -359,13 +474,86 @@ public class JsonLayout {
 			varName = props.getString("name", LSystem.UNKOWN);
 		}
 
+		SpriteParameter par = new SpriteParameter(this, props);
+
 		switch (code) {
 		case 0:
 		default:
+			int maxFrame = -1;
+			if (props.containsKey("maxFrame")) {
+				maxFrame = props.getInt("maxFrame", -1);
+			} else if (props.containsKey("frame")) {
+				maxFrame = props.getInt("frame", -1);
+			}
+
+			int delay = 150;
+			if (props.containsKey("delay")) {
+				delay = props.getInt("delay", delay);
+			} else if (props.containsKey("time")) {
+				delay = props.getInt("time", delay);
+			}
+
+			int transform = props.getInt("transform", 0);
+
+			Sprite spr = null;
+			if (!StringUtils.isEmpty(par.path)) {
+				if (par.width > 1 && par.height > 1) {
+					spr = new Sprite(par.path, maxFrame, par.x, par.y, par.width, par.height, delay);
+				} else {
+					spr = new Sprite(par.path);
+					spr.setLocation(par.x, par.y);
+				}
+			} else {
+				spr = new Sprite(par.x, par.y);
+			}
+
+			spr.setTransform(transform);
+			
+			spr.setFlipX(props.getBoolean("flipx", false));
+			spr.setFlipY(props.getBoolean("flipy", false));
+			
+			sprite = spr;
+
 			break;
 		case 1:
+
+			Entity entity = null;
+
+			LTexture image = null;
+
+			if (!StringUtils.isEmpty(par.path)) {
+				image = LSystem.loadTexture(par.path);
+			}
+
+			if (image != null && par.width > 1 && par.height > 1) {
+				entity = new Entity(image, par.x, par.y, par.width, par.height);
+			} else if (image != null) {
+				entity = new Entity(image, par.x, par.y);
+			}
+
+			entity.setRotationCenterX(props.getNumber("pivotx", -1f));
+			entity.setRotationCenterY(props.getNumber("pivoty", -1f));
+
+			entity.setSkewCenterX(props.getNumber("skewx", -1f));
+			entity.setSkewCenterY(props.getNumber("skewy", -1f));
+
+			entity.setFlipX(props.getBoolean("flipx", false));
+			entity.setFlipY(props.getBoolean("flipy", false));
+
+			sprite = entity;
+
 			break;
 		}
+
+		if (par.z != -1) {
+			sprite.setLayer(par.z);
+		}
+
+		sprite.setColor(par.color);
+		sprite.setAlpha(par.alpha);
+		sprite.setRotation(par.rotation);
+		sprite.setScale(par.scaleX, par.scaleY);
+		sprite.setVisible(par.visible);
 
 		putSprites(varName, sprite);
 
@@ -415,13 +603,12 @@ public class JsonLayout {
 		LLabel label = new LLabel(par.algin, par.font, par.color, background, par.text, par.x, par.y, par.width,
 				par.height);
 
-
 		if (par.z != -1) {
 			label.setLayer(par.z);
 		}
 		label.setVisible(par.visible);
 
-		onMove(par.layoutAlgin, view, label);
+		move(par.layoutAlgin, view, label);
 
 		view.add(label);
 
@@ -443,11 +630,11 @@ public class JsonLayout {
 		LPaper paper = new LPaper(background, par.x, par.y, par.width, par.height);
 
 		if (par.z != -1) {
-            paper.setLayer(par.z);			
+			paper.setLayer(par.z);
 		}
 		paper.setVisible(par.visible);
 
-		onMove(par.layoutAlgin, view, paper);
+		move(par.layoutAlgin, view, paper);
 
 		view.add(paper);
 
@@ -496,13 +683,12 @@ public class JsonLayout {
 			}
 		});
 
-
 		if (par.z != -1) {
 			box.setLayer(par.z);
 		}
 		box.setVisible(par.visible);
 
-		onMove(par.layoutAlgin, view, box);
+		move(par.layoutAlgin, view, box);
 
 		view.add(box);
 
@@ -533,7 +719,7 @@ public class JsonLayout {
 		}
 		layer.setVisible(par.visible);
 
-		onMove(par.layoutAlgin, view, layer);
+		move(par.layoutAlgin, view, layer);
 
 		view.add(layer);
 
@@ -599,7 +785,7 @@ public class JsonLayout {
 
 		clickButton.setVisible(par.visible);
 
-		onMove(par.layoutAlgin, view, clickButton);
+		move(par.layoutAlgin, view, clickButton);
 
 		view.add(clickButton);
 
@@ -626,7 +812,7 @@ public class JsonLayout {
 		}
 		clickButton.setVisible(par.visible);
 
-		onMove(par.layoutAlgin, view, clickButton);
+		move(par.layoutAlgin, view, clickButton);
 
 		view.add(clickButton);
 
@@ -663,7 +849,7 @@ public class JsonLayout {
 		}
 		menu.setVisible(par.visible);
 
-		onMove(par.layoutAlgin, view, menu);
+		move(par.layoutAlgin, view, menu);
 
 		view.add(menu);
 
@@ -719,7 +905,7 @@ public class JsonLayout {
 		}
 		menu.setVisible(par.visible);
 
-		onMove(par.layoutAlgin, view, menu);
+		move(par.layoutAlgin, view, menu);
 
 		view.add(menu);
 
@@ -775,7 +961,7 @@ public class JsonLayout {
 		}
 		textarea.setVisible(par.visible);
 
-		onMove(par.layoutAlgin, view, textarea);
+		move(par.layoutAlgin, view, textarea);
 
 		view.add(textarea);
 
@@ -811,7 +997,7 @@ public class JsonLayout {
 		}
 		message.setVisible(par.visible);
 
-		onMove(par.layoutAlgin, view, message);
+		move(par.layoutAlgin, view, message);
 
 		view.add(message);
 
@@ -850,7 +1036,7 @@ public class JsonLayout {
 		}
 		message.setVisible(par.visible);
 
-		onMove(par.layoutAlgin, view, message);
+		move(par.layoutAlgin, view, message);
 
 		view.add(message);
 
@@ -893,7 +1079,7 @@ public class JsonLayout {
 		}
 		check.setVisible(par.visible);
 
-		onMove(par.layoutAlgin, view, check);
+		move(par.layoutAlgin, view, check);
 
 		view.add(check);
 
@@ -937,7 +1123,7 @@ public class JsonLayout {
 		}
 		progress.setVisible(par.visible);
 
-		onMove(par.layoutAlgin, view, progress);
+		move(par.layoutAlgin, view, progress);
 
 		view.add(progress);
 
@@ -962,40 +1148,11 @@ public class JsonLayout {
 
 	}
 
-	protected void onMove(LayoutAlign align, LContainer view, LComponent comp) {
-		if (align != null) {
-			switch (align) {
-			case Left:
-				view.leftOn(comp);
-				break;
-			case Right:
-				view.rightOn(comp);
-				break;
-			case Center:
-				view.centerOn(comp);
-				break;
-			case Top:
-				view.topOn(comp);
-				break;
-			case Bottom:
-				view.bottomOn(comp);
-				break;
-			case TopLeft:
-				view.topLeftOn(comp);
-				break;
-			case TopRight:
-				view.topRightOn(comp);
-				break;
-			case BottomLeft:
-				view.bottomLeftOn(comp);
-				break;
-			case BottomRight:
-				view.bottomRightOn(comp);
-				break;
-			}
-		}
+	protected void move(LayoutAlign align, LContainer view, LComponent comp) {
+		view.moveOn(align, comp);
 	}
 
+	@SuppressWarnings("unchecked")
 	protected <T extends LComponent> T createComponent(int code, Json.Object props, LContainer view) {
 
 		LComponent comp = null;
@@ -1058,10 +1215,12 @@ public class JsonLayout {
 		this.createGameWindowImage = gameWindowImage;
 	}
 
+	@SuppressWarnings("unchecked")
 	public <T extends LComponent> T getComponent(String name) {
 		return (T) components.get(name);
 	}
 
+	@SuppressWarnings("unchecked")
 	public <T extends LComponent> T removeComponent(String name) {
 		return (T) components.remove(name);
 	}
@@ -1092,6 +1251,14 @@ public class JsonLayout {
 
 	public TArray<LContainer> getContainers() {
 		return container;
+	}
+
+	public String getLayoutType() {
+		return this.layoutType;
+	}
+
+	public String getPath() {
+		return this.path;
 	}
 
 }

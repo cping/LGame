@@ -673,7 +673,17 @@ final public class StringUtils extends CharUtils {
 	public static boolean isEmpty(String param) {
 		return param == null || param.length() == 0 || "".equals(param.trim());
 	}
-
+	
+	/**
+	 * 判断是否非空
+	 * 
+	 * @param param
+	 * @return
+	 */
+	public static boolean isNotEmpty(String param) {
+		return !isEmpty(param);
+	}
+	
 	/**
 	 * 判断是否为null
 	 * 

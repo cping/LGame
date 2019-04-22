@@ -18,27 +18,13 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package org.test;
+package loon.component.layout;
 
-import loon.Stage;
-import loon.component.layout.JsonLayout;
+/**
+ * 精灵与组件基本位置布局枚举类
+ */
+public enum LayoutAlign {
 
-public class JSonViewTest extends Stage{
-
-	@Override
-	public void create() {
-
-		//加载json布局文件
-		JsonLayout layout = new JsonLayout("test.txt");
-		//为无图窗口创建背景图
-		layout.setCreateGameWindowImage(true);
-		//解析
-		layout.parse();
-		//打包显示在screen
-		layout.pack(this);
-	
-		//最后渲染精灵组件
-		lastSpriteDraw();
-	}
+	Left, Center, Right, Top, Bottom, TopLeft, TopRight, BottomLeft, BottomRight;
 
 }

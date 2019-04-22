@@ -430,6 +430,60 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	/**
+	 * 把精灵渲染置于桌面与桌面之间
+	 */
+	public void centerSpriteDraw() {
+		setFristOrder(DRAW_DESKTOP_PAINT());
+		setSecondOrder(DRAW_SPRITE_PAINT());
+		setLastOrder(DRAW_USER_PAINT());
+	}
+
+	/**
+	 * 最后绘制精灵
+	 */
+	public void lastSpriteDraw() {
+		setFristOrder(DRAW_USER_PAINT());
+		setSecondOrder(DRAW_DESKTOP_PAINT());
+		setLastOrder(DRAW_SPRITE_PAINT());
+	}
+
+	/**
+	 * 只绘制精灵
+	 */
+	public void onlySpriteDraw() {
+		setFristOrder(null);
+		setSecondOrder(null);
+		setLastOrder(DRAW_SPRITE_PAINT());
+	}
+
+	/**
+	 * 把桌面渲染置于精灵与桌面之间
+	 */
+	public void centerDesktopDraw() {
+		setFristOrder(DRAW_SPRITE_PAINT());
+		setSecondOrder(DRAW_DESKTOP_PAINT());
+		setLastOrder(DRAW_USER_PAINT());
+	}
+
+	/**
+	 * 最后绘制组件
+	 */
+	public void lastDesktopDraw() {
+		setFristOrder(DRAW_USER_PAINT());
+		setSecondOrder(DRAW_SPRITE_PAINT());
+		setLastOrder(DRAW_DESKTOP_PAINT());
+	}
+
+	/**
+	 * 只绘制组件
+	 */
+	public void onlyDesktopDraw() {
+		setFristOrder(null);
+		setSecondOrder(null);
+		setLastOrder(DRAW_DESKTOP_PAINT());
+	}
+
+	/**
 	 * 最后绘制用户界面
 	 */
 	public void lastUserDraw() {
