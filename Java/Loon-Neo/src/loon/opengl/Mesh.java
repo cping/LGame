@@ -582,7 +582,10 @@ public class Mesh implements LRelease {
 		LSystem.addMesh(mesh);
 	}
 
-	public static void invalidateAllMeshes(LGame game) {
+	public static void invalidate(LGame game) {
+		if (game.graphics().gl == null) {
+			return;
+		}
 		TArray<Mesh> meshesArray = game.getMeshAll();
 		if (meshesArray == null) {
 			return;

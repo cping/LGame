@@ -20,30 +20,32 @@
  */
 package loon.utils.json;
 
+import loon.LSystem;
+
 public final class JsonParserException extends RuntimeException {
-	
-  private static final long serialVersionUID = 1L;
-  private final int linePos;
-  private final int charPos;
-  private final int charOffset;
 
-  public JsonParserException(Exception e, String message, int linePos, int charPos, int charOffset) {
-    super(message, e);
-    this.linePos = linePos;
-    this.charPos = charPos;
-    this.charOffset = charOffset;
-  }
+	private static final long serialVersionUID = 1L;
+	private final int linePos;
+	private final int charPos;
+	private final int charOffset;
 
-  public int getLinePosition() {
-    return linePos;
-  }
+	public JsonParserException(Exception e, String message, int linePos, int charPos, int charOffset) {
+		super(message, e);
+		LSystem.error(message, e);
+		this.linePos = linePos;
+		this.charPos = charPos;
+		this.charOffset = charOffset;
+	}
 
-  public int getCharPosition() {
-    return charPos;
-  }
-  
-  public int getCharOffset() {
-    return charOffset;
-  }
+	public int getLinePosition() {
+		return linePos;
+	}
+
+	public int getCharPosition() {
+		return charPos;
+	}
+
+	public int getCharOffset() {
+		return charOffset;
+	}
 }
-

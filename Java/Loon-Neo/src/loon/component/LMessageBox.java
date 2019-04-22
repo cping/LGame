@@ -71,8 +71,8 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 
 	public static class DrawMessageBox extends AbstractBox {
 
-		private final int DEFAULT_WIDTH;
-		private final int DEFAULT_HEIGHT;
+		private final int drawWidth;
+		private final int drawHeight;
 
 		LTexture imgFace;
 
@@ -93,28 +93,32 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 		private float offsetY;
 
 		private float _leading = 0;
-		private String flagType = LSystem.FLAG_TAG;
+		private String _flagType = LSystem.FLAG_TAG;
+		private LColor flagColor;
 
-		protected DrawMessageBox(IFont font, LTexture face, LTexture box, int w, int h) {
+		protected DrawMessageBox(IFont font, LTexture face, LTexture box, String flag, int w, int h) {
 			super(font);
 			super.init(w, h);
 
-			this.DEFAULT_WIDTH = w;
-			this.DEFAULT_HEIGHT = h;
+			this.drawWidth = w;
+			this.drawHeight = h;
+
+			this.flagColor = LColor.orange;
 
 			this.imgFace = face;
 			this.drawFace = false;
 			this._radius = 10;
 			this._textureBox = box;
+			this._flagType = StringUtils.isEmpty(flag) ? LSystem.FLAG_TAG : flag;
 		}
 
 		public void setFlagType(String f) {
-			this.flagType = f;
+			this._flagType = f;
 		}
 
 		public void reinit() {
-			this._boxWidth = DEFAULT_WIDTH;
-			this._boxHeight = DEFAULT_HEIGHT;
+			this._boxWidth = drawWidth;
+			this._boxHeight = drawHeight;
 			this._borderW = 3f;
 			this.messageHeight = (this._boxHeight * 0.8f);
 			this.messageY = (this._boxHeight * 0.08f);
@@ -164,18 +168,18 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 			}
 
 			drawMessage(g, message, this._boxX + this.messageX + offsetX, this._boxY + this.messageY + offsetY);
-			if (isPage && flagType != null) {
+			if (isPage && _flagType != null) {
 				int size = StringUtils.charCount(message, '\n');
 				if (_leading > 0) {
-					this.font.drawString(g, flagType, this._boxX + this.pageX + this.offsetX,
+					this.font.drawString(g, _flagType, this._boxX + this.pageX + this.offsetX,
 							this._boxY + this.pageY + this.font.stringHeight(message) + this.offsetY
 									+ (this.font.getSize() * 0.10f) + (size * _leading),
-							this.fontColor);
+							this.flagColor);
 				} else {
-					this.font.drawString(g, flagType,
+					this.font.drawString(g, _flagType,
 							this._boxX + this.pageX + this.offsetX, this._boxY + this.pageY
 									+ this.font.stringHeight(message) + this.offsetY + (this.font.getSize() * 0.10f),
-							this.fontColor);
+							this.flagColor);
 				}
 			}
 
@@ -206,6 +210,14 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 
 		public void setLeading(final float leading) {
 			this._leading = leading;
+		}
+
+		public LColor getFlagColor() {
+			return flagColor.cpy();
+		}
+
+		public void setFlagColor(LColor c) {
+			this.flagColor = c;
 		}
 
 		@Override
@@ -285,17 +297,18 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 
 	}
 
-	private final static ObjectMap<String, LTexture> FACE_POOL = new ObjectMap<String, LTexture>();
+	private final ObjectMap<String, LTexture> faceCache = new ObjectMap<String, LTexture>();
 
-	public static void addFaceImage(String name, LTexture tex) {
-		FACE_POOL.put(name, tex);
+	public void addFaceImage(String name, LTexture tex) {
+		faceCache.put(name, tex);
 	}
 
-	public static LTexture getFaceImage(String name) {
-		return FACE_POOL.get(name);
+	public LTexture getFaceImage(String name) {
+		return faceCache.get(name);
 	}
 
 	public static class Message {
+		
 		private String message;
 		private String comment;
 		private String face;
@@ -425,9 +438,10 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 		this._tmpString = sbr.toString();
 		if (font instanceof LFont) {
 			this._box = new DrawMessageBox(new ShadowFont((LFont) font, _tmpString,
-					typeFlag == null ? LSystem.FLAG_TAG : typeFlag, _showShadow), null, box, width(), height());
+					typeFlag == null ? LSystem.FLAG_TAG : typeFlag, _showShadow), null, box, typeFlag, width(),
+					height());
 		} else {
-			this._box = new DrawMessageBox(font, null, box, width(), height());
+			this._box = new DrawMessageBox(font, null, box, typeFlag, width(), height());
 		}
 		this._box.setLocation(x, y);
 		this._font = font;
@@ -476,13 +490,12 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 				_tmpString += text;
 			}
 		}
-
 		if (font instanceof LFont) {
 			this._box = new DrawMessageBox(
 					new ShadowFont((LFont) font, messages, typeFlag == null ? LSystem.FLAG_TAG : typeFlag, _showShadow),
-					null, box, width(), height());
+					null, box, typeFlag, width(), height());
 		} else {
-			this._box = new DrawMessageBox(font, null, box, width(), height());
+			this._box = new DrawMessageBox(font, null, box, typeFlag, width(), height());
 		}
 		this._box.setLocation(getX(), getY());
 		if (!StringUtils.isEmpty(face)) {
@@ -740,11 +753,11 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 		int size = result.length;
 		if (size > 0) {
 			if (3 == size) {
-				setFaceImage(FACE_POOL.get(result[0]), Float.valueOf(result[1]), Float.valueOf(result[2]));
+				setFaceImage(faceCache.get(result[0]), Float.valueOf(result[1]), Float.valueOf(result[2]));
 			} else if (2 == size) {
-				setFaceImage(FACE_POOL.get(result[0]), Float.valueOf(result[1]), Float.valueOf(result[1]));
+				setFaceImage(faceCache.get(result[0]), Float.valueOf(result[1]), Float.valueOf(result[1]));
 			} else {
-				setFaceImage(FACE_POOL.get(result[0]));
+				setFaceImage(faceCache.get(result[0]));
 			}
 		}
 	}
@@ -775,6 +788,14 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 	public LMessageBox setPageTime(int pageTime) {
 		this.pageTime = pageTime;
 		return this;
+	}
+
+	public LColor getFlagColor() {
+		return _box.getFlagColor();
+	}
+
+	public void setFlagColor(LColor c) {
+		this._box.setFlagColor(c);
 	}
 
 	public int getDelay() {

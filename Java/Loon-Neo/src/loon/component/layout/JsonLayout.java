@@ -26,7 +26,10 @@ import loon.Json;
 import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
+import loon.PlayerUtils;
 import loon.Screen;
+import loon.action.ActionScript;
+import loon.action.ActionTween;
 import loon.action.sprite.ISprite;
 import loon.canvas.LColor;
 import loon.component.DefUI;
@@ -37,23 +40,32 @@ import loon.component.LComponent;
 import loon.component.LContainer;
 import loon.component.LLabel;
 import loon.component.LLayer;
+import loon.component.LMenu;
 import loon.component.LMenuSelect;
+import loon.component.LMessage;
 import loon.component.LMessageBox;
 import loon.component.LPanel;
 import loon.component.LPaper;
+import loon.component.LProgress;
 import loon.component.LTextArea;
-import loon.component.LMessageBox.Message;
+import loon.component.LProgress.ProgressType;
+import loon.component.LSelect;
 import loon.component.skin.CheckBoxSkin;
+import loon.component.skin.MenuSkin;
 import loon.component.skin.SkinManager;
 import loon.event.Touched;
 import loon.font.BMFont;
 import loon.font.IFont;
 import loon.font.LFont;
+import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
+/**
+ * Json布局器,用于解析组件和精灵配置到窗口显示
+ */
 @SuppressWarnings("unchecked")
 public class JsonLayout {
 
@@ -68,6 +80,8 @@ public class JsonLayout {
 		public int x = 0;
 
 		public int y = 0;
+
+		public int z = -1;
 
 		public int width = 1;
 
@@ -113,6 +127,12 @@ public class JsonLayout {
 				y = props.getInt("y", y);
 			} else if (props.containsKey("top")) {
 				y = props.getInt("top", y);
+			}
+
+			if (props.containsKey("z")) {
+				z = props.getInt("z", z);
+			} else if (props.containsKey("layer")) {
+				z = props.getInt("layer", z);
 			}
 
 			if (props.containsKey("width")) {
@@ -236,10 +256,14 @@ public class JsonLayout {
 		}
 		this.path = path;
 		this.container = new TArray<LContainer>();
+		this.sprites = new ObjectMap<String, ISprite>();
 		createGameWindowImage = false;
 	}
 
 	public void pack(Screen screen) {
+		for (ISprite s : sprites.values()) {
+			screen.add(s);
+		}
 		for (LContainer c : container) {
 			screen.add(c);
 		}
@@ -299,25 +323,17 @@ public class JsonLayout {
 		} else if (JsonTemplate.COMP_LABEL.equals(typeName)) {
 			createComponent(2, props, view);
 		} else if (JsonTemplate.COMP_LAYER.equals(typeName)) {
-
 			createComponent(3, props, view);
-
 		} else if (JsonTemplate.COMP_MENU.equals(typeName)) {
-
 			createComponent(4, props, view);
-
 		} else if (JsonTemplate.COMP_MENU_SELECT.equals(typeName)) {
 			createComponent(5, props, view);
 		} else if (JsonTemplate.COMP_PAPER.equals(typeName)) {
 			createComponent(6, props, view);
 		} else if (JsonTemplate.COMP_SELECT.equals(typeName)) {
-
 			createComponent(7, props, view);
-
 		} else if (JsonTemplate.COMP_PROGRESS.equals(typeName)) {
-
 			createComponent(8, props, view);
-
 		} else if (JsonTemplate.COMP_CHECK.equals(typeName)) {
 			createComponent(9, props, view);
 		} else if (JsonTemplate.COMP_TEXTAREA.equals(typeName)) {
@@ -326,11 +342,42 @@ public class JsonLayout {
 			createComponent(11, props, view);
 		} else if (JsonTemplate.COMP_MESSAGEBOX.equals(typeName)) {
 			createComponent(12, props, view);
+		} else if (JsonTemplate.SPR_SPRITE.equals(typeName)) {
+			createSprite(0, props);
+		} else if (JsonTemplate.SPR_ENTITY.equals(typeName)) {
+			createSprite(1, props);
 		}
-
 	}
 
-	private ObjectMap<String, LComponent> putComponents(String name, LComponent comp) {
+	protected ISprite createSprite(int code, Json.Object props) {
+
+		ISprite sprite = null;
+
+		String varName = props.getString(JsonTemplate.LAYOUY_VAR, LSystem.UNKOWN);
+
+		if (StringUtils.isEmpty(varName)) {
+			varName = props.getString("name", LSystem.UNKOWN);
+		}
+
+		switch (code) {
+		case 0:
+		default:
+			break;
+		case 1:
+			break;
+		}
+
+		putSprites(varName, sprite);
+
+		return sprite;
+	}
+
+	protected ObjectMap<String, ISprite> putSprites(String name, ISprite sprite) {
+		sprites.put(name, sprite);
+		return sprites;
+	}
+
+	protected ObjectMap<String, LComponent> putComponents(String name, LComponent comp) {
 		if (components == null) {
 			components = new ObjectMap<String, LComponent>();
 		}
@@ -368,6 +415,10 @@ public class JsonLayout {
 		LLabel label = new LLabel(par.algin, par.font, par.color, background, par.text, par.x, par.y, par.width,
 				par.height);
 
+
+		if (par.z != -1) {
+			label.setLayer(par.z);
+		}
 		label.setVisible(par.visible);
 
 		onMove(par.layoutAlgin, view, label);
@@ -391,6 +442,9 @@ public class JsonLayout {
 
 		LPaper paper = new LPaper(background, par.x, par.y, par.width, par.height);
 
+		if (par.z != -1) {
+            paper.setLayer(par.z);			
+		}
 		paper.setVisible(par.visible);
 
 		onMove(par.layoutAlgin, view, paper);
@@ -442,6 +496,10 @@ public class JsonLayout {
 			}
 		});
 
+
+		if (par.z != -1) {
+			box.setLayer(par.z);
+		}
 		box.setVisible(par.visible);
 
 		onMove(par.layoutAlgin, view, box);
@@ -469,6 +527,10 @@ public class JsonLayout {
 		LLayer layer = new LLayer(par.x, par.y, par.width, par.height, bounded);
 
 		layer.setBackground(background);
+
+		if (par.z != -1) {
+			layer.setLayer(par.z);
+		}
 		layer.setVisible(par.visible);
 
 		onMove(par.layoutAlgin, view, layer);
@@ -531,6 +593,10 @@ public class JsonLayout {
 
 		}
 
+		if (par.z != -1) {
+			clickButton.setLayer(par.z);
+		}
+
 		clickButton.setVisible(par.visible);
 
 		onMove(par.layoutAlgin, view, clickButton);
@@ -555,6 +621,9 @@ public class JsonLayout {
 			clickButton = new LButton(par.font, par.text, par.color, par.x, par.y, par.width, par.height);
 		}
 
+		if (par.z != -1) {
+			clickButton.setLayer(par.z);
+		}
 		clickButton.setVisible(par.visible);
 
 		onMove(par.layoutAlgin, view, clickButton);
@@ -589,6 +658,65 @@ public class JsonLayout {
 			menu.setBackground(DefUI.getGameWinFrame(menu.width(), menu.height()));
 		}
 
+		if (par.z != -1) {
+			menu.setLayer(par.z);
+		}
+		menu.setVisible(par.visible);
+
+		onMove(par.layoutAlgin, view, menu);
+
+		view.add(menu);
+
+		putComponents(varName, menu);
+
+		return menu;
+
+	}
+
+	protected LMenu createMenu(Json.Object props, String varName, LContainer view) {
+
+		LMenu menu = null;
+
+		BaseParameter par = new BaseParameter(this, props);
+
+		LTexture tabTexture = null;
+
+		LTexture mainTexture = null;
+
+		int moveType = props.getInt("type", 0);
+
+		int taby = props.getInt("taby", 0);
+
+		if (taby == 0) {
+			taby = props.getInt("tab", 0);
+		}
+
+		int mainsize = props.getInt("mainsize", 0);
+		if (mainsize == 0) {
+			mainsize = props.getInt("size", 80);
+		}
+
+		boolean defaultUI = true;
+
+		if (!StringUtils.isEmpty(par.path)) {
+			String[] files = splitData(par.path);
+			if (files.length >= 2) {
+				tabTexture = LSystem.loadTexture(files[0]);
+				mainTexture = LSystem.loadTexture(files[1]);
+				defaultUI = false;
+			}
+		} else {
+			MenuSkin skin = MenuSkin.def();
+			tabTexture = skin.getTabTexture();
+			mainTexture = skin.getMainTexture();
+		}
+
+		menu = new LMenu(moveType, par.font, par.text, par.width, par.height, tabTexture, mainTexture, taby, mainsize,
+				defaultUI, par.color);
+
+		if (par.z != -1) {
+			menu.setLayer(par.z);
+		}
 		menu.setVisible(par.visible);
 
 		onMove(par.layoutAlgin, view, menu);
@@ -642,6 +770,9 @@ public class JsonLayout {
 			textarea.setTopOffset(offsetY);
 		}
 
+		if (par.z != -1) {
+			textarea.setLayer(par.z);
+		}
 		textarea.setVisible(par.visible);
 
 		onMove(par.layoutAlgin, view, textarea);
@@ -651,6 +782,83 @@ public class JsonLayout {
 		putComponents(varName, textarea);
 
 		return textarea;
+	}
+
+	protected LMessage createMessage(Json.Object props, String varName, LContainer view) {
+
+		LMessage message = null;
+
+		BaseParameter par = new BaseParameter(this, props);
+
+		LTexture background = null;
+
+		if (!StringUtils.isEmpty(par.path)) {
+			background = LSystem.loadTexture(par.path);
+		}
+
+		if (background == null && createGameWindowImage) {
+			background = DefUI.getGameWinFrame(par.width, par.height);
+		}
+
+		message = new LMessage(par.font, background, par.x, par.y, par.width, par.height, par.color);
+
+		if (!StringUtils.isEmpty(par.text)) {
+			message.setMessage(par.text, false);
+		}
+
+		if (par.z != -1) {
+			message.setLayer(par.z);
+		}
+		message.setVisible(par.visible);
+
+		onMove(par.layoutAlgin, view, message);
+
+		view.add(message);
+
+		putComponents(varName, message);
+		parseChild(props, message);
+
+		return message;
+
+	}
+
+	protected LSelect createSelect(Json.Object props, String varName, LContainer view) {
+
+		LSelect message = null;
+
+		BaseParameter par = new BaseParameter(this, props);
+
+		LTexture background = null;
+
+		if (!StringUtils.isEmpty(par.path)) {
+			background = LSystem.loadTexture(par.path);
+		}
+
+		if (background == null && createGameWindowImage) {
+			background = DefUI.getGameWinFrame(par.width, par.height);
+		}
+
+		message = new LSelect(par.font, background, par.x, par.y, par.width, par.height, par.color);
+
+		if (!StringUtils.isEmpty(par.text)) {
+			String[] mes = splitData(par.text);
+			message.setMessage(mes[0], CollectionUtils.copyOf(mes, 1, mes.length));
+		}
+
+		if (par.z != -1) {
+			message.setLayer(par.z);
+		}
+		message.setVisible(par.visible);
+
+		onMove(par.layoutAlgin, view, message);
+
+		view.add(message);
+
+		putComponents(varName, message);
+		parseChild(props, message);
+
+		return message;
+
 	}
 
 	protected LCheckBox createCheckBox(Json.Object props, String varName, LContainer view) {
@@ -680,6 +888,9 @@ public class JsonLayout {
 		check = new LCheckBox(par.text, par.x, par.y, unchecked, checked, MathUtils.max(par.width, checked.getWidth()),
 				true, par.color, par.font);
 
+		if (par.z != -1) {
+			check.setLayer(par.z);
+		}
 		check.setVisible(par.visible);
 
 		onMove(par.layoutAlgin, view, check);
@@ -689,6 +900,50 @@ public class JsonLayout {
 		putComponents(varName, check);
 
 		return check;
+	}
+
+	protected LProgress createProgress(Json.Object props, String varName, LContainer view) {
+
+		LProgress progress = null;
+
+		BaseParameter par = new BaseParameter(this, props);
+
+		LTexture background = null;
+		LTexture bgProgress = null;
+
+		ProgressType pType = ProgressType.GAME;
+
+		if (!StringUtils.isEmpty(par.path)) {
+			String[] files = splitData(par.path);
+			if (files.length == 2) {
+				background = LSystem.loadTexture(files[0]);
+				bgProgress = LSystem.loadTexture(files[1]);
+				pType = ProgressType.UI;
+			}
+		}
+
+		progress = new LProgress(pType, par.color, par.x, par.y, par.width, par.height, background, bgProgress);
+
+		progress.setVertical(props.getBoolean("vertical", false));
+		float value = props.getNumber("value", 0f);
+
+		if (value > 1f) {
+			value = value / 100f;
+		}
+		progress.setPercentage(value);
+
+		if (par.z != -1) {
+			progress.setLayer(par.z);
+		}
+		progress.setVisible(par.visible);
+
+		onMove(par.layoutAlgin, view, progress);
+
+		view.add(progress);
+
+		putComponents(varName, progress);
+
+		return progress;
 	}
 
 	protected void parseChild(Json.Object props, LContainer view) {
@@ -744,8 +999,10 @@ public class JsonLayout {
 	protected <T extends LComponent> T createComponent(int code, Json.Object props, LContainer view) {
 
 		LComponent comp = null;
+
 		String varName = props.getString(JsonTemplate.LAYOUY_VAR, LSystem.UNKOWN);
-		if (varName == null) {
+
+		if (StringUtils.isEmpty(varName)) {
 			varName = props.getString("name", LSystem.UNKOWN);
 		}
 		switch (code) {
@@ -755,8 +1012,15 @@ public class JsonLayout {
 		case 1:
 			comp = createImageButton(props, varName, view);
 			break;
+		case 2:
+		default:
+			comp = createLabel(props, varName, view);
+			break;
 		case 3:
 			comp = createLayer(props, varName, view);
+			break;
+		case 4:
+			comp = createMenu(props, varName, view);
 			break;
 		case 5:
 			comp = createMenuSelect(props, varName, view);
@@ -764,18 +1028,23 @@ public class JsonLayout {
 		case 6:
 			comp = createPaper(props, varName, view);
 			break;
+		case 7:
+			comp = createSelect(props, varName, view);
+			break;
+		case 8:
+			comp = createProgress(props, varName, view);
+			break;
 		case 9:
 			comp = createCheckBox(props, varName, view);
 			break;
 		case 10:
 			comp = createTextarea(props, varName, view);
 			break;
+		case 11:
+			comp = createMessage(props, varName, view);
+			break;
 		case 12:
 			comp = createMessageBox(props, varName, view);
-			break;
-		case 2:
-		default:
-			comp = createLabel(props, varName, view);
 			break;
 		}
 		return (T) comp;
@@ -795,6 +1064,30 @@ public class JsonLayout {
 
 	public <T extends LComponent> T removeComponent(String name) {
 		return (T) components.remove(name);
+	}
+
+	public ActionScript actionScript(String varName, String script) {
+		LComponent comp = components.get(varName);
+		if (comp != null) {
+			return PlayerUtils.act(comp, script);
+		}
+		return null;
+	}
+
+	public ActionTween selfAction(String varName) {
+		LComponent comp = components.get(varName);
+		if (comp != null) {
+			return comp.selfAction();
+		}
+		return null;
+	}
+
+	public boolean isActionCompleted(String varName) {
+		LComponent comp = components.get(varName);
+		if (comp != null) {
+			return comp.isActionCompleted();
+		}
+		return false;
 	}
 
 	public TArray<LContainer> getContainers() {

@@ -580,7 +580,10 @@ public class ShaderProgram implements LRelease {
 		LSystem.addShader(shaderProgram);
 	}
 
-	public static void invalidateAllShaderPrograms(LGame game) {
+	public static void invalidate(LGame game) {
+		if (game.graphics().gl == null) {
+			return;
+		}
 		TArray<ShaderProgram> shaderArray = game.getShaderAll();
 		if (shaderArray == null) {
 			return;

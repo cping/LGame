@@ -62,8 +62,8 @@ public class LProgress extends LComponent {
 		this(ProgressType.GAME, LColor.red, x, y, width, height, null, null);
 	}
 
-	public LProgress(LColor _component_baseColor, int x, int y, int width, int height) {
-		this(ProgressType.GAME, _component_baseColor, x, y, width, height, null, null);
+	public LProgress(LColor color, int x, int y, int width, int height) {
+		this(ProgressType.GAME, color, x, y, width, height, null, null);
 	}
 
 	public LProgress(ProgressType type, LColor _component_baseColor, int x, int y, int width, int height) {
@@ -75,12 +75,12 @@ public class LProgress extends LComponent {
 				skin.getProgressTexture());
 	}
 
-	public LProgress(ProgressType type, LColor _component_baseColor, int x, int y, int width, int height, LTexture bg,
+	public LProgress(ProgressType type, LColor color, int x, int y, int width, int height, LTexture bg,
 			LTexture bgProgress) {
 		super(x, y, width, height);
 		this.progressType = type;
 		this.batch = new SpriteBatch(128);
-		this._component_baseColor = _component_baseColor;
+		this._component_baseColor = color;
 		switch (progressType) {
 		case GAME:
 			this.texture = new LTextureRegion(LSystem.getSystemImagePath() + "bar.png");
@@ -116,6 +116,7 @@ public class LProgress extends LComponent {
 		}
 	}
 
+	@Override
 	public void update(final long elapsedTime) {
 		super.update(elapsedTime);
 		if (listener != null) {

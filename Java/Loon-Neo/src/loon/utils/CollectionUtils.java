@@ -153,6 +153,22 @@ final public class CollectionUtils {
 	 * copy指定长度的数组数据
 	 * 
 	 * @param data
+	 * @param start
+	 * @param end
+	 * @return
+	 */
+	public static String[] copyOf(String[] data, int start, int end) {
+		String tempArr[] = new String[end - start];
+		for (int i = start, j = 0; i < end; i++, j++) {
+			tempArr[j] = data[i];
+		}
+		return tempArr;
+	}
+
+	/**
+	 * copy指定长度的数组数据
+	 * 
+	 * @param data
 	 * @param newSize
 	 * @return
 	 */
@@ -352,18 +368,17 @@ final public class CollectionUtils {
 	// --为了兼容GWT，尽量减少反射的使用，所以只好针对不同类分别处理了……--//
 	/**
 	 * 
-	 * public static Object expand(Object data, int i, boolean flag) { int
-	 * j = ArrayReflection.getLength(data); Object obj1 =
+	 * public static Object expand(Object data, int i, boolean flag) { int j =
+	 * ArrayReflection.getLength(data); Object obj1 =
 	 * ArrayReflection.newInstance(data.getClass().getComponentType(), j + i);
 	 * System.arraycopy(data, 0, obj1, flag ? 0 : i, j); return obj1; }
 	 * 
-	 * public static Object expand(Object data, int size) { return
-	 * expand(data, size, true); }
+	 * public static Object expand(Object data, int size) { return expand(data,
+	 * size, true); }
 	 * 
-	 * public static Object expand(Object data, int size, boolean flag,
-	 * Class<?> class1) { if (data == null) { return
-	 * ArrayReflection.newInstance(class1, 1); } else { return expand(data,
-	 * size, flag); } }
+	 * public static Object expand(Object data, int size, boolean flag, Class<?>
+	 * class1) { if (data == null) { return ArrayReflection.newInstance(class1,
+	 * 1); } else { return expand(data, size, flag); } }
 	 * 
 	 * public static Object cut(Object data, int size) { int j; if ((j =
 	 * ArrayReflection.getLength(data)) == 1) { return
@@ -383,11 +398,11 @@ final public class CollectionUtils {
 	 * dest, 0, srcLength); } return dest; }
 	 * 
 	 * 
-	 * public static Object[] copyOf(Object[] original, int newLength) {
-	 * return copyOf(original, newLength, original.getClass()); }
+	 * public static Object[] copyOf(Object[] original, int newLength) { return
+	 * copyOf(original, newLength, original.getClass()); }
 	 * 
-	 * public static Object[] copyOf(Object[] original, int newLength,
-	 * Class<?> newType) { Object[] copy = (newType == Object[].class) ? new
+	 * public static Object[] copyOf(Object[] original, int newLength, Class<?>
+	 * newType) { Object[] copy = (newType == Object[].class) ? new
 	 * Object[newLength] : (Object[])
 	 * ArrayReflection.newInstance(newType.getComponentType(), newLength);
 	 * System.arraycopy(original, 0, copy, 0, MathUtils.min(original.length,
@@ -467,12 +482,12 @@ final public class CollectionUtils {
 		if (a1 == null || a2 == null) {
 			return false;
 		}
-		
+
 		int length = a1.length;
 		if (a2.length != length) {
 			return false;
 		}
-		
+
 		for (int i = 0; i < length; i++) {
 			if (a1[i] != a2[i]) {
 				return false;

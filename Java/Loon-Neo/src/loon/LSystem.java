@@ -31,7 +31,9 @@ import loon.event.Updateable;
 import loon.font.IFont;
 import loon.font.LFont;
 import loon.geom.Dimension;
+import loon.opengl.FrameBuffer;
 import loon.opengl.GLEx;
+import loon.opengl.GLFrameBuffer;
 import loon.opengl.LSTRFont;
 import loon.opengl.Mesh;
 import loon.opengl.ShaderCmd;
@@ -387,6 +389,31 @@ public class LSystem {
 		}
 	}
 
+	public static void addFrameBuffer(GLFrameBuffer buffer) {
+		if (base() != null) {
+			base().addFrameBuffer(buffer);
+		}
+	}
+
+	public static void removeFrameBuffer(GLFrameBuffer buffer) {
+		if (base() != null) {
+			base().getFrameBufferAll();
+		}
+	}
+
+	public static TArray<GLFrameBuffer> getFrameBufferAll() {
+		if (base() != null) {
+			return base().getFrameBufferAll();
+		}
+		return null;
+	}
+
+	public static void clearFramebuffer() {
+		if (base() != null) {
+			base().clearFramebuffer();
+		}
+	}
+
 	public static void resetTextureRes() {
 		resetTextureRes(base());
 	}
@@ -398,8 +425,9 @@ public class LSystem {
 	}
 
 	public static void resetShader(final LGame game) {
-		Mesh.invalidateAllMeshes(game);
-		ShaderProgram.invalidateAllShaderPrograms(game);
+		Mesh.invalidate(game);
+		ShaderProgram.invalidate(game);
+		FrameBuffer.invalidate(game);
 	}
 
 	public static void exit() {

@@ -554,9 +554,11 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 	public synchronized void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
 		float alpha = g.alpha();
 		try {
+		
 			g.setAlpha(alphaMenu);
 			switch (type) {
 			case MOVE_LEFT:
+			
 				if ((selected == this) || (selected == null)) {
 					g.draw(this.tab, this.width, getTaby(), tabWidth, tabHeight, _component_baseColor);
 					if (label != null) {

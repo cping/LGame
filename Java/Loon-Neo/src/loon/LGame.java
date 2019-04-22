@@ -28,6 +28,8 @@ import loon.component.Desktop;
 import loon.event.InputMake;
 import loon.font.IFont;
 import loon.font.LFont;
+import loon.opengl.FrameBuffer;
+import loon.opengl.GLFrameBuffer;
 import loon.opengl.LSTRFont;
 import loon.opengl.Mesh;
 import loon.opengl.ShaderProgram;
@@ -89,6 +91,9 @@ public abstract class LGame {
 	// 全部shader
 	private final TArray<ShaderProgram> _shader_all_pools;
 
+	// 全部framebuffer
+	private final TArray<GLFrameBuffer> _framebuffer_all_pools;
+
 	// 单独纹理批处理缓存
 	private final IntMap<LTextureBatch> _texture_batch_pools;
 
@@ -132,6 +137,7 @@ public abstract class LGame {
 		LGame._platform = plat;
 		this._mesh_all_pools = new TArray<Mesh>(128);
 		this._shader_all_pools = new TArray<ShaderProgram>(128);
+		this._framebuffer_all_pools = new TArray<GLFrameBuffer>(12);
 		this._texture_batch_pools = new IntMap<LTextureBatch>(12);
 		this._texture_mesh_pools = new ObjectMap<String, Mesh>(12);
 		this._texture_lazys = new ObjectMap<String, LTexture>(128);
@@ -168,7 +174,7 @@ public abstract class LGame {
 	protected final void initProcess(LGame game) {
 		LGame._base = game;
 		if (LGame._base == null && LGame._platform != null) {
-			LGame._base =LGame._platform.getGame();
+			LGame._base = LGame._platform.getGame();
 		}
 		processImpl = new LProcess(game);
 		log().debug("The Loon Game Engine is Begin");
@@ -212,8 +218,9 @@ public abstract class LGame {
 	 * @param game
 	 */
 	public void resetShader() {
-		Mesh.invalidateAllMeshes(this);
-		ShaderProgram.invalidateAllShaderPrograms(this);
+		Mesh.invalidate(this);
+		ShaderProgram.invalidate(this);
+		FrameBuffer.invalidate(this);
 	}
 
 	/**
@@ -980,6 +987,22 @@ public abstract class LGame {
 
 	public void clearShader() {
 		_shader_all_pools.clear();
+	}
+
+	public void addFrameBuffer(GLFrameBuffer buffer) {
+		_framebuffer_all_pools.add(buffer);
+	}
+
+	public void removeFrameBuffer(GLFrameBuffer buffer) {
+		_framebuffer_all_pools.remove(buffer);
+	}
+
+	public TArray<GLFrameBuffer> getFrameBufferAll() {
+		return _framebuffer_all_pools;
+	}
+
+	public void clearFramebuffer() {
+		_framebuffer_all_pools.clear();
 	}
 
 	public int getSpritesSize() {
