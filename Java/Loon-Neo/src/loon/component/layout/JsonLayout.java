@@ -23,6 +23,7 @@ package loon.component.layout;
 import loon.BaseIO;
 import loon.HorizontalAlign;
 import loon.Json;
+import loon.LRelease;
 import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
@@ -33,6 +34,7 @@ import loon.action.ActionTween;
 import loon.action.sprite.Entity;
 import loon.action.sprite.ISprite;
 import loon.action.sprite.Sprite;
+import loon.action.sprite.SpriteControls;
 import loon.canvas.LColor;
 import loon.component.DefUI;
 import loon.component.LButton;
@@ -43,6 +45,7 @@ import loon.component.LContainer;
 import loon.component.LLabel;
 import loon.component.LLayer;
 import loon.component.LMenu;
+import loon.component.LMenu.MenuItem;
 import loon.component.LMenuSelect;
 import loon.component.LMessage;
 import loon.component.LMessageBox;
@@ -68,7 +71,9 @@ import loon.utils.TArray;
 /**
  * Json布局器,用于解析组件和精灵配置到窗口显示
  */
-public class JsonLayout {
+public class JsonLayout implements LRelease {
+
+	private JsonLayoutListener jsonLayoutListener;
 
 	public static class SpriteParameter {
 
@@ -359,6 +364,10 @@ public class JsonLayout {
 
 	private String path;
 
+	private Screen currentScreen;
+
+	private boolean closed;
+
 	private boolean createGameWindowImage;
 
 	public JsonLayout(String path) {
@@ -372,6 +381,7 @@ public class JsonLayout {
 	}
 
 	public void pack(Screen screen) {
+		this.currentScreen = screen;
 		if (sprites.size > 0) {
 			for (ISprite s : sprites.values()) {
 				screen.add(s);
@@ -508,10 +518,10 @@ public class JsonLayout {
 			}
 
 			spr.setTransform(transform);
-			
+
 			spr.setFlipX(props.getBoolean("flipx", false));
 			spr.setFlipY(props.getBoolean("flipy", false));
-			
+
 			sprite = spr;
 
 			break;
@@ -554,6 +564,10 @@ public class JsonLayout {
 		sprite.setRotation(par.rotation);
 		sprite.setScale(par.scaleX, par.scaleY);
 		sprite.setVisible(par.visible);
+
+		if (jsonLayoutListener != null) {
+			jsonLayoutListener.on(props, varName, sprite);
+		}
 
 		putSprites(varName, sprite);
 
@@ -882,6 +896,9 @@ public class JsonLayout {
 			mainsize = props.getInt("size", 80);
 		}
 
+		int cellWidth = props.getInt("cellWidth", -1);
+		int cellHeight = props.getInt("cellHeight", -1);
+
 		boolean defaultUI = true;
 
 		if (!StringUtils.isEmpty(par.path)) {
@@ -899,6 +916,46 @@ public class JsonLayout {
 
 		menu = new LMenu(moveType, par.font, par.text, par.width, par.height, tabTexture, mainTexture, taby, mainsize,
 				defaultUI, par.color);
+
+		if (cellWidth != -1) {
+			menu.setCellWidth(cellWidth);
+		}
+		if (cellHeight != -1) {
+			menu.setCellHeight(cellHeight);
+		}
+
+		Json.Array items = props.getArray("items");
+		if (items != null) {
+
+			for (int i = 0; i < items.length(); i++) {
+				Json.Object o = items.getObject(i);
+				BaseParameter itemPar = new BaseParameter(this, o);
+
+				MenuItem item = menu.add(itemPar.text);
+				item.setFont(itemPar.font);
+
+				item.offsetX = itemPar.x;
+				item.offsetY = itemPar.y;
+
+				item.labelOffsetX = o.getNumber("laboffx", 0);
+				item.labelOffsetY = o.getNumber("laboffy", 0);
+
+				if (!StringUtils.isEmpty(itemPar.path)) {
+					item.setTexture(LSystem.loadTexture(itemPar.path));
+				}
+				String newVarName = o.getString("var", null);
+				if (newVarName == null) {
+					newVarName = o.getString("name", null);
+				}
+				if (newVarName != null) {
+					item.setVarName(newVarName);
+				}
+
+				menu.add(item);
+
+			}
+
+		}
 
 		if (par.z != -1) {
 			menu.setLayer(par.z);
@@ -1204,6 +1261,11 @@ public class JsonLayout {
 			comp = createMessageBox(props, varName, view);
 			break;
 		}
+
+		if (jsonLayoutListener != null) {
+			jsonLayoutListener.on(props, varName, comp);
+		}
+
 		return (T) comp;
 	}
 
@@ -1253,12 +1315,85 @@ public class JsonLayout {
 		return container;
 	}
 
+	public TArray<ISprite> getSprites() {
+		TArray<ISprite> list = new TArray<ISprite>(sprites.size());
+		for (ISprite s : sprites.values()) {
+			list.add(s);
+		}
+		return list;
+	}
+
+	public SpriteControls getSpriteControls() {
+		return new SpriteControls(getSprites());
+	}
+
 	public String getLayoutType() {
 		return this.layoutType;
 	}
 
 	public String getPath() {
 		return this.path;
+	}
+
+	public void setListener(JsonLayoutListener listener) {
+		this.jsonLayoutListener = listener;
+	}
+
+	public JsonLayoutListener getJsonLayoutListener() {
+		return this.jsonLayoutListener;
+	}
+
+	public void setVisible(boolean v) {
+		if (container != null) {
+			for (LComponent c : container) {
+				if (c != null) {
+					c.setVisible(v);
+				}
+			}
+		}
+		if (sprites != null) {
+			for (ISprite s : sprites.values()) {
+				if (s != null) {
+					s.setVisible(v);
+				}
+			}
+		}
+	}
+
+	public boolean isClosed() {
+		return closed;
+	}
+
+	@Override
+	public void close() {
+		Screen screen = this.currentScreen;
+		if (screen == null && LSystem.getProcess() != null) {
+			screen = LSystem.getProcess().getScreen();
+		}
+		if (container != null) {
+			for (LComponent c : container) {
+				if (screen != null) {
+					screen.remove(c);
+				}
+				if (c != null) {
+					c.close();
+				}
+
+			}
+			container.clear();
+		}
+		if (sprites != null) {
+			for (ISprite s : sprites.values()) {
+				if (screen != null) {
+					screen.remove(s);
+				}
+				if (s != null) {
+					s.close();
+				}
+			}
+			sprites.clear();
+		}
+		closed = true;
 	}
 
 }

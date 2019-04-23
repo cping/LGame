@@ -24,6 +24,7 @@ public class MenuTest extends Stage {
 				add(LToast.makeText("保存完毕", Style.SUCCESS));
 			}
 		});
+		
 		//字体位置偏移3个像素
 		item.setFont(font).offsetX = 3;
 		panel.add("读取记录").setFont(font).offsetX = 2;

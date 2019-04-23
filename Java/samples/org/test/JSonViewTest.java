@@ -20,25 +20,44 @@
  */
 package org.test;
 
+import loon.Json;
 import loon.Stage;
+import loon.action.sprite.ISprite;
+import loon.component.LComponent;
 import loon.component.layout.JsonLayout;
+import loon.component.layout.JsonLayoutListener;
 
-public class JSonViewTest extends Stage{
+public class JSonViewTest extends Stage {
 
 	@Override
 	public void create() {
 
-		//加载json布局文件
+		// 加载json布局文件
 		JsonLayout layout = new JsonLayout("test.txt");
-		//为无图窗口创建背景图
+		//监听json解析,可以在此进行自己的针对性操作
+		layout.setListener(new JsonLayoutListener() {
+
+			@Override
+			public void on(Json.Object props, String name, ISprite comp) {
+
+			}
+
+			@Override
+			public void on(Json.Object props, String name, LComponent comp) {
+
+			}
+		});
+		// 为无图窗口创建背景图
 		layout.setCreateGameWindowImage(true);
-		//解析
+		// 解析
 		layout.parse();
-		//打包显示在screen
+		// 打包显示在screen
 		layout.pack(this);
-	
-		//最后渲染精灵组件
+
+		// 最后渲染精灵组件
 		lastSpriteDraw();
+
+		add(MultiScreenTest.getBackButton(this, 1));
 	}
 
 }

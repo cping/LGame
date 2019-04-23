@@ -5,7 +5,12 @@
 {"props":{"x":55,"y":55,"width":45,"height":29,"frame":20,"skin":"dog.png","var":"spritetest"},"type":"Sprite"},
 {"props":{"x":0,"y":0,"skin":"back1.png","bound":"false","var":"layer1"},"type":"Layer"},
 {"props":{"x":355,"y":65,"skin":"ccc.png","var":"image1"},"type":"Paper"},
-{"props":{"width":120,"height":55,"text":"testabc","var":"menua"},"type":"Menu"},
+{"props":{"width":120,"height":55,"text":"testabc","var":"menua"
+,"items":[
+{"x":-20,"y":"-5","skin":"ball.png","var":"item1"},
+{"x":-20,"text":"btn2","var":"item2"}
+]
+},"type":"Menu"},
 {"props":{"x":255,"y":125,"width":190,"height":100,"text":"数据测试数据\n测试数据测试","var":"mess1"},"type":"message"},
 {"props":{"x":155,"y":15,"width":200,"height":25,"vertical":false,"value":50,"color":"red", "var":"progress1"},"type":"Progress"},
 {"props":{"x":165,"y":55,"width":165,"height":90,"text":"今朝有酒今朝休,天道茫茫何所求。|非人非物我非我,魑魅魍魉鬼见愁。","var":"box1"},"type":"Message.Box"},

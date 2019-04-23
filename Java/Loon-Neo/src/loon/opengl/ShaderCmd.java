@@ -146,33 +146,33 @@ public class ShaderCmd {
 		return putUniform(MAT4, name);
 	}
 
-	public ShaderCmd putAttribute(String var, String name) {
-		return putVar(VarType.Attribute, var, name);
+	public ShaderCmd putAttribute(String varName, String name) {
+		return putVar(VarType.Attribute, varName, name);
 	}
 
-	public ShaderCmd putUniform(String var, String name) {
-		return putVar(VarType.Uniform, var, name);
+	public ShaderCmd putUniform(String varName, String name) {
+		return putVar(VarType.Uniform, varName, name);
 	}
 
-	public ShaderCmd putVarying(String var, String name) {
-		return putVar(VarType.Varying, var, name);
+	public ShaderCmd putVarying(String varName, String name) {
+		return putVar(VarType.Varying, varName, name);
 	}
 
-	protected ShaderCmd putVar(VarType type, String var, String name) {
+	protected ShaderCmd putVar(VarType type, String varName, String name) {
 		clearCache();
 		String typeString = null;
 		switch (type) {
 		case Attribute:
 			typeString = "attribute";
-			attributeList.add(typeString + space + var + space + name + end);
+			attributeList.add(typeString + space + varName + space + name + end);
 			break;
 		case Uniform:
 			typeString = "uniform";
-			uniformList.add(typeString + space + var + space + name + end);
+			uniformList.add(typeString + space + varName + space + name + end);
 			break;
 		case Varying:
 			typeString = "varying";
-			varyingList.add(typeString + space + var + space + name + end);
+			varyingList.add(typeString + space + varName + space + name + end);
 			break;
 		default:
 			break;

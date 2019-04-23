@@ -1859,8 +1859,8 @@ public class RocScript {
 
 	private void assignVar() throws ScriptException {
 		debug("Assign variable");
-		String var = item;
-		if (!Character.isLetter(var.charAt(0))) {
+		String varName = item;
+		if (!Character.isLetter(varName.charAt(0))) {
 			handleError(UNKOWN);
 			return;
 		}
@@ -1875,7 +1875,7 @@ public class RocScript {
 
 		Object obj = analysis();
 
-		vars.last().put(var, obj);
+		vars.last().put(varName, obj);
 	}
 
 	private void passBack() {

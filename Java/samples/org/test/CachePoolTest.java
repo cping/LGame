@@ -34,6 +34,8 @@ public class CachePoolTest extends Stage{
 	@Override
 	public void create() {
 
+		add(MultiScreenTest.getBackButton(this, 1));
+		
 		final LLabel label = addLabel("对象缓存池测试中,现有两个测试对象");
 		centerOn(label);
 
