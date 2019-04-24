@@ -23,11 +23,12 @@ package loon.utils.json;
 import java.math.BigInteger;
 
 import loon.LSystem;
+import loon.utils.CharUtils;
 import loon.utils.MathUtils;
 
 final class JsonParser {
 
-	private enum Token {
+	private static enum Token {
 		EOF(false), NULL(true), TRUE(true), 
 		FALSE(true), STRING(true), NUMBER(true), 
 		COMMA(false), COLON(false),
@@ -120,7 +121,7 @@ final class JsonParser {
 
 	private Token advanceToken() throws JsonParserException {
 		int c = advanceChar();
-		while (isWhitespace(c)) {
+		while (CharUtils.isWhitespace(c)) {
 			c = advanceChar();
 		}
 
@@ -213,8 +214,7 @@ final class JsonParser {
 			throw createParseException(null, "Numbers may not start with '" + (char) c + "'", true);
 		default:
 		}
-
-		if (isAsciiLetter(c)) {
+		if (CharUtils.isAsciiLetter(c)) {
 			throw createHelpfulException((char) c, null, 0);
 		}
 
@@ -223,12 +223,13 @@ final class JsonParser {
 
 	private void consumeKeyword(char first, char[] expected) throws JsonParserException {
 		for (int i = 0; i < expected.length; i++) {
-			if (advanceChar() != expected[i]) {
+			int adChar = advanceChar();
+			if (adChar != expected[i]) {
 				throw createHelpfulException(first, expected, i);
 			}
 		}
 
-		if (isAsciiLetter(peekChar())) {
+		if (CharUtils.isAsciiLetter(peekChar())) {
 			throw createHelpfulException(first, expected, expected.length);
 		}
 	}
@@ -238,7 +239,7 @@ final class JsonParser {
 		int end = _index;
 
 		boolean isDouble = false;
-		while (isDigitCharacter(peekChar())) {
+		while (CharUtils.isDigitCharacter(peekChar())) {
 			char next = (char) advanceChar();
 			isDouble = next == '.' || next == 'e' || next == 'E' || isDouble;
 			end++;
@@ -362,18 +363,6 @@ final class JsonParser {
 		return c;
 	}
 
-	private boolean isDigitCharacter(int c) {
-		return (c >= '0' && c <= '9') || c == 'e' || c == 'E' || c == '.' || c == '+' || c == '-';
-	}
-
-	private boolean isWhitespace(int c) {
-		return c == ' ' || c == '\n' || c == '\r' || c == '\t';
-	}
-
-	private boolean isAsciiLetter(int c) {
-		return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
-	}
-
 	private int peekChar() {
 		return _eof ? -1 : _strings.charAt(_index);
 	}
@@ -403,7 +392,7 @@ final class JsonParser {
 		StringBuilder errorToken = new StringBuilder(
 				first + (expected == null ? LSystem.EMPTY : new String(expected, 0, failurePosition)));
 
-		while (isAsciiLetter(peekChar()) && errorToken.length() < 15) {
+		while (CharUtils.isAsciiLetter(peekChar()) && errorToken.length() < 15) {
 			errorToken.append((char) advanceChar());
 		}
 

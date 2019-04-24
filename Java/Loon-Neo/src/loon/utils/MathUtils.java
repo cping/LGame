@@ -1259,4 +1259,20 @@ public class MathUtils {
 		return n;
 	}
 
+	public static float parseAngle(String angle, float value) {
+		if (StringUtils.isEmpty(angle)) {
+			return 0f;
+		}
+		angle = angle.toLowerCase();
+		if ("deg".equals(angle)) {
+			return MathUtils.DEG_TO_RAD * value;
+		} else if ("grad".equals(angle)) {
+			return MathUtils.PI / 200 * value;
+		} else if ("rad".equals(angle)) {
+			return value;
+		} else if ("turn".equals(angle)) {
+			return MathUtils.TWO_PI * value;
+		}
+		return value;
+	}
 }

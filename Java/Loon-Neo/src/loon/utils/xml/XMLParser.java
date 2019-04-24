@@ -267,6 +267,14 @@ public class XMLParser {
 		return new XMLParser().parseText(BaseIO.loadText(file), l);
 	}
 
+	public static XMLDocument loadText(String context) {
+		return loadText(context, null);
+	}
+
+	public static XMLDocument loadText(String context, XMLListener l) {
+		return new XMLParser().parseText(context, l);
+	}
+
 	public void dispose() {
 		if (stack != null) {
 			stack.clear();

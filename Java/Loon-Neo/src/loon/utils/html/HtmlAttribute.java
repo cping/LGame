@@ -1,5 +1,5 @@
 /**
- * Copyright 2008 - 2011
+ * Copyright 2008 - 2019 The Loon Game Engine Authors
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -16,29 +16,29 @@
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
- * @version 0.1
+ * @version 0.5
  */
-package loon.utils.xml;
+package loon.utils.html;
 
 import loon.LSysException;
 import loon.LSystem;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 
-public class XMLAttribute {
+public class HtmlAttribute {
 
 	private String name;
 
 	private String value;
 
-	protected XMLElement element;
+	protected HtmlElement element;
 
-	XMLAttribute(String n, String v) {
+	HtmlAttribute(String n, String v) {
 		this.name = n;
 		this.value = v;
 	}
 
-	public XMLElement getElement() {
+	public HtmlElement getElement() {
 		return element;
 	}
 
@@ -53,9 +53,8 @@ public class XMLAttribute {
 		try {
 			return Integer.parseInt(this.value);
 		} catch (Throwable ex) {
-			throw new LSysException("Attribute '" + this.name
-					+ "' has value '" + this.value
-					+ "' which is not an integer !");
+			throw new LSysException(
+					"Attribute '" + this.name + "' has value '" + this.value + "' which is not an integer !");
 		}
 	}
 
@@ -66,9 +65,8 @@ public class XMLAttribute {
 		try {
 			return Float.parseFloat(this.value);
 		} catch (Throwable ex) {
-			throw new LSysException("Attribute '" + this.name
-					+ "' has value '" + this.value
-					+ "' which is not an float !");
+			throw new LSysException(
+					"Attribute '" + this.name + "' has value '" + this.value + "' which is not an float !");
 		}
 	}
 
@@ -82,9 +80,8 @@ public class XMLAttribute {
 			}
 			return Double.parseDouble(this.value);
 		} catch (Throwable ex) {
-			throw new LSysException("Attribute '" + this.name
-					+ "' has value '" + this.value
-					+ "' which is not an double !");
+			throw new LSysException(
+					"Attribute '" + this.name + "' has value '" + this.value + "' which is not an double !");
 		}
 	}
 

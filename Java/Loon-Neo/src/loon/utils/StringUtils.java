@@ -239,6 +239,30 @@ final public class StringUtils extends CharUtils {
 
 	}
 
+	public static String filter(CharSequence message, char... chars) {
+		return filter(message, chars, "");
+	}
+
+	public static String filter(CharSequence message, char[] chars, CharSequence newTag) {
+		StringBuilder sbr = new StringBuilder();
+		boolean addFlag;
+		for (int i = 0; i < message.length(); i++) {
+			addFlag = true;
+			char ch = message.charAt(i);
+			for (int j = 0; j < chars.length; j++) {
+				if (chars[j] == ch) {
+					addFlag = false;
+					sbr.append(newTag);
+					break;
+				}
+			}
+			if (addFlag) {
+				sbr.append(ch);
+			}
+		}
+		return sbr.toString();
+	}
+
 	/**
 	 * 以指定字符过滤切割字符串，并返回分割后的字符串数组
 	 * 
@@ -673,7 +697,7 @@ final public class StringUtils extends CharUtils {
 	public static boolean isEmpty(String param) {
 		return param == null || param.length() == 0 || "".equals(param.trim());
 	}
-	
+
 	/**
 	 * 判断是否非空
 	 * 
@@ -683,7 +707,7 @@ final public class StringUtils extends CharUtils {
 	public static boolean isNotEmpty(String param) {
 		return !isEmpty(param);
 	}
-	
+
 	/**
 	 * 判断是否为null
 	 * 
@@ -1162,8 +1186,7 @@ final public class StringUtils extends CharUtils {
 		return unificationCharSequence(new CharArray(128), messages, limit);
 	}
 
-	public static String unificationCharSequence(CharArray tempChars, CharSequence[] messages,
-			CharSequence limit) {
+	public static String unificationCharSequence(CharArray tempChars, CharSequence[] messages, CharSequence limit) {
 		if (messages == null || messages.length == 0) {
 			return "";
 		}
@@ -1480,5 +1503,5 @@ final public class StringUtils extends CharUtils {
 		}
 		return list;
 	}
-	  
+
 }

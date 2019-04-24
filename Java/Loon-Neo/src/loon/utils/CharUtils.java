@@ -225,8 +225,20 @@ public class CharUtils {
 		return -1;
 	}
 
+	public static boolean isDigitCharacter(int c) {
+		return (c >= '0' && c <= '9') || c == 'e' || c == 'E' || c == '.' || c == '+' || c == '-';
+	}
+
+	public static boolean isWhitespace(int c) {
+		return c == ' ' || c == '\n' || c == '\r' || c == '\t';
+	}
+
+	public static boolean isAsciiLetter(int c) {
+		return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
+	}
+
 	public static boolean isWhitespace(char c) {
-		return c <= ' ';
+		return isWhitespace(c);
 	}
 
 	public static boolean isLowercaseAlpha(char c) {
