@@ -25,12 +25,13 @@ import java.io.Serializable;
 
 import loon.action.sprite.ShapeEntity;
 import loon.canvas.LColor;
+import loon.utils.IArray;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 import loon.utils.StringKeyValue;
 import loon.utils.StringUtils;
 
-public abstract class Shape implements Serializable, XY {
+public abstract class Shape implements Serializable, IArray, XY {
 
 	/**
 	 * 
@@ -626,6 +627,30 @@ public abstract class Shape implements Serializable, XY {
 	}
 
 	@Override
+	public int size() {
+		return points == null ? 0 : points.length;
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return size() == 0;
+	}
+
+	@Override
+	public void clear() {
+		points = new float[0];
+		center = new float[0];
+		x = 0;
+		y = 0;
+		rotation = 0;
+		scaleX = 1f;
+		scaleY = 1f;
+		maxX = maxY = 0;
+		minX = minY = 0;
+		pointsDirty = true;
+	}
+
+	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 17;
@@ -639,27 +664,14 @@ public abstract class Shape implements Serializable, XY {
 		}
 		return result;
 	}
-	
+
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("Shape");
-		builder.kv("pos", x+","+y)
-		.comma()
-		.kv("scale", scaleX+","+scaleY)
-		.comma()
-		.kv("points", "[" + StringUtils.join(',', points) + "]")
-		.comma()
-		.kv("center", "[" + StringUtils.join(',', center) + "]")
-		.comma()
-		.kv("rotation", rotation)
-		.comma()
-		.kv("minX", minX)
-		.comma()
-		.kv("minY", minY)
-		.comma()
-		.kv("maxX", maxX)
-		.comma()
-		.kv("maxY", maxY);
+		builder.kv("pos", x + "," + y).comma().kv("scale", scaleX + "," + scaleY).comma()
+				.kv("points", "[" + StringUtils.join(',', points) + "]").comma()
+				.kv("center", "[" + StringUtils.join(',', center) + "]").comma().kv("rotation", rotation).comma()
+				.kv("minX", minX).comma().kv("minY", minY).comma().kv("maxX", maxX).comma().kv("maxY", maxY);
 		return builder.toString();
 	}
 }

@@ -48,4 +48,19 @@ public class EmptyBundle implements Bundle<Object> {
 		return null;
 	}
 
+	@Override
+	public int size() {
+		return 0;
+	}
+
+	@Override
+	public void clear() {
+
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return false;
+	}
+
 }

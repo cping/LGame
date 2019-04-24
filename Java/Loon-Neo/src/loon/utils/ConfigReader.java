@@ -48,7 +48,7 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 	}
 
 	public static ConfigReader getInstance(final String path) {
-		synchronized (CONFIG_CACHE) {
+		synchronized (ConfigReader.class) {
 			ConfigReader reader = CONFIG_CACHE.get(path);
 			if (reader == null || reader._closed) {
 				reader = new ConfigReader(path);
@@ -413,6 +413,21 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 
 	public String getPath() {
 		return _path;
+	}
+
+	@Override
+	public int size() {
+		return _configItems.size;
+	}
+
+	@Override
+	public void clear() {
+		_configItems.clear();
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return _configItems.isEmpty();
 	}
 
 	public boolean isClosed() {

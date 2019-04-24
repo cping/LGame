@@ -5,7 +5,7 @@ package loon.utils;
  * 
  * @param <T>
  */
-public interface Bundle<T> {
+public interface Bundle<T> extends IArray {
 	
     void put(String key, T value);
     

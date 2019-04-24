@@ -22,9 +22,10 @@ package loon.utils.json;
 
 import loon.Json;
 import loon.LSystem;
+import loon.utils.IArray;
 import loon.utils.TArray;
 
-class JsonArray implements Json.Array {
+class JsonArray implements Json.Array, IArray {
 
 	private final TArray<Object> _json_array_context;
 
@@ -35,11 +36,11 @@ class JsonArray implements Json.Array {
 	JsonArray(Object... collection) {
 		_json_array_context = new TArray<Object>(collection);
 	}
-	
+
 	public final static JsonBuilder<JsonArray> at() {
 		return builder();
 	}
-	
+
 	public final static JsonBuilder<JsonArray> builder() {
 		return new JsonBuilder<JsonArray>(new JsonArray());
 	}
@@ -217,6 +218,23 @@ class JsonArray implements Json.Array {
 
 	Object get(int key) {
 		return (key >= 0 && key < _json_array_context.size) ? _json_array_context.get(key) : null;
+	}
+
+	@Override
+	public int size() {
+		return length();
+	}
+
+	@Override
+	public void clear() {
+		if (_json_array_context != null) {
+			_json_array_context.clear();
+		}
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return length() == 0;
 	}
 
 }

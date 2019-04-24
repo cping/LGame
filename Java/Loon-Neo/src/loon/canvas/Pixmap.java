@@ -366,6 +366,7 @@ public class Pixmap extends Limit implements LRelease {
 	public Pixmap greyScale() {
 		return greyScale(1f);
 	}
+
 	/**
 	 * 过滤指定像素阀值
 	 * 
@@ -415,7 +416,7 @@ public class Pixmap extends Limit implements LRelease {
 		}
 		return this;
 	}
-	
+
 	/**
 	 * 墨化
 	 * 
@@ -428,9 +429,9 @@ public class Pixmap extends Limit implements LRelease {
 			int color = _drawPixels[i];
 			if (color != LColor.TRANSPARENT) {
 				int[] rgba = LColor.getRGBAs(color);
-				float r = rgba[0]/ 255f;
-				float g = rgba[1]/ 255f;
-				float b = rgba[2]/ 255f;
+				float r = rgba[0] / 255f;
+				float g = rgba[1] / 255f;
+				float b = rgba[2] / 255f;
 				float a = rgba[3] / 255f;
 				float nr = (0.393f * r + 0.769f * g + 0.189f * b) * mix + r * (1f - mix);
 				float ng = (0.349f * r + 0.686f * g + 0.168f * b) * mix + g * (1f - mix);
@@ -442,6 +443,7 @@ public class Pixmap extends Limit implements LRelease {
 		}
 		return this;
 	}
+
 	/**
 	 * 向指定坐标插入像素
 	 * 
@@ -2508,6 +2510,14 @@ public class Pixmap extends Limit implements LRelease {
 			}
 			dst += _width;
 		}
+	}
+
+	public int size() {
+		return _width * _height;
+	}
+
+	public boolean isEmpty() {
+		return _width == 0 && _height == 0;
 	}
 
 	@Override

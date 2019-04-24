@@ -30,7 +30,7 @@ import loon.utils.ObjectMap;
 
 public class AnimationHelper {
 
-	private final static ObjectMap<String, AnimationHelper> animations = new ObjectMap<String, AnimationHelper>();
+	final static ObjectMap<String, AnimationHelper> ANIS = new ObjectMap<String, AnimationHelper>();
 
 	private String flag = null;
 	// 角色向下
@@ -120,13 +120,11 @@ public class AnimationHelper {
 		return texture;
 	}
 
-	public static AnimationHelper makeObject(String fileName, int row, int col,
-			int tileWidth, int tileHeight) {
+	public static AnimationHelper makeObject(String fileName, int row, int col, int tileWidth, int tileHeight) {
 		String key = fileName.trim().toLowerCase();
-		AnimationHelper animation = animations.get(key);
+		AnimationHelper animation = ANIS.get(key);
 		if (animation == null) {
-			LTexture[][] images = TextureUtils.getSplit2Textures(fileName,
-					tileWidth, tileHeight);
+			LTexture[][] images = TextureUtils.getSplit2Textures(fileName, tileWidth, tileHeight);
 			LTexture[][] result = new LTexture[row][col];
 			for (int y = 0; y < col; y++) {
 				for (int x = 0; x < row; x++) {
@@ -134,18 +132,14 @@ public class AnimationHelper {
 				}
 			}
 			images = null;
-			animations.put(
-					key,
-					animation = makeObject(key, result[0], result[1],
-							result[2], result[3]));
+			ANIS.put(key, animation = makeObject(key, result[0], result[1], result[2], result[3]));
 		}
 		return animation;
 	}
 
-	public static AnimationHelper makeObject(String fileName, int tileWidth,
-			int tileHeight, LColor col) {
+	public static AnimationHelper makeObject(String fileName, int tileWidth, int tileHeight, LColor col) {
 		String key = fileName.trim().toLowerCase();
-		AnimationHelper animation = animations.get(key);
+		AnimationHelper animation = ANIS.get(key);
 		if (animation == null) {
 
 			LTexture texture = TextureUtils.filterColor(fileName, col);
@@ -153,8 +147,7 @@ public class AnimationHelper {
 			int wlength = (int) (texture.width() / tileWidth);
 			int hlength = (int) (texture.height() / tileHeight);
 
-			LTexture[][] images = TextureUtils.getSplit2Textures(texture,
-					tileWidth, tileHeight);
+			LTexture[][] images = TextureUtils.getSplit2Textures(texture, tileWidth, tileHeight);
 
 			LTexture[][] result = new LTexture[hlength][wlength];
 			for (int y = 0; y < wlength; y++) {
@@ -165,17 +158,14 @@ public class AnimationHelper {
 
 			images = null;
 
-			animations.put(
-					key,
-					animation = makeObject(key, result[0], result[1],
-							result[3], result[2]));
+			ANIS.put(key, animation = makeObject(key, result[0], result[1], result[3], result[2]));
 		}
 		return animation;
 
 	}
 
-	public final static AnimationHelper makeObject(String flag,
-			LTexture[] down, LTexture[] left, LTexture[] right, LTexture[] up) {
+	public final static AnimationHelper makeObject(String flag, LTexture[] down, LTexture[] left, LTexture[] right,
+			LTexture[] up) {
 		AnimationHelper animation = new AnimationHelper(flag);
 		animation.downImages = down;
 		animation.leftImages = left;
@@ -183,7 +173,6 @@ public class AnimationHelper {
 		animation.upImages = up;
 		return animation;
 	}
-
 
 	AnimationHelper(String f) {
 		this.flag = f;
@@ -212,6 +201,6 @@ public class AnimationHelper {
 		dispose(upImages);
 		dispose(leftImages);
 		dispose(rightImages);
-		animations.remove(flag);
+		ANIS.remove(flag);
 	}
 }

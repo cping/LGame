@@ -20,16 +20,17 @@
  */
 package loon.action.sprite;
 
-import java.util.Arrays;
-
+import loon.LRelease;
 import loon.LSysException;
 import loon.LSystem;
+import loon.utils.CollectionUtils;
+import loon.utils.IArray;
 import loon.utils.MathUtils;
 
 /**
  * 一个Animation播放序列的存储器，需要与Animation或Sprite合用才能生效
  */
-public class AnimationData {
+public class AnimationData implements IArray, LRelease {
 
 	public static final int LOOP_CONTINUOUS = -1;
 	private int _frameCount;
@@ -50,13 +51,11 @@ public class AnimationData {
 		this.set(frameDurationEach, frameCount);
 	}
 
-	public AnimationData(final long frameDurationEach, final int frameCount,
-			final boolean loop) {
+	public AnimationData(final long frameDurationEach, final int frameCount, final boolean loop) {
 		this.set(frameDurationEach, frameCount, loop);
 	}
 
-	public AnimationData(final long frameDurationEach, final int frameCount,
-			final int loopCount) {
+	public AnimationData(final long frameDurationEach, final int frameCount, final int loopCount) {
 		this.set(frameDurationEach, frameCount, loopCount);
 	}
 
@@ -72,19 +71,16 @@ public class AnimationData {
 		this.set(frameDurations, loopCount);
 	}
 
-	public AnimationData(final long[] frameDurations,
-			final int firstFrameIndex, final int lastFrameIndex,
+	public AnimationData(final long[] frameDurations, final int firstFrameIndex, final int lastFrameIndex,
 			final boolean loop) {
 		this.set(frameDurations, firstFrameIndex, lastFrameIndex, loop);
 	}
 
-	public AnimationData(final long[] frameDurations, final int[] frames,
-			final int loopCount) {
+	public AnimationData(final long[] frameDurations, final int[] frames, final int loopCount) {
 		this.set(frameDurations, frames, loopCount);
 	}
 
-	public AnimationData(final long[] frameDurations,
-			final int firstFrameIndex, final int lastFrameIndex,
+	public AnimationData(final long[] frameDurations, final int firstFrameIndex, final int lastFrameIndex,
 			final int loopCount) {
 		this.set(frameDurations, firstFrameIndex, lastFrameIndex, loopCount);
 	}
@@ -132,17 +128,12 @@ public class AnimationData {
 		this.set(frameDurationEach, frameCount, true);
 	}
 
-	public void set(final long frameDurationEach, final int frameCount,
-			final boolean loop) {
-		this.set(frameDurationEach, frameCount,
-				(loop) ? AnimationData.LOOP_CONTINUOUS : 0);
+	public void set(final long frameDurationEach, final int frameCount, final boolean loop) {
+		this.set(frameDurationEach, frameCount, (loop) ? AnimationData.LOOP_CONTINUOUS : 0);
 	}
 
-	public void set(final long frameDurationEach, final int frameCount,
-			final int loopCount) {
-		this.set(
-				AnimationData.fillFrameDurations(frameDurationEach, frameCount),
-				loopCount);
+	public void set(final long frameDurationEach, final int frameCount, final int loopCount) {
+		this.set(AnimationData.fillFrameDurations(frameDurationEach, frameCount), loopCount);
 	}
 
 	public void set(final long[] frameDurations) {
@@ -157,25 +148,21 @@ public class AnimationData {
 		this.set(frameDurations, 0, frameDurations.length - 1, loopCount);
 	}
 
-	public void set(final long[] frameDurations, final int firstFrameIndex,
-			final int lastFrameIndex) {
+	public void set(final long[] frameDurations, final int firstFrameIndex, final int lastFrameIndex) {
 		this.set(frameDurations, firstFrameIndex, lastFrameIndex, true);
 	}
 
-	public void set(final long[] frameDurations, final int firstFrameIndex,
-			final int lastFrameIndex, final boolean loop) {
-		this.set(frameDurations, firstFrameIndex, lastFrameIndex,
-				(loop) ? AnimationData.LOOP_CONTINUOUS : 0);
+	public void set(final long[] frameDurations, final int firstFrameIndex, final int lastFrameIndex,
+			final boolean loop) {
+		this.set(frameDurations, firstFrameIndex, lastFrameIndex, (loop) ? AnimationData.LOOP_CONTINUOUS : 0);
 	}
 
-	public void set(final long[] frameDurations, final int firstFrameIndex,
-			final int lastFrameIndex, final int loopCount) {
-		this.set(frameDurations, (lastFrameIndex - firstFrameIndex) + 1, null,
-				firstFrameIndex, loopCount);
+	public void set(final long[] frameDurations, final int firstFrameIndex, final int lastFrameIndex,
+			final int loopCount) {
+		this.set(frameDurations, (lastFrameIndex - firstFrameIndex) + 1, null, firstFrameIndex, loopCount);
 
 		if ((firstFrameIndex + 1) > lastFrameIndex) {
-			throw new LSysException(
-					"An animation needs at least two tiles to animate between.");
+			throw new LSysException("An animation needs at least two tiles to animate between.");
 		}
 	}
 
@@ -183,29 +170,23 @@ public class AnimationData {
 		this.set(frameDurations, frames, true);
 	}
 
-	public void set(final long[] frameDurations, final int[] frames,
-			final boolean loop) {
-		this.set(frameDurations, frames, (loop) ? AnimationData.LOOP_CONTINUOUS
-				: 0);
+	public void set(final long[] frameDurations, final int[] frames, final boolean loop) {
+		this.set(frameDurations, frames, (loop) ? AnimationData.LOOP_CONTINUOUS : 0);
 	}
 
-	public void set(final long[] frameDurations, final int[] frames,
-			final int loopCount) {
+	public void set(final long[] frameDurations, final int[] frames, final int loopCount) {
 		this.set(frameDurations, frames.length, frames, 0, loopCount);
 	}
 
 	public void set(final AnimationData animationData) {
-		this.set(animationData.getFrameDurations(),
-				animationData.getFrameCount(), animationData.getFrames(),
-				animationData.getFirstFrameIndex(),
-				animationData.getLoopCount());
+		this.set(animationData.getFrameDurations(), animationData.getFrameCount(), animationData.getFrames(),
+				animationData.getFirstFrameIndex(), animationData.getLoopCount());
 	}
 
-	private void set(final long[] frameDurations, final int frameCount,
-			final int[] frames, final int firstFrameIndex, final int loopCount) {
+	private void set(final long[] frameDurations, final int frameCount, final int[] frames, final int firstFrameIndex,
+			final int loopCount) {
 		if (frameDurations.length != frameCount) {
-			throw new LSysException(
-					"frameDurations does not equal frameCount!");
+			throw new LSysException("frameDurations does not equal frameCount!");
 		}
 
 		this._frameDurations = frameDurations;
@@ -214,27 +195,49 @@ public class AnimationData {
 		this._firstFrameIndex = firstFrameIndex;
 		this._loopCount = loopCount;
 
-		if ((this._frameEndsInNanoseconds == null)
-				|| (this._frameCount > this._frameEndsInNanoseconds.length)) {
+		if ((this._frameEndsInNanoseconds == null) || (this._frameCount > this._frameEndsInNanoseconds.length)) {
 			this._frameEndsInNanoseconds = new long[this._frameCount];
 		}
 		final long[] frameEndsInNanoseconds = this._frameEndsInNanoseconds;
-		MathUtils.arraySumInto(this._frameDurations, frameEndsInNanoseconds,
-				LSystem.SECOND);
+		MathUtils.arraySumInto(this._frameDurations, frameEndsInNanoseconds, LSystem.SECOND);
 
 		final long lastFrameEnd = frameEndsInNanoseconds[this._frameCount - 1];
 		this._animationDuration = lastFrameEnd;
 	}
 
-	private static long[] fillFrameDurations(final long frameDurationEach,
-			final int frameCount) {
+	private static long[] fillFrameDurations(final long frameDurationEach, final int frameCount) {
 		final long[] frameDurations = new long[frameCount];
-		Arrays.fill(frameDurations, frameDurationEach);
+		CollectionUtils.fill(frameDurations, frameDurationEach);
 		return frameDurations;
 	}
 
 	public AnimationData cpy() {
 		return new AnimationData(this);
 	}
+
+	@Override
+	public int size() {
+		return _frames == null ? 0 : _frames.length;
+	}
+
+	@Override
+	public void clear() {
+		_frames = new int[0];
+		_frameDurations = new long[0];
+		_frameEndsInNanoseconds = new long[0];
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return size() == 0;
+	}
+	
+	@Override
+	public void close() {
+		_frames = null;
+		_frameDurations = null;
+		_frameEndsInNanoseconds = null;
+	}
+
 
 }

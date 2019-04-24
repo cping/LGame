@@ -23,12 +23,13 @@ package loon.utils.processes;
 
 import loon.LRelease;
 import loon.LSystem;
+import loon.utils.IArray;
 import loon.utils.LIterator;
 import loon.utils.SortedList;
 import loon.utils.TArray;
 import loon.utils.timer.LTimerContext;
 
-public class RealtimeProcessManager implements RealtimeProcessEvent, LRelease {
+public class RealtimeProcessManager implements RealtimeProcessEvent, IArray, LRelease {
 
 	private static RealtimeProcessManager instance;
 
@@ -152,6 +153,21 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, LRelease {
 				}
 			}
 		}
+	}
+
+	@Override
+	public int size() {
+		return processes.size;
+	}
+
+	@Override
+	public void clear() {
+		processes.clear();
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return processes.size == 0;
 	}
 
 	public void dispose() {

@@ -39,7 +39,7 @@ public class Session implements Bundle<String> {
 
 	private String loadData() {
 		String result = _save.getItem(name);
-		if(StringUtils.isEmpty(result)){
+		if (StringUtils.isEmpty(result)) {
 			return result;
 		}
 		if (Base64Coder.isBase64(result)) {
@@ -53,7 +53,7 @@ public class Session implements Bundle<String> {
 	}
 
 	private void saveData(String result) {
-		if(StringUtils.isEmpty(result)){
+		if (StringUtils.isEmpty(result)) {
 			return;
 		}
 		if (!Base64Coder.isBase64(result)) {
@@ -124,7 +124,7 @@ public class Session implements Bundle<String> {
 		}
 
 		public void set(int index, final String v) {
-			if(StringUtils.isEmpty(v)){
+			if (StringUtils.isEmpty(v)) {
 				return;
 			}
 			final String value = StringUtils.replace(v, String.valueOf(flag), "+");
@@ -229,7 +229,7 @@ public class Session implements Bundle<String> {
 	}
 
 	public Session set(String name, int index, String value) {
-		if(StringUtils.isEmpty(value)){
+		if (StringUtils.isEmpty(value)) {
 			return this;
 		}
 		synchronized (recordsList) {
@@ -269,7 +269,7 @@ public class Session implements Bundle<String> {
 	}
 
 	public Session add(String name, String value) {
-		if(StringUtils.isEmpty(value)){
+		if (StringUtils.isEmpty(value)) {
 			return this;
 		}
 		synchronized (recordsList) {
@@ -506,6 +506,21 @@ public class Session implements Bundle<String> {
 
 	public Session cpy() {
 		return new Session(name);
+	}
+
+	@Override
+	public int size() {
+		return recordsList.size;
+	}
+
+	@Override
+	public void clear() {
+		recordsList.clear();
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return recordsList.isEmpty();
 	}
 
 	public Session dispose(String name) {

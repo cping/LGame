@@ -1072,6 +1072,45 @@ final public class CollectionUtils {
 	}
 
 	/**
+	 * 填充指定整型数组
+	 * 
+	 * @param arrays
+	 * @param fromIndex
+	 * @param toIndex
+	 * @param val
+	 */
+	public static void fill(long[] arrays, int fromIndex, int toIndex, int val) {
+		rangeCheck(arrays.length, fromIndex, toIndex);
+		for (int i = fromIndex; i < toIndex; i++) {
+			arrays[i] = val;
+		}
+	}
+
+	/**
+	 * 填充指定整型数组
+	 * 
+	 * @param arrays
+	 * @param val
+	 */
+	public static void fill(long[] arrays, long val) {
+		for (int i = 0, len = arrays.length; i < len; i++) {
+			arrays[i] = val;
+		}
+	}
+
+	/**
+	 * 填充指定整型数组
+	 * 
+	 * @param arrays
+	 * @param val
+	 */
+	public static void fill(int[] arrays, int val) {
+		for (int i = 0, len = arrays.length; i < len; i++) {
+			arrays[i] = val;
+		}
+	}
+
+	/**
 	 * 填充指定对象数组
 	 * 
 	 * @param arrays

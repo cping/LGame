@@ -26,11 +26,12 @@ import loon.LSystem;
 import loon.canvas.LColor;
 import loon.opengl.TextureUtils;
 import loon.utils.CollectionUtils;
+import loon.utils.IArray;
 import loon.utils.TArray;
 import loon.utils.res.MovieSpriteSheet;
 import loon.utils.timer.LTimer;
 
-public class Animation implements LRelease {
+public class Animation implements IArray, LRelease {
 
 	public static interface AnimationListener {
 		public void onComplete(Animation animation);
@@ -46,7 +47,7 @@ public class Animation implements LRelease {
 		return this.Listener;
 	}
 
-	boolean isRunning,aClosed;
+	boolean isRunning, aClosed;
 
 	private TArray<AnimationFrame> frames;
 
@@ -424,12 +425,8 @@ public class Animation implements LRelease {
 		}
 	}
 
-	public boolean isClosed() {
-		return aClosed;
-	}
-	
 	@Override
-	public void close() {
+	public void clear() {
 		if (frames != null) {
 			for (AnimationFrame frame : frames) {
 				if (frame != null) {
@@ -439,8 +436,26 @@ public class Animation implements LRelease {
 			frames.clear();
 		}
 		this.size = 0;
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return this.size == 0;
+	}
+
+	public boolean isClosed() {
+		return aClosed;
+	}
+
+	@Override
+	public void close() {
+		this.clear();
 		this.aClosed = true;
 	}
 
+	@Override
+	public int size() {
+		return frames.size;
+	}
 
 }

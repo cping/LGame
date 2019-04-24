@@ -12,7 +12,7 @@ public class MapBundle<T> implements Bundle<T> {
 	public void put(String key, T value) {
 		_mapBundle.put(key, value);
 	}
-	
+
 	@Override
 	public T get(String key) {
 		return get(key, null);
@@ -41,5 +41,20 @@ public class MapBundle<T> implements Bundle<T> {
 		} else {
 			return defaultValue;
 		}
+	}
+
+	@Override
+	public int size() {
+		return _mapBundle.size;
+	}
+
+	@Override
+	public void clear() {
+		_mapBundle.clear();
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return _mapBundle.isEmpty();
 	}
 }
