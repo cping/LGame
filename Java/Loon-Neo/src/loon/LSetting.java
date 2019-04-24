@@ -40,7 +40,7 @@ public class LSetting {
 	 * 如果为false,则直接建立字典表存单字到大图然后查表渲染单字(字典也可以缓存信息然后一次性提交显示,但是全局缓存资源占用太大,所以默认是不缓存数据的).
 	 */
 	public boolean supportTempSysFont = true;
-	
+
 	/**
 	 * 默认游戏字体设置
 	 */
@@ -50,12 +50,12 @@ public class LSetting {
 	 * 默认log字体设置
 	 */
 	public IFont defaultLogFont;
-	
+
 	/**
 	 * loon自带图的存放路径和文件前缀(默认assets起,不用写)
 	 */
 	public String systemImgPath = "loon_";
-	
+
 	/**
 	 * Loon自带的模拟按键的缩放比率(Screen实现EmulatorListener接口自动出现,8个按钮)
 	 */
@@ -65,14 +65,14 @@ public class LSetting {
 	 * 如果此项为true,则Loon会检查resize缩放行为,原本宽高比例是横屏，改成竖屏，或者竖屏改成横屏的resize将不被允许
 	 */
 	public boolean isCheckReisze = false;
-	
+
 	/**
 	 * 如果此项为true,则Loon中的缓动动画会和图像渲染同步(为false时缓动刷新次数会比画面渲染次数少),true时缓动动画会更加流畅,
 	 * <p>
 	 * 但是缓动资源较多则可能延迟画面渲染(因为都卡在一起执行了)
 	 */
 	public boolean isSyncTween = false;
-	
+
 	/**
 	 * 若此处true,则fps,memory以及sprite数量之类数据
 	 */
@@ -189,17 +189,17 @@ public class LSetting {
 	 * 此项为true时,drag与move事件全游戏无效
 	 */
 	public boolean notAllowDragAndMove = false;
-	
+
 	/**
 	 * 锁定全部Touch事件,此项为true时,Loon中所有触屏(鼠标)事件不生效
 	 */
 	public boolean lockAllTouchEvent = false;
-	
+
 	/**
 	 * 当前游戏类型，默认为"未知"
 	 */
 	public GameType gameType = GameType.UNKOWN;
-	
+
 	/**
 	 * 复制setting设置到自身
 	 * 
@@ -257,6 +257,10 @@ public class LSetting {
 
 	public boolean landscape() {
 		return this.height < this.width;
+	}
+
+	public boolean portrait() {
+		return this.height >= this.width;
 	}
 
 	public void updateScale() {

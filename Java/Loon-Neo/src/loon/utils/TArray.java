@@ -442,6 +442,14 @@ public class TArray<T> implements Iterable<T>, IArray {
 		return items[size < 1 ? 0 : size - 1];
 	}
 
+	public T removeFirst() {
+		return removeIndex(0);
+	}
+	
+	public T removeLast() {
+		return removeIndex(size < 1 ? 0 : size - 1);
+	}
+
 	public T random() {
 		if (size == 0)
 			return null;

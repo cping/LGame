@@ -80,6 +80,13 @@ public class StringKeyValue {
 		return capacity;
 	}
 
+	public StringKeyValue addValue(float ch) {
+		initBuild();
+		_buffer.append(ch);
+		_dirty = true;
+		return this;
+	}
+
 	public StringKeyValue addValue(CharSequence ch) {
 		if (ch == null) {
 			return this;
@@ -169,6 +176,28 @@ public class StringKeyValue {
 
 	public StringKeyValue text(CharSequence mes) {
 		return addValue(mes);
+	}
+
+	public TArray<CharSequence> getTags() {
+		return new TArray<CharSequence>(flags);
+	}
+
+	public CharSequence removeFirstTag() {
+		return flags.removeFirst();
+	}
+
+	public CharSequence removeLastTag() {
+		return flags.removeLast();
+	}
+
+	public StringKeyValue addTag(CharSequence tag) {
+		flags.add(tag);
+		return this;
+	}
+
+	public StringKeyValue removeTag(CharSequence tag) {
+		flags.remove(tag);
+		return this;
 	}
 
 	public StringKeyValue pushTag(CharSequence tag) {

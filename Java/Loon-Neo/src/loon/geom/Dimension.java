@@ -130,6 +130,14 @@ public class Dimension {
 		return new Dimension(width, height);
 	}
 
+	public boolean isLandscape() {
+		return this.height < this.width;
+	}
+
+	public boolean isPortrait() {
+		return this.height >= this.width;
+	}
+
 	@Override
 	public String toString() {
 		return "(" + width + "," + height + ")";

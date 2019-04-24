@@ -304,6 +304,15 @@ public class Array<T> implements IArray, LRelease {
 		return result;
 	}
 
+	public T removeLast() {
+		if (_close) {
+			return null;
+		}
+		T result = last();
+		remove(_length < 1 ? 0 : _length - 1);
+		return result;
+	}
+	
 	public boolean remove(int idx) {
 		if (_close) {
 			return false;
