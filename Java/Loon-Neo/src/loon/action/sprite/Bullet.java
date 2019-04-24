@@ -37,6 +37,11 @@ import loon.utils.MathUtils;
 import loon.utils.timer.EaseTimer;
 import loon.utils.timer.LTimerContext;
 
+/**
+ * 子弹渲染用类,支持动画播放, 角色角度和方向的自动转换，但本身不是精灵,不能直接add到Screen,由精灵类BulletEntity管理和渲染到游戏中去<br>
+ * 一个游戏中，可以存在多个甚至海量的Bullet, 如果子弹过多时,可以使用CacheManager管理子弹的生命周期.
+ * 
+ */
 public class Bullet extends LObject<Bullet> implements CollisionObject, ActionBind, LRelease {
 
 	protected static String BUTTLE_DEFAULT_NAME = "Buttle";
@@ -184,7 +189,21 @@ public class Bullet extends LObject<Bullet> implements CollisionObject, ActionBi
 		return this;
 	}
 
-	public void setDirection(int dir) {
+	public Bullet setMoveTargetToRotation(float dstX, float dstY) {
+		return setMoveTargetToRotation(Vector2f.at(dstX, dstY));
+	}
+
+	public Bullet setMoveTargetToRotation(Vector2f target) {
+		if (target == null) {
+			return this;
+		}
+		float rot = Field2D.rotation(getLocation(), target);
+		this.setRotation(rot);
+		this.direction = Field2D.getDirection(getLocation(), target);
+		return this;
+	}
+
+	public Bullet setDirection(int dir) {
 		if (this.direction != dir || this.speed == null) {
 			this.speed = Field2D.getDirectionToPoint(this.direction, this.initSpeed);
 			if (dirToAngle) {
@@ -192,6 +211,7 @@ public class Bullet extends LObject<Bullet> implements CollisionObject, ActionBi
 			}
 		}
 		this.direction = dir;
+		return this;
 	}
 
 	public Animation getAnimation() {
