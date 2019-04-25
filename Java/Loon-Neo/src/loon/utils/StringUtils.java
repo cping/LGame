@@ -222,7 +222,7 @@ final public class StringUtils extends CharUtils {
 	 * @param letter
 	 * @return
 	 */
-	public static boolean isEnglishAndNumeric(char letter) {
+	public static boolean isEnglishAndNumeric(int letter) {
 		return (97 > letter || letter > 122) && (65 > letter || letter > 90) && (48 > letter || letter > 57);
 	}
 
@@ -232,7 +232,7 @@ final public class StringUtils extends CharUtils {
 	 * @param c
 	 * @return
 	 */
-	public static boolean isSingle(final char c) {
+	public static boolean isSingle(final int c) {
 		return (':' == c || '：' == c) || (',' == c || '，' == c) || ('"' == c || '“' == c)
 				|| ((0x0020 <= c) && (c <= 0x007E) && !((('a' <= c) && (c <= 'z')) || (('A' <= c) && (c <= 'Z')))
 						&& !('0' <= c) && (c <= '9'));
@@ -731,7 +731,7 @@ final public class StringUtils extends CharUtils {
 		String spStr = " _-";
 		int checkStrLength = checkStr.length() - 1;
 		for (int i = 0; i <= checkStrLength; i++) {
-			char ch = checkStr.charAt(i);
+			int ch = checkStr.charAt(i);
 			if (ch < '\176') {
 				ch = Character.toUpperCase(ch);
 				if (((ch < 'A') || (ch > 'Z')) && ((ch < '0') || (ch > '9')) && (spStr.indexOf(ch) < 0)) {
@@ -790,7 +790,7 @@ final public class StringUtils extends CharUtils {
 	 * @return
 	 */
 	public static boolean isNumeric(char letter) {
-		return ('0' > letter || letter > '9');
+		return isDigitCharacter(letter);
 	}
 
 	/**

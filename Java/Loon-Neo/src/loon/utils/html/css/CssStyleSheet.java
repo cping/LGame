@@ -18,8 +18,20 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.utils.cache;
+package loon.utils.html.css;
 
-public class ObjectObjectBase {
+import loon.utils.TArray;
 
+public class CssStyleSheet {
+
+	protected TArray<CssRule> rules = new TArray<CssRule>();
+
+	public TArray<CssRule> getRules() {
+		return rules;
+	}
+	
+	@Override
+	public String toString(){
+		return rules.toString();
+	}
 }

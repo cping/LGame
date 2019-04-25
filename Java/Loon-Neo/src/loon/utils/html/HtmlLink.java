@@ -18,8 +18,32 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.utils.cache;
+package loon.utils.html;
 
-public class ACCache {
+public class HtmlLink {
+	
+	protected String real;
+	
+	protected String typeData;
+	
+	protected String href;
+	
+	protected HtmlLink(HtmlElement ele){
+		this.real = ele.getAttribute("real", null);
+		this.typeData = ele.getAttribute("type", null);
+		this.href = ele.getAttribute("href", null);
+	}
+
+	public String getReal() {
+		return real;
+	}
+
+	public String getType() {
+		return typeData;
+	}
+
+	public String getHref() {
+		return href;
+	}
 
 }

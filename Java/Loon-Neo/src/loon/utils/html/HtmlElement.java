@@ -342,6 +342,23 @@ public class HtmlElement {
 		return images;
 	}
 
+	public HtmlLink getLink() {
+		TArray<HtmlLink> links = getLinks();
+		if (links.size > 0) {
+			return links.get(0);
+		}
+		return null;
+	}
+
+	public TArray<HtmlLink> getLinks() {
+		TArray<HtmlLink> links = new TArray<HtmlLink>();
+		TArray<HtmlElement> eles = all("link");
+		for (HtmlElement e : eles) {
+			links.add(new HtmlLink(e));
+		}
+		return links;
+	}
+
 	public boolean isBody() {
 		return "body".equals(name);
 	}
@@ -358,10 +375,22 @@ public class HtmlElement {
 		return "button".equals(name);
 	}
 
+	public boolean isStyle() {
+		return "style".equals(name);
+	}
+
 	public boolean isTable() {
 		return "table".equals(name);
 	}
 
+	public boolean isDiv() {
+		return "div".equals(name);
+	}
+
+	public boolean isSpan() {
+		return "span".equals(name);
+	}
+	
 	public boolean isFont() {
 		return "font".equals(name);
 	}

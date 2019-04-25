@@ -445,7 +445,7 @@ public class TArray<T> implements Iterable<T>, IArray {
 	public T removeFirst() {
 		return removeIndex(0);
 	}
-	
+
 	public T removeLast() {
 		return removeIndex(size < 1 ? 0 : size - 1);
 	}
@@ -664,6 +664,9 @@ public class TArray<T> implements Iterable<T>, IArray {
 	}
 
 	public void sort(Comparator<T> compar) {
+		if (items.length <= 1) {
+			return;
+		}
 		SortUtils.quickSort(items, compar);
 	}
 

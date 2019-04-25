@@ -225,6 +225,10 @@ public class CharUtils {
 		return -1;
 	}
 
+	public static boolean isAsciiLetterDiait(int c) {
+		return isDigitCharacter(c) || isAsciiLetter(c);
+	}
+
 	public static boolean isDigitCharacter(int c) {
 		return (c >= '0' && c <= '9') || c == 'e' || c == 'E' || c == '.' || c == '+' || c == '-';
 	}
@@ -237,39 +241,35 @@ public class CharUtils {
 		return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
 	}
 
-	public static boolean isWhitespace(char c) {
-		return isWhitespace(c);
-	}
-
-	public static boolean isLowercaseAlpha(char c) {
+	public static boolean isLowercaseAlpha(int c) {
 		return (c >= 'a') && (c <= 'z');
 	}
 
-	public static boolean isUppercaseAlpha(char c) {
+	public static boolean isUppercaseAlpha(int c) {
 		return (c >= 'A') && (c <= 'Z');
 	}
 
-	public static boolean isAlphaOrDigit(char c) {
+	public static boolean isAlphaOrDigit(int c) {
 		return isDigit(c) || isAlpha(c);
 	}
 
-	public static boolean isWordChar(char c) {
+	public static boolean isWordChar(int c) {
 		return isDigit(c) || isAlpha(c) || (c == '_');
 	}
 
-	public static boolean isPropertyNameChar(char c) {
+	public static boolean isPropertyNameChar(int c) {
 		return isDigit(c) || isAlpha(c) || (c == '_') || (c == '.') || (c == '[') || (c == ']');
 	}
 
-	public static boolean isAlpha(char c) {
+	public static boolean isAlpha(int c) {
 		return ((c >= 'a') && (c <= 'z')) || ((c >= 'A') && (c <= 'Z'));
 	}
 
-	public static boolean isDigit(char c) {
+	public static boolean isDigit(int c) {
 		return c >= '0' && c <= '9';
 	}
 
-	public static boolean isHexDigit(char c) {
+	public static boolean isHexDigit(int c) {
 		return (c >= '0' && c <= '9') || ((c >= 'a') && (c <= 'f')) || ((c >= 'A') && (c <= 'F'));
 	}
 
@@ -307,23 +307,23 @@ public class CharUtils {
 		}
 	}
 
-	protected static boolean isReserved(char c) {
+	protected static boolean isReserved(int c) {
 		return isGenericDelimiter(c) || isSubDelimiter(c);
 	}
 
-	protected static boolean isUnreserved(char c) {
+	protected static boolean isUnreserved(int c) {
 		return isAlpha(c) || isDigit(c) || c == '-' || c == '.' || c == '_' || c == '~';
 	}
 
-	protected static boolean isPchar(char c) {
+	protected static boolean isPchar(int c) {
 		return isUnreserved(c) || isSubDelimiter(c) || c == ':' || c == '@';
 	}
 
-	protected static boolean isLetterOrDigit(char ch) {
+	protected static boolean isLetterOrDigit(int ch) {
 		return (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || (ch >= '0' && ch <= '9');
 	}
 
-	protected static boolean isEscapeExempt(char c) {
+	protected static boolean isEscapeExempt(int c) {
 		switch (c) {
 		case '*':
 		case '@':
