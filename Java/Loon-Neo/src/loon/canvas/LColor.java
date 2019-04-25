@@ -25,7 +25,6 @@ import java.io.Serializable;
 import loon.geom.Vector3f;
 import loon.geom.Vector4f;
 import loon.utils.CharUtils;
-import loon.utils.ListMap;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 import loon.utils.StringUtils;
@@ -300,8 +299,6 @@ public class LColor implements Serializable {
 		return bytes;
 	}
 
-	private static ListMap<String, LColor> colorMap;
-
 	public static final LColor silver = new LColor(0xffc0c0c0);
 
 	public static final LColor lightBlue = new LColor(0xffadd8e6);
@@ -428,49 +425,11 @@ public class LColor implements Serializable {
 		} else if (MathUtils.isNan(c)) {
 			setColor(convertInt(c));
 		} else {
-			synchronized (this) {
-				if (colorMap == null) {
-					colorMap = new ListMap<String, LColor>();
-					colorMap.put("limegreen", limeGreen);
-					colorMap.put("linen", linen);
-					colorMap.put("maroon", maroon);
-					colorMap.put("mediumAquamarine", mediumAquamarine);
-					colorMap.put("mediumblue", mediumBlue);
-					colorMap.put("wheat", wheat);
-					colorMap.put("gold", gold);
-					colorMap.put("white", white);
-					colorMap.put("yellow", yellow);
-					colorMap.put("red", red);
-					colorMap.put("blue", blue);
-					colorMap.put("cornflowerblue", cornFlowerBlue);
-					colorMap.put("black", black);
-					colorMap.put("gray", gray);
-					colorMap.put("cyan", cyan);
-					colorMap.put("darkgray", darkGray);
-					colorMap.put("lightgray", lightGray);
-					colorMap.put("pink", pink);
-					colorMap.put("orange", orange);
-					colorMap.put("magenta", magenta);
-					colorMap.put("silver", silver);
-					colorMap.put("lightblue", lightBlue);
-					colorMap.put("lightcoral", lightCoral);
-					colorMap.put("lightcyan", lightCyan);
-					colorMap.put("lightgoldenrodyellow", lightGoldenrodYellow);
-					colorMap.put("lightgreen", lightGreen);
-					colorMap.put("lightpink", lightPink);
-					colorMap.put("lightseagreen", lightSeaGreen);
-					colorMap.put("lightskyblue", lightSkyBlue);
-					colorMap.put("lightslategray", lightSlateGray);
-					colorMap.put("lightsteelblue", lightSteelBlue);
-					colorMap.put("lightyellow", lightYellow);
-					colorMap.put("transparent", transparent);
-				}
-				LColor color = colorMap.get(c.trim());
-				if (color != null) {
-					setColor(color);
-				} else {
-					setColor(hexToColor(c));
-				}
+			LColor color = LColorList.get().find(c);
+			if (color != null) {
+				setColor(color);
+			} else {
+				setColor(hexToColor(c));
 			}
 		}
 	}
@@ -1258,6 +1217,16 @@ public class LColor implements Serializable {
 		return getHSLtoRGB(r, g, b);
 	}
 
+	/**
+	 * 返回一个指定英文名称的Color(按照html标准)
+	 * 
+	 * @param colorName
+	 * @return
+	 */
+	public final static LColor findName(String colorName) {
+		return LColorList.get().find(colorName);
+	}
+	
 	@Override
 	public String toString() {
 		String value = CharUtils

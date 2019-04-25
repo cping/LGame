@@ -140,7 +140,7 @@ public class XMLElement {
 	public Iterator<Object> elements() {
 		return this.contents.iterator();
 	}
-
+	
 	public TArray<XMLElement> list() {
 		TArray<XMLElement> lists = new TArray<XMLElement>(contents.size);
 		for (Iterator<?> e = elements(); e.hasNext();) {
@@ -249,33 +249,12 @@ public class XMLElement {
 		return sbr.toString();
 	}
 
-	@Override
-	public String toString() {
-		String str1 = null;
-		if (this.name == null) {
-			str1 = LSystem.EMPTY;
-		} else {
-			str1 = "<" + this.name;
-		}
-		for (String str2 : attributes.keys()) {
-			str1 = str1 + " " + str2 + " = \"" + getAttribute(str2).getValue() + "\"";
-		}
-		if (this.name != null) {
-			str1 = str1 + ">";
-		}
-		str1 = str1 + getContents();
-		if (this.name != null) {
-			str1 = str1 + "</" + this.name + ">";
-		}
-		return str1;
-	}
-
 	public XMLAttribute addAttribute(String name, int value) {
 		XMLAttribute attribute = new XMLAttribute(name, String.valueOf(value));
 		this.attributes.put(name, attribute);
 		return attribute;
 	}
-	
+
 	public XMLAttribute addAttribute(String name, String value) {
 		XMLAttribute attribute = new XMLAttribute(name, value);
 		this.attributes.put(name, attribute);
@@ -285,6 +264,32 @@ public class XMLElement {
 	public XMLElement addContents(Object o) {
 		this.contents.add(o);
 		return this;
+	}
+
+	@Override
+	public String toString() {
+		StringBuffer builder = new StringBuffer();
+		if (this.name == null) {
+			builder.append(LSystem.EMPTY);
+		} else {
+			builder.append('<');
+			builder.append(this.name);
+		}
+		for (String str2 : attributes.keys()) {
+			builder.append(' ');
+			builder.append(str2);
+			builder.append(" = \"");
+			builder.append(getAttribute(str2).getValue());
+			builder.append("\"");
+		}
+		if (this.name != null) {
+			builder.append(">\n");
+		}
+		builder.append(getContents());
+		if (this.name != null) {
+			builder.append("</" + this.name + ">\n");
+		}
+		return builder.toString();
 	}
 
 	public XMLElement dispose() {

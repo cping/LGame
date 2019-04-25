@@ -80,6 +80,27 @@ public class StringKeyValue {
 		return capacity;
 	}
 
+	public StringKeyValue addValue(boolean ch) {
+		initBuild();
+		_buffer.append(ch);
+		_dirty = true;
+		return this;
+	}
+
+	public StringKeyValue addValue(long ch) {
+		initBuild();
+		_buffer.append(ch);
+		_dirty = true;
+		return this;
+	}
+
+	public StringKeyValue addValue(int ch) {
+		initBuild();
+		_buffer.append(ch);
+		_dirty = true;
+		return this;
+	}
+
 	public StringKeyValue addValue(float ch) {
 		initBuild();
 		_buffer.append(ch);

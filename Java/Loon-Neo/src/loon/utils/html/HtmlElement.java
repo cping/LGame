@@ -33,7 +33,11 @@ public class HtmlElement {
 
 	private String name;
 
-	private String data;
+	private StringBuffer buffer;
+
+	private String tempData;
+
+	private boolean dirty;
 
 	private ObjectMap<String, HtmlAttribute> attributes;
 
@@ -48,15 +52,30 @@ public class HtmlElement {
 	public HtmlElement(String name) {
 		this.attributes = new ObjectMap<String, HtmlAttribute>();
 		this.contents = new TArray<HtmlElement>();
+		this.buffer = new StringBuffer(512);
 		this.name = name;
+		if (this.name != null) {
+			this.name = this.name.trim().toLowerCase();
+		}
 	}
 
-	protected void setData(String d) {
-		this.data = StringUtils.filter(d, '\r', '\n', '\t');
+	protected void addData(String d) {
+		if (StringUtils.isEmpty(d)) {
+			return;
+		}
+		if (!d.equals(tempData)) {
+			this.buffer.append(StringUtils.filter(d, '\r', '\n', '\t'));
+		}
+		tempData = d;
+		dirty = true;
 	}
 
-	protected String getData() {
-		return this.data;
+	public String getData() {
+		if (dirty) {
+			tempData = this.buffer.toString();
+			dirty = false;
+		}
+		return this.tempData;
 	}
 
 	public byte[] readContentBinHex() {
@@ -148,6 +167,10 @@ public class HtmlElement {
 		return this.attributes.containsKey(name);
 	}
 
+	public int childCount() {
+		return this.contents == null ? 0 : this.contents.size;
+	}
+
 	public Iterator<HtmlElement> elements() {
 		return this.contents.iterator();
 	}
@@ -156,10 +179,7 @@ public class HtmlElement {
 		TArray<HtmlElement> lists = new TArray<HtmlElement>(contents.size);
 		for (Iterator<HtmlElement> e = elements(); e.hasNext();) {
 			HtmlElement o = e.next();
-			if (!(o instanceof HtmlElement)) {
-				continue;
-			}
-			lists.add((HtmlElement) o);
+			lists.add(o);
 		}
 		return lists;
 	}
@@ -167,9 +187,6 @@ public class HtmlElement {
 	public HtmlElement getFirstChild() {
 		for (Iterator<HtmlElement> e = elements(); e.hasNext();) {
 			HtmlElement o = e.next();
-			if (!(o instanceof HtmlElement)) {
-				continue;
-			}
 			return (HtmlElement) o;
 		}
 		return null;
@@ -178,12 +195,31 @@ public class HtmlElement {
 	public HtmlElement getChildrenByName(String name) {
 		for (Iterator<HtmlElement> e = elements(); e.hasNext();) {
 			HtmlElement o = e.next();
-			if ((!(o instanceof HtmlElement)) || (!((HtmlElement) o).getName().equals(name))) {
+			if (!o.getName().equals(name)) {
 				continue;
 			}
 			return (HtmlElement) o;
 		}
 		return null;
+	}
+
+	public TArray<HtmlElement> all(String name) {
+		if (childCount() == 0) {
+			return new TArray<HtmlElement>();
+		}
+		TArray<HtmlElement> result = new TArray<HtmlElement>();
+		TArray<HtmlElement> looper = contents;
+		while (looper.size > 0) {
+			TArray<HtmlElement> next = new TArray<HtmlElement>();
+			for (HtmlElement node : looper) {
+				if (name.equals(node.getName())) {
+					result.add(node);
+				}
+				next.addAll(node.contents);
+			}
+			looper = next;
+		}
+		return result;
 	}
 
 	public TArray<HtmlElement> find(String name) {
@@ -193,7 +229,7 @@ public class HtmlElement {
 			if (!ele.equals(ele.getName())) {
 				Iterator<HtmlElement> it = ele.elements(name);
 				for (; it.hasNext();) {
-					HtmlElement child = (HtmlElement) it.next();
+					HtmlElement child = it.next();
 					child.parent = ele;
 					v.add(child);
 				}
@@ -260,6 +296,104 @@ public class HtmlElement {
 		return sbr.toString();
 	}
 
+	public HtmlAttribute addAttribute(String name, int value) {
+		HtmlAttribute attribute = new HtmlAttribute(name, String.valueOf(value));
+		this.attributes.put(name, attribute);
+		return attribute;
+	}
+
+	public HtmlAttribute addAttribute(String name, String value) {
+		HtmlAttribute attribute = new HtmlAttribute(name, value);
+		this.attributes.put(name, attribute);
+		return attribute;
+	}
+
+	public HtmlFont getFont() {
+		TArray<HtmlFont> fonts = getFonts();
+		if (fonts.size > 0) {
+			return fonts.get(0);
+		}
+		return null;
+	}
+
+	public TArray<HtmlFont> getFonts() {
+		TArray<HtmlFont> fonts = new TArray<HtmlFont>();
+		TArray<HtmlElement> eles = all("font");
+		for (HtmlElement e : eles) {
+			fonts.add(new HtmlFont(e));
+		}
+		return fonts;
+	}
+
+	public HtmlImage getImage() {
+		TArray<HtmlImage> images = getImages();
+		if (images.size > 0) {
+			return images.get(0);
+		}
+		return null;
+	}
+
+	public TArray<HtmlImage> getImages() {
+		TArray<HtmlImage> images = new TArray<HtmlImage>();
+		TArray<HtmlElement> eles = all("img");
+		for (HtmlElement e : eles) {
+			images.add(new HtmlImage(e));
+		}
+		return images;
+	}
+
+	public boolean isBody() {
+		return "body".equals(name);
+	}
+
+	public boolean isHead() {
+		return "head".equals(name);
+	}
+
+	public boolean isHtml() {
+		return "html".equals(name);
+	}
+
+	public boolean isButton() {
+		return "button".equals(name);
+	}
+
+	public boolean isTable() {
+		return "table".equals(name);
+	}
+
+	public boolean isFont() {
+		return "font".equals(name);
+	}
+
+	public boolean isImg() {
+		return "img".equals(name);
+	}
+
+	public boolean isLink() {
+		return "link".equals(name);
+	}
+
+	public boolean isBr() {
+		return "br".equals(name);
+	}
+
+	public boolean isTr() {
+		return "tr".equals(name);
+	}
+
+	public boolean isA() {
+		return "a".equals(name);
+	}
+
+	public boolean isB() {
+		return "b".equals(name);
+	}
+
+	public boolean isP() {
+		return "p".equals(name);
+	}
+
 	@Override
 	public String toString() {
 		StringBuffer builder = new StringBuffer();
@@ -279,7 +413,8 @@ public class HtmlElement {
 		if (this.name != null) {
 			builder.append(">\n");
 		}
-		if (this.data != null) {
+		String data = getData();
+		if (data != null) {
 			builder.append(data);
 		}
 		builder.append(getContents());
@@ -287,48 +422,6 @@ public class HtmlElement {
 			builder.append("</" + this.name + ">\n");
 		}
 		return builder.toString();
-	}
-
-	public HtmlAttribute addAttribute(String name, int value) {
-		HtmlAttribute attribute = new HtmlAttribute(name, String.valueOf(value));
-		this.attributes.put(name, attribute);
-		return attribute;
-	}
-
-	public HtmlAttribute addAttribute(String name, String value) {
-		HtmlAttribute attribute = new HtmlAttribute(name, value);
-		this.attributes.put(name, attribute);
-		return attribute;
-	}
-
-	public TArray<HtmlFont> getFonts() {
-		TArray<HtmlFont> fonts = new TArray<HtmlFont>();
-		if ("font".equals(getName())) {
-			fonts.add(new HtmlFont(this));
-		} else {
-			TArray<HtmlElement> eles = find("font");
-			if (eles.size != 0) {
-				for (HtmlElement e : eles) {
-					fonts.add(new HtmlFont(e));
-				}
-			}
-		}
-		return fonts;
-	}
-
-	public TArray<HtmlImage> getImages() {
-		TArray<HtmlImage> images = new TArray<HtmlImage>();
-		if ("img".equals(getName())) {
-			images.add(new HtmlImage(this));
-		} else {
-			TArray<HtmlElement> eles = find("font");
-			if (eles.size != 0) {
-				for (HtmlElement e : eles) {
-					images.add(new HtmlImage(e));
-				}
-			}
-		}
-		return images;
 	}
 
 	public HtmlElement dispose() {
@@ -342,5 +435,4 @@ public class HtmlElement {
 		}
 		return this;
 	}
-
 }

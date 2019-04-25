@@ -20,7 +20,9 @@
  */
 package loon.utils.html;
 
+import loon.LSystem;
 import loon.canvas.LColor;
+import loon.utils.StringKeyValue;
 
 public class HtmlFont {
 
@@ -33,7 +35,7 @@ public class HtmlFont {
 	protected String text;
 
 	protected HtmlFont(HtmlElement ele) {
-		face = ele.getAttribute("face", "Dialog");
+		face = ele.getAttribute("face", LSystem.UNKOWN);
 		size = ele.getIntAttribute("size", 20);
 		String colorStr = ele.getAttribute("color", null);
 		if (colorStr == null) {
@@ -51,12 +53,19 @@ public class HtmlFont {
 	public int getSize() {
 		return size;
 	}
+
 	public LColor getColor() {
 		return color;
 	}
-	
+
 	public String getText() {
 		return text;
+	}
+
+	public String toString() {
+		StringKeyValue builder = new StringKeyValue("HtmlFont");
+		builder.kv("face", face).comma().kv("size", size).comma().kv("text", text).comma().kv("color", color);
+		return builder.toString();
 	}
 
 }

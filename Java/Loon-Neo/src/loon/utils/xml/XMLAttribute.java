@@ -51,7 +51,7 @@ public class XMLAttribute {
 			return 0;
 		}
 		try {
-			return Integer.parseInt(this.value);
+			return (int) Float.parseFloat(this.value);
 		} catch (Throwable ex) {
 			throw new LSysException("Attribute '" + this.name
 					+ "' has value '" + this.value

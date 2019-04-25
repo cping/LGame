@@ -56,7 +56,7 @@ public class HtmlParser {
 			} else {
 				data = str;
 				if (topElement != null) {
-					topElement.setData(data);
+					topElement.addData(data);
 				}
 			}
 			count++;
