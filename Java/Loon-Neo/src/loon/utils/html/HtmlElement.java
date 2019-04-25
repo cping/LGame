@@ -28,6 +28,8 @@ import loon.utils.Base64Coder;
 import loon.utils.ObjectMap;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
+import loon.utils.html.css.CssParser;
+import loon.utils.html.css.CssStyleSheet;
 
 public class HtmlElement {
 
@@ -75,7 +77,7 @@ public class HtmlElement {
 			tempData = this.buffer.toString();
 			dirty = false;
 		}
-		return this.tempData;
+		return StringUtils.replaceTrim(this.tempData, "<!--", "-->");
 	}
 
 	public byte[] readContentBinHex() {
@@ -359,6 +361,30 @@ public class HtmlElement {
 		return links;
 	}
 
+	public boolean isOnlyText() {
+		if (contents.size == 0 && tempData != null) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public String getId() {
+		return getAttribute("id", LSystem.UNKOWN);
+	}
+
+	public String getClassesAttribute() {
+		return getAttribute("class", LSystem.UNKOWN);
+	}
+
+	public CssStyleSheet getStyleSheet() {
+		if (isStyle()) {
+			CssStyleSheet sheet = CssParser.loadText(getData());
+			return sheet;
+		}
+		return new CssStyleSheet();
+	}
+
 	public boolean isBody() {
 		return "body".equals(name);
 	}
@@ -390,7 +416,7 @@ public class HtmlElement {
 	public boolean isSpan() {
 		return "span".equals(name);
 	}
-	
+
 	public boolean isFont() {
 		return "font".equals(name);
 	}
@@ -401,6 +427,10 @@ public class HtmlElement {
 
 	public boolean isLink() {
 		return "link".equals(name);
+	}
+
+	public boolean isMeta() {
+		return "meta".equals(name);
 	}
 
 	public boolean isBr() {

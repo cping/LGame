@@ -28,6 +28,9 @@ import loon.utils.CharParser;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
+/**
+ * 工具类,用于解析css文件
+ */
 public class CssParser extends CharParser {
 
 	public final static CssStyleSheet parse(String path) {
@@ -37,7 +40,7 @@ public class CssParser extends CharParser {
 	public final static CssStyleSheet loadText(String context) {
 		return new CssParser().parseText(context);
 	}
-	
+
 	public CssStyleSheet parseText(String c) {
 		context = c;
 		poistion = 0;
@@ -156,6 +159,17 @@ public class CssParser extends CharParser {
 			return null;
 		}
 		String colorString = context.substring(poistion - 1, poistion += 6);
+		int index = colorString.indexOf(';');
+		if (index != -1) {
+			colorString = colorString.substring(0, index);
+			poistion -= index;
+		} else {
+			index = colorString.indexOf('}');
+			if (index != -1) {
+				colorString = colorString.substring(0, index);
+				poistion -= index;
+			}
+		}
 		LColor color = new LColor(colorString);
 		return new CssColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
 	}

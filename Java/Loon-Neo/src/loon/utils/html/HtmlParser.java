@@ -51,6 +51,10 @@ public class HtmlParser {
 			String str = tokenizer.nextElement();
 			String data = null;
 			if ((str.startsWith("<!--")) && (str.endsWith("-->"))) {
+				data = str;
+				if (topElement != null) {
+					topElement.addData(data);
+				}
 			} else if (str.charAt(0) == '<') {
 				newElement(str, count);
 			} else {
