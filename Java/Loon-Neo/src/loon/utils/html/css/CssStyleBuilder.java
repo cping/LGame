@@ -34,6 +34,7 @@ public class CssStyleBuilder {
 
 		for (CssMatchedRule matchedRule : rules) {
 			for (CssDeclaration declaration : matchedRule.rule.declarations) {
+
 				values.put(declaration.name, declaration.value);
 			}
 		}
@@ -57,7 +58,6 @@ public class CssStyleBuilder {
 		return values;
 	}
 
-	
 	private TArray<CssMatchedRule> matchRules(HtmlElement elementData, CssStyleSheet styleSheet) {
 
 		TArray<CssMatchedRule> matchedRules = new TArray<CssMatchedRule>();
@@ -74,46 +74,54 @@ public class CssStyleBuilder {
 	private CssMatchedRule matchRule(HtmlElement elementData, CssRule rule) {
 
 		for (CssSelectorObject s : rule.selectors) {
-			boolean matchedSimpleSelector = matchSimpleSelector(elementData, s.selector);
 
-			if (matchedSimpleSelector) {
-				return new CssMatchedRule(s.getSelectorTemp(), rule);
+			if (s != null) {
+
+				boolean matchedSelector = matchBaseSelector(elementData, s.selector);
+
+				if (matchedSelector) {
+					return new CssMatchedRule(s.getSelectorTemp(), rule);
+				}
 			}
 		}
 		return null;
 	}
 
-	private boolean matchSimpleSelector(HtmlElement elementData, CssSelector selector) {
-		
+	private boolean matchBaseSelector(HtmlElement elementData, CssSelector selector) {
+
 		boolean found = false;
 
-		if (selector.tagName != null){
-			if (selector.tagName.equals(elementData.getName())){
+		if (selector.tagName != null) {
+
+			if (selector.tagName.equals(elementData.getName())) {
+
 				found = true;
 			}
 		}
 
 		String[] clazz = elementData.getClasses();
 		for (int i = 0; i < clazz.length; i++) {
+
 			if (selector.classNames.contains("*") || selector.classNames.contains(clazz[i])) {
+
 				found = true;
 				break;
 			}
 		}
 
-		if (elementData.getId() != null)
-			if (selector.id.equals(elementData.getId())){
+		if (elementData.getId() != null) {
+			if (selector.id != null && selector.id.equals(elementData.getId())) {
 				found = true;
 			}
+		}
 
 		return found;
 	}
 
 	protected boolean matches(HtmlElement elementData, CssSelectorObject selector) {
-		if (isSelector(selector)){
-			return matchSimpleSelector(elementData, selector.selector);
-		}
-		else{
+		if (isSelector(selector)) {
+			return matchBaseSelector(elementData, selector.selector);
+		} else {
 			return false;
 		}
 	}
@@ -121,7 +129,7 @@ public class CssStyleBuilder {
 	private boolean isSelector(CssSelectorObject selector) {
 		return selector.selector != null;
 	}
-	
+
 	public CssStyleNode build(HtmlElement root, CssStyleSheet styleSheet) {
 
 		CssStyleNode styledNode = new CssStyleNode();

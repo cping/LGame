@@ -158,7 +158,24 @@ final public class CollectionUtils {
 	 * @return
 	 */
 	public static String[] copyOf(String[] data, int start, int end) {
-		String tempArr[] = new String[end - start];
+		String[] tempArr = new String[end - start];
+		for (int i = start, j = 0; i < end; i++, j++) {
+			tempArr[j] = data[i];
+		}
+		return tempArr;
+	}
+
+	/**
+	 * copy指定长度的数组数据
+	 * 
+	 * @param data
+	 * @param start
+	 * @param end
+	 * @return
+	 */
+	public static <T> T[] copyOf(T[] data, int start, int end) {
+		@SuppressWarnings("unchecked")
+		T[] tempArr = (T[]) new Object[end - start];
 		for (int i = start, j = 0; i < end; i++, j++) {
 			tempArr[j] = data[i];
 		}

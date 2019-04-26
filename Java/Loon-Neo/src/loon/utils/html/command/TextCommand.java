@@ -23,6 +23,7 @@ package loon.utils.html.command;
 import loon.HorizontalAlign;
 import loon.LSystem;
 import loon.canvas.LColor;
+import loon.font.Font.Style;
 import loon.font.FontUtils;
 import loon.font.IFont;
 import loon.font.LFont;
@@ -76,11 +77,17 @@ public class TextCommand extends DisplayCommand {
 			} else {
 				color = LColor.decode(colorStr);
 			}
+		} else if (e.isH()) {
+			text = e.getData();
+			color = LColor.black;
+			int v = Integer.parseInt(e.getName().substring(1, 2)) - 1;
+			font = LFont.getFont(sysFont, Style.BOLD, 40 - (v * 4));
 		} else {
 			text = e.getData();
 			color = LColor.black;
 			font = LSystem.getSystemGameFont();
 		}
+
 		PointF fontSize = FontUtils.getTextWidthAndHeight(font, text);
 		rect = new Rect(0, 0, fontSize.x, fontSize.y);
 

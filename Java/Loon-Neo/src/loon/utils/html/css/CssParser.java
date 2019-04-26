@@ -68,28 +68,30 @@ public class CssParser extends CharParser {
 	}
 
 	protected CssSelector parseSelectorData() {
-		CssSelector SimpleSelector = new CssSelector(null, null, new TArray<String>());
+		CssSelector baseSelector = new CssSelector(null, null, new TArray<String>());
 
 		for (;;) {
 			char ch = nextChar();
 			switch (ch) {
 			case '#':
 				consumeChar();
-				SimpleSelector.id = parseName();
+				baseSelector.id = parseName();
 				break;
 			case '.':
 				consumeChar();
-				SimpleSelector.classNames.add(parseName());
+				String name = parseName();
+				baseSelector.classNames.add(name);
 				break;
 			case '*':
 				consumeChar();
-				SimpleSelector.classNames.add("*");
+				baseSelector.classNames.add("*");
 			default:
-				if (!(StringUtils.isAsciiLetterDiait(nextChar()))) {
-					return SimpleSelector;
+				char chr = nextChar();
+				if (!(StringUtils.isAsciiLetterDiait(chr))) {
+					return baseSelector;
 				}
 				String tagName = parseName();
-				SimpleSelector.tagName = tagName;
+				baseSelector.tagName = tagName;
 				break;
 			}
 		}
@@ -133,6 +135,7 @@ public class CssParser extends CharParser {
 
 			@Override
 			public int compare(CssSelectorObject selector1, CssSelectorObject selector2) {
+
 				if (selector1 == null || selector2 == null) {
 					return 0;
 				}

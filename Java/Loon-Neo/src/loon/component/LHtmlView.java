@@ -27,7 +27,7 @@ import loon.utils.html.HtmlDisplay;
 import loon.utils.html.HtmlParser;
 
 /**
- * HTML内容渲染用组件(HtmlDisplay构建中……此类完成度取决于HtmlDisplay的完成度……)
+ * HTML内容渲染用组件,用html+css脚本的方式构建游戏画面(HtmlDisplay构建中……此类完成度取决于HtmlDisplay的完成度……)
  */
 public class LHtmlView extends LContainer {
 

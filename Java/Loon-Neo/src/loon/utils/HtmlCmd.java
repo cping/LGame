@@ -405,7 +405,7 @@ public class HtmlCmd extends StringKeyValue {
 		Img temp = img().src(src).width(w).height(h);
 		return temp.end();
 	}
-	
+
 	public HtmlCmd img(CharSequence src, int w, int h) {
 		Img temp = img().src(src).width(w).height(h);
 		return temp.end();
@@ -524,6 +524,11 @@ public class HtmlCmd extends StringKeyValue {
 		return begin("ul");
 	}
 
+	public HtmlCmd hr() {
+		addValue("<hr>");
+		return this;
+	}
+
 	public HtmlCmd li() {
 		return begin("li");
 	}
@@ -540,6 +545,11 @@ public class HtmlCmd extends StringKeyValue {
 
 	public HtmlCmd style() {
 		return begin("style");
+	}
+
+	public HtmlCmd linkCss(CharSequence path) {
+		addValue("<link rel=\"stylesheet\"> type=\"text/css\" href=\"").addValue(path + "\"/>");
+		return this;
 	}
 
 	public HtmlCmd link(CharSequence text) {

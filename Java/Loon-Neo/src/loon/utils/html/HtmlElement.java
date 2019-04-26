@@ -25,10 +25,13 @@ import java.util.Iterator;
 import loon.LSysException;
 import loon.LSystem;
 import loon.utils.Base64Coder;
+import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 import loon.utils.html.css.CssParser;
+import loon.utils.html.css.CssStyleBuilder;
+import loon.utils.html.css.CssStyleNode;
 import loon.utils.html.css.CssStyleSheet;
 
 public class HtmlElement {
@@ -365,6 +368,14 @@ public class HtmlElement {
 		return links;
 	}
 
+	public boolean isAttrEmpty() {
+		if (attributes.size == 0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	public boolean isOnlyText() {
 		if (attributes.size == 0 && tempData != null) {
 			return true;
@@ -374,19 +385,29 @@ public class HtmlElement {
 	}
 
 	public String getId() {
-		return getAttribute("id", LSystem.UNKOWN);
+		return getAttribute("id", null);
 	}
 
 	public String getClassesAttribute() {
-		return getAttribute("class", LSystem.UNKOWN);
+		return StringUtils.filter(getAttribute("class", ""), '\'', '"');
 	}
 
 	public String[] getClasses() {
-		String context = getAttribute("class", "");
+		String context = StringUtils.filter(getAttribute("class", ""), '\'', '"');
 		if (context.length() == 0) {
 			return new String[] { "" };
 		}
 		return StringUtils.split(context, " ");
+	}
+
+	public CssStyleNode loadCss() {
+		if (!isLinkCssStyle()) {
+			return new CssStyleNode();
+		}
+		CssStyleSheet style = CssParser.loadText(href());
+		CssStyleBuilder builder = new CssStyleBuilder();
+		CssStyleNode node = builder.build(this, style);
+		return node;
 	}
 
 	public CssStyleSheet getStyleSheet() {
@@ -395,6 +416,14 @@ public class HtmlElement {
 			return sheet;
 		}
 		return new CssStyleSheet();
+	}
+
+	public String href() {
+		return getAttribute("href", null);
+	}
+
+	public boolean isLinkCssStyle() {
+		return isLink() && ("stylesheet".equals(getAttribute("rel")) || "text/css".equals(getAttribute("type")));
 	}
 
 	public boolean isBody() {
@@ -463,6 +492,10 @@ public class HtmlElement {
 
 	public boolean isP() {
 		return "p".equals(name);
+	}
+
+	public boolean isH() {
+		return name.length() == 2 && name.startsWith("h") && MathUtils.isNan(name.substring(1, 2));
 	}
 
 	@Override

@@ -664,7 +664,7 @@ public class TArray<T> implements Iterable<T>, IArray {
 	}
 
 	public void sort(Comparator<T> compar) {
-		if (items.length <= 1) {
+		if (size <= 1) {
 			return;
 		}
 		SortUtils.quickSort(items, compar);

@@ -25,6 +25,7 @@ import loon.opengl.GLEx;
 import loon.utils.TArray;
 import loon.utils.html.command.DisplayCommand;
 import loon.utils.html.command.ImageCommand;
+import loon.utils.html.command.LineCommand;
 import loon.utils.html.command.TextCommand;
 import loon.utils.html.css.CssDimensions.Rect;
 
@@ -48,7 +49,7 @@ public class HtmlDisplay {
 
 		Rect lastRect = null;
 
-		int sysSize = LSystem.getSystemGameFont().getHeight();
+		int sysSize = LSystem.getSystemGameFont().getHeight() + 5;
 
 		float lineWidth = 0;
 		float lineHeight = 0;
@@ -64,6 +65,16 @@ public class HtmlDisplay {
 				String tagName = node.getName();
 				DisplayCommand display = null;
 
+				if (lastRect != null) {
+					if (lineWidth - lastRect.width > width) {
+						lineWidth = 0;
+					}
+				} else {
+					if (lineWidth > width) {
+						lineWidth = 0;
+					}
+				}
+
 				if (newLine) {
 					lineWidth = 0;
 					if (lastRect != null) {
@@ -75,8 +86,12 @@ public class HtmlDisplay {
 					newLineAmount = 0;
 					newLine = false;
 				}
-
-				if ("b".equals(tagName)) {
+				if (node.isH()) {
+					display = new TextCommand(width, height);
+					display.parser(node);
+					newLine = true;
+					newLineAmount = sysSize;
+				} else if ("b".equals(tagName)) {
 					display = new TextCommand(width, height);
 					display.parser(node);
 				} else if ("font".equals(tagName)) {
@@ -97,6 +112,11 @@ public class HtmlDisplay {
 					} else {
 						lineHeight += sysSize;
 					}
+				} else if ("hr".equals(tagName)) {
+					display = new LineCommand(width, height);
+					display.parser(node);
+					newLine = true;
+					newLineAmount = sysSize + 5;
 				}
 
 				if (display != null) {
