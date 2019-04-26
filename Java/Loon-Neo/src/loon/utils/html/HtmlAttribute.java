@@ -24,6 +24,8 @@ import loon.LSysException;
 import loon.LSystem;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
+import loon.utils.html.css.CssParser;
+import loon.utils.html.css.CssStyleSheet;
 
 public class HtmlAttribute {
 
@@ -40,6 +42,18 @@ public class HtmlAttribute {
 
 	public HtmlElement getElement() {
 		return element;
+	}
+
+	public boolean isStyle() {
+		return "style".equals(name);
+	}
+
+	public CssStyleSheet getStyleSheet() {
+		if (isStyle()) {
+			CssStyleSheet sheet = CssParser.loadText(this.value);
+			return sheet;
+		}
+		return new CssStyleSheet();
 	}
 
 	public String getValue() {

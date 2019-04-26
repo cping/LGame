@@ -52,6 +52,12 @@ public class CssDimensions {
 			this.height = height;
 		}
 
+		public Rect doubleWH() {
+			this.width *= 2;
+			this.height *= 2;
+			return this;
+		}
+
 		public Rect expandedBy(EdgeSize edge) {
 			Rect rect = new Rect();
 

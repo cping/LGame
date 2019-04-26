@@ -20,21 +20,39 @@
  */
 package loon.component;
 
+import loon.LSystem;
 import loon.LTexture;
 import loon.opengl.GLEx;
+import loon.utils.html.HtmlDisplay;
+import loon.utils.html.HtmlParser;
 
 /**
- * HTML内容渲染用组件(需要等html和css解析库构建完毕再实现)
+ * HTML内容渲染用组件(HtmlDisplay构建中……此类完成度取决于HtmlDisplay的完成度……)
  */
-public class LHtmlView extends LContainer{
+public class LHtmlView extends LContainer {
+
+	private HtmlDisplay display;
+
+	public LHtmlView(int x, int y) {
+		this(x, y, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
+	}
 
 	public LHtmlView(int x, int y, int w, int h) {
 		super(x, y, w, h);
+		this.display = new HtmlDisplay(w, h);
+	}
+
+	public void loadText(String text) {
+		display.parse(HtmlParser.loadText(text));
+	}
+
+	public void loadPath(String path) {
+		display.parse(HtmlParser.parse(path));
 	}
 
 	@Override
 	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
-		
+		display.paint(g, x, y);
 	}
 
 	@Override

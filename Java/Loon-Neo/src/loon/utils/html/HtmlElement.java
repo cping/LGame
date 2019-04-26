@@ -205,6 +205,10 @@ public class HtmlElement {
 		return null;
 	}
 
+	public TArray<HtmlElement> childs() {
+		return contents;
+	}
+
 	public TArray<HtmlElement> all(String name) {
 		if (childCount() == 0) {
 			return new TArray<HtmlElement>();
@@ -362,7 +366,7 @@ public class HtmlElement {
 	}
 
 	public boolean isOnlyText() {
-		if (contents.size == 0 && tempData != null) {
+		if (attributes.size == 0 && tempData != null) {
 			return true;
 		} else {
 			return false;
@@ -375,6 +379,14 @@ public class HtmlElement {
 
 	public String getClassesAttribute() {
 		return getAttribute("class", LSystem.UNKOWN);
+	}
+
+	public String[] getClasses() {
+		String context = getAttribute("class", "");
+		if (context.length() == 0) {
+			return new String[] { "" };
+		}
+		return StringUtils.split(context, " ");
 	}
 
 	public CssStyleSheet getStyleSheet() {

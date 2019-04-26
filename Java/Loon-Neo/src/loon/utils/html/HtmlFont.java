@@ -28,7 +28,7 @@ public class HtmlFont {
 
 	protected String face;
 
-	protected int size;
+	protected float size;
 
 	protected LColor color;
 
@@ -36,7 +36,7 @@ public class HtmlFont {
 
 	protected HtmlFont(HtmlElement ele) {
 		face = ele.getAttribute("face", LSystem.UNKOWN);
-		size = ele.getIntAttribute("size", 20);
+		size = ele.getFloatAttribute("size", 2.0f);
 		String colorStr = ele.getAttribute("color", null);
 		if (colorStr == null) {
 			color = LColor.white;
@@ -50,7 +50,7 @@ public class HtmlFont {
 		return face;
 	}
 
-	public int getSize() {
+	public float getSize() {
 		return size;
 	}
 

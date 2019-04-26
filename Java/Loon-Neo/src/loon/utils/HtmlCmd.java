@@ -20,6 +20,7 @@
  */
 package loon.utils;
 
+import loon.HorizontalAlign;
 import loon.LSystem;
 import loon.canvas.LColor;
 
@@ -324,7 +325,7 @@ public class HtmlCmd extends StringKeyValue {
 	public Font fontSize(CharSequence s) {
 		return font().size(s);
 	}
-	
+
 	public Font fontSize(int s) {
 		return font().size(s);
 	}
@@ -332,6 +333,7 @@ public class HtmlCmd extends StringKeyValue {
 	public Font fontFace(CharSequence f) {
 		return font().face(f);
 	}
+
 	public HtmlCmd h1() {
 		return begin("h1");
 	}
@@ -399,13 +401,28 @@ public class HtmlCmd extends StringKeyValue {
 		return new Img(this);
 	}
 
-	public HtmlCmd img(CharSequence src) {
-		img().src(src).end();
-		return this;
+	public HtmlCmd img(CharSequence src, CharSequence w, CharSequence h) {
+		Img temp = img().src(src).width(w).height(h);
+		return temp.end();
+	}
+	
+	public HtmlCmd img(CharSequence src, int w, int h) {
+		Img temp = img().src(src).width(w).height(h);
+		return temp.end();
+	}
+
+	public HtmlCmd img(CharSequence src, CharSequence alt) {
+		Img temp = img().src(src).alt(alt);
+		return temp.end();
 	}
 
 	public HtmlCmd p() {
 		return begin("p");
+	}
+
+	public HtmlCmd p(CharSequence text, HorizontalAlign align) {
+		addValue("<p align=" + align.toString() + ">").addValue(text).addValue("</p>");
+		return this;
 	}
 
 	public HtmlCmd p(CharSequence text) {

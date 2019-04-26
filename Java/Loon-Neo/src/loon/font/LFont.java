@@ -20,6 +20,7 @@
  */
 package loon.font;
 
+import loon.LSysException;
 import loon.LSystem;
 import loon.canvas.Canvas;
 import loon.canvas.Image;
@@ -64,7 +65,7 @@ public class LFont implements IFont {
 	 * LSystem.setSystemGameFont(LFont.getDefaultFont());
 	 * 
 	 */
-	
+
 	private LTexturePack fontTempPack;
 
 	private boolean supportCacheFontPack = true;
@@ -110,6 +111,9 @@ public class LFont implements IFont {
 	}
 
 	LFont(String name, Style style, int size, boolean antialias) {
+		if (StringUtils.isEmpty(name)) {
+			throw new LSysException("Font name is null !");
+		}
 		this.textFormat = new TextFormat(new Font(name, style, MathUtils.max(1, size)), antialias);
 		this.supportCacheFontPack = LSystem.isSupportTempFont() && !LSystem.isHTML5();
 		this.fontPackMaxCache = (LSystem.isDesktop() ? 4096 : 2048) / size;
