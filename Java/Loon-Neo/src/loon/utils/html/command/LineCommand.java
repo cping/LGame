@@ -24,6 +24,7 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
 import loon.opengl.GLEx;
+import loon.utils.MathUtils;
 import loon.utils.html.HtmlElement;
 import loon.utils.html.css.CssStyleSheet;
 import loon.utils.html.css.CssDimensions.Rect;
@@ -37,7 +38,7 @@ public class LineCommand extends DisplayCommand {
 	private int offset;
 
 	public LineCommand(CssStyleSheet sheet, float width, float height, LColor color) {
-		super(sheet,"Line", width, height, color);
+		super(sheet, "Line", width, height, color);
 	}
 
 	@Override
@@ -52,8 +53,8 @@ public class LineCommand extends DisplayCommand {
 
 	@Override
 	public void paint(GLEx g, float x, float y) {
-		g.draw(texture, offset + x, rect.y + y + space + (rect.height * offset), rect.width - offset, rect.height,
-				defaultColor);
+		g.draw(texture, offset + x, rect.y + y + space + (rect.height * offset), rect.width - offset,
+				MathUtils.min(rect.height, 1), defaultColor);
 	}
 
 	@Override
