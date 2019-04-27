@@ -22,7 +22,6 @@ package loon.utils.html.command;
 
 import loon.HorizontalAlign;
 import loon.LSystem;
-import loon.LTexture;
 import loon.canvas.LColor;
 import loon.component.Print;
 import loon.font.Font.Style;
@@ -34,11 +33,12 @@ import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 import loon.utils.html.HtmlElement;
+import loon.utils.html.css.CssStyleSheet;
 
 public class TextCommand extends DisplayCommand {
 
-	public TextCommand(float width, float height, LColor color) {
-		super("Text", width, height, color);
+	public TextCommand(CssStyleSheet sheet, float width, float height, LColor color) {
+		super(sheet, "Text", width, height, color);
 	}
 
 	protected String text;

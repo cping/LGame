@@ -553,7 +553,7 @@ public class HtmlCmd extends StringKeyValue {
 	}
 
 	public HtmlCmd linkCss(CharSequence path) {
-		addValue("<link rel=\"stylesheet\"> type=\"text/css\" href=\"").addValue(path + "\"/>");
+		addValue("<link rel=\"stylesheet\" type=\"text/css\" href=\"").addValue(path + "\"/>");
 		return this;
 	}
 

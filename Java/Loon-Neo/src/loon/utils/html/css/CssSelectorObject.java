@@ -20,6 +20,8 @@
  */
 package loon.utils.html.css;
 
+import loon.utils.StringUtils;
+
 public class CssSelectorObject {
 
 	public CssSelector selector;
@@ -28,10 +30,12 @@ public class CssSelectorObject {
 
 		CssSelectorTemp temp = new CssSelectorTemp();
 
-		temp.id = (selector.id.isEmpty() ? 0 : 1);
-		temp.clazz = selector.classNames.size();
-		temp.tag = (selector.tagName.isEmpty() ? 0 : 1);
-
+		if (selector != null) {
+			temp.id = (StringUtils.isEmpty(selector.id) ? 0 : 1);
+			temp.clazz = selector.classNames.size();
+			temp.tag = (StringUtils.isEmpty(selector.tagName) ? 0 : 1);
+		}
+		
 		return temp.get();
 	}
 
@@ -40,7 +44,7 @@ public class CssSelectorObject {
 		CssSelectorTemp temp = new CssSelectorTemp();
 
 		if (selector != null & selector.id != null) {
-			temp.id = (selector.id.isEmpty() ? 0 : 1);
+			temp.id = (StringUtils.isEmpty(selector.id) ? 0 : 1);
 		} else {
 			temp.id = 0;
 		}
@@ -48,7 +52,7 @@ public class CssSelectorObject {
 		temp.clazz = selector.classNames.size();
 
 		if (selector != null & selector.tagName != null) {
-			temp.tag = (selector.tagName.isEmpty() ? 0 : 1);
+			temp.tag = (StringUtils.isEmpty(selector.tagName) ? 0 : 1);
 		} else {
 			temp.tag = 0;
 		}

@@ -27,6 +27,7 @@ import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 import loon.utils.html.HtmlElement;
+import loon.utils.html.css.CssStyleSheet;
 import loon.utils.html.css.CssDimensions.Rect;
 
 public class ImageCommand extends DisplayCommand {
@@ -39,8 +40,8 @@ public class ImageCommand extends DisplayCommand {
 
 	private int height;
 
-	public ImageCommand(float width, float height, LColor color) {
-		super("Image", width, height, color);
+	public ImageCommand(CssStyleSheet sheet, float width, float height, LColor color) {
+		super(sheet,"Image", width, height, color);
 	}
 
 	@Override

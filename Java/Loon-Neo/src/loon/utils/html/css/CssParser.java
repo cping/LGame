@@ -23,6 +23,7 @@ package loon.utils.html.css;
 import java.util.Comparator;
 
 import loon.BaseIO;
+import loon.LSystem;
 import loon.canvas.LColor;
 import loon.utils.CharParser;
 import loon.utils.StringUtils;
@@ -88,6 +89,7 @@ public class CssParser extends CharParser {
 			default:
 				char chr = nextChar();
 				if (!(StringUtils.isAsciiLetterDiait(chr))) {
+					baseSelector.tagName = LSystem.UNKOWN;
 					return baseSelector;
 				}
 				String tagName = parseName();
@@ -139,10 +141,9 @@ public class CssParser extends CharParser {
 				if (selector1 == null || selector2 == null) {
 					return 0;
 				}
-				return selector2.getSelectorTempString().compareTo(selector1.getSelectorTempString());
+				return selector1.getSelectorTempString().compareTo(selector2.getSelectorTempString());
 			}
 		});
-		
 
 		selectors.reverse();
 
@@ -191,7 +192,7 @@ public class CssParser extends CharParser {
 		if (unitStr.equals("px")) {
 			return CssUnit.PX();
 		} else {
-			return null;
+			return CssUnit.PT();
 		}
 	}
 

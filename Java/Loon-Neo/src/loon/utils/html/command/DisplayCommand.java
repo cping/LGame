@@ -24,12 +24,15 @@ import loon.LRelease;
 import loon.canvas.LColor;
 import loon.opengl.GLEx;
 import loon.utils.html.HtmlElement;
+import loon.utils.html.css.CssStyleSheet;
 import loon.utils.html.css.CssDimensions.Rect;
 
 /**
  * 命令存储用类,转换html标记字符串为对应loon渲染指令并保存,在需要的场合渲染展示
  */
 public abstract class DisplayCommand implements LRelease {
+
+	protected CssStyleSheet styleSheet;
 
 	protected Rect rect;
 
@@ -41,7 +44,8 @@ public abstract class DisplayCommand implements LRelease {
 
 	protected final float screenHeight;
 
-	public DisplayCommand(String name, float width, float height, LColor color) {
+	public DisplayCommand(CssStyleSheet sheet, String name, float width, float height, LColor color) {
+		this.styleSheet = sheet;
 		this.name = name;
 		this.defaultColor = color;
 		this.screenWidth = width;
@@ -69,6 +73,14 @@ public abstract class DisplayCommand implements LRelease {
 		if (rect != null) {
 			rect.y += height + 1;
 		}
+	}
+
+	public CssStyleSheet getStyleSheet() {
+		return styleSheet;
+	}
+
+	public void setStyleSheet(CssStyleSheet styleSheet) {
+		this.styleSheet = styleSheet;
 	}
 
 	public abstract void update();

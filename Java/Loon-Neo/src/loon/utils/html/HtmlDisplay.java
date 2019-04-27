@@ -41,14 +41,14 @@ public class HtmlDisplay {
 	private TArray<DisplayCommand> displays;
 
 	private float width, height;
-	
+
 	private CssStyleSheet cssSheet;
 
 	private CssDimensions cssBlock;
 
 	private LColor defaultColor;
 
-	public HtmlDisplay(float w, float h,LColor color) {
+	public HtmlDisplay(float w, float h, LColor color) {
 		this.cssBlock = CssDimensions.createDimension(w, h);
 		this.displays = new TArray<DisplayCommand>();
 		this.width = w;
@@ -78,6 +78,8 @@ public class HtmlDisplay {
 				String tagName = node.getName();
 				DisplayCommand display = null;
 
+				cssSheet = node.getStyleSheet();
+
 				if (lastRect != null) {
 					if (lineWidth - lastRect.width > width) {
 						lineWidth = 0;
@@ -101,24 +103,30 @@ public class HtmlDisplay {
 				}
 
 				if (node.isH()) {
-					display = new TextCommand(width, height, defaultColor);
+					display = new TextCommand(cssSheet, width, height, defaultColor);
 					display.parser(node);
 					newLine = true;
 					newLineAmount = sysSize;
 				} else if ("a".equals(tagName)) {
-					display = new TextCommand(width, height, defaultColor);
+					display = new TextCommand(cssSheet, width, height, defaultColor);
 					display.parser(node);
 				} else if ("b".equals(tagName)) {
-					display = new TextCommand(width, height, defaultColor);
+					display = new TextCommand(cssSheet, width, height, defaultColor);
+					display.parser(node);
+				} else if ("label".equals(tagName)) {
+					display = new TextCommand(cssSheet, width, height, defaultColor);
+					display.parser(node);
+				} else if ("span".equals(tagName)) {
+					display = new TextCommand(cssSheet, width, height, defaultColor);
 					display.parser(node);
 				} else if ("font".equals(tagName)) {
-					display = new TextCommand(width, height, defaultColor);
+					display = new TextCommand(cssSheet, width, height, defaultColor);
 					display.parser(node);
 				} else if ("img".equals(tagName)) {
-					display = new ImageCommand(width, height, defaultColor);
+					display = new ImageCommand(cssSheet, width, height, defaultColor);
 					display.parser(node);
 				} else if ("p".equals(tagName)) {
-					display = new TextCommand(width, height, defaultColor);
+					display = new TextCommand(cssSheet, width, height, defaultColor);
 					display.parser(node);
 					newLine = true;
 					newLineAmount = sysSize;
@@ -130,7 +138,7 @@ public class HtmlDisplay {
 						lineHeight += sysSize;
 					}
 				} else if ("hr".equals(tagName)) {
-					display = new LineCommand(width, height, defaultColor);
+					display = new LineCommand(cssSheet, width, height, defaultColor);
 					display.parser(node);
 					newLine = true;
 					newLineAmount = sysSize + 5;

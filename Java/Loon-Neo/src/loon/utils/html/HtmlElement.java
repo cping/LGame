@@ -424,9 +424,17 @@ public class HtmlElement {
 	}
 
 	public CssStyleSheet getStyleSheet() {
-		if (isStyle()) {
-			CssStyleSheet sheet = CssParser.loadText(getData());
-			return sheet;
+		if (isStyle() || isLinkCssStyle()) {
+			String path = href();
+			if (StringUtils.isEmpty(path)) {
+				String text = getData();
+				if (StringUtils.isEmpty(text)) {
+					throw new LSysException(name + " style is null !");
+				}
+				return CssParser.loadText(text);
+			} else {
+				return CssParser.parse(path);
+			}
 		}
 		return new CssStyleSheet();
 	}
@@ -436,7 +444,8 @@ public class HtmlElement {
 	}
 
 	public boolean isLinkCssStyle() {
-		return isLink() && ("stylesheet".equals(getAttribute("rel")) || "text/css".equals(getAttribute("type")));
+		return isLink()
+				&& ("stylesheet".equals(getAttribute("rel", null)) || "text/css".equals(getAttribute("type", null)));
 	}
 
 	public boolean isBody() {

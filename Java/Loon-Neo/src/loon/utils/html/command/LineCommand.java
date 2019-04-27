@@ -25,6 +25,7 @@ import loon.LTexture;
 import loon.canvas.LColor;
 import loon.opengl.GLEx;
 import loon.utils.html.HtmlElement;
+import loon.utils.html.css.CssStyleSheet;
 import loon.utils.html.css.CssDimensions.Rect;
 
 public class LineCommand extends DisplayCommand {
@@ -35,8 +36,8 @@ public class LineCommand extends DisplayCommand {
 
 	private int offset;
 
-	public LineCommand(float width, float height, LColor color) {
-		super("Line", width, height, color);
+	public LineCommand(CssStyleSheet sheet, float width, float height, LColor color) {
+		super(sheet,"Line", width, height, color);
 	}
 
 	@Override

@@ -26,12 +26,16 @@ public class CssStyleSheet {
 
 	protected TArray<CssRule> rules = new TArray<CssRule>();
 
+	public int size() {
+		return rules.size;
+	}
+
 	public TArray<CssRule> getRules() {
 		return rules;
 	}
-	
+
 	@Override
-	public String toString(){
+	public String toString() {
 		return rules.toString();
 	}
 }
