@@ -60,8 +60,9 @@ public class CssStyleNode {
 
 	public CssValue find(CssValue defualtValue, String... args) {
 		for (int i = 0; i < args.length; i++) {
-			if (values.get(args[i]) != null)
-				return values.get(args[i]);
+			String name = args[i];
+			if (values.get(name) != null)
+				return values.get(name);
 		}
 		return defualtValue;
 	}

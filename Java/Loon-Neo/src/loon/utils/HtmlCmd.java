@@ -543,6 +543,11 @@ public class HtmlCmd extends StringKeyValue {
 		return this;
 	}
 
+	public HtmlCmd styleCss(CharSequence text) {
+		addValue("<style type=\"text/css\">").addValue(text).addValue("</style>");
+		return this;
+	}
+	
 	public HtmlCmd style() {
 		return begin("style");
 	}

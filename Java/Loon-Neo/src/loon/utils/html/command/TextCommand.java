@@ -22,7 +22,9 @@ package loon.utils.html.command;
 
 import loon.HorizontalAlign;
 import loon.LSystem;
+import loon.LTexture;
 import loon.canvas.LColor;
+import loon.component.Print;
 import loon.font.Font.Style;
 import loon.font.FontUtils;
 import loon.font.IFont;
@@ -32,12 +34,11 @@ import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 import loon.utils.html.HtmlElement;
-import loon.utils.html.css.CssDimensions.Rect;
 
 public class TextCommand extends DisplayCommand {
 
-	public TextCommand(float width, float height) {
-		super("Text", width, height);
+	public TextCommand(float width, float height, LColor color) {
+		super("Text", width, height, color);
 	}
 
 	protected String text;
@@ -48,11 +49,19 @@ public class TextCommand extends DisplayCommand {
 
 	private HorizontalAlign align;
 
+	private boolean dirty;
+	
+	private HtmlElement node;
+
+	private int sysSize;
+
 	@Override
 	public void parser(HtmlElement e) {
 
-		int sysSize = LSystem.getSystemGameFont().getSize();
+		sysSize = LSystem.getSystemGameFont().getSize();
 		String sysFont = LSystem.getSystemGameFontName().toLowerCase();
+
+		this.node = e;
 
 		if (e.isFont()) {
 			text = e.getData();
@@ -73,23 +82,24 @@ public class TextCommand extends DisplayCommand {
 			}
 			String colorStr = e.getAttribute("color", null);
 			if (colorStr == null) {
-				color = LColor.white;
+				color = defaultColor;
 			} else {
 				color = LColor.decode(colorStr);
 			}
 		} else if (e.isH()) {
 			text = e.getData();
-			color = LColor.black;
+			color = defaultColor;
 			int v = Integer.parseInt(e.getName().substring(1, 2)) - 1;
 			font = LFont.getFont(sysFont, Style.BOLD, 40 - (v * 4));
+		} else if (e.isA()) {
+			text = e.getData();
+			color = defaultColor;
+			font = LFont.getFont(sysFont, Style.BOLD_ITALIC, LSystem.getSystemGameFont().getSize());
 		} else {
 			text = e.getData();
-			color = LColor.black;
+			color = defaultColor;
 			font = LSystem.getSystemGameFont();
 		}
-
-		PointF fontSize = FontUtils.getTextWidthAndHeight(font, text);
-		rect = new Rect(0, 0, fontSize.x, fontSize.y);
 
 		String alignName = e.getAttribute("align", null);
 		if (!StringUtils.isEmpty(alignName)) {
@@ -104,7 +114,21 @@ public class TextCommand extends DisplayCommand {
 			align = HorizontalAlign.LEFT;
 		}
 
-		if (e.isP()) {
+		dirty = true;
+	}
+
+	@Override
+	public void update() {
+
+		if (dirty && text != null) {
+			text = Print.prepareString(font, text, screenWidth - rect.x);
+			PointF fontSize = FontUtils.getTextWidthAndHeight(font, text);
+			rect.width = fontSize.x;
+			rect.height = fontSize.y;
+			dirty = false;
+		}
+
+		if (node != null && node.isP()) {
 			rect.y += sysSize;
 			rect.height += sysSize;
 		}
@@ -126,6 +150,11 @@ public class TextCommand extends DisplayCommand {
 			break;
 		}
 		g.setFont(temp);
+	}
+
+	@Override
+	public void close() {
+
 	}
 
 }

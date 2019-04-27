@@ -42,17 +42,49 @@ import loon.utils.TArray;
  */
 public class Print implements FontSet<Print>, LRelease {
 
-	public enum Mode {
+	public static enum Mode {
 		NONE, LEFT, RIGHT, CENTER
 	}
 
-	// they is other char flags
-	private final static char[] _wrapchars = { '\u3002', '\u3001', '\uff0c', '\uff0e', '\u300d', '\uff3d', '\u3011',
-			'\u300f', '\u30fc', '\uff5e', '\uff09', '\u3041', '\u3043', '\u3045', '\u3047', '\u3049', '\u30a1',
-			'\u30a3', '\u30a5', '\u30a7', '\u30a9', '\u30c3', '\u30e3', '\u30e5', '\u30e7', '\u30ee', '\u308e',
-			'\u3083', '\u3085', '\u3087', '\u3063', '\u2026', '\uff0d', '\uff01', '\uff1f' };
+	protected static class WarpChars {
 
-	private final static int _otherFlagsSize = _wrapchars.length;
+		// they is other char flags
+		protected final static char[] TABLE = { '\u3002', '\u3001', '\uff0c', '\uff0e', '\u300d', '\uff3d', '\u3011',
+				'\u300f', '\u30fc', '\uff5e', '\uff09', '\u3041', '\u3043', '\u3045', '\u3047', '\u3049', '\u30a1',
+				'\u30a3', '\u30a5', '\u30a7', '\u30a9', '\u30c3', '\u30e3', '\u30e5', '\u30e7', '\u30ee', '\u308e',
+				'\u3083', '\u3085', '\u3087', '\u3063', '\u2026', '\uff0d', '\uff01', '\uff1f' };
+	}
+
+	private final static int _otherFlagsSize = 35;
+
+	/**
+	 * 解析并重复字符串,为超过指定长度的字符串加换行符
+	 * 
+	 * @param font
+	 * @param text
+	 * @param width
+	 * @return
+	 */
+	public static String prepareString(IFont font, String text, float width) {
+
+		StringBuilder string = new StringBuilder();
+		int lineWidth = 0;
+		char ch = text.charAt(0);
+		int fontWidth = font.charWidth(ch)-4;
+
+		for (int i = 0; i < text.length(); i++) {
+			ch = text.charAt(i);
+			string.append(ch);
+			lineWidth += fontWidth;
+
+			if (lineWidth > width) {
+				lineWidth = 0;
+				string.append("\n");
+			}
+		}
+
+		return string.toString();
+	}
 
 	/**
 	 * 返回指定字符串，匹配指定字体后，在指定宽度内的每行应显示字符串.
@@ -98,7 +130,7 @@ public class Print implements FontSet<Print>, LRelease {
 				line = str.substring(0, i);
 
 				for (int j = 0; j < _otherFlagsSize; j++) {
-					if (c == _wrapchars[j]) {
+					if (c == WarpChars.TABLE[j]) {
 						int delta = font.stringWidth(line + c) - width;
 						if (delta < 15) {
 							line = str.substring(0, ++i);

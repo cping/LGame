@@ -20,6 +20,8 @@
  */
 package loon.utils.html.command;
 
+import loon.LRelease;
+import loon.canvas.LColor;
 import loon.opengl.GLEx;
 import loon.utils.html.HtmlElement;
 import loon.utils.html.css.CssDimensions.Rect;
@@ -27,9 +29,11 @@ import loon.utils.html.css.CssDimensions.Rect;
 /**
  * 命令存储用类,转换html标记字符串为对应loon渲染指令并保存,在需要的场合渲染展示
  */
-public abstract class DisplayCommand {
+public abstract class DisplayCommand implements LRelease {
 
 	protected Rect rect;
+
+	protected LColor defaultColor;
 
 	private final String name;
 
@@ -37,8 +41,9 @@ public abstract class DisplayCommand {
 
 	protected final float screenHeight;
 
-	public DisplayCommand(String name, float width, float height) {
+	public DisplayCommand(String name, float width, float height, LColor color) {
 		this.name = name;
+		this.defaultColor = color;
 		this.screenWidth = width;
 		this.screenHeight = height;
 	}
@@ -65,6 +70,8 @@ public abstract class DisplayCommand {
 			rect.y += height + 1;
 		}
 	}
+
+	public abstract void update();
 
 	public abstract void parser(HtmlElement e);
 

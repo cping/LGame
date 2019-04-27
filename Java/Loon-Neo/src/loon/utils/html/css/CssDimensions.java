@@ -22,6 +22,18 @@ package loon.utils.html.css;
 
 public class CssDimensions {
 
+	public final static CssDimensions createDimension(float w, float h) {
+
+		CssDimensions block = new CssDimensions();
+
+		block.content = new Rect(0.0f, 0.0f, w, h);
+		block.border = new EdgeSize();
+		block.margin = new EdgeSize();
+		block.padding = new EdgeSize();
+		
+		return block;
+	}
+
 	public static class EdgeSize {
 
 		public float left = 0.0f;

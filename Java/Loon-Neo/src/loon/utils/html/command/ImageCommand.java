@@ -22,6 +22,7 @@ package loon.utils.html.command;
 
 import loon.LSystem;
 import loon.LTexture;
+import loon.canvas.LColor;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
@@ -38,8 +39,8 @@ public class ImageCommand extends DisplayCommand {
 
 	private int height;
 
-	public ImageCommand(float width, float height) {
-		super("Image", width, height);
+	public ImageCommand(float width, float height, LColor color) {
+		super("Image", width, height, color);
 	}
 
 	@Override
@@ -91,6 +92,19 @@ public class ImageCommand extends DisplayCommand {
 	@Override
 	public void paint(GLEx g, float x, float y) {
 		g.draw(texture, rect.x + x, rect.y + y, rect.width, rect.height);
+	}
+
+	@Override
+	public void update() {
+
+	}
+
+	@Override
+	public void close() {
+		if (texture != null) {
+			texture.close();
+			texture = null;
+		}
 	}
 
 }

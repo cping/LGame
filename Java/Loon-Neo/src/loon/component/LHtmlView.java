@@ -22,6 +22,7 @@ package loon.component;
 
 import loon.LSystem;
 import loon.LTexture;
+import loon.canvas.LColor;
 import loon.opengl.GLEx;
 import loon.utils.html.HtmlDisplay;
 import loon.utils.html.HtmlParser;
@@ -34,12 +35,16 @@ public class LHtmlView extends LContainer {
 	private HtmlDisplay display;
 
 	public LHtmlView(int x, int y) {
-		this(x, y, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
+		this(x, y, LColor.black);
 	}
 
-	public LHtmlView(int x, int y, int w, int h) {
+	public LHtmlView(int x, int y, LColor c) {
+		this(x, y, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), c);
+	}
+
+	public LHtmlView(int x, int y, int w, int h, LColor c) {
 		super(x, y, w, h);
-		this.display = new HtmlDisplay(w, h);
+		this.display = new HtmlDisplay(w, h, c);
 	}
 
 	public void loadText(String text) {
@@ -53,6 +58,10 @@ public class LHtmlView extends LContainer {
 	@Override
 	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
 		display.paint(g, x, y);
+	}
+
+	public HtmlDisplay getHtmlDisplay() {
+		return display;
 	}
 
 	@Override

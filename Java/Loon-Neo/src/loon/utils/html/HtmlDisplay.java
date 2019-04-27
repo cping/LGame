@@ -21,26 +21,39 @@
 package loon.utils.html;
 
 import loon.LSystem;
+import loon.canvas.LColor;
 import loon.opengl.GLEx;
+import loon.utils.MathUtils;
 import loon.utils.TArray;
 import loon.utils.html.command.DisplayCommand;
 import loon.utils.html.command.ImageCommand;
 import loon.utils.html.command.LineCommand;
 import loon.utils.html.command.TextCommand;
+import loon.utils.html.css.CssDimensions;
 import loon.utils.html.css.CssDimensions.Rect;
+import loon.utils.html.css.CssStyleSheet;
 
 /**
  * 构建中,逐渐实现w3c标准……
  */
 public class HtmlDisplay {
 
-	private TArray<DisplayCommand> displays = new TArray<DisplayCommand>();
+	private TArray<DisplayCommand> displays;
 
 	private float width, height;
+	
+	private CssStyleSheet cssSheet;
 
-	public HtmlDisplay(float w, float h) {
+	private CssDimensions cssBlock;
+
+	private LColor defaultColor;
+
+	public HtmlDisplay(float w, float h,LColor color) {
+		this.cssBlock = CssDimensions.createDimension(w, h);
+		this.displays = new TArray<DisplayCommand>();
 		this.width = w;
 		this.height = h;
+		defaultColor = color;
 	}
 
 	public void parse(HtmlElement element) {
@@ -86,22 +99,26 @@ public class HtmlDisplay {
 					newLineAmount = 0;
 					newLine = false;
 				}
+
 				if (node.isH()) {
-					display = new TextCommand(width, height);
+					display = new TextCommand(width, height, defaultColor);
 					display.parser(node);
 					newLine = true;
 					newLineAmount = sysSize;
+				} else if ("a".equals(tagName)) {
+					display = new TextCommand(width, height, defaultColor);
+					display.parser(node);
 				} else if ("b".equals(tagName)) {
-					display = new TextCommand(width, height);
+					display = new TextCommand(width, height, defaultColor);
 					display.parser(node);
 				} else if ("font".equals(tagName)) {
-					display = new TextCommand(width, height);
+					display = new TextCommand(width, height, defaultColor);
 					display.parser(node);
 				} else if ("img".equals(tagName)) {
-					display = new ImageCommand(width, height);
+					display = new ImageCommand(width, height, defaultColor);
 					display.parser(node);
 				} else if ("p".equals(tagName)) {
-					display = new TextCommand(width, height);
+					display = new TextCommand(width, height, defaultColor);
 					display.parser(node);
 					newLine = true;
 					newLineAmount = sysSize;
@@ -113,7 +130,7 @@ public class HtmlDisplay {
 						lineHeight += sysSize;
 					}
 				} else if ("hr".equals(tagName)) {
-					display = new LineCommand(width, height);
+					display = new LineCommand(width, height, defaultColor);
 					display.parser(node);
 					newLine = true;
 					newLineAmount = sysSize + 5;
@@ -121,10 +138,18 @@ public class HtmlDisplay {
 
 				if (display != null) {
 
+					float height = (lastRect == null) ? 0 : lastRect.height;
+
 					lastRect = display.getRect();
 
 					display.addX(lineWidth);
 					display.addY(lineHeight);
+
+					display.update();
+
+					if (height != 0 && lineWidth != 0) {
+						lastRect.height = MathUtils.max(lastRect.height, height);
+					}
 
 					lineWidth += lastRect.width;
 
@@ -143,5 +168,25 @@ public class HtmlDisplay {
 				command.paint(g, x, y);
 			}
 		}
+	}
+
+	public CssDimensions getCssBlock() {
+		return cssBlock;
+	}
+
+	public LColor getDefaultColor() {
+		return defaultColor.cpy();
+	}
+
+	public void setDefaultColor(LColor defaultColor) {
+		this.defaultColor = defaultColor;
+	}
+
+	public CssStyleSheet getCssSheet() {
+		return cssSheet;
+	}
+
+	public void setCssSheet(CssStyleSheet cssSheet) {
+		this.cssSheet = cssSheet;
 	}
 }

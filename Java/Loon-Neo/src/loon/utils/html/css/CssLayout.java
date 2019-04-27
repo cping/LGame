@@ -32,10 +32,16 @@ public class CssLayout {
 
 	protected TArray<CssLayout> children;
 
+	protected int defaultHeight = 5;
+
 	public CssLayout(CssLayoutType newType) {
 		this.dimensions = new CssDimensions();
 		this.children = new TArray<CssLayout>();
 		layoutType = newType;
+	}
+
+	public CssLayoutType getLayoutType() {
+		return layoutType;
 	}
 
 	public CssStyleNode getStyleNode() {
@@ -156,6 +162,7 @@ public class CssLayout {
 		}
 
 		this.dimensions.content.width = width.toPx();
+		this.dimensions.content.height = defaultHeight;
 		this.dimensions.padding.left = leftPadding.toPx();
 		this.dimensions.padding.right = rightPadding.toPx();
 		this.dimensions.margin.right = rightMargin.toPx();
@@ -164,7 +171,7 @@ public class CssLayout {
 	}
 
 	private void layoutBlock(CssDimensions conBlock) {
-		
+
 		calculateBlockWidth(conBlock);
 
 		calculateBlockPosition(conBlock);
@@ -194,13 +201,13 @@ public class CssLayout {
 	}
 
 	private void layoutBlockChildren() {
-		int minHeight = MathUtils.min(20, LSystem.getSystemGameFont().getSize());
-		if (children.size() > 0)
+		int minHeight = MathUtils.max(defaultHeight, LSystem.getSystemGameFont().getHeight());
+		if (children.size() > 0) {
 			for (CssLayout child : children) {
 				child.layout(dimensions);
 				this.dimensions.content.height += child.dimensions.extraBox().height;
 			}
-		else {
+		} else {
 			this.dimensions.content.height = minHeight + this.dimensions.content.height
 					+ this.dimensions.extraBox().height;
 		}

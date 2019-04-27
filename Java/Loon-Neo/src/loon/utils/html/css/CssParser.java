@@ -139,9 +139,10 @@ public class CssParser extends CharParser {
 				if (selector1 == null || selector2 == null) {
 					return 0;
 				}
-				return (selector1.getSelectorTempString().compareTo(selector2.getSelectorTempString()));
+				return selector2.getSelectorTempString().compareTo(selector1.getSelectorTempString());
 			}
 		});
+		
 
 		selectors.reverse();
 

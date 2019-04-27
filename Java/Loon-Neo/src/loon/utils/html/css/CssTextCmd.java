@@ -18,50 +18,45 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.utils.html.command;
+package loon.utils.html.css;
 
-import loon.LSystem;
-import loon.LTexture;
 import loon.canvas.LColor;
+import loon.component.Print;
 import loon.opengl.GLEx;
-import loon.utils.html.HtmlElement;
 import loon.utils.html.css.CssDimensions.Rect;
 
-public class LineCommand extends DisplayCommand {
+public class CssTextCmd extends CssCmd {
 
-	private LTexture texture;
+	public Rect rect;
 
-	private int space;
+	public String text;
 
-	private int offset;
+	public float offset;
 
-	public LineCommand(float width, float height, LColor color) {
-		super("Line", width, height, color);
-	}
+	private boolean dirty;
 
-	@Override
-	public void parser(HtmlElement e) {
+	private String tempText;
+
+	public CssTextCmd(float w, float h) {
+		super(w, h);
+		dirty = true;
 		offset = 4;
-		space = LSystem.getSystemGameFont().getHeight();
-		texture = LSystem.base().graphics().finalColorTex();
-		if (e.isAttrEmpty()) {
-			rect = new Rect(offset, 0, screenWidth - offset, 1);
-		}
 	}
 
 	@Override
 	public void paint(GLEx g, float x, float y) {
-		g.draw(texture, offset + x, rect.y + y + space + (rect.height * offset), rect.width - offset, rect.height,
-				defaultColor);
-	}
-
-	@Override
-	public void update() {
-
-	}
-
-	@Override
-	public void close() {
+		if (rect != null) {
+			if (x + rect.x + g.getFont().stringWidth(text) + offset < rect.height) {
+				g.drawString(text, x + rect.x + offset, y + rect.y + offset, LColor.white);
+			} else {
+				if (dirty) {
+					tempText = Print.prepareString(g.getFont(), text,
+							rect.width - offset - rect.x - offset - g.getFont().getSize() * 3);
+					dirty = false;
+				}
+				g.drawString(tempText, x + rect.x + offset, y + rect.y + offset, LColor.white);
+			}
+		}
 
 	}
 

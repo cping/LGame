@@ -18,50 +18,36 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.utils.html.command;
+package loon.utils.html.css;
 
 import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
 import loon.opengl.GLEx;
-import loon.utils.html.HtmlElement;
 import loon.utils.html.css.CssDimensions.Rect;
 
-public class LineCommand extends DisplayCommand {
+public class CssColorCmd extends CssCmd {
 
+	private LColor displayColor = LColor.white.cpy();
+	public CssColor color;
+	public Rect rect;
 	private LTexture texture;
 
-	private int space;
-
-	private int offset;
-
-	public LineCommand(float width, float height, LColor color) {
-		super("Line", width, height, color);
-	}
-
-	@Override
-	public void parser(HtmlElement e) {
-		offset = 4;
-		space = LSystem.getSystemGameFont().getHeight();
+	public CssColorCmd(float w,float h) {
+		super(w, h);
 		texture = LSystem.base().graphics().finalColorTex();
-		if (e.isAttrEmpty()) {
-			rect = new Rect(offset, 0, screenWidth - offset, 1);
-		}
 	}
 
 	@Override
 	public void paint(GLEx g, float x, float y) {
-		g.draw(texture, offset + x, rect.y + y + space + (rect.height * offset), rect.width - offset, rect.height,
-				defaultColor);
-	}
 
-	@Override
-	public void update() {
+		if (color != null) {
+			displayColor.setColor(color.r, color.g, color.b, color.a);
+		}
 
-	}
-
-	@Override
-	public void close() {
+		if (rect != null) {
+			g.draw(texture, rect.x, rect.y, rect.width, rect.height, displayColor);
+		}
 
 	}
 

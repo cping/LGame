@@ -29,6 +29,10 @@ import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
+import loon.utils.html.css.CssDimensions;
+import loon.utils.html.css.CssDisplayBuilder;
+import loon.utils.html.css.CssLayout;
+import loon.utils.html.css.CssLayoutBuilder;
 import loon.utils.html.css.CssParser;
 import loon.utils.html.css.CssStyleBuilder;
 import loon.utils.html.css.CssStyleNode;
@@ -408,6 +412,15 @@ public class HtmlElement {
 		CssStyleBuilder builder = new CssStyleBuilder();
 		CssStyleNode node = builder.build(this, style);
 		return node;
+	}
+
+	public CssDisplayBuilder createCSS(float w, float h) {
+		CssDimensions dimensions = CssDimensions.createDimension(w, h);
+		CssDisplayBuilder builder = new CssDisplayBuilder();
+		CssLayoutBuilder layouyBuilder = new CssLayoutBuilder();
+		CssLayout layout = layouyBuilder.layoutTree(loadCss(), dimensions);
+		builder.build(layout);
+		return builder;
 	}
 
 	public CssStyleSheet getStyleSheet() {
