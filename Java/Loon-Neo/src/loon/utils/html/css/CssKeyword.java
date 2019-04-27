@@ -22,15 +22,13 @@ package loon.utils.html.css;
 
 public class CssKeyword extends CssValue {
 
-	protected String keyString;
-
 	public CssKeyword(String key) {
-		this.keyString = key;
+		super("Text");
 		super.valueString = key;
 	}
 
 	public String getKeyword() {
-		return this.keyString;
+		return this.valueString;
 	}
 
 	@Override

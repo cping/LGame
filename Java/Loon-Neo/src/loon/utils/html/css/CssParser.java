@@ -89,7 +89,6 @@ public class CssParser extends CharParser {
 			default:
 				char chr = nextChar();
 				if (!(StringUtils.isAsciiLetterDiait(chr))) {
-					baseSelector.tagName = LSystem.UNKOWN;
 					return baseSelector;
 				}
 				String tagName = parseName();
@@ -141,6 +140,7 @@ public class CssParser extends CharParser {
 				if (selector1 == null || selector2 == null) {
 					return 0;
 				}
+
 				return selector1.getSelectorTempString().compareTo(selector2.getSelectorTempString());
 			}
 		});
@@ -152,7 +152,7 @@ public class CssParser extends CharParser {
 
 	protected String parseName() {
 		StringBuilder sb = new StringBuilder();
-		while (!eof() && StringUtils.isAsciiLetterDiait(nextChar())) {
+		while (!eof() && (StringUtils.isAsciiLetterDiait(nextChar()) || ' ' == nextChar())) {
 			char consumedChar = consumeChar();
 			sb.append(consumedChar);
 		}
@@ -163,16 +163,17 @@ public class CssParser extends CharParser {
 		if (!(consumeChar() == '#')) {
 			return null;
 		}
+
 		String colorString = context.substring(poistion - 1, poistion += 6);
 		int index = colorString.indexOf(';');
 		if (index != -1) {
 			colorString = colorString.substring(0, index);
-			poistion -= index;
+			poistion -= index - 1;
 		} else {
 			index = colorString.indexOf('}');
 			if (index != -1) {
 				colorString = colorString.substring(0, index);
-				poistion -= index;
+				poistion -= index - 1;
 			}
 		}
 		LColor color = new LColor(colorString);
@@ -207,7 +208,8 @@ public class CssParser extends CharParser {
 		} else if (nextChar() == '#') {
 			value = parseColor();
 		} else {
-			value = new CssKeyword(parseName());
+			String name = parseName();
+			value = new CssKeyword(name);
 		}
 		return value;
 	}

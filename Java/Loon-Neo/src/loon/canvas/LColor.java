@@ -985,8 +985,12 @@ public class LColor implements Serializable {
 			if (c.startsWith("#")) {
 				return hexToColor(c.substring(1));
 			} else {
-				return new LColor(Integer.parseInt(c.substring(0, 2), 16), Integer.parseInt(c.substring(2, 4), 16),
-						Integer.parseInt(c.substring(4, 6), 16));
+				String temp = c;
+				if (temp.length() < 6) {
+					temp = MathUtils.addZeros(temp, 6, true);
+				}
+				return new LColor(Integer.parseInt(temp.substring(0, 2), 16),
+						Integer.parseInt(temp.substring(2, 4), 16), Integer.parseInt(temp.substring(4, 6), 16));
 			}
 		} catch (Throwable e) {
 			return new LColor();
@@ -1226,7 +1230,7 @@ public class LColor implements Serializable {
 	public final static LColor findName(String colorName) {
 		return LColorList.get().find(colorName);
 	}
-	
+
 	@Override
 	public String toString() {
 		String value = CharUtils

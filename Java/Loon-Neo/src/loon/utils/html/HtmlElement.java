@@ -423,7 +423,12 @@ public class HtmlElement {
 		return builder;
 	}
 
+	private CssStyleSheet tempSheet;
+
 	public CssStyleSheet getStyleSheet() {
+		if (!dirty && tempSheet != null) {
+			return tempSheet;
+		}
 		if (isStyle() || isLinkCssStyle()) {
 			String path = href();
 			if (StringUtils.isEmpty(path)) {
@@ -431,12 +436,12 @@ public class HtmlElement {
 				if (StringUtils.isEmpty(text)) {
 					throw new LSysException(name + " style is null !");
 				}
-				return CssParser.loadText(text);
+				return tempSheet = CssParser.loadText(text);
 			} else {
-				return CssParser.parse(path);
+				return tempSheet = CssParser.parse(path);
 			}
 		}
-		return new CssStyleSheet();
+		return tempSheet = new CssStyleSheet();
 	}
 
 	public String href() {

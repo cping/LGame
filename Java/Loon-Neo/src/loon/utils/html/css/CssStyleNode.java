@@ -50,6 +50,14 @@ public class CssStyleNode {
 		return values.get(name);
 	}
 
+	public CssValue getCssValueOf(String name, String defValue) {
+		CssValue v = values.get(name);
+		if (v != null) {
+			return v;
+		}
+		return new CssKeyword(defValue);
+	}
+
 	public CssValue addValue(String key, CssValue value) {
 		return values.put(key, value);
 	}
@@ -65,6 +73,10 @@ public class CssStyleNode {
 				return values.get(name);
 		}
 		return defualtValue;
+	}
+
+	public int childCount() {
+		return children.size;
 	}
 
 }

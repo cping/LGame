@@ -20,8 +20,11 @@
  */
 package loon.utils.html;
 
+import javax.swing.text.html.StyleSheet;
+
 import loon.LSystem;
 import loon.canvas.LColor;
+import loon.font.IFont;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
@@ -29,9 +32,13 @@ import loon.utils.html.command.DisplayCommand;
 import loon.utils.html.command.ImageCommand;
 import loon.utils.html.command.LineCommand;
 import loon.utils.html.command.TextCommand;
+import loon.utils.html.css.CssColor;
 import loon.utils.html.css.CssDimensions;
 import loon.utils.html.css.CssDimensions.Rect;
+import loon.utils.html.css.CssStyleBuilder;
+import loon.utils.html.css.CssStyleNode;
 import loon.utils.html.css.CssStyleSheet;
+import loon.utils.html.css.CssValue;
 
 /**
  * 构建中,逐渐实现w3c标准……
@@ -42,17 +49,23 @@ public class HtmlDisplay {
 
 	private float width, height;
 
-	private CssStyleSheet cssSheet;
+	private TArray<CssStyleSheet> cssSheets;
 
 	private CssDimensions cssBlock;
 
 	private LColor defaultColor;
 
+	private LColor backgroundColor;
+
+	private String defaultFontName;
+
 	public HtmlDisplay(float w, float h, LColor color) {
 		this.cssBlock = CssDimensions.createDimension(w, h);
+		this.cssSheets = new TArray<CssStyleSheet>();
 		this.displays = new TArray<DisplayCommand>();
 		this.width = w;
 		this.height = h;
+		this.backgroundColor = LColor.white;
 		defaultColor = color;
 	}
 
@@ -78,7 +91,13 @@ public class HtmlDisplay {
 				String tagName = node.getName();
 				DisplayCommand display = null;
 
-				cssSheet = node.getStyleSheet();
+				CssStyleSheet cssSheet = node.getStyleSheet();
+
+				if (cssSheet.size() > 0) {
+					cssSheets.add(cssSheet);
+				} else {
+					cssSheet = cssSheets.last();
+				}
 
 				if (lastRect != null) {
 					if (lineWidth - lastRect.width > width) {
@@ -102,7 +121,36 @@ public class HtmlDisplay {
 					newLine = false;
 				}
 
-				if (node.isH()) {
+				if (node.isBody()) {
+
+					if (cssSheet.size() > 0) {
+
+						CssStyleBuilder builder = new CssStyleBuilder();
+						CssStyleNode cssNode = builder.build(node, cssSheet);
+
+						CssValue value = cssNode.getValueOf("background-color");
+						if (value != null && value instanceof CssColor) {
+							backgroundColor = ((CssColor) value).getLColor();
+						} else if (value != null) {
+							backgroundColor = LColor.findName(value.getValueString());
+						}
+
+						value = cssNode.getValueOf("color");
+
+						if (value != null && value instanceof CssColor) {
+							defaultColor = ((CssColor) value).getLColor();
+						} else if (value != null) {
+							defaultColor = LColor.findName(value.getValueString());
+						}
+
+						value = cssNode.getValueOf("font-family");
+
+						if (value != null) {
+							defaultFontName = value.getValueString();
+						}
+					}
+
+				} else if (node.isH()) {
 					display = new TextCommand(cssSheet, width, height, defaultColor);
 					display.parser(node);
 					newLine = true;
@@ -170,6 +218,7 @@ public class HtmlDisplay {
 	}
 
 	public void paint(GLEx g, float x, float y) {
+		g.fillRect(x, y, width, height, backgroundColor);
 		for (int i = 0; i < displays.size; i++) {
 			DisplayCommand command = displays.get(i);
 			if (command != null) {
@@ -190,11 +239,23 @@ public class HtmlDisplay {
 		this.defaultColor = defaultColor;
 	}
 
-	public CssStyleSheet getCssSheet() {
-		return cssSheet;
+	public TArray<CssStyleSheet> getCssSheets() {
+		return cssSheets;
 	}
 
-	public void setCssSheet(CssStyleSheet cssSheet) {
-		this.cssSheet = cssSheet;
+	public LColor getBackgroundColor() {
+		return backgroundColor.cpy();
+	}
+
+	public void setBackgroundColor(LColor b) {
+		this.backgroundColor = b;
+	}
+
+	public String getDefaultFontName() {
+		return defaultFontName;
+	}
+
+	public void setDefaultFontName(String f) {
+		this.defaultFontName = f;
 	}
 }

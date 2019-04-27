@@ -220,20 +220,39 @@ public class MathUtils {
 	 * 为指定数值补足位数
 	 * 
 	 * @param number
+	 * @param numDigit
+	 * @return
+	 */
+	public static final String addZeros(String number, int numDigit) {
+		return addZeros(number, numDigit, false);
+	}
+
+	/**
+	 * 为指定数值补足位数
+	 * 
+	 * @param number
 	 * @param numDigits
 	 * @return
 	 */
-	public static final String addZeros(String number, int numDigits) {
+	public static final String addZeros(String number, int numDigits, boolean reverse) {
 		int length = numDigits - number.length();
 		if (length > -1) {
 			if (length - 1 < ZEROS.length) {
-				number = ZEROS[length] + number;
+				if (reverse) {
+					number = number + ZEROS[length];
+				} else {
+					number = ZEROS[length] + number;
+				}
 			} else {
 				StringBuilder sbr = new StringBuilder();
 				for (int i = 0; i < length; i++) {
 					sbr.append('0');
 				}
-				number = sbr.toString() + number;
+				if (reverse) {
+					number = number + sbr.toString();
+				} else {
+					number = sbr.toString() + number;
+				}
 			}
 		}
 		return number;

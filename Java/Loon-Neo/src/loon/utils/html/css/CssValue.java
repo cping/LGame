@@ -20,7 +20,15 @@
  */
 package loon.utils.html.css;
 
+import loon.LSystem;
+
 public abstract class CssValue {
+
+	protected String typeName = LSystem.UNKOWN;
+
+	public CssValue(String name) {
+		this.typeName = name;
+	}
 
 	protected String valueString = "";
 
@@ -34,5 +42,9 @@ public abstract class CssValue {
 
 	public String getValueString() {
 		return this.valueString;
+	}
+
+	public String getTypeName() {
+		return this.typeName;
 	}
 }

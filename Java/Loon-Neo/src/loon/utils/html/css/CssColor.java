@@ -24,16 +24,24 @@ import loon.canvas.LColor;
 
 public class CssColor extends CssValue {
 
+	private LColor tempColor;
+
 	public int r;
 	public int g;
 	public int b;
 	public int a;
 
 	public CssColor(int r, int g, int b, int a) {
+		super("Color");
 		this.r = r;
 		this.g = g;
 		this.b = b;
 		this.a = a;
+		sync();
+	}
+	
+	public void sync(){
+		this.valueString = getLColor().toCSS();
 	}
 
 	@Override
@@ -42,10 +50,16 @@ public class CssColor extends CssValue {
 		this.b = color.b;
 		this.g = color.g;
 		this.a = color.a;
+		sync();
 	}
 
 	public LColor getLColor() {
-		return new LColor(r, g, b, a);
+		if (tempColor == null) {
+			tempColor = new LColor(r, g, b, a);
+		} else {
+			tempColor.setColor(r, g, b, a);
+		}
+		return tempColor;
 	}
 
 	@Override
@@ -59,7 +73,14 @@ public class CssColor extends CssValue {
 	}
 
 	@Override
+	public String getValueString() {
+		sync();
+		return this.valueString;
+	}
+
+	@Override
 	public float toPx() {
 		return 0;
 	}
+
 }

@@ -667,7 +667,14 @@ public class TArray<T> implements Iterable<T>, IArray {
 		if (size <= 1) {
 			return;
 		}
-		SortUtils.quickSort(items, compar);
+		T[] obj = CollectionUtils.copyOf(items, 0, size);
+		SortUtils.quickSort(obj, compar);
+		int count = 0;
+		for (int i = 0; i < obj.length; i++) {
+			if (obj[i] != null) {
+				items[count++] = obj[i];
+			}
+		}
 	}
 
 	@Override
