@@ -22,6 +22,7 @@ package org.test;
 
 import loon.Stage;
 import loon.action.sprite.effect.PixelChopEffect;
+import loon.action.sprite.effect.PixelChopEffect.ChopDirection;
 import loon.action.sprite.effect.StringEffect;
 import loon.canvas.LColor;
 import loon.event.Touched;
@@ -31,13 +32,13 @@ public class ChopTest extends Stage {
 
 	@Override
 	public void create() {
-		//监听Screen的up事件
+		// 监听Screen的up事件
 		up(new Touched() {
 
 			@Override
 			public void on(float x, float y) {
-				// 斩击效果,斩击线粗2,长30
-				add(new PixelChopEffect(LColor.red, x, y, 2 , 30));
+				// 斩击效果,由西北向东南方向,斩击线粗2,长30
+				add(new PixelChopEffect(ChopDirection.WNTES, LColor.red, x, y, 2, 30));
 				// 文字上浮
 				add(StringEffect.up("9999", Vector2f.at(x, y), LColor.red));
 				// 文字下浮
@@ -45,7 +46,7 @@ public class ChopTest extends Stage {
 			}
 		});
 
-		add(MultiScreenTest.getBackButton(this,1));
+		add(MultiScreenTest.getBackButton(this, 1));
 	}
 
 }

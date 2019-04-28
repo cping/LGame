@@ -35,13 +35,21 @@ import loon.utils.MathUtils;
 public class PixelChopEffect extends PixelBaseEffect {
 
 	public static enum ChopDirection {
-		// West North To East South
+		/**
+		 * West North To East South
+		 */
 		WNTES,
-		// North East to South West
+		/**
+		 * North East to South West
+		 */
 		NETSW,
-		// Top to Bottom
+		/**
+		 * Top to Bottom
+		 */
 		TTB,
-		// Left to Right
+		/**
+		 * Left to Right
+		 */
 		LTR;
 	}
 
@@ -51,29 +59,52 @@ public class PixelChopEffect extends PixelBaseEffect {
 
 	private float width;
 
+	private int mode;
+
 	public PixelChopEffect(LColor color, float x, float y) {
-		this(ChopDirection.WNTES, color, x, y, 2);
+		this(ChopDirection.WNTES, color, 0, x, y, 2);
 	}
 
 	public PixelChopEffect(LColor color, float x, float y, int frameLimit) {
-		this(ChopDirection.WNTES, color, x, y, 2, 25);
+		this(ChopDirection.WNTES, color, 0, x, y, 2, 25);
 	}
 
-	public PixelChopEffect(ChopDirection dir, LColor color, float x, float y) {
-		this(dir, color, x, y, 2);
+	public PixelChopEffect(LColor color, int mode, float x, float y) {
+		this(ChopDirection.WNTES, color, mode, x, y, 2);
+	}
+
+	public PixelChopEffect(LColor color, int mode, float x, float y, int frameLimit) {
+		this(ChopDirection.WNTES, color, mode, x, y, 2, 25);
+	}
+
+	public PixelChopEffect(ChopDirection dir, LColor color, int mode, float x, float y) {
+		this(dir, color, mode, x, y, 2);
 	}
 
 	public PixelChopEffect(ChopDirection dir, LColor color, float x, float y, int frameLimit) {
-		this(dir, color, x, y, 2, 25);
+		this(dir, color, 0, x, y, 2, 25);
 	}
 
-	public PixelChopEffect(LColor color, float x, float y, float width, int frameLimit) {
-		this(ChopDirection.WNTES, color, x, y, width, frameLimit);
+	public PixelChopEffect(ChopDirection dir, LColor color, int mode, float x, float y, int frameLimit) {
+		this(dir, color, mode, x, y, 2, 25);
 	}
 
 	public PixelChopEffect(ChopDirection dir, LColor color, float x, float y, float width, int frameLimit) {
+		this(dir, color, 0, x, y, width, frameLimit);
+	}
+
+	public PixelChopEffect(LColor color, float x, float y, float width, int frameLimit) {
+		this(ChopDirection.WNTES, color, 0, x, y, width, frameLimit);
+	}
+
+	public PixelChopEffect(LColor color, int mode, float x, float y, float width, int frameLimit) {
+		this(ChopDirection.WNTES, color, mode, x, y, width, frameLimit);
+	}
+
+	public PixelChopEffect(ChopDirection dir, LColor color, int mode, float x, float y, float width, int frameLimit) {
 		super(color, x, y, 0, 0);
 		this.direction = dir;
+		this.mode = mode;
 		this.width = width;
 		this.viewX = x;
 		this.viewY = y;
@@ -100,40 +131,119 @@ public class PixelChopEffect extends PixelBaseEffect {
 		float x2 = 0.0f;
 		float y2 = 0.0f;
 		float offset = 0.0f;
-		switch (direction) {
-		case LTR:
-			offset = MathUtils.floor(f / 3);
-			x1 = x - f - offset;
-			y1 = y;
-			x2 = x + f + offset;
-			y2 = y1;
-			break;
-		case TTB:
-			offset = MathUtils.floor(f / 3);
-			x1 = x;
-			y1 = y - f - offset;
-			x2 = x1;
-			y2 = y + f + offset;
-			break;
-		case NETSW:
-			x1 = x - f;
-			y1 = y + f;
-			x2 = x + f;
-			y2 = y - f;
-			break;
-		case WNTES:
-		default:
-			x1 = x - f;
-			y1 = y - f;
-			x2 = x + f;
-			y2 = y + f;
-			break;
+		if (mode == 0) {
+			switch (direction) {
+			case LTR:
+				offset = MathUtils.floor(f / 3);
+				x1 = x - f - offset;
+				y1 = y;
+				x2 = x + f + offset;
+				y2 = y1;
+				break;
+			case TTB:
+				offset = MathUtils.floor(f / 3);
+				x1 = x;
+				y1 = y - f - offset;
+				x2 = x1;
+				y2 = y + f + offset;
+				break;
+			case NETSW:
+				x1 = x - f;
+				y1 = y + f;
+				x2 = x + f;
+				y2 = y - f;
+				break;
+			case WNTES:
+			default:
+				x1 = x - f;
+				y1 = y - f;
+				x2 = x + f;
+				y2 = y + f;
+				break;
+			}
+		} else if (mode == 1) {
+			switch (direction) {
+			case LTR:
+				offset = MathUtils.floor(limit / 3);
+				x1 = x - limit - offset + f;
+				y1 = y;
+				x2 = x + limit + offset + f;
+				y2 = y1;
+				break;
+			case TTB:
+				offset = MathUtils.floor(limit / 3);
+				x1 = x;
+				y1 = y - limit - offset + f;
+				x2 = x1;
+				y2 = y + limit + offset + f;
+				break;
+			case NETSW:
+				x1 = x - limit - f;
+				y1 = y + limit + f;
+				x2 = x + limit - f;
+				y2 = y - limit + f;
+				break;
+			case WNTES:
+			default:
+				x1 = x - limit + f;
+				y1 = y - limit + f;
+				x2 = x + limit + f;
+				y2 = y + limit + f;
+				break;
+			}
+		} else {
+			switch (direction) {
+			case LTR:
+				offset = MathUtils.floor(limit / 3);
+				x1 = x - limit - offset;
+				y1 = y;
+				x2 = x + limit + offset;
+				y2 = y1;
+				break;
+			case TTB:
+				offset = MathUtils.floor(limit / 3);
+				x1 = x;
+				y1 = y - limit - offset;
+				x2 = x1;
+				y2 = y + limit + offset;
+				break;
+			case NETSW:
+				x1 = x - limit;
+				y1 = y + limit;
+				x2 = x + limit;
+				y2 = y - limit;
+				break;
+			case WNTES:
+			default:
+				x1 = x - limit;
+				y1 = y - limit;
+				x2 = x + limit;
+				y2 = y + limit;
+				break;
+			}
 		}
+
 		g.drawLine(x1, y1, x2, y2, width);
 		g.setColor(tmp);
 		if (super.frame >= limit) {
 			super.completed = true;
 		}
+	}
+
+	public int getMode() {
+		return mode;
+	}
+
+	/**
+	 * line display mode
+	 * 
+	 * 0:both ends 1:move line 2:only show line
+	 * 
+	 * @param mode
+	 * 
+	 */
+	public void setMode(int mode) {
+		this.mode = mode;
 	}
 
 }
