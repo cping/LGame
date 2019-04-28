@@ -208,35 +208,12 @@ final public class StringUtils extends CharUtils {
 		}
 		int size = message.length();
 		for (int j = 0; j < size; j++) {
-			char letter = message.charAt(j);
+			int letter = message.charAt(j);
 			if (isEnglishAndNumeric(letter)) {
 				return false;
 			}
 		}
 		return true;
-	}
-
-	/**
-	 * 判定是否由纯粹的西方字符组成
-	 * 
-	 * @param letter
-	 * @return
-	 */
-	public static boolean isEnglishAndNumeric(int letter) {
-		return (97 > letter || letter > 122) && (65 > letter || letter > 90) && (48 > letter || letter > 57);
-	}
-
-	/**
-	 * 判定是否为半角符号
-	 * 
-	 * @param c
-	 * @return
-	 */
-	public static boolean isSingle(final int c) {
-		return (':' == c || '：' == c) || (',' == c || '，' == c) || ('"' == c || '“' == c)
-				|| ((0x0020 <= c) && (c <= 0x007E) && !((('a' <= c) && (c <= 'z')) || (('A' <= c) && (c <= 'Z')))
-						&& !('0' <= c) && (c <= '9'));
-
 	}
 
 	public static String filter(CharSequence message, char... chars) {
@@ -684,9 +661,6 @@ final public class StringUtils extends CharUtils {
 		return false;
 	}
 
-	public static boolean isChinese(char c) {
-		return c >= 0x4e00 && c <= 0x9fa5;
-	}
 
 	/**
 	 * 判断是否为null
@@ -889,127 +863,6 @@ final public class StringUtils extends CharUtils {
 		}
 	}
 
-	/**
-	 * @see #indexOf(int[], int, int)
-	 */
-	public static int indexOf(int[] arr, int v) {
-		return indexOf(arr, v, 0);
-	}
-
-	/**
-	 * @param arr
-	 *            数组
-	 * @param v
-	 *            值
-	 * @param off
-	 *            从那个下标开始搜索(包含)
-	 * @return 第一个匹配元素的下标
-	 */
-	public static int indexOf(int[] arr, int v, int off) {
-		if (null != arr)
-			for (int i = off; i < arr.length; i++) {
-				if (arr[i] == v)
-					return i;
-			}
-		return -1;
-	}
-
-	/**
-	 * @param arr
-	 * @param v
-	 * @return 最后一个匹配元素的下标
-	 */
-	public static int lastIndexOf(int[] arr, int v) {
-		if (null != arr)
-			for (int i = arr.length - 1; i >= 0; i--) {
-				if (arr[i] == v)
-					return i;
-			}
-		return -1;
-	}
-
-	/**
-	 * @see #indexOf(char[], char, int)
-	 */
-	public static int indexOf(char[] arr, char v) {
-		if (null != arr)
-			for (int i = 0; i < arr.length; i++) {
-				if (arr[i] == v)
-					return i;
-			}
-		return -1;
-	}
-
-	/**
-	 * @param arr
-	 *            数组
-	 * @param v
-	 *            值
-	 * @param off
-	 *            从那个下标开始搜索(包含)
-	 * @return 第一个匹配元素的下标
-	 */
-	public static int indexOf(char[] arr, char v, int off) {
-		if (null != arr)
-			for (int i = off; i < arr.length; i++) {
-				if (arr[i] == v)
-					return i;
-			}
-		return -1;
-	}
-
-	/**
-	 * @param arr
-	 * @param v
-	 * @return 第一个匹配元素的下标
-	 */
-	public static int lastIndexOf(char[] arr, char v) {
-		if (null != arr)
-			for (int i = arr.length - 1; i >= 0; i--) {
-				if (arr[i] == v)
-					return i;
-			}
-		return -1;
-	}
-
-	/**
-	 * @see #indexOf(long[], long, int)
-	 */
-	public static int indexOf(long[] arr, long v) {
-		return indexOf(arr, v, 0);
-	}
-
-	/**
-	 * @param arr
-	 *            数组
-	 * @param v
-	 *            值
-	 * @param off
-	 *            从那个下标开始搜索(包含)
-	 * @return 第一个匹配元素的下标
-	 */
-	public static int indexOf(long[] arr, long v, int off) {
-		if (null != arr)
-			for (int i = off; i < arr.length; i++) {
-				if (arr[i] == v)
-					return i;
-			}
-		return -1;
-	}
-
-	/**
-	 * @param arr
-	 * @param v
-	 * @return 第一个匹配元素的下标
-	 */
-	public static int lastIndexOf(long[] arr, long v) {
-		if (null != arr)
-			for (int i = arr.length - 1; i >= 0; i--) {
-				if (arr[i] == v)
-					return i;
-			}
-		return -1;
-	}
 
 	/**
 	 * 获得特定字符总数
@@ -1504,4 +1357,22 @@ final public class StringUtils extends CharUtils {
 		return list;
 	}
 
+	/**
+	 * 查看指定CharSequence数值是否在指定CharSequence数组中
+	 * 
+	 * @param key
+	 * @param texts
+	 * @return
+	 */
+	public static boolean contains(CharSequence key, CharSequence... texts) {
+		for (CharSequence text : texts) {
+			if (key == null && text == null) {
+				return true;
+			}
+			if (text == key || (text != null && text.equals(key))) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

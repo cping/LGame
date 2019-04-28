@@ -27,6 +27,7 @@ import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 import loon.utils.html.command.DisplayCommand;
+import loon.utils.html.command.DivCommand;
 import loon.utils.html.command.ImageCommand;
 import loon.utils.html.command.LineCommand;
 import loon.utils.html.command.TextCommand;
@@ -66,7 +67,7 @@ public class HtmlDisplay {
 	private LColor backgroundColor;
 
 	private LColor foregroundColor;
-	
+
 	private String defaultFontName;
 
 	public HtmlDisplay(float w, float h, LColor color) {
@@ -86,11 +87,11 @@ public class HtmlDisplay {
 		Rect lastRect = null;
 
 		bodyRect = new Rect();
-		
+
 		bodyPadding = new EdgeSize();
-		
+
 		fontSize = LSystem.getSystemGameFont().getSize();
-          
+
 		float lineWidth = 0;
 		float lineHeight = 0;
 
@@ -153,13 +154,13 @@ public class HtmlDisplay {
 							backgroundColor = new LColor(value.getValueString());
 						}
 
-						 value = cssNode.getValueOf("foreground-color");
+						value = cssNode.getValueOf("foreground-color");
 						if (value != null && value instanceof CssColor) {
 							foregroundColor = ((CssColor) value).getLColor();
 						} else if (value != null) {
 							foregroundColor = new LColor(value.getValueString());
 						}
-						
+
 						value = cssNode.getValueOf("color");
 
 						if (value != null && value instanceof CssColor) {
@@ -213,7 +214,7 @@ public class HtmlDisplay {
 								cssNode.find(zeroLength, "padding-bottom").getValueString());
 						bodyPadding.left = Rect.getValue(width, fontSize,
 								cssNode.find(zeroLength, "padding-left").getValueString());
-						
+
 					}
 
 				} else if (node.isH()) {
@@ -221,20 +222,11 @@ public class HtmlDisplay {
 					display.parser(node);
 					newLine = true;
 					newLineAmount = sysSize;
-				} else if ("a".equals(tagName)) {
+				} else if (StringUtils.contains(tagName, "a", "b", "label", "font")) {
 					display = new TextCommand(cssSheet, width, height, defaultFontName, fontSize, defaultColor);
 					display.parser(node);
-				} else if ("b".equals(tagName)) {
-					display = new TextCommand(cssSheet, width, height, defaultFontName, fontSize, defaultColor);
-					display.parser(node);
-				} else if ("label".equals(tagName)) {
-					display = new TextCommand(cssSheet, width, height, defaultFontName, fontSize, defaultColor);
-					display.parser(node);
-				} else if ("span".equals(tagName)) {
-					display = new TextCommand(cssSheet, width, height, defaultFontName, fontSize, defaultColor);
-					display.parser(node);
-				} else if ("font".equals(tagName)) {
-					display = new TextCommand(cssSheet, width, height, defaultFontName, fontSize, defaultColor);
+				} else if (StringUtils.contains(tagName, "span", "div")) {
+					display = new DivCommand(cssSheet, width, height, defaultFontName, fontSize, defaultColor);
 					display.parser(node);
 				} else if ("img".equals(tagName)) {
 					display = new ImageCommand(cssSheet, width, height, defaultColor);
@@ -313,6 +305,10 @@ public class HtmlDisplay {
 
 	public LColor getBackgroundColor() {
 		return backgroundColor.cpy();
+	}
+
+	public LColor getForegroundColor() {
+		return foregroundColor.cpy();
 	}
 
 	public String getDefaultFontName() {
@@ -425,4 +421,5 @@ public class HtmlDisplay {
 
 		return cssBlock;
 	}
+
 }

@@ -225,8 +225,30 @@ public class CharUtils {
 		return -1;
 	}
 
+	public static boolean isChinese(int c) {
+		return c >= 0x4e00 && c <= 0x9fa5;
+	}
+
+	public static boolean isEnglishAndNumeric(int letter) {
+		return isDigit(letter) || isAsciiLetter(letter);
+	}
+
+	public static boolean isSingle(int c) {
+		return (':' == c || '：' == c) || (',' == c || '，' == c) || ('"' == c || '“' == c)
+				|| ((0x0020 <= c) && (c <= 0x007E) && !((('a' <= c) && (c <= 'z')) || (('A' <= c) && (c <= 'Z')))
+						&& !('0' <= c) && (c <= '9'));
+	}
+
 	public static boolean isAsciiLetterDiait(int c) {
 		return isDigitCharacter(c) || isAsciiLetter(c);
+	}
+
+	public static boolean isDigit(int c) {
+		return c >= '0' && c <= '9';
+	}
+
+	public static boolean isHexDigit(int c) {
+		return (c >= '0' && c <= '9') || ((c >= 'a') && (c <= 'f')) || ((c >= 'A') && (c <= 'F'));
 	}
 
 	public static boolean isDigitCharacter(int c) {
@@ -249,6 +271,10 @@ public class CharUtils {
 		return (c >= 'A') && (c <= 'Z');
 	}
 
+	public static boolean isAlpha(int c) {
+		return isAsciiLetter(c);
+	}
+
 	public static boolean isAlphaOrDigit(int c) {
 		return isDigit(c) || isAlpha(c);
 	}
@@ -259,18 +285,6 @@ public class CharUtils {
 
 	public static boolean isPropertyNameChar(int c) {
 		return isDigit(c) || isAlpha(c) || (c == '_') || (c == '.') || (c == '[') || (c == ']');
-	}
-
-	public static boolean isAlpha(int c) {
-		return ((c >= 'a') && (c <= 'z')) || ((c >= 'A') && (c <= 'Z'));
-	}
-
-	public static boolean isDigit(int c) {
-		return c >= '0' && c <= '9';
-	}
-
-	public static boolean isHexDigit(int c) {
-		return (c >= '0' && c <= '9') || ((c >= 'a') && (c <= 'f')) || ((c >= 'A') && (c <= 'F'));
 	}
 
 	public static boolean isGenericDelimiter(int c) {

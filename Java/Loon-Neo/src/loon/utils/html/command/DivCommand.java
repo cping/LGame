@@ -20,15 +20,37 @@
  */
 package loon.utils.html.command;
 
+import loon.HorizontalAlign;
 import loon.canvas.LColor;
+import loon.font.IFont;
 import loon.opengl.GLEx;
 import loon.utils.html.HtmlElement;
 import loon.utils.html.css.CssStyleSheet;
 
 public class DivCommand extends DisplayCommand {
 
-	public DivCommand(CssStyleSheet sheet, String name, float width, float height, LColor color) {
-		super(sheet, name, width, height, color);
+	protected String text;
+
+	protected LColor color;
+
+	protected IFont font;
+
+	private HorizontalAlign align;
+
+	private boolean dirty;
+
+	private HtmlElement node;
+
+	private int sysSize;
+
+	private int fontSize;
+
+	private String fontName;
+	
+	public DivCommand(CssStyleSheet sheet, float width, float height, String fontName, int fontSize, LColor color) {
+		super(sheet, "Text", width, height, color);
+		this.fontName = fontName;
+		this.fontSize = fontSize;
 
 	}
 
