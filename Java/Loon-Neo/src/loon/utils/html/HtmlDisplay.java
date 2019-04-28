@@ -33,6 +33,7 @@ import loon.utils.html.command.TextCommand;
 import loon.utils.html.css.CssColor;
 import loon.utils.html.css.CssDimensions;
 import loon.utils.html.css.CssKeyword;
+import loon.utils.html.css.CssDimensions.EdgeSize;
 import loon.utils.html.css.CssDimensions.Rect;
 import loon.utils.html.css.CssLength;
 import loon.utils.html.css.CssStyleBuilder;
@@ -56,10 +57,16 @@ public class HtmlDisplay {
 
 	private CssDimensions cssBlock;
 
+	private Rect bodyRect;
+
+	private EdgeSize bodyPadding;
+
 	private LColor defaultColor;
 
 	private LColor backgroundColor;
 
+	private LColor foregroundColor;
+	
 	private String defaultFontName;
 
 	public HtmlDisplay(float w, float h, LColor color) {
@@ -78,16 +85,18 @@ public class HtmlDisplay {
 
 		Rect lastRect = null;
 
+		bodyRect = new Rect();
+		
+		bodyPadding = new EdgeSize();
+		
 		fontSize = LSystem.getSystemGameFont().getSize();
-
+          
 		float lineWidth = 0;
 		float lineHeight = 0;
 
 		boolean newLine = false;
 
 		int newLineAmount = 0;
-
-		Rect bodyRect = new Rect();
 
 		while (looper.size > 0) {
 
@@ -141,15 +150,22 @@ public class HtmlDisplay {
 						if (value != null && value instanceof CssColor) {
 							backgroundColor = ((CssColor) value).getLColor();
 						} else if (value != null) {
-							backgroundColor = LColor.findName(value.getValueString());
+							backgroundColor = new LColor(value.getValueString());
 						}
 
+						 value = cssNode.getValueOf("foreground-color");
+						if (value != null && value instanceof CssColor) {
+							foregroundColor = ((CssColor) value).getLColor();
+						} else if (value != null) {
+							foregroundColor = new LColor(value.getValueString());
+						}
+						
 						value = cssNode.getValueOf("color");
 
 						if (value != null && value instanceof CssColor) {
 							defaultColor = ((CssColor) value).getLColor();
 						} else if (value != null) {
-							defaultColor = LColor.findName(value.getValueString());
+							defaultColor = new LColor(value.getValueString());
 						}
 
 						value = cssNode.getValueOf("font-family");
@@ -186,9 +202,18 @@ public class HtmlDisplay {
 								cssNode.find(zeroLength, "margin-right").getValueString());
 						bodyRect.bottom = Rect.getValue(height, fontSize,
 								cssNode.find(zeroLength, "margin-bottom").getValueString());
-						bodyRect.right = Rect.getValue(width, fontSize,
-								cssNode.find(zeroLength, "margin-right").getValueString());
+						bodyRect.left = Rect.getValue(width, fontSize,
+								cssNode.find(zeroLength, "margin-left").getValueString());
 
+						bodyPadding.top = Rect.getValue(height, fontSize,
+								cssNode.find(zeroLength, "padding-top").getValueString());
+						bodyPadding.right = Rect.getValue(width, fontSize,
+								cssNode.find(zeroLength, "padding-right").getValueString());
+						bodyPadding.bottom = Rect.getValue(height, fontSize,
+								cssNode.find(zeroLength, "padding-bottom").getValueString());
+						bodyPadding.left = Rect.getValue(width, fontSize,
+								cssNode.find(zeroLength, "padding-left").getValueString());
+						
 					}
 
 				} else if (node.isH()) {

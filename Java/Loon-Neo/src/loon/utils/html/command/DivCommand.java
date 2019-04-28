@@ -20,6 +20,36 @@
  */
 package loon.utils.html.command;
 
-public class DivCommand {
+import loon.canvas.LColor;
+import loon.opengl.GLEx;
+import loon.utils.html.HtmlElement;
+import loon.utils.html.css.CssStyleSheet;
+
+public class DivCommand extends DisplayCommand {
+
+	public DivCommand(CssStyleSheet sheet, String name, float width, float height, LColor color) {
+		super(sheet, name, width, height, color);
+
+	}
+
+	@Override
+	public void update() {
+
+	}
+
+	@Override
+	public void parser(HtmlElement e) {
+
+	}
+
+	@Override
+	public void paint(GLEx g, float x, float y) {
+
+	}
+
+	@Override
+	public void close() {
+
+	}
 
 }

@@ -22,6 +22,7 @@ package loon.action.sprite.effect;
 
 import loon.canvas.LColor;
 import loon.opengl.GLEx;
+import loon.utils.MathUtils;
 
 /**
  * 以指定坐标为中心点,出现像素风斩击效果
@@ -33,20 +34,46 @@ import loon.opengl.GLEx;
  */
 public class PixelChopEffect extends PixelBaseEffect {
 
+	public static enum ChopDirection {
+		// West North To East South
+		WNTES,
+		// North East to South West
+		NETSW,
+		// Top to Bottom
+		TTB,
+		// Left to Right
+		LTR;
+	}
+
+	private ChopDirection direction;
+
 	private float viewX, viewY;
 
 	private float width;
 
 	public PixelChopEffect(LColor color, float x, float y) {
-		this(color, x, y, 2);
+		this(ChopDirection.WNTES, color, x, y, 2);
 	}
 
 	public PixelChopEffect(LColor color, float x, float y, int frameLimit) {
-		this(color, x, y, 2, 25);
+		this(ChopDirection.WNTES, color, x, y, 2, 25);
+	}
+
+	public PixelChopEffect(ChopDirection dir, LColor color, float x, float y) {
+		this(dir, color, x, y, 2);
+	}
+
+	public PixelChopEffect(ChopDirection dir, LColor color, float x, float y, int frameLimit) {
+		this(dir, color, x, y, 2, 25);
 	}
 
 	public PixelChopEffect(LColor color, float x, float y, float width, int frameLimit) {
+		this(ChopDirection.WNTES, color, x, y, width, frameLimit);
+	}
+
+	public PixelChopEffect(ChopDirection dir, LColor color, float x, float y, float width, int frameLimit) {
 		super(color, x, y, 0, 0);
+		this.direction = dir;
 		this.width = width;
 		this.viewX = x;
 		this.viewY = y;
@@ -68,10 +95,40 @@ public class PixelChopEffect extends PixelBaseEffect {
 		if (f > limit) {
 			f = limit - f;
 		}
-		float x1 = x - f;
-		float y1 = y - f;
-		float x2 = x + f;
-		float y2 = y + f;
+		float x1 = 0.0f;
+		float y1 = 0.0f;
+		float x2 = 0.0f;
+		float y2 = 0.0f;
+		float offset = 0.0f;
+		switch (direction) {
+		case LTR:
+			offset = MathUtils.floor(f / 3);
+			x1 = x - f - offset;
+			y1 = y;
+			x2 = x + f + offset;
+			y2 = y1;
+			break;
+		case TTB:
+			offset = MathUtils.floor(f / 3);
+			x1 = x;
+			y1 = y - f - offset;
+			x2 = x1;
+			y2 = y + f + offset;
+			break;
+		case NETSW:
+			x1 = x - f;
+			y1 = y + f;
+			x2 = x + f;
+			y2 = y - f;
+			break;
+		case WNTES:
+		default:
+			x1 = x - f;
+			y1 = y - f;
+			x2 = x + f;
+			y2 = y + f;
+			break;
+		}
 		g.drawLine(x1, y1, x2, y2, width);
 		g.setColor(tmp);
 		if (super.frame >= limit) {

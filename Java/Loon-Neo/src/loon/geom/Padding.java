@@ -29,6 +29,10 @@ public class Padding {
 	private int right;
 	private int bottom;
 
+	public Padding() {
+		this(0, 0, 0, 0);
+	}
+
 	public Padding(int left, int top, int right, int bottom) {
 		this.left = left;
 		this.top = top;

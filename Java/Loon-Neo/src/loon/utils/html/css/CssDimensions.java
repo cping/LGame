@@ -65,6 +65,7 @@ public class CssDimensions {
 		public float height = 0.0f;
 
 		public Rect() {
+			this(0f, 0f, 0f, 0f);
 		}
 
 		public Rect(float x, float y, float width, float height) {
