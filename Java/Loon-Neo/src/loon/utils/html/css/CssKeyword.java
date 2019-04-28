@@ -20,6 +20,8 @@
  */
 package loon.utils.html.css;
 
+import loon.utils.html.css.CssDimensions.Rect;
+
 public class CssKeyword extends CssValue {
 
 	public CssKeyword(String key) {
@@ -45,6 +47,6 @@ public class CssKeyword extends CssValue {
 
 	@Override
 	public float toPx() {
-		return 0;
+		return Rect.getFloat(this.valueString);
 	}
 }

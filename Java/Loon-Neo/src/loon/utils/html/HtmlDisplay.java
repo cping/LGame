@@ -20,13 +20,11 @@
  */
 package loon.utils.html;
 
-import javax.swing.text.html.StyleSheet;
-
 import loon.LSystem;
 import loon.canvas.LColor;
-import loon.font.IFont;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
+import loon.utils.StringUtils;
 import loon.utils.TArray;
 import loon.utils.html.command.DisplayCommand;
 import loon.utils.html.command.ImageCommand;
@@ -34,10 +32,13 @@ import loon.utils.html.command.LineCommand;
 import loon.utils.html.command.TextCommand;
 import loon.utils.html.css.CssColor;
 import loon.utils.html.css.CssDimensions;
+import loon.utils.html.css.CssKeyword;
 import loon.utils.html.css.CssDimensions.Rect;
+import loon.utils.html.css.CssLength;
 import loon.utils.html.css.CssStyleBuilder;
 import loon.utils.html.css.CssStyleNode;
 import loon.utils.html.css.CssStyleSheet;
+import loon.utils.html.css.CssUnit;
 import loon.utils.html.css.CssValue;
 
 /**
@@ -48,6 +49,8 @@ public class HtmlDisplay {
 	private TArray<DisplayCommand> displays;
 
 	private float width, height;
+
+	private int fontSize = 0;
 
 	private TArray<CssStyleSheet> cssSheets;
 
@@ -75,7 +78,7 @@ public class HtmlDisplay {
 
 		Rect lastRect = null;
 
-		int sysSize = LSystem.getSystemGameFont().getHeight() + 5;
+		fontSize = LSystem.getSystemGameFont().getSize();
 
 		float lineWidth = 0;
 		float lineHeight = 0;
@@ -84,8 +87,14 @@ public class HtmlDisplay {
 
 		int newLineAmount = 0;
 
+		Rect bodyRect = new Rect();
+
 		while (looper.size > 0) {
+
 			TArray<HtmlElement> next = new TArray<HtmlElement>();
+
+			int sysSize = fontSize + 5;
+
 			for (HtmlElement node : looper) {
 
 				String tagName = node.getName();
@@ -148,33 +157,65 @@ public class HtmlDisplay {
 						if (value != null) {
 							defaultFontName = value.getValueString();
 						}
+
+						value = cssNode.getValueOf("font-size");
+
+						if (value != null && value instanceof CssLength) {
+							fontSize = MathUtils.max(1, (int) ((CssLength) value).toPx());
+						} else if (value != null) {
+							fontSize = MathUtils.max(1, (int) Rect.getValue(MathUtils.max(width, height), fontSize,
+									value.getValueString()));
+						}
+
+						value = cssNode.getValueOf("margin");
+
+						if (value != null) {
+							String margin = value.getValueString();
+
+							String[] items = StringUtils.split(margin, ' ');
+
+							bodyRect = Rect.analyze(bodyRect, fontSize, width, height, items);
+
+						}
+
+						CssKeyword zeroLength = new CssKeyword("0");
+
+						bodyRect.top = Rect.getValue(height, fontSize,
+								cssNode.find(zeroLength, "margin-top").getValueString());
+						bodyRect.right = Rect.getValue(width, fontSize,
+								cssNode.find(zeroLength, "margin-right").getValueString());
+						bodyRect.bottom = Rect.getValue(height, fontSize,
+								cssNode.find(zeroLength, "margin-bottom").getValueString());
+						bodyRect.right = Rect.getValue(width, fontSize,
+								cssNode.find(zeroLength, "margin-right").getValueString());
+
 					}
 
 				} else if (node.isH()) {
-					display = new TextCommand(cssSheet, width, height, defaultColor);
+					display = new TextCommand(cssSheet, width, height, defaultFontName, fontSize, defaultColor);
 					display.parser(node);
 					newLine = true;
 					newLineAmount = sysSize;
 				} else if ("a".equals(tagName)) {
-					display = new TextCommand(cssSheet, width, height, defaultColor);
+					display = new TextCommand(cssSheet, width, height, defaultFontName, fontSize, defaultColor);
 					display.parser(node);
 				} else if ("b".equals(tagName)) {
-					display = new TextCommand(cssSheet, width, height, defaultColor);
+					display = new TextCommand(cssSheet, width, height, defaultFontName, fontSize, defaultColor);
 					display.parser(node);
 				} else if ("label".equals(tagName)) {
-					display = new TextCommand(cssSheet, width, height, defaultColor);
+					display = new TextCommand(cssSheet, width, height, defaultFontName, fontSize, defaultColor);
 					display.parser(node);
 				} else if ("span".equals(tagName)) {
-					display = new TextCommand(cssSheet, width, height, defaultColor);
+					display = new TextCommand(cssSheet, width, height, defaultFontName, fontSize, defaultColor);
 					display.parser(node);
 				} else if ("font".equals(tagName)) {
-					display = new TextCommand(cssSheet, width, height, defaultColor);
+					display = new TextCommand(cssSheet, width, height, defaultFontName, fontSize, defaultColor);
 					display.parser(node);
 				} else if ("img".equals(tagName)) {
 					display = new ImageCommand(cssSheet, width, height, defaultColor);
 					display.parser(node);
 				} else if ("p".equals(tagName)) {
-					display = new TextCommand(cssSheet, width, height, defaultColor);
+					display = new TextCommand(cssSheet, width, height, defaultFontName, fontSize, defaultColor);
 					display.parser(node);
 					newLine = true;
 					newLineAmount = sysSize;
@@ -200,6 +241,8 @@ public class HtmlDisplay {
 
 					display.addX(lineWidth);
 					display.addY(lineHeight);
+
+					display.setLimit(bodyRect);
 
 					display.update();
 
@@ -247,15 +290,114 @@ public class HtmlDisplay {
 		return backgroundColor.cpy();
 	}
 
-	public void setBackgroundColor(LColor b) {
-		this.backgroundColor = b;
-	}
-
 	public String getDefaultFontName() {
 		return defaultFontName;
 	}
 
-	public void setDefaultFontName(String f) {
-		this.defaultFontName = f;
+	public float getWidth() {
+		return width;
+	}
+
+	public float getHeight() {
+		return height;
+	}
+
+	public static CssDimensions getBlockHeight(CssDimensions cssBlock, CssStyleNode style) {
+		CssValue height = style.getValueOf("height");
+		if (height != null && height.toPx() != 0.0f) {
+			cssBlock.content.height = height.toPx();
+		}
+		return cssBlock;
+	}
+
+	public static CssDimensions getBlockPosition(CssDimensions cssBlock, CssDimensions conBlock, CssStyleNode style) {
+
+		CssLength zeroLength = new CssLength(0.0f, CssUnit.PX());
+
+		cssBlock.margin.top = (style.find(zeroLength, "margin-top", "margin")).toPx();
+		cssBlock.margin.bottom = (style.find(zeroLength, "margin-bottom", "margin")).toPx();
+
+		cssBlock.border.top = (style.find(zeroLength, "border-top-width", "border-width")).toPx();
+		cssBlock.border.bottom = ((CssLength) style.find(zeroLength, "border-bottom-width", "border-width")).toPx();
+
+		cssBlock.padding.top = (style.find(zeroLength, "padding-top", "padding")).toPx();
+		cssBlock.padding.bottom = (style.find(zeroLength, "padding-bottom", "padding")).toPx();
+
+		cssBlock.content.x = conBlock.content.x + cssBlock.margin.left + cssBlock.border.left + cssBlock.padding.left;
+
+		cssBlock.content.y = conBlock.content.y + conBlock.content.height + cssBlock.margin.top + cssBlock.border.top
+				+ cssBlock.padding.top;
+
+		return cssBlock;
+	}
+
+	public static CssDimensions getBlockWidth(CssDimensions cssBlock, CssDimensions conBlock, CssStyleNode style,
+			int height) {
+
+		CssValue initWidth = new CssKeyword("auto");
+		CssValue width = style.find(initWidth, "width");
+		CssLength zeroLength = new CssLength(0.0f, CssUnit.PX());
+
+		CssValue leftMargin = style.find(zeroLength, "margin-left", "margin");
+		CssValue rightMargin = style.find(zeroLength, "margin-right", "margin");
+
+		CssValue leftBorder = style.find(zeroLength, "border-left-width", "border-width");
+		CssValue rightBorder = style.find(zeroLength, "border-right-width", "border-width");
+
+		CssValue leftPadding = style.find(zeroLength, "padding-left", "padding");
+		CssValue rightPadding = style.find(zeroLength, "padding-right", "padding");
+
+		float total = leftMargin.toPx() + rightMargin.toPx() + leftBorder.toPx() + rightBorder.toPx()
+				+ leftPadding.toPx() + rightPadding.toPx() + width.toPx();
+
+		if (!width.getValueString().equals("auto") && total > conBlock.content.width) {
+			if (leftMargin.getValueString().equals("auto")) {
+				leftMargin = new CssLength(0.0f, CssUnit.PX());
+			}
+			if (rightMargin.getValueString().equals("auto")) {
+				rightMargin = new CssLength(0.0f, CssUnit.PX());
+			}
+		}
+
+		float underflow = conBlock.content.width - total;
+
+		boolean widthAuto, marginLeftAuto, marginRightAuto;
+
+		widthAuto = width.getValueString().equals("auto");
+		marginLeftAuto = leftMargin.getValueString().equals("auto");
+		marginRightAuto = rightMargin.getValueString().equals("auto");
+
+		if (!widthAuto & !marginLeftAuto & !marginRightAuto) {
+			rightMargin = new CssLength(rightMargin.toPx() + underflow, CssUnit.PX());
+		} else if ((!widthAuto & !marginLeftAuto & marginRightAuto)) {
+			rightMargin = new CssLength(underflow, CssUnit.PX());
+		} else if ((!widthAuto & marginLeftAuto & !marginRightAuto)) {
+			leftMargin = new CssLength(underflow, CssUnit.PX());
+		} else if ((!widthAuto & marginLeftAuto & marginRightAuto)) {
+			leftMargin = new CssLength(underflow / 2, CssUnit.PX());
+			rightMargin = new CssLength(underflow / 2, CssUnit.PX());
+		} else if (widthAuto) {
+			if (marginLeftAuto) {
+				leftMargin = new CssLength(0.0f, CssUnit.PX());
+			}
+			if (marginRightAuto) {
+				rightMargin = new CssLength(0.0f, CssUnit.PX());
+			}
+			if (underflow >= 0.0f) {
+				width = new CssLength(underflow, CssUnit.PX());
+			} else {
+				width = new CssLength(0.0f, CssUnit.PX());
+				rightMargin = new CssLength(rightMargin.toPx() + underflow, CssUnit.PX());
+			}
+		}
+
+		cssBlock.content.width = width.toPx();
+		cssBlock.content.height = height;
+		cssBlock.padding.left = leftPadding.toPx();
+		cssBlock.padding.right = rightPadding.toPx();
+		cssBlock.margin.right = rightMargin.toPx();
+		cssBlock.margin.left = leftMargin.toPx();
+
+		return cssBlock;
 	}
 }

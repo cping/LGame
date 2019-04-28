@@ -41,7 +41,7 @@ public class ImageCommand extends DisplayCommand {
 	private int height;
 
 	public ImageCommand(CssStyleSheet sheet, float width, float height, LColor color) {
-		super(sheet,"Image", width, height, color);
+		super(sheet, "Image", width, height, color);
 	}
 
 	@Override
@@ -92,7 +92,7 @@ public class ImageCommand extends DisplayCommand {
 
 	@Override
 	public void paint(GLEx g, float x, float y) {
-		g.draw(texture, rect.x + x, rect.y + y, rect.width, rect.height);
+		g.draw(texture, rect.left + rect.x + x, rect.top + rect.y + y, rect.width, rect.height);
 	}
 
 	@Override

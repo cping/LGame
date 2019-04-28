@@ -36,11 +36,7 @@ import loon.utils.html.HtmlElement;
 import loon.utils.html.css.CssStyleSheet;
 
 public class TextCommand extends DisplayCommand {
-
-	public TextCommand(CssStyleSheet sheet, float width, float height, LColor color) {
-		super(sheet, "Text", width, height, color);
-	}
-
+	
 	protected String text;
 
 	protected LColor color;
@@ -50,24 +46,39 @@ public class TextCommand extends DisplayCommand {
 	private HorizontalAlign align;
 
 	private boolean dirty;
-	
+
 	private HtmlElement node;
 
 	private int sysSize;
+
+	private int fontSize;
+
+	private String fontName;
+
+	public TextCommand(CssStyleSheet sheet, float width, float height, String fontName, int fontSize, LColor color) {
+		super(sheet, "Text", width, height, color);
+		this.fontName = fontName;
+		this.fontSize = fontSize;
+	}
 
 	@Override
 	public void parser(HtmlElement e) {
 
 		sysSize = LSystem.getSystemGameFont().getSize();
-		String sysFont = LSystem.getSystemGameFontName().toLowerCase();
+
+		if (fontSize <= 1) {
+			fontSize = sysSize;
+		}
+
+		String sysFont = StringUtils.isEmpty(fontName) ? LSystem.getSystemGameFontName().toLowerCase() : fontName;
 
 		this.node = e;
 
 		if (e.isFont()) {
 			text = e.getData();
 			float size = (e.getFloatAttribute("size", 2.0f));
-			int dsize = 20;
-			if (size < 20) {
+			int dsize = fontSize;
+			if (size < fontSize) {
 				dsize = MathUtils.floor(size * 8f);
 			} else {
 				dsize = MathUtils.floor(size);
@@ -121,7 +132,7 @@ public class TextCommand extends DisplayCommand {
 	public void update() {
 
 		if (dirty && text != null) {
-			text = Print.prepareString(font, text, screenWidth - rect.x);
+			text = Print.prepareString(font, text, screenWidth - rect.x - rect.left - rect.right);
 			PointF fontSize = FontUtils.getTextWidthAndHeight(font, text);
 			rect.width = fontSize.x;
 			rect.height = fontSize.y;
@@ -138,15 +149,16 @@ public class TextCommand extends DisplayCommand {
 	public void paint(GLEx g, float x, float y) {
 		IFont temp = g.getFont();
 		g.setFont(font);
+
 		switch (align) {
 		case RIGHT:
-			g.drawString(text, screenWidth - rect.width + x, rect.y + y, color);
+			g.drawString(text, screenWidth - rect.width + x + rect.left, rect.y + y + rect.top, color);
 			break;
 		case CENTER:
-			g.drawString(text, (screenWidth - rect.width) / 2 + x, rect.y + y, color);
+			g.drawString(text, (screenWidth - rect.width) / 2 + x + rect.left, rect.y + y + rect.top, color);
 			break;
 		default:
-			g.drawString(text, rect.x + x, rect.y + y, color);
+			g.drawString(text, rect.x + x + rect.left, rect.y + y + rect.top, color);
 			break;
 		}
 		g.setFont(temp);

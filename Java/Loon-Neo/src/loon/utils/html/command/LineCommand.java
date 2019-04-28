@@ -53,8 +53,8 @@ public class LineCommand extends DisplayCommand {
 
 	@Override
 	public void paint(GLEx g, float x, float y) {
-		g.draw(texture, offset + x, rect.y + y + space + (rect.height * offset), rect.width - offset,
-				MathUtils.min(rect.height, 1), defaultColor);
+		g.draw(texture, rect.left + offset + x, rect.y + y + space + (rect.height * offset),
+				rect.top + rect.width - offset, MathUtils.min(rect.height, 1), defaultColor);
 	}
 
 	@Override

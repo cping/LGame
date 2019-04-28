@@ -18,18 +18,8 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.utils.html.css;
+package loon.utils.html.command;
 
-public class CssBlockType implements CssLayoutType {
-	
-	public final CssStyleNode styledNode;
+public class DivCommand {
 
-	public CssBlockType(CssStyleNode styledNode) {
-		this.styledNode = styledNode;
-	}
-
-	@Override
-	public <T> T accept(CssLayoutTypeVisitor<T> visitor) {
-		return visitor.visit(this);
-	}
 }

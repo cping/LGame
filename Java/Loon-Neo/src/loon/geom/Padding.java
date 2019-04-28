@@ -71,13 +71,7 @@ public class Padding {
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("Padding");
-		builder.kv("left", left)
-		.comma()
-		.kv("top", top)
-		.comma()
-		.kv("right", right)
-		.comma()
-		.kv("bottom", bottom);
+		builder.kv("left", left).comma().kv("top", top).comma().kv("right", right).comma().kv("bottom", bottom);
 		return builder.toString();
 	}
 }

@@ -75,6 +75,12 @@ public abstract class DisplayCommand implements LRelease {
 		}
 	}
 
+	public void setLimit(Rect r) {
+		if (rect != null) {
+			rect.setLimit(r);
+		}
+	}
+
 	public CssStyleSheet getStyleSheet() {
 		return styleSheet;
 	}

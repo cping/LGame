@@ -23,7 +23,6 @@ package loon.utils.html.css;
 import java.util.Comparator;
 
 import loon.BaseIO;
-import loon.LSystem;
 import loon.canvas.LColor;
 import loon.utils.CharParser;
 import loon.utils.StringUtils;
@@ -181,11 +180,11 @@ public class CssParser extends CharParser {
 	}
 
 	protected float parseFloat() {
-		StringBuilder sb = new StringBuilder();
+		StringBuilder sbr = new StringBuilder();
 		while (!eof() && StringUtils.isDigitCharacter(nextChar())) {
-			sb.append(consumeChar());
+			sbr.append(consumeChar());
 		}
-		return Float.parseFloat(sb.toString());
+		return Float.parseFloat(sbr.toString());
 	}
 
 	protected CssUnit parseUnit() {
@@ -201,9 +200,20 @@ public class CssParser extends CharParser {
 		return new CssLength(parseFloat(), parseUnit());
 	}
 
+	protected CssValue parseTextValue() {
+		CssValue value = null;
+		if (nextChar() == '#') {
+			value = parseColor();
+		} else {
+			String name = parseName();
+			value = new CssKeyword(name);
+		}
+		return value;
+	}
+
 	protected CssValue parseValue() {
 		CssValue value = null;
-		if (StringUtils.isDigit(nextChar())) {
+		if (StringUtils.isDigitCharacter(nextChar())) {
 			value = parseLength();
 		} else if (nextChar() == '#') {
 			value = parseColor();
@@ -225,7 +235,13 @@ public class CssParser extends CharParser {
 		}
 
 		consumeWhitespace();
-		CssValue propertyValue = parseValue();
+
+		CssValue propertyValue = null;
+		if ("margin".equals(propertyName) || "padding".equals(propertyName)) {
+			propertyValue = parseTextValue();
+		} else {
+			propertyValue = parseValue();
+		}
 
 		if (!(consumeChar() == ';')) {
 			return null;
