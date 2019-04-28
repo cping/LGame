@@ -207,13 +207,14 @@ final public class StringUtils extends CharUtils {
 			return false;
 		}
 		int size = message.length();
+		int amount = 0;
 		for (int j = 0; j < size; j++) {
 			int letter = message.charAt(j);
-			if (isEnglishAndNumeric(letter)) {
-				return false;
+			if (isEnglishAndNumeric(letter) || letter == ' ') {
+				amount++;
 			}
 		}
-		return true;
+		return amount >= size;
 	}
 
 	public static String filter(CharSequence message, char... chars) {
@@ -661,7 +662,6 @@ final public class StringUtils extends CharUtils {
 		return false;
 	}
 
-
 	/**
 	 * 判断是否为null
 	 * 
@@ -862,7 +862,6 @@ final public class StringUtils extends CharUtils {
 			return line;
 		}
 	}
-
 
 	/**
 	 * 获得特定字符总数

@@ -31,13 +31,12 @@ import loon.utils.html.command.DivCommand;
 import loon.utils.html.command.ImageCommand;
 import loon.utils.html.command.LineCommand;
 import loon.utils.html.command.TextCommand;
-import loon.utils.html.css.CssColor;
 import loon.utils.html.css.CssDimensions;
 import loon.utils.html.css.CssKeyword;
 import loon.utils.html.css.CssDimensions.EdgeSize;
 import loon.utils.html.css.CssDimensions.Rect;
+import loon.utils.html.css.CssElement;
 import loon.utils.html.css.CssLength;
-import loon.utils.html.css.CssStyleBuilder;
 import loon.utils.html.css.CssStyleNode;
 import loon.utils.html.css.CssStyleSheet;
 import loon.utils.html.css.CssUnit;
@@ -76,7 +75,6 @@ public class HtmlDisplay {
 		this.displays = new TArray<DisplayCommand>();
 		this.width = w;
 		this.height = h;
-		this.backgroundColor = LColor.white;
 		defaultColor = color;
 	}
 
@@ -144,76 +142,17 @@ public class HtmlDisplay {
 
 					if (cssSheet.size() > 0) {
 
-						CssStyleBuilder builder = new CssStyleBuilder();
-						CssStyleNode cssNode = builder.build(node, cssSheet);
+						CssElement cssElement = new CssElement(cssSheet, node, bodyRect, bodyPadding, width, height);
 
-						CssValue value = cssNode.getValueOf("background-color");
-						if (value != null && value instanceof CssColor) {
-							backgroundColor = ((CssColor) value).getLColor();
-						} else if (value != null) {
-							backgroundColor = new LColor(value.getValueString());
-						}
+						defaultColor = cssElement.getFontColor();
+						defaultFontName = cssElement.getFontName();
+						fontSize = (int) cssElement.getFontSize();
 
-						value = cssNode.getValueOf("foreground-color");
-						if (value != null && value instanceof CssColor) {
-							foregroundColor = ((CssColor) value).getLColor();
-						} else if (value != null) {
-							foregroundColor = new LColor(value.getValueString());
-						}
+						backgroundColor = cssElement.getBackgroundColor();
+						foregroundColor = cssElement.getForegroundColor();
 
-						value = cssNode.getValueOf("color");
-
-						if (value != null && value instanceof CssColor) {
-							defaultColor = ((CssColor) value).getLColor();
-						} else if (value != null) {
-							defaultColor = new LColor(value.getValueString());
-						}
-
-						value = cssNode.getValueOf("font-family");
-
-						if (value != null) {
-							defaultFontName = value.getValueString();
-						}
-
-						value = cssNode.getValueOf("font-size");
-
-						if (value != null && value instanceof CssLength) {
-							fontSize = MathUtils.max(1, (int) ((CssLength) value).toPx());
-						} else if (value != null) {
-							fontSize = MathUtils.max(1, (int) Rect.getValue(MathUtils.max(width, height), fontSize,
-									value.getValueString()));
-						}
-
-						value = cssNode.getValueOf("margin");
-
-						if (value != null) {
-							String margin = value.getValueString();
-
-							String[] items = StringUtils.split(margin, ' ');
-
-							bodyRect = Rect.analyze(bodyRect, fontSize, width, height, items);
-
-						}
-
-						CssKeyword zeroLength = new CssKeyword("0");
-
-						bodyRect.top = Rect.getValue(height, fontSize,
-								cssNode.find(zeroLength, "margin-top").getValueString());
-						bodyRect.right = Rect.getValue(width, fontSize,
-								cssNode.find(zeroLength, "margin-right").getValueString());
-						bodyRect.bottom = Rect.getValue(height, fontSize,
-								cssNode.find(zeroLength, "margin-bottom").getValueString());
-						bodyRect.left = Rect.getValue(width, fontSize,
-								cssNode.find(zeroLength, "margin-left").getValueString());
-
-						bodyPadding.top = Rect.getValue(height, fontSize,
-								cssNode.find(zeroLength, "padding-top").getValueString());
-						bodyPadding.right = Rect.getValue(width, fontSize,
-								cssNode.find(zeroLength, "padding-right").getValueString());
-						bodyPadding.bottom = Rect.getValue(height, fontSize,
-								cssNode.find(zeroLength, "padding-bottom").getValueString());
-						bodyPadding.left = Rect.getValue(width, fontSize,
-								cssNode.find(zeroLength, "padding-left").getValueString());
+						bodyRect = cssElement.getMargin();
+						bodyPadding = cssElement.getPadding();
 
 					}
 

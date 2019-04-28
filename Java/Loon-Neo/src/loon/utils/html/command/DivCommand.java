@@ -43,11 +43,11 @@ public class DivCommand extends DisplayCommand {
 
 	private int sysSize;
 
-	private int fontSize;
+	private float fontSize;
 
 	private String fontName;
 	
-	public DivCommand(CssStyleSheet sheet, float width, float height, String fontName, int fontSize, LColor color) {
+	public DivCommand(CssStyleSheet sheet, float width, float height, String fontName, float fontSize, LColor color) {
 		super(sheet, "Text", width, height, color);
 		this.fontName = fontName;
 		this.fontSize = fontSize;

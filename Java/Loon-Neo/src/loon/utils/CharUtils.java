@@ -228,9 +228,9 @@ public class CharUtils {
 	public static boolean isChinese(int c) {
 		return c >= 0x4e00 && c <= 0x9fa5;
 	}
-
+	
 	public static boolean isEnglishAndNumeric(int letter) {
-		return isDigit(letter) || isAsciiLetter(letter);
+		return isAsciiLetterDiait(letter);
 	}
 
 	public static boolean isSingle(int c) {

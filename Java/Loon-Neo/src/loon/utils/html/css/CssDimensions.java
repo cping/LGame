@@ -110,7 +110,28 @@ public class CssDimensions {
 			}
 			return bodyRect;
 		}
-
+		
+		public static EdgeSize analyze(EdgeSize bodyRect, float fontSize, float width, float height, String... items) {
+			if (bodyRect == null) {
+				bodyRect = new EdgeSize();
+			}
+			if (items.length == 1) {
+				bodyRect.top = getValue(height, fontSize, items[0]);
+			} else if (items.length == 2) {
+				bodyRect.top = getValue(height, fontSize, items[0]);
+				bodyRect.right = getValue(width, fontSize, items[1]);
+			} else if (items.length == 3) {
+				bodyRect.top = getValue(height, fontSize, items[0]);
+				bodyRect.right = getValue(width, fontSize, items[1]);
+				bodyRect.bottom = getValue(height, fontSize, items[2]);
+			} else if (items.length >= 4) {
+				bodyRect.top = getValue(height, fontSize, items[0]);
+				bodyRect.right = getValue(width, fontSize, items[1]);
+				bodyRect.bottom = getValue(height, fontSize, items[2]);
+				bodyRect.left = getValue(width, fontSize, items[3]);
+			}
+			return bodyRect;
+		}
 		public static Rect em(float value, String top, String right, String bottom, String left) {
 			return em(value, getFloat(top), getFloat(right), getFloat(bottom), getFloat(left));
 		}

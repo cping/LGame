@@ -51,11 +51,11 @@ public class TextCommand extends DisplayCommand {
 
 	private int sysSize;
 
-	private int fontSize;
+	private float fontSize;
 
 	private String fontName;
 
-	public TextCommand(CssStyleSheet sheet, float width, float height, String fontName, int fontSize, LColor color) {
+	public TextCommand(CssStyleSheet sheet, float width, float height, String fontName, float fontSize, LColor color) {
 		super(sheet, "Text", width, height, color);
 		this.fontName = fontName;
 		this.fontSize = fontSize;
@@ -77,7 +77,7 @@ public class TextCommand extends DisplayCommand {
 		if (e.isFont()) {
 			text = e.getData();
 			float size = (e.getFloatAttribute("size", 2.0f));
-			int dsize = fontSize;
+			int dsize = (int) fontSize;
 			if (size < fontSize) {
 				dsize = MathUtils.floor(size * 8f);
 			} else {
