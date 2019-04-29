@@ -24,12 +24,17 @@ import loon.canvas.LColor;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 import loon.utils.html.HtmlElement;
+import loon.utils.html.css.CssDimensions.Border;
 import loon.utils.html.css.CssDimensions.EdgeSize;
 import loon.utils.html.css.CssDimensions.Rect;
 
 public class CssElement {
 
 	private float fontSize;
+
+	private String fontStyle;
+
+	private float lineHeight;
 
 	private String fontName;
 
@@ -39,9 +44,17 @@ public class CssElement {
 
 	private LColor foregroundColor;
 
+	private String backgroundImageUrl;
+
+	private String backgroundPosition;
+
+	private String border;
+
 	private Rect marginRect;
 
 	private EdgeSize paddingSize;
+
+	private Border borderSize;
 
 	private HtmlElement node;
 
@@ -50,6 +63,12 @@ public class CssElement {
 	private float width;
 
 	private float height;
+
+	private float cssWidth;
+
+	private float cssHeight;
+
+	private CssStyleNode cssNode;
 
 	public CssElement(CssStyleSheet s, HtmlElement e, Rect m, EdgeSize p, float w, float h) {
 		this.style = s;
@@ -63,7 +82,8 @@ public class CssElement {
 	public void parse() {
 
 		CssStyleBuilder builder = new CssStyleBuilder();
-		CssStyleNode cssNode = builder.build(node, style);
+
+		this.cssNode = builder.build(node, style);
 
 		CssValue value = cssNode.getValueOf("background-color");
 		if (value != null && value instanceof CssColor) {
@@ -87,10 +107,28 @@ public class CssElement {
 			fontColor = new LColor(value.getValueString());
 		}
 
+		value = cssNode.getValueOf("background-image");
+
+		if (value != null) {
+			backgroundImageUrl = value.getValueString();
+		}
+
+		value = cssNode.getValueOf("background-position");
+
+		if (value != null) {
+			backgroundPosition = value.getValueString();
+		}
+
 		value = cssNode.getValueOf("font-family");
 
 		if (value != null) {
 			fontName = value.getValueString();
+		}
+
+		value = cssNode.getValueOf("font-style");
+
+		if (value != null) {
+			fontStyle = value.getValueString();
 		}
 
 		value = cssNode.getValueOf("font-size");
@@ -99,6 +137,31 @@ public class CssElement {
 			fontSize = MathUtils.max(1f, ((CssLength) value).toPx());
 		} else if (value != null) {
 			fontSize = MathUtils.max(1f, Rect.getValue(MathUtils.max(width, height), fontSize, value.getValueString()));
+		}
+
+		value = cssNode.getValueOf("line_height");
+
+		if (value != null && value instanceof CssLength) {
+			lineHeight = MathUtils.max(1f, ((CssLength) value).toPx());
+		} else if (value != null) {
+			lineHeight = MathUtils.max(1f,
+					Rect.getValue(MathUtils.max(width, height), fontSize, value.getValueString()));
+		}
+
+		value = cssNode.getValueOf("width");
+
+		if (value != null && value instanceof CssLength) {
+			cssWidth = MathUtils.max(1f, ((CssLength) value).toPx());
+		} else if (value != null) {
+			cssWidth = MathUtils.max(1f, Rect.getValue(width, fontSize, value.getValueString()));
+		}
+
+		value = cssNode.getValueOf("height");
+
+		if (value != null && value instanceof CssLength) {
+			cssHeight = MathUtils.max(1f, ((CssLength) value).toPx());
+		} else if (value != null) {
+			cssHeight = MathUtils.max(1f, Rect.getValue(height, fontSize, value.getValueString()));
 		}
 
 		value = cssNode.getValueOf("margin");
@@ -143,6 +206,68 @@ public class CssElement {
 		paddingSize.left = MathUtils.max(paddingSize.left,
 				Rect.getValue(width, fontSize, cssNode.find(zeroLength, "padding-left").getValueString()));
 
+		value = cssNode.getValueOf("border");
+
+		if (value != null) {
+			border = value.getValueString();
+		}
+
+		borderSize.top = cssNode.find(zeroLength, "border-top").getValueString();
+		borderSize.right = cssNode.find(zeroLength, "border-right").getValueString();
+		borderSize.bottom = cssNode.find(zeroLength, "border-bottom").getValueString();
+		borderSize.left = cssNode.find(zeroLength, "border-left").getValueString();
+
+		value = cssNode.getValueOf("border-top-color");
+		if (value != null) {
+			borderSize.top += ";" + value.getValueString();
+		}
+		value = cssNode.getValueOf("border-top-width");
+		if (value != null) {
+			borderSize.top += ";" + value.getValueString();
+		}
+		value = cssNode.getValueOf("border-top-style");
+		if (value != null) {
+			borderSize.top += ";" + value.getValueString();
+		}
+
+		value = cssNode.getValueOf("border-right-color");
+		if (value != null) {
+			borderSize.right += ";" + value.getValueString();
+		}
+		value = cssNode.getValueOf("border-right-width");
+		if (value != null) {
+			borderSize.right += ";" + value.getValueString();
+		}
+		value = cssNode.getValueOf("border-right-style");
+		if (value != null) {
+			borderSize.right += ";" + value.getValueString();
+		}
+
+		value = cssNode.getValueOf("border-bottom-color");
+		if (value != null) {
+			borderSize.bottom += ";" + value.getValueString();
+		}
+		value = cssNode.getValueOf("border-bottom-width");
+		if (value != null) {
+			borderSize.bottom += ";" + value.getValueString();
+		}
+		value = cssNode.getValueOf("border-bottom-style");
+		if (value != null) {
+			borderSize.bottom += ";" + value.getValueString();
+		}
+
+		value = cssNode.getValueOf("border-left-color");
+		if (value != null) {
+			borderSize.left += ";" + value.getValueString();
+		}
+		value = cssNode.getValueOf("border-left-width");
+		if (value != null) {
+			borderSize.left += ";" + value.getValueString();
+		}
+		value = cssNode.getValueOf("border-left-style");
+		if (value != null) {
+			borderSize.left += ";" + value.getValueString();
+		}
 	}
 
 	public float getFontSize() {
@@ -200,4 +325,41 @@ public class CssElement {
 	public void setPadding(EdgeSize padding) {
 		this.paddingSize = padding;
 	}
+
+	public float getLineHeight() {
+		return lineHeight;
+	}
+
+	public String getFontStyle() {
+		return fontStyle;
+	}
+
+	public String getBackgroundImageUrl() {
+		return backgroundImageUrl;
+	}
+
+	public String getBackgroundPosition() {
+		return backgroundPosition;
+	}
+
+	public Border getBorderSize() {
+		return borderSize;
+	}
+
+	public CssStyleNode getCssNode() {
+		return cssNode;
+	}
+
+	public float getCssWidth() {
+		return cssWidth;
+	}
+
+	public float getCssHeight() {
+		return cssHeight;
+	}
+
+	public String getBorder() {
+		return border;
+	}
+
 }

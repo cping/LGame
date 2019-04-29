@@ -24,15 +24,19 @@ import loon.LRelease;
 import loon.canvas.LColor;
 import loon.opengl.GLEx;
 import loon.utils.html.HtmlElement;
-import loon.utils.html.css.CssStyleSheet;
 import loon.utils.html.css.CssDimensions.Rect;
+import loon.utils.html.css.CssElement;
+import loon.utils.html.css.CssStyleNode;
+import loon.utils.html.css.CssStyleSheet;
 
 /**
  * 命令存储用类,转换html标记字符串为对应loon渲染指令并保存,在需要的场合渲染展示
  */
 public abstract class DisplayCommand implements LRelease {
 
-	protected CssStyleSheet styleSheet;
+	protected CssStyleNode attributeStyleSheet;
+
+	protected CssStyleNode styleSheet;
 
 	protected Rect rect;
 
@@ -44,7 +48,11 @@ public abstract class DisplayCommand implements LRelease {
 
 	protected final float screenHeight;
 
-	public DisplayCommand(CssStyleSheet sheet, String name, float width, float height, LColor color) {
+	protected CssElement element;
+
+	protected CssElement attrElement;
+
+	public DisplayCommand(CssStyleNode sheet, String name, float width, float height, LColor color) {
 		this.styleSheet = sheet;
 		this.name = name;
 		this.defaultColor = color;
@@ -81,18 +89,33 @@ public abstract class DisplayCommand implements LRelease {
 		}
 	}
 
-	public CssStyleSheet getStyleSheet() {
+	public CssStyleNode getStyleNode() {
 		return styleSheet;
 	}
 
-	public void setStyleSheet(CssStyleSheet styleSheet) {
-		this.styleSheet = styleSheet;
+	public void setStyleNode(CssStyleNode style) {
+		this.styleSheet = style;
 	}
 
 	public abstract void update();
 
-	public abstract void parser(HtmlElement e);
+	public void parser(HtmlElement e) {
+		if (e != null && e.isAttyStyle()) {
+			attrElement = new CssElement(e.getAttrStyleSheet(), e, null, null, screenWidth, screenHeight);
+		}
+		CssStyleSheet cssSheet = e.getStyleSheet();
+		if (cssSheet.size() > 0) {
+			element = new CssElement(cssSheet, e, null, null, screenWidth, screenHeight);
+		}
+	}
 
 	public abstract void paint(GLEx g, float x, float y);
 
+	public CssElement getCssElement() {
+		return element;
+	}
+
+	public CssElement getCssAttributeElement() {
+		return element;
+	}
 }

@@ -33,7 +33,7 @@ import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 import loon.utils.html.HtmlElement;
-import loon.utils.html.css.CssStyleSheet;
+import loon.utils.html.css.CssStyleNode;
 
 public class TextCommand extends DisplayCommand {
 	
@@ -55,7 +55,7 @@ public class TextCommand extends DisplayCommand {
 
 	private String fontName;
 
-	public TextCommand(CssStyleSheet sheet, float width, float height, String fontName, float fontSize, LColor color) {
+	public TextCommand(CssStyleNode sheet, float width, float height, String fontName, float fontSize, LColor color) {
 		super(sheet, "Text", width, height, color);
 		this.fontName = fontName;
 		this.fontSize = fontSize;
@@ -63,7 +63,8 @@ public class TextCommand extends DisplayCommand {
 
 	@Override
 	public void parser(HtmlElement e) {
-
+		super.parser(e);
+		
 		sysSize = LSystem.getSystemGameFont().getSize();
 
 		if (fontSize <= 1) {

@@ -25,6 +25,7 @@ import loon.canvas.LColor;
 import loon.font.IFont;
 import loon.opengl.GLEx;
 import loon.utils.html.HtmlElement;
+import loon.utils.html.css.CssStyleNode;
 import loon.utils.html.css.CssStyleSheet;
 
 public class DivCommand extends DisplayCommand {
@@ -46,8 +47,8 @@ public class DivCommand extends DisplayCommand {
 	private float fontSize;
 
 	private String fontName;
-	
-	public DivCommand(CssStyleSheet sheet, float width, float height, String fontName, float fontSize, LColor color) {
+
+	public DivCommand(CssStyleNode sheet, float width, float height, String fontName, float fontSize, LColor color) {
 		super(sheet, "Text", width, height, color);
 		this.fontName = fontName;
 		this.fontSize = fontSize;
@@ -61,7 +62,7 @@ public class DivCommand extends DisplayCommand {
 
 	@Override
 	public void parser(HtmlElement e) {
-
+		super.parser(e);
 	}
 
 	@Override

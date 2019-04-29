@@ -26,8 +26,8 @@ import loon.canvas.LColor;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.html.HtmlElement;
-import loon.utils.html.css.CssStyleSheet;
 import loon.utils.html.css.CssDimensions.Rect;
+import loon.utils.html.css.CssStyleNode;
 
 public class LineCommand extends DisplayCommand {
 
@@ -37,12 +37,13 @@ public class LineCommand extends DisplayCommand {
 
 	private int offset;
 
-	public LineCommand(CssStyleSheet sheet, float width, float height, LColor color) {
+	public LineCommand(CssStyleNode sheet, float width, float height, LColor color) {
 		super(sheet, "Line", width, height, color);
 	}
 
 	@Override
 	public void parser(HtmlElement e) {
+		super.parser(e);
 		offset = 4;
 		space = LSystem.getSystemGameFont().getHeight();
 		texture = LSystem.base().graphics().finalColorTex();

@@ -51,6 +51,15 @@ public class CssDimensions {
 			this.bottom = v;
 		}
 	}
+	
+	public static class Border{
+		
+		public String left = null;
+		public String right = null;
+		public String top = null;
+		public String bottom = null;
+		
+	}
 
 	public static class Rect {
 

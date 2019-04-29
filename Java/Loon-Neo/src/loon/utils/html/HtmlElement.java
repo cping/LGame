@@ -376,6 +376,10 @@ public class HtmlElement {
 		}
 	}
 
+	public boolean isAttyStyle() {
+		return !isAttrEmpty() && (getAttribute("style", null) != null);
+	}
+
 	public boolean isOnlyText() {
 		if (attributes.size == 0 && tempData != null) {
 			return true;
@@ -429,6 +433,23 @@ public class HtmlElement {
 			}
 		}
 		return tempSheet = new CssStyleSheet();
+	}
+
+	public CssStyleSheet getAttrStyleSheet() {
+		String value = getAttribute("style", null);
+		if (value != null) {
+			return CssParser.loadText("* {" + value + "}");
+		}
+		return null;
+	}
+
+	public CssStyleNode getAttrStyleNode() {
+		String value = getAttribute("style", null);
+		if (value != null) {
+			CssStyleBuilder builder = new CssStyleBuilder();
+			return builder.build(this, getAttrStyleSheet());
+		}
+		return null;
 	}
 
 	public String href() {

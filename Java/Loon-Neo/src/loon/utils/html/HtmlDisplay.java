@@ -93,6 +93,8 @@ public class HtmlDisplay {
 		float lineWidth = 0;
 		float lineHeight = 0;
 
+		CssStyleNode cssStyleNode = null;
+		
 		boolean newLine = false;
 
 		int newLineAmount = 0;
@@ -157,21 +159,21 @@ public class HtmlDisplay {
 					}
 
 				} else if (node.isH()) {
-					display = new TextCommand(cssSheet, width, height, defaultFontName, fontSize, defaultColor);
+					display = new TextCommand(cssStyleNode, width, height, defaultFontName, fontSize, defaultColor);
 					display.parser(node);
 					newLine = true;
 					newLineAmount = sysSize;
 				} else if (StringUtils.contains(tagName, "a", "b", "label", "font")) {
-					display = new TextCommand(cssSheet, width, height, defaultFontName, fontSize, defaultColor);
+					display = new TextCommand(cssStyleNode, width, height, defaultFontName, fontSize, defaultColor);
 					display.parser(node);
 				} else if (StringUtils.contains(tagName, "span", "div")) {
-					display = new DivCommand(cssSheet, width, height, defaultFontName, fontSize, defaultColor);
+					display = new DivCommand(cssStyleNode, width, height, defaultFontName, fontSize, defaultColor);
 					display.parser(node);
 				} else if ("img".equals(tagName)) {
-					display = new ImageCommand(cssSheet, width, height, defaultColor);
+					display = new ImageCommand(cssStyleNode, width, height, defaultColor);
 					display.parser(node);
 				} else if ("p".equals(tagName)) {
-					display = new TextCommand(cssSheet, width, height, defaultFontName, fontSize, defaultColor);
+					display = new TextCommand(cssStyleNode, width, height, defaultFontName, fontSize, defaultColor);
 					display.parser(node);
 					newLine = true;
 					newLineAmount = sysSize;
@@ -183,7 +185,7 @@ public class HtmlDisplay {
 						lineHeight += sysSize;
 					}
 				} else if ("hr".equals(tagName)) {
-					display = new LineCommand(cssSheet, width, height, defaultColor);
+					display = new LineCommand(cssStyleNode, width, height, defaultColor);
 					display.parser(node);
 					newLine = true;
 					newLineAmount = sysSize + 5;
