@@ -2,6 +2,10 @@
 <!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit trunk//EN" "http://google-web-toolkit.googlecode.com/svn/trunk/distro-source/core/src/gwt-module.dtd">
 <module>
 	<inherits name='com.google.gwt.user.User' />
+	<source path="gen">
+		<exclude name="ReflectionCacheSourceCreator.java"/>
+		<exclude name="ReflectionCacheGenerator.java"/>
+	</source>
 	<define-configuration-property name="loon.reflect.include"
 		is-multi-valued="true" />
 	<define-configuration-property name="loon.reflect.exclude"

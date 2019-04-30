@@ -1,18 +1,12 @@
 package loon.test;
 
-import loon.LSystem;
-import loon.LTransition;
 import loon.Screen;
 import loon.action.sprite.AnimationData;
-import loon.canvas.LColor;
 import loon.component.LButton;
 import loon.component.LPaper;
 import loon.event.ActionKey;
 import loon.event.GameTouch;
-import loon.html5.gwt.GWTGame;
-import loon.html5.gwt.Loon;
 import loon.opengl.GLEx;
-import loon.utils.Scale;
 import loon.utils.timer.LTimerContext;
 
 public class TitleScreen extends Screen {

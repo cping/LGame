@@ -14,6 +14,8 @@
 	<source path="gwt">
 		<exclude name="**/emu/**" />
 		<exclude name="**/theme/**" />
+		<exclude name="**/AssetCacheLinker.java"/>
+		<exclude name="**/ResourcesWrapper.java"/>
 		<exclude name="**/PreloaderBundleGenerator.java"/>
 		<exclude name="**/FileWrapper.java"/>
 	</source>
