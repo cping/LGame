@@ -277,7 +277,7 @@ public class FloatArray implements IArray {
 
 	public float first() {
 		if (length == 0) {
-			throw new IllegalStateException("Array is empty.");
+			throw new LSysException("Array is empty.");
 		}
 		return items[0];
 	}

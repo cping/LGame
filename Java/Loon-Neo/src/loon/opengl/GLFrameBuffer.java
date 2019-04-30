@@ -26,6 +26,7 @@ import java.nio.IntBuffer;
 
 import loon.LGame;
 import loon.LRelease;
+import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
 import loon.utils.GLUtils;
@@ -196,15 +197,15 @@ public abstract class GLFrameBuffer implements LRelease {
 			gl.glDeleteFramebuffer(framebufferHandle);
 
 			if (result == GL20.GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT)
-				throw new IllegalStateException("Frame buffer couldn't be constructed: incomplete attachment");
+				throw new LSysException("Frame buffer couldn't be constructed: incomplete attachment");
 			if (result == GL20.GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS)
-				throw new IllegalStateException("Frame buffer couldn't be constructed: incomplete dimensions");
+				throw new LSysException("Frame buffer couldn't be constructed: incomplete dimensions");
 			if (result == GL20.GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT)
-				throw new IllegalStateException("Frame buffer couldn't be constructed: missing attachment");
+				throw new LSysException("Frame buffer couldn't be constructed: missing attachment");
 			if (result == GL20.GL_FRAMEBUFFER_UNSUPPORTED)
-				throw new IllegalStateException(
+				throw new LSysException(
 						"Frame buffer couldn't be constructed: unsupported combination of formats");
-			throw new IllegalStateException("Frame buffer couldn't be constructed: unknown error " + result);
+			throw new LSysException("Frame buffer couldn't be constructed: unknown error " + result);
 		}
 
 		addManagedFrameBuffer(this);

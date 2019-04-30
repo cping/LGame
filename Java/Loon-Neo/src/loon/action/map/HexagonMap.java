@@ -360,7 +360,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		path.cost = found.g;
 		SortedList<int[]> positions = new SortedList<int[]>();
 		while (found != null) {
-			positions.addFirst(found.position.clone());
+			positions.addFirst(CollectionUtils.copyOf(found.position));
 			found = found.parent;
 		}
 		path.positions = positions;

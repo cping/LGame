@@ -20,6 +20,7 @@
  */
 package loon.component;
 
+import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
@@ -387,7 +388,7 @@ public class BaseBox extends AbstractBox {
 		}
 	}
 
-	public void addMenuItem(int menuIndex, BoxItem menuItem) throws IllegalArgumentException {
+	public void addMenuItem(int menuIndex, BoxItem menuItem) throws LSysException {
 		if ((menuIndex < 0) || (menuIndex > this.menuItems.length)) {
 			return;
 		}

@@ -20,6 +20,8 @@
  */
 package loon.utils.reply;
 
+import loon.LSysException;
+
 public abstract class Try<T> {
 
 	public static final class Success<T> extends Try<T> {
@@ -36,7 +38,7 @@ public abstract class Try<T> {
 
 		@Override
 		public Throwable getFailure() {
-			throw new IllegalStateException();
+			throw new LSysException("Failure");
 		}
 
 		@Override

@@ -46,7 +46,7 @@ public class PTransformer {
 		e11 += m.e11;
 	}
 
-	public PTransformer clone() {
+	public PTransformer cpy() {
 		return new PTransformer(e00, e01, e10, e11);
 	}
 

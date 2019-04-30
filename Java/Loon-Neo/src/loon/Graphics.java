@@ -135,7 +135,7 @@ public abstract class Graphics {
 		int texWidth = config.toTexWidth(scale.scaledCeil(width));
 		int texHeight = config.toTexHeight(scale.scaledCeil(height));
 		if (texWidth <= 0 || texHeight <= 0) {
-			throw new IllegalArgumentException("Invalid texture size: " + texWidth + "x" + texHeight);
+			throw new LSysException("Invalid texture size: " + texWidth + "x" + texHeight);
 		}
 		int id = createTexture(config);
 		gl.glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texWidth, texHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, null);

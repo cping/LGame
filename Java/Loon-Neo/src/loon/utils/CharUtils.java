@@ -352,14 +352,14 @@ public class CharUtils {
 		}
 	}
 
-	public static char toUpperAscii(char c) {
+	public static int toUpperAscii(int c) {
 		if (isLowercaseAlpha(c)) {
 			c -= (char) 0x20;
 		}
 		return c;
 	}
 
-	public static char toLowerAscii(char c) {
+	public static int toLowerAscii(int c) {
 		if (isUppercaseAlpha(c)) {
 			c += (char) 0x20;
 		}

@@ -123,13 +123,13 @@ public class ListMap<K, V> implements IArray {
 
 	public K firstKey() {
 		if (size == 0)
-			throw new IllegalStateException("Map is empty.");
+			throw new LSysException("Map is empty.");
 		return keys[0];
 	}
 
 	public V firstValue() {
 		if (size == 0)
-			throw new IllegalStateException("Map is empty.");
+			throw new LSysException("Map is empty.");
 		return values[0];
 	}
 

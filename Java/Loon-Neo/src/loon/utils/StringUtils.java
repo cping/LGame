@@ -433,10 +433,9 @@ final public class StringUtils extends CharUtils {
 	 * @param str
 	 * @param size
 	 * @return
-	 * @throws NullPointerException
-	 * @throws IllegalArgumentException
+	 * @throws LSysException
 	 */
-	public static String[] splitSize(String str, int size) throws NullPointerException, IllegalArgumentException {
+	public static String[] splitSize(String str, int size) throws LSysException {
 		if (isEmpty(str)) {
 			return new String[] { str };
 		}
@@ -700,21 +699,13 @@ final public class StringUtils extends CharUtils {
 	 * @return 逻辑值（True Or False）。
 	 */
 	public static boolean hasChinese(String checkStr) {
-		boolean checkedStatus = false;
-		boolean isError = false;
-		String spStr = " _-";
-		int checkStrLength = checkStr.length() - 1;
-		for (int i = 0; i <= checkStrLength; i++) {
+		for (int i = 0; i < checkStr.length(); i++) {
 			int ch = checkStr.charAt(i);
-			if (ch < '\176') {
-				ch = Character.toUpperCase(ch);
-				if (((ch < 'A') || (ch > 'Z')) && ((ch < '0') || (ch > '9')) && (spStr.indexOf(ch) < 0)) {
-					isError = true;
-				}
+			if (isChinese(ch)) {
+				return true;
 			}
 		}
-		checkedStatus = !isError;
-		return checkedStatus;
+		return false;
 	}
 
 	/**

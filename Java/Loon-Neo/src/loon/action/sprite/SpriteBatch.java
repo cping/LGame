@@ -483,7 +483,7 @@ public class SpriteBatch extends PixmapFImpl {
 
 	private void checkDrawing() {
 		if (!drawing) {
-			throw new IllegalStateException("Not implemented begin !");
+			throw new LSysException("Not implemented begin !");
 		}
 	}
 

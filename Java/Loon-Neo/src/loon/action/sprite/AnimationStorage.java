@@ -98,8 +98,7 @@ public class AnimationStorage extends Animation {
 		this(new TArray<Animation>(CollectionUtils.INITIAL_CAPACITY));
 	}
 
-	@Override
-	public Object clone() {
+	public AnimationStorage cpy() {
 		return new AnimationStorage(playAnimations);
 	}
 

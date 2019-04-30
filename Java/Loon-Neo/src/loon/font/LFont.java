@@ -115,8 +115,8 @@ public class LFont implements IFont {
 			throw new LSysException("Font name is null !");
 		}
 		this.textFormat = new TextFormat(new Font(name, style, MathUtils.max(1, size)), antialias);
-		this.supportCacheFontPack = LSystem.isSupportTempFont() && !LSystem.isHTML5();
-		this.fontPackMaxCache = (LSystem.isDesktop() ? 4096 : 2048) / size;
+		this.supportCacheFontPack = LSystem.isSupportTempFont();
+		this.fontPackMaxCache = (LSystem.isDesktop() ? 8192 : 4096) / size;
 		this.fontPackCharsLimit = 2;
 		this.fontPackCharsCount = 0;
 		this.tooManyChars = false;

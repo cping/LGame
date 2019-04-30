@@ -258,7 +258,7 @@ public class CharArray implements IArray {
 
 	public int first() {
 		if (length == 0) {
-			throw new IllegalStateException("Array is empty.");
+			throw new LSysException("Array is empty.");
 		}
 		return items[0];
 	}

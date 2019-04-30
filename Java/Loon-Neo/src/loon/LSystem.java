@@ -622,7 +622,7 @@ public class LSystem {
 	public static ShaderProgram createShader(String ver, String fragment) {
 		ShaderProgram shader = new ShaderProgram(ver, fragment);
 		if (shader.isCompiled() == false) {
-			throw new IllegalArgumentException("Error compiling shader: " + shader.getLog());
+			throw new LSysException("Error compiling shader: " + shader.getLog());
 		}
 		return shader;
 	}

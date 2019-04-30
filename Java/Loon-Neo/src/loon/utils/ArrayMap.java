@@ -393,8 +393,7 @@ public class ArrayMap implements IArray {
 		return true;
 	}
 
-	@Override
-	public Object clone() {
+	public ArrayMap cpy() {
 		ArrayMap copy = new ArrayMap();
 		copy.threshold = threshold;
 		copy.keysTable = keysTable;
