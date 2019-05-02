@@ -2168,6 +2168,144 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	/**
+	 * 按照上一个精灵的x,y位置,另起一行添加精灵,并偏移指定位置
+	 * 
+	 * @param spr
+	 * @param offX
+	 * @param offY
+	 * @return
+	 */
+	public ISprite addPadding(ISprite spr, float offX, float offY) {
+		if (isClose || sprites == null) {
+			return spr;
+		}
+		return sprites.addPadding(spr, offX, offY);
+	}
+
+	/**
+	 * 按照上一个精灵的y轴,另起一行添加精灵
+	 * 
+	 * @param spr
+	 * @return
+	 */
+	public ISprite addCol(ISprite spr) {
+		if (isClose || sprites == null) {
+			return spr;
+		}
+		return sprites.addCol(spr);
+	}
+
+	/**
+	 * 按照上一个精灵的y轴,另起一行添加精灵,并让y轴偏移指定位置
+	 * 
+	 * @param spr
+	 * @param offY
+	 * @return
+	 */
+	public ISprite addCol(ISprite spr, float offY) {
+		if (isClose || sprites == null) {
+			return spr;
+		}
+		return sprites.addCol(spr, offY);
+	}
+
+	/**
+	 * 按照上一个精灵的x轴,另起一行添加精灵
+	 * 
+	 * @param spr
+	 * @return
+	 */
+	public ISprite addRow(ISprite spr) {
+		if (isClose || sprites == null) {
+			return spr;
+		}
+		return sprites.addRow(spr);
+	}
+
+	/**
+	 * 按照上一个精灵的x轴,另起一行添加精灵,并将x轴偏移指定位置
+	 * 
+	 * @param spr
+	 * @param offX
+	 * @return
+	 */
+	public ISprite addRow(ISprite spr, float offX) {
+		if (isClose || sprites == null) {
+			return spr;
+		}
+		return sprites.addRow(spr, offX);
+	}
+
+	/**
+	 * 按照上一个组件的x,y位置,另起一行添加组件,并偏移指定位置
+	 * 
+	 * @param comp
+	 * @param offX
+	 * @param offY
+	 * @return
+	 */
+	public LComponent addPadding(LComponent comp, float offX, float offY) {
+		if (isClose || desktop == null) {
+			return comp;
+		}
+		return desktop.addPadding(comp, offX, offY);
+	}
+
+	/**
+	 * 按照上一个组件的y轴,另起一行添加组件
+	 * 
+	 * @param comp
+	 * @return
+	 */
+	public LComponent addCol(LComponent comp) {
+		if (isClose || desktop == null) {
+			return comp;
+		}
+		return desktop.addCol(comp);
+	}
+
+	/**
+	 * 按照上一个组件的y轴,另起一行添加组件,并偏移指定y轴坐标
+	 * 
+	 * @param comp
+	 * @param offY
+	 * @return
+	 */
+	public LComponent addCol(LComponent comp, float offY) {
+		if (isClose || desktop == null) {
+			return comp;
+		}
+		return desktop.addCol(comp, offY);
+	}
+
+	/**
+	 * 按照上一个组件的x轴,在同一行添加组件
+	 * 
+	 * @param comp
+	 * @return
+	 */
+	public LComponent addRow(LComponent comp) {
+		if (isClose || desktop == null) {
+			return comp;
+		}
+		return desktop.addRow(comp);
+	}
+
+	/**
+	 * 按照上一个组件的x轴,在同一行添加组件,并偏移指定x轴
+	 * 
+	 * @param comp
+	 * @param offX
+	 * @return
+	 */
+	public LComponent addRow(LComponent comp, float offX) {
+		if (isClose || desktop == null) {
+			return comp;
+		}
+		return desktop.addRow(comp, offX);
+	}
+
+	/**
 	 * 删除指定对象
 	 * 
 	 * @param obj

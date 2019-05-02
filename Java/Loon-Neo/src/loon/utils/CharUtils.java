@@ -35,6 +35,62 @@ public class CharUtils {
 	public static char toChar(byte b) {
 		return (char) (b & 0xFF);
 	}
+	
+	public static long getBytesToLong(final byte[] bytes) {
+		return getBytesToLong(bytes, 0, bytes.length);
+	}
+
+	public static long getBytesToLong(final byte[] x, final int offset, final int n) {
+		switch (n) {
+		case 1:
+			return x[offset] & 0xFFL;
+		case 2:
+			return (x[offset + 1] & 0xFFL) | ((x[offset] & 0xFFL) << 8);
+		case 3:
+			return (x[offset + 2] & 0xFFL) | ((x[offset + 1] & 0xFFL) << 8) | ((x[offset] & 0xFFL) << 16);
+		case 4:
+			return (x[offset + 3] & 0xFFL) | ((x[offset + 2] & 0xFFL) << 8) | ((x[offset + 1] & 0xFFL) << 16)
+					| ((x[offset] & 0xFFL) << 24);
+		case 5:
+			return (x[offset + 4] & 0xFFL) | ((x[offset + 3] & 0xFFL) << 8) | ((x[offset + 2] & 0xFFL) << 16)
+					| ((x[offset + 1] & 0xFFL) << 24) | ((x[offset] & 0xFFL) << 32);
+		case 6:
+			return (x[offset + 5] & 0xFFL) | ((x[offset + 4] & 0xFFL) << 8) | ((x[offset + 3] & 0xFFL) << 16)
+					| ((x[offset + 2] & 0xFFL) << 24) | ((x[offset + 1] & 0xFFL) << 32) | ((x[offset] & 0xFFL) << 40);
+		case 7:
+			return (x[offset + 6] & 0xFFL) | ((x[offset + 5] & 0xFFL) << 8) | ((x[offset + 4] & 0xFFL) << 16)
+					| ((x[offset + 3] & 0xFFL) << 24) | ((x[offset + 2] & 0xFFL) << 32)
+					| ((x[offset + 1] & 0xFFL) << 40) | ((x[offset] & 0xFFL) << 48);
+		case 8:
+			return (x[offset + 7] & 0xFFL) | ((x[offset + 6] & 0xFFL) << 8) | ((x[offset + 5] & 0xFFL) << 16)
+					| ((x[offset + 4] & 0xFFL) << 24) | ((x[offset + 3] & 0xFFL) << 32)
+					| ((x[offset + 2] & 0xFFL) << 40) | ((x[offset + 1] & 0xFFL) << 48) | ((x[offset] & 0xFFL) << 56);
+		default:
+			throw new LSysException("No bytes specified");
+		}
+	}
+
+	public static long fromHexToLong(String hexStr) {
+		return getBytesToLong(fromHex(hexStr));
+	}
+
+	public static byte[] fromHex(String hexStr) {
+		if (StringUtils.isEmpty(hexStr)) {
+			return new byte[] {};
+		}
+		byte[] bytes = new byte[hexStr.length() / 2];
+		for (int i = 0; i < bytes.length; i++) {
+			int char1 = hexStr.charAt(i * 2);
+			char1 = char1 > 0x60 ? char1 - 0x57 : char1 - 0x30;
+			int char2 = hexStr.charAt(i * 2 + 1);
+			char2 = char2 > 0x60 ? char2 - 0x57 : char2 - 0x30;
+			if (char1 < 0 || char2 < 0 || char1 > 15 || char2 > 15) {
+				throw new LSysException("Invalid hex number: " + hexStr);
+			}
+			bytes[i] = (byte) ((char1 << 4) + char2);
+		}
+		return bytes;
+	}
 
 	public static String toHex(int value) {
 		byte[] bytes = new byte[4];
@@ -228,7 +284,7 @@ public class CharUtils {
 	public static boolean isChinese(int c) {
 		return c >= 0x4e00 && c <= 0x9fa5;
 	}
-	
+
 	public static boolean isEnglishAndNumeric(int letter) {
 		return isAsciiLetterDiait(letter);
 	}

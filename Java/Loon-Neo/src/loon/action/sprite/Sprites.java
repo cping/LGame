@@ -71,6 +71,8 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	private int _width, _height;
 
+	private float _newLineHeight = -1f;
+	
 	private Screen _screen;
 
 	private final String _sprites_name;
@@ -257,6 +259,154 @@ public class Sprites implements IArray, Visible, LRelease {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * 按照上一个精灵的x,y位置,另起一行添加精灵,并偏移指定位置
+	 * 
+	 * @param spr
+	 * @param offX
+	 * @param offY
+	 * @return
+	 */
+	public ISprite addPadding(ISprite spr, float offX, float offY) {
+		return addPadding(spr, offX, offY, 2);
+	}
+
+	/**
+	 * 按照上一个精灵的y轴,另起一行添加精灵
+	 * 
+	 * @param spr
+	 * @return
+	 */
+	public ISprite addCol(ISprite spr) {
+		return addPadding(spr, 0, 0, 1);
+	}
+
+	/**
+	 * 按照上一个精灵的y轴,另起一行添加精灵,并让y轴偏移指定位置
+	 * 
+	 * @param spr
+	 * @param offY
+	 * @return
+	 */
+	public ISprite addCol(ISprite spr, float offY) {
+		return addPadding(spr, 0, offY, 1);
+	}
+
+	/**
+	 * 按照上一个精灵的x轴,另起一行添加精灵
+	 * 
+	 * @param spr
+	 * @return
+	 */
+	public ISprite addRow(ISprite spr) {
+		return addPadding(spr, 0, 0, 0);
+	}
+
+	/**
+	 * 按照上一个精灵的x轴,另起一行添加精灵,并将x轴偏移指定位置
+	 * 
+	 * @param spr
+	 * @param offX
+	 * @return
+	 */
+	public ISprite addRow(ISprite spr, float offX) {
+		return addPadding(spr, offX, 0, 0);
+	}
+	
+	/**
+	 * 按照上一个精灵的x,y位置,另起一行添加精灵,并偏移指定位置
+	 * 
+	 * @param spr
+	 * @param offX
+	 * @param offY
+	 * @param code
+	 * @return
+	 */
+	public ISprite addPadding(ISprite spr, float offX, float offY, int code) {
+		if (_closed) {
+			return spr;
+		}
+		if (spr == null) {
+			return null;
+		}
+		if (this == spr) {
+			return spr;
+		}
+		
+		float maxX = 0;
+		float maxY = 0;
+
+		ISprite tag = null;
+
+		if (_size == 1) {
+
+			ISprite cp = _sprites[0];
+
+			if (cp != null && cp.getY() >= _newLineHeight) {
+				maxX = cp.getX();
+				maxY = cp.getY();
+				tag = cp;
+			}
+
+		} else {
+
+			for (int i = 0; i < _size; i++) {
+
+				ISprite c = _sprites[i];
+
+				if (c != null && c != spr && c.getY() >= _newLineHeight) {
+					float oldMaxX = maxX;
+					float oldMaxY = maxY;
+					maxX = MathUtils.max(maxX, c.getX());
+					maxY = MathUtils.max(maxY, c.getY());
+					if (oldMaxX != maxX || oldMaxY != maxY) {
+						tag = c;
+					}
+				}
+			}
+
+		}
+		if (tag == null && _size > 0) {
+			tag = _sprites[_size - 1];
+		}
+
+		if (tag != null && tag != spr) {
+
+			switch (code) {
+			case 0:
+				spr.setLocation(maxX + tag.getWidth() + offX, maxY + offY);
+				break;
+			case 1:
+				spr.setLocation(0 + offX, maxY + tag.getHeight() + offY);
+				break;
+			default:
+				spr.setLocation(maxX + tag.getWidth() + offX, maxY + tag.getHeight() + offY);
+				break;
+			}
+
+		} else {
+
+			switch (code) {
+			case 0:
+				spr.setLocation(maxX + offX, maxY + offY);
+				break;
+			case 1:
+				spr.setLocation(0 + offX, maxY + offY);
+				break;
+			default:
+				spr.setLocation(maxX + offX, maxY + offY);
+				break;
+			}
+
+		}
+
+		add(spr);
+
+		_newLineHeight = spr.getY();
+
+		return spr;
 	}
 
 	/**
@@ -1124,6 +1274,7 @@ public class Sprites implements IArray, Visible, LRelease {
 			return;
 		}
 		this._visible = false;
+		this._newLineHeight = 0;
 		for (ISprite spr : _sprites) {
 			if (spr != null) {
 				spr.close();

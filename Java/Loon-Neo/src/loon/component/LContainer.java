@@ -44,6 +44,8 @@ public abstract class LContainer extends LComponent implements IArray {
 
 	protected LComponent[] _childs = new LComponent[0];
 
+	private float _newLineHeight = -1f;
+	
 	private final static LayerSorter<LComponent> compSorter = new LayerSorter<LComponent>(false);
 
 	private int childCount = 0;
@@ -58,6 +60,113 @@ public abstract class LContainer extends LComponent implements IArray {
 	@Override
 	public boolean isContainer() {
 		return true;
+	}
+
+	public LComponent addPadding(LComponent comp, float offX, float offY) {
+		return addPadding(comp, offX, offY, 2);
+	}
+
+	public LComponent addCol(LComponent comp) {
+		return addPadding(comp, 0, 0, 1);
+	}
+
+	public LComponent addCol(LComponent comp, float offY) {
+		return addPadding(comp, 0, offY, 1);
+	}
+
+	public LComponent addRow(LComponent comp) {
+		return addPadding(comp, 0, 0, 0);
+	}
+
+	public LComponent addRow(LComponent comp, float offX) {
+		return addPadding(comp, offX, 0, 0);
+	}
+
+	public LComponent addPadding(LComponent comp, float offX, float offY, int code) {
+		if (_component_isClose) {
+			return comp;
+		}
+		if (comp == null) {
+			return null;
+		}
+		if (this == comp) {
+			return this;
+		}
+
+		final String otherName = "ToolTip";
+
+		float maxX = 0;
+		float maxY = 0;
+
+		LComponent tag = null;
+
+		if (childCount == 1) {
+
+			LComponent cp = _childs[0];
+
+			if (cp != null && cp.getY() >= _newLineHeight && !otherName.equals(cp.getUIName())) {
+				maxX = cp.getX();
+				maxY = cp.getY();
+				tag = cp;
+			}
+
+		} else {
+
+			for (int i = 0; i < childCount; i++) {
+
+				LComponent c = _childs[i];
+
+				if (c != null && c != comp && c.getY() >= _newLineHeight && !otherName.equals(c.getUIName())) {
+					float oldMaxX = maxX;
+					float oldMaxY = maxY;
+					maxX = MathUtils.max(maxX, c.getX());
+					maxY = MathUtils.max(maxY, c.getY());
+					if (oldMaxX != maxX || oldMaxY != maxY) {
+						tag = c;
+					}
+				}
+			}
+
+		}
+		if (tag == null && childCount > 0) {
+			tag = _childs[childCount - 1];
+		}
+
+		if (tag != null && tag != comp && !otherName.equals(tag.getUIName())) {
+
+			switch (code) {
+			case 0:
+				comp.setLocation(maxX + tag.getWidth() + offX, maxY + offY);
+				break;
+			case 1:
+				comp.setLocation(0 + offX, maxY + tag.getHeight() + offY);
+				break;
+			default:
+				comp.setLocation(maxX + tag.getWidth() + offX, maxY + tag.getHeight() + offY);
+				break;
+			}
+
+		} else {
+
+			switch (code) {
+			case 0:
+				comp.setLocation(maxX + offX, maxY + offY);
+				break;
+			case 1:
+				comp.setLocation(0 + offX, maxY + offY);
+				break;
+			default:
+				comp.setLocation(maxX + offX, maxY + offY);
+				break;
+			}
+
+		}
+
+		add(comp);
+
+		_newLineHeight = comp.getY();
+
+		return comp;
 	}
 
 	public LComponent add(LComponent... comps) {
@@ -888,7 +997,7 @@ public abstract class LContainer extends LComponent implements IArray {
 		}
 		return result;
 	}
-	
+
 	@Override
 	public LComponent in() {
 		if (_component_isClose) {
@@ -1020,7 +1129,8 @@ public abstract class LContainer extends LComponent implements IArray {
 			}
 			_childs = null;
 		}
-		_component_isClose = true;
+		this._component_isClose = true;
+		this._newLineHeight = 0;
 	}
 
 }

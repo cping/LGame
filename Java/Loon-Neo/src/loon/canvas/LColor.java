@@ -420,6 +420,19 @@ public class LColor implements Serializable {
 							convertInt(list[3].trim()));
 				}
 			}
+		} else if (c.startsWith("argb")) {
+			int start = c.indexOf('(');
+			int end = c.lastIndexOf(')');
+			if (start != -1 && end != -1 && end > start) {
+				String result = c.substring(start + 1, end).trim();
+				String[] list = StringUtils.split(result, ',');
+				if (list.length == 3) {
+					setColor(convertInt(list[1].trim()), convertInt(list[2].trim()), convertInt(list[0].trim()));
+				} else if (list.length == 4) {
+					setColor(convertInt(list[1].trim()), convertInt(list[2].trim()), convertInt(list[3].trim()),
+							convertInt(list[0].trim()));
+				}
+			}
 		} else if (c.startsWith("transparent")) {
 			setColor(TRANSPARENT);
 		} else if (MathUtils.isNan(c)) {
@@ -985,12 +998,7 @@ public class LColor implements Serializable {
 			if (c.startsWith("#")) {
 				return hexToColor(c.substring(1));
 			} else {
-				String temp = c;
-				if (temp.length() < 6) {
-					temp = MathUtils.addZeros(temp, 6, true);
-				}
-				return new LColor(Integer.parseInt(temp.substring(0, 2), 16),
-						Integer.parseInt(temp.substring(2, 4), 16), Integer.parseInt(temp.substring(4, 6), 16));
+				return new LColor((int) CharUtils.fromHexToLong(c));
 			}
 		} catch (Throwable e) {
 			return new LColor();

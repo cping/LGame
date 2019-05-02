@@ -145,9 +145,47 @@ public class Desktop implements Visible, LRelease {
 		addAt(new LSpriteUI(sprite), x, y);
 	}
 
-	public void add(LComponent comp) {
+	public LComponent addPadding(LComponent comp, float offX, float offY) {
+		if (dclosed) {
+			return comp;
+		}
+		return contentPane.addPadding(comp, offX, offY);
+	}
+
+	public LComponent addCol(LComponent comp) {
+		if (dclosed) {
+			return comp;
+		}
+		return contentPane.addCol(comp);
+	}
+
+	public LComponent addCol(LComponent comp, float offY) {
+		if (dclosed) {
+			return comp;
+		}
+		return contentPane.addRow(comp, offY);
+	}
+
+	public LComponent addRow(LComponent comp) {
+		if (dclosed) {
+			return comp;
+		}
+		return contentPane.addRow(comp);
+	}
+
+	public LComponent addRow(LComponent comp, float offX) {
+		if (dclosed) {
+			return comp;
+		}
+		return contentPane.addRow(comp, offX);
+	}
+
+	public LComponent add(LComponent comp) {
+		if (dclosed) {
+			return comp;
+		}
 		if (comp == null) {
-			return;
+			return comp;
 		}
 		comp.setDesktop(this);
 		if (comp.isFull) {
@@ -155,6 +193,7 @@ public class Desktop implements Visible, LRelease {
 		}
 		this.contentPane.add(comp);
 		this.processTouchMotionEvent();
+		return comp;
 	}
 
 	public int remove(LComponent comp) {
