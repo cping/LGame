@@ -1,0 +1,41 @@
+<config>
+  <executableName>${app.executable}</executableName>
+  <mainClass>${app.mainclass}</mainClass>
+  <os>ios</os>
+  <arch>thumbv7</arch>
+  <target>ios</target>
+  <iosInfoPList>Info.plist.xml</iosInfoPList>
+  <resources>
+    <resource>
+      <directory>resources</directory>
+    </resource>
+    <resource>
+      <directory>../assets/src/main/resources</directory>
+      <includes>
+        <include>assets/**</include>
+      </includes>
+      <skipPngCrush>true</skipPngCrush>
+    </resource>
+  </resources>
+  <forceLinkClasses>
+    <!-- these are needed for Storage -->
+    <pattern>SQLite.JDBCDriver</pattern>
+    <pattern>SQLite.JDBC2z.JDBCConnection</pattern>
+    <!-- these are needed for WebSocket support in Net -->
+    <pattern>com.android.org.conscrypt.OpenSSLProvider</pattern>
+    <pattern>org.apache.harmony.security.provider.cert.DRLCertFactory</pattern>
+    <pattern>com.android.org.bouncycastle.jce.provider.BouncyCastleProvider</pattern>
+    <pattern>org.apache.harmony.security.provider.crypto.CryptoProvider</pattern>
+    <pattern>com.android.org.conscrypt.JSSEProvider</pattern>
+    <pattern>com.android.org.conscrypt.OpenSSLMessageDigestJDK$SHA1</pattern>
+  </forceLinkClasses>
+  <frameworks>
+    <framework>UIKit</framework>
+    <framework>OpenGLES</framework>
+    <framework>QuartzCore</framework>
+    <framework>CoreGraphics</framework>
+    <framework>OpenAL</framework>
+    <framework>AudioToolbox</framework>
+    <framework>AVFoundation</framework>
+  </frameworks>
+</config>

@@ -1,0 +1,16 @@
+<module rename-to='GwtTemplate'>
+  <inherits name='com.google.gwt.user.User'/>
+  <inherits name='com.google.gwt.user.theme.clean.Clean'/>
+  <inherits name='loon.html5.Core' />
+  <inherits name='assets'/>
+  <set-property name="compiler.stackMode" value="strip"/>
+  <set-property name="compiler.useSourceMaps" value="true" />
+  <set-configuration-property name="CssResource.style" value="pretty"/>
+  <collapse-all-properties />
+  <set-configuration-property name="loon.assetpath" value="../assets"/>
+  <set-configuration-property name="loon.addtojs" value="true"/>
+  <entry-point class='loon.template.gwt.MyGame'/>
+  <set-configuration-property name="CssResource.enableGss" value="false"/>
+  <add-linker name="xsiframe"/>
+  <set-configuration-property name='xsiframe.failIfScriptTag' value='FALSE'/>
+</module>

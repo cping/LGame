@@ -1,0 +1,16 @@
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+dependencies {
+  implementation project(":core")
+  implementation project(":assets")
+  implementation fileTree(dir: 'libs', includes: ['loon-core-0.5.jar','loon-robovm-0.5.jar','loon-robovm-0.5-source.jar'])
+}
+
+launchIPhoneSimulator.dependsOn build
+launchIPadSimulator.dependsOn build
+launchIOSDevice.dependsOn build
+createIPA.dependsOn build
+
+robovm {
+  archs = "thumbv7:arm64"
+}

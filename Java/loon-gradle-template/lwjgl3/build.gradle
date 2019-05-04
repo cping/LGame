@@ -1,0 +1,46 @@
+//此模块和javase只能开启运行一个,否则会弹出两个窗体
+/*apply plugin: "java"
+
+sourceCompatibility = 1.8
+
+project.ext.mainClassName = "loon.template.lwjgl3.MyGame"
+project.ext.assetsDir = new File("../assets/src/main/resources/assets")
+
+dependencies {
+    implementation project(":core")
+    implementation project(":assets")
+    implementation fileTree(dir: 'libs', includes: ['loon-core-0.5.jar','loon-lwjgl3-0.5.jar','loon-lwjgl3-0.5-source.jar','*.jar'])
+}
+
+import org.apache.tools.ant.taskdefs.condition.Os
+project.ext.extraJvmArgs = Os.isFamily(Os.FAMILY_MAC) ? ['-XstartOnFirstThread'] : []
+
+task run(dependsOn: classes, type: JavaExec) {
+  main = project.mainClassName
+  classpath = sourceSets.main.runtimeClasspath
+  standardInput = System.in
+  ignoreExitValue = true
+  jvmArgs extraJvmArgs
+}
+
+task debug(dependsOn: classes, type: JavaExec) {
+  main = project.mainClassName
+  classpath = sourceSets.main.runtimeClasspath
+  standardInput = System.in
+  ignoreExitValue = true
+  jvmArgs extraJvmArgs
+  debug = true
+}
+
+task dist(type: Jar) {
+  from files(sourceSets.main.output.classesDirs)
+  from files(sourceSets.main.output.resourcesDir)
+  from {configurations.compile.collect {zipTree(it)}}
+
+  manifest {
+    attributes 'Main-Class': project.mainClassName
+  }
+}
+
+dist.dependsOn classes
+*/

@@ -1,0 +1,50 @@
+apply plugin: "java"
+
+sourceCompatibility = 1.8
+
+project.ext.mainClassName = "loon.template.javase.MyGame"
+project.ext.assetsDir = new File("../assets/src/main/resources/assets")
+
+dependencies {
+    implementation project(":core")
+    implementation fileTree(dir: 'libs', includes: ['loon-core-0.5.jar','loon-javase-0.5.jar','loon-javase-0.5-source.jar','lwjgl.jar'])
+}
+
+task run(dependsOn: classes, type: JavaExec) {
+    main = project.mainClassName
+    classpath = sourceSets.main.runtimeClasspath
+    standardInput = System.in
+    workingDir = project.assetsDir
+    if(System.getProperty("os.name").toLowerCase().contains("mac")){
+        jvmArgs "-XstartOnFirstThread"
+    }
+    ignoreExitValue = true
+    if(project.hasProperty("args")){
+        args Eval.me(project.getProperties()["args"])
+    }
+}
+
+task debug(dependsOn: classes, type: JavaExec) {
+    main = project.mainClassName
+    classpath = sourceSets.main.runtimeClasspath
+    standardInput = System.in
+    workingDir = project.assetsDir
+    if(System.getProperty("os.name").toLowerCase().contains("mac")){
+        jvmArgs "-XstartOnFirstThread"
+    }
+    ignoreExitValue = true
+    debug = true
+}
+
+task dist(type: Jar) {
+    dependsOn classes
+    from files(sourceSets.main.output.classesDirs)
+    from files(sourceSets.main.output.resourcesDir)
+    from{ configurations.compile.collect{ zipTree(it) } }
+    from files(project.assetsDir)
+    manifest {
+      attributes 'Main-Class': project.mainClassName
+    }
+}
+
+dist.dependsOn classes

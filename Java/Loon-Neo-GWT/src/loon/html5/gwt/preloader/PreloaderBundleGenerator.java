@@ -35,6 +35,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
 import java.util.Set;
 
 import loon.LSystem;
@@ -73,8 +74,7 @@ public class PreloaderBundleGenerator extends Generator {
 		@Override
 		public boolean accept(File file) {
 			if (file.isDirectory()) {
-				if (file.getName().equals(".svn")
-						|| file.getName().equals(".tmp")) {
+				if (file.getName().equals(".svn") || file.getName().equals(".tmp")) {
 					return false;
 				}
 				return true;
@@ -91,8 +91,8 @@ public class PreloaderBundleGenerator extends Generator {
 	}
 
 	@Override
-	public String generate(TreeLogger logger, GeneratorContext context,
-			String typeName) throws UnableToCompleteException {
+	public String generate(TreeLogger logger, GeneratorContext context, String typeName)
+			throws UnableToCompleteException {
 		info(logger, "location : " + new File(".").getAbsolutePath());
 		String assetPath = getAssetPath(context);
 		info(logger, "set assets path : " + assetPath);
@@ -108,10 +108,8 @@ public class PreloaderBundleGenerator extends Generator {
 		// 防止定位到奇怪的assets资源目录……
 		if (source_list != null && source_list.length > 0) {
 			for (String file : source_list) {
-				if (file.contains("assets/loon_logo.png")
-						|| file.contains("assets/loon_pad_ui.png")
-						|| file.contains("assets/loon_ui.png")
-						|| file.contains("assets.txt")) {
+				if (file.contains("assets/loon_logo.png") || file.contains("assets/loon_pad_ui.png")
+						|| file.contains("assets/loon_ui.png") || file.contains("assets.txt")) {
 					idx++;
 				}
 				if (idx >= 1) {
@@ -126,54 +124,44 @@ public class PreloaderBundleGenerator extends Generator {
 		if (!source.exists() || source.list().length == 0) {
 			source = new ResourcesWrapper("../" + assetPath);
 			if (!source.exists() || source.list().length == 0) {
-				source = new ResourcesWrapper(getPath(assetPath).substring(
-						assetPath.indexOf('/') + 1, assetPath.length()));
+				source = new ResourcesWrapper(
+						getPath(assetPath).substring(assetPath.indexOf('/') + 1, assetPath.length()));
 				if (!source.exists() || source.list().length == 0) {
-					source = new ResourcesWrapper(getPath(assetPath).replace(
-							assetOutputPath, "").replace("../", ""));
+					source = new ResourcesWrapper(getPath(assetPath).replace(assetOutputPath, "").replace("../", ""));
 					if (!source.exists()) {
 						source = new ResourcesWrapper(assetPath);
 						if (!source.exists()) {
-							throw new RuntimeException(
-									"assets path '"
-											+ assetPath
-											+ "' does not exist. Check your loon.assetpath property in your GWT project's module gwt.xml file");
+							throw new RuntimeException("assets path '" + assetPath
+									+ "' does not exist. Check your loon.assetpath property in your GWT project's module gwt.xml file");
 						}
 					}
 				}
 			}
 		}
 		if (!source.isDirectory()) {
-			throw new RuntimeException(
-					"assets path '"
-							+ assetPath
-							+ "' is not a directory. Check your loon.assetpath property in your GWT project's module gwt.xml file");
+			throw new RuntimeException("assets path '" + assetPath
+					+ "' is not a directory. Check your loon.assetpath property in your GWT project's module gwt.xml file");
 		}
-		info(logger, "Copying resources from " + assetPath + " to "
-				+ assetOutputPath);
+		info(logger, "Copying resources from " + assetPath + " to " + assetOutputPath);
 		info(logger, source.file.getAbsolutePath());
 		ResourcesWrapper target = new ResourcesWrapper("assets/");
 		info(logger, target.file.getAbsolutePath());
-		if (!target.file.getAbsolutePath().replace("\\", "/")
-				.endsWith(assetOutputPath + "assets")) {
+		if (!target.file.getAbsolutePath().replace("\\", "/").endsWith(assetOutputPath + "assets")) {
 			target = new ResourcesWrapper(assetOutputPath + "assets/");
 		}
 		if (target.exists()) {
 			if (!target.deleteDirectory()) {
-				throw new RuntimeException("Couldn't clean target path '"
-						+ target + "'");
+				throw new RuntimeException("Couldn't clean target path '" + target + "'");
 			}
 		}
 		ArrayList<Asset> assets = new ArrayList<Asset>();
 		boolean addtojs = false;
 		ConfigurationProperty property = null;
 		try {
-			property = context.getPropertyOracle().getConfigurationProperty(
-					"loon.addtojs");
+			property = context.getPropertyOracle().getConfigurationProperty("loon.addtojs");
 			if (property != null && property.getValues().size() > 0) {
 				String parameter = property.getValues().get(0).toLowerCase();
-				if ("yes".equals(parameter) || "true".equals(parameter)
-						|| "ok".equals(parameter)) {
+				if ("yes".equals(parameter) || "true".equals(parameter) || "ok".equals(parameter)) {
 					addtojs = true;
 				}
 			}
@@ -211,8 +199,7 @@ public class PreloaderBundleGenerator extends Generator {
 					if (addtojs) {
 						String result;
 						try {
-							result = new String(Base64Coder.encode(fileRes
-									.readBytes()));
+							result = new String(Base64Coder.encode(fileRes.readBytes()));
 						} catch (IOException e) {
 							result = "";
 						}
@@ -244,8 +231,7 @@ public class PreloaderBundleGenerator extends Generator {
 					if (addtojs) {
 						String result;
 						try {
-							result = new String(Base64Coder.encode(fileRes
-									.readBytes()));
+							result = new String(Base64Coder.encode(fileRes.readBytes()));
 						} catch (IOException e) {
 							result = "";
 						}
@@ -269,8 +255,7 @@ public class PreloaderBundleGenerator extends Generator {
 			}
 			dcode.append("return list;};};");
 
-			ResourcesWrapper res = new ResourcesWrapper(target.path()
-					+ "/resources.js");
+			ResourcesWrapper res = new ResourcesWrapper(target.path() + "/resources.js");
 			res.writeString(dcode.toString(), false, LSystem.ENCODING);
 
 			return createDummyClass(logger, context, typeName);
@@ -280,11 +265,13 @@ public class PreloaderBundleGenerator extends Generator {
 
 		List<String> classpathFiles = getClasspathFiles(context);
 		for (String classpathFile : classpathFiles) {
+			if (filter(classpathFile)) {
+				continue;
+			}
 			info(logger, classpathFile);
 			if (assetFilter.accept(classpathFile, false)) {
 				try {
-					InputStream is = context.getClass().getClassLoader()
-							.getResourceAsStream(classpathFile);
+					InputStream is = context.getClass().getClassLoader().getResourceAsStream(classpathFile);
 					ResourcesWrapper dest = target.child(classpathFile);
 					dest.write(is, false);
 					assets.add(new Asset(dest, assetFilter.getType(dest.path())));
@@ -308,38 +295,67 @@ public class PreloaderBundleGenerator extends Generator {
 			}
 			bundleAssets.add(asset);
 		}
-
 		for (Entry<String, ArrayList<Asset>> bundle : bundles.entrySet()) {
 			StringBuffer buffer = new StringBuffer();
+			HashSet<String> caches = new HashSet<String>(10);
 			for (Asset asset : bundle.getValue()) {
-				String path = asset.file.path().replace('\\', '/')
-						.replace(assetOutputPath, "")
-						.replaceFirst("assets/", "");
-				if (path.startsWith("/"))
-					path = path.substring(1);
-				buffer.append(asset.type.code);
-				buffer.append(":");
-				buffer.append(path);
-				buffer.append(":");
-				buffer.append(asset.file.isDirectory() ? 0 : asset.file
-						.length());
-				buffer.append(":");
-				String mimetype = URLConnection
-						.guessContentTypeFromName(asset.file.name());
-				String ext = LSystem.getExtension(asset.file.name())
-						.toLowerCase();
-				if (ext.equals("an") || ext.equals("tmx")) {
-					buffer.append("text/plain");
-				} else {
-					buffer.append(mimetype == null ? "application/unknown"
-							: mimetype);
+				ResourcesWrapper resFile = asset.file;
+				String resCode = asset.type.code;
+				String newPath = getPath(resFile.path());
+				if (!filter(newPath)) {
+					String path = newPath.replace(assetOutputPath, "").replaceFirst("assets/", "")
+							.replaceFirst("src/main/resources/assets/", "").replaceFirst("src/main/", "");
+					if (path.startsWith("/")) {
+						path = path.substring(1);
+					}
+					if (caches.add(resCode + path)) {
+						buffer.append(resCode);
+						buffer.append(":");
+						buffer.append(path);
+						buffer.append(":");
+						buffer.append(resFile.isDirectory() ? 0 : resFile.length());
+						buffer.append(":");
+						String mimetype = URLConnection.guessContentTypeFromName(resFile.name());
+						String ext = LSystem.getExtension(resFile.name()).toLowerCase();
+						if (ext.equals("an") || ext.equals("tmx")) {
+							buffer.append("text/plain");
+						} else {
+							buffer.append(mimetype == null ? "application/unknown" : mimetype);
+						}
+						buffer.append("\n");
+					}
 				}
-				buffer.append("\n");
 			}
-			target.child(bundle.getKey() + ".txt").writeString(
-					buffer.toString(), false);
+			target.child(bundle.getKey() + ".txt").writeString(buffer.toString(), false);
 		}
 		return createDummyClass(logger, context, typeName);
+	}
+
+	private static boolean filter(String fileName) {
+		if (fileName == null) {
+			return true;
+		}
+		String path = getPath(fileName).trim().toLowerCase();
+		String ext = LSystem.getExtension(path);
+		if (ext.equals("jar") || ext.equals("iml") || ext.equals("mf")) {
+			return true;
+		}
+		if (path.indexOf("asset") != -1 && !"".equals(ext)) {
+			return false;
+		}
+		if (path.startsWith("/")) {
+			path = path.substring(1);
+		}
+		if (path.indexOf("libs") != -1 && "".equals(ext)) {
+			return true;
+		}
+		if (path.indexOf("build/resources/main") != -1) {
+			return true;
+		}
+		if (path.indexOf("build") != -1 && "".equals(ext)) {
+			return true;
+		}
+		return false;
 	}
 
 	private static ArrayList<String> listFile(File file) {
@@ -354,7 +370,10 @@ public class PreloaderBundleGenerator extends Generator {
 					ls.clear();
 					ls = null;
 				} else {
-					ret.add(tempfile.getPath());
+					String path = tempfile.getPath();
+					if (!filter(path)) {
+						ret.add(path);
+					}
 				}
 			}
 		}
@@ -371,44 +390,38 @@ public class PreloaderBundleGenerator extends Generator {
 		}
 	}
 
-	private static void push(StringBuilder code, String key, Object value,
-			boolean allplus) {
+	private static void push(StringBuilder code, String keyName, Object value, boolean allplus) {
+		String newKey = getPath(keyName).replace("src/main/resources/", "").replace("src/main/", "")
+				.replace("build/resources/main/", "");
 		if (allplus) {
-			code.append(String.format("list.push({k:%s,v:%s});", "\"" + key
-					+ "\"", value));
+			code.append(String.format("list.push({k:%s,v:%s});", "\"" + newKey + "\"", value));
 		} else {
 			if (value instanceof String) {
 				String result = (String) value;
 				if (result.startsWith("\"") || result.startsWith("\\\"")) {
-					code.append(String.format("list.push({k:%s,v:%s});", "\""
-							+ key + "\"", result));
+					code.append(String.format("list.push({k:%s,v:%s});", "\"" + newKey + "\"", result));
 				} else {
-					code.append(String.format("list.push({k:%s,v:%s});", "\""
-							+ key + "\"", "\"" + result + "\""));
+					code.append(String.format("list.push({k:%s,v:%s});", "\"" + newKey + "\"", "\"" + result + "\""));
 				}
 			} else {
-				code.append(String.format("list.push({k:%s,v:%s});", "\"" + key
-						+ "\"", value));
+				code.append(String.format("list.push({k:%s,v:%s});", "\"" + newKey + "\"", value));
 			}
 		}
 	}
 
-	private void copyFile(ResourcesWrapper source, ResourcesWrapper dest,
-			AssetFilter filter, ArrayList<Asset> assets) {
+	private void copyFile(ResourcesWrapper source, ResourcesWrapper dest, AssetFilter filter, ArrayList<Asset> assets) {
 		if (!filter.accept(dest.path(), false))
 			return;
 		try {
 			assets.add(new Asset(dest, filter.getType(dest.path())));
 			dest.write(source.read(), false);
 		} catch (Exception ex) {
-			throw new RuntimeException("Error copying source file: " + source
-					+ "\n" //
+			throw new RuntimeException("Error copying source file: " + source + "\n" //
 					+ "To destination: " + dest, ex);
 		}
 	}
 
-	private void copyDirectory(ResourcesWrapper sourceDir,
-			ResourcesWrapper destDir, AssetFilter filter,
+	private void copyDirectory(ResourcesWrapper sourceDir, ResourcesWrapper destDir, AssetFilter filter,
 			ArrayList<Asset> assets) {
 		if (!filter.accept(destDir.path(), true))
 			return;
@@ -428,8 +441,7 @@ public class PreloaderBundleGenerator extends Generator {
 	private AssetFilter getAssetFilter(GeneratorContext context) {
 		ConfigurationProperty assetFilterClassProperty = null;
 		try {
-			assetFilterClassProperty = context.getPropertyOracle()
-					.getConfigurationProperty("loon.assetfilterclass");
+			assetFilterClassProperty = context.getPropertyOracle().getConfigurationProperty("loon.assetfilterclass");
 		} catch (BadPropertyValueException e) {
 			return new DefaultAssetFilter();
 		}
@@ -442,19 +454,15 @@ public class PreloaderBundleGenerator extends Generator {
 		try {
 			return (AssetFilter) Class.forName(assetFilterClass).newInstance();
 		} catch (Exception e) {
-			throw new RuntimeException(
-					"Couldn't instantiate custom AssetFilter '"
-							+ assetFilterClass
-							+ "', make sure the class is public and has a public default constructor",
-					e);
+			throw new RuntimeException("Couldn't instantiate custom AssetFilter '" + assetFilterClass
+					+ "', make sure the class is public and has a public default constructor", e);
 		}
 	}
 
 	private String getAssetPath(GeneratorContext context) {
 		ConfigurationProperty assetPathProperty = null;
 		try {
-			assetPathProperty = context.getPropertyOracle()
-					.getConfigurationProperty("loon.assetpath");
+			assetPathProperty = context.getPropertyOracle().getConfigurationProperty("loon.assetpath");
 		} catch (BadPropertyValueException e) {
 			throw new RuntimeException(
 					"No loon.assetpath defined. Add <set-configuration-property name=\"loon.assetpath\" value=\"relative/path/to/assets/\"/> to your GWT projects gwt.xml file");
@@ -470,10 +478,8 @@ public class PreloaderBundleGenerator extends Generator {
 		} else {
 			String[] tokens = paths.split(",");
 			for (String token : tokens) {
-				if (new ResourcesWrapper(token).exists()
-						|| new ResourcesWrapper("../" + token).exists()
-						|| new ResourcesWrapper(getPath(token).replace("../",
-								"")).exists()) {
+				if (new ResourcesWrapper(token).exists() || new ResourcesWrapper("../" + token).exists()
+						|| new ResourcesWrapper(getPath(token).replace("../", "")).exists()) {
 					return token;
 				}
 			}
@@ -485,8 +491,7 @@ public class PreloaderBundleGenerator extends Generator {
 	private String getAssetOutputPath(GeneratorContext context) {
 		ConfigurationProperty assetPathProperty = null;
 		try {
-			assetPathProperty = context.getPropertyOracle()
-					.getConfigurationProperty("loon.assetoutputpath");
+			assetPathProperty = context.getPropertyOracle().getConfigurationProperty("loon.assetoutputpath");
 		} catch (BadPropertyValueException e) {
 			return null;
 		}
@@ -500,8 +505,7 @@ public class PreloaderBundleGenerator extends Generator {
 			String[] tokens = paths.split(",");
 			String path = null;
 			for (String token : tokens) {
-				if (new ResourcesWrapper(token).exists()
-						|| new ResourcesWrapper(token).mkdirs()) {
+				if (new ResourcesWrapper(token).exists() || new ResourcesWrapper(token).mkdirs()) {
 					path = token;
 				}
 			}
@@ -515,8 +519,7 @@ public class PreloaderBundleGenerator extends Generator {
 	private List<String> getClasspathFiles(GeneratorContext context) {
 		List<String> classpathFiles = new ArrayList<String>();
 		try {
-			ConfigurationProperty prop = context.getPropertyOracle()
-					.getConfigurationProperty("loon.files.classpath");
+			ConfigurationProperty prop = context.getPropertyOracle().getConfigurationProperty("loon.files.classpath");
 			for (String value : prop.getValues()) {
 				classpathFiles.add(value);
 			}
@@ -525,17 +528,14 @@ public class PreloaderBundleGenerator extends Generator {
 		return classpathFiles;
 	}
 
-	private String createDummyClass(TreeLogger logger,
-			GeneratorContext context, String typeName) {
+	private String createDummyClass(TreeLogger logger, GeneratorContext context, String typeName) {
 		String packageName = "loon.html5.gwt.preloader";
 		String className = "PreloaderBundleImpl";
-		PrintWriter printWriter = context.tryCreate(logger, packageName,
-				className);
+		PrintWriter printWriter = context.tryCreate(logger, packageName, className);
 		if (printWriter == null) {
 			return packageName + "." + className;
 		}
-		ClassSourceFileComposerFactory composer = new ClassSourceFileComposerFactory(
-				packageName, className);
+		ClassSourceFileComposerFactory composer = new ClassSourceFileComposerFactory(packageName, className);
 		composer.addImplementedInterface(packageName + ".PreloaderBundle");
 		composer.addImport(ClientBundleWithLookup.class.getName());
 		composer.addImport(DataResource.class.getName());
@@ -543,61 +543,50 @@ public class PreloaderBundleGenerator extends Generator {
 		composer.addImport(ImageResource.class.getName());
 		composer.addImport(ResourcePrototype.class.getName());
 		composer.addImport(TextResource.class.getName());
-		Set<Resource> resources = preferMp3(getResources(context, packageName,
-				fileFilter));
+		Set<Resource> resources = preferMp3(getResources(context, packageName, fileFilter));
 		Set<String> methodNames = new HashSet<String>();
-		SourceWriter sourceWriter = composer.createSourceWriter(context,
-				printWriter);
+		SourceWriter sourceWriter = composer.createSourceWriter(context, printWriter);
 		sourceWriter.println("public ResourcePrototype[] getResources() {");
 		sourceWriter.indent();
 		sourceWriter.println("return SiteBundle.INSTANCE.getResources();");
 		sourceWriter.outdent();
 		sourceWriter.println("}");
-		sourceWriter
-				.println("public ResourcePrototype getResource(String name) {");
+		sourceWriter.println("public ResourcePrototype getResource(String name) {");
 		sourceWriter.indent();
 		sourceWriter.println("return SiteBundle.INSTANCE.getResource(name);");
 		sourceWriter.outdent();
 		sourceWriter.println("}");
-		sourceWriter
-				.println("static interface SiteBundle extends ClientBundleWithLookup {");
+		sourceWriter.println("static interface SiteBundle extends ClientBundleWithLookup {");
 		sourceWriter.indent();
-		sourceWriter
-				.println("SiteBundle INSTANCE = GWT.create(SiteBundle.class);");
+		sourceWriter.println("SiteBundle INSTANCE = GWT.create(SiteBundle.class);");
 		for (Resource resource : resources) {
 			String relativePath = resource.getPath();
-			String filename = resource.getPath().substring(
-					resource.getPath().lastIndexOf('/') + 1);
+			String filename = resource.getPath().substring(resource.getPath().lastIndexOf('/') + 1);
 			String contentType = getContentType(logger, resource);
 			String methodName = stripExtension(filename);
 			if (!isValidMethodName(methodName)) {
-				logger.log(TreeLogger.WARN, "Skipping invalid method name ("
-						+ methodName + ") due to: " + relativePath);
+				logger.log(TreeLogger.WARN,
+						"Skipping invalid method name (" + methodName + ") due to: " + relativePath);
 				continue;
 			}
 			if (!methodNames.add(methodName)) {
-				logger.log(TreeLogger.WARN,
-						"Skipping duplicate method name due to: "
-								+ relativePath);
+				logger.log(TreeLogger.WARN, "Skipping duplicate method name due to: " + relativePath);
 				continue;
 			}
-			logger.log(TreeLogger.DEBUG, "Generating method for: "
-					+ relativePath);
+			logger.log(TreeLogger.DEBUG, "Generating method for: " + relativePath);
 			Class<? extends ResourcePrototype> returnType = getResourcePrototype(contentType);
 			sourceWriter.println();
 			if (returnType == DataResource.class) {
 				if (contentType.startsWith("audio/")) {
 					sourceWriter.println("@DataResource.DoNotEmbed");
 				} else {
-					sourceWriter.println("@DataResource.MimeType(\""
-							+ contentType + "\")");
+					sourceWriter.println("@DataResource.MimeType(\"" + contentType + "\")");
 				}
 			}
 
 			sourceWriter.println("@Source(\"" + relativePath + "\")");
 
-			sourceWriter.println(returnType.getName() + " " + methodName
-					+ "();");
+			sourceWriter.println(returnType.getName() + " " + methodName + "();");
 		}
 
 		sourceWriter.outdent();
@@ -627,8 +616,7 @@ public class PreloaderBundleGenerator extends Generator {
 		return filename.replaceFirst("\\.[^.]+$", "");
 	}
 
-	private HashSet<Resource> getResources(GeneratorContext context,
-			String packName, FileFilter filter) {
+	private HashSet<Resource> getResources(GeneratorContext context, String packName, FileFilter filter) {
 		final String pack = packName.replace('.', '/');
 		HashSet<Resource> resourceList = new HashSet<Resource>();
 		for (String path : context.getResourcesOracle().getPathNames()) {
@@ -637,16 +625,14 @@ public class PreloaderBundleGenerator extends Generator {
 			}
 			String ext = LSystem.getExtension(path);
 			if (EXTENSION_MAP.containsKey(ext)) {
-				resourceList
-						.add(context.getResourcesOracle().getResource(path));
+				resourceList.add(context.getResourcesOracle().getResource(path));
 			}
 		}
 
 		return resourceList;
 	}
 
-	private Class<? extends ResourcePrototype> getResourcePrototype(
-			String contentType) {
+	private Class<? extends ResourcePrototype> getResourcePrototype(String contentType) {
 		Class<? extends ResourcePrototype> returnType;
 		if (contentType.startsWith("image/")) {
 			returnType = ImageResource.class;
@@ -664,8 +650,7 @@ public class PreloaderBundleGenerator extends Generator {
 
 	private static String readCodeString(File file) throws Exception {
 		FileInputStream in = new FileInputStream(file);
-		BufferedReader reader = new BufferedReader(new InputStreamReader(in,
-				LSystem.ENCODING));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(in, LSystem.ENCODING));
 		try {
 			String text = null;
 			StringBuffer dcode = new StringBuffer();
@@ -687,8 +672,7 @@ public class PreloaderBundleGenerator extends Generator {
 							dcode.append(ch);
 						}
 					}
-					if (size > 0
-							&& chars[size - 1] != DefaultAssetFilter.special_symbols) {
+					if (size > 0 && chars[size - 1] != DefaultAssetFilter.special_symbols) {
 						dcode.append(DefaultAssetFilter.special_symbols);
 					}
 					dcode.append("\"+");
@@ -709,7 +693,8 @@ public class PreloaderBundleGenerator extends Generator {
 			pathLen = path.length();
 			path = path.replaceAll("[^/]+/\\.\\./", "");
 		} while (path.length() != pathLen);
-		return path.replace("\\", "/");
+		String fileName = path.replace('\\', '/');
+		return fileName;
 	}
 
 	private static String getResName(String fileName) {
@@ -732,10 +717,8 @@ public class PreloaderBundleGenerator extends Generator {
 		String contentType = EXTENSION_MAP.get(extension);
 		if (contentType == null) {
 			logger.log(TreeLogger.WARN,
-					"No Content Type mapping for files with '" + extension
-							+ "' extension. Please add a mapping to the "
-							+ PreloaderBundleGenerator.class.getCanonicalName()
-							+ " class.");
+					"No Content Type mapping for files with '" + extension + "' extension. Please add a mapping to the "
+							+ PreloaderBundleGenerator.class.getCanonicalName() + " class.");
 			contentType = "application/octet-stream";
 		}
 		return contentType;
@@ -743,13 +726,12 @@ public class PreloaderBundleGenerator extends Generator {
 
 	private static Var getVarText(String resName, String fileName) {
 		try {
-			String varname = "txt_"
-					+ resName.replace('.', '_').replace('/', '_');
+			String varname = "txt_" + resName.replace('.', '_').replace('/', '_');
 			String result = readCodeString(new File(fileName));
 			Var var = new Var();
 			var.name = varname;
-			var.context = ("var " + varname + " = (" + result) + ").replace('"
-					+ DefaultAssetFilter.special_symbols + "', '\\n');";
+			var.context = ("var " + varname + " = (" + result) + ").replace('" + DefaultAssetFilter.special_symbols
+					+ "', '\\n');";
 			return var;
 		} catch (Exception e) {
 			e.printStackTrace();

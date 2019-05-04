@@ -1,0 +1,132 @@
+apply plugin: "com.android.application"
+
+buildscript{
+    repositories{
+        mavenLocal()
+        mavenCentral()
+        google()
+        maven{ url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        jcenter()
+    }
+
+    dependencies{
+        classpath 'com.android.tools.build:gradle:3.4.0'
+    }
+}
+
+
+repositories{
+    mavenCentral()
+    jcenter()
+    maven{
+        url "https://maven.google.com"
+    }
+}
+
+dependencies {
+    implementation project(":core")
+    implementation fileTree(dir: 'libs', includes: ['loon-core-0.5.jar','loon-andorid-0.5.jar'])
+    implementation 'com.android.support:appcompat-v7:28.0.0-rc02'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+}
+
+
+android {
+    buildToolsVersion '28.0.3'
+    compileSdkVersion 28
+    defaultConfig {
+        applicationId "loon.template.mygame"
+        minSdkVersion 14
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    sourceSets{
+        main{
+            manifest.srcFile 'src/main/AndroidManifest.xml'
+            assets.srcDirs = ['assets', 'src/main/assets', '../assets/src/main/resources/assets']
+            jniLibs.srcDirs = ['libs']
+            res.srcDirs = ['res']
+        }
+    }
+
+    packagingOptions {
+        exclude 'META-INF/robovm/ios/robovm.xml'
+        exclude '**/*.java'
+        exclude '**/*.gwt.xml'
+    }
+
+    compileOptions{
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    signingConfigs{
+        release{
+            if(project.hasProperty("RELEASE_STORE_FILE")){
+                storeFile file(RELEASE_STORE_FILE)
+                storePassword RELEASE_STORE_PASSWORD
+                keyAlias RELEASE_KEY_ALIAS
+                keyPassword RELEASE_KEY_PASSWORD
+            }else{
+                println("No keystore info property found!")
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+    }
+}
+
+task run(type: Exec){
+    def path
+    def localProperties = project.file("../local.properties")
+    if(localProperties.exists()){
+        Properties properties = new Properties()
+        localProperties.withInputStream{ instr ->
+            properties.load(instr)
+        }
+        def sdkDir = properties.getProperty('sdk.dir')
+        if(sdkDir){
+            path = sdkDir
+        }else{
+            path = "$System.env.ANDROID_HOME"
+        }
+    }else{
+        path = "$System.env.ANDROID_HOME"
+    }
+
+    def adb = path + "/platform-tools/adb"
+    commandLine "$adb", 'shell', 'am', 'start', '-n', 'io.anuke.mindustry/io.anuke.mindustry.AndroidLauncher'
+}
+idea{
+    module{
+        sourceDirs += file("src")
+        scopes = [COMPILE: [plus: [project.configurations.compile]]]
+
+        iml{
+            withXml{
+                def node = it.asNode()
+                def builder = NodeBuilder.newInstance()
+                builder.current = node
+                builder.component(name: "FacetManager"){
+                    facet(type: "android", name: "Android"){
+                        configuration{
+                            option(name: "UPDATE_PROPERTY_FILES", value: "true")
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

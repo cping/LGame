@@ -1,0 +1,3 @@
+<module rename-to='assets'>
+  <public path="assets" />
+</module>

@@ -6,11 +6,14 @@
 
 [免费的游戏素材可见此](https://github.com/cping/LGame/blob/master/dev-res/README.md "Game Source of Free")
 
-android-studio运行模板见:androidstudio-template
+单纯android-studio运行模板见:androidstudio-template
 
-单纯gradle运行模板见:loon-gradle-template
+全java应用gradle运行模板见:loon-gradle-template
+(模块的task run执行对应环境程序,task dist打包程序)
 
-PS:本来eclipse下是可以直接生成项目的，不过前两年没更新，现在ADT已经作古了，需要花时间重写这部分……
+![LGame](https://raw.github.com/cping/LGame/master/gradle_test.png "gradle_test")
+
+PS:本来eclipse下是可以直接生成项目的，不过前两年没更新，现在ADT已经作古了，需要花时间重写这部分，暂不提供……
 
 *2019年复活继续更新 - 2019-03-08。
 

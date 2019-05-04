@@ -1,0 +1,2 @@
+rootProject.name = 'loon-template'
+include 'core','assets','javase','lwjgl3','html','robovm','android'

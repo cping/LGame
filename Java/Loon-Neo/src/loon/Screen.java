@@ -2215,11 +2215,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @param spr
 	 * @return
 	 */
-	public ISprite addRow(ISprite spr) {
+	public Screen addRow(ISprite spr) {
 		if (isClose || sprites == null) {
-			return spr;
+			return this;
 		}
-		return sprites.addRow(spr);
+		sprites.addRow(spr);
+		return this;
 	}
 
 	/**
@@ -2229,11 +2230,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @param offX
 	 * @return
 	 */
-	public ISprite addRow(ISprite spr, float offX) {
+	public Screen addRow(ISprite spr, float offX) {
 		if (isClose || sprites == null) {
-			return spr;
+			return this;
 		}
-		return sprites.addRow(spr, offX);
+		sprites.addRow(spr, offX);
+		return this;
 	}
 
 	/**
@@ -2244,11 +2246,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @param offY
 	 * @return
 	 */
-	public LComponent addPadding(LComponent comp, float offX, float offY) {
+	public Screen addPadding(LComponent comp, float offX, float offY) {
 		if (isClose || desktop == null) {
-			return comp;
+			return this;
 		}
-		return desktop.addPadding(comp, offX, offY);
+		desktop.addPadding(comp, offX, offY);
+		return this;
 	}
 
 	/**
@@ -2257,11 +2260,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @param comp
 	 * @return
 	 */
-	public LComponent addCol(LComponent comp) {
+	public Screen addCol(LComponent comp) {
 		if (isClose || desktop == null) {
-			return comp;
+			return this;
 		}
-		return desktop.addCol(comp);
+		desktop.addCol(comp);
+		return this;
 	}
 
 	/**
@@ -2271,11 +2275,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @param offY
 	 * @return
 	 */
-	public LComponent addCol(LComponent comp, float offY) {
+	public Screen addCol(LComponent comp, float offY) {
 		if (isClose || desktop == null) {
-			return comp;
+			return this;
 		}
-		return desktop.addCol(comp, offY);
+		desktop.addCol(comp, offY);
+		return this;
 	}
 
 	/**
@@ -2284,11 +2289,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @param comp
 	 * @return
 	 */
-	public LComponent addRow(LComponent comp) {
+	public Screen addRow(LComponent comp) {
 		if (isClose || desktop == null) {
-			return comp;
+			return this;
 		}
-		return desktop.addRow(comp);
+		desktop.addRow(comp);
+		return this;
 	}
 
 	/**
@@ -2298,11 +2304,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @param offX
 	 * @return
 	 */
-	public LComponent addRow(LComponent comp, float offX) {
+	public Screen addRow(LComponent comp, float offX) {
 		if (isClose || desktop == null) {
-			return comp;
+			return this;
 		}
-		return desktop.addRow(comp, offX);
+		desktop.addRow(comp, offX);
+		return this;
 	}
 
 	/**

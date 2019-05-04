@@ -17,7 +17,7 @@
   <collapse-all-properties />
   <set-configuration-property name="loon.assetpath" value="../assets"/>
   <!-- 若此项为真,除音频外所有资源不加载入实际路径，而是单独的资源js中 -->
-  <set-configuration-property name="loon.addtojs" value="true"/>
+  <set-configuration-property name="loon.addtojs" value="false"/>
   <entry-point class='loon.test.TestLoon'/>
   <set-configuration-property name="CssResource.enableGss" value="true"/>
   <add-linker name="xsiframe"/>

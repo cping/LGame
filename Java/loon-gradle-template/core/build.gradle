@@ -1,0 +1,8 @@
+apply plugin: "java"
+
+sourceCompatibility = 1.7
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+dependencies {
+      implementation fileTree(dir: 'libs', include: ['loon-core-0.5.jar','loon-core-0.5-source.jar'])
+}

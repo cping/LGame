@@ -1,0 +1,86 @@
+apply plugin: "java"
+
+dependencies {
+  implementation project(":core")
+  implementation project(":assets")
+  implementation 'com.google.gwt:gwt-user:2.7.0'
+  implementation 'com.google.gwt:gwt-dev:2.7.0'
+  implementation fileTree(dir: 'libs', includes: ['loon-gwt-0.5-source.jar','loon-gwt-0.5.jar','loon-core-0.5.jar','loon-core-0.5-source.jar'])
+}
+
+gwt {
+
+  src = files(file('src/main/java'))
+
+  compiler {
+    strict = true
+    disableCastChecking = true
+  }
+}
+
+
+import org.wisepersist.gradle.plugins.gwt.GwtSuperDev
+
+def HttpFileServer server = null
+def httpFilePort = 8080
+
+task startHttpServer () {
+  dependsOn draftCompileGwt
+
+  String output = project.buildDir.path + "/gwt/draftOut"
+
+  doLast {
+    copy {
+      from "src/main/webapp"
+      into output
+    }
+
+    copy {
+      from "war"
+      into output
+    }
+
+    server = new SimpleHttpFileServerFactory().start(new File(output), httpFilePort)
+    println "Server started in directory " + server.getContentRoot() +
+      ", http://localhost:" + server.getPort()
+  }
+}
+
+task superDev (type: GwtSuperDev) {
+  dependsOn startHttpServer
+  doFirst {
+    gwt.modules = gwt.devModules
+  }
+}
+
+task dist(dependsOn: [clean, compileGwt]) {
+  doLast {
+    file("build/dist").mkdirs()
+    copy {
+      from "build/gwt/out"
+      into "build/dist"
+    }
+    copy {
+      from "src/main/webapp"
+      into "build/dist"
+    }
+    copy {
+      from "war"
+      into "build/dist"
+    }
+    copy{
+      from "war/assets/build/resources/main"
+      into "build/dist"
+    }
+  }
+}
+
+task addCoreSource {
+  doLast {
+    sourceSets.main.compileClasspath += files(project(':core').sourceSets.main.allJava.srcDirs)
+  }
+}
+
+tasks.checkGwt.dependsOn(addCoreSource)
+tasks.compileGwt.dependsOn(addCoreSource)
+tasks.draftCompileGwt.dependsOn(addCoreSource)

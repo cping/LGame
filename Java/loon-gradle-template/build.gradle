@@ -1,0 +1,105 @@
+buildscript {
+
+  project.ext.roboVMVersion = '2.3.6'
+
+  repositories {
+    mavenLocal()
+    mavenCentral()
+    google()
+    maven{ url "https://oss.sonatype.org/content/repositories/snapshots/" }
+    jcenter()
+  }
+
+  dependencies {
+    classpath "org.wisepersist:gwt-gradle-plugin:1.0.6"
+    classpath 'com.mobidevelop.robovm:robovm-gradle-plugin:2.3.6'
+  }
+}
+
+allprojects {
+  apply plugin: "idea"
+  version = "1.0"
+
+  repositories {
+    mavenLocal()
+    mavenCentral()
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
+    maven { url "https://oss.sonatype.org/content/repositories/releases/" }
+    maven { url 'https://jitpack.io' }
+  }
+
+  ext {
+
+    appName = "LGame-Run-Template"
+
+    gwtVersion = "2.7.0"
+  }
+}
+
+project(":assets") {
+
+  apply plugin: "java"
+
+  sourceCompatibility = 1.8
+}
+
+project(":core") {
+
+  apply plugin: "java"
+
+  sourceCompatibility = 1.8
+}
+
+project(":javase") {
+
+  apply plugin: "java"
+
+  sourceCompatibility = 1.8
+
+}
+/*
+project(":lwjgl3") {
+  apply plugin: "java"
+
+  sourceCompatibility = 1.8
+
+}*/
+
+project(":robovm") {
+  apply plugin: "java"
+  apply plugin: "robovm"
+
+  sourceCompatibility = 1.8
+
+  dependencies {
+    implementation "com.mobidevelop.robovm:robovm-rt:$roboVMVersion"
+    implementation "com.mobidevelop.robovm:robovm-objc:$roboVMVersion"
+    implementation "com.mobidevelop.robovm:robovm-cocoatouch:$roboVMVersion"
+  }
+
+  ext {
+    mainClassName = "loon.template.robovm.MyGame"
+  }
+}
+
+project(":html") {
+  apply plugin: "gwt"
+  apply plugin: "war"
+
+  sourceCompatibility = 1.8
+
+  gwt {
+    gwtVersion = "$project.gwtVersion"
+    maxHeapSize = "1G"
+    minHeapSize = "1G"
+
+    modules "loon.template.gwt.MyGame"
+    devModules "loon.template.gwt.MyGame"
+
+    project.webAppDirName = "webapp"
+  }
+}
+
+task clean(type:Delete){
+    delete rootProject.buildDir
+}
