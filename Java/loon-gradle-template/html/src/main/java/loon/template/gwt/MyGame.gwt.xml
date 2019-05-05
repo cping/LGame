@@ -8,7 +8,7 @@
   <set-configuration-property name="CssResource.style" value="pretty"/>
   <collapse-all-properties />
   <set-configuration-property name="loon.assetpath" value="../assets"/>
-  <set-configuration-property name="loon.addtojs" value="true"/>
+  <set-configuration-property name="loon.addtojs" value="false"/>
   <entry-point class='loon.template.gwt.MyGame'/>
   <set-configuration-property name="CssResource.enableGss" value="false"/>
   <add-linker name="xsiframe"/>

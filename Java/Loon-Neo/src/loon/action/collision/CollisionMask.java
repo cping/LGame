@@ -25,7 +25,7 @@ import loon.LSysException;
 import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.canvas.Pixmap;
-import loon.geom.Point;
+import loon.geom.PointF;
 import loon.geom.Polygon;
 import loon.utils.TArray;
 
@@ -72,8 +72,8 @@ public class CollisionMask {
 			int limitY, int interval) {
 		Polygon split = null;
 		Polygon result = null;
-		TArray<Point[]> points = new TArray<Point[]>();
-		Point[] tmpPoint;
+		TArray<PointF[]> points = new TArray<PointF[]>();
+		PointF[] tmpPoint;
 		int x1, y1, x2, y2;
 		boolean secondPoint;
 		int pixel = 0;
@@ -98,15 +98,15 @@ public class CollisionMask {
 				}
 			}
 			if (secondPoint && (x2 > -1) && (y2 > -1)) {
-				tmpPoint = new Point[2];
-				tmpPoint[0] = new Point(offsetX + x1, offsetY + y1);
-				tmpPoint[1] = new Point(offsetX + x2, offsetY + y2);
+				tmpPoint = new PointF[2];
+				tmpPoint[0] = new PointF(offsetX + x1, offsetY + y1);
+				tmpPoint[1] = new PointF(offsetX + x2, offsetY + y2);
 				points.add(tmpPoint);
 			}
 		}
 		split = makePolygon(points);
 		if (split != null) {
-			points = new TArray<Point[]>();
+			points = new TArray<PointF[]>();
 
 			for (int x = startX; x < limitX - interval; x += interval) {
 				secondPoint = false;
@@ -128,9 +128,9 @@ public class CollisionMask {
 					}
 				}
 				if (secondPoint && (x2 > -1) && (y2 > -1)) {
-					tmpPoint = new Point[2];
-					tmpPoint[0] = new Point(offsetX + x1, offsetY + y1);
-					tmpPoint[1] = new Point(offsetX + x2, offsetY + y2);
+					tmpPoint = new PointF[2];
+					tmpPoint[0] = new PointF(offsetX + x1, offsetY + y1);
+					tmpPoint[1] = new PointF(offsetX + x2, offsetY + y2);
 					points.add(tmpPoint);
 				}
 			}
@@ -146,17 +146,17 @@ public class CollisionMask {
 	 * @param points
 	 * @return
 	 */
-	private static Polygon makePolygon(TArray<Point[]> points) {
+	private static Polygon makePolygon(TArray<PointF[]> points) {
 		Polygon polygon = null;
 		if (!points.isEmpty()) {
 			int size = points.size;
 			polygon = new Polygon();
 			for (int i = 0; i < size; i++) {
-				Point p = (points.get(i))[0];
+				PointF p = (points.get(i))[0];
 				polygon.addPoint(p.x, p.y);
 			}
 			for (int i = size - 1; i >= 0; i--) {
-				Point p = (points.get(i))[1];
+				PointF p = (points.get(i))[1];
 				polygon.addPoint(p.x, p.y);
 			}
 		}
