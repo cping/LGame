@@ -28,7 +28,7 @@ import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 import loon.utils.html.HtmlElement;
 import loon.utils.html.css.CssDimensions.Rect;
-import loon.utils.html.css.CssStyleNode;
+import loon.utils.html.css.CssStyleSheet;
 
 public class ImageCommand extends DisplayCommand {
 
@@ -40,7 +40,7 @@ public class ImageCommand extends DisplayCommand {
 
 	private int height;
 
-	public ImageCommand(CssStyleNode sheet, float width, float height, LColor color) {
+	public ImageCommand(CssStyleSheet sheet, float width, float height, LColor color) {
 		super(sheet, "Image", width, height, color);
 	}
 

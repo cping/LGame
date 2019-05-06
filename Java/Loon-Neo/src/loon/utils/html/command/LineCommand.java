@@ -27,7 +27,7 @@ import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.html.HtmlElement;
 import loon.utils.html.css.CssDimensions.Rect;
-import loon.utils.html.css.CssStyleNode;
+import loon.utils.html.css.CssStyleSheet;
 
 public class LineCommand extends DisplayCommand {
 
@@ -37,7 +37,7 @@ public class LineCommand extends DisplayCommand {
 
 	private int offset;
 
-	public LineCommand(CssStyleNode sheet, float width, float height, LColor color) {
+	public LineCommand(CssStyleSheet sheet, float width, float height, LColor color) {
 		super(sheet, "Line", width, height, color);
 	}
 

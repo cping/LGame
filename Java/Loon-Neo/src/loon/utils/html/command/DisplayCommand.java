@@ -26,7 +26,6 @@ import loon.opengl.GLEx;
 import loon.utils.html.HtmlElement;
 import loon.utils.html.css.CssDimensions.Rect;
 import loon.utils.html.css.CssElement;
-import loon.utils.html.css.CssStyleNode;
 import loon.utils.html.css.CssStyleSheet;
 
 /**
@@ -34,9 +33,7 @@ import loon.utils.html.css.CssStyleSheet;
  */
 public abstract class DisplayCommand implements LRelease {
 
-	protected CssStyleNode attributeStyleSheet;
-
-	protected CssStyleNode styleSheet;
+	protected CssStyleSheet styleSheet;
 
 	protected Rect rect;
 
@@ -48,11 +45,13 @@ public abstract class DisplayCommand implements LRelease {
 
 	protected final float screenHeight;
 
-	protected CssElement element;
+	protected CssElement bodyElement;
+
+	protected CssElement selfElement;
 
 	protected CssElement attrElement;
 
-	public DisplayCommand(CssStyleNode sheet, String name, float width, float height, LColor color) {
+	public DisplayCommand(CssStyleSheet sheet, String name, float width, float height, LColor color) {
 		this.styleSheet = sheet;
 		this.name = name;
 		this.defaultColor = color;
@@ -89,33 +88,39 @@ public abstract class DisplayCommand implements LRelease {
 		}
 	}
 
-	public CssStyleNode getStyleNode() {
+	public CssStyleSheet getStyleNode() {
 		return styleSheet;
 	}
 
-	public void setStyleNode(CssStyleNode style) {
+	public void setStyleSheet(CssStyleSheet style) {
 		this.styleSheet = style;
 	}
 
 	public abstract void update();
 
 	public void parser(HtmlElement e) {
+		if (styleSheet != null) {
+			bodyElement = new CssElement(styleSheet, e, null, null, screenWidth, screenHeight);
+			bodyElement.parse();
+		}
 		if (e != null && e.isAttyStyle()) {
 			attrElement = new CssElement(e.getAttrStyleSheet(), e, null, null, screenWidth, screenHeight);
+			attrElement.parse();
 		}
 		CssStyleSheet cssSheet = e.getStyleSheet();
 		if (cssSheet.size() > 0) {
-			element = new CssElement(cssSheet, e, null, null, screenWidth, screenHeight);
+			selfElement = new CssElement(cssSheet, e, null, null, screenWidth, screenHeight);
+			selfElement.parse();
 		}
 	}
 
 	public abstract void paint(GLEx g, float x, float y);
 
-	public CssElement getCssElement() {
-		return element;
+	public CssElement getCssSelfElement() {
+		return selfElement;
 	}
 
 	public CssElement getCssAttributeElement() {
-		return element;
+		return attrElement;
 	}
 }

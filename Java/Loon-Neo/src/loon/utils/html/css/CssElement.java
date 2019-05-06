@@ -175,6 +175,10 @@ public class CssElement {
 
 		}
 
+		if (marginRect == null) {
+			marginRect = new Rect();
+		}
+
 		CssKeyword zeroLength = new CssKeyword("0");
 
 		marginRect.top = MathUtils.max(marginRect.top,
@@ -197,6 +201,10 @@ public class CssElement {
 
 		}
 
+		if (paddingSize == null) {
+			paddingSize = new EdgeSize();
+		}
+
 		paddingSize.top = MathUtils.max(paddingSize.top,
 				Rect.getValue(height, fontSize, cssNode.find(zeroLength, "padding-top").getValueString()));
 		paddingSize.right = MathUtils.max(paddingSize.right,
@@ -212,6 +220,10 @@ public class CssElement {
 			border = value.getValueString();
 		}
 
+		if (borderSize == null) {
+			borderSize = new Border();
+		}
+		
 		borderSize.top = cssNode.find(zeroLength, "border-top").getValueString();
 		borderSize.right = cssNode.find(zeroLength, "border-right").getValueString();
 		borderSize.bottom = cssNode.find(zeroLength, "border-bottom").getValueString();

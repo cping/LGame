@@ -75,6 +75,7 @@ public class HtmlDisplay {
 		this.displays = new TArray<DisplayCommand>();
 		this.width = w;
 		this.height = h;
+		this.backgroundColor = LColor.white;
 		defaultColor = color;
 	}
 
@@ -93,8 +94,8 @@ public class HtmlDisplay {
 		float lineWidth = 0;
 		float lineHeight = 0;
 
-		CssStyleNode cssStyleNode = null;
-		
+		CssStyleSheet cssStyle = null;
+
 		boolean newLine = false;
 
 		int newLineAmount = 0;
@@ -110,12 +111,12 @@ public class HtmlDisplay {
 				String tagName = node.getName();
 				DisplayCommand display = null;
 
-				CssStyleSheet cssSheet = node.getStyleSheet();
+				cssStyle = node.getStyleSheet();
 
-				if (cssSheet.size() > 0) {
-					cssSheets.add(cssSheet);
+				if (cssStyle.size() > 0) {
+					cssSheets.add(cssStyle);
 				} else {
-					cssSheet = cssSheets.last();
+					cssStyle = cssSheets.last();
 				}
 
 				if (lastRect != null) {
@@ -142,12 +143,15 @@ public class HtmlDisplay {
 
 				if (node.isBody()) {
 
-					if (cssSheet.size() > 0) {
+					if (cssStyle != null && cssStyle.size() > 0) {
 
-						CssElement cssElement = new CssElement(cssSheet, node, bodyRect, bodyPadding, width, height);
+						CssElement cssElement = new CssElement(cssStyle, node, bodyRect, bodyPadding, width, height);
+
+						cssElement.parse();
 
 						defaultColor = cssElement.getFontColor();
 						defaultFontName = cssElement.getFontName();
+
 						fontSize = (int) cssElement.getFontSize();
 
 						backgroundColor = cssElement.getBackgroundColor();
@@ -159,21 +163,21 @@ public class HtmlDisplay {
 					}
 
 				} else if (node.isH()) {
-					display = new TextCommand(cssStyleNode, width, height, defaultFontName, fontSize, defaultColor);
+					display = new TextCommand(cssStyle, width, height, defaultFontName, fontSize, defaultColor);
 					display.parser(node);
 					newLine = true;
 					newLineAmount = sysSize;
 				} else if (StringUtils.contains(tagName, "a", "b", "label", "font")) {
-					display = new TextCommand(cssStyleNode, width, height, defaultFontName, fontSize, defaultColor);
+					display = new TextCommand(cssStyle, width, height, defaultFontName, fontSize, defaultColor);
 					display.parser(node);
 				} else if (StringUtils.contains(tagName, "span", "div")) {
-					display = new DivCommand(cssStyleNode, width, height, defaultFontName, fontSize, defaultColor);
+					display = new DivCommand(cssStyle, width, height, defaultFontName, fontSize, defaultColor);
 					display.parser(node);
 				} else if ("img".equals(tagName)) {
-					display = new ImageCommand(cssStyleNode, width, height, defaultColor);
+					display = new ImageCommand(cssStyle, width, height, defaultColor);
 					display.parser(node);
 				} else if ("p".equals(tagName)) {
-					display = new TextCommand(cssStyleNode, width, height, defaultFontName, fontSize, defaultColor);
+					display = new TextCommand(cssStyle, width, height, defaultFontName, fontSize, defaultColor);
 					display.parser(node);
 					newLine = true;
 					newLineAmount = sysSize;
@@ -185,7 +189,7 @@ public class HtmlDisplay {
 						lineHeight += sysSize;
 					}
 				} else if ("hr".equals(tagName)) {
-					display = new LineCommand(cssStyleNode, width, height, defaultColor);
+					display = new LineCommand(cssStyle, width, height, defaultColor);
 					display.parser(node);
 					newLine = true;
 					newLineAmount = sysSize + 5;

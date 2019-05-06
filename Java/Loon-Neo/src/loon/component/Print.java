@@ -66,12 +66,13 @@ public class Print implements FontSet<Print>, LRelease {
 	 * @return
 	 */
 	public static String prepareString(IFont font, String text, float width) {
-
+		if (font == null || StringUtils.isEmpty(text)) {
+			return "";
+		}
 		StringBuilder string = new StringBuilder();
 		int lineWidth = 0;
 		char ch = text.charAt(0);
-		int fontWidth = font.charWidth(ch)-4;
-
+		int fontWidth = StringUtils.hasChinese(font.getFontName()) ? font.charWidth(ch) : font.charWidth(ch) - 4;
 		for (int i = 0; i < text.length(); i++) {
 			ch = text.charAt(i);
 			string.append(ch);

@@ -687,6 +687,9 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	public GLEx setColor(LColor color) {
+		if (color == null) {
+			return this;
+		}
 		int argb = color.getARGB();
 		setColor(argb);
 		return this;

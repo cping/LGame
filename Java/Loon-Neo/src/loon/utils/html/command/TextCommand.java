@@ -33,10 +33,10 @@ import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 import loon.utils.html.HtmlElement;
-import loon.utils.html.css.CssStyleNode;
+import loon.utils.html.css.CssStyleSheet;
 
 public class TextCommand extends DisplayCommand {
-	
+
 	protected String text;
 
 	protected LColor color;
@@ -55,7 +55,7 @@ public class TextCommand extends DisplayCommand {
 
 	private String fontName;
 
-	public TextCommand(CssStyleNode sheet, float width, float height, String fontName, float fontSize, LColor color) {
+	public TextCommand(CssStyleSheet sheet, float width, float height, String fontName, float fontSize, LColor color) {
 		super(sheet, "Text", width, height, color);
 		this.fontName = fontName;
 		this.fontSize = fontSize;
@@ -64,14 +64,34 @@ public class TextCommand extends DisplayCommand {
 	@Override
 	public void parser(HtmlElement e) {
 		super.parser(e);
-		
+
+		String newFontName = null;
+		String sysFont = StringUtils.isEmpty(fontName) ? LSystem.getSystemGameFontName().toLowerCase() : fontName;
+
+		if (bodyElement != null) {
+			newFontName = bodyElement.getFontName() == null ? bodyElement.getFontName() : sysFont;
+			color = bodyElement.getFontColor();
+			fontSize = bodyElement.getFontSize();
+		}
+		if (selfElement != null) {
+			newFontName = selfElement.getFontName() == null ? selfElement.getFontName() : sysFont;
+			color = selfElement.getFontColor();
+			fontSize = selfElement.getFontSize();
+		}
+		if (attrElement != null) {
+			newFontName = attrElement.getFontName() == null ? attrElement.getFontName() : sysFont;
+			color = attrElement.getFontColor();
+			fontSize = attrElement.getFontSize();
+		}
+		if (newFontName == null) {
+			newFontName = sysFont;
+		}
+
 		sysSize = LSystem.getSystemGameFont().getSize();
 
 		if (fontSize <= 1) {
 			fontSize = sysSize;
 		}
-
-		String sysFont = StringUtils.isEmpty(fontName) ? LSystem.getSystemGameFontName().toLowerCase() : fontName;
 
 		this.node = e;
 
@@ -84,9 +104,10 @@ public class TextCommand extends DisplayCommand {
 			} else {
 				dsize = MathUtils.floor(size);
 			}
-			String face = e.getAttribute("face", "dialog");
+			String face = e.getAttribute("face", newFontName);
+		
 			if (sysFont.equals(face) && dsize == sysSize) {
-				font = LFont.getFont(face, dsize);
+				font = LSystem.getSystemGameFont();
 			} else if (face != null) {
 				font = LFont.getFont(face, dsize);
 			} else {

@@ -299,6 +299,16 @@ public class HtmlCmd extends StringKeyValue {
 		return this;
 	}
 
+	public HtmlCmd divId(CharSequence id, CharSequence text) {
+		addValue("<div id=\"" + id + "\">").addValue(text).addValue("</div>");
+		return this;
+	}
+
+	public HtmlCmd divClass(CharSequence clazz, CharSequence text) {
+		addValue("<div class=\"" + clazz + "\">").addValue(text).addValue("</div>");
+		return this;
+	}
+
 	public HtmlCmd em() {
 		return begin("em");
 	}
@@ -547,7 +557,7 @@ public class HtmlCmd extends StringKeyValue {
 		addValue("<style type=\"text/css\">").addValue(text).addValue("</style>");
 		return this;
 	}
-	
+
 	public HtmlCmd style() {
 		return begin("style");
 	}
@@ -571,6 +581,16 @@ public class HtmlCmd extends StringKeyValue {
 		return this;
 	}
 
+	public HtmlCmd spanId(CharSequence id, CharSequence text) {
+		addValue("<span id=\"" + id + "\">").addValue(text).addValue("</span>");
+		return this;
+	}
+
+	public HtmlCmd spanClass(CharSequence clazz, CharSequence text) {
+		addValue("<span class=\"" + clazz + "\">").addValue(text).addValue("</span>");
+		return this;
+	}
+	
 	public HtmlCmd span() {
 		return begin("span");
 	}
