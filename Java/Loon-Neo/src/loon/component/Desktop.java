@@ -428,11 +428,17 @@ public class Desktop implements Visible, LRelease {
 		if (this.selectedComponent != null && !this.selectedComponent._keyLocked) {
 			this.selectedComponent.keyPressed(key);
 		}
+		if (this.contentPane != null && this.contentPane != this.selectedComponent) {
+			this.contentPane.keyPressed(key);
+		}
 	}
 
 	public void keyReleased(GameKey key) {
 		if (this.selectedComponent != null && !this.selectedComponent._keyLocked) {
 			this.selectedComponent.keyReleased(key);
+		}
+		if (this.contentPane != null && this.contentPane != this.selectedComponent) {
+			this.contentPane.keyReleased(key);
 		}
 	}
 
@@ -441,12 +447,26 @@ public class Desktop implements Visible, LRelease {
 	 * 
 	 */
 	public void processEvents() {
+		processTouchs();
+		processKeys();
+	}
+
+	/**
+	 * 触发触屏(鼠标)事件
+	 */
+	public void processTouchs() {
 		// 鼠标滑动
 		this.processTouchMotionEvent();
 		// 鼠标事件
 		if (this.hoverComponent != null && !this.hoverComponent._touchLocked && this.hoverComponent.isEnabled()) {
 			this.processTouchEvent();
 		}
+	}
+
+	/**
+	 * 触发键盘事件
+	 */
+	public void processKeys() {
 		// 键盘事件
 		if (this.selectedComponent != null && !this.selectedComponent._keyLocked
 				&& this.selectedComponent.isEnabled()) {

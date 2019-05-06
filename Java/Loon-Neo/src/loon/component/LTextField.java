@@ -38,12 +38,14 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
 import loon.component.skin.SkinManager;
+import loon.event.ActionKey;
 import loon.event.GameKey;
 import loon.event.SysInputFactory;
 import loon.event.SysInputFactory.OnscreenKeyboard;
 import loon.event.SysKey;
 import loon.font.IFont;
 import loon.opengl.GLEx;
+import loon.utils.CharUtils;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 
@@ -52,13 +54,24 @@ import loon.utils.StringUtils;
  */
 public class LTextField extends LTextBar {
 
-	public static LTextField at(int x, int y) {
-		return new LTextField(LSystem.EMPTY, x, y);
-	}
+	public static final int INPUT_STRING = 0;
 
-	@Override
-	public String getUIName() {
-		return "TextField";
+	public static final int INPUT_SIGNED_INTEGER_NUM = 1;
+
+	public static final int INPUT_UNSIGNED_INTEGER_NUM = 2;
+
+	public static final int INPUT_INTEGER = INPUT_SIGNED_INTEGER_NUM;
+
+	public static final int INPUT_SIGNED_FLOATING_POINT_NUM = 3;
+
+	public static final int INPUT_UNSIGNED_FLOATING_POINT_NUM = 4;
+
+	public static final int INPUT_FLOATING_POINT_NUM = INPUT_SIGNED_INTEGER_NUM;
+
+	private ActionKey keyLock = new ActionKey();
+
+	public static LTextField at(int x, int y) {
+		return new LTextField(x, y);
 	}
 
 	public OnscreenKeyboard getOnscreenKeyboard() {
@@ -68,10 +81,6 @@ public class LTextField extends LTextBar {
 	public void setOnscreenKeyboard(OnscreenKeyboard keyboard) {
 		SysInputFactory.setKeyBoard(keyboard);
 	}
-
-	public static final int INPUT_STRING = 0, INPUT_SIGNED_INTEGER_NUM = 1, INPUT_UNSIGNED_INTEGER_NUM = 2,
-			INPUT_INTEGER = INPUT_SIGNED_INTEGER_NUM, INPUT_SIGNED_FLOATING_POINT_NUM = 3,
-			INPUT_UNSIGNED_FLOATING_POINT_NUM = 4, INPUT_FLOATING_POINT_NUM = INPUT_SIGNED_INTEGER_NUM;
 
 	private String cursor = "_";
 
@@ -107,6 +116,10 @@ public class LTextField extends LTextBar {
 		this(txt, x, y, SkinManager.get().getTextBarSkin().getFontColor(), INPUT_STRING, limit);
 	}
 
+	public LTextField(int x, int y) {
+		this(LSystem.EMPTY, x, y, SkinManager.get().getTextBarSkin().getFontColor(), INPUT_STRING, 128);
+	}
+
 	public LTextField(String txt, int x, int y) {
 		this(txt, x, y, SkinManager.get().getTextBarSkin().getFontColor(), INPUT_STRING, 128);
 	}
@@ -116,7 +129,9 @@ public class LTextField extends LTextBar {
 		super(txt, left, right, body, x, y, textcolor, font);
 		this._font = font;
 		this.inputType = type;
-		this.startidx = txt.length();
+		if (txt != null) {
+			this.startidx = txt.length();
+		}
 		this.limit = limit + startidx;
 		this.setFocusable(true);
 		freeRes().add(left, right, body);
@@ -144,23 +159,34 @@ public class LTextField extends LTextBar {
 	}
 
 	@Override
-	protected void keyPressed(GameKey key) {
+	protected void keyReleased(GameKey key) {
+		super.keyReleased(key);
+		keyLock.release();
+	}
 
+	@Override
+	protected void keyPressed(GameKey key) {
+		super.keyPressed(key);
 		if (!isFocusable()) {
 			return;
 		}
-
-		char nextchar = key.getKeyChar();
-		if (nextchar == 0
-				&& (StringUtils.isChinese(nextchar) || StringUtils.isAlphabetNumeric(String.valueOf(nextchar)))) {
+		if (!isPointInUI()) {
 			return;
 		}
-
+		if (keyLock.isPressed()) {
+			return;
+		}
+		char nextchar = key.getKeyChar();
+		if (nextchar == 0 && (StringUtils.isChinese(nextchar) || CharUtils.isAlphaOrDigit(nextchar))) {
+			return;
+		}
 		boolean isatstart = _text.length() == startidx;
-		if (nextchar == '\b' && _text.length() != 0 && !isatstart) {
+		if (((key.getKeyCode() == SysKey.BACK) || (key.getKeyCode() == SysKey.DEL)
+				|| (key.getKeyCode() == SysKey.BACKSPACE)) && _text.length() != 0 && !isatstart) {
 			_text = _text.substring(0, _text.length() - 1);
 			return;
 		}
+		// input data max length
 		if (_text.length() == limit) {
 			return;
 		}
@@ -168,16 +194,16 @@ public class LTextField extends LTextBar {
 		if (inputType != INPUT_STRING) {
 			switch (inputType) {
 			case INPUT_UNSIGNED_INTEGER_NUM:
-				valid = Character.isDigit(nextchar);
+				valid = CharUtils.isDigitCharacter(nextchar);
 				break;
 			case INPUT_SIGNED_INTEGER_NUM:
-				valid = Character.isDigit(nextchar) || nextchar == '-' && isatstart;
+				valid = CharUtils.isDigitCharacter(nextchar) || nextchar == '-' && isatstart;
 				break;
 			case INPUT_UNSIGNED_FLOATING_POINT_NUM:
-				valid = Character.isDigit(nextchar) || nextchar == '.';
+				valid = CharUtils.isDigitCharacter(nextchar) || nextchar == '.';
 				break;
 			case INPUT_SIGNED_FLOATING_POINT_NUM:
-				valid = Character.isDigit(nextchar) || nextchar == '.' || nextchar == '-' && isatstart;
+				valid = CharUtils.isDigitCharacter(nextchar) || nextchar == '.' || nextchar == '-' && isatstart;
 				break;
 			}
 		}
@@ -188,6 +214,7 @@ public class LTextField extends LTextBar {
 				_text += nextchar;
 			}
 		}
+		keyLock.release();
 
 	}
 
@@ -231,6 +258,11 @@ public class LTextField extends LTextBar {
 
 	public int getLimit() {
 		return this.limit;
+	}
+
+	@Override
+	public String getUIName() {
+		return "TextField";
 	}
 
 }

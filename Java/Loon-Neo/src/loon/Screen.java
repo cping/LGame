@@ -3562,8 +3562,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			if (!isClickLimit(e)) {
 				updateTouchArea(Event.DOWN, e.getX(), e.getY());
 				touchDown(e);
-				if (_clickListener != null) {
-					_clickListener.DownClick(getDesktop().getSelectedComponent(), e.getX(), e.getY());
+				if (_clickListener != null && desktop != null) {
+					_clickListener.DownClick(desktop.getSelectedComponent(), e.getX(), e.getY());
 				}
 			}
 		} catch (Throwable ex) {
@@ -3592,8 +3592,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			if (!isClickLimit(e)) {
 				updateTouchArea(Event.UP, e.getX(), e.getY());
 				touchUp(e);
-				if (_clickListener != null) {
-					_clickListener.UpClick(getDesktop().getSelectedComponent(), e.getX(), e.getY());
+				if (_clickListener != null && desktop != null) {
+					_clickListener.UpClick(desktop.getSelectedComponent(), e.getX(), e.getY());
 				}
 			}
 		} catch (Throwable ex) {
@@ -3631,8 +3631,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		if (!isClickLimit(e)) {
 			updateTouchArea(Event.DRAG, e.getX(), e.getY());
 			touchDrag(e);
-			if (_clickListener != null) {
-				_clickListener.DragClick(getDesktop().getSelectedComponent(), e.getX(), e.getY());
+			if (_clickListener != null && desktop != null) {
+				_clickListener.DragClick(desktop.getSelectedComponent(), e.getX(), e.getY());
 			}
 		}
 	}

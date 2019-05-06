@@ -505,9 +505,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 			return this;
 		}
 		this.font = fn;
-		if (this.font instanceof LFont) {
-			useLFont = true;
-		}
+		this.useLFont = (this.font instanceof LFont);
 		this.cellHeight = font.getHeight();
 		return this;
 	}

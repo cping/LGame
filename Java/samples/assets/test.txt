@@ -5,6 +5,7 @@
 {"props":{"x":55,"y":55,"width":45,"height":29,"frame":20,"skin":"dog.png","var":"spritetest"},"type":"Sprite"},
 {"props":{"x":0,"y":0,"skin":"back1.png","bound":"false","var":"layer1"},"type":"Layer"},
 {"props":{"x":355,"y":65,"skin":"ccc.png","var":"image1"},"type":"Paper"},
+{"props":{"x":365,"y":65,"text":"","var":"text1"},"type":"Text"},
 {"props":{"width":120,"height":55,"text":"testabc","var":"menua"
 ,"items":[
 {"x":-20,"y":"-5","skin":"ball.png","var":"item1"},

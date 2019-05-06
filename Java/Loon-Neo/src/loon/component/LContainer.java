@@ -45,7 +45,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	protected LComponent[] _childs = new LComponent[0];
 
 	private float _newLineHeight = -1f;
-	
+
 	private final static LayerSorter<LComponent> compSorter = new LayerSorter<LComponent>(false);
 
 	private int childCount = 0;

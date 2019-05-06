@@ -223,8 +223,8 @@ public class BaseBox extends AbstractBox {
 		if (this.mode == MenuMode.NORMAL) {
 			int lh = this.font.getHeight();
 			this.lineHeight = (lh * 1.134146f);
-			this._boxHeight = (lh / 2 + MathUtils.round(this.lineHeight * this.numberOfMenus));
 			this.itemsOffsetY = (lh / 4f);
+			this._boxHeight = (lh / 2 + MathUtils.round(this.lineHeight * this.numberOfMenus));
 			this._borderW = 3f;
 		}
 	}

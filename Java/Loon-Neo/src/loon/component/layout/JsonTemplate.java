@@ -67,6 +67,8 @@ public class JsonTemplate {
 	public final static String COMP_MESSAGE = "message";
 
 	public final static String COMP_MESSAGEBOX = "message.box";
+
+	public final static String COMP_TEXT_FIELD = "text";
 	
 	public final static String SPR_SPRITE = "sprite";
 

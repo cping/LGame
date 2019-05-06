@@ -21,15 +21,18 @@
  */
 package loon.component;
 
+import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
 import loon.component.skin.SkinManager;
 import loon.component.skin.TextBarSkin;
 import loon.font.FontUtils;
 import loon.font.IFont;
+import loon.font.LFont;
 import loon.geom.PointF;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
+import loon.utils.StringUtils;
 import loon.utils.TArray;
 
 /**
@@ -38,10 +41,6 @@ import loon.utils.TArray;
 public class LTextBar extends LComponent {
 
 	private boolean _drawUI = false;
-
-	private static final LColor FOCUSED = new LColor(0x58543c);
-
-	private static final LColor UNFOCUSED = new LColor(0x817b58);
 
 	private LTexture left, right, body;
 
@@ -58,6 +57,8 @@ public class LTextBar extends LComponent {
 	private String _lastText = null;
 
 	private TArray<String> _messages = null;
+
+	private boolean _useLFont;
 
 	private boolean over, pressed;
 
@@ -108,17 +109,17 @@ public class LTextBar extends LComponent {
 		int w = f.stringWidth(txt) + (left != null ? left.getWidth() : 0) + (right != null ? right.getWidth() : 0) * 3;
 		int h = (int) (body != null ? body.getHeight() : f.getHeight());
 		this._fontColor = c;
-		this._font = f;
 		if (maxWidth == -1 && body != null) {
 			this._maxWidth = w;
 		} else {
 			this._maxWidth = maxWidth;
 		}
-		this.setSize(w, h);
 		this.left = left;
 		this.right = right;
 		this.body = body;
+		this.setFont(f);
 		this.setText(txt);
+		this.setSize(w, h);
 		freeRes().add(left, right, body);
 		autoSize();
 	}
@@ -134,7 +135,7 @@ public class LTextBar extends LComponent {
 			this.setHeight(MathUtils.max(getHeight(), size.y));
 		}
 	}
-	
+
 	public void setMaxWidth(float w) {
 		this._maxWidth = (int) w;
 	}
@@ -158,18 +159,19 @@ public class LTextBar extends LComponent {
 		if (_drawUI) {
 			float width = textWidth() + _font.getSize() + 5;
 			if (isPointInUI()) {
-				g.fillRect(x, y, width, height, FOCUSED);
+				g.fillRect(x, y, width, height, LColor.gray);
 			} else {
-				g.fillRect(x, y, width, height, UNFOCUSED);
+				g.fillRect(x, y, width, height, LColor.black);
 			}
 			if (_messages != null) {
 				for (int i = 0, size = _messages.size; i < size; i++) {
 					String text = _messages.get(i);
-					drawString(g, text, x + _offsetX + 5, y + _offsetY + i * (_font.stringHeight(text)), _fontColor);
+					drawString(g, _font, text, x + _offsetX + 5, y + _offsetY + i * (_font.stringHeight(text)),
+							_fontColor);
 
 				}
 			} else {
-				drawString(g, _text, x + 5, y, _fontColor);
+				drawString(g, _font, _text, x + 5, y, _fontColor);
 			}
 			g.drawRect(x, y, width, height, LColor.black);
 			return;
@@ -178,12 +180,12 @@ public class LTextBar extends LComponent {
 				if (_messages != null) {
 					for (int i = 0, size = _messages.size; i < size; i++) {
 						String text = _messages.get(i);
-						drawString(g, text, x + _offsetX + 5, y + _offsetY + i * (_font.stringHeight(text)),
+						drawString(g, _font, text, x + _offsetX + 5, y + _offsetY + i * (_font.stringHeight(text)),
 								_fontColor);
 
 					}
 				} else {
-					drawString(g, _text, x + 5, y, _fontColor);
+					drawString(g, _font, _text, x + 5, y, _fontColor);
 				}
 			} else {
 				if (left != null) {
@@ -211,30 +213,40 @@ public class LTextBar extends LComponent {
 					if (_messages != null) {
 						for (int i = 0, size = _messages.size; i < size; i++) {
 							String text = _messages.get(i);
-							drawString(g, text, x + _offsetX + left.getWidth() + 5,
+							drawString(g, _font, text, x + _offsetX + left.getWidth() + 5,
 									y + _offsetY + i * (_font.stringHeight(text)), _fontColor);
 						}
 					} else {
-						drawString(g, _text, x + left.getWidth() + 5, y, _fontColor);
+						drawString(g, _font, _text, x + left.getWidth() + 5, y, _fontColor);
 					}
 				} else {
 					if (_messages != null) {
 						for (int i = 0, size = _messages.size; i < size; i++) {
 							String text = _messages.get(i);
-							drawString(g, text, x + _offsetX + 5, y + _offsetY + i * (_font.stringHeight(text)),
+							drawString(g, _font, text, x + _offsetX + 5, y + _offsetY + i * (_font.stringHeight(text)),
 									_fontColor);
 
 						}
 					} else {
-						drawString(g, _text, x + 5, y, _fontColor);
+						drawString(g, _font, _text, x + 5, y, _fontColor);
 					}
 				}
 			}
 		}
 	}
 
-	private final void drawString(GLEx g, String mes, float x, float y, LColor fontColor) {
-		_font.drawString(g, mes, x, y, fontColor);
+	private final void drawString(GLEx g, IFont font, String mes, float x, float y, LColor fontColor) {
+		boolean supportPack = false;
+		if (_useLFont) {
+			LFont newFont = (LFont) font;
+			supportPack = newFont.isSupportCacheFontPack();
+			newFont.setSupportCacheFontPack(false);
+		}
+		font.drawString(g, mes, x, y, fontColor);
+		if (_useLFont && supportPack) {
+			LFont newFont = (LFont) font;
+			newFont.setSupportCacheFontPack(supportPack);
+		}
 	}
 
 	public float textWidth() {
@@ -273,19 +285,30 @@ public class LTextBar extends LComponent {
 		return _font;
 	}
 
-	public void setFont(IFont font) {
+	public LTextBar setFont(IFont font) {
+		if (font == null) {
+			return this;
+		}
 		this._font = font;
+		this._useLFont = (this._font instanceof LFont);
+		return this;
 	}
 
 	public String getText() {
 		return _text;
 	}
 
-	public void setText(String mes) {
+	public LTextBar setText(String mes) {
+		if(StringUtils.isEmpty(mes)){
+			this._text = LSystem.EMPTY;
+			this._messages = Print.formatMessage(_text, _font, _maxWidth);
+			return this;
+		}
 		if (!mes.equals(_lastText)) {
 			this._text = mes;
-			this._messages = Print.formatMessage(mes, _font, _maxWidth);
+			this._messages = Print.formatMessage(_text, _font, _maxWidth);
 		}
+		return this;
 	}
 
 	@Override
@@ -306,14 +329,17 @@ public class LTextBar extends LComponent {
 		this.pressed = false;
 	}
 
+	@Override
 	protected void processTouchEntered() {
 		this.over = true;
 	}
 
+	@Override
 	protected void processTouchExited() {
 		this.over = this.pressed = false;
 	}
 
+	@Override
 	protected void processKeyPressed() {
 		if (this.isSelected()) {
 			this.pressedTime = 5;
@@ -322,12 +348,14 @@ public class LTextBar extends LComponent {
 		}
 	}
 
+	@Override
 	protected void processKeyReleased() {
 		if (this.isSelected()) {
 			this.pressed = false;
 		}
 	}
 
+	@Override
 	public void update(long timer) {
 		if (this.pressedTime > 0 && --this.pressedTime <= 0) {
 			this.pressed = false;

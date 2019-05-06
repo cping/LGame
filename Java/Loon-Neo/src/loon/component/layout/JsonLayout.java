@@ -53,11 +53,13 @@ import loon.component.LPanel;
 import loon.component.LPaper;
 import loon.component.LProgress;
 import loon.component.LTextArea;
+import loon.component.LTextField;
 import loon.component.LProgress.ProgressType;
 import loon.component.LSelect;
 import loon.component.skin.CheckBoxSkin;
 import loon.component.skin.MenuSkin;
 import loon.component.skin.SkinManager;
+import loon.component.skin.TextBarSkin;
 import loon.event.Touched;
 import loon.font.BMFont;
 import loon.font.IFont;
@@ -395,44 +397,48 @@ public class JsonLayout implements LRelease {
 	}
 
 	public void parse() {
+		try {
+			String text = BaseIO.loadText(path);
+			if (StringUtils.isEmpty(text)) {
+				throw new LSysException("File Context is null");
+			}
 
-		String text = BaseIO.loadText(path);
-
-		if (StringUtils.isEmpty(text)) {
-			throw new LSysException("File Context is null");
+			parseText(text);
+		} catch (Throwable cause) {
+			LSystem.error("JsonLayout parse exception", cause);
 		}
-
-		parseText(text);
 	}
 
 	public void parseText(String context) {
+		try {
+			if (StringUtils.isEmpty(context)) {
+				throw new LSysException("Context is null");
+			}
 
-		if (StringUtils.isEmpty(context)) {
-			throw new LSysException("Context is null");
+			Json.Object jsonObj = LSystem.base().json().parse(context.trim());
+			layoutType = jsonObj.getString(JsonTemplate.LAYOUY_TYPE, LSystem.UNKOWN).trim().toLowerCase();
+
+			if ("view".equals(layoutType) || "panel".equals(layoutType)) {
+
+				Json.Object props = jsonObj.getObject(JsonTemplate.LAYOUY_PROPS);
+
+				LPanel panel = new LPanel(props.getInt("x", 0), props.getInt("y", 0),
+						props.getInt("width", LSystem.viewSize.getWidth()),
+						props.getInt("height", LSystem.viewSize.getHeight()));
+
+				container.add(panel);
+
+				parseChild(jsonObj, panel);
+
+			} else {
+				LPanel panel = new LPanel(0, 0, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
+				container.add(panel);
+
+				parseJsonProps(jsonObj.getObject(JsonTemplate.LAYOUY_PROPS), panel);
+			}
+		} catch (Throwable cause) {
+			LSystem.error("JsonLayout parseText exception", cause);
 		}
-
-		Json.Object jsonObj = LSystem.base().json().parse(context.trim());
-		layoutType = jsonObj.getString(JsonTemplate.LAYOUY_TYPE, LSystem.UNKOWN).trim().toLowerCase();
-
-		if ("view".equals(layoutType) || "panel".equals(layoutType)) {
-
-			Json.Object props = jsonObj.getObject(JsonTemplate.LAYOUY_PROPS);
-
-			LPanel panel = new LPanel(props.getInt("x", 0), props.getInt("y", 0),
-					props.getInt("width", LSystem.viewSize.getWidth()),
-					props.getInt("height", LSystem.viewSize.getHeight()));
-
-			container.add(panel);
-
-			parseChild(jsonObj, panel);
-
-		} else {
-			LPanel panel = new LPanel(0, 0, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
-			container.add(panel);
-
-			parseJsonProps(jsonObj.getObject(JsonTemplate.LAYOUY_PROPS), panel);
-		}
-
 	}
 
 	protected void parseJsonProps(Json.Object o, LContainer view) {
@@ -467,6 +473,8 @@ public class JsonLayout implements LRelease {
 			createComponent(11, props, view);
 		} else if (JsonTemplate.COMP_MESSAGEBOX.equals(typeName)) {
 			createComponent(12, props, view);
+		} else if (JsonTemplate.COMP_TEXT_FIELD.equals(typeName)) {
+			createComponent(13, props, view);
 		} else if (JsonTemplate.SPR_SPRITE.equals(typeName)) {
 			createSprite(0, props);
 		} else if (JsonTemplate.SPR_ENTITY.equals(typeName)) {
@@ -1189,6 +1197,59 @@ public class JsonLayout implements LRelease {
 		return progress;
 	}
 
+	protected LTextField createTextField(Json.Object props, String varName, LContainer view) {
+
+		BaseParameter par = new BaseParameter(this, props);
+
+		LTexture background = null;
+
+		LTexture leftImg = null;
+
+		LTexture rightImg = null;
+
+		if (!StringUtils.isEmpty(par.path)) {
+			String[] files = splitData(par.path);
+			if (files.length == 1) {
+				background = LSystem.loadTexture(files[0]);
+			} else if (files.length == 2) {
+				background = LSystem.loadTexture(files[0]);
+				leftImg = LSystem.loadTexture(files[1]);
+				rightImg = leftImg;
+			} else if (files.length == 3) {
+				background = LSystem.loadTexture(files[0]);
+				leftImg = LSystem.loadTexture(files[1]);
+				rightImg = LSystem.loadTexture(files[2]);
+			}
+		} else {
+			TextBarSkin skin = SkinManager.get().getTextBarSkin();
+			background = skin.getBodyTexture();
+			leftImg = skin.getLeftTexture();
+			rightImg = skin.getRightTexture();
+		}
+
+		boolean hideBackground = props.getBoolean("hideback", false);
+		int inputType = props.getInt("type", 0);
+		int limit = props.getInt("limit", 128);
+
+		LTextField field = new LTextField(par.font, par.text, leftImg, rightImg, background, par.x, par.y, par.color,
+				inputType, limit);
+		field.setHideBackground(hideBackground);
+
+		if (par.z != -1) {
+			field.setLayer(par.z);
+		}
+		field.setVisible(par.visible);
+
+		move(par.layoutAlgin, view, field);
+
+		view.add(field);
+
+		putComponents(varName, field);
+
+		return null;
+
+	}
+
 	protected void parseChild(Json.Object props, LContainer view) {
 
 		if (props.containsKey(JsonTemplate.LAYOUY_CHILD)) {
@@ -1259,6 +1320,9 @@ public class JsonLayout implements LRelease {
 			break;
 		case 12:
 			comp = createMessageBox(props, varName, view);
+			break;
+		case 13:
+			comp = createTextField(props, varName, view);
 			break;
 		}
 
