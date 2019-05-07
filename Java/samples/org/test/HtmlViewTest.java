@@ -30,26 +30,26 @@ public class HtmlViewTest extends Stage {
 
 	@Override
 	public void create() {
+
 		HtmlCmd html = new HtmlCmd();
 		html.body();
-
 		html.b("text").brn();
 		html.p("teteett", HorizontalAlign.LEFT);
 		html.h1("github");
 		html.img("ccc.png", 25, 25);
-
+		html.divId("ccc","test");
 		html.fontSize(3).color("red").text("it is red text!it is red text!it is red text!it is red text!").end().brn();
-		html.fontSize(2).color("black").text("it is black text!").end();
+		html.fontSize(2).color("gray").text("it is black text!").end();
 		html.img("ball.png", "20%", "15%");
-
 		html.fontSize(2).color("blue").text("it is blue text!").end().brn();
 		html.fontFace("dialog").color("green").text("it is green text!").end();
 		html.end();
 
-		LHtmlView view = new LHtmlView(0, 0);
+		LHtmlView view = new LHtmlView(0, 0, LColor.white,LColor.black);
 		view.loadText(html.toString());
 		add(view);
-		setBackground(LColor.white);
+
+		add(MultiScreenTest.getBackButton(this, 1));
 	}
 
 }

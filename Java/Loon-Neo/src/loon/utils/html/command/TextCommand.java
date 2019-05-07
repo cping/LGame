@@ -105,7 +105,7 @@ public class TextCommand extends DisplayCommand {
 				dsize = MathUtils.floor(size);
 			}
 			String face = e.getAttribute("face", newFontName);
-		
+
 			if (sysFont.equals(face) && dsize == sysSize) {
 				font = LSystem.getSystemGameFont();
 			} else if (face != null) {
@@ -154,7 +154,7 @@ public class TextCommand extends DisplayCommand {
 	public void update() {
 
 		if (dirty && text != null) {
-			text = Print.prepareString(font, text, screenWidth - rect.x - rect.left - rect.right);
+			text = Print.prepareString(text, font, screenWidth - rect.x - rect.left - rect.right);
 			PointF fontSize = FontUtils.getTextWidthAndHeight(font, text);
 			rect.width = fontSize.x;
 			rect.height = fontSize.y;

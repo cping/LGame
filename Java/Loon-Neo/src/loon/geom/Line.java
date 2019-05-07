@@ -172,7 +172,7 @@ public class Line extends Shape {
 	}
 
 	public TArray<Point> getBresenhamPoints(int stepRate, TArray<Point> points) {
-		
+
 		stepRate = MathUtils.max(1, stepRate);
 		if (points == null) {
 			points = new TArray<Point>();
@@ -294,6 +294,32 @@ public class Line extends Shape {
 		return true;
 	}
 
+	public float side(Vector2f v) {
+		if (v == null) {
+			return 0f;
+		}
+		return side(v.x, v.y);
+	}
+
+	public float side(float x, float y) {
+		return (end.x - start.x) * (y - start.y) - (end.y - start.y) * (x - start.x);
+	}
+
+	public Vector2f project(Vector2f v) {
+		if (v == null) {
+			return Vector2f.ZERO();
+		}
+		return project(v.x, v.y);
+	}
+
+	public Vector2f project(float x, float y) {
+		float dx = end.x - start.x;
+		float dy = end.y - start.y;
+		float k = ((x - start.x) * dx + (y - start.y) * dy) / (dx * dx + dy * dy);
+		return new Vector2f(dx * k + start.x, dy * k + start.y);
+	}
+
+	@Override
 	protected void createPoints() {
 		points = new float[4];
 		points[0] = getX1();
@@ -343,7 +369,7 @@ public class Line extends Shape {
 		result = prime * result + NumberUtils.floatToIntBits(end.hashCode());
 		return result;
 	}
-	
+
 	@Override
 	public final String toString() {
 		return "(" + getX1() + "," + getY1() + "," + getX2() + "," + getY2() + ")";

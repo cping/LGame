@@ -921,9 +921,9 @@ public class MathUtils {
 	}
 
 	public static final float hermite(float value1, float tangent1, float value2, float tangent2, float amount) {
-		double v1 = value1, v2 = value2, t1 = tangent1, t2 = tangent2, s = amount, result;
-		double sCubed = s * s * s;
-		double sSquared = s * s;
+		float v1 = value1, v2 = value2, t1 = tangent1, t2 = tangent2, s = amount, result;
+		float sCubed = s * s * s;
+		float sSquared = s * s;
 
 		if (amount == 0f) {
 			result = value1;

@@ -213,6 +213,13 @@ public class Triangle2f extends Shape implements Triangle {
 		return ((u > 0) && (v > 0) && (u + v < 1));
 	}
 
+	public boolean containsPoint(Vector2f v) {
+		if (v == null) {
+			return false;
+		}
+		return containsPoint(v.x, v.y);
+	}
+
 	public boolean containsPoint(float nx, float ny) {
 		float vx2 = nx - xpoints[0];
 		float vy2 = ny - ypoints[0];
@@ -231,6 +238,10 @@ public class Triangle2f extends Shape implements Triangle {
 		float v = (dot00 * dot12 - dot01 * dot02) * invDenom;
 
 		return ((u >= 0) && (v >= 0) && (u + v <= 1));
+	}
+
+	public PointF getPointCenter() {
+		return new PointF((xpoints[0] + xpoints[1] + xpoints[2]) / 3, (ypoints[0] + ypoints[1] + ypoints[2]) / 3);
 	}
 
 	@Override
@@ -275,21 +286,10 @@ public class Triangle2f extends Shape implements Triangle {
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("Triangle");
-		builder.kv("xpoints", "[" + StringUtils.join(',', xpoints) + "]")
-		.comma()
-		.kv("ypoints", "[" + StringUtils.join(',', ypoints) + "]")
-		.comma()
-		.kv("center", "[" + StringUtils.join(',', center) + "]")
-		.comma()
-		.kv("rotation", rotation)
-		.comma()
-		.kv("minX", minX)
-		.comma()
-		.kv("minY", minY)
-		.comma()
-		.kv("maxX", maxX)
-		.comma()
-		.kv("maxY", maxY);
+		builder.kv("xpoints", "[" + StringUtils.join(',', xpoints) + "]").comma()
+				.kv("ypoints", "[" + StringUtils.join(',', ypoints) + "]").comma()
+				.kv("center", "[" + StringUtils.join(',', center) + "]").comma().kv("rotation", rotation).comma()
+				.kv("minX", minX).comma().kv("minY", minY).comma().kv("maxX", maxX).comma().kv("maxY", maxY);
 		return builder.toString();
 	}
 

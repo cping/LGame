@@ -155,6 +155,55 @@ public class Circle extends Ellipse {
 		boundingCircleRadius = radius;
 	}
 
+	public float side(Vector2f v) {
+		if (v == null) {
+			return 0f;
+		}
+		return side(v.x, v.y);
+	}
+
+	public float side(float px, float py) {
+		float dx = px - x;
+		float dy = py - y;
+		return radius * radius - (dx * dx + dy * dy);
+	}
+
+	public boolean collideCircle(Circle c) {
+		float dx = x - c.x;
+		float dy = y - c.y;
+		return dx * dx + dy * dy < (radius + c.radius) * (radius + c.radius);
+	}
+
+	public boolean collideBounds(RectBox b) {
+		if (x < b.getX() - radius) {
+			return false;
+		}
+		if (x > b.getWidth() + radius) {
+			return false;
+		}
+		if (y < b.getY() - radius) {
+			return false;
+		}
+		if (y > b.getHeight() + radius) {
+			return false;
+		}
+		if (x < b.getX() && y < b.getY() && MathUtils.distance(x - b.getX(), y - b.getY()) > radius * radius) {
+			return false;
+		}
+		if (x > b.getWidth() && y < b.getY() && MathUtils.distance(x - b.getWidth(), y - b.getY()) > radius * radius) {
+			return false;
+		}
+		if (x < b.getX() && y > b.getHeight()
+				&& MathUtils.distance(x - b.getX(), y - b.getHeight()) > radius * radius) {
+			return false;
+		}
+		if (x > b.getWidth() && y > b.getHeight()
+				&& MathUtils.distance(x - b.getWidth(), y - b.getHeight()) > radius * radius) {
+			return false;
+		}
+		return true;
+	}
+
 	private boolean intersects(RectBox other) {
 		RectBox box = other;
 		Circle circle = this;

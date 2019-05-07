@@ -35,16 +35,16 @@ public class LHtmlView extends LContainer {
 	private HtmlDisplay display;
 
 	public LHtmlView(int x, int y) {
-		this(x, y, LColor.black);
+		this(x, y, LColor.black, LColor.white);
 	}
 
-	public LHtmlView(int x, int y, LColor c) {
-		this(x, y, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), c);
+	public LHtmlView(int x, int y, LColor f, LColor b) {
+		this(x, y, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), f, b);
 	}
 
-	public LHtmlView(int x, int y, int w, int h, LColor c) {
+	public LHtmlView(int x, int y, int w, int h, LColor f, LColor b) {
 		super(x, y, w, h);
-		this.display = new HtmlDisplay(w, h, c);
+		this.display = new HtmlDisplay(w, h, f, b);
 	}
 
 	public void loadText(String text) {

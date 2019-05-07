@@ -60,31 +60,27 @@ public class Print implements FontSet<Print>, LRelease {
 	/**
 	 * 解析并重复字符串,为超过指定长度的字符串加换行符
 	 * 
-	 * @param font
 	 * @param text
+	 * @param font
 	 * @param width
 	 * @return
 	 */
-	public static String prepareString(IFont font, String text, float width) {
+	public static String prepareString(String text, IFont font, float width) {
 		if (font == null || StringUtils.isEmpty(text)) {
 			return "";
 		}
-		StringBuilder string = new StringBuilder();
-		int lineWidth = 0;
-		char ch = text.charAt(0);
-		int fontWidth = StringUtils.hasChinese(font.getFontName()) ? font.charWidth(ch) : font.charWidth(ch) - 4;
-		for (int i = 0; i < text.length(); i++) {
-			ch = text.charAt(i);
-			string.append(ch);
-			lineWidth += fontWidth;
-
-			if (lineWidth > width) {
-				lineWidth = 0;
-				string.append("\n");
+		StringBuilder sbr = new StringBuilder();
+		TArray<String> list = formatMessage(text, font, width);
+		for (int i = 0; i < list.size; i++) {
+			String temp = list.get(i);
+			if (!StringUtils.isEmpty(temp)) {
+				sbr.append(list.get(i));
+				if (i < list.size - 1) {
+					sbr.append('\n');
+				}
 			}
 		}
-
-		return string.toString();
+		return sbr.toString();
 	}
 
 	/**
@@ -97,7 +93,7 @@ public class Print implements FontSet<Print>, LRelease {
 	 * @param width
 	 * @return
 	 */
-	public static TArray<String> formatMessage(String text, IFont font, int width) {
+	public static TArray<String> formatMessage(String text, IFont font, float width) {
 
 		TArray<String> list = new TArray<String>();
 		if (text == null) {
@@ -132,7 +128,7 @@ public class Print implements FontSet<Print>, LRelease {
 
 				for (int j = 0; j < _otherFlagsSize; j++) {
 					if (c == WarpChars.TABLE[j]) {
-						int delta = font.stringWidth(line + c) - width;
+						int delta = (int) (font.stringWidth(line + c) - width);
 						if (delta < 15) {
 							line = str.substring(0, ++i);
 							break;

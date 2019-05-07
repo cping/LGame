@@ -69,14 +69,18 @@ public class HtmlDisplay {
 
 	private String defaultFontName;
 
-	public HtmlDisplay(float w, float h, LColor color) {
+	public HtmlDisplay(float w, float h) {
+		this(w, h, LColor.black, LColor.white);
+	}
+	
+	public HtmlDisplay(float w, float h, LColor fontColor,LColor background) {
 		this.cssBlock = CssDimensions.createDimension(w, h);
 		this.cssSheets = new TArray<CssStyleSheet>();
 		this.displays = new TArray<DisplayCommand>();
 		this.width = w;
 		this.height = h;
-		this.backgroundColor = LColor.white;
-		defaultColor = color;
+		this.backgroundColor = background;
+		defaultColor = fontColor;
 	}
 
 	public void parse(HtmlElement element) {

@@ -118,7 +118,7 @@ public class DivCommand extends DisplayCommand {
 	public void update() {
 
 		if (dirty && text != null) {
-			text = Print.prepareString(font, text, screenWidth - rect.x - rect.left - rect.right);
+			text = Print.prepareString(text, font, screenWidth - rect.x - rect.left - rect.right);
 			PointF fontSize = FontUtils.getTextWidthAndHeight(font, text);
 			rect.width = fontSize.x;
 			rect.height = fontSize.y;
