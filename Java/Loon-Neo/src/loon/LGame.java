@@ -1155,6 +1155,18 @@ public abstract class LGame {
 		return displayImpl;
 	}
 
+	public void close() {
+		if (!errors.isClosed()) {
+			errors.clearConnections();
+		}
+		if (!status.isClosed()) {
+			status.clearConnections();
+		}
+		if (!frame.isClosed()) {
+			frame.clearConnections();
+		}
+	}
+
 	/**
 	 * 由于GWT不支持真实的反射，而完全模拟反射需要耗费大量资源，精确反射又难以控制用户具体使用的类，所以统一放弃外部反射方法，
 	 * 不让用户有机会使用自定义的类操作。

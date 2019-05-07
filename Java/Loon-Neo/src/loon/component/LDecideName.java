@@ -64,12 +64,14 @@ public class LDecideName extends LComponent implements FontSet<LDecideName> {
 
 	private LColor _fontColor = LColor.white;
 
-	private LColor _selectedColor ;
-	
+	private LColor _selectedColor;
+
 	private IFont _font;
 
 	private int text_width_space = 5;
-	
+
+	private boolean useLFont;
+
 	private String enterFlag;
 
 	private String name;
@@ -90,7 +92,6 @@ public class LDecideName extends LComponent implements FontSet<LDecideName> {
 	private int initDraw = -1;
 
 	private char enterFlagString = '>', clearFlagString = '<';
-	
 
 	public LDecideName(TArray<String> mes, int x, int y) {
 		this(mes, x, y, 400, 250);
@@ -123,9 +124,9 @@ public class LDecideName extends LComponent implements FontSet<LDecideName> {
 	public LDecideName(String label, String name, TArray<String> mes, IFont f, int x, int y, int width, int height,
 			LTexture bg, LColor color) {
 		super(x, y, width, height - f.getHeight() - 20);
-		this._font = f;
 		this._fontColor = color;
 		this._selectedColor = new LColor(0, 150, 0, 150);
+		this.setFont(f);
 		this.onlyBackground(bg);
 		this.labelName = label;
 		this.name = name;
@@ -158,6 +159,16 @@ public class LDecideName extends LComponent implements FontSet<LDecideName> {
 		if (_background != null) {
 			g.draw(_background, x, y, getWidth(), getHeight());
 		}
+		
+		boolean supportPack = false;
+
+		if (useLFont) {
+			LFont newFont = (LFont) _font;
+			supportPack = newFont.isSupportCacheFontPack();
+			newFont.setSupportCacheFontPack(false);
+		}
+		
+		g.setFont(_font);
 		float posX = x + leftOffset;
 		if (labelName != null) {
 			g.drawString(labelName + this.name, posX + labelOffsetX + text_width_space,
@@ -171,7 +182,7 @@ public class LDecideName extends LComponent implements FontSet<LDecideName> {
 							posX + MathUtils.round((i * dx + 0.01f) * getWidth()) + text_width_space,
 							posY + MathUtils.round(((j + 1) * dy - 0.01f) * getHeight()) - _font.getAscent()
 									- text_width_space / 2,
-									_fontColor);
+							_fontColor);
 					if (showGrid) {
 						g.drawRect(posX + MathUtils.round((i * dx) * getWidth()),
 								posY + MathUtils.round((j * dy) * getHeight()), MathUtils.round(dx * getWidth()),
@@ -183,6 +194,13 @@ public class LDecideName extends LComponent implements FontSet<LDecideName> {
 		g.fillRect(posX + MathUtils.round((this.cursorX * dx) * getWidth()) - 1,
 				posY + MathUtils.round((this.cursorY * dy) * getHeight()) - 1, MathUtils.round(dx * getWidth()) + 2,
 				MathUtils.round(dy * getHeight()) + 2);
+		
+
+		if (useLFont && supportPack) {
+			LFont newFont = (LFont) _font;
+			newFont.setSupportCacheFontPack(supportPack);
+		}
+		
 		g.setFont(oldFont);
 		g.setColor(oldColor);
 	}
@@ -310,7 +328,7 @@ public class LDecideName extends LComponent implements FontSet<LDecideName> {
 	public LColor getFontColor() {
 		return this._fontColor;
 	}
-	
+
 	@Override
 	public LDecideName setFontColor(LColor fontColor) {
 		this._fontColor = fontColor;
@@ -425,7 +443,11 @@ public class LDecideName extends LComponent implements FontSet<LDecideName> {
 
 	@Override
 	public LDecideName setFont(IFont font) {
+		if (font == null) {
+			return this;
+		}
 		this._font = font;
+		this.useLFont = (this._font instanceof LFont);
 		return this;
 	}
 

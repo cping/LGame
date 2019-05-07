@@ -401,25 +401,35 @@ public class LProcess {
 	}
 
 	public void stop() {
-		_running = false;
-		if (isInstance) {
-			_currentScreen.stop();
-		}
-		endTransition();
-		if (isInstance) {
-			isInstance = false;
-			unloads.clear();
-			if (_currentScreen != null) {
-				_currentScreen.destroy();
-				_currentScreen = null;
+		try {
+			synchronized (LProcess.class) {
+				_running = false;
+				if (isInstance) {
+					_currentScreen.stop();
+				}
+				endTransition();
+				if (isInstance) {
+					isInstance = false;
+					unloads.clear();
+					if (_currentScreen != null) {
+						_currentScreen.destroy();
+						_currentScreen = null;
+					}
+					if (_game != null && _game.display() != null) {
+						_game.assets().close();
+						_game.display().close();
+					}
+					RealtimeProcessManager.get().dispose();
+					LSTRDictionary.get().dispose();
+					LSystem.disposeTextureAll();
+					LSystem.stopRepaint();
+					if (_game != null) {
+						_game.close();
+					}
+				}
 			}
-			if (_game != null && _game.display() != null) {
-				_game.assets().close();
-				_game.display().close();
-			}
-			RealtimeProcessManager.get().dispose();
-			LSTRDictionary.get().dispose();
-			LSystem.disposeTextureAll();
+		} catch (Throwable cause) {
+			cause.printStackTrace();
 		}
 		LSystem.debug("The Loon Game Engine is End");
 	}

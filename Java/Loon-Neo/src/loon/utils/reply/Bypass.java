@@ -26,10 +26,10 @@ import loon.event.Updateable;
 public abstract class Bypass {
 
 	protected static final Cons DISPATCHING = new Cons(null, null);
-	
+
 	protected Cons _listeners;
 	protected Runs _pendingRuns;
-	
+
 	public abstract interface GoListener {
 	}
 
@@ -85,7 +85,7 @@ public abstract class Bypass {
 		if (isDispatching()) {
 			_pendingRuns = append(_pendingRuns, new Runs() {
 				@Override
-				public void action(Object o){
+				public void action(Object o) {
 					_listeners = Cons.removeAll(_listeners, listener);
 					connectionRemoved();
 				}
@@ -108,8 +108,7 @@ public abstract class Bypass {
 
 	}
 
-	protected void notify(final Notifier notifier, final Object a1,
-			final Object a2, final Object a3) {
+	protected void notify(final Notifier notifier, final Object a1, final Object a2, final Object a3) {
 		Cons lners;
 		synchronized (this) {
 			if (_listeners == DISPATCHING) {
@@ -133,7 +132,7 @@ public abstract class Bypass {
 				} catch (RuntimeException ex) {
 					exn = ex;
 				}
-				if (cons.oneShot()){
+				if (cons.oneShot()) {
 					cons.close();
 				}
 			}
@@ -143,7 +142,7 @@ public abstract class Bypass {
 				_listeners = lners;
 			}
 			Runs run;
-			for (;(run = nextRun()) != null;) {
+			for (; (run = nextRun()) != null;) {
 				try {
 					run.action(this);
 				} catch (RuntimeException ex) {
@@ -151,14 +150,14 @@ public abstract class Bypass {
 				}
 			}
 		}
-		if (exn != null){
+		if (exn != null) {
 			throw exn;
 		}
 	}
 
 	private synchronized Runs nextRun() {
 		Runs run = _pendingRuns;
-		if (run != null){
+		if (run != null) {
 			_pendingRuns = run.next;
 		}
 		return run;
@@ -166,6 +165,10 @@ public abstract class Bypass {
 
 	private final boolean isDispatching() {
 		return _listeners == DISPATCHING;
+	}
+
+	public boolean isClosed() {
+		return isDispatching();
 	}
 
 	protected static <T> boolean areEqual(T o1, T o2) {
@@ -184,8 +187,7 @@ public abstract class Bypass {
 	}
 
 	protected static abstract class Notifier {
-		public abstract void notify(Object listener, Object a1, Object a2,
-				Object a3);
+		public abstract void notify(Object listener, Object a1, Object a2, Object a3);
 	}
 
 }

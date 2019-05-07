@@ -255,6 +255,14 @@ public class LFont implements IFont {
 				fontTempPack.putImage(text, canvas.image);
 				canvas = null;
 
+				entry = fontTempPack.getEntry(text);
+				if (entry != null) {
+					int tint = g.color();
+					g.setTint(c);
+					fontTempPack.draw(entry, g, x, y, rotation, c);
+					g.setTint(tint);
+				}
+				
 				return true;
 
 			} else {
