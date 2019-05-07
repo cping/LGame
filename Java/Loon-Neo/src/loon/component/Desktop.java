@@ -163,7 +163,7 @@ public class Desktop implements Visible, LRelease {
 		if (dclosed) {
 			return comp;
 		}
-		return contentPane.addRow(comp, offY);
+		return contentPane.addCol(comp, offY);
 	}
 
 	public LComponent addRow(LComponent comp) {

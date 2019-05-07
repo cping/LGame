@@ -28,11 +28,13 @@ public class CompNewLine extends Stage {
 
 	@Override
 	public void create() {
-		
+
 		LClickButton c = LClickButton.make("按钮1");
-		addRow(c);
+		//注入按钮,新起一行,偏移y坐标80
+		addCol(c, 80);
 
 		LClickButton c1 = LClickButton.make("按钮2");
+		//注入按钮,与上一个组件同行
 		addRow(c1);
 
 		LClickButton c2 = LClickButton.make("按钮3");
@@ -45,6 +47,7 @@ public class CompNewLine extends Stage {
 		addRow(c5);
 
 		LClickButton c6 = LClickButton.make("按钮6");
+		//注入按钮,新起一列
 		addCol(c6);
 
 		LClickButton c7 = LClickButton.make("按钮7");
@@ -63,10 +66,13 @@ public class CompNewLine extends Stage {
 		addRow(c11);
 
 		Entity e = new Entity("ccc.png");
-		addRow(e, 200);
+		//注入精灵(loon中精灵与组件位置分开计算.默认也不是同层渲染),偏移位置200,80
+		addPadding(e, 200, 80);
 
 		Entity e1 = new Entity("ccc.png");
 		addRow(e1);
+
+		add(MultiScreenTest.getBackButton(this, 1));
 	}
 
 }

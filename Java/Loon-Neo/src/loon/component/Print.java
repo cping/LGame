@@ -58,7 +58,7 @@ public class Print implements FontSet<Print>, LRelease {
 	private final static int _otherFlagsSize = 35;
 
 	/**
-	 * 解析并重复字符串,为超过指定长度的字符串加换行符
+	 * 解析并重构字符串,为超过指定长度的字符串加换行符
 	 * 
 	 * @param text
 	 * @param font
