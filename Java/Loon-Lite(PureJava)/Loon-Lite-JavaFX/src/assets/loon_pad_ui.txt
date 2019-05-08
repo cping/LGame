@@ -1,0 +1,6 @@
+<?xml version="1.0" standalone="yes"?>
+<pack file="assets/loon_pad_ui.png">
+	<block id="0" name="back" left="0" top="0" right="116" bottom="116" />
+	<block id="1" name="fore" left="116" top="0" right="222" bottom="106" />
+	<block id="2" name="dot" left="0" top="116" right="48" bottom="164" />
+</pack>
