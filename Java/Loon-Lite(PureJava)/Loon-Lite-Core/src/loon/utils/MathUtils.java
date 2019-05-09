@@ -1294,4 +1294,47 @@ public class MathUtils {
 		}
 		return value;
 	}
+
+	public static final float fixRotation(final float rotation) {
+		float newAngle = 0f;
+		if (rotation == -360f || rotation == 360f) {
+			return newAngle;
+		}
+		newAngle = rotation;
+		if (newAngle < 0f) {
+			while (newAngle < -360f) {
+				newAngle += 360f;
+			}
+		}
+		if (newAngle > 0f) {
+			while (newAngle > 360f) {
+				newAngle -= 360f;
+			}
+		}
+		return newAngle;
+	}
+
+	public static final float adjust(final float angle) {
+		float newAngle = angle;
+		while (newAngle < 0) {
+			newAngle += RAD_FULL;
+		}
+		while (newAngle > RAD_FULL) {
+			newAngle -= RAD_FULL;
+		}
+		return newAngle;
+	}
+
+	public static final boolean inAngleRange(final float angle,final float startAngle,final float endAngle) {
+		float newAngle = adjust(angle);
+		float newStartAngle = adjust(startAngle);
+		float newEndAngle = adjust(endAngle);
+		if (newStartAngle > newEndAngle) {
+			newEndAngle += RAD_FULL;
+			if (newAngle < newStartAngle) {
+				newAngle += RAD_FULL;
+			}
+		}
+		return newAngle >= newStartAngle && newAngle <= newEndAngle;
+	}
 }

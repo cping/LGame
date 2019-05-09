@@ -24,12 +24,10 @@ import javax.swing.JOptionPane;
 
 import loon.LGame;
 import loon.LSetting;
-import loon.LSystem;
 import loon.LazyLoading;
 import loon.Platform;
 import loon.event.KeyMake;
 import loon.event.SysInput;
-import loon.event.Updateable;
 
 public class Loon implements Platform {
 
@@ -80,10 +78,10 @@ public class Loon implements Platform {
 			event.cancel();
 			return;
 		}
-		LSystem.load(new Updateable() {
+		game.invokeAsync(new Runnable() {
 
 			@Override
-			public void action(Object a) {
+			public void run() {
 				final String output = (String) JOptionPane.showInputDialog(
 						null, label, "", JOptionPane.QUESTION_MESSAGE, null,
 						null, initVal);
@@ -106,10 +104,10 @@ public class Loon implements Platform {
 			event.cancel();
 			return;
 		}
-		LSystem.load(new Updateable() {
+		game.invokeAsync(new Runnable() {
 
 			@Override
-			public void action(Object a) {
+			public void run() {
 				int optType = JOptionPane.OK_CANCEL_OPTION;
 				int msgType = cancel == null ? JOptionPane.INFORMATION_MESSAGE
 						: JOptionPane.QUESTION_MESSAGE;

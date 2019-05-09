@@ -1238,7 +1238,27 @@ public class LColor implements Serializable {
 	public final static LColor findName(String colorName) {
 		return LColorList.get().find(colorName);
 	}
-
+	
+	/**
+	 * 返回当前像素对应的英文名称
+	 * 
+	 * @param pixel
+	 * @return
+	 */
+	public final static String getColorName(int pixel) {
+		return LColorList.get().find(pixel);
+	}
+	
+	/**
+	 * 返回当前色彩对应的英文名称
+	 *  
+	 * @param color
+	 * @return
+	 */
+	public final static String getColorName(LColor color) {
+		return LColorList.get().find(color);
+	}
+	
 	@Override
 	public String toString() {
 		String value = CharUtils

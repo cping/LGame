@@ -20,6 +20,7 @@
  */
 package loon.canvas;
 
+import loon.LSystem;
 import loon.utils.ListMap;
 import loon.utils.StringUtils;
 
@@ -66,6 +67,31 @@ public class LColorList {
 			return color;
 		}
 		return LColor.white.cpy();
+	}
+
+	public String find(LColor color) {
+		if (color == null) {
+			return LSystem.UNKOWN;
+		}
+		return find(color.getRGB());
+	}
+
+	public String find(int pixel) {
+		if (dirty) {
+			init();
+		}
+		for (int i = 0; i < colorList.size; i++) {
+			LColor c = colorList.getValueAt(i);
+			if (c != null) {
+				if (c.getRGB() == pixel) {
+					return colorList.getKeyAt(i);
+				}
+				if (c.getARGB() == pixel) {
+					return colorList.getKeyAt(i);
+				}
+			}
+		}
+		return LSystem.UNKOWN;
 	}
 
 	public void init() {

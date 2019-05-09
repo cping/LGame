@@ -68,8 +68,8 @@ public class TextureAtlas implements LRelease {
 
 	public TextureAtlas getTextureAtlas(String prefix) {
 		ListMap<String, TextureData> frames = new ListMap<String, TextureData>();
-		for (Object o : _frames.values) {
-			TextureData td = (TextureData) o;
+		for (int i = 0; i < _frames.size; i++) {
+			TextureData td = _frames.getValueAt(i);
 			if (null != td && td.name.startsWith(prefix)) {
 				frames.put(td.name, td);
 			}

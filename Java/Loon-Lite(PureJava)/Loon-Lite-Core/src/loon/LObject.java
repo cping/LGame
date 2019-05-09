@@ -322,10 +322,7 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	}
 
 	public void setRotation(float r) {
-		this._rotation = r;
-		if (_rotation >= 360f) {
-			_rotation = 0f;
-		}
+		this._rotation = MathUtils.fixRotation(r);
 		if (_rect != null) {
 			_rect.setBounds(MathUtils.getBounds(_location.x, _location.y, getWidth(), getHeight(), r, _rect));
 		} else {
