@@ -76,7 +76,7 @@ public class AndroidCanvas extends Canvas {
 		this.setStrokeColor(argb);
 		this.setFillColor(argb);
 		this.setAlpha(a);
-		return null;
+		return this;
 	}
 
 	@Override
@@ -84,7 +84,7 @@ public class AndroidCanvas extends Canvas {
 		int rgb = LColor.getRGB(r, g, b);
 		this.setStrokeColor(rgb);
 		this.setFillColor(rgb);
-		return null;
+		return this;
 	}
 
 	@Override

@@ -227,8 +227,6 @@ public abstract class Canvas implements LRelease {
 
 	public abstract Canvas setFillGradient(Gradient gradient);
 
-	public abstract Canvas setFillPattern(Pattern pattern);
-
 	public abstract Canvas setLineCap(LineCap cap);
 
 	public abstract Canvas setLineJoin(LineJoin join);

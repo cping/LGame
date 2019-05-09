@@ -46,7 +46,7 @@ public class JavaFXImage extends ImageImpl {
 		super(game, async, Scale.ONE, preWidth, preHeight, source);
 	}
 
-	public Image fxImage() {
+	public WritableImage fxImage() {
 		return buffer;
 	}
 
