@@ -187,7 +187,7 @@ public class JavaFXCanvas extends Canvas {
 
 	@Override
 	public Canvas fillText(TextLayout text, float x, float y) {
-		// TODO Auto-generated method stub
+		
 		return null;
 	}
 
