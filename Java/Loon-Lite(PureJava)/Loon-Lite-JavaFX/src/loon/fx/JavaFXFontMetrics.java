@@ -20,8 +20,6 @@
  */
 package loon.fx;
 
-import java.text.CharacterIterator;
-
 import javafx.geometry.Bounds;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
@@ -29,29 +27,57 @@ import javafx.scene.text.Text;
 import loon.font.Font;
 import loon.font.Font.Style;
 import loon.geom.RectBox;
+import loon.utils.MathUtils;
 
 public class JavaFXFontMetrics {
 
 	public final Font font;
 
-	public final float height;
+	private final float fascent;
 
-	public final float emwidth;
+	private final float fdescent;
 
-	public JavaFXFontMetrics(Font font, float height, float emwidth) {
-		this.font = font;
-		this.height = height;
-		this.emwidth = emwidth;
+	private final float fheight;
+
+	private final float leading;
+
+	protected final float emwidth;
+
+	protected javafx.scene.text.Font fxfont;
+
+	protected Text fxtext;
+
+	protected Bounds fxbound;
+
+	public JavaFXFontMetrics(Font font) {
+		this(font, 0, 0);
 	}
-
-	public RectBox getStringBounds(CharacterIterator ci, int beginIndex, int limit) {
-		char[] arr = new char[limit - beginIndex];
-		ci.setIndex(beginIndex);
-		for (int idx = 0; idx < arr.length; idx++) {
-			arr[idx] = ci.current();
-			ci.next();
+	
+	public JavaFXFontMetrics(Font font, float height, float ewidth) {
+		this.font = font;
+		FontWeight weight = (font.style == Style.BOLD) ? FontWeight.BOLD : FontWeight.NORMAL;
+		FontPosture posture = (font.style == Style.ITALIC) ? FontPosture.ITALIC : FontPosture.REGULAR;
+		if (font.style == Style.BOLD_ITALIC) {
+			weight = FontWeight.BOLD;
+			posture = FontPosture.ITALIC;
 		}
-		return getStringBounds(arr, beginIndex, limit);
+		if (font.style == Style.PLAIN) {
+			weight = FontWeight.NORMAL;
+			posture = FontPosture.REGULAR;
+		}
+		this.fxfont = javafx.scene.text.Font.font(font.name, weight, posture, font.size);
+		this.fxtext = new Text();
+		this.fxtext.setFont(fxfont);
+		this.fxbound = fxtext.getLayoutBounds();
+		this.fheight = MathUtils.max(height, (float) fxbound.getHeight());
+		this.emwidth = MathUtils.max(ewidth, (float) fxbound.getWidth());
+		this.fascent = (float) -fxbound.getMinY();
+		this.fdescent = (float) fxbound.getMaxY();
+		this.leading = fheight;
+	}
+	
+	public Bounds getBounds(){
+		return this.fxbound;
 	}
 
 	public RectBox getStringBounds(char[] chars, int beginIndex, int limit) {
@@ -65,37 +91,41 @@ public class JavaFXFontMetrics {
 	}
 
 	public RectBox getStringBounds(String str) {
-		Text text = new Text(str);
-		FontWeight weight = (font.style == Style.BOLD) ? FontWeight.BOLD : FontWeight.NORMAL;
-		FontPosture posture = (font.style == Style.ITALIC) ? FontPosture.ITALIC : FontPosture.REGULAR;
-		if (font.style == Style.BOLD_ITALIC) {
-			weight = FontWeight.BOLD;
-			posture = FontPosture.ITALIC;
-		}
-		if (font.style == Style.PLAIN) {
-			weight = FontWeight.NORMAL;
-			posture = FontPosture.REGULAR;
-		}
-		javafx.scene.text.Font fxfont = javafx.scene.text.Font.font(font.name, weight, posture, font.size);
-		text.setFont(fxfont);
-		Bounds b = text.getLayoutBounds();	
+		fxtext.setText(str);
+		Bounds b = fxtext.getLayoutBounds();
 		return new RectBox(b.getMinX(), b.getMinY(), b.getWidth(), b.getHeight());
+	}
+
+	public int stringHeight(String str) {
+		return (int) getStringBounds(str).getHeight();
 	}
 
 	public int stringWidth(String str) {
 		return (int) getStringBounds(str).getWidth();
 	}
 
+	public int charWidth(char chars) {
+		return stringWidth(String.valueOf(chars));
+	}
+
+	public int charHeight(char chars) {
+		return stringHeight(String.valueOf(chars));
+	}
+
+	public int getHeight() {
+		return (int) fheight;
+	}
+
 	public float ascent() {
-		return 0.7f * height;
+		return fascent;
 	}
 
 	public float descent() {
-		return height - ascent();
+		return fdescent;
 	}
 
 	public float leading() {
-		return 0.1f * height;
+		return leading;
 	}
 
 	public float adjustWidth(float width) {

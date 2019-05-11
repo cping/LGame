@@ -20,6 +20,20 @@
  */
 package loon.fx;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Worker;
+import javafx.concurrent.Worker.State;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
+import javafx.stage.Stage;
 import loon.Accelerometer;
 import loon.Assets;
 import loon.Asyn;
@@ -32,83 +46,148 @@ import loon.Save;
 import loon.Support;
 import loon.event.InputMake;
 
-public class JavaFXGame extends LGame{
+public class JavaFXGame extends LGame {
 
-	public JavaFXGame(LSetting config, Platform plat) {
+	public static class JavaFXSetting extends LSetting {
+
+	}
+
+	protected final Canvas gameCanvas;
+	private final JavaFXAppliaction app;
+	private final JavaFXAccelerometer accelerometer;
+	private final JavaFXSave save;
+	private final JavaFXGraphics graphics;
+	private final JavaFXAssets assets;
+	private final ExecutorService pool = Executors.newFixedThreadPool(4);
+	private final Support support;
+
+	private final JavaFXLog log;
+	private final Asyn asyn;
+
+	private final long start = System.nanoTime();
+
+	public JavaFXGame(Platform plat, LSetting config) {
 		super(config, plat);
-		// TODO Auto-generated constructor stub
+		this.app = new JavaFXAppliaction(this);
+		this.assets = new JavaFXAssets(this);
+		this.log = new JavaFXLog();
+		this.support = new NativeSupport();
+		this.save = new JavaFXSave(log, config.appName);
+		this.accelerometer = new JavaFXAccelerometer();
+		this.graphics = new JavaFXGraphics(this);
+		this.asyn = new JavaFXAsyn(pool, log, frame);
+		this.gameCanvas = new Canvas(setting.getShowWidth(), setting.getShowHeight());
+	}
+
+	public void reset() {
+
+	}
+
+	public int getWidth() {
+		return app.getWidth();
+	}
+
+	public int getHeight() {
+		return app.getHeight();
 	}
 
 	@Override
 	public Type type() {
-		// TODO Auto-generated method stub
-		return null;
+		return Type.JAVAFX;
 	}
 
 	@Override
 	public double time() {
-		// TODO Auto-generated method stub
-		return 0;
+		return System.currentTimeMillis();
 	}
 
 	@Override
 	public int tick() {
-		// TODO Auto-generated method stub
-		return 0;
+		return (int) ((System.nanoTime() - start) / 1000000L);
 	}
 
 	@Override
-	public void openURL(String url) {
-		// TODO Auto-generated method stub
-		
+	public void openURL(final String url) {
+
+		invokeAsync(new Runnable() {
+
+			@Override
+			public void run() {
+
+				final Scene scene = new Scene(new Group());
+
+				final Stage newStage = new Stage();
+				final WebView view = new WebView();
+				final WebEngine engine = view.getEngine();
+
+				final ScrollPane scrollPane = new ScrollPane();
+				scrollPane.setContent(view);
+
+				engine.getLoadWorker().stateProperty().addListener(new ChangeListener<State>() {
+
+					@Override
+					public void changed(ObservableValue<? extends State> ov, State oldState, State newState) {
+
+						if (newState == Worker.State.SUCCEEDED) {
+							newStage.setTitle(engine.getLocation());
+						}
+						if (newState == Worker.State.FAILED || newState == Worker.State.CANCELLED) {
+							newStage.close();
+						}
+
+					}
+
+				});
+				engine.load(url);
+
+				scene.setRoot(scrollPane);
+
+				newStage.setScene(scene);
+				newStage.show();
+
+			}
+		});
+
 	}
 
 	@Override
 	public Assets assets() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.assets;
 	}
 
 	@Override
 	public Asyn asyn() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.asyn;
 	}
 
 	@Override
 	public Graphics graphics() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.graphics;
 	}
 
 	@Override
 	public InputMake input() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public Log log() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.log;
 	}
 
 	@Override
 	public Save save() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.save;
 	}
 
 	@Override
 	public Accelerometer accel() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.accelerometer;
 	}
 
 	@Override
 	public Support support() {
-		// TODO Auto-generated method stub
-		return null;
+		return support;
 	}
 
 }

@@ -42,10 +42,10 @@ import loon.utils.reply.Act;
 public abstract class LGame {
 
 	/**
-	 * 支持的运行库(Java版不支持的会由C++版和C#版实现)
+	 * 支持的运行库(此为纯Java版,只支持能跑Java语法的平台(环境)，多语言多平台请使用完整版Loon)
 	 */
 	public static enum Type {
-		JAVASE, ANDROID, IOS, WP, HTML5, UNITY, SWITCH, STUB
+		JAVAFX, ANDROID, GWT, STUB
 	}
 
 	/**

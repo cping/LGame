@@ -32,7 +32,6 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.util.Arrays;
 
-import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 
@@ -47,7 +46,6 @@ import loon.LSystem;
 import loon.Sound;
 import loon.canvas.Image;
 import loon.canvas.ImageImpl;
-import loon.canvas.Pixmap;
 import loon.utils.MathUtils;
 import loon.utils.Scale;
 import loon.utils.StringUtils;

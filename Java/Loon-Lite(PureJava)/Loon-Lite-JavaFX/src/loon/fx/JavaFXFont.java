@@ -29,7 +29,7 @@ import loon.utils.StringUtils;
 
 class JavaFXFont {
 
-	public static final JavaFXFont DEFAULT = new JavaFXFont(Font.getDefault(), 14);
+	public static final JavaFXFont DEFAULT = new JavaFXFont(Font.getDefault());
 
 	public final Font typeface;
 	public final float size;

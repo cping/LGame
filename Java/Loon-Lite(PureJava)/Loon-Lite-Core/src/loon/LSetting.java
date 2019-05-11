@@ -215,7 +215,6 @@ public class LSetting {
 		this.fullscreen = setting.fullscreen;
 		this.emulateTouch = setting.emulateTouch;
 		this.activationKey = setting.activationKey;
-		this.convertImagesOnLoad = setting.convertImagesOnLoad;
 		this.saveTexturePixels = setting.saveTexturePixels;
 		this.appName = setting.appName;
 		this.gameType = setting.gameType;
