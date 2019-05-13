@@ -27,6 +27,7 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.LTrans;
 import loon.action.camera.BaseCamera;
+import loon.canvas.Canvas;
 import loon.canvas.LColor;
 import loon.canvas.Paint;
 import loon.canvas.PixmapFImpl;
@@ -44,7 +45,6 @@ import loon.geom.Shape;
 import loon.geom.Triangle2f;
 import loon.geom.Vector2f;
 import loon.geom.XY;
-import loon.opengl.GLRenderer.GLType;
 import loon.utils.Array;
 import loon.utils.GLUtils;
 import loon.utils.MathUtils;
@@ -95,7 +95,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 
 	private final LTexture colorTex;
 
-	protected final RenderTarget target;
+	protected final Canvas target;
 
 	private int scissorDepth;
 

@@ -24,10 +24,12 @@ import java.util.LinkedList;
 
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.effect.BlendMode;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
-import javafx.scene.shape.FillRule;
+import javafx.scene.shape.StrokeLineCap;
+import javafx.scene.shape.StrokeLineJoin;
 import loon.Graphics;
 import loon.canvas.Canvas;
 import loon.canvas.Gradient;
@@ -35,7 +37,7 @@ import loon.canvas.Gradient.Config;
 import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.canvas.Path;
-import loon.canvas.Pattern;
+import loon.font.LFont;
 import loon.font.TextLayout;
 
 public class JavaFXCanvas extends Canvas {
@@ -47,7 +49,7 @@ public class JavaFXCanvas extends Canvas {
 
 	LColor color;
 	boolean isDirty;
-	
+
 	protected JavaFXCanvas(Graphics gfx, JavaFXImage image) {
 		super(gfx, image);
 		this.fxImage = image.fxImage();
@@ -72,6 +74,10 @@ public class JavaFXCanvas extends Canvas {
 
 	private Color getLColorToFX(LColor c) {
 		return javafx.scene.paint.Color.rgb(c.getRed(), c.getGreen(), c.getBlue(), c.a);
+	}
+
+	private LColor getFXToLColor(Color c) {
+		return new LColor((float) c.getRed(), (float) c.getGreen(), (float) c.getBlue(), (float) c.getOpacity());
 	}
 
 	private Canvas applyColor(LColor c) {
@@ -128,8 +134,13 @@ public class JavaFXCanvas extends Canvas {
 
 	@Override
 	public Gradient createGradient(Config config) {
-		// TODO Auto-generated method stub
-		return null;
+		if (config instanceof Gradient.Linear) {
+			return JavaFXGradient.create((Gradient.Linear) config);
+		} else if (config instanceof Gradient.Radial) {
+			return JavaFXGradient.create((Gradient.Radial) config);
+		} else {
+			throw new IllegalArgumentException("Unknown config: " + config);
+		}
 	}
 
 	@Override
@@ -154,25 +165,33 @@ public class JavaFXCanvas extends Canvas {
 
 	@Override
 	public Canvas drawText(String text, float x, float y) {
-		// TODO Auto-generated method stub
-		return null;
+		if (_font == null) {
+			_font = LFont.getDefaultFont();
+		}
+		return fillText(_font.getLayoutText(text), x, y);
 	}
 
 	@Override
 	public Canvas fillCircle(float x, float y, float radius) {
-		// TODO Auto-generated method stub
-		return null;
+		context.beginPath();
+		context.arcTo(x, y, radius, 0f, 2f * Math.PI);
+		context.fill();
+		isDirty = true;
+		return this;
 	}
 
 	@Override
 	public Canvas fillPath(Path path) {
-		// TODO Auto-generated method stub
-		return null;
+		assert path instanceof JavaFXPath;
+		((JavaFXPath) path).replay(context);
+		context.fill();
+		isDirty = true;
+		return this;
 	}
 
 	@Override
 	public Canvas fillRect(float x, float y, float width, float height) {
-		context.fillRect(x, y, width,height);
+		context.fillRect(x, y, width, height);
 		isDirty = true;
 		return this;
 	}
@@ -186,9 +205,10 @@ public class JavaFXCanvas extends Canvas {
 	}
 
 	@Override
-	public Canvas fillText(TextLayout text, float x, float y) {
-		
-		return null;
+	public Canvas fillText(TextLayout layout, float x, float y) {
+		((JavaFXTextLayout) layout).fill(context, x, y);
+		isDirty = true;
+		return this;
 	}
 
 	@Override
@@ -200,50 +220,77 @@ public class JavaFXCanvas extends Canvas {
 
 	@Override
 	public Canvas rotate(float radians) {
-		// TODO Auto-generated method stub
-		return null;
+		context.rotate(radians);
+		return this;
 	}
 
 	@Override
 	public Canvas scale(float x, float y) {
-		// TODO Auto-generated method stub
-		return null;
+		context.scale(x, y);
+		return this;
 	}
 
 	@Override
 	public Canvas setAlpha(float alpha) {
-		// TODO Auto-generated method stub
-		return null;
+		context.setGlobalAlpha(alpha);
+		return this;
 	}
 
 	@Override
 	public Canvas setCompositeOperation(Composite composite) {
-		// TODO Auto-generated method stub
-		return null;
+		BlendMode mode = null;
+		switch (composite) {
+		case SRC_ATOP:
+			mode = BlendMode.SRC_ATOP;
+			break;
+		case MULTIPLY:
+			mode = BlendMode.MULTIPLY;
+			break;
+		case DST_ATOP:
+		case DST_IN:
+		case DST_OUT:
+		case DST_OVER:
+		case SRC:
+		case SRC_IN:
+		case SRC_OUT:
+		case SRC_OVER:
+		case XOR:
+		default:
+			mode = BlendMode.SRC_OVER;
+			break;
+		}
+		context.setGlobalBlendMode(mode);
+		return this;
 	}
 
 	@Override
 	public Canvas setFillColor(int color) {
-		// TODO Auto-generated method stub
-		return null;
+		context.setFill(getLColorToFX(new LColor(color)));
+		return this;
 	}
 
 	@Override
 	public int getStrokeColor() {
-		// TODO Auto-generated method stub
-		return 0;
+		Paint strokePaint = context.getStroke();
+		assert strokePaint instanceof Color;
+		LColor color = getFXToLColor((Color) strokePaint);
+		return color.getARGB();
 	}
 
 	@Override
 	public int getFillColor() {
-		// TODO Auto-generated method stub
-		return 0;
+		Paint fillPaint = context.getFill();
+		assert fillPaint instanceof Color;
+		LColor color = getFXToLColor((Color) fillPaint);
+		return color.getARGB();
 	}
 
 	@Override
 	public Canvas setColor(int r, int g, int b) {
-		// TODO Auto-generated method stub
-		return null;
+		int rgb = LColor.getRGB(r, g, b);
+		this.setStrokeColor(rgb);
+		this.setFillColor(rgb);
+		return this;
 	}
 
 	@Override
@@ -257,67 +304,103 @@ public class JavaFXCanvas extends Canvas {
 
 	@Override
 	public Canvas setFillGradient(Gradient gradient) {
-		return null;
+		assert gradient instanceof JavaFXGradient;
+		context.setFill(((JavaFXGradient) gradient).fxpaint);
+		return this;
 	}
-
 
 	@Override
 	public Canvas setLineCap(LineCap cap) {
-		// TODO Auto-generated method stub
-		return null;
+		StrokeLineCap lineCap = null;
+		switch (cap) {
+		case BUTT:
+			lineCap = StrokeLineCap.BUTT;
+			break;
+		case ROUND:
+			lineCap = StrokeLineCap.ROUND;
+			break;
+		case SQUARE:
+			lineCap = StrokeLineCap.SQUARE;
+			break;
+		}
+		context.setLineCap(lineCap);
+		return this;
 	}
 
 	@Override
 	public Canvas setLineJoin(LineJoin join) {
-		// TODO Auto-generated method stub
-		return null;
+		StrokeLineJoin lineJoin = null;
+		switch (join) {
+		case BEVEL:
+			lineJoin = StrokeLineJoin.BEVEL;
+			break;
+		case MITER:
+			lineJoin = StrokeLineJoin.MITER;
+			break;
+		case ROUND:
+			lineJoin = StrokeLineJoin.ROUND;
+			break;
+		}
+		context.setLineJoin(lineJoin);
+		return this;
 	}
 
 	@Override
 	public Canvas setMiterLimit(float miter) {
-		// TODO Auto-generated method stub
-		return null;
+		context.setMiterLimit(miter);
+		return this;
 	}
 
 	@Override
 	public Canvas setStrokeColor(int color) {
-		// TODO Auto-generated method stub
-		return null;
+		context.setStroke(getLColorToFX(new LColor(color)));
+		return this;
 	}
 
 	@Override
 	public Canvas setStrokeWidth(float strokeWidth) {
-		// TODO Auto-generated method stub
-		return null;
+		context.setLineWidth(strokeWidth);
+		return this;
 	}
 
 	@Override
 	public Canvas strokeCircle(float x, float y, float radius) {
-		// TODO Auto-generated method stub
-		return null;
+		context.beginPath();
+		context.arcTo(x, y, radius, 0, 2 * Math.PI);
+		context.stroke();
+		isDirty = true;
+		return this;
 	}
 
 	@Override
 	public Canvas strokePath(Path path) {
-		// TODO Auto-generated method stub
-		return null;
+		assert path instanceof JavaFXPath;
+		((JavaFXPath) path).replay(context);
+		context.stroke();
+		isDirty = true;
+		return this;
 	}
 
 	@Override
 	public Canvas strokeRect(float x, float y, float width, float height) {
-		// TODO Auto-generated method stub
-		return null;
+		context.strokeRect(x, y, width, height);
+		isDirty = true;
+		return this;
 	}
 
 	@Override
 	public Canvas strokeRoundRect(float x, float y, float width, float height, float radius) {
-		// TODO Auto-generated method stub
-		return null;
+		addRoundRectPath(x, y, width, height, radius);
+		context.stroke();
+		isDirty = true;
+		return this;
 	}
 
 	@Override
-	public Canvas strokeText(TextLayout text, float x, float y) {
-		return null;
+	public Canvas strokeText(TextLayout layout, float x, float y) {
+		((JavaFXTextLayout) layout).stroke(context, x, y);
+		isDirty = true;
+		return this;
 	}
 
 	@Override
@@ -341,10 +424,8 @@ public class JavaFXCanvas extends Canvas {
 		return paintStack.peek();
 	}
 
-	private void addRoundRectPath(float x, float y, float width, float height,
-			float radius) {
-		float midx = x + width / 2, midy = y + height / 2, maxx = x + width, maxy = y
-				+ height;
+	private void addRoundRectPath(float x, float y, float width, float height, float radius) {
+		float midx = x + width / 2, midy = y + height / 2, maxx = x + width, maxy = y + height;
 		context.beginPath();
 		context.moveTo(x, midy);
 		context.arcTo(x, y, midx, y, radius);

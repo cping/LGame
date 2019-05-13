@@ -316,22 +316,20 @@ public class GLUtils {
 		return currentHardwareTextureID;
 	}
 
-	public static void bindTexture(final GL20 gl, final int hardwareTextureID) {
+	public static void bindTexture(final int hardwareTextureID) {
 		try {
 			if (GLUtils.currentHardwareTextureID != hardwareTextureID) {
-				gl.glBindTexture(GL20.GL_TEXTURE_2D, hardwareTextureID);
 				GLUtils.currentHardwareTextureID = hardwareTextureID;
 			}
 		} catch (Throwable e) {
 		}
 	}
 
-	public static void deleteTexture(GL20 gl, int id) {
-		gl.glDeleteTexture(id);
+	public static void deleteTexture( int id) {
 		currentHardwareTextureID = -1;
 	}
 
-	public static void bindTexture(GL20 gl, LTexture tex2d) {
+	public static void bindTexture(LTexture tex2d) {
 		if (!tex2d.isLoaded()) {
 			tex2d.loadTexture();
 		}

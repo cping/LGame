@@ -18,35 +18,25 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.test;
+package loon.opengl;
 
-import javafx.application.Application;
-import javafx.scene.Group;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
+import loon.LTexture;
+import loon.geom.Affine2f;
 
-public class Main extends Application {
+public class MeshData {
 
-	@Override
-	public void start(Stage primaryStage) throws Exception {
-		float width = 640;
-		float height = 480;
-
-		TestCanvas canvas = new TestCanvas(width, height);
-
-		Group group = new Group();
-		group.getChildren().add(canvas);
-
-		Scene scene = new Scene(group, width, height);
-
-		primaryStage.setTitle("Loon Lite JavaFX Test");
-		primaryStage.setScene(scene);
-		primaryStage.show();
-
-	}
-
-	public static void main(String[] args) {
-		launch(args);
-	}
-
+	public LTexture texture;
+	
+	public float[] uvs ;
+	
+	public float[] vertices;
+	
+	public int[] indexes;
+	
+	public Affine2f uvTransform;
+	
+	public boolean useUvTransform;
+	
+	public int canvasPadding = 1;
+	
 }

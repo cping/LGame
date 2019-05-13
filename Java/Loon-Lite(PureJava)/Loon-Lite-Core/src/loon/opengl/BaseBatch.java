@@ -25,15 +25,6 @@ import loon.geom.Affine2f;
 
 public abstract class BaseBatch extends LTextureBind {
 
-
-	protected void setShaderDirty(boolean dirty) {
-		this._shader_ditry = dirty;
-	}
-
-	protected boolean isShaderDirty() {
-		return this._shader_ditry;
-	}
-
 	public void addQuad(LTexture tex, int tint, Affine2f xf, float x, float y, float w, float h) {
 		if (tex == null || tex.isClosed()) {
 			return;
@@ -45,13 +36,13 @@ public abstract class BaseBatch extends LTextureBind {
 		setTexture(tex);
 
 		if (tex.getParent() == null) {
-			float u2 = tex.getFormat().repeatX ? w / tex.width() : tex.widthRatio;
-			float uv = tex.getFormat().repeatY ? h / tex.height() : tex.heightRatio;
+			float u2 =  tex.widthRatio;
+			float uv =  tex.heightRatio;
 			addQuad(tint, xf, x, y, x + w, y + h, tex.xOff, tex.yOff, u2, uv);
 		} else {
 			LTexture forefather = LTexture.firstFather(tex);
-			float u2 = tex.getFormat().repeatX ? w / forefather.width() : tex.widthRatio;
-			float uv = tex.getFormat().repeatY ? h / forefather.height() : tex.heightRatio;
+			float u2 =  tex.widthRatio;
+			float uv =  tex.heightRatio;
 			if ((w < forefather.width() || h < forefather.height()) && !tex.isScale()) {
 				addQuad(tint, xf, x, y, x + w, y + h, tex.xOff, tex.yOff, u2, uv);
 			} else {

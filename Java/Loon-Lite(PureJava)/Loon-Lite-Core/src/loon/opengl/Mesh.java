@@ -18,25 +18,25 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.fx;
+package loon.opengl;
 
-import loon.LTexture;
-import loon.geom.Affine2f;
+import loon.canvas.Canvas;
 
-public class MeshData {
+public interface Mesh {
 
-	public LTexture texture;
+	public void setVertices(float[] vers);
 	
-	public float[] uvs ;
+	public void setIndices(int[] inds);
 	
-	public float[] vertices;
+	public void paint(Canvas canvas);
+
+	public void renderNoIndexes(MeshData mesh);
+
+	public void renderWithIndexes(MeshData mesh) ;
+
+	public void renderDrawTriangle(MeshData mesh, int index0, int index1, int index2);
 	
-	public float[] indexes;
+	public MeshData getMesh();
 	
-	public Affine2f uvTransform;
-	
-	public boolean useUvTransform;
-	
-	public int canvasPadding = 1;
-	
+	public void setMesh(MeshData mesh) ;
 }

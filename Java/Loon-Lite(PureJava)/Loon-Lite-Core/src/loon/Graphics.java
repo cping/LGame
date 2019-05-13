@@ -34,6 +34,10 @@ import loon.utils.reply.UnitPort;
 
 public abstract class Graphics {
 
+	protected Canvas defaultRenderTarget;
+	
+	protected final Counter amount;
+
 	protected final LGame game;
 	protected final Dimension viewSizeM = new Dimension();
 	protected Scale scale = null;
@@ -89,6 +93,12 @@ public abstract class Graphics {
 	}
 
 	public LTexture createTexture(float width, float height, LTexture.Format config) {
+		int texWidth = scale.scaledCeil(width);
+		int texHeight = scale.scaledCeil(height);
+		if (texWidth <= 0 || texHeight <= 0) {
+			throw new LSysException("Invalid texture size: " + texWidth + "x" + texHeight);
+		}
+		int id = createTexture(config);
 		return new LTexture(this, id, config, texWidth, texHeight, scale, width, height);
 	}
 
@@ -132,6 +142,7 @@ public abstract class Graphics {
 	protected Graphics(LGame game, Scale scale) {
 		this.game = game;
 		this.scale = scale;
+		this.amount = new Counter();
 	}
 
 	protected int defaultFramebuffer() {
@@ -181,6 +192,14 @@ public abstract class Graphics {
 	}
 
 	public int createTexture(LTexture.Format config, int count) {
+		int id = amount.increment() + count;
+		if (LSystem.containsTexture(id)) {
+			return createTexture(config, 1);
+		}
+		if (GLUtils.getCurrentHardwareTextureID() == id) {
+			return createTexture(config, 1);
+		}
+		GLUtils.bindTexture(id);
 		return id;
 	}
 

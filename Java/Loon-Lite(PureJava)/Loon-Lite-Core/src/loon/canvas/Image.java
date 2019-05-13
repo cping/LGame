@@ -167,8 +167,8 @@ public abstract class Image extends TextureSource implements Canvas.Drawable, LR
 		if (!isLoaded()) {
 			throw new LSysException("Cannot create texture from unready image: " + this);
 		}
-		int texWidth = config.toTexWidth(pixelWidth());
-		int texHeight = config.toTexHeight(pixelHeight());
+		int texWidth = pixelWidth();
+		int texHeight = pixelHeight();
 		if (texWidth <= 0 || texHeight <= 0) {
 			throw new LSysException(
 					"Invalid texture size: " + texWidth + "x" + texHeight + " from: " + this);

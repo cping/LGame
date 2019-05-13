@@ -46,6 +46,7 @@ import loon.LSystem;
 import loon.Sound;
 import loon.canvas.Image;
 import loon.canvas.ImageImpl;
+import loon.opengl.Mesh;
 import loon.utils.MathUtils;
 import loon.utils.Scale;
 import loon.utils.StringUtils;
@@ -718,6 +719,11 @@ public class JavaFXAssets extends Assets {
 	@Override
 	protected ImageImpl createImage(boolean async, int rwid, int rhei, String source) {
 		return new JavaFXImage(game, async, rwid, rhei, source);
+	}
+
+	@Override
+	public Mesh makeMesh() {
+		return new JavaFXMesh();
 	}
 
 }

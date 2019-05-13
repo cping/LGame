@@ -81,9 +81,6 @@ public abstract class LGame {
 	// 单独纹理批处理缓存
 	private final IntMap<LTextureBatch> _texture_batch_pools;
 
-	// mesh缓存
-	private final ObjectMap<String, Mesh> _texture_mesh_pools;
-
 	// 纹理惰性加载缓存
 	private final ObjectMap<String, LTexture> _texture_lazys;
 
@@ -119,11 +116,7 @@ public abstract class LGame {
 
 	public LGame(LSetting config, Platform plat) {
 		LGame._platform = plat;
-		this._mesh_all_pools = new TArray<Mesh>(128);
-		this._shader_all_pools = new TArray<ShaderProgram>(128);
-		this._framebuffer_all_pools = new TArray<GLFrameBuffer>(12);
 		this._texture_batch_pools = new IntMap<LTextureBatch>(12);
-		this._texture_mesh_pools = new ObjectMap<String, Mesh>(12);
 		this._texture_lazys = new ObjectMap<String, LTexture>(128);
 		this._texture_all_list = new TArray<LTexture>(128);
 		this._sprites_pools = new TArray<Sprites>(12);
@@ -192,19 +185,7 @@ public abstract class LGame {
 		if (plat != null) {
 			LGame._platform = plat;
 			LGame._base = plat.getGame();
-			LGame._base.resetShader();
 		}
-	}
-
-	/**
-	 * 刷新Shader数据
-	 * 
-	 * @param game
-	 */
-	public void resetShader() {
-		Mesh.invalidate(this);
-		ShaderProgram.invalidate(this);
-		FrameBuffer.invalidate(this);
 	}
 
 	/**
@@ -226,36 +207,6 @@ public abstract class LGame {
 		if (_base != game || _base != oldGame) {
 			_base = oldGame;
 		}
-	}
-
-	/**
-	 * 检查是否手机环境
-	 * 
-	 * @return
-	 */
-	public boolean isMobile() {
-		Type type = this.type();
-		return (type == LGame.Type.ANDROID || type == LGame.Type.IOS || type == LGame.Type.WP
-				|| type == LGame.Type.SWITCH);
-	}
-
-	/**
-	 * 检查是否HTML5(JS)环境
-	 * 
-	 * @return
-	 */
-	public boolean isHTML5() {
-		Type type = this.type();
-		return type == LGame.Type.HTML5;
-	}
-
-	/**
-	 * 是否桌面
-	 * 
-	 * @return
-	 */
-	public boolean isDesktop() {
-		return !isMobile() && !isHTML5();
 	}
 
 	/**
@@ -443,94 +394,6 @@ public abstract class LGame {
 			}
 			return pBatch;
 		}
-	}
-
-	/**
-	 * 刷新指定的Mesh池中Mesh数据
-	 * 
-	 * @param n
-	 * @param size
-	 */
-	public void resetMeshPool(String n, int size) {
-		String name = n + size;
-		synchronized (_texture_mesh_pools) {
-			Mesh mesh = _texture_mesh_pools.get(name);
-			if (mesh != null) {
-				mesh.close();
-				mesh = null;
-			}
-			_texture_mesh_pools.remove(name);
-			if (mesh == null || mesh.isClosed()) {
-				mesh = new Mesh(VertexDataType.VertexArray, false, size * 4, size * 6,
-						new VertexAttribute(Usage.Position, 2, ShaderProgram.POSITION_ATTRIBUTE),
-						new VertexAttribute(Usage.ColorPacked, 4, ShaderProgram.COLOR_ATTRIBUTE),
-						new VertexAttribute(Usage.TextureCoordinates, 2, ShaderProgram.TEXCOORD_ATTRIBUTE + "0"));
-				LSystem.resetIndices(size, mesh);
-				_texture_mesh_pools.put(name, mesh);
-			}
-		}
-	}
-
-	/**
-	 * 获得指定名称大小的MeshPool池中对象
-	 * 
-	 * @param n
-	 * @param size
-	 * @return
-	 */
-	public Mesh getMeshPool(String n, int size) {
-		String name = n + size;
-		synchronized (_texture_mesh_pools) {
-			Mesh mesh = _texture_mesh_pools.get(name);
-			if (mesh == null || mesh.isClosed()) {
-				mesh = new Mesh(VertexDataType.VertexArray, false, size * 4, size * 6,
-						new VertexAttribute(Usage.Position, 2, ShaderProgram.POSITION_ATTRIBUTE),
-						new VertexAttribute(Usage.ColorPacked, 4, ShaderProgram.COLOR_ATTRIBUTE),
-						new VertexAttribute(Usage.TextureCoordinates, 2, ShaderProgram.TEXCOORD_ATTRIBUTE + "0"));
-				LSystem.resetIndices(size, mesh);
-				_texture_mesh_pools.put(name, mesh);
-			}
-			return mesh;
-		}
-	}
-
-	/**
-	 * 获得MeshPool大小
-	 * 
-	 * @return
-	 */
-	public int getMeshPoolSize() {
-		return _texture_mesh_pools.size;
-	}
-
-	/**
-	 * 注销一个指定名称大小的MeshPool中对象
-	 * 
-	 * @param name
-	 * @param size
-	 */
-	public void disposeMeshPool(String name, int size) {
-		String key = name + size;
-		synchronized (_texture_mesh_pools) {
-			Mesh mesh = _texture_mesh_pools.remove(key);
-			if (mesh != null) {
-				mesh.close();
-			}
-		}
-	}
-
-	/**
-	 * 注销全部MeshPool池中对象
-	 */
-	public void disposeMeshPool() {
-		synchronized (_texture_mesh_pools) {
-			for (Mesh mesh : _texture_mesh_pools.values()) {
-				if (mesh != null) {
-					mesh.close();
-				}
-			}
-		}
-		_texture_mesh_pools.clear();
 	}
 
 	/**
@@ -941,54 +804,6 @@ public abstract class LGame {
 		closeAllTexture();
 	}
 
-	public void addMesh(Mesh mesh) {
-		_mesh_all_pools.add(mesh);
-	}
-
-	public void removeMesh(Mesh mesh) {
-		_mesh_all_pools.remove(mesh);
-	}
-
-	public TArray<Mesh> getMeshAll() {
-		return _mesh_all_pools;
-	}
-
-	public void clearMesh() {
-		_mesh_all_pools.clear();
-	}
-
-	public void addShader(ShaderProgram shader) {
-		_shader_all_pools.add(shader);
-	}
-
-	public void removeShader(ShaderProgram shader) {
-		_shader_all_pools.remove(shader);
-	}
-
-	public TArray<ShaderProgram> getShaderAll() {
-		return _shader_all_pools;
-	}
-
-	public void clearShader() {
-		_shader_all_pools.clear();
-	}
-
-	public void addFrameBuffer(GLFrameBuffer buffer) {
-		_framebuffer_all_pools.add(buffer);
-	}
-
-	public void removeFrameBuffer(GLFrameBuffer buffer) {
-		_framebuffer_all_pools.remove(buffer);
-	}
-
-	public TArray<GLFrameBuffer> getFrameBufferAll() {
-		return _framebuffer_all_pools;
-	}
-
-	public void clearFramebuffer() {
-		_framebuffer_all_pools.clear();
-	}
-
 	public int getSpritesSize() {
 		return _sprites_pools.size;
 	}
@@ -1139,6 +954,14 @@ public abstract class LGame {
 		return displayImpl;
 	}
 
+	public boolean isHTML5() {
+		return this.type() == Type.GWT;
+	}
+
+	public abstract boolean isMobile();
+
+	public abstract boolean isDesktop();
+	
 	public void close() {
 		if (!errors.isClosed()) {
 			errors.clearConnections();

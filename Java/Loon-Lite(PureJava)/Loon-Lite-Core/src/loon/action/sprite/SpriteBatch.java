@@ -63,8 +63,6 @@ public class SpriteBatch extends PixmapFImpl {
 
 	protected boolean drawing = false;
 
-	private boolean ownsShader;
-
 	private float color = LColor.white.toFloatBits();
 
 	private LColor tempColor = new LColor(1, 1, 1, 1);
@@ -78,8 +76,6 @@ public class SpriteBatch extends PixmapFImpl {
 	private BlendState lastBlendState = BlendState.NonPremultiplied;
 
 	private IFont font;
-
-	private final ShaderSource source;
 
 	private LTexture colorTexture;
 
@@ -193,24 +189,11 @@ public class SpriteBatch extends PixmapFImpl {
 			throw new LSysException("Can't have more than 5460 sprites per batch: " + size);
 		}
 		this.name = "spritebatch";
-		this.source = src;
 		this.font = LSystem.getSystemGameFont();
 		this.colorTexture = LSystem.base().graphics().finalColorTex();
 		this.mesh = new MeshDefault();
 		this.shader = defaultShader;
 		this.expandVertices = new ExpandVertices(size);
-	}
-
-	public void setShaderUniformf(String name, LColor color) {
-		if (shader != null) {
-			shader.setUniformf(name, color);
-		}
-	}
-
-	public void setShaderUniformf(int name, LColor color) {
-		if (shader != null) {
-			shader.setUniformf(name, color);
-		}
 	}
 
 	public void setColor(LColor c) {
@@ -437,11 +420,6 @@ public class SpriteBatch extends PixmapFImpl {
 			throw new LSysException("SpriteBatch.end must be called before begin.");
 		}
 		LSystem.base().graphics().gl.glDepthMask(false);
-		if (customShader != null) {
-			customShader.begin();
-		} else {
-			shader.begin();
-		}
 		setupMatrices();
 		drawing = true;
 	}
@@ -597,27 +575,6 @@ public class SpriteBatch extends PixmapFImpl {
 			invTexWidth = (1f / texture.width()) * texture.widthRatio;
 			invTexHeight = (1f / texture.height()) * texture.heightRatio;
 		}
-	}
-
-	public void setShader(ShaderProgram shader) {
-		if (drawing) {
-			submit();
-			if (customShader != null) {
-				customShader.end();
-			} else {
-				this.shader.end();
-			}
-		}
-		customShader = shader;
-		if (drawing) {
-			if (customShader != null) {
-				customShader.begin();
-			} else {
-				this.shader.begin();
-			}
-			setupMatrices();
-		}
-
 	}
 
 	public boolean isDrawing() {

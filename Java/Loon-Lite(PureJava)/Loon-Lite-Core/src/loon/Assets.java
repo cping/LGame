@@ -22,6 +22,7 @@ package loon;
 
 import loon.canvas.Image;
 import loon.canvas.ImageImpl;
+import loon.opengl.Mesh;
 import loon.utils.ArrayByte;
 import loon.utils.TArray;
 import loon.utils.reply.GoFuture;
@@ -29,7 +30,7 @@ import loon.utils.reply.GoPromise;
 import loon.utils.res.ResourceLocal;
 
 public abstract class Assets {
-
+	
 	private TArray<Sound> soundCache = new TArray<Sound>(10);
 
 	// 为了方便直接转码到C#和C++，无法使用匿名内部类(也就是在构造内直接构造实现的方式)，只能都写出类来……
@@ -204,6 +205,8 @@ public abstract class Assets {
 		} while (path.length() != pathLen);
 		return path.replace("\\", "/");
 	}
+	
+	public abstract Mesh makeMesh();
 
 	public void close() {
 		for (Sound s : soundCache) {

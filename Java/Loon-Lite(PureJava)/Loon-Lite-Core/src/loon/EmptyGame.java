@@ -172,4 +172,14 @@ public class EmptyGame extends LGame {
 		return accelerometer;
 	}
 
+	@Override
+	public boolean isMobile() {
+		return false;
+	}
+
+	@Override
+	public boolean isDesktop() {
+		return false;
+	}
+
 }

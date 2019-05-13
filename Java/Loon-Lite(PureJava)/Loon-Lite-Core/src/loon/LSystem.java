@@ -31,13 +31,9 @@ import loon.event.Updateable;
 import loon.font.IFont;
 import loon.font.LFont;
 import loon.geom.Dimension;
-import loon.opengl.FrameBuffer;
 import loon.opengl.GLEx;
-import loon.opengl.GLFrameBuffer;
 import loon.opengl.LSTRFont;
 import loon.opengl.Mesh;
-import loon.opengl.ShaderCmd;
-import loon.opengl.ShaderProgram;
 import loon.utils.NumberUtils;
 import loon.utils.Scale;
 import loon.utils.TArray;
@@ -136,51 +132,6 @@ public class LSystem {
 	private static float _scaleWidth = 1f;
 
 	private static float _scaleHeight = 1f;
-
-	public static final String getGLExVertexShader() {
-		ShaderCmd cmd = ShaderCmd.getCmd("glex_vertex");
-		if (cmd.isCache()) {
-			return cmd.getShader();
-		} else {
-			cmd.putAttributeVec4(ShaderProgram.POSITION_ATTRIBUTE);
-			cmd.putAttributeVec4(ShaderProgram.COLOR_ATTRIBUTE);
-			cmd.putAttributeVec2(ShaderProgram.TEXCOORD_ATTRIBUTE + "0");
-			cmd.putUniformMat4("u_projTrans");
-			cmd.putVaryingVec4("v_color");
-			cmd.putVaryingVec2("v_texCoords");
-			cmd.putMainCmd("   v_color = " + ShaderProgram.COLOR_ATTRIBUTE + ";\n"
-					+ "   v_color.a = v_color.a * (255.0/254.0);\n" + "   v_texCoords = "
-					+ ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\n" + "   gl_Position =  u_projTrans * "
-					+ ShaderProgram.POSITION_ATTRIBUTE + ";");
-			return cmd.getShader();
-		}
-	}
-
-	public static final String getGLExFragmentShader() {
-		ShaderCmd cmd = ShaderCmd.getCmd("glex_fragment");
-		if (cmd.isCache()) {
-			return cmd.getShader();
-		} else {
-			cmd.putVarying("LOWP vec4", "v_color");
-			cmd.putVaryingVec2("v_texCoords");
-			cmd.putUniform("sampler2D", "u_texture");
-			cmd.putMainLowpCmd("  gl_FragColor = v_color * texture2D(u_texture, v_texCoords);");
-			return cmd.getShader();
-		}
-	}
-
-	public static final String getColorFragmentShader() {
-		ShaderCmd cmd = ShaderCmd.getCmd("color_fragment");
-		if (cmd.isCache()) {
-			return cmd.getShader();
-		} else {
-			cmd.putUniform("LOWP vec4", "v_color");
-			cmd.putVaryingVec2("v_texCoords");
-			cmd.putUniform("sampler2D", "u_texture");
-			cmd.putMainLowpCmd("  gl_FragColor = v_color * texture2D(u_texture, v_texCoords);");
-			return cmd.getShader();
-		}
-	}
 
 	public static final Platform platform() {
 		return LGame._platform;
@@ -339,95 +290,12 @@ public class LSystem {
 		return _version;
 	}
 
-	public static final void addMesh(Mesh mesh) {
-		if (base() != null) {
-			base().addMesh(mesh);
-		}
-	}
-
-	public static final void removeMesh(Mesh mesh) {
-		if (base() != null) {
-			base().removeMesh(mesh);
-		}
-	}
-
-	public static final TArray<Mesh> getMeshAll() {
-		if (base() != null) {
-			return base().getMeshAll();
-		}
-		return null;
-	}
-
-	public static final void clearMesh() {
-		if (base() != null) {
-			base().clearMesh();
-		}
-	}
-
-	public static final void addShader(ShaderProgram shader) {
-		if (base() != null) {
-			base().addShader(shader);
-		}
-	}
-
-	public static final void removeShader(ShaderProgram mesh) {
-		if (base() != null) {
-			base().removeShader(mesh);
-		}
-	}
-
-	public static final TArray<ShaderProgram> getShaderAll() {
-		if (base() != null) {
-			return base().getShaderAll();
-		}
-		return null;
-	}
-
-	public static final void clearShader() {
-		if (base() != null) {
-			base().clearShader();
-		}
-	}
-
-	public static void addFrameBuffer(GLFrameBuffer buffer) {
-		if (base() != null) {
-			base().addFrameBuffer(buffer);
-		}
-	}
-
-	public static void removeFrameBuffer(GLFrameBuffer buffer) {
-		if (base() != null) {
-			base().getFrameBufferAll();
-		}
-	}
-
-	public static TArray<GLFrameBuffer> getFrameBufferAll() {
-		if (base() != null) {
-			return base().getFrameBufferAll();
-		}
-		return null;
-	}
-
-	public static void clearFramebuffer() {
-		if (base() != null) {
-			base().clearFramebuffer();
-		}
-	}
-
 	public static void resetTextureRes() {
 		resetTextureRes(base());
 	}
 
 	public static void resetTextureRes(final LGame game) {
-		resetShader(game);
-		disposeMeshPool();
 		disposeTextureAll();
-	}
-
-	public static void resetShader(final LGame game) {
-		Mesh.invalidate(game);
-		ShaderProgram.invalidate(game);
-		FrameBuffer.invalidate(game);
 	}
 
 	public static void exit() {
@@ -619,14 +487,6 @@ public class LSystem {
 		}
 	}
 
-	public static ShaderProgram createShader(String ver, String fragment) {
-		ShaderProgram shader = new ShaderProgram(ver, fragment);
-		if (shader.isCompiled() == false) {
-			throw new LSysException("Error compiling shader: " + shader.getLog());
-		}
-		return shader;
-	}
-
 	public static final String format(float value) {
 		String fmt = String.valueOf(value);
 		return fmt.indexOf('.') == -1 ? (fmt + ".0") : fmt;
@@ -743,51 +603,20 @@ public class LSystem {
 		return null;
 	}
 
-	public static final void resetIndices(int size, Mesh mesh) {
+	public static final int[] resetIndices(int size, Mesh mesh) {
 		int len = size * 6;
-		short[] indices = new short[len];
-		short j = 0;
+		int[] indices = new int[len];
+		int j = 0;
 		for (int i = 0; i < len; i += 6, j += 4) {
 			indices[i] = j;
-			indices[i + 1] = (short) (j + 1);
-			indices[i + 2] = (short) (j + 2);
-			indices[i + 3] = (short) (j + 2);
-			indices[i + 4] = (short) (j + 3);
+			indices[i + 1] = (j + 1);
+			indices[i + 2] = (j + 2);
+			indices[i + 3] = (j + 2);
+			indices[i + 4] = (j + 3);
 			indices[i + 5] = j;
 		}
 		mesh.setIndices(indices);
-	}
-
-	public static final Mesh getMeshPool(String n, int size) {
-		if (base() != null) {
-			return base().getMeshPool(n, size);
-		}
-		return null;
-	}
-
-	public static final void resetMeshPool(String n, int size) {
-		if (base() != null) {
-			base().resetMeshPool(n, size);
-		}
-	}
-
-	public static final int getMeshPoolSize() {
-		if (base() != null) {
-			base().getMeshPoolSize();
-		}
-		return 0;
-	}
-
-	public static final void disposeMeshPool(String name, int size) {
-		if (base() != null) {
-			base().disposeMeshPool(name, size);
-		}
-	}
-
-	public static final void disposeMeshPool() {
-		if (base() != null) {
-			base().disposeMeshPool();
-		}
+		return indices;
 	}
 
 	public static final boolean containsTexture(int id) {

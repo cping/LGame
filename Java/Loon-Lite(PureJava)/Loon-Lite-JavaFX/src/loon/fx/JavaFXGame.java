@@ -190,4 +190,14 @@ public class JavaFXGame extends LGame {
 		return support;
 	}
 
+	@Override
+	public boolean isMobile() {
+		return false;
+	}
+
+	@Override
+	public boolean isDesktop() {
+		return true;
+	}
+
 }

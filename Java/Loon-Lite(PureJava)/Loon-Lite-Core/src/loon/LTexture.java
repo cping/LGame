@@ -27,10 +27,7 @@ import loon.canvas.LColor;
 import loon.event.Updateable;
 import loon.geom.Affine2f;
 import loon.opengl.BaseBatch;
-import loon.opengl.GL20;
-import loon.opengl.GLPaint;
 import loon.opengl.Painter;
-import loon.opengl.ShaderSource;
 import loon.opengl.TrilateralBatch;
 import loon.utils.CollectionUtils;
 import loon.utils.GLUtils;
@@ -47,6 +44,12 @@ import loon.utils.timer.LTimerContext;
 import static loon.opengl.GL20.*;
 
 public class LTexture extends Painter implements LRelease {
+	
+	public static enum Format {
+		DEFAULT,
+		NEAREST,
+		LINEAR;
+	}
 
 	public static LTexture createTexture(int w, int h, Format config) {
 		return LSystem.createTexture(w, h, config);
@@ -92,65 +95,11 @@ public class LTexture extends Painter implements LRelease {
 
 	protected String tmpLazy = "tex" + TimeUtils.millis();
 
+	protected Format config;
+	
 	protected int refCount;
 
-	public final static class Format {
-
-		public static Format NEAREST = new Format(true, false, false, GL_NEAREST, GL_NEAREST, false);
-
-		public static Format LINEAR = new Format(true, false, false, GL_LINEAR, GL_LINEAR, false);
-
-		public static Format UNMANAGED = new Format(false, false, false, GL_NEAREST, GL_LINEAR, false);
-
-		public static Format DEFAULT = LINEAR;
-
-		public final boolean managed;
-
-		public final boolean repeatX, repeatY;
-
-		public final int minFilter, magFilter;
-
-		public final boolean mipmaps;
-
-		public Format(boolean managed, boolean repeatX, boolean repeatY, int minFilter, int magFilter,
-				boolean mipmaps) {
-			this.managed = managed;
-			this.repeatX = repeatX;
-			this.repeatY = repeatY;
-			this.minFilter = minFilter;
-			this.magFilter = magFilter;
-			this.mipmaps = mipmaps;
-		}
-
-		public Format repeat(boolean repeatX, boolean repeatY) {
-			return new Format(managed, repeatX, repeatY, minFilter, magFilter, mipmaps);
-		}
-
-		public int toTexWidth(int sourceWidth) {
-			return (repeatX || mipmaps) ? GLUtils.nextPOT(sourceWidth) : sourceWidth;
-		}
-
-		public int toTexHeight(int sourceHeight) {
-			return (repeatY || mipmaps) ? GLUtils.nextPOT(sourceHeight) : sourceHeight;
-		}
-
-		@Override
-		public String toString() {
-			StringKeyValue builder = new StringKeyValue("Managed");
-			builder.kv("managed", managed)
-			.comma()
-			.kv("repeat", (repeatX ? "x" : "") + (repeatY ? "y" : ""))
-			.comma()
-			.kv("filter",(minFilter + "/" + magFilter))
-			.comma()
-			.kv("mipmaps", mipmaps);
-			return builder.toString();
-		}
-	}
-
 	private int id;
-
-	private Format config;
 
 	public int getID() {
 		return id;
