@@ -21,6 +21,7 @@
 package loon.action;
 
 import loon.LSystem;
+import loon.action.collision.CollisionResult;
 import loon.action.map.AStarFindHeuristic;
 import loon.action.map.AStarFinder;
 import loon.action.map.Field2D;
@@ -55,16 +56,32 @@ public class MoveTo extends ActionEvent {
 
 	private boolean moveByMode = false;
 
+	public MoveTo(float x, float y, boolean flag) {
+		this(LSystem.viewSize.newField2D(), x, y, flag, 4);
+	}
+
 	public MoveTo(final Field2D map, float x, float y, boolean flag) {
 		this(map, x, y, flag, 4);
+	}
+
+	public MoveTo(float x, float y, boolean flag, int speed) {
+		this(LSystem.viewSize.newField2D(), x, y, flag, speed);
 	}
 
 	public MoveTo(final Field2D map, float x, float y, boolean flag, int speed) {
 		this(map, -1f, -1f, x, y, flag, speed, true, false);
 	}
 
+	public MoveTo(float sx, float sy, float x, float y, boolean flag, int speed) {
+		this(LSystem.viewSize.newField2D(), sx, sy, x, y, flag, speed, true, false);
+	}
+
 	public MoveTo(final Field2D map, float sx, float sy, float x, float y, boolean flag, int speed) {
 		this(map, sx, sy, x, y, flag, speed, true, false);
+	}
+
+	public MoveTo(float sx, float sy, float x, float y, boolean flag, int speed, boolean cache, boolean synField) {
+		this(LSystem.viewSize.newField2D(), sx, sy, x, y, flag, speed, cache, synField);
 	}
 
 	public MoveTo(final Field2D map, float sx, float sy, float x, float y, boolean flag, int speed, boolean cache,
@@ -143,6 +160,10 @@ public class MoveTo extends ActionEvent {
 
 	@Override
 	public void onLoad() {
+		updatePath();
+	}
+
+	public void updatePath() {
 		if (!moveByMode && original != null && LSystem.getProcess() != null && LSystem.getProcess().getScreen() != null
 				&& !LSystem.getProcess().getScreen().getRectBox().contains(original.x(), original.y())
 				&& layerMap != null && !layerMap.inside(original.x(), original.y())) { // 处理越界出Field2D二维数组的移动
@@ -188,6 +209,9 @@ public class MoveTo extends ActionEvent {
 			synchronized (pActorPath) {
 				pActorPath.clear();
 				pActorPath = null;
+			}
+			if (pathCache != null) {
+				pathCache.clear();
 			}
 		}
 	}
@@ -282,7 +306,7 @@ public class MoveTo extends ActionEvent {
 			} else {
 				count++;
 			}
-			original.setLocation(x + offsetX, y + offsetY);
+			movePos(x + offsetX, y + offsetY);
 			_isCompleted = (count == 2);
 		} else {
 			if (layerMap == null || original == null || pActorPath == null || pActorPath.size == 0) {
@@ -297,7 +321,7 @@ public class MoveTo extends ActionEvent {
 						}
 					}
 				}
-				if (endX == startX && endY == startY) {
+				if (collisionWorld != null || (endX == startX && endY == startY)) {
 					if (pActorPath.size > 1) {
 						Vector2f moveStart = pActorPath.get(0);
 						Vector2f moveEnd = pActorPath.get(1);
@@ -381,7 +405,19 @@ public class MoveTo extends ActionEvent {
 				}
 				if (!(original.x() != 0 && original.y() != 0 && startX == 0 && startY == 0 && endX == 0 && endY == 0)) {
 					synchronized (original) {
-						original.setLocation(startX + offsetX, startY + offsetY);
+						float newX = startX + offsetX;
+						float newY = startY + offsetY;
+						if (collisionWorld != null) {
+							CollisionResult.Result result = collisionWorld.move(original, newX, newY);
+							if (newX != result.goalX || newY != result.goalY) {
+								clearPath();
+								original.setLocation(result.goalX, result.goalY);
+							} else {
+								original.setLocation(newX, newY);
+							}
+						} else {
+							original.setLocation(newX, newY);
+						}
 					}
 				}
 			}
@@ -471,21 +507,14 @@ public class MoveTo extends ActionEvent {
 	public String getName() {
 		return "move";
 	}
-	
+
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue(getName());
-		builder.kv("startLocation", startLocation)
-		.comma()
-		.kv("endLocation", endLocation)
-		.comma()
-		.kv("layerMap",layerMap)
-		.comma()
-		.kv("direction",direction)
-		.comma()
-		.kv("speed",speed)
-		.comma()
-		.kv("heuristic", heuristic);
+		builder.kv("startLocation", startLocation).comma().kv("endLocation", endLocation).comma()
+				.kv("layerMap", layerMap).comma().kv("direction", direction).comma().kv("speed", speed).comma()
+				.kv("heuristic", heuristic);
 		return builder.toString();
 	}
+
 }

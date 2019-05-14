@@ -20,6 +20,8 @@
  */
 package loon.action;
 
+import loon.action.collision.CollisionResult;
+import loon.action.collision.CollisionWorld;
 import loon.utils.StringKeyValue;
 import loon.utils.timer.LTimer;
 
@@ -30,6 +32,8 @@ public abstract class ActionEvent {
 	private ActionListener actionListener;
 
 	protected boolean firstTick, _isCompleted, isInit;
+
+	protected CollisionWorld collisionWorld;
 
 	protected ActionBind original;
 
@@ -167,12 +171,32 @@ public abstract class ActionEvent {
 		original = e.original;
 		return this;
 	}
-	
+
 	public ActionEvent kill() {
 		this._isCompleted = true;
 		return this;
 	}
-	
+
+	public void movePos(float x, float y) {
+		if (original == null) {
+			return;
+		}
+		if (collisionWorld != null) {
+			CollisionResult.Result result = collisionWorld.move(original, x, y);
+			original.setLocation(result.goalX, result.goalY);
+		} else {
+			original.setLocation(x, y);
+		}
+	}
+
+	public CollisionWorld getCollisionWorld() {
+		return collisionWorld;
+	}
+
+	public void setCollisionWorld(CollisionWorld world) {
+		this.collisionWorld = world;
+	}
+
 	public abstract ActionEvent cpy();
 
 	public abstract ActionEvent reverse();
@@ -182,14 +206,8 @@ public abstract class ActionEvent {
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue(getName());
-		builder
-		.kv("loaded", isInit)
-		.comma()
-		.kv("bind", original)
-		.comma()
-		.kv("offset", (offsetX + " x " + offsetY))
-		.comma()
-		.kv("tag", tag);
+		builder.kv("loaded", isInit).comma().kv("bind", original).comma().kv("offset", (offsetX + " x " + offsetY))
+				.comma().kv("tag", tag);
 		return builder.toString();
 	}
 }

@@ -69,9 +69,8 @@ public class BezierBy extends ActionEvent {
 		final float y = (uu * bezier.controlPoint1.y)
 				+ (ut2 * bezier.controlPoint2.x) + (tt * bezier.endPosition.y);
 
-		if (original != null) {
-			original.setLocation(startX + x, startY + y);
-		}
+		movePos(startX + x, startY + y);
+		
 	}
 
 	@Override

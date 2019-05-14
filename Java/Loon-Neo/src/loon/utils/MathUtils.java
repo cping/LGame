@@ -487,6 +487,15 @@ public class MathUtils {
 			return b - a <= EPSILON;
 	}
 
+	public static final int sign(float x) {
+		if (x > 0) {
+			return 1;
+		} else if (x < 0) {
+			return -1;
+		}
+		return 0;
+	}
+
 	static final int SK1 = 498;
 
 	static final int SK2 = 10882;
@@ -822,6 +831,13 @@ public class MathUtils {
 
 	public static final float bringToBounds(final float minValue, final float maxValue, final float v) {
 		return Math.max(minValue, Math.min(maxValue, v));
+	}
+
+	public static final float nearest(float x, float a, float b) {
+		if (abs(a - x) < abs(b - x)) {
+			return a;
+		}
+		return b;
 	}
 
 	public static final boolean nextBoolean() {
@@ -1248,6 +1264,18 @@ public class MathUtils {
 		return (x < y) ? -1 : ((x == y) ? 0 : 1);
 	}
 
+	public static final int compare(float x, float y) {
+		if (x < y) {
+			return -1;
+		}
+		if (x > y) {
+			return 1;
+		}
+		int thisBits = NumberUtils.floatToIntBits(x);
+		int anotherBits = NumberUtils.floatToIntBits(y);
+		return (thisBits == anotherBits ? 0 : (thisBits < anotherBits ? -1 : 1));
+	}
+
 	public static final int longOfZeros(long i) {
 		if (i == 0) {
 			return 64;
@@ -1325,7 +1353,7 @@ public class MathUtils {
 		return newAngle;
 	}
 
-	public static final boolean inAngleRange(final float angle,final float startAngle,final float endAngle) {
+	public static final boolean inAngleRange(final float angle, final float startAngle, final float endAngle) {
 		float newAngle = adjust(angle);
 		float newStartAngle = adjust(startAngle);
 		float newEndAngle = adjust(endAngle);
@@ -1337,4 +1365,5 @@ public class MathUtils {
 		}
 		return newAngle >= newStartAngle && newAngle <= newEndAngle;
 	}
+
 }

@@ -29,7 +29,6 @@ import loon.canvas.Canvas;
 import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.canvas.Pixmap;
-import loon.opengl.GL20;
 
 public class GLUtils {
 	
@@ -55,7 +54,7 @@ public class GLUtils {
 
 	private static boolean enableTextures = false;
 
-	public static void reset(final GL20 gl) {
+	public static void reset() {
 		GLUtils.reload();
 	}
 

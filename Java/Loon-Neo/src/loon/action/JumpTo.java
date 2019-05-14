@@ -28,7 +28,7 @@ public class JumpTo extends ActionEvent {
 	private float moveX;
 	private float moveY;
 	private float gravity;
-	
+
 	private int moveJump;
 
 	public JumpTo(int m, float g) {
@@ -79,16 +79,14 @@ public class JumpTo extends ActionEvent {
 				this.moveY = moveJump;
 			}
 		}
-		original.setLocation(offsetX + (original.getX() + this.moveX), offsetY
-				+ (original.getY() + this.moveY));
+		movePos(offsetX + (original.getX() + this.moveX), offsetY + (original.getY() + this.moveY));
 		if (moveJump < 0) {
 			this.moveY += gravity;
 		} else {
 			this.moveY -= gravity;
 		}
 		if (moveJump > 0) {
-			if (original.getY() + original.getHeight() > original
-					.getContainerHeight() + original.getHeight()) {
+			if (original.getY() + original.getHeight() > original.getContainerHeight() + original.getHeight()) {
 				_isCompleted = true;
 			}
 		} else if (original.getY() + original.getHeight() < 0) {
@@ -97,24 +95,20 @@ public class JumpTo extends ActionEvent {
 		boolean isLimit = original.isBounded();
 		if (isLimit) {
 			RectBox rect = original.getRectBox();
-			int limitWidth = (int) (original.getContainerWidth() - rect
-					.getWidth());
+			int limitWidth = (int) (original.getContainerWidth() - rect.getWidth());
 			int limitHeight = (int) rect.getHeight();
 			if (original.getX() > limitWidth) {
-				original.setLocation(offsetX + limitWidth,
-						offsetY + original.getY());
+				movePos(offsetX + limitWidth, offsetY + original.getY());
 				_isCompleted = true;
 			} else if (original.getX() < 0) {
-				original.setLocation(offsetX, offsetY + original.getY());
+				movePos(offsetX, offsetY + original.getY());
 				_isCompleted = true;
 			}
 			if (original.getY() < 0) {
-				original.setLocation(offsetX + original.getX(), offsetY
-						+ limitHeight);
+				movePos(offsetX + original.getX(), offsetY + limitHeight);
 				_isCompleted = true;
 			} else if (original.getY() > original.getHeight() - limitHeight) {
-				original.setLocation(offsetX + original.getX(), offsetY
-						+ (original.getContainerHeight() - limitHeight));
+				movePos(offsetX + original.getX(), offsetY + (original.getContainerHeight() - limitHeight));
 				_isCompleted = true;
 			}
 		}
@@ -138,17 +132,12 @@ public class JumpTo extends ActionEvent {
 	public String getName() {
 		return "jump";
 	}
-	
+
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue(getName());
-		builder.kv("moveX", moveX)
-		.comma()
-		.kv("moveY", moveY)
-		.comma()
-		.kv("moveJump",moveJump)
-		.comma()
-		.kv("gravity",gravity);
+		builder.kv("moveX", moveX).comma().kv("moveY", moveY).comma().kv("moveJump", moveJump).comma().kv("gravity",
+				gravity);
 		return builder.toString();
 	}
 }

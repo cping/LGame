@@ -438,6 +438,96 @@ public class RectI implements XY {
 		return height;
 	}
 
+	public static void getNearestCorner(int x, int y, int w, int h, int px, int py, PointI result) {
+		result.set((int) MathUtils.nearest(px, x, x + w), (int) MathUtils.nearest(y, y, y + h));
+	}
+
+	public static boolean getSegmentIntersectionIndices(int x, int y, int w, int h, int x1, int y1, int x2, int y2,
+			int ti1, int ti2, PointI ti, PointI n1, PointI n2) {
+		int dx = x2 - x1;
+		int dy = y2 - y1;
+
+		int nx = 0, ny = 0;
+		int nx1 = 0, ny1 = 0, nx2 = 0, ny2 = 0;
+		int p, q, r;
+
+		for (int side = 1; side <= 4; side++) {
+			switch (side) {
+			case 1:
+				nx = -1;
+				ny = 0;
+				p = -dx;
+				q = x1 - x;
+				break;
+			case 2:
+				nx = 1;
+				ny = 0;
+				p = dx;
+				q = x + w - x1;
+				break;
+			case 3:
+				nx = 0;
+				ny = -1;
+				p = -dy;
+				q = y1 - y;
+				break;
+			default:
+				nx = 0;
+				ny = -1;
+				p = dy;
+				q = y + h - y1;
+				break;
+			}
+
+			if (p == 0) {
+				if (q <= 0) {
+					return false;
+				}
+			} else {
+				r = q / p;
+				if (p < 0) {
+					if (r > ti2) {
+						return false;
+					} else if (r > ti1) {
+						ti1 = r;
+						nx1 = nx;
+						ny1 = ny;
+					}
+				} else {
+					if (r < ti1) {
+						return false;
+					} else if (r < ti2) {
+						ti2 = r;
+						nx2 = nx;
+						ny2 = ny;
+					}
+				}
+			}
+		}
+		ti.set(ti1, ti2);
+		n1.set(nx1, ny1);
+		n2.set(nx2, ny2);
+		return true;
+	}
+
+	public static void getDiff(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2, RectI result) {
+		result.set(x2 - x1 - w1, y2 - y1 - h1, w1 + w2, h1 + h2);
+	}
+
+	public static boolean containsPoint(int x, int y, int w, int h, int px, int py, int delta) {
+		return px - x > delta && py - y > delta && x + w - px > delta && y + h - py > delta;
+	}
+
+	public static boolean isIntersecting(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2) {
+		return x1 < x2 + w2 && x2 < x1 + w1 && y1 < y2 + h2 && y2 < y1 + h1;
+	}
+
+	public static int getSquareDistance(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2) {
+		int dx = x1 - x2 + (w1 - w2) / 2;
+		int dy = y1 - y2 + (h1 - h2) / 2;
+		return dx * dx + dy * dy;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -448,17 +538,11 @@ public class RectI implements XY {
 		result = prime * result + NumberUtils.floatToIntBits(height);
 		return result;
 	}
-	
+
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("RectI");
-		builder.kv("x", x)
-		.comma()
-		.kv("y", y)
-		.comma()
-		.kv("width", width)
-		.comma()
-		.kv("height", height);
+		builder.kv("x", x).comma().kv("y", y).comma().kv("width", width).comma().kv("height", height);
 		return builder.toString();
 	}
 }

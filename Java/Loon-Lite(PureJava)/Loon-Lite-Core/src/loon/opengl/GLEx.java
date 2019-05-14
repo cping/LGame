@@ -127,7 +127,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 * @param def
 	 * @param alltex
 	 */
-	public GLEx(Graphics gfx, RenderTarget target, BaseBatch def, boolean alltex) {
+	public GLEx(Graphics gfx, Canvas target, BaseBatch def, boolean alltex) {
 		super(0f, 0f, LSystem.viewSize.getRect(), LSystem.viewSize.width, LSystem.viewSize.height, def_skip);
 		this.gfx = gfx;
 		this.target = target;
@@ -144,21 +144,15 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		this.update();
 	}
 
-	public GLEx(Graphics gfx, RenderTarget target, GL20 gl) {
+	public GLEx(Graphics gfx, Canvas target) {
 		this(gfx, target, createDefaultBatch(gl), false);
 	}
 
 	public int getWidth() {
-		if (target != null) {
-			return (int) (target.width() / target.xscale());
-		}
 		return LSystem.viewSize.getWidth();
 	}
 
 	public int getHeight() {
-		if (target != null) {
-			return (int) (target.height() / target.yscale());
-		}
 		return LSystem.viewSize.getHeight();
 	}
 
@@ -314,7 +308,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		return this;
 	}
 
-	public static BaseBatch createDefaultBatch(GL20 gl) {
+	public static BaseBatch createDefaultBatch(Canvas gl) {
 		return new TrilateralBatch(gl);
 	}
 

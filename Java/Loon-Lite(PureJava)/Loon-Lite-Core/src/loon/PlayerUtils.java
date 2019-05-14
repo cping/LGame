@@ -26,7 +26,6 @@ import loon.action.ActionControl;
 import loon.action.ActionEvent;
 import loon.action.ActionScript;
 import loon.action.ActionTween;
-import loon.action.sprite.CanvasPlayer;
 import loon.canvas.Canvas;
 import loon.canvas.LColor;
 import loon.event.ActionUpdate;
@@ -276,17 +275,6 @@ public class PlayerUtils extends Director {
 
 	public final static boolean stopActionTags(ActionBind k, Object tag) {
 		return ActionControl.get().stopTags(k, tag);
-	}
-
-	public final static CanvasPlayer createTextPlayer(LFont font, String text) {
-		TextLayout layout = font.getLayoutText(text);
-		Canvas canvas = LSystem.base().graphics().createCanvas(MathUtils.ceil(layout.stringWidth(text)),
-				MathUtils.ceil(layout.getHeight()));
-		canvas.setColor(LColor.white);
-		canvas.setFont(font);
-		canvas.drawText(text, 0f, 0f);
-		CanvasPlayer player = new CanvasPlayer(LSystem.base().graphics(), canvas);
-		return player;
 	}
 
 	/**

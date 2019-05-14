@@ -20,6 +20,7 @@
  */
 package loon.opengl;
 
+import loon.canvas.Canvas;
 import loon.canvas.LColor;
 import loon.geom.Affine2f;
 import loon.geom.Matrix4;
@@ -98,15 +99,11 @@ public class TrilateralBatch extends BaseBatch {
 		}
 	}
 
-	public TrilateralBatch(GL20 gl) {
+	public TrilateralBatch(Canvas gl) {
 		this(gl, DEF_SOURCE);
 	}
 
-	public TrilateralBatch(GL20 gl, ShaderSource src) {
-		this(gl, 512, src);
-	}
-
-	public TrilateralBatch(GL20 gl, int maxSize, ShaderSource src) {
+	public TrilateralBatch(Canvas gl, int maxSize) {
 		super(gl);
 		this.expandVertices = new ExpandVertices(maxSize);
 		this._shader_source = src;

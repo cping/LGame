@@ -101,6 +101,10 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		this(LSystem.loadTexture(path));
 	}
 
+	public Entity(final String path, final float x, final float y) {
+		this(LSystem.loadTexture(path), x, y);
+	}
+
 	public Entity(final LTexture texture) {
 		this(texture, 0, 0, texture == null ? 0 : texture.getWidth(), texture == null ? 0 : texture.getHeight());
 	}

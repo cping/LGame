@@ -39,6 +39,7 @@ import loon.canvas.LColor;
 import loon.canvas.Path;
 import loon.font.LFont;
 import loon.font.TextLayout;
+import loon.geom.Affine2f;
 
 public class JavaFXCanvas extends Canvas {
 

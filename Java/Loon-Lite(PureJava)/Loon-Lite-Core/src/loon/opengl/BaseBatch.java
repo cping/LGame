@@ -21,6 +21,7 @@
 package loon.opengl;
 
 import loon.LTexture;
+import loon.canvas.Canvas;
 import loon.geom.Affine2f;
 
 public abstract class BaseBatch extends LTextureBind {
@@ -96,7 +97,7 @@ public abstract class BaseBatch extends LTextureBind {
 			float y1, float sx1, float sy1, float x2, float y2, float sx2, float sy2, float x3, float y3, float sx3,
 			float sy3, float x4, float y4, float sx4, float sy4);
 
-	protected BaseBatch(GL20 gl) {
+	protected BaseBatch(Canvas gl) {
 		super(gl);
 	}
 }

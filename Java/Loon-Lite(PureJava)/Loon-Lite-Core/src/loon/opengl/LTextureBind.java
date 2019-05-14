@@ -21,9 +21,12 @@
 package loon.opengl;
 
 import loon.LTexture;
+import loon.canvas.Canvas;
+import loon.utils.GLUtils;
 
 public class LTextureBind extends GLBase {
 
+	protected Canvas gl = null;
 	protected int curTexId = -1;
 	protected int lastTexId = -1;
 
@@ -50,12 +53,12 @@ public class LTextureBind extends GLBase {
 		curTexId = -1;
 	}
 
-	protected LTextureBind() {
-	
+	protected LTextureBind(Canvas g) {
+		this.gl = g;
 	}
 
 	protected void bindTexture() {
-		GLUtils.bindTexture(gl, curTexId);
+		GLUtils.bindTexture(curTexId);
 	}
 
 	@Override

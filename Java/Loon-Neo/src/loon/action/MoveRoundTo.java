@@ -97,7 +97,7 @@ public class MoveRoundTo extends ActionEvent {
 					* (this.startRadius + this.radius);
 			float y = this.centerPoint.y + MathUtils.sin(radian)
 					* (this.startRadius + this.radius);
-			this.original.setLocation(x +original.getWidth()/2+ offsetX, y +original.getHeight()/2+ offsetY);
+			movePos(x +original.getWidth()/2+ offsetX, y +original.getHeight()/2+ offsetY);
 			return;
 		}
 		float currentRadius = this.startRadius + this.radius
@@ -108,7 +108,7 @@ public class MoveRoundTo extends ActionEvent {
 				* currentRadius);
 		this.startPoint.y = (this.centerPoint.y + MathUtils.sin(radian)
 				* currentRadius);
-		this.original.setLocation(this.startPoint.x + offsetX, this.startPoint.y
+		movePos(this.startPoint.x + offsetX, this.startPoint.y
 				+ offsetY);
 	}
 

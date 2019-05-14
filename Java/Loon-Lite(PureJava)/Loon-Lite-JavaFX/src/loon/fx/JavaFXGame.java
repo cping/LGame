@@ -53,8 +53,9 @@ public class JavaFXGame extends LGame {
 	}
 
 	protected final Canvas gameCanvas;
-	private final JavaFXAppliaction app;
+	protected final JavaFXAppliaction app;
 	private final JavaFXAccelerometer accelerometer;
+	private final JavaFXInputMake input;
 	private final JavaFXSave save;
 	private final JavaFXGraphics graphics;
 	private final JavaFXAssets assets;
@@ -70,6 +71,7 @@ public class JavaFXGame extends LGame {
 		super(config, plat);
 		this.app = new JavaFXAppliaction(this);
 		this.assets = new JavaFXAssets(this);
+		this.input = new JavaFXInputMake(this);
 		this.log = new JavaFXLog();
 		this.support = new NativeSupport();
 		this.save = new JavaFXSave(log, config.appName);
@@ -167,7 +169,7 @@ public class JavaFXGame extends LGame {
 
 	@Override
 	public InputMake input() {
-		return null;
+		return this.input;
 	}
 
 	@Override
