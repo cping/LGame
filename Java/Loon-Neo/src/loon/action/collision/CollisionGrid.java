@@ -37,7 +37,6 @@ public class CollisionGrid {
 	private final PointF traverse_initStepY = new PointF();
 	private final PointF cellRect_cxy = new PointF();
 	
-	
 	public static void toWorld(float cellSizeX, float cellSizeY, float cx, float cy, PointF point) {
 		point.set((cx - 1) * cellSizeX, (cy - 1) * cellSizeY);
 	}

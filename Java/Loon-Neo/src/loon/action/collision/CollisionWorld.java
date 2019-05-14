@@ -43,6 +43,8 @@ public class CollisionWorld {
 	}
 
 	private final static float DELTA = 1e-5f;
+	
+	private CollisionFilter worldCollisionFilter;
 
 	private final Screen gameScreen;
 
@@ -89,6 +91,7 @@ public class CollisionWorld {
 		this.gameScreen = s;
 		this.cellSizeX = cellx;
 		this.cellSizeY = celly;
+		this.worldCollisionFilter = CollisionFilter.getDefault();
 	}
 
 	public CollisionManager getCollisionManager() {
@@ -275,7 +278,7 @@ public class CollisionWorld {
 
 	public Collisions project(ActionBind bind, float x, float y, float w, float h, float goalX, float goalY,
 			Collisions collisions) {
-		return project(bind, x, y, w, h, goalX, goalY, CollisionFilter.defaultFilter, collisions);
+		return project(bind, x, y, w, h, goalX, goalY, worldCollisionFilter, collisions);
 	}
 
 	public Collisions project(ActionBind bind, float x, float y, float w, float h, float goalX, float goalY,
@@ -440,7 +443,7 @@ public class CollisionWorld {
 	}
 
 	public CollisionResult.Result check(ActionBind bind, float goalX, float goalY) {
-		return check(bind, goalX, goalY, CollisionFilter.defaultFilter);
+		return check(bind, goalX, goalY, worldCollisionFilter);
 	}
 
 	public CollisionResult.Result check(ActionBind bind, float goalX, float goalY, final CollisionFilter filter) {
@@ -455,7 +458,7 @@ public class CollisionWorld {
 					return null;
 				}
 				if (filter == null) {
-					return defaultFilter.filter(bind, other);
+					return worldCollisionFilter.filter(bind, other);
 				}
 				return filter.filter(bind, other);
 			}
@@ -491,7 +494,7 @@ public class CollisionWorld {
 	}
 
 	public CollisionResult.Result move(ActionBind bind, float goalX, float goalY) {
-		return move(bind, goalX, goalY, CollisionFilter.defaultFilter);
+		return move(bind, goalX, goalY, worldCollisionFilter);
 	}
 
 	public CollisionResult.Result move(ActionBind bind, float goalX, float goalY, CollisionFilter filter) {
@@ -500,6 +503,14 @@ public class CollisionWorld {
 		return result;
 	}
 
+	public CollisionFilter getWorldCollisionFilter() {
+		return worldCollisionFilter;
+	}
+
+	public void setWorldCollisionFilter(CollisionFilter collisionFilter) {
+		this.worldCollisionFilter = collisionFilter;
+	}
+	
 	public Screen getGameScreen() {
 		return gameScreen;
 	}

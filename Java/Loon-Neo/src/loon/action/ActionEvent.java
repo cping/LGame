@@ -20,6 +20,7 @@
  */
 package loon.action;
 
+import loon.action.collision.CollisionFilter;
 import loon.action.collision.CollisionResult;
 import loon.action.collision.CollisionWorld;
 import loon.utils.StringKeyValue;
@@ -34,6 +35,8 @@ public abstract class ActionEvent {
 	protected boolean firstTick, _isCompleted, isInit;
 
 	protected CollisionWorld collisionWorld;
+
+	protected CollisionFilter worldCollisionFilter;
 
 	protected ActionBind original;
 
@@ -182,7 +185,10 @@ public abstract class ActionEvent {
 			return;
 		}
 		if (collisionWorld != null) {
-			CollisionResult.Result result = collisionWorld.move(original, x, y);
+			if (worldCollisionFilter == null) {
+				worldCollisionFilter = CollisionFilter.getDefault();
+			}
+			CollisionResult.Result result = collisionWorld.move(original, x, y, worldCollisionFilter);
 			original.setLocation(result.goalX, result.goalY);
 		} else {
 			original.setLocation(x, y);

@@ -21,6 +21,7 @@
 package loon.action;
 
 import loon.LSystem;
+import loon.action.collision.CollisionFilter;
 import loon.action.collision.CollisionResult;
 import loon.action.map.AStarFindHeuristic;
 import loon.action.map.AStarFinder;
@@ -321,7 +322,7 @@ public class MoveTo extends ActionEvent {
 						}
 					}
 				}
-				if (collisionWorld != null || (endX == startX && endY == startY)) {
+				if (endX == startX && endY == startY) {
 					if (pActorPath.size > 1) {
 						Vector2f moveStart = pActorPath.get(0);
 						Vector2f moveEnd = pActorPath.get(1);
@@ -407,20 +408,30 @@ public class MoveTo extends ActionEvent {
 					synchronized (original) {
 						float newX = startX + offsetX;
 						float newY = startY + offsetY;
-						if (collisionWorld != null) {
-							CollisionResult.Result result = collisionWorld.move(original, newX, newY);
-							if (newX != result.goalX || newY != result.goalY) {
-								clearPath();
-								original.setLocation(result.goalX, result.goalY);
-							} else {
-								original.setLocation(newX, newY);
-							}
-						} else {
-							original.setLocation(newX, newY);
-						}
+						movePathPos(newX, newY);
 					}
 				}
 			}
+		}
+	}
+
+	public void movePathPos(float newX, float newY) {
+		if (collisionWorld != null) {
+			if (worldCollisionFilter == null) {
+				worldCollisionFilter = CollisionFilter.getDefault();
+			}
+			CollisionResult.Result result = collisionWorld.move(original, newX, newY, worldCollisionFilter);
+			if (result.goalX != newX || result.goalY != newY) {
+				clearPath();
+				endLocation.set(result.goalX, result.goalY);
+				startLocation.set(newX, newY);
+				updatePath();
+				original.setLocation(result.goalX, result.goalY);
+			} else {
+				original.setLocation(newX, newY);
+			}
+		} else {
+			original.setLocation(newX, newY);
 		}
 	}
 

@@ -34,8 +34,8 @@ public class CollisionWorldTest extends Stage {
 	public void create() {
 
 		// 定义一个碰撞世界(此类会处理位置变化)
-		CollisionWorld world = new CollisionWorld(this);
-		ActionBind item1 = world.add(new Entity("ball.png", 66, 66));
+		final CollisionWorld world = new CollisionWorld(this);
+		final ActionBind item1 = world.add(new Entity("ball.png", 66, 66));
 		ActionBind item2 = world.add(new Entity("ball.png", 266, 166));
 		ActionBind item3 = world.add(new Entity("ball.png", 155, 100));
 		up(new Touched() {

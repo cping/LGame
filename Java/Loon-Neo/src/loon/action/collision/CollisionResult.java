@@ -24,14 +24,14 @@ import loon.geom.PointF;
 
 public abstract class CollisionResult {
 
-	public abstract Result response(CollisionWorld world, CollisionData collision, float x, float y, float w, float h, float goalX,
-			float goalY, CollisionFilter filter, Result result);
+	public abstract Result response(CollisionWorld world, CollisionData collision, float x, float y, float w, float h,
+			float goalX, float goalY, CollisionFilter filter, Result result);
 
 	public static class Result {
 
 		public float goalX;
 		public float goalY;
-		
+
 		public Collisions collisions = new Collisions();
 
 		public void set(float goalX, float goalY) {
@@ -40,80 +40,88 @@ public abstract class CollisionResult {
 		}
 	}
 
-	public static CollisionResult slide = new CollisionResult() {
-		@Override
-		public   Result response(CollisionWorld world, CollisionData collision, float x, float y, float w, float h, float goalX,
-				float goalY, CollisionFilter filter, Result result) {
-			PointF tch = collision.touch;
-			PointF move = collision.move;
-			float sx = tch.x, sy = tch.y;
-			if (move.x != 0 || move.y != 0) {
-				if (collision.normal.x == 0) {
-					sx = goalX;
-				} else {
-					sy = goalY;
+	public static CollisionResult newSlide() {
+		return new CollisionResult() {
+			@Override
+			public Result response(CollisionWorld world, CollisionData collision, float x, float y, float w, float h,
+					float goalX, float goalY, CollisionFilter filter, Result result) {
+				PointF tch = collision.touch;
+				PointF move = collision.move;
+				float sx = tch.x, sy = tch.y;
+				if (move.x != 0 || move.y != 0) {
+					if (collision.normal.x == 0) {
+						sx = goalX;
+					} else {
+						sy = goalY;
+					}
 				}
+
+				x = tch.x;
+				y = tch.y;
+				goalX = sx;
+				goalY = sy;
+				result.collisions.clear();
+				world.project(collision.item, x, y, w, h, goalX, goalY, filter, result.collisions);
+				result.set(goalX, goalY);
+				return result;
 			}
+		};
+	}
 
-			x = tch.x;
-			y = tch.y;
-			goalX = sx;
-			goalY = sy;
-			result.collisions.clear();
-			world.project(collision.item, x, y, w, h, goalX, goalY, filter, result.collisions);
-			result.set(goalX, goalY);
-			return result;
-		}
-	};
+	public static CollisionResult newTouch() {
+		return new CollisionResult() {
+			@Override
+			public Result response(CollisionWorld world, CollisionData collision, float x, float y, float w, float h,
+					float goalX, float goalY, CollisionFilter filter, Result result) {
+				result.collisions.clear();
+				result.set(collision.touch.x, collision.touch.y);
+				return result;
+			}
+		};
+	}
 
-	public static CollisionResult touch = new CollisionResult() {
-		@Override
-		public   Result response(CollisionWorld world, CollisionData collision, float x, float y, float w, float h, float goalX,
-				float goalY, CollisionFilter filter, Result result) {
-			result.collisions.clear();
-			result.set(collision.touch.x, collision.touch.y);
-			return result;
-		}
-	};
+	public static CollisionResult newCross() {
+		return new CollisionResult() {
+			@Override
+			public Result response(CollisionWorld world, CollisionData collision, float x, float y, float w, float h,
+					float goalX, float goalY, CollisionFilter filter, Result result) {
+				result.collisions.clear();
+				world.project(collision.item, x, y, w, h, goalX, goalY, filter, result.collisions);
+				result.set(goalX, goalY);
+				return result;
+			}
+		};
+	}
 
-	public  static CollisionResult cross = new CollisionResult() {
-		@Override
-		public   Result response(CollisionWorld world, CollisionData collision, float x, float y, float w, float h, float goalX,
-				float goalY, CollisionFilter filter, Result result) {
-			result.collisions.clear();
-			world.project(collision.item, x, y, w, h, goalX, goalY, filter, result.collisions);
-			result.set(goalX, goalY);
-			return result;
-		}
-	};
-	
-	public static CollisionResult bounce = new CollisionResult() {
-		@Override
-		public   Result response(CollisionWorld world, CollisionData collision, float x, float y, float w, float h, float goalX,
-				float goalY, CollisionFilter filter, Result result) {
-			PointF tch = collision.touch;
-			PointF move = collision.move;
-			float bx = tch.x, by = tch.y;
-			if (move.x != 0 || move.y != 0) {
-				float bnx = goalX - tch.x;
-				float bny = goalY - tch.y;
-				if (collision.normal.x == 0) {
-					bny = -bny;
-				} else {
-					bnx = -bnx;
+	public static CollisionResult newBounce() {
+		return new CollisionResult() {
+			@Override
+			public Result response(CollisionWorld world, CollisionData collision, float x, float y, float w, float h,
+					float goalX, float goalY, CollisionFilter filter, Result result) {
+				PointF tch = collision.touch;
+				PointF move = collision.move;
+				float bx = tch.x, by = tch.y;
+				if (move.x != 0 || move.y != 0) {
+					float bnx = goalX - tch.x;
+					float bny = goalY - tch.y;
+					if (collision.normal.x == 0) {
+						bny = -bny;
+					} else {
+						bnx = -bnx;
+					}
+					bx = tch.x + bnx;
+					by = tch.y + bny;
 				}
-				bx = tch.x + bnx;
-				by = tch.y + bny;
-			}
 
-			x = tch.x;
-			y = tch.y;
-			goalX = bx;
-			goalY = by;
-			result.collisions.clear();
-			world.project(collision.item, x, y, w, h, goalX, goalY, filter, result.collisions);
-			result.set(goalX, goalY);
-			return result;
-		}
-	};
+				x = tch.x;
+				y = tch.y;
+				goalX = bx;
+				goalY = by;
+				result.collisions.clear();
+				world.project(collision.item, x, y, w, h, goalX, goalY, filter, result.collisions);
+				result.set(goalX, goalY);
+				return result;
+			}
+		};
+	}
 }
