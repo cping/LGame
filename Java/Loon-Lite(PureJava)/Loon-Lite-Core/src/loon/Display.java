@@ -265,7 +265,7 @@ public class Display extends LSystemView {
 		super(game, updateRate);
 		_setting = LSystem.base().setting;
 		_process = LSystem.getProcess();
-		_glEx = new GLEx(game.graphics(), game.graphics().defaultRenderTarget, gl);
+		_glEx = new GLEx(game.graphics(), game.graphics().defaultRenderTarget);
 		_glEx.update();
 		updateSyncTween(_setting.isSyncTween);
 		if (!_setting.isLogo) {

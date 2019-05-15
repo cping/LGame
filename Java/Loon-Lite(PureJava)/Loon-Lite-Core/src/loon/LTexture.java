@@ -41,7 +41,6 @@ import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.reply.UnitPort;
 import loon.utils.timer.LTimerContext;
-import static loon.opengl.GL20.*;
 
 public class LTexture extends Painter implements LRelease {
 	
@@ -166,25 +165,21 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	public float toTexWidth() {
-		return config.toTexWidth(pixelWidth);
+		return pixelWidth;
 	}
 
 	public float toTexHeight() {
-		return config.toTexHeight(pixelHeight);
+		return pixelHeight;
 	}
 
 	public void reference() {
-		if (config.managed) {
 			refCount++;
-		}
 	}
 
 	public void release() {
-		if (config.managed) {
 			if (--refCount == 0) {
 				close(true);
 			}
-		}
 	}
 
 	public String src() {
@@ -287,31 +282,12 @@ public class LTexture extends Painter implements LRelease {
 		this.source = image.getSource();
 
 		if (image != null) {
-			if (config.repeatX || config.repeatY || config.mipmaps) {
-				int pixWidth = image.pixelWidth(), pixHeight = image.pixelHeight();
-				int potWidth = config.toTexWidth(pixWidth), potHeight = config.toTexWidth(pixHeight);
-				if (potWidth != pixWidth || potHeight != pixHeight) {
-					Canvas scaled = gfx.createCanvasImpl(Scale.ONE, potWidth, potHeight);
-					scaled.draw(image, 0, 0, potWidth, potHeight);
-					scaled.image.upload(gfx, LTexture.this);
-					scaled.close();
-				} else {
-					image.upload(gfx, LTexture.this);
-				}
-			} else {
-				image.upload(gfx, LTexture.this);
-			}
 			imageWidth = image.getWidth();
 			imageHeight = image.getHeight();
-			if (config.mipmaps) {
-				gfx.gl.glGenerateMipmap(GL_TEXTURE_2D);
-			}
 		}
-		if (config.mipmaps) {
-			_memorySize = imageWidth * imageHeight * 4 * (1 + 1 / 3);
-		} else {
+	
 			_memorySize = imageWidth * imageHeight * 4;
-		}
+		
 		if (closed && !_isReload) {
 			if (image != null && (image.getSource() == null || image.getSource().indexOf("<canvas>") != -1)
 					&& gfx.game != null && gfx.game.setting.saveTexturePixels) {
@@ -344,13 +320,9 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	public void bind() {
-		GLUtils.bindTexture(gfx.gl, id);
+		GLUtils.bindTexture(id);
 	}
 
-	public void bind(int unit) {
-		gfx.gl.glActiveTexture(GL20.GL_TEXTURE0 + unit);
-		GLUtils.bindTexture(gfx.gl, id);
-	}
 
 	@Override
 	public LTexture texture() {
@@ -592,17 +564,6 @@ public class LTexture extends Painter implements LRelease {
 		return this;
 	}
 
-	public LTexture setColor(GLPaint paint) {
-		if (colors == null) {
-			colors = new LColor[4];
-		}
-		colors[0] = paint.getTopLeftColor();
-		colors[1] = paint.getTopRightColor();
-		colors[2] = paint.getBottomLeftColor();
-		colors[3] = paint.getBottomRightColor();
-		return this;
-	}
-
 	public LTexture setColor(int corner, float r, float g, float b, float a) {
 		if (colors == null) {
 			colors = new LColor[] { new LColor(1f, 1f, 1f, 1f), new LColor(1f, 1f, 1f, 1f), new LColor(1f, 1f, 1f, 1f),
@@ -639,16 +600,11 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	public LTextureBatch getTextureBatch(String name, int size) {
-		makeBatch(name, TrilateralBatch.DEF_SOURCE, size);
+		makeBatch(name,  size);
 		return batch;
 	}
 
-	public LTextureBatch getTextureBatch(String name, ShaderSource source, int size) {
-		makeBatch(name, source, size);
-		return batch;
-	}
-
-	protected void makeBatch(String name, ShaderSource source, int size) {
+	protected void makeBatch(String name,  int size) {
 		if (!checkExistBatch()) {
 			batch = gfx.game.getBatchCache(this);
 			if (batch == null || batch.closed()) {
