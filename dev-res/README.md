@@ -1,4 +1,4 @@
-# Java(Android)游戏开发领域常用资源 (游戏素材,游戏资源,不定期更新:本次更新日期 2019-03-20)
+# Java(Android)游戏开发领域常用资源 (游戏素材,游戏资源,不定期更新:本次更新日期 2019-05-15)
 
 ### Java游戏开发框架及资源(仅包含还在更新的)
 
@@ -9,6 +9,9 @@
 * GameComposer: Java/JavaFX游戏引擎,支持多种web平台转换。[项目地址](https://github.com/mirkosertic/GameComposer)
 * playn: 2D的Java游戏引擎，支持多平台。 [项目地址](https://github.com/threerings/playn/)
 * FXGL: Java / JavaFX / Kotlin Game Library (Engine)  [项目地址](https://github.com/AlmasB/FXGL/)
+* Rajawali: 只能运行于Android的Java 2D/3D游戏引擎，但是对Android特性有很好的封装，环境针对性很强，基本上Android支持的3D API(VR什么的)，它都支持。[项目地址](https://github.com/Rajawali/Rajawali/)
+* Litleengine: 一个纯Java的2D游戏引擎项目，本身是一套Swing封装。[项目地址](https://github.com/gurkenlabs/litiengine/)
+* Lionengine: 依旧是一个纯Java的2D游戏引擎项目，支持AWT、SWT(Eclipse提供的，基于JavaSE的渲染库)，还有Android运行。[项目地址](https://github.com/b3dgs/lionengine/)
 * LWJGL: 目前最常用的，对OpenGL/CL/AL等渲染API进行本地封装的Java开发包。[官网](http://lwjgl.org/)
 * JavaFX: Java官方目前最推荐的UI库，号称是Swing以及Applet的后继者，也可以用于游戏开发官方提供有Android环境的本地支持库，通过Robovm也可以支持IOS平台。[官网](http://www.oracle.com/technetwork/java/javase/overview/javafx-overview-2158620.html)
 * Scene Builder: 开发JavaFX应用的可视化布局工具。[下载地址](http://gluonhq.com/open-source/scene-builder/)
@@ -25,6 +28,8 @@
 * Bytecoder: 一个类似于TeaVM的Java to JavaScript工具。[项目地址](https://github.com/mirkosertic/Bytecoder)
 * j2obj: 仿造GWT原理的Java to Objective-C代码转换器，在IOS上拥有较为完整的JRE本地支持，可以满足大多数【平台无关】的Java代码直接转换到IOS环境。[项目地址](https://github.com/google/j2objc/)
 * openjdk: 完全开源的JDK（JRE）支持库，运行API上与Oracle版并无区别，但是实现上全部开源，也没有商用限制，也就是用户可以自行删减内容，方便精简出游戏专用JRE（而官方版在使用协议上是不能自行精简的）。 [完整编译版地址](https://github.com/alexkasko/openjdk-unofficial-builds/)
+* openjfx: JavaFX的开源社区版，由于JavaFX已经不是JDK的自带类库，所以openjfx已经可以看作是JavaFX的本体，两者关系近似于MonoGame和XNA，只不过openjfx现在没有monogame那么大使用量和那么多支持的平台罢了，仅仅是可以跑Windows、Linux、Mac、Android和IOS(而且android和ios支持也不太友好,还有个编译为js的纯收费项目不提也罢，官方示例在我手机上进浏览器就卡死|||)，但也不排除以后openjfx突然火了，变得能支持更多平台。[Github地址](https://github.com/javafxports/openjdk-jfx)
+* GraalVM: Oracle推出的一个多语言支持VM，本体以JDK为基础构建，但也套用了如LLVM之类第三方环境，除了如Java，Scala，Kotlin之类标准JVM语言运行外，还支持node.js环境模拟、以及C、C++之类编译型语言的虚拟机运行，某种程度上，可以把它看作一个Java环境的GCC。除此之外，它最大的特点是允许把运行在此虚拟机的程序利用Native-Image指令AOT静态编译为纯本地库（虽然目前只支持Linux环境，而且暂时没有支持Android的计划，IOS就更别提了，不过它的issues上有人询问过，未来可能支持，话说最近AOT化Java字节码为本地指令的项目很多，预订年底开源的华为方舟编译器也是类似的存在，不愁Java代码不能本地化）,对了，推特服务器现在跑的Java环境，就是[定制版]GraalVM本地化后运行的。[Github地址](https://github.com/oracle/graal)
 
 ### Java的程序打包工具
 
