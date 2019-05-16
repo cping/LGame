@@ -31,6 +31,22 @@ public class AnimatedEntity extends Entity {
 
 	public static class PlayIndex {
 
+		public final static PlayIndex at(int[] animates) {
+			return at(220, animates);
+		}
+
+		public final static PlayIndex at(long frameTime, int[] animates) {
+			if (animates == null) {
+				return null;
+			}
+			int size = animates.length;
+			long[] frames = new long[size];
+			for (int i = 0; i < size; i++) {
+				frames[i] = frameTime;
+			}
+			return create(frames, animates);
+		}
+
 		public final static PlayIndex at(long[] frames, int[] animates) {
 			return create(frames, animates);
 		}

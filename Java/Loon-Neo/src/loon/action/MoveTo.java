@@ -57,6 +57,8 @@ public class MoveTo extends ActionEvent {
 
 	private boolean moveByMode = false;
 
+	private boolean isDirUpdate = false;
+
 	public MoveTo(float x, float y, boolean flag) {
 		this(LSystem.viewSize.newField2D(), x, y, flag, 4);
 	}
@@ -272,43 +274,91 @@ public class MoveTo extends ActionEvent {
 	@Override
 	public void update(long elapsedTime) {
 		if (moveByMode) {
-			float x = original.getX();
-			float y = original.getY();
+			int count = 0;
 			int dirX = (int) (endX - startX);
 			int dirY = (int) (endY - startY);
-			int count = 0;
-			if (dirX > 0) {
-				if (x >= endX) {
-					count++;
+			int dir = Field2D.getDirection(dirX, dirY, direction);
+			if (flag) {
+				float x = original.getX();
+				float y = original.getY();
+				if (dirX > 0) {
+					if (x >= endX) {
+						count++;
+					} else {
+						x += speed;
+					}
+				} else if (dirX < 0) {
+					if (x <= endX) {
+						count++;
+					} else {
+						x -= speed;
+					}
 				} else {
-					x += speed;
-				}
-			} else if (dirX < 0) {
-				if (x <= endX) {
 					count++;
-				} else {
-					x -= speed;
 				}
+				if (dirY > 0) {
+					if (y >= endY) {
+						count++;
+					} else {
+						y += speed;
+					}
+				} else if (dirY < 0) {
+					if (y <= endY) {
+						count++;
+					} else {
+						y -= speed;
+					}
+				} else {
+					count++;
+				}
+				float lastX = original.getX();
+				float lastY = original.getY();
+				float newX = x + offsetX;
+				float newY = y + offsetY;
+				updateDirection((int) (newX - lastX), (int) (newY - lastY));
+				movePos(newX, newY);
+				_isCompleted = (count == 2);
 			} else {
-				count++;
-			}
-			if (dirY > 0) {
-				if (y >= endY) {
-					count++;
-				} else {
-					y += speed;
+				switch (dir) {
+				case Field2D.TUP:
+				case Field2D.UP:
+					startY -= speed;
+					if (startY < endY) {
+						startY = endY;
+					}
+					break;
+				case Field2D.TDOWN:
+				case Field2D.DOWN:
+					startY += speed;
+					if (startY > endY) {
+						startY = endY;
+					}
+					break;
+				case Field2D.TLEFT:
+				case Field2D.LEFT:
+					startX -= speed;
+					if (startX < endX) {
+						startX = endX;
+					}
+					break;
+				case Field2D.TRIGHT:
+				case Field2D.RIGHT:
+					startX += speed;
+					if (startX > endX) {
+						startX = endX;
+					}
+					break;
 				}
-			} else if (dirY < 0) {
-				if (y <= endY) {
-					count++;
-				} else {
-					y -= speed;
+				float lastX = original.getX();
+				float lastY = original.getY();
+				float newX = startX + offsetX;
+				float newY = startY + offsetY;
+				updateDirection((int) (newX - lastX), (int) (newY - lastY));
+				movePos(newX, newY);
+				if (endX - startX == 0 && endY - startY == 0) {
+					_isCompleted = true;
 				}
-			} else {
-				count++;
 			}
-			movePos(x + offsetX, y + offsetY);
-			_isCompleted = (count == 2);
 		} else {
 			if (layerMap == null || original == null || pActorPath == null || pActorPath.size == 0) {
 				return;
@@ -332,9 +382,7 @@ public class MoveTo extends ActionEvent {
 						endY = moveEnd.y() * layerMap.getTileHeight();
 						moveX = moveEnd.x() - moveStart.x();
 						moveY = moveEnd.y() - moveStart.y();
-						if (moveX > -2 && moveY > -2 && moveX < 2 && moveY < 2) {
-							direction = Field2D.getDirection(moveX, moveY, direction);
-						}
+						updateDirection(moveX, moveY);
 					}
 					pActorPath.removeIndex(0);
 				}
@@ -463,6 +511,16 @@ public class MoveTo extends ActionEvent {
 	public boolean isComplete() {
 		return moveByMode ? _isCompleted
 				: (pActorPath == null || pActorPath.size == 0 || _isCompleted || original == null);
+	}
+
+	public boolean isDirectionUpdate() {
+		return isDirUpdate;
+	}
+
+	public void updateDirection(int x, int y) {
+		int oldDir = direction;
+		direction = Field2D.getDirection(x, y, oldDir);
+		isDirUpdate = (oldDir != direction);
 	}
 
 	public boolean isUseCache() {

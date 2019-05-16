@@ -23,6 +23,7 @@ package loon.action;
 import loon.utils.StringKeyValue;
 import loon.LSystem;
 import loon.action.collision.CollisionWorld;
+import loon.action.map.Field2D;
 import loon.utils.Easing.EasingMode;
 import loon.utils.timer.EaseTimer;
 
@@ -31,6 +32,10 @@ public class MoveBy extends ActionEvent {
 	private int _speed = 1;
 
 	private float _startX = -1, _startY = -1, _endX, _endY;
+
+	private int _direction = -1;
+
+	private boolean isDirUpdate = false;
 
 	private EaseTimer easeTimer;
 
@@ -78,8 +83,13 @@ public class MoveBy extends ActionEvent {
 					_isCompleted = true;
 					return;
 				}
-				float newX = _startX + (_endX - _startX) * easeTimer.getProgress() + offsetX;
-				float newY = _startY + (_endY - _startY) * easeTimer.getProgress() + offsetY;
+				float dirX = (_endX - _startX);
+				float dirY = (_endY - _startY);
+				float newX = _startX + dirX * easeTimer.getProgress() + offsetX;
+				float newY = _startY + dirY * easeTimer.getProgress() + offsetY;
+				float lastX = original.getX();
+				float lastY = original.getY();
+				updateDirection((int) (newX - lastX), (int) (newY - lastY));
 				movePos(newX, newY);
 			} else {
 				float x = original.getX();
@@ -117,12 +127,29 @@ public class MoveBy extends ActionEvent {
 				} else {
 					count++;
 				}
+				float lastX = original.getX();
+				float lastY = original.getY();
 				float newX = x + offsetX;
 				float newY = y + offsetY;
+				updateDirection((int) (newX - lastX), (int) (newY - lastY));
 				movePos(newX, newY);
 				_isCompleted = (count == 2);
 			}
 		}
+	}
+
+	public int getDirection() {
+		return _direction;
+	}
+
+	public boolean isDirectionUpdate() {
+		return isDirUpdate;
+	}
+
+	public void updateDirection(int x, int y) {
+		int oldDir = _direction;
+		_direction = Field2D.getDirection(x, y, oldDir);
+		isDirUpdate = (oldDir != _direction);
 	}
 
 	@Override

@@ -181,6 +181,10 @@ public abstract class ActionEvent {
 	}
 
 	public void movePos(float x, float y) {
+		movePos(x, y, -1f, -1f);
+	}
+
+	public void movePos(float x, float y, float lastX, float lastY) {
 		if (original == null) {
 			return;
 		}
@@ -189,7 +193,15 @@ public abstract class ActionEvent {
 				worldCollisionFilter = CollisionFilter.getDefault();
 			}
 			CollisionResult.Result result = collisionWorld.move(original, x, y, worldCollisionFilter);
-			original.setLocation(result.goalX, result.goalY);
+			if (lastX != -1 && lastY != -1) {
+				if (result.goalX != x || result.goalY != y) {
+					original.setLocation(lastX, lastY);
+				} else {
+					original.setLocation(result.goalX, result.goalY);
+				}
+			} else {
+				original.setLocation(result.goalX, result.goalY);
+			}
 		} else {
 			original.setLocation(x, y);
 		}

@@ -37,7 +37,7 @@ import loon.utils.TArray;
 public class Field2D implements IArray, Config {
 
 	private final static float ANGULAR = 0.706F;
-	
+
 	private String _objectName = "Field2D";
 
 	private Vector2f _offset = new Vector2f();
@@ -152,7 +152,8 @@ public class Field2D implements IArray, Config {
 		} else if (y < 0) {
 			newY = -1;
 		}
-		return getDirectionImpl(newX, newY);
+		int dir = getDirectionImpl(newX, newY);
+		return Config.EMPTY == dir ? value : dir;
 	}
 
 	private static final int getDirectionImpl(int x, int y) {
@@ -160,14 +161,14 @@ public class Field2D implements IArray, Config {
 			return Config.EMPTY;
 		} else if (x == 1 && y == -1) {
 			return Config.UP;
+		} else if (x == 0 && y == -1) {
+			return Config.TUP;
 		} else if (x == -1 && y == -1) {
 			return Config.LEFT;
 		} else if (x == 1 && y == 1) {
 			return Config.RIGHT;
 		} else if (x == -1 && y == 1) {
 			return Config.DOWN;
-		} else if (x == 0 && y == -1) {
-			return Config.TUP;
 		} else if (x == -1 && y == 0) {
 			return Config.TLEFT;
 		} else if (x == 1 && y == 0) {
