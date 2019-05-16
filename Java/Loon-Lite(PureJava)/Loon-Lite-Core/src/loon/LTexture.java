@@ -608,7 +608,7 @@ public class LTexture extends Painter implements LRelease {
 		if (!checkExistBatch()) {
 			batch = gfx.game.getBatchCache(this);
 			if (batch == null || batch.closed()) {
-				batch = new LTextureBatch(this, source, size);
+				batch = new LTextureBatch(this, size);
 				if (!StringUtils.isEmpty(name)) {
 					batch.setTextureBatchName(name);
 				}
@@ -951,7 +951,7 @@ public class LTexture extends Painter implements LRelease {
 					synchronized (LTexture.class) {
 						if (gfx.game.delTexture(textureId)) {
 							if (gfx.game.setting.disposeTexture && !_disposed && _closed) {
-								GLUtils.deleteTexture(gfx.gl, textureId);
+								//GLUtils.deleteTexture(textureId);
 								_disposed = true;
 							}
 							if (_image != null) {

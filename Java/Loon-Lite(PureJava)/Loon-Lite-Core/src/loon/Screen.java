@@ -4142,15 +4142,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	/**
-	 * 截屏并保存在texture
-	 * 
-	 * @return
-	 */
-	public LTexture screenshotToTexture() {
-		return screenshotToImage().onHaveToClose(true).texture();
-	}
-
-	/**
 	 * 返回全局通用的Bundle对象(作用类似Android中同名类,内部为key-value键值对形式的值,用来跨screen传递数据)
 	 * 
 	 * @return
@@ -4243,44 +4234,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return getBundle().calc(key);
 	}
 
-	/**
-	 * 截屏screen并转化为base64字符串
-	 * 
-	 * @return
-	 */
-	public String screenshotToBase64() {
-		Image tmp = screenshotToImage();
-		String base64 = tmp.getBase64();
-		tmp.close();
-		tmp = null;
-		return base64;
-	}
-
-	/**
-	 * 截屏screen并保存在image(image存在系统依赖,为系统本地image类组件的封装,所以效果可能存在差异)
-	 * 
-	 * @return
-	 */
-	public Image screenshotToImage() {
-		Image tmp = GLUtils.getScreenshot();
-		Image image = Image.getResize(tmp, getWidth(), getHeight());
-		tmp.close();
-		tmp = null;
-		return image;
-	}
-
-	/**
-	 * 截屏screen并保存在pixmap(pixmap本质上是一个无系统依赖的，仅存在于内存中的像素数组)
-	 * 
-	 * @return
-	 */
-	public Pixmap screenshotToPixmap() {
-		Pixmap pixmap = GLUtils.getFrameBufferRGBPixmap();
-		Pixmap image = Pixmap.getResize(pixmap, getWidth(), getHeight());
-		pixmap.close();
-		pixmap = null;
-		return image;
-	}
 
 	/**
 	 * 退出游戏
@@ -4289,69 +4242,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 */
 	public Screen exitGame() {
 		LSystem.exit();
-		return this;
-	}
-
-	/**
-	 * 返回video的缓存结果(不设置out对象时才会有效)
-	 * 
-	 * @return
-	 */
-	public ArrayByte getVideoCache() {
-		if (LSystem.base() != null && LSystem.base().display() != null) {
-			return LSystem.base().display().getVideoCache();
-		}
-		return new ArrayByte();
-	}
-
-	/**
-	 * 开始录像(默认使用ArrayByte缓存录像结果到内存中)
-	 * 
-	 * @return
-	 */
-	public Screen startVideo() {
-		if (LSystem.base() != null && LSystem.base().display() != null) {
-			LSystem.base().display().startVideo();
-		}
-		return this;
-	}
-
-	/**
-	 * 开始录像(指定一个OutputStream对象,比如FileOutputStream 输出录像结果到指定硬盘位置)
-	 * 
-	 * @param output
-	 * @return
-	 */
-	public Screen startVideo(OutputStream output) {
-		if (LSystem.base() != null && LSystem.base().display() != null) {
-			LSystem.base().display().startVideo(output);
-		}
-		return this;
-	}
-
-	/**
-	 * 开始录像(指定一个OutputStream对象,比如FileOutputStream 输出录像结果到指定硬盘位置)
-	 * 
-	 * @param output
-	 * @param delay
-	 * @return
-	 */
-	public Screen startVideo(OutputStream output, long delay) {
-		if (LSystem.base() != null && LSystem.base().display() != null) {
-			LSystem.base().display().startVideo(output, delay);
-		}
-		return this;
-	}
-
-	/**
-	 * 结束录像
-	 * 
-	 * @return
-	 */
-	public Screen stopVideo() {
-		if (LSystem.base() != null && LSystem.base().display() != null) {
-			LSystem.base().display().startVideo();
-		}
 		return this;
 	}
 

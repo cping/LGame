@@ -421,7 +421,7 @@ public abstract class LComponent extends LObject<LContainer>
 			return;
 		}
 		synchronized (this) {
-			int blend = g.getBlendMode();
+		//	int blend = g.getBlendMode();
 			boolean update = _rotation != 0 || !(_scaleX == 1f && _scaleY == 1f) || _flipX || _flipY;
 			try {
 				g.saveBrush();
@@ -460,7 +460,7 @@ public abstract class LComponent extends LObject<LContainer>
 						tx.translate(-centerX, -centerY);
 					}
 				}
-				g.setBlendMode(_blend);
+				//g.setBlendMode(_blend);
 				if (_drawBackground && _background != null) {
 					g.draw(_background, this._screenX, this._screenY, width, height, _component_baseColor);
 				}
@@ -479,7 +479,7 @@ public abstract class LComponent extends LObject<LContainer>
 				if (this._component_elastic) {
 					g.clearClip();
 				}
-				g.setBlendMode(blend);
+			//	g.setBlendMode(blend);
 				g.restoreBrush();
 			}
 		}

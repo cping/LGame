@@ -20,33 +20,42 @@
  */
 package loon.fx;
 
-import javafx.application.Application;
-import javafx.scene.Group;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
+import javafx.animation.AnimationTimer;
+import loon.LSetting;
+import loon.LazyLoading;
+import loon.Screen;
 
-public class Main extends Application {
+public class Main  {
 
-	@Override
-	public void start(Stage primaryStage) throws Exception {
-		float width = 640;
-		float height = 480;
-
-		TestCanvas canvas = new TestCanvas(width, height);
-
-		Group group = new Group();
-		group.getChildren().add(canvas);
-
-		Scene scene = new Scene(group, width, height);
-
-		primaryStage.setTitle("Loon Lite JavaFX Test");
-		primaryStage.setScene(scene);
-		primaryStage.show();
-
-	}
 
 	public static void main(String[] args) {
-		launch(args);
+		
+		LSetting setting = new LSetting();
+		// 原始大小
+		setting.width = 480;
+		setting.height = 320;
+		setting.isDebug = false;
+		setting.isLogo = false;
+		setting.isDisplayLog = false;
+
+		// 要求显示的大小
+		setting.width_zoom = 640;
+		setting.height_zoom = 480;
+		setting.logoPath = "loon_logo.png";
+		setting.isFPS = false;
+		setting.isMemory = false;
+
+		// 默认字体
+		setting.fontName = "黑体";
+		// setting.emulateTouch = true;
+
+		Loon.register(setting, new LazyLoading.Data() {
+
+			@Override
+			public Screen onScreen() {
+				return null;//new CollisionWorldTest();
+			}
+		});
 	}
 
 }

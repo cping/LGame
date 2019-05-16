@@ -540,7 +540,7 @@ public class LSTRFont implements IFont, LRelease {
 		final boolean scale = sx != 1f || sy != 1f;
 		final boolean angle = rotation != 0;
 		final boolean update = scale || angle || anchor;
-		final int blend = gl.getBlendMode();
+		/*final int blend = gl.getBlendMode();
 		try {
 			gl.setBlendMode(LSystem.MODE_NORMAL);
 			gl.setTint(c);
@@ -590,7 +590,7 @@ public class LSTRFont implements IFont, LRelease {
 			if (update) {
 				gl.restoreTx();
 			}
-		}
+		}*/
 	}
 
 	public void setUpdateX(float x) {
@@ -675,13 +675,13 @@ public class LSTRFont implements IFont, LRelease {
 		if (texture.isClosed()) {
 			return;
 		}
-		GL20 g = LSystem.base().graphics().gl;
+		/*GL20 g = LSystem.base().graphics().gl;
 		if (g != null) {
 			int old = GLUtils.getBlendMode();
 			GLUtils.setBlendMode(g, LSystem.MODE_NORMAL);
 			fontBatch.end();
 			GLUtils.setBlendMode(g, old);
-		}
+		}*/
 	}
 
 	private boolean processing() {
@@ -699,13 +699,13 @@ public class LSTRFont implements IFont, LRelease {
 		if (texture.isClosed()) {
 			return;
 		}
-		GL20 g = LSystem.base().graphics().gl;
+		/*GL20 g = LSystem.base().graphics().gl;
 		if (g != null) {
 			int old = GLUtils.getBlendMode();
 			GLUtils.setBlendMode(g, LSystem.MODE_NORMAL);
 			fontBatch.postLastCache();
 			GLUtils.setBlendMode(g, old);
-		}
+		}*/
 	}
 
 	public Cache saveCharCache() {

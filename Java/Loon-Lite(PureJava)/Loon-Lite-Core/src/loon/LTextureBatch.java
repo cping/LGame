@@ -165,31 +165,23 @@ public class LTextureBatch implements LRelease {
 		return texture;
 	}
 
-	private MeshDefault mesh;
+	//private MeshDefault mesh;
 
 	private BlendState lastBlendState = BlendState.NonPremultiplied;
 
 	public LTextureBatch(LTexture tex) {
-		this(tex, 256, TrilateralBatch.DEF_SOURCE, null);
+		this(tex, 256);
 	}
 
-	public LTextureBatch(LTexture tex, final ShaderSource src) {
-		this(tex, src, 256);
-	}
-
-	public LTextureBatch(LTexture tex, final ShaderSource src, int size) {
-		this(tex, size, src, null);
-	}
-
-	public LTextureBatch(LTexture tex, final int size, final ShaderSource src, final ShaderProgram defaultShader) {
+	public LTextureBatch(LTexture tex, final int size) {
 		if (size > 5460) {
 			throw new LSysException("Can't have more than 5460 sprites per batch: " + size);
 		}
 		this.setTexture(tex);
-		this.source = src;
-		this.shader = defaultShader;
+		//this.source = src;
+		//this.shader = defaultShader;
 		this.expandVertices = new ExpandVertices(size);
-		this.mesh = new MeshDefault();
+		//this.mesh = new MeshDefault();
 	}
 
 	public void glColor4f() {
@@ -235,9 +227,6 @@ public class LTextureBatch implements LRelease {
 
 	public void begin() {
 		if (!isLoaded) {
-			if (shader == null) {
-				shader = LSystem.createShader(source.vertexShader(), source.fragmentShader());
-			}
 			isLoaded = true;
 		}
 		if (drawing) {
@@ -247,12 +236,6 @@ public class LTextureBatch implements LRelease {
 		if (!isCacheLocked) {
 			vertexIdx = 0;
 			lastTexture = null;
-		}
-		LSystem.base().graphics().gl.glDepthMask(false);
-		if (customShader != null) {
-			customShader.begin();
-		} else {
-			shader.begin();
 		}
 		setupMatrices(LSystem.base().graphics().getViewMatrix());
 		drawing = true;
@@ -277,12 +260,6 @@ public class LTextureBatch implements LRelease {
 			submit();
 		}
 		drawing = false;
-		LSystem.base().graphics().gl.glDepthMask(true);
-		if (customShader != null) {
-			customShader.end();
-		} else {
-			shader.end();
-		}
 		LSystem.mainBeginDraw();
 	}
 
@@ -360,7 +337,7 @@ public class LTextureBatch implements LRelease {
 	}
 
 	public void submit(BlendState state) {
-		if (vertexIdx == 0) {
+	/*	if (vertexIdx == 0) {
 			return;
 		}
 		if (!isCacheLocked) {
@@ -400,7 +377,7 @@ public class LTextureBatch implements LRelease {
 			}
 			GLUtils.setBlendMode(gl, old);
 		}
-
+*/
 	}
 
 	public void setTextureBatchName(String n) {
@@ -417,15 +394,6 @@ public class LTextureBatch implements LRelease {
 		} else {
 			combinedMatrix.set(view);
 		}
-		if (customShader != null) {
-			customShader.setUniformMatrix("u_projTrans", combinedMatrix);
-			customShader.setUniformi("u_texture", 0);
-			source.setupShader(customShader);
-		} else {
-			shader.setUniformMatrix("u_projTrans", combinedMatrix);
-			shader.setUniformi("u_texture", 0);
-			source.setupShader(shader);
-		}
 	}
 
 	protected void switchTexture(LTexture texture) {
@@ -433,26 +401,6 @@ public class LTextureBatch implements LRelease {
 		lastTexture = texture;
 		invTexWidth = 1.0f / texWidth;
 		invTexHeight = 1.0f / texHeight;
-	}
-
-	protected void setShader(Matrix4 view, ShaderProgram shader) {
-		if (drawing) {
-			submit();
-			if (customShader != null) {
-				customShader.end();
-			} else {
-				this.shader.end();
-			}
-		}
-		customShader = shader;
-		if (drawing) {
-			if (customShader != null) {
-				customShader.begin();
-			} else {
-				this.shader.begin();
-			}
-			setupMatrices(view);
-		}
 	}
 
 	public boolean isDrawing() {
@@ -475,29 +423,12 @@ public class LTextureBatch implements LRelease {
 			end();
 		}
 		LSystem.mainEndDraw();
-		if (color == null) {
-			if (shader == null) {
-				shader = LSystem.createShader(source.vertexShader(), source.fragmentShader());
-			}
-			globalShader = shader;
-		} else if (globalShader == null) {
-			globalShader = LSystem.createShader(LSystem.getGLExVertexShader(), LSystem.getColorFragmentShader());
-		}
-		globalShader.begin();
-		float oldColor = getFloatColor();
-		if (color != null) {
-			globalShader.setUniformf("v_color", color.r, color.g, color.b, color.a);
-		}
 		if (batchMatrix != null) {
 			combinedMatrix.set(batchMatrix);
 		} else {
 			combinedMatrix.set(view);
 		}
-		if (globalShader != null) {
-			globalShader.setUniformMatrix("u_projTrans", combinedMatrix);
-			globalShader.setUniformi("u_texture", 0);
-		}
-		if (cache.vertexIdx > 0) {
+		/*if (cache.vertexIdx > 0) {
 			GL20 gl = LSystem.base().graphics().gl;
 			GLUtils.bindTexture(gl, texture.getID());
 			int old = GLUtils.getBlendMode();
@@ -522,21 +453,21 @@ public class LTextureBatch implements LRelease {
 		} else if (color != null) {
 			globalShader.setUniformf("v_color", oldColor);
 		}
-		globalShader.end();
+		globalShader.end();*/
 		LSystem.mainBeginDraw();
 		runningCache = true;
 	}
 
 	public void setIndices(short[] indices) {
-		mesh.getMesh(name, expandVertices.getSize()).setIndices(indices);
+	//	mesh.getMesh(name, expandVertices.getSize()).setIndices(indices);
 	}
 
 	public void resetIndices() {
-		mesh.resetIndices(name, expandVertices.getSize());
+		//mesh.resetIndices(name, expandVertices.getSize());
 	}
 
 	public void setGLType(int type) {
-		mesh.setGLType(type);
+		//mesh.setGLType(type);
 	}
 
 	public boolean postLastCache() {
@@ -1185,20 +1116,11 @@ public class LTextureBatch implements LRelease {
 		isClosed = true;
 		isLoaded = false;
 		isCacheLocked = false;
-		if (shader != null) {
-			shader.close();
-		}
-		if (globalShader != null) {
-			globalShader.close();
-		}
-		if (customShader != null) {
-			customShader.close();
-		}
 		if (lastCache != null) {
 			lastCache.close();
 		}
 		if (!_batch_name.equals(name)) {
-			mesh.dispose(name, expandVertices.getSize());
+		//	mesh.dispose(name, expandVertices.getSize());
 		}
 		LSystem.disposeBatchCache(this, false);
 		runningCache = false;

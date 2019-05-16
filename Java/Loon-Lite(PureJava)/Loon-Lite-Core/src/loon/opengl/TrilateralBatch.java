@@ -70,7 +70,7 @@ public class TrilateralBatch extends BaseBatch {
 			}
 			int count = spritesInBatch * 6;
 			bindTexture();
-			GL20 gl = LSystem.base().graphics().gl;
+		/*	GL20 gl = LSystem.base().graphics().gl;
 			int tmp = GLUtils.getBlendMode();
 			if (tmpColor.a >= 0.98f) {
 				GLUtils.setBlendMode(gl, LSystem.MODE_NORMAL);
@@ -78,12 +78,12 @@ public class TrilateralBatch extends BaseBatch {
 				GLUtils.setBlendMode(gl, LSystem.MODE_SPEED);
 			}
 			mesh.post(_batch_name, expandVertices.getSize(), shader, expandVertices.getVertices(), idx, count);
-			GLUtils.setBlendMode(gl, tmp);
+			GLUtils.setBlendMode(gl, tmp);*/
 		} catch (Throwable ex) {
 			LSystem.error("Batch submit() error", ex);
 		} finally {
 			if (expandVertices.expand(this.idx)) {
-				mesh.reset(_batch_name, expandVertices.length());
+			//	mesh.reset(_batch_name, expandVertices.length());
 			}
 			if (!lockSubmit) {
 				idx = 0;
@@ -92,28 +92,27 @@ public class TrilateralBatch extends BaseBatch {
 	}
 
 	private void setupMatrices() {
-		if (shader != null) {
+		/*if (shader != null) {
 			shader.setUniformMatrix("u_projTrans", viewMatrix);
 			shader.setUniformi("u_texture", 0);
 			_shader_source.setupShader(shader);
-		}
+		}*/
 	}
 
 	public TrilateralBatch(Canvas gl) {
-		this(gl, DEF_SOURCE);
+		this(gl,256);
 	}
 
 	public TrilateralBatch(Canvas gl, int maxSize) {
 		super(gl);
 		this.expandVertices = new ExpandVertices(maxSize);
-		this._shader_source = src;
 		this.viewMatrix = new Matrix4();
 		this.init();
 	}
 
 	@Override
 	public void init() {
-		this.mesh = new MeshDefault();
+	//	this.mesh = new MeshDefault();
 	}
 
 	protected float addX(float m00, float m01, float m10, float m11, float x, float y, float sx, float sy, float tx,

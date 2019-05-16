@@ -53,7 +53,6 @@ public class JavaFXGame extends LGame {
 	}
 
 	protected final Canvas gameCanvas;
-	protected final JavaFXAppliaction app;
 	private final JavaFXAccelerometer accelerometer;
 	private final JavaFXInputMake input;
 	private final JavaFXSave save;
@@ -69,7 +68,6 @@ public class JavaFXGame extends LGame {
 
 	public JavaFXGame(Platform plat, LSetting config) {
 		super(config, plat);
-		this.app = new JavaFXAppliaction(this);
 		this.assets = new JavaFXAssets(this);
 		this.input = new JavaFXInputMake(this);
 		this.log = new JavaFXLog();
@@ -82,15 +80,7 @@ public class JavaFXGame extends LGame {
 	}
 
 	public void reset() {
-
-	}
-
-	public int getWidth() {
-		return app.getWidth();
-	}
-
-	public int getHeight() {
-		return app.getHeight();
+		graphics.init();
 	}
 
 	@Override
@@ -200,6 +190,10 @@ public class JavaFXGame extends LGame {
 	@Override
 	public boolean isDesktop() {
 		return true;
+	}
+
+	public String getJavaFXProperty() {
+		return System.getProperty("javafx.platform");
 	}
 
 }

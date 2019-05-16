@@ -812,10 +812,10 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 			return;
 		}
 		boolean update = (_rotation != 0) || !(scaleX == 1f && scaleY == 1f);
-		int blend = g.getBlendMode();
+		//int blend = g.getBlendMode();
 		int tmp = g.color();
 		try {
-			g.setBlendMode(_blend);
+		//	g.setBlendMode(_blend);
 			g.setAlpha(_alpha);
 			if (this.roll) {
 				this.offset = toRollPosition(this.offset);
@@ -853,7 +853,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 			if (update) {
 				g.restoreTx();
 			}
-			g.setBlendMode(blend);
+		//	g.setBlendMode(blend);
 			g.setColor(tmp);
 		}
 	}

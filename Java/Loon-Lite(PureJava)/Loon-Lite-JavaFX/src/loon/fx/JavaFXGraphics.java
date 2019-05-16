@@ -20,6 +20,7 @@
  */
 package loon.fx;
 
+import javafx.animation.AnimationTimer;
 import javafx.scene.image.WritableImage;
 import loon.Graphics;
 import loon.canvas.Canvas;
@@ -34,6 +35,8 @@ public class JavaFXGraphics extends Graphics {
 	private final JavaFXGame game;
 
 	private Dimension screenSize = new Dimension();
+
+	protected AnimationTimer loopRunner;
 
 	protected JavaFXGraphics(JavaFXGame game) {
 		this(game, Scale.ONE);
@@ -74,6 +77,45 @@ public class JavaFXGraphics extends Graphics {
 		WritableImage bitmap = new WritableImage(pixelWidth, pixelHeight);
 		JavaFXImage image = new JavaFXImage(this, scale, bitmap, "<canvas>");
 		return new JavaFXCanvas(this, image);
+	}
+
+	protected void start() {
+		if (loopRunner == null) {
+			init();
+		}
+		loopRunner.start();
+    }
+    
+	protected void resume() {
+		if (loopRunner == null) {
+			return;
+		}
+		start();
+	}
+
+	protected void pause() {
+		stop();
+	}
+
+	protected void stop() {
+		if (loopRunner == null) {
+			return;
+		}
+		loopRunner.stop();
+	}
+	
+	protected void init() {
+		if (loopRunner != null) {
+			loopRunner.stop();
+			loopRunner = null;
+		}
+		loopRunner = new AnimationTimer() {
+
+			@Override
+			public void handle(long time) {
+
+			}
+		};
 	}
 
 }

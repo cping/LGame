@@ -71,7 +71,7 @@ public class SpriteBatch extends PixmapFImpl {
 
 	private boolean lockSubmit = false;
 
-	private MeshDefault mesh;
+//	private MeshDefault mesh;
 
 	private BlendState lastBlendState = BlendState.NonPremultiplied;
 
@@ -175,15 +175,8 @@ public class SpriteBatch extends PixmapFImpl {
 		this(256);
 	}
 
-	public SpriteBatch(int size) {
-		this(TrilateralBatch.DEF_SOURCE, size);
-	}
 
-	public SpriteBatch(ShaderSource src, int size) {
-		this(src, size, null);
-	}
-
-	public SpriteBatch(final ShaderSource src, final int size, final ShaderProgram defaultShader) {
+	public SpriteBatch(final int size) {
 		super(0, 0, LSystem.viewSize.getRect(), LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), 4);
 		if (size > 5460) {
 			throw new LSysException("Can't have more than 5460 sprites per batch: " + size);
@@ -191,8 +184,7 @@ public class SpriteBatch extends PixmapFImpl {
 		this.name = "spritebatch";
 		this.font = LSystem.getSystemGameFont();
 		this.colorTexture = LSystem.base().graphics().finalColorTex();
-		this.mesh = new MeshDefault();
-		this.shader = defaultShader;
+	//	this.mesh = new MeshDefault();
 		this.expandVertices = new ExpandVertices(size);
 	}
 
@@ -409,17 +401,12 @@ public class SpriteBatch extends PixmapFImpl {
 
 	public void begin() {
 		if (!isLoaded) {
-			if (shader == null) {
-				shader = LSystem.createShader(source.vertexShader(), source.fragmentShader());
-				ownsShader = true;
-			}
 			isLoaded = true;
 		}
 		LSystem.mainEndDraw();
 		if (drawing) {
 			throw new LSysException("SpriteBatch.end must be called before begin.");
 		}
-		LSystem.base().graphics().gl.glDepthMask(false);
 		setupMatrices();
 		drawing = true;
 	}
@@ -444,12 +431,6 @@ public class SpriteBatch extends PixmapFImpl {
 		}
 		lastTexture = null;
 		drawing = false;
-		LSystem.base().graphics().gl.glDepthMask(true);
-		if (customShader != null) {
-			customShader.end();
-		} else {
-			shader.end();
-		}
 		LSystem.mainBeginDraw();
 	}
 
@@ -499,7 +480,7 @@ public class SpriteBatch extends PixmapFImpl {
 		if (idx == 0) {
 			return;
 		}
-		GL20 gl = LSystem.base().graphics().gl;
+	/*	GL20 gl = LSystem.base().graphics().gl;
 		int old = GLUtils.getBlendMode();
 		try {
 			LSystem.mainEndDraw();
@@ -535,34 +516,19 @@ public class SpriteBatch extends PixmapFImpl {
 			if (!lockSubmit) {
 				idx = 0;
 			}
-		}
+		}*/
 	}
 
 	private final String name;
 
 	public void close() {
-		if (ownsShader && shader != null) {
-			shader.close();
-		}
-		if (customShader != null) {
-			customShader.close();
-		}
-		if (mesh != null) {
+	/*	if (mesh != null) {
 			mesh.dispose(name, expandVertices.getSize());
-		}
+		}*/
 	}
 
 	private void setupMatrices() {
 		final Matrix4 view = LSystem.base().graphics().getViewMatrix();
-		if (customShader != null) {
-			customShader.setUniformMatrix("u_projTrans", view);
-			customShader.setUniformi("u_texture", 0);
-			source.setupShader(customShader);
-		} else {
-			shader.setUniformMatrix("u_projTrans", view);
-			shader.setUniformi("u_texture", 0);
-			source.setupShader(shader);
-		}
 	}
 
 	protected void switchTexture(LTexture texture) {

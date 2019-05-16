@@ -111,9 +111,9 @@ public abstract class ActionObject extends LObject<ISprite> implements Flip<Acti
 			return;
 		}
 		float alpha = gl.alpha();
-		int blend = gl.getBlendMode();
+//		int blend = gl.getBlendMode();
 		try {
-			gl.setBlendMode(_blend);
+		//	gl.setBlendMode(_blend);
 			gl.setAlpha(_alpha);
 			LTexture texture = animation.getSpriteImage();
 			float width = dstWidth <= 1 ? texture.getWidth() : dstWidth;
@@ -122,7 +122,7 @@ public abstract class ActionObject extends LObject<ISprite> implements Flip<Acti
 					scaleY, flipX, flipY);
 		} finally {
 			gl.setAlpha(alpha);
-			gl.setBlendMode(blend);
+			//gl.setBlendMode(blend);
 		}
 	}
 

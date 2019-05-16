@@ -196,6 +196,11 @@ public class LSetting {
 	public GameType gameType = GameType.UNKOWN;
 
 	/**
+	 * 初始化游戏时传参用，默认无数据
+	 */
+	public String[] args = new String[] { "" };
+
+	/**
 	 * 复制setting设置到自身
 	 * 
 	 * @param setting
@@ -225,6 +230,7 @@ public class LSetting {
 		this.emulatorScale = setting.emulatorScale;
 		this.notAllowDragAndMove = setting.notAllowDragAndMove;
 		this.lockAllTouchEvent = setting.lockAllTouchEvent;
+		this.args = setting.args;
 	}
 
 	/**

@@ -1180,10 +1180,10 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 			return;
 		}
 		boolean update = (_rotation != 0) || !(_scaleX == 1f && _scaleY == 1f);
-		int blend = g.getBlendMode();
+	//	int blend = g.getBlendMode();
 		int tmp = g.color();
 		try {
-			g.setBlendMode(_blend);
+		//	g.setBlendMode(_blend);
 			g.setAlpha(_alpha);
 			if (this.roll) {
 				this.offset = toRollPosition(this.offset);
@@ -1221,7 +1221,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 			if (update) {
 				g.restoreTx();
 			}
-			g.setBlendMode(blend);
+		//	g.setBlendMode(blend);
 			g.setColor(tmp);
 		}
 

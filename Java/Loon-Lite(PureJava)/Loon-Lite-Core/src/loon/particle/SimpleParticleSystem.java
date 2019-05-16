@@ -144,10 +144,6 @@ public class SimpleParticleSystem extends Entity {
 		sprite = null;
 	}
 
-	public int getBlendingMode() {
-		return GLUtils.getBlendMode();
-	}
-
 	protected SimpleParticle createParticle(SimpleParticleSystem system) {
 		return new SimpleParticle(system);
 	}
@@ -209,14 +205,14 @@ public class SimpleParticleSystem extends Entity {
 			if (!emitter.isEnabled()) {
 				continue;
 			}
-
+/*
 			int mode = g.getBlendMode();
 
 			if (emitter.useAdditive()) {
 				g.setBlendMode(LSystem.MODE_ADD);
 			} else {
 				g.setBlendMode(state);
-			}
+			}*/
 
 			ParticlePool pool = particlesByEmitter.get(emitter);
 			LTexture image = emitter.getImage();
@@ -240,7 +236,7 @@ public class SimpleParticleSystem extends Entity {
 				image.glEnd();
 			}
 
-			g.setBlendMode(mode);
+			//g.setBlendMode(mode);
 
 		}
 
