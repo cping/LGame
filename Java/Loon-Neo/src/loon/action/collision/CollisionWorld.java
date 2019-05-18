@@ -20,6 +20,7 @@
  */
 package loon.action.collision;
 
+import loon.LRelease;
 import loon.Screen;
 import loon.action.ActionBind;
 import loon.action.collision.CollisionGrid.TraverseCallback;
@@ -33,7 +34,7 @@ import loon.utils.ObjectMap.Keys;
 /**
  * 一个碰撞物体自动管理用类,和CollisionManager不同,它会自动获得碰撞后新的物体坐标
  */
-public class CollisionWorld {
+public class CollisionWorld implements LRelease {
 
 	public static class Cell {
 		public int itemCount = 0;
@@ -43,7 +44,7 @@ public class CollisionWorld {
 	}
 
 	private final static float DELTA = 1e-5f;
-	
+
 	private CollisionFilter worldCollisionFilter;
 
 	private final Screen gameScreen;
@@ -59,7 +60,9 @@ public class CollisionWorld {
 	private ObjectMap<Float, ObjectMap<Float, Cell>> rows = new ObjectMap<Float, ObjectMap<Float, Cell>>();
 	private ObjectMap<Cell, Boolean> nonEmptyCells = new ObjectMap<Cell, Boolean>();
 	private CollisionGrid grid = new CollisionGrid();
-	private boolean tileMode = true;
+
+	private boolean tileMode = false;
+	private boolean closed = false;
 
 	private CollisionManager collisionManager;
 
@@ -83,18 +86,30 @@ public class CollisionWorld {
 	private final Collisions check_projectedCols = new Collisions();
 	private final CollisionResult.Result check_result = new CollisionResult.Result();
 
-	public CollisionWorld(Screen s) {
-		this(s, 64f, 64f);
+	public CollisionWorld() {
+		this(null);
 	}
 
-	public CollisionWorld(Screen s, float cellx, float celly) {
+	public CollisionWorld(Screen s) {
+		this(s, 64f, 64f, true);
+	}
+
+	public CollisionWorld(Screen s, boolean mode) {
+		this(s, 64f, 64f, mode);
+	}
+
+	public CollisionWorld(Screen s, float cellx, float celly, boolean mode) {
 		this.gameScreen = s;
 		this.cellSizeX = cellx;
 		this.cellSizeY = celly;
+		this.tileMode = mode;
 		this.worldCollisionFilter = CollisionFilter.getDefault();
 	}
 
 	public CollisionManager getCollisionManager() {
+		if (closed) {
+			return null;
+		}
 		if (collisionManager == null) {
 			collisionManager = new CollisionManager();
 		}
@@ -104,6 +119,9 @@ public class CollisionWorld {
 
 	public CollisionData detectCollision(float x1, float y1, float w1, float h1, float x2, float y2, float w2, float h2,
 			float goalX, float goalY) {
+		if (closed) {
+			return null;
+		}
 		CollisionData col = segmentIntersectionIndicescol;
 		float dx = goalX - x1;
 		float dy = goalY - y1;
@@ -191,6 +209,9 @@ public class CollisionWorld {
 	}
 
 	private void addItemToCell(ActionBind bind, float cx, float cy) {
+		if (closed) {
+			return;
+		}
 		if (!rows.containsKey(cy)) {
 			rows.put(cy, new ObjectMap<Float, Cell>());
 		}
@@ -208,6 +229,9 @@ public class CollisionWorld {
 	}
 
 	private boolean removeItemFromCell(ActionBind bind, float cx, float cy) {
+		if (closed) {
+			return false;
+		}
 		if (!rows.containsKey(cy)) {
 			return false;
 		}
@@ -229,6 +253,9 @@ public class CollisionWorld {
 
 	private ObjectMap<ActionBind, Boolean> getDictItemsInCellRect(float cl, float ct, float cw, float ch,
 			ObjectMap<ActionBind, Boolean> result) {
+		if (closed) {
+			return null;
+		}
 		result.clear();
 		for (float cy = ct; cy < ct + ch; cy++) {
 			if (rows.containsKey(cy)) {
@@ -250,6 +277,9 @@ public class CollisionWorld {
 	}
 
 	public TArray<Cell> getCellsTouchedBySegment(float x1, float y1, float x2, float y2, final TArray<Cell> result) {
+		if (closed) {
+			return null;
+		}
 		result.clear();
 		getCellsTouchedBySegment_visited.clear();
 		final TArray<Cell> visited = getCellsTouchedBySegment_visited;
@@ -283,6 +313,9 @@ public class CollisionWorld {
 
 	public Collisions project(ActionBind bind, float x, float y, float w, float h, float goalX, float goalY,
 			CollisionFilter filter, Collisions collisions) {
+		if (closed) {
+			return null;
+		}
 		collisions.clear();
 		TArray<ActionBind> visited = project_visited;
 		visited.clear();
@@ -326,10 +359,16 @@ public class CollisionWorld {
 	}
 
 	public RectF getRect(ActionBind bind) {
+		if (closed) {
+			return null;
+		}
 		return rects.get(bind);
 	}
 
 	public int countCells() {
+		if (closed) {
+			return 0;
+		}
 		int count = 0;
 		for (ObjectMap<Float, Cell> row : rows.values()) {
 			for (Float x : row.keys()) {
@@ -342,10 +381,16 @@ public class CollisionWorld {
 	}
 
 	public boolean hasItem(ActionBind bind) {
+		if (closed) {
+			return false;
+		}
 		return rects.containsKey(bind);
 	}
 
 	public int countItems() {
+		if (closed) {
+			return 0;
+		}
 		return rects.size();
 	}
 
@@ -360,10 +405,16 @@ public class CollisionWorld {
 	}
 
 	public ActionBind add(ActionBind bind) {
+		if (closed) {
+			return null;
+		}
 		return add(bind, bind.getX(), bind.getY(), bind.getWidth(), bind.getHeight());
 	}
 
 	public ActionBind add(ActionBind bind, float x, float y, float w, float h) {
+		if (closed) {
+			return null;
+		}
 		if (rects.containsKey(bind)) {
 			return bind;
 		}
@@ -382,6 +433,9 @@ public class CollisionWorld {
 	}
 
 	public void remove(ActionBind bind) {
+		if (closed) {
+			return;
+		}
 		RectF rect = getRect(bind);
 		float x = rect.x, y = rect.y, w = rect.width, h = rect.height;
 		if (gameScreen != null) {
@@ -399,12 +453,18 @@ public class CollisionWorld {
 	}
 
 	public void update(ActionBind bind, float x2, float y2) {
+		if (closed) {
+			return;
+		}
 		RectF rect = getRect(bind);
 		float w = rect.width, h = rect.height;
 		update(bind, x2, y2, w, h);
 	}
 
 	public void update(ActionBind bind, float x2, float y2, float w2, float h2) {
+		if (closed) {
+			return;
+		}
 		RectF rect = getRect(bind);
 		float x1 = rect.x, y1 = rect.y, w1 = rect.width, h1 = rect.height;
 		if (x1 != x2 || y1 != y2 || w1 != w2 || h1 != h2) {
@@ -447,6 +507,9 @@ public class CollisionWorld {
 	}
 
 	public CollisionResult.Result check(ActionBind bind, float goalX, float goalY, final CollisionFilter filter) {
+		if (closed) {
+			return null;
+		}
 		final TArray<ActionBind> visited = check_visited;
 		visited.clear();
 		visited.add(bind);
@@ -498,6 +561,9 @@ public class CollisionWorld {
 	}
 
 	public CollisionResult.Result move(ActionBind bind, float goalX, float goalY, CollisionFilter filter) {
+		if (closed) {
+			return null;
+		}
 		CollisionResult.Result result = check(bind, goalX, goalY, filter);
 		update(bind, result.goalX, result.goalY);
 		return result;
@@ -510,8 +576,42 @@ public class CollisionWorld {
 	public void setWorldCollisionFilter(CollisionFilter collisionFilter) {
 		this.worldCollisionFilter = collisionFilter;
 	}
-	
+
 	public Screen getGameScreen() {
 		return gameScreen;
+	}
+
+	public boolean isClose() {
+		return closed;
+	}
+
+	@Override
+	public void close() {
+		if (closed) {
+			return;
+		}
+		closed = true;
+		if (rects != null) {
+			rects.clear();
+			rects = null;
+		}
+		if (rows != null) {
+			rows.clear();
+			rows = null;
+		}
+		if (nonEmptyCells != null) {
+			nonEmptyCells.clear();
+			nonEmptyCells = null;
+		}
+		if (collisionManager != null) {
+			collisionManager.clear();
+			collisionManager = null;
+		}
+		getCellsTouchedBySegment_visited.clear();
+		project_visited.clear();
+		project_dictItemsInCellRect.clear();
+		check_visited.clear();
+		check_cols.clear();
+		check_projectedCols.clear();
 	}
 }

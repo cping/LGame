@@ -22,6 +22,7 @@ package loon.action.collision;
 
 import java.util.Comparator;
 
+import loon.LRelease;
 import loon.action.ActionBind;
 import loon.geom.RectF;
 import loon.utils.BoolArray;
@@ -32,7 +33,7 @@ import loon.utils.IntMap.Entry;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
 
-public class Collisions implements Comparator<Integer> {
+public class Collisions implements Comparator<Integer>, LRelease {
 
 	private final static int INIT_SIZE = 4;
 	private final BoolArray overlaps = new BoolArray(INIT_SIZE);
@@ -159,7 +160,6 @@ public class Collisions implements Comparator<Integer> {
 		others.clear();
 		types.clear();
 	}
-
 
 	public <T extends Comparable<T>> void keySort(final IntArray indices, TArray<ActionBind> list) {
 		swapMap.clear();
@@ -292,4 +292,30 @@ public class Collisions implements Comparator<Integer> {
 		}
 		return MathUtils.compare(tis.get(a), tis.get(b));
 	}
+
+	@Override
+	public void close() {
+		overlaps.clear();
+		tis.clear();
+		moveXs.clear();
+		moveYs.clear();
+		normalXs.clear();
+		normalYs.clear();
+		touchXs.clear();
+		touchYs.clear();
+		x1s.clear();
+		y1s.clear();
+		w1s.clear();
+		h1s.clear();
+		x2s.clear();
+		y2s.clear();
+		w2s.clear();
+		h2s.clear();
+		order.clear();
+		swapMap.clear();
+		items.clear();
+		others.clear();
+		types.clear();
+	}
+
 }

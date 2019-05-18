@@ -38,12 +38,15 @@ public class MoveTo extends ActionEvent {
 	// 寻径缓存，如果useCache为true时,moveTo将不理会实际寻径结果，全部按照缓存中的路线行走
 	private final static IntMap<TArray<Vector2f>> pathCache = new IntMap<TArray<Vector2f>>(
 			LSystem.DEFAULT_MAX_CACHE_SIZE);
+	
+	//默认每帧的移动数值(象素)
+	private final static int INIT_MOVE_SPEED = 4;
 
 	private Vector2f startLocation, endLocation;
 
 	private Field2D layerMap;
 
-	private boolean flag, useCache, synchroLayerField;
+	private boolean allDir, useCache, synchroLayerField;
 
 	private TArray<Vector2f> pActorPath;
 
@@ -59,40 +62,40 @@ public class MoveTo extends ActionEvent {
 
 	private boolean isDirUpdate = false;
 
-	public MoveTo(float x, float y, boolean flag) {
-		this(LSystem.viewSize.newField2D(), x, y, flag, 4);
+	public MoveTo(float x, float y, boolean all) {
+		this(LSystem.viewSize.newField2D(), x, y, all, INIT_MOVE_SPEED);
 	}
 
-	public MoveTo(final Field2D map, float x, float y, boolean flag) {
-		this(map, x, y, flag, 4);
+	public MoveTo(final Field2D map, float x, float y, boolean all) {
+		this(map, x, y, all, INIT_MOVE_SPEED);
 	}
 
-	public MoveTo(float x, float y, boolean flag, int speed) {
-		this(LSystem.viewSize.newField2D(), x, y, flag, speed);
+	public MoveTo(float x, float y, boolean all, int speed) {
+		this(LSystem.viewSize.newField2D(), x, y, all, speed);
 	}
 
-	public MoveTo(final Field2D map, float x, float y, boolean flag, int speed) {
-		this(map, -1f, -1f, x, y, flag, speed, true, false);
+	public MoveTo(final Field2D map, float x, float y, boolean all, int speed) {
+		this(map, -1f, -1f, x, y, all, speed, true, false);
 	}
 
-	public MoveTo(float sx, float sy, float x, float y, boolean flag, int speed) {
-		this(LSystem.viewSize.newField2D(), sx, sy, x, y, flag, speed, true, false);
+	public MoveTo(float sx, float sy, float x, float y, boolean all, int speed) {
+		this(LSystem.viewSize.newField2D(), sx, sy, x, y, all, speed, true, false);
 	}
 
-	public MoveTo(final Field2D map, float sx, float sy, float x, float y, boolean flag, int speed) {
-		this(map, sx, sy, x, y, flag, speed, true, false);
+	public MoveTo(final Field2D map, float sx, float sy, float x, float y, boolean all, int speed) {
+		this(map, sx, sy, x, y, all, speed, true, false);
 	}
 
-	public MoveTo(float sx, float sy, float x, float y, boolean flag, int speed, boolean cache, boolean synField) {
-		this(LSystem.viewSize.newField2D(), sx, sy, x, y, flag, speed, cache, synField);
+	public MoveTo(float sx, float sy, float x, float y, boolean all, int speed, boolean cache, boolean synField) {
+		this(LSystem.viewSize.newField2D(), sx, sy, x, y, all, speed, cache, synField);
 	}
 
-	public MoveTo(final Field2D map, float sx, float sy, float x, float y, boolean flag, int speed, boolean cache,
+	public MoveTo(final Field2D map, float sx, float sy, float x, float y, boolean all, int speed, boolean cache,
 			boolean synField) {
 		this.startLocation = new Vector2f(sx, sy);
 		this.endLocation = new Vector2f(x, y);
 		this.layerMap = map;
-		this.flag = flag;
+		this.allDir = all;
 		this.speed = speed;
 		this.useCache = cache;
 		this.synchroLayerField = synField;
@@ -101,12 +104,12 @@ public class MoveTo extends ActionEvent {
 		}
 	}
 
-	public MoveTo(final Field2D map, Vector2f pos, boolean flag) {
-		this(map, pos, flag, 4);
+	public MoveTo(final Field2D map, Vector2f pos, boolean allDir) {
+		this(map, pos, allDir, INIT_MOVE_SPEED);
 	}
 
-	public MoveTo(final Field2D map, Vector2f pos, boolean flag, int speed) {
-		this(map, pos.x(), pos.y(), flag, speed);
+	public MoveTo(final Field2D map, Vector2f pos, boolean allDir, int speed) {
+		this(map, pos.x(), pos.y(), allDir, speed);
 	}
 
 	public void randomPathFinder() {
@@ -192,7 +195,7 @@ public class MoveTo extends ActionEvent {
 								layerMap.pixelsToTilesWidth(startLocation.x()),
 								layerMap.pixelsToTilesHeight(startLocation.y()),
 								layerMap.pixelsToTilesWidth(endLocation.x()),
-								layerMap.pixelsToTilesHeight(endLocation.y()), flag);
+								layerMap.pixelsToTilesHeight(endLocation.y()), allDir);
 						pathCache.put(key, final_path);
 					}
 					pActorPath = new TArray<Vector2f>();
@@ -201,7 +204,7 @@ public class MoveTo extends ActionEvent {
 			} else {
 				pActorPath = AStarFinder.find(heuristic, layerMap, layerMap.pixelsToTilesWidth(startLocation.x()),
 						layerMap.pixelsToTilesHeight(startLocation.y()), layerMap.pixelsToTilesWidth(endLocation.x()),
-						layerMap.pixelsToTilesHeight(endLocation.y()), flag);
+						layerMap.pixelsToTilesHeight(endLocation.y()), allDir);
 
 			}
 		}
@@ -233,7 +236,7 @@ public class MoveTo extends ActionEvent {
 			return super.hashCode();
 		}
 		int hashCode = 1;
-		hashCode = LSystem.unite(hashCode, flag);
+		hashCode = LSystem.unite(hashCode, allDir);
 		hashCode = LSystem.unite(hashCode, layerMap.pixelsToTilesWidth(original.x()));
 		hashCode = LSystem.unite(hashCode, layerMap.pixelsToTilesHeight(original.y()));
 		hashCode = LSystem.unite(hashCode, layerMap.pixelsToTilesWidth(endLocation.x()));
@@ -278,7 +281,7 @@ public class MoveTo extends ActionEvent {
 			int dirX = (int) (endX - startX);
 			int dirY = (int) (endY - startY);
 			int dir = Field2D.getDirection(dirX, dirY, direction);
-			if (flag) {
+			if (allDir) {
 				float x = original.getX();
 				float y = original.getY();
 				if (dirX > 0) {
@@ -557,7 +560,7 @@ public class MoveTo extends ActionEvent {
 
 	@Override
 	public ActionEvent cpy() {
-		MoveTo move = new MoveTo(layerMap, -1, -1, endLocation.x, endLocation.y, flag, speed, useCache,
+		MoveTo move = new MoveTo(layerMap, -1, -1, endLocation.x, endLocation.y, allDir, speed, useCache,
 				synchroLayerField);
 		move.set(this);
 		move.heuristic = this.heuristic;
@@ -566,7 +569,7 @@ public class MoveTo extends ActionEvent {
 
 	@Override
 	public ActionEvent reverse() {
-		MoveTo move = new MoveTo(layerMap, -1, -1, oldX, oldY, flag, speed, useCache, synchroLayerField);
+		MoveTo move = new MoveTo(layerMap, -1, -1, oldX, oldY, allDir, speed, useCache, synchroLayerField);
 		move.set(this);
 		move.heuristic = this.heuristic;
 		return move;

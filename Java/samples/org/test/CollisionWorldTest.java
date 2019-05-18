@@ -38,7 +38,7 @@ public class CollisionWorldTest extends Stage {
 
 		// 定义一个碰撞世界(此类会处理位置变化)
 		final CollisionWorld world = new CollisionWorld(this);
-		// 构建精灵以32x32的大小拆分图片，放置在坐标位置200x600,显示大小宽32,高32
+		// 构建精灵以32x32的大小拆分图片，放置在坐标位置200x60,显示大小宽32,高32
 		final AnimatedEntity hero = new AnimatedEntity("assets/rpg/hero.gif", 32, 32, 200, 60, 32, 32);
 		// 播放动画,速度每帧220
 		final long[] frames = { 220, 220, 220 };
@@ -66,7 +66,7 @@ public class CollisionWorldTest extends Stage {
 			@Override
 			public void on(final float x, final float y) {
 				// item1移动到指定位置,8方向移动,速度8
-				MoveTo move = new MoveTo(x, y, true, 8);
+				final MoveTo move = new MoveTo(x, y, true, 8);
 				// 不寻径,单纯移动
 				move.setMoveByMode(true);
 				// 注入碰撞世界,让缓动动画自动计算碰撞结果
@@ -113,7 +113,11 @@ public class CollisionWorldTest extends Stage {
 				hero.selfAction().event(move).start();
 			}
 		});
+		
+		//关闭Screen时注销碰撞世界
+		putRelease(world);
 
+		add(MultiScreenTest.getBackButton(this, 1));
 	}
 
 }
