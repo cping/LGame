@@ -41,6 +41,10 @@ public class JavaFXImage extends ImageImpl {
 		super(gfx, scale, (int) buffer.getWidth(), (int) buffer.getHeight(), source, buffer);
 	}
 
+	public JavaFXImage(JavaFXGame game, int preWidth, int preHeight) {
+		super(game, false, Scale.ONE, preWidth, preHeight, "<canvas>");
+	}
+	
 	public JavaFXImage(JavaFXGame game, boolean async, int preWidth, int preHeight, String source) {
 		super(game, async, Scale.ONE, preWidth, preHeight, source);
 	}

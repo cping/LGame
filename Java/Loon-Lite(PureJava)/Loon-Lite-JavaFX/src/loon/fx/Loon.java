@@ -23,12 +23,21 @@ package loon.fx;
 import java.util.Optional;
 
 import javafx.application.Application;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.transform.Scale;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import loon.LGame;
 import loon.LSetting;
@@ -39,58 +48,139 @@ import loon.event.SysInput;
 
 public class Loon extends Application implements Platform {
 
-	private JavaFXGame game;
+	private final static class JavaFXInit {
 
-	private Scene fxScene;
+		private Loon app;
 
-	public Loon(LSetting config) {
-		this.game = new JavaFXGame(this, config);
+		private LSetting appSetting;
+
+		private LazyLoading.Data lazyData;
+
+		public void start(Stage stage) throws Exception {
+			app = new Loon(appSetting);
+			app.game.register(lazyData.onScreen());
+			app.game.reset();
+			app.start(stage);
+		}
 	}
 
-	@Override
+	public final static class GameApp extends Application {
+
+		private static JavaFXInit initData;
+
+		@Override
+		public void start(Stage stage) throws Exception {
+			initData.start(stage);
+		}
+
+		public static void register(LSetting setting, LazyLoading.Data lazy) {
+			initData = new JavaFXInit();
+			initData.lazyData = lazy;
+			initData.appSetting = setting;
+			launch(GameApp.class, setting.args);
+		}
+
+	}
+
+	private DoubleProperty scaledWidth = new SimpleDoubleProperty();
+	private DoubleProperty scaledHeight = new SimpleDoubleProperty();
+	private DoubleProperty scaleRatioX = new SimpleDoubleProperty();
+	private DoubleProperty scaleRatioY = new SimpleDoubleProperty();
+
+	private double windowBorderWidth = 0d;
+	private double windowBorderHeight = 0d;
+
+	protected JavaFXGame game;
+
+	protected Scene fxScene;
+
+	public Loon(LSetting setting) {
+		this.game = new JavaFXGame(this, setting);
+	}
+
 	public void start(Stage primaryStage) throws Exception {
+		float newWidth = game.setting.getShowWidth();
+		float newHeight = game.setting.getShowHeight();
+
 		Group group = new Group();
-		group.getChildren().add(game.gameCanvas);
-		this.fxScene = new Scene(group, game.setting.width_zoom, game.setting.height_zoom);
+
+		Canvas canvas = game.gameCanvas.fxCanvas;
+
+		if (canvas == null) {
+			canvas = new Canvas(newWidth, newHeight);
+		}
+		GraphicsContext ctx = canvas.getGraphicsContext2D();
+		
+		Paint paint = ctx.getFill();
+		ctx.setFill(Color.BLACK);
+		ctx.fillRect(0, 0, newWidth, newHeight);
+		ctx.setFill(paint);
+
+		group.getChildren().add(canvas);
+		primaryStage.setScene(createScene(group, newWidth, newHeight));
 		primaryStage.setTitle(game.setting.appName);
-		primaryStage.setScene(fxScene);
+
+		windowBorderWidth = primaryStage.getWidth() - scaledWidth.getValue();
+		windowBorderHeight = primaryStage.getHeight() - scaledHeight.getValue();
+
+		if (windowBorderHeight < 0.5 && System.getProperty("os.name").contains("nux")) {
+			windowBorderHeight = 35.0d;
+		}
+
+		scaledWidth.bind(primaryStage.widthProperty().subtract(windowBorderWidth));
+		scaledHeight.bind(primaryStage.heightProperty().subtract(windowBorderHeight));
+
+		if (game.setting.fullscreen) {
+			primaryStage.setMaximized(true);
+			primaryStage.setFullScreen(true);
+		}
+
+		scaleRatioX.bind(scaledWidth.divide(newWidth));
+		scaleRatioY.bind(scaledHeight.divide(newHeight));
+		fxScene.getRoot().prefWidth(scaledWidth.doubleValue());
+		fxScene.getRoot().prefHeight(scaledWidth.doubleValue());
 		primaryStage.show();
 	}
 
-	public static void register(LSetting setting, LazyLoading.Data lazy) {
-		register(setting, null, lazy);
-	}
-
-	public static void register(LSetting setting, Stage stage, LazyLoading.Data lazy) {
-		Loon plat = new Loon(setting);
-		plat.game.register(lazy.onScreen());
-		plat.game.reset();
-		if (System.getProperty("javafx.platform") == null) {
-			System.setProperty("javafx.platform", "Desktop");
-		}
-		String[] args = plat.game.setting.args;
-		if (stage == null) {
-			launch(args);
+	protected Scene createScene(Group group, float width, float height) {
+		LSetting setting = game.setting;
+		Rectangle2D rect = null;
+		if (setting.fullscreen) {
+			rect = Screen.getPrimary().getBounds();
 		} else {
-			try {
-				plat.start(stage);
-			} catch (Throwable cause) {
-				System.out.println("Register Exception:");
-				cause.printStackTrace();
-				System.out.println("Loon will now exit");
-				System.exit(-1);
+			rect = Screen.getPrimary().getVisualBounds();
+		}
+		if ((width > rect.getWidth()) || (height > rect.getHeight())) {
+			float extraMargin = 25f;
+			float ratio = width / height;
+			for (int i = 0; i < rect.getWidth(); i++) {
+				if (width / ratio <= rect.getHeight()) {
+					width = i - extraMargin;
+					height = i / ratio;
+					break;
+				}
 			}
 		}
+		this.fxScene = new Scene(group, width, height);
+		scaledWidth.set(width);
+		scaledHeight.set(height);
+		scaleRatioX.set(scaledWidth.getValue() / setting.getShowWidth());
+		scaleRatioY.set(scaledHeight.getValue() / setting.getShowHeight());
+		return fxScene;
+	}
+
+	public static void systemLog(String message) {
+		System.out.println(message);
 	}
 
 	@Override
 	public int getContainerWidth() {
-		return fxScene == null ? game.setting.width_zoom : (int) fxScene.getWidth();
+		return fxScene == null ? game.setting.getShowWidth() : (int) fxScene.getWidth();
 	}
 
 	@Override
 	public int getContainerHeight() {
-		return fxScene == null ? game.setting.height_zoom : (int) fxScene.getHeight();
+		return fxScene == null ? game.setting.getShowHeight() : (int) fxScene.getHeight();
 	}
 
 	@Override

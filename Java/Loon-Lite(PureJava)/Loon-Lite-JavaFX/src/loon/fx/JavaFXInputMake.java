@@ -23,6 +23,7 @@ package loon.fx;
 import java.util.List;
 
 import javafx.event.EventHandler;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
@@ -99,7 +100,8 @@ public class JavaFXInputMake extends InputMake {
 
 	public JavaFXInputMake(JavaFXGame game) {
 		this.game = game;
-		this.game.gameCanvas.setOnKeyPressed(new EventHandler<KeyEvent>() {
+		Canvas canvas = this.game.gameCanvas.fxCanvas;
+		canvas.setOnKeyPressed(new EventHandler<KeyEvent>() {
 
 			@Override
 			public void handle(KeyEvent e) {
@@ -109,7 +111,7 @@ public class JavaFXInputMake extends InputMake {
 
 			}
 		});
-		this.game.gameCanvas.setOnKeyReleased(new EventHandler<KeyEvent>() {
+		canvas.setOnKeyReleased(new EventHandler<KeyEvent>() {
 
 			@Override
 			public void handle(KeyEvent e) {
@@ -119,7 +121,7 @@ public class JavaFXInputMake extends InputMake {
 
 			}
 		});
-		this.game.gameCanvas.setOnKeyTyped(new EventHandler<KeyEvent>() {
+		canvas.setOnKeyTyped(new EventHandler<KeyEvent>() {
 
 			@Override
 			public void handle(KeyEvent e) {
@@ -129,7 +131,7 @@ public class JavaFXInputMake extends InputMake {
 
 			}
 		});
-		this.game.gameCanvas.setOnMousePressed(new EventHandler<MouseEvent>() {
+		canvas.setOnMousePressed(new EventHandler<MouseEvent>() {
 
 			@Override
 			public void handle(MouseEvent e) {
@@ -146,7 +148,7 @@ public class JavaFXInputMake extends InputMake {
 
 			}
 		});
-		this.game.gameCanvas.setOnMouseReleased(new EventHandler<MouseEvent>() {
+		canvas.setOnMouseReleased(new EventHandler<MouseEvent>() {
 
 			@Override
 			public void handle(MouseEvent e) {
@@ -164,7 +166,7 @@ public class JavaFXInputMake extends InputMake {
 
 			}
 		});
-		this.game.gameCanvas.setOnMouseMoved(new MoveEventHandler() {
+		canvas.setOnMouseMoved(new MoveEventHandler() {
 
 			@Override
 			protected boolean wantDragSequence() {
@@ -172,7 +174,7 @@ public class JavaFXInputMake extends InputMake {
 			}
 		});
 
-		this.game.gameCanvas.setOnTouchPressed(new EventHandler<TouchEvent>() {
+		canvas.setOnTouchPressed(new EventHandler<TouchEvent>() {
 
 			@Override
 			public void handle(TouchEvent e) {
@@ -182,7 +184,7 @@ public class JavaFXInputMake extends InputMake {
 			}
 
 		});
-		this.game.gameCanvas.setOnTouchReleased(new EventHandler<TouchEvent>() {
+		canvas.setOnTouchReleased(new EventHandler<TouchEvent>() {
 
 			@Override
 			public void handle(TouchEvent e) {
@@ -195,7 +197,7 @@ public class JavaFXInputMake extends InputMake {
 			}
 
 		});
-		this.game.gameCanvas.setOnTouchStationary(new EventHandler<TouchEvent>() {
+		canvas.setOnTouchStationary(new EventHandler<TouchEvent>() {
 
 			@Override
 			public void handle(TouchEvent e) {
@@ -208,7 +210,7 @@ public class JavaFXInputMake extends InputMake {
 			}
 
 		});
-		this.game.gameCanvas.setOnTouchMoved(new EventHandler<TouchEvent>() {
+		canvas.setOnTouchMoved(new EventHandler<TouchEvent>() {
 
 			@Override
 			public void handle(TouchEvent e) {

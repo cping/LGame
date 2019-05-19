@@ -47,6 +47,8 @@ public class JavaFXCanvas extends Canvas {
 	final javafx.scene.canvas.Canvas fxCanvas;
 	final WritableImage fxImage;
 	final GraphicsContext context;
+	double width;
+	double height;
 
 	LColor color;
 	boolean isDirty;
@@ -54,7 +56,9 @@ public class JavaFXCanvas extends Canvas {
 	protected JavaFXCanvas(Graphics gfx, JavaFXImage image) {
 		super(gfx, image);
 		this.fxImage = image.fxImage();
-		this.fxCanvas = new javafx.scene.canvas.Canvas(image.getWidth(), image.getHeight());
+		this.width = image.getWidth();
+		this.height = image.getHeight();
+		this.fxCanvas = new javafx.scene.canvas.Canvas(width, height);
 		context = fxCanvas.getGraphicsContext2D();
 		paintStack.addFirst(new JavaFXCanvasState(context));
 	}
@@ -93,7 +97,7 @@ public class JavaFXCanvas extends Canvas {
 	public Canvas clear() {
 		Paint tmp = context.getFill();
 		context.setFill(Color.BLACK);
-		context.clearRect(0, 0, fxImage.getWidth(), fxImage.getHeight());
+		context.fillRect(0, 0, width, height);
 		context.setFill(tmp);
 		isDirty = true;
 		return this;

@@ -20,12 +20,12 @@
  */
 package loon.fx;
 
-import javafx.animation.AnimationTimer;
 import loon.LSetting;
 import loon.LazyLoading;
 import loon.Screen;
+import loon.fx.Loon.GameApp;
 
-public class Main  {
+public class Main {
 
 
 	public static void main(String[] args) {
@@ -49,11 +49,18 @@ public class Main  {
 		setting.fontName = "黑体";
 		// setting.emulateTouch = true;
 
-		Loon.register(setting, new LazyLoading.Data() {
+		GameApp.register(setting, new LazyLoading.Data() {
 
 			@Override
 			public Screen onScreen() {
-				return null;//new CollisionWorldTest();
+				return new loon.Stage() {
+					
+					@Override
+					public void create() {
+						// TODO Auto-generated method stub
+						
+					}
+				};
 			}
 		});
 	}

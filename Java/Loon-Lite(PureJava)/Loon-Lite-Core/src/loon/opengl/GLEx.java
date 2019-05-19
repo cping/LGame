@@ -608,6 +608,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (isClosed) {
 			return;
 		}
+		gfx.getCanvas().clear();
 		//GLUtils.setClearColor(batch.gl, red, green, blue, alpha);
 		this.setFont(LSystem.getSystemGameFont());
 		this.lastBrush.baseColor = LColor.DEF_COLOR;

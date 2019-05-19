@@ -203,4 +203,5 @@ public abstract class Graphics {
 		return id;
 	}
 
+	public abstract Canvas getCanvas();
 }

@@ -22,7 +22,9 @@ package loon.fx;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
+import javafx.animation.AnimationTimer;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Worker;
@@ -44,6 +46,7 @@ import loon.Log;
 import loon.Platform;
 import loon.Save;
 import loon.Support;
+import loon.LGame.Status;
 import loon.event.InputMake;
 
 public class JavaFXGame extends LGame {
@@ -52,9 +55,10 @@ public class JavaFXGame extends LGame {
 
 	}
 
-	protected final Canvas gameCanvas;
+	protected AnimationTimer loopRunner;
+	protected JavaFXCanvas gameCanvas;
 	private final JavaFXAccelerometer accelerometer;
-	private final JavaFXInputMake input;
+
 	private final JavaFXSave save;
 	private final JavaFXGraphics graphics;
 	private final JavaFXAssets assets;
@@ -66,21 +70,88 @@ public class JavaFXGame extends LGame {
 
 	private final long start = System.nanoTime();
 
+	private JavaFXInputMake input;
+
+	private boolean active = true;
+
 	public JavaFXGame(Platform plat, LSetting config) {
 		super(config, plat);
-		this.assets = new JavaFXAssets(this);
+		this.graphics = new JavaFXGraphics(this);
+		this.gameCanvas = graphics.canvas;
 		this.input = new JavaFXInputMake(this);
+		this.assets = new JavaFXAssets(this);
 		this.log = new JavaFXLog();
 		this.support = new NativeSupport();
 		this.save = new JavaFXSave(log, config.appName);
 		this.accelerometer = new JavaFXAccelerometer();
-		this.graphics = new JavaFXGraphics(this);
 		this.asyn = new JavaFXAsyn(pool, log, frame);
-		this.gameCanvas = new Canvas(setting.getShowWidth(), setting.getShowHeight());
+		this.initProcess();
+	}
+
+	protected void toggleActivation() {
+		active = !active;
+	}
+
+	protected void start() {
+		if (loopRunner == null) {
+			init();
+		}
+		loopRunner.start();
+	}
+
+	protected void resume() {
+		if (loopRunner == null) {
+			return;
+		}
+		start();
+	}
+
+	protected void pause() {
+		stop();
+	}
+
+	protected void stop() {
+		if (loopRunner == null) {
+			return;
+		}
+		loopRunner.stop();
+	}
+
+	protected void init() {
+		if (loopRunner != null) {
+			loopRunner.stop();
+			loopRunner = null;
+		}
 	}
 
 	public void reset() {
-		graphics.init();
+		init();
+		loopRunner = new AnimationTimer() {
+
+			boolean wasActive = active;
+
+			@Override
+			public void handle(long time) {
+				if (wasActive != active) {
+					status.emit(wasActive ? Status.PAUSE : Status.RESUME);
+					wasActive = active;
+				}
+				if (active) {
+					emitFrame();
+				}
+			}
+		};
+		loopRunner.start();
+	}
+
+	protected void shutdown() {
+		status.emit(Status.EXIT);
+		try {
+			pool.shutdown();
+			pool.awaitTermination(1, TimeUnit.SECONDS);
+		} catch (InterruptedException ie) {
+		}
+		System.exit(0);
 	}
 
 	@Override
