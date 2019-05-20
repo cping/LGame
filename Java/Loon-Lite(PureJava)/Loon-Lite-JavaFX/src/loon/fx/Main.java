@@ -38,6 +38,7 @@ public class Main {
 		@Override
 		public void draw(GLEx g) {
 			g.draw(texture, 77, 77);
+			g.drawString("大日如来", 77, 77);
 		}
 
 		@Override

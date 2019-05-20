@@ -150,8 +150,8 @@ public class LTexture extends Painter implements LRelease {
 		this.gfx = gfx;
 		this.id = id;
 		this.config = config;
-		this.pixelWidth = pixWidth;
-		this.pixelHeight = pixHeight;
+		this.pixelWidth = GLUtils.nextPOT(pixWidth);
+		this.pixelHeight = GLUtils.nextPOT(pixHeight);
 		this.scale = scale;
 		this.displayWidth = dispWidth;
 		this.displayHeight = dispHeight;

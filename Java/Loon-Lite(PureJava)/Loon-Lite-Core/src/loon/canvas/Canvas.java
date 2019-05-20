@@ -255,6 +255,10 @@ public abstract class Canvas implements LRelease {
 
 	public LTexture toTexture(LTexture.Format config) {
 		try {
+	
+			if(this.isDirty){
+				snapshot();
+			}
 			return image.createTexture(config);
 		} finally {
 			close();

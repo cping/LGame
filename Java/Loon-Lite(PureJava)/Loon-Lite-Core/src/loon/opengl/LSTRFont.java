@@ -92,6 +92,7 @@ public class LSTRFont implements IFont, LRelease {
 			Canvas canvas = LSystem.base().graphics().createCanvas(strfont.textureWidth, strfont.textureHeight);
 			canvas.setColor(LColor.white);
 			canvas.setFont(strfont.font);
+	
 			int rowHeight = 0;
 			int positionX = 0;
 			int positionY = 0;
@@ -540,9 +541,9 @@ public class LSTRFont implements IFont, LRelease {
 		final boolean scale = sx != 1f || sy != 1f;
 		final boolean angle = rotation != 0;
 		final boolean update = scale || angle || anchor;
-		/*final int blend = gl.getBlendMode();
+		//final int blend = gl.getBlendMode();
 		try {
-			gl.setBlendMode(LSystem.MODE_NORMAL);
+		//	gl.setBlendMode(LSystem.MODE_NORMAL);
 			gl.setTint(c);
 			if (update) {
 				gl.saveTx();
@@ -565,6 +566,7 @@ public class LSTRFont implements IFont, LRelease {
 					xf.translate(ax, ay);
 				}
 			}
+
 			for (int i = startIndex; i < endIndex; i++) {
 				charCurrent = chars.charAt(i);
 				if (charCurrent < totalCharSet) {
@@ -585,12 +587,12 @@ public class LSTRFont implements IFont, LRelease {
 				}
 			}
 		} finally {
-			gl.setBlendMode(blend);
+			//gl.setBlendMode(blend);
 			gl.setTint(old);
 			if (update) {
 				gl.restoreTx();
 			}
-		}*/
+		}
 	}
 
 	public void setUpdateX(float x) {

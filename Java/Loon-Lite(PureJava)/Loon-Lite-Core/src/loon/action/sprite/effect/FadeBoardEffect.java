@@ -285,8 +285,10 @@ public class FadeBoardEffect extends Entity implements BaseEffect {
 		super.close();
 		this._completed = true;
 		this._dirty = true;
-		this.paintBlocks.clear();
-		this.paintBlocks = null;
+		if (paintBlocks != null) {
+			this.paintBlocks.clear();
+			this.paintBlocks = null;
+		}
 	}
 
 }

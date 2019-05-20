@@ -20,8 +20,6 @@
  */
 package loon.fx;
 
-import java.util.LinkedList;
-
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.effect.BlendMode;
@@ -43,29 +41,33 @@ import loon.geom.Affine2f;
 
 public class JavaFXCanvas extends Canvas {
 
-	private final LinkedList<JavaFXCanvasState> paintStack = new LinkedList<JavaFXCanvasState>();
 	final javafx.scene.canvas.Canvas fxCanvas;
-	final WritableImage fxImage;
+	private JavaFXImage javaImage;
+	private SnapshotParameters snapshotParameters;
 	final GraphicsContext context;
 	double width;
 	double height;
 
 	LColor color;
-	boolean isDirty;
 
 	protected JavaFXCanvas(Graphics gfx, JavaFXImage image) {
 		super(gfx, image);
-		this.fxImage = image.fxImage();
+		this.javaImage = image;
 		this.width = image.getWidth();
 		this.height = image.getHeight();
 		this.fxCanvas = new javafx.scene.canvas.Canvas(width, height);
-		context = fxCanvas.getGraphicsContext2D();
-		paintStack.addFirst(new JavaFXCanvasState(context));
+		this.context = fxCanvas.getGraphicsContext2D();
+		this.snapshotParameters = new SnapshotParameters();
+		if (image.hasAlpha()) {
+			snapshotParameters.setFill(Color.TRANSPARENT);
+		}
+		this.isDirty = false;
 	}
 
 	@Override
 	public Canvas save() {
-		paintStack.addFirst(new JavaFXCanvasState(context));
+		context.save();
+		this.isDirty = true;
 		return this;
 	}
 
@@ -90,6 +92,7 @@ public class JavaFXCanvas extends Canvas {
 		Color fxcolor = getLColorToFX(c);
 		context.setFill(fxcolor);
 		context.setStroke(fxcolor);
+		this.isDirty = true;
 		return this;
 	}
 
@@ -112,7 +115,16 @@ public class JavaFXCanvas extends Canvas {
 
 	@Override
 	public Image snapshot() {
-		return new JavaFXImage(gfx, image.scale(), fxCanvas.snapshot(new SnapshotParameters(), fxImage), "<canvas>");
+		if (javaImage == null) {
+			javaImage = new JavaFXImage(gfx, image.scale(),
+					fxCanvas.snapshot(snapshotParameters, javaImage.buffer), "<canvas>");
+			isDirty = false;
+		}
+		if (isDirty) {
+			fxCanvas.snapshot(snapshotParameters, javaImage.buffer);
+			isDirty = false;
+		}
+		return javaImage;
 	}
 
 	@Override
@@ -218,26 +230,29 @@ public class JavaFXCanvas extends Canvas {
 
 	@Override
 	public Canvas restore() {
-		paintStack.peek().restore();
-		paintStack.removeFirst();
+		context.restore();
+		this.isDirty = true;
 		return this;
 	}
 
 	@Override
 	public Canvas rotate(float radians) {
 		context.rotate(radians);
+		this.isDirty = true;
 		return this;
 	}
 
 	@Override
 	public Canvas scale(float x, float y) {
 		context.scale(x, y);
+		this.isDirty = true;
 		return this;
 	}
 
 	@Override
 	public Canvas setAlpha(float alpha) {
 		context.setGlobalAlpha(alpha);
+		this.isDirty = true;
 		return this;
 	}
 
@@ -265,12 +280,14 @@ public class JavaFXCanvas extends Canvas {
 			break;
 		}
 		context.setGlobalBlendMode(mode);
+		this.isDirty = true;
 		return this;
 	}
 
 	@Override
 	public Canvas setFillColor(int color) {
 		context.setFill(getLColorToFX(new LColor(color)));
+		this.isDirty = true;
 		return this;
 	}
 
@@ -295,6 +312,7 @@ public class JavaFXCanvas extends Canvas {
 		int rgb = LColor.getRGB(r, g, b);
 		this.setStrokeColor(rgb);
 		this.setFillColor(rgb);
+		this.isDirty = true;
 		return this;
 	}
 
@@ -304,6 +322,7 @@ public class JavaFXCanvas extends Canvas {
 		this.setStrokeColor(argb);
 		this.setFillColor(argb);
 		this.setAlpha(a);
+		this.isDirty = true;
 		return this;
 	}
 
@@ -311,6 +330,7 @@ public class JavaFXCanvas extends Canvas {
 	public Canvas setFillGradient(Gradient gradient) {
 		assert gradient instanceof JavaFXGradient;
 		context.setFill(((JavaFXGradient) gradient).fxpaint);
+		this.isDirty = true;
 		return this;
 	}
 
@@ -329,6 +349,7 @@ public class JavaFXCanvas extends Canvas {
 			break;
 		}
 		context.setLineCap(lineCap);
+		this.isDirty = true;
 		return this;
 	}
 
@@ -347,24 +368,28 @@ public class JavaFXCanvas extends Canvas {
 			break;
 		}
 		context.setLineJoin(lineJoin);
+		this.isDirty = true;
 		return this;
 	}
 
 	@Override
 	public Canvas setMiterLimit(float miter) {
 		context.setMiterLimit(miter);
+		this.isDirty = true;
 		return this;
 	}
 
 	@Override
 	public Canvas setStrokeColor(int color) {
 		context.setStroke(getLColorToFX(new LColor(color)));
+		this.isDirty = true;
 		return this;
 	}
 
 	@Override
 	public Canvas setStrokeWidth(float strokeWidth) {
 		context.setLineWidth(strokeWidth);
+		this.isDirty = true;
 		return this;
 	}
 
@@ -423,10 +448,6 @@ public class JavaFXCanvas extends Canvas {
 	@Override
 	protected JavaFXCanvas gc() {
 		return this;
-	}
-
-	protected JavaFXCanvasState currentState() {
-		return paintStack.peek();
 	}
 
 	private void addRoundRectPath(float x, float y, float width, float height, float radius) {

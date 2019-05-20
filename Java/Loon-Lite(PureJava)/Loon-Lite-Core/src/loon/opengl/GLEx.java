@@ -134,7 +134,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		this.batch = def;
 		this.affineStack.add(lastTrans = new Affine2f());
 		this.colorTex = gfx.finalColorTex();
-		//this.scale(scaleX = target.xscale(), scaleY = target.yscale());
+		// this.scale(scaleX = target.xscale(), scaleY = target.yscale());
 		this.lastBrush = new BrushSave();
 		this.lastBrush.font = LSystem.getSystemGameFont();
 		this.lastBrush.alltextures = alltex;
@@ -145,7 +145,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	public GLEx(Graphics gfx) {
-		this(gfx,createDefaultBatch(gfx.getCanvas()), false);
+		this(gfx, createDefaultBatch(gfx.getCanvas()), false);
 	}
 
 	public int getWidth() {
@@ -172,7 +172,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (batch == null) {
 			return this;
 		}
-		//target.bind();
+		// target.bind();
 		beginBatch(batch);
 		return this;
 	}
@@ -265,28 +265,20 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-	//	GL20 gl = batch.gl;
-	/*	// 刷新原始设置
-		GLUtils.reset(gl);
-		// 清空背景为黑色
-		GLUtils.setClearColor(gl, LColor.black);
-		if (!LSystem.isHTML5()) {
-			// 禁用色彩抖动
-			GLUtils.disableDither(gl);
-			// 禁用深度测试
-			GLUtils.disableDepthTest(gl);
-			// 禁用双面剪切
-			GLUtils.disableCulling(gl);
-		}
-		// 设定画布渲染模式为默认
-		this.setBlendMode(LSystem.MODE_NORMAL);*/
+		// GL20 gl = batch.gl;
+		/*
+		 * // 刷新原始设置 GLUtils.reset(gl); // 清空背景为黑色 GLUtils.setClearColor(gl,
+		 * LColor.black); if (!LSystem.isHTML5()) { // 禁用色彩抖动
+		 * GLUtils.disableDither(gl); // 禁用深度测试 GLUtils.disableDepthTest(gl); //
+		 * 禁用双面剪切 GLUtils.disableCulling(gl); } // 设定画布渲染模式为默认
+		 * this.setBlendMode(LSystem.MODE_NORMAL);
+		 */
 		return this;
 	}
 
 	public static BaseBatch createDefaultBatch(Canvas gl) {
 		return new TrilateralBatch(gl);
 	}
-
 
 	public Affine2f tx() {
 		return lastTrans;
@@ -318,7 +310,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (lastBrush != null) {
 			this.setFont(lastBrush.font);
 			this.setLineWidth(lastBrush.lineWidth);
-		//	this.setBlendMode(lastBrush.blend);
+			// this.setBlendMode(lastBrush.blend);
 		}
 		return this;
 	}
@@ -332,7 +324,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		this.setPixSkip(lastBrush.alltextures ? def_skip_html5 : def_skip);
 		this.setFont(LSystem.getSystemGameFont());
 		this.setLineWidth(1f);
-		//this.setBlendMode(LSystem.MODE_NORMAL);
+		// this.setBlendMode(LSystem.MODE_NORMAL);
 		brushStack.pop();
 		return this;
 	}
@@ -349,6 +341,16 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		return this;
 	}
 
+	public GLEx saveCanvas() {
+		graphics.save();
+		return this;
+	}
+	
+	public GLEx restoreCanvas() {
+		graphics.restore();
+		return this;
+	}
+
 	public GLEx saveTx() {
 		if (isClosed) {
 			return this;
@@ -356,6 +358,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (lastTrans != null) {
 			affineStack.add(lastTrans = lastTrans.cpy());
 		}
+		graphics.save();
 		return this;
 	}
 
@@ -372,6 +375,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			return this;
 		}
 		lastTrans = affineStack.previousPop();
+		graphics.restore();
 		return this;
 	}
 
@@ -398,11 +402,12 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		int width = (int) (w1 * LSystem.getScaleWidth());
 		int height = (int) (h1 * LSystem.getScaleHeight());
 		batch.flush();
-		//RectBox r = pushScissorState(x, target.flip() ? target.height() - y - height : y, width, height);
-	/*	batch.gl.glScissor(r.x(), r.y(), r.width(), r.height());
-		if (scissorDepth == 1) {
-			GLUtils.enablecissorTest(batch.gl);
-		}*/
+		// RectBox r = pushScissorState(x, target.flip() ? target.height() - y -
+		// height : y, width, height);
+		/*
+		 * batch.gl.glScissor(r.x(), r.y(), r.width(), r.height()); if
+		 * (scissorDepth == 1) { GLUtils.enablecissorTest(batch.gl); }
+		 */
 		return false;// !r.isEmpty();
 	}
 
@@ -417,9 +422,9 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		batch.flush();
 		RectBox r = popScissorState();
 		if (r == null) {
-		//	GLUtils.disablecissorTest(batch.gl);
+			// GLUtils.disablecissorTest(batch.gl);
 		} else {
-		//	batch.gl.glScissor(r.x(), r.y(), r.width(), r.height());
+			// batch.gl.glScissor(r.x(), r.y(), r.width(), r.height());
 		}
 		return this;
 	}
@@ -464,7 +469,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-	//	batch.gl.glViewport(x, y, width, height);
+		// batch.gl.glViewport(x, y, width, height);
 		return this;
 	}
 
@@ -487,6 +492,15 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		} else if (flipY) {
 			Affine2f.transform(tx(), x, y, Affine2f.TRANS_MIRROR_ROT180, width, height);
 		}
+		return this;
+	}
+
+	public GLEx postform() {
+		if (isClosed) {
+			return this;
+		}
+		Affine2f post = tx();
+		graphics.transform(post.m00, post.m01, post.m10, post.m11, post.tx, post.ty);
 		return this;
 	}
 
@@ -609,13 +623,13 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			return;
 		}
 		graphics.clear();
-		//GLUtils.setClearColor(batch.gl, red, green, blue, alpha);
+		// GLUtils.setClearColor(batch.gl, red, green, blue, alpha);
 		this.setFont(LSystem.getSystemGameFont());
 		this.lastBrush.baseColor = LColor.DEF_COLOR;
 		this.lastBrush.fillColor = LColor.DEF_COLOR;
 		this.lastBrush.baseAlpha = 1f;
 		this.lastBrush.patternTex = null;
-	//	this.setBlendMode(LSystem.MODE_NORMAL);
+		// this.setBlendMode(LSystem.MODE_NORMAL);
 		this.resetLineWidth();
 	}
 
@@ -723,12 +737,12 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	public GLEx clear(float red, float green, float blue, float alpha) {
-		//GLUtils.setClearColor(batch.gl, red, green, blue, alpha);
+		// GLUtils.setClearColor(batch.gl, red, green, blue, alpha);
 		return this;
 	}
 
 	public final GLEx clear(LColor color) {
-		//GLUtils.setClearColor(batch.gl, color);
+		// GLUtils.setClearColor(batch.gl, color);
 		return this;
 	}
 
@@ -1527,7 +1541,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	private BaseBatch beginBatch(BaseBatch batch) {
-		//batch.begin(target.width(), target.height(), target.flip());
+		// batch.begin(target.width(), target.height(), target.flip());
 		return batch;
 	}
 
@@ -1594,7 +1608,6 @@ public class GLEx extends PixmapFImpl implements LRelease {
 
 	private boolean useBegin;
 
-	
 	public GLEx drawLine(float x1, float y1, float x2, float y2) {
 		return $drawLine(x1, y1, x2, y2, true);
 	}
@@ -1616,15 +1629,12 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			} else if (y1 != y2) {
 				y2++;
 			}
-		/*	if (use) {
-				beginRenderer(GLType.Line);
-			}
-			int argb = LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor);
-			glRenderer.setColor(argb);
-			glRenderer.line(x1, y1, x2, y2);
-			if (use) {
-				endRenderer();
-			}*/
+			/*
+			 * if (use) { beginRenderer(GLType.Line); } int argb =
+			 * LColor.combine(this.lastBrush.fillColor,
+			 * this.lastBrush.baseColor); glRenderer.setColor(argb);
+			 * glRenderer.line(x1, y1, x2, y2); if (use) { endRenderer(); }
+			 */
 			return this;
 		}
 	}
@@ -1660,11 +1670,11 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			}
 			int argb = LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor);
 			if (points.length == 2) {
-				
+
 			} else if (points.length == 4) {
-			
+
 			} else {
-				
+
 			}
 		}
 		return this;
@@ -1723,11 +1733,12 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			}
 			drawPolylineImpl(xps, yps, len);
 		} else {
-		//	int argb = LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor);
-		/*	beginRenderer(GLType.Line);
-			glRenderer.setColor(argb);
-			glRenderer.polyline(points);
-			endRenderer();*/
+			// int argb = LColor.combine(this.lastBrush.fillColor,
+			// this.lastBrush.baseColor);
+			/*
+			 * beginRenderer(GLType.Line); glRenderer.setColor(argb);
+			 * glRenderer.polyline(points); endRenderer();
+			 */
 		}
 		return this;
 	}
@@ -1757,11 +1768,12 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (this.lastBrush.alltextures) {
 			fillShapeImpl(shape, x, y);
 		} else {
-		/*	int argb = LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor);
-			beginRenderer(GLType.Filled);
-			glRenderer.setColor(argb);
-			glRenderer.drawShape(shape, x, y);
-			endRenderer();*/
+			/*
+			 * int argb = LColor.combine(this.lastBrush.fillColor,
+			 * this.lastBrush.baseColor); beginRenderer(GLType.Filled);
+			 * glRenderer.setColor(argb); glRenderer.drawShape(shape, x, y);
+			 * endRenderer();
+			 */
 		}
 		return this;
 	}
@@ -1849,11 +1861,12 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 */
 	public GLEx drawTriangle(final float x1, final float y1, final float x2, final float y2, final float x3,
 			final float y3) {
-	/*	beginRenderer(GLType.Line);
-		int argb = LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor);
-		glRenderer.setColor(argb);
-		glRenderer.triangle(x1, y1, x2, y2, x3, y3);
-		endRenderer();*/
+		/*
+		 * beginRenderer(GLType.Line); int argb =
+		 * LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor);
+		 * glRenderer.setColor(argb); glRenderer.triangle(x1, y1, x2, y2, x3,
+		 * y3); endRenderer();
+		 */
 		return this;
 	}
 
@@ -1869,11 +1882,12 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 */
 	public GLEx fillTriangle(final float x1, final float y1, final float x2, final float y2, final float x3,
 			final float y3) {
-	/*	beginRenderer(GLType.Filled);
-		int argb = LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor);
-		glRenderer.setColor(argb);
-		glRenderer.triangle(x1, y1, x2, y2, x3, y3);
-		endRenderer();*/
+		/*
+		 * beginRenderer(GLType.Filled); int argb =
+		 * LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor);
+		 * glRenderer.setColor(argb); glRenderer.triangle(x1, y1, x2, y2, x3,
+		 * y3); endRenderer();
+		 */
 		return this;
 	}
 
@@ -2039,11 +2053,12 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (this.lastBrush.alltextures) {
 			drawPointImpl(x, y);
 		} else {
-			/*beginRenderer(GLType.Point);
-			int argb = LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor);
-			glRenderer.setColor(argb);
-			glRenderer.point(x, y);
-			endRenderer();*/
+			/*
+			 * beginRenderer(GLType.Point); int argb =
+			 * LColor.combine(this.lastBrush.fillColor,
+			 * this.lastBrush.baseColor); glRenderer.setColor(argb);
+			 * glRenderer.point(x, y); endRenderer();
+			 */
 		}
 		return this;
 	}
@@ -2061,11 +2076,11 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			drawPointImpl(x, y);
 			setColor(tmp);
 		} else {
-			/*beginRenderer(GLType.Point);
-			int argb = LColor.combine(this.lastBrush.baseColor, color);
-			glRenderer.setColor(argb);
-			glRenderer.point(x, y);
-			endRenderer();*/
+			/*
+			 * beginRenderer(GLType.Point); int argb =
+			 * LColor.combine(this.lastBrush.baseColor, color);
+			 * glRenderer.setColor(argb); glRenderer.point(x, y); endRenderer();
+			 */
 		}
 		return this;
 	}
@@ -2083,13 +2098,13 @@ public class GLEx extends PixmapFImpl implements LRelease {
 				drawPointImpl(x[i], y[i]);
 			}
 		} else {
-		/*	beginRenderer(GLType.Point);
-			int argb = LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor);
-			glRenderer.setColor(argb);
-			for (int i = 0; i < size; i++) {
-				glRenderer.point(x[i], y[i]);
-			}
-			endRenderer();*/
+			/*
+			 * beginRenderer(GLType.Point); int argb =
+			 * LColor.combine(this.lastBrush.fillColor,
+			 * this.lastBrush.baseColor); glRenderer.setColor(argb); for (int i
+			 * = 0; i < size; i++) { glRenderer.point(x[i], y[i]); }
+			 * endRenderer();
+			 */
 		}
 		return this;
 	}
@@ -2325,15 +2340,15 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			float cx = x1 + radiusW;
 			float cy = y1 + radiusH;
 			if ((int) radiusW == (int) radiusH) {
-				/*beginRenderer(GLType.Line);
-				int argb = LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor);
-				glRenderer.setColor(argb);
-				if (end - start == 360) {
-					glRenderer.oval(cx, cy, MathUtils.min(radiusW, radiusH));
-				} else {
-					glRenderer.arc(cx, cy, MathUtils.min(radiusW, radiusH), start, end, segments);
-				}
-				endRenderer();*/
+				/*
+				 * beginRenderer(GLType.Line); int argb =
+				 * LColor.combine(this.lastBrush.fillColor,
+				 * this.lastBrush.baseColor); glRenderer.setColor(argb); if (end
+				 * - start == 360) { glRenderer.oval(cx, cy,
+				 * MathUtils.min(radiusW, radiusH)); } else { glRenderer.arc(cx,
+				 * cy, MathUtils.min(radiusW, radiusH), start, end, segments); }
+				 * endRenderer();
+				 */
 			} else {
 				draw(new Ellipse(cx, cy, radiusW, radiusH, start, end, segments));
 			}
@@ -2380,15 +2395,14 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			float radiusH = height / 2.0f;
 			float cx = x1 + radiusW;
 			float cy = y1 + radiusH;
-			/*beginRenderer(GLType.Filled);
-			int argb = LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor);
-			glRenderer.setColor(argb);
-			if (end - start == 360) {
-				glRenderer.oval(cx, cy, MathUtils.min(radiusW, radiusH));
-			} else {
-				glRenderer.arc(cx, cy, MathUtils.min(radiusW, radiusH), start, end, segments);
-			}
-			endRenderer();*/
+			/*
+			 * beginRenderer(GLType.Filled); int argb =
+			 * LColor.combine(this.lastBrush.fillColor,
+			 * this.lastBrush.baseColor); glRenderer.setColor(argb); if (end -
+			 * start == 360) { glRenderer.oval(cx, cy, MathUtils.min(radiusW,
+			 * radiusH)); } else { glRenderer.arc(cx, cy, MathUtils.min(radiusW,
+			 * radiusH), start, end, segments); } endRenderer();
+			 */
 		}
 		return this;
 	}
@@ -2926,7 +2940,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		}
 		if (width != this.lastBrush.lineWidth) {
 			this.lastBrush.lineWidth = width;
-			//batch.gl.glLineWidth(width);
+			// batch.gl.glLineWidth(width);
 		}
 		return this;
 	}
@@ -2936,7 +2950,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			return this;
 		}
 		if (this.lastBrush.lineWidth != 1f) {
-		//	batch.gl.glLineWidth(1f);
+			// batch.gl.glLineWidth(1f);
 			this.lastBrush.lineWidth = 1f;
 		}
 		return this;
@@ -3020,9 +3034,9 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	public void close() {
 		this.isClosed = true;
 		this.useBegin = false;
-	/*	if (glRenderer != null) {
-			glRenderer.close();
-		}*/
+		/*
+		 * if (glRenderer != null) { glRenderer.close(); }
+		 */
 	}
 
 }

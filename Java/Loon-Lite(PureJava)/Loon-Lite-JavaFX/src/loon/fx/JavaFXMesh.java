@@ -21,10 +21,13 @@
 package loon.fx;
 
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import loon.LSysException;
 import loon.LTexture;
 import loon.canvas.Canvas;
 import loon.canvas.Image;
+import loon.canvas.LColor;
 import loon.geom.Affine2f;
 import loon.opengl.Mesh;
 import loon.opengl.MeshData;
@@ -250,7 +253,10 @@ public class JavaFXMesh implements Mesh {
 		float newY = textureHeight * st;
 		float newWidth = textureWidth * sr;
 		float newHeight = textureHeight * sb;
-
+		LColor color = new LColor(tint);
+		Paint paint = Color.rgb(color.getRed(), color.getGreen(), color.getBlue(), color.a);
+		context.setFill(paint);
+		context.setStroke(paint);
 		context.transform(m00, m01, m10, m11, tx, ty);
 		context.drawImage(((JavaFXImage) source).buffer, newX, newY, newWidth, newHeight, left, top, right, bottom);
 		context.restore();

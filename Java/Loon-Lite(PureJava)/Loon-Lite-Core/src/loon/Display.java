@@ -306,7 +306,9 @@ public class Display extends LSystemView {
 			// 显示fps速度
 			if (debug || _setting.isFPS) {
 				tickFrames();
+			
 				fpsFont.drawString(_glEx, "FPS:" + frameRate, 5, 5, 0, LColor.white);
+				
 			}
 			// 显示内存
 			if (debug || _setting.isMemory) {

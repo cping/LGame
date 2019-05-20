@@ -120,7 +120,9 @@ public class LightningBranch implements ILightning {
 
 	@Override
 	public void close() {
-		bolts.clear();
+		if (bolts != null) {
+			bolts.clear();
+		}
 		closed = true;
 	}
 
