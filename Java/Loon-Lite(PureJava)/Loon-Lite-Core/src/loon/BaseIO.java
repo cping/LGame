@@ -25,11 +25,13 @@ import java.io.IOException;
 import loon.LTexture.Format;
 import loon.action.sprite.Entity;
 import loon.action.sprite.Sprite;
+import loon.canvas.Canvas;
 import loon.canvas.Image;
 import loon.canvas.NinePatchAbstract.Repeat;
 import loon.canvas.TGA;
 import loon.component.DefUI;
 import loon.geom.Vector2f;
+import loon.opengl.Mesh;
 import loon.utils.ArrayByte;
 import loon.utils.ArrayByteReader;
 import loon.utils.GifDecoder;
@@ -41,6 +43,10 @@ import loon.utils.reply.GoFuture;
  * Loon的基础资源加载器
  */
 public abstract class BaseIO extends DefUI {
+	
+	public final static Mesh createMesh(Canvas canvas){
+		return LSystem.base().makeMesh(canvas);
+	}
 
 	public final static GoFuture<String> loadAsynText(String path) {
 		final LGame base = LSystem.base();

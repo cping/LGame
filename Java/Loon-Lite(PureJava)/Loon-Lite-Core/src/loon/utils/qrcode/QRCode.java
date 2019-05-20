@@ -83,7 +83,7 @@ public class QRCode {
 	}
 
 	public LTexture createTexture(int width, int height, LColor color, boolean trans) {
-		return createImage(width, height, color, trans).onHaveToClose(true).texture();
+		return createImage(width, height, color, trans).texture();
 	}
 
 	public Image createImage(int width, int height, LColor color, boolean trans) {

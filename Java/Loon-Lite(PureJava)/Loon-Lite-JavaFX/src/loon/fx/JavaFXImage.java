@@ -108,7 +108,7 @@ public class JavaFXImage extends ImageImpl {
 		PixelReader reader = buffer.getPixelReader();
 		for (int i = 0; i < w; i++) {
 			for (int j = 0; j < h; j++) {
-				pixels[i * w + j] = reader.getArgb(i, j);
+				pixels[j * w + i] = reader.getArgb(i, j);
 			}
 		}
 		return pixels;

@@ -45,12 +45,6 @@ public abstract class Image extends TextureSource implements Canvas.Drawable, LR
 
 	private boolean isTexture = false;
 
-	private boolean haveToClose = false;
-
-	public boolean toClose() {
-		return haveToClose;
-	}
-
 	public static Canvas createCanvas(float w, float h) {
 		return createCanvas((int) w, (int) h);
 	}
@@ -411,16 +405,9 @@ public abstract class Image extends TextureSource implements Canvas.Drawable, LR
 		setPixels(pixmap.getData(), pixmap.getWidth(), pixmap.getHeight());
 	}
 
-	public Image onHaveToClose(boolean c) {
-		this.haveToClose = c;
-		return this;
-	}
-
 	public final void close() {
 		if (!this.isTexture) {
 			this.closeImpl();
-		} else {
-			this.haveToClose = true;
 		}
 		this.closed = true;
 	}

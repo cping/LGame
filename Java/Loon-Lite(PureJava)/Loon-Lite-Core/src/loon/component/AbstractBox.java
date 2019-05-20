@@ -44,7 +44,7 @@ public abstract class AbstractBox implements XY {
 	protected LColor fontColor = LColor.white.cpy();
 	protected LTexture _textureBox;
 	protected int _radius;
-	protected boolean useLFont;
+
 
 	protected AbstractBox(IFont font) {
 		if (font == null) {
@@ -69,7 +69,6 @@ public abstract class AbstractBox implements XY {
 			return;
 		}
 		this.font = fn;
-		this.useLFont = (this.font instanceof LFont);
 		dirty();
 	}
 

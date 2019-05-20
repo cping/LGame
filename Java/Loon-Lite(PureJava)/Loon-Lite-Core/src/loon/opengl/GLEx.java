@@ -95,7 +95,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 
 	private final LTexture colorTex;
 
-	protected final Canvas target;
+	protected final Canvas graphics;
 
 	private int scissorDepth;
 
@@ -127,10 +127,10 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 * @param def
 	 * @param alltex
 	 */
-	public GLEx(Graphics gfx, Canvas target, BaseBatch def, boolean alltex) {
+	public GLEx(Graphics gfx, BaseBatch def, boolean alltex) {
 		super(0f, 0f, LSystem.viewSize.getRect(), LSystem.viewSize.width, LSystem.viewSize.height, def_skip);
 		this.gfx = gfx;
-		this.target = target;
+		this.graphics = gfx.getCanvas();
 		this.batch = def;
 		this.affineStack.add(lastTrans = new Affine2f());
 		this.colorTex = gfx.finalColorTex();
@@ -144,8 +144,8 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		this.update();
 	}
 
-	public GLEx(Graphics gfx, Canvas target) {
-		this(gfx, target, createDefaultBatch(target), false);
+	public GLEx(Graphics gfx) {
+		this(gfx,createDefaultBatch(gfx.getCanvas()), false);
 	}
 
 	public int getWidth() {
@@ -608,7 +608,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (isClosed) {
 			return;
 		}
-		gfx.getCanvas().clear();
+		graphics.clear();
 		//GLUtils.setClearColor(batch.gl, red, green, blue, alpha);
 		this.setFont(LSystem.getSystemGameFont());
 		this.lastBrush.baseColor = LColor.DEF_COLOR;

@@ -31,7 +31,6 @@ import javafx.concurrent.Worker;
 import javafx.concurrent.Worker.State;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -46,12 +45,15 @@ import loon.Log;
 import loon.Platform;
 import loon.Save;
 import loon.Support;
-import loon.LGame.Status;
+import loon.canvas.Canvas;
 import loon.event.InputMake;
+import loon.opengl.Mesh;
 
 public class JavaFXGame extends LGame {
 
 	public static class JavaFXSetting extends LSetting {
+
+		public boolean resizable = true;
 
 	}
 
@@ -145,7 +147,11 @@ public class JavaFXGame extends LGame {
 	}
 
 	protected void shutdown() {
+		if (status.isClosed()) {
+			return;
+		}
 		status.emit(Status.EXIT);
+		stop();
 		try {
 			pool.shutdown();
 			pool.awaitTermination(1, TimeUnit.SECONDS);
@@ -258,6 +264,11 @@ public class JavaFXGame extends LGame {
 		return false;
 	}
 
+	@Override
+	public Mesh makeMesh(Canvas canvas) {
+		return new JavaFXMesh(canvas);
+	}
+	
 	@Override
 	public boolean isDesktop() {
 		return true;

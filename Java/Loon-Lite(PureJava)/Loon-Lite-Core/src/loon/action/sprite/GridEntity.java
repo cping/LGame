@@ -133,7 +133,7 @@ public class GridEntity extends Entity {
 				Image img = Image.createImage(width(), height());
 				Canvas canvas = img.getCanvas();
 				draw(canvas, 0, 0);
-				_image = img.onHaveToClose(true).texture();
+				_image = img.texture();
 			} else {
 				g.draw(_image, drawX(offsetX), drawY(offsetY));
 			}

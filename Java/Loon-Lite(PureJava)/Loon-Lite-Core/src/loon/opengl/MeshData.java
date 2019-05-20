@@ -27,6 +27,8 @@ public class MeshData {
 
 	public LTexture texture;
 	
+	public int amount = -1;
+	
 	public float[] uvs ;
 	
 	public float[] vertices;

@@ -758,20 +758,13 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		} else {
 			font = displayFont;
 		}
-		boolean useFontCache = false;
-		if (font instanceof LFont) {
-			LFont newFont = ((LFont) font);
-			useFontCache = newFont.isSupportCacheFontPack();
-			newFont.setSupportCacheFontPack(false);
-		}
+	
 		int[] center = hexagon.getCenter();
 		String text = "[" + x + "," + y + "]";
 		g.setFont(font);
 		g.drawText(text, (center[0] - getViewRect().x - font.stringWidth(text) / 2) + offX,
 				(center[1] - getViewRect().y + font.getHeight() / 2) + offY, color);
-		if (useFontCache) {
-			((LFont) font).setSupportCacheFontPack(useFontCache);
-		}
+
 	}
 
 	public Vector2f getPositionFlag() {

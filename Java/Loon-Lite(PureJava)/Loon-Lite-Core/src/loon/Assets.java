@@ -205,8 +205,6 @@ public abstract class Assets {
 		} while (path.length() != pathLen);
 		return path.replace("\\", "/");
 	}
-	
-	public abstract Mesh makeMesh();
 
 	public void close() {
 		for (Sound s : soundCache) {

@@ -87,15 +87,8 @@ public abstract class BaseBatch extends LTextureBind {
 		addQuad(tint, xf.m00, xf.m01, xf.m10, xf.m11, xf.tx, xf.ty, left, top, right, bottom, sl, st, sr, sb);
 	}
 
-	public void addQuad(int tint, float m00, float m01, float m10, float m11, float tx, float ty, float left, float top,
-			float right, float bottom, float sl, float st, float sr, float sb) {
-		addQuad(tint, m00, m01, m10, m11, tx, ty, left, top, sl, st, right, top, sr, st, left, bottom, sl, sb, right,
-				bottom, sr, sb);
-	}
-
-	public abstract void addQuad(int tint, float m00, float m01, float m10, float m11, float tx, float ty, float x1,
-			float y1, float sx1, float sy1, float x2, float y2, float sx2, float sy2, float x3, float y3, float sx3,
-			float sy3, float x4, float y4, float sx4, float sy4);
+	public abstract void addQuad(int tint, float m00, float m01, float m10, float m11, float tx, float ty, float left, float top,
+			float right, float bottom, float sl, float st, float sr, float sb) ;
 
 	protected BaseBatch(Canvas gl) {
 		super(gl);

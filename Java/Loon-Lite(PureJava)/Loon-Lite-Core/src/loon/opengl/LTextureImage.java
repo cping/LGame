@@ -15,7 +15,7 @@ public class LTextureImage extends GLEx {
 
 	public LTextureImage(Graphics gfx, BaseBatch defaultBatch,
 			LTexture texture, boolean alltex) {
-		super(gfx, gfx.createCanvas(400, 400), defaultBatch, alltex);
+		super(gfx, defaultBatch, alltex);
 		this.texture = texture;
 	}
 

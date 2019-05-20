@@ -20,8 +20,6 @@
  */
 package loon;
 
-import java.io.OutputStream;
-
 import loon.action.ActionBind;
 import loon.action.ActionControl;
 import loon.action.ActionTween;
@@ -4977,9 +4975,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 				_closeUpdate = null;
 				screenSwitch = null;
 				DefUI.self().clearDefaultUI();
-				if (LSystem.base() != null) {
-					LSystem.base().closeFontTempTexture();
-				}
 			} catch (Throwable cause) {
 				LSystem.error("Screen destroy() dispatch exception", cause);
 			} finally {

@@ -59,6 +59,11 @@ public abstract class Graphics {
 		return scale;
 	}
 
+	public Affine2f getViewAffine() {
+		display = game.display();
+		return display.GL().tx();
+	}
+	
 	public Matrix4 getViewMatrix() {
 		display = game.display();
 		Dimension view = LSystem.viewSize;

@@ -21,6 +21,7 @@
 package loon.fx;
 
 import javafx.scene.canvas.GraphicsContext;
+import loon.LSysException;
 import loon.LTexture;
 import loon.canvas.Canvas;
 import loon.canvas.Image;
@@ -45,16 +46,22 @@ public class JavaFXMesh implements Mesh {
 
 	private int mode = 0;
 
-	/**
-	 * 将mesh数据渲染到Canvas上面
-	 * 
-	 * @param canvas
-	 * 
-	 */
-	public void paint(Canvas canvas) {
+	public JavaFXMesh(Canvas canvas) {
+		if (canvas == null) {
+			throw new LSysException("");
+		}
 		if (canvas instanceof JavaFXCanvas) {
 			this.context = ((JavaFXCanvas) canvas).context;
 		}
+	}
+
+	/**
+	 * 将mesh数据渲染到Canvas上面
+	 * 
+	 * 
+	 */
+	@Override
+	public void paint() {
 		if (mesh != null) {
 			if (mode == 0) {
 				renderWithIndexes(mesh);
@@ -71,7 +78,7 @@ public class JavaFXMesh implements Mesh {
 	 * 
 	 */
 	public void renderNoIndexes(MeshData mesh) {
-		int i, len = mesh.vertices.length / 2;
+		int i, len = mesh.amount == -1 ? mesh.vertices.length / 2 : mesh.amount;
 		int index;
 		for (i = 0; i < len - 2; i++) {
 			index = i * 2;
@@ -87,7 +94,7 @@ public class JavaFXMesh implements Mesh {
 	 */
 	public void renderWithIndexes(MeshData mesh) {
 		int[] indexes = mesh.indexes;
-		int i, len = indexes.length;
+		int i, len = mesh.amount == -1 ? indexes.length : mesh.amount;
 		for (i = 0; i < len; i += 3) {
 			int index0 = indexes[i] * 2;
 			int index1 = indexes[i + 1] * 2;
@@ -110,12 +117,12 @@ public class JavaFXMesh implements Mesh {
 		float sourceHeight = source.getHeight();
 
 		// uv数据
-		float u0;
-		float u1;
-		float u2;
-		float v0;
-		float v1;
-		float v2;
+		float u0 = 1f;
+		float u1 = 1f;
+		float u2 = 1f;
+		float v0 = 1f;
+		float v1 = 1f;
+		float v2 = 1f;
 
 		if (mesh.useUvTransform) {
 			Affine2f ut = mesh.uvTransform;
@@ -225,9 +232,27 @@ public class JavaFXMesh implements Mesh {
 	public void setIndices(int[] inds) {
 		mesh.indexes = inds;
 	}
-	
+
 	@Override
-	public void setVertices(float[] vers){
+	public void setVertices(float[] vers) {
 		mesh.vertices = vers;
+	}
+
+	@Override
+	public void paint(int tint, float m00, float m01, float m10, float m11, float tx, float ty, float left, float top,
+			float right, float bottom, float sl, float st, float sr, float sb) {
+		LTexture texture = mesh.texture;
+		Image source = texture.getImage();
+		float textureWidth = texture.pixelWidth();
+		float textureHeight = texture.pixelHeight();
+
+		float newX = textureWidth * sl;
+		float newY = textureHeight * st;
+		float newWidth = textureWidth * sr;
+		float newHeight = textureHeight * sb;
+
+		context.transform(m00, m01, m10, m11, tx, ty);
+		context.drawImage(((JavaFXImage) source).buffer, newX, newY, newWidth, newHeight, left, top, right, bottom);
+		context.restore();
 	}
 }

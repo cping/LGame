@@ -347,11 +347,6 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 			return this;
 		}
 		this.text = t;
-		if (!LSystem.isSupportTempFont()) {
-			if (font instanceof LFont) {
-				LSTRDictionary.get().bind((LFont) font, text);
-			}
-		}
 		return this;
 	}
 

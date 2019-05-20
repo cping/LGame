@@ -20,6 +20,7 @@
  */
 package loon.opengl;
 
+import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.Canvas;
 import loon.utils.GLUtils;
@@ -32,6 +33,10 @@ public class LTextureBind extends GLBase {
 
 	public int getCurrentTextureID() {
 		return this.curTexId;
+	}
+
+	public LTexture getCurrentTexture() {
+		return LSystem.getTexture(this.curTexId);
 	}
 
 	public void setTexture(final LTexture texture) {

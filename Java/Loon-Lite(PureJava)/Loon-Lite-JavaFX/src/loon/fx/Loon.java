@@ -25,6 +25,7 @@ import java.util.Optional;
 import javafx.application.Application;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -39,12 +40,14 @@ import javafx.scene.control.TextInputDialog;
 import javafx.scene.transform.Scale;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import loon.LGame;
 import loon.LSetting;
 import loon.LazyLoading;
 import loon.Platform;
 import loon.event.KeyMake;
 import loon.event.SysInput;
+import loon.fx.JavaFXGame.JavaFXSetting;
 
 public class Loon extends Application implements Platform {
 
@@ -62,6 +65,12 @@ public class Loon extends Application implements Platform {
 			app.game.reset();
 			app.start(stage);
 		}
+
+		public void stop() throws Exception {
+			if (app != null) {
+				app.stop();
+			}
+		}
 	}
 
 	public final static class GameApp extends Application {
@@ -71,6 +80,12 @@ public class Loon extends Application implements Platform {
 		@Override
 		public void start(Stage stage) throws Exception {
 			initData.start(stage);
+		}
+
+		@Override
+		public void stop() throws Exception {
+			super.stop();
+			initData.stop();
 		}
 
 		public static void register(LSetting setting, LazyLoading.Data lazy) {
@@ -98,6 +113,10 @@ public class Loon extends Application implements Platform {
 		this.game = new JavaFXGame(this, setting);
 	}
 
+	public void stop() throws Exception {
+		this.game.shutdown();
+	}
+
 	public void start(Stage primaryStage) throws Exception {
 		float newWidth = game.setting.getShowWidth();
 		float newHeight = game.setting.getShowHeight();
@@ -110,15 +129,27 @@ public class Loon extends Application implements Platform {
 			canvas = new Canvas(newWidth, newHeight);
 		}
 		GraphicsContext ctx = canvas.getGraphicsContext2D();
-		
+
 		Paint paint = ctx.getFill();
 		ctx.setFill(Color.BLACK);
 		ctx.fillRect(0, 0, newWidth, newHeight);
 		ctx.setFill(paint);
 
 		group.getChildren().add(canvas);
+
 		primaryStage.setScene(createScene(group, newWidth, newHeight));
+		primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+			
+			@Override
+			public void handle(WindowEvent e) {
+				game.shutdown();
+			}
+		});
 		primaryStage.setTitle(game.setting.appName);
+		if (game.setting instanceof JavaFXSetting) {
+			primaryStage.setResizable(((JavaFXSetting) game.setting).resizable);
+		}
+		primaryStage.show();
 
 		windowBorderWidth = primaryStage.getWidth() - scaledWidth.getValue();
 		windowBorderHeight = primaryStage.getHeight() - scaledHeight.getValue();
@@ -127,19 +158,19 @@ public class Loon extends Application implements Platform {
 			windowBorderHeight = 35.0d;
 		}
 
-		scaledWidth.bind(primaryStage.widthProperty().subtract(windowBorderWidth));
-		scaledHeight.bind(primaryStage.heightProperty().subtract(windowBorderHeight));
-
-		if (game.setting.fullscreen) {
-			primaryStage.setMaximized(true);
-			primaryStage.setFullScreen(true);
-		}
+		scaledWidth.bind(primaryStage.widthProperty().add(windowBorderWidth));
+		scaledHeight.bind(primaryStage.heightProperty().add(windowBorderHeight));
 
 		scaleRatioX.bind(scaledWidth.divide(newWidth));
 		scaleRatioY.bind(scaledHeight.divide(newHeight));
 		fxScene.getRoot().prefWidth(scaledWidth.doubleValue());
-		fxScene.getRoot().prefHeight(scaledWidth.doubleValue());
-		primaryStage.show();
+		fxScene.getRoot().prefHeight(scaledHeight.doubleValue());
+
+		Scale scale = new Scale();
+		scale.xProperty().bind(scaleRatioX);
+		scale.yProperty().bind(scaleRatioY);
+		fxScene.getRoot().getTransforms().setAll(scale);
+
 	}
 
 	protected Scene createScene(Group group, float width, float height) {
@@ -150,9 +181,11 @@ public class Loon extends Application implements Platform {
 		} else {
 			rect = Screen.getPrimary().getVisualBounds();
 		}
+
 		if ((width > rect.getWidth()) || (height > rect.getHeight())) {
 			float extraMargin = 25f;
 			float ratio = width / height;
+
 			for (int i = 0; i < rect.getWidth(); i++) {
 				if (width / ratio <= rect.getHeight()) {
 					width = i - extraMargin;
@@ -161,6 +194,7 @@ public class Loon extends Application implements Platform {
 				}
 			}
 		}
+
 		this.fxScene = new Scene(group, width, height);
 		scaledWidth.set(width);
 		scaledHeight.set(height);

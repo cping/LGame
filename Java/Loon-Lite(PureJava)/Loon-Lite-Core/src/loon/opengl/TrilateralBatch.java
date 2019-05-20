@@ -25,16 +25,21 @@ import loon.canvas.LColor;
 import loon.geom.Affine2f;
 import loon.geom.Matrix4;
 import loon.utils.MathUtils;
+import loon.BaseIO;
 import loon.LSystem;
 
 public class TrilateralBatch extends BaseBatch {
 
 	private final static String _batch_name = "trilbatch";
 
+	private final MeshData meshData = new MeshData();
+
 	private final Matrix4 viewMatrix;
 
 	private final ExpandVertices expandVertices;
 
+	private Mesh meshObject;
+	
 	private int idx = 0;
 
 	private final LColor tmpColor = new LColor();
@@ -43,22 +48,14 @@ public class TrilateralBatch extends BaseBatch {
 
 	private boolean isLoaded;
 
-	private boolean lockSubmit = false;
-
 
 	public int getSize() {
 		return expandVertices.getSize();
 	}
-
 	
-	public boolean isLockSubmit() {
-		return lockSubmit;
-	}
 
-	public void setLockSubmit(boolean lockSubmit) {
-		this.lockSubmit = lockSubmit;
-	}
-
+	public int[] indices;
+	
 	public void submit() {
 		if (idx == 0) {
 			return;
@@ -70,6 +67,13 @@ public class TrilateralBatch extends BaseBatch {
 			}
 			int count = spritesInBatch * 6;
 			bindTexture();
+			meshData.texture = getCurrentTexture();
+			meshData.vertices = expandVertices.getVertices();
+			meshData.indexes =indices; 
+			meshData.amount = idx;
+			meshData.uvTransform = new Affine2f();
+			meshObject.setMesh(meshData);
+			meshObject.paint();
 		/*	GL20 gl = LSystem.base().graphics().gl;
 			int tmp = GLUtils.getBlendMode();
 			if (tmpColor.a >= 0.98f) {
@@ -84,9 +88,6 @@ public class TrilateralBatch extends BaseBatch {
 		} finally {
 			if (expandVertices.expand(this.idx)) {
 			//	mesh.reset(_batch_name, expandVertices.length());
-			}
-			if (!lockSubmit) {
-				idx = 0;
 			}
 		}
 	}
@@ -112,7 +113,18 @@ public class TrilateralBatch extends BaseBatch {
 
 	@Override
 	public void init() {
-	//	this.mesh = new MeshDefault();
+		meshObject = LSystem.base().makeMesh(gl);
+		int len = 256 * 6;
+		indices = new int[len];
+		short j = 0;
+		for (int i = 0; i < len; i += 6, j += 4) {
+			indices[i] = j;
+			indices[i + 1] = (j + 1);
+			indices[i + 2] =  (j + 2);
+			indices[i + 3] =  (j + 2);
+			indices[i + 4] =  (j + 3);
+			indices[i + 5] = j;
+		}
 	}
 
 	protected float addX(float m00, float m01, float m10, float m11, float x, float y, float sx, float sy, float tx,
@@ -123,50 +135,6 @@ public class TrilateralBatch extends BaseBatch {
 	protected float addY(float m00, float m01, float m10, float m11, float x, float y, float sx, float sy, float tx,
 			float ty) {
 		return m01 * x + m11 * y + ty;
-	}
-
-	@Override
-	public void addQuad(int tint, float m00, float m01, float m10, float m11, float tx, float ty, float x1, float y1,
-			float sx1, float sy1, float x2, float y2, float sx2, float sy2, float x3, float y3, float sx3, float sy3,
-			float x4, float y4, float sx4, float sy4) {
-
-		if (lockSubmit) {
-			return;
-		}
-
-		float colorFloat = tmpColor.setColor(tint).toFloatBits();
-
-		int index = this.idx;
-
-		expandVertices.setVertice(index++, addX(m00, m01, m10, m11, x1, y1, sx1, sy1, tx, ty));
-		expandVertices.setVertice(index++, addY(m00, m01, m10, m11, x1, y1, sx1, sy1, tx, ty));
-		expandVertices.setVertice(index++, colorFloat);
-		expandVertices.setVertice(index++, sx1);
-		expandVertices.setVertice(index++, sy1);
-
-		expandVertices.setVertice(index++, addX(m00, m01, m10, m11, x2, y2, sx2, sy2, tx, ty));
-		expandVertices.setVertice(index++, addY(m00, m01, m10, m11, x2, y2, sx2, sy2, tx, ty));
-		expandVertices.setVertice(index++, colorFloat);
-		expandVertices.setVertice(index++, sx2);
-		expandVertices.setVertice(index++, sy2);
-
-		expandVertices.setVertice(index++, addX(m00, m01, m10, m11, x4, y4, sx4, sy4, tx, ty));
-		expandVertices.setVertice(index++, addY(m00, m01, m10, m11, x4, y4, sx4, sy4, tx, ty));
-		expandVertices.setVertice(index++, colorFloat);
-		expandVertices.setVertice(index++, sx4);
-		expandVertices.setVertice(index++, sy4);
-
-		expandVertices.setVertice(index++, addX(m00, m01, m10, m11, x3, y3, sx3, sy3, tx, ty));
-		expandVertices.setVertice(index++, addY(m00, m01, m10, m11, x3, y3, sx3, sy3, tx, ty));
-		expandVertices.setVertice(index++, colorFloat);
-		expandVertices.setVertice(index++, sx3);
-		expandVertices.setVertice(index++, sy3);
-
-		this.idx = index;
-
-		if (lastTexId != curTexId) {
-			flush();
-		}
 	}
 
 	private float ubufWidth = 0;
@@ -223,6 +191,51 @@ public class TrilateralBatch extends BaseBatch {
 	@Override
 	public String toString() {
 		return "tris/" + expandVertices.length();
+	}
+
+	@Override
+	public void addQuad(int tint, float m00, float m01, float m10, float m11, float tx, float ty, float left, float top,
+			float right, float bottom, float sl, float st, float sr, float sb) {
+
+
+			meshData.texture = getCurrentTexture();
+			meshObject.setMesh(meshData);
+			meshObject.paint(tint, m00, m01, m10, m11, tx, ty, left, top, right, bottom, sl, st, sr, sb);
+	/*
+			int index = this.idx;
+
+			expandVertices.setVertice(index++, addX(m00, m01, m10, m11, x1, y1, sx1, sy1, tx, ty));
+			expandVertices.setVertice(index++, addY(m00, m01, m10, m11, x1, y1, sx1, sy1, tx, ty));
+			expandVertices.setVertice(index++, colorFloat);
+			expandVertices.setVertice(index++, sx1);
+			expandVertices.setVertice(index++, sy1);
+
+			expandVertices.setVertice(index++, addX(m00, m01, m10, m11, x2, y2, sx2, sy2, tx, ty));
+			expandVertices.setVertice(index++, addY(m00, m01, m10, m11, x2, y2, sx2, sy2, tx, ty));
+			expandVertices.setVertice(index++, colorFloat);
+			expandVertices.setVertice(index++, sx2);
+			expandVertices.setVertice(index++, sy2);
+
+			expandVertices.setVertice(index++, addX(m00, m01, m10, m11, x4, y4, sx4, sy4, tx, ty));
+			expandVertices.setVertice(index++, addY(m00, m01, m10, m11, x4, y4, sx4, sy4, tx, ty));
+			expandVertices.setVertice(index++, colorFloat);
+			expandVertices.setVertice(index++, sx4);
+			expandVertices.setVertice(index++, sy4);
+
+			expandVertices.setVertice(index++, addX(m00, m01, m10, m11, x3, y3, sx3, sy3, tx, ty));
+			expandVertices.setVertice(index++, addY(m00, m01, m10, m11, x3, y3, sx3, sy3, tx, ty));
+			expandVertices.setVertice(index++, colorFloat);
+			expandVertices.setVertice(index++, sx3);
+			expandVertices.setVertice(index++, sy3);
+
+			this.idx = index;
+
+			if (lastTexId != curTexId) {
+				flush();
+			}*/
+		
+
+		
 	}
 
 }

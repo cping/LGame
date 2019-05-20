@@ -697,7 +697,6 @@ public class JavaFXAssets extends Assets {
 	@Override
 	protected ImageImpl.Data load(String path) throws Exception {
 		Exception error = null;
-
 		for (Scale.ScaledResource rsrc : assetScale().getScaledResources(path)) {
 			try {
 				WritableImage image = requireResource(rsrc.path).readImage();
@@ -719,11 +718,6 @@ public class JavaFXAssets extends Assets {
 	@Override
 	protected ImageImpl createImage(boolean async, int rwid, int rhei, String source) {
 		return new JavaFXImage(game, async, rwid, rhei, source);
-	}
-
-	@Override
-	public Mesh makeMesh() {
-		return new JavaFXMesh();
 	}
 
 }

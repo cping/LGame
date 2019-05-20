@@ -20,16 +20,17 @@
  */
 package loon.opengl;
 
-import loon.canvas.Canvas;
-
 public interface Mesh {
 
 	public void setVertices(float[] vers);
 	
 	public void setIndices(int[] inds);
 	
-	public void paint(Canvas canvas);
+	public void paint();
 
+	public void paint(int tint, float m00, float m01, float m10, float m11, float tx, float ty, float left, float top,
+			float right, float bottom, float sl, float st, float sr, float sb);
+	
 	public void renderNoIndexes(MeshData mesh);
 
 	public void renderWithIndexes(MeshData mesh) ;

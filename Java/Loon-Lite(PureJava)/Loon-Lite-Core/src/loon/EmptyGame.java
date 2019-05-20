@@ -20,8 +20,10 @@
  */
 package loon;
 
+import loon.canvas.Canvas;
 import loon.event.InputMake;
 import loon.event.InputMakeImpl;
+import loon.opengl.Mesh;
 import loon.utils.ObjectMap;
 import loon.utils.TimeUtils;
 import loon.utils.reply.Act;
@@ -180,6 +182,11 @@ public class EmptyGame extends LGame {
 	@Override
 	public boolean isDesktop() {
 		return false;
+	}
+
+	@Override
+	public Mesh makeMesh(Canvas canvas) {
+		throw new UnsupportedOperationException();
 	}
 
 }

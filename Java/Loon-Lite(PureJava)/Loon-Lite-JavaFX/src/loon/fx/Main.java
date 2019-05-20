@@ -21,12 +21,86 @@
 package loon.fx;
 
 import loon.LSetting;
+import loon.LTexture;
+import loon.LTextures;
 import loon.LazyLoading;
 import loon.Screen;
+import loon.event.GameTouch;
 import loon.fx.Loon.GameApp;
+import loon.opengl.GLEx;
+import loon.utils.timer.LTimerContext;
 
 public class Main {
 
+	public static class ScreenTest extends Screen{
+
+		LTexture texture = LTextures.loadTexture("ccc.png");
+		@Override
+		public void draw(GLEx g) {
+			g.draw(texture, 77, 77);
+		}
+
+		@Override
+		public void onLoad() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void alter(LTimerContext timer) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void resize(int width, int height) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void touchDown(GameTouch e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void touchUp(GameTouch e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void touchMove(GameTouch e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void touchDrag(GameTouch e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void resume() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void pause() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void close() {
+			// TODO Auto-generated method stub
+			
+		}
+		
+	}
 
 	public static void main(String[] args) {
 		
@@ -53,14 +127,7 @@ public class Main {
 
 			@Override
 			public Screen onScreen() {
-				return new loon.Stage() {
-					
-					@Override
-					public void create() {
-						// TODO Auto-generated method stub
-						
-					}
-				};
+				return new ScreenTest();
 			}
 		});
 	}

@@ -22,6 +22,7 @@ package loon;
 
 import loon.LTexture.Format;
 import loon.action.sprite.Sprites;
+import loon.canvas.Canvas;
 import loon.canvas.Image;
 import loon.canvas.NinePatchAbstract.Repeat;
 import loon.component.Desktop;
@@ -29,6 +30,7 @@ import loon.event.InputMake;
 import loon.font.IFont;
 import loon.font.LFont;
 import loon.opengl.LSTRFont;
+import loon.opengl.Mesh;
 import loon.utils.IntMap;
 import loon.utils.ObjectMap;
 import loon.utils.StringUtils;
@@ -414,6 +416,23 @@ public abstract class LGame {
 	}
 
 	/**
+	 * 以纹理id获得具体纹理
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public LTexture getTexture(int id) {
+		synchronized (_texture_all_list) {
+			for (LTexture tex : _texture_all_list) {
+				if (tex != null && !tex.isClosed() && tex.getID() == id) {
+					return tex;
+				}
+			}
+			return null;
+		}
+	}
+
+	/**
 	 * 单纯从池中删除指定的纹理对象
 	 * 
 	 * @param id
@@ -615,7 +634,7 @@ public abstract class LGame {
 			return null;
 		}
 		log().debug("Texture : New " + path + " Loaded");
-		return BaseIO.loadImage(path).onHaveToClose(true).createTexture(config);
+		return BaseIO.loadImage(path).createTexture(config);
 	}
 
 	/**
@@ -688,7 +707,7 @@ public abstract class LGame {
 				texture.refCount++;
 				return texture;
 			}
-			texture = Image.createImageNicePatch(fileName, x, y, w, h).onHaveToClose(true).createTexture(config);
+			texture = Image.createImageNicePatch(fileName, x, y, w, h).createTexture(config);
 			texture.tmpLazy = fileName;
 			_texture_lazys.put(key, texture);
 			log().debug("Texture : " + fileName + " Loaded");
@@ -723,7 +742,7 @@ public abstract class LGame {
 				texture.refCount++;
 				return texture;
 			}
-			texture = BaseIO.loadImage(fileName).onHaveToClose(true).createTexture(config);
+			texture = BaseIO.loadImage(fileName).createTexture(config);
 			texture.tmpLazy = fileName;
 			_texture_lazys.put(key, texture);
 			log().debug("Texture : " + fileName + " Loaded");
@@ -899,15 +918,6 @@ public abstract class LGame {
 		return null;
 	}
 
-	protected final void closeFontTempTexture() {
-		for (int i = _font_pools.size - 1; i > -1; i--) {
-			IFont font = _font_pools.get(i);
-			if (font != null && font instanceof LFont) {
-				((LFont) font).closeTempTexture();
-			}
-		}
-	}
-
 	public void closeFontPool() {
 		for (int i = _font_pools.size - 1; i > -1; i--) {
 			IFont font = _font_pools.get(i);
@@ -919,6 +929,8 @@ public abstract class LGame {
 	}
 
 	public abstract LGame.Type type();
+
+	public abstract Mesh makeMesh(Canvas canvas);
 
 	public abstract double time();
 
@@ -961,7 +973,7 @@ public abstract class LGame {
 	public abstract boolean isMobile();
 
 	public abstract boolean isDesktop();
-	
+
 	public void close() {
 		if (!errors.isClosed()) {
 			errors.clearConnections();

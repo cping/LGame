@@ -344,13 +344,6 @@ public class LSystem {
 		return false;
 	}
 
-	public static boolean isSupportTempFont() {
-		if (base() != null) {
-			return base().setting.supportTempSysFont;
-		}
-		return false;
-	}
-
 	public static float getScaleWidth() {
 		return LSystem._scaleWidth;
 	}
@@ -624,6 +617,13 @@ public class LSystem {
 			return base().containsTexture(id);
 		}
 		return false;
+	}
+
+	public static final LTexture getTexture(int id) {
+		if (base() != null) {
+			return base().getTexture(id);
+		}
+		return null;
 	}
 
 	public static final void reloadTexture() {

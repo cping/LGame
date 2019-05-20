@@ -58,8 +58,6 @@ public class LTextBar extends LComponent {
 
 	private TArray<String> _messages = null;
 
-	private boolean _useLFont;
-
 	private boolean over, pressed;
 
 	private int pressedTime;
@@ -237,16 +235,7 @@ public class LTextBar extends LComponent {
 
 	private final void drawString(GLEx g, IFont font, String mes, float x, float y, LColor fontColor) {
 		boolean supportPack = false;
-		if (_useLFont) {
-			LFont newFont = (LFont) font;
-			supportPack = newFont.isSupportCacheFontPack();
-			newFont.setSupportCacheFontPack(false);
-		}
 		font.drawString(g, mes, x, y, fontColor);
-		if (_useLFont && supportPack) {
-			LFont newFont = (LFont) font;
-			newFont.setSupportCacheFontPack(supportPack);
-		}
 	}
 
 	public float textWidth() {
@@ -290,7 +279,6 @@ public class LTextBar extends LComponent {
 			return this;
 		}
 		this._font = font;
-		this._useLFont = (this._font instanceof LFont);
 		return this;
 	}
 

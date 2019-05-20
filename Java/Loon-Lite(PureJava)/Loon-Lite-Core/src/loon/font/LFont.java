@@ -66,20 +66,6 @@ public class LFont implements IFont {
 	 * 
 	 */
 
-	private LTexturePack fontTempPack;
-
-	private boolean supportCacheFontPack = true;
-
-	private boolean initTempFontPack = false;
-
-	private boolean tooManyChars = false;
-
-	private int fontPackCharsCount;
-
-	private int fontPackMaxCache;
-
-	private int fontPackCharsLimit;
-
 	private IntMap<Vector2f> fontSizes = new IntMap<Vector2f>(50);
 
 	private final static String tmp = "H";
@@ -115,11 +101,6 @@ public class LFont implements IFont {
 			throw new LSysException("Font name is null !");
 		}
 		this.textFormat = new TextFormat(new Font(name, style, MathUtils.max(1, size)), antialias);
-		this.supportCacheFontPack = LSystem.isSupportTempFont();
-		this.fontPackMaxCache = (LSystem.isDesktop() ? 8192 : 4096) / size;
-		this.fontPackCharsLimit = 2;
-		this.fontPackCharsCount = 0;
-		this.tooManyChars = false;
 		LSystem.pushFontPool(this);
 	}
 
@@ -188,9 +169,6 @@ public class LFont implements IFont {
 		if (useCache) {
 			LSTRDictionary.get().drawString(this, chars, _offset.x + tx, _offset.y + ty, angle, c);
 		} else {
-			if (drawStringTemp(g, chars, _offset.x + tx, _offset.y + ty, angle, c)) {
-				return;
-			}
 			LSTRDictionary.get().drawString(g, this, chars, _offset.x + tx, _offset.y + ty, angle, c);
 		}
 	}
@@ -207,110 +185,10 @@ public class LFont implements IFont {
 		if (useCache) {
 			LSTRDictionary.get().drawString(this, chars, _offset.x + tx, _offset.y + ty, sx, sy, ax, ay, angle, c);
 		} else {
-			if (sx == 1f && sy == 1f && ax == 0 && ay == 0) {
-				if (drawStringTemp(g, chars, _offset.x + tx, _offset.y + ty, angle, c)) {
-					return;
-				}
-			}
 			LSTRDictionary.get().drawString(g, this, chars, _offset.x + tx, _offset.y + ty, sx, sy, ax, ay, angle, c);
 		}
 	}
 
-	protected boolean drawStringTemp(GLEx g, String text, float x, float y, float rotation, LColor c) {
-
-		if (!tooManyChars && supportCacheFontPack && text.length() > fontPackCharsLimit && text.indexOf('\n') == -1) {
-
-			if (!initTempFontPack) {
-
-				if (fontTempPack != null) {
-					fontTempPack.close();
-					fontTempPack = null;
-				}
-
-				fontTempPack = new LTexturePack();
-				initTempFontPack = true;
-			}
-
-			PackEntry entry = fontTempPack.getEntry(text);
-
-			if (entry != null) {
-
-				int tint = g.color();
-				g.setTint(c);
-
-				fontTempPack.draw(entry, g, x, y, rotation, c);
-
-				g.setTint(tint);
-
-				return true;
-
-			} else if (fontPackCharsCount < fontPackMaxCache) {
-
-				fontPackCharsCount += text.length();
-				PointF fontSize = FontUtils.getTextWidthAndHeight(this, text);
-				Canvas canvas = Image.createCanvas(fontSize.x, fontSize.y);
-				TextLayout newLayout = getLayoutText(text);
-				canvas.setColor(LColor.white);
-				canvas.fillText(newLayout, 0, 0);
-				fontTempPack.putImage(text, canvas.image);
-				canvas = null;
-
-				entry = fontTempPack.getEntry(text);
-				if (entry != null) {
-					int tint = g.color();
-					g.setTint(c);
-					fontTempPack.draw(entry, g, x, y, rotation, c);
-					g.setTint(tint);
-				}
-				
-				return true;
-
-			} else {
-				tooManyChars = true;
-				clearPack();
-			}
-
-		}
-
-		return false;
-	}
-
-	protected void clearPack() {
-		// clear template font
-		if (fontTempPack != null) {
-			fontTempPack.close();
-			fontTempPack = null;
-		}
-		initTempFontPack = false;
-	}
-
-	public boolean isSupportCacheFontPack() {
-		return supportCacheFontPack;
-	}
-
-	public void setSupportCacheFontPack(boolean support) {
-		this.supportCacheFontPack = support;
-	}
-
-	public int getFontPackCharsLimit() {
-		return fontPackCharsLimit;
-	}
-
-	public void setFontPackCharsLimit(int fontPackCharsLimit) {
-		this.fontPackCharsLimit = fontPackCharsLimit;
-	}
-
-	public int getFontPackMaxCache() {
-		return fontPackMaxCache;
-	}
-
-	public void setFontPackMaxCache(int fontPackMaxCache) {
-		this.fontPackMaxCache = fontPackMaxCache;
-	}
-
-	public int getFontPackCharsCount() {
-		return this.fontPackCharsCount;
-	}
 
 	private void initLayout(String text) {
 		if (LSystem.base() == null) {
@@ -531,12 +409,6 @@ public class LFont implements IFont {
 		return builder.toString();
 	}
 
-	public void closeTempTexture() {
-		clearPack();
-		tooManyChars = false;
-		fontPackCharsCount = 0;
-	}
-
 	public boolean isClosed() {
 		return closed;
 	}
@@ -544,7 +416,6 @@ public class LFont implements IFont {
 	@Override
 	public void close() {
 		closed = true;
-		closeTempTexture();
 		LSystem.popFontPool(this);
 	}
 

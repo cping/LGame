@@ -159,13 +159,6 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 				drawFace(g, this._boxX + offsetX, this._boxY + offsetY);
 			}
 
-			boolean supportPack = false;
-
-			if (useLFont) {
-				LFont newFont = (LFont) font;
-				supportPack = newFont.isSupportCacheFontPack();
-				newFont.setSupportCacheFontPack(false);
-			}
 
 			drawMessage(g, message, this._boxX + this.messageX + offsetX, this._boxY + this.messageY + offsetY);
 			if (isPage && _flagType != null) {
@@ -183,10 +176,6 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 				}
 			}
 
-			if (useLFont && supportPack) {
-				LFont newFont = (LFont) font;
-				newFont.setSupportCacheFontPack(supportPack);
-			}
 		}
 
 		private void drawMessage(GLEx g, String message, float x, float y) {
