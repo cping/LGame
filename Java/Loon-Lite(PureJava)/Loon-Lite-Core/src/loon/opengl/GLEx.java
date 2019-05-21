@@ -30,7 +30,6 @@ import loon.action.camera.BaseCamera;
 import loon.canvas.Canvas;
 import loon.canvas.LColor;
 import loon.canvas.Paint;
-import loon.canvas.PixmapFImpl;
 import loon.canvas.Paint.Style;
 import loon.font.IFont;
 import loon.geom.Affine2f;
@@ -50,7 +49,7 @@ import loon.utils.GLUtils;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
 
-public class GLEx extends PixmapFImpl implements LRelease {
+public class GLEx implements LRelease {
 
 	/*
 	 * 内部类，用来保存与复位GLEx的基本渲染参数
@@ -58,7 +57,6 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	private static class BrushSave {
 		int baseColor = LColor.DEF_COLOR;
 		int fillColor = LColor.DEF_COLOR;
-		int pixSkip = def_skip;
 		float lineWidth = 1f;
 		float baseAlpha = 1f;
 		int blend = LSystem.MODE_NORMAL;
@@ -71,7 +69,6 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			BrushSave save = new BrushSave();
 			save.baseColor = this.baseColor;
 			save.fillColor = this.fillColor;
-			save.pixSkip = this.pixSkip;
 			save.lineWidth = this.lineWidth;
 			save.alltextures = this.alltextures;
 			save.font = this.font;
@@ -128,17 +125,15 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 * @param alltex
 	 */
 	public GLEx(Graphics gfx, BaseBatch def, boolean alltex) {
-		super(0f, 0f, LSystem.viewSize.getRect(), LSystem.viewSize.width, LSystem.viewSize.height, def_skip);
 		this.gfx = gfx;
 		this.graphics = gfx.getCanvas();
 		this.batch = def;
 		this.affineStack.add(lastTrans = new Affine2f());
 		this.colorTex = gfx.finalColorTex();
-		// this.scale(scaleX = target.xscale(), scaleY = target.yscale());
+		this.scale(scaleX = LSystem.getScaleWidth(), scaleY = LSystem.getScaleHeight());
 		this.lastBrush = new BrushSave();
 		this.lastBrush.font = LSystem.getSystemGameFont();
 		this.lastBrush.alltextures = alltex;
-		this.lastBrush.pixSkip = LSystem.isHTML5() ? def_skip_html5 : def_skip;
 		this.lastBrush.blend = LSystem.MODE_NORMAL;
 		this.brushStack.add(lastBrush);
 		this.update();
@@ -321,7 +316,6 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		this.lastBrush.fillColor = LColor.DEF_COLOR;
 		this.lastBrush.patternTex = null;
 		this.lastBrush.alltextures = LSystem.isHTML5();
-		this.setPixSkip(lastBrush.alltextures ? def_skip_html5 : def_skip);
 		this.setFont(LSystem.getSystemGameFont());
 		this.setLineWidth(1f);
 		// this.setBlendMode(LSystem.MODE_NORMAL);
@@ -345,7 +339,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		graphics.save();
 		return this;
 	}
-	
+
 	public GLEx restoreCanvas() {
 		graphics.restore();
 		return this;
@@ -1522,7 +1516,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-		fillRectNative(x, y, width, height);
+		//fillRectNative(x, y, width, height);
 		return this;
 	}
 
@@ -1587,7 +1581,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 					MathUtils.max(MathUtils.min(pr.maxY(), y + height - 1) - r.y, 0));
 		}
 		if (this.lastBrush.alltextures) {
-			setClipImpl(0, 0, r, getWidth(), getHeight());
+		//	setClipImpl(0, 0, r, getWidth(), getHeight());
 		}
 		scissorDepth++;
 		return r;
@@ -1598,9 +1592,9 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		RectBox r = scissorDepth == 0 ? null : scissors.get(scissorDepth - 1);
 		if (this.lastBrush.alltextures) {
 			if (r == null) {
-				setClipImpl(0, 0, LSystem.viewSize.getRect(), getWidth(), getHeight());
+				//setClipImpl(0, 0, LSystem.viewSize.getRect(), getWidth(), getHeight());
 			} else {
-				setClipImpl(0, 0, r, getWidth(), getHeight());
+				//setClipImpl(0, 0, r, getWidth(), getHeight());
 			}
 		}
 		return r;
@@ -1662,7 +1656,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			return this;
 		}
 		if (this.lastBrush.alltextures) {
-			drawShapeImpl(shape, x, y);
+			//drawShapeImpl(shape, x, y);
 		} else {
 			float[] points = shape.getPoints();
 			if (points.length == 0) {
@@ -1731,7 +1725,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 				xps[j] = points[i] + x;
 				yps[j] = points[i + 1] + y;
 			}
-			drawPolylineImpl(xps, yps, len);
+			//drawPolylineImpl(xps, yps, len);
 		} else {
 			// int argb = LColor.combine(this.lastBrush.fillColor,
 			// this.lastBrush.baseColor);
@@ -1766,7 +1760,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			return this;
 		}
 		if (this.lastBrush.alltextures) {
-			fillShapeImpl(shape, x, y);
+		//	fillShapeImpl(shape, x, y);
 		} else {
 			/*
 			 * int argb = LColor.combine(this.lastBrush.fillColor,
@@ -2019,7 +2013,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 */
 	public GLEx drawOval(float x1, float y1, float width, float height) {
 		if (this.lastBrush.alltextures) {
-			drawOvalImpl(x1, y1, width, height);
+		//	drawOvalImpl(x1, y1, width, height);
 			return this;
 		} else {
 			return this.drawArc(x1, y1, width, height, 32, 0, 360);
@@ -2036,7 +2030,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 */
 	public GLEx fillOval(float x1, float y1, float width, float height) {
 		if (this.lastBrush.alltextures) {
-			fillOvalImpl(x1, y1, width, height);
+		//	fillOvalImpl(x1, y1, width, height);
 			return this;
 		} else {
 			return this.fillArc(x1, y1, width, height, 32, 0, 360);
@@ -2051,7 +2045,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 */
 	public GLEx drawPoint(float x, float y) {
 		if (this.lastBrush.alltextures) {
-			drawPointImpl(x, y);
+			//drawPointImpl(x, y);
 		} else {
 			/*
 			 * beginRenderer(GLType.Point); int argb =
@@ -2073,7 +2067,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (this.lastBrush.alltextures) {
 			int tmp = this.lastBrush.baseColor;
 			setColor(color);
-			drawPointImpl(x, y);
+		//	drawPointImpl(x, y);
 			setColor(tmp);
 		} else {
 			/*
@@ -2095,7 +2089,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	public GLEx drawPoints(float[] x, float[] y, int size) {
 		if (this.lastBrush.alltextures) {
 			for (int i = 0; i < size; i++) {
-				drawPointImpl(x[i], y[i]);
+				//drawPointImpl(x[i], y[i]);
 			}
 		} else {
 			/*
@@ -2121,7 +2115,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			return this;
 		}
 		if (this.lastBrush.alltextures) {
-			fillPolygonImpl(xPoints, yPoints, nPoints);
+			//fillPolygonImpl(xPoints, yPoints, nPoints);
 		} else {
 			fill(new Polygon(xPoints, yPoints, nPoints));
 		}
@@ -2140,7 +2134,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			return this;
 		}
 		if (this.lastBrush.alltextures) {
-			drawPolygonImpl(xPoints, yPoints, nPoints);
+		//	drawPolygonImpl(xPoints, yPoints, nPoints);
 		} else {
 			draw(new Polygon(xPoints, yPoints, nPoints));
 		}
@@ -2203,10 +2197,9 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 * @param y2
 	 */
 	public final GLEx fillRect(final float x1, final float y1, final float x2, final float y2, LColor color) {
-		int argb = this.lastBrush.baseColor;
-		setColor(color);
-		setRect(x1, y1, x2, y2, true);
-		setColor(argb);
+		LColor c = new LColor(LColor.combine(color.getARGB(), this.lastBrush.baseColor));
+		Canvas canvas = gfx.getCanvas();
+		canvas.fillRect(x1, y1, x2, y2, c);
 		return this;
 	}
 
@@ -2245,7 +2238,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		}
 		if (this.lastBrush.alltextures) {
 			if (fill) {
-				fillRectNative(x, y, width, height);
+			//	fillRectNative(x, y, width, height);
 			} else {
 				float tempX = x;
 				float tempY = y;
@@ -2330,7 +2323,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			return this;
 		}
 		if (this.lastBrush.alltextures) {
-			drawArcImpl(x1, y1, width, height, start, end);
+		//	drawArcImpl(x1, y1, width, height, start, end);
 		} else {
 			while (end < start) {
 				end += 360;
@@ -2386,7 +2379,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			return this;
 		}
 		if (this.lastBrush.alltextures) {
-			fillArcImpl(x1, y1, width, height, start, end);
+			//fillArcImpl(x1, y1, width, height, start, end);
 		} else {
 			while (end < start) {
 				end += 360;
@@ -2435,7 +2428,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			return this;
 		}
 		if (this.lastBrush.alltextures) {
-			drawRoundRectImpl(x, y, width, height, radius);
+			//drawRoundRectImpl(x, y, width, height, radius);
 		} else {
 			if (radius < 0) {
 				throw new LSysException("radius > 0");
@@ -2489,7 +2482,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			return this;
 		}
 		if (this.lastBrush.alltextures) {
-			fillRoundRectImpl(x, y, width, height, radius);
+		//	fillRoundRectImpl(x, y, width, height, radius);
 		} else {
 			if (radius < 0) {
 				throw new LSysException("radius > 0");
@@ -2982,34 +2975,6 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	public GLEx setAlltextures(boolean all) {
 		this.lastBrush.alltextures = all;
 		return this;
-	}
-
-	@Override
-	protected void fillRectNative(float x, float y, float width, float height) {
-		if (this.lastBrush.patternTex != null) {
-			batch.addQuad(this.lastBrush.patternTex, this.lastBrush.baseColor, tx(), x, y, width, height);
-		} else {
-			batch.addQuad(colorTex, LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor), tx(), x, y,
-					width, height);
-		}
-	}
-
-	@Override
-	protected void drawLineImpl(float x1, float y1, float x2, float y2) {
-		drawLine(x1, y1, x2, y2, getPixSkip());
-	}
-
-	@Override
-	protected void drawPointNative(float x, float y, int skip) {
-		if (!inside(x, y)) {
-			if (this.lastBrush.patternTex != null) {
-				batch.addQuad(this.lastBrush.patternTex, this.lastBrush.baseColor, lastTrans, x, y,
-						skip + this.lastBrush.lineWidth, skip + this.lastBrush.lineWidth);
-			} else {
-				batch.addQuad(colorTex, LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor), lastTrans,
-						x, y, skip + this.lastBrush.lineWidth, skip + this.lastBrush.lineWidth);
-			}
-		}
 	}
 
 	/**

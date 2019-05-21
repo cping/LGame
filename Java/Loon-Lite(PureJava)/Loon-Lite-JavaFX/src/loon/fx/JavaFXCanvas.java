@@ -107,6 +107,16 @@ public class JavaFXCanvas extends Canvas {
 	}
 
 	@Override
+	public Canvas clear(LColor color) {
+		Paint tmp = context.getFill();
+		context.setFill(getLColorToFX(color));
+		context.fillRect(0, 0, width, height);
+		context.setFill(tmp);
+		isDirty = true;
+		return this;
+	}
+
+	@Override
 	public Canvas clearRect(float x, float y, float width, float height) {
 		context.clearRect(x, y, width, height);
 		isDirty = true;
@@ -116,8 +126,8 @@ public class JavaFXCanvas extends Canvas {
 	@Override
 	public Image snapshot() {
 		if (javaImage == null) {
-			javaImage = new JavaFXImage(gfx, image.scale(),
-					fxCanvas.snapshot(snapshotParameters, javaImage.buffer), "<canvas>");
+			javaImage = new JavaFXImage(gfx, image.scale(), fxCanvas.snapshot(snapshotParameters, javaImage.buffer),
+					"<canvas>");
 			isDirty = false;
 		}
 		if (isDirty) {
@@ -208,7 +218,16 @@ public class JavaFXCanvas extends Canvas {
 
 	@Override
 	public Canvas fillRect(float x, float y, float width, float height) {
-		context.fillRect(x, y, width, height);
+		context.fillRect(0, 0, width, height);
+		isDirty = true;
+		return this;
+	}
+
+	public Canvas fillRect(float x, float y, float width, float height, LColor color) {
+		Paint tmp = context.getFill();
+		context.setFill(getLColorToFX(color));
+		context.fillRect(0, 0, width, height);
+		context.setFill(tmp);
 		isDirty = true;
 		return this;
 	}

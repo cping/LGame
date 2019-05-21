@@ -123,15 +123,9 @@ public abstract class PixelBaseEffect extends Entity {
 		if(!isVisible()){
 			return;
 		}
-		int tmp = g.getPixSkip();
-		boolean useTex = g.isAlltextures() && LSystem.isHTML5();
-		if (useTex) {
-			g.setPixSkip(4);
-		}
+
 		draw(g, drawX(offsetX), drawY(offsetY));
-		if (useTex) {
-			g.setPixSkip(tmp);
-		}
+	
 	}
 
 	@Override

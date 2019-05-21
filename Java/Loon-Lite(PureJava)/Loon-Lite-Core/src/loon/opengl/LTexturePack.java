@@ -414,7 +414,7 @@ public class LTexturePack implements LRelease {
 				canvas.draw(entry.image, entry.bounds.left, entry.bounds.top);
 			}
 			packing = false;
-			return canvas.image;
+			return canvas.getImage();
 		}
 		return null;
 	}

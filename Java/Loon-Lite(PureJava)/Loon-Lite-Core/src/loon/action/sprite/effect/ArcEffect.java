@@ -101,11 +101,8 @@ public class ArcEffect extends Entity implements BaseEffect {
 		}
 		tmpColor = g.color();
 		g.setColor(_baseColor);
-		int tmp = g.getPixSkip();
-		boolean useTex = LSystem.isHTML5();
-		if (useTex) {
-			g.setPixSkip(8);
-		}
+	
+	
 		if (step <= 1) {
 			g.fillRect(drawX(offsetX), drawY(offsetY), _width, _height);
 		} else {
@@ -119,9 +116,7 @@ public class ArcEffect extends Entity implements BaseEffect {
 				g.fillArc(x + offsetX + _offset.x, y + offsetY + _offset.y, w, h, 20, 0, this.sign[this.curTurn] * deg);
 			}
 		}
-		if (useTex) {
-			g.setPixSkip(tmp);
-		}
+
 		g.setColor(tmpColor);
 	}
 

@@ -87,8 +87,8 @@ public class LGradation implements LRelease {
 					gl.drawLine(i, 0, i, height);
 				}
 				drawTexWidth = gl.toTexture();
-				if (gl.image != null) {
-					gl.image.close();
+				if (gl.getImage() != null) {
+					gl.getImage().close();
 				}
 			}
 			g.draw(drawTexWidth, x, y);
@@ -113,8 +113,8 @@ public class LGradation implements LRelease {
 					gl.drawLine(0, i, width, i);
 				}
 				drawTexHeight = gl.toTexture();
-				if (gl.image != null) {
-					gl.image.close();
+				if (gl.getImage() != null) {
+					gl.getImage().close();
 				}
 			}
 			g.draw(drawTexHeight, x, y);
@@ -132,7 +132,7 @@ public class LGradation implements LRelease {
 		try {
 			if (drawImgWidth == null && !drawImgWidth.isClosed()) {
 				Canvas gl = LSystem.base().graphics().createCanvas(width, height);
-				drawImgWidth = gl.image;
+				drawImgWidth = gl.getImage();
 				for (int i = 0; i < width; i++) {
 					gl.setColor((startColor.getRed() * (width - i)) / width + (endColor.getRed() * i) / width,
 							(startColor.getGreen() * (width - i)) / width + (endColor.getGreen() * i) / width,
@@ -157,7 +157,7 @@ public class LGradation implements LRelease {
 		try {
 			if (drawImgHeight == null && !drawImgHeight.isClosed()) {
 				Canvas gl = LSystem.base().graphics().createCanvas(width, height);
-				drawImgHeight = gl.image;
+				drawImgHeight = gl.getImage();
 				for (int i = 0; i < height; i++) {
 					gl.setColor((startColor.getRed() * (height - i)) / height + (endColor.getRed() * i) / height,
 							(startColor.getGreen() * (height - i)) / height + (endColor.getGreen() * i) / height,

@@ -137,13 +137,8 @@ public class LTexture extends Painter implements LRelease {
 		@Override
 		public String toString() {
 			StringKeyValue builder = new StringKeyValue("Managed");
-			builder.kv("managed", managed)
-			.comma()
-			.kv("repeat", (repeatX ? "x" : "") + (repeatY ? "y" : ""))
-			.comma()
-			.kv("filter",(minFilter + "/" + magFilter))
-			.comma()
-			.kv("mipmaps", mipmaps);
+			builder.kv("managed", managed).comma().kv("repeat", (repeatX ? "x" : "") + (repeatY ? "y" : "")).comma()
+					.kv("filter", (minFilter + "/" + magFilter)).comma().kv("mipmaps", mipmaps);
 			return builder.toString();
 		}
 	}
@@ -482,13 +477,8 @@ public class LTexture extends Painter implements LRelease {
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("LTexture");
-		builder.kv("id", id)
-		.comma()
-		.kv("pixelSize", (pixelWidth + "x" + pixelHeight))
-		.comma()
-		.kv("displaySize",(displayWidth + "x" + displayHeight + " @ " + scale))
-		.comma()
-		.kv("config", config);
+		builder.kv("id", id).comma().kv("pixelSize", (pixelWidth + "x" + pixelHeight)).comma()
+				.kv("displaySize", (displayWidth + "x" + displayHeight + " @ " + scale)).comma().kv("config", config);
 		return builder.toString();
 	}
 
@@ -550,10 +540,10 @@ public class LTexture extends Painter implements LRelease {
 			copy.pixelHeight = (int) (this.pixelHeight * this.heightRatio);
 			copy.displayWidth = this.displayWidth * this.widthRatio;
 			copy.displayHeight = this.displayHeight * this.heightRatio;
-			copy.xOff = (((float) x / copy.displayWidth) * this.widthRatio) + this.xOff;
-			copy.yOff = (((float) y / copy.displayHeight) * this.heightRatio) + this.yOff;
-			copy.widthRatio = (((float) width / copy.displayWidth) * widthRatio) + copy.xOff;
-			copy.heightRatio = (((float) height / copy.displayHeight) * heightRatio) + copy.yOff;
+			copy.xOff = ((x / copy.displayWidth) * this.widthRatio) + this.xOff;
+			copy.yOff = ((y / copy.displayHeight) * this.heightRatio) + this.yOff;
+			copy.widthRatio = ((width / copy.displayWidth) * widthRatio) + copy.xOff;
+			copy.heightRatio = ((height / copy.displayHeight) * heightRatio) + copy.yOff;
 			copy._disabledTexture = _disabledTexture;
 
 			childs.put(hashCode, copy);
@@ -610,8 +600,8 @@ public class LTexture extends Painter implements LRelease {
 			copy.displayHeight = this.displayHeight * this.heightRatio;
 			copy.xOff = this.xOff;
 			copy.yOff = this.yOff;
-			copy.widthRatio = (((float) width / copy.displayWidth) * widthRatio) + copy.xOff;
-			copy.heightRatio = (((float) height / copy.displayHeight) * heightRatio) + copy.yOff;
+			copy.widthRatio = ((width / copy.displayWidth) * widthRatio) + copy.xOff;
+			copy.heightRatio = ((height / copy.displayHeight) * heightRatio) + copy.yOff;
 			copy._disabledTexture = _disabledTexture;
 			childs.put(hashCode, copy);
 
@@ -899,8 +889,8 @@ public class LTexture extends Painter implements LRelease {
 		if (checkExistBatch()) {
 			batch.draw(colors, x, y, srcWidth - srcX, srcHeight - srcY, srcX, srcY, srcWidth, srcHeight);
 		} else {
-			gfx.game.displayImpl.GL().draw(this, x, y, srcWidth - srcX, srcHeight - srcY, srcX, srcY, srcWidth, srcHeight,
-					colors == null ? null : colors[0]);
+			gfx.game.displayImpl.GL().draw(this, x, y, srcWidth - srcX, srcHeight - srcY, srcX, srcY, srcWidth,
+					srcHeight, colors == null ? null : colors[0]);
 		}
 		return this;
 	}
@@ -913,7 +903,8 @@ public class LTexture extends Painter implements LRelease {
 		if (checkExistBatch()) {
 			batch.draw(colors, x, y, width, height, x1, y1, x2, y2);
 		} else {
-			gfx.game.displayImpl.GL().draw(this, x, y, width, height, x1, y1, x2, y2, colors == null ? null : colors[0]);
+			gfx.game.displayImpl.GL().draw(this, x, y, width, height, x1, y1, x2, y2,
+					colors == null ? null : colors[0]);
 		}
 		return this;
 	}

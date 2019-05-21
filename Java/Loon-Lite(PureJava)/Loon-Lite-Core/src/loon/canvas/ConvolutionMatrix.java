@@ -160,13 +160,13 @@ public class ConvolutionMatrix {
 					B = 255;
 				}
 
-				canvas.image.setPixel(LColor.argb(A, R, G, B), x + 1, y + 1);
+				canvas.getImage().setPixel(LColor.argb(A, R, G, B), x + 1, y + 1);
 			}
 		}
 
 		src.close();
 		src = null;
 
-		return canvas.image;
+		return canvas.getImage();
 	}
 }

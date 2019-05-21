@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import javafx.geometry.Bounds;
 import javafx.geometry.VPos;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.effect.BlendMode;
 import javafx.scene.text.Font;
 import loon.font.TextFormat;
 import loon.font.TextWrap;

@@ -696,6 +696,9 @@ public class JavaFXAssets extends Assets {
 
 	@Override
 	protected ImageImpl.Data load(String path) throws Exception {
+		if (path == null || "<canvas>".equals(path)) {
+			return null;
+		}
 		Exception error = null;
 		for (Scale.ScaledResource rsrc : assetScale().getScaledResources(path)) {
 			try {

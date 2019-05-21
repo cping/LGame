@@ -318,6 +318,9 @@ public class GWTAssets extends Assets {
 
 	@Override
 	protected ImageImpl.Data load(String path) throws Exception {
+		if (path == null || "<canvas>".equals(path)) {
+			return null;
+		}
 		path = getPath(path);
 		if (path.startsWith(LSystem.getSystemImagePath())) {
 			path = GWT_DEF_RES + path;

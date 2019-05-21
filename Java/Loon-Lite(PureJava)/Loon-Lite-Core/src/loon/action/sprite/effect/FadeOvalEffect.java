@@ -120,11 +120,7 @@ public class FadeOvalEffect extends Entity implements BaseEffect {
 			return;
 		}
 		if (this.elapsed > -1) {
-			int tmp = g.getPixSkip();
-			boolean usetex = LSystem.isHTML5();
-			if (usetex) {
-				g.setPixSkip(10);
-			}
+
 			int old = g.color();
 			int size = OVAL_COLORS.length;
 			for (int i = size - 1; i >= 0; i--) {
@@ -135,9 +131,7 @@ public class FadeOvalEffect extends Entity implements BaseEffect {
 						w, h);
 			}
 			g.setColor(old);
-			if (usetex) {
-				g.setPixSkip(tmp);
-			}
+	
 		}
 	}
 

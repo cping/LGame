@@ -123,9 +123,9 @@ public abstract class ImageImpl extends Image {
 		Canvas canvas = LSystem.base().graphics()
 				.createCanvas(buffer.width(), buffer.height());
 		canvas.draw(buffer, 0, 0);
-		getLight(canvas.image, v);
+		getLight(canvas.getImage(), v);
 		canvas.close();
-		return canvas.image;
+		return canvas.getImage();
 	}
 
 	@Override

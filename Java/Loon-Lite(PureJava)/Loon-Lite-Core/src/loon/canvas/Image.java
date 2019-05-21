@@ -58,7 +58,7 @@ public abstract class Image extends TextureSource implements Canvas.Drawable, LR
 	}
 
 	public static Image createImage(int w, int h) {
-		return LSystem.base().graphics().createCanvas(w, h).image;
+		return LSystem.base().graphics().createCanvas(w, h).getImage();
 	}
 
 	public static Image createImageNicePatch(String path, int x, int y, int w, int h) {
@@ -69,7 +69,7 @@ public abstract class Image extends TextureSource implements Canvas.Drawable, LR
 		final ImageNinePatch np = new ImageNinePatch(createImage(path), repeat);
 		Canvas c = Image.createCanvas(w, h);
 		np.drawNinePatch(c, x, y, w, h);
-		return c.image;
+		return c.getImage();
 	}
 
 	public static Image createImage(final String path) {
@@ -79,20 +79,20 @@ public abstract class Image extends TextureSource implements Canvas.Drawable, LR
 	public static Image getResize(final Image image, int w, int h) {
 		Canvas canvas = LSystem.base().graphics().createCanvas(w, h);
 		canvas.draw(image, 0, 0, w, h, 0, 0, image.width(), image.height());
-		return canvas.image;
+		return canvas.getImage();
 	}
 
 	public static Image drawClipImage(final Image image, int objectWidth, int objectHeight, int x1, int y1, int x2,
 			int y2) {
 		Canvas canvas = LSystem.base().graphics().createCanvas(objectWidth, objectHeight);
 		canvas.draw(image, 0, 0, objectWidth, objectHeight, x1, y1, x2, y2);
-		return canvas.image;
+		return canvas.getImage();
 	}
 
 	public static Image drawClipImage(final Image image, int objectWidth, int objectHeight, int x, int y) {
 		Canvas canvas = LSystem.base().graphics().createCanvas(objectWidth, objectHeight);
 		canvas.draw(image, 0, 0, objectWidth, objectHeight, x, y, x + objectWidth, objectHeight + y);
-		return canvas.image;
+		return canvas.getImage();
 	}
 
 	Canvas canvas;
@@ -428,6 +428,6 @@ public abstract class Image extends TextureSource implements Canvas.Drawable, LR
 		if (closed) {
 			this.close();
 		}
-		return canvas.image;
+		return canvas.getImage();
 	}
 }

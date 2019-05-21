@@ -280,8 +280,8 @@ public class DefUI {
 			}
 		}
 		LTexture background = g.toTexture();
-		if (g.image != null) {
-			g.image.close();
+		if (g.getImage() != null) {
+			g.getImage().close();
 		}
 		return background;
 	}
@@ -321,8 +321,8 @@ public class DefUI {
 		}
 		tool.drawTable(g, 0, 0, width, height, size);
 		LTexture texture = g.toTexture();
-		if (g.image != null) {
-			g.image.close();
+		if (g.getImage() != null) {
+			g.getImage().close();
 		}
 		return texture;
 	}
@@ -359,8 +359,8 @@ public class DefUI {
 		}
 		tool.drawFrame(g, 0, 0, width, height);
 		LTexture texture = g.toTexture();
-		if (g.image != null) {
-			g.image.close();
+		if (g.getImage() != null) {
+			g.getImage().close();
 		}
 		return texture;
 	}
@@ -383,8 +383,8 @@ public class DefUI {
 		g.draw(pix.getImage(), 0, 0, width, height);
 		tool.drawFrame(g, 0, 0, width, height);
 		LTexture texture = g.toTexture();
-		if (g.image != null) {
-			g.image.close();
+		if (g.getImage() != null) {
+			g.getImage().close();
 		}
 		return texture;
 	}
@@ -520,7 +520,7 @@ public class DefUI {
 			}
 		}
 		Canvas canvas = LSystem.base().graphics().createCanvas(tmp.width(), tmp.height());
-		Image imgs = canvas.image;
+		Image imgs = canvas.getImage();
 		imgs.setPixels(pixels, (int) tmp.width(), (int) tmp.height());
 		if (tmp != null) {
 			tmp.close();

@@ -80,12 +80,16 @@ public abstract class Canvas implements LRelease {
 				float sy, float sw, float sh);
 	}
 
-	public final Image image;
+	protected final Image image;
 
 	public final float width;
 
 	public final float height;
 
+	public Image getImage(){
+		return snapshot();
+	}
+	
 	public abstract Image snapshot();
 
 	@Override
@@ -196,6 +200,8 @@ public abstract class Canvas implements LRelease {
 
 	public abstract Canvas fillRect(float x, float y, float width, float height);
 
+	public abstract Canvas fillRect(float x, float y, float width, float height,LColor c);
+	
 	public abstract Canvas fillRoundRect(float x, float y, float width,
 			float height, float radius);
 

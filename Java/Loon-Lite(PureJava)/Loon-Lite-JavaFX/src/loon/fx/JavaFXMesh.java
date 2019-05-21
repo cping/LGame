@@ -21,13 +21,14 @@
 package loon.fx;
 
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.effect.ColorAdjust;
+import javafx.scene.effect.Light;
+import javafx.scene.effect.Lighting;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import loon.LSysException;
 import loon.LTexture;
 import loon.canvas.Canvas;
 import loon.canvas.Image;
-import loon.canvas.LColor;
 import loon.geom.Affine2f;
 import loon.opengl.Mesh;
 import loon.opengl.MeshData;
@@ -47,6 +48,14 @@ public class JavaFXMesh implements Mesh {
 	 */
 	private GraphicsContext context;
 
+	private ColorAdjust adjust;
+
+	private Lighting lighting;
+
+	private Light light;
+
+	private int lastTint = -1;
+
 	private int mode = 0;
 
 	public JavaFXMesh(Canvas canvas) {
@@ -56,6 +65,12 @@ public class JavaFXMesh implements Mesh {
 		if (canvas instanceof JavaFXCanvas) {
 			this.context = ((JavaFXCanvas) canvas).context;
 		}
+		this.adjust = new ColorAdjust();
+		this.lighting = new Lighting();
+		this.lighting.setDiffuseConstant(1);
+		this.lighting.setSpecularConstant(0);
+		this.lighting.setSpecularExponent(0);
+		lighting.setSurfaceScale(0);
 	}
 
 	/**
@@ -241,24 +256,62 @@ public class JavaFXMesh implements Mesh {
 		mesh.vertices = vers;
 	}
 
+	protected static double colorMap(double value, double start, double stop, double targetStart, double targetStop) {
+		return targetStart + (targetStop - targetStart) * ((value - start) / (stop - start));
+	}
+
+	protected ColorAdjust getAdjust(Color paint) {
+		double hue = colorMap((paint.getHue() + 180) % 360, 0, 360, -1, 1);
+		adjust.setHue(hue);
+		double saturation = paint.getSaturation();
+		adjust.setSaturation(saturation);
+		double brightness = colorMap(paint.getBrightness(), 0, 1, -1, 0);
+		adjust.setBrightness(brightness);
+		return adjust;
+	}
+
 	@Override
 	public void paint(int tint, float m00, float m01, float m10, float m11, float tx, float ty, float left, float top,
 			float right, float bottom, float sl, float st, float sr, float sb) {
 		LTexture texture = mesh.texture;
 		Image source = texture.getImage();
-		float textureWidth = texture.pixelWidth();
-		float textureHeight = texture.pixelHeight();
+		float textureWidth = texture.getDisplayWidth();
+		float textureHeight = texture.getDisplayHeight();
 
-		float newX = textureWidth * sl;
-		float newY = textureHeight * st;
-		float newWidth = textureWidth * sr;
-		float newHeight = textureHeight * sb;
-		LColor color = new LColor(tint);
-		Paint paint = Color.rgb(color.getRed(), color.getGreen(), color.getBlue(), color.a);
+		float dstX = textureWidth * (sl);
+		float dstY = textureHeight * (st);
+		float dstWidth = textureWidth * (sr);
+		float dstHeight = textureHeight * (sb);
+
+		int r = (tint & 0x00FF0000) >> 16;
+		int g = (tint & 0x0000FF00) >> 8;
+		int b = (tint & 0x000000FF);
+		int a = (tint & 0xFF000000) >> 24;
+		if (a < 0) {
+			a += 256;
+		}
+		if (a > 0) {
+			a = 255;
+		}
+		Color paint = Color.rgb(r, g, b, (float) a / 255f);
+		context.save();
 		context.setFill(paint);
 		context.setStroke(paint);
+
+		if (tint != -1) {
+			if (textureWidth == 1 && textureHeight == 1) {
+				context.setEffect(getAdjust(paint));
+			} else {
+				if (tint != lastTint || light == null) {
+					light = new Light.Distant(65, 65, paint);
+					lastTint = tint;
+				}
+				lighting.setLight(light);
+				context.setEffect(lighting);
+			}
+		}
 		context.transform(m00, m01, m10, m11, tx, ty);
-		context.drawImage(((JavaFXImage) source).buffer, newX, newY, newWidth, newHeight, left, top, right, bottom);
+		context.drawImage(((JavaFXImage) source).buffer, dstX, dstY, dstWidth, dstHeight, left, top, right, bottom);
 		context.restore();
 	}
 }

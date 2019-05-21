@@ -102,7 +102,7 @@ public class AnimationHelper {
 		canvas.fillRect(w / 4, 0, w / 2, h);
 		canvas.setColor(0, 0, 0, 255);
 		canvas.fillRect(0, h / 4, w, h / 2);
-		int[] basePixels = canvas.image.getPixels();
+		int[] basePixels = canvas.getImage().getPixels();
 		int length = basePixels.length;
 		int c = LColor.black.getRGB();
 		for (int i = 0; i < length; i++) {
@@ -110,10 +110,10 @@ public class AnimationHelper {
 				basePixels[i] = 0xffffff;
 			}
 		}
-		canvas.image.setPixels(basePixels, w, h);
-		LTexture texture = canvas.image.texture();
-		if (canvas.image != null) {
-			canvas.image.close();
+		canvas.getImage().setPixels(basePixels, w, h);
+		LTexture texture = canvas.getImage().texture();
+		if (canvas.getImage() != null) {
+			canvas.getImage().close();
 		}
 		canvas.close();
 		canvas = null;

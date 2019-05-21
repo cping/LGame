@@ -27,6 +27,7 @@ import javafx.scene.text.Text;
 import loon.font.Font;
 import loon.font.Font.Style;
 import loon.geom.RectBox;
+import loon.utils.CharUtils;
 import loon.utils.MathUtils;
 
 public class JavaFXFontMetrics {
@@ -104,12 +105,13 @@ public class JavaFXFontMetrics {
 		return (int) getStringBounds(str).getWidth();
 	}
 
-	public int charWidth(char chars) {
-		return stringWidth(String.valueOf(chars));
+	public int charWidth(char ch) {
+		int width = stringWidth(String.valueOf(ch));
+		return width;
 	}
 
-	public int charHeight(char chars) {
-		return stringHeight(String.valueOf(chars));
+	public int charHeight(char ch) {
+		return stringHeight(String.valueOf(ch));
 	}
 
 	public int getHeight() {

@@ -23,8 +23,10 @@ package loon.fx;
 import loon.LSetting;
 import loon.LTexture;
 import loon.LTextures;
+import loon.LTransition;
 import loon.LazyLoading;
 import loon.Screen;
+import loon.canvas.LColor;
 import loon.event.GameTouch;
 import loon.fx.Loon.GameApp;
 import loon.opengl.GLEx;
@@ -34,17 +36,18 @@ public class Main {
 
 	public static class ScreenTest extends Screen{
 
-		LTexture texture = LTextures.loadTexture("ccc.png");
+		
+		LTexture texture = loadTexture("ccc.png");
 		@Override
 		public void draw(GLEx g) {
-			g.draw(texture, 77, 77);
-			g.drawString("大日如来", 77, 77);
+			//g.fillRect(66, 66, 388, 388,LColor.red);
+			g.draw(texture, 77, 77,LColor.red);
+			g.drawString("数据测试avddf", 77, 77);
 		}
 
 		@Override
 		public void onLoad() {
-			// TODO Auto-generated method stub
-			
+			//setBackground(LColor.yellow);
 		}
 
 		@Override
@@ -109,7 +112,7 @@ public class Main {
 		// 原始大小
 		setting.width = 480;
 		setting.height = 320;
-		setting.isDebug = false;
+		setting.isDebug = true;
 		setting.isLogo = false;
 		setting.isDisplayLog = false;
 

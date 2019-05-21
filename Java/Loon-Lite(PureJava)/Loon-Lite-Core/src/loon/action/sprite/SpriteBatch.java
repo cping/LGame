@@ -24,7 +24,6 @@ import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
-import loon.canvas.PixmapFImpl;
 import loon.font.IFont;
 import loon.geom.Matrix4;
 import loon.geom.RectBox;
@@ -43,7 +42,7 @@ import loon.utils.NumberUtils;
  * 这是一个纹理批量渲染的实现,其中API可以基本兼容xna(monogame)以及libgdx的同名SpriteBatch类(干什么用大家都懂的)
  * 
  */
-public class SpriteBatch extends PixmapFImpl {
+public class SpriteBatch {
 
 	public static enum SpriteEffects {
 		None, FlipHorizontally, FlipVertically;
@@ -145,23 +144,6 @@ public class SpriteBatch extends PixmapFImpl {
 
 	private IntMap<SpriteBatch.TextureLine> lineLazy = new IntMap<SpriteBatch.TextureLine>(1000);
 
-	@Override
-	protected void drawLineImpl(float x1, float y1, float x2, float y2) {
-		int hashCode = 1;
-		hashCode = LSystem.unite(hashCode, x1);
-		hashCode = LSystem.unite(hashCode, y1);
-		hashCode = LSystem.unite(hashCode, x2);
-		hashCode = LSystem.unite(hashCode, y2);
-		SpriteBatch.TextureLine line = lineLazy.get(hashCode);
-		if (line == null) {
-			line = new SpriteBatch.TextureLine(colorTexture);
-			line.setStart(x1, y1);
-			line.setEnd(x2, y2);
-			line.setStrokeWidth(LSystem.base().display().GL().getPixSkip());
-			lineLazy.put(hashCode, line);
-		}
-		line.draw(this);
-	}
 
 	public IFont getFont() {
 		return font;
@@ -177,7 +159,6 @@ public class SpriteBatch extends PixmapFImpl {
 
 
 	public SpriteBatch(final int size) {
-		super(0, 0, LSystem.viewSize.getRect(), LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), 4);
 		if (size > 5460) {
 			throw new LSysException("Can't have more than 5460 sprites per batch: " + size);
 		}
@@ -1690,49 +1671,49 @@ public class SpriteBatch extends PixmapFImpl {
 	}
 
 	public void drawPoint(int x, int y) {
-		drawPointImpl(x, y);
+	//	drawPointImpl(x, y);
 	}
 
 	public void fillPolygon(float xPoints[], float yPoints[], int nPoints) {
-		fillPolygonImpl(xPoints, yPoints, nPoints);
+	//	fillPolygonImpl(xPoints, yPoints, nPoints);
 	}
 
 	public void drawPolygon(float[] xPoints, float[] yPoints, int nPoints) {
-		drawPolygonImpl(xPoints, yPoints, nPoints);
+		//drawPolygonImpl(xPoints, yPoints, nPoints);
 	}
 
 	public void drawOval(float x1, float y1, float width, float height) {
-		drawOvalImpl(x1, y1, width, height);
+		//drawOvalImpl(x1, y1, width, height);
 	}
 
 	public void fillOval(float x1, float y1, float width, float height) {
-		fillOvalImpl(x1, y1, width, height);
+		//fillOvalImpl(x1, y1, width, height);
 	}
 
 	public void drawArc(RectBox rect, float start, float end) {
-		drawArcImpl(rect.x, rect.y, rect.width, rect.height, start, end);
+		//drawArcImpl(rect.x, rect.y, rect.width, rect.height, start, end);
 	}
 
 	public void drawArc(float x1, float y1, float width, float height, float start, float end) {
-		drawArcImpl(x1, y1, width, height, start, end);
+		//drawArcImpl(x1, y1, width, height, start, end);
 	}
 
 	public void fillArc(float x1, float y1, float width, float height, float start, float end) {
-		fillArcImpl(x1, y1, width, height, start, end);
+		//fillArcImpl(x1, y1, width, height, start, end);
 	}
 
 	public void drawRect(float x, float y, float width, float height) {
-		drawRectImpl(x, y, width, height);
+		//drawRectImpl(x, y, width, height);
 
 	}
 
 	public final void drawRoundRect(float x, float y, float width, float height, int radius) {
-		drawRoundRectImpl(x, y, width, height, radius, radius);
+	//	drawRoundRectImpl(x, y, width, height, radius, radius);
 
 	}
 
 	public final void fillRoundRect(float x, float y, float width, float height, int radius) {
-		fillRoundRectImpl(x, y, width, height, radius);
+		//fillRoundRectImpl(x, y, width, height, radius);
 	}
 
 	public void fillRect(float x, float y, float width, float height) {
@@ -1744,7 +1725,7 @@ public class SpriteBatch extends PixmapFImpl {
 	}
 
 	public void draw(Shape shape, float x, float y) {
-		drawShapeImpl(shape, x, y);
+	//	drawShapeImpl(shape, x, y);
 	}
 
 	public void fill(Shape shape) {
@@ -1752,17 +1733,13 @@ public class SpriteBatch extends PixmapFImpl {
 	}
 
 	public void fill(Shape shape, float x, float y) {
-		fillShapeImpl(shape, x, y);
+		//fillShapeImpl(shape, x, y);
 	}
 
-	@Override
 	protected void drawPointNative(float x, float y, int skip) {
-		if (!inside(x, y)) {
-			draw(colorTexture, x, y, skip, skip);
-		}
+		
 	}
 
-	@Override
 	protected void fillRectNative(float x, float y, float width, float height) {
 		draw(colorTexture, x, y, width, height);
 	}

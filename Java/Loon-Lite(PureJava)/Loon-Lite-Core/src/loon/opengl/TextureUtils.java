@@ -42,10 +42,6 @@ public class TextureUtils {
 				.toGray(tmp.getPixels(), (int) tmp.width(), (int) tmp.height());
 		tmp.setPixels(pixels, (int) tmp.width(), (int) tmp.height());
 		LTexture texture = tmp.texture();
-		if (tmp != null) {
-			tmp.close();
-			tmp = null;
-		}
 		pixels = null;
 		return texture;
 	}
@@ -219,9 +215,6 @@ public class TextureUtils {
 		canvas.fillRect(0, 0, width, height);
 		canvas.close();
 		LTexture tex2d = canvas.toTexture();
-		if (canvas.image != null) {
-			canvas.image.close();
-		}
 		return tex2d;
 	}
 

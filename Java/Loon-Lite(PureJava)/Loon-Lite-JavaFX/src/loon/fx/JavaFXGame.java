@@ -31,6 +31,7 @@ import javafx.concurrent.Worker;
 import javafx.concurrent.Worker.State;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -41,6 +42,7 @@ import loon.Asyn;
 import loon.Graphics;
 import loon.LGame;
 import loon.LSetting;
+import loon.LSystem;
 import loon.Log;
 import loon.Platform;
 import loon.Save;
@@ -134,6 +136,8 @@ public class JavaFXGame extends LGame {
 
 			@Override
 			public void handle(long time) {
+				GraphicsContext gc = gameCanvas.fxCanvas.getGraphicsContext2D();
+				gc.save();
 				if (wasActive != active) {
 					status.emit(wasActive ? Status.PAUSE : Status.RESUME);
 					wasActive = active;
@@ -141,6 +145,7 @@ public class JavaFXGame extends LGame {
 				if (active) {
 					emitFrame();
 				}
+				gc.restore();
 			}
 		};
 		loopRunner.start();

@@ -117,6 +117,9 @@ public class RoboVMAssets extends Assets {
 
 	@Override
 	protected ImageImpl.Data load(String path) throws Exception {
+		if (path == null || "<canvas>".equals(path)) {
+			return null;
+		}
 		Exception error = null;
 		for (Scale.ScaledResource rsrc : game.graphics().scale()
 				.getScaledResources(path)) {

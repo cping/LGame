@@ -76,7 +76,7 @@ public class Pixmap extends Limit implements LRelease {
 				tmpCanvas = getGraphics().createCanvas(getWidth(), getHeight());
 			}
 			if (_dirty) {
-				tmpCanvas.image.setPixmap(this);
+				tmpCanvas.getImage().setPixmap(this);
 			}
 		} else if (scaleUpdate) {
 			int newWidth = scale.scaledCeil(getWidth());
@@ -85,7 +85,7 @@ public class Pixmap extends Limit implements LRelease {
 				tmpCanvas = getGraphics().createCanvas(newWidth, newHeight);
 			}
 			if (_dirty) {
-				tmpCanvas.image.setPixmap(Pixmap.getResize(this, newWidth, newHeight));
+				tmpCanvas.getImage().setPixmap(Pixmap.getResize(this, newWidth, newHeight));
 			}
 		} else {
 			int newWidth = scale.invScaledCeil(getWidth());
@@ -94,10 +94,10 @@ public class Pixmap extends Limit implements LRelease {
 				tmpCanvas = getGraphics().createCanvas(newWidth, newHeight);
 			}
 			if (_dirty) {
-				tmpCanvas.image.setPixmap(this);
+				tmpCanvas.getImage().setPixmap(this);
 			}
 		}
-		return tmpCanvas.image;
+		return tmpCanvas.getImage();
 	}
 
 	public LTexture texture() {

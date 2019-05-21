@@ -150,8 +150,8 @@ public class LTexture extends Painter implements LRelease {
 		this.gfx = gfx;
 		this.id = id;
 		this.config = config;
-		this.pixelWidth = GLUtils.nextPOT(pixWidth);
-		this.pixelHeight = GLUtils.nextPOT(pixHeight);
+		this.pixelWidth = pixWidth;
+		this.pixelHeight = pixHeight;
 		this.scale = scale;
 		this.displayWidth = dispWidth;
 		this.displayHeight = dispHeight;
@@ -283,7 +283,7 @@ public class LTexture extends Painter implements LRelease {
 			_isLoaded = true;
 			return;
 		}
-	
+
 	}
 
 	public void bind() {
@@ -431,10 +431,10 @@ public class LTexture extends Painter implements LRelease {
 			copy.pixelHeight = (int) (this.pixelHeight * this.heightRatio);
 			copy.displayWidth = this.displayWidth * this.widthRatio;
 			copy.displayHeight = this.displayHeight * this.heightRatio;
-			copy.xOff = (((float) x / copy.displayWidth) * this.widthRatio) + this.xOff;
-			copy.yOff = (((float) y / copy.displayHeight) * this.heightRatio) + this.yOff;
-			copy.widthRatio = (((float) width / copy.displayWidth) * widthRatio) + copy.xOff;
-			copy.heightRatio = (((float) height / copy.displayHeight) * heightRatio) + copy.yOff;
+			copy.xOff = ((x / copy.displayWidth) * this.widthRatio) + this.xOff;
+			copy.yOff = ((y / copy.displayHeight) * this.heightRatio) + this.yOff;
+			copy.widthRatio = ((width / copy.displayWidth) * widthRatio);
+			copy.heightRatio = ((height / copy.displayHeight) * heightRatio);
 			copy._disabledTexture = _disabledTexture;
 
 			childs.put(hashCode, copy);
@@ -490,8 +490,8 @@ public class LTexture extends Painter implements LRelease {
 			copy.displayHeight = this.displayHeight * this.heightRatio;
 			copy.xOff = this.xOff;
 			copy.yOff = this.yOff;
-			copy.widthRatio = (((float) width / copy.displayWidth) * widthRatio) + copy.xOff;
-			copy.heightRatio = (((float) height / copy.displayHeight) * heightRatio) + copy.yOff;
+			copy.widthRatio = ((width / copy.displayWidth) * widthRatio);
+			copy.heightRatio = ((height / copy.displayHeight) * heightRatio);
 			copy._disabledTexture = _disabledTexture;
 			childs.put(hashCode, copy);
 

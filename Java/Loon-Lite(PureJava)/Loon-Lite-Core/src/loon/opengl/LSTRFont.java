@@ -99,11 +99,8 @@ public class LSTRFont implements IFont, LRelease {
 			int customCharsLength = (strfont.additionalChars != null) ? strfont.additionalChars.length : 0;
 			strfont.totalCharSet = customCharsLength == 0 ? strfont.totalCharSet : 0;
 			StringBuilder sbr = new StringBuilder(strfont.totalCharSet);
-			int fixSize = strfont.fontSize / 5;
-			if (fixSize % 2 != 0) {
-				fixSize -= 1;
-			}
-			final boolean clipFont = LSystem.isTrueFontClip() && strfont.fontSize < 20 && LSystem.isMobile();
+		
+			final boolean clipFont = LSystem.isTrueFontClip();
 			// 本地字体怎么都不如ttf或者fnt字体清晰准确,差异太大，只能尽量保证显示效果……
 			for (int i = 0, size = strfont.totalCharSet + customCharsLength; i < size; i++) {
 				char ch = (i < strfont.totalCharSet) ? (char) i : strfont.additionalChars[i - strfont.totalCharSet];
@@ -111,6 +108,7 @@ public class LSTRFont implements IFont, LRelease {
 				TextLayout layout = strfont.font.getLayoutText(String.valueOf(ch));
 
 				int charwidth = layout.charWidth(ch);
+				
 
 				if (charwidth <= 0) {
 					charwidth = 1;
@@ -122,20 +120,9 @@ public class LSTRFont implements IFont, LRelease {
 				}
 				IntObject newIntObject = new IntObject();
 
-				if (clipFont) {
-					if (StringUtils.isAlphabetLower(ch)) {
-						charwidth += fixSize;
-						charheight += fixSize;
-					}
-				} else {
-					if (ch == 'i' && charheight > 24) {
-						charheight -= 4;
-					}
-				}
-
 				newIntObject.width = charwidth;
 				newIntObject.height = charheight;
-
+		
 				if (clipFont) {
 					// 发现部分环境字体如果整体渲染到canvas的话，会导致纹理切的不整齐(实际上就是间距和从系统获取的不符合),
 					// 保险起见一个个字体粘贴……
@@ -200,7 +187,7 @@ public class LSTRFont implements IFont, LRelease {
 		canvas.setColor(LColor.white);
 		canvas.fillText(layout, 0, 0);
 		canvas.close();
-		return canvas.image;
+		return canvas.snapshot();
 
 	}
 
@@ -541,9 +528,7 @@ public class LSTRFont implements IFont, LRelease {
 		final boolean scale = sx != 1f || sy != 1f;
 		final boolean angle = rotation != 0;
 		final boolean update = scale || angle || anchor;
-		//final int blend = gl.getBlendMode();
 		try {
-		//	gl.setBlendMode(LSystem.MODE_NORMAL);
 			gl.setTint(c);
 			if (update) {
 				gl.saveTx();
@@ -566,7 +551,6 @@ public class LSTRFont implements IFont, LRelease {
 					xf.translate(ax, ay);
 				}
 			}
-
 			for (int i = startIndex; i < endIndex; i++) {
 				charCurrent = chars.charAt(i);
 				if (charCurrent < totalCharSet) {
@@ -582,12 +566,10 @@ public class LSTRFont implements IFont, LRelease {
 					gl.draw(texture, x + totalWidth, y + totalHeight, intObject.width * sx, intObject.height * sy,
 							StringUtils.isChinese((char) charCurrent) ? intObject.storedX - updateX : intObject.storedX,
 							intObject.storedY, intObject.width, intObject.height - updateY, c);
-
 					totalWidth += intObject.width;
 				}
 			}
 		} finally {
-			//gl.setBlendMode(blend);
 			gl.setTint(old);
 			if (update) {
 				gl.restoreTx();

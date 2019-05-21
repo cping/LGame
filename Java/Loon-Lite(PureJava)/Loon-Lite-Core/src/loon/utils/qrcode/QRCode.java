@@ -106,7 +106,7 @@ public class QRCode {
 				}
 			}
 		}
-		return canvas.image;
+		return canvas.getImage();
 	}
 
 	public Pixmap createPixmap(int width, int height, LColor color, boolean trans) {

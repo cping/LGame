@@ -124,8 +124,9 @@ public class Loon extends Application implements Platform {
 		Group group = new Group();
 
 		Canvas canvas = game.gameCanvas.fxCanvas;
-
+		
 		if (canvas == null) {
+		
 			canvas = new Canvas(newWidth, newHeight);
 		}
 		GraphicsContext ctx = canvas.getGraphicsContext2D();
@@ -134,7 +135,7 @@ public class Loon extends Application implements Platform {
 		ctx.setFill(Color.BLACK);
 		ctx.fillRect(0, 0, newWidth, newHeight);
 		ctx.setFill(paint);
-
+	
 		group.getChildren().add(canvas);
 
 		primaryStage.setScene(createScene(group, newWidth, newHeight));

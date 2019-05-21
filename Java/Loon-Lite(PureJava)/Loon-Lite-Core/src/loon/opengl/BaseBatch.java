@@ -37,18 +37,17 @@ public abstract class BaseBatch extends LTextureBind {
 		setTexture(tex);
 
 		if (tex.getParent() == null) {
-			float u2 =  tex.widthRatio;
-			float uv =  tex.heightRatio;
-			addQuad(tint, xf, x, y, x + w, y + h, tex.xOff, tex.yOff, u2, uv);
+			float u2 = tex.widthRatio;
+			float uv = tex.heightRatio;
+			addQuad(tint, xf, x, y, w, h, tex.xOff, tex.yOff, u2, uv);
 		} else {
 			LTexture forefather = LTexture.firstFather(tex);
-			float u2 =  tex.widthRatio;
-			float uv =  tex.heightRatio;
+			float u2 = tex.widthRatio;
+			float uv = tex.heightRatio;
 			if ((w < forefather.width() || h < forefather.height()) && !tex.isScale()) {
-				addQuad(tint, xf, x, y, x + w, y + h, tex.xOff, tex.yOff, u2, uv);
+				addQuad(tint, xf, x, y, w, h, tex.xOff, tex.yOff, u2, uv);
 			} else {
-				addQuad(tint, xf, x, y, x + w, y + h, tex.xOff, tex.yOff, forefather.widthRatio,
-						forefather.heightRatio);
+				addQuad(tint, xf, x, y, w, h, tex.xOff, tex.yOff, forefather.widthRatio, forefather.heightRatio);
 			}
 		}
 	}
@@ -67,18 +66,18 @@ public abstract class BaseBatch extends LTextureBind {
 			float displayHeight = tex.getDisplayHeight() * tex.heightRatio;
 			float xOff = ((sx / displayWidth) * tex.widthRatio) + tex.xOff;
 			float yOff = ((sy / displayHeight) * tex.heightRatio) + tex.yOff;
-			float widthRatio = ((sw / displayWidth) * tex.widthRatio) + xOff;
-			float heightRatio = ((sh / displayHeight) * tex.heightRatio) + yOff;
-			addQuad(tint, xf, dx, dy, dx + dw, dy + dh, xOff, yOff, widthRatio, heightRatio);
+			float widthRatio = ((sw / displayWidth) * tex.widthRatio);
+			float heightRatio = ((sh / displayHeight) * tex.heightRatio);
+			addQuad(tint, xf, dx, dy, dw, dh, xOff, yOff, widthRatio, heightRatio);
 		} else {
 			LTexture forefather = LTexture.firstFather(tex);
 			float displayWidth = forefather.getDisplayWidth() * forefather.widthRatio;
 			float displayHeight = forefather.getDisplayHeight() * forefather.heightRatio;
 			float xOff = ((sx / displayWidth) * forefather.widthRatio) + forefather.xOff + tex.xOff;
 			float yOff = ((sy / displayHeight) * forefather.heightRatio) + forefather.yOff + tex.yOff;
-			float widthRatio = ((sw / displayWidth) * forefather.widthRatio) + xOff;
-			float heightRatio = ((sh / displayHeight) * forefather.heightRatio) + yOff;
-			addQuad(tint, xf, dx, dy, dx + dw, dy + dh, xOff, yOff, widthRatio, heightRatio);
+			float widthRatio = ((sw / displayWidth) * forefather.widthRatio);
+			float heightRatio = ((sh / displayHeight) * forefather.heightRatio);
+			addQuad(tint, xf, dx, dy, dw, dh, xOff, yOff, widthRatio, heightRatio);
 		}
 	}
 
@@ -87,8 +86,8 @@ public abstract class BaseBatch extends LTextureBind {
 		addQuad(tint, xf.m00, xf.m01, xf.m10, xf.m11, xf.tx, xf.ty, left, top, right, bottom, sl, st, sr, sb);
 	}
 
-	public abstract void addQuad(int tint, float m00, float m01, float m10, float m11, float tx, float ty, float left, float top,
-			float right, float bottom, float sl, float st, float sr, float sb) ;
+	public abstract void addQuad(int tint, float m00, float m01, float m10, float m11, float tx, float ty, float left,
+			float top, float right, float bottom, float sl, float st, float sr, float sb);
 
 	protected BaseBatch(Canvas gl) {
 		super(gl);

@@ -55,8 +55,8 @@ public class JavaFXImage extends ImageImpl {
 
 	@Override
 	public void draw(Object ctx, float x, float y, float w, float h) {
-		GraphicsContext gfx = (GraphicsContext) ctx;
-		gfx.drawImage(buffer, MathUtils.ifloor(x), MathUtils.ifloor(y), MathUtils.ifloor(w), MathUtils.ifloor(h));
+		JavaFXCanvas gfx = (JavaFXCanvas) ctx;
+		gfx.context.drawImage(buffer, MathUtils.ifloor(x), MathUtils.ifloor(y), MathUtils.ifloor(w), MathUtils.ifloor(h));
 	}
 
 	@Override
@@ -66,8 +66,8 @@ public class JavaFXImage extends ImageImpl {
 		sy *= f;
 		sw *= f;
 		sh *= f;
-		GraphicsContext gfx = (GraphicsContext) ctx;
-		gfx.drawImage(buffer, MathUtils.ifloor(dx), MathUtils.ifloor(dy), MathUtils.ifloor(dw), MathUtils.ifloor(dh),
+		JavaFXCanvas gfx = (JavaFXCanvas) ctx;
+		gfx.context.drawImage(buffer, MathUtils.ifloor(dx), MathUtils.ifloor(dy), MathUtils.ifloor(dw), MathUtils.ifloor(dh),
 				MathUtils.ifloor(sx), MathUtils.ifloor(sy), MathUtils.ifloor(sw), MathUtils.ifloor(sh));
 	}
 
