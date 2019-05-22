@@ -20,19 +20,15 @@
  */
 package loon.fx;
 
-import java.util.concurrent.ExecutorService;
-
+import javafx.application.Platform;
 import loon.Asyn;
 import loon.Log;
 import loon.utils.reply.Act;
 
 public class JavaFXAsyn extends Asyn.Default {
 
-	private ExecutorService pool;
-
-	public JavaFXAsyn(ExecutorService p, Log log, Act<? extends Object> frame) {
+	public JavaFXAsyn(Log log, Act<? extends Object> frame) {
 		super(log, frame);
-		this.pool = p;
 	}
 
 	@Override
@@ -42,6 +38,6 @@ public class JavaFXAsyn extends Asyn.Default {
 
 	@Override
 	public void invokeAsync(Runnable action) {
-		pool.execute(action);
+		Platform.runLater(action);
 	}
 }

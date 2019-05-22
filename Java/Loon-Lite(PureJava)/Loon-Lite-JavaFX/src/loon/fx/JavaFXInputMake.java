@@ -100,7 +100,7 @@ public class JavaFXInputMake extends InputMake {
 
 	public JavaFXInputMake(JavaFXGame game) {
 		this.game = game;
-		Canvas canvas = this.game.gameCanvas.fxCanvas;
+		Canvas canvas = this.game.getFxCanvas();
 		canvas.setOnKeyPressed(new EventHandler<KeyEvent>() {
 
 			@Override

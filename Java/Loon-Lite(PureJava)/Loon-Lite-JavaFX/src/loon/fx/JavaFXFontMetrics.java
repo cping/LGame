@@ -53,7 +53,7 @@ public class JavaFXFontMetrics {
 	public JavaFXFontMetrics(Font font) {
 		this(font, 0, 0);
 	}
-	
+
 	public JavaFXFontMetrics(Font font, float height, float ewidth) {
 		this.font = font;
 		FontWeight weight = (font.style == Style.BOLD) ? FontWeight.BOLD : FontWeight.NORMAL;
@@ -76,8 +76,8 @@ public class JavaFXFontMetrics {
 		this.fdescent = (float) fxbound.getMaxY();
 		this.leading = fheight;
 	}
-	
-	public Bounds getBounds(){
+
+	public Bounds getBounds() {
 		return this.fxbound;
 	}
 
@@ -107,6 +107,22 @@ public class JavaFXFontMetrics {
 
 	public int charWidth(char ch) {
 		int width = stringWidth(String.valueOf(ch));
+		if (CharUtils.isAlpha(ch)) {
+			if (width < 5) {
+				return width + 3;
+			}
+			if (width < 10) {
+				return width + 2;
+			}
+			if (width < 15) {
+				return width + 1;
+			}
+			return width;
+		}
+		if (CharUtils.isDigitCharacter(ch)) {
+			return width < 10 ? width + 1 : width;
+		}
+	
 		return width;
 	}
 

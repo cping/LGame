@@ -20,10 +20,6 @@
  */
 package loon.fx;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-
 import javafx.animation.AnimationTimer;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -57,16 +53,16 @@ public class JavaFXGame extends LGame {
 
 		public boolean resizable = true;
 
+		public String[] iconPaths = null;
 	}
 
 	protected AnimationTimer loopRunner;
-	protected JavaFXCanvas gameCanvas;
+	// protected JavaFXCanvas gameCanvas;
 	private final JavaFXAccelerometer accelerometer;
 
 	private final JavaFXSave save;
 	private final JavaFXGraphics graphics;
 	private final JavaFXAssets assets;
-	private final ExecutorService pool = Executors.newFixedThreadPool(4);
 	private final Support support;
 
 	private final JavaFXLog log;
@@ -81,14 +77,13 @@ public class JavaFXGame extends LGame {
 	public JavaFXGame(Platform plat, LSetting config) {
 		super(config, plat);
 		this.graphics = new JavaFXGraphics(this);
-		this.gameCanvas = graphics.canvas;
 		this.input = new JavaFXInputMake(this);
 		this.assets = new JavaFXAssets(this);
 		this.log = new JavaFXLog();
 		this.support = new NativeSupport();
 		this.save = new JavaFXSave(log, config.appName);
 		this.accelerometer = new JavaFXAccelerometer();
-		this.asyn = new JavaFXAsyn(pool, log, frame);
+		this.asyn = new JavaFXAsyn(log, frame);
 		this.initProcess();
 	}
 
@@ -136,7 +131,7 @@ public class JavaFXGame extends LGame {
 
 			@Override
 			public void handle(long time) {
-				GraphicsContext gc = gameCanvas.fxCanvas.getGraphicsContext2D();
+				GraphicsContext gc = graphics.canvas.fxCanvas.getGraphicsContext2D();
 				gc.save();
 				if (wasActive != active) {
 					status.emit(wasActive ? Status.PAUSE : Status.RESUME);
@@ -157,11 +152,6 @@ public class JavaFXGame extends LGame {
 		}
 		status.emit(Status.EXIT);
 		stop();
-		try {
-			pool.shutdown();
-			pool.awaitTermination(1, TimeUnit.SECONDS);
-		} catch (InterruptedException ie) {
-		}
 		System.exit(0);
 	}
 
@@ -224,6 +214,10 @@ public class JavaFXGame extends LGame {
 
 	}
 
+	public javafx.scene.canvas.Canvas getFxCanvas() {
+		return graphics.canvas.fxCanvas;
+	}
+
 	@Override
 	public Assets assets() {
 		return this.assets;
@@ -265,22 +259,30 @@ public class JavaFXGame extends LGame {
 	}
 
 	@Override
-	public boolean isMobile() {
-		return false;
-	}
-
-	@Override
 	public Mesh makeMesh(Canvas canvas) {
 		return new JavaFXMesh(canvas);
 	}
-	
+
+	@Override
+	public boolean isMobile() {
+		return !isDesktop();
+	}
+
 	@Override
 	public boolean isDesktop() {
-		return true;
+		return JavaFXAssets.isDesktop();
 	}
 
 	public String getJavaFXProperty() {
-		return System.getProperty("javafx.platform");
+		return JavaFXAssets.getJavaFXProperty();
+	}
+
+	public String getDevice() {
+		return System.getProperty("os.arch", "").trim().toLowerCase();
+	}
+
+	public boolean isARMDevice() {
+		return getDevice().indexOf("arm") != -1;
 	}
 
 }

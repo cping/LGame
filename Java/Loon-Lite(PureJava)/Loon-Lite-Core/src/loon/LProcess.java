@@ -256,7 +256,7 @@ public class LProcess {
 						// * 使用,返回: 设定或者自定义一个LTransition对象.
 						LTransition _transition = screen.onTransition();
 						if (_transition == null) {
-							int rad = MathUtils.random(0, 12);
+							int rad = 12;//MathUtils.random(0, 12);
 							switch (rad) {
 							case 0:
 								_transition = LTransition.newFadeIn();

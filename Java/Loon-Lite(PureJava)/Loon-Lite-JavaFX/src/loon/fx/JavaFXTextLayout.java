@@ -27,6 +27,7 @@ import javafx.geometry.VPos;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontSmoothingType;
 import loon.font.TextFormat;
 import loon.font.TextWrap;
 import loon.geom.RectBox;
@@ -108,13 +109,13 @@ public class JavaFXTextLayout extends loon.font.TextLayout {
 		context.fillText(text, x, y);
 	}
 
-	static void configContext(GraphicsContext context, TextFormat format) {
+	void configContext(GraphicsContext context, TextFormat format) {
 		Font font = getFont(format);
 		context.setFont(font);
 		context.setTextBaseline(VPos.TOP);
 	}
 
-	static Font getFont(TextFormat format) {
+	Font getFont(TextFormat format) {
 		return (format.font == null) ? JavaFXFont.DEFAULT.typeface : JavaFXFont.create(format.font);
 	}
 
@@ -125,7 +126,7 @@ public class JavaFXTextLayout extends loon.font.TextLayout {
 
 	private static RectBox computeBounds(JavaFXFontMetrics metrics) {
 		Bounds bounds = metrics.getBounds();
-		return new RectBox((float) bounds.getMinX(), (float) bounds.getMinY() + metrics.ascent(),
+		return new RectBox((float) bounds.getMinX(), (float) bounds.getMinY() - metrics.ascent(),
 				(float) bounds.getWidth(), (float) bounds.getHeight());
 	}
 

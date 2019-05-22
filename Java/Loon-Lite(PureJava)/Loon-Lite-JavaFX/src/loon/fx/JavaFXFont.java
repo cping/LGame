@@ -47,7 +47,26 @@ class JavaFXFont {
 	public static Font create(loon.font.Font font) {
 		String name = font.name;
 		if (StringUtils.isEmpty(name)) {
-			name = "monospace";
+			name = "Arial";
+		}
+		if (StringUtils.hasChinese(name)) {
+			if ("黑体".equals(name)) {
+				name = "SimHei";
+			} else if ("新宋体".equals(name)) {
+				name = "NSimSun";
+			} else if ("仿宋".equals(name)) {
+				name = "FangSong";
+			} else if ("楷体".equals(name)) {
+				name = "KaiTi";
+			} else if ("仿宋_GB2312".equals(name)) {
+				name = "FangSong_GB2312";
+			} else if ("隶书".equals(name)) {
+				name = "LiSu";
+			} else if ("楷体_GB2312".equals(name)) {
+				name = "KaiTi_GB2312";
+			} else {
+				name = "Verdana";
+			}
 		}
 		FontWeight weight = (font.style == Style.BOLD) ? FontWeight.BOLD : FontWeight.NORMAL;
 		FontPosture posture = (font.style == Style.ITALIC) ? FontPosture.ITALIC : FontPosture.REGULAR;

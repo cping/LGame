@@ -159,8 +159,6 @@ public class Display extends LSystemView {
 
 	private IFont fpsFont;
 
-	private float cred, cgreen, cblue, calpha;
-
 	private final GLEx _glEx;
 
 	private final LProcess _process;
@@ -225,37 +223,6 @@ public class Display extends LSystemView {
 		return _process;
 	}
 
-	/**
-	 * 清空当前游戏窗体内容为指定色彩
-	 * 
-	 * @param red
-	 * @param green
-	 * @param blue
-	 * @param alpha
-	 */
-	public void clearColor(float red, float green, float blue, float alpha) {
-		cred = red;
-		cgreen = green;
-		cblue = blue;
-		calpha = alpha;
-	}
-
-	/**
-	 * 清空当前游戏窗体内容为指定色彩
-	 * 
-	 * @param color
-	 */
-	public void clearColor(LColor color) {
-		this.clearColor(color.r, color.g, color.b, color.a);
-	}
-
-	/**
-	 * 清空当前游戏窗体内容为纯黑色
-	 */
-	public void clearColor() {
-		this.clearColor(0, 0, 0, 0);
-	}
-
 	protected void draw(LTimerContext clock) {
 
 		// fix渲染时机，避免调用渲染在纹理构造前
@@ -269,7 +236,7 @@ public class Display extends LSystemView {
 			try {
 				_glEx.save();
 				_glEx.begin();
-				_glEx.clear(cred, cgreen, cblue, calpha);
+				_glEx.resetClear();
 				if (logoTex == null || logoTex.finish || logoTex.logo.disposed()) {
 					showLogo = false;
 					return;
@@ -296,7 +263,7 @@ public class Display extends LSystemView {
 		try {
 			_glEx.saveTx();
 			_glEx.begin();
-			_glEx.reset(cred, cgreen, cblue, calpha);
+			_glEx.resetClear();
 
 			_process.load();
 			_process.runTimer(clock);
@@ -306,9 +273,7 @@ public class Display extends LSystemView {
 			// 显示fps速度
 			if (debug || _setting.isFPS) {
 				tickFrames();
-			
 				fpsFont.drawString(_glEx, "FPS:" + frameRate, 5, 5, 0, LColor.white);
-				
 			}
 			// 显示内存
 			if (debug || _setting.isMemory) {
@@ -362,22 +327,6 @@ public class Display extends LSystemView {
 
 	public int getFPS() {
 		return frameRate;
-	}
-
-	public float getAlpha() {
-		return calpha;
-	}
-
-	public float getRed() {
-		return cred;
-	}
-
-	public float getGreen() {
-		return cgreen;
-	}
-
-	public float getBlue() {
-		return cblue;
 	}
 
 	public GLEx GL() {

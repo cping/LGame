@@ -30,16 +30,21 @@ public class LTextureBind extends GLBase {
 	protected Canvas gl = null;
 	protected int curTexId = -1;
 	protected int lastTexId = -1;
+	protected LTexture lastTexture = null;
 
 	public int getCurrentTextureID() {
 		return this.curTexId;
 	}
 
 	public LTexture getCurrentTexture() {
+		if (lastTexture != null && !lastTexture.isClosed() && lastTexture.getID() == this.curTexId) {
+			return lastTexture;
+		}
 		return LSystem.getTexture(this.curTexId);
 	}
 
 	public void setTexture(final LTexture texture) {
+		lastTexture = texture;
 		final int id = texture.getID();
 		if (!texture.isLoaded()) {
 			texture.loadTexture();

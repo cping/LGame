@@ -533,6 +533,10 @@ public class LSystem {
 		LSystem._auto_repaint = true;
 	}
 
+	public static final boolean isEmulateFullVer() {
+		return base() != null ? base().setting.emulateFullVer: false ;
+	}
+
 	public static final <E> void dispatchEvent(Act<E> signal, E event) {
 		if (base() != null) {
 			base().dispatchEvent(signal, event);
@@ -546,7 +550,7 @@ public class LSystem {
 	}
 
 	public static final boolean isAsyncSupported() {
-		return base() != null ? false : base().isAsyncSupported();
+		return base() != null ? base().isAsyncSupported() : false;
 	}
 
 	public static final void invokeAsync(Runnable action) {

@@ -28,87 +28,79 @@ import loon.LazyLoading;
 import loon.Screen;
 import loon.canvas.LColor;
 import loon.event.GameTouch;
+import loon.fx.JavaFXGame.JavaFXSetting;
 import loon.fx.Loon.GameApp;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimerContext;
 
-public class Main {
+public class Main extends GameApp {
 
-	public static class ScreenTest extends Screen{
+	public static class ScreenTest extends Screen {
 
-		
 		LTexture texture = loadTexture("ccc.png");
+
 		@Override
 		public void draw(GLEx g) {
-			//g.fillRect(66, 66, 388, 388,LColor.red);
-			g.draw(texture, 77, 77,LColor.red);
+			// g.fillRect(66, 66, 388, 388,LColor.red);
+			g.draw(texture, 77, 77, LColor.red);
 			g.drawString("数据测试avddf", 77, 77);
 		}
 
 		@Override
 		public void onLoad() {
-			//setBackground(LColor.yellow);
+			// setBackground(LColor.yellow);
 		}
 
 		@Override
 		public void alter(LTimerContext timer) {
-			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void resize(int width, int height) {
-			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void touchDown(GameTouch e) {
-			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void touchUp(GameTouch e) {
-			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void touchMove(GameTouch e) {
-			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void touchDrag(GameTouch e) {
-			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void resume() {
-			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void pause() {
-			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void close() {
-			// TODO Auto-generated method stub
-			
+
 		}
-		
+
 	}
 
 	public static void main(String[] args) {
-		
-		LSetting setting = new LSetting();
+
+		JavaFXSetting setting = new JavaFXSetting();
 		// 原始大小
 		setting.width = 480;
 		setting.height = 320;
@@ -122,12 +114,12 @@ public class Main {
 		setting.logoPath = "loon_logo.png";
 		setting.isFPS = false;
 		setting.isMemory = false;
-
+		setting.iconPaths = new String[] { "l.png" };
+		setting.fullscreen = true;
 		// 默认字体
 		setting.fontName = "黑体";
-		// setting.emulateTouch = true;
 
-		GameApp.register(setting, new LazyLoading.Data() {
+		register(setting, new LazyLoading.Data() {
 
 			@Override
 			public Screen onScreen() {

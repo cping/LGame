@@ -98,6 +98,8 @@ public abstract class Canvas implements LRelease {
 
 	public abstract Canvas clear();
 
+	public abstract Canvas clear(LColor color);
+	
 	public abstract Canvas clearRect(float x, float y, float width, float height);
 
 	public abstract Canvas clip(Path clipPath);
@@ -167,6 +169,8 @@ public abstract class Canvas implements LRelease {
 
 	public abstract Canvas drawText(String text, float x, float y);
 
+	public abstract Canvas drawText(String text, float x, float y,LColor color);
+	
 	public Canvas drawText(String message, float x, float y, int c1, int c2) {
 		int tmp = getFillColor();
 		setFillColor(c1);

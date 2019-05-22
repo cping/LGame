@@ -92,14 +92,14 @@ public class LSTRFont implements IFont, LRelease {
 			Canvas canvas = LSystem.base().graphics().createCanvas(strfont.textureWidth, strfont.textureHeight);
 			canvas.setColor(LColor.white);
 			canvas.setFont(strfont.font);
-	
+
 			int rowHeight = 0;
 			int positionX = 0;
 			int positionY = 0;
 			int customCharsLength = (strfont.additionalChars != null) ? strfont.additionalChars.length : 0;
 			strfont.totalCharSet = customCharsLength == 0 ? strfont.totalCharSet : 0;
 			StringBuilder sbr = new StringBuilder(strfont.totalCharSet);
-		
+
 			final boolean clipFont = LSystem.isTrueFontClip();
 			// 本地字体怎么都不如ttf或者fnt字体清晰准确,差异太大，只能尽量保证显示效果……
 			for (int i = 0, size = strfont.totalCharSet + customCharsLength; i < size; i++) {
@@ -108,7 +108,6 @@ public class LSTRFont implements IFont, LRelease {
 				TextLayout layout = strfont.font.getLayoutText(String.valueOf(ch));
 
 				int charwidth = layout.charWidth(ch);
-				
 
 				if (charwidth <= 0) {
 					charwidth = 1;
@@ -122,7 +121,7 @@ public class LSTRFont implements IFont, LRelease {
 
 				newIntObject.width = charwidth;
 				newIntObject.height = charheight;
-		
+
 				if (clipFont) {
 					// 发现部分环境字体如果整体渲染到canvas的话，会导致纹理切的不整齐(实际上就是间距和从系统获取的不符合),
 					// 保险起见一个个字体粘贴……
@@ -314,11 +313,13 @@ public class LSTRFont implements IFont, LRelease {
 		isDrawing = true;
 		updateX = 0;
 		updateY = LSystem.isHTML5() ? 1f : 0;
-		Updateable update = new UpdateStringFont(this);
-		if (asyn) {
-			LSystem.load(update);
-		} else {
-			update.action(null);
+		if (LSystem.isEmulateFullVer()) {
+			Updateable update = new UpdateStringFont(this);
+			if (asyn) {
+				LSystem.load(update);
+			} else {
+				update.action(null);
+			}
 		}
 	}
 
@@ -369,7 +370,7 @@ public class LSTRFont implements IFont, LRelease {
 			_initDraw++;
 			return;
 		}
-		if (texture.isClosed()) {
+		if (checkTexture()) {
 			return;
 		}
 		if (displays.size > LSystem.DEFAULT_MAX_CACHE_SIZE) {
@@ -510,11 +511,12 @@ public class LSTRFont implements IFont, LRelease {
 		if (processing()) {
 			return;
 		}
+
 		if (_initDraw < _drawLimit) {
 			_initDraw++;
 			return;
 		}
-		if (texture.isClosed()) {
+		if (checkTexture()) {
 			return;
 		}
 		final float x = mx + _offset.x;
@@ -523,13 +525,11 @@ public class LSTRFont implements IFont, LRelease {
 		this.charCurrent = 0;
 		this.totalWidth = 0;
 		this.totalHeight = 0;
-		int old = gl.color();
 		final boolean anchor = ax != 0 || ay != 0;
 		final boolean scale = sx != 1f || sy != 1f;
 		final boolean angle = rotation != 0;
 		final boolean update = scale || angle || anchor;
 		try {
-			gl.setTint(c);
 			if (update) {
 				gl.saveTx();
 				Affine2f xf = gl.tx();
@@ -550,27 +550,37 @@ public class LSTRFont implements IFont, LRelease {
 				if (anchor) {
 					xf.translate(ax, ay);
 				}
+
 			}
-			for (int i = startIndex; i < endIndex; i++) {
-				charCurrent = chars.charAt(i);
-				if (charCurrent < totalCharSet) {
-					intObject = charArray[charCurrent];
-				} else {
-					intObject = customChars.get(charCurrent);
+			if (LSystem.isEmulateFullVer()) {
+				for (int i = startIndex; i < endIndex; i++) {
+					charCurrent = chars.charAt(i);
+					if (charCurrent < totalCharSet) {
+						intObject = charArray[charCurrent];
+					} else {
+						intObject = customChars.get(charCurrent);
+					}
+					if (charCurrent == newLineFlag) {
+						totalHeight += fontSize;
+						totalWidth = 0;
+					}
+					if (intObject != null) {
+						gl.draw(texture, x + totalWidth, y + totalHeight, intObject.width * sx, intObject.height * sy,
+								StringUtils.isChinese((char) charCurrent) ? intObject.storedX - updateX
+										: intObject.storedX,
+								intObject.storedY, intObject.width, intObject.height - updateY, c);
+						totalWidth += intObject.width;
+					}
 				}
-				if (charCurrent == newLineFlag) {
-					totalHeight += fontSize;
-					totalWidth = 0;
-				}
-				if (intObject != null) {
-					gl.draw(texture, x + totalWidth, y + totalHeight, intObject.width * sx, intObject.height * sy,
-							StringUtils.isChinese((char) charCurrent) ? intObject.storedX - updateX : intObject.storedX,
-							intObject.storedY, intObject.width, intObject.height - updateY, c);
-					totalWidth += intObject.width;
-				}
+			} else {
+				gl.saveCanvas();
+				gl.postform();
+				gl.getCanvas().setFont(font);
+				gl.getCanvas().drawText(chars, x, y, c);
+				gl.restoreCanvas();
 			}
+
 		} finally {
-			gl.setTint(old);
 			if (update) {
 				gl.restoreTx();
 			}
@@ -583,6 +593,10 @@ public class LSTRFont implements IFont, LRelease {
 
 	public void setUpdateY(float y) {
 		this.updateY = y;
+	}
+	
+	private boolean checkTexture(){
+		return LSystem.isEmulateFullVer() && texture.isClosed();
 	}
 
 	public void addChar(char c, float x, float y, LColor color) {
@@ -597,7 +611,7 @@ public class LSTRFont implements IFont, LRelease {
 			_initDraw++;
 			return;
 		}
-		if (texture.isClosed()) {
+		if (checkTexture()) {
 			return;
 		}
 		this.charCurrent = c;
@@ -638,7 +652,7 @@ public class LSTRFont implements IFont, LRelease {
 			_initDraw++;
 			return;
 		}
-		if (texture.isClosed()) {
+		if (checkTexture()) {
 			return;
 		}
 		fontBatch.begin();
@@ -656,20 +670,18 @@ public class LSTRFont implements IFont, LRelease {
 		if (processing()) {
 			return;
 		}
-		if (texture.isClosed()) {
+		if (checkTexture()) {
 			return;
 		}
-		/*GL20 g = LSystem.base().graphics().gl;
-		if (g != null) {
-			int old = GLUtils.getBlendMode();
-			GLUtils.setBlendMode(g, LSystem.MODE_NORMAL);
-			fontBatch.end();
-			GLUtils.setBlendMode(g, old);
-		}*/
+		/*
+		 * GL20 g = LSystem.base().graphics().gl; if (g != null) { int old =
+		 * GLUtils.getBlendMode(); GLUtils.setBlendMode(g, LSystem.MODE_NORMAL);
+		 * fontBatch.end(); GLUtils.setBlendMode(g, old); }
+		 */
 	}
 
 	private boolean processing() {
-		return fontBatch == null || isDrawing;
+		return (fontBatch == null || isDrawing) && LSystem.isEmulateFullVer();
 	}
 
 	public void postCharCache() {
@@ -680,16 +692,14 @@ public class LSTRFont implements IFont, LRelease {
 		if (processing()) {
 			return;
 		}
-		if (texture.isClosed()) {
+		if (checkTexture()) {
 			return;
 		}
-		/*GL20 g = LSystem.base().graphics().gl;
-		if (g != null) {
-			int old = GLUtils.getBlendMode();
-			GLUtils.setBlendMode(g, LSystem.MODE_NORMAL);
-			fontBatch.postLastCache();
-			GLUtils.setBlendMode(g, old);
-		}*/
+		/*
+		 * GL20 g = LSystem.base().graphics().gl; if (g != null) { int old =
+		 * GLUtils.getBlendMode(); GLUtils.setBlendMode(g, LSystem.MODE_NORMAL);
+		 * fontBatch.postLastCache(); GLUtils.setBlendMode(g, old); }
+		 */
 	}
 
 	public Cache saveCharCache() {
@@ -700,7 +710,7 @@ public class LSTRFont implements IFont, LRelease {
 		if (processing()) {
 			return null;
 		}
-		if (texture.isClosed()) {
+		if (checkTexture()) {
 			return null;
 		}
 		fontBatch.disposeLastCache();
@@ -748,7 +758,7 @@ public class LSTRFont implements IFont, LRelease {
 		if (processing()) {
 			return font.charWidth(c);
 		}
-		if (texture.isClosed()) {
+		if (checkTexture()) {
 			return 0;
 		}
 		if (c < totalCharSet) {
@@ -767,10 +777,10 @@ public class LSTRFont implements IFont, LRelease {
 			return 0;
 		}
 		make();
-		if (processing()) {
+		if (processing() || !LSystem.isEmulateFullVer()) {
 			return font.stringWidth(s);
 		}
-		if (texture.isClosed()) {
+		if (checkTexture()) {
 			return 0;
 		}
 		int totalWidth = 0;
@@ -804,7 +814,7 @@ public class LSTRFont implements IFont, LRelease {
 		if (processing()) {
 			return font.stringHeight(s);
 		}
-		if (texture.isClosed()) {
+		if (checkTexture()) {
 			return 0;
 		}
 		int currentChar = 0;

@@ -166,8 +166,6 @@ public class LFont implements IFont {
 		if (StringUtils.isEmpty(chars)) {
 			return;
 		}
-		
-		
 		if (useCache) {
 			LSTRDictionary.get().drawString(this, chars, _offset.x + tx, _offset.y + ty, angle, c);
 		} else {
@@ -184,7 +182,6 @@ public class LFont implements IFont {
 		if (StringUtils.isEmpty(chars)) {
 			return;
 		}
-
 		if (useCache) {
 			LSTRDictionary.get().drawString(this, chars, _offset.x + tx, _offset.y + ty, sx, sy, ax, ay, angle, c);
 		} else {

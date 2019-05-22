@@ -23,7 +23,6 @@ package loon.fx;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.effect.BlendMode;
-import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.StrokeLineCap;
@@ -196,6 +195,18 @@ public class JavaFXCanvas extends Canvas {
 			_font = LFont.getDefaultFont();
 		}
 		return fillText(_font.getLayoutText(text), x, y);
+	}
+
+	@Override
+	public Canvas drawText(String text, float x, float y, LColor color) {
+		if (_font == null) {
+			_font = LFont.getDefaultFont();
+		}
+		Paint tmp = context.getFill();
+		context.setFill(getLColorToFX(color));
+		fillText(_font.getLayoutText(text), x, y);
+		context.setFill(tmp);
+		return this;
 	}
 
 	@Override

@@ -693,7 +693,7 @@ public class LSystem {
 	}
 
 	public static final boolean isAsyncSupported() {
-		return base() != null ? false : base().isAsyncSupported();
+		return base() != null ? base().isAsyncSupported() : false;
 	}
 
 	public static final void invokeAsync(Runnable action) {
