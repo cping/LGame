@@ -22,9 +22,14 @@ package loon.action.sprite;
 
 import loon.LRelease;
 import loon.action.ActionBind;
+import loon.action.collision.CollisionFilter;
+import loon.action.collision.CollisionResult;
+import loon.action.collision.CollisionWorld;
 import loon.action.map.Config;
 import loon.action.map.Field2D;
+import loon.action.map.HexagonMap;
 import loon.action.map.TileMap;
+import loon.geom.ActionBindRect;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.timer.LTimerContext;
@@ -34,35 +39,94 @@ import loon.utils.timer.LTimerContext;
  */
 public class MoveControl implements LRelease {
 
-	private int _moveSpeed = 8;
+	private float _moveSpeed = 1;
 
-	private float _offsetX = 0.4f;
+	private float _offsetX = 0f;
 
-	private float _offsetY = 0.4f;
+	private float _offsetY = 0f;
 
-	private int _posX = 0, _posY = 0, _direction = -1, _lastDirection = -1;
+	private float _lastX;
 
-	private int _moveX = 0, _moveY = 0, _movingLength = 0;
+	private float _lastY;
+
+	private float _vagueWidthScale, _vagueHeightScale;
+
+	private int _direction = -1, _lastDirection = -1;
 
 	private boolean _isMoving = false, _running = false, _freeDir = true, _closed = false;
 
+	private CollisionWorld _collisionWorld;
+
+	private CollisionFilter _worldCollisionFilter;
+
 	private ActionBind _bindObject;
+
+	private ActionBindRect _actionRect;
 
 	private Field2D _currentArrayMap;
 
-	private long _delay = 30;
+	private long _delay = 0;
 
 	public MoveControl(ActionBind bind, TileMap map) {
-		this(bind, map.getField());
+		this(bind, map.getField2D());
+	}
+
+	public MoveControl(ActionBind bind, HexagonMap map) {
+		this(bind, map.getField2D());
 	}
 
 	public MoveControl(ActionBind bind, int[][] map) {
 		this(bind, new Field2D(map));
 	}
 
+	public MoveControl(ActionBind bind) {
+		this(bind, (Field2D) null);
+	}
+
 	public MoveControl(ActionBind bind, Field2D field2d) {
+		this(bind, field2d, 8, 30, 1f, 1f);
+	}
+
+	public MoveControl(ActionBind bind, Field2D field2d, int moveSpeed, int delay, float ws, float hs) {
 		this._bindObject = bind;
 		this._currentArrayMap = field2d;
+		this._actionRect = new ActionBindRect(bind);
+		this._delay = delay;
+		this._moveSpeed = moveSpeed;
+		this._vagueWidthScale = ws;
+		this._vagueHeightScale = hs;
+	}
+
+	public void upIso() {
+		this.setDirection(Config.UP);
+	}
+
+	public void tup() {
+		this.setDirection(Config.TUP);
+	}
+
+	public void downIso() {
+		this.setDirection(Config.DOWN);
+	}
+
+	public void tdown() {
+		this.setDirection(Config.TDOWN);
+	}
+
+	public void leftIso() {
+		this.setDirection(Config.LEFT);
+	}
+
+	public void tleft() {
+		this.setDirection(Config.TLEFT);
+	}
+
+	public void rightIso() {
+		this.setDirection(Config.RIGHT);
+	}
+
+	public void tright() {
+		this.setDirection(Config.TRIGHT);
 	}
 
 	public void setDirection(int d) {
@@ -109,350 +173,142 @@ public class MoveControl implements LRelease {
 		return this;
 	}
 
+	protected final boolean checkTileCollision(Field2D field2d, ActionBind bind, float newX, float newY) {
+		if (field2d == null) {
+			return false;
+		}
+		return field2d.checkTileCollision(bind.getX() - _offsetX, bind.getY() - _offsetY,
+				bind.getWidth() * _vagueWidthScale, bind.getHeight() * _vagueHeightScale, newX, newY);
+	}
+
 	public final boolean move(ActionBind bind, Field2D field2d, int direction) {
-		boolean notMove = false;
-		this._movingLength = 0;
-		float posX = bind.getX();
-		float posY = bind.getY();
-		posX = posX / field2d.getTileWidth();
-		posY = posY / field2d.getTileHeight();
-		if ((posX - (int) posX) > _offsetX) {
-			posX = field2d.pixelsToTilesWidth(bind.getX()) + 1;
-		} else {
-			posX = field2d.pixelsToTilesWidth(bind.getX());
-		}
-		if ((posY - (int) posY) > _offsetY) {
-			posY = field2d.pixelsToTilesHeight(bind.getY()) + 1;
-		} else {
-			posY = field2d.pixelsToTilesHeight(bind.getY());
-		}
-		this._posX = bind.x();
-		this._posY = bind.y();
-		this._moveX = (int) posX;
-		this._moveY = (int) posY;
+		float startX = bind.getX() - _offsetX;
+		float startY = bind.getY() - _offsetY;
+		float newX = 0;
+		float newY = 0;
+		_isMoving = true;
 		switch (direction) {
-		case Config.TLEFT:
-			if (moveTLeft(field2d)) {
-				notMove = true;
+		case Field2D.TUP:
+			newY = startY - _moveSpeed;
+			if (!checkTileCollision(field2d, bind, startX, newY)) {
+				startY = newY;
+			} else {
+				_isMoving = false;
 			}
 			break;
-		case Config.LEFT:
-			if (moveLeft(field2d)) {
-				notMove = true;
+		case Field2D.TDOWN:
+			newY = startY + _moveSpeed;
+			if (!checkTileCollision(field2d, bind, startX, newY)) {
+				startY = newY;
+			} else {
+				_isMoving = false;
 			}
 			break;
-		case Config.TRIGHT:
-			if (moveTRight(field2d)) {
-				notMove = true;
+		case Field2D.TLEFT:
+			newX = startX - _moveSpeed;
+			if (!checkTileCollision(field2d, bind, newX, startY)) {
+				startX = newX;
+			} else {
+				_isMoving = false;
 			}
 			break;
-		case Config.RIGHT:
-			if (moveRight(field2d)) {
-				notMove = true;
+		case Field2D.TRIGHT:
+			newX = startX + _moveSpeed;
+			if (!checkTileCollision(field2d, bind, newX, startY)) {
+				startX = newX;
+			} else {
+				_isMoving = false;
 			}
 			break;
-		case Config.TUP:
-			if (moveTUp(field2d)) {
-				notMove = true;
+		case Field2D.UP:
+			newX = startX + _moveSpeed;
+			newY = startY - _moveSpeed;
+			if (!checkTileCollision(field2d, bind, newX, newY)) {
+				startX = newX;
+				startY = newY;
+			} else {
+				_isMoving = false;
 			}
 			break;
-		case Config.UP:
-			if (moveUp(field2d)) {
-				notMove = true;
+		case Field2D.DOWN:
+			newX = startX - _moveSpeed;
+			newY = startY + _moveSpeed;
+
+			if (!checkTileCollision(field2d, bind, newX, newY)) {
+				startX = newX;
+				startY = newY;
+			} else {
+				_isMoving = false;
 			}
 			break;
-		case Config.TDOWN:
-			if (moveTDown(field2d)) {
-				notMove = true;
+		case Field2D.LEFT:
+			newX = startX - _moveSpeed;
+			newY = startY - _moveSpeed;
+			if (!checkTileCollision(field2d, bind, newX, newY)) {
+				startX = newX;
+				startY = newY;
+			} else {
+				_isMoving = false;
 			}
 			break;
-		case Config.DOWN:
-			if (moveDown(field2d)) {
-				notMove = true;
+		case Field2D.RIGHT:
+			newX = startX + _moveSpeed;
+			newY = startY + _moveSpeed;
+			if (!checkTileCollision(field2d, bind, newX, newY)) {
+				startX = newX;
+				startY = newY;
+			} else {
+				_isMoving = false;
 			}
 			break;
 		}
-		if (!notMove) {
-			bind.setX(_posX);
-			bind.setY(_posY);
-			_lastDirection = _direction;
+		if (_isMoving) {
+			movePos(bind, startX, startY, direction);
 		}
-		return notMove;
+		return true;
 	}
 
-	private boolean moveLeft(Field2D field2d) {
-		int nextX = _moveX - 1;
-		int nextY = _moveY - 1;
-		if (nextX < 0) {
-			nextX = 0;
-		}
-		if (nextY < 0) {
-			nextY = 0;
-		}
-		if (field2d.isHit(nextX, nextY)) {
-			_posX -= _moveSpeed;
-			if (_posX < 0) {
-				_posX = 0;
-			}
-			_posY -= _moveSpeed;
-			if (_posY < 0) {
-				_posY = 0;
-			}
-			_movingLength += _moveSpeed;
-			if (_movingLength >= field2d.getTileWidth()) {
-				_moveX--;
-				_posX = _moveX * field2d.getTileWidth();
-				_isMoving = false;
-				return true;
-			}
-			if (_movingLength >= field2d.getTileHeight()) {
-				_moveY--;
-				_posY = _moveY * field2d.getTileHeight();
-				_isMoving = false;
-				return true;
-			}
-		} else {
-			_isMoving = false;
-			_posX = _moveX * field2d.getTileWidth();
-			_posY = _moveY * field2d.getTileHeight();
-		}
-		return false;
+	public void movePos(ActionBind bind, float x, float y, int dir) {
+		movePos(bind, x, y, -1f, -1f, dir);
 	}
 
-	private boolean moveTLeft(Field2D field2d) {
-		int nextX = _moveX - 1;
-		int nextY = _moveY;
-		if (nextX < 0) {
-			nextX = 0;
+	public void movePos(ActionBind bind, float x, float y, float lastX, float lastY, int dir) {
+		if (bind == null) {
+			return;
 		}
-		if (field2d.isHit(nextX, nextY)) {
-			_posX -= _moveSpeed;
-			if (_posX < 0) {
-				_posX = 0;
+		if (_collisionWorld != null) {
+			if (_worldCollisionFilter == null) {
+				_worldCollisionFilter = CollisionFilter.getDefault();
 			}
-			_movingLength += _moveSpeed;
-			if (_movingLength >= field2d.getTileWidth()) {
-				_moveX--;
-				_posX = _moveX * field2d.getTileWidth();
-				_isMoving = false;
-				return true;
+			_actionRect.setRect(bind.getX() - _offsetX, bind.getY() - _offsetY, bind.getWidth() * _vagueWidthScale,
+					bind.getHeight() * _vagueHeightScale);
+			CollisionResult.Result result = _collisionWorld.move(_actionRect, x, y, _worldCollisionFilter);
+			if (lastX != -1 && lastY != -1) {
+				if (result.goalX != x || result.goalY != y) {
+					bind.setLocation(lastX + _offsetX, lastY + _offsetY);
+				} else {
+					bind.setLocation(result.goalX + _offsetY, result.goalY + _offsetY);
+				}
+			} else {
+				bind.setLocation(result.goalX + _offsetX, result.goalY + _offsetY);
 			}
 		} else {
-			_isMoving = false;
-			_posX = _moveX * field2d.getTileWidth();
-			_posY = _moveY * field2d.getTileHeight();
+			bind.setLocation(x + _offsetX, y + _offsetY);
 		}
-		return false;
-	}
-
-	private boolean moveRight(Field2D field2d) {
-		int nextX = _moveX + 1;
-		int nextY = _moveY + 1;
-		if (nextX > field2d.getWidth() - 1) {
-			nextX = field2d.getWidth() - 1;
-		}
-		if (nextY > field2d.getHeight() - 1) {
-			nextY = field2d.getHeight() - 1;
-		}
-		if (field2d.isHit(nextX, nextY)) {
-			_posX += _moveSpeed;
-			if (_posX > field2d.getViewWidth() - field2d.getTileWidth()) {
-				_posX = field2d.getViewWidth() - field2d.getTileWidth();
-			}
-			_posY += _moveSpeed;
-			if (_posY > field2d.getViewHeight() - field2d.getTileHeight()) {
-				_posY = field2d.getViewHeight() - field2d.getTileHeight();
-			}
-			_movingLength += _moveSpeed;
-			if (_movingLength >= field2d.getTileWidth()) {
-				_moveX++;
-				_posX = _moveX * field2d.getTileWidth();
-				_isMoving = false;
-				return true;
-			}
-			if (_movingLength >= field2d.getTileHeight()) {
-				_moveY++;
-				_posY = _moveY * field2d.getTileHeight();
-				_isMoving = false;
-				return true;
-			}
-		} else {
-			_isMoving = false;
-			_posX = _moveX * field2d.getTileWidth();
-			_posY = _moveY * field2d.getTileHeight();
-		}
-
-		return false;
-	}
-
-	private boolean moveTRight(Field2D field2d) {
-		int nextX = _moveX + 1;
-		int nextY = _moveY;
-		if (nextX > field2d.getWidth() - 1) {
-			nextX = field2d.getWidth() - 1;
-		}
-		if (field2d.isHit(nextX, nextY)) {
-			_posX += _moveSpeed;
-			if (_posX > field2d.getViewWidth() - field2d.getTileWidth()) {
-				_posX = field2d.getViewWidth() - field2d.getTileWidth();
-			}
-			_movingLength += _moveSpeed;
-			if (_movingLength >= field2d.getTileWidth()) {
-				_moveX++;
-				_posX = _moveX * field2d.getTileWidth();
-				_isMoving = false;
-				return true;
-			}
-		} else {
-			_isMoving = false;
-			_posX = _moveX * field2d.getTileWidth();
-			_posY = _moveY * field2d.getTileHeight();
-		}
-
-		return false;
-	}
-
-	private boolean moveUp(Field2D field2d) {
-		int nextX = _moveX + 1;
-		int nextY = _moveY - 1;
-		if (nextX > field2d.getWidth() - 1) {
-			nextX = field2d.getWidth() - 1;
-		}
-		if (nextY < 0) {
-			nextY = 0;
-		}
-		if (field2d.isHit(nextX, nextY)) {
-			_posX += _moveSpeed;
-			if (_posX > field2d.getViewWidth() - field2d.getTileWidth()) {
-				_posX = field2d.getViewWidth() - field2d.getTileWidth();
-			}
-			_movingLength += _moveSpeed;
-			if (_movingLength >= field2d.getTileWidth()) {
-				_moveX++;
-				_posX = _moveX * field2d.getTileWidth();
-				_isMoving = false;
-				return true;
-			}
-			_posY -= _moveSpeed;
-			if (_posY < 0) {
-				_posY = 0;
-			}
-			if (_movingLength >= field2d.getTileHeight()) {
-				_moveY--;
-				_posY = _moveY * field2d.getTileHeight();
-				_isMoving = false;
-				return true;
-			}
-		} else {
-			_isMoving = false;
-			_posX = _moveX * field2d.getTileWidth();
-			_posY = _moveY * field2d.getTileHeight();
-		}
-
-		return false;
-	}
-
-	private boolean moveTUp(Field2D field2d) {
-		int nextX = _moveX;
-		int nextY = _moveY - 1;
-		if (nextY < 0) {
-			nextY = 0;
-		}
-		if (field2d.isHit(nextX, nextY)) {
-			_posY -= _moveSpeed;
-			if (_posY < 0) {
-				_posY = 0;
-			}
-			_movingLength += _moveSpeed;
-			if (_movingLength >= field2d.getTileHeight()) {
-				_moveY--;
-				_posY = _moveY * field2d.getTileHeight();
-				_isMoving = false;
-				return true;
-			}
-		} else {
-			_isMoving = false;
-			_posX = _moveX * field2d.getTileWidth();
-			_posY = _moveY * field2d.getTileHeight();
-		}
-
-		return false;
-	}
-
-	private boolean moveDown(Field2D field2d) {
-		int nextX = _moveX - 1;
-		int nextY = _moveY + 1;
-		if (nextX < 0) {
-			nextX = 0;
-		}
-		if (nextY > field2d.getHeight() - 1) {
-			nextY = field2d.getHeight() - 1;
-		}
-		if (field2d.isHit(nextX, nextY)) {
-			_posX -= _moveSpeed;
-			if (_posX < 0) {
-				_posX = 0;
-			}
-			_movingLength += _moveSpeed;
-			if (_movingLength >= field2d.getTileWidth()) {
-				_moveX--;
-				_posX = _moveX * field2d.getTileWidth();
-				_isMoving = false;
-				return true;
-			}
-			_posY += _moveSpeed;
-			if (_posY > field2d.getViewHeight() - field2d.getTileHeight()) {
-				_posY = field2d.getViewHeight() - field2d.getTileHeight();
-			}
-			if (_movingLength >= field2d.getTileHeight()) {
-				_moveY++;
-				_posY = _moveY * field2d.getTileHeight();
-				_isMoving = false;
-				return true;
-			}
-		} else {
-			_isMoving = false;
-			_posX = _moveX * field2d.getTileWidth();
-			_posY = _moveY * field2d.getTileHeight();
-		}
-		return false;
-	}
-
-	private boolean moveTDown(Field2D field2d) {
-		int nextX = _moveX;
-		int nextY = _moveY + 1;
-		if (nextY > field2d.getHeight() - 1) {
-			nextY = field2d.getHeight() - 1;
-		}
-		if (field2d.isHit(nextX, nextY)) {
-			_posY += _moveSpeed;
-			if (_posY > field2d.getViewHeight() - field2d.getTileHeight()) {
-				_posY = field2d.getViewHeight() - field2d.getTileHeight();
-			}
-			_movingLength += _moveSpeed;
-			if (_movingLength >= field2d.getTileHeight()) {
-				_moveY++;
-				_posY = _moveY * field2d.getTileHeight();
-				_isMoving = false;
-				return true;
-			}
-		} else {
-			_isMoving = false;
-			_posX = _moveX * field2d.getTileWidth();
-			_posY = _moveY * field2d.getTileHeight();
-		}
-		return false;
+		_lastX = bind.getX() - _offsetX;
+		_lastY = bind.getY() - _offsetY;
+		_lastDirection = dir;
 	}
 
 	public boolean isMoving() {
 		return _isMoving;
 	}
 
-	public int getSpeed() {
+	public float getSpeed() {
 		return _moveSpeed;
 	}
 
-	public MoveControl setSpeed(int s) {
+	public MoveControl setSpeed(float s) {
 		this._moveSpeed = s;
 		return this;
 	}
@@ -509,8 +365,12 @@ public class MoveControl implements LRelease {
 		this._delay = delay;
 	}
 
-	public boolean isClosed() {
-		return _closed;
+	public float getLastX() {
+		return _lastX;
+	}
+
+	public float getLastY() {
+		return _lastY;
 	}
 
 	public float getOffsetX() {
@@ -527,6 +387,51 @@ public class MoveControl implements LRelease {
 
 	public void setOffsetY(float offsetY) {
 		this._offsetY = offsetY;
+	}
+
+	public CollisionFilter getCollisionFilter() {
+		return _worldCollisionFilter;
+	}
+
+	public void setCollisionFilter(CollisionFilter filter) {
+		this._worldCollisionFilter = filter;
+	}
+
+	public CollisionWorld getCollisionWorld() {
+		return _collisionWorld;
+	}
+
+	public void setCollisionWorld(CollisionWorld world) {
+		this._collisionWorld = world;
+	}
+
+	public void setVagueScale(float scale) {
+		this.setVagueScale(scale, scale);
+	}
+
+	public void setVagueScale(float ws, float hs) {
+		this.setVagueWidthScale(ws);
+		this.setVagueHeightScale(hs);
+	}
+
+	public float getVagueWidthScale() {
+		return _vagueWidthScale;
+	}
+
+	public void setVagueWidthScale(float ws) {
+		this._vagueWidthScale = ws;
+	}
+
+	public float getVagueHeightScale() {
+		return _vagueHeightScale;
+	}
+
+	public void setVagueHeightScale(float hs) {
+		this._vagueHeightScale = hs;
+	}
+
+	public boolean isClosed() {
+		return this._closed;
 	}
 
 	@Override

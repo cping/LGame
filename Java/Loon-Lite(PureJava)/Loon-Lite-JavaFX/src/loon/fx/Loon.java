@@ -183,7 +183,7 @@ public class Loon extends Application implements Platform {
 				}
 			}
 		}
-		if (game.isDesktop()) {
+		if (game.setting.fullscreen && game.isDesktop()) {
 			primaryStage.setFullScreen(true);
 			primaryStage.setFullScreenExitHint("");
 		}

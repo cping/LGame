@@ -115,7 +115,7 @@ public class Main extends GameApp {
 		setting.isFPS = false;
 		setting.isMemory = false;
 		setting.iconPaths = new String[] { "l.png" };
-		setting.fullscreen = true;
+		setting.fullscreen = false;
 		// 默认字体
 		setting.fontName = "黑体";
 

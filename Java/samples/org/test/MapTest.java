@@ -30,7 +30,7 @@ import loon.utils.timer.LTimerContext;
 
 public class MapTest extends Stage {
 
-	//此示例演示了三种角色的地图移动方式，分别是触屏移动,键盘移动,以及虚拟按钮移动
+	// 此示例演示了三种角色的地图移动方式，分别是触屏移动,键盘移动,以及虚拟按钮移动
 	@Override
 	public void create() {
 		try {
@@ -43,47 +43,49 @@ public class MapTest extends Stage {
 			add(ripple);
 			// 构建数组地图精灵
 			final TileMap map = new TileMap("assets/rpg/map.txt", 32, 32);
-			
+
 			// 设置切图方式
-			/*TArray<LTexturePackClip> clips = new TArray<LTexturePackClip>(10);
-			// 索引,名称,开始切图的x,y位置,以及切下来多少
-			clips.add(new LTexturePackClip(0, "1", 0, 0, 32, 32));
-			clips.add(new LTexturePackClip(1, "2", 32, 0, 32, 32));
-			clips.add(new LTexturePackClip(2, "3", 64, 0, 32, 32));
-			clips.add(new LTexturePackClip(3, "4", 96, 0, 32, 32));
-			clips.add(new LTexturePackClip(4, "5", 128, 0, 32, 32));
-			clips.add(new LTexturePackClip(5, "6", 160, 0, 32, 32));
-			// 注入切图用地图，以及切图方式(也可以直接注入xml配置文件)
-			map.setImagePack("assets/rpg/map.png", clips);*/
-			//按照瓦片规格自动获取地图切片(切出来大小都是一样的,只对规则图片有效)
-			map.setImagePackAuto("assets/rpg/map.png", 32,32);
+			/*
+			 * TArray<LTexturePackClip> clips = new
+			 * TArray<LTexturePackClip>(10); // 索引,名称,开始切图的x,y位置,以及切下来多少
+			 * clips.add(new LTexturePackClip(0, "1", 0, 0, 32, 32));
+			 * clips.add(new LTexturePackClip(1, "2", 32, 0, 32, 32));
+			 * clips.add(new LTexturePackClip(2, "3", 64, 0, 32, 32));
+			 * clips.add(new LTexturePackClip(3, "4", 96, 0, 32, 32));
+			 * clips.add(new LTexturePackClip(4, "5", 128, 0, 32, 32));
+			 * clips.add(new LTexturePackClip(5, "6", 160, 0, 32, 32)); //
+			 * 注入切图用地图，以及切图方式(也可以直接注入xml配置文件)
+			 * map.setImagePack("assets/rpg/map.png", clips);
+			 */
+			// 按照瓦片规格自动获取地图切片(切出来大小都是一样的,只对规则图片有效)
+			map.setImagePackAuto("assets/rpg/map.png", 32, 32);
 			// 执行切图
 			map.pack();
-		
+
 			// 设置数组瓦片索引id和切图id的绑定关系(不设置时按照setImagePack中注入的切图id自动和地图id匹配)
-			/*map.putTile(0, 0);
-			map.putTile(1, 1);
-			map.putTile(2, 2);
-			map.putTile(3, 3);
-			map.putTile(4, 4);
-			map.putTile(5, 5);*/
+			/*
+			 * map.putTile(0, 0); map.putTile(1, 1); map.putTile(2, 2);
+			 * map.putTile(3, 3); map.putTile(4, 4); map.putTile(5, 5);
+			 */
 			// 注入地图到窗体
 			add(map);
 			// 制作动画角色,切分大小32x32每帧,显示位置到坐标3,4(换算为数组地图位置),显示大小32x32
 			final AnimatedEntity hero = new AnimatedEntity("assets/rpg/hero.gif", 32, 32, map.tilesToPixelsX(3),
 					map.tilesToPixelsY(4), 32, 32);
 			// 播放动画,速度每帧220
-			final long[] frames = {220, 220, 220 };
+			final long[] frames = { 220, 220, 220 };
 			// 左右下上四方向的帧播放顺序(也可以理解为具体播放的帧)
 			final int[] leftIds = { 3, 4, 5 };
 			final int[] rightIds = { 6, 7, 8 };
-			final int[] downIds = {  0, 1, 2 };
-			final int[] upIds = {  9, 10, 11 };
+			final int[] downIds = { 0, 1, 2 };
+			final int[] upIds = { 9, 10, 11 };
 			// 也可以这样设置，播放时直接传入key的字符串数值，两种方式都能生效
-			/*hero.setPlayIndex("left", PlayIndex.at(frames,leftIds));
-			hero.setPlayIndex("right", PlayIndex.at(frames,rightIds));
-			hero.setPlayIndex("down", PlayIndex.at(frames,downIds));
-			hero.setPlayIndex("up", PlayIndex.at(frames,upIds));*/
+			/*
+			 * hero.setPlayIndex("left", PlayIndex.at(frames,leftIds));
+			 * hero.setPlayIndex("right", PlayIndex.at(frames,rightIds));
+			 * hero.setPlayIndex("down", PlayIndex.at(frames,downIds));
+			 * hero.setPlayIndex("up", PlayIndex.at(frames,upIds));
+			 */
 			// 播放动画,速度每帧220,播放顺序为第0,1,2帧
 			// hero.animate(new long[]{220, 220, 220 }, new int[]{0, 1, 2});
 			hero.animate(frames, downIds);
@@ -97,7 +99,7 @@ public class MapTest extends Stage {
 			hero.setOffset(map.getOffset());
 			// 添加hero到地图上
 			add(hero);
-		
+
 			// ----触屏移动---
 			// 监听窗体down事件
 			down(new Touched() {
@@ -111,8 +113,6 @@ public class MapTest extends Stage {
 					// 监听MoveTo
 					move.setActionListener(new ActionListener() {
 
-						private int lastDirection = -1;
-
 						@Override
 						public void stop(ActionBind o) {
 
@@ -125,7 +125,7 @@ public class MapTest extends Stage {
 						@Override
 						public void process(ActionBind o) {
 							// 存储上一个移动方向，避免反复刷新动画事件
-							if (lastDirection != move.getDirection() && o.getX() != x && o.getY() != y) {
+							if (move.isDirectionUpdate()) {
 								switch (move.getDirection()) {
 								case Field2D.TUP:
 									hero.animate(frames, upIds);
@@ -141,7 +141,6 @@ public class MapTest extends Stage {
 									hero.animate(frames, rightIds);
 									break;
 								}
-								lastDirection = move.getDirection();
 							}
 						}
 					});
@@ -151,65 +150,65 @@ public class MapTest extends Stage {
 				}
 			});
 
-			//构架移动控制器,注入控制的角色和二维数组
-			final MoveControl mc = new MoveControl(hero,map.getField());
+			// 构架移动控制器,注入控制的角色和二维数组
+			final MoveControl mc = new MoveControl(hero, map);
 			mc.start();
 			// 注销窗体时关闭移动控制器
 			putRelease(mc);
 			// ----按键移动---
-			//构建键盘监听
+			// 构建键盘监听
 			ActionKey left = new ActionKey();
 			left.setFunction(new Updateable() {
-				
+
 				@Override
 				public void action(Object a) {
-					if(!mc.isTLeft()){
+					if (!mc.isTLeft()) {
 						hero.animate(frames, leftIds);
 					}
 					mc.setDirection(Config.TLEFT);
-				
+
 				}
 			});
 			addActionKey(SysKey.LEFT, left);
-			
+
 			ActionKey right = new ActionKey();
 			right.setFunction(new Updateable() {
-				
+
 				@Override
 				public void action(Object a) {
-					if(!mc.isTRight()){
+					if (!mc.isTRight()) {
 						hero.animate(frames, rightIds);
 					}
 					mc.setDirection(Config.TRIGHT);
-				
+
 				}
 			});
 			addActionKey(SysKey.RIGHT, right);
 
 			ActionKey up = new ActionKey();
 			up.setFunction(new Updateable() {
-				
+
 				@Override
 				public void action(Object a) {
-					if(!mc.isTUp()){
+					if (!mc.isTUp()) {
 						hero.animate(frames, upIds);
 					}
 					mc.setDirection(Config.TUP);
-				
+
 				}
 			});
 			addActionKey(SysKey.UP, up);
-			
+
 			ActionKey down = new ActionKey();
 			down.setFunction(new Updateable() {
-				
+
 				@Override
 				public void action(Object a) {
-					if(!mc.isTDown()){
+					if (!mc.isTDown()) {
 						hero.animate(frames, downIds);
 					}
 					mc.setDirection(Config.TDOWN);
-				
+
 				}
 			});
 			addActionKey(SysKey.DOWN, down);
@@ -264,11 +263,11 @@ public class MapTest extends Stage {
 			error(e.getMessage());
 		}
 		LClickButton click = MultiScreenTest.getBackButton(this, 1);
-		//禁止触屏点击到click位置，也就是防止点击back时自动寻径
+		// 禁止触屏点击到click位置，也就是防止点击back时自动寻径
 		addTouchLimit(click);
 		add(click);
-		//插入网格GridEntity
-		//add(new GridEntity());
+		// 插入网格GridEntity
+		// add(new GridEntity());
 	}
 
 }

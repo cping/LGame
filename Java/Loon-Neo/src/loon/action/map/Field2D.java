@@ -21,9 +21,12 @@
 package loon.action.map;
 
 import loon.LSystem;
+import loon.action.ActionBind;
 import loon.action.collision.CollisionHelper;
 import loon.action.map.colider.Tile;
 import loon.action.map.colider.TileHelper;
+import loon.geom.PointF;
+import loon.geom.PointI;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.utils.CollectionUtils;
@@ -454,27 +457,35 @@ public class Field2D implements IArray, Config {
 		return getPixelsAtFieldType(itsX, itsY);
 	}
 
-	public boolean isHit(Vector2f point) {
-		int type = get(mapArrays, point);
-		if (type == -1) {
-			return false;
-		}
-		if (moveLimited != null) {
-			for (int i = 0; i < moveLimited.length; i++) {
-				if (moveLimited[i] == type) {
-					return false;
-				}
-			}
-		}
-		return true;
-	}
-
 	public boolean inside(int x, int y) {
 		return CollisionHelper.intersect(0, 0, width * tileWidth, height * tileHeight, x, y);
 	}
 
 	public boolean inside(float x, float y) {
 		return inside((int) x, (int) y);
+	}
+
+	public boolean isHit(Vector2f point) {
+		return isHit(point.x(), point.y());
+	}
+
+	public boolean isHit(PointI point) {
+		return isHit(point.x, point.y);
+	}
+
+	public boolean isHit(PointF point) {
+		return isHit((int) point.x, (int) point.y);
+	}
+
+	public boolean isPixelHit(float px, float py) {
+		return isHit(pixelsToTilesWidth(px), pixelsToTilesHeight(py));
+	}
+
+	public Vector2f getPixelLimitPos(float px, float py) {
+		if (!isHit(pixelsToTilesWidth(px), pixelsToTilesHeight(py))) {
+			return new Vector2f(px, py);
+		}
+		return null;
 	}
 
 	public boolean isHit(int px, int py) {
@@ -490,6 +501,81 @@ public class Field2D implements IArray, Config {
 			}
 		}
 		return true;
+	}
+
+	public Vector2f getTileCollision(ActionBind bind, float newX, float newY) {
+		if (bind == null) {
+			return null;
+		}
+		return getTileCollision(bind.getX(), bind.getY(), bind.getWidth(), bind.getHeight(), newX, newY);
+	}
+
+	public Vector2f getTileCollision(float srcX, float srcY, float srcWidth, float srcHeight, float newX, float newY) {
+		newX = MathUtils.ceil(newX);
+		newY = MathUtils.ceil(newY);
+
+		float fromX = MathUtils.min(srcX, newX);
+		float fromY = MathUtils.min(srcY, newY);
+		float toX = MathUtils.max(srcX, newX);
+		float toY = MathUtils.max(srcY, newY);
+
+		int fromTileX = pixelsToTilesWidth(fromX);
+		int fromTileY = pixelsToTilesHeight(fromY);
+		int toTileX = pixelsToTilesWidth(toX + srcWidth - 1f);
+		int toTileY = pixelsToTilesHeight(toY + srcHeight - 1f);
+
+		for (int x = fromTileX; x <= toTileX; x++) {
+			for (int y = fromTileY; y <= toTileY; y++) {
+				if ((x < 0) || (x >= getWidth())) {
+					return new Vector2f(x, y);
+				}
+				if ((y < 0) || (y >= getHeight())) {
+					return new Vector2f(x, y);
+				}
+				if (!this.isHit(x, y)) {
+					return new Vector2f(x, y);
+				}
+			}
+		}
+
+		return null;
+	}
+
+	public boolean checkTileCollision(ActionBind bind, float newX, float newY) {
+		if (bind == null) {
+			return false;
+		}
+		return checkTileCollision(bind.getX(), bind.getY(), bind.getWidth(), bind.getHeight(), newX, newY);
+	}
+
+	public boolean checkTileCollision(float srcX, float srcY, float srcWidth, float srcHeight, float newX, float newY) {
+		newX = MathUtils.ceil(newX);
+		newY = MathUtils.ceil(newY);
+
+		float fromX = MathUtils.min(srcX, newX);
+		float fromY = MathUtils.min(srcY, newY);
+		float toX = MathUtils.max(srcX, newX);
+		float toY = MathUtils.max(srcY, newY);
+
+		int fromTileX = pixelsToTilesWidth(fromX);
+		int fromTileY = pixelsToTilesHeight(fromY);
+		int toTileX = pixelsToTilesWidth(toX + srcWidth - 1f);
+		int toTileY = pixelsToTilesHeight(toY + srcHeight - 1f);
+
+		for (int x = fromTileX; x <= toTileX; x++) {
+			for (int y = fromTileY; y <= toTileY; y++) {
+				if ((x < 0) || (x >= getWidth())) {
+					return true;
+				}
+				if ((y < 0) || (y >= getHeight())) {
+					return true;
+				}
+				if (!this.isHit(x, y)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	public int[][] neighbors(int px, int py, boolean flag) {

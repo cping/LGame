@@ -1393,34 +1393,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	}
 
 	public Vector2f getTileCollision(LObject<?> o, float newX, float newY) {
-		newX = MathUtils.ceil(newX);
-		newY = MathUtils.ceil(newY);
-
-		float fromX = MathUtils.min(o.getX(), newX);
-		float fromY = MathUtils.min(o.getY(), newY);
-		float toX = MathUtils.max(o.getX(), newX);
-		float toY = MathUtils.max(o.getY(), newY);
-
-		int fromTileX = field2dMap.pixelsToTilesWidth(fromX);
-		int fromTileY = field2dMap.pixelsToTilesHeight(fromY);
-		int toTileX = field2dMap.pixelsToTilesWidth(toX + o.getWidth() - 1f);
-		int toTileY = field2dMap.pixelsToTilesHeight(toY + o.getHeight() - 1f);
-
-		for (int x = fromTileX; x <= toTileX; x++) {
-			for (int y = fromTileY; y <= toTileY; y++) {
-				if ((x < 0) || (x >= field2dMap.getWidth())) {
-					return new Vector2f(x, y);
-				}
-				if ((y < 0) || (y >= field2dMap.getHeight())) {
-					return new Vector2f(x, y);
-				}
-				if (!this.isHit(x, y)) {
-					return new Vector2f(x, y);
-				}
-			}
-		}
-
-		return null;
+		return field2dMap.getTileCollision(o.getX(), o.getY(), o.getWidth(), o.getHeight(), newX, newY);
 	}
 
 	public int getTileIDFromPixels(Vector2f v) {

@@ -207,6 +207,14 @@ public abstract class ActionEvent {
 		}
 	}
 
+	public CollisionFilter getCollisionFilter() {
+		return worldCollisionFilter;
+	}
+
+	public void setCollisionFilter(CollisionFilter filter) {
+		this.worldCollisionFilter = filter;
+	}
+
 	public CollisionWorld getCollisionWorld() {
 		return collisionWorld;
 	}

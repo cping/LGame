@@ -448,25 +448,25 @@ public class GameMapTest extends SpriteBatchScreen {
 
 	@Override
 	public void onResume() {
-		// TODO Auto-generated method stub
+		
 		
 	}
 
 	@Override
 	public void onPause() {
-		// TODO Auto-generated method stub
+		
 		
 	}
 
 	@Override
 	public void dispose() {
-		// TODO Auto-generated method stub
+		
 		
 	}
 
 	@Override
 	public void resize(int width, int height) {
-		// TODO Auto-generated method stub
+		
 		
 	}
 
