@@ -507,8 +507,10 @@ public class CollisionWorld implements LRelease {
 	}
 
 	public CollisionResult.Result check(ActionBind bind, float goalX, float goalY, final CollisionFilter filter) {
-		if (closed) {
-			return null;
+		if (closed || rects.size == 0) {
+			check_result.goalX = goalX;
+			check_result.goalY = goalY;
+			return check_result;
 		}
 		final TArray<ActionBind> visited = check_visited;
 		visited.clear();
@@ -562,7 +564,9 @@ public class CollisionWorld implements LRelease {
 
 	public CollisionResult.Result move(ActionBind bind, float goalX, float goalY, CollisionFilter filter) {
 		if (closed) {
-			return null;
+			check_result.goalX = goalX;
+			check_result.goalY = goalY;
+			return check_result;
 		}
 		CollisionResult.Result result = check(bind, goalX, goalY, filter);
 		update(bind, result.goalX, result.goalY);
@@ -593,7 +597,6 @@ public class CollisionWorld implements LRelease {
 		closed = true;
 		if (rects != null) {
 			rects.clear();
-			rects = null;
 		}
 		if (rows != null) {
 			rows.clear();

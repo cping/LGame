@@ -63,13 +63,13 @@ public class Loon extends Application implements Platform {
 
 		public void start(Stage stage) throws Exception {
 			Rectangle2D rect = null;
-			if (appSetting.fullscreen && JavaFXAssets.isDesktop()) {
+			if (appSetting.fullscreen && JavaFXGame.isJavaFXDesktop()) {
 				rect = Screen.getPrimary().getBounds();
 			} else {
 				rect = Screen.getPrimary().getVisualBounds();
 			}
 			// 如果javafx在android或ios上跑强制全屏
-			String property = JavaFXAssets.getJavaFXProperty();
+			String property = JavaFXGame.getJavaFXProperty();
 			if (property.indexOf("android") != -1 || property.indexOf("ios") != -1 || appSetting.fullscreen) {
 				appSetting.width_zoom = (int) rect.getWidth();
 				appSetting.height_zoom = (int) rect.getHeight();

@@ -2,7 +2,6 @@ package org.test;
 
 import java.io.IOException;
 
-import loon.LTextureBatch;
 import loon.Stage;
 import loon.action.ActionBind;
 import loon.action.ActionListener;
@@ -11,8 +10,6 @@ import loon.action.map.Config;
 import loon.action.map.Field2D;
 import loon.action.map.TileMap;
 import loon.action.sprite.AnimatedEntity;
-import loon.action.sprite.GridEntity;
-import loon.action.sprite.AnimatedEntity.PlayIndex;
 import loon.action.sprite.MoveControl;
 import loon.action.sprite.effect.RippleEffect;
 import loon.action.sprite.effect.RippleEffect.Model;
@@ -23,10 +20,6 @@ import loon.event.ActionKey;
 import loon.event.SysKey;
 import loon.event.Touched;
 import loon.event.Updateable;
-import loon.opengl.LTexturePackClip;
-import loon.utils.TArray;
-import loon.utils.processes.RealtimeProcess;
-import loon.utils.timer.LTimerContext;
 
 public class MapTest extends Stage {
 

@@ -52,18 +52,6 @@ import loon.utils.StringUtils;
 
 public class JavaFXAssets extends Assets {
 
-	public static boolean isDesktop() {
-		return getJavaFXProperty().indexOf("desktop") != -1;
-	}
-
-	public static String getJavaFXProperty() {
-		String monocle = System.getProperty("monocle.platform");
-		if (!StringUtils.isEmpty(monocle)) {
-			return monocle.trim().toLowerCase();
-		}
-		return System.getProperty("javafx.platform", "desktop").trim().toLowerCase();
-	}
-
 	private final static String DEF_RES = "assets/";
 
 	public static interface JavaFXResource extends LRelease {

@@ -38,8 +38,8 @@ public class MoveTo extends ActionEvent {
 	// 寻径缓存，如果useCache为true时,moveTo将不理会实际寻径结果，全部按照缓存中的路线行走
 	private final static IntMap<TArray<Vector2f>> pathCache = new IntMap<TArray<Vector2f>>(
 			LSystem.DEFAULT_MAX_CACHE_SIZE);
-	
-	//默认每帧的移动数值(象素)
+
+	// 默认每帧的移动数值(象素)
 	private final static int INIT_MOVE_SPEED = 4;
 
 	private Vector2f startLocation, endLocation;
@@ -50,7 +50,7 @@ public class MoveTo extends ActionEvent {
 
 	private TArray<Vector2f> pActorPath;
 
-	private int startX, startY, endX, endY, moveX, moveY;
+	private float startX, startY, endX, endY, moveX, moveY;
 
 	private int direction, speed;
 
@@ -274,60 +274,73 @@ public class MoveTo extends ActionEvent {
 		return layerMap;
 	}
 
+	private boolean isMoved;
+
 	@Override
 	public void update(long elapsedTime) {
+		isMoved = true;
+		float newX = 0f;
+		float newY = 0f;
 		if (moveByMode) {
 			int count = 0;
 			int dirX = (int) (endX - startX);
 			int dirY = (int) (endY - startY);
 			int dir = Field2D.getDirection(dirX, dirY, direction);
 			if (allDir) {
-				float x = original.getX();
-				float y = original.getY();
+				newX = original.getX();
+				newY = original.getY();
 				if (dirX > 0) {
-					if (x >= endX) {
+					if (newX >= endX) {
 						count++;
 					} else {
-						x += speed;
+						newX += speed;
 					}
 				} else if (dirX < 0) {
-					if (x <= endX) {
+					if (newX <= endX) {
 						count++;
 					} else {
-						x -= speed;
+						newX -= speed;
 					}
 				} else {
 					count++;
 				}
 				if (dirY > 0) {
-					if (y >= endY) {
+					if (newY >= endY) {
 						count++;
 					} else {
-						y += speed;
+						newY += speed;
 					}
 				} else if (dirY < 0) {
-					if (y <= endY) {
+					if (newY <= endY) {
 						count++;
 					} else {
-						y -= speed;
+						newY -= speed;
 					}
 				} else {
 					count++;
 				}
-				float lastX = original.getX();
-				float lastY = original.getY();
-				float newX = x + offsetX;
-				float newY = y + offsetY;
-				updateDirection((int) (newX - lastX), (int) (newY - lastY));
-				movePos(newX, newY);
+				if (count > 0) {
+					isMoved = false;
+				}
+				if (!checkTileCollision(layerMap, original, newX, newY)) {
+					float lastX = original.getX();
+					float lastY = original.getY();
+					newX += offsetX;
+					newY += offsetY;
+					updateDirection((int) (newX - lastX), (int) (newY - lastY));
+					movePos(newX, newY);
+				}
 				_isCompleted = (count == 2);
 			} else {
+				startX = original.getX() - offsetX;
+				startY = original.getY() - offsetY;
 				switch (dir) {
 				case Field2D.TUP:
 				case Field2D.UP:
 					startY -= speed;
 					if (startY < endY) {
 						startY = endY;
+						isMoved = false;
 					}
 					break;
 				case Field2D.TDOWN:
@@ -335,6 +348,7 @@ public class MoveTo extends ActionEvent {
 					startY += speed;
 					if (startY > endY) {
 						startY = endY;
+						isMoved = false;
 					}
 					break;
 				case Field2D.TLEFT:
@@ -342,6 +356,7 @@ public class MoveTo extends ActionEvent {
 					startX -= speed;
 					if (startX < endX) {
 						startX = endX;
+						isMoved = false;
 					}
 					break;
 				case Field2D.TRIGHT:
@@ -349,15 +364,20 @@ public class MoveTo extends ActionEvent {
 					startX += speed;
 					if (startX > endX) {
 						startX = endX;
+						isMoved = false;
 					}
 					break;
 				}
 				float lastX = original.getX();
 				float lastY = original.getY();
-				float newX = startX + offsetX;
-				float newY = startY + offsetY;
-				updateDirection((int) (newX - lastX), (int) (newY - lastY));
-				movePos(newX, newY);
+				if (!checkTileCollision(layerMap, original, startX, startY)) {
+					newX = startX + offsetX;
+					newY = startY + offsetY;
+					if (isMoved) {
+						updateDirection((int) (newX - lastX), (int) (newY - lastY));
+					}
+					movePos(newX, newY);
+				}
 				if (endX - startX == 0 && endY - startY == 0) {
 					_isCompleted = true;
 				}
@@ -375,6 +395,7 @@ public class MoveTo extends ActionEvent {
 						}
 					}
 				}
+				
 				if (endX == startX && endY == startY) {
 					if (pActorPath.size > 1) {
 						Vector2f moveStart = pActorPath.get(0);
@@ -389,81 +410,157 @@ public class MoveTo extends ActionEvent {
 					}
 					pActorPath.removeIndex(0);
 				}
+
+				newX = original.getX() - offsetX;
+				newY = original.getY() - offsetY;
 				switch (direction) {
 				case Field2D.TUP:
 					startY -= speed;
+					newY -= speed;
 					if (startY < endY) {
 						startY = endY;
+					}
+					if (newY < endY) {
+						newY = endY;
+						isMoved = false;
 					}
 					break;
 				case Field2D.TDOWN:
 					startY += speed;
+					newY += speed;
 					if (startY > endY) {
 						startY = endY;
+					}
+					if (newY > endY) {
+						newY = endY;
+						isMoved = false;
 					}
 					break;
 				case Field2D.TLEFT:
 					startX -= speed;
+					newX -= speed;
 					if (startX < endX) {
 						startX = endX;
+					}
+					if (newX < endX) {
+						newX = endX;
+						isMoved = false;
 					}
 					break;
 				case Field2D.TRIGHT:
 					startX += speed;
+					newX += speed;
 					if (startX > endX) {
 						startX = endX;
+					}
+					if (newX > endX) {
+						newX = endX;
+						isMoved = false;
 					}
 					break;
 				case Field2D.UP:
 					startX += speed;
 					startY -= speed;
+					newX += speed;
+					newY -= speed;
 					if (startX > endX) {
 						startX = endX;
 					}
 					if (startY < endY) {
 						startY = endY;
+					}
+					if (newX > endX) {
+						newX = endX;
+						isMoved = false;
+					}
+					if (newY < endY) {
+						newY = endY;
+						isMoved = false;
 					}
 					break;
 				case Field2D.DOWN:
 					startX -= speed;
 					startY += speed;
+					newX -= speed;
+					newY += speed;
 					if (startX < endX) {
 						startX = endX;
 					}
 					if (startY > endY) {
 						startY = endY;
 					}
+					if (newX < endX) {
+						newX = endX;
+						isMoved = false;
+					}
+					if (newY > endY) {
+						newY = endY;
+						isMoved = false;
+					}
 					break;
 				case Field2D.LEFT:
 					startX -= speed;
 					startY -= speed;
+					newX -= speed;
+					newY -= speed;
 					if (startX < endX) {
 						startX = endX;
 					}
 					if (startY < endY) {
 						startY = endY;
 					}
+					if (newX < endX) {
+						newX = endX;
+						isMoved = false;
+					}
+					if (newY < endY) {
+						newY = endY;
+						isMoved = false;
+					}
 					break;
 				case Field2D.RIGHT:
 					startX += speed;
 					startY += speed;
+					newX += speed;
+					newY += speed;
 					if (startX > endX) {
 						startX = endX;
 					}
 					if (startY > endY) {
 						startY = endY;
 					}
+					if (newX > endX) {
+						newX = endX;
+						isMoved = false;
+					}
+					if (newY > endY) {
+						newY = endY;
+						isMoved = false;
+					}
 					break;
 				}
-				if (!(original.x() != 0 && original.y() != 0 && startX == 0 && startY == 0 && endX == 0 && endY == 0)) {
+				if (!checkTileCollision(layerMap, original, newX, newY)) {
 					synchronized (original) {
-						float newX = startX + offsetX;
-						float newY = startY + offsetY;
+						newX += offsetX;
+						newY += offsetY;
 						movePathPos(newX, newY);
 					}
 				}
 			}
 		}
+		isMoved = !_isCompleted;
+	}
+
+	public boolean isMoving() {
+		return isMoved;
+	}
+
+	protected final boolean checkTileCollision(Field2D field2d, ActionBind bind, float newX, float newY) {
+		if (field2d == null) {
+			return false;
+		}
+		return field2d.checkTileCollision(bind.getX() - offsetX, bind.getY() - offsetY, bind.getWidth(),
+				bind.getHeight(), newX, newY);
 	}
 
 	public void movePathPos(float newX, float newY) {
@@ -472,7 +569,7 @@ public class MoveTo extends ActionEvent {
 				worldCollisionFilter = CollisionFilter.getDefault();
 			}
 			CollisionResult.Result result = collisionWorld.move(original, newX, newY, worldCollisionFilter);
-			if (result.goalX != newX || result.goalY != newY) {
+			if ((result.goalX != newX || result.goalY != newY)) {
 				clearPath();
 				endLocation.set(result.goalX, result.goalY);
 				startLocation.set(newX, newY);
@@ -520,9 +617,9 @@ public class MoveTo extends ActionEvent {
 		return isDirUpdate;
 	}
 
-	public void updateDirection(int x, int y) {
+	public void updateDirection(float x, float y) {
 		int oldDir = direction;
-		direction = Field2D.getDirection(x, y, oldDir);
+		direction = Field2D.getDirection((int) x, (int) y, oldDir);
 		isDirUpdate = (oldDir != direction);
 	}
 

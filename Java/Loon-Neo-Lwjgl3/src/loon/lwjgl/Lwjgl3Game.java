@@ -57,6 +57,10 @@ public class Lwjgl3Game extends LGame {
 		public int synMode = Lwjgl3Sync.LWJGL_GLFW;
 	}
 
+	final static private Runtime systemRuntime = Runtime.getRuntime();
+
+	final static Support support = new Lwjgl3Support();
+
 	final static private boolean osIsLinux;
 
 	final static private boolean osIsUnix;
@@ -65,42 +69,64 @@ public class Lwjgl3Game extends LGame {
 
 	final static private boolean osIsWindows;
 
-	final static private boolean osIsWindowsXP;
-
-	final static private boolean osIsWindows2003;
-
 	final static private boolean osBit64;
 
-	final static public String OS_NAME;
+	final static private String OS_NAME;
 
-	final static public int JAVA_13 = 0;
+	final static private String JAVA_SPEC;
 
-	final static public int JAVA_14 = 1;
-
-	final static public int JAVA_15 = 2;
-
-	final static public int JAVA_16 = 3;
-
-	final static public int JAVA_17 = 4;
-
-	final static public int JAVA_18 = 5;
-
-	final static public int JAVA_19 = 6;
-
-	final static Support support = new Lwjgl3Support();
+	final static private String JAVA_VERSION;
 
 	static {
-		OS_NAME = System.getProperty("os.name").toLowerCase();
+		OS_NAME = getProperty("os.name").toLowerCase();
+		JAVA_SPEC = getProperty("java.specification.version").toLowerCase();
+		JAVA_VERSION = getProperty("java.version").toLowerCase();
 		osIsLinux = OS_NAME.indexOf("linux") != -1;
 		osIsUnix = OS_NAME.indexOf("nix") != -1 || OS_NAME.indexOf("nux") != 1;
 		osIsMacOs = OS_NAME.indexOf("mac") != -1;
 		osIsWindows = OS_NAME.indexOf("windows") != -1;
-		osIsWindowsXP = OS_NAME.startsWith("Windows") && (OS_NAME.compareTo("5.1") >= 0);
-		osIsWindows2003 = "windows 2003".equals(OS_NAME);
-		osBit64 = System.getProperty("os.arch").equals("amd64");
+		String arch = getProperty("os.arch");
+		osBit64 = arch.indexOf("amd64") != -1 || arch.indexOf("x86_64") != -1;
 	}
 
-	final private static Runtime systemRuntime = Runtime.getRuntime();
+	protected static String getProperty(String value) {
+		String result = null;
+		try {
+			result = System.getProperty(value, "").trim();
+		} catch (Throwable cause) {
+			result = "";
+		}
+		return result;
+	}
+
+	public static boolean isJavaVersion(String versionPrefix) {
+		return JAVA_SPEC.indexOf(versionPrefix) != -1;
+	}
+
+	public static String getJavaVersion() {
+		return JAVA_VERSION;
+	}
+
+	public static boolean isSun() {
+		return getProperty("java.vm.vendor").indexOf("Sun") != -1
+				|| getProperty("java.vm.vendor").indexOf("Oracle") != -1;
+	}
+
+	public static boolean isApple() {
+		return getProperty("java.vm.vendor").indexOf("Apple") != -1;
+	}
+
+	public static boolean isHPUX() {
+		return getProperty("java.vm.vendor").indexOf("Hewlett-Packard Company") != -1;
+	}
+
+	public static boolean isIBM() {
+		return getProperty("java.vm.vendor").indexOf("IBM") != -1;
+	}
+
+	public static boolean isBlackdown() {
+		return getProperty("java.vm.vendor").indexOf("Blackdown") != -1;
+	}
 
 	public static boolean isLinux() {
 		return osIsLinux;
@@ -118,37 +144,8 @@ public class Lwjgl3Game extends LGame {
 		return osIsWindows;
 	}
 
-	public static boolean isWindowsXP() {
-		return osIsWindowsXP;
-	}
-
-	public static boolean isWindows2003() {
-		return osIsWindows2003;
-	}
-
 	public static boolean isBit64() {
 		return osBit64;
-	}
-
-	public static boolean isSun() {
-		return System.getProperty("java.vm.vendor").indexOf("Sun") != -1
-				|| System.getProperty("java.vm.vendor").indexOf("Oracle") != -1;
-	}
-
-	public static boolean isApple() {
-		return System.getProperty("java.vm.vendor").indexOf("Apple") != -1;
-	}
-
-	public static boolean isHPUX() {
-		return System.getProperty("java.vm.vendor").indexOf("Hewlett-Packard Company") != -1;
-	}
-
-	public static boolean isIBM() {
-		return System.getProperty("java.vm.vendor").indexOf("IBM") != -1;
-	}
-
-	public static boolean isBlackdown() {
-		return System.getProperty("java.vm.vendor").indexOf("Blackdown") != -1;
 	}
 
 	private boolean active = true;

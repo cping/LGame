@@ -38,7 +38,6 @@ import loon.Asyn;
 import loon.Graphics;
 import loon.LGame;
 import loon.LSetting;
-import loon.LSystem;
 import loon.Log;
 import loon.Platform;
 import loon.Save;
@@ -46,6 +45,7 @@ import loon.Support;
 import loon.canvas.Canvas;
 import loon.event.InputMake;
 import loon.opengl.Mesh;
+import loon.utils.StringUtils;
 
 public class JavaFXGame extends LGame {
 
@@ -56,8 +56,109 @@ public class JavaFXGame extends LGame {
 		public String[] iconPaths = null;
 	}
 
+	static private boolean osIsAndroid;
+
+	final static private boolean osIsLinux;
+
+	final static private boolean osIsUnix;
+
+	final static private boolean osIsMacOs;
+
+	final static private boolean osIsWindows;
+
+	final static private boolean osBit64;
+
+	final static private String OS_NAME;
+
+	final static private String JAVA_SPEC;
+
+	final static private String JAVA_VERSION;
+
+	static {
+		OS_NAME = getProperty("os.name").toLowerCase();
+		JAVA_SPEC = getProperty("java.specification.version").toLowerCase();
+		JAVA_VERSION = getProperty("java.version").toLowerCase();
+		osIsLinux = OS_NAME.indexOf("linux") != -1;
+		osIsUnix = OS_NAME.indexOf("nix") != -1 || OS_NAME.indexOf("nux") != 1;
+		osIsMacOs = OS_NAME.indexOf("mac") != -1;
+		osIsWindows = OS_NAME.indexOf("windows") != -1;
+		String arch = getProperty("os.arch");
+		osBit64 = arch.indexOf("amd64") != -1 || arch.indexOf("x86_64") != -1;
+		checkAndroid();
+	}
+
+	public static boolean isJavaVersion(String versionPrefix) {
+		return JAVA_SPEC.indexOf(versionPrefix) != -1;
+	}
+
+	public static String getJavaVersion() {
+		return JAVA_VERSION;
+	}
+
+	public static boolean checkAndroid() {
+		if (osIsAndroid) {
+			return osIsAndroid;
+		}
+		String jvm = getProperty("java.runtime.name").toLowerCase();
+		if (jvm.indexOf("android runtime") != -1) {
+			return (osIsAndroid = true);
+		}
+		try {
+			Class.forName("android.Manifest");
+			return (osIsAndroid = true);
+		} catch (Throwable cause) {
+			osIsAndroid = false;
+		}
+		return osIsAndroid;
+	}
+
+	public static boolean isSun() {
+		return getProperty("java.vm.vendor").indexOf("Sun") != -1
+				|| getProperty("java.vm.vendor").indexOf("Oracle") != -1;
+	}
+
+	public static boolean isApple() {
+		return getProperty("java.vm.vendor").indexOf("Apple") != -1;
+	}
+
+	public static boolean isHPUX() {
+		return getProperty("java.vm.vendor").indexOf("Hewlett-Packard Company") != -1;
+	}
+
+	public static boolean isIBM() {
+		return getProperty("java.vm.vendor").indexOf("IBM") != -1;
+	}
+
+	public static boolean isBlackdown() {
+		return getProperty("java.vm.vendor").indexOf("Blackdown") != -1;
+	}
+
+	public static boolean isAndroid() {
+		return osIsAndroid;
+	}
+
+	public static boolean isLinux() {
+		return osIsLinux;
+	}
+
+	public static boolean isMacOS() {
+		return osIsMacOs;
+	}
+
+	public static boolean isUnix() {
+		return osIsUnix;
+	}
+
+	public static boolean isWindows() {
+		return osIsWindows;
+	}
+
+	public static boolean isBit64() {
+		return osBit64;
+	}
+
 	protected AnimationTimer loopRunner;
-	// protected JavaFXCanvas gameCanvas;
+
 	private final JavaFXAccelerometer accelerometer;
 
 	private final JavaFXSave save;
@@ -85,6 +186,32 @@ public class JavaFXGame extends LGame {
 		this.accelerometer = new JavaFXAccelerometer();
 		this.asyn = new JavaFXAsyn(log, frame);
 		this.initProcess();
+	}
+
+	protected static String getProperty(String value) {
+		return getProperty(value, "");
+	}
+
+	protected static String getProperty(String value, String def) {
+		String result = null;
+		try {
+			result = System.getProperty(value, def).trim();
+		} catch (Throwable cause) {
+			result = "";
+		}
+		return result;
+	}
+
+	public static boolean isJavaFXDesktop() {
+		return getJavaFXProperty().indexOf("desktop") != -1 && !isAndroid();
+	}
+
+	public static String getJavaFXProperty() {
+		String monocle = getProperty("monocle.platform");
+		if (!StringUtils.isEmpty(monocle)) {
+			return monocle.trim().toLowerCase();
+		}
+		return getProperty("javafx.platform", "desktop").trim().toLowerCase();
 	}
 
 	protected void toggleActivation() {
@@ -270,15 +397,15 @@ public class JavaFXGame extends LGame {
 
 	@Override
 	public boolean isDesktop() {
-		return JavaFXAssets.isDesktop();
+		return isJavaFXDesktop();
 	}
 
-	public String getJavaFXProperty() {
-		return JavaFXAssets.getJavaFXProperty();
+	public String getProperty() {
+		return getJavaFXProperty();
 	}
 
 	public String getDevice() {
-		return System.getProperty("os.arch", "").trim().toLowerCase();
+		return getProperty("os.arch").toLowerCase();
 	}
 
 	public boolean isARMDevice() {

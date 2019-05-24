@@ -14,17 +14,17 @@ public class ControlTest extends Stage {
 		// 构建精灵以70x124的大小拆分图片，放置在坐标位置300x60,显示大小宽70,高124
 		final AnimatedEntity hero = new AnimatedEntity("assets/rpg/sword.png", 70, 124, 300, 60, 70, 124);
 		// 播放动画,速度每帧220
-		final long[] frames = { 220, 220, 220, 220 };
+		//final long[] frames = { 220, 220, 220, 220 };
 		// 绑定字符串和帧索引关系,左右下上以及斜角(等距视角)上下左右共8方向的帧播放顺序(也可以理解为具体播放的帧)
 		// PlayIndex的作用是序列化帧,注入每帧播放时间以及播放帧的顺序,比如4,7就是播放索引号4,5,6,7这4帧
-		hero.setPlayIndex("tleft", PlayIndex.at(frames, 4, 7));
-		hero.setPlayIndex("tright", PlayIndex.at(frames, 8, 11));
-		hero.setPlayIndex("tdown", PlayIndex.at(frames, 0, 3));
-		hero.setPlayIndex("tup", PlayIndex.at(frames, 12, 15));
-		hero.setPlayIndex("left", PlayIndex.at(frames, 24, 27));
-		hero.setPlayIndex("right", PlayIndex.at(frames, 20, 23));
-		hero.setPlayIndex("down", PlayIndex.at(frames, 16, 19));
-		hero.setPlayIndex("up", PlayIndex.at(frames, 28, 31));
+		hero.setPlayIndex("tleft", PlayIndex.at(220, 4, 7));
+		hero.setPlayIndex("tright", PlayIndex.at(220, 8, 11));
+		hero.setPlayIndex("tdown", PlayIndex.at(220, 0, 3));
+		hero.setPlayIndex("tup", PlayIndex.at(220, 12, 15));
+		hero.setPlayIndex("left", PlayIndex.at(220, 24, 27));
+		hero.setPlayIndex("right", PlayIndex.at(220, 20, 23));
+		hero.setPlayIndex("down", PlayIndex.at(220, 16, 19));
+		hero.setPlayIndex("up", PlayIndex.at(220, 28, 31));
 		// 播放绑定到down的动画帧
 		hero.animate("tdown");
 

@@ -21,7 +21,7 @@
 package loon.log;
 
 import loon.LSystem;
-import loon.fx.JavaFXAssets;
+import loon.fx.JavaFXGame;
 
 public class LogFormat {
 
@@ -134,7 +134,7 @@ public class LogFormat {
 	}
 
 	public synchronized void out(String tm, String app, String level, String msg) {
-		if (JavaFXAssets.getJavaFXProperty().indexOf("desktop") != -1) {
+		if (JavaFXGame.isJavaFXDesktop()) {
 			String value[] = { tm, app, level, msg };
 			if (count++ % 9999 == 0) {
 				logMsg = new StringBuffer(formatString(LOG_TAG, "-", " ")).append(LSystem.LS)

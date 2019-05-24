@@ -233,7 +233,6 @@ public class MoveControl implements LRelease {
 		case Field2D.DOWN:
 			newX = startX - _moveSpeed;
 			newY = startY + _moveSpeed;
-
 			if (!checkTileCollision(field2d, bind, newX, newY)) {
 				startX = newX;
 				startY = newY;
