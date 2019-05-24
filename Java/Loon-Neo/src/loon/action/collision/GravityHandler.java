@@ -26,6 +26,7 @@ import loon.action.ActionBind;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.utils.MathUtils;
+import loon.utils.ObjectMap;
 import loon.utils.TArray;
 import loon.utils.cache.Pool;
 
@@ -46,6 +47,8 @@ public class GravityHandler implements LRelease {
 		}
 
 	};
+
+	private ObjectMap<ActionBind, Gravity> gravityMap;
 
 	private GravityUpdate listener;
 
@@ -87,6 +90,7 @@ public class GravityHandler implements LRelease {
 
 	public GravityHandler(int w, int h) {
 		this.setLimit(w, h);
+		this.gravityMap = new ObjectMap<ActionBind, Gravity>();
 		this.objects = new TArray<Gravity>(10);
 		this.pendingAdd = new TArray<Gravity>(10);
 		this.pendingRemove = new TArray<Gravity>(10);
@@ -121,8 +125,9 @@ public class GravityHandler implements LRelease {
 			return;
 		}
 		commits();
-		final float second = elapsedTime / 1000f;
+		final float second = MathUtils.max(elapsedTime / 1000f, 0.01f);
 		for (Gravity g : lazyObjects) {
+
 			if (g.enabled && g.bind != null) {
 
 				final float accelerationX = g.accelerationX;
@@ -157,11 +162,11 @@ public class GravityHandler implements LRelease {
 				if (velocityX != 0 || velocityY != 0) {
 					velocityX = bindX + velocityX * second;
 					velocityY = bindY + velocityY * second;
+					if (g.g != 0) {
+						velocityY += g.gadd;
+						g.gadd += g.g;
+					}
 					if (isBounded) {
-						if (g.g != 0) {
-							velocityY += g.gadd;
-							g.gadd += g.g;
-						}
 						if (g.bounce != 0) {
 							final int limitWidth = width - bindWidth;
 							final int limitHeight = height - bindHeight;
@@ -221,8 +226,8 @@ public class GravityHandler implements LRelease {
 		if (additionCount > 0) {
 			final Object[] additionsArray = pendingAdd.toArray();
 			for (int i = 0; i < additionCount; i++) {
-				Gravity object = (Gravity) additionsArray[i];
-				objects.add(object);
+				Gravity o = (Gravity) additionsArray[i];
+				objects.add(o);
 			}
 			pendingAdd.clear();
 			changes = true;
@@ -231,14 +236,20 @@ public class GravityHandler implements LRelease {
 		if (removalCount > 0) {
 			final Object[] removalsArray = pendingRemove.toArray();
 			for (int i = 0; i < removalCount; i++) {
-				Gravity object = (Gravity) removalsArray[i];
-				objects.remove(object);
+				Gravity o = (Gravity) removalsArray[i];
+				objects.remove(o);
 			}
 			pendingRemove.clear();
 			changes = true;
 		}
 		if (changes) {
-			lazyObjects = objects.toArray(new Gravity[] {});
+			int size = objects.size;
+			if (lazyObjects == null || lazyObjects.length != size) {
+				lazyObjects = new Gravity[size];
+			}
+			for (int i = 0; i < size; i++) {
+				lazyObjects[i] = objects.get(i);
+			}
 		}
 	}
 
@@ -255,7 +266,11 @@ public class GravityHandler implements LRelease {
 	}
 
 	public Gravity get(int index) {
-		return lazyObjects[index];
+		if (index > -1 && index < lazyObjects.length) {
+			return lazyObjects[index];
+		} else {
+			return null;
+		}
 	}
 
 	public Gravity add(ActionBind o, float vx, float vy) {
@@ -267,7 +282,10 @@ public class GravityHandler implements LRelease {
 	}
 
 	public Gravity add(ActionBind o, float vx, float vy, float ax, float ay, float ave) {
-		Gravity g = new Gravity(o);
+		Gravity g = gravityMap.get(o);
+		if (g == null) {
+			gravityMap.put(o, (g = new Gravity(o)));
+		}
 		g.velocityX = vx;
 		g.velocityY = vy;
 		g.accelerationX = ax;
@@ -277,30 +295,45 @@ public class GravityHandler implements LRelease {
 		return g;
 	}
 
-	public void add(Gravity object) {
-		pendingAdd.add(object);
+	public Gravity add(ActionBind o) {
+		Gravity g = gravityMap.get(o);
+		if (g == null) {
+			gravityMap.put(o, (g = new Gravity(o)));
+		}
+		return add(g);
 	}
 
-	public void remove(Gravity object) {
-		pendingRemove.add(object);
+	public Gravity get(ActionBind o) {
+		return gravityMap.get(o);
+	}
+
+	public Gravity add(Gravity o) {
+		if (!pendingAdd.contains(o)) {
+			pendingAdd.add(o);
+		}
+		return o;
+	}
+
+	public Gravity remove(Gravity o) {
+		pendingRemove.add(o);
+		return o;
 	}
 
 	public void removeAll() {
 		final int count = objects.size;
-		final Object[] objectArray = objects.toArray();
 		for (int i = 0; i < count; i++) {
-			pendingRemove.add((Gravity) objectArray[i]);
+			pendingRemove.add(objects.get(i));
 		}
 		pendingAdd.clear();
 	}
 
 	public Gravity getObject(String name) {
 		commits();
-		for (Gravity object : lazyObjects) {
-			if (object != null) {
-				if (object.name != null) {
-					if (object.name.equals(name)) {
-						return object;
+		for (Gravity o : lazyObjects) {
+			if (o != null) {
+				if (o.name != null) {
+					if (o.name.equals(name)) {
+						return o;
 					}
 				}
 			}
@@ -570,6 +603,10 @@ public class GravityHandler implements LRelease {
 		if (pendingAdd != null) {
 			pendingAdd.clear();
 			pendingAdd = null;
+		}
+		if (gravityMap != null) {
+			gravityMap.clear();
+			gravityMap = null;
 		}
 		if (lazyObjects != null) {
 			for (Gravity g : lazyObjects) {

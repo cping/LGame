@@ -1516,26 +1516,39 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	/**
-	 * 设定重力系统是否启动
+	 * 设定重力系统是否启动,并返回控制器
 	 * 
 	 * @param g
 	 * @return
 	 */
 	public GravityHandler setGravity(boolean g) {
-		if (g && gravityHandler == null) {
-			gravityHandler = new GravityHandler(getWidth(), getHeight());
+		return setGravity(getWidth(), getHeight(), g);
+	}
+
+	/**
+	 * 设定重力系统是否启动,并返回控制器
+	 *  
+	 * @param w
+	 * @param h
+	 * @param g
+	 * @return
+	 */
+	public GravityHandler setGravity(int w, int h, boolean g) {
+		if (g && (gravityHandler == null || gravityHandler.isClosed())) {
+			gravityHandler = new GravityHandler(w, h);
+			gravityHandler.setBounded(true);
 		}
 		this.isGravity = g;
 		return gravityHandler;
 	}
 
 	/**
-	 * 设定重力系统是否启动
+	 * 返回重力系统是否启动
 	 * 
 	 * @param g
 	 * @return
 	 */
-	public GravityHandler getGravity(boolean g) {
+	public GravityHandler getGravity() {
 		return gravityHandler;
 	}
 
@@ -2530,6 +2543,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		LLabel label = LLabel.make(alignment, text, font, pos.x(), pos.y(), color);
 		add(label);
 		return label;
+	}
+
+	public Sprite addSprite(LTexture tex) {
+		return addSprite(tex, 0, 0);
 	}
 
 	public Sprite addSprite(LTexture tex, Vector2f pos) {

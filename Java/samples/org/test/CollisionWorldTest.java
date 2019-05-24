@@ -68,7 +68,7 @@ public class CollisionWorldTest extends Stage {
 				// item1移动到指定位置,8方向移动,速度8
 				final MoveTo move = new MoveTo(x, y, true, 8);
 				// 不寻径,单纯移动
-				move.setMoveByMode(true);
+			//	move.setMoveByMode(true);
 				// 注入碰撞世界,让缓动动画自动计算碰撞结果
 				move.setCollisionWorld(world);
 				// 监听移动事件
