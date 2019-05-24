@@ -48,6 +48,10 @@ public class GravityHandler implements LRelease {
 
 	};
 
+	private CollisionWorld collisionWorld;
+
+	protected CollisionFilter worldCollisionFilter;
+
 	private ObjectMap<ActionBind, Gravity> gravityMap;
 
 	private GravityUpdate listener;
@@ -110,7 +114,12 @@ public class GravityHandler implements LRelease {
 		return false;
 	}
 
-	public void setLimit(int w, int h) {
+	public GravityHandler setLimit(int w, int h) {
+		if (w > 0 && h > 0) {
+			setBounded(true);
+		} else {
+			return this;
+		}
 		this.width = w;
 		this.height = h;
 		if (rectLimit == null) {
@@ -118,6 +127,7 @@ public class GravityHandler implements LRelease {
 		} else {
 			this.rectLimit.setBounds(0, 0, w, h);
 		}
+		return this;
 	}
 
 	public void update(long elapsedTime) {
@@ -133,6 +143,7 @@ public class GravityHandler implements LRelease {
 				final float accelerationX = g.accelerationX;
 				final float accelerationY = g.accelerationY;
 				final float angularVelocity = g.angularVelocity;
+				final float gravity = g.g;
 
 				bindWidth = (int) g.bind.getWidth();
 				bindHeight = (int) g.bind.getHeight();
@@ -160,48 +171,60 @@ public class GravityHandler implements LRelease {
 				velocityX = g.velocityX;
 				velocityY = g.velocityY;
 				if (velocityX != 0 || velocityY != 0) {
-					velocityX = bindX + velocityX * second;
-					velocityY = bindY + velocityY * second;
-					if (g.g != 0) {
-						velocityY += g.gadd;
-						g.gadd += g.g;
+
+					velocityX = bindX + (velocityX * second);
+					velocityY = bindY + (velocityY * second);
+
+					if (gravity != 0 && g.velocityX != 0) {
+						velocityX += g.gadd;
 					}
+					if (gravity != 0 && g.velocityY != 0) {
+						velocityY += g.gadd;
+					}
+					if (gravity != 0) {
+						g.gadd += gravity;
+					}
+
 					if (isBounded) {
-						if (g.bounce != 0) {
+						if (g.bounce != 0f) {
 							final int limitWidth = width - bindWidth;
 							final int limitHeight = height - bindHeight;
 							final boolean chageWidth = bindX >= limitWidth;
 							final boolean chageHeight = bindY >= limitHeight;
 							if (chageWidth) {
-								bindX -= g.bounce + g.g;
+								bindX -= g.bounce + gravity;
 								if (g.bounce > 0) {
-									g.bounce -= (g.bounce / MathUtils.random(1, 5)) + second;
+									g.bounce -= (g.bounce + second) + MathUtils.random(0f, 5f);
 								} else if (g.bounce < 0) {
 									g.bounce = 0;
 									bindX = limitWidth;
+									g.limitX = true;
 								}
 							}
 							if (chageHeight) {
-								bindY -= g.bounce + g.g;
+								bindY -= g.bounce + gravity;
 								if (g.bounce > 0) {
-									g.bounce -= (g.bounce / MathUtils.random(1, 5)) + second;
+									g.bounce -= (g.bounce + second) + MathUtils.random(0f, 5f);
 								} else if (g.bounce < 0) {
 									g.bounce = 0;
 									bindY = limitHeight;
+									g.limitY = true;
 								}
 							}
 							if (chageWidth || chageHeight) {
-								g.bind.setLocation(bindX, bindY);
+								movePos(g.bind, bindX, bindY);
 								if (isListener) {
 									listener.action(g, bindX, bindY);
 								}
 								return;
 							}
 						}
-						velocityX = limitValue(velocityX, width - bindWidth);
-						velocityY = limitValue(velocityY, height - bindHeight);
+						int limitWidth = width - bindWidth;
+						int limitHeight = height - bindHeight;
+						velocityX = limitValue(g, velocityX, limitWidth);
+						velocityY = limitValue(g, velocityY, limitHeight);
 					}
-					g.bind.setLocation(velocityX, velocityY);
+					movePos(g.bind, velocityX, velocityY);
 					if (isListener) {
 						listener.action(g, velocityX, velocityY);
 					}
@@ -210,17 +233,23 @@ public class GravityHandler implements LRelease {
 		}
 	}
 
-	private float limitValue(float value, float limit) {
-		if (value < 0) {
-			value = 0;
+	private float limitValue(Gravity g, float value, float limit) {
+		if (g.g < 0f) {
+			if (value < 0f) {
+				value = 0f;
+				g.limitX = true;
+			}
 		}
-		if (limit < value) {
-			value = limit;
+		if (g.g > 0f) {
+			if (limit < value) {
+				value = limit;
+				g.limitY = true;
+			}
 		}
 		return value;
 	}
 
-	public void commits() {
+	protected void commits() {
 		boolean changes = false;
 		final int additionCount = pendingAdd.size;
 		if (additionCount > 0) {
@@ -556,6 +585,34 @@ public class GravityHandler implements LRelease {
 		return result;
 	}
 
+	public GravityHandler movePos(ActionBind bind, float x, float y) {
+		return movePos(bind, x, y, -1f, -1f);
+	}
+
+	public GravityHandler movePos(ActionBind bind, float x, float y, float lastX, float lastY) {
+		if (bind == null) {
+			return this;
+		}
+		if (collisionWorld != null) {
+			if (worldCollisionFilter == null) {
+				worldCollisionFilter = CollisionFilter.getDefault();
+			}
+			CollisionResult.Result result = collisionWorld.move(bind, x, y, worldCollisionFilter);
+			if (lastX != -1 && lastY != -1) {
+				if (result.goalX != x || result.goalY != y) {
+					bind.setLocation(lastX, lastY);
+				} else {
+					bind.setLocation(result.goalX, result.goalY);
+				}
+			} else {
+				bind.setLocation(result.goalX, result.goalY);
+			}
+		} else {
+			bind.setLocation(x, y);
+		}
+		return this;
+	}
+
 	public boolean isEnabled() {
 		return isEnabled;
 	}
@@ -576,13 +633,30 @@ public class GravityHandler implements LRelease {
 		return isListener;
 	}
 
-	public void onUpdate(GravityUpdate listener) {
+	public GravityHandler setListener(GravityUpdate listener) {
+		return onUpdate(listener);
+	}
+
+	public GravityHandler onUpdate(GravityUpdate listener) {
 		this.listener = listener;
-		if (listener != null) {
-			isListener = true;
-		} else {
-			isListener = false;
-		}
+		this.isListener = listener != null;
+		return this;
+	}
+
+	public CollisionFilter getCollisionFilter() {
+		return worldCollisionFilter;
+	}
+
+	public void setCollisionFilter(CollisionFilter filter) {
+		this.worldCollisionFilter = filter;
+	}
+
+	public CollisionWorld getCollisionWorld() {
+		return collisionWorld;
+	}
+
+	public void setCollisionWorld(CollisionWorld world) {
+		this.collisionWorld = world;
 	}
 
 	public boolean isClosed() {

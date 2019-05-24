@@ -40,6 +40,10 @@ public class Gravity implements LRelease {
 
 	public float bounce;
 
+	public boolean limitX;
+	
+	public boolean limitY;
+	
 	public float gadd;
 
 	public float g;
@@ -165,6 +169,22 @@ public class Gravity implements LRelease {
 		this.g = g;
 	}
 
+	public void setAntiGravityX(){
+		float og = this.g;
+		float ox = this.velocityX;
+		reset();
+		this.g = -og;
+		this.velocityX = ox;
+	}
+	
+	public void setAntiGravityY(){
+		float og = this.g;
+		float oy = this.velocityY;
+		reset();
+		this.g = -og;
+		this.velocityY = oy;
+	}
+
 	public float getBounce() {
 		return bounce;
 	}
@@ -198,6 +218,7 @@ public class Gravity implements LRelease {
 		this.velocityX = 0;
 		this.velocityY = 0;
 		this.angularVelocity = 0;
+		this.limitX = this.limitY =  false;
 	}
 
 	public void dispose() {

@@ -1536,7 +1536,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	public GravityHandler setGravity(int w, int h, boolean g) {
 		if (g && (gravityHandler == null || gravityHandler.isClosed())) {
 			gravityHandler = new GravityHandler(w, h);
-			gravityHandler.setBounded(true);
 		}
 		this.isGravity = g;
 		return gravityHandler;

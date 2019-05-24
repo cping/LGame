@@ -108,7 +108,7 @@ public class CollisionWorld implements LRelease {
 
 	public CollisionManager getCollisionManager() {
 		if (closed) {
-			return null;
+			return collisionManager;
 		}
 		if (collisionManager == null) {
 			collisionManager = new CollisionManager();

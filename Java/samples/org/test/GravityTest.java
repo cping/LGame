@@ -24,6 +24,7 @@ import loon.LTexture;
 import loon.Stage;
 import loon.action.collision.Gravity;
 import loon.action.collision.GravityHandler;
+import loon.action.collision.GravityHandler.GravityUpdate;
 import loon.action.sprite.Sprite;
 import loon.action.sprite.Sprites;
 
@@ -35,9 +36,9 @@ public class GravityTest extends Stage {
 		// 导入足球纹理
 		LTexture ball = loadTexture("ball.png");
 
-		// 在同一行构建7个足球精灵,间隔5像素
+		// 在同一行构建7个足球精灵,间隔4像素
 		for (int i = 0; i < 7; i++) {
-			addRow(new Sprite(ball), 5);
+			addRow(new Sprite(ball), 4);
 		}
 
 		// 开启Screen重力控制
@@ -57,8 +58,22 @@ public class GravityTest extends Stage {
 			}
 			// y轴移动速度5
 			g.velocityY = 5f;
+			// 弹力值
+			// g.bounce = 10f;
 		}
 
+		//监听重力对象
+		handler.setListener(new GravityUpdate() {
+
+			@Override
+			public void action(Gravity g, float x, float y) {
+				// 如果开启了边界检查(Screen中默认开启),并且触底或触顶
+				if (g.limitX || g.limitY) {
+					// 让y轴反重力(颠倒g值,正变负,负变正)
+					g.setAntiGravityY();
+				}
+			}
+		});
 		add(MultiScreenTest.getBackButton(this, 1));
 	}
 
