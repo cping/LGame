@@ -32,7 +32,7 @@ public class Gravity implements LRelease {
 
 	private static final RectBox HIT_SELF = new RectBox();
 
-	public Object object;
+	public Object tag;
 
 	public ActionBind bind;
 
@@ -41,9 +41,9 @@ public class Gravity implements LRelease {
 	public float bounce;
 
 	public boolean limitX;
-	
+
 	public boolean limitY;
-	
+
 	public float gadd;
 
 	public float g;
@@ -67,12 +67,16 @@ public class Gravity implements LRelease {
 	}
 
 	public Gravity(String name, ActionBind o) {
-		this(name, o, o.getX(), o.getY(), o.getWidth(), o.getHeight());
+		this(name, o, null);
 	}
 
-	public Gravity(String name, ActionBind o, float x, float y, float w, float h) {
+	public Gravity(String name, ActionBind o, Object tag) {
+		this(name, o, tag, o.getX(), o.getY(), o.getWidth(), o.getHeight());
+	}
+
+	public Gravity(String name, ActionBind o, Object tag, float x, float y, float w, float h) {
 		this.name = name;
-		this.object = o;
+		this.tag = tag;
 		this.bind = o;
 		this.enabled = true;
 		this.setBounds(x, y, w, h);
@@ -82,8 +86,9 @@ public class Gravity implements LRelease {
 		return this.enabled;
 	}
 
-	public void setEnabled(final boolean enabled) {
+	public Gravity setEnabled(final boolean enabled) {
 		this.enabled = enabled;
+		return this;
 	}
 
 	public float getVelocityX() {
@@ -94,21 +99,24 @@ public class Gravity implements LRelease {
 		return this.velocityY;
 	}
 
-	public void setVelocityX(final float velocityX) {
+	public Gravity setVelocityX(final float velocityX) {
 		this.velocityX = velocityX;
+		return this;
 	}
 
-	public void setVelocityY(final float velocityY) {
+	public Gravity setVelocityY(final float velocityY) {
 		this.velocityY = velocityY;
+		return this;
 	}
 
-	public void setVelocity(final float velocity) {
-		setVelocity(velocity);
+	public Gravity setVelocity(final float velocity) {
+		return setVelocity(velocity, velocity);
 	}
 
-	public void setVelocity(final float velocityX, final float velocityY) {
+	public Gravity setVelocity(final float velocityX, final float velocityY) {
 		this.setVelocityX(velocityX);
 		this.setVelocityY(velocityY);
+		return this;
 	}
 
 	public float getAccelerationX() {
@@ -119,26 +127,31 @@ public class Gravity implements LRelease {
 		return this.accelerationY;
 	}
 
-	public void setAccelerationX(final float accelerationX) {
+	public Gravity setAccelerationX(final float accelerationX) {
 		this.accelerationX = accelerationX;
+		return this;
 	}
 
-	public void setAccelerationY(final float accelerationY) {
+	public Gravity setAccelerationY(final float accelerationY) {
 		this.accelerationY = accelerationY;
+		return this;
 	}
 
-	public void setAcceleration(final float accelerationX, final float accelerationY) {
+	public Gravity setAcceleration(final float accelerationX, final float accelerationY) {
 		this.setAccelerationX(accelerationX);
 		this.setAccelerationY(accelerationY);
+		return this;
 	}
 
-	public void setAcceleration(final float acceleration) {
+	public Gravity setAcceleration(final float acceleration) {
 		this.setAcceleration(acceleration);
+		return this;
 	}
 
-	public void accelerate(final float accelerationX, final float accelerationY) {
+	public Gravity accelerate(final float accelerationX, final float accelerationY) {
 		this.accelerationX += accelerationX;
 		this.accelerationY += accelerationY;
+		return this;
 	}
 
 	public float getAngularVelocity() {
@@ -153,8 +166,8 @@ public class Gravity implements LRelease {
 		return bind;
 	}
 
-	public Object getObject() {
-		return object;
+	public Object getTag() {
+		return tag;
 	}
 
 	public String getName() {
@@ -165,24 +178,39 @@ public class Gravity implements LRelease {
 		return g;
 	}
 
-	public void setG(float g) {
+	public Gravity setG(float g) {
 		this.g = g;
+		return this;
 	}
 
-	public void setAntiGravityX(){
+	public Gravity setAntiGravityX() {
+		return setAntiGravityX(true);
+	}
+
+	public Gravity setAntiGravityX(boolean r) {
 		float og = this.g;
 		float ox = this.velocityX;
-		reset();
+		if (r) {
+			reset();
+		}
 		this.g = -og;
 		this.velocityX = ox;
+		return this;
 	}
-	
-	public void setAntiGravityY(){
+
+	public Gravity setAntiGravityY() {
+		return setAntiGravityY(true);
+	}
+
+	public Gravity setAntiGravityY(boolean r) {
 		float og = this.g;
 		float oy = this.velocityY;
-		reset();
+		if (r) {
+			reset();
+		}
 		this.g = -og;
 		this.velocityY = oy;
+		return this;
 	}
 
 	public float getBounce() {
@@ -218,7 +246,7 @@ public class Gravity implements LRelease {
 		this.velocityX = 0;
 		this.velocityY = 0;
 		this.angularVelocity = 0;
-		this.limitX = this.limitY =  false;
+		this.limitX = this.limitY = false;
 	}
 
 	public void dispose() {

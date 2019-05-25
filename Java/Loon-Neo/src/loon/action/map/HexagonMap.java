@@ -104,7 +104,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 
 	protected Hexagon[][] hexagons;
 
-	private Field2D field2dMap;
+	private Field2D field2d;
 
 	private int[] position = new int[2];
 
@@ -496,15 +496,15 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	}
 
 	public int[] getLimit() {
-		if (field2dMap != null) {
-			return field2dMap.getLimit();
+		if (field2d != null) {
+			return field2d.getLimit();
 		}
 		return new int[] { -1 };
 	}
 
 	public void setLimit(int[] limitTypes) {
-		if (field2dMap != null) {
-			field2dMap.setLimit(limitTypes);
+		if (field2d != null) {
+			field2d.setLimit(limitTypes);
 		}
 	}
 
@@ -985,15 +985,15 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 
 	private void setFieldMap(int[][] maps) {
 		if (origin != null) {
-			if (field2dMap == null) {
-				field2dMap = new Field2D(maps, origin.getWidth(), origin.getHeight());
+			if (field2d == null) {
+				field2d = new Field2D(maps, origin.getWidth(), origin.getHeight());
 			} else {
-				field2dMap.set(maps, origin.getWidth(), origin.getHeight());
+				field2d.set(maps, origin.getWidth(), origin.getHeight());
 			}
-		} else if (field2dMap == null) {
-			field2dMap = new Field2D(maps);
+		} else if (field2d == null) {
+			field2d = new Field2D(maps);
 		} else {
-			field2dMap.setMap(maps);
+			field2d.setMap(maps);
 		}
 	}
 
@@ -1058,7 +1058,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 
 	public MoveControl followControl(ActionBind bind) {
 		followAction(bind);
-		return new MoveControl(bind, this.field2dMap);
+		return new MoveControl(bind, this.field2d);
 	}
 
 	public boolean isRoll() {
@@ -1263,7 +1263,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 			float offsetX = limitOffsetX(follow.getX());
 			float offsetY = limitOffsetY(follow.getY());
 			setOffset(offsetX, offsetY);
-			field2dMap.setOffset(offset);
+			field2d.setOffset(offset);
 		}
 		return this;
 	}
@@ -1282,18 +1282,18 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	}
 
 	public int getPixelsAtFieldType(Vector2f pos) {
-		return field2dMap.getPixelsAtFieldType(pos.x, pos.y);
+		return field2d.getPixelsAtFieldType(pos.x, pos.y);
 	}
 
 	public int getPixelsAtFieldType(float x, float y) {
 		int itsX = pixelsToTilesWidth(x);
 		int itsY = pixelsToTilesHeight(y);
-		return field2dMap.getPixelsAtFieldType(itsX, itsY);
+		return field2d.getPixelsAtFieldType(itsX, itsY);
 	}
 
 	@Override
 	public Field2D getField2D() {
-		return field2dMap;
+		return field2d;
 	}
 
 	@Override
@@ -1324,12 +1324,12 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 
 	@Override
 	public boolean inContains(float x, float y, float w, float h) {
-		return field2dMap.getRect().contains(x, y, w, h);
+		return field2d.getRect().contains(x, y, w, h);
 	}
 
 	public void scrollDown(float distance) {
 		this.offset.y = limitOffsetY(MathUtils.min((this.offset.y + distance),
-				(MathUtils.max(0, this.field2dMap.getViewHeight() - getContainerHeight()))));
+				(MathUtils.max(0, this.field2d.getViewHeight() - getContainerHeight()))));
 	}
 
 	public void scrollLeft(float distance) {
@@ -1343,7 +1343,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 
 	public void scrollRight(float distance) {
 		this.offset.x = limitOffsetX(MathUtils.min((this.offset.x + distance),
-				(MathUtils.max(0, this.field2dMap.getViewWidth() - getContainerWidth()))));
+				(MathUtils.max(0, this.field2d.getViewWidth() - getContainerWidth()))));
 	}
 
 	public void scrollUp(float distance) {
@@ -1360,7 +1360,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	}
 
 	public boolean isHit(int px, int py) {
-		return field2dMap.isHit(px, py);
+		return field2d.isHit(px, py);
 	}
 
 	public boolean isHit(Vector2f v) {
@@ -1372,8 +1372,8 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	}
 
 	public boolean isPixelHit(int px, int py, int movePx, int movePy) {
-		return isHit(field2dMap.pixelsToTilesWidth(field2dMap.offsetXPixel(px)) + movePx,
-				field2dMap.pixelsToTilesHeight(field2dMap.offsetYPixel(py)) + movePy);
+		return isHit(field2d.pixelsToTilesWidth(field2d.offsetXPixel(px)) + movePx,
+				field2d.pixelsToTilesHeight(field2d.offsetYPixel(py)) + movePy);
 	}
 
 	public boolean isPixelTUp(int px, int py) {
@@ -1393,7 +1393,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	}
 
 	public Vector2f getTileCollision(LObject<?> o, float newX, float newY) {
-		return field2dMap.getTileCollision(o.getX(), o.getY(), o.getWidth(), o.getHeight(), newX, newY);
+		return field2d.getTileCollision(o.getX(), o.getY(), o.getWidth(), o.getHeight(), newX, newY);
 	}
 
 	public int getTileIDFromPixels(Vector2f v) {
@@ -1401,8 +1401,8 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	}
 
 	public int getTileID(int x, int y) {
-		if (x >= 0 && x < field2dMap.getWidth() && y >= 0 && y < field2dMap.getHeight()) {
-			return field2dMap.getTileType(x, y);
+		if (x >= 0 && x < field2d.getWidth() && y >= 0 && y < field2d.getHeight()) {
+			return field2d.getTileType(x, y);
 		} else {
 			return -1;
 		}
@@ -1416,33 +1416,33 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	}
 
 	public Vector2f pixelsToTiles(float x, float y) {
-		float xprime = x / field2dMap.getTileWidth() - 1;
-		float yprime = y / field2dMap.getTileHeight() - 1;
+		float xprime = x / field2d.getTileWidth() - 1;
+		float yprime = y / field2d.getTileHeight() - 1;
 		return new Vector2f(xprime, yprime);
 	}
 
 	public Field2D getField() {
-		return field2dMap;
+		return field2d;
 	}
 
 	public int tilesToPixelsX(float x) {
-		return field2dMap.tilesToWidthPixels(x);
+		return field2d.tilesToWidthPixels(x);
 	}
 
 	public int tilesToPixelsY(float y) {
-		return field2dMap.tilesToHeightPixels(y);
+		return field2d.tilesToHeightPixels(y);
 	}
 
 	public int pixelsToTilesWidth(float x) {
-		return field2dMap.pixelsToTilesWidth(x);
+		return field2d.pixelsToTilesWidth(x);
 	}
 
 	public int pixelsToTilesHeight(float y) {
-		return field2dMap.pixelsToTilesHeight(y);
+		return field2d.pixelsToTilesHeight(y);
 	}
 
 	public int[][] getMap() {
-		return field2dMap.getMap();
+		return field2d.getMap();
 	}
 
 	public boolean isActive() {
@@ -1780,6 +1780,81 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		return Hexagon.createImageToHexagon(img, origin, 1, 1);
 	}
 
+	public boolean move(ActionBind o, float newX, float newY) {
+		return move(o, newX, newY, true);
+	}
+
+	public boolean move(ActionBind o, float newX, float newY, boolean toMoved) {
+		if (o == null) {
+			return false;
+		}
+		float x = offsetXPixel(o.getX()) + newX;
+		float y = offsetYPixel(o.getY()) + newY;
+		if (!field2d.checkTileCollision(o, x, y)) {
+			if (toMoved) {
+				Vector2f pos = decoordinate((int) x, (int) y);
+				if (pos != null) {
+					position = pos.toInt();
+					int tx = position[0] + (position[1] >> 1);
+					int ty = position[1];
+					o.setLocation(tilesToPixelsX(tx), tilesToPixelsX(ty));
+				}
+			}
+			return true;
+		}
+		return false;
+	}
+
+	public boolean moveX(ActionBind o, float newX) {
+		return moveX(o, newX, true);
+	}
+
+	public boolean moveX(ActionBind o, float newX, boolean toMoved) {
+		if (o == null) {
+			return false;
+		}
+		float x = offsetXPixel(o.getX()) + newX;
+		float y = offsetYPixel(o.getY());
+		if (!field2d.checkTileCollision(o, x, y)) {
+			if (toMoved) {
+				Vector2f pos = decoordinate((int) x, (int) y);
+				if (pos != null) {
+					position = pos.toInt();
+					int tx = position[0] + (position[1] >> 1);
+					int ty = position[1];
+					o.setLocation(tilesToPixelsX(tx), tilesToPixelsX(ty));
+				}
+			}
+			return true;
+		}
+		return false;
+	}
+
+	public boolean moveY(ActionBind o, float newY) {
+		return moveY(o, newY, true);
+	}
+
+	public boolean moveY(ActionBind o, float newY, boolean toMoved) {
+		if (o == null) {
+			return false;
+		}
+		float x = offsetXPixel(o.getX());
+		float y = offsetYPixel(o.getY()) + newY;
+		if (!field2d.checkTileCollision(o, x, y)) {
+			if (toMoved) {
+				Vector2f pos = decoordinate((int) x, (int) y);
+				if (pos != null) {
+					position = pos.toInt();
+					int tx = position[0] + (position[1] >> 1);
+					int ty = position[1];
+					o.setLocation(tilesToPixelsX(tx), tilesToPixelsX(ty));
+				}
+			}
+			return true;
+		}
+		return false;
+	}
+
 	@Override
 	public HexagonMap setFont(IFont font) {
 		this.displayFont = font;
@@ -1804,7 +1879,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 
 	@Override
 	public String toString() {
-		return field2dMap == null ? super.toString() : field2dMap.toString();
+		return field2d == null ? super.toString() : field2d.toString();
 	}
 
 	public boolean isClosed() {

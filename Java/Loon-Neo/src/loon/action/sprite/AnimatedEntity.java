@@ -90,8 +90,8 @@ public class AnimatedEntity extends Entity {
 
 		final int[] animates;
 
-		public PlayIndex(long[] f, int[] ani) {
-			this.frames = CollectionUtils.copyOf(f);
+		public PlayIndex(long[] frame, int[] ani) {
+			this.frames = CollectionUtils.copyOf(frame);
 			this.animates = CollectionUtils.copyOf(ani);
 		}
 

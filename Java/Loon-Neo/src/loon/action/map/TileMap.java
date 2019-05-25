@@ -80,7 +80,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	private final int maxWidth, maxHeight;
 
-	private final Field2D field;
+	private final Field2D field2d;
 
 	private int lastOffsetX, lastOffsetY;
 
@@ -152,39 +152,39 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		this(maps, screen, tileWidth, tileHeight, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 	}
 
-	public TileMap(Field2D field) {
-		this(field, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), Format.LINEAR);
+	public TileMap(Field2D field2d) {
+		this(field2d, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), Format.LINEAR);
 	}
 
-	public TileMap(Field2D field, Screen screen) {
-		this(field, screen, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), Format.LINEAR);
+	public TileMap(Field2D field2d, Screen screen) {
+		this(field2d, screen, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), Format.LINEAR);
 	}
 
-	public TileMap(Field2D field, Format format) {
-		this(field, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), format);
+	public TileMap(Field2D field2d, Format format) {
+		this(field2d, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), format);
 	}
 
-	public TileMap(Field2D field, Screen screen, Format format) {
-		this(field, screen, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), format);
+	public TileMap(Field2D field2d, Screen screen, Format format) {
+		this(field2d, screen, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), format);
 	}
 
-	public TileMap(Field2D field, int mWidth, int mHeight, Format format) {
-		this(field, null, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), format);
+	public TileMap(Field2D field2d, int mWidth, int mHeight, Format format) {
+		this(field2d, null, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), format);
 	}
 
-	public TileMap(Field2D field, Screen screen, int mWidth, int mHeight, Format format) {
-		this.field = field;
-		if (field != null && mWidth == -1 && mHeight == -1) {
-			this.maxWidth = field.getViewWidth();
-			this.maxHeight = field.getViewHeight();
+	public TileMap(Field2D field2d, Screen screen, int mWidth, int mHeight, Format format) {
+		this.field2d = field2d;
+		if (field2d != null && mWidth == -1 && mHeight == -1) {
+			this.maxWidth = field2d.getViewWidth();
+			this.maxHeight = field2d.getViewHeight();
 		} else {
 			this.maxWidth = mWidth;
 			this.maxHeight = mHeight;
 		}
-		if (field == null) {
+		if (field2d == null) {
 			this.offset = new Vector2f(0, 0);
 		} else {
-			this.offset = field.getOffset();
+			this.offset = field2d.getOffset();
 		}
 		this.texturePack = new LTexturePack();
 		this.format = format;
@@ -361,7 +361,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	}
 
 	public int[][] getMap() {
-		return field.getMap();
+		return field2d.getMap();
 	}
 
 	public boolean isActive() {
@@ -394,16 +394,16 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	}
 
 	public int getTileID(int x, int y) {
-		if (x >= 0 && x < field.getWidth() && y >= 0 && y < field.getHeight()) {
-			return field.getTileType(x, y);
+		if (x >= 0 && x < field2d.getWidth() && y >= 0 && y < field2d.getHeight()) {
+			return field2d.getTileType(x, y);
 		} else {
 			return -1;
 		}
 	}
 
 	public TileMap setTileID(int x, int y, int id) {
-		if (x >= 0 && x < field.getWidth() && y >= 0 && y < field.getHeight()) {
-			field.setTileType(x, y, id);
+		if (x >= 0 && x < field2d.getWidth() && y >= 0 && y < field2d.getHeight()) {
+			field2d.setTileType(x, y, id);
 		}
 		return this;
 	}
@@ -459,10 +459,10 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		if (!dirty && lastOffsetX == offsetX && lastOffsetY == offsetY) {
 			texturePack.postCache();
 			if (playAnimation) {
-				int[][] maps = field.getMap();
+				int[][] maps = field2d.getMap();
 				for (int i = firstTileX; i < lastTileX; i++) {
 					for (int j = firstTileY; j < lastTileY; j++) {
-						if (i > -1 && j > -1 && i < field.getWidth() && j < field.getHeight()) {
+						if (i > -1 && j > -1 && i < field2d.getWidth() && j < field2d.getHeight()) {
 							int id = maps[j][i];
 							for (TileImpl tile : arrays) {
 								if (tile.isAnimation && tile.idx == id) {
@@ -470,14 +470,14 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 										LColor tmp = batch.getColor();
 										batch.setColor(baseColor);
 										batch.draw(tile.animation.getSpriteImage(),
-												field.tilesToWidthPixels(i) + offsetX,
-												field.tilesToHeightPixels(j) + offsetY, field.getTileWidth(),
-												field.getTileHeight());
+												field2d.tilesToWidthPixels(i) + offsetX,
+												field2d.tilesToHeightPixels(j) + offsetY, field2d.getTileWidth(),
+												field2d.getTileHeight());
 										batch.setColor(tmp);
 									} else {
-										g.draw(tile.animation.getSpriteImage(), field.tilesToWidthPixels(i) + offsetX,
-												field.tilesToHeightPixels(j) + offsetY, field.getTileWidth(),
-												field.getTileHeight(), baseColor);
+										g.draw(tile.animation.getSpriteImage(), field2d.tilesToWidthPixels(i) + offsetX,
+												field2d.tilesToHeightPixels(j) + offsetY, field2d.getTileWidth(),
+												field2d.getTileHeight(), baseColor);
 									}
 								}
 							}
@@ -492,17 +492,17 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 			texturePack.glBegin();
 
-			firstTileX = field.pixelsToTilesWidth(-offsetX);
-			firstTileY = field.pixelsToTilesHeight(-offsetY);
+			firstTileX = field2d.pixelsToTilesWidth(-offsetX);
+			firstTileY = field2d.pixelsToTilesHeight(-offsetY);
 
-			lastTileX = firstTileX + field.pixelsToTilesWidth(maxWidth) + 1;
-			lastTileX = MathUtils.min(lastTileX, field.getWidth());
-			lastTileY = firstTileY + field.pixelsToTilesHeight(maxHeight) + 1;
-			lastTileY = MathUtils.min(lastTileY, field.getHeight());
-			int[][] maps = field.getMap();
+			lastTileX = firstTileX + field2d.pixelsToTilesWidth(maxWidth) + 1;
+			lastTileX = MathUtils.min(lastTileX, field2d.getWidth());
+			lastTileY = firstTileY + field2d.pixelsToTilesHeight(maxHeight) + 1;
+			lastTileY = MathUtils.min(lastTileY, field2d.getHeight());
+			int[][] maps = field2d.getMap();
 			for (int i = firstTileX; i < lastTileX; i++) {
 				for (int j = firstTileY; j < lastTileY; j++) {
-					if (i > -1 && j > -1 && i < field.getWidth() && j < field.getHeight()) {
+					if (i > -1 && j > -1 && i < field2d.getWidth() && j < field2d.getHeight()) {
 						int id = maps[j][i];
 						for (TileImpl tile : arrays) {
 							if (playAnimation) {
@@ -512,26 +512,26 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 											LColor tmp = batch.getColor();
 											batch.setColor(baseColor);
 											batch.draw(tile.animation.getSpriteImage(),
-													field.tilesToWidthPixels(i) + offsetX,
-													field.tilesToHeightPixels(j) + offsetY, field.getTileWidth(),
-													field.getTileHeight());
+													field2d.tilesToWidthPixels(i) + offsetX,
+													field2d.tilesToHeightPixels(j) + offsetY, field2d.getTileWidth(),
+													field2d.getTileHeight());
 											batch.setColor(tmp);
 										} else {
 											g.draw(tile.animation.getSpriteImage(),
-													field.tilesToWidthPixels(i) + offsetX,
-													field.tilesToHeightPixels(j) + offsetY, field.getTileWidth(),
-													field.getTileHeight(), baseColor);
+													field2d.tilesToWidthPixels(i) + offsetX,
+													field2d.tilesToHeightPixels(j) + offsetY, field2d.getTileWidth(),
+													field2d.getTileHeight(), baseColor);
 										}
 									} else {
-										texturePack.draw(tile.imgId, field.tilesToWidthPixels(i) + offsetX,
-												field.tilesToHeightPixels(j) + offsetY, field.getTileWidth(),
-												field.getTileHeight(), baseColor);
+										texturePack.draw(tile.imgId, field2d.tilesToWidthPixels(i) + offsetX,
+												field2d.tilesToHeightPixels(j) + offsetY, field2d.getTileWidth(),
+												field2d.getTileHeight(), baseColor);
 									}
 								}
 							} else if (tile.idx == id) {
-								texturePack.draw(tile.imgId, field.tilesToWidthPixels(i) + offsetX,
-										field.tilesToHeightPixels(j) + offsetY, field.getTileWidth(),
-										field.getTileHeight(), baseColor);
+								texturePack.draw(tile.imgId, field2d.tilesToWidthPixels(i) + offsetX,
+										field2d.tilesToHeightPixels(j) + offsetY, field2d.getTileWidth(),
+										field2d.getTileHeight(), baseColor);
 							}
 
 						}
@@ -552,7 +552,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	public void scrollDown(float distance) {
 		this.offset.y = limitOffsetY(MathUtils.min((this.offset.y + distance),
-				(MathUtils.max(0, this.field.getViewHeight() - getContainerHeight()))));
+				(MathUtils.max(0, this.field2d.getViewHeight() - getContainerHeight()))));
 	}
 
 	public void scrollLeft(float distance) {
@@ -566,7 +566,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	public void scrollRight(float distance) {
 		this.offset.x = limitOffsetX(MathUtils.min((this.offset.x + distance),
-				(MathUtils.max(0, this.field.getViewWidth() - getContainerWidth()))));
+				(MathUtils.max(0, this.field2d.getViewWidth() - getContainerWidth()))));
 	}
 
 	public void scrollUp(float distance) {
@@ -583,16 +583,16 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	}
 
 	public int[] getLimit() {
-		return field.getLimit();
+		return field2d.getLimit();
 	}
 
 	public TileMap setLimit(int[] limit) {
-		field.setLimit(limit);
+		field2d.setLimit(limit);
 		return this;
 	}
 
 	public boolean isHit(int px, int py) {
-		return field.isHit(px, py);
+		return field2d.isHit(px, py);
 	}
 
 	public boolean isHit(Vector2f v) {
@@ -604,8 +604,8 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	}
 
 	public boolean isPixelHit(int px, int py, int movePx, int movePy) {
-		return isHit(field.pixelsToTilesWidth(field.offsetXPixel(px)) + movePx,
-				field.pixelsToTilesHeight(field.offsetYPixel(py)) + movePy);
+		return isHit(field2d.pixelsToTilesWidth(field2d.offsetXPixel(px)) + movePx,
+				field2d.pixelsToTilesHeight(field2d.offsetYPixel(py)) + movePy);
 	}
 
 	public boolean isPixelTUp(int px, int py) {
@@ -625,7 +625,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	}
 
 	public Vector2f getTileCollision(LObject<?> o, float newX, float newY) {
-		return field.getTileCollision(o.getX(), o.getY(), o.getWidth(), o.getHeight(), newX, newY);
+		return field2d.getTileCollision(o.getX(), o.getY(), o.getWidth(), o.getHeight(), newX, newY);
 	}
 
 	public int getTileIDFromPixels(Vector2f v) {
@@ -640,29 +640,29 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	}
 
 	public Vector2f pixelsToTiles(float x, float y) {
-		float xprime = x / field.getTileWidth() - 1;
-		float yprime = y / field.getTileHeight() - 1;
+		float xprime = x / field2d.getTileWidth() - 1;
+		float yprime = y / field2d.getTileHeight() - 1;
 		return new Vector2f(xprime, yprime);
 	}
 
 	public Field2D getField() {
-		return field;
+		return field2d;
 	}
 
 	public int tilesToPixelsX(float x) {
-		return field.tilesToWidthPixels(x);
+		return field2d.tilesToWidthPixels(x);
 	}
 
 	public int tilesToPixelsY(float y) {
-		return field.tilesToHeightPixels(y);
+		return field2d.tilesToHeightPixels(y);
 	}
 
 	public int pixelsToTilesWidth(float x) {
-		return field.pixelsToTilesWidth(x);
+		return field2d.pixelsToTilesWidth(x);
 	}
 
 	public int pixelsToTilesHeight(float y) {
-		return field.pixelsToTilesHeight(y);
+		return field2d.pixelsToTilesHeight(y);
 	}
 
 	/**
@@ -673,8 +673,8 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	 * @return
 	 */
 	public Vector2f tilesToPixels(float x, float y) {
-		float xprime = x * field.getTileWidth() - offset.getX();
-		float yprime = y * field.getTileHeight() - offset.getY();
+		float xprime = x * field2d.getTileWidth() - offset.getX();
+		float yprime = y * field2d.getTileHeight() - offset.getY();
 		return new Vector2f(xprime, yprime);
 	}
 
@@ -717,38 +717,38 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	}
 
 	public int getTileWidth() {
-		return field.getTileWidth();
+		return field2d.getTileWidth();
 	}
 
 	public int getTileHeight() {
-		return field.getTileHeight();
+		return field2d.getTileHeight();
 	}
 
 	@Override
 	public float getHeight() {
-		return field.getHeight() * field.getTileWidth();
+		return field2d.getHeight() * field2d.getTileWidth();
 	}
 
 	@Override
 	public float getWidth() {
-		return field.getWidth() * field.getTileHeight();
+		return field2d.getWidth() * field2d.getTileHeight();
 	}
 
 	public int getRow() {
-		return field.getWidth();
+		return field2d.getWidth();
 	}
 
 	public int getCol() {
-		return field.getHeight();
+		return field2d.getHeight();
 	}
 
 	public TileMap setMapValues(int v) {
-		field.setValues(v);
+		field2d.setValues(v);
 		return this;
 	}
 
 	public Field2D getNewField2D() {
-		return new Field2D(field);
+		return new Field2D(field2d);
 	}
 
 	public DrawListener<TileMap> getListener() {
@@ -838,8 +838,8 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	@Override
 	public RectBox getCollisionBox() {
-		return getRect(x() + offset.x, y() + offset.y, field.getTileWidth() * field.getWidth(),
-				field.getTileHeight() * field.getHeight());
+		return getRect(x() + offset.x, y() + offset.y, field2d.getTileWidth() * field2d.getWidth(),
+				field2d.getTileHeight() * field2d.getHeight());
 	}
 
 	@Override
@@ -891,7 +891,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 			float offsetX = limitOffsetX(follow.getX());
 			float offsetY = limitOffsetY(follow.getY());
 			setOffset(offsetX, offsetY);
-			field.setOffset(offset);
+			field2d.setOffset(offset);
 		}
 		return this;
 	}
@@ -910,18 +910,18 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	}
 
 	public int getPixelsAtFieldType(Vector2f pos) {
-		return field.getPixelsAtFieldType(pos.x, pos.y);
+		return field2d.getPixelsAtFieldType(pos.x, pos.y);
 	}
 
 	public int getPixelsAtFieldType(float x, float y) {
 		int itsX = pixelsToTilesWidth(x);
 		int itsY = pixelsToTilesHeight(y);
-		return field.getPixelsAtFieldType(itsX, itsY);
+		return field2d.getPixelsAtFieldType(itsX, itsY);
 	}
 
 	@Override
 	public Field2D getField2D() {
-		return field;
+		return field2d;
 	}
 
 	@Override
@@ -952,12 +952,12 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	@Override
 	public boolean inContains(float x, float y, float w, float h) {
-		return field.getRect().contains(x, y, w, h);
+		return field2d.getRect().contains(x, y, w, h);
 	}
 
 	@Override
 	public RectBox getRectBox() {
-		return field.getRect();
+		return field2d.getRect();
 	}
 
 	public ActionBind getFollow() {
@@ -987,17 +987,17 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	public MoveControl followControl(ActionBind bind) {
 		followAction(bind);
-		return new MoveControl(bind, this.field);
+		return new MoveControl(bind, this.field2d);
 	}
 
 	public Vector2f toRollPosition(Vector2f pos) {
-		pos.x = pos.x % ((float) (field.getViewWidth()));
-		pos.y = pos.y % ((float) (field.getViewHeight()));
+		pos.x = pos.x % ((float) (field2d.getViewWidth()));
+		pos.y = pos.y % ((float) (field2d.getViewHeight()));
 		if (pos.x < 0f) {
-			pos.x += field.getViewWidth();
+			pos.x += field2d.getViewWidth();
 		}
 		if (pos.x < 0f) {
-			pos.y += field.getViewHeight();
+			pos.y += field2d.getViewHeight();
 		}
 		return pos;
 	}
@@ -1018,6 +1018,63 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	public TileMap setBackground(LTexture bg) {
 		this._background = bg;
 		return this;
+	}
+
+	public boolean move(ActionBind o, float newX, float newY) {
+		return move(o, newX, newY, true);
+	}
+
+	public boolean move(ActionBind o, float newX, float newY, boolean toMoved) {
+		if (o == null) {
+			return false;
+		}
+		float x = offsetXPixel(o.getX()) + newX;
+		float y = offsetYPixel(o.getY()) + newY;
+		if (!field2d.checkTileCollision(o, x, y)) {
+			if (toMoved) {
+				o.setLocation(x, y);
+			}
+			return true;
+		}
+		return false;
+	}
+
+	public boolean moveX(ActionBind o, float newX) {
+		return moveX(o, newX, true);
+	}
+
+	public boolean moveX(ActionBind o, float newX, boolean toMoved) {
+		if (o == null) {
+			return false;
+		}
+		float x = offsetXPixel(o.getX()) + newX;
+		float y = offsetYPixel(o.getY());
+		if (!field2d.checkTileCollision(o, x, y)) {
+			if (toMoved) {
+				o.setLocation(x, y);
+			}
+			return true;
+		}
+		return false;
+	}
+
+	public boolean moveY(ActionBind o, float newY) {
+		return moveY(o, newY, true);
+	}
+
+	public boolean moveY(ActionBind o, float newY, boolean toMoved) {
+		if (o == null) {
+			return false;
+		}
+		float x = offsetXPixel(o.getX());
+		float y = offsetYPixel(o.getY()) + newY;
+		if (!field2d.checkTileCollision(o, x, y)) {
+			if (toMoved) {
+				o.setLocation(x, y);
+			}
+			return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -1116,7 +1173,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	@Override
 	public String toString() {
-		return field.toString();
+		return field2d.toString();
 	}
 
 	@Override

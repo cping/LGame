@@ -25,10 +25,12 @@ import loon.LSystem;
 import loon.action.ActionBind;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
+import loon.utils.Easing.EasingMode;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
 import loon.utils.TArray;
 import loon.utils.cache.Pool;
+import loon.utils.timer.EaseTimer;
 
 /**
  * 简单的重力控制器,使用时需要绑定Gravity
@@ -47,6 +49,10 @@ public class GravityHandler implements LRelease {
 		}
 
 	};
+
+	private EaseTimer easeTimer;
+
+	private EasingMode easingMode;
 
 	private CollisionWorld collisionWorld;
 
@@ -89,11 +95,29 @@ public class GravityHandler implements LRelease {
 	private final TArray<Gravity> collisionObjects = new TArray<Gravity>();
 
 	public GravityHandler() {
-		this(LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
+		this(EasingMode.Linear, 1f);
 	}
 
 	public GravityHandler(int w, int h) {
+		this(w, h, EasingMode.Linear, 1f);
+	}
+
+	public GravityHandler(EasingMode ease) {
+		this(ease, 1f);
+	}
+
+	public GravityHandler(EasingMode ease, float duration) {
+		this(LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), ease, duration);
+	}
+
+	public GravityHandler(int w, int h, EasingMode ease) {
+		this(w, h, ease, 1f);
+	}
+
+	public GravityHandler(int w, int h, EasingMode ease, float duration) {
 		this.setLimit(w, h);
+		this.easingMode = ease;
+		this.easeTimer = new EaseTimer(duration, easingMode);
 		this.gravityMap = new ObjectMap<ActionBind, Gravity>();
 		this.objects = new TArray<Gravity>(10);
 		this.pendingAdd = new TArray<Gravity>(10);
@@ -135,8 +159,12 @@ public class GravityHandler implements LRelease {
 			return;
 		}
 		commits();
-		final float second = MathUtils.max(elapsedTime / 1000f, 0.01f);
-		for (Gravity g : lazyObjects) {
+
+		easeTimer.action(elapsedTime);
+
+		final float delta = MathUtils.max(elapsedTime / 1000f, 0.01f) * easeTimer.getProgress();
+
+		for (Gravity g : objects) {
 
 			if (g.enabled && g.bind != null) {
 
@@ -152,7 +180,7 @@ public class GravityHandler implements LRelease {
 
 				if (angularVelocity != 0) {
 
-					final float rotate = g.bind.getRotation() + angularVelocity * second;
+					final float rotate = g.bind.getRotation() + angularVelocity * delta;
 					int[] newObjectRect = MathUtils.getLimit(bindX, bindY, bindWidth, bindHeight, rotate);
 
 					bindWidth = newObjectRect[2];
@@ -164,16 +192,16 @@ public class GravityHandler implements LRelease {
 				}
 
 				if (accelerationX != 0 || accelerationY != 0) {
-					g.velocityX += accelerationX * second;
-					g.velocityY += accelerationY * second;
+					g.velocityX += accelerationX * delta;
+					g.velocityY += accelerationY * delta;
 				}
 
 				velocityX = g.velocityX;
 				velocityY = g.velocityY;
 				if (velocityX != 0 || velocityY != 0) {
 
-					velocityX = bindX + (velocityX * second);
-					velocityY = bindY + (velocityY * second);
+					velocityX = bindX + (velocityX * delta);
+					velocityY = bindY + (velocityY * delta);
 
 					if (gravity != 0 && g.velocityX != 0) {
 						velocityX += g.gadd;
@@ -194,7 +222,7 @@ public class GravityHandler implements LRelease {
 							if (chageWidth) {
 								bindX -= g.bounce + gravity;
 								if (g.bounce > 0) {
-									g.bounce -= (g.bounce + second) + MathUtils.random(0f, 5f);
+									g.bounce -= (g.bounce + delta) + MathUtils.random(0f, 5f);
 								} else if (g.bounce < 0) {
 									g.bounce = 0;
 									bindX = limitWidth;
@@ -204,7 +232,7 @@ public class GravityHandler implements LRelease {
 							if (chageHeight) {
 								bindY -= g.bounce + gravity;
 								if (g.bounce > 0) {
-									g.bounce -= (g.bounce + second) + MathUtils.random(0f, 5f);
+									g.bounce -= (g.bounce + delta) + MathUtils.random(0f, 5f);
 								} else if (g.bounce < 0) {
 									g.bounce = 0;
 									bindY = limitHeight;
@@ -250,53 +278,46 @@ public class GravityHandler implements LRelease {
 	}
 
 	protected void commits() {
-		boolean changes = false;
 		final int additionCount = pendingAdd.size;
 		if (additionCount > 0) {
-			final Object[] additionsArray = pendingAdd.toArray();
 			for (int i = 0; i < additionCount; i++) {
-				Gravity o = (Gravity) additionsArray[i];
+				Gravity o = pendingAdd.get(i);
 				objects.add(o);
 			}
 			pendingAdd.clear();
-			changes = true;
 		}
 		final int removalCount = pendingRemove.size;
 		if (removalCount > 0) {
-			final Object[] removalsArray = pendingRemove.toArray();
 			for (int i = 0; i < removalCount; i++) {
-				Gravity o = (Gravity) removalsArray[i];
+				Gravity o = pendingRemove.get(i);
 				objects.remove(o);
 			}
 			pendingRemove.clear();
-			changes = true;
-		}
-		if (changes) {
-			int size = objects.size;
-			if (lazyObjects == null || lazyObjects.length != size) {
-				lazyObjects = new Gravity[size];
-			}
-			for (int i = 0; i < size; i++) {
-				lazyObjects[i] = objects.get(i);
-			}
 		}
 	}
 
 	public Gravity[] getObjects() {
+		int size = objects.size;
+		if (lazyObjects == null || lazyObjects.length != size) {
+			lazyObjects = new Gravity[size];
+		}
+		for (int i = 0; i < size; i++) {
+			lazyObjects[i] = objects.get(i);
+		}
 		return lazyObjects;
 	}
 
 	public int getCount() {
-		return lazyObjects.length;
+		return objects.size;
 	}
 
 	public int getConcreteCount() {
-		return lazyObjects.length + pendingAdd.size - pendingRemove.size;
+		return objects.size + pendingAdd.size - pendingRemove.size;
 	}
 
 	public Gravity get(int index) {
-		if (index > -1 && index < lazyObjects.length) {
-			return lazyObjects[index];
+		if (index > -1 && index < objects.size) {
+			return objects.get(index);
 		} else {
 			return null;
 		}
@@ -358,16 +379,16 @@ public class GravityHandler implements LRelease {
 
 	public Gravity getObject(String name) {
 		commits();
-		for (Gravity o : lazyObjects) {
-			if (o != null) {
-				if (o.name != null) {
-					if (o.name.equals(name)) {
-						return o;
-					}
+		for (Gravity o : objects) {
+			if (o != null && o.name != null) {
+				if (o.name.equals(name)) {
+					return o;
 				}
+
 			}
 		}
 		return null;
+
 	}
 
 	public GravityResult getCollisionBetweenObjects(Gravity target) {
@@ -659,6 +680,15 @@ public class GravityHandler implements LRelease {
 		this.collisionWorld = world;
 	}
 
+	public EasingMode getEasingMode() {
+		return easingMode;
+	}
+
+	public GravityHandler setEasingMode(EasingMode ease) {
+		easeTimer.setEasingMode(ease);
+		return this;
+	}
+
 	public boolean isClosed() {
 		return closed;
 	}
@@ -682,14 +712,7 @@ public class GravityHandler implements LRelease {
 			gravityMap.clear();
 			gravityMap = null;
 		}
-		if (lazyObjects != null) {
-			for (Gravity g : lazyObjects) {
-				if (g != null) {
-					g.dispose();
-					g = null;
-				}
-			}
-		}
+		lazyObjects = null;
 		closed = true;
 	}
 

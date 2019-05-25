@@ -89,6 +89,7 @@ import loon.utils.ArrayMap;
 import loon.utils.Calculator;
 import loon.utils.CollectionUtils;
 import loon.utils.ConfigReader;
+import loon.utils.Easing.EasingMode;
 import loon.utils.GLUtils;
 import loon.utils.IntMap;
 import loon.utils.MathUtils;
@@ -1522,20 +1523,44 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public GravityHandler setGravity(boolean g) {
-		return setGravity(getWidth(), getHeight(), g);
+		return setGravity(EasingMode.Linear, g);
 	}
 
 	/**
 	 * 设定重力系统是否启动,并返回控制器
-	 *  
-	 * @param w
-	 * @param h
+	 * 
+	 * @param ease
 	 * @param g
 	 * @return
 	 */
-	public GravityHandler setGravity(int w, int h, boolean g) {
+	public GravityHandler setGravity(EasingMode ease, boolean g) {
+		return setGravity(getWidth(), getHeight(), ease, 1f, g);
+	}
+
+	/**
+	 * 设定重力系统是否启动,并返回控制器
+	 * 
+	 * @param ease
+	 * @param d
+	 * @param g
+	 * @return
+	 */
+	public GravityHandler setGravity(EasingMode ease, float d, boolean g) {
+		return setGravity(getWidth(), getHeight(), ease, d, g);
+	}
+
+	/**
+	 * 设定重力系统是否启动,并返回控制器
+	 * 
+	 * @param w
+	 * @param h
+	 * @param ease
+	 * @param g
+	 * @return
+	 */
+	public GravityHandler setGravity(int w, int h, EasingMode ease, float d, boolean g) {
 		if (g && (gravityHandler == null || gravityHandler.isClosed())) {
-			gravityHandler = new GravityHandler(w, h);
+			gravityHandler = new GravityHandler(w, h, ease, d);
 		}
 		this.isGravity = g;
 		return gravityHandler;
