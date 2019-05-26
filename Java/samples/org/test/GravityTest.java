@@ -27,6 +27,8 @@ import loon.action.collision.GravityHandler;
 import loon.action.collision.GravityHandler.GravityUpdate;
 import loon.action.sprite.Sprite;
 import loon.action.sprite.Sprites;
+import loon.event.Touched;
+import loon.utils.Easing.EasingMode;
 
 public class GravityTest extends Stage {
 
@@ -42,7 +44,7 @@ public class GravityTest extends Stage {
 		}
 
 		// 开启Screen重力控制
-		GravityHandler handler = setGravity(true);
+		GravityHandler handler = setGravity(EasingMode.Linear, true);
 
 		// 获得精灵控制器
 		Sprites sprites = getSprites();
@@ -62,7 +64,7 @@ public class GravityTest extends Stage {
 			// g.bounce = 10f;
 		}
 
-		//监听重力对象
+		// 监听重力对象
 		handler.setListener(new GravityUpdate() {
 
 			@Override
@@ -74,6 +76,23 @@ public class GravityTest extends Stage {
 				}
 			}
 		});
+
+		up(new Touched() {
+
+			@Override
+			public void on(float x, float y) {
+				// 如果点击处存在重力对象
+				Gravity g = handler.contains(x, y);
+				if (g != null) {
+					// 删除重力控制
+					handler.remove(g);
+					// 删除精灵
+					remove(g.bind);
+				}
+
+			}
+		});
+
 		add(MultiScreenTest.getBackButton(this, 1));
 	}
 

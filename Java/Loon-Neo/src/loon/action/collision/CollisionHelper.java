@@ -246,7 +246,7 @@ public final class CollisionHelper extends ShapeUtils {
 		return false;
 	}
 
-	public static final boolean intersect(RectBox rect, int x, int y) {
+	public static final boolean intersect(RectBox rect, float x, float y) {
 		if (rect != null) {
 			if (rect.Left() <= x && x < rect.Right() && rect.Top() <= y && y < rect.Bottom())
 				return true;
@@ -254,7 +254,7 @@ public final class CollisionHelper extends ShapeUtils {
 		return false;
 	}
 
-	public static final boolean intersect(int sx, int sy, int width, int height, int x, int y) {
+	public static final boolean intersect(float sx, float sy, float width, float height, float x, float y) {
 		return (x >= sx) && ((x - sx) < width) && (y >= sy) && ((y - sy) < height);
 	}
 
