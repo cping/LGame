@@ -388,6 +388,30 @@ public class Array<T> implements IArray, LRelease {
 		return get(MathUtils.random(0, _length - 1));
 	}
 
+	public Array<T> randomArrays() {
+		if (_length == 0) {
+			return new Array<T>();
+		}
+		T v = null;
+		Array<T> newArrays = new Array<T>();
+		for(;hashNext();){
+			newArrays.add(next());
+		}
+		stopNext();
+		for (int i = 0; i < _length; i++) {
+			v = random();
+			for (int j = 0; j < i; j++) {
+				if (newArrays.get(j) == v) {
+					v = random();
+					j = -1;
+				}
+
+			}
+			newArrays.set(i, v);
+		}
+		return newArrays;
+	}
+
 	@Override
 	public String toString() {
 		return toString(',');

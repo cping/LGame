@@ -356,6 +356,30 @@ public class BoolArray implements IArray {
 		return items[MathUtils.random(0, length - 1)];
 	}
 
+	public BoolArray randomBoolArray() {
+		return new BoolArray(randomArrays());
+	}
+
+	public boolean[] randomArrays() {
+		if (length == 0) {
+			return new boolean[0];
+		}
+		boolean v = false;
+		boolean[] newArrays = CollectionUtils.copyOf(items, length);
+		for (int i = 0; i < length; i++) {
+			v = random();
+			for (int j = 0; j < i; j++) {
+				if (newArrays[j] == v) {
+					v = random();
+					j = -1;
+				}
+
+			}
+			newArrays[i] = v;
+		}
+		return newArrays;
+	}
+	
 	public boolean[] toArray() {
 		boolean[] array = new boolean[length];
 		System.arraycopy(items, 0, array, 0, length);

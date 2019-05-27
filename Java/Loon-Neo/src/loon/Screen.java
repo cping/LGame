@@ -2056,6 +2056,16 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	/**
 	 * 设定背景颜色
 	 * 
+	 * @param colorString
+	 * @return
+	 */
+	public Screen setBackgroundValue(String colorString) {
+		return setBackground(LColor.decode(colorString));
+	}
+
+	/**
+	 * 设定背景颜色
+	 * 
 	 * @param c
 	 * @return
 	 */

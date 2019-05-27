@@ -1348,6 +1348,64 @@ final public class StringUtils extends CharUtils {
 	}
 
 	/**
+	 * 转化指定字符串为'非null'字符串
+	 * 
+	 * @param mes
+	 * @return
+	 */
+	public static CharSequence notNull(final CharSequence mes) {
+		if (mes == null || mes.length() == 0) {
+			return "";
+		}
+		return mes;
+	}
+
+	/**
+	 * 去除特定字符串中指定的字符后内容
+	 * 
+	 * @param values
+	 * @param str
+	 * @param sum
+	 * @return
+	 */
+	public static CharSequence notNull(CharSequence mes, char str, int sum) {
+		if (mes == null || mes.length() == 0) {
+			return notNull(mes);
+		}
+		int num = 0;
+		StringBuilder sbr = new StringBuilder();
+		for (int i = 0; i < mes.length(); i++) {
+			char ch = mes.charAt(i);
+			if (ch == str) {
+				num++;
+			}
+			sbr.append(ch);
+			if (num == sum) {
+				return sbr.toString();
+			}
+		}
+		return mes;
+	}
+
+	/**
+	 * 判断两组CharSequence是否相等
+	 * 
+	 * @param a
+	 * @param b
+	 * @return
+	 */
+	public static boolean assertEqual(CharSequence a, CharSequence b) {
+		if (a == b) {
+			return true;
+		}
+		if (a == null || b == null) {
+			return a == null && b == null;
+		} else {
+			return a.equals(b);
+		}
+	}
+
+	/**
 	 * 查看指定CharSequence数值是否在指定CharSequence数组中
 	 * 
 	 * @param key

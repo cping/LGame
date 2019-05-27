@@ -456,6 +456,29 @@ public class TArray<T> implements Iterable<T>, IArray {
 		return items[MathUtils.random(0, size - 1)];
 	}
 
+	public TArray<T> randomArrays() {
+		if (size == 0) {
+			return new TArray<T>();
+		}
+		T v = null;
+		TArray<T> newArrays = new TArray<T>(size);
+		for (int i = 0; i < size; i++) {
+			newArrays.add(get(i));
+		}
+		for (int i = 0; i < size; i++) {
+			v = random();
+			for (int j = 0; j < i; j++) {
+				if (newArrays.get(j) == v) {
+					v = random();
+					j = -1;
+				}
+
+			}
+			newArrays.set(i, v);
+		}
+		return newArrays;
+	}
+
 	public Object[] toArray() {
 		Object[] result = new Object[size];
 		System.arraycopy(items, 0, result, 0, size);

@@ -114,8 +114,16 @@ public class GameTouch {
 		return x;
 	}
 
+	public int getTileX(int tileX) {
+		return (int) (x / tileX);
+	}
+
 	public float getY() {
 		return y;
+	}
+
+	public int getTileY(int tileY) {
+		return (int) (y / tileY);
 	}
 
 	public float getDX() {

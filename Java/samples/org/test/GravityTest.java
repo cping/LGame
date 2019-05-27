@@ -44,7 +44,7 @@ public class GravityTest extends Stage {
 		}
 
 		// 开启Screen重力控制
-		GravityHandler handler = setGravity(EasingMode.Linear, true);
+		final GravityHandler handler = setGravity(EasingMode.Linear, true);
 
 		// 获得精灵控制器
 		Sprites sprites = getSprites();
@@ -77,7 +77,7 @@ public class GravityTest extends Stage {
 			}
 		});
 
-		up(new Touched() {
+		down(new Touched() {
 
 			@Override
 			public void on(float x, float y) {
