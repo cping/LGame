@@ -35,6 +35,7 @@ import loon.opengl.TrilateralBatch;
 import loon.utils.CollectionUtils;
 import loon.utils.GLUtils;
 import loon.utils.IntMap;
+import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 import loon.utils.Scale;
 import loon.utils.StringKeyValue;
@@ -64,7 +65,7 @@ public class LTexture extends Painter implements LRelease {
 	 * 是否无视子纹理使用情况,强制注销纹理
 	 */
 	private boolean _forcedDeleteTexture = false;
-	
+
 	private boolean _disabledTexture = false;
 
 	private boolean _drawing = false;
@@ -159,7 +160,6 @@ public class LTexture extends Painter implements LRelease {
 	public Format getFormat() {
 		return config;
 	}
-
 
 	private int pixelWidth;
 
@@ -411,14 +411,16 @@ public class LTexture extends Painter implements LRelease {
 
 	@Override
 	public float width() {
-		float result = displayWidth * widthRatio - displayWidth * xOff;
-		return result > 0 ? result : -result;
+		float scale = parent == null ? 1f : parent.widthRatio;
+		float result = (displayWidth * widthRatio - displayWidth * xOff) / scale;
+		return MathUtils.abs(result);
 	}
 
 	@Override
 	public float height() {
-		float result = displayHeight * heightRatio - displayHeight * yOff;
-		return result > 0 ? result : -result;
+		float scale = parent == null ? 1f : parent.heightRatio;
+		float result = (displayHeight * heightRatio - displayHeight * yOff) / scale;
+		return MathUtils.abs(result);
 	}
 
 	@Override
@@ -488,10 +490,12 @@ public class LTexture extends Painter implements LRelease {
 		return builder.toString();
 	}
 
+	@Override
 	public float getDisplayWidth() {
 		return displayWidth;
 	}
 
+	@Override
 	public float getDisplayHeight() {
 		return displayHeight;
 	}
@@ -550,9 +554,10 @@ public class LTexture extends Painter implements LRelease {
 			copy.yOff = ((y / copy.displayHeight) * this.heightRatio) + this.yOff;
 			copy.widthRatio = ((width / copy.displayWidth) * widthRatio) + copy.xOff;
 			copy.heightRatio = ((height / copy.displayHeight) * heightRatio) + copy.yOff;
+
 			copy._disabledTexture = _disabledTexture;
 			copy._forcedDeleteTexture = _forcedDeleteTexture;
-			
+
 			childs.put(hashCode, copy);
 			return copy;
 		}
@@ -611,7 +616,7 @@ public class LTexture extends Painter implements LRelease {
 			copy.heightRatio = ((height / copy.displayHeight) * heightRatio) + copy.yOff;
 			copy._disabledTexture = _disabledTexture;
 			copy._forcedDeleteTexture = _forcedDeleteTexture;
-			
+
 			childs.put(hashCode, copy);
 			return copy;
 		}
@@ -1085,11 +1090,11 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	public int getWidth() {
-		return (int) width();
+		return MathUtils.ifloor(width());
 	}
 
 	public int getHeight() {
-		return (int) height();
+		return MathUtils.ifloor(height());
 	}
 
 	public boolean isDrawCanvas() {
@@ -1129,7 +1134,7 @@ public class LTexture extends Painter implements LRelease {
 	public int getMemSize() {
 		return _memorySize;
 	}
-	
+
 	/**
 	 * 关闭纹理资源（默认非强制关闭）
 	 */
@@ -1166,7 +1171,7 @@ public class LTexture extends Painter implements LRelease {
 		this._forcedDeleteTexture = forcedDelete;
 		return this;
 	}
-	
+
 	public int getRefCount() {
 		return this.refCount;
 	}
@@ -1241,6 +1246,5 @@ public class LTexture extends Painter implements LRelease {
 			}
 		}
 	}
-
 
 }

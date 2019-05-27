@@ -32,11 +32,13 @@ public class JigsawTest extends Screen {
 
 	private boolean completed = false;
 
+	private LColor selected;
+
+	private LColor grid;
+
 	private LTexture texture;
 
 	private LTexture[] textures;
-
-	private IntArray initBlocks;
 
 	private IntArray randBlocks;
 
@@ -73,15 +75,16 @@ public class JigsawTest extends Screen {
 						int x = i * tileWidth;
 						int y = j * tileHeight;
 						g.draw(texture, x, y, tileWidth, tileHeight);
+						int tint = g.color();
 						// 选中的瓦片
 						if (selectIndex == idx) {
-							g.setColor(LColor.green.setAlpha(0.5f));
+							g.setColor(selected.setAlpha(0.5f));
 							g.fillRect(i * tileWidth, j * tileHeight, tileWidth - 1, tileHeight - 1);
 						} else {
-							g.setColor(LColor.orange);
+							g.setColor(grid);
 							g.drawRect(i * tileWidth, j * tileHeight, tileWidth - 1, tileHeight - 1);
 						}
-						g.resetColor();
+						g.setColor(tint);
 					}
 				}
 				// 如果所有图片序列化
@@ -99,27 +102,32 @@ public class JigsawTest extends Screen {
 		// 瓦片大小
 		tileWidth = 120;
 		tileHeight = 80;
-		// 以此万片全屏输出拼图需要的行列数
+		// 获得瓦片全屏输出为拼图需要的行列数
 		rows = getWidth() / tileWidth;
 		cols = getHeight() / tileHeight;
 		// 瓦片总数
 		int count = rows * cols;
 		// 缩放纹理为屏幕大小，并且注销时无视子纹理使用情况,强制删除纹理
 		texture = loadTexture("backimage.jpg").scale(getWidth(), getHeight()).setForcedDelete(true);
-
+		// 选中图片的颜色
+		selected = LColor.green.cpy();
+		// 网格颜色
+		grid = LColor.orange.cpy();
+		// 瓦片存储用数组
 		textures = new LTexture[count];
-		initBlocks = new IntArray(count);
-		// 注入拼图索引到initBlocks
+		// 瓦片索引存储用整型集合类
+		randBlocks = new IntArray(count);
+		// 注入拼图索引到randBlocks
 		int idx = 0;
 		for (int i = 0; i < rows; i++) {
 			for (int j = 0; j < cols; j++) {
 				textures[idx] = texture.copy(i * tileWidth, j * tileHeight, tileWidth, tileHeight);
-				initBlocks.add(idx);
+				randBlocks.add(idx);
 				idx++;
 			}
 		}
 		// 获得拼图的随机索引
-		randBlocks = initBlocks.randomIntArray();
+		randBlocks = randBlocks.randomIntArray();
 		// 注销Screen时注销纹理
 		putRelease(texture);
 
