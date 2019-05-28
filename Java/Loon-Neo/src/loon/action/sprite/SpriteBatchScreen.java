@@ -618,10 +618,6 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 			indexTile.close();
 			indexTile = null;
 		}
-		if (objects != null) {
-			objects.clear();
-			objects = null;
-		}
 		if (pendingAdd != null) {
 			pendingAdd.clear();
 			pendingAdd = null;
@@ -629,6 +625,16 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		if (pendingRemove != null) {
 			pendingRemove.clear();
 			pendingRemove = null;
+		}
+		if (objects != null) {
+			for (int i = 0; i < objects.size; i++) {
+				ActionObject obj = objects.get(i);
+				if (obj != null) {
+					obj.close();
+				}
+			}
+			objects.clear();
+			objects = null;
 		}
 		updateListener = null;
 		usePhysics = false;

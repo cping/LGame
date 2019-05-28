@@ -415,12 +415,7 @@ public class Animation implements IArray, LRelease {
 		@Override
 		public void close() {
 			if (image != null) {
-				LTexture father = image.getParent();
-				if (father != null && !father.disposed()) {
-					father.close();
-				} else if (image != null && !image.disposed()) {
-					image.close();
-				}
+				image.close();
 			}
 		}
 	}

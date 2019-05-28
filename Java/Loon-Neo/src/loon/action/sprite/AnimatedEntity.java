@@ -124,6 +124,7 @@ public class AnimatedEntity extends Entity {
 
 	private boolean _animationRunning;
 	private boolean _animationStartedFired;
+	private boolean _animationDispose;
 
 	private int _currentFrameIndex;
 	private long _animationProgress;
@@ -159,6 +160,7 @@ public class AnimatedEntity extends Entity {
 		this.setSize(width, height);
 		this._playEvents = new ObjectMap<String, AnimatedEntity.PlayIndex>(8);
 		this._animation = ani;
+		this._animationDispose = (this._animation != null);
 	}
 
 	@Override
@@ -485,11 +487,22 @@ public class AnimatedEntity extends Entity {
 		return this;
 	}
 
+	public boolean isAnimationDispose() {
+		return _animationDispose;
+	}
+
+	public void setAnimationDispose(boolean dispose) {
+		this._animationDispose = dispose;
+	}
+
 	@Override
 	public void close() {
 		super.close();
 		this.stopAnimation();
 		this.clearPlayEvents();
+		if (_animationDispose && _animation != null) {
+			_animation.close();
+		}
 	}
 
 }

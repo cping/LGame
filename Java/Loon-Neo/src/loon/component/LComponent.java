@@ -910,17 +910,16 @@ public abstract class LComponent extends LObject<LContainer>
 
 	public void setImageUI(LTexture[] imageUI, boolean processUI) {
 		if (imageUI != null) {
-			this._width = (int) imageUI[0].width();
-			this._height = (int) imageUI[0].height();
+			this._width = imageUI[0].getWidth();
+			this._height = imageUI[0].getHeight();
 		}
-
 		this._imageUI = imageUI;
 	}
 
 	public void setImageUI(int index, LTexture imageUI) {
 		if (imageUI != null) {
-			this._width = (int) imageUI.width();
-			this._height = (int) imageUI.height();
+			this._width = imageUI.getWidth();
+			this._height = imageUI.getHeight();
 		}
 		this._imageUI[index] = imageUI;
 	}
@@ -1438,7 +1437,8 @@ public abstract class LComponent extends LObject<LContainer>
 		}
 		this._super = null;
 		if (_imageUI != null) {
-			for (int i = 0, size = _imageUI.length; i < size; i++) {
+			final int size = _imageUI.length;
+			for (int i = 0; i < size; i++) {
 				_imageUI[i].close();
 				_imageUI[i] = null;
 			}

@@ -149,7 +149,9 @@ public class LTexture extends Painter implements LRelease {
 		}
 	}
 
-	private int id;
+	private int id = -1;
+
+	private int lazyHashCode = -1;
 
 	private Format config;
 
@@ -536,6 +538,7 @@ public class LTexture extends Painter implements LRelease {
 			refCount++;
 			copy.parent = LTexture.this;
 			copy.id = id;
+			copy.lazyHashCode = hashCode;
 			copy._isLoaded = _isLoaded;
 			copy.gfx = gfx;
 			copy.config = config;
@@ -595,6 +598,7 @@ public class LTexture extends Painter implements LRelease {
 			refCount++;
 			copy.parent = LTexture.this;
 			copy.id = id;
+			copy.lazyHashCode = hashCode;
 			copy._isLoaded = _isLoaded;
 			copy.gfx = gfx;
 			copy.config = config;
@@ -1222,10 +1226,19 @@ public class LTexture extends Painter implements LRelease {
 			if (childs != null) {
 				childs.clear();
 			}
-		} else if (!isChildAllClose()) {
+		}
+		if (isChild()) {
+			IntMap<LTexture> list = parent.childs;
+			if (list != null) {
+				list.remove(lazyHashCode);
+			}
+			parent.close();
 			return;
 		}
 		this.refCount--;
+		if (!isChildAllClose()) {
+			return;
+		}
 		// forcedDelete时强制删除子纹理及父纹理，无论状态
 		if (forcedDelete) {
 			refCount = 0;
