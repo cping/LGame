@@ -184,6 +184,16 @@ public class LColor implements Serializable {
 		return argb(0xff, r, g, b);
 	}
 
+	public static final int alpha(int color, float a) {
+		if (a < 0f) {
+			a = 0f;
+		} else if (a > 1f) {
+			a = 1f;
+		}
+		int ialpha = (int) (0xFF * MathUtils.clamp(a, 0, 1f));
+		return (ialpha << 24) | (color & 0xFFFFFF);
+	}
+
 	public static final int alpha(int color) {
 		return (color >> 24) & 0xFF;
 	}
@@ -1238,7 +1248,7 @@ public class LColor implements Serializable {
 	public final static LColor findName(String colorName) {
 		return LColorList.get().find(colorName);
 	}
-	
+
 	/**
 	 * 返回当前像素对应的英文名称
 	 * 
@@ -1248,17 +1258,17 @@ public class LColor implements Serializable {
 	public final static String getColorName(int pixel) {
 		return LColorList.get().find(pixel);
 	}
-	
+
 	/**
 	 * 返回当前色彩对应的英文名称
-	 *  
+	 * 
 	 * @param color
 	 * @return
 	 */
 	public final static String getColorName(LColor color) {
 		return LColorList.get().find(color);
 	}
-	
+
 	@Override
 	public String toString() {
 		String value = CharUtils

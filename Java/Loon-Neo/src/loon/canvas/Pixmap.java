@@ -1820,8 +1820,9 @@ public class Pixmap extends Limit implements LRelease {
 		drawCircle(x, y, width, height, true, new CircleUpdate() {
 			public void newPoint(int xLeft, int yTop, int xRight, int yBottom) {
 				drawLineImpl(xLeft, xRight, yTop);
-				if (yTop != yBottom)
+				if (yTop != yBottom){
 					drawLineImpl(xLeft, xRight, yBottom);
+				}
 			}
 		});
 		return this;
