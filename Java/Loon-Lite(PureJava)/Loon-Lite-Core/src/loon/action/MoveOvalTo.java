@@ -135,7 +135,7 @@ public class MoveOvalTo extends ActionEvent {
 			float x = this.centerPoint.x + (radius * MathUtils.cos(radian));
 			float y = this.centerPoint.y + (radius * MathUtils.sin(radian));
 
-			this.original.setLocation(x + offsetX, y + offsetY);
+			movePos(x + offsetX, y + offsetY);
 			return;
 		}
 
@@ -172,7 +172,7 @@ public class MoveOvalTo extends ActionEvent {
 				* this.height * addX * addX / (this.width * this.width));
 		this.startPoint.y = (this.centerPoint.y + addY * this.directionY);
 
-		this.original.setLocation(this.startPoint.x + offsetX,
+		movePos(this.startPoint.x + offsetX,
 				this.startPoint.y + offsetY);
 	}
 

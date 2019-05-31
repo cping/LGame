@@ -4,6 +4,8 @@
 
 [![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 
+[EN](README.md) / [KR](README.kr.md)
+
 [免费的游戏素材可见此](https://github.com/cping/LGame/blob/master/dev-res/README.md "Game Source of Free")
 
 单纯android-studio运行模板见:androidstudio-template

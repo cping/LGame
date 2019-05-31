@@ -23,8 +23,12 @@ package loon.action.sprite;
 import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
+import loon.action.ActionBind;
+import loon.action.collision.CollisionFilter;
 import loon.action.collision.CollisionManager;
 import loon.action.collision.CollisionObject;
+import loon.action.collision.CollisionResult;
+import loon.action.collision.CollisionWorld;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.opengl.LTextureFree;
@@ -36,29 +40,47 @@ import loon.utils.TArray;
  */
 public class BulletEntity extends Entity {
 
+	private CollisionWorld collisionWorld;
+
+	protected CollisionFilter worldCollisionFilter;
+
 	private boolean closed;
 
 	private boolean running;
 
 	private boolean limitMoved;
 
+	private boolean selfWorld;
+
 	private TArray<Bullet> bullets;
 
 	private LTextureFree textureFree;
 
-	private CollisionManager collisionManager;
-
 	private EasingMode easingMode;
 
 	public BulletEntity() {
-		this(0, 0, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
+		this(null);
 	}
 
 	public BulletEntity(int x, int y, int w, int h) {
+		this(null, x, y, w, h);
+	}
+
+	public BulletEntity(CollisionWorld world) {
+		this(world, 0, 0, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
+	}
+
+	public BulletEntity(CollisionWorld world, int x, int y, int w, int h) {
 		this.easingMode = EasingMode.Linear;
 		this.bullets = new TArray<Bullet>(32);
 		this.textureFree = new LTextureFree();
-		this.collisionManager = getCollisionManager();
+		if (world != null) {
+			this.collisionWorld = world;
+			this.selfWorld = false;
+		} else {
+			this.collisionWorld = new CollisionWorld();
+			this.selfWorld = true;
+		}
 		this.closed = false;
 		this.running = true;
 		this.limitMoved = true;
@@ -67,11 +89,24 @@ public class BulletEntity extends Entity {
 		this.setSize(w, h);
 	}
 
-	public CollisionManager getCollisionManager() {
-		if (collisionManager == null) {
-			collisionManager = new CollisionManager();
+	public BulletEntity setCollisionWorld(CollisionWorld world) {
+		if (world == null) {
+			return this;
 		}
-		return collisionManager;
+		if (selfWorld && collisionWorld != null) {
+			collisionWorld.close();
+		}
+		this.selfWorld = false;
+		this.collisionWorld = world;
+		return this;
+	}
+
+	public CollisionManager getCollisionManager() {
+		if (collisionWorld == null) {
+			collisionWorld = new CollisionWorld();
+			selfWorld = true;
+		}
+		return collisionWorld.getCollisionManager();
 	}
 
 	public BulletEntity addBullet(LTexture texture, float x, float y, int dir) {
@@ -122,7 +157,7 @@ public class BulletEntity extends Entity {
 	public BulletEntity addBullet(EasingMode easing, String path, float x, float y, int dir, int initSpeed) {
 		return addBullet(new Bullet(easing, LSystem.loadTexture(path), x, y, dir, initSpeed));
 	}
-	
+
 	public BulletEntity addBullet(EasingMode easing, String path, float x, float y, int dir, int initSpeed,
 			float duration) {
 		return addBullet(new Bullet(easing, LSystem.loadTexture(path), x, y, dir, initSpeed, duration));
@@ -138,9 +173,20 @@ public class BulletEntity extends Entity {
 		if (bullet.getTexture() != null) {
 			textureFree.add(bullet.getTexture());
 		}
-		bullets.add(bullet);
-		collisionManager.addObject(bullet);
+		addWorld(bullet);
 		return this;
+	}
+
+	private void addWorld(Bullet bullet) {
+		bullets.add(bullet);
+		collisionWorld.add(bullet);
+		collisionWorld.getCollisionManager().addObject(bullet);
+	}
+
+	private void removeWorld(Bullet bullet) {
+		bullets.remove(bullet);
+		collisionWorld.remove(bullet);
+		collisionWorld.getCollisionManager().removeObject(bullet);
 	}
 
 	@Override
@@ -151,6 +197,7 @@ public class BulletEntity extends Entity {
 		for (int i = this.bullets.size - 1; i >= 0; i--) {
 			Bullet bu = bullets.get(i);
 			if (bu != null) {
+				movePos(bu);
 				bu.draw(g, offsetX + getX(), offsetY + getY());
 			}
 		}
@@ -165,10 +212,10 @@ public class BulletEntity extends Entity {
 			for (int i = this.bullets.size - 1; i >= 0; i--) {
 				Bullet bu = bullets.get(i);
 				if (bu != null) {
+					movePos(bu);
 					bu.update(elapsedTime);
 					if (limitMoved && !getRectBox().intersects(bu.getRectBox())) {
-						bullets.remove(bu);
-						collisionManager.removeObject(bu);
+						removeWorld(bu);
 					}
 				}
 			}
@@ -235,84 +282,84 @@ public class BulletEntity extends Entity {
 		if (closed) {
 			return;
 		}
-		collisionManager.setInTheLayer(itlayer);
+		getCollisionManager().setInTheLayer(itlayer);
 	}
 
 	public boolean getCollisionInTheLayer() {
 		if (closed) {
 			return false;
 		}
-		return collisionManager.getInTheLayer();
+		return getCollisionManager().getInTheLayer();
 	}
 
 	public void setCollisionOffsetPos(float x, float y) {
 		if (closed) {
 			return;
 		}
-		collisionManager.setOffsetPos(x, y);
+		getCollisionManager().setOffsetPos(x, y);
 	}
 
 	public void setCollisionOffsetX(float x) {
 		if (closed) {
 			return;
 		}
-		collisionManager.setOffsetX(x);
+		getCollisionManager().setOffsetX(x);
 	}
 
 	public void setCollisionOffsetY(float y) {
 		if (closed) {
 			return;
 		}
-		collisionManager.setOffsetY(y);
+		getCollisionManager().setOffsetY(y);
 	}
 
 	public Vector2f getCollisionOffsetPos() {
 		if (closed) {
 			return Vector2f.ZERO();
 		}
-		return collisionManager.getOffsetPos();
+		return getCollisionManager().getOffsetPos();
 	}
 
 	public void putCollision(CollisionObject obj) {
 		if (closed) {
 			return;
 		}
-		collisionManager.addObject(obj);
+		getCollisionManager().addObject(obj);
 	}
 
 	public void removeCollision(CollisionObject obj) {
 		if (closed) {
 			return;
 		}
-		collisionManager.removeObject(obj);
+		getCollisionManager().removeObject(obj);
 	}
 
 	public void removeCollision(String objFlag) {
 		if (closed) {
 			return;
 		}
-		collisionManager.removeObject(objFlag);
+		getCollisionManager().removeObject(objFlag);
 	}
 
 	public int getCollisionSize() {
 		if (closed) {
 			return 0;
 		}
-		return collisionManager.numberActors();
+		return getCollisionManager().numberActors();
 	}
 
 	public TArray<CollisionObject> getCollisionObjects() {
 		if (closed) {
 			return null;
 		}
-		return collisionManager.getActorsList();
+		return getCollisionManager().getActorsList();
 	}
 
 	public TArray<CollisionObject> getCollisionObjects(String objFlag) {
 		if (closed) {
 			return null;
 		}
-		return collisionManager.getObjects(objFlag);
+		return getCollisionManager().getObjects(objFlag);
 	}
 
 	public TArray<CollisionObject> getCollisionButtles() {
@@ -323,7 +370,7 @@ public class BulletEntity extends Entity {
 		if (closed) {
 			return null;
 		}
-		return collisionManager.getObjectsAt(x, y, objFlag);
+		return getCollisionManager().getObjectsAt(x, y, objFlag);
 	}
 
 	public TArray<CollisionObject> getCollisionButtlesAt(float x, float y) {
@@ -334,7 +381,7 @@ public class BulletEntity extends Entity {
 		if (closed) {
 			return null;
 		}
-		return collisionManager.getIntersectingObjects(obj, objFlag);
+		return getCollisionManager().getIntersectingObjects(obj, objFlag);
 	}
 
 	public TArray<CollisionObject> getIntersectingButtles(CollisionObject obj) {
@@ -345,7 +392,7 @@ public class BulletEntity extends Entity {
 		if (closed) {
 			return null;
 		}
-		return collisionManager.getOnlyIntersectingObject(obj, objFlag);
+		return getCollisionManager().getOnlyIntersectingObject(obj, objFlag);
 	}
 
 	public CollisionObject getOnlyIntersectingButtle(CollisionObject obj) {
@@ -356,7 +403,7 @@ public class BulletEntity extends Entity {
 		if (closed) {
 			return null;
 		}
-		return collisionManager.getObjectsInRange(x, y, r, objFlag);
+		return getCollisionManager().getObjectsInRange(x, y, r, objFlag);
 	}
 
 	public TArray<CollisionObject> getButtlesInRange(float x, float y, float r) {
@@ -370,7 +417,7 @@ public class BulletEntity extends Entity {
 		if (distance < 0) {
 			throw new LSysException("distance < 0");
 		} else {
-			return collisionManager.getNeighbours(obj, distance, d, objFlag);
+			return getCollisionManager().getNeighbours(obj, distance, d, objFlag);
 		}
 	}
 
@@ -386,6 +433,31 @@ public class BulletEntity extends Entity {
 		this.easingMode = easingMode;
 	}
 
+	private void movePos(ActionBind bind) {
+		if (bind == null) {
+			return;
+		}
+		if (collisionWorld != null) {
+			if (worldCollisionFilter == null) {
+				worldCollisionFilter = CollisionFilter.getDefault();
+			}
+			CollisionResult.Result result = collisionWorld.move(bind, bind.getX(), bind.getY(), worldCollisionFilter);
+			bind.setLocation(result.goalX, result.goalY);
+		}
+	}
+
+	public CollisionFilter getCollisionFilter() {
+		return worldCollisionFilter;
+	}
+
+	public void setCollisionFilter(CollisionFilter filter) {
+		this.worldCollisionFilter = filter;
+	}
+
+	public CollisionWorld getCollisionWorld() {
+		return collisionWorld;
+	}
+
 	@Override
 	public boolean isClosed() {
 		return closed || super.isClosed();
@@ -399,9 +471,11 @@ public class BulletEntity extends Entity {
 			textureFree.close();
 			textureFree = null;
 		}
-		if (collisionManager != null) {
-			collisionManager.dispose();
-			collisionManager = null;
+		if (selfWorld) {
+			if (collisionWorld != null) {
+				collisionWorld.close();
+				collisionWorld = null;
+			}
 		}
 		running = false;
 		closed = true;

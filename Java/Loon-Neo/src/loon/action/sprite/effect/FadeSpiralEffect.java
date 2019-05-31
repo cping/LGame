@@ -75,8 +75,8 @@ public class FadeSpiralEffect extends Entity implements BaseEffect {
 
 	@Override
 	public void reset() {
-		int tmp = _baseColor.getARGB();
 		super.reset();
+		int tmp = _baseColor.getARGB();
 		if (type == ISprite.TYPE_FADE_IN) {
 			for (int x = 0; x < tilewidth; x++) {
 				for (int y = 0; y < tileheight; y++) {

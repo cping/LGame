@@ -94,7 +94,7 @@ public class CircleTo extends ActionEvent {
 		this.y = (this.cy + this.radius
 				* MathUtils.sin(MathUtils.toRadians(this.velocity * dt)));
 		synchronized (original) {
-			original.setLocation(x + offsetX, y + offsetY);
+			movePos(x + offsetX, y + offsetY);
 		}
 	}
 

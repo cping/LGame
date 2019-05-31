@@ -67,7 +67,7 @@ public class FireTo extends ActionEvent {
 			if (original.inContains(x, y, original.getWidth(),
 					original.getHeight())) {
 				synchronized (original) {
-					original.setLocation(x + offsetX, y + offsetY);
+					movePos(x + offsetX, y + offsetY);
 				}
 			} else {
 				_isCompleted = true;
@@ -84,7 +84,7 @@ public class FireTo extends ActionEvent {
 				_isCompleted = true;
 			}
 			synchronized (original) {
-				original.setLocation(x + offsetX, y + offsetY);
+				movePos(x + offsetX, y + offsetY);
 			}
 		}
 	}

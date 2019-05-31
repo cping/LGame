@@ -22,6 +22,8 @@ package loon.action;
 
 import loon.utils.StringKeyValue;
 import loon.LSystem;
+import loon.action.collision.CollisionWorld;
+import loon.action.map.Field2D;
 import loon.utils.Easing.EasingMode;
 import loon.utils.timer.EaseTimer;
 
@@ -31,10 +33,15 @@ public class MoveBy extends ActionEvent {
 
 	private float _startX = -1, _startY = -1, _endX, _endY;
 
+	private int _direction = -1;
+
+	private boolean isDirUpdate = false;
+
 	private EaseTimer easeTimer;
 
-	public MoveBy(float endX, float endY, float duration, float delay,
-			EasingMode easing) {
+	private CollisionWorld world;
+
+	public MoveBy(float endX, float endY, float duration, float delay, EasingMode easing) {
 		this(-1, -1, endX, endY, 0, duration, delay, easing, 0, 0);
 	}
 
@@ -50,14 +57,12 @@ public class MoveBy extends ActionEvent {
 		this(-1, -1, endX, endY, speed, 1f, LSystem.DEFAULT_EASE_DELAY, EasingMode.Linear, 0, 0);
 	}
 
-	public MoveBy(float endX, float endY, int speed, EasingMode easing,
-			float sx, float sy) {
+	public MoveBy(float endX, float endY, int speed, EasingMode easing, float sx, float sy) {
 		this(-1, -1, endX, endY, speed, 1f, LSystem.DEFAULT_EASE_DELAY, easing, sx, sy);
 	}
 
-	public MoveBy(float startX, float startY, float endX, float endY,
-			int speed, float duration, float delay, EasingMode easing,
-			float sx, float sy) {
+	public MoveBy(float startX, float startY, float endX, float endY, int speed, float duration, float delay,
+			EasingMode easing, float sx, float sy) {
 		this._startX = startX;
 		this._startY = startY;
 		this._endX = endX;
@@ -78,10 +83,14 @@ public class MoveBy extends ActionEvent {
 					_isCompleted = true;
 					return;
 				}
-				original.setLocation(
-						_startX + (_endX - _startX) * easeTimer.getProgress()
-								+ offsetX, _startY + (_endY - _startY)
-								* easeTimer.getProgress() + offsetY);
+				float dirX = (_endX - _startX);
+				float dirY = (_endY - _startY);
+				float newX = _startX + dirX * easeTimer.getProgress() + offsetX;
+				float newY = _startY + dirY * easeTimer.getProgress() + offsetY;
+				float lastX = original.getX();
+				float lastY = original.getY();
+				updateDirection((int) (newX - lastX), (int) (newY - lastY));
+				movePos(newX, newY);
 			} else {
 				float x = original.getX();
 				float y = original.getY();
@@ -118,11 +127,29 @@ public class MoveBy extends ActionEvent {
 				} else {
 					count++;
 				}
-				original.setLocation(x + offsetX, y + offsetY);
+				float lastX = original.getX();
+				float lastY = original.getY();
+				float newX = x + offsetX;
+				float newY = y + offsetY;
+				updateDirection((int) (newX - lastX), (int) (newY - lastY));
+				movePos(newX, newY);
 				_isCompleted = (count == 2);
 			}
 		}
+	}
 
+	public int getDirection() {
+		return _direction;
+	}
+
+	public boolean isDirectionUpdate() {
+		return isDirUpdate;
+	}
+
+	public void updateDirection(int x, int y) {
+		int oldDir = _direction;
+		_direction = Field2D.getDirection(x, y, oldDir);
+		isDirUpdate = (oldDir != _direction);
 	}
 
 	@Override
@@ -144,8 +171,7 @@ public class MoveBy extends ActionEvent {
 
 	@Override
 	public ActionEvent cpy() {
-		MoveBy move = new MoveBy(_startX, _startY, _endX, _endY, _speed,
-				easeTimer.getDuration(), easeTimer.getDelay(),
+		MoveBy move = new MoveBy(_startX, _startY, _endX, _endY, _speed, easeTimer.getDuration(), easeTimer.getDelay(),
 				easeTimer.getEasingMode(), offsetX, offsetY);
 		move.set(this);
 		return move;
@@ -153,8 +179,7 @@ public class MoveBy extends ActionEvent {
 
 	@Override
 	public ActionEvent reverse() {
-		MoveBy move = new MoveBy(_endX, _endY, _startX, _startY, _speed,
-				easeTimer.getDuration(), easeTimer.getDelay(),
+		MoveBy move = new MoveBy(_endX, _endY, _startX, _startY, _speed, easeTimer.getDuration(), easeTimer.getDelay(),
 				easeTimer.getEasingMode(), offsetX, offsetY);
 		move.set(this);
 		return move;
@@ -165,20 +190,20 @@ public class MoveBy extends ActionEvent {
 		return "moveby";
 	}
 
+	public CollisionWorld getWorld() {
+		return world;
+	}
+
+	public void setWorld(CollisionWorld world) {
+		this.world = world;
+	}
+
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue(getName());
-		builder.kv("speed", _speed)
-		.comma()
-		.kv("startX", _startX)
-		.comma()
-		.kv("startY",_startY)
-		.comma()
-		.kv("endX",_endX)
-		.comma()
-		.kv("endY",_endY)
-		.comma()
-		.kv("EaseTimer",easeTimer);
+		builder.kv("speed", _speed).comma().kv("startX", _startX).comma().kv("startY", _startY).comma()
+				.kv("endX", _endX).comma().kv("endY", _endY).comma().kv("EaseTimer", easeTimer);
 		return builder.toString();
 	}
+
 }

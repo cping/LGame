@@ -77,6 +77,18 @@ public class ExplosionEffect extends Entity implements BaseEffect {
 		this(m, pix, null, 8, 8, EasingMode.Linear, 1f);
 	}
 
+	public ExplosionEffect(Mode m, String path, RectBox rect) {
+		this(m, path, rect, 1f);
+	}
+
+	public ExplosionEffect(Mode m, String path, RectBox rect, float duration) {
+		this(m, BaseIO.loadImage(path), rect, duration);
+	}
+
+	public ExplosionEffect(Mode m, Image pix, RectBox rect, float duration) {
+		this(m, pix, rect, 8, 8, EasingMode.Linear, duration);
+	}
+
 	public ExplosionEffect(Mode m, Image pix, EasingMode ease) {
 		this(m, pix, null, 8, 8, ease, 1f);
 	}
@@ -101,6 +113,8 @@ public class ExplosionEffect extends Entity implements BaseEffect {
 		} else {
 			this.imageRect = imageSize;
 		}
+		this.setLocation(imageRect.x, imageRect.y);
+		this.setSize(imageRect.width, imageRect.height);
 		this.blockWidth = tw;
 		this.blockHeight = th;
 		this.easingMode = ease;
@@ -129,6 +143,7 @@ public class ExplosionEffect extends Entity implements BaseEffect {
 
 	@Override
 	public void reset() {
+		super.reset();
 		this.stop();
 		this.packed = false;
 	}
@@ -451,6 +466,9 @@ public class ExplosionEffect extends Entity implements BaseEffect {
 	@Override
 	public void close() {
 		super.close();
+		this.stop();
+		this.fragments = null;
+		this.packed = false;
 		if (ovalTexture != null) {
 			ovalTexture.close();
 			ovalTexture = null;

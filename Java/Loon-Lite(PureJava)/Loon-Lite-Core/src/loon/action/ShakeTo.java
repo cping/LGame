@@ -56,6 +56,7 @@ public class ShakeTo extends ActionEvent {
 		this.shakeTimer = delay;
 	}
 
+	@Override
 	public void update(long elapsedTime) {
 		easeTimer.update(elapsedTime);
 		if (easeTimer.isCompleted()) {

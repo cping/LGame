@@ -312,6 +312,27 @@ public class FloatArray implements IArray {
 		return this;
 	}
 
+	public boolean isSorted(boolean order) {
+		final float[] arrays = this.items;
+		int orderCount = 0;
+		float temp = -1;
+		float v = order ? Float.MIN_VALUE : Float.MAX_VALUE;
+		for (int i = 0; i < length; i++) {
+			temp = v;
+			v = arrays[i];
+			if (order) {
+				if (temp <= v) {
+					orderCount++;
+				}
+			} else {
+				if (temp >= v) {
+					orderCount++;
+				}
+			}
+		}
+		return orderCount == length;
+	}
+	
 	public void reverse() {
 		float[] items = this.items;
 		for (int i = 0, lastIndex = length - 1, n = length / 2; i < n; i++) {
@@ -342,6 +363,30 @@ public class FloatArray implements IArray {
 			return 0;
 		}
 		return items[MathUtils.random(0, length - 1)];
+	}
+
+	public FloatArray randomFloatArray() {
+		return new FloatArray(randomArrays());
+	}
+
+	public float[] randomArrays() {
+		if (length == 0) {
+			return new float[0];
+		}
+		float v = 0f;
+		float[] newArrays = CollectionUtils.copyOf(items, length);
+		for (int i = 0; i < length; i++) {
+			v = random();
+			for (int j = 0; j < i; j++) {
+				if (newArrays[j] == v) {
+					v = random();
+					j = -1;
+				}
+
+			}
+			newArrays[i] = v;
+		}
+		return newArrays;
 	}
 
 	public float[] toArray() {

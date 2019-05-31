@@ -72,7 +72,7 @@ public class Sprites implements IArray, Visible, LRelease {
 	private int _width, _height;
 
 	private float _newLineHeight = -1f;
-	
+
 	private Screen _screen;
 
 	private final String _sprites_name;
@@ -314,7 +314,7 @@ public class Sprites implements IArray, Visible, LRelease {
 	public ISprite addRow(ISprite spr, float offX) {
 		return addPadding(spr, offX, 0, 0);
 	}
-	
+
 	/**
 	 * 按照上一个精灵的x,y位置,另起一行添加精灵,并偏移指定位置
 	 * 
@@ -334,7 +334,7 @@ public class Sprites implements IArray, Visible, LRelease {
 		if (this == spr) {
 			return spr;
 		}
-		
+
 		float maxX = 0;
 		float maxY = 0;
 
@@ -681,6 +681,110 @@ public class Sprites implements IArray, Visible, LRelease {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * 返回指定位置内的所有精灵
+	 * 
+	 * @param x
+	 * @param y
+	 * @param w
+	 * @param h
+	 * @return
+	 */
+	public TArray<ISprite> contains(float x, float y, float w, float h) {
+		TArray<ISprite> sprites = new TArray<ISprite>();
+		if (_closed) {
+			return sprites;
+		}
+		if (_sprites == null) {
+			return sprites;
+		}
+		for (int i = 0; i < _size; i++) {
+			ISprite sp = _sprites[i];
+			if (sp != null) {
+				if (sp.inContains(x, y, w, h)) {
+					sprites.add(sp);
+				}
+			}
+		}
+		return sprites;
+	}
+
+	/**
+	 * 返回包含指定位置的所有精灵
+	 * 
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public TArray<ISprite> contains(float x, float y) {
+		return contains(x, y, 1f, 1f);
+	}
+
+	/**
+	 * 返回包含指定精灵位置的所有精灵
+	 * 
+	 * @param sprite
+	 * @return
+	 */
+	public TArray<ISprite> containsSprite(ISprite sprite) {
+		if (sprite == null) {
+			return new TArray<ISprite>(0);
+		}
+		return contains(sprite.getX(), sprite.getY(), sprite.getWidth(), sprite.getHeight());
+	}
+
+	/**
+	 * 返回指定位置内的所有精灵
+	 * 
+	 * @param x
+	 * @param y
+	 * @param w
+	 * @param h
+	 * @return
+	 */
+	public TArray<ISprite> intersects(float x, float y, float w, float h) {
+		TArray<ISprite> sprites = new TArray<ISprite>();
+		if (_closed) {
+			return sprites;
+		}
+		if (_sprites == null) {
+			return sprites;
+		}
+		for (int i = 0; i < _size; i++) {
+			ISprite sp = _sprites[i];
+			if (sp != null) {
+				if (sp.getCollisionBox().intersects(x, y, w, h)) {
+					sprites.add(sp);
+				}
+			}
+		}
+		return sprites;
+	}
+
+	/**
+	 * 返回与指定位置相交的所有精灵
+	 * 
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public TArray<ISprite> intersects(float x, float y) {
+		return intersects(x, y, 1f, 1f);
+	}
+
+	/**
+	 * 返回与指定精灵位置相交的所有精灵
+	 * 
+	 * @param sprite
+	 * @return
+	 */
+	public TArray<ISprite> intersectsSprite(ISprite sprite) {
+		if (sprite == null) {
+			return new TArray<ISprite>(0);
+		}
+		return intersects(sprite.getX(), sprite.getY(), sprite.getWidth(), sprite.getHeight());
 	}
 
 	/**

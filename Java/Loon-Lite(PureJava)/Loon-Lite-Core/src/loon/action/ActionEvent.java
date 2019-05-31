@@ -20,6 +20,9 @@
  */
 package loon.action;
 
+import loon.action.collision.CollisionFilter;
+import loon.action.collision.CollisionResult;
+import loon.action.collision.CollisionWorld;
 import loon.utils.StringKeyValue;
 import loon.utils.timer.LTimer;
 
@@ -30,6 +33,10 @@ public abstract class ActionEvent {
 	private ActionListener actionListener;
 
 	protected boolean firstTick, _isCompleted, isInit;
+
+	protected CollisionWorld collisionWorld;
+
+	protected CollisionFilter worldCollisionFilter;
 
 	protected ActionBind original;
 
@@ -167,12 +174,55 @@ public abstract class ActionEvent {
 		original = e.original;
 		return this;
 	}
-	
+
 	public ActionEvent kill() {
 		this._isCompleted = true;
 		return this;
 	}
-	
+
+	public void movePos(float x, float y) {
+		movePos(x, y, -1f, -1f);
+	}
+
+	public void movePos(float x, float y, float lastX, float lastY) {
+		if (original == null) {
+			return;
+		}
+		if (collisionWorld != null) {
+			if (worldCollisionFilter == null) {
+				worldCollisionFilter = CollisionFilter.getDefault();
+			}
+			CollisionResult.Result result = collisionWorld.move(original, x, y, worldCollisionFilter);
+			if (lastX != -1 && lastY != -1) {
+				if (result.goalX != x || result.goalY != y) {
+					original.setLocation(lastX, lastY);
+				} else {
+					original.setLocation(result.goalX, result.goalY);
+				}
+			} else {
+				original.setLocation(result.goalX, result.goalY);
+			}
+		} else {
+			original.setLocation(x, y);
+		}
+	}
+
+	public CollisionFilter getCollisionFilter() {
+		return worldCollisionFilter;
+	}
+
+	public void setCollisionFilter(CollisionFilter filter) {
+		this.worldCollisionFilter = filter;
+	}
+
+	public CollisionWorld getCollisionWorld() {
+		return collisionWorld;
+	}
+
+	public void setCollisionWorld(CollisionWorld world) {
+		this.collisionWorld = world;
+	}
+
 	public abstract ActionEvent cpy();
 
 	public abstract ActionEvent reverse();
@@ -182,14 +232,8 @@ public abstract class ActionEvent {
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue(getName());
-		builder
-		.kv("loaded", isInit)
-		.comma()
-		.kv("bind", original)
-		.comma()
-		.kv("offset", (offsetX + " x " + offsetY))
-		.comma()
-		.kv("tag", tag);
+		builder.kv("loaded", isInit).comma().kv("bind", original).comma().kv("offset", (offsetX + " x " + offsetY))
+				.comma().kv("tag", tag);
 		return builder.toString();
 	}
 }

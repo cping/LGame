@@ -21,6 +21,8 @@
 package loon.action;
 
 import loon.LSystem;
+import loon.action.collision.CollisionFilter;
+import loon.action.collision.CollisionResult;
 import loon.action.map.AStarFindHeuristic;
 import loon.action.map.AStarFinder;
 import loon.action.map.Field2D;
@@ -37,15 +39,18 @@ public class MoveTo extends ActionEvent {
 	private final static IntMap<TArray<Vector2f>> pathCache = new IntMap<TArray<Vector2f>>(
 			LSystem.DEFAULT_MAX_CACHE_SIZE);
 
+	// 默认每帧的移动数值(象素)
+	private final static int INIT_MOVE_SPEED = 4;
+
 	private Vector2f startLocation, endLocation;
 
 	private Field2D layerMap;
 
-	private boolean flag, useCache, synchroLayerField;
+	private boolean allDir, useCache, synchroLayerField;
 
 	private TArray<Vector2f> pActorPath;
 
-	private int startX, startY, endX, endY, moveX, moveY;
+	private float startX, startY, endX, endY, moveX, moveY;
 
 	private int direction, speed;
 
@@ -55,24 +60,42 @@ public class MoveTo extends ActionEvent {
 
 	private boolean moveByMode = false;
 
-	public MoveTo(final Field2D map, float x, float y, boolean flag) {
-		this(map, x, y, flag, 4);
+	private boolean isDirUpdate = false;
+
+	public MoveTo(float x, float y, boolean all) {
+		this(LSystem.viewSize.newField2D(), x, y, all, INIT_MOVE_SPEED);
 	}
 
-	public MoveTo(final Field2D map, float x, float y, boolean flag, int speed) {
-		this(map, -1f, -1f, x, y, flag, speed, true, false);
+	public MoveTo(final Field2D map, float x, float y, boolean all) {
+		this(map, x, y, all, INIT_MOVE_SPEED);
 	}
 
-	public MoveTo(final Field2D map, float sx, float sy, float x, float y, boolean flag, int speed) {
-		this(map, sx, sy, x, y, flag, speed, true, false);
+	public MoveTo(float x, float y, boolean all, int speed) {
+		this(LSystem.viewSize.newField2D(), x, y, all, speed);
 	}
 
-	public MoveTo(final Field2D map, float sx, float sy, float x, float y, boolean flag, int speed, boolean cache,
+	public MoveTo(final Field2D map, float x, float y, boolean all, int speed) {
+		this(map, -1f, -1f, x, y, all, speed, true, false);
+	}
+
+	public MoveTo(float sx, float sy, float x, float y, boolean all, int speed) {
+		this(LSystem.viewSize.newField2D(), sx, sy, x, y, all, speed, true, false);
+	}
+
+	public MoveTo(final Field2D map, float sx, float sy, float x, float y, boolean all, int speed) {
+		this(map, sx, sy, x, y, all, speed, true, false);
+	}
+
+	public MoveTo(float sx, float sy, float x, float y, boolean all, int speed, boolean cache, boolean synField) {
+		this(LSystem.viewSize.newField2D(), sx, sy, x, y, all, speed, cache, synField);
+	}
+
+	public MoveTo(final Field2D map, float sx, float sy, float x, float y, boolean all, int speed, boolean cache,
 			boolean synField) {
 		this.startLocation = new Vector2f(sx, sy);
 		this.endLocation = new Vector2f(x, y);
 		this.layerMap = map;
-		this.flag = flag;
+		this.allDir = all;
 		this.speed = speed;
 		this.useCache = cache;
 		this.synchroLayerField = synField;
@@ -81,12 +104,12 @@ public class MoveTo extends ActionEvent {
 		}
 	}
 
-	public MoveTo(final Field2D map, Vector2f pos, boolean flag) {
-		this(map, pos, flag, 4);
+	public MoveTo(final Field2D map, Vector2f pos, boolean allDir) {
+		this(map, pos, allDir, INIT_MOVE_SPEED);
 	}
 
-	public MoveTo(final Field2D map, Vector2f pos, boolean flag, int speed) {
-		this(map, pos.x(), pos.y(), flag, speed);
+	public MoveTo(final Field2D map, Vector2f pos, boolean allDir, int speed) {
+		this(map, pos.x(), pos.y(), allDir, speed);
 	}
 
 	public void randomPathFinder() {
@@ -143,6 +166,10 @@ public class MoveTo extends ActionEvent {
 
 	@Override
 	public void onLoad() {
+		updatePath();
+	}
+
+	public void updatePath() {
 		if (!moveByMode && original != null && LSystem.getProcess() != null && LSystem.getProcess().getScreen() != null
 				&& !LSystem.getProcess().getScreen().getRectBox().contains(original.x(), original.y())
 				&& layerMap != null && !layerMap.inside(original.x(), original.y())) { // 处理越界出Field2D二维数组的移动
@@ -168,7 +195,7 @@ public class MoveTo extends ActionEvent {
 								layerMap.pixelsToTilesWidth(startLocation.x()),
 								layerMap.pixelsToTilesHeight(startLocation.y()),
 								layerMap.pixelsToTilesWidth(endLocation.x()),
-								layerMap.pixelsToTilesHeight(endLocation.y()), flag);
+								layerMap.pixelsToTilesHeight(endLocation.y()), allDir);
 						pathCache.put(key, final_path);
 					}
 					pActorPath = new TArray<Vector2f>();
@@ -177,7 +204,7 @@ public class MoveTo extends ActionEvent {
 			} else {
 				pActorPath = AStarFinder.find(heuristic, layerMap, layerMap.pixelsToTilesWidth(startLocation.x()),
 						layerMap.pixelsToTilesHeight(startLocation.y()), layerMap.pixelsToTilesWidth(endLocation.x()),
-						layerMap.pixelsToTilesHeight(endLocation.y()), flag);
+						layerMap.pixelsToTilesHeight(endLocation.y()), allDir);
 
 			}
 		}
@@ -188,6 +215,9 @@ public class MoveTo extends ActionEvent {
 			synchronized (pActorPath) {
 				pActorPath.clear();
 				pActorPath = null;
+			}
+			if (pathCache != null) {
+				pathCache.clear();
 			}
 		}
 	}
@@ -206,7 +236,7 @@ public class MoveTo extends ActionEvent {
 			return super.hashCode();
 		}
 		int hashCode = 1;
-		hashCode = LSystem.unite(hashCode, flag);
+		hashCode = LSystem.unite(hashCode, allDir);
 		hashCode = LSystem.unite(hashCode, layerMap.pixelsToTilesWidth(original.x()));
 		hashCode = LSystem.unite(hashCode, layerMap.pixelsToTilesHeight(original.y()));
 		hashCode = LSystem.unite(hashCode, layerMap.pixelsToTilesWidth(endLocation.x()));
@@ -244,46 +274,114 @@ public class MoveTo extends ActionEvent {
 		return layerMap;
 	}
 
+	private boolean isMoved;
+
 	@Override
 	public void update(long elapsedTime) {
+		isMoved = true;
+		float newX = 0f;
+		float newY = 0f;
 		if (moveByMode) {
-			float x = original.getX();
-			float y = original.getY();
+			int count = 0;
 			int dirX = (int) (endX - startX);
 			int dirY = (int) (endY - startY);
-			int count = 0;
-			if (dirX > 0) {
-				if (x >= endX) {
-					count++;
+			int dir = Field2D.getDirection(dirX, dirY, direction);
+			if (allDir) {
+				newX = original.getX();
+				newY = original.getY();
+				if (dirX > 0) {
+					if (newX >= endX) {
+						count++;
+					} else {
+						newX += speed;
+					}
+				} else if (dirX < 0) {
+					if (newX <= endX) {
+						count++;
+					} else {
+						newX -= speed;
+					}
 				} else {
-					x += speed;
-				}
-			} else if (dirX < 0) {
-				if (x <= endX) {
 					count++;
-				} else {
-					x -= speed;
 				}
+				if (dirY > 0) {
+					if (newY >= endY) {
+						count++;
+					} else {
+						newY += speed;
+					}
+				} else if (dirY < 0) {
+					if (newY <= endY) {
+						count++;
+					} else {
+						newY -= speed;
+					}
+				} else {
+					count++;
+				}
+				if (count > 0) {
+					isMoved = false;
+				}
+				if (!checkTileCollision(layerMap, original, newX, newY)) {
+					float lastX = original.getX();
+					float lastY = original.getY();
+					newX += offsetX;
+					newY += offsetY;
+					updateDirection((int) (newX - lastX), (int) (newY - lastY));
+					movePos(newX, newY);
+				}
+				_isCompleted = (count == 2);
 			} else {
-				count++;
-			}
-			if (dirY > 0) {
-				if (y >= endY) {
-					count++;
-				} else {
-					y += speed;
+				startX = original.getX() - offsetX;
+				startY = original.getY() - offsetY;
+				switch (dir) {
+				case Field2D.TUP:
+				case Field2D.UP:
+					startY -= speed;
+					if (startY < endY) {
+						startY = endY;
+						isMoved = false;
+					}
+					break;
+				case Field2D.TDOWN:
+				case Field2D.DOWN:
+					startY += speed;
+					if (startY > endY) {
+						startY = endY;
+						isMoved = false;
+					}
+					break;
+				case Field2D.TLEFT:
+				case Field2D.LEFT:
+					startX -= speed;
+					if (startX < endX) {
+						startX = endX;
+						isMoved = false;
+					}
+					break;
+				case Field2D.TRIGHT:
+				case Field2D.RIGHT:
+					startX += speed;
+					if (startX > endX) {
+						startX = endX;
+						isMoved = false;
+					}
+					break;
 				}
-			} else if (dirY < 0) {
-				if (y <= endY) {
-					count++;
-				} else {
-					y -= speed;
+				float lastX = original.getX();
+				float lastY = original.getY();
+				if (!checkTileCollision(layerMap, original, startX, startY)) {
+					newX = startX + offsetX;
+					newY = startY + offsetY;
+					if (isMoved) {
+						updateDirection((int) (newX - lastX), (int) (newY - lastY));
+					}
+					movePos(newX, newY);
 				}
-			} else {
-				count++;
+				if (endX - startX == 0 && endY - startY == 0) {
+					_isCompleted = true;
+				}
 			}
-			original.setLocation(x + offsetX, y + offsetY);
-			_isCompleted = (count == 2);
 		} else {
 			if (layerMap == null || original == null || pActorPath == null || pActorPath.size == 0) {
 				return;
@@ -297,6 +395,7 @@ public class MoveTo extends ActionEvent {
 						}
 					}
 				}
+				
 				if (endX == startX && endY == startY) {
 					if (pActorPath.size > 1) {
 						Vector2f moveStart = pActorPath.get(0);
@@ -307,84 +406,180 @@ public class MoveTo extends ActionEvent {
 						endY = moveEnd.y() * layerMap.getTileHeight();
 						moveX = moveEnd.x() - moveStart.x();
 						moveY = moveEnd.y() - moveStart.y();
-						if (moveX > -2 && moveY > -2 && moveX < 2 && moveY < 2) {
-							direction = Field2D.getDirection(moveX, moveY, direction);
-						}
+						updateDirection(moveX, moveY);
 					}
 					pActorPath.removeIndex(0);
 				}
+
+				newX = original.getX() - offsetX;
+				newY = original.getY() - offsetY;
 				switch (direction) {
 				case Field2D.TUP:
 					startY -= speed;
+					newY -= speed;
 					if (startY < endY) {
 						startY = endY;
+					}
+					if (newY < endY) {
+						newY = endY;
+						isMoved = false;
 					}
 					break;
 				case Field2D.TDOWN:
 					startY += speed;
+					newY += speed;
 					if (startY > endY) {
 						startY = endY;
+					}
+					if (newY > endY) {
+						newY = endY;
+						isMoved = false;
 					}
 					break;
 				case Field2D.TLEFT:
 					startX -= speed;
+					newX -= speed;
 					if (startX < endX) {
 						startX = endX;
+					}
+					if (newX < endX) {
+						newX = endX;
+						isMoved = false;
 					}
 					break;
 				case Field2D.TRIGHT:
 					startX += speed;
+					newX += speed;
 					if (startX > endX) {
 						startX = endX;
+					}
+					if (newX > endX) {
+						newX = endX;
+						isMoved = false;
 					}
 					break;
 				case Field2D.UP:
 					startX += speed;
 					startY -= speed;
+					newX += speed;
+					newY -= speed;
 					if (startX > endX) {
 						startX = endX;
 					}
 					if (startY < endY) {
 						startY = endY;
+					}
+					if (newX > endX) {
+						newX = endX;
+						isMoved = false;
+					}
+					if (newY < endY) {
+						newY = endY;
+						isMoved = false;
 					}
 					break;
 				case Field2D.DOWN:
 					startX -= speed;
 					startY += speed;
+					newX -= speed;
+					newY += speed;
 					if (startX < endX) {
 						startX = endX;
 					}
 					if (startY > endY) {
 						startY = endY;
 					}
+					if (newX < endX) {
+						newX = endX;
+						isMoved = false;
+					}
+					if (newY > endY) {
+						newY = endY;
+						isMoved = false;
+					}
 					break;
 				case Field2D.LEFT:
 					startX -= speed;
 					startY -= speed;
+					newX -= speed;
+					newY -= speed;
 					if (startX < endX) {
 						startX = endX;
 					}
 					if (startY < endY) {
 						startY = endY;
 					}
+					if (newX < endX) {
+						newX = endX;
+						isMoved = false;
+					}
+					if (newY < endY) {
+						newY = endY;
+						isMoved = false;
+					}
 					break;
 				case Field2D.RIGHT:
 					startX += speed;
 					startY += speed;
+					newX += speed;
+					newY += speed;
 					if (startX > endX) {
 						startX = endX;
 					}
 					if (startY > endY) {
 						startY = endY;
 					}
+					if (newX > endX) {
+						newX = endX;
+						isMoved = false;
+					}
+					if (newY > endY) {
+						newY = endY;
+						isMoved = false;
+					}
 					break;
 				}
-				if (!(original.x() != 0 && original.y() != 0 && startX == 0 && startY == 0 && endX == 0 && endY == 0)) {
+				if (!checkTileCollision(layerMap, original, newX, newY)) {
 					synchronized (original) {
-						original.setLocation(startX + offsetX, startY + offsetY);
+						newX += offsetX;
+						newY += offsetY;
+						movePathPos(newX, newY);
 					}
 				}
 			}
+		}
+		isMoved = !_isCompleted;
+	}
+
+	public boolean isMoving() {
+		return isMoved;
+	}
+
+	protected final boolean checkTileCollision(Field2D field2d, ActionBind bind, float newX, float newY) {
+		if (field2d == null) {
+			return false;
+		}
+		return field2d.checkTileCollision(bind.getX() - offsetX, bind.getY() - offsetY, bind.getWidth(),
+				bind.getHeight(), newX, newY);
+	}
+
+	public void movePathPos(float newX, float newY) {
+		if (collisionWorld != null) {
+			if (worldCollisionFilter == null) {
+				worldCollisionFilter = CollisionFilter.getDefault();
+			}
+			CollisionResult.Result result = collisionWorld.move(original, newX, newY, worldCollisionFilter);
+			if ((result.goalX != newX || result.goalY != newY)) {
+				clearPath();
+				endLocation.set(result.goalX, result.goalY);
+				startLocation.set(newX, newY);
+				updatePath();
+				original.setLocation(result.goalX, result.goalY);
+			} else {
+				original.setLocation(newX, newY);
+			}
+		} else {
+			original.setLocation(newX, newY);
 		}
 	}
 
@@ -416,6 +611,16 @@ public class MoveTo extends ActionEvent {
 	public boolean isComplete() {
 		return moveByMode ? _isCompleted
 				: (pActorPath == null || pActorPath.size == 0 || _isCompleted || original == null);
+	}
+
+	public boolean isDirectionUpdate() {
+		return isDirUpdate;
+	}
+
+	public void updateDirection(float x, float y) {
+		int oldDir = direction;
+		direction = Field2D.getDirection((int) x, (int) y, oldDir);
+		isDirUpdate = (oldDir != direction);
 	}
 
 	public boolean isUseCache() {
@@ -452,7 +657,7 @@ public class MoveTo extends ActionEvent {
 
 	@Override
 	public ActionEvent cpy() {
-		MoveTo move = new MoveTo(layerMap, -1, -1, endLocation.x, endLocation.y, flag, speed, useCache,
+		MoveTo move = new MoveTo(layerMap, -1, -1, endLocation.x, endLocation.y, allDir, speed, useCache,
 				synchroLayerField);
 		move.set(this);
 		move.heuristic = this.heuristic;
@@ -461,7 +666,7 @@ public class MoveTo extends ActionEvent {
 
 	@Override
 	public ActionEvent reverse() {
-		MoveTo move = new MoveTo(layerMap, -1, -1, oldX, oldY, flag, speed, useCache, synchroLayerField);
+		MoveTo move = new MoveTo(layerMap, -1, -1, oldX, oldY, allDir, speed, useCache, synchroLayerField);
 		move.set(this);
 		move.heuristic = this.heuristic;
 		return move;
@@ -471,21 +676,14 @@ public class MoveTo extends ActionEvent {
 	public String getName() {
 		return "move";
 	}
-	
+
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue(getName());
-		builder.kv("startLocation", startLocation)
-		.comma()
-		.kv("endLocation", endLocation)
-		.comma()
-		.kv("layerMap",layerMap)
-		.comma()
-		.kv("direction",direction)
-		.comma()
-		.kv("speed",speed)
-		.comma()
-		.kv("heuristic", heuristic);
+		builder.kv("startLocation", startLocation).comma().kv("endLocation", endLocation).comma()
+				.kv("layerMap", layerMap).comma().kv("direction", direction).comma().kv("speed", speed).comma()
+				.kv("heuristic", heuristic);
 		return builder.toString();
 	}
+
 }

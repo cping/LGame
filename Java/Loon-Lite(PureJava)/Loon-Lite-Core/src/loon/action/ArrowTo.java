@@ -139,7 +139,7 @@ public class ArrowTo extends ActionEvent {
 			float slope = vy / vx;
 			float theta = MathUtils.atan(slope);
 			original.setRotation(theta * MathUtils.RAD_TO_DEG);
-			original.setLocation(currentX + offsetX, currentY + offsetY);
+			movePos(currentX + offsetX, currentY + offsetY);
 		}
 	}
 
