@@ -113,6 +113,7 @@ public abstract class ActionEvent {
 		if (actionListener != null) {
 			actionListener.stop(original);
 		}
+		this._isCompleted = true;
 		return this;
 	}
 

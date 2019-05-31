@@ -23,21 +23,21 @@ package loon.action.map.battle.behavior;
 public abstract class IActor {
 
 	protected int currentIndex;
-	
+
 	protected IMove moves;
 
 	protected String name;
-	
-	protected int team ;
-	
+
+	protected int team;
+
 	protected IActorStatus actorStatus;
-	
+
 	protected boolean visible;
-	
+
 	protected boolean exist;
-	
+
 	protected float posX;
-	
+
 	protected float posY;
 
 	public IMove getMoves() {
@@ -55,7 +55,7 @@ public abstract class IActor {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	public int getTeam() {
 		return team;
 	}
@@ -68,8 +68,8 @@ public abstract class IActor {
 		return actorStatus;
 	}
 
-	public void setActorStatus(IActorStatus actorStatus) {
-		this.actorStatus = actorStatus;
+	public void setActorStatus(IActorStatus status) {
+		this.actorStatus = status;
 	}
 
 	public boolean isVisible() {
@@ -103,7 +103,7 @@ public abstract class IActor {
 	public void setExist(boolean exist) {
 		this.exist = exist;
 	}
-	
+
 	public int getCurrentIndex() {
 		return currentIndex;
 	}
@@ -112,13 +112,36 @@ public abstract class IActor {
 		this.currentIndex = currentIndex;
 	}
 
+	public boolean deadCheck() {
+		return actorStatus != null ? actorStatus.deadCheck() : false;
+	}
+
+	public boolean isWin() {
+		return actorStatus != null ? actorStatus.isWin() : false;
+	}
+
+	public boolean isLose() {
+		return actorStatus != null ? actorStatus.isLose() : false;
+	}
+
+	public boolean levelUp() {
+		return actorStatus != null ? actorStatus.levelUp() : false;
+	}
+
+	public int getTeamID() {
+		return actorStatus != null ? actorStatus.team : -1;
+	}
+
+	public int getGroupID() {
+		return actorStatus != null ? actorStatus.group : -1;
+	}
+
 	public abstract boolean actionCheck();
 
 	public abstract void attackCheck();
-		
+
 	public abstract void nextAction();
 
 	public abstract IActor enemyCheck();
-	
-	
+
 }

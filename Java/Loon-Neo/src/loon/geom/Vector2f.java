@@ -99,15 +99,22 @@ public class Vector2f implements Serializable, XY {
 		return lengthSquared();
 	}
 
-	public Vector2f nor() {
-		float len = len();
-		if (len != 0) {
-			x /= len;
-			y /= len;
+	public Vector2f normalizeSelf() {
+		float l = length();
+		if (l == 0 || l == 1){
+			return this;
 		}
-		return this;
+		return set(x / l, y / l);
 	}
 
+	public Vector2f nor() {
+		return normalizeSelf();
+	}
+
+	public Vector2f normalizeNew() {
+		return nor(len());
+	}
+	
 	public Vector2f nor(float n) {
 		return new Vector2f(x == 0 ? 0 : x / n, y == 0 ? 0 : y / n);
 	}
@@ -892,15 +899,6 @@ public class Vector2f implements Serializable, XY {
 
 	public Vector2f subtract(float x, float y) {
 		return add(-x, -y);
-	}
-
-	public Vector2f normalizeSelf() {
-		float l = length();
-
-		if (l == 0 || l == 1)
-			return this;
-
-		return set(x / l, y / l);
 	}
 
 	public Vector2f negateSelf() {

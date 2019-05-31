@@ -29,6 +29,10 @@ public abstract class IActorStatus {
 	public abstract boolean deadCheck();
 	
 	public abstract boolean levelUp();
+
+	public abstract boolean isWin();
 	
+	public abstract boolean isLose();
+
 
 }

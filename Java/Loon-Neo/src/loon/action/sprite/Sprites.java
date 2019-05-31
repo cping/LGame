@@ -1254,9 +1254,7 @@ public class Sprites implements IArray, Visible, LRelease {
 	 * @return
 	 */
 	public TArray<ISprite> find(QueryEvent<ISprite> query) {
-
 		TArray<ISprite> result = new TArray<ISprite>();
-
 		for (int i = _sprites.length - 1; i > -1; i--) {
 			ISprite sprite = _sprites[i];
 			if (sprite != null) {

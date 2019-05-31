@@ -282,6 +282,39 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		}
 	}
 
+	public ActionTween followTo(ActionBind actorToFollow) {
+		return event(new FollowTo(actorToFollow));
+	}
+
+	public ActionTween followTo(Field2D field2d, ActionBind actorToFollow) {
+		return event(new FollowTo(field2d, actorToFollow));
+	}
+
+	public ActionTween followTo(ActionBind actorToFollow, float speed) {
+		return event(new FollowTo(actorToFollow, speed));
+	}
+
+	public ActionTween followTo(Field2D field2d, ActionBind actorToFollow, float speed) {
+		return event(new FollowTo(field2d, actorToFollow, speed));
+	}
+
+	public ActionTween followTo(ActionBind actorToFollow, float follow, float speed) {
+		return event(new FollowTo(actorToFollow, follow, speed));
+	}
+
+	public ActionTween followTo(Field2D field2d, ActionBind actorToFollow, float follow, float speed) {
+		return event(new FollowTo(field2d, actorToFollow, follow, speed));
+	}
+
+	public ActionTween followTo(ActionBind actorToFollow, float vx, float vy, float follow, float speed) {
+		return event(new FollowTo(actorToFollow, vx, vy, follow, speed));
+	}
+
+	public ActionTween followTo(Field2D field2d, ActionBind actorToFollow, float vx, float vy, float follow,
+			float speed) {
+		return event(new FollowTo(field2d, actorToFollow, vx, vy, follow, speed));
+	}
+
 	public ActionTween moveBy(float endX, float endY) {
 		return moveBy(endX, endY, 8);
 	}
