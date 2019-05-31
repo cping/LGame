@@ -1115,9 +1115,6 @@ public abstract class LContainer extends LComponent implements IArray {
 	@Override
 	public void close() {
 		super.close();
-		if (_component_isClose) {
-			return;
-		}
 		if (_component_autoDestroy) {
 			if (_childs != null) {
 				for (LComponent c : _childs) {

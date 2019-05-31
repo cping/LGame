@@ -48,6 +48,10 @@ public class MathUtils {
 
 	public static final int HALF_FIXED = 2 << 15;
 
+	public static final int SK1 = 498;
+
+	public static final int SK2 = 10882;
+
 	private static final String[] ZEROS = { "", "0", "00", "000", "0000", "00000", "000000", "0000000", "00000000",
 			"000000000", "0000000000" };
 
@@ -495,10 +499,6 @@ public class MathUtils {
 		}
 		return 0;
 	}
-
-	static final int SK1 = 498;
-
-	static final int SK2 = 10882;
 
 	public static final int sin(int f) {
 		int sign = 1;

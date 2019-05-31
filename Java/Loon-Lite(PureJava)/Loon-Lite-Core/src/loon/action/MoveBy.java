@@ -22,7 +22,6 @@ package loon.action;
 
 import loon.utils.StringKeyValue;
 import loon.LSystem;
-import loon.action.collision.CollisionWorld;
 import loon.action.map.Field2D;
 import loon.utils.Easing.EasingMode;
 import loon.utils.timer.EaseTimer;
@@ -38,8 +37,6 @@ public class MoveBy extends ActionEvent {
 	private boolean isDirUpdate = false;
 
 	private EaseTimer easeTimer;
-
-	private CollisionWorld world;
 
 	public MoveBy(float endX, float endY, float duration, float delay, EasingMode easing) {
 		this(-1, -1, endX, endY, 0, duration, delay, easing, 0, 0);
@@ -188,14 +185,6 @@ public class MoveBy extends ActionEvent {
 	@Override
 	public String getName() {
 		return "moveby";
-	}
-
-	public CollisionWorld getWorld() {
-		return world;
-	}
-
-	public void setWorld(CollisionWorld world) {
-		this.world = world;
 	}
 
 	@Override

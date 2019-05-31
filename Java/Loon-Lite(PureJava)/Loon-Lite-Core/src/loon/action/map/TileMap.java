@@ -1047,8 +1047,10 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		if (o == null) {
 			return false;
 		}
+
 		float x = offsetXPixel(o.getX()) + newX;
 		float y = offsetYPixel(o.getY());
+
 		if (!field2d.checkTileCollision(o, x, y)) {
 			if (toMoved) {
 				o.setLocation(x, y);

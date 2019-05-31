@@ -1164,7 +1164,6 @@ final public class StringUtils extends CharUtils {
 				}
 			}
 		}
-
 		if (tempChars.length == 0) {
 			return "";
 		} else {

@@ -639,7 +639,6 @@ public class GravityHandler implements LRelease {
 		}
 
 		result.normal.setZero();
-
 		collisionObjects.clear();
 
 		for (Gravity b : otherObjects) {

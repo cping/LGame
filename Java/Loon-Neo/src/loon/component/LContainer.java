@@ -101,21 +101,15 @@ public abstract class LContainer extends LComponent implements IArray {
 		LComponent tag = null;
 
 		if (childCount == 1) {
-
 			LComponent cp = _childs[0];
-
 			if (cp != null && cp.getY() >= _newLineHeight && !otherName.equals(cp.getUIName())) {
 				maxX = cp.getX();
 				maxY = cp.getY();
 				tag = cp;
 			}
-
 		} else {
-
 			for (int i = 0; i < childCount; i++) {
-
 				LComponent c = _childs[i];
-
 				if (c != null && c != comp && c.getY() >= _newLineHeight && !otherName.equals(c.getUIName())) {
 					float oldMaxX = maxX;
 					float oldMaxY = maxY;
@@ -126,14 +120,11 @@ public abstract class LContainer extends LComponent implements IArray {
 					}
 				}
 			}
-
 		}
 		if (tag == null && childCount > 0) {
 			tag = _childs[childCount - 1];
 		}
-
 		if (tag != null && tag != comp && !otherName.equals(tag.getUIName())) {
-
 			switch (code) {
 			case 0:
 				comp.setLocation(maxX + tag.getWidth() + offX, maxY + offY);
@@ -145,9 +136,7 @@ public abstract class LContainer extends LComponent implements IArray {
 				comp.setLocation(maxX + tag.getWidth() + offX, maxY + tag.getHeight() + offY);
 				break;
 			}
-
 		} else {
-
 			switch (code) {
 			case 0:
 				comp.setLocation(maxX + offX, maxY + offY);
@@ -159,13 +148,10 @@ public abstract class LContainer extends LComponent implements IArray {
 				comp.setLocation(maxX + offX, maxY + offY);
 				break;
 			}
-
 		}
 
 		add(comp);
-
 		_newLineHeight = comp.getY();
-
 		return comp;
 	}
 
@@ -1115,9 +1101,6 @@ public abstract class LContainer extends LComponent implements IArray {
 	@Override
 	public void close() {
 		super.close();
-		if (_component_isClose) {
-			return;
-		}
 		if (_component_autoDestroy) {
 			if (_childs != null) {
 				for (LComponent c : _childs) {

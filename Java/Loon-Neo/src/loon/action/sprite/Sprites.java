@@ -341,21 +341,15 @@ public class Sprites implements IArray, Visible, LRelease {
 		ISprite tag = null;
 
 		if (_size == 1) {
-
 			ISprite cp = _sprites[0];
-
 			if (cp != null && cp.getY() >= _newLineHeight) {
 				maxX = cp.getX();
 				maxY = cp.getY();
 				tag = cp;
 			}
-
 		} else {
-
 			for (int i = 0; i < _size; i++) {
-
 				ISprite c = _sprites[i];
-
 				if (c != null && c != spr && c.getY() >= _newLineHeight) {
 					float oldMaxX = maxX;
 					float oldMaxY = maxY;
@@ -373,7 +367,6 @@ public class Sprites implements IArray, Visible, LRelease {
 		}
 
 		if (tag != null && tag != spr) {
-
 			switch (code) {
 			case 0:
 				spr.setLocation(maxX + tag.getWidth() + offX, maxY + offY);
@@ -387,7 +380,6 @@ public class Sprites implements IArray, Visible, LRelease {
 			}
 
 		} else {
-
 			switch (code) {
 			case 0:
 				spr.setLocation(maxX + offX, maxY + offY);
@@ -399,13 +391,10 @@ public class Sprites implements IArray, Visible, LRelease {
 				spr.setLocation(maxX + offX, maxY + offY);
 				break;
 			}
-
 		}
 
 		add(spr);
-
 		_newLineHeight = spr.getY();
-
 		return spr;
 	}
 
@@ -1231,9 +1220,7 @@ public class Sprites implements IArray, Visible, LRelease {
 	 * @return
 	 */
 	public TArray<ISprite> remove(QueryEvent<ISprite> query) {
-
 		TArray<ISprite> result = new TArray<ISprite>();
-
 		for (int i = _sprites.length - 1; i > -1; i--) {
 			ISprite sprite = _sprites[i];
 			if (sprite != null) {
@@ -1243,7 +1230,6 @@ public class Sprites implements IArray, Visible, LRelease {
 				}
 			}
 		}
-
 		return result;
 	}
 
@@ -1263,7 +1249,6 @@ public class Sprites implements IArray, Visible, LRelease {
 				}
 			}
 		}
-
 		return result;
 	}
 
@@ -1274,13 +1259,10 @@ public class Sprites implements IArray, Visible, LRelease {
 	 * @return
 	 */
 	public <T extends ISprite> TArray<T> delete(QueryEvent<T> query) {
-
 		TArray<T> result = new TArray<T>();
-
 		for (int i = _sprites.length - 1; i > -1; i--) {
 			ISprite sprite = _sprites[i];
 			if (sprite != null) {
-
 				@SuppressWarnings("unchecked")
 				T v = (T) sprite;
 				if (query.hit(v)) {
@@ -1289,7 +1271,6 @@ public class Sprites implements IArray, Visible, LRelease {
 				}
 			}
 		}
-
 		return result;
 	}
 
@@ -1300,12 +1281,9 @@ public class Sprites implements IArray, Visible, LRelease {
 	 * @return
 	 */
 	public <T extends ISprite> TArray<T> select(QueryEvent<T> query) {
-
 		TArray<T> result = new TArray<T>();
-
 		for (int i = _sprites.length - 1; i > -1; i--) {
 			ISprite sprite = _sprites[i];
-
 			if (sprite != null) {
 				@SuppressWarnings("unchecked")
 				T v = (T) sprite;

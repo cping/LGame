@@ -383,7 +383,6 @@ public class IntArray implements IArray {
 					v = random();
 					j = -1;
 				}
-
 			}
 			newArrays[i] = v;
 		}
