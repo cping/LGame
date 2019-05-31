@@ -1342,6 +1342,25 @@ public class MathUtils {
 		return newAngle;
 	}
 
+	public static final float fixAngle(final float angle) {
+		float newAngle = angle;
+		if (newAngle == -TWO_PI || newAngle == TWO_PI) {
+			return newAngle;
+		}
+		newAngle = angle;
+		if (newAngle < 0) {
+			while (newAngle < 0) {
+				newAngle += TWO_PI;
+			}
+		}
+		if (newAngle > TWO_PI) {
+			while (newAngle > TWO_PI) {
+				newAngle -= TWO_PI;
+			}
+		}
+		return newAngle;
+	}
+
 	public static final float adjust(final float angle) {
 		float newAngle = angle;
 		while (newAngle < 0) {

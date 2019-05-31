@@ -413,7 +413,7 @@ public class LColor implements Serializable {
 			setColor(LColor.white);
 			return;
 		}
-		c = c.toLowerCase();
+		c = c.trim().toLowerCase();
 		// 识别字符串格式颜色
 		if (c.startsWith("#")) {
 			setColor(hexToColor(c));
@@ -447,6 +447,8 @@ public class LColor implements Serializable {
 			setColor(TRANSPARENT);
 		} else if (MathUtils.isNan(c)) {
 			setColor(convertInt(c));
+		} else if (StringUtils.isHex(c)) {
+			setColor(hexToColor(c));
 		} else {
 			LColor color = LColorList.get().find(c);
 			if (color != null) {
@@ -1269,14 +1271,49 @@ public class LColor implements Serializable {
 		return LColorList.get().find(color);
 	}
 
-	@Override
-	public String toString() {
-		String value = CharUtils
-				.toHex(((int) (255 * r) << 24) | ((int) (255 * g) << 16) | ((int) (255 * b) << 8) | ((int) (255 * a)));
+	/**
+	 * 返回指定像素的字符串格式
+	 * 
+	 * @param color
+	 * @return
+	 */
+	public String toString(int color) {
+		String value = CharUtils.toHex(color);
 		for (; value.length() < 8;) {
 			value = "0" + value;
 		}
 		return value;
+	}
+
+	/**
+	 * 以指定像素格式返回当前色彩的字符串格式
+	 * 
+	 * @param format
+	 * @return
+	 */
+	public String toString(String format) {
+		if (StringUtils.isEmpty(format)) {
+			return toString();
+		}
+		String newFormat = format.trim().toLowerCase();
+		if ("rgb".equals(newFormat)) {
+			return toString(getRGB());
+		} else if ("argb".equals(newFormat) || "rgba".equals(newFormat)) {
+			return toString(getARGB());
+		} else if ("hsl".equals(newFormat)) {
+			return toString(getRGBtoHSL().getARGB());
+		} else if ("alpha".equals(newFormat)) {
+			return toString(getAlpha());
+		}
+		return toString();
+	}
+
+	/**
+	 * 返回当前Color的字符串格式
+	 */
+	@Override
+	public String toString() {
+		return toString(getARGB());
 	}
 
 }
