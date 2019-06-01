@@ -23,6 +23,7 @@ package org.test;
 import loon.Stage;
 import loon.action.ActionBind;
 import loon.action.ActionListener;
+import loon.action.FollowTo;
 import loon.action.MoveTo;
 import loon.action.collision.CollisionWorld;
 import loon.action.map.Field2D;
@@ -60,6 +61,14 @@ public class CollisionWorldTest extends Stage {
 		world.add(new Entity("ball.png", 66, 66));
 		world.add(new Entity("ball.png", 266, 166));
 		world.add(new Entity("ball.png", 155, 100));
+		
+		Entity follow = new Entity("ball.png", 266, 266);
+		FollowTo followeve = new FollowTo(hero);
+		followeve.setCollisionWorld(world);
+		//跟随hero
+		follow.selfAction().event(followeve).start();
+		
+		world.add(follow);
 
 		up(new Touched() {
 

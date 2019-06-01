@@ -8,6 +8,7 @@ import loon.action.sprite.effect.FadeDotEffect;
 import loon.action.sprite.effect.FadeOvalEffect;
 import loon.action.sprite.effect.FadeSpiralEffect;
 import loon.action.sprite.effect.FadeTileEffect;
+import loon.action.sprite.effect.PixelBubbleEffect;
 import loon.action.sprite.effect.SwipeEffect;
 import loon.canvas.LColor;
 import loon.component.LLabel;
@@ -19,7 +20,7 @@ public class EffectTest extends Stage {
 
 	@Override
 	public void create() {
-		
+
 		final Array<BaseEffect> effects = new Array<BaseEffect>();
 
 		// 设置背景图片
@@ -57,16 +58,18 @@ public class EffectTest extends Stage {
 					kill();
 					LLabel label = addLabel("Effect Over");
 					centerOn(label);
-					
+					// 显示一堆红色气泡出来
+					add(new PixelBubbleEffect(LColor.red));
+
 				}
 			}
 		};
 		// 加入一个单独的游戏进程
 		addProcess(process);
-		
-		//Screen关闭时注销进程,注销effct集合
-		putReleases(process,effects);
-		
-		add(MultiScreenTest.getBackButton(this,0));
+
+		// Screen关闭时注销进程,注销effct集合
+		putReleases(process, effects);
+
+		add(MultiScreenTest.getBackButton(this, 0));
 	}
 }

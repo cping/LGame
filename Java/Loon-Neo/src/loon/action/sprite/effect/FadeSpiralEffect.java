@@ -63,14 +63,14 @@ public class FadeSpiralEffect extends Entity implements BaseEffect {
 	public FadeSpiralEffect(int type, int speed, LColor c, int w, int h) {
 		this.type = type;
 		this.speed = speed;
-		this.setColor(c);
 		this.timer = new LTimer(30);
-		this.setSize(w, h);
 		this.tilewidth = (int) (LSystem.viewSize.getWidth() / w + 1);
 		this.tileheight = (int) (LSystem.viewSize.getHeight() / h + 1);
 		this.conversions = new boolean[tilewidth][tileheight];
 		this.reset();
 		this.setRepaint(true);
+		this.setColor(c);
+		this.setSize(w, h);
 	}
 
 	@Override
@@ -90,10 +90,10 @@ public class FadeSpiralEffect extends Entity implements BaseEffect {
 				}
 			}
 		}
-		state = 1;
-		cx = 0;
-		cy = 0;
-		tilescovered = 0;
+		this.state = 1;
+		this.cx = 0;
+		this.cy = 0;
+		this.tilescovered = 0;
 		_baseColor.setColor(tmp);
 	}
 
