@@ -49,8 +49,16 @@ import loon.utils.GLUtils;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
 
+/**
+ * loon的lite版本glex是基于不同Java环境的本地默认渲染接口直接调用出来的，而非如完整版一样，用gles实现的，所以在某些方法上并没有完整保留完整版写法，不是做不到，而是<br>
+ * 效率问题。因为java本地环境提供的渲染api已经是不同环境下渲染接口的封装，比如javafx的glass已经是directx(win)或者opengl(linux)的封装自适应调用了,如果再保留完整版写法等于多封装一次<br>
+ * 效率上会差很多,不如直接调用他们封装好的高效还不容易出错（相对而言，事实上java的本地渲染api就没有快的,看一眼源码就知道了,各种耗时方法都不缓存，还有大量单独纹理提交……）。
+ */
 public class GLEx implements LRelease {
 
+	//临时缓存GLEx中的颜色用
+	private LColor _tempColor = LColor.white.cpy();
+	
 	/*
 	 * 内部类，用来保存与复位GLEx的基本渲染参数
 	 */
@@ -164,7 +172,6 @@ public class GLEx implements LRelease {
 		if (batch == null) {
 			return this;
 		}
-		// target.bind();
 		beginBatch(batch);
 		return this;
 	}
@@ -295,7 +302,6 @@ public class GLEx implements LRelease {
 		if (lastBrush != null) {
 			this.setFont(lastBrush.font);
 			this.setLineWidth(lastBrush.lineWidth);
-			// this.setBlendMode(lastBrush.blend);
 		}
 		return this;
 	}
@@ -308,7 +314,6 @@ public class GLEx implements LRelease {
 		this.lastBrush.alltextures = LSystem.isHTML5();
 		this.setFont(LSystem.getSystemGameFont());
 		this.setLineWidth(1f);
-		// this.setBlendMode(LSystem.MODE_NORMAL);
 		brushStack.pop();
 		return this;
 	}
@@ -324,8 +329,8 @@ public class GLEx implements LRelease {
 		this.restoreBrush();
 		return this;
 	}
-	
-	public Canvas getCanvas(){
+
+	public Canvas getCanvas() {
 		return gfx.getCanvas();
 	}
 
@@ -389,14 +394,9 @@ public class GLEx implements LRelease {
 		int y = (int) (y1 * LSystem.getScaleHeight());
 		int width = (int) (w1 * LSystem.getScaleWidth());
 		int height = (int) (h1 * LSystem.getScaleHeight());
-		batch.flush();
-		// RectBox r = pushScissorState(x, target.flip() ? target.height() - y -
-		// height : y, width, height);
-		/*
-		 * batch.gl.glScissor(r.x(), r.y(), r.width(), r.height()); if
-		 * (scissorDepth == 1) { GLUtils.enablecissorTest(batch.gl); }
-		 */
-		return false;// !r.isEmpty();
+		RectBox r = pushScissorState(x, gfx.flip() ? gfx.height() - y - height : y, width, height);
+		gfx.getCanvas().clipRect(x, y, width, height);
+		return !r.isEmpty();
 	}
 
 	public GLEx clearClip() {
@@ -721,9 +721,12 @@ public class GLEx implements LRelease {
 	public GLEx clear() {
 		return clear(0, 0, 0, 0);
 	}
+	
 
 	public GLEx clear(float red, float green, float blue, float alpha) {
-		// GLUtils.setClearColor(batch.gl, red, green, blue, alpha);
+		Canvas canvas = gfx.getCanvas();
+		_tempColor.setColor(red,green,blue,alpha);
+		canvas.clear(_tempColor);
 		return this;
 	}
 
@@ -1528,7 +1531,7 @@ public class GLEx implements LRelease {
 	}
 
 	private BaseBatch beginBatch(BaseBatch batch) {
-		// batch.begin(target.width(), target.height(), target.flip());
+		batch.begin(gfx.width(), gfx.height(), gfx.flip());
 		return batch;
 	}
 

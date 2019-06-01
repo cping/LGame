@@ -37,6 +37,8 @@ public abstract class Graphics {
 	protected Canvas defaultRenderTarget;
 	
 	protected final Counter amount;
+	
+	protected boolean flipScreen;
 
 	protected final LGame game;
 	protected final Dimension viewSizeM = new Dimension();
@@ -85,6 +87,22 @@ public abstract class Graphics {
 
 	public void restore() {
 		viewMatrix = matrixsStack.pop();
+	}
+	
+	public int width(){
+		return screenSize().getWidth();
+	}
+
+	public int height(){
+		return screenSize().getHeight();
+	}
+
+	public void setFlip(boolean flip) {
+		this.flipScreen = flip;
+	}
+	
+	public boolean flip(){
+		return this.flipScreen;
 	}
 
 	public abstract Dimension screenSize();
@@ -209,4 +227,5 @@ public abstract class Graphics {
 	}
 
 	public abstract Canvas getCanvas();
+
 }
