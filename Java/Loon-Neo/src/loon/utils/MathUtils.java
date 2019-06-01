@@ -1343,8 +1343,8 @@ public class MathUtils {
 	}
 
 	public static final float fixAngle(final float angle) {
-		float newAngle = angle;
-		if (newAngle == -TWO_PI || newAngle == TWO_PI) {
+		float newAngle = 0f;
+		if (angle == -TWO_PI || angle == TWO_PI) {
 			return newAngle;
 		}
 		newAngle = angle;

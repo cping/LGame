@@ -28,6 +28,7 @@ public class JumpTo extends ActionEvent {
 	private float moveX;
 	private float moveY;
 	private float gravity;
+
 	private int moveJump;
 
 	public JumpTo(int m, float g) {

@@ -150,9 +150,7 @@ public final class CollisionHelper extends ShapeUtils {
 		Point upperRight = new Point(rect1.getMaxX(), rect1.getMinY());
 		Point downLeft = new Point(rect1.getMinX(), rect1.getMaxY());
 		Point downRight = new Point(rect1.getMaxX(), rect1.getMaxY());
-
 		boolean collided = true;
-
 		if (!isPointToLine(upperLeft, upperRight, middle, radius)) {
 			if (!isPointToLine(upperRight, downRight, middle, radius)) {
 				if (!isPointToLine(upperLeft, downLeft, middle, radius)) {

@@ -115,11 +115,9 @@ public class ArrowTo extends ActionEvent {
 			_isCompleted = true;
 			return;
 		}
-
 		vy += gravity * easeTimer.getProgress();
 		currentX += vx * easeTimer.getProgress();
 		currentY += vy * easeTimer.getProgress();
-
 		if (original.isContainer() && original.isBounded()) {
 			if (currentX < -original.getWidth()
 					|| startY < -original.getHeight()

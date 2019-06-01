@@ -26,15 +26,19 @@ import loon.utils.StringKeyValue;
 public class CircleTo extends ActionEvent {
 
 	private float x;
+
 	private float y;
 
 	private float cx = -1;
+
 	private float cy = -1;
 
 	private int radius;
+
 	private int velocity;
 
 	private float dt;
+
 	private float speed;
 
 	public CircleTo(int radius, int velocity) {

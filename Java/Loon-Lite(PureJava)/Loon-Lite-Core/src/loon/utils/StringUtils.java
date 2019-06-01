@@ -749,6 +749,25 @@ final public class StringUtils extends CharUtils {
 	}
 
 	/**
+	 * 判断整个字符串是否完全有hex字符(0-f)组成
+	 * 
+	 * @param ch
+	 * @return
+	 */
+	public static boolean isHex(CharSequence ch) {
+		if (ch == null) {
+			return false;
+		}
+		for (int i = 0; i < ch.length(); i++) {
+			int c = ch.charAt(i);
+			if (!isHexDigit(c)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
 	 * 检查是否为数字
 	 * 
 	 * @param letter
@@ -1164,6 +1183,7 @@ final public class StringUtils extends CharUtils {
 				}
 			}
 		}
+
 		if (tempChars.length == 0) {
 			return "";
 		} else {

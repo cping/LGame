@@ -156,12 +156,10 @@ public class MoveTo extends ActionEvent {
 
 	public void setMoveByMode(boolean m) {
 		this.moveByMode = m;
-
 		if (original != null) {
 			this.startX = original.x();
 			this.startY = original.y();
 		}
-
 		this.endX = endLocation.x();
 		this.endY = endLocation.y();
 	}

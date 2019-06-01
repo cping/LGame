@@ -41,6 +41,7 @@ public class Gravity implements LRelease {
 	public float bounce;
 
 	public boolean limitX;
+
 	public boolean limitY;
 
 	public float gadd;
@@ -48,9 +49,11 @@ public class Gravity implements LRelease {
 	public float g;
 
 	public float accelerationX;
+
 	public float accelerationY;
 
 	public float velocityX;
+
 	public float velocityY;
 
 	public float angularVelocity;

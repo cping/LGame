@@ -28,6 +28,7 @@ public class FireTo extends ActionEvent {
 	private float direction;
 
 	private float x, y;
+
 	private float vx, vy;
 
 	private float endX, endY;
