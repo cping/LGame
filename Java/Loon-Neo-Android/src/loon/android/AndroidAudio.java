@@ -29,7 +29,6 @@ import android.content.res.AssetFileDescriptor;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnErrorListener;
-import android.media.SoundPool;
 import android.util.Log;
 import loon.LGame;
 import loon.LSystem;
@@ -71,7 +70,7 @@ public class AndroidAudio {
 	private final HashSet<AndroidSound<?>> playing = new HashSet<AndroidSound<?>>();
 	private final HashMap<String, OpenALSound> loadingOpenAlSounds = new HashMap<String, OpenALSound>();
 	private final HashMap<Integer, PooledSound> loadingSounds = new HashMap<Integer, PooledSound>();
-	private final SoundPool pool;
+	private final android.media.SoundPool pool;
 
 	final static boolean notSupport() {
 		return (AndroidGame.isDevice("GT-S5830B") || AndroidGame.isDevice("GT-I9100"));
@@ -245,12 +244,25 @@ public class AndroidAudio {
 		}
 	};
 
+	@SuppressWarnings("deprecation")
 	public AndroidAudio() {
-		this.pool = new SoundPool(8, AudioManager.STREAM_MUSIC, 0);
+		 if (android.os.Build.VERSION.SDK_INT >= 21) {
+			 android.media.AudioAttributes audioAttributes = null;
+             audioAttributes = new android.media.AudioAttributes.Builder()
+                     .setUsage(android.media.AudioAttributes.USAGE_MEDIA)
+                     .setContentType(android.media.AudioAttributes.CONTENT_TYPE_MUSIC)
+                     .build();
+             this.pool = new android.media.SoundPool.Builder()
+                     .setMaxStreams(16)
+                     .setAudioAttributes(audioAttributes)
+                     .build();
+         } else { 
+        	 this.pool = new android.media.SoundPool(16, AudioManager.STREAM_MUSIC, 0);
+         }
 		// 以标准pool监听器监听数据
 		this.pool
-				.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
-					public void onLoadComplete(SoundPool soundPool,
+				.setOnLoadCompleteListener(new android.media.SoundPool.OnLoadCompleteListener() {
+					public void onLoadComplete(android.media.SoundPool soundPool,
 							int soundId, int status) {
 						PooledSound sound = loadingSounds.remove(soundId);
 						if (sound == null) {

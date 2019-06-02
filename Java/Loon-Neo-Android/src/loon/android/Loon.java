@@ -42,7 +42,6 @@ import loon.event.SysInput;
 import loon.geom.RectBox;
 import loon.geom.RectI;
 import loon.utils.StringUtils;
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -75,6 +74,7 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 			return;
 		}
 		Loon.self.runOnUiThread(new Runnable() {
+			@Override
 			public void run() {
 				android.view.inputmethod.InputMethodManager manager = (android.view.inputmethod.InputMethodManager) Loon.self
 						.getSystemService(android.content.Context.INPUT_METHOD_SERVICE);
@@ -98,7 +98,6 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 		});
 	}
 
-	@SuppressLint("SetJavaScriptEnabled")
 	final static class Web extends android.webkit.WebView {
 
 		/**
@@ -489,19 +488,21 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 			} catch (Exception e) {
 			}
 		}
-		try {
-			final int REQUIRED_CONFIG_CHANGES = android.content.pm.ActivityInfo.CONFIG_ORIENTATION
-					| android.content.pm.ActivityInfo.CONFIG_KEYBOARD_HIDDEN;
-			android.content.pm.ActivityInfo info = this.getPackageManager()
-					.getActivityInfo(new android.content.ComponentName(context, this.getClass()), 0);
-			if ((info.configChanges & REQUIRED_CONFIG_CHANGES) != REQUIRED_CONFIG_CHANGES) {
-				new android.app.AlertDialog.Builder(this)
-						.setMessage(
-								"Loon Tip : Please add the following line to the Activity manifest .\n[configChanges=\"keyboardHidden|orientation\"]")
-						.show();
+		if (setting.checkConfig) {
+			try {
+				final int REQUIRED_CONFIG_CHANGES = android.content.pm.ActivityInfo.CONFIG_ORIENTATION
+						| android.content.pm.ActivityInfo.CONFIG_KEYBOARD_HIDDEN;
+				android.content.pm.ActivityInfo info = this.getPackageManager()
+						.getActivityInfo(new android.content.ComponentName(context, this.getClass()), 0);
+				if ((info.configChanges & REQUIRED_CONFIG_CHANGES) != REQUIRED_CONFIG_CHANGES) {
+					new android.app.AlertDialog.Builder(this)
+							.setMessage(
+									"Loon Tip : Please add the following line to the Activity manifest .\n[configChanges=\"keyboardHidden|orientation\"]")
+							.show();
+				}
+			} catch (Exception e) {
+				Log.w("Loon", "Cannot access game AndroidManifest.xml file !");
 			}
-		} catch (Exception e) {
-			Log.w("Loon", "Cannot access game AndroidManifest.xml file !");
 		}
 	}
 

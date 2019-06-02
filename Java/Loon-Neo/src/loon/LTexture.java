@@ -551,8 +551,13 @@ public class LTexture extends Painter implements LRelease {
 			copy._copySize = true;
 			copy.pixelWidth = (int) (this.pixelWidth * this.widthRatio);
 			copy.pixelHeight = (int) (this.pixelHeight * this.heightRatio);
-			copy.displayWidth = this.getWidth() * this.widthRatio;
-			copy.displayHeight = this.getHeight() * this.heightRatio;
+			if (this.widthRatio != 1f && this.heightRatio != 1f) {
+				copy.displayWidth = this.displayWidth * this.widthRatio;
+				copy.displayHeight = this.displayHeight * this.heightRatio;
+			} else {
+				copy.displayWidth = this.getWidth() * this.widthRatio;
+				copy.displayHeight = this.getHeight() * this.heightRatio;
+			}
 			copy.xOff = ((x / copy.displayWidth) * this.widthRatio) + this.xOff;
 			copy.yOff = ((y / copy.displayHeight) * this.heightRatio) + this.yOff;
 			copy.widthRatio = ((width / copy.displayWidth) * widthRatio) + copy.xOff;
@@ -612,8 +617,13 @@ public class LTexture extends Painter implements LRelease {
 			copy._scaleSize = true;
 			copy.pixelWidth = (int) (this.pixelWidth * this.widthRatio);
 			copy.pixelHeight = (int) (this.pixelHeight * this.heightRatio);
-			copy.displayWidth = getWidth() * this.widthRatio;
-			copy.displayHeight = getHeight() * this.heightRatio;
+			if (this.widthRatio != 1f && this.heightRatio != 1f) {
+				copy.displayWidth = this.displayWidth * this.widthRatio;
+				copy.displayHeight = this.displayHeight * this.heightRatio;
+			} else {
+				copy.displayWidth = this.getWidth() * this.widthRatio;
+				copy.displayHeight = this.getHeight() * this.heightRatio;
+			}
 			copy.xOff = this.xOff;
 			copy.yOff = this.yOff;
 			copy.widthRatio = ((width / copy.displayWidth) * widthRatio) + copy.xOff;

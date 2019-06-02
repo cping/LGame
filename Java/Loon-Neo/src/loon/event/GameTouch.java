@@ -144,7 +144,7 @@ public class GameTouch {
 		return dy;
 	}
 
-	static boolean isDraging;
+	boolean isDraging;
 
 	public boolean isDown() {
 		return button == SysTouch.TOUCH_DOWN;

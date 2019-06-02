@@ -31,7 +31,7 @@ public class ClickButtonSkin implements FontSet<ClickButtonSkin>{
 
 	private LTexture idleClickTexture;
 	private LTexture hoverClickTexture;
-	private LTexture clickedTexture;
+	private LTexture disableTexture;
 	private IFont font;
 	private LColor fontColor;
 
@@ -45,12 +45,12 @@ public class ClickButtonSkin implements FontSet<ClickButtonSkin>{
 	}
 
 	public ClickButtonSkin(IFont font, LColor fontColor, LTexture idle,
-			LTexture hover, LTexture clicked) {
+			LTexture hover, LTexture disable) {
 		this.font = font;
 		this.fontColor = fontColor;
 		this.idleClickTexture = idle;
 		this.hoverClickTexture = hover;
-		this.clickedTexture = clicked;
+		this.disableTexture = disable;
 	}
 
 	public LTexture getIdleClickTexture() {
@@ -69,12 +69,12 @@ public class ClickButtonSkin implements FontSet<ClickButtonSkin>{
 		this.hoverClickTexture = hoverClickTexture;
 	}
 
-	public LTexture getClickedTexture() {
-		return clickedTexture;
+	public LTexture getDisableTexture() {
+		return disableTexture;
 	}
 
-	public void setClickedTexture(LTexture c) {
-		this.clickedTexture = c;
+	public void setDisableTexture(LTexture disableTexture) {
+		this.disableTexture = disableTexture;
 	}
 
 	@Override

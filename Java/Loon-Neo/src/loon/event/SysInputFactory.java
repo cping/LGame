@@ -22,7 +22,6 @@ package loon.event;
 
 import loon.EmulatorButtons;
 import loon.LProcess;
-import loon.LRelease;
 import loon.LSystem;
 import loon.geom.Vector2f;
 import loon.utils.MathUtils;
@@ -83,6 +82,7 @@ public class SysInputFactory {
 		_offsetTouchY = 0;
 		_offsetMoveX = 0;
 		_offsetMoveY = 0;
+		_isDraging = false;
 		finalTouch.reset();
 		finalKey.reset();
 		touchCollection.clear();
@@ -155,6 +155,7 @@ public class SysInputFactory {
 		final float touchX = pos.x;
 		final float touchY = pos.y;
 		final int button = event.button;
+		finalTouch.isDraging = _isDraging;
 		finalTouch.x = touchX;
 		finalTouch.y = touchY;
 		finalTouch.button = event.button;
@@ -271,6 +272,8 @@ public class SysInputFactory {
 			TouchMake.Event e = events[i];
 			float touchX = (e.getX() - process.getX()) / LSystem.getScaleWidth();
 			float touchY = (e.getY() - process.getY()) / LSystem.getScaleHeight();
+			
+			finalTouch.isDraging = _isDraging;
 			finalTouch.x = touchX;
 			finalTouch.y = touchY;
 			finalTouch.pointer = i;

@@ -212,14 +212,7 @@ public class EmulatorButtons implements LRelease {
 				}
 			}
 		};
-		if (dpad != null) {
-			dpad.close();
-			dpad = null;
-		}
-		if (buttons != null) {
-			buttons.close();
-			buttons = null;
-		}
+
 		this.visible = true;
 
 		this.setLocation(0, 0);
@@ -496,6 +489,14 @@ public class EmulatorButtons implements LRelease {
 		if (pack != null) {
 			pack.close();
 			pack = null;
+		}
+		if (dpad != null) {
+			dpad.close();
+			dpad = null;
+		}
+		if (buttons != null) {
+			buttons.close();
+			buttons = null;
 		}
 		closed = true;
 	}

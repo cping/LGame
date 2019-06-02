@@ -936,6 +936,8 @@ public class Desktop implements Visible, LRelease {
 	public void resize() {
 		this.isClicked = false;
 		this.hoverComponent = null;
+		this.selectedComponent = null;
+		this.clickComponent[0] = null;
 		if (contentPane != null) {
 			contentPane.processResize();
 		}

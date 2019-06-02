@@ -57,6 +57,9 @@ public class AndroidGame extends LGame {
 		// 请求的屏幕方向(-1时以xml设置为准)
 		public int orientation = -1;
 
+		//若此项为true,则会检查configChanges是否已经设置
+		public boolean checkConfig = false;
+		
 		// 是否隐藏状态栏
 		public boolean hideStatusBar = true;
 

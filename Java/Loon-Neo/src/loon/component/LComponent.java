@@ -883,7 +883,7 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	protected void processResize() {
-	};
+	}
 
 	void keyPressed() {
 		this.checkFocusKey();

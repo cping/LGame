@@ -45,6 +45,8 @@ import loon.utils.timer.LTimerContext;
 
 public class LProcess {
 
+	protected TArray<Updateable> resumes;
+
 	protected TArray<Updateable> loads;
 
 	protected TArray<Updateable> unloads;
@@ -160,6 +162,18 @@ public class LProcess {
 
 	public final SysInputFactory getCurrentSysInput() {
 		return _currentInput;
+	}
+
+	public void addResume(Updateable u) {
+		synchronized (resumes) {
+			resumes.add(u);
+		}
+	}
+
+	public void removeResume(Updateable u) {
+		synchronized (resumes) {
+			resumes.remove(u);
+		}
 	}
 
 	// --- Load start ---//
@@ -391,6 +405,10 @@ public class LProcess {
 
 	public void resume() {
 		if (isInstance) {
+			final int count = resumes.size;
+			if (count > 0) {
+				callUpdateable(resumes);
+			}
 			_currentInput.reset();
 			_currentScreen.resume();
 		}
@@ -442,6 +460,11 @@ public class LProcess {
 	}
 
 	public void clear() {
+		if (resumes == null) {
+			resumes = new TArray<Updateable>(10);
+		} else {
+			resumes.clear();
+		}
 		if (loads == null) {
 			loads = new TArray<Updateable>(10);
 		} else {

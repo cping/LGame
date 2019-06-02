@@ -26,7 +26,9 @@ import loon.LTexture;
 import loon.canvas.LColor;
 import loon.component.skin.ClickButtonSkin;
 import loon.component.skin.SkinManager;
+import loon.event.ActionKey;
 import loon.event.CallFunction;
+import loon.event.SysKey;
 import loon.font.BMFont;
 import loon.font.FontSet;
 import loon.font.FontUtils;
@@ -43,13 +45,15 @@ import loon.utils.StringUtils;
  */
 public class LClickButton extends LComponent implements FontSet<LClickButton> {
 
+	private ActionKey onTouch = new ActionKey();
+
 	private CallFunction _function;
 
-	private LTexture idleClick, hoverClick, clickedClick;
+	private LTexture idleClick, hoverClick, disableClick;
 
 	private IFont font;
 
-	private boolean pressed, selected, over, grayButton;
+	private boolean over, grayButton, lightClickedButton;
 
 	private int pressedTime, offsetLeft, offsetTop;
 
@@ -134,13 +138,13 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 				SkinManager.get().getClickButtonSkin().getFontColor(), x, y, width, height,
 				SkinManager.get().getClickButtonSkin().getIdleClickTexture(),
 				SkinManager.get().getClickButtonSkin().getHoverClickTexture(),
-				SkinManager.get().getClickButtonSkin().getClickedTexture());
+				SkinManager.get().getClickButtonSkin().getDisableTexture());
 	}
 
 	public LClickButton(String text, IFont font, LColor color, int x, int y, int width, int height) {
 		this(text, font, color, x, y, width, height, SkinManager.get().getClickButtonSkin().getIdleClickTexture(),
 				SkinManager.get().getClickButtonSkin().getHoverClickTexture(),
-				SkinManager.get().getClickButtonSkin().getClickedTexture());
+				SkinManager.get().getClickButtonSkin().getDisableTexture());
 	}
 
 	public LClickButton(String text, IFont font, LColor color, int x, int y, int width, int height, String path) {
@@ -166,37 +170,38 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 
 	public LClickButton(ClickButtonSkin skin, String text, int x, int y, int width, int height) {
 		this(text, skin.getFont(), skin.getFontColor(), x, y, width, height, skin.getIdleClickTexture(),
-				skin.getHoverClickTexture(), skin.getClickedTexture());
+				skin.getHoverClickTexture(), skin.getDisableTexture());
 	}
 
 	public LClickButton(String text, LColor color, int x, int y, int width, int height) {
 		this(text, SkinManager.get().getClickButtonSkin().getFont(), color, x, y, width, height,
 				SkinManager.get().getClickButtonSkin().getIdleClickTexture(),
 				SkinManager.get().getClickButtonSkin().getHoverClickTexture(),
-				SkinManager.get().getClickButtonSkin().getClickedTexture());
+				SkinManager.get().getClickButtonSkin().getDisableTexture());
 	}
 
 	public LClickButton(String text, IFont font, LColor color, int x, int y, int width, int height, LTexture idle,
-			LTexture hover, LTexture clicked) {
+			LTexture hover, LTexture disable) {
 		super(x, y, width, height);
 		this.text = text;
 		this.font = font;
 		this.fontColor = color;
 		this.idleClick = idle;
 		this.hoverClick = hover;
-		this.clickedClick = clicked;
-		if (idle == null && hover == null && clicked == null) {
+		this.disableClick = disable;
+		this.lightClickedButton = true;
+		if (idle == null && hover == null && disable == null) {
 			idleClick = SkinManager.get().getClickButtonSkin().getIdleClickTexture();
 			hoverClick = SkinManager.get().getClickButtonSkin().getHoverClickTexture();
-			clickedClick = SkinManager.get().getClickButtonSkin().getClickedTexture();
+			disableClick = SkinManager.get().getClickButtonSkin().getDisableTexture();
 		} else if (idle == null) {
 			idleClick = SkinManager.get().getClickButtonSkin().getIdleClickTexture();
 		} else if (hover == null) {
 			hoverClick = SkinManager.get().getClickButtonSkin().getHoverClickTexture();
-		} else if (clicked == null) {
-			clickedClick = SkinManager.get().getClickButtonSkin().getClickedTexture();
+		} else if (disable == null) {
+			disableClick = SkinManager.get().getClickButtonSkin().getDisableTexture();
 		}
-		freeRes().add(idleClick, hoverClick, clickedClick);
+		freeRes().add(idleClick, hoverClick, disableClick);
 		autoSize();
 	}
 
@@ -218,10 +223,15 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 		}
 		if (grayButton) {
 			if (!isEnabled()) {
-				g.draw(clickedClick, x, y, getWidth(), getHeight(),
+				g.draw(disableClick, x, y, getWidth(), getHeight(),
 						_component_baseColor == null ? LColor.gray : _component_baseColor.mul(LColor.gray));
 			} else if (isTouchPressed()) {
-				g.draw(idleClick, x, y, getWidth(), getHeight(), _component_baseColor);
+				if (lightClickedButton) {
+					g.draw(idleClick, x, y, getWidth(), getHeight(), _component_baseColor == null ? LColor.lightGray
+							: _component_baseColor.mul(LColor.lightGray));
+				} else {
+					g.draw(idleClick, x, y, getWidth(), getHeight(), _component_baseColor);
+				}
 			} else if (isTouchOver()) {
 				g.draw(hoverClick, x, y, getWidth(), getHeight(), _component_baseColor);
 			} else {
@@ -230,9 +240,14 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 			}
 		} else {
 			if (!isEnabled()) {
-				g.draw(clickedClick, x, y, getWidth(), getHeight(), _component_baseColor);
+				g.draw(disableClick, x, y, getWidth(), getHeight(), _component_baseColor);
 			} else if (isTouchPressed()) {
-				g.draw(idleClick, x, y, getWidth(), getHeight(), _component_baseColor);
+				if (lightClickedButton) {
+					g.draw(idleClick, x, y, getWidth(), getHeight(), _component_baseColor == null ? LColor.lightGray
+							: _component_baseColor.mul(LColor.lightGray));
+				} else {
+					g.draw(idleClick, x, y, getWidth(), getHeight(), _component_baseColor);
+				}
 			} else if (isTouchOver()) {
 				g.draw(hoverClick, x, y, getWidth(), getHeight(), _component_baseColor);
 			} else {
@@ -258,45 +273,37 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 			return;
 		}
 		super.update(elapsedTime);
-		if (selected) {
-			pressed = true;
-			return;
-		}
 		if (this.pressedTime > 0 && --this.pressedTime <= 0) {
-			this.pressed = false;
+			onTouch.release();
+			this.pressedTime = 0;
 		}
 	}
 
 	public LClickButton checked() {
-		this.pressed = true;
-		this.selected = true;
+		onTouch.press();
 		return this;
 	}
 
 	public LClickButton unchecked() {
-		this.pressed = false;
-		this.selected = false;
+		onTouch.release();
 		return this;
-	}
-
-	public boolean isTouchOver() {
-		return this.over;
-	}
-
-	public boolean isTouchPressed() {
-		return this.pressed;
 	}
 
 	@Override
 	protected void processTouchDragged() {
-		this.over = this.pressed = this.intersects(getUITouchX(), getUITouchY());
 		super.processTouchDragged();
+		this.over = this.intersects(getUITouchX(), getUITouchY());
+		if (!onTouch.isPressed()) {
+			this.onTouch.press();
+		}
 	}
 
 	@Override
 	protected void processTouchPressed() {
 		super.processTouchPressed();
-		this.pressed = true;
+		if (!onTouch.isPressed()) {
+			onTouch.press();
+		}
 	}
 
 	@Override
@@ -309,7 +316,9 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 				LSystem.error("LClickButton call() exception", t);
 			}
 		}
-		this.pressed = false;
+		if (onTouch.isPressed()) {
+			onTouch.release();
+		}
 	}
 
 	@Override
@@ -319,22 +328,29 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 
 	@Override
 	protected void processTouchExited() {
-		this.over = this.pressed = false;
+		this.over = false;
+		if (onTouch.isPressed()) {
+			onTouch.release();
+		}
 	}
 
 	@Override
 	protected void processKeyPressed() {
-		if (this.isSelected()) {
-			this.pressedTime = 5;
-			this.pressed = true;
-			this.doClick();
+		if (this.isSelected() && SysKey.isKeyPressed(SysKey.ENTER)) {
+			if (!onTouch.isPressed()) {
+				this.pressedTime = 5;
+				this.onTouch.press();
+				this.doClick();
+			}
 		}
 	}
 
 	@Override
 	protected void processKeyReleased() {
-		if (this.isSelected()) {
-			this.pressed = false;
+		if (this.isSelected() && SysKey.isKeyRelease(SysKey.ENTER)) {
+			if (onTouch.isPressed()) {
+				onTouch.release();
+			}
 		}
 	}
 
@@ -384,8 +400,16 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 		return this;
 	}
 
+	public boolean isTouchOver() {
+		return this.over;
+	}
+
+	public boolean isTouchPressed() {
+		return onTouch.isPressed();
+	}
+
 	public boolean isPressed() {
-		return pressed;
+		return isTouchPressed();
 	}
 
 	@Override
@@ -418,24 +442,32 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 	}
 
 	public LTexture getClickedClick() {
-		return clickedClick;
+		return disableClick;
 	}
 
-	public LClickButton setClickedClick(LTexture clickedClick) {
-		this.clickedClick = clickedClick;
+	public LClickButton setClickedClick(LTexture disableClick) {
+		this.disableClick = disableClick;
 		return this;
 	}
 
-	public LClickButton setTexture(LTexture clickedClick) {
-		this.clickedClick = clickedClick;
-		this.idleClick = clickedClick;
-		this.hoverClick = clickedClick;
+	public LClickButton setTexture(LTexture click) {
+		this.disableClick = click;
+		this.idleClick = click;
+		this.hoverClick = click;
 		return this;
 	}
 
 	public LClickButton setTexture(String path) {
 		setTexture(LSystem.loadTexture(path));
 		return this;
+	}
+
+	public boolean isLightClickedButton() {
+		return lightClickedButton;
+	}
+
+	public void setLightClickedButton(boolean clickedButton) {
+		this.lightClickedButton = clickedButton;
 	}
 
 	public boolean isGrayButton() {
