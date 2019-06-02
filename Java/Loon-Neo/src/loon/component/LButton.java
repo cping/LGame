@@ -86,6 +86,10 @@ public class LButton extends LComponent implements FontSet<LButton> {
 		freeRes().add(img);
 	}
 
+	public LButton(int x, int y) {
+		this(LSystem.getSystemGameFont(), "", x, y, 1, 1);
+	}
+	
 	public LButton(String text, int x, int y, int w, int h) {
 		this(LSystem.getSystemGameFont(), text, x, y, w, h);
 	}

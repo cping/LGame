@@ -80,14 +80,14 @@ public class LProcess {
 	public LProcess(LGame game) {
 		super();
 		this._game = game;
-		this._bundle = new ObjectBundle();
-		this._currentInput = new SysInputFactory(this);
-		this._screens = new TArray<Screen>();
-		this._screenMap = new ListMap<CharSequence, Screen>();
-		this.clear();
 		LSetting setting = _game.setting;
 		setting.updateScale();
 		LSystem.viewSize.setSize(setting.width, setting.height);
+		this._bundle = new ObjectBundle();
+		this._currentInput = new SysInputFactory();
+		this._screens = new TArray<Screen>();
+		this._screenMap = new ListMap<CharSequence, Screen>();
+		this.clear();
 		InputMake input = game.input();
 		if (input != null) {
 			if (!game.setting.emulateTouch && !game.isMobile()) {
@@ -384,18 +384,21 @@ public class LProcess {
 
 	public void resize(int w, int h) {
 		if (isInstance) {
+			_currentInput.reset();
 			_currentScreen.resetSize(w, h);
 		}
 	}
 
 	public void resume() {
 		if (isInstance) {
+			_currentInput.reset();
 			_currentScreen.resume();
 		}
 	}
 
 	public void pause() {
 		if (isInstance) {
+			_currentInput.reset();
 			_currentScreen.pause();
 		}
 	}

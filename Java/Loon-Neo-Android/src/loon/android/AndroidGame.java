@@ -47,9 +47,15 @@ public class AndroidGame extends LGame {
 
 		// 屏幕显示模式
 		public LMode showMode = LMode.Fill;
+		
+		// 是否允许改变屏幕方向
+		public boolean useOrientation = true;
 
 		// 是否使用唤醒锁
 		public boolean useWakelock = false;
+		
+		// 请求的屏幕方向(-1时以xml设置为准)
+		public int orientation = -1;
 
 		// 是否隐藏状态栏
 		public boolean hideStatusBar = true;

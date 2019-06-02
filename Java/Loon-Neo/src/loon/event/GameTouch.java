@@ -37,7 +37,17 @@ public class GameTouch {
 	int id;
 
 	GameTouch() {
+		reset();
+	}
 
+	public void reset() {
+		this.type = -1;
+		this.x = 0;
+		this.y = 0;
+		this.dx = dy = 0;
+		this.button = -1;
+		this.pointer = -1;
+		this.id = -1;
 	}
 
 	public GameTouch(float x, float y, int pointer, int id) {

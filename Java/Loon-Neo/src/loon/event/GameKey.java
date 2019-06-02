@@ -31,7 +31,14 @@ public class GameKey {
 	double timer;
 
 	GameKey() {
+		reset();
+	}
 
+	public void reset() {
+		this.type = -1;
+		this.keyCode = -1;
+		this.keyChar = (char) -1;
+		this.timer = 0;
 	}
 
 	public double getTimer() {
@@ -79,6 +86,6 @@ public class GameKey {
 
 	@Override
 	public String toString() {
-		return "type:" + type+","+ "keyChar:" + keyChar + ", keyCode:" + keyCode;
+		return "type:" + type + "," + "keyChar:" + keyChar + ", keyCode:" + keyCode;
 	}
 }

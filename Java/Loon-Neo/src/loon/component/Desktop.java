@@ -293,7 +293,7 @@ public class Desktop implements Visible, LRelease {
 		return removed;
 	}
 
-	boolean isClicked;
+	private boolean isClicked;
 
 	/**
 	 * 刷新当前桌面
@@ -499,7 +499,10 @@ public class Desktop implements Visible, LRelease {
 			int touchDx = (int) (input == null ? SysTouch.getDX() : this.input.getTouchDX());
 			int touchDy = (int) (input == null ? SysTouch.getDY() : this.input.getTouchDY());
 			// 获得当前窗体下鼠标坐标
-			LComponent comp = this.findComponent(touchX, touchY);
+			LComponent comp = null;
+			if (SysTouch.getButton() != -1) {
+				comp = this.findComponent(touchX, touchY);
+			}
 			if (comp != null && !comp._touchLocked) {
 				if (touchDx != 0 || touchDy != 0 || SysTouch.getDX() != 0 || SysTouch.getDY() != 0) {
 					comp.processTouchMoved();
@@ -515,15 +518,18 @@ public class Desktop implements Visible, LRelease {
 					if (tooltip != null) {
 						this.tooltip.setToolTipComponent(comp);
 					}
-					comp.processTouchEntered();
+					if (SysTouch.getButton() != -1) {
+						comp.processTouchEntered();
+					}
 				} else if (comp != this.hoverComponent && !this.hoverComponent._touchLocked) {
 					if (tooltip != null) {
 						this.tooltip.setToolTipComponent(comp);
 					}
 					this.hoverComponent.processTouchExited();
-					comp.processTouchEntered();
+					if (SysTouch.getButton() != -1) {
+						comp.processTouchEntered();
+					}
 				}
-
 			} else {
 				// 如果没有对应的悬停提示数据
 				if (tooltip != null) {
@@ -928,6 +934,8 @@ public class Desktop implements Visible, LRelease {
 	}
 
 	public void resize() {
+		this.isClicked = false;
+		this.hoverComponent = null;
 		if (contentPane != null) {
 			contentPane.processResize();
 		}

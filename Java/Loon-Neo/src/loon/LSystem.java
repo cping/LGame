@@ -476,6 +476,13 @@ public class LSystem {
 		return false;
 	}
 
+	public static boolean isEmulateTouch() {
+		if (base() != null) {
+			return base().setting.emulateTouch;
+		}
+		return false;
+	}
+
 	public static boolean isSupportTempFont() {
 		if (base() != null) {
 			return base().setting.supportTempSysFont;

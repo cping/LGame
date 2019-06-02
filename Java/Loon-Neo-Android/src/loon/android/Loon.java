@@ -296,26 +296,6 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 			return params.get(name);
 		}
 
-		/**
-		 * 添加一组自制JavaScript脚本到当前Web界面当中
-		 * 
-		 * @param sprites
-		 */
-		public void addJavaScripts(JavaScript[] sprites) {
-			for (int i = 0; i < sprites.length; i++) {
-				this.addJavascriptInterface(sprites[i].getObject(), sprites[i].getName());
-			}
-		}
-
-		/**
-		 * 添加自制JavaScript脚本到当前Web界面当中
-		 * 
-		 * @param sprite
-		 */
-		public void addJavaScripts(JavaScript sprite) {
-			this.addJavascriptInterface(sprite.getObject(), sprite.getName());
-		}
-
 		public void setVisible(boolean isVisible) {
 			if (isVisible) {
 				this.setVisibility(View.VISIBLE);
@@ -654,13 +634,39 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 		return (WindowManager.LayoutParams.FLAG_FULLSCREEN | WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
 	}
 
-	protected boolean usePortraitOrientation() {
-		return false;
+	protected boolean useOrientation() {
+		if (game == null) {
+			return true;
+		}
+		LSetting setting = game.setting;
+		if (setting == null) {
+			return true;
+		}
+		if (setting instanceof AndroidSetting) {
+			return ((AndroidSetting) setting).useOrientation;
+		}
+		return true;
 	}
 
 	protected int orientation() {
-		return usePortraitOrientation() ? ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-				: ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+		boolean use = useOrientation();
+		int orientation = getRequestedOrientation();
+		LSetting setting = game.setting;
+		if (use) {
+			if (setting instanceof AndroidSetting) {
+				AndroidSetting aset = ((AndroidSetting) setting);
+				if (aset.orientation != -1) {
+					orientation = aset.orientation;
+				}
+			}
+		} else {
+			if (setting.landscape()) {
+				orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+			} else {
+				orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+			}
+		}
+		return orientation;
 	}
 
 	protected Bitmap.Config preferredBitmapConfig() {

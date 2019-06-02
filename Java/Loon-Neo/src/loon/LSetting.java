@@ -86,7 +86,7 @@ public class LSetting {
 	public boolean isSyncTween = false;
 
 	/**
-	 * 若此处true,则fps,memory以及sprite数量之类数据
+	 * 若此处true,则fps,memory以及sprite数量之类数据强制显示
 	 */
 	public boolean isDebug = false;
 
