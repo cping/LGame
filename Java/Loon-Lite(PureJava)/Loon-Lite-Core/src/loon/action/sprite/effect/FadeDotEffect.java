@@ -197,14 +197,11 @@ public class FadeDotEffect extends Entity implements BaseEffect {
 		if (finished) {
 			return;
 		}
-		boolean useText = g.isAlltextures() && LSystem.isHTML5();
-
 		int tmp = g.color();
 		g.setColor(_baseColor);
 		for (int i = 0; i < dots.size; i++) {
 			((Dot) dots.get(i)).paint(g, drawX(offsetX), drawY(offsetY));
 		}
-
 		g.setColor(tmp);
 	}
 

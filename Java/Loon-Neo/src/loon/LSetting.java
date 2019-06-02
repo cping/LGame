@@ -42,6 +42,18 @@ public class LSetting {
 	public boolean supportTempSysFont = true;
 
 	/**
+	 * 若此项不为-1,则loon的Display类中LTimerContext在被传参时,以此数值替换动态计算出的paint刷新数值(也就是强制锁值),
+	 * 默认单位是毫秒，比如锁定1/60帧就是(long)((1f/60f) * 1000)
+	 */
+	public long fixedPaintLoopTime = -1;
+
+	/**
+	 * 若此项不为-1,则loon的Display类中LTimerContext在被传参时,以此数值替换动态计算出的update刷新数值(也就是强制锁值),
+	 * 默认单位是毫秒，比如锁定1/60帧就是(long)((1f/60f) * 1000)
+	 */
+	public long fixedUpdateLoopTime = -1;
+
+	/**
 	 * 默认游戏字体设置
 	 */
 	public IFont defaultGameFont;
@@ -232,6 +244,8 @@ public class LSetting {
 		this.logoPath = setting.logoPath;
 		this.fontName = setting.fontName;
 		this.version = setting.version;
+		this.fixedPaintLoopTime = setting.fixedPaintLoopTime;
+		this.fixedUpdateLoopTime = setting.fixedUpdateLoopTime;
 		this.useTrueFontClip = setting.useTrueFontClip;
 		this.emulatorScale = setting.emulatorScale;
 		this.notAllowDragAndMove = setting.notAllowDragAndMove;
@@ -259,6 +273,28 @@ public class LSetting {
 	public void setSystemGlobalFont(IFont font) {
 		setSystemLogFont(font);
 		setSystemGameFont(font);
+	}
+
+	/**
+	 * 锁死paint刷新为1/60帧
+	 */
+	public void fixedPaintTime() {
+		fixedPaintTime(1f / 60f);
+	}
+
+	public void fixedPaintTime(float time) {
+		this.fixedPaintLoopTime = (long) (time * 1000f);
+	}
+
+	/**
+	 * 锁死update刷新为3.5/60帧
+	 */
+	public void fixedUpdateTime() {
+		fixedPaintTime(3.5f / 60f);
+	}
+
+	public void fixedUpdateTime(float time) {
+		this.fixedUpdateLoopTime = (long) (time * 1000f);
 	}
 
 	public boolean landscape() {

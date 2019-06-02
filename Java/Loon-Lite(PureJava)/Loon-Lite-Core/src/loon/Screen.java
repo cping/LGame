@@ -2859,7 +2859,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		if (LSystem.base() == null) {
 			return null;
 		}
-		return new LTextureImage(LSystem.base().graphics(), LSystem.base().display().GL().batch(), width, height, true);
+		return new LTextureImage(LSystem.base().graphics(), LSystem.base().display().GL().batch(), width, height);
 	}
 
 	protected void afterUI(GLEx g) {

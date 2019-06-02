@@ -43,6 +43,7 @@ public class JavaFXCanvas extends Canvas {
 	final javafx.scene.canvas.Canvas fxCanvas;
 	private JavaFXImage javaImage;
 	private SnapshotParameters snapshotParameters;
+	private LColor tmpColor = LColor.white.cpy();
 	final GraphicsContext context;
 	double width;
 	double height;
@@ -315,26 +316,40 @@ public class JavaFXCanvas extends Canvas {
 	}
 
 	@Override
-	public Canvas setFillColor(int color) {
-		context.setFill(getLColorToFX(new LColor(color)));
+	public Canvas setFillColor(LColor color) {
+		context.setFill(getLColorToFX(color));
 		this.isDirty = true;
 		return this;
 	}
 
 	@Override
-	public int getStrokeColor() {
+	public Canvas setFillColor(int color) {
+		return setFillColor(tmpColor.setColor(color));
+	}
+
+	@Override
+	public LColor getStroketoLColor() {
 		Paint strokePaint = context.getStroke();
 		assert strokePaint instanceof Color;
 		LColor color = getFXToLColor((Color) strokePaint);
-		return color.getARGB();
+		return color;
+	}
+
+	@Override
+	public int getStrokeColor() {
+		return getStroketoLColor().getARGB();
+	}
+
+	public LColor getFilltoLColor() {
+		Paint fillPaint = context.getFill();
+		assert fillPaint instanceof Color;
+		LColor color = getFXToLColor((Color) fillPaint);
+		return color;
 	}
 
 	@Override
 	public int getFillColor() {
-		Paint fillPaint = context.getFill();
-		assert fillPaint instanceof Color;
-		LColor color = getFXToLColor((Color) fillPaint);
-		return color.getARGB();
+		return getFilltoLColor().getARGB();
 	}
 
 	@Override
@@ -410,10 +425,15 @@ public class JavaFXCanvas extends Canvas {
 	}
 
 	@Override
-	public Canvas setStrokeColor(int color) {
-		context.setStroke(getLColorToFX(new LColor(color)));
+	public Canvas setStrokeColor(LColor color) {
+		context.setStroke(getLColorToFX(color));
 		this.isDirty = true;
 		return this;
+	}
+
+	@Override
+	public Canvas setStrokeColor(int color) {
+		return setStrokeColor(tmpColor.setColor(color));
 	}
 
 	@Override

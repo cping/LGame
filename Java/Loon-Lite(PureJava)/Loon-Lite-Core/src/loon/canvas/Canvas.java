@@ -204,7 +204,7 @@ public abstract class Canvas implements LRelease {
 
 	public abstract Canvas fillRect(float x, float y, float width, float height);
 
-	public abstract Canvas fillRect(float x, float y, float width, float height,LColor c);
+	public abstract Canvas fillRect(float x, float y, float width, float height, LColor c);
 	
 	public abstract Canvas fillRoundRect(float x, float y, float width,
 			float height, float radius);
@@ -223,12 +223,18 @@ public abstract class Canvas implements LRelease {
 
 	public abstract Canvas setCompositeOperation(Composite composite);
 
+	public abstract Canvas setFillColor(LColor color);
+	
 	public abstract Canvas setFillColor(int color);
 
 	public abstract Canvas setColor(LColor color);
 
+	public abstract LColor getStroketoLColor();
+	
 	public abstract int getStrokeColor();
 
+	public abstract LColor getFilltoLColor();
+	
 	public abstract int getFillColor();
 
 	public abstract Canvas setColor(int r, int g, int b);
@@ -245,6 +251,8 @@ public abstract class Canvas implements LRelease {
 
 	public abstract Canvas setStrokeColor(int color);
 
+	public abstract Canvas setStrokeColor(LColor color);
+	
 	public abstract Canvas setStrokeWidth(float strokeWidth);
 
 	public abstract Canvas strokeCircle(float x, float y, float radius);

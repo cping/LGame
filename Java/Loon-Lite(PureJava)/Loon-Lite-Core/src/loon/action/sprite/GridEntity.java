@@ -155,10 +155,8 @@ public class GridEntity extends Entity {
 	}
 
 	public void draw(GLEx g, float offsetX, float offsetY) {
-		boolean allTex = g.isAlltextures();
 		float lw = g.getLineWidth();
 		int tint = g.color();
-		g.setAlltextures(alltextures);
 		g.setLineWidth(lineWidth);
 		g.setColor(_baseColor);
 		for (int i = 0; i < gridLines.size; i++) {
@@ -166,7 +164,6 @@ public class GridEntity extends Entity {
 			g.drawLine(drawX(line.minX + offsetX), drawY(line.minY + offsetY), drawX(line.maxX + offsetX),
 					drawY(line.maxY + offsetY));
 		}
-		g.setAlltextures(allTex);
 		g.setLineWidth(lw);
 		g.setTint(tint);
 	}

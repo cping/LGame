@@ -8,14 +8,14 @@ public class LTextureImage extends GLEx {
 	public final LTexture texture;
 
 	public LTextureImage(Graphics gfx, BaseBatch defaultBatch, float width,
-			float height, boolean alltex) {
+			float height) {
 		this(gfx, defaultBatch, gfx.createTexture(width, height,
-				LTexture.Format.LINEAR), alltex);
+				LTexture.Format.LINEAR));
 	}
 
 	public LTextureImage(Graphics gfx, BaseBatch defaultBatch,
-			LTexture texture, boolean alltex) {
-		super(gfx, defaultBatch, alltex);
+			LTexture texture) {
+		super(gfx, defaultBatch);
 		this.texture = texture;
 	}
 

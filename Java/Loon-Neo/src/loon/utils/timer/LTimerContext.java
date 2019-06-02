@@ -31,7 +31,7 @@ public class LTimerContext {
 	public float alpha;
 
 	public LTimerContext() {
-		timeSinceLastUpdate = 0;
+		this.timeSinceLastUpdate = 0;
 	}
 
 	public float getMilliseconds() {
@@ -49,11 +49,9 @@ public class LTimerContext {
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("LTimerContext");
-		builder.kv("timeSinceLastUpdate", timeSinceLastUpdate)
-		.comma()
-		.kv("tick", tick)
-		.comma()
-		.kv("alpha", alpha);
+		builder.kv("timeSinceLastUpdate", timeSinceLastUpdate).comma()
+		.kv("tick", tick).comma().kv("alpha", alpha);
 		return builder.toString();
 	}
+
 }

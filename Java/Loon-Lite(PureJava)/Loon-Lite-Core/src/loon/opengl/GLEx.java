@@ -31,6 +31,7 @@ import loon.canvas.Canvas;
 import loon.canvas.LColor;
 import loon.canvas.Paint;
 import loon.canvas.Paint.Style;
+import loon.canvas.Path;
 import loon.font.IFont;
 import loon.geom.Affine2f;
 import loon.geom.Ellipse;
@@ -55,10 +56,6 @@ import loon.utils.TArray;
  * 效率上会差很多,不如直接调用他们封装好的高效还不容易出错（相对而言，事实上java的本地渲染api就没有快的,看一眼源码就知道了,各种耗时方法都不缓存，还有大量单独纹理提交……）。
  */
 public class GLEx implements LRelease {
-
-	//临时缓存GLEx中的颜色用
-	private LColor _tempColor = LColor.white.cpy();
-	
 	/*
 	 * 内部类，用来保存与复位GLEx的基本渲染参数
 	 */
@@ -69,7 +66,6 @@ public class GLEx implements LRelease {
 		float baseAlpha = 1f;
 		int blend = LSystem.MODE_NORMAL;
 
-		boolean alltextures = false;
 		IFont font = null;
 		LTexture patternTex = null;
 
@@ -78,7 +74,6 @@ public class GLEx implements LRelease {
 			save.baseColor = this.baseColor;
 			save.fillColor = this.fillColor;
 			save.lineWidth = this.lineWidth;
-			save.alltextures = this.alltextures;
 			save.font = this.font;
 			save.patternTex = this.patternTex;
 			save.blend = this.blend;
@@ -130,7 +125,7 @@ public class GLEx implements LRelease {
 	 * @param def
 	 * @param alltex
 	 */
-	public GLEx(Graphics gfx, BaseBatch def, boolean alltex) {
+	public GLEx(Graphics gfx, BaseBatch def) {
 		this.gfx = gfx;
 		this.batch = def;
 		this.affineStack.add(lastTrans = new Affine2f());
@@ -138,14 +133,13 @@ public class GLEx implements LRelease {
 		this.scale(scaleX = LSystem.getScaleWidth(), scaleY = LSystem.getScaleHeight());
 		this.lastBrush = new BrushSave();
 		this.lastBrush.font = LSystem.getSystemGameFont();
-		this.lastBrush.alltextures = alltex;
 		this.lastBrush.blend = LSystem.MODE_NORMAL;
 		this.brushStack.add(lastBrush);
 		this.update();
 	}
 
 	public GLEx(Graphics gfx) {
-		this(gfx, createDefaultBatch(gfx.getCanvas()), false);
+		this(gfx, createDefaultBatch(gfx.getCanvas()));
 	}
 
 	public int getWidth() {
@@ -311,7 +305,6 @@ public class GLEx implements LRelease {
 		this.lastBrush.baseColor = LColor.DEF_COLOR;
 		this.lastBrush.fillColor = LColor.DEF_COLOR;
 		this.lastBrush.patternTex = null;
-		this.lastBrush.alltextures = LSystem.isHTML5();
 		this.setFont(LSystem.getSystemGameFont());
 		this.setLineWidth(1f);
 		brushStack.pop();
@@ -721,12 +714,11 @@ public class GLEx implements LRelease {
 	public GLEx clear() {
 		return clear(0, 0, 0, 0);
 	}
-	
 
 	public GLEx clear(float red, float green, float blue, float alpha) {
 		Canvas canvas = gfx.getCanvas();
-		_tempColor.setColor(red,green,blue,alpha);
-		canvas.clear(_tempColor);
+		tmpColor.setColor(red, green, blue, alpha);
+		canvas.clear(tmpColor);
 		return this;
 	}
 
@@ -1512,7 +1504,8 @@ public class GLEx implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-		// fillRectNative(x, y, width, height);
+		Canvas canvas = gfx.getCanvas();
+		canvas.fillRect(x, y, width, height, tmpColor.setColor(lastBrush.baseColor));
 		return this;
 	}
 
@@ -1576,58 +1569,22 @@ public class GLEx implements LRelease {
 			r.setSize(MathUtils.max(MathUtils.min(pr.maxX(), x + width - 1) - r.x, 0),
 					MathUtils.max(MathUtils.min(pr.maxY(), y + height - 1) - r.y, 0));
 		}
-		if (this.lastBrush.alltextures) {
-			// setClipImpl(0, 0, r, getWidth(), getHeight());
-		}
 		scissorDepth++;
 		return r;
 	}
 
 	private RectBox popScissorState() {
 		scissorDepth--;
-		RectBox r = scissorDepth == 0 ? null : scissors.get(scissorDepth - 1);
-		if (this.lastBrush.alltextures) {
-			if (r == null) {
-				// setClipImpl(0, 0, LSystem.viewSize.getRect(), getWidth(),
-				// getHeight());
-			} else {
-				// setClipImpl(0, 0, r, getWidth(), getHeight());
-			}
-		}
-		return r;
+		return scissorDepth == 0 ? null : scissors.get(scissorDepth - 1);
 	}
-
-	private boolean useBegin;
 
 	public GLEx drawLine(float x1, float y1, float x2, float y2) {
-		return $drawLine(x1, y1, x2, y2, true);
-	}
-
-	private GLEx $drawLine(float x1, float y1, float x2, float y2, boolean use) {
-		if (isClosed) {
-			return this;
-		}
-		if (this.lastBrush.alltextures) {
-			return drawLine(x1, y1, x2, y2, this.lastBrush.lineWidth);
-		} else {
-			if (x1 > x2) {
-				x1++;
-			} else if (x1 != x2) {
-				x2++;
-			}
-			if (y1 > y2) {
-				y1++;
-			} else if (y1 != y2) {
-				y2++;
-			}
-			/*
-			 * if (use) { beginRenderer(GLType.Line); } int argb =
-			 * LColor.combine(this.lastBrush.fillColor,
-			 * this.lastBrush.baseColor); glRenderer.setColor(argb);
-			 * glRenderer.line(x1, y1, x2, y2); if (use) { endRenderer(); }
-			 */
-			return this;
-		}
+		Canvas canvas = gfx.getCanvas();
+		LColor color = canvas.getFilltoLColor();
+		canvas.setColor(tmpColor.setColor(lastBrush.baseColor));
+		canvas.drawLine(x1, y1, x2, y2);
+		canvas.setColor(color);
+		return this;
 	}
 
 	/**
@@ -1652,22 +1609,18 @@ public class GLEx implements LRelease {
 		if (shape == null) {
 			return this;
 		}
-		if (this.lastBrush.alltextures) {
-			// drawShapeImpl(shape, x, y);
-		} else {
-			float[] points = shape.getPoints();
-			if (points.length == 0) {
-				return this;
-			}
-			int argb = LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor);
-			if (points.length == 2) {
-
-			} else if (points.length == 4) {
-
-			} else {
-
-			}
+		int argb = LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor);
+		Canvas canvas = gfx.getCanvas();
+		Path path = canvas.createPath();
+		float[] points = shape.getPoints();
+		for (int i = 0; i < points.length; i += 2) {
+			path.lineTo(points[i], points[i + 1]);
 		}
+		path.close();
+		LColor color = canvas.getStroketoLColor();
+		canvas.setStrokeColor(tmpColor.setColor(argb));
+		canvas.strokePath(path);
+		canvas.setStrokeColor(color);
 		return this;
 	}
 
@@ -1714,23 +1667,17 @@ public class GLEx implements LRelease {
 			drawLine(points[0], points[1], points[2], points[3]);
 			return this;
 		}
-		if (this.lastBrush.alltextures) {
-			int len = size / 2;
-			final float[] xps = new float[len];
-			final float[] yps = new float[len];
-			for (int i = 0, j = 0; i < size; i += 2, j++) {
-				xps[j] = points[i] + x;
-				yps[j] = points[i + 1] + y;
-			}
-			// drawPolylineImpl(xps, yps, len);
-		} else {
-			// int argb = LColor.combine(this.lastBrush.fillColor,
-			// this.lastBrush.baseColor);
-			/*
-			 * beginRenderer(GLType.Line); glRenderer.setColor(argb);
-			 * glRenderer.polyline(points); endRenderer();
-			 */
+		int argb = LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor);
+		Canvas canvas = gfx.getCanvas();
+		Path path = canvas.createPath();
+		for (int i = 0; i < points.length; i += 2) {
+			path.lineTo(points[i], points[i + 1]);
 		}
+		path.close();
+		LColor color = canvas.getStroketoLColor();
+		canvas.setStrokeColor(tmpColor.setColor(argb));
+		canvas.strokePath(path);
+		canvas.setStrokeColor(color);
 		return this;
 	}
 
@@ -1756,16 +1703,18 @@ public class GLEx implements LRelease {
 		if (shape == null) {
 			return this;
 		}
-		if (this.lastBrush.alltextures) {
-			// fillShapeImpl(shape, x, y);
-		} else {
-			/*
-			 * int argb = LColor.combine(this.lastBrush.fillColor,
-			 * this.lastBrush.baseColor); beginRenderer(GLType.Filled);
-			 * glRenderer.setColor(argb); glRenderer.drawShape(shape, x, y);
-			 * endRenderer();
-			 */
+		int argb = LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor);
+		Canvas canvas = gfx.getCanvas();
+		Path path = canvas.createPath();
+		float[] points = shape.getPoints();
+		for (int i = 0; i < points.length; i += 2) {
+			path.lineTo(points[i], points[i + 1]);
 		}
+		path.close();
+		LColor color = canvas.getFilltoLColor();
+		canvas.setColor(tmpColor.setColor(argb));
+		canvas.fillPath(path);
+		canvas.setColor(color);
 		return this;
 	}
 
@@ -2009,12 +1958,7 @@ public class GLEx implements LRelease {
 	 * @param Aa
 	 */
 	public GLEx drawOval(float x1, float y1, float width, float height) {
-		if (this.lastBrush.alltextures) {
-			// drawOvalImpl(x1, y1, width, height);
-			return this;
-		} else {
 			return this.drawArc(x1, y1, width, height, 32, 0, 360);
-		}
 	}
 
 	/**
@@ -2026,12 +1970,9 @@ public class GLEx implements LRelease {
 	 * @param Aa
 	 */
 	public GLEx fillOval(float x1, float y1, float width, float height) {
-		if (this.lastBrush.alltextures) {
-			// fillOvalImpl(x1, y1, width, height);
-			return this;
-		} else {
-			return this.fillArc(x1, y1, width, height, 32, 0, 360);
-		}
+
+		return this.fillArc(x1, y1, width, height, 32, 0, 360);
+
 	}
 
 	/**
@@ -2041,17 +1982,7 @@ public class GLEx implements LRelease {
 	 * @param y
 	 */
 	public GLEx drawPoint(float x, float y) {
-		if (this.lastBrush.alltextures) {
-			// drawPointImpl(x, y);
-		} else {
-			/*
-			 * beginRenderer(GLType.Point); int argb =
-			 * LColor.combine(this.lastBrush.fillColor,
-			 * this.lastBrush.baseColor); glRenderer.setColor(argb);
-			 * glRenderer.point(x, y); endRenderer();
-			 */
-		}
-		return this;
+		return drawPoint(x, y, lastBrush.baseColor);
 	}
 
 	/**
@@ -2061,18 +1992,11 @@ public class GLEx implements LRelease {
 	 * @param y
 	 */
 	public GLEx drawPoint(float x, float y, int color) {
-		if (this.lastBrush.alltextures) {
-			int tmp = this.lastBrush.baseColor;
-			setColor(color);
-			// drawPointImpl(x, y);
-			setColor(tmp);
-		} else {
-			/*
-			 * beginRenderer(GLType.Point); int argb =
-			 * LColor.combine(this.lastBrush.baseColor, color);
-			 * glRenderer.setColor(argb); glRenderer.point(x, y); endRenderer();
-			 */
-		}
+		Canvas canvas = gfx.getCanvas();
+		LColor tmp = canvas.getFilltoLColor();
+		canvas.setColor(tmpColor.setColor(color));
+		canvas.drawPoint(x, y);
+		canvas.setColor(tmp);
 		return this;
 	}
 
@@ -2084,19 +2008,13 @@ public class GLEx implements LRelease {
 	 * @param size
 	 */
 	public GLEx drawPoints(float[] x, float[] y, int size) {
-		if (this.lastBrush.alltextures) {
-			for (int i = 0; i < size; i++) {
-				// drawPointImpl(x[i], y[i]);
-			}
-		} else {
-			/*
-			 * beginRenderer(GLType.Point); int argb =
-			 * LColor.combine(this.lastBrush.fillColor,
-			 * this.lastBrush.baseColor); glRenderer.setColor(argb); for (int i
-			 * = 0; i < size; i++) { glRenderer.point(x[i], y[i]); }
-			 * endRenderer();
-			 */
+		Canvas canvas = gfx.getCanvas();
+		Path path = canvas.createPath();
+		for (int i = 0; i < size; i++) {
+			path.lineTo(x[i], y[i]);
 		}
+		path.close();
+		canvas.strokePath(path);
 		return this;
 	}
 
@@ -2111,11 +2029,9 @@ public class GLEx implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-		if (this.lastBrush.alltextures) {
-			// fillPolygonImpl(xPoints, yPoints, nPoints);
-		} else {
-			fill(new Polygon(xPoints, yPoints, nPoints));
-		}
+
+		fill(new Polygon(xPoints, yPoints, nPoints));
+
 		return this;
 	}
 
@@ -2130,11 +2046,9 @@ public class GLEx implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-		if (this.lastBrush.alltextures) {
-			// drawPolygonImpl(xPoints, yPoints, nPoints);
-		} else {
-			draw(new Polygon(xPoints, yPoints, nPoints));
-		}
+
+		draw(new Polygon(xPoints, yPoints, nPoints));
+
 		return this;
 	}
 
@@ -2233,29 +2147,29 @@ public class GLEx implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-		if (this.lastBrush.alltextures) {
-			if (fill) {
-				// fillRectNative(x, y, width, height);
-			} else {
-				float tempX = x;
-				float tempY = y;
-				float tempWidth = x + width;
-				float tempHeight = y + height;
-				if (tempX > tempWidth) {
-					x = tempX;
-					tempX = tempWidth;
-					tempWidth = x;
-				}
-				if (tempY > tempHeight) {
-					y = tempY;
-					tempY = tempHeight;
-					tempHeight = y;
-				}
-				drawLine(tempX, tempY, tempHeight, tempY, this.lastBrush.lineWidth);
-				drawLine(tempX, tempY + 1, tempX, tempHeight, this.lastBrush.lineWidth);
-				drawLine(tempHeight, tempHeight, tempX + 1, tempHeight, this.lastBrush.lineWidth);
-				drawLine(tempHeight, tempHeight - 1, tempHeight, tempY + 1, this.lastBrush.lineWidth);
+
+		if (fill) {
+			// fillRectNative(x, y, width, height);
+		} else {
+			float tempX = x;
+			float tempY = y;
+			float tempWidth = x + width;
+			float tempHeight = y + height;
+			if (tempX > tempWidth) {
+				x = tempX;
+				tempX = tempWidth;
+				tempWidth = x;
 			}
+			if (tempY > tempHeight) {
+				y = tempY;
+				tempY = tempHeight;
+				tempHeight = y;
+			}
+			drawLine(tempX, tempY, tempHeight, tempY, this.lastBrush.lineWidth);
+			drawLine(tempX, tempY + 1, tempX, tempHeight, this.lastBrush.lineWidth);
+			drawLine(tempHeight, tempHeight, tempX + 1, tempHeight, this.lastBrush.lineWidth);
+			drawLine(tempHeight, tempHeight - 1, tempHeight, tempY + 1, this.lastBrush.lineWidth);
+
 			return this;
 		}
 
@@ -2319,30 +2233,27 @@ public class GLEx implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-		if (this.lastBrush.alltextures) {
-			// drawArcImpl(x1, y1, width, height, start, end);
-		} else {
-			while (end < start) {
-				end += 360;
-			}
-			float radiusW = width / 2.0f;
-			float radiusH = height / 2.0f;
-			float cx = x1 + radiusW;
-			float cy = y1 + radiusH;
-			if ((int) radiusW == (int) radiusH) {
-				/*
-				 * beginRenderer(GLType.Line); int argb =
-				 * LColor.combine(this.lastBrush.fillColor,
-				 * this.lastBrush.baseColor); glRenderer.setColor(argb); if (end
-				 * - start == 360) { glRenderer.oval(cx, cy,
-				 * MathUtils.min(radiusW, radiusH)); } else { glRenderer.arc(cx,
-				 * cy, MathUtils.min(radiusW, radiusH), start, end, segments); }
-				 * endRenderer();
-				 */
-			} else {
-				draw(new Ellipse(cx, cy, radiusW, radiusH, start, end, segments));
-			}
+
+		while (end < start) {
+			end += 360;
 		}
+		float radiusW = width / 2.0f;
+		float radiusH = height / 2.0f;
+		float cx = x1 + radiusW;
+		float cy = y1 + radiusH;
+		if ((int) radiusW == (int) radiusH) {
+			/*
+			 * beginRenderer(GLType.Line); int argb =
+			 * LColor.combine(this.lastBrush.fillColor,
+			 * this.lastBrush.baseColor); glRenderer.setColor(argb); if (end -
+			 * start == 360) { glRenderer.oval(cx, cy, MathUtils.min(radiusW,
+			 * radiusH)); } else { glRenderer.arc(cx, cy, MathUtils.min(radiusW,
+			 * radiusH), start, end, segments); } endRenderer();
+			 */
+		} else {
+			draw(new Ellipse(cx, cy, radiusW, radiusH, start, end, segments));
+		}
+
 		return this;
 	}
 
@@ -2375,25 +2286,23 @@ public class GLEx implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-		if (this.lastBrush.alltextures) {
-			// fillArcImpl(x1, y1, width, height, start, end);
-		} else {
-			while (end < start) {
-				end += 360;
-			}
-			float radiusW = width / 2.0f;
-			float radiusH = height / 2.0f;
-			float cx = x1 + radiusW;
-			float cy = y1 + radiusH;
-			/*
-			 * beginRenderer(GLType.Filled); int argb =
-			 * LColor.combine(this.lastBrush.fillColor,
-			 * this.lastBrush.baseColor); glRenderer.setColor(argb); if (end -
-			 * start == 360) { glRenderer.oval(cx, cy, MathUtils.min(radiusW,
-			 * radiusH)); } else { glRenderer.arc(cx, cy, MathUtils.min(radiusW,
-			 * radiusH), start, end, segments); } endRenderer();
-			 */
+
+		while (end < start) {
+			end += 360;
 		}
+		float radiusW = width / 2.0f;
+		float radiusH = height / 2.0f;
+		float cx = x1 + radiusW;
+		float cy = y1 + radiusH;
+		/*
+		 * beginRenderer(GLType.Filled); int argb =
+		 * LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor);
+		 * glRenderer.setColor(argb); if (end - start == 360) {
+		 * glRenderer.oval(cx, cy, MathUtils.min(radiusW, radiusH)); } else {
+		 * glRenderer.arc(cx, cy, MathUtils.min(radiusW, radiusH), start, end,
+		 * segments); } endRenderer();
+		 */
+
 		return this;
 	}
 
@@ -2424,30 +2333,28 @@ public class GLEx implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-		if (this.lastBrush.alltextures) {
-			// drawRoundRectImpl(x, y, width, height, radius);
-		} else {
-			if (radius < 0) {
-				throw new LSysException("radius > 0");
-			}
-			if (radius == 0) {
-				drawRect(x, y, width, height);
-				return this;
-			}
-			int mr = (int) MathUtils.min(width, height) / 2;
-			if (radius > mr) {
-				radius = mr;
-			}
-			drawLine(x + radius, y, x + width - radius, y);
-			drawLine(x, y + radius, x, y + height - radius);
-			drawLine(x + width, y + radius, x + width, y + height - radius);
-			drawLine(x + radius, y + height, x + width - radius, y + height);
-			float d = radius * 2;
-			drawArc(x + width - d, y + height - d, d, d, segs, 0, 90);
-			drawArc(x, y + height - d, d, d, segs, 90, 180);
-			drawArc(x + width - d, y, d, d, segs, 270, 360);
-			drawArc(x, y, d, d, segs, 180, 270);
+
+		if (radius < 0) {
+			throw new LSysException("radius > 0");
 		}
+		if (radius == 0) {
+			drawRect(x, y, width, height);
+			return this;
+		}
+		int mr = (int) MathUtils.min(width, height) / 2;
+		if (radius > mr) {
+			radius = mr;
+		}
+		drawLine(x + radius, y, x + width - radius, y);
+		drawLine(x, y + radius, x, y + height - radius);
+		drawLine(x + width, y + radius, x + width, y + height - radius);
+		drawLine(x + radius, y + height, x + width - radius, y + height);
+		float d = radius * 2;
+		drawArc(x + width - d, y + height - d, d, d, segs, 0, 90);
+		drawArc(x, y + height - d, d, d, segs, 90, 180);
+		drawArc(x + width - d, y, d, d, segs, 270, 360);
+		drawArc(x, y, d, d, segs, 180, 270);
+
 		return this;
 	}
 
@@ -2478,31 +2385,28 @@ public class GLEx implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-		if (this.lastBrush.alltextures) {
-			// fillRoundRectImpl(x, y, width, height, radius);
-		} else {
-			if (radius < 0) {
-				throw new LSysException("radius > 0");
-			}
-			if (radius == 0) {
-				fillRect(x, y, width, height);
-				return this;
-			}
-			int mr = (int) MathUtils.min(width, height) / 2;
-			if (radius > mr) {
-				radius = mr;
-			}
-			float d = radius * 2;
-			fillRect(x + radius, y, width - d, radius);
-			fillRect(x, y + radius, radius, height - d);
-			fillRect(x + width - radius, y + radius, radius, height - d);
-			fillRect(x + radius, y + height - radius, width - d, radius);
-			fillRect(x + radius, y + radius, width - d, height - d);
-			fillArc(x + width - d, y + height - d, d, d, segs, 0, 90);
-			fillArc(x, y + height - d, d, d, segs, 90, 180);
-			fillArc(x + width - d, y, d, d, segs, 270, 360);
-			fillArc(x, y, d, d, segs, 180, 270);
+		if (radius < 0) {
+			throw new LSysException("radius > 0");
 		}
+		if (radius == 0) {
+			fillRect(x, y, width, height);
+			return this;
+		}
+		int mr = (int) MathUtils.min(width, height) / 2;
+		if (radius > mr) {
+			radius = mr;
+		}
+		float d = radius * 2;
+		fillRect(x + radius, y, width - d, radius);
+		fillRect(x, y + radius, radius, height - d);
+		fillRect(x + width - radius, y + radius, radius, height - d);
+		fillRect(x + radius, y + height - radius, width - d, radius);
+		fillRect(x + radius, y + radius, width - d, height - d);
+		fillArc(x + width - d, y + height - d, d, d, segs, 0, 90);
+		fillArc(x, y + height - d, d, d, segs, 90, 180);
+		fillArc(x + width - d, y, d, d, segs, 270, 360);
+		fillArc(x, y, d, d, segs, 180, 270);
+
 		return this;
 	}
 
@@ -2955,26 +2859,6 @@ public class GLEx implements LRelease {
 	}
 
 	/**
-	 * GLEx是否全部渲染都使用贴图进行
-	 * 
-	 * @return
-	 */
-	public boolean isAlltextures() {
-		return this.lastBrush.alltextures;
-	}
-
-	/**
-	 * 此项数值为true时,则GLEx全部Shape渲染都为贴图模拟
-	 * 
-	 * @param all
-	 * @return
-	 */
-	public GLEx setAlltextures(boolean all) {
-		this.lastBrush.alltextures = all;
-		return this;
-	}
-
-	/**
 	 * width的缩放比例
 	 * 
 	 * @return
@@ -2995,10 +2879,6 @@ public class GLEx implements LRelease {
 	@Override
 	public void close() {
 		this.isClosed = true;
-		this.useBegin = false;
-		/*
-		 * if (glRenderer != null) { glRenderer.close(); }
-		 */
 	}
 
 }
