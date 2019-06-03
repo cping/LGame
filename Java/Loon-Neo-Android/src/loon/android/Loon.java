@@ -188,10 +188,6 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 			// 密码保存与Form信息不保存
 			// webSettings.setSavePassword(false);
 			webSettings.setSaveFormData(false);
-			if (!webSettings.getJavaScriptEnabled()) {
-				// 响应JavaScript事件
-				webSettings.setJavaScriptEnabled(true);
-			}
 			// 允许JavaScript脚本打开新的窗口
 			webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
 			// 允许自动加载图像资源

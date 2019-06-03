@@ -142,8 +142,8 @@ public class ResourceLocal extends ResourceGetter implements IEventListener {
 		}
 		return obj;
 	}
-	
-	protected XMLDocument loadXML(ResourceItem item){
+
+	protected XMLDocument loadXML(ResourceItem item) {
 		return XMLParser.parse(item.url());
 	}
 
@@ -425,6 +425,17 @@ public class ResourceLocal extends ResourceGetter implements IEventListener {
 			_resourceTable.put(name, item);
 		}
 		return item;
+	}
+
+	public int count() {
+		return _dataTable.size();
+	}
+
+	public ResourceLocal clear() {
+		_dataTable.clear();
+		_resourceTable.clear();
+		_groupTable.clear();
+		return this;
 	}
 
 	@Override

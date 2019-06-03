@@ -72,12 +72,16 @@ public class Sprite extends LObject<ISprite>
 
 	// 动画
 	private Animation animation = new Animation();
+	
+	private LColor _debugDrawColor = LColor.red;
 
 	private int transform;
 
 	private float _scaleX = 1f, _scaleY = 1f;
 
 	private boolean _flipX = false, _flipY = false;
+	
+	private boolean _debugDraw = false;
 
 	private int _maxFrame;
 
@@ -727,6 +731,12 @@ public class Sprite extends LObject<ISprite>
 					}
 				}
 			}
+			if (_debugDraw) {
+				boolean useAll = g.isAlltextures();
+				g.setAlltextures(true);
+				g.drawRect(nx, ny, width, height, _debugDrawColor);
+				g.setAlltextures(useAll);
+			}
 		} finally {
 			g.setColor(tmp);
 			if (update) {
@@ -1149,6 +1159,26 @@ public class Sprite extends LObject<ISprite>
 		return new Gravity("Sprite", this);
 	}
 
+	public boolean isDebugDraw() {
+		return _debugDraw;
+	}
+
+	public void setDebugDraw(boolean debugDraw) {
+		this._debugDraw = debugDraw;
+	}
+
+	public LColor getDebugDrawColor() {
+		return _debugDrawColor.cpy();
+	}
+
+	public Sprite setDebugDrawColor(LColor debugColor) {
+		if(debugColor==null){
+			return this;
+		}
+		this._debugDrawColor = debugColor;
+		return this;
+	}
+	
 	public boolean isClosed() {
 		return isDisposed();
 	}

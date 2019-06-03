@@ -697,7 +697,7 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	public final Object getCollisionData() {
 		return _collisionData;
 	}
-
+	
 	public abstract float getWidth();
 
 	public abstract float getHeight();

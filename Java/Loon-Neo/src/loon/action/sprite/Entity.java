@@ -56,6 +56,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	protected boolean _childrenVisible = true;
 	protected boolean _childrenIgnoreUpdate = false;
 	protected boolean _childrenSortPending = false;
+	protected boolean _debugDraw = false;
 
 	protected int _idxTag = IEntity.TAG_INVALID;
 
@@ -64,6 +65,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	protected RectBox _shear;
 	protected LColor _baseColor = new LColor(LColor.white);
+	private LColor _debugDrawColor = LColor.red;
 
 	protected Vector2f _offset = new Vector2f();
 	protected float _rotationCenterX = -1;
@@ -801,6 +803,12 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 					g.fillRect(nx, ny, _width, _height, _baseColor);
 				}
 			}
+			if (_debugDraw) {
+				boolean useAll = g.isAlltextures();
+				g.setAlltextures(true);
+				g.drawRect(nx, ny, _width, _height, _debugDrawColor);
+				g.setAlltextures(useAll);
+			}
 			if (update) {
 				g.restoreBrush();
 				g.restoreTx();
@@ -960,6 +968,10 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	public void setSize(float w, float h) {
 		setWidth(w);
 		setHeight(h);
+	}
+
+	public void setBounds(RectBox rect) {
+		this.setBounds(rect.x, rect.y, rect.width, rect.height);
 	}
 
 	public void setBounds(float x, float y, float width, float height) {
@@ -1271,6 +1283,26 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	public Gravity getGravity() {
 		return new Gravity("Entity", this);
+	}
+
+	public boolean isDebugDraw() {
+		return _debugDraw;
+	}
+
+	public void setDebugDraw(boolean debugDraw) {
+		this._debugDraw = debugDraw;
+	}
+
+	public LColor getDebugDrawColor() {
+		return _debugDrawColor.cpy();
+	}
+
+	public Entity setDebugDrawColor(LColor debugColor) {
+		if (debugColor == null) {
+			return this;
+		}
+		this._debugDrawColor = debugColor;
+		return this;
 	}
 
 	public boolean isClosed() {

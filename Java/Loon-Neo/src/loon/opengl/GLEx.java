@@ -2325,7 +2325,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-		if (this.lastBrush.alltextures) {
+		if (this.lastBrush.alltextures || lastTrans.getAngle() != 0f) {
 			if (fill) {
 				fillRectNative(x, y, width, height);
 			} else {
@@ -2343,10 +2343,10 @@ public class GLEx extends PixmapFImpl implements LRelease {
 					tempY = tempHeight;
 					tempHeight = y;
 				}
-				drawLine(tempX, tempY, tempHeight, tempY, this.lastBrush.lineWidth);
+				drawLine(tempX, tempY, tempWidth, tempY, this.lastBrush.lineWidth);
 				drawLine(tempX, tempY + 1, tempX, tempHeight, this.lastBrush.lineWidth);
-				drawLine(tempHeight, tempHeight, tempX + 1, tempHeight, this.lastBrush.lineWidth);
-				drawLine(tempHeight, tempHeight - 1, tempHeight, tempY + 1, this.lastBrush.lineWidth);
+				drawLine(tempWidth, tempHeight, tempX + 1, tempHeight, this.lastBrush.lineWidth);
+				drawLine(tempWidth, tempHeight - 1, tempWidth, tempY + 1, this.lastBrush.lineWidth);
 			}
 			return this;
 		}

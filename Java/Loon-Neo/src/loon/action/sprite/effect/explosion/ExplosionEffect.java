@@ -113,8 +113,7 @@ public class ExplosionEffect extends Entity implements BaseEffect {
 		} else {
 			this.imageRect = imageSize;
 		}
-		this.setLocation(imageRect.x, imageRect.y);
-		this.setSize(imageRect.width, imageRect.height);
+		this.setBounds(imageRect);
 		this.blockWidth = tw;
 		this.blockHeight = th;
 		this.easingMode = ease;
