@@ -28,8 +28,9 @@ public class BooleanValue {
 		this.set(v);
 	}
 
-	public void set(boolean res) {
+	public BooleanValue set(boolean res) {
 		this.value = res;
+		return this;
 	}
 
 	public boolean result() {

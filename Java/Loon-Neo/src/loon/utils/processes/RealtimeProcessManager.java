@@ -121,6 +121,26 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, IArray, LRe
 		return null;
 	}
 
+	public void delete(GameProcess process) {
+		if (process == null) {
+			return;
+		}
+		if (processes != null && processes.size > 0) {
+			synchronized (this.processes) {
+				final TArray<GameProcess> ps = new TArray<GameProcess>(processes);
+				for (int i = 0; i < ps.size; i++) {
+					GameProcess p = ps.get(i);
+					if (p != null) {
+						if (process == p || process.getId() == p.getId() || process.getId().equals(p.getId())) {
+							p.kill();
+							processes.remove(p);
+						}
+					}
+				}
+			}
+		}
+	}
+
 	public void delete(String id) {
 		if (processes != null && processes.size > 0) {
 			synchronized (this.processes) {

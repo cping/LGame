@@ -1447,10 +1447,10 @@ public class Pixmap extends Limit implements LRelease {
 			tempY = tempHeight;
 			tempHeight = y1;
 		}
-		drawLine(tempX, tempY, tempHeight, tempY);
+		drawLine(tempX, tempY, tempWidth, tempY);
 		drawLine(tempX, tempY + 1, tempX, tempHeight);
-		drawLine(tempHeight, tempHeight, tempX + 1, tempHeight);
-		drawLine(tempHeight, tempHeight - 1, tempHeight, tempY + 1);
+		drawLine(tempWidth, tempHeight, tempX + 1, tempHeight);
+		drawLine(tempWidth, tempHeight - 1, tempWidth, tempY + 1);
 		return this;
 	}
 
@@ -1820,7 +1820,7 @@ public class Pixmap extends Limit implements LRelease {
 		drawCircle(x, y, width, height, true, new CircleUpdate() {
 			public void newPoint(int xLeft, int yTop, int xRight, int yBottom) {
 				drawLineImpl(xLeft, xRight, yTop);
-				if (yTop != yBottom){
+				if (yTop != yBottom) {
 					drawLineImpl(xLeft, xRight, yBottom);
 				}
 			}

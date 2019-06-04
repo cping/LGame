@@ -28,8 +28,9 @@ public class FloatValue {
 		this.set(v);
 	}
 
-	public void set(float v) {
+	public FloatValue set(float v) {
 		this.value = v;
+		return this;
 	}
 
 	public float result() {

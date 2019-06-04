@@ -25,11 +25,12 @@ import loon.LRelease;
 import loon.LSystem;
 import loon.utils.LIterator;
 import loon.utils.SortedList;
-import loon.utils.TimeUtils;
 import loon.utils.timer.LTimer;
 import loon.utils.timer.LTimerContext;
 
 public abstract class RealtimeProcess implements GameProcess, LRelease {
+
+	private static int GLOBAL_ID = 0;
 
 	protected boolean isDead;
 
@@ -42,7 +43,7 @@ public abstract class RealtimeProcess implements GameProcess, LRelease {
 	private SortedList<GameProcess> processesToFireWhenFinished;
 
 	public RealtimeProcess() {
-		this("Process" + TimeUtils.millis());
+		this("Process" + (GLOBAL_ID++));
 	}
 
 	public RealtimeProcess(String id) {
@@ -50,7 +51,7 @@ public abstract class RealtimeProcess implements GameProcess, LRelease {
 	}
 
 	public RealtimeProcess(long delay) {
-		this("Process" + TimeUtils.millis(), delay);
+		this("Process" + (GLOBAL_ID++), delay);
 	}
 
 	public RealtimeProcess(String id, long delay) {

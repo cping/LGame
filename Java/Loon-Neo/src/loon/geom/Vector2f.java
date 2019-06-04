@@ -265,113 +265,117 @@ public class Vector2f implements Serializable, XY {
 		y = coords[1];
 	}
 
-	public void move_45D_up() {
-		move_45D_up(1);
+	public Vector2f move_45D_up() {
+		return move_45D_up(1);
 	}
 
-	public void move_45D_up(int multiples) {
-		move_multiples(Field2D.UP, multiples);
+	public Vector2f move_45D_up(int multiples) {
+		return move_multiples(Field2D.UP, multiples);
 	}
 
-	public void move_45D_left() {
-		move_45D_left(1);
+	public Vector2f move_45D_left() {
+		return move_45D_left(1);
 	}
 
-	public void move_45D_left(int multiples) {
-		move_multiples(Field2D.LEFT, multiples);
+	public Vector2f move_45D_left(int multiples) {
+		return move_multiples(Field2D.LEFT, multiples);
 	}
 
-	public void move_45D_right() {
-		move_45D_right(1);
+	public Vector2f move_45D_right() {
+		return move_45D_right(1);
 	}
 
-	public void move_45D_right(int multiples) {
-		move_multiples(Field2D.RIGHT, multiples);
+	public Vector2f move_45D_right(int multiples) {
+		return move_multiples(Field2D.RIGHT, multiples);
 	}
 
-	public void move_45D_down() {
-		move_45D_down(1);
+	public Vector2f move_45D_down() {
+		return move_45D_down(1);
 	}
 
-	public void move_45D_down(int multiples) {
-		move_multiples(Field2D.DOWN, multiples);
+	public Vector2f move_45D_down(int multiples) {
+		return move_multiples(Field2D.DOWN, multiples);
 	}
 
-	public void move_up() {
-		move_up(1);
+	public Vector2f move_up() {
+		return move_up(1);
 	}
 
-	public void move_up(int multiples) {
-		move_multiples(Field2D.TUP, multiples);
+	public Vector2f move_up(int multiples) {
+		return move_multiples(Field2D.TUP, multiples);
 	}
 
-	public void move_left() {
-		move_left(1);
+	public Vector2f move_left() {
+		return move_left(1);
 	}
 
-	public void move_left(int multiples) {
-		move_multiples(Field2D.TLEFT, multiples);
+	public Vector2f move_left(int multiples) {
+		return move_multiples(Field2D.TLEFT, multiples);
 	}
 
-	public void move_right() {
-		move_right(1);
+	public Vector2f move_right() {
+		return move_right(1);
 	}
 
-	public void move_right(int multiples) {
-		move_multiples(Field2D.TRIGHT, multiples);
+	public Vector2f move_right(int multiples) {
+		return move_multiples(Field2D.TRIGHT, multiples);
 	}
 
-	public void move_down() {
-		move_down(1);
+	public Vector2f move_down() {
+		return move_down(1);
 	}
 
-	public void move_down(int multiples) {
-		move_multiples(Field2D.TDOWN, multiples);
+	public Vector2f move_down(int multiples) {
+		return move_multiples(Field2D.TDOWN, multiples);
 	}
 
-	public void move(Vector2f vector2D) {
+	public Vector2f move(Vector2f vector2D) {
 		this.x += vector2D.x;
 		this.y += vector2D.y;
+		return this;
 	}
 
-	public void move_multiples(int direction, int multiples) {
+	public Vector2f move_multiples(int direction, int multiples) {
 		if (multiples <= 0) {
 			multiples = 1;
 		}
 		Vector2f v = Field2D.getDirection(direction);
-		move(v.x() * multiples, v.y() * multiples);
+		return move(v.x() * multiples, v.y() * multiples);
 	}
 
-	public void moveX(int x) {
+	public Vector2f moveX(int x) {
 		this.x += x;
+		return this;
 	}
 
-	public void moveY(int y) {
+	public Vector2f moveY(int y) {
 		this.y += y;
+		return this;
 	}
 
-	public void moveByAngle(int degAngle, float distance) {
+	public Vector2f moveByAngle(int degAngle, float distance) {
 		if (distance == 0) {
-			return;
+			return this;
 		}
 		float Angle = MathUtils.toRadians(degAngle);
 		float dX = (MathUtils.cos(Angle) * distance);
 		float dY = (-MathUtils.sin(Angle) * distance);
 		int idX = MathUtils.round(dX);
 		int idY = MathUtils.round(dY);
-		move(idX, idY);
+		return move(idX, idY);
 	}
 
-	public void move(float x, float y) {
+	public Vector2f move(float x, float y) {
 		this.x += x;
 		this.y += y;
+		return this;
 	}
 
-	public void move(float distance) {
+	public Vector2f move(float distance) {
 		float angle = MathUtils.toRadians(getAngle());
 		int x = MathUtils.round(getX() + MathUtils.cos(angle) * distance);
 		int y = MathUtils.round(getY() + MathUtils.sin(angle) * distance);
-		setLocation(x, y);
+		return setLocation(x, y);
 	}
 
 	public boolean nearlyCompare(Vector2f v, int range) {
@@ -433,23 +437,28 @@ public class Vector2f implements Serializable, XY {
 		return (new float[] { x, y });
 	}
 
-	public void setLocation(float x, float y) {
+	public Vector2f setLocation(float x, float y) {
 		this.x = x;
 		this.y = y;
+		return this;
 	}
 
-	public void setX(float x) {
+	public Vector2f setX(float x) {
 		this.x = x;
+		return this;
 	}
 
-	public void setY(float y) {
+	public Vector2f setY(float y) {
 		this.y = y;
+		return this;
 	}
 
+	@Override
 	public float getX() {
 		return x;
 	}
 
+	@Override
 	public float getY() {
 		return y;
 	}
@@ -691,13 +700,11 @@ public class Vector2f implements Serializable, XY {
 		return this;
 	}
 
-
 	public final float normalize() {
 		float length = length();
 		if (length < MathUtils.EPSILON) {
 			return 0f;
 		}
-
 		float invLength = 1.0f / length;
 		x *= invLength;
 		y *= invLength;
