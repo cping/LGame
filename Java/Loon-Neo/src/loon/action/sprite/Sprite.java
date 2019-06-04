@@ -1163,15 +1163,16 @@ public class Sprite extends LObject<ISprite>
 		return _debugDraw;
 	}
 
-	public void setDebugDraw(boolean debugDraw) {
+	public ISprite setDebugDraw(boolean debugDraw) {
 		this._debugDraw = debugDraw;
+		return this;
 	}
 
 	public LColor getDebugDrawColor() {
 		return _debugDrawColor.cpy();
 	}
 
-	public Sprite setDebugDrawColor(LColor debugColor) {
+	public ISprite setDebugDrawColor(LColor debugColor) {
 		if(debugColor==null){
 			return this;
 		}

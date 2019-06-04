@@ -2331,8 +2331,8 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			} else {
 				float tempX = x;
 				float tempY = y;
-				float tempWidth = x + width;
-				float tempHeight = y + height;
+				float tempWidth = tempX + width;
+				float tempHeight = tempY + height;
 				if (tempX > tempWidth) {
 					x = tempX;
 					tempX = tempWidth;

@@ -650,6 +650,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	@Override
 	public void reset() {
 		this._visible = true;
+		this._debugDraw = false;
 		this._ignoreUpdate = false;
 		this._childrenVisible = true;
 		this._childrenIgnoreUpdate = false;
@@ -1289,22 +1290,23 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		return _debugDraw;
 	}
 
-	public void setDebugDraw(boolean debugDraw) {
+	public ISprite setDebugDraw(boolean debugDraw) {
 		this._debugDraw = debugDraw;
+		return this;
 	}
 
 	public LColor getDebugDrawColor() {
 		return _debugDrawColor.cpy();
 	}
 
-	public Entity setDebugDrawColor(LColor debugColor) {
-		if (debugColor == null) {
+	public ISprite setDebugDrawColor(LColor debugColor) {
+		if(debugColor==null){
 			return this;
 		}
 		this._debugDrawColor = debugColor;
 		return this;
 	}
-
+	
 	public boolean isClosed() {
 		return isDisposed();
 	}

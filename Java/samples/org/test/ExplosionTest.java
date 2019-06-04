@@ -42,6 +42,7 @@ public class ExplosionTest extends Stage {
 		// ExplosionEffect(Mode.Explode,"fish.png");
 		// 设定效果位置228x28
 		effect.setLocation(228, 28);
+		//effect.setDebugDraw(true);
 		// 旋转90度
 		// effect.setRotation(90f);
 		// 注入Screen

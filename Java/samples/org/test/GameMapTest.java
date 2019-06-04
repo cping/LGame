@@ -163,6 +163,8 @@ public class GameMapTest extends SpriteBatchScreen {
 	public void create() {
 
 		add(MultiScreenTest.getBackButton(this, 0));
+		//使用GLEx而非SpriteBacth渲染画面
+		//setUseGLEx(true);
 
 		// 以指定图片创建动画
 		this.coinAnimation = Animation.getDefaultAnimation("assets/coin.png",
@@ -174,6 +176,7 @@ public class GameMapTest extends SpriteBatchScreen {
 		this.jumpertwoAnimation = Animation.getDefaultAnimation(
 				"assets/jumper_two.gif", 32, 32, 200);
 
+		
 		// 注销Screen时释放下列资源
 		putReleases(coinAnimation, enemyAnimation, accelAnimation,
 				jumpertwoAnimation, hero);
@@ -238,7 +241,6 @@ public class GameMapTest extends SpriteBatchScreen {
 
 		// 在像素坐标位置(192,32)放置角色，大小为32x32，动画为针对hero.png的分解图
 		hero = addJumpObject(192, 32, 32, 32, animation);
-
 		// 让地图跟随指定对象产生移动（无论插入有多少张数组地图，此跟随默认对所有地图生效）
 		// 另外请注意，此处能产生跟随的对像是任意LObject，并不局限于游戏角色。
 		follow(hero);

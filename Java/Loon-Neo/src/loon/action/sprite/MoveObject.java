@@ -55,12 +55,19 @@ public class MoveObject extends ActionObject {
 
 	private int movingLength;
 
+	public MoveObject(float x, float y, String path) {
+		this(x, y, 0, 0, Animation.getDefaultAnimation(path), null);
+	}
+
+	public MoveObject(float x, float y, Animation animation) {
+		this(x, y, 0, 0, animation, null);
+	}
+
 	public MoveObject(float x, float y, Animation animation, TileMap map) {
 		this(x, y, 0, 0, animation, map);
 	}
 
-	public MoveObject(float x, float y, float dw, float dh,
-			Animation animation, TileMap map) {
+	public MoveObject(float x, float y, float dw, float dh, Animation animation, TileMap map) {
 		super(x, y, dw, dh, animation, map);
 		this.timer = new LTimer(0);
 		this.isComplete = false;
@@ -75,15 +82,9 @@ public class MoveObject extends ActionObject {
 				if (findPath != null) {
 					findPath.clear();
 				}
-				findPath = AStarFinder
-						.find(heuristic,
-								tiles.getField(),
-								tiles.pixelsToTilesWidth(x()),
-								tiles.pixelsToTilesHeight(y()),
-								tiles.pixelsToTilesWidth(touchX
-										- tiles.getOffset().x),
-								tiles.pixelsToTilesHeight(touchY
-										- tiles.getOffset().y), allDirection);
+				findPath = AStarFinder.find(heuristic, tiles.getField(), tiles.pixelsToTilesWidth(x()),
+						tiles.pixelsToTilesHeight(y()), tiles.pixelsToTilesWidth(touchX - tiles.getOffset().x),
+						tiles.pixelsToTilesHeight(touchY - tiles.getOffset().y), allDirection);
 			} else if (findPath != null) {
 				findPath.clear();
 			}
@@ -276,16 +277,13 @@ public class MoveObject extends ActionObject {
 		hashCode = LSystem.unite(hashCode, allDirection);
 		hashCode = LSystem.unite(hashCode, tiles.pixelsToTilesWidth(x()));
 		hashCode = LSystem.unite(hashCode, tiles.pixelsToTilesHeight(y()));
-		hashCode = LSystem.unite(hashCode,
-				tiles.pixelsToTilesWidth(touchX - tiles.getOffset().x));
-		hashCode = LSystem.unite(hashCode,
-				tiles.pixelsToTilesHeight(touchY - tiles.getOffset().y));
+		hashCode = LSystem.unite(hashCode, tiles.pixelsToTilesWidth(touchX - tiles.getOffset().x));
+		hashCode = LSystem.unite(hashCode, tiles.pixelsToTilesHeight(touchY - tiles.getOffset().y));
 		hashCode = LSystem.unite(hashCode, tiles.getWidth());
 		hashCode = LSystem.unite(hashCode, tiles.getHeight());
 		hashCode = LSystem.unite(hashCode, tiles.getTileWidth());
 		hashCode = LSystem.unite(hashCode, tiles.getTileHeight());
-		hashCode = LSystem.unite(hashCode,
-				CollectionUtils.hashCode(tiles.getMap()));
+		hashCode = LSystem.unite(hashCode, CollectionUtils.hashCode(tiles.getMap()));
 		return hashCode;
 	}
 

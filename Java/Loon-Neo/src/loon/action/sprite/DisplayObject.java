@@ -36,9 +36,11 @@ import loon.geom.XY;
 import loon.opengl.GLEx;
 
 public abstract class DisplayObject extends EventDispatcher implements CollisionObject, ISprite, XY, BoxSize {
+	
+	public static float morphX = 1f;
 
-	public static float morphX = 1f, morphY = 1f;
-
+	public static float morphY = 1f;
+	
 	protected boolean _visible = true;
 
 	protected RectBox _scrollRect = null;

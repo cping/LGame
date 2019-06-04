@@ -1806,12 +1806,10 @@ public class SpriteBatch extends PixmapFImpl {
 
 	public void drawRect(float x, float y, float width, float height) {
 		drawRectImpl(x, y, width, height);
-
 	}
 
 	public final void drawRoundRect(float x, float y, float width, float height, int radius) {
 		drawRoundRectImpl(x, y, width, height, radius, radius);
-
 	}
 
 	public final void fillRoundRect(float x, float y, float width, float height, int radius) {

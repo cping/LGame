@@ -236,8 +236,8 @@ public class MovieClip extends DisplayObject {
 		}
 		RectBox drawRect = RectBox.getIntersection(tempRect, rect);
 		if (drawRect != null) {
-			int destX = (int) (drawRect.x() * DisplayObject.morphX);
-			int destY = (int) (drawRect.y() * DisplayObject.morphY);
+			int destX = (int) (drawRect.x() * morphX);
+			int destY = (int) (drawRect.y() * morphY);
 
 			float rotate = 0;
 			Direction dir = Direction.TRANS_NONE;

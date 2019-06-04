@@ -138,6 +138,9 @@ public class LTimer implements LRelease {
 	}
 
 	public boolean action(long elapsedTime) {
+		if (this.closed) {
+			return false;
+		}
 		if (this.active) {
 			this.currentTick += (elapsedTime * speedFactor);
 			if (this.maxNumberOfRepeats > -1 && this.numberOfTicks >= this.maxNumberOfRepeats) {
@@ -156,7 +159,7 @@ public class LTimer implements LRelease {
 				return true;
 			}
 		}
-		return !this.closed;
+		return false;
 	}
 
 	public LTimer refresh() {
@@ -220,7 +223,11 @@ public class LTimer implements LRelease {
 	}
 
 	public LTimer setRepeats(int amount) {
-		return this.reset(this.delay, amount, this.speedFactor, true);
+		return setRepeats(amount, true);
+	}
+
+	public LTimer setRepeats(int amount, boolean newRepats) {
+		return this.reset(this.delay, amount, this.speedFactor, newRepats);
 	}
 
 	public LTimer setActive(boolean bool) {

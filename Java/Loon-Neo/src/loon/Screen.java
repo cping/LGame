@@ -3380,7 +3380,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return this;
 	}
 
-	public abstract void alter(LTimerContext timer);
+	public abstract void alter(LTimerContext context);
 
 	/**
 	 * 设定游戏窗体
