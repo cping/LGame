@@ -622,6 +622,10 @@ public class LColor implements Serializable {
 	}
 
 	public LColor setColor(int pixel) {
+		return setColorARGB(pixel);
+	}
+
+	public LColor setColorARGB(int pixel) {
 		int r = (pixel & 0x00FF0000) >> 16;
 		int g = (pixel & 0x0000FF00) >> 8;
 		int b = (pixel & 0x000000FF);
@@ -629,8 +633,14 @@ public class LColor implements Serializable {
 		if (a < 0) {
 			a += 256;
 		}
-		setColor(r, g, b, a);
-		return this;
+		return setColor(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
+	}
+
+	public LColor setColorRGB(int pixel) {
+		int r = (pixel & 0x00FF0000) >> 16;
+		int g = (pixel & 0x0000FF00) >> 8;
+		int b = (pixel & 0x000000FF);
+		return setColor(r / 255.0f, g / 255.0f, b / 255.0f, 1f);
 	}
 
 	public float red() {
