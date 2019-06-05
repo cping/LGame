@@ -45,6 +45,9 @@ import loon.utils.TimeUtils;
 
 public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite {
 
+	protected float _fixedWidthOffset = 0f;
+	protected float _fixedHeightOffset = 0f;
+
 	protected Sprites sprites = null;
 
 	protected int lastHashCode = 1;
@@ -126,7 +129,8 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 		default:
 			break;
 		}
-		throw new LSysException("A TmxMapRenderer has not yet been implemented for " + map.getOrientation() + " orientation");
+		throw new LSysException(
+				"A TmxMapRenderer has not yet been implemented for " + map.getOrientation() + " orientation");
 	}
 
 	public void update(long delta) {
@@ -158,12 +162,12 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 
 	@Override
 	public float getWidth() {
-		return map.getWidth() * map.getTileWidth();
+		return (map.getWidth() * map.getTileWidth() * scaleX) - _fixedWidthOffset;
 	}
 
 	@Override
 	public float getHeight() {
-		return map.getHeight() * map.getTileHeight();
+		return (map.getHeight() * map.getTileHeight() * scaleY) - _fixedHeightOffset;
 	}
 
 	public void renderImageLayers(GLEx gl, int... layerIDs) {
@@ -351,10 +355,30 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 		return this.sprites.getScreen() == null ? LSystem.getProcess().getScreen() : this.sprites.getScreen();
 	}
 
+	@Override
+	public float getFixedWidthOffset() {
+		return _fixedWidthOffset;
+	}
+
+	@Override
+	public void setFixedWidthOffset(float fixedWidthOffset) {
+		this._fixedWidthOffset = fixedWidthOffset;
+	}
+
+	@Override
+	public float getFixedHeightOffset() {
+		return _fixedHeightOffset;
+	}
+
+	@Override
+	public void setFixedHeightOffset(float fixedHeightOffset) {
+		this._fixedHeightOffset = fixedHeightOffset;
+	}
+
 	public boolean isClosed() {
 		return isDisposed();
 	}
-	
+
 	@Override
 	public void close() {
 		visible = false;

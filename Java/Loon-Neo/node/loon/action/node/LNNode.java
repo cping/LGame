@@ -156,6 +156,10 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 		setHeight(h);
 	}
 
+	protected float _fixedWidthOffset = 0f;
+	
+	protected float _fixedHeightOffset = 0f;
+	
 	protected int _top;
 
 	protected int _left;
@@ -886,12 +890,14 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 		return _screenRect.height;
 	}
 
+	@Override
 	public float getWidth() {
-		return (_size_width * scale[0]);
+		return (_size_width * scale[0]) - _fixedWidthOffset;
 	}
 
+	@Override
 	public float getHeight() {
-		return (_size_height * scale[1]);
+		return (_size_height * scale[1]) - _fixedHeightOffset;
 	}
 
 	public void moveCamera(float x, float y) {
@@ -1372,7 +1378,27 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 		return this._sprites.getScreen() == null ? LSystem.getProcess().getScreen() : this._sprites.getScreen();
 	}
 	
-	
+
+	@Override
+	public float getFixedWidthOffset() {
+		return _fixedWidthOffset;
+	}
+
+	@Override
+	public void setFixedWidthOffset(float fixedWidthOffset) {
+		this._fixedWidthOffset = fixedWidthOffset;
+	}
+
+	@Override
+	public float getFixedHeightOffset() {
+		return _fixedHeightOffset;
+	}
+
+	@Override
+	public void setFixedHeightOffset(float fixedHeightOffset) {
+		this._fixedHeightOffset = fixedHeightOffset;
+	}
+
 	@Override
 	public void close() {
 		this._isClose = true;
@@ -1396,4 +1422,5 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 		setState(State.DISPOSED);
 		removeActionEvents(this);
 	}
+
 }

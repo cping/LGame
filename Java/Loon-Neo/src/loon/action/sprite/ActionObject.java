@@ -26,6 +26,7 @@ import loon.LTexture;
 import loon.PlayerUtils;
 import loon.Screen;
 import loon.Director.Origin;
+import loon.LGame;
 import loon.action.ActionTween;
 import loon.action.map.Attribute;
 import loon.action.map.Config;
@@ -67,6 +68,10 @@ public abstract class ActionObject extends LObject<ISprite> implements Flip<Acti
 
 	protected float dstWidth, dstHeight;
 
+	protected float fixedWidthOffset = 0;
+	
+	protected float fixedHeightOffset = 0;
+	
 	private LColor _filterColor = new LColor(1f, 1f, 1f, 1f);
 
 	private LColor _debugDrawColor = LColor.red;
@@ -78,7 +83,7 @@ public abstract class ActionObject extends LObject<ISprite> implements Flip<Acti
 	public ActionObject(float x, float y, Animation animation) {
 		this(x, y, 0, 0, animation, null);
 	}
-	
+
 	public ActionObject(float x, float y, float dw, float dh, Animation animation, TileMap map) {
 		this.setLocation(x, y);
 		this.tiles = map;
@@ -119,8 +124,41 @@ public abstract class ActionObject extends LObject<ISprite> implements Flip<Acti
 			LTexture texture = animation.getSpriteImage();
 			float width = dstWidth <= 1 ? texture.getWidth() : dstWidth;
 			float height = dstHeight <= 1 ? texture.getHeight() : dstHeight;
-			batch.drawFlip(animation.getSpriteImage(),nx,ny, width, height, scaleX,
-					scaleY, getRotation(), flipX, flipY);
+			batch.drawFlip(texture, nx, ny, width, height, scaleX, scaleY, getRotation(), flipX, flipY);
+			if (_debugDraw) {
+				LGame game = LSystem.base();
+				if (game != null) {
+					GLEx gl = game.display().GL();
+					if (gl != null) {
+						boolean update = (_rotation != 0) || !(scaleX == 1f && scaleY == 1f);
+						if (update) {
+							gl.saveTx();
+							Affine2f tx = gl.tx();
+							final float centerX = this._pivot.x == -1 ? (nx + _origin.ox(width)) : nx + this._pivot.x;
+							final float centerY = this._pivot.y == -1 ? (ny + _origin.oy(height)) : ny + this._pivot.y;
+							if (_rotation != 0) {
+								tx.translate(centerX, centerY);
+								tx.preRotate(_rotation);
+								tx.translate(-centerX, -centerY);
+							}
+							if (((scaleX != 1) || (scaleY != 1))) {
+								tx.translate(centerX, centerY);
+								tx.preScale(scaleX, scaleY);
+								tx.translate(-centerX, -centerY);
+							}
+							boolean useAll = gl.isAlltextures();
+							gl.setAlltextures(true);
+							gl.drawRect(nx, ny, width, height, _debugDrawColor);
+							gl.setAlltextures(useAll);
+							gl.restoreTx();
+						}else{
+							batch.setColor(_debugDrawColor);
+							batch.drawRect(nx, ny, width, height);
+							batch.setColor(tmp);
+						}
+					}
+				}
+			}
 		} finally {
 			batch.setColor(tmp);
 			batch.setAlpha(alpha);
@@ -222,14 +260,15 @@ public abstract class ActionObject extends LObject<ISprite> implements Flip<Acti
 		return false;
 	}
 
+	
 	@Override
 	public float getWidth() {
-		return (int) ((dstWidth > 1 ? (int) dstWidth : animation.getSpriteImage().width()) * scaleX);
+		return (int) ((dstWidth > 1 ? (int) dstWidth : animation.getSpriteImage().width()) * scaleX) - fixedWidthOffset;
 	}
 
 	@Override
 	public float getHeight() {
-		return (int) ((dstHeight > 1 ? (int) dstHeight : animation.getSpriteImage().height()) * scaleY);
+		return (int) ((dstHeight > 1 ? (int) dstHeight : animation.getSpriteImage().height()) * scaleY) - fixedHeightOffset;
 	}
 
 	public Attribute getAttribute() {
@@ -412,9 +451,6 @@ public abstract class ActionObject extends LObject<ISprite> implements Flip<Acti
 
 	@Override
 	public void setScale(final float sx, final float sy) {
-		if (this.scaleX == sx && this.scaleY == sy) {
-			return;
-		}
 		this.scaleX = sx;
 		this.scaleY = sy;
 	}
@@ -450,6 +486,22 @@ public abstract class ActionObject extends LObject<ISprite> implements Flip<Acti
 		return this;
 	}
 
+	public float getFixedWidthOffset() {
+		return fixedWidthOffset;
+	}
+
+	public void setFixedWidthOffset(float fixedWidthOffset) {
+		this.fixedWidthOffset = fixedWidthOffset;
+	}
+
+	public float getFixedHeightOffset() {
+		return fixedHeightOffset;
+	}
+
+	public void setFixedHeightOffset(float fixedHeightOffset) {
+		this.fixedHeightOffset = fixedHeightOffset;
+	}
+	
 	public boolean isClosed() {
 		return isDisposed();
 	}

@@ -20,6 +20,7 @@
  */
 package loon.action.sprite;
 
+import loon.LGame;
 import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
@@ -102,7 +103,7 @@ public class SpriteBatch extends PixmapFImpl {
 		private Vector2f pdirection;
 
 		private Vector2f pcentre;
-
+		
 		private float plength;
 
 		private boolean pchanged;
@@ -110,7 +111,7 @@ public class SpriteBatch extends PixmapFImpl {
 		private LTexture whitePixel;
 
 		public TextureLine(LTexture texture) {
-			pchanged = true;
+			this.pchanged = true;
 			whitePixel = texture;
 		}
 
@@ -134,11 +135,11 @@ public class SpriteBatch extends PixmapFImpl {
 		}
 
 		public void update() {
-			pdirection = new Vector2f(pend.x - pstart.x, pend.y - pstart.y);
+			pdirection = pend.sub(pstart);
 			pdirection.nor();
 			pangle = MathUtils.toDegrees(MathUtils.atan2(pend.y - pstart.y, pend.x - pstart.x));
-			plength = MathUtils.ceil(Vector2f.dst(pstart, pend));
-			pcentre = new Vector2f((pend.x + pstart.x) / 2, (pend.y + pstart.y) / 2);
+			plength = MathUtils.ceil(pstart.distance(pend));
+			pcentre = (pstart.add(pend).div(2));
 			pchanged = false;
 		}
 
@@ -147,8 +148,8 @@ public class SpriteBatch extends PixmapFImpl {
 				update();
 			}
 			if (pstrokeWidth > 0) {
-				batch.draw(whitePixel, pcentre.x, pcentre.y, plength / 2f, pstrokeWidth / 2, plength, pstrokeWidth, 1f,
-						1f, pangle, 0, 0, 1f, 1f, false, false, true);
+				batch.draw(whitePixel, pcentre.x, pcentre.y, plength / 2f, pstrokeWidth / 2, plength, pstrokeWidth,
+						1f, 1f, MathUtils.fixRotation(pangle), 0, 0, 1f, 1f, false, false, true);
 			}
 		}
 	}
@@ -157,17 +158,24 @@ public class SpriteBatch extends PixmapFImpl {
 
 	@Override
 	protected void drawLineImpl(float x1, float y1, float x2, float y2) {
+		drawLineImpl(x1, y1, x2, y2, 1f);
+	}
+
+	protected void drawLineImpl(float x1, float y1, float x2, float y2, 
+			float lineWidth) {
+
 		int hashCode = 1;
 		hashCode = LSystem.unite(hashCode, x1);
 		hashCode = LSystem.unite(hashCode, y1);
 		hashCode = LSystem.unite(hashCode, x2);
 		hashCode = LSystem.unite(hashCode, y2);
+		hashCode = LSystem.unite(hashCode, lineWidth);
 		SpriteBatch.TextureLine line = lineLazy.get(hashCode);
 		if (line == null) {
 			line = new SpriteBatch.TextureLine(colorTexture);
 			line.setStart(x1, y1);
 			line.setEnd(x2, y2);
-			line.setStrokeWidth(LSystem.base().display().GL().getPixSkip());
+			line.setStrokeWidth(lineWidth);
 			lineLazy.put(hashCode, line);
 		}
 		line.draw(this);
@@ -1802,6 +1810,33 @@ public class SpriteBatch extends PixmapFImpl {
 
 	public void fillArc(float x1, float y1, float width, float height, float start, float end) {
 		fillArcImpl(x1, y1, width, height, start, end);
+	}
+
+	@Override
+	protected void drawRectImpl(float x1, float y1, float w1, float h1) {
+		float tempX = x1;
+		float tempY = y1;
+		float tempWidth = tempX + w1;
+		float tempHeight = tempY + h1;
+		if (tempX > tempWidth) {
+			x1 = tempX;
+			tempX = tempWidth;
+			tempWidth = x1;
+		}
+		if (tempY > tempHeight) {
+			y1 = tempY;
+			tempY = tempHeight;
+			tempHeight = y1;
+		}
+		float lineWidth = 1f;
+		LGame game = LSystem.base();
+		if (game != null && game.display() != null) {
+			lineWidth = game.display().GL().getLineWidth();
+		}
+		drawLineImpl(tempX, tempY, tempWidth, tempY,  lineWidth);
+		drawLineImpl(tempX, tempY + 1, tempX, tempHeight, lineWidth);
+		drawLineImpl(tempWidth, tempHeight, tempX + 1, tempHeight, lineWidth);
+		drawLineImpl(tempWidth, tempHeight - 1, tempWidth, tempY + 1,  lineWidth);
 	}
 
 	public void drawRect(float x, float y, float width, float height) {

@@ -106,6 +106,9 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 
 	private Field2D field2d;
 
+	private float _fixedWidthOffset = 0f;
+	private float _fixedHeightOffset = 0f;
+
 	private int[] position = new int[2];
 
 	private int[][] positions = new int[6][2];
@@ -975,12 +978,12 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 
 	@Override
 	public float getWidth() {
-		return getRect().getWidth();
+		return getRect().getWidth() * _scaleX - _fixedWidthOffset;
 	}
 
 	@Override
 	public float getHeight() {
-		return getRect().getHeight();
+		return getRect().getHeight() * _scaleY - _fixedHeightOffset;
 	}
 
 	private void setFieldMap(int[][] maps) {
@@ -1880,6 +1883,26 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	@Override
 	public String toString() {
 		return field2d == null ? super.toString() : field2d.toString();
+	}
+
+	@Override
+	public float getFixedWidthOffset() {
+		return _fixedWidthOffset;
+	}
+
+	@Override
+	public void setFixedWidthOffset(float fixedWidthOffset) {
+		this._fixedWidthOffset = fixedWidthOffset;
+	}
+
+	@Override
+	public float getFixedHeightOffset() {
+		return _fixedHeightOffset;
+	}
+
+	@Override
+	public void setFixedHeightOffset(float fixedHeightOffset) {
+		this._fixedHeightOffset = fixedHeightOffset;
 	}
 
 	public boolean isClosed() {

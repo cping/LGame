@@ -265,7 +265,26 @@ public class RocSSprite extends LObject<ISprite> implements ISprite {
 	}
 
 	@Override
+	public float getFixedWidthOffset() {
+		return 0;
+	}
+
+	@Override
+	public void setFixedWidthOffset(float widthOffset) {
+	}
+
+	@Override
+	public float getFixedHeightOffset() {
+		return 0;
+	}
+
+	@Override
+	public void setFixedHeightOffset(float heightOffset) {
+	}
+	
+	@Override
 	public void close() {
 		setState(State.DISPOSED);
 	}
+
 }

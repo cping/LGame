@@ -72,15 +72,19 @@ public class Sprite extends LObject<ISprite>
 
 	// 动画
 	private Animation animation = new Animation();
-	
+
 	private LColor _debugDrawColor = LColor.red;
 
 	private int transform;
 
 	private float _scaleX = 1f, _scaleY = 1f;
 
-	private boolean _flipX = false, _flipY = false;
+	private float _fixedWidthOffset = 0f;
 	
+	private float _fixedHeightOffset = 0f;
+
+	private boolean _flipX = false, _flipY = false;
+
 	private boolean _debugDraw = false;
 
 	private int _maxFrame;
@@ -573,7 +577,7 @@ public class Sprite extends LObject<ISprite>
 		if (si == null) {
 			return -1;
 		}
-		return (int) (si.width() * _scaleX);
+		return (si.width() * _scaleX) - _fixedWidthOffset;
 	}
 
 	@Override
@@ -582,7 +586,7 @@ public class Sprite extends LObject<ISprite>
 		if (si == null) {
 			return -1;
 		}
-		return (int) (si.height() * _scaleY);
+		return (si.height() * _scaleY) - _fixedHeightOffset;
 	}
 
 	/**
@@ -1173,13 +1177,33 @@ public class Sprite extends LObject<ISprite>
 	}
 
 	public ISprite setDebugDrawColor(LColor debugColor) {
-		if(debugColor==null){
+		if (debugColor == null) {
 			return this;
 		}
 		this._debugDrawColor = debugColor;
 		return this;
 	}
-	
+
+	@Override
+	public float getFixedWidthOffset() {
+		return _fixedWidthOffset;
+	}
+
+	@Override
+	public void setFixedWidthOffset(float fixedWidthOffset) {
+		this._fixedWidthOffset = fixedWidthOffset;
+	}
+
+	@Override
+	public float getFixedHeightOffset() {
+		return _fixedHeightOffset;
+	}
+
+	@Override
+	public void setFixedHeightOffset(float fixedHeightOffset) {
+		this._fixedHeightOffset = fixedHeightOffset;
+	}
+
 	public boolean isClosed() {
 		return isDisposed();
 	}

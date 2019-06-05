@@ -82,6 +82,9 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	private final Field2D field2d;
 
+	private float _fixedWidthOffset = 0f;
+	private float _fixedHeightOffset = 0f;
+
 	private int lastOffsetX, lastOffsetY;
 
 	private ActionBind follow;
@@ -726,12 +729,12 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	@Override
 	public float getHeight() {
-		return field2d.getHeight() * field2d.getTileWidth();
+		return (field2d.getHeight() * field2d.getTileWidth() * scaleY) - _fixedHeightOffset;
 	}
 
 	@Override
 	public float getWidth() {
-		return field2d.getWidth() * field2d.getTileHeight();
+		return (field2d.getWidth() * field2d.getTileHeight() * scaleX) - _fixedWidthOffset;
 	}
 
 	public int getRow() {
@@ -1165,6 +1168,26 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	@Override
 	public float getContainerHeight() {
 		return this._sprites == null ? super.getContainerHeight() : this._sprites.getHeight();
+	}
+
+	@Override
+	public float getFixedWidthOffset() {
+		return _fixedWidthOffset;
+	}
+
+	@Override
+	public void setFixedWidthOffset(float fixedWidthOffset) {
+		this._fixedWidthOffset = fixedWidthOffset;
+	}
+
+	@Override
+	public float getFixedHeightOffset() {
+		return _fixedHeightOffset;
+	}
+
+	@Override
+	public void setFixedHeightOffset(float fixedHeightOffset) {
+		this._fixedHeightOffset = fixedHeightOffset;
 	}
 
 	public boolean isClosed() {

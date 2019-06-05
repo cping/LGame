@@ -89,6 +89,14 @@ public interface ISprite extends ActionBind, Visible, LRelease, XY {
 
 	Screen getScreen();
 
+	float getFixedWidthOffset();
+
+	void setFixedWidthOffset(float widthOffset);
+
+	float getFixedHeightOffset();
+
+	void setFixedHeightOffset(float heightOffset);
+
 	boolean isDisposed();
 
 }

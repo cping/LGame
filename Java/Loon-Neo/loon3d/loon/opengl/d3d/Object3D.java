@@ -21,7 +21,7 @@ public class Object3D extends LObject<ISprite> implements ISprite {
 	private boolean isPreview = false;
 
 	private Sprites sprites = null;
-	
+
 	// 轮廓预览模式
 	private PreBoxViewer3D preview;
 
@@ -195,7 +195,24 @@ public class Object3D extends LObject<ISprite> implements ISprite {
 		}
 		return this.sprites.getScreen() == null ? LSystem.getProcess().getScreen() : this.sprites.getScreen();
 	}
-	
+
+	@Override
+	public float getFixedWidthOffset() {
+		return 0;
+	}
+
+	public void setFixedWidthOffset(float widthOffset) {
+	}
+
+	@Override
+	public float getFixedHeightOffset() {
+		return 0;
+	}
+
+	@Override
+	public void setFixedHeightOffset(float heightOffset) {
+	}
+
 	@Override
 	public void close() {
 		setState(State.DISPOSED);

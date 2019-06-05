@@ -68,6 +68,10 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	private LColor _debugDrawColor = LColor.red;
 
 	protected Vector2f _offset = new Vector2f();
+
+	protected float _fixedWidthOffset = 0f;
+	protected float _fixedHeightOffset = 0f;
+
 	protected float _rotationCenterX = -1;
 	protected float _rotationCenterY = -1;
 
@@ -906,12 +910,12 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	@Override
 	public float getWidth() {
-		return (_width * this._scaleX);
+		return (_width * this._scaleX) - _fixedWidthOffset;
 	}
 
 	@Override
 	public float getHeight() {
-		return (_height * this._scaleY);
+		return (_height * this._scaleY) - _fixedHeightOffset;
 	}
 
 	@Override
@@ -1300,13 +1304,33 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	}
 
 	public ISprite setDebugDrawColor(LColor debugColor) {
-		if(debugColor==null){
+		if (debugColor == null) {
 			return this;
 		}
 		this._debugDrawColor = debugColor;
 		return this;
 	}
-	
+
+	@Override
+	public float getFixedWidthOffset() {
+		return _fixedWidthOffset;
+	}
+
+	@Override
+	public void setFixedWidthOffset(float fixedWidthOffset) {
+		this._fixedWidthOffset = fixedWidthOffset;
+	}
+
+	@Override
+	public float getFixedHeightOffset() {
+		return _fixedHeightOffset;
+	}
+
+	@Override
+	public void setFixedHeightOffset(float fixedHeightOffset) {
+		this._fixedHeightOffset = fixedHeightOffset;
+	}
+
 	public boolean isClosed() {
 		return isDisposed();
 	}
