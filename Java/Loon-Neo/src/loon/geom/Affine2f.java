@@ -443,6 +443,22 @@ public class Affine2f implements LTrans, XY {
 		return MathUtils.sqrt(m10 * m10 + m11 * m11);
 	}
 
+	public float skewX() {
+		if (this.m11 < 0) {
+			return MathUtils.atan2(this.m11, this.m01) + (MathUtils.PI / 2);
+		} else {
+			return MathUtils.atan2(this.m11, this.m01) - (MathUtils.PI / 2);
+		}
+	}
+
+	public float skewY() {
+		if (this.m00 < 0) {
+			return MathUtils.atan2(this.m10, this.m00) - MathUtils.PI;
+		} else {
+			return MathUtils.atan2(this.m10, this.m00);
+		}
+	}
+
 	public float rotation() {
 		float n00 = m00, n10 = m10;
 		float n01 = m01, n11 = m11;
@@ -764,6 +780,32 @@ public class Affine2f implements LTrans, XY {
 		float rdet = 1f / det;
 		return new Affine2f(+m11 * rdet, -m10 * rdet, -m01 * rdet, +m00 * rdet, (m10 * ty - m11 * tx) * rdet,
 				(m01 * tx - m00 * ty) * rdet);
+	}
+
+	public Affine2f concat(Affine2f other) {
+		float a = this.m00 * other.m00;
+		float b = 0f;
+		float c = 0f;
+		float d = this.m11 * other.m11;
+		float tx = this.tx * other.m00 + other.tx;
+		float ty = this.ty * other.m11 + other.ty;
+
+		if (this.m10 != 0f || this.m01 != 0f || other.m10 != 0f || other.m01 != 0f) {
+			a += this.m10 * other.m01;
+			d += this.m01 * other.m10;
+			b += this.m00 * other.m10 + this.m10 * other.m11;
+			c += this.m01 * other.m00 + this.m11 * other.m01;
+			tx += this.ty * other.m01;
+			ty += this.tx * other.m10;
+		}
+
+		this.m00 = a;
+		this.m01 = b;
+		this.m10 = c;
+		this.m11 = d;
+		this.tx = tx;
+		this.ty = ty;
+		return this;
 	}
 
 	public Affine2f concatenate(Affine2f other) {

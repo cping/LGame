@@ -39,7 +39,7 @@ public class RectBox extends Shape implements BoxSize {
 	public final static RectBox at(float x, float y, float w, float h) {
 		return new RectBox(x, y, w, h);
 	}
-	
+
 	public int width;
 
 	public int height;
@@ -242,14 +242,6 @@ public class RectBox extends Shape implements BoxSize {
 		return this.y + this.height;
 	}
 
-	public float getRight() {
-		return getMaxX();
-	}
-
-	public float getBottom() {
-		return getMaxY();
-	}
-
 	public float getMiddleX() {
 		return getCenterX();
 	}
@@ -266,6 +258,68 @@ public class RectBox extends Shape implements BoxSize {
 	@Override
 	public float getCenterY() {
 		return y + height / 2f;
+	}
+
+	public float getLeft() {
+		return this.getMinX();
+	}
+
+	public RectBox setLeft(float value) {
+		this.width += this.x - value;
+		this.x = value;
+		return this;
+	}
+
+	public float getRight() {
+		return getMaxX();
+	}
+
+	public RectBox setRight(float v) {
+		this.width = (int) (v - this.x);
+		return this;
+	}
+
+	public float getTop() {
+		return getMinY();
+	}
+
+	public RectBox setTop(float value) {
+		this.height += this.y - value;
+		this.y = value;
+		return this;
+	}
+
+	public float getBottom() {
+		return getMaxY();
+	}
+
+	public RectBox setBottom(float v) {
+		this.height = (int) (v - this.y);
+		return this;
+	}
+
+	public int Left() {
+		return this.x();
+	}
+
+	public int Right() {
+		return (int) getMaxX();
+	}
+
+	public int Top() {
+		return this.y();
+	}
+
+	public int Bottom() {
+		return (int) getMaxY();
+	}
+	
+	public Vector2f topLeft() {
+		return new Vector2f(this.getLeft(), this.getTop());
+	}
+
+	public Vector2f bottomRight() {
+		return new Vector2f(this.getRight(), this.getBottom());
 	}
 
 	public RectBox normalize() {
@@ -730,7 +784,7 @@ public class RectBox extends Shape implements BoxSize {
 		}
 		return new RectBox(x / view.x, y / view.y, width / view.width, height / view.height);
 	}
-	
+
 	public RectBox inc(float v) {
 		return new RectBox(x + v, y + v, width + v, height + v);
 	}
@@ -803,21 +857,6 @@ public class RectBox extends Shape implements BoxSize {
 		return this;
 	}
 
-	public int Left() {
-		return this.x();
-	}
-
-	public int Right() {
-		return (int) (this.x + this.width);
-	}
-
-	public int Top() {
-		return this.y();
-	}
-
-	public int Bottom() {
-		return (int) (this.y + this.height);
-	}
 
 	@Override
 	public int hashCode() {

@@ -21,7 +21,7 @@
 package loon.geom;
 
 public interface BoxSize {
-
+	  
 	public float getX();
 
 	public float getY();

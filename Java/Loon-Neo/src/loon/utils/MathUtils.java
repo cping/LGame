@@ -932,6 +932,14 @@ public class MathUtils {
 		return v < 0f ? 0f : (v > 1f ? 1f : v);
 	}
 
+	public static final float clampAngle(final float v) {
+		float value = v % PI * 2;
+		if (value < 0) {
+			value += PI * 2;
+		}
+		return value;
+	}
+
 	public static final float distance(float value1, float value2) {
 		return Math.abs(value1 - value2);
 	}

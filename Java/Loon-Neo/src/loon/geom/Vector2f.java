@@ -90,7 +90,7 @@ public class Vector2f implements Serializable, XY {
 	public final float lengthSquared() {
 		return (x * x + y * y);
 	}
-	
+
 	public float len() {
 		return length();
 	}
@@ -101,7 +101,7 @@ public class Vector2f implements Serializable, XY {
 
 	public Vector2f normalizeSelf() {
 		float l = length();
-		if (l == 0 || l == 1){
+		if (l == 0 || l == 1) {
 			return this;
 		}
 		return set(x / l, y / l);
@@ -114,7 +114,7 @@ public class Vector2f implements Serializable, XY {
 	public Vector2f normalizeNew() {
 		return nor(len());
 	}
-	
+
 	public Vector2f nor(float n) {
 		return new Vector2f(x == 0 ? 0 : x / n, y == 0 ? 0 : y / n);
 	}
@@ -130,7 +130,7 @@ public class Vector2f implements Serializable, XY {
 	public final Vector2f mulSelf(float scale) {
 		return mulSelf(scale);
 	}
-	
+
 	public final Vector2f mulSelf(float sx, float sy) {
 		this.x *= sx;
 		this.y *= sy;
@@ -637,6 +637,11 @@ public class Vector2f implements Serializable, XY {
 		final float x_d = x2 - x1;
 		final float y_d = y2 - y1;
 		return x_d * x_d + y_d * y_d;
+	}
+
+	public static Vector2f polar(float len, float angle) {
+		return new Vector2f(len * MathUtils.cos(angle / MathUtils.DEG_TO_RAD),
+				len * MathUtils.sin(angle / MathUtils.DEG_TO_RAD));
 	}
 
 	public final void setZero() {
