@@ -271,12 +271,12 @@ public class BMFont implements IFont {
 					int second = Integer.parseInt(tokens.nextToken());
 					tokens.nextToken();
 					int offset = Integer.parseInt(tokens.nextToken());
-					TArray<Short> values = kerning.get(new Short(first));
+					TArray<Short> values = kerning.get(Short.valueOf(first));
 					if (values == null) {
 						values = new TArray<Short>();
-						kerning.put(new Short(first), values);
+						kerning.put(Short.valueOf(first), values);
 					}
-					values.add(new Short((short) ((offset << 8) | second)));
+					values.add(Short.valueOf((short) ((offset << 8) | second)));
 				}
 			}
 		}

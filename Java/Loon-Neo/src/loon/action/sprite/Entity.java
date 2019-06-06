@@ -1116,7 +1116,6 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	@Override
 	protected void finalize() throws Throwable {
-		super.finalize();
 		if (!isDisposed()) {
 			this.close();
 		}
