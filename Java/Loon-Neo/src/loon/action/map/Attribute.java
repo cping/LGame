@@ -46,4 +46,9 @@ public class Attribute {
 		this.attribute = attribute;
 	}
 
+	public Attribute cpy(Attribute other){
+		this.name = other.name;
+		this.attribute = other.attribute;
+		return this;
+	}
 }

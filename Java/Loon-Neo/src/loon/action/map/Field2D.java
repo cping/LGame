@@ -315,7 +315,16 @@ public class Field2D implements IArray, Config {
 	}
 
 	public Tile getTile(int x, int y) {
-		return _tileImpl.at(x, y);
+		if (allowLimit(x, y)) {
+			return _tileImpl.at(getTileType(x, y), x, y, this.tileWidth, this.tileHeight);
+		}
+		return null;
+	}
+
+	public Tile getPointTile(float px, float py) {
+		int x = MathUtils.floor(px / this.tileWidth);
+		int y = MathUtils.floor(py / this.tileHeight);
+		return getTile(x, y);
 	}
 
 	public void set(int[][] mapArrays, int tw, int th) {
