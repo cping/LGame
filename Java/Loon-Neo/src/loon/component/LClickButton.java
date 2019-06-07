@@ -47,8 +47,6 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 
 	private ActionKey onTouch = new ActionKey();
 
-	private CallFunction _function;
-
 	private LTexture idleClick, hoverClick, disableClick;
 
 	private IFont font;
@@ -61,6 +59,8 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 
 	private String text = null;
 
+	private CallFunction _function;
+	
 	public static LClickButton makePath(String path) {
 		LTexture tex = LSystem.loadTexture(path);
 		return new LClickButton(null, SkinManager.get().getClickButtonSkin().getFont(),

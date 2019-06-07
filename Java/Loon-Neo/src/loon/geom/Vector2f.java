@@ -50,16 +50,28 @@ public class Vector2f implements Serializable, XY {
 		return new Vector2f(0, 0);
 	}
 
+	public final static Vector2f HALF() {
+		return new Vector2f(0.5f, 0.5f);
+	}
+
+	public final static Vector2f ONE() {
+		return new Vector2f(1f, 1f);
+	}
+
 	public final static Vector2f AXIS_X() {
-		return new Vector2f(1, 0);
+		return new Vector2f(1f, 0f);
 	}
 
 	public final static Vector2f AXIS_Y() {
-		return new Vector2f(0, 1);
+		return new Vector2f(0f, 1f);
 	}
 
 	public final static Vector2f at(float x, float y) {
 		return new Vector2f(x, y);
+	}
+
+	public final static Vector2f fromAngle(float angle) {
+		return new Vector2f(MathUtils.cos(angle), MathUtils.sin(angle));
 	}
 
 	public float x;
@@ -206,7 +218,7 @@ public class Vector2f implements Serializable, XY {
 	public Vector2f tmp() {
 		return TMP().set(this);
 	}
-
+	
 	public float crs(Vector2f v) {
 		return this.x * v.y - this.y * v.x;
 	}
@@ -215,17 +227,73 @@ public class Vector2f implements Serializable, XY {
 		return this.x * y - this.y * x;
 	}
 
-	public float angle() {
-		float angle = MathUtils.atan2(y, x) * MathUtils.RAD_TO_DEG;
-		if (angle < 0) {
-			angle += 360;
+	public float getAngle() {
+		float theta = MathUtils.toDegrees(MathUtils.atan2(y, x));
+		if ((theta < -360) || (theta > 360)) {
+			theta = theta % 360;
 		}
-		return angle;
+		if (theta < 0) {
+			theta = 360 + theta;
+		}
+		return theta;
+	}
+	
+	public float angle() {
+		return getAngle();
 	}
 
+	public int angle(Vector2f v) {
+		int dx = v.x() - x();
+		int dy = v.y() - y();
+		int adx = MathUtils.abs(dx);
+		int ady = MathUtils.abs(dy);
+		if ((dy == 0) && (dx == 0)) {
+			return 0;
+		}
+		if ((dy == 0) && (dx > 0)) {
+			return 0;
+		}
+		if ((dy == 0) && (dx < 0)) {
+			return 180;
+		}
+		if ((dy > 0) && (dx == 0)) {
+			return 90;
+		}
+		if ((dy < 0) && (dx == 0)) {
+			return 270;
+		}
+		float rwinkel = MathUtils.atan(ady / adx);
+		float dwinkel = 0.0f;
+		if ((dx > 0) && (dy > 0)) {
+			dwinkel = MathUtils.toDegrees(rwinkel);
+		} else if ((dx < 0) && (dy > 0)) {
+			dwinkel = (180.0f - MathUtils.toDegrees(rwinkel));
+		} else if ((dx > 0) && (dy < 0)) {
+			dwinkel = (360.0f - MathUtils.toDegrees(rwinkel));
+		} else if ((dx < 0) && (dy < 0)) {
+			dwinkel = (180.0f + MathUtils.toDegrees(rwinkel));
+		}
+		int iwinkel = (int) dwinkel;
+		if (iwinkel == 360) {
+			iwinkel = 0;
+		}
+		return iwinkel;
+	}
+
+	public static float angleTo(Vector2f vectorA) {
+		float theta = MathUtils.toDegrees(MathUtils.atan2(vectorA.y, vectorA.x));
+		if ((theta < -360) || (theta > 360)) {
+			theta = theta % 360;
+		}
+		if (theta < 0) {
+			theta = 360 + theta;
+		}
+		return theta;
+	}
+	
 	public Vector2f newRotate(float angle) {
 
-		float rad = angle * MathUtils.DEG_TO_RAD;
+		float rad = MathUtils.toRadians(angle);
 		float cos = MathUtils.cos(rad);
 		float sin = MathUtils.sin(rad);
 
@@ -237,7 +305,7 @@ public class Vector2f implements Serializable, XY {
 
 	public Vector2f rotate(float angle) {
 		if (angle != 0) {
-			float rad = angle * MathUtils.DEG_TO_RAD;
+			float rad = MathUtils.toRadians(angle);
 			float cos = MathUtils.cos(rad);
 			float sin = MathUtils.sin(rad);
 
@@ -382,55 +450,6 @@ public class Vector2f implements Serializable, XY {
 		int dX = MathUtils.abs(x() - v.x());
 		int dY = MathUtils.abs(y() - v.y());
 		return (dX <= range) && (dY <= range);
-	}
-
-	public int angle(Vector2f v) {
-		int dx = v.x() - x();
-		int dy = v.y() - y();
-		int adx = MathUtils.abs(dx);
-		int ady = MathUtils.abs(dy);
-		if ((dy == 0) && (dx == 0)) {
-			return 0;
-		}
-		if ((dy == 0) && (dx > 0)) {
-			return 0;
-		}
-		if ((dy == 0) && (dx < 0)) {
-			return 180;
-		}
-		if ((dy > 0) && (dx == 0)) {
-			return 90;
-		}
-		if ((dy < 0) && (dx == 0)) {
-			return 270;
-		}
-		float rwinkel = MathUtils.atan(ady / adx);
-		float dwinkel = 0.0f;
-		if ((dx > 0) && (dy > 0)) {
-			dwinkel = MathUtils.toDegrees(rwinkel);
-		} else if ((dx < 0) && (dy > 0)) {
-			dwinkel = (180.0f - MathUtils.toDegrees(rwinkel));
-		} else if ((dx > 0) && (dy < 0)) {
-			dwinkel = (360.0f - MathUtils.toDegrees(rwinkel));
-		} else if ((dx < 0) && (dy < 0)) {
-			dwinkel = (180.0f + MathUtils.toDegrees(rwinkel));
-		}
-		int iwinkel = (int) dwinkel;
-		if (iwinkel == 360) {
-			iwinkel = 0;
-		}
-		return iwinkel;
-	}
-
-	public float getAngle() {
-		float theta = MathUtils.toDegrees(MathUtils.atan2(y, x));
-		if ((theta < -360) || (theta > 360)) {
-			theta = theta % 360;
-		}
-		if (theta < 0) {
-			theta = 360 + theta;
-		}
-		return theta;
 	}
 
 	public float[] getCoords() {
@@ -605,16 +624,8 @@ public class Vector2f implements Serializable, XY {
 		return vectorA.x * y - vectorA.y * x;
 	}
 
-	public static float angleTo(Vector2f vectorA) {
-		float angle = MathUtils.atan2(vectorA.y, vectorA.x) * MathUtils.RAD_TO_DEG;
-		if (angle < 0) {
-			angle += 360;
-		}
-		return angle;
-	}
-
 	public static Vector2f rotate(Vector2f vectorA, float angle) {
-		float rad = angle * MathUtils.DEG_TO_RAD;
+		float rad = MathUtils.toRadians(angle);
 		float cos = MathUtils.cos(rad);
 		float sin = MathUtils.sin(rad);
 
