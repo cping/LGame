@@ -43,7 +43,7 @@ public class SysTouch {
 	public static ActionKey getOnlyKey() {
 		return SysInputFactory.getOnlyKey();
 	}
-	
+
 	public static final int TOUCH_DOWN = 0;
 
 	public static final int TOUCH_UP = 1;
@@ -51,7 +51,7 @@ public class SysTouch {
 	public static final int TOUCH_MOVE = 2;
 
 	public static final int TOUCH_DRAG = 3;
-	
+
 	public static final int LEFT = 0;
 
 	public static final int RIGHT = 1;
@@ -108,7 +108,7 @@ public class SysTouch {
 	public static float getDY() {
 		return SysInputFactory.finalTouch.dy;
 	}
-	
+
 	public static boolean isDown() {
 		return SysInputFactory.finalTouch.isDown();
 	}
@@ -121,7 +121,20 @@ public class SysTouch {
 		return SysInputFactory.finalTouch.isMove();
 	}
 
+	public static long getDuration() {
+		return SysInputFactory.finalTouch.duration;
+	}
+
+	public static long getTimeDown() {
+		return SysInputFactory.finalTouch.timeDown;
+	}
+
+	public static long getTimeUp() {
+		return SysInputFactory.finalTouch.timeUp;
+	}
+
 	public static boolean isDrag() {
 		return SysInputFactory._isDraging;
 	}
+
 }

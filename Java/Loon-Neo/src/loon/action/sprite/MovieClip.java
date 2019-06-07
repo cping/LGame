@@ -52,6 +52,8 @@ public class MovieClip extends DisplayObject {
 
 	private boolean _isLoop = false;
 
+	private RectBox _tempRect;
+	
 	public MovieClip(MovieSpriteSheet sheet, int interval) {
 		init(sheet, interval, DisplayObject.ANCHOR_TOP_LEFT);
 	}
@@ -198,8 +200,6 @@ public class MovieClip extends DisplayObject {
 		enterFrame(elapsedTime);
 	}
 
-	private RectBox tempRect;
-
 	@Override
 	public void createUI(GLEx g) {
 		this.createUI(g, 0, 0);
@@ -223,10 +223,10 @@ public class MovieClip extends DisplayObject {
 			y -= _ssd.sourceH() >> 1;
 		}
 		PointF p = local2Global(x, y);
-		if (tempRect == null) {
-			tempRect = new RectBox(p.x, p.y, getWidth(), getHeight());
+		if (_tempRect == null) {
+			_tempRect = new RectBox(p.x, p.y, _width, _height);
 		} else {
-			tempRect.setBounds(p.x, p.y, getWidth(), getHeight());
+			_tempRect.setBounds(p.x, p.y, _width, _height);
 		}
 		RectBox rect = null;
 		if (LSystem.getProcess() != null && LSystem.getProcess().getScreen() != null) {
@@ -234,7 +234,7 @@ public class MovieClip extends DisplayObject {
 		} else {
 			rect = LSystem.viewSize.getRect();
 		}
-		RectBox drawRect = RectBox.getIntersection(tempRect, rect);
+		RectBox drawRect = RectBox.getIntersection(_tempRect, rect);
 		if (drawRect != null) {
 			int destX = (int) (drawRect.x() * morphX);
 			int destY = (int) (drawRect.y() * morphY);

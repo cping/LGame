@@ -1350,6 +1350,16 @@ public class MathUtils {
 		return newAngle;
 	}
 
+	public static final float fixRotationLimit(final float rotation, final float min, final float max) {
+		float result = rotation;
+		if (rotation > max) {
+			result = max;
+		} else if (rotation < min) {
+			result = min;
+		}
+		return fixRotation(result);
+	}
+
 	public static final float fixAngle(final float angle) {
 		float newAngle = 0f;
 		if (angle == -TWO_PI || angle == TWO_PI) {
@@ -1367,6 +1377,16 @@ public class MathUtils {
 			}
 		}
 		return newAngle;
+	}
+
+	public static final float fixAngleLimit(final float angle, final float min, final float max) {
+		float result = angle;
+		if (angle > max) {
+			result = max;
+		} else if (angle < min) {
+			result = min;
+		}
+		return fixAngle(result);
 	}
 
 	public static final float adjust(final float angle) {
