@@ -328,7 +328,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 				break;
 			}
 		}
-
+		
 		void update(LTimerContext c) {
 			try {
 				switch (type) {
@@ -1371,21 +1371,21 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		LSystem.invokeLater(runnable);
 		return this;
 	}
-	
+
 	public Screen addResume(Updateable u) {
 		if (handler != null) {
 			handler.addResume(u);
 		}
 		return this;
 	}
-	
+
 	public Screen removeResume(Updateable u) {
 		if (handler != null) {
 			handler.removeResume(u);
 		}
 		return this;
 	}
-	
+
 	public Screen addLoad(Updateable u) {
 		if (handler != null) {
 			handler.addLoad(u);

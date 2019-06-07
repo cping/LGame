@@ -25,6 +25,7 @@ import loon.LProcess;
 import loon.LSystem;
 import loon.geom.Vector2f;
 import loon.utils.MathUtils;
+import loon.utils.TimeUtils;
 
 public class SysInputFactory {
 
@@ -86,6 +87,7 @@ public class SysInputFactory {
 		finalTouch.reset();
 		finalKey.reset();
 		touchCollection.clear();
+		update();
 	}
 
 	public static void resetTouch() {
@@ -100,11 +102,15 @@ public class SysInputFactory {
 	}
 
 	public SysInputFactory() {
+		this.update();
+	}
+
+	protected void update() {
 		LProcess process = LSystem.getProcess();
 		if (process != null) {
 			this._halfWidth = process.getWidth() / 2;
 			this._halfHeight = process.getHeight() / 2;
-		} else {
+		} else if (LSystem.viewSize != null) {
 			this._halfWidth = LSystem.viewSize.getWidth() / 2;
 			this._halfHeight = LSystem.viewSize.getHeight() / 2;
 		}
@@ -181,6 +187,8 @@ public class SysInputFactory {
 		switch (finalTouch.type) {
 		case SysTouch.TOUCH_DOWN:
 			finalTouch.button = SysTouch.TOUCH_DOWN;
+			finalTouch.duration = 0;
+			finalTouch.timeDown = TimeUtils.millis();
 			if (useTouchCollection) {
 				touchCollection.add(finalTouch.id, finalTouch.x, finalTouch.y);
 			}
@@ -193,6 +201,8 @@ public class SysInputFactory {
 			break;
 		case SysTouch.TOUCH_UP:
 			finalTouch.button = SysTouch.TOUCH_UP;
+			finalTouch.timeUp = TimeUtils.millis();
+			finalTouch.duration = finalTouch.timeUp - finalTouch.timeDown;
 			if (useTouchCollection) {
 				touchCollection.update(finalTouch.id, LTouchLocationState.Released, finalTouch.x, finalTouch.y);
 			}
@@ -209,6 +219,7 @@ public class SysInputFactory {
 			finalTouch.dx = _offsetTouchX - _offsetMoveX;
 			finalTouch.dy = _offsetTouchY - _offsetMoveY;
 			finalTouch.button = SysTouch.TOUCH_MOVE;
+			finalTouch.duration = TimeUtils.millis() - finalTouch.timeDown;
 			if (!_isDraging) {
 				if (useTouchCollection) {
 					touchCollection.update(finalTouch.id, LTouchLocationState.Dragged, finalTouch.x, finalTouch.y);
@@ -227,6 +238,7 @@ public class SysInputFactory {
 			finalTouch.dx = _offsetTouchX - _offsetMoveX;
 			finalTouch.dy = _offsetTouchY - _offsetMoveY;
 			finalTouch.button = SysTouch.TOUCH_DRAG;
+			finalTouch.duration = TimeUtils.millis() - finalTouch.timeDown;
 			ebuttons = process.getEmulatorButtons();
 			if (ebuttons != null && ebuttons.isVisible()) {
 				ebuttons.hit(0, touchX, touchY, true);
@@ -243,6 +255,7 @@ public class SysInputFactory {
 			_isDraging = true;
 			break;
 		default:
+			finalTouch.duration = 0;
 			if (useTouchCollection) {
 				touchCollection.update(finalTouch.id, LTouchLocationState.Invalid, finalTouch.x, finalTouch.y);
 			}
@@ -272,7 +285,7 @@ public class SysInputFactory {
 			TouchMake.Event e = events[i];
 			float touchX = (e.getX() - process.getX()) / LSystem.getScaleWidth();
 			float touchY = (e.getY() - process.getY()) / LSystem.getScaleHeight();
-			
+
 			finalTouch.isDraging = _isDraging;
 			finalTouch.x = touchX;
 			finalTouch.y = touchY;
@@ -295,7 +308,9 @@ public class SysInputFactory {
 				} else {
 					finalTouch.type = SysTouch.LOWER_RIGHT;
 				}
+				finalTouch.duration = 0;
 				finalTouch.button = SysTouch.TOUCH_DOWN;
+				finalTouch.timeDown = TimeUtils.millis();
 				process.mousePressed(finalTouch);
 				_isDraging = false;
 				if (ebuttons != null && ebuttons.isVisible()) {
@@ -303,11 +318,11 @@ public class SysInputFactory {
 				}
 				break;
 			case MOVE:
-
 				_offsetMoveX = touchX;
 				_offsetMoveY = touchY;
 				finalTouch.dx = _offsetTouchX - _offsetMoveX;
 				finalTouch.dy = _offsetTouchY - _offsetMoveY;
+				finalTouch.duration = TimeUtils.millis() - finalTouch.timeDown;
 				if (MathUtils.abs(finalTouch.dx) > 0.1f || MathUtils.abs(finalTouch.dy) > 0.1f) {
 					if (useTouchCollection) {
 						touchCollection.update(finalTouch.id, LTouchLocationState.Dragged, finalTouch.x, finalTouch.y);
@@ -334,6 +349,8 @@ public class SysInputFactory {
 				if (finalTouch.button == SysTouch.TOUCH_DOWN || finalTouch.button == SysTouch.TOUCH_MOVE) {
 					finalTouch.button = SysTouch.TOUCH_UP;
 				}
+				finalTouch.timeUp = TimeUtils.millis();
+				finalTouch.duration = finalTouch.timeUp - finalTouch.timeDown;
 				process.mouseReleased(finalTouch);
 				_isDraging = false;
 				if (ebuttons != null && ebuttons.isVisible()) {
@@ -345,6 +362,7 @@ public class SysInputFactory {
 				if (finalTouch.button == SysTouch.TOUCH_DOWN || finalTouch.button == SysTouch.TOUCH_MOVE) {
 					finalTouch.button = SysTouch.TOUCH_UP;
 				}
+				finalTouch.duration = 0;
 				if (useTouchCollection) {
 					touchCollection.update(finalTouch.id, LTouchLocationState.Invalid, finalTouch.x, finalTouch.y);
 				}

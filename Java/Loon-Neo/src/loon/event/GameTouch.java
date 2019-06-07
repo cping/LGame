@@ -21,6 +21,7 @@
 package loon.event;
 
 import loon.geom.Vector2f;
+import loon.utils.StringKeyValue;
 
 public class GameTouch {
 
@@ -36,6 +37,12 @@ public class GameTouch {
 
 	int id;
 
+	long timeDown;
+
+	long timeUp;
+
+	long duration;
+
 	GameTouch() {
 		reset();
 	}
@@ -45,6 +52,8 @@ public class GameTouch {
 		this.x = 0;
 		this.y = 0;
 		this.dx = dy = 0;
+		this.timeDown = this.timeUp = 0;
+		this.duration = 0;
 		this.button = -1;
 		this.pointer = -1;
 		this.id = -1;
@@ -67,7 +76,10 @@ public class GameTouch {
 		this.y = touch.y;
 		this.button = touch.button;
 		this.pointer = touch.pointer;
+		this.duration = touch.duration;
 		this.id = touch.id;
+		this.timeUp = touch.timeUp;
+		this.timeDown = touch.timeDown;
 	}
 
 	public void offset(float x, float y) {
@@ -166,8 +178,39 @@ public class GameTouch {
 		return new Vector2f((int) x, (int) y);
 	}
 
+	/**
+	 * 触屏（或鼠标）按下的具体时间
+	 * 
+	 * @return
+	 */
+	public long getTimeDown() {
+		return timeDown;
+	}
+
+	/**
+	 * 触屏(或鼠标)松开的具体时间
+	 * 
+	 * @return
+	 */
+	public long getTimeUp() {
+		return timeUp;
+	}
+
+	/**
+	 * 触屏(或鼠标)按下到松开的具体耗时
+	 * 
+	 * @return
+	 */
+	public long getDuration() {
+		return duration;
+	}
+
 	@Override
 	public String toString() {
-		return "id:" + id + "," + get() + ", point:" + pointer + ", button:" + button;
+		StringKeyValue builder = new StringKeyValue("GameTouch");
+		builder.kv("id", id).comma().kv("point", pointer).comma().kv("button", button).comma().kv("timeDown", timeDown)
+				.comma().kv("timeUp", timeUp).comma().kv("duration", duration);
+		return builder.toString();
 	}
+
 }

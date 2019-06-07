@@ -787,6 +787,11 @@ public class LProcess {
 
 	public void clearScreens() {
 		_screenMap.clear();
+		for (Screen screen : _screens) {
+			if (screen != null) {
+				screen.destroy();
+			}
+		}
 		_screens.clear();
 	}
 

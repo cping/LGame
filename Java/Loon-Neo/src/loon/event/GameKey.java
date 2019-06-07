@@ -20,6 +20,8 @@
  */
 package loon.event;
 
+import loon.utils.StringKeyValue;
+
 public class GameKey {
 
 	int type;
@@ -49,6 +51,7 @@ public class GameKey {
 		this.type = key.type;
 		this.keyCode = key.keyCode;
 		this.keyChar = key.keyChar;
+		this.timer = key.timer;
 	}
 
 	public boolean equals(GameKey e) {
@@ -86,6 +89,10 @@ public class GameKey {
 
 	@Override
 	public String toString() {
-		return "type:" + type + "," + "keyChar:" + keyChar + ", keyCode:" + keyCode;
+		StringKeyValue builder = new StringKeyValue("GameKey");
+		builder.kv("type", type).comma().kv("keyChar", keyChar).comma().kv("keyCode", keyCode).comma().kv("time",
+				timer);
+		return builder.toString();
+
 	}
 }
