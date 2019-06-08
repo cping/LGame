@@ -837,7 +837,7 @@ public abstract class LContainer extends LComponent implements IArray {
 		}
 	}
 
-	public void layoutElements(final LayoutManager manager, final LComponent... comps) {
+	public LContainer layoutElements(final LayoutManager manager, final LComponent... comps) {
 		if (manager != null) {
 			TArray<LComponent> list = new TArray<LComponent>();
 			for (int i = 0; i < comps.length; i++) {
@@ -852,13 +852,14 @@ public abstract class LContainer extends LComponent implements IArray {
 			}
 			manager.layoutElements(this, tmp);
 		}
+		return this;
 	}
 
-	public void packLayout(final LayoutManager manager) {
-		packLayout(manager, 0, 0, 0, 0);
+	public LContainer packLayout(final LayoutManager manager) {
+		return packLayout(manager, 0, 0, 0, 0);
 	}
 
-	public void packLayout(final LayoutManager manager, final float spacex, final float spacey, final float spaceWidth,
+	public LContainer packLayout(final LayoutManager manager, final float spacex, final float spacey, final float spaceWidth,
 			final float spaceHeight) {
 		LComponent[] comps = getComponents();
 		CollectionUtils.reverse(comps);
@@ -874,6 +875,7 @@ public abstract class LContainer extends LComponent implements IArray {
 				}
 			}
 		}
+		return this;
 	}
 
 	void setDesktops(Desktop d) {

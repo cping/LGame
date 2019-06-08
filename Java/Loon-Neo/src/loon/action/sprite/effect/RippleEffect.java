@@ -25,6 +25,7 @@ import java.util.Iterator;
 import loon.LSystem;
 import loon.action.sprite.Entity;
 import loon.canvas.LColor;
+import loon.event.ActionKey;
 import loon.event.LTouchArea;
 import loon.opengl.GLEx;
 import loon.utils.TArray;
@@ -38,6 +39,33 @@ import loon.utils.timer.LTimerContext;
  */
 public class RippleEffect extends Entity implements LTouchArea, BaseEffect {
 
+	private static class RippleProcess extends RealtimeProcess {
+
+		RippleEffect rippleEffect;
+
+		RippleKernel rippleOther;
+
+		float dstX;
+
+		float dstY;
+
+		int existTime;
+
+		public RippleProcess(float x, float y, int time, RippleEffect effect) {
+			this.dstX = x;
+			this.dstY = y;
+			this.existTime = time;
+			this.rippleEffect = effect;
+		}
+
+		@Override
+		public void run(LTimerContext time) {
+			rippleOther = new RippleKernel(dstX, dstY, existTime);
+			rippleEffect.ripples.add(rippleOther);
+			kill();
+		}
+	}
+
 	public static RippleEffect at(Model model) {
 		return new RippleEffect(model);
 	}
@@ -46,7 +74,13 @@ public class RippleEffect extends Entity implements LTouchArea, BaseEffect {
 		OVAL, RECT, TRIANGLE;
 	}
 
+	private ActionKey touchLocked = new ActionKey();
+
+	private RippleProcess lastProcess;
+
 	private TArray<RippleKernel> ripples;
+
+	private TArray<RippleProcess> processArray;
 
 	private LTimer timer;
 
@@ -75,6 +109,7 @@ public class RippleEffect extends Entity implements LTouchArea, BaseEffect {
 	public RippleEffect(Model m, LColor c, int time) {
 		this.model = m;
 		this.ripples = new TArray<RippleKernel>();
+		this.processArray = new TArray<RippleProcess>();
 		this.existTime = time;
 		this.timer = new LTimer(60);
 		this.setColor(c);
@@ -90,19 +125,15 @@ public class RippleEffect extends Entity implements LTouchArea, BaseEffect {
 	}
 
 	public boolean addRipplePoint(final float x, final float y) {
-		final RippleKernel ripple = new RippleKernel(x, y, existTime);
-		final RealtimeProcess update = new RealtimeProcess() {
 
-			@Override
-			public void run(LTimerContext time) {
-				RippleKernel rippleOther = new RippleKernel(x, y, existTime);
-				ripples.add(rippleOther);
-				kill();
-			}
-		};
-		update.setDelay(LSystem.SECOND / 5);
-		RealtimeProcessManager.get().addProcess(update);
-		ripples.add(ripple);
+		this.ripples.add(new RippleKernel(x, y, existTime));
+
+		this.lastProcess = new RippleProcess(x, y, existTime, this);
+		this.lastProcess.setDelay(LSystem.SECOND / 5);
+		this.processArray.add(lastProcess);
+		
+		RealtimeProcessManager.get().addProcess(lastProcess);
+		
 		return true;
 	}
 
@@ -152,12 +183,6 @@ public class RippleEffect extends Entity implements LTouchArea, BaseEffect {
 		return completed;
 	}
 
-	@Override
-	public void close() {
-		super.close();
-		completed = true;
-	}
-
 	public int getExistTime() {
 		return existTime;
 	}
@@ -174,8 +199,32 @@ public class RippleEffect extends Entity implements LTouchArea, BaseEffect {
 	@Override
 	public void onAreaTouched(Event e, float touchX, float touchY) {
 		if (e == Event.DOWN) {
-			addRipplePoint(touchX, touchY);
+			if (!touchLocked.isPressed() || (lastProcess != null && lastProcess.isDead())) {
+				if (lastProcess != null) {
+					lastProcess.kill();
+					ripples.remove(lastProcess.rippleOther);
+				}
+				addRipplePoint(touchX, touchY);
+				touchLocked.press();
+			}
+		} else if (e == Event.UP) {
+			touchLocked.release();
 		}
 	}
 
+	@Override
+	public void close() {
+		super.close();
+		if (processArray != null) {
+			for (RippleProcess process : processArray) {
+				if (process != null) {
+					process.close();
+					process = null;
+				}
+			}
+			processArray.clear();
+		}
+		touchLocked.release();
+		completed = true;
+	}
 }

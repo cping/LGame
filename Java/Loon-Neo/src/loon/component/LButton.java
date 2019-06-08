@@ -110,7 +110,11 @@ public class LButton extends LComponent implements FontSet<LButton> {
 		this.text = text;
 	}
 
-	public void setImages(LTexture... images) {
+	public LButton setDefAndPress(LTexture defImage, LTexture pressImage) {
+		return setImages(defImage, defImage, pressImage);
+	}
+
+	public LButton setImages(LTexture... images) {
 		LTexture[] buttons = null;
 		if (images != null) {
 			int size = images.length;
@@ -148,6 +152,7 @@ public class LButton extends LComponent implements FontSet<LButton> {
 		} else {
 			throw new LSysException("LButton setImages exception, buttons size =" + this.type);
 		}
+		return this;
 	}
 
 	@Override
@@ -201,16 +206,19 @@ public class LButton extends LComponent implements FontSet<LButton> {
 		return this.text;
 	}
 
-	public void setText(String st) {
+	public LButton setText(String st) {
 		this.text = st;
+		return this;
 	}
 
-	public void checked() {
+	public LButton checked() {
 		onTouch.press();
+		return this;
 	}
 
-	public void unchecked() {
+	public LButton unchecked() {
 		onTouch.release();
+		return this;
 	}
 
 	@Override
