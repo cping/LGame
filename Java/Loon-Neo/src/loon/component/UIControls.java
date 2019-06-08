@@ -414,6 +414,26 @@ public class UIControls {
 		return this;
 	}
 
+	public UIControls location(float x, float y) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				comp.setLocation(x, y);
+			}
+		}
+		return this;
+	}
+
+	public UIControls offset(float x, float y) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				comp.setLocation(comp.getX() + x, comp.getY() + y);
+			}
+		}
+		return this;
+	}
+
 	public UIControls setWidth(int w) {
 		for (int i = 0, n = _comps.size; i < n; i++) {
 			LComponent comp = _comps.get(i);
@@ -904,6 +924,25 @@ public class UIControls {
 					tween = PlayerUtils.set(comp).shakeTo(shakeX, shakeY);
 				} else {
 					tween.shakeTo(shakeX, shakeY);
+				}
+				if (!tweens.containsKey(comp)) {
+					tweens.put(comp, tween);
+				}
+
+			}
+		}
+		return this;
+	}
+
+	public UIControls followTo(ActionBind bind, float follow, float speed) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null && (comp instanceof ActionBind)) {
+				ActionTween tween = tweens.get(comp);
+				if (tween == null) {
+					tween = PlayerUtils.set((ActionBind) comp).followTo(bind, follow, speed);
+				} else {
+					tween.followTo(bind, follow, speed);
 				}
 				if (!tweens.containsKey(comp)) {
 					tweens.put(comp, tween);

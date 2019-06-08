@@ -560,13 +560,31 @@ public class LColor implements Serializable {
 	}
 
 	public LColor darker(float scale) {
-		scale = 1f - scale;
+		scale = 1f - MathUtils.clamp(scale, 0f, 1f);
 		LColor temp = new LColor(r * scale, g * scale, b * scale, a);
 		return temp;
 	}
 
+	public LColor lighter() {
+		return lighter(0.5f);
+	}
+
+	public LColor lighter(float scale) {
+		scale = MathUtils.clamp(scale, 0f, 1f);
+		float newRed = MathUtils.clamp(this.r + (1f - this.r) * scale, 0f, 1f);
+		float newGreen = MathUtils.clamp(this.g + (1f - this.g) * scale, 0f, 1f);
+		float newBlue = MathUtils.clamp(this.b + (1f - b) * scale, 0f, 1f);
+		return new LColor(newRed, newGreen, newBlue, a);
+	}
+
 	public LColor brighter() {
 		return brighter(0.2f);
+	}
+
+	public LColor brighter(float scale) {
+		scale = MathUtils.clamp(scale, 0f, 1f) + 1f;
+		LColor temp = new LColor(r * scale, g * scale, b * scale, a);
+		return temp;
 	}
 
 	public LColor setColorValue(int r, int g, int b, int a) {
@@ -678,12 +696,6 @@ public class LColor implements Serializable {
 	public LColor setAlpha(float alpha) {
 		this.a = alpha;
 		return this;
-	}
-
-	public LColor brighter(float scale) {
-		scale += 1;
-		LColor temp = new LColor(r * scale, g * scale, b * scale, a);
-		return temp;
 	}
 
 	public LColor multiply(LColor c) {

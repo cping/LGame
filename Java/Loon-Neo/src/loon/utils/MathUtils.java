@@ -645,6 +645,10 @@ public class MathUtils {
 		return (n < 0) ? -n : n;
 	}
 
+	public static final double abs(double n) {
+		return (n < 0) ? -n : n;
+	}
+	
 	public static final int abs(int n) {
 		return (n < 0) ? -n : n;
 	}
@@ -884,6 +888,10 @@ public class MathUtils {
 		return (int) (x + BIG_ENOUGH_FLOOR) - BIG_ENOUGH_INT;
 	}
 
+	public static final long floor(double x) {
+		return (long) (x + BIG_ENOUGH_FLOOR) - BIG_ENOUGH_INT;
+	}
+	
 	public static final int floorPositive(float x) {
 		return (int) x;
 	}
@@ -928,6 +936,18 @@ public class MathUtils {
 		return value;
 	}
 
+	public static final double clamp(double value, double min, double max) {
+		value = (value > max) ? max : value;
+		value = (value < min) ? min : value;
+		return value;
+	}
+	
+	public static final long clamp(long value, long min, long max) {
+		value = (value > max) ? max : value;
+		value = (value < min) ? min : value;
+		return value;
+	}
+	
 	public static final float clamp(final float v) {
 		return v < 0f ? 0f : (v > 1f ? 1f : v);
 	}
