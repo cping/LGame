@@ -79,6 +79,7 @@ public class PlayerUtils extends Director {
 				update.action(time);
 			}
 		};
+		process.setProcessType(GameProcessType.Progress);
 		RealtimeProcessManager.get().addProcess(process);
 		return process;
 	}
@@ -114,11 +115,8 @@ public class PlayerUtils extends Director {
 	 * 
 	 * @param process
 	 */
-	public final static void removeProcess(GameProcess process) {
-		if (process == null) {
-			return;
-		}
-		removeProcess(process.getId());
+	public final static TArray<GameProcess> removeProcess(GameProcess process) {
+		return removeProcess(process.getId());
 	}
 
 	/**
@@ -126,8 +124,8 @@ public class PlayerUtils extends Director {
 	 * 
 	 * @param id
 	 */
-	public final static void removeProcess(String id) {
-		RealtimeProcessManager.get().delete(id);
+	public final static TArray<GameProcess> removeProcess(String id) {
+		return RealtimeProcessManager.get().delete(id);
 	}
 
 	/**
@@ -135,8 +133,8 @@ public class PlayerUtils extends Director {
 	 * 
 	 * @param id
 	 */
-	public final static void deleteIndex(String id) {
-		RealtimeProcessManager.get().deleteIndex(id);
+	public final static TArray<GameProcess> deleteIndex(String id) {
+		return RealtimeProcessManager.get().deleteIndex(id);
 	}
 
 	/**

@@ -30,11 +30,13 @@ public class ProgressMonitor implements ProgressListener {
 	private final ObjectMap<ProgressMonitor, ProgressListener> _childProgressMonitorToProgressListenerMap = new ObjectMap<ProgressMonitor, ProgressListener>();
 
 	public ProgressMonitor() {
-
+		this(null);
 	}
 
 	public ProgressMonitor(final ProgressListener p) {
-		this._progressListeners.add(p);
+		if (p != null) {
+			this._progressListeners.add(p);
+		}
 	}
 
 	@Override
@@ -45,30 +47,22 @@ public class ProgressMonitor implements ProgressListener {
 		}
 	}
 
-	public void addChildProgressMonitor(
-			final ProgressMonitor childProgressMonitor,
-			final int rangeFrom,
+	public void addChildProgressMonitor(final ProgressMonitor childProgressMonitor, final int rangeFrom,
 			final int rangeTo) {
 		final ProgressListener childProgressMonitorListener = new ProgressListener() {
 			@Override
 			public void onProgressChanged(final int pss) {
-				final int progress = MathUtils.mix(
-						rangeFrom,
-						rangeTo, (float) pss
-								/ ProgressListener.PROGRESS_MAX);
+				final int progress = MathUtils.mix(rangeFrom, rangeTo, (float) pss / ProgressListener.PROGRESS_MAX);
 				ProgressMonitor.this.onProgressChanged(progress);
 			}
 		};
 		childProgressMonitor.addProgressListener(childProgressMonitorListener);
-		this._childProgressMonitorToProgressListenerMap.put(
-				childProgressMonitor, childProgressMonitorListener);
+		this._childProgressMonitorToProgressListenerMap.put(childProgressMonitor, childProgressMonitorListener);
 	}
 
-	public void unChildProgressMonitor(
-			final ProgressMonitor childProgressMonitor) {
+	public void unChildProgressMonitor(final ProgressMonitor childProgressMonitor) {
 		childProgressMonitor
-				.removeProgressListener(this._childProgressMonitorToProgressListenerMap
-						.get(childProgressMonitor));
+				.removeProgressListener(this._childProgressMonitorToProgressListenerMap.get(childProgressMonitor));
 	}
 
 	private void addProgressListener(final ProgressListener p) {

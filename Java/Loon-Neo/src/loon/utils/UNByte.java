@@ -26,9 +26,6 @@ public class UNByte {
 
 	private short unByte;
 
-	public UNByte() {
-	}
-
 	public UNByte(byte unsigned) {
 		this.read(unsigned);
 	}

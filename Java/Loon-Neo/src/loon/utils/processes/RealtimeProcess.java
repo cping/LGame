@@ -44,8 +44,12 @@ public abstract class RealtimeProcess implements GameProcess, LRelease {
 
 	private SortedList<GameProcess> processesToFireWhenFinished;
 
+	private final static String getProcessName(){
+		return "Process" + (GLOBAL_ID++);
+	}
+	
 	public RealtimeProcess() {
-		this("Process" + (GLOBAL_ID++));
+		this(getProcessName());
 	}
 
 	public RealtimeProcess(String id) {
@@ -53,7 +57,7 @@ public abstract class RealtimeProcess implements GameProcess, LRelease {
 	}
 
 	public RealtimeProcess(long delay) {
-		this("Process" + (GLOBAL_ID++), delay);
+		this(getProcessName(), delay);
 	}
 
 	public RealtimeProcess(String id, long delay) {

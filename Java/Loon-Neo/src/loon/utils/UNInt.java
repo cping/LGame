@@ -26,9 +26,6 @@ public class UNInt {
 
 	private long unInt;
 
-	public UNInt() {
-	}
-
 	public UNInt(int unsigned) {
 		this.read(unsigned);
 	}

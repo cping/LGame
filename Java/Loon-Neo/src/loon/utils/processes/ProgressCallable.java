@@ -20,8 +20,10 @@
  */
 package loon.utils.processes;
 
+import loon.LSysException;
+
 public interface ProgressCallable<T> {
 	
-	public T call(final ProgressListener p) throws Exception;
+	public T call(final ProgressListener p) throws LSysException;
 	
 }

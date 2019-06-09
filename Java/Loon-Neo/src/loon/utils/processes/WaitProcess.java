@@ -49,12 +49,16 @@ public class WaitProcess implements GameProcess, LRelease {
 
 	private RealtimeProcess _waitProcess;
 
+	private final static String getProcessName() {
+		return "Process" + TimeUtils.millis();
+	}
+
 	public WaitProcess(Updateable update) {
-		this("Process" + TimeUtils.millis(), 60, update);
+		this(getProcessName(), 60, update);
 	}
 
 	public WaitProcess(long delay, Updateable update) {
-		this("Process" + TimeUtils.millis(), delay, update);
+		this(getProcessName(), delay, update);
 	}
 
 	public WaitProcess(String id, long delay, Updateable update) {
@@ -83,6 +87,7 @@ public class WaitProcess implements GameProcess, LRelease {
 		this.processHost = processHost;
 	}
 
+	@Override
 	public void fireThisWhenFinished(GameProcess realtimeProcess) {
 		if (this.processesToFireWhenFinished == null) {
 			this.processesToFireWhenFinished = new SortedList<GameProcess>();

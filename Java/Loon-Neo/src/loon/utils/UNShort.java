@@ -26,9 +26,6 @@ public class UNShort {
 
 	private char unShort;
 
-	public UNShort() {
-	}
-
 	public UNShort(short unsigned) {
 		this.read(unsigned);
 	}

@@ -26,9 +26,6 @@ public class UNLong {
 
 	private long unLong;
 
-	public UNLong() {
-	}
-
 	public UNLong(int unsigned) {
 		this.read(unsigned);
 	}
