@@ -38,6 +38,7 @@ import loon.utils.MathUtils;
 import loon.utils.ObjectBundle;
 import loon.utils.Resolution;
 import loon.utils.TArray;
+import loon.utils.processes.GameProcessType;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.reply.Port;
@@ -356,6 +357,7 @@ public class LProcess {
 						}
 					}
 				};
+				process.setProcessType(GameProcessType.Initialize);
 				process.setDelay(0);
 
 				RealtimeProcessManager.get().addProcess(process);

@@ -60,6 +60,7 @@ import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 import loon.utils.processes.GameProcess;
+import loon.utils.processes.GameProcessType;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.timer.LTimer;
@@ -171,6 +172,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 
 		public AVGProcess(AVGScreen screen) {
 			this._screen = screen;
+			this.setProcessType(GameProcessType.Screen);
 		}
 
 		public AVGScreen getScreen() {
@@ -590,6 +592,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 					kill();
 				}
 			};
+			process.setProcessType(GameProcessType.View);
 			addProcess(process);
 		}
 	}
@@ -719,6 +722,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		};
 		setSpeedMode(_speedMode);
 		avgProcess.setDelay(_plapDelay);
+		avgProcess.setProcessType(GameProcessType.View);
 		RealtimeProcessManager.get().addProcess(avgProcess);
 
 	}

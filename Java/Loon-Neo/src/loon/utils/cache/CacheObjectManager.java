@@ -29,6 +29,7 @@ import loon.utils.ObjectMap;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 import loon.utils.TimeUtils;
+import loon.utils.processes.GameProcessType;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.timer.Duration;
@@ -85,6 +86,7 @@ public class CacheObjectManager {
 				update(time.timeSinceLastUpdate);
 			}
 		};
+		process.setProcessType(GameProcessType.Progress);
 		process.setDelay(delay);
 	}
 

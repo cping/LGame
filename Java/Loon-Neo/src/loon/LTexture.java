@@ -41,6 +41,7 @@ import loon.utils.Scale;
 import loon.utils.StringKeyValue;
 import loon.utils.StringUtils;
 import loon.utils.TimeUtils;
+import loon.utils.processes.GameProcessType;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.reply.UnitPort;
@@ -1095,6 +1096,7 @@ public class LTexture extends Painter implements LRelease {
 						kill();
 					}
 				};
+				process.setProcessType(GameProcessType.Texture);
 				process.setDelay(LSystem.SECOND);
 				RealtimeProcessManager.get().addProcess(process);
 			} else {

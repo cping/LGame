@@ -24,6 +24,7 @@ import loon.LSystem;
 import loon.utils.MathUtils;
 import loon.utils.StringKeyValue;
 import loon.utils.StringUtils;
+import loon.utils.processes.GameProcessType;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
 
@@ -54,6 +55,7 @@ public class CountdownTimer extends RealtimeProcess {
 	public CountdownTimer(int second) {
 		super(0);
 		this.set(second);
+		this.setProcessType(GameProcessType.Time);
 	}
 
 	public void add(int second) {

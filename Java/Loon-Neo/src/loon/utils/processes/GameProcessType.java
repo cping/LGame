@@ -1,6 +1,5 @@
 /**
- * 
- * Copyright 2014
+ * Copyright 2008 - 2019 The Loon Game Engine Authors
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -17,29 +16,42 @@
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
- * @version 0.4.1
+ * @version 0.5
  */
 package loon.utils.processes;
 
-import loon.utils.timer.LTimerContext;
+/**
+ * 默认可以标注的Loon进程类型
+ *
+ */
+public enum GameProcessType {
 
-public abstract interface GameProcess {
+	Screen,
 	
-	public abstract GameProcessType getProcessType();
-
-	public abstract void setProcessType(GameProcessType processType);
+	View,
 	
-	public abstract void setProcessHost(RealtimeProcessHost host);
-
-	public abstract void fireThisWhenFinished(GameProcess process);
-
-	public abstract void tick(LTimerContext time);
-
-	public abstract void kill();
-
-	public abstract boolean isDead();
-
-	public abstract String getId();
-
-	public abstract void finish();
+	Net,
+	
+	Initialize,
+	
+	Progress,
+	
+	Tween,
+	
+	Sprite,
+	
+	Component,
+	
+	Texture,
+	
+	Touch,
+	
+	Orientation,
+	
+	Motion,
+	
+	Time,
+	
+	Other;
+	
 }

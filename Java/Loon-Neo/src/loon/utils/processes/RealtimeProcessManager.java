@@ -107,18 +107,54 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, IArray, LRe
 		}
 	}
 
-	public GameProcess find(String id) {
+	public TArray<GameProcess> find(String id) {
+		TArray<GameProcess> list = new TArray<GameProcess>();
 		if (processes != null && processes.size > 0) {
 			synchronized (this.processes) {
 				for (LIterator<GameProcess> it = processes.listIterator(); it.hasNext();) {
 					GameProcess p = it.next();
-					if (p.getId() == id || p.getId().equals(id)) {
-						return p;
+					if (p != null && (p.getId() == id || p.getId().equals(id))) {
+						list.add(p);
 					}
 				}
 			}
 		}
-		return null;
+		return list;
+	}
+
+	public TArray<GameProcess> find(GameProcessType pt) {
+		TArray<GameProcess> list = new TArray<GameProcess>();
+		if (processes != null && processes.size > 0) {
+			synchronized (this.processes) {
+				for (LIterator<GameProcess> it = processes.listIterator(); it.hasNext();) {
+					GameProcess p = it.next();
+					if (p != null && p.getProcessType() == pt) {
+						list.add(p);
+					}
+				}
+			}
+		}
+		return list;
+	}
+
+	public void delete(GameProcessType pt) {
+		if (pt == null) {
+			return;
+		}
+		if (processes != null && processes.size > 0) {
+			synchronized (this.processes) {
+				final TArray<GameProcess> ps = new TArray<GameProcess>(processes);
+				for (int i = 0; i < ps.size; i++) {
+					GameProcess p = ps.get(i);
+					if (p != null) {
+						if (p.getProcessType() == pt) {
+							p.kill();
+							processes.remove(p);
+						}
+					}
+				}
+			}
+		}
 	}
 
 	public void delete(GameProcess process) {
@@ -141,7 +177,7 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, IArray, LRe
 		}
 	}
 
-	public void delete(String id) {
+	public GameProcess delete(String id) {
 		if (processes != null && processes.size > 0) {
 			synchronized (this.processes) {
 				final TArray<GameProcess> ps = new TArray<GameProcess>(processes);
@@ -151,11 +187,13 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, IArray, LRe
 						if (p.getId() == id || p.getId().equals(id)) {
 							p.kill();
 							processes.remove(p);
+							return p;
 						}
 					}
 				}
 			}
 		}
+		return null;
 	}
 
 	public void deleteIndex(String id) {

@@ -36,7 +36,9 @@ import loon.font.TextLayout;
 import loon.geom.BooleanValue;
 import loon.geom.RectBox;
 import loon.utils.MathUtils;
+import loon.utils.TArray;
 import loon.utils.processes.GameProcess;
+import loon.utils.processes.GameProcessType;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.processes.WaitProcess;
@@ -53,8 +55,8 @@ public class PlayerUtils extends Director {
 	 * 
 	 * @param update
 	 */
-	public final static void addProcess(final ActionUpdate update) {
-		addProcess(update, 0);
+	public final static GameProcess addProcess(final ActionUpdate update) {
+		return addProcess(update, 0);
 	}
 
 	/**
@@ -63,11 +65,11 @@ public class PlayerUtils extends Director {
 	 * @param update
 	 * @param delay
 	 */
-	public final static void addProcess(final ActionUpdate update, final long delay) {
+	public final static GameProcess addProcess(final ActionUpdate update, final long delay) {
 		if (update == null) {
-			return;
+			return null;
 		}
-		RealtimeProcessManager.get().addProcess(new RealtimeProcess(delay) {
+		RealtimeProcess process = new RealtimeProcess(delay) {
 
 			@Override
 			public void run(LTimerContext time) {
@@ -76,7 +78,9 @@ public class PlayerUtils extends Director {
 				}
 				update.action(time);
 			}
-		});
+		};
+		RealtimeProcessManager.get().addProcess(process);
+		return process;
 	}
 
 	/**
@@ -84,13 +88,14 @@ public class PlayerUtils extends Director {
 	 * 
 	 * @param process
 	 */
-	public final static void addProcess(GameProcess process) {
+	public final static GameProcess addProcess(GameProcess process) {
 		if (process == null) {
-			return;
+			return process;
 		}
 		RealtimeProcessManager.get().addProcess(process);
+		return process;
 	}
-	
+
 	/**
 	 * 查看GameProcess是否存在
 	 * 
@@ -103,7 +108,7 @@ public class PlayerUtils extends Director {
 		}
 		return RealtimeProcessManager.get().containsProcess(process);
 	}
-	
+
 	/**
 	 * 删除一个GameProcess
 	 * 
@@ -140,8 +145,18 @@ public class PlayerUtils extends Director {
 	 * @param id
 	 * @return
 	 */
-	public final static GameProcess find(String id) {
+	public final static TArray<GameProcess> find(String id) {
 		return RealtimeProcessManager.get().find(id);
+	}
+
+	/**
+	 * 获得指定type的GameProcess
+	 * 
+	 * @param pt
+	 * @return
+	 */
+	public final static TArray<GameProcess> find(GameProcessType pt) {
+		return RealtimeProcessManager.get().find(pt);
 	}
 
 	/**

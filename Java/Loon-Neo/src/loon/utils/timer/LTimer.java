@@ -24,6 +24,7 @@ import loon.LRelease;
 import loon.event.Updateable;
 import loon.utils.MathUtils;
 import loon.utils.StringKeyValue;
+import loon.utils.processes.GameProcessType;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
 
@@ -49,6 +50,7 @@ public class LTimer implements LRelease {
 
 		public TimerProcess(LTimer t) {
 			this.timer = t;
+			this.setProcessType(GameProcessType.Time);
 		}
 
 		@Override

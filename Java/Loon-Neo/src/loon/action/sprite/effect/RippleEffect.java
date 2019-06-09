@@ -29,6 +29,7 @@ import loon.event.ActionKey;
 import loon.event.LTouchArea;
 import loon.opengl.GLEx;
 import loon.utils.TArray;
+import loon.utils.processes.GameProcessType;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.timer.LTimer;
@@ -56,6 +57,7 @@ public class RippleEffect extends Entity implements LTouchArea, BaseEffect {
 			this.dstY = y;
 			this.existTime = time;
 			this.rippleEffect = effect;
+			this.setProcessType(GameProcessType.View);
 		}
 
 		@Override

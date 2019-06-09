@@ -37,6 +37,8 @@ public class WaitProcess implements GameProcess, LRelease {
 
 	private LTimer timer;
 
+	private GameProcessType processType = GameProcessType.Other;
+
 	private RealtimeProcessHost processHost;
 
 	private SortedList<GameProcess> processesToFireWhenFinished;
@@ -56,10 +58,15 @@ public class WaitProcess implements GameProcess, LRelease {
 	}
 
 	public WaitProcess(String id, long delay, Updateable update) {
+		this(id, delay, GameProcessType.Other, update);
+	}
+
+	public WaitProcess(String id, long delay, GameProcessType pt, Updateable update) {
 		this.timer = new LTimer(delay);
 		this.isDead = false;
 		this.isAutoKill = true;
 		this.id = id;
+		this.processType = pt;
 		this.update = update;
 	}
 
@@ -117,6 +124,24 @@ public class WaitProcess implements GameProcess, LRelease {
 		return this.id;
 	}
 
+	public boolean isAutoKill() {
+		return isAutoKill;
+	}
+
+	public void setAutoKill(boolean isAutoKill) {
+		this.isAutoKill = isAutoKill;
+	}
+
+	@Override
+	public GameProcessType getProcessType() {
+		return this.processType;
+	}
+
+	@Override
+	public void setProcessType(GameProcessType pt) {
+		this.processType = pt;
+	}
+
 	@Override
 	public void finish() {
 		if (!this.isDead) {
@@ -131,14 +156,6 @@ public class WaitProcess implements GameProcess, LRelease {
 			this.processHost.processFinished(this.id, this);
 		}
 		value.set(true);
-	}
-
-	public boolean isAutoKill() {
-		return isAutoKill;
-	}
-
-	public void setAutoKill(boolean isAutoKill) {
-		this.isAutoKill = isAutoKill;
 	}
 
 	@Override

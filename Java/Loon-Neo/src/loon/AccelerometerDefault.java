@@ -25,6 +25,7 @@ import loon.action.map.Config;
 import loon.event.SysKey;
 import loon.utils.MathUtils;
 import loon.utils.TimeUtils;
+import loon.utils.processes.GameProcessType;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.timer.LTimerContext;
@@ -137,6 +138,7 @@ public class AccelerometerDefault implements Accelerometer {
 		public SensorProcess(float[] values) {
 			this.accelerometerValues = values;
 			this.setDelay(_sleep);
+			this.setProcessType(GameProcessType.Orientation);
 		}
 
 		@Override

@@ -36,6 +36,8 @@ public abstract class RealtimeProcess implements GameProcess, LRelease {
 
 	protected final String id;
 
+	private GameProcessType processType = GameProcessType.Other;
+
 	private LTimer timer = new LTimer(LSystem.SECOND);
 
 	private RealtimeProcessHost processHost;
@@ -55,9 +57,14 @@ public abstract class RealtimeProcess implements GameProcess, LRelease {
 	}
 
 	public RealtimeProcess(String id, long delay) {
+		this(id, delay, GameProcessType.Other);
+	}
+
+	public RealtimeProcess(String id, long delay, GameProcessType pt) {
 		this.isDead = false;
 		this.id = id;
 		this.timer.setDelay(delay);
+		this.processType = pt;
 	}
 
 	@Override
@@ -115,6 +122,16 @@ public abstract class RealtimeProcess implements GameProcess, LRelease {
 
 	public boolean isActive() {
 		return timer.isActive();
+	}
+
+	@Override
+	public GameProcessType getProcessType() {
+		return this.processType;
+	}
+
+	@Override
+	public void setProcessType(GameProcessType pt) {
+		this.processType = pt;
 	}
 
 	public abstract void run(LTimerContext time);
