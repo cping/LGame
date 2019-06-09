@@ -361,4 +361,7 @@ public class SysKey {
 		}
 	}
 
+	public static GameKey cpy(){
+		return SysInputFactory.finalKey.cpy();
+	}
 }

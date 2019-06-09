@@ -74,6 +74,8 @@ public class GameTouch {
 		this.type = touch.type;
 		this.x = touch.x;
 		this.y = touch.y;
+		this.dx = touch.dx;
+		this.dy = touch.dy;
 		this.button = touch.button;
 		this.pointer = touch.pointer;
 		this.duration = touch.duration;
@@ -203,6 +205,15 @@ public class GameTouch {
 	 */
 	public long getDuration() {
 		return duration;
+	}
+	
+	/**
+	 * copy当前GameTouch
+	 * 
+	 * @return
+	 */
+	public GameTouch cpy(){
+		return new GameTouch(this);
 	}
 
 	@Override

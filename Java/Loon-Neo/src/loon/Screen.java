@@ -60,6 +60,7 @@ import loon.component.layout.LayoutPort;
 import loon.component.skin.SkinManager;
 import loon.event.ActionKey;
 import loon.event.ClickListener;
+import loon.event.DrawListener;
 import loon.event.FrameLoopEvent;
 import loon.event.GameKey;
 import loon.event.GameTouch;
@@ -187,6 +188,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	private LTransition _transition;
 
+	private DrawListener<Screen> _drawListener;
+
 	private boolean spriteRun, desktopRun, stageRun;
 
 	private boolean fristPaintFlag;
@@ -307,6 +310,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		void paint(GLEx g) {
 			switch (type) {
 			case DRAW_USER:
+				DrawListener<Screen> drawing = screen._drawListener;
+				if (drawing != null) {
+					drawing.draw(g, screen.getX(), screen.getY());
+				}
 				screen.draw(g);
 				break;
 			case DRAW_SPRITE:
@@ -328,11 +335,15 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 				break;
 			}
 		}
-		
+
 		void update(LTimerContext c) {
 			try {
 				switch (type) {
 				case DRAW_USER:
+					DrawListener<Screen> drawing = screen._drawListener;
+					if (drawing != null) {
+						drawing.update(c.timeSinceLastUpdate);
+					}
 					screen.alter(c);
 					break;
 				case DRAW_SPRITE:
@@ -5076,6 +5087,24 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return desktop.select(query);
 	}
 
+	/**
+	 * 返回当前Screen的渲染监听器
+	 * 
+	 * @return
+	 */
+	public DrawListener<Screen> getDrawListener() {
+		return _drawListener;
+	}
+
+	/**
+	 * 设定当前Screen的渲染监听器
+	 * 
+	 * @param drawListener
+	 */
+	public void setDrawListener(DrawListener<Screen> drawListener) {
+		this._drawListener = drawListener;
+	}
+	
 	@Override
 	public String toString() {
 		StringKeyValue sbr = new StringKeyValue(getClass().getName());
@@ -5094,6 +5123,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 				_scaleX = _scaleY = _alpha = 1f;
 				_baseColor = null;
 				_visible = false;
+				_drawListener = null;
 				_clickListener = null;
 				_touchListener = null;
 				_limits.clear();
@@ -5162,5 +5192,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			}
 		}
 	}
+
 
 }

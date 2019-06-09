@@ -87,6 +87,15 @@ public class GameKey {
 		return type == SysKey.UP;
 	}
 
+	/**
+	 * copy当前GameKey
+	 * 
+	 * @return
+	 */
+	public GameKey cpy() {
+		return new GameKey(this);
+	}
+
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("GameKey");

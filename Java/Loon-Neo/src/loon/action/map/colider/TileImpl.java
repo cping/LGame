@@ -236,4 +236,9 @@ public class TileImpl implements Tile {
 	public boolean isClosed() {
 		return closed;
 	}
+
+	@Override
+	public Tile getTileImpl() {
+		return this;
+	}
 }

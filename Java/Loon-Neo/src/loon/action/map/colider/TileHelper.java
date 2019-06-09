@@ -122,6 +122,7 @@ public class TileHelper implements Tile {
 		return new TileHelper(id, x, y, w, h);
 	}
 
+	@Override
 	public Tile getTileImpl() {
 		return new TileImpl(this.id, this.tileX, this.tileY, this.tileWidth, this.tileHeight);
 	}

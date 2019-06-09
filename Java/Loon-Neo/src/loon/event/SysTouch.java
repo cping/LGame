@@ -136,5 +136,9 @@ public class SysTouch {
 	public static boolean isDrag() {
 		return SysInputFactory._isDraging;
 	}
+	
+	public static GameTouch cpy(){
+		return SysInputFactory.finalTouch.cpy();
+	}
 
 }
