@@ -62,7 +62,7 @@ public class ParticleSprite extends Entity {
 
 	@Override
 	public void onUpdate(long elapsedTime) {
-		float delta = MathUtils.min(elapsedTime / 1000f, 0.1f);
+		float delta = MathUtils.max(elapsedTime / 1000f, 0.01f);
 		currentLife += delta;
 		if (currentLife >= lifespan) {
 			currentLife = lifespan;

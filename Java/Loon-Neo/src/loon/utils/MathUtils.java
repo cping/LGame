@@ -1433,4 +1433,21 @@ public class MathUtils {
 		return newAngle >= newStartAngle && newAngle <= newEndAngle;
 	}
 
+	public final static float scroll(float scroll, float side) {
+		float start = 0;
+		final float v = MathUtils.abs(scroll) % side;
+		if (v < 0) {
+			start = -(side - v);
+		} else if (v > 0) {
+			start = -v;
+		}
+		return start;
+	}
+
+	public static float inerations(float total, float start, float side) {
+		final float diff = total = start;
+		final float v = diff / side;
+		return v + (diff % side > 0 ? 1f : 0f);
+	}
+
 }

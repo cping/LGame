@@ -1,5 +1,9 @@
 package loon.utils;
 
+/**
+ * 一个简单的信息存储池
+ *
+ */
 public class MessageQueue {
 
 	private static class Message {

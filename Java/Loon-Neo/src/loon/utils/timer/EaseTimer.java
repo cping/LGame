@@ -77,16 +77,24 @@ public class EaseTimer {
 		this._timeInAfter = timer._timeInAfter;
 	}
 
+	public boolean action(LTimerContext context) {
+		return action(context.timeSinceLastUpdate);
+	}
+
 	public boolean action(long elapsedTime) {
 		update(elapsedTime);
 		return isCompleted();
+	}
+
+	public void update(LTimerContext context) {
+		update(context.timeSinceLastUpdate);
 	}
 
 	public void update(long elapsedTime) {
 		if (this._finished) {
 			return;
 		}
-		this._delta = MathUtils.min(elapsedTime / 1000f, 0.1f);
+		this._delta = MathUtils.max(elapsedTime / 1000f, 0.01f);
 		this._timer += _delta;
 		if (this._timer >= _delay) {
 			_timeInAfter += _delta / _duration;

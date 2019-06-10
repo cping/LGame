@@ -29,7 +29,7 @@ public class GameTime {
 	public static GameTime get() {
 		return getInstance();
 	}
-	
+
 	public static GameTime getInstance() {
 		if (_instance == null) {
 			synchronized (GameTime.class) {
@@ -51,31 +51,31 @@ public class GameTime {
 	}
 
 	public GameTime() {
-		_elapsedTime = _totalTime = 0f;
+		this(0f, 0f);
 	}
 
 	public GameTime(float totalGameTime, float elapsedGameTime) {
-		_totalTime = totalGameTime;
-		_elapsedTime = elapsedGameTime;
+		this(totalGameTime, elapsedGameTime, false);
 	}
 
 	public GameTime(float totalRealTime, float elapsedRealTime, boolean isRunningSlowly) {
-		_totalTime = totalRealTime;
-		_elapsedTime = elapsedRealTime;
+		this._totalTime = totalRealTime;
+		this._elapsedTime = elapsedRealTime;
 		_running = isRunningSlowly;
 	}
 
 	public void update(float elapsed) {
-		_elapsedTime = elapsed;
-		_totalTime += elapsed;
+		this._elapsedTime = elapsed;
+		this._totalTime += elapsed;
 	}
 
 	public void update(LTimerContext context) {
 		update(context.getMilliseconds());
 	}
 
-	public void resetElapsedTime() {
+	public GameTime resetElapsedTime() {
 		_elapsedTime = 0f;
+		return this;
 	}
 
 	public boolean isRunningSlowly() {

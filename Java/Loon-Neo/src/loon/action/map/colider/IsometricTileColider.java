@@ -21,7 +21,7 @@
 package loon.action.map.colider;
 
 /**
- * 斜45度瓦片碰撞器
+ * 等距视图(斜45度)瓦片碰撞器
  */
 public class IsometricTileColider extends TileColider {
 
@@ -32,7 +32,6 @@ public class IsometricTileColider extends TileColider {
 	@Override
 	public boolean colideTile(Tile tile, int mx, int my, int offsetX,
 			int offsetY) {
-
 		return colideIsometric(tile, mx, my, offsetX, offsetY);
 	}
 

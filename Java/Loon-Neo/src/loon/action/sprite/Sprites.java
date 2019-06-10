@@ -53,6 +53,10 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	protected ISprite[] _sprites;
 
+	private float _scrollX;
+
+	private float _scrollY;
+
 	private int viewX;
 
 	private int viewY;
@@ -1016,6 +1020,7 @@ public class Sprites implements IArray, Visible, LRelease {
 		float spriteY;
 		float spriteWidth;
 		float spriteHeight;
+
 		for (int i = 0; i < this._size; i++) {
 			ISprite spr = this._sprites[i];
 			if (spr != null && spr.isVisible()) {
@@ -1067,6 +1072,21 @@ public class Sprites implements IArray, Visible, LRelease {
 		if (!_visible) {
 			return;
 		}
+
+		final float newScrollX = _scrollX;
+		final float newScrollY = _scrollY;
+
+		final int drawWidth = _width;
+		final int drawHeight = _height;
+
+		final float startX = MathUtils.scroll(newScrollX, drawWidth);
+		final float startY = MathUtils.scroll(newScrollY, drawHeight);
+
+		final boolean update = (startX != 0f || startY != 0f);
+
+		if (update) {
+			g.translate(startX, startY);
+		}
 		float minX, minY, maxX, maxY;
 		if (this._isViewWindowSet) {
 			minX = x + this.viewX;
@@ -1098,6 +1118,9 @@ public class Sprites implements IArray, Visible, LRelease {
 		}
 		if (offset) {
 			g.translate(-minX, -minY);
+		}
+		if (update) {
+			g.translate(-startX, -startY);
 		}
 	}
 
@@ -1328,6 +1351,36 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	public Screen getScreen() {
 		return _screen;
+	}
+
+	public Sprites scrollBy(float x, float y) {
+		this._scrollX += x;
+		this._scrollY += y;
+		return this;
+	}
+
+	public Sprites scrollTo(float x, float y) {
+		this._scrollX = x;
+		this._scrollY = y;
+		return this;
+	}
+
+	public float scrollX() {
+		return this._scrollX;
+	}
+
+	public float scrollY() {
+		return this._scrollY;
+	}
+
+	public Sprites scrollX(float x) {
+		this._scrollX = x;
+		return this;
+	}
+
+	public Sprites scrollY(float y) {
+		this._scrollY = y;
+		return this;
 	}
 
 	public String getName() {

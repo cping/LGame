@@ -230,36 +230,36 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	}
 
 	public ActionTween moveTo(float endX, float endY, boolean flag) {
-		return moveTo(LSystem.viewSize.newField2D(), endX, endY, flag, 8, 0, 0, null);
+		return moveTo(null, endX, endY, flag, 8, 0, 0, null);
 	}
 
 	public ActionTween moveTo(float endX, float endY, boolean flag, ActionListener l) {
-		return moveTo(LSystem.viewSize.newField2D(), endX, endY, flag, 8, 0, 0, l);
+		return moveTo(null, endX, endY, flag, 8, 0, 0, l);
 	}
 
 	public ActionTween moveTo(float endX, float endY, boolean flag, int speed) {
-		return moveTo(LSystem.viewSize.newField2D(), endX, endY, flag, speed, 0, 0, null);
+		return moveTo(null, endX, endY, flag, speed, 0, 0, null);
 	}
 
 	public ActionTween moveTo(float endX, float endY, boolean flag, int speed, ActionListener l) {
-		return moveTo(LSystem.viewSize.newField2D(), endX, endY, flag, speed, 0, 0, l);
+		return moveTo(null, endX, endY, flag, speed, 0, 0, l);
 	}
 
 	public ActionTween moveTo(float endX, float endY, boolean flag, float offsetX, float offsetY) {
-		return moveTo(LSystem.viewSize.newField2D(), endX, endY, flag, 8, offsetX, offsetY, null);
+		return moveTo(null, endX, endY, flag, 8, offsetX, offsetY, null);
 	}
 
 	public ActionTween moveTo(float endX, float endY, boolean flag, float offsetX, float offsetY, ActionListener l) {
-		return moveTo(LSystem.viewSize.newField2D(), endX, endY, flag, 8, offsetX, offsetY, l);
+		return moveTo(null, endX, endY, flag, 8, offsetX, offsetY, l);
 	}
 
 	public ActionTween moveTo(float endX, float endY, boolean flag, int speed, float offsetX, float offsetY) {
-		return moveTo(LSystem.viewSize.newField2D(), endX, endY, flag, speed, offsetX, offsetY, null);
+		return moveTo(null, endX, endY, flag, speed, offsetX, offsetY, null);
 	}
 
 	public ActionTween moveTo(float endX, float endY, boolean flag, int speed, float offsetX, float offsetY,
 			ActionListener l) {
-		return moveTo(LSystem.viewSize.newField2D(), endX, endY, flag, speed, offsetX, offsetY, l);
+		return moveTo(null, endX, endY, flag, speed, offsetX, offsetY, l);
 	}
 
 	public ActionTween moveTo(Field2D map, float endX, float endY, boolean flag, int speed) {

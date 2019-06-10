@@ -20,6 +20,7 @@
  */
 package loon.utils.timer;
 
+import loon.utils.MathUtils;
 import loon.utils.StringKeyValue;
 
 public class LTimerContext {
@@ -35,7 +36,7 @@ public class LTimerContext {
 	}
 
 	public float getMilliseconds() {
-		return timeSinceLastUpdate / 1000f;
+		return MathUtils.max(timeSinceLastUpdate / 1000f, 0, 01f);
 	}
 
 	public long getTimeSinceLastUpdate() {
@@ -49,8 +50,7 @@ public class LTimerContext {
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("LTimerContext");
-		builder.kv("timeSinceLastUpdate", timeSinceLastUpdate).comma()
-		.kv("tick", tick).comma().kv("alpha", alpha);
+		builder.kv("timeSinceLastUpdate", timeSinceLastUpdate).comma().kv("tick", tick).comma().kv("alpha", alpha);
 		return builder.toString();
 	}
 

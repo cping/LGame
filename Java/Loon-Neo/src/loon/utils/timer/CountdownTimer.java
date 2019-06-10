@@ -40,7 +40,7 @@ public class CountdownTimer extends RealtimeProcess {
 
 	private String _separator = SEPARATOR_FORMAT;
 
-	private int _second = 0;
+	private float _second = 0;
 
 	private long _millisecond = 0;
 
@@ -49,22 +49,22 @@ public class CountdownTimer extends RealtimeProcess {
 	private boolean _finished;
 
 	public CountdownTimer() {
-		this(0);
+		this(0f);
 	}
 
-	public CountdownTimer(int second) {
+	public CountdownTimer(float second) {
 		super(0);
 		this.set(second);
 		this.setProcessType(GameProcessType.Time);
 	}
 
-	public void add(int second) {
-		this._millisecond += second * LSystem.SECOND;
+	public void add(float second) {
+		this._millisecond += (second * LSystem.SECOND);
 	}
 
-	public void set(int second) {
+	public void set(float second) {
 		this._second = second;
-		this._millisecond = second * LSystem.SECOND;
+		this._millisecond = (long) (second * LSystem.SECOND);
 		this._finished = false;
 	}
 
@@ -74,7 +74,7 @@ public class CountdownTimer extends RealtimeProcess {
 		this._finished = true;
 	}
 
-	public int startSecond() {
+	public float startSecond() {
 		return _second;
 	}
 
@@ -105,11 +105,11 @@ public class CountdownTimer extends RealtimeProcess {
 		}
 	}
 
-	public void play() {
-		play(this._second);
+	public CountdownTimer play() {
+		return play(this._second);
 	}
 
-	public void play(int second) {
+	public CountdownTimer play(float second) {
 		synchronized (this) {
 			this.set(second);
 			RealtimeProcessManager manager = RealtimeProcessManager.get();
@@ -117,6 +117,7 @@ public class CountdownTimer extends RealtimeProcess {
 			super.isDead = false;
 			manager.addProcess(this);
 		}
+		return this;
 	}
 
 	public boolean isCompleted() {
@@ -135,8 +136,9 @@ public class CountdownTimer extends RealtimeProcess {
 		return _separator;
 	}
 
-	public void setSeparator(String separator) {
+	public CountdownTimer setSeparator(String separator) {
 		this._separator = separator;
+		return this;
 	}
 
 	@Override

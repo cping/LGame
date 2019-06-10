@@ -46,7 +46,7 @@ public class MoveTo extends ActionEvent {
 
 	private Field2D layerMap;
 
-	private boolean allDir, useCache, synchroLayerField;
+	private boolean allDir, isMoved, useCache, synchroLayerField;
 
 	private TArray<Vector2f> pActorPath;
 
@@ -63,7 +63,7 @@ public class MoveTo extends ActionEvent {
 	private boolean isDirUpdate = false;
 
 	public MoveTo(float x, float y, boolean all) {
-		this(LSystem.viewSize.newField2D(), x, y, all, INIT_MOVE_SPEED);
+		this(null, x, y, all, INIT_MOVE_SPEED);
 	}
 
 	public MoveTo(final Field2D map, float x, float y, boolean all) {
@@ -71,7 +71,7 @@ public class MoveTo extends ActionEvent {
 	}
 
 	public MoveTo(float x, float y, boolean all, int speed) {
-		this(LSystem.viewSize.newField2D(), x, y, all, speed);
+		this(null, x, y, all, speed);
 	}
 
 	public MoveTo(final Field2D map, float x, float y, boolean all, int speed) {
@@ -79,7 +79,7 @@ public class MoveTo extends ActionEvent {
 	}
 
 	public MoveTo(float sx, float sy, float x, float y, boolean all, int speed) {
-		this(LSystem.viewSize.newField2D(), sx, sy, x, y, all, speed, true, false);
+		this(null, sx, sy, x, y, all, speed, true, false);
 	}
 
 	public MoveTo(final Field2D map, float sx, float sy, float x, float y, boolean all, int speed) {
@@ -87,7 +87,7 @@ public class MoveTo extends ActionEvent {
 	}
 
 	public MoveTo(float sx, float sy, float x, float y, boolean all, int speed, boolean cache, boolean synField) {
-		this(LSystem.viewSize.newField2D(), sx, sy, x, y, all, speed, cache, synField);
+		this(null, sx, sy, x, y, all, speed, cache, synField);
 	}
 
 	public MoveTo(final Field2D map, float sx, float sy, float x, float y, boolean all, int speed, boolean cache,
@@ -274,8 +274,6 @@ public class MoveTo extends ActionEvent {
 		return layerMap;
 	}
 
-	private boolean isMoved;
-
 	@Override
 	public void update(long elapsedTime) {
 		isMoved = true;
@@ -395,7 +393,7 @@ public class MoveTo extends ActionEvent {
 						}
 					}
 				}
-				
+
 				if (endX == startX && endY == startY) {
 					if (pActorPath.size > 1) {
 						Vector2f moveStart = pActorPath.get(0);

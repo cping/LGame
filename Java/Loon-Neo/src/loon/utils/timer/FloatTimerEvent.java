@@ -38,11 +38,15 @@ public abstract class FloatTimerEvent {
 	public FloatTimerEvent(float delay, boolean repeat) {
 		this.delay = delay;
 		this.repeat = repeat;
-		this.acc = 0.0F;
+		this.acc = 0f;
+	}
+
+	public void update(LTimerContext context) {
+		update(context.timeSinceLastUpdate);
 	}
 
 	public void update(long elapsedTime) {
-		this.update(MathUtils.min(elapsedTime / 1000f, 0.1f));
+		this.update(MathUtils.max(elapsedTime / 1000f, 0.01f));
 	}
 
 	public void update(float delta) {
@@ -57,16 +61,16 @@ public abstract class FloatTimerEvent {
 				else {
 					this.done = true;
 				}
-
 				execute();
 			}
 		}
 	}
 
-	public void reset() {
+	public FloatTimerEvent reset() {
 		this.stopped = false;
 		this.done = false;
-		this.acc = 0.0F;
+		this.acc = 0f;
+		return this;
 	}
 
 	public boolean isCompleted() {
@@ -77,12 +81,14 @@ public abstract class FloatTimerEvent {
 		return (!this.done) && (this.acc < this.delay) && (!this.stopped);
 	}
 
-	public void stop() {
+	public FloatTimerEvent stop() {
 		this.stopped = true;
+		return this;
 	}
 
-	public void setDelay(int delay) {
+	public FloatTimerEvent setDelay(int delay) {
 		this.delay = delay;
+		return this;
 	}
 
 	public abstract void execute();
@@ -97,9 +103,9 @@ public abstract class FloatTimerEvent {
 
 	public float getPercentageRemaining() {
 		if (this.done)
-			return 100.0F;
+			return 100f;
 		if (this.stopped) {
-			return 0.0F;
+			return 0f;
 		}
 		return 1f - (this.delay - this.acc) / this.delay;
 	}
@@ -107,19 +113,12 @@ public abstract class FloatTimerEvent {
 	public float getDelay() {
 		return this.delay;
 	}
-	
+
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("FloatTimerEvent");
-		builder.kv("delay", delay)
-		.comma()
-		.kv("repeat", repeat)
-		.comma()
-		.kv("acc", acc)
-		.comma()
-		.kv("done", done)
-		.comma()
-		.kv("stopped", stopped);
+		builder.kv("delay", delay).comma().kv("repeat", repeat).comma().kv("acc", acc).comma().kv("done", done).comma()
+				.kv("stopped", stopped);
 		return builder.toString();
 	}
 }

@@ -933,6 +933,48 @@ public class Desktop implements Visible, LRelease {
 		}
 	}
 
+	public Desktop scrollBy(float x, float y) {
+		if (contentPane != null) {
+			contentPane.scrollBy(x, y);
+		}
+		return this;
+	}
+
+	public Desktop scrollTo(float x, float y) {
+		if (contentPane != null) {
+			contentPane.scrollTo(x, y);
+		}
+		return this;
+	}
+
+	public float scrollX() {
+		if (contentPane != null) {
+			return contentPane.scrollX();
+		}
+		return 0f;
+	}
+
+	public float scrollY() {
+		if (contentPane != null) {
+			return contentPane.scrollY();
+		}
+		return 0f;
+	}
+
+	public Desktop scrollX(float x) {
+		if (contentPane != null) {
+			contentPane.scrollX(x);
+		}
+		return this;
+	}
+
+	public Desktop scrollY(float y) {
+		if (contentPane != null) {
+			contentPane.scrollY(y);
+		}
+		return this;
+	}
+
 	public void resize() {
 		this.isClicked = false;
 		this.hoverComponent = null;

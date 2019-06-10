@@ -45,7 +45,11 @@ public abstract class LContainer extends LComponent implements IArray {
 	protected LComponent[] _childs = new LComponent[0];
 
 	private float _newLineHeight = -1f;
-
+	// 滚动x轴
+	protected float _component_scrollX;
+	// 滚动y轴
+	protected float _component_scrollY;
+	
 	private final static LayerSorter<LComponent> compSorter = new LayerSorter<LComponent>(false);
 
 	private int childCount = 0;
@@ -623,6 +627,20 @@ public abstract class LContainer extends LComponent implements IArray {
 		if (!this.isVisible()) {
 			return;
 		}
+		final float newScrollX = _component_scrollX;
+		final float newScrollY = _component_scrollY;
+
+		final float drawWidth = _width;
+		final float drawHeight = _height;
+
+		final float startX = MathUtils.scroll(newScrollX, drawWidth);
+		final float startY = MathUtils.scroll(newScrollY, drawHeight);
+
+		final boolean update = (startX != 0f || startY != 0f);
+
+		if (update) {
+			g.translate(startX, startY);
+		}
 		synchronized (_childs) {
 			super.createUI(g);
 			if (this._component_elastic) {
@@ -632,6 +650,10 @@ public abstract class LContainer extends LComponent implements IArray {
 			if (this._component_elastic) {
 				g.clearClip();
 			}
+		}
+
+		if (update) {
+			g.translate(-startX, -startY);
 		}
 	}
 
@@ -859,8 +881,8 @@ public abstract class LContainer extends LComponent implements IArray {
 		return packLayout(manager, 0, 0, 0, 0);
 	}
 
-	public LContainer packLayout(final LayoutManager manager, final float spacex, final float spacey, final float spaceWidth,
-			final float spaceHeight) {
+	public LContainer packLayout(final LayoutManager manager, final float spacex, final float spacey,
+			final float spaceWidth, final float spaceHeight) {
 		LComponent[] comps = getComponents();
 		CollectionUtils.reverse(comps);
 		layoutElements(manager, comps);
@@ -1090,6 +1112,36 @@ public abstract class LContainer extends LComponent implements IArray {
 				}
 			}
 		}
+	}
+
+	public LContainer scrollBy(float x, float y) {
+		this._component_scrollX += x;
+		this._component_scrollY += y;
+		return this;
+	}
+
+	public LContainer scrollTo(float x, float y) {
+		this._component_scrollX = x;
+		this._component_scrollY = y;
+		return this;
+	}
+
+	public float scrollX() {
+		return this._component_scrollX;
+	}
+
+	public float scrollY() {
+		return this._component_scrollY;
+	}
+
+	public LContainer scrollX(float x) {
+		this._component_scrollX = x;
+		return this;
+	}
+
+	public LContainer scrollY(float y) {
+		this._component_scrollY = y;
+		return this;
 	}
 
 	@Override

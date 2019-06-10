@@ -502,14 +502,29 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public boolean contains(float x, float y, float width, float height) {
-		return (this._component_visible
-				&& (x >= this._screenX && y >= this._screenY && ((x + width) <= (this._screenX + this._width * _scaleX))
-						&& ((y + height) <= (this._screenY + this._height * _scaleY))));
+		return (this._component_visible && (x >= this.getDrawScrollX() && y >= this.getDrawScrollY()
+				&& ((x + width) <= (this.getDrawScrollX() + this._width * _scaleX))
+				&& ((y + height) <= (this.getDrawScrollY() + this._height * _scaleY))));
 	}
 
 	public boolean intersects(float x1, float y1) {
-		return (this._component_visible) && (x1 >= this._screenX && x1 <= this._screenX + this._width * _scaleX
-				&& y1 >= this._screenY && y1 <= this._screenY + this._height * _scaleY);
+		return (this._component_visible)
+				&& (x1 >= this.getDrawScrollX() && x1 <= this.getDrawScrollX() + this._width * _scaleX
+						&& y1 >= this.getDrawScrollY() && y1 <= this.getDrawScrollY() + this._height * _scaleY);
+	}
+
+	protected float getDrawScrollX() {
+		if (_super != null) {
+			return this._screenX - _super._component_scrollX;
+		}
+		return this._screenX;
+	}
+
+	protected float getDrawScrollY() {
+		if (_super != null) {
+			return this._screenY - _super._component_scrollY;
+		}
+		return this._screenY;
 	}
 
 	@Override
@@ -524,10 +539,10 @@ public abstract class LComponent extends LObject<LContainer>
 
 	public boolean intersects(LComponent comp) {
 		return (this._component_visible) && (comp.isVisible())
-				&& (this._screenX + this._width * _scaleX >= comp._screenX
-						&& this._screenX <= comp._screenX + comp._width
-						&& this._screenY + this._height * _scaleY >= comp._screenY
-						&& this._screenY <= comp._screenY + comp._height);
+				&& (this.getDrawScrollX() + this._width * _scaleX >= comp.getDrawScrollX()
+						&& this.getDrawScrollX() <= comp.getDrawScrollX() + comp._width
+						&& this.getDrawScrollY() + this._height * _scaleY >= comp.getDrawScrollY()
+						&& this.getDrawScrollY() <= comp.getDrawScrollY() + comp._height);
 	}
 
 	@Override
@@ -754,8 +769,8 @@ public abstract class LComponent extends LObject<LContainer>
 
 	public RectBox getCollisionBox() {
 		validatePosition();
-		return setRect(
-				MathUtils.getBounds(_screenX, _screenY, getWidth() * _scaleX, getHeight() * _scaleY, _rotation, _rect));
+		return setRect(MathUtils.getBounds(getDrawScrollX(), getDrawScrollY(), getWidth() * _scaleX,
+				getHeight() * _scaleY, _rotation, _rect));
 	}
 
 	public LComponent getToolTipParent() {
