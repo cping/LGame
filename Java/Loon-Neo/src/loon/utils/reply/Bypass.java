@@ -30,7 +30,7 @@ public abstract class Bypass {
 	protected Cons _listeners;
 	protected Runs _pendingRuns;
 
-	public abstract interface GoListener {
+	public interface GoListener {
 	}
 
 	public boolean hasConnections() {

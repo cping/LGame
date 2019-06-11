@@ -20,8 +20,8 @@
  */
 package loon.event;
 
-public abstract interface Updateable {
+public interface Updateable {
 
-	public abstract void action(Object a);
+	public void action(Object a);
 
 }

@@ -23,23 +23,23 @@ package loon.utils.processes;
 
 import loon.utils.timer.LTimerContext;
 
-public abstract interface GameProcess {
+public interface GameProcess {
 	
-	public abstract GameProcessType getProcessType();
+	public GameProcessType getProcessType();
 
-	public abstract void setProcessType(GameProcessType processType);
+	public void setProcessType(GameProcessType processType);
 	
-	public abstract void setProcessHost(RealtimeProcessHost host);
+	public void setProcessHost(RealtimeProcessHost host);
 
-	public abstract void fireThisWhenFinished(GameProcess process);
+	public void fireThisWhenFinished(GameProcess process);
 
-	public abstract void tick(LTimerContext time);
+	public void tick(LTimerContext time);
 
-	public abstract void kill();
+	public void kill();
 
-	public abstract boolean isDead();
+	public boolean isDead();
 
-	public abstract String getId();
+	public String getId();
 
-	public abstract void finish();
+	public void finish();
 }
