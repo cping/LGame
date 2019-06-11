@@ -34,7 +34,6 @@ import loon.utils.GLUtils;
 import loon.utils.GifEncoder;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
-import loon.utils.TimeUtils;
 import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.reply.Port;
 import loon.utils.timer.LTimer;
@@ -228,9 +227,11 @@ public class Display extends LSystemView {
 
 	private Runtime runtime;
 
-	private long frameCount;
+	private long frameCount = 0l;
 
-	private int frameRate, frames;
+	private int frameRate = 0;
+
+	private float frameDelta = 0f;
 
 	private IFont fpsFont;
 
@@ -381,8 +382,7 @@ public class Display extends LSystemView {
 			final boolean debug = _setting.isDebug;
 			// 显示fps速度
 			if (debug || _setting.isFPS) {
-				tickFrames();
-				fpsFont.drawString(_glEx, "FPS:" + frameRate, 5, 5, 0, LColor.white);
+				drawFrames(_glEx, clock.timeSinceLastUpdate);
 			}
 			// 显示内存
 			if (debug || _setting.isMemory) {
@@ -444,18 +444,16 @@ public class Display extends LSystemView {
 		return this;
 	}
 
-	private void tickFrames() {
-		final long time = TimeUtils.millis();
-		if (time - frameCount > 1000L) {
-			final int settingFPS = _setting.fps;
-			frameRate = MathUtils.min(settingFPS, frames);
-			if (frameRate == settingFPS - 1) {
-				frameRate = MathUtils.max(settingFPS, frames);
-			}
-			frames = 0;
-			frameCount = time;
+	private final void drawFrames(final GLEx g,final float delta) {
+		this.frameCount++;
+		this.frameDelta += delta;
+		if (frameCount % 60 == 0) {
+			final int newFps = MathUtils.round((1000f * frameCount) / frameDelta);
+			this.frameRate = MathUtils.clamp(newFps, 0, _setting.fps);
+			this.frameDelta = 0;
+			this.frameCount = 0;
 		}
-		frames++;
+		fpsFont.drawString(_glEx, "FPS:" + frameRate, 5, 5, 0, LColor.white);
 	}
 
 	public int getFPS() {

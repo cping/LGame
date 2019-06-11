@@ -22,6 +22,7 @@ package loon;
 
 import loon.event.GameTouch;
 import loon.opengl.GLEx;
+import loon.utils.MathUtils;
 import loon.utils.timer.LTimerContext;
 
 /**
@@ -29,23 +30,23 @@ import loon.utils.timer.LTimerContext;
  */
 public abstract class Stage extends Screen {
 
-	private static float percent;
+	private float percent;
 
-	private static float maxPercent;
+	private float maxPercent;
 
 	public final Stage setPercentMaximum(float max) {
-		maxPercent = max;
+		this.maxPercent = MathUtils.clamp(max, 0f, 100f);
 		return this;
 	}
 
 	public final Stage setPercent(float cur, float max) {
-		percent = cur;
-		maxPercent = max;
+		this.percent = MathUtils.clamp(cur, 0f, 100f);
+		this.maxPercent = MathUtils.clamp(max, 0f, 100f);
 		return this;
 	}
 
-	public final Stage updatePercent(float number) {
-		percent = number / maxPercent;
+	public final Stage updatePercent(float num) {
+		this.percent = MathUtils.clamp(num, 0f, 100f) / maxPercent;
 		return this;
 	}
 
@@ -55,6 +56,15 @@ public abstract class Stage extends Screen {
 
 	public final Stage removePercent() {
 		return updatePercent(percent--);
+	}
+
+	public final Stage resetPercent() {
+		this.percent = 0f;
+		return this;
+	}
+
+	public final int getMaximumPercent() {
+		return (int) maxPercent;
 	}
 
 	public final int getPercent() {
