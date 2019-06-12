@@ -37,6 +37,46 @@ public class Side {
 
 	public final static int Bottom = 4;
 
+	private int _direction = None;
+
+	public Side() {
+		this(None);
+	}
+
+	public Side(int dir) {
+		this._direction = dir;
+	}
+
+	public int getDirection() {
+		return this._direction;
+	}
+
+	public boolean estDirection(Side side) {
+		switch (getDirection()) {
+		case Left:
+		case Right:
+			if (side.getDirection() == Bottom || side.getDirection() == Top) {
+				return true;
+			} else {
+				return false;
+			}
+		case Bottom:
+		case Top:
+			if (side.getDirection() == Left || side.getDirection() == Right) {
+				return true;
+			} else {
+				return false;
+			}
+		case None:
+		default:
+			return false;
+		}
+	}
+
+	public int getOppositeSide() {
+		return getOppositeSide(_direction);
+	}
+
 	public static int getOppositeSide(int side) {
 		if (side == Side.Top) {
 			return Side.Bottom;
@@ -53,15 +93,15 @@ public class Side {
 		return Side.None;
 	}
 
-	public int getSideFromDirection(Vector2f direction) {
+	public static int getSideFromDirection(Vector2f direction) {
 		return getSideFromDirection(Vector2f.ZERO(), direction, 1);
 	}
 
-	public int getSideFromDirection(Vector2f initVector, Vector2f direction) {
+	public static int getSideFromDirection(Vector2f initVector, Vector2f direction) {
 		return getSideFromDirection(initVector, direction, 1);
 	}
 
-	public int getSideFromDirection(final Vector2f initVector, final Vector2f direction, final int val) {
+	public static int getSideFromDirection(final Vector2f initVector, final Vector2f direction, final int val) {
 		Vector2f[] directions = { initVector.move_left(val), initVector.move_right(val), initVector.move_up(val),
 				initVector.move_down(val) };
 		int[] directionEnum = { Side.Left, Side.Right, Side.Top, Side.Bottom };

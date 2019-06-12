@@ -226,7 +226,7 @@ public class Display extends LSystemView {
 					finish = true;
 				}
 			}
-			gl.setAlpha(alpha);
+			gl.setAlpha(MathUtils.clamp(alpha, 0f, 0.98f));
 			gl.draw(logo, centerX, centerY);
 		}
 
