@@ -25,16 +25,24 @@ package loon;
  */
 public class LimitedCounter extends Counter {
 	
-	private int limit;
+	private int _limit;
 
 	public LimitedCounter(int limit) {
-		this.limit = limit;
+		this._limit = limit;
 	}
 
 	public int getLimit() {
-		return limit;
+		return _limit;
 	}
 
+	@Override
+	public int increment(int val) {
+		if (!isLimitReached()) {
+			return super.increment(val);
+		}
+		return getValue();
+	}
+	
 	@Override
 	public int increment() {
 		if (!isLimitReached()) {
@@ -44,16 +52,11 @@ public class LimitedCounter extends Counter {
 	}
 
 	public int valuesUntilLimitRemains() {
-		return limit - getValue();
-	}
-
-	@Override
-	public void clear() {
-		super.clear();
+		return _limit - getValue();
 	}
 
 	public boolean isLimitReached() {
-		return getValue() == limit;
+		return getValue() == _limit;
 	}
 
 }

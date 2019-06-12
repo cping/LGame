@@ -98,11 +98,12 @@ public class AnimationStorage extends Animation {
 		this(new TArray<Animation>(CollectionUtils.INITIAL_CAPACITY));
 	}
 
+	@Override
 	public AnimationStorage cpy() {
 		return new AnimationStorage(playAnimations);
 	}
 
-	public synchronized void addAnimation(Animation anm) {
+	public void addAnimation(Animation anm) {
 		if (anm != null) {
 			anm.Listener = asl;
 			playAnimations.add(anm);
@@ -111,7 +112,8 @@ public class AnimationStorage extends Animation {
 		}
 	}
 
-	public synchronized void update(long timer) {
+	@Override
+	public void update(long timer) {
 		if (loopCount != -1 && loopPlay > loopCount) {
 			return;
 		}
@@ -135,7 +137,7 @@ public class AnimationStorage extends Animation {
 		}
 	}
 
-	public void playIndex(int idx) {
+	public AnimationStorage playIndex(int idx) {
 		if (currentFrameIndex > -1 && currentFrameIndex < size) {
 			currentFrameIndex = idx;
 			Animation animation = playAnimations.get(currentFrameIndex);
@@ -143,6 +145,7 @@ public class AnimationStorage extends Animation {
 				animation.reset();
 			}
 		}
+		return this;
 	}
 
 	@Override
@@ -177,7 +180,7 @@ public class AnimationStorage extends Animation {
 		return animationIndexLocked;
 	}
 
-	public void indexLocked(int inx) {
+	public AnimationStorage indexLocked(int inx) {
 		this.animationIndexLocked = inx;
 		if (animationIndexLocked > -1 && animationIndexLocked < size) {
 			this.currentFrameIndex = animationIndexLocked;
@@ -186,13 +189,15 @@ public class AnimationStorage extends Animation {
 				animation.reset();
 			}
 		}
+		return this;
 	}
 
 	@Override
-	public void reset() {
+	public Animation reset() {
 		super.reset();
 		loopOverToPlay = true;
 		loopOverToRemove = false;
+		return this;
 	}
 
 	public boolean isLoopOverToRemove() {

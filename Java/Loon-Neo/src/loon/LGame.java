@@ -242,6 +242,7 @@ public abstract class LGame {
 		if (_base != game || _base != oldGame) {
 			_base = oldGame;
 		}
+		LSystem.base();
 	}
 
 	/**

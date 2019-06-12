@@ -22,6 +22,7 @@ package loon.event;
 
 import loon.geom.Vector2f;
 import loon.utils.StringKeyValue;
+import loon.utils.TimeUtils;
 
 public class GameTouch {
 
@@ -179,6 +180,44 @@ public class GameTouch {
 	public Vector2f get() {
 		return new Vector2f((int) x, (int) y);
 	}
+	
+	/**
+	 * 判断触屏按下事件是否超过了当前系统时间
+	 * 
+	 * @return
+	 */
+	public boolean justPressed() {
+		return justPressed(TimeUtils.millis());
+	}
+
+	/**
+	 * 判断触屏按下事件是否超过了指定的时间
+	 * 
+	 * @param time
+	 * @return
+	 */
+	public boolean justPressed(long time) {
+		return (this.isDown() && (this.timeDown + duration) > time);
+	}
+
+	/**
+	 * 判断触屏松开事件是否超过了当前系统时间
+	 * 
+	 * @return
+	 */
+	public boolean justReleased() {
+		return justReleased(TimeUtils.millis());
+	}
+
+	/**
+	 * 判断触屏松开事件是否超过了指定的时间
+	 * 
+	 * @param time
+	 * @return
+	 */
+	public boolean justReleased(long time) {
+		return (this.isUp() && (this.timeUp + duration) > time);
+	}
 
 	/**
 	 * 触屏（或鼠标）按下的具体时间
@@ -206,13 +245,13 @@ public class GameTouch {
 	public long getDuration() {
 		return duration;
 	}
-	
+
 	/**
 	 * copy当前GameTouch
 	 * 
 	 * @return
 	 */
-	public GameTouch cpy(){
+	public GameTouch cpy() {
 		return new GameTouch(this);
 	}
 
