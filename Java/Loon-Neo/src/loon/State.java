@@ -45,6 +45,8 @@ public abstract class State implements LRelease {
 
 	protected boolean syncCamera;
 
+	private boolean isScalePos;
+	
 	public State() {
 		this(LSystem.UNKOWN);
 	}
@@ -52,6 +54,7 @@ public abstract class State implements LRelease {
 	public State(String name) {
 		this.stateName = name;
 		this.syncCamera = true;
+		this.isScalePos = false;
 		this.camera = new Affine2f();
 	}
 
@@ -71,16 +74,20 @@ public abstract class State implements LRelease {
 
 	public State setCameraX(float x) {
 		camera.tx = x;
+		isScalePos = false;
 		return this;
 	}
 
 	public State setCameraY(float y) {
 		camera.ty = y;
+		isScalePos = false;
 		return this;
 	}
 
 	public State camera(float x, float y) {
-		return posCamera(-(x * LSystem.getScaleWidth()), -(y * LSystem.getScaleHeight()));
+		posCamera(-(x * LSystem.getScaleWidth()), -(y * LSystem.getScaleHeight()));
+		isScalePos = true;
+		return this;
 	}
 
 	public State posCamera(float x, float y) {
@@ -104,11 +111,11 @@ public abstract class State implements LRelease {
 	}
 
 	public float getCameraX() {
-		return MathUtils.abs(camera.tx);
+		return MathUtils.abs(isScalePos ? (camera.tx / LSystem.getScaleWidth()) : camera.tx);
 	}
 
 	public float getCameraY() {
-		return MathUtils.abs(camera.ty);
+		return MathUtils.abs(isScalePos ? (camera.ty / LSystem.getScaleWidth()) : camera.ty);
 	}
 
 	protected void setStateManager(StateManager smr) {

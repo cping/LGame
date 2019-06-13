@@ -20,7 +20,6 @@
  */
 package loon;
 
-import loon.geom.Affine2f;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
@@ -118,8 +117,8 @@ public class StateManager implements LRelease {
 	public void load() {
 		for (int i = states.size - 1; i > -1; i--) {
 			State state = states.get(i);
-				state.load();
-				state.isLoaded = true;
+			state.load();
+			state.isLoaded = true;
 		}
 	}
 
@@ -143,11 +142,7 @@ public class StateManager implements LRelease {
 			}
 			try {
 				if (state.syncCamera) {
-					g.saveTx();
-					Affine2f tx = g.tx();
-					if (tx != null) {
-						tx.concat(state.camera);
-					}
+					g.concat(state.camera);
 				}
 				state.paint(g);
 			} finally {
