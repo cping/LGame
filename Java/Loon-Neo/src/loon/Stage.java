@@ -26,9 +26,15 @@ import loon.utils.MathUtils;
 import loon.utils.timer.LTimerContext;
 
 /**
- * 一个Screen的衍生抽象类,除了create默认都不必实现,纯组件构建游戏时可以使用此类派生画面
+ * 一个Screen的衍生抽象类,除了create函数,什么都不必实现.
+ * 
+ * 希望纯组件构建游戏时(也就是一个create接口满足一切时)可以使用此类派生画面
  */
 public abstract class Stage extends Screen {
+
+	private StateManager stateManager;
+
+	private boolean existing;
 
 	private float percent;
 
@@ -71,6 +77,61 @@ public abstract class Stage extends Screen {
 		return (int) percent;
 	}
 
+	protected StateManager createStateManager() {
+		if (stateManager == null) {
+			stateManager = new StateManager();
+			existing = true;
+		}
+		return this.stateManager;
+	}
+
+	public StateManager getStateManager() {
+		return createStateManager();
+	}
+
+	public boolean peekStateEquals(String name) {
+		return peekState().getName().equals(name);
+	}
+
+	public State peekState() {
+		this.stateManager = createStateManager();
+		return stateManager.peek();
+	}
+
+	public Stage playState(String name) {
+		this.stateManager = createStateManager();
+		stateManager.play(name);
+		return this;
+	}
+
+	public Stage playState(int idx) {
+		this.stateManager = createStateManager();
+		stateManager.play(idx);
+		return this;
+	}
+
+	public Stage removeState(String name) {
+		this.stateManager = createStateManager();
+		stateManager.remove(name);
+		return this;
+	}
+
+	public Stage removeState(int idx) {
+		this.stateManager = createStateManager();
+		stateManager.remove(idx);
+		return this;
+	}
+
+	public Stage addState(State state) {
+		return addState(null, state);
+	}
+
+	public Stage addState(String name, State state) {
+		this.stateManager = createStateManager();
+		stateManager.add(name, state);
+		return this;
+	}
+
 	@Override
 	public LTransition onTransition() {
 		return LTransition.newEmpty();
@@ -80,13 +141,18 @@ public abstract class Stage extends Screen {
 
 	@Override
 	public void draw(GLEx g) {
-
+		if (existing) {
+			stateManager.paint(g);
+		}
 	}
 
 	@Override
 	public void onLoad() {
 		try {
 			create();
+			if (existing) {
+				stateManager.load();
+			}
 		} catch (Throwable cause) {
 			LSystem.error("Screen create failure", cause);
 		}
@@ -94,7 +160,9 @@ public abstract class Stage extends Screen {
 
 	@Override
 	public void alter(LTimerContext timer) {
-
+		if (existing) {
+			stateManager.update(timer.getMilliseconds());
+		}
 	}
 
 	@Override
@@ -134,7 +202,12 @@ public abstract class Stage extends Screen {
 
 	@Override
 	public void close() {
-
+		existing = false;
+		if (stateManager != null) {
+			stateManager.close();
+			stateManager = null;
+		}
+		percent = maxPercent = 0;
 	}
 
 }

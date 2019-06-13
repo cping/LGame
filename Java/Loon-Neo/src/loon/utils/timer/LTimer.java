@@ -138,7 +138,11 @@ public class LTimer implements LRelease {
 	public boolean action(LTimerContext context) {
 		return action(context.timeSinceLastUpdate);
 	}
-
+	
+	public boolean action(float delta) {
+		return action((long) (MathUtils.max(delta * 1000, 10)));
+	}
+	
 	public boolean action(long elapsedTime) {
 		if (this.closed) {
 			return false;

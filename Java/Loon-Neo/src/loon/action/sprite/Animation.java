@@ -280,6 +280,15 @@ public class Animation implements IArray, LRelease {
 	/**
 	 * 更新当前动画
 	 * 
+	 * @param delta
+	 */
+	public void update(float delta) {
+		update((long) (MathUtils.max(delta * 1000, 10)));
+	}
+
+	/**
+	 * 更新当前动画
+	 * 
 	 * @param timer
 	 */
 	public void update(long timer) {
@@ -340,6 +349,32 @@ public class Animation implements IArray, LRelease {
 			}
 			return texture;
 		}
+	}
+
+	/**
+	 * 返回当前动画当前帧宽度
+	 * 
+	 * @return
+	 */
+	public int getWidth() {
+		LTexture tex = getSpriteImage();
+		if (tex != null) {
+			return tex.getWidth();
+		}
+		return 0;
+	}
+
+	/**
+	 * 返回当前动画当前帧高度
+	 * 
+	 * @return
+	 */
+	public int getHeight() {
+		LTexture tex = getSpriteImage();
+		if (tex != null) {
+			return tex.getHeight();
+		}
+		return 0;
 	}
 
 	/**

@@ -33,7 +33,6 @@ public class MultiScreenTest extends Screen {
 
 	@Override
 	public void draw(GLEx g) {
-
 	}
 
 	public static LClickButton getBackButton(final Screen screen, final int page) {
@@ -154,7 +153,7 @@ public class MultiScreenTest extends Screen {
 			"Countdown", "AVG", "Layer", "LLK", "TextField", "SRPG", "PShadow", "Array2DMap", "Image", "Natural",
 			"MenuSelect", "CheckBox", "TextTree", "SLG", "I18N", "Buttle", "HexagonMap", "Label", "Grid", "Elements",
 			"QRCode", "Chop", "CachePool", "JSonView", "HtmlView", "CompNewLine", "CollWorld", "Gravity", "Jigsaw","Tetris"
-			,"Explosion"};
+			,"Explosion","FBird"};
 
 	static BMFont info_font;
 
@@ -270,6 +269,7 @@ public class MultiScreenTest extends Screen {
 			addScreen(page1[index++], new JigsawTest());
 			addScreen(page1[index++], new TetrisTest());
 			addScreen(page1[index++], new ExplosionTest());
+			addScreen(page1[index++], new FlappyBirdTest());
 		}
 
 		// 默认按钮大小为100x25

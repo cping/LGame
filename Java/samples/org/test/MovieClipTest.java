@@ -32,6 +32,7 @@ public class MovieClipTest extends Stage {
 		add(c3);
 
 		Sprite c4 = new Sprite(res.getSheet("Monster02json"), 255, 155, 128);
+		c3.setLoop(true);
 		c4.setScale(2f, 2f);
 		add(c4);
 		
