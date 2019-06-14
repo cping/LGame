@@ -182,6 +182,18 @@ public class LSystem {
 		}
 	}
 
+	/**
+	 * 释放静态对象与数值的缓存
+	 */
+	public static final void freeStaticObject() {
+		LGame._platform = null;
+		LGame._base = null;
+		PAUSED = false;
+		_auto_repaint = true;
+		_scaleWidth = 1f;
+		_scaleHeight = 1f;
+	}
+
 	public static final Platform platform() {
 		return LGame._platform;
 	}

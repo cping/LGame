@@ -577,7 +577,7 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 	public void onBackPressed() {
 		moveTaskToBack(false);
 	}
-
+	
 	@Override
 	protected void onDestroy() {
 		AndroidGame.debugLog("onDestroy");
@@ -591,6 +591,13 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 			game.assets.getNativeAudio().onDestroy();
 			game.onExit();
 		}
+		LSystem.freeStaticObject();
+		frameLayout = null;
+		game = null;
+		gameView = null;
+		setting = null;
+		mainData = null;
+		self = null;
 		super.onDestroy();
 	}
 

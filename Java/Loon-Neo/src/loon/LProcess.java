@@ -446,6 +446,7 @@ public class LProcess {
 					LSTRDictionary.get().dispose();
 					LSystem.disposeTextureAll();
 					LSystem.stopRepaint();
+					LSystem.freeStaticObject();
 					if (_game != null) {
 						_game.close();
 					}
