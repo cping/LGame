@@ -8,6 +8,8 @@
 
 [Free Game Resources Links](https://github.com/cping/LGame/blob/master/dev-res/README.md "Game Resources of Free")
 
+[Download Loon Game Engine](https://github.com/cping/LGame/releases/tag/LGame-0.5-Beta-fix1 "Loon Game Engine")
+
 Only Android-studio Template : androidstudio-template
 
 All Java code Run Template : loon-gradle-template
@@ -90,7 +92,7 @@ public class Main  {
 	}
 }
 ```
-## Create a LGame project
+### Create a LGame project
 
 LGame comes with a file called LGameProjectMake.jar which is an executable UI and command line tool. You can simply execute the JAR file which will open the setup UI.
 
@@ -111,7 +113,10 @@ Built-in over 30 game example(Part screenshots):
 
 ![LGame](https://raw.github.com/cping/LGame/master/live2dsupport.png "live2d_support")
 
+PS : If there is a dependency problem such as a Loon-method NoSuchMethodError, the best way is of course to reset the environment yourself to ensure that the relevant jars are recognized by the compiler. But if not, then there is a simple and feasible solution, which is to delete all loon related jars, and then directly copy the relevant source code to your running environment src directory, so no matter what environment, as long as you can run, They Never have a dependency problem...
 _________
+
+#### 关于LGame
 
 *LGame目前版本虽然基于标准OpenGLES API开发,但项目0.1版最早脱胎于AWT Java2D时代,所以采用了AWT Graphics2D的坐标系（画布左上角为原点(x=0,y=0),Y轴向下为正值,与JavaFx或Android,JavaScript的Canvas渲染坐标一致），渲染接口也都被保存下来，Graphics2D以及Android Canvas的大部分API可以在GLEx这一全局渲染类中直接使用，甚至连J2ME时代的游戏你都能无缝移植过来(有完整API支持)。
 
@@ -136,6 +141,10 @@ _________
 2：json布局器结合ioc控制反转，让游戏逻辑与变量，功能视图化，借此拖拽式生成游戏，以及可视化编辑器的开发。
 
 2：还有就是一些效果上的优化，例如减少内存占用，更多的音频和图像格式支持，构建Shader效果库，为精灵加入脏矩渲染之类，也都是后面的事情，不可能一个版本就完成所有事情，总要分个主次的。
+
+PS : 由于Java/Android运行环境的逐渐碎片化，Gradle乃至Android系统本身也【越来越不能】保证运行时环境的绝对一致性(Gradle这货自己就是个坑，大家回头看看Gradle5.x能完美兼容Gradle2.x乃至4.x配置吗？)，某些原因下，可能会造成loon的相关jar导入失败(其实不光loon有，隔壁'LXXXXx'也有)，导致APK中缺少相关代码，从而阻碍程序正常运行(也就是运行时会出针对loon包的NoSuchMethodError之类依赖错误)。从本质上讲，这不是Loon的问题，而是环境配置的问题。
+
+如果出现loon相关的NoSuchMethodError之类依赖问题，最好的方法当然是自行重新设置环境，保证相关jar能够被编译器识别到。但是如果不行，那么，还有一个简单可行的解决方案，那就是删掉所有loon相关jar，然后直接copy相关源码到您的运行环境src目录中，这样无论什么环境，只要能跑起来，都不会出现依赖问题了……
 _________
 
 License : http://www.apache.org/licenses/LICENSE-2.0
