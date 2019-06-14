@@ -41,6 +41,7 @@ import loon.event.KeyMake;
 import loon.event.SysInput;
 import loon.geom.RectBox;
 import loon.geom.RectI;
+import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -413,7 +414,11 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 
 	protected DisplayMetrics getSysDisplayMetrices() {
 		DisplayMetrics dm = new DisplayMetrics();
-		getWindowManager().getDefaultDisplay().getMetrics(dm);
+		try {
+			getWindowManager().getDefaultDisplay().getMetrics(dm);
+		} catch (Throwable cause) {
+			cause.printStackTrace();
+		}
 		return dm;
 	}
 
@@ -647,7 +652,15 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 
 	protected int orientation() {
 		boolean use = useOrientation();
-		int orientation = getRequestedOrientation();
+		int orientation = -1;
+		if (android.os.Build.VERSION.SDK_INT < 23) {
+			orientation = this.getRequestedOrientation();
+		} else {
+			try {
+				orientation = this.getResources().getConfiguration().orientation;
+			} catch (Throwable cause) {
+			}
+		}
 		LSetting setting = game.setting;
 		if (use) {
 			if (setting instanceof AndroidSetting) {
@@ -656,7 +669,8 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 					orientation = aset.orientation;
 				}
 			}
-		} else {
+		}
+		if (orientation <= 0 || !use) {
 			if (setting.landscape()) {
 				orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
 			} else {
@@ -672,10 +686,6 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 
 	protected float scaleFactor() {
 		return getResources().getDisplayMetrics().density;
-	}
-
-	protected int maxSimultaneousSounds() {
-		return 8;
 	}
 
 	public AndroidGameViewGL gameView() {
@@ -798,8 +808,8 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 
 		RectBox d = getScreenDimension();
 
-		this.maxWidth = (int) d.getWidth();
-		this.maxHeight = (int) d.getHeight();
+		this.maxWidth = MathUtils.max((int) d.getWidth(), 1);
+		this.maxHeight = MathUtils.max((int) d.getHeight(), 1);
 
 		if (landscape && (d.getWidth() > d.getHeight())) {
 			maxWidth = (int) d.getWidth();
@@ -890,7 +900,12 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 			LSystem.setScaleHeight(1f);
 
 		}
-
+		if (zoomWidth <= 0) {
+			zoomWidth = maxWidth;
+		}
+		if (zoomHeight <= 0) {
+			zoomHeight = maxHeight;
+		}
 		LSystem.setScaleWidth(((float) maxWidth) / zoomWidth);
 		LSystem.setScaleHeight(((float) maxHeight) / zoomHeight);
 		LSystem.viewSize.setSize(zoomWidth, zoomHeight);
@@ -979,6 +994,7 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 		}
 	}
 
+	@Override
 	public void setImmersiveMode(boolean use) {
 		if (!use || AndroidGame.getSDKVersion() < 19) {
 			return;
