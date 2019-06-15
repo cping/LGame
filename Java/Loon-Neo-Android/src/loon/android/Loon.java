@@ -238,6 +238,7 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 			final android.widget.ProgressBar progress = new android.widget.ProgressBar(activity);
 			activity.addView(progress, AndroidLocation.CENTER);
 			setWebChromeClient(new android.webkit.WebChromeClient() {
+
 				@Override
 				public void onProgressChanged(final android.webkit.WebView view, final int newProgress) {
 					Loon.self.runOnUiThread(new Runnable() {
@@ -254,7 +255,9 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 
 				}
 			});
-			if (url != null) {
+			if (url != null)
+
+			{
 				loadUrl(url);
 			}
 		}
@@ -351,15 +354,15 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 		}
 
 	}
-	
+
 	protected static Loon self;
-	
+
 	private FrameLayout frameLayout;
 
 	private AndroidGame game;
 	private AndroidGameViewGL gameView;
 	private AndroidSetting setting;
-	
+
 	private LazyLoading.Data mainData;
 
 	public static String getResourcePath(String name) throws IOException {
@@ -430,7 +433,7 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		LSystem.freeStaticObject();
 
 		Loon.self = this;
@@ -478,7 +481,7 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 
 		setContentView(mode, gameView, width, height);
 
-		setRequestedOrientation(orientation());
+		setRequestedOrientation(configOrientation());
 
 		createWakeLock(setting.useWakelock);
 		hideStatusBar(setting.hideStatusBar);
@@ -580,7 +583,7 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 	public void onBackPressed() {
 		moveTaskToBack(false);
 	}
-	
+
 	@Override
 	protected void onDestroy() {
 		AndroidGame.debugLog("onDestroy");
@@ -650,7 +653,10 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 		if (game == null) {
 			return true;
 		}
-		LSetting setting = game.setting;
+		return useOrientation(game.setting);
+	}
+
+	protected boolean useOrientation(LSetting setting) {
 		if (setting == null) {
 			return true;
 		}
@@ -660,28 +666,36 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 		return true;
 	}
 
-	protected int orientation() {
-		boolean use = useOrientation();
-		int orientation = -1;
-		if (android.os.Build.VERSION.SDK_INT < 23) {
-			orientation = this.getRequestedOrientation();
-		} else {
-			try {
-				orientation = this.getResources().getConfiguration().orientation;
-			} catch (Throwable cause) {
-			}
+	protected int configOrientation() {
+
+		if (game == null) {
+			return 0;
 		}
-		LSetting setting = game.setting;
+
+		final LSetting gameSetting = game.setting;
+
+		boolean use = useOrientation(gameSetting);
+
+		int orientation = -1;
+		
 		if (use) {
-			if (setting instanceof AndroidSetting) {
-				AndroidSetting aset = ((AndroidSetting) setting);
+			if (android.os.Build.VERSION.SDK_INT < 23) {
+				orientation = this.getRequestedOrientation();
+			} else {
+				try {
+					orientation = this.getResources().getConfiguration().orientation;
+				} catch (Throwable cause) {
+				}
+			}
+			if (gameSetting instanceof AndroidSetting) {
+				AndroidSetting aset = ((AndroidSetting) gameSetting);
 				if (aset.orientation != -1) {
 					orientation = aset.orientation;
 				}
 			}
 		}
 		if (orientation <= 0 || !use) {
-			if (setting.landscape()) {
+			if (gameSetting.landscape()) {
 				orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
 			} else {
 				orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
