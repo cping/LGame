@@ -351,14 +351,15 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 		}
 
 	}
-
+	
+	protected static Loon self;
+	
 	private FrameLayout frameLayout;
 
 	private AndroidGame game;
 	private AndroidGameViewGL gameView;
-	protected static Loon self;
 	private AndroidSetting setting;
-
+	
 	private LazyLoading.Data mainData;
 
 	public static String getResourcePath(String name) throws IOException {
@@ -429,6 +430,8 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		LSystem.freeStaticObject();
 
 		Loon.self = this;
 

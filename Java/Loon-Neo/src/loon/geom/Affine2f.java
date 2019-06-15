@@ -854,6 +854,79 @@ public class Affine2f implements LTrans, XY {
 		return this;
 	}
 
+	/**
+	 * 让矩阵前置一组新矩阵数据
+	 * 
+	 * @param a
+	 * @param b
+	 * @param c
+	 * @param d
+	 * @param tx
+	 * @param ty
+	 * @return
+	 */
+	public Affine2f prepend(float a, float b, float c, float d, float tx, float ty) {
+		float tx1 = this.tx;
+		if (this.m00 != 1 || b != 0 || c != 0 || d != 1) {
+			float a1 = this.m00;
+			float c1 = this.m01;
+			this.m00 = a1 * a + this.m10 * c;
+			this.m10 = a1 * b + this.m10 * d;
+			this.m01 = c1 * a + this.m11 * c;
+			this.m11 = c1 * b + this.m11 * d;
+		}
+		this.tx = tx1 * a + this.ty * c + tx;
+		this.ty = tx1 * b + this.ty * d + ty;
+		return this;
+	}
+
+	/**
+	 * 让矩阵后置一组新矩阵数据
+	 * 
+	 * @param other
+	 * @return
+	 */
+	public Affine2f prepend(Affine2f other) {
+		return prepend(other.m00, other.m10, other.m01, other.m11, other.tx, other.ty);
+	}
+
+	/**
+	 * 让矩阵后置一组新矩阵数据
+	 * 
+	 * @param a
+	 * @param b
+	 * @param c
+	 * @param d
+	 * @param tx
+	 * @param ty
+	 * @return
+	 */
+	public Affine2f append(float a, float b, float c, float d, float tx, float ty) {
+		float a1 = this.m00;
+		float b1 = this.m10;
+		float c1 = this.m01;
+		float d1 = this.m11;
+		if (a != 1 || b != 0 || c != 0 || d != 1) {
+			this.m00 = a * a1 + b * c1;
+			this.m10 = a * b1 + b * d1;
+			this.m01 = c * a1 + d * c1;
+			this.m11 = c * b1 + d * d1;
+		}
+		this.tx = tx * a1 + ty * c1 + this.tx;
+		this.ty = tx * b1 + ty * d1 + this.ty;
+		return this;
+	}
+
+	/**
+	 * 让矩阵后置一组新矩阵数据
+	 * 
+	 * @param other
+	 * @return
+	 */
+	public Affine2f append(Affine2f other) {
+		return append(other.m00, other.m10, other.m01, other.m11, other.tx, other.ty);
+	}
+
 	public Affine2f lerp(Affine2f other, float t) {
 		if (generality() < other.generality()) {
 			return other.lerp(this, -t);
