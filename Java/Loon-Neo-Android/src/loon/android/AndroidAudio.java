@@ -246,7 +246,7 @@ public class AndroidAudio {
 
 	@SuppressWarnings("deprecation")
 	public AndroidAudio() {
-		 if (android.os.Build.VERSION.SDK_INT >= 21) {
+		 if (AndroidGame.isAndroidVersionHigher(21)) {
 			 android.media.AudioAttributes audioAttributes = null;
              audioAttributes = new android.media.AudioAttributes.Builder()
                      .setUsage(android.media.AudioAttributes.USAGE_MEDIA)

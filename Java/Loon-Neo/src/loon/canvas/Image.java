@@ -300,7 +300,18 @@ public abstract class Image extends TextureSource implements Canvas.Drawable, LR
 	public abstract int getPixel(int x, int y);
 
 	public abstract int getRGB(int x, int y);
-
+	
+	public boolean isTransparent(int x, int y) {
+		if (x < 0 || y < 0 || x >= getWidth() || y >= getHeight()) {
+			return true;
+		} else if (!hasAlpha()) {
+			return false;
+		} else {
+			int pixel = getRGB(x, y);
+			return (pixel >>> 24) == 0;
+		}
+	}
+	
 	public abstract void setRGB(int rgb, int x, int y);
 
 	public abstract void getRGB(int startX, int startY, int width, int height, int[] rgbArray, int offset,

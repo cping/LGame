@@ -255,9 +255,7 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 
 				}
 			});
-			if (url != null)
-
-			{
+			if (url != null) {
 				loadUrl(url);
 			}
 		}
@@ -667,7 +665,6 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 	}
 
 	protected int configOrientation() {
-
 		if (game == null) {
 			return 0;
 		}
@@ -677,14 +674,17 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 		boolean use = useOrientation(gameSetting);
 
 		int orientation = -1;
-		
+
 		if (use) {
-			if (android.os.Build.VERSION.SDK_INT < 23) {
+			if (!AndroidGame.isAndroidVersionHigher(23)) {
 				orientation = this.getRequestedOrientation();
 			} else {
 				try {
 					orientation = this.getResources().getConfiguration().orientation;
 				} catch (Throwable cause) {
+				}
+				if (orientation == ActivityInfo.SCREEN_ORIENTATION_USER) {
+					orientation = this.getRequestedOrientation();
 				}
 			}
 			if (gameSetting instanceof AndroidSetting) {
@@ -694,10 +694,16 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 				}
 			}
 		}
-		if (orientation <= 0 || !use) {
+		if (orientation <= -1 || !use) {
 			if (gameSetting.landscape()) {
 				orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
 			} else {
+				orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+			}
+		} else {
+			if (gameSetting.landscape() && orientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
+				orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+			} else if (!gameSetting.landscape() && orientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
 				orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
 			}
 		}
