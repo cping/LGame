@@ -57,6 +57,8 @@ public class TimerTest extends Screen{
 		
 		//关闭Screen时注销计时器
 		putRelease(timer2);
+
+		add(MultiScreenTest.getBackButton(this, 2));
 	}
 
 	@Override

@@ -73,6 +73,7 @@ public class SankeTest extends Screen {
 					} else if (type == 2) {
 						color.setColor(LColor.red);
 					}
+					//绘制'蛇'和果实(如果有图的话可以用图片替换这部分)
 					g.fillOval(map.tilesToWidthPixels(x), map.tilesToWidthPixels(y), map.getTileWidth(),
 							map.getTileHeight(), color);
 				}

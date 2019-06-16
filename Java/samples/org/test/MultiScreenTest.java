@@ -156,7 +156,7 @@ public class MultiScreenTest extends Screen {
 			"QRCode", "Chop", "CachePool", "JSonView", "HtmlView", "CompNewLine", "CollWorld", "Gravity", "Jigsaw",
 			"Tetris", "Explosion", "FBird" };
 
-	final String[] page2 = { "Sanke" };
+	final String[] page2 = { "Timer","Sanke" };
 
 	static BMFont info_font;
 
@@ -274,6 +274,7 @@ public class MultiScreenTest extends Screen {
 			addScreen(page1[index++], new ExplosionTest());
 			addScreen(page1[index++], new FlappyBirdTest());
 		} else if (page == 2) {
+			addScreen(page2[index++], new TimerTest());
 			addScreen(page2[index++], new SankeTest());
 		}
 

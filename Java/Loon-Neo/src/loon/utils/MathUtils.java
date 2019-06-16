@@ -648,7 +648,7 @@ public class MathUtils {
 	public static final double abs(double n) {
 		return (n < 0) ? -n : n;
 	}
-	
+
 	public static final int abs(int n) {
 		return (n < 0) ? -n : n;
 	}
@@ -891,7 +891,7 @@ public class MathUtils {
 	public static final long floor(double x) {
 		return (long) (x + BIG_ENOUGH_FLOOR) - BIG_ENOUGH_INT;
 	}
-	
+
 	public static final int floorPositive(float x) {
 		return (int) x;
 	}
@@ -941,13 +941,13 @@ public class MathUtils {
 		value = (value < min) ? min : value;
 		return value;
 	}
-	
+
 	public static final long clamp(long value, long min, long max) {
 		value = (value > max) ? max : value;
 		value = (value < min) ? min : value;
 		return value;
 	}
-	
+
 	public static final float clamp(final float v) {
 		return v < 0f ? 0f : (v > 1f ? 1f : v);
 	}
@@ -960,8 +960,12 @@ public class MathUtils {
 		return value;
 	}
 
-	public static final float distance(float value1, float value2) {
-		return Math.abs(value1 - value2);
+	public static final float distance(float x1, float x2) {
+		return Math.abs(x1 - x2);
+	}
+
+	public static float distance(float x1, float y1, float x2, float y2) {
+		return (float) Math.pow(Math.pow(x1 - x2, 2.0d) + Math.pow(y1 - y2, 2.0d), 0.5d);
 	}
 
 	public static final float hermite(float value1, float tangent1, float value2, float tangent2, float amount) {
@@ -1431,6 +1435,12 @@ public class MathUtils {
 			}
 		}
 		return newAngle >= newStartAngle && newAngle <= newEndAngle;
+	}
+
+	public static final float angleFrom(float x1, float y1, float x2, float y2) {
+		float diffX = x2 - x1;
+		float diffY = y2 - y1;
+		return atan2(diffY, diffX);
 	}
 
 	public final static float scroll(float scroll, float side) {
