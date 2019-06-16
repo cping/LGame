@@ -43,6 +43,10 @@ public class LGradation implements LRelease {
 
 	private Image drawImgWidth, drawImgHeight;
 
+	public static void freeStatic(){
+		COLOR_GRADATIONS = null;
+	}
+	
 	public static LGradation getInstance(LColor s, LColor e, int w, int h) {
 		return getInstance(s, e, w, h, 125);
 	}

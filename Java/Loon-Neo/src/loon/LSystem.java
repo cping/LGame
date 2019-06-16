@@ -22,9 +22,17 @@ package loon;
 
 import loon.LTexture.Format;
 import loon.Log.Level;
+import loon.action.ActionControl;
+import loon.action.avg.AVGDialog;
+import loon.action.avg.drama.Command;
+import loon.action.collision.CollisionFilter;
 import loon.action.sprite.Sprites;
+import loon.canvas.LColorPool;
+import loon.canvas.LGradation;
 import loon.canvas.NinePatchAbstract.Repeat;
+import loon.component.DefUI;
 import loon.component.Desktop;
+import loon.component.skin.SkinManager;
 import loon.event.KeyMake;
 import loon.event.SysInput;
 import loon.event.Updateable;
@@ -34,6 +42,7 @@ import loon.geom.Dimension;
 import loon.opengl.FrameBuffer;
 import loon.opengl.GLEx;
 import loon.opengl.GLFrameBuffer;
+import loon.opengl.LSTRDictionary;
 import loon.opengl.LSTRFont;
 import loon.opengl.Mesh;
 import loon.opengl.ShaderCmd;
@@ -42,6 +51,7 @@ import loon.utils.NumberUtils;
 import loon.utils.Scale;
 import loon.utils.TArray;
 import loon.utils.json.JsonImpl;
+import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.reply.Act;
 
 public class LSystem {
@@ -186,8 +196,17 @@ public class LSystem {
 	 * 释放静态对象与数值的缓存
 	 */
 	public static final void freeStaticObject() {
-		LGame._platform = null;
-		LGame._base = null;
+        LGame.freeStatic();
+		LSTRDictionary.freeStatic();
+		ActionControl.freeStatic();
+		RealtimeProcessManager.freeStatic();
+		LGradation.freeStatic();
+		DefUI.freeStatic();
+		SkinManager.freeStatic();
+		LColorPool.freeStatic();
+		CollisionFilter.freeStatic();
+		AVGDialog.freeStatic();
+		Command.freeStatic();
 		PAUSED = false;
 		_auto_repaint = true;
 		_scaleWidth = 1f;

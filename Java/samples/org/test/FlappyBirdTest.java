@@ -48,8 +48,7 @@ public class FlappyBirdTest extends Stage {
 		private Bird bird;
 		private LTexture ground;
 		private LTexture gameoverImg;
-		private Vector2f groundPos1;
-		private Vector2f groundPos2;
+
 		private TArray<Tube> tubes;
 
 		@Override
@@ -77,8 +76,6 @@ public class FlappyBirdTest extends Stage {
 			for (int i = 1; i <= TUBE_COUNT; i++) {
 				tubes.add(new Tube(i * (TUBE_SPACING + Tube.TUBE_WIDTH)));
 			}
-			groundPos1 = new Vector2f(getHalfWidth(), GROUND_Y_OFFSET);
-			groundPos2 = new Vector2f(getHalfHeight() + ground.getWidth(), GROUND_Y_OFFSET);
 			gameover = false;
 
 		}
@@ -88,16 +85,10 @@ public class FlappyBirdTest extends Stage {
 			if (SysTouch.isUp()) {
 				bird.jump();
 			}
-			if (getCameraX() - (getHalfWidth()) > groundPos1.x + ground.getWidth()) {
-				groundPos1.addSelf(ground.getWidth() * 2, 0);
-			}
-			if (getCameraX() - (getHalfHeight()) > groundPos2.x + ground.getWidth()) {
-				groundPos2.addSelf(ground.getWidth() * 2, 0);
-			}
 			bird.update(delta);
 			camera(bird.getX() - 50, getHalfHeight());
 			for (Tube tube : tubes) {
-				if (getCameraX() - getHalfWidth() > tube.getPosTopTube().x + tube.getTopTube().getWidth()) {
+				if (getCameraX() - getWidth() > tube.getPosTopTube().x + tube.getTopTube().getWidth()) {
 					tube.reposition(tube.getPosTopTube().x + ((Tube.TUBE_WIDTH + TUBE_SPACING) * TUBE_COUNT));
 				}
 				if (!testing && tube.collides(bird.getBounds())) {
@@ -142,7 +133,7 @@ public class FlappyBirdTest extends Stage {
 
 		@Override
 		public void paint(GLEx g) {
-			g.draw(playBtn, (getWidth() / 2) - (playBtn.getWidth() / 2), getHeight() / 2);
+			g.draw(playBtn, (getWidth() - playBtn.getWidth()) / 2, getHeight() / 2);
 		}
 
 		@Override

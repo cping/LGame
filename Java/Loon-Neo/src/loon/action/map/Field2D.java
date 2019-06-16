@@ -21,6 +21,7 @@
 package loon.action.map;
 
 import loon.LSystem;
+import loon.Screen;
 import loon.action.ActionBind;
 import loon.action.collision.CollisionHelper;
 import loon.action.map.colider.Tile;
@@ -310,12 +311,39 @@ public class Field2D implements IArray, Config {
 		this.set(mapArrays, tw, th);
 	}
 
-	public void cpy(Field2D field) {
+	public Field2D(int w, int h) {
+		this(w, h, 32, 32, -1);
+	}
+
+	public Field2D(Screen screen, int tw, int th) {
+		this(MathUtils.floor(screen.getWidth() / tw), MathUtils.floor(screen.getHeight() / th), tw, th, -1);
+	}
+
+	public Field2D(int w, int h, int tw, int th) {
+		this(w, h, tw, th, -1);
+	}
+
+	public Field2D(int w, int h, int tw, int th, int val) {
+		int[][] newMap = new int[h][w];
+		for (int i = 0; i < h; i++) {
+			for (int j = 0; j < w; j++) {
+				newMap[i][j] = val;
+			}
+		}
+		this.set(newMap, tw, th);
+	}
+
+	public Field2D fill(int val) {
+		return setValues(val);
+	}
+
+	public Field2D cpy(Field2D field) {
 		this.set(CollectionUtils.copyOf(field.mapArrays), field.tileWidth, field.tileHeight);
+		return this;
 	}
 
 	public Tile getTile(int x, int y) {
-		if (allowLimit(x, y)) {
+		if (contains(x, y)) {
 			return _tileImpl.at(getTileType(x, y), x, y, this.tileWidth, this.tileHeight);
 		}
 		return null;
@@ -423,13 +451,13 @@ public class Field2D implements IArray, Config {
 		this.moveLimited = limit;
 	}
 
-	private final boolean allowLimit(int x, int y) {
+	public boolean contains(int x, int y) {
 		return x >= 0 && x < width && y >= 0 && y < height;
 	}
 
 	public int getTileType(int x, int y) {
 		try {
-			if (!allowLimit(x, y)) {
+			if (!contains(x, y)) {
 				return -1;
 			}
 			return mapArrays[y][x];
@@ -440,7 +468,7 @@ public class Field2D implements IArray, Config {
 
 	public void setTileType(int x, int y, int tile) {
 		try {
-			if (!allowLimit(x, y)) {
+			if (!contains(x, y)) {
 				return;
 			}
 			this.mapArrays[y][x] = tile;
@@ -625,7 +653,7 @@ public class Field2D implements IArray, Config {
 
 	protected int get(int[][] mapArrays, int px, int py) {
 		try {
-			if (allowLimit(px, py)) {
+			if (contains(px, py)) {
 				return mapArrays[py][px];
 			} else {
 				return -1;

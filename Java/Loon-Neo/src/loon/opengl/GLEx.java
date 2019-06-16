@@ -588,7 +588,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		txf.concat(aff);
 		return this;
 	}
-	
+
 	public GLEx set(Affine2f aff) {
 		if (isClosed) {
 			return this;
@@ -2134,6 +2134,28 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		} else {
 			return this.fillArc(x1, y1, width, height, 32, 0, 360);
 		}
+	}
+
+	/**
+	 * 填充椭圆
+	 * 
+	 * @param x1
+	 * @param y1
+	 * @param width
+	 * @param height
+	 * @param color
+	 * @return
+	 */
+	public GLEx fillOval(float x1, float y1, float width, float height, LColor c) {
+		int tint = color();
+		setTint(c);
+		if (this.lastBrush.alltextures) {
+			fillOvalImpl(x1, y1, width, height);
+		} else {
+			this.fillArc(x1, y1, width, height, 32, 0, 360);
+		}
+		setTint(tint);
+		return this;
 	}
 
 	/**

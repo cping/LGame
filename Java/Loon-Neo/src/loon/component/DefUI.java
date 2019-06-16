@@ -48,6 +48,10 @@ public class DefUI {
 
 	private static DefUI instance;
 
+	public static void freeStatic(){
+		instance = null;
+	}
+	
 	public final static DefUI make() {
 		return new DefUI();
 	}

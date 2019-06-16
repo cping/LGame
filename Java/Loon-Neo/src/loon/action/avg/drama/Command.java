@@ -1208,6 +1208,14 @@ public class Command extends Conversion implements LRelease {
 		}
 
 	}
+	
+	public static void freeStatic(){
+		scriptLazy = null;
+		scriptContext = null;
+		functions = null;
+		setEnvironmentList = null;
+		conditionEnvironmentList = null;
+	}
 
 	public boolean isClosed() {
 		return isClose;

@@ -1120,6 +1120,11 @@ public abstract class LGame {
 		_font_pools.clear();
 	}
 
+	public static void freeStatic(){
+		LGame._platform = null;
+		LGame._base = null;
+	}
+	
 	public abstract LGame.Type type();
 
 	public abstract double time();

@@ -40,15 +40,15 @@ import loon.utils.StringKeyValue;
 
 public class ActionTween extends ActionTweenBase<ActionTween> {
 
-	private static int combinedAttrsLimit = 3;
-	private static int funPointsLimit = 0;
+	private int combinedAttrsLimit = 3;
+	private int funPointsLimit = 0;
 
-	public static void setCombinedAttributesLimit(int limit) {
-		ActionTween.combinedAttrsLimit = limit;
+	public void setCombinedAttributesLimit(int limit) {
+		this.combinedAttrsLimit = limit;
 	}
 
-	public static void setfunPointsLimit(int limit) {
-		ActionTween.funPointsLimit = limit;
+	public void setfunPointsLimit(int limit) {
+		this.funPointsLimit = limit;
 	}
 
 	private static final ActionTweenPool.Callback<ActionTween> poolCallback = new ActionTweenPool.Callback<ActionTween>() {

@@ -35,6 +35,10 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, IArray, LRe
 
 	private SortedList<GameProcess> processes;
 
+	public static void freeStatic(){
+		instance = null;
+	}
+	
 	public static final RealtimeProcessManager get() {
 		if (instance == null) {
 			synchronized (RealtimeProcessManager.class) {

@@ -23,7 +23,7 @@ package loon.action.collision;
 import loon.action.ActionBind;
 
 public abstract class CollisionFilter {
-
+	
 	public abstract CollisionResult filter(ActionBind obj, ActionBind other);
 
 	private static CollisionFilter defaultFilter;
@@ -102,6 +102,13 @@ public abstract class CollisionFilter {
 			}
 		}
 		return bulletFilter;
+	}
+
+	public static void freeStatic(){
+		defaultFilter = null;
+		crossFilter = null;
+		touchFilter = null;
+		bulletFilter = null;
 	}
 
 }

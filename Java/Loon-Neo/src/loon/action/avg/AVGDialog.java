@@ -33,6 +33,10 @@ import loon.utils.ObjectMap;
 final public class AVGDialog {
 
 	private static ObjectMap<String, LTexture> lazyImages;
+	
+	public static void freeStatic(){
+		lazyImages = null;
+	}
 
 	public final static LTexture getRMXPDialog(String fileName, int width, int height) {
 		if (lazyImages == null) {

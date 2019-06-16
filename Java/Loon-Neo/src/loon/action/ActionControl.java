@@ -42,6 +42,10 @@ public class ActionControl implements LRelease {
 
 	private boolean pause;
 
+	public static void freeStatic(){
+		instanceAction = null;
+	}
+	
 	/**
 	 * 构建一个单独的缓动动画控制器
 	 * 

@@ -52,23 +52,31 @@ public class Counter {
 	}
 
 	public int increment(int val) {
-		if (this._max !=-1 || this._value < this._max) {
-			if (this._max != -1 && this._value + val > this._max) {
-				this._value = this._max;
-			} else {
-				this._value += val;
+		if (!(this._min == -1 && this._max == -1)) {
+			if (this._max != -1 || this._value < this._max) {
+				if (this._max != -1 && this._value + val > this._max) {
+					this._value = this._max;
+				} else {
+					this._value += val;
+				}
 			}
+		} else {
+			this._value += val;
 		}
 		return this._value;
 	}
 
 	public int reduction(int val) {
-		if (this._min !=-1 || this._value > this._min) {
-			if (this._min != -1 && this._value - val < this._min) {
-				this._value = this._min;
-			} else {
-				this._value -= val;
+		if (!(this._min == -1 && this._max == -1)) {
+			if (this._min != -1 || this._value > this._min) {
+				if (this._min != -1 && this._value - val < this._min) {
+					this._value = this._min;
+				} else {
+					this._value -= val;
+				}
 			}
+		} else {
+			this._value -= val;
 		}
 		return this._value;
 	}
@@ -78,10 +86,14 @@ public class Counter {
 	}
 
 	public Counter setValue(int val) {
-		if (this._max != -1 && val > this._max) {
-			this._value = this._max;
-		} else if (this._min != -1 && val < this._min) {
-			this._value = this._min;
+		if (!(this._min == -1 && this._max == -1)) {
+			if (this._max != -1 && val > this._max) {
+				this._value = this._max;
+			} else if (this._min != -1 && val < this._min) {
+				this._value = this._min;
+			} else {
+				this._value = val;
+			}
 		} else {
 			this._value = val;
 		}

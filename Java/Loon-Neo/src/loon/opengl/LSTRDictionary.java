@@ -39,6 +39,10 @@ public final class LSTRDictionary implements LRelease {
 
 	private static LSTRDictionary instance;
 
+	public static void freeStatic(){
+		instance = null;
+	}
+	
 	public final static LSTRDictionary make() {
 		return new LSTRDictionary();
 	}

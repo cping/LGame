@@ -31,6 +31,10 @@ public class LColorPool implements LRelease {
 
 	private static LColorPool colorPool;
 
+	public static void freeStatic(){
+		colorPool = null;
+	}
+	
 	public static LColorPool get() {
 		synchronized (LColorPool.class) {
 			if (colorPool == null) {

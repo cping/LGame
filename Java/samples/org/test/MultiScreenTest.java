@@ -13,6 +13,7 @@ import loon.component.layout.LayoutManager;
 import loon.event.ActionKey;
 import loon.event.ClickListener;
 import loon.event.GameTouch;
+import loon.event.Touched;
 import loon.font.BMFont;
 import loon.opengl.GLEx;
 import loon.utils.TArray;
@@ -152,8 +153,10 @@ public class MultiScreenTest extends Screen {
 	final String[] page1 = { "Screen", "Slider", "Alert", "Animation", "FrameLoop", "Script", "SText", "Light",
 			"Countdown", "AVG", "Layer", "LLK", "TextField", "SRPG", "PShadow", "Array2DMap", "Image", "Natural",
 			"MenuSelect", "CheckBox", "TextTree", "SLG", "I18N", "Buttle", "HexagonMap", "Label", "Grid", "Elements",
-			"QRCode", "Chop", "CachePool", "JSonView", "HtmlView", "CompNewLine", "CollWorld", "Gravity", "Jigsaw","Tetris"
-			,"Explosion","FBird"};
+			"QRCode", "Chop", "CachePool", "JSonView", "HtmlView", "CompNewLine", "CollWorld", "Gravity", "Jigsaw",
+			"Tetris", "Explosion", "FBird" };
+
+	final String[] page2 = { "Sanke" };
 
 	static BMFont info_font;
 
@@ -165,7 +168,7 @@ public class MultiScreenTest extends Screen {
 		// delayTween(10);
 		// 创建一个普通的Entity
 
-		String[][] pages = { page0, page1 };
+		String[][] pages = { page0, page1, page2 };
 		// 使用图片字体(如果不设置，则loon默认使用当前系统字体)
 		if (info_font == null) {
 			try {
@@ -270,6 +273,8 @@ public class MultiScreenTest extends Screen {
 			addScreen(page1[index++], new TetrisTest());
 			addScreen(page1[index++], new ExplosionTest());
 			addScreen(page1[index++], new FlappyBirdTest());
+		} else if (page == 2) {
+			addScreen(page2[index++], new SankeTest());
 		}
 
 		// 默认按钮大小为100x25
@@ -309,8 +314,32 @@ public class MultiScreenTest extends Screen {
 		add(exitClick);
 		// tweens.add(set(exitClick));
 
+		if (page != 0 && page != (pages.length - 1)) {
+			// 设置一个上页按钮
+			LClickButton nextClick = LClickButton.make("BACK", 45, 25);
+			// 设定一个特殊状态为false
+			nextClick.setStatus(LObject.FALSE);
+			// 设置监听
+			nextClick.S(clickListener);
+			// 初始透明度0
+			nextClick.setAlpha(0);
+			nextClick.setFont(info_font);
+			// 偏移Screen大小-按钮大小-5
+			nextClick.setX(getWidth() - nextClick.getWidth() - 5);
+			nextClick.setY(getHeight() - nextClick.getHeight() - 55);
+			// 监听next按钮
+			nextClick.up(new Touched() {
+
+				@Override
+				public void on(float x, float y) {
+					// 变更为page-1
+					runScreen("main").index = page - 1;
+				}
+			});
+			add(nextClick);
+		}
 		// 设置一个下页按钮
-		LClickButton nextClick = LClickButton.make(page == 0 ? "NEXT" : "BACK", 45, 25);
+		LClickButton nextClick = LClickButton.make(page < (pages.length - 1) ? "NEXT" : "BACK", 45, 25);
 		// 设定一个特殊状态为false
 		nextClick.setStatus(LObject.FALSE);
 		// 设置监听
