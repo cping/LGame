@@ -156,7 +156,7 @@ public class MultiScreenTest extends Screen {
 			"QRCode", "Chop", "CachePool", "JSonView", "HtmlView", "CompNewLine", "CollWorld", "Gravity", "Jigsaw",
 			"Tetris", "Explosion", "FBird" };
 
-	final String[] page2 = { "Timer","Sanke" };
+	final String[] page2 = { "Timer","Snake" };
 
 	static BMFont info_font;
 
@@ -275,7 +275,7 @@ public class MultiScreenTest extends Screen {
 			addScreen(page1[index++], new FlappyBirdTest());
 		} else if (page == 2) {
 			addScreen(page2[index++], new TimerTest());
-			addScreen(page2[index++], new SankeTest());
+			addScreen(page2[index++], new SnakeTest());
 		}
 
 		// 默认按钮大小为100x25
