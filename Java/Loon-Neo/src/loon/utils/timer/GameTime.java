@@ -24,8 +24,12 @@ import loon.utils.StringKeyValue;
 
 public class GameTime {
 
-	protected static GameTime _instance = null;
+	private static GameTime _instance = null;
 
+	public static void freeStatic(){
+		_instance = null;
+	}
+	
 	public static GameTime get() {
 		return getInstance();
 	}

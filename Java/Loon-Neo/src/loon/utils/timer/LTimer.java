@@ -66,6 +66,10 @@ public class LTimer implements LRelease {
 	}
 
 	private static LTimer _instance = null;
+	
+	public static void freeStatic(){
+		_instance = null;
+	}
 
 	public static LTimer getInstance() {
 		if (_instance == null) {
@@ -86,32 +90,32 @@ public class LTimer implements LRelease {
 		return new LTimer();
 	}
 
-	public static LTimer at(long delay) {
-		return new LTimer(delay);
+	public static LTimer at(long _delay) {
+		return new LTimer(_delay);
 	}
 
-	public static LTimer at(Duration delay) {
-		return new LTimer(delay);
+	public static LTimer at(Duration _delay) {
+		return new LTimer(_delay);
 	}
 
 	private static int GLOBAL_ID = 0;
 
-	private TimerProcess process = null;
-	private int id = 0;
-	private int maxNumberOfRepeats = -1;
-	private int numberOfTicks = 0;
+	private TimerProcess _process = null;
+	private int _idx = 0;
+	private int _maxNumberOfRepeats = -1;
+	private int _numberOfTicks = 0;
 
-	private boolean repeats = true;
-	private boolean completed = false;
-	private boolean closed = false;
+	private boolean _repeats = true;
+	private boolean _completed = false;
+	private boolean _closed = false;
 
-	private float speedFactor = 1f;
+	private float _speedFactor = 1f;
 
-	private long delay = 0;
-	private long currentTick = 0;
-	private boolean active = true;
+	private long _delay = 0;
+	private long _currentTick = 0;
+	private boolean _active = true;
 
-	private Updateable update;
+	private Updateable _update;
 
 	public LTimer() {
 		this(450);
@@ -130,8 +134,8 @@ public class LTimer implements LRelease {
 	}
 
 	public LTimer(long delay, int numberOfRepeats, float factor, boolean repeats) {
-		this.id = GLOBAL_ID++;
-		this.closed = false;
+		this._idx = GLOBAL_ID++;
+		this._closed = false;
 		this.reset(delay, numberOfRepeats, factor, repeats);
 	}
 
@@ -144,23 +148,23 @@ public class LTimer implements LRelease {
 	}
 	
 	public boolean action(long elapsedTime) {
-		if (this.closed) {
+		if (this._closed) {
 			return false;
 		}
-		if (this.active) {
-			this.currentTick += (elapsedTime * speedFactor);
-			if (this.maxNumberOfRepeats > -1 && this.numberOfTicks >= this.maxNumberOfRepeats) {
-				this.completed = true;
+		if (this._active) {
+			this._currentTick += (elapsedTime * _speedFactor);
+			if (this._maxNumberOfRepeats > -1 && this._numberOfTicks >= this._maxNumberOfRepeats) {
+				this._completed = true;
 			}
-			if (!this.completed && this.currentTick >= this.delay) {
-				if (this.update != null) {
-					this.update.action(this);
+			if (!this._completed && this._currentTick >= this._delay) {
+				if (this._update != null) {
+					this._update.action(this);
 				}
-				this.numberOfTicks++;
-				if (this.repeats) {
-					this.currentTick = 0;
+				this._numberOfTicks++;
+				if (this._repeats) {
+					this._currentTick = 0;
 				} else {
-					this.completed = true;
+					this._completed = true;
 				}
 				return true;
 			}
@@ -173,51 +177,51 @@ public class LTimer implements LRelease {
 	}
 
 	public LTimer reset() {
-		return this.reset(this.delay, this.maxNumberOfRepeats, this.speedFactor, this.repeats);
+		return this.reset(this._delay, this._maxNumberOfRepeats, this._speedFactor, this._repeats);
 	}
 
 	public LTimer reset(long newDelay, int newNumberOfRepeats, float newFactor, boolean newRepeats) {
-		this.delay = MathUtils.max(newDelay, 0);
-		this.maxNumberOfRepeats = MathUtils.max(newNumberOfRepeats, -1);
-		this.speedFactor = MathUtils.max(newFactor, 0.01f);
-		this.repeats = newRepeats;
-		this.active = true;
-		this.completed = false;
-		this.currentTick = 0;
-		this.numberOfTicks = 0;
-		this.speedFactor = 1f;
+		this._delay = MathUtils.max(newDelay, 0);
+		this._maxNumberOfRepeats = MathUtils.max(newNumberOfRepeats, -1);
+		this._speedFactor = MathUtils.max(newFactor, 0.01f);
+		this._repeats = newRepeats;
+		this._active = true;
+		this._completed = false;
+		this._currentTick = 0;
+		this._numberOfTicks = 0;
+		this._speedFactor = 1f;
 		return this;
 	}
 
 	public LTimer setEquals(LTimer other) {
-		this.delay = MathUtils.max(other.delay, 0);
-		this.maxNumberOfRepeats = MathUtils.max(other.maxNumberOfRepeats, -1);
-		this.speedFactor = MathUtils.max(other.speedFactor, 0.01f);
-		this.repeats = other.repeats;
-		this.active = other.active;
-		this.completed = other.completed;
-		this.currentTick = other.currentTick;
-		this.numberOfTicks = other.numberOfTicks;
-		this.speedFactor = other.speedFactor;
+		this._delay = MathUtils.max(other._delay, 0);
+		this._maxNumberOfRepeats = MathUtils.max(other._maxNumberOfRepeats, -1);
+		this._speedFactor = MathUtils.max(other._speedFactor, 0.01f);
+		this._repeats = other._repeats;
+		this._active = other._active;
+		this._completed = other._completed;
+		this._currentTick = other._currentTick;
+		this._numberOfTicks = other._numberOfTicks;
+		this._speedFactor = other._speedFactor;
 		return this;
 	}
 
 	public LTimer addPercentage(long elapsedTime) {
-		this.currentTick += elapsedTime;
+		this._currentTick += elapsedTime;
 		return this;
 	}
 
 	public LTimer addPercentage(LTimerContext context) {
-		this.currentTick += context.timeSinceLastUpdate;
+		this._currentTick += context.timeSinceLastUpdate;
 		return this;
 	}
 
 	public int getTimesRepeated() {
-		return this.numberOfTicks;
+		return this._numberOfTicks;
 	}
 
 	public long getDelay() {
-		return this.delay;
+		return this._delay;
 	}
 
 	public LTimer setDelay(Duration d) {
@@ -225,7 +229,7 @@ public class LTimer implements LRelease {
 	}
 
 	public LTimer setDelay(long delay) {
-		return reset(delay, this.maxNumberOfRepeats, this.speedFactor, this.repeats);
+		return reset(delay, this._maxNumberOfRepeats, this._speedFactor, this._repeats);
 	}
 
 	public LTimer setRepeats(int amount) {
@@ -233,131 +237,131 @@ public class LTimer implements LRelease {
 	}
 
 	public LTimer setRepeats(int amount, boolean newRepats) {
-		return this.reset(this.delay, amount, this.speedFactor, newRepats);
+		return this.reset(this._delay, amount, this._speedFactor, newRepats);
 	}
 
-	public LTimer setActive(boolean bool) {
+	public LTimer setActive(boolean active) {
 		this.reset();
-		this.active = bool;
+		this._active = active;
 		return this;
 	}
 
 	public boolean isActive() {
-		return this.active;
+		return this._active;
 	}
 
 	public LTimer start() {
-		this.active = true;
+		this._active = true;
 		return this;
 	}
 
 	public LTimer stop() {
-		this.active = false;
+		this._active = false;
 		return this;
 	}
 
 	public LTimer pause() {
-		this.active = false;
+		this._active = false;
 		return this;
 	}
 
 	public LTimer unpause() {
-		this.active = true;
+		this._active = true;
 		return this;
 	}
 
 	public int getId() {
-		return id;
+		return _idx;
 	}
 
 	public long getCurrentTick() {
-		return this.currentTick;
+		return this._currentTick;
 	}
 
 	public LTimer setCurrentTick(long tick) {
-		this.currentTick = tick;
+		this._currentTick = tick;
 		return this;
 	}
 
 	public float getPercentage() {
-		return (float) this.currentTick / (float) this.delay;
+		return (float) this._currentTick / (float) this._delay;
 	}
 
 	public float getRemaining() {
-		return (float) (this.delay - this.currentTick);
+		return (float) (this._delay - this._currentTick);
 	}
 
 	public boolean checkInterval(long interval) {
-		return (currentTick / interval) > ((currentTick - delay) / interval);
+		return (_currentTick / interval) > ((_currentTick - _delay) / interval);
 	}
 
 	public LTimer clamp() {
-		if (this.currentTick > this.delay) {
-			currentTick = delay;
+		if (this._currentTick > this._delay) {
+			_currentTick = _delay;
 		}
 		return this;
 	}
 
 	public float getSpeedFactor() {
-		return speedFactor;
+		return _speedFactor;
 	}
 
 	public LTimer setSpeedFactor(float factor) {
-		this.speedFactor = factor;
+		this._speedFactor = factor;
 		return this;
 	}
 
 	public boolean isCompleted() {
-		return completed;
+		return _completed;
 	}
 
 	public LTimer setCompleted(boolean completed) {
-		this.completed = completed;
+		this._completed = completed;
 		return this;
 	}
 
 	public Updateable getUpdateable() {
-		return update;
+		return _update;
 	}
 
 	public LTimer setUpdateable(Updateable u) {
-		this.update = u;
+		this._update = u;
 		return this;
 	}
 
 	public LTimer submit() {
 		synchronized (RealtimeProcessManager.class) {
-			RealtimeProcessManager.get().delete(process);
-			if (process == null || process.isDead()) {
-				process = new TimerProcess(this);
+			RealtimeProcessManager.get().delete(_process);
+			if (_process == null || _process.isDead()) {
+				_process = new TimerProcess(this);
 			}
-			process.setDelay(0);
-			RealtimeProcessManager.get().addProcess(process);
+			_process.setDelay(0);
+			RealtimeProcessManager.get().addProcess(_process);
 		}
 		return this;
 	}
 
 	public boolean isClosed() {
-		return this.closed;
+		return this._closed;
 	}
 
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("LTimer");
-		builder.kv("currentTick", currentTick).comma().kv("delay", delay).comma().kv("factor", speedFactor).comma()
-				.kv("active", active).comma().kv("repeats", repeats).comma()
-				.kv("maxNumberOfRepeats", maxNumberOfRepeats).comma().kv("numberOfTicks", numberOfTicks).comma()
-				.kv("completed", completed);
+		builder.kv("currentTick", _currentTick).comma().kv("delay", _delay).comma().kv("factor", _speedFactor).comma()
+				.kv("active", _active).comma().kv("repeats", _repeats).comma()
+				.kv("maxNumberOfRepeats", _maxNumberOfRepeats).comma().kv("numberOfTicks", _numberOfTicks).comma()
+				.kv("completed", _completed);
 		return builder.toString();
 	}
 
 	@Override
 	public void close() {
 		stop();
-		this.closed = true;
-		if (process != null) {
-			process.close();
-			process = null;
+		this._closed = true;
+		if (_process != null) {
+			_process.close();
+			_process = null;
 		}
 	}
 

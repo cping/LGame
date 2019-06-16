@@ -53,6 +53,9 @@ import loon.utils.TArray;
 import loon.utils.json.JsonImpl;
 import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.reply.Act;
+import loon.utils.timer.Duration;
+import loon.utils.timer.GameTime;
+import loon.utils.timer.LTimer;
 
 public class LSystem {
 
@@ -207,6 +210,9 @@ public class LSystem {
 		CollisionFilter.freeStatic();
 		AVGDialog.freeStatic();
 		Command.freeStatic();
+		Duration.freeStatic();
+		GameTime.freeStatic();
+		LTimer.freeStatic();
 		PAUSED = false;
 		_auto_repaint = true;
 		_scaleWidth = 1f;

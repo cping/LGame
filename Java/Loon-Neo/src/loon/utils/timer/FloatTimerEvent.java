@@ -25,20 +25,21 @@ import loon.utils.StringKeyValue;
 
 public abstract class FloatTimerEvent {
 
-	private float delay;
-	private boolean repeat;
-	private float acc;
-	private boolean done;
-	private boolean stopped;
+	private float _delay;
+	private float _acc;
+	
+	private boolean _repeat;
+	private boolean _done;
+	private boolean _stopped;
 
 	public FloatTimerEvent(float delay) {
 		this(delay, false);
 	}
 
 	public FloatTimerEvent(float delay, boolean repeat) {
-		this.delay = delay;
-		this.repeat = repeat;
-		this.acc = 0f;
+		this._delay = delay;
+		this._repeat = repeat;
+		this._acc = 0f;
 	}
 
 	public void update(LTimerContext context) {
@@ -50,16 +51,16 @@ public abstract class FloatTimerEvent {
 	}
 
 	public void update(float delta) {
-		if ((!this.done) && (!this.stopped)) {
-			this.acc += delta;
+		if ((!this._done) && (!this._stopped)) {
+			this._acc += delta;
 
-			if (this.acc >= this.delay) {
-				this.acc -= this.delay;
+			if (this._acc >= this._delay) {
+				this._acc -= this._delay;
 
-				if (this.repeat)
+				if (this._repeat)
 					reset();
 				else {
-					this.done = true;
+					this._done = true;
 				}
 				execute();
 			}
@@ -67,58 +68,58 @@ public abstract class FloatTimerEvent {
 	}
 
 	public FloatTimerEvent reset() {
-		this.stopped = false;
-		this.done = false;
-		this.acc = 0f;
+		this._stopped = false;
+		this._done = false;
+		this._acc = 0f;
 		return this;
 	}
 
 	public boolean isCompleted() {
-		return this.done;
+		return this._done;
 	}
 
 	public boolean isRunning() {
-		return (!this.done) && (this.acc < this.delay) && (!this.stopped);
+		return (!this._done) && (this._acc < this._delay) && (!this._stopped);
 	}
 
 	public FloatTimerEvent stop() {
-		this.stopped = true;
+		this._stopped = true;
 		return this;
 	}
 
 	public FloatTimerEvent setDelay(int delay) {
-		this.delay = delay;
+		this._delay = delay;
 		return this;
 	}
 
 	public abstract void execute();
 
 	public float getPercentage() {
-		return this.acc / this.delay;
+		return this._acc / this._delay;
 	}
 
 	public float getRemaining() {
-		return this.delay - this.acc;
+		return this._delay - this._acc;
 	}
 
 	public float getPercentageRemaining() {
-		if (this.done)
+		if (this._done)
 			return 100f;
-		if (this.stopped) {
+		if (this._stopped) {
 			return 0f;
 		}
-		return 1f - (this.delay - this.acc) / this.delay;
+		return 1f - (this._delay - this._acc) / this._delay;
 	}
 
 	public float getDelay() {
-		return this.delay;
+		return this._delay;
 	}
 
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("FloatTimerEvent");
-		builder.kv("delay", delay).comma().kv("repeat", repeat).comma().kv("acc", acc).comma().kv("done", done).comma()
-				.kv("stopped", stopped);
+		builder.kv("delay", _delay).comma().kv("repeat", _repeat).comma().kv("acc", _acc).comma().kv("done", _done).comma()
+				.kv("stopped", _stopped);
 		return builder.toString();
 	}
 }

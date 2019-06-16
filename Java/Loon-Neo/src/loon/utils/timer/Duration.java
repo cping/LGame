@@ -36,6 +36,10 @@ public class Duration implements Comparable<Duration> {
 
 	protected static Duration _instance = null;
 
+	public static void freeStatic(){
+		_instance = null;
+	}
+	
 	public static Duration get() {
 		return getInstance();
 	}
