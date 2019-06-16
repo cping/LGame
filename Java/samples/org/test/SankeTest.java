@@ -24,6 +24,7 @@ import loon.Counter;
 import loon.Screen;
 import loon.action.map.Field2D;
 import loon.action.map.Side;
+import loon.action.sprite.GridEntity;
 import loon.canvas.LColor;
 import loon.component.LPad;
 import loon.event.ActionKey;
@@ -256,6 +257,9 @@ public class SankeTest extends Screen {
 		moveTimer.submit();
 		// 注销Screen时销毁moveTimer
 		putRelease(moveTimer);
+		
+		//注入网格,总大小为Screen大小,单独网格大小为二维地图瓦片大小
+		add(new GridEntity(0, 0, getWidth(), getHeight(), map.getTileWidth(), map.getTileHeight(), LColor.gray));
 
 		// 初始化游戏设定
 		newGame();
