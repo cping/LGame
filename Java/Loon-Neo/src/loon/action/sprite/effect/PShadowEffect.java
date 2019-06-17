@@ -40,7 +40,7 @@ public class PShadowEffect extends Entity {
 
 	private int indexD, indexW, block;
 
-	private boolean flag = true, completed = false;
+	private boolean flag = true, completed = false , autoRemoved = false;
 
 	private static int[] deasilTrans, widdershinTrans;
 
@@ -137,7 +137,7 @@ public class PShadowEffect extends Entity {
 			}
 		}
 		if (this.completed) {
-			if (getSprites() != null) {
+			if (autoRemoved && getSprites() != null) {
 				getSprites().remove(this);
 			}
 		}
@@ -165,6 +165,15 @@ public class PShadowEffect extends Entity {
 
 	public void setBlockSize(int block) {
 		this.block = block;
+	}
+
+	public boolean isAutoRemoved() {
+		return autoRemoved;
+	}
+
+	public PShadowEffect setAutoRemoved(boolean autoRemoved) {
+		this.autoRemoved = autoRemoved;
+		return this;
 	}
 
 	@Override

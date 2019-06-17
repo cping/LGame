@@ -34,8 +34,12 @@ public class SwipeEffect extends Entity implements BaseEffect {
 	private LTimer timer = new LTimer(450);
 
 	protected int type;
-
+	
+	protected float triangle = 90;
+	
 	protected boolean finished;
+	
+	protected boolean autoRemoved;
 
 	public static SwipeEffect getInstance(int type, LColor c) {
 		return getInstance(type, c, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
@@ -84,7 +88,6 @@ public class SwipeEffect extends Entity implements BaseEffect {
 			return;
 		}
 		float percent = timer.getPercentage();
-		float triangle = 90;
 
 		LColor tmp = g.getColor();
 		
@@ -116,7 +119,7 @@ public class SwipeEffect extends Entity implements BaseEffect {
 			finished = true;
 		}
 		if (this.finished) {
-			if (getSprites() != null) {
+			if (autoRemoved && getSprites() != null) {
 				getSprites().remove(this);
 			}
 		}
@@ -126,10 +129,29 @@ public class SwipeEffect extends Entity implements BaseEffect {
 		return type;
 	}
 
+	public float getTriangle() {
+		return triangle;
+	}
+
+	public SwipeEffect setTriangle(float triangle) {
+		this.triangle = triangle;
+		return this;
+	}
+	
+	public boolean isAutoRemoved() {
+		return autoRemoved;
+	}
+
+	public SwipeEffect setAutoRemoved(boolean autoRemoved) {
+		this.autoRemoved = autoRemoved;
+		return this;
+	}
+
 	@Override
 	public void close() {
 		super.close();
 		finished = true;
 	}
+
 
 }

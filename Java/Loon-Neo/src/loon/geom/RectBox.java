@@ -313,7 +313,7 @@ public class RectBox extends Shape implements BoxSize {
 	public int Bottom() {
 		return (int) getMaxY();
 	}
-	
+
 	public Vector2f topLeft() {
 		return new Vector2f(this.getLeft(), this.getTop());
 	}
@@ -496,7 +496,7 @@ public class RectBox extends Shape implements BoxSize {
 	}
 
 	/**
-	 * 设定矩形选框交集
+	 * 判定矩形选框交集
 	 * 
 	 * @param rect
 	 * @return
@@ -506,12 +506,19 @@ public class RectBox extends Shape implements BoxSize {
 		return intersects(rect.x, rect.y, rect.width, rect.height);
 	}
 
+	/**
+	 * 判定矩形选框交集
+	 * 
+	 * @param x
+	 * @param y
+	 * @return
+	 */
 	public boolean intersects(float x, float y) {
 		return intersects(0, 0, width, height);
 	}
 
 	/**
-	 * 设定矩形选框交集
+	 * 判定矩形选框交集
 	 * 
 	 * @param x
 	 * @param y
@@ -856,7 +863,6 @@ public class RectBox extends Shape implements BoxSize {
 		setBounds(tx1, ty1, tx2, ty2);
 		return this;
 	}
-
 
 	@Override
 	public int hashCode() {

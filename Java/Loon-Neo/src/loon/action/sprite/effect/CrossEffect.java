@@ -33,6 +33,8 @@ public class CrossEffect extends Entity implements BaseEffect {
 
 	private boolean completed;
 
+	private boolean autoRemoved;
+
 	private LTexture otexture, ntexture;
 
 	private LTimer timer;
@@ -101,7 +103,7 @@ public class CrossEffect extends Entity implements BaseEffect {
 			count++;
 		}
 		if (this.completed) {
-			if (getSprites() != null) {
+			if (autoRemoved && getSprites() != null) {
 				getSprites().remove(this);
 			}
 		}
@@ -180,6 +182,15 @@ public class CrossEffect extends Entity implements BaseEffect {
 		this.maxcount = maxcount;
 	}
 
+	public boolean isAutoRemoved() {
+		return autoRemoved;
+	}
+
+	public CrossEffect setAutoRemoved(boolean autoRemoved) {
+		this.autoRemoved = autoRemoved;
+		return this;
+	}
+	
 	@Override
 	public void close() {
 		super.close();

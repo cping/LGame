@@ -37,6 +37,8 @@ public class FadeTileEffect extends Entity implements BaseEffect {
 	private int tileWidth, tileHeight;
 
 	private boolean completed;
+	
+	private boolean autoRemoved;
 
 	private int count;
 
@@ -240,7 +242,7 @@ public class FadeTileEffect extends Entity implements BaseEffect {
 			}
 		}
 		if (this.completed) {
-			if (getSprites() != null) {
+			if (autoRemoved && getSprites() != null) {
 				getSprites().remove(this);
 			}
 		}
@@ -314,6 +316,15 @@ public class FadeTileEffect extends Entity implements BaseEffect {
 		return count;
 	}
 
+	public boolean isAutoRemoved() {
+		return autoRemoved;
+	}
+
+	public FadeTileEffect setAutoRemoved(boolean autoRemoved) {
+		this.autoRemoved = autoRemoved;
+		return this;
+	}
+	
 	@Override
 	public void close() {
 		super.close();
@@ -321,5 +332,6 @@ public class FadeTileEffect extends Entity implements BaseEffect {
 		conversions = null;
 		temp = null;
 	}
+
 
 }

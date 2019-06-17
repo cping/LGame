@@ -40,11 +40,13 @@ public class StringEffect extends Entity implements BaseEffect {
 
 	private LTimer delayTimer = new LTimer(0);
 
-	private Vector2f updatePos;
+	private Vector2f _updatePos;
 
 	private Text _font;
 
 	private boolean _completed;
+
+	private boolean _autoRemoved;
 
 	/**
 	 * not Move
@@ -285,8 +287,10 @@ public class StringEffect extends Entity implements BaseEffect {
 
 	public StringEffect(TextOptions opt, IFont font, String mes, Vector2f pos, Vector2f update, LColor color) {
 		this._font = new Text(font, mes, opt);
-		this.updatePos = update;
+		this._updatePos = update;
 		this._alpha = 1f;
+		this._completed = false;
+		this._autoRemoved = true;
 		this.setLocation(pos);
 		this.setColor(color);
 		this.setSize(_font.getWidth(), _font.getHeight());
@@ -304,21 +308,23 @@ public class StringEffect extends Entity implements BaseEffect {
 			return;
 		}
 		if (delayTimer.action(elapsedTime)) {
-			getLocation().addSelf(this.updatePos);
+			getLocation().addSelf(this._updatePos);
 			this._alpha -= 0.0125f;
 			if (_alpha <= 0) {
 				_completed = true;
 			}
 			if (_completed) {
-				if (LSystem.getProcess() != null && LSystem.getProcess().getScreen() != null) {
-					LSystem.getProcess().getScreen().remove(this);
-				} 
-				if (getSprites() != null) {
-					getSprites().remove(this);
+				if (_autoRemoved) {
+					if (LSystem.getProcess() != null && LSystem.getProcess().getScreen() != null) {
+						LSystem.getProcess().getScreen().remove(this);
+					}
+					if (getSprites() != null) {
+						getSprites().remove(this);
+					}
 				}
 			}
 		}
-	
+
 	}
 
 	@Override
@@ -344,6 +350,15 @@ public class StringEffect extends Entity implements BaseEffect {
 	@Override
 	public boolean isCompleted() {
 		return _completed;
+	}
+
+	public boolean isAutoRemoved() {
+		return _autoRemoved;
+	}
+
+	public StringEffect setAutoRemoved(boolean autoRemoved) {
+		this._autoRemoved = autoRemoved;
+		return this;
 	}
 
 	@Override

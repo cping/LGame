@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Random;
 
+import loon.LSysException;
 import loon.LTexture;
 import loon.Stage;
 import loon.action.ActionBind;
@@ -345,7 +346,7 @@ public class SLGTest extends Stage {
 		turn = 1;
 		try {
 			map = new TileMap("srpg/map1.txt", 32, 32);
-		} catch (IOException e) {
+		} catch (LSysException e) {
 			e.printStackTrace();
 		}
 		// 设置切图方式

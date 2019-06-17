@@ -36,6 +36,8 @@ public class FadeDotEffect extends Entity implements BaseEffect {
 
 	private int countCompleted = 0;
 
+	private boolean autoRemoved;
+
 	private boolean finished;
 
 	private TArray<Dot> dots;
@@ -205,12 +207,12 @@ public class FadeDotEffect extends Entity implements BaseEffect {
 			}
 		}
 		if (this.finished) {
-			if (getSprites() != null) {
+			if (autoRemoved && getSprites() != null) {
 				getSprites().remove(this);
 			}
 		}
 	}
-
+	
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
 		if (finished) {
@@ -243,6 +245,15 @@ public class FadeDotEffect extends Entity implements BaseEffect {
 		return type;
 	}
 
+	public boolean isAutoRemoved() {
+		return autoRemoved;
+	}
+
+	public FadeDotEffect setAutoRemoved(boolean autoRemoved) {
+		this.autoRemoved = autoRemoved;
+		return this;
+	}
+	
 	@Override
 	public void close() {
 		super.close();

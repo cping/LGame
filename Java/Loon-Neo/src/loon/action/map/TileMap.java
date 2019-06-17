@@ -20,8 +20,6 @@
  */
 package loon.action.map;
 
-import java.io.IOException;
-
 import loon.LObject;
 import loon.LSysException;
 import loon.LSystem;
@@ -103,31 +101,31 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	private float scaleX = 1f, scaleY = 1f;
 
-	public TileMap(String fileName, int tileWidth, int tileHeight) throws IOException {
+	public TileMap(String fileName, int tileWidth, int tileHeight)  {
 		this(fileName, tileWidth, tileHeight, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), Format.LINEAR);
 	}
 
-	public TileMap(String fileName, Screen screen, int tileWidth, int tileHeight) throws IOException {
+	public TileMap(String fileName, Screen screen, int tileWidth, int tileHeight)  {
 		this(fileName, screen, tileWidth, tileHeight, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(),
 				Format.LINEAR);
 	}
 
-	public TileMap(String fileName, int tileWidth, int tileHeight, int mWidth, int mHeight) throws IOException {
+	public TileMap(String fileName, int tileWidth, int tileHeight, int mWidth, int mHeight)  {
 		this(fileName, tileWidth, tileHeight, mWidth, mHeight, Format.LINEAR);
 	}
 
 	public TileMap(String fileName, Screen screen, int tileWidth, int tileHeight, int mWidth, int mHeight)
-			throws IOException {
+			 {
 		this(fileName, screen, tileWidth, tileHeight, mWidth, mHeight, Format.LINEAR);
 	}
 
 	public TileMap(String fileName, int tileWidth, int tileHeight, int mWidth, int mHeight, Format format)
-			throws IOException {
+			 {
 		this(TileMapConfig.loadAthwartArray(fileName), tileWidth, tileHeight, mWidth, mHeight, format);
 	}
 
 	public TileMap(String fileName, Screen screen, int tileWidth, int tileHeight, int mWidth, int mHeight,
-			Format format) throws IOException {
+			Format format)  {
 		this(TileMapConfig.loadAthwartArray(fileName), screen, tileWidth, tileHeight, mWidth, mHeight, format);
 	}
 

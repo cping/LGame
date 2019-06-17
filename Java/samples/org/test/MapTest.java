@@ -2,6 +2,7 @@ package org.test;
 
 import java.io.IOException;
 
+import loon.LSysException;
 import loon.Stage;
 import loon.action.ActionBind;
 import loon.action.ActionListener;
@@ -252,7 +253,7 @@ public class MapTest extends Stage {
 				}
 			});
 			add(pad);
-		} catch (IOException e) {
+		} catch (LSysException e) {
 			error(e.getMessage());
 		}
 		LClickButton click = MultiScreenTest.getBackButton(this, 1);

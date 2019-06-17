@@ -88,6 +88,8 @@ public class RippleEffect extends Entity implements LTouchArea, BaseEffect {
 
 	private boolean completed;
 
+	private boolean autoRemoved;
+
 	private Model model;
 
 	private int existTime;
@@ -133,9 +135,9 @@ public class RippleEffect extends Entity implements LTouchArea, BaseEffect {
 		this.lastProcess = new RippleProcess(x, y, existTime, this);
 		this.lastProcess.setDelay(LSystem.SECOND / 5);
 		this.processArray.add(lastProcess);
-		
+
 		RealtimeProcessManager.get().addProcess(lastProcess);
-		
+
 		return true;
 	}
 
@@ -167,11 +169,13 @@ public class RippleEffect extends Entity implements LTouchArea, BaseEffect {
 			}
 		}
 		if (completed) {
-			if (LSystem.getProcess() != null && LSystem.getProcess().getScreen() != null) {
-				LSystem.getProcess().getScreen().remove(this);
-			}
-			if (getSprites() != null) {
-				getSprites().remove(this);
+			if (autoRemoved) {
+				if (LSystem.getProcess() != null && LSystem.getProcess().getScreen() != null) {
+					LSystem.getProcess().getScreen().remove(this);
+				}
+				if (getSprites() != null) {
+					getSprites().remove(this);
+				}
 			}
 		}
 	}
@@ -214,6 +218,15 @@ public class RippleEffect extends Entity implements LTouchArea, BaseEffect {
 		}
 	}
 
+	public boolean isAutoRemoved() {
+		return autoRemoved;
+	}
+
+	public RippleEffect setAutoRemoved(boolean autoRemoved) {
+		this.autoRemoved = autoRemoved;
+		return this;
+	}
+
 	@Override
 	public void close() {
 		super.close();
@@ -229,4 +242,5 @@ public class RippleEffect extends Entity implements LTouchArea, BaseEffect {
 		touchLocked.release();
 		completed = true;
 	}
+
 }

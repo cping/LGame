@@ -33,6 +33,7 @@ import loon.utils.timer.LTimer;
 public class FadeSpiralEffect extends Entity implements BaseEffect {
 
 	private boolean finished;
+	private boolean autoRemoved;
 	private int tilewidth;
 	private int tileheight;
 	private int speed;
@@ -216,16 +217,26 @@ public class FadeSpiralEffect extends Entity implements BaseEffect {
 			}
 		}
 		if (this.finished) {
-			if (getSprites() != null) {
+			if (autoRemoved && getSprites() != null) {
 				getSprites().remove(this);
 			}
 		}
 	}
 
+	public boolean isAutoRemoved() {
+		return autoRemoved;
+	}
+
+	public FadeSpiralEffect setAutoRemoved(boolean autoRemoved) {
+		this.autoRemoved = autoRemoved;
+		return this;
+	}
+	
 	@Override
 	public void close() {
 		super.close();
 		finished = true;
 		conversions = null;
 	}
+
 }

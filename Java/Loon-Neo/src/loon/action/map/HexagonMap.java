@@ -20,7 +20,6 @@
  */
 package loon.action.map;
 
-import java.util.Iterator;
 
 import loon.LObject;
 import loon.LSysException;
@@ -52,6 +51,7 @@ import loon.opengl.LTexturePack;
 import loon.opengl.LTexturePackClip;
 import loon.utils.CollectionUtils;
 import loon.utils.IntMap;
+import loon.utils.LIterator;
 import loon.utils.MathUtils;
 import loon.utils.SortedList;
 import loon.utils.StringUtils;
@@ -219,7 +219,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		public int cost;
 	}
 
-	protected static class CellIterator implements Iterator<TileVisit<TileImpl>> {
+	protected static class CellIterator implements LIterator<TileVisit<TileImpl>> {
 
 		protected int m, n;
 		protected int cols, rows;
@@ -259,7 +259,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 
 	}
 
-	public Iterator<TileVisit<TileImpl>> iterator() {
+	public LIterator<TileVisit<TileImpl>> iterator() {
 		return new CellIterator(this, 0, 0, cols, rows);
 	}
 
@@ -284,7 +284,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		return new Iterable<TileVisit<TileImpl>>() {
 
 			@Override
-			public Iterator<TileVisit<TileImpl>> iterator() {
+			public LIterator<TileVisit<TileImpl>> iterator() {
 				return iterator;
 			}
 		};

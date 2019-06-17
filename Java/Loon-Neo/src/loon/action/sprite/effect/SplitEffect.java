@@ -39,7 +39,7 @@ public class SplitEffect extends Entity implements BaseEffect {
 
 	private int halfWidth, halfHeight, multiples, direction;
 
-	private boolean completed, special;
+	private boolean completed, autoRemoved, special;
 
 	private RectBox limit;
 
@@ -116,8 +116,7 @@ public class SplitEffect extends Entity implements BaseEffect {
 
 				if (special) {
 					if (!limit.intersects(movePosOne.x, movePosOne.y, halfHeight, halfWidth)
-							&& !limit.intersects(movePosTwo.x, movePosTwo.y, halfHeight,
-									halfWidth)) {
+							&& !limit.intersects(movePosTwo.x, movePosTwo.y, halfHeight, halfWidth)) {
 						this.completed = true;
 					}
 				} else if (!limit.intersects(movePosOne.x, movePosOne.y, halfWidth, halfHeight)
@@ -127,7 +126,7 @@ public class SplitEffect extends Entity implements BaseEffect {
 			}
 		}
 		if (this.completed) {
-			if (getSprites() != null) {
+			if (autoRemoved && getSprites() != null) {
 				getSprites().remove(this);
 			}
 		}
@@ -147,19 +146,15 @@ public class SplitEffect extends Entity implements BaseEffect {
 			case Config.RIGHT:
 			case Config.TUP:
 			case Config.TDOWN:
-				g.draw(_image, x1, y1, _width, halfHeight, 0, 0, _width,
-						halfHeight);
-				g.draw(_image, x2, y2, _width, halfHeight, 0, halfHeight,
-						_width, _height - halfHeight);
+				g.draw(_image, x1, y1, _width, halfHeight, 0, 0, _width, halfHeight);
+				g.draw(_image, x2, y2, _width, halfHeight, 0, halfHeight, _width, _height - halfHeight);
 				break;
 			case Config.UP:
 			case Config.DOWN:
 			case Config.TLEFT:
 			case Config.TRIGHT:
-				g.draw(_image, x1, y1, halfWidth, _height, 0, 0, halfWidth,
-						_height);
-				g.draw(_image, x2, y2, halfWidth, _height, halfWidth, 0, _width
-						- halfWidth, _height);
+				g.draw(_image, x1, y1, halfWidth, _height, 0, 0, halfWidth, _height);
+				g.draw(_image, x2, y2, halfWidth, _height, halfWidth, 0, _width - halfWidth, _height);
 				break;
 
 			}
@@ -179,10 +174,20 @@ public class SplitEffect extends Entity implements BaseEffect {
 		this.multiples = multiples;
 	}
 
+	public boolean isAutoRemoved() {
+		return autoRemoved;
+	}
+
+	public SplitEffect setAutoRemoved(boolean autoRemoved) {
+		this.autoRemoved = autoRemoved;
+		return this;
+	}
+	
 	@Override
 	public void close() {
 		super.close();
 		completed = true;
 	}
+
 
 }

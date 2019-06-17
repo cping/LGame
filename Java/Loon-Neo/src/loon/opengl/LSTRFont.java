@@ -461,7 +461,6 @@ public class LSTRFont implements IFont, LRelease {
 					totalWidth = 0;
 				}
 				if (intObject != null) {
-
 					fontBatch.drawQuad(totalWidth, totalHeight, (totalWidth + intObject.width) - offsetX,
 							(totalHeight + intObject.height) - offsetY, intObject.storedX, intObject.storedY,
 							intObject.storedX + intObject.width - offsetX,

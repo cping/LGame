@@ -27,6 +27,7 @@ import loon.action.avg.AVGDialog;
 import loon.action.avg.drama.Command;
 import loon.action.collision.CollisionFilter;
 import loon.action.sprite.Sprites;
+import loon.action.sprite.effect.LightningEffect;
 import loon.canvas.LColorPool;
 import loon.canvas.LGradation;
 import loon.canvas.NinePatchAbstract.Repeat;
@@ -209,6 +210,7 @@ public class LSystem {
 		LColorPool.freeStatic();
 		CollisionFilter.freeStatic();
 		AVGDialog.freeStatic();
+		LightningEffect.freeStatic();
 		Command.freeStatic();
 		Duration.freeStatic();
 		GameTime.freeStatic();

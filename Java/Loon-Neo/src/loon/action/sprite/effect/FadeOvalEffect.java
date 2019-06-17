@@ -38,6 +38,7 @@ public class FadeOvalEffect extends Entity implements BaseEffect {
 	private LTimer timer;
 	private float elapsed;
 	private boolean finished = false;
+	private boolean autoRemoved = false;
 	
 	private int type = TYPE_FADE_IN;
 	private int maxColorSize;
@@ -116,7 +117,7 @@ public class FadeOvalEffect extends Entity implements BaseEffect {
 			}
 		}
 		if (this.finished) {
-			if (getSprites() != null) {
+			if (autoRemoved && getSprites() != null) {
 				getSprites().remove(this);
 			}
 		}
@@ -153,10 +154,20 @@ public class FadeOvalEffect extends Entity implements BaseEffect {
 		return type;
 	}
 
+	public boolean isAutoRemoved() {
+		return autoRemoved;
+	}
+
+	public FadeOvalEffect setAutoRemoved(boolean autoRemoved) {
+		this.autoRemoved = autoRemoved;
+		return this;
+	}
+	
 	@Override
 	public void close() {
 		super.close();
 		this.finished = true;
 	}
+
 
 }

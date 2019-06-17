@@ -20,16 +20,17 @@
  */
 package loon.utils.timer;
 
+import loon.utils.MathUtils;
 import loon.utils.StringKeyValue;
 
 public class GameTime {
 
 	private static GameTime _instance = null;
 
-	public static void freeStatic(){
+	public static void freeStatic() {
 		_instance = null;
 	}
-	
+
 	public static GameTime get() {
 		return getInstance();
 	}
@@ -87,7 +88,7 @@ public class GameTime {
 	}
 
 	public float getMilliseconds() {
-		return _elapsedTime * 1000;
+		return MathUtils.max(_elapsedTime * 1000, 10);
 	}
 
 	public float getElapsedGameTime() {

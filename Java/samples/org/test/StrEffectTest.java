@@ -7,7 +7,7 @@ import loon.event.Touched;
 import loon.geom.Vector2f;
 import loon.utils.Calculator;
 
-public class StrEffectTest extends Stage{
+public class StrEffectTest extends Stage {
 
 	@Override
 	public void create() {

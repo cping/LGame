@@ -37,8 +37,8 @@ public class ChopTest extends Stage {
 
 			@Override
 			public void on(float x, float y) {
-				// 斩击效果,由西北向东南方向,斩击线粗2,长30
-				add(new PixelChopEffect(ChopDirection.WNTES, LColor.red, x, y, 2, 30));
+				// 斩击效果,由西北向东南方向,斩击线粗2,长30,播放完毕后自动删除
+				add(new PixelChopEffect(ChopDirection.WNTES, LColor.red, x, y, 2, 30).setAutoRemoved(true));
 				// 文字上浮
 				add(StringEffect.up("9999", Vector2f.at(x, y), LColor.red));
 				// 文字下浮

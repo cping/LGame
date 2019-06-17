@@ -28,9 +28,9 @@ public class NaturalTest extends Stage {
 
 			@Override
 			public void on(float x, float y) {
-				// 从触屏位置，向屏幕中心，发射一道弧形闪电
+				// 从触屏位置,向屏幕中心,发射一道弧形闪电,完成后自动从精灵集合删除
 				add(LightningEffect.addBolt(Vector2f.at(x, y), Vector2f.at(getHalfWidth(), getHalfHeight()),
-						LColor.white));
+						LColor.white).setAutoRemoved(true));
 			}
 		})
 		.add(MultiScreenTest.getBackButton(this, 1));

@@ -41,6 +41,8 @@ public class ArcEffect extends Entity implements BaseEffect {
 	private int tmpColor;
 
 	private int[] sign = { 1, -1 };
+	
+	private boolean autoRemoved;
 
 	private boolean completed;
 
@@ -88,7 +90,7 @@ public class ArcEffect extends Entity implements BaseEffect {
 			step++;
 		}
 		if (this.completed) {
-			if (getSprites() != null) {
+			if (autoRemoved && getSprites() != null) {
 				getSprites().remove(this);
 			}
 		}
@@ -139,6 +141,15 @@ public class ArcEffect extends Entity implements BaseEffect {
 
 	public void setTurn(int turn) {
 		this.curTurn = turn;
+	}
+
+	public boolean isAutoRemoved() {
+		return autoRemoved;
+	}
+
+	public ArcEffect setAutoRemoved(boolean autoRemoved) {
+		this.autoRemoved = autoRemoved;
+		return this;
 	}
 
 	@Override
