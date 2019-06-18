@@ -4,44 +4,56 @@ import loon.BaseIO;
 import loon.LSysException;
 
 /**
- * 工具类，用来解析python游戏的配置数据 
+ * 工具类，用来解析python游戏的配置数据
  */
 public class ParsePythonData {
 
-	static ObjectMap<String, Object> CACHE_DATA;
+	protected class LoopStringBuilder {
 
-	private StringBuffer buf = new StringBuffer();
+		private char[] chars;
+		private int pos;
+		private int size;
 
-	private int lineNo = 1, pos;
-	
-	final static char EOF = (char) -1;
-
-	public synchronized static Object parseString(String str) throws Exception {
-		if (CACHE_DATA == null) {
-			CACHE_DATA = new ObjectMap<String, Object>();
+		protected LoopStringBuilder(int size) {
+			this.size = size;
+			this.pos = 0;
+			chars = new char[size];
 		}
-		Object o = CACHE_DATA.get(str);
-		if (o == null) {
-			o = new ParsePythonData().parseAll(new ArrayByte(str.getBytes()));
-			CACHE_DATA.put(str, o);
+
+		public void add(char c) {
+			chars[pos++] = c;
+			if (pos >= size) {
+				pos = 0;
+			}
 		}
-		return o;
+
+		public String get() {
+			int q = pos;
+			StringBuilder sbr = new StringBuilder();
+			for (int i = 0; i < size; i++) {
+				sbr.append(chars[q++]);
+				if (q >= size) {
+					q = 0;
+				}
+			}
+			return sbr.toString();
+		}
+
 	}
 
-	public synchronized static Object parseFile(String file) throws Exception {
-		if (CACHE_DATA == null) {
-			CACHE_DATA = new ObjectMap<String, Object>();
-		}
-		Object o = CACHE_DATA.get(file);
-		if (o == null) {
-			o = new ParsePythonData().parseAll(BaseIO.loadArrayByte(file));
-			CACHE_DATA.put(file, o);
-		}
-		return o;
+	private StringBuffer buffer = new StringBuffer();
+
+	private int lineNo = 1, pos = 0;
+
+	public static Object parseString(String str) throws LSysException {
+		return new ParsePythonData().parseAll(new ArrayByte(str.getBytes()));
 	}
 
+	public static Object parseFile(String file) throws LSysException {
+		return new ParsePythonData().parseAll(BaseIO.loadArrayByte(file));
+	}
 
-	private Object parse(ArrayByte in) throws Exception {
+	private Object parse(ArrayByte in) throws LSysException {
 		char i = readA(in);
 		if (i == '/') {
 			char flag = xread(in);
@@ -52,7 +64,7 @@ public class ParsePythonData {
 				pushBack(flag);
 			}
 		}
-		if (i == EOF) {
+		if (i == (char) -1) {
 			return null;
 		}
 		if (i == '{') {
@@ -81,10 +93,10 @@ public class ParsePythonData {
 		return readNumber(in, i);
 	}
 
-	public Object parseAll(ArrayByte in) throws Exception {
+	public Object parseAll(ArrayByte in) throws LSysException {
 		Object o = parse(in);
 		char i = readA(in);
-		if (i == EOF) {
+		if (i == (char) -1) {
 			in.close();
 			return o;
 		}
@@ -93,22 +105,21 @@ public class ParsePythonData {
 	}
 
 	private void pushBack(char c) {
-		buf.append(c);
+		buffer.append(c);
 	}
 
-	private void confirm(char i, char c) throws Exception {
+	private void confirm(char i, char c) throws LSysException {
 		if (i != c) {
-			throw new LSysException("Expected to read " + c + " but " + i + "("
-					+ ((int) i) + ") found" + at());
+			throw new LSysException("Expected to read " + c + " but " + i + "(" + ((int) i) + ") found" + at());
 		}
 	}
 
-	private void confirm(ArrayByte in, char c) throws Exception {
+	private void confirm(ArrayByte in, char c) throws LSysException {
 		char i = readA(in);
 		confirm(i, c);
 	}
 
-	private char read(ArrayByte in) throws Exception {
+	private char read(ArrayByte in) throws LSysException {
 		char c = (char) in.read();
 		if (c == '\n') {
 			lineNo++;
@@ -119,7 +130,7 @@ public class ParsePythonData {
 		return c;
 	}
 
-	private char readA(ArrayByte in) throws Exception {
+	private char readA(ArrayByte in) throws LSysException {
 		char i = xread(in);
 		for (;;) {
 			while (i == '\n' || i == '\r' || i == ' ' || i == '\t') {
@@ -140,13 +151,13 @@ public class ParsePythonData {
 		}
 	}
 
-	private Object readNumber(ArrayByte in, char first) throws Exception {
+	private Object readNumber(ArrayByte in, char first) throws LSysException {
 		StringBuffer sbr = new StringBuffer();
 		sbr.append(first);
 		for (;;) {
 			char i = xread(in);
-			if (i == EOF || i == ' ' || i == '\n' || i == '\r' || i == '\t'
-					|| i == ',' || i == '}' || i == ')' || i == ']' || i == ':') {
+			if (i == (char) -1 || i == ' ' || i == '\n' || i == '\r' || i == '\t' || i == ',' || i == '}' || i == ')'
+					|| i == ']' || i == ':') {
 				pushBack(i);
 				break;
 			}
@@ -155,13 +166,11 @@ public class ParsePythonData {
 		return sbr.toString();
 	}
 
-	private void readList(ArrayByte in, TArray<Object> l, char end)
-			throws Exception {
+	private void readList(ArrayByte in, TArray<Object> l, char end) throws LSysException {
 		for (;;) {
 			char i = readA(in);
-			if (i == EOF) {
-				throw new LSysException("Expected to read " + end
-						+ " but EOF found" + at());
+			if (i == (char) -1) {
+				throw new LSysException("Expected to read " + end + " but (char) -1 found" + at());
 			}
 			if (i == end) {
 				return;
@@ -177,13 +186,11 @@ public class ParsePythonData {
 		}
 	}
 
-	private void readMap(ArrayByte in, ObjectMap<Object, Object> m, char end)
-			throws Exception {
+	private void readMap(ArrayByte in, ObjectMap<Object, Object> m, char end) throws LSysException {
 		for (;;) {
 			char i = readA(in);
-			if (i == EOF) {
-				throw new LSysException("Expected to read " + end
-						+ " but EOF found" + at());
+			if (i == (char) -1) {
+				throw new LSysException("Expected to read " + end + " but (char) -1 found" + at());
 			}
 			if (i == end) {
 				return;
@@ -201,7 +208,7 @@ public class ParsePythonData {
 		}
 	}
 
-	private String readString(ArrayByte in, char end) throws Exception {
+	private String readString(ArrayByte in, char end) throws LSysException {
 		StringBuffer sb = new StringBuffer();
 		char i = xread(in);
 		for (;;) {
@@ -219,9 +226,8 @@ public class ParsePythonData {
 			if (i == '\\') {
 				i = xread(in);
 			}
-			if (i == EOF) {
-				throw new LSysException("Expected to read " + end
-						+ " but EOF found" + at());
+			if (i == (char) -1) {
+				throw new LSysException("Expected to read " + end + " but (char) -1 found" + at());
 			}
 			sb.append(i);
 			i = xread(in);
@@ -230,11 +236,11 @@ public class ParsePythonData {
 
 	}
 
-	private char xread(ArrayByte in) throws Exception {
-		int len = buf.length();
+	private char xread(ArrayByte in) throws LSysException {
+		int len = buffer.length();
 		if (len > 0) {
-			char i = buf.charAt(len - 1);
-			buf.setLength(len - 1);
+			char i = buffer.charAt(len - 1);
+			buffer.setLength(len - 1);
 			return i;
 		}
 		return read(in);
@@ -244,11 +250,11 @@ public class ParsePythonData {
 		return " at line:" + lineNo + " pos:" + pos;
 	}
 
-	private void skipUtil(ArrayByte in, String end) throws Exception {
+	private void skipUtil(ArrayByte in, String end) throws LSysException {
 		LoopStringBuilder loopBuilder = new LoopStringBuilder(end.length());
 		for (;;) {
 			char b;
-			if ((b = xread(in)) == EOF) {
+			if ((b = xread(in)) == (char) -1) {
 				return;
 			}
 			loopBuilder.add(b);

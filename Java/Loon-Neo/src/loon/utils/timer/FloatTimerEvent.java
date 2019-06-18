@@ -23,6 +23,10 @@ package loon.utils.timer;
 import loon.utils.MathUtils;
 import loon.utils.StringKeyValue;
 
+/**
+ * 一个浮点计时器的抽象,实现后可用于处理及触发浮点类型的时间经过事件
+ * 
+ */
 public abstract class FloatTimerEvent {
 
 	private float _delay;
@@ -53,12 +57,11 @@ public abstract class FloatTimerEvent {
 	public void update(float delta) {
 		if ((!this._done) && (!this._stopped)) {
 			this._acc += delta;
-
 			if (this._acc >= this._delay) {
 				this._acc -= this._delay;
-
-				if (this._repeat)
+				if (this._repeat){
 					reset();
+				}
 				else {
 					this._done = true;
 				}

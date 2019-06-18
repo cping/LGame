@@ -198,6 +198,29 @@ public class LongArray implements IArray {
 		return -1;
 	}
 
+	public LongArray randomFloatArray() {
+		return new LongArray(randomArrays());
+	}
+
+	public long[] randomArrays() {
+		if (length == 0) {
+			return new long[0];
+		}
+		long v = 0L;
+		long[] newArrays = CollectionUtils.copyOf(items, length);
+		for (int i = 0; i < length; i++) {
+			v = random();
+			for (int j = 0; j < i; j++) {
+				if (newArrays[j] == v) {
+					v = random();
+					j = -1;
+				}
+			}
+			newArrays[i] = v;
+		}
+		return newArrays;
+	}
+
 	public boolean removeValue(long value) {
 		long[] items = this.items;
 		for (int i = 0, n = length; i < n; i++) {
@@ -438,6 +461,24 @@ public class LongArray implements IArray {
 		return new LongArray(concat(this.items, this.length, o.items, o.length));
 	}
 
+	public long sum() {
+		if (length == 0) {
+			return 0;
+		}
+		long total = 0;
+		for (int i = length - 1; i > -1; i--) {
+			total += items[i];
+		}
+		return total;
+	}
+
+	public long average() {
+		if (length == 0) {
+			return 0;
+		}
+		return this.sum() / length;
+	}
+	
 	@Override
 	public int size() {
 		return length;

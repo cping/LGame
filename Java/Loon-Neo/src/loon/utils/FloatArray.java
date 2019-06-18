@@ -523,6 +523,24 @@ public class FloatArray implements IArray {
 		return false;
 	}
 
+	public float sum() {
+		if (length == 0) {
+			return 0;
+		}
+		float total = 0;
+		for (int i = length - 1; i > -1; i--) {
+			total += items[i];
+		}
+		return total;
+	}
+
+	public float average() {
+		if (length == 0) {
+			return 0;
+		}
+		return this.sum() / length;
+	}
+	
 	public byte[] getBytes() {
 		return getBytes(0);
 	}
