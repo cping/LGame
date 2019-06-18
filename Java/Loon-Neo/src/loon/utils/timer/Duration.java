@@ -61,6 +61,14 @@ public class Duration implements Comparable<Duration> {
 
 	public static final Duration ONE = new Duration(1);
 
+	public static final Duration ONE_SECOND = new Duration(1000);
+
+	public static final Duration ONE_MINUTE = new Duration(60000);
+
+	public static final Duration ONE_HOUR = new Duration(3600000);
+
+	public static final Duration ONE_DAY = new Duration(86400000);
+	
 	public final static Duration at(float ms) {
 		return new Duration(ms);
 	}

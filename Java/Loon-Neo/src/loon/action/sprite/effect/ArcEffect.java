@@ -41,7 +41,7 @@ public class ArcEffect extends Entity implements BaseEffect {
 	private int tmpColor;
 
 	private int[] sign = { 1, -1 };
-	
+
 	private boolean autoRemoved;
 
 	private boolean completed;
@@ -114,11 +114,11 @@ public class ArcEffect extends Entity implements BaseEffect {
 			float deg = 360f / this.arcDiv * this.step;
 			if (deg < 360) {
 				float length = MathUtils.sqrt(MathUtils.pow(_width / 2, 2.0f) + MathUtils.pow(_height / 2, 2.0f));
-				float x = getX() + (_width / 2 - length);
-				float y = getY() + (_height / 2 - length);
+				float x = drawX(_width / 2 - length + offsetX);
+				float y = drawY(_height / 2 - length + offsetY);
 				float w = _width / 2 + length - x;
 				float h = _height / 2 + length - y;
-				g.fillArc(x + offsetX + _offset.x, y + offsetY + _offset.y, w, h, 20, 0, this.sign[this.curTurn] * deg);
+				g.fillArc(x, y, w, h, 20, 0, this.sign[this.curTurn] * deg);
 			}
 		}
 		if (useTex) {

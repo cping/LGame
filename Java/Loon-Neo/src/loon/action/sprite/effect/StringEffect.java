@@ -57,7 +57,7 @@ public class StringEffect extends Entity implements BaseEffect {
 	 * @return
 	 */
 	public final static StringEffect notMove(String mes, Vector2f pos, LColor color) {
-		return notMove(LSystem.getSystemGameFont(), mes, pos, color);
+		return notMove(LSystem.getSystemGameFont(), mes, pos, color).setAutoRemoved(true);
 	}
 
 	/**
@@ -70,7 +70,7 @@ public class StringEffect extends Entity implements BaseEffect {
 	 * @return
 	 */
 	public final static StringEffect notMove(IFont font, String mes, Vector2f pos, LColor color) {
-		return new StringEffect(font, mes, pos, Vector2f.at(0, 0), color);
+		return new StringEffect(font, mes, pos, Vector2f.at(0, 0), color).setAutoRemoved(true);
 	}
 
 	/**
@@ -82,7 +82,7 @@ public class StringEffect extends Entity implements BaseEffect {
 	 * @return
 	 */
 	public final static StringEffect m45Ddown(String mes, Vector2f pos, LColor color) {
-		return m45Ddown(LSystem.getSystemGameFont(), mes, pos, color);
+		return m45Ddown(LSystem.getSystemGameFont(), mes, pos, color).setAutoRemoved(true);
 	}
 
 	/**
@@ -95,7 +95,7 @@ public class StringEffect extends Entity implements BaseEffect {
 	 * @return
 	 */
 	public final static StringEffect m45Ddown(IFont font, String mes, Vector2f pos, LColor color) {
-		return new StringEffect(font, mes, pos, Vector2f.at(-MOVE_VALUE, MOVE_VALUE), color);
+		return new StringEffect(font, mes, pos, Vector2f.at(-MOVE_VALUE, MOVE_VALUE), color).setAutoRemoved(true);
 	}
 
 	/**
@@ -107,7 +107,7 @@ public class StringEffect extends Entity implements BaseEffect {
 	 * @return
 	 */
 	public final static StringEffect m45Dup(String mes, Vector2f pos, LColor color) {
-		return m45Dup(LSystem.getSystemGameFont(), mes, pos, color);
+		return m45Dup(LSystem.getSystemGameFont(), mes, pos, color).setAutoRemoved(true);
 	}
 
 	/**
@@ -120,7 +120,7 @@ public class StringEffect extends Entity implements BaseEffect {
 	 * @return
 	 */
 	public final static StringEffect m45Dup(IFont font, String mes, Vector2f pos, LColor color) {
-		return new StringEffect(font, mes, pos, Vector2f.at(MOVE_VALUE, -MOVE_VALUE), color);
+		return new StringEffect(font, mes, pos, Vector2f.at(MOVE_VALUE, -MOVE_VALUE), color).setAutoRemoved(true);
 	}
 
 	/**
@@ -132,7 +132,7 @@ public class StringEffect extends Entity implements BaseEffect {
 	 * @return
 	 */
 	public final static StringEffect m45Dright(String mes, Vector2f pos, LColor color) {
-		return m45Dright(LSystem.getSystemGameFont(), mes, pos, color);
+		return m45Dright(LSystem.getSystemGameFont(), mes, pos, color).setAutoRemoved(true);
 	}
 
 	/**
@@ -145,7 +145,7 @@ public class StringEffect extends Entity implements BaseEffect {
 	 * @return
 	 */
 	public final static StringEffect m45Dright(IFont font, String mes, Vector2f pos, LColor color) {
-		return new StringEffect(font, mes, pos, Vector2f.at(MOVE_VALUE, MOVE_VALUE), color);
+		return new StringEffect(font, mes, pos, Vector2f.at(MOVE_VALUE, MOVE_VALUE), color).setAutoRemoved(true);
 	}
 
 	/**
@@ -157,7 +157,7 @@ public class StringEffect extends Entity implements BaseEffect {
 	 * @return
 	 */
 	public final static StringEffect m45Dleft(String mes, Vector2f pos, LColor color) {
-		return m45Dleft(LSystem.getSystemGameFont(), mes, pos, color);
+		return m45Dleft(LSystem.getSystemGameFont(), mes, pos, color).setAutoRemoved(true);
 	}
 
 	/**
@@ -170,7 +170,7 @@ public class StringEffect extends Entity implements BaseEffect {
 	 * @return
 	 */
 	public final static StringEffect m45Dleft(IFont font, String mes, Vector2f pos, LColor color) {
-		return new StringEffect(font, mes, pos, Vector2f.at(-MOVE_VALUE, -MOVE_VALUE), color);
+		return new StringEffect(font, mes, pos, Vector2f.at(-MOVE_VALUE, -MOVE_VALUE), color).setAutoRemoved(true);
 	}
 
 	/**
@@ -182,7 +182,7 @@ public class StringEffect extends Entity implements BaseEffect {
 	 * @return
 	 */
 	public final static StringEffect right(String mes, Vector2f pos, LColor color) {
-		return right(LSystem.getSystemGameFont(), mes, pos, color);
+		return right(LSystem.getSystemGameFont(), mes, pos, color).setAutoRemoved(true);
 	}
 
 	/**
@@ -195,7 +195,7 @@ public class StringEffect extends Entity implements BaseEffect {
 	 * @return
 	 */
 	public final static StringEffect right(IFont font, String mes, Vector2f pos, LColor color) {
-		return new StringEffect(font, mes, pos, Vector2f.at(MOVE_VALUE, 0), color);
+		return new StringEffect(font, mes, pos, Vector2f.at(MOVE_VALUE, 0), color).setAutoRemoved(true);
 	}
 
 	/**
@@ -207,7 +207,7 @@ public class StringEffect extends Entity implements BaseEffect {
 	 * @return
 	 */
 	public final static StringEffect left(String mes, Vector2f pos, LColor color) {
-		return left(LSystem.getSystemGameFont(), mes, pos, color);
+		return left(LSystem.getSystemGameFont(), mes, pos, color).setAutoRemoved(true);
 	}
 
 	/**
@@ -220,7 +220,7 @@ public class StringEffect extends Entity implements BaseEffect {
 	 * @return
 	 */
 	public final static StringEffect left(IFont font, String mes, Vector2f pos, LColor color) {
-		return new StringEffect(font, mes, pos, Vector2f.at(-MOVE_VALUE, 0), color);
+		return new StringEffect(font, mes, pos, Vector2f.at(-MOVE_VALUE, 0), color).setAutoRemoved(true);
 	}
 
 	/**
@@ -232,7 +232,7 @@ public class StringEffect extends Entity implements BaseEffect {
 	 * @return
 	 */
 	public final static StringEffect up(String mes, Vector2f pos, LColor color) {
-		return up(LSystem.getSystemGameFont(), mes, pos, color);
+		return up(LSystem.getSystemGameFont(), mes, pos, color).setAutoRemoved(true);
 	}
 
 	/**
@@ -245,7 +245,7 @@ public class StringEffect extends Entity implements BaseEffect {
 	 * @return
 	 */
 	public final static StringEffect up(IFont font, String mes, Vector2f pos, LColor color) {
-		return new StringEffect(font, mes, pos, Vector2f.at(0, -MOVE_VALUE), color);
+		return new StringEffect(font, mes, pos, Vector2f.at(0, -MOVE_VALUE), color).setAutoRemoved(true);
 	}
 
 	/**
@@ -257,7 +257,7 @@ public class StringEffect extends Entity implements BaseEffect {
 	 * @return
 	 */
 	public final static StringEffect down(String mes, Vector2f pos, LColor color) {
-		return down(LSystem.getSystemGameFont(), mes, pos, color);
+		return down(LSystem.getSystemGameFont(), mes, pos, color).setAutoRemoved(true);
 	}
 
 	/**
@@ -270,11 +270,11 @@ public class StringEffect extends Entity implements BaseEffect {
 	 * @return
 	 */
 	public final static StringEffect down(IFont font, String mes, Vector2f pos, LColor color) {
-		return new StringEffect(font, mes, pos, Vector2f.at(0, MOVE_VALUE), color);
+		return new StringEffect(font, mes, pos, Vector2f.at(0, MOVE_VALUE), color).setAutoRemoved(true);
 	}
 
 	public final static StringEffect move(int dir, IFont font, String mes, Vector2f pos, LColor color) {
-		return new StringEffect(font, mes, pos, Field2D.getDirection(dir).cpy(), color);
+		return new StringEffect(font, mes, pos, Field2D.getDirection(dir).cpy(), color).setAutoRemoved(true);
 	}
 
 	public StringEffect(String mes, Vector2f pos, Vector2f update, LColor c) {
@@ -290,7 +290,6 @@ public class StringEffect extends Entity implements BaseEffect {
 		this._updatePos = update;
 		this._alpha = 1f;
 		this._completed = false;
-		this._autoRemoved = true;
 		this.setLocation(pos);
 		this.setColor(color);
 		this.setSize(_font.getWidth(), _font.getHeight());

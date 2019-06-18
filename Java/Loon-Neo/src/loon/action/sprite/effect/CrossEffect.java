@@ -135,10 +135,8 @@ public class CrossEffect extends Entity implements BaseEffect {
 				}
 				left = i * 2 * part;
 				right = (int) (_width - ((i + 1) * 2 - 1) * part);
-				g.draw(tmp, x() + left + offsetX + _offset.x, y() + offsetY + _offset.y, part, _height, left, 0,
-						left + part, _height);
-				g.draw(tmp, x() + right + offsetX + _offset.x, y() + offsetY + _offset.y, part, _height, right, 0,
-						right + part, _height);
+				g.draw(tmp, drawX(offsetX + left), drawY(offsetY), part, _height, left, 0, left + part, _height);
+				g.draw(tmp, drawX(offsetX + right), drawY(offsetY), part, _height, right, 0, right + part, _height);
 			}
 			break;
 		case 1:
@@ -154,8 +152,8 @@ public class CrossEffect extends Entity implements BaseEffect {
 				}
 				int up = i * 2 * part;
 				int down = (int) (_height - ((i + 1) * 2 - 1) * part);
-				g.draw(tmp, offsetX + _offset.x, up, _width, part, 0, up, _width, up + part);
-				g.draw(tmp, offsetY + _offset.y, down, _width, part, 0, down, _width, down + part);
+				g.draw(tmp, drawX(offsetX), drawY(up), _width, part, 0, up, _width, up + part);
+				g.draw(tmp, drawX(offsetY), drawY(down), _width, part, 0, down, _width, down + part);
 			}
 			break;
 		}
@@ -190,7 +188,7 @@ public class CrossEffect extends Entity implements BaseEffect {
 		this.autoRemoved = autoRemoved;
 		return this;
 	}
-	
+
 	@Override
 	public void close() {
 		super.close();

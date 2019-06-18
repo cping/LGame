@@ -186,6 +186,7 @@ public class TextEffect extends Entity implements BaseEffect {
 		text.velocityY = vy;
 		texts.add(text);
 		tempTexts.add(text.cpy());
+		packed = false;
 		return this;
 	}
 
@@ -211,10 +212,11 @@ public class TextEffect extends Entity implements BaseEffect {
 
 	@Override
 	public void onUpdate(long elapsedTime) {
-		if (!packed) {
+		final int length = texts.size;
+		if (!packed && length > 0) {
 			LFont font = null;
 			TArray<CharSequence> messages = new TArray<CharSequence>();
-			for (int i = texts.size - 1; i > -1; --i) {
+			for (int i = length - 1; i > -1; --i) {
 				MessageBlock text = texts.get(i);
 				if (text != null) {
 					if (text.font != null && text.font instanceof LFont) {
@@ -236,7 +238,7 @@ public class TextEffect extends Entity implements BaseEffect {
 		}
 		if (timer.action(elapsedTime)) {
 			float delta = MathUtils.max(elapsedTime / 1000f, 0.01f);
-			for (int i = texts.size - 1; i > -1; --i) {
+			for (int i = length - 1; i > -1; --i) {
 				MessageBlock text = texts.get(i);
 				if (text != null) {
 					text.stateTime += delta;
@@ -249,13 +251,17 @@ public class TextEffect extends Entity implements BaseEffect {
 					}
 				}
 			}
-			completed = texts.isEmpty();
 		}
+		completed = texts.isEmpty();
 		if (completed) {
 			if (autoRemoved && getSprites() != null) {
 				getSprites().remove(this);
 			}
 		}
+	}
+
+	public int countText() {
+		return texts.size;
 	}
 
 	@Override
@@ -266,10 +272,10 @@ public class TextEffect extends Entity implements BaseEffect {
 				IFont tmp = g.getFont();
 				g.setFont(text.font);
 				if (text.scale == 1f && text.rotation == 0f) {
-					g.drawString(text.message, text.x, text.y, text.color);
+					g.drawString(text.message, drawX(offsetX + text.x), drawY(offsetY + text.y), text.color);
 				} else {
-					g.drawString(text.message, text.x, text.y, text.scale, text.scale, 0f, 0f, text.rotation,
-							text.color);
+					g.drawString(text.message, drawX(offsetX + text.x), drawY(offsetY + text.y), text.scale, text.scale, 0f, 0f,
+							text.rotation, text.color);
 				}
 				g.setFont(tmp);
 			}
