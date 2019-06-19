@@ -866,7 +866,7 @@ public class SpriteControls {
 		return size == tweens.size;
 	}
 
-	public Margin margin(int size, boolean vertical, float left, float top, float right, float bottom) {
+	public Margin margin(float size, boolean vertical, float left, float top, float right, float bottom) {
 		if (_margin == null) {
 			_margin = new Margin(size, vertical);
 		} else {

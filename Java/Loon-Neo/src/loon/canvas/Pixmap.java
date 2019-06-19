@@ -191,7 +191,7 @@ public class Pixmap extends Limit implements LRelease {
 
 	private int[] _drawPixels;
 
-	private int _translateX, _translateY, _width, _height, size;
+	private int _translateX, _translateY, _width, _height, _length;
 
 	private LColor xorColor;
 
@@ -224,7 +224,7 @@ public class Pixmap extends Limit implements LRelease {
 		this._height = h;
 		this._drawPixels = pixelsData;
 		this._hasAlpha = hasAlpha;
-		this.size = _drawPixels.length;
+		this._length = _drawPixels.length;
 		if (hasAlpha) {
 			this._transparent = 0;
 		} else {
@@ -245,7 +245,7 @@ public class Pixmap extends Limit implements LRelease {
 		if (_isClosed) {
 			return this;
 		}
-		for (int i = 0; i < this.size; i++) {
+		for (int i = 0; i < this._length; i++) {
 			drawPoint(_drawPixels, i, c);
 		}
 		return this;
@@ -269,7 +269,7 @@ public class Pixmap extends Limit implements LRelease {
 	 *
 	 */
 	public Pixmap clear() {
-		for (int i = 0; i < size; i++) {
+		for (int i = 0; i < _length; i++) {
 			_drawPixels[i] = 0;
 		}
 		_dirty = true;
@@ -292,7 +292,7 @@ public class Pixmap extends Limit implements LRelease {
 	 * @return
 	 */
 	public Pixmap filter(int src, int dst) {
-		for (int i = 0; i < size; i++) {
+		for (int i = 0; i < _length; i++) {
 			if (_drawPixels[i] == src) {
 				_drawPixels[i] = dst;
 			}
@@ -340,7 +340,7 @@ public class Pixmap extends Limit implements LRelease {
 	 */
 	public Pixmap greyScale(float mix) {
 		mix = MathUtils.min(MathUtils.max(mix, 0f), 1f);
-		for (int i = 0; i < size; i++) {
+		for (int i = 0; i < _length; i++) {
 			int color = _drawPixels[i];
 			if (color != LColor.TRANSPARENT) {
 				int[] rgba = LColor.getRGBAs(color);
@@ -375,7 +375,7 @@ public class Pixmap extends Limit implements LRelease {
 	 */
 	public Pixmap threshold(int threshold) {
 		threshold = (threshold | 127);
-		for (int i = 0; i < size; i++) {
+		for (int i = 0; i < _length; i++) {
 			int color = _drawPixels[i];
 			if (color != LColor.TRANSPARENT) {
 				int[] rgba = LColor.getRGBAs(color);
@@ -400,7 +400,7 @@ public class Pixmap extends Limit implements LRelease {
 	 */
 	public Pixmap invert(float mix) {
 		mix = MathUtils.min(MathUtils.max(mix, 0f), 1f);
-		for (int i = 0; i < size; i++) {
+		for (int i = 0; i < _length; i++) {
 			int color = _drawPixels[i];
 			if (color != LColor.TRANSPARENT) {
 				int[] rgba = LColor.getRGBAs(color);
@@ -425,7 +425,7 @@ public class Pixmap extends Limit implements LRelease {
 	 */
 	public Pixmap sepia(float mix) {
 		mix = MathUtils.min(MathUtils.max(mix, 0f), 1f);
-		for (int i = 0; i < size; i++) {
+		for (int i = 0; i < _length; i++) {
 			int color = _drawPixels[i];
 			if (color != LColor.TRANSPARENT) {
 				int[] rgba = LColor.getRGBAs(color);
@@ -1761,20 +1761,49 @@ public class Pixmap extends Limit implements LRelease {
 	}
 
 	public Pixmap fillRect(int x, int y, int width, int height) {
+		return fillRect(x, y, width, height, _baseColor);
+	}
+
+	public Pixmap fillRect(int x, int y, int width, int height, int color) {
 		if (_isClosed) {
 			return this;
 		}
 		if (x == 0 && y == 0 && width == _width && height == _height) {
-			clearDraw(_baseColor);
+			clearDraw(color);
 			return this;
 		}
 		int maxX = MathUtils.min(x + width - 1 + _translateX, clip.x + clip.width - 1);
 		int maxY = MathUtils.min(y + height - 1 + _translateY, clip.y + clip.height - 1);
-		for (int row = MathUtils.max(y + _translateY, clip.y); row <= maxY; row++) {
-			for (int col = MathUtils.max(x + _translateX, clip.x); col <= maxX; col++) {
-				drawPoint(col, row, _baseColor);
+		for (int i = MathUtils.max(y + _translateY, clip.y); i <= maxY; i++) {
+			for (int j = MathUtils.max(x + _translateX, clip.x); j <= maxX; j++) {
+				drawPoint(j, i, color);
 			}
 		}
+		return this;
+	}
+
+	public Pixmap fillRectTilted(int xpos, int ypos, int width, int height, int color, int xtilt, int ytilt) {
+		if (_isClosed) {
+			return this;
+		}
+		int maxX = MathUtils.min(xpos + width - 1 + _translateX, clip.x + clip.width - 1);
+		int maxY = MathUtils.min(ypos + height - 1 + _translateY, clip.y + clip.height - 1);
+		for (int y = MathUtils.max(ypos + _translateY, clip.y); y <= maxY; y++) {
+			for (int x = MathUtils.max(xpos + _translateX, clip.x); x <= maxX; x++) {
+				int ypix = (x - xpos) * ytilt;
+				int xpix = (y - ypos) * xtilt;
+				if ((x + xpix >= 0) && (x + xpix < this._width) && (y + ypix >= 0) && (y + ypix < this._height)) {
+					drawPoint(x + xpix, y + ypix, color);
+				}
+			}
+		}
+		return this;
+	}
+
+	public Pixmap drawColumn(int xpos, int ypos, int w, int h, int p, int color1, int color2, int color3) {
+		fillRect(xpos, ypos, w, h, color1);
+		fillRectTilted(xpos - p, ypos - p, p, h, color2, 0, 1);
+		fillRectTilted(xpos - p, ypos - p, w, p, color3, 1, 0);
 		return this;
 	}
 
@@ -2164,6 +2193,16 @@ public class Pixmap extends Limit implements LRelease {
 		}
 	}
 
+	public Pixmap blendTo(int colorTo, int alpha) {
+		for (int i = 0; i < this._length; i++) {
+			int colorFrom = this._drawPixels[i];
+			int blendRB = (colorFrom & 0xFF00FF) * alpha + (colorTo & 0xFF00FF) * (256 - alpha) & 0xFF00FF00;
+			int blendG = (colorFrom & 0xFF00) * alpha + (colorTo & 0xFF00) * (256 - alpha) & 0xFF0000;
+			this._drawPixels[i] = ((blendRB | blendG) >>> 8);
+		}
+		return this;
+	}
+
 	public int getComposite() {
 		return this._composite;
 	}
@@ -2338,7 +2377,7 @@ public class Pixmap extends Limit implements LRelease {
 	}
 
 	public int getSize() {
-		return size;
+		return _length;
 	}
 
 	public int[] getData() {

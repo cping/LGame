@@ -455,6 +455,10 @@ public class Field2D implements IArray, Config {
 		return x >= 0 && x < width && y >= 0 && y < height;
 	}
 
+	public boolean isTileType(int x, int y, int type) {
+		return getTileType(x, y) == type;
+	}
+
 	public int getTileType(int x, int y) {
 		try {
 			if (!contains(x, y)) {

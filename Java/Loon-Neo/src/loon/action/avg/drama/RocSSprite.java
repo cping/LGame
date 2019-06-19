@@ -281,7 +281,22 @@ public class RocSSprite extends LObject<ISprite> implements ISprite {
 	@Override
 	public void setFixedHeightOffset(float heightOffset) {
 	}
-	
+
+	@Override
+	public boolean collides(ISprite other) {
+		return false;
+	}
+
+	@Override
+	public boolean collidesX(ISprite other) {
+		return false;
+	}
+
+	@Override
+	public boolean collidesY(ISprite other) {
+		return false;
+	}
+
 	@Override
 	public void close() {
 		setState(State.DISPOSED);

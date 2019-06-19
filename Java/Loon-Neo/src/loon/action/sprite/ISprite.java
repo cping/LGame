@@ -97,6 +97,12 @@ public interface ISprite extends ActionBind, Visible, LRelease, XY {
 
 	void setFixedHeightOffset(float heightOffset);
 
+	boolean collides(ISprite other);
+
+	boolean collidesX(ISprite other);
+
+	boolean collidesY(ISprite other);
+
 	boolean isDisposed();
 
 }
