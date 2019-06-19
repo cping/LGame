@@ -203,11 +203,17 @@ public class JavaFXGame extends LGame {
 	}
 
 	public static boolean isJavaFXDesktop() {
-		return getJavaFXProperty().indexOf("desktop") != -1 && !isAndroid();
+		String result = getJavaFXProperty();
+		return (result.indexOf("desktop") != -1 || result.indexOf("mac") != -1 || result.indexOf("win") != -1
+				|| result.indexOf("linux") != -1) && !isAndroid();
 	}
 
 	public static String getJavaFXProperty() {
-		String monocle = getProperty("monocle.platform");
+		String glass = getProperty("glass.platform", null);
+		if (!StringUtils.isEmpty(glass)) {
+			return glass.trim().toLowerCase();
+		}
+		String monocle = getProperty("monocle.platform", null);
 		if (!StringUtils.isEmpty(monocle)) {
 			return monocle.trim().toLowerCase();
 		}

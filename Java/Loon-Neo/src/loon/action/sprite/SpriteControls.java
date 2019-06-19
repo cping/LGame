@@ -27,6 +27,7 @@ import loon.action.ActionBind;
 import loon.action.ActionTween;
 import loon.action.map.Field2D;
 import loon.canvas.LColor;
+import loon.component.layout.Margin;
 import loon.event.EventDispatcher;
 import loon.font.FontSet;
 import loon.font.IFont;
@@ -76,6 +77,8 @@ public class SpriteControls {
 
 	private ObjectMap<ISprite, ActionTween> tweens = new ObjectMap<ISprite, ActionTween>(
 			CollectionUtils.INITIAL_CAPACITY);
+
+	private Margin _margin;
 
 	private final TArray<ISprite> _sprs;
 
@@ -863,4 +866,21 @@ public class SpriteControls {
 		return size == tweens.size;
 	}
 
+	public Margin margin(int size, boolean vertical, float left, float top, float right, float bottom) {
+		if (_margin == null) {
+			_margin = new Margin(size, vertical);
+		} else {
+			_margin.setSize(size);
+			_margin.setVertical(vertical);
+		}
+		_margin.setMargin(left, top, right, bottom);
+		_margin.clear();
+		for (int i = 0; i < _sprs.size; i++) {
+			ISprite spr = _sprs.get(i);
+			if (spr != null) {
+				_margin.addChild(spr);
+			}
+		}
+		return _margin;
+	}
 }

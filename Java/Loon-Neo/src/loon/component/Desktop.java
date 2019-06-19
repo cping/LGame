@@ -30,6 +30,7 @@ import loon.action.sprite.ISprite;
 import loon.component.layout.LayoutConstraints;
 import loon.component.layout.LayoutManager;
 import loon.component.layout.LayoutPort;
+import loon.component.layout.Margin;
 import loon.event.GameKey;
 import loon.event.QueryEvent;
 import loon.event.SysInput;
@@ -714,23 +715,21 @@ public class Desktop implements Visible, LRelease {
 		}
 	}
 
-	void clearComponentsStat(LComponent[] comp) {
-		if (comp == null) {
+	void clearComponentsStat(LComponent[] components) {
+		if (components == null) {
 			return;
 		}
 
 		boolean checkTouchMotion = false;
-		for (int i = 0; i < comp.length; i++) {
-			if (this.hoverComponent == comp[i]) {
+		for (int i = 0; i < components.length; i++) {
+			LComponent comp = components[i];
+			if (this.hoverComponent == comp) {
 				checkTouchMotion = true;
 			}
-
-			if (this.selectedComponent == comp[i]) {
+			if (this.selectedComponent == comp) {
 				this.deselectComponent();
 			}
-
 			this.clickComponent[0] = null;
-
 		}
 
 		if (checkTouchMotion) {
@@ -800,14 +799,18 @@ public class Desktop implements Visible, LRelease {
 
 	public UIControls createUIControls() {
 		UIControls controls = null;
-		if (contentPane != null && contentPane._childs != null) {
-			controls = new UIControls(contentPane._childs);
+		if (contentPane != null) {
+			controls = contentPane.createUIControls();
 		} else {
 			controls = new UIControls();
 		}
 		return controls;
 	}
 
+	public UIControls controls() {
+		return createUIControls();
+	}
+	
 	public UIControls findUINamesToUIControls(String... uiName) {
 		UIControls controls = null;
 		if (contentPane != null && contentPane._childs != null) {
@@ -1023,6 +1026,14 @@ public class Desktop implements Visible, LRelease {
 	 */
 	public <T extends LComponent> TArray<T> select(QueryEvent<T> query) {
 		return contentPane.select(query);
+	}
+
+	public Margin margin(boolean vertical, float left, float top, float right, float bottom) {
+		float size = vertical ? getHeight() : getWidth();
+		if (dclosed) {
+			return new Margin(size, vertical);
+		}
+		return contentPane.margin(vertical, left, top, right, bottom);
 	}
 
 	public Screen getInput() {

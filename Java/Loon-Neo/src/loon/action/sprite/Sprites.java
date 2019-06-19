@@ -27,6 +27,7 @@ import loon.Screen;
 import loon.Visible;
 import loon.action.ActionBind;
 import loon.action.ActionControl;
+import loon.component.layout.Margin;
 import loon.event.QueryEvent;
 import loon.geom.PointI;
 import loon.geom.RectBox;
@@ -50,6 +51,8 @@ public class Sprites implements IArray, Visible, LRelease {
 		public void update(ISprite spr);
 
 	}
+
+	private Margin _margin;
 
 	protected ISprite[] _sprites;
 
@@ -1165,7 +1168,7 @@ public class Sprites implements IArray, Visible, LRelease {
 			return new SpriteControls();
 		}
 		SpriteControls controls = null;
-		if (_sprites != null) {
+		if (_sprites != null && _size > 0) {
 			controls = new SpriteControls(_sprites);
 		} else {
 			controls = new SpriteControls();
@@ -1173,6 +1176,10 @@ public class Sprites implements IArray, Visible, LRelease {
 		return controls;
 	}
 
+	public SpriteControls controls() {
+		return createSpriteControls();
+	}
+	
 	public SpriteControls findNamesToSpriteControls(String... names) {
 		if (_closed) {
 			return new SpriteControls();
@@ -1381,6 +1388,28 @@ public class Sprites implements IArray, Visible, LRelease {
 	public Sprites scrollY(float y) {
 		this._scrollY = y;
 		return this;
+	}
+
+	public Margin margin(boolean vertical, float left, float top, float right, float bottom) {
+		float size = vertical ? getHeight() : getWidth();
+		if (_closed) {
+			return new Margin(size, vertical);
+		}
+		if (_margin == null) {
+			_margin = new Margin(size, vertical);
+		} else {
+			_margin.setSize(size);
+			_margin.setVertical(vertical);
+		}
+		_margin.setMargin(left, top, right, bottom);
+		_margin.clear();
+		for (int i = 0; i < _size; i++) {
+			ISprite spr = _sprites[i];
+			if (spr != null) {
+				_margin.addChild(spr);
+			}
+		}
+		return _margin;
 	}
 
 	public String getName() {
