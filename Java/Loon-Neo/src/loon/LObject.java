@@ -308,13 +308,7 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	}
 
 	public void setAlpha(float a) {
-		if (a < 0f) {
-			a = 0f;
-		}
-		if (a > 1f) {
-			a = 1f;
-		}
-		this._alpha = a;
+		this._alpha = MathUtils.clamp(a, 0f, 1f);
 	}
 
 	public float getAlpha() {

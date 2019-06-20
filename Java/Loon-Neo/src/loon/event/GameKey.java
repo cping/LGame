@@ -24,27 +24,20 @@ import loon.utils.StringKeyValue;
 
 public class GameKey {
 
-	int type;
+	protected int type;
 
-	int keyCode;
+	protected int keyCode;
 
-	char keyChar;
+	protected int presses;
 
-	double timer;
+	protected boolean down;
+
+	protected char keyChar;
+
+	protected double timer;
 
 	GameKey() {
 		reset();
-	}
-
-	public void reset() {
-		this.type = -1;
-		this.keyCode = -1;
-		this.keyChar = (char) -1;
-		this.timer = 0;
-	}
-
-	public double getTimer() {
-		return timer;
 	}
 
 	GameKey(GameKey key) {
@@ -52,6 +45,35 @@ public class GameKey {
 		this.keyCode = key.keyCode;
 		this.keyChar = key.keyChar;
 		this.timer = key.timer;
+		this.presses = key.presses;
+		this.down = key.down;
+	}
+
+	public void reset() {
+		this.type = -1;
+		this.keyCode = -1;
+		this.keyChar = (char) -1;
+		this.timer = 0;
+		this.presses = 0;
+		this.down = false;
+	}
+
+	public double getTimer() {
+		return timer;
+	}
+
+	public boolean toggle() {
+		return toggle(isDown());
+	}
+
+	public boolean toggle(boolean pressed) {
+		if (pressed != this.down) {
+			this.down = pressed;
+		}
+		if (pressed) {
+			this.presses += 1;
+		}
+		return this.down;
 	}
 
 	public boolean equals(GameKey e) {
@@ -104,4 +126,5 @@ public class GameKey {
 		return builder.toString();
 
 	}
+
 }
