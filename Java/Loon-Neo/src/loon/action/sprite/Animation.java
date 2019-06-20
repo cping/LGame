@@ -28,24 +28,44 @@ import loon.opengl.TextureUtils;
 import loon.utils.CollectionUtils;
 import loon.utils.IArray;
 import loon.utils.MathUtils;
+import loon.utils.StringUtils;
 import loon.utils.TArray;
 import loon.utils.res.MovieSpriteSheet;
 import loon.utils.timer.LTimer;
 
 public class Animation implements IArray, LRelease {
 
+	private static class AnimationFrame implements LRelease {
+
+		protected LTexture image;
+
+		protected long endTimer;
+
+		public AnimationFrame(LTexture image, long endTimer) {
+			this.image = image;
+			this.endTimer = endTimer;
+		}
+
+		@Override
+		public void close() {
+			if (image != null) {
+				image.close();
+			}
+		}
+	}
+
 	public static interface AnimationListener {
 		public void onComplete(Animation animation);
 	}
 
-	public AnimationListener Listener;
+	protected AnimationListener listener;
 
 	public void setAnimationListener(AnimationListener l) {
-		this.Listener = l;
+		this.listener = l;
 	}
 
 	public AnimationListener getAnimationListener() {
-		return this.Listener;
+		return this.listener;
 	}
 
 	protected boolean isRunning, aClosed;
@@ -58,15 +78,18 @@ public class Animation implements IArray, LRelease {
 
 	protected long animTime = 0, totalDuration = 0;
 
-	protected int size;
+	protected int length;
 
+	protected String animationName;
+	
 	private LTimer intervalTime = new LTimer(0);
-
+	
 	public Animation() {
 		this(new TArray<AnimationFrame>(CollectionUtils.INITIAL_CAPACITY), 0);
 	}
 
 	public Animation(Animation a) {
+		this.animationName = a.animationName;
 		this.isRunning = a.isRunning;
 		this.frames = new TArray<Animation.AnimationFrame>(a.frames);
 		this.loopCount = a.loopCount;
@@ -74,13 +97,14 @@ public class Animation implements IArray, LRelease {
 		this.currentFrameIndex = a.currentFrameIndex;
 		this.animTime = a.animTime;
 		this.totalDuration = a.totalDuration;
-		this.size = frames.size;
+		this.length = frames.size;
 	}
 
 	private Animation(TArray<AnimationFrame> frames, long totalDuration) {
+		this.animationName = LSystem.UNKOWN;
 		this.loopCount = -1;
 		this.frames = frames;
-		this.size = frames.size;
+		this.length = frames.size;
 		this.totalDuration = totalDuration;
 		this.isRunning = true;
 		start();
@@ -220,7 +244,7 @@ public class Animation implements IArray, LRelease {
 	public Animation addFrame(LTexture image, long timer) {
 		totalDuration += timer;
 		frames.add(new AnimationFrame(image, totalDuration));
-		size++;
+		length++;
 		return this;
 	}
 
@@ -248,7 +272,7 @@ public class Animation implements IArray, LRelease {
 	 */
 	public Animation play(int idx) {
 		animTime = 0;
-		if (size > 0) {
+		if (length > 0) {
 			currentFrameIndex = idx;
 		}
 		this.isRunning = true;
@@ -299,11 +323,11 @@ public class Animation implements IArray, LRelease {
 			return;
 		}
 		if (isRunning && intervalTime.action(timer)) {
-			if (size > 0) {
+			if (length > 0) {
 				animTime += timer;
 				if (animTime > totalDuration) {
-					if (Listener != null) {
-						Listener.onComplete(this);
+					if (listener != null) {
+						listener.onComplete(this);
 					}
 					animTime = animTime % totalDuration;
 					currentFrameIndex = 0;
@@ -322,7 +346,7 @@ public class Animation implements IArray, LRelease {
 	 * @return
 	 */
 	public LTexture getSpriteImage() {
-		if (size == 0) {
+		if (length == 0) {
 			return null;
 		} else {
 			final LTexture texture = getFrame(currentFrameIndex).image;
@@ -340,7 +364,7 @@ public class Animation implements IArray, LRelease {
 	 * @return
 	 */
 	public LTexture getSpriteImage(int index) {
-		if (index < 0 || index >= size) {
+		if (index < 0 || index >= length) {
 			return null;
 		} else {
 			LTexture texture = getFrame(index).image;
@@ -386,8 +410,8 @@ public class Animation implements IArray, LRelease {
 	private AnimationFrame getFrame(int index) {
 		if (index < 0) {
 			return frames.get(0);
-		} else if (index >= size) {
-			return frames.get(size - 1);
+		} else if (index >= length) {
+			return frames.get(length - 1);
 		}
 		return frames.get(index);
 	}
@@ -420,7 +444,7 @@ public class Animation implements IArray, LRelease {
 	}
 
 	public Animation setCurrentFrameIndex(int index) {
-		this.currentFrameIndex = MathUtils.clamp(index, 0, MathUtils.min(frames.size, size));
+		this.currentFrameIndex = MathUtils.clamp(index, 0, MathUtils.min(frames.size, length));
 		return this;
 	}
 
@@ -435,7 +459,7 @@ public class Animation implements IArray, LRelease {
 	}
 
 	public int getTotalFrames() {
-		return size;
+		return length;
 	}
 
 	public int getLoopCount() {
@@ -464,25 +488,6 @@ public class Animation implements IArray, LRelease {
 		return getDelay();
 	}
 
-	private static class AnimationFrame implements LRelease {
-
-		protected LTexture image;
-
-		protected long endTimer;
-
-		public AnimationFrame(LTexture image, long endTimer) {
-			this.image = image;
-			this.endTimer = endTimer;
-		}
-
-		@Override
-		public void close() {
-			if (image != null) {
-				image.close();
-			}
-		}
-	}
-
 	@Override
 	public void clear() {
 		if (frames != null) {
@@ -493,12 +498,12 @@ public class Animation implements IArray, LRelease {
 			}
 			frames.clear();
 		}
-		this.size = 0;
+		this.length = 0;
 	}
 
 	@Override
 	public boolean isEmpty() {
-		return this.size == 0;
+		return this.length == 0;
 	}
 
 	public boolean isClosed() {
@@ -514,6 +519,18 @@ public class Animation implements IArray, LRelease {
 	@Override
 	public int size() {
 		return frames.size;
+	}
+
+	public String getAnimationName() {
+		return animationName;
+	}
+
+	public Animation setAnimationName(String ani) {
+		if(StringUtils.isEmpty(ani)){
+			return this;
+		}
+		this.animationName = ani;
+		return this;
 	}
 
 }

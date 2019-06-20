@@ -26,23 +26,23 @@ import loon.utils.TimeUtils;
 
 public class GameTouch {
 
-	int type;
+	protected int type;
 
-	float x, y;
+	protected float x, y;
 
-	float dx, dy;
+	protected float dx, dy;
 
-	int button;
+	protected int button;
 
-	int pointer;
+	protected int pointer;
 
-	int id;
+	protected int id;
 
-	long timeDown;
+	protected long timeDown;
 
-	long timeUp;
+	protected long timeUp;
 
-	long duration;
+	protected long duration;
 
 	GameTouch() {
 		reset();

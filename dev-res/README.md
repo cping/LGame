@@ -57,6 +57,7 @@ PS:使用下列免费资源时，建议注明引用的资源出处，免得引�
 * rr-sc(人人素材):一个中国的资源素材论坛，各种资源都有，部分免费，依旧是收费资源为主。[地址](https://www.rr-sc.com)
 * soundimage:一个欧美的免费资源站，有1800多种完全免费的图像和音频资源可用(音频为主)。[地址](https://www.soundimage.org)
 * soundeffect-lab: 一个日本的音频下载站，拥有多种效果音频类型(含游戏与其它场合)，大多数游戏有这网站撑着效果音就足够了，不过资源都是mp3发布，某些场合可能需要自己转码，另外该站已经写明商用免费。[地址](http://soundeffect-lab.info/sound/voice/game.html)
+* FreeSFX: 一个免费的音频站。[地址](https://www.freesfx.co.uk/)
 * Unity Asset Store: Unity3D的资源商店，都是收钱的，但是资源够多，而且版权可靠性有保障。[地址](https://assetstore.unity.com)
 * 猫手製アイコン屋: 日式素材下载站。 [地址](http://www007.upp.so-net.ne.jp/nekoteya/)
 * 消失点: 日式AVG（galgame）以及RMXP和RMVX素材站，素材以背景图和地图为主。[地址](http://www.aj.undo.jp/)  
@@ -97,6 +98,7 @@ PS:使用下列免费资源时，建议注明引用的资源出处，免得引�
 
 ### 免费的开发辅助工具
 
+* PyxelEdit: 一个2D的像素风画面编辑器。[地址](https://www.pyxeledit.com/)
 * gimp: 经典的免费图像资源开发工具，基本可以替代PS使用[地址](http://www.gimp.org/)
 * live2d: 伪3D人物动态表情开发工具(基本上就是设计AVG游戏动态角色用的)[地址](http://www.live2d.com/)
 * mapeditor: 瓦片地图开发工具。[地址](http://mapeditor.org/)

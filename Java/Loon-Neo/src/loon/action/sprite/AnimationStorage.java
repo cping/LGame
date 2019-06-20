@@ -22,11 +22,12 @@ package loon.action.sprite;
 
 import loon.LTexture;
 import loon.utils.CollectionUtils;
+import loon.utils.StringUtils;
 import loon.utils.TArray;
 
 public class AnimationStorage extends Animation {
 
-	private int animationIndexLocked = -1;
+	private int _animationIndexLocked = -1;
 
 	private static class AnimationStorageListener implements AnimationListener {
 
@@ -36,26 +37,27 @@ public class AnimationStorage extends Animation {
 			this.store = s;
 		}
 
+		@Override
 		public void onComplete(Animation animation) {
-			if (store.animationIndexLocked != -1) {
-				store.currentFrameIndex = store.animationIndexLocked;
+			if (store._animationIndexLocked != -1) {
+				store.currentFrameIndex = store._animationIndexLocked;
 			} else {
-				if (store.loopOverToRemove) {
-					if (store.Listener != null) {
-						store.Listener.onComplete(store);
+				if (store._loopOverToRemove) {
+					if (store.listener != null) {
+						store.listener.onComplete(store);
 					}
-					store.playAnimations.remove(animation);
-					store.size = store.playAnimations.size;
+					store._playAnimations.remove(animation);
+					store.length = store._playAnimations.size;
 					store.loopPlay++;
 				} else {
-					if (store.currentFrameIndex < store.size - 1) {
-						if (store.Listener != null) {
-							store.Listener.onComplete(store);
+					if (store.currentFrameIndex < store.length - 1) {
+						if (store.listener != null) {
+							store.listener.onComplete(store);
 						}
 						store.currentFrameIndex++;
 						store.loopPlay++;
 					} else {
-						if (store.loopOverToPlay) {
+						if (store._loopOverToPlay) {
 							store.currentFrameIndex = 0;
 						} else {
 							store.currentFrameIndex = 0;
@@ -68,30 +70,29 @@ public class AnimationStorage extends Animation {
 
 	}
 
-	private boolean loopOverToPlay;
+	private boolean _loopOverToPlay;
 
-	private boolean loopOverToRemove;
+	private boolean _loopOverToRemove;
 
-	private AnimationStorageListener asl;
+	private AnimationStorageListener _asl;
 
-	private TArray<Animation> playAnimations;
+	private TArray<Animation> _playAnimations;
 
 	public AnimationStorage(TArray<Animation> f) {
-		this.asl = new AnimationStorageListener(this);
+		this._asl = new AnimationStorageListener(this);
 		if (f != null) {
-			playAnimations = f;
+			_playAnimations = f;
 		} else {
-			playAnimations = new TArray<Animation>(
-					CollectionUtils.INITIAL_CAPACITY);
+			_playAnimations = new TArray<Animation>(CollectionUtils.INITIAL_CAPACITY);
 		}
-		for (Animation a : playAnimations) {
+		for (Animation a : _playAnimations) {
 			if (a != null) {
-				a.Listener = asl;
+				a.listener = _asl;
 			}
 		}
-		this.size = playAnimations.size;
-		this.loopOverToPlay = true;
-		this.loopOverToRemove = false;
+		this.length = _playAnimations.size;
+		this._loopOverToPlay = true;
+		this._loopOverToRemove = false;
 	}
 
 	public AnimationStorage() {
@@ -100,16 +101,40 @@ public class AnimationStorage extends Animation {
 
 	@Override
 	public AnimationStorage cpy() {
-		return new AnimationStorage(playAnimations);
+		return new AnimationStorage(_playAnimations);
 	}
 
-	public void addAnimation(Animation anm) {
-		if (anm != null) {
-			anm.Listener = asl;
-			playAnimations.add(anm);
-			isRunning = true;
-			size++;
+	public Animation findAnimation(String name) {
+		if (StringUtils.isEmpty(name)) {
+			return null;
 		}
+		for (Animation ani : _playAnimations) {
+			if (ani != null && name.equals(ani.animationName)) {
+				return ani;
+			}
+		}
+		return null;
+	}
+
+	public Animation removeAnimation(Animation anm) {
+		if (anm != null) {
+			anm.listener = null;
+			if (_playAnimations.remove(anm)) {
+				length--;
+			}
+			isRunning = !_playAnimations.isEmpty();
+		}
+		return this;
+	}
+
+	public Animation addAnimation(Animation anm) {
+		if (anm != null) {
+			anm.listener = _asl;
+			_playAnimations.add(anm);
+			isRunning = true;
+			length++;
+		}
+		return this;
 	}
 
 	@Override
@@ -118,8 +143,8 @@ public class AnimationStorage extends Animation {
 			return;
 		}
 		if (isRunning) {
-			if (currentFrameIndex > -1 && currentFrameIndex < size) {
-				Animation animation = playAnimations.get(currentFrameIndex);
+			if (currentFrameIndex > -1 && currentFrameIndex < length) {
+				Animation animation = _playAnimations.get(currentFrameIndex);
 				if (animation != null) {
 					if (animation.isRunning) {
 						animation.update(timer);
@@ -130,17 +155,17 @@ public class AnimationStorage extends Animation {
 	}
 
 	public Animation getAnimation(int idx) {
-		if (currentFrameIndex > -1 && currentFrameIndex < size) {
-			return playAnimations.get(idx);
+		if (currentFrameIndex > -1 && currentFrameIndex < length) {
+			return _playAnimations.get(idx);
 		} else {
 			return null;
 		}
 	}
 
 	public AnimationStorage playIndex(int idx) {
-		if (currentFrameIndex > -1 && currentFrameIndex < size) {
+		if (currentFrameIndex > -1 && currentFrameIndex < length) {
 			currentFrameIndex = idx;
-			Animation animation = playAnimations.get(currentFrameIndex);
+			Animation animation = _playAnimations.get(currentFrameIndex);
 			if (animation != null) {
 				animation.reset();
 			}
@@ -150,8 +175,8 @@ public class AnimationStorage extends Animation {
 
 	@Override
 	public LTexture getSpriteImage() {
-		if (currentFrameIndex > -1 && currentFrameIndex < size) {
-			Animation animation = playAnimations.get(currentFrameIndex);
+		if (currentFrameIndex > -1 && currentFrameIndex < length) {
+			Animation animation = _playAnimations.get(currentFrameIndex);
 			return animation.getSpriteImage(animation.currentFrameIndex);
 		} else {
 			return null;
@@ -160,8 +185,8 @@ public class AnimationStorage extends Animation {
 
 	@Override
 	public LTexture getSpriteImage(int idx) {
-		if (currentFrameIndex > -1 && currentFrameIndex < size) {
-			Animation animation = playAnimations.get(currentFrameIndex);
+		if (currentFrameIndex > -1 && currentFrameIndex < length) {
+			Animation animation = _playAnimations.get(currentFrameIndex);
 			return animation.getSpriteImage(idx);
 		} else {
 			return null;
@@ -169,22 +194,22 @@ public class AnimationStorage extends Animation {
 	}
 
 	public LTexture getSpriteImage(int animation, int idx) {
-		if (currentFrameIndex > -1 && currentFrameIndex < size) {
-			return playAnimations.get(animation).getSpriteImage(idx);
+		if (currentFrameIndex > -1 && currentFrameIndex < length) {
+			return _playAnimations.get(animation).getSpriteImage(idx);
 		} else {
 			return null;
 		}
 	}
 
 	public int getIndexLocked() {
-		return animationIndexLocked;
+		return _animationIndexLocked;
 	}
 
-	public AnimationStorage indexLocked(int inx) {
-		this.animationIndexLocked = inx;
-		if (animationIndexLocked > -1 && animationIndexLocked < size) {
-			this.currentFrameIndex = animationIndexLocked;
-			Animation animation = playAnimations.get(currentFrameIndex);
+	public AnimationStorage indexLocked(int idx) {
+		this._animationIndexLocked = idx;
+		if (_animationIndexLocked > -1 && _animationIndexLocked < length) {
+			this.currentFrameIndex = _animationIndexLocked;
+			Animation animation = _playAnimations.get(currentFrameIndex);
 			if (animation != null) {
 				animation.reset();
 			}
@@ -195,25 +220,25 @@ public class AnimationStorage extends Animation {
 	@Override
 	public Animation reset() {
 		super.reset();
-		loopOverToPlay = true;
-		loopOverToRemove = false;
+		_loopOverToPlay = true;
+		_loopOverToRemove = false;
 		return this;
 	}
 
 	public boolean isLoopOverToRemove() {
-		return loopOverToRemove;
+		return _loopOverToRemove;
 	}
 
-	public void loopOverToRemove(boolean l) {
-		loopOverToRemove = l;
+	public void _loopOverToRemove(boolean l) {
+		_loopOverToRemove = l;
 	}
 
 	public boolean isLoopPlay() {
-		return loopOverToPlay;
+		return _loopOverToPlay;
 	}
 
 	public void setLoopPlay(boolean l) {
-		this.loopOverToPlay = l;
+		this._loopOverToPlay = l;
 	}
 
 }

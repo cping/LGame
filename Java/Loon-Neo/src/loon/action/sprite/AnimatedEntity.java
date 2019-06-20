@@ -470,7 +470,7 @@ public class AnimatedEntity extends Entity {
 	}
 
 	public int getCount() {
-		return _animation.size;
+		return _animation.length;
 	}
 
 	public AnimatedEntity setPlayIndex(String key, PlayIndex play) {

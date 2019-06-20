@@ -670,7 +670,7 @@ public class Sprite extends LObject<ISprite>
 
 		final boolean notImg = image == null;
 
-		if (animation != null && animation.size > 0 && notImg) {
+		if (animation != null && animation.length > 0 && notImg) {
 			return;
 		}
 
