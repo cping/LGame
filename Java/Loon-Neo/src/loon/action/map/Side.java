@@ -20,6 +20,7 @@
  */
 package loon.action.map;
 
+import loon.LSystem;
 import loon.geom.Vector2f;
 
 /**
@@ -38,8 +39,8 @@ public class Side implements Config {
 	public Side(int dir) {
 		this._direction = dir;
 	}
-	
-	protected void updateDirection(){
+
+	protected void updateDirection() {
 		this._pos = Field2D.getDirection(_direction);
 	}
 
@@ -73,6 +74,20 @@ public class Side implements Config {
 		case TDOWN:
 		case TUP:
 			if (side.getDirection() == TLEFT || side.getDirection() == TRIGHT) {
+				return true;
+			} else {
+				return false;
+			}
+		case LEFT:
+		case RIGHT:
+			if (side.getDirection() == DOWN || side.getDirection() == UP) {
+				return true;
+			} else {
+				return false;
+			}
+		case DOWN:
+		case UP:
+			if (side.getDirection() == LEFT || side.getDirection() == RIGHT) {
 				return true;
 			} else {
 				return false;
@@ -111,14 +126,26 @@ public class Side implements Config {
 		if (side == Side.TUP) {
 			return Side.TDOWN;
 		}
+		if (side == Side.UP) {
+			return Side.DOWN;
+		}
 		if (side == Side.TDOWN) {
 			return Side.TUP;
+		}
+		if (side == Side.DOWN) {
+			return Side.UP;
 		}
 		if (side == Side.TLEFT) {
 			return Side.TRIGHT;
 		}
+		if (side == Side.LEFT) {
+			return Side.RIGHT;
+		}
 		if (side == Side.TRIGHT) {
 			return Side.TLEFT;
+		}
+		if (side == Side.RIGHT) {
+			return Side.LEFT;
 		}
 		return Side.EMPTY;
 	}
@@ -145,4 +172,48 @@ public class Side implements Config {
 		}
 		return directionEnum[maxIndex];
 	}
+
+	public static String getDirectionName(final int direction) {
+		String dirName = LSystem.UNKOWN;
+		switch (direction) {
+		case TUP:
+			dirName = "UP";
+			break;
+		case TLEFT:
+			dirName = "LEFT";
+			break;
+		case TDOWN:
+			dirName = "DOWN";
+			break;
+		case TRIGHT:
+			dirName = "RIGHT";
+			break;
+		case UP:
+			dirName = "UP_ISO";
+			break;
+		case LEFT:
+			dirName = "LEFT_ISO";
+			break;
+		case DOWN:
+			dirName = "DOWN_ISO";
+			break;
+		case RIGHT:
+			dirName = "RIGHT_ISO";
+			break;
+		default:
+			dirName = "EMPTY";
+			break;
+		}
+		return dirName;
+	}
+
+	public String getDirectionName() {
+		return getDirectionName(_direction);
+	}
+
+	@Override
+	public String toString() {
+		return getDirectionName();
+	}
+
 }

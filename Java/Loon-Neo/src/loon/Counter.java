@@ -23,7 +23,7 @@ package loon;
 import loon.utils.MathUtils;
 
 /**
- * 一个简单的计数器
+ * 一个简单的计数器，允许设定递增或递减值，也可以限制最大和最小取值范围
  */
 public class Counter {
 

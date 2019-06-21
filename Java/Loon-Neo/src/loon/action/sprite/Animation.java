@@ -81,9 +81,9 @@ public class Animation implements IArray, LRelease {
 	protected int length;
 
 	protected String animationName;
-	
+
 	private LTimer intervalTime = new LTimer(0);
-	
+
 	public Animation() {
 		this(new TArray<AnimationFrame>(CollectionUtils.INITIAL_CAPACITY), 0);
 	}
@@ -520,13 +520,38 @@ public class Animation implements IArray, LRelease {
 	public int size() {
 		return frames.size;
 	}
+	
+	public Animation increment() {
+		if(intervalTime.getCurrentTick() > 0) {
+			currentFrameIndex += 1;
+			if(currentFrameIndex >= length){
+				done();
+			}
+		} else {
+			currentFrameIndex -= 1;
+			if(currentFrameIndex < 0){
+				done();
+			}
+		}
+		return this;
+	}
+	
+	public Animation done() {
+		if (intervalTime.getCurrentTick() > 0) {
+			currentFrameIndex = 0;
+		} else {
+			currentFrameIndex = length - 1;
+		}
+		isRunning = false;
+		return this;
+	}
 
 	public String getAnimationName() {
 		return animationName;
 	}
 
 	public Animation setAnimationName(String ani) {
-		if(StringUtils.isEmpty(ani)){
+		if (StringUtils.isEmpty(ani)) {
 			return this;
 		}
 		this.animationName = ani;

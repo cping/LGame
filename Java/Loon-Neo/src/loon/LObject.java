@@ -39,6 +39,12 @@ import loon.utils.reply.VarView;
 
 public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 
+	private static int _SYS_GLOBAL_SEQNO = 0;
+
+	public final static int allLObjects() {
+		return _SYS_GLOBAL_SEQNO;
+	}
+	
 	public static enum State {
 		UNKOWN, REMOVED, ADDED, DISPOSED
 	}
@@ -232,6 +238,8 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 
 	protected float _alpha = 1f;
 
+	protected float _rotation;
+	
 	protected RectBox _rect;
 
 	protected String _name;
@@ -242,53 +250,50 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 
 	protected int _layer;
 
-	protected float _rotation;
-
 	private int _objStatus = NOT;
-
-	private static int _sys_seqNo = 0;
-
+	
 	private int _seqNo = 0;
 
 	public LObject() {
-		_seqNo = _sys_seqNo;
-		_sys_seqNo++;
-	}
-
-	public final static int allLObjects() {
-		return _sys_seqNo;
+		this._seqNo = _SYS_GLOBAL_SEQNO;
+		this._rotation = 0;
+		this._layer = 0;
+		this._alpha = 1f;
+		_SYS_GLOBAL_SEQNO++;
 	}
 
 	public final int getSequenceNo() {
 		return _seqNo;
 	}
 
-	public final void setStatus(int status) {
+	public final LObject<T> setStatus(int status) {
 		this._objStatus = status;
+		return this;
 	}
 
-	public final void setLife(int status) {
-		setStatus(status);
+	public final LObject<T> setLife(int status) {
+		return setStatus(status);
 	}
 
-	public final void addLife() {
-		setStatus(_objStatus++);
+	public final LObject<T> addLife() {
+		return setStatus(_objStatus++);
 	}
 
 	public final int getStatus() {
 		return this._objStatus;
 	}
 
-	public final void removeLife() {
-		setStatus(_objStatus--);
+	public final LObject<T> removeLife() {
+		return setStatus(_objStatus--);
 	}
 
 	public final int getLife() {
 		return getStatus();
 	}
 
-	public final void setObjectFlag(String flag) {
+	public final LObject<T> setObjectFlag(String flag) {
 		this._object_flag = flag;
+		return this;
 	}
 
 	public final String getObjectFlag() {
