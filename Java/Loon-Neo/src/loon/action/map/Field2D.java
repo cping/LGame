@@ -36,9 +36,12 @@ import loon.utils.MathUtils;
 import loon.utils.TArray;
 
 /**
- * 2维数组到地图数据的转化与处理用类
+ * 二维数组到地图数据的存储转化与处理用类
  */
 public class Field2D implements IArray, Config {
+
+	private final static int[][][] NEIGHBORS = { { { 1, 1 }, { 1, 0 }, { 0, -1 }, { -1, 0 }, { -1, 1 }, { 0, 1 } },
+			{ { 1, 0 }, { 1, -1 }, { 0, -1 }, { -1, -1 }, { -1, 0 }, { 0, 1 } } };
 
 	private final static float ANGULAR = 0.706F;
 
@@ -355,7 +358,7 @@ public class Field2D implements IArray, Config {
 		return getTile(x, y);
 	}
 
-	public void set(int[][] mapArrays, int tw, int th) {
+	public Field2D set(int[][] mapArrays, int tw, int th) {
 		this.setMap(mapArrays);
 		this.setTileWidth(tw);
 		this.setTileHeight(th);
@@ -367,16 +370,19 @@ public class Field2D implements IArray, Config {
 			this._tileImpl.setWidth(tileWidth);
 			this._tileImpl.setHeight(tileHeight);
 		}
+		return this;
 	}
 
-	public void setSize(int width, int height) {
+	public Field2D setSize(int width, int height) {
 		this.width = width;
 		this.height = height;
+		return this;
 	}
 
-	public void setTile(int tw, int th) {
+	public Field2D setTile(int tw, int th) {
 		this.tileWidth = tw;
 		this.tileHeight = th;
+		return this;
 	}
 
 	public int getWidth() {
@@ -385,6 +391,29 @@ public class Field2D implements IArray, Config {
 
 	public int getHeight() {
 		return height;
+	}
+
+	public int getDrawWidth() {
+		return tilesToHeightPixels(width);
+	}
+
+	public int getDrawHeight() {
+		return tilesToHeightPixels(height);
+	}
+
+	public int getHexagonWidth() {
+		return MathUtils.floor(width / 3 * 2);
+	}
+
+	public int getHexagonHeight() {
+		return MathUtils.floor(height / MathUtils.sqrt(3)) - 1;
+	}
+
+	public PointI pixelsHexagonToTiles(float x, float y) {
+		int sqrte = MathUtils.sqrt(3) / 3;
+		int hx = MathUtils.floor(2 / 3 * x / tileWidth);
+		int hy = (int) (sqrte * y / tileHeight + MathUtils.round(hx) % 2) * sqrte;
+		return new PointI(hx, hy);
 	}
 
 	public int pixelsToTilesWidth(float x) {
@@ -431,24 +460,27 @@ public class Field2D implements IArray, Config {
 		return tileHeight;
 	}
 
-	public void setTileHeight(int tileHeight) {
+	public Field2D setTileHeight(int tileHeight) {
 		this.tileHeight = tileHeight;
+		return this;
 	}
 
 	public int getTileWidth() {
 		return tileWidth;
 	}
 
-	public void setTileWidth(int tileWidth) {
+	public Field2D setTileWidth(int tileWidth) {
 		this.tileWidth = tileWidth;
+		return this;
 	}
 
 	public int[] getLimit() {
 		return moveLimited;
 	}
 
-	public void setLimit(int[] limit) {
+	public Field2D setLimit(int[] limit) {
 		this.moveLimited = limit;
+		return this;
 	}
 
 	public boolean contains(int x, int y) {
@@ -470,22 +502,24 @@ public class Field2D implements IArray, Config {
 		}
 	}
 
-	public void setTileType(int x, int y, int tile) {
+	public Field2D setTileType(int x, int y, int tile) {
 		try {
 			if (!contains(x, y)) {
-				return;
+				return this;
 			}
 			this.mapArrays[y][x] = tile;
 		} catch (Throwable e) {
 		}
+		return this;
 	}
 
 	public int[][] getMap() {
 		return CollectionUtils.copyOf(mapArrays);
 	}
 
-	public void setMap(int[][] mapArrays) {
+	public Field2D setMap(int[][] mapArrays) {
 		this.mapArrays = mapArrays;
+		return this;
 	}
 
 	public int getPixelsAtFieldType(Vector2f pos) {
@@ -499,7 +533,7 @@ public class Field2D implements IArray, Config {
 	}
 
 	public boolean inside(int x, int y) {
-		return CollisionHelper.intersect(0, 0, width * tileWidth, height * tileHeight, x, y);
+		return CollisionHelper.intersect(0, 0, getDrawWidth(), getDrawHeight(), x, y);
 	}
 
 	public boolean inside(float x, float y) {
@@ -695,16 +729,45 @@ public class Field2D implements IArray, Config {
 		return _tileImpl;
 	}
 
-	public void setTileImpl(Tile tileImpl) {
+	public Field2D setTileImpl(Tile tileImpl) {
 		this._tileImpl = tileImpl;
+		return this;
+	}
+
+	public int getNeighborType(int x, int y, int d) {
+		int[] n = NEIGHBORS[x & 1][d];
+		int nx = x + n[0];
+		int ny = y + n[1];
+		if (nx < 0 || nx >= getHexagonWidth() || ny < 0 || ny >= getHexagonHeight()) {
+			return -1;
+		}
+		if (!contains(nx, ny)) {
+			return -1;
+		}
+		return mapArrays[ny][nx];
+	}
+
+	public Field2D setNeighborType(int x, int y, int d, int t) {
+		int[] n = NEIGHBORS[x & 1][d];
+		int nx = x + n[0];
+		int ny = y + n[1];
+		if (nx < 0 || nx >= getHexagonWidth() || ny < 0 || ny >= getHexagonHeight()) {
+			return this;
+		}
+		if (!contains(nx, ny)) {
+			return this;
+		}
+		mapArrays[ny][nx] = t;
+		return this;
 	}
 
 	public Vector2f getOffset() {
 		return _offset;
 	}
 
-	public void setOffset(Vector2f offset) {
+	public Field2D setOffset(Vector2f offset) {
 		this._offset = offset;
+		return this;
 	}
 
 	public int offsetXPixel(int x) {
@@ -720,8 +783,9 @@ public class Field2D implements IArray, Config {
 		return mapArrays == null || mapArrays.length == 0;
 	}
 
-	public void setName(String n) {
+	public Field2D setName(String n) {
 		this._objectName = n;
+		return this;
 	}
 
 	public String getName() {
