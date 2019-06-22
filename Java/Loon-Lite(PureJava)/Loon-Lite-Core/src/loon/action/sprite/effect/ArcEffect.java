@@ -42,6 +42,8 @@ public class ArcEffect extends Entity implements BaseEffect {
 
 	private int[] sign = { 1, -1 };
 
+	private boolean autoRemoved;
+
 	private boolean completed;
 
 	private LTimer timer;
@@ -88,7 +90,7 @@ public class ArcEffect extends Entity implements BaseEffect {
 			step++;
 		}
 		if (this.completed) {
-			if (getSprites() != null) {
+			if (autoRemoved && getSprites() != null) {
 				getSprites().remove(this);
 			}
 		}
@@ -101,19 +103,18 @@ public class ArcEffect extends Entity implements BaseEffect {
 		}
 		tmpColor = g.color();
 		g.setColor(_baseColor);
-	
-	
+
 		if (step <= 1) {
 			g.fillRect(drawX(offsetX), drawY(offsetY), _width, _height);
 		} else {
 			float deg = 360f / this.arcDiv * this.step;
 			if (deg < 360) {
 				float length = MathUtils.sqrt(MathUtils.pow(_width / 2, 2.0f) + MathUtils.pow(_height / 2, 2.0f));
-				float x = getX() + (_width / 2 - length);
-				float y = getY() + (_height / 2 - length);
+				float x = drawX(_width / 2 - length + offsetX);
+				float y = drawY(_height / 2 - length + offsetY);
 				float w = _width / 2 + length - x;
 				float h = _height / 2 + length - y;
-				g.fillArc(x + offsetX + _offset.x, y + offsetY + _offset.y, w, h, 20, 0, this.sign[this.curTurn] * deg);
+				g.fillArc(x, y, w, h, 20, 0, this.sign[this.curTurn] * deg);
 			}
 		}
 
@@ -134,6 +135,15 @@ public class ArcEffect extends Entity implements BaseEffect {
 
 	public void setTurn(int turn) {
 		this.curTurn = turn;
+	}
+
+	public boolean isAutoRemoved() {
+		return autoRemoved;
+	}
+
+	public ArcEffect setAutoRemoved(boolean autoRemoved) {
+		this.autoRemoved = autoRemoved;
+		return this;
 	}
 
 	@Override

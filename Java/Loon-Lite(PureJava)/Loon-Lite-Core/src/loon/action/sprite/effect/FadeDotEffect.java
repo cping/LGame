@@ -36,13 +36,20 @@ public class FadeDotEffect extends Entity implements BaseEffect {
 
 	private int countCompleted = 0;
 
+	private boolean autoRemoved;
+
 	private boolean finished;
 
-	private TArray<Dot> dots = new TArray<Dot>();
+	private TArray<Dot> dots;
 
 	private int count = 4;
 
 	private int type = ISprite.TYPE_FADE_IN;
+
+	private int dot_time = 0;
+	private int dot_rad = 0;
+	private int dot_width = 0;
+	private int dot_height = 0;
 
 	private LTimer timer = new LTimer(0);
 
@@ -118,7 +125,6 @@ public class FadeDotEffect extends Entity implements BaseEffect {
 				g.setAlpha(a);
 			}
 		}
-
 	}
 
 	public FadeDotEffect(LColor c, int type, int time, int count) {
@@ -140,14 +146,32 @@ public class FadeDotEffect extends Entity implements BaseEffect {
 	public FadeDotEffect(int type, int time, int rad, int count, LColor c, int w, int h) {
 		this.type = type;
 		this.count = count;
+		this.dot_time = time;
+		this.dot_rad = rad;
+		this.dot_width = w;
+		this.dot_height = h;
 		this.setColor(c);
 		this.setSize(w, h);
 		this.setRepaint(true);
-		if (dots.size == 0) {
-			for (int i = 0; i < count; i++) {
-				dots.add(new Dot(type, time, rad, w, h));
-			}
+		this.updateDots();
+	}
+
+	protected void updateDots() {
+		if (dots != null) {
+			dots.clear();
+			dots = null;
 		}
+		dots = new TArray<Dot>();
+		for (int i = 0; i < count; i++) {
+			dots.add(new Dot(type, dot_time, dot_rad, dot_width, dot_height));
+		}
+		finished = false;
+	}
+
+	@Override
+	public void reset() {
+		super.reset();
+		updateDots();
 	}
 
 	public float getDelay() {
@@ -183,12 +207,12 @@ public class FadeDotEffect extends Entity implements BaseEffect {
 			}
 		}
 		if (this.finished) {
-			if (getSprites() != null) {
+			if (autoRemoved && getSprites() != null) {
 				getSprites().remove(this);
 			}
 		}
 	}
-
+	
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
 		if (finished) {
@@ -197,11 +221,13 @@ public class FadeDotEffect extends Entity implements BaseEffect {
 		if (finished) {
 			return;
 		}
+
 		int tmp = g.color();
 		g.setColor(_baseColor);
 		for (int i = 0; i < dots.size; i++) {
 			((Dot) dots.get(i)).paint(g, drawX(offsetX), drawY(offsetY));
 		}
+	
 		g.setColor(tmp);
 	}
 
@@ -213,11 +239,23 @@ public class FadeDotEffect extends Entity implements BaseEffect {
 		return type;
 	}
 
+	public boolean isAutoRemoved() {
+		return autoRemoved;
+	}
+
+	public FadeDotEffect setAutoRemoved(boolean autoRemoved) {
+		this.autoRemoved = autoRemoved;
+		return this;
+	}
+	
 	@Override
 	public void close() {
 		super.close();
 		finished = true;
-		dots.clear();
+		if (dots != null) {
+			dots.clear();
+			dots = null;
+		}
 	}
 
 }

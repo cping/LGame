@@ -267,8 +267,6 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 			return;
 		}
 
-		boolean supportPack = false;
-
 		IFont tmp = g.getFont();
 		g.setFont(_font);
 		renderSub(g, offsetX, offsetY, x, y);
@@ -329,7 +327,6 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 			maxHeight += height;
 		}
 		setSize(maxWidth + _space * 2 - _font.getSize(), maxHeight + _space * 2);
-
 		_dirty = false;
 		return this;
 	}

@@ -520,24 +520,33 @@ public class Animation implements IArray, LRelease {
 	public int size() {
 		return frames.size;
 	}
-	
+
 	public Animation increment() {
-		if(intervalTime.getCurrentTick() > 0) {
-			currentFrameIndex += 1;
-			if(currentFrameIndex >= length){
-				done();
-			}
-		} else {
-			currentFrameIndex -= 1;
-			if(currentFrameIndex < 0){
-				done();
-			}
+		return increment(1);
+	}
+
+	public Animation increment(int v) {
+		currentFrameIndex += v;
+		if (currentFrameIndex >= length) {
+			done();
 		}
 		return this;
 	}
-	
+
+	public Animation reduction() {
+		return reduction(1);
+	}
+
+	public Animation reduction(int v) {
+		currentFrameIndex -= v;
+		if (currentFrameIndex < 0) {
+			done();
+		}
+		return this;
+	}
+
 	public Animation done() {
-		if (intervalTime.getCurrentTick() > 0) {
+		if (currentFrameIndex < 0) {
 			currentFrameIndex = 0;
 		} else {
 			currentFrameIndex = length - 1;

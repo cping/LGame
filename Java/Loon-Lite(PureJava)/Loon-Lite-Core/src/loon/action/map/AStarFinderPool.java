@@ -24,6 +24,7 @@ import loon.geom.Vector2f;
 import loon.utils.LIterator;
 import loon.utils.SortedList;
 import loon.utils.TArray;
+import loon.utils.processes.GameProcessType;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.timer.LTimerContext;
@@ -55,6 +56,7 @@ public class AStarFinderPool {
 				}
 			}
 		};
+		pathfinderProcess.setProcessType(GameProcessType.Progress);
 		pathfinderProcess.sleep(1000000);
 		RealtimeProcessManager.get().addProcess(pathfinderProcess);
 	}

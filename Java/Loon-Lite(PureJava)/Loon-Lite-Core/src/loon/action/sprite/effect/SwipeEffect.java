@@ -35,7 +35,11 @@ public class SwipeEffect extends Entity implements BaseEffect {
 
 	protected int type;
 
+	protected float triangle = 90;
+
 	protected boolean finished;
+
+	protected boolean autoRemoved;
 
 	public static SwipeEffect getInstance(int type, LColor c) {
 		return getInstance(type, c, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
@@ -84,29 +88,29 @@ public class SwipeEffect extends Entity implements BaseEffect {
 			return;
 		}
 		float percent = timer.getPercentage();
-		float triangle = 90;
 
 		LColor tmp = g.getColor();
-		
+
 		if (type == TYPE_FADE_IN) {
 			float width = getWidth() + (2 * triangle);
 			float height = getHeight();
-			float x = percent * width - triangle;
-			float y = 0;
+			float x = drawX(sx + (percent * width - triangle));
+			float y = drawY(sy + 0);
 			g.setColor(_baseColor);
 			g.fillRect(x + triangle, y, width, height);
 			g.fillTriangle(x, height, x + triangle, height, x + triangle, y);
 		} else {
-			float x = percent * (triangle + getWidth()) - triangle;
+			float x = drawX(sx + (percent * (triangle + getWidth()) - triangle));
+			float y = drawY(sy + 0);
 			float width = percent * (getWidth() + triangle);
 			float height = getHeight();
 			g.setColor(_baseColor);
-			g.fillRect(-triangle, 0, width, height);
-			g.fillTriangle(x, 0, x + triangle, 0, x, height);
+			g.fillRect(-triangle, y, width, height);
+			g.fillTriangle(x, y, x + triangle, y, x, height);
 		}
-		
+
 		g.setColor(tmp);
-		
+
 		return;
 	}
 
@@ -116,7 +120,7 @@ public class SwipeEffect extends Entity implements BaseEffect {
 			finished = true;
 		}
 		if (this.finished) {
-			if (getSprites() != null) {
+			if (autoRemoved && getSprites() != null) {
 				getSprites().remove(this);
 			}
 		}
@@ -124,6 +128,24 @@ public class SwipeEffect extends Entity implements BaseEffect {
 
 	public int getFadeType() {
 		return type;
+	}
+
+	public float getTriangle() {
+		return triangle;
+	}
+
+	public SwipeEffect setTriangle(float triangle) {
+		this.triangle = triangle;
+		return this;
+	}
+
+	public boolean isAutoRemoved() {
+		return autoRemoved;
+	}
+
+	public SwipeEffect setAutoRemoved(boolean autoRemoved) {
+		this.autoRemoved = autoRemoved;
+		return this;
 	}
 
 	@Override

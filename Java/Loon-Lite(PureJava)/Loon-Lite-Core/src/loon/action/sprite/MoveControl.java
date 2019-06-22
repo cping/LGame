@@ -30,6 +30,7 @@ import loon.action.map.Field2D;
 import loon.action.map.HexagonMap;
 import loon.action.map.TileMap;
 import loon.geom.ActionBindRect;
+import loon.utils.processes.GameProcessType;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.timer.LTimerContext;
@@ -161,6 +162,7 @@ public class MoveControl implements LRelease {
 					}
 				}
 			};
+			process.setProcessType(GameProcessType.Progress);
 			process.setDelay(_delay);
 			_running = true;
 			RealtimeProcessManager.get().addProcess(process);

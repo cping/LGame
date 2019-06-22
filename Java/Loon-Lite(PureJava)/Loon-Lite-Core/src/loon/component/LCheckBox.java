@@ -27,6 +27,7 @@ import loon.canvas.LColor;
 import loon.component.skin.CheckBoxSkin;
 import loon.component.skin.SkinManager;
 import loon.event.CallFunction;
+import loon.event.SysKey;
 import loon.font.FontSet;
 import loon.font.IFont;
 import loon.geom.Vector2f;
@@ -211,7 +212,7 @@ public class LCheckBox extends LComponent implements FontSet<LCheckBox> {
 
 	@Override
 	protected void processKeyPressed() {
-		if (this.isSelected()) {
+		if (this.isSelected() && SysKey.isKeyPressed(SysKey.ENTER)) {
 			this.pressedTime = 5;
 			this.pressed = true;
 			this.doClick();
@@ -220,7 +221,7 @@ public class LCheckBox extends LComponent implements FontSet<LCheckBox> {
 
 	@Override
 	protected void processKeyReleased() {
-		if (this.isSelected()) {
+		if (this.isSelected() && SysKey.isKeyRelease(SysKey.ENTER)) {
 			this.pressed = false;
 		}
 	}

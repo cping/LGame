@@ -116,6 +116,10 @@ public class AABB implements XY, BoxSize {
 		return ((xmin > minX && xmin < minX + maxX) && (xmax > minX && xmax < minX + maxX))
 				&& ((ymin > minY && ymin < minY + maxY) && (ymax > minY && ymax < minY + maxY));
 	}
+	
+	public RectBox toRectBox() {
+		return new RectBox(this.minX, this.minY, this.maxX, this.maxY);
+	}
 
 	@Override
 	public int hashCode() {

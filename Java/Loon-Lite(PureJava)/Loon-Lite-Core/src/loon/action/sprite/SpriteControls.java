@@ -27,6 +27,7 @@ import loon.action.ActionBind;
 import loon.action.ActionTween;
 import loon.action.map.Field2D;
 import loon.canvas.LColor;
+import loon.component.layout.Margin;
 import loon.event.EventDispatcher;
 import loon.font.FontSet;
 import loon.font.IFont;
@@ -76,6 +77,8 @@ public class SpriteControls {
 
 	private ObjectMap<ISprite, ActionTween> tweens = new ObjectMap<ISprite, ActionTween>(
 			CollectionUtils.INITIAL_CAPACITY);
+
+	private Margin _margin;
 
 	private final TArray<ISprite> _sprs;
 
@@ -183,7 +186,7 @@ public class SpriteControls {
 	public SpriteControls alpha(float a) {
 		return setAlpha(a);
 	}
-	
+
 	public SpriteControls setAlpha(float a) {
 		for (int i = 0, n = _sprs.size; i < n; i++) {
 			ISprite spr = _sprs.get(i);
@@ -198,6 +201,8 @@ public class SpriteControls {
 					((EventDispatcher) spr).setAlpha(a);
 				} else if (spr instanceof LObject<?>) {
 					((LObject<?>) spr).setAlpha(a);
+				} else {
+					spr.setAlpha(a);
 				}
 
 			}
@@ -217,6 +222,8 @@ public class SpriteControls {
 					((ActionObject) spr).setScale(s);
 				} else if (spr instanceof MovieClip) {
 					((MovieClip) spr).setScale(s, s);
+				} else {
+					spr.setScale(s, s);
 				}
 			}
 		}
@@ -235,6 +242,8 @@ public class SpriteControls {
 					((ActionObject) spr).setScale(sx, sy);
 				} else if (spr instanceof MovieClip) {
 					((MovieClip) spr).setScale(sx, sy);
+				} else {
+					spr.setScale(sx, sy);
 				}
 			}
 		}
@@ -255,6 +264,8 @@ public class SpriteControls {
 					((EventDispatcher) spr).setX(x);
 				} else if (spr instanceof LObject<?>) {
 					((LObject<?>) spr).setX(x);
+				} else {
+					spr.setX(x);
 				}
 			}
 		}
@@ -275,6 +286,54 @@ public class SpriteControls {
 					((EventDispatcher) spr).setY(y);
 				} else if (spr instanceof LObject<?>) {
 					((LObject<?>) spr).setY(y);
+				} else {
+					spr.setY(y);
+				}
+			}
+		}
+		return this;
+	}
+
+	public SpriteControls location(float x, float y) {
+		for (int i = 0, n = _sprs.size; i < n; i++) {
+			ISprite spr = _sprs.get(i);
+			if (spr != null) {
+				if (spr instanceof Sprite) {
+					((Sprite) spr).setLocation(x, y);
+				} else if (spr instanceof Entity) {
+					((Entity) spr).setLocation(x, y);
+				} else if (spr instanceof ActionObject) {
+					((ActionObject) spr).setLocation(x, y);
+				} else if (spr instanceof EventDispatcher) {
+					((EventDispatcher) spr).setLocation(x, y);
+				} else if (spr instanceof LObject<?>) {
+					((LObject<?>) spr).setLocation(x, y);
+				} else {
+					spr.setLocation(x, y);
+				}
+			}
+		}
+		return this;
+	}
+
+	public SpriteControls offset(float x, float y) {
+		for (int i = 0, n = _sprs.size; i < n; i++) {
+			ISprite spr = _sprs.get(i);
+			if (spr != null) {
+				float oldX = spr.getX();
+				float oldY = spr.getY();
+				if (spr instanceof Sprite) {
+					((Sprite) spr).setLocation(oldX + x, oldY + y);
+				} else if (spr instanceof Entity) {
+					((Entity) spr).setLocation(oldX + x, oldY + y);
+				} else if (spr instanceof ActionObject) {
+					((ActionObject) spr).setLocation(oldX + x, oldY + y);
+				} else if (spr instanceof EventDispatcher) {
+					((EventDispatcher) spr).setLocation(oldX + x, oldY + y);
+				} else if (spr instanceof LObject<?>) {
+					((LObject<?>) spr).setLocation(oldX + x, oldY + y);
+				} else {
+					spr.setLocation(oldX + x, oldY + y);
 				}
 			}
 		}
@@ -738,6 +797,25 @@ public class SpriteControls {
 		return this;
 	}
 
+	public SpriteControls followTo(ActionBind bind, float follow, float speed) {
+		for (int i = 0, n = _sprs.size; i < n; i++) {
+			ISprite spr = _sprs.get(i);
+			if (spr != null && (spr instanceof ActionBind)) {
+				ActionTween tween = tweens.get(spr);
+				if (tween == null) {
+					tween = PlayerUtils.set((ActionBind) spr).followTo(bind, follow, speed);
+				} else {
+					tween.followTo(bind, follow, speed);
+				}
+				if (!tweens.containsKey(spr)) {
+					tweens.put(spr, tween);
+				}
+
+			}
+		}
+		return this;
+	}
+
 	public SpriteControls flashTo(float duration) {
 		for (int i = 0, n = _sprs.size; i < n; i++) {
 			ISprite spr = _sprs.get(i);
@@ -788,4 +866,21 @@ public class SpriteControls {
 		return size == tweens.size;
 	}
 
+	public Margin margin(float size, boolean vertical, float left, float top, float right, float bottom) {
+		if (_margin == null) {
+			_margin = new Margin(size, vertical);
+		} else {
+			_margin.setSize(size);
+			_margin.setVertical(vertical);
+		}
+		_margin.setMargin(left, top, right, bottom);
+		_margin.clear();
+		for (int i = 0; i < _sprs.size; i++) {
+			ISprite spr = _sprs.get(i);
+			if (spr != null) {
+				_margin.addChild(spr);
+			}
+		}
+		return _margin;
+	}
 }

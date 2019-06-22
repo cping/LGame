@@ -96,7 +96,7 @@ public class TriangleEffect extends Entity implements BaseEffect {
 			}
 		}
 		for (int i = 0; i < avg.length; i++) {
-			avg[i] /= 3D;
+			avg[i] /= 3f;
 		}
 	}
 

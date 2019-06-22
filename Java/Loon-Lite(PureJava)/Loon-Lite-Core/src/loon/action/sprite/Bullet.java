@@ -38,7 +38,8 @@ import loon.utils.timer.EaseTimer;
 import loon.utils.timer.LTimerContext;
 
 /**
- * 子弹渲染用类,支持动画播放, 角色角度和方向的自动转换，但本身不是精灵,不能直接add到Screen,由精灵类BulletEntity管理和渲染到游戏中去<br>
+ * 子弹渲染用类,支持动画播放,
+ * 角色角度和方向的自动转换，但本身不是精灵,不能直接add到Screen,由精灵类BulletEntity管理和渲染到游戏中去<br>
  * 一个游戏中，可以存在多个甚至海量的Bullet, 如果子弹过多时,可以使用CacheManager管理子弹的生命周期.
  * 
  */
@@ -50,6 +51,7 @@ public class Bullet extends LObject<Bullet> implements CollisionObject, ActionBi
 
 	protected static float INIT_DURATION = 1f;
 
+	private int bulletType;
 	private int direction;
 	private int initSpeed;
 
@@ -59,6 +61,7 @@ public class Bullet extends LObject<Bullet> implements CollisionObject, ActionBi
 	private boolean dirToAngle;
 	private boolean closed;
 	private boolean visible;
+	private boolean active;
 
 	private float width;
 	private float height;
@@ -111,6 +114,11 @@ public class Bullet extends LObject<Bullet> implements CollisionObject, ActionBi
 
 	public Bullet(EasingMode easingMode, Animation ani, float x, float y, float w, float h, int dir,
 			int bulletInitSpeed, float duration) {
+		this(0, easingMode, ani, x, y, w, h, dir, bulletInitSpeed, duration);
+	}
+
+	public Bullet(int bulletType, EasingMode easingMode, Animation ani, float x, float y, float w, float h, int dir,
+			int bulletInitSpeed, float duration) {
 		this.setLocation(x, y);
 		this.setObjectFlag(BUTTLE_DEFAULT_NAME);
 		this.easeTimer = new EaseTimer(duration, easingMode);
@@ -118,9 +126,11 @@ public class Bullet extends LObject<Bullet> implements CollisionObject, ActionBi
 		this.animation = ani;
 		this.direction = dir;
 		this.initSpeed = bulletInitSpeed;
+		this.bulletType = bulletType;
 		this.scaleX = this.scaleY = 1f;
 		this.visible = true;
 		this.dirToAngle = true;
+		this.active = true;
 		this.closed = false;
 		this.width = w;
 		this.height = h;
@@ -138,11 +148,14 @@ public class Bullet extends LObject<Bullet> implements CollisionObject, ActionBi
 		}
 		if (animation != null) {
 			LTexture texture = animation.getSpriteImage();
+			float tmp = baseColor.a;
 			if (texture != null) {
-				g.draw(texture, getX() + offsetX, getY() + offsetY, getWidth(), getHeight(), baseColor, _rotation);
+				g.draw(texture, getX() + offsetX, getY() + offsetY, getWidth(), getHeight(), baseColor.setAlpha(_alpha),
+						_rotation);
 				width = MathUtils.max(width, texture.width());
 				height = MathUtils.max(height, texture.height());
 			}
+			baseColor.a = tmp;
 		}
 	}
 
@@ -151,12 +164,17 @@ public class Bullet extends LObject<Bullet> implements CollisionObject, ActionBi
 		if (closed) {
 			return;
 		}
-		animation.update(elapsedTime);
-		easeTimer.update(elapsedTime);
-		float delta = easeTimer.getProgress();
-		float x = getX() + speed.getX() * delta;
-		float y = getY() + speed.getY() * delta;
-		setLocation(x, y);
+		if ((speed.getX() == 0) && (speed.getY() == 0)) {
+			this.active = false;
+		}
+		if (active) {
+			animation.update(elapsedTime);
+			easeTimer.update(elapsedTime);
+			float delta = easeTimer.getProgress();
+			float x = getX() + speed.getX() * delta;
+			float y = getY() + speed.getY() * delta;
+			setLocation(x, y);
+		}
 	}
 
 	public void update(LTimerContext time) {
@@ -306,6 +324,24 @@ public class Bullet extends LObject<Bullet> implements CollisionObject, ActionBi
 	@Override
 	public boolean isContainer() {
 		return false;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public Bullet setActive(boolean active) {
+		this.active = active;
+		return this;
+	}
+
+	public int getBulletType() {
+		return bulletType;
+	}
+
+	public Bullet setBulletType(int bulletType) {
+		this.bulletType = bulletType;
+		return this;
 	}
 
 	@Override

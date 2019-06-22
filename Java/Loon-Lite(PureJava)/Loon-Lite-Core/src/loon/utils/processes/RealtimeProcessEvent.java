@@ -23,11 +23,11 @@ package loon.utils.processes;
 
 import loon.utils.timer.LTimerContext;
 
-public abstract interface RealtimeProcessEvent {
+public interface RealtimeProcessEvent {
 	
-	public abstract void addProcess(GameProcess process);
+	public void addProcess(GameProcess process);
 	
 	public boolean containsProcess(GameProcess process);
 	
-	public abstract void tick(LTimerContext clock);
+	public void tick(LTimerContext clock);
 }

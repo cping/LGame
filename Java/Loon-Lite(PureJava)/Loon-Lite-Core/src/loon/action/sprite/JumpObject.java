@@ -56,6 +56,14 @@ public class JumpObject extends ActionObject {
 
 	private boolean canJumperTwo;
 
+	public JumpObject(float x, float y, String path) {
+		this(x, y, 0, 0, Animation.getDefaultAnimation(path), null);
+	}
+
+	public JumpObject(float x, float y, Animation animation) {
+		this(x, y, 0, 0, animation, null);
+	}
+	
 	public JumpObject(float x, float y, Animation animation, TileMap map) {
 		super(x, y, 0, 0, animation, map);
 		vx = 0;

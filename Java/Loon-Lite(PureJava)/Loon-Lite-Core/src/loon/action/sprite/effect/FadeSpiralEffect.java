@@ -33,6 +33,7 @@ import loon.utils.timer.LTimer;
 public class FadeSpiralEffect extends Entity implements BaseEffect {
 
 	private boolean finished;
+	private boolean autoRemoved;
 	private int tilewidth;
 	private int tileheight;
 	private int speed;
@@ -63,20 +64,20 @@ public class FadeSpiralEffect extends Entity implements BaseEffect {
 	public FadeSpiralEffect(int type, int speed, LColor c, int w, int h) {
 		this.type = type;
 		this.speed = speed;
-		this.setColor(c);
 		this.timer = new LTimer(30);
-		this.setSize(w, h);
 		this.tilewidth = (int) (LSystem.viewSize.getWidth() / w + 1);
 		this.tileheight = (int) (LSystem.viewSize.getHeight() / h + 1);
 		this.conversions = new boolean[tilewidth][tileheight];
 		this.reset();
 		this.setRepaint(true);
+		this.setColor(c);
+		this.setSize(w, h);
 	}
 
 	@Override
 	public void reset() {
-		int tmp = _baseColor.getARGB();
 		super.reset();
+		int tmp = _baseColor.getARGB();
 		if (type == ISprite.TYPE_FADE_IN) {
 			for (int x = 0; x < tilewidth; x++) {
 				for (int y = 0; y < tileheight; y++) {
@@ -90,10 +91,10 @@ public class FadeSpiralEffect extends Entity implements BaseEffect {
 				}
 			}
 		}
-		state = 1;
-		cx = 0;
-		cy = 0;
-		tilescovered = 0;
+		this.state = 1;
+		this.cx = 0;
+		this.cy = 0;
+		this.tilescovered = 0;
 		_baseColor.setColor(tmp);
 	}
 
@@ -216,16 +217,26 @@ public class FadeSpiralEffect extends Entity implements BaseEffect {
 			}
 		}
 		if (this.finished) {
-			if (getSprites() != null) {
+			if (autoRemoved && getSprites() != null) {
 				getSprites().remove(this);
 			}
 		}
 	}
 
+	public boolean isAutoRemoved() {
+		return autoRemoved;
+	}
+
+	public FadeSpiralEffect setAutoRemoved(boolean autoRemoved) {
+		this.autoRemoved = autoRemoved;
+		return this;
+	}
+	
 	@Override
 	public void close() {
 		super.close();
 		finished = true;
 		conversions = null;
 	}
+
 }

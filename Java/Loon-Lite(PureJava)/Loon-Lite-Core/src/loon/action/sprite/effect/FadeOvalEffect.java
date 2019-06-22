@@ -32,14 +32,17 @@ import loon.utils.timer.LTimer;
  */
 public class FadeOvalEffect extends Entity implements BaseEffect {
 
-	private static final LColor[] OVAL_COLORS = new LColor[5];
+	private final LColor[] oval_colors;
 
 	private float max_time;
 	private LTimer timer;
 	private float elapsed;
 	private boolean finished = false;
+	private boolean autoRemoved = false;
+	
 	private int type = TYPE_FADE_IN;
-
+	private int maxColorSize;
+	
 	public FadeOvalEffect(int type, LColor color) {
 		this(type, color, LSystem.viewSize.width, LSystem.viewSize.height);
 	}
@@ -53,13 +56,19 @@ public class FadeOvalEffect extends Entity implements BaseEffect {
 	}
 
 	public FadeOvalEffect(int type, LColor oc, int time, float w, float h) {
+		this(type, oc, time, w, h, 5);
+	}
+
+	public FadeOvalEffect(int type, LColor oc, int time, float w, float h, int maxSize) {
 		this.type = type;
 		this.elapsed = 0;
 		this.setSize(w, h);
 		this.setColor(oc);
 		this.elapsed = 0;
-		for (int i = 0; i < OVAL_COLORS.length; i++) {
-			OVAL_COLORS[i] = new LColor(oc.r, oc.g, oc.b, 1F - 0.15f * i);
+		this.maxColorSize = maxSize;
+		this.oval_colors = new LColor[maxColorSize];
+		for (int i = 0; i < maxColorSize; i++) {
+			oval_colors[i] = new LColor(oc.r, oc.g, oc.b, 1F - 0.15f * i);
 		}
 		this.max_time = time;
 		this.timer = new LTimer(0);
@@ -108,7 +117,7 @@ public class FadeOvalEffect extends Entity implements BaseEffect {
 			}
 		}
 		if (this.finished) {
-			if (getSprites() != null) {
+			if (autoRemoved && getSprites() != null) {
 				getSprites().remove(this);
 			}
 		}
@@ -122,16 +131,16 @@ public class FadeOvalEffect extends Entity implements BaseEffect {
 		if (this.elapsed > -1) {
 
 			int old = g.color();
-			int size = OVAL_COLORS.length;
+			int size = maxColorSize;
 			for (int i = size - 1; i >= 0; i--) {
-				g.setColor(OVAL_COLORS[i]);
+				g.setColor(oval_colors[i]);
 				float w = this._width + i * this._width * 0.1f;
 				float h = this._height + i * this._height * 0.1f;
 				g.fillOval((g.getWidth() / 2 - w / 2f) + sx + _offset.x, (g.getHeight() / 2 - h / 2f) + sy + _offset.y,
 						w, h);
 			}
 			g.setColor(old);
-	
+
 		}
 	}
 
@@ -139,10 +148,20 @@ public class FadeOvalEffect extends Entity implements BaseEffect {
 		return type;
 	}
 
+	public boolean isAutoRemoved() {
+		return autoRemoved;
+	}
+
+	public FadeOvalEffect setAutoRemoved(boolean autoRemoved) {
+		this.autoRemoved = autoRemoved;
+		return this;
+	}
+	
 	@Override
 	public void close() {
 		super.close();
 		this.finished = true;
 	}
+
 
 }

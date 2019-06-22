@@ -234,7 +234,6 @@ public class LTextBar extends LComponent {
 	}
 
 	private final void drawString(GLEx g, IFont font, String mes, float x, float y, LColor fontColor) {
-		boolean supportPack = false;
 		font.drawString(g, mes, x, y, fontColor);
 	}
 

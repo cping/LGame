@@ -24,6 +24,7 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.LTexture.Format;
 import loon.action.map.Config;
+import loon.event.ActionKey;
 import loon.event.SysTouch;
 import loon.opengl.GLEx;
 import loon.opengl.LTexturePack;
@@ -33,6 +34,10 @@ import loon.utils.MathUtils;
  * 游戏手柄用UI(Loon默认jar中有图,当然也可以自定义),支持上下左右四方向移动,八方向移动请使用LControl
  */
 public class LPad extends LComponent {
+
+	private ActionKey lockedKey;
+
+	private boolean isLimitClick = false;
 
 	private boolean isLeft, isRight, isUp, isDown, isClick;
 
@@ -96,6 +101,7 @@ public class LPad extends LComponent {
 		this.centerX = (baseWidth - dotWidth) / 2f + offsetX;
 		this.centerY = (baseHeight - dotHeight) / 2f + offsetY;
 		this.scale_pad = scale;
+		this.lockedKey = new ActionKey();
 		p.setFormat(Format.LINEAR);
 	}
 
@@ -104,6 +110,9 @@ public class LPad extends LComponent {
 	}
 
 	void freeClick() {
+		if (isLimitClick) {
+			lockedKey.release();
+		}
 		this.isLeft = false;
 		this.isRight = false;
 		this.isDown = false;
@@ -123,6 +132,12 @@ public class LPad extends LComponent {
 
 	@Override
 	protected void processTouchPressed() {
+		if (isLimitClick) {
+			if (lockedKey.isPressed()) {
+				return;
+			}
+			lockedKey.press();
+		}
 		final float x = MathUtils.bringToBounds(0, baseWidth, SysTouch.getX() - getScreenX()) / baseWidth - 0.5f;
 		final float y = MathUtils.bringToBounds(0, baseHeight, SysTouch.getY() - getScreenY()) / baseHeight - 0.5f;
 		if (x == 0 && y == 0) {
@@ -264,6 +279,15 @@ public class LPad extends LComponent {
 		this.offsetY = offsetY;
 	}
 
+	public boolean isLimitClick() {
+		return isLimitClick;
+	}
+
+	public void setLimitClick(boolean l) {
+		this.isLimitClick = l;
+		this.lockedKey.reset();
+	}
+	
 	@Override
 	public String getUIName() {
 		return "Pad";

@@ -30,13 +30,15 @@ import loon.opengl.GLEx;
  */
 public class FadeEffect extends Entity implements BaseEffect {
 
-	public float time;
+	private float time;
 
-	public float currentFrame;
+	private float currentFrame;
 
-	public int type;
+	private int type;
 
-	public boolean finished;
+	private boolean finished;
+	
+	private boolean autoRemoved;
 
 	public static FadeEffect getInstance(int type, LColor c) {
 		return getInstance(type, c, LSystem.viewSize.getWidth(),
@@ -133,7 +135,7 @@ public class FadeEffect extends Entity implements BaseEffect {
 			}
 		}
 		if (this.finished) {
-			if (getSprites() != null) {
+			if (autoRemoved && getSprites() != null) {
 				getSprites().remove(this);
 			}
 		}
@@ -143,10 +145,20 @@ public class FadeEffect extends Entity implements BaseEffect {
 		return type;
 	}
 
+	public boolean isAutoRemoved() {
+		return autoRemoved;
+	}
+
+	public FadeEffect setAutoRemoved(boolean autoRemoved) {
+		this.autoRemoved = autoRemoved;
+		return this;
+	}
+	
 	@Override
 	public void close() {
 		super.close();
 		finished = true;
 	}
+
 
 }

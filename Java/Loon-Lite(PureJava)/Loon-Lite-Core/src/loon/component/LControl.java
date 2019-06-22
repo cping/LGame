@@ -72,6 +72,8 @@ public class LControl extends LComponent {
 
 	private boolean allowDiagonal;
 
+	private int lastDir = -1;
+
 	public LControl(int x, int y) {
 		this(x, y, 128, 128, 64, 64);
 	}
@@ -111,8 +113,8 @@ public class LControl extends LComponent {
 	}
 
 	private void centerOffset() {
-		this.centerX = (baseWidth - dotWidth) / 2f + 1f;
-		this.centerY = (baseHeight - dotHeight) / 2f + 1f;
+		this.centerX = (baseWidth - dotWidth) / 2f;
+		this.centerY = (baseHeight - dotHeight) / 2f;
 	}
 
 	@Override
@@ -164,6 +166,7 @@ public class LControl extends LComponent {
 				default:
 					break;
 				}
+				lastDir = direction;
 			}
 		} catch (Throwable t) {
 			LSystem.error("LControl click exception", t);
@@ -228,6 +231,42 @@ public class LControl extends LComponent {
 		g.draw(controlDot, x + centerX, y + centerY, dotWidth, dotHeight);
 		g.setAlpha(1f);
 
+	}
+
+	public boolean isLastTLeft() {
+		return lastDir == Config.TLEFT;
+	}
+
+	public boolean isLastTRight() {
+		return lastDir == Config.TRIGHT;
+	}
+
+	public boolean isLastTUp() {
+		return lastDir == Config.TUP;
+	}
+
+	public boolean isLastTDown() {
+		return lastDir == Config.TDOWN;
+	}
+
+	public boolean isLastLeft() {
+		return lastDir == Config.LEFT;
+	}
+
+	public boolean isLastRight() {
+		return lastDir == Config.RIGHT;
+	}
+
+	public boolean isLastUp() {
+		return lastDir == Config.UP;
+	}
+
+	public boolean isLastDown() {
+		return lastDir == Config.DOWN;
+	}
+
+	public int getDirection() {
+		return lastDir;
 	}
 
 	@Override

@@ -22,9 +22,9 @@ package loon.action.map.colider;
 
 public interface Tile {
 
-	public Tile at(int x, int y);
+	public Tile at(int x, int y, int w, int h);
 
-	public Tile at(int id, int x, int y);
+	public Tile at(int id, int x, int y, int w, int h);
 
 	public void setX(int x);
 
@@ -41,5 +41,7 @@ public interface Tile {
 	public int getWidth();
 
 	public int getHeight();
+	
+	public Tile getTileImpl();
 
 }

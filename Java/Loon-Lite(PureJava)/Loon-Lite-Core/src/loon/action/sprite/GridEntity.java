@@ -54,8 +54,6 @@ public class GridEntity extends Entity {
 
 	private boolean drawCache;
 
-	private boolean alltextures;
-
 	public GridEntity() {
 		this(LColor.green);
 	}
@@ -98,7 +96,6 @@ public class GridEntity extends Entity {
 		this.gridScale = scale;
 		this.lineWidth = lineWidth;
 		this.drawCache = true;
-		this.alltextures = true;
 		this._repaintDraw = true;
 		drity = true;
 	}
@@ -178,14 +175,6 @@ public class GridEntity extends Entity {
 
 	public void setDrity(boolean drity) {
 		this.drity = drity;
-	}
-
-	public boolean isAlltextures() {
-		return alltextures;
-	}
-
-	public void setAlltextures(boolean alltextures) {
-		this.alltextures = alltextures;
 	}
 
 	public boolean isDrawCache() {

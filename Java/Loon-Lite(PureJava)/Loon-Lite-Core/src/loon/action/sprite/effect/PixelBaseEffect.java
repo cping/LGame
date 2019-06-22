@@ -37,6 +37,8 @@ public abstract class PixelBaseEffect extends Entity {
 
 	protected boolean completed;
 
+	protected boolean autoRemoved;
+	
 	protected float[] startLocation;
 
 	protected float[] targetLocation;
@@ -123,9 +125,7 @@ public abstract class PixelBaseEffect extends Entity {
 		if(!isVisible()){
 			return;
 		}
-
 		draw(g, drawX(offsetX), drawY(offsetY));
-	
 	}
 
 	@Override
@@ -135,7 +135,7 @@ public abstract class PixelBaseEffect extends Entity {
 				next();
 			}
 		} else {
-			if (getSprites() != null) {
+			if (autoRemoved && getSprites() != null) {
 				getSprites().remove(this);
 			}
 		}
@@ -153,6 +153,15 @@ public abstract class PixelBaseEffect extends Entity {
 		return completed;
 	}
 
+	public boolean isAutoRemoved() {
+		return autoRemoved;
+	}
+
+	public PixelBaseEffect setAutoRemoved(boolean autoRemoved) {
+		this.autoRemoved = autoRemoved;
+		return this;
+	}
+	
 	@Override
 	public void close() {
 		super.close();
@@ -161,5 +170,6 @@ public abstract class PixelBaseEffect extends Entity {
 		startLocation = null;
 		targetLocation = null;
 	}
+
 
 }

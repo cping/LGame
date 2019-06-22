@@ -43,9 +43,39 @@ public class ActionCounter extends LimitedCounter {
 	}
 
 	@Override
+	public int increment(int v) {
+		boolean isLimitReachedBefore = isLimitReached();
+		int result = super.increment(v);
+		if (actListener != null && isLimitReached() && !isLimitReachedBefore) {
+			actListener.action(this);
+		}
+		return result;
+	}
+
+	@Override
 	public int increment() {
 		boolean isLimitReachedBefore = isLimitReached();
 		int result = super.increment();
+		if (actListener != null && isLimitReached() && !isLimitReachedBefore) {
+			actListener.action(this);
+		}
+		return result;
+	}
+
+	@Override
+	public int reduction(int v) {
+		boolean isLimitReachedBefore = isLimitReached();
+		int result = super.reduction(v);
+		if (actListener != null && isLimitReached() && !isLimitReachedBefore) {
+			actListener.action(this);
+		}
+		return result;
+	}
+
+	@Override
+	public int reduction() {
+		boolean isLimitReachedBefore = isLimitReached();
+		int result = super.reduction();
 		if (actListener != null && isLimitReached() && !isLimitReachedBefore) {
 			actListener.action(this);
 		}

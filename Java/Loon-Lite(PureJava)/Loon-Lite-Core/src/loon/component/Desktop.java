@@ -30,6 +30,7 @@ import loon.action.sprite.ISprite;
 import loon.component.layout.LayoutConstraints;
 import loon.component.layout.LayoutManager;
 import loon.component.layout.LayoutPort;
+import loon.component.layout.Margin;
 import loon.event.GameKey;
 import loon.event.QueryEvent;
 import loon.event.SysInput;
@@ -293,7 +294,7 @@ public class Desktop implements Visible, LRelease {
 		return removed;
 	}
 
-	boolean isClicked;
+	private boolean isClicked;
 
 	/**
 	 * 刷新当前桌面
@@ -499,7 +500,10 @@ public class Desktop implements Visible, LRelease {
 			int touchDx = (int) (input == null ? SysTouch.getDX() : this.input.getTouchDX());
 			int touchDy = (int) (input == null ? SysTouch.getDY() : this.input.getTouchDY());
 			// 获得当前窗体下鼠标坐标
-			LComponent comp = this.findComponent(touchX, touchY);
+			LComponent comp = null;
+			if (SysTouch.getButton() != -1) {
+				comp = this.findComponent(touchX, touchY);
+			}
 			if (comp != null && !comp._touchLocked) {
 				if (touchDx != 0 || touchDy != 0 || SysTouch.getDX() != 0 || SysTouch.getDY() != 0) {
 					comp.processTouchMoved();
@@ -515,15 +519,18 @@ public class Desktop implements Visible, LRelease {
 					if (tooltip != null) {
 						this.tooltip.setToolTipComponent(comp);
 					}
-					comp.processTouchEntered();
+					if (SysTouch.getButton() != -1) {
+						comp.processTouchEntered();
+					}
 				} else if (comp != this.hoverComponent && !this.hoverComponent._touchLocked) {
 					if (tooltip != null) {
 						this.tooltip.setToolTipComponent(comp);
 					}
 					this.hoverComponent.processTouchExited();
-					comp.processTouchEntered();
+					if (SysTouch.getButton() != -1) {
+						comp.processTouchEntered();
+					}
 				}
-
 			} else {
 				// 如果没有对应的悬停提示数据
 				if (tooltip != null) {
@@ -708,23 +715,21 @@ public class Desktop implements Visible, LRelease {
 		}
 	}
 
-	void clearComponentsStat(LComponent[] comp) {
-		if (comp == null) {
+	void clearComponentsStat(LComponent[] components) {
+		if (components == null) {
 			return;
 		}
 
 		boolean checkTouchMotion = false;
-		for (int i = 0; i < comp.length; i++) {
-			if (this.hoverComponent == comp[i]) {
+		for (int i = 0; i < components.length; i++) {
+			LComponent comp = components[i];
+			if (this.hoverComponent == comp) {
 				checkTouchMotion = true;
 			}
-
-			if (this.selectedComponent == comp[i]) {
+			if (this.selectedComponent == comp) {
 				this.deselectComponent();
 			}
-
 			this.clickComponent[0] = null;
-
 		}
 
 		if (checkTouchMotion) {
@@ -794,14 +799,18 @@ public class Desktop implements Visible, LRelease {
 
 	public UIControls createUIControls() {
 		UIControls controls = null;
-		if (contentPane != null && contentPane._childs != null) {
-			controls = new UIControls(contentPane._childs);
+		if (contentPane != null) {
+			controls = contentPane.createUIControls();
 		} else {
 			controls = new UIControls();
 		}
 		return controls;
 	}
 
+	public UIControls controls() {
+		return createUIControls();
+	}
+	
 	public UIControls findUINamesToUIControls(String... uiName) {
 		UIControls controls = null;
 		if (contentPane != null && contentPane._childs != null) {
@@ -927,7 +936,53 @@ public class Desktop implements Visible, LRelease {
 		}
 	}
 
+	public Desktop scrollBy(float x, float y) {
+		if (contentPane != null) {
+			contentPane.scrollBy(x, y);
+		}
+		return this;
+	}
+
+	public Desktop scrollTo(float x, float y) {
+		if (contentPane != null) {
+			contentPane.scrollTo(x, y);
+		}
+		return this;
+	}
+
+	public float scrollX() {
+		if (contentPane != null) {
+			return contentPane.scrollX();
+		}
+		return 0f;
+	}
+
+	public float scrollY() {
+		if (contentPane != null) {
+			return contentPane.scrollY();
+		}
+		return 0f;
+	}
+
+	public Desktop scrollX(float x) {
+		if (contentPane != null) {
+			contentPane.scrollX(x);
+		}
+		return this;
+	}
+
+	public Desktop scrollY(float y) {
+		if (contentPane != null) {
+			contentPane.scrollY(y);
+		}
+		return this;
+	}
+
 	public void resize() {
+		this.isClicked = false;
+		this.hoverComponent = null;
+		this.selectedComponent = null;
+		this.clickComponent[0] = null;
 		if (contentPane != null) {
 			contentPane.processResize();
 		}
@@ -971,6 +1026,14 @@ public class Desktop implements Visible, LRelease {
 	 */
 	public <T extends LComponent> TArray<T> select(QueryEvent<T> query) {
 		return contentPane.select(query);
+	}
+
+	public Margin margin(boolean vertical, float left, float top, float right, float bottom) {
+		float size = vertical ? getHeight() : getWidth();
+		if (dclosed) {
+			return new Margin(size, vertical);
+		}
+		return contentPane.margin(vertical, left, top, right, bottom);
 	}
 
 	public Screen getInput() {

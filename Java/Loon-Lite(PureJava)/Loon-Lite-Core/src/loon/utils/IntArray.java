@@ -539,6 +539,24 @@ public class IntArray implements IArray {
 		return false;
 	}
 
+	public int sum() {
+		if (length == 0) {
+			return 0;
+		}
+		int total = 0;
+		for (int i = length - 1; i > -1; i--) {
+			total += items[i];
+		}
+		return total;
+	}
+
+	public int average() {
+		if (length == 0) {
+			return 0;
+		}
+		return this.sum() / length;
+	}
+
 	public String toString(char split) {
 		if (length == 0) {
 			return "[]";

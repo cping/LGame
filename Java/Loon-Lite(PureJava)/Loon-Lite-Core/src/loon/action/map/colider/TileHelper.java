@@ -105,21 +105,26 @@ public class TileHelper implements Tile {
 	}
 
 	public void setWidth(float w) {
-		setWidth((int)w);
+		setWidth((int) w);
 	}
 
 	public void setHeight(float h) {
-		setHeight((int)h);
-	}
-	
-	@Override
-	public Tile at(int x, int y) {
-		return new TileHelper(-1, x, y, tileWidth, tileHeight);
+		setHeight((int) h);
 	}
 
 	@Override
-	public Tile at(int id, int x, int y) {
-		return new TileHelper(id, x, y, tileWidth, tileHeight);
+	public Tile at(int x, int y, int w, int h) {
+		return new TileHelper(-1, x, y, w, h);
+	}
+
+	@Override
+	public Tile at(int id, int x, int y, int w, int h) {
+		return new TileHelper(id, x, y, w, h);
+	}
+
+	@Override
+	public Tile getTileImpl() {
+		return new TileImpl(this.id, this.tileX, this.tileY, this.tileWidth, this.tileHeight);
 	}
 
 }

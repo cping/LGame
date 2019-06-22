@@ -20,8 +20,6 @@
  */
 package loon.action.map;
 
-import java.io.IOException;
-
 import loon.LObject;
 import loon.LSysException;
 import loon.LSystem;
@@ -82,6 +80,9 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	private final Field2D field2d;
 
+	private float _fixedWidthOffset = 0f;
+	private float _fixedHeightOffset = 0f;
+
 	private int lastOffsetX, lastOffsetY;
 
 	private ActionBind follow;
@@ -100,31 +101,31 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	private float scaleX = 1f, scaleY = 1f;
 
-	public TileMap(String fileName, int tileWidth, int tileHeight) throws IOException {
+	public TileMap(String fileName, int tileWidth, int tileHeight)  {
 		this(fileName, tileWidth, tileHeight, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), Format.LINEAR);
 	}
 
-	public TileMap(String fileName, Screen screen, int tileWidth, int tileHeight) throws IOException {
+	public TileMap(String fileName, Screen screen, int tileWidth, int tileHeight)  {
 		this(fileName, screen, tileWidth, tileHeight, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(),
 				Format.LINEAR);
 	}
 
-	public TileMap(String fileName, int tileWidth, int tileHeight, int mWidth, int mHeight) throws IOException {
+	public TileMap(String fileName, int tileWidth, int tileHeight, int mWidth, int mHeight)  {
 		this(fileName, tileWidth, tileHeight, mWidth, mHeight, Format.LINEAR);
 	}
 
 	public TileMap(String fileName, Screen screen, int tileWidth, int tileHeight, int mWidth, int mHeight)
-			throws IOException {
+			 {
 		this(fileName, screen, tileWidth, tileHeight, mWidth, mHeight, Format.LINEAR);
 	}
 
 	public TileMap(String fileName, int tileWidth, int tileHeight, int mWidth, int mHeight, Format format)
-			throws IOException {
+			 {
 		this(TileMapConfig.loadAthwartArray(fileName), tileWidth, tileHeight, mWidth, mHeight, format);
 	}
 
 	public TileMap(String fileName, Screen screen, int tileWidth, int tileHeight, int mWidth, int mHeight,
-			Format format) throws IOException {
+			Format format)  {
 		this(TileMapConfig.loadAthwartArray(fileName), screen, tileWidth, tileHeight, mWidth, mHeight, format);
 	}
 
@@ -726,12 +727,12 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	@Override
 	public float getHeight() {
-		return field2d.getHeight() * field2d.getTileWidth();
+		return (field2d.getHeight() * field2d.getTileWidth() * scaleY) - _fixedHeightOffset;
 	}
 
 	@Override
 	public float getWidth() {
-		return field2d.getWidth() * field2d.getTileHeight();
+		return (field2d.getWidth() * field2d.getTileHeight() * scaleX) - _fixedWidthOffset;
 	}
 
 	public int getRow() {
@@ -785,10 +786,8 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 			return;
 		}
 		boolean update = (_rotation != 0) || !(scaleX == 1f && scaleY == 1f);
-	//	int blend = g.getBlendMode();
 		int tmp = g.color();
 		try {
-		//	g.setBlendMode(_blend);
 			g.setAlpha(_alpha);
 			if (this.roll) {
 				this.offset = toRollPosition(this.offset);
@@ -826,7 +825,6 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 			if (update) {
 				g.restoreTx();
 			}
-			//g.setBlendMode(blend);
 			g.setColor(tmp);
 		}
 	}
@@ -957,7 +955,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	@Override
 	public RectBox getRectBox() {
-		return field2d.getRect();
+		return getCollisionBox();
 	}
 
 	public ActionBind getFollow() {
@@ -1167,6 +1165,58 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		return this._sprites == null ? super.getContainerHeight() : this._sprites.getHeight();
 	}
 
+	@Override
+	public float getFixedWidthOffset() {
+		return _fixedWidthOffset;
+	}
+
+	@Override
+	public void setFixedWidthOffset(float fixedWidthOffset) {
+		this._fixedWidthOffset = fixedWidthOffset;
+	}
+
+	@Override
+	public float getFixedHeightOffset() {
+		return _fixedHeightOffset;
+	}
+
+	@Override
+	public void setFixedHeightOffset(float fixedHeightOffset) {
+		this._fixedHeightOffset = fixedHeightOffset;
+	}
+
+	@Override
+	public boolean collides(ISprite e) {
+		if (e == null || !e.isVisible()) {
+			return false;
+		}
+		return getRectBox().intersects(e.getCollisionBox());
+	}
+
+	@Override
+	public boolean collidesX(ISprite other) {
+		if (other == null || !other.isVisible()) {
+			return false;
+		}
+		RectBox rectSelf = getRectBox();
+		RectBox a = new RectBox(rectSelf.getX(), 0, rectSelf.getWidth(), rectSelf.getHeight());
+		RectBox rectDst = getRectBox();
+		RectBox b = new RectBox(rectDst.getX(), 0, rectDst.getWidth(), rectDst.getHeight());
+		return a.intersects(b);
+	}
+
+	@Override
+	public boolean collidesY(ISprite other) {
+		if (other == null || !other.isVisible()) {
+			return false;
+		}
+		RectBox rectSelf = getRectBox();
+		RectBox a = new RectBox(0, rectSelf.getY(), rectSelf.getWidth(), rectSelf.getHeight());
+		RectBox rectDst = getRectBox();
+		RectBox b = new RectBox(0, rectDst.getY(), rectDst.getWidth(), rectDst.getHeight());
+		return a.intersects(b);
+	}
+	
 	public boolean isClosed() {
 		return isDisposed();
 	}

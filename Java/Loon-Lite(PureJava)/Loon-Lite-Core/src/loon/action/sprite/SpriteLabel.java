@@ -29,6 +29,10 @@ import loon.font.Text;
 import loon.font.TextOptions;
 import loon.opengl.GLEx;
 
+/**
+ * 一个精灵用字符串显示用类
+ * 
+ */
 public class SpriteLabel extends Entity {
 
 	private final Text _text;
@@ -41,8 +45,7 @@ public class SpriteLabel extends Entity {
 		this(LSystem.getSystemGameFont(), label, x, y);
 	}
 
-	public SpriteLabel(String label, String font, Style type, int size, int x,
-			int y) {
+	public SpriteLabel(String label, String font, Style type, int size, int x, int y) {
 		this(LFont.getFont(font, type, size), label, x, y);
 	}
 
@@ -52,6 +55,7 @@ public class SpriteLabel extends Entity {
 
 	public SpriteLabel(IFont font, TextOptions opt, String label, int x, int y) {
 		this._text = new Text(font, label, opt);
+		this.setSize(_text.getWidth(), _text.getHeight());
 		this.setRepaint(true);
 		this.setColor(LColor.white);
 		this.setLocation(x, y);
@@ -88,9 +92,9 @@ public class SpriteLabel extends Entity {
 		_text.setText(label);
 		return this;
 	}
-	
+
 	@Override
-	public void close(){
+	public void close() {
 		super.close();
 		_text.close();
 	}

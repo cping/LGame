@@ -25,15 +25,18 @@ import loon.LRelease;
 import loon.LSystem;
 import loon.utils.LIterator;
 import loon.utils.SortedList;
-import loon.utils.TimeUtils;
 import loon.utils.timer.LTimer;
 import loon.utils.timer.LTimerContext;
 
 public abstract class RealtimeProcess implements GameProcess, LRelease {
 
+	private static int GLOBAL_ID = 0;
+
 	protected boolean isDead;
 
 	protected final String id;
+
+	private GameProcessType processType = GameProcessType.Other;
 
 	private LTimer timer = new LTimer(LSystem.SECOND);
 
@@ -41,8 +44,12 @@ public abstract class RealtimeProcess implements GameProcess, LRelease {
 
 	private SortedList<GameProcess> processesToFireWhenFinished;
 
+	private final static String getProcessName(){
+		return "Process" + (GLOBAL_ID++);
+	}
+	
 	public RealtimeProcess() {
-		this("Process" + TimeUtils.millis());
+		this(getProcessName());
 	}
 
 	public RealtimeProcess(String id) {
@@ -50,13 +57,18 @@ public abstract class RealtimeProcess implements GameProcess, LRelease {
 	}
 
 	public RealtimeProcess(long delay) {
-		this("Process" + TimeUtils.millis(), delay);
+		this(getProcessName(), delay);
 	}
 
 	public RealtimeProcess(String id, long delay) {
+		this(id, delay, GameProcessType.Other);
+	}
+
+	public RealtimeProcess(String id, long delay, GameProcessType pt) {
 		this.isDead = false;
 		this.id = id;
 		this.timer.setDelay(delay);
+		this.processType = pt;
 	}
 
 	@Override
@@ -114,6 +126,16 @@ public abstract class RealtimeProcess implements GameProcess, LRelease {
 
 	public boolean isActive() {
 		return timer.isActive();
+	}
+
+	@Override
+	public GameProcessType getProcessType() {
+		return this.processType;
+	}
+
+	@Override
+	public void setProcessType(GameProcessType pt) {
+		this.processType = pt;
 	}
 
 	public abstract void run(LTimerContext time);

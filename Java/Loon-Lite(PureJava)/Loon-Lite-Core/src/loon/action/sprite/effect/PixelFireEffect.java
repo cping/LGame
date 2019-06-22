@@ -77,7 +77,7 @@ public class PixelFireEffect extends Entity implements BaseEffect {
 		}
 
 		void update(long elapsedTime) {
-			float delta = MathUtils.max(elapsedTime / 1000f, 0.001f) * _effect._speed;
+			float delta = MathUtils.max(elapsedTime / 1000f, 0.01f) * _effect._speed;
 			_y -= _vy;
 			if (_id % 2 == 0) {
 				_x += MathUtils.sin(_vx, _effect._angle, 1f, true);

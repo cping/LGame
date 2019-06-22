@@ -39,8 +39,14 @@ public class LightningEffect extends Entity {
 	private int _countCompleted;
 
 	private boolean _completed;
+	
+	private boolean _autoRemoved;
 
 	private static LightningEffect instance;
+	
+	public final static void freeStatic(){
+		instance = null;
+	}
 
 	final static LightningEffect make() {
 		return new LightningEffect();
@@ -136,7 +142,7 @@ public class LightningEffect extends Entity {
 			_completed = true;
 		}
 		if (_completed) {
-			if (getSprites() != null) {
+			if (_autoRemoved && getSprites() != null) {
 				getSprites().remove(this);
 			}
 		}
@@ -185,6 +191,15 @@ public class LightningEffect extends Entity {
 
 	public void loadLightning() {
 		loadLightning(new LTexturePack(LSystem.getSystemImagePath() + "natural.txt"));
+	}
+
+	public boolean isAutoRemoved() {
+		return _autoRemoved;
+	}
+
+	public LightningEffect setAutoRemoved(boolean autoRemoved) {
+		this._autoRemoved = autoRemoved;
+		return this;
 	}
 
 	@Override

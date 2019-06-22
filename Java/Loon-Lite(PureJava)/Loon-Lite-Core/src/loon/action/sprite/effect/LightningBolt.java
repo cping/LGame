@@ -41,7 +41,7 @@ public class LightningBolt implements ILightning {
 	private LTimer timer = new LTimer(0);
 
 	private TArray<LightningLine> segments = new TArray<LightningLine>();
-	
+
 	private boolean closed;
 
 	public LightningBolt(Vector2f source, Vector2f dest) {
@@ -169,7 +169,9 @@ public class LightningBolt implements ILightning {
 
 	@Override
 	public void close() {
-		segments.clear();
+		if (segments != null) {
+			segments.clear();
+		}
 		closed = true;
 	}
 

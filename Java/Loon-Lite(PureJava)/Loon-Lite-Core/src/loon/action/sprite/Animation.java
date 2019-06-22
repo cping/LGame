@@ -27,37 +27,60 @@ import loon.canvas.LColor;
 import loon.opengl.TextureUtils;
 import loon.utils.CollectionUtils;
 import loon.utils.IArray;
+import loon.utils.MathUtils;
+import loon.utils.StringUtils;
 import loon.utils.TArray;
 import loon.utils.res.MovieSpriteSheet;
 import loon.utils.timer.LTimer;
 
 public class Animation implements IArray, LRelease {
 
+	private static class AnimationFrame implements LRelease {
+
+		protected LTexture image;
+
+		protected long endTimer;
+
+		public AnimationFrame(LTexture image, long endTimer) {
+			this.image = image;
+			this.endTimer = endTimer;
+		}
+
+		@Override
+		public void close() {
+			if (image != null) {
+				image.close();
+			}
+		}
+	}
+
 	public static interface AnimationListener {
 		public void onComplete(Animation animation);
 	}
 
-	public AnimationListener Listener;
+	protected AnimationListener listener;
 
 	public void setAnimationListener(AnimationListener l) {
-		this.Listener = l;
+		this.listener = l;
 	}
 
 	public AnimationListener getAnimationListener() {
-		return this.Listener;
+		return this.listener;
 	}
 
-	boolean isRunning, aClosed;
+	protected boolean isRunning, aClosed;
 
 	private TArray<AnimationFrame> frames;
 
-	int loopCount, loopPlay;
+	protected int loopCount, loopPlay;
 
-	int currentFrameIndex;
+	protected int currentFrameIndex;
 
-	long animTime = 0, totalDuration = 0;
+	protected long animTime = 0, totalDuration = 0;
 
-	int size;
+	protected int length;
+
+	protected String animationName;
 
 	private LTimer intervalTime = new LTimer(0);
 
@@ -66,6 +89,7 @@ public class Animation implements IArray, LRelease {
 	}
 
 	public Animation(Animation a) {
+		this.animationName = a.animationName;
 		this.isRunning = a.isRunning;
 		this.frames = new TArray<Animation.AnimationFrame>(a.frames);
 		this.loopCount = a.loopCount;
@@ -73,13 +97,14 @@ public class Animation implements IArray, LRelease {
 		this.currentFrameIndex = a.currentFrameIndex;
 		this.animTime = a.animTime;
 		this.totalDuration = a.totalDuration;
-		this.size = frames.size;
+		this.length = frames.size;
 	}
 
 	private Animation(TArray<AnimationFrame> frames, long totalDuration) {
+		this.animationName = LSystem.UNKOWN;
 		this.loopCount = -1;
 		this.frames = frames;
-		this.size = frames.size;
+		this.length = frames.size;
 		this.totalDuration = totalDuration;
 		this.isRunning = true;
 		start();
@@ -216,10 +241,11 @@ public class Animation implements IArray, LRelease {
 	 * @param image
 	 * @param timer
 	 */
-	public synchronized void addFrame(LTexture image, long timer) {
+	public Animation addFrame(LTexture image, long timer) {
 		totalDuration += timer;
 		frames.add(new AnimationFrame(image, totalDuration));
-		size++;
+		length++;
+		return this;
 	}
 
 	/**
@@ -228,38 +254,60 @@ public class Animation implements IArray, LRelease {
 	 * @param fileName
 	 * @param timer
 	 */
-	public synchronized void addFrame(String fileName, long timer) {
-		addFrame(LSystem.loadTexture(fileName), timer);
+	public Animation addFrame(String fileName, long timer) {
+		return addFrame(LSystem.loadTexture(fileName), timer);
 	}
 
 	/**
 	 * 开始执行动画
 	 * 
 	 */
-	public synchronized void start() {
-		play(0);
+	public Animation start() {
+		return play(0);
 	}
 
 	/**
 	 * 开始执行动画
 	 * 
 	 */
-	public synchronized void play(int idx) {
+	public Animation play(int idx) {
 		animTime = 0;
-		if (size > 0) {
+		if (length > 0) {
 			currentFrameIndex = idx;
 		}
+		this.isRunning = true;
+		return this;
+	}
+
+	/**
+	 * 停止动画播放
+	 * 
+	 * @return
+	 */
+	public Animation stop() {
+		this.isRunning = false;
+		return this;
 	}
 
 	/**
 	 * 刷新动画为初始状态
 	 */
-	public void reset() {
+	public Animation reset() {
 		animTime = 0;
 		currentFrameIndex = 0;
 		loopPlay = 0;
 		loopCount = -1;
 		isRunning = true;
+		return this;
+	}
+
+	/**
+	 * 更新当前动画
+	 * 
+	 * @param delta
+	 */
+	public void update(float delta) {
+		update((long) (MathUtils.max(delta * 1000, 10)));
 	}
 
 	/**
@@ -267,7 +315,7 @@ public class Animation implements IArray, LRelease {
 	 * 
 	 * @param timer
 	 */
-	public synchronized void update(long timer) {
+	public void update(long timer) {
 		if (loopCount != -1 && loopPlay > loopCount) {
 			return;
 		}
@@ -275,11 +323,11 @@ public class Animation implements IArray, LRelease {
 			return;
 		}
 		if (isRunning && intervalTime.action(timer)) {
-			if (size > 0) {
+			if (length > 0) {
 				animTime += timer;
 				if (animTime > totalDuration) {
-					if (Listener != null) {
-						Listener.onComplete(this);
+					if (listener != null) {
+						listener.onComplete(this);
 					}
 					animTime = animTime % totalDuration;
 					currentFrameIndex = 0;
@@ -298,7 +346,7 @@ public class Animation implements IArray, LRelease {
 	 * @return
 	 */
 	public LTexture getSpriteImage() {
-		if (size == 0) {
+		if (length == 0) {
 			return null;
 		} else {
 			final LTexture texture = getFrame(currentFrameIndex).image;
@@ -316,7 +364,7 @@ public class Animation implements IArray, LRelease {
 	 * @return
 	 */
 	public LTexture getSpriteImage(int index) {
-		if (index < 0 || index >= size) {
+		if (index < 0 || index >= length) {
 			return null;
 		} else {
 			LTexture texture = getFrame(index).image;
@@ -328,6 +376,32 @@ public class Animation implements IArray, LRelease {
 	}
 
 	/**
+	 * 返回当前动画当前帧宽度
+	 * 
+	 * @return
+	 */
+	public int getWidth() {
+		LTexture tex = getSpriteImage();
+		if (tex != null) {
+			return tex.getWidth();
+		}
+		return 0;
+	}
+
+	/**
+	 * 返回当前动画当前帧高度
+	 * 
+	 * @return
+	 */
+	public int getHeight() {
+		LTexture tex = getSpriteImage();
+		if (tex != null) {
+			return tex.getHeight();
+		}
+		return 0;
+	}
+
+	/**
 	 * 返回当前动画面板
 	 * 
 	 * @param i
@@ -336,8 +410,8 @@ public class Animation implements IArray, LRelease {
 	private AnimationFrame getFrame(int index) {
 		if (index < 0) {
 			return frames.get(0);
-		} else if (index >= size) {
-			return frames.get(size - 1);
+		} else if (index >= length) {
+			return frames.get(length - 1);
 		}
 		return frames.get(index);
 	}
@@ -369,28 +443,41 @@ public class Animation implements IArray, LRelease {
 		return this.currentFrameIndex;
 	}
 
-	public void setCurrentFrameIndex(int index) {
-		this.currentFrameIndex = index;
+	public Animation setCurrentFrameIndex(int index) {
+		this.currentFrameIndex = MathUtils.clamp(index, 0, MathUtils.min(frames.size, length));
+		return this;
+	}
+
+	/**
+	 * 在当前帧基础上，向前(+)或向后(-)移动指定帧
+	 * 
+	 * @param n
+	 * @return
+	 */
+	public Animation moveFrame(int n) {
+		return this.setCurrentFrameIndex(this.currentFrameIndex + n);
 	}
 
 	public int getTotalFrames() {
-		return size;
+		return length;
 	}
 
 	public int getLoopCount() {
 		return loopCount;
 	}
 
-	public void setLoopCount(int loopCount) {
+	public Animation setLoopCount(int loopCount) {
 		this.loopCount = loopCount;
+		return this;
 	}
 
-	public void setDelay(long d) {
+	public Animation setDelay(long d) {
 		intervalTime.setDelay(d);
+		return this;
 	}
 
-	public void setInterval(long d) {
-		setDelay(d);
+	public Animation setInterval(long d) {
+		return setDelay(d);
 	}
 
 	public long getDelay() {
@@ -399,30 +486,6 @@ public class Animation implements IArray, LRelease {
 
 	public long getInterval() {
 		return getDelay();
-	}
-
-	private static class AnimationFrame implements LRelease {
-
-		LTexture image;
-
-		long endTimer;
-
-		public AnimationFrame(LTexture image, long endTimer) {
-			this.image = image;
-			this.endTimer = endTimer;
-		}
-
-		@Override
-		public void close() {
-			if (image != null) {
-				LTexture father = image.getParent();
-				if (father != null && !father.disposed()) {
-					father.close();
-				} else if (image != null && !image.disposed()) {
-					image.close();
-				}
-			}
-		}
 	}
 
 	@Override
@@ -435,12 +498,12 @@ public class Animation implements IArray, LRelease {
 			}
 			frames.clear();
 		}
-		this.size = 0;
+		this.length = 0;
 	}
 
 	@Override
 	public boolean isEmpty() {
-		return this.size == 0;
+		return this.length == 0;
 	}
 
 	public boolean isClosed() {
@@ -456,6 +519,52 @@ public class Animation implements IArray, LRelease {
 	@Override
 	public int size() {
 		return frames.size;
+	}
+
+	public Animation increment() {
+		return increment(1);
+	}
+
+	public Animation increment(int v) {
+		currentFrameIndex += v;
+		if (currentFrameIndex >= length) {
+			done();
+		}
+		return this;
+	}
+
+	public Animation reduction() {
+		return reduction(1);
+	}
+
+	public Animation reduction(int v) {
+		currentFrameIndex -= v;
+		if (currentFrameIndex < 0) {
+			done();
+		}
+		return this;
+	}
+
+	public Animation done() {
+		if (currentFrameIndex < 0) {
+			currentFrameIndex = 0;
+		} else {
+			currentFrameIndex = length - 1;
+		}
+		isRunning = false;
+		return this;
+	}
+
+	public String getAnimationName() {
+		return animationName;
+	}
+
+	public Animation setAnimationName(String ani) {
+		if (StringUtils.isEmpty(ani)) {
+			return this;
+		}
+		this.animationName = ani;
+		return this;
 	}
 
 }

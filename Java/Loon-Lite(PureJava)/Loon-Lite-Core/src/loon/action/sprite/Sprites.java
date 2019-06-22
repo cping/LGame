@@ -27,6 +27,7 @@ import loon.Screen;
 import loon.Visible;
 import loon.action.ActionBind;
 import loon.action.ActionControl;
+import loon.component.layout.Margin;
 import loon.event.QueryEvent;
 import loon.geom.PointI;
 import loon.geom.RectBox;
@@ -51,7 +52,13 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	}
 
+	private Margin _margin;
+
 	protected ISprite[] _sprites;
+
+	private float _scrollX;
+
+	private float _scrollY;
 
 	private int viewX;
 
@@ -72,7 +79,7 @@ public class Sprites implements IArray, Visible, LRelease {
 	private int _width, _height;
 
 	private float _newLineHeight = -1f;
-	
+
 	private Screen _screen;
 
 	private final String _sprites_name;
@@ -314,7 +321,7 @@ public class Sprites implements IArray, Visible, LRelease {
 	public ISprite addRow(ISprite spr, float offX) {
 		return addPadding(spr, offX, 0, 0);
 	}
-	
+
 	/**
 	 * 按照上一个精灵的x,y位置,另起一行添加精灵,并偏移指定位置
 	 * 
@@ -334,28 +341,22 @@ public class Sprites implements IArray, Visible, LRelease {
 		if (this == spr) {
 			return spr;
 		}
-		
+
 		float maxX = 0;
 		float maxY = 0;
 
 		ISprite tag = null;
 
 		if (_size == 1) {
-
 			ISprite cp = _sprites[0];
-
 			if (cp != null && cp.getY() >= _newLineHeight) {
 				maxX = cp.getX();
 				maxY = cp.getY();
 				tag = cp;
 			}
-
 		} else {
-
 			for (int i = 0; i < _size; i++) {
-
 				ISprite c = _sprites[i];
-
 				if (c != null && c != spr && c.getY() >= _newLineHeight) {
 					float oldMaxX = maxX;
 					float oldMaxY = maxY;
@@ -373,7 +374,6 @@ public class Sprites implements IArray, Visible, LRelease {
 		}
 
 		if (tag != null && tag != spr) {
-
 			switch (code) {
 			case 0:
 				spr.setLocation(maxX + tag.getWidth() + offX, maxY + offY);
@@ -387,7 +387,6 @@ public class Sprites implements IArray, Visible, LRelease {
 			}
 
 		} else {
-
 			switch (code) {
 			case 0:
 				spr.setLocation(maxX + offX, maxY + offY);
@@ -399,13 +398,10 @@ public class Sprites implements IArray, Visible, LRelease {
 				spr.setLocation(maxX + offX, maxY + offY);
 				break;
 			}
-
 		}
 
 		add(spr);
-
 		_newLineHeight = spr.getY();
-
 		return spr;
 	}
 
@@ -684,6 +680,110 @@ public class Sprites implements IArray, Visible, LRelease {
 	}
 
 	/**
+	 * 返回指定位置内的所有精灵
+	 * 
+	 * @param x
+	 * @param y
+	 * @param w
+	 * @param h
+	 * @return
+	 */
+	public TArray<ISprite> contains(float x, float y, float w, float h) {
+		TArray<ISprite> sprites = new TArray<ISprite>();
+		if (_closed) {
+			return sprites;
+		}
+		if (_sprites == null) {
+			return sprites;
+		}
+		for (int i = 0; i < _size; i++) {
+			ISprite sp = _sprites[i];
+			if (sp != null) {
+				if (sp.inContains(x, y, w, h)) {
+					sprites.add(sp);
+				}
+			}
+		}
+		return sprites;
+	}
+
+	/**
+	 * 返回包含指定位置的所有精灵
+	 * 
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public TArray<ISprite> contains(float x, float y) {
+		return contains(x, y, 1f, 1f);
+	}
+
+	/**
+	 * 返回包含指定精灵位置的所有精灵
+	 * 
+	 * @param sprite
+	 * @return
+	 */
+	public TArray<ISprite> containsSprite(ISprite sprite) {
+		if (sprite == null) {
+			return new TArray<ISprite>(0);
+		}
+		return contains(sprite.getX(), sprite.getY(), sprite.getWidth(), sprite.getHeight());
+	}
+
+	/**
+	 * 返回指定位置内的所有精灵
+	 * 
+	 * @param x
+	 * @param y
+	 * @param w
+	 * @param h
+	 * @return
+	 */
+	public TArray<ISprite> intersects(float x, float y, float w, float h) {
+		TArray<ISprite> sprites = new TArray<ISprite>();
+		if (_closed) {
+			return sprites;
+		}
+		if (_sprites == null) {
+			return sprites;
+		}
+		for (int i = 0; i < _size; i++) {
+			ISprite sp = _sprites[i];
+			if (sp != null) {
+				if (sp.getCollisionBox().intersects(x, y, w, h)) {
+					sprites.add(sp);
+				}
+			}
+		}
+		return sprites;
+	}
+
+	/**
+	 * 返回与指定位置相交的所有精灵
+	 * 
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public TArray<ISprite> intersects(float x, float y) {
+		return intersects(x, y, 1f, 1f);
+	}
+
+	/**
+	 * 返回与指定精灵位置相交的所有精灵
+	 * 
+	 * @param sprite
+	 * @return
+	 */
+	public TArray<ISprite> intersectsSprite(ISprite sprite) {
+		if (sprite == null) {
+			return new TArray<ISprite>(0);
+		}
+		return intersects(sprite.getX(), sprite.getY(), sprite.getWidth(), sprite.getHeight());
+	}
+
+	/**
 	 * 删除指定索引处精灵
 	 * 
 	 * @param index
@@ -923,6 +1023,7 @@ public class Sprites implements IArray, Visible, LRelease {
 		float spriteY;
 		float spriteWidth;
 		float spriteHeight;
+
 		for (int i = 0; i < this._size; i++) {
 			ISprite spr = this._sprites[i];
 			if (spr != null && spr.isVisible()) {
@@ -974,6 +1075,21 @@ public class Sprites implements IArray, Visible, LRelease {
 		if (!_visible) {
 			return;
 		}
+
+		final float newScrollX = _scrollX;
+		final float newScrollY = _scrollY;
+
+		final int drawWidth = _width;
+		final int drawHeight = _height;
+
+		final float startX = MathUtils.scroll(newScrollX, drawWidth);
+		final float startY = MathUtils.scroll(newScrollY, drawHeight);
+
+		final boolean update = (startX != 0f || startY != 0f);
+
+		if (update) {
+			g.translate(startX, startY);
+		}
 		float minX, minY, maxX, maxY;
 		if (this._isViewWindowSet) {
 			minX = x + this.viewX;
@@ -1005,6 +1121,9 @@ public class Sprites implements IArray, Visible, LRelease {
 		}
 		if (offset) {
 			g.translate(-minX, -minY);
+		}
+		if (update) {
+			g.translate(-startX, -startY);
 		}
 	}
 
@@ -1049,7 +1168,7 @@ public class Sprites implements IArray, Visible, LRelease {
 			return new SpriteControls();
 		}
 		SpriteControls controls = null;
-		if (_sprites != null) {
+		if (_sprites != null && _size > 0) {
 			controls = new SpriteControls(_sprites);
 		} else {
 			controls = new SpriteControls();
@@ -1057,6 +1176,10 @@ public class Sprites implements IArray, Visible, LRelease {
 		return controls;
 	}
 
+	public SpriteControls controls() {
+		return createSpriteControls();
+	}
+	
 	public SpriteControls findNamesToSpriteControls(String... names) {
 		if (_closed) {
 			return new SpriteControls();
@@ -1127,9 +1250,7 @@ public class Sprites implements IArray, Visible, LRelease {
 	 * @return
 	 */
 	public TArray<ISprite> remove(QueryEvent<ISprite> query) {
-
 		TArray<ISprite> result = new TArray<ISprite>();
-
 		for (int i = _sprites.length - 1; i > -1; i--) {
 			ISprite sprite = _sprites[i];
 			if (sprite != null) {
@@ -1139,7 +1260,6 @@ public class Sprites implements IArray, Visible, LRelease {
 				}
 			}
 		}
-
 		return result;
 	}
 
@@ -1150,9 +1270,7 @@ public class Sprites implements IArray, Visible, LRelease {
 	 * @return
 	 */
 	public TArray<ISprite> find(QueryEvent<ISprite> query) {
-
 		TArray<ISprite> result = new TArray<ISprite>();
-
 		for (int i = _sprites.length - 1; i > -1; i--) {
 			ISprite sprite = _sprites[i];
 			if (sprite != null) {
@@ -1161,7 +1279,6 @@ public class Sprites implements IArray, Visible, LRelease {
 				}
 			}
 		}
-
 		return result;
 	}
 
@@ -1172,13 +1289,10 @@ public class Sprites implements IArray, Visible, LRelease {
 	 * @return
 	 */
 	public <T extends ISprite> TArray<T> delete(QueryEvent<T> query) {
-
 		TArray<T> result = new TArray<T>();
-
 		for (int i = _sprites.length - 1; i > -1; i--) {
 			ISprite sprite = _sprites[i];
 			if (sprite != null) {
-
 				@SuppressWarnings("unchecked")
 				T v = (T) sprite;
 				if (query.hit(v)) {
@@ -1187,7 +1301,6 @@ public class Sprites implements IArray, Visible, LRelease {
 				}
 			}
 		}
-
 		return result;
 	}
 
@@ -1198,12 +1311,9 @@ public class Sprites implements IArray, Visible, LRelease {
 	 * @return
 	 */
 	public <T extends ISprite> TArray<T> select(QueryEvent<T> query) {
-
 		TArray<T> result = new TArray<T>();
-
 		for (int i = _sprites.length - 1; i > -1; i--) {
 			ISprite sprite = _sprites[i];
-
 			if (sprite != null) {
 				@SuppressWarnings("unchecked")
 				T v = (T) sprite;
@@ -1248,6 +1358,58 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	public Screen getScreen() {
 		return _screen;
+	}
+
+	public Sprites scrollBy(float x, float y) {
+		this._scrollX += x;
+		this._scrollY += y;
+		return this;
+	}
+
+	public Sprites scrollTo(float x, float y) {
+		this._scrollX = x;
+		this._scrollY = y;
+		return this;
+	}
+
+	public float scrollX() {
+		return this._scrollX;
+	}
+
+	public float scrollY() {
+		return this._scrollY;
+	}
+
+	public Sprites scrollX(float x) {
+		this._scrollX = x;
+		return this;
+	}
+
+	public Sprites scrollY(float y) {
+		this._scrollY = y;
+		return this;
+	}
+
+	public Margin margin(boolean vertical, float left, float top, float right, float bottom) {
+		float size = vertical ? getHeight() : getWidth();
+		if (_closed) {
+			return new Margin(size, vertical);
+		}
+		if (_margin == null) {
+			_margin = new Margin(size, vertical);
+		} else {
+			_margin.setSize(size);
+			_margin.setVertical(vertical);
+		}
+		_margin.setMargin(left, top, right, bottom);
+		_margin.clear();
+		for (int i = 0; i < _size; i++) {
+			ISprite spr = _sprites[i];
+			if (spr != null) {
+				_margin.addChild(spr);
+			}
+		}
+		return _margin;
 	}
 
 	public String getName() {

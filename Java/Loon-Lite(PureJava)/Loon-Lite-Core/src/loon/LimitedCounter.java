@@ -21,18 +21,35 @@
 package loon;
 
 /**
- * 一个限制计数次数的计数器
+ * 一个限制计数可操作最大值的计数器
  */
 public class LimitedCounter extends Counter {
-	
-	private int limit;
+
+	private int _limit;
 
 	public LimitedCounter(int limit) {
-		this.limit = limit;
+		this(limit, 0);
+	}
+
+	public LimitedCounter(int limit, int v) {
+		this(limit, v, -1, -1);
+	}
+
+	public LimitedCounter(int limit, int v, int min, int max) {
+		super(v, min, max);
+		this._limit = limit;
 	}
 
 	public int getLimit() {
-		return limit;
+		return _limit;
+	}
+
+	@Override
+	public int increment(int val) {
+		if (!isLimitReached()) {
+			return super.increment(val);
+		}
+		return getValue();
 	}
 
 	@Override
@@ -43,17 +60,28 @@ public class LimitedCounter extends Counter {
 		return getValue();
 	}
 
-	public int valuesUntilLimitRemains() {
-		return limit - getValue();
+	@Override
+	public int reduction(int val) {
+		if (!isLimitReached()) {
+			return super.reduction(val);
+		}
+		return getValue();
 	}
 
 	@Override
-	public void clear() {
-		super.clear();
+	public int reduction() {
+		if (!isLimitReached()) {
+			return super.reduction();
+		}
+		return getValue();
+	}
+
+	public int valuesUntilLimitRemains() {
+		return _limit - getValue();
 	}
 
 	public boolean isLimitReached() {
-		return getValue() == limit;
+		return _limit > 0 ? (getValue() >= _limit) : (getValue() <= _limit);
 	}
 
 }

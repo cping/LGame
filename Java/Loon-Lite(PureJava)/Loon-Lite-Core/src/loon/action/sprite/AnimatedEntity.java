@@ -22,6 +22,7 @@ package loon.action.sprite;
 
 import loon.LTexture;
 import loon.utils.CollectionUtils;
+import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
 
 /**
@@ -30,6 +31,52 @@ import loon.utils.ObjectMap;
 public class AnimatedEntity extends Entity {
 
 	public static class PlayIndex {
+
+		public final static PlayIndex at(int[] animates) {
+			return at(220, animates);
+		}
+
+		public final static PlayIndex at(long frameTime, int[] animates) {
+			if (animates == null) {
+				return null;
+			}
+			int size = animates.length;
+			long[] frames = new long[size];
+			for (int i = 0; i < size; i++) {
+				frames[i] = frameTime;
+			}
+			return create(frames, animates);
+		}
+
+		public final static PlayIndex at(long frameTime, int startIdx, int endIdx) {
+			startIdx = MathUtils.abs(startIdx);
+			endIdx = MathUtils.abs(endIdx);
+			int size = endIdx - startIdx + 1;
+			long[] frames = new long[size];
+			for (int i = 0; i < size; i++) {
+				frames[i] = frameTime;
+			}
+			return at(frames, startIdx, endIdx);
+		}
+
+		public final static PlayIndex at(long[] frames, int startIdx, int endIdx) {
+			startIdx = MathUtils.abs(startIdx);
+			endIdx = MathUtils.abs(endIdx);
+			int size = endIdx - startIdx + 1;
+			int[] animateIndexs = null;
+			if (size <= 0) {
+				animateIndexs = new int[2];
+				animateIndexs[0] = startIdx;
+				animateIndexs[1] = endIdx;
+			} else {
+				animateIndexs = new int[size];
+				for (int i = 0; i < size; i++) {
+					int idx = startIdx + i;
+					animateIndexs[i] = idx;
+				}
+			}
+			return create(frames, animateIndexs);
+		}
 
 		public final static PlayIndex at(long[] frames, int[] animates) {
 			return create(frames, animates);
@@ -43,8 +90,8 @@ public class AnimatedEntity extends Entity {
 
 		final int[] animates;
 
-		public PlayIndex(long[] f, int[] ani) {
-			this.frames = CollectionUtils.copyOf(f);
+		public PlayIndex(long[] frame, int[] ani) {
+			this.frames = CollectionUtils.copyOf(frame);
 			this.animates = CollectionUtils.copyOf(ani);
 		}
 
@@ -77,6 +124,7 @@ public class AnimatedEntity extends Entity {
 
 	private boolean _animationRunning;
 	private boolean _animationStartedFired;
+	private boolean _animationDispose;
 
 	private int _currentFrameIndex;
 	private long _animationProgress;
@@ -112,6 +160,7 @@ public class AnimatedEntity extends Entity {
 		this.setSize(width, height);
 		this._playEvents = new ObjectMap<String, AnimatedEntity.PlayIndex>(8);
 		this._animation = ani;
+		this._animationDispose = (this._animation != null);
 	}
 
 	@Override
@@ -421,7 +470,7 @@ public class AnimatedEntity extends Entity {
 	}
 
 	public int getCount() {
-		return _animation.size;
+		return _animation.length;
 	}
 
 	public AnimatedEntity setPlayIndex(String key, PlayIndex play) {
@@ -438,11 +487,22 @@ public class AnimatedEntity extends Entity {
 		return this;
 	}
 
+	public boolean isAnimationDispose() {
+		return _animationDispose;
+	}
+
+	public void setAnimationDispose(boolean dispose) {
+		this._animationDispose = dispose;
+	}
+
 	@Override
 	public void close() {
 		super.close();
 		this.stopAnimation();
 		this.clearPlayEvents();
+		if (_animationDispose && _animation != null) {
+			_animation.close();
+		}
 	}
 
 }

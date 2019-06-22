@@ -18,12 +18,16 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.utils.processes;
+package loon.action.sprite;
 
-import loon.LSysException;
+import loon.LSystem;
+import loon.canvas.LColor;
 
-public interface ProgressCallable<T> {
-	
-	public T call(final ProgressListener p) throws LSysException;
-	
+public class ColorBackground extends ImageBackground {
+
+	public ColorBackground(LColor c, float x, float y, float w, float h) {
+		super(LSystem.base().graphics().finalColorTex(), x, y, w, h);
+		this.setColor(c);
+	}
+
 }

@@ -421,7 +421,6 @@ public abstract class LComponent extends LObject<LContainer>
 			return;
 		}
 		synchronized (this) {
-		//	int blend = g.getBlendMode();
 			boolean update = _rotation != 0 || !(_scaleX == 1f && _scaleY == 1f) || _flipX || _flipY;
 			try {
 				g.saveBrush();
@@ -460,7 +459,6 @@ public abstract class LComponent extends LObject<LContainer>
 						tx.translate(-centerX, -centerY);
 					}
 				}
-				//g.setBlendMode(_blend);
 				if (_drawBackground && _background != null) {
 					g.draw(_background, this._screenX, this._screenY, width, height, _component_baseColor);
 				}
@@ -479,7 +477,6 @@ public abstract class LComponent extends LObject<LContainer>
 				if (this._component_elastic) {
 					g.clearClip();
 				}
-			//	g.setBlendMode(blend);
 				g.restoreBrush();
 			}
 		}
@@ -502,14 +499,29 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public boolean contains(float x, float y, float width, float height) {
-		return (this._component_visible
-				&& (x >= this._screenX && y >= this._screenY && ((x + width) <= (this._screenX + this._width * _scaleX))
-						&& ((y + height) <= (this._screenY + this._height * _scaleY))));
+		return (this._component_visible && (x >= this.getDrawScrollX() && y >= this.getDrawScrollY()
+				&& ((x + width) <= (this.getDrawScrollX() + this._width * _scaleX))
+				&& ((y + height) <= (this.getDrawScrollY() + this._height * _scaleY))));
 	}
 
 	public boolean intersects(float x1, float y1) {
-		return (this._component_visible) && (x1 >= this._screenX && x1 <= this._screenX + this._width * _scaleX
-				&& y1 >= this._screenY && y1 <= this._screenY + this._height * _scaleY);
+		return (this._component_visible)
+				&& (x1 >= this.getDrawScrollX() && x1 <= this.getDrawScrollX() + this._width * _scaleX
+						&& y1 >= this.getDrawScrollY() && y1 <= this.getDrawScrollY() + this._height * _scaleY);
+	}
+
+	protected float getDrawScrollX() {
+		if (_super != null) {
+			return this._screenX - _super._component_scrollX;
+		}
+		return this._screenX;
+	}
+
+	protected float getDrawScrollY() {
+		if (_super != null) {
+			return this._screenY - _super._component_scrollY;
+		}
+		return this._screenY;
 	}
 
 	@Override
@@ -524,10 +536,10 @@ public abstract class LComponent extends LObject<LContainer>
 
 	public boolean intersects(LComponent comp) {
 		return (this._component_visible) && (comp.isVisible())
-				&& (this._screenX + this._width * _scaleX >= comp._screenX
-						&& this._screenX <= comp._screenX + comp._width
-						&& this._screenY + this._height * _scaleY >= comp._screenY
-						&& this._screenY <= comp._screenY + comp._height);
+				&& (this.getDrawScrollX() + this._width * _scaleX >= comp.getDrawScrollX()
+						&& this.getDrawScrollX() <= comp.getDrawScrollX() + comp._width
+						&& this.getDrawScrollY() + this._height * _scaleY >= comp.getDrawScrollY()
+						&& this.getDrawScrollY() <= comp.getDrawScrollY() + comp._height);
 	}
 
 	@Override
@@ -754,8 +766,8 @@ public abstract class LComponent extends LObject<LContainer>
 
 	public RectBox getCollisionBox() {
 		validatePosition();
-		return setRect(
-				MathUtils.getBounds(_screenX, _screenY, getWidth() * _scaleX, getHeight() * _scaleY, _rotation, _rect));
+		return setRect(MathUtils.getBounds(getDrawScrollX(), getDrawScrollY(), getWidth() * _scaleX,
+				getHeight() * _scaleY, _rotation, _rect));
 	}
 
 	public LComponent getToolTipParent() {
@@ -883,7 +895,7 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	protected void processResize() {
-	};
+	}
 
 	void keyPressed() {
 		this.checkFocusKey();
@@ -910,17 +922,16 @@ public abstract class LComponent extends LObject<LContainer>
 
 	public void setImageUI(LTexture[] imageUI, boolean processUI) {
 		if (imageUI != null) {
-			this._width = (int) imageUI[0].width();
-			this._height = (int) imageUI[0].height();
+			this._width = imageUI[0].getWidth();
+			this._height = imageUI[0].getHeight();
 		}
-
 		this._imageUI = imageUI;
 	}
 
 	public void setImageUI(int index, LTexture imageUI) {
 		if (imageUI != null) {
-			this._width = (int) imageUI.width();
-			this._height = (int) imageUI.height();
+			this._width = imageUI.getWidth();
+			this._height = imageUI.getHeight();
 		}
 		this._imageUI[index] = imageUI;
 	}
@@ -1438,7 +1449,8 @@ public abstract class LComponent extends LObject<LContainer>
 		}
 		this._super = null;
 		if (_imageUI != null) {
-			for (int i = 0, size = _imageUI.length; i < size; i++) {
+			final int size = _imageUI.length;
+			for (int i = 0; i < size; i++) {
 				_imageUI[i].close();
 				_imageUI[i] = null;
 			}

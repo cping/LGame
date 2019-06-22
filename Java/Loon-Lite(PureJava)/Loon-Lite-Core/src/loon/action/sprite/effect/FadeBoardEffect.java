@@ -52,6 +52,8 @@ public class FadeBoardEffect extends Entity implements BaseEffect {
 	private int fadeType;
 
 	private boolean _completed;
+	
+	private boolean _autoRemoved;
 
 	private boolean _dirty;
 
@@ -253,7 +255,7 @@ public class FadeBoardEffect extends Entity implements BaseEffect {
 			_completed = true;
 		}
 		if (this._completed) {
-			if (getSprites() != null) {
+			if (_autoRemoved && getSprites() != null) {
 				getSprites().remove(this);
 			}
 		}
@@ -273,6 +275,15 @@ public class FadeBoardEffect extends Entity implements BaseEffect {
 		}
 	}
 
+	public boolean isAutoRemoved() {
+		return _autoRemoved;
+	}
+
+	public FadeBoardEffect setAutoRemoved(boolean autoRemoved) {
+		this._autoRemoved = autoRemoved;
+		return this;
+	}
+	
 	@Override
 	public void reset() {
 		super.reset();

@@ -30,6 +30,15 @@ import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.canvas.LGradation;
 import loon.canvas.Pixmap;
+import loon.geom.BooleanValue;
+import loon.geom.FloatValue;
+import loon.geom.IntValue;
+import loon.geom.PointF;
+import loon.geom.PointI;
+import loon.geom.RectBox;
+import loon.geom.RectF;
+import loon.geom.RectI;
+import loon.geom.Vector2f;
 import loon.opengl.LSubTexture;
 import loon.utils.TArray;
 import loon.utils.ArrayMap;
@@ -39,6 +48,10 @@ public class DefUI {
 
 	private static DefUI instance;
 
+	public static void freeStatic(){
+		instance = null;
+	}
+	
 	public final static DefUI make() {
 		return new DefUI();
 	}
@@ -603,6 +616,42 @@ public class DefUI {
 			defaultTextures.add(textfieldbody.get());
 		}
 		return defaultTextures.get(index);
+	}
+
+	public static Vector2f point(float x, float y) {
+		return new Vector2f(x, y);
+	}
+
+	public static PointF pointf(float x, float y) {
+		return new PointF(x, y);
+	}
+
+	public static PointI pointi(int x, int y) {
+		return new PointI(x, y);
+	}
+
+	public static RectBox rect(float x, float y, float w, float h) {
+		return new RectBox(x, y, w, h);
+	}
+
+	public static RectF rectf(float x, float y, float w, float h) {
+		return new RectF(x, y, w, h);
+	}
+
+	public static RectI recti(int x, int y, int w, int h) {
+		return new RectI(x, y, w, h);
+	}
+
+	public static BooleanValue boolValue(boolean v) {
+		return new BooleanValue(v);
+	}
+
+	public static FloatValue floatValue(float v) {
+		return new FloatValue(v);
+	}
+
+	public static IntValue intValue(int v) {
+		return new IntValue(v);
 	}
 
 	public final void clearDefaultUI() {

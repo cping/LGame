@@ -158,7 +158,6 @@ public class LDecideName extends LComponent implements FontSet<LDecideName> {
 			g.draw(_background, x, y, getWidth(), getHeight());
 		}
 		
-		
 		g.setFont(_font);
 		float posX = x + leftOffset;
 		if (labelName != null) {

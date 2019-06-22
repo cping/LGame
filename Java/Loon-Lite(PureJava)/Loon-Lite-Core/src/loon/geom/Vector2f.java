@@ -50,16 +50,28 @@ public class Vector2f implements Serializable, XY {
 		return new Vector2f(0, 0);
 	}
 
+	public final static Vector2f HALF() {
+		return new Vector2f(0.5f, 0.5f);
+	}
+
+	public final static Vector2f ONE() {
+		return new Vector2f(1f, 1f);
+	}
+
 	public final static Vector2f AXIS_X() {
-		return new Vector2f(1, 0);
+		return new Vector2f(1f, 0f);
 	}
 
 	public final static Vector2f AXIS_Y() {
-		return new Vector2f(0, 1);
+		return new Vector2f(0f, 1f);
 	}
 
 	public final static Vector2f at(float x, float y) {
 		return new Vector2f(x, y);
+	}
+
+	public final static Vector2f fromAngle(float angle) {
+		return new Vector2f(MathUtils.cos(angle), MathUtils.sin(angle));
 	}
 
 	public float x;
@@ -90,7 +102,7 @@ public class Vector2f implements Serializable, XY {
 	public final float lengthSquared() {
 		return (x * x + y * y);
 	}
-	
+
 	public float len() {
 		return length();
 	}
@@ -101,7 +113,7 @@ public class Vector2f implements Serializable, XY {
 
 	public Vector2f normalizeSelf() {
 		float l = length();
-		if (l == 0 || l == 1){
+		if (l == 0 || l == 1) {
 			return this;
 		}
 		return set(x / l, y / l);
@@ -114,7 +126,7 @@ public class Vector2f implements Serializable, XY {
 	public Vector2f normalizeNew() {
 		return nor(len());
 	}
-	
+
 	public Vector2f nor(float n) {
 		return new Vector2f(x == 0 ? 0 : x / n, y == 0 ? 0 : y / n);
 	}
@@ -130,7 +142,7 @@ public class Vector2f implements Serializable, XY {
 	public final Vector2f mulSelf(float scale) {
 		return mulSelf(scale);
 	}
-	
+
 	public final Vector2f mulSelf(float sx, float sy) {
 		this.x *= sx;
 		this.y *= sy;
@@ -206,7 +218,7 @@ public class Vector2f implements Serializable, XY {
 	public Vector2f tmp() {
 		return TMP().set(this);
 	}
-
+	
 	public float crs(Vector2f v) {
 		return this.x * v.y - this.y * v.x;
 	}
@@ -215,169 +227,19 @@ public class Vector2f implements Serializable, XY {
 		return this.x * y - this.y * x;
 	}
 
+	public float getAngle() {
+		float theta = MathUtils.toDegrees(MathUtils.atan2(y, x));
+		if ((theta < -360) || (theta > 360)) {
+			theta = theta % 360;
+		}
+		if (theta < 0) {
+			theta = 360 + theta;
+		}
+		return theta;
+	}
+	
 	public float angle() {
-		float angle = MathUtils.atan2(y, x) * MathUtils.RAD_TO_DEG;
-		if (angle < 0) {
-			angle += 360;
-		}
-		return angle;
-	}
-
-	public Vector2f newRotate(float angle) {
-
-		float rad = angle * MathUtils.DEG_TO_RAD;
-		float cos = MathUtils.cos(rad);
-		float sin = MathUtils.sin(rad);
-
-		float newX = this.x * cos - this.y * sin;
-		float newY = this.x * sin + this.y * cos;
-
-		return new Vector2f(newX, newY);
-	}
-
-	public Vector2f rotate(float angle) {
-		if (angle != 0) {
-			float rad = angle * MathUtils.DEG_TO_RAD;
-			float cos = MathUtils.cos(rad);
-			float sin = MathUtils.sin(rad);
-
-			float newX = this.x * cos - this.y * sin;
-			float newY = this.x * sin + this.y * cos;
-
-			this.x = newX;
-			this.y = newY;
-		}
-		return this;
-	}
-
-	public Vector2f lerp(Vector2f target, float alpha) {
-		Vector2f r = this.mul(1.0f - alpha);
-		r.add(target.tmp().mul(alpha));
-		return r;
-	}
-
-	public Vector2f(float value) {
-		this(value, value);
-	}
-
-	public Vector2f(float[] coords) {
-		x = coords[0];
-		y = coords[1];
-	}
-
-	public void move_45D_up() {
-		move_45D_up(1);
-	}
-
-	public void move_45D_up(int multiples) {
-		move_multiples(Field2D.UP, multiples);
-	}
-
-	public void move_45D_left() {
-		move_45D_left(1);
-	}
-
-	public void move_45D_left(int multiples) {
-		move_multiples(Field2D.LEFT, multiples);
-	}
-
-	public void move_45D_right() {
-		move_45D_right(1);
-	}
-
-	public void move_45D_right(int multiples) {
-		move_multiples(Field2D.RIGHT, multiples);
-	}
-
-	public void move_45D_down() {
-		move_45D_down(1);
-	}
-
-	public void move_45D_down(int multiples) {
-		move_multiples(Field2D.DOWN, multiples);
-	}
-
-	public void move_up() {
-		move_up(1);
-	}
-
-	public void move_up(int multiples) {
-		move_multiples(Field2D.TUP, multiples);
-	}
-
-	public void move_left() {
-		move_left(1);
-	}
-
-	public void move_left(int multiples) {
-		move_multiples(Field2D.TLEFT, multiples);
-	}
-
-	public void move_right() {
-		move_right(1);
-	}
-
-	public void move_right(int multiples) {
-		move_multiples(Field2D.TRIGHT, multiples);
-	}
-
-	public void move_down() {
-		move_down(1);
-	}
-
-	public void move_down(int multiples) {
-		move_multiples(Field2D.TDOWN, multiples);
-	}
-
-	public void move(Vector2f vector2D) {
-		this.x += vector2D.x;
-		this.y += vector2D.y;
-	}
-
-	public void move_multiples(int direction, int multiples) {
-		if (multiples <= 0) {
-			multiples = 1;
-		}
-		Vector2f v = Field2D.getDirection(direction);
-		move(v.x() * multiples, v.y() * multiples);
-	}
-
-	public void moveX(int x) {
-		this.x += x;
-	}
-
-	public void moveY(int y) {
-		this.y += y;
-	}
-
-	public void moveByAngle(int degAngle, float distance) {
-		if (distance == 0) {
-			return;
-		}
-		float Angle = MathUtils.toRadians(degAngle);
-		float dX = (MathUtils.cos(Angle) * distance);
-		float dY = (-MathUtils.sin(Angle) * distance);
-		int idX = MathUtils.round(dX);
-		int idY = MathUtils.round(dY);
-		move(idX, idY);
-	}
-
-	public void move(float x, float y) {
-		this.x += x;
-		this.y += y;
-	}
-
-	public void move(float distance) {
-		float angle = MathUtils.toRadians(getAngle());
-		int x = MathUtils.round(getX() + MathUtils.cos(angle) * distance);
-		int y = MathUtils.round(getY() + MathUtils.sin(angle) * distance);
-		setLocation(x, y);
-	}
-
-	public boolean nearlyCompare(Vector2f v, int range) {
-		int dX = MathUtils.abs(x() - v.x());
-		int dY = MathUtils.abs(y() - v.y());
-		return (dX <= range) && (dY <= range);
+		return getAngle();
 	}
 
 	public int angle(Vector2f v) {
@@ -418,8 +280,8 @@ public class Vector2f implements Serializable, XY {
 		return iwinkel;
 	}
 
-	public float getAngle() {
-		float theta = MathUtils.toDegrees(MathUtils.atan2(y, x));
+	public static float angleTo(Vector2f vectorA) {
+		float theta = MathUtils.toDegrees(MathUtils.atan2(vectorA.y, vectorA.x));
 		if ((theta < -360) || (theta > 360)) {
 			theta = theta % 360;
 		}
@@ -428,28 +290,194 @@ public class Vector2f implements Serializable, XY {
 		}
 		return theta;
 	}
+	
+	public Vector2f newRotate(float angle) {
+
+		float rad = MathUtils.toRadians(angle);
+		float cos = MathUtils.cos(rad);
+		float sin = MathUtils.sin(rad);
+
+		float newX = this.x * cos - this.y * sin;
+		float newY = this.x * sin + this.y * cos;
+
+		return new Vector2f(newX, newY);
+	}
+
+	public Vector2f rotate(float angle) {
+		if (angle != 0) {
+			float rad = MathUtils.toRadians(angle);
+			float cos = MathUtils.cos(rad);
+			float sin = MathUtils.sin(rad);
+
+			float newX = this.x * cos - this.y * sin;
+			float newY = this.x * sin + this.y * cos;
+
+			this.x = newX;
+			this.y = newY;
+		}
+		return this;
+	}
+
+	public Vector2f lerp(Vector2f target, float alpha) {
+		Vector2f r = this.mul(1.0f - alpha);
+		r.add(target.tmp().mul(alpha));
+		return r;
+	}
+
+	public Vector2f(float value) {
+		this(value, value);
+	}
+
+	public Vector2f(float[] coords) {
+		x = coords[0];
+		y = coords[1];
+	}
+
+	public Vector2f move_45D_up() {
+		return move_45D_up(1);
+	}
+
+	public Vector2f move_45D_up(int multiples) {
+		return move_multiples(Field2D.UP, multiples);
+	}
+
+	public Vector2f move_45D_left() {
+		return move_45D_left(1);
+	}
+
+	public Vector2f move_45D_left(int multiples) {
+		return move_multiples(Field2D.LEFT, multiples);
+	}
+
+	public Vector2f move_45D_right() {
+		return move_45D_right(1);
+	}
+
+	public Vector2f move_45D_right(int multiples) {
+		return move_multiples(Field2D.RIGHT, multiples);
+	}
+
+	public Vector2f move_45D_down() {
+		return move_45D_down(1);
+	}
+
+	public Vector2f move_45D_down(int multiples) {
+		return move_multiples(Field2D.DOWN, multiples);
+	}
+
+	public Vector2f move_up() {
+		return move_up(1);
+	}
+
+	public Vector2f move_up(int multiples) {
+		return move_multiples(Field2D.TUP, multiples);
+	}
+
+	public Vector2f move_left() {
+		return move_left(1);
+	}
+
+	public Vector2f move_left(int multiples) {
+		return move_multiples(Field2D.TLEFT, multiples);
+	}
+
+	public Vector2f move_right() {
+		return move_right(1);
+	}
+
+	public Vector2f move_right(int multiples) {
+		return move_multiples(Field2D.TRIGHT, multiples);
+	}
+
+	public Vector2f move_down() {
+		return move_down(1);
+	}
+
+	public Vector2f move_down(int multiples) {
+		return move_multiples(Field2D.TDOWN, multiples);
+	}
+
+	public Vector2f move(Vector2f vector2D) {
+		this.x += vector2D.x;
+		this.y += vector2D.y;
+		return this;
+	}
+
+	public Vector2f move_multiples(int direction, int multiples) {
+		if (multiples <= 0) {
+			multiples = 1;
+		}
+		Vector2f v = Field2D.getDirection(direction);
+		return move(v.x() * multiples, v.y() * multiples);
+	}
+
+	public Vector2f moveX(int x) {
+		this.x += x;
+		return this;
+	}
+
+	public Vector2f moveY(int y) {
+		this.y += y;
+		return this;
+	}
+
+	public Vector2f moveByAngle(int degAngle, float distance) {
+		if (distance == 0) {
+			return this;
+		}
+		float Angle = MathUtils.toRadians(degAngle);
+		float dX = (MathUtils.cos(Angle) * distance);
+		float dY = (-MathUtils.sin(Angle) * distance);
+		int idX = MathUtils.round(dX);
+		int idY = MathUtils.round(dY);
+		return move(idX, idY);
+	}
+
+	public Vector2f move(float x, float y) {
+		this.x += x;
+		this.y += y;
+		return this;
+	}
+
+	public Vector2f move(float distance) {
+		float angle = MathUtils.toRadians(getAngle());
+		int x = MathUtils.round(getX() + MathUtils.cos(angle) * distance);
+		int y = MathUtils.round(getY() + MathUtils.sin(angle) * distance);
+		return setLocation(x, y);
+	}
+
+	public boolean nearlyCompare(Vector2f v, int range) {
+		int dX = MathUtils.abs(x() - v.x());
+		int dY = MathUtils.abs(y() - v.y());
+		return (dX <= range) && (dY <= range);
+	}
 
 	public float[] getCoords() {
 		return (new float[] { x, y });
 	}
 
-	public void setLocation(float x, float y) {
+	public Vector2f setLocation(float x, float y) {
 		this.x = x;
 		this.y = y;
+		return this;
 	}
 
-	public void setX(float x) {
+	public Vector2f setX(float x) {
 		this.x = x;
+		return this;
 	}
 
-	public void setY(float y) {
+	public Vector2f setY(float y) {
 		this.y = y;
+		return this;
 	}
 
+	@Override
 	public float getX() {
 		return x;
 	}
 
+	@Override
 	public float getY() {
 		return y;
 	}
@@ -596,16 +624,8 @@ public class Vector2f implements Serializable, XY {
 		return vectorA.x * y - vectorA.y * x;
 	}
 
-	public static float angleTo(Vector2f vectorA) {
-		float angle = MathUtils.atan2(vectorA.y, vectorA.x) * MathUtils.RAD_TO_DEG;
-		if (angle < 0) {
-			angle += 360;
-		}
-		return angle;
-	}
-
 	public static Vector2f rotate(Vector2f vectorA, float angle) {
-		float rad = angle * MathUtils.DEG_TO_RAD;
+		float rad = MathUtils.toRadians(angle);
 		float cos = MathUtils.cos(rad);
 		float sin = MathUtils.sin(rad);
 
@@ -628,6 +648,11 @@ public class Vector2f implements Serializable, XY {
 		final float x_d = x2 - x1;
 		final float y_d = y2 - y1;
 		return x_d * x_d + y_d * y_d;
+	}
+
+	public static Vector2f polar(float len, float angle) {
+		return new Vector2f(len * MathUtils.cos(angle / MathUtils.DEG_TO_RAD),
+				len * MathUtils.sin(angle / MathUtils.DEG_TO_RAD));
 	}
 
 	public final void setZero() {
@@ -691,13 +716,11 @@ public class Vector2f implements Serializable, XY {
 		return this;
 	}
 
-
 	public final float normalize() {
 		float length = length();
 		if (length < MathUtils.EPSILON) {
 			return 0f;
 		}
-
 		float invLength = 1.0f / length;
 		x *= invLength;
 		y *= invLength;

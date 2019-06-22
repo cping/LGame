@@ -30,6 +30,7 @@ import loon.action.ActionBind;
 import loon.action.ActionTween;
 import loon.action.map.Field2D;
 import loon.canvas.LColor;
+import loon.component.layout.Margin;
 import loon.event.ClickListener;
 import loon.event.Touched;
 import loon.font.FontSet;
@@ -83,6 +84,8 @@ public class UIControls {
 
 	private ObjectMap<ActionBind, ActionTween> tweens = new ObjectMap<ActionBind, ActionTween>(
 			CollectionUtils.INITIAL_CAPACITY);
+
+	private Margin _margin;
 
 	private final TArray<LComponent> _comps;
 
@@ -409,6 +412,26 @@ public class UIControls {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				comp.setY(y);
+			}
+		}
+		return this;
+	}
+
+	public UIControls location(float x, float y) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				comp.setLocation(x, y);
+			}
+		}
+		return this;
+	}
+
+	public UIControls offset(float x, float y) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				comp.setLocation(comp.getX() + x, comp.getY() + y);
 			}
 		}
 		return this;
@@ -914,6 +937,25 @@ public class UIControls {
 		return this;
 	}
 
+	public UIControls followTo(ActionBind bind, float follow, float speed) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null && (comp instanceof ActionBind)) {
+				ActionTween tween = tweens.get(comp);
+				if (tween == null) {
+					tween = PlayerUtils.set((ActionBind) comp).followTo(bind, follow, speed);
+				} else {
+					tween.followTo(bind, follow, speed);
+				}
+				if (!tweens.containsKey(comp)) {
+					tweens.put(comp, tween);
+				}
+
+			}
+		}
+		return this;
+	}
+
 	public UIControls flashTo(float duration) {
 		for (int i = 0, n = _comps.size; i < n; i++) {
 			LComponent comp = _comps.get(i);
@@ -962,4 +1004,23 @@ public class UIControls {
 		}
 		return size == tweens.size;
 	}
+
+	public Margin margin(float size, boolean vertical, float left, float top, float right, float bottom) {
+		if (_margin == null) {
+			_margin = new Margin(size, vertical);
+		} else {
+			_margin.setSize(size);
+			_margin.setVertical(vertical);
+		}
+		_margin.setMargin(left, top, right, bottom);
+		_margin.clear();
+		for (int i = _comps.size - 1; i > -1; --i) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				_margin.addChild(comp);
+			}
+		}
+		return _margin;
+	}
+
 }

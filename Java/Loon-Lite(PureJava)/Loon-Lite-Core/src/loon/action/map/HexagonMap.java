@@ -20,7 +20,6 @@
  */
 package loon.action.map;
 
-import java.util.Iterator;
 
 import loon.LObject;
 import loon.LSysException;
@@ -52,6 +51,7 @@ import loon.opengl.LTexturePack;
 import loon.opengl.LTexturePackClip;
 import loon.utils.CollectionUtils;
 import loon.utils.IntMap;
+import loon.utils.LIterator;
 import loon.utils.MathUtils;
 import loon.utils.SortedList;
 import loon.utils.StringUtils;
@@ -105,6 +105,9 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	protected Hexagon[][] hexagons;
 
 	private Field2D field2d;
+
+	private float _fixedWidthOffset = 0f;
+	private float _fixedHeightOffset = 0f;
 
 	private int[] position = new int[2];
 
@@ -216,7 +219,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		public int cost;
 	}
 
-	protected static class CellIterator implements Iterator<TileVisit<TileImpl>> {
+	protected static class CellIterator implements LIterator<TileVisit<TileImpl>> {
 
 		protected int m, n;
 		protected int cols, rows;
@@ -256,7 +259,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 
 	}
 
-	public Iterator<TileVisit<TileImpl>> iterator() {
+	public LIterator<TileVisit<TileImpl>> iterator() {
 		return new CellIterator(this, 0, 0, cols, rows);
 	}
 
@@ -281,7 +284,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		return new Iterable<TileVisit<TileImpl>>() {
 
 			@Override
-			public Iterator<TileVisit<TileImpl>> iterator() {
+			public LIterator<TileVisit<TileImpl>> iterator() {
 				return iterator;
 			}
 		};
@@ -966,12 +969,12 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 
 	@Override
 	public float getWidth() {
-		return getRect().getWidth();
+		return getRect().getWidth() * _scaleX - _fixedWidthOffset;
 	}
 
 	@Override
 	public float getHeight() {
-		return getRect().getHeight();
+		return getRect().getHeight() * _scaleY - _fixedHeightOffset;
 	}
 
 	private void setFieldMap(int[][] maps) {
@@ -1171,10 +1174,8 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 			return;
 		}
 		boolean update = (_rotation != 0) || !(_scaleX == 1f && _scaleY == 1f);
-	//	int blend = g.getBlendMode();
 		int tmp = g.color();
 		try {
-		//	g.setBlendMode(_blend);
 			g.setAlpha(_alpha);
 			if (this.roll) {
 				this.offset = toRollPosition(this.offset);
@@ -1212,7 +1213,6 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 			if (update) {
 				g.restoreTx();
 			}
-			//g.setBlendMode(blend);
 			g.setColor(tmp);
 		}
 
@@ -1873,6 +1873,58 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		return field2d == null ? super.toString() : field2d.toString();
 	}
 
+	@Override
+	public float getFixedWidthOffset() {
+		return _fixedWidthOffset;
+	}
+
+	@Override
+	public void setFixedWidthOffset(float fixedWidthOffset) {
+		this._fixedWidthOffset = fixedWidthOffset;
+	}
+
+	@Override
+	public float getFixedHeightOffset() {
+		return _fixedHeightOffset;
+	}
+
+	@Override
+	public void setFixedHeightOffset(float fixedHeightOffset) {
+		this._fixedHeightOffset = fixedHeightOffset;
+	}
+
+	@Override
+	public boolean collides(ISprite e) {
+		if (e == null || !e.isVisible()) {
+			return false;
+		}
+		return getRectBox().intersects(e.getCollisionBox());
+	}
+
+	@Override
+	public boolean collidesX(ISprite other) {
+		if (other == null || !other.isVisible()) {
+			return false;
+		}
+		RectBox rectSelf = getRectBox();
+		RectBox a = new RectBox(rectSelf.getX(), 0, rectSelf.getWidth(), rectSelf.getHeight());
+		RectBox rectDst = getRectBox();
+		RectBox b = new RectBox(rectDst.getX(), 0, rectDst.getWidth(), rectDst.getHeight());
+		return a.intersects(b);
+	}
+
+	@Override
+	public boolean collidesY(ISprite other) {
+		if (other == null || !other.isVisible()) {
+			return false;
+		}
+		RectBox rectSelf = getRectBox();
+		RectBox a = new RectBox(0, rectSelf.getY(), rectSelf.getWidth(), rectSelf.getHeight());
+		RectBox rectDst = getRectBox();
+		RectBox b = new RectBox(0, rectDst.getY(), rectDst.getWidth(), rectDst.getHeight());
+		return a.intersects(b);
+	}
+	
 	public boolean isClosed() {
 		return isDisposed();
 	}

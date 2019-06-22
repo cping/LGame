@@ -18,12 +18,16 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.utils.processes;
+package loon.action.sprite;
 
-import loon.LSysException;
+/**
+ * 背景精灵的抽象类(全屏大小的精灵)
+ */
+public abstract class Background extends Entity {
 
-public interface ProgressCallable<T> {
-	
-	public T call(final ProgressListener p) throws LSysException;
-	
+	public Background(float x, float y, float w, float h) {
+		this.setLocation(x, y);
+		this.setSize(w, h);
+	}
+
 }

@@ -18,12 +18,30 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.utils.processes;
+package loon.action.sprite;
 
-import loon.LSysException;
+import loon.LTexture;
+import loon.LSystem;
 
-public interface ProgressCallable<T> {
-	
-	public T call(final ProgressListener p) throws LSysException;
-	
+public class ImageBackground extends Background {
+
+	public ImageBackground(LTexture tex, float x, float y, float w, float h) {
+		super(x, y, w, h);
+		setRepaint(true);
+		_image = tex;
+	}
+
+	public ImageBackground(String path, float x, float y, float w, float h) {
+		this(LSystem.loadTexture(path), x, y, w, h);
+	}
+
+	public ImageBackground(String path) {
+		this(LSystem.loadTexture(path));
+	}
+
+	public ImageBackground(LTexture texture) {
+		super(0, 0, texture.getWidth(), texture.getHeight());
+		_image = texture;
+	}
+
 }

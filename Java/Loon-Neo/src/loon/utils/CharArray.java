@@ -319,11 +319,35 @@ public class CharArray implements IArray {
 			length = newlength;
 	}
 
-	public int random() {
+	public char random() {
 		if (length == 0) {
 			return 0;
 		}
 		return items[MathUtils.random(0, length - 1)];
+	}
+
+	public CharArray randomCharArray() {
+		return new CharArray(randomArrays());
+	}
+
+	public char[] randomArrays() {
+		if (length == 0) {
+			return new char[0];
+		}
+		char v = (char) -1;
+		char[] newArrays = CollectionUtils.copyOf(items, length);
+		for (int i = 0; i < length; i++) {
+			v = random();
+			for (int j = 0; j < i; j++) {
+				if (newArrays[j] == v) {
+					v = random();
+					j = -1;
+				}
+
+			}
+			newArrays[i] = v;
+		}
+		return newArrays;
 	}
 
 	public char[] toArray() {

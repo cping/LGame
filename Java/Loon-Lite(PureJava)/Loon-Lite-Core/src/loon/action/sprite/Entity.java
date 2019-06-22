@@ -56,6 +56,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	protected boolean _childrenVisible = true;
 	protected boolean _childrenIgnoreUpdate = false;
 	protected boolean _childrenSortPending = false;
+	protected boolean _debugDraw = false;
 
 	protected int _idxTag = IEntity.TAG_INVALID;
 
@@ -64,8 +65,13 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	protected RectBox _shear;
 	protected LColor _baseColor = new LColor(LColor.white);
+	private LColor _debugDrawColor = LColor.red;
 
 	protected Vector2f _offset = new Vector2f();
+
+	protected float _fixedWidthOffset = 0f;
+	protected float _fixedHeightOffset = 0f;
+
 	protected float _rotationCenterX = -1;
 	protected float _rotationCenterY = -1;
 
@@ -99,6 +105,10 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	public Entity(final String path) {
 		this(LSystem.loadTexture(path));
+	}
+
+	public Entity(final String path, final float x, final float y) {
+		this(LSystem.loadTexture(path), x, y);
 	}
 
 	public Entity(final LTexture texture) {
@@ -644,6 +654,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	@Override
 	public void reset() {
 		this._visible = true;
+		this._debugDraw = false;
 		this._ignoreUpdate = false;
 		this._childrenVisible = true;
 		this._childrenIgnoreUpdate = false;
@@ -715,8 +726,6 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		}
 		boolean exist = _image != null || (_width > 0 && _height > 0) || _repaintDraw;
 		if (exist) {
-			//int blend = g.getBlendMode();
-			//g.setBlendMode(_blend);
 			boolean update = ((_rotation != 0 || !(_scaleX == 1f && _scaleY == 1f) || !(_skewX == 0 && _skewY == 0))
 					|| _flipX || _flipY) && _deform;
 			float nx = offsetX + this._location.x + _offset.x;
@@ -797,11 +806,13 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 					g.fillRect(nx, ny, _width, _height, _baseColor);
 				}
 			}
+			if (_debugDraw) {
+				g.drawRect(nx, ny, _width, _height, _debugDrawColor);
+			}
 			if (update) {
 				g.restoreBrush();
 				g.restoreTx();
 			}
-			//g.setBlendMode(blend);
 		}
 	}
 
@@ -893,12 +904,12 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	@Override
 	public float getWidth() {
-		return (_width * this._scaleX);
+		return (_width * this._scaleX) - _fixedWidthOffset;
 	}
 
 	@Override
 	public float getHeight() {
-		return (_height * this._scaleY);
+		return (_height * this._scaleY) - _fixedHeightOffset;
 	}
 
 	@Override
@@ -956,6 +967,10 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	public void setSize(float w, float h) {
 		setWidth(w);
 		setHeight(h);
+	}
+
+	public void setBounds(RectBox rect) {
+		this.setBounds(rect.x, rect.y, rect.width, rect.height);
 	}
 
 	public void setBounds(float x, float y, float width, float height) {
@@ -1060,6 +1075,38 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	}
 
 	@Override
+	public boolean collides(ISprite e) {
+		if (e == null || !e.isVisible()) {
+			return false;
+		}
+		return intersects(e.getCollisionBox());
+	}
+
+	@Override
+	public boolean collidesX(ISprite other) {
+		if (other == null || !other.isVisible()) {
+			return false;
+		}
+		RectBox rectSelf = getRectBox();
+		RectBox a = new RectBox(rectSelf.getX(), 0, rectSelf.getWidth(), rectSelf.getHeight());
+		RectBox rectDst = getRectBox();
+		RectBox b = new RectBox(rectDst.getX(), 0, rectDst.getWidth(), rectDst.getHeight());
+		return a.intersects(b);
+	}
+
+	@Override
+	public boolean collidesY(ISprite other) {
+		if (other == null || !other.isVisible()) {
+			return false;
+		}
+		RectBox rectSelf = getRectBox();
+		RectBox a = new RectBox(0, rectSelf.getY(), rectSelf.getWidth(), rectSelf.getHeight());
+		RectBox rectDst = getRectBox();
+		RectBox b = new RectBox(0, rectDst.getY(), rectDst.getWidth(), rectDst.getHeight());
+		return a.intersects(b);
+	}
+
+	@Override
 	public void toString(final StringBuilder s) {
 		s.append(super.toString());
 		if ((this._childrens != null) && (this._childrens.size > 0)) {
@@ -1095,7 +1142,6 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	@Override
 	protected void finalize() throws Throwable {
-		super.finalize();
 		if (!isDisposed()) {
 			this.close();
 		}
@@ -1267,6 +1313,47 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	public Gravity getGravity() {
 		return new Gravity("Entity", this);
+	}
+
+	public boolean isDebugDraw() {
+		return _debugDraw;
+	}
+
+	public ISprite setDebugDraw(boolean debugDraw) {
+		this._debugDraw = debugDraw;
+		return this;
+	}
+
+	public LColor getDebugDrawColor() {
+		return _debugDrawColor.cpy();
+	}
+
+	public ISprite setDebugDrawColor(LColor debugColor) {
+		if (debugColor == null) {
+			return this;
+		}
+		this._debugDrawColor = debugColor;
+		return this;
+	}
+
+	@Override
+	public float getFixedWidthOffset() {
+		return _fixedWidthOffset;
+	}
+
+	@Override
+	public void setFixedWidthOffset(float fixedWidthOffset) {
+		this._fixedWidthOffset = fixedWidthOffset;
+	}
+
+	@Override
+	public float getFixedHeightOffset() {
+		return _fixedHeightOffset;
+	}
+
+	@Override
+	public void setFixedHeightOffset(float fixedHeightOffset) {
+		this._fixedHeightOffset = fixedHeightOffset;
 	}
 
 	public boolean isClosed() {

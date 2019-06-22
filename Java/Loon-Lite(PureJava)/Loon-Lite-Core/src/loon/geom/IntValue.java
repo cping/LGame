@@ -28,8 +28,9 @@ public class IntValue {
 		this.set(v);
 	}
 
-	public void set(int v) {
+	public IntValue set(int v) {
 		this.value = v;
+		return this;
 	}
 
 	public int result() {

@@ -264,6 +264,10 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 				maxHeight += height;
 			}
 			setSize(maxWidth + _flag_text_space * 2, maxHeight + _flag_text_space * 2);
+			if (_font instanceof LFont) {
+				LSTRDictionary.get().bind((LFont) _font, _labels);
+			}
+
 		}
 		return this;
 	}

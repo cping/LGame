@@ -159,6 +159,7 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 				drawFace(g, this._boxX + offsetX, this._boxY + offsetY);
 			}
 
+			boolean supportPack = false;
 
 			drawMessage(g, message, this._boxX + this.messageX + offsetX, this._boxY + this.messageY + offsetY);
 			if (isPage && _flagType != null) {

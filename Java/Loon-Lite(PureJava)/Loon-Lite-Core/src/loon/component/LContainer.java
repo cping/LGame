@@ -26,6 +26,7 @@ import loon.LSystem;
 import loon.action.ActionBind;
 import loon.component.layout.LayoutManager;
 import loon.component.layout.LayoutPort;
+import loon.component.layout.Margin;
 import loon.event.GameKey;
 import loon.event.QueryEvent;
 import loon.geom.RectBox;
@@ -44,7 +45,13 @@ public abstract class LContainer extends LComponent implements IArray {
 
 	protected LComponent[] _childs = new LComponent[0];
 
+	private Margin _margin;
+
 	private float _newLineHeight = -1f;
+	// 滚动x轴
+	protected float _component_scrollX;
+	// 滚动y轴
+	protected float _component_scrollY;
 
 	private final static LayerSorter<LComponent> compSorter = new LayerSorter<LComponent>(false);
 
@@ -101,21 +108,15 @@ public abstract class LContainer extends LComponent implements IArray {
 		LComponent tag = null;
 
 		if (childCount == 1) {
-
 			LComponent cp = _childs[0];
-
 			if (cp != null && cp.getY() >= _newLineHeight && !otherName.equals(cp.getUIName())) {
 				maxX = cp.getX();
 				maxY = cp.getY();
 				tag = cp;
 			}
-
 		} else {
-
 			for (int i = 0; i < childCount; i++) {
-
 				LComponent c = _childs[i];
-
 				if (c != null && c != comp && c.getY() >= _newLineHeight && !otherName.equals(c.getUIName())) {
 					float oldMaxX = maxX;
 					float oldMaxY = maxY;
@@ -126,14 +127,11 @@ public abstract class LContainer extends LComponent implements IArray {
 					}
 				}
 			}
-
 		}
 		if (tag == null && childCount > 0) {
 			tag = _childs[childCount - 1];
 		}
-
 		if (tag != null && tag != comp && !otherName.equals(tag.getUIName())) {
-
 			switch (code) {
 			case 0:
 				comp.setLocation(maxX + tag.getWidth() + offX, maxY + offY);
@@ -145,9 +143,7 @@ public abstract class LContainer extends LComponent implements IArray {
 				comp.setLocation(maxX + tag.getWidth() + offX, maxY + tag.getHeight() + offY);
 				break;
 			}
-
 		} else {
-
 			switch (code) {
 			case 0:
 				comp.setLocation(maxX + offX, maxY + offY);
@@ -159,13 +155,10 @@ public abstract class LContainer extends LComponent implements IArray {
 				comp.setLocation(maxX + offX, maxY + offY);
 				break;
 			}
-
 		}
 
 		add(comp);
-
 		_newLineHeight = comp.getY();
-
 		return comp;
 	}
 
@@ -319,7 +312,8 @@ public abstract class LContainer extends LComponent implements IArray {
 		final int size = this.childCount;
 		for (String name : names) {
 			for (int i = size - 1; i > -1; i--) {
-				if (name.equals(this._childs[i].getUIName())) {
+				LComponent comp = this._childs[i];
+				if (comp != null && name.equals(comp.getUIName())) {
 					list.add(this._childs[i]);
 				}
 			}
@@ -587,7 +581,7 @@ public abstract class LContainer extends LComponent implements IArray {
 				LComponent component;
 				for (int i = 0; i < this.childCount; i++) {
 					component = _childs[i];
-					if (component != this) {
+					if (component != null && component != this) {
 						component.update(timer);
 					}
 				}
@@ -604,15 +598,20 @@ public abstract class LContainer extends LComponent implements IArray {
 		}
 		super.validatePosition();
 		for (int i = 0; i < this.childCount; i++) {
-			this._childs[i].validatePosition();
+			LComponent comp = this._childs[i];
+			if (comp != null) {
+				comp.validatePosition();
+			}
 		}
 		if (!this._component_elastic) {
 			for (int i = 0; i < this.childCount; i++) {
-				if (this._childs[i].getX() > this.getWidth() || this._childs[i].getY() > this.getHeight()
-						|| this._childs[i].getX() + this._childs[i].getWidth() < 0
-						|| this._childs[i].getY() + this._childs[i].getHeight() < 0) {
-					setElastic(true);
-					break;
+				LComponent comp = this._childs[i];
+				if (comp != null) {
+					if (comp.getX() > this.getWidth() || comp.getY() > this.getHeight()
+							|| comp.getX() + comp.getWidth() < 0 || comp.getY() + comp.getHeight() < 0) {
+						setElastic(true);
+						break;
+					}
 				}
 			}
 		}
@@ -637,6 +636,20 @@ public abstract class LContainer extends LComponent implements IArray {
 		if (!this.isVisible()) {
 			return;
 		}
+		final float newScrollX = _component_scrollX;
+		final float newScrollY = _component_scrollY;
+
+		final float drawWidth = _width;
+		final float drawHeight = _height;
+
+		final float startX = MathUtils.scroll(newScrollX, drawWidth);
+		final float startY = MathUtils.scroll(newScrollY, drawHeight);
+
+		final boolean update = (startX != 0f || startY != 0f);
+
+		if (update) {
+			g.translate(startX, startY);
+		}
 		synchronized (_childs) {
 			super.createUI(g);
 			if (this._component_elastic) {
@@ -646,6 +659,10 @@ public abstract class LContainer extends LComponent implements IArray {
 			if (this._component_elastic) {
 				g.clearClip();
 			}
+		}
+
+		if (update) {
+			g.translate(-startX, -startY);
 		}
 	}
 
@@ -808,7 +825,7 @@ public abstract class LContainer extends LComponent implements IArray {
 					return comp;
 				}
 			}
-			if (child.intersects(x1, y1)) {
+			if (child != null && child.intersects(x1, y1)) {
 				LComponent comp = (!child.isContainer()) ? child : ((LContainer) child).findComponent(x1, y1);
 				LContainer container = comp.getContainer();
 				if (container != null && container.isContainer() && (container instanceof LScrollContainer)) {
@@ -851,7 +868,7 @@ public abstract class LContainer extends LComponent implements IArray {
 		}
 	}
 
-	public void layoutElements(final LayoutManager manager, final LComponent... comps) {
+	public LContainer layoutElements(final LayoutManager manager, final LComponent... comps) {
 		if (manager != null) {
 			TArray<LComponent> list = new TArray<LComponent>();
 			for (int i = 0; i < comps.length; i++) {
@@ -866,14 +883,15 @@ public abstract class LContainer extends LComponent implements IArray {
 			}
 			manager.layoutElements(this, tmp);
 		}
+		return this;
 	}
 
-	public void packLayout(final LayoutManager manager) {
-		packLayout(manager, 0, 0, 0, 0);
+	public LContainer packLayout(final LayoutManager manager) {
+		return packLayout(manager, 0, 0, 0, 0);
 	}
 
-	public void packLayout(final LayoutManager manager, final float spacex, final float spacey, final float spaceWidth,
-			final float spaceHeight) {
+	public LContainer packLayout(final LayoutManager manager, final float spacex, final float spacey,
+			final float spaceWidth, final float spaceHeight) {
 		LComponent[] comps = getComponents();
 		CollectionUtils.reverse(comps);
 		layoutElements(manager, comps);
@@ -888,6 +906,7 @@ public abstract class LContainer extends LComponent implements IArray {
 				}
 			}
 		}
+		return this;
 	}
 
 	void setDesktops(Desktop d) {
@@ -1102,6 +1121,72 @@ public abstract class LContainer extends LComponent implements IArray {
 				}
 			}
 		}
+	}
+
+	public LContainer scrollBy(float x, float y) {
+		this._component_scrollX += x;
+		this._component_scrollY += y;
+		return this;
+	}
+
+	public LContainer scrollTo(float x, float y) {
+		this._component_scrollX = x;
+		this._component_scrollY = y;
+		return this;
+	}
+
+	public float scrollX() {
+		return this._component_scrollX;
+	}
+
+	public float scrollY() {
+		return this._component_scrollY;
+	}
+
+	public LContainer scrollX(float x) {
+		this._component_scrollX = x;
+		return this;
+	}
+
+	public LContainer scrollY(float y) {
+		this._component_scrollY = y;
+		return this;
+	}
+
+	public UIControls createUIControls() {
+		UIControls controls = null;
+		if (_childs != null && childCount > 0) {
+			controls = new UIControls(_childs);
+		} else {
+			controls = new UIControls();
+		}
+		return controls;
+	}
+
+	public UIControls controls() {
+		return createUIControls();
+	}
+	
+	public Margin margin(boolean vertical, float left, float top, float right, float bottom) {
+		float size = vertical ? getHeight() : getWidth();
+		if (_component_isClose) {
+			return new Margin(size, vertical);
+		}
+		if (_margin == null) {
+			_margin = new Margin(size, vertical);
+		} else {
+			_margin.setSize(size);
+			_margin.setVertical(vertical);
+		}
+		_margin.setMargin(left, top, right, bottom);
+		_margin.clear();
+		for (int i = childCount - 1; i > -1; --i) {
+			LComponent comp = _childs[i];
+			if (comp != null) {
+				_margin.addChild(comp);
+			}
+		}
+		return _margin;
 	}
 
 	@Override

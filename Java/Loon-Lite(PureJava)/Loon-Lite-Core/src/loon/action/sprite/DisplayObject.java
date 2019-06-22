@@ -37,7 +37,13 @@ import loon.opengl.GLEx;
 
 public abstract class DisplayObject extends EventDispatcher implements CollisionObject, ISprite, XY, BoxSize {
 
-	public static float morphX = 1f, morphY = 1f;
+	public static float morphX = 1f;
+
+	public static float morphY = 1f;
+
+	protected float _fixedWidthOffset = 0f;
+
+	protected float _fixedHeightOffset = 0f;
 
 	protected boolean _visible = true;
 
@@ -75,12 +81,12 @@ public abstract class DisplayObject extends EventDispatcher implements Collision
 
 	@Override
 	public float getWidth() {
-		return _width;
+		return _width * _scaleX - _fixedWidthOffset;
 	}
 
 	@Override
 	public float getHeight() {
-		return _height;
+		return _height * _scaleY - _fixedHeightOffset;
 	}
 
 	public int getTrans() {
@@ -357,7 +363,7 @@ public abstract class DisplayObject extends EventDispatcher implements Collision
 	public boolean intersects(RectBox rect) {
 		return getCollisionBox().intersects(rect);
 	}
-	
+
 	@Override
 	public float getContainerWidth() {
 		return this._sprites == null ? super.getContainerWidth() : this._sprites.getWidth();
@@ -366,6 +372,59 @@ public abstract class DisplayObject extends EventDispatcher implements Collision
 	@Override
 	public float getContainerHeight() {
 		return this._sprites == null ? super.getContainerHeight() : this._sprites.getHeight();
+	}
+
+	@Override
+	public float getFixedWidthOffset() {
+		return _fixedWidthOffset;
+	}
+
+	@Override
+	public void setFixedWidthOffset(float fixedWidthOffset) {
+		this._fixedWidthOffset = fixedWidthOffset;
+	}
+
+	@Override
+	public float getFixedHeightOffset() {
+		return _fixedHeightOffset;
+	}
+
+	@Override
+	public void setFixedHeightOffset(float fixedHeightOffset) {
+		this._fixedHeightOffset = fixedHeightOffset;
+	}
+	
+
+	@Override
+	public boolean collides(ISprite e) {
+		if (e == null || !e.isVisible()) {
+			return false;
+		}
+		return intersects(e.getCollisionBox());
+	}
+
+	@Override
+	public boolean collidesX(ISprite other) {
+		if (other == null || !other.isVisible()) {
+			return false;
+		}
+		RectBox rectSelf = getRectBox();
+		RectBox a = new RectBox(rectSelf.getX(), 0, rectSelf.getWidth(), rectSelf.getHeight());
+		RectBox rectDst = getRectBox();
+		RectBox b = new RectBox(rectDst.getX(), 0, rectDst.getWidth(), rectDst.getHeight());
+		return a.intersects(b);
+	}
+
+	@Override
+	public boolean collidesY(ISprite other) {
+		if (other == null || !other.isVisible()) {
+			return false;
+		}
+		RectBox rectSelf = getRectBox();
+		RectBox a = new RectBox(0, rectSelf.getY(), rectSelf.getWidth(), rectSelf.getHeight());
+		RectBox rectDst = getRectBox();
+		RectBox b = new RectBox(0, rectDst.getY(), rectDst.getWidth(), rectDst.getHeight());
+		return a.intersects(b);
 	}
 
 }

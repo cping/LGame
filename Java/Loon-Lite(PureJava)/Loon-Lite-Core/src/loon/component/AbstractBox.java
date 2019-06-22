@@ -24,7 +24,6 @@ import loon.LSysException;
 import loon.LTexture;
 import loon.canvas.LColor;
 import loon.font.IFont;
-import loon.font.LFont;
 import loon.geom.Vector2f;
 import loon.geom.XY;
 import loon.opengl.GLEx;
@@ -44,8 +43,7 @@ public abstract class AbstractBox implements XY {
 	protected LColor fontColor = LColor.white.cpy();
 	protected LTexture _textureBox;
 	protected int _radius;
-
-
+	
 	protected AbstractBox(IFont font) {
 		if (font == null) {
 			throw new LSysException("IFont is null");

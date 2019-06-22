@@ -30,18 +30,18 @@ import loon.utils.TArray;
  */
 public class Scene extends Entity {
 
-	private long secondsElapsedTotal;
+	private long _secondsElapsedTotal;
 
 	protected Scene _parentScene;
 	protected Scene _childScene;
 	private boolean _childSceneModalDraw;
 	private boolean _childSceneModalUpdate;
 
-	private boolean mBackgroundEnabled = true;
+	private boolean _backgroundEnabled = true;
 
-	private TArray<Item<Object>> items = new TArray<Item<Object>>();
+	private TArray<Item<Object>> _items = new TArray<Item<Object>>();
 
-	private TArray<Character> characters = new TArray<Character>();
+	private TArray<Character> _characters = new TArray<Character>();
 
 	public Scene() {
 		this(0);
@@ -54,11 +54,11 @@ public class Scene extends Entity {
 	}
 
 	public void addItem(Item<Object> item) {
-		this.items.add(item);
+		this._items.add(item);
 	}
 
 	public Item<Object> getItem(int index) {
-		return this.items.get(index);
+		return this._items.get(index);
 	}
 
 	public Item<Object> getItem(String name) {
@@ -70,7 +70,7 @@ public class Scene extends Entity {
 	}
 
 	public int findItem(String name) {
-		for (int i = 0; i < this.items.size; i++) {
+		for (int i = 0; i < this._items.size; i++) {
 			if (getItem(i).getName().equalsIgnoreCase(name)) {
 				return i;
 			}
@@ -79,19 +79,19 @@ public class Scene extends Entity {
 	}
 
 	public Item<Object> removeItem(int index) {
-		return this.items.removeIndex(index);
+		return this._items.removeIndex(index);
 	}
 
 	public int countItems() {
-		return this.items.size;
+		return this._items.size;
 	}
 
 	public void addCharacter(Character character) {
-		this.characters.add(character);
+		this._characters.add(character);
 	}
 
 	public Character getCharacter(int index) {
-		return this.characters.get(index);
+		return this._characters.get(index);
 	}
 
 	public Character getCharacter(String name) {
@@ -103,7 +103,7 @@ public class Scene extends Entity {
 	}
 
 	public int findCharacter(String name) {
-		for (int i = 0; i < this.characters.size; i++) {
+		for (int i = 0; i < this._characters.size; i++) {
 			if (getCharacter(i).getName().equalsIgnoreCase(name)) {
 				return i;
 			}
@@ -112,15 +112,15 @@ public class Scene extends Entity {
 	}
 
 	public Character removeCharacter(int index) {
-		return this.characters.removeIndex(index);
+		return this._characters.removeIndex(index);
 	}
 
 	public int countCharacters() {
-		return this.characters.size;
+		return this._characters.size;
 	}
 
 	public float getSecondsElapsedTotal() {
-		return this.secondsElapsedTotal;
+		return this._secondsElapsedTotal;
 	}
 
 	private void setParentScene(final Scene pParentScene) {
@@ -137,7 +137,7 @@ public class Scene extends Entity {
 	protected void onManagedPaint(final GLEx gl, float offsetX, float offsetY) {
 		final Scene childScene = this._childScene;
 		if (childScene == null || !this._childSceneModalDraw) {
-			if (this.mBackgroundEnabled) {
+			if (this._backgroundEnabled) {
 				super.onManagedPaint(gl, offsetX, offsetY);
 			}
 		}
@@ -186,7 +186,7 @@ public class Scene extends Entity {
 
 	@Override
 	protected void onManagedUpdate(final long elapsedTime) {
-		this.secondsElapsedTotal += elapsedTime;
+		this._secondsElapsedTotal += elapsedTime;
 		final Scene childScene = this._childScene;
 		if (childScene == null || !this._childSceneModalUpdate) {
 			super.onManagedUpdate(elapsedTime);

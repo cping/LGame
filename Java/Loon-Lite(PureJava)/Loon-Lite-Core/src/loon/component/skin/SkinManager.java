@@ -26,6 +26,10 @@ public class SkinManager {
 
 	private static SkinManager instance;
 
+	public static void freeStatic(){
+		instance = null;
+	}
+	
 	public final static SkinManager make() {
 		return new SkinManager();
 	}

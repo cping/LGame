@@ -164,8 +164,12 @@ public class LightningRandom implements ILightning {
 
 	@Override
 	public void close() {
-		particles.clear();
-		bolts.clear();
+		if (particles != null) {
+			particles.clear();
+		}
+		if (bolts != null) {
+			bolts.clear();
+		}
 		closed = true;
 	}
 

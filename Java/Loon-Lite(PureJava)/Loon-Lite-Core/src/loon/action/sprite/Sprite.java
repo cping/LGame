@@ -73,11 +73,19 @@ public class Sprite extends LObject<ISprite>
 	// 动画
 	private Animation animation = new Animation();
 
+	private LColor _debugDrawColor = LColor.red;
+
 	private int transform;
 
 	private float _scaleX = 1f, _scaleY = 1f;
 
+	private float _fixedWidthOffset = 0f;
+	
+	private float _fixedHeightOffset = 0f;
+
 	private boolean _flipX = false, _flipY = false;
+
+	private boolean _debugDraw = false;
 
 	private int _maxFrame;
 
@@ -569,7 +577,7 @@ public class Sprite extends LObject<ISprite>
 		if (si == null) {
 			return -1;
 		}
-		return (int) (si.width() * _scaleX);
+		return (si.width() * _scaleX) - _fixedWidthOffset;
 	}
 
 	@Override
@@ -578,7 +586,7 @@ public class Sprite extends LObject<ISprite>
 		if (si == null) {
 			return -1;
 		}
-		return (int) (si.height() * _scaleY);
+		return (si.height() * _scaleY) - _fixedHeightOffset;
 	}
 
 	/**
@@ -662,7 +670,7 @@ public class Sprite extends LObject<ISprite>
 
 		final boolean notImg = image == null;
 
-		if (animation != null && animation.size > 0 && notImg) {
+		if (animation != null && animation.length > 0 && notImg) {
 			return;
 		}
 
@@ -671,9 +679,7 @@ public class Sprite extends LObject<ISprite>
 
 		boolean update = (_rotation != 0) || !(_scaleX == 1f && _scaleY == 1f) || _flipX || _flipY;
 		int tmp = g.color();
-		//int blend = g.getBlendMode();
 		try {
-		//	g.setBlendMode(_blend);
 			float nx = this._location.x + offsetX;
 			float ny = this._location.y + offsetY;
 			if (update) {
@@ -727,12 +733,14 @@ public class Sprite extends LObject<ISprite>
 					}
 				}
 			}
+			if (_debugDraw) {
+				g.drawRect(nx, ny, width, height, _debugDrawColor);
+			}
 		} finally {
 			g.setColor(tmp);
 			if (update) {
 				g.restoreTx();
 			}
-		//	g.setBlendMode(blend);
 		}
 	}
 
@@ -1149,6 +1157,79 @@ public class Sprite extends LObject<ISprite>
 		return new Gravity("Sprite", this);
 	}
 
+	public boolean isDebugDraw() {
+		return _debugDraw;
+	}
+
+	public ISprite setDebugDraw(boolean debugDraw) {
+		this._debugDraw = debugDraw;
+		return this;
+	}
+
+	public LColor getDebugDrawColor() {
+		return _debugDrawColor.cpy();
+	}
+
+	public ISprite setDebugDrawColor(LColor debugColor) {
+		if (debugColor == null) {
+			return this;
+		}
+		this._debugDrawColor = debugColor;
+		return this;
+	}
+
+	@Override
+	public float getFixedWidthOffset() {
+		return _fixedWidthOffset;
+	}
+
+	@Override
+	public void setFixedWidthOffset(float fixedWidthOffset) {
+		this._fixedWidthOffset = fixedWidthOffset;
+	}
+
+	@Override
+	public float getFixedHeightOffset() {
+		return _fixedHeightOffset;
+	}
+
+	@Override
+	public void setFixedHeightOffset(float fixedHeightOffset) {
+		this._fixedHeightOffset = fixedHeightOffset;
+	}
+
+	@Override
+	public boolean collides(ISprite e) {
+		if (e == null || !e.isVisible()) {
+			return false;
+		}
+		return intersects(e.getCollisionBox());
+	}
+
+	@Override
+	public boolean collidesX(ISprite other) {
+		if (other == null || !other.isVisible()) {
+			return false;
+		}
+		RectBox rectSelf = getRectBox();
+		RectBox a = new RectBox(rectSelf.getX(), 0, rectSelf.getWidth(), rectSelf.getHeight());
+		RectBox rectDst = getRectBox();
+		RectBox b = new RectBox(rectDst.getX(), 0, rectDst.getWidth(), rectDst.getHeight());
+		return a.intersects(b);
+	}
+
+	@Override
+	public boolean collidesY(ISprite other) {
+		if (other == null || !other.isVisible()) {
+			return false;
+		}
+		RectBox rectSelf = getRectBox();
+		RectBox a = new RectBox(0, rectSelf.getY(), rectSelf.getWidth(), rectSelf.getHeight());
+		RectBox rectDst = getRectBox();
+		RectBox b = new RectBox(0, rectDst.getY(), rectDst.getWidth(), rectDst.getHeight());
+		return a.intersects(b);
+	}
+	
 	public boolean isClosed() {
 		return isDisposed();
 	}

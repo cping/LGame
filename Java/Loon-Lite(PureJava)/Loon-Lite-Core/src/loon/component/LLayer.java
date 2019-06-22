@@ -666,6 +666,11 @@ public class LLayer extends ActorLayer {
 	}
 
 	@Override
+	public String getUIName() {
+		return "Layer";
+	}
+	
+	@Override
 	public void close() {
 		super.close();
 		if (collisionChecker != null) {
@@ -686,10 +691,5 @@ public class LLayer extends ActorLayer {
 			_layerSprites.close();
 		}
 		_layerSprites = null;
-	}
-
-	@Override
-	public String getUIName() {
-		return "Layer";
 	}
 }

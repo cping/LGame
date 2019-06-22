@@ -645,6 +645,10 @@ public class MathUtils {
 		return (n < 0) ? -n : n;
 	}
 
+	public static final double abs(double n) {
+		return (n < 0) ? -n : n;
+	}
+
 	public static final int abs(int n) {
 		return (n < 0) ? -n : n;
 	}
@@ -884,6 +888,10 @@ public class MathUtils {
 		return (int) (x + BIG_ENOUGH_FLOOR) - BIG_ENOUGH_INT;
 	}
 
+	public static final long floor(double x) {
+		return (long) (x + BIG_ENOUGH_FLOOR) - BIG_ENOUGH_INT;
+	}
+
 	public static final int floorPositive(float x) {
 		return (int) x;
 	}
@@ -928,12 +936,36 @@ public class MathUtils {
 		return value;
 	}
 
+	public static final double clamp(double value, double min, double max) {
+		value = (value > max) ? max : value;
+		value = (value < min) ? min : value;
+		return value;
+	}
+
+	public static final long clamp(long value, long min, long max) {
+		value = (value > max) ? max : value;
+		value = (value < min) ? min : value;
+		return value;
+	}
+
 	public static final float clamp(final float v) {
 		return v < 0f ? 0f : (v > 1f ? 1f : v);
 	}
 
-	public static final float distance(float value1, float value2) {
-		return Math.abs(value1 - value2);
+	public static final float clampAngle(final float v) {
+		float value = v % PI * 2;
+		if (value < 0) {
+			value += PI * 2;
+		}
+		return value;
+	}
+
+	public static final float distance(float x1, float x2) {
+		return Math.abs(x1 - x2);
+	}
+
+	public static float distance(float x1, float y1, float x2, float y2) {
+		return (float) Math.pow(Math.pow(x1 - x2, 2.0d) + Math.pow(y1 - y2, 2.0d), 0.5d);
 	}
 
 	public static final float hermite(float value1, float tangent1, float value2, float tangent2, float amount) {
@@ -1342,6 +1374,16 @@ public class MathUtils {
 		return newAngle;
 	}
 
+	public static final float fixRotationLimit(final float rotation, final float min, final float max) {
+		float result = rotation;
+		if (rotation > max) {
+			result = max;
+		} else if (rotation < min) {
+			result = min;
+		}
+		return fixRotation(result);
+	}
+
 	public static final float fixAngle(final float angle) {
 		float newAngle = 0f;
 		if (angle == -TWO_PI || angle == TWO_PI) {
@@ -1359,6 +1401,16 @@ public class MathUtils {
 			}
 		}
 		return newAngle;
+	}
+
+	public static final float fixAngleLimit(final float angle, final float min, final float max) {
+		float result = angle;
+		if (angle > max) {
+			result = max;
+		} else if (angle < min) {
+			result = min;
+		}
+		return fixAngle(result);
 	}
 
 	public static final float adjust(final float angle) {
@@ -1383,6 +1435,29 @@ public class MathUtils {
 			}
 		}
 		return newAngle >= newStartAngle && newAngle <= newEndAngle;
+	}
+
+	public static final float angleFrom(float x1, float y1, float x2, float y2) {
+		float diffX = x2 - x1;
+		float diffY = y2 - y1;
+		return atan2(diffY, diffX);
+	}
+
+	public final static float scroll(float scroll, float side) {
+		float start = 0;
+		final float v = MathUtils.abs(scroll) % side;
+		if (v < 0) {
+			start = -(side - v);
+		} else if (v > 0) {
+			start = -v;
+		}
+		return start;
+	}
+
+	public static float inerations(float total, float start, float side) {
+		final float diff = total = start;
+		final float v = diff / side;
+		return v + (diff % side > 0 ? 1f : 0f);
 	}
 
 }

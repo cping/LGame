@@ -37,6 +37,8 @@ public class WaitProcess implements GameProcess, LRelease {
 
 	private LTimer timer;
 
+	private GameProcessType processType = GameProcessType.Other;
+
 	private RealtimeProcessHost processHost;
 
 	private SortedList<GameProcess> processesToFireWhenFinished;
@@ -47,19 +49,28 @@ public class WaitProcess implements GameProcess, LRelease {
 
 	private RealtimeProcess _waitProcess;
 
+	private final static String getProcessName() {
+		return "Process" + TimeUtils.millis();
+	}
+
 	public WaitProcess(Updateable update) {
-		this("Process" + TimeUtils.millis(), 60, update);
+		this(getProcessName(), 60, update);
 	}
 
 	public WaitProcess(long delay, Updateable update) {
-		this("Process" + TimeUtils.millis(), delay, update);
+		this(getProcessName(), delay, update);
 	}
 
 	public WaitProcess(String id, long delay, Updateable update) {
+		this(id, delay, GameProcessType.Other, update);
+	}
+
+	public WaitProcess(String id, long delay, GameProcessType pt, Updateable update) {
 		this.timer = new LTimer(delay);
 		this.isDead = false;
 		this.isAutoKill = true;
 		this.id = id;
+		this.processType = pt;
 		this.update = update;
 	}
 
@@ -76,6 +87,7 @@ public class WaitProcess implements GameProcess, LRelease {
 		this.processHost = processHost;
 	}
 
+	@Override
 	public void fireThisWhenFinished(GameProcess realtimeProcess) {
 		if (this.processesToFireWhenFinished == null) {
 			this.processesToFireWhenFinished = new SortedList<GameProcess>();
@@ -117,6 +129,24 @@ public class WaitProcess implements GameProcess, LRelease {
 		return this.id;
 	}
 
+	public boolean isAutoKill() {
+		return isAutoKill;
+	}
+
+	public void setAutoKill(boolean isAutoKill) {
+		this.isAutoKill = isAutoKill;
+	}
+
+	@Override
+	public GameProcessType getProcessType() {
+		return this.processType;
+	}
+
+	@Override
+	public void setProcessType(GameProcessType pt) {
+		this.processType = pt;
+	}
+
 	@Override
 	public void finish() {
 		if (!this.isDead) {
@@ -131,14 +161,6 @@ public class WaitProcess implements GameProcess, LRelease {
 			this.processHost.processFinished(this.id, this);
 		}
 		value.set(true);
-	}
-
-	public boolean isAutoKill() {
-		return isAutoKill;
-	}
-
-	public void setAutoKill(boolean isAutoKill) {
-		this.isAutoKill = isAutoKill;
 	}
 
 	@Override
