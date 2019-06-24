@@ -32,7 +32,7 @@ import loon.utils.MathUtils;
 /**
  * Loon的Byte[]操作用类
  * 
- * 它的作用在于针对二进制数据进行读取,写入以及处理，总之是字节层操作时才会用到的工具类.
+ * 它的作用在于针对二进制数据进行读取,写入以及处理,总之是字节层操作时才会用到的工具类.
  */
 public class ArrayByte implements IArray, LRelease {
 

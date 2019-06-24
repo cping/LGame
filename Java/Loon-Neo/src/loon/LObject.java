@@ -44,7 +44,7 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	public final static int allLObjects() {
 		return _SYS_GLOBAL_SEQNO;
 	}
-	
+
 	public static enum State {
 		UNKOWN, REMOVED, ADDED, DISPOSED
 	}
@@ -239,7 +239,7 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	protected float _alpha = 1f;
 
 	protected float _rotation;
-	
+
 	protected RectBox _rect;
 
 	protected String _name;
@@ -248,10 +248,12 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 
 	protected Vector2f _location = new Vector2f(0, 0);
 
+	protected Vector2f _previous_location = new Vector2f(0, 0);
+
 	protected int _layer;
 
 	private int _objStatus = NOT;
-	
+
 	private int _seqNo = 0;
 
 	public LObject() {
@@ -439,11 +441,36 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 		return MathUtils.abs(getLayer());
 	}
 
+	public float getPreviousX() {
+		return _previous_location.x;
+	}
+
+	public float getPreviousY() {
+		return _previous_location.y;
+	}
+
+	public int previousX() {
+		return _previous_location.x();
+	}
+
+	public int previousY() {
+		return _previous_location.y();
+	}
+
+	public boolean hasMoved() {
+		return (_previous_location.x != _location.x || _previous_location.y != _location.y);
+	}
+
+	protected void syncPreviousPos() {
+		_previous_location.set(_location);
+	}
+
 	public void move_45D_up() {
 		move_45D_up(1);
 	}
 
 	public void move_45D_up(int multiples) {
+		syncPreviousPos();
 		_location.move_multiples(Field2D.UP, multiples);
 	}
 
@@ -452,6 +479,7 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	}
 
 	public void move_45D_left(int multiples) {
+		syncPreviousPos();
 		_location.move_multiples(Field2D.LEFT, multiples);
 	}
 
@@ -460,6 +488,7 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	}
 
 	public void move_45D_right(int multiples) {
+		syncPreviousPos();
 		_location.move_multiples(Field2D.RIGHT, multiples);
 	}
 
@@ -468,6 +497,7 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	}
 
 	public void move_45D_down(int multiples) {
+		syncPreviousPos();
 		_location.move_multiples(Field2D.DOWN, multiples);
 	}
 
@@ -476,6 +506,7 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	}
 
 	public void move_up(int multiples) {
+		syncPreviousPos();
 		_location.move_multiples(Field2D.TUP, multiples);
 	}
 
@@ -484,6 +515,7 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	}
 
 	public void move_left(int multiples) {
+		syncPreviousPos();
 		_location.move_multiples(Field2D.TLEFT, multiples);
 	}
 
@@ -492,6 +524,7 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	}
 
 	public void move_right(int multiples) {
+		syncPreviousPos();
 		_location.move_multiples(Field2D.TRIGHT, multiples);
 	}
 
@@ -500,6 +533,7 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	}
 
 	public void move_down(int multiples) {
+		syncPreviousPos();
 		_location.move_multiples(Field2D.TDOWN, multiples);
 	}
 
@@ -508,6 +542,7 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	}
 
 	public void move(float x, float y) {
+		syncPreviousPos();
 		_location.move(x, y);
 	}
 
@@ -528,15 +563,16 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	}
 
 	public void setLocation(float x, float y) {
+		syncPreviousPos();
 		_location.setLocation(x, y);
 	}
 
 	public int x() {
-		return (int) _location.getX();
+		return _location.x();
 	}
 
 	public int y() {
-		return (int) _location.getY();
+		return _location.y();
 	}
 
 	@Override
@@ -554,6 +590,7 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	}
 
 	public void setX(float x) {
+		syncPreviousPos();
 		_location.setX(x);
 	}
 
@@ -562,6 +599,7 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	}
 
 	public void setY(float y) {
+		syncPreviousPos();
 		_location.setY(y);
 	}
 
@@ -696,7 +734,7 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	public final Object getCollisionData() {
 		return _collisionData;
 	}
-	
+
 	public abstract float getWidth();
 
 	public abstract float getHeight();
