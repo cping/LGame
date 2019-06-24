@@ -20,18 +20,105 @@
  */
 package loon;
 
+import java.io.OutputStream;
+
 import loon.action.ActionControl;
+import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.font.IFont;
 import loon.opengl.GLEx;
+import loon.utils.ArrayByte;
+import loon.utils.ArrayByteOutput;
+import loon.utils.GLUtils;
+import loon.utils.GifEncoder;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
-import loon.utils.TimeUtils;
 import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.reply.Port;
+import loon.utils.timer.LTimer;
 import loon.utils.timer.LTimerContext;
 
 public class Display extends LSystemView {
+
+	private final static String FPS_STR = "FPS:";
+
+	private final static String MEMORY_STR = "MEMORY:";
+
+	private final static String SPRITE_STR = "SPRITE:";
+
+	private final static String DESKTOP_STR = "DESKTOP:";
+
+	private String displayMemony = MEMORY_STR;
+
+	private String displaySprites = SPRITE_STR;
+
+	private StringBuilder displayMessage = new StringBuilder(32);
+
+	private GifEncoder gifEncoder;
+
+	private boolean videoScreenToGif;
+
+	private ArrayByteOutput videoCache;
+
+	private final LTimer videoDelay = new LTimer();
+
+	/**
+	 * 返回video的缓存结果(不设置out对象时才会有效)
+	 * 
+	 * @return
+	 */
+	public ArrayByte getVideoCache() {
+		return videoCache.getArrayByte();
+	}
+
+	/**
+	 * 开始录像(默认使用ArrayByte缓存录像结果到内存中)
+	 * 
+	 * @return
+	 */
+	public GifEncoder startVideo() {
+		return startVideo(videoCache = new ArrayByteOutput());
+	}
+
+	/**
+	 * 开始录像(指定一个OutputStream对象,比如FileOutputStream 输出录像结果到指定硬盘位置)
+	 * 
+	 * @param output
+	 * @return
+	 */
+	public GifEncoder startVideo(OutputStream output) {
+		return startVideo(output, LSystem.isDesktop() ? LSystem.SECOND : LSystem.SECOND + LSystem.SECOND / 2);
+	}
+
+	/**
+	 * 开始录像(指定一个OutputStream对象,比如FileOutputStream 输出录像结果到指定硬盘位置)
+	 * 
+	 * @param output
+	 * @param delay
+	 * @return
+	 */
+	public GifEncoder startVideo(OutputStream output, long delay) {
+		stopVideo();
+		videoDelay.setDelay(delay);
+		gifEncoder = new GifEncoder();
+		gifEncoder.start(output);
+		gifEncoder.setDelay((int) delay);
+		videoScreenToGif = true;
+		return gifEncoder;
+	}
+
+	/**
+	 * 结束录像
+	 * 
+	 * @return
+	 */
+	public GifEncoder stopVideo() {
+		if (gifEncoder != null) {
+			gifEncoder.finish();
+		}
+		videoScreenToGif = false;
+		return gifEncoder;
+	}
 
 	// 为了方便直接转码到C#和C++，无法使用匿名内部类(也就是在构造内直接构造实现的方式)，只能都写出具体类来……
 	// PS:别提delegate，委托那玩意写出来太不优雅了(对于凭空实现某接口或抽象，而非局部重载来说)，而且大多数J2C#的工具也不能直接转换过去……
@@ -138,7 +225,7 @@ public class Display extends LSystemView {
 					finish = true;
 				}
 			}
-			gl.setAlpha(alpha);
+			gl.setAlpha(MathUtils.clamp(alpha, 0f, 0.98f));
 			gl.draw(logo, centerX, centerY);
 		}
 
@@ -153,11 +240,15 @@ public class Display extends LSystemView {
 
 	private Runtime runtime;
 
-	private long frameCount;
+	private long frameCount = 0l;
 
-	private int frameRate, frames;
+	private int frameRate = 0;
+
+	private float frameDelta = 0f;
 
 	private IFont fpsFont;
+
+	private float cred, cgreen, cblue, calpha;
 
 	private final GLEx _glEx;
 
@@ -187,11 +278,14 @@ public class Display extends LSystemView {
 
 	public Display(LGame game, int updateRate) {
 		super(game, updateRate);
-		_setting = LSystem.base().setting;
-		_process = LSystem.getProcess();
-		_glEx = new GLEx(game.graphics());
+		Graphics graphics = game.graphics();
+		_setting = game.setting;
+		_process = game.process();
+		_glEx = new GLEx(graphics);
 		_glEx.update();
 		updateSyncTween(_setting.isSyncTween);
+		this.displayMemony = MEMORY_STR + "0";
+		this.displaySprites = SPRITE_STR + "0, " + DESKTOP_STR + "0";
 		if (!_setting.isLogo) {
 			_process.start();
 		}
@@ -223,6 +317,37 @@ public class Display extends LSystemView {
 		return _process;
 	}
 
+	/**
+	 * 清空当前游戏窗体内容为指定色彩
+	 * 
+	 * @param red
+	 * @param green
+	 * @param blue
+	 * @param alpha
+	 */
+	public void clearColor(float red, float green, float blue, float alpha) {
+		cred = red;
+		cgreen = green;
+		cblue = blue;
+		calpha = alpha;
+	}
+
+	/**
+	 * 清空当前游戏窗体内容为指定色彩
+	 * 
+	 * @param color
+	 */
+	public void clearColor(LColor color) {
+		this.clearColor(color.r, color.g, color.b, color.a);
+	}
+
+	/**
+	 * 清空当前游戏窗体内容为纯黑色
+	 */
+	public void clearColor() {
+		this.clearColor(0, 0, 0, 0);
+	}
+
 	protected void draw(LTimerContext clock) {
 
 		// fix渲染时机，避免调用渲染在纹理构造前
@@ -236,7 +361,7 @@ public class Display extends LSystemView {
 			try {
 				_glEx.save();
 				_glEx.begin();
-				_glEx.resetClear();
+				_glEx.clear(cred, cgreen, cblue, calpha);
 				if (logoTex == null || logoTex.finish || logoTex.logo.disposed()) {
 					showLogo = false;
 					return;
@@ -263,40 +388,41 @@ public class Display extends LSystemView {
 		try {
 			_glEx.saveTx();
 			_glEx.begin();
-			_glEx.resetClear();
+			_glEx.reset();
 
 			_process.load();
 			_process.runTimer(clock);
 			_process.draw(_glEx);
 
-			final boolean debug = _setting.isDebug;
-			// 显示fps速度
-			if (debug || _setting.isFPS) {
-				tickFrames();
-				fpsFont.drawString(_glEx, "FPS:" + frameRate, 5, 5, 0, LColor.white);
-			}
-			// 显示内存
-			if (debug || _setting.isMemory) {
-				if (runtime == null) {
-					runtime = Runtime.getRuntime();
-				}
-				long totalMemory = runtime.totalMemory();
-				long currentMemory = totalMemory - runtime.freeMemory();
-				String memory = ((float) ((currentMemory * 10) >> 20) / 10) + " of "
-						+ ((float) ((runtime.maxMemory() * 10) >> 20) / 10) + " MB";
-				fpsFont.drawString(_glEx, "MEMORY:" + memory, 5, 25, 0, LColor.white);
-			}
-			if (debug || _setting.isSprites) {
-				fpsFont.drawString(_glEx,
-						"SPRITE:" + getGame().allSpritesCount() + "," + " DESKTOP:" + getGame().allDesktopCount(), 5,
-						45, 0, LColor.white);
-			}
-			// 若打印日志到界面,很可能挡住游戏界面内容,所以isDisplayLog为true并且debug才显示
-			if (debug && _setting.isDisplayLog) {
-				_process.paintLog(_glEx, 5, 65);
-			}
+			// 渲染debug信息
+			drawDebug(_glEx, _setting, clock.timeSinceLastUpdate);
+
 			_process.drawEmulator(_glEx);
 			_process.unload();
+
+			// 如果存在屏幕录像设置
+			if (videoScreenToGif && !LSystem.PAUSED && gifEncoder != null) {
+				if (videoDelay.action(clock)) {
+					Image tmp = null;//GLUtils.getScreenshot();
+					Image image = null;
+					if (LSystem.isDesktop()) {
+						image = tmp;
+					} else {
+						// 因为内存和速度关系,考虑到全平台录制,因此默认只录屏幕大小的一半(否则在手机上绝对抗不了5分钟以上……)
+						image = Image.getResize(tmp, (int) (_process.getWidth() * 0.5f),
+								(int) (_process.getHeight() * 0.5f));
+					}
+					gifEncoder.addFrame(image);
+					if (tmp != null) {
+						tmp.close();
+						tmp = null;
+					}
+					if (image != null) {
+						image.close();
+						image = null;
+					}
+				}
+			}
 
 		} finally {
 			_glEx.end();
@@ -311,22 +437,92 @@ public class Display extends LSystemView {
 		return this;
 	}
 
-	private void tickFrames() {
-		final long time = TimeUtils.millis();
-		if (time - frameCount > 1000L) {
-			final int settingFPS = _setting.fps;
-			frameRate = MathUtils.min(settingFPS, frames);
-			if (frameRate == settingFPS - 1) {
-				frameRate = MathUtils.max(settingFPS, frames);
+	/**
+	 * 渲染debug信息到游戏画面
+	 * 
+	 * @param gl
+	 * @param setting
+	 * @param delta
+	 */
+	private final void drawDebug(final GLEx gl, final LSetting setting, final float delta) {
+		final boolean debug = setting.isDebug;
+		this.frameCount++;
+		this.frameDelta += delta;
+
+		if (frameCount % 60 == 0) {
+			final int dstFPS = setting.fps;
+			final int newFps = MathUtils.round((1000f * frameCount) / frameDelta) + 1;
+			this.frameRate = MathUtils.clamp(newFps, 0, dstFPS);
+			if (frameRate == dstFPS - 1) {
+				frameRate = MathUtils.max(dstFPS, frameRate);
 			}
-			frames = 0;
-			frameCount = time;
+			this.frameDelta = 0;
+			this.frameCount = 0;
+
+			if (runtime == null) {
+				runtime = Runtime.getRuntime();
+			}
+			long totalMemory = runtime.totalMemory();
+			long currentMemory = totalMemory - runtime.freeMemory();
+
+			displayMessage.delete(0, displayMessage.length());
+			displayMessage.append(MEMORY_STR);
+			displayMessage.append(((float) ((currentMemory * 10) >> 20) / 10f));
+			displayMessage.append(" of ");
+			displayMessage.append(((float) ((runtime.maxMemory() * 10) >> 20) / 10f));
+			displayMessage.append(" MB");
+
+			displayMemony = displayMessage.toString();
+
+			LGame game = getGame();
+
+			displayMessage.delete(0, displayMessage.length());
+			displayMessage.append(SPRITE_STR);
+			displayMessage.append(game.allSpritesCount());
+			displayMessage.append(", ");
+			displayMessage.append(DESKTOP_STR);
+			displayMessage.append(game.allDesktopCount());
+
+			displaySprites = displayMessage.toString();
+
 		}
-		frames++;
+		// 显示fps速度
+		if (debug || setting.isFPS) {
+			fpsFont.drawString(gl, FPS_STR + frameRate, 5, 5, 0, LColor.white);
+		}
+		// 显示内存占用
+		if (debug || setting.isMemory) {
+			fpsFont.drawString(gl, displayMemony, 5, 25, 0, LColor.white);
+		}
+		// 显示精灵与组件数量
+		if (debug || setting.isSprites) {
+			fpsFont.drawString(gl, displaySprites, 5, 45, 0, LColor.white);
+		}
+		// 若打印日志到界面,很可能挡住游戏界面内容,所以isDisplayLog为true并且debug才显示
+		if (debug && setting.isDisplayLog) {
+			_process.paintLog(gl, 5, 65);
+		}
+
 	}
 
 	public int getFPS() {
 		return frameRate;
+	}
+
+	public float getAlpha() {
+		return calpha;
+	}
+
+	public float getRed() {
+		return cred;
+	}
+
+	public float getGreen() {
+		return cgreen;
+	}
+
+	public float getBlue() {
+		return cblue;
 	}
 
 	public GLEx GL() {

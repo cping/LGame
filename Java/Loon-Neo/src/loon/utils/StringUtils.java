@@ -1442,4 +1442,5 @@ final public class StringUtils extends CharUtils {
 		}
 		return false;
 	}
+	
 }

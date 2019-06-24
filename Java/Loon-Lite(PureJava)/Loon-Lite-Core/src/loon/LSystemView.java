@@ -70,7 +70,7 @@ public abstract class LSystemView extends BaseIO {
 		final long updateLoop = setting.fixedUpdateLoopTime;
 		
 		int nextUpdate = this.nextUpdate;
-		
+
 		if (updateTick >= nextUpdate) {
 			long updateRate = this.updateRate;
 			long updates = 0;

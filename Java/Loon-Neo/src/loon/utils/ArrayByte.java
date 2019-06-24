@@ -31,11 +31,90 @@ import loon.utils.MathUtils;
 
 /**
  * Loon的Byte[]操作用类
+ * 
+ * 它的作用在于针对二进制数据进行读取,写入以及处理，总之是字节层操作时才会用到的工具类.
  */
 public class ArrayByte implements IArray, LRelease {
 
+	/**
+	 * 返回指定字符串符合UTF8编码的子符长度
+	 * 
+	 * @param str
+	 * @return
+	 */
+	public static int getUTF8ByteLength(CharSequence str) {
+		int len = 0;
+		int ch = 0;
+		for (int i = 0; i < str.length(); i++) {
+			ch = str.charAt(i);
+			if (ch < 128) {
+				len += 1;
+			} else if (ch < 2048) {
+				len += 2;
+			} else if ((ch & 0xFC00) == 0xD800 && (str.charAt(i + 1) & 0xFC00) == 0xDC00) {
+				++i;
+				len += 4;
+			} else {
+				len += 3;
+			}
+		}
+		return len;
+	}
+
+	/**
+	 * 转化字符串为ArrayByte
+	 * 
+	 * @param str
+	 * @return
+	 */
+	public static ArrayByte encodeUTF8(CharSequence str) {
+		return encodeUTF8(str,BIG_ENDIAN);
+	}
+	
+	/**
+	 * 转化字符串为ArrayByte
+	 * 
+	 * @param str
+	 * @param orderType
+	 * @return
+	 */
+	public static ArrayByte encodeUTF8(CharSequence str, int orderType) {
+		int offset = 0;
+		int c1 = 0;
+		int c2 = 0;
+		IntArray buffer = new IntArray(getUTF8ByteLength(str));
+		for (int i = 0; i < str.length(); i++) {
+			c1 = str.charAt(i);
+			if (c1 < 128) {
+				buffer.set(offset++, c1);
+			} else if (c1 < 2048) {
+				buffer.set(offset++, c1 >> 6 | 192);
+				buffer.set(offset++, c1 & 63 | 128);
+			} else if ((c1 & 0xFC00) == 0xD800 && ((c2 = str.charAt(i + 1)) & 0xFC00) == 0xDC00) {
+				c1 = 0x10000 + ((c1 & 0x03FF) << 10) + (c2 & 0x03FF);
+				++i;
+				buffer.set(offset++, c1 >> 18 | 240);
+				buffer.set(offset++, c1 >> 12 & 63 | 128);
+				buffer.set(offset++, c1 >> 6 & 63 | 128);
+				buffer.set(offset++, c1 & 63 | 128);
+			} else {
+				buffer.set(offset++, c1 >> 12 | 224);
+				buffer.set(offset++, c1 >> 6 & 63 | 128);
+				buffer.set(offset++, c1 & 63 | 128);
+			}
+		}
+		ArrayByte bytes = new ArrayByte(offset);
+		bytes.setByteOrder(orderType);
+		for (int i = 0; i < offset; i++) {
+			bytes.writeByte(buffer.get(i));
+		}
+		return bytes;
+	}
+	
+	// 倒序注入和读取字节数据,既多字节数字的[最高]有效字节位于字节序列的最前面,依次递减.
 	public static final int BIG_ENDIAN = 0;
 
+	// 正序注入和读取字节数据,既多字节数字的[最低]有效字节位于字节序列的最前面,依次递增.
 	public static final int LITTLE_ENDIAN = 1;
 
 	private byte[] data;
@@ -181,7 +260,7 @@ public class ArrayByte implements IArray, LRelease {
 		return n - remaining;
 	}
 
-	public void read(OutputStream out) throws IOException  {
+	public void read(OutputStream out) throws IOException {
 		out.write(data, position, data.length - position);
 		position = data.length;
 	}
