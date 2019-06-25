@@ -31,6 +31,7 @@ import loon.LRelease;
 import loon.LSysException;
 import loon.LSystem;
 import loon.canvas.LColor;
+import loon.geom.Affine2f;
 import loon.geom.Matrix3;
 import loon.geom.Matrix4;
 import loon.geom.Vector2f;
@@ -424,6 +425,24 @@ public class ShaderProgram implements LRelease {
 		GL20 gl = LSystem.base().graphics().gl;
 		checkManaged();
 		gl.glUniformMatrix3fv(location, 1, transpose, matrix.val, 0);
+	}
+
+	public void setUniformMatrix(String name, Affine2f aff) {
+		setUniformMatrix(name, aff, false);
+	}
+
+	public void setUniformMatrix(String name, Affine2f aff, boolean transpose) {
+		setUniformMatrix(fetchUniformLocation(name), aff, transpose);
+	}
+
+	public void setUniformMatrix(int location, Affine2f aff) {
+		setUniformMatrix(location, aff, false);
+	}
+
+	public void setUniformMatrix(int location, Affine2f aff, boolean transpose) {
+		GL20 gl = LSystem.base().graphics().gl;
+		checkManaged();
+		gl.glUniformMatrix3fv(location, 1, transpose, aff.getMartix3f(), 0);
 	}
 
 	public void setUniformMatrix3fv(String name, FloatBuffer buffer, int count, boolean transpose) {

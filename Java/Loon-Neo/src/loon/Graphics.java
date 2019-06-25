@@ -45,9 +45,9 @@ public abstract class Graphics {
 	private Display display = null;
 	private Affine2f affine = null, lastAffine = null;
 	private Matrix4 viewMatrix = null;
-	private static Array<Matrix4> matrixsStack = new Array<Matrix4>();
+	private Array<Matrix4> matrixsStack = new Array<Matrix4>();
 	// 创建一个半永久的纹理，用以批量进行颜色渲染
-	private static LTexture colorTex;
+	private LTexture colorTex;
 
 	// 用以提供GL渲染服务
 	public final GL20 gl;

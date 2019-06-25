@@ -28,8 +28,10 @@ import loon.utils.NumberUtils;
 import loon.utils.StringKeyValue;
 
 /**
+ * 2D矩阵存储用类.
+ * 
  * 以对象存储，而非数组的方式实现一个3x2(标准矩阵应为3x3)的2D仿射矩阵类，
- * 也就是保留了线的“直线性”和“平行性”，但缺少了长宽高的3D矩阵延展能力。 所以，此类仅适合2D应用中使用.
+ * 也就是保留了线的“直线性”和“平行性”，但缺少了长宽高的3D矩阵延展能力。 所以，此类仅适合2D应用中使用(当然,也可以转化为3D应用,只是没有Z值).
  * 
  * 对应的3x3矩阵关系如下所示:
  * 
@@ -64,7 +66,7 @@ public class Affine2f implements LTrans, XY {
 		return into;
 	}
 
-	private static Matrix4 projectionMatrix = null;
+	private Matrix4 projectionMatrix = null;
 
 	protected Affine2f(Affine2f other) {
 		this(other.scaleX(), other.scaleY(), other.rotation(), other.tx(), other.ty());
@@ -310,6 +312,8 @@ public class Affine2f implements LTrans, XY {
 	public float tx = 0.0f;
 	/* y translation */
 	public float ty = 0.0f;
+    /* convert Affine to Matrix3 */
+	private float[] matrix3f = new float[9];
 
 	public Affine2f() {
 		this(1, 0, 0, 1, 0, 0);
@@ -497,13 +501,27 @@ public class Affine2f implements LTrans, XY {
 		return this.ty;
 	}
 
-	public void get(float[] matrix) {
+	public float[] getMartix3f() {
+		matrix3f[0] = m00;
+		matrix3f[1] = m10;
+		matrix3f[2] = 0;
+		matrix3f[3] = m01;
+		matrix3f[4] = m11;
+		matrix3f[5] = 0;
+		matrix3f[6] = tx;
+		matrix3f[7] = ty;
+		matrix3f[8] = 1;
+		return get(matrix3f);
+	}
+
+	public float[] get(float[] matrix) {
 		matrix[0] = m00;
 		matrix[1] = m01;
 		matrix[2] = m10;
 		matrix[3] = m11;
 		matrix[4] = tx;
 		matrix[5] = ty;
+		return matrix;
 	}
 
 	public Affine2f setUniformScale(float scale) {
@@ -1024,6 +1042,16 @@ public class Affine2f implements LTrans, XY {
 		return projectionMatrix;
 	}
 
+	public Affine2f cpy(Affine2f other) {
+		this.m00 = other.m00;
+		this.m01 = other.m01;
+		this.m10 = other.m10;
+		this.m11 = other.m11;
+		this.tx = other.tx;
+		this.ty = other.ty;
+		return this;
+	}
+
 	public Affine2f cpy() {
 		return new Affine2f(m00, m01, m10, m11, tx, ty);
 	}
@@ -1031,8 +1059,6 @@ public class Affine2f implements LTrans, XY {
 	public int generality() {
 		return GENERALITY;
 	}
-
-	public Object tag;
 
 	public Vector2f scale() {
 		return new Vector2f(scaleX(), scaleY());

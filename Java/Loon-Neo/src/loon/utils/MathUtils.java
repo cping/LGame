@@ -773,6 +773,10 @@ public class MathUtils {
 		return (Atan2.TABLE[yi * ATAN2_DIM + xi] + add) * mul;
 	}
 
+	public static final boolean between(float v, float min, float max) {
+		return (v > min && v < max);
+	}
+
 	public static final float toDegrees(final float radians) {
 		return radians * RAD_TO_DEG;
 	}

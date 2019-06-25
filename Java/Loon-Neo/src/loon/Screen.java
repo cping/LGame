@@ -2940,13 +2940,19 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return new LTextureImage(LSystem.base().graphics(), LSystem.base().display().GL().batch(), width, height, true);
 	}
 
-	protected void afterUI(GLEx g) {
+	/**
+	 * 重载此函数,可以自定义渲染Screen的最下层图像
+	 * 
+	 * @param g
+	 */
+	protected void afterUI(GLEx g) {}
 
-	}
-
-	protected void beforeUI(GLEx g) {
-
-	}
+	/**
+	 * 重载此函数,可以自定义渲染Screen的最上层图像
+	 * 
+	 * @param g
+	 */
+	protected void beforeUI(GLEx g) {}
 
 	private final void repaint(GLEx g) {
 		if (!_visible) {

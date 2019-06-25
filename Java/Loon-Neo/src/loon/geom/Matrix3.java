@@ -82,7 +82,7 @@ public class Matrix3 implements Serializable, XY {
 		this(t1);
 		concatenate(t2);
 	}
-
+	
 	public Matrix3 set(Affine2f affine) {
 		float[] val = this.val;
 
