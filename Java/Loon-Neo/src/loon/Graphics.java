@@ -61,26 +61,32 @@ public abstract class Graphics {
 			_graphics = gfx;
 		}
 
+		@Override
 		public int id() {
 			return _graphics.defaultFramebuffer();
 		}
 
+		@Override
 		public int width() {
 			return _graphics.viewPixelWidth;
 		}
 
+		@Override
 		public int height() {
 			return _graphics.viewPixelHeight;
 		}
 
+		@Override
 		public float xscale() {
 			return _graphics.game.setting.scaling() ? LSystem.getScaleWidth() : _graphics.scale.factor;
 		}
 
+		@Override
 		public float yscale() {
 			return _graphics.game.setting.scaling() ? LSystem.getScaleHeight() : _graphics.scale.factor;
 		}
 
+		@Override
 		public boolean flip() {
 			return true;
 		}
@@ -170,7 +176,7 @@ public abstract class Graphics {
 	}
 
 	public LTexture finalColorTex() {
-		if (colorTex == null) {
+		if (colorTex == null || colorTex.isClosed()) {
 			Canvas canvas = createCanvas(1, 1);
 			canvas.setFillColor(0xFFFFFFFF).fillRect(0, 0, canvas.width, canvas.height);
 			colorTex = canvas.toTexture(LTexture.Format.NEAREST);

@@ -259,6 +259,22 @@ public class Affine2f implements LTrans, XY {
 		return tx;
 	}
 
+	public Affine2f combined(Affine2f aff) {
+
+		float a = aff.m00 * this.m00 + aff.m01 * this.m10;
+		float b = aff.m00 * this.m11 + aff.m11 * this.m10;
+		float tx = aff.m00 * this.m01 + aff.m01 * this.m11;
+		float c = aff.m00 * this.tx + aff.m01 * this.ty;
+		float d = aff.m10 * this.tx + aff.m11 * this.ty;
+
+		this.m00 = a;
+		this.m01 = b;
+		this.tx = tx;
+		this.m10 = c;
+		this.m11 = d;
+		return this;
+	}
+	
 	public Affine2f combined(Matrix4 mat) {
 		float[] m = mat.val;
 
@@ -312,7 +328,7 @@ public class Affine2f implements LTrans, XY {
 	public float tx = 0.0f;
 	/* y translation */
 	public float ty = 0.0f;
-    /* convert Affine to Matrix3 */
+	/* convert Affine to Matrix3 */
 	private float[] matrix3f = new float[9];
 
 	public Affine2f() {
@@ -1030,6 +1046,31 @@ public class Affine2f implements LTrans, XY {
 		}
 		float rdet = 1 / det;
 		return into.set((x * m11 - y * m10) * rdet, (y * m00 - x * m01) * rdet);
+	}
+
+	public Affine2f setToOrtho2D(float x, float y, float width, float height) {
+		setToOrtho(x, x + width, y + height, y, 1f, -1f);
+		return this;
+	}
+
+	public Affine2f setToOrtho2D(float x, float y, float width, float height, float near, float far) {
+		setToOrtho(x, x + width, y + height, y, near, far);
+		return this;
+	}
+
+	public Affine2f setToOrtho(float left, float right, float bottom, float top, float near, float far) {
+		float x_orth = 2 / (right - left);
+		float y_orth = 2 / (top - bottom);
+
+		float m03 = -(right + left) / (right - left);
+		float m13 = -(top + bottom) / (top - bottom);
+
+		this.m00 = x_orth;
+		this.m11 = y_orth;
+		this.tx = m03;
+		this.ty = m13;
+
+		return this;
 	}
 
 	public Matrix4 toViewMatrix4() {

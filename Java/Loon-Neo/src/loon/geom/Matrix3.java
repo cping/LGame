@@ -99,6 +99,39 @@ public class Matrix3 implements Serializable, XY {
 		return this;
 	}
 
+	public Matrix3 setToOrtho2D(float x, float y, float width, float height) {
+		setToOrtho(x, x + width, y + height, y, 1f, -1f);
+		return this;
+	}
+
+	public Matrix3 setToOrtho2D(float x, float y, float width, float height, float near, float far) {
+		setToOrtho(x, x + width, y + height, y, near, far);
+		return this;
+	}
+
+	public Matrix3 setToOrtho(float left, float right, float bottom, float top, float near, float far) {
+
+		float x_orth = 2 / (right - left);
+		float y_orth = 2 / (top - bottom);
+		float z_orth = -2 / (far - near);
+
+		float tx = -(right + left) / (right - left);
+		float ty = -(top + bottom) / (top - bottom);
+		float tz = -(far + near) / (far - near);
+
+		val[M00] = x_orth;
+		val[M10] = 0;
+		val[M20] = z_orth;
+		val[M01] = y_orth;
+		val[M11] = 0;
+		val[M21] = z_orth;
+		val[M02] = tx;
+		val[M12] = ty;
+		val[M22] = tz;
+
+		return this;
+	}
+	
 	public Matrix3 idt() {
 		val[M00] = 1;
 		val[M10] = 0;
