@@ -104,26 +104,30 @@ public class Dimension {
 		return (int) width;
 	}
 
-	public void setWidth(int width) {
+	public Dimension setWidth(int width) {
 		this.width = width;
 		this.dirty = true;
+		return this;
 	}
 
-	public void setSize(int width, int height) {
+	public Dimension setSize(int width, int height) {
 		this.width = width;
 		this.height = height;
 		this.dirty = true;
+		return this;
 	}
 
-	public void setSize(Dimension d) {
+	public Dimension setSize(Dimension d) {
 		this.width = d.getWidth();
 		this.height = d.getHeight();
 		this.dirty = true;
+		return this;
 	}
 
-	public void setHeight(int height) {
+	public Dimension setHeight(int height) {
 		this.height = height;
 		this.dirty = true;
+		return this;
 	}
 
 	public Dimension cpy() {

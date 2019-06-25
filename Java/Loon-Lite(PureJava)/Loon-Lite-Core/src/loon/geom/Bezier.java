@@ -49,36 +49,39 @@ public class Bezier {
 		return endPosition;
 	}
 
-	public void setEndPosition(float x, float y) {
-		setEndPosition(Vector2f.at(x, y));
+	public Bezier setEndPosition(float x, float y) {
+		return setEndPosition(Vector2f.at(x, y));
 	}
 
-	public void setEndPosition(Vector2f endPosition) {
+	public Bezier setEndPosition(Vector2f endPosition) {
 		this.endPosition = endPosition;
+		return this;
 	}
 
 	public Vector2f getControlPoint1() {
 		return controlPoint1;
 	}
 
-	public void setControlPoint1(float x, float y) {
-		setControlPoint1(Vector2f.at(x, y));
+	public Bezier setControlPoint1(float x, float y) {
+		return setControlPoint1(Vector2f.at(x, y));
 	}
 
-	public void setControlPoint1(Vector2f controlPoint1) {
+	public Bezier setControlPoint1(Vector2f controlPoint1) {
 		this.controlPoint1 = controlPoint1;
+		return this;
 	}
 
 	public Vector2f getControlPoint2() {
 		return controlPoint2;
 	}
 
-	public void setControlPoint2(float x, float y) {
-		setControlPoint2(Vector2f.at(x, y));
+	public Bezier setControlPoint2(float x, float y) {
+		return setControlPoint2(Vector2f.at(x, y));
 	}
 
-	public void setControlPoint2(Vector2f controlPoint2) {
+	public Bezier setControlPoint2(Vector2f controlPoint2) {
 		this.controlPoint2 = controlPoint2;
+		return this;
 	}
 
 	public Bezier cpy() {

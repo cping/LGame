@@ -325,8 +325,8 @@ public class Affine2f implements LTrans, XY {
 		return this;
 	}
 
-	public final void reset() {
-		this.idt();
+	public final Affine2f reset() {
+		return this.idt();
 	}
 
 	public boolean equals(Object o) {
