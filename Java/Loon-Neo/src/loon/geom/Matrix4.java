@@ -1043,7 +1043,6 @@ public class Matrix4 implements Serializable, XY {
 		if (affine.ty == val[M13]) {
 			count++;
 		}
-		System.out.println(count);
 		return count == 6;
 	}
 

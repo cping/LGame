@@ -264,8 +264,8 @@ public class Affine2f implements LTrans, XY {
 		float a = aff.m00 * this.m00 + aff.m01 * this.m10;
 		float b = aff.m00 * this.m11 + aff.m11 * this.m10;
 		float tx = aff.m00 * this.m01 + aff.m01 * this.m11;
-		float c = aff.m00 * this.tx + aff.m01 * this.ty;
-		float d = aff.m10 * this.tx + aff.m11 * this.ty;
+		float c = aff.m00 * this.tx + aff.m01 * this.ty + aff.tx;
+		float d = aff.m10 * this.tx + aff.m11 * this.ty + aff.ty;
 
 		this.m00 = a;
 		this.m01 = b;
@@ -274,7 +274,7 @@ public class Affine2f implements LTrans, XY {
 		this.m11 = d;
 		return this;
 	}
-	
+
 	public Affine2f combined(Matrix4 mat) {
 		float[] m = mat.val;
 
@@ -349,6 +349,7 @@ public class Affine2f implements LTrans, XY {
 		return this.idt();
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		if (null == o) {
 			return false;
@@ -527,16 +528,36 @@ public class Affine2f implements LTrans, XY {
 		matrix3f[6] = tx;
 		matrix3f[7] = ty;
 		matrix3f[8] = 1;
-		return get(matrix3f);
+		return matrix3f;
 	}
 
 	public float[] get(float[] matrix) {
-		matrix[0] = m00;
-		matrix[1] = m01;
-		matrix[2] = m10;
-		matrix[3] = m11;
-		matrix[4] = tx;
-		matrix[5] = ty;
+		if (matrix == null) {
+			return getMartix3f();
+		}
+		final int len = matrix.length;
+		if (len == 6) {
+			matrix[0] = m00;
+			matrix[1] = m01;
+			matrix[2] = m10;
+			matrix[3] = m11;
+			matrix[4] = tx;
+			matrix[5] = ty;
+		} else if (len == 9) {
+			matrix[0] = m00;
+			matrix[1] = m10;
+			matrix[3] = m01;
+			matrix[4] = m11;
+			matrix[6] = tx;
+			matrix[7] = ty;
+		} else if (len == 16) {
+			matrix[0] = m00;
+			matrix[1] = m10;
+			matrix[4] = m01;
+			matrix[5] = m11;
+			matrix[12] = tx;
+			matrix[13] = ty;
+		}
 		return matrix;
 	}
 
