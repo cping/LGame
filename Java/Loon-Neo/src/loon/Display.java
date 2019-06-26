@@ -447,64 +447,67 @@ public class Display extends LSystemView {
 	 * @param delta
 	 */
 	private final void drawDebug(final GLEx gl, final LSetting setting, final float delta) {
+		
 		final boolean debug = setting.isDebug;
-		this.frameCount++;
-		this.frameDelta += delta;
+		
+		if (debug || setting.isFPS || setting.isMemory || setting.isSprites) {
+			this.frameCount++;
+			this.frameDelta += delta;
 
-		if (frameCount % 60 == 0) {
-			final int dstFPS = setting.fps;
-			final int newFps = MathUtils.round((1000f * frameCount) / frameDelta) + 1;
-			this.frameRate = MathUtils.clamp(newFps, 0, dstFPS);
-			if (frameRate == dstFPS - 1) {
-				frameRate = MathUtils.max(dstFPS, frameRate);
+			if (frameCount % 60 == 0) {
+				final int dstFPS = setting.fps;
+				final int newFps = MathUtils.round((1000f * frameCount) / frameDelta) + 1;
+				this.frameRate = MathUtils.clamp(newFps, 0, dstFPS);
+				if (frameRate == dstFPS - 1) {
+					frameRate = MathUtils.max(dstFPS, frameRate);
+				}
+				this.frameDelta = 0;
+				this.frameCount = 0;
+
+				if (runtime == null) {
+					runtime = Runtime.getRuntime();
+				}
+				long totalMemory = runtime.totalMemory();
+				long currentMemory = totalMemory - runtime.freeMemory();
+
+				displayMessage.delete(0, displayMessage.length());
+				displayMessage.append(MEMORY_STR);
+				displayMessage.append(((float) ((currentMemory * 10) >> 20) / 10f));
+				displayMessage.append(" of ");
+				displayMessage.append(((float) ((runtime.maxMemory() * 10) >> 20) / 10f));
+				displayMessage.append(" MB");
+
+				displayMemony = displayMessage.toString();
+
+				LGame game = getGame();
+
+				displayMessage.delete(0, displayMessage.length());
+				displayMessage.append(SPRITE_STR);
+				displayMessage.append(game.allSpritesCount());
+				displayMessage.append(", ");
+				displayMessage.append(DESKTOP_STR);
+				displayMessage.append(game.allDesktopCount());
+
+				displaySprites = displayMessage.toString();
+
 			}
-			this.frameDelta = 0;
-			this.frameCount = 0;
-
-			if (runtime == null) {
-				runtime = Runtime.getRuntime();
+			// 显示fps速度
+			if (debug || setting.isFPS) {
+				fpsFont.drawString(gl, FPS_STR + frameRate, 5, 5, 0, LColor.white);
 			}
-			long totalMemory = runtime.totalMemory();
-			long currentMemory = totalMemory - runtime.freeMemory();
-
-			displayMessage.delete(0, displayMessage.length());
-			displayMessage.append(MEMORY_STR);
-			displayMessage.append(((float) ((currentMemory * 10) >> 20) / 10f));
-			displayMessage.append(" of ");
-			displayMessage.append(((float) ((runtime.maxMemory() * 10) >> 20) / 10f));
-			displayMessage.append(" MB");
-
-			displayMemony = displayMessage.toString();
-
-			LGame game = getGame();
-
-			displayMessage.delete(0, displayMessage.length());
-			displayMessage.append(SPRITE_STR);
-			displayMessage.append(game.allSpritesCount());
-			displayMessage.append(", ");
-			displayMessage.append(DESKTOP_STR);
-			displayMessage.append(game.allDesktopCount());
-
-			displaySprites = displayMessage.toString();
-
+			// 显示内存占用
+			if (debug || setting.isMemory) {
+				fpsFont.drawString(gl, displayMemony, 5, 25, 0, LColor.white);
+			}
+			// 显示精灵与组件数量
+			if (debug || setting.isSprites) {
+				fpsFont.drawString(gl, displaySprites, 5, 45, 0, LColor.white);
+			}
+			// 若打印日志到界面,很可能挡住游戏界面内容,所以isDisplayLog为true并且debug才显示
+			if (debug && setting.isDisplayLog) {
+				_process.paintLog(gl, 5, 65);
+			}
 		}
-		// 显示fps速度
-		if (debug || setting.isFPS) {
-			fpsFont.drawString(gl, FPS_STR + frameRate, 5, 5, 0, LColor.white);
-		}
-		// 显示内存占用
-		if (debug || setting.isMemory) {
-			fpsFont.drawString(gl, displayMemony, 5, 25, 0, LColor.white);
-		}
-		// 显示精灵与组件数量
-		if (debug || setting.isSprites) {
-			fpsFont.drawString(gl, displaySprites, 5, 45, 0, LColor.white);
-		}
-		// 若打印日志到界面,很可能挡住游戏界面内容,所以isDisplayLog为true并且debug才显示
-		if (debug && setting.isDisplayLog) {
-			_process.paintLog(gl, 5, 65);
-		}
-
 	}
 
 	public int getFPS() {

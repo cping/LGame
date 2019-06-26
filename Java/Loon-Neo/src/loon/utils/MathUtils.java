@@ -496,6 +496,10 @@ public class MathUtils {
 		return 0;
 	}
 
+	public static final int randomSign() {
+		return (MathUtils.random() > 0.5f) ? 1 : -1;
+	}
+
 	static final int SK1 = 498;
 
 	static final int SK2 = 10882;
@@ -1462,6 +1466,56 @@ public class MathUtils {
 		final float diff = total = start;
 		final float v = diff / side;
 		return v + (diff % side > 0 ? 1f : 0f);
+	}
+
+	public static float factorial(float v) {
+		if (v == 0f) {
+			return 1f;
+		}
+		float result = v;
+		while (--v > 0) {
+			result *= v;
+		}
+		return result;
+	}
+
+	public static float maxAdd(float v, float amount, float max) {
+		v += amount;
+		if (v > max) {
+			v = max;
+		}
+		return v;
+	}
+
+	public static float minSub(float v, float amount, float min) {
+		v -= amount;
+		if (v < min) {
+			v = min;
+		}
+		return v;
+	}
+
+	public static float wrapValue(float v, float amount, float max) {
+		float diff = 0f;
+		v = MathUtils.abs(v);
+		amount = MathUtils.abs(amount);
+		max = MathUtils.abs(max);
+		diff = (v + amount) % max;
+		return diff;
+	}
+
+	public static boolean chanceRoll(float chance) {
+		if (chance <= 0f) {
+			return false;
+		} else if (chance >= 100f) {
+			return true;
+		} else {
+			if (MathUtils.random() * 100f >= chance) {
+				return false;
+			} else {
+				return true;
+			}
+		}
 	}
 
 }
