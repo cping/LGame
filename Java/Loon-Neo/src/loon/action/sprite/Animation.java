@@ -426,16 +426,24 @@ public class Animation implements IArray, LRelease {
 	}
 
 	/**
-	 * 返回动画状态
+	 * 返回动画是否正在播放状态
 	 * 
-	 * @param isStop
 	 */
 	public boolean isRunning() {
 		return this.isRunning;
 	}
 
 	/**
-	 * 返回当前动画索引
+	 * 返回动画是否正在播放状态
+	 * 
+	 * @return
+	 */
+	public boolean isPlaying() {
+		return isRunning();
+	}
+
+	/**
+	 * 返回当前动画帧(索引)
 	 * 
 	 * @return
 	 */
@@ -443,6 +451,12 @@ public class Animation implements IArray, LRelease {
 		return this.currentFrameIndex;
 	}
 
+	/**
+	 * 设定当前动画帧(索引)
+	 * 
+	 * @param index
+	 * @return
+	 */
 	public Animation setCurrentFrameIndex(int index) {
 		this.currentFrameIndex = MathUtils.clamp(index, 0, MathUtils.min(frames.size, length));
 		return this;

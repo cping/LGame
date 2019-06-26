@@ -416,6 +416,18 @@ public class Field2D implements IArray, Config {
 		return new PointI(hx, hy);
 	}
 
+	public PointI pixelsIsometricToTiles(float x, float y) {
+		int hx = MathUtils.floor(x / (tileWidth * 0.5f));
+		int hy = MathUtils.floor((y - hx * (tileHeight / 2f)) / tileHeight);
+		return new PointI(hx + hy, hy);
+	}
+
+	public PointI pixelsOrthogonalToTiles(float x, float y) {
+		int hx = MathUtils.floor(x / tileWidth);
+		int hy = MathUtils.floor(y / tileHeight);
+		return new PointI(hx, hy);
+	}
+
 	public int pixelsToTilesWidth(float x) {
 		return MathUtils.floor(x / tileWidth);
 	}
@@ -734,31 +746,44 @@ public class Field2D implements IArray, Config {
 		return this;
 	}
 
-	public int getNeighborType(int x, int y, int d) {
-		int[] n = NEIGHBORS[x & 1][d];
-		int nx = x + n[0];
-		int ny = y + n[1];
-		if (nx < 0 || nx >= getHexagonWidth() || ny < 0 || ny >= getHexagonHeight()) {
+	public float getIsometricType(float px, float py) {
+		float halfWidth = this.getDrawWidth() * 0.5f;
+		if (px < 0 || px >= halfWidth || py < 0 || py >= this.getDrawHeight()) {
 			return -1;
 		}
-		if (!contains(nx, ny)) {
-			return -1;
-		}
-		return mapArrays[ny][nx];
+		PointI point = this.pixelsIsometricToTiles(px, py);
+		return this.getTileType(point.x, point.y);
 	}
 
-	public Field2D setNeighborType(int x, int y, int d, int t) {
-		int[] n = NEIGHBORS[x & 1][d];
-		int nx = x + n[0];
-		int ny = y + n[1];
+	public Field2D setIsometricType(float px, float py, int t) {
+		float halfWidth = this.getDrawWidth() * 0.5f;
+		if (px < 0 || px >= halfWidth || py < 0 || py >= this.getDrawHeight()) {
+			return this;
+		}
+		PointI point = this.pixelsIsometricToTiles(px, py);
+		return this.setTileType(point.x, point.y, t);
+	}
+
+	public int getNeighborType(float px, float py, int d) {
+		PointI point = this.pixelsHexagonToTiles(px, py);
+		int[] n = NEIGHBORS[point.x & 1][d];
+		int nx = point.x + n[0];
+		int ny = point.y + n[1];
+		if (nx < 0 || nx >= getHexagonWidth() || ny < 0 || ny >= getHexagonHeight()) {
+			return -1;
+		}
+		return getTileType(nx, ny);
+	}
+
+	public Field2D setNeighborType(float px, float py, int d, int t) {
+		PointI point = this.pixelsHexagonToTiles(px, py);
+		int[] n = NEIGHBORS[point.x & 1][d];
+		int nx = point.x + n[0];
+		int ny = point.y + n[1];
 		if (nx < 0 || nx >= getHexagonWidth() || ny < 0 || ny >= getHexagonHeight()) {
 			return this;
 		}
-		if (!contains(nx, ny)) {
-			return this;
-		}
-		mapArrays[ny][nx] = t;
-		return this;
+		return setTileType(nx, ny, t);
 	}
 
 	public Vector2f getOffset() {

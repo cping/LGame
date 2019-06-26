@@ -42,7 +42,7 @@ import loon.utils.TArray;
 import loon.utils.Easing.EasingMode;
 
 /**
- * 组件的群组化操作控制器，可以同时改变一组组件的参数或动画事件
+ * UI组件的群组化操作控制器，可以同时改变一组组件的参数或动画事件
  */
 public class UIControls {
 
