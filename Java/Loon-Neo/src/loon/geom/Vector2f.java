@@ -218,7 +218,7 @@ public class Vector2f implements Serializable, XY {
 	public Vector2f tmp() {
 		return TMP().set(this);
 	}
-	
+
 	public float crs(Vector2f v) {
 		return this.x * v.y - this.y * v.x;
 	}
@@ -237,7 +237,7 @@ public class Vector2f implements Serializable, XY {
 		}
 		return theta;
 	}
-	
+
 	public float angle() {
 		return getAngle();
 	}
@@ -290,7 +290,7 @@ public class Vector2f implements Serializable, XY {
 		}
 		return theta;
 	}
-	
+
 	public Vector2f newRotate(float angle) {
 
 		float rad = MathUtils.toRadians(angle);
@@ -1028,6 +1028,10 @@ public class Vector2f implements Serializable, XY {
 
 	public int[] toInt() {
 		return new int[] { x(), y() };
+	}
+
+	public String toCSS() {
+		return this.x + "px " + this.y + "px";
 	}
 
 	@Override

@@ -217,16 +217,13 @@ public class Line extends Shape {
 
 	public boolean on(Vector2f point) {
 		getClosestPoint(point, closest);
-
 		return point.equals(closest);
 	}
 
 	public float distanceSquared(Vector2f point) {
 		getClosestPoint(point, closest);
 		closest.sub(point);
-
 		float result = closest.lengthSquared();
-
 		return result;
 	}
 
@@ -346,6 +343,40 @@ public class Line extends Shape {
 
 	public float ptLineDistSq(Point pt) {
 		return ShapeUtils.ptLineDistSq(getX1(), getY1(), getX2(), getY2(), pt.getX(), pt.getY());
+	}
+
+	public float slope() {
+		return (this.getY2() - this.getY1()) / (this.getX2() - this.getX1());
+	}
+
+	public float perpSlope() {
+		return -((this.getX2() - this.getX1()) / (this.getY2() - this.getY1()));
+	}
+
+	public float angle() {
+		return MathUtils.atan2(this.getY2() - this.getY1(), this.getX2() - this.getX1());
+	}
+
+	public boolean isPointOnLine(float x, float y) {
+		return (x - this.getX1()) * (this.getY2() - this.getY1()) == (this.getX2() - this.getX1()) * (y - this.getY1());
+	}
+
+	public boolean isPointOnLineSegment(float x, float y) {
+		float xMin = MathUtils.min(this.getX1(), this.getX2());
+		float xMax = MathUtils.max(this.getX1(), this.getX2());
+		float yMin = MathUtils.min(this.getY1(), this.getY2());
+		float yMax = MathUtils.max(this.getY1(), this.getY2());
+		return this.isPointOnLine(x, y) && (x >= xMin && x <= xMax) && (y >= yMin && y <= yMax);
+	}
+
+	public boolean isPointOnRay(float x, float y) {
+		if ((x - this.getX1()) * (this.getY2() - this.getY1()) == (this.getX2() - this.getX1()) * (y - this.getY1())) {
+			if (MathUtils.atan2(y - this.getY1(), x - this.getX1()) == MathUtils.atan2(this.getY2() - this.getY1(),
+					this.getX2() - this.getX1())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override

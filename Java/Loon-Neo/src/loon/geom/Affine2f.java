@@ -370,6 +370,9 @@ public class Affine2f implements LTrans, XY {
 		if (a2f == null) {
 			return false;
 		}
+		if (a2f == this) {
+			return true;
+		}
 		return a2f.m00 == m00 && a2f.m01 == m01 && a2f.tx == tx && a2f.ty == ty && a2f.m10 == m10 && a2f.m11 == m11;
 	}
 
@@ -837,6 +840,22 @@ public class Affine2f implements LTrans, XY {
 				(m01 * tx - m00 * ty) * rdet);
 	}
 
+	public Affine2f invertSelf() {
+		float a1 = this.m00;
+		float b1 = this.m01;
+		float c1 = this.m10;
+		float d1 = this.m11;
+		float tx1 = this.tx;
+		float n = a1 * d1 - b1 * c1;
+		this.m00 = d1 / n;
+		this.m01 = -b1 / n;
+		this.m10 = -c1 / n;
+		this.m11 = a1 / n;
+		this.tx = (c1 * this.ty - d1 * tx1) / n;
+		this.ty = -(a1 * this.ty - b1 * tx1) / n;
+		return this;
+	}
+
 	public Affine2f concat(Affine2f other) {
 		float a = this.m00 * other.m00;
 		float b = 0f;
@@ -1111,6 +1130,16 @@ public class Affine2f implements LTrans, XY {
 		this.m11 = other.m11;
 		this.tx = other.tx;
 		this.ty = other.ty;
+		return this;
+	}
+
+	public Affine2f cpyTo(Affine2f other) {
+		other.m00 = this.m00;
+		other.m01 = this.m01;
+		other.m10 = this.m10;
+		other.m11 = this.m11;
+		other.tx = this.tx;
+		other.ty = this.ty;
 		return this;
 	}
 

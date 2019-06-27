@@ -257,4 +257,57 @@ public class Circle extends Ellipse {
 		boolean intersects = circleCenter.sub(closest).lengthSquared() <= getRadius() * getRadius();
 		return intersects;
 	}
+
+	public boolean intersects(Circle other) {
+		if (other == null) {
+			return false;
+		}
+		return this.distanceTo(other, false) < (this.radius + other.radius);
+	}
+
+	public float distanceTo(XY target) {
+		return distanceTo(target, false);
+	}
+
+	public float distanceTo(XY target, boolean round) {
+		if (target == null) {
+			return 0f;
+		}
+		float dx = this.x - target.getX();
+		float dy = this.y - target.getY();
+		if (round) {
+			return MathUtils.round(MathUtils.sqrt(dx * dx + dy * dy));
+		} else {
+			return MathUtils.sqrt(dx * dx + dy * dy);
+		}
+	}
+
+	public Vector2f circumferencePoint(float angle, boolean asDegrees) {
+		return circumferencePoint(angle, asDegrees, null);
+	}
+
+	public Vector2f circumferencePoint(float angle, boolean asDegrees, Vector2f output) {
+		if (asDegrees) {
+			angle = MathUtils.toDegrees(angle);
+		}
+		if (output == null) {
+			output = new Vector2f();
+		}
+		output.x = this.x + this.radius * MathUtils.cos(angle);
+		output.y = this.y + this.radius * MathUtils.sin(angle);
+		return output;
+	}
+
+	public boolean equals(Circle other) {
+		if (other == null) {
+			return false;
+		}
+		if (other == this) {
+			return true;
+		}
+		if (this.x == other.x && this.y == other.y && this.radius == other.radius) {
+			return true;
+		}
+		return false;
+	}
 }

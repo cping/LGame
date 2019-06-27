@@ -115,6 +115,10 @@ public class PointI implements XY {
 		return y;
 	}
 
+	public String toCSS() {
+		return this.x + "px " + this.y + "px";
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
