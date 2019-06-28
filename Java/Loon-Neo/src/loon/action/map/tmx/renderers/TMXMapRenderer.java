@@ -43,6 +43,9 @@ import loon.opengl.GLEx;
 import loon.utils.ObjectMap;
 import loon.utils.TimeUtils;
 
+/**
+ * TMX地图渲染用基本抽象类,所有TMX地图文件的渲染皆由此类的子类负责具体实现
+ */
 public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite {
 
 	protected float _fixedWidthOffset = 0f;

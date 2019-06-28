@@ -45,6 +45,9 @@ import loon.utils.IArray;
 import loon.utils.LayerSorter;
 import loon.utils.TArray;
 
+/**
+ * 一个精灵类的具体实现,可以用来充当ECS模式中的实体对象用类(当然,Loon中并不强制要求使用ECS模式进行开发)
+ */
 public class Entity extends LObject<IEntity> implements CollisionObject, IEntity, IArray, BoxSize {
 
 	private static final int CHILDREN_CAPACITY_DEFAULT = 4;

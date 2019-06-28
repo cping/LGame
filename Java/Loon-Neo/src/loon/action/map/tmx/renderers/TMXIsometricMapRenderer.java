@@ -33,6 +33,10 @@ import loon.geom.Vector2f;
 import loon.opengl.BlendState;
 import loon.opengl.GLEx;
 
+/**
+ * 标准斜视视角（标准45度角）地图纹理渲染器
+ *
+ */
 public class TMXIsometricMapRenderer extends TMXMapRenderer {
 
 	private Vector2f tempVector = new Vector2f();

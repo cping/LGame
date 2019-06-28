@@ -49,6 +49,10 @@ import loon.utils.TArray;
 import loon.utils.TimeUtils;
 import loon.utils.res.MovieSpriteSheet;
 
+/**
+ * 一个精灵类的具体实现,仿照J2ME的Sprite同名类实现的精灵类
+ *
+ */
 public class Sprite extends LObject<ISprite>
 		implements Flip<Sprite>, CollisionObject, ISprite, IArray, LTrans, BoxSize {
 

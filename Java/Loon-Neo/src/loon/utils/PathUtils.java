@@ -37,6 +37,9 @@ public class PathUtils {
 	 * @return
 	 */
 	public static String normalize(String filename) {
+		if (StringUtils.isEmpty(filename)) {
+			return "";
+		}
 		String result = StringUtils.filter(filename, new char[] { '\\', '/' }, LSystem.FS);
 		String doubleTag = LSystem.FS + LSystem.FS;
 		if (result.indexOf(doubleTag) != -1) {
@@ -52,6 +55,9 @@ public class PathUtils {
 	 * @return
 	 */
 	public static String getBaseFileName(String filename) {
+		if (StringUtils.isEmpty(filename)) {
+			return "";
+		}
 		String result = "";
 		if (filename.indexOf('\\') != -1) {
 			result = filename.substring(filename.lastIndexOf('\\') + 1);
@@ -155,7 +161,7 @@ public class PathUtils {
 	}
 
 	/**
-	 * 返回文件夹所在的最后一级文件夹路径
+	 * 返回文件夹所在的文件夹路径
 	 * 
 	 * @param dir
 	 * @return

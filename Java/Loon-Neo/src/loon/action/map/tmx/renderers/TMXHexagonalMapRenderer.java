@@ -33,6 +33,9 @@ import loon.opengl.BlendState;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 
+/**
+ * 六角形(六边形)地图纹理渲染器
+ */
 public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 
 	public TMXHexagonalMapRenderer(TMXMap map) {
