@@ -217,10 +217,25 @@ final public class StringUtils extends CharUtils {
 		return amount >= size;
 	}
 
+	/**
+	 * 过滤指定字符为空
+	 * 
+	 * @param message
+	 * @param chars
+	 * @return
+	 */
 	public static String filter(CharSequence message, char... chars) {
 		return filter(message, chars, "");
 	}
 
+	/**
+	 * 过滤指定字符为新字符
+	 * 
+	 * @param message
+	 * @param chars
+	 * @param newTag
+	 * @return
+	 */
 	public static String filter(CharSequence message, char[] chars, CharSequence newTag) {
 		StringBuilder sbr = new StringBuilder();
 		boolean addFlag;
@@ -513,15 +528,28 @@ final public class StringUtils extends CharUtils {
 	 * 过滤指定字符串为空
 	 * 
 	 * @param message
+	 * @param newTag
 	 * @param oldStrings
 	 * @return
 	 */
-	public static String replaceTrim(String message, String... oldStrings) {
-		if (message == null)
+	public static String replacesTrim(String message, String newTag, String... oldStrings) {
+		return replaces(message, "", oldStrings);
+	}
+
+	/**
+	 * 过滤指定字符串为指定样式
+	 * 
+	 * @param message
+	 * @param newTag
+	 * @param oldStrings
+	 * @return
+	 */
+	public static String replaces(String message, String newTag, String... oldStrings) {
+		if (message == null) {
 			return null;
-		String trim = "";
+		}
 		for (int i = 0; i < oldStrings.length; i++) {
-			message = replace(message, oldStrings[i], trim);
+			message = replace(message, oldStrings[i], newTag);
 		}
 		return message.trim();
 	}
@@ -1442,5 +1470,4 @@ final public class StringUtils extends CharUtils {
 		}
 		return false;
 	}
-	
 }

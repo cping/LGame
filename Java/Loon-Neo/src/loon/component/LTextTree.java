@@ -368,7 +368,7 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 
 	public String getSelectedResult() {
 		if (_lines != null && _selected != -1 && CollectionUtils.safeRange(_lines.items, _selected)) {
-			return StringUtils.replaceTrim(_lines.get(_selected), subLastTreeFlag, subTreeNextFlag, subTreeFlag);
+			return StringUtils.replacesTrim(_lines.get(_selected), subLastTreeFlag, subTreeNextFlag, subTreeFlag);
 		}
 		return null;
 	}

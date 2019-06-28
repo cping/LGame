@@ -80,7 +80,7 @@ public class HtmlElement {
 			tempData = this.buffer.toString();
 			dirty = false;
 		}
-		return StringUtils.replaceTrim(this.tempData, "<!--", "-->");
+		return StringUtils.replacesTrim(this.tempData, "<!--", "-->");
 	}
 
 	public byte[] readContentBinHex() {
