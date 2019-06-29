@@ -21,6 +21,7 @@
 package loon.utils.timer;
 
 import loon.LRelease;
+import loon.LSystem;
 import loon.event.Updateable;
 import loon.utils.MathUtils;
 import loon.utils.StringKeyValue;
@@ -144,7 +145,7 @@ public class LTimer implements LRelease {
 	}
 	
 	public boolean action(float delta) {
-		return action((long) (MathUtils.max(delta * 1000, 10)));
+		return action((long) (MathUtils.max(delta * 1000, 8)));
 	}
 	
 	public boolean action(long elapsedTime) {
@@ -183,7 +184,7 @@ public class LTimer implements LRelease {
 	public LTimer reset(long newDelay, int newNumberOfRepeats, float newFactor, boolean newRepeats) {
 		this._delay = MathUtils.max(newDelay, 0);
 		this._maxNumberOfRepeats = MathUtils.max(newNumberOfRepeats, -1);
-		this._speedFactor = MathUtils.max(newFactor, 0.01f);
+		this._speedFactor = MathUtils.max(newFactor, LSystem.MIN_SECONE_SPEED_FIXED);
 		this._repeats = newRepeats;
 		this._active = true;
 		this._completed = false;
@@ -196,7 +197,7 @@ public class LTimer implements LRelease {
 	public LTimer setEquals(LTimer other) {
 		this._delay = MathUtils.max(other._delay, 0);
 		this._maxNumberOfRepeats = MathUtils.max(other._maxNumberOfRepeats, -1);
-		this._speedFactor = MathUtils.max(other._speedFactor, 0.01f);
+		this._speedFactor = MathUtils.max(other._speedFactor, LSystem.MIN_SECONE_SPEED_FIXED);
 		this._repeats = other._repeats;
 		this._active = other._active;
 		this._completed = other._completed;

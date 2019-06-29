@@ -210,7 +210,7 @@ public class MovieClip extends DisplayObject {
 		if (!_visible) {
 			return;
 		}
-		if (_alpha <= 0.01f) {
+		if (_alpha < 0.01f) {
 			return;
 		}
 		if (_ssd == null) {

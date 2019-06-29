@@ -37,6 +37,9 @@ import loon.utils.IntMap;
 import loon.utils.ObjectSet;
 import loon.utils.TArray;
 
+/**
+ * A*寻径用类
+ */
 public class AStarFinder extends TileImplPathFind implements Updateable, LRelease {
 
 	public final static AStarFindHeuristic ASTAR_CLOSEST = new Closest();

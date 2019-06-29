@@ -114,7 +114,7 @@ public class FadeBoardEffect extends Entity implements BaseEffect {
 			}
 			_delayCount += elapsedTime;
 			if (_delayCount >= _delayTimer) {
-				_currentDelta += MathUtils.max(elapsedTime / 1000f, 0.01f);
+				_currentDelta += MathUtils.max(elapsedTime / 1000f, LSystem.MIN_SECONE_SPEED_FIXED);
 				float delta = MathUtils.sin(_currentDelta / _effect.blocDuration * 1.5707964f);
 				if (_effect.fadeType == TYPE_FADE_OUT) {
 					_angle += (delta * 100f);

@@ -947,7 +947,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	public float getDeltaTime() {
-		return MathUtils.max(elapsedTime / 1000f, 0.01f);
+		return MathUtils.max(elapsedTime / 1000f, LSystem.MIN_SECONE_SPEED_FIXED);
 	}
 
 	public long getElapsedTime() {

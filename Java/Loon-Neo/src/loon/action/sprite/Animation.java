@@ -33,6 +33,9 @@ import loon.utils.TArray;
 import loon.utils.res.MovieSpriteSheet;
 import loon.utils.timer.LTimer;
 
+/**
+ * 动画纹理存储用类
+ */
 public class Animation implements IArray, LRelease {
 
 	private static class AnimationFrame implements LRelease {

@@ -20,6 +20,7 @@
  */
 package loon.utils.timer;
 
+import loon.LSystem;
 import loon.utils.MathUtils;
 import loon.utils.StringKeyValue;
 
@@ -51,7 +52,7 @@ public abstract class FloatTimerEvent {
 	}
 
 	public void update(long elapsedTime) {
-		this.update(MathUtils.max(elapsedTime / 1000f, 0.01f));
+		this.update(MathUtils.max(elapsedTime / 1000f, LSystem.MIN_SECONE_SPEED_FIXED));
 	}
 
 	public void update(float delta) {

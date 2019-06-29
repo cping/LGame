@@ -237,7 +237,7 @@ public class TextEffect extends Entity implements BaseEffect {
 			packed = true;
 		}
 		if (timer.action(elapsedTime)) {
-			float delta = MathUtils.max(elapsedTime / 1000f, 0.01f);
+			float delta = MathUtils.max(elapsedTime / 1000f, LSystem.MIN_SECONE_SPEED_FIXED);
 			for (int i = length - 1; i > -1; --i) {
 				MessageBlock text = texts.get(i);
 				if (text != null) {

@@ -94,7 +94,7 @@ public class EaseTimer {
 		if (this._finished) {
 			return;
 		}
-		this._delta = MathUtils.max(elapsedTime / 1000f, 0.01f);
+		this._delta = MathUtils.max(elapsedTime / 1000f, LSystem.MIN_SECONE_SPEED_FIXED);
 		this._timer += _delta;
 		if (this._timer >= _delay) {
 			_timeInAfter += _delta / _duration;
