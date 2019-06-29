@@ -30,8 +30,8 @@ public class Point extends Shape {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public final static Point at(float x,float y){
-		return new Point(x,y);
+	public final static Point at(float x, float y) {
+		return new Point(x, y);
 	}
 
 	public int clazz;
@@ -119,15 +119,15 @@ public class Point extends Shape {
 	}
 
 	public final int distanceTo(Point p) {
-		final int tx = (int) (this.x - p.x);
-		final int ty = (int) (this.y - p.y);
-		return MathUtils.sqrt(MathUtils.mul(tx, tx) + MathUtils.mul(ty, ty));
+		final float tx = (this.x - p.x);
+		final float ty = (this.y - p.y);
+		return (int) MathUtils.sqrt(MathUtils.mul(tx, tx) + MathUtils.mul(ty, ty));
 	}
 
 	public final int distanceTo(int x, int y) {
-		final int tx = (int) (this.x - x);
-		final int ty = (int) (this.y - y);
-		return MathUtils.sqrt(MathUtils.mul(tx, tx) + MathUtils.mul(ty, ty));
+		final float tx = (int) (this.x - x);
+		final float ty = (int) (this.y - y);
+		return (int) MathUtils.sqrt(MathUtils.mul(tx, tx) + MathUtils.mul(ty, ty));
 	}
 
 	public void getLocation(Point dest) {
@@ -148,7 +148,7 @@ public class Point extends Shape {
 		Point p = (Point) obj;
 		return p.x == this.x && p.y == this.y && p.clazz == this.clazz;
 	}
-	
+
 	@Override
 	public final String toString() {
 		return "(" + x + "," + y + ")";

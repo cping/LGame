@@ -88,6 +88,8 @@ public class MathUtils {
 
 	public static final float TWO_PI = 6.28319f;
 
+	public static final float SQRT2 = 1.4142135f;
+
 	private static final int SIN_BITS = 13;
 
 	private static final int SIN_MASK = ~(-1 << SIN_BITS);
@@ -446,14 +448,6 @@ public class MathUtils {
 		return (float) ((z / (long) y) >> 16);
 	}
 
-	public static final int sqrt(int n) {
-		int s = (n + 65536) >> 1;
-		for (int i = 0; i < 8; i++) {
-			s = (s + div(n, s)) >> 1;
-		}
-		return s;
-	}
-
 	public static final int round(int n) {
 		if (n > 0) {
 			if ((n & 0x8000) != 0) {
@@ -587,8 +581,8 @@ public class MathUtils {
 
 	static final int AS4 = 102939;
 
-	public static final int asin(int f) {
-		int fRoot = sqrt(ONE_FIXED - f);
+	public static final int asinInt(int f) {
+		int fRoot = sqrtInt(ONE_FIXED - f);
 		int result = AS1;
 		result = mul(result, f);
 		result += AS2;
@@ -600,8 +594,8 @@ public class MathUtils {
 		return result;
 	}
 
-	public static final int acos(int f) {
-		int fRoot = sqrt(ONE_FIXED - f);
+	public static final int acosInt(int f) {
+		int fRoot = sqrtInt(ONE_FIXED - f);
 		int result = AS1;
 		result = mul(result, f);
 		result += AS2;
@@ -663,6 +657,14 @@ public class MathUtils {
 
 	public static final float sqrt(float a) {
 		return (float) Math.sqrt(a);
+	}
+
+	public static final int sqrtInt(int n) {
+		int s = (n + 65536) >> 1;
+		for (int i = 0; i < 8; i++) {
+			s = (s + div(n, s)) >> 1;
+		}
+		return s;
 	}
 
 	public static final float log(float a) {

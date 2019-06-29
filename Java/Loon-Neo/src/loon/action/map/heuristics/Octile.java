@@ -1,5 +1,5 @@
 /**
- * Copyright 2008 - 2012
+ * Copyright 2008 - 2019 The Loon Game Engine Authors
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -16,30 +16,30 @@
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
- * @version 0.3.3
+ * @version 0.5
  */
 package loon.action.map.heuristics;
 
 import loon.action.map.AStarFindHeuristic;
 import loon.utils.MathUtils;
 
-public class DiagonalShort implements AStarFindHeuristic {
-	
+public class Octile implements AStarFindHeuristic {
+
 	@Override
 	public float getScore(float sx, float sy, float tx, float ty) {
-		float diagonal = MathUtils.min(MathUtils.abs(sx - tx),
-				MathUtils.abs(sy - ty));
-		float straight = (MathUtils.abs(sx - tx) + MathUtils.abs(sy - ty));
-		return 2f * diagonal + (straight - 2f * diagonal);
+		float v = MathUtils.SQRT2 - 1f;
+		float dx = MathUtils.abs(sx - tx);
+		float dy = MathUtils.abs(sy - ty);
+		return (dx < dy) ? v * dx + dy : v * dy + dx;
 	}
-	
+
 	@Override
 	public int getType() {
-		return DIAGONAL_SHORT;
+		return OCTILE;
 	}
 
 	@Override
 	public String toString() {
-		return "DiagonalShort";
+		return "Octile";
 	}
 }

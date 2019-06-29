@@ -52,7 +52,7 @@ public class PointI implements XY {
 	}
 
 	public final int length() {
-		return MathUtils.sqrt(MathUtils.mul(x, x) + MathUtils.mul(y, y));
+		return (int) MathUtils.sqrt(MathUtils.mul(x, x) + MathUtils.mul(y, y));
 	}
 
 	public final PointI negate() {
@@ -76,13 +76,13 @@ public class PointI implements XY {
 	public final int distanceTo(PointI p) {
 		final int tx = this.x - p.x;
 		final int ty = this.y - p.y;
-		return MathUtils.sqrt(MathUtils.mul(tx, tx) + MathUtils.mul(ty, ty));
+		return (int) MathUtils.sqrt(MathUtils.mul(tx, tx) + MathUtils.mul(ty, ty));
 	}
 
 	public final int distanceTo(int x, int y) {
 		final int tx = this.x - x;
 		final int ty = this.y - y;
-		return MathUtils.sqrt(MathUtils.mul(tx, tx) + MathUtils.mul(ty, ty));
+		return (int) MathUtils.sqrt(MathUtils.mul(tx, tx) + MathUtils.mul(ty, ty));
 	}
 
 	public final int distanceTo(PointI p1, PointI p2) {
@@ -94,7 +94,7 @@ public class PointI implements XY {
 		final int iy = p1.y + MathUtils.mul(u, ty);
 		final int dx = ix - x;
 		final int dy = iy - y;
-		return MathUtils.sqrt(MathUtils.mul(dx, dx) + MathUtils.mul(dy, dy));
+		return (int) MathUtils.sqrt(MathUtils.mul(dx, dx) + MathUtils.mul(dy, dy));
 	}
 
 	public PointI cpy(PointI p) {

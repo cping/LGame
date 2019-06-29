@@ -62,9 +62,9 @@ public class LightImageTest extends Screen {
 					int distX = pos1.x - pos2.x;
 					int distY = pos1.y - pos2.y;
 
-					int dist = MathUtils.sqrt(distX * distX + distY * distY) + 40;
+					int dist = (int) MathUtils.sqrt(distX * distX + distY * distY);
 
-					laser.setScaleX(dist / limit);
+					laser.setScaleX(dist);
 					laser.setLocation(pos1);
 
 					laser.blendLight();

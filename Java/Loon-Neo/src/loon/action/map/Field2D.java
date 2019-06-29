@@ -75,9 +75,9 @@ public class Field2D implements IArray, Config {
 	}
 
 	public static final int angle(Vector2f source, Vector2f target) {
-		int nx = target.x() - source.x();
-		int ny = target.y() - source.y();
-		int r = MathUtils.sqrt(nx * nx + ny * ny);
+		float nx = target.getX() - source.getX();
+		float ny = target.getY() - source.getY();
+		float r = MathUtils.sqrt(nx * nx + ny * ny);
 		float cos = nx / r;
 		int angle = MathUtils.floor(MathUtils.acos(cos) * 180 / MathUtils.PI);
 		if (ny < 0) {
@@ -402,17 +402,17 @@ public class Field2D implements IArray, Config {
 	}
 
 	public int getHexagonWidth() {
-		return MathUtils.floor(width / 3 * 2);
+		return MathUtils.floor(width / 3f * 2f);
 	}
 
 	public int getHexagonHeight() {
-		return MathUtils.floor(height / MathUtils.sqrt(3)) - 1;
+		return MathUtils.floor(height / MathUtils.sqrt(3f)) - 1;
 	}
 
 	public PointI pixelsHexagonToTiles(float x, float y) {
-		int sqrte = MathUtils.sqrt(3) / 3;
+		float sqrte = MathUtils.sqrt(3f) / 3f;
 		int hx = MathUtils.floor(2 / 3 * x / tileWidth);
-		int hy = (int) (sqrte * y / tileHeight + MathUtils.round(hx) % 2) * sqrte;
+		int hy = (int) ((sqrte * y / tileHeight + MathUtils.round(hx) % 2f) * sqrte);
 		return new PointI(hx, hy);
 	}
 

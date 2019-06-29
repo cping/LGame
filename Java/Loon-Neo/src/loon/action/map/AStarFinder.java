@@ -23,14 +23,17 @@ package loon.action.map;
 import loon.LRelease;
 import loon.LSystem;
 import loon.action.map.colider.TileImplPathFind;
+import loon.action.map.heuristics.BestFirst;
 import loon.action.map.heuristics.Closest;
 import loon.action.map.heuristics.ClosestSquared;
 import loon.action.map.heuristics.Diagonal;
+import loon.action.map.heuristics.DiagonalMin;
 import loon.action.map.heuristics.DiagonalShort;
 import loon.action.map.heuristics.Euclidean;
 import loon.action.map.heuristics.EuclideanNoSQR;
 import loon.action.map.heuristics.Manhattan;
 import loon.action.map.heuristics.Mixing;
+import loon.action.map.heuristics.Octile;
 import loon.event.Updateable;
 import loon.geom.Vector2f;
 import loon.utils.IntMap;
@@ -58,6 +61,12 @@ public class AStarFinder extends TileImplPathFind implements Updateable, LReleas
 
 	public final static AStarFindHeuristic ASTAR_DIAGONAL_SHORT = new DiagonalShort();
 
+	public final static AStarFindHeuristic ASTAR_BEST_FIRST = new BestFirst();
+
+	public final static AStarFindHeuristic ASTAR_OCTILE = new Octile();
+
+	public final static AStarFindHeuristic ASTAR_DIAGONAL_MIN = new DiagonalMin();
+	
 	private final static IntMap<TArray<Vector2f>> FINDER_LAZY = new IntMap<TArray<Vector2f>>(100);
 
 	private final static int makeLazyKey(AStarFindHeuristic heuristic, int[][] map, int[] limits, int sx, int sy,
@@ -195,10 +204,12 @@ public class AStarFinder extends TileImplPathFind implements Updateable, LReleas
 		this.findHeuristic = find.findHeuristic;
 	}
 
+	@Override
 	public int hashCode() {
 		return super.hashCode();
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		if (o instanceof AStarFinder) {
 			return this.pathFoundListener == ((AStarFinder) o).pathFoundListener;
