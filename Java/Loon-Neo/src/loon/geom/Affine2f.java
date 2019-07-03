@@ -460,11 +460,11 @@ public class Affine2f implements LTrans, XY {
 	}
 
 	public float scaleX() {
-		return MathUtils.sqrt(m00 * m00 + m01 * m01);
+		return m01 == 0 ? m00 : MathUtils.sqrt(m00 * m00 + m01 * m01);
 	}
 
 	public float scaleY() {
-		return MathUtils.sqrt(m10 * m10 + m11 * m11);
+		return m10 == 0 ? m11 : MathUtils.sqrt(m10 * m10 + m11 * m11);
 	}
 
 	public float skewX() {
@@ -592,6 +592,18 @@ public class Affine2f implements LTrans, XY {
 		m01 = sina * sx;
 		m10 = -sina * sy;
 		m11 = cosa * sy;
+		return this;
+	}
+
+	public Affine2f skew(float x, float y) {
+		float tanX = MathUtils.tan(x);
+		float tanY = MathUtils.tan(y);
+		float a1 = m00;
+		float b1 = m01;
+		m00 += tanY * m10;
+		m01 += tanY * m11;
+		m10 += tanX * a1;
+		m11 += tanX * b1;
 		return this;
 	}
 

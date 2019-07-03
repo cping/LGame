@@ -182,6 +182,10 @@ public class MathUtils {
 		return MathUtils.abs(a - b) <= tolerance;
 	}
 
+	public final static boolean isPowerOfTwo(int w, int h) {
+		return (w > 0 && (w & (w - 1)) == 0 && h > 0 && (h & (h - 1)) == 0);
+	}
+
 	public final static int nextPowerOfTwo(int value) {
 		if (value == 0)
 			return 1;
@@ -498,7 +502,7 @@ public class MathUtils {
 
 	static final int SK2 = 10882;
 
-	public static final int sin(int f) {
+	public static final int sinInt(int f) {
 		int sign = 1;
 		if ((f > PI_OVER_2_FIXED) && (f <= PI_FIXED)) {
 			f = PI_FIXED - f;
@@ -523,7 +527,7 @@ public class MathUtils {
 
 	static final int CK2 = 32551;
 
-	public static final int cos(int f) {
+	public static final int cosInt(int f) {
 		int sign = 1;
 		if ((f > PI_OVER_2_FIXED) && (f <= PI_FIXED)) {
 			f = PI_FIXED - f;
@@ -547,7 +551,7 @@ public class MathUtils {
 
 	static final int TK2 = 20810;
 
-	public static final int tan(int f) {
+	public static final int tanInt(int f) {
 		int sqr = mul(f, f);
 		int result = TK1;
 		result = mul(result, sqr);
@@ -558,7 +562,7 @@ public class MathUtils {
 		return result;
 	}
 
-	public static final int atan(int f) {
+	public static final int atanInt(int f) {
 		int sqr = mul(f, f);
 		int result = 1365;
 		result = mul(result, sqr);
@@ -1103,6 +1107,10 @@ public class MathUtils {
 		return val >= minValue && val <= maxValue;
 	}
 
+	public static final boolean isNaN(float v) {
+		return (v != v);
+	}
+
 	protected static int TO_STRING_DECIMAL_PLACES = 3;
 
 	public static final String toString(float value) {
@@ -1118,9 +1126,9 @@ public class MathUtils {
 	}
 
 	public static final String toString(float value, int decimalPlaces, boolean showTag) {
-		if (Float.isNaN(value))
+		if (isNaN(value)) {
 			return "NaN";
-
+		}
 		StringBuilder buf = new StringBuilder();
 		if (value >= 0) {
 			if (showTag) {
@@ -1470,6 +1478,12 @@ public class MathUtils {
 		return v + (diff % side > 0 ? 1f : 0f);
 	}
 
+	/**
+	 * 计算指定数值的阶乘
+	 * 
+	 * @param v
+	 * @return
+	 */
 	public static float factorial(float v) {
 		if (v == 0f) {
 			return 1f;
@@ -1481,6 +1495,14 @@ public class MathUtils {
 		return result;
 	}
 
+	/**
+	 * 让两值做加法,若大于第三值则返回第三值
+	 * 
+	 * @param v
+	 * @param amount
+	 * @param max
+	 * @return
+	 */
 	public static float maxAdd(float v, float amount, float max) {
 		v += amount;
 		if (v > max) {
@@ -1489,6 +1511,14 @@ public class MathUtils {
 		return v;
 	}
 
+	/**
+	 * 让两值做减法,若小于第三值则返回第三值
+	 * 
+	 * @param v
+	 * @param amount
+	 * @param min
+	 * @return
+	 */
 	public static float minSub(float v, float amount, float min) {
 		v -= amount;
 		if (v < min) {
@@ -1497,6 +1527,14 @@ public class MathUtils {
 		return v;
 	}
 
+	/**
+	 * 返回一个数值增加指定变量后与指定值比较的余数
+	 * 
+	 * @param v
+	 * @param amount
+	 * @param max
+	 * @return
+	 */
 	public static float wrapValue(float v, float amount, float max) {
 		float diff = 0f;
 		v = MathUtils.abs(v);
@@ -1506,6 +1544,13 @@ public class MathUtils {
 		return diff;
 	}
 
+	/**
+	 * 返回一个概率事件是否被触发的布尔值
+	 * 
+	 * @param chance
+	 *            >0 && < 100
+	 * @return
+	 */
 	public static boolean chanceRoll(float chance) {
 		if (chance <= 0f) {
 			return false;
