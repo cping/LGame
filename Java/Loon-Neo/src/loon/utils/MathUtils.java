@@ -1455,12 +1455,28 @@ public class MathUtils {
 		return newAngle >= newStartAngle && newAngle <= newEndAngle;
 	}
 
+	/**
+	 * 转换坐标为angle
+	 * 
+	 * @param x1
+	 * @param y1
+	 * @param x2
+	 * @param y2
+	 * @return
+	 */
 	public static final float angleFrom(float x1, float y1, float x2, float y2) {
 		float diffX = x2 - x1;
 		float diffY = y2 - y1;
 		return atan2(diffY, diffX);
 	}
 
+	/**
+	 * 滚动指定参数值
+	 * 
+	 * @param scroll
+	 * @param side
+	 * @return
+	 */
 	public final static float scroll(float scroll, float side) {
 		float start = 0;
 		final float v = MathUtils.abs(scroll) % side;
@@ -1472,6 +1488,14 @@ public class MathUtils {
 		return start;
 	}
 
+	/**
+	 * 迭代下降指定数值
+	 * 
+	 * @param total
+	 * @param start
+	 * @param side
+	 * @return
+	 */
 	public static float inerations(float total, float start, float side) {
 		final float diff = total = start;
 		final float v = diff / side;
