@@ -256,6 +256,14 @@ public class MoveTo extends ActionEvent {
 		return this;
 	}
 
+	public float getStartX() {
+		return startX == 0 ? startLocation.x : startX;
+	}
+
+	public float getStartY() {
+		return startY == 0 ? startLocation.y : startY;
+	}
+
 	public TArray<Vector2f> getPath() {
 		return pActorPath;
 	}
@@ -646,11 +654,11 @@ public class MoveTo extends ActionEvent {
 	}
 
 	public float getEndX() {
-		return endX;
+		return endX == 0 ? endLocation.x : endX;
 	}
 
 	public float getEndY() {
-		return endY;
+		return endY == 0 ? endLocation.y : endY;
 	}
 
 	@Override

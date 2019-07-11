@@ -45,6 +45,19 @@ import loon.utils.TArray;
  */
 public class AStarFinder extends TileImplPathFind implements Updateable, LRelease {
 
+	private static class ScoredPath {
+
+		private float score;
+
+		private TArray<Vector2f> path;
+
+		ScoredPath(float score, TArray<Vector2f> path) {
+			this.score = score;
+			this.path = path;
+		}
+
+	}
+	
 	public final static AStarFindHeuristic ASTAR_CLOSEST = new Closest();
 
 	public final static AStarFindHeuristic ASTAR_CLOSEST_SQUARED = new ClosestSquared();
@@ -337,19 +350,6 @@ public class AStarFinder extends TileImplPathFind implements Updateable, LReleas
 		}
 	}
 
-	private static class ScoredPath {
-
-		private float score;
-
-		private TArray<Vector2f> path;
-
-		ScoredPath(float score, TArray<Vector2f> path) {
-			this.score = score;
-			this.path = path;
-		}
-
-	}
-
 	public boolean isClosed() {
 		return closed;
 	}
@@ -357,7 +357,7 @@ public class AStarFinder extends TileImplPathFind implements Updateable, LReleas
 	@Override
 	public void close() {
 		try {
-			if (path == null) {
+			if (path != null) {
 				path.clear();
 				path = null;
 			}

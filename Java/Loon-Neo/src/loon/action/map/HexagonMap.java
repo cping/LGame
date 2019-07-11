@@ -20,7 +20,6 @@
  */
 package loon.action.map;
 
-
 import loon.LObject;
 import loon.LSysException;
 import loon.LSystem;

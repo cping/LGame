@@ -1414,10 +1414,25 @@ final public class StringUtils extends CharUtils {
 		return unificationChars(tempChars, messages, null);
 	}
 
+	/**
+	 * 合并字符数组到CharArray字符集合中的去(不包含limit中限定的字符)
+	 * 
+	 * @param messages
+	 * @param limit
+	 * @return
+	 */
 	public static String unificationChars(char[] messages, CharSequence limit) {
 		return unificationChars(new CharArray(128), messages, null);
 	}
 
+	/**
+	 * 合并字符数组到CharArray字符集合中的去(不包含limit中限定的字符)
+	 * 
+	 * @param tempChars
+	 * @param messages
+	 * @param limit
+	 * @return
+	 */
 	public static String unificationChars(CharArray tempChars, char[] messages, CharSequence limit) {
 		if (messages == null || messages.length == 0) {
 			return "";
@@ -1455,10 +1470,25 @@ final public class StringUtils extends CharUtils {
 		}
 	}
 
+	/**
+	 * 判定指定字符序列中指定字符是否存在
+	 * 
+	 * @param s
+	 * @param ch
+	 * @return
+	 */
 	public static int indexOf(CharSequence s, char ch) {
 		return indexOf(s, ch, 0);
 	}
 
+	/**
+	 * 判定指定字符序列中指定字符是否存在
+	 * 
+	 * @param c
+	 * @param ch
+	 * @param start
+	 * @return
+	 */
 	public static int indexOf(CharSequence c, char ch, int start) {
 		if (c instanceof String) {
 			return ((String) c).indexOf(ch, start);
@@ -1470,6 +1500,15 @@ final public class StringUtils extends CharUtils {
 		return new char[len];
 	}
 
+	/**
+	 * 检索指定字符序列集合中指定区间内指定字符是否存在并返回其索引位置
+	 * 
+	 * @param c
+	 * @param ch
+	 * @param start
+	 * @param end
+	 * @return
+	 */
 	public static int indexOf(CharSequence c, char ch, int start, int end) {
 		if ((c instanceof StringBuffer) || (c instanceof StringBuilder) || (c instanceof String)) {
 			final int INDEX_INCREMENT = 500;
@@ -1503,6 +1542,12 @@ final public class StringUtils extends CharUtils {
 		return -1;
 	}
 
+	/**
+	 * 转换一个字符串集合为字符串数组
+	 * 
+	 * @param list
+	 * @return
+	 */
 	public static String[] getListToStrings(TArray<String> list) {
 		if (list == null || list.size == 0) {
 			return null;
@@ -1514,6 +1559,12 @@ final public class StringUtils extends CharUtils {
 		return result;
 	}
 
+	/**
+	 * 转化字符序列数组到字符序列集合中去
+	 * 
+	 * @param chars
+	 * @return
+	 */
 	public static TArray<CharSequence> getArrays(CharSequence[] chars) {
 		if (chars == null) {
 			return new TArray<CharSequence>(0);
@@ -1526,6 +1577,15 @@ final public class StringUtils extends CharUtils {
 		return arrays;
 	}
 
+	/**
+	 * 从指定字符序列中截取指定长度的字符串到指定字符数组中去
+	 * 
+	 * @param c
+	 * @param start
+	 * @param end
+	 * @param dest
+	 * @param destoff
+	 */
 	public static void getChars(CharSequence c, int start, int end, char[] dest, int destoff) {
 		if (c instanceof String) {
 			((String) c).getChars(start, end, dest, destoff);
@@ -1540,6 +1600,13 @@ final public class StringUtils extends CharUtils {
 		}
 	}
 
+	/**
+	 * 返回指定字符序列中指定标记出现的次数
+	 * 
+	 * @param chars
+	 * @param flag
+	 * @return
+	 */
 	public static int countOccurrences(final CharSequence chars, final char flag) {
 		int count = 0;
 		int lastOccurrence = indexOf(chars, flag, 0);
