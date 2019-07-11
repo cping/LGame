@@ -68,11 +68,23 @@ final public class StringUtils extends CharUtils {
 		return b.toString();
 	}
 
+	/**
+	 * 判断指定字符串内容是否为布尔值(不判定数字为布尔)
+	 * 
+	 * @param o
+	 * @return
+	 */
 	public static boolean isBoolean(String o) {
 		String str = o.trim().toLowerCase();
 		return str.equals("true") || str.equals("false") || str.equals("yes") || str.equals("no") || str.equals("ok");
 	}
 
+	/**
+	 * 转换指定字符串内容为布尔值(判定数字为布尔)
+	 * 
+	 * @param o
+	 * @return
+	 */
 	public static boolean toBoolean(String o) {
 		String str = o.trim().toLowerCase();
 		if (str.equals("true") || str.equals("yes") || str.equals("ok")) {
@@ -85,18 +97,76 @@ final public class StringUtils extends CharUtils {
 		return false;
 	}
 
+	/**
+	 * 判断两个字符串是否等值
+	 * 
+	 * @param a
+	 * @param b
+	 * @return
+	 */
 	public static boolean equals(String a, String b) {
-		if (a == null || b == null) {
-			return (a == b);
-		} else {
-			return a.equals(b);
-		}
+		return assertEqual(a, b);
 	}
 
+	/**
+	 * 判定两组字符序列是否内容相等
+	 * 
+	 * @param a
+	 * @param b
+	 * @return
+	 */
+	public static boolean equals(final CharSequence a, final CharSequence b) {
+		return equals(a, b, false);
+	}
+
+	/**
+	 * 判定两组字符序列是否内容相等
+	 * 
+	 * @param a
+	 * @param b
+	 * @param ignoreWhitespaces
+	 *            如果此项为true,则无视所有不显示的占位符,即StringUtils.equals("abc\n", "abc",true)
+	 *            这样含有换行符之类不显示字符的字符串在比较时此标记为true时将等值,为false时不等值,默认为false
+	 * @return
+	 */
+	public static boolean equals(final CharSequence a, final CharSequence b, final boolean ignoreWhitespaces) {
+		if (a == null) {
+			return (b == null);
+		} else if (b == null) {
+			return false;
+		}
+		if (ignoreWhitespaces) {
+			return equals(spaceFilter(a), spaceFilter(b), false);
+		} else {
+			final int size = a.length();
+			if (b.length() != size) {
+				return false;
+			}
+			for (int i = size - 1; i >= 0; i--) {
+				if (a.charAt(i) != b.charAt(i)) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * 去除字符串中所有空白字符
+	 * 
+	 * @param text
+	 * @return
+	 */
 	public static String trim(String text) {
 		return (rtrim(ltrim(text.trim()))).trim();
 	}
 
+	/**
+	 * 去除字符串右侧空白字符
+	 * 
+	 * @param s
+	 * @return
+	 */
 	public static String rtrim(String s) {
 		int off = s.length() - 1;
 		while (off >= 0 && s.charAt(off) <= ' ') {
@@ -105,6 +175,12 @@ final public class StringUtils extends CharUtils {
 		return off < s.length() - 1 ? s.substring(0, off + 1) : s;
 	}
 
+	/**
+	 * 去除字符串左侧空白字符
+	 * 
+	 * @param s
+	 * @return
+	 */
 	public static String ltrim(String s) {
 		int off = 0;
 		while (off < s.length() && s.charAt(off) <= ' ') {
@@ -113,12 +189,48 @@ final public class StringUtils extends CharUtils {
 		return off > 0 ? s.substring(off) : s;
 	}
 
-	public static boolean startsWith(String n, char tag) {
-		return n.charAt(0) == tag;
+	/**
+	 * 判定指定字符串是否包含指定开头
+	 * 
+	 * @param s
+	 * @param sub
+	 * @return
+	 */
+	public static boolean startsWith(final String s, final String sub) {
+		return (s != null) && (sub != null) && s.startsWith(sub);
 	}
 
+	/**
+	 * 判定指定字符串是否包含指定开头
+	 * 
+	 * @param n
+	 * @param tag
+	 * @return
+	 */
+	public static boolean startsWith(String n, char tag) {
+		return (n != null) && n.charAt(0) == tag;
+	}
+
+	/**
+	 * 判定指定字符串是否包含指定结尾
+	 * 
+	 * @param s
+	 * @param sub
+	 * @return
+	 */
+	public static boolean endsWith(final String s, final String sub) {
+		return (s != null) && (sub != null) && s.endsWith(sub);
+	}
+
+	/**
+	 * 判定指定字符串是否包含指定结尾
+	 * 
+	 * @param n
+	 * @param tag
+	 * @return
+	 */
 	public static boolean endsWith(String n, char tag) {
-		return n.charAt(n.length() - 1) == tag;
+		return (n != null) && n.charAt(n.length() - 1) == tag;
 	}
 
 	/**
@@ -184,7 +296,7 @@ final public class StringUtils extends CharUtils {
 	 * @param res
 	 * @return
 	 */
-	public static String concat(Object... res) {
+	public static String concat(final Object... res) {
 		StringBuffer sbr = new StringBuffer(res.length);
 		for (int i = 0; i < res.length; i++) {
 			if (res[i] instanceof Integer) {
@@ -197,13 +309,34 @@ final public class StringUtils extends CharUtils {
 	}
 
 	/**
+	 * 拼接指定字符数组
+	 * 
+	 * @param cs
+	 * @return
+	 */
+	public final static char[] concat(final char[]... res) {
+		int size = 0;
+		for (final char[] e : res) {
+			size += e.length;
+		}
+		final char[] c = new char[size];
+		int ci = 0;
+		for (final char[] e : res) {
+			size = e.length;
+			System.arraycopy(e, 0, c, ci, size);
+			ci += size;
+		}
+		return c;
+	}
+
+	/**
 	 * 判定是否由纯粹的西方字符组成
 	 * 
 	 * @param message
 	 * @return
 	 */
-	public static boolean isEnglishAndNumeric(String message) {
-		if (message == null || message.length() == 0) {
+	public static boolean isEnglishAndNumeric(final String message) {
+		if (isEmpty(message)) {
 			return false;
 		}
 		int size = message.length();
@@ -237,6 +370,9 @@ final public class StringUtils extends CharUtils {
 	 * @return
 	 */
 	public static String filter(CharSequence message, char[] chars, CharSequence newTag) {
+		if (size(message) <= 0) {
+			return "";
+		}
 		StringBuilder sbr = new StringBuilder();
 		boolean addFlag;
 		for (int i = 0; i < message.length(); i++) {
@@ -251,6 +387,27 @@ final public class StringUtils extends CharUtils {
 			}
 			if (addFlag) {
 				sbr.append(ch);
+			}
+		}
+		return sbr.toString();
+	}
+
+	/**
+	 * 过滤字符序列中所有不显示的占位符
+	 * 
+	 * @param s
+	 * @return
+	 */
+	public static String spaceFilter(CharSequence s) {
+		if (size(s) <= 0) {
+			return "";
+		}
+		StringBuilder sbr = new StringBuilder();
+		final int size = s.length();
+		for (int i = 0; i < size; i++) {
+			char c = s.charAt(i);
+			if (!isSpace(c)) {
+				sbr.append(c);
 			}
 		}
 		return sbr.toString();
@@ -406,19 +563,19 @@ final public class StringUtils extends CharUtils {
 	public static String[] splitCsv(String str) {
 		TArray<String> stringList = new TArray<String>();
 		String tempString;
-		StringBuilder sb = new StringBuilder();
+		StringBuilder sbr = new StringBuilder();
 		for (int i = 0; i < str.length(); i++) {
 			if (str.charAt(i) == '"') {
 				i++;
 				while (i < str.length()) {
 					if (str.charAt(i) == '"' && str.charAt(i + 1) == '"') {
-						sb.append('"');
+						sbr.append('"');
 						i = i + 2;
 					}
 					if (str.charAt(i) == '"') {
 						break;
 					} else {
-						sb.append(str.charAt(i));
+						sbr.append(str.charAt(i));
 						i++;
 					}
 				}
@@ -426,17 +583,17 @@ final public class StringUtils extends CharUtils {
 			}
 
 			if (str.charAt(i) != ',') {
-				sb.append(str.charAt(i));
+				sbr.append(str.charAt(i));
 			} else {
-				tempString = sb.toString();
+				tempString = sbr.toString();
 				stringList.add(tempString);
-				sb.setLength(0);
+				sbr.setLength(0);
 			}
 		}
 
-		tempString = sb.toString();
+		tempString = sbr.toString();
 		stringList.add(tempString);
-		sb.setLength(0);
+		sbr.setLength(0);
 		String[] stockArr = new String[stringList.size];
 		stockArr = stringList.toArray(stockArr);
 		return stockArr;
@@ -469,10 +626,30 @@ final public class StringUtils extends CharUtils {
 		return ret;
 	}
 
+	/**
+	 * 以指定标记分割过滤字符序列并返回一个数据集合
+	 * 
+	 * @param chars
+	 *            要过滤的字符序列
+	 * @param flag
+	 *            以何种标记过滤分段
+	 * @return
+	 */
 	public static TArray<CharSequence> splitArray(final CharSequence chars, final char flag) {
 		return splitArray(chars, flag, new TArray<CharSequence>());
 	}
 
+	/**
+	 * 以指定标记分割过滤字符序列并返回一个数据集合
+	 * 
+	 * @param chars
+	 *            要过滤的字符序列
+	 * @param flag
+	 *            以何种标记过滤分段
+	 * @param result
+	 *            返回结果用的集合对象
+	 * @return
+	 */
 	public static <T extends TArray<CharSequence>> T splitArray(final CharSequence chars, final char flag,
 			final T result) {
 		final int partCount = countOccurrences(chars, flag) + 1;
@@ -759,7 +936,7 @@ final public class StringUtils extends CharUtils {
 	}
 
 	/**
-	 * 检查是否为纯字母
+	 * 检查是否为纯字母大写
 	 * 
 	 * @param letter
 	 * @return
@@ -768,10 +945,22 @@ final public class StringUtils extends CharUtils {
 		return ('A' <= letter && letter <= 'Z');
 	}
 
+	/**
+	 * 检查是否为纯字母小写
+	 * 
+	 * @param letter
+	 * @return
+	 */
 	public static boolean isAlphabetLower(char letter) {
 		return ('a' <= letter && letter <= 'z');
 	}
 
+	/**
+	 * 检查是否为纯字母
+	 * 
+	 * @param letter
+	 * @return
+	 */
 	public static boolean isAlphabet(char letter) {
 		return isAlphabetUpper(letter) || isAlphabetLower(letter);
 	}
@@ -922,15 +1111,21 @@ final public class StringUtils extends CharUtils {
 		return count;
 	}
 
+	/**
+	 * 对指定字符串进行escape解码
+	 * 
+	 * @param escaped
+	 * @return
+	 */
 	public static String unescape(String escaped) {
 		int length = escaped.length();
 		int i = 0;
-		StringBuilder sb = new StringBuilder(escaped.length() / 2);
+		StringBuilder sbr = new StringBuilder(escaped.length() / 2);
 
 		while (i < length) {
 			char n = escaped.charAt(i++);
 			if (n != '%') {
-				sb.append(n);
+				sbr.append(n);
 			} else {
 				n = escaped.charAt(i++);
 				int code;
@@ -943,53 +1138,91 @@ final public class StringUtils extends CharUtils {
 					String slice = escaped.substring(i - 1, ++i);
 					code = Integer.valueOf(slice, 16);
 				}
-				sb.append((char) code);
+				sbr.append((char) code);
 			}
 		}
 
-		return sb.toString();
+		return sbr.toString();
 	}
 
+	/**
+	 * 对指定字符串进行escape编码
+	 * 
+	 * @param raw
+	 * @return
+	 */
 	public static String escape(String raw) {
 		int length = raw.length();
 		int i = 0;
-		StringBuilder sb = new StringBuilder(raw.length() / 2);
+		StringBuilder sbr = new StringBuilder(raw.length() / 2);
 
 		while (i < length) {
 			char c = raw.charAt(i++);
 
 			if (CharUtils.isLetterOrDigit(c) || CharUtils.isEscapeExempt(c)) {
-				sb.append(c);
+				sbr.append(c);
 			} else {
 				int i1 = raw.codePointAt(i - 1);
 				String escape = CharUtils.toHex(i1);
 
-				sb.append('%');
+				sbr.append('%');
 
 				if (escape.length() > 2) {
-					sb.append('u');
+					sbr.append('u');
 				}
-				sb.append(escape.toUpperCase());
+				sbr.append(escape.toUpperCase());
 
 			}
 		}
 
-		return sb.toString();
+		return sbr.toString();
 	}
 
+	/**
+	 * 当字符序列长度不满足指定要求时，在字符串前(左侧)补位特定字符,字符序列增加为指定长度
+	 * 
+	 * @param chars
+	 *            原始字符序列
+	 * @param padChar
+	 *            字符序列长度不够时补位用字符
+	 * @param len
+	 *            字符序列长度补位生效的要求长度
+	 * @return
+	 */
 	public static CharSequence padFront(final CharSequence chars, final char padChar, final int len) {
 		final int padCount = len - chars.length();
 		if (padCount <= 0) {
 			return chars;
 		} else {
-			final StringBuilder sb = new StringBuilder();
+			final StringBuilder sbr = new StringBuilder();
 
 			for (int i = padCount - 1; i >= 0; i--) {
-				sb.append(padChar);
+				sbr.append(padChar);
 			}
-			sb.append(chars);
+			sbr.append(chars);
 
-			return sb.toString();
+			return sbr.toString();
+		}
+	}
+
+	/**
+	 * 当字符序列长度不满足指定要求时，在字符串前(右侧)补位特定字符,字符序列增加为指定长度
+	 * 
+	 * @param chars
+	 * @param padChar
+	 * @param len
+	 * @return
+	 */
+	public static CharSequence padBack(final CharSequence chars, final char padChar, final int len) {
+		final int padCount = len - chars.length();
+		if (padCount <= 0) {
+			return chars;
+		} else {
+			final StringBuilder sbr = new StringBuilder(chars);
+			for (int i = padCount - 1; i >= 0; i--) {
+				sbr.append(padChar);
+			}
+			return sbr.toString();
 		}
 	}
 
@@ -1314,6 +1547,12 @@ final public class StringUtils extends CharUtils {
 		return count;
 	}
 
+	/**
+	 * 判定指定字符串是否仅占位而不显示
+	 * 
+	 * @param c
+	 * @return
+	 */
 	public static boolean isSpace(char c) {
 		switch (c) {
 		case ' ':
@@ -1331,10 +1570,26 @@ final public class StringUtils extends CharUtils {
 		}
 	}
 
+	/**
+	 * 统计指定集合中字符序列对象的总长度
+	 * 
+	 * @param chars
+	 *            字符序列集合
+	 * @return
+	 */
 	public static int countCharacters(final TArray<CharSequence> chars) {
 		return countCharacters(chars, false);
 	}
 
+	/**
+	 * 统计指定集合中字符序列对象的总长度
+	 * 
+	 * @param chars
+	 *            字符序列集合
+	 * @param ignoreWhitespaces
+	 *            是否跳过仅占位而不显示的字符
+	 * @return
+	 */
 	public static int countCharacters(final TArray<CharSequence> chars, final boolean ignoreWhitespaces) {
 		int characters = 0;
 		if (ignoreWhitespaces) {
@@ -1356,12 +1611,18 @@ final public class StringUtils extends CharUtils {
 		return characters;
 	}
 
-	public static String notLineBreaks(String text) {
-		final int h = text.indexOf('\n');
+	/**
+	 * 去掉指定字符串句尾的换行字符
+	 * 
+	 * @param s
+	 * @return
+	 */
+	public static String notLineBreaks(String s) {
+		final int h = s.indexOf('\n');
 		if (h >= 0) {
-			return text.substring(0, h);
+			return s.substring(0, h);
 		}
-		return text;
+		return s;
 	}
 
 	/**
@@ -1441,7 +1702,7 @@ final public class StringUtils extends CharUtils {
 	 * @param b
 	 * @return
 	 */
-	public static boolean assertEqual(CharSequence a, CharSequence b) {
+	public static boolean assertEqual(final CharSequence a, final CharSequence b) {
 		if (a == b) {
 			return true;
 		}
@@ -1470,4 +1731,54 @@ final public class StringUtils extends CharUtils {
 		}
 		return false;
 	}
+
+	/**
+	 * 反转指定字符序列
+	 * 
+	 * @param v
+	 * @return
+	 */
+	public final static String reverse(final CharSequence v) {
+		if (size(v) <= 0) {
+			return "";
+		}
+		final int size = v.length();
+		final StringBuilder sbr = new StringBuilder(size);
+		for (int i = size - 1; i >= 0; i--) {
+			sbr.append(v.charAt(i));
+		}
+		return sbr.toString();
+	}
+
+	/**
+	 * 返回指定字符序列长度
+	 * 
+	 * @param v
+	 * @return
+	 */
+	public static int size(final CharSequence v) {
+		return v == null ? -1 : v.length();
+	}
+
+	/**
+	 * 返回指定字符序列中指定索引对应的字符
+	 * 
+	 * @param v
+	 * @param i
+	 * @return
+	 */
+	public final static char charAt(final CharSequence v, final int i) {
+		return size(v) <= i ? 0 : v.charAt(i);
+	}
+
+	/**
+	 * 返回指定对象的字符串信息
+	 * 
+	 * @param o
+	 * @return
+	 */
+	public static String toString(final Object o) {
+		return o == null ? null : o.toString();
+	}
+
 }

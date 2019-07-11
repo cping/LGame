@@ -596,5 +596,4 @@ public final class CollisionHelper extends ShapeUtils {
 		}
 		return result;
 	}
-
 }

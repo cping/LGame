@@ -92,7 +92,7 @@ public class LSystem {
 	// 屏幕大小
 	public static final Dimension viewSize = new Dimension(480, 320);
 
-	/** 
+	/**
 	 * 允许的最小时间计数变动值(这个值会影响缓动动画,普通动画,计时器之类,比如默认的60FPS换算成数值显示就是1/60==0.0166666666666667,<br>
 	 * 即每1/60秒增加数值0.0166666666666667(换算成毫秒就是16.66666666666667),而这个变量就是规定这类取值的最小值,也就是即便显示0FPS时,
 	 * 还有多少速度值用于累加[保底],不让画面完全卡死)
@@ -706,6 +706,10 @@ public class LSystem {
 
 	public static final int unite(int hashCode, int value) {
 		return 31 * hashCode + value;
+	}
+
+	public static final boolean equals(final Object o1, final Object o2) {
+		return (o1 == null) ? (o2 == null) : o1.equals(o2);
 	}
 
 	public static boolean isImage(String extension) {

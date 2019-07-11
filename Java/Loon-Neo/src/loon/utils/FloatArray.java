@@ -395,6 +395,7 @@ public class FloatArray implements IArray {
 		return array;
 	}
 
+	@Override
 	public boolean equals(Object object) {
 		if (object == this)
 			return true;
