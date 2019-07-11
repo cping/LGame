@@ -23,6 +23,9 @@ package loon.utils;
 import loon.LSysException;
 import loon.LSystem;
 
+/**
+ * 字符处理用工具类(此类被StringUtils继承,直接使用StringUtils也可以)
+ */
 public class CharUtils {
 
 	static final private class HexChars {

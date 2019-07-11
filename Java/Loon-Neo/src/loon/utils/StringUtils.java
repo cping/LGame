@@ -23,6 +23,9 @@ package loon.utils;
 import loon.LSysException;
 import loon.LSystem;
 
+/**
+ * 字符串处理用工具类
+ */
 final public class StringUtils extends CharUtils {
 
 	private StringUtils() {

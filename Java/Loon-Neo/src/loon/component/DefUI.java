@@ -48,10 +48,10 @@ public class DefUI {
 
 	private static DefUI instance;
 
-	public static void freeStatic(){
+	public static void freeStatic() {
 		instance = null;
 	}
-	
+
 	public final static DefUI make() {
 		return new DefUI();
 	}
@@ -512,6 +512,48 @@ public class DefUI {
 				setTransmission(g, x, y + bun * i, width, bun, LColor.black, 0.7F);
 			}
 		}
+	}
+
+	/**
+	 * 产生一个游戏用按钮纹理
+	 * 
+	 * @param width
+	 * @param height
+	 * @return
+	 */
+	public final static LTexture getGameWinButton(final int width, final int height) {
+		return getGameWinButton(width, height, LColor.gray);
+	}
+
+	/**
+	 * 产生一个指定色彩的游戏用按钮纹理
+	 * 
+	 * @param width
+	 * @param height
+	 * @param fill
+	 * @return
+	 */
+	public final static LTexture getGameWinButton(final int width, final int height, final LColor fill) {
+		Pixmap img = Pixmap.createImage(width, height);
+		final int t = LColor.white.darker().getARGB(), b = LColor.black.getARGB();
+		final int f = new LColor(fill).darker().getARGB();
+		final int w1 = width - 1, h1 = height - 1;
+		for (int j = 1; j < h1; j++) {
+			img.putPixel(0, j, b);
+			img.putPixel(1, j, t);
+			img.putPixel(w1, h1 - j, b);
+		}
+		for (int i = 1; i < w1; i++) {
+			img.putPixel(i, 0, b);
+			img.putPixel(i, 1, t);
+			img.putPixel(w1 - i, h1, b);
+		}
+		for (int j = 2; j < h1; j++) {
+			for (int i = 2; i < w1; i++) {
+				img.putPixel(i, j, f);
+			}
+		}
+		return img.texture();
 	}
 
 	private final void setTransmission(Canvas g, int x, int y, int w, int h, LColor col, float t) {
