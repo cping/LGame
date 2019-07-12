@@ -581,7 +581,8 @@ public class Field2D implements IArray, Config {
 			return false;
 		}
 		if (moveLimited != null) {
-			for (int i = 0; i < moveLimited.length; i++) {
+			final int size = moveLimited.length - 1;
+			for (int i = size; i > -1; i--) {
 				if (moveLimited[i] == type) {
 					return false;
 				}

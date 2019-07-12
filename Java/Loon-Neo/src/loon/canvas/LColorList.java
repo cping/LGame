@@ -31,6 +31,10 @@ public class LColorList {
 
 	private static LColorList instance;
 
+	public final static void freeStatic(){
+		instance = null;
+	}
+
 	public final static LColorList get() {
 		if (instance == null || instance.dirty) {
 			synchronized (LColorList.class) {

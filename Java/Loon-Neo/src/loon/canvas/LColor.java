@@ -698,6 +698,52 @@ public class LColor implements Serializable {
 		return this;
 	}
 
+    public boolean addRed(final float red) {
+        final float n = add(this.r, red);
+        if (n == this.r) {
+            return false;
+        }
+        this.r = n;
+        return true;
+    }
+    
+    public boolean addGreen(final float green) {
+        final float n = add(this.g, green);
+        if (n == this.g) {
+            return false;
+        }
+        this.g = n;
+        return true;
+    }
+    
+    public boolean addBlue(final float blue) {
+        final float n = add(this.b, blue);
+        if (n == this.b) {
+            return false;
+        }
+        this.b = n;
+        return true;
+    }
+    
+    public boolean addAlpha(final float alpha) {
+        final float n = add(this.a, alpha);
+        if (n == this.a) {
+            return false;
+        }
+        this.a = n;
+        return true;
+    }
+    
+    private final static float add(float c, final float i) {
+        c += i;
+        if (c > 1f) {
+            c = 1f;
+        } else if (c < 0f) {
+            c = 0f;
+        }
+        return c;
+    }
+    
 	public LColor multiply(LColor c) {
 		return new LColor(r * c.r, g * c.g, b * c.b, a * c.a);
 	}
