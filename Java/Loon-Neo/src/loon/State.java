@@ -34,7 +34,7 @@ import loon.utils.StringUtils;
  * 一个Stage中,可以存在复数的State,使用addState添加,使用playState转换用户需要的State对象进行显示,removeState删除.
  */
 public abstract class State implements LRelease {
-
+	
 	protected StateManager stateManager;
 
 	protected String stateName;
@@ -44,7 +44,9 @@ public abstract class State implements LRelease {
 	protected boolean isLoaded;
 
 	protected boolean syncCamera;
-
+	
+	protected GameMode runMode;
+	
 	private boolean isScalePos;
 
 	public State() {
@@ -138,5 +140,13 @@ public abstract class State implements LRelease {
 
 	public void setSyncCamera(boolean sync) {
 		this.syncCamera = sync;
+	}
+
+	public GameMode getRunMode() {
+		return runMode;
+	}
+
+	public void setRunMode(GameMode runMode) {
+		this.runMode = runMode;
 	}
 }

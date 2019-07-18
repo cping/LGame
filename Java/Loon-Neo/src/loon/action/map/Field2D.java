@@ -666,6 +666,14 @@ public class Field2D implements IArray, Config {
 		return false;
 	}
 
+	public boolean notWidth(final int x) {
+		return x < 0 || x >= width;
+	}
+
+	public boolean notHeight(final int y) {
+		return y < 0 || y >= height;
+	}
+
 	public int[][] neighbors(int px, int py, boolean flag) {
 		int[][] pos = new int[8][2];
 		insertArrays(pos, 0, px, py - 1);

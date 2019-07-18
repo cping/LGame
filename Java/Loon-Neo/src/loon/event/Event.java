@@ -29,7 +29,7 @@ public abstract class Event {
 	protected static final int F_SHIFT_DOWN = 1 << 3;
 	protected static final int F_META_DOWN = 1 << 4;
 
-	public static class Input extends Event {
+	public static class InputEvent extends Event {
 
 		public int flags;
 
@@ -93,7 +93,7 @@ public abstract class Event {
 			return flags;
 		}
 
-		protected Input(int flags, double time) {
+		protected InputEvent(int flags, double time) {
 			this.flags = flags;
 			this.time = time;
 		}
@@ -108,7 +108,7 @@ public abstract class Event {
 		}
 	}
 
-	public static class XY extends Input implements loon.geom.XY {
+	public static class XYEvent extends InputEvent implements loon.geom.XY {
 
 		public final float x;
 
@@ -124,7 +124,7 @@ public abstract class Event {
 			return y;
 		}
 
-		protected XY(int flags, double time, float x, float y) {
+		protected XYEvent(int flags, double time, float x, float y) {
 			super(flags, time);
 			this.x = x;
 			this.y = y;

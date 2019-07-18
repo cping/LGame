@@ -28,7 +28,7 @@ public abstract class KeyMake {
 		DEFAULT, NUMBER, EMAIL, URL;
 	}
 	
-	public static class Event extends loon.event.Event.Input {
+	public static class Event extends loon.event.Event.InputEvent {
 		public char keyChar;
 
 		protected Event(int flags, char ch, double time) {

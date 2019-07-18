@@ -24,7 +24,7 @@ import loon.utils.reply.Port;
 
 public class MouseMake {
 
-  public static class Event extends loon.event.Event.XY {
+  public static class Event extends loon.event.Event.XYEvent {
 
     protected Event (int flags, double time, float x, float y) {
       super(flags, time, x, y);

@@ -22,6 +22,7 @@ package loon.utils.timer;
 
 import loon.LRelease;
 import loon.LSystem;
+import loon.event.TimerEvent;
 import loon.event.Updateable;
 import loon.utils.MathUtils;
 import loon.utils.StringKeyValue;
@@ -67,8 +68,8 @@ public class LTimer implements LRelease {
 	}
 
 	private static LTimer _instance = null;
-	
-	public static void freeStatic(){
+
+	public static void freeStatic() {
 		_instance = null;
 	}
 
@@ -143,11 +144,11 @@ public class LTimer implements LRelease {
 	public boolean action(LTimerContext context) {
 		return action(context.timeSinceLastUpdate);
 	}
-	
+
 	public boolean action(float delta) {
 		return action((long) (MathUtils.max(delta * 1000, 8)));
 	}
-	
+
 	public boolean action(long elapsedTime) {
 		if (this._closed) {
 			return false;
@@ -171,6 +172,10 @@ public class LTimer implements LRelease {
 			}
 		}
 		return false;
+	}
+
+	public TimerEvent makeEvent() {
+		return new TimerEvent(_currentTick);
 	}
 
 	public LTimer refresh() {
@@ -328,6 +333,10 @@ public class LTimer implements LRelease {
 	public LTimer setUpdateable(Updateable u) {
 		this._update = u;
 		return this;
+	}
+
+	public TimerEvent makeTimeEvent() {
+		return new TimerEvent(this._currentTick);
 	}
 
 	public LTimer submit() {

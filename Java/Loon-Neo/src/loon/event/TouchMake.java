@@ -22,7 +22,7 @@ package loon.event;
 
 public class TouchMake {
 
-	public static class Event extends loon.event.Event.XY {
+	public static class Event extends loon.event.Event.XYEvent {
 
 		public static enum Kind {
 			START(true, false), MOVE(false, false), END(false, true), CANCEL(

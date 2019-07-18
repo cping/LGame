@@ -201,6 +201,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	// 0.3.2版新增的简易重力控制接口
 	private GravityHandler gravityHandler;
 
+	private GameMode _gameMode;
+
 	private LColor _backgroundColor;
 
 	private RectBox _rectBox;
@@ -2945,14 +2947,16 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * 
 	 * @param g
 	 */
-	protected void afterUI(GLEx g) {}
+	protected void afterUI(GLEx g) {
+	}
 
 	/**
 	 * 重载此函数,可以自定义渲染Screen的最上层图像
 	 * 
 	 * @param g
 	 */
-	protected void beforeUI(GLEx g) {}
+	protected void beforeUI(GLEx g) {
+	}
 
 	private final void repaint(GLEx g) {
 		if (!_visible) {
@@ -5110,7 +5114,25 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	public void setDrawListener(DrawListener<Screen> drawListener) {
 		this._drawListener = drawListener;
 	}
-	
+
+	/**
+	 * 获得当前游戏进行的状态
+	 * 
+	 * @return
+	 */
+	public GameMode getGameMode() {
+		return _gameMode == null ? GameMode.Unkown : _gameMode;
+	}
+
+	/**
+	 * 认定当前游戏进行的状态
+	 * 
+	 * @param gameMode
+	 */
+	public void setGameMode(GameMode gameMode) {
+		this._gameMode = gameMode;
+	}
+
 	@Override
 	public String toString() {
 		StringKeyValue sbr = new StringKeyValue(getClass().getName());
@@ -5128,6 +5150,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 				_rotation = 0;
 				_scaleX = _scaleY = _alpha = 1f;
 				_baseColor = null;
+				_gameMode = null;
 				_visible = false;
 				_drawListener = null;
 				_clickListener = null;
@@ -5198,6 +5221,5 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			}
 		}
 	}
-
 
 }
