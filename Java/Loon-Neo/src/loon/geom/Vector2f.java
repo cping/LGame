@@ -34,14 +34,14 @@ public class Vector2f implements Serializable, XY {
 	 */
 	private static final long serialVersionUID = -1844534518528011982L;
 
-	private static final Array<Vector2f> _vec2_cache = new Array<Vector2f>();
+	private static final Array<Vector2f> _VEC2_CACHE = new Array<Vector2f>();
 
 	public final static Vector2f STATIC_ZERO = new Vector2f();
 
 	public final static Vector2f TMP() {
-		Vector2f temp = _vec2_cache.pop();
+		Vector2f temp = _VEC2_CACHE.pop();
 		if (temp == null) {
-			_vec2_cache.add(temp = new Vector2f(0, 0));
+			_VEC2_CACHE.add(temp = new Vector2f(0, 0));
 		}
 		return temp;
 	}
@@ -978,15 +978,15 @@ public class Vector2f implements Serializable, XY {
 	}
 
 	public Vector2f scale(float s) {
-		return scale(s, s);
-	}
-
-	public Vector2f project(Vector2f v) {
-		return scale(dot(v) / v.lengthSquared());
+		return mul(s);
 	}
 
 	public Vector2f scale(float sx, float sy) {
-		return new Vector2f(x * sx, y * sy);
+		return mul(x * sx, y * sy);
+	}
+	
+	public Vector2f project(Vector2f v) {
+		return mul(dot(v) / v.lengthSquared());
 	}
 
 	public Vector2f reflectSelf(Vector2f axis) {

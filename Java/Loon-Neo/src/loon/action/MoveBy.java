@@ -28,7 +28,7 @@ import loon.utils.timer.EaseTimer;
 
 public class MoveBy extends ActionEvent {
 
-	private int _speed = 1;
+	private float _speed = 1;
 
 	private float _startX = -1, _startY = -1, _endX, _endY;
 
@@ -50,15 +50,15 @@ public class MoveBy extends ActionEvent {
 		this(-1, -1, endX, endY, 0, duration, LSystem.DEFAULT_EASE_DELAY, easing, 0, 0);
 	}
 
-	public MoveBy(float endX, float endY, int speed) {
+	public MoveBy(float endX, float endY, float speed) {
 		this(-1, -1, endX, endY, speed, 1f, LSystem.DEFAULT_EASE_DELAY, EasingMode.Linear, 0, 0);
 	}
 
-	public MoveBy(float endX, float endY, int speed, EasingMode easing, float sx, float sy) {
+	public MoveBy(float endX, float endY, float speed, EasingMode easing, float sx, float sy) {
 		this(-1, -1, endX, endY, speed, 1f, LSystem.DEFAULT_EASE_DELAY, easing, sx, sy);
 	}
 
-	public MoveBy(float startX, float startY, float endX, float endY, int speed, float duration, float delay,
+	public MoveBy(float startX, float startY, float endX, float endY, float speed, float duration, float delay,
 			EasingMode easing, float sx, float sy) {
 		this._startX = startX;
 		this._startY = startY;
@@ -159,6 +159,15 @@ public class MoveBy extends ActionEvent {
 				_startY = original.getY();
 			}
 		}
+	}
+
+	public float getSpeed() {
+		return _speed;
+	}
+
+	public MoveBy setSpeed(float speed) {
+		this._speed = speed;
+		return this;
 	}
 
 	@Override

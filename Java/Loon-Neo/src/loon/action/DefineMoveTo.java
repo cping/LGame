@@ -1,5 +1,5 @@
 /**
- * Copyright 2008 - 2011
+ * Copyright 2008 - 2019 The Loon Game Engine Authors
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -16,136 +16,67 @@
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
- * @version 0.1
+ * @version 0.5
  */
 package loon.action;
 
 import loon.LSystem;
 import loon.action.collision.CollisionFilter;
 import loon.action.collision.CollisionResult;
-import loon.action.map.AStarFindHeuristic;
-import loon.action.map.AStarFinder;
+import loon.action.map.CustomPath;
 import loon.action.map.Field2D;
 import loon.geom.Vector2f;
-import loon.utils.IntMap;
-import loon.utils.TArray;
 import loon.utils.CollectionUtils;
-import loon.utils.MathUtils;
 import loon.utils.StringKeyValue;
 
 /**
- * 缓动对象移动用效果类,内置寻径和碰撞接口,可以自动实现寻径和障碍物回避效果(当然,也可以不寻径不检查碰撞而单纯移动)
+ * 一个自定义移动路径使用的缓动效果类,它的实现需要CustomPath类配置配合
  */
-public class MoveTo extends ActionEvent {
-
-	// 寻径缓存，如果useCache为true时,moveTo将不理会实际寻径结果，全部按照缓存中的路线行走
-	private final static IntMap<TArray<Vector2f>> _PATH_CACHE = new IntMap<TArray<Vector2f>>(
-			LSystem.DEFAULT_MAX_CACHE_SIZE);
+public class DefineMoveTo extends ActionEvent {
 
 	// 默认每帧的移动数值(象素)
 	private final static float _INIT_MOVE_SPEED = 4f;
 
-	private Vector2f startLocation, endLocation;
+	private CustomPath initPath, layerPath;
 
 	private Field2D layerMap;
 
-	private boolean allDir, isMoved, useCache, synchroLayerField;
+	private boolean allDir, isMoved, moveByMode, synchroLayerField;
 
-	private TArray<Vector2f> pActorPath;
-
-	private float startX, startY, endX, endY, moveX, moveY, speed;
+	private float startX = -1f, startY = -1f, endX = -1f, endY = -1f, moveX, moveY, speed;
 
 	private int direction;
 
-	private AStarFindHeuristic heuristic;
-
 	private Vector2f pLocation = new Vector2f();
-
-	private boolean moveByMode = false;
 
 	private boolean isDirUpdate = false;
 
-	public MoveTo(float x, float y, boolean all) {
-		this(null, x, y, all, _INIT_MOVE_SPEED);
+	public DefineMoveTo(final CustomPath path) {
+		this(null, path, true);
 	}
 
-	public MoveTo(final Field2D map, float x, float y, boolean all) {
-		this(map, x, y, all, _INIT_MOVE_SPEED);
+	public DefineMoveTo(final CustomPath path, final float speed) {
+		this(null, path, true, speed);
 	}
 
-	public MoveTo(float x, float y, boolean all, float speed) {
-		this(null, x, y, all, speed);
+	public DefineMoveTo(final CustomPath path, final boolean all) {
+		this(null, path, all);
 	}
 
-	public MoveTo(final Field2D map, float x, float y, boolean all, float speed) {
-		this(map, -1f, -1f, x, y, all, speed, true, false);
+	public DefineMoveTo(final Field2D map, final CustomPath path, final boolean all) {
+		this(map, path, all, _INIT_MOVE_SPEED);
 	}
 
-	public MoveTo(float sx, float sy, float x, float y, boolean all, float speed) {
-		this(null, sx, sy, x, y, all, speed, true, false);
-	}
-
-	public MoveTo(final Field2D map, float sx, float sy, float x, float y, boolean all, float speed) {
-		this(map, sx, sy, x, y, all, speed, true, false);
-	}
-
-	public MoveTo(float sx, float sy, float x, float y, boolean all, float speed, boolean cache, boolean synField) {
-		this(null, sx, sy, x, y, all, speed, cache, synField);
-	}
-
-	public MoveTo(final Field2D map, float sx, float sy, float x, float y, boolean all, float speed, boolean cache,
-			boolean synField) {
-		this.startLocation = new Vector2f(sx, sy);
-		this.endLocation = new Vector2f(x, y);
+	public DefineMoveTo(final Field2D map, final CustomPath path, final boolean all, final float speed) {
 		this.layerMap = map;
+		if (path != null) {
+			this.initPath = path;
+			this.layerPath = initPath.cpy();
+		}
 		this.allDir = all;
 		this.speed = speed;
-		this.useCache = cache;
-		this.synchroLayerField = synField;
-		if (map == null) {
+		if (layerPath == null) {
 			moveByMode = true;
-		}
-	}
-
-	public MoveTo(final Field2D map, Vector2f pos, boolean allDir) {
-		this(map, pos, allDir, _INIT_MOVE_SPEED);
-	}
-
-	public MoveTo(final Field2D map, Vector2f pos, boolean allDir, float speed) {
-		this(map, pos.x(), pos.y(), allDir, speed);
-	}
-
-	public void randomPathFinder() {
-		synchronized (MoveTo.class) {
-			AStarFindHeuristic afh = null;
-			int index = MathUtils.random(AStarFindHeuristic.MANHATTAN, AStarFindHeuristic.CLOSEST_SQUARED);
-			switch (index) {
-			case AStarFindHeuristic.MANHATTAN:
-				afh = AStarFinder.ASTAR_EUCLIDEAN;
-				break;
-			case AStarFindHeuristic.MIXING:
-				afh = AStarFinder.ASTAR_MIXING;
-				break;
-			case AStarFindHeuristic.DIAGONAL:
-				afh = AStarFinder.ASTAR_DIAGONAL;
-				break;
-			case AStarFindHeuristic.DIAGONAL_SHORT:
-				afh = AStarFinder.ASTAR_DIAGONAL_SHORT;
-				break;
-			case AStarFindHeuristic.EUCLIDEAN:
-				afh = AStarFinder.ASTAR_EUCLIDEAN;
-				break;
-			case AStarFindHeuristic.EUCLIDEAN_NOSQR:
-				afh = AStarFinder.ASTAR_EUCLIDEAN_NOSQR;
-				break;
-			case AStarFindHeuristic.CLOSEST:
-				afh = AStarFinder.ASTAR_CLOSEST;
-				break;
-			case AStarFindHeuristic.CLOSEST_SQUARED:
-				afh = AStarFinder.ASTAR_CLOSEST_SQUARED;
-				break;
-			}
-			setHeuristic(afh);
 		}
 	}
 
@@ -159,12 +90,15 @@ public class MoveTo extends ActionEvent {
 
 	public void setMoveByMode(boolean m) {
 		this.moveByMode = m;
-		if (original != null) {
+		if (original != null && (startX == -1f && startY == -1f)) {
 			this.startX = original.x();
 			this.startY = original.y();
 		}
-		this.endX = endLocation.x();
-		this.endY = endLocation.y();
+		if (layerPath != null && (endX == -1f && endY == -1f)) {
+			Vector2f end = layerPath.first();
+			this.endX = end.x();
+			this.endY = end.y();
+		}
 	}
 
 	@Override
@@ -182,55 +116,11 @@ public class MoveTo extends ActionEvent {
 			setMoveByMode(true);
 			return;
 		}
-		if (layerMap == null || original == null) {
-			return;
-		}
-		if (!(original.x() == endLocation.x() && original.y() == endLocation.y())) {
-			if (useCache) {
-				synchronized (_PATH_CACHE) {
-					if (_PATH_CACHE.size > LSystem.DEFAULT_MAX_CACHE_SIZE * 10) {
-						_PATH_CACHE.clear();
-					}
-					int key = hashCode();
-					TArray<Vector2f> final_path = _PATH_CACHE.get(key);
-					if (final_path == null) {
-						final_path = AStarFinder.find(heuristic, layerMap,
-								layerMap.pixelsToTilesWidth(startLocation.x()),
-								layerMap.pixelsToTilesHeight(startLocation.y()),
-								layerMap.pixelsToTilesWidth(endLocation.x()),
-								layerMap.pixelsToTilesHeight(endLocation.y()), allDir);
-						_PATH_CACHE.put(key, final_path);
-					}
-					pActorPath = new TArray<Vector2f>();
-					pActorPath.addAll(final_path);
-				}
-			} else {
-				pActorPath = AStarFinder.find(heuristic, layerMap, layerMap.pixelsToTilesWidth(startLocation.x()),
-						layerMap.pixelsToTilesHeight(startLocation.y()), layerMap.pixelsToTilesWidth(endLocation.x()),
-						layerMap.pixelsToTilesHeight(endLocation.y()), allDir);
-
-			}
-		}
 	}
 
 	public void clearPath() {
-		if (pActorPath != null) {
-			synchronized (pActorPath) {
-				if (pActorPath != null) {
-					pActorPath.clear();
-				}
-			}
-			clearPathCache();
-		}
-	}
-
-	public static void clearPathCache() {
-		if (_PATH_CACHE != null) {
-			synchronized (_PATH_CACHE) {
-				if (_PATH_CACHE != null) {
-					_PATH_CACHE.clear();
-				}
-			}
+		if (layerPath != null) {
+			layerPath.clear();
 		}
 	}
 
@@ -241,10 +131,10 @@ public class MoveTo extends ActionEvent {
 		}
 		int hashCode = 1;
 		hashCode = LSystem.unite(hashCode, allDir);
-		hashCode = LSystem.unite(hashCode, layerMap.pixelsToTilesWidth(original.x()));
-		hashCode = LSystem.unite(hashCode, layerMap.pixelsToTilesHeight(original.y()));
-		hashCode = LSystem.unite(hashCode, layerMap.pixelsToTilesWidth(endLocation.x()));
-		hashCode = LSystem.unite(hashCode, layerMap.pixelsToTilesHeight(endLocation.y()));
+		hashCode = LSystem.unite(hashCode, layerMap.pixelsToTilesWidth(startX));
+		hashCode = LSystem.unite(hashCode, layerMap.pixelsToTilesHeight(startY));
+		hashCode = LSystem.unite(hashCode, layerMap.pixelsToTilesWidth(endX));
+		hashCode = LSystem.unite(hashCode, layerMap.pixelsToTilesHeight(endY));
 		hashCode = LSystem.unite(hashCode, layerMap.getWidth());
 		hashCode = LSystem.unite(hashCode, layerMap.getHeight());
 		hashCode = LSystem.unite(hashCode, layerMap.getTileWidth());
@@ -256,20 +146,22 @@ public class MoveTo extends ActionEvent {
 	@Override
 	public ActionEvent start(ActionBind target) {
 		super.start(target);
-		startLocation.set(target.getX(), target.getY());
+		startX = target.getX();
+		startY = target.getY();
+		if (layerPath != null) {
+			Vector2f end = layerPath.first();
+			this.endX = end.x();
+			this.endY = end.y();
+		}
 		return this;
 	}
 
 	public float getStartX() {
-		return startX == 0 ? startLocation.x : startX;
+		return startX;
 	}
 
 	public float getStartY() {
-		return startY == 0 ? startLocation.y : startY;
-	}
-
-	public TArray<Vector2f> getPath() {
-		return pActorPath;
+		return startY;
 	}
 
 	public int getDirection() {
@@ -393,10 +285,10 @@ public class MoveTo extends ActionEvent {
 				}
 			}
 		} else {
-			if (original == null || pActorPath == null || pActorPath.size == 0) {
+			if (original == null || layerPath == null || layerPath.size() == 0) {
 				return;
 			}
-			synchronized (pActorPath) {
+			synchronized (layerPath) {
 				if (synchroLayerField) {
 					if (original != null) {
 						Field2D field = original.getField2D();
@@ -405,31 +297,31 @@ public class MoveTo extends ActionEvent {
 						}
 					}
 				}
-
 				if (endX == startX && endY == startY) {
-					if (pActorPath.size > 1) {
-						Vector2f moveStart = pActorPath.get(0);
-						Vector2f moveEnd = pActorPath.get(1);
+					if (layerPath.size() > 1) {
+						Vector2f moveStart = layerPath.get(0);
+						Vector2f moveEnd = layerPath.get(1);
 						if (layerMap != null) {
 							startX = layerMap.tilesToWidthPixels(moveStart.x());
 							startY = layerMap.tilesToHeightPixels(moveStart.y());
 							endX = layerMap.tilesToWidthPixels(moveEnd.x());
 							endY = layerMap.tilesToHeightPixels(moveEnd.y());
 						} else {
-							startX = moveStart.getX() * original.getWidth();
-							startY = moveStart.getY() * original.getHeight();
-							endX = moveEnd.getX() * original.getWidth();
-							endY = moveEnd.getY() * original.getHeight();
+							startX = moveStart.getX();
+							startY = moveStart.getY();
+							endX = moveEnd.getX();
+							endY = moveEnd.getY();
 						}
 						moveX = moveEnd.x() - moveStart.x();
 						moveY = moveEnd.y() - moveStart.y();
 						updateDirection(moveX, moveY);
 					}
-					pActorPath.removeIndex(0);
+					layerPath.removeIndex(0);
 				}
 
 				newX = original.getX() - offsetX;
 				newY = original.getY() - offsetY;
+
 				switch (direction) {
 				case Field2D.TUP:
 					startY -= speed;
@@ -556,6 +448,7 @@ public class MoveTo extends ActionEvent {
 					}
 					break;
 				}
+
 				if (!checkTileCollision(layerMap, original, newX, newY)) {
 					synchronized (original) {
 						newX += offsetX;
@@ -588,8 +481,6 @@ public class MoveTo extends ActionEvent {
 			CollisionResult.Result result = collisionWorld.move(original, newX, newY, worldCollisionFilter);
 			if ((result.goalX != newX || result.goalY != newY)) {
 				clearPath();
-				endLocation.set(result.goalX, result.goalY);
-				startLocation.set(newX, newY);
 				updatePath();
 				original.setLocation(result.goalX, result.goalY);
 			} else {
@@ -601,9 +492,9 @@ public class MoveTo extends ActionEvent {
 	}
 
 	public Vector2f nextPos() {
-		if (pActorPath != null) {
-			synchronized (pActorPath) {
-				int size = pActorPath.size;
+		if (layerPath != null) {
+			synchronized (layerPath) {
+				int size = layerPath.size();
 				if (size > 0) {
 					pLocation.set(endX, endY);
 				} else {
@@ -621,7 +512,7 @@ public class MoveTo extends ActionEvent {
 		return speed;
 	}
 
-	public MoveTo setSpeed(float speed) {
+	public DefineMoveTo setSpeed(float speed) {
 		this.speed = speed;
 		return this;
 	}
@@ -629,7 +520,7 @@ public class MoveTo extends ActionEvent {
 	@Override
 	public boolean isComplete() {
 		return moveByMode ? _isCompleted
-				: (pActorPath == null || pActorPath.size == 0 || _isCompleted || original == null);
+				: (layerPath == null || layerPath.size() == 0 || _isCompleted || original == null);
 	}
 
 	public boolean isDirectionUpdate() {
@@ -642,14 +533,6 @@ public class MoveTo extends ActionEvent {
 		isDirUpdate = (oldDir != direction);
 	}
 
-	public boolean isUseCache() {
-		return useCache;
-	}
-
-	public void setUseCache(boolean useCache) {
-		this.useCache = useCache;
-	}
-
 	public boolean isSynchroLayerField() {
 		return synchroLayerField;
 	}
@@ -658,50 +541,38 @@ public class MoveTo extends ActionEvent {
 		this.synchroLayerField = syn;
 	}
 
-	public AStarFindHeuristic getHeuristic() {
-		return heuristic;
-	}
-
-	public void setHeuristic(AStarFindHeuristic heuristic) {
-		this.heuristic = heuristic;
-	}
-
 	public float getEndX() {
-		return endX == 0 ? endLocation.x : endX;
+		return endX;
 	}
 
 	public float getEndY() {
-		return endY == 0 ? endLocation.y : endY;
+		return endY;
 	}
 
 	@Override
 	public ActionEvent cpy() {
-		MoveTo move = new MoveTo(layerMap, -1, -1, endLocation.x, endLocation.y, allDir, speed, useCache,
-				synchroLayerField);
-		move.set(this);
-		move.heuristic = this.heuristic;
-		return move;
+		DefineMoveTo defMove = new DefineMoveTo(layerMap, initPath, allDir, speed);
+		defMove.set(this);
+		return defMove;
 	}
 
 	@Override
 	public ActionEvent reverse() {
-		MoveTo move = new MoveTo(layerMap, -1, -1, oldX, oldY, allDir, speed, useCache, synchroLayerField);
-		move.set(this);
-		move.heuristic = this.heuristic;
-		return move;
+		DefineMoveTo defMove = new DefineMoveTo(layerMap, initPath.cpyReverse(), allDir, speed);
+		defMove.set(this);
+		return defMove;
 	}
 
 	@Override
 	public String getName() {
-		return "move";
+		return "defmove";
 	}
 
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue(getName());
-		builder.kv("startLocation", startLocation).comma().kv("endLocation", endLocation).comma()
-				.kv("layerMap", layerMap).comma().kv("direction", direction).comma().kv("speed", speed).comma()
-				.kv("heuristic", heuristic);
+		builder.kv("layerMap", layerMap).comma().kv("layerPath", layerPath).comma().kv("direction", direction).comma()
+				.kv("speed", speed);
 		return builder.toString();
 	}
 

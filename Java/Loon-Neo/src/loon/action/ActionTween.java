@@ -22,6 +22,7 @@ package loon.action;
 
 import loon.LSysException;
 import loon.LSystem;
+import loon.action.map.CustomPath;
 import loon.action.map.Field2D;
 import loon.action.sprite.ISprite;
 import loon.action.sprite.effect.BaseEffect;
@@ -51,7 +52,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		this.funPointsLimit = limit;
 	}
 
-	private static final ActionTweenPool.Callback<ActionTween> poolCallback = new ActionTweenPool.Callback<ActionTween>() {
+	private static final ActionTweenPool.Callback<ActionTween> _POOL_CALLBACK = new ActionTweenPool.Callback<ActionTween>() {
 		@Override
 		public void onPool(ActionTween obj) {
 			obj.reset();
@@ -79,7 +80,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		}
 	};
 
-	private static final ActionTweenPool<ActionTween> pool = new ActionTweenPool<ActionTween>(20, poolCallback) {
+	private static final ActionTweenPool<ActionTween> _POOLS = new ActionTweenPool<ActionTween>(20, _POOL_CALLBACK) {
 		@Override
 		protected ActionTween create() {
 			return new ActionTween();
@@ -98,7 +99,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	 * @return
 	 */
 	public static ActionTween to(ActionBind target, int tweenType, float duration) {
-		ActionTween tween = pool.get();
+		ActionTween tween = _POOLS.get();
 		tween.setup(target, tweenType, duration);
 		tween.ease(Easing.QUAD_INOUT);
 		tween.path(ActionControl.SMOOTH);
@@ -114,7 +115,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	 * @return
 	 */
 	public static ActionTween from(ActionBind target, int tweenType, float duration) {
-		ActionTween tween = pool.get();
+		ActionTween tween = _POOLS.get();
 		tween.setup(target, tweenType, duration);
 		tween.ease(Easing.QUAD_INOUT);
 		tween.path(ActionControl.SMOOTH);
@@ -130,7 +131,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	 * @return
 	 */
 	public static ActionTween set(ActionBind target, int tweenType) {
-		ActionTween tween = pool.get();
+		ActionTween tween = _POOLS.get();
 		tween.setup(target, tweenType, 0);
 		tween.ease(Easing.QUAD_INOUT);
 		return tween;
@@ -143,7 +144,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	 * @return
 	 */
 	public static ActionTween call(ActionCallback callback) {
-		ActionTween tween = pool.get();
+		ActionTween tween = _POOLS.get();
 		tween.setup(null, -1, 0);
 		tween.setCallback(callback);
 		tween.setCallbackTriggers(ActionMode.START);
@@ -156,17 +157,17 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	 * @return
 	 */
 	public static ActionTween mark() {
-		ActionTween tween = pool.get();
+		ActionTween tween = _POOLS.get();
 		tween.setup(null, -1, 0);
 		return tween;
 	}
 
 	public static int getPoolSize() {
-		return pool.size();
+		return _POOLS.size();
 	}
 
 	public static void resize(int minCapacity) {
-		pool.resize(minCapacity);
+		_POOLS.resize(minCapacity);
 	}
 
 	private int type;
@@ -213,6 +214,46 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		return event(new FlashTo(duration, delay, easing));
 	}
 
+	public ActionTween defineMoveTo(CustomPath path) {
+		return defineMoveTo(null, path, true, 8f);
+	}
+
+	public ActionTween defineMoveTo(CustomPath path, boolean flag) {
+		return defineMoveTo(null, path, flag, 8f);
+	}
+
+	public ActionTween defineMoveTo(CustomPath path, boolean flag, float speed) {
+		return defineMoveTo(null, path, flag, speed);
+	}
+
+	public ActionTween defineMoveTo(Field2D map, CustomPath path, boolean flag, float speed) {
+		return defineMoveTo(map, path, flag, speed, null);
+	}
+
+	public ActionTween defineMoveTo(CustomPath path, ActionListener l) {
+		return defineMoveTo(null, path, true, 8f, l);
+	}
+
+	public ActionTween defineMoveTo(CustomPath path, boolean flag, ActionListener l) {
+		return defineMoveTo(null, path, flag, 8f, l);
+	}
+
+	public ActionTween defineMoveTo(CustomPath path, boolean flag, float speed, ActionListener l) {
+		return defineMoveTo(null, path, flag, speed, l);
+	}
+
+	public ActionTween defineMoveTo(Field2D map, CustomPath path, boolean flag, float speed, ActionListener l) {
+		return defineMoveTo(map, path, flag, speed, 0f, 0f, l);
+	}
+
+	public ActionTween defineMoveTo(Field2D map, CustomPath path, boolean flag, float speed, float offsetX,
+			float offsetY, ActionListener l) {
+		DefineMoveTo move = new DefineMoveTo(map, path, flag, speed);
+		move.setDelay(0);
+		move.setOffset(offsetX, offsetY);
+		return event(move, l);
+	}
+
 	public ActionTween moveTo(float endX, float endY) {
 		return moveTo(endX, endY, false, 8);
 	}
@@ -221,11 +262,11 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		return moveTo(endX, endY, false, 8, l);
 	}
 
-	public ActionTween moveTo(float endX, float endY, int speed) {
+	public ActionTween moveTo(float endX, float endY, float speed) {
 		return moveTo(endX, endY, false, speed);
 	}
 
-	public ActionTween moveTo(float endX, float endY, int speed, ActionListener l) {
+	public ActionTween moveTo(float endX, float endY, float speed, ActionListener l) {
 		return moveTo(endX, endY, false, speed, l);
 	}
 
@@ -237,11 +278,11 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		return moveTo(null, endX, endY, flag, 8, 0, 0, l);
 	}
 
-	public ActionTween moveTo(float endX, float endY, boolean flag, int speed) {
+	public ActionTween moveTo(float endX, float endY, boolean flag, float speed) {
 		return moveTo(null, endX, endY, flag, speed, 0, 0, null);
 	}
 
-	public ActionTween moveTo(float endX, float endY, boolean flag, int speed, ActionListener l) {
+	public ActionTween moveTo(float endX, float endY, boolean flag, float speed, ActionListener l) {
 		return moveTo(null, endX, endY, flag, speed, 0, 0, l);
 	}
 
@@ -270,7 +311,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		return moveTo(map, endX, endY, flag, speed, 0, 0, l);
 	}
 
-	public ActionTween moveTo(Field2D map, float endX, float endY, boolean flag, int speed, float offsetX,
+	public ActionTween moveTo(Field2D map, float endX, float endY, boolean flag, float speed, float offsetX,
 			float offsetY, ActionListener l) {
 		if (map != null && map.inside(endX, endY)) {
 			MoveTo move = new MoveTo(map, endX, endY, flag, speed);
@@ -345,7 +386,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		return moveBy(endX, endY, speed, easing, offsetX, offsetY, null);
 	}
 
-	public ActionTween moveBy(float endX, float endY, int speed, EasingMode easing, float offsetX, float offsetY,
+	public ActionTween moveBy(float endX, float endY, float speed, EasingMode easing, float offsetX, float offsetY,
 			ActionListener l) {
 		return event(new MoveBy(endX, endY, speed, easing, offsetX, offsetY), l);
 	}
@@ -1090,7 +1131,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 
 	@Override
 	public void free() {
-		pool.free(this);
+		_POOLS.free(this);
 		ActionControl.get().removeAllActions(_target);
 	}
 

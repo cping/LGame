@@ -21,7 +21,10 @@
 package loon.action.map;
 
 import loon.LRelease;
+import loon.LSystem;
 import loon.geom.Vector2f;
+import loon.utils.StringKeyValue;
+import loon.utils.StringUtils;
 import loon.utils.TArray;
 
 /**
@@ -31,10 +34,31 @@ public class CustomPath implements LRelease {
 
 	private TArray<Vector2f> steps = new TArray<Vector2f>();
 
+	private float scaleX;
+
+	private float scaleY;
+
+	private String name;
+
 	public CustomPath() {
+		this(LSystem.UNKOWN);
 	}
 
-	public int getLength() {
+	public CustomPath(String n) {
+		this(n, 1f);
+	}
+
+	public CustomPath(String n, float scale) {
+		this(n, scale, scale);
+	}
+
+	public CustomPath(String n, float sx, float sy) {
+		this.name = n;
+		this.scaleX = sx;
+		this.scaleY = sy;
+	}
+
+	public int size() {
 		return steps.size;
 	}
 
@@ -42,7 +66,15 @@ public class CustomPath implements LRelease {
 		if (index < 0 || index >= steps.size) {
 			return null;
 		}
-		return steps.get(index);
+		return steps.get(index).mul(scaleX, scaleY);
+	}
+
+	public Vector2f first() {
+		return getStep(0);
+	}
+
+	public Vector2f last() {
+		return getStep(steps.size < 1 ? 0 : steps.size - 1);
 	}
 
 	public Vector2f get(int index) {
@@ -57,12 +89,12 @@ public class CustomPath implements LRelease {
 		return getStep(index).getY();
 	}
 
-	public CustomPath append(int x, int y) {
+	public CustomPath append(float x, float y) {
 		steps.add(new Vector2f(x, y));
 		return this;
 	}
 
-	public CustomPath prepend(int x, int y) {
+	public CustomPath prepend(float x, float y) {
 		steps.add(new Vector2f(x, y));
 		return this;
 	}
@@ -72,22 +104,163 @@ public class CustomPath implements LRelease {
 		return this;
 	}
 
+	public CustomPath removeIndex(int idx) {
+		steps.removeIndex(idx);
+		return this;
+	}
+
 	public Vector2f pop() {
 		return steps.pop();
 	}
 
-	public CustomPath add(Vector2f step) {
-		steps.add(step);
+	public CustomPath reverse() {
+		steps.reverse();
 		return this;
+	}
+
+	public CustomPath add(CustomPath path) {
+		if (path != null) {
+			steps.addAll(path.steps);
+		}
+		return this;
+	}
+
+	public CustomPath addLoop(float startX, float startY, float endX, float endY, int count) {
+		return addLoop(new Vector2f(startX, startY), new Vector2f(endX, endY), count);
+	}
+
+	public CustomPath addLoop(Vector2f start, Vector2f end, int count) {
+		if (start == null || end == null) {
+			return this;
+		}
+		for (int i = 0; i < count; i++) {
+			steps.add(start.cpy());
+			steps.add(end.cpy());
+		}
+		return this;
+	}
+
+	public CustomPath loop(int count) {
+		TArray<Vector2f> tmp = new TArray<Vector2f>();
+		for (int i = 0; i < count; i++) {
+			for (int j = 0; j < steps.size; j++) {
+				Vector2f loc = steps.get(j);
+				if (loc != null) {
+					tmp.add(loc.cpy());
+				}
+			}
+		}
+		steps.clear();
+		steps.addAll(tmp);
+		return this;
+	}
+
+	public CustomPath add(Vector2f... pos) {
+		if (pos == null) {
+			return this;
+		}
+		for (int i = 0; i < pos.length; i++) {
+			Vector2f loc = pos[i];
+			if (loc != null) {
+				steps.add(loc);
+			}
+		}
+		return this;
+	}
+
+	public CustomPath add(Vector2f step) {
+		if (step != null) {
+			steps.add(step);
+		}
+		return this;
+	}
+
+	public CustomPath cpy() {
+		return new CustomPath(this.name, this.scaleX, this.scaleY).add(this);
+	}
+
+	public CustomPath cpyReverse() {
+		return cpy().reverse();
 	}
 
 	public boolean contains(int x, int y) {
 		return steps.contains(new Vector2f(x, y), false);
 	}
 
+	public boolean containsScale(int x, int y) {
+		return steps.contains(new Vector2f(x, y).mul(scaleX, scaleY), false);
+	}
+
+	public CustomPath setScale(float s) {
+		this.scaleX = this.scaleY = s;
+		return this;
+	}
+
+	public float getScaleX() {
+		return scaleX;
+	}
+
+	public CustomPath setScaleX(float scaleX) {
+		this.scaleX = scaleX;
+		return this;
+	}
+
+	public float getScaleY() {
+		return scaleY;
+	}
+
+	public CustomPath setScaleY(float scaleY) {
+		this.scaleY = scaleY;
+		return this;
+	}
+
+	public CustomPath setName(String n) {
+		if (!StringUtils.isEmpty(n)) {
+			this.name = n;
+		}
+		return this;
+	}
+
+	public String getName() {
+		return name;
+	}
+
 	public CustomPath clear() {
 		steps.clear();
 		return this;
+	}
+
+	@Override
+	public boolean equals(Object other) {
+		if (other == null) {
+			return false;
+		}
+		if (other == this) {
+			return true;
+		}
+		if (other instanceof CustomPath) {
+			CustomPath path = (CustomPath) other;
+			return path.scaleX == this.scaleX && path.scaleY == this.scaleY && steps.equals(path.steps);
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = LSystem.unite(result, scaleX);
+		result = LSystem.unite(result, scaleY);
+		result = LSystem.unite(result, steps.hashCode());
+		return prime * result;
+	}
+
+	@Override
+	public String toString() {
+		StringKeyValue builder = new StringKeyValue("CustomPath");
+		builder.kv("name", name).comma().kv("scaleX", scaleX).comma().kv("scaleY", scaleY).comma().kv("steps",
+				steps.toString());
+		return builder.toString();
 	}
 
 	@Override
