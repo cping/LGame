@@ -65,6 +65,7 @@ public class MoveBy extends ActionEvent {
 		this._endX = endX;
 		this._endY = endY;
 		this._speed = speed;
+		this._direction = Field2D.EMPTY;
 		this.offsetX = sx;
 		this.offsetY = sy;
 		this.easeTimer = new EaseTimer(duration, delay, easing);

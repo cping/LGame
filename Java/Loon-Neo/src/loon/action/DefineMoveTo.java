@@ -75,6 +75,7 @@ public class DefineMoveTo extends ActionEvent {
 		}
 		this.allDir = all;
 		this.speed = speed;
+		this.direction = Field2D.EMPTY;
 		if (layerPath == null) {
 			moveByMode = true;
 		}
@@ -317,6 +318,10 @@ public class DefineMoveTo extends ActionEvent {
 						updateDirection(moveX, moveY);
 					}
 					layerPath.removeIndex(0);
+				} else {
+					moveX = endX - startX;
+					moveY = endY - startY;
+					updateDirection(moveX, moveY);
 				}
 
 				newX = original.getX() - offsetX;

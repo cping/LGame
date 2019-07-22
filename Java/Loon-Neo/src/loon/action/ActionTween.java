@@ -42,7 +42,7 @@ import loon.utils.StringKeyValue;
 public class ActionTween extends ActionTweenBase<ActionTween> {
 
 	private float initMoveSpeed = 8f;
-	
+
 	private int combinedAttrsLimit = 3;
 	private int funPointsLimit = 0;
 
@@ -319,7 +319,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		move.setOffset(offsetX, offsetY);
 		return event(move, l);
 	}
-	
+
 	public ActionTween moveTo(float endX, float endY) {
 		return moveTo(endX, endY, false, initMoveSpeed);
 	}
@@ -1028,6 +1028,18 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 			}
 		}
 		return this;
+	}
+
+	public boolean notEvent() {
+		return actionEvents == null || actionEvents.size() == 0;
+	}
+
+	public int countEvent() {
+		return actionEvents == null ? 0 : actionEvents.size();
+	}
+
+	public boolean isRunning() {
+		return (!notEvent() || (this.currentActionEvent != null && !this.currentActionEvent.isComplete()));
 	}
 
 	public ActionEvent getCurrentActionEvent() {

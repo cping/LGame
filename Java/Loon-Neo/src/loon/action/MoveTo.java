@@ -102,6 +102,7 @@ public class MoveTo extends ActionEvent {
 		this.speed = speed;
 		this.useCache = cache;
 		this.synchroLayerField = synField;
+		this.direction = Field2D.EMPTY;
 		if (map == null) {
 			moveByMode = true;
 		}
@@ -426,6 +427,10 @@ public class MoveTo extends ActionEvent {
 						updateDirection(moveX, moveY);
 					}
 					pActorPath.removeIndex(0);
+				} else {
+					moveX = endX - startX;
+					moveY = endY - startY;
+					updateDirection(moveX, moveY);
 				}
 
 				newX = original.getX() - offsetX;

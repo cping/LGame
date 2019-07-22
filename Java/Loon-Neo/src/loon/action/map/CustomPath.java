@@ -205,7 +205,12 @@ public class CustomPath implements LRelease {
 	}
 
 	public CustomPath setScale(float s) {
-		this.scaleX = this.scaleY = s;
+		return setScale(s, s);
+	}
+
+	public CustomPath setScale(float sx, float sy) {
+		this.scaleX = sx;
+		this.scaleY = sy;
 		return this;
 	}
 
