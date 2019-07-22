@@ -425,8 +425,21 @@ public class MoveTo extends ActionEvent {
 						moveX = moveEnd.x() - moveStart.x();
 						moveY = moveEnd.y() - moveStart.y();
 						updateDirection(moveX, moveY);
+					} else if (pActorPath.size == 1) {
+						Vector2f moveEnd = pActorPath.pop();
+						if (layerMap != null) {
+							endX = layerMap.tilesToWidthPixels(moveEnd.x());
+							endY = layerMap.tilesToHeightPixels(moveEnd.y());
+						} else {
+							endX = moveEnd.getX() * original.getWidth();
+							endY = moveEnd.getY() * original.getHeight();
+						}
+						moveX = moveEnd.x() - startX;
+						moveY = moveEnd.y() - startY;
 					}
-					pActorPath.removeIndex(0);
+					if (pActorPath.size > 0) {
+						pActorPath.removeIndex(0);
+					}
 				} else {
 					moveX = endX - startX;
 					moveY = endY - startY;
@@ -679,6 +692,10 @@ public class MoveTo extends ActionEvent {
 		return endY == 0 ? endLocation.y : endY;
 	}
 
+	public boolean isAllDirection() {
+		return allDir;
+	}
+	
 	@Override
 	public ActionEvent cpy() {
 		MoveTo move = new MoveTo(layerMap, -1, -1, endLocation.x, endLocation.y, allDir, speed, useCache,
@@ -709,5 +726,7 @@ public class MoveTo extends ActionEvent {
 				.kv("heuristic", heuristic);
 		return builder.toString();
 	}
+
+
 
 }

@@ -320,60 +320,160 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		return event(move, l);
 	}
 
+	/**
+	 * 移动角色到指定目标
+	 * 
+	 * @param endX
+	 * @param endY
+	 * @return
+	 */
 	public ActionTween moveTo(float endX, float endY) {
 		return moveTo(endX, endY, false, initMoveSpeed);
 	}
 
+	/**
+	 * 移动角色到指定目标并监听
+	 * 
+	 * @param endX
+	 * @param endY
+	 * @param l
+	 * @return
+	 */
 	public ActionTween moveTo(float endX, float endY, ActionListener l) {
 		return moveTo(endX, endY, false, initMoveSpeed, l);
 	}
 
+	/**
+	 * 移动角色到指定目标并指定速度
+	 * 
+	 * @param endX
+	 * @param endY
+	 * @param speed
+	 * @return
+	 */
 	public ActionTween moveTo(float endX, float endY, float speed) {
 		return moveTo(endX, endY, false, speed);
 	}
 
+	/**
+	 * 移动角色到指定目标并指定速度以及监听
+	 * 
+	 * @param endX
+	 * @param endY
+	 * @param speed
+	 * @param l
+	 * @return
+	 */
 	public ActionTween moveTo(float endX, float endY, float speed, ActionListener l) {
 		return moveTo(endX, endY, false, speed, l);
 	}
 
+	/**
+	 * 移动角色到指定目标并设置8方向行走或4方向行走
+	 * 
+	 * @param endX
+	 * @param endY
+	 * @param flag
+	 * @return
+	 */
 	public ActionTween moveTo(float endX, float endY, boolean flag) {
 		return moveTo(null, endX, endY, flag, initMoveSpeed, 0, 0, null);
 	}
 
+	/**
+	 * 移动角色到指定目标并设置8方向行走或4方向行走以及监听
+	 * 
+	 * @param endX
+	 * @param endY
+	 * @param flag
+	 * @param l
+	 * @return
+	 */
 	public ActionTween moveTo(float endX, float endY, boolean flag, ActionListener l) {
 		return moveTo(null, endX, endY, flag, initMoveSpeed, 0, 0, l);
 	}
 
+	/**
+	 * 移动角色到指定目标并设置8方向行走或4方向行走以及移动速度
+	 * 
+	 * @param endX
+	 * @param endY
+	 * @param flag
+	 * @param speed
+	 * @return
+	 */
 	public ActionTween moveTo(float endX, float endY, boolean flag, float speed) {
 		return moveTo(null, endX, endY, flag, speed, 0, 0, null);
 	}
 
+	/**
+	 * 移动角色到指定目标并设置8方向行走或4方向行走以及移动速度并且监听
+	 * 
+	 * @param endX
+	 * @param endY
+	 * @param flag
+	 * @param speed
+	 * @param l
+	 * @return
+	 */
 	public ActionTween moveTo(float endX, float endY, boolean flag, float speed, ActionListener l) {
 		return moveTo(null, endX, endY, flag, speed, 0, 0, l);
 	}
 
+	/**
+	 * 移动角色到指定目标并设置8方向行走或4方向行走以及移动速度并进行位置偏移
+	 * 
+	 * @param endX
+	 * @param endY
+	 * @param flag
+	 * @param offsetX
+	 * @param offsetY
+	 * @return
+	 */
 	public ActionTween moveTo(float endX, float endY, boolean flag, float offsetX, float offsetY) {
 		return moveTo(null, endX, endY, flag, initMoveSpeed, offsetX, offsetY, null);
 	}
 
+	/**
+	 * 移动角色到指定目标并设置8方向行走或4方向行走并进行位置偏移并且监听
+	 *  
+	 * @param endX
+	 * @param endY
+	 * @param flag
+	 * @param offsetX
+	 * @param offsetY
+	 * @param l
+	 * @return
+	 */
 	public ActionTween moveTo(float endX, float endY, boolean flag, float offsetX, float offsetY, ActionListener l) {
 		return moveTo(null, endX, endY, flag, initMoveSpeed, offsetX, offsetY, l);
 	}
 
-	public ActionTween moveTo(float endX, float endY, boolean flag, int speed, float offsetX, float offsetY) {
+	/**
+	 * 移动角色到指定目标并设置8方向行走或4方向行走以及移动速度并进行位置偏移并且监听
+	 * 
+	 * @param endX
+	 * @param endY
+	 * @param flag
+	 * @param speed
+	 * @param offsetX
+	 * @param offsetY
+	 * @return
+	 */
+	public ActionTween moveTo(float endX, float endY, boolean flag, float speed, float offsetX, float offsetY) {
 		return moveTo(null, endX, endY, flag, speed, offsetX, offsetY, null);
 	}
 
-	public ActionTween moveTo(float endX, float endY, boolean flag, int speed, float offsetX, float offsetY,
+	public ActionTween moveTo(float endX, float endY, boolean flag, float speed, float offsetX, float offsetY,
 			ActionListener l) {
 		return moveTo(null, endX, endY, flag, speed, offsetX, offsetY, l);
 	}
 
-	public ActionTween moveTo(Field2D map, float endX, float endY, boolean flag, int speed) {
+	public ActionTween moveTo(Field2D map, float endX, float endY, boolean flag, float speed) {
 		return moveTo(map, endX, endY, flag, speed, 0, 0, null);
 	}
 
-	public ActionTween moveTo(Field2D map, float endX, float endY, boolean flag, int speed, ActionListener l) {
+	public ActionTween moveTo(Field2D map, float endX, float endY, boolean flag, float speed, ActionListener l) {
 		return moveTo(map, endX, endY, flag, speed, 0, 0, l);
 	}
 
@@ -448,7 +548,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		return event(new MoveBy(-1f, -1f, endX, endY, 0, duration, delay, easing, offsetX, offsetY), l);
 	}
 
-	public ActionTween moveBy(float endX, float endY, int speed, EasingMode easing, float offsetX, float offsetY) {
+	public ActionTween moveBy(float endX, float endY, float speed, EasingMode easing, float offsetX, float offsetY) {
 		return moveBy(endX, endY, speed, easing, offsetX, offsetY, null);
 	}
 

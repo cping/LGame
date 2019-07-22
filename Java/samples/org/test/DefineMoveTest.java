@@ -60,7 +60,7 @@ public class DefineMoveTest extends Stage {
 
 		// 构建一个默认的行走路径,并把所有坐标缩放32倍(实际上就是二维坐标转显示坐标)
 		path.add(Vector2f.at(0, 0), Vector2f.at(0, 4), Vector2f.at(0, 6), Vector2f.at(1, 0), Vector2f.at(7, 5),
-				Vector2f.at(5, 5),Vector2f.at(9, 5)).setScale(32);
+				Vector2f.at(5, 5), Vector2f.at(9, 5)).setScale(32);
 
 		// 把上述路径循环操作3次
 		path.loop(3);
@@ -75,8 +75,8 @@ public class DefineMoveTest extends Stage {
 			public void on(float x, float y) {
 				// 如果ball的缓动动画没有运行
 				if (!tween.isRunning()) {
-					// 构建缓动事件自定义移动
-					final DefineMoveTo move = new DefineMoveTo(path);
+					// 构建缓动事件自定义移动(8方向)
+					final DefineMoveTo move = new DefineMoveTo(path, true);
 					// 调用自定义移动事件，并开始执行缓动动画
 					tween.event(move).start().setActionListener(new ActionListener() {
 
@@ -95,32 +95,55 @@ public class DefineMoveTest extends Stage {
 						public void process(ActionBind o) {
 							// 如果缓动事件发生了方向改变
 							if (move.isDirectionUpdate()) {
-								// 转换移动方向到角色动画
-								switch (move.getDirection()) {
-								case Config.TUP:
-									hero.animate("tup");
-									break;
-								case Config.UP:
-									hero.animate("up");
-									break;
-								case Config.TDOWN:
-									hero.animate("tdown");
-									break;
-								case Config.DOWN:
-									hero.animate("down");
-									break;
-								case Config.TLEFT:
-									hero.animate("tleft");
-									break;
-								case Config.LEFT:
-									hero.animate("left");
-									break;
-								case Config.TRIGHT:
-									hero.animate("tright");
-									break;
-								case Config.RIGHT:
-									hero.animate("right");
-									break;
+								// 判定是否全方位(8方向)移动
+								if (move.isAllDirection()) {
+									// 转换移动方向到角色动画(八方向)
+									switch (move.getDirection()) {
+									case Config.TUP:
+										hero.animate("tup");
+										break;
+									case Config.UP:
+										hero.animate("up");
+										break;
+									case Config.TDOWN:
+										hero.animate("tdown");
+										break;
+									case Config.DOWN:
+										hero.animate("down");
+										break;
+									case Config.TLEFT:
+										hero.animate("tleft");
+										break;
+									case Config.LEFT:
+										hero.animate("left");
+										break;
+									case Config.TRIGHT:
+										hero.animate("tright");
+										break;
+									case Config.RIGHT:
+										hero.animate("right");
+										break;
+									}
+								} else {
+									// 转换移动方向到角色动画(四方向)
+									switch (move.getDirection()) {
+									case Config.UP:
+									case Config.TUP:
+										hero.animate("tup");
+										break;
+									case Config.DOWN:
+									case Config.TDOWN:
+										hero.animate("tdown");
+										break;
+									case Config.LEFT:
+									case Config.TLEFT:
+										hero.animate("tleft");
+										break;
+									case Config.RIGHT:
+									case Config.TRIGHT:
+										hero.animate("tright");
+										break;
+									}
 								}
 							}
 						}

@@ -51,18 +51,42 @@ public class DefineMoveTo extends ActionEvent {
 
 	private boolean isDirUpdate = false;
 
+	/**
+	 * 使用自定义路径移动
+	 * 
+	 * @param path
+	 */
 	public DefineMoveTo(final CustomPath path) {
 		this(null, path, true);
 	}
 
+	/**
+	 * 使用自定义路径移动,并设置移动速度
+	 * 
+	 * @param path
+	 * @param speed
+	 */
 	public DefineMoveTo(final CustomPath path, final float speed) {
 		this(null, path, true, speed);
 	}
 
+	/**
+	 * 使用自定义路径移动,并设置8方向或4方向移动
+	 * 
+	 * @param path
+	 * @param all
+	 */
 	public DefineMoveTo(final CustomPath path, final boolean all) {
 		this(null, path, all);
 	}
 
+	/**
+	 * 注入二维数组地图,使用自定义路径移动,并设置8方向或4方向移动
+	 * 
+	 * @param map
+	 * @param path
+	 * @param all
+	 */
 	public DefineMoveTo(final Field2D map, final CustomPath path, final boolean all) {
 		this(map, path, all, _INIT_MOVE_SPEED);
 	}
@@ -316,8 +340,21 @@ public class DefineMoveTo extends ActionEvent {
 						moveX = moveEnd.x() - moveStart.x();
 						moveY = moveEnd.y() - moveStart.y();
 						updateDirection(moveX, moveY);
+					} else if (layerPath.size() == 1) {
+						Vector2f moveEnd = layerPath.pop();
+						if (layerMap != null) {
+							endX = layerMap.tilesToWidthPixels(moveEnd.x());
+							endY = layerMap.tilesToHeightPixels(moveEnd.y());
+						} else {
+							endX = moveEnd.getX();
+							endY = moveEnd.getY();
+						}
+						moveX = moveEnd.x() - startX;
+						moveY = moveEnd.y() - startY;
 					}
-					layerPath.removeIndex(0);
+					if (layerPath.size() > 0) {
+						layerPath.removeIndex(0);
+					}
 				} else {
 					moveX = endX - startX;
 					moveY = endY - startY;
@@ -628,6 +665,10 @@ public class DefineMoveTo extends ActionEvent {
 		return endY;
 	}
 
+	public boolean isAllDirection() {
+		return allDir;
+	}
+	
 	@Override
 	public ActionEvent cpy() {
 		DefineMoveTo defMove = new DefineMoveTo(layerMap, initPath, allDir, speed);

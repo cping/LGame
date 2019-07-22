@@ -204,6 +204,10 @@ public class CustomPath implements LRelease {
 		return steps.contains(new Vector2f(x, y).mul(scaleX, scaleY), false);
 	}
 
+	public boolean isScale() {
+		return scaleX != 1f && scaleY != 1f;
+	}
+
 	public CustomPath setScale(float s) {
 		return setScale(s, s);
 	}
