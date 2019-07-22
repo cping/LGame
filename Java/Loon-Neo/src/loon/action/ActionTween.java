@@ -41,6 +41,8 @@ import loon.utils.StringKeyValue;
 
 public class ActionTween extends ActionTweenBase<ActionTween> {
 
+	private float initMoveSpeed = 8f;
+	
 	private int combinedAttrsLimit = 3;
 	private int funPointsLimit = 0;
 
@@ -214,52 +216,116 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		return event(new FlashTo(duration, delay, easing));
 	}
 
+	/**
+	 * 按照指定路径移动
+	 * 
+	 * @param path
+	 * @return
+	 */
 	public ActionTween defineMoveTo(CustomPath path) {
-		return defineMoveTo(null, path, true, 8f);
+		return defineMoveTo(null, path, true, initMoveSpeed);
 	}
 
-	public ActionTween defineMoveTo(CustomPath path, boolean flag) {
-		return defineMoveTo(null, path, flag, 8f);
+	/**
+	 * 按照指定路径移动,并选择是八方向走法或四方向走法
+	 * 
+	 * @param path
+	 * @param flag
+	 * @return
+	 */
+	public ActionTween defineMoveTo(CustomPath path, boolean all) {
+		return defineMoveTo(null, path, all, initMoveSpeed);
 	}
 
-	public ActionTween defineMoveTo(CustomPath path, boolean flag, float speed) {
-		return defineMoveTo(null, path, flag, speed);
+	/**
+	 * 按照指定路径移动,并选择是八方向走法或四方向走法,以及移动速度
+	 * 
+	 * @param path
+	 * @param all
+	 * @param speed
+	 * @return
+	 */
+	public ActionTween defineMoveTo(CustomPath path, boolean all, float speed) {
+		return defineMoveTo(null, path, all, speed);
 	}
 
-	public ActionTween defineMoveTo(Field2D map, CustomPath path, boolean flag, float speed) {
-		return defineMoveTo(map, path, flag, speed, null);
+	/**
+	 * 在地址的二维数组地图上,按照指定路径移动,并选择是八方向走法或四方向走法
+	 * 
+	 * @param map
+	 * @param path
+	 * @param all
+	 * @param speed
+	 * @return
+	 */
+	public ActionTween defineMoveTo(Field2D map, CustomPath path, boolean all, float speed) {
+		return defineMoveTo(map, path, all, speed, null);
 	}
 
+	/**
+	 * 按照指定路径移动,并选择监听器
+	 * 
+	 * @param path
+	 * @param l
+	 * @return
+	 */
 	public ActionTween defineMoveTo(CustomPath path, ActionListener l) {
-		return defineMoveTo(null, path, true, 8f, l);
+		return defineMoveTo(null, path, true, initMoveSpeed, l);
 	}
 
-	public ActionTween defineMoveTo(CustomPath path, boolean flag, ActionListener l) {
-		return defineMoveTo(null, path, flag, 8f, l);
+	/**
+	 * 按照指定路径移动,并选择是八方向走法或四方向走法以及监听器
+	 * 
+	 * @param path
+	 * @param all
+	 * @param l
+	 * @return
+	 */
+	public ActionTween defineMoveTo(CustomPath path, boolean all, ActionListener l) {
+		return defineMoveTo(null, path, all, initMoveSpeed, l);
 	}
 
-	public ActionTween defineMoveTo(CustomPath path, boolean flag, float speed, ActionListener l) {
-		return defineMoveTo(null, path, flag, speed, l);
+	/**
+	 * 按照指定路径移动,并选择是八方向走法或四方向走法以及速度和监听器
+	 * 
+	 * @param path
+	 * @param all
+	 * @param speed
+	 * @param l
+	 * @return
+	 */
+	public ActionTween defineMoveTo(CustomPath path, boolean all, float speed, ActionListener l) {
+		return defineMoveTo(null, path, all, speed, l);
 	}
 
-	public ActionTween defineMoveTo(Field2D map, CustomPath path, boolean flag, float speed, ActionListener l) {
-		return defineMoveTo(map, path, flag, speed, 0f, 0f, l);
+	/**
+	 * 在指定的二维数组地图上,按照指定路径移动,并选择是八方向走法或四方向走法以及速度和监听器
+	 * 
+	 * @param map
+	 * @param path
+	 * @param all
+	 * @param speed
+	 * @param l
+	 * @return
+	 */
+	public ActionTween defineMoveTo(Field2D map, CustomPath path, boolean all, float speed, ActionListener l) {
+		return defineMoveTo(map, path, all, speed, 0f, 0f, l);
 	}
 
-	public ActionTween defineMoveTo(Field2D map, CustomPath path, boolean flag, float speed, float offsetX,
+	public ActionTween defineMoveTo(Field2D map, CustomPath path, boolean all, float speed, float offsetX,
 			float offsetY, ActionListener l) {
-		DefineMoveTo move = new DefineMoveTo(map, path, flag, speed);
+		DefineMoveTo move = new DefineMoveTo(map, path, all, speed);
 		move.setDelay(0);
 		move.setOffset(offsetX, offsetY);
 		return event(move, l);
 	}
-
+	
 	public ActionTween moveTo(float endX, float endY) {
-		return moveTo(endX, endY, false, 8);
+		return moveTo(endX, endY, false, initMoveSpeed);
 	}
 
 	public ActionTween moveTo(float endX, float endY, ActionListener l) {
-		return moveTo(endX, endY, false, 8, l);
+		return moveTo(endX, endY, false, initMoveSpeed, l);
 	}
 
 	public ActionTween moveTo(float endX, float endY, float speed) {
@@ -271,11 +337,11 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	}
 
 	public ActionTween moveTo(float endX, float endY, boolean flag) {
-		return moveTo(null, endX, endY, flag, 8, 0, 0, null);
+		return moveTo(null, endX, endY, flag, initMoveSpeed, 0, 0, null);
 	}
 
 	public ActionTween moveTo(float endX, float endY, boolean flag, ActionListener l) {
-		return moveTo(null, endX, endY, flag, 8, 0, 0, l);
+		return moveTo(null, endX, endY, flag, initMoveSpeed, 0, 0, l);
 	}
 
 	public ActionTween moveTo(float endX, float endY, boolean flag, float speed) {
@@ -287,11 +353,11 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	}
 
 	public ActionTween moveTo(float endX, float endY, boolean flag, float offsetX, float offsetY) {
-		return moveTo(null, endX, endY, flag, 8, offsetX, offsetY, null);
+		return moveTo(null, endX, endY, flag, initMoveSpeed, offsetX, offsetY, null);
 	}
 
 	public ActionTween moveTo(float endX, float endY, boolean flag, float offsetX, float offsetY, ActionListener l) {
-		return moveTo(null, endX, endY, flag, 8, offsetX, offsetY, l);
+		return moveTo(null, endX, endY, flag, initMoveSpeed, offsetX, offsetY, l);
 	}
 
 	public ActionTween moveTo(float endX, float endY, boolean flag, int speed, float offsetX, float offsetY) {
@@ -357,18 +423,18 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	}
 
 	public ActionTween moveBy(float endX, float endY) {
-		return moveBy(endX, endY, 8);
+		return moveBy(endX, endY, initMoveSpeed);
 	}
 
 	public ActionTween moveBy(float endX, float endY, ActionListener l) {
-		return moveBy(endX, endY, 8, l);
+		return moveBy(endX, endY, initMoveSpeed, l);
 	}
 
-	public ActionTween moveBy(float endX, float endY, int speed) {
+	public ActionTween moveBy(float endX, float endY, float speed) {
 		return event(new MoveBy(endX, endY, speed), null);
 	}
 
-	public ActionTween moveBy(float endX, float endY, int speed, ActionListener l) {
+	public ActionTween moveBy(float endX, float endY, float speed, ActionListener l) {
 		return event(new MoveBy(endX, endY, speed), l);
 	}
 
@@ -1286,6 +1352,15 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	@Override
 	protected boolean containsTarget(ActionBind target, int tweenType) {
 		return this._target == target && this.type == tweenType;
+	}
+
+	public float getInitMoveSpeed() {
+		return initMoveSpeed;
+	}
+
+	public ActionTween setInitMoveSpeed(float initMoveSpeed) {
+		this.initMoveSpeed = initMoveSpeed;
+		return this;
 	}
 
 	@Override

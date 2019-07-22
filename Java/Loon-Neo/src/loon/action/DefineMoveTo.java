@@ -322,131 +322,205 @@ public class DefineMoveTo extends ActionEvent {
 				newX = original.getX() - offsetX;
 				newY = original.getY() - offsetY;
 
-				switch (direction) {
-				case Field2D.TUP:
-					startY -= speed;
-					newY -= speed;
-					if (startY < endY) {
-						startY = endY;
+				if (allDir) {
+					switch (direction) {
+					case Field2D.TUP:
+						startY -= speed;
+						newY -= speed;
+						if (startY < endY) {
+							startY = endY;
+						}
+						if (newY < endY) {
+							newY = endY;
+							isMoved = false;
+						}
+						break;
+					case Field2D.TDOWN:
+						startY += speed;
+						newY += speed;
+						if (startY > endY) {
+							startY = endY;
+						}
+						if (newY > endY) {
+							newY = endY;
+							isMoved = false;
+						}
+						break;
+					case Field2D.TLEFT:
+						startX -= speed;
+						newX -= speed;
+						if (startX < endX) {
+							startX = endX;
+						}
+						if (newX < endX) {
+							newX = endX;
+							isMoved = false;
+						}
+						break;
+					case Field2D.TRIGHT:
+						startX += speed;
+						newX += speed;
+						if (startX > endX) {
+							startX = endX;
+						}
+						if (newX > endX) {
+							newX = endX;
+							isMoved = false;
+						}
+						break;
+					case Field2D.UP:
+						startX += speed;
+						startY -= speed;
+						newX += speed;
+						newY -= speed;
+						if (startX > endX) {
+							startX = endX;
+						}
+						if (startY < endY) {
+							startY = endY;
+						}
+						if (newX > endX) {
+							newX = endX;
+							isMoved = false;
+						}
+						if (newY < endY) {
+							newY = endY;
+							isMoved = false;
+						}
+						break;
+					case Field2D.DOWN:
+						startX -= speed;
+						startY += speed;
+						newX -= speed;
+						newY += speed;
+						if (startX < endX) {
+							startX = endX;
+						}
+						if (startY > endY) {
+							startY = endY;
+						}
+						if (newX < endX) {
+							newX = endX;
+							isMoved = false;
+						}
+						if (newY > endY) {
+							newY = endY;
+							isMoved = false;
+						}
+						break;
+					case Field2D.LEFT:
+						startX -= speed;
+						startY -= speed;
+						newX -= speed;
+						newY -= speed;
+						if (startX < endX) {
+							startX = endX;
+						}
+						if (startY < endY) {
+							startY = endY;
+						}
+						if (newX < endX) {
+							newX = endX;
+							isMoved = false;
+						}
+						if (newY < endY) {
+							newY = endY;
+							isMoved = false;
+						}
+						break;
+					case Field2D.RIGHT:
+						startX += speed;
+						startY += speed;
+						newX += speed;
+						newY += speed;
+						if (startX > endX) {
+							startX = endX;
+						}
+						if (startY > endY) {
+							startY = endY;
+						}
+						if (newX > endX) {
+							newX = endX;
+							isMoved = false;
+						}
+						if (newY > endY) {
+							newY = endY;
+							isMoved = false;
+						}
+						break;
 					}
-					if (newY < endY) {
-						newY = endY;
-						isMoved = false;
+				} else {
+					switch (direction) {
+					case Field2D.TUP:
+					case Field2D.UP:
+						startY -= speed;
+						newY -= speed;
+						if (startY < endY) {
+							startY = endY;
+						}
+						if (newY < endY) {
+							newY = endY;
+							isMoved = false;
+						}
+						break;
+					case Field2D.TDOWN:
+					case Field2D.DOWN:
+						startY += speed;
+						newY += speed;
+						if (startY > endY) {
+							startY = endY;
+						}
+						if (newY > endY) {
+							newY = endY;
+							isMoved = false;
+						}
+						break;
+					case Field2D.TLEFT:
+					case Field2D.LEFT:
+						startX -= speed;
+						newX -= speed;
+						if (startX < endX) {
+							startX = endX;
+						}
+						if (newX < endX) {
+							newX = endX;
+							isMoved = false;
+						}
+						break;
+					case Field2D.TRIGHT:
+					case Field2D.RIGHT:
+						startX += speed;
+						newX += speed;
+						if (startX > endX) {
+							startX = endX;
+						}
+						if (newX > endX) {
+							newX = endX;
+							isMoved = false;
+						}
+						break;
 					}
-					break;
-				case Field2D.TDOWN:
-					startY += speed;
-					newY += speed;
-					if (startY > endY) {
-						startY = endY;
+					if (!isMoved) {
+						float offV = 0f;
+						if (endX != startX) {
+							offV = (endX - startX);
+							if (offV > 0) {
+								direction = Field2D.TLEFT;
+							}
+							if (offV < 0) {
+								direction = Field2D.TRIGHT;
+							}
+						}
+						if (endY != startY) {
+							offV = (endY - startY);
+							if (offV > 0) {
+								direction = Field2D.TDOWN;
+							}
+							if (offV < 0) {
+								direction = Field2D.TUP;
+							}
+						}
 					}
-					if (newY > endY) {
-						newY = endY;
-						isMoved = false;
-					}
-					break;
-				case Field2D.TLEFT:
-					startX -= speed;
-					newX -= speed;
-					if (startX < endX) {
-						startX = endX;
-					}
-					if (newX < endX) {
-						newX = endX;
-						isMoved = false;
-					}
-					break;
-				case Field2D.TRIGHT:
-					startX += speed;
-					newX += speed;
-					if (startX > endX) {
-						startX = endX;
-					}
-					if (newX > endX) {
-						newX = endX;
-						isMoved = false;
-					}
-					break;
-				case Field2D.UP:
-					startX += speed;
-					startY -= speed;
-					newX += speed;
-					newY -= speed;
-					if (startX > endX) {
-						startX = endX;
-					}
-					if (startY < endY) {
-						startY = endY;
-					}
-					if (newX > endX) {
-						newX = endX;
-						isMoved = false;
-					}
-					if (newY < endY) {
-						newY = endY;
-						isMoved = false;
-					}
-					break;
-				case Field2D.DOWN:
-					startX -= speed;
-					startY += speed;
-					newX -= speed;
-					newY += speed;
-					if (startX < endX) {
-						startX = endX;
-					}
-					if (startY > endY) {
-						startY = endY;
-					}
-					if (newX < endX) {
-						newX = endX;
-						isMoved = false;
-					}
-					if (newY > endY) {
-						newY = endY;
-						isMoved = false;
-					}
-					break;
-				case Field2D.LEFT:
-					startX -= speed;
-					startY -= speed;
-					newX -= speed;
-					newY -= speed;
-					if (startX < endX) {
-						startX = endX;
-					}
-					if (startY < endY) {
-						startY = endY;
-					}
-					if (newX < endX) {
-						newX = endX;
-						isMoved = false;
-					}
-					if (newY < endY) {
-						newY = endY;
-						isMoved = false;
-					}
-					break;
-				case Field2D.RIGHT:
-					startX += speed;
-					startY += speed;
-					newX += speed;
-					newY += speed;
-					if (startX > endX) {
-						startX = endX;
-					}
-					if (startY > endY) {
-						startY = endY;
-					}
-					if (newX > endX) {
-						newX = endX;
-						isMoved = false;
-					}
-					if (newY > endY) {
-						newY = endY;
-						isMoved = false;
-					}
-					break;
 				}
 
 				if (!checkTileCollision(layerMap, original, newX, newY)) {
