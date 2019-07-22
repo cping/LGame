@@ -168,6 +168,19 @@ public class CustomPath implements LRelease {
 		return this;
 	}
 
+	public CustomPath add(TArray<Vector2f> v) {
+		if (v == null) {
+			return this;
+		}
+		for (int i = 0; i < v.size; i++) {
+			Vector2f loc = v.get(i);
+			if (loc != null) {
+				steps.add(loc);
+			}
+		}
+		return this;
+	}
+
 	public CustomPath add(Vector2f step) {
 		if (step != null) {
 			steps.add(step);

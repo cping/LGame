@@ -505,10 +505,10 @@ public class DefineMoveTo extends ActionEvent {
 						if (endX != startX) {
 							offV = (endX - startX);
 							if (offV > 0) {
-								direction = Field2D.TLEFT;
+								direction = Field2D.TRIGHT;
 							}
 							if (offV < 0) {
-								direction = Field2D.TRIGHT;
+								direction = Field2D.TLEFT;
 							}
 						}
 						if (endY != startY) {
