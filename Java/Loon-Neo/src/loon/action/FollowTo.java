@@ -190,6 +190,30 @@ public class FollowTo extends ActionEvent {
 		this._velocityY = vy;
 	}
 
+	public ActionBind getFollow() {
+		return _actorToFollow;
+	}
+
+	public boolean isStarted() {
+		return _started;
+	}
+
+	public float getNewX() {
+		return _newX;
+	}
+
+	public float getNewY() {
+		return _newY;
+	}
+
+	public float getFollowDistance() {
+		return _followDistance;
+	}
+
+	public float getSpeed() {
+		return _speed;
+	}
+
 	@Override
 	public boolean isComplete() {
 		return _isCompleted;

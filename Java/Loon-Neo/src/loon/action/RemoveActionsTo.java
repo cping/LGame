@@ -48,6 +48,10 @@ public class RemoveActionsTo extends ActionEvent {
 		this._isCompleted = true;
 	}
 
+	public ActionBind getRemoveBind() {
+		return _removeBind;
+	}
+	
 	@Override
 	public void onLoad() {
 		if (_removeBind == null) {

@@ -663,10 +663,18 @@ public class DefineMoveTo extends ActionEvent {
 		return moveX;
 	}
 
-	public float geetMoveY() {
+	public float getMoveY() {
 		return moveY;
 	}
 
+	public boolean isMoved() {
+		return isMoved;
+	}
+
+	public boolean isMoveByMode() {
+		return moveByMode;
+	}
+	
 	public float getEndX() {
 		return endX;
 	}

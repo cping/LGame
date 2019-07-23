@@ -41,6 +41,10 @@ public class DelayTo extends ActionEvent {
 		}
 	}
 
+	public float getTimeDelay() {
+		return delay;
+	}
+	
 	@Override
 	public void onLoad() {
 
@@ -74,4 +78,6 @@ public class DelayTo extends ActionEvent {
 		builder.kv("delay", timer);
 		return builder.toString();
 	}
+
+
 }

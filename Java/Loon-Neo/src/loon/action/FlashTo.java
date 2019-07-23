@@ -70,6 +70,10 @@ public class FlashTo extends ActionEvent {
 		}
 	}
 
+	public float getInterval() {
+		return interval;
+	}
+	
 	@Override
 	public void onLoad() {
 

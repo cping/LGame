@@ -176,6 +176,42 @@ public class MoveOvalTo extends ActionEvent {
 				this.startPoint.y + offsetY);
 	}
 
+	public float getAngle() {
+		return angle;
+	}
+
+	public float getStartAngle() {
+		return startAngle;
+	}
+
+	public float getWidth() {
+		return width;
+	}
+
+	public float getHeight() {
+		return height;
+	}
+
+	public float getRotateScale() {
+		return rotateScale;
+	}
+
+	public float getCurrentPosX() {
+		return currentPosX;
+	}
+
+	public float getPer() {
+		return per;
+	}
+
+	public int getDirectionX() {
+		return directionX;
+	}
+
+	public int getDirectionY() {
+		return directionY;
+	}
+	
 	@Override
 	public void onLoad() {
 		if (startPoint == null || startPoint.getX() == -1

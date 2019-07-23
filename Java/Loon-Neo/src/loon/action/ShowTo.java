@@ -38,6 +38,10 @@ public class ShowTo extends ActionEvent {
 		}
 	}
 
+	public boolean isVisible() {
+		return visible;
+	}
+	
 	@Override
 	public void onLoad() {
 
@@ -73,4 +77,5 @@ public class ShowTo extends ActionEvent {
 		builder.kv("visible", visible);
 		return builder.toString();
 	}
+
 }

@@ -171,6 +171,22 @@ public class MoveBy extends ActionEvent {
 		return this;
 	}
 
+	public float getStartX() {
+		return _startX;
+	}
+
+	public float getStartY() {
+		return _startY;
+	}
+
+	public float getEndX() {
+		return _endX;
+	}
+
+	public float getEndY() {
+		return _endY;
+	}
+
 	@Override
 	public boolean isComplete() {
 		return _isCompleted;

@@ -119,11 +119,11 @@ public abstract class ActionEvent {
 
 	public abstract boolean isComplete();
 
-	public Object getTag() {
+	public final Object getTag() {
 		return tag;
 	}
 
-	public ActionEvent setTag(Object tag) {
+	public final ActionEvent setTag(Object tag) {
 		this.tag = tag;
 		return this;
 	}
@@ -181,11 +181,11 @@ public abstract class ActionEvent {
 		return this;
 	}
 
-	public void movePos(float x, float y) {
+	public final void movePos(float x, float y) {
 		movePos(x, y, -1f, -1f);
 	}
 
-	public void movePos(float x, float y, float lastX, float lastY) {
+	public final void movePos(float x, float y, float lastX, float lastY) {
 		if (original == null) {
 			return;
 		}
@@ -208,22 +208,38 @@ public abstract class ActionEvent {
 		}
 	}
 
-	public CollisionFilter getCollisionFilter() {
+	public final CollisionFilter getCollisionFilter() {
 		return worldCollisionFilter;
 	}
 
-	public void setCollisionFilter(CollisionFilter filter) {
+	public final void setCollisionFilter(CollisionFilter filter) {
 		this.worldCollisionFilter = filter;
 	}
 
-	public CollisionWorld getCollisionWorld() {
+	public final CollisionWorld getCollisionWorld() {
 		return collisionWorld;
 	}
 
-	public void setCollisionWorld(CollisionWorld world) {
+	public final void setCollisionWorld(CollisionWorld world) {
 		this.collisionWorld = world;
 	}
 
+	public final boolean isFirstTick() {
+		return firstTick;
+	}
+
+	public final boolean isInit() {
+		return isInit;
+	}
+
+	public final float getOldX() {
+		return oldX;
+	}
+
+	public final float getOldY() {
+		return oldY;
+	}
+	
 	public abstract ActionEvent cpy();
 
 	public abstract ActionEvent reverse();
@@ -237,4 +253,5 @@ public abstract class ActionEvent {
 				.comma().kv("tag", tag);
 		return builder.toString();
 	}
+
 }

@@ -108,6 +108,14 @@ public class BezierBy extends ActionEvent {
 		return this;
 	}
 
+	public float getStartX() {
+		return startX;
+	}
+
+	public float getStartY() {
+		return startY;
+	}
+	
 	@Override
 	public String getName() {
 		return "bezierby";
@@ -125,4 +133,5 @@ public class BezierBy extends ActionEvent {
 		.kv("EaseTimer", easeTimer);
 		return builder.toString();
 	}
+
 }

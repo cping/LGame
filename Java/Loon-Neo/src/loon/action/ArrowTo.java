@@ -138,7 +138,7 @@ public class ArrowTo extends ActionEvent {
 		synchronized (original) {
 			float slope = vy / vx;
 			float theta = MathUtils.atan(slope);
-			original.setRotation(theta * MathUtils.RAD_TO_DEG);
+			original.setRotation(MathUtils.toDegrees(theta));
 			movePos(currentX + offsetX, currentY + offsetY);
 		}
 	}
@@ -147,6 +147,46 @@ public class ArrowTo extends ActionEvent {
 		return dir;
 	}
 
+	public float getGravity() {
+		return gravity;
+	}
+
+	public float getStartX() {
+		return startX;
+	}
+
+	public float getStartY() {
+		return startY;
+	}
+
+	public float getEndX() {
+		return endX;
+	}
+
+	public float getEndY() {
+		return endY;
+	}
+
+	public float getCurrentX() {
+		return currentX;
+	}
+
+	public float getCurrentY() {
+		return currentY;
+	}
+
+	public float getVx() {
+		return vx;
+	}
+
+	public float getVy() {
+		return vy;
+	}
+
+	public float getSpeed() {
+		return speed;
+	}
+	
 	@Override
 	public ActionEvent cpy() {
 		ArrowTo arrow = new ArrowTo(startX, startY, endX, endY, speed, gravity,
@@ -188,4 +228,5 @@ public class ArrowTo extends ActionEvent {
 		.kv("EaseTimer",easeTimer);
 		return builder.toString();
 	}
+
 }

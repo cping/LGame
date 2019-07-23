@@ -103,6 +103,30 @@ public class ScaleTo extends ActionEvent {
 		}
 	}
 
+	public float getDeltaX() {
+		return deltaX;
+	}
+
+	public float getDeltaY() {
+		return deltaY;
+	}
+
+	public float getStartX() {
+		return startX;
+	}
+
+	public float getStartY() {
+		return startY;
+	}
+
+	public float getEndX() {
+		return endX;
+	}
+
+	public float getEndY() {
+		return endY;
+	}
+	
 	@Override
 	public ActionEvent cpy() {
 		ScaleTo scale = new ScaleTo(startX, startY, endX, endY, speed);
@@ -142,4 +166,5 @@ public class ScaleTo extends ActionEvent {
 		.kv("delta", dt);
 		return builder.toString();
 	}
+
 }

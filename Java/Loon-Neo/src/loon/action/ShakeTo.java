@@ -81,6 +81,30 @@ public class ShakeTo extends ActionEvent {
 		}
 	}
 
+	public float getShakeX() {
+		return shakeX;
+	}
+
+	public float getShakeY() {
+		return shakeY;
+	}
+
+	public float getOldShakeX() {
+		return oldShakeX;
+	}
+
+	public float getOldShakeY() {
+		return oldShakeY;
+	}
+
+	public float getStartOffsetX() {
+		return startOffsetX;
+	}
+
+	public float getStartOffsetY() {
+		return startOffsetY;
+	}
+	
 	@Override
 	public void onLoad() {
 		if (original != null) {
@@ -128,4 +152,5 @@ public class ShakeTo extends ActionEvent {
 		.kv("EaseTimer", easeTimer);
 		return builder.toString();
 	}
+
 }

@@ -94,6 +94,18 @@ public class FadeTo extends ActionEvent {
 		}
 	}
 
+	public float getTime() {
+		return time;
+	}
+
+	public float getCurrentFrame() {
+		return currentFrame;
+	}
+
+	public int getType() {
+		return type;
+	}
+
 	@Override
 	public ActionEvent cpy() {
 		FadeTo fade = new FadeTo(type, time);
@@ -127,4 +139,5 @@ public class FadeTo extends ActionEvent {
 		builder.kv("speed", time).comma().kv("currentFrame", currentFrame);
 		return builder.toString();
 	}
+
 }

@@ -40,6 +40,10 @@ public class FlipYTo extends ActionEvent {
 		}
 	}
 
+	public boolean isFlipY() {
+		return flipY;
+	}
+	
 	@Override
 	public void onLoad() {
 

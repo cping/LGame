@@ -40,6 +40,10 @@ public class FlipXTo extends ActionEvent {
 		}
 	}
 
+	public boolean isFlipX() {
+		return flipX;
+	}
+	
 	@Override
 	public void onLoad() {
 
@@ -75,4 +79,5 @@ public class FlipXTo extends ActionEvent {
 		builder.kv("flipX", flipX);
 		return builder.toString();
 	}
+
 }

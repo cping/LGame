@@ -130,6 +130,54 @@ public class TransformTo extends ActionEvent {
 		}
 	}
 
+	public float getNewX() {
+		return newX;
+	}
+
+	public float getNewY() {
+		return newY;
+	}
+
+	public float getNewScaleX() {
+		return newScaleX;
+	}
+
+	public float getNewScaleY() {
+		return newScaleY;
+	}
+
+	public float getNewRotation() {
+		return newRotation;
+	}
+
+	public float getNewAlpha() {
+		return newAlpha;
+	}
+
+	public LColor getNewColor() {
+		return newColor.cpy();
+	}
+
+	public float getOldScaleX() {
+		return oldScaleX;
+	}
+
+	public float getOldScaleY() {
+		return oldScaleY;
+	}
+
+	public float getOldRotation() {
+		return oldRotation;
+	}
+
+	public float getOldAlpha() {
+		return oldAlpha;
+	}
+
+	public LColor getOldColor() {
+		return oldColor.cpy();
+	}
+	
 	@Override
 	public boolean isComplete() {
 		return _isCompleted;

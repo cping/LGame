@@ -194,6 +194,62 @@ public class ColorTo extends ActionEvent {
 		return color;
 	}
 
+	public float getStartRed() {
+		return startRed;
+	}
+
+	public float getStartGreen() {
+		return startGreen;
+	}
+
+	public float getStartBlue() {
+		return startBlue;
+	}
+
+	public float getStartAlpha() {
+		return startAlpha;
+	}
+
+	public float getSlopeRed() {
+		return slopeRed;
+	}
+
+	public float getSlopeGreen() {
+		return slopeGreen;
+	}
+
+	public float getSlopeBlue() {
+		return slopeBlue;
+	}
+
+	public float getSlopeAlpha() {
+		return slopeAlpha;
+	}
+
+	public float getEndRed() {
+		return endRed;
+	}
+
+	public float getEndGreen() {
+		return endGreen;
+	}
+
+	public float getEndBlue() {
+		return endBlue;
+	}
+
+	public float getEndAlpha() {
+		return endAlpha;
+	}
+
+	public LColor getStart() {
+		return start.cpy();
+	}
+
+	public LColor getEnd() {
+		return end.cpy();
+	}
+	
 	@Override
 	public String getName() {
 		return "color";
@@ -209,4 +265,5 @@ public class ColorTo extends ActionEvent {
 		.kv("EaseTimer", easeTimer);
 		return builder.toString();
 	}
+
 }

@@ -29,9 +29,9 @@ public class CircleTo extends ActionEvent {
 
 	private float y;
 
-	private float cx = -1;
+	private float startX = -1;
 
-	private float cy = -1;
+	private float startY = -1;
 
 	private int radius;
 
@@ -49,8 +49,8 @@ public class CircleTo extends ActionEvent {
 			float speed) {
 		this.radius = radius;
 		this.velocity = velocity;
-		this.cx = centerX;
-		this.cy = centerY;
+		this.startX = centerX;
+		this.startY = centerY;
 		this.speed = speed;
 	}
 
@@ -70,37 +70,58 @@ public class CircleTo extends ActionEvent {
 		return this.speed;
 	}
 
+	@Override
 	public boolean isComplete() {
 		return _isCompleted;
 	}
 
 	@Override
 	public void onLoad() {
-		if (cx == -1) {
-			this.cx = original.getX();
+		if (startX == -1) {
+			this.startX = original.getX();
 		}
-		if (cy == -1) {
-			this.cy = original.getY();
+		if (startY == -1) {
+			this.startY = original.getY();
 		}
-		this.x = (cx + radius);
-		this.y = cy;
+		this.x = (startX + radius);
+		this.y = startY;
 	}
 
 	@Override
 	public void update(long elapsedTime) {
 		dt += MathUtils.max((elapsedTime / 1000f), speed);
-		this.x = (this.cx + this.radius
+		this.x = (this.startX + this.radius
 				* MathUtils.cos(MathUtils.toRadians(this.velocity * dt)));
-		this.y = (this.cy + this.radius
+		this.y = (this.startY + this.radius
 				* MathUtils.sin(MathUtils.toRadians(this.velocity * dt)));
 		synchronized (original) {
 			movePos(x + offsetX, y + offsetY);
 		}
 	}
 
+	public float getX() {
+		return x;
+	}
+
+	public float getY() {
+		return y;
+	}
+
+	public float getStartX() {
+		return startX;
+	}
+
+	public float getStartY() {
+		return startY;
+	}
+
+	public int getRadius() {
+		return radius;
+	}
+	
 	@Override
 	public ActionEvent cpy() {
-		CircleTo circle = new CircleTo(cx, cy, radius, velocity, speed);
+		CircleTo circle = new CircleTo(startX, startY, radius, velocity, speed);
 		circle.set(this);
 		return circle;
 	}
@@ -118,9 +139,9 @@ public class CircleTo extends ActionEvent {
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue(getName());
-		builder.kv("centerX",cx)
+		builder.kv("startX",startX)
 		.comma()
-		.kv("centerY", cy)
+		.kv("startY", startY)
 		.comma()
 		.kv("radius", radius)
 		.comma()
@@ -131,4 +152,5 @@ public class CircleTo extends ActionEvent {
 		.kv("delta", dt);
 		return builder.toString();
 	}
+
 }

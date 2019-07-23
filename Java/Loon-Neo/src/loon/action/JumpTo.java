@@ -114,6 +114,14 @@ public class JumpTo extends ActionEvent {
 		}
 	}
 
+	public float getGravity() {
+		return gravity;
+	}
+
+	public int getMoveJump() {
+		return moveJump;
+	}
+	
 	@Override
 	public ActionEvent cpy() {
 		JumpTo jump = new JumpTo(moveJump, gravity);

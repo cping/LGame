@@ -136,6 +136,10 @@ public class TransferTo extends ActionEvent {
 		return currentPosition;
 	}
 
+	public float getTravelDistance() {
+		return travelDistance;
+	}
+	
 	@Override
 	public void onLoad() {
 		if (original != null) {
@@ -194,4 +198,5 @@ public class TransferTo extends ActionEvent {
 		.kv("EaseTimer", easeTimer);
 		return builder.toString();
 	}
+
 }

@@ -112,6 +112,22 @@ public class MoveRoundTo extends ActionEvent {
 				+ offsetY);
 	}
 
+	public float getAngle() {
+		return angle;
+	}
+
+	public float getStartAngle() {
+		return startAngle;
+	}
+
+	public float getRadius() {
+		return radius;
+	}
+
+	public float getStartRadius() {
+		return startRadius;
+	}
+	
 	@Override
 	public void onLoad() {
 		if (startPoint == null || startPoint.getX() == -1 || startPoint.getY() == -1) {
@@ -145,18 +161,6 @@ public class MoveRoundTo extends ActionEvent {
 		return "moveround";
 	}
 	
-
-	/**
-	 * 
-	private final float angle;
-	private final float startAngle;
-	private final float radius;
-	private final float startRadius;
-	private Vector2f startPoint,oldStartPoint;
-	private Vector2f centerPoint,oldCenterPoint;
-	private EaseTimer timer;
-	 */
-	
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue(getName());
@@ -175,4 +179,5 @@ public class MoveRoundTo extends ActionEvent {
 		.kv("EaseTimer",timer);
 		return builder.toString();
 	}
+
 }
