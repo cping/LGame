@@ -175,11 +175,11 @@ public class ArrowTo extends ActionEvent {
 		return currentY;
 	}
 
-	public float getVx() {
+	public float getVelocityX() {
 		return vx;
 	}
 
-	public float getVy() {
+	public float getVelocityY() {
 		return vy;
 	}
 

@@ -181,11 +181,11 @@ public abstract class ActionEvent {
 		return this;
 	}
 
-	public final void movePos(float x, float y) {
+	public void movePos(float x, float y) {
 		movePos(x, y, -1f, -1f);
 	}
 
-	public final void movePos(float x, float y, float lastX, float lastY) {
+	public void movePos(float x, float y, float lastX, float lastY) {
 		if (original == null) {
 			return;
 		}
@@ -208,35 +208,35 @@ public abstract class ActionEvent {
 		}
 	}
 
-	public final CollisionFilter getCollisionFilter() {
+	public CollisionFilter getCollisionFilter() {
 		return worldCollisionFilter;
 	}
 
-	public final void setCollisionFilter(CollisionFilter filter) {
+	public void setCollisionFilter(CollisionFilter filter) {
 		this.worldCollisionFilter = filter;
 	}
 
-	public final CollisionWorld getCollisionWorld() {
+	public CollisionWorld getCollisionWorld() {
 		return collisionWorld;
 	}
 
-	public final void setCollisionWorld(CollisionWorld world) {
+	public void setCollisionWorld(CollisionWorld world) {
 		this.collisionWorld = world;
 	}
 
-	public final boolean isFirstTick() {
+	public boolean isFirstTick() {
 		return firstTick;
 	}
 
-	public final boolean isInit() {
+	public boolean isInit() {
 		return isInit;
 	}
 
-	public final float getOldX() {
+	public float getOldX() {
 		return oldX;
 	}
 
-	public final float getOldY() {
+	public float getOldY() {
 		return oldY;
 	}
 	
