@@ -48,6 +48,9 @@ public class Actions {
 	}
 
 	public boolean stopNames(ActionBind k, String name) {
+		if (k == null) {
+			return true;
+		}
 		ActionElement eles = (ActionElement) actions.getValue(k);
 		if (eles == null || name == null) {
 			return true;
@@ -68,6 +71,9 @@ public class Actions {
 	}
 
 	public boolean stopTags(ActionBind k, Object tag) {
+		if (k == null) {
+			return true;
+		}
 		ActionElement eles = (ActionElement) actions.getValue(k);
 		if (eles == null || tag == null) {
 			return true;
@@ -88,6 +94,9 @@ public class Actions {
 	}
 
 	public boolean isCompleted(ActionBind k) {
+		if (k == null) {
+			return true;
+		}
 		ActionElement eles = (ActionElement) actions.getValue(k);
 		if (eles == null) {
 			return true;
@@ -107,10 +116,16 @@ public class Actions {
 	}
 
 	public boolean containsKey(ActionBind k) {
+		if (k == null) {
+			return false;
+		}
 		return actions.containsKey(k);
 	}
 
 	public boolean containsValue(ActionEvent v) {
+		if (v == null) {
+			return false;
+		}
 		return actions.containsValue(v);
 	}
 

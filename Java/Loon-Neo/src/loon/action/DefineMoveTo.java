@@ -342,15 +342,17 @@ public class DefineMoveTo extends ActionEvent {
 						updateDirection(moveX, moveY);
 					} else if (layerPath.size() == 1) {
 						Vector2f moveEnd = layerPath.pop();
+						float newEndX = endX;
+						float newEndY = endY;
 						if (layerMap != null) {
-							endX = layerMap.tilesToWidthPixels(moveEnd.x());
-							endY = layerMap.tilesToHeightPixels(moveEnd.y());
+							newEndX = layerMap.tilesToWidthPixels(moveEnd.x());
+							newEndY = layerMap.tilesToHeightPixels(moveEnd.y());
 						} else {
-							endX = moveEnd.getX();
-							endY = moveEnd.getY();
+							newEndX = moveEnd.getX();
+							newEndY = moveEnd.getY();
 						}
-						moveX = moveEnd.x() - startX;
-						moveY = moveEnd.y() - startY;
+						moveX = newEndX - endX;
+						moveY = newEndY - endY;
 					}
 					if (layerPath.size() > 0) {
 						layerPath.removeIndex(0);
@@ -657,6 +659,14 @@ public class DefineMoveTo extends ActionEvent {
 		this.synchroLayerField = syn;
 	}
 
+	public float getMoveX() {
+		return moveX;
+	}
+
+	public float geetMoveY() {
+		return moveY;
+	}
+
 	public float getEndX() {
 		return endX;
 	}
@@ -668,7 +678,7 @@ public class DefineMoveTo extends ActionEvent {
 	public boolean isAllDirection() {
 		return allDir;
 	}
-	
+
 	@Override
 	public ActionEvent cpy() {
 		DefineMoveTo defMove = new DefineMoveTo(layerMap, initPath, allDir, speed);

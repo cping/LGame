@@ -30,6 +30,10 @@ import loon.utils.ObjectMap;
  */
 public class AnimatedEntity extends Entity {
 
+	/**
+	 * 动画具体播放速度值及帧索引存储用类
+	 *
+	 */
 	public static class PlayIndex {
 
 		public final static PlayIndex at(int[] animates) {
@@ -478,6 +482,22 @@ public class AnimatedEntity extends Entity {
 		return this;
 	}
 
+	public AnimatedEntity setPlayIndex(String key, int[] animates) {
+		return setPlayIndex(key, PlayIndex.at(animates));
+	}
+	
+	public AnimatedEntity setPlayIndex(String key, long frameTime, int[] animates) {
+		return setPlayIndex(key, PlayIndex.at(frameTime, animates));
+	}
+	
+	public AnimatedEntity setPlayIndex(String key, long frameTime, int startIdx, int endIdx) {
+		return setPlayIndex(key, PlayIndex.at(frameTime, startIdx, endIdx));
+	}
+
+	public AnimatedEntity setPlayIndex(String key, long[] frameTime, int startIdx, int endIdx) {
+		return setPlayIndex(key, PlayIndex.at(frameTime, startIdx, endIdx));
+	}
+	
 	public PlayIndex getPlayIndex(String key) {
 		return _playEvents.get(key);
 	}
@@ -485,6 +505,10 @@ public class AnimatedEntity extends Entity {
 	public AnimatedEntity clearPlayEvents() {
 		_playEvents.clear();
 		return this;
+	}
+
+	public int size(){
+		return _playEvents.size;
 	}
 
 	public boolean isAnimationDispose() {

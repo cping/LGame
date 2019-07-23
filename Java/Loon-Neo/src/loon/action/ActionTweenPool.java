@@ -22,7 +22,6 @@ package loon.action;
 
 import loon.utils.TArray;
 
-
 abstract class ActionTweenPool<T> {
 
 	public interface Callback<T> extends loon.utils.reply.Callback<T> {
