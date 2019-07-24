@@ -24,6 +24,8 @@ import java.util.Random;
 
 import loon.LSysException;
 import loon.geom.RectBox;
+import loon.geom.Vector2f;
+import loon.geom.XY;
 
 public class MathUtils {
 
@@ -643,6 +645,67 @@ public class MathUtils {
 		return sqrt(sq(x2 - x1) + sq(y2 - y1) + sq(z2 - z1));
 	}
 
+	public static final float distSquared(float x1, float y1, float x2, float y2) {
+		return (x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1);
+	}
+
+	public static final float distRectPoint(float px, float py, float rx, float ry, float rw, float rh) {
+		if (px >= rx && px <= rx + rw) {
+			if (py >= ry && py <= ry + rh) {
+				return 0f;
+			}
+			if (py > ry) {
+				return py - (ry + rh);
+			}
+			return ry - py;
+		}
+		if (py >= ry && py <= ry + rh) {
+			if (px > rx) {
+				return px - (rx + rw);
+			}
+			return rx - px;
+		}
+		if (px > rx) {
+			if (py > ry) {
+				return dist(px, py, rx + rw, ry + rh);
+			}
+			return dist(px, py, rx + rw, ry);
+		}
+		if (py > ry) {
+			return dist(px, py, rx, ry + rh);
+		}
+		return dist(px, py, rx, ry);
+	}
+
+	public static final float distRects(float x1, float y1, float w1, float h1, float x2, float y2, float w2,
+			float h2) {
+		if (x1 < x2 + w2 && x2 < x1 + w1) {
+			if (y1 < y2 + h2 && y2 < y1 + h1) {
+				return 0f;
+			}
+			if (y1 > y2) {
+				return y1 - (y2 + h2);
+			}
+			return y2 - (y1 + h1);
+		}
+		if (y1 < y2 + h2 && y2 < y1 + h1) {
+			if (x1 > x2) {
+				return x1 - (x2 + w2);
+			}
+			return x2 - (x1 + w1);
+		}
+		if (x1 > x2) {
+			if (y1 > y2) {
+				return dist(x1, y1, (x2 + w2), (y2 + h2));
+			}
+			return dist(x1, y1 + h1, x2 + w2, y2);
+		}
+		if (y1 > y2) {
+			return dist(x1 + w1, y1, x2, y2 + h2);
+		}
+		return dist(x1 + w1, y1 + h1, x2, y2);
+	}
+
 	public static final float abs(float n) {
 		return (n < 0) ? -n : n;
 	}
@@ -974,11 +1037,25 @@ public class MathUtils {
 		return value;
 	}
 
-	public static final float distance(float x1, float x2) {
-		return Math.abs(x1 - x2);
+	public static final Vector2f clampInRect(XY v, float x, float y, float width, float height) {
+		return clampInRect(v, x, y, width, height, 0f);
 	}
 
-	public static float distance(float x1, float y1, float x2, float y2) {
+	public static final Vector2f clampInRect(XY v, float x, float y, float width, float height, float padding) {
+		if (v == null) {
+			return Vector2f.ZERO();
+		}
+		Vector2f obj = new Vector2f();
+		obj.x = clamp(v.getX(), x + padding, x + width - padding);
+		obj.y = clamp(v.getY(), y + padding, y + height - padding);
+		return obj;
+	}
+
+	public static final float distance(float x1, float x2) {
+		return abs(x1 - x2);
+	}
+
+	public static final float distance(float x1, float y1, float x2, float y2) {
 		return (float) Math.pow(Math.pow(x1 - x2, 2.0d) + Math.pow(y1 - y2, 2.0d), 0.5d);
 	}
 
@@ -1300,6 +1377,20 @@ public class MathUtils {
 
 	public static final float scale(float value, float maxValue, float maxScale) {
 		return (maxScale / maxValue) * value;
+	}
+
+	public static final float scale(float value, float minValue, float maxValue, float min2, float max2) {
+		return min2 + ((value - minValue) / (maxValue - minValue)) * (max2 - min2);
+	}
+
+	public static final float scaleClamp(float value, float minValue, float maxValue, float min2, float max2) {
+		value = min2 + ((value - minValue) / (maxValue - minValue)) * (max2 - min2);
+		if (max2 > min2) {
+			value = value < max2 ? value : max2;
+			return value > min2 ? value : min2;
+		}
+		value = value < min2 ? value : min2;
+		return value > max2 ? value : max2;
 	}
 
 	public static final float percent(float value, float percent) {

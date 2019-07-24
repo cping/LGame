@@ -907,6 +907,16 @@ public class Vector2f implements Serializable, XY {
 	public static String pointToString(float x, float y) {
 		return MathUtils.toString(x) + "," + MathUtils.toString(y);
 	}
+	
+	public final Vector2f inverse() {
+		return new Vector2f(-this.x, -this.y);
+	}
+
+	public final Vector2f inverseSelf() {
+		this.x = -this.x;
+		this.y = -this.y;
+		return this;
+	}
 
 	public final Vector2f addSelf(Vector2f v) {
 		this.x += v.x;
@@ -926,6 +936,14 @@ public class Vector2f implements Serializable, XY {
 
 	public Vector2f negateSelf() {
 		return set(-x, -y);
+	}
+
+	public float zcross(float zx, float zy) {
+		return (this.x * zy) - (this.y * zx);
+	}
+
+	public float zcross(Vector2f v) {
+		return (this.x * v.y) - (this.y * v.x);
 	}
 
 	public float dot(float x, float y) {
@@ -984,7 +1002,7 @@ public class Vector2f implements Serializable, XY {
 	public Vector2f scale(float sx, float sy) {
 		return mul(x * sx, y * sy);
 	}
-	
+
 	public Vector2f project(Vector2f v) {
 		return mul(dot(v) / v.lengthSquared());
 	}
