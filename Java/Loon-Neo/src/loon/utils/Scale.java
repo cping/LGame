@@ -20,6 +20,10 @@
  */
 package loon.utils;
 
+/**
+ * 浮点参数缩放操作用工具类
+ *
+ */
 public class Scale {
 
 	public static class ScaledResource {
@@ -39,7 +43,7 @@ public class Scale {
 		}
 	}
 
-	public static final Scale ONE = new Scale(1);
+	public static final Scale ONE = new Scale(1f);
 
 	public final float factor;
 

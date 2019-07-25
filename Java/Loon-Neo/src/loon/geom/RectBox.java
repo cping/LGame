@@ -734,6 +734,7 @@ public class RectBox extends Shape implements BoxSize {
 		return y() + height();
 	}
 
+	@Override
 	public boolean isEmpty() {
 		return getWidth() <= 0 || height() <= 0;
 	}

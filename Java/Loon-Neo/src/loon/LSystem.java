@@ -538,22 +538,92 @@ public class LSystem {
 		return false;
 	}
 
+	/**
+	 * 返回当前游戏屏幕宽的缩放比例
+	 * 
+	 * @return
+	 */
 	public static float getScaleWidth() {
 		return LSystem._scaleWidth;
 	}
 
+	/**
+	 * 返回当前游戏屏幕高的缩放比例
+	 * 
+	 * @return
+	 */
 	public static float getScaleHeight() {
 		return LSystem._scaleHeight;
 	}
 
+	/**
+	 * 设定当前游戏屏幕宽的缩放比例
+	 * 
+	 * @param sx
+	 */
 	public static void setScaleWidth(float sx) {
 		LSystem._scaleWidth = sx;
 	}
 
+	/**
+	 * 设定当前游戏屏幕宽的缩放比例
+	 * 
+	 * @param sy
+	 */
 	public static void setScaleHeight(float sy) {
 		LSystem._scaleHeight = sy;
 	}
 
+	/**
+	 * 设定当前游戏屏幕的缩放比例
+	 * 
+	 * @param fixScale
+	 */
+	public static void setResizeScaleFixed(float fixScale) {
+		LSystem._scaleWidth = fixScale;
+		LSystem._scaleHeight = fixScale;
+	}
+
+	/**
+	 * 设定当前游戏屏幕实际宽高除以初始宽高后的缩放比例
+	 * 
+	 * @param baseWidth
+	 * @param baseHeight
+	 * @param screenWidth
+	 * @param screenHeight
+	 */
+	public static void setResizeScale(float baseWidth, float baseHeight, float screenWidth, float screenHeight) {
+		LSystem.setScaleWidth(screenWidth / baseWidth);
+		LSystem.setScaleHeight(screenHeight / baseHeight);
+	}
+
+	/**
+	 * 设定当前游戏屏幕宽高的缩放比例为实际宽度和初始宽度的换算后比例
+	 * 
+	 * @param baseWidth
+	 * @param screenWidth
+	 */
+	public static void setResizeWidthScale(float baseWidth, float screenWidth) {
+		float scale = screenWidth / baseWidth;
+		LSystem.setResizeScaleFixed(scale);
+	}
+
+	/**
+	 * 设定当前游戏屏幕宽高的缩放比例为实际高度和初始高度的换算后比例
+	 * 
+	 * @param baseHeight
+	 * @param screenHeight
+	 */
+	public static void setResizeHeightScale(float baseHeight, float screenHeight) {
+		float scale = screenHeight / baseHeight;
+		LSystem.setResizeScaleFixed(scale);
+	}
+
+	/**
+	 * 返回当前Graphics中的Scale对象实体
+	 * 
+	 * @return
+	 */
 	public static Scale getScale() {
 		Graphics graphics = null;
 		if (LSystem.base() != null) {

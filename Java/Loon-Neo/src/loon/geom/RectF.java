@@ -438,6 +438,10 @@ public class RectF implements XY {
 		return height;
 	}
 
+	public boolean isEmpty() {
+		return width <= 0 && height <= 0;
+	}
+
 	public static void getNearestCorner(float x, float y, float w, float h, float px, float py, PointF result) {
 		result.set(MathUtils.nearest(px, x, x + w), MathUtils.nearest(y, y, y + h));
 	}

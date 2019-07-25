@@ -637,6 +637,18 @@ public class MathUtils {
 		return (float) Math.sqrt(a * a + b * b + c * c);
 	}
 
+	public static final float distance(float x1, float x2) {
+		return abs(x1 - x2);
+	}
+
+	public static final float distance(float x1, float y1, float x2, float y2) {
+		return dist(x1, y1, x2, y2);
+	}
+	
+	public static final float dist(float x1, float y1) {
+		return abs(x1 - y1);
+	}
+	
 	public static final float dist(float x1, float y1, float x2, float y2) {
 		return sqrt(sq(x2 - x1) + sq(y2 - y1));
 	}
@@ -1049,14 +1061,6 @@ public class MathUtils {
 		obj.x = clamp(v.getX(), x + padding, x + width - padding);
 		obj.y = clamp(v.getY(), y + padding, y + height - padding);
 		return obj;
-	}
-
-	public static final float distance(float x1, float x2) {
-		return abs(x1 - x2);
-	}
-
-	public static final float distance(float x1, float y1, float x2, float y2) {
-		return (float) Math.pow(Math.pow(x1 - x2, 2.0d) + Math.pow(y1 - y2, 2.0d), 0.5d);
 	}
 
 	public static final float hermite(float value1, float tangent1, float value2, float tangent2, float amount) {

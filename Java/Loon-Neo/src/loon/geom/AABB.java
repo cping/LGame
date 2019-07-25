@@ -116,7 +116,11 @@ public class AABB implements XY, BoxSize {
 		return ((xmin > minX && xmin < minX + maxX) && (xmax > minX && xmax < minX + maxX))
 				&& ((ymin > minY && ymin < minY + maxY) && (ymax > minY && ymax < minY + maxY));
 	}
-	
+
+	public boolean isEmpty() {
+		return this.maxX <= 0 && this.maxY <= 0;
+	}
+
 	public RectBox toRectBox() {
 		return new RectBox(this.minX, this.minY, this.maxX, this.maxY);
 	}
@@ -131,17 +135,11 @@ public class AABB implements XY, BoxSize {
 		result = prime * result + NumberUtils.floatToIntBits(maxY);
 		return result;
 	}
-	
+
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("AABB");
-		builder.kv("minX", minX)
-		.comma()
-		.kv("minY", minY)
-		.comma()
-		.kv("maxX", maxX)
-		.comma()
-		.kv("maxY", maxY);
+		builder.kv("minX", minX).comma().kv("minY", minY).comma().kv("maxX", maxX).comma().kv("maxY", maxY);
 		return builder.toString();
 	}
 

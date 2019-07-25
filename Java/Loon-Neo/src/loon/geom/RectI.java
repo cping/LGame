@@ -438,6 +438,10 @@ public class RectI implements XY {
 		return height;
 	}
 
+	public boolean isEmpty() {
+		return width <= 0 && height <= 0;
+	}
+	
 	public static void getNearestCorner(int x, int y, int w, int h, int px, int py, PointI result) {
 		result.set((int) MathUtils.nearest(px, x, x + w), (int) MathUtils.nearest(y, y, y + h));
 	}
