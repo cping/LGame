@@ -247,6 +247,10 @@ public class CustomPath implements LRelease {
 		return name;
 	}
 
+	public boolean isEmpty() {
+		return steps.isEmpty();
+	}
+
 	public CustomPath clear() {
 		steps.clear();
 		return this;

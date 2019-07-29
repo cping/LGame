@@ -1139,6 +1139,16 @@ public class Actor extends LObject<Actor>
 	}
 
 	@Override
+	public float getCenterX() {
+		return getX() + getWidth() / 2f;
+	}
+
+	@Override
+	public float getCenterY() {
+		return getY() + getHeight() / 2f;
+	}
+	
+	@Override
 	public ActionTween selfAction() {
 		return PlayerUtils.set(this);
 	}

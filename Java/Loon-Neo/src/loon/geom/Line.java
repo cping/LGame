@@ -54,8 +54,8 @@ public class Line extends Shape {
 		this(x, y, true, true);
 	}
 
-	public Line(Point p1, Point p2) {
-		this(p1.x, p1.y, p2.x, p2.y);
+	public Line(XY p1, XY p2) {
+		this(p1.getX(), p1.getY(), p2.getX(), p2.getY());
 	}
 
 	public Line(float x1, float y1, float x2, float y2) {
@@ -291,11 +291,11 @@ public class Line extends Shape {
 		return true;
 	}
 
-	public float side(Vector2f v) {
+	public float side(XY v) {
 		if (v == null) {
 			return 0f;
 		}
-		return side(v.x, v.y);
+		return side(v.getX(), v.getY());
 	}
 
 	public float side(float x, float y) {
@@ -325,7 +325,7 @@ public class Line extends Shape {
 		points[3] = getY2();
 	}
 
-	public float ptSegDistSq(Point pt) {
+	public float ptSegDistSq(XY pt) {
 		return ShapeUtils.ptSegDistSq(getX1(), getY1(), getX2(), getY2(), pt.getX(), pt.getY());
 	}
 
@@ -333,7 +333,7 @@ public class Line extends Shape {
 		return ShapeUtils.ptSegDistSq(getX1(), getY1(), getX2(), getY2(), px, py);
 	}
 
-	public float ptLineDist(Point pt) {
+	public float ptLineDist(XY pt) {
 		return ShapeUtils.ptLineDist(getX1(), getY1(), getX2(), getY2(), pt.getX(), pt.getY());
 	}
 
@@ -341,7 +341,7 @@ public class Line extends Shape {
 		return ShapeUtils.ptLineDistSq(getX1(), getY1(), getX2(), getY2(), px, py);
 	}
 
-	public float ptLineDistSq(Point pt) {
+	public float ptLineDistSq(XY pt) {
 		return ShapeUtils.ptLineDistSq(getX1(), getY1(), getX2(), getY2(), pt.getX(), pt.getY());
 	}
 

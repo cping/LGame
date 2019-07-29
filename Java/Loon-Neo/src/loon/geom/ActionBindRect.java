@@ -203,4 +203,14 @@ public class ActionBindRect implements ActionBind, BoxSize {
 		rect.setHeight(h);
 	}
 
+	@Override
+	public float getCenterX() {
+		return rect.getCenterX();
+	}
+
+	@Override
+	public float getCenterY() {
+		return rect.getCenterY();
+	}
+
 }

@@ -121,6 +121,16 @@ public class AABB implements XY, BoxSize {
 		return this.maxX <= 0 && this.maxY <= 0;
 	}
 
+	@Override
+	public float getCenterX() {
+		return this.minX + this.maxX / 2f;
+	}
+
+	@Override
+	public float getCenterY() {
+		return this.minY + this.maxY / 2f;
+	}
+
 	public RectBox toRectBox() {
 		return new RectBox(this.minX, this.minY, this.maxX, this.maxY);
 	}

@@ -1209,6 +1209,16 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		return offsetY + this._location.y + _offset.y;
 	}
 
+	@Override
+	public float getCenterX() {
+		return getX() + getWidth() / 2f;
+	}
+
+	@Override
+	public float getCenterY() {
+		return getY() + getHeight() / 2f;
+	}
+	
 	public Entity in() {
 		return in(30);
 	}

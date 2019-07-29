@@ -1239,6 +1239,16 @@ public class Sprite extends LObject<ISprite>
 		RectBox b = new RectBox(0, rectDst.getY(), rectDst.getWidth(), rectDst.getHeight());
 		return a.intersects(b);
 	}
+
+	@Override
+	public float getCenterX() {
+		return getX() + getWidth() / 2f;
+	}
+
+	@Override
+	public float getCenterY() {
+		return getY() + getHeight() / 2f;
+	}
 	
 	public boolean isClosed() {
 		return isDisposed();

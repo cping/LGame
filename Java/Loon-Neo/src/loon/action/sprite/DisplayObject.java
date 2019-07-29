@@ -393,8 +393,17 @@ public abstract class DisplayObject extends EventDispatcher implements Collision
 	public void setFixedHeightOffset(float fixedHeightOffset) {
 		this._fixedHeightOffset = fixedHeightOffset;
 	}
-	
 
+	@Override
+	public float getCenterX() {
+		return getX() + getWidth() / 2f;
+	}
+
+	@Override
+	public float getCenterY() {
+		return getY() + getHeight() / 2f;
+	}
+	
 	@Override
 	public boolean collides(ISprite e) {
 		if (e == null || !e.isVisible()) {

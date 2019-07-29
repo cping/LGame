@@ -1198,6 +1198,16 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 		}
 	}
 
+	@Override
+	public float getCenterX() {
+		return getX() + getWidth() / 2f;
+	}
+
+	@Override
+	public float getCenterY() {
+		return getY() + getHeight() / 2f;
+	}
+	
 	private RectBox temp_rect;
 
 	public RectBox getRectBox() {

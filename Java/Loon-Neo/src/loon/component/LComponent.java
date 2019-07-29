@@ -1405,6 +1405,16 @@ public abstract class LComponent extends LObject<LContainer>
 		return (_desktop == null || _desktop.input == null) ? LSystem.getProcess().getScreen() : _desktop.input;
 	}
 
+	@Override
+	public float getCenterX() {
+		return getX() + getWidth() / 2f;
+	}
+
+	@Override
+	public float getCenterY() {
+		return getY() + getHeight() / 2f;
+	}
+	
 	public boolean isDesktopContainer() {
 		return desktopContainer;
 	}

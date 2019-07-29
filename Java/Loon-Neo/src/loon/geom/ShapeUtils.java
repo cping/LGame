@@ -267,6 +267,10 @@ public class ShapeUtils {
 		return ((v1ex - vsx) * (v2ex - vsx) + (v1ey - vsy) * (v2ey - vsy));
 	}
 
+	public static final float dotf(float vsx, float vsy, float v1ex, float v1ey, float v2ex, float v2ey) {
+		return ((v1ex - vsx) * (v2ex - vsx) + (v1ey - vsy) * (v2ey - vsy));
+	}
+
 	public static final void transPointList(float[] points, float x, float y) {
 		int i = 0, len = points.length;
 		for (i = 0; i < len; i += 2) {
