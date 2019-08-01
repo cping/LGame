@@ -29,8 +29,9 @@ import loon.geom.RectBox;
 import loon.geom.Shape;
 import loon.geom.ShapeUtils;
 import loon.geom.Vector2f;
-import loon.geom.Vector3f;
+
 import loon.geom.XY;
+import loon.geom.XYZ;
 import loon.utils.MathUtils;
 
 /**
@@ -521,9 +522,10 @@ public final class CollisionHelper extends ShapeUtils {
 				p2Min.getX(), p2Min.getY(), p2Max.getX() - p2Min.getX(), p2Max.getY() - p2Min.getY());
 	}
 
-	public static final boolean checkAABBvsAABB(Vector3f p1, float w1, float h1, float t1, Vector3f p2, float w2,
-			float h2, float t2) {
-		return checkAABBvsAABB(p1.x, p1.y, p1.z, w1, h1, t1, p2.x, p2.y, p2.z, w2, h2, t2);
+	public static final boolean checkAABBvsAABB(XYZ p1, float w1, float h1, float t1, XYZ p2, float w2, float h2,
+			float t2) {
+		return checkAABBvsAABB(p1.getX(), p1.getY(), p1.getZ(), w1, h1, t1, p2.getX(), p2.getY(), p2.getZ(), w2, h2,
+				t2);
 	}
 
 	public static final boolean checkAABBvsAABB(float x1, float y1, float z1, float w1, float h1, float t1, float x2,
@@ -531,9 +533,10 @@ public final class CollisionHelper extends ShapeUtils {
 		return !(x1 > x2 + w2 || x1 + w1 < x2) && !(y1 > y2 + h2 || y1 + h1 < y2) && !(z1 > z2 + t2 || z1 + t1 < z2);
 	}
 
-	public static final boolean checkAABBvsAABB(Vector3f p1Min, Vector3f p1Max, Vector3f p2Min, Vector3f p2Max) {
-		return checkAABBvsAABB(p1Min.x, p1Min.y, p1Min.z, p1Max.x - p1Min.x, p1Max.y - p1Min.y, p1Max.z - p1Min.z,
-				p2Min.x, p2Min.y, p1Min.z, p2Max.x - p2Min.x, p2Max.y - p2Min.y, p2Max.z - p2Min.z);
+	public static final boolean checkAABBvsAABB(XYZ p1Min, XYZ p1Max, XYZ p2Min, XYZ p2Max) {
+		return checkAABBvsAABB(p1Min.getX(), p1Min.getY(), p1Min.getZ(), p1Max.getX() - p1Min.getX(),
+				p1Max.getY() - p1Min.getY(), p1Max.getZ() - p1Min.getZ(), p2Min.getX(), p2Min.getY(), p1Min.getZ(),
+				p2Max.getX() - p2Min.getX(), p2Max.getY() - p2Min.getY(), p2Max.getZ() - p2Min.getZ());
 	}
 
 	public static final boolean checkCircleCircle(XY p1, float r1, XY p2, float r2) {
@@ -547,8 +550,8 @@ public final class CollisionHelper extends ShapeUtils {
 		return distance <= radiusSumSq;
 	}
 
-	public static final boolean checkSphereSphere(Vector3f p1, float r1, Vector3f p2, float r2) {
-		return checkSphereSphere(p1.x, p1.y, p1.z, r1, p2.x, p2.y, p2.z, r2);
+	public static final boolean checkSphereSphere(XYZ p1, float r1, XYZ p2, float r2) {
+		return checkSphereSphere(p1.getX(), p1.getY(), p1.getZ(), r1, p2.getX(), p2.getY(), p2.getZ(), r2);
 	}
 
 	public static final boolean checkSphereSphere(float x1, float y1, float z1, float r1, float x2, float y2, float z2,

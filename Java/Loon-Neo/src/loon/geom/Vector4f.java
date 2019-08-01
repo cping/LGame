@@ -26,19 +26,19 @@ import loon.utils.Array;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 
-public class Vector4f implements Serializable, XY {
+public class Vector4f implements Serializable, XYZW {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 5987567676643500192L;
 
-	private static final Array<Vector4f> _vec4_cache = new Array<Vector4f>();
+	private static final Array<Vector4f> _VEC4_CACHE = new Array<Vector4f>();
 
 	public final static Vector4f TMP() {
-		Vector4f temp = _vec4_cache.pop();
+		Vector4f temp = _VEC4_CACHE.pop();
 		if (temp == null) {
-			_vec4_cache.add(temp = new Vector4f(0, 0, 0, 0));
+			_VEC4_CACHE.add(temp = new Vector4f(0, 0, 0, 0));
 		}
 		return temp;
 	}
@@ -329,6 +329,7 @@ public class Vector4f implements Serializable, XY {
 		return this;
 	}
 
+	@Override
 	public float getZ() {
 		return z;
 	}
@@ -338,6 +339,7 @@ public class Vector4f implements Serializable, XY {
 		return this;
 	}
 
+	@Override
 	public float getW() {
 		return w;
 	}

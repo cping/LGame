@@ -1,5 +1,5 @@
 /**
- * Copyright 2008 - 2015 The Loon Game Engine Authors
+ * Copyright 2008 - 2019 The Loon Game Engine Authors
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -21,11 +21,10 @@
 package loon.geom;
 
 /**
- * 二维坐标通用接口
+ * 四维坐标通用接口
  */
-public interface XY
-{
-    float getX ();
-
-    float getY ();
+public interface XYZW extends XYZ {
+	
+	public float getW();
+	
 }

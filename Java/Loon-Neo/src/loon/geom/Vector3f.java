@@ -26,7 +26,7 @@ import loon.utils.Array;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 
-public class Vector3f implements Serializable, XY {
+public class Vector3f implements Serializable, XYZ {
 
 	/**
 	 * 
@@ -39,12 +39,12 @@ public class Vector3f implements Serializable, XY {
 
 	public float z;
 
-	private static final Array<Vector3f> _vec3_cache = new Array<Vector3f>();
+	private static final Array<Vector3f> _VEC3_CACHE = new Array<Vector3f>();
 
 	public final static Vector3f TMP() {
-		Vector3f temp = _vec3_cache.pop();
+		Vector3f temp = _VEC3_CACHE.pop();
 		if (temp == null) {
-			_vec3_cache.add(temp = new Vector3f(0, 0, 0));
+			_VEC3_CACHE.add(temp = new Vector3f(0, 0, 0));
 		}
 		return temp;
 	}
@@ -771,6 +771,7 @@ public class Vector3f implements Serializable, XY {
 		return this.y;
 	}
 
+	@Override
 	public float getZ() {
 		return this.z;
 	}
