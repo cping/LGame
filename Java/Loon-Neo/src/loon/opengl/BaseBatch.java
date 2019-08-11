@@ -21,6 +21,7 @@
 package loon.opengl;
 
 import loon.LTexture;
+import loon.canvas.LColor;
 import loon.geom.Affine2f;
 
 public abstract class BaseBatch extends LTextureBind {
@@ -59,6 +60,9 @@ public abstract class BaseBatch extends LTextureBind {
 		if (w < 1f || h < 1f) {
 			return;
 		}
+		if (LColor.getAlpha(tint) <= 0) {
+			return;
+		}
 
 		setTexture(tex);
 
@@ -87,6 +91,10 @@ public abstract class BaseBatch extends LTextureBind {
 		if (dw < 1f || dh < 1f || sw < 1f || sh < 1f) {
 			return;
 		}
+		if (LColor.getAlpha(tint) <= 0) {
+			return;
+		}
+		
 		setTexture(tex);
 		if (tex.getParent() == null) {
 			float displayWidth = tex.getDisplayWidth() * tex.widthRatio;
