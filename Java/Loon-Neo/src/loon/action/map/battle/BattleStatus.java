@@ -21,7 +21,6 @@
 package loon.action.map.battle;
 
 import loon.utils.ObjectMap;
-import loon.utils.UUID;
 
 public class BattleStatus {
 	
@@ -36,8 +35,6 @@ public class BattleStatus {
 	
 	private ObjectMap<String, BattlePlayer> players;
 	
-	private String roundId;
-	
 	private BaseState state;
 	
 	private boolean flippedHeads;
@@ -47,7 +44,6 @@ public class BattleStatus {
 	}
 	
 	public void reset() {
-		roundId = "WAITING_FOR_PLAYERS";
 		state = BaseState.WAITING_FOR_PLAYERS;
 	}
 	
@@ -56,8 +52,6 @@ public class BattleStatus {
 		for (BattlePlayer player : players.values()) {
 			player.resetForNewRound();
 		}
-		
-		roundId = new UUID().toString();
 		
 		state = BaseState.PROCESS_CALLS;
 	}
@@ -71,10 +65,6 @@ public class BattleStatus {
 		return players;
 	}
 
-	public String getRoundId() {
-		return roundId;
-	}
-
 	public BaseState getState() {
 		return state;
 	}
@@ -82,4 +72,5 @@ public class BattleStatus {
 	public boolean getFlippedHeads() {
 		return flippedHeads;
 	}
+
 }

@@ -20,11 +20,12 @@
  */
 package loon.action.map.battle;
 
-public enum BattleTeam {
+public interface BattleState {
+
+    void update(long elapsedTime);
     
-	Opponent,
-	
-	Player,
-	
-	Friendly;
+    void onEnter();
+    
+    void onExit();
+
 }

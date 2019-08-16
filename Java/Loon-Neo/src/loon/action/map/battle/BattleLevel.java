@@ -20,6 +20,10 @@
  */
 package loon.action.map.battle;
 
+/**
+ * 战斗用工具类,一个简单的等级与经验值和等级转换器
+ *
+ */
 public class BattleLevel {
 
 	private int level;

@@ -20,11 +20,17 @@
  */
 package loon.action.map.battle;
 
-public enum BattleTeam {
-    
-	Opponent,
-	
-	Player,
-	
-	Friendly;
+public class BattleTransition {
+
+	protected BattleState from;
+	protected BattleState to;
+
+	protected BattleCondition condition;
+
+	public BattleTransition(BattleState from, BattleCondition condition, BattleState to) {
+		this.from = from;
+		this.condition = condition;
+		this.to = to;
+	}
+
 }

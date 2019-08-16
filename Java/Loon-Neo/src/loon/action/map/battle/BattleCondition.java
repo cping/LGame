@@ -20,11 +20,6 @@
  */
 package loon.action.map.battle;
 
-public enum BattleTeam {
-    
-	Opponent,
-	
-	Player,
-	
-	Friendly;
+public interface BattleCondition {
+	boolean isTrue();
 }

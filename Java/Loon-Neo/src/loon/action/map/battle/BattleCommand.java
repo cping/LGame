@@ -49,6 +49,14 @@ public class BattleCommand {
 
 	}
 
+	private String playerInFlag = "PLAYER_IN";
+
+	private String playerOutFlag = "PLAYER_OUT";
+
+	private String playerCallFlag = "PLAYER_CALL";
+	
+	private String playerCurrentFlag = null;
+	
 	private BattleEvent eventHandler;
 
 	private BattleStatus status;
@@ -62,10 +70,12 @@ public class BattleCommand {
 		BattlePlayer player = command.getPlayer();
 
 		if (status.getPlayers().containsKey(player.getId())) {
-			eventHandler.error(status, player, "PLAYER_IN");
+			eventHandler.error(status, player, playerInFlag);
 			return false;
 		}
 
+		playerCurrentFlag = playerInFlag;
+		
 		status.getPlayers().put(player.getId(), player);
 
 		eventHandler.playerJoin(status, player);
@@ -77,10 +87,12 @@ public class BattleCommand {
 		BattlePlayer player = command.getPlayer();
 
 		if (!status.getPlayers().containsKey(player.getId())) {
-			eventHandler.error(status, player, "PLAYER_NOT_IN");
+			eventHandler.error(status, player, playerOutFlag);
 			return false;
 		}
 
+		playerCurrentFlag = playerOutFlag;
+		
 		status.getPlayers().remove(player.getId());
 
 		return true;
@@ -90,11 +102,12 @@ public class BattleCommand {
 		BattlePlayer player = command.getPlayer();
 
 		if (!status.getPlayers().containsKey(player.getId())) {
-			eventHandler.error(status, player, "PLAYER_NOT_IN");
-
+			eventHandler.error(status, player, playerCallFlag);
 			return;
 		}
 
+		playerCurrentFlag = playerCallFlag;
+		
 		player.setHeads(command.isHeads());
 	}
 
@@ -136,5 +149,37 @@ public class BattleCommand {
 	public void otherCommand(BattleBaseCommand command) {
 		eventHandler.error(status, command.getPlayer(),
 				command.getName() + " not allowed " + status.getState().toString() + " state.");
+	}
+
+	public String getPlayerInFlag() {
+		return playerInFlag;
+	}
+
+	public void setPlayerInFlag(String i) {
+		this.playerInFlag = i;
+	}
+
+	public String getPlayerOutFlag() {
+		return playerOutFlag;
+	}
+
+	public void setPlayerOutFlag(String o) {
+		this.playerOutFlag = o;
+	}
+
+	public String getPlayerCallFlag() {
+		return playerCallFlag;
+	}
+
+	public void setPlayerCallFlag(String c) {
+		this.playerCallFlag = c;
+	}
+
+	public String getPlayerCurrentFlag() {
+		return playerCurrentFlag;
+	}
+
+	public void setPlayerCurrentFlag(String cur) {
+		this.playerCurrentFlag = cur;
 	}
 }
