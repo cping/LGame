@@ -44,6 +44,7 @@ public abstract class Interval implements Updateable, LRelease {
 
 	public Interval start() {
 		timer.start();
+		timer.setUpdateable(this);
 		timer.submit();
 		return this;
 	}
