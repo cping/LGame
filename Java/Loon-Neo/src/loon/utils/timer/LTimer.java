@@ -31,7 +31,13 @@ import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
 
 /**
- * Loon的计时器类
+ * Loon的计时器用类
+ * 
+ * 此类主要作用有二:
+ * 
+ * 1, 直接以函数调用形式调用,利用action函数作真假条件判断,每当条件满足时执行一次以action函数检查后生效的if中内容.
+ * 
+ * 2, 提交一个指定执行次数的事件到游戏进程中去(不指定则默认无限循环),每隔指定时间执行一次.
  * 
  * <pre>
  *  //提交timer到游戏循环中
@@ -267,13 +273,11 @@ public class LTimer implements LRelease {
 	}
 
 	public LTimer pause() {
-		this._active = false;
-		return this;
+		return stop();
 	}
 
 	public LTimer unpause() {
-		this._active = true;
-		return this;
+		return start();
 	}
 
 	public int getId() {
@@ -347,6 +351,13 @@ public class LTimer implements LRelease {
 			}
 			_process.setDelay(0);
 			RealtimeProcessManager.get().addProcess(_process);
+		}
+		return this;
+	}
+
+	public LTimer kill() {
+		if (_process != null) {
+			_process.kill();
 		}
 		return this;
 	}
