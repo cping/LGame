@@ -22,6 +22,8 @@ package loon.action.map.battle;
 
 import java.util.Comparator;
 
+import loon.LSystem;
+
 public abstract class BattleAction {
 
 	public class SpeedComparer implements Comparator<BattleAction> {
@@ -55,13 +57,20 @@ public abstract class BattleAction {
 	private int speed;
 	private int targetIndex;
 	private int rating;
+	
+	private BattleStateMachine machine;
 
 	public BattleAction() {
+		this(null);
+	}
+	
+	public BattleAction(BattleStateMachine m) {
+		this.machine = m;
 		this.reset();
 	}
 
 	public void reset() {
-		this.actionName = "unkwon";
+		this.actionName = LSystem.UNKOWN;
 		this.actionSpeed = 0;
 		this.turnCost = 0;
 		this.actionAnimationCode = -1;
@@ -174,4 +183,13 @@ public abstract class BattleAction {
 		this.rating = rating;
 	}
 
+	public abstract int getInitiative();
+
+	public BattleStateMachine getMachine() {
+		return machine;
+	}
+
+	public void setMachine(BattleStateMachine machine) {
+		this.machine = machine;
+	}
 }

@@ -42,6 +42,14 @@ public abstract class Interval implements Updateable, LRelease {
 		this.timer = new LTimer(d);
 	}
 
+	public Interval(String name, long delay) {
+		this.timer = new LTimer(name, delay);
+	}
+
+	public Interval(String name, Duration d) {
+		this.timer = new LTimer(name, d);
+	}
+
 	public Interval start() {
 		timer.start();
 		timer.setUpdateable(this);
@@ -72,6 +80,10 @@ public abstract class Interval implements Updateable, LRelease {
 
 	public long getDelay() {
 		return timer.getDelay();
+	}
+
+	public String getName() {
+		return timer.getName();
 	}
 
 	public LTimer currentTimer() {

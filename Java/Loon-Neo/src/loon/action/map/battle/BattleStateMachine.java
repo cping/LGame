@@ -24,32 +24,46 @@ import loon.utils.TArray;
 
 public class BattleStateMachine {
 
-	protected TArray<BattleTransition> transitions;
-	protected BattleState current;
+	protected TArray<BattleTransition> _transitions;
+
+	protected BattleState _current;
 
 	public BattleStateMachine(BattleState start, TArray<BattleTransition> transitions) {
-		this.current = start;
-		this.transitions = transitions;
-		this.current.onEnter();
+		this(start, transitions, true);
 	}
 
-	public void addTransition(BattleTransition tran) {
-		transitions.add(tran);
-	}
-
-	public void update(long elapsedTime) {
-		current.update(elapsedTime);
-		BattleState nextState = getNextState();
-		if (nextState != null) {
-			current.onExit();
-			nextState.onEnter();
-			current = nextState;
+	public BattleStateMachine(BattleState start, TArray<BattleTransition> transitions, boolean enter) {
+		this._current = start;
+		this._transitions = transitions;
+		if (enter) {
+			this._current.onEnter();
 		}
 	}
 
+	public void addTransition(BattleTransition tran) {
+		_transitions.add(tran);
+	}
+
+	public void update(long elapsedTime) {
+		_current.update(elapsedTime);
+		BattleState nextState = getNextState();
+		if (nextState != null) {
+			_current.onExit();
+			nextState.onEnter();
+			_current = nextState;
+		}
+	}
+
+	public BattleTransition remove(int idx) {
+		if (idx > -1 && idx < _transitions.size) {
+			return _transitions.removeIndex(idx);
+		}
+		return null;
+	}
+
 	public BattleState getNextState() {
-		for (BattleTransition transition : transitions) {
-			if (transition.from != null && !transition.from.equals(current)) {
+		for (BattleTransition transition : _transitions) {
+			if (transition.from != null && !transition.from.equals(_current)) {
 				continue;
 			}
 			if (transition.condition.isTrue()) {

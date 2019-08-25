@@ -83,7 +83,7 @@ public class LTimer implements LRelease {
 		if (_instance == null) {
 			synchronized (LTimer.class) {
 				if (_instance == null) {
-					_instance = new LTimer(0);
+					_instance = new LTimer("STATIC_TIME", 0);
 				}
 			}
 		}
@@ -125,24 +125,51 @@ public class LTimer implements LRelease {
 
 	private Updateable _update;
 
+	private final String _name;
+
 	public LTimer() {
 		this(450);
+	}
+
+	public LTimer(String name) {
+		this(name, 450);
+	}
+
+	public LTimer(String name, Duration d) {
+		this(name, d == null ? 0 : d.toMillisLong(), 1f);
 	}
 
 	public LTimer(Duration d) {
 		this(d == null ? 0 : d.toMillisLong());
 	}
 
+	public LTimer(String name, long delay) {
+		this(name, delay, 1f);
+	}
+
 	public LTimer(long delay) {
 		this(delay, 1f);
+	}
+
+	public LTimer(String name, long delay, float factor) {
+		this(name, delay, -1, factor, true);
 	}
 
 	public LTimer(long delay, float factor) {
 		this(delay, -1, factor, true);
 	}
 
+	public LTimer(String name, long delay, float factor, boolean repeats) {
+		this(name, delay, -1, factor, repeats);
+	}
+
 	public LTimer(long delay, int numberOfRepeats, float factor, boolean repeats) {
+		this(LSystem.UNKOWN, delay, numberOfRepeats, factor, repeats);
+	}
+
+	public LTimer(String name, long delay, int numberOfRepeats, float factor, boolean repeats) {
 		this._idx = GLOBAL_ID++;
+		this._name = name;
 		this._closed = false;
 		this.reset(delay, numberOfRepeats, factor, repeats);
 	}
@@ -362,6 +389,10 @@ public class LTimer implements LRelease {
 		return this;
 	}
 
+	public String getName() {
+		return _name;
+	}
+
 	public boolean isClosed() {
 		return this._closed;
 	}
@@ -369,8 +400,8 @@ public class LTimer implements LRelease {
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("LTimer");
-		builder.kv("currentTick", _currentTick).comma().kv("delay", _delay).comma().kv("factor", _speedFactor).comma()
-				.kv("active", _active).comma().kv("repeats", _repeats).comma()
+		builder.kv("name", _name).comma().kv("currentTick", _currentTick).comma().kv("delay", _delay).comma()
+				.kv("factor", _speedFactor).comma().kv("active", _active).comma().kv("repeats", _repeats).comma()
 				.kv("maxNumberOfRepeats", _maxNumberOfRepeats).comma().kv("numberOfTicks", _numberOfTicks).comma()
 				.kv("completed", _completed);
 		return builder.toString();

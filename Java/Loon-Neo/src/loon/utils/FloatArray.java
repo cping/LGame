@@ -332,7 +332,7 @@ public class FloatArray implements IArray {
 		}
 		return orderCount == length;
 	}
-	
+
 	public void reverse() {
 		float[] items = this.items;
 		for (int i = 0, lastIndex = length - 1, n = length / 2; i < n; i++) {
@@ -357,7 +357,7 @@ public class FloatArray implements IArray {
 		if (length > newlength)
 			length = newlength;
 	}
-
+	
 	public float random() {
 		if (length == 0) {
 			return 0;
@@ -541,7 +541,31 @@ public class FloatArray implements IArray {
 		}
 		return this.sum() / length;
 	}
-	
+
+	public float min() {
+		float v = this.items[0];
+		final int size = this.length;
+		for (int i = size - 1; i > -1; i--) {
+			float n = this.items[i];
+			if (n < v) {
+				v = n;
+			}
+		}
+		return v;
+	}
+
+	public float max() {
+		float v = this.items[0];
+		final int size = this.length;
+		for (int i = size - 1; i > -1; i--) {
+			float n = this.items[i];
+			if (n > v) {
+				v = n;
+			}
+		}
+		return v;
+	}
+
 	public byte[] getBytes() {
 		return getBytes(0);
 	}

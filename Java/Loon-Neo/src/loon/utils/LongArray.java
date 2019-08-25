@@ -374,6 +374,7 @@ public class LongArray implements IArray {
 		return array;
 	}
 
+	@Override
 	public boolean equals(Object object) {
 		if (object == this)
 			return true;
@@ -477,6 +478,30 @@ public class LongArray implements IArray {
 			return 0;
 		}
 		return this.sum() / length;
+	}
+	
+	public long min() {
+		long v = this.items[0];
+		final int size = this.length;
+		for (int i = size - 1; i > -1; i--) {
+			long n = this.items[i];
+			if (n < v) {
+				v = n;
+			}
+		}
+		return v;
+	}
+
+	public long max() {
+		long v = this.items[0];
+		final int size = this.length;
+		for (int i = size - 1; i > -1; i--) {
+			long n = this.items[i];
+			if (n > v) {
+				v = n;
+			}
+		}
+		return v;
 	}
 	
 	@Override

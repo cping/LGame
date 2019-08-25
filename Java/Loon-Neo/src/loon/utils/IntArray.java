@@ -557,6 +557,30 @@ public class IntArray implements IArray {
 		return this.sum() / length;
 	}
 
+	public int min() {
+		int v = this.items[0];
+		final int size = this.length;
+		for (int i = size - 1; i > -1; i--) {
+			int n = this.items[i];
+			if (n < v) {
+				v = n;
+			}
+		}
+		return v;
+	}
+
+	public int max() {
+		int v = this.items[0];
+		final int size = this.length;
+		for (int i = size - 1; i > -1; i--) {
+			int n = this.items[i];
+			if (n > v) {
+				v = n;
+			}
+		}
+		return v;
+	}
+	
 	public String toString(char split) {
 		if (length == 0) {
 			return "[]";
