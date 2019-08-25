@@ -22,11 +22,11 @@ package loon.action.map.battle;
 
 import loon.opengl.GLEx;
 
-public abstract class BattleView {
+public abstract class BattleView implements BattleDraw {
 
-	public abstract void alter(long elapsedTime);
+	public abstract void update(long elapsedTime);
 
-	public abstract void draw(GLEx gl);
+	public abstract void draw(BattleCamera cam, GLEx g);
 
 	public abstract int state();
 

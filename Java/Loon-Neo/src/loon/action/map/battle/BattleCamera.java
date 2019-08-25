@@ -59,6 +59,64 @@ public class BattleCamera {
 		return this;
 	}
 
+	public BattleCamera adjustToPlayer(int mapWidth, int mapHeight) {
+		return adjustToPlayer(anchorTarget, mapWidth, mapHeight);
+	}
+
+	public BattleCamera adjustToPlayer(ActionBind player, int mapWidth, int mapHeight) {
+
+		float newCameraX = (player.getX() + player.getWidth() / 2) - width / 2;
+		float newCameraY = (player.getY() + player.getHeight() / 2) - height / 2;
+
+		if (newCameraX < 0) {
+			newCameraX = 0;
+		} else if (newCameraX + width > mapWidth) {
+			newCameraX = mapWidth - width;
+		}
+
+		if (newCameraY < 0) {
+			newCameraY = 0;
+		} else if (newCameraY + height > mapHeight) {
+			newCameraY = mapHeight - height;
+		}
+
+		this.curX = newCameraX;
+		this.curY = newCameraY;
+
+		return this;
+	}
+
+	public BattleCamera followPlayer(int mapWidth, int mapHeight, float cameraOffset, float cameraSpeed) {
+		return followPlayer(anchorTarget, mapWidth, mapHeight, cameraOffset, cameraSpeed);
+	}
+
+	public BattleCamera followPlayer(ActionBind player, int mapWidth, int mapHeight, float cameraOffset,
+			float cameraSpeed) {
+		
+		if (player.getX() - curX < cameraOffset) {
+			if (curX > 0) {
+				curX -= cameraSpeed;
+			}
+		} else if ((curX + width) - (player.getX() + player.getWidth()) < cameraOffset) {
+			if (curX + width < mapWidth) {
+				curX += cameraSpeed;
+			}
+		}
+		
+		if (player.getY() - curY < cameraOffset) {
+			if (curY > 0) {
+				curY -= cameraSpeed;
+			}
+		} else if ((curY + height) - (player.getY() + player.getHeight()) < cameraOffset) {
+			if (curY + height < mapHeight) {
+				curY += cameraSpeed;
+			}
+		}
+		
+		return this;
+		
+	}
+
 	public float getWidth() {
 		return width / scaleX;
 	}
@@ -172,4 +230,5 @@ public class BattleCamera {
 			this.shakeX = shakeY = 0;
 		}
 	}
+
 }

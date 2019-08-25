@@ -22,7 +22,7 @@ package loon.action.map.battle;
 
 import loon.opengl.GLEx;
 
-public interface BattleDraw {
+public interface BattleDraw  {
 
 	public void draw(BattleCamera cam, GLEx g);
 
