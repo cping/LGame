@@ -21,7 +21,7 @@
 package loon.utils.timer;
 
 import loon.LRelease;
-import loon.event.Updateable;
+import loon.event.ActionUpdate;
 
 /**
  * 这是一个指定循环事务延迟触发用抽象类,本身并没有实现关键的loop方法,loop部分需要用户根据实际需求实现.<br>
@@ -30,64 +30,89 @@ import loon.event.Updateable;
  * ps:事实上这只是一个LTimer的延迟调用部分功能的抽象封装,简化了LTimer的delay相关方法的调用.
  * 不使用此类,而直接使用LTimer也可以得到完全等价的效果.
  */
-public abstract class Interval implements Updateable, LRelease {
+public abstract class Interval implements ActionUpdate, LRelease {
 
-	private final LTimer timer;
+	protected final LTimer _loop_timer;
+
+	public Interval() {
+		this._loop_timer = new LTimer(0L);
+	}
 
 	public Interval(long delay) {
-		this.timer = new LTimer(delay);
+		this._loop_timer = new LTimer(delay);
 	}
 
 	public Interval(Duration d) {
-		this.timer = new LTimer(d);
+		this._loop_timer = new LTimer(d);
 	}
 
 	public Interval(String name, long delay) {
-		this.timer = new LTimer(name, delay);
+		this._loop_timer = new LTimer(name, delay);
+	}
+
+	public Interval(long delay, int loopCount) {
+		this._loop_timer = new LTimer(delay, loopCount);
+	}
+
+	public Interval(String name, long delay, int loopCount) {
+		this._loop_timer = new LTimer(name, delay, loopCount);
 	}
 
 	public Interval(String name, Duration d) {
-		this.timer = new LTimer(name, d);
+		this._loop_timer = new LTimer(name, d);
 	}
 
 	public Interval start() {
-		timer.start();
-		timer.setUpdateable(this);
-		timer.submit();
+		_loop_timer.start();
+		_loop_timer.setUpdateable(this);
+		_loop_timer.submit();
 		return this;
 	}
 
 	public Interval stop() {
-		timer.stop();
-		timer.kill();
+		_loop_timer.stop();
+		_loop_timer.kill();
 		return this;
 	}
 
 	public Interval pause() {
-		timer.pause();
+		_loop_timer.pause();
 		return this;
 	}
 
 	public Interval unpause() {
-		timer.unpause();
+		_loop_timer.unpause();
 		return this;
 	}
 
 	public Interval setDelay(long d) {
-		timer.setDelay(d);
+		_loop_timer.setDelay(d);
 		return this;
 	}
 
 	public long getDelay() {
-		return timer.getDelay();
+		return _loop_timer.getDelay();
 	}
 
 	public String getName() {
-		return timer.getName();
+		return _loop_timer.getName();
+	}
+
+	public boolean isActive() {
+		return _loop_timer.isActive();
+	}
+
+	public boolean isClosed() {
+		return _loop_timer.isClosed();
+	}
+
+	@Override
+	public boolean completed() {
+		return _loop_timer.isCompleted();
 	}
 
 	public LTimer currentTimer() {
-		return timer;
+		return _loop_timer;
 	}
 
 	@Override
@@ -99,7 +124,7 @@ public abstract class Interval implements Updateable, LRelease {
 
 	@Override
 	public void close() {
-		timer.close();
+		_loop_timer.close();
 	}
 
 }

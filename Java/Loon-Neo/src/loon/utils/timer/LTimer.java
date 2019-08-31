@@ -159,6 +159,14 @@ public class LTimer implements LRelease {
 		this(delay, -1, factor, true);
 	}
 
+	public LTimer(long delay, int numberOfRepeats) {
+		this(LSystem.UNKOWN, delay, numberOfRepeats);
+	}
+
+	public LTimer(String name, long delay, int numberOfRepeats) {
+		this(name, delay, numberOfRepeats, 1f, true);
+	}
+
 	public LTimer(String name, long delay, float factor, boolean repeats) {
 		this(name, delay, -1, factor, repeats);
 	}
@@ -195,8 +203,8 @@ public class LTimer implements LRelease {
 				if (this._update != null) {
 					this._update.action(this);
 				}
-				this._numberOfTicks++;
 				if (this._repeats) {
+					this._numberOfTicks++;
 					this._currentTick = 0;
 				} else {
 					this._completed = true;
@@ -291,22 +299,30 @@ public class LTimer implements LRelease {
 
 	public LTimer start() {
 		this._active = true;
+		this.setCompleted(false);
 		return this;
 	}
 
 	public LTimer stop() {
 		this._active = false;
+		this.setCompleted(true);
 		return this;
 	}
 
 	public LTimer pause() {
-		return stop();
+		this._active = false;
+		return this;
 	}
 
 	public LTimer unpause() {
-		return start();
+		this._active = true;
+		return this;
 	}
 
+	public boolean paused() {
+		return !isActive();
+	}
+	
 	public int getId() {
 		return _idx;
 	}
@@ -372,7 +388,9 @@ public class LTimer implements LRelease {
 
 	public LTimer submit() {
 		synchronized (RealtimeProcessManager.class) {
-			RealtimeProcessManager.get().delete(_process);
+			if (_process != null) {
+				RealtimeProcessManager.get().delete(_process);
+			}
 			if (_process == null || _process.isDead()) {
 				_process = new TimerProcess(this);
 			}
