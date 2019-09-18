@@ -675,7 +675,7 @@ public class Field2D implements IArray, Config {
 	}
 
 	public int[][] neighbors(int px, int py, boolean flag) {
-		int[][] pos = new int[8][2];
+		int[][] pos = new int[flag ? 8 : 4][2];
 		insertArrays(pos, 0, px, py - 1);
 		insertArrays(pos, 0, px + 1, py);
 		insertArrays(pos, 0, px, py + 1);
@@ -691,7 +691,7 @@ public class Field2D implements IArray, Config {
 
 	public TArray<Vector2f> neighbors(Vector2f pos, boolean flag) {
 		if (result == null) {
-			result = new TArray<Vector2f>(8);
+			result = new TArray<Vector2f>(flag ? 8 : 4);
 		} else {
 			result.clear();
 		}

@@ -171,7 +171,7 @@ public class AStarFinder extends TileImplPathFind implements Updateable, LReleas
 
 	private boolean flying, flag, closed;
 
-	private Field2D field;
+	private Field2D findMap;
 
 	private int startX, startY, endX, endY;
 
@@ -188,9 +188,9 @@ public class AStarFinder extends TileImplPathFind implements Updateable, LReleas
 		this.findHeuristic = heuristic;
 	}
 
-	public AStarFinder(AStarFindHeuristic heuristic, Field2D field, int startX, int startY, int endX, int endY,
+	public AStarFinder(AStarFindHeuristic heuristic, Field2D m, int startX, int startY, int endX, int endY,
 			boolean flying, boolean flag, AStarFinderListener callback) {
-		this.field = field;
+		this.findMap = m;
 		this.startX = startX;
 		this.startY = startY;
 		this.endX = endX;
@@ -201,13 +201,13 @@ public class AStarFinder extends TileImplPathFind implements Updateable, LReleas
 		this.findHeuristic = heuristic;
 	}
 
-	public AStarFinder(AStarFindHeuristic heuristic, Field2D field, int startX, int startY, int endX, int endY,
+	public AStarFinder(AStarFindHeuristic heuristic, Field2D m, int startX, int startY, int endX, int endY,
 			boolean flying, boolean flag) {
-		this(heuristic, field, startX, startY, endX, endY, flying, flag, null);
+		this(heuristic, m, startX, startY, endX, endY, flying, flag, null);
 	}
 
 	public void update(AStarFinder find) {
-		this.field = find.field;
+		this.findMap = find.findMap;
 		this.startX = find.startX;
 		this.startY = find.startY;
 		this.endX = find.endX;
@@ -233,10 +233,10 @@ public class AStarFinder extends TileImplPathFind implements Updateable, LReleas
 	public TArray<Vector2f> findPath() {
 		Vector2f start = new Vector2f(startX, startY);
 		Vector2f over = new Vector2f(endX, endY);
-		return calc(field, start, over, flag);
+		return calc(findMap, start, over, flag);
 	}
 
-	private TArray<Vector2f> calc(Field2D field, Vector2f start, Vector2f goal, boolean flag) {
+	private TArray<Vector2f> calc(Field2D m, Vector2f start, Vector2f goal, boolean flag) {
 		if (start.equals(goal)) {
 			TArray<Vector2f> v = new TArray<Vector2f>();
 			v.add(start);
@@ -267,7 +267,7 @@ public class AStarFinder extends TileImplPathFind implements Updateable, LReleas
 			spath.path = path;
 		}
 		pathes.add(spath);
-		return astar(field, flag);
+		return astar(m, flag);
 	}
 
 	private int overflow = 4096;
@@ -280,7 +280,7 @@ public class AStarFinder extends TileImplPathFind implements Updateable, LReleas
 		return this.overflow;
 	}
 
-	private TArray<Vector2f> astar(Field2D field, boolean flag) {
+	private TArray<Vector2f> astar(Field2D map, boolean flag) {
 		for (int j = 0; pathes.size > 0; j++) {
 			if (j > overflow) {
 				pathes.clear();
@@ -291,15 +291,14 @@ public class AStarFinder extends TileImplPathFind implements Updateable, LReleas
 			if (current.equals(goal)) {
 				return new TArray<Vector2f>(spath.path);
 			}
-			TArray<Vector2f> list = field.neighbors(current, flag);
-			int size = list.size;
+			TArray<Vector2f> list = map.neighbors(current, flag);
+			final int size = list.size;
 			for (int i = 0; i < size; i++) {
 				Vector2f next = list.get(i);
-				if (visitedCache.contains(next)) {
+				if (!map.isHit(next) && !flying) {
 					continue;
 				}
-				visitedCache.add(next);
-				if (!field.isHit(next) && !flying) {
+				if(!visitedCache.add(next)){
 					continue;
 				}
 				TArray<Vector2f> path = new TArray<Vector2f>(spath.path);

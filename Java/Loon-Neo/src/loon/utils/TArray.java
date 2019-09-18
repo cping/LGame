@@ -376,6 +376,7 @@ public class TArray<T> implements Iterable<T>, IArray {
 		return items[0];
 	}
 
+	@Override
 	public void clear() {
 		T[] items = this.items;
 		for (int i = 0, n = size; i < n; i++)
@@ -383,6 +384,7 @@ public class TArray<T> implements Iterable<T>, IArray {
 		size = 0;
 	}
 
+	@Override
 	public boolean isEmpty() {
 		return this.size == 0;
 	}
@@ -427,6 +429,17 @@ public class TArray<T> implements Iterable<T>, IArray {
 			items[i] = items[ii];
 			items[ii] = temp;
 		}
+		return this;
+	}
+
+	public TArray<T> unshift(T o) {
+		T[] items = this.items;
+		int len = items.length;
+		T[] newItems = (T[]) new Object[len + 1];
+		newItems[0] = o;
+		System.arraycopy(items, 0, newItems, 1, items.length);
+		this.items = newItems;
+		this.size++;
 		return this;
 	}
 
