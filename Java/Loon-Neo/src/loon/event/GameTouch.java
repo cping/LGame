@@ -161,6 +161,18 @@ public class GameTouch {
 
 	boolean isDraging;
 
+	public boolean isLeft() {
+		return button == SysTouch.LEFT;
+	}
+
+	public boolean isMiddle() {
+		return button == SysTouch.MIDDLE;
+	}
+	
+	public boolean isRight() {
+		return button == SysTouch.RIGHT;
+	}
+	
 	public boolean isDown() {
 		return button == SysTouch.TOUCH_DOWN;
 	}

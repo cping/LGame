@@ -128,7 +128,8 @@ final public class StringUtils extends CharUtils {
 	 * @param a
 	 * @param b
 	 * @param ignoreWhitespaces
-	 *            如果此项为true,则无视所有不显示的占位符,即StringUtils.equals("abc\n", "abc",true)
+	 *            如果此项为true,则无视所有不显示的占位符,即StringUtils.equals("abc\n",
+	 *            "abc",true)
 	 *            这样含有换行符之类不显示字符的字符串在比较时此标记为true时将等值,为false时不等值,默认为false
 	 * @return
 	 */
@@ -859,6 +860,12 @@ final public class StringUtils extends CharUtils {
 		return count >= size;
 	}
 
+	/**
+	 * 判断字符串中是否包含中文
+	 * 
+	 * @param mes
+	 * @return
+	 */
 	public static boolean containChinaLanguage(String mes) {
 		int size = mes.length();
 		for (int i = 0; i < size; i++) {
@@ -867,6 +874,21 @@ final public class StringUtils extends CharUtils {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * 判断字符串是否全部是空格
+	 * 
+	 * @param param
+	 * @return
+	 */
+	public static boolean isBlankAll(CharSequence param) {
+		for (int i = 0; i < param.length(); i++) {
+			if (param.charAt(i) != ' ') {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**
@@ -1234,6 +1256,9 @@ final public class StringUtils extends CharUtils {
 	}
 
 	public static String merge(String[] messages) {
+		if (isEmpty(messages)) {
+			return "";
+		}
 		StringBuilder sbr = new StringBuilder();
 		for (String mes : messages) {
 			if (mes != null) {
@@ -1244,6 +1269,9 @@ final public class StringUtils extends CharUtils {
 	}
 
 	public static String merge(CharSequence[] messages) {
+		if (messages == null || messages.length == 0) {
+			return "";
+		}
 		StringBuilder sbr = new StringBuilder();
 		for (CharSequence mes : messages) {
 			if (mes != null) {

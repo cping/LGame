@@ -124,7 +124,7 @@ public class LSetting {
 	/**
 	 * 生成系统默认的LFont时,是否使用剪切生成
 	 */
-	public boolean useTrueFontClip = true;
+	public boolean useTrueFontClip = false;
 
 	/**
 	 * 帧率

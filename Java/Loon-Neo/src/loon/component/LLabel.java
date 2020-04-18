@@ -214,6 +214,9 @@ public class LLabel extends LComponent implements FontSet<LLabel> {
 	}
 
 	public LLabel setText(CharSequence ch) {
+		if (_text == null || ch == null) {
+			return this;
+		}
 		_text.setText(ch);
 		return this;
 	}

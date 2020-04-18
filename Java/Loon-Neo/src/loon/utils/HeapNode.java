@@ -20,7 +20,6 @@
  */
 package loon.utils;
 
-
 public abstract class HeapNode {
 
 	public float h;

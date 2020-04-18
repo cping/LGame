@@ -310,6 +310,18 @@ public class SysKey {
 		return SysInputFactory.finalKey.keyCode;
 	}
 
+	public boolean isShift() {
+		return SysInputFactory.finalKey.isShift();
+	}
+
+	public boolean isCtrl() {
+		return SysInputFactory.finalKey.isCtrl();
+	}
+
+	public boolean isAlt() {
+		return SysInputFactory.finalKey.isAlt();
+	}
+
 	public static boolean isDown() {
 		return SysInputFactory.finalKey.isDown();
 	}
@@ -330,8 +342,7 @@ public class SysKey {
 		keys.removeValue(key);
 	}
 
-	final static ActionKey only_key = new ActionKey(
-			ActionKey.DETECT_INITIAL_PRESS_ONLY);
+	final static ActionKey only_key = new ActionKey(ActionKey.DETECT_INITIAL_PRESS_ONLY);
 
 	public static ActionKey getOnlyKey() {
 		return only_key;
@@ -361,7 +372,7 @@ public class SysKey {
 		}
 	}
 
-	public static GameKey cpy(){
+	public static GameKey cpy() {
 		return SysInputFactory.finalKey.cpy();
 	}
 }

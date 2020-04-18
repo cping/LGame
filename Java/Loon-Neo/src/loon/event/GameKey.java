@@ -20,6 +20,7 @@
  */
 package loon.event;
 
+import loon.LSystem;
 import loon.utils.StringKeyValue;
 
 public class GameKey {
@@ -99,6 +100,18 @@ public class GameKey {
 
 	public int getType() {
 		return type;
+	}
+
+	public boolean isShift() {
+		return type == SysKey.SHIFT_LEFT || type == SysKey.SHIFT_RIGHT;
+	}
+
+	public boolean isCtrl() {
+		return type == SysKey.CONTROL_LEFT || type == SysKey.CONTROL_RIGHT;
+	}
+
+	public boolean isAlt() {
+		return type == SysKey.ALT_LEFT || type == SysKey.ALT_RIGHT;
 	}
 
 	public boolean isDown() {

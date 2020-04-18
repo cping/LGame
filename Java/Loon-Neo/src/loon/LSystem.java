@@ -783,7 +783,7 @@ public class LSystem {
 	public static final boolean equals(final Object o1, final Object o2) {
 		return (o1 == null) ? (o2 == null) : o1.equals(o2);
 	}
-
+	
 	public static boolean isImage(String extension) {
 		return extension.equals("jpg") || extension.equals("jpeg") || extension.equals("png") || extension.equals("bmp")
 				|| extension.equals("gif");

@@ -183,6 +183,8 @@ public class Print implements FontSet<Print>, LRelease {
 
 	private IFont ifont;
 
+	private boolean nativeFont = false;
+
 	private boolean isEnglish, isWait, isIconFlag;
 
 	private float iconX, iconY, offsetIconX, offsetIconY;
@@ -205,8 +207,6 @@ public class Print implements FontSet<Print>, LRelease {
 		this.isWait = false;
 		this.isIconFlag = true;
 	}
-
-	private boolean nativeFont = false;
 
 	public void setMessage(String context, IFont font) {
 		setMessage(context, font, false);

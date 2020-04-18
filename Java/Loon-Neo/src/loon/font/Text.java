@@ -103,8 +103,14 @@ public class Text implements LRelease {
 		if (LSystem.base() == null || chars == null) {
 			return;
 		}
+		if(_closed){
+			return;
+		}
 		this._chars = chars != null ? chars : LSystem.EMPTY;
 		final IFont font = this._font;
+		if (this._lines == null) {
+			this._lines = new TArray<CharSequence>();
+		}
 		this._lines.clear();
 		this._lineWidths.clear();
 		if (this._textOptions._autoWrap == AutoWrap.NONE) {

@@ -109,6 +109,18 @@ public class SysTouch {
 		return SysInputFactory.finalTouch.dy;
 	}
 
+	public static boolean isLeft() {
+		return SysInputFactory.finalTouch.isLeft();
+	}
+
+	public static boolean isMiddle() {
+		return SysInputFactory.finalTouch.isMiddle();
+	}
+
+	public static boolean isRight() {
+		return SysInputFactory.finalTouch.isRight();
+	}
+
 	public static boolean isDown() {
 		return SysInputFactory.finalTouch.isDown();
 	}
