@@ -20,18 +20,9 @@
  */
 package loon.opengl;
 
-import loon.LSystem;
 import loon.opengl.ShaderSource;
 
 public class GlobalSource extends ShaderSource {
-
-	public GlobalSource() {
-		this(LSystem.getGLExVertexShader(), LSystem.getGLExFragmentShader());
-	}
-
-	public GlobalSource(String vertex, String frament) {
-		super(vertex, frament);
-	}
 
 	@Override
 	public void setupShader(ShaderProgram program) {

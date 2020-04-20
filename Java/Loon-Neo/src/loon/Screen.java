@@ -84,7 +84,9 @@ import loon.geom.Triangle2f;
 import loon.geom.Vector2f;
 import loon.geom.XY;
 import loon.opengl.GLEx;
+import loon.opengl.GlobalSource;
 import loon.opengl.LTextureImage;
+import loon.opengl.ShaderSource;
 import loon.utils.ArrayByte;
 import loon.utils.ArrayMap;
 import loon.utils.Calculator;
@@ -3154,6 +3156,20 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		}
 		loopEvents.clear();
 		initLoopEvents = false;
+	}
+
+	public Screen setShaderSource(ShaderSource src) {
+		if (LSystem.getProcess() != null && src != null) {
+			LSystem.getProcess().setShaderSource(src);
+		}
+		return this;
+	}
+
+	public ShaderSource getShaderSource() {
+		if (LSystem.getProcess() != null) {
+			return LSystem.getProcess().getShaderSource();
+		}
+		return new GlobalSource();
 	}
 
 	private final void process(final LTimerContext timer) {

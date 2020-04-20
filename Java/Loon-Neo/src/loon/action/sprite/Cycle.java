@@ -114,7 +114,9 @@ public class Cycle extends Entity {
 			break;
 		case 7:
 			cycle.setStepType(1);
-			cycle.setColor(LColor.yellow);
+			cycle.setColor(0xFF2E82);
+			cycle.setStepsPerFrame(2);
+			cycle.setTrailLength(0.9f);
 			cycle.addPath(Cycle.LINE, 10 * scale, 10 * scale, 90 * scale, 10 * scale);
 			cycle.addPath(Cycle.LINE, 90 * scale, 10 * scale, 90 * scale, 90 * scale);
 			cycle.addPath(Cycle.LINE, 90 * scale, 90 * scale, 10 * scale, 90 * scale);

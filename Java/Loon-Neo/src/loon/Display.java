@@ -28,6 +28,8 @@ import loon.canvas.LColor;
 import loon.font.IFont;
 import loon.opengl.GL20;
 import loon.opengl.GLEx;
+import loon.opengl.GlobalSource;
+import loon.opengl.ShaderSource;
 import loon.utils.ArrayByte;
 import loon.utils.ArrayByteOutput;
 import loon.utils.GLUtils;
@@ -434,6 +436,19 @@ public class Display extends LSystemView {
 
 	}
 
+	public void setShaderSource(ShaderSource src) {
+		if (_glEx != null && src != null) {
+			_glEx.setShaderSource(src);
+		}
+	}
+
+	public ShaderSource getShaderSource() {
+		if (_glEx != null) {
+			return _glEx.getShaderSource();
+		}
+		return new GlobalSource();
+	}
+	
 	public Display resize(int viewWidth, int viewHeight) {
 		_process.resize(viewWidth, viewHeight);
 		return this;
@@ -447,9 +462,9 @@ public class Display extends LSystemView {
 	 * @param delta
 	 */
 	private final void drawDebug(final GLEx gl, final LSetting setting, final float delta) {
-		
+
 		final boolean debug = setting.isDebug;
-		
+
 		if (debug || setting.isFPS || setting.isMemory || setting.isSprites) {
 			this.frameCount++;
 			this.frameDelta += delta;

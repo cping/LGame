@@ -20,7 +20,6 @@
  */
 package loon.event;
 
-import loon.LSystem;
 import loon.utils.StringKeyValue;
 
 public class GameKey {

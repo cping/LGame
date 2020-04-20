@@ -137,6 +137,10 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		return new Entity(LSystem.loadTexture(path), x, y);
 	}
 
+	public static Entity make(String path) {
+		return new Entity(LSystem.loadTexture(path), 0, 0);
+	}
+
 	protected void onUpdateColor() {
 
 	}
@@ -1218,7 +1222,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	public float getCenterY() {
 		return getY() + getHeight() / 2f;
 	}
-	
+
 	public Entity in() {
 		return in(30);
 	}

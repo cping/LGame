@@ -214,6 +214,15 @@ public class ShaderProgram implements LRelease {
 		return fetchUniformLocation(name, pedantic);
 	}
 
+	public int findUniformLocation(String name) {
+		GL20 gl = LSystem.base().graphics().gl;
+		int location = -1;
+		if ((location = uniforms.get(name, -2)) == -2) {
+			location = gl.glGetUniformLocation(program, name);
+		}
+		return location;
+	}
+	
 	public int fetchUniformLocation(String name, boolean pedantic) {
 		GL20 gl = LSystem.base().graphics().gl;
 		int location;

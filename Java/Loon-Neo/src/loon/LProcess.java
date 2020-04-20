@@ -32,7 +32,9 @@ import loon.event.TouchMake;
 import loon.event.Updateable;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
+import loon.opengl.GlobalSource;
 import loon.opengl.LSTRDictionary;
+import loon.opengl.ShaderSource;
 import loon.utils.ListMap;
 import loon.utils.MathUtils;
 import loon.utils.ObjectBundle;
@@ -136,8 +138,20 @@ public class LProcess {
 				}
 			}
 		});
-		// 当处于html5时，让本地字体渲染的创建过程异步
-		LSTRDictionary.get().setAsyn(game.isHTML5());
+	}
+
+	public LProcess setShaderSource(ShaderSource src) {
+		if (this._game != null && this._game.displayImpl != null && src != null) {
+			this._game.displayImpl.setShaderSource(src);
+		}
+		return this;
+	}
+
+	public ShaderSource getShaderSource() {
+		if (this._game != null && this._game.displayImpl != null) {
+			return this._game.displayImpl.getShaderSource();
+		}
+		return new GlobalSource();
 	}
 
 	private final static void callUpdateable(final TArray<Updateable> list) {

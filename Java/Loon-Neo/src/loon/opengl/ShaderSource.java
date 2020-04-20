@@ -20,14 +20,19 @@
  */
 package loon.opengl;
 
+import loon.LSystem;
 import loon.utils.StringKeyValue;
 
 public abstract class ShaderSource {
 
-	private final String _vertexShader;
+	private String _vertexShader;
 
-	private final String _framentShader;
+	private String _framentShader;
 
+	public ShaderSource() {
+		this(LSystem.getGLExVertexShader(), LSystem.getGLExFragmentShader());
+	}
+	
 	public ShaderSource(String vertex, String frament) {
 		this._vertexShader = vertex;
 		this._framentShader = frament;
@@ -44,6 +49,14 @@ public abstract class ShaderSource {
 
 	public String fragmentShader() {
 		return _framentShader;
+	}
+
+	public void setVertexShader(String vertex) {
+		this._vertexShader = vertex;
+	}
+
+	public void setFragmentShader(String fragment) {
+		this._framentShader = fragment;
 	}
 
 	@Override
@@ -78,10 +91,7 @@ public abstract class ShaderSource {
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("ShaderSource");
-		builder
-		.newLine().kv("vertexShader", _vertexShader)
-		.newLine().kv("framentShader", _framentShader)
-		.newLine();
+		builder.newLine().kv("vertexShader", _vertexShader).newLine().kv("framentShader", _framentShader).newLine();
 		return builder.toString();
 	}
 
