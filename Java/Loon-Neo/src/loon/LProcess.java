@@ -32,7 +32,6 @@ import loon.event.TouchMake;
 import loon.event.Updateable;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
-import loon.opengl.GlobalSource;
 import loon.opengl.LSTRDictionary;
 import loon.opengl.ShaderSource;
 import loon.utils.ListMap;
@@ -141,17 +140,12 @@ public class LProcess {
 	}
 
 	public LProcess setShaderSource(ShaderSource src) {
-		if (this._game != null && this._game.displayImpl != null && src != null) {
-			this._game.displayImpl.setShaderSource(src);
-		}
+		LSystem.setShaderSource(src);
 		return this;
 	}
 
 	public ShaderSource getShaderSource() {
-		if (this._game != null && this._game.displayImpl != null) {
-			return this._game.displayImpl.getShaderSource();
-		}
-		return new GlobalSource();
+		return LSystem.getShaderSource();
 	}
 
 	private final static void callUpdateable(final TArray<Updateable> list) {

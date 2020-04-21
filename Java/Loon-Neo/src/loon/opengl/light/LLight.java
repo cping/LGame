@@ -59,8 +59,7 @@ public abstract class LLight {
 
 	public LLight setColor(int corner, float r, float g, float b, float a) {
 		if (colors == null) {
-			colors = new LColor[] { new LColor(1, 1, 1, 1f),
-					new LColor(1, 1, 1, 1f), new LColor(1, 1, 1, 1f),
+			colors = new LColor[] { new LColor(1, 1, 1, 1f), new LColor(1, 1, 1, 1f), new LColor(1, 1, 1, 1f),
 					new LColor(1, 1, 1, 1f) };
 		}
 
@@ -80,14 +79,10 @@ public abstract class LLight {
 	 */
 	public LLight setLightColor(int x, int y) {
 		if (x < width && y < height) {
-			setColor(0, lightValue[x][y][0], lightValue[x][y][1],
-					lightValue[x][y][2], 1);
-			setColor(1, lightValue[x + 1][y][0], lightValue[x + 1][y][1],
-					lightValue[x + 1][y][2], 1);
-			setColor(2, lightValue[x + 1][y + 1][0],
-					lightValue[x + 1][y + 1][1], lightValue[x + 1][y + 1][2], 1);
-			setColor(3, lightValue[x][y + 1][0], lightValue[x][y + 1][1],
-					lightValue[x][y + 1][2], 1);
+			setColor(0, lightValue[x][y][0], lightValue[x][y][1], lightValue[x][y][2], 1);
+			setColor(1, lightValue[x + 1][y][0], lightValue[x + 1][y][1], lightValue[x + 1][y][2], 1);
+			setColor(2, lightValue[x + 1][y + 1][0], lightValue[x + 1][y + 1][1], lightValue[x + 1][y + 1][2], 1);
+			setColor(3, lightValue[x][y + 1][0], lightValue[x][y + 1][1], lightValue[x][y + 1][2], 1);
 			isLightDirty = true;
 		}
 		return this;
@@ -163,8 +158,7 @@ public abstract class LLight {
 					lightValue[x][y][component] = 0;
 				}
 				for (int i = 0; i < lights.size; i++) {
-					float[] effect = (lights.get(i)).getEffectAt(x, y,
-							colouredLights);
+					float[] effect = (lights.get(i)).getEffectAt(x, y, colouredLights);
 					for (int component = 0; component < 3; component++) {
 						lightValue[x][y][component] += effect[component];
 					}
@@ -181,7 +175,7 @@ public abstract class LLight {
 	}
 
 	// 地图光源用类
-	public static class Light {
+	public static class Light extends BaseLight {
 
 		private float xpos;
 
@@ -189,13 +183,13 @@ public abstract class LLight {
 
 		private float strength;
 
-		private LColor color;
-
 		public Light(float x, float y, float str, LColor col) {
 			this.xpos = x;
 			this.ypos = y;
 			this.strength = str;
-			this.color = col;
+			if (col != null) {
+				this.color.setColor(col);
+			}
 		}
 
 		public Light(float x, float y, float str) {
@@ -216,8 +210,7 @@ public abstract class LLight {
 				effect = 0;
 			}
 			if (colouredLights) {
-				return new float[] { color.r * effect, color.g * effect,
-						color.b * effect };
+				return new float[] { color.r * effect, color.g * effect, color.b * effect };
 			} else {
 				return new float[] { effect, effect, effect };
 			}

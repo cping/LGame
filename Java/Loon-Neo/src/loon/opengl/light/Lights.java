@@ -27,9 +27,13 @@ import loon.utils.TArray;
 public class Lights {
 	
 	public final LColor ambientLight = new LColor(0f,0f,0f,1f);
+	
     public LColor fog;
+    
 	public final TArray<DirectionalLight> directionalLights = new TArray<DirectionalLight>();
+	
 	public final TArray<PointLight> pointLights = new TArray<PointLight>();
+	
 	
 	public Lights() {}
 	

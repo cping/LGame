@@ -38,7 +38,6 @@ import loon.opengl.LTextureRegion;
 import loon.opengl.MeshDefault;
 import loon.opengl.ShaderProgram;
 import loon.opengl.ShaderSource;
-import loon.opengl.TrilateralBatch;
 import loon.utils.GLUtils;
 import loon.utils.IntMap;
 import loon.utils.MathUtils;
@@ -194,7 +193,7 @@ public class SpriteBatch extends PixmapFImpl {
 	}
 
 	public SpriteBatch(int size) {
-		this(TrilateralBatch.DEF_SOURCE, size);
+		this(LSystem.getShaderSource(), size);
 	}
 
 	public SpriteBatch(ShaderSource src, int size) {

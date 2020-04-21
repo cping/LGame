@@ -29,7 +29,6 @@ import loon.opengl.GL20;
 import loon.opengl.MeshDefault;
 import loon.opengl.ShaderProgram;
 import loon.opengl.ShaderSource;
-import loon.opengl.TrilateralBatch;
 import loon.utils.GLUtils;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
@@ -180,7 +179,7 @@ public class LTextureBatch implements LRelease {
 	private BlendState lastBlendState = BlendState.NonPremultiplied;
 
 	public LTextureBatch(LTexture tex) {
-		this(tex, 256, TrilateralBatch.DEF_SOURCE, null);
+		this(tex, 256, LSystem.getShaderSource(), null);
 	}
 
 	public LTextureBatch(LTexture tex, final ShaderSource src) {

@@ -60,7 +60,7 @@ public class ShaderTest extends Stage {
 
 		addPadding(Entity.make("bird.png"), 100, 150);
 		addRow(Entity.make("ccc.png"), 100);
-
+		add(MultiScreenTest.getBackButton(this,2));
 	}
 	
 	@Override

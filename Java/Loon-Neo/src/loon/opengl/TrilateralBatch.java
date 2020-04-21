@@ -29,8 +29,6 @@ import loon.LSystem;
 
 public class TrilateralBatch extends BaseBatch {
 
-	public final static GlobalSource DEF_SOURCE = new GlobalSource();
-
 	private final static String _batch_name = "trilbatch";
 
 	private final Matrix4 viewMatrix;
@@ -116,7 +114,7 @@ public class TrilateralBatch extends BaseBatch {
 	}
 
 	public TrilateralBatch(GL20 gl) {
-		this(gl, DEF_SOURCE);
+		this(gl, LSystem.DEF_SOURCE);
 	}
 
 	public TrilateralBatch(GL20 gl, ShaderSource src) {

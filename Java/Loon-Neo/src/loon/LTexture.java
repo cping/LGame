@@ -31,7 +31,6 @@ import loon.opengl.GL20;
 import loon.opengl.GLPaint;
 import loon.opengl.Painter;
 import loon.opengl.ShaderSource;
-import loon.opengl.TrilateralBatch;
 import loon.utils.CollectionUtils;
 import loon.utils.GLUtils;
 import loon.utils.IntMap;
@@ -708,7 +707,7 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	public LTextureBatch getTextureBatch(String name, int size) {
-		makeBatch(name, TrilateralBatch.DEF_SOURCE, size);
+		makeBatch(name, gfx.game.displayImpl.getShaderSource(), size);
 		return batch;
 	}
 

@@ -44,11 +44,13 @@ import loon.geom.Dimension;
 import loon.opengl.FrameBuffer;
 import loon.opengl.GLEx;
 import loon.opengl.GLFrameBuffer;
+import loon.opengl.GlobalSource;
 import loon.opengl.LSTRDictionary;
 import loon.opengl.LSTRFont;
 import loon.opengl.Mesh;
 import loon.opengl.ShaderCmd;
 import loon.opengl.ShaderProgram;
+import loon.opengl.ShaderSource;
 import loon.utils.NumberUtils;
 import loon.utils.Scale;
 import loon.utils.TArray;
@@ -150,6 +152,9 @@ public class LSystem {
 
 	public static final String ENCODING = "UTF-8";
 
+	// 默认的Shader
+	public static final GlobalSource DEF_SOURCE = new GlobalSource();
+	
 	public static boolean PAUSED = false;
 
 	// 是否允许屏幕画面刷新
@@ -725,6 +730,19 @@ public class LSystem {
 		}
 	}
 
+	public static final ShaderSource getShaderSource() {
+		if (base() != null && base().displayImpl != null) {
+			return base().displayImpl.getShaderSource();
+		}
+		return DEF_SOURCE;
+	}
+
+	public static final void setShaderSource(ShaderSource src) {
+		if (base() != null && base().displayImpl != null && src != null) {
+			base().displayImpl.setShaderSource(src);
+		}
+	}
+
 	public static final LProcess getProcess() {
 		if (base() != null) {
 			return base().processImpl;
@@ -783,7 +801,7 @@ public class LSystem {
 	public static final boolean equals(final Object o1, final Object o2) {
 		return (o1 == null) ? (o2 == null) : o1.equals(o2);
 	}
-	
+
 	public static boolean isImage(String extension) {
 		return extension.equals("jpg") || extension.equals("jpeg") || extension.equals("png") || extension.equals("bmp")
 				|| extension.equals("gif");

@@ -28,7 +28,6 @@ import loon.canvas.LColor;
 import loon.font.IFont;
 import loon.opengl.GL20;
 import loon.opengl.GLEx;
-import loon.opengl.GlobalSource;
 import loon.opengl.ShaderSource;
 import loon.utils.ArrayByte;
 import loon.utils.ArrayByteOutput;
@@ -446,7 +445,7 @@ public class Display extends LSystemView {
 		if (_glEx != null) {
 			return _glEx.getShaderSource();
 		}
-		return new GlobalSource();
+		return LSystem.DEF_SOURCE;
 	}
 	
 	public Display resize(int viewWidth, int viewHeight) {

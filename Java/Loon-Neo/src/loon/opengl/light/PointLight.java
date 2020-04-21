@@ -24,7 +24,9 @@ import loon.canvas.LColor;
 import loon.geom.Vector3f;
 
 public class PointLight extends BaseLight {
+	
 	public final Vector3f position = new Vector3f();
+	
 	public float intensity;
 
 	public PointLight set(final PointLight copyFrom) {
