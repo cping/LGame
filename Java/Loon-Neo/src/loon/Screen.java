@@ -3045,6 +3045,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		}
 	}
 
+
+	protected void drawLast(GLEx g) {
+
+	}
+
 	public synchronized void createUI(GLEx g) {
 		if (isClose) {
 			return;
@@ -3155,6 +3160,16 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		}
 		loopEvents.clear();
 		initLoopEvents = false;
+	}
+
+	public Screen disableFrameBuffer() {
+		LSystem.disableFrameBuffer();
+		return this;
+	}
+
+	public Screen enableFrameBuffer() {
+		LSystem.enableFrameBuffer();
+		return this;
 	}
 
 	public Screen setShaderSource(ShaderSource src) {

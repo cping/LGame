@@ -47,11 +47,12 @@ public class ShaderTest extends Stage {
 			"error.r = (0.0809444479 * l) + (-0.130504409 * m) + (0.116721066 * s);\n"+
 			"error.g = (-0.0102485335 * l) + (0.0540193266 * m) + (-0.113614708 * s);\n"+
 			"error.b = (-0.000365296938 * l) + (-0.00412161469 * m) + (0.693511405 * s);\n"+
-			"error.a = 1.0;\n"+
+			"error.a = o.a;\n"+
 			"gl_FragColor = error.rgba;\n"+
 			"};";
 	@Override
 	public void create() {
+		setBackground("back1.png");
 		GlobalSource source = new GlobalSource();
 
 		source.setFragmentShader(green);

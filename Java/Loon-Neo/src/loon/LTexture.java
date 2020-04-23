@@ -1041,9 +1041,6 @@ public class LTexture extends Painter implements LRelease {
 		if (_disabledTexture) {
 			return;
 		}
-		if (!_isLoaded) {
-			return;
-		}
 		final int textureId = id;
 		if (!gfx.game.containsTexture(textureId)) {
 			return;

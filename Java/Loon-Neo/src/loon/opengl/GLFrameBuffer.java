@@ -133,6 +133,7 @@ public abstract class GLFrameBuffer implements LRelease {
 		LTexture texture = createTexture(
 				(FrameBufferTextureAttachmentSpec) bufferBuilder.textureAttachmentSpecs.first());
 		textureAttachments.add(texture);
+		texture.loadTexture();
 		GLUtils.bindTexture(gl, texture.getID());
 
 		attachFrameBufferColorTexture(textureAttachments.first());
@@ -149,6 +150,7 @@ public abstract class GLFrameBuffer implements LRelease {
 
 		gl.glBindRenderbuffer(GL20.GL_RENDERBUFFER, 0);
 		for (LTexture tex : textureAttachments) {
+			tex.loadTexture();
 			GLUtils.bindTexture(gl, tex);
 		}
 
@@ -211,7 +213,6 @@ public abstract class GLFrameBuffer implements LRelease {
 		addManagedFrameBuffer(this);
 	}
 
-	/** Releases all resources associated with the FrameBuffer. */
 	@Override
 	public void close() {
 		GL20 gl = LSystem.base().graphics().gl;
@@ -238,7 +239,7 @@ public abstract class GLFrameBuffer implements LRelease {
 		LSystem.base().graphics().gl.glBindFramebuffer(GL20.GL_FRAMEBUFFER, framebufferHandle);
 	}
 
-	public static void unbind() {
+	public void unbind() {
 		LSystem.base().graphics().gl.glBindFramebuffer(GL20.GL_FRAMEBUFFER, defaultFramebufferHandle);
 	}
 
@@ -252,7 +253,7 @@ public abstract class GLFrameBuffer implements LRelease {
 	}
 
 	public void end() {
-		end(0, 0, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
+		end(0, 0, bufferBuilder.width, bufferBuilder.height);
 	}
 
 	public void end(int x, int y, int width, int height) {

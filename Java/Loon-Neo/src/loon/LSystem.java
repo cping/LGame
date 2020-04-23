@@ -730,13 +730,25 @@ public class LSystem {
 		}
 	}
 
+	public static final void disableFrameBuffer() {
+		if (base() != null && base().displayImpl != null) {
+			base().displayImpl.disableFrameBuffer();
+		}
+	}
+
+	public static final void enableFrameBuffer() {
+		if (base() != null && base().displayImpl != null) {
+			base().displayImpl.enableFrameBuffer();
+		}
+	}
+	
 	public static final ShaderSource getShaderSource() {
 		if (base() != null && base().displayImpl != null) {
 			return base().displayImpl.getShaderSource();
 		}
 		return DEF_SOURCE;
 	}
-
+	
 	public static final void setShaderSource(ShaderSource src) {
 		if (base() != null && base().displayImpl != null && src != null) {
 			base().displayImpl.setShaderSource(src);

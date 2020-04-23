@@ -37,6 +37,10 @@ public class FrameBuffer extends GLFrameBuffer {
 		this(width, height, glFormat, glType, hasDepth, false);
 	}
 
+	public FrameBuffer(int width, int height, boolean hasDepth) {
+		this(width, height,  GL20.GL_RGBA, GL20.GL_UNSIGNED_BYTE, hasDepth, hasDepth);
+	}
+	
 	public FrameBuffer(int width, int height, boolean hasDepth, boolean hasStencil) {
 		this(width, height, GL20.GL_RGBA, GL20.GL_UNSIGNED_BYTE, hasDepth);
 	}
@@ -68,9 +72,5 @@ public class FrameBuffer extends GLFrameBuffer {
 	protected void attachFrameBufferColorTexture(LTexture texture) {
 		LSystem.base().graphics().gl.glFramebufferTexture2D(GL20.GL_FRAMEBUFFER, GL20.GL_COLOR_ATTACHMENT0,
 				GL20.GL_TEXTURE_2D, texture.getID(), 0);
-	}
-
-	public static void unbind() {
-		GLFrameBuffer.unbind();
 	}
 }

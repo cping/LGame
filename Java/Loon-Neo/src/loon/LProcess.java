@@ -551,6 +551,12 @@ public class LProcess {
 		}
 	}
 
+	public void drawLast(GLEx g) {
+		if (isInstance && !_waitTransition) {
+			_currentScreen.drawLast(g);
+		}
+	}
+
 	public void drawEmulator(GLEx gl) {
 		if (emulatorButtons != null) {
 			emulatorButtons.draw(gl);

@@ -59,7 +59,7 @@ public abstract class RenderTarget implements LRelease {
 			}
 
 			public boolean flip() {
-				return false;
+				return true;
 			}
 		};
 	}

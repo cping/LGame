@@ -85,7 +85,13 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		TRANS_NONE, TRANS_MIRROR, TRANS_FLIP, TRANS_MF;
 	}
 
+	// 如果此项为true,则GLEx循环中每次begin会启动一个FrameBuffer保存,每次end会关闭一个FrameBuffer并将对应纹理保存至Texture
+	// 以此完整保存全局FrameBuffer内容(否则GLEx中每次begin时FrameBuffer绑定都会刷新，如果多次begin和end，将无法保存全部内容)
+	private boolean saveToFrameBufferTexture;
+
 	private LColor tmpColor = new LColor();
+
+	private final Array<LTextureImage> frameBuffers = new Array<LTextureImage>();
 
 	private final Array<Affine2f> affineStack = new Array<Affine2f>();
 
@@ -93,9 +99,11 @@ public class GLEx extends PixmapFImpl implements LRelease {
 
 	private final TArray<RectBox> scissors = new TArray<RectBox>();
 
+	private final TArray<LTexture> bufferTextures = new TArray<LTexture>();
+
 	private final LTexture colorTex;
 
-	protected final RenderTarget target;
+	protected RenderTarget target;
 
 	private int scissorDepth;
 
@@ -108,6 +116,8 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	private Affine2f lastTrans;
 
 	private BrushSave lastBrush;
+
+	private LTextureImage lastFrameBuffer;
 
 	private float triangleValue = 0.5235988f;
 
@@ -127,7 +137,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 * @param def
 	 * @param alltex
 	 */
-	public GLEx(Graphics gfx, RenderTarget target, BaseBatch def, boolean alltex) {
+	public GLEx(Graphics gfx, RenderTarget target, BaseBatch def, boolean alltex, boolean saveFrameBuffer) {
 		super(0f, 0f, LSystem.viewSize.getRect(), LSystem.viewSize.width, LSystem.viewSize.height, def_skip);
 		this.gfx = gfx;
 		this.target = target;
@@ -141,11 +151,40 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		this.lastBrush.pixSkip = LSystem.isHTML5() ? def_skip_html5 : def_skip;
 		this.lastBrush.blend = LSystem.MODE_NORMAL;
 		this.brushStack.add(lastBrush);
+		this.saveToFrameBufferTexture = saveFrameBuffer;
 		this.update();
 	}
 
+	public GLEx(Graphics gfx, RenderTarget target, GL20 gl, boolean alltex, boolean saveFrameBuffer) {
+		this(gfx, target, createDefaultBatch(gl), alltex, saveFrameBuffer);
+	}
+
 	public GLEx(Graphics gfx, RenderTarget target, GL20 gl) {
-		this(gfx, target, createDefaultBatch(gl), false);
+		this(gfx, target, createDefaultBatch(gl), false, false);
+	}
+
+	public RenderTarget createTarget(LTexture tex) {
+		return RenderTarget.create(gfx, tex);
+	}
+
+	public boolean isSaveFrameBuffer() {
+		return this.saveToFrameBufferTexture;
+	}
+
+	public GLEx setRenderTarget(RenderTarget tar) {
+		if (tar != null && this.target != null && this.target != tar && this.target.id() != tar.id()) {
+			this.target.close();
+			this.target = tar;
+		}
+		return this;
+	}
+
+	public RenderTarget getRenderTarget() {
+		return this.target;
+	}
+
+	public void bindRenderTarget() {
+		this.target.bind();
 	}
 
 	public int getWidth() {
@@ -180,6 +219,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		}
 		target.bind();
 		beginBatch(batch);
+		startFrameBuffer();
 		return this;
 	}
 
@@ -196,12 +236,27 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (batch == null) {
 			return this;
 		}
+		stopFrameBuffer();
 		batch.end();
 		return this;
 	}
 
 	public BaseBatch batch() {
 		return batch;
+	}
+
+	/**
+	 * 将当然GLEx缓存到一个单独的LTextureImage中去(用于获得指定范围内的texture)
+	 * 
+	 * @return
+	 */
+	public LTextureImage toFrameBufferTexture(boolean saveBuffer) {
+		return new LTextureImage(this.gfx, this.batch, getWidth() * getScaleX(), getHeight() * getScaleY(),
+				this.isAlltextures(), saveBuffer);
+	}
+
+	public LTextureImage toFrameBufferTexture() {
+		return toFrameBufferTexture(false);
 	}
 
 	/**
@@ -394,6 +449,104 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	public GLEx restore() {
 		this.restoreTx();
 		this.restoreBrush();
+		return this;
+	}
+
+	public GLEx enableFrameBuffer() {
+		this.saveToFrameBufferTexture = true;
+		return this;
+	}
+
+	public GLEx disableFrameBuffer() {
+		this.saveToFrameBufferTexture = false;
+		return this;
+	}
+
+	public TArray<LTexture> getFrameBufferTextures() {
+		return bufferTextures;
+	}
+
+	public GLEx saveFrameBuffer() {
+		enableFrameBuffer();
+		startFrameBuffer();
+		return this;
+	}
+
+	public LTexture freeFrameBuffer(int idx) {
+		stopFrameBuffer();
+		LTexture texture = null;
+		TArray<LTexture> temps = getFrameBufferTextures();
+		if (temps.size - 1 >= idx) {
+			texture = temps.get(idx);
+		}
+		return texture;
+	}
+
+	public GLEx startFrameBuffer() {
+		if (isClosed) {
+			return this;
+		}
+		if (this.saveToFrameBufferTexture) {
+			if (frameBuffers != null) {
+				frameBuffers.add(lastFrameBuffer = toFrameBufferTexture(false));
+				bufferTextures.add(lastFrameBuffer.texture);
+				lastFrameBuffer.begin();
+			}
+		}
+		return this;
+	}
+
+	public GLEx stopFrameBuffer() {
+		if (isClosed) {
+			return this;
+		}
+		if (this.saveToFrameBufferTexture) {
+			lastFrameBuffer = frameBuffers.pop();
+			if (lastFrameBuffer != null) {
+				lastFrameBuffer.end().close();
+			}
+		}
+		return this;
+	}
+
+	public GLEx clearFrame() {
+		if (saveToFrameBufferTexture) {
+			clearFrameBuffer();
+			clearFrameTextures();
+		}
+		return this;
+	}
+
+	public GLEx clearFrameBuffer() {
+		if (isClosed) {
+			return this;
+		}
+		if (frameBuffers != null) {
+			for (; frameBuffers.hashNext();) {
+				LTextureImage buffer = frameBuffers.next();
+				if (buffer != null) {
+					buffer.close();
+				}
+			}
+			frameBuffers.stopNext();
+			frameBuffers.clear();
+		}
+		return this;
+	}
+
+	public GLEx clearFrameTextures() {
+		if (isClosed) {
+			return this;
+		}
+		if (bufferTextures != null) {
+			for (int i = bufferTextures.size() - 1; i > -1; i--) {
+				LTexture texture = bufferTextures.get(i);
+				if (texture != null) {
+					texture.close(true);
+				}
+			}
+			bufferTextures.clear();
+		}
 		return this;
 	}
 
@@ -662,9 +815,9 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		return this;
 	}
 
-	public void reset(float red, float green, float blue, float alpha) {
+	public GLEx reset(float red, float green, float blue, float alpha) {
 		if (isClosed) {
-			return;
+			return this;
 		}
 		GLUtils.setClearColor(batch.gl, red, green, blue, alpha);
 		this.setFont(LSystem.getSystemGameFont());
@@ -674,14 +827,15 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		this.lastBrush.patternTex = null;
 		this.setBlendMode(LSystem.MODE_NORMAL);
 		this.resetLineWidth();
+		return this;
 	}
 
-	public void reset() {
+	public GLEx reset() {
 		if (isClosed) {
-			return;
+			return this;
 		}
 		tmpColor.setColor(this.lastBrush.baseColor);
-		reset(tmpColor.r, tmpColor.g, tmpColor.b, tmpColor.a);
+		return reset(tmpColor.r, tmpColor.g, tmpColor.b, tmpColor.a);
 	}
 
 	public int color() {
@@ -1284,6 +1438,10 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		return this;
 	}
 
+	public GLEx drawFlip(Painter texture, float x, float y) {
+		return drawFlip(texture, x, y, LColor.white);
+	}
+
 	public GLEx drawFlip(Painter texture, float x, float y, LColor color) {
 		if (isClosed) {
 			return this;
@@ -1293,6 +1451,11 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		}
 		return draw(texture, x, y, texture.width(), texture.height(), 0, 0, texture.width(), texture.height(), color, 0,
 				null, Direction.TRANS_FLIP);
+	}
+
+	public GLEx drawFlip(Painter texture, float x, float y, float w, float h) {
+		return draw(texture, x, y, w, h, 0, 0, texture.width(), texture.height(), LColor.white, 0f, null,
+				Direction.TRANS_FLIP);
 	}
 
 	public GLEx drawFlip(Painter texture, float x, float y, float w, float h, LColor color, float rotation) {
@@ -3152,6 +3315,9 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (glRenderer != null) {
 			glRenderer.close();
 		}
+		/*
+		 * this.clearFrameBuffer(); this.clearFrameTextures();
+		 */
 	}
 
 }

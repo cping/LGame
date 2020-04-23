@@ -1,7 +1,5 @@
 package org.test;
 
-import java.io.IOException;
-
 import loon.LSysException;
 import loon.Stage;
 import loon.action.ActionBind;

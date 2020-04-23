@@ -351,6 +351,24 @@ public class Display extends LSystemView {
 		this.clearColor(0, 0, 0, 0);
 	}
 
+	/**
+	 * 启用GLEx的全局渲染FrameBuffer(全局缓存渲染到纹理中去)
+	 */
+	public void enableFrameBuffer() {
+		if (_glEx != null) {
+			_glEx.enableFrameBuffer();
+		}
+	}
+
+	/**
+	 * 关闭GLEx的全局渲染FrameBuffer
+	 */
+	public void disableFrameBuffer() {
+		if (_glEx != null) {
+			_glEx.disableFrameBuffer();
+		}
+	}
+
 	protected void draw(LTimerContext clock) {
 
 		// fix渲染时机，避免调用渲染在纹理构造前
@@ -361,7 +379,11 @@ public class Display extends LSystemView {
 		}
 
 		if (showLogo) {
+			boolean saveBuffer = _glEx.isSaveFrameBuffer();
 			try {
+				if (saveBuffer) {
+					_glEx.disableFrameBuffer();
+				}
 				_glEx.save();
 				_glEx.begin();
 				_glEx.clear(cred, cgreen, cblue, calpha);
@@ -374,6 +396,9 @@ public class Display extends LSystemView {
 					showLogo = false;
 					logoTex.close();
 					logoTex = null;
+				}
+				if (saveBuffer) {
+					_glEx.enableFrameBuffer();
 				}
 			} finally {
 				_glEx.end();
@@ -390,17 +415,19 @@ public class Display extends LSystemView {
 		}
 		try {
 			_glEx.saveTx();
-			_glEx.begin();
 			_glEx.reset(cred, cgreen, cblue, calpha);
-
+			_glEx.begin();
+	
 			_process.load();
 			_process.runTimer(clock);
-			_process.draw(_glEx);
 
+			_process.draw(_glEx);
 			// 渲染debug信息
 			drawDebug(_glEx, _setting, clock.timeSinceLastUpdate);
-
 			_process.drawEmulator(_glEx);
+			// 最后渲染的内容
+			_process.drawLast(_glEx);
+
 			_process.unload();
 
 			// 如果存在屏幕录像设置
@@ -430,6 +457,7 @@ public class Display extends LSystemView {
 		} finally {
 			_glEx.end();
 			_glEx.restoreTx();
+			_glEx.clearFrame();
 			_process.resetTouch();
 		}
 
@@ -447,7 +475,7 @@ public class Display extends LSystemView {
 		}
 		return LSystem.DEF_SOURCE;
 	}
-	
+
 	public Display resize(int viewWidth, int viewHeight) {
 		_process.resize(viewWidth, viewHeight);
 		return this;
