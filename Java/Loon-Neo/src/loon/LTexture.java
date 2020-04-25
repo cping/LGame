@@ -249,6 +249,46 @@ public class LTexture extends Painter implements LRelease {
 		return StringUtils.isEmpty(source) ? "" : source;
 	}
 
+	public LTexture cpyFramebufferData() {
+		Image img = _getFramebufferData();
+		if (img == null) {
+			return null;
+		}
+		return img.onHaveToClose(true).texture();
+	}
+
+	private Image _getFramebufferData() {
+		boolean saved = gfx.game.displayImpl.GL().isSaveFrameBuffer();
+		if (saved) {
+			return GLUtils.getScreenshot(0, 0, getWidth(), getHeight(), false);
+		}
+		GL20 gl = gfx.gl;
+		final int fb = gl.glGenFramebuffer();
+		if (fb == 0) {
+			throw new LSysException("Failed to gen framebuffer: " + gl.glGetError());
+		}
+		gl.glBindFramebuffer(GL_FRAMEBUFFER, fb);
+		gl.glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, getID(), 0);
+		boolean canRead = GLUtils.isFrameBufferCompleted(gl);
+		if (!canRead) {
+			return null;
+		}
+		Image image = GLUtils.getFrameBuffeImage(gl, 0, 0, getWidth(), getHeight(), false, true);
+		gl.glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		gl.glDeleteFramebuffer(fb);
+		return image;
+	}
+
+	public int[] getPixels() {
+		if (_cachePixels != null) {
+			return CollectionUtils.copyOf(_cachePixels);
+		}
+		if (_image != null) {
+			return _image.getPixels();
+		}
+		return getImage().getPixels();
+	}
+
 	public Image getImage() {
 		if ((_image == null || _image.isClosed()) && !StringUtils.isEmpty(source)) {
 			_image = BaseIO.loadImage(source);
@@ -256,6 +296,14 @@ public class LTexture extends Painter implements LRelease {
 		if (_image == null && _cachePixels != null) {
 			_image = Image.createImage(imageWidth, imageHeight);
 			_image.setPixels(_cachePixels, imageWidth, imageHeight);
+		} else if (_image == null && _cachePixels == null) {
+			Image tmp = _getFramebufferData();
+			if (tmp != null) {
+				imageWidth = tmp.getWidth();
+				imageHeight = tmp.getHeight();
+				_cachePixels = tmp.getPixels();
+				_image = tmp;
+			}
 		}
 		int w = getWidth();
 		int h = getHeight();

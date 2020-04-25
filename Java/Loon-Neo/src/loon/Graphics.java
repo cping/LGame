@@ -57,7 +57,7 @@ public abstract class Graphics {
 		private final Graphics _graphics;
 
 		public DefaultRender(Graphics gfx) {
-			super(gfx);
+			super(gfx, null);
 			_graphics = gfx;
 		}
 
@@ -89,6 +89,11 @@ public abstract class Graphics {
 		@Override
 		public boolean flip() {
 			return true;
+		}
+
+		@Override
+		public LTexture texture() {
+			return null;
 		}
 
 	}

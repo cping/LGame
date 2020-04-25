@@ -37,7 +37,7 @@ public abstract class RenderTarget implements LRelease {
 		gl.glBindFramebuffer(GL_FRAMEBUFFER, fb);
 		gl.glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tex.getID(), 0);
 		gl.checkError("RenderTarget.create");
-		return new RenderTarget(gfx) {
+		return new RenderTarget(gfx, tex) {
 			public int id() {
 				return fb;
 			}
@@ -61,14 +61,24 @@ public abstract class RenderTarget implements LRelease {
 			public boolean flip() {
 				return true;
 			}
+
+			@Override
+			public LTexture texture() {
+				return tex;
+			}
 		};
 	}
 
 	public final Graphics gfx;
 
-	public RenderTarget(Graphics gfx) {
+	public final LTexture texture;
+
+	public RenderTarget(Graphics gfx, LTexture texture) {
 		this.gfx = gfx;
+		this.texture = texture;
 	}
+
+	public abstract LTexture texture();
 
 	public abstract int id();
 
@@ -87,6 +97,10 @@ public abstract class RenderTarget implements LRelease {
 	public void bind() {
 		gfx.gl.glBindFramebuffer(GL_FRAMEBUFFER, id());
 		gfx.gl.glViewport(0, 0, width(), height());
+	}
+
+	public void unbind() {
+		gfx.gl.glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
 	@Override

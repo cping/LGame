@@ -20,6 +20,10 @@
  */
 package loon.opengl;
 
+import static loon.opengl.GL20.GL_COLOR_ATTACHMENT0;
+import static loon.opengl.GL20.GL_FRAMEBUFFER;
+import static loon.opengl.GL20.GL_TEXTURE_2D;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
@@ -29,10 +33,15 @@ import loon.LRelease;
 import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
+import loon.canvas.Image;
 import loon.utils.GLUtils;
 import loon.utils.TArray;
 
 public abstract class GLFrameBuffer implements LRelease {
+
+	public enum FrameBufferDepthFormat {
+		DEPTHSTENCIL_NONE, DEPTH_16, STENCIL_8, DEPTHSTENCIL_24_8;
+	}
 
 	public static class FrameBufferBuilder extends GLFrameBufferBuilder<FrameBuffer> {
 		public FrameBufferBuilder(int width, int height) {
@@ -95,6 +104,59 @@ public abstract class GLFrameBuffer implements LRelease {
 		return textureAttachments;
 	}
 
+	public void clear(float r, float g, float b, float a) {
+		this.clear(r, g, b, a, FrameBufferDepthFormat.DEPTHSTENCIL_NONE);
+	}
+
+	public void clear(float r, float g, float b, float a, FrameBufferDepthFormat depthStencilFormat) {
+		GL20 gl = LSystem.base().graphics().gl;
+		gl.glClearColor(r, g, b, a);
+		int flag = GL20.GL_COLOR_BUFFER_BIT;
+		switch (depthStencilFormat) {
+		case DEPTHSTENCIL_NONE:
+			flag |= GL20.GL_DEPTH_BUFFER_BIT;
+			return;
+		case DEPTH_16:
+			flag |= GL20.GL_DEPTH_BUFFER_BIT;
+			break;
+		case STENCIL_8:
+			flag |= GL20.GL_STENCIL_BUFFER_BIT;
+			break;
+		case DEPTHSTENCIL_24_8:
+			flag |= GL20.GL_DEPTH_BUFFER_BIT;
+			flag |= GL20.GL_STENCIL_BUFFER_BIT;
+			break;
+		}
+		gl.glClear(flag);
+	}
+
+	public LTexture getTextureData() {
+		return getTextureData(true, true);
+	}
+
+	public LTexture getTextureData(boolean flip, boolean alpha) {
+		return getImageData(0, flip, alpha).texture();
+	}
+
+	public Image getImageData(int index, boolean flip, boolean alpha) {
+		GL20 gl = LSystem.base().graphics().gl;
+		final int nfb = gl.glGenFramebuffer();
+		if (nfb == 0) {
+			throw new LSysException("Failed to gen framebuffer: " + gl.glGetError());
+		}
+		LTexture texture = getTextureAttachments().get(index);
+		gl.glBindFramebuffer(GL_FRAMEBUFFER, nfb);
+		gl.glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture.getID(), 0);
+		boolean canRead = GLUtils.isFrameBufferCompleted(gl);
+		if (!canRead) {
+			return null;
+		}
+		Image image = GLUtils.getFrameBuffeImage(gl, 0, 0, getWidth(), getHeight(), flip, alpha);
+		gl.glBindFramebuffer(GL_FRAMEBUFFER, defaultFramebufferHandle);
+		gl.glDeleteFramebuffer(nfb);
+		return image;
+	}
+
 	protected void build() {
 		GL20 gl = LSystem.base().graphics().gl;
 
@@ -133,7 +195,6 @@ public abstract class GLFrameBuffer implements LRelease {
 		LTexture texture = createTexture(
 				(FrameBufferTextureAttachmentSpec) bufferBuilder.textureAttachmentSpecs.first());
 		textureAttachments.add(texture);
-		texture.loadTexture();
 		GLUtils.bindTexture(gl, texture.getID());
 
 		attachFrameBufferColorTexture(textureAttachments.first());
@@ -150,7 +211,6 @@ public abstract class GLFrameBuffer implements LRelease {
 
 		gl.glBindRenderbuffer(GL20.GL_RENDERBUFFER, 0);
 		for (LTexture tex : textureAttachments) {
-			tex.loadTexture();
 			GLUtils.bindTexture(gl, tex);
 		}
 
@@ -205,8 +265,7 @@ public abstract class GLFrameBuffer implements LRelease {
 			if (result == GL20.GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT)
 				throw new LSysException("Frame buffer couldn't be constructed: missing attachment");
 			if (result == GL20.GL_FRAMEBUFFER_UNSUPPORTED)
-				throw new LSysException(
-						"Frame buffer couldn't be constructed: unsupported combination of formats");
+				throw new LSysException("Frame buffer couldn't be constructed: unsupported combination of formats");
 			throw new LSysException("Frame buffer couldn't be constructed: unknown error " + result);
 		}
 
@@ -235,12 +294,20 @@ public abstract class GLFrameBuffer implements LRelease {
 		LSystem.removeFrameBuffer(this);
 	}
 
+	public void bind(GL20 gl) {
+		gl.glBindFramebuffer(GL20.GL_FRAMEBUFFER, framebufferHandle);
+	}
+
+	public void unbind(GL20 gl) {
+		gl.glBindFramebuffer(GL20.GL_FRAMEBUFFER, defaultFramebufferHandle);
+	}
+
 	public void bind() {
-		LSystem.base().graphics().gl.glBindFramebuffer(GL20.GL_FRAMEBUFFER, framebufferHandle);
+		bind(LSystem.base().graphics().gl);
 	}
 
 	public void unbind() {
-		LSystem.base().graphics().gl.glBindFramebuffer(GL20.GL_FRAMEBUFFER, defaultFramebufferHandle);
+		unbind(LSystem.base().graphics().gl);
 	}
 
 	public void begin() {

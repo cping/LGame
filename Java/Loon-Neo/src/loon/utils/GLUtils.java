@@ -32,8 +32,9 @@ import loon.canvas.Pixmap;
 import loon.opengl.GL20;
 
 public class GLUtils {
-	
-	private GLUtils(){}
+
+	private GLUtils() {
+	}
 
 	private static int currentHardwareBufferID = -1;
 
@@ -493,8 +494,20 @@ public class GLUtils {
 		return getScreenshot(x, y, w, h, true);
 	}
 
+	public static Image getScreenshot(int x, int y, int w, int h, boolean flipY, boolean alpha) {
+		return getFrameBuffeImage(LSystem.base().graphics().gl, x, y, w, h, flipY, alpha);
+	}
+
 	public static Image getScreenshot(int x, int y, int w, int h, boolean flipY) {
-		return getFrameBuffeImage(LSystem.base().graphics().gl, x, y, w, h, flipY, LSystem.isDesktop() ? false : true);
+		return getScreenshot(x, y, w, h, flipY, LSystem.isDesktop() ? false : true);
+	}
+
+	public static boolean isFrameBufferCompleted() {
+		return isFrameBufferCompleted(LSystem.base().graphics().gl);
+	}
+
+	public static boolean isFrameBufferCompleted(GL20 gl) {
+		return gl.glCheckFramebufferStatus(GL20.GL_FRAMEBUFFER) == GL20.GL_FRAMEBUFFER_COMPLETE;
 	}
 
 }

@@ -187,6 +187,10 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		this.target.bind();
 	}
 
+	public void unbindRenderTarget() {
+		this.target.unbind();
+	}
+
 	public int getWidth() {
 		if (target != null) {
 			return (int) (target.width() / target.xscale());
@@ -470,6 +474,13 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		enableFrameBuffer();
 		startFrameBuffer();
 		return this;
+	}
+
+	public LTextureImage getFrameBuffers(int idx) {
+		if (idx > -1 && idx < frameBuffers.size()) {
+			return frameBuffers.get(idx);
+		}
+		return null;
 	}
 
 	public LTexture freeFrameBuffer(int idx) {
@@ -1439,6 +1450,12 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	public GLEx drawFlip(Painter texture, float x, float y) {
+		if (isClosed) {
+			return this;
+		}
+		if (texture == null) {
+			return this;
+		}
 		return drawFlip(texture, x, y, LColor.white);
 	}
 
@@ -1454,6 +1471,12 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	public GLEx drawFlip(Painter texture, float x, float y, float w, float h) {
+		if (isClosed) {
+			return this;
+		}
+		if (texture == null) {
+			return this;
+		}
 		return draw(texture, x, y, w, h, 0, 0, texture.width(), texture.height(), LColor.white, 0f, null,
 				Direction.TRANS_FLIP);
 	}
@@ -3315,9 +3338,6 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (glRenderer != null) {
 			glRenderer.close();
 		}
-		/*
-		 * this.clearFrameBuffer(); this.clearFrameTextures();
-		 */
 	}
 
 }
