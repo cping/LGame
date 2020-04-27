@@ -128,15 +128,15 @@ public class Vector2f implements Serializable, XY {
 	}
 
 	public Vector2f nor(float n) {
-		return new Vector2f(x == 0 ? 0 : x / n, y == 0 ? 0 : y / n);
+		return new Vector2f(this.x == 0 ? 0 : this.x / n, this.y == 0 ? 0 : this.y / n);
 	}
 
 	public final Vector2f mul(float s) {
-		return new Vector2f(x * s, y * s);
+		return new Vector2f(this.x * s, this.y * s);
 	}
 
 	public final Vector2f mul(float sx, float sy) {
-		return new Vector2f(x * sx, y * sy);
+		return new Vector2f(this.x * sx, this.y * sy);
 	}
 
 	public final Vector2f mulSelf(float scale) {
@@ -149,11 +149,19 @@ public class Vector2f implements Serializable, XY {
 		return this;
 	}
 
+	public Vector2f mulSelf(Affine2f mat) {
+		float nx = this.x * mat.m00 + this.y * mat.m01 + mat.tx;
+		float ny = this.x * mat.m10 + this.y * mat.m11 + mat.ty;
+		this.x = nx;
+		this.y = ny;
+		return this;
+	}
+
 	public Vector2f mulSelf(Matrix3 mat) {
-		float x = this.x * mat.val[0] + this.y * mat.val[3] + mat.val[6];
-		float y = this.x * mat.val[1] + this.y * mat.val[4] + mat.val[7];
-		this.x = x;
-		this.y = y;
+		float nx = this.x * mat.val[0] + this.y * mat.val[3] + mat.val[6];
+		float ny = this.x * mat.val[1] + this.y * mat.val[4] + mat.val[7];
+		this.x = nx;
+		this.y = ny;
 		return this;
 	}
 
@@ -907,7 +915,7 @@ public class Vector2f implements Serializable, XY {
 	public static String pointToString(float x, float y) {
 		return MathUtils.toString(x) + "," + MathUtils.toString(y);
 	}
-	
+
 	public final Vector2f inverse() {
 		return new Vector2f(-this.x, -this.y);
 	}

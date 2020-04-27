@@ -20,6 +20,7 @@
  */
 package loon.action.map;
 
+import loon.LObject;
 import loon.LSystem;
 import loon.Screen;
 import loon.action.ActionBind;
@@ -67,6 +68,86 @@ public class Field2D implements IArray, Config {
 	private int tileHeight = 32;
 
 	private int width, height;
+
+	public static final Vector2f shiftPosition(TArray<LObject<?>> items, float x, float y, int direction) {
+		return shiftPosition(items, x, y, direction, null);
+	}
+
+	public static final Vector2f shiftPosition(TArray<LObject<?>> items, float x, float y, int direction,
+			Vector2f output) {
+
+		if (output == null) {
+			output = new Vector2f();
+		}
+
+		float px;
+		float py;
+
+		if (items.size > 1) {
+			int i = 0;
+			float cx = 0f;
+			float cy = 0f;
+			LObject<?> cur = null;
+
+			if (direction == 0) {
+				// 下方坐标转上方坐标
+
+				int len = items.size - 1;
+
+				LObject<?> obj = items.get(len);
+				px = obj.getX();
+				py = obj.getY();
+
+				for (i = len - 1; i >= 0; i--) {
+
+					cur = items.get(i);
+					cx = cur.getX();
+					cy = cur.getX();
+
+					cur.setX(px);
+					cur.setY(py);
+
+					px = cx;
+					py = cy;
+				}
+				obj.setX(x);
+				obj.setX(y);
+			} else {
+				// 上方坐标转下方坐标
+
+				LObject<?> obj = items.get(0);
+				px = obj.getX();
+				py = obj.getY();
+
+				for (i = 1; i < items.size; i++) {
+
+					cur = items.get(i);
+					cx = cur.getX();
+					cy = cur.getX();
+
+					cur.setX(px);
+					cur.setY(py);
+
+					px = cx;
+					py = cy;
+				}
+				obj.setX(x);
+				obj.setX(y);
+			}
+		} else {
+
+			LObject<?> obj = items.get(0);
+			px = obj.getX();
+			py = obj.getY();
+			obj.setX(x);
+			obj.setX(y);
+		}
+
+		output.x = px;
+		output.y = py;
+
+		return output;
+	}
 
 	public static final float rotation(Vector2f source, Vector2f target) {
 		int nx = MathUtils.floor(target.getX() - source.getX());

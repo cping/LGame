@@ -1296,6 +1296,38 @@ public abstract class LComponent extends LObject<LContainer>
 		}
 	}
 
+	public float clampX(float x) {
+		if (_super == null) {
+			return x;
+		}
+		RectBox bounds = _super.getRectBox();
+		float dw = _super.getWidth();
+		float bx = bounds.x + ((dw - this.getWidth()) / 2);
+		float bw = MathUtils.max(bx, bx + bounds.width - dw);
+		if (x < bx) {
+			x = bx;
+		} else if (x > bw) {
+			x = bw;
+		}
+		return x;
+	}
+
+	public float clampY(float y) {
+		if (_super == null) {
+			return y;
+		}
+		RectBox bounds = _super.getRectBox();
+		float dh = _super.getHeight();
+		float by = bounds.y + ((dh - this.getHeight()) / 2);
+		float bh = Math.max(by, by + bounds.height - dh);
+		if (y < by) {
+			y = by;
+		} else if (y > bh) {
+			y = bh;
+		}
+		return y;
+	}
+
 	@Override
 	public void setColor(LColor c) {
 		this._component_baseColor = new LColor(c);
@@ -1414,7 +1446,7 @@ public abstract class LComponent extends LObject<LContainer>
 	public float getCenterY() {
 		return getY() + getHeight() / 2f;
 	}
-	
+
 	public boolean isDesktopContainer() {
 		return desktopContainer;
 	}

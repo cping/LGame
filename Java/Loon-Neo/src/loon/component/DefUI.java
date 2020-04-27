@@ -42,9 +42,10 @@ import loon.geom.Vector2f;
 import loon.opengl.LSubTexture;
 import loon.utils.TArray;
 import loon.utils.ArrayMap;
+import loon.utils.HelperUtils;
 import loon.utils.MathUtils;
 
-public class DefUI {
+public class DefUI extends HelperUtils {
 
 	private static DefUI instance;
 

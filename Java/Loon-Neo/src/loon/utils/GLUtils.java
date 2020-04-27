@@ -101,6 +101,14 @@ public class GLUtils {
 		return value + 1;
 	}
 
+	public static boolean isPowerOfTwo(int value) {
+		return (value > 0 && (value & (value - 1)) == 0);
+	}
+
+	public static boolean isPowerOfTwo(int width, int height) {
+		return (width > 0 && (width & (width - 1)) == 0 && height > 0 && (height & (height - 1)) == 0);
+	}
+
 	private static int currentBlendMode = -1;
 
 	public static final int getBlendMode() {

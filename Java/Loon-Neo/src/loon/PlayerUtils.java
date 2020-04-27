@@ -49,7 +49,7 @@ import loon.utils.timer.LTimerContext;
  *
  */
 public class PlayerUtils extends Director {
-
+	
 	/**
 	 * 添加一个ActionUpdate进程到游戏,当completed为true时销毁
 	 * 

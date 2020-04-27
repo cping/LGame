@@ -27,6 +27,7 @@ import loon.LGame;
 import loon.LRelease;
 import loon.LSysException;
 import loon.LSystem;
+import loon.geom.Affine2f;
 import loon.geom.BoundingBox;
 import loon.geom.Matrix3;
 import loon.geom.Matrix4;
@@ -330,9 +331,9 @@ public class Mesh implements LRelease {
 			return;
 		}
 		if (autoBind) {
-
 			bind(shader);
 		}
+		final GL20 gl = LSystem.base().graphics().gl;
 		if (isVertexArray) {
 			if (indices.getNumIndices() > 0) {
 				ShortBuffer buffer = indices.getBuffer();
@@ -340,17 +341,17 @@ public class Mesh implements LRelease {
 				int oldLimit = buffer.limit();
 				buffer.position(offset);
 				buffer.limit(offset + count);
-				LSystem.base().graphics().gl.glDrawElements(primitiveType, count, GL20.GL_UNSIGNED_SHORT, buffer);
+				gl.glDrawElements(primitiveType, count, GL20.GL_UNSIGNED_SHORT, buffer);
 				buffer.position(oldPosition);
 				buffer.limit(oldLimit);
 			} else {
-				LSystem.base().graphics().gl.glDrawArrays(primitiveType, offset, count);
+				gl.glDrawArrays(primitiveType, offset, count);
 			}
 		} else {
 			if (indices.getNumIndices() > 0) {
-				LSystem.base().graphics().gl.glDrawElements(primitiveType, count, GL20.GL_UNSIGNED_SHORT, offset * 2);
+				gl.glDrawElements(primitiveType, count, GL20.GL_UNSIGNED_SHORT, offset * 2);
 			} else {
-				LSystem.base().graphics().gl.glDrawArrays(primitiveType, offset, count);
+				gl.glDrawArrays(primitiveType, offset, count);
 			}
 		}
 
@@ -361,6 +362,7 @@ public class Mesh implements LRelease {
 
 	private boolean closed;
 
+	@Override
 	public synchronized void close() {
 		if (closed) {
 			return;
@@ -656,42 +658,75 @@ public class Mesh implements LRelease {
 		updateVertices(start * stride, vertices);
 	}
 
-	public static void transform(final Matrix4 matrix, final float[] vertices, int vertexSize, int offset,
-			int dimensions, int start, int count) {
+	public static void transform(final Matrix4 matrix, final float[] vertices, int vertexSize, int offset, int dimensions,
+			int start, int count) {
 		if (offset < 0 || dimensions < 1 || (offset + dimensions) > vertexSize)
 			throw new LSysException("offset > vertexSize !");
 		if (start < 0 || count < 1 || ((start + count) * vertexSize) > vertices.length)
 			throw new LSysException("start = " + start + ", count = " + count + ", vertexSize = " + vertexSize
 					+ ", length = " + vertices.length);
 
-		final Vector3f tmp = new Vector3f();
-
+		final Vector3f tmp3 = new Vector3f();
 		int idx = offset + (start * vertexSize);
 		switch (dimensions) {
 		case 1:
 			for (int i = 0; i < count; i++) {
-				tmp.set(vertices[idx], 0, 0).mulSelf(matrix);
-				vertices[idx] = tmp.x;
+				tmp3.set(vertices[idx], 0, 0).mulSelf(matrix);
+				vertices[idx] = tmp3.x;
 				idx += vertexSize;
 			}
 			break;
 		case 2:
 			for (int i = 0; i < count; i++) {
-				tmp.set(vertices[idx], vertices[idx + 1], 0).mulSelf(matrix);
-				vertices[idx] = tmp.x;
-				vertices[idx + 1] = tmp.y;
+				tmp3.set(vertices[idx], vertices[idx + 1], 0).mulSelf(matrix);
+				vertices[idx] = tmp3.x;
+				vertices[idx + 1] = tmp3.y;
 				idx += vertexSize;
 			}
 			break;
 		case 3:
 			for (int i = 0; i < count; i++) {
-				tmp.set(vertices[idx], vertices[idx + 1], vertices[idx + 2]).mulSelf(matrix);
-				vertices[idx] = tmp.x;
-				vertices[idx + 1] = tmp.y;
-				vertices[idx + 2] = tmp.z;
+				tmp3.set(vertices[idx], vertices[idx + 1], vertices[idx + 2]).mulSelf(matrix);
+				vertices[idx] = tmp3.x;
+				vertices[idx + 1] = tmp3.y;
+				vertices[idx + 2] = tmp3.z;
 				idx += vertexSize;
 			}
 			break;
+		}
+	}
+
+	public void transformUV(final Affine2f matrix) {
+		transformUV(matrix, 0, getNumVertices());
+	}
+
+	protected void transformUV(final Affine2f matrix, final int start, final int count) {
+		final VertexAttribute posAttr = getVertexAttribute(Usage.TextureCoordinates);
+		final int offset = posAttr.offset / 4;
+		final int vertexSize = getVertexSize() / 4;
+		final int numVertices = getNumVertices();
+        final int size = numVertices * vertexSize; 
+		final float[] vertices = new float[size];
+		getVertices(0, size, vertices);
+		transformUV(matrix, vertices, vertexSize, offset, start, count);
+		setVertices(vertices, 0, vertices.length);
+	}
+	
+	final static Vector2f aff2 = new Vector2f();
+	
+	public static void transformUV(final Affine2f matrix, final float[] vertices, int vertexSize, int offset, int start,
+			int count) {
+		if (start < 0 || count < 1 || ((start + count) * vertexSize) > vertices.length) {
+			throw new LSysException("start = " + start + ", count = " + count + ", vertexSize = " + vertexSize
+					+ ", length = " + vertices.length);
+		}
+	
+		int idx = offset + (start * vertexSize);
+		for (int i = 0; i < count; i++) {
+			aff2.set(vertices[idx], vertices[idx + 1]).mulSelf(matrix);
+			vertices[idx] = aff2.x;
+			vertices[idx + 1] = aff2.y;
+			idx += vertexSize;
 		}
 	}
 
@@ -704,26 +739,27 @@ public class Mesh implements LRelease {
 		final int offset = posAttr.offset / 4;
 		final int vertexSize = getVertexSize() / 4;
 		final int numVertices = getNumVertices();
-
-		final float[] vertices = new float[numVertices * vertexSize];
-		getVertices(0, vertices.length, vertices);
+        final int size = numVertices * vertexSize; 
+		final float[] vertices = new float[size];
+		getVertices(0, size, vertices);
 		transformUV(matrix, vertices, vertexSize, offset, start, count);
 		setVertices(vertices, 0, vertices.length);
 	}
-
-	private final static Vector2f tmp = new Vector2f();
-
+	
+	final static Vector2f tmp2 = new Vector2f();
+	
 	public static void transformUV(final Matrix3 matrix, final float[] vertices, int vertexSize, int offset, int start,
 			int count) {
 		if (start < 0 || count < 1 || ((start + count) * vertexSize) > vertices.length) {
 			throw new LSysException("start = " + start + ", count = " + count + ", vertexSize = " + vertexSize
 					+ ", length = " + vertices.length);
 		}
+
 		int idx = offset + (start * vertexSize);
 		for (int i = 0; i < count; i++) {
-			tmp.set(vertices[idx], vertices[idx + 1]).mulSelf(matrix);
-			vertices[idx] = tmp.x;
-			vertices[idx + 1] = tmp.y;
+			tmp2.set(vertices[idx], vertices[idx + 1]).mulSelf(matrix);
+			vertices[idx] = tmp2.x;
+			vertices[idx + 1] = tmp2.y;
 			idx += vertexSize;
 		}
 	}

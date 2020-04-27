@@ -82,7 +82,7 @@ public class Matrix3 implements Serializable, XY {
 		this(t1);
 		concatenate(t2);
 	}
-	
+
 	public Matrix3 set(Affine2f affine) {
 		float[] val = this.val;
 
@@ -131,7 +131,7 @@ public class Matrix3 implements Serializable, XY {
 
 		return this;
 	}
-	
+
 	public Matrix3 idt() {
 		val[M00] = 1;
 		val[M10] = 0;
@@ -1188,14 +1188,22 @@ public class Matrix3 implements Serializable, XY {
 		return true;
 	}
 
+	public float getX(float x, float y) {
+		return x * val[M00] + y * val[M01] + val[M02];
+	}
+
+	public float getY(float x, float y) {
+		return x * val[M10] + y * val[M11] + val[M12];
+	}
+
 	@Override
 	public float getX() {
-		return tmp[M02];
+		return val[M02];
 	}
 
 	@Override
 	public float getY() {
-		return tmp[M12];
+		return val[M12];
 	}
 
 	@Override
@@ -1207,20 +1215,14 @@ public class Matrix3 implements Serializable, XY {
 		}
 		return result;
 	}
-	
+
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("Matrix3");
-		builder.newLine()
-		.addValue("[{0},{1},{2}]")
-		.newLine()
-		.addValue("[{3},{4}.{5}]")
-		.newLine()
-		.addValue("[{6},{7},{8}]")
-		.newLine();
-		return StringUtils.format(builder.toString(), val[M00], val[M01], val[M02], 
-				val[M10], val[M11], val[M12], 
+		builder.newLine().addValue("[{0},{1},{2}]").newLine().addValue("[{3},{4}.{5}]").newLine()
+				.addValue("[{6},{7},{8}]").newLine();
+		return StringUtils.format(builder.toString(), val[M00], val[M01], val[M02], val[M10], val[M11], val[M12],
 				val[M20], val[M21], val[M22]);
 	}
-	
+
 }

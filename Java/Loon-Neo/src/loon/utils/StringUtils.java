@@ -902,7 +902,17 @@ final public class StringUtils extends CharUtils {
 	}
 
 	/**
-	 * 判断是否非空
+	 * 判断CharSequence是否非空(和isNotEmpty与isEmpty分开函数名,防止串类型)
+	 * 
+	 * @param value
+	 * @return
+	 */
+	public static boolean isNullOrEmpty(CharSequence value) {
+		return value == null || value.length() == 0;
+	}
+
+	/**
+	 * 判断String是否非空
 	 * 
 	 * @param param
 	 * @return
@@ -919,6 +929,22 @@ final public class StringUtils extends CharUtils {
 	 */
 	public static boolean isEmpty(String... param) {
 		return param == null || param.length == 0;
+	}
+
+	/**
+	 * 大写第一个字符
+	 * 
+	 * @param mes
+	 * @return
+	 */
+	public static String toUpperCaseFirst(String mes) {
+		if (isEmpty(mes)) {
+			return "";
+		}
+		if (mes.length() < 2) {
+			return mes.substring(0).toUpperCase();
+		}
+		return mes.substring(0, 1).toUpperCase() + mes.substring(1, mes.length());
 	}
 
 	/**
@@ -1524,10 +1550,6 @@ final public class StringUtils extends CharUtils {
 		return indexOf(c, ch, start, c.length());
 	}
 
-	private static char[] obtain(int len) {
-		return new char[len];
-	}
-
 	/**
 	 * 检索指定字符序列集合中指定区间内指定字符是否存在并返回其索引位置
 	 * 
@@ -1540,7 +1562,7 @@ final public class StringUtils extends CharUtils {
 	public static int indexOf(CharSequence c, char ch, int start, int end) {
 		if ((c instanceof StringBuffer) || (c instanceof StringBuilder) || (c instanceof String)) {
 			final int INDEX_INCREMENT = 500;
-			char[] temp = obtain(INDEX_INCREMENT);
+			char[] temp = new char[INDEX_INCREMENT];
 
 			while (start < end) {
 				int segend = start + INDEX_INCREMENT;

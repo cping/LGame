@@ -254,7 +254,7 @@ public class Affine2f implements LTrans, XY {
 		return into;
 	}
 
-	/*default generality*/
+	/* default generality */
 	protected int GENERALITY = 4;
 	/* x scale */
 	public float m00 = 1.0f;
@@ -675,6 +675,28 @@ public class Affine2f implements LTrans, XY {
 		return this;
 	}
 
+	/**
+	 * 获得矩阵转换后的X坐标
+	 * 
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public float getX(float x, float y) {
+		return x * this.m00 + y * this.m01 + this.tx;
+	}
+
+	/**
+	 * 获得矩阵转换后的Y坐标
+	 * 
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public float getY(float x, float y) {
+		return x * this.m10 + y * this.m11 + this.ty;
+	}
+
 	public Affine2f rotate(float angle) {
 		float sina = MathUtils.sin(angle), cosa = MathUtils.cos(angle);
 		return multiply(this, cosa, sina, -sina, cosa, 0, 0, this);
@@ -985,6 +1007,51 @@ public class Affine2f implements LTrans, XY {
 		this.tx = (c1 * this.ty - d1 * tx1) / n;
 		this.ty = -(a1 * this.ty - b1 * tx1) / n;
 		return this;
+	}
+
+	/**
+	 * 直接设定参数给Affine2f
+	 * 
+	 * @param x
+	 * @param y
+	 * @param rotation
+	 * @param scaleX
+	 * @param scaleY
+	 * @return
+	 */
+	public Affine2f applyITRS(float x, float y, float rotation, float scaleX, float scaleY) {
+		float radianSin = MathUtils.sin(rotation);
+		float radianCos = MathUtils.cos(rotation);
+		this.m00 = radianCos * scaleX;
+		this.m01 = radianSin * scaleX;
+		this.m10 = -radianSin * scaleY;
+		this.m11 = radianCos * scaleY;
+		this.tx = x;
+		this.ty = y;
+		return this;
+	}
+
+	/**
+	 * 反转x和y坐标
+	 * 
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public Vector2f applyInverse(float x, float y) {
+		Vector2f output = new Vector2f();
+
+		float a = this.m00;
+		float b = this.m01;
+		float c = this.m10;
+		float d = this.m11;
+
+		float id = 1f / ((a * d) + (c * -b));
+
+		output.x = (d * id * x) + (-c * id * y) + (((ty * c) - (tx * d)) * id);
+		output.y = (a * id * y) + (-b * id * x) + (((-ty * a) + (tx * b)) * id);
+
+		return output;
 	}
 
 	/**

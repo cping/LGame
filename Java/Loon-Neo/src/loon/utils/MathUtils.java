@@ -337,6 +337,14 @@ public class MathUtils {
 		return 0;
 	}
 
+	public static final boolean isNan(float v) {
+		return (v != v);
+	}
+
+	public static final boolean isNan(double v) {
+		return (v != v);
+	}
+	
 	/**
 	 * 判断是否为数字
 	 * 
@@ -1110,8 +1118,8 @@ public class MathUtils {
 	}
 
 	public static final double IEEEremainder(double f1, double f2) {
-		double r = Math.abs(f1 % f2);
-		if (Double.isNaN(r) || r == f2 || r <= Math.abs(f2) / 2.0) {
+		double r = MathUtils.abs(f1 % f2);
+		if (isNan(r) || r == f2 || r <= MathUtils.abs(f2) / 2.0) {
 			return r;
 		} else {
 			return Math.signum(f1) * (r - f2);
@@ -1187,11 +1195,7 @@ public class MathUtils {
 	public static final boolean isInBounds(final float minValue, final float maxValue, final float val) {
 		return val >= minValue && val <= maxValue;
 	}
-
-	public static final boolean isNaN(float v) {
-		return (v != v);
-	}
-
+	
 	protected static int TO_STRING_DECIMAL_PLACES = 3;
 
 	public static final String toString(float value) {
@@ -1207,7 +1211,7 @@ public class MathUtils {
 	}
 
 	public static final String toString(float value, int decimalPlaces, boolean showTag) {
-		if (isNaN(value)) {
+		if (isNan(value)) {
 			return "NaN";
 		}
 		StringBuilder buf = new StringBuilder();
