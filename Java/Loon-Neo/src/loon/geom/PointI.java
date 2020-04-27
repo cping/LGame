@@ -20,6 +20,7 @@
  */
 package loon.geom;
 
+import loon.LSystem;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 
@@ -117,6 +118,12 @@ public class PointI implements XY {
 
 	public String toCSS() {
 		return this.x + "px " + this.y + "px";
+	}
+	
+	public PointI random() {
+		this.x = MathUtils.random(0,LSystem.viewSize.getWidth());
+		this.y = MathUtils.random(0,LSystem.viewSize.getHeight());
+		return this;
 	}
 	
 	@Override

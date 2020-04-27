@@ -22,6 +22,7 @@ package loon.geom;
 
 import java.io.Serializable;
 
+import loon.LSystem;
 import loon.utils.Array;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
@@ -1136,6 +1137,14 @@ public class Vector3f implements Serializable, XYZ {
 		return new Vector3f(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
 	}
 
+	public Vector3f random() {
+		this.x = MathUtils.random(0f,LSystem.viewSize.getWidth());
+		this.y = MathUtils.random(0f,LSystem.viewSize.getHeight());
+		this.z = MathUtils.random();
+		return this;
+	}
+	
+	
 	@Override
 	public String toString() {
 		return "(" + x + ", " + y + ", " + z + ")";

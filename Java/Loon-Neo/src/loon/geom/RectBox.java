@@ -21,6 +21,7 @@
 package loon.geom;
 
 import loon.LObject;
+import loon.LSystem;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 import loon.utils.StringKeyValue;
@@ -865,6 +866,14 @@ public class RectBox extends Shape implements BoxSize {
 		return this;
 	}
 
+	public RectBox random() {
+		this.x = MathUtils.random(0f,LSystem.viewSize.getWidth());
+		this.y = MathUtils.random(0f,LSystem.viewSize.getHeight());
+		this.width = MathUtils.random(0,LSystem.viewSize.getWidth());
+		this.height = MathUtils.random(0,LSystem.viewSize.getHeight());
+		return this;
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;

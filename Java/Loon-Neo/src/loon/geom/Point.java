@@ -21,6 +21,7 @@
  */
 package loon.geom;
 
+import loon.LSystem;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 
@@ -134,6 +135,12 @@ public class Point extends Shape {
 		dest.setLocation(this.x, this.y);
 	}
 
+	public Point random() {
+		this.x = MathUtils.random(0f, LSystem.viewSize.getWidth());
+		this.y = MathUtils.random(0f, LSystem.viewSize.getHeight());
+		return this;
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;

@@ -22,6 +22,7 @@ package loon.geom;
 
 import java.io.Serializable;
 
+import loon.LSystem;
 import loon.utils.Array;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
@@ -1049,6 +1050,14 @@ public class Vector4f implements Serializable, XYZW {
 		return new Vector3f(w, w, w);
 	}
 
+	public Vector4f random() {
+		this.x = MathUtils.random(0f,LSystem.viewSize.getWidth());
+		this.y = MathUtils.random(0f,LSystem.viewSize.getHeight());
+		this.z = MathUtils.random();
+		this.w = MathUtils.random();
+		return this;
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;

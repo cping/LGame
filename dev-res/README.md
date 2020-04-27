@@ -30,6 +30,7 @@
 * openjdk: 完全开源的JDK（JRE）支持库，运行API上与Oracle版并无区别，但是实现上全部开源，也没有商用限制，也就是用户可以自行删减内容，方便精简出游戏专用JRE（而官方版在使用协议上是不能自行精简的）。 [完整编译版地址](https://github.com/alexkasko/openjdk-unofficial-builds/)
 * openjfx: JavaFX的开源社区版，由于JavaFX已经不是JDK的自带类库，所以openjfx已经可以看作是JavaFX的本体，两者关系近似于MonoGame和XNA，只不过openjfx现在没有monogame那么大使用量和那么多支持的平台罢了，仅仅是可以跑Windows、Linux、Mac、Android和IOS(而且android和ios支持也不太友好,还有个编译为js的纯收费项目不提也罢，官方示例在我手机上进浏览器就卡死|||)，但也不排除以后openjfx突然火了，变得能支持更多平台。[Github地址](https://github.com/javafxports/openjdk-jfx)
 * GraalVM: Oracle推出的一个多语言支持VM，本体以JDK为基础构建，但也套用了如LLVM之类第三方环境，除了如Java，Scala，Kotlin之类标准JVM语言运行外，还支持node.js环境模拟、以及C、C++之类编译型语言的虚拟机运行，某种程度上，可以把它看作一个Java环境的GCC。除此之外，它最大的特点是允许把运行在此虚拟机的程序利用Native-Image指令AOT静态编译为纯本地库（虽然目前只支持Linux环境，而且暂时没有支持Android的计划，IOS就更别提了，不过它的issues上有人询问过，未来可能支持，话说最近AOT化Java字节码为本地指令的项目很多，预订年底开源的华为方舟编译器也是类似的存在，不愁Java代码不能本地化）,对了，推特服务器现在跑的Java环境，就是[定制版]GraalVM本地化后运行的。[Github地址](https://github.com/oracle/graal)
+* AdoptOpenjdk: 本质上就是OpenJDK的打包版编译后可直接运行环境，因为Oracle对JDK(JRE)事实上商用收费的关系，Adopt这种免费的发布版本就有了生存空间。总体上讲，如果想商用新版本的JDK(JRE)而不花钱又懒得自己打包OpenJDK的话，用Adopt就是个不错的选择。[下载地址](https://adoptopenjdk.net)
 
 ### Java的程序打包工具
 
@@ -113,5 +114,5 @@ PS:使用下列免费资源时，建议注明引用的资源出处，免得引�
 * luajava: Lua脚本的Java本地支持库。 [项目地址](https://github.com/jasonsantos/luajava/)
 * Clojure: 可看做现代版Lisp的动态类型语言。[官网](http://clojure.org/)
 * Ceylon: RedHat开发的面向对象静态类型编程语言。[官网](http://ceylon-lang.org/)
-* Kotlin: JetBrain针对JVM、安卓和浏览器提供的静态类型编程语言。[官网](http://kotlinlang.org/)
+* Kotlin: 最初是JetBrain针对JVM、安卓和浏览器提供的静态类型编程语言，新版本已经开始支持通过LLVM转化字节码为机器码本地运行(有专门的Kotlin Native库)，理论上可以全平台运行。[官网](http://kotlinlang.org/)
 * Xtend: 一种静态编程语言，能够将其代码转换为简洁高效的Java代码，并基于JVM运行。[官网](http://www.eclipse.org/xtend)

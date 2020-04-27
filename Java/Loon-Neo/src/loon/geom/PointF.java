@@ -20,6 +20,7 @@
  */
 package loon.geom;
 
+import loon.LSystem;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 
@@ -115,10 +116,16 @@ public class PointF implements XY {
 		return y;
 	}
 
+	public PointF random() {
+		this.x = MathUtils.random(0f, LSystem.viewSize.getWidth());
+		this.y = MathUtils.random(0f, LSystem.viewSize.getHeight());
+		return this;
+	}
+
 	public String toCSS() {
 		return this.x + "px " + this.y + "px";
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

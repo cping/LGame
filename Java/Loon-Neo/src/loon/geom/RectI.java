@@ -20,6 +20,7 @@
  */
 package loon.geom;
 
+import loon.LSystem;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 import loon.utils.StringKeyValue;
@@ -532,6 +533,14 @@ public class RectI implements XY {
 		return dx * dx + dy * dy;
 	}
 
+	public RectI random() {
+		this.x = MathUtils.random(0,LSystem.viewSize.getWidth());
+		this.y = MathUtils.random(0,LSystem.viewSize.getHeight());
+		this.width = MathUtils.random(0,LSystem.viewSize.getWidth());
+		this.height = MathUtils.random(0,LSystem.viewSize.getHeight());
+		return this;
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;

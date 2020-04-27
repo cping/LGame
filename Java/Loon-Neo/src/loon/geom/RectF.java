@@ -21,6 +21,7 @@
  */
 package loon.geom;
 
+import loon.LSystem;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 import loon.utils.StringKeyValue;
@@ -533,6 +534,14 @@ public class RectF implements XY {
 		float dx = x1 - x2 + (w1 - w2) / 2;
 		float dy = y1 - y2 + (h1 - h2) / 2;
 		return dx * dx + dy * dy;
+	}
+
+	public RectF random() {
+		this.x = MathUtils.random(0f, LSystem.viewSize.getWidth());
+		this.y = MathUtils.random(0f, LSystem.viewSize.getHeight());
+		this.width = MathUtils.random(0f, LSystem.viewSize.getWidth());
+		this.height = MathUtils.random(0f, LSystem.viewSize.getHeight());
+		return this;
 	}
 
 	@Override

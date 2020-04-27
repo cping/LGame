@@ -20,6 +20,8 @@
  */
 package loon.geom;
 
+import loon.LSystem;
+import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 import loon.utils.StringKeyValue;
 
@@ -119,6 +121,14 @@ public class AABB implements XY, BoxSize {
 
 	public boolean isEmpty() {
 		return this.maxX <= 0 && this.maxY <= 0;
+	}
+
+	public AABB random() {
+		this.minX = MathUtils.random(0f,LSystem.viewSize.getWidth());
+		this.minY = MathUtils.random(0f,LSystem.viewSize.getHeight());
+		this.maxX = MathUtils.random(0f,LSystem.viewSize.getWidth());
+		this.maxY = MathUtils.random(0f,LSystem.viewSize.getHeight());
+		return this;
 	}
 
 	@Override
