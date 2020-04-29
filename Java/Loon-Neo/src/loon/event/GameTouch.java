@@ -192,6 +192,22 @@ public class GameTouch {
 	public Vector2f get() {
 		return new Vector2f((int) x, (int) y);
 	}
+
+	public boolean lowerLeft() {
+		return type == SysTouch.LOWER_LEFT;
+	}
+
+	public boolean lowerRight() {
+		return type == SysTouch.LOWER_RIGHT;
+	}
+	
+	public boolean upperLeft() {
+		return type == SysTouch.UPPER_LEFT;
+	}
+
+	public boolean upperRight() {
+		return type == SysTouch.UPPER_RIGHT;
+	}
 	
 	/**
 	 * 判断触屏按下事件是否超过了当前系统时间

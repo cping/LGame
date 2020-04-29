@@ -99,6 +99,7 @@ public abstract class Shape implements Serializable, IArray, XY {
 		return new Vector2f(getCenterX(), getCenterY());
 	}
 
+	@Override
 	public float getX() {
 		return x;
 	}
@@ -139,6 +140,7 @@ public abstract class Shape implements Serializable, IArray, XY {
 		}
 	}
 
+	@Override
 	public float getY() {
 		return y;
 	}

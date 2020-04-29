@@ -98,7 +98,8 @@ public class Line extends Shape {
 
 	@Override
 	public float length() {
-		return vec.len();
+		return (int) MathUtils
+				.sqrt((getX2() - getX1()) * (getX2() - getX2()) + (getY2() - getY1()) * (getY2() - getY1()));
 	}
 
 	public float lengthSquared() {
@@ -300,6 +301,13 @@ public class Line extends Shape {
 
 	public float side(float x, float y) {
 		return (end.x - start.x) * (y - start.y) - (end.y - start.y) * (x - start.x);
+	}
+
+	public Vector2f getMidPoint() {
+		Vector2f out = new Vector2f();
+		out.x = (getX1() + getX2()) / 2f;
+		out.y = (getY1() + getY2()) / 2f;
+		return out;
 	}
 
 	public Vector2f project(Vector2f v) {

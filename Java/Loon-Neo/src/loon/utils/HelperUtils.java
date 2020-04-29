@@ -23,8 +23,11 @@ package loon.utils;
 import loon.LSystem;
 import loon.ZIndex;
 import loon.canvas.LColor;
+import loon.event.Updateable;
 import loon.utils.reply.Pair;
 import loon.utils.reply.Triple;
+import loon.utils.timer.Duration;
+import loon.utils.timer.Interval;
 
 /**
  * 辅助用类,实现了一些常见的数值转换功能,可以在Screen中直接调用
@@ -32,19 +35,96 @@ import loon.utils.reply.Triple;
  */
 public class HelperUtils {
 
-	public static <T1, T2> Pair<T1, T2> toPair(T1 a, T2 b) {
+	public final static Interval interval(final Duration d, final Updateable update) {
+		return new Interval(d) {
+
+			@Override
+			public void loop() {
+				if (update != null) {
+					update.action(null);
+				}
+			}
+		};
+	}
+
+	public final static Interval interval(final String name, final long delay, final Updateable update) {
+		return new Interval(name, delay) {
+
+			@Override
+			public void loop() {
+				if (update != null) {
+					update.action(null);
+				}
+			}
+		};
+	}
+
+	public final static Interval interval(final long delay, final int loopCount, final Updateable update) {
+		return new Interval(delay, loopCount) {
+
+			@Override
+			public void loop() {
+				if (update != null) {
+					update.action(null);
+				}
+			}
+		};
+	}
+
+	public final static Interval interval(final String name, final long delay, final int loopCount,
+			final Updateable update) {
+		return new Interval(delay, loopCount) {
+
+			@Override
+			public void loop() {
+				if (update != null) {
+					update.action(null);
+				}
+			}
+		};
+	}
+
+	public final static Interval interval(final String name, final Duration d, final Updateable update) {
+		return new Interval(name, d) {
+
+			@Override
+			public void loop() {
+				if (update != null) {
+					update.action(null);
+				}
+			}
+		};
+	}
+
+	public final static <T1, T2> Pair<T1, T2> toPair(T1 a, T2 b) {
 		return Pair.get(a, b);
 	}
 
-	public static <T1, T2, T3> Triple<T1, T2, T3> toTriple(T1 a, T2 b, T3 c) {
+	public final static <T1, T2, T3> Triple<T1, T2, T3> toTriple(T1 a, T2 b, T3 c) {
 		return Triple.get(a, b, c);
 	}
 
-	public static <T> T getValue(T val, T defval) {
+	public final static <T> T getValue(T val, T defval) {
 		return val == null ? defval : val;
 	}
 
-	public static boolean toOrder(ZIndex[] array) {
+	public final static float toPercent(float value, float min, float max) {
+		return MathUtils.percent(value, min, max);
+	}
+
+	public final static float toPercent(float value, float min, float max, float upperMax) {
+		return MathUtils.percent(value, min, max, upperMax);
+	}
+
+	public static final float toPercent(float value, float percent) {
+		return MathUtils.percent(value, percent);
+	}
+
+	public static final int toPercent(int value, int percent) {
+		return MathUtils.percent(value, percent);
+	}
+
+	public final static boolean toOrder(ZIndex[] array) {
 		if (array == null || array.length < 2) {
 			return false;
 		}
@@ -55,7 +135,7 @@ public class HelperUtils {
 			j = i;
 			cur = array[j];
 			key = array[j].getLayer();
-			for (;--j > -1;) {
+			for (; --j > -1;) {
 				if (array[j].getLayer() > key) {
 					array[j + 1] = array[j];
 				} else {
@@ -66,7 +146,7 @@ public class HelperUtils {
 		}
 		return true;
 	}
-	
+
 	public final static LColor toColor(int r, int g, int b, int a) {
 		return new LColor(r, g, b, a);
 	}

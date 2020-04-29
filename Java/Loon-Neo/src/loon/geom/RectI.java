@@ -148,11 +148,11 @@ public class RectI implements XY {
 		}
 
 		public boolean contains(Circle circle) {
-			float xmin = circle.x - circle.radius;
-			float xmax = xmin + 2f * circle.radius;
+			float xmin = circle.x - circle.boundingCircleRadius;
+			float xmax = xmin + 2f * circle.boundingCircleRadius;
 
-			float ymin = circle.y - circle.radius;
-			float ymax = ymin + 2f * circle.radius;
+			float ymin = circle.y - circle.boundingCircleRadius;
+			float ymax = ymin + 2f * circle.boundingCircleRadius;
 
 			return ((xmin > getX() && xmin < getX() + width()) && (xmax > getX() && xmax < getX() + width()))
 					&& ((ymin > getY() && ymin < getY() + height()) && (ymax > getY() && ymax < getY() + height()));

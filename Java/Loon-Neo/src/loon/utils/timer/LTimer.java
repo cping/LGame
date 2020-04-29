@@ -322,7 +322,7 @@ public class LTimer implements LRelease {
 	public boolean paused() {
 		return !isActive();
 	}
-	
+
 	public int getId() {
 		return _idx;
 	}
@@ -340,6 +340,21 @@ public class LTimer implements LRelease {
 		return (float) this._currentTick / (float) this._delay;
 	}
 
+	public float getOverallPercentage() {
+		if (this._numberOfTicks > 0) {
+			float totalDuration = this._delay + (this._delay * this._numberOfTicks);
+			float totalElapsed = this._currentTick + (this._delay * (this._numberOfTicks - this._maxNumberOfRepeats));
+			return (totalElapsed / totalDuration);
+		} else {
+			return this.getPercentage();
+		}
+	}
+	
+	public float getElapsedSeconds ()
+    {
+        return this._currentTick * 0.001f;
+    }
+    
 	public float getRemaining() {
 		return (float) (this._delay - this._currentTick);
 	}

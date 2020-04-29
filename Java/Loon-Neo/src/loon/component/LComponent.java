@@ -1319,7 +1319,7 @@ public abstract class LComponent extends LObject<LContainer>
 		RectBox bounds = _super.getRectBox();
 		float dh = _super.getHeight();
 		float by = bounds.y + ((dh - this.getHeight()) / 2);
-		float bh = Math.max(by, by + bounds.height - dh);
+		float bh = MathUtils.max(by, by + bounds.height - dh);
 		if (y < by) {
 			y = by;
 		} else if (y > bh) {

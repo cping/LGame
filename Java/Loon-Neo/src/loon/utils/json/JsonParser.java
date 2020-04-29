@@ -20,12 +20,13 @@
  */
 package loon.utils.json;
 
-import java.math.BigInteger;
-
 import loon.LSystem;
 import loon.utils.CharUtils;
 import loon.utils.MathUtils;
 
+/**
+ * 自带的json解析用类
+ */
 final class JsonParser {
 
 	private static enum Token {
@@ -290,7 +291,7 @@ final class JsonParser {
 			if (length < 19) {
 				return Long.parseLong(number);
 			}
-			return new BigInteger(number);
+			return new java.math.BigInteger(number);
 		} catch (NumberFormatException e) {
 			throw createParseException(e, "Malformed number: " + number, true);
 		}

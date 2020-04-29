@@ -43,31 +43,26 @@ public class Ellipse extends Shape {
 
 	private float _end = 359;
 
-	public Ellipse(float centerPointX, float centerPointY, float radius1,
-			float radius2) {
+	public Ellipse(float centerPointX, float centerPointY, float radius1, float radius2) {
 		this.set(centerPointX, centerPointY, radius1, radius2);
 	}
 
-	public Ellipse(float centerPointX, float centerPointY, float radius1,
-			float radius2, int segmentCount) {
+	public Ellipse(float centerPointX, float centerPointY, float radius1, float radius2, int segmentCount) {
 		this.set(centerPointX, centerPointY, radius1, radius2, segmentCount);
 	}
 
-	public Ellipse(float centerPointX, float centerPointY, float radius1,
-			float radius2, float start, float end,int segmentCount) {
+	public Ellipse(float centerPointX, float centerPointY, float radius1, float radius2, float start, float end,
+			int segmentCount) {
 		_start = start;
 		_end = end;
 		set(centerPointX, centerPointY, radius1, radius2, segmentCount);
 	}
 
-	public void set(float centerPointX, float centerPointY, float radius1,
-			float radius2) {
-		set(centerPointX, centerPointY, radius1, radius2,
-				DEFAULT_SEGMENT_MAX_COUNT);
+	public void set(float centerPointX, float centerPointY, float radius1, float radius2) {
+		set(centerPointX, centerPointY, radius1, radius2, DEFAULT_SEGMENT_MAX_COUNT);
 	}
 
-	public void set(float centerPointX, float centerPointY, float radius1,
-			float radius2, int segmentCount) {
+	public void set(float centerPointX, float centerPointY, float radius1, float radius2, int segmentCount) {
 		this.x = centerPointX - radius1;
 		this.y = centerPointY - radius2;
 		this.radius1 = radius1;
@@ -131,7 +126,7 @@ public class Ellipse extends Shape {
 			if (ang > end) {
 				ang = end;
 			}
-			 
+
 			float newX = (cx + (MathUtils.cos(MathUtils.toRadians(ang)) * radius1));
 			float newY = (cy + (MathUtils.sin(MathUtils.toRadians(ang)) * radius2));
 
@@ -166,7 +161,7 @@ public class Ellipse extends Shape {
 
 	@Override
 	protected void calculateRadius() {
-		boundingCircleRadius = (radius1 > radius2) ? radius1 : radius2;
+		boundingCircleRadius = MathUtils.max(radius1, radius2);
 	}
 
 	@Override
@@ -192,6 +187,14 @@ public class Ellipse extends Shape {
 
 	public void setEnd(float end) {
 		this._end = end;
+	}
+
+	public float getMinorRadius() {
+		return MathUtils.min(this.radius1, this.radius2) / 2f;
+	}
+
+	public float getMajorRadius() {
+		return MathUtils.max(this.radius1, this.radius2) / 2f;
 	}
 
 	@Override

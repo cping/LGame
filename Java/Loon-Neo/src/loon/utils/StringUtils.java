@@ -72,12 +72,30 @@ final public class StringUtils extends CharUtils {
 	}
 
 	/**
-	 * 判断指定字符串内容是否为布尔值(不判定数字为布尔)
+	 * 判定指定字符序列是否在指定范围内
+	 * 
+	 * @param cs
+	 * @param minX
+	 * @param maxX
+	 * @return
+	 */
+	public static boolean isLimit(CharSequence cs, int minX, int maxX) {
+		if (isNullOrEmpty(cs)) {
+			return false;
+		}
+		return MathUtils.isLimit(cs.length(), minX, maxX);
+	}
+
+	/**
+	 * 判断指定字符串内容是否为布尔值(不判定数字为布尔，并且只判定布尔值，不考虑值真假问题)
 	 * 
 	 * @param o
 	 * @return
 	 */
 	public static boolean isBoolean(String o) {
+		if (isEmpty(o)) {
+			return false;
+		}
 		String str = o.trim().toLowerCase();
 		return str.equals("true") || str.equals("false") || str.equals("yes") || str.equals("no") || str.equals("ok");
 	}
@@ -89,6 +107,9 @@ final public class StringUtils extends CharUtils {
 	 * @return
 	 */
 	public static boolean toBoolean(String o) {
+		if (isEmpty(o)) {
+			return false;
+		}
 		String str = o.trim().toLowerCase();
 		if (str.equals("true") || str.equals("yes") || str.equals("ok")) {
 			return true;

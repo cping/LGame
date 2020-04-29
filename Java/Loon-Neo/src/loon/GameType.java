@@ -31,7 +31,7 @@ public enum GameType {
 	FTG("Fighting Game"),
 	AVG("Adventure Game"),
 	SLG("Simulation Game"),
-	RPG("Role-playing game"),
+	RPG("Role-playing Game"),
 	STRATEGY("Strategy Game"),
 	SPORT("Sports Game"),
 	RACING("Racing Game"),

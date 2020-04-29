@@ -26,6 +26,9 @@ import loon.utils.StringUtils;
 import loon.utils.TArray;
 import loon.utils.xml.XMLTokenizer;
 
+/**
+ * 自带的html解析用类
+ */
 public class HtmlParser {
 
 	public static HtmlElement parse(String path) {

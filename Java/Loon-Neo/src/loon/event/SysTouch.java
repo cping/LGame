@@ -133,6 +133,22 @@ public class SysTouch {
 		return SysInputFactory.finalTouch.isMove();
 	}
 
+	public static boolean lowerLeft() {
+		return SysInputFactory.finalTouch.lowerLeft();
+	}
+
+	public static boolean lowerRight() {
+		return SysInputFactory.finalTouch.lowerRight();
+	}
+
+	public static boolean upperLeft() {
+		return SysInputFactory.finalTouch.upperLeft();
+	}
+
+	public static boolean upperRight() {
+		return SysInputFactory.finalTouch.upperRight();
+	}
+
 	public static long getDuration() {
 		return SysInputFactory.finalTouch.duration;
 	}
@@ -148,8 +164,8 @@ public class SysTouch {
 	public static boolean isDrag() {
 		return SysInputFactory._isDraging;
 	}
-	
-	public static GameTouch cpy(){
+
+	public static GameTouch cpy() {
 		return SysInputFactory.finalTouch.cpy();
 	}
 

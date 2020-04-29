@@ -463,10 +463,10 @@ public class RectBox extends Shape implements BoxSize {
 	}
 
 	public boolean contains(Circle circle) {
-		float xmin = circle.x - circle.radius;
-		float xmax = xmin + 2f * circle.radius;
-		float ymin = circle.y - circle.radius;
-		float ymax = ymin + 2f * circle.radius;
+		float xmin = circle.x - circle.boundingCircleRadius;
+		float xmax = xmin + 2f * circle.boundingCircleRadius;
+		float ymin = circle.y - circle.boundingCircleRadius;
+		float ymax = ymin + 2f * circle.boundingCircleRadius;
 		return ((xmin > x && xmin < x + width) && (xmax > x && xmax < x + width))
 				&& ((ymin > y && ymin < y + height) && (ymax > y && ymax < y + height));
 	}
@@ -867,13 +867,13 @@ public class RectBox extends Shape implements BoxSize {
 	}
 
 	public RectBox random() {
-		this.x = MathUtils.random(0f,LSystem.viewSize.getWidth());
-		this.y = MathUtils.random(0f,LSystem.viewSize.getHeight());
-		this.width = MathUtils.random(0,LSystem.viewSize.getWidth());
-		this.height = MathUtils.random(0,LSystem.viewSize.getHeight());
+		this.x = MathUtils.random(0f, LSystem.viewSize.getWidth());
+		this.y = MathUtils.random(0f, LSystem.viewSize.getHeight());
+		this.width = MathUtils.random(0, LSystem.viewSize.getWidth());
+		this.height = MathUtils.random(0, LSystem.viewSize.getHeight());
 		return this;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

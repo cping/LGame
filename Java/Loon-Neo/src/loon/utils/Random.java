@@ -60,7 +60,7 @@ public class Random {
 		if (seed != 0) {
 			this._mt.set(0, seed);
 		} else {
-			this._mt.set(0, (TimeUtils.millis()) >>> 0);
+			this._mt.set(0, (TimeUtils.nanoTime()) >>> 0);
 		}
 		for (int i = 1; i < this._n; i++) {
 			long s = this._mt.get(i - 1) ^ (this._mt.get(i - 1) >>> (this._w - 2));
@@ -94,11 +94,11 @@ public class Random {
 	}
 
 	public int nextInt(int min, int max) {
-		return MathUtils.clamp(MathUtils.floor((max - min + 1) * this.nextFloat() + min), min, max);
+		return MathUtils.clamp(MathUtils.abs(MathUtils.floor((max - min + 1) * this.nextFloat() + min)), min, max);
 	}
 
 	public long nextLong(long min, long max) {
-		return MathUtils.clamp(MathUtils.floor((max - min + 1) * this.nextFloat() + min), min, max);
+		return MathUtils.clamp(MathUtils.abs(MathUtils.floor((max - min + 1) * this.nextFloat() + min)), min, max);
 	}
 
 	public double nextDouble(double min, double max) {

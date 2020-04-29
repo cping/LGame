@@ -25,6 +25,9 @@ import loon.LSysException;
 import loon.LSystem;
 import loon.utils.TArray;
 
+/**
+ * 自带的XML解析用类
+ */
 public class XMLParser {
 
 	public static final int OPEN_TAG = 0;
@@ -123,10 +126,8 @@ public class XMLParser {
 				StringBuffer sbr1 = new StringBuffer(128);
 				StringBuffer sbr2 = new StringBuffer(32);
 				for (int m = 0; m < str2.length(); m++) {
-
 					switch (str2.charAt(m)) {
 					case '"':
-
 						start = start != 0 ? 0 : 1;
 						break;
 					case ' ':
@@ -148,7 +149,6 @@ public class XMLParser {
 						}
 						break;
 					case '=':
-
 						if (start == 0) {
 							end = 1;
 						}

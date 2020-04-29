@@ -109,11 +109,11 @@ public class AABB implements XY, BoxSize {
 	}
 
 	public boolean contains(Circle circle) {
-		float xmin = circle.x - circle.radius;
-		float xmax = xmin + 2f * circle.radius;
+		float xmin = circle.x - circle.getRadius();
+		float xmax = xmin + 2f * circle.getRadius();
 
-		float ymin = circle.y - circle.radius;
-		float ymax = ymin + 2f * circle.radius;
+		float ymin = circle.y - circle.getRadius();
+		float ymax = ymin + 2f * circle.getRadius();
 
 		return ((xmin > minX && xmin < minX + maxX) && (xmax > minX && xmax < minX + maxX))
 				&& ((ymin > minY && ymin < minY + maxY) && (ymax > minY && ymax < minY + maxY));
@@ -144,7 +144,7 @@ public class AABB implements XY, BoxSize {
 	public RectBox toRectBox() {
 		return new RectBox(this.minX, this.minY, this.maxX, this.maxY);
 	}
-
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;

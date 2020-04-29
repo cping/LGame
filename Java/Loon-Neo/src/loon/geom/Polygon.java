@@ -23,17 +23,20 @@ package loon.geom;
 
 import loon.LSysException;
 import loon.physics.PPolygon;
+import loon.utils.MathUtils;
 import loon.utils.StringKeyValue;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
 public class Polygon extends Shape implements BoxSize {
+
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 7491444927273846690L;
 
-	public static class Polygon2i {}
+	public static class Polygon2i {
+	}
 
 	private boolean allowDups = false;
 
@@ -90,8 +93,7 @@ public class Polygon extends Shape implements BoxSize {
 
 	public Polygon(float[] xpoints, float[] ypoints, int npoints) {
 		if (npoints > xpoints.length || npoints > ypoints.length) {
-			throw new LSysException("npoints > xpoints.length || "
-					+ "npoints > ypoints.length");
+			throw new LSysException("npoints > xpoints.length || " + "npoints > ypoints.length");
 		}
 		if (npoints < 0) {
 			throw new LSysException("npoints < 0");
@@ -108,8 +110,7 @@ public class Polygon extends Shape implements BoxSize {
 
 	public Polygon(int[] xpoints, int[] ypoints, int npoints) {
 		if (npoints > xpoints.length || npoints > ypoints.length) {
-			throw new LSysException("npoints > xpoints.length || "
-					+ "npoints > ypoints.length");
+			throw new LSysException("npoints > xpoints.length || " + "npoints > ypoints.length");
 		}
 		if (npoints < 0) {
 			throw new LSysException("npoints < 0");
@@ -231,30 +232,36 @@ public class Polygon extends Shape implements BoxSize {
 
 	@Override
 	public void setWidth(float w) {
-        this.maxX = w;
+		this.maxX = w;
 	}
 
 	@Override
 	public void setHeight(float h) {
-	    this.maxY = h; 
+		this.maxY = h;
 	}
-	
+
+	public RectBox getBox() {
+		TArray<Vector2f> v = getVertices();
+		float miX = this.minX;
+		float miY = this.minY;
+		float maX = this.maxX;
+		float maY = this.maxY;
+		for (int i = 0; i < v.size; i++) {
+			Vector2f p = v.get(i);
+			miX = MathUtils.min(miX, p.x);
+			miY = MathUtils.min(miY, p.y);
+			maX = MathUtils.max(maX, p.x);
+			maY = MathUtils.max(maY, p.y);
+		}
+		return new RectBox(miX, miY, maX - miX, maY - miY);
+	}
+
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("Polygon");
-		builder.kv("points", "[" + StringUtils.join(',', points) + "]")
-		.comma()
-		.kv("center", "[" + StringUtils.join(',', center) + "]")
-		.comma()
-		.kv("rotation", rotation)
-		.comma()
-		.kv("minX", minX)
-		.comma()
-		.kv("minY", minY)
-		.comma()
-		.kv("maxX", maxX)
-		.comma()
-		.kv("maxY", maxY);
+		builder.kv("points", "[" + StringUtils.join(',', points) + "]").comma()
+				.kv("center", "[" + StringUtils.join(',', center) + "]").comma().kv("rotation", rotation).comma()
+				.kv("minX", minX).comma().kv("minY", minY).comma().kv("maxX", maxX).comma().kv("maxY", maxY);
 		return builder.toString();
 	}
 }

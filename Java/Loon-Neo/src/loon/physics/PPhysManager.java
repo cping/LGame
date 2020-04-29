@@ -100,7 +100,7 @@ public class PPhysManager {
 	}
 
 	public PBody circle(boolean fix, Circle c, float angle, float density) {
-		return circle(fix, c.x, c.y, c.radius, angle, density);
+		return circle(fix, c.x, c.y, c.getRadius(), angle, density);
 	}
 
 	public PBody addCircle(boolean fix, float x, float y, float r, float angle,

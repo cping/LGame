@@ -344,7 +344,7 @@ public class MathUtils {
 	public static final boolean isNan(double v) {
 		return (v != v);
 	}
-	
+
 	/**
 	 * 判断是否为数字
 	 * 
@@ -621,6 +621,10 @@ public class MathUtils {
 		return result;
 	}
 
+	public static final float trunc(float x) {
+		return x < 0f ? MathUtils.ceil(x) : MathUtils.floor(x);
+	}
+
 	public static final float tan(float angle) {
 		return (float) Math.tan(angle);
 	}
@@ -652,11 +656,11 @@ public class MathUtils {
 	public static final float distance(float x1, float y1, float x2, float y2) {
 		return dist(x1, y1, x2, y2);
 	}
-	
+
 	public static final float dist(float x1, float y1) {
 		return abs(x1 - y1);
 	}
-	
+
 	public static final float dist(float x1, float y1, float x2, float y2) {
 		return sqrt(sq(x2 - x1) + sq(y2 - y1));
 	}
@@ -1195,7 +1199,7 @@ public class MathUtils {
 	public static final boolean isInBounds(final float minValue, final float maxValue, final float val) {
 		return val >= minValue && val <= maxValue;
 	}
-	
+
 	protected static int TO_STRING_DECIMAL_PLACES = 3;
 
 	public static final String toString(float value) {
@@ -1401,6 +1405,30 @@ public class MathUtils {
 		return value > max2 ? value : max2;
 	}
 
+	public final static float percent(float value, float min, float max) {
+		return percent(value, min, max, 1f);
+	}
+
+	public final static float percent(float value, float min, float max, float upperMax) {
+		if (max <= -1f) {
+			max = min + 1f;
+		}
+		float percentage = (value - min) / (max - min);
+		if (percentage > 1f) {
+			if (upperMax != -1f) {
+				percentage = ((upperMax - value)) / (upperMax - max);
+				if (percentage < 0f) {
+					percentage = 0f;
+				}
+			} else {
+				percentage = 1f;
+			}
+		} else if (percentage < 0f) {
+			percentage = 0f;
+		}
+		return percentage;
+	}
+
 	public static final float percent(float value, float percent) {
 		return value * (percent * 0.01f);
 	}
@@ -1471,7 +1499,11 @@ public class MathUtils {
 		}
 		return value;
 	}
-
+	
+	public static final boolean isLimit(int value, int minX, int maxX) {
+		return value >= minX && value <= maxX;
+	}
+	
 	public static final float fixRotation(final float rotation) {
 		float newAngle = 0f;
 		if (rotation == -360f || rotation == 360f) {

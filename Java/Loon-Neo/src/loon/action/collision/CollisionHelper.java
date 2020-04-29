@@ -33,6 +33,7 @@ import loon.geom.Vector2f;
 import loon.geom.XY;
 import loon.geom.XYZ;
 import loon.utils.MathUtils;
+import loon.utils.TArray;
 
 /**
  * 碰撞事件检测与处理工具类,内部是一系列碰撞检测与处理方法的集合
@@ -719,6 +720,57 @@ public final class CollisionHelper extends ShapeUtils {
 			result.setBounds(tileWidth * col, tileHeight * row, tileWidth, tileHeight);
 		}
 		return result;
+	}
+
+	/**
+	 * 获得指定线经过的点
+	 * 
+	 * @param line
+	 * @param stepRate
+	 * @return
+	 */
+	public static final TArray<Vector2f> getBresenhamPoints(Line line, float stepRate) {
+		if (stepRate < 1f) {
+			stepRate = 1f;
+		}
+		TArray<Vector2f> results = new TArray<Vector2f>();
+	
+		float x1 = MathUtils.round(line.getX1());
+		float y1 = MathUtils.round(line.getY1());
+		float x2 = MathUtils.round(line.getX2());
+		float y2 = MathUtils.round(line.getY2());
+
+		float dx = MathUtils.abs(x2 - x1);
+		float dy = MathUtils.abs(y2 - y1);
+		float sx = (x1 < x2) ? 1 : -1;
+		float sy = (y1 < y2) ? 1 : -1;
+		int err = MathUtils.ceil(dx) - MathUtils.ceil(dy);
+
+		results.add(new Vector2f(x1, y1));
+
+		int i = 1;
+
+		while (!((x1 == x2) && (y1 == y2))) {
+			int e2 = err << 1;
+
+			if (e2 > -dy) {
+				err -= dy;
+				x1 += sx;
+			}
+
+			if (e2 < dx) {
+				err += dx;
+				y1 += sy;
+			}
+
+			if (i % stepRate == 0) {
+				results.add(new Vector2f(x1, y1));
+			}
+
+			i++;
+		}
+
+		return results;
 	}
 
 }

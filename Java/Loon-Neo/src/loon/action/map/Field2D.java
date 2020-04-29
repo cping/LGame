@@ -149,6 +149,23 @@ public class Field2D implements IArray, Config {
 		return output;
 	}
 
+	public final static Vector2f toXY(int index, int width, int height) {
+		Vector2f out = new Vector2f();
+		float nx = 0f;
+		float ny = 0f;
+		int total = width * height;
+		if (index > 0 && index <= total) {
+			if (index > width - 1) {
+				ny = MathUtils.floor(index / width);
+				nx = index - (ny * width);
+			} else {
+				nx = index;
+			}
+			out.set(nx, ny);
+		}
+		return out;
+	}
+
 	public static final float rotation(Vector2f source, Vector2f target) {
 		int nx = MathUtils.floor(target.getX() - source.getX());
 		int ny = MathUtils.floor(target.getY() - source.getY());
@@ -753,6 +770,10 @@ public class Field2D implements IArray, Config {
 
 	public boolean notHeight(final int y) {
 		return y < 0 || y >= height;
+	}
+
+	public Vector2f toXY(int index) {
+		return toXY(index, this.width, this.height);
 	}
 
 	public int[][] neighbors(int px, int py, boolean flag) {
