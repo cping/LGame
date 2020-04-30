@@ -21,12 +21,31 @@
 package loon.geom;
 
 import loon.utils.MathUtils;
+import loon.utils.StringUtils;
 
 public class Circle extends Ellipse {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+
+	public static Circle at(String v) {
+		if (StringUtils.isEmpty(v)) {
+			return new Circle();
+		}
+		String[] result = StringUtils.split(v, ',');
+		int len = result.length;
+		if (len > 2) {
+			try {
+				float x = Float.parseFloat(result[0].trim());
+				float y = Float.parseFloat(result[1].trim());
+				float r = Float.parseFloat(result[2].trim());
+				return new Circle(x, y, r);
+			} catch (Exception ex) {
+			}
+		}
+		return new Circle();
+	}
 
 	public static Circle at(float centerPointX, float centerPointY, float r) {
 		return new Circle(centerPointX, centerPointY, r);
@@ -37,6 +56,12 @@ public class Circle extends Ellipse {
 		return new Circle(centerPointX, centerPointY, radius);
 	}
 
+	/**
+	 * 构建一个圆形
+	 */
+	public Circle() {
+		this(0f, 0f, 0f);
+	}
 
 	/**
 	 * 构建一个圆形
@@ -176,7 +201,8 @@ public class Circle extends Ellipse {
 	public boolean collideCircle(Circle c) {
 		float dx = x - c.x;
 		float dy = y - c.y;
-		return dx * dx + dy * dy < (boundingCircleRadius + c.boundingCircleRadius) * (boundingCircleRadius + c.boundingCircleRadius);
+		return dx * dx + dy * dy < (boundingCircleRadius + c.boundingCircleRadius)
+				* (boundingCircleRadius + c.boundingCircleRadius);
 	}
 
 	public boolean collideBounds(RectBox size) {
@@ -237,13 +263,23 @@ public class Circle extends Ellipse {
 		if (other instanceof Circle) {
 			return contains((Circle) other);
 		}
-		for (int i = 0; i < other.getPointCount(); i++) {
-			float[] pt = other.getPoint(i);
-			if (!contains(pt[0], pt[1])) {
-				return false;
-			}
-		}
-		return true;
+		return super.contains(other);
+	}
+
+	public float getLeft() {
+		return this.x - this.boundingCircleRadius;
+	}
+
+	public float getRight() {
+		return this.x + this.boundingCircleRadius;
+	}
+
+	public float getTop() {
+		return this.y - this.boundingCircleRadius;
+	}
+
+	public float getBottom() {
+		return this.y + this.boundingCircleRadius;
 	}
 
 	public boolean contains(Circle c) {
@@ -296,7 +332,8 @@ public class Circle extends Ellipse {
 	}
 
 	public float area() {
-		return (this.boundingCircleRadius > 0) ? MathUtils.PI * this.boundingCircleRadius * this.boundingCircleRadius : 0f;
+		return (this.boundingCircleRadius > 0) ? MathUtils.PI * this.boundingCircleRadius * this.boundingCircleRadius
+				: 0f;
 	}
 
 	public boolean equals(Circle other) {

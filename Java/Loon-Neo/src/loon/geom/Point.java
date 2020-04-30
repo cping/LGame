@@ -24,12 +24,30 @@ package loon.geom;
 import loon.LSystem;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
+import loon.utils.StringUtils;
 
 public class Point extends Shape {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+
+	public static Point at(String v) {
+		if (StringUtils.isEmpty(v)) {
+			return new Point();
+		}
+		String[] result = StringUtils.split(v, ',');
+		int len = result.length;
+		if (len > 1) {
+			try {
+				float x = Float.parseFloat(result[0].trim());
+				float y = Float.parseFloat(result[1].trim());
+				return new Point(x, y);
+			} catch (Exception ex) {
+			}
+		}
+		return new Point();
+	}
 
 	public final static Point at(float x, float y) {
 		return new Point(x, y);
@@ -40,6 +58,10 @@ public class Point extends Shape {
 	public static final int POINT_CONVEX = 1;
 
 	public static final int POINT_CONCAVE = 2;
+
+	public Point() {
+		this(0f, 0f);
+	}
 
 	public Point(float x, float y) {
 		this.checkPoints();
@@ -140,7 +162,7 @@ public class Point extends Shape {
 		this.y = MathUtils.random(0f, LSystem.viewSize.getHeight());
 		return this;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

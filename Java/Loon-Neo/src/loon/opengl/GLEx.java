@@ -1924,6 +1924,21 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 * 绘制不特定Shape
 	 * 
 	 * @param shape
+	 * @param color
+	 * @return
+	 */
+	public GLEx draw(Shape shape, LColor color) {
+		int tmp = getTint();
+		setTint(color);
+		draw(shape, 0f, 0f);
+		setTint(tmp);
+		return this;
+	}
+
+	/**
+	 * 绘制不特定Shape
+	 * 
+	 * @param shape
 	 * @param x
 	 * @param y
 	 * @return
@@ -2033,6 +2048,21 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 */
 	public GLEx fill(Shape shape) {
 		return fill(shape, 0f, 0f);
+	}
+
+	/**
+	 * 绘制不特定Shape
+	 * 
+	 * @param shape
+	 * @param color
+	 * @return
+	 */
+	public GLEx fill(Shape shape, LColor color) {
+		int tmp = getTint();
+		setTint(color);
+		fill(shape, 0f, 0f);
+		setTint(tmp);
+		return this;
 	}
 
 	/**

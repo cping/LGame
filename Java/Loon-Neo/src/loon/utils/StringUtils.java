@@ -61,7 +61,7 @@ final public class StringUtils extends CharUtils {
 				} else {
 					b.append('{').append(nstr).append('}');
 				}
-			} catch (NumberFormatException e) {
+			} catch (Exception e) {
 				b.append('{').append(nstr).append('}');
 			}
 			p = idx + 1;
@@ -898,6 +898,26 @@ final public class StringUtils extends CharUtils {
 	}
 
 	/**
+	 * 返回字符序列中出现的中文字符数量
+	 * 
+	 * @param cs
+	 * @return
+	 */
+	public static int getChineseCount(CharSequence cs) {
+		if (isNullOrEmpty(cs)) {
+			return 0;
+		}
+		int count = 0;
+		for (int i = 0; i < cs.length(); i++) {
+			char ch = cs.charAt(i);
+			if (isChinese(ch)) {
+				count++;
+			}
+		}
+		return count;
+	}
+
+	/**
 	 * 判断字符串是否全部是空格
 	 * 
 	 * @param param
@@ -969,6 +989,59 @@ final public class StringUtils extends CharUtils {
 	}
 
 	/**
+	 * 小写第一个字符
+	 * 
+	 * @param mes
+	 * @return
+	 */
+	public static String toLowerCaseFirst(String mes) {
+		if (isEmpty(mes)) {
+			return "";
+		}
+		if (mes.length() < 2) {
+			return mes.substring(0).toLowerCase();
+		}
+		return mes.substring(0, 1).toLowerCase() + mes.substring(1, mes.length());
+	}
+
+	/**
+	 * 转换字符串为字符串数组
+	 * 
+	 * @param mes
+	 * @return
+	 */
+	public static String[] toList(final String mes) {
+		return toList(mes, null);
+	}
+
+	/**
+	 * 转换字符串为字符串数组
+	 * 
+	 * @param mes
+	 * @param flag
+	 * @return
+	 */
+	public static String[] toList(final String mes, final String flag) {
+		String result = trim(mes);
+		if (result.startsWith("{") && result.endsWith("}") || result.startsWith("[") && result.endsWith("]")
+				|| result.startsWith("(") && result.endsWith(")")) {
+			result = result.substring(1, result.length() - 1);
+		}
+		if (result.endsWith(",")) {
+			result = result.substring(0, result.length() - 1);
+		}
+		String sep = flag;
+		if (sep == null) {
+			if (result.indexOf(':') >= 0) {
+				sep = ":";
+			} else {
+				sep = ",";
+			}
+		}
+		return split(result, sep);
+	}
+
+	/**
 	 * 检查指定字符串中是否存在中文字符。
 	 * 
 	 * @param checkStr
@@ -976,13 +1049,7 @@ final public class StringUtils extends CharUtils {
 	 * @return 逻辑值（True Or False）。
 	 */
 	public static boolean hasChinese(String checkStr) {
-		for (int i = 0; i < checkStr.length(); i++) {
-			int ch = checkStr.charAt(i);
-			if (isChinese(ch)) {
-				return true;
-			}
-		}
-		return false;
+		return getChineseCount(checkStr) > 0;
 	}
 
 	/**

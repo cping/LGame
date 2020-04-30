@@ -24,6 +24,7 @@ import loon.action.map.Config;
 import loon.action.map.Field2D;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
+import loon.utils.StringUtils;
 import loon.utils.TArray;
 
 public class Line extends Shape {
@@ -31,6 +32,25 @@ public class Line extends Shape {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+
+	public static Line at(String v) {
+		if (StringUtils.isEmpty(v)) {
+			return new Line();
+		}
+		String[] result = StringUtils.split(v, ',');
+		int len = result.length;
+		if (len > 3) {
+			try {
+				float x = Float.parseFloat(result[0].trim());
+				float y = Float.parseFloat(result[1].trim());
+				float x1 = Float.parseFloat(result[2].trim());
+				float y1 = Float.parseFloat(result[3].trim());
+				return new Line(x, y, x1, y1);
+			} catch (Exception ex) {
+			}
+		}
+		return new Line();
+	}
 
 	public final static Line at(float x1, float y1, float x2, float y2) {
 		return new Line(x1, y1, x2, y2);
@@ -45,6 +65,10 @@ public class Line extends Shape {
 	private Vector2f loc = new Vector2f(0, 0);
 
 	private Vector2f closest = new Vector2f(0, 0);
+
+	public Line() {
+		this(0f, 0f);
+	}
 
 	public Line(float x, float y, boolean inner, boolean outer) {
 		this(0, 0, x, y);
@@ -131,7 +155,6 @@ public class Line extends Shape {
 		float dx = (ex - sx);
 		float dy = (ey - sy);
 		vec.set(dx, dy);
-
 	}
 
 	public float getDX() {
@@ -249,47 +272,94 @@ public class Line extends Shape {
 		result.y = start.getY() + projDistance * vec.getY();
 	}
 
-	public Vector2f intersect(Line other) {
-		return intersect(other, false);
+	public boolean intersects(Line other) {
+		return intersects(other, null);
 	}
 
-	public Vector2f intersect(Line other, boolean limit) {
-		Vector2f temp = new Vector2f();
-
-		if (!intersect(other, limit, temp)) {
-			return null;
+	public boolean intersects(Line other, Vector2f result) {
+		if (other == null) {
+			return false;
 		}
 
-		return temp;
-	}
+		float x1 = getX1();
+		float y1 = getY1();
+		float x2 = getX2();
+		float y2 = getY2();
 
-	public boolean intersect(Line other, boolean limit, Vector2f result) {
-		float dx1 = end.getX() - start.getX();
-		float dx2 = other.end.getX() - other.start.getX();
-		float dy1 = end.getY() - start.getY();
-		float dy2 = other.end.getY() - other.start.getY();
-		float denom = (dy2 * dx1) - (dx2 * dy1);
+		float x3 = other.getX1();
+		float y3 = other.getY1();
+		float x4 = other.getX2();
+		float y4 = other.getY2();
+
+		float numA = (x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3);
+		float numB = (x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3);
+		float denom = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
 
 		if (denom == 0) {
 			return false;
 		}
 
-		float ua = (dx2 * (start.getY() - other.start.getY())) - (dy2 * (start.getX() - other.start.getX()));
-		ua /= denom;
-		float ub = (dx1 * (start.getY() - other.start.getY())) - (dy1 * (start.getX() - other.start.getX()));
-		ub /= denom;
+		float uA = numA / denom;
+		float uB = numB / denom;
 
-		if ((limit) && ((ua < 0) || (ua > 1) || (ub < 0) || (ub > 1))) {
+		if (uA >= 0 && uA <= 1 && uB >= 0 && uB <= 1) {
+			if (result != null) {
+				result.x = x1 + (uA * (x2 - x1));
+				result.y = y1 + (uA * (y2 - y1));
+			}
+			return true;
+		}
+
+		return false;
+	}
+
+	public boolean intersects(RectBox rect) {
+		if (rect == null) {
 			return false;
 		}
 
-		float u = ua;
+		float x1 = start.getX();
+		float y1 = start.getY();
 
-		float ix = start.getX() + (u * (end.getX() - start.getX()));
-		float iy = start.getY() + (u * (end.getY() - start.getY()));
+		float x2 = end.getX() + start.getX();
+		float y2 = end.getY() + start.getY();
 
-		result.set(ix, iy);
-		return true;
+		float bx1 = rect.x;
+		float by1 = rect.y;
+		float bx2 = rect.getRight();
+		float by2 = rect.getBottom();
+
+		float t = 0;
+		if ((x1 >= bx1 && x1 <= bx2 && y1 >= by1 && y1 <= by2) || (x2 >= bx1 && x2 <= bx2 && y2 >= by1 && y2 <= by2)) {
+			return true;
+		}
+
+		if (x1 < bx1 && x2 >= bx1) {
+			t = y1 + (y2 - y1) * (bx1 - x1) / (x2 - x1);
+			if (t > by1 && t <= by2) {
+				return rect.intersects(this);
+			}
+		} else if (x1 > bx2 && x2 <= bx2) {
+			t = y1 + (y2 - y1) * (bx2 - x1) / (x2 - x1);
+			if (t >= by1 && t <= by2) {
+				return rect.intersects(this);
+			}
+		}
+
+		if (y1 < by1 && y2 >= by1) {
+			t = x1 + (x2 - x1) * (by1 - y1) / (y2 - y1);
+			if (t >= bx1 && t <= bx2) {
+				return rect.intersects(this);
+			}
+
+		} else if (y1 > by2 && y2 <= by2) {
+			t = x1 + (x2 - x1) * (by2 - y1) / (y2 - y1);
+			if (t >= bx1 && t <= bx2) {
+				return rect.intersects(this);
+			}
+		}
+
+		return false;
 	}
 
 	public float side(XY v) {

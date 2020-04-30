@@ -261,9 +261,6 @@ public abstract class Shape implements Serializable, IArray, XY {
 	}
 
 	public boolean contains(Shape other) {
-		if (other.intersects(this)) {
-			return false;
-		}
 		for (int i = 0; i < other.getPointCount(); i++) {
 			float[] pt = other.getPoint(i);
 			if (!contains(pt[0], pt[1])) {

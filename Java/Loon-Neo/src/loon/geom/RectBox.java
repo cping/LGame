@@ -25,6 +25,7 @@ import loon.LSystem;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 import loon.utils.StringKeyValue;
+import loon.utils.StringUtils;
 
 public class RectBox extends Shape implements BoxSize {
 
@@ -32,6 +33,25 @@ public class RectBox extends Shape implements BoxSize {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+
+	public static RectBox at(String v) {
+		if (StringUtils.isEmpty(v)) {
+			return new RectBox();
+		}
+		String[] result = StringUtils.split(v, ',');
+		int len = result.length;
+		if (len > 3) {
+			try {
+				float x = Float.parseFloat(result[0].trim());
+				float y = Float.parseFloat(result[1].trim());
+				float width = Float.parseFloat(result[2].trim());
+				float height = Float.parseFloat(result[3].trim());
+				return new RectBox(x, y, width, height);
+			} catch (Exception ex) {
+			}
+		}
+		return new RectBox();
+	}
 
 	public final static RectBox at(int x, int y, int w, int h) {
 		return new RectBox(x, y, w, h);
@@ -864,6 +884,18 @@ public class RectBox extends Shape implements BoxSize {
 		}
 		setBounds(tx1, ty1, tx2, ty2);
 		return this;
+	}
+
+	public float getAspectRatio() {
+		return (height == 0) ? Float.NaN : (float) width / (float) height;
+	}
+
+	public float area() {
+		return this.width * this.height;
+	}
+
+	public float perimeter() {
+		return 2f * (this.width + this.height);
 	}
 
 	public RectBox random() {
