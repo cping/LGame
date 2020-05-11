@@ -231,6 +231,7 @@ public class Actions {
 						}
 						if (!currentTarget.currentAction.isInit) {
 							currentTarget.currentAction.isInit = true;
+							currentTarget.currentAction.initAction();
 							currentTarget.currentAction.onLoad();
 						}
 						currentTarget.currentAction.step(elapsedTime);

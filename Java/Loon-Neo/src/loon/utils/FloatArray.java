@@ -109,14 +109,14 @@ public class FloatArray implements IArray {
 		addAll(array, 0, array.length);
 	}
 
-	public void addAll(float[] array, int offset, int length) {
+	public void addAll(float[] array, int offset, int len) {
 		float[] items = this.items;
-		int lengthNeeded = length + length;
+		int lengthNeeded = this.length + len;
 		if (lengthNeeded > items.length) {
 			items = relength(MathUtils.max(8, (int) (lengthNeeded * 1.75f)));
 		}
-		System.arraycopy(array, offset, items, length, length);
-		length += length;
+		System.arraycopy(array, offset, items, this.length, len);
+		this.length += len;
 	}
 
 	public float get(int index) {

@@ -63,6 +63,8 @@ public class ExplosionEffect extends Entity implements BaseEffect {
 
 	private Image pixmap;
 
+	private boolean autoRemoved;
+
 	private EasingMode easingMode;
 
 	private EaseTimer timer;
@@ -151,6 +153,11 @@ public class ExplosionEffect extends Entity implements BaseEffect {
 	protected void onUpdate(final long elapsedTime) {
 		if (startExplision) {
 			timer.action(elapsedTime);
+		}
+		if (this.isCompleted()) {
+			if (autoRemoved && getSprites() != null) {
+				getSprites().remove(this);
+			}
 		}
 	}
 
@@ -460,6 +467,15 @@ public class ExplosionEffect extends Entity implements BaseEffect {
 
 	public void setEasingMode(EasingMode easingMode) {
 		this.easingMode = easingMode;
+	}
+
+	public boolean isAutoRemoved() {
+		return autoRemoved;
+	}
+
+	public ExplosionEffect setAutoRemoved(boolean autoRemoved) {
+		this.autoRemoved = autoRemoved;
+		return this;
 	}
 
 	@Override

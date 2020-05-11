@@ -297,7 +297,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	// 是否已经暂停
 	private boolean isTimerPaused = false;
 
-	public int index = 0;
+	private int _screenIndex = 0;
 
 	public static final class PaintOrder {
 
@@ -393,12 +393,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	public Screen setID(int id) {
-		this.index = id;
+		this._screenIndex = id;
 		return this;
 	}
 
 	public int getID() {
-		return this.index;
+		return this._screenIndex;
 	}
 
 	/**
@@ -1364,11 +1364,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			desktop = null;
 		}
 		this.desktop = new Desktop("ScreenDesktop", this, width, height);
-		this._keyActions.clear();
 		this.isNext = true;
-		this.index = 0;
 		this.tx = ty = 0;
 		this.isTranslate = false;
+		this._screenIndex = 0;
+		this._keyActions.clear();
 		this._visible = true;
 		this._rotation = 0;
 		this._scaleX = _scaleY = _alpha = 1f;
@@ -2822,14 +2822,42 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @param sprite
 	 * @return
 	 */
-
-	public boolean onClick(ISprite sprite) {
+	public boolean onClick(ISprite sprite, float x, float y) {
 		if (sprite == null) {
 			return false;
 		}
 		if (sprite.isVisible()) {
 			RectBox rect = sprite.getCollisionBox();
-			if (rect.contains(SysTouch.getX(), SysTouch.getY()) || rect.intersects(SysTouch.getX(), SysTouch.getY())) {
+			if (rect.contains(x, y) || rect.intersects(x, y)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * 判断是否点中指定精灵
+	 * 
+	 * @param sprite
+	 * @return
+	 */
+	public boolean onClick(ISprite sprite) {
+		return onClick(sprite, SysTouch.getX(), SysTouch.getY());
+	}
+
+	/**
+	 * 判断是否点中指定组件
+	 * 
+	 * @param component
+	 * @return
+	 */
+	public boolean onClick(LComponent component, float x, float y) {
+		if (component == null) {
+			return false;
+		}
+		if (component.isVisible()) {
+			RectBox rect = component.getCollisionBox();
+			if (rect.contains(x, y) || rect.intersects(x, y)) {
 				return true;
 			}
 		}
@@ -2842,18 +2870,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @param component
 	 * @return
 	 */
-
 	public boolean onClick(LComponent component) {
-		if (component == null) {
-			return false;
-		}
-		if (component.isVisible()) {
-			RectBox rect = component.getCollisionBox();
-			if (rect.contains(SysTouch.getX(), SysTouch.getY()) || rect.intersects(SysTouch.getX(), SysTouch.getY())) {
-				return true;
-			}
-		}
-		return false;
+		return onClick(component, SysTouch.getX(), SysTouch.getY());
 	}
 
 	public Screen centerOn(final LObject<?> object) {
@@ -2952,11 +2970,31 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	/**
+	 * 添加一组事件到循环开始前
+	 * 
+	 * @param update
+	 * @return
+	 */
+	public Screen after(Updateable update) {
+		return addLoad(update);
+	}
+
+	/**
 	 * 重载此函数,可以自定义渲染Screen的最上层图像
 	 * 
 	 * @param g
 	 */
 	protected void beforeUI(GLEx g) {
+	}
+
+	/**
+	 * 添加一组事件到循环开始后
+	 * 
+	 * @param update
+	 * @return
+	 */
+	public Screen before(Updateable update) {
+		return addUnLoad(update);
 	}
 
 	private final void repaint(GLEx g) {
@@ -3044,7 +3082,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			}
 		}
 	}
-
 
 	protected void drawLast(GLEx g) {
 
@@ -5171,7 +5208,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	public final void destroy() {
 		synchronized (Screen.class) {
 			try {
-				index = 0;
+				_screenIndex = 0;
 				_rotation = 0;
 				_scaleX = _scaleY = _alpha = 1f;
 				_baseColor = null;

@@ -1,5 +1,5 @@
 /**
- * Copyright 2008 - 2015 The Loon Game Engine Authors
+ * Copyright 2008 - 2019 The Loon Game Engine Authors
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -18,31 +18,21 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.geom;
+package loon.action.sprite;
 
-public class BooleanValue {
+import loon.opengl.GLEx;
 
-	private boolean value = false;
+public abstract class Draw extends Entity {
 
-	public BooleanValue() {
-		this(false);
+	public Draw() {
+		super();
+		setRepaint(true);
 	}
 
-	public BooleanValue(boolean v) {
-		this.set(v);
-	}
-
-	public BooleanValue set(boolean res) {
-		this.value = res;
-		return this;
-	}
-
-	public boolean result() {
-		return value;
-	}
+	public abstract void draw(GLEx g, float offsetX, float offsetY);
 
 	@Override
-	public String toString() {
-		return String.valueOf(value);
+	public void repaint(GLEx g, float offsetX, float offsetY) {
+		draw(g, offsetX, offsetY);
 	}
 }

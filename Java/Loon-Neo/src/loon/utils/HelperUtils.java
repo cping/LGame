@@ -24,6 +24,15 @@ import loon.LSystem;
 import loon.ZIndex;
 import loon.canvas.LColor;
 import loon.event.Updateable;
+import loon.geom.BooleanValue;
+import loon.geom.FloatValue;
+import loon.geom.IntValue;
+import loon.geom.PointF;
+import loon.geom.PointI;
+import loon.geom.RectBox;
+import loon.geom.RectF;
+import loon.geom.RectI;
+import loon.geom.Vector2f;
 import loon.utils.reply.Pair;
 import loon.utils.reply.Triple;
 import loon.utils.timer.Duration;
@@ -104,6 +113,78 @@ public class HelperUtils {
 		return Triple.get(a, b, c);
 	}
 
+	public final static Vector2f point() {
+		return point(0f, 0f);
+	}
+	
+	public final static Vector2f point(float x, float y) {
+		return new Vector2f(x, y);
+	}
+
+	public final static PointF pointf() {
+		return pointf(0f, 0f);
+	}
+
+	public final static PointF pointf(float x, float y) {
+		return new PointF(x, y);
+	}
+
+	public final static PointI pointi() {
+		return pointi(0, 0);
+	}
+	
+	public final static PointI pointi(int x, int y) {
+		return new PointI(x, y);
+	}
+
+	public final static RectBox rect(float x, float y, float w, float h) {
+		return new RectBox(x, y, w, h);
+	}
+
+	public final static RectF rectf(float x, float y, float w, float h) {
+		return new RectF(x, y, w, h);
+	}
+
+	public final static RectI recti(int x, int y, int w, int h) {
+		return new RectI(x, y, w, h);
+	}
+
+	public final static BooleanValue boolValue(boolean v) {
+		return refBool(v);
+	}
+
+	public final static FloatValue floatValue(float v) {
+		return refFloat(v);
+	}
+
+	public final static IntValue intValue(int v) {
+		return refInt(v);
+	}
+
+	public final static BooleanValue refBool() {
+		return new BooleanValue();
+	}
+
+	public final static FloatValue refFloat() {
+		return new FloatValue();
+	}
+
+	public final static IntValue refInt() {
+		return new IntValue();
+	}
+
+	public final static BooleanValue refBool(boolean v) {
+		return new BooleanValue(v);
+	}
+
+	public final static FloatValue refFloat(float v) {
+		return new FloatValue(v);
+	}
+
+	public final static IntValue refInt(int v) {
+		return new IntValue(v);
+	}
+
 	public final static <T> T getValue(T val, T defval) {
 		return val == null ? defval : val;
 	}
@@ -122,6 +203,18 @@ public class HelperUtils {
 
 	public static final int toPercent(int value, int percent) {
 		return MathUtils.percent(value, percent);
+	}
+
+	public final static BoolArray toBoolArrayOf(boolean... arrays) {
+		return new BoolArray(arrays);
+	}
+
+	public final static FloatArray toFloatArrayOf(float... arrays) {
+		return new FloatArray(arrays);
+	}
+
+	public final static IntArray toIntArrayOf(int... arrays) {
+		return new IntArray(arrays);
 	}
 
 	public final static boolean toOrder(ZIndex[] array) {

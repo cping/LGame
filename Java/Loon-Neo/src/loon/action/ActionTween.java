@@ -436,7 +436,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 
 	/**
 	 * 移动角色到指定目标并设置8方向行走或4方向行走并进行位置偏移并且监听
-	 *  
+	 * 
 	 * @param endX
 	 * @param endY
 	 * @param flag
@@ -469,6 +469,14 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		return moveTo(null, endX, endY, flag, speed, offsetX, offsetY, l);
 	}
 
+	public ActionTween moveTo(Field2D map, float endX, float endY, boolean flag) {
+		return moveTo(map, endX, endY, flag, initMoveSpeed, 0, 0, null);
+	}
+
+	public ActionTween moveTo(Field2D map, float endX, float endY, int delayTime, boolean flag) {
+		return moveTo(map, endX, endY, flag, initMoveSpeed, 0, 0, delayTime, null);
+	}
+
 	public ActionTween moveTo(Field2D map, float endX, float endY, boolean flag, float speed) {
 		return moveTo(map, endX, endY, flag, speed, 0, 0, null);
 	}
@@ -479,8 +487,13 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 
 	public ActionTween moveTo(Field2D map, float endX, float endY, boolean flag, float speed, float offsetX,
 			float offsetY, ActionListener l) {
+		return moveTo(map, endX, endY, flag, speed, offsetX, offsetY, 0, l);
+	}
+
+	public ActionTween moveTo(Field2D map, float endX, float endY, boolean flag, float speed, float offsetX,
+			float offsetY, int delayTime, ActionListener l) {
 		if (map != null && map.inside(endX, endY)) {
-			MoveTo move = new MoveTo(map, endX, endY, flag, speed);
+			MoveTo move = new MoveTo(map, endX, endY, flag, speed,delayTime);
 			move.setDelay(0);
 			move.setOffset(offsetX, offsetY);
 			return event(move, l);
@@ -601,7 +614,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	}
 
 	public ActionTween fadeTo(int fadeMode, float speed) {
-		return event(new FadeTo(fadeMode, (int) speed));
+		return event(new FadeTo(fadeMode, speed));
 	}
 
 	public ActionTween rotateTo(float angle) {

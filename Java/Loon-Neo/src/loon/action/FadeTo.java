@@ -64,7 +64,6 @@ public class FadeTo extends ActionEvent {
 
 	@Override
 	public void onLoad() {
-
 	}
 
 	@Override

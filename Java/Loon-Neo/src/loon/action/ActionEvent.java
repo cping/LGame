@@ -86,6 +86,12 @@ public abstract class ActionEvent {
 		return original;
 	}
 
+	protected void initAction() {
+		if (actionListener != null) {
+			actionListener.start(this.original);
+		}
+	}
+
 	public ActionEvent start(ActionBind o) {
 		if (o == null) {
 			return this;
@@ -96,12 +102,12 @@ public abstract class ActionEvent {
 			oldY = original.getY();
 		}
 		this.timer.refresh();
+		if (!this.isInit) {
+			this.initAction();
+		}
 		this.firstTick = true;
 		this._isCompleted = false;
 		this.isInit = false;
-		if (actionListener != null) {
-			actionListener.start(o);
-		}
 		return this;
 	}
 
@@ -239,7 +245,7 @@ public abstract class ActionEvent {
 	public float getOldY() {
 		return oldY;
 	}
-	
+
 	public abstract ActionEvent cpy();
 
 	public abstract ActionEvent reverse();

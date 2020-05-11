@@ -101,31 +101,29 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	private float scaleX = 1f, scaleY = 1f;
 
-	public TileMap(String fileName, int tileWidth, int tileHeight)  {
+	public TileMap(String fileName, int tileWidth, int tileHeight) {
 		this(fileName, tileWidth, tileHeight, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), Format.LINEAR);
 	}
 
-	public TileMap(String fileName, Screen screen, int tileWidth, int tileHeight)  {
+	public TileMap(String fileName, Screen screen, int tileWidth, int tileHeight) {
 		this(fileName, screen, tileWidth, tileHeight, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(),
 				Format.LINEAR);
 	}
 
-	public TileMap(String fileName, int tileWidth, int tileHeight, int mWidth, int mHeight)  {
+	public TileMap(String fileName, int tileWidth, int tileHeight, int mWidth, int mHeight) {
 		this(fileName, tileWidth, tileHeight, mWidth, mHeight, Format.LINEAR);
 	}
 
-	public TileMap(String fileName, Screen screen, int tileWidth, int tileHeight, int mWidth, int mHeight)
-			 {
+	public TileMap(String fileName, Screen screen, int tileWidth, int tileHeight, int mWidth, int mHeight) {
 		this(fileName, screen, tileWidth, tileHeight, mWidth, mHeight, Format.LINEAR);
 	}
 
-	public TileMap(String fileName, int tileWidth, int tileHeight, int mWidth, int mHeight, Format format)
-			 {
+	public TileMap(String fileName, int tileWidth, int tileHeight, int mWidth, int mHeight, Format format) {
 		this(TileMapConfig.loadAthwartArray(fileName), tileWidth, tileHeight, mWidth, mHeight, format);
 	}
 
 	public TileMap(String fileName, Screen screen, int tileWidth, int tileHeight, int mWidth, int mHeight,
-			Format format)  {
+			Format format) {
 		this(TileMapConfig.loadAthwartArray(fileName), screen, tileWidth, tileHeight, mWidth, mHeight, format);
 	}
 
@@ -394,6 +392,11 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		return format;
 	}
 
+	public TileMap replaceType(int oldid, int newid) {
+		field2d.replaceType(oldid, newid);
+		return this;
+	}
+
 	public int getTileID(int x, int y) {
 		if (x >= 0 && x < field2d.getWidth() && y >= 0 && y < field2d.getHeight()) {
 			return field2d.getTileType(x, y);
@@ -592,6 +595,11 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		return this;
 	}
 
+	public TileMap setAllowMove(int[] args) {
+		 field2d.setAllowMove(args);
+		 return this;
+	}
+	
 	public boolean isHit(int px, int py) {
 		return field2d.isHit(px, py);
 	}
@@ -644,10 +652,6 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		float xprime = x / field2d.getTileWidth() - 1;
 		float yprime = y / field2d.getTileHeight() - 1;
 		return new Vector2f(xprime, yprime);
-	}
-
-	public Field2D getField() {
-		return field2d;
 	}
 
 	public int tilesToPixelsX(float x) {
@@ -974,6 +978,22 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		return setFollow(follow);
 	}
 
+	public int toTileScrollPixelX(float x) {
+		return (int) offsetXPixel(tilesToPixelsX(x));
+	}
+
+	public int toTileScrollPixelY(float y) {
+		return (int) offsetYPixel(tilesToPixelsY(y));
+	}
+
+	public int toPixelScrollTileX(float x) {
+		return pixelsToTilesWidth(offsetXPixel(x));
+	}
+
+	public int toPixelScrollTileY(float y) {
+		return pixelsToTilesHeight(offsetYPixel(y));
+	}
+
 	public float offsetXPixel(float x) {
 		return MathUtils.iceil((x - offset.x - _location.x) / scaleX);
 	}
@@ -1219,7 +1239,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		RectBox b = new RectBox(0, rectDst.getY(), rectDst.getWidth(), rectDst.getHeight());
 		return a.intersects(b);
 	}
-	
+
 	public boolean isClosed() {
 		return isDisposed();
 	}

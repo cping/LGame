@@ -89,6 +89,10 @@ public class PixelChopEffect extends PixelBaseEffect {
 		this(dir, color, mode, x, y, 2, 25);
 	}
 
+	public PixelChopEffect(LColor color, int x, int y, int width, int frameLimit) {
+		this(ChopDirection.WNTES, color, 0, x, y, width, frameLimit);
+	}
+	
 	public PixelChopEffect(ChopDirection dir, LColor color, float x, float y, float width, int frameLimit) {
 		this(dir, color, 0, x, y, width, frameLimit);
 	}

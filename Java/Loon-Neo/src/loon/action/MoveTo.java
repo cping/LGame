@@ -45,6 +45,13 @@ public class MoveTo extends ActionEvent {
 	// 默认每帧的移动数值(象素)
 	private final static float _INIT_MOVE_SPEED = 4f;
 
+	private int _process_delay = 0;
+
+	private boolean _processed = false;
+
+	// 默认延迟1帧后触发move事件完成
+	private int process_delay_time = 0;
+
 	private Vector2f startLocation, endLocation;
 
 	private Field2D layerMap;
@@ -81,6 +88,10 @@ public class MoveTo extends ActionEvent {
 		this(map, -1f, -1f, x, y, all, speed, true, false);
 	}
 
+	public MoveTo(final Field2D map, float x, float y, boolean all, float speed, int delay) {
+		this(map, -1f, -1f, x, y, all, speed, true, false, delay);
+	}
+
 	public MoveTo(float sx, float sy, float x, float y, boolean all, float speed) {
 		this(null, sx, sy, x, y, all, speed, true, false);
 	}
@@ -95,6 +106,11 @@ public class MoveTo extends ActionEvent {
 
 	public MoveTo(final Field2D map, float sx, float sy, float x, float y, boolean all, float speed, boolean cache,
 			boolean synField) {
+		this(map, sx, sy, x, y, all, speed, cache, synField, 0);
+	}
+
+	public MoveTo(final Field2D map, float sx, float sy, float x, float y, boolean all, float speed, boolean cache,
+			boolean synField, int delayTime) {
 		this.startLocation = new Vector2f(sx, sy);
 		this.endLocation = new Vector2f(x, y);
 		this.layerMap = map;
@@ -102,6 +118,7 @@ public class MoveTo extends ActionEvent {
 		this.speed = speed;
 		this.useCache = cache;
 		this.synchroLayerField = synField;
+		this.process_delay_time = delayTime;
 		this.direction = Field2D.EMPTY;
 		if (map == null) {
 			moveByMode = true;
@@ -174,6 +191,8 @@ public class MoveTo extends ActionEvent {
 	}
 
 	public void updatePath() {
+		_process_delay = 0;
+		_processed = false;
 		if (!moveByMode && original != null && LSystem.getProcess() != null && LSystem.getProcess().getScreen() != null
 				&& !LSystem.getProcess().getScreen().getRectBox().contains(original.x(), original.y())
 				&& layerMap != null && !layerMap.inside(original.x(), original.y())) { // 处理越界出Field2D二维数组的移动
@@ -289,6 +308,24 @@ public class MoveTo extends ActionEvent {
 
 	@Override
 	public void update(long elapsedTime) {
+		if (process_delay_time > 0) {
+			if (!this.moveByMode) {
+				if (!_processed && (this.pActorPath == null || this.original == null || this.pActorPath.size == 0)) {
+					_processed = true;
+				}
+			}
+			if (_processed) {
+				_process_delay++;
+				// 延迟指定帧数后触发stop事件(主要是防止移动距离短时同步触发，太快肉眼跟不上，产生视觉错误)
+				if (_process_delay > process_delay_time) {
+					this._isCompleted = true;
+					this._process_delay = 0;
+					this._processed = false;
+					this.isMoved = !_isCompleted;
+				}
+				return;
+			}
+		}
 		isMoved = true;
 		float newX = 0f;
 		float newY = 0f;
@@ -341,7 +378,7 @@ public class MoveTo extends ActionEvent {
 					updateDirection((int) (newX - lastX), (int) (newY - lastY));
 					movePos(newX, newY);
 				}
-				_isCompleted = (count == 2);
+				_processed = (count == 2);
 			} else {
 				startX = original.getX() - offsetX;
 				startY = original.getY() - offsetY;
@@ -390,7 +427,7 @@ public class MoveTo extends ActionEvent {
 					movePos(newX, newY);
 				}
 				if (endX - startX == 0 && endY - startY == 0) {
-					_isCompleted = true;
+					_processed = true;
 				}
 			}
 		} else {
@@ -585,6 +622,9 @@ public class MoveTo extends ActionEvent {
 				}
 			}
 		}
+		if (process_delay_time <= 0) {
+			this._isCompleted = this._processed;
+		}
 		isMoved = !_isCompleted;
 	}
 
@@ -652,7 +692,7 @@ public class MoveTo extends ActionEvent {
 	public boolean isMoveByMode() {
 		return moveByMode;
 	}
-	
+
 	public float getSpeed() {
 		return speed;
 	}
@@ -664,8 +704,11 @@ public class MoveTo extends ActionEvent {
 
 	@Override
 	public boolean isComplete() {
-		return moveByMode ? _isCompleted
-				: (pActorPath == null || pActorPath.size == 0 || _isCompleted || original == null);
+		if (this.process_delay_time <= 0) {
+			return moveByMode ? _isCompleted
+					: (pActorPath == null || pActorPath.size == 0 || _isCompleted || original == null);
+		}
+		return _isCompleted;
 	}
 
 	public boolean isDirectionUpdate() {
@@ -714,10 +757,35 @@ public class MoveTo extends ActionEvent {
 		return allDir;
 	}
 
+	public int getProcessDelay() {
+		return _process_delay;
+	}
+
+	public void setProcessDelay(int delay) {
+		this._process_delay = delay;
+	}
+
+	public void setProcessed(boolean processed) {
+		this._processed = processed;
+	}
+
+	public int getProcessDelayTime() {
+		return process_delay_time;
+	}
+
+	/**
+	 * 设定move完成后延迟触发stop事件的延迟时间(触发太快了影响肉眼效果,后续操作可能像并发执行,而不是顺序)
+	 * 
+	 * @param delayTime
+	 */
+	public void setProcessDelayTime(int delayTime) {
+		this.process_delay_time = delayTime;
+	}
+
 	@Override
 	public ActionEvent cpy() {
 		MoveTo move = new MoveTo(layerMap, -1, -1, endLocation.x, endLocation.y, allDir, speed, useCache,
-				synchroLayerField);
+				synchroLayerField, process_delay_time);
 		move.set(this);
 		move.heuristic = this.heuristic;
 		return move;
@@ -725,7 +793,8 @@ public class MoveTo extends ActionEvent {
 
 	@Override
 	public ActionEvent reverse() {
-		MoveTo move = new MoveTo(layerMap, -1, -1, oldX, oldY, allDir, speed, useCache, synchroLayerField);
+		MoveTo move = new MoveTo(layerMap, -1, -1, oldX, oldY, allDir, speed, useCache, synchroLayerField,
+				process_delay_time);
 		move.set(this);
 		move.heuristic = this.heuristic;
 		return move;

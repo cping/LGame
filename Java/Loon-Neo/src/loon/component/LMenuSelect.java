@@ -129,44 +129,44 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 		return new LMenuSelect(labels, 0, 0);
 	}
 
-	public static LMenuSelect make(String labels, int x, int y) {
+	public static LMenuSelect make(String labels, float x, float y) {
 		return new LMenuSelect(labels, x, y);
 	}
 
-	public static LMenuSelect make(String[] labels, int x, int y) {
+	public static LMenuSelect make(String[] labels, float x, float y) {
 		return new LMenuSelect(labels, x, y);
 	}
 
-	public static LMenuSelect make(IFont font, String[] labels, int x, int y) {
+	public static LMenuSelect make(IFont font, String[] labels, float x, float y) {
 		return new LMenuSelect(font, labels, x, y);
 	}
 
-	public static LMenuSelect make(IFont font, String[] labels, String path, int x, int y) {
+	public static LMenuSelect make(IFont font, String[] labels, String path, float x, float y) {
 		return new LMenuSelect(font, labels, path, x, y);
 	}
 
-	public static LMenuSelect make(IFont font, String[] labels, LTexture bg, int x, int y) {
+	public static LMenuSelect make(IFont font, String[] labels, LTexture bg, float x, float y) {
 		return new LMenuSelect(font, labels, bg, x, y);
 	}
 
-	public LMenuSelect(String labels, int x, int y) {
+	public LMenuSelect(String labels, float x, float y) {
 		this(StringUtils.split(labels, ','), x, y);
 	}
 
-	public LMenuSelect(String[] labels, int x, int y) {
+	public LMenuSelect(String[] labels, float x, float y) {
 		this(LSystem.getSystemGameFont(), labels, x, y);
 	}
 
-	public LMenuSelect(IFont font, String[] labels, int x, int y) {
+	public LMenuSelect(IFont font, String[] labels, float x, float y) {
 		this(font, labels, (LTexture) null, x, y);
 	}
 
-	public LMenuSelect(IFont font, String[] labels, String path, int x, int y) {
+	public LMenuSelect(IFont font, String[] labels, String path, float x, float y) {
 		this(font, labels, LSystem.loadTexture(path), x, y);
 	}
 
-	public LMenuSelect(IFont font, String[] labels, LTexture bg, int x, int y) {
-		this(x, y, 1, 1);
+	public LMenuSelect(IFont font, String[] labels, LTexture bg, float x, float y) {
+		this((int) x, (int) y, 1, 1);
 		this.selectRectColor = LColor.white;
 		this.selectedFillColor = LColor.blue;
 		this.selectBackgroundColor = LColor.blue.darker();

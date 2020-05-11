@@ -1,5 +1,5 @@
 /**
- * Copyright 2008 - 2015 The Loon Game Engine Authors
+ * Copyright 2008 - 2019 The Loon Game Engine Authors
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -18,31 +18,25 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.geom;
+package loon.event;
 
-public class BooleanValue {
+public abstract class Observed {
 
-	private boolean value = false;
+	private Subject _subject;
 
-	public BooleanValue() {
-		this(false);
+	public Observed() {
+		this(0, null);
 	}
 
-	public BooleanValue(boolean v) {
-		this.set(v);
+	public Observed(int id, Observed par) {
+		this._subject = new Subject(0, par);
 	}
 
-	public BooleanValue set(boolean res) {
-		this.value = res;
-		return this;
+	public Subject getSubject() {
+		return _subject;
 	}
 
-	public boolean result() {
-		return value;
-	}
-
-	@Override
-	public String toString() {
-		return String.valueOf(value);
+	public void setSubject(Subject sub) {
+		this._subject = sub;
 	}
 }

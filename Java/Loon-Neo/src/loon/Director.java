@@ -437,6 +437,10 @@ public class Director extends SoundBox {
 		return MathUtils.random(start, end);
 	}
 
+	public final static int random(int start, int end) {
+		return MathUtils.random(start, end);
+	}
+
 	public final static Calculator newCalculator() {
 		return new Calculator();
 	}

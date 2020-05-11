@@ -227,7 +227,7 @@ public abstract class ActionObject extends LObject<ISprite> implements Flip<Acti
 
 	@Override
 	public Field2D getField2D() {
-		return tiles.getField();
+		return tiles.getField2D();
 	}
 
 	public void setFilterColor(LColor f) {

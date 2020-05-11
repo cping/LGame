@@ -326,6 +326,38 @@ public class MoveControl implements LRelease {
 		this._freeDir = d;
 	}
 
+	public boolean isWN() {
+		return _lastDirection == Config.WN;
+	}
+
+	public boolean isW() {
+		return _lastDirection == Config.W;
+	}
+
+	public boolean isSW() {
+		return _lastDirection == Config.SW;
+	}
+
+	public boolean isS() {
+		return _lastDirection == Config.S;
+	}
+
+	public boolean isNE() {
+		return _lastDirection == Config.NE;
+	}
+
+	public boolean isN() {
+		return _lastDirection == Config.N;
+	}
+
+	public boolean isES() {
+		return _lastDirection == Config.ES;
+	}
+
+	public boolean isE() {
+		return _lastDirection == Config.E;
+	}
+	
 	public boolean isLeft() {
 		return _lastDirection == Config.LEFT;
 	}

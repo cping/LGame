@@ -33,6 +33,7 @@ import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.utils.CollectionUtils;
 import loon.utils.IArray;
+import loon.utils.IntArray;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
 
@@ -68,6 +69,8 @@ public class Field2D implements IArray, Config {
 	private int tileHeight = 32;
 
 	private int width, height;
+
+	private IntArray allowMove;
 
 	public static final Vector2f shiftPosition(TArray<LObject<?>> items, float x, float y, int direction) {
 		return shiftPosition(items, x, y, direction, null);
@@ -457,6 +460,9 @@ public class Field2D implements IArray, Config {
 	}
 
 	public Field2D set(int[][] mapArrays, int tw, int th) {
+		if (this.allowMove == null) {
+			this.allowMove = new IntArray();
+		}
 		this.setMap(mapArrays);
 		this.setTileWidth(tw);
 		this.setTileHeight(th);
@@ -593,8 +599,27 @@ public class Field2D implements IArray, Config {
 		return this;
 	}
 
+	public Field2D setAllowMove(int[] args) {
+		this.allowMove.addAll(args);
+		return this;
+	}
+
 	public boolean contains(int x, int y) {
 		return x >= 0 && x < width && y >= 0 && y < height;
+	}
+
+	public Field2D replaceType(int oldid, int newid) {
+		int w = mapArrays[0].length;
+		int h = mapArrays.length;
+		for (int i = 0; i < h; i++) {
+			for (int j = 0; j < w; j++) {
+				int id = mapArrays[i][j];
+				if (id == oldid) {
+					mapArrays[i][j] = newid;
+				}
+			}
+		}
+		return this;
 	}
 
 	public boolean isTileType(int x, int y, int type) {
@@ -642,6 +667,10 @@ public class Field2D implements IArray, Config {
 		return getPixelsAtFieldType(itsX, itsY);
 	}
 
+	public IntArray getAllowMove() {
+		return this.allowMove;
+	}
+
 	public boolean inside(int x, int y) {
 		return CollisionHelper.intersect(0, 0, getDrawWidth(), getDrawHeight(), x, y);
 	}
@@ -675,7 +704,7 @@ public class Field2D implements IArray, Config {
 
 	public boolean isHit(int px, int py) {
 		int type = get(mapArrays, px, py);
-		if (type == -1) {
+		if (type == -1 && !allowMove.contains(type)) {
 			return false;
 		}
 		if (moveLimited != null) {

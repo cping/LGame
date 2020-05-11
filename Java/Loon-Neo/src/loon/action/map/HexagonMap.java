@@ -1402,12 +1402,24 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		return getTileIDFromPixels(v.x, v.y);
 	}
 
+	public HexagonMap replaceType(int oldid, int newid) {
+		field2d.replaceType(oldid, newid);
+		return this;
+	}
+
 	public int getTileID(int x, int y) {
 		if (x >= 0 && x < field2d.getWidth() && y >= 0 && y < field2d.getHeight()) {
 			return field2d.getTileType(x, y);
 		} else {
 			return -1;
 		}
+	}
+
+	public HexagonMap setTileID(int x, int y, int id) {
+		if (x >= 0 && x < field2d.getWidth() && y >= 0 && y < field2d.getHeight()) {
+			field2d.setTileType(x, y, id);
+		}
+		return this;
 	}
 
 	public int getTileIDFromPixels(float sx, float sy) {

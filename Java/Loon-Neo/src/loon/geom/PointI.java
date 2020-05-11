@@ -43,9 +43,34 @@ public class PointI implements XY {
 		this.y = p.y;
 	}
 
-	public void set(int x1, int y1) {
+	public PointI set(int x1, int y1) {
 		this.x = x1;
 		this.y = y1;
+		return this;
+	}
+
+	public PointF getF() {
+		return new PointF(this.x, this.y);
+	}
+
+	public PointI empty() {
+		return this.set(0, 0);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		PointI other = (PointI) obj;
+		return equals(other);
+	}
+
+	public final boolean equals(PointI point) {
+		return equals(point.x, point.y);
 	}
 
 	public final boolean equals(int x, int y) {
@@ -119,13 +144,13 @@ public class PointI implements XY {
 	public String toCSS() {
 		return this.x + "px " + this.y + "px";
 	}
-	
+
 	public PointI random() {
-		this.x = MathUtils.random(0,LSystem.viewSize.getWidth());
-		this.y = MathUtils.random(0,LSystem.viewSize.getHeight());
+		this.x = MathUtils.random(0, LSystem.viewSize.getWidth());
+		this.y = MathUtils.random(0, LSystem.viewSize.getHeight());
 		return this;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

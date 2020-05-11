@@ -12,6 +12,30 @@ public class LayerSorter<T> extends InsertionSorter<T> {
 	private final Comparator<T> zIndexComparator = new Comparator<T>() {
 		@Override
 		public int compare(final T ea, final T eb) {
+			if (ea != null && eb == null) {
+				if (positive) {
+					if (ea instanceof ZIndex) {
+						return ((ZIndex) ea).getLayer();
+					}
+				}else{
+					if (ea instanceof ZIndex) {
+						return -((ZIndex) ea).getLayer();
+					}
+				}
+				return 0;
+			}
+			if (ea == null && eb != null) {
+				if (positive) {
+					if (eb instanceof ZIndex) {
+						return ((ZIndex) eb).getLayer();
+					}
+				}else{
+					if (eb instanceof ZIndex) {
+						return -((ZIndex) eb).getLayer();
+					}
+				}
+				return 0;
+			}
 			if (ea instanceof ZIndex && eb instanceof ZIndex) {
 				if (positive) {
 					return ((ZIndex) ea).getLayer() - ((ZIndex) eb).getLayer();

@@ -77,7 +77,7 @@ public class MultiScreenTest extends Screen {
 						public void stop(ActionBind o) {
 							Screen s = screen.runScreen("main");
 							if (s != null) {
-								s.index = page;
+								s.setID(page);
 							}
 							// 还原当前动作角色旋转角度为0
 							o.setRotation(0);
@@ -189,7 +189,7 @@ public class MultiScreenTest extends Screen {
 			// 预先设定多个Screen，并赋予名称
 			addScreen("main", this);
 		} else {
-			page = screen.index;
+			page = screen.getID();
 		}
 
 		if (page == 0) {
@@ -342,7 +342,7 @@ public class MultiScreenTest extends Screen {
 				@Override
 				public void on(float x, float y) {
 					// 变更为page-1
-					runScreen("main").index = page - 1;
+					runScreen("main").setID(page - 1);
 				}
 			});
 			add(nextClick);
@@ -382,10 +382,10 @@ public class MultiScreenTest extends Screen {
 				// 如果按钮文本为next
 				if (((LClickButton) comp).getText().equals("NEXT")) {
 					// 索引变更为page+1
-					runScreen("main").index = page + 1;
+					runScreen("main").setID(page + 1);
 				} else {
 					// 变更为page-1
-					runScreen("main").index = page - 1;
+					runScreen("main").setID(page - 1);
 				}
 			}
 		});

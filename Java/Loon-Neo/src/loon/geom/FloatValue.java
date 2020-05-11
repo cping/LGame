@@ -24,6 +24,10 @@ public class FloatValue {
 
 	private float value = 0f;
 
+	public FloatValue() {
+		this(0f);
+	}
+
 	public FloatValue(float v) {
 		this.set(v);
 	}

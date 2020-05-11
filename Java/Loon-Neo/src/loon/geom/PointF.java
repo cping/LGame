@@ -43,9 +43,34 @@ public class PointF implements XY {
 		this.y = p.y;
 	}
 
-	public void set(float x1, float y1) {
+	public PointF set(float x1, float y1) {
 		this.x = x1;
 		this.y = y1;
+		return this;
+	}
+
+	public PointI getI() {
+		return new PointI(MathUtils.floor(this.x), MathUtils.floor(this.y));
+	}
+
+	public PointF empty() {
+		return set(0f, 0f);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		PointF other = (PointF) obj;
+		return equals(other);
+	}
+
+	public final boolean equals(PointF point) {
+		return equals(point.x, point.y);
 	}
 
 	public final boolean equals(float x, float y) {

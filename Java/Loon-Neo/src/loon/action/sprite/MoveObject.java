@@ -82,7 +82,7 @@ public class MoveObject extends ActionObject {
 				if (findPath != null) {
 					findPath.clear();
 				}
-				findPath = AStarFinder.find(heuristic, tiles.getField(), tiles.pixelsToTilesWidth(x()),
+				findPath = AStarFinder.find(heuristic, tiles.getField2D(), tiles.pixelsToTilesWidth(x()),
 						tiles.pixelsToTilesHeight(y()), tiles.pixelsToTilesWidth(touchX - tiles.getOffset().x),
 						tiles.pixelsToTilesHeight(touchY - tiles.getOffset().y), allDirection);
 			} else if (findPath != null) {

@@ -49,7 +49,7 @@ import loon.utils.timer.LTimerContext;
  *
  */
 public class PlayerUtils extends Director {
-	
+
 	/**
 	 * 添加一个ActionUpdate进程到游戏,当completed为true时销毁
 	 * 
@@ -236,6 +236,14 @@ public class PlayerUtils extends Director {
 			removeAllActions(target);
 		}
 		return ActionTween.from(target, tweenType, duration);
+	}
+
+	public final static ActionTween get(ActionBind target) {
+		return set(target, -1, false);
+	}
+
+	public final static ActionTween get(ActionBind target, int tweenType) {
+		return set(target, tweenType, false);
 	}
 
 	public final static ActionTween set(ActionBind target, int tweenType, boolean removeActions) {

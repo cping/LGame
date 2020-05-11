@@ -57,7 +57,7 @@ public class AStarFinder extends TileImplPathFind implements Updateable, LReleas
 		}
 
 	}
-	
+
 	public final static AStarFindHeuristic ASTAR_CLOSEST = new Closest();
 
 	public final static AStarFindHeuristic ASTAR_CLOSEST_SQUARED = new ClosestSquared();
@@ -79,7 +79,7 @@ public class AStarFinder extends TileImplPathFind implements Updateable, LReleas
 	public final static AStarFindHeuristic ASTAR_OCTILE = new Octile();
 
 	public final static AStarFindHeuristic ASTAR_DIAGONAL_MIN = new DiagonalMin();
-	
+
 	private final static IntMap<TArray<Vector2f>> FINDER_LAZY = new IntMap<TArray<Vector2f>>(100);
 
 	private final static int makeLazyKey(AStarFindHeuristic heuristic, int[][] map, int[] limits, int sx, int sy,
@@ -139,9 +139,25 @@ public class AStarFinder extends TileImplPathFind implements Updateable, LReleas
 		}
 	}
 
+	public static TArray<Vector2f> find(int[][] maps, int x1, int y1, int x2, int y2, boolean flag) {
+		return find(null, maps, x1, y1, x2, y2, flag);
+	}
+
 	public static TArray<Vector2f> find(AStarFindHeuristic heuristic, int[][] maps, int x1, int y1, int x2, int y2,
 			boolean flag) {
 		return find(heuristic, maps, x1, y1, x2, y2, flag);
+	}
+
+	public static TArray<Vector2f> find(HexagonMap map, int x1, int y1, int x2, int y2, boolean flag) {
+		return find(null, map.getField2D().getMap(), map.getLimit(), x1, y1, x2, y2, flag);
+	}
+	
+	public static TArray<Vector2f> find(TileMap map, int x1, int y1, int x2, int y2, boolean flag) {
+		return find(null, map.getField2D().getMap(), map.getLimit(), x1, y1, x2, y2, flag);
+	}
+
+	public static TArray<Vector2f> find(Field2D maps, int x1, int y1, int x2, int y2, boolean flag) {
+		return find(null, maps.getMap(), maps.getLimit(), x1, y1, x2, y2, flag);
 	}
 
 	public static TArray<Vector2f> find(AStarFindHeuristic heuristic, Field2D maps, int x1, int y1, int x2, int y2,
@@ -298,7 +314,7 @@ public class AStarFinder extends TileImplPathFind implements Updateable, LReleas
 				if (!map.isHit(next) && !flying) {
 					continue;
 				}
-				if(!visitedCache.add(next)){
+				if (!visitedCache.add(next)) {
 					continue;
 				}
 				TArray<Vector2f> path = new TArray<Vector2f>(spath.path);

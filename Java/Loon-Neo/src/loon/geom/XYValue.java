@@ -1,5 +1,5 @@
 /**
- * Copyright 2008 - 2015 The Loon Game Engine Authors
+ * Copyright 2008 - 2019 The Loon Game Engine Authors
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -20,29 +20,26 @@
  */
 package loon.geom;
 
-public class BooleanValue {
+public class XYValue {
 
-	private boolean value = false;
+	private XY value = null;
 
-	public BooleanValue() {
-		this(false);
-	}
-
-	public BooleanValue(boolean v) {
+	public XYValue(XY v) {
 		this.set(v);
 	}
 
-	public BooleanValue set(boolean res) {
-		this.value = res;
+	public XYValue set(XY v) {
+		this.value = v;
 		return this;
 	}
 
-	public boolean result() {
+	public XY result() {
 		return value;
 	}
 
 	@Override
 	public String toString() {
-		return String.valueOf(value);
+		return value.toString();
 	}
+
 }

@@ -24,6 +24,10 @@ public class IntValue {
 
 	private int value;
 
+	public IntValue() {
+		this(0);
+	}
+
 	public IntValue(int v) {
 		this.set(v);
 	}
