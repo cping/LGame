@@ -20,10 +20,19 @@
  */
 package loon.utils;
 
+import loon.ActionCounter;
+import loon.Counter;
+import loon.EmptyObject;
+import loon.LObject;
 import loon.LSystem;
+import loon.LimitedCounter;
 import loon.ZIndex;
+import loon.Director.Origin;
+import loon.Director.Position;
+import loon.Log.Level;
 import loon.canvas.LColor;
 import loon.event.Updateable;
+import loon.geom.Affine2f;
 import loon.geom.BooleanValue;
 import loon.geom.FloatValue;
 import loon.geom.IntValue;
@@ -44,6 +53,311 @@ import loon.utils.timer.Interval;
  */
 public class HelperUtils {
 
+	public final static EmptyObject newEmptyObject() {
+		return new EmptyObject();
+	}
+
+	public final static Vector2f makeOrigin(LObject<?> o, Origin origin) {
+		return createOrigin(o, origin);
+	}
+
+	public final static TArray<Vector2f> makeOrigins(Origin origin, LObject<?>... objs) {
+		TArray<Vector2f> result = new TArray<Vector2f>(objs.length);
+		for (LObject<?> o : objs) {
+			result.add(createOrigin(o, origin));
+		}
+		return result;
+	}
+
+	private static Vector2f createOrigin(LObject<?> o, Origin origin) {
+		Vector2f v = new Vector2f(o.x(), o.y());
+		switch (origin) {
+		case CENTER:
+			v.set(o.getWidth() / 2f, o.getHeight() / 2f);
+			return v;
+		case TOP_LEFT:
+			v.set(0.0f, o.getHeight());
+			return v;
+		case TOP_RIGHT:
+			v.set(o.getWidth(), o.getHeight());
+			return v;
+		case BOTTOM_LEFT:
+			v.set(0.0f, 0.0f);
+			return v;
+		case BOTTOM_RIGHT:
+			v.set(o.getWidth(), 0.0f);
+			return v;
+		case LEFT_CENTER:
+			v.set(0.0f, o.getHeight() / 2f);
+			return v;
+		case TOP_CENTER:
+			v.set(o.getWidth() / 2f, o.getHeight());
+			return v;
+		case BOTTOM_CENTER:
+			v.set(o.getWidth() / 2f, 0.0f);
+			return v;
+		case RIGHT_CENTER:
+			v.set(o.getWidth(), o.getHeight() / 2f);
+			return v;
+		default:
+			return v;
+		}
+	}
+
+	public final static void setPoisiton(LObject<?> objToBePositioned, LObject<?> objStable, Position position) {
+		float atp_W = objToBePositioned.getWidth();
+		float atp_H = objToBePositioned.getHeight();
+		float obj_X = objStable.getX();
+		float obj_Y = objStable.getY();
+		float obj_XW = objStable.getWidth() + obj_X;
+		float obj_YH = objStable.getHeight() + obj_Y;
+		setLocation(objToBePositioned, atp_W, atp_H, obj_X, obj_Y, obj_XW, obj_YH, position);
+	}
+
+	public final static void setPoisiton(LObject<?> objToBePositioned, float x, float y, float width, float height,
+			Position position) {
+		float atp_W = objToBePositioned.getWidth();
+		float atp_H = objToBePositioned.getHeight();
+		float obj_X = x;
+		float obj_Y = y;
+		float obj_XW = width + obj_X;
+		float obj_YH = height + obj_Y;
+		setLocation(objToBePositioned, atp_W, atp_H, obj_X, obj_Y, obj_XW, obj_YH, position);
+	}
+
+	private static void setLocation(LObject<?> objToBePositioned, float atp_W, float atp_H, float obj_X, float obj_Y,
+			float obj_XW, float obj_YH, Position position) {
+		switch (position) {
+		case CENTER:
+			objToBePositioned.setX((obj_XW / 2f) - atp_W / 2f);
+			objToBePositioned.setY((obj_YH / 2f) - atp_H / 2f);
+			break;
+		case SAME:
+			objToBePositioned.setLocation(obj_X, obj_Y);
+			break;
+		case LEFT:
+			objToBePositioned.setLocation(obj_X, obj_YH / 2f - atp_H / 2f);
+			break;
+		case TOP_LEFT:
+			objToBePositioned.setLocation(obj_X, obj_YH - atp_H);
+			break;
+		case TOP_LEFT_CENTER:
+			objToBePositioned.setLocation(obj_X - atp_W / 2f, obj_YH - atp_H / 2f);
+			break;
+		case TOP_RIGHT:
+			objToBePositioned.setLocation(obj_XW - atp_W, obj_YH - atp_H);
+			break;
+		case TOP_RIGHT_CENTER:
+			objToBePositioned.setLocation(obj_XW - atp_W / 2f, obj_YH - atp_H / 2f);
+			break;
+		case TOP_CENTER:
+			objToBePositioned.setLocation(obj_XW / 2f - atp_W / 2f, obj_YH - atp_H);
+			break;
+		case BOTTOM_LEFT:
+			objToBePositioned.setLocation(obj_X, obj_Y);
+			break;
+		case BOTTOM_LEFT_CENTER:
+			objToBePositioned.setLocation(obj_X - atp_W / 2f, obj_Y - atp_H / 2f);
+			break;
+		case BOTTOM_RIGHT:
+			objToBePositioned.setLocation(obj_XW - atp_W, obj_Y);
+			break;
+		case BOTTOM_RIGHT_CENTER:
+			objToBePositioned.setLocation(obj_XW - atp_W / 2f, obj_Y - atp_H / 2f);
+			break;
+		case BOTTOM_CENTER:
+			objToBePositioned.setLocation(obj_XW / 2f - atp_W / 2f, obj_Y);
+			break;
+		case RIGHT_CENTER:
+			objToBePositioned.setLocation(obj_XW - atp_W, obj_YH / 2f - atp_H / 2f);
+			break;
+		default:
+			objToBePositioned.setLocation(objToBePositioned.getX(), objToBePositioned.getY());
+			break;
+		}
+	}
+
+	private final static Affine2f _trans = new Affine2f();
+
+	public final static Vector2f local2Global(float centerX, float centerY, float posX, float posY,
+			Vector2f resultPoint) {
+		return local2Global(0, 1f, 1f, 0, 0, false, false, centerX, centerY, posX, posY, resultPoint);
+	}
+
+	public final static Vector2f local2Global(boolean flipX, boolean flipY, float centerX, float centerY, float posX,
+			float posY, Vector2f resultPoint) {
+		return local2Global(0, 1f, 1f, 0, 0, flipX, flipY, centerX, centerY, posX, posY, resultPoint);
+	}
+
+	public final static Vector2f local2Global(float rotation, float centerX, float centerY, float posX, float posY,
+			Vector2f resultPoint) {
+		return local2Global(rotation, 1f, 1f, 0, 0, false, false, centerX, centerY, posX, posY, resultPoint);
+	}
+
+	public final static Vector2f local2Global(float rotation, boolean flipX, boolean flipY, float centerX,
+			float centerY, float posX, float posY, Vector2f resultPoint) {
+		return local2Global(rotation, 1f, 1f, 0, 0, flipX, flipY, centerX, centerY, posX, posY, resultPoint);
+	}
+
+	public final static Vector2f local2Global(float rotation, float scaleX, float scaleY, boolean flipX, boolean flipY,
+			float centerX, float centerY, float posX, float posY, Vector2f resultPoint) {
+		return local2Global(rotation, scaleX, scaleY, 0, 0, flipX, flipY, centerX, centerY, posX, posY, resultPoint);
+	}
+
+	public final static Vector2f local2Global(float rotation, float scaleX, float scaleY, float skewX, float skewY,
+			boolean flipX, boolean flipY, float centerX, float centerY, float posX, float posY, Vector2f resultPoint) {
+		_trans.idt();
+		if (rotation != 0) {
+			_trans.translate(centerX, centerY);
+			_trans.preRotate(rotation);
+			_trans.translate(-centerX, -centerY);
+		}
+		if (flipX || flipY) {
+			if (flipX && flipY) {
+				Affine2f.transform(_trans, centerX, centerY, Affine2f.TRANS_ROT180);
+			} else if (flipX) {
+				Affine2f.transform(_trans, centerX, centerY, Affine2f.TRANS_MIRROR);
+			} else if (flipY) {
+				Affine2f.transform(_trans, centerX, centerY, Affine2f.TRANS_MIRROR_ROT180);
+			}
+		}
+		if ((scaleX != 1) || (scaleY != 1)) {
+			_trans.translate(centerX, centerY);
+			_trans.preScale(scaleX, scaleY);
+			_trans.translate(-centerX, -centerY);
+		}
+		if ((skewX != 0) || (skewY != 0)) {
+			_trans.translate(centerX, centerY);
+			_trans.preShear(skewX, skewY);
+			_trans.translate(-centerX, -centerY);
+		}
+		if (resultPoint != null) {
+			_trans.transformPoint(posX, posY, resultPoint);
+			return resultPoint;
+		}
+		return resultPoint;
+	}
+
+	public final static float random() {
+		return MathUtils.random();
+	}
+
+	public final static float random(float start, float end) {
+		return MathUtils.random(start, end);
+	}
+
+	public final static int random(int start, int end) {
+		return MathUtils.random(start, end);
+	}
+
+	public final static Calculator newCalculator() {
+		return new Calculator();
+	}
+
+	public final static Counter newCounter() {
+		return new Counter();
+	}
+
+	public final static LimitedCounter newLimitedCounter(int limit) {
+		return new LimitedCounter(limit);
+	}
+
+	public final static ActionCounter newActionCounter(int limit, Updateable update) {
+		return new ActionCounter(limit, update);
+	}
+
+	public final static void debug(String msg) {
+		LSystem.debug(msg);
+	}
+
+	public final static void debug(String msg, Object... args) {
+		LSystem.debug(msg, args);
+	}
+
+	public final static void debug(String msg, Throwable throwable) {
+		LSystem.debug(msg, throwable);
+	}
+
+	public final static void info(String msg) {
+		LSystem.info(msg);
+	}
+
+	public final static void info(String msg, Object... args) {
+		LSystem.info(msg, args);
+	}
+
+	public final static void info(String msg, Throwable throwable) {
+		LSystem.info(msg, throwable);
+	}
+
+	public final static void error(String msg) {
+		LSystem.error(msg);
+	}
+
+	public final static void error(String msg, Object... args) {
+		LSystem.error(msg, args);
+	}
+
+	public final static void error(String msg, Throwable throwable) {
+		LSystem.error(msg, throwable);
+	}
+
+	public final static void reportError(String msg, Throwable throwable) {
+		LSystem.reportError(msg, throwable);
+	}
+
+	public final static void d(String msg) {
+		LSystem.debug(msg);
+	}
+
+	public final static void d(String msg, Object... args) {
+		LSystem.debug(msg, args);
+	}
+
+	public final static void d(String msg, Throwable throwable) {
+		LSystem.debug(msg, throwable);
+	}
+
+	public final static void i(String msg) {
+		LSystem.info(msg);
+	}
+
+	public final static void i(String msg, Object... args) {
+		LSystem.info(msg, args);
+	}
+
+	public final static void i(String msg, Throwable throwable) {
+		LSystem.info(msg, throwable);
+	}
+
+	public final static void w(String msg) {
+		LSystem.warn(msg);
+	}
+
+	public final static void w(String msg, Object... args) {
+		LSystem.warn(msg, args);
+	}
+
+	public final static void w(String msg, Throwable throwable) {
+		LSystem.warn(msg, throwable);
+	}
+
+	public final static void e(String msg) {
+		LSystem.error(msg);
+	}
+
+	public final static void e(String msg, Object... args) {
+		LSystem.error(msg, args);
+	}
+
+	public final static void e(String msg, Throwable throwable) {
+		LSystem.error(msg, throwable);
+	}
+
+	public final static void setLogMinLevel(Level level) {
+		LSystem.setLogMinLevel(level);
+	}
+	
 	public final static Interval interval(final Duration d, final Updateable update) {
 		return new Interval(d) {
 
@@ -450,7 +764,7 @@ public class HelperUtils {
 				return v;
 			}
 		}
-		return LSystem.UNKOWN;
+		return LSystem.UNKNOWN;
 	}
 
 }

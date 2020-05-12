@@ -50,7 +50,7 @@ public abstract class State implements LRelease {
 	private boolean isScalePos;
 
 	public State() {
-		this(LSystem.UNKOWN);
+		this(LSystem.UNKNOWN);
 	}
 
 	public State(String name) {

@@ -596,10 +596,10 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	}
 
 	public TileMap setAllowMove(int[] args) {
-		 field2d.setAllowMove(args);
-		 return this;
+		field2d.setAllowMove(args);
+		return this;
 	}
-	
+
 	public boolean isHit(int px, int py) {
 		return field2d.isHit(px, py);
 	}
@@ -978,12 +978,20 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		return setFollow(follow);
 	}
 
+	public Vector2f toTilesScrollPixels(float x, float y) {
+		return new Vector2f(toTileScrollPixelX(x), toTileScrollPixelY(y));
+	}
+
 	public int toTileScrollPixelX(float x) {
-		return (int) offsetXPixel(tilesToPixelsX(x));
+		return offsetXPixel(tilesToPixelsX(x));
 	}
 
 	public int toTileScrollPixelY(float y) {
-		return (int) offsetYPixel(tilesToPixelsY(y));
+		return offsetYPixel(tilesToPixelsY(y));
+	}
+
+	public Vector2f toPixelsScrollTiles(float x, float y) {
+		return new Vector2f(toPixelScrollTileX(x), toPixelScrollTileY(y));
 	}
 
 	public int toPixelScrollTileX(float x) {
@@ -994,11 +1002,15 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		return pixelsToTilesHeight(offsetYPixel(y));
 	}
 
-	public float offsetXPixel(float x) {
+	public Vector2f offsetPixels(float x, float y) {
+		return new Vector2f(offsetXPixel(x), offsetYPixel(y));
+	}
+
+	public int offsetXPixel(float x) {
 		return MathUtils.iceil((x - offset.x - _location.x) / scaleX);
 	}
 
-	public float offsetYPixel(float y) {
+	public int offsetYPixel(float y) {
 		return MathUtils.iceil((y - offset.y - _location.y) / scaleY);
 	}
 

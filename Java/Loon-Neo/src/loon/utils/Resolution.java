@@ -61,7 +61,7 @@ public class Resolution implements Comparable<Resolution> {
 				return "Mode [16 : 10] " + toString();
 			}
 		}
-		return "Mode [unkown] " + toString();
+		return "Mode [unknown] " + toString();
 	}
 
 	public RectI getRect() {

@@ -104,7 +104,7 @@ public class Animation implements IArray, LRelease {
 	}
 
 	private Animation(TArray<AnimationFrame> frames, long totalDuration) {
-		this.animationName = LSystem.UNKOWN;
+		this.animationName = LSystem.UNKNOWN;
 		this.loopCount = -1;
 		this.frames = frames;
 		this.length = frames.size;

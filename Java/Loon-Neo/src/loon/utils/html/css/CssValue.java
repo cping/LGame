@@ -24,7 +24,7 @@ import loon.LSystem;
 
 public abstract class CssValue {
 
-	protected String typeName = LSystem.UNKOWN;
+	protected String typeName = LSystem.UNKNOWN;
 
 	public CssValue(String name) {
 		this.typeName = name;

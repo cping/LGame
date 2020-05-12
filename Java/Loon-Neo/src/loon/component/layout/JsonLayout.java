@@ -416,7 +416,7 @@ public class JsonLayout implements LRelease {
 			}
 
 			Json.Object jsonObj = LSystem.base().json().parse(context.trim());
-			layoutType = jsonObj.getString(JsonTemplate.LAYOUY_TYPE, LSystem.UNKOWN).trim().toLowerCase();
+			layoutType = jsonObj.getString(JsonTemplate.LAYOUY_TYPE, LSystem.UNKNOWN).trim().toLowerCase();
 
 			if ("view".equals(layoutType) || "panel".equals(layoutType)) {
 
@@ -486,10 +486,10 @@ public class JsonLayout implements LRelease {
 
 		ISprite sprite = null;
 
-		String varName = props.getString(JsonTemplate.LAYOUY_VAR, LSystem.UNKOWN);
+		String varName = props.getString(JsonTemplate.LAYOUY_VAR, LSystem.UNKNOWN);
 
 		if (StringUtils.isEmpty(varName)) {
-			varName = props.getString("name", LSystem.UNKOWN);
+			varName = props.getString("name", LSystem.UNKNOWN);
 		}
 
 		SpriteParameter par = new SpriteParameter(this, props);
@@ -859,7 +859,7 @@ public class JsonLayout implements LRelease {
 			String[] texts = splitData(par.text);
 			menu = new LMenuSelect(par.font, texts, background, par.x, par.y);
 		} else {
-			menu = new LMenuSelect(par.font, new String[] { LSystem.UNKOWN }, background, par.x, par.y);
+			menu = new LMenuSelect(par.font, new String[] { LSystem.UNKNOWN }, background, par.x, par.y);
 		}
 
 		if (background == null && createGameWindowImage) {
@@ -1275,10 +1275,10 @@ public class JsonLayout implements LRelease {
 
 		LComponent comp = null;
 
-		String varName = props.getString(JsonTemplate.LAYOUY_VAR, LSystem.UNKOWN);
+		String varName = props.getString(JsonTemplate.LAYOUY_VAR, LSystem.UNKNOWN);
 
 		if (StringUtils.isEmpty(varName)) {
-			varName = props.getString("name", LSystem.UNKOWN);
+			varName = props.getString("name", LSystem.UNKNOWN);
 		}
 		switch (code) {
 		case 0:

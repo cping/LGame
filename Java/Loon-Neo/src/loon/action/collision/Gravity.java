@@ -63,7 +63,7 @@ public class Gravity implements LRelease {
 	public RectBox bounds = new RectBox();
 
 	public Gravity(ActionBind o) {
-		this(LSystem.UNKOWN, o);
+		this(LSystem.UNKNOWN, o);
 	}
 
 	public Gravity(String name, ActionBind o) {

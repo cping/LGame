@@ -25,7 +25,7 @@ package loon;
  */
 public enum GameType {
 
-	UNKOWN("Unkown Game"),
+	UNKNOWN("Unknown Game"),
 	ACT("Action Game"),
 	STG("Shooting Game"),
 	FTG("Fighting Game"),

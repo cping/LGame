@@ -46,10 +46,10 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	}
 
 	public static enum State {
-		UNKOWN, REMOVED, ADDED, DISPOSED
+		UNKNOWN, REMOVED, ADDED, DISPOSED
 	}
 
-	protected final VarView<State> _state = Var.create(State.UNKOWN);
+	protected final VarView<State> _state = Var.create(State.UNKNOWN);
 
 	public final void setState(State state) {
 		((Var<State>) this._state).update(state);
@@ -71,8 +71,8 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 		return _state.get() == State.ADDED;
 	}
 
-	public final boolean isUnkown() {
-		return _state.get() == State.UNKOWN;
+	public final boolean isUnknown() {
+		return _state.get() == State.UNKNOWN;
 	}
 
 	// 无状态

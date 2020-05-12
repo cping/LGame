@@ -114,11 +114,11 @@ public class Scheduler implements LRelease {
 	}
 
 	public Scheduler(long delay) {
-		this(LSystem.UNKOWN, delay);
+		this(LSystem.UNKNOWN, delay);
 	}
 
 	public Scheduler(boolean removeTask) {
-		this(LSystem.UNKOWN, removeTask);
+		this(LSystem.UNKNOWN, removeTask);
 	}
 
 	public Scheduler(String name, boolean removeTask) {
@@ -130,7 +130,7 @@ public class Scheduler implements LRelease {
 	}
 
 	public Scheduler(boolean removeTask, boolean sequence) {
-		this(LSystem.UNKOWN, 0L, removeTask, sequence);
+		this(LSystem.UNKNOWN, 0L, removeTask, sequence);
 	}
 
 	public Scheduler(String name, boolean removeTask, boolean sequence) {

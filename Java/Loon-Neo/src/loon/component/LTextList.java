@@ -317,7 +317,7 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 		if (idx != -1) {
 			return name[idx];
 		}
-		return LSystem.UNKOWN;
+		return LSystem.UNKNOWN;
 	}
 
 	/**

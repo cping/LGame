@@ -174,7 +174,7 @@ public class Side implements Config {
 	}
 
 	public static String getDirectionName(final int direction) {
-		String dirName = LSystem.UNKOWN;
+		String dirName = LSystem.UNKNOWN;
 		switch (direction) {
 		case TUP:
 			dirName = "UP";

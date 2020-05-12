@@ -43,7 +43,7 @@ public class MoveTo extends ActionEvent {
 			LSystem.DEFAULT_MAX_CACHE_SIZE);
 
 	// 默认每帧的移动数值(象素)
-	private final static float _INIT_MOVE_SPEED = 4f;
+	protected final static float _INIT_MOVE_SPEED = 8f;
 
 	private int _process_delay = 0;
 
@@ -109,10 +109,14 @@ public class MoveTo extends ActionEvent {
 		this(map, sx, sy, x, y, all, speed, cache, synField, 0);
 	}
 
-	public MoveTo(final Field2D map, float sx, float sy, float x, float y, boolean all, float speed, boolean cache,
+	public MoveTo(final Field2D map, float sx, float sy, float x, float y, boolean all, float speed, int delay) {
+		this(map, sx, sy, x, y, all, speed, true, false, delay);
+	}
+
+	public MoveTo(final Field2D map, float sx, float sy, float ex, float ey, boolean all, float speed, boolean cache,
 			boolean synField, int delayTime) {
 		this.startLocation = new Vector2f(sx, sy);
-		this.endLocation = new Vector2f(x, y);
+		this.endLocation = new Vector2f(ex, ey);
 		this.layerMap = map;
 		this.allDir = all;
 		this.speed = speed;

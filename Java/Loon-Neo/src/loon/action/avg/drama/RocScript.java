@@ -1032,7 +1032,7 @@ public class RocScript {
 			if (value.length() > 0 && value.indexOf(",") == -1) {
 				if (value.indexOf("\"") == -1 && value.indexOf("/") == -1 && !isNumber(value)) {
 					String tmp = getVarVal(value).toString();
-					if (!LSystem.UNKOWN.equalsIgnoreCase(tmp)) {
+					if (!LSystem.UNKNOWN.equalsIgnoreCase(tmp)) {
 						value = tmp;
 					}
 				}
@@ -1042,7 +1042,7 @@ public class RocScript {
 				for (String s : split) {
 					if (s.indexOf("\"") == -1 && value.indexOf("/") == -1 && !isNumber(s)) {
 						String tmp = getVarVal(s).toString();
-						if (!LSystem.UNKOWN.equalsIgnoreCase(tmp)) {
+						if (!LSystem.UNKNOWN.equalsIgnoreCase(tmp)) {
 							sbr.append(tmp.toString());
 						} else {
 							sbr.append(s);
@@ -1059,7 +1059,7 @@ public class RocScript {
 
 			}
 			Object reuslt = _rocFunctions.getValue(this, key, value);
-			return reuslt == null ? LSystem.UNKOWN : reuslt;
+			return reuslt == null ? LSystem.UNKNOWN : reuslt;
 		}
 
 		Function f = (Function) functs.get(item.toLowerCase());
@@ -2141,7 +2141,7 @@ public class RocScript {
 		}
 
 		if (o == null) {
-			o = LSystem.UNKOWN;
+			o = LSystem.UNKNOWN;
 		}
 		debug("Get var: " + o);
 		return o;

@@ -35,5 +35,5 @@ public enum GameMode {
 	//结束
 	End,
 	//未知
-	Unkown;
+	Unknown;
 }

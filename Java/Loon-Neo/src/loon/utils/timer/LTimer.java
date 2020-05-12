@@ -160,7 +160,7 @@ public class LTimer implements LRelease {
 	}
 
 	public LTimer(long delay, int numberOfRepeats) {
-		this(LSystem.UNKOWN, delay, numberOfRepeats);
+		this(LSystem.UNKNOWN, delay, numberOfRepeats);
 	}
 
 	public LTimer(String name, long delay, int numberOfRepeats) {
@@ -172,7 +172,7 @@ public class LTimer implements LRelease {
 	}
 
 	public LTimer(long delay, int numberOfRepeats, float factor, boolean repeats) {
-		this(LSystem.UNKOWN, delay, numberOfRepeats, factor, repeats);
+		this(LSystem.UNKNOWN, delay, numberOfRepeats, factor, repeats);
 	}
 
 	public LTimer(String name, long delay, int numberOfRepeats, float factor, boolean repeats) {

@@ -135,7 +135,7 @@ public class CacheObjectPool<T extends CacheObject> extends CacheObjectBase {
 
 	@Override
 	public boolean canSpawn() {
-		return canSpawn(LSystem.UNKOWN);
+		return canSpawn(LSystem.UNKNOWN);
 	}
 
 	@Override
@@ -154,7 +154,7 @@ public class CacheObjectPool<T extends CacheObject> extends CacheObjectBase {
 	}
 
 	public T onSpawn() {
-		return onSpawn(LSystem.UNKOWN);
+		return onSpawn(LSystem.UNKNOWN);
 	}
 
 	public T onSpawn(String name) {

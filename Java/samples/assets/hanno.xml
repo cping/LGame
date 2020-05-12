@@ -1,0 +1,11 @@
+<?xml version="1.0" standalone="yes" ?>
+<pack file="assets/hanno.png">
+	<block name="1" left="0" top="0" right="49" bottom="58" />
+	<block name="2" left="49" top="0" right="117" bottom="58" />
+	<block name="3" left="117" top="0" right="206" bottom="58" />
+	<block name="4" left="206" top="0" right="316" bottom="58" />
+	<block name="5" left="316" top="0" right="447" bottom="58" />
+	<block name="6" left="0" top="58" right="151" bottom="116" />
+	<block name="7" left="151" top="58" right="323" bottom="116" />
+	<block name="8" left="0" top="116" right="192" bottom="174" />
+</pack>

@@ -41,9 +41,10 @@ import loon.utils.StringKeyValue;
 
 public class ActionTween extends ActionTweenBase<ActionTween> {
 
-	private float initMoveSpeed = 8f;
+	private float initMoveSpeed = MoveTo._INIT_MOVE_SPEED;
 
 	private int combinedAttrsLimit = 3;
+
 	private int funPointsLimit = 0;
 
 	public void setCombinedAttributesLimit(int limit) {
@@ -493,7 +494,38 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	public ActionTween moveTo(Field2D map, float endX, float endY, boolean flag, float speed, float offsetX,
 			float offsetY, int delayTime, ActionListener l) {
 		if (map != null && map.inside(endX, endY)) {
-			MoveTo move = new MoveTo(map, endX, endY, flag, speed,delayTime);
+			MoveTo move = new MoveTo(map, endX, endY, flag, speed, delayTime);
+			move.setDelay(0);
+			move.setOffset(offsetX, offsetY);
+			return event(move, l);
+		} else {
+			return moveBy(endX, endY, speed, EasingMode.Linear, offsetX, offsetY, l);
+		}
+	}
+
+	public ActionTween moveTo(Field2D map, float startX, float startY, float endX, float endY, boolean flag) {
+		return moveTo(map, startX, startY, endX, endY, 0, flag);
+	}
+
+	public ActionTween moveTo(Field2D map, float startX, float startY, float endX, float endY, int delayTime,
+			boolean flag) {
+		return moveTo(map, startX, startY, endX, endY, delayTime, flag, initMoveSpeed);
+	}
+
+	public ActionTween moveTo(Field2D map, float startX, float startY, float endX, float endY, int delayTime,
+			boolean flag, float speed) {
+		return moveTo(map, startX, startY, endX, endY, delayTime, flag, speed, 0, 0);
+	}
+
+	public ActionTween moveTo(Field2D map, float startX, float startY, float endX, float endY, int delayTime,
+			boolean flag, float speed, float offsetX, float offsetY) {
+		return moveTo(map, startX, startY, endX, endY, delayTime, flag, speed, offsetX, offsetY, null);
+	}
+
+	public ActionTween moveTo(Field2D map, float startX, float startY, float endX, float endY, int delayTime,
+			boolean flag, float speed, float offsetX, float offsetY, ActionListener l) {
+		if (map != null && map.inside(endX, endY)) {
+			MoveTo move = new MoveTo(map, startX, startY, endX, endY, flag, speed, true, false, delayTime);
 			move.setDelay(0);
 			move.setOffset(offsetX, offsetY);
 			return event(move, l);

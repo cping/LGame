@@ -26,10 +26,12 @@ import loon.LTexture;
 import loon.Stage;
 import loon.action.ActionBind;
 import loon.action.ActionListener;
+import loon.action.MoveTo;
 import loon.action.map.AStarFinder;
+import loon.action.map.Field2D;
 import loon.action.map.TileMap;
+import loon.action.sprite.AnimatedEntity;
 import loon.action.sprite.Draw;
-import loon.action.sprite.Entity;
 import loon.action.sprite.effect.PixelChopEffect;
 import loon.action.sprite.effect.StringEffect;
 import loon.canvas.LColor;
@@ -66,6 +68,9 @@ public class SLGTest extends Stage {
 
 		public void load() {
 			add(get());
+			// 限制屏幕点击位置(也就是这个组件的点击事件不会传导到屏幕touch,
+			// 虽然可以写成默认的,但是有些操作需要截取时又无法截取点击,所以还是用设置模式)
+			addTouchLimit(get());
 		}
 
 		public void show() {
@@ -698,7 +703,7 @@ public class SLGTest extends Stage {
 	 * 角色封装
 	 *
 	 */
-	public class Role extends Entity {
+	public class Role extends AnimatedEntity {
 
 		// 分队（0:我军 1:敌军）
 		int team;
@@ -719,9 +724,17 @@ public class SLGTest extends Stage {
 		 * @param x
 		 * @param y
 		 */
-		public Role(String name, int team, LTexture image, int move, int x, int y) {
-			super(image, gameMap.tilesToPixelsX(x), gameMap.tilesToPixelsY(y));
+		public Role(String name, int team, String path, int move, int tileX, int tileY) {
+			super(path, 32, 32, gameMap.toTileScrollPixelX(tileX), gameMap.toTileScrollPixelY(tileY), gameTile,
+					gameTile);
 			this.setName(name);
+			//绑定动画索引和图像纹理索引
+			int delay = 260;
+			this.setPlayIndex("down", PlayIndex.at(delay, 0, 2));
+			this.setPlayIndex("left", PlayIndex.at(delay, 3, 5));
+			this.setPlayIndex("right", PlayIndex.at(delay, 6, 8));
+			this.setPlayIndex("up", PlayIndex.at(delay, 9, 11));
+			this.animate("down");
 			this.team = team;
 			this.action = 2;
 			this.hp = 10;
@@ -790,15 +803,16 @@ public class SLGTest extends Stage {
 	 * @param x
 	 * @param y
 	 */
-	private void createRole(String name, int team, int imageIndex, int move, int x, int y) {
+	private Role createRole(String name, int team, String path, int imageIndex, int move, int x, int y) {
 		if (team == PLAYER_TEAM) {
 			playerCount++;
 		} else if (team == ENEMY_TEAM) {
 			enemyCount++;
 		}
-		Role role = new Role(name, team, unitImages[imageIndex], move, x, y);
+		Role role = new Role(name, team, path, move, x, y);
 		unitList.add(role);
 		add(role);
+		return role;
 	}
 
 	public Role getRoleIdxObject(int idx) {
@@ -908,7 +922,7 @@ public class SLGTest extends Stage {
 			public void stop(ActionBind o) {
 				unitList.remove(e);
 				remove(e);
-				if (team == 0) {
+				if (team == PLAYER_TEAM) {
 					updatePlayerPos();
 					playerCount--;
 				} else {
@@ -1103,6 +1117,12 @@ public class SLGTest extends Stage {
 		return randMove(move, role, newCounter());
 	}
 
+	public PointI tilePixels(float x, float y) {
+		int newX = gameMap.offsetXPixel(x);
+		int newY = gameMap.offsetYPixel(y);
+		return pointi(newX, newY);
+	}
+
 	/**
 	 * 转化地图到屏幕像素
 	 * 
@@ -1194,15 +1214,15 @@ public class SLGTest extends Stage {
 		add(gameMap);
 
 		// 创建角色:name=空罐少女,team=0(我军),imageindex=3,x=7,y=1,以下雷同
-		createRole("空罐少女", 0, 1, 3, 2, 4);
-		createRole("猫猫1", 0, 0, 3, 2, 6);
-		createRole("猫猫2", 0, 0, 3, 12, 6);
+		createRole("空罐少女", 0, "assets/player.png", 1, 3, 2, 4);
+		createRole("猫猫1", 0, "assets/player2.png", 0, 3, 2, 6);
+		createRole("猫猫2", 0, "assets/player2.png", 0, 3, 12, 6);
 		// 创建角色:name=躲猫兵团1,team=1(敌军),imageindex=6,x=4,y=5,以下雷同
-		createRole("躲猫兵团1", 1, 2, 3, 4, 5);
-		createRole("躲猫兵团2", 1, 2, 2, 8, 5);
-		createRole("躲猫兵团3", 1, 2, 3, 5, 7);
-		createRole("躲猫兵团4", 1, 2, 2, 7, 2);
-		createRole("躲猫兵团5", 1, 2, 3, 7, 7);
+		createRole("躲猫兵团1", 1, "assets/enemy1.png", 2, 3, 4, 5);
+		createRole("躲猫兵团2", 1, "assets/enemy1.png", 2, 2, 8, 5);
+		createRole("躲猫兵团3", 1, "assets/enemy1.png", 2, 3, 5, 7);
+		createRole("躲猫兵团4", 1, "assets/enemy1.png", 2, 2, 7, 2);
+		createRole("躲猫兵团5", 1, "assets/enemy1.png", 2, 3, 7, 7);
 
 		// 当前操作的角色索引
 		final IntValue roleIndex = refInt(-1);
@@ -1218,12 +1238,19 @@ public class SLGTest extends Stage {
 		final Move moveState = new Move(gameMap, gameTile);
 		add(moveState);
 
+		final State menuState = new State(gameTile);
+		add(menuState);
+
+		/*
+		 * final Vector2f offset = new Vector2f();
+		 * 
+		 * gameMap.setOffset(offset); moveState.setOffset(offset);
+		 * menuState.setOffset(offset);
+		 */
+
 		final Menu menu = new Menu("攻击,待机", 0, 0);
 		menu.hide();
 		menu.load();
-
-		final State menuState = new State(gameTile);
-		add(menuState);
 
 		// 监听菜单事件
 		menu.setListener(new LMenuSelect.ClickEvent() {
@@ -1346,8 +1373,8 @@ public class SLGTest extends Stage {
 				break;
 			}
 		} else if (roleIndex.result() != -1) {
-			Role role = getRole(roleIndex.result());
-			if (role.team == PLAYER_TEAM && !role.isStop()) {
+			final Role runRole = getRole(roleIndex.result());
+			if (runRole.team == PLAYER_TEAM && !runRole.isStop()) {
 				if (count.getValue() == 0) {
 					moveState.setMoveCourse(curTileX, curTileY);
 					menuState.resetSelect();
@@ -1357,29 +1384,56 @@ public class SLGTest extends Stage {
 				} else {
 					// 变更敌人位置
 					updateEnemyPos();
+					// 转换像素坐标为地图实际坐标
+					final PointI startPos = tilePixels(runRole.x(), runRole.y());
+					final PointI newPos = tileMapToTilePixels(moveState.getMoveCourseX(), moveState.getMoveCourseY());
 					// 移动角色到指定地图位置
-					PointI newPos = tileMapToTilePixels(moveState.getMoveCourseX(), moveState.getMoveCourseY());
-					get(role).moveTo(gameMap.getField2D(), newPos.x, newPos.y, false).start()
-							.setActionListener(new ActionListener() {
+					final MoveTo move = new MoveTo(gameMap.getField2D(), startPos.x, startPos.y, newPos.x, newPos.y, false,
+							8);
+					move.setActionListener(new ActionListener() {
 
-								@Override
-								public void stop(ActionBind o) {
-									gameRunning.set(false);
-									moveState.clear();
-									menu.update(o.getX(), o.getY());
-									menu.show();
+						@Override
+						public void stop(ActionBind o) {
+							gameRunning.set(false);
+							moveState.clear();
+							menu.update(o.getX(), o.getY());
+							menu.show();
+							// 当移动停止时，理论上应该判断下上下左右的障碍物（敌人）关系，然后决定面朝方向，
+							// 或者直接交给用户决定，这仅仅是个示例，所以直接面部向下了
+							runRole.animate("down");
+						}
+
+						@Override
+						public void start(ActionBind o) {
+							gameRunning.set(true);
+						}
+
+						@Override
+						public void process(ActionBind o) {
+							gameRunning.set(true);
+							// 存储上一个移动方向，避免反复刷新动画事件
+							if (move.isDirectionUpdate()) {
+								switch (move.getDirection()) {
+								case Field2D.TUP:
+									runRole.animate("up");
+									break;
+								default:
+								case Field2D.TDOWN:
+									runRole.animate("down");
+									break;
+								case Field2D.TLEFT:
+									runRole.animate("left");
+									break;
+								case Field2D.TRIGHT:
+									runRole.animate("right");
+									break;
 								}
+							}
 
-								@Override
-								public void start(ActionBind o) {
-									gameRunning.set(true);
-								}
-
-								@Override
-								public void process(ActionBind o) {
-
-								}
-							});
+						}
+					});
+					// 开始缓动动画
+					get(runRole).event(move).start();
 					moveState.clear();
 					count.clear();
 				}
@@ -1530,34 +1584,60 @@ public class SLGTest extends Stage {
 				if (checkMoveArea(movePos.x, movePos.y) && !runRole.isStop()) {
 					// 把随机位置注入位置锁(因为后面是异步执行的Action移动,不占用的话其它角色寻径检查位置时可能会出错……)
 					lockedLocation.add(pointi(movePos.x, movePos.y));
+					// 转换像素坐标为地图实际坐标
+					final PointI startPos = tilePixels(runRole.x(), runRole.y());
 					final PointI endPos = tileMapToTilePixels(movePos.getX(), movePos.getY());
 					// 四方向移动，移动角色到指定地图位置(延迟5帧触发stop事件)
-					get(runRole).moveTo(gameMap.getField2D(), endPos.x, endPos.y, 5, false).start()
-							.setActionListener(new ActionListener() {
+					final MoveTo move = new MoveTo(gameMap.getField2D(), startPos.x, startPos.y, endPos.x, endPos.y, false, 8,
+							5);
+					move.setActionListener(new ActionListener() {
 
-								@Override
-								public void stop(ActionBind o) {
-									final PointI endPos = pixelsToTileMap(o.getX(), o.getY());
-									final Role enemy = checkRoleExist(endPos.x, endPos.y, 1, PLAYER_TEAM);
-									if (enemy != null) {
-										gameRunning.set(true);
-										attackEnemy(gameRunning, 0, moveState, runRole, enemy);
-									} else {
-										runRole.stop();
-										gameRunning.set(false);
-									}
-								}
+						@Override
+						public void stop(ActionBind o) {
+							final PointI endPos = pixelsToTileMap(o.getX(), o.getY());
+							final Role enemy = checkRoleExist(endPos.x, endPos.y, 1, PLAYER_TEAM);
+							if (enemy != null) {
+								gameRunning.set(true);
+								attackEnemy(gameRunning, 0, moveState, runRole, enemy);
+							} else {
+								runRole.stop();
+								gameRunning.set(false);
+							}
+							// 当移动停止时，理论上应该判断下上下左右的障碍物（敌人）关系，然后决定面朝方向，
+							// 或者直接交给用户决定，这仅仅是个示例，所以直接面部向下了
+							runRole.animate("down");
+						}
 
-								@Override
-								public void start(ActionBind o) {
-									gameRunning.set(true);
-								}
+						@Override
+						public void start(ActionBind o) {
+							gameRunning.set(true);
+						}
 
-								@Override
-								public void process(ActionBind o) {
-									gameRunning.set(true);
+						@Override
+						public void process(ActionBind o) {
+							gameRunning.set(true);
+							// 存储上一个移动方向，避免反复刷新动画事件
+							if (move.isDirectionUpdate()) {
+								switch (move.getDirection()) {
+								case Field2D.TUP:
+									runRole.animate("up");
+									break;
+								default:
+								case Field2D.TDOWN:
+									runRole.animate("down");
+									break;
+								case Field2D.TLEFT:
+									runRole.animate("left");
+									break;
+								case Field2D.TRIGHT:
+									runRole.animate("right");
+									break;
 								}
-							});
+							}
+						}
+					});
+					// 开始缓动动画
+					get(runRole).event(move).start();
 				} else { // 如果随机生成的移动位置不可用
 					PointI point = pixelsToTileMap(runRole.getX(), runRole.getY());
 					final Role enemy = checkRoleExist(point.x, point.y, 1, PLAYER_TEAM);

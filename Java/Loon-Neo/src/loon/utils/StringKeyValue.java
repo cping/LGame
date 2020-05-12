@@ -188,7 +188,7 @@ public class StringKeyValue {
 			return this;
 		}
 		if (key != null && value == null) {
-			return addValue(key).addValue("=").addValue(LSystem.UNKOWN);
+			return addValue(key).addValue("=").addValue(LSystem.UNKNOWN);
 		} else if (key != null && value != null) {
 			return addValue(key).addValue("=").addValue(value.toString());
 		}

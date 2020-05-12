@@ -37,7 +37,7 @@ public abstract class CacheObjectBase {
 
 	public CacheObjectBase(String name, int cap, long time) {
 		if (StringUtils.isEmpty(name)) {
-			name = LSystem.UNKOWN;
+			name = LSystem.UNKNOWN;
 		}
 		this._name = name;
 		this._capacity = cap;

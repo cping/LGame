@@ -76,7 +76,7 @@ public class LSystem {
 
 	public static final String EMPTY = "";
 
-	public static final String UNKOWN = "unkown";
+	public static final String UNKNOWN = "unknown";
 	// 默认缓存数量
 	public static final int DEFAULT_MAX_CACHE_SIZE = 32;
 

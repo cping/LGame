@@ -44,7 +44,7 @@ public class ScreenSwitch {
 
 	public ScreenSwitch(Screen dst, Screen src, BasePage page1, BasePage page2,
 			float duration) {
-		this._mode = PageMethod.Unkown;
+		this._mode = PageMethod.Unknown;
 		this._target = dst;
 		this._source = src;
 		this._easeTimer = new EaseTimer(duration);

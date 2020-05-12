@@ -186,7 +186,7 @@ public class LSetting {
 	/**
 	 * 当前应用版本号
 	 */
-	public String version = LSystem.UNKOWN;
+	public String version = LSystem.UNKNOWN;
 
 	/**
 	 * 允许注销纹理(为false所有纹理都不被注销)
@@ -211,7 +211,7 @@ public class LSetting {
 	/**
 	 * 当前游戏类型，默认为"未知"
 	 */
-	public GameType gameType = GameType.UNKOWN;
+	public GameType gameType = GameType.UNKNOWN;
 
 	/**
 	 * 初始化游戏时传参用，默认无数据

@@ -75,7 +75,7 @@ public class LColorList {
 
 	public String find(LColor color) {
 		if (color == null) {
-			return LSystem.UNKOWN;
+			return LSystem.UNKNOWN;
 		}
 		return find(color.getRGB());
 	}
@@ -95,7 +95,7 @@ public class LColorList {
 				}
 			}
 		}
-		return LSystem.UNKOWN;
+		return LSystem.UNKNOWN;
 	}
 
 	public void init() {

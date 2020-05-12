@@ -20,7 +20,6 @@
  */
 package loon.action.avg;
 
-import loon.LObject;
 import loon.LSystem;
 import loon.LTexture;
 import loon.LTransition;
@@ -826,12 +825,12 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	}
 
 	@Override
-	public Screen addTouchLimit(LObject<?> c) {
+	public Screen addTouchLimit(ActionBind act) {
 		if (messageDesktop == null) {
 			initDesktop();
 		}
-		if (!(c instanceof LClickButton)) {
-			super.addTouchLimit(c);
+		if (!(act instanceof LClickButton)) {
+			super.addTouchLimit(act);
 		}
 		return this;
 	}

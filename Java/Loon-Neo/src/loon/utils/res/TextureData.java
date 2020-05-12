@@ -37,7 +37,7 @@ public class TextureData implements XY {
 
 	protected int offY = 0;
 
-	protected String name = LSystem.UNKOWN;
+	protected String name = LSystem.UNKNOWN;
 
 	protected TextureData() {
 

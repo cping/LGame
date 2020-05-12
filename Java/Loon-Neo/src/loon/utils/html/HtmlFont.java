@@ -35,13 +35,13 @@ public class HtmlFont {
 	protected String text;
 
 	protected HtmlFont(HtmlElement ele) {
-		face = ele.getAttribute("face", LSystem.UNKOWN);
-		size = ele.getFloatAttribute("size", 2.0f);
+		this.face = ele.getAttribute("face", LSystem.UNKNOWN);
+		this.size = ele.getFloatAttribute("size", 2.0f);
 		String colorStr = ele.getAttribute("color", null);
 		if (colorStr == null) {
-			color = LColor.white;
+			this.color = LColor.white;
 		} else {
-			color = LColor.decode(colorStr);
+			this.color = LColor.decode(colorStr);
 		}
 		text = ele.getData();
 	}

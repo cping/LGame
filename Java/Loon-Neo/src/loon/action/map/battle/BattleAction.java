@@ -70,7 +70,7 @@ public abstract class BattleAction {
 	}
 
 	public void reset() {
-		this.actionName = LSystem.UNKOWN;
+		this.actionName = LSystem.UNKNOWN;
 		this.actionSpeed = 0;
 		this.turnCost = 0;
 		this.actionAnimationCode = -1;

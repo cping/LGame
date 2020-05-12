@@ -126,7 +126,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 *
 	 */
 	public static enum PageMethod {
-		Unkown, Accordion, BackToFore, CubeIn, Depth, Fade, Rotate, RotateDown, RotateUp, Stack, ZoomIn, ZoomOut;
+		Unknown, Accordion, BackToFore, CubeIn, Depth, Fade, Rotate, RotateDown, RotateUp, Stack, ZoomIn, ZoomOut;
 	}
 
 	/**
@@ -183,9 +183,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	private ScreenAction _screenAction = null;
 
-	private final TArray<LTouchArea> _touchAreas = new TArray<LTouchArea>();
+	private TArray<LTouchArea> _touchAreas = new TArray<LTouchArea>();
 
-	protected final Closeable.Set _conns = new Closeable.Set();
+	private Closeable.Set _conns = new Closeable.Set();
 
 	private LTransition _transition;
 
@@ -223,6 +223,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	private boolean _visible = true;
 
 	private TArray<RectBox> _limits = new TArray<RectBox>(10);
+
+	private TArray<ActionBind> _action_limits = new TArray<ActionBind>(10);
 
 	private Accelerometer.SensorDirection direction = Accelerometer.SensorDirection.EMPTY;
 
@@ -380,11 +382,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	public Screen(int w, int h) {
-		this(LSystem.UNKOWN, w, h);
+		this(LSystem.UNKNOWN, w, h);
 	}
 
 	public Screen() {
-		this(LSystem.UNKOWN, 0, 0);
+		this(LSystem.UNKNOWN, 0, 0);
 	}
 
 	protected void init(String name, int w, int h) {
@@ -1218,6 +1220,14 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	public Screen removeTouchLimit() {
 		_limits.clear();
+		_action_limits.clear();
+		return this;
+	}
+
+	public Screen removeTouchLimit(ActionBind act) {
+		if (act != null) {
+			_action_limits.remove(act);
+		}
 		return this;
 	}
 
@@ -1228,23 +1238,20 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return this;
 	}
 
-	public Screen removeTouchLimit(LObject<?> c) {
-		if (c != null) {
-			_limits.remove(c.getCollisionArea());
-		}
-		return this;
-	}
-
-	public Screen addTouchLimit(LObject<?> c) {
-		if (c != null) {
-			_limits.add(c.getCollisionArea());
+	public Screen addTouchLimit(ActionBind act) {
+		if (act != null) {
+			if (!_action_limits.contains(act)) {
+				_action_limits.add(act);
+			}
 		}
 		return this;
 	}
 
 	public Screen addTouchLimit(RectBox r) {
 		if (r != null) {
-			_limits.add(r);
+			if (!_limits.contains(r)) {
+				_limits.add(r);
+			}
 		}
 		return this;
 	}
@@ -1254,11 +1261,17 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	public boolean isClickLimit(int x, int y) {
-		if (_limits.size == 0) {
+		if (_limits.size == 0 && _action_limits.size == 0) {
 			return false;
 		}
 		for (RectBox rect : _limits) {
 			if (rect.contains(x, y)) {
+				return true;
+			}
+		}
+		for (ActionBind act : _action_limits) {
+			final boolean show = (act.isVisible() && act.getAlpha() > 0f);
+			if (show && act.getRectBox().contains(x, y)) {
 				return true;
 			}
 		}
@@ -1374,6 +1387,27 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		this._scaleX = _scaleY = _alpha = 1f;
 		this._baseColor = null;
 		this._isExistCamera = false;
+		if (this.delayTimer == null) {
+			this.delayTimer = new LTimer(0);
+		}
+		if (this.pauseTimer == null) {
+			this.pauseTimer = new LTimer(LSystem.SECOND);
+		}
+		if (this._limits == null) {
+			this._limits = new TArray<RectBox>(10);
+		}
+		if (this._action_limits == null) {
+			this._action_limits = new TArray<ActionBind>(10);
+		}
+		if (this._touchAreas == null) {
+			this._touchAreas = new TArray<LTouchArea>();
+		}
+		if (this._conns == null) {
+			this._conns = new Closeable.Set();
+		}
+		if (this._keyActions == null) {
+			this._keyActions = new ArrayMap(CollectionUtils.INITIAL_CAPACITY);
+		}
 	}
 
 	public Screen invokeAsync(Runnable runnable) {
@@ -2706,6 +2740,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	public Screen remove(ISprite sprite) {
 		if (sprites != null) {
 			sprites.remove(sprite);
+			removeTouchLimit(sprite);
 			if (sprite instanceof LTouchArea) {
 				unregisterTouchArea((LTouchArea) sprite);
 			}
@@ -2769,6 +2804,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	public Screen remove(LComponent comp) {
 		if (desktop != null) {
 			desktop.remove(comp);
+			removeTouchLimit(comp);
 			if (comp instanceof LTouchArea) {
 				unregisterTouchArea((LTouchArea) comp);
 			}
@@ -3704,7 +3740,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		int button = e.getButton();
 
 		try {
-			touchType.put(type, Boolean.valueOf(true));
+			touchType.put(type, Boolean.TRUE);
 			touchButtonPressed = button;
 			touchButtonReleased = SysInput.NO_BUTTON;
 			if (!isClickLimit(e)) {
@@ -3734,7 +3770,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		int button = e.getButton();
 
 		try {
-			touchType.put(type, Boolean.valueOf(false));
+			touchType.put(type, Boolean.FALSE);
 			touchButtonReleased = button;
 			touchButtonPressed = SysInput.NO_BUTTON;
 			if (!isClickLimit(e)) {
@@ -5183,7 +5219,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public GameMode getGameMode() {
-		return _gameMode == null ? GameMode.Unkown : _gameMode;
+		return _gameMode == null ? GameMode.Unknown : _gameMode;
 	}
 
 	/**
@@ -5218,6 +5254,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 				_clickListener = null;
 				_touchListener = null;
 				_limits.clear();
+				_action_limits.clear();
 				_touchAreas.clear();
 				touchButtonPressed = SysInput.NO_BUTTON;
 				touchButtonReleased = SysInput.NO_BUTTON;

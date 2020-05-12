@@ -41,7 +41,7 @@ public class CustomPath implements LRelease {
 	private String name;
 
 	public CustomPath() {
-		this(LSystem.UNKOWN);
+		this(LSystem.UNKNOWN);
 	}
 
 	public CustomPath(String n) {
