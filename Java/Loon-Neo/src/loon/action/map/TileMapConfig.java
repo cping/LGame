@@ -24,6 +24,7 @@ import java.util.StringTokenizer;
 
 import loon.BaseIO;
 import loon.LSystem;
+import loon.utils.CharUtils;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
@@ -61,7 +62,13 @@ public class TileMapConfig {
 		for (int i = 0; i < width; i++) {
 			line = br.nextToken();
 			for (int j = 0; j < height; j++) {
-				map[i][j] = line.charAt(j);
+				char temp = line.charAt(j);
+				if (temp == ' ') {
+					temp = 0;
+				} else if (CharUtils.isDigit(temp)) {
+					temp = (char) CharUtils.toInt(temp);
+				}
+				map[i][j] = temp;
 			}
 		}
 		return map;
@@ -77,13 +84,33 @@ public class TileMapConfig {
 		for (; br.hasMoreTokens();) {
 			result = StringUtils.replace(br.nextToken().trim(), LSystem.LS, LSystem.EMPTY);
 			if (!StringUtils.isEmpty(result)) {
-				String[] stringArray = result.split(",");
-				int size = stringArray.length;
-				int[] intArray = new int[size];
-				for (int i = 0; i < size; i++) {
-					intArray[i] = Integer.parseInt(stringArray[i]);
+				char flag = ',';
+				if (result.indexOf(flag) != -1) {
+					String[] stringArray = StringUtils.split(result, flag);
+					int size = stringArray.length;
+					int[] intArray = new int[size];
+					for (int i = 0; i < size; i++) {
+						String temp = stringArray[i];
+						if (temp.length() > 0) {
+							intArray[i] = stringToInt(temp);
+						}
+					}
+					records.add(intArray);
+				} else {
+					char[] charArray = result.toCharArray();
+					int size = charArray.length;
+					int[] intArray = new int[size];
+					for (int i = 0; i < size; i++) {
+						char temp = charArray[i];
+						if (temp == ' ') {
+							temp = 0;
+						} else if (CharUtils.isDigit(temp)) {
+							temp = (char) CharUtils.toInt(temp);
+						}
+						intArray[i] = temp;
+					}
+					records.add(intArray);
 				}
-				records.add(intArray);
 			}
 		}
 		return records;
@@ -140,7 +167,7 @@ public class TileMapConfig {
 				String[] strPrms = StringUtils.split(strLns[i], ',');
 				resArr[i] = new int[strPrms.length];
 				for (int j = 0; j < strPrms.length; j++) {
-					resArr[i][j] = stingToInt(strPrms[j]);
+					resArr[i][j] = stringToInt(strPrms[j]);
 				}
 			}
 		} catch (Throwable ex) {
@@ -149,14 +176,28 @@ public class TileMapConfig {
 		return resArr;
 	}
 
-	private static int stingToInt(String srcStr) {
+	public static int stringToIntCode(String src) {
+		int len = src.length();
+		if (len == 1) {
+			return src.charAt(0);
+		}
+		int code = 0;
+		for (int n = 0; n < len; n++) {
+			code = LSystem.unite(code, src.charAt(n));
+		}
+		return code;
+	}
+
+	private static int stringToInt(String src) {
 		int resNo = 0;
-		if (MathUtils.isNan(srcStr)) {
+		if (MathUtils.isNan(src)) {
 			try {
-				resNo = Integer.parseInt(srcStr);
+				resNo = Integer.parseInt(src);
 			} catch (Throwable ex) {
 				LSystem.error("TileMapConfig stringToInt exception", ex);
 			}
+		} else {
+			return stringToIntCode(src);
 		}
 		return resNo;
 	}

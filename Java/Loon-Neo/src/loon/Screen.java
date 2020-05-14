@@ -78,6 +78,7 @@ import loon.font.IFont;
 import loon.geom.BoxSize;
 import loon.geom.Circle;
 import loon.geom.Line;
+import loon.geom.PointF;
 import loon.geom.PointI;
 import loon.geom.RectBox;
 import loon.geom.Triangle2f;
@@ -171,8 +172,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	private Updateable _closeUpdate;
 
-	private ClickListener _clickListener;
-
 	private TouchedClick _touchListener;
 
 	private String _screenName;
@@ -245,7 +244,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	// 桌面集合
 	private Desktop desktop;
 
-	private PointI touch = new PointI(0, 0);
+	private final PointF _lastTocuh = new PointF();
+
+	private final PointI _touch = new PointI();
 
 	private boolean isLoad, isLock, isClose, isTranslate, isGravity;
 
@@ -584,11 +585,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		if (_touchListener == null) {
 			_touchListener = new TouchedClick();
 		}
-		if (_clickListener != null) {
-			_touchListener.addClickListener(_clickListener);
-		}
-		this._clickListener = _touchListener;
-		return _touchListener;
+		TouchedClick click = new TouchedClick();
+		_touchListener.addClickListener(click);
+		return click;
 	}
 
 	public Screen addClickListener(ClickListener c) {
@@ -656,7 +655,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @param t
 	 * @return
 	 */
-	public Screen onDrag(Touched t) {
+	public Screen drag(Touched t) {
 		makeTouched().setDragTouch(t);
 		return this;
 	}
@@ -1381,6 +1380,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		this.tx = ty = 0;
 		this.isTranslate = false;
 		this._screenIndex = 0;
+		this._lastTocuh.empty();
 		this._keyActions.clear();
 		this._visible = true;
 		this._rotation = 0;
@@ -3329,6 +3329,18 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		this.touchButtonReleased = NO_BUTTON;
 	}
 
+	public PointF getLastTouch() {
+		return _lastTocuh;
+	}
+
+	public float getLastTouchX() {
+		return _lastTocuh.x;
+	}
+
+	public float getLastTouchY() {
+		return _lastTocuh.y;
+	}
+
 	public void runTimer(final LTimerContext timer) {
 		if (isClose) {
 			return;
@@ -3543,8 +3555,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	@Override
 	public PointI getTouch() {
-		touch.set((int) SysTouch.getX(), (int) SysTouch.getY());
-		return touch;
+		_touch.set((int) SysTouch.getX(), (int) SysTouch.getY());
+		return _touch;
 	}
 
 	public boolean isPaused() {
@@ -3746,9 +3758,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			if (!isClickLimit(e)) {
 				updateTouchArea(Event.DOWN, e.getX(), e.getY());
 				touchDown(e);
-				if (_clickListener != null && desktop != null) {
-					_clickListener.DownClick(desktop.getSelectedComponent(), e.getX(), e.getY());
+				if (_touchListener != null && desktop != null) {
+					_touchListener.DownClick(desktop.getSelectedComponent(), e.getX(), e.getY());
 				}
+				_lastTocuh.set(e.getX(), e.getY());
 			}
 		} catch (Throwable ex) {
 			touchButtonPressed = SysInput.NO_BUTTON;
@@ -3776,9 +3789,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			if (!isClickLimit(e)) {
 				updateTouchArea(Event.UP, e.getX(), e.getY());
 				touchUp(e);
-				if (_clickListener != null && desktop != null) {
-					_clickListener.UpClick(desktop.getSelectedComponent(), e.getX(), e.getY());
+				if (_touchListener != null && desktop != null) {
+					_touchListener.UpClick(desktop.getSelectedComponent(), e.getX(), e.getY());
 				}
+				_lastTocuh.set(e.getX(), e.getY());
 			}
 		} catch (Throwable ex) {
 			touchButtonPressed = SysInput.NO_BUTTON;
@@ -3796,7 +3810,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		if (isTranslate) {
 			e.offset(tx, ty);
 		}
-
 		if (!isClickLimit(e)) {
 			updateTouchArea(Event.MOVE, e.getX(), e.getY());
 			touchMove(e);
@@ -3815,9 +3828,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		if (!isClickLimit(e)) {
 			updateTouchArea(Event.DRAG, e.getX(), e.getY());
 			touchDrag(e);
-			if (_clickListener != null && desktop != null) {
-				_clickListener.DragClick(desktop.getSelectedComponent(), e.getX(), e.getY());
+			if (_touchListener != null && desktop != null) {
+				_touchListener.DragClick(desktop.getSelectedComponent(), e.getX(), e.getY());
 			}
+			_lastTocuh.set(e.getX(), e.getY());
 		}
 	}
 
@@ -5251,7 +5265,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 				_gameMode = null;
 				_visible = false;
 				_drawListener = null;
-				_clickListener = null;
 				_touchListener = null;
 				_limits.clear();
 				_action_limits.clear();

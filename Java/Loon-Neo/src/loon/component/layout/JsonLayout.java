@@ -693,8 +693,8 @@ public class JsonLayout implements LRelease {
 
 		if (background == null && createGameWindowImage) {
 			box.setBackground(DefUI.getGameWinFrame(box.width(), box.height()));
-			box.setOffsetX(10);
-			box.setOffsetY(10);
+			box.setBoxOffsetX(10);
+			box.setBoxOffsetY(10);
 		}
 
 		box.up(new Touched() {

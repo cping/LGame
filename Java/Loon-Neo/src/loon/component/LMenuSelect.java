@@ -213,12 +213,20 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 		return setImageFlag(LSystem.loadTexture(path));
 	}
 
+	public LMenuSelect update(String labels) {
+		return setLabels(labels);
+	}
+	
 	public LMenuSelect setLabels(String labels) {
 		return setLabels(StringUtils.split(labels, ','));
 	}
 
+	public LMenuSelect update(String[] labels) {
+		return setLabels(labels);
+	}
+	
 	public LMenuSelect setLabels(String[] labels) {
-		_labels = labels;
+		this._labels = labels;
 		if (_labels != null) {
 			_selectCountMax = labels.length;
 			_selectRects = new RectF[_selectCountMax];

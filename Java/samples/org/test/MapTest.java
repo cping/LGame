@@ -35,7 +35,6 @@ public class MapTest extends Stage {
 			add(ripple);
 			// 构建数组地图精灵
 			final TileMap map = new TileMap("assets/rpg/map.txt", 32, 32);
-
 			// 设置切图方式
 			/*
 			 * TArray<LTexturePackClip> clips = new
@@ -61,6 +60,7 @@ public class MapTest extends Stage {
 			 */
 			// 注入地图到窗体
 			add(map);
+			
 			// 制作动画角色,切分大小32x32每帧,显示位置到坐标3,4(换算为数组地图位置),显示大小32x32
 			final AnimatedEntity hero = new AnimatedEntity("assets/rpg/hero.gif", 32, 32, map.tilesToPixelsX(3),
 					map.tilesToPixelsY(4), 32, 32);
@@ -92,6 +92,15 @@ public class MapTest extends Stage {
 			// 添加hero到地图上
 			add(hero);
 
+			// 角色追随和地图滚动只能开一个(否则地图移动视角会乱跳),默认如果followAction注入则scroll无效化
+			/* drag(new Touched() {
+
+				@Override
+				public void on(float x, float y) {
+					map.scroll(x, y);
+				}
+			}); */
+			
 			// ----触屏移动---
 			// 监听窗体down事件
 			down(new Touched() {
@@ -259,6 +268,7 @@ public class MapTest extends Stage {
 		add(click);
 		// 插入网格GridEntity
 		// add(new GridEntity());
+	
 	}
 
 }

@@ -38,7 +38,7 @@ public class CharUtils {
 	public static char toChar(byte b) {
 		return (char) (b & 0xFF);
 	}
-	
+
 	public static long getBytesToLong(final byte[] bytes) {
 		return getBytesToLong(bytes, 0, bytes.length);
 	}
@@ -143,6 +143,16 @@ public class CharUtils {
 		ob[0] = HexChars.TABLE[(ib >>> 4) & 0X0F];
 		ob[1] = HexChars.TABLE[ib & 0X0F];
 		return new String(ob);
+	}
+
+	public static int toInt(char c) {
+		char[] chars = HexChars.TABLE;
+		for (int i = 0; i < 10; i++) {
+			if (c == chars[i]) {
+				return i;
+			}
+		}
+		return c;
 	}
 
 	public static long b2iu(byte b) {

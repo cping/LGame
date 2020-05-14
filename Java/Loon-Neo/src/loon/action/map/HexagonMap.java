@@ -42,6 +42,7 @@ import loon.font.FontSet;
 import loon.font.IFont;
 import loon.font.LFont;
 import loon.geom.Affine2f;
+import loon.geom.PointF;
 import loon.geom.Polygon;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
@@ -104,6 +105,8 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	protected Hexagon[][] hexagons;
 
 	private Field2D field2d;
+
+	private final PointF _scrollDrag = new PointF();
 
 	private float _fixedWidthOffset = 0f;
 	private float _fixedHeightOffset = 0f;
@@ -1229,6 +1232,14 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 
 	}
 
+	public int getPixelX(float x) {
+		return MathUtils.iceil((x - _location.x) / _scaleX);
+	}
+
+	public int getPixelY(float y) {
+		return MathUtils.iceil((y - _location.y) / _scaleY);
+	}
+	
 	public float offsetXPixel(float x) {
 		return MathUtils.iceil((x - offset.x - _location.x) / _scaleX);
 	}
@@ -1264,8 +1275,10 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		if (follow != null) {
 			float offsetX = limitOffsetX(follow.getX());
 			float offsetY = limitOffsetY(follow.getY());
-			setOffset(offsetX, offsetY);
-			field2d.setOffset(offset);
+			if (offsetX != 0 || offsetY != 0) {
+				setOffset(offsetX, offsetY);
+				field2d.setOffset(offset);
+			}
 		}
 		return this;
 	}
@@ -1293,6 +1306,16 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		return field2d.getPixelsAtFieldType(itsX, itsY);
 	}
 
+	/**
+	 * 地图居中偏移
+	 * 
+	 * @return
+	 */
+	public HexagonMap centerOffset() {
+		this.offset.set(centerX(), centerY());
+		return this;
+	}
+	
 	@Override
 	public Field2D getField2D() {
 		return field2d;
@@ -1329,36 +1352,113 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		return field2d.getRect().contains(x, y, w, h);
 	}
 
-	public void scrollDown(float distance) {
-		this.offset.y = limitOffsetY(MathUtils.min((this.offset.y + distance),
-				(MathUtils.max(0, this.field2d.getViewHeight() - getContainerHeight()))));
+	public float centerX() {
+		return (getContainerWidth() - getWidth()) / 2f;
 	}
 
-	public void scrollLeft(float distance) {
-		this.offset.x = limitOffsetX(MathUtils.max(this.offset.x - distance, 0));
+	public float centerY() {
+		return (getContainerHeight() - getHeight()) / 2f;
 	}
 
-	public void scrollLeftUp(float distance) {
+	public HexagonMap scrollDown(float distance) {
+		if (distance == 0) {
+			return this;
+		}
+		this.offset.y = MathUtils.min((this.offset.y + distance),
+				(MathUtils.max(0, this.getContainerHeight() - this.getHeight())));
+		if (this.offset.y >= 0) {
+			this.offset.y = 0;
+		}
+		return this;
+	}
+
+	public HexagonMap scrollLeft(float distance) {
+		if (distance == 0) {
+			return this;
+		}
+		this.offset.x = MathUtils.min(this.offset.x - distance, this.getX());
+		float limitX = (getContainerWidth() - getWidth());
+		if (this.offset.x <= limitX) {
+			this.offset.x = limitX;
+		}
+		return this;
+	}
+
+	public HexagonMap scrollRight(float distance) {
+		if (distance == 0) {
+			return this;
+		}
+		this.offset.x = MathUtils.min((this.offset.x + distance),
+				(MathUtils.max(0, this.getWidth() - getContainerWidth())));
+		if (this.offset.x >= 0) {
+			this.offset.x = 0;
+		}
+		return this;
+	}
+
+	public HexagonMap scrollUp(float distance) {
+		if (distance == 0) {
+			return this;
+		}
+		this.offset.y = MathUtils.min(this.offset.y - distance, 0);
+		float limitY = (getContainerHeight() - getHeight());
+		if (this.offset.y <= limitY) {
+			this.offset.y = limitY;
+		}
+		return this;
+	}
+
+	public HexagonMap scrollLeftUp(float distance) {
 		this.scrollUp(distance);
 		this.scrollLeft(distance);
+		return this;
 	}
 
-	public void scrollRight(float distance) {
-		this.offset.x = limitOffsetX(MathUtils.min((this.offset.x + distance),
-				(MathUtils.max(0, this.field2d.getViewWidth() - getContainerWidth()))));
-	}
-
-	public void scrollUp(float distance) {
-		this.offset.y = limitOffsetY(MathUtils.max(this.offset.y - distance, 0));
-	}
-
-	public void scrollRightDown(float distance) {
+	public HexagonMap scrollRightDown(float distance) {
 		this.scrollDown(distance);
 		this.scrollRight(distance);
+		return this;
 	}
 
-	public void scrollClear() {
-		this.offset.set(0, 0);
+	public HexagonMap scrollClear() {
+		if (!this.offset.equals(0f, 0f)) {
+			this.offset.set(0, 0);
+		}
+		return this;
+	}
+
+	public HexagonMap scroll(float x, float y) {
+		return scroll(x, y, 4f);
+	}
+
+	public HexagonMap scroll(float x, float y, float distance) {
+		if (_scrollDrag.x == 0f && _scrollDrag.y == 0f) {
+			_scrollDrag.set(x, y);
+			return this;
+		}
+		return scroll(_scrollDrag.x, _scrollDrag.y, x, y, distance);
+	}
+
+	public HexagonMap scroll(float x1, float y1, float x2, float y2) {
+		return scroll(x1, y1, x2, y2, 4f);
+	}
+
+	public HexagonMap scroll(float x1, float y1, float x2, float y2, float distance) {
+		if (this.follow != null) {
+			return this;
+		}
+		if (x1 < x2 && x1 > centerX()) {
+			scrollRight(distance);
+		} else if (x1 > x2) {
+			scrollLeft(distance);
+		}
+		if (y1 < y2 && y1 > centerY()) {
+			scrollDown(distance);
+		} else if (y1 > y2) {
+			scrollUp(distance);
+		}
+		_scrollDrag.set(x2, y2);
+		return this;
 	}
 
 	public boolean isHit(int px, int py) {
@@ -1461,6 +1561,10 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 
 	public boolean isActive() {
 		return active;
+	}
+
+	public boolean isValid(int x, int y) {
+		return this.field2d.inside(x, y);
 	}
 
 	public HexagonMap removeTile(int id) {
@@ -1947,7 +2051,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		RectBox b = new RectBox(0, rectDst.getY(), rectDst.getWidth(), rectDst.getHeight());
 		return a.intersects(b);
 	}
-	
+
 	public boolean isClosed() {
 		return isDisposed();
 	}

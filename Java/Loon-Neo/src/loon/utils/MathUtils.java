@@ -188,6 +188,11 @@ public class MathUtils {
 		return (w > 0 && (w & (w - 1)) == 0 && h > 0 && (h & (h - 1)) == 0);
 	}
 
+	public final static int previousPowerOfTwo(int value) {
+		final int power = (int) (log(value) / log(2));
+		return (int) pow(2, power);
+	}
+
 	public final static int nextPowerOfTwo(int value) {
 		if (value == 0)
 			return 1;
@@ -1499,11 +1504,11 @@ public class MathUtils {
 		}
 		return value;
 	}
-	
+
 	public static final boolean isLimit(int value, int minX, int maxX) {
 		return value >= minX && value <= maxX;
 	}
-	
+
 	public static final float fixRotation(final float rotation) {
 		float newAngle = 0f;
 		if (rotation == -360f || rotation == 360f) {

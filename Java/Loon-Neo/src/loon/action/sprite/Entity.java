@@ -64,6 +64,10 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	protected int _idxTag = IEntity.TAG_INVALID;
 
 	protected boolean _repaintDraw = false;
+
+	//是否传递本身偏移设定数据到自绘部分
+	protected boolean _repaintAutoOffset = false;
+	
 	protected TArray<IEntity> _childrens;
 
 	protected RectBox _shear;
@@ -798,7 +802,11 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 				}
 				float tmp = g.alpha();
 				g.setAlpha(_alpha);
-				repaint(g, offsetX, offsetY);
+				if (_repaintAutoOffset) {
+					repaint(g, nx, ny);
+				} else {
+					repaint(g, offsetX, offsetY);
+				}
 				g.setAlpha(tmp);
 				if (elastic) {
 					g.clearClip();
@@ -1379,6 +1387,14 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		this._fixedHeightOffset = fixedHeightOffset;
 	}
 
+	public boolean isRepaintAutoOffset() {
+		return _repaintAutoOffset;
+	}
+
+	public void setRepaintAutoOffset(boolean autoOffset) {
+		this._repaintAutoOffset = autoOffset;
+	}
+	
 	public boolean isClosed() {
 		return isDisposed();
 	}

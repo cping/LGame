@@ -441,8 +441,31 @@ public class Field2D implements IArray, Config {
 		return setValues(val);
 	}
 
+	public Field2D cpy() {
+		return new Field2D(this);
+	}
+
 	public Field2D cpy(Field2D field) {
 		this.set(CollectionUtils.copyOf(field.mapArrays), field.tileWidth, field.tileHeight);
+		if (field._offset != null) {
+			this._offset = field._offset.cpy();
+		}
+		if (field._rectTemp != null) {
+			this._rectTemp = field._rectTemp.cpy();
+		}
+		this._tileImpl = field._tileImpl;
+		this.Tag = field.Tag;
+		if (field.result != null) {
+			this.result = field.result.cpy();
+		}
+		if (field.moveLimited != null) {
+			this.moveLimited = CollectionUtils.copyOf(field.moveLimited);
+		}
+		this.width = field.width;
+		this.height = field.height;
+		if (field.allowMove != null) {
+			this.allowMove = new IntArray(field.allowMove);
+		}
 		return this;
 	}
 

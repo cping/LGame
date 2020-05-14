@@ -18,7 +18,7 @@ public class LMessageBoxTest extends Stage {
 		//行间距3
 		box.setLeading(3);
 		//偏移10,10
-		box.setOffset(10, 10);
+		box.setBoxOffset(10, 10);
 		add(box);
 		centerOn(box);
 		box.S(new ClickListener() {

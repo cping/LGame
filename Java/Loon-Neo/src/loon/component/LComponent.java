@@ -215,6 +215,8 @@ public abstract class LComponent extends LObject<LContainer>
 
 	private LTexture[] _imageUI = null;
 
+	private Vector2f _offset = new Vector2f();
+
 	protected boolean _component_elastic = false;
 
 	protected boolean _component_autoDestroy = true;
@@ -422,6 +424,8 @@ public abstract class LComponent extends LObject<LContainer>
 		}
 		synchronized (this) {
 			int blend = g.getBlendMode();
+			float offsetX = _offset.x;
+			float offsetY = _offset.y;
 			boolean update = _rotation != 0 || !(_scaleX == 1f && _scaleY == 1f) || _flipX || _flipY;
 			try {
 				g.saveBrush();
@@ -433,13 +437,15 @@ public abstract class LComponent extends LObject<LContainer>
 				final int width = (int) this.getWidth();
 				final int height = (int) this.getHeight();
 				if (this._component_elastic) {
-					g.setClip(this._screenX, this._screenY, width, height);
+					g.setClip(this._screenX + offsetX, this._screenY + offsetY, width, height);
 				}
 				if (update) {
 					g.saveTx();
 					Affine2f tx = g.tx();
-					final float centerX = _pivotX == -1 ? this._screenX + _origin.ox(width) : this._screenX + _pivotX;
-					final float centerY = _pivotY == -1 ? this._screenY + _origin.oy(height) : this._screenY + _pivotY;
+					final float centerX = (_pivotX == -1 ? this._screenX + _origin.ox(width) : this._screenX + _pivotX)
+							+ offsetX;
+					final float centerY = (_pivotY == -1 ? this._screenY + _origin.oy(height) : this._screenY + _pivotY)
+							+ offsetY;
 					if (_rotation != 0) {
 						tx.translate(centerX, centerY);
 						tx.preRotate(_rotation);
@@ -462,15 +468,19 @@ public abstract class LComponent extends LObject<LContainer>
 				}
 				g.setBlendMode(_blend);
 				if (_drawBackground && _background != null) {
-					g.draw(_background, this._screenX, this._screenY, width, height, _component_baseColor);
+					g.draw(_background, this._screenX + offsetX, this._screenY + offsetY, width, height,
+							_component_baseColor);
 				}
 				if (this.customRendering) {
-					this.createCustomUI(g, this._screenX, this._screenY, width, height);
+					this.createCustomUI(g, (int) (this._screenX + offsetX), (int) (this._screenY + offsetY), width,
+							height);
 				} else {
-					this.createUI(g, this._screenX, this._screenY, this, this._imageUI);
+					this.createUI(g, (int) (this._screenX + offsetX), (int) (this._screenY + offsetY), this,
+							this._imageUI);
 				}
 				if (isDrawSelect()) {
-					g.drawRect(this._screenX, this._screenY, width - 1f, height - 1f, _component_baseColor);
+					g.drawRect(this._screenX + offsetX, this._screenY + offsetY, width - 1f, height - 1f,
+							_component_baseColor);
 				}
 			} finally {
 				if (update) {
@@ -1474,6 +1484,34 @@ public abstract class LComponent extends LObject<LContainer>
 	@Override
 	public boolean containsPoint(float x, float y) {
 		return getCollisionBox().contains(x, y, 1, 1);
+	}
+
+	public Vector2f getOffset() {
+		return _offset;
+	}
+
+	public void setOffset(float x, float y) {
+		this._offset.set(x, y);
+	}
+
+	public void setOffset(Vector2f offset) {
+		this._offset = offset;
+	}
+
+	public float getOffsetX() {
+		return _offset.x;
+	}
+
+	public void setOffsetX(float offsetX) {
+		this._offset.setX(offsetX);
+	}
+
+	public float getOffsetY() {
+		return _offset.y;
+	}
+
+	public void setOffsetY(float offsetY) {
+		this._offset.setY(offsetY);
 	}
 
 	@Override

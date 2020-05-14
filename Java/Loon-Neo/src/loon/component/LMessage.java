@@ -43,6 +43,8 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 
 	private long printTime, totalDuration;
 
+	private int tempColor;
+	
 	private float dx, dy, dw, dh;
 
 	private Print print;
@@ -263,14 +265,12 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 		}
 	}
 
-	private int tmpColor;
-
 	@Override
 	protected synchronized void createCustomUI(GLEx g, int x, int y, int w, int h) {
 		if (!isVisible()) {
 			return;
 		}
-		tmpColor = g.color();
+		tempColor = g.color();
 		print.draw(g, fontColor);
 		if (print.isComplete() && animation != null) {
 			if (animation.getSpriteImage() != null) {
@@ -281,7 +281,7 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 				g.setAlpha(alpha);
 			}
 		}
-		g.setColor(tmpColor);
+		g.setColor(tempColor);
 	}
 
 	@Override

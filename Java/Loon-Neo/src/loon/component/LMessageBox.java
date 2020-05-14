@@ -563,17 +563,17 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 		return this._box;
 	}
 
-	public LMessageBox setOffset(float x, float y) {
+	public LMessageBox setBoxOffset(float x, float y) {
 		this._box.setOffset(x, y);
 		return this;
 	}
 
-	public LMessageBox setOffsetX(float x) {
+	public LMessageBox setBoxOffsetX(float x) {
 		this._box.setOffsetX(x);
 		return this;
 	}
 
-	public LMessageBox setOffsetY(float y) {
+	public LMessageBox setBoxOffsetY(float y) {
 		this._box.setOffsetY(y);
 		return this;
 	}
