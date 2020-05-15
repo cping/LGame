@@ -1,0 +1,23 @@
+{
+/*文件源目录("."为本地，否则请写路径，loon-build会自动寻找src文件夹进行编译)*/
+sourceDir:".",
+/**项目配置，"[]"代表数组,"{}"代表参数,"\""约定一个具体提数值,","可以分隔多个参数
+ * ,jars代表要打包入编译jar的其它jar文件,manifests中追加MANIFEST.MF参数.
+ * 具体到下例:第一项是输出的jar名,第二项是输出地址,"."代表当前目录输出.
+ * main为主函数，jars是附带的jar, manifests内是追加的jar内配置参数.
+ * classpath是当前项目需要的额外类库所在地址(也就是jdk中默认不带的jar).
+ */
+list:[
+ [BaseSample,.,{main:"loon.JarInternal",jars:["libs"],
+ manifests:["Rsrc-Main-Class: org.test.Main","Rsrc-Class-Path:./ lwjgl.jar loon-core-0.5.jar loon-javase-0.5.jar loon-live2d.jar loon-srpg.jar loon-node-0.5.jar","Class-Path: ."],
+ classpath:["libs/loon-core-0.5.jar","libs/loon-javase-0.5.jar","libs/loon-live2d.jar","libs/loon-srpg.jar","libs/loon-node-0.5.jar"]}]
+],
+/*输出目录*/
+outputDir:".",
+/*源码的开发Java环境*/
+source:"1.8",
+/*编译的运行Java环境*/
+target:"1.8",
+/*是否debug信息到控制台*/
+debug:true
+}

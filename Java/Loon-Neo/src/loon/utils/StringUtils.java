@@ -1946,7 +1946,7 @@ final public class StringUtils extends CharUtils {
 	 * @param v
 	 * @return
 	 */
-	public final static String reverse(final CharSequence v) {
+	public static String reverse(final CharSequence v) {
 		if (size(v) <= 0) {
 			return "";
 		}
@@ -1975,10 +1975,48 @@ final public class StringUtils extends CharUtils {
 	 * @param i
 	 * @return
 	 */
-	public final static char charAt(final CharSequence v, final int i) {
+	public static char charAt(final CharSequence v, final int i) {
 		return size(v) <= i ? 0 : v.charAt(i);
 	}
+	
+	/**
+	 * 格式化回车符，使字符串中只出现'\n'
+	 * 
+	 * @param src
+	 * @return
+	 */
+	public static String formatCRLF(String src)
+	{
+		if(isEmpty(src)){
+			return "";
+		}
+		int pos = src.indexOf("\r");
+		if (pos != -1)
+		{
+			int len = src.length();
+			StringBuilder buffer = new StringBuilder();
+			int lastPos = 0;
+			while (pos != -1)
+			{
+				buffer.append(src, lastPos, pos);
+				if (pos == len - 1 || src.charAt(pos + 1) != '\n'){
+					buffer.append('\n');
+				}
+				lastPos = pos + 1;
+				if (lastPos >= len){
+					break;
+				}
+				pos = src.indexOf("\r", lastPos);
+			}
+			if (lastPos < len){
+				buffer.append(src, lastPos, len);
+			}
 
+			src = buffer.toString();
+		}
+		return src;
+	}
+	
 	/**
 	 * 返回指定对象的字符串信息
 	 * 

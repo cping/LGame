@@ -38,6 +38,7 @@ import loon.utils.LayerSorter;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
+import loon.utils.reply.Callback;
 
 /**
  * 精灵精灵总父类，用来注册，控制，以及渲染所有精灵精灵（所有默认【不支持】触屏的精灵，被置于此。不过，
@@ -1428,8 +1429,25 @@ public class Sprites implements IArray, Visible, LRelease {
 		return _margin;
 	}
 
+	/**
+	 * 遍历Sprites中所有精灵对象并反馈给Callback
+	 * 
+	 * @param callback
+	 */
+	public Sprites forChildren(Callback<ISprite> callback) {
+		if (callback == null) {
+			return this;
+		}
+		for (ISprite child : this._sprites) {
+			if (child != null) {
+				callback.onSuccess(child);
+			}
+		}
+		return this;
+	}
+
 	public String getName() {
-		return _sprites_name;
+		return this._sprites_name;
 	}
 
 	@Override

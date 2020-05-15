@@ -15,8 +15,10 @@ import loon.component.Actor;
 import loon.component.ActorLayer;
 import loon.component.LLayer;
 import loon.component.LPaper;
+import loon.event.FrameLoopEvent;
 import loon.event.GameTouch;
 import loon.font.LFont;
+import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.utils.ArrayMap;
 import loon.utils.ConfigReader;
@@ -30,9 +32,8 @@ public class TDMain extends Screen {
 
 	private Field2D field;
 
-	private String[] turrets = new String[] { "assets/bulletTurret.png",
-			"assets/bombTurret.png", "assets/poisonTurret.png",
-			"assets/laserTurret.png", "assets/bullet.png" };
+	private String[] turrets = new String[] { "assets/bulletTurret.png", "assets/bombTurret.png",
+			"assets/poisonTurret.png", "assets/laserTurret.png", "assets/bullet.png" };
 
 	/**
 	 * 子弹用类
@@ -95,8 +96,7 @@ public class TDMain extends Screen {
 					this.x += MathUtils.cos(angle);
 					this.y += MathUtils.sin(angle);
 				}
-				this.setLocation(
-						this.x + (field.getTileWidth() - this.getWidth()) / 2,
+				this.setLocation(this.x + (field.getTileWidth() - this.getWidth()) / 2,
 						this.y + (field.getTileHeight() - this.getHeight()) / 2);
 				break;
 			case 1:
@@ -127,9 +127,7 @@ public class TDMain extends Screen {
 
 				return;
 				// 超出游戏画面时删除自身
-			} else if (this.getX() <= 12
-					|| this.getX() >= this.getLLayer().getWidth() - 12
-					|| this.getY() <= 12
+			} else if (this.getX() <= 12 || this.getX() >= this.getLLayer().getWidth() - 12 || this.getY() <= 12
 					|| this.getY() >= this.getLLayer().getHeight() - 12) {
 				removeFlag = true;
 				this.getLLayer().removeObject(this);
@@ -174,6 +172,8 @@ public class TDMain extends Screen {
 				public void stop(ActionBind o) {
 					// 旋转90度
 					rotateTo(90);
+					// 透明度还原
+					setAlpha(1f);
 				}
 
 			});
@@ -182,16 +182,14 @@ public class TDMain extends Screen {
 
 		public void draw(GLEx g) {
 			if (selected) {
-				g.saveBrush();
+				int tint = g.color();
 				g.setColor(255, 0, 0, 100);
-				g.fillOval(-(range * 2 - field.getTileWidth()) / 2,
-						-(range * 2 - field.getTileHeight()) / 2,
+				g.fillOval(-(range * 2 - field.getTileWidth()) / 2, -(range * 2 - field.getTileHeight()) / 2,
 						this.range * 2 - 1, this.range * 2 - 1);
 				g.setColor(LColor.red);
-				g.drawOval(-(range * 2 - field.getTileWidth()) / 2,
-						-(range * 2 - field.getTileHeight()) / 2,
+				g.drawOval(-(range * 2 - field.getTileWidth()) / 2, -(range * 2 - field.getTileHeight()) / 2,
 						this.range * 2 - 1, this.range * 2 - 1);
-				g.restoreBrush();
+				g.setTint(tint);
 			}
 		}
 
@@ -201,12 +199,29 @@ public class TDMain extends Screen {
 			// 当敌人存在
 			if (!es.isEmpty()) {
 				Enemy target = (Enemy) es.get(0);
-				// 删除原有炮台事件
-				removeActionEvents();
+
+				// 添加一个循环体,0.5秒循环一次
+				addFrameLoop(0.5f, new FrameLoopEvent() {
+
+					@Override
+					public void invoke(long elapsedTime, Screen e) {
+						// 当炮台完全显示出来后
+						if ((getAlpha() == 1f)) {
+							// 删除原有炮台事件
+							removeActionEvents();
+							// 删除这个循环体
+							kill();
+						}
+					}
+
+					@Override
+					public void completed() {
+
+					}
+				});
+
 				// 旋转炮台对准Enemy坐标
-				setRotation(MathUtils.toDegrees(MathUtils.atan2(
-						(target.getY() - this.getY()),
-						(target.getX() - this.getX()))));
+				setRotation(Field2D.rotation(Vector2f.at(this.getX(), this.getY()), Vector2f.at(target.getX(), target.getY())));
 
 			}
 			// 延迟炮击
@@ -219,12 +234,12 @@ public class TDMain extends Screen {
 				Bullet bullet = new Bullet(0, turrets[4], this.getRotation(), 2);
 
 				// 计算炮击点
-				int x = MathUtils.round(MathUtils.cos(MathUtils.toRadians(this
-						.getRotation())) * (float) bullet.getWidth() * 2)
+				int x = MathUtils
+						.round(MathUtils.cos(MathUtils.toRadians(this.getRotation())) * (float) bullet.getWidth() * 2)
 						+ this.x();
 
-				int y = MathUtils.round(MathUtils.sin(MathUtils.toRadians(this
-						.getRotation())) * (float) bullet.getHeight() * 2)
+				int y = MathUtils
+						.round(MathUtils.sin(MathUtils.toRadians(this.getRotation())) * (float) bullet.getHeight() * 2)
 						+ this.y();
 
 				// 注入炮弹到Layer
@@ -253,13 +268,11 @@ public class TDMain extends Screen {
 		// 使用精灵StatusBar充当血槽
 		protected StatusBar hpBar;
 
-		public Enemy(String fileName, int sx, int sy, int ex, int ey,
-				int speed, int hp) {
+		public Enemy(String fileName, int sx, int sy, int ex, int ey, int speed, int hp) {
 			this.setObjectFlag("Enemy");
 			this.setDelay(300);
 			this.setImage(fileName);
-			this.hpBar = new StatusBar(hp, hp, (this.width() - 25) / 2,
-					this.height() + 5, 25, 5);
+			this.hpBar = new StatusBar(hp, hp, (this.width() - 25) / 2, this.height() + 5, 25, 5);
 			this.startX = sx;
 			this.startY = sy;
 			this.endX = ex;
@@ -309,10 +322,8 @@ public class TDMain extends Screen {
 		public void addLayer(final ActorLayer layer) {
 
 			// 坐标矫正，用以让角色居于瓦片中心
-			final int offsetX = (getLLayer().getField2D().getTileWidth() - this
-					.width()) / 2;
-			final int offsetY = (getLLayer().getField2D().getTileWidth() - this
-					.height()) / 2;
+			final int offsetX = (getLLayer().getField2D().getTileWidth() - this.width()) / 2;
+			final int offsetY = (getLLayer().getField2D().getTileWidth() - this.height()) / 2;
 			// 初始化角色在Layer中坐标
 			setLocation(startX + offsetX, startY + offsetY);
 			// 命令角色向指定坐标自行移动(参数为false为四方向寻径，为true时八方向)，并返回移动控制器
@@ -408,8 +419,7 @@ public class TDMain extends Screen {
 				public void paint(GLEx g) {
 					if (selectTurret == 0) {
 						g.setColor(LColor.red);
-						g.drawRect(2, 2, this.getWidth() - 4,
-								this.getHeight() - 4);
+						g.drawRect(2, 2, this.getWidth() - 4, this.getHeight() - 4);
 						g.resetColor();
 					}
 				}
@@ -424,8 +434,7 @@ public class TDMain extends Screen {
 				public void paint(GLEx g) {
 					if (selectTurret == 1) {
 						g.setColor(LColor.red);
-						g.drawRect(2, 2, this.getWidth() - 4,
-								this.getHeight() - 4);
+						g.drawRect(2, 2, this.getWidth() - 4, this.getHeight() - 4);
 						g.resetColor();
 					}
 				}
@@ -440,8 +449,7 @@ public class TDMain extends Screen {
 				public void paint(GLEx g) {
 					if (selectTurret == 2) {
 						g.setColor(LColor.red);
-						g.drawRect(2, 2, this.getWidth() - 4,
-								this.getHeight() - 4);
+						g.drawRect(2, 2, this.getWidth() - 4, this.getHeight() - 4);
 						g.resetColor();
 					}
 				}
@@ -456,8 +464,7 @@ public class TDMain extends Screen {
 				public void paint(GLEx g) {
 					if (selectTurret == 3) {
 						g.setColor(LColor.red);
-						g.drawRect(2, 2, this.getWidth() - 4,
-								this.getHeight() - 4);
+						g.drawRect(2, 2, this.getWidth() - 4, this.getHeight() - 4);
 						g.resetColor();
 					}
 				}
@@ -524,8 +531,7 @@ public class TDMain extends Screen {
 			ConfigReader config = ConfigReader.getInstance("assets/map.txt");
 
 			// 为Layer加入简单的2D地图背景，瓦片大小32x32，以rock图片铺底
-			setField2DBackground(config.getField2D("test", 32, 32), pathMap,
-					"assets/rock.png");
+			setField2DBackground(config.getField2D("test", 32, 32), pathMap, "assets/rock.png");
 
 			TDMain.this.field = getField2D();
 
@@ -548,25 +554,20 @@ public class TDMain extends Screen {
 					// 根据点击next(增加敌人)的次数变换敌人样式
 					switch (count) {
 					case 0:
-						enemy = new Enemy("assets/enemy.png", startX, startY,
-								endX, endY, 2, 4);
+						enemy = new Enemy("assets/enemy.png", startX, startY, endX, endY, 2, 4);
 						break;
 					case 1:
-						enemy = new Enemy("assets/fastEnemy.png", startX,
-								startY, endX, endY, 4, 6);
+						enemy = new Enemy("assets/fastEnemy.png", startX, startY, endX, endY, 4, 6);
 						break;
 					case 2:
-						enemy = new Enemy("assets/smallEnemy.png", startX,
-								startY, endX, endY, 3, 10);
+						enemy = new Enemy("assets/smallEnemy.png", startX, startY, endX, endY, 3, 10);
 						break;
 					case 3:
-						enemy = new Enemy("assets/bigEnemy.png", startX,
-								startY, endX, endY, 1, 16);
+						enemy = new Enemy("assets/bigEnemy.png", startX, startY, endX, endY, 1, 16);
 						break;
 					default:
 						count = 0;
-						enemy = new Enemy("assets/enemy.png", startX, startY,
-								endX, endY, 2, 2);
+						enemy = new Enemy("assets/enemy.png", startX, startY, endX, endY, 2, 2);
 						break;
 					}
 					addObject(enemy);
@@ -587,12 +588,9 @@ public class TDMain extends Screen {
 			int newX = x / field.getTileWidth();
 			int newY = y / field.getTileHeight();
 			// 当选中炮塔(参数不为-1)且数组地图参数为-1(不可通过)并且无其它角色在此时
-			if ((o = getClickActor()) == null && selectTurret != -1
-					&& field.getType(newY, newX) == -1) {
+			if ((o = getClickActor()) == null && selectTurret != -1 && field.getTileType(newX, newY) == -1) {
 				// 添加炮塔
-				addObject(new Turret(turrets[selectTurret]),
-						newX * field.getTileWidth(),
-						newY * field.getTileHeight());
+				addObject(new Turret(turrets[selectTurret]), newX * field.getTileWidth(), newY * field.getTileHeight());
 			}
 			if (o != null && o instanceof Turret) {
 				((Turret) o).selected = true;
@@ -612,7 +610,6 @@ public class TDMain extends Screen {
 	}
 
 	public void onLoad() {
-
 		// 构建地图用Layer
 		MapLayer layer = new MapLayer();
 		layer.setAutoDestroy(true);
@@ -627,7 +624,6 @@ public class TDMain extends Screen {
 		menu.setY(0);
 		// 添加menu到Screen
 		add(menu);
-
 	}
 
 	@Override
@@ -689,5 +685,4 @@ public class TDMain extends Screen {
 		// TODO Auto-generated method stub
 
 	}
-
 }

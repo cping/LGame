@@ -46,6 +46,28 @@ public class LColor implements Serializable {
 	public static final int TRANSPARENT = 0xFF000000;
 
 	/**
+	 * 转换颜色为RGB格式的Color
+	 * 
+	 * @param value
+	 * @return
+	 */
+	public static final LColor fromRGB(int value)
+	{
+		return new LColor(((value >> 16) & 0xFF), ((value >> 8) & 0xFF), (value & 0xFF), 255);
+	}
+
+	/**
+	 * 转换颜色为RGBA格式的Color
+	 * 
+	 * @param value
+	 * @return
+	 */
+	public static final LColor fromRGBA(int value)
+	{
+		return new LColor(((value >> 16) & 0xFF), ((value >> 8) & 0xFF), (value & 0xFF), ((value >> 24) & 0xFF));
+	}
+	
+	/**
 	 * 解码字符串为color对象
 	 * 
 	 * @param colorString
@@ -181,7 +203,7 @@ public class LColor implements Serializable {
 	}
 
 	public static final int rgb(int r, int g, int b) {
-		return argb(0xff, r, g, b);
+		return argb(0xFF, r, g, b);
 	}
 
 	public static final int alpha(int color, float a) {
@@ -923,9 +945,9 @@ public class LColor implements Serializable {
 	 * @return
 	 */
 	public static final int getRGB(int pixels) {
-		int r = (pixels >> 16) & 0xff;
-		int g = (pixels >> 8) & 0xff;
-		int b = pixels & 0xff;
+		int r = (pixels >> 16) & 0xFF;
+		int g = (pixels >> 8) & 0xFF;
+		int b = pixels & 0xFF;
 		return rgb(r, g, b);
 	}
 
@@ -959,7 +981,7 @@ public class LColor implements Serializable {
 	 * @return
 	 */
 	public static final int getRed(int color) {
-		return (color >> 16) & 0xff;
+		return (color >> 16) & 0xFF;
 	}
 
 	/**
@@ -969,7 +991,7 @@ public class LColor implements Serializable {
 	 * @return
 	 */
 	public static final int getGreen(int color) {
-		return (color >> 8) & 0xff;
+		return (color >> 8) & 0xFF;
 	}
 
 	/**
@@ -979,7 +1001,7 @@ public class LColor implements Serializable {
 	 * @return
 	 */
 	public static final int getBlue(int color) {
-		return color & 0xff;
+		return color & 0xFF;
 	}
 
 	/**
@@ -995,9 +1017,9 @@ public class LColor implements Serializable {
 		} else if (a == 255) {
 			return argbColor;
 		} else {
-			int r = (argbColor >> 16) & 0xff;
-			int g = (argbColor >> 8) & 0xff;
-			int b = argbColor & 0xff;
+			int r = (argbColor >> 16) & 0xFF;
+			int g = (argbColor >> 8) & 0xFF;
+			int b = argbColor & 0xFF;
 			r = (a * r + 127) / 255;
 			g = (a * g + 127) / 255;
 			b = (a * b + 127) / 255;
@@ -1007,17 +1029,17 @@ public class LColor implements Serializable {
 
 	public static final int[] getRGBs(final int pixel) {
 		int[] rgbs = new int[3];
-		rgbs[0] = (pixel >> 16) & 0xff;
-		rgbs[1] = (pixel >> 8) & 0xff;
-		rgbs[2] = (pixel) & 0xff;
+		rgbs[0] = (pixel >> 16) & 0xFF;
+		rgbs[1] = (pixel >> 8) & 0xFF;
+		rgbs[2] = (pixel) & 0xFF;
 		return rgbs;
 	}
 
 	public static final int[] getRGBAs(final int pixel) {
 		int[] rgbas = new int[4];
-		rgbas[0] = (pixel >> 16) & 0xff;
-		rgbas[1] = (pixel >> 8) & 0xff;
-		rgbas[2] = (pixel) & 0xff;
+		rgbas[0] = (pixel >> 16) & 0xFF;
+		rgbas[1] = (pixel >> 8) & 0xFF;
+		rgbas[2] = (pixel) & 0xFF;
 		rgbas[3] = pixel >>> 24;
 		return rgbas;
 	}
@@ -1069,10 +1091,10 @@ public class LColor implements Serializable {
 	}
 
 	public static final String cssColorString(int color) {
-		double a = ((color >> 24) & 0xff) / 255.0;
-		int r = (color >> 16) & 0xff;
-		int g = (color >> 8) & 0xff;
-		int b = (color >> 0) & 0xff;
+		double a = ((color >> 24) & 0xFF) / 255.0;
+		int r = (color >> 16) & 0xFF;
+		int g = (color >> 8) & 0xFF;
+		int b = (color >> 0) & 0xFF;
 		return "rgba(" + r + "," + g + "," + b + "," + a + ")";
 	}
 

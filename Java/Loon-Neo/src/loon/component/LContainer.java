@@ -37,6 +37,7 @@ import loon.utils.IArray;
 import loon.utils.LayerSorter;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
+import loon.utils.reply.Callback;
 
 /**
  * UI组件的上级类,作为容器可以把多个LComponent注入一个LContainer
@@ -1190,6 +1191,23 @@ public abstract class LContainer extends LComponent implements IArray {
 			}
 		}
 		return _margin;
+	}
+
+	/**
+	 * 遍历LContainer中所有组件对象并反馈给Callback
+	 * 
+	 * @param callback
+	 */
+	public LContainer forChildren(Callback<LComponent> callback) {
+		if (callback == null) {
+			return this;
+		}
+		for (LComponent child : this._childs) {
+			if (child != null) {
+				callback.onSuccess(child);
+			}
+		}
+		return this;
 	}
 
 	@Override

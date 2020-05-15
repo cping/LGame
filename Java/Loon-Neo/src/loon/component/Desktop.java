@@ -40,6 +40,7 @@ import loon.opengl.GLEx;
 import loon.utils.CollectionUtils;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
+import loon.utils.reply.Callback;
 
 /**
  * 桌面组件总父类，用来注册，控制，以及渲染所有桌面组件（所有默认支持触屏的组件，被置于此）
@@ -978,7 +979,7 @@ public class Desktop implements Visible, LRelease {
 		return this;
 	}
 
-	public void resize() {
+	public Desktop resize() {
 		this.isClicked = false;
 		this.hoverComponent = null;
 		this.selectedComponent = null;
@@ -986,8 +987,16 @@ public class Desktop implements Visible, LRelease {
 		if (contentPane != null) {
 			contentPane.processResize();
 		}
+		return this;
 	}
-
+	
+	public Desktop forChildren(Callback<LComponent> callback) {
+		if (contentPane != null) {
+			contentPane.forChildren(callback);
+		}
+		return this;
+	}
+	
 	/**
 	 * 删除符合指定条件的组件并返回操作的集合
 	 * 

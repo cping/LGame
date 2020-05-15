@@ -103,6 +103,7 @@ import loon.utils.TArray;
 import loon.utils.processes.GameProcess;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
+import loon.utils.reply.Callback;
 import loon.utils.reply.Closeable;
 import loon.utils.reply.Port;
 import loon.utils.res.ResourceLocal;
@@ -4237,19 +4238,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return set(getScreenAction(), false);
 	}
 
-	public abstract void resume();
-
-	public abstract void pause();
-
-	public void stop() {
-	}// noop
-
 	/**
-	 * 释放函数内资源
+	 * 创建一个针对此Screen的组件控制器
 	 * 
+	 * @return
 	 */
-	public abstract void close();
-
 	public UIControls createUIControls() {
 		if (desktop != null) {
 			return desktop.createUIControls();
@@ -4271,6 +4264,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return new UIControls();
 	}
 
+	/**
+	 * 插找桌面组件名包含在此序列中的组件控制器
+	 * 
+	 * @param name
+	 * @return
+	 */
 	public UIControls findNames(String... name) {
 		if (desktop != null) {
 			return desktop.findNamesToUIControls(name);
@@ -4278,6 +4277,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return new UIControls();
 	}
 
+	/**
+	 * 插找桌面组件名不包含在此序列中的组件控制器
+	 * 
+	 * @param name
+	 * @return
+	 */
 	public UIControls findNotNames(String... name) {
 		if (desktop != null) {
 			return desktop.findNotNamesToUIControls(name);
@@ -4285,6 +4290,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return new UIControls();
 	}
 
+	/**
+	 * 插找桌面组件Tag包含在此序列中的组件控制器
+	 * 
+	 * @param o
+	 * @return
+	 */
 	public UIControls findTags(Object... o) {
 		if (desktop != null) {
 			return desktop.findTagsToUIControls(o);
@@ -4292,6 +4303,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return new UIControls();
 	}
 
+	/**
+	 * 插找桌面组件Tag不包含在此序列中的组件控制器
+	 * 
+	 * @param o
+	 * @return
+	 */
 	public UIControls findNotTags(Object... o) {
 		if (desktop != null) {
 			return desktop.findNotTagsToUIControls(o);
@@ -4299,6 +4316,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return new UIControls();
 	}
 
+	/**
+	 * 创建一个针对当前Screen的精灵控制器
+	 * 
+	 * @return
+	 */
 	public SpriteControls createSpriteControls() {
 		if (sprites != null) {
 			return sprites.createSpriteControls();
@@ -4306,6 +4328,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return new SpriteControls();
 	}
 
+	/**
+	 * 查找在此序列中的精灵控制器
+	 * 
+	 * @param names
+	 * @return
+	 */
 	public SpriteControls findSpriteNames(String... names) {
 		if (sprites != null) {
 			return sprites.findNamesToSpriteControls(names);
@@ -4313,6 +4341,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return new SpriteControls();
 	}
 
+	/**
+	 * 查找不在此序列中的精灵控制器
+	 * 
+	 * @param names
+	 * @return
+	 */
 	public SpriteControls findSpriteNotNames(String... names) {
 		if (sprites != null) {
 			return sprites.findNotNamesToSpriteControls(names);
@@ -4321,7 +4355,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	/**
-	 * 查找所有【包含】指定tag的精灵
+	 * 查找所有【包含】指定tag的精灵控制器
 	 * 
 	 * @param o
 	 * @return
@@ -4334,7 +4368,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	/**
-	 * 查找所有【不包含】指定tag的精灵
+	 * 查找所有【不包含】指定tag的精灵控制器
 	 * 
 	 * @param o
 	 * @return
@@ -5247,6 +5281,32 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	/**
+	 * 遍历所有注入Screen的精灵
+	 * 
+	 * @param callback
+	 * @return
+	 */
+	public Screen forSpriteChildren(Callback<ISprite> callback) {
+		if (this.sprites != null) {
+			this.sprites.forChildren(callback);
+		}
+		return this;
+	}
+
+	/**
+	 * 遍历所有注入Screen的组件
+	 * 
+	 * @param callback
+	 * @return
+	 */
+	public Screen forComponentChildren(Callback<LComponent> callback) {
+		if (this.desktop != null) {
+			this.desktop.forChildren(callback);
+		}
+		return this;
+	}
+	
+	/**
 	 * 获得当前游戏进行的状态
 	 * 
 	 * @return
@@ -5271,6 +5331,28 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return sbr.toString();
 	}
 
+	/**
+	 * Screen挂起时调用
+	 */
+	public abstract void resume();
+
+	/**
+	 * Screen暂停时调用
+	 */
+	public abstract void pause();
+
+	/**
+	 * Screen停止时调用
+	 */
+	public void stop() {
+	}// noop
+
+	/**
+	 * 释放函数内资源
+	 * 
+	 */
+	public abstract void close();
+	
 	/**
 	 * 注销Screen
 	 */

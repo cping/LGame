@@ -309,7 +309,7 @@ public class ArrayByte implements IArray, LRelease {
 		position += length;
 		return length;
 	}
-
+	
 	public long skip(long n) {
 		long remaining = n;
 		int nr;

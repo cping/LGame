@@ -14,6 +14,8 @@ public class TestTD {
 		// 原始大小
 		setting.width = 480;
 		setting.height = 320;
+		setting.width_zoom = 640;
+		setting.height_zoom = 480;
 		setting.isLogo = true;
 		setting.logoPath = "loon_logo.png";
 		setting.isFPS = true;
