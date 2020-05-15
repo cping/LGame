@@ -52,9 +52,9 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	}
 
-	private Margin _margin;
-
 	protected ISprite[] _sprites;
+
+	private Margin _margin;
 
 	private float _scrollX;
 
@@ -193,10 +193,19 @@ public class Sprites implements IArray, Visible, LRelease {
 	 * 
 	 */
 	public void sortSprites() {
-		if (_closed) {
+		if (this._closed) {
 			return;
 		}
-		spriteSorter.sort(this._sprites);
+		if (this._size <= 1) {
+			return;
+		}
+		if (this._sprites.length != this._size) {
+			ISprite[] sprs = CollectionUtils.copyOf(this._sprites, this._size);
+			spriteSorter.sort(sprs);
+			this._sprites = sprs;
+		} else {
+			spriteSorter.sort(this._sprites);
+		}
 	}
 
 	/**
@@ -239,9 +248,11 @@ public class Sprites implements IArray, Visible, LRelease {
 		ISprite[] snapshot = _sprites;
 		for (int i = snapshot.length - 1; i >= 0; i--) {
 			ISprite child = snapshot[i];
-			RectBox rect = child.getCollisionBox();
-			if (rect != null && rect.contains(x, y)) {
-				return child;
+			if (child != null) {
+				RectBox rect = child.getCollisionBox();
+				if (rect != null && rect.contains(x, y)) {
+					return child;
+				}
 			}
 		}
 		return null;
@@ -260,9 +271,11 @@ public class Sprites implements IArray, Visible, LRelease {
 		ISprite[] snapshot = _sprites;
 		for (int i = snapshot.length - 1; i >= 0; i--) {
 			ISprite child = snapshot[i];
-			String childName = child.getName();
-			if (name.equals(childName)) {
-				return child;
+			if (child != null) {
+				String childName = child.getName();
+				if (name.equals(childName)) {
+					return child;
+				}
 			}
 		}
 		return null;
@@ -625,10 +638,13 @@ public class Sprites implements IArray, Visible, LRelease {
 		final int size = this._size;
 		for (String name : names) {
 			for (int i = size - 1; i > -1; i--) {
-				if (this._sprites[i] instanceof ISprite) {
-					ISprite sp = (ISprite) this._sprites[i];
-					if (!name.equals(sp.getName())) {
-						list.add(sp);
+				ISprite child = this._sprites[i];
+				if (child != null) {
+					if (child instanceof ISprite) {
+						ISprite sp = (ISprite) child;
+						if (!name.equals(sp.getName())) {
+							list.add(sp);
+						}
 					}
 				}
 			}
@@ -997,7 +1013,7 @@ public class Sprites implements IArray, Visible, LRelease {
 		boolean listerner = (sprListerner != null);
 		for (int i = _size - 1; i > -1; i--) {
 			ISprite child = _sprites[i];
-			if (child.isVisible()) {
+			if (child != null && child.isVisible()) {
 				try {
 					child.update(elapsedTime);
 					if (listerner) {
@@ -1179,7 +1195,7 @@ public class Sprites implements IArray, Visible, LRelease {
 	public SpriteControls controls() {
 		return createSpriteControls();
 	}
-	
+
 	public SpriteControls findNamesToSpriteControls(String... names) {
 		if (_closed) {
 			return new SpriteControls();

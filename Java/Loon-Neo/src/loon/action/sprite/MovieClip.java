@@ -123,7 +123,7 @@ public class MovieClip extends DisplayObject {
 		}
 		return null;
 	}
-
+	
 	public MovieClip gotoAndStop(String label) {
 		if (null != _sheet) {
 			TextureData ssd = _sheet.getSSD(label);

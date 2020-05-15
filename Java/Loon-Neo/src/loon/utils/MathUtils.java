@@ -647,11 +647,15 @@ public class MathUtils {
 	}
 
 	public static final float mag(float a, float b) {
-		return (float) Math.sqrt(a * a + b * b);
+		return sqrt(a * a + b * b);
 	}
 
 	public static final float mag(float a, float b, float c) {
-		return (float) Math.sqrt(a * a + b * b + c * c);
+		return sqrt(a * a + b * b + c * c);
+	}
+
+	public static final float median(float a, float b, float c) {
+		return (a <= b) ? ((b <= c) ? b : ((a < c) ? c : a)) : ((a <= c) ? a : ((b < c) ? c : b));
 	}
 
 	public static final float distance(float x1, float x2) {

@@ -497,6 +497,15 @@ public class Animation implements IArray, LRelease {
 		return setDelay(d);
 	}
 
+	public Animation setPlaySettings(int start, int end, int count)
+	{
+		this.reset();
+		this.currentFrameIndex = start;
+		this.length = end;
+		this.loopCount = count;
+		return this;
+	}
+	
 	public long getDelay() {
 		return intervalTime.getDelay();
 	}

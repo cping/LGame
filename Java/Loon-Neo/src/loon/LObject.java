@@ -34,9 +34,13 @@ import loon.opengl.BlendMode;
 import loon.utils.MathUtils;
 import loon.utils.StringKeyValue;
 import loon.utils.StringUtils;
+import loon.utils.reply.Callback;
 import loon.utils.reply.Var;
 import loon.utils.reply.VarView;
 
+/**
+ * 一个通用的Loon对象,除Screen外,Loon中所有可移动并展示的对象都继承于此类
+ */
 public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 
 	private static int _SYS_GLOBAL_SEQNO = 0;
@@ -441,10 +445,20 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 		return MathUtils.abs(getLayer());
 	}
 
+	/**
+	 * 上一个经过的X坐标
+	 * 
+	 * @return
+	 */
 	public float getPreviousX() {
 		return _previous_location.x;
 	}
 
+	/**
+	 * 上一个经过的Y坐标
+	 * 
+	 * @return
+	 */
 	public float getPreviousY() {
 		return _previous_location.y;
 	}
@@ -457,10 +471,18 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 		return _previous_location.y();
 	}
 
+	/**
+	 * 判定当前坐标是否发生了移动
+	 * 
+	 * @return
+	 */
 	public boolean hasMoved() {
 		return (_previous_location.x != _location.x || _previous_location.y != _location.y);
 	}
 
+	/**
+	 * 同步保存上一个移动地址
+	 */
 	protected void syncPreviousPos() {
 		_previous_location.set(_location);
 	}
@@ -725,6 +747,72 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 
 	public void bottomRightOn(final LObject<?> object) {
 		bottomRightOn(object, getWidth(), getHeight());
+	}
+
+	/**
+	 * 调用时以指定速度向指定X轴移动(到目标X后停止)
+	 * 
+	 * 注意,此函数没有调用缓动的moveTo方法,只有调用时才会累加移动,不能自动累加
+	 * 
+	 * @param destX
+	 * @param speed
+	 * @return
+	 */
+	public final LObject<T> moveToX(float destX, float speed) {
+		if (this.getX() == destX) {
+			return this;
+		}
+		int dir = (this.getX() > destX) ? -1 : 1;
+		this.setX(this.getX() + speed * dir);
+		if (dir == 1 && this.getX() >= destX || dir == -1 && this.getX() <= destX) {
+			this.setX(destX);
+		}
+		return this;
+	}
+
+	/**
+	 * 调用时以指定速度向指定Y轴移动(到目标Y后停止)
+	 * 
+	 * 注意,此函数没有调用缓动的moveTo方法,只有调用时才会累加移动,不能自动累加
+	 * 
+	 * @param destY
+	 * @param speed
+	 * @return
+	 */
+	public final LObject<T> moveToY(float destY, float speed) {
+		if (this.getY() == destY) {
+			return this;
+		}
+		int dir = (this.getY() > destY) ? -1 : 1;
+		this.setY(this.getY() + speed * dir);
+		if (dir == 1 && this.getY() >= destY || dir == -1 && this.getY() <= destY) {
+			this.setY(destY);
+		}
+		return this;
+	}
+
+	/**
+	 * 调用时以指定速度向指定方向移动(到目标后停止),移动结束后Callback自身
+	 * 
+	 * 注意,此函数没有调用缓动的moveTo方法,只有调用时才会累加移动,不能自动累加
+	 * 
+	 * @param destX
+	 * @param destY
+	 * @param speed
+	 * @param callback
+	 * @return
+	 */
+	public final LObject<T> moveTo(float destX, float destY, float speed, Callback<LObject<T>> callback) {
+		if (this.getX() == destX && this.getY() == destY && callback != null) {
+			callback.onSuccess(this);
+			return this;
+		}
+		this.moveToX(destX, speed);
+		this.moveToY(destY, speed);
+		if (this.getX() == destX && this.getY() == destY && callback != null) {
+			callback.onSuccess(this);
+		}
+		return this;
 	}
 
 	public final void setCollisionData(Object data) {

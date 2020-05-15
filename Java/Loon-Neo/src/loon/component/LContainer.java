@@ -721,7 +721,10 @@ public abstract class LContainer extends LComponent implements IArray {
 	}
 
 	public void sortComponents() {
-		if (_component_isClose) {
+		if (this._component_isClose) {
+			return;
+		}
+		if (this.childCount <= 1) {
 			return;
 		}
 		compSorter.sort(this._childs);
@@ -1166,7 +1169,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	public UIControls controls() {
 		return createUIControls();
 	}
-	
+
 	public Margin margin(boolean vertical, float left, float top, float right, float bottom) {
 		float size = vertical ? getHeight() : getWidth();
 		if (_component_isClose) {

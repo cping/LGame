@@ -65,9 +65,9 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	protected boolean _repaintDraw = false;
 
-	//是否传递本身偏移设定数据到自绘部分
+	// 是否传递本身偏移设定数据到自绘部分
 	protected boolean _repaintAutoOffset = false;
-	
+
 	protected TArray<IEntity> _childrens;
 
 	protected RectBox _shear;
@@ -1394,7 +1394,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	public void setRepaintAutoOffset(boolean autoOffset) {
 		this._repaintAutoOffset = autoOffset;
 	}
-	
+
 	public boolean isClosed() {
 		return isDisposed();
 	}

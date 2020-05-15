@@ -22,7 +22,6 @@ public class LayerSorter<T> extends InsertionSorter<T> {
 						return -((ZIndex) ea).getLayer();
 					}
 				}
-				return 0;
 			}
 			if (ea == null && eb != null) {
 				if (positive) {
@@ -34,7 +33,6 @@ public class LayerSorter<T> extends InsertionSorter<T> {
 						return -((ZIndex) eb).getLayer();
 					}
 				}
-				return 0;
 			}
 			if (ea instanceof ZIndex && eb instanceof ZIndex) {
 				if (positive) {

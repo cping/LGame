@@ -158,6 +158,7 @@ public class SLGTest extends Stage {
 			// 让角色坐标随地图偏移
 			this.setOffset(gameMap.getOffset());
 			this.setRepaintAutoOffset(true);
+			this.setZ(10000);
 			this.maxX = gameMap.getTileWidth();
 			this.maxY = gameMap.getTileHeight();
 			this.tileSize = tileSize;
@@ -631,7 +632,7 @@ public class SLGTest extends Stage {
 		}
 
 		public float getLeft(Role role, float v) {
-			float x = (role.getX() - role.getWidth() / 2) + v - role.getWidth() ;
+			float x = (role.getX() - role.getWidth() / 2) + v - role.getWidth();
 			return x;
 		}
 
@@ -750,6 +751,7 @@ public class SLGTest extends Stage {
 			this.animate("down");
 			// 让角色坐标随地图偏移
 			this.setOffset(gameMap.getOffset());
+			this.setZ(10);
 			this.team = team;
 			this.action = 2;
 			this.hp = 10;
@@ -933,11 +935,17 @@ public class SLGTest extends Stage {
 			float attackY = enemy.y() + gameMap.getOffsetY() + centerSize;
 			final int khp = random(1, 3);
 
-			add(PixelChopEffect.get(ChopDirection.WNTES, LColor.red, attackX, attackY, 2, centerSize)
-					.setAutoRemoved(true));
+			PixelChopEffect chop = PixelChopEffect.get(ChopDirection.WNTES, LColor.red, attackX, attackY, 2,
+					centerSize);
+			chop.setAutoRemoved(true);
+			chop.setZ(1500);
+			add(chop);
 
 			// 文字上浮
-			add(StringEffect.up(String.valueOf(khp), Vector2f.at(attackX, attackY), LColor.red).setAutoRemoved(true));
+			StringEffect str = StringEffect.up(String.valueOf(khp), Vector2f.at(attackX, attackY), LColor.red);
+			str.setAutoRemoved(true);
+			str.setZ(1500);
+			add(str);
 
 			// 敌人颤抖
 			get(enemy).shakeTo(0.5f).start().setActionListener(new ActionListener() {
@@ -977,7 +985,7 @@ public class SLGTest extends Stage {
 	 * @return
 	 */
 	public Field2D toCurrentMap(boolean player) {
-		//复制二维数组地图
+		// 复制二维数组地图
 		Field2D field = gameMap.getField2D().cpy();
 		if (player) {
 			// 添加敌人数据到地图
@@ -996,19 +1004,33 @@ public class SLGTest extends Stage {
 	 * @param tileY
 	 * @return
 	 */
-	public boolean checkAttackPlayer(int tileX, int tileY) {
-		return checkAttack(tileX, tileY, PLAYER_TEAM);
+	public boolean checkAttackPlayer(Role attacker, int tileX, int tileY) {
+		return checkAttack(attacker, tileX, tileY, PLAYER_TEAM);
 	}
 
-	public boolean checkAttackEnemy(int tileX, int tileY) {
-		return checkAttack(tileX, tileY, ENEMY_TEAM);
+	public boolean checkAttackEnemy(Role attacker, int tileX, int tileY) {
+		return checkAttack(attacker, tileX, tileY, ENEMY_TEAM);
 	}
 
-	public boolean checkAttack(int tileX, int tileY, int team) {
+	public boolean checkAttack(Role attacker, int tileX, int tileY, int team) {
+		PointI attackPos = pixelsToTileMap(attacker.getX(), attacker.getY());
 		for (Role r : unitList) {
 			if (r.team == team) {
 				PointI pos = pixelsToTileMap(r.getX(), r.getY());
-				if (tileX == pos.x && tileY == pos.y) {
+				boolean checkAttacker = false;
+				if (attackPos.x - 1 == tileX && attackPos.y == tileY) {
+					checkAttacker = true;
+				}
+				if (attackPos.x + 1 == tileX && attackPos.y == tileY) {
+					checkAttacker = true;
+				}
+				if (attackPos.x == tileX && attackPos.y - 1 == tileY) {
+					checkAttacker = true;
+				}
+				if (attackPos.x == tileX && attackPos.y + 1 == tileY) {
+					checkAttacker = true;
+				}
+				if (checkAttacker && tileX == pos.x && tileY == pos.y) {
 					return true;
 				}
 			}
@@ -1310,7 +1332,6 @@ public class SLGTest extends Stage {
 		final State menuState = new State(gameTile);
 		add(menuState);
 
-
 		final Menu menu = new Menu("攻击,待机", 0, 0);
 		menu.hide();
 		menu.load();
@@ -1408,7 +1429,7 @@ public class SLGTest extends Stage {
 
 		// 地图不跟随对象滚动
 		gameMap.followAction(null);
-		
+
 		PointI tilePos = pixelsToScrollTileMap(x, y);
 
 		int curTileX = tilePos.x;
@@ -1430,10 +1451,11 @@ public class SLGTest extends Stage {
 				break;
 			case ENEMY_TEAM:
 				if (moveState.isAttacking()) {
+					Role attacker = getRoleIdxObject(roleIndex.result());
 					// 检查攻击范围
-					if (checkAttackEnemy(curTileX, curTileY)) {
+					if (checkAttackEnemy(attacker, curTileX, curTileY)) {
 						// 以索引ID获得敌人并执行攻击
-						attackEnemy(gameRunning, ENEMY_TEAM, moveState, getRoleIdxObject(roleIndex.result()), role);
+						attackEnemy(gameRunning, ENEMY_TEAM, moveState, attacker, role);
 						menuState.hide();
 						menu.hide();
 						moveState.clear();

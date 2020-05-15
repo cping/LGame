@@ -20,7 +20,6 @@
  */
 package loon.action.map;
 
-import loon.LObject;
 import loon.LSystem;
 import loon.Screen;
 import loon.action.ActionBind;
@@ -72,11 +71,95 @@ public class Field2D implements IArray, Config {
 
 	private IntArray allowMove;
 
-	public static final Vector2f shiftPosition(TArray<LObject<?>> items, float x, float y, int direction) {
+	public TArray<PointI> getPosOfLine(int x0, int y0, int x1, int y1) {
+		TArray<PointI> list = new TArray<PointI>();
+		int dx = MathUtils.abs(x1 - x0);
+		int dy = MathUtils.abs(y1 - y0);
+		int sx = (x0 < x1) ? 1 : -1;
+		int sy = (y0 < y1) ? 1 : -1;
+		int err = dx - dy;
+		for (;;) {
+			list.add(new PointI(x0, y1));
+			if ((x0 == x1) && (y0 == y1)) {
+				break;
+			}
+			int e2 = 2 * err;
+			if (e2 > -dy) {
+				err -= dy;
+				x0 += sx;
+			}
+			if (e2 < dx) {
+				err += dx;
+				y0 += sy;
+			}
+		}
+		return list;
+	}
+
+	public TArray<PointI> getPosOfParabola(int x0, int y0, int x1, int y1, int height) {
+		if (x0 == x1) {
+			return this.getPosOfLine(x0, y0, x1, y1);
+		}
+		TArray<PointI> list = new TArray<PointI>();
+		int top_y, start_x, start_y, dest_x, dest_y;
+		top_y = (y0 + y1) / 2 - height;
+		if (y0 > y1) {
+			start_y = y1;
+			dest_y = y0;
+		} else {
+			start_y = y0;
+			dest_y = y1;
+		}
+		if (x0 > x1) {
+			start_x = x1;
+			dest_x = x0;
+		} else {
+			dest_x = x1;
+			start_x = x0;
+		}
+		int k = (int) -MathUtils.sqrt((top_y - start_y) / (top_y - dest_y));
+		int v = (k * dest_x - start_x) / (k - 1);
+		int u = (top_y - start_y) / ((start_x - v) * (start_x - v));
+		for (int x = start_x; x <= dest_x; x++) {
+			int y = top_y - u * (x - v) * (x - v);
+			list.add(new PointI(x, y));
+		}
+		if (x0 > x1) {
+			list = list.reverse();
+		}
+		return list;
+	}
+
+	public TArray<PointI> getPosOfParabola(int x1, int y1, int x2, int y2, int x3, int y3) {
+		TArray<PointI> list = new TArray<PointI>();
+		int a = (x1 * (y3 - y2) - x2 * y3 + y2 * x3 + y1 * (x2 - x3))
+				/ (x1 * ((x3 * x3) - (x2 * x2)) - x2 * (x3 * x3) + (x2 * x2) * x3 + (x1 * x1) * (x2 - x3));
+		int b = -((x1 * x1) * (y3 - y2) - (x2 * x2) * y3 + y2 * (x3 * x3) + y1 * ((x2 * x2) - (x3 * x3)))
+				/ (x1 * ((x3 * x3) - (x2 * x2)) - x2 * (x3 * x3) + (x2 * x2) * x3 + (x1 * x1) * (x2 - x3));
+		int c = (x1 * (y2 * (x3 * x3) - (x2 * x2) * y3) + (x1 * x1) * (x2 * y3 - y2 * x3)
+				+ y1 * ((x2 * x2) * x3 - x2 * (x3 * x3)))
+				/ (x1 * ((x3 * x3) - (x2 * x2)) - x2 * (x3 * x3) + (x2 * x2) * x3 + (x1 * x1) * (x2 - x3));
+		int start_x;
+		int end_x;
+		if (x1 <= x3) {
+			start_x = x1;
+			end_x = x3;
+		} else {
+			start_x = x3;
+			end_x = x1;
+		}
+		for (int x = start_x; x <= end_x; x++) {
+			int y = a * x * x + b * x + c;
+			list.add(new PointI(x, y));
+		}
+		return list;
+	}
+
+	public static final Vector2f shiftPosition(TArray<ActionBind> items, float x, float y, int direction) {
 		return shiftPosition(items, x, y, direction, null);
 	}
 
-	public static final Vector2f shiftPosition(TArray<LObject<?>> items, float x, float y, int direction,
+	public static final Vector2f shiftPosition(TArray<ActionBind> items, float x, float y, int direction,
 			Vector2f output) {
 
 		if (output == null) {
@@ -90,14 +173,14 @@ public class Field2D implements IArray, Config {
 			int i = 0;
 			float cx = 0f;
 			float cy = 0f;
-			LObject<?> cur = null;
+			ActionBind cur = null;
 
 			if (direction == 0) {
 				// 下方坐标转上方坐标
 
 				int len = items.size - 1;
 
-				LObject<?> obj = items.get(len);
+				ActionBind obj = items.get(len);
 				px = obj.getX();
 				py = obj.getY();
 
@@ -118,7 +201,7 @@ public class Field2D implements IArray, Config {
 			} else {
 				// 上方坐标转下方坐标
 
-				LObject<?> obj = items.get(0);
+				ActionBind obj = items.get(0);
 				px = obj.getX();
 				py = obj.getY();
 
@@ -139,7 +222,7 @@ public class Field2D implements IArray, Config {
 			}
 		} else {
 
-			LObject<?> obj = items.get(0);
+			ActionBind obj = items.get(0);
 			px = obj.getX();
 			py = obj.getY();
 			obj.setX(x);
@@ -167,6 +250,13 @@ public class Field2D implements IArray, Config {
 			out.set(nx, ny);
 		}
 		return out;
+	}
+
+	public static final float getRelation(float x, float x1, float x2, float y1, float y2, float scale) {
+		if (scale <= 0f) {
+			scale = 1f;
+		}
+		return ((y2 - y1) / MathUtils.pow((x2 - x1), scale) * 1f) * MathUtils.pow((x - x1), scale) + y1;
 	}
 
 	public static final float rotation(Vector2f source, Vector2f target) {
@@ -292,6 +382,30 @@ public class Field2D implements IArray, Config {
 			type = Config.TDOWN;
 		}
 		return getDirectionToPoint(type, 1).cpy();
+	}
+
+	public static final String toDirection(int id) {
+		switch (id) {
+		default:
+		case Config.EMPTY:
+			return "EMPTY";
+		case Config.LEFT:
+			return "LEFT";
+		case Config.RIGHT:
+			return "RIGHT";
+		case Config.UP:
+			return "UP";
+		case Config.DOWN:
+			return "DOWN";
+		case Config.TLEFT:
+			return "TLEFT";
+		case Config.TRIGHT:
+			return "TRIGHT";
+		case Config.TDOWN:
+			return "TDOWN";
+		case Config.TUP:
+			return "TUP";
+		}
 	}
 
 	private static void insertArrays(int[][] arrays, int index, int px, int py) {
@@ -907,6 +1021,11 @@ public class Field2D implements IArray, Config {
 	public Field2D setTileImpl(Tile tileImpl) {
 		this._tileImpl = tileImpl;
 		return this;
+	}
+
+	public boolean canOffsetTile(float x, float y) {
+		return this._offset.x >= x - width && this._offset.x <= x + width && this._offset.y >= y - height
+				&& this._offset.y <= y + height;
 	}
 
 	public float getIsometricType(float px, float py) {

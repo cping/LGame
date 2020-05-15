@@ -53,6 +53,10 @@ public class PointI implements XY {
 		return new PointF(this.x, this.y);
 	}
 
+	public PointI toRoundPoint() {
+		return new PointI(MathUtils.floor(this.x), MathUtils.floor(this.y));
+	}
+
 	public PointI empty() {
 		return this.set(0, 0);
 	}

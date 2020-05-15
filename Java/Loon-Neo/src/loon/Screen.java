@@ -2004,6 +2004,24 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	/**
+	 * 判断当前Screen是否能后退一页
+	 * 
+	 * @return
+	 */
+	public boolean canScreenBack() {
+		return this._screenIndex > 0;
+	}
+
+	/**
+	 * 判断当前Screen是否能前进一页
+	 * 
+	 * @return
+	 */
+	public boolean canScreenNext() {
+		return this._screenIndex < getScreenCount() - 1;
+	}
+
+	/**
 	 * 返回精灵监听
 	 * 
 	 * @return
@@ -4600,16 +4618,16 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public boolean isTouchMoved(float distance) {
-		return CollisionHelper.isMoved(distance, lastTouchX, lastTouchY, getTouchX(), getTouchY());
+		return CollisionHelper.isMoved(distance, getLastTouchX(), getLastTouchY(), getTouchX(), getTouchY());
 	}
 
 	/**
-	 * 判断当前Touch行为与上次是否存在一定程度的移动(默认间距32个像素)
+	 * 判断当前Touch行为与上次是否存在一定程度的移动(默认间距2个像素判定移动)
 	 * 
 	 * @return
 	 */
 	public boolean isTouchMoved() {
-		return isTouchMoved(32);
+		return isTouchMoved(2f);
 	}
 
 	/**
@@ -4620,7 +4638,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 */
 	public int getTouchDirection(float distance) {
 		if (isTouchMoved(distance)) {
-			return Field2D.getDirection(Vector2f.at(lastTouchX, lastTouchY), Vector2f.at(getTouchX(), getTouchY()));
+			return Field2D.getDirection(Vector2f.at(getLastTouchX(), getLastTouchY()),
+					Vector2f.at(getTouchX(), getTouchY()));
 		}
 		return Config.EMPTY;
 	}
@@ -4631,7 +4650,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public int getTouchDirection() {
-		return getTouchDirection(32);
+		return getTouchDirection(2f);
 	}
 
 	/**
