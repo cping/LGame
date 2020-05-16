@@ -21,7 +21,5 @@
 package loon;
 
 public enum VerticalAlign {
-	TOP,
-	CENTER,
-	BOTTOM;
+	TOP, CENTER, BOTTOM;
 }

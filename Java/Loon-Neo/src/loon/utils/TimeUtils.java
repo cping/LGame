@@ -20,12 +20,35 @@
  */
 package loon.utils;
 
-public class TimeUtils {
+import loon.LSystem;
+
+/**
+ * 一个基础的时间管理用类(基本没有使用java时间库(除了获得系统时间外),方便移植)
+ */
+public final class TimeUtils {
 
 	private static final long nanosPerMilli = 1000000L;
 
 	public static enum Unit {
 		NANOS, MICROS, MILLIS, SECONDS
+	}
+
+	public enum TimeFormat {
+		UNDEFINED, HH_MM_SS, MM_SS_000, MM_SS_0, HH_MM_SS_000, DD_HH_MM;
+
+		public String getFormat() {
+			switch (this) {
+			default:
+			case HH_MM_SS:
+				return "{0}:{1}:{2}";
+			case HH_MM_SS_000:
+				return "{0}:{1}:{2}.{3}";
+			case MM_SS_000:
+				return "{0}:{1}.{2}";
+			case MM_SS_0:
+				return "{0}:{1}.{2}";
+			}
+		}
 	}
 
 	private TimeUtils() {
@@ -44,8 +67,7 @@ public class TimeUtils {
 	}
 
 	public static float currentSeconds() {
-		long timeMillis = millis();
-		return timeMillis / 1000f;
+		return getSeconds(millis());
 	}
 
 	public static float currentTime(Unit unit) {
@@ -165,5 +187,84 @@ public class TimeUtils {
 			return "d (WTF dude check you calculation!)";
 		}
 	}
+	
+	public static long getUTC8Days() {
+		return getDays(millis(), 8);
+	}
 
+	public static long getUTCDays() {
+		return getDays(millis(), 0);
+	}
+
+	public static long getDays(final long ms, final long offsetHour) {
+		return (ms + (offsetHour * LSystem.HOUR)) / 1000 / 60 / 60 / 24 % 365;
+	}
+
+	public static long getHours() {
+		return getHours(millis());
+	}
+
+	public static long getHours(final long ms) {
+		return ms / 1000 / 60 / 60 % 24;
+	}
+
+	public static long getMinutes() {
+		return getMinutes(millis());
+	}
+
+	public static long getMinutes(final long ms) {
+		return ms / 1000 / 60 % 60;
+	}
+
+	public static long getSeconds() {
+		return getSeconds(millis());
+	}
+
+	public static long getSeconds(final long ms) {
+		return ms / 1000 % 60;
+	}
+
+	public static long getMilliSeconds(final long ms) {
+		return ms % 1000;
+	}
+
+	public static String getUTC8Time() {
+		return getUTCTime(8);
+	}
+
+	public static String getUTCTime() {
+		return getUTCTime(0);
+	}
+
+	public static String getUTCTime(long offsetHour) {
+		return getUTCTime(millis(), offsetHour);
+	}
+
+	public static String getUTCTime(long duration, long offsetHour) {
+		return getUTCTime(duration + (offsetHour * LSystem.HOUR), TimeFormat.HH_MM_SS);
+	}
+
+	private static String zero(long v) {
+		return MathUtils.addZeros(v, 2);
+	}
+	
+	public static String getUTCTime(long duration, TimeFormat format) {
+		long h = getHours(duration);
+		long m = getMinutes(duration);
+		long s = getSeconds(duration);
+		long ms = getMilliSeconds(duration);
+		switch (format) {
+		case HH_MM_SS:
+			return StringUtils.format(format.getFormat(), zero(h), zero(m), zero(s));
+		case HH_MM_SS_000:
+			return StringUtils.format(format.getFormat(), zero(h), zero(m), zero(s), ms);
+		case MM_SS_000:
+			return StringUtils.format(format.getFormat(), zero(m), zero(s), ms);
+		case MM_SS_0:
+			return StringUtils.format(format.getFormat(), zero(m), zero(s), ms / 100);
+		case UNDEFINED:
+		default:
+			return String.valueOf(ms);
+		}
+	}
 }

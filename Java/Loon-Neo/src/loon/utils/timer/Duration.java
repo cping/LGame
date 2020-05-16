@@ -36,10 +36,10 @@ public class Duration implements Comparable<Duration> {
 
 	protected static Duration _instance = null;
 
-	public static void freeStatic(){
+	public static void freeStatic() {
 		_instance = null;
 	}
-	
+
 	public static Duration get() {
 		return getInstance();
 	}
@@ -68,7 +68,7 @@ public class Duration implements Comparable<Duration> {
 	public static final Duration ONE_HOUR = new Duration(3600000);
 
 	public static final Duration ONE_DAY = new Duration(86400000);
-	
+
 	public final static Duration at(float ms) {
 		return new Duration(ms);
 	}
