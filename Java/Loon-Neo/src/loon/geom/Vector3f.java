@@ -51,7 +51,11 @@ public class Vector3f implements Serializable, XYZ {
 	}
 
 	public final static Vector3f ZERO() {
-		return new Vector3f(0, 0, 0);
+		return new Vector3f(0);
+	}
+	
+	public final static Vector3f ONE() {
+		return new Vector3f(1);
 	}
 
 	public final static Vector3f AXIS_X() {
@@ -66,15 +70,25 @@ public class Vector3f implements Serializable, XYZ {
 		return new Vector3f(0, 0, 1);
 	}
 
+	public final static Vector3f at(float x, float y, float z) {
+		return new Vector3f(x, y, z);
+	}
+
+    public final static Vector3f smoothStep(Vector3f a, Vector3f b, float amount)
+    {
+        return new Vector3f
+        (
+            MathUtils.smoothStep(a.x, b.x, amount),
+            MathUtils.smoothStep(a.y, b.y, amount),
+            MathUtils.smoothStep(a.z, b.z, amount)
+        );
+     }
+    
 	private final static Matrix4 tmpMat = new Matrix4();
 
 	private final static Vector3f tmpNormal1 = new Vector3f();
 
 	private final static Vector3f tmpNormal2 = new Vector3f();
-
-	public final static Vector3f at(float x, float y, float z) {
-		return new Vector3f(x, y, z);
-	}
 
 	public Vector3f() {
 		this(0, 0, 0);
@@ -813,6 +827,10 @@ public class Vector3f implements Serializable, XYZ {
 		return new Vector3f(x - argVec.x, y - argVec.y, z - argVec.z);
 	}
 
+	public Vector3f smoothStep(Vector3f v, float amount) {
+		return smoothStep(this, v, amount);
+	}
+	
 	public final static Vector3f vectorSquareEquation(Vector3f a, Vector3f b, Vector3f c) {
 		float baz = -1 * a.z / b.z;
 		b.scaleSelf(baz).addSelf(a);

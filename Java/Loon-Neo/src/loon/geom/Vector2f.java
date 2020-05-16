@@ -48,7 +48,7 @@ public class Vector2f implements Serializable, XY {
 	}
 
 	public final static Vector2f ZERO() {
-		return new Vector2f(0, 0);
+		return new Vector2f(0);
 	}
 
 	public final static Vector2f HALF() {
@@ -56,15 +56,15 @@ public class Vector2f implements Serializable, XY {
 	}
 
 	public final static Vector2f ONE() {
-		return new Vector2f(1f, 1f);
+		return new Vector2f(1);
 	}
 
 	public final static Vector2f AXIS_X() {
-		return new Vector2f(1f, 0f);
+		return new Vector2f(1, 0);
 	}
 
 	public final static Vector2f AXIS_Y() {
-		return new Vector2f(0f, 1f);
+		return new Vector2f(0, 1);
 	}
 
 	public final static Vector2f at(float x, float y) {
@@ -73,6 +73,237 @@ public class Vector2f implements Serializable, XY {
 
 	public final static Vector2f fromAngle(float angle) {
 		return new Vector2f(MathUtils.cos(angle), MathUtils.sin(angle));
+	}
+
+	public final static Vector2f sum(Vector2f a, Vector2f b) {
+		Vector2f answer = new Vector2f(a);
+		return answer.add(b);
+	}
+
+	public final static Vector2f mult(Vector2f vector, float scalar) {
+		Vector2f answer = new Vector2f(vector);
+		return answer.mul(scalar);
+	}
+
+	public final static Vector2f cpy(Vector2f vectorA) {
+		Vector2f newSVector2 = new Vector2f();
+
+		newSVector2.x = vectorA.x;
+		newSVector2.y = vectorA.y;
+
+		return newSVector2;
+	}
+
+	public final static float len(Vector2f vectorA) {
+		return MathUtils.sqrt(vectorA.x * vectorA.x + vectorA.y * vectorA.y);
+	}
+
+	public final static float len2(Vector2f vectorA) {
+		return vectorA.x * vectorA.x + vectorA.y * vectorA.y;
+	}
+
+	public final static Vector2f set(Vector2f vectorA, Vector2f vectorB) {
+		vectorA.x = vectorB.x;
+		vectorA.y = vectorB.y;
+		return vectorA;
+	}
+
+	public final static Vector2f set(Vector2f vectorA, float x, float y) {
+		vectorA.x = x;
+		vectorA.y = y;
+		return vectorA;
+	}
+
+	public final Vector2f subNew(Vector2f vectorB) {
+		return subNew(this, vectorB);
+	}
+
+	public final static Vector2f subNew(Vector2f vectorA, Vector2f vectorB) {
+		return at(vectorA.x - vectorB.x, vectorA.y - vectorB.y);
+	}
+
+	public final static Vector2f sub(Vector2f vectorA, Vector2f vectorB) {
+		vectorA.x -= vectorB.x;
+		vectorA.y -= vectorB.y;
+		return vectorA;
+	}
+
+	public final static Vector2f nor(Vector2f vectorA) {
+		float len = len(vectorA);
+		if (len != 0) {
+			vectorA.x /= len;
+			vectorA.y /= len;
+		}
+		return vectorA;
+	}
+
+	public final static Vector2f addNew(Vector2f vectorA, Vector2f vectorB) {
+		return at(vectorA.x + vectorB.x, vectorA.y + vectorB.y);
+	}
+
+	public final static Vector2f add(Vector2f vectorA, Vector2f vectorB) {
+		vectorA.x += vectorB.x;
+		vectorA.y += vectorB.y;
+		return vectorA;
+	}
+
+	public final static Vector2f add(Vector2f vectorA, float x, float y) {
+		vectorA.x += x;
+		vectorA.y += y;
+		return vectorA;
+	}
+
+	public final static Vector2f smoothStep(Vector2f a, Vector2f b, float amount) {
+		return new Vector2f(MathUtils.smoothStep(a.x, b.x, amount), MathUtils.smoothStep(a.y, b.y, amount));
+	}
+	
+	public final static Vector2f transform(Vector2f value, Quaternion rotation) {
+		return transform(value, rotation, null);
+	}
+
+	public final static Vector2f transform(Vector2f value, Quaternion rotation, Vector2f result) {
+		if (result == null) {
+			result = new Vector2f();
+		}
+		Vector3f rot1 = new Vector3f(rotation.x + rotation.x, rotation.y + rotation.y, rotation.z + rotation.z);
+		Vector3f rot2 = new Vector3f(rotation.x, rotation.x, rotation.w);
+		Vector3f rot3 = new Vector3f(1, rotation.y, rotation.z);
+		Vector3f rot4 = rot1.mul(rot2);
+		Vector3f rot5 = rot1.mul(rot3);
+		Vector2f v = new Vector2f();
+		v.x = (value.x * (1f - rot5.y - rot5.z) + value.y * (rot4.y - rot4.z));
+		v.y = (value.x * (rot4.y + rot4.z) + value.y * (1f - rot4.x - rot5.z));
+		result.x = v.x;
+		result.y = v.y;
+		return result;
+	}
+	public final static Vector2f abs(Vector2f a) {
+		return new Vector2f(MathUtils.abs(a.x), MathUtils.abs(a.y));
+	}
+
+	public final static void absToOut(Vector2f a, Vector2f out) {
+		out.x = MathUtils.abs(a.x);
+		out.y = MathUtils.abs(a.y);
+	}
+
+	public final static float dot(Vector2f a, Vector2f b) {
+		return a.x * b.x + a.y * b.y;
+	}
+
+	public final static float cross(Vector2f a, Vector2f b) {
+		return a.x * b.y - a.y * b.x;
+	}
+
+	public final static Vector2f cross(Vector2f a, float s) {
+		return new Vector2f(s * a.y, -s * a.x);
+	}
+
+	public final static void crossToOut(Vector2f a, float s, Vector2f out) {
+		float tempy = -s * a.x;
+		out.x = s * a.y;
+		out.y = tempy;
+	}
+
+	public final static Vector2f cross(float s, Vector2f a) {
+		return new Vector2f(-s * a.y, s * a.x);
+	}
+
+	public final static void crossToOut(float s, Vector2f a, Vector2f out) {
+		float tempY = s * a.x;
+		out.x = -s * a.y;
+		out.y = tempY;
+	}
+
+	public final static void negateToOut(Vector2f a, Vector2f out) {
+		out.x = -a.x;
+		out.y = -a.y;
+	}
+
+	public final static Vector2f min(Vector2f a, Vector2f b) {
+		return new Vector2f(a.x < b.x ? a.x : b.x, a.y < b.y ? a.y : b.y);
+	}
+
+	public final static Vector2f max(Vector2f a, Vector2f b) {
+		return new Vector2f(a.x > b.x ? a.x : b.x, a.y > b.y ? a.y : b.y);
+	}
+
+	public final static void minToOut(Vector2f a, Vector2f b, Vector2f out) {
+		out.x = a.x < b.x ? a.x : b.x;
+		out.y = a.y < b.y ? a.y : b.y;
+	}
+
+	public final static void maxToOut(Vector2f a, Vector2f b, Vector2f out) {
+		out.x = a.x > b.x ? a.x : b.x;
+		out.y = a.y > b.y ? a.y : b.y;
+	}
+
+	public final static Vector2f mul(Vector2f vectorA, float scalar) {
+		vectorA.x *= scalar;
+		vectorA.y *= scalar;
+		return vectorA;
+	}
+
+	public final static float dst(Vector2f vectorA, Vector2f vectorB) {
+		final float x_d = vectorB.x - vectorA.x;
+		final float y_d = vectorB.y - vectorA.y;
+		return MathUtils.sqrt(x_d * x_d + y_d * y_d);
+	}
+
+	public final static float dst(Vector2f vectorA, float x, float y) {
+		final float x_d = x - vectorA.x;
+		final float y_d = y - vectorA.y;
+		return MathUtils.sqrt(x_d * x_d + y_d * y_d);
+	}
+
+	public final static float dst2(Vector2f vectorA, Vector2f vectorB) {
+		final float x_d = vectorB.x - vectorA.x;
+		final float y_d = vectorB.y - vectorA.y;
+		return x_d * x_d + y_d * y_d;
+	}
+
+	public final static Vector2f sub(Vector2f vectorA, float x, float y) {
+		vectorA.x -= x;
+		vectorA.y -= y;
+		return vectorA;
+	}
+
+	public final static float crs(Vector2f vectorA, Vector2f vectorB) {
+		return vectorA.x * vectorB.y - vectorA.y * vectorB.x;
+	}
+
+	public final static float crs(Vector2f vectorA, float x, float y) {
+		return vectorA.x * y - vectorA.y * x;
+	}
+
+	public final static Vector2f rotate(Vector2f vectorA, float angle) {
+		float rad = MathUtils.toRadians(angle);
+		float cos = MathUtils.cos(rad);
+		float sin = MathUtils.sin(rad);
+
+		float newX = vectorA.x * cos - vectorA.y * sin;
+		float newY = vectorA.x * sin + vectorA.y * cos;
+
+		vectorA.x = newX;
+		vectorA.y = newY;
+
+		return vectorA;
+	}
+
+	public final static Vector2f lerp(Vector2f vectorA, Vector2f target, float alpha) {
+		Vector2f r = mul(vectorA, 1.0f - alpha);
+		add(r, mul(cpy(target), alpha));
+		return r;
+	}
+
+	public final static float dst2(float x1, float y1, float x2, float y2) {
+		final float x_d = x2 - x1;
+		final float y_d = y2 - y1;
+		return x_d * x_d + y_d * y_d;
+	}
+
+	public final static Vector2f polar(float len, float angle) {
+		return new Vector2f(len * MathUtils.cos(angle / MathUtils.DEG_TO_RAD),
+				len * MathUtils.sin(angle / MathUtils.DEG_TO_RAD));
 	}
 
 	public float x;
@@ -166,6 +397,10 @@ public class Vector2f implements Serializable, XY {
 		return this;
 	}
 
+	public Vector2f smoothStep(Vector2f v, float amount) {
+		return smoothStep(this, v, amount);
+	}
+	
 	public Vector2f sub(float x, float y) {
 		return new Vector2f(this.x - x, this.y - y);
 	}
@@ -505,163 +740,8 @@ public class Vector2f implements Serializable, XY {
 		return this;
 	}
 
-	public static Vector2f sum(Vector2f a, Vector2f b) {
-		Vector2f answer = new Vector2f(a);
-		return answer.add(b);
-	}
-
-	public static Vector2f mult(Vector2f vector, float scalar) {
-		Vector2f answer = new Vector2f(vector);
-		return answer.mul(scalar);
-	}
-
-	public float cross(final Vector2f v) {
-		return this.x * v.y - v.x * this.y;
-	}
-
-	public float lenManhattan() {
-		return MathUtils.abs(this.x) + MathUtils.abs(this.y);
-	}
-
-	public static Vector2f cpy(Vector2f vectorA) {
-		Vector2f newSVector2 = new Vector2f();
-
-		newSVector2.x = vectorA.x;
-		newSVector2.y = vectorA.y;
-
-		return newSVector2;
-	}
-
-	public static float len(Vector2f vectorA) {
-		return MathUtils.sqrt(vectorA.x * vectorA.x + vectorA.y * vectorA.y);
-	}
-
-	public static float len2(Vector2f vectorA) {
-		return vectorA.x * vectorA.x + vectorA.y * vectorA.y;
-	}
-
-	public static Vector2f set(Vector2f vectorA, Vector2f vectorB) {
-		vectorA.x = vectorB.x;
-		vectorA.y = vectorB.y;
-		return vectorA;
-	}
-
-	public static Vector2f set(Vector2f vectorA, float x, float y) {
-		vectorA.x = x;
-		vectorA.y = y;
-		return vectorA;
-	}
-
-	public Vector2f subNew(Vector2f vectorB) {
-		return subNew(this, vectorB);
-	}
-
-	public static Vector2f subNew(Vector2f vectorA, Vector2f vectorB) {
-		return at(vectorA.x - vectorB.x, vectorA.y - vectorB.y);
-	}
-
-	public static Vector2f sub(Vector2f vectorA, Vector2f vectorB) {
-		vectorA.x -= vectorB.x;
-		vectorA.y -= vectorB.y;
-		return vectorA;
-	}
-
-	public static Vector2f nor(Vector2f vectorA) {
-		float len = len(vectorA);
-		if (len != 0) {
-			vectorA.x /= len;
-			vectorA.y /= len;
-		}
-		return vectorA;
-	}
-
-	public static Vector2f addNew(Vector2f vectorA, Vector2f vectorB) {
-		return at(vectorA.x + vectorB.x, vectorA.y + vectorB.y);
-	}
-
-	public static Vector2f add(Vector2f vectorA, Vector2f vectorB) {
-		vectorA.x += vectorB.x;
-		vectorA.y += vectorB.y;
-		return vectorA;
-	}
-
-	public static Vector2f add(Vector2f vectorA, float x, float y) {
-		vectorA.x += x;
-		vectorA.y += y;
-		return vectorA;
-	}
-
 	public Vector2f mul(Vector2f vectorA) {
 		return new Vector2f(x * vectorA.x, y * vectorA.y);
-	}
-
-	public static Vector2f mul(Vector2f vectorA, float scalar) {
-		vectorA.x *= scalar;
-		vectorA.y *= scalar;
-		return vectorA;
-	}
-
-	public static float dst(Vector2f vectorA, Vector2f vectorB) {
-		final float x_d = vectorB.x - vectorA.x;
-		final float y_d = vectorB.y - vectorA.y;
-		return MathUtils.sqrt(x_d * x_d + y_d * y_d);
-	}
-
-	public static float dst(Vector2f vectorA, float x, float y) {
-		final float x_d = x - vectorA.x;
-		final float y_d = y - vectorA.y;
-		return MathUtils.sqrt(x_d * x_d + y_d * y_d);
-	}
-
-	public static float dst2(Vector2f vectorA, Vector2f vectorB) {
-		final float x_d = vectorB.x - vectorA.x;
-		final float y_d = vectorB.y - vectorA.y;
-		return x_d * x_d + y_d * y_d;
-	}
-
-	public static Vector2f sub(Vector2f vectorA, float x, float y) {
-		vectorA.x -= x;
-		vectorA.y -= y;
-		return vectorA;
-	}
-
-	public static float crs(Vector2f vectorA, Vector2f vectorB) {
-		return vectorA.x * vectorB.y - vectorA.y * vectorB.x;
-	}
-
-	public static float crs(Vector2f vectorA, float x, float y) {
-		return vectorA.x * y - vectorA.y * x;
-	}
-
-	public static Vector2f rotate(Vector2f vectorA, float angle) {
-		float rad = MathUtils.toRadians(angle);
-		float cos = MathUtils.cos(rad);
-		float sin = MathUtils.sin(rad);
-
-		float newX = vectorA.x * cos - vectorA.y * sin;
-		float newY = vectorA.x * sin + vectorA.y * cos;
-
-		vectorA.x = newX;
-		vectorA.y = newY;
-
-		return vectorA;
-	}
-
-	public static Vector2f lerp(Vector2f vectorA, Vector2f target, float alpha) {
-		Vector2f r = mul(vectorA, 1.0f - alpha);
-		add(r, mul(cpy(target), alpha));
-		return r;
-	}
-
-	public static float dst2(float x1, float y1, float x2, float y2) {
-		final float x_d = x2 - x1;
-		final float y_d = y2 - y1;
-		return x_d * x_d + y_d * y_d;
-	}
-
-	public static Vector2f polar(float len, float angle) {
-		return new Vector2f(len * MathUtils.cos(angle / MathUtils.DEG_TO_RAD),
-				len * MathUtils.sin(angle / MathUtils.DEG_TO_RAD));
 	}
 
 	public final void setZero() {
@@ -750,72 +830,12 @@ public class Vector2f implements Serializable, XY {
 		y = MathUtils.abs(y);
 	}
 
-	public final static Vector2f abs(Vector2f a) {
-		return new Vector2f(MathUtils.abs(a.x), MathUtils.abs(a.y));
-	}
-
-	public final static void absToOut(Vector2f a, Vector2f out) {
-		out.x = MathUtils.abs(a.x);
-		out.y = MathUtils.abs(a.y);
-	}
-
-	public final static float dot(Vector2f a, Vector2f b) {
-		return a.x * b.x + a.y * b.y;
-	}
-
-	public final static float cross(Vector2f a, Vector2f b) {
-		return a.x * b.y - a.y * b.x;
-	}
-
-	public final static Vector2f cross(Vector2f a, float s) {
-		return new Vector2f(s * a.y, -s * a.x);
-	}
-
-	public final static void crossToOut(Vector2f a, float s, Vector2f out) {
-		float tempy = -s * a.x;
-		out.x = s * a.y;
-		out.y = tempy;
-	}
-
-	public final static Vector2f cross(float s, Vector2f a) {
-		return new Vector2f(-s * a.y, s * a.x);
-	}
-
-	public final static void crossToOut(float s, Vector2f a, Vector2f out) {
-		float tempY = s * a.x;
-		out.x = -s * a.y;
-		out.y = tempY;
-	}
-
-	public final static void negateToOut(Vector2f a, Vector2f out) {
-		out.x = -a.x;
-		out.y = -a.y;
-	}
-
-	public final static Vector2f min(Vector2f a, Vector2f b) {
-		return new Vector2f(a.x < b.x ? a.x : b.x, a.y < b.y ? a.y : b.y);
-	}
-
-	public final static Vector2f max(Vector2f a, Vector2f b) {
-		return new Vector2f(a.x > b.x ? a.x : b.x, a.y > b.y ? a.y : b.y);
-	}
-
-	public final static void minToOut(Vector2f a, Vector2f b, Vector2f out) {
-		out.x = a.x < b.x ? a.x : b.x;
-		out.y = a.y < b.y ? a.y : b.y;
-	}
-
-	public final static void maxToOut(Vector2f a, Vector2f b, Vector2f out) {
-		out.x = a.x > b.x ? a.x : b.x;
-		out.y = a.y > b.y ? a.y : b.y;
-	}
-
 	public Vector2f random() {
-		this.x = MathUtils.random(0f,LSystem.viewSize.getWidth());
-		this.y = MathUtils.random(0f,LSystem.viewSize.getHeight());
+		this.x = MathUtils.random(0f, LSystem.viewSize.getWidth());
+		this.y = MathUtils.random(0f, LSystem.viewSize.getHeight());
 		return this;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -1034,27 +1054,14 @@ public class Vector2f implements Serializable, XY {
 		return addSelf(-x, -y);
 	}
 
-	public static Vector2f transform(Vector2f value, Quaternion rotation) {
-		return transform(value, rotation, null);
+	public float cross(final Vector2f v) {
+		return this.x * v.y - v.x * this.y;
 	}
 
-	public static Vector2f transform(Vector2f value, Quaternion rotation, Vector2f result) {
-		if (result == null) {
-			result = new Vector2f();
-		}
-		Vector3f rot1 = new Vector3f(rotation.x + rotation.x, rotation.y + rotation.y, rotation.z + rotation.z);
-		Vector3f rot2 = new Vector3f(rotation.x, rotation.x, rotation.w);
-		Vector3f rot3 = new Vector3f(1, rotation.y, rotation.z);
-		Vector3f rot4 = rot1.mul(rot2);
-		Vector3f rot5 = rot1.mul(rot3);
-		Vector2f v = new Vector2f();
-		v.x = (value.x * (1f - rot5.y - rot5.z) + value.y * (rot4.y - rot4.z));
-		v.y = (value.x * (rot4.y + rot4.z) + value.y * (1f - rot4.x - rot5.z));
-		result.x = v.x;
-		result.y = v.y;
-		return result;
+	public float lenManhattan() {
+		return MathUtils.abs(this.x) + MathUtils.abs(this.y);
 	}
-
+	
 	public float[] toFloat() {
 		return new float[] { x, y };
 	}

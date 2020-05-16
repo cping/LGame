@@ -45,7 +45,11 @@ public class Vector4f implements Serializable, XYZW {
 	}
 
 	public final static Vector4f ZERO() {
-		return new Vector4f(0, 0, 0, 0);
+		return new Vector4f(0);
+	}
+	
+	public final static Vector4f ONE() {
+		return new Vector4f(1);
 	}
 
 	public final static Vector4f AXIS_X() {
@@ -60,10 +64,25 @@ public class Vector4f implements Serializable, XYZW {
 		return new Vector4f(0, 0, 1, 0);
 	}
 
+	public final static Vector4f AXIS_W() {
+		return new Vector4f(0, 0, 0, 1);
+	}
+
 	public final static Vector4f at(float x, float y, float z, float w) {
 		return new Vector4f(x, y, z, w);
 	}
-
+	
+    public final static Vector4f smoothStep(Vector4f a, Vector4f b, float amount)
+    {
+        return new Vector4f
+        (
+            MathUtils.smoothStep(a.x, b.x, amount),
+            MathUtils.smoothStep(a.y, b.y, amount),
+            MathUtils.smoothStep(a.z, b.z, amount),
+            MathUtils.smoothStep(a.w, b.w, amount)
+        );
+    }
+    
 	public float x, y, z, w;
 
 	public Vector4f() {
@@ -167,6 +186,10 @@ public class Vector4f implements Serializable, XYZW {
 		return addSelf(x, y, v.x, v.y);
 	}
 
+	public Vector4f smoothStep(Vector4f v, float amount) {
+		return smoothStep(this, v, amount);
+	}
+	
 	public Vector4f subtract(Vector4f v) {
 		return add(-v.x, -v.y, -v.z, -v.w);
 	}

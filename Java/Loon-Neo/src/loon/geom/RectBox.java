@@ -34,7 +34,7 @@ public class RectBox extends Shape implements BoxSize {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public static RectBox at(String v) {
+	public final static RectBox at(String v) {
 		if (StringUtils.isEmpty(v)) {
 			return new RectBox();
 		}
@@ -59,6 +59,62 @@ public class RectBox extends Shape implements BoxSize {
 
 	public final static RectBox at(float x, float y, float w, float h) {
 		return new RectBox(x, y, w, h);
+	}
+
+	public final static RectBox inflate(RectBox src, int xScale, int yScale) {
+		float destWidth = src.width + xScale;
+		float destHeight = src.height + yScale;
+		float destX = src.x - xScale / 2;
+		float destY = src.y - yScale / 2;
+		return new RectBox(destX, destY, destWidth, destHeight);
+	}
+
+	public final static RectBox intersect(RectBox src1, RectBox src2, RectBox dest) {
+		if (dest == null) {
+			dest = new RectBox();
+		}
+		float x1 = MathUtils.max(src1.getMinX(), src2.getMinX());
+		float y1 = MathUtils.max(src1.getMinY(), src2.getMinY());
+		float x2 = MathUtils.min(src1.getMaxX(), src2.getMaxX());
+		float y2 = MathUtils.min(src1.getMaxY(), src2.getMaxY());
+		dest.setBounds(x1, y1, x2 - x1, y2 - y1);
+		return dest;
+	}
+
+	public final static RectBox getIntersection(RectBox a, RectBox b) {
+		float a_x = a.getX();
+		float a_r = a.getRight();
+		float a_y = a.getY();
+		float a_t = a.getBottom();
+		float b_x = b.getX();
+		float b_r = b.getRight();
+		float b_y = b.getY();
+		float b_t = b.getBottom();
+		float i_x = MathUtils.max(a_x, b_x);
+		float i_r = MathUtils.min(a_r, b_r);
+		float i_y = MathUtils.max(a_y, b_y);
+		float i_t = MathUtils.min(a_t, b_t);
+		return i_x < i_r && i_y < i_t ? new RectBox(i_x, i_y, i_r - i_x, i_t - i_y) : null;
+	}
+
+	public final static RectBox getIntersection(RectBox a, RectBox b, RectBox result) {
+		float a_x = a.getX();
+		float a_r = a.getRight();
+		float a_y = a.getY();
+		float a_t = a.getBottom();
+		float b_x = b.getX();
+		float b_r = b.getRight();
+		float b_y = b.getY();
+		float b_t = b.getBottom();
+		float i_x = MathUtils.max(a_x, b_x);
+		float i_r = MathUtils.min(a_r, b_r);
+		float i_y = MathUtils.max(a_y, b_y);
+		float i_t = MathUtils.min(a_t, b_t);
+		if (i_x < i_r && i_y < i_t) {
+			result.setBounds(i_x, i_y, i_r - i_x, i_t - i_y);
+			return result;
+		}
+		return null;
 	}
 
 	public int width;
@@ -357,42 +413,6 @@ public class RectBox extends Shape implements BoxSize {
 			r.y -= r.height;
 		}
 		return this;
-	}
-
-	public static final RectBox getIntersection(RectBox a, RectBox b) {
-		float a_x = a.getX();
-		float a_r = a.getRight();
-		float a_y = a.getY();
-		float a_t = a.getBottom();
-		float b_x = b.getX();
-		float b_r = b.getRight();
-		float b_y = b.getY();
-		float b_t = b.getBottom();
-		float i_x = MathUtils.max(a_x, b_x);
-		float i_r = MathUtils.min(a_r, b_r);
-		float i_y = MathUtils.max(a_y, b_y);
-		float i_t = MathUtils.min(a_t, b_t);
-		return i_x < i_r && i_y < i_t ? new RectBox(i_x, i_y, i_r - i_x, i_t - i_y) : null;
-	}
-
-	public static final RectBox getIntersection(RectBox a, RectBox b, RectBox result) {
-		float a_x = a.getX();
-		float a_r = a.getRight();
-		float a_y = a.getY();
-		float a_t = a.getBottom();
-		float b_x = b.getX();
-		float b_r = b.getRight();
-		float b_y = b.getY();
-		float b_t = b.getBottom();
-		float i_x = MathUtils.max(a_x, b_x);
-		float i_r = MathUtils.min(a_r, b_r);
-		float i_y = MathUtils.max(a_y, b_y);
-		float i_t = MathUtils.min(a_t, b_t);
-		if (i_x < i_r && i_y < i_t) {
-			result.setBounds(i_x, i_y, i_r - i_x, i_t - i_y);
-			return result;
-		}
-		return null;
 	}
 
 	public float[] toFloat() {
@@ -737,14 +757,6 @@ public class RectBox extends Shape implements BoxSize {
 		dest.intersection(rectBox);
 		intersect(this, rectBox, dest);
 		return dest;
-	}
-
-	public static final void intersect(RectBox src1, RectBox src2, RectBox dest) {
-		float x1 = MathUtils.max(src1.getMinX(), src2.getMinX());
-		float y1 = MathUtils.max(src1.getMinY(), src2.getMinY());
-		float x2 = MathUtils.min(src1.getMaxX(), src2.getMaxX());
-		float y2 = MathUtils.min(src1.getMaxY(), src2.getMaxY());
-		dest.setBounds(x1, y1, x2 - x1, y2 - y1);
 	}
 
 	public float maxX() {
