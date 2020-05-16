@@ -28,8 +28,6 @@ import loon.utils.TArray;
  */
 public class Character extends CharacterValue {
 
-	private String name;
-
 	private TArray<Attribute> attributes = new TArray<Attribute>();
 
 	private TArray<Item<Object>> items = new TArray<Item<Object>>();
@@ -41,24 +39,14 @@ public class Character extends CharacterValue {
 	}
 
 	public Character(CharacterInfo info, String name) {
-		super(info, info.updateMaxHealth(0), info.updateManaPoints(0), info.updateAttack(0), info.updateDefence(0),
-				info.updateStrength(0), info.updateIntelligence(0), info.updateFitness(0), info.updateDexterity(0),
-				info.updateAgility(0));
-		this.name = name;
+		super(name, info, info.updateMaxHealth(0), info.updateManaPoints(0), info.updateAttack(0),
+				info.updateDefence(0), info.updateStrength(0), info.updateIntelligence(0), info.updateFitness(0),
+				info.updateDexterity(0), info.updateAgility(0));
 	}
 
 	public Character(CharacterInfo info, String name, int maxHealth, int maxMana, int attack, int defence, int strength,
 			int intelligence, int fitness, int dexterity, int agility) {
-		super(info, maxHealth, maxMana, attack, defence, strength, intelligence, fitness, dexterity, agility);
-		this.name = name;
-	}
-
-	public String getName() {
-		return this.name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
+		super(name, info, maxHealth, maxMana, attack, defence, strength, intelligence, fitness, dexterity, agility);
 	}
 
 	public void addAttribute(Attribute attribute) {

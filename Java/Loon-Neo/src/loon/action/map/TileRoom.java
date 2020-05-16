@@ -23,6 +23,9 @@ package loon.action.map;
 import loon.utils.ObjectMap;
 import loon.utils.TArray;
 
+/**
+ * 瓦片房间用类,用于记录特定瓦片的地图转换关系
+ */
 public class TileRoom {
 
 	class RoomLink {

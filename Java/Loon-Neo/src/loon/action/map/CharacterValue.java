@@ -20,6 +20,7 @@
  */
 package loon.action.map;
 
+import loon.LSystem;
 import loon.utils.MathUtils;
 
 /**
@@ -28,6 +29,8 @@ import loon.utils.MathUtils;
  */
 public abstract class CharacterValue {
 
+	private String roleName;
+	
 	private int maxHealth;
 	private int maxMana;
 	private int health;
@@ -43,8 +46,8 @@ public abstract class CharacterValue {
 	private int team;
 	private int movePoints;
 	private int turnPoints;
-	private int actionPoints; 
-	
+	private int actionPoints;
+
 	private boolean isAttack;
 	private boolean isDefense;
 	private boolean isSkill;
@@ -54,6 +57,13 @@ public abstract class CharacterValue {
 
 	public CharacterValue(CharacterInfo info, int maxHealth, int maxMana, int attack, int defence, int strength,
 			int intelligence, int fitness, int dexterity, int agility) {
+		this(LSystem.UNKNOWN, info, maxHealth, maxMana, attack, defence, strength, intelligence, fitness, dexterity,
+				agility);
+	}
+
+	public CharacterValue(String name, CharacterInfo info, int maxHealth, int maxMana, int attack, int defence,
+			int strength, int intelligence, int fitness, int dexterity, int agility) {
+		this.roleName = name;
 		this.info = info;
 		this.maxHealth = maxHealth;
 		this.maxMana = maxMana;
@@ -384,5 +394,13 @@ public abstract class CharacterValue {
 
 	public void setActionPoints(int actionPoints) {
 		this.actionPoints = actionPoints;
+	}
+
+	public String getRoleName() {
+		return roleName;
+	}
+
+	public void setRoleName(String roleName) {
+		this.roleName = roleName;
 	}
 }

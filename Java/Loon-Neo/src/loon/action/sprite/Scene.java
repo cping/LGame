@@ -104,7 +104,8 @@ public class Scene extends Entity {
 
 	public int findCharacter(String name) {
 		for (int i = 0; i < this._characters.size; i++) {
-			if (getCharacter(i).getName().equalsIgnoreCase(name)) {
+			Character ch = getCharacter(i);
+			if (ch != null && ch.getRoleName().equals(name)) {
 				return i;
 			}
 		}
