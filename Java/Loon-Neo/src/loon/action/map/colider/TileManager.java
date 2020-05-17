@@ -58,20 +58,24 @@ public class TileManager {
 
 	private float tileScale = DEF_TILE_SCALE;
 
+	private int width, height;
+
 	private IntMap<Integer> limits = new IntMap<Integer>();
 
 	private TileDrawListener<TileImpl> listener;
 
-	public TileManager(AStarFindHeuristic h) {
-		this(h, DEF_TILE_SCALE);
+	public TileManager(AStarFindHeuristic h, int maxX, int maxY) {
+		this(h, maxX, maxY, DEF_TILE_SCALE);
 	}
 
-	public TileManager(AStarFindHeuristic h, float ts) {
-		this(h, DEF_RATE, DEF_SOLID, ts);
+	public TileManager(AStarFindHeuristic h, int maxX, int maxY, float ts) {
+		this(h, maxX, maxY, DEF_RATE, DEF_SOLID, ts);
 	}
 
-	public TileManager(AStarFindHeuristic h, int r, int s, float ts) {
+	public TileManager(AStarFindHeuristic h, int maxX, int maxY, int r, int s, float ts) {
 		this.tilesX = new ObjectMap<Integer, ObjectMap<Integer, TileImpl>>(32);
+		this.width = maxX;
+		this.height = maxY;
 		this.heuristic = h;
 		this.rate = r;
 		this.solid = s;
@@ -79,12 +83,15 @@ public class TileManager {
 	}
 
 	public void put(TileImpl tile) {
-		ObjectMap<Integer, TileImpl> tilesY = tilesX.get(tile.getX());
-		if (tilesY == null) {
-			tilesY = new ObjectMap<Integer, TileImpl>(32);
-			tilesX.put(tile.getX(), tilesY);
+		if (tile != null) {
+			tile.calcNeighbours(width, height);
+			ObjectMap<Integer, TileImpl> tilesY = tilesX.get(tile.getX());
+			if (tilesY == null) {
+				tilesY = new ObjectMap<Integer, TileImpl>(32);
+				tilesX.put(tile.getX(), tilesY);
+			}
+			tilesY.put(tile.getY(), tile);
 		}
-		tilesY.put(tile.getY(), tile);
 	}
 
 	public void remove(TileImpl tile) {
@@ -159,7 +166,7 @@ public class TileManager {
 	public void setTileListener(TileDrawListener<TileImpl> listener) {
 		this.listener = listener;
 	}
-	
+
 	public void drawTiles(GLEx g, float offsetX, float offsetY) {
 		ObjectMap<Integer, ObjectMap<Integer, TileImpl>> list = this.tilesX;
 		for (Entries<Integer, ObjectMap<Integer, TileImpl>> it = list.iterator(); it.hasNext();) {
@@ -192,26 +199,32 @@ public class TileManager {
 		if (startTile != null && endTile != null) {
 			return findMovePath(startTile, endTile, player);
 		}
-		return null;
+		if (startTile == null) {
+			startTile = new TileImpl(0, startX, startY);
+			startTile.calcNeighbours(width, height);
+		}
+		if (endTile == null) {
+			endTile = new TileImpl(0, endX, endY);
+			endTile.calcNeighbours(width, height);
+		}
+		return findMovePath(startTile, endTile, player);
 	}
 
 	public TArray<TileImpl> findMovePath(TileImpl start, TileImpl end, boolean player) {
-		ObjectMap<Integer, ObjectMap<Integer, TileImpl>> list = this.tilesX;
-		TArray<TArray<TileImpl>> listx = new TArray<TArray<TileImpl>>();
-		for (Entries<Integer, ObjectMap<Integer, TileImpl>> it = list.iterator(); it.hasNext();) {
-			Entry<Integer, ObjectMap<Integer, TileImpl>> entry = it.next();
-			ObjectMap<Integer, TileImpl> tiles = entry.value;
-			TArray<TileImpl> tmpx = new TArray<TileImpl>(tiles.size);
-			for (TileImpl tiley : tiles.values()) {
-				tmpx.add(tiley);
-			}
-			listx.add(tmpx);
-		}
-		return findMovePath(listx, start, end, player);
+		return findMovePath(this.tilesX, start, end, player);
 	}
 
-	public TArray<TileImpl> findMovePath(TArray<TArray<TileImpl>> list, TileImpl start, TileImpl end, boolean player) {
+	public TArray<TileImpl> findMovePath(ObjectMap<Integer, ObjectMap<Integer, TileImpl>> list, TileImpl start,
+			TileImpl end, boolean player) {
 		return TileImplPathFind.find(this, heuristic, list, start, end, player);
+	}
+
+	public int getWidth() {
+		return width;
+	}
+
+	public int getHeight() {
+		return height;
 	}
 
 }

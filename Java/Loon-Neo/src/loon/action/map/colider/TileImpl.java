@@ -20,6 +20,7 @@
  */
 package loon.action.map.colider;
 
+import loon.LSystem;
 import loon.action.ActionBind;
 import loon.action.map.Attribute;
 import loon.action.sprite.Animation;
@@ -121,11 +122,16 @@ public class TileImpl implements Tile {
 		return this;
 	}
 
+	public void calcNeighbours() {
+		this.calcNeighbours(LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
+	}
+
 	public void calcNeighbours(int maxX, int maxY) {
-		if (this.neighbours != null) {
-			return;
+		if (this.neighbours == null) {
+			this.neighbours = new TArray<Vector2f>();
+		} else {
+			this.neighbours.clear();
 		}
-		this.neighbours = new TArray<Vector2f>();
 		if (this.rect.y > 0) {
 			if (this.rect.x > 0) {
 				this.neighbours.add(new Vector2f(this.rect.x - 1, this.rect.y - 1)); // 上

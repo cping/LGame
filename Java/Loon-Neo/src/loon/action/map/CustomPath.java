@@ -48,14 +48,33 @@ public class CustomPath implements LRelease {
 		this(n, 1f);
 	}
 
+	public CustomPath(TArray<Vector2f> list) {
+		this(list, 1f);
+	}
+
+	public CustomPath(TArray<Vector2f> list, float scale) {
+		this(list, scale, scale);
+	}
+
+	public CustomPath(TArray<Vector2f> list, float sx, float sy) {
+		this(LSystem.UNKNOWN, list, sx, sy);
+	}
+
 	public CustomPath(String n, float scale) {
 		this(n, scale, scale);
 	}
 
 	public CustomPath(String n, float sx, float sy) {
+		this(n, null, sx, sy);
+	}
+
+	public CustomPath(String n, TArray<Vector2f> list, float sx, float sy) {
 		this.name = n;
 		this.scaleX = sx;
 		this.scaleY = sy;
+		if (list != null) {
+			add(list);
+		}
 	}
 
 	public int size() {
@@ -95,7 +114,7 @@ public class CustomPath implements LRelease {
 	}
 
 	public CustomPath prepend(float x, float y) {
-		steps.add(new Vector2f(x, y));
+		steps.unshift(new Vector2f(x, y));
 		return this;
 	}
 

@@ -23,30 +23,36 @@ package loon.action.map.colider;
 import loon.action.map.AStarFindHeuristic;
 import loon.geom.Vector2f;
 import loon.utils.MathUtils;
+import loon.utils.ObjectMap;
 import loon.utils.TArray;
+import loon.utils.ObjectMap.Entries;
+import loon.utils.ObjectMap.Entry;
 
 /**
  * 针对TileImpl这个Tile接口实现的专属寻径用工具
  */
 public class TileImplPathFind {
 
-	public static TArray<TileImpl> find(TileManager tm, TArray<TArray<TileImpl>> list, TileImpl toT, TileImpl fromT) {
-		return TileImplPathFind.find(tm, tm.getHeuristic(), list, toT, fromT, true);
+	public static TArray<TileImpl> find(TileManager tm, ObjectMap<Integer, ObjectMap<Integer, TileImpl>> list,
+			TileImpl fromT, TileImpl toT) {
+		return TileImplPathFind.find(tm, tm.getHeuristic(), list, fromT, toT, true);
 	}
 
-	public static TArray<TileImpl> find(TileManager tm, AStarFindHeuristic heuristic, TArray<TArray<TileImpl>> list,
-			TileImpl toT, TileImpl fromT, boolean isPlayer) {
+	public static TArray<TileImpl> find(TileManager tm, AStarFindHeuristic heuristic,
+			ObjectMap<Integer, ObjectMap<Integer, TileImpl>> list, TileImpl fromT, TileImpl toT, boolean isPlayer) {
 		TArray<TileImpl> open = new TArray<TileImpl>();
 
 		TileImpl currentTile = null;
 		boolean pathFound = false;
 
-		for (TArray<TileImpl> xTs : list) {
-			for (TileImpl t : xTs) {
-				t.open = false;
-				t.closed = false;
-				t.parent = null;
-				t.H = TileImplPathFind.getDist(heuristic, t, toT);
+		for (Entries<Integer, ObjectMap<Integer, TileImpl>> it = list.iterator(); it.hasNext();) {
+			Entry<Integer, ObjectMap<Integer, TileImpl>> entry = it.next();
+			ObjectMap<Integer, TileImpl> tiles = entry.value;
+			for (TileImpl tiley : tiles.values()) {
+				tiley.open = false;
+				tiley.closed = false;
+				tiley.parent = null;
+				tiley.H = TileImplPathFind.getDist(heuristic, tiley, toT);
 			}
 		}
 
@@ -54,10 +60,11 @@ public class TileImplPathFind {
 		open.add(fromT);
 
 		while (!pathFound) {
+
 			currentTile = TileImplPathFind.getLowestF(open);
 
 			if (currentTile == null) {
-				return null;
+				break;
 			}
 			currentTile.closed = true;
 
@@ -67,24 +74,37 @@ public class TileImplPathFind {
 			}
 
 			for (Vector2f tc : currentTile.getNeighbours()) {
-				TileImpl neighbour = list.get(tc.x()).get(tc.y());
-				if (neighbour.solid) {
-					continue;
-				}
-				if (neighbour.closed) {
-					continue;
-				}
-				if (isPlayer && (tm.getLimits() != null && tm.getLimits().size > 0
-						&& (tm.getLimit(neighbour.getX(), neighbour.getY()) == 0)
-						|| tm.getLimit(neighbour.getX(), neighbour.getY()) == neighbour.idx)) {
-					continue;
-				}
-				if (!neighbour.open) {
-					neighbour.G = TileImplPathFind.getGScore(heuristic, neighbour, currentTile);
-					neighbour.parent = currentTile;
-					neighbour.open = true;
-					open.add(neighbour);
+				if (list.containsKey(tc.x())) {
+					ObjectMap<Integer, TileImpl> impl = list.get(tc.x());
+					if (impl != null && impl.containsKey(tc.y())) {
+						TileImpl neighbour = impl.get(tc.y());
+						if (neighbour.solid) {
+							continue;
+						}
+						if (neighbour.closed) {
+							continue;
+						}
+						if (isPlayer && (tm.getLimits() != null && tm.getLimits().size > 0
+								&& (tm.getLimit(neighbour.getX(), neighbour.getY()) == 0)
+								|| tm.getLimit(neighbour.getX(), neighbour.getY()) == neighbour.idx)) {
+							continue;
+						}
+						if (!neighbour.open) {
+							neighbour.G = TileImplPathFind.getGScore(heuristic, neighbour, currentTile);
+							neighbour.parent = currentTile;
+							neighbour.open = true;
+							open.add(neighbour);
+						} else {
+							float tmpG = TileImplPathFind.getGScore(heuristic, neighbour, currentTile);
+							if ((neighbour.H + tmpG) < neighbour.getWeight()) {
+								neighbour.G = tmpG;
+								neighbour.parent = currentTile;
+							}
+						}
+					}
 				} else {
+					TileImpl neighbour = new TileImpl(0, tc.x(), tc.y());
+					neighbour.calcNeighbours(tm.getWidth(), tm.getHeight());
 					float tmpG = TileImplPathFind.getGScore(heuristic, neighbour, currentTile);
 					if ((neighbour.H + tmpG) < neighbour.getWeight()) {
 						neighbour.G = tmpG;
@@ -97,13 +117,17 @@ public class TileImplPathFind {
 		TArray<TileImpl> path = new TArray<TileImpl>();
 		path.add(toT);
 
-		while (currentTile != fromT) {
-			if (currentTile.parent != null) {
-				currentTile = currentTile.parent;
-				path.add(currentTile);
+		if (currentTile != null) {
+			while (currentTile != fromT) {
+				if (currentTile.parent != null) {
+					currentTile = currentTile.parent;
+					path.add(currentTile);
+				}
 			}
 		}
+
 		path.reverse();
+
 		if (tm != null) {
 			path = TileImplPathFind.optomisePath(tm, path);
 		}
@@ -159,13 +183,15 @@ public class TileImplPathFind {
 			lowest_tile = t;
 			lowest_w = w;
 		}
-		openList.remove(lowest_tile);
+		if (lowest_tile != null) {
+			openList.remove(lowest_tile);
+		}
 		return lowest_tile;
 	}
 
 	public static float getGScore(AStarFindHeuristic heuristic, TileImpl tile, TileImpl ptile) {
 		if (heuristic != null) {
-			return heuristic.getScore(tile.getX(), tile.getY(), tile.getX(), tile.getY());
+			return heuristic.getScore(tile.getX(), tile.getY(), ptile.getX(), ptile.getY());
 		}
 		if (ptile.getX() != tile.getX() && ptile.getY() != tile.getY()) {
 			return ptile.G + 15;
@@ -175,7 +201,7 @@ public class TileImplPathFind {
 
 	public static float getDist(AStarFindHeuristic heuristic, TileImpl f, TileImpl t) {
 		if (heuristic != null) {
-			return heuristic.getScore(f.getX(), f.getY(), f.getX(), f.getY());
+			return heuristic.getScore(f.getX(), f.getY(), t.getX(), t.getY());
 		}
 		int xDiff = MathUtils.abs(f.getX() - t.getX());
 		int yDiff = MathUtils.abs(f.getY() - t.getY());
