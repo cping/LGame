@@ -38,9 +38,9 @@ public class RunCompile {
 
 	public int execute() throws Exception {
 
+		StringBuilder outString = new StringBuilder();
 		if (prj.projects.verbose) {
 
-			StringBuilder outString = new StringBuilder();
 			for (String s : list) {
 				outString.append(s);
 				outString.append(' ');
@@ -51,8 +51,10 @@ public class RunCompile {
 		}
 
 		Process p = new ProcessBuilder().command(list).start();
-		StreamOut errorGobbler = new StreamOut(p.getErrorStream(), "err");
-		StreamOut outputGobbler = new StreamOut(p.getInputStream(), "out");
+		//Runtime  runtime = Runtime.getRuntime();
+		//Process p = runtime.exec(list.toArray(new String[0]));
+		StreamOut errorGobbler = new StreamOut(p.getErrorStream(), " err ");
+		StreamOut outputGobbler = new StreamOut(p.getInputStream(), " out ");
 		outputGobbler.start();
 		errorGobbler.start();
 		return p.waitFor();

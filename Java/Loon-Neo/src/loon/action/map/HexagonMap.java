@@ -398,7 +398,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	}
 
 	public int getLimitType(int[] position) {
-		int id = getTile(position).idx;
+		int id = getTile(position).getId();
 		if (getLimit() != null) {
 			for (int i = 0; i < getLimit().length; i++) {
 				if (getLimit()[i] == id) {
@@ -421,7 +421,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		for (int j = 0; j < cols; j++) {
 			for (int i = 0; i < rows; i++) {
 				tiles[i][j] = new TileImpl(id, i, j);
-				tiles[i][j].imgId = imgId;
+				tiles[i][j].setImgId(imgId);
 				maps[i][j] = id;
 			}
 		}
@@ -442,12 +442,12 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	}
 
 	public HexagonMap putImageIdTile(int id, int x, int y) {
-		getTile(x, y).imgId = id;
+		getTile(x, y).setImgId(id);
 		return this;
 	}
 
 	public int getImageIdTile(int x, int y) {
-		return getTile(x, y).imgId;
+		return getTile(x, y).getImgId();
 	}
 
 	public HexagonMap createMap(int startWidth, int midHeight, int endHeight, int cols, int rows) {
@@ -803,7 +803,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		if (position != null) {
 			TileImpl tile = getTile(position);
 			if (allowDisplayClicked) {
-				setTile(position, new TileImpl((tile.idx < getLimit().length - 1) ? tile.idx + 1 : 0));
+				setTile(position, new TileImpl((tile.getId() < getLimit().length - 1) ? tile.getId() + 1 : 0));
 			}
 			return tile;
 		}
@@ -1569,9 +1569,9 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 
 	public HexagonMap removeTile(int id) {
 		for (TileImpl tile : tileBinds) {
-			if (tile.idx == id) {
-				if (tile.isAnimation) {
-					animations.remove(tile.animation);
+			if (tile.getId() == id) {
+				if (tile.isAnimation()) {
+					animations.remove(tile.getAnimation());
 				}
 				tileBinds.remove(tile);
 			}
@@ -1586,17 +1586,16 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	public int putAnimationTile(int id, Animation animation, Attribute attribute) {
 		if (active) {
 			TileImpl tile = new TileImpl(id);
-			tile.imgId = -1;
-			tile.attribute = attribute;
+			tile.setImgId(-1);
+			tile.setAttribute(attribute);
 			if (animation != null && animation.getTotalFrames() > 0) {
-				tile.isAnimation = true;
-				tile.animation = animation;
+				tile.setAnimation(animation);
 				playAnimation = true;
 			}
 			animations.add(animation);
 			tileBinds.add(tile);
 			dirty = true;
-			return tile.imgId;
+			return tile.getImgId();
 		} else {
 			throw new LSysException("Map is no longer active, you can not add new tiles !");
 		}
@@ -1621,11 +1620,11 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	public int putTile(int id, Image img, Attribute attribute) {
 		if (active) {
 			TileImpl tile = new TileImpl(id);
-			tile.imgId = texturePack.putImage(img);
-			tile.attribute = attribute;
+			tile.setImgId(texturePack.putImage(img));
+			tile.setAttribute(attribute);
 			tileBinds.add(tile);
 			dirty = true;
-			return tile.imgId;
+			return tile.getImgId();
 		} else {
 			throw new LSysException("Map is no longer active, you can not add new tiles !");
 		}
@@ -1638,11 +1637,11 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	public int putTile(int id, LTexture img, Attribute attribute) {
 		if (active) {
 			TileImpl tile = new TileImpl(id);
-			tile.imgId = texturePack.putImage(img);
-			tile.attribute = attribute;
+			tile.setImgId(texturePack.putImage(img));
+			tile.setAttribute(attribute);
 			tileBinds.add(tile);
 			dirty = true;
-			return tile.imgId;
+			return tile.getImgId();
 		} else {
 			throw new LSysException("Map is no longer active, you can not add new tiles !");
 		}
@@ -1655,11 +1654,11 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	public int putTile(int id, String res, Attribute attribute) {
 		if (active) {
 			TileImpl tile = new TileImpl(id);
-			tile.imgId = texturePack.putImage(res);
-			tile.attribute = attribute;
+			tile.setImgId(texturePack.putImage(res));
+			tile.setAttribute(attribute);
 			tileBinds.add(tile);
 			dirty = true;
-			return tile.imgId;
+			return tile.getImgId();
 		} else {
 			throw new LSysException("Map is no longer active, you can not add new tiles !");
 		}
@@ -1672,8 +1671,8 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	public HexagonMap putTile(int id, int imgId, Attribute attribute) {
 		if (active) {
 			TileImpl tile = new TileImpl(id);
-			tile.imgId = imgId;
-			tile.attribute = attribute;
+			tile.setImgId(imgId);
+			tile.setAttribute(attribute);
 			tileBinds.add(tile);
 			dirty = true;
 		} else {
@@ -1688,7 +1687,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 
 	public TileImpl getTile(int id) {
 		for (TileImpl tile : tileBinds) {
-			if (tile.idx == id) {
+			if (tile.getId() == id) {
 				return tile;
 			}
 		}
@@ -1736,9 +1735,9 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 					Hexagon hexagon = coordinate(visit.position);
 					if (getViewRect().intersects(hexagon.getFrameRect())) {
 						TileImpl tile = visit.tile;
-						TileImpl bindImpl = getTile(tile.idx);
-						if (bindImpl != null && playAnimation && bindImpl.isAnimation) {
-							LTexture texture = bindImpl.animation.getSpriteImage();
+						TileImpl bindImpl = getTile(tile.getId());
+						if (bindImpl != null && playAnimation && bindImpl.isAnimation()) {
+							LTexture texture = bindImpl.getAnimation().getSpriteImage();
 							if (texture != null) {
 								int newWidth = MathUtils.max(texture.getWidth(), hexagon.getWidth());
 								int newHeight = MathUtils.max(texture.getHeight(), hexagon.getHeight());
@@ -1750,7 +1749,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 								}
 							}
 						} else if (bindImpl != null) {
-							LTexture texture = texturePack.getTexture(bindImpl.imgId);
+							LTexture texture = texturePack.getTexture(bindImpl.getImgId());
 							if (texture != null) {
 								int newWidth = MathUtils.max(texture.getWidth(), hexagon.getWidth());
 								int newHeight = MathUtils.max(texture.getHeight(), hexagon.getHeight());
@@ -1765,7 +1764,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 								step = 0;
 							}
 							LColor color = LColor.white;
-							switch (tile.idx) {
+							switch (tile.getId()) {
 							case 0:
 								color = LColor.red;
 								break;
@@ -1831,9 +1830,9 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 							Hexagon hexagon = coordinate(visit.position);
 							if (getViewRect().intersects(hexagon.getFrameRect())) {
 								TileImpl tile = visit.tile;
-								TileImpl bindImpl = getTile(tile.idx);
-								if (bindImpl != null && playAnimation && bindImpl.isAnimation) {
-									LTexture texture = bindImpl.animation.getSpriteImage();
+								TileImpl bindImpl = getTile(tile.getId());
+								if (bindImpl != null && playAnimation && bindImpl.isAnimation()) {
+									LTexture texture = bindImpl.getAnimation().getSpriteImage();
 									int newWidth = MathUtils.max(texture.getWidth(), hexagon.getWidth());
 									int newHeight = MathUtils.max(texture.getHeight(), hexagon.getHeight());
 									g.draw(texture, hexagon.getX() + offsetX, hexagon.getY() + offsetY, newWidth,
@@ -1852,9 +1851,9 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 						Hexagon hexagon = coordinate(visit.position);
 						if (getViewRect().intersects(hexagon.getFrameRect())) {
 							TileImpl tile = visit.tile;
-							TileImpl bindImpl = getTile(tile.idx);
-							if (bindImpl != null && playAnimation && bindImpl.isAnimation) {
-								LTexture texture = bindImpl.animation.getSpriteImage();
+							TileImpl bindImpl = getTile(tile.getId());
+							if (bindImpl != null && playAnimation && bindImpl.isAnimation()) {
+								LTexture texture = bindImpl.getAnimation().getSpriteImage();
 								if (texture != null) {
 									int newWidth = MathUtils.max(texture.getWidth(), hexagon.getWidth());
 									int newHeight = MathUtils.max(texture.getHeight(), hexagon.getHeight());
@@ -1862,7 +1861,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 											newHeight);
 								}
 							} else if (bindImpl != null) {
-								int id = bindImpl.imgId;
+								int id = bindImpl.getImgId();
 								LTexture texture = texturePack.getTexture(id);
 								if (texture != null) {
 									int newWidth = MathUtils.max(texture.getWidth(), hexagon.getWidth());

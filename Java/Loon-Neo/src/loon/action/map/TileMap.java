@@ -244,9 +244,9 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	public TileMap removeTile(int id) {
 		for (TileImpl tile : arrays) {
-			if (tile.idx == id) {
-				if (tile.isAnimation) {
-					animations.remove(tile.animation);
+			if (tile.getId() == id) {
+				if (tile.isAnimation()) {
+					animations.remove(tile.getAnimation());
 				}
 				arrays.remove(tile);
 			}
@@ -261,17 +261,16 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	public int putAnimationTile(int id, Animation animation, Attribute attribute) {
 		if (active) {
 			TileImpl tile = new TileImpl(id);
-			tile.imgId = -1;
-			tile.attribute = attribute;
+			tile.setImgId(-1);
+			tile.setAttribute(attribute);
 			if (animation != null && animation.getTotalFrames() > 0) {
-				tile.isAnimation = true;
-				tile.animation = animation;
+				tile.setAnimation(animation);
 				playAnimation = true;
 			}
 			animations.add(animation);
 			arrays.add(tile);
 			dirty = true;
-			return tile.imgId;
+			return tile.getImgId();
 		} else {
 			throw new LSysException("Map is no longer active, you can not add new tiles !");
 		}
@@ -288,11 +287,11 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	public int putTile(int id, Image img, Attribute attribute) {
 		if (active) {
 			TileImpl tile = new TileImpl(id);
-			tile.imgId = texturePack.putImage(img);
-			tile.attribute = attribute;
+			tile.setImgId(texturePack.putImage(img));
+			tile.setAttribute(attribute);
 			arrays.add(tile);
 			dirty = true;
-			return tile.imgId;
+			return tile.getImgId();
 		} else {
 			throw new LSysException("Map is no longer active, you can not add new tiles !");
 		}
@@ -305,11 +304,11 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	public int putTile(int id, LTexture img, Attribute attribute) {
 		if (active) {
 			TileImpl tile = new TileImpl(id);
-			tile.imgId = texturePack.putImage(img);
-			tile.attribute = attribute;
+			tile.setImgId(texturePack.putImage(img));
+			tile.setAttribute(attribute);
 			arrays.add(tile);
 			dirty = true;
-			return tile.imgId;
+			return tile.getImgId();
 		} else {
 			throw new LSysException("Map is no longer active, you can not add new tiles !");
 		}
@@ -322,11 +321,11 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	public int putTile(int id, String res, Attribute attribute) {
 		if (active) {
 			TileImpl tile = new TileImpl(id);
-			tile.imgId = texturePack.putImage(res);
-			tile.attribute = attribute;
+			tile.setImgId(texturePack.putImage(res));
+			tile.setAttribute(attribute);
 			arrays.add(tile);
 			dirty = true;
-			return tile.imgId;
+			return tile.getImgId();
 		} else {
 			throw new LSysException("Map is no longer active, you can not add new tiles !");
 		}
@@ -339,8 +338,8 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	public TileMap putTile(int id, int imgId, Attribute attribute) {
 		if (active) {
 			TileImpl tile = new TileImpl(id);
-			tile.imgId = imgId;
-			tile.attribute = attribute;
+			tile.setImgId(imgId);
+			tile.setAttribute(attribute);
 			arrays.add(tile);
 			dirty = true;
 		} else {
@@ -355,7 +354,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	public TileImpl getTile(int id) {
 		for (TileImpl tile : arrays) {
-			if (tile.idx == id) {
+			if (tile.getId() == id) {
 				return tile;
 			}
 		}
@@ -484,14 +483,14 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 							final float posX = field2d.tilesToWidthPixels(i) + offsetX;
 							final float posY = field2d.tilesToHeightPixels(j) + offsetY;
 							for (TileImpl tile : arrays) {
-								if (tile.isAnimation && tile.idx == id) {
+								if (tile.isAnimation() && tile.getId() == id) {
 									if (useBatch) {
 										LColor tmp = batch.getColor();
 										batch.setColor(baseColor);
-										batch.draw(tile.animation.getSpriteImage(), posX, posY, tileWidth, tileHeight);
+										batch.draw(tile.getAnimation().getSpriteImage(), posX, posY, tileWidth, tileHeight);
 										batch.setColor(tmp);
 									} else {
-										g.draw(tile.animation.getSpriteImage(), posX, posY, tileWidth, tileHeight,
+										g.draw(tile.getAnimation().getSpriteImage(), posX, posY, tileWidth, tileHeight,
 												baseColor);
 									}
 								}
@@ -528,24 +527,24 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 						final float posY = field2d.tilesToHeightPixels(j) + offsetY;
 						for (TileImpl tile : arrays) {
 							if (playAnimation) {
-								if (tile.idx == id) {
-									if (tile.isAnimation) {
+								if (tile.getId() == id) {
+									if (tile.isAnimation()) {
 										if (useBatch) {
 											LColor tmp = batch.getColor();
 											batch.setColor(baseColor);
-											batch.draw(tile.animation.getSpriteImage(), posX, posY, tileWidth,
+											batch.draw(tile.getAnimation().getSpriteImage(), posX, posY, tileWidth,
 													tileHeight);
 											batch.setColor(tmp);
 										} else {
-											g.draw(tile.animation.getSpriteImage(), posX, posY, tileWidth, tileHeight,
+											g.draw(tile.getAnimation().getSpriteImage(), posX, posY, tileWidth, tileHeight,
 													baseColor);
 										}
 									} else {
-										texturePack.draw(tile.imgId, posX, posY, tileWidth, tileHeight, baseColor);
+										texturePack.draw(tile.getImgId(), posX, posY, tileWidth, tileHeight, baseColor);
 									}
 								}
-							} else if (tile.idx == id) {
-								texturePack.draw(tile.imgId, posX, posY, tileWidth, tileHeight);
+							} else if (tile.getId() == id) {
+								texturePack.draw(tile.getImgId(), posX, posY, tileWidth, tileHeight);
 							}
 						}
 					}

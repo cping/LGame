@@ -20,6 +20,7 @@
  */
 package loon.action.map.colider;
 
+import loon.action.ActionBind;
 import loon.action.map.Attribute;
 import loon.action.sprite.Animation;
 import loon.geom.RectI;
@@ -31,17 +32,17 @@ public class TileImpl implements Tile {
 
 	private RectI rect;
 
-	public int idx = -1;
+	protected int idx = -1;
 
-	public int solidType = -1;
+	protected int solidType = -1;
 
-	public int imgId = -1;
+	protected int imgId = -1;
 
-	public Attribute attribute;
+	protected Attribute attribute;
 
-	public boolean isAnimation;
+	protected boolean isAnimation;
 
-	public Animation animation;
+	protected Animation animation;
 
 	protected TArray<TileEvent> events = new TArray<TileEvent>();
 
@@ -53,10 +54,16 @@ public class TileImpl implements Tile {
 
 	protected TileImpl parent = null;
 
+	protected ActionBind bind = null;
+
 	private TArray<Vector2f> neighbours;
 
 	public TileImpl(int idx) {
 		this(idx, 0, 0);
+	}
+
+	public TileImpl(int idx, ActionBind bind) {
+		this(idx, bind, bind.x(), bind.y(), (int) bind.getWidth(), (int) bind.getHeight());
 	}
 
 	public TileImpl(int idx, int x, int y) {
@@ -64,10 +71,15 @@ public class TileImpl implements Tile {
 	}
 
 	public TileImpl(int idx, int x, int y, int w, int h) {
+		this(idx, null, x, y, w, h);
+	}
+
+	public TileImpl(int idx, ActionBind bind, int x, int y, int w, int h) {
 		this.idx = idx;
 		this.imgId = idx;
 		this.solidType = idx;
 		this.rect = new RectI(x, y, w, h);
+		this.bind = bind;
 	}
 
 	public float getWeight() {
@@ -100,6 +112,7 @@ public class TileImpl implements Tile {
 		G = other.G;
 		H = other.H;
 		parent = other.parent;
+		bind = other.bind;
 		if (neighbours != null) {
 			neighbours.addAll(other.neighbours);
 		} else {
@@ -138,8 +151,12 @@ public class TileImpl implements Tile {
 			}
 		}
 	}
-	
-	protected void setId(int id){
+
+	public int getId() {
+		return this.idx;
+	}
+
+	protected void setId(int id) {
 		this.idx = id;
 		this.imgId = id;
 		this.solidType = id;
@@ -148,7 +165,7 @@ public class TileImpl implements Tile {
 	@Override
 	public TileImpl at(int id, int x, int y, int w, int h) {
 		TileImpl impl = cpy();
-		impl.setId(id); 
+		impl.setId(id);
 		impl.setX(x);
 		impl.setY(y);
 		impl.setWidth(w);
@@ -226,11 +243,32 @@ public class TileImpl implements Tile {
 	}
 
 	public void setAnimation(Animation animation) {
+		this.isAnimation = !(animation == null);
 		this.animation = animation;
 	}
 
 	public TArray<TileEvent> getEvents() {
 		return events;
+	}
+
+	public ActionBind getBind() {
+		return bind;
+	}
+
+	public int getImgId() {
+		return imgId;
+	}
+
+	public void setImgId(int imgId) {
+		this.imgId = imgId;
+	}
+
+	public boolean isAnimation() {
+		return isAnimation;
+	}
+
+	public void setAnimation(boolean ani) {
+		this.isAnimation = ani;
 	}
 
 	public boolean isClosed() {
@@ -241,4 +279,5 @@ public class TileImpl implements Tile {
 	public Tile getTileImpl() {
 		return this;
 	}
+
 }

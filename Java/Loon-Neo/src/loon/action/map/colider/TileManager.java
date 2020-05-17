@@ -20,19 +20,33 @@
  */
 package loon.action.map.colider;
 
+import loon.LSystem;
 import loon.action.map.AStarFindHeuristic;
+import loon.opengl.GLEx;
+import loon.utils.IntMap;
 import loon.utils.ObjectMap;
 import loon.utils.TArray;
+import loon.utils.ObjectMap.Entries;
+import loon.utils.ObjectMap.Entry;
 
+/**
+ * 不规则地图的瓦片管理器(即地图最大长宽不统一的地图)
+ */
 public class TileManager {
+
+	public static interface TileDrawListener<T> {
+
+		public void update(long elapsedTime, T tile);
+
+		public void draw(GLEx g, T tile, float x, float y);
+
+	}
 
 	public static final int DEF_RATE = 5;
 
 	public static final int DEF_SOLID = 1;
 
 	public static final float DEF_TILE_SCALE = 1f;
-
-	private final int[][] limit;
 
 	private final ObjectMap<Integer, ObjectMap<Integer, TileImpl>> tilesX;
 
@@ -44,34 +58,24 @@ public class TileManager {
 
 	private float tileScale = DEF_TILE_SCALE;
 
-	public TileManager(AStarFindHeuristic h, int tileXsize, int tileYsize) {
-		this(h, tileXsize, tileYsize, DEF_TILE_SCALE);
+	private IntMap<Integer> limits = new IntMap<Integer>();
+
+	private TileDrawListener<TileImpl> listener;
+
+	public TileManager(AStarFindHeuristic h) {
+		this(h, DEF_TILE_SCALE);
 	}
 
-	public TileManager(AStarFindHeuristic h, int tileXsize, int tileYsize, float ts) {
-		this(h, tileXsize, tileYsize, DEF_RATE, DEF_SOLID, ts);
+	public TileManager(AStarFindHeuristic h, float ts) {
+		this(h, DEF_RATE, DEF_SOLID, ts);
 	}
 
-	public TileManager(AStarFindHeuristic h, int tileXsize, int tileYsize, int r, int s, float ts) {
+	public TileManager(AStarFindHeuristic h, int r, int s, float ts) {
 		this.tilesX = new ObjectMap<Integer, ObjectMap<Integer, TileImpl>>(32);
-		this.limit = new int[tileXsize][tileYsize];
 		this.heuristic = h;
 		this.rate = r;
 		this.solid = s;
 		this.tileScale = ts;
-	}
-
-	public void setLimit(int x, int y, int flag) {
-		if (limit != null) {
-			limit[x][y] = flag;
-		}
-	}
-
-	public int getLimit(int x, int y) {
-		if (limit == null) {
-			return 0;
-		}
-		return limit[x][y];
 	}
 
 	public void put(TileImpl tile) {
@@ -112,6 +116,26 @@ public class TileManager {
 		return null;
 	}
 
+	public IntMap<Integer> getLimits() {
+		return this.limits;
+	}
+
+	public TileManager putLimit(int x, int y, Integer value) {
+		int tileCode = 1;
+		tileCode = LSystem.unite(tileCode, x);
+		tileCode = LSystem.unite(tileCode, y);
+		limits.put(tileCode, value);
+		return this;
+	}
+
+	public int getLimit(int x, int y) {
+		int tileCode = 1;
+		tileCode = LSystem.unite(tileCode, x);
+		tileCode = LSystem.unite(tileCode, y);
+		Integer v = limits.get(tileCode);
+		return v == null ? -1 : v.intValue();
+	}
+
 	public int getRate() {
 		return rate;
 	}
@@ -128,11 +152,66 @@ public class TileManager {
 		return heuristic;
 	}
 
-	public int[][] getLimit() {
-		return limit;
+	public TileDrawListener<TileImpl> getTileListener() {
+		return listener;
+	}
+
+	public void setTileListener(TileDrawListener<TileImpl> listener) {
+		this.listener = listener;
+	}
+	
+	public void drawTiles(GLEx g, float offsetX, float offsetY) {
+		ObjectMap<Integer, ObjectMap<Integer, TileImpl>> list = this.tilesX;
+		for (Entries<Integer, ObjectMap<Integer, TileImpl>> it = list.iterator(); it.hasNext();) {
+			Entry<Integer, ObjectMap<Integer, TileImpl>> entry = it.next();
+			ObjectMap<Integer, TileImpl> tiles = entry.value;
+			for (TileImpl tiley : tiles.values()) {
+				if (listener != null && tiley != null) {
+					listener.draw(g, tiley, offsetX, offsetY);
+				}
+			}
+		}
+	}
+
+	public void updateTiles(long elapsedTime) {
+		ObjectMap<Integer, ObjectMap<Integer, TileImpl>> list = this.tilesX;
+		for (Entries<Integer, ObjectMap<Integer, TileImpl>> it = list.iterator(); it.hasNext();) {
+			Entry<Integer, ObjectMap<Integer, TileImpl>> entry = it.next();
+			ObjectMap<Integer, TileImpl> tiles = entry.value;
+			for (TileImpl tiley : tiles.values()) {
+				if (listener != null && tiley != null) {
+					listener.update(elapsedTime, tiley);
+				}
+			}
+		}
+	}
+
+	public TArray<TileImpl> findMovePath(int startX, int startY, int endX, int endY, boolean player) {
+		TileImpl startTile = getTile(startX, startY);
+		TileImpl endTile = getTile(endX, endY);
+		if (startTile != null && endTile != null) {
+			return findMovePath(startTile, endTile, player);
+		}
+		return null;
+	}
+
+	public TArray<TileImpl> findMovePath(TileImpl start, TileImpl end, boolean player) {
+		ObjectMap<Integer, ObjectMap<Integer, TileImpl>> list = this.tilesX;
+		TArray<TArray<TileImpl>> listx = new TArray<TArray<TileImpl>>();
+		for (Entries<Integer, ObjectMap<Integer, TileImpl>> it = list.iterator(); it.hasNext();) {
+			Entry<Integer, ObjectMap<Integer, TileImpl>> entry = it.next();
+			ObjectMap<Integer, TileImpl> tiles = entry.value;
+			TArray<TileImpl> tmpx = new TArray<TileImpl>(tiles.size);
+			for (TileImpl tiley : tiles.values()) {
+				tmpx.add(tiley);
+			}
+			listx.add(tmpx);
+		}
+		return findMovePath(listx, start, end, player);
 	}
 
 	public TArray<TileImpl> findMovePath(TArray<TArray<TileImpl>> list, TileImpl start, TileImpl end, boolean player) {
 		return TileImplPathFind.find(this, heuristic, list, start, end, player);
 	}
+
 }

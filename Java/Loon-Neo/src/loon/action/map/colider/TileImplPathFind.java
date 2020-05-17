@@ -28,7 +28,7 @@ import loon.utils.TArray;
 /**
  * 针对TileImpl这个Tile接口实现的专属寻径用工具
  */
-public class TileImplPathFind{
+public class TileImplPathFind {
 
 	public static TArray<TileImpl> find(TileManager tm, TArray<TArray<TileImpl>> list, TileImpl toT, TileImpl fromT) {
 		return TileImplPathFind.find(tm, tm.getHeuristic(), list, toT, fromT, true);
@@ -74,8 +74,9 @@ public class TileImplPathFind{
 				if (neighbour.closed) {
 					continue;
 				}
-				if (isPlayer && (tm.getLimit() != null && tm.getLimit().length > 0
-						&& tm.getLimit()[neighbour.getX()][neighbour.getY()] == 0)) {
+				if (isPlayer && (tm.getLimits() != null && tm.getLimits().size > 0
+						&& (tm.getLimit(neighbour.getX(), neighbour.getY()) == 0)
+						|| tm.getLimit(neighbour.getX(), neighbour.getY()) == neighbour.idx)) {
 					continue;
 				}
 				if (!neighbour.open) {
@@ -248,7 +249,6 @@ public class TileImplPathFind{
 		int x = (int) cX, y = (int) cY;
 		int tileX = (int) (x / tm.getScale());
 		int tileY = (int) (y / tm.getScale());
-
 		return tm.getTile(tileX, tileY);
 	}
 

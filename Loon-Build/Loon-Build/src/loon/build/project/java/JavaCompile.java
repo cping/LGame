@@ -18,6 +18,9 @@ public class JavaCompile {
 		this.executable = executable;
 	}
 
+	public String getTarget() {
+		return this.target;
+	}
 
 	public void setTarget(String target) {
 		this.target = target;
@@ -42,31 +45,35 @@ public class JavaCompile {
 	public void setClasspath(JavaPath classpath) {
 		this.classpath = classpath;
 	}
-
+	
 	public int execute() throws Exception {
 		RunCompile exec = new RunCompile(prj);
-		exec.setCmd(executable);
-	
+
+		exec.setCmd("\"" + executable + "\"");
+		
 		if (!debug) {
 			exec.addArg("-g:none");
 		}
+
 		if (destdir != null) {
 			new File(destdir).mkdirs();
-			exec.addArg("-d", destdir);
+			exec.addArg("-d", "\"" + JavaBuild.getPath(destdir) + "\"");
 		}
 
 		if (encoding != null) {
-			exec.addArg("-encoding", encoding);
+			exec.addArg("-encoding", "\"" +encoding+ "\"");
 		}
 
 		if (source != null) {
-			exec.addArg("-source", source);
+			exec.addArg("-source", "\"" +source+ "\"");
 		}
+		
 		if (srcdir != null) {
-			exec.addArg("-sourcepath", srcdir);
+			exec.addArg("-sourcepath", "\"" + JavaBuild.getPath(srcdir.replace("/", "\\")) + "\"");
 		}
+		
 		if (target != null) {
-			exec.addArg("-target", target);
+			exec.addArg("-target",  "\"" + target+ "\"");
 		}
 
 		if (classpath != null) {
@@ -75,10 +82,11 @@ public class JavaCompile {
 				exec.addArg("-cp", cp);
 			}
 		}
+		
 
 		File f = JarWrite.getTempFile("filelist");
 		int cnt = JarWrite.writeFileList(f, new File(srcdir), new File(destdir));
-	
+
 		if (cnt == 0) {
 			return cnt;
 		}

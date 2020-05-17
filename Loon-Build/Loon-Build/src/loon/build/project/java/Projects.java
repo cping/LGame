@@ -32,8 +32,9 @@ public class Projects {
 			List<Object> list = (List<Object>) prjs.get(i);
 			ProjectItem prj = new ProjectItem();
 			maps.put((String) list.get(0), prj);
-			prj.name = (String) list.get(0);
-			prj.dir = (String) list.get(1);
+			prj.name = JavaBuild.getPath((String) list.get(0));
+			prj.dir = JavaBuild.getPath((String) list.get(1));
+
 			if (list.size() >= 3) {
 				ArrayMap m = (ArrayMap) list.get(2);
 				prj.depends = (List<Object>) m.get("dep");
@@ -41,10 +42,9 @@ public class Projects {
 				prj.jars = (List<Object>) m.get("jars");
 				prj.classpaths = (List<Object>)m.get("classpath");
 				prj.manifests = (List<Object>) m.get("manifests");
-				prj.mainClass = (String) m.get("main");
-				prj.outSrc = (String) m.get("src");
+				prj.mainClass = JavaBuild.getPath((String) m.get("main"));
+				prj.outSrc = JavaBuild.getPath((String) m.get("src"));
 				prj.run = (List<Object>) m.get("run");
-	
 			}
 		}
 	}

@@ -28,5 +28,4 @@ public interface DrawListener<T> {
 
 	public T draw(GLEx g, float x, float y);
 
-	
 }

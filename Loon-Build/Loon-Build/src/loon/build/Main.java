@@ -12,6 +12,6 @@ public class Main {
 						"clean" });
 			}
 		}
-	//	JavaBuild.load(new String[] { "F:/ttes/build-test.txt","clean" });
+		//JavaBuild.load(new String[]{"f:\\ttes","clean"});
 	}
 }

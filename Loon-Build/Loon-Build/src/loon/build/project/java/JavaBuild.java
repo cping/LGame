@@ -6,6 +6,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -60,8 +63,7 @@ public class JavaBuild {
 				}
 			}
 			if (turn.size() == 0) {
-				throw new RuntimeException("to build " + builds
-						+ " but they depend on each other");
+				throw new RuntimeException("to build " + builds + " but they depend on each other");
 			}
 			buildTurn(turn);
 			built.addAll(turn);
@@ -122,43 +124,38 @@ public class JavaBuild {
 		project.setName(prjName);
 		JavaCompile javac = new JavaCompile();
 		javac.setProject(project);
-		javac.setExecutable(prjList.javaHome
-				+ (JDK.isWindows() ? "/bin/javac.exe" : "/bin/javac"));
+		javac.setExecutable(prjList.javaHome + (JDK.isWindows() ? "/bin/javac.exe" : "/bin/javac"));
 		javac.setTarget(getParam("target", "1.8"));
 		javac.setSource(getParam("source", "1.8"));
 		javac.setEncoding(getParam("encoding", LSystem.ENCODING));
 		javac.setDebug(new Boolean(getParam("debug", "false")));
 		srcDirFile = new File(path.getCanonicalPath(), "/" + sourceFileName);
 		if (!srcDirFile.exists()) {
-			throw new RuntimeException("src dir not found:"
-					+ srcDirFile.getCanonicalPath());
+			throw new RuntimeException("src dir not found:" + srcDirFile.getCanonicalPath());
 		}
-		javac.setSrcdir(path.getCanonicalPath() + "/" + sourceFileName);
-		File buildDir = new File(path.getCanonicalPath() + "/build");
+		javac.setSrcdir(getPath(path.getCanonicalPath() + "/" + sourceFileName));
+		File buildDir = new File(getPath(path.getCanonicalPath() + "/build"));
 		buildDir.mkdirs();
-		
 		String mainCalss = prj.mainClass;
 		if (mainCalss != null) {
 			// 如果使用loon提供的内部类引用器
 			if ("loon.JarInternal".equals(mainCalss)) {
-				File jarInternalFile = new File(srcDirFile,
-						"/loon/JarInternal.java");
+				File jarInternalFile = new File(srcDirFile, "/loon/JarInternal.java");
 				if (!jarInternalFile.exists()) {
-					byte[] buffer = Packer.getResourceZipFile(
-							"assets/loon.zip", "loon/JarInternal.java");
+					byte[] buffer = Packer.getResourceZipFile("assets/loon.zip", "loon/JarInternal.java");
 					if (buffer != null) {
 						FileUtils.write(jarInternalFile, buffer);
 					}
 				}
 			}
 		}
-		
-		String buildOutputPath = buildDir.getCanonicalPath();
+
+		String buildOutputPath = getPath(buildDir.getCanonicalPath());
 		javac.setDestdir(buildOutputPath);
 		JavaPath cp = new JavaPath(project);
 		if (prj.classpaths != null) {
 			for (Object o : prj.classpaths) {
-				String classPath = o.toString();
+				String classPath = getPath(o.toString());
 				File classFile = new File(classPath);
 				if (!classFile.exists()) {
 					classFile = addPath(prjList.sourceDir, classPath);
@@ -174,20 +171,18 @@ public class JavaBuild {
 					File[] fs = f1.listFiles();
 					for (File f : fs) {
 						if (f.getName().endsWith(".jar")) {
-							cp.add(f.getCanonicalPath());
+							cp.add(getPath(f.getCanonicalPath()));
 						}
 					}
 				} else {
-					cp.add(addPath(prjList.sourceDir, o.toString())
-							.getCanonicalPath());
+					cp.add(addPath(prjList.sourceDir, o.toString()).getCanonicalPath());
 				}
 			}
 		}
 		if (prj.depends != null) {
 			for (Object o : prj.depends) {
 				ProjectItem p1 = prjList.maps.get(o.toString());
-				String po = addPath(prjList.sourceDir, p1.dir)
-						.getCanonicalPath() + "/completed/" + p1.name + ".jar";
+				String po = addPath(prjList.sourceDir, p1.dir).getCanonicalPath() + "/completed/" + p1.name + ".jar";
 				cp.add(po);
 			}
 		}
@@ -207,12 +202,11 @@ public class JavaBuild {
 			for (Object o : prj.jars) {
 				File f1 = addPath(prjList.sourceDir, o.toString());
 				if (f1.exists()) {
-					FileUtils.copyDir(f1.getAbsolutePath(),
-							buildDir.getAbsolutePath());
+					FileUtils.copyDir(getPath(f1.getAbsolutePath()), getPath(buildDir.getAbsolutePath()));
 				}
 			}
 		}
-	
+
 		JarFileCopy copy = new JarFileCopy();
 		copy.setProject(project);
 		copy.setTodir(buildDir);
@@ -227,8 +221,7 @@ public class JavaBuild {
 
 		JarConfig jar = new JarConfig();
 		jar.setProject(project);
-		File jarFile = new File(path.getCanonicalPath() + "/completed/"
-				+ prjName + ".jar");
+		File jarFile = new File(getPath(path.getCanonicalPath() + "/completed/" + prjName + ".jar"));
 		jarFile.getParentFile().mkdirs();
 		jar.setDestFile(jarFile);
 		jar.setBasedir(buildDir);
@@ -268,13 +261,12 @@ public class JavaBuild {
 
 		if (prj.outSrc != null && StringUtils.toBoolean(prj.outSrc)) {
 			// 打包源码
-			File file = new File(path.getCanonicalPath() + "/" + sourceFileName);
+			File file = new File(getPath(path.getCanonicalPath()) + "/" + sourceFileName);
 			if (file.exists()) {
 				ZipFileMake make = new ZipFileMake();
 				File output = addPath(prjList.sourceDir, outputDir);
 				String sourceFilePath = output.getCanonicalPath();
-				make.zipFolder(file.getCanonicalPath(), sourceFilePath + "/"
-						+ prjName + "-source.jar");
+				make.zipFolder(file.getCanonicalPath(), sourceFilePath + "/" + prjName + "-source.jar");
 			}
 		}
 	}
@@ -299,8 +291,7 @@ public class JavaBuild {
 			if (p.depends != null) {
 				for (Object n : p.depends) {
 					if (!builds.contains(n.toString())) {
-						throw new RuntimeException("[" + p.name + "] need ["
-								+ n + "] which is not exists");
+						throw new RuntimeException("[" + p.name + "] need [" + n + "] which is not exists");
 					}
 				}
 			}
@@ -309,8 +300,7 @@ public class JavaBuild {
 
 	public void clean(Projects prjList) throws IOException {
 		for (ProjectItem prj : prjList.maps.values()) {
-			String path = addPath(prjList.sourceDir, prj.dir)
-					.getCanonicalPath();
+			String path = addPath(prjList.sourceDir, prj.dir).getCanonicalPath();
 			deleteDirectory(new File(path + "/completed"), 0);
 			deleteDirectory(new File(path + "/build"), 0);
 		}
@@ -378,32 +368,52 @@ public class JavaBuild {
 	public static File addPath(String sourceDir, String dir) {
 		File path;
 		if (dir.startsWith("/") || dir.indexOf(":") > 0) {
-			path = new File(dir);
+			path = new File(getPath(dir));
 		} else {
-			path = new File(sourceDir, dir);
+			path = new File(getPath(sourceDir), getPath(dir));
 		}
 		return path;
 	}
 
 	@SuppressWarnings("unchecked")
 	static ArrayMap makeDefaultConfig(String[] args) throws Exception {
-		File dir = args.length > 0 ? new File(args[0]).getAbsoluteFile()
-				.getParentFile() : new File(".");
+		File dir = args.length > 0 ? new File(getPath(args[0])).getAbsoluteFile().getParentFile() : new File(".");
 		log("Current Dir:" + dir.getCanonicalPath());
-		File srcDir = new File(dir, sourceFileName);
+		File srcDir = new File(dir, getPath(sourceFileName));
 		if (!(srcDir.exists() && srcDir.isDirectory())) {
 			log("'src' dir not found, exiting...");
 			return null;
 		}
-		String prjName = dir.getCanonicalFile().getName();
+		String prjName = getPath(dir.getCanonicalFile().getName());
 		log("user default project name:" + prjName);
 		ArrayMap maps = new ArrayMap();
 		maps.put("sourceDir", ".");
 		maps.put("outputDir", ".");
 		maps.put("debug", "true");
-		maps.put("list", (List<Object>) ParseData.parseAll(String.format(
-				"[ [ %s , . ],  ]", prjName)));
+		maps.put("list", (List<Object>) ParseData.parseAll(String.format("[ [ %s , . ],  ]", getEncodePath(prjName))));
 		return maps;
+	}
+
+	public static String getEncodePath(String path) {
+		if (path == null) {
+			return null;
+		}
+		try {
+			return URLEncoder.encode(path, LSystem.ENCODING);
+		} catch (UnsupportedEncodingException e) {
+			return path;
+		}
+	}
+
+	public static String getPath(String path) {
+		if (path == null) {
+			return null;
+		}
+		try {
+			return URLDecoder.decode(path, LSystem.ENCODING);
+		} catch (UnsupportedEncodingException e) {
+			return path;
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -416,11 +426,10 @@ public class JavaBuild {
 			String path = args[0];
 			if (".".equals(path)) {
 				File thisPath = new File("");
-				args[0] = thisPath.getAbsolutePath() + "\\build.txt";
+				args[0] = getPath(thisPath.getAbsolutePath()) + "\\build.txt";
 				args[0] = StringUtils.replace(args[0], "\\", "/");
 			}
-			String fileContext = readString(new FileInputStream(args[0]),
-					LSystem.ENCODING);
+			String fileContext = readString(new FileInputStream(args[0]), LSystem.ENCODING);
 			ArrayMap map = (ArrayMap) ParseData.parseAll(fileContext);
 			if (map != null && params != null) {
 				params.putAll(map);
@@ -429,9 +438,10 @@ public class JavaBuild {
 		if (params == null) {
 			return;
 		}
-		String pb1 = (String) params.get("sourceDir");
-		String outputDir = (String) params.get("outputDir");
-		String javaHome = JVM.getJavaHome((String) params.get("javaHome"));
+
+		String pb1 = getPath((String) params.get("sourceDir"));
+		String outputDir = getPath((String) params.get("outputDir"));
+		String javaHome = getPath(JVM.getJavaHome((String) params.get("javaHome")));
 		if (outputDir == null) {
 			outputDir = ".";
 		}
@@ -444,28 +454,26 @@ public class JavaBuild {
 		Projects prjs1 = new Projects();
 		prjs1.verbose = true;
 		prjs1.addPrjs((List<Object>) prjList);
-		prjs1.sourceDir = args.length == 0 ? "." : addPath(
-				new File(args[0]).getParent(), pb1).getCanonicalPath();
+		prjs1.sourceDir = args.length == 0 ? "." : addPath(new File(args[0]).getParent(), pb1).getCanonicalPath();
 		prjs1.javaHome = javaHome;
 
 		long t1 = System.currentTimeMillis();
 		if (args.length > 1 && args[1].equals("clean")) {
 			new JavaBuild(params).clean(prjs1);
 		}
+		log("outputDir:" + outputDir);
 		new JavaBuild(params).build(prjs1, outputDir);
 		long t2 = System.currentTimeMillis();
-		log(String
-				.format("Compile end. time cost %,d ms, javac(compiled):%,d, copy:%,d(%,d bytes), jar:%,d, java(exec):%,d.",
-						t2 - t1, prjs1.totalJavac, prjs1.totalCopy,
-						prjs1.totalCopys, prjs1.totalJar, prjs1.totalJava));
+		log(String.format(
+				"Compile end. time cost %,d ms, javac(compiled):%,d, copy:%,d(%,d bytes), jar:%,d, java(exec):%,d.",
+				t2 - t1, prjs1.totalJavac, prjs1.totalCopy, prjs1.totalCopys, prjs1.totalJar, prjs1.totalJava));
 	}
 
 	public static void log(String s) {
 		Log.log(s);
 	}
 
-	public static String readString(InputStream ins, String enc)
-			throws IOException {
+	public static String readString(InputStream ins, String enc) throws IOException {
 		BufferedReader in = new BufferedReader(new InputStreamReader(ins, enc));
 		char[] buf = new char[1000];
 		int len;
