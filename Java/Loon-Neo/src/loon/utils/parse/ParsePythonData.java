@@ -1,7 +1,10 @@
-package loon.utils;
+package loon.utils.parse;
 
 import loon.BaseIO;
 import loon.LSysException;
+import loon.utils.ArrayByte;
+import loon.utils.ObjectMap;
+import loon.utils.TArray;
 
 /**
  * 工具类，用来解析python游戏的配置数据
@@ -45,15 +48,15 @@ public class ParsePythonData {
 
 	private int lineNo = 1, pos = 0;
 
-	public static Object parseString(String str) throws LSysException {
+	public static Object parseString(String str) {
 		return new ParsePythonData().parseAll(new ArrayByte(str.getBytes()));
 	}
 
-	public static Object parseFile(String file) throws LSysException {
+	public static Object parseFile(String file) {
 		return new ParsePythonData().parseAll(BaseIO.loadArrayByte(file));
 	}
 
-	private Object parse(ArrayByte in) throws LSysException {
+	private Object parse(ArrayByte in) {
 		char i = readA(in);
 		if (i == '/') {
 			char flag = xread(in);
@@ -93,7 +96,7 @@ public class ParsePythonData {
 		return readNumber(in, i);
 	}
 
-	public Object parseAll(ArrayByte in) throws LSysException {
+	public Object parseAll(ArrayByte in) {
 		Object o = parse(in);
 		char i = readA(in);
 		if (i == (char) -1) {
@@ -114,12 +117,12 @@ public class ParsePythonData {
 		}
 	}
 
-	private void confirm(ArrayByte in, char c) throws LSysException {
+	private void confirm(ArrayByte in, char c) {
 		char i = readA(in);
 		confirm(i, c);
 	}
 
-	private char read(ArrayByte in) throws LSysException {
+	private char read(ArrayByte in) {
 		char c = (char) in.read();
 		if (c == '\n') {
 			lineNo++;
@@ -130,7 +133,7 @@ public class ParsePythonData {
 		return c;
 	}
 
-	private char readA(ArrayByte in) throws LSysException {
+	private char readA(ArrayByte in) {
 		char i = xread(in);
 		for (;;) {
 			while (i == '\n' || i == '\r' || i == ' ' || i == '\t') {
@@ -151,7 +154,7 @@ public class ParsePythonData {
 		}
 	}
 
-	private Object readNumber(ArrayByte in, char first) throws LSysException {
+	private Object readNumber(ArrayByte in, char first) {
 		StringBuffer sbr = new StringBuffer();
 		sbr.append(first);
 		for (;;) {
@@ -166,7 +169,7 @@ public class ParsePythonData {
 		return sbr.toString();
 	}
 
-	private void readList(ArrayByte in, TArray<Object> l, char end) throws LSysException {
+	private void readList(ArrayByte in, TArray<Object> l, char end) {
 		for (;;) {
 			char i = readA(in);
 			if (i == (char) -1) {
@@ -186,7 +189,7 @@ public class ParsePythonData {
 		}
 	}
 
-	private void readMap(ArrayByte in, ObjectMap<Object, Object> m, char end) throws LSysException {
+	private void readMap(ArrayByte in, ObjectMap<Object, Object> m, char end) {
 		for (;;) {
 			char i = readA(in);
 			if (i == (char) -1) {
@@ -208,7 +211,7 @@ public class ParsePythonData {
 		}
 	}
 
-	private String readString(ArrayByte in, char end) throws LSysException {
+	private String readString(ArrayByte in, char end) {
 		StringBuffer sb = new StringBuffer();
 		char i = xread(in);
 		for (;;) {
@@ -236,7 +239,7 @@ public class ParsePythonData {
 
 	}
 
-	private char xread(ArrayByte in) throws LSysException {
+	private char xread(ArrayByte in) {
 		int len = buffer.length();
 		if (len > 0) {
 			char i = buffer.charAt(len - 1);
@@ -250,7 +253,7 @@ public class ParsePythonData {
 		return " at line:" + lineNo + " pos:" + pos;
 	}
 
-	private void skipUtil(ArrayByte in, String end) throws LSysException {
+	private void skipUtil(ArrayByte in, String end) {
 		LoopStringBuilder loopBuilder = new LoopStringBuilder(end.length());
 		for (;;) {
 			char b;

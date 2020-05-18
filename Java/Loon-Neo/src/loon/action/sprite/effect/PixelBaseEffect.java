@@ -28,7 +28,9 @@ import loon.utils.TArray;
 import loon.utils.timer.LTimer;
 
 /**
- * 此像素非真像素,而是指'像素风格',实际是三角形纹理贴图效果……
+ * PixelBaseEffect效果包含一系列不需要图片的,也不必依赖Shader的,可以直接使用在任意游戏中的效果.
+ * 
+ * PS:此像素非真像素,而是指'像素风格',实际还是三角形纹理贴图效果……
  *
  */
 public abstract class PixelBaseEffect extends Entity {

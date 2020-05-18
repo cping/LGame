@@ -21,7 +21,6 @@
 package loon.font;
 
 import java.util.Iterator;
-import java.util.StringTokenizer;
 
 import loon.BaseIO;
 import loon.LSysException;
@@ -40,6 +39,7 @@ import loon.utils.StringUtils;
 import loon.utils.ObjectMap.Entries;
 import loon.utils.ObjectMap.Entry;
 import loon.utils.TArray;
+import loon.utils.parse.StrTokenizer;
 
 // AngelCode图像字体专用类(因为仅处理限定范围内的字体，此类速度会比较早前版本中提供的文字渲染类更快，
 // 但缺点在于，没有提供图像的文字不能被渲染).
@@ -212,7 +212,7 @@ public class BMFont implements IFont {
 		if (StringUtils.isEmpty(text)) {
 			throw new LSysException("BMFont resource is null !");
 		}
-		StringTokenizer br = new StringTokenizer(text, LSystem.NL);
+		StrTokenizer br = new StrTokenizer(text, LSystem.NL);
 		info = br.nextToken();
 		common = br.nextToken();
 		page = br.nextToken();
@@ -263,7 +263,7 @@ public class BMFont implements IFont {
 				}
 				if (line.startsWith("kernings c")) {
 				} else if (line.startsWith("kerning")) {
-					StringTokenizer tokens = new StringTokenizer(line, " =");
+					StrTokenizer tokens = new StrTokenizer(line, " =");
 					tokens.nextToken();
 					tokens.nextToken();
 					short first = Short.parseShort(tokens.nextToken());
@@ -312,7 +312,7 @@ public class BMFont implements IFont {
 
 	private CharDef parseChar(final String line) throws LSysException {
 		CharDef def = new CharDef(this);
-		StringTokenizer tokens = new StringTokenizer(line, " =");
+		StrTokenizer tokens = new StrTokenizer(line, " =");
 		tokens.nextToken();
 		tokens.nextToken();
 

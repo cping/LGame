@@ -237,6 +237,44 @@ final public class StringUtils extends CharUtils {
 	}
 
 	/**
+	 * 检查是否以指定字符序列开头
+	 * 
+	 * @param str
+	 * @param prefix
+	 * @param isIgnore
+	 * @return
+	 */
+	public static boolean startWith(CharSequence str, CharSequence prefix, boolean isIgnore) {
+		if (null == str || null == prefix) {
+			return null == str && null == prefix;
+		}
+		if (isIgnore) {
+			return str.toString().toLowerCase().startsWith(prefix.toString().toLowerCase());
+		} else {
+			return str.toString().startsWith(prefix.toString());
+		}
+	}
+
+	/**
+	 * 检查指定字符序列开头中是否包含如下字符序列
+	 * 
+	 * @param str
+	 * @param prefixes
+	 * @return
+	 */
+	public static boolean startsAnyWith(CharSequence str, CharSequence... prefixes) {
+		if (isNullOrEmpty(str) || CollectionUtils.isEmpty(prefixes)) {
+			return false;
+		}
+		for (CharSequence suffix : prefixes) {
+			if (startWith(str, suffix, false)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * 判定指定字符串是否包含指定结尾
 	 * 
 	 * @param s
@@ -1698,6 +1736,24 @@ final public class StringUtils extends CharUtils {
 	}
 
 	/**
+	 * 转化字符串数组为Array集合
+	 * 
+	 * @param str
+	 * @return
+	 */
+	public static TArray<String> getStringsToList(String... str) {
+		if (str == null || str.length == 0) {
+			return null;
+		}
+		int len = str.length;
+		TArray<String> list = new TArray<String>(len);
+		for (int i = 0; i < len; i++) {
+			list.add(str[i]);
+		}
+		return list;
+	}
+
+	/**
 	 * 转化字符序列数组到字符序列集合中去
 	 * 
 	 * @param chars
@@ -1978,37 +2034,34 @@ final public class StringUtils extends CharUtils {
 	public static char charAt(final CharSequence v, final int i) {
 		return size(v) <= i ? 0 : v.charAt(i);
 	}
-	
+
 	/**
 	 * 格式化回车符，使字符串中只出现'\n'
 	 * 
 	 * @param src
 	 * @return
 	 */
-	public static String formatCRLF(String src)
-	{
-		if(isEmpty(src)){
+	public static String formatCRLF(String src) {
+		if (isEmpty(src)) {
 			return "";
 		}
 		int pos = src.indexOf("\r");
-		if (pos != -1)
-		{
+		if (pos != -1) {
 			int len = src.length();
 			StringBuilder buffer = new StringBuilder();
 			int lastPos = 0;
-			while (pos != -1)
-			{
+			while (pos != -1) {
 				buffer.append(src, lastPos, pos);
-				if (pos == len - 1 || src.charAt(pos + 1) != '\n'){
+				if (pos == len - 1 || src.charAt(pos + 1) != '\n') {
 					buffer.append('\n');
 				}
 				lastPos = pos + 1;
-				if (lastPos >= len){
+				if (lastPos >= len) {
 					break;
 				}
 				pos = src.indexOf("\r", lastPos);
 			}
-			if (lastPos < len){
+			if (lastPos < len) {
 				buffer.append(src, lastPos, len);
 			}
 
@@ -2016,7 +2069,7 @@ final public class StringUtils extends CharUtils {
 		}
 		return src;
 	}
-	
+
 	/**
 	 * 返回指定对象的字符串信息
 	 * 

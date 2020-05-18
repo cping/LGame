@@ -20,8 +20,6 @@
  */
 package loon.action.avg.drama;
 
-import java.util.StringTokenizer;
-
 import loon.BaseIO;
 import loon.LRelease;
 import loon.LSysException;
@@ -34,6 +32,7 @@ import loon.utils.MathUtils;
 import loon.utils.StringKeyValue;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
+import loon.utils.parse.StrTokenizer;
 
 /**
  * 一个非常简单的脚本解释器,用来跨平台实现avg游戏脚本解析,以统一Loon内部的简单脚本格式,
@@ -1143,7 +1142,7 @@ public class Command extends Conversion implements LRelease {
 			int length = capacity;
 			int index = 0;
 			try {
-				StringTokenizer reader = new StringTokenizer(context, LSystem.NL);
+				StrTokenizer reader = new StrTokenizer(context, LSystem.NL);
 				String record = null;
 				for (; reader.hasMoreTokens();) {
 					record = reader.nextToken().trim();

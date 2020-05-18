@@ -1,7 +1,5 @@
 package loon.opengl;
 
-import java.util.StringTokenizer;
-
 import loon.BaseIO;
 import loon.canvas.LColor;
 import loon.canvas.Pixmap;
@@ -9,6 +7,8 @@ import loon.geom.Vector3f;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
+import loon.utils.parse.StrTokenizer;
+
 /**这是一个3D对象预览用组件，可以导出3D对象的基本骨骼图，另外，此组件允许直接把3D图像输出在Pixmap上.方便用户静态使用**/
 public class PreBoxViewer3D {
 
@@ -473,7 +473,7 @@ public class PreBoxViewer3D {
 	}
 
 	private static void parseVertex(String line, float[] vertex) {
-		StringTokenizer stk = new StringTokenizer(line, " ");
+		StrTokenizer stk = new StrTokenizer(line, " ");
 		float w = 1.0f;
 
 		if (true == stk.hasMoreTokens() && 0 == stk.nextToken().compareTo("v")) {
@@ -498,7 +498,7 @@ public class PreBoxViewer3D {
 	}
 
 	private static void parseTextureVertex(String line, float[] vertex) {
-		StringTokenizer stk = new StringTokenizer(line, " ");
+		StrTokenizer stk = new StrTokenizer(line, " ");
 		if (true == stk.hasMoreTokens() && 0 == stk.nextToken().compareTo("vt")) {
 			if (true == stk.hasMoreTokens()) {
 				vertex[0] = Float.valueOf(stk.nextToken());
@@ -516,7 +516,7 @@ public class PreBoxViewer3D {
 	}
 
 	private static void parseVertexNormal(String line, float[] vertex) {
-		StringTokenizer stk = new StringTokenizer(line, " ");
+		StrTokenizer stk = new StrTokenizer(line, " ");
 		float w = 1.0f;
 
 		if (true == stk.hasMoreTokens() && 0 == stk.nextToken().compareTo("vn")) {
@@ -541,7 +541,7 @@ public class PreBoxViewer3D {
 	}
 
 	private static void parseFace(String line, int[] face) {
-		StringTokenizer stk = new StringTokenizer(line, " ");
+		StrTokenizer stk = new StrTokenizer(line, " ");
 		if (stk.hasMoreTokens() && stk.nextToken().startsWith("f")) {
 			for (int i = 0; i < 3; i++) {
 				if (stk.hasMoreTokens()) {

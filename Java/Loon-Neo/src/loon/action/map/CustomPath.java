@@ -32,7 +32,9 @@ import loon.utils.TArray;
  */
 public class CustomPath implements LRelease {
 
-	private TArray<Vector2f> steps = new TArray<Vector2f>();
+	protected TArray<Vector2f> steps = new TArray<Vector2f>();
+
+	private CustomPathMove pathMove;
 
 	private float scaleX;
 
@@ -75,6 +77,13 @@ public class CustomPath implements LRelease {
 		if (list != null) {
 			add(list);
 		}
+	}
+
+	public CustomPathMove getMovePath() {
+		if (this.pathMove == null) {
+			this.pathMove = new CustomPathMove(this);
+		}
+		return this.pathMove;
 	}
 
 	public int size() {
@@ -130,6 +139,10 @@ public class CustomPath implements LRelease {
 
 	public Vector2f pop() {
 		return steps.pop();
+	}
+
+	public TArray<Vector2f> getSteps() {
+		return this.steps;
 	}
 
 	public CustomPath reverse() {

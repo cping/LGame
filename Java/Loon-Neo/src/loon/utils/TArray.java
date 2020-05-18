@@ -583,7 +583,7 @@ public class TArray<T> implements Iterable<T>, IArray {
 		return new TArray(array);
 	}
 
-	public final static class ArrayIterator<T> implements Iterator<T>, Iterable<T> {
+	public final static class ArrayIterator<T> implements LIterator<T>, Iterator<T>, Iterable<T> {
 
 		private final TArray<T> array;
 		private final boolean allowRemove;

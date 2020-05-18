@@ -27,12 +27,61 @@ import loon.event.QueryEvent;
 
 public class FloatArray implements IArray {
 
+	/**
+	 * 产生一组指定范围的数据
+	 * 
+	 * @param start
+	 * @param end
+	 * @return
+	 */
 	public static FloatArray range(int start, int end) {
 		FloatArray array = new FloatArray(end - start);
 		for (int i = start; i < end; i++) {
-			array.add(i);
+			array.add(i + MathUtils.random(0f, 0.99f));
 		}
 		return array;
+	}
+
+	/**
+	 * 产生一组指定范围的随机数据
+	 * 
+	 * @param begin
+	 * @param end
+	 * @return
+	 */
+	public static FloatArray rangeRandom(int begin, int end) {
+		return rangeRandom(begin, end, (end - begin));
+	}
+
+	/**
+	 * 产生一组指定范围的随机数据
+	 * 
+	 * @param begin
+	 * @param end
+	 * @param size
+	 * @return
+	 */
+	public static FloatArray rangeRandom(int begin, int end, int size) {
+		if (begin > end) {
+			int temp = begin;
+			begin = end;
+			end = temp;
+		}
+		if ((end - begin) < size) {
+			throw new LSysException("Size out Range between begin and end !");
+		}
+		float[] randSeed = new float[end - begin];
+		for (int i = begin; i < end; i++) {
+			randSeed[i - begin] = i + MathUtils.random(0f, 0.99f);
+		}
+		float[] floatArrays = new float[size];
+		for (int i = 0; i < size; i++) {
+			final int len = randSeed.length - i - 1;
+			int j = MathUtils.random(len);
+			floatArrays[i] = randSeed[j];
+			randSeed[j] = randSeed[len];
+		}
+		return new FloatArray(floatArrays);
 	}
 
 	public float[] items;
@@ -357,7 +406,7 @@ public class FloatArray implements IArray {
 		if (length > newlength)
 			length = newlength;
 	}
-	
+
 	public float random() {
 		if (length == 0) {
 			return 0;

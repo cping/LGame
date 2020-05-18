@@ -1,7 +1,5 @@
 package loon.utils;
 
-import java.io.IOException;
-
 import loon.LRelease;
 import loon.LSystem;
 
@@ -16,11 +14,17 @@ public class ArrayByteReader implements LRelease {
 		in = stream;
 	}
 
+	@Override
 	public void close() {
 		in.close();
 	}
 
-	public void skip(long n) throws IOException {
+	public ArrayByteReader reset() {
+		in.reset();
+		return this;
+	}
+
+	public void skip(long n) {
 		if (in == null) {
 			return;
 		}
@@ -51,7 +55,7 @@ public class ArrayByteReader implements LRelease {
 		return c = in.read(buf, offset, length);
 	}
 
-	public String readLine() throws IOException {
+	public String readLine() {
 		if (in == null) {
 			return LSystem.EMPTY;
 		}

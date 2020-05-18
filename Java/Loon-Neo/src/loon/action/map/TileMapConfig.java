@@ -20,8 +20,6 @@
  */
 package loon.action.map;
 
-import java.util.StringTokenizer;
-
 import loon.BaseIO;
 import loon.LSystem;
 import loon.utils.CharUtils;
@@ -29,6 +27,7 @@ import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
+import loon.utils.parse.StrTokenizer;
 
 public class TileMapConfig {
 
@@ -53,7 +52,7 @@ public class TileMapConfig {
 		if (result == null) {
 			return map;
 		}
-		StringTokenizer br = new StringTokenizer(result, LSystem.NL);
+		StrTokenizer br = new StrTokenizer(result, LSystem.NL);
 		String line = br.nextToken();
 		int width = Integer.parseInt(line);
 		line = br.nextToken();
@@ -79,7 +78,7 @@ public class TileMapConfig {
 		if (result == null) {
 			return null;
 		}
-		StringTokenizer br = new StringTokenizer(result, LSystem.NL);
+		StrTokenizer br = new StrTokenizer(result, LSystem.NL);
 		TArray<int[]> records = new TArray<int[]>(CollectionUtils.INITIAL_CAPACITY);
 		for (; br.hasMoreTokens();) {
 			result = StringUtils.replace(br.nextToken().trim(), LSystem.LS, LSystem.EMPTY);

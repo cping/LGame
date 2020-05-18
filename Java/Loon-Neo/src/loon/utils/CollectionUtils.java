@@ -841,6 +841,116 @@ final public class CollectionUtils {
 	public static boolean safeRange(Object[] arrays, int startIndex, int endIndex) {
 		return safeRange(arrays, startIndex, endIndex, false);
 	}
+	
+	/**
+	 * 判定指定对象数组是否为空
+	 * 
+	 * @param array
+	 * @return
+	 */
+	public static <T> boolean isEmpty(T[] array) {
+		return array == null || array.length == 0;
+	}
+	
+	/**
+	 * 判定指定对象数组是否不为空
+	 * 
+	 * @param array
+	 * @return
+	 */
+	public static <T> boolean isNotEmpty( T[] array) {
+		return (array != null && array.length != 0);
+	}
+
+	/**
+	 * 判定数组是否为空
+	 * 
+	 * @param array
+	 * @return
+	 */
+	public static boolean isEmpty(ISprite[] array) {
+		return array == null || array.length == 0;
+	}
+	
+	/**
+	 * 判定数组是否为空
+	 * 
+	 * @param array
+	 * @return
+	 */
+	public static boolean isEmpty(LComponent[] array) {
+		return array == null || array.length == 0;
+	}
+	
+	/**
+	 * 判定数组是否为空
+	 * 
+	 * @param array
+	 * @return
+	 */
+	public static boolean isEmpty(long[] array) {
+		return array == null || array.length == 0;
+	}
+
+	/**
+	 * 判定数组是否为空
+	 * 
+	 * @param array
+	 * @return
+	 */
+	public static boolean isEmpty(int[] array) {
+		return array == null || array.length == 0;
+	}
+
+	/**
+	 * 判定数组是否为空
+	 * 
+	 * @param array
+	 * @return
+	 */
+	public static boolean isEmpty(char[] array) {
+		return array == null || array.length == 0;
+	}
+
+	/**
+	 * 判定数组是否为空
+	 * 
+	 * @param array
+	 * @return
+	 */
+	public static boolean isEmpty(byte[] array) {
+		return array == null || array.length == 0;
+	}
+
+	/**
+	 * 判定数组是否为空
+	 * 
+	 * @param array
+	 * @return
+	 */
+	public static boolean isEmpty(double[] array) {
+		return array == null || array.length == 0;
+	}
+
+	/**
+	 * 判定数组是否为空
+	 * 
+	 * @param array
+	 * @return
+	 */
+	public static boolean isEmpty(float[] array) {
+		return array == null || array.length == 0;
+	}
+
+	/**
+	 * 判定数组是否为空
+	 * 
+	 * @param array
+	 * @return
+	 */
+	public static boolean isEmpty(boolean[] array) {
+		return array == null || array.length == 0;
+	}
 
 	/**
 	 * 设定对象数组中指定范围内数值为统一的data

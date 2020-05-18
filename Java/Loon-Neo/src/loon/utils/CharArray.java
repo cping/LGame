@@ -8,12 +8,61 @@ import loon.event.QueryEvent;
 
 public class CharArray implements IArray {
 
+	/**
+	 * 产生一组指定范围的数据
+	 * 
+	 * @param start
+	 * @param end
+	 * @return
+	 */
 	public static CharArray range(int start, int end) {
 		CharArray array = new CharArray(end - start);
 		for (int i = start; i < end; i++) {
 			array.add((char) i);
 		}
 		return array;
+	}
+
+	/**
+	 * 产生一组指定范围的随机数据
+	 * 
+	 * @param begin
+	 * @param end
+	 * @return
+	 */
+	public static CharArray rangeRandomArrays(int begin, int end) {
+		return rangeRandom(begin, end, (end - begin));
+	}
+
+	/**
+	 * 产生一组指定范围的随机数据
+	 * 
+	 * @param begin
+	 * @param end
+	 * @param size
+	 * @return
+	 */
+	public static CharArray rangeRandom(int begin, int end, int size) {
+		if (begin > end) {
+			int temp = begin;
+			begin = end;
+			end = temp;
+		}
+		if ((end - begin) < size) {
+			throw new LSysException("Size out Range between begin and end !");
+		}
+		char[] randSeed = new char[end - begin];
+		for (int i = begin; i < end; i++) {
+			randSeed[i - begin] = (char) i;
+		}
+		char[] charArrays = new char[size];
+		for (int i = 0; i < size; i++) {
+			final int len = randSeed.length - i - 1;
+			int j = MathUtils.random(len);
+			charArrays[i] = (char) randSeed[j];
+			randSeed[j] = (char) randSeed[len];
+		}
+		return new CharArray(charArrays);
 	}
 
 	public char[] items;

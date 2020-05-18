@@ -20,8 +20,6 @@
  */
 package loon.action.avg;
 
-import java.util.StringTokenizer;
-
 import loon.BaseIO;
 import loon.LRelease;
 import loon.LSystem;
@@ -32,6 +30,7 @@ import loon.geom.PointI;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
+import loon.utils.parse.StrTokenizer;
 
 //0.3.3新增类,用以按指定的格式循环播放动画图像
 public class AVGAnm implements Expression, LRelease {
@@ -80,7 +79,7 @@ public class AVGAnm implements Expression, LRelease {
 
 	public void open(String text) {
 		try {
-			StringTokenizer reader = new StringTokenizer(text, LSystem.NL);
+			StrTokenizer reader = new StrTokenizer(text, LSystem.NL);
 			String script = null;
 			for (; reader.hasMoreTokens();) {
 				script = reader.nextToken().trim();

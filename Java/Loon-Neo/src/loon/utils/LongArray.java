@@ -25,6 +25,63 @@ import java.util.Arrays;
 import loon.LSysException;
 
 public class LongArray implements IArray {
+
+	/**
+	 * 产生一组指定范围的数据
+	 * 
+	 * @param start
+	 * @param end
+	 * @return
+	 */
+	public static LongArray range(int start, int end) {
+		LongArray array = new LongArray(end - start);
+		for (int i = start; i < end; i++) {
+			array.add(i);
+		}
+		return array;
+	}
+
+	/**
+	 * 产生一组指定范围的随机数据
+	 * 
+	 * @param begin
+	 * @param end
+	 * @return
+	 */
+	public static LongArray rangeRandom(int begin, int end) {
+		return rangeRandom(begin, end, (end - begin));
+	}
+
+	/**
+	 * 产生一组指定范围的随机数据
+	 * 
+	 * @param begin
+	 * @param end
+	 * @param size
+	 * @return
+	 */
+	public static LongArray rangeRandom(int begin, int end, int size) {
+		if (begin > end) {
+			int temp = begin;
+			begin = end;
+			end = temp;
+		}
+		if ((end - begin) < size) {
+			throw new LSysException("Size out Range between begin and end !");
+		}
+		long[] randSeed = new long[end - begin];
+		for (int i = begin; i < end; i++) {
+			randSeed[i - begin] = i;
+		}
+		long[] longArrays = new long[size];
+		for (int i = 0; i < size; i++) {
+			final int len = randSeed.length - i - 1;
+			int j = MathUtils.random(len);
+			longArrays[i] = randSeed[j];
+			randSeed[j] = randSeed[len];
+		}
+		return new LongArray(longArrays);
+	}
 	
 	public long[] items;
 	public int length;

@@ -1,13 +1,12 @@
 package loon.utils;
 
-import java.util.StringTokenizer;
-
 import loon.BaseIO;
 import loon.LRelease;
 import loon.LSysException;
 import loon.LSystem;
 import loon.action.avg.drama.Expression;
 import loon.action.map.Field2D;
+import loon.utils.parse.StrTokenizer;
 
 /**
  * 一个简单的多文本数据存储及读取用类,作用类似于ini文件
@@ -88,7 +87,7 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 			_loaders = new TArray<StringKeyValue>();
 		}
 		String context = BaseIO.loadText(path);
-		StringTokenizer reader = new StringTokenizer(context, LSystem.NL);
+		StrTokenizer reader = new StrTokenizer(context, LSystem.NL);
 		String curTemplate = LSystem.EMPTY;
 		StringKeyValue curBuffer = null;
 		String result = null;
@@ -150,7 +149,7 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 		if (StringUtils.isEmpty(text)) {
 			return;
 		}
-		StringTokenizer reader = new StringTokenizer(text, LSystem.NL);
+		StrTokenizer reader = new StrTokenizer(text, LSystem.NL);
 		String record = null;
 		StringBuffer mapBuffer = new StringBuffer();
 		boolean mapFlag = false;

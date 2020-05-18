@@ -64,6 +64,10 @@ public class TileManager {
 
 	private TileDrawListener<TileImpl> listener;
 
+	public TileManager(AStarFindHeuristic h) {
+		this(h, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
+	}
+
 	public TileManager(AStarFindHeuristic h, int maxX, int maxY) {
 		this(h, maxX, maxY, DEF_TILE_SCALE);
 	}
@@ -82,12 +86,25 @@ public class TileManager {
 		this.tileScale = ts;
 	}
 
+	public void calcMap(int tileWidth, int tileHeight, int mapWidth, int mapHeight) {
+		this.width = (tileWidth * mapWidth);
+		this.height = (tileHeight * mapHeight);
+		TileImpl[][] tiles = new TileImpl[mapWidth][mapHeight];
+		for (int x = 0; x < mapWidth; ++x) {
+			for (int y = 0; y < mapHeight; ++y) {
+				TileImpl impl = new TileImpl(0, x, y, tileWidth, tileHeight);
+				tiles[x][y] = impl;
+				put(impl);
+			}
+		}
+	}
+
 	public void put(TileImpl tile) {
 		if (tile != null) {
 			tile.calcNeighbours(width, height);
 			ObjectMap<Integer, TileImpl> tilesY = tilesX.get(tile.getX());
 			if (tilesY == null) {
-				tilesY = new ObjectMap<Integer, TileImpl>(32);
+				tilesY = new ObjectMap<Integer, TileImpl>(height);
 				tilesX.put(tile.getX(), tilesY);
 			}
 			tilesY.put(tile.getY(), tile);
@@ -97,7 +114,7 @@ public class TileManager {
 	public void remove(TileImpl tile) {
 		ObjectMap<Integer, TileImpl> tilesY = tilesX.get(tile.getX());
 		if (tilesY == null) {
-			tilesY = new ObjectMap<Integer, TileImpl>(32);
+			tilesY = new ObjectMap<Integer, TileImpl>(height);
 			tilesX.put(tile.getX(), tilesY);
 		}
 		tilesY.remove(tile.getY());

@@ -21,14 +21,47 @@
 package loon.geom;
 
 import loon.LSystem;
+import loon.action.ActionBind;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 import loon.utils.StringKeyValue;
+import loon.utils.StringUtils;
 
 /**
  * 一个最基础的矩形碰撞器
  */
 public class AABB implements XY, BoxSize {
+
+	public final static AABB at(String v) {
+		if (StringUtils.isEmpty(v)) {
+			return new AABB();
+		}
+		String[] result = StringUtils.split(v, ',');
+		int len = result.length;
+		if (len > 3) {
+			try {
+				float x = Float.parseFloat(result[0].trim());
+				float y = Float.parseFloat(result[1].trim());
+				float width = Float.parseFloat(result[2].trim());
+				float height = Float.parseFloat(result[3].trim());
+				return new AABB(x, y, width, height);
+			} catch (Exception ex) {
+			}
+		}
+		return new AABB();
+	}
+
+	public final static AABB at(int x, int y, int w, int h) {
+		return new AABB(x, y, w, h);
+	}
+
+	public final static AABB at(float x, float y, float w, float h) {
+		return new AABB(x, y, w, h);
+	}
+	
+    public final static AABB fromActor(ActionBind bind) {
+        return new AABB(bind.getX(), bind.getY(), bind.getWidth(), bind.getHeight());
+    }
 
 	public float minX, minY;
 

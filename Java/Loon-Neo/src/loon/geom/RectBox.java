@@ -22,6 +22,7 @@ package loon.geom;
 
 import loon.LObject;
 import loon.LSystem;
+import loon.action.ActionBind;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 import loon.utils.StringKeyValue;
@@ -60,6 +61,10 @@ public class RectBox extends Shape implements BoxSize {
 	public final static RectBox at(float x, float y, float w, float h) {
 		return new RectBox(x, y, w, h);
 	}
+
+    public final static RectBox fromActor(ActionBind bind) {
+        return new RectBox(bind.getX(), bind.getY(), bind.getWidth(), bind.getHeight());
+    }
 
 	public final static RectBox inflate(RectBox src, int xScale, int yScale) {
 		float destWidth = src.width + xScale;
