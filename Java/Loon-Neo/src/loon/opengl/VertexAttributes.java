@@ -23,6 +23,7 @@ package loon.opengl;
 import java.util.Iterator;
 
 import loon.LSysException;
+import loon.utils.StrBuilder;
 
 public final class VertexAttributes implements Iterable<VertexAttribute> {
 
@@ -98,7 +99,7 @@ public final class VertexAttributes implements Iterable<VertexAttribute> {
 	}
 
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
+		StrBuilder builder = new StrBuilder();
 		builder.append("[");
 		for (int i = 0; i < attributes.length; i++) {
 			builder.append("(");

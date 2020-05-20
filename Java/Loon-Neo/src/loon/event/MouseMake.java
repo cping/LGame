@@ -20,6 +20,7 @@
  */
 package loon.event;
 
+import loon.utils.StrBuilder;
 import loon.utils.reply.Port;
 
 public class MouseMake {
@@ -47,7 +48,7 @@ public class MouseMake {
       return "Button";
     }
 
-    @Override protected void addFields (StringBuilder builder) {
+    @Override protected void addFields (StrBuilder builder) {
       super.addFields(builder);
       builder.append(", id=").append(button).append(", down=").append(down);
     }

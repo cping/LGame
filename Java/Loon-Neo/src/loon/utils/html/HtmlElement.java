@@ -27,6 +27,7 @@ import loon.LSystem;
 import loon.utils.Base64Coder;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
+import loon.utils.StrBuilder;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 import loon.utils.html.css.CssParser;
@@ -38,7 +39,7 @@ public class HtmlElement {
 
 	private String name;
 
-	private StringBuffer buffer;
+	private StrBuilder buffer;
 
 	private String tempData;
 
@@ -57,7 +58,7 @@ public class HtmlElement {
 	public HtmlElement(String name) {
 		this.attributes = new ObjectMap<String, HtmlAttribute>();
 		this.contents = new TArray<HtmlElement>();
-		this.buffer = new StringBuffer(512);
+		this.buffer = new StrBuilder(512);
 		this.name = name;
 		if (this.name != null) {
 			this.name = this.name.trim().toLowerCase();
@@ -106,7 +107,7 @@ public class HtmlElement {
 	}
 
 	private int readValueChunk(char[] buffer, int offset, int length) {
-		StringBuffer textCache = new StringBuffer(length);
+		StrBuilder textCache = new StrBuilder(length);
 		for (Iterator<HtmlElement> e = elements(); e.hasNext();) {
 			textCache.append(e.next().toString());
 		}
@@ -298,7 +299,7 @@ public class HtmlElement {
 	}
 
 	public String getContents() {
-		StringBuffer sbr = new StringBuffer(1024);
+		StrBuilder sbr = new StrBuilder(1024);
 		for (Iterator<HtmlElement> e = elements(); e.hasNext();) {
 			sbr.append(e.next().toString());
 		}
@@ -535,7 +536,7 @@ public class HtmlElement {
 
 	@Override
 	public String toString() {
-		StringBuffer builder = new StringBuffer();
+		StrBuilder builder = new StrBuilder();
 		if (this.name == null) {
 			builder.append(LSystem.EMPTY);
 		} else {

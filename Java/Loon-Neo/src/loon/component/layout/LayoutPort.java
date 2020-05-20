@@ -23,6 +23,7 @@ package loon.component.layout;
 import loon.geom.BoxSize;
 import loon.geom.RectBox;
 import loon.geom.SizeValue;
+import loon.utils.StrBuilder;
 
 public class LayoutPort {
 
@@ -66,7 +67,7 @@ public class LayoutPort {
 
 	@Override
 	public String toString() {
-		StringBuffer result = new StringBuffer();
+		StrBuilder result = new StrBuilder();
 		result.append("box [" + box.getX() + ", " + box.getY() + ", "
 				+ box.getWidth() + ", " + box.getHeight()
 				+ "] with constraints [" + boxConstraints.getX() + ", "

@@ -20,6 +20,7 @@
  */
 package loon.event;
 
+import loon.utils.StrBuilder;
 import loon.utils.reply.Port;
 
 public abstract class KeyMake {
@@ -56,7 +57,7 @@ public abstract class KeyMake {
 		}
 
 		@Override
-		protected void addFields(StringBuilder builder) {
+		protected void addFields(StrBuilder builder) {
 			super.addFields(builder);
 			builder.append(", keyCode=").append(keyCode).append(", down=")
 					.append(down);

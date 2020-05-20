@@ -18,27 +18,20 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon;
+package loon.utils.parse;
 
-public class LSysException extends RuntimeException {
+import loon.LSysException;
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -3689299562639868277L;
+public interface YamlEvent {
 
-	public LSysException(String message) {
-		super(message);
-		LSystem.error(message);
-	}
+	void event(int idx);
 
-	public LSysException(String message, Throwable cause) {
-		super(message, cause);
-		LSystem.error(message, cause);
-	}
+	void event(String key);
 
-	public LSysException(String message, int line) {
-		super(message);
-		LSystem.error("exception for line : " + line + "\n" + message);
-	}
+	void content(String key, String value);
+
+	void property(String key, String value);
+
+	void error(LSysException ex, int line);
+
 }

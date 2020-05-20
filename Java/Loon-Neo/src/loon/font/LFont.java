@@ -35,6 +35,7 @@ import loon.opengl.LTexturePack;
 import loon.opengl.LTexturePack.PackEntry;
 import loon.utils.IntMap;
 import loon.utils.MathUtils;
+import loon.utils.StrBuilder;
 import loon.utils.StringKeyValue;
 import loon.utils.StringUtils;
 
@@ -339,7 +340,7 @@ public class LFont implements IFont {
 		if (message.indexOf('\n') == -1) {
 			return textLayout.stringWidth(message);
 		} else {
-			StringBuffer sbr = new StringBuffer();
+			StrBuilder sbr = new StrBuilder();
 			int width = 0;
 			for (int i = 0, size = message.length(); i < size; i++) {
 				char ch = message.charAt(i);

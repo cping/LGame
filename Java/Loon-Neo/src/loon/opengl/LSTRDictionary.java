@@ -27,6 +27,7 @@ import loon.canvas.LColor;
 import loon.font.LFont;
 import loon.utils.ArrayMap;
 import loon.utils.CharArray;
+import loon.utils.StrBuilder;
 import loon.utils.ArrayMap.Entry;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
@@ -89,7 +90,7 @@ public final class LSTRDictionary implements LRelease {
 
 	private String _lastMessage;
 
-	private static StringBuffer _lazyKey;
+	private static StrBuilder _lazyKey;
 
 	public static class Dict implements LRelease {
 
@@ -253,7 +254,7 @@ public final class LSTRDictionary implements LRelease {
 		return count == len;
 	}
 
-	private StringBuffer tmpBuffer = null;
+	private StrBuilder tmpBuffer = null;
 
 	public final Dict bind(final LFont font, final TArray<CharSequence> chars) {
 		CharSequence[] buffers = new CharSequence[chars.size];
@@ -339,7 +340,7 @@ public final class LSTRDictionary implements LRelease {
 						pDict.font = null;
 					}
 					if (tmpBuffer == null) {
-						tmpBuffer = new StringBuffer(newSize);
+						tmpBuffer = new StrBuilder(newSize);
 					} else {
 						tmpBuffer.delete(0, tmpBuffer.length());
 					}
@@ -418,7 +419,7 @@ public final class LSTRDictionary implements LRelease {
 		hashCode = LSystem.unite(hashCode, font.getDescent());
 
 		if (_lazyKey == null) {
-			_lazyKey = new StringBuffer();
+			_lazyKey = new StrBuilder();
 			_lazyKey.append(font.getFontName().toLowerCase());
 			_lazyKey.append(hashCode);
 			_lazyKey.append(split);

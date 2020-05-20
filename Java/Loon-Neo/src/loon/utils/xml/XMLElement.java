@@ -26,6 +26,7 @@ import loon.LSysException;
 import loon.LSystem;
 import loon.utils.Base64Coder;
 import loon.utils.ObjectMap;
+import loon.utils.StrBuilder;
 import loon.utils.TArray;
 
 public class XMLElement {
@@ -71,7 +72,7 @@ public class XMLElement {
 	}
 
 	private int readValueChunk(char[] buffer, int offset, int length) {
-		StringBuffer textCache = new StringBuffer(length);
+		StrBuilder textCache = new StrBuilder(length);
 		for (Iterator<?> e = elements(); e.hasNext();) {
 			textCache.append(e.next().toString());
 		}
@@ -242,7 +243,7 @@ public class XMLElement {
 	}
 
 	public String getContents() {
-		StringBuffer sbr = new StringBuffer(1024);
+		StrBuilder sbr = new StrBuilder(1024);
 		for (Iterator<?> e = elements(); e.hasNext();) {
 			sbr.append(e.next().toString());
 		}
@@ -268,7 +269,7 @@ public class XMLElement {
 
 	@Override
 	public String toString() {
-		StringBuffer builder = new StringBuffer();
+		StrBuilder builder = new StrBuilder();
 		if (this.name == null) {
 			builder.append(LSystem.EMPTY);
 		} else {

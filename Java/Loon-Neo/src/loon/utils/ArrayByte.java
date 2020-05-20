@@ -389,11 +389,11 @@ public class ArrayByte implements IArray, LRelease {
 
 		int goalPosition = position() + utfLength;
 
-		StringBuffer string = new StringBuffer(utfLength);
+		StrBuilder strings = new StrBuilder(utfLength);
 		while (position() < goalPosition) {
 			int a = readByte() & 0xff;
 			if ((a & 0x80) == 0) {
-				string.append((char) a);
+				strings.append((char) a);
 			} else {
 				int b = readByte() & 0xff;
 				if ((b & 0xc0) != 0x80) {
@@ -402,20 +402,20 @@ public class ArrayByte implements IArray, LRelease {
 
 				if ((a & 0xe0) == 0xc0) {
 					char ch = (char) (((a & 0x1f) << 6) | (b & 0x3f));
-					string.append(ch);
+					strings.append(ch);
 				} else if ((a & 0xf0) == 0xe0) {
 					int c = readByte() & 0xff;
 					if ((c & 0xc0) != 0x80) {
 						throw new LSysException(String.valueOf(c));
 					}
 					char ch = (char) (((a & 0x0f) << 12) | ((b & 0x3f) << 6) | (c & 0x3f));
-					string.append(ch);
+					strings.append(ch);
 				} else {
 					throw new LSysException("null");
 				}
 			}
 		}
-		return string.toString();
+		return strings.toString();
 	}
 
 	private void ensureCapacity(int dataSize) {

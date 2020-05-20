@@ -287,7 +287,7 @@ public class TreeNode<T> implements Iterable<TreeNode<T>> {
 	
 	@Override
 	public String toString() {
-		StringBuilder sbr = new StringBuilder();
+		StrBuilder sbr = new StrBuilder();
 		sbr.append("\n" + this.name);
 		sbr.append("\n[");
 		for (TreeNode<T> node : children) {

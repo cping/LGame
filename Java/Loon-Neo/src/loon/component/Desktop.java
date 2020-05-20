@@ -937,6 +937,13 @@ public class Desktop implements Visible, LRelease {
 		}
 	}
 
+	public Desktop sortDesktop() {
+		if (contentPane != null) {
+			contentPane.sortComponents();
+		}
+		return this;
+	}
+	
 	public Desktop scrollBy(float x, float y) {
 		if (contentPane != null) {
 			contentPane.scrollBy(x, y);

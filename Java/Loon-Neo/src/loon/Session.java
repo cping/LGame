@@ -24,6 +24,7 @@ import loon.utils.ArrayMap;
 import loon.utils.ArrayMap.Entry;
 import loon.utils.Base64Coder;
 import loon.utils.Bundle;
+import loon.utils.StrBuilder;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 import loon.utils.TimeUtils;
@@ -138,7 +139,7 @@ public class Session implements Bundle<String> {
 		}
 
 		public String encode() {
-			StringBuffer sbr = new StringBuffer(32);
+			StrBuilder sbr = new StrBuilder(32);
 			sbr.append(this.name);
 			sbr.append(flag);
 			sbr.append(this.active ? "1" : "0");
@@ -421,7 +422,7 @@ public class Session implements Bundle<String> {
 
 	public String encode() {
 		synchronized (recordsList) {
-			StringBuffer sbr = new StringBuffer();
+			StrBuilder sbr = new StrBuilder();
 			sbr.append(recordsList.size).append(flag).toString();
 			for (int i = 0; i < recordsList.size; i++) {
 				sbr.append((recordsList.get(i)).encode()).toString();

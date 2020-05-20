@@ -554,7 +554,7 @@ public class TArray<T> implements Iterable<T>, IArray {
 		if (size == 0)
 			return "[]";
 		T[] items = this.items;
-		StringBuilder buffer = new StringBuilder(32);
+		StrBuilder buffer = new StrBuilder(32);
 		buffer.append('[');
 		buffer.append(items[0]);
 		for (int i = 1; i < size; i++) {
@@ -570,7 +570,7 @@ public class TArray<T> implements Iterable<T>, IArray {
 			return "";
 		}
 		T[] items = this.items;
-		StringBuilder buffer = new StringBuilder(32);
+		StrBuilder buffer = new StrBuilder(32);
 		buffer.append(items[0]);
 		for (int i = 1; i < size; i++) {
 			buffer.append(separator);

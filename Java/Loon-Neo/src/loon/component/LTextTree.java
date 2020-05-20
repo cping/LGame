@@ -36,6 +36,7 @@ import loon.opengl.GLEx;
 import loon.opengl.LSTRDictionary;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
+import loon.utils.StrBuilder;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
@@ -308,7 +309,7 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 		for (CharSequence ch : treeList) {
 			int size = ch.length();
 			if (size > 1) {
-				String mes = new StringBuffer(ch).substring(0, size - 1).toString();
+				String mes = new StrBuilder(ch).substring(0, size - 1).toString();
 				_lines.add(mes);
 			}
 		}
@@ -413,22 +414,22 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 	}
 
 	protected String renderTree(TreeElement tree) {
-		TArray<StringBuilder> lines = renderDirectoryTreeLines(tree);
+		TArray<StrBuilder> lines = renderDirectoryTreeLines(tree);
 		String newline = LSystem.LS;
-		StringBuilder sb = new StringBuilder(lines.size() * 20);
-		for (StringBuilder line : lines) {
+		StrBuilder sb = new StrBuilder(lines.size() * 20);
+		for (StrBuilder line : lines) {
 			sb.append(line);
 			sb.append(newline);
 		}
 		return sb.toString();
 	}
 
-	protected TArray<StringBuilder> renderDirectoryTreeLines(TreeElement tree) {
-		TArray<StringBuilder> result = new TArray<StringBuilder>();
-		result.add(new StringBuilder().append(tree.getText()));
+	protected TArray<StrBuilder> renderDirectoryTreeLines(TreeElement tree) {
+		TArray<StrBuilder> result = new TArray<StrBuilder>();
+		result.add(new StrBuilder().append(tree.getText()));
 		Iterator<TreeElement> iterator = tree.childs.iterator();
 		while (iterator.hasNext()) {
-			TArray<StringBuilder> subtree = renderDirectoryTreeLines(iterator.next());
+			TArray<StrBuilder> subtree = renderDirectoryTreeLines(iterator.next());
 			if (iterator.hasNext()) {
 				addSubtree(result, subtree);
 			} else {
@@ -438,18 +439,18 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 		return result;
 	}
 
-	protected void addSubtree(TArray<StringBuilder> result, TArray<StringBuilder> subtree) {
-		Iterator<StringBuilder> iterator = subtree.iterator();
-		StringBuilder sbr = iterator.next();
+	protected void addSubtree(TArray<StrBuilder> result, TArray<StrBuilder> subtree) {
+		Iterator<StrBuilder> iterator = subtree.iterator();
+		StrBuilder sbr = iterator.next();
 		result.add(sbr.insert(0, subTreeFlag));
 		while (iterator.hasNext()) {
 			result.add(iterator.next().insert(0, subTreeNextFlag));
 		}
 	}
 
-	private void addLastSubtree(TArray<StringBuilder> result, TArray<StringBuilder> subtree) {
-		Iterator<StringBuilder> iterator = subtree.iterator();
-		StringBuilder sbr = iterator.next();
+	private void addLastSubtree(TArray<StrBuilder> result, TArray<StrBuilder> subtree) {
+		Iterator<StrBuilder> iterator = subtree.iterator();
+		StrBuilder sbr = iterator.next();
 		result.add(sbr.insert(0, subLastTreeFlag));
 		while (iterator.hasNext()) {
 			result.add(iterator.next().insert(0, "    "));

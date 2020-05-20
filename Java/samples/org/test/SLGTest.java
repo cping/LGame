@@ -605,7 +605,7 @@ public class SLGTest extends Stage {
 
 		public State(int tileSize) {
 			this.tileSize = tileSize;
-			this.setZ(10000);
+			this.setZ(5000);
 			this.setOffset(gameMap.getOffset());
 			this.setRepaintAutoOffset(true);
 		}
@@ -898,12 +898,13 @@ public class SLGTest extends Stage {
 	}
 
 	public void removeRole(final BooleanValue gameRunning, final int team, final Role e) {
+		// 从单元集合中删除角色
+		unitList.remove(e);
 		// 放倒角色淡出并删除敌人
 		get(e).rotateTo(90).fadeOut(6f).start().setActionListener(new ActionListener() {
 
 			@Override
 			public void stop(ActionBind o) {
-				unitList.remove(e);
 				remove(e);
 				if (team == PLAYER_TEAM) {
 					playerCount--;
@@ -1013,6 +1014,9 @@ public class SLGTest extends Stage {
 	}
 
 	public boolean checkAttack(Role attacker, int tileX, int tileY, int team) {
+		if (attacker == null) {
+			return false;
+		}
 		PointI attackPos = pixelsToTileMap(attacker.getX(), attacker.getY());
 		for (Role r : unitList) {
 			if (r.team == team) {
@@ -1428,7 +1432,7 @@ public class SLGTest extends Stage {
 		}
 
 		// 地图不跟随对象滚动
-		gameMap.followAction(null);
+		gameMap.followDonot();
 
 		PointI tilePos = pixelsToScrollTileMap(x, y);
 
@@ -1705,7 +1709,7 @@ public class SLGTest extends Stage {
 						@Override
 						public void stop(ActionBind o) {
 							// 清空跟随对象
-							gameMap.followAction(null);
+							gameMap.followDonot();
 							final PointI endPos = pixelsToTileMap(o.getX(), o.getY());
 							final Role enemy = checkRoleExist(endPos.x, endPos.y, 1, PLAYER_TEAM);
 							if (enemy != null) {

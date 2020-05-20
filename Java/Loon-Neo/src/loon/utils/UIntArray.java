@@ -679,7 +679,7 @@ public class UIntArray implements IArray {
 		if (length == 0)
 			return "";
 		byte[] bytebuffer = this.bytebuffer;
-		StringBuilder buffer = new StringBuilder(32);
+		StrBuilder buffer = new StrBuilder(32);
 		buffer.append(StringUtils.toHex(bytebuffer[0]));
 		for (int i = 1; i < length; i++) {
 			buffer.append(separator);
@@ -693,7 +693,7 @@ public class UIntArray implements IArray {
 			return "[]";
 		}
 		byte[] bytebuffer = this.bytebuffer;
-		StringBuilder buffer = new StringBuilder(CollectionUtils.INITIAL_CAPACITY);
+		StrBuilder buffer = new StrBuilder(CollectionUtils.INITIAL_CAPACITY);
 		buffer.append('[');
 		buffer.append(StringUtils.toHex(bytebuffer[0]));
 		for (int i = 1; i < length; i++) {

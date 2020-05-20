@@ -34,6 +34,7 @@ import loon.utils.ArrayByteOutput;
 import loon.utils.GLUtils;
 import loon.utils.GifEncoder;
 import loon.utils.MathUtils;
+import loon.utils.StrBuilder;
 import loon.utils.StringUtils;
 import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.reply.Port;
@@ -54,7 +55,7 @@ public class Display extends LSystemView {
 
 	private String displaySprites = SPRITE_STR;
 
-	private StringBuilder displayMessage = new StringBuilder(32);
+	private StrBuilder displayMessage = new StrBuilder(32);
 
 	private GifEncoder gifEncoder;
 

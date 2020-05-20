@@ -380,7 +380,7 @@ public class ListMap<K, V> implements IArray {
 			return "[]";
 		K[] keys = this.keys;
 		V[] values = this.values;
-		StringBuilder buffer = new StringBuilder(32);
+		StrBuilder buffer = new StrBuilder(32);
 		buffer.append('[');
 		buffer.append(keys[0]);
 		buffer.append('=');

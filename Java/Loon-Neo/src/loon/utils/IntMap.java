@@ -430,7 +430,7 @@ public class IntMap<T> implements IArray, Iterable<T> {
 		if (size == 0) {
 			return "[]";
 		}
-		StringBuilder buffer = new StringBuilder(32);
+		StrBuilder buffer = new StrBuilder(32);
 		buffer.append('[');
 		long[] keyTable = this.keysTable;
 		T[] valueTable = this.valuesTable;

@@ -40,6 +40,7 @@ import loon.utils.IntMap;
 import loon.utils.LIterator;
 import loon.utils.MathUtils;
 import loon.utils.OrderedSet;
+import loon.utils.StrBuilder;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
@@ -112,7 +113,7 @@ public class LSTRFont implements IFont, LRelease {
 			int positionY = 0;
 			int customCharsLength = (strfont.additionalChars != null) ? strfont.additionalChars.length : 0;
 			strfont.totalCharSet = customCharsLength == 0 ? strfont.totalCharSet : 0;
-			StringBuilder sbr = new StringBuilder(strfont.totalCharSet);
+			StrBuilder sbr = new StrBuilder(strfont.totalCharSet);
 			final boolean clipFont = LSystem.isTrueFontClip();
 			final OrderedSet<Character> outchached = new OrderedSet<Character>();
 			// 本地字体怎么都不如ttf或者fnt字体清晰准确,差异太大，只能尽量保证显示效果……
@@ -247,7 +248,7 @@ public class LSTRFont implements IFont, LRelease {
 			}
 			// 若字符串超过当前纹理大小,则创建新纹理保存
 			if (strfont._outBounds) {
-				StringBuilder temp = new StringBuilder(outchached.size());
+				StrBuilder temp = new StrBuilder(outchached.size());
 				for (LIterator<Character> it = outchached.iterator(); it.hasNext();) {
 					temp.append(it.next());
 				}
@@ -398,7 +399,7 @@ public class LSTRFont implements IFont, LRelease {
 		int customCharsLength = (additionalChars != null) ? additionalChars.length : 0;
 		this.totalCharSet = customCharsLength == 0 ? totalCharSet : 0;
 		if (chs != null && chs.length() > 0) {
-			StringBuilder tmp = new StringBuilder(chs);
+			StrBuilder tmp = new StrBuilder(chs);
 			this.text = tmp.toString();
 			this.additionalChars = text.toCharArray();
 			if (additionalChars != null && additionalChars.length > totalCharSet) {

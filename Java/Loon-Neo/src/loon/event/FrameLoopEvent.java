@@ -24,6 +24,9 @@ import loon.LSystem;
 import loon.Screen;
 import loon.utils.timer.LTimer;
 
+/**
+ * 一个交给Screen使用的内部循环用类
+ */
 public abstract class FrameLoopEvent {
 
 	private boolean killSelf = false;
@@ -51,8 +54,8 @@ public abstract class FrameLoopEvent {
 		return this;
 	}
 
-	public FrameLoopEvent setSecond(float s) {
-		timer.setDelay((long) (LSystem.SECOND * s));
+	public FrameLoopEvent setSecond(float second) {
+		timer.setDelay((long) (LSystem.SECOND * second));
 		return this;
 	}
 

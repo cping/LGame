@@ -48,11 +48,7 @@ public class TileMapConfig {
 
 	public static int[][] loadCharsMap(String resName) {
 		int[][] map = null;
-		String result = BaseIO.loadText(resName);
-		if (result == null) {
-			return map;
-		}
-		StrTokenizer br = new StrTokenizer(result, LSystem.NL);
+		StrTokenizer br = BaseIO.loadStrTokenizer(resName, LSystem.NL);
 		String line = br.nextToken();
 		int width = Integer.parseInt(line);
 		line = br.nextToken();
@@ -74,11 +70,8 @@ public class TileMapConfig {
 	}
 
 	public static TArray<int[]> loadList(final String fileName) {
-		String result = BaseIO.loadText(fileName);
-		if (result == null) {
-			return null;
-		}
-		StrTokenizer br = new StrTokenizer(result, LSystem.NL);
+		String result = null;
+		StrTokenizer br = BaseIO.loadStrTokenizer(fileName, LSystem.NL);
 		TArray<int[]> records = new TArray<int[]>(CollectionUtils.INITIAL_CAPACITY);
 		for (; br.hasMoreTokens();) {
 			result = StringUtils.replace(br.nextToken().trim(), LSystem.LS, LSystem.EMPTY);

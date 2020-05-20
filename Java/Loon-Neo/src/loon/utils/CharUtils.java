@@ -34,7 +34,7 @@ public class CharUtils {
 				'e', 'f' };
 
 	}
-
+	
 	public static char toChar(byte b) {
 		return (char) (b & 0xFF);
 	}
@@ -120,7 +120,7 @@ public class CharUtils {
 			hexChars[j * 2 + 1] = HexChars.TABLE[v & 0x0F];
 		}
 		if (removeZero) {
-			StringBuilder sbr = new StringBuilder(hexChars.length);
+			StrBuilder sbr = new StrBuilder(hexChars.length);
 			final char tag = '0';
 			boolean flag = false;
 			for (int i = 0; i < hexChars.length; i++) {
@@ -329,7 +329,7 @@ public class CharUtils {
 	}
 
 	public static boolean isAsciiLetter(int c) {
-		return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
+		return isLowercaseAlpha(c) || isUppercaseAlpha(c);
 	}
 
 	public static boolean isLowercaseAlpha(int c) {
@@ -338,6 +338,18 @@ public class CharUtils {
 
 	public static boolean isUppercaseAlpha(int c) {
 		return (c >= 'A') && (c <= 'Z');
+	}
+
+	public static boolean isAlphabetUpper(char letter) {
+		return isUppercaseAlpha(letter);
+	}
+
+	public static boolean isAlphabetLower(char letter) {
+		return isLowercaseAlpha(letter);
+	}
+
+	public static boolean isAlphabet(char letter) {
+		return isAsciiLetter(letter);
 	}
 
 	public static boolean isAlpha(int c) {

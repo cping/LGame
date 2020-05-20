@@ -43,6 +43,7 @@ import loon.opengl.GLEx;
 import loon.opengl.LSTRDictionary;
 import loon.utils.TArray;
 import loon.utils.MathUtils;
+import loon.utils.StrBuilder;
 
 /**
  * 在一些不方便输入字符串的设备上,输入角色名称时可用此UI,字数不够上下分页,多来几个就成了……
@@ -138,7 +139,7 @@ public class LDecideName extends LComponent implements FontSet<LDecideName> {
 	private void bindString() {
 		if (!bind) {
 			if (_font instanceof LFont) {
-				StringBuffer sbr = new StringBuffer();
+				StrBuilder sbr = new StrBuilder();
 				for (int i = 0; i < keyArrays.size; i++) {
 					sbr.append(keyArrays.get(i));
 				}

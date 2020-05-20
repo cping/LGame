@@ -20,6 +20,8 @@
  */
 package loon.event;
 
+import loon.utils.StrBuilder;
+
 public abstract class Event {
 
 	public static final int F_PREVENT_DEFAULT = 1 << 0;
@@ -74,7 +76,7 @@ public abstract class Event {
 
 		@Override
 		public String toString() {
-			StringBuilder builder = new StringBuilder(name()).append('[');
+			StrBuilder builder = new StrBuilder(name()).append('[');
 			addFields(builder);
 			return builder.append(']').toString();
 		}
@@ -102,7 +104,7 @@ public abstract class Event {
 			return "Input";
 		}
 
-		protected void addFields(StringBuilder builder) {
+		protected void addFields(StrBuilder builder) {
 			builder.append("time=").append(time).append(", flags=")
 					.append(flags);
 		}
@@ -136,7 +138,7 @@ public abstract class Event {
 		}
 
 		@Override
-		protected void addFields(StringBuilder builder) {
+		protected void addFields(StrBuilder builder) {
 			super.addFields(builder);
 			builder.append(", x=").append(x).append(", y=").append(y);
 		}

@@ -26,6 +26,7 @@ import loon.action.sprite.IEntity;
 import loon.canvas.LColor;
 import loon.opengl.GLEx;
 import loon.utils.Flip;
+import loon.utils.StrBuilder;
 
 public interface IEntity extends ISprite, Flip<IEntity> {
 
@@ -202,7 +203,7 @@ public interface IEntity extends ISprite, Flip<IEntity> {
 
 	public Object getUserData();
 
-	public void toString(final StringBuilder s);
+	public void toString(final StrBuilder s);
 
 	public void update(long elapsedTime);
 

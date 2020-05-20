@@ -257,7 +257,7 @@ public class MathUtils {
 					number = ZEROS[length] + number;
 				}
 			} else {
-				StringBuilder sbr = new StringBuilder();
+				StrBuilder sbr = new StrBuilder();
 				for (int i = 0; i < length; i++) {
 					sbr.append('0');
 				}
@@ -429,6 +429,13 @@ public class MathUtils {
 			return false;
 		}
 		return !allowSigns && foundDigit;
+	}
+
+	public static final boolean isNumber(CharSequence num) {
+		if (StringUtils.isEmpty(num)) {
+			return false;
+		}
+		return isNan(num.toString());
 	}
 
 	public static final boolean isZero(float value) {
@@ -1227,7 +1234,7 @@ public class MathUtils {
 		if (isNan(value)) {
 			return "NaN";
 		}
-		StringBuilder buf = new StringBuilder();
+		StrBuilder buf = new StrBuilder();
 		if (value >= 0) {
 			if (showTag) {
 				buf.append("+");

@@ -20,6 +20,8 @@
  */
 package loon.utils.qrcode;
 
+import loon.utils.StrBuilder;
+
 public class QRPolynomial {
 
 	private final int[] num;
@@ -76,7 +78,7 @@ public class QRPolynomial {
 	}
 
 	public String toLogString() {
-		StringBuilder buffer = new StringBuilder();
+		StrBuilder buffer = new StrBuilder();
 		for (int i = 0; i < getLength(); i++) {
 			if (i > 0) {
 				buffer.append(",");
@@ -88,7 +90,7 @@ public class QRPolynomial {
 
 	@Override
 	public String toString() {
-		StringBuilder buffer = new StringBuilder();
+		StrBuilder buffer = new StrBuilder();
 		for (int i = 0; i < getLength(); i++) {
 			if (i > 0) {
 				buffer.append(",");

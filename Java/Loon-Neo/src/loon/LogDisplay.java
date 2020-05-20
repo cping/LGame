@@ -25,6 +25,7 @@ import loon.component.Print;
 import loon.font.IFont;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
+import loon.utils.StrBuilder;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
@@ -125,7 +126,7 @@ public class LogDisplay {
 	}
 
 	public String getText() {
-		StringBuffer sbr = new StringBuffer();
+		StrBuilder sbr = new StrBuilder();
 		if (_texts != null) {
 			for (int i = 0; i < _texts.size; i++) {
 				sbr.append(_texts.get(i));

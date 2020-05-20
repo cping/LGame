@@ -17,6 +17,7 @@ package loon.physics;
 
 import loon.geom.Vector2f;
 import loon.utils.MathUtils;
+import loon.utils.StrBuilder;
 
 public class PTransformer {
 
@@ -116,7 +117,7 @@ public class PTransformer {
 	}
 
 	public String toString() {
-		return (new StringBuilder("[[")).append(e00).append(", ").append(e01)
+		return (new StrBuilder("[[")).append(e00).append(", ").append(e01)
 				.append("], [").append(e10).append(", ").append(e11)
 				.append("]]").toString();
 	}

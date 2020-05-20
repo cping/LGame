@@ -38,6 +38,7 @@ import loon.utils.StringKeyValue;
 import loon.utils.StringUtils;
 import loon.utils.ObjectMap.Entries;
 import loon.utils.ObjectMap.Entry;
+import loon.utils.StrBuilder;
 import loon.utils.TArray;
 import loon.utils.parse.StrTokenizer;
 
@@ -219,7 +220,7 @@ public class BMFont implements IFont {
 
 		if (info != null && !StringUtils.isEmpty(info)) {
 			int size = info.length();
-			StringBuilder sbr = new StringBuilder();
+			StrBuilder sbr = new StrBuilder();
 			for (int i = 0; i < size; i++) {
 				char ch = info.charAt(i);
 				if (ch == ' ' && sbr.length() > 0) {

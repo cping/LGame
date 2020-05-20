@@ -465,7 +465,7 @@ public class IntArray implements IArray {
 		if (length == 0)
 			return "";
 		int[] items = this.items;
-		StringBuilder buffer = new StringBuilder(32);
+		StrBuilder buffer = new StrBuilder(32);
 		buffer.append(items[0]);
 		for (int i = 1; i < length; i++) {
 			buffer.append(separator);
@@ -635,7 +635,7 @@ public class IntArray implements IArray {
 			return "[]";
 		}
 		int[] items = this.items;
-		StringBuilder buffer = new StringBuilder(CollectionUtils.INITIAL_CAPACITY);
+		StrBuilder buffer = new StrBuilder();
 		buffer.append('[');
 		buffer.append(items[0]);
 		for (int i = 1; i < length; i++) {

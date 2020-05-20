@@ -2,6 +2,7 @@ package loon.opengl;
 
 import loon.BaseIO;
 import loon.LSystem;
+import loon.utils.StrBuilder;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
@@ -15,7 +16,7 @@ public class ShaderUtils {
 	}
 
 	private static String process(String codeText, TArray<String> included) {
-		StringBuilder builder = new StringBuilder();
+		StrBuilder builder = new StrBuilder();
 		String[] lines = StringUtils.split(codeText, '\n');
 		if (lines != null) {
 			for (int line = 0; line < lines.length; line++) {

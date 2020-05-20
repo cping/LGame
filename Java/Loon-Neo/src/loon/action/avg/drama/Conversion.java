@@ -25,6 +25,7 @@ import loon.LSystem;
 import loon.utils.Calculator;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
+import loon.utils.StrBuilder;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
@@ -90,7 +91,7 @@ public abstract class Conversion implements Expression {
 			return context;
 		}
 		int size = context.length();
-		StringBuffer sbr = new StringBuffer(size * 2);
+		StrBuilder sbr = new StrBuilder(size * 2);
 		boolean notFlag = false;
 		boolean operator;
 		for (int i = 0; i < size; i++) {
@@ -258,7 +259,7 @@ public abstract class Conversion implements Expression {
 				expChr = new char[exp.length()];
 				int ecIdx = 0;
 				boolean skip = false;
-				StringBuffer buf = new StringBuffer(exp);
+				StrBuilder buf = new StrBuilder(exp);
 				int depth = 0;
 				boolean balance = true;
 				char ch;

@@ -22,6 +22,7 @@ package loon.utils.html;
 
 import loon.BaseIO;
 import loon.LSysException;
+import loon.utils.StrBuilder;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 import loon.utils.xml.XMLTokenizer;
@@ -140,8 +141,8 @@ public class HtmlParser {
 				int start = 0;
 				int end = 0;
 
-				StringBuffer sbr1 = new StringBuffer(128);
-				StringBuffer sbr2 = new StringBuffer(32);
+				StrBuilder sbr1 = new StrBuilder(128);
+				StrBuilder sbr2 = new StrBuilder(32);
 				for (int m = 0; m < text.length(); m++) {
 
 					switch (text.charAt(m)) {

@@ -65,7 +65,7 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 
 	private final String _path;
 
-	private final StringBuffer template_values = new StringBuffer();
+	private final StrBuilder template_values = new StrBuilder();
 
 	public ConfigReader(final String resName) {
 		if (StringUtils.isEmpty(resName)) {
@@ -151,7 +151,7 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 		}
 		StrTokenizer reader = new StrTokenizer(text, LSystem.NL);
 		String record = null;
-		StringBuffer mapBuffer = new StringBuffer();
+		StrBuilder mapBuffer = new StrBuilder();
 		boolean mapFlag = false;
 		String mapName = null;
 		for (; reader.hasMoreTokens();) {
@@ -185,7 +185,7 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 		}
 		char[] chars = mes.toCharArray();
 		int size = chars.length;
-		StringBuffer sbr = template_values.delete(0, template_values.length());
+		StrBuilder sbr = template_values.delete(0, template_values.length());
 		String key = null;
 		String value = null;
 		int idx = 0;
@@ -371,7 +371,7 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 			boolean pFlag = false;
 			char[] chars = v.toCharArray();
 			int size = chars.length;
-			StringBuffer sbr = new StringBuffer(128);
+			StrBuilder sbr = new StrBuilder(128);
 			TArray<int[]> records = new TArray<int[]>(CollectionUtils.INITIAL_CAPACITY);
 			for (int i = 0; i < size; i++) {
 				char pValue = chars[i];

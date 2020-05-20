@@ -430,11 +430,15 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	}
 
 	public void setZ(int z) {
-		setLayer(-z);
+		this.setZOrder(z);
 	}
 
 	public void setZOrder(int z) {
-		setLayer(-z);
+		int orderZ = z;
+		if (this._super != null && this._super instanceof ZIndex) {
+			orderZ = z - MathUtils.abs(((ZIndex) this._super).getLayer());
+		}
+		setLayer(-orderZ);
 	}
 
 	public int getZOrder() {
@@ -442,7 +446,7 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	}
 
 	public int getZ() {
-		return MathUtils.abs(getLayer());
+		return getZOrder();
 	}
 
 	/**

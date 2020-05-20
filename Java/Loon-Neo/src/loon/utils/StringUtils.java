@@ -39,7 +39,7 @@ final public class StringUtils extends CharUtils {
 	 * @return
 	 */
 	public static String format(String format, Object... params) {
-		StringBuilder b = new StringBuilder();
+		StrBuilder b = new StrBuilder();
 		int p = 0;
 		for (;;) {
 			int i = format.indexOf('{', p);
@@ -97,7 +97,8 @@ final public class StringUtils extends CharUtils {
 			return false;
 		}
 		String str = o.trim().toLowerCase();
-		return str.equals("true") || str.equals("false") || str.equals("yes") || str.equals("no") || str.equals("ok");
+		return str.equals("true") || str.equals("false") || str.equals("yes") || str.equals("no") || str.equals("ok")
+				|| str.equals("on") || str.equals("off");
 	}
 
 	/**
@@ -111,9 +112,9 @@ final public class StringUtils extends CharUtils {
 			return false;
 		}
 		String str = o.trim().toLowerCase();
-		if (str.equals("true") || str.equals("yes") || str.equals("ok")) {
+		if (str.equals("true") || str.equals("yes") || str.equals("ok") || str.equals("on")) {
 			return true;
-		} else if (str.equals("no") || str.equals("false")) {
+		} else if (str.equals("no") || str.equals("false") || str.equals("off")) {
 			return false;
 		} else if (MathUtils.isNan(str)) {
 			return Double.parseDouble(str) > 0;
@@ -221,8 +222,8 @@ final public class StringUtils extends CharUtils {
 	 * @param sub
 	 * @return
 	 */
-	public static boolean startsWith(final String s, final String sub) {
-		return (s != null) && (sub != null) && s.startsWith(sub);
+	public static boolean startsWith(final CharSequence s, final CharSequence sub) {
+		return (s != null) && (sub != null) && s.toString().startsWith(sub.toString());
 	}
 
 	/**
@@ -232,7 +233,7 @@ final public class StringUtils extends CharUtils {
 	 * @param tag
 	 * @return
 	 */
-	public static boolean startsWith(String n, char tag) {
+	public static boolean startsWith(CharSequence n, char tag) {
 		return (n != null) && n.charAt(0) == tag;
 	}
 
@@ -281,8 +282,8 @@ final public class StringUtils extends CharUtils {
 	 * @param sub
 	 * @return
 	 */
-	public static boolean endsWith(final String s, final String sub) {
-		return (s != null) && (sub != null) && s.endsWith(sub);
+	public static boolean endsWith(final CharSequence s, final CharSequence sub) {
+		return (s != null) && (sub != null) && s.toString().endsWith(sub.toString());
 	}
 
 	/**
@@ -292,7 +293,7 @@ final public class StringUtils extends CharUtils {
 	 * @param tag
 	 * @return
 	 */
-	public static boolean endsWith(String n, char tag) {
+	public static boolean endsWith(CharSequence n, char tag) {
 		return (n != null) && n.charAt(n.length() - 1) == tag;
 	}
 
@@ -304,7 +305,7 @@ final public class StringUtils extends CharUtils {
 	 * @return
 	 */
 	public static String join(Character flag, Object... o) {
-		StringBuilder sbr = new StringBuilder();
+		StrBuilder sbr = new StrBuilder();
 		int size = o.length;
 		for (int i = 0; i < size; i++) {
 			sbr.append(o[i]);
@@ -323,7 +324,7 @@ final public class StringUtils extends CharUtils {
 	 * @return
 	 */
 	public static String join(Character flag, float[] o) {
-		StringBuilder sbr = new StringBuilder();
+		StrBuilder sbr = new StrBuilder();
 		int size = o.length;
 		for (int i = 0; i < size; i++) {
 			sbr.append(o[i]);
@@ -342,7 +343,7 @@ final public class StringUtils extends CharUtils {
 	 * @return
 	 */
 	public static String join(Character flag, int[] o) {
-		StringBuilder sbr = new StringBuilder();
+		StrBuilder sbr = new StrBuilder();
 		int size = o.length;
 		for (int i = 0; i < size; i++) {
 			sbr.append(o[i]);
@@ -360,7 +361,7 @@ final public class StringUtils extends CharUtils {
 	 * @return
 	 */
 	public static String concat(final Object... res) {
-		StringBuffer sbr = new StringBuffer(res.length);
+		StrBuilder sbr = new StrBuilder(res.length);
 		for (int i = 0; i < res.length; i++) {
 			if (res[i] instanceof Integer) {
 				sbr.append((Integer) res[i]);
@@ -398,14 +399,14 @@ final public class StringUtils extends CharUtils {
 	 * @param message
 	 * @return
 	 */
-	public static boolean isEnglishAndNumeric(final String message) {
-		if (isEmpty(message)) {
+	public static boolean isEnglishAndNumeric(final CharSequence cs) {
+		if (isEmpty(cs)) {
 			return false;
 		}
-		int size = message.length();
+		int size = cs.length();
 		int amount = 0;
 		for (int j = 0; j < size; j++) {
-			int letter = message.charAt(j);
+			int letter = cs.charAt(j);
 			if (isEnglishAndNumeric(letter) || letter == ' ') {
 				amount++;
 			}
@@ -436,7 +437,7 @@ final public class StringUtils extends CharUtils {
 		if (size(message) <= 0) {
 			return "";
 		}
-		StringBuilder sbr = new StringBuilder();
+		StrBuilder sbr = new StrBuilder();
 		boolean addFlag;
 		for (int i = 0; i < message.length(); i++) {
 			addFlag = true;
@@ -465,7 +466,7 @@ final public class StringUtils extends CharUtils {
 		if (size(s) <= 0) {
 			return "";
 		}
-		StringBuilder sbr = new StringBuilder();
+		StrBuilder sbr = new StrBuilder();
 		final int size = s.length();
 		for (int i = 0; i < size; i++) {
 			char c = s.charAt(i);
@@ -626,7 +627,7 @@ final public class StringUtils extends CharUtils {
 	public static String[] splitCsv(String str) {
 		TArray<String> stringList = new TArray<String>();
 		String tempString;
-		StringBuilder sbr = new StringBuilder();
+		StrBuilder sbr = new StrBuilder();
 		for (int i = 0; i < str.length(); i++) {
 			if (str.charAt(i) == '"') {
 				i++;
@@ -690,6 +691,19 @@ final public class StringUtils extends CharUtils {
 	}
 
 	/**
+	 * 给指定支付序列加上引号
+	 * 
+	 * @param cs
+	 * @return
+	 */
+	public static String quote(CharSequence cs) {
+		if (isNullOrEmpty(cs)) {
+			return "\"\"";
+		}
+		return "\"" + cs + "\"";
+	}
+
+	/**
 	 * 以指定标记分割过滤字符序列并返回一个数据集合
 	 * 
 	 * @param chars
@@ -749,7 +763,7 @@ final public class StringUtils extends CharUtils {
 			char string2[] = message.toCharArray();
 			char newString2[] = newString.toCharArray();
 			int oLength = oldString.length();
-			StringBuffer buf = new StringBuffer(string2.length);
+			StrBuilder buf = new StrBuilder(string2.length);
 			buf.append(string2, 0, i).append(newString2);
 			i += oLength;
 			int j;
@@ -812,7 +826,7 @@ final public class StringUtils extends CharUtils {
 			char line2[] = line.toCharArray();
 			char newString2[] = newString.toCharArray();
 			int oLength = oldString.length();
-			StringBuffer buf = new StringBuffer(line2.length);
+			StrBuilder buf = new StrBuilder(line2.length);
 			buf.append(line2, 0, i).append(newString2);
 			i += oLength;
 			int j;
@@ -848,7 +862,7 @@ final public class StringUtils extends CharUtils {
 			char line2[] = line.toCharArray();
 			char newString2[] = newString.toCharArray();
 			int oLength = oldString.length();
-			StringBuffer buf = new StringBuffer(line2.length);
+			StrBuilder buf = new StrBuilder(line2.length);
 			buf.append(line2, 0, i).append(newString2);
 			i += oLength;
 			int j;
@@ -884,7 +898,7 @@ final public class StringUtils extends CharUtils {
 			char line2[] = line.toCharArray();
 			char newString2[] = newString.toCharArray();
 			int oLength = oldString.length();
-			StringBuffer buf = new StringBuffer(line2.length);
+			StrBuilder buf = new StrBuilder(line2.length);
 			buf.append(line2, 0, i).append(newString2);
 			i += oLength;
 			int j;
@@ -905,14 +919,17 @@ final public class StringUtils extends CharUtils {
 	/**
 	 * 检查一组字符串是否完全由中文组成
 	 * 
-	 * @param str
+	 * @param cs
 	 * @return
 	 */
-	public static boolean isChinaLanguage(String mes) {
-		int size = mes.length();
+	public static boolean isChinaLanguage(CharSequence cs) {
+		if (isNullOrEmpty(cs)) {
+			return false;
+		}
+		int size = cs.length();
 		int count = 0;
 		for (int i = 0; i < size; i++) {
-			if (isChinese(mes.charAt(i))) {
+			if (isChinese(cs.charAt(i))) {
 				count++;
 			}
 		}
@@ -922,13 +939,16 @@ final public class StringUtils extends CharUtils {
 	/**
 	 * 判断字符串中是否包含中文
 	 * 
-	 * @param mes
+	 * @param cs
 	 * @return
 	 */
-	public static boolean containChinaLanguage(String mes) {
-		int size = mes.length();
+	public static boolean containChinaLanguage(CharSequence cs) {
+		if (isNullOrEmpty(cs)) {
+			return false;
+		}
+		int size = cs.length();
 		for (int i = 0; i < size; i++) {
-			if (isChinese(mes.charAt(i))) {
+			if (isChinese(cs.charAt(i))) {
 				return true;
 			}
 		}
@@ -976,12 +996,12 @@ final public class StringUtils extends CharUtils {
 	 * @param param
 	 * @return
 	 */
-	public static boolean isEmpty(String param) {
-		return param == null || param.length() == 0 || "".equals(param.trim());
+	public static boolean isEmpty(CharSequence value) {
+		return value == null || value.length() == 0 || "".equals(value.toString().trim());
 	}
 
 	/**
-	 * 判断CharSequence是否非空(和isNotEmpty与isEmpty分开函数名,防止串类型)
+	 * 判断CharSequence是否非空(和isNotEmpty与isEmpty分开函数名,防止串类型,这个没有trim操作,也就是" "不算空)
 	 * 
 	 * @param value
 	 * @return
@@ -996,8 +1016,8 @@ final public class StringUtils extends CharUtils {
 	 * @param param
 	 * @return
 	 */
-	public static boolean isNotEmpty(String param) {
-		return !isEmpty(param);
+	public static boolean isNotEmpty(CharSequence value) {
+		return !isEmpty(value);
 	}
 
 	/**
@@ -1006,8 +1026,8 @@ final public class StringUtils extends CharUtils {
 	 * @param param
 	 * @return
 	 */
-	public static boolean isEmpty(String... param) {
-		return param == null || param.length == 0;
+	public static boolean isEmpty(CharSequence... value) {
+		return value == null || value.length == 0;
 	}
 
 	/**
@@ -1040,6 +1060,42 @@ final public class StringUtils extends CharUtils {
 			return mes.substring(0).toLowerCase();
 		}
 		return mes.substring(0, 1).toLowerCase() + mes.substring(1, mes.length());
+	}
+
+	/**
+	 * 大写字符序列的首字母,其余全部小写
+	 * 
+	 * @param cs
+	 * @return
+	 */
+	public static String toUpperFirstOtherAllLower(CharSequence cs) {
+		if (isNullOrEmpty(cs)) {
+			return "";
+		}
+		final int len = cs.length();
+		StrBuilder sbr = new StrBuilder(len).append(toUpperAscii(cs.charAt(0)));
+		for (int i = 1; i < len; i++) {
+			sbr.append(toLowerAscii(cs.charAt(i)));
+		}
+		return sbr.toString();
+	}
+
+	/**
+	 * 小写字符序列的首字母,其余全部大写
+	 * 
+	 * @param cs
+	 * @return
+	 */
+	public static String toLowerFirstOtherAllUpper(CharSequence cs) {
+		if (isNullOrEmpty(cs)) {
+			return "";
+		}
+		final int len = cs.length();
+		StrBuilder sbr = new StrBuilder(len).append(toLowerAscii(cs.charAt(0)));
+		for (int i = 1; i < len; i++) {
+			sbr.append(toUpperAscii(cs.charAt(i)));
+		}
+		return sbr.toString();
 	}
 
 	/**
@@ -1086,7 +1142,7 @@ final public class StringUtils extends CharUtils {
 	 *            指定需要检查的字符串。
 	 * @return 逻辑值（True Or False）。
 	 */
-	public static boolean hasChinese(String checkStr) {
+	public static boolean hasChinese(CharSequence checkStr) {
 		return getChineseCount(checkStr) > 0;
 	}
 
@@ -1096,7 +1152,7 @@ final public class StringUtils extends CharUtils {
 	 * @param value
 	 * @return
 	 */
-	public static boolean isAlphabet(String value) {
+	public static boolean isAlphabet(CharSequence value) {
 		if (value == null || value.length() == 0) {
 			return false;
 		}
@@ -1110,36 +1166,6 @@ final public class StringUtils extends CharUtils {
 			}
 		}
 		return count >= size;
-	}
-
-	/**
-	 * 检查是否为纯字母大写
-	 * 
-	 * @param letter
-	 * @return
-	 */
-	public static boolean isAlphabetUpper(char letter) {
-		return ('A' <= letter && letter <= 'Z');
-	}
-
-	/**
-	 * 检查是否为纯字母小写
-	 * 
-	 * @param letter
-	 * @return
-	 */
-	public static boolean isAlphabetLower(char letter) {
-		return ('a' <= letter && letter <= 'z');
-	}
-
-	/**
-	 * 检查是否为纯字母
-	 * 
-	 * @param letter
-	 * @return
-	 */
-	public static boolean isAlphabet(char letter) {
-		return isAlphabetUpper(letter) || isAlphabetLower(letter);
 	}
 
 	/**
@@ -1239,6 +1265,42 @@ final public class StringUtils extends CharUtils {
 	}
 
 	/**
+	 * 检查指定字符序列是否全部大写
+	 * 
+	 * @param cs
+	 * @return
+	 */
+	public static boolean isAllUppercaseAlpha(CharSequence cs) {
+		if (isNullOrEmpty(cs)) {
+			return false;
+		}
+		int length = cs.length();
+		for (int i = 0; i < length; i++) {
+			if (!(isUppercaseAlpha(cs.charAt(i))))
+				return false;
+		}
+		return true;
+	}
+
+	/**
+	 * 检查指定字符序列是否全部小写
+	 * 
+	 * @param cs
+	 * @return
+	 */
+	public static boolean isAllLowercaseAlpha(CharSequence cs) {
+		if (isNullOrEmpty(cs)) {
+			return false;
+		}
+		int length = cs.length();
+		for (int i = 0; i < length; i++) {
+			if (!(isLowercaseAlpha(cs.charAt(i))))
+				return false;
+		}
+		return true;
+	}
+
+	/**
 	 * 替换指定字符串
 	 * 
 	 * @param line
@@ -1253,7 +1315,7 @@ final public class StringUtils extends CharUtils {
 			char line2[] = line.toCharArray();
 			char newString2[] = newString.toCharArray();
 			int oLength = oldString.length();
-			StringBuffer buffer = new StringBuffer(line2.length);
+			StrBuilder buffer = new StrBuilder(line2.length);
 			buffer.append(line2, 0, i).append(newString2);
 			i += oLength;
 			for (j = i; (i = line.indexOf(oldString, i)) > 0; j = i) {
@@ -1297,7 +1359,7 @@ final public class StringUtils extends CharUtils {
 	public static String unescape(String escaped) {
 		int length = escaped.length();
 		int i = 0;
-		StringBuilder sbr = new StringBuilder(escaped.length() / 2);
+		StrBuilder sbr = new StrBuilder(escaped.length() / 2);
 
 		while (i < length) {
 			char n = escaped.charAt(i++);
@@ -1328,10 +1390,10 @@ final public class StringUtils extends CharUtils {
 	 * @param raw
 	 * @return
 	 */
-	public static String escape(String raw) {
+	public static String escape(CharSequence raw) {
 		int length = raw.length();
 		int i = 0;
-		StringBuilder sbr = new StringBuilder(raw.length() / 2);
+		StrBuilder sbr = new StrBuilder(raw.length() / 2);
 
 		while (i < length) {
 			char c = raw.charAt(i++);
@@ -1339,7 +1401,7 @@ final public class StringUtils extends CharUtils {
 			if (CharUtils.isLetterOrDigit(c) || CharUtils.isEscapeExempt(c)) {
 				sbr.append(c);
 			} else {
-				int i1 = raw.codePointAt(i - 1);
+				int i1 = raw.charAt(i - 1);
 				String escape = CharUtils.toHex(i1);
 
 				sbr.append('%');
@@ -1371,7 +1433,7 @@ final public class StringUtils extends CharUtils {
 		if (padCount <= 0) {
 			return chars;
 		} else {
-			final StringBuilder sbr = new StringBuilder();
+			final StrBuilder sbr = new StrBuilder();
 
 			for (int i = padCount - 1; i >= 0; i--) {
 				sbr.append(padChar);
@@ -1395,7 +1457,7 @@ final public class StringUtils extends CharUtils {
 		if (padCount <= 0) {
 			return chars;
 		} else {
-			final StringBuilder sbr = new StringBuilder(chars);
+			final StrBuilder sbr = new StrBuilder(chars);
 			for (int i = padCount - 1; i >= 0; i--) {
 				sbr.append(padChar);
 			}
@@ -1411,7 +1473,7 @@ final public class StringUtils extends CharUtils {
 		if (isEmpty(messages)) {
 			return "";
 		}
-		StringBuilder sbr = new StringBuilder();
+		StrBuilder sbr = new StrBuilder();
 		for (String mes : messages) {
 			if (mes != null) {
 				sbr.append(mes.trim());
@@ -1424,7 +1486,7 @@ final public class StringUtils extends CharUtils {
 		if (messages == null || messages.length == 0) {
 			return "";
 		}
-		StringBuilder sbr = new StringBuilder();
+		StrBuilder sbr = new StrBuilder();
 		for (CharSequence mes : messages) {
 			if (mes != null) {
 				sbr.append(mes);
@@ -1686,7 +1748,7 @@ final public class StringUtils extends CharUtils {
 	 * @return
 	 */
 	public static int indexOf(CharSequence c, char ch, int start, int end) {
-		if ((c instanceof StringBuffer) || (c instanceof StringBuilder) || (c instanceof String)) {
+		if ((c instanceof StringBuffer) || (c instanceof StringBuilder) || (c instanceof StrBuilder) || (c instanceof String)) {
 			final int INDEX_INCREMENT = 500;
 			char[] temp = new char[INDEX_INCREMENT];
 
@@ -1786,7 +1848,9 @@ final public class StringUtils extends CharUtils {
 		} else if (c instanceof StringBuffer) {
 			((StringBuffer) c).getChars(start, end, dest, destoff);
 		} else if (c instanceof StringBuilder) {
-			((StringBuilder) c).getChars(start, end, dest, destoff);
+			((StrBuilder) c).getChars(start, end, dest, destoff);
+		} else if (c instanceof StrBuilder) {
+			((StrBuilder) c).getChars(start, end, dest, destoff);
 		} else {
 			for (int i = start; i < end; i++) {
 				dest[destoff++] = c.charAt(i);
@@ -1945,7 +2009,7 @@ final public class StringUtils extends CharUtils {
 			return notNull(mes);
 		}
 		int num = 0;
-		StringBuilder sbr = new StringBuilder();
+		StrBuilder sbr = new StrBuilder();
 		for (int i = 0; i < mes.length(); i++) {
 			char ch = mes.charAt(i);
 			if (ch == str) {
@@ -2007,7 +2071,7 @@ final public class StringUtils extends CharUtils {
 			return "";
 		}
 		final int size = v.length();
-		final StringBuilder sbr = new StringBuilder(size);
+		final StrBuilder sbr = new StrBuilder(size);
 		for (int i = size - 1; i >= 0; i--) {
 			sbr.append(v.charAt(i));
 		}
@@ -2041,14 +2105,15 @@ final public class StringUtils extends CharUtils {
 	 * @param src
 	 * @return
 	 */
-	public static String formatCRLF(String src) {
-		if (isEmpty(src)) {
+	public static String formatCRLF(CharSequence cs) {
+		if (isEmpty(cs)) {
 			return "";
 		}
+		String src = cs.toString();
 		int pos = src.indexOf("\r");
 		if (pos != -1) {
 			int len = src.length();
-			StringBuilder buffer = new StringBuilder();
+			StrBuilder buffer = new StrBuilder();
 			int lastPos = 0;
 			while (pos != -1) {
 				buffer.append(src, lastPos, pos);
@@ -2064,10 +2129,57 @@ final public class StringUtils extends CharUtils {
 			if (lastPos < len) {
 				buffer.append(src, lastPos, len);
 			}
-
 			src = buffer.toString();
 		}
 		return src;
+	}
+
+	/**
+	 * 格式化字符序列为escape,并在原始\n位置插入指定分隔符
+	 * 
+	 * @param cs
+	 * @param indent
+	 * @return
+	 */
+	public static String formatEscape(CharSequence cs, CharSequence indent) {
+		String text = cs.toString();
+		if (text.indexOf('\n') != -1) {
+			if (text.length() == 1) {
+				return quote("\\n");
+			}
+			StrBuilder sbr = new StrBuilder();
+			sbr.append("|");
+			String[] lines = split(text, '\n');
+			for (int i = 0; i < lines.length; i++) {
+				String line = lines[i];
+				sbr.append("\n" + indent + line);
+			}
+			if (text.charAt(text.length() - 1) == '\n') {
+				sbr.append("\n" + indent);
+			}
+			return sbr.toString();
+		} else if ("".equals(text)) {
+			return quote(text);
+		} else {
+			final String indicators = ":[]{},\"'|*&";
+			boolean quoteIt = false;
+			for (char c : indicators.toCharArray())
+				if (text.indexOf(c) != -1) {
+					quoteIt = true;
+					break;
+				}
+			if (text.trim().length() != text.length()) {
+				quoteIt = true;
+			}
+			if (MathUtils.isNumber(text)) {
+				quoteIt = true;
+			}
+			if (quoteIt) {
+				text = escape(text);
+				text = quote(text);
+			}
+			return text;
+		}
 	}
 
 	/**

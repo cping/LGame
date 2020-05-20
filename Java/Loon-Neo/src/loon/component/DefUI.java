@@ -59,6 +59,14 @@ public class DefUI extends HelperUtils {
 		return instance;
 	}
 
+	public final static DefUI selfClear() {
+		DefUI ui = self();
+		if (ui != null) {
+			ui.clearDefaultUI();
+		}
+		return ui;
+	}
+
 	public final static String win_frame_UI = LSystem.getSystemImagePath() + "wbar.png";
 
 	private TArray<LTexture> defaultTextures;

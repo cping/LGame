@@ -529,7 +529,7 @@ public class ArrayMap implements IArray {
 			return "[]";
 		}
 		Entry[] values = this.valuesTable;
-		StringBuilder buffer = new StringBuilder(CollectionUtils.INITIAL_CAPACITY);
+		StrBuilder buffer = new StrBuilder(32);
 		buffer.append('[');
 		for (int i = 0; i < size; i++) {
 			Object key = values[i].key;

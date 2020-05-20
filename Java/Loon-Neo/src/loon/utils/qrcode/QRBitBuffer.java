@@ -21,6 +21,7 @@
 package loon.utils.qrcode;
 
 import loon.utils.CollectionUtils;
+import loon.utils.StrBuilder;
 
 public class QRBitBuffer {
 
@@ -62,7 +63,7 @@ public class QRBitBuffer {
 
 	@Override
 	public String toString() {
-		StringBuilder buffer = new StringBuilder();
+		StrBuilder buffer = new StrBuilder();
 		for (int i = 0; i < getLengthInBits(); i++) {
 			buffer.append(get(i) ? '1' : '0');
 		}

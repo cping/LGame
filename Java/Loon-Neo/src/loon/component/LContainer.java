@@ -36,6 +36,7 @@ import loon.utils.CollectionUtils;
 import loon.utils.IArray;
 import loon.utils.LayerSorter;
 import loon.utils.MathUtils;
+import loon.utils.StrBuilder;
 import loon.utils.TArray;
 import loon.utils.reply.Callback;
 
@@ -1091,7 +1092,7 @@ public abstract class LContainer extends LComponent implements IArray {
 		}
 	}
 
-	void toString(StringBuilder buffer, int indent) {
+	void toString(StrBuilder buffer, int indent) {
 		buffer.append(super.toString());
 		LComponent[] comps = _childs;
 		int size = comps.length;
@@ -1212,7 +1213,7 @@ public abstract class LContainer extends LComponent implements IArray {
 
 	@Override
 	public String toString() {
-		StringBuilder buffer = new StringBuilder(128);
+		StrBuilder buffer = new StrBuilder(128);
 		toString(buffer, 1);
 		buffer.setLength(buffer.length() - 1);
 		return buffer.toString();

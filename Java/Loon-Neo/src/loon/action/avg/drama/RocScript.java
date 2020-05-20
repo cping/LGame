@@ -27,6 +27,7 @@ import loon.utils.Array;
 import loon.utils.ArrayMap;
 import loon.utils.CharUtils;
 import loon.utils.MathUtils;
+import loon.utils.StrBuilder;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
@@ -280,7 +281,7 @@ public class RocScript {
 		}
 	}
 
-	private void splitFlag(String src, StringBuffer out, char flag) {
+	private void splitFlag(String src, StrBuilder out, char flag) {
 		char[] chars = src.toCharArray();
 		for (int i = 0; i < chars.length; i++) {
 			char ch = chars[i];
@@ -296,7 +297,7 @@ public class RocScript {
 	}
 
 	private String filterCommand(String cmd) {
-		StringBuilder sbr = new StringBuilder(cmd.length());
+		StrBuilder sbr = new StrBuilder(cmd.length());
 		boolean tflag = true;
 		char lastChar = 0;
 		for (int i = 0; i < cmd.length(); i++) {
@@ -315,7 +316,7 @@ public class RocScript {
 	}
 
 	private String filtrScript(String script) {
-		StringBuffer out = new StringBuffer();
+		StrBuilder out = new StrBuilder();
 		String[] context = StringUtils.split(script, new char[] { '\r', '\n', '\t' }, true);
 		for (String c : context) {
 			if (c == null) {
@@ -1038,7 +1039,7 @@ public class RocScript {
 				}
 			} else if (value.indexOf(",") != -1) {
 				String[] split = StringUtils.split(value, ',');
-				StringBuilder sbr = new StringBuilder();
+				StrBuilder sbr = new StrBuilder();
 				for (String s : split) {
 					if (s.indexOf("\"") == -1 && value.indexOf("/") == -1 && !isNumber(s)) {
 						String tmp = getVarVal(s).toString();
@@ -1241,7 +1242,7 @@ public class RocScript {
 	private boolean nextCommand() throws ScriptException {
 		if (itemType == MACROS && macroType != -1) {
 			char flag = macros[1].toCharArray()[0];
-			StringBuffer sbr = new StringBuffer(1024);
+			StrBuilder sbr = new StrBuilder(1024);
 			while (textIdx < _temp_contexts.length) {
 				char ch = _temp_contexts[textIdx++];
 				if (flag == ch) {

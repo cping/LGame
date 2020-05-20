@@ -62,7 +62,7 @@ public class ArrayByteReader implements LRelease {
 		if (in.available() <= 0) {
 			return null;
 		}
-		StringBuilder sbr = new StringBuilder();
+		StrBuilder sbr = new StrBuilder();
 		int c = -1;
 		boolean keepReading = true;
 		do {

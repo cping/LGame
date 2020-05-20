@@ -25,6 +25,7 @@ import java.util.Comparator;
 import loon.BaseIO;
 import loon.canvas.LColor;
 import loon.utils.CharParser;
+import loon.utils.StrBuilder;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
@@ -150,12 +151,12 @@ public class CssParser extends CharParser {
 	}
 
 	protected String parseName() {
-		StringBuilder sb = new StringBuilder();
+		StrBuilder sbr = new StrBuilder();
 		while (!eof() && (StringUtils.isAsciiLetterDiait(nextChar()) || ' ' == nextChar())) {
 			char consumedChar = consumeChar();
-			sb.append(consumedChar);
+			sbr.append(consumedChar);
 		}
-		return sb.toString();
+		return sbr.toString();
 	}
 
 	protected CssColor parseColor() {
@@ -180,7 +181,7 @@ public class CssParser extends CharParser {
 	}
 
 	protected float parseFloat() {
-		StringBuilder sbr = new StringBuilder();
+		StrBuilder sbr = new StrBuilder();
 		while (!eof() && StringUtils.isDigitCharacter(nextChar())) {
 			sbr.append(consumeChar());
 		}

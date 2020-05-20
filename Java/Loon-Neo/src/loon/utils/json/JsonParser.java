@@ -23,6 +23,7 @@ package loon.utils.json;
 import loon.LSystem;
 import loon.utils.CharUtils;
 import loon.utils.MathUtils;
+import loon.utils.StrBuilder;
 
 /**
  * 自带的json解析用类
@@ -60,7 +61,7 @@ final class JsonParser {
 	
 	private static final char[] NULL = { 'u', 'l', 'l' };
 
-	private StringBuilder _reusableBuffer = new StringBuilder();
+	private StrBuilder _reusableBuffer = new StrBuilder();
 
 	private String _strings;
 
@@ -390,14 +391,14 @@ final class JsonParser {
 	private JsonParserException createHelpfulException(char first, char[] expected, int failurePosition)
 			throws JsonParserException {
 
-		StringBuilder errorToken = new StringBuilder(
+		StrBuilder errorToken = new StrBuilder(
 				first + (expected == null ? LSystem.EMPTY : new String(expected, 0, failurePosition)));
 
 		while (CharUtils.isAsciiLetter(peekChar()) && errorToken.length() < 15) {
 			errorToken.append((char) advanceChar());
 		}
 
-		return createParseException(null, "Unexpected token '" + errorToken + "'"
+		return createParseException(null, "Unexpected token '" + errorToken.toString() + "'"
 				+ (expected == null ? LSystem.EMPTY : ". Did you mean '" + first + new String(expected) + "'?"), true);
 	}
 

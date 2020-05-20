@@ -21,6 +21,7 @@
 package loon.utils.html.css;
 
 import loon.utils.MathUtils;
+import loon.utils.StrBuilder;
 import loon.utils.StringUtils;
 
 public class CssDimensions {
@@ -206,7 +207,7 @@ public class CssDimensions {
 			if (MathUtils.isNan(value)) {
 				return Float.parseFloat(value);
 			}
-			StringBuilder sbr = new StringBuilder();
+			StrBuilder sbr = new StrBuilder();
 			for (int i = 0; i < value.length(); i++) {
 				char ch = value.charAt(i);
 				if (StringUtils.isDigit(ch)) {

@@ -841,7 +841,7 @@ final public class CollectionUtils {
 	public static boolean safeRange(Object[] arrays, int startIndex, int endIndex) {
 		return safeRange(arrays, startIndex, endIndex, false);
 	}
-	
+
 	/**
 	 * 判定指定对象数组是否为空
 	 * 
@@ -851,14 +851,14 @@ final public class CollectionUtils {
 	public static <T> boolean isEmpty(T[] array) {
 		return array == null || array.length == 0;
 	}
-	
+
 	/**
 	 * 判定指定对象数组是否不为空
 	 * 
 	 * @param array
 	 * @return
 	 */
-	public static <T> boolean isNotEmpty( T[] array) {
+	public static <T> boolean isNotEmpty(T[] array) {
 		return (array != null && array.length != 0);
 	}
 
@@ -871,7 +871,7 @@ final public class CollectionUtils {
 	public static boolean isEmpty(ISprite[] array) {
 		return array == null || array.length == 0;
 	}
-	
+
 	/**
 	 * 判定数组是否为空
 	 * 
@@ -881,7 +881,7 @@ final public class CollectionUtils {
 	public static boolean isEmpty(LComponent[] array) {
 		return array == null || array.length == 0;
 	}
-	
+
 	/**
 	 * 判定数组是否为空
 	 * 
@@ -1206,6 +1206,21 @@ final public class CollectionUtils {
 	 * @param toIndex
 	 * @param val
 	 */
+	public static void fill(char[] arrays, int fromIndex, int toIndex, char val) {
+		rangeCheck(arrays.length, fromIndex, toIndex);
+		for (int i = fromIndex; i < toIndex; i++) {
+			arrays[i] = val;
+		}
+	}
+
+	/**
+	 * 填充指定整型数组
+	 * 
+	 * @param arrays
+	 * @param fromIndex
+	 * @param toIndex
+	 * @param val
+	 */
 	public static void fill(long[] arrays, int fromIndex, int toIndex, int val) {
 		rangeCheck(arrays.length, fromIndex, toIndex);
 		for (int i = fromIndex; i < toIndex; i++) {
@@ -1251,7 +1266,6 @@ final public class CollectionUtils {
 			arrays[i] = data;
 		}
 	}
-	
 
 	/**
 	 * 查看指定数组中是否包含v值

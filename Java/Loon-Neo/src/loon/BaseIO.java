@@ -20,8 +20,6 @@
  */
 package loon;
 
-import java.io.IOException;
-
 import loon.LTexture.Format;
 import loon.action.sprite.Entity;
 import loon.action.sprite.Sprite;
@@ -35,6 +33,7 @@ import loon.utils.ArrayByteReader;
 import loon.utils.GifDecoder;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
+import loon.utils.parse.StrTokenizer;
 import loon.utils.reply.GoFuture;
 
 /**
@@ -86,7 +85,8 @@ public abstract class BaseIO extends DefUI {
 		return LSystem.loadNinePatchTexture(path, x, y, w, h);
 	}
 
-	public final static LTexture loadNinePatchTexture(String path, Repeat repeat, int x, int y, int w, int h, Format config) {
+	public final static LTexture loadNinePatchTexture(String path, Repeat repeat, int x, int y, int w, int h,
+			Format config) {
 		return LSystem.loadNinePatchTexture(path, repeat, x, y, w, h, config);
 	}
 
@@ -108,7 +108,7 @@ public abstract class BaseIO extends DefUI {
 						tga.close();
 						tga = null;
 					}
-				} catch (IOException e) {
+				} catch (Exception e) {
 					throw new LSysException(e.getMessage());
 				}
 				return tmp;
@@ -145,6 +145,25 @@ public abstract class BaseIO extends DefUI {
 			return new ArrayByte(1);
 		}
 		return new ArrayByte(buffer);
+	}
+
+	public final static StrTokenizer loadStrTokenizer(String path) {
+		return loadStrTokenizer(path, null);
+	}
+
+	public final static StrTokenizer loadStrTokenizer(String path, String delimiters) {
+		if (StringUtils.isEmpty(path)) {
+			return new StrTokenizer("");
+		}
+		String text = loadText(path);
+		if (text == null) {
+			return new StrTokenizer("");
+		}
+		if (delimiters == null) {
+			return new StrTokenizer(text);
+		} else {
+			return new StrTokenizer(text, delimiters);
+		}
 	}
 
 	public final static GoFuture<byte[]> loadAsynBytes(String path) {

@@ -22,6 +22,7 @@ package loon.opengl;
 
 import loon.LSystem;
 import loon.utils.ObjectMap;
+import loon.utils.StrBuilder;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
@@ -181,7 +182,7 @@ public class ShaderCmd {
 	}
 
 	public String getAttributes() {
-		StringBuilder cmds = new StringBuilder();
+		StrBuilder cmds = new StrBuilder();
 		for (String s : attributeList) {
 			cmds.append(s);
 		}
@@ -189,7 +190,7 @@ public class ShaderCmd {
 	}
 
 	public String getVaryings() {
-		StringBuilder cmds = new StringBuilder();
+		StrBuilder cmds = new StrBuilder();
 		for (String s : varyingList) {
 			cmds.append(s);
 		}
@@ -197,7 +198,7 @@ public class ShaderCmd {
 	}
 
 	public String getUniforms() {
-		StringBuilder cmds = new StringBuilder();
+		StrBuilder cmds = new StrBuilder();
 		for (String s : uniformList) {
 			cmds.append(s);
 		}
@@ -205,7 +206,7 @@ public class ShaderCmd {
 	}
 
 	public String getVarShader() {
-		StringBuilder sbr = new StringBuilder();
+		StrBuilder sbr = new StrBuilder();
 		sbr.append(getAttributes());
 		sbr.append(getUniforms());
 		sbr.append(getVaryings());

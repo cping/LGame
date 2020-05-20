@@ -40,7 +40,7 @@ public class StringKeyValue {
 
 	private Array<CharSequence> flags;
 
-	private StringBuilder _buffer;
+	private StrBuilder _buffer;
 
 	private boolean _dirty;
 
@@ -63,7 +63,7 @@ public class StringKeyValue {
 
 	private void initBuild() {
 		if (!_init_buffer && _buffer == null) {
-			_buffer = new StringBuilder(capacity);
+			_buffer = new StrBuilder(capacity);
 			_init_buffer = true;
 		}
 	}
@@ -171,7 +171,7 @@ public class StringKeyValue {
 			return this;
 		}
 		int size = values.length;
-		StringBuilder sbr = new StringBuilder(size + 32);
+		StrBuilder sbr = new StrBuilder(size + 32);
 		sbr.append('{');
 		for (int i = 0; i < size; i++) {
 			sbr.append(values[i]);

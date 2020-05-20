@@ -1,15 +1,36 @@
+/**
+ * Copyright 2008 - 2019 The Loon Game Engine Authors
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ * 
+ * @project loon
+ * @author cping
+ * @email：javachenpeng@yahoo.com
+ * @version 0.5
+ */
 package loon.utils.parse;
 
 import loon.BaseIO;
 import loon.LSysException;
 import loon.utils.ArrayByte;
 import loon.utils.ObjectMap;
+import loon.utils.StrBuilder;
 import loon.utils.TArray;
 
 /**
- * 工具类，用来解析python游戏的配置数据
+ * 工具类，用于解析python游戏的配置数据
  */
-public class ParsePythonData {
+public class ParserPythonData {
 
 	protected class LoopStringBuilder {
 
@@ -32,7 +53,7 @@ public class ParsePythonData {
 
 		public String get() {
 			int q = pos;
-			StringBuilder sbr = new StringBuilder();
+			StrBuilder sbr = new StrBuilder();
 			for (int i = 0; i < size; i++) {
 				sbr.append(chars[q++]);
 				if (q >= size) {
@@ -44,16 +65,16 @@ public class ParsePythonData {
 
 	}
 
-	private StringBuffer buffer = new StringBuffer();
+	private StrBuilder buffer = new StrBuilder();
 
 	private int lineNo = 1, pos = 0;
 
 	public static Object parseString(String str) {
-		return new ParsePythonData().parseAll(new ArrayByte(str.getBytes()));
+		return new ParserPythonData().parseAll(new ArrayByte(str.getBytes()));
 	}
 
 	public static Object parseFile(String file) {
-		return new ParsePythonData().parseAll(BaseIO.loadArrayByte(file));
+		return new ParserPythonData().parseAll(BaseIO.loadArrayByte(file));
 	}
 
 	private Object parse(ArrayByte in) {
@@ -155,7 +176,7 @@ public class ParsePythonData {
 	}
 
 	private Object readNumber(ArrayByte in, char first) {
-		StringBuffer sbr = new StringBuffer();
+		StrBuilder sbr = new StrBuilder();
 		sbr.append(first);
 		for (;;) {
 			char i = xread(in);
@@ -212,13 +233,13 @@ public class ParsePythonData {
 	}
 
 	private String readString(ArrayByte in, char end) {
-		StringBuffer sb = new StringBuffer();
+		StrBuilder sbr = new StrBuilder();
 		char i = xread(in);
 		for (;;) {
 			if (i == end) {
 				char flag = xread(in);
 				if (flag == end && (flag == '"' || flag == '\'')) {
-					sb.append(flag);
+					sbr.append(flag);
 					i = xread(in);
 					continue;
 				} else {
@@ -232,10 +253,10 @@ public class ParsePythonData {
 			if (i == (char) -1) {
 				throw new LSysException("Expected to read " + end + " but (char) -1 found" + at());
 			}
-			sb.append(i);
+			sbr.append(i);
 			i = xread(in);
 		}
-		return sb.toString();
+		return sbr.toString();
 
 	}
 

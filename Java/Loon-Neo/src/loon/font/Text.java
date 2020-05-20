@@ -30,6 +30,7 @@ import loon.opengl.LSTRDictionary;
 import loon.opengl.LSTRFont;
 import loon.utils.FloatArray;
 import loon.utils.MathUtils;
+import loon.utils.StrBuilder;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
@@ -151,8 +152,10 @@ public class Text implements LRelease {
 			mes = ((StringBuffer) ch).toString();
 		} else if (ch instanceof StringBuilder) {
 			mes = ((StringBuilder) ch).toString();
-		} else {
-			mes = new StringBuffer(ch).toString();
+		} else if (ch instanceof StrBuilder) {
+			mes = ((StrBuilder) ch).toString();
+		}else {
+			mes = new StrBuilder(ch).toString();
 		}
 		return mes;
 	}
@@ -436,7 +439,7 @@ public class Text implements LRelease {
 
 	@Override
 	public String toString() {
-		return new StringBuffer(_chars).toString();
+		return new StrBuilder(_chars).toString();
 	}
 
 	@Override

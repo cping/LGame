@@ -29,6 +29,7 @@ import loon.utils.ArrayMap;
 import loon.utils.ArrayMap.Entry;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
+import loon.utils.StrBuilder;
 import loon.utils.StringKeyValue;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
@@ -56,7 +57,7 @@ public class Command extends Conversion implements LRelease {
 	private static ArrayMap conditionEnvironmentList;
 
 	// 读入连续数据
-	private StringBuffer readBuffer;
+	private StrBuilder readBuffer;
 
 	// 缓存脚本名
 	private String cacheCommandName;
@@ -199,7 +200,7 @@ public class Command extends Conversion implements LRelease {
 			setEnvironmentList.put(V_SELECT_KEY, "-1");
 		}
 		if (readBuffer == null) {
-			readBuffer = new StringBuffer(256);
+			readBuffer = new StrBuilder(256);
 		} else {
 			readBuffer.delete(0, readBuffer.length());
 		}
@@ -243,7 +244,7 @@ public class Command extends Conversion implements LRelease {
 				condition = temps.get(2);
 			} else {
 				int count = 0;
-				StringBuilder sbr = new StringBuilder();
+				StrBuilder sbr = new StrBuilder();
 				for (int i = 0; i < temps.size; i++) {
 					String res = temps.get(i);
 					if (count > 0) {
@@ -421,7 +422,7 @@ public class Command extends Conversion implements LRelease {
 		int lookupStartIndex = 0;
 		int lookupEndIndex = 0;
 		int length;
-		StringBuilder sbr = new StringBuilder(100);
+		StrBuilder sbr = new StrBuilder(100);
 		for (int i = 0; i < dlength; i++) {
 			char tag = messages[i];
 			if (tag == startString[lookupStartIndex]) {
@@ -584,7 +585,7 @@ public class Command extends Conversion implements LRelease {
 	 * @return
 	 */
 	public String batchToString() {
-		StringBuilder resString = new StringBuilder(scriptSize * 10);
+		StrBuilder resString = new StrBuilder(scriptSize * 10);
 		for (; next();) {
 			String execute = doExecute();
 			if (execute != null) {
@@ -603,7 +604,7 @@ public class Command extends Conversion implements LRelease {
 			if (len == 4) {
 				result = temps.get(3).toString();
 			} else if (len > 4) {
-				StringBuilder sbr = new StringBuilder(len);
+				StrBuilder sbr = new StrBuilder(len);
 				for (int i = 3; i < temps.size; i++) {
 					sbr.append(temps.get(i));
 				}
@@ -1100,7 +1101,7 @@ public class Command extends Conversion implements LRelease {
 	 */
 	private final boolean includeCommand(String cmd) {
 		temps = commandSplit(cmd);
-		StringBuilder sbr = new StringBuilder();
+		StrBuilder sbr = new StrBuilder();
 		for (int i = 1; i < temps.size; i++) {
 			sbr.append(temps.get(i));
 		}

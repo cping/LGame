@@ -611,7 +611,7 @@ public class HtmlCmd extends StringKeyValue {
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
+		StrBuilder builder = new StrBuilder();
 		builder.append("<!DOCTYPE html>").append(LSystem.LS).append("<" + getKey() + ">").append(LSystem.LS)
 				.append(getValue()).append(LSystem.LS).append("</" + getKey() + ">");
 		return builder.toString();

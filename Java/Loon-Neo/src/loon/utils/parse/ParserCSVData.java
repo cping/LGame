@@ -21,17 +21,18 @@
 package loon.utils.parse;
 
 import loon.BaseIO;
+import loon.LSystem;
 import loon.utils.LIterator;
 import loon.utils.ObjectMap;
-import loon.utils.ObjectMap.Entry;
-import loon.utils.OrderedMap;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
+import loon.utils.ObjectMap.Entry;
+import loon.utils.StrBuilder;
 
 /**
- * csv文件解析用工具类
+ * 工具类，用于解析csv的配置数据
  */
-public class ParseCSVData {
+public class ParserCSVData {
 
 	public static class CSVRow {
 
@@ -66,11 +67,11 @@ public class ParseCSVData {
 			return fields;
 		}
 
-		public OrderedMap<String, String> getFieldMap() {
+		public ObjectMap<String, String> getFieldMap() {
 			if (headerMap == null) {
 				return null;
 			}
-			final OrderedMap<String, String> fieldMap = new OrderedMap<String, String>(headerMap.size());
+			final ObjectMap<String, String> fieldMap = new ObjectMap<String, String>(headerMap.size());
 			for (final Entry<String, Integer> header : headerMap.entries()) {
 				String key = header.getKey();
 				Integer col = headerMap.get(key);
@@ -134,14 +135,14 @@ public class ParseCSVData {
 			if (headerMap == null || headerMap.size == 0) {
 				return "[]";
 			}
-			final StringBuilder buffer = new StringBuilder("CSVRow{");
+			final StrBuilder buffer = new StrBuilder("CSVRow{");
 			buffer.append("line=");
 			buffer.append(this.lineId);
 			buffer.append(", ");
 			buffer.append("table=");
 			if (headerMap != null) {
 				buffer.append('{');
-				OrderedMap<String, String> map = getFieldMap();
+				ObjectMap<String, String> map = getFieldMap();
 				for (final LIterator<Entry<String, String>> it = map.iterator(); it.hasNext();) {
 					final Entry<String, String> entry = it.next();
 					buffer.append(entry.getKey());
@@ -162,19 +163,19 @@ public class ParseCSVData {
 		}
 	}
 
-	public static ParseCSVData parseString(String str) {
-		ParseCSVData data = new ParseCSVData(str);
+	public static ParserCSVData parseString(String str) {
+		ParserCSVData data = new ParserCSVData(str);
 		data.readCSVList();
 		return data;
 	}
 
-	public static ParseCSVData parseFile(String path) {
-		ParseCSVData data = new ParseCSVData(BaseIO.loadText(path));
+	public static ParserCSVData parseFile(String path) {
+		ParserCSVData data = new ParserCSVData(BaseIO.loadText(path));
 		data.readCSVList();
 		return data;
 	}
 
-	private StrTokenizer _reader;
+	private final StrTokenizer _reader;
 
 	private CSVRow _header;
 
@@ -182,15 +183,29 @@ public class ParseCSVData {
 
 	private boolean _finished;
 
-	private char csvFlag = ',';
+	private char _csvFlag;
 
 	private int maxFieldCount = 0;
 	private int fieldCount = 0;
 	private int startingLineNo = 0;
 	private int lineNo = 0;
 
-	protected ParseCSVData(String context) {
-		_reader = new StrTokenizer(context);
+	protected ParserCSVData(String context) {
+		this._reader = new StrTokenizer(context);
+		this.reset();
+	}
+
+	public ParserCSVData reset() {
+		this._rows = null;
+		this._finished = false;
+		this._csvFlag = LSystem.COMMA;
+		
+		this.maxFieldCount = 0;
+		this.fieldCount = 0;
+		this.startingLineNo = 0;
+		this.lineNo = 0;
+		
+		return this;
 	}
 
 	public TArray<CSVRow> readCSVList() {
@@ -228,10 +243,10 @@ public class ParseCSVData {
 			if (lineNo == 1) {
 				initHeader(lineNo, result);
 			}
-			if (result.indexOf(csvFlag) == -1) {
+			if (result.indexOf(_csvFlag) == -1) {
 				continue;
 			}
-			final String[] split = StringUtils.split(result, csvFlag);
+			final String[] split = StringUtils.split(result, _csvFlag);
 			return new CSVRow(startingLineNo, this._header == null ? null : this._header.headerMap,
 					StringUtils.getStringsToList(split));
 		}
@@ -239,7 +254,7 @@ public class ParseCSVData {
 	}
 
 	private void initHeader(final int id, final String str) {
-		final String[] split = StringUtils.split(str, csvFlag);
+		final String[] split = StringUtils.split(str, _csvFlag);
 		final int len = split.length;
 		final ObjectMap<String, Integer> localHeaderMap = new ObjectMap<String, Integer>(len);
 		for (int i = 0; i < len; i++) {
@@ -259,8 +274,13 @@ public class ParseCSVData {
 		return this._header;
 	}
 
+	public ParserCSVData setCsvFlag(char flag) {
+		this._csvFlag = flag;
+		return this;
+	}
+
 	public char getCsvFlag() {
-		return this.csvFlag;
+		return this._csvFlag;
 	}
 
 	public int getMaxFieldCount() {

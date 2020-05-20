@@ -23,6 +23,7 @@ package loon.utils.xml;
 import loon.BaseIO;
 import loon.LSysException;
 import loon.LSystem;
+import loon.utils.StrBuilder;
 import loon.utils.TArray;
 
 /**
@@ -42,7 +43,7 @@ public class XMLParser {
 
 	private XMLElement rootElement;
 
-	private StringBuffer header = new StringBuffer(1024);
+	private StrBuilder header = new StrBuilder(1024);
 
 	private void pushElement(XMLElement root, int idx, XMLListener l) {
 		if (this.topElement == null) {
@@ -123,8 +124,8 @@ public class XMLParser {
 				int start = 0;
 				int end = 0;
 
-				StringBuffer sbr1 = new StringBuffer(128);
-				StringBuffer sbr2 = new StringBuffer(32);
+				StrBuilder sbr1 = new StrBuilder(128);
+				StrBuilder sbr2 = new StrBuilder(32);
 				for (int m = 0; m < str2.length(); m++) {
 					switch (str2.charAt(m)) {
 					case '"':

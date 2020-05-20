@@ -43,6 +43,7 @@ import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.utils.IArray;
 import loon.utils.LayerSorter;
+import loon.utils.StrBuilder;
 import loon.utils.TArray;
 
 /**
@@ -1136,7 +1137,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	}
 
 	@Override
-	public void toString(final StringBuilder s) {
+	public void toString(final StrBuilder s) {
 		s.append(super.toString());
 		if ((this._childrens != null) && (this._childrens.size > 0)) {
 			s.append(LSystem.LS);
@@ -1154,9 +1155,9 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	@Override
 	public String toString() {
-		final StringBuilder stringBuilder = new StringBuilder();
-		this.toString(stringBuilder);
-		return stringBuilder.toString();
+		final StrBuilder sbr = new StrBuilder();
+		this.toString(sbr);
+		return sbr.toString();
 	}
 
 	@Override

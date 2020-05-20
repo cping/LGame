@@ -25,6 +25,7 @@ import loon.canvas.LColor;
 import loon.geom.PointF;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
+import loon.utils.StrBuilder;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
@@ -103,7 +104,7 @@ public class FontUtils {
 		if (chars instanceof String) {
 			return font.stringWidth(((String) chars).substring(start, end).toString());
 		} else {
-			return font.stringWidth(new StringBuffer(chars).substring(start, end).toString());
+			return font.stringWidth(new StrBuilder(chars).substring(start, end).toString());
 		}
 	}
 
@@ -118,7 +119,7 @@ public class FontUtils {
 			float maxWidth = 0f;
 			float space = font.getSize() / 4f;
 			for (int i = 0; i < result.size; i++) {
-				maxWidth = MathUtils.max(maxWidth, font.stringWidth(new StringBuffer(result.get(i)).toString()));
+				maxWidth = MathUtils.max(maxWidth, font.stringWidth(new StrBuilder(result.get(i)).toString()));
 			}
 			if (defWidth >= 1f && defHeight >= 1f) {
 				return new PointF(MathUtils.max(defWidth, maxWidth) + space,

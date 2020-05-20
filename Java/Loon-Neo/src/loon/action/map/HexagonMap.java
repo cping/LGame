@@ -58,10 +58,11 @@ import loon.utils.StringUtils;
 import loon.utils.TArray;
 
 /**
- * 一个简单的,渲染六边形瓦片地图用的,二维数组地图构造以及显示类.复杂地图请使用tmx包
+ * 一个简单(易于操作)的渲染六边形瓦片地图用的,二维数组地图构造以及显示类.复杂地图请使用tmx包
  */
 public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>, ISprite {
 
+	// 默认的六边形参数
 	public static final int LEFT = -3;
 	public static final int DOWNLEFT = -2;
 	public static final int UPLEFT = -1;
@@ -149,7 +150,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 
 	private Sprites _mapSprites;
 
-	private Sprites _sprites;
+	private Sprites _screenSprites;
 
 	protected static class Node implements Comparable<Node> {
 
@@ -1019,6 +1020,10 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		return this;
 	}
 
+	public HexagonMap followDonot() {
+		return setFollow(null);
+	}
+	
 	public HexagonMap followAction(ActionBind follow) {
 		return setFollow(follow);
 	}
@@ -1105,23 +1110,23 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 
 	@Override
 	public void setSprites(Sprites ss) {
-		if (this._sprites == ss) {
+		if (this._screenSprites == ss) {
 			return;
 		}
-		this._sprites = ss;
+		this._screenSprites = ss;
 	}
 
 	@Override
 	public Sprites getSprites() {
-		return this._sprites;
+		return this._screenSprites;
 	}
 
 	@Override
 	public Screen getScreen() {
-		if (this._sprites == null) {
+		if (this._screenSprites == null) {
 			return LSystem.getProcess().getScreen();
 		}
-		return this._sprites.getScreen() == null ? LSystem.getProcess().getScreen() : this._sprites.getScreen();
+		return this._screenSprites.getScreen() == null ? LSystem.getProcess().getScreen() : this._screenSprites.getScreen();
 	}
 
 	public float getScreenX() {
@@ -1153,7 +1158,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		if (_super != null) {
 			return getScreenX() - getX();
 		}
-		return this._sprites == null ? super.getContainerX() : this._sprites.getX();
+		return this._screenSprites == null ? super.getContainerX() : this._screenSprites.getX();
 	}
 
 	@Override
@@ -1161,17 +1166,17 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		if (_super != null) {
 			return getScreenY() - getY();
 		}
-		return this._sprites == null ? super.getContainerY() : this._sprites.getY();
+		return this._screenSprites == null ? super.getContainerY() : this._screenSprites.getY();
 	}
 
 	@Override
 	public float getContainerWidth() {
-		return this._sprites == null ? super.getContainerWidth() : this._sprites.getWidth();
+		return this._screenSprites == null ? super.getContainerWidth() : this._screenSprites.getWidth();
 	}
 
 	@Override
 	public float getContainerHeight() {
-		return this._sprites == null ? super.getContainerHeight() : this._sprites.getHeight();
+		return this._screenSprites == null ? super.getContainerHeight() : this._screenSprites.getHeight();
 	}
 
 	@Override

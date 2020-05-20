@@ -451,7 +451,7 @@ public class LongArray implements IArray {
 		if (length == 0)
 			return "";
 		long[] items = this.items;
-		StringBuilder buffer = new StringBuilder(32);
+		StrBuilder buffer = new StrBuilder(32);
 		buffer.append(items[0]);
 		for (int i = 1; i < length; i++) {
 			buffer.append(separator);
@@ -585,8 +585,7 @@ public class LongArray implements IArray {
 			return "[]";
 		}
 		long[] items = this.items;
-		StringBuilder buffer = new StringBuilder(
-				CollectionUtils.INITIAL_CAPACITY);
+		StrBuilder buffer = new StrBuilder(32);
 		buffer.append('[');
 		buffer.append(items[0]);
 		for (int i = 1; i < length; i++) {

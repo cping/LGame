@@ -1,0 +1,16 @@
+--- !net.sourceforge.yamlbeans.YamlWriterTest$Test
+booleanValue: true
+date: 2008-08-13 03:26:24
+child: &1 !net.sourceforge.yamlbeans.YamlWriterTest$Test2
+   value: ssssssssssss
+doubleValue: 1.5
+floatValue: 1.2
+intValue: 中文的
+listValues: !java.util.LinkedList
+- 32345
+- !net.sourceforge.yamlbeans.YamlWriterTest$Test {}
+- 123
+- *1
+mooCow: yay
+stringValue: yay
+value: c

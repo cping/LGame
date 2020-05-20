@@ -32,8 +32,8 @@ public class StrTokenizer {
 
 	private int position;
 
-	public StrTokenizer(String string) {
-		this(string, " \t\n\r\f", false);
+	public StrTokenizer(String str) {
+		this(str, " \t\n\r\f", false);
 	}
 
 	public StrTokenizer(String str, String delimiters) {

@@ -1110,22 +1110,22 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray 
 		if (size == 0) {
 			return "[]";
 		}
-		StringBuilder sb = new StringBuilder();
-		sb.append('[');
+		StrBuilder sbr = new StrBuilder();
+		sbr.append('[');
 		boolean first = true;
 		for (int i = iterateFirst(); i != NO_INDEX; i = iterateNext(i)) {
 			if (first) {
 				first = false;
 			} else {
-				sb.append(", ");
+				sbr.append(", ");
 			}
 			Object key = i == NULL_INDEX ? null : keyValueTable[(i << keyIndexShift) + 1];
 			Object value = keyIndexShift > 0 ? keyValueTable[(i << keyIndexShift) + 2] : FINAL_VALUE;
-			sb.append(key == this ? "(this Map)" : key);
-			sb.append('=');
-			sb.append(value == this ? "(this Map)" : value);
+			sbr.append(key == this ? "(this Map)" : key);
+			sbr.append('=');
+			sbr.append(value == this ? "(this Map)" : value);
 		}
-		return sb.append(']').toString();
+		return sbr.append(']').toString();
 	}
 
 }

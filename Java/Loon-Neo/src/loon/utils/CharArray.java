@@ -424,7 +424,7 @@ public class CharArray implements IArray {
 		if (length == 0)
 			return LSystem.EMPTY;
 		char[] items = this.items;
-		StringBuilder buffer = new StringBuilder(32);
+		StrBuilder buffer = new StrBuilder(32);
 		buffer.append(items[0]);
 		for (int i = 1; i < length; i++) {
 			buffer.append(separator);
@@ -553,7 +553,7 @@ public class CharArray implements IArray {
 			return "[]";
 		}
 		char[] items = this.items;
-		StringBuilder buffer = new StringBuilder(CollectionUtils.INITIAL_CAPACITY);
+		StrBuilder buffer = new StrBuilder(32);
 		buffer.append('[');
 		buffer.append(items[0]);
 		for (int i = 1; i < length; i++) {

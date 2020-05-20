@@ -36,6 +36,7 @@ import loon.geom.RectF;
 import loon.opengl.GLEx;
 import loon.opengl.LSTRDictionary;
 import loon.utils.MathUtils;
+import loon.utils.StrBuilder;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 import loon.utils.timer.LTimer;
@@ -251,7 +252,7 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 				for (CharSequence ch : chars) {
 					maxWidth = MathUtils.max(maxWidth,
 							FontUtils.measureText(_font, ch) + _font.getHeight() + _flagWidth + _flag_text_space);
-					height += MathUtils.max(_font.stringHeight(new StringBuilder(ch).toString()), _flagHeight);
+					height += MathUtils.max(_font.stringHeight(new StrBuilder(ch).toString()), _flagHeight);
 				}
 				if (maxWidth > lastWidth) {
 					for (int j = 0; j < _selectRects.length; j++) {

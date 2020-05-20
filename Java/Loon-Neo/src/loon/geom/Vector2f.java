@@ -46,7 +46,7 @@ public class Vector2f implements Serializable, XY {
 		}
 		return temp;
 	}
-
+	
 	public final static Vector2f ZERO() {
 		return new Vector2f(0);
 	}
@@ -69,6 +69,10 @@ public class Vector2f implements Serializable, XY {
 
 	public final static Vector2f at(float x, float y) {
 		return new Vector2f(x, y);
+	}
+
+	public final static Vector2f at(XY xy) {
+		return new Vector2f(xy.getX(), xy.getY());
 	}
 
 	public final static Vector2f fromAngle(float angle) {
@@ -156,7 +160,7 @@ public class Vector2f implements Serializable, XY {
 	public final static Vector2f smoothStep(Vector2f a, Vector2f b, float amount) {
 		return new Vector2f(MathUtils.smoothStep(a.x, b.x, amount), MathUtils.smoothStep(a.y, b.y, amount));
 	}
-	
+
 	public final static Vector2f transform(Vector2f value, Quaternion rotation) {
 		return transform(value, rotation, null);
 	}
@@ -177,6 +181,7 @@ public class Vector2f implements Serializable, XY {
 		result.y = v.y;
 		return result;
 	}
+
 	public final static Vector2f abs(Vector2f a) {
 		return new Vector2f(MathUtils.abs(a.x), MathUtils.abs(a.y));
 	}
@@ -400,7 +405,7 @@ public class Vector2f implements Serializable, XY {
 	public Vector2f smoothStep(Vector2f v, float amount) {
 		return smoothStep(this, v, amount);
 	}
-	
+
 	public Vector2f sub(float x, float y) {
 		return new Vector2f(this.x - x, this.y - y);
 	}
@@ -639,6 +644,38 @@ public class Vector2f implements Serializable, XY {
 
 	public Vector2f move_down(int multiples) {
 		return move_multiples(Field2D.TDOWN, multiples);
+	}
+
+	public Vector2f up(float v) {
+		return new Vector2f(this.x, this.y - v);
+	}
+
+	public Vector2f down(float v) {
+		return new Vector2f(this.x, this.y + v);
+	}
+
+	public Vector2f left(float v) {
+		return new Vector2f(this.x - v, this.y);
+	}
+
+	public Vector2f right(float v) {
+		return new Vector2f(this.x + v, this.y);
+	}
+
+	public Vector2f up() {
+		return up(1f);
+	}
+
+	public Vector2f down() {
+		return down(1f);
+	}
+
+	public Vector2f left() {
+		return left(1f);
+	}
+
+	public Vector2f right() {
+		return right(1f);
 	}
 
 	public Vector2f move(Vector2f vector2D) {
@@ -1061,7 +1098,7 @@ public class Vector2f implements Serializable, XY {
 	public float lenManhattan() {
 		return MathUtils.abs(this.x) + MathUtils.abs(this.y);
 	}
-	
+
 	public float[] toFloat() {
 		return new float[] { x, y };
 	}

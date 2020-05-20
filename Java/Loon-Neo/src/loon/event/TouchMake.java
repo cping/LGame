@@ -20,6 +20,8 @@
  */
 package loon.event;
 
+import loon.utils.StrBuilder;
+
 public class TouchMake {
 
 	public static class Event extends loon.event.Event.XYEvent {
@@ -62,7 +64,7 @@ public class TouchMake {
 		}
 
 		@Override
-		protected void addFields(StringBuilder builder) {
+		protected void addFields(StrBuilder builder) {
 			super.addFields(builder);
 			builder.append(", kind=").append(kind).append(", id=").append(id)
 					.append(", pressure=").append(pressure).append(", size=")

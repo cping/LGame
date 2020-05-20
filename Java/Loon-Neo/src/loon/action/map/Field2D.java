@@ -34,6 +34,7 @@ import loon.utils.CollectionUtils;
 import loon.utils.IArray;
 import loon.utils.IntArray;
 import loon.utils.MathUtils;
+import loon.utils.StrBuilder;
 import loon.utils.TArray;
 
 /**
@@ -1118,7 +1119,7 @@ public class Field2D implements IArray, Config {
 		if (isEmpty()) {
 			return "[]";
 		}
-		StringBuilder buffer = new StringBuilder(size() * 2 + height + 2);
+		StrBuilder buffer = new StrBuilder(size() * 2 + height + 2);
 		buffer.append('[');
 		buffer.append(LSystem.LS);
 		for (int i = 0; i < height; i++) {

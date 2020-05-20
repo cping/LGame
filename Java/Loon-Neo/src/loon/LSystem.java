@@ -66,7 +66,8 @@ public class LSystem {
 	private LSystem() {
 	}
 
-	// 版本号(正在不断完善中,试图把此版做成API以及功能基本稳定的版本,以后只优化与扩展api,而不替换删除api,所以0.5会持续的比较长……)
+	/** 版本号(正在不断完善中,试图把此版做成API以及功能基本稳定的版本,以后只优化与扩展api,
+	           而不替换删除api,所以0.5会持续的比较长(否则多语言版本来回改太麻烦)……) **/
 	private static final String _version = "0.5-beta";
 
 	// 默认的字符串打印完毕flag
@@ -74,9 +75,50 @@ public class LSystem {
 
 	public static final String FLAG_SELECT_TAG = "◆";
 
+	/** 表示空值和无效的占位用字符串 **/
 	public static final String EMPTY = "";
 
+	public static final String NULL = "null";
+	
 	public static final String UNKNOWN = "unknown";
+
+	/** 常见字符串操作用符号  **/
+	public static final char DOT = '.';
+	
+	public static final char SLASH = '/';
+	
+	public static final char BACKSLASH = '\\';
+	
+	public static final char CR = '\r';
+	
+	public static final char LF = '\n';
+	
+	public static final char UNDERLINE = '_';
+	
+	public static final char DASHED = '-';
+	
+	public static final char COMMA = ',';
+	
+	public static final char DELIM_START = '{';
+	
+	public static final char DELIM_END = '}';
+	
+	public static final char BRACKET_START = '[';
+	
+	public static final char BRACKET_END = ']';
+	
+	public static final char COLON = ':';
+	
+	public static final char DOUBLE_QUOTES = '"';
+	
+	public static final char SINGLE_QUOTE = '\'';
+	
+	public static final char AMP = '&';
+	
+	public static final char SPACE = ' ';
+	
+	public static final char TAB = '	';
+	
 	// 默认缓存数量
 	public static final int DEFAULT_MAX_CACHE_SIZE = 32;
 
@@ -92,7 +134,7 @@ public class LSystem {
 	// 换行标记
 	public static final String NL = "\r\n";
 
-	// 屏幕大小
+	// 默认屏幕大小(初始化时数值会被改变)
 	public static final Dimension viewSize = new Dimension(480, 320);
 
 	/**
@@ -150,6 +192,7 @@ public class LSystem {
 	// 理论上一年
 	public static final long YEAR = DAY * 365;
 
+	// 默认编码格式
 	public static final String ENCODING = "UTF-8";
 
 	// 默认的Shader

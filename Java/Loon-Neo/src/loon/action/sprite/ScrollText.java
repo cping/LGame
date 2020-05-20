@@ -30,6 +30,7 @@ import loon.font.Font.Style;
 import loon.font.Text;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
+import loon.utils.StrBuilder;
 import loon.utils.timer.LTimer;
 
 /**
@@ -116,7 +117,7 @@ public class ScrollText extends Entity {
 		if (text.length == 1) {
 			this._text = new Text(font, text[0], opt);
 		} else {
-			StringBuffer sbr = new StringBuffer();
+			StrBuilder sbr = new StrBuilder();
 			for (int i = 0, size = text.length; i < size; i++) {
 				sbr.append(text[i]);
 				sbr.append(LSystem.LS);

@@ -40,6 +40,7 @@ import loon.utils.ArrayByte;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 import loon.utils.Scale;
+import loon.utils.StrBuilder;
 import loon.utils.TArray;
 
 /**
@@ -2562,7 +2563,7 @@ public class Pixmap extends Limit implements LRelease {
 
 	@Override
 	public String toString() {
-		StringBuilder sbr = new StringBuilder();
+		StrBuilder sbr = new StrBuilder();
 		for (int y = 0; y < _height; y++) {
 			sbr.append('[');
 			for (int x = 0; x < _width; x++) {

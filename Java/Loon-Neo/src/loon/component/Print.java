@@ -34,6 +34,7 @@ import loon.opengl.GLEx;
 import loon.opengl.LSTRDictionary;
 import loon.opengl.LSTRFont;
 import loon.utils.MathUtils;
+import loon.utils.StrBuilder;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
@@ -69,7 +70,7 @@ public class Print implements FontSet<Print>, LRelease {
 		if (font == null || StringUtils.isEmpty(text)) {
 			return "";
 		}
-		StringBuilder sbr = new StringBuilder();
+		StrBuilder sbr = new StrBuilder();
 		TArray<String> list = formatMessage(text, font, width);
 		for (int i = 0; i < list.size; i++) {
 			String temp = list.get(i);
@@ -167,7 +168,7 @@ public class Print implements FontSet<Print>, LRelease {
 
 	private boolean onComplete, newLine, visible, closed;
 
-	private StringBuffer messageBuffer = new StringBuffer(messageLength);
+	private StrBuilder messageBuffer = new StrBuilder(messageLength);
 
 	private int width, height, leftOffset, topOffset, next, messageCount;
 
