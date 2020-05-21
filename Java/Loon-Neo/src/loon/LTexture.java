@@ -28,6 +28,7 @@ import loon.event.Updateable;
 import loon.geom.Affine2f;
 import loon.opengl.BaseBatch;
 import loon.opengl.GL20;
+import loon.opengl.GLEx;
 import loon.opengl.GLPaint;
 import loon.opengl.Painter;
 import loon.opengl.ShaderSource;
@@ -249,6 +250,11 @@ public class LTexture extends Painter implements LRelease {
 		return StringUtils.isEmpty(source) ? "" : source;
 	}
 
+	/**
+	 * 拷贝当前纹理图像到缓冲区并转化为Image
+	 * 
+	 * @return
+	 */
 	public LTexture cpyFramebufferData() {
 		Image img = _getFramebufferData();
 		if (img == null) {
@@ -258,9 +264,13 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	private Image _getFramebufferData() {
-		boolean saved = gfx.game.displayImpl.GL().isSaveFrameBuffer();
+		GLEx glex = gfx.game.displayImpl.GL();
+		boolean saved = glex.isSaveFrameBuffer() && glex.running();
 		if (saved) {
-			return GLUtils.getScreenshot(0, 0, getWidth(), getHeight(), false);
+			glex.end();
+			glex.disableFrameBuffer();
+		} else {
+			glex.flush();
 		}
 		GL20 gl = gfx.gl;
 		final int fb = gl.glGenFramebuffer();
@@ -276,6 +286,10 @@ public class LTexture extends Painter implements LRelease {
 		Image image = GLUtils.getFrameBuffeImage(gl, 0, 0, getWidth(), getHeight(), false, true);
 		gl.glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		gl.glDeleteFramebuffer(fb);
+		if (saved) {
+			glex.enableFrameBuffer();
+			glex.begin();
+		}
 		return image;
 	}
 
@@ -799,10 +813,18 @@ public class LTexture extends Painter implements LRelease {
 		return (checkExistBatch() && batch.isLoaded);
 	}
 
+	public LTexture begin() {
+		return glBegin();
+	}
+
 	public LTexture glBegin() {
 		getTextureBatch();
 		batch.begin();
 		return this;
+	}
+
+	public LTexture end() {
+		return glEnd();
 	}
 
 	public LTexture glEnd() {

@@ -26,11 +26,12 @@ import loon.LSystem;
 /**
  * @info:
  *
- * 		StrBuilder是一个简化的,基本等价于StringBuilder的字符串操作类,作用是当Loon处于不存在Java类库的环境时(比如typescript版之类)取代StringBuilder.
+ * 		StrBuilder是一个简化的,基本等价于StringBuilder的字符串操作类,作用是当Loon处于不存在Java类库的环境时(比如typescript版之类)
+ * 取代StringBuilder.总之是为了移植多平台的产物,如果能明确使用平台的话就没必要用……
  * 
  * @code:
  * 
-* 
+*         <pre>
  * 		  StringBuilder sbr = new StringBuilder(); 
  *        sbr.append("ssssssssttts");
  *        StrBuilder str = new StrBuilder(); 
@@ -61,7 +62,7 @@ import loon.LSystem;
  *        System.out.println(b); 
  *        System.out.println("nb:" + nb);
  *        System.out.println(b);
- * 
+ *        </pre>
  * 
  */
 public class StrBuilder implements CharSequence, Appendable {

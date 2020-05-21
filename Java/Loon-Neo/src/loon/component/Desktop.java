@@ -37,7 +37,6 @@ import loon.event.SysInput;
 import loon.event.SysTouch;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
-import loon.utils.CollectionUtils;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 import loon.utils.reply.Callback;
@@ -132,19 +131,24 @@ public class Desktop implements Visible, LRelease {
 		return contentPane.getComponentCount();
 	}
 
-	public void addAt(LComponent comp, float x, float y) {
+	public Desktop addAt(LComponent comp, float x, float y) {
 		if (comp != null) {
 			comp.setLocation(x, y);
 			add(comp);
 		}
+		return this;
 	}
 
-	public void addSprite(ISprite sprite) {
-		add(new LSpriteUI(sprite));
+	public LSpriteUI addSprite(ISprite sprite) {
+		LSpriteUI ui = new LSpriteUI(sprite);
+		add(ui);
+		return ui;
 	}
 
-	public void addSpriteAt(ISprite sprite, float x, float y) {
-		addAt(new LSpriteUI(sprite), x, y);
+	public LSpriteUI addSpriteAt(ISprite sprite, float x, float y) {
+		LSpriteUI ui = new LSpriteUI(sprite);
+		addAt(ui, x, y);
+		return ui;
 	}
 
 	public LComponent addPadding(LComponent comp, float offX, float offY) {
@@ -753,7 +757,7 @@ public class Desktop implements Visible, LRelease {
 	}
 
 	public LComponent[] getComponents() {
-		return CollectionUtils.copyOf(contentPane._childs);
+		return contentPane.getComponents();
 	}
 
 	public LComponent getTopComponent() {
@@ -811,7 +815,7 @@ public class Desktop implements Visible, LRelease {
 	public UIControls controls() {
 		return createUIControls();
 	}
-	
+
 	public UIControls findUINamesToUIControls(String... uiName) {
 		UIControls controls = null;
 		if (contentPane != null && contentPane._childs != null) {
@@ -927,14 +931,15 @@ public class Desktop implements Visible, LRelease {
 		return this.contentPane.get();
 	}
 
-	public void removeAll() {
-		clear();
+	public Desktop removeAll() {
+		return clear();
 	}
 
-	public void clear() {
+	public Desktop clear() {
 		if (contentPane != null) {
 			contentPane.clear();
 		}
+		return this;
 	}
 
 	public Desktop sortDesktop() {
@@ -943,7 +948,7 @@ public class Desktop implements Visible, LRelease {
 		}
 		return this;
 	}
-	
+
 	public Desktop scrollBy(float x, float y) {
 		if (contentPane != null) {
 			contentPane.scrollBy(x, y);
@@ -996,14 +1001,14 @@ public class Desktop implements Visible, LRelease {
 		}
 		return this;
 	}
-	
+
 	public Desktop forChildren(Callback<LComponent> callback) {
 		if (contentPane != null) {
 			contentPane.forChildren(callback);
 		}
 		return this;
 	}
-	
+
 	/**
 	 * 删除符合指定条件的组件并返回操作的集合
 	 * 

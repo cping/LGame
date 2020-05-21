@@ -34,8 +34,16 @@ public class MeshDefault {
 		return LSystem.getMeshPool(n, size);
 	}
 
+	public Mesh getMesh(String n, int size, int trisize) {
+		return LSystem.getMeshTrianglePool(n, size, trisize);
+	}
+
 	public void reset(String n, int size) {
 		LSystem.resetMeshPool(n, size);
+	}
+
+	public void reset(String n, int size, int trisize) {
+		LSystem.resetMeshTrianglePool(n, size, trisize);
 	}
 
 	public void setGLType(int type) {
@@ -44,6 +52,11 @@ public class MeshDefault {
 
 	public int getGLType() {
 		return this.type;
+	}
+
+	public void setVertices(String name, int size, float[] vertices) {
+		Mesh mesh = getMesh(name, size);
+		mesh.setVertices(vertices);
 	}
 
 	public void setIndices(String name, int size, short[] indices) {
@@ -56,8 +69,8 @@ public class MeshDefault {
 		LSystem.resetIndices(size, mesh);
 	}
 
-	public void post(final String name, final int size, ShaderProgram shader, float[] vertices,
-			int vertexIdx, int count) {
+	public void post(final String name, final int size, ShaderProgram shader, float[] vertices, int vertexIdx,
+			int count) {
 		// 防止与主画面渲染器GLEx冲突
 		this.running = LSystem.mainDrawRunning();
 		if (!running) {
@@ -79,6 +92,35 @@ public class MeshDefault {
 		mesh.getIndicesBuffer().position(0);
 		mesh.getIndicesBuffer().limit(count);
 		mesh.render(shader, type, 0, count);
+		if (!running) {
+			shader.glUseProgramUnBind();
+		} else if (stop_main_readering) {
+			LSystem.mainBeginDraw();
+		}
+	}
+
+	public void post(final String name, final int size, final int trisize, ShaderProgram shader, short[] indices,
+			int indicesIdx, float[] vertices, int vertexIdx, int countInBatch) {
+		// 防止与主画面渲染器GLEx冲突
+		this.running = LSystem.mainDrawRunning();
+		if (!running) {
+			shader.glUseProgramBind();
+		} else {
+			LSystem.mainEndDraw();
+			stop_main_readering = true;
+		}
+		Mesh mesh = getMesh(name, size, trisize);
+		if (mesh == null) {
+			if (!running) {
+				shader.glUseProgramUnBind();
+			} else if (stop_main_readering) {
+				LSystem.mainBeginDraw();
+			}
+			return;
+		}
+		mesh.setVertices(vertices, 0, vertexIdx);
+		mesh.setIndices(indices, 0, indicesIdx);
+		mesh.render(shader, type, 0, countInBatch);
 		if (!running) {
 			shader.glUseProgramUnBind();
 		} else if (stop_main_readering) {

@@ -70,6 +70,12 @@ public abstract class GLFrameBuffer implements LRelease {
 
 	protected final static int GL_DEPTH24_STENCIL8_OES = 0x88F0;
 
+	protected boolean bufferLocked = false;
+	
+	protected GLFrameBuffer lastBoundFramebuffer = null;
+
+	protected GLFrameBuffer currentBoundFramebuffer = null;
+
 	protected TArray<LTexture> textureAttachments = new TArray<LTexture>();
 
 	protected static int defaultFramebufferHandle;
@@ -96,6 +102,10 @@ public abstract class GLFrameBuffer implements LRelease {
 		build();
 	}
 
+	public LTexture texture() {
+		return textureAttachments.first();
+	}
+	
 	public LTexture getColorBufferTexture() {
 		return textureAttachments.first();
 	}
@@ -128,6 +138,10 @@ public abstract class GLFrameBuffer implements LRelease {
 			break;
 		}
 		gl.glClear(flag);
+	}
+
+	public boolean isBound() {
+		return currentBoundFramebuffer == this;
 	}
 
 	public LTexture getTextureData() {
@@ -309,18 +323,53 @@ public abstract class GLFrameBuffer implements LRelease {
 	public void unbind() {
 		unbind(LSystem.base().graphics().gl);
 	}
-
+ 	
+	public GLFrameBuffer lock(){
+		this.bufferLocked = true;
+		return this;
+	}
+	
+	public boolean isLocked(){
+		return this.bufferLocked;
+	}
+	
+	public GLFrameBuffer unlock(){
+		this.bufferLocked = false;
+		return this;
+	}
+	
 	public void begin() {
+		if(bufferLocked){
+			return;
+		}
+		if (currentBoundFramebuffer == this) {
+			throw new LSysException("Do not run begin !");
+		}
+		LSystem.mainFlushDraw();
+		lastBoundFramebuffer = currentBoundFramebuffer;
+		currentBoundFramebuffer = this;
 		bind();
 		setFrameBufferViewport();
 	}
 
-	protected void setFrameBufferViewport() {
-		LSystem.base().graphics().gl.glViewport(0, 0, bufferBuilder.width, bufferBuilder.height);
+	public void end() {
+		if(bufferLocked){
+			return;
+		}
+		LSystem.mainFlushDraw();
+		if (lastBoundFramebuffer != null) {
+			lastBoundFramebuffer.bind();
+			lastBoundFramebuffer.setFrameBufferViewport();
+		} else {
+			unbind();
+			LSystem.base().graphics().gl.glViewport(0, 0, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
+		}
+		currentBoundFramebuffer = lastBoundFramebuffer;
+		lastBoundFramebuffer = null;
 	}
 
-	public void end() {
-		end(0, 0, bufferBuilder.width, bufferBuilder.height);
+	protected void setFrameBufferViewport() {
+		LSystem.base().graphics().gl.glViewport(0, 0, bufferBuilder.width, bufferBuilder.height);
 	}
 
 	public void end(int x, int y, int width, int height) {

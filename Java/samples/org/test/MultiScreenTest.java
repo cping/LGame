@@ -43,7 +43,7 @@ public class MultiScreenTest extends Screen {
 	public static LClickButton getBackButton(final Screen screen, final int page, final int x, int y) {
 
 		LClickButton back = new LClickButton("Back", x, y, 80, 50);
-		screen.addTouchLimit(back);
+		//screen.addTouchLimit(back);
 		back.setLayer(130);
 		back.S(new ClickListener() {
 

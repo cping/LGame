@@ -55,9 +55,11 @@ public class Pixmap extends Limit implements LRelease {
 
 	public final static int SRC_OVER = 2;
 
-	private int _composite = -1;
-
 	private Canvas tmpCanvas = null;
+	
+	private Vector2f tempLocation = new Vector2f();
+	
+	private int _composite = -1;
 
 	protected Graphics getGraphics() {
 		if (LSystem.base() != null) {
@@ -1419,6 +1421,132 @@ public class Pixmap extends Limit implements LRelease {
 				y = tempY;
 			}
 		}
+		return this;
+	}
+
+	/**
+	 * 虚线绘制
+	 * 
+	 * @param x1
+	 * @param y1
+	 * @param x2
+	 * @param y2
+	 * @param divisions
+	 * @param width
+	 * @return
+	 */
+	public Pixmap drawDashLine(int x1, int y1, int x2, int y2, int divisions) {
+		int dx = x2 - x1, dy = y2 - y1;
+		for (int i = 0; i < divisions; i++) {
+			if (i % 2 == 0) {
+				drawLine(x1 + (int) ((float) i / divisions) * dx, y1 + (int) ((float) i / divisions) * dy,
+						x1 + (int) ((i + 1f) / divisions) * dx, y1 + (int) ((i + 1f) / divisions) * dy);
+			}
+		}
+		return this;
+	}
+
+	public Pixmap drawAngleLine(int x, int y, float angle, float length) {
+		tempLocation.set(1f).setLength(length).setAngle(angle);
+		return drawLine(x, y, x + tempLocation.x(), y + tempLocation.y());
+	}
+
+	public Pixmap drawDashCircle(int x, int y, float radius) {
+		float scaleFactor = 0.6f;
+		int sides = 10 + MathUtils.floor(radius * scaleFactor);
+		if (sides % 2 == 1) {
+			sides++;
+		}
+
+		tempLocation.set(0f);
+
+		for (int i = 0; i < sides; i++) {
+			if (i % 2 == 0) {
+				continue;
+			}
+			tempLocation.set(radius, 0).setAngle(360f / sides * i + 90);
+			int x1 = tempLocation.x();
+			int y1 = tempLocation.y();
+
+			tempLocation.set(radius, 0).setAngle(360f / sides * (i + 1) + 90);
+
+			drawLine(x1 + x, y1 + y, tempLocation.x() + x, tempLocation.y() + y);
+		}
+		return this;
+	}
+
+	public Pixmap drawSpikes(int x, int y, float radius, float length, int spikes, float rot) {
+		tempLocation.set(0f, 1f);
+		float step = 360f / spikes;
+
+		for (int i = 0; i < spikes; i++) {
+			tempLocation.setAngle(i * step + rot);
+			tempLocation.setLength(radius);
+			int x1 = tempLocation.x(), y1 = tempLocation.y();
+			tempLocation.setLength(radius + length);
+
+			drawLine(x + x1, y + y1, x + tempLocation.x(), y + tempLocation.y());
+		}
+		return this;
+	}
+
+	/**
+	 * 绘制弧线
+	 * 
+	 * @param x1
+	 * @param y1
+	 * @param cx1
+	 * @param cy1
+	 * @param cx2
+	 * @param cy2
+	 * @param x2
+	 * @param y2
+	 * @param segments
+	 * @param width
+	 * @return
+	 */
+	public Pixmap drawCurve(float x1, float y1, float cx1, float cy1, float cx2, float cy2, float x2, float y2,
+			int segments, float width) {
+
+		final float subdivstep = 1f / segments;
+		final float subdiv_stepa = subdivstep * subdivstep;
+		final float subdiv_stepb = subdivstep * subdivstep * subdivstep;
+
+		final float pre1 = 3 * subdivstep;
+		final float pre2 = 3 * subdiv_stepa;
+		final float pre4 = 6 * subdiv_stepa;
+		final float pre5 = 6 * subdiv_stepb;
+
+		final float tmp1x = x1 - cx1 * 2 + cx2;
+		final float tmp1y = y1 - cy1 * 2 + cy2;
+
+		final float tmp2x = (cx1 - cx2) * 3 - x1 + x2;
+		final float tmp2y = (cy1 - cy2) * 3 - y1 + y2;
+
+		float fx = x1;
+		float fy = y1;
+
+		float dfx = (cx1 - x1) * pre1 + tmp1x * pre2 + tmp2x * subdiv_stepb;
+		float dfy = (cy1 - y1) * pre1 + tmp1y * pre2 + tmp2y * subdiv_stepb;
+
+		float ddfx = tmp1x * pre4 + tmp2x * pre5;
+		float ddfy = tmp1y * pre4 + tmp2y * pre5;
+
+		float dddfx = tmp2x * pre5;
+		float dddfy = tmp2y * pre5;
+
+		for (; segments-- > 0;) {
+			float fxold = fx, fyold = fy;
+			fx += dfx;
+			fy += dfy;
+			dfx += ddfx;
+			dfy += ddfy;
+			ddfx += dddfx;
+			ddfy += dddfy;
+			drawLine((int) fxold, (int) fyold, (int) fx, (int) fy);
+		}
+
+		drawLine((int) fx, (int) fy, (int) x2, (int) y2);
 		return this;
 	}
 

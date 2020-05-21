@@ -551,6 +551,12 @@ public class LProcess {
 		}
 	}
 
+	public void drawFrist(GLEx g) {
+		if (isInstance && !_waitTransition) {
+			_currentScreen.drawFrist(g);
+		}
+	}
+	
 	public void drawLast(GLEx g) {
 		if (isInstance && !_waitTransition) {
 			_currentScreen.drawLast(g);

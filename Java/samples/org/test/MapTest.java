@@ -217,7 +217,7 @@ public class MapTest extends Stage {
 			// 创建控制按钮
 			final LPad pad = new LPad(25, 150);
 			// 禁止窗体触屏区域包含pad
-			addTouchLimit(pad);
+			// addTouchLimit(pad);
 			// 监听事件
 			pad.setListener(new LPad.ClickListener() {
 
@@ -264,11 +264,10 @@ public class MapTest extends Stage {
 		}
 		LClickButton click = MultiScreenTest.getBackButton(this, 1);
 		// 禁止触屏点击到click位置，也就是防止点击back时自动寻径
-		addTouchLimit(click);
+		//addTouchLimit(click);
 		add(click);
 		// 插入网格GridEntity
 		// add(new GridEntity());
-	
 	}
 
 }

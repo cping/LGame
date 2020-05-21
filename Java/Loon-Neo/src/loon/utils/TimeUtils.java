@@ -187,7 +187,7 @@ public final class TimeUtils {
 			return "d (WTF dude check you calculation!)";
 		}
 	}
-	
+
 	public static long getUTC8Days() {
 		return getDays(millis(), 8);
 	}
@@ -228,6 +228,39 @@ public final class TimeUtils {
 		return ms % 1000;
 	}
 
+	public static String formatMillis(long val) {
+		StrBuilder sbr = new StrBuilder(20);
+		String sgn = "";
+		if (val < 0) {
+			sgn = "-";
+		}
+		val = MathUtils.abs(val);
+		formatTime(sbr, sgn, 0, (val / 3600000));
+		val %= 3600000;
+		formatTime(sbr, ":", 2, (val / 60000));
+		val %= 60000;
+		formatTime(sbr, ":", 2, (val / 1000));
+		return sbr.toString();
+	}
+
+	private static void formatTime(StrBuilder tag, String pfx, int dgt, long val) {
+		tag.append(pfx);
+		if (dgt > 1) {
+			int pad = (dgt - 1);
+			for (long i = val; i > 9 && pad > 0; i /= 10) {
+				pad--;
+			}
+			for (int j = 0; j < pad; j++) {
+				tag.append('0');
+			}
+		}
+		tag.append(val);
+	}
+
+	public static String millisTime() {
+		return formatMillis(millis());
+	}
+
 	public static String getUTC8Time() {
 		return getUTCTime(8);
 	}
@@ -247,7 +280,7 @@ public final class TimeUtils {
 	private static String zero(long v) {
 		return MathUtils.addZeros(v, 2);
 	}
-	
+
 	public static String getUTCTime(long duration, TimeFormat format) {
 		long h = getHours(duration);
 		long m = getMinutes(duration);

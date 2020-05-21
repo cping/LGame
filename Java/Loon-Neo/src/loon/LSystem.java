@@ -66,8 +66,10 @@ public class LSystem {
 	private LSystem() {
 	}
 
-	/** 版本号(正在不断完善中,试图把此版做成API以及功能基本稳定的版本,以后只优化与扩展api,
-	           而不替换删除api,所以0.5会持续的比较长(否则多语言版本来回改太麻烦)……) **/
+	/**
+	 * 版本号(正在不断完善中,试图把此版做成API以及功能基本稳定的版本,以后只优化与扩展api,
+	 * 而不替换删除api,所以0.5会持续的比较长(否则多语言版本来回改太麻烦)……)
+	 **/
 	private static final String _version = "0.5-beta";
 
 	// 默认的字符串打印完毕flag
@@ -79,46 +81,46 @@ public class LSystem {
 	public static final String EMPTY = "";
 
 	public static final String NULL = "null";
-	
+
 	public static final String UNKNOWN = "unknown";
 
-	/** 常见字符串操作用符号  **/
+	/** 常见字符串操作用符号 **/
 	public static final char DOT = '.';
-	
+
 	public static final char SLASH = '/';
-	
+
 	public static final char BACKSLASH = '\\';
-	
+
 	public static final char CR = '\r';
-	
+
 	public static final char LF = '\n';
-	
+
 	public static final char UNDERLINE = '_';
-	
+
 	public static final char DASHED = '-';
-	
+
 	public static final char COMMA = ',';
-	
+
 	public static final char DELIM_START = '{';
-	
+
 	public static final char DELIM_END = '}';
-	
+
 	public static final char BRACKET_START = '[';
-	
+
 	public static final char BRACKET_END = ']';
-	
+
 	public static final char COLON = ':';
-	
+
 	public static final char DOUBLE_QUOTES = '"';
-	
+
 	public static final char SINGLE_QUOTE = '\'';
-	
+
 	public static final char AMP = '&';
-	
+
 	public static final char SPACE = ' ';
-	
+
 	public static final char TAB = '	';
-	
+
 	// 默认缓存数量
 	public static final int DEFAULT_MAX_CACHE_SIZE = 32;
 
@@ -197,7 +199,7 @@ public class LSystem {
 
 	// 默认的Shader
 	public static final GlobalSource DEF_SOURCE = new GlobalSource();
-	
+
 	public static boolean PAUSED = false;
 
 	// 是否允许屏幕画面刷新
@@ -750,6 +752,19 @@ public class LSystem {
 		}
 	}
 
+	public static void mainFlushDraw() {
+		if (base() == null) {
+			return;
+		}
+		Display game = base().display();
+		if (game != null) {
+			GLEx gl = game.GL();
+			if (gl.running()) {
+				gl.flush();
+			}
+		}
+	}
+
 	public static void mainEndDraw() {
 		if (base() == null) {
 			return;
@@ -784,14 +799,14 @@ public class LSystem {
 			base().displayImpl.enableFrameBuffer();
 		}
 	}
-	
+
 	public static final ShaderSource getShaderSource() {
 		if (base() != null && base().displayImpl != null) {
 			return base().displayImpl.getShaderSource();
 		}
 		return DEF_SOURCE;
 	}
-	
+
 	public static final void setShaderSource(ShaderSource src) {
 		if (base() != null && base().displayImpl != null && src != null) {
 			base().displayImpl.setShaderSource(src);
@@ -970,6 +985,19 @@ public class LSystem {
 	public static final void resetMeshPool(String n, int size) {
 		if (base() != null) {
 			base().resetMeshPool(n, size);
+		}
+	}
+
+	public static final Mesh getMeshTrianglePool(String n, int size, int trisize) {
+		if (base() != null) {
+			return base().getMeshTrianglePool(n, size, trisize);
+		}
+		return null;
+	}
+
+	public static final void resetMeshTrianglePool(String n, int size, int trisize) {
+		if (base() != null) {
+			base().resetMeshTrianglePool(n, size, trisize);
 		}
 	}
 

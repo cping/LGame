@@ -758,6 +758,10 @@ public class MathUtils {
 		return (n < 0) ? -n : n;
 	}
 
+	public static final long abs(long n) {
+		return (n < 0) ? -n : n;
+	}
+
 	public static final float sq(float a) {
 		return a * a;
 	}
@@ -900,6 +904,14 @@ public class MathUtils {
 
 	public static final float degToRad(float deg) {
 		return deg * 360 / TWO_PI;
+	}
+
+	public static final float trnsX(float angle, float len) {
+		return len * cosDeg(angle);
+	}
+
+	public static final float trnsY(float angle, float len) {
+		return len * sinDeg(angle);
 	}
 
 	public static final float safeAdd(float left, float right) {

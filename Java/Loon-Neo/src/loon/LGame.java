@@ -487,7 +487,7 @@ public abstract class LGame {
 			}
 		}
 	}
-
+	
 	/**
 	 * 获得指定名称大小的MeshPool池中对象
 	 * 
@@ -511,6 +511,60 @@ public abstract class LGame {
 		}
 	}
 
+	/**
+	 * 获得指定名称大小的MeshPool池中对象
+	 * 
+	 * @param n
+	 * @param size
+	 * @return
+	 */
+	public Mesh getMeshTrianglePool(String n, int size, int trisize) {
+		int code = 1;
+		code = LSystem.unite(code, size);
+		code = LSystem.unite(code, trisize);
+		String name = n + "tri" + code;
+		synchronized (_texture_mesh_pools) {
+			Mesh mesh = _texture_mesh_pools.get(name);
+			if (mesh == null || mesh.isClosed()) {
+				mesh = new Mesh(VertexDataType.VertexArray, false, size, trisize * 3,
+						new VertexAttribute(Usage.Position, 2, ShaderProgram.POSITION_ATTRIBUTE),
+						new VertexAttribute(Usage.ColorPacked, 4, ShaderProgram.COLOR_ATTRIBUTE),
+						new VertexAttribute(Usage.TextureCoordinates, 2, ShaderProgram.TEXCOORD_ATTRIBUTE + "0"));
+				_texture_mesh_pools.put(name, mesh);
+			}
+			return mesh;
+		}
+	}
+
+
+	/**
+	 * 刷新指定的Mesh池中Mesh数据
+	 * 
+	 * @param n
+	 * @param size
+	 */
+	public void resetMeshTrianglePool(String n, int size, int trisize) {
+		int code = 1;
+		code = LSystem.unite(code, size);
+		code = LSystem.unite(code, trisize);
+		String name = n + "tri" + code;
+		synchronized (_texture_mesh_pools) {
+			Mesh mesh = _texture_mesh_pools.get(name);
+			if (mesh != null) {
+				mesh.close();
+				mesh = null;
+			}
+			_texture_mesh_pools.remove(name);
+			if (mesh == null || mesh.isClosed()) {
+				mesh = new Mesh(VertexDataType.VertexArray, false, size, trisize * 3,
+						new VertexAttribute(Usage.Position, 2, ShaderProgram.POSITION_ATTRIBUTE),
+						new VertexAttribute(Usage.ColorPacked, 4, ShaderProgram.COLOR_ATTRIBUTE),
+						new VertexAttribute(Usage.TextureCoordinates, 2, ShaderProgram.TEXCOORD_ATTRIBUTE + "0"));
+				_texture_mesh_pools.put(name, mesh);
+			}
+		}
+	}
+	
 	/**
 	 * 获得MeshPool大小
 	 * 
@@ -1120,11 +1174,11 @@ public abstract class LGame {
 		_font_pools.clear();
 	}
 
-	public static void freeStatic(){
+	public static void freeStatic() {
 		LGame._platform = null;
 		LGame._base = null;
 	}
-	
+
 	public abstract LGame.Type type();
 
 	public abstract double time();

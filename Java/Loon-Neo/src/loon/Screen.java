@@ -20,8 +20,6 @@
  */
 package loon;
 
-import java.io.OutputStream;
-
 import loon.action.ActionBind;
 import loon.action.ActionControl;
 import loon.action.ActionTween;
@@ -53,6 +51,7 @@ import loon.component.LLabel;
 import loon.component.LLayer;
 import loon.component.LMenuSelect;
 import loon.component.LPaper;
+import loon.component.LSpriteUI;
 import loon.component.UIControls;
 import loon.component.layout.LayoutConstraints;
 import loon.component.layout.LayoutManager;
@@ -90,7 +89,6 @@ import loon.opengl.ShaderSource;
 import loon.utils.ArrayByte;
 import loon.utils.ArrayMap;
 import loon.utils.Calculator;
-import loon.utils.CollectionUtils;
 import loon.utils.ConfigReader;
 import loon.utils.Easing.EasingMode;
 import loon.utils.GLUtils;
@@ -177,7 +175,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	private boolean _collisionClosed;
 
-	private ArrayMap _keyActions = new ArrayMap(CollectionUtils.INITIAL_CAPACITY);
+	private ArrayMap _keyActions = new ArrayMap();
 
 	private Updateable _closeUpdate;
 
@@ -260,6 +258,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	private final PointF _lastTocuh = new PointF();
 
 	private final PointI _touch = new PointI();
+
+	private boolean _desktopPenetrate = false;
 
 	private boolean isLoad, isLock, isClose, isTranslate, isGravity;
 
@@ -1237,12 +1237,22 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		replaceLoading = false;
 	}
 
+	/**
+	 * 删除所有添加的TouchLimit
+	 * 
+	 * @return
+	 */
 	public Screen removeTouchLimit() {
 		_rect_limits.clear();
 		_action_limits.clear();
 		return this;
 	}
 
+	/**
+	 * 删除ActionBind的TouchLimit
+	 * 
+	 * @return
+	 */
 	public Screen removeTouchLimit(ActionBind act) {
 		if (act != null) {
 			_action_limits.remove(act);
@@ -1250,35 +1260,71 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return this;
 	}
 
-	public Screen removeTouchLimit(RectBox r) {
-		if (r != null) {
-			_rect_limits.remove(r);
+	/**
+	 * 删除RectBox的TouchLimit
+	 * 
+	 * @param rect
+	 * @return
+	 */
+	public Screen removeTouchLimit(RectBox rect) {
+		if (rect != null) {
+			_rect_limits.remove(rect);
 		}
 		return this;
 	}
 
+	/**
+	 * 添加一个针对ActionBind区域的触屏限制
+	 * 
+	 * @param act
+	 * @return
+	 */
 	public Screen addTouchLimit(ActionBind act) {
-		if (act != null) {
-			if (!_action_limits.contains(act)) {
-				_action_limits.add(act);
-			}
+		if (act != null && !_action_limits.contains(act)) {
+			_action_limits.add(act);
 		}
 		return this;
 	}
 
-	public Screen addTouchLimit(RectBox r) {
-		if (r != null) {
-			if (!_rect_limits.contains(r)) {
-				_rect_limits.add(r);
-			}
+	/**
+	 * 添加一个针对RectBox区域的触屏限制
+	 * 
+	 * @param rect
+	 * @return
+	 */
+	public Screen addTouchLimit(RectBox rect) {
+		if (rect != null && !_rect_limits.contains(rect)) {
+			_rect_limits.add(rect);
 		}
 		return this;
 	}
 
+	/**
+	 * 检查指定点击区域是否有被限制(@see addTouchLimit() 函数添加限制区域)
+	 * 
+	 * @return
+	 */
+	public boolean isClickLimit() {
+		return isClickLimit(SysTouch.x(), SysTouch.y());
+	}
+
+	/**
+	 * 检查指定点击区域是否有被限制(@see addTouchLimit() 函数添加限制区域)
+	 * 
+	 * @param e
+	 * @return
+	 */
 	public boolean isClickLimit(GameTouch e) {
 		return isClickLimit(e.x(), e.y());
 	}
 
+	/**
+	 * 检查指定点击区域是否有被限制(@see addTouchLimit() 函数添加限制区域)
+	 * 
+	 * @param x
+	 * @param y
+	 * @return
+	 */
 	public boolean isClickLimit(int x, int y) {
 		if (_rect_limits.size == 0 && _action_limits.size == 0) {
 			return false;
@@ -1409,6 +1455,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		this._baseColor = null;
 		this._isExistCamera = false;
 		this._initLoopEvents = false;
+		this._desktopPenetrate = false;
 		if (this.delayTimer == null) {
 			this.delayTimer = new LTimer(0);
 		}
@@ -1428,7 +1475,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			this._conns = new Closeable.Set();
 		}
 		if (this._keyActions == null) {
-			this._keyActions = new ArrayMap(CollectionUtils.INITIAL_CAPACITY);
+			this._keyActions = new ArrayMap();
 		}
 	}
 
@@ -2525,6 +2572,52 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return this;
 	}
 
+	public boolean isDesktopPenetrate() {
+		return _desktopPenetrate;
+	}
+
+	/**
+	 * 是否允许桌面组件触碰事件传导到Screen(若此项为true,则当组件占据屏幕位置时,触发的Touch相关事件Screen的也
+	 * Touch监听默认也会收到,反之则无法接收)
+	 * 
+	 * @param dp
+	 * @return
+	 */
+	public Screen setDesktopPenetrate(boolean dp) {
+		if (this._desktopPenetrate == dp) {
+			return this;
+		}
+		this._desktopPenetrate = dp;
+		if (this._desktopPenetrate) {
+			final TArray<ActionBind> limits = this._action_limits;
+			if (limits != null) {
+				final int len = this._action_limits.size;
+				if (len > 0) {
+					for (int i = len - 1; i > -1; i--) {
+						ActionBind bind = limits.get(i);
+						if (bind != null && bind instanceof LComponent) {
+							limits.remove(bind);
+						}
+					}
+				}
+			}
+		} else {
+			if (desktop != null) {
+				final LComponent[] comps = desktop.getComponents();
+				if (comps != null) {
+					final int size = comps.length;
+					for (int i = 0; i < size; i++) {
+						LComponent comp = comps[i];
+						if (comp != null) {
+							addTouchLimit(comp);
+						}
+					}
+				}
+			}
+		}
+		return this;
+	}
+
 	/**
 	 * 添加游戏组件
 	 * 
@@ -2533,9 +2626,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	public Screen addSpriteToUI(ISprite s) {
 		if (desktop != null) {
-			desktop.addSprite(s);
+			LSpriteUI ui = desktop.addSprite(s);
 			if (s instanceof LTouchArea) {
 				registerTouchArea((LTouchArea) s);
+			}
+			if (!_desktopPenetrate) {
+				addTouchLimit(ui);
 			}
 		}
 		return this;
@@ -2551,9 +2647,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 */
 	public Screen addSpriteToUIAt(ISprite s, float x, float y) {
 		if (desktop != null) {
-			desktop.addSpriteAt(s, x, y);
+			LSpriteUI ui = desktop.addSpriteAt(s, x, y);
 			if (s instanceof LTouchArea) {
 				registerTouchArea((LTouchArea) s);
+			}
+			if (!_desktopPenetrate) {
+				addTouchLimit(ui);
 			}
 		}
 		return this;
@@ -2564,12 +2663,14 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * 
 	 * @param comp
 	 */
-
 	public Screen add(LComponent comp) {
 		if (desktop != null) {
 			desktop.add(comp);
 			if (comp instanceof LTouchArea) {
 				registerTouchArea((LTouchArea) comp);
+			}
+			if (!_desktopPenetrate) {
+				addTouchLimit(comp);
 			}
 		}
 		return this;
@@ -2588,6 +2689,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			desktop.addAt(comp, x, y);
 			if (comp instanceof LTouchArea) {
 				registerTouchArea((LTouchArea) comp);
+			}
+			if (!_desktopPenetrate) {
+				addTouchLimit(comp);
 			}
 		}
 		return this;
@@ -2881,11 +2985,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			sprites.removeAll();
 		}
 		if (desktop != null) {
-			desktop.clear();
+			desktop.removeAll();
 		}
 		ActionControl.get().clear();
 		removeAllLoad();
 		removeAllUnLoad();
+		removeTouchLimit();
 		clearTouchAreas();
 		clearTouched();
 		clearFrameLoop();
@@ -3157,6 +3262,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 				g.restore();
 			}
 		}
+	}
+
+	protected void drawFrist(GLEx g) {
+
 	}
 
 	protected void drawLast(GLEx g) {
@@ -3797,8 +3906,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 				if (_touchListener != null && desktop != null) {
 					_touchListener.DownClick(desktop.getSelectedComponent(), e.getX(), e.getY());
 				}
-				_lastTocuh.set(e.getX(), e.getY());
 			}
+			_lastTocuh.set(e.getX(), e.getY());
 		} catch (Throwable ex) {
 			touchButtonPressed = SysInput.NO_BUTTON;
 			touchButtonReleased = SysInput.NO_BUTTON;
@@ -3828,8 +3937,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 				if (_touchListener != null && desktop != null) {
 					_touchListener.UpClick(desktop.getSelectedComponent(), e.getX(), e.getY());
 				}
-				_lastTocuh.set(e.getX(), e.getY());
 			}
+			_lastTocuh.set(e.getX(), e.getY());
 		} catch (Throwable ex) {
 			touchButtonPressed = SysInput.NO_BUTTON;
 			touchButtonReleased = SysInput.NO_BUTTON;
@@ -3867,8 +3976,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			if (_touchListener != null && desktop != null) {
 				_touchListener.DragClick(desktop.getSelectedComponent(), e.getX(), e.getY());
 			}
-			_lastTocuh.set(e.getX(), e.getY());
 		}
+		_lastTocuh.set(e.getX(), e.getY());
 	}
 
 	public abstract void touchDrag(GameTouch e);
@@ -4589,7 +4698,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @param output
 	 * @return
 	 */
-	public Screen startVideo(OutputStream output) {
+	public Screen startVideo(java.io.OutputStream output) {
 		if (LSystem.base() != null && LSystem.base().display() != null) {
 			LSystem.base().display().startVideo(output);
 		}
@@ -4603,7 +4712,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @param delay
 	 * @return
 	 */
-	public Screen startVideo(OutputStream output, long delay) {
+	public Screen startVideo(java.io.OutputStream output, long delay) {
 		if (LSystem.base() != null && LSystem.base().display() != null) {
 			LSystem.base().display().startVideo(output, delay);
 		}
@@ -5423,6 +5532,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 				isGravity = false;
 				isLock = true;
 				_isExistCamera = false;
+				_desktopPenetrate = false;
 				if (sprites != null) {
 					spriteRun = false;
 					sprites.close();

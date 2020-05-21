@@ -853,7 +853,7 @@ public abstract class LContainer extends LComponent implements IArray {
 		if (_component_isClose) {
 			return null;
 		}
-		return CollectionUtils.copyOf(this._childs);
+		return CollectionUtils.copyOf(this._childs, this.childCount);
 	}
 
 	public LComponent get() {

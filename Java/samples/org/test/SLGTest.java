@@ -1358,7 +1358,7 @@ public class SLGTest extends Stage {
 			}
 		});
 
-		// 玩家与地方本回合操作对象临时存储用堆栈
+		// 玩家与敌方本回合操作对象临时存储用堆栈
 		final Array<Role> playerStack = new Array<Role>();
 		final Array<Role> enemyStack = new Array<Role>();
 

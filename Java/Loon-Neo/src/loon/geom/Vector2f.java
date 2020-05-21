@@ -841,7 +841,19 @@ public class Vector2f implements Serializable, XY {
 		y *= a;
 		return this;
 	}
-
+	
+    public final Vector2f setLength(float len){
+    	len = len*len;
+        float oldLength = lengthSquared();
+        return (oldLength == 0 || oldLength == len) ? this : scaleSelf(MathUtils.sqrt(len / oldLength));
+    }
+    
+    public final Vector2f setAngle(float radians){
+        this.set(length(), 0f);
+        this.rotate(radians);
+        return this;
+    }
+    
 	public final float normalize() {
 		float length = length();
 		if (length < MathUtils.EPSILON) {

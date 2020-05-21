@@ -418,7 +418,8 @@ public class Display extends LSystemView {
 			_glEx.saveTx();
 			_glEx.reset(cred, cgreen, cblue, calpha);
 			_glEx.begin();
-	
+			
+			_process.drawFrist(_glEx);
 			_process.load();
 			_process.runTimer(clock);
 

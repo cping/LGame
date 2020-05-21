@@ -24,6 +24,36 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.LTexture.Format;
 
+/**
+ * 图像缓冲区构建用类
+ * 
+ * <pre>
+ * 
+ * &#64;Override
+ * public void create() {
+ * 	tex = loadTexture("assets/ccc.png");
+ * 	// 构建一个纹理缓冲器
+ * 	buffer = new FrameBuffer(getWidth(), getHeight());
+ * }
+ * 
+ * &#64;Override
+ * public void draw(GLEx g) {
+ * 	// 如果缓冲区没有锁定
+ * 	if (!buffer.isLocked()) {
+ * 		// 开始缓冲屏幕纹理到缓冲器
+ * 		buffer.begin();
+ * 		g.draw(tex, 55, 55, LColor.red);
+ * 		// 结束缓冲
+ * 		buffer.end();
+ * 		// 锁定纹理不再缓冲
+ * 		buffer.lock();
+ * 	}
+ * 	// 显示缓冲的数据
+ * 	g.drawFlip(buffer.texture(), 0, 0);
+ * }
+ * 
+ * </pre>
+ */
 public class FrameBuffer extends GLFrameBuffer {
 
 	FrameBuffer() {
@@ -33,14 +63,18 @@ public class FrameBuffer extends GLFrameBuffer {
 		super(bufferBuilder);
 	}
 
+	public FrameBuffer(int width, int height) {
+		this(width, height, false);
+	}
+
 	public FrameBuffer(int width, int height, int glFormat, int glType, boolean hasDepth) {
 		this(width, height, glFormat, glType, hasDepth, false);
 	}
 
 	public FrameBuffer(int width, int height, boolean hasDepth) {
-		this(width, height,  GL20.GL_RGBA, GL20.GL_UNSIGNED_BYTE, hasDepth, hasDepth);
+		this(width, height, hasDepth, false);
 	}
-	
+
 	public FrameBuffer(int width, int height, boolean hasDepth, boolean hasStencil) {
 		this(width, height, GL20.GL_RGBA, GL20.GL_UNSIGNED_BYTE, hasDepth);
 	}
