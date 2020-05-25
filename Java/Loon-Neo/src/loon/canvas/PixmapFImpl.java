@@ -341,28 +341,52 @@ public abstract class PixmapFImpl {
 		}
 	}
 
+	/**
+	 * 填充一个圆弧
+	 * 
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
+	 * @param start
+	 * @param arcAngle
+	 */
 	protected void fillArcImpl(float x, float y, float width, float height, float start, float arcAngle) {
-		if (arcAngle == 0) {
-			return;
-		}
-		if (arcAngle < 0) {
-			start = 360 - arcAngle;
-			arcAngle = 360 + arcAngle;
-		}
-		start %= 360;
-		if (start < 0) {
-			start += 360;
-		}
-		if (arcAngle % 360 == 0) {
-			fillOvalImpl(x, y, width, height);
-			return;
+		fillArcImpl(x, y, width, height, start, arcAngle, false);
+	}
+
+	/**
+	 * 填充一个圆弧
+	 * 
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
+	 * @param start
+	 * @param arcAngle
+	 * @param reverse
+	 * @return
+	 */
+	protected void fillArcImpl(float x, float y, float width, float height, float start, float arcAngle, boolean reverse) {
+		if (reverse) {
+			if (arcAngle < 0) {
+				start = 360 - arcAngle;
+				arcAngle = 360 + arcAngle;
+			}
+			start %= 360;
+			if (start < 0) {
+				start += 360;
+			}
+			if (arcAngle % 360 == 0) {
+				fillOvalImpl(x, y, width, height);
+			} else {
+				arcAngle %= 360;
+			}
 		} else {
-			arcAngle %= 360;
+			arcAngle = -arcAngle;
 		}
-
 		final float startAngle = arcAngle > 0 ? start
-				: (start + arcAngle < 0 ? start + arcAngle + 360 : start + arcAngle);
-
+				: (start + arcAngle < 0 ? start + arcAngle + 360f : start + arcAngle);
 		final float centerX = x + _translateX + width / 2;
 		final float centerY = y + _translateY + height / 2;
 		final float xPoints[] = new float[7];

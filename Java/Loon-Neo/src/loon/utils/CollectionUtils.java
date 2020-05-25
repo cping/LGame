@@ -26,12 +26,6 @@ import loon.LTexture;
 import loon.action.sprite.ISprite;
 import loon.component.Actor;
 import loon.component.LComponent;
-import loon.physics.PBody;
-import loon.physics.PConvexPolygonShape;
-import loon.physics.PJoint;
-import loon.physics.PShape;
-import loon.physics.PSolver;
-import loon.physics.PSortableObject;
 
 final public class CollectionUtils {
 
@@ -589,66 +583,6 @@ final public class CollectionUtils {
 		LComponent[] newArrays = new LComponent[j];
 		System.arraycopy(objs, 0, newArrays, 0, j);
 		return newArrays;
-	}
-
-	public static PConvexPolygonShape[] copyOf(PConvexPolygonShape[] data, int newSize) {
-		PConvexPolygonShape tempArr[] = new PConvexPolygonShape[newSize];
-		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
-		return tempArr;
-	}
-
-	public static PConvexPolygonShape[] copyOf(PConvexPolygonShape[] data) {
-		return copyOf(data, data.length);
-	}
-
-	public static PBody[] copyOf(PBody[] data, int newSize) {
-		PBody tempArr[] = new PBody[newSize];
-		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
-		return tempArr;
-	}
-
-	public static PBody[] copyOf(PBody[] data) {
-		return copyOf(data, data.length);
-	}
-
-	public static PJoint[] copyOf(PJoint[] data) {
-		return copyOf(data, data.length);
-	}
-
-	public static PJoint[] copyOf(PJoint[] data, int newSize) {
-		PJoint tempArr[] = new PJoint[newSize];
-		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
-		return tempArr;
-	}
-
-	public static PSolver[] copyOf(PSolver[] data) {
-		return copyOf(data, data.length);
-	}
-
-	public static PSolver[] copyOf(PSolver[] data, int newSize) {
-		PSolver tempArr[] = new PSolver[newSize];
-		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
-		return tempArr;
-	}
-
-	public static PShape[] copyOf(PShape[] data) {
-		return copyOf(data, data.length);
-	}
-
-	public static PShape[] copyOf(PShape[] data, int newSize) {
-		PShape tempArr[] = new PShape[newSize];
-		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
-		return tempArr;
-	}
-
-	public static PSortableObject[] copyOf(PSortableObject[] data) {
-		return copyOf(data, data.length);
-	}
-
-	public static PSortableObject[] copyOf(PSortableObject[] data, int newSize) {
-		PSortableObject tempArr[] = new PSortableObject[newSize];
-		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
-		return tempArr;
 	}
 
 	public static LTexture[] copyOf(LTexture[] data, int newSize) {

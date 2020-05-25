@@ -43,7 +43,6 @@ import loon.action.sprite.Sprites.SpriteListener;
 import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.canvas.Pixmap;
-import loon.component.DefUI;
 import loon.component.Desktop;
 import loon.component.LClickButton;
 import loon.component.LComponent;
@@ -440,6 +439,27 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return order;
 	}
 
+	protected final PaintOrder DRAW_USER_PAINT() {
+		if (userOrder == null) {
+			userOrder = new PaintOrder(DRAW_USER, this);
+		}
+		return userOrder;
+	}
+
+	protected final PaintOrder DRAW_SPRITE_PAINT() {
+		if (spriteOrder == null) {
+			spriteOrder = new PaintOrder(DRAW_SPRITE, this);
+		}
+		return spriteOrder;
+	}
+
+	protected final PaintOrder DRAW_DESKTOP_PAINT() {
+		if (desktopOrder == null) {
+			desktopOrder = new PaintOrder(DRAW_DESKTOP, this);
+		}
+		return desktopOrder;
+	}
+	
 	/**
 	 * 设置Screen中组件渲染顺序
 	 * 
@@ -1341,27 +1361,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			}
 		}
 		return false;
-	}
-
-	protected final PaintOrder DRAW_USER_PAINT() {
-		if (userOrder == null) {
-			userOrder = new PaintOrder(DRAW_USER, this);
-		}
-		return userOrder;
-	}
-
-	protected final PaintOrder DRAW_SPRITE_PAINT() {
-		if (spriteOrder == null) {
-			spriteOrder = new PaintOrder(DRAW_SPRITE, this);
-		}
-		return spriteOrder;
-	}
-
-	protected final PaintOrder DRAW_DESKTOP_PAINT() {
-		if (desktopOrder == null) {
-			desktopOrder = new PaintOrder(DRAW_DESKTOP, this);
-		}
-		return desktopOrder;
 	}
 
 	final public void resetSize() {
@@ -2447,6 +2446,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			return this;
 		}
 		desktop.addPadding(comp, offX, offY);
+		if (comp instanceof LTouchArea) {
+			registerTouchArea((LTouchArea) comp);
+		}
+		if (!_desktopPenetrate) {
+			addTouchLimit(comp);
+		}
 		return this;
 	}
 
@@ -2461,6 +2466,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			return this;
 		}
 		desktop.addCol(comp);
+		if (comp instanceof LTouchArea) {
+			registerTouchArea((LTouchArea) comp);
+		}
+		if (!_desktopPenetrate) {
+			addTouchLimit(comp);
+		}
 		return this;
 	}
 
@@ -2476,6 +2487,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			return this;
 		}
 		desktop.addCol(comp, offY);
+		if (comp instanceof LTouchArea) {
+			registerTouchArea((LTouchArea) comp);
+		}
+		if (!_desktopPenetrate) {
+			addTouchLimit(comp);
+		}
 		return this;
 	}
 
@@ -2490,6 +2507,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			return this;
 		}
 		desktop.addRow(comp);
+		if (comp instanceof LTouchArea) {
+			registerTouchArea((LTouchArea) comp);
+		}
+		if (!_desktopPenetrate) {
+			addTouchLimit(comp);
+		}
 		return this;
 	}
 
@@ -2505,6 +2528,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			return this;
 		}
 		desktop.addRow(comp, offX);
+		if (comp instanceof LTouchArea) {
+			registerTouchArea((LTouchArea) comp);
+		}
+		if (!_desktopPenetrate) {
+			addTouchLimit(comp);
+		}
 		return this;
 	}
 
@@ -2937,9 +2966,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			}
 			if (textureObject != null) {
 				remove(textureObject);
-				if (textureObject instanceof LTouchArea) {
-					unregisterTouchArea((LTouchArea) textureObject);
-				}
 			}
 		}
 		return this;
@@ -3036,7 +3062,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		if (component == null) {
 			return false;
 		}
-		if (component.isVisible()) {
+		if (component.isVisible() && component.getAlpha() > 0f) {
 			RectBox rect = component.getCollisionBox();
 			if (rect.contains(x, y) || rect.intersects(x, y)) {
 				return true;
@@ -3400,6 +3426,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	private final void process(final LTimerContext timer) {
+		this.elapsedTime = timer.timeSinceLastUpdate;
 		for (int i = _keyActions.size() - 1; i >= 0; i--) {
 			ActionKey act = (ActionKey) _keyActions.get(i);
 			if (act.isPressed()) {
@@ -3409,7 +3436,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 				}
 			}
 		}
-		this.elapsedTime = timer.timeSinceLastUpdate;
 		// 如果Screen设置了计时器暂停
 		if (isTimerPaused) {
 			// 开始累加时间
@@ -5584,10 +5610,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 				_closeUpdate = null;
 				this.screenSwitch = null;
 				this.stageRun = false;
-				DefUI.selfClear();
-				if (LSystem.base() != null) {
-					LSystem.base().closeFontTempTexture();
-				}
+				LSystem.closeTemp();
 			} catch (Throwable cause) {
 				LSystem.error("Screen destroy() dispatch exception", cause);
 			} finally {

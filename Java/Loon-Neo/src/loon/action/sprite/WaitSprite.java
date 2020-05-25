@@ -119,7 +119,7 @@ public class WaitSprite extends Entity {
 				g.drawOval(x, y, width, height);
 				int sa = angle % 360;
 				g.fillArc(x + (width - paintWidth) / 2, y + (height - paintHeight) / 2, paintWidth, paintHeight, sa,
-						sa + ANGLE_STEP);
+						ANGLE_STEP);
 				g.resetLineWidth();
 				g.setBlendMode(old);
 				break;

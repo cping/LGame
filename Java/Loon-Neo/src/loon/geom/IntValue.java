@@ -37,6 +37,10 @@ public class IntValue {
 		return this;
 	}
 
+	public int get() {
+		return result();
+	}
+	
 	public int result() {
 		return value;
 	}

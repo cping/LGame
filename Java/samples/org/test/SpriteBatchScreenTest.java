@@ -3,9 +3,9 @@ package org.test;
 import loon.LTexture;
 import loon.LTransition;
 import loon.action.sprite.SpriteBatch;
-import loon.action.sprite.SpriteBatchScreen;
 import loon.event.GameKey;
 import loon.event.GameTouch;
+import loon.physics.SpriteBatchScreen;
 
 public class SpriteBatchScreenTest extends SpriteBatchScreen {
 

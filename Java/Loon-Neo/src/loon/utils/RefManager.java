@@ -24,8 +24,7 @@ import loon.LRelease;
 //引用管理器，作用是保存实现了LRelease接口的对象，然后统一释放。
 public class RefManager implements LRelease {
 
-	public TArray<LRelease> objects = new TArray<LRelease>(
-			CollectionUtils.INITIAL_CAPACITY);
+	public TArray<LRelease> objects = new TArray<LRelease>();
 
 	public RefManager() {
 	}

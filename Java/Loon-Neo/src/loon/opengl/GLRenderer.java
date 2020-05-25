@@ -498,24 +498,45 @@ public class GLRenderer implements LRelease {
 	}
 
 	public void arc(float x, float y, float radius, float start, float degrees) {
-		arc(x, y, radius, start, degrees, 32);
+		arc(x, y, radius, start, degrees, 32, false);
 	}
 
-	public void arc(float x, float y, float radius, float start, float end, int segments) {
+	public void arc(float x, float y, float radius, float start, float degrees, boolean reverse) {
+		arc(x, y, radius, start, degrees, 32, reverse);
+	}
+
+	/**
+	 * 绘制弧形,如果reverse为true则反转绘制方向(为true是顺时绘制,反转则逆时绘制)
+	 * 
+	 * @param x
+	 * @param y
+	 * @param radius
+	 * @param start
+	 * @param end
+	 * @param segments
+	 * @param reverse
+	 */
+	public void arc(float x, float y, float radius, float start, float end, int segments, boolean reverse) {
 		if (segments <= 0) {
 			throw new LSysException("segments must be >= 0.");
 		}
 		if (_currType != GLType.Filled && _currType != GLType.Line) {
 			throw new LSysException("Must call begin(GLType.Filled) or begin(GLType.Line)");
 		}
-		float arcAngle = end - start;
-		if (arcAngle < 0) {
-			start = 360 - arcAngle;
-			arcAngle = 360 + arcAngle;
-		}
-		start %= 360;
-		if (start < 0) {
-			start += 360;
+		float arcAngle = end;
+		if (!reverse) {
+			if (arcAngle < 0) {
+				start = 360 - arcAngle;
+				arcAngle = 360 + arcAngle;
+			}
+			start %= 360;
+			if (start < 0) {
+				start += 360;
+			}
+			start = arcAngle > 0 ? start : (start + arcAngle < 0 ? start + arcAngle + 360 : start + arcAngle);
+		} else {
+			start = -start;
+			start = arcAngle < 0 ? start : (start + arcAngle < 0 ? start + arcAngle + 360 : start + arcAngle);
 		}
 		float theta = (2 * MathUtils.PI * (arcAngle / 360.0f)) / segments;
 		float cos = MathUtils.cos(theta);

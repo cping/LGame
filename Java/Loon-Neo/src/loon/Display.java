@@ -41,6 +41,9 @@ import loon.utils.reply.Port;
 import loon.utils.timer.LTimer;
 import loon.utils.timer.LTimerContext;
 
+/**
+ * Loon显示实际载体用类,主渲染器GLEx于此类中被构建,但用户无需直接使用此类,细节操作已被融入Screen中
+ */
 public class Display extends LSystemView {
 
 	private final static String FPS_STR = "FPS:";

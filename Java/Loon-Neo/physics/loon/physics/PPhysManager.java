@@ -11,7 +11,7 @@ import loon.geom.Vector2f;
 import loon.utils.CollectionUtils;
 
 public class PPhysManager {
-	
+
 	public float scale;
 
 	public float offX;
@@ -45,28 +45,23 @@ public class PPhysManager {
 		return body;
 	}
 
-	public PBody box(boolean fix, float x, float y, float w, float h,
-			float angle, float density) {
+	public PBody box(boolean fix, float x, float y, float w, float h, float angle, float density) {
 		PBody body = null;
 		if (!isCenterPos) {
-			body = new PBody(angle, fix, new PShape[] { new PBoxShape(
-					(x + w / 2) / scale, (y + h / 2) / scale, w / scale, h
-							/ scale, angle, density) });
+			body = new PBody(angle, fix, new PShape[] {
+					new PBoxShape((x + w / 2) / scale, (y + h / 2) / scale, w / scale, h / scale, angle, density) });
 		} else {
 			body = new PBody(angle, fix,
-					new PShape[] { new PBoxShape(x / scale, y / scale, w
-							/ scale, h / scale, angle, density) });
+					new PShape[] { new PBoxShape(x / scale, y / scale, w / scale, h / scale, angle, density) });
 		}
 		return body;
 	}
 
 	public PBody box(boolean fix, RectBox rect, float angle, float density) {
-		return box(fix, rect.x, rect.y, (float) rect.width,
-				(float) rect.height, angle, density);
+		return box(fix, rect.x, rect.y, (float) rect.width, (float) rect.height, angle, density);
 	}
 
-	public PBody addBox(boolean fix, float x, float y, float w, float h,
-			float angle, float density) {
+	public PBody addBox(boolean fix, float x, float y, float w, float h, float angle, float density) {
 		PBody body = box(fix, x, y, w, h, angle, density);
 		world.addBody(body);
 		return body;
@@ -86,15 +81,14 @@ public class PPhysManager {
 		return addBox(fix, rect, 0F, 1F);
 	}
 
-	public PBody circle(boolean fix, float x, float y, float r, float angle,
-			float density) {
+	public PBody circle(boolean fix, float x, float y, float r, float angle, float density) {
 		PBody body = null;
 		if (!isCenterPos) {
-			body = new PBody(angle, fix, new PShape[] { new PCircleShape(x
-					/ scale, y / scale, r / scale, angle, density) });
+			body = new PBody(angle, fix,
+					new PShape[] { new PCircleShape(x / scale, y / scale, r / scale, angle, density) });
 		} else {
-			body = new PBody(angle, fix, new PShape[] { new PCircleShape(x
-					/ scale, y / scale, r / scale, angle, density) });
+			body = new PBody(angle, fix,
+					new PShape[] { new PCircleShape(x / scale, y / scale, r / scale, angle, density) });
 		}
 		return body;
 	}
@@ -103,8 +97,7 @@ public class PPhysManager {
 		return circle(fix, c.x, c.y, c.getRadius(), angle, density);
 	}
 
-	public PBody addCircle(boolean fix, float x, float y, float r, float angle,
-			float density) {
+	public PBody addCircle(boolean fix, float x, float y, float r, float angle, float density) {
 		PBody body = circle(fix, x, y, r, angle, density);
 		world.addBody(body);
 		return body;
@@ -119,15 +112,13 @@ public class PPhysManager {
 	}
 
 	public PBody polygon(boolean fix, Polygon p, float angle, float density) {
-		PPolygon tmp = p.getPPolygon(this.scale);
-		PConcavePolygonShape shape = new PConcavePolygonShape(tmp.xs, tmp.ys,
-				density);
+		PPolygon tmp = Utils.getPPolygon(p.getPoints(), this.scale);
+		PConcavePolygonShape shape = new PConcavePolygonShape(tmp.xs, tmp.ys, density);
 		PBody body = new PBody(angle, fix, new PShape[] { shape });
 		return body;
 	}
 
-	public PBody polygon(boolean fix, float[] xs, float[] ys, int num,
-			float angle, float density) {
+	public PBody polygon(boolean fix, float[] xs, float[] ys, int num, float angle, float density) {
 		if (num < 3) {
 			return null;
 		}
@@ -150,8 +141,7 @@ public class PPhysManager {
 		return addPolygon(fix, xs, ys, num, 0F, 1F);
 	}
 
-	public PBody addPolygon(boolean fix, float[] xs, float[] ys, int num,
-			float angle, float density) {
+	public PBody addPolygon(boolean fix, float[] xs, float[] ys, int num, float angle, float density) {
 		PBody body = polygon(fix, xs, ys, num, angle, density);
 		world.addBody(body);
 		return body;
@@ -196,8 +186,7 @@ public class PPhysManager {
 		return addPolygon(fix, polygon, angle, density);
 	}
 
-	public PBody addShape(boolean fix, LTexture shape, float angle,
-			float density) throws Exception {
+	public PBody addShape(boolean fix, LTexture shape, float angle, float density) throws Exception {
 		Image image = shape.getImage();
 		Polygon polygon = null;
 		if (image == null) {

@@ -56,9 +56,9 @@ public class Pixmap extends Limit implements LRelease {
 	public final static int SRC_OVER = 2;
 
 	private Canvas tmpCanvas = null;
-	
+
 	private Vector2f tempLocation = new Vector2f();
-	
+
 	private int _composite = -1;
 
 	protected Graphics getGraphics() {
@@ -209,6 +209,10 @@ public class Pixmap extends Limit implements LRelease {
 	private RectI defClip;
 
 	private RectI clip;
+
+	public Pixmap(int w, int h) {
+		this(w, h, true);
+	}
 
 	public Pixmap(int w, int h, boolean hasAlpha) {
 		this.set(new int[w * h], w, h, hasAlpha);
@@ -2041,7 +2045,7 @@ public class Pixmap extends Limit implements LRelease {
 	}
 
 	/**
-	 * 填充一个弧线
+	 * 填充一个圆弧
 	 * 
 	 * @param x
 	 * @param y
@@ -2051,22 +2055,42 @@ public class Pixmap extends Limit implements LRelease {
 	 * @param arcAngle
 	 */
 	public Pixmap fillArc(int x, int y, int width, int height, int start, int arcAngle) {
+		return fillArc(x, y, width, height, start, arcAngle, false);
+	}
+
+	/**
+	 * 填充一个圆弧
+	 * 
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
+	 * @param start
+	 * @param arcAngle
+	 * @param reverse
+	 * @return
+	 */
+	public Pixmap fillArc(int x, int y, int width, int height, int start, int arcAngle, boolean reverse) {
 		if (_isClosed) {
 			return this;
 		}
-		if (arcAngle < 0) {
-			start = 360 - arcAngle;
-			arcAngle = 360 + arcAngle;
-		}
-		start %= 360;
-		if (start < 0) {
-			start += 360;
-		}
-		if (arcAngle % 360 == 0) {
-			fillOval(x, y, width, height);
-			return this;
+		if (reverse) {
+			if (arcAngle < 0) {
+				start = 360 - arcAngle;
+				arcAngle = 360 + arcAngle;
+			}
+			start %= 360;
+			if (start < 0) {
+				start += 360;
+			}
+			if (arcAngle % 360 == 0) {
+				fillOval(x, y, width, height);
+				return this;
+			} else {
+				arcAngle %= 360;
+			}
 		} else {
-			arcAngle %= 360;
+			arcAngle = -arcAngle;
 		}
 		final int startAngle = arcAngle > 0 ? start
 				: (start + arcAngle < 0 ? start + arcAngle + 360 : start + arcAngle);
@@ -2086,6 +2110,10 @@ public class Pixmap extends Limit implements LRelease {
 			}
 		});
 		return this;
+	}
+
+	public Pixmap fillCircle(int x, int y, int radius) {
+		return fillOval(x, y, radius, radius);
 	}
 
 	public Pixmap drawPolyline(int xPoints[], int yPoints[], int nPoints) {

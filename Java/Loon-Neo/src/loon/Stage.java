@@ -20,9 +20,18 @@
  */
 package loon;
 
+import loon.action.ActionBind;
+import loon.action.map.TileMap;
+import loon.action.sprite.ActionObject;
+import loon.action.sprite.Animation;
+import loon.action.sprite.JumpObject;
+import loon.action.sprite.MoveObject;
 import loon.event.GameTouch;
+import loon.event.UpdateListener;
+import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
+import loon.utils.TArray;
 import loon.utils.timer.LTimerContext;
 
 /**
@@ -31,6 +40,26 @@ import loon.utils.timer.LTimerContext;
  * 希望纯组件构建游戏时(也就是一个create接口满足一切时)可以使用此类派生画面
  */
 public abstract class Stage extends Screen {
+
+	private float drawPosX;
+
+	private float drawPosY;
+
+	private UpdateListener updateListener;
+
+	private TArray<ActionObject> objects;
+
+	private TArray<ActionObject> pendingAdd;
+
+	private TArray<ActionObject> pendingRemove;
+
+	private TArray<TileMap> tiles;
+
+	private TileMap currentTileMap;
+
+	private Vector2f offset;
+
+	private ActionBind follow;
 
 	private StateManager stateManager;
 
@@ -137,18 +166,43 @@ public abstract class Stage extends Screen {
 		return LTransition.newEmpty();
 	}
 
-	public abstract void create();
-
-	@Override
-	public void draw(GLEx g) {
-		if (existing) {
-			stateManager.paint(g);
+	public void commits() {
+		if (isClosed()) {
+			return;
+		}
+		if (pendingAdd != null) {
+			final int additionCount = pendingAdd.size;
+			if (additionCount > 0) {
+				for (int i = 0; i < additionCount; i++) {
+					ActionObject object = pendingAdd.get(i);
+					objects.add(object);
+				}
+				pendingAdd.clear();
+			}
+		}
+		if (pendingRemove != null) {
+			final int removalCount = pendingRemove.size;
+			if (removalCount > 0) {
+				for (int i = 0; i < removalCount; i++) {
+					ActionObject object = pendingRemove.get(i);
+					objects.remove(object);
+				}
+				pendingRemove.clear();
+			}
 		}
 	}
+
+	public abstract void create();
 
 	@Override
 	public void onLoad() {
 		try {
+			int size = 8;
+			this.objects = new TArray<ActionObject>(size);
+			this.pendingAdd = new TArray<ActionObject>(size);
+			this.pendingRemove = new TArray<ActionObject>(size);
+			this.tiles = new TArray<TileMap>(size);
+			this.offset = Vector2f.ZERO();
 			create();
 			if (existing) {
 				stateManager.load();
@@ -160,10 +214,60 @@ public abstract class Stage extends Screen {
 
 	@Override
 	public void alter(LTimerContext timer) {
+		if (follow != null && tiles != null && tiles.size > 0) {
+			for (TileMap tile : tiles) {
+				float offsetX = getHalfWidth() - follow.getX();
+				offsetX = MathUtils.min(offsetX, 0);
+				offsetX = MathUtils.max(offsetX, getWidth() - tile.getWidth());
+
+				float offsetY = getHalfHeight() - follow.getY();
+				offsetY = MathUtils.min(offsetY, 0);
+				offsetY = MathUtils.max(offsetY, getHeight() - tile.getHeight());
+
+				setOffset(tile, offsetX, offsetY);
+				tile.update(timer.timeSinceLastUpdate);
+			}
+		}
+		if (objects != null && objects.size > 0) {
+			for (ActionObject o : objects) {
+				if (updateListener != null) {
+					updateListener.act(o, timer.timeSinceLastUpdate);
+				}
+				o.update(timer.timeSinceLastUpdate);
+			}
+		}
+		update(timer);
+		commits();
 		if (existing) {
 			stateManager.update(timer.getMilliseconds());
 		}
 	}
+
+	@Override
+	public void draw(GLEx g) {
+		if (tiles != null && tiles.size > 0) {
+			for (TileMap tile : tiles) {
+				tile.draw(g, null, offset.x(), offset.y());
+			}
+		}
+		if (objects != null && objects.size > 0) {
+			for (ActionObject o : objects) {
+				drawPosX = o.getX() + offset.x;
+				drawPosY = o.getY() + offset.y;
+				if (intersects(drawPosX, drawPosY, o.getWidth(), o.getHeight()) || contains(drawPosX, drawPosY)) {
+					o.draw(g, offset.x, offset.y);
+				}
+			}
+		}
+		paint(g);
+		if (existing) {
+			stateManager.paint(g);
+		}
+	}
+
+	public void paint(GLEx g) {}
+
+	public void update(LTimerContext timer) {}
 
 	@Override
 	public void resize(int width, int height) {
@@ -200,14 +304,135 @@ public abstract class Stage extends Screen {
 
 	}
 
+	public TileMap getIndexTile() {
+		return this.currentTileMap;
+	}
+
+	public void setIndexTile(TileMap indexTile) {
+		this.currentTileMap = indexTile;
+	}
+
+	public void follow(ActionObject o) {
+		this.follow = o;
+	}
+
+	public void setOffset(TileMap tile, float sx, float sy) {
+		offset.set(sx, sy);
+		tile.setOffset(offset);
+	}
+
+	public final Vector2f getOffset() {
+		return offset;
+	}
+
+	public void putTileMap(TileMap t) {
+		tiles.add(t);
+	}
+
+	public void removeTileMap(TileMap t) {
+		tiles.remove(t);
+	}
+
+	public void addTileObject(ActionObject o) {
+		add(o);
+	}
+
+	public JumpObject addJumpObject(float x, float y, float w, float h, Animation a) {
+		JumpObject o = null;
+		if (currentTileMap != null) {
+			o = new JumpObject(x, y, w, h, a, currentTileMap);
+		} else if (tiles.size > 0) {
+			o = new JumpObject(x, y, w, h, a, tiles.get(0));
+		} else {
+			return null;
+		}
+		add(o);
+		return o;
+	}
+
+	public MoveObject addMoveObject(float x, float y, float w, float h, Animation a) {
+		MoveObject o = null;
+		if (currentTileMap != null) {
+			o = new MoveObject(x, y, w, h, a, currentTileMap);
+		} else if (tiles.size > 0) {
+			o = new MoveObject(x, y, w, h, a, tiles.get(0));
+		} else {
+			return null;
+		}
+		add(o);
+		return o;
+	}
+
+	public void removeTileObject(ActionObject o) {
+		remove(o);
+	}
+
+	public ActionObject add(ActionObject object) {
+		pendingAdd.add(object);
+		return object;
+	}
+
+	public ActionObject remove(ActionObject object) {
+		pendingRemove.add(object);
+		return object;
+	}
+
+	public void removeTileObjects() {
+		final int count = objects.size;
+		final Object[] objectArray = objects.toArray();
+		for (int i = 0; i < count; i++) {
+			ActionObject o = (ActionObject) objectArray[i];
+			pendingRemove.add(o);
+		}
+		pendingAdd.clear();
+	}
+
+	public ActionObject findObject(float x, float y) {
+		for (ActionObject o : objects) {
+			if ((o.getX() == x && o.getY() == y) || o.getRectBox().contains(x, y)) {
+				return o;
+			}
+		}
+		return null;
+	}
+
+	public UpdateListener getUpdateListener() {
+		return updateListener;
+	}
+
+	public void setUpdateListener(UpdateListener update) {
+		this.updateListener = update;
+	}
+
+	public void dispose(){}
+	
 	@Override
 	public void close() {
 		existing = false;
+		if (this.pendingAdd != null) {
+			this.pendingAdd.clear();
+		}
+		if (this.pendingRemove != null) {
+			this.pendingRemove.clear();
+		}
+		if (this.tiles != null) {
+			this.tiles.clear();
+		}
+		if (objects != null) {
+			for (int i = 0; i < objects.size; i++) {
+				ActionObject obj = objects.get(i);
+				if (obj != null) {
+					obj.close();
+				}
+			}
+			objects.clear();
+		}
 		if (stateManager != null) {
 			stateManager.close();
 			stateManager = null;
 		}
 		percent = maxPercent = 0;
+		dispose();
 	}
 
 }

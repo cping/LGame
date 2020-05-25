@@ -62,6 +62,7 @@ public class ArcEffect extends Entity implements BaseEffect {
 		this.timer = new LTimer(200);
 		this.setColor(c == null ? LColor.black : c);
 		this.setRepaint(true);
+		this.setTurn(1);
 		arcDiv = div;
 	}
 
@@ -83,9 +84,11 @@ public class ArcEffect extends Entity implements BaseEffect {
 		if (completed) {
 			return;
 		}
+
 		if (this.step >= this.arcDiv) {
 			this.completed = true;
 		}
+
 		if (timer.action(elapsedTime)) {
 			step++;
 		}

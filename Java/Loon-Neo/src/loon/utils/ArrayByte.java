@@ -309,7 +309,7 @@ public class ArrayByte implements IArray, LRelease {
 		position += length;
 		return length;
 	}
-	
+
 	public long skip(long n) {
 		long remaining = n;
 		int nr;
@@ -352,6 +352,36 @@ public class ArrayByte implements IArray, LRelease {
 
 	public short readShort() throws IndexOutOfBoundsException {
 		return (short) read2Byte();
+	}
+
+	public long readUInt8() throws IndexOutOfBoundsException {
+		return (0x000000FF & (int) readByte());
+	}
+
+	public long readUInt16() throws IndexOutOfBoundsException {
+		int firstByte = (0x000000FF & (int) readByte());
+		int secondByte = (0x000000FF & (int) readByte());
+		long result = 0;
+		if (this.byteOrder == LITTLE_ENDIAN) {
+			result = (long) ((secondByte << 8 | firstByte) & 0xFFFFFFFFL);
+		} else {
+			result = (long) ((firstByte << 8 | secondByte) & 0xFFFFFFFFL);
+		}
+		return result;
+	}
+
+	public long readUInt32() throws IndexOutOfBoundsException {
+		int firstByte = (0x000000FF & (int) readByte());
+		int secondByte = (0x000000FF & (int) readByte());
+		int thirdByte = (0x000000FF & (int) readByte());
+		int fourthByte = (0x000000FF & (int) readByte());
+		long result = 0;
+		if (this.byteOrder == LITTLE_ENDIAN) {
+			result = ((long) (fourthByte << 24 | thirdByte << 16 | secondByte << 8 | firstByte)) & 0xFFFFFFFFL;
+		} else {
+			result = ((long) (firstByte << 24 | secondByte << 16 | thirdByte << 8 | fourthByte)) & 0xFFFFFFFFL;
+		}
+		return result;
 	}
 
 	public int readInt() throws IndexOutOfBoundsException {
@@ -522,7 +552,7 @@ public class ArrayByte implements IArray, LRelease {
 		}
 
 		if (utfLength > 65535) {
-			throw new LSysException(utfLength +" > 65535");
+			throw new LSysException(utfLength + " > 65535");
 		}
 
 		ensureCapacity(2 + utfLength);

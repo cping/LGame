@@ -7,43 +7,59 @@ import loon.ZIndex;
 
 public class LayerSorter<T> extends InsertionSorter<T> {
 
-	private boolean positive = false;
+	public static int calcLowToHigh(ZIndex p1, ZIndex p2) {
+		return p1.getLayer() - p2.getLayer();
+	}
 
-	private final Comparator<T> zIndexComparator = new Comparator<T>() {
+	public static int calcHighToLow(ZIndex p1, ZIndex p2) {
+		return p2.getLayer() - p1.getLayer();
+	}
+
+	private class ZIndexComparator implements Comparator<T> {
+
+		private LayerSorter<T> _sorter;
+
+		public ZIndexComparator(LayerSorter<T> sorter) {
+			this._sorter = sorter;
+		}
+
 		@Override
 		public int compare(final T ea, final T eb) {
 			if (ea != null && eb == null) {
-				if (positive) {
+				if (_sorter.positive) {
 					if (ea instanceof ZIndex) {
 						return ((ZIndex) ea).getLayer();
 					}
-				}else{
+				} else {
 					if (ea instanceof ZIndex) {
 						return -((ZIndex) ea).getLayer();
 					}
 				}
 			}
 			if (ea == null && eb != null) {
-				if (positive) {
+				if (_sorter.positive) {
 					if (eb instanceof ZIndex) {
 						return ((ZIndex) eb).getLayer();
 					}
-				}else{
+				} else {
 					if (eb instanceof ZIndex) {
 						return -((ZIndex) eb).getLayer();
 					}
 				}
 			}
 			if (ea instanceof ZIndex && eb instanceof ZIndex) {
-				if (positive) {
-					return ((ZIndex) ea).getLayer() - ((ZIndex) eb).getLayer();
-				} else {
-					return ((ZIndex) eb).getLayer() - ((ZIndex) ea).getLayer();
-				}
+				ZIndex src = ((ZIndex) ea);
+				ZIndex des = ((ZIndex) eb);
+				return _sorter.calc(src, des);
 			}
 			return 0;
 		}
-	};
+
+	}
+
+	private boolean positive = false;
+
+	private final ZIndexComparator zindexComparator;
 
 	public LayerSorter() {
 		this(false);
@@ -51,29 +67,34 @@ public class LayerSorter<T> extends InsertionSorter<T> {
 
 	public LayerSorter(boolean p) {
 		this.positive = p;
+		this.zindexComparator = new ZIndexComparator(this);
+	}
+	
+	public int calc(ZIndex p1, ZIndex p2) {
+		return positive ? calcLowToHigh(p1, p2) : calcHighToLow(p1, p2);
 	}
 
 	public void sort(final T[] es) {
-		this.sort(es, this.zIndexComparator);
+		this.sort(es, this.zindexComparator);
 	}
 
 	public void sort(final T[] es, final int s, final int e) {
-		this.sort(es, s, e, this.zIndexComparator);
+		this.sort(es, s, e, this.zindexComparator);
 	}
 
 	public void sort(final List<T> es) {
-		this.sort(es, this.zIndexComparator);
+		this.sort(es, this.zindexComparator);
 	}
 
 	public void sort(final List<T> es, final int s, final int e) {
-		this.sort(es, s, e, this.zIndexComparator);
+		this.sort(es, s, e, this.zindexComparator);
 	}
 
 	public void sort(final TArray<T> es) {
-		this.sort(es, this.zIndexComparator);
+		this.sort(es, this.zindexComparator);
 	}
 
 	public void sort(final TArray<T> es, final int s, final int e) {
-		this.sort(es, s, e, this.zIndexComparator);
+		this.sort(es, s, e, this.zindexComparator);
 	}
 }

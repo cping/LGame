@@ -15,8 +15,6 @@
  */
 package loon.physics;
 
-import loon.utils.CollectionUtils;
-
 public class PSweepAndPrune {
 
 	protected boolean checkX;
@@ -33,9 +31,9 @@ public class PSweepAndPrune {
 
 	void addObject(PSortableObject ox, PSortableObject oy) {
 		if (numObject + 1 >= objsX.length) {
-			objsX =  CollectionUtils.copyOf(objsX,
+			objsX =  Utils.copyOf(objsX,
 					objsX.length * 2);
-			objsY =  CollectionUtils.copyOf(objsY,
+			objsY =  Utils.copyOf(objsY,
 					objsY.length * 2);
 		}
 		objsX[numObject] = ox;

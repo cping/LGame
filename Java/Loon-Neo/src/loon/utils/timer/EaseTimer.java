@@ -193,15 +193,20 @@ public class EaseTimer {
 		}
 	}
 
-	public void reset() {
+	public EaseTimer reset(float delay) {
 		this._ease_value_max = 1f;
 		this._ease_value_min = 0f;
 		this._timer = 0;
 		this._progress = 0.0f;
 		this._finished = false;
 		this._delta = 0;
-		this._delay = LSystem.DEFAULT_EASE_DELAY;
+		this._delay = delay;
 		this._timeInAfter = 0;
+		return this;
+	}
+	
+	public EaseTimer reset() {
+		return reset(LSystem.DEFAULT_EASE_DELAY);
 	}
 
 	public EaseTimer setEasingMode(EasingMode ease) {

@@ -28,7 +28,7 @@ import loon.utils.NumberUtils;
 import loon.utils.StringKeyValue;
 import loon.utils.StringUtils;
 
-public class RectBox extends Shape implements BoxSize {
+public class RectBox extends Shape implements BoxSize, XYZW {
 
 	/**
 	 * 
@@ -62,9 +62,9 @@ public class RectBox extends Shape implements BoxSize {
 		return new RectBox(x, y, w, h);
 	}
 
-    public final static RectBox fromActor(ActionBind bind) {
-        return new RectBox(bind.getX(), bind.getY(), bind.getWidth(), bind.getHeight());
-    }
+	public final static RectBox fromActor(ActionBind bind) {
+		return new RectBox(bind.getX(), bind.getY(), bind.getWidth(), bind.getHeight());
+	}
 
 	public final static RectBox inflate(RectBox src, int xScale, int yScale) {
 		float destWidth = src.width + xScale;
@@ -294,6 +294,16 @@ public class RectBox extends Shape implements BoxSize {
 	@Override
 	public void setY(float y) {
 		this.y = y;
+	}
+
+	@Override
+	public float getZ() {
+		return getWidth();
+	}
+
+	@Override
+	public float getW() {
+		return getHeight();
 	}
 
 	public RectBox copy(RectBox other) {

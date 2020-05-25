@@ -1567,9 +1567,10 @@ public class SLGTest extends Stage {
 
 	public void notAttack(Move moveState, State menuState, Menu menu, int index, int curTileX, int curTileY) {
 		add(LToast.makeText("不在攻击范围中", Style.ERROR));
-		moveState.setActionIndex(index);
+		moveState.setActionIndex(-1);
 		menuState.hide();
 		menu.hide();
+		moveState.clear();
 	}
 
 	/**

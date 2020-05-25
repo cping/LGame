@@ -294,6 +294,18 @@ public class LSystem {
 		return game;
 	}
 
+	public static final void closeFontCache() {
+		LGame game = base();
+		if (game != null) {
+			game.closeFontTempTexture();
+		}
+	}
+	
+	public static final void closeTemp(){
+		DefUI.selfClear();
+		LSystem.closeFontCache();
+	}
+
 	public static final boolean landscape() {
 		return viewSize.height < viewSize.width;
 	}

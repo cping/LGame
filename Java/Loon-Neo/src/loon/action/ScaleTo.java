@@ -90,16 +90,16 @@ public class ScaleTo extends ActionEvent {
 			synchronized (original) {
 				if (original != null) {
 					dt += MathUtils.max((elapsedTime / 1000), speed);
-					original.setScale(startX + (deltaX * dt), startY
-							+ (deltaY * dt));
-					_isCompleted = (deltaX > 0 ? (original.getScaleX() >= endX)
-							: (original.getScaleX() <= endX))
-							&& (deltaY > 0 ? (original.getScaleY() >= endY)
-									: (original.getScaleY() <= endY));
+					original.setScale(startX + (deltaX * dt), startY + (deltaY * dt));
+					_isCompleted = (deltaX > 0 ? (original.getScaleX() >= endX) : (original.getScaleX() <= endX))
+							&& (deltaY > 0 ? (original.getScaleY() >= endY) : (original.getScaleY() <= endY));
 				}
 			}
 		} else {
 			_isCompleted = true;
+		}
+		if (_isCompleted && original != null) {
+			original.setScale(endX, endY);
 		}
 	}
 
@@ -126,7 +126,7 @@ public class ScaleTo extends ActionEvent {
 	public float getEndY() {
 		return endY;
 	}
-	
+
 	@Override
 	public ActionEvent cpy() {
 		ScaleTo scale = new ScaleTo(startX, startY, endX, endY, speed);
@@ -149,21 +149,9 @@ public class ScaleTo extends ActionEvent {
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue(getName());
-		builder.kv("startX", startX)
-		.comma()
-		.kv("startY", startY)
-		.comma()
-		.kv("deltaX", deltaX)
-		.comma()
-		.kv("deltaY", deltaY)
-		.comma()
-		.kv("endX",endX)
-		.comma()
-		.kv("endY",endY)
-		.comma()
-		.kv("speed",speed)
-		.comma()
-		.kv("delta", dt);
+		builder.kv("startX", startX).comma().kv("startY", startY).comma().kv("deltaX", deltaX).comma()
+				.kv("deltaY", deltaY).comma().kv("endX", endX).comma().kv("endY", endY).comma().kv("speed", speed)
+				.comma().kv("delta", dt);
 		return builder.toString();
 	}
 

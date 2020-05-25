@@ -37,6 +37,10 @@ public class FloatValue {
 		return this;
 	}
 
+	public float get() {
+		return result();
+	}
+	
 	public float result() {
 		return value;
 	}

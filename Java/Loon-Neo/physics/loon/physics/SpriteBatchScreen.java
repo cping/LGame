@@ -18,7 +18,7 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.3.3
  */
-package loon.action.sprite;
+package loon.physics;
 
 import loon.LObject;
 import loon.LSysException;
@@ -26,7 +26,13 @@ import loon.LSystem;
 import loon.Screen;
 import loon.action.map.Config;
 import loon.action.map.TileMap;
+import loon.action.sprite.ActionObject;
+import loon.action.sprite.Animation;
+import loon.action.sprite.JumpObject;
+import loon.action.sprite.MoveObject;
+import loon.action.sprite.SpriteBatch;
 import loon.event.GameKey;
+import loon.event.UpdateListener;
 import loon.geom.AABB;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
@@ -193,12 +199,6 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 
 	public boolean isFixed() {
 		return _fixed;
-	}
-
-	public interface UpdateListener {
-
-		public void act(ActionObject obj, long elapsedTime);
-
 	}
 
 	public SpriteBatchScreen() {

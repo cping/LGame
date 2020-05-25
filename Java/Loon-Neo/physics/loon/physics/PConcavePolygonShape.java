@@ -16,7 +16,6 @@
 package loon.physics;
 
 import loon.geom.Vector2f;
-import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 
 public class PConcavePolygonShape extends PShape {
@@ -130,7 +129,7 @@ public class PConcavePolygonShape extends PShape {
 	}
 
 	public PConvexPolygonShape[] getConvexes() {
-		return  CollectionUtils.copyOf(convexes,
+		return Utils.copyOf(convexes,
 				numConvexes);
 	}
 

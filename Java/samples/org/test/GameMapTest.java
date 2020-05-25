@@ -20,25 +20,23 @@
  */
 package org.test;
 
+import loon.Stage;
 import loon.action.ActionBind;
 import loon.action.ActionListener;
 import loon.action.RotateTo;
 import loon.action.map.TileMap;
 import loon.action.sprite.Animation;
 import loon.action.sprite.JumpObject;
-import loon.action.sprite.SpriteBatch;
 import loon.action.sprite.ActionObject;
-import loon.action.sprite.SpriteBatchScreen;
 import loon.canvas.LColor;
 import loon.component.LPad;
+import loon.event.UpdateListener;
 import loon.event.ActionKey;
-import loon.event.GameKey;
-import loon.event.GameTouch;
 import loon.event.SysKey;
 import loon.geom.Vector2f;
+import loon.utils.timer.LTimerContext;
 
-//PS:使用SpriteBatch时，请尽可能使用同一LTexture衍生出的图片，这样后台能有效的合并处理
-public class GameMapTest extends SpriteBatchScreen {
+public class GameMapTest extends Stage {
 
 	// 敌人用类
 	class Enemy extends ActionObject {
@@ -54,6 +52,7 @@ public class GameMapTest extends SpriteBatchScreen {
 			vy = 0;
 		}
 
+		@Override
 		public void update(long e) {
 
 			float x = getX();
@@ -111,6 +110,7 @@ public class GameMapTest extends SpriteBatchScreen {
 			hero.setJumperTwo(true);
 		}
 
+		@Override
 		public void update(long elapsedTime) {
 			animation.update(elapsedTime);
 		}
@@ -127,6 +127,7 @@ public class GameMapTest extends SpriteBatchScreen {
 			hero.setSpeed(hero.getSpeed() * 2);
 		}
 
+		@Override
 		public void update(long elapsedTime) {
 			animation.update(elapsedTime);
 		}
@@ -139,6 +140,7 @@ public class GameMapTest extends SpriteBatchScreen {
 			super(x, y, 32, 32, animation, tiles);
 		}
 
+		@Override
 		public void update(long elapsedTime) {
 			animation.update(elapsedTime);
 		}
@@ -160,26 +162,28 @@ public class GameMapTest extends SpriteBatchScreen {
 	// 二级跳动画图
 	private Animation jumpertwoAnimation;
 
+	@Override
 	public void create() {
-
+		// 最先绘制用户画面
+		//setFristOrder(DRAW_USER_PAINT());
+		// 其次绘制精灵
+		//setSecondOrder(DRAW_SPRITE_PAINT());
+		// 最后绘制桌面
+		//setLastOrder(DRAW_DESKTOP_PAINT());
+		//先绘制用户画面,然后绘制精灵，最后绘制桌面组件
+		lastDesktopDraw();
 		add(MultiScreenTest.getBackButton(this, 0));
-		//使用GLEx而非SpriteBacth渲染画面
-		//setUseGLEx(true);
+		// 使用GLEx而非SpriteBacth渲染画面
+		// setUseGLEx(true);
 
 		// 以指定图片创建动画
-		this.coinAnimation = Animation.getDefaultAnimation("assets/coin.png",
-				32, 32, 200);
-		this.enemyAnimation = Animation.getDefaultAnimation("assets/enemy.gif",
-				32, 32, 200, LColor.black);
-		this.accelAnimation = Animation.getDefaultAnimation(
-				"assets/accelerator.gif", 32, 32, 200);
-		this.jumpertwoAnimation = Animation.getDefaultAnimation(
-				"assets/jumper_two.gif", 32, 32, 200);
+		this.coinAnimation = Animation.getDefaultAnimation("assets/coin.png", 32, 32, 200);
+		this.enemyAnimation = Animation.getDefaultAnimation("assets/enemy.gif", 32, 32, 200, LColor.black);
+		this.accelAnimation = Animation.getDefaultAnimation("assets/accelerator.gif", 32, 32, 200);
+		this.jumpertwoAnimation = Animation.getDefaultAnimation("assets/jumper_two.gif", 32, 32, 200);
 
-		
 		// 注销Screen时释放下列资源
-		putReleases(coinAnimation, enemyAnimation, accelAnimation,
-				jumpertwoAnimation, hero);
+		putReleases(coinAnimation, enemyAnimation, accelAnimation, jumpertwoAnimation, hero);
 
 		// 加载一张由字符串形成的地图（如果不使用此方式加载，则默认使用标准的数组地图）
 		final TileMap indexMap = TileMap.loadCharsMap("assets/map.chr", 32, 32);
@@ -207,28 +211,23 @@ public class GameMapTest extends SpriteBatchScreen {
 			for (int j = 0; j < h; j++) {
 				switch (maps[j][i]) {
 				case 'o':
-					Coin coin = new Coin(indexMap.tilesToPixelsX(i),
-							indexMap.tilesToPixelsY(j), new Animation(
-									coinAnimation), indexMap);
+					Coin coin = new Coin(indexMap.tilesToPixelsX(i), indexMap.tilesToPixelsY(j),
+							new Animation(coinAnimation), indexMap);
 					addTileObject(coin);
 					break;
 				case 'k':
-					Enemy enemy = new Enemy(indexMap.tilesToPixelsX(i),
-							indexMap.tilesToPixelsY(j), new Animation(
-									enemyAnimation), indexMap);
+					Enemy enemy = new Enemy(indexMap.tilesToPixelsX(i), indexMap.tilesToPixelsY(j),
+							new Animation(enemyAnimation), indexMap);
 					addTileObject(enemy);
 					break;
 				case 'a':
-					Accelerator accelerator = new Accelerator(
-							indexMap.tilesToPixelsX(i),
-							indexMap.tilesToPixelsY(j), new Animation(
-									accelAnimation), indexMap);
+					Accelerator accelerator = new Accelerator(indexMap.tilesToPixelsX(i), indexMap.tilesToPixelsY(j),
+							new Animation(accelAnimation), indexMap);
 					addTileObject(accelerator);
 					break;
 				case 'j':
-					JumperTwo jump = new JumperTwo(indexMap.tilesToPixelsX(i),
-							indexMap.tilesToPixelsY(j), new Animation(
-									jumpertwoAnimation), indexMap);
+					JumperTwo jump = new JumperTwo(indexMap.tilesToPixelsX(i), indexMap.tilesToPixelsY(j),
+							new Animation(jumpertwoAnimation), indexMap);
 					addTileObject(jump);
 					break;
 				}
@@ -236,8 +235,7 @@ public class GameMapTest extends SpriteBatchScreen {
 		}
 
 		// 获得主角动作图
-		Animation animation = Animation.getDefaultAnimation("assets/hero.png",
-				20, 20, 150, LColor.black);
+		Animation animation = Animation.getDefaultAnimation("assets/hero.png", 20, 20, 150, LColor.black);
 
 		// 在像素坐标位置(192,32)放置角色，大小为32x32，动画为针对hero.png的分解图
 		hero = addJumpObject(192, 32, 32, 32, animation);
@@ -256,9 +254,8 @@ public class GameMapTest extends SpriteBatchScreen {
 			public void check(int x, int y) {
 				if (indexMap.getTileID(x, y) == 'C') {
 					indexMap.setTileID(x, y, 'c');
-					Enemy enemy = new Enemy(indexMap.tilesToPixelsX(x),
-							indexMap.tilesToPixelsY(y - 1), new Animation(
-									enemyAnimation), indexMap);
+					Enemy enemy = new Enemy(indexMap.tilesToPixelsX(x), indexMap.tilesToPixelsY(y - 1),
+							new Animation(enemyAnimation), indexMap);
 					add(enemy);
 					// 标注地图已脏，强制缓存刷新
 					indexMap.setDirty(true);
@@ -292,6 +289,7 @@ public class GameMapTest extends SpriteBatchScreen {
 
 		// 对应跳跃的键盘事件（DETECT_INITIAL_PRESS_ONLY表示在放开之前，此按键不会再次触发）
 		ActionKey jumpKey = new ActionKey(ActionKey.DETECT_INITIAL_PRESS_ONLY) {
+			@Override
 			public void act(long e) {
 				hero.jump();
 			}
@@ -299,36 +297,35 @@ public class GameMapTest extends SpriteBatchScreen {
 
 		addActionKey(SysKey.UP, jumpKey);
 
-			LPad pad = new LPad(10, 180);
-			LPad.ClickListener click = new LPad.ClickListener() {
+		LPad pad = new LPad(10, 180);
+		LPad.ClickListener click = new LPad.ClickListener() {
 
-				public void up() {
-					pressActionKey(SysKey.UP);
-				}
+			public void up() {
+				pressActionKey(SysKey.UP);
+			}
 
-				public void right() {
-					pressActionKey(SysKey.RIGHT);
-				}
+			public void right() {
+				pressActionKey(SysKey.RIGHT);
+			}
 
-				public void left() {
-					pressActionKey(SysKey.LEFT);
-				}
+			public void left() {
+				pressActionKey(SysKey.LEFT);
+			}
 
-				public void down() {
-					pressActionKey(SysKey.DOWN);
-				}
+			public void down() {
+				pressActionKey(SysKey.DOWN);
+			}
 
-				public void other() {
-					releaseActionKeys();
-				}
+			public void other() {
+				releaseActionKeys();
+			}
 
-			};
-			pad.setListener(click);
-			add(pad);
-		
+		};
+		pad.setListener(click);
+		add(pad);
 
 		// 地图中角色事件监听(每帧都会触发一次此监听)
-		this.updateListener = new UpdateListener() {
+		UpdateListener updateListener = new UpdateListener() {
 
 			public void act(ActionObject sprite, long elapsedTime) {
 
@@ -362,6 +359,7 @@ public class GameMapTest extends SpriteBatchScreen {
 				}
 			}
 		};
+		setUpdateListener(updateListener);
 		selfAction().shakeTo(3f, 3f).start();
 
 	}
@@ -376,16 +374,19 @@ public class GameMapTest extends SpriteBatchScreen {
 			rotate = new RotateTo(360f, 5f);
 			rotate.setActionListener(new ActionListener() {
 
+				@Override
 				public void stop(ActionBind o) {
 					hero.setFilterColor(LColor.white);
 					hero.setRotation(0);
 				}
 
+				@Override
 				public void start(ActionBind o) {
 					hero.setFilterColor(LColor.red);
 					hero.jump();
 				}
 
+				@Override
 				public void process(ActionBind o) {
 
 				}
@@ -400,77 +401,11 @@ public class GameMapTest extends SpriteBatchScreen {
 		}
 	}
 
-	// 背景绘制
-	public void after(SpriteBatch batch) {
-
-	}
-
-	// 前景绘制
-	public void before(SpriteBatch batch) {
-
-	}
-
-	
-	public void update(long elapsedTime) {
-
+	@Override
+	public void update(LTimerContext context) {
 		if (hero != null) {
 			hero.stop();
 		}
 	}
-
-	// 释放资源
-	public void close() {
-
-	}
-
-	@Override
-	public void touchDrag(GameTouch e) {
-		
-	}
-	
-	public void touchDown(GameTouch e) {
-
-	}
-
-	public void touchUp(GameTouch e) {
-
-	}
-
-	public void touchMove(GameTouch e) {
-
-	}
-
-	public void press(GameKey e) {
-
-	}
-
-	public void release(GameKey e) {
-
-	}
-
-	@Override
-	public void onResume() {
-		
-		
-	}
-
-	@Override
-	public void onPause() {
-		
-		
-	}
-
-	@Override
-	public void dispose() {
-		
-		
-	}
-
-	@Override
-	public void resize(int width, int height) {
-		
-		
-	}
-
 
 }

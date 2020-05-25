@@ -22,7 +22,6 @@
 package loon.geom;
 
 import loon.LSysException;
-import loon.physics.PPolygon;
 import loon.utils.MathUtils;
 import loon.utils.StringKeyValue;
 import loon.utils.StringUtils;
@@ -218,10 +217,6 @@ public class Polygon extends Shape implements BoxSize {
 
 	public void setClosed(boolean closed) {
 		this.closed = closed;
-	}
-
-	public PPolygon getPPolygon(float scale) {
-		return new PPolygon(points, scale);
 	}
 
 	public Polygon cpy() {

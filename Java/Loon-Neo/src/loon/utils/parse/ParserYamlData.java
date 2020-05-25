@@ -27,6 +27,9 @@ import loon.utils.ObjectMap;
 import loon.utils.StrBuilder;
 import loon.utils.StringUtils;
 
+/**
+ * 工具类，用于解析yaml文件的配置数据
+ */
 public class ParserYamlData {
 
 	public static ParserYamlData parseString(String str, YamlEvent eve) {

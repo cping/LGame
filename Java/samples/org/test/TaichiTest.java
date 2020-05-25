@@ -18,32 +18,33 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.geom;
+package org.test;
 
-public class XYValue {
+import loon.Stage;
+import loon.action.RotateTo;
+import loon.action.sprite.effect.PixelGossipEffect;
+import loon.canvas.LColor;
 
-	private XY value = null;
-
-	public XYValue(XY v) {
-		this.set(v);
-	}
-
-	public XYValue set(XY v) {
-		this.value = v;
-		return this;
-	}
-
-	public XY get() {
-		return result();
-	}
-	
-	public XY result() {
-		return value;
-	}
+public class TaichiTest extends Stage{
 
 	@Override
-	public String toString() {
-		return value.toString();
+	public void create() {
+
+		setBackground(LColor.yellow);
+		
+		PixelGossipEffect taichi = new PixelGossipEffect(0, 0, 200, 200);
+		
+		centerOn(taichi);
+		// 构建一个旋转事件,速度4f
+		RotateTo rotate = new RotateTo(360, 4f);
+		// 循环旋转
+		rotate.loop(true);
+		// 让效果自身启动动画事件
+		taichi.selfAction().event(rotate).start();
+		add(taichi);
+	
+		add(MultiScreenTest.getBackButton(this, 2));
+		
 	}
 
 }

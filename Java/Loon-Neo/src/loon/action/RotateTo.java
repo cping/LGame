@@ -25,6 +25,9 @@ import loon.LSystem;
 import loon.utils.Easing.EasingMode;
 import loon.utils.timer.EaseTimer;
 
+/**
+ * 旋转用缓动事件
+ */
 public class RotateTo extends ActionEvent {
 
 	private float speed = 2f;
@@ -33,6 +36,8 @@ public class RotateTo extends ActionEvent {
 	private float dstAngle = 0;
 	private float currentRotation = 0;
 	private EaseTimer easeTimer;
+
+	private boolean angleLoop = false;
 
 	public RotateTo(float dstAngle) {
 		this(dstAngle, 2f);
@@ -46,8 +51,7 @@ public class RotateTo extends ActionEvent {
 		this(-1f, dstAngle, 1f, speed, LSystem.DEFAULT_EASE_DELAY, EasingMode.Linear);
 	}
 
-	public RotateTo(float dstAngle, float diffAngle, float speed,
-			EasingMode easing) {
+	public RotateTo(float dstAngle, float diffAngle, float speed, EasingMode easing) {
 		this(-1f, dstAngle, diffAngle, 2f, LSystem.DEFAULT_EASE_DELAY, easing);
 	}
 
@@ -55,8 +59,8 @@ public class RotateTo extends ActionEvent {
 		this(-1f, dstAngle, diffAngle, 2f, LSystem.DEFAULT_EASE_DELAY, EasingMode.Linear);
 	}
 
-	public RotateTo(float startRotation, float dstAngle, float diffAngle,
-			float duration, float delay, EasingMode easing) {
+	public RotateTo(float startRotation, float dstAngle, float diffAngle, float duration, float delay,
+			EasingMode easing) {
 		this.startRotation = startRotation;
 		this.dstAngle = dstAngle;
 		this.diffAngle = diffAngle;
@@ -79,22 +83,43 @@ public class RotateTo extends ActionEvent {
 		}
 	}
 
+	public RotateTo loop(boolean l) {
+		if (this.angleLoop == l) {
+			return this;
+		}
+		this.angleLoop = l;
+		if (easeTimer != null) {
+			easeTimer.reset(easeTimer.getDelay());
+		}
+		return this;
+	}
+
+	public boolean isLoop() {
+		return this.angleLoop;
+	}
+
+	@Override
 	public void update(long elapsedTime) {
 		easeTimer.update(elapsedTime);
 		if (easeTimer.isCompleted()) {
-			_isCompleted = true;
+			if (!angleLoop) {
+				_isCompleted = true;
+			} else {
+				easeTimer.reset(easeTimer.getDelay());
+			}
 			original.setRotation(dstAngle);
 			return;
 		}
 		if (startRotation >= dstAngle) {
-			if (currentRotation <= dstAngle && currentRotation != 0) {
+			if (currentRotation <= dstAngle && currentRotation != 0f) {
 				currentRotation = dstAngle;
-				_isCompleted = true;
+				if (!angleLoop) {
+					_isCompleted = true;
+				}
 			}
 		}
-		original.setRotation(currentRotation = (startRotation + (dstAngle - startRotation)
-				* easeTimer.getProgress() * diffAngle)
-				+ speed);
+		original.setRotation(currentRotation = (startRotation
+				+ ((angleLoop ? 360f : dstAngle) - startRotation) * easeTimer.getProgress() * diffAngle) + speed);
 	}
 
 	public float getDiffAngle() {
@@ -119,8 +144,7 @@ public class RotateTo extends ActionEvent {
 
 	@Override
 	public ActionEvent cpy() {
-		RotateTo r = new RotateTo(startRotation, dstAngle, diffAngle,
-				easeTimer.getDuration(), easeTimer.getDelay(),
+		RotateTo r = new RotateTo(startRotation, dstAngle, diffAngle, easeTimer.getDuration(), easeTimer.getDelay(),
 				easeTimer.getEasingMode());
 		r.set(this);
 		return r;
@@ -128,8 +152,7 @@ public class RotateTo extends ActionEvent {
 
 	@Override
 	public ActionEvent reverse() {
-		RotateTo r = new RotateTo(dstAngle, startRotation, diffAngle,
-				easeTimer.getDuration(), easeTimer.getDelay(),
+		RotateTo r = new RotateTo(dstAngle, startRotation, diffAngle, easeTimer.getDuration(), easeTimer.getDelay(),
 				easeTimer.getEasingMode());
 		r.set(this);
 		return r;
@@ -139,21 +162,13 @@ public class RotateTo extends ActionEvent {
 	public String getName() {
 		return "rotate";
 	}
-	
+
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue(getName());
-		builder.kv("speed", speed)
-		.comma()
-		.kv("diffAngle", diffAngle)
-		.comma()
-		.kv("startRotation", startRotation)
-		.comma()
-		.kv("dstAngle", dstAngle)
-		.comma()
-		.kv("currentRotation",currentRotation)
-		.comma()
-		.kv("EaseTimer",easeTimer);
+		builder.kv("speed", speed).comma().kv("diffAngle", diffAngle).comma().kv("startRotation", startRotation).comma()
+				.kv("dstAngle", dstAngle).comma().kv("currentRotation", currentRotation).comma()
+				.kv("EaseTimer", easeTimer);
 		return builder.toString();
 	}
 }

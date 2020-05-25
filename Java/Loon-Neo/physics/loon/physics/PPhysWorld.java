@@ -16,7 +16,6 @@
 package loon.physics;
 
 import loon.geom.Vector2f;
-import loon.utils.CollectionUtils;
 import loon.utils.TimeUtils;
 
 public class PPhysWorld {
@@ -73,7 +72,7 @@ public class PPhysWorld {
 
 	public void addBody(PBody b) {
 		if (numBodies + 1 >= bodies.length) {
-			bodies =  CollectionUtils
+			bodies =  Utils
 					.copyOf(bodies, bodies.length * 2);
 		}
 		b.w = this;
@@ -86,7 +85,7 @@ public class PPhysWorld {
 
 	public void addJoint(PJoint j) {
 		if (numJoints + 1 >= joints.length) {
-			joints =  CollectionUtils.copyOf(joints,
+			joints =  Utils.copyOf(joints,
 					joints.length * 2);
 		}
 		joints[numJoints] = j;
@@ -102,7 +101,7 @@ public class PPhysWorld {
 			return;
 		}
 		if (numShapes + 1 >= shapes.length) {
-			shapes =  CollectionUtils.copyOf(shapes,
+			shapes =  Utils.copyOf(shapes,
 					shapes.length * 2);
 		}
 		shapes[numShapes] = s;
@@ -112,7 +111,7 @@ public class PPhysWorld {
 
 	private void addSolver(PSolver s) {
 		if (numSolvers + 1 >= solvers.length) {
-			solvers =  CollectionUtils.copyOf(solvers,
+			solvers =  Utils.copyOf(solvers,
 					solvers.length * 2);
 		}
 		solvers[numSolvers] = s;
@@ -197,7 +196,7 @@ public class PPhysWorld {
 	}
 
 	public PBody[] getBodies() {
-		return  CollectionUtils.copyOf(bodies, numBodies);
+		return  Utils.copyOf(bodies, numBodies);
 	}
 
 	public PBody[] inner_bodies() {
@@ -225,7 +224,7 @@ public class PPhysWorld {
 	}
 
 	public PJoint[] getJoints() {
-		return  CollectionUtils.copyOf(joints, numJoints);
+		return  Utils.copyOf(joints, numJoints);
 	}
 
 	public long getPositionUpdateTime() {
@@ -233,11 +232,11 @@ public class PPhysWorld {
 	}
 
 	public PShape[] getShapes() {
-		return  CollectionUtils.copyOf(shapes, numShapes);
+		return  Utils.copyOf(shapes, numShapes);
 	}
 
 	public PSolver[] getSolvers() {
-		return  CollectionUtils.copyOf(solvers, numSolvers);
+		return  Utils.copyOf(solvers, numSolvers);
 	}
 
 	public long getTotalStepTime() {

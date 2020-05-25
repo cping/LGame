@@ -2806,7 +2806,23 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 * @return
 	 */
 	public final GLEx drawArc(float x1, float y1, float width, float height, float start, float end) {
-		return drawArc(x1, y1, width, height, 40, start, end);
+		return drawArc(x1, y1, width, height, 32, start, end);
+	}
+
+	/**
+	 * 绘制指定大小的弧度
+	 * 
+	 * @param x1
+	 * @param y1
+	 * @param width
+	 * @param height
+	 * @param segments
+	 * @param start
+	 * @param end
+	 * @return
+	 */
+	public final GLEx drawArc(float x1, float y1, float width, float height, int segments, float start, float end) {
+		return drawArc(x1, y1, width, height, segments, start, end, false);
 	}
 
 	/**
@@ -2820,16 +2836,14 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 * @param start
 	 * @param end
 	 */
-	public final GLEx drawArc(float x1, float y1, float width, float height, int segments, float start, float end) {
+	public final GLEx drawArc(float x1, float y1, float width, float height, int segments, float start, float end,
+			boolean reverse) {
 		if (isClosed) {
 			return this;
 		}
 		if (this.lastBrush.alltextures) {
 			drawArcImpl(x1, y1, width, height, start, end);
 		} else {
-			while (end < start) {
-				end += 360;
-			}
 			float radiusW = width / 2.0f;
 			float radiusH = height / 2.0f;
 			float cx = x1 + radiusW;
@@ -2841,7 +2855,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 				if (end - start == 360) {
 					glRenderer.oval(cx, cy, MathUtils.min(radiusW, radiusH));
 				} else {
-					glRenderer.arc(cx, cy, MathUtils.min(radiusW, radiusH), start, end, segments);
+					glRenderer.arc(cx, cy, MathUtils.min(radiusW, radiusH), start, end, segments, reverse);
 				}
 				endRenderer();
 			} else {
@@ -2862,7 +2876,20 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 * @param end
 	 */
 	public final GLEx fillArc(float x1, float y1, float width, float height, float start, float end) {
-		return fillArc(x1, y1, width, height, 40, start, end);
+		return fillArc(x1, y1, width, height, 32, start, end);
+	}
+
+	/**
+	 * 填充指定大小的弧度
+	 * 
+	 * @param rect
+	 * @param start
+	 * @param segments
+	 * @param end
+	 * @return
+	 */
+	public final GLEx fillArc(RectBox rect, int segments, float start, float end) {
+		return fillArc(rect.x, rect.y, rect.width, rect.height, segments, start, end);
 	}
 
 	/**
@@ -2875,17 +2902,49 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 * @param segments
 	 * @param start
 	 * @param end
+	 * @return
 	 */
 	public final GLEx fillArc(float x1, float y1, float width, float height, int segments, float start, float end) {
+		return fillArc(x1, y1, width, height, segments, start, end, false);
+	}
+
+	/**
+	 * 填充指定大小的弧度
+	 * 
+	 * @param x1
+	 * @param y1
+	 * @param width
+	 * @param height
+	 * @param start
+	 * @param end
+	 * @param reverse
+	 * @return
+	 */
+	public final GLEx fillArc(float x1, float y1, float width, float height, float start, float end, boolean reverse) {
+		return fillArc(x1, y1, width, height, 32, start, end, reverse);
+	}
+
+	/**
+	 * 填充指定大小的弧度
+	 * 
+	 * @param x1
+	 * @param y1
+	 * @param width
+	 * @param height
+	 * @param segments
+	 * @param start
+	 * @param end
+	 * @param reverse
+	 * @return
+	 */
+	public final GLEx fillArc(float x1, float y1, float width, float height, int segments, float start, float end,
+			boolean reverse) {
 		if (isClosed) {
 			return this;
 		}
 		if (this.lastBrush.alltextures) {
 			fillArcImpl(x1, y1, width, height, start, end);
 		} else {
-			while (end < start) {
-				end += 360;
-			}
 			float radiusW = width / 2.0f;
 			float radiusH = height / 2.0f;
 			float cx = x1 + radiusW;
@@ -2896,7 +2955,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			if (end - start == 360) {
 				glRenderer.oval(cx, cy, MathUtils.min(radiusW, radiusH));
 			} else {
-				glRenderer.arc(cx, cy, MathUtils.min(radiusW, radiusH), start, end, segments);
+				glRenderer.arc(cx, cy, MathUtils.min(radiusW, radiusH), start, end, segments, reverse);
 			}
 			endRenderer();
 		}
@@ -2913,7 +2972,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 * @param radius
 	 */
 	public final GLEx drawRoundRect(float x, float y, float width, float height, int radius) {
-		return drawRoundRect(x, y, width, height, radius, 40);
+		return drawRoundRect(x, y, width, height, radius, 32);
 	}
 
 	/**
@@ -2967,7 +3026,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 * @param cornerRadius
 	 */
 	public final GLEx fillRoundRect(float x, float y, float width, float height, int cornerRadius) {
-		return fillRoundRect(x, y, width, height, cornerRadius, 40);
+		return fillRoundRect(x, y, width, height, cornerRadius, 32);
 	}
 
 	/**
@@ -3010,6 +3069,14 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			fillArc(x, y, d, d, segs, 180, 270);
 		}
 		return this;
+	}
+
+	public GLEx fillCircle(float x, float y, float radius) {
+		return fillOval(x, y, radius, radius);
+	}
+
+	public GLEx drawCircle(float x, float y, float radius) {
+		return drawOval(x, y, radius, radius);
 	}
 
 	/**

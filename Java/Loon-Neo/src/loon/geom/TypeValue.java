@@ -1,5 +1,5 @@
 /**
- * Copyright 2008 - 2015 The Loon Game Engine Authors
+ * Copyright 2008 - 2019 The Loon Game Engine Authors
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -20,28 +20,28 @@
  */
 package loon.geom;
 
-public class BooleanValue {
+public class TypeValue<T> {
 
-	private boolean value = false;
-
-	public BooleanValue() {
-		this(false);
+	public static final <T> TypeValue<T> getValue(T v) {
+		return new TypeValue<T>(v);
 	}
 
-	public BooleanValue(boolean v) {
+	private T value;
+
+	public TypeValue(T v) {
 		this.set(v);
 	}
 
-	public BooleanValue set(boolean res) {
+	public TypeValue<T> set(T res) {
 		this.value = res;
 		return this;
 	}
 
-	public boolean get() {
+	public T get() {
 		return result();
 	}
-	
-	public boolean result() {
+
+	public T result() {
 		return value;
 	}
 

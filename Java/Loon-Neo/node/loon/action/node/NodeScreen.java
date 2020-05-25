@@ -3,10 +3,11 @@ package loon.action.node;
 import loon.LSystem;
 import loon.Screen;
 import loon.action.sprite.SpriteBatch;
-import loon.action.sprite.SpriteBatchScreen;
 import loon.event.SysInput;
 import loon.event.SysTouch;
+import loon.event.UpdateListener;
 import loon.opengl.GLEx;
+import loon.physics.SpriteBatchScreen;
 import loon.utils.timer.LTimerContext;
 
 public abstract class NodeScreen extends SpriteBatchScreen {
@@ -106,8 +107,7 @@ public abstract class NodeScreen extends SpriteBatchScreen {
 	}
 
 	private void processTouchMotionEvent() {
-		if (this.hoverNode != null && this.hoverNode.isEnabled()
-				&& SysTouch.isDrag()) {
+		if (this.hoverNode != null && this.hoverNode.isEnabled() && SysTouch.isDrag()) {
 			if (getTouchDY() != 0 || getTouchDY() != 0) {
 				this.hoverNode.processTouchDragged();
 			}
@@ -291,8 +291,7 @@ public abstract class NodeScreen extends SpriteBatchScreen {
 
 	public void setModal(LNNode node) {
 		if (node != null && !node.isVisible()) {
-			throw new RuntimeException(
-					"Can't set invisible node as modal node!");
+			throw new RuntimeException("Can't set invisible node as modal node!");
 		}
 		this.modal = node;
 	}
@@ -325,18 +324,17 @@ public abstract class NodeScreen extends SpriteBatchScreen {
 		}
 	}
 
-	protected void drawing(GLEx g,SpriteBatch batch){
+	protected void drawing(GLEx g, SpriteBatch batch) {
 		if (batch == null || isUseGLEx()) {
 			if (content != null && content.isVisible()) {
 				content.drawNode(g);
 			}
-		}else{
+		} else {
 			if (content != null && content.isVisible()) {
 				content.drawNode(batch);
 			}
 		}
 	}
-
 
 	@Override
 	public Screen setAutoDestory(final boolean a) {
@@ -355,14 +353,14 @@ public abstract class NodeScreen extends SpriteBatchScreen {
 		return super.isAutoDestory();
 	}
 
-	 static LNNode[] expand(LNNode[] objs, int i, boolean flag) {
+	static LNNode[] expand(LNNode[] objs, int i, boolean flag) {
 		int size = objs.length;
 		LNNode[] newArrays = new LNNode[size + i];
 		System.arraycopy(objs, 0, newArrays, flag ? 0 : i, size);
 		return newArrays;
 	}
 
-	 static LNNode[] cut(LNNode[] objs, int size) {
+	static LNNode[] cut(LNNode[] objs, int size) {
 		int j;
 		if ((j = objs.length) == 1) {
 			return new LNNode[0];

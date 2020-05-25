@@ -2,10 +2,10 @@ package org.test;
 
 import loon.action.sprite.SpriteBatch;
 import loon.action.sprite.ActionObject;
-import loon.action.sprite.SpriteBatchScreen;
 import loon.action.sprite.TextureObject;
 import loon.event.GameKey;
 import loon.event.GameTouch;
+import loon.physics.SpriteBatchScreen;
 
 public class PhysicalTest extends SpriteBatchScreen {
 

@@ -53,6 +53,7 @@ public class TGA {
 
 		public int[] pixels;
 
+		@Override
 		public void close() {
 			if (pixels != null) {
 				pixels = null;

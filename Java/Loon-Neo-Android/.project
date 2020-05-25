@@ -42,6 +42,16 @@
 			<locationURI>WORKSPACE_LOC/avgtest</locationURI>
 		</link>
 		<link>
+			<name>node</name>
+			<type>2</type>
+			<location>J:/android_space/Loon-Neo/node</location>
+		</link>
+		<link>
+			<name>physics</name>
+			<type>2</type>
+			<location>J:/android_space/Loon-Neo/physics</location>
+		</link>
+		<link>
 			<name>samples</name>
 			<type>2</type>
 			<locationURI>WORKSPACE_LOC/samples</locationURI>
