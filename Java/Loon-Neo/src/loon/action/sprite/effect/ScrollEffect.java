@@ -29,7 +29,7 @@ import loon.opengl.GLEx;
 import loon.utils.timer.LTimer;
 
 /**
- * 0.3.2版新增类，用以实现特定图像的滚动播放(循环展示)
+ * 滚屏效果类,用以实现特定图像的滚动播放(循环展示)
  */
 public class ScrollEffect extends Entity implements BaseEffect {
 
@@ -52,7 +52,7 @@ public class ScrollEffect extends Entity implements BaseEffect {
 	}
 
 	public ScrollEffect(LTexture tex2d) {
-		this(Config.DOWN, tex2d, LSystem.viewSize.getRect());
+		this(Config.DOWN, tex2d, null);
 	}
 
 	public ScrollEffect(int d, String fileName) {
@@ -60,7 +60,7 @@ public class ScrollEffect extends Entity implements BaseEffect {
 	}
 
 	public ScrollEffect(int d, LTexture tex2d) {
-		this(d, tex2d, LSystem.viewSize.getRect());
+		this(d, tex2d, null);
 	}
 
 	public ScrollEffect(int d, String fileName, RectBox limit) {
@@ -68,21 +68,25 @@ public class ScrollEffect extends Entity implements BaseEffect {
 	}
 
 	public ScrollEffect(int d, LTexture tex2d, RectBox limit) {
-		this(d, tex2d, limit.x, limit.y, limit.width, limit.height);
-	}
-
-	public ScrollEffect(int d, LTexture tex2d, float x, float y, int w, int h) {
-		this.setLocation(x, y);
+		if (limit == null) {
+			if (tex2d == null) {
+				limit = LSystem.viewSize.getRect();
+			} else {
+				limit = new RectBox(0, 0, tex2d.getWidth(), tex2d.getHeight());
+			}
+		}
+		this.setLocation(limit.x, limit.y);
+		this.setSize(limit.width, limit.height);
 		this.setTexture(tex2d);
 		this.setRepaint(true);
-		this.setSize(w, h);
 		this.count = 1;
 		this.timer = new LTimer(10);
 		this.model = d;
 	}
 
-	public void setDelay(long delay) {
+	public ScrollEffect setDelay(long delay) {
 		timer.setDelay(delay);
+		return this;
 	}
 
 	public long getDelay() {
@@ -112,17 +116,19 @@ public class ScrollEffect extends Entity implements BaseEffect {
 		}
 	}
 
-	
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
+		if (_image == null) {
+			return;
+		}
 		switch (model) {
 		case Config.DOWN:
 		case Config.TDOWN:
 			for (int i = -1; i < 1; i++) {
 				for (int j = 0; j < 1; j++) {
-					g.draw(_image, x() + (j * _width) + offsetX + _offset.x, y()
-							+ (i * _height + backgroundLoop) + offsetY + _offset.y, _width,
-							_height, 0, 0, _width, _height);
+					g.draw(_image, x() + (j * _width) + offsetX + _offset.x,
+							y() + (i * _height + backgroundLoop) + offsetY + _offset.y, _width, _height, 0, 0, _width,
+							_height);
 				}
 			}
 			break;
@@ -130,9 +136,8 @@ public class ScrollEffect extends Entity implements BaseEffect {
 		case Config.TRIGHT:
 			for (int j = -1; j < 1; j++) {
 				for (int i = 0; i < 1; i++) {
-					g.draw(_image, x() + (j * _width + backgroundLoop)
-							+ offsetX + _offset.x, y() + (i * _height) + offsetY + _offset.y, _width,
-							_height, 0, 0, _width, _height);
+					g.draw(_image, x() + (j * _width + backgroundLoop) + offsetX + _offset.x,
+							y() + (i * _height) + offsetY + _offset.y, _width, _height, 0, 0, _width, _height);
 				}
 			}
 			break;
@@ -140,9 +145,9 @@ public class ScrollEffect extends Entity implements BaseEffect {
 		case Config.TUP:
 			for (int i = -1; i < 1; i++) {
 				for (int j = 0; j < 1; j++) {
-					g.draw(_image, x() + (j * _width) + offsetX + _offset.x, y()
-							- (i * _height + backgroundLoop) + offsetY + _offset.y, _width,
-							_height, 0, 0, _width, _height);
+					g.draw(_image, x() + (j * _width) + offsetX + _offset.x,
+							y() - (i * _height + backgroundLoop) + offsetY + _offset.y, _width, _height, 0, 0, _width,
+							_height);
 				}
 			}
 			break;
@@ -150,25 +155,27 @@ public class ScrollEffect extends Entity implements BaseEffect {
 		case Config.TLEFT:
 			for (int j = -1; j < 1; j++) {
 				for (int i = 0; i < 1; i++) {
-					g.draw(_image, x() - (j * _width + backgroundLoop)
-							+ offsetX + _offset.x, y() + (i * _height) + offsetY + _offset.y, _width,
-							_height, 0, 0, _width, _height);
+					g.draw(_image, x() - (j * _width + backgroundLoop) + offsetX + _offset.x,
+							y() + (i * _height) + offsetY + _offset.y, _width, _height, 0, 0, _width, _height);
 				}
 			}
 			break;
 		}
+		g.flush();
 	}
 
 	public int getCount() {
 		return count;
 	}
 
-	public void setCount(int count) {
+	public ScrollEffect setCount(int count) {
 		this.count = count;
+		return this;
 	}
 
-	public void setStop(boolean completed) {
+	public ScrollEffect setStop(boolean completed) {
 		this.completed = completed;
+		return this;
 	}
 
 	@Override

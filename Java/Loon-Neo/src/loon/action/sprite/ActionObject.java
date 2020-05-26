@@ -254,7 +254,7 @@ public abstract class ActionObject extends LObject<ISprite> implements Flip<Acti
 	public boolean isCollision(ActionObject o) {
 		RectBox src = getCollisionArea();
 		RectBox dst = o.getCollisionArea();
-		if (src.intersects(dst)) {
+		if (src.intersects(dst)||src.contains(dst)) {
 			return true;
 		}
 		return false;

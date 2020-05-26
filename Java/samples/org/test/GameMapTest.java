@@ -23,7 +23,9 @@ package org.test;
 import loon.Stage;
 import loon.action.ActionBind;
 import loon.action.ActionListener;
+import loon.action.FlashTo;
 import loon.action.RotateTo;
+import loon.action.map.Config;
 import loon.action.map.TileMap;
 import loon.action.sprite.Animation;
 import loon.action.sprite.JumpObject;
@@ -33,6 +35,7 @@ import loon.component.LPad;
 import loon.event.UpdateListener;
 import loon.event.ActionKey;
 import loon.event.SysKey;
+import loon.geom.BooleanValue;
 import loon.geom.Vector2f;
 import loon.utils.timer.LTimerContext;
 
@@ -147,6 +150,9 @@ public class GameMapTest extends Stage {
 
 	}
 
+	// 锁定主角操作
+	private BooleanValue heroLocked = refBool();
+
 	private JumpObject hero;
 
 	// PS：如果具体游戏开发时用到多动画切换，则建议使用AnimationStorage这个Animation的子类
@@ -165,16 +171,19 @@ public class GameMapTest extends Stage {
 	@Override
 	public void create() {
 		// 最先绘制用户画面
-		//setFristOrder(DRAW_USER_PAINT());
+		// setFristOrder(DRAW_USER_PAINT());
 		// 其次绘制精灵
-		//setSecondOrder(DRAW_SPRITE_PAINT());
+		// setSecondOrder(DRAW_SPRITE_PAINT());
 		// 最后绘制桌面
-		//setLastOrder(DRAW_DESKTOP_PAINT());
-		//先绘制用户画面,然后绘制精灵，最后绘制桌面组件
+		// setLastOrder(DRAW_DESKTOP_PAINT());
+		// 先绘制用户画面,然后绘制精灵，最后绘制桌面组件
 		lastDesktopDraw();
 		add(MultiScreenTest.getBackButton(this, 0));
 		// 使用GLEx而非SpriteBacth渲染画面
 		// setUseGLEx(true);
+
+		// 设置游戏滚动背景,向左方移动
+		setScrollBackground(Config.LEFT, "assets/tile_clouds.png");
 
 		// 以指定图片创建动画
 		this.coinAnimation = Animation.getDefaultAnimation("assets/coin.png", 32, 32, 200);
@@ -239,6 +248,8 @@ public class GameMapTest extends Stage {
 
 		// 在像素坐标位置(192,32)放置角色，大小为32x32，动画为针对hero.png的分解图
 		hero = addJumpObject(192, 32, 32, 32, animation);
+		// 像素计算上角色高偏移2个像素
+		hero.setFixedHeightOffset(2);
 		// 让地图跟随指定对象产生移动（无论插入有多少张数组地图，此跟随默认对所有地图生效）
 		// 另外请注意，此处能产生跟随的对像是任意LObject，并不局限于游戏角色。
 		follow(hero);
@@ -270,8 +281,10 @@ public class GameMapTest extends Stage {
 		// 对应向左行走的键盘事件
 		ActionKey goLeftKey = new ActionKey() {
 			public void act(long e) {
-				hero.setMirror(true);
-				hero.accelerateLeft();
+				if (!heroLocked.get()) {
+					hero.setMirror(true);
+					hero.accelerateLeft();
+				}
 			}
 		};
 
@@ -280,8 +293,10 @@ public class GameMapTest extends Stage {
 		// 对应向右行走的键盘事件
 		ActionKey goRightKey = new ActionKey() {
 			public void act(long e) {
-				hero.setMirror(false);
-				hero.accelerateRight();
+				if (!heroLocked.get()) {
+					hero.setMirror(false);
+					hero.accelerateRight();
+				}
 			}
 		};
 
@@ -291,7 +306,9 @@ public class GameMapTest extends Stage {
 		ActionKey jumpKey = new ActionKey(ActionKey.DETECT_INITIAL_PRESS_ONLY) {
 			@Override
 			public void act(long e) {
-				hero.jump();
+				if (!heroLocked.get()) {
+					hero.jump();
+				}
 			}
 		};
 
@@ -369,35 +386,35 @@ public class GameMapTest extends Stage {
 	public void damage() {
 		// 主角与敌人碰撞时(而非踩到了敌人)，触发一个旋转动作(其实效果可以做的更有趣一些，
 		// 比如先反弹到某一方向(FireTo)，然后再弹回等等，此处仅仅举个例子)
+		// 旋转360度，时间2秒
 		if (rotate == null) {
-			// 旋转360度，每帧累加5度
-			rotate = new RotateTo(360f, 5f);
+			rotate = new RotateTo(360f, 2f);
 			rotate.setActionListener(new ActionListener() {
 
 				@Override
 				public void stop(ActionBind o) {
 					hero.setFilterColor(LColor.white);
 					hero.setRotation(0);
+					// 解除锁定
+					heroLocked.set(false);
+					rotate = null;
 				}
 
 				@Override
 				public void start(ActionBind o) {
 					hero.setFilterColor(LColor.red);
 					hero.jump();
+					// 锁定操作
+					heroLocked.set(true);
 				}
 
 				@Override
 				public void process(ActionBind o) {
-
+					heroLocked.set(true);
 				}
 			});
-			addAction(rotate, hero);
-		} else if (rotate.isComplete()) {
-			hero.setFilterColor(LColor.red);
-			// 直接重置rotate对象
-			rotate.start(hero);
-			// 重新插入(LGame的方针是Action事件触发且结束后，自动删除该事件，所以需要重新插入)
-			addAction(rotate, hero);
+			// 让角色闪烁并且翻转
+			hero.selfAction().parallelTo(new FlashTo(), rotate).start();
 		}
 	}
 

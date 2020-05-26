@@ -26,6 +26,7 @@ import loon.action.sprite.ActionObject;
 import loon.action.sprite.Animation;
 import loon.action.sprite.JumpObject;
 import loon.action.sprite.MoveObject;
+import loon.action.sprite.effect.ScrollEffect;
 import loon.event.GameTouch;
 import loon.event.UpdateListener;
 import loon.geom.Vector2f;
@@ -44,6 +45,8 @@ public abstract class Stage extends Screen {
 	private float drawPosX;
 
 	private float drawPosY;
+
+	private ScrollEffect scrollBackground;
 
 	private UpdateListener updateListener;
 
@@ -214,6 +217,9 @@ public abstract class Stage extends Screen {
 
 	@Override
 	public void alter(LTimerContext timer) {
+		if (scrollBackground != null) {
+			scrollBackground.update(timer.timeSinceLastUpdate);
+		}
 		if (follow != null && tiles != null && tiles.size > 0) {
 			for (TileMap tile : tiles) {
 				float offsetX = getHalfWidth() - follow.getX();
@@ -245,6 +251,10 @@ public abstract class Stage extends Screen {
 
 	@Override
 	public void draw(GLEx g) {
+		background(g);
+		if (scrollBackground != null) {
+			scrollBackground.paint(g);
+		}
 		if (tiles != null && tiles.size > 0) {
 			for (TileMap tile : tiles) {
 				tile.draw(g, null, offset.x(), offset.y());
@@ -264,6 +274,8 @@ public abstract class Stage extends Screen {
 			stateManager.paint(g);
 		}
 	}
+	
+	public void background(GLEx g){}
 
 	public void paint(GLEx g) {}
 
@@ -271,70 +283,69 @@ public abstract class Stage extends Screen {
 
 	@Override
 	public void resize(int width, int height) {
-
 	}
 
 	@Override
 	public void touchDown(GameTouch e) {
-
 	}
 
 	@Override
 	public void touchUp(GameTouch e) {
-
 	}
 
 	@Override
 	public void touchMove(GameTouch e) {
-
 	}
 
 	@Override
 	public void touchDrag(GameTouch e) {
-
 	}
 
 	@Override
 	public void resume() {
-
 	}
 
 	@Override
 	public void pause() {
-
 	}
 
 	public TileMap getIndexTile() {
 		return this.currentTileMap;
 	}
 
-	public void setIndexTile(TileMap indexTile) {
+	public Stage setIndexTile(TileMap indexTile) {
 		this.currentTileMap = indexTile;
+		return this;
 	}
 
-	public void follow(ActionObject o) {
+	public Stage follow(ActionObject o) {
 		this.follow = o;
+		return this;
 	}
 
-	public void setOffset(TileMap tile, float sx, float sy) {
+	public Stage setOffset(TileMap tile, float sx, float sy) {
 		offset.set(sx, sy);
 		tile.setOffset(offset);
+		return this;
 	}
 
 	public final Vector2f getOffset() {
 		return offset;
 	}
 
-	public void putTileMap(TileMap t) {
+	public Stage putTileMap(TileMap t) {
 		tiles.add(t);
+		return this;
 	}
 
-	public void removeTileMap(TileMap t) {
+	public Stage removeTileMap(TileMap t) {
 		tiles.remove(t);
+		return this;
 	}
 
-	public void addTileObject(ActionObject o) {
+	public Stage addTileObject(ActionObject o) {
 		add(o);
+		return this;
 	}
 
 	public JumpObject addJumpObject(float x, float y, float w, float h, Animation a) {
@@ -363,8 +374,9 @@ public abstract class Stage extends Screen {
 		return o;
 	}
 
-	public void removeTileObject(ActionObject o) {
+	public Stage removeTileObject(ActionObject o) {
 		remove(o);
+		return this;
 	}
 
 	public ActionObject add(ActionObject object) {
@@ -377,7 +389,7 @@ public abstract class Stage extends Screen {
 		return object;
 	}
 
-	public void removeTileObjects() {
+	public Stage removeTileObjects() {
 		final int count = objects.size;
 		final Object[] objectArray = objects.toArray();
 		for (int i = 0; i < count; i++) {
@@ -385,6 +397,7 @@ public abstract class Stage extends Screen {
 			pendingRemove.add(o);
 		}
 		pendingAdd.clear();
+		return this;
 	}
 
 	public ActionObject findObject(float x, float y) {
@@ -400,12 +413,28 @@ public abstract class Stage extends Screen {
 		return updateListener;
 	}
 
-	public void setUpdateListener(UpdateListener update) {
+	public Stage setUpdateListener(UpdateListener update) {
 		this.updateListener = update;
+		return this;
 	}
 
-	public void dispose(){}
+	public Stage setScrollBackground(ScrollEffect scrollBackground) {
+		this.scrollBackground = scrollBackground;
+		return this;
+	}
+
+	public Stage setScrollBackground(int dir, String path) {
+		this.scrollBackground = new ScrollEffect(dir, path);
+		return this;
+	}
 	
+	public void dispose() {
+	}
+
+	public ScrollEffect getScrollBackground() {
+		return scrollBackground;
+	}
+
 	@Override
 	public void close() {
 		existing = false;

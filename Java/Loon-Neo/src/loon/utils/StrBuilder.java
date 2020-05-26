@@ -420,6 +420,39 @@ public class StrBuilder implements CharSequence, Appendable {
 		return this._currentIndex;
 	}
 
+    public StrBuilder reverse() {
+        boolean hasSurrogates = false;
+        int n = _currentIndex - 1;
+        for (int j = (n-1) >> 1; j >= 0; j--) {
+            int k = n - j;
+            char cj = _values[j];
+            char ck = _values[k];
+            _values[j] = ck;
+            _values[k] = cj;
+            if (CharUtils.isSurrogate(cj) ||
+            		CharUtils.isSurrogate(ck)) {
+                hasSurrogates = true;
+            }
+        }
+        if (hasSurrogates) {
+            reverseAllValidSurrogatePairs();
+        }
+        return this;
+    }
+
+    private void reverseAllValidSurrogatePairs() {
+        for (int i = 0; i < _currentIndex - 1; i++) {
+            char c2 = _values[i];
+            if (CharUtils.isLowSurrogate(c2)) {
+                char c1 = _values[i + 1];
+                if (CharUtils.isHighSurrogate(c1)) {
+                	_values[i++] = c1;
+                	_values[i] = c2;
+                }
+            }
+        }
+    }
+    
 	@Override
 	public boolean equals(Object o) {
 		if (o == null) {

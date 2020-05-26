@@ -25,12 +25,42 @@ import loon.event.QueryEvent;
 
 public class BoolArray implements IArray {
 
+	/**
+	 * 产生一组指定范围的数据
+	 * 
+	 * @param start
+	 * @param end
+	 * @param value
+	 * @return
+	 */
 	public static BoolArray range(int start, int end, boolean value) {
 		BoolArray array = new BoolArray(end - start);
 		for (int i = start; i < end; i++) {
 			array.add(value);
 		}
 		return array;
+	}
+
+	/**
+	 * 产生一组指定范围的随机数据
+	 * 
+	 * @param begin
+	 * @param end
+	 * @param size
+	 * @return
+	 */
+	public static BoolArray rangeRandom(int begin, int end) {
+		if (begin > end) {
+			int temp = begin;
+			begin = end;
+			end = temp;
+		}
+		int size = end - begin;
+		boolean[] boolArrays = new boolean[size];
+		for (int i = 0; i < size; i++) {
+			boolArrays[i] = MathUtils.randomBoolean();
+		}
+		return new BoolArray(boolArrays);
 	}
 
 	public boolean[] items;

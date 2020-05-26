@@ -28,6 +28,18 @@ import loon.LSystem;
  */
 public class CharUtils {
 
+    public static final char MIN_HIGH_SURROGATE = '\uD800';
+
+    public static final char MAX_HIGH_SURROGATE = '\uDBFF';
+
+    public static final char MIN_LOW_SURROGATE  = '\uDC00';
+
+    public static final char MAX_LOW_SURROGATE  = '\uDFFF';
+
+    public static final char MIN_SURROGATE = MIN_HIGH_SURROGATE;
+
+    public static final char MAX_SURROGATE = MAX_LOW_SURROGATE;
+    
 	static final private class HexChars {
 
 		static final char[] TABLE = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd',
@@ -402,6 +414,22 @@ public class CharUtils {
 		}
 	}
 
+    public static boolean isHighSurrogate(char ch) {
+        return ch >= MIN_HIGH_SURROGATE && ch < (MAX_HIGH_SURROGATE + 1);
+    }
+
+    public static boolean isLowSurrogate(char ch) {
+        return ch >= MIN_LOW_SURROGATE && ch < (MAX_LOW_SURROGATE + 1);
+    }
+
+    public static boolean isSurrogate(char ch) {
+        return ch >= MIN_SURROGATE && ch < (MAX_SURROGATE + 1);
+    }
+
+    public static boolean isSurrogatePair(char high, char low) {
+        return isHighSurrogate(high) && isLowSurrogate(low);
+    }
+    
 	protected static boolean isReserved(int c) {
 		return isGenericDelimiter(c) || isSubDelimiter(c);
 	}

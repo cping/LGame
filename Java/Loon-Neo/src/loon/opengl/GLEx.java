@@ -50,6 +50,9 @@ import loon.utils.GLUtils;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
 
+/**
+ * 一个全局使用的渲染器,内部为OpenGL封装,混合有JavaSE(JavaME)的Graphics和Android的Canvas主要API功能
+ */
 public class GLEx extends PixmapFImpl implements LRelease {
 
 	/*
@@ -247,6 +250,11 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		return this;
 	}
 
+	/**
+	 * 提交纹理渲染结果到GPU
+	 * 
+	 * @return
+	 */
 	public GLEx flush() {
 		if (isClosed) {
 			return this;
@@ -326,6 +334,9 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	public GLEx setFont(IFont font) {
+		if (font == null) {
+			return this;
+		}
 		this.lastBrush.font = font;
 		return this;
 	}
@@ -430,6 +441,19 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		return this;
 	}
 
+	public GLEx restoreBrush(int idx) {
+		if (isClosed) {
+			return this;
+		}
+		lastBrush = brushStack.get(idx);
+		if (lastBrush != null) {
+			this.setFont(lastBrush.font);
+			this.setLineWidth(lastBrush.lineWidth);
+			this.setBlendMode(lastBrush.blend);
+		}
+		return this;
+	}
+
 	public GLEx restoreBrush() {
 		if (isClosed) {
 			return this;
@@ -463,9 +487,23 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		return this;
 	}
 
+	public int saveCount() {
+		save();
+		int size = affineStack.size();
+		int idx = size > 0 ? size - 1 : 0;
+		return idx;
+	}
+
 	public GLEx restore() {
 		this.restoreTx();
 		this.restoreBrush();
+		return this;
+	}
+
+	public GLEx restoreToCount(int idx) {
+		idx = MathUtils.clamp(idx, 0, affineStack.size() - 1);
+		this.restoreTx(idx);
+		this.restoreBrush(idx);
 		return this;
 	}
 
@@ -589,6 +627,14 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			return this;
 		}
 		affineStack.clear();
+		return this;
+	}
+
+	public GLEx restoreTx(int idx) {
+		if (isClosed) {
+			return this;
+		}
+		lastTrans = affineStack.get(idx);
 		return this;
 	}
 
@@ -1119,11 +1165,13 @@ public class GLEx extends PixmapFImpl implements LRelease {
 
 	public GLEx drawText(String message, float x, float y, int color, float rotation) {
 		int tmp = this.lastBrush.baseColor;
-		setColor(color);
-		this.lastBrush.font.drawString(this, message, x + offsetStringX,
-				y + offsetStringY - this.lastBrush.font.getAscent() - 1, rotation,
-				tmpColor.setColor(this.lastBrush.baseColor));
-		setColor(tmp);
+		if (this.lastBrush.font != null) {
+			setColor(color);
+			this.lastBrush.font.drawString(this, message, x + offsetStringX,
+					y + offsetStringY - this.lastBrush.font.getAscent() - 1, rotation,
+					tmpColor.setColor(this.lastBrush.baseColor));
+			setColor(tmp);
+		}
 		return this;
 	}
 
@@ -3064,9 +3112,9 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			fillRect(x + radius, y + height - radius, width - d, radius);
 			fillRect(x + radius, y + radius, width - d, height - d);
 			fillArc(x + width - d, y + height - d, d, d, segs, 0, 90);
-			fillArc(x, y + height - d, d, d, segs, 90, 180);
-			fillArc(x + width - d, y, d, d, segs, 270, 360);
-			fillArc(x, y, d, d, segs, 180, 270);
+			fillArc(x, y + height - d, d, d, segs, 90, 90);
+			fillArc(x + width - d, y, d, d, segs, 270, 90);
+			fillArc(x, y, d, d, segs, 180, 90);
 		}
 		return this;
 	}
@@ -3106,12 +3154,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	/**
-	 * PS:此处drawString，相比旧版做了一些改变，旧版是按照java标注的drawstring函数绘制字符串，
-	 * 减去ascent值后再进行显示，而目前版本则按照xna的字符模式，不再减去该值，所以默认显示位置有所变化。如果要实现
-	 * loon-0.5以前版本的drawString功能，请使用drawText函数.(最关键的是，loon文字显示默认使用本机字体，
-	 * 而非强制导入ttf或者图片字体，因此ascent这个值，随着运行环境不同，会有细微变化，所以使用旧版drawString
-	 * 显示字符位置，会随着系统出现微妙变化，而新版中则希望样式更为统一(如果减去size值，可以相对固定位置，但不一定能和
-	 * 当前系统字体的实际大小配合，显示位置同样可能存在细微差异，始终无位移始终最稳妥)).
+	 * PS:此处drawString，不减去ascent再进行显示，和减去该值的drawText渲染后上下位置不一样的
 	 */
 	/**
 	 * 输出字符串
@@ -3214,8 +3257,10 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (mes == null || mes.length() == 0) {
 			return this;
 		}
-		this.lastBrush.font.drawString(this, mes, x + offsetStringX, y + offsetStringY, scaleX, scaleY, ax, ay,
-				rotation, c);
+		if (this.lastBrush.font != null) {
+			this.lastBrush.font.drawString(this, mes, x + offsetStringX, y + offsetStringY, scaleX, scaleY, ax, ay,
+					rotation, c);
+		}
 		return this;
 	}
 

@@ -467,26 +467,30 @@ public class Field2D implements IArray, Config {
 	}
 
 	public static final int getDirection(Vector2f source, Vector2f target) {
-		if (source.x - target.x > 0) {
-			if (source.y - target.y > 0) {
+		return getDirection(source.x, source.y, target.x, target.y);
+	}
+
+	public static final int getDirection(float srcX, float srcY, float destX, float destY) {
+		if (srcX - destX > 0) {
+			if (srcY - destY > 0) {
 				return Config.LEFT;
-			} else if (source.y - target.y < 0) {
+			} else if (srcY - destY < 0) {
 				return Config.DOWN;
 			} else {
 				return Config.TLEFT;
 			}
-		} else if (source.x - target.x < 0) {
-			if (source.y - target.y > 0) {
+		} else if (srcX - destX < 0) {
+			if (srcY - destY > 0) {
 				return Config.UP;
-			} else if (source.y - target.y < 0) {
+			} else if (srcY - destY < 0) {
 				return Config.RIGHT;
 			} else {
 				return Config.TRIGHT;
 			}
 		} else {
-			if (source.y - target.y > 0) {
+			if (srcY - destY > 0) {
 				return Config.TUP;
-			} else if (source.y - target.y < 0) {
+			} else if (srcY - destY < 0) {
 				return Config.TDOWN;
 			} else {
 				return Config.EMPTY;

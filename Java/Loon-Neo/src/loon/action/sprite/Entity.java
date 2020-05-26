@@ -736,11 +736,11 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	}
 
-	protected void paint(final GLEx g) {
+	public void paint(final GLEx g) {
 		paint(g, 0, 0);
 	}
 
-	protected void paint(final GLEx g, float offsetX, float offsetY) {
+	public void paint(final GLEx g, float offsetX, float offsetY) {
 		if (_alpha < 0.01) {
 			return;
 		}
@@ -846,8 +846,9 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		}
 	}
 
-	public void setRepaint(boolean r) {
+	public Entity setRepaint(boolean r) {
 		this._repaintDraw = r;
+		return this;
 	}
 
 	public boolean isRepaint() {

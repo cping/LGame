@@ -357,7 +357,7 @@ public class HelperUtils {
 	public final static void setLogMinLevel(Level level) {
 		LSystem.setLogMinLevel(level);
 	}
-	
+
 	public final static Interval interval(final Duration d, final Updateable update) {
 		return new Interval(d) {
 
@@ -430,7 +430,7 @@ public class HelperUtils {
 	public final static Vector2f point() {
 		return point(0f, 0f);
 	}
-	
+
 	public final static Vector2f point(float x, float y) {
 		return new Vector2f(x, y);
 	}
@@ -446,7 +446,7 @@ public class HelperUtils {
 	public final static PointI pointi() {
 		return pointi(0, 0);
 	}
-	
+
 	public final static PointI pointi(int x, int y) {
 		return new PointI(x, y);
 	}
@@ -591,6 +591,9 @@ public class HelperUtils {
 		if (o instanceof Number) {
 			return ((Number) o).doubleValue();
 		}
+		if (o instanceof Boolean) {
+			return ((Boolean) o).booleanValue() ? 1 : 0;
+		}
 		if (o instanceof Character) {
 			Character v = (Character) o;
 			char vc = v.charValue();
@@ -629,6 +632,9 @@ public class HelperUtils {
 		}
 		if (o instanceof Number) {
 			return ((Number) o).floatValue();
+		}
+		if (o instanceof Boolean) {
+			return ((Boolean) o).booleanValue() ? 1 : 0;
 		}
 		if (o instanceof Character) {
 			Character v = (Character) o;
@@ -669,6 +675,9 @@ public class HelperUtils {
 		if (o instanceof Number) {
 			return ((Number) o).intValue();
 		}
+		if (o instanceof Boolean) {
+			return ((Boolean) o).booleanValue() ? 1 : 0;
+		}
 		if (o instanceof Character) {
 			Character v = (Character) o;
 			char vc = v.charValue();
@@ -708,6 +717,9 @@ public class HelperUtils {
 		if (o instanceof Number) {
 			return ((Number) o).longValue();
 		}
+		if (o instanceof Boolean) {
+			return ((Boolean) o).booleanValue() ? 1 : 0;
+		}
 		if (o instanceof Character) {
 			Character v = (Character) o;
 			char vc = v.charValue();
@@ -727,7 +739,7 @@ public class HelperUtils {
 
 	public final static String toStr(Object o) {
 		if (o == null) {
-			return "";
+			return LSystem.NULL;
 		}
 		if (o instanceof Short) {
 			return String.valueOf(((Short) o).shortValue());
@@ -747,6 +759,9 @@ public class HelperUtils {
 		if (o instanceof Number) {
 			return String.valueOf(((Number) o).floatValue());
 		}
+		if (o instanceof Boolean) {
+			return String.valueOf(((Boolean) o).booleanValue());
+		}
 		if (o instanceof Character) {
 			Character v = (Character) o;
 			char vc = v.charValue();
@@ -764,7 +779,7 @@ public class HelperUtils {
 				return v;
 			}
 		}
-		return LSystem.UNKNOWN;
+		return o.toString();
 	}
 
 }
