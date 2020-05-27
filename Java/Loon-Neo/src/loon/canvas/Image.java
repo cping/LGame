@@ -300,7 +300,7 @@ public abstract class Image extends TextureSource implements Canvas.Drawable, LR
 	public abstract int getPixel(int x, int y);
 
 	public abstract int getRGB(int x, int y);
-	
+
 	public boolean isTransparent(int x, int y) {
 		if (x < 0 || y < 0 || x >= getWidth() || y >= getHeight()) {
 			return true;
@@ -311,7 +311,7 @@ public abstract class Image extends TextureSource implements Canvas.Drawable, LR
 			return (pixel >>> 24) == 0;
 		}
 	}
-	
+
 	public abstract void setRGB(int rgb, int x, int y);
 
 	public abstract void getRGB(int startX, int startY, int width, int height, int[] rgbArray, int offset,
@@ -439,6 +439,71 @@ public abstract class Image extends TextureSource implements Canvas.Drawable, LR
 		return this;
 	}
 
+	public boolean isColorEmpty() {
+		for (int y = 0; y < getHeight(); y++) {
+			for (int x = 0; x < getWidth(); x++) {
+				final int pixel = getRGB(x, y);
+				if (pixel >> 24 != 0x00) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	public final Image cpy() {
+		return cpy(false);
+	}
+
+	public final Image cpy(boolean closed) {
+		Canvas canvas = createCanvas(width(), height());
+		canvas.draw(this, 0, 0);
+		if (closed) {
+			this.close();
+		}
+		return canvas.image;
+	}
+
+	@Override
+	public boolean equals(final Object obj) {
+		if (obj == null) {
+			return false;
+		}
+        if(obj instanceof Image){
+        	return equals((Image)obj);
+        }
+        return false;
+	}
+
+	public boolean equals(final Image dst) {
+		return equals(this, dst);
+	}
+
+	public static boolean equals(final Image src, final Image dst) {
+		if (src == dst) {
+			return true;
+		}
+		if (src == null) {
+			return false;
+		}
+		if (dst == null) {
+			return false;
+		}
+		if (src.getWidth() != dst.getWidth() || src.getHeight() != dst.getHeight()
+				|| src.hasAlpha() != dst.hasAlpha()) {
+			return false;
+		}
+		for (int x = 0; x < dst.getWidth(); x++) {
+			for (int y = 0; y < dst.getHeight(); y++) {
+				if (src.getRGB(x, y) != dst.getRGB(x, y)) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+	
+	@Override
 	public final void close() {
 		if (!this.isTexture) {
 			this.closeImpl();
@@ -453,17 +518,5 @@ public abstract class Image extends TextureSource implements Canvas.Drawable, LR
 	}
 
 	protected abstract void closeImpl();
-
-	public final Image cpy() {
-		return cpy(false);
-	}
-
-	public final Image cpy(boolean closed) {
-		Canvas canvas = createCanvas(width(), height());
-		canvas.draw(this, 0, 0);
-		if (closed) {
-			this.close();
-		}
-		return canvas.image;
-	}
+	
 }

@@ -29,6 +29,7 @@ import loon.action.ActionBind;
 import loon.action.ActionControl;
 import loon.component.layout.Margin;
 import loon.event.QueryEvent;
+import loon.event.ResizeListener;
 import loon.geom.PointI;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
@@ -60,6 +61,8 @@ public class Sprites implements IArray, Visible, LRelease {
 	private float _scrollX;
 
 	private float _scrollY;
+
+	private ResizeListener<Sprites> _resizeListener;
 
 	private int viewX;
 
@@ -133,6 +136,7 @@ public class Sprites implements IArray, Visible, LRelease {
 			if (viewHeight < this._height) {
 				viewHeight = this._height;
 			}
+			this.resize(w, h, true);
 		}
 		return this;
 	}
@@ -1152,6 +1156,14 @@ public class Sprites implements IArray, Visible, LRelease {
 		return viewY;
 	}
 
+	public float getStageX() {
+		return (getX() - getScreenX());
+	}
+
+	public float getStageY() {
+		return (getX() - getScreenX());
+	}
+
 	/**
 	 * 设定精灵集合在屏幕中的位置与大小
 	 * 
@@ -1377,6 +1389,14 @@ public class Sprites implements IArray, Visible, LRelease {
 		return _screen;
 	}
 
+	public float getScreenX() {
+		return _screen == null ? 0 : _screen.getX();
+	}
+
+	public float getScreenY() {
+		return _screen == null ? 0 : _screen.getY();
+	}
+
 	public Sprites scrollBy(float x, float y) {
 		this._scrollX += x;
 		this._scrollY += y;
@@ -1446,6 +1466,31 @@ public class Sprites implements IArray, Visible, LRelease {
 		return this;
 	}
 
+	public Sprites resize(float width, float height, boolean forceResize) {
+		if (_resizeListener != null) {
+			_resizeListener.onResize(this);
+		}
+		if (forceResize || (this._width != (int) width && this._height != (int) height)) {
+			this._width = (int) width;
+			this._height = (int) height;
+			for (ISprite child : this._sprites) {
+				if (child != null) {
+					child.onResize();
+				}
+			}
+		}
+		return this;
+	}
+
+	public ResizeListener<Sprites> getResizeListener() {
+		return _resizeListener;
+	}
+
+	public Sprites setResizeListener(ResizeListener<Sprites> listener) {
+		this._resizeListener = listener;
+		return this;
+	}
+
 	public String getName() {
 		return this._sprites_name;
 	}
@@ -1477,8 +1522,9 @@ public class Sprites implements IArray, Visible, LRelease {
 			}
 		}
 		clear();
-		this._sprites = null;
 		this._closed = true;
+		this._sprites = null;
+		this._resizeListener = null;
 		LSystem.popSpritesPool(this);
 	}
 }

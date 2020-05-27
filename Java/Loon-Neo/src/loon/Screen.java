@@ -65,6 +65,7 @@ import loon.event.GameTouch;
 import loon.event.LTouchArea;
 import loon.event.LTouchLocation;
 import loon.event.QueryEvent;
+import loon.event.ResizeListener;
 import loon.event.SysInput;
 import loon.event.SysTouch;
 import loon.event.Touched;
@@ -171,6 +172,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * 通用碰撞管理器(需要用户自行初始化(getCollisionManager或initializeCollision),不实例化默认不存在)
 	 */
 	private CollisionManager _collisionManager;
+
+	private ResizeListener<Screen> _resizeListener;
 
 	private boolean _collisionClosed;
 
@@ -459,7 +462,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		}
 		return desktopOrder;
 	}
-	
+
 	/**
 	 * 设置Screen中组件渲染顺序
 	 * 
@@ -1374,12 +1377,14 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		this.halfWidth = width / 2;
 		this.halfHeight = height / 2;
 		this.setSize(width, height);
+		if (_resizeListener != null) {
+			_resizeListener.onResize(this);
+		}
 		if (spriteRun && sprites != null) {
 			sprites.setSize(width, height);
 		}
 		if (desktopRun && desktop != null) {
 			desktop.setSize(width, height);
-			desktop.resize();
 		}
 		if (isGravity && gravityHandler != null) {
 			gravityHandler.setLimit(width, height);
@@ -5514,6 +5519,14 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	public void stop() {
 	}// noop
 
+	public ResizeListener<Screen> getResizeListener() {
+		return _resizeListener;
+	}
+
+	public void setResizeListener(ResizeListener<Screen> listener) {
+		this._resizeListener = listener;
+	}
+
 	/**
 	 * 释放函数内资源
 	 * 
@@ -5608,6 +5621,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 					_loopEvents.clear();
 				}
 				_closeUpdate = null;
+				_resizeListener = null;
 				this.screenSwitch = null;
 				this.stageRun = false;
 				LSystem.closeTemp();

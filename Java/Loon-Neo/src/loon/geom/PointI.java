@@ -43,6 +43,10 @@ public class PointI implements XY {
 		this.y = p.y;
 	}
 
+	public PointI set(int v) {
+		return set(v, v);
+	}
+	
 	public PointI set(int x1, int y1) {
 		this.x = x1;
 		this.y = y1;

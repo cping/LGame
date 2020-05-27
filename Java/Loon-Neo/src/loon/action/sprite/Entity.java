@@ -35,6 +35,7 @@ import loon.action.collision.CollisionObject;
 import loon.action.collision.Gravity;
 import loon.action.map.Field2D;
 import loon.canvas.LColor;
+import loon.event.ResizeListener;
 import loon.geom.Affine2f;
 import loon.geom.BoxSize;
 import loon.geom.Dimension;
@@ -98,6 +99,8 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	protected boolean _flipX = false, _flipY = false;
 
 	private final static LayerSorter<IEntity> entitySorter = new LayerSorter<IEntity>(false);
+
+	private ResizeListener<Entity> _resizeListener;
 
 	private boolean _stopUpdate = false;
 
@@ -723,12 +726,12 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	public float getCurrentY() {
 		return this.getY() + _offset.y;
 	}
-	
-	public float centerX(){
+
+	public float centerX() {
 		return getX() + (getWidth() / 2f);
 	}
 
-	public float centerY(){
+	public float centerY() {
 		return getY() + (getHeight() / 2f);
 	}
 
@@ -1377,6 +1380,22 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		return this;
 	}
 
+	public ResizeListener<Entity> getResizeListener() {
+		return _resizeListener;
+	}
+
+	public Entity setResizeListener(ResizeListener<Entity> listener) {
+		this._resizeListener = listener;
+		return this;
+	}
+
+	@Override
+	public void onResize() {
+		if (_resizeListener != null) {
+			_resizeListener.onResize(this);
+		}
+	}
+
 	@Override
 	public float getFixedWidthOffset() {
 		return _fixedWidthOffset;
@@ -1418,6 +1437,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 			}
 		}
 		_stopUpdate = false;
+		_resizeListener = null;
 		setState(State.DISPOSED);
 		removeChildren();
 		removeActionEvents(this);

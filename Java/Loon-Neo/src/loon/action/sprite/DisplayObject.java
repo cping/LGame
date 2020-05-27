@@ -28,6 +28,7 @@ import loon.action.collision.CollisionObject;
 import loon.action.map.Field2D;
 import loon.canvas.LColor;
 import loon.event.EventDispatcher;
+import loon.event.ResizeListener;
 import loon.geom.BoxSize;
 import loon.geom.PointF;
 import loon.geom.RectBox;
@@ -41,6 +42,8 @@ public abstract class DisplayObject extends EventDispatcher implements Collision
 
 	public static float morphY = 1f;
 
+	protected ResizeListener<DisplayObject> _resizeListener;
+	
 	protected float _fixedWidthOffset = 0f;
 
 	protected float _fixedHeightOffset = 0f;
@@ -435,5 +438,20 @@ public abstract class DisplayObject extends EventDispatcher implements Collision
 		RectBox b = new RectBox(0, rectDst.getY(), rectDst.getWidth(), rectDst.getHeight());
 		return a.intersects(b);
 	}
+	
+	public ResizeListener<DisplayObject> getResizeListener() {
+		return _resizeListener;
+	}
 
+	public DisplayObject setResizeListener(ResizeListener<DisplayObject> listener) {
+		this._resizeListener = listener;
+		return this;
+	}
+
+	@Override
+	public void onResize() {
+		if (_resizeListener != null) {
+			_resizeListener.onResize(this);
+		}
+	}
 }

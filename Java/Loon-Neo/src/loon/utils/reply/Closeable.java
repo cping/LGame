@@ -51,7 +51,7 @@ public interface Closeable extends LRelease {
 
 		public <T extends LRelease> T add(T c) {
 			if (_set == null) {
-				_set = new ObjectSet<>();
+				_set = new ObjectSet<LRelease>();
 			}
 			_set.add(c);
 			return c;

@@ -38,6 +38,7 @@ import loon.action.map.tmx.tiles.TMXTile;
 import loon.action.sprite.ISprite;
 import loon.action.sprite.Sprites;
 import loon.canvas.LColor;
+import loon.event.ResizeListener;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.utils.ObjectMap;
@@ -48,6 +49,8 @@ import loon.utils.TimeUtils;
  */
 public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite {
 
+	private ResizeListener<TMXMapRenderer> _resizeListener;
+	
 	protected float _fixedWidthOffset = 0f;
 	protected float _fixedHeightOffset = 0f;
 
@@ -409,8 +412,23 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 		RectBox b = new RectBox(0, rectDst.getY(), rectDst.getWidth(), rectDst.getHeight());
 		return a.intersects(b);
 	}
-	
-	
+
+	@Override
+	public void onResize() {
+		if (_resizeListener != null) {
+			_resizeListener.onResize(this);
+		}
+	}
+
+	public ResizeListener<TMXMapRenderer> getResizeListener() {
+		return _resizeListener;
+	}
+
+	public TMXMapRenderer setResizeListener(ResizeListener<TMXMapRenderer> listener) {
+		this._resizeListener = listener;
+		return this;
+	}
+
 	public boolean isClosed() {
 		return isDisposed();
 	}
@@ -428,6 +446,7 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 			texture.close();
 		}
 		lastHashCode = 1;
+		_resizeListener = null;
 		setState(State.DISPOSED);
 	}
 }

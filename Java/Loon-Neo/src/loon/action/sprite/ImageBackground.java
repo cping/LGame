@@ -171,5 +171,12 @@ public class ImageBackground extends Background {
 	public float scrollY() {
 		return _offset.y;
 	}
+	
+	@Override
+	public void onResize(){
+		super.onResize();
+		this._offset.set(0f);
+		this._scrollDrag.set(0f);
+	}
 
 }

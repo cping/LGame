@@ -810,6 +810,26 @@ public class MathUtils {
 		return (a > b) ? ((a > c) ? a : c) : ((b > c) ? b : c);
 	}
 
+	public static final int max(final int[] numbers) {
+		int max = Integer.MIN_VALUE;
+		for (int i = 0; i < numbers.length; i++) {
+			if (numbers[i] > max) {
+				max = numbers[i];
+			}
+		}
+		return max;
+	}
+
+	public static final float max(final float[] numbers) {
+		float max = Integer.MIN_VALUE;
+		for (int i = 0; i < numbers.length; i++) {
+			if (numbers[i] > max) {
+				max = numbers[i];
+			}
+		}
+		return max;
+	}
+
 	public static final int min(int a, int b, int c) {
 		return (a < b) ? ((a < c) ? a : c) : ((b < c) ? b : c);
 	}
@@ -824,6 +844,26 @@ public class MathUtils {
 
 	public static final int min(int a, int b) {
 		return (a <= b) ? a : b;
+	}
+
+	public static final int min(final int[] numbers) {
+		int min = Integer.MAX_VALUE;
+		for (int i = 0; i < numbers.length; i++) {
+			if (numbers[i] < min) {
+				min = numbers[i];
+			}
+		}
+		return min;
+	}
+
+	public static final float min(final float[] numbers) {
+		float min = Integer.MAX_VALUE;
+		for (int i = 0; i < numbers.length; i++) {
+			if (numbers[i] < min) {
+				min = numbers[i];
+			}
+		}
+		return min;
 	}
 
 	public static final float mix(final float x, final float y, final float m) {

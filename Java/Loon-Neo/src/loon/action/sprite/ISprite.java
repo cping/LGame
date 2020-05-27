@@ -70,6 +70,8 @@ public interface ISprite extends ActionBind, Visible, LRelease, ZIndex, XY {
 	void createUI(GLEx g, float offsetX, float offsetY);
 
 	void update(long elapsedTime);
+	
+	void onResize();
 
 	@Override
 	int getLayer();

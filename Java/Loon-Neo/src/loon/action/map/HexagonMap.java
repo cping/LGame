@@ -38,6 +38,7 @@ import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.canvas.Pixmap;
 import loon.event.DrawListener;
+import loon.event.ResizeListener;
 import loon.font.FontSet;
 import loon.font.IFont;
 import loon.font.LFont;
@@ -110,8 +111,11 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	private final PointF _scrollDrag = new PointF();
 
 	private float _fixedWidthOffset = 0f;
+	
 	private float _fixedHeightOffset = 0f;
 
+	private ResizeListener<HexagonMap> _resizeListener;
+	
 	private int[] position = new int[2];
 
 	private int[][] positions = new int[6][2];
@@ -2056,10 +2060,29 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		return a.intersects(b);
 	}
 
+	@Override
+	public void onResize() {
+		if (_resizeListener != null) {
+			_resizeListener.onResize(this);
+		}
+		if (_mapSprites != null) {
+			_mapSprites.resize(getWidth(), getHeight(), false);
+		}
+	}
+
+	public ResizeListener<HexagonMap> getResizeListener() {
+		return _resizeListener;
+	}
+
+	public HexagonMap setResizeListener(ResizeListener<HexagonMap> listener) {
+		this._resizeListener = listener;
+		return this;
+	}
+	
 	public boolean isClosed() {
 		return isDisposed();
 	}
-
+	
 	@Override
 	public void close() {
 		roll = false;
@@ -2086,6 +2109,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 			_background.close();
 			_background = null;
 		}
+		_resizeListener = null;
 		removeActionEvents(this);
 		setState(State.DISPOSED);
 	}

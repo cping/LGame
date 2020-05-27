@@ -35,6 +35,7 @@ import loon.action.sprite.SpriteBatch;
 import loon.action.sprite.Sprites;
 import loon.canvas.LColor;
 import loon.event.GameTouch;
+import loon.event.ResizeListener;
 import loon.event.SysInput;
 import loon.event.SysKey;
 import loon.event.SysTouch;
@@ -87,6 +88,8 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 
 	private Comparator<LNNode> comparator = LNNode.DEFAULT_COMPARATOR;
 
+	private ResizeListener<LNNode> _resizeListener;
+
 	private final static InsertionSorter<LNNode> _node_sorter = new InsertionSorter<LNNode>();
 
 	public static interface CallListener {
@@ -132,7 +135,7 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 	protected float _size_width, _size_height;
 
 	protected float _orig_width, _orig_height;
-	
+
 	protected Sprites _sprites;
 
 	@Override
@@ -157,9 +160,9 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 	}
 
 	protected float _fixedWidthOffset = 0f;
-	
+
 	protected float _fixedHeightOffset = 0f;
-	
+
 	protected int _top;
 
 	protected int _left;
@@ -1207,7 +1210,7 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 	public float getCenterY() {
 		return getY() + getHeight() / 2f;
 	}
-	
+
 	private RectBox temp_rect;
 
 	public RectBox getRectBox() {
@@ -1387,7 +1390,6 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 		}
 		return this._sprites.getScreen() == null ? LSystem.getProcess().getScreen() : this._sprites.getScreen();
 	}
-	
 
 	@Override
 	public float getFixedWidthOffset() {
@@ -1440,7 +1442,23 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 		RectBox b = new RectBox(0, rectDst.getY(), rectDst.getWidth(), rectDst.getHeight());
 		return a.intersects(b);
 	}
+
+	public ResizeListener<LNNode> getResizeListener() {
+		return _resizeListener;
+	}
+
+	public LNNode setResizeListener(ResizeListener<LNNode> listener) {
+		this._resizeListener = listener;
+		return this;
+	}
 	
+	@Override
+	public void onResize() {
+		if (_resizeListener != null) {
+			_resizeListener.onResize(this);
+		}
+	}
+
 	@Override
 	public void close() {
 		this._isClose = true;
@@ -1463,7 +1481,7 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 		}
 		setState(State.DISPOSED);
 		removeActionEvents(this);
+		_resizeListener = null;
 	}
-
 
 }

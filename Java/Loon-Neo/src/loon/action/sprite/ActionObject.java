@@ -33,6 +33,7 @@ import loon.action.map.Config;
 import loon.action.map.Field2D;
 import loon.action.map.TileMap;
 import loon.canvas.LColor;
+import loon.event.ResizeListener;
 import loon.geom.Affine2f;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
@@ -44,6 +45,8 @@ import loon.utils.Flip;
  */
 public abstract class ActionObject extends LObject<ISprite> implements Flip<ActionObject>, Config, ISprite {
 
+	private ResizeListener<ActionObject> _resizeListener;
+	
 	private Origin _origin = Origin.CENTER;
 
 	private Vector2f _pivot = new Vector2f(-1, -1);
@@ -533,7 +536,23 @@ public abstract class ActionObject extends LObject<ISprite> implements Flip<Acti
 		RectBox b = new RectBox(0, rectDst.getY(), rectDst.getWidth(), rectDst.getHeight());
 		return a.intersects(b);
 	}
+	
+	public ResizeListener<ActionObject> getResizeListener() {
+		return _resizeListener;
+	}
 
+	public ActionObject setResizeListener(ResizeListener<ActionObject> listener) {
+		this._resizeListener = listener;
+		return this;
+	}
+
+	@Override
+	public void onResize() {
+		if (_resizeListener != null) {
+			_resizeListener.onResize(this);
+		}
+	}
+	
 	public boolean isClosed() {
 		return isDisposed();
 	}
@@ -545,6 +564,7 @@ public abstract class ActionObject extends LObject<ISprite> implements Flip<Acti
 		}
 		setState(State.DISPOSED);
 		removeActionEvents(this);
+		_resizeListener = null;
 	}
 
 }

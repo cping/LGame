@@ -12,6 +12,7 @@ import loon.action.map.Field2D;
 import loon.action.sprite.ISprite;
 import loon.action.sprite.Sprites;
 import loon.canvas.LColor;
+import loon.event.ResizeListener;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimer;
@@ -21,6 +22,8 @@ import loon.utils.timer.LTimer;
  */
 public class RocSSprite extends LObject<ISprite> implements ISprite {
 
+	private ResizeListener<RocSSprite> _resizeListener;
+	
 	private boolean _visible, _loopScript;
 
 	private RocScript _script;
@@ -297,9 +300,26 @@ public class RocSSprite extends LObject<ISprite> implements ISprite {
 		return false;
 	}
 
+	public ResizeListener<RocSSprite> getResizeListener() {
+		return _resizeListener;
+	}
+
+	public RocSSprite setResizeListener(ResizeListener<RocSSprite> listener) {
+		this._resizeListener = listener;
+		return this;
+	}
+
+	@Override
+	public void onResize() {
+		if (_resizeListener != null) {
+			_resizeListener.onResize(this);
+		}
+	}
+
 	@Override
 	public void close() {
 		setState(State.DISPOSED);
+		_resizeListener = null;
 	}
 
 }

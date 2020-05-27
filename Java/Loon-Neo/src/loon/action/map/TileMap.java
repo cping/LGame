@@ -38,6 +38,7 @@ import loon.action.sprite.Sprites;
 import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.event.DrawListener;
+import loon.event.ResizeListener;
 import loon.geom.Affine2f;
 import loon.geom.PointF;
 import loon.geom.RectBox;
@@ -60,6 +61,8 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	// 显示Map的上级Sprites
 	private Sprites _screenSprites;
+
+	private ResizeListener<TileMap> _resizeListener;
 
 	private int firstTileX;
 
@@ -487,7 +490,8 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 									if (useBatch) {
 										LColor tmp = batch.getColor();
 										batch.setColor(baseColor);
-										batch.draw(tile.getAnimation().getSpriteImage(), posX, posY, tileWidth, tileHeight);
+										batch.draw(tile.getAnimation().getSpriteImage(), posX, posY, tileWidth,
+												tileHeight);
 										batch.setColor(tmp);
 									} else {
 										g.draw(tile.getAnimation().getSpriteImage(), posX, posY, tileWidth, tileHeight,
@@ -536,8 +540,8 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 													tileHeight);
 											batch.setColor(tmp);
 										} else {
-											g.draw(tile.getAnimation().getSpriteImage(), posX, posY, tileWidth, tileHeight,
-													baseColor);
+											g.draw(tile.getAnimation().getSpriteImage(), posX, posY, tileWidth,
+													tileHeight, baseColor);
 										}
 									} else {
 										texturePack.draw(tile.getImgId(), posX, posY, tileWidth, tileHeight, baseColor);
@@ -1076,7 +1080,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	public TileMap followDonot() {
 		return setFollow(null);
 	}
-	
+
 	public TileMap followAction(ActionBind follow) {
 		return setFollow(follow);
 	}
@@ -1258,7 +1262,8 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		if (this._screenSprites == null) {
 			return LSystem.getProcess().getScreen();
 		}
-		return this._screenSprites.getScreen() == null ? LSystem.getProcess().getScreen() : this._screenSprites.getScreen();
+		return this._screenSprites.getScreen() == null ? LSystem.getProcess().getScreen()
+				: this._screenSprites.getScreen();
 	}
 
 	public float getScreenX() {
@@ -1363,6 +1368,25 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		return a.intersects(b);
 	}
 
+	@Override
+	public void onResize() {
+		if (_resizeListener != null) {
+			_resizeListener.onResize(this);
+		}
+		if (_mapSprites != null) {
+			_mapSprites.resize(getWidth(), getHeight(), false);
+		}
+	}
+
+	public ResizeListener<TileMap> getResizeListener() {
+		return _resizeListener;
+	}
+
+	public TileMap setResizeListener(ResizeListener<TileMap> listener) {
+		this._resizeListener = listener;
+		return this;
+	}
+
 	public boolean isClosed() {
 		return isDisposed();
 	}
@@ -1390,6 +1414,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 			_background.close();
 			_background = null;
 		}
+		_resizeListener = null;
 		removeActionEvents(this);
 		setState(State.DISPOSED);
 	}

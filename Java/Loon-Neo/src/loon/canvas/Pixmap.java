@@ -2709,12 +2709,63 @@ public class Pixmap extends Limit implements LRelease {
 		}
 	}
 
+	@Override
+	public boolean equals(final Object obj) {
+		if (obj == null) {
+			return false;
+		}
+        if(obj instanceof Pixmap){
+        	return equals((Pixmap)obj);
+        }
+        return false;
+	}
+
+	public boolean equals(final Pixmap dst) {
+		return equals(this, dst);
+	}
+
+	public static boolean equals(final Pixmap src, final Pixmap dst) {
+		if (src == dst) {
+			return true;
+		}
+		if (src == null) {
+			return false;
+		}
+		if (dst == null) {
+			return false;
+		}
+		if (src.getWidth() != dst.getWidth() || src.getHeight() != dst.getHeight()
+				|| src.hasAlpha() != dst.hasAlpha()) {
+			return false;
+		}
+		for (int x = 0; x < dst.getWidth(); x++) {
+			for (int y = 0; y < dst.getHeight(); y++) {
+				if (src.getPixel(x, y) != dst.getPixel(x, y)) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
 	public int size() {
 		return _width * _height;
 	}
 
 	public boolean isEmpty() {
 		return _width == 0 && _height == 0;
+	}
+
+	public boolean isColorEmpty() {
+		for (int y = 0; y < getHeight(); y++) {
+			for (int x = 0; x < getWidth(); x++) {
+				final int pixel = getPixel(x, y);
+				if (pixel >> 24 != 0x00) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 
 	@Override

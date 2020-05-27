@@ -620,17 +620,6 @@ public abstract class LContainer extends LComponent implements IArray {
 	}
 
 	@Override
-	protected void validateSize() {
-		super.validateSize();
-		for (int i = 0; i < this.childCount; i++) {
-			LComponent comp = this._childs[i];
-			if (comp != null && comp != this) {
-				comp.validateSize();
-			}
-		}
-	}
-
-	@Override
 	public void createUI(GLEx g) {
 		if (_component_isClose) {
 			return;
@@ -1128,6 +1117,23 @@ public abstract class LContainer extends LComponent implements IArray {
 		}
 	}
 
+	@Override
+	protected LContainer validateResize() {
+		if (_component_isClose) {
+			return this;
+		}
+		super.validateResize();
+		if (_childs != null && childCount > 0) {
+			for (int i = this.childCount - 1; i >= 0; i--) {
+				LComponent comp = _childs[i];
+				if (comp != null && comp != this && comp.getParent() == this) {
+					comp.validateResize();
+				}
+			}
+		}
+		return this;
+	}
+
 	public LContainer scrollBy(float x, float y) {
 		this._component_scrollX += x;
 		this._component_scrollY += y;
@@ -1209,6 +1215,14 @@ public abstract class LContainer extends LComponent implements IArray {
 			}
 		}
 		return this;
+	}
+
+	public float getStageX() {
+		return (getX() - getScreenX()) / getScaleX();
+	}
+
+	public float getStageY() {
+		return (getX() - getScreenX()) / getScaleY();
 	}
 
 	@Override

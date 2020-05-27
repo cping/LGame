@@ -1361,8 +1361,8 @@ public class SLGTest extends Stage {
 		// 玩家与敌方本回合操作对象临时存储用堆栈
 		final Array<Role> playerStack = new Array<Role>();
 		final Array<Role> enemyStack = new Array<Role>();
-
-		// 玩家回合与敌方回合标识(事实上就是两个互斥锁,loon默认是单线程的,有且只有一个mianloop(为了兼容gwt),
+		
+		// 玩家回合与敌方回合标识(事实上就是两个互斥锁,loon默认是单线程的,有且只有一个mainloop(为了兼容gwt),
 		// 所以异步处理上比较麻烦(当然写成多线程也可以,参考SRPG那个例子,不过那样就无法跑网页了(以后换成teavm后台应该可以)))
 		final BooleanValue playerRound = refBool();
 		final BooleanValue enemyRound = refBool();

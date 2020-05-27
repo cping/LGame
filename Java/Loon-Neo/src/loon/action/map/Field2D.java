@@ -608,8 +608,10 @@ public class Field2D implements IArray, Config {
 		this.setMap(mapArrays);
 		this.setTileWidth(tw);
 		this.setTileHeight(th);
-		this.width = mapArrays[0].length;
-		this.height = mapArrays.length;
+		if (mapArrays != null) {
+			this.width = mapArrays[0].length;
+			this.height = mapArrays.length;
+		}
 		if (_tileImpl == null) {
 			this._tileImpl = new TileHelper(tileWidth, tileHeight);
 		} else {
@@ -795,6 +797,9 @@ public class Field2D implements IArray, Config {
 	}
 
 	public Field2D setMap(int[][] mapArrays) {
+		if (mapArrays == null) {
+			return this;
+		}
 		this.mapArrays = mapArrays;
 		return this;
 	}
@@ -1026,6 +1031,14 @@ public class Field2D implements IArray, Config {
 	public Field2D setTileImpl(Tile tileImpl) {
 		this._tileImpl = tileImpl;
 		return this;
+	}
+
+	public int clampX(int x) {
+		return MathUtils.clamp(x, 0, this.width - 1);
+	}
+
+	public int clampY(int y) {
+		return MathUtils.clamp(y, 0, this.height - 1);
 	}
 
 	public boolean canOffsetTile(float x, float y) {

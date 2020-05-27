@@ -41,6 +41,7 @@ import loon.component.layout.LayoutManager;
 import loon.component.layout.LayoutPort;
 import loon.event.ClickListener;
 import loon.event.GameKey;
+import loon.event.ResizeListener;
 import loon.event.SysInput;
 import loon.event.SysKey;
 import loon.event.SysTouch;
@@ -216,6 +217,12 @@ public abstract class LComponent extends LObject<LContainer>
 	private LTexture[] _imageUI = null;
 
 	private Vector2f _offset = new Vector2f();
+
+	private ResizeListener<LComponent> _resizeListener;
+
+	protected float _fixedWidthOffset = 0f;
+
+	protected float _fixedHeightOffset = 0f;
 
 	protected boolean _component_elastic = false;
 
@@ -635,7 +642,7 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public LComponent setBounds(float dx, float dy, int width, int height) {
-		setLocation(dx, dy);
+		this.setLocation(dx, dy);
 		if (this._width != width || this._height != height) {
 			this._width = width;
 			this._height = height;
@@ -645,7 +652,7 @@ public abstract class LComponent extends LObject<LContainer>
 			if (_height == 0) {
 				_height = 1;
 			}
-			this.validateSize();
+			this.validateResize();
 		}
 		return this;
 	}
@@ -724,11 +731,8 @@ public abstract class LComponent extends LObject<LContainer>
 			if (this._height == 0) {
 				this._height = 1;
 			}
-			this.validateSize();
+			this.validateResize();
 		}
-	}
-
-	protected void validateSize() {
 	}
 
 	public void validatePosition() {
@@ -761,12 +765,12 @@ public abstract class LComponent extends LObject<LContainer>
 
 	@Override
 	public float getWidth() {
-		return (this._width * _scaleX);
+		return (this._width * _scaleX) - _fixedWidthOffset;
 	}
 
 	@Override
 	public float getHeight() {
-		return (this._height * _scaleY);
+		return (this._height * _scaleY) - _fixedHeightOffset;
 	}
 
 	public int width() {
@@ -775,6 +779,24 @@ public abstract class LComponent extends LObject<LContainer>
 
 	public int height() {
 		return (int) getHeight();
+	}
+
+	public float getFixedWidthOffset() {
+		return _fixedWidthOffset;
+	}
+
+	public LComponent setFixedWidthOffset(float fixedWidthOffset) {
+		this._fixedWidthOffset = fixedWidthOffset;
+		return this;
+	}
+
+	public float getFixedHeightOffset() {
+		return _fixedHeightOffset;
+	}
+
+	public LComponent setFixedHeightOffset(float fixedHeightOffset) {
+		this._fixedHeightOffset = fixedHeightOffset;
+		return this;
 	}
 
 	public RectBox getCollisionBox() {
@@ -1032,12 +1054,14 @@ public abstract class LComponent extends LObject<LContainer>
 		return this.isSelectDraw;
 	}
 
-	public void setDrawSelect(boolean select) {
+	public LComponent setDrawSelect(boolean select) {
 		this.isSelectDraw = select;
+		return this;
 	}
 
-	public void setScale(final float s) {
+	public LComponent setScale(final float s) {
 		this.setScale(s, s);
+		return this;
 	}
 
 	@Override
@@ -1120,6 +1144,14 @@ public abstract class LComponent extends LObject<LContainer>
 				return toPixelScaleY(SysTouch.getY() - _super.getY() - getY());
 			}
 		}
+	}
+
+	protected LComponent validateResize() {
+		if (this._resizeListener != null) {
+			this._resizeListener.onResize(this);
+		}
+		this.processResize();
+		return this;
 	}
 
 	@Override
@@ -1352,8 +1384,9 @@ public abstract class LComponent extends LObject<LContainer>
 		return _origin;
 	}
 
-	public void setOrigin(Origin o) {
+	public LComponent setOrigin(Origin o) {
 		this._origin = o;
+		return this;
 	}
 
 	@Override
@@ -1514,6 +1547,15 @@ public abstract class LComponent extends LObject<LContainer>
 		this._offset.setY(offsetY);
 	}
 
+	public ResizeListener<LComponent> getResizeListener() {
+		return _resizeListener;
+	}
+
+	public LComponent setResizeListener(ResizeListener<LComponent> listener) {
+		this._resizeListener = listener;
+		return this;
+	}
+
 	@Override
 	public void close() {
 		if (!_component_autoDestroy) {
@@ -1550,6 +1592,7 @@ public abstract class LComponent extends LObject<LContainer>
 		this._component_selected = false;
 		this._component_visible = false;
 		this._touchListener = null;
+		this._resizeListener = null;
 		this.input = null;
 		this.Click = null;
 		setState(State.DISPOSED);

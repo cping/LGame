@@ -43,6 +43,10 @@ public class PointF implements XY {
 		this.y = p.y;
 	}
 
+	public PointF set(float v) {
+		return set(v, v);
+	}
+
 	public PointF set(float x1, float y1) {
 		this.x = x1;
 		this.y = y1;

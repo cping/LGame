@@ -34,6 +34,7 @@ import loon.action.collision.CollisionObject;
 import loon.action.collision.Gravity;
 import loon.action.map.Field2D;
 import loon.canvas.LColor;
+import loon.event.ResizeListener;
 import loon.geom.Affine2f;
 import loon.geom.BoxSize;
 import loon.geom.Point;
@@ -79,6 +80,8 @@ public class Sprite extends LObject<ISprite>
 
 	private LColor _debugDrawColor = LColor.red;
 
+	private ResizeListener<Sprite> _resizeListener;
+	
 	private int transform;
 
 	private float _scaleX = 1f, _scaleY = 1f;
@@ -1249,6 +1252,22 @@ public class Sprite extends LObject<ISprite>
 	public float getCenterY() {
 		return getY() + getHeight() / 2f;
 	}
+
+	public ResizeListener<Sprite> getResizeListener() {
+		return _resizeListener;
+	}
+
+	public Sprite setResizeListener(ResizeListener<Sprite> listener) {
+		this._resizeListener = listener;
+		return this;
+	}
+
+	@Override
+	public void onResize() {
+		if (_resizeListener != null) {
+			_resizeListener.onResize(this);
+		}
+	}
 	
 	public boolean isClosed() {
 		return isDisposed();
@@ -1266,6 +1285,7 @@ public class Sprite extends LObject<ISprite>
 		setState(State.DISPOSED);
 		removeChilds();
 		removeActionEvents(this);
+		_resizeListener = null;
 	}
 
 }

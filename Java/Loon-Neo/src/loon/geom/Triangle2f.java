@@ -51,7 +51,11 @@ public class Triangle2f extends Shape implements Triangle {
 		this();
 		set(x, y, w, h);
 	}
-
+	
+	public Triangle2f(Vector2f t1, Vector2f t2, Vector2f t3) {
+		this(t1.x, t1.y, t2.x, t2.y, t3.x, t3.y);
+	}
+	
 	public Triangle2f(float x1, float y1, float x2, float y2, float x3, float y3) {
 		this();
 		float dx1 = x2 - x1;

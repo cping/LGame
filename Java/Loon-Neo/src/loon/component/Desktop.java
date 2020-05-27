@@ -33,6 +33,7 @@ import loon.component.layout.LayoutPort;
 import loon.component.layout.Margin;
 import loon.event.GameKey;
 import loon.event.QueryEvent;
+import loon.event.ResizeListener;
 import loon.event.SysInput;
 import loon.event.SysTouch;
 import loon.geom.RectBox;
@@ -49,6 +50,8 @@ public class Desktop implements Visible, LRelease {
 
 	// 输入设备监听
 	protected final Screen input;
+
+	private ResizeListener<Desktop> _resizeListener;
 
 	private LContainer contentPane;
 
@@ -991,11 +994,19 @@ public class Desktop implements Visible, LRelease {
 		return this;
 	}
 
-	public Desktop resize() {
+	public Desktop freeComponent() {
 		this.isClicked = false;
 		this.hoverComponent = null;
 		this.selectedComponent = null;
 		this.clickComponent[0] = null;
+		return this;
+	}
+
+	public Desktop resize() {
+		freeComponent();
+		if (_resizeListener != null) {
+			_resizeListener.onResize(this);
+		}
 		if (contentPane != null) {
 			contentPane.processResize();
 		}
@@ -1057,12 +1068,49 @@ public class Desktop implements Visible, LRelease {
 		return contentPane.margin(vertical, left, top, right, bottom);
 	}
 
+	public Screen getScreen() {
+		return input;
+	}
+
+	public float getScreenX() {
+		return input == null ? 0 : input.getX();
+	}
+
+	public float getScreenY() {
+		return input == null ? 0 : input.getY();
+	}
+
+	public float getX() {
+		return contentPane == null ? 0 : contentPane.getX();
+	}
+
+	public float getY() {
+		return contentPane == null ? 0 : contentPane.getY();
+	}
+
+	public float getStageX() {
+		return (getX() - getScreenX()) / contentPane.getScaleX();
+	}
+
+	public float getStageY() {
+		return (getX() - getScreenX()) / contentPane.getScaleY();
+	}
+
 	public Screen getInput() {
 		return input;
 	}
 
 	public String getName() {
 		return desktop_name;
+	}
+
+	public ResizeListener<Desktop> getResizeListener() {
+		return _resizeListener;
+	}
+
+	public Desktop setResizeListener(ResizeListener<Desktop> listener) {
+		this._resizeListener = listener;
+		return this;
 	}
 
 	@Override
@@ -1092,6 +1140,7 @@ public class Desktop implements Visible, LRelease {
 			contentPane.close();
 		}
 		this.dclosed = true;
+		this._resizeListener = null;
 		LSystem.popDesktopPool(this);
 	}
 
