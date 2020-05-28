@@ -224,11 +224,13 @@ public class LScrollBar extends LComponent {
 	}
 
 	@Override
-	public void setSize(int w, int h) {
+	public LScrollBar setSize(float w, float h) {
 		super.setSize(w, h);
 		adjustSlider();
+		return this;
 	}
 
+	@Override
 	public void update(final long elapsedTime) {
 		super.update(elapsedTime);
 		if (SysTouch.isDrag()) {

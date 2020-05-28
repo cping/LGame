@@ -441,7 +441,7 @@ public class LLayer extends ActorLayer {
 
 	public int getScroll(RectBox visibleRect, int orientation, int direction) {
 		int cellSize = this.getCellSize();
-		double scrollPos = 0.0D;
+		float scrollPos = 0f;
 		if (orientation == 0) {
 			if (direction < 0) {
 				scrollPos = visibleRect.getMinX();

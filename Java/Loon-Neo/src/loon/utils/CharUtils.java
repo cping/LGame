@@ -429,6 +429,10 @@ public class CharUtils {
     public static boolean isSurrogatePair(char high, char low) {
         return isHighSurrogate(high) && isLowSurrogate(low);
     }
+
+    public static boolean isInherited(char c) {
+        return c == '~';
+    }
     
 	protected static boolean isReserved(int c) {
 		return isGenericDelimiter(c) || isSubDelimiter(c);

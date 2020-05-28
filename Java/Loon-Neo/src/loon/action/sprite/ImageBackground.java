@@ -27,6 +27,9 @@ import loon.geom.PointF;
 import loon.utils.MathUtils;
 import loon.LSystem;
 
+/**
+ * 背景精灵具体实现,可拖拽
+ */
 public class ImageBackground extends Background {
 
 	private PointF _scrollDrag;

@@ -39,6 +39,7 @@ import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.utils.Flip;
+import loon.utils.MathUtils;
 
 /**
  * 和瓦片地图绑定的动作对象,用来抽象一些简单的地图中精灵动作,允许渲染到SpriteBatch或者GLEx中
@@ -46,7 +47,7 @@ import loon.utils.Flip;
 public abstract class ActionObject extends LObject<ISprite> implements Flip<ActionObject>, Config, ISprite {
 
 	private ResizeListener<ActionObject> _resizeListener;
-	
+
 	private Origin _origin = Origin.CENTER;
 
 	private Vector2f _pivot = new Vector2f(-1, -1);
@@ -72,9 +73,9 @@ public abstract class ActionObject extends LObject<ISprite> implements Flip<Acti
 	protected float dstWidth, dstHeight;
 
 	protected float fixedWidthOffset = 0;
-	
+
 	protected float fixedHeightOffset = 0;
-	
+
 	private LColor _filterColor = new LColor(1f, 1f, 1f, 1f);
 
 	private LColor _debugDrawColor = LColor.red;
@@ -154,7 +155,7 @@ public abstract class ActionObject extends LObject<ISprite> implements Flip<Acti
 							gl.drawRect(nx, ny, width, height, _debugDrawColor);
 							gl.setAlltextures(useAll);
 							gl.restoreTx();
-						}else{
+						} else {
 							batch.setColor(_debugDrawColor);
 							batch.drawRect(nx, ny, width, height);
 							batch.setColor(tmp);
@@ -241,29 +242,40 @@ public abstract class ActionObject extends LObject<ISprite> implements Flip<Acti
 		return new LColor(this._filterColor);
 	}
 
-	public void setSize(float width, float height) {
-		this.dstWidth = width;
-		this.dstHeight = height;
+	public ActionObject setWidth(float w) {
+		if (w != this.dstWidth) {
+			this.onResize();
+		}
+		this.dstWidth = MathUtils.max(1f, w);
+		return this;
 	}
 
-	public void setWidth(float w) {
-		this.dstWidth = w;
+	public ActionObject setHeight(float h) {
+		if (h != this.dstHeight) {
+			this.onResize();
+		}
+		this.dstHeight = MathUtils.max(1f, h);
+		return this;
 	}
 
-	public void setHeight(float h) {
-		this.dstHeight = h;
+	public ActionObject setSize(float w, float h) {
+		if (this.dstWidth != w || this.dstHeight != h) {
+			this.dstWidth = MathUtils.max(1f, w);
+			this.dstHeight = MathUtils.max(1f, h);
+			this.onResize();
+		}
+		return this;
 	}
 
 	public boolean isCollision(ActionObject o) {
 		RectBox src = getCollisionArea();
 		RectBox dst = o.getCollisionArea();
-		if (src.intersects(dst)||src.contains(dst)) {
+		if (src.intersects(dst) || src.contains(dst)) {
 			return true;
 		}
 		return false;
 	}
 
-	
 	@Override
 	public float getWidth() {
 		return (int) ((dstWidth > 1 ? (int) dstWidth : animation.getSpriteImage().width()) * scaleX) - fixedWidthOffset;
@@ -271,7 +283,8 @@ public abstract class ActionObject extends LObject<ISprite> implements Flip<Acti
 
 	@Override
 	public float getHeight() {
-		return (int) ((dstHeight > 1 ? (int) dstHeight : animation.getSpriteImage().height()) * scaleY) - fixedHeightOffset;
+		return (int) ((dstHeight > 1 ? (int) dstHeight : animation.getSpriteImage().height()) * scaleY)
+				- fixedHeightOffset;
 	}
 
 	public Attribute getAttribute() {
@@ -536,7 +549,7 @@ public abstract class ActionObject extends LObject<ISprite> implements Flip<Acti
 		RectBox b = new RectBox(0, rectDst.getY(), rectDst.getWidth(), rectDst.getHeight());
 		return a.intersects(b);
 	}
-	
+
 	public ResizeListener<ActionObject> getResizeListener() {
 		return _resizeListener;
 	}
@@ -552,7 +565,7 @@ public abstract class ActionObject extends LObject<ISprite> implements Flip<Acti
 			_resizeListener.onResize(this);
 		}
 	}
-	
+
 	public boolean isClosed() {
 		return isDisposed();
 	}

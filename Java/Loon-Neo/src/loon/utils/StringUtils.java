@@ -1198,6 +1198,22 @@ final public class StringUtils extends CharUtils {
 	}
 
 	/**
+	 * 检查字符串数值是否为相对位置
+	 * 
+	 * @param mes
+	 * @return
+	 */
+	public static boolean isRelative(String mes) {
+		if (isEmpty(mes) || mes.length() < 2) {
+			return false;
+		}
+		if (!mes.substring(0, 1).equals("~")) {
+			return false;
+		}
+		return MathUtils.isNumber(mes.substring(1));
+	}
+
+	/**
 	 * 变更数字字符串格式为指定分隔符货币格式(比如100000000用分隔符","分割后就是100,000,000)
 	 * 
 	 * @param value
@@ -1748,7 +1764,8 @@ final public class StringUtils extends CharUtils {
 	 * @return
 	 */
 	public static int indexOf(CharSequence c, char ch, int start, int end) {
-		if ((c instanceof StringBuffer) || (c instanceof StringBuilder) || (c instanceof StrBuilder) || (c instanceof String)) {
+		if ((c instanceof StringBuffer) || (c instanceof StringBuilder) || (c instanceof StrBuilder)
+				|| (c instanceof String)) {
 			final int INDEX_INCREMENT = 500;
 			char[] temp = new char[INDEX_INCREMENT];
 

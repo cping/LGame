@@ -57,6 +57,11 @@ public class CharacterInfo {
 	private int equipManaPoint;
 	private int equipAgility;
 
+	// 角色性别
+	private int sexType;
+	// 角色年龄
+	private int ageValue;
+
 	public int updateAttack(float attackModifier) {
 		return (int) (attackModifier * (float) (this.baseAttack + this.equipAttack));
 	}
@@ -96,165 +101,203 @@ public class CharacterInfo {
 	public int updateAgility(float agilityModifier) {
 		return (int) (agilityModifier * (float) (this.baseAgility + this.equipAgility));
 	}
-
+	
 	public int getBaseMaxHealth() {
 		return this.baseMaxHealth;
 	}
 
-	public void setBaseMaxHealth(int baseMaxHealth) {
+	public CharacterInfo setBaseMaxHealth(int baseMaxHealth) {
 		this.baseMaxHealth = baseMaxHealth;
+		return this;
 	}
 
 	public int getBaseAttack() {
 		return this.baseAttack;
 	}
 
-	public void setBaseAttack(int baseAttack) {
+	public CharacterInfo setBaseAttack(int baseAttack) {
 		this.baseAttack = baseAttack;
+		return this;
 	}
 
 	public int getBaseDefence() {
 		return this.baseDefence;
 	}
 
-	public void setBaseDefence(int baseDefence) {
+	public CharacterInfo setBaseDefence(int baseDefence) {
 		this.baseDefence = baseDefence;
+		return this;
 	}
 
 	public int getBaseStrength() {
 		return this.baseStrength;
 	}
 
-	public void setBaseStrength(int baseStrength) {
+	public CharacterInfo setBaseStrength(int baseStrength) {
 		this.baseStrength = baseStrength;
+		return this;
 	}
 
 	public int getBaseIntelligence() {
 		return this.baseIntelligence;
 	}
 
-	public void setBaseIntelligence(int baseIntelligence) {
+	public CharacterInfo setBaseIntelligence(int baseIntelligence) {
 		this.baseIntelligence = baseIntelligence;
+		return this;
 	}
 
 	public int getBaseFitness() {
 		return this.baseFitness;
 	}
 
-	public void setBaseFitness(int baseFitness) {
+	public CharacterInfo setBaseFitness(int baseFitness) {
 		this.baseFitness = baseFitness;
+		return this;
 	}
 
 	public int getBaseDexterity() {
 		return this.baseDexterity;
 	}
 
-	public void setBaseDexterity(int baseDexterity) {
+	public CharacterInfo setBaseDexterity(int baseDexterity) {
 		this.baseDexterity = baseDexterity;
+		return this;
 	}
 
 	public int getEquipMaxHealth() {
 		return this.equipMaxHealth;
 	}
 
-	public void setEquipMaxHealth(int equipMaxHealth) {
+	public CharacterInfo setEquipMaxHealth(int equipMaxHealth) {
 		this.equipMaxHealth = equipMaxHealth;
+		return this;
 	}
 
 	public int getEquipAttack() {
 		return this.equipAttack;
 	}
 
-	public void setEquipAttack(int equipAttack) {
+	public CharacterInfo setEquipAttack(int equipAttack) {
 		this.equipAttack = equipAttack;
+		return this;
 	}
 
 	public int getEquipDefence() {
 		return this.equipDefence;
 	}
 
-	public void setEquipDefence(int equipDefence) {
+	public CharacterInfo setEquipDefence(int equipDefence) {
 		this.equipDefence = equipDefence;
+		return this;
 	}
 
 	public int getEquipStrength() {
 		return this.equipStrength;
 	}
 
-	public void setEquipStrength(int equipStrength) {
+	public CharacterInfo setEquipStrength(int equipStrength) {
 		this.equipStrength = equipStrength;
+		return this;
 	}
 
 	public int getEquipIntelligence() {
 		return this.equipIntelligence;
 	}
 
-	public void setEquipIntelligence(int equipIntelligence) {
+	public CharacterInfo setEquipIntelligence(int equipIntelligence) {
 		this.equipIntelligence = equipIntelligence;
+		return this;
 	}
 
 	public int getEquipFitness() {
 		return this.equipFitness;
 	}
 
-	public void setEquipFitness(int equipFitness) {
+	public CharacterInfo setEquipFitness(int equipFitness) {
 		this.equipFitness = equipFitness;
+		return this;
 	}
 
 	public int getEquipDexterity() {
 		return this.equipDexterity;
 	}
 
-	public void setEquipDexterity(int equipDexterity) {
+	public CharacterInfo setEquipDexterity(int equipDexterity) {
 		this.equipDexterity = equipDexterity;
+		return this;
 	}
 
 	public int getBaseSkillPoints() {
 		return baseSkillPoints;
 	}
 
-	public void setBaseSkillPoints(int baseSkillPoints) {
+	public CharacterInfo setBaseSkillPoints(int baseSkillPoints) {
 		this.baseSkillPoints = baseSkillPoints;
+		return this;
 	}
 
 	public int getBaseManaPoint() {
 		return baseManaPoint;
 	}
 
-	public void setBaseManaPoint(int baseManaPoint) {
+	public CharacterInfo setBaseManaPoint(int baseManaPoint) {
 		this.baseManaPoint = baseManaPoint;
+		return this;
 	}
 
 	public int getBaseAgility() {
 		return baseAgility;
 	}
 
-	public void setBaseAgility(int baseAgility) {
+	public CharacterInfo setBaseAgility(int baseAgility) {
 		this.baseAgility = baseAgility;
+		return this;
 	}
 
 	public int getEquipSkillPoints() {
 		return equipSkillPoints;
 	}
 
-	public void setEquipSkillPoints(int equipSkillPoints) {
+	public CharacterInfo setEquipSkillPoints(int equipSkillPoints) {
 		this.equipSkillPoints = equipSkillPoints;
+		return this;
 	}
 
 	public int getEquipManaPoint() {
 		return equipManaPoint;
 	}
 
-	public void setEquipManaPoint(int equipManaPoint) {
+	public CharacterInfo setEquipManaPoint(int equipManaPoint) {
 		this.equipManaPoint = equipManaPoint;
+		return this;
 	}
 
 	public int getEquipAgility() {
 		return equipAgility;
 	}
 
-	public void setEquipAgility(int equipAgility) {
+	public CharacterInfo setEquipAgility(int equipAgility) {
 		this.equipAgility = equipAgility;
+		return this;
+	}
+
+	public CharacterInfo setSexType(int sextype) {
+		this.sexType = sextype;
+		return this;
+	}
+
+	public int getSexType() {
+		return this.sexType;
+	}
+
+	public CharacterInfo setAgeValue(int agevalue) {
+		this.ageValue = agevalue;
+		return this;
+	}
+	
+	public int getAgeValue() {
+		return ageValue;
 	}
 
 }

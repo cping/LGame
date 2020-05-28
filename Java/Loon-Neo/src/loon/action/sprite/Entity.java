@@ -44,6 +44,7 @@ import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.utils.IArray;
 import loon.utils.LayerSorter;
+import loon.utils.MathUtils;
 import loon.utils.StrBuilder;
 import loon.utils.TArray;
 
@@ -990,26 +991,37 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	@Override
 	public void setWidth(float w) {
-		this._width = w;
+		if (w != this._width) {
+			this.onResize();
+		}
+		this._width = MathUtils.max(1f, w);
 	}
 
 	@Override
 	public void setHeight(float h) {
-		this._height = h;
+		if (h != this._height) {
+			this.onResize();
+		}
+		this._height = MathUtils.max(1f, h);
 	}
 
-	public void setSize(float w, float h) {
-		setWidth(w);
-		setHeight(h);
+	public Entity setSize(float w, float h) {
+		if (this._width != w || this._height != h) {
+			this._width = MathUtils.max(1f, w);
+			this._height = MathUtils.max(1f, h);
+			this.onResize();
+		}
+		return this;
 	}
 
-	public void setBounds(RectBox rect) {
-		this.setBounds(rect.x, rect.y, rect.width, rect.height);
+	public Entity setBounds(RectBox rect) {
+		return this.setBounds(rect.x, rect.y, rect.width, rect.height);
 	}
 
-	public void setBounds(float x, float y, float width, float height) {
+	public Entity setBounds(float x, float y, float width, float height) {
 		this.setLocation(x, y);
 		this.setSize(width, height);
+		return this;
 	}
 
 	public Dimension getDimension() {
@@ -1031,26 +1043,30 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		return _shear;
 	}
 
-	public void setShear(RectBox s) {
+	public Entity setShear(RectBox s) {
 		allocateShear();
 		this._shear.setBounds(s);
+		return this;
 	}
 
-	public void setShear(float x, float y, float w, float h) {
+	public Entity setShear(float x, float y, float w, float h) {
 		allocateShear();
 		this._shear.setBounds(x, y, w, h);
+		return this;
 	}
 
-	public void setClip(float x, float y, float w, float h) {
+	public Entity setClip(float x, float y, float w, float h) {
 		setShear(x, y, w, h);
+		return this;
 	}
 
 	public boolean isDeform() {
 		return _deform;
 	}
 
-	public void setDeform(boolean d) {
+	public Entity setDeform(boolean d) {
 		this._deform = d;
+		return this;
 	}
 
 	@Override
@@ -1066,8 +1082,9 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		return _origin;
 	}
 
-	public void setOrigin(Origin o) {
+	public Entity setOrigin(Origin o) {
 		this._origin = o;
+		return this;
 	}
 
 	public boolean isStopUpdate() {
@@ -1393,6 +1410,14 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	public void onResize() {
 		if (_resizeListener != null) {
 			_resizeListener.onResize(this);
+		}
+		if (_childrens != null) {
+			for (int i = this._childrens.size - 1; i >= 0; i--) {
+				final IEntity child = this._childrens.get(i);
+				if (child != null && child != this) {
+					child.onResize();
+				}
+			}
 		}
 	}
 

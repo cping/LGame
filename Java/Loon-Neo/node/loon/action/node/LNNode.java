@@ -140,6 +140,9 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 
 	@Override
 	public void setWidth(float w) {
+		if (this._size_width != w) {
+			this.onResize();
+		}
 		this._size_width = w;
 		if (_orig_width == 0) {
 			this._orig_width = w;
@@ -148,6 +151,9 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 
 	@Override
 	public void setHeight(float h) {
+		if (this._size_height != h) {
+			this.onResize();
+		}
 		this._size_height = h;
 		if (_orig_height == 0) {
 			this._orig_height = h;
@@ -155,8 +161,17 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 	}
 
 	void setNodeSize(float w, float h) {
-		setWidth(w);
-		setHeight(h);
+		if (this._size_height != h || this._size_height != h) {
+			this.onResize();
+		}
+		this._size_width = w;
+		this._size_height = h;
+		if (_orig_width == 0) {
+			this._orig_width = w;
+		}
+		if (_orig_height == 0) {
+			this._orig_height = h;
+		}
 	}
 
 	protected float _fixedWidthOffset = 0f;
@@ -1451,11 +1466,19 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 		this._resizeListener = listener;
 		return this;
 	}
-	
+
 	@Override
 	public void onResize() {
 		if (_resizeListener != null) {
 			_resizeListener.onResize(this);
+		}
+		if (childs != null) {
+			for (int i = this.childs.length - 1; i >= 0; i--) {
+				final LNNode child = this.childs[i];
+				if (child != null && child != this) {
+					child.onResize();
+				}
+			}
 		}
 	}
 

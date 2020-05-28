@@ -75,6 +75,10 @@ public class StopwatchTimer {
 		return (currentTime() - _from) >= _target;
 	}
 
+	public boolean isPassedTime(long interval) {
+		return currentTime() - _from >= interval;
+	}
+
 	public StopwatchTimer reset() {
 		start();
 		return this;
@@ -94,7 +98,7 @@ public class StopwatchTimer {
 	public StopwatchTimer end() {
 		return stop();
 	}
-	
+
 	public StopwatchTimer stop() {
 		this._lastStop = this._to;
 		this._to = currentTime();
@@ -116,17 +120,11 @@ public class StopwatchTimer {
 	public long getEndTime() {
 		return this._to;
 	}
-	
+
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("StopwatchTimer");
-		builder.kv("from", _from)
-		.comma()
-		.kv("to", _to)
-		.comma()
-		.kv("lastStop", _lastStop)
-		.comma()
-		.kv("target", _target);
+		builder.kv("from", _from).comma().kv("to", _to).comma().kv("lastStop", _lastStop).comma().kv("target", _target);
 		return builder.toString();
 	}
 }

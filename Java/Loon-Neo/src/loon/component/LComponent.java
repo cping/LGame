@@ -641,22 +641,6 @@ public abstract class LComponent extends LObject<LContainer>
 		this.validatePosition();
 	}
 
-	public LComponent setBounds(float dx, float dy, int width, int height) {
-		this.setLocation(dx, dy);
-		if (this._width != width || this._height != height) {
-			this._width = width;
-			this._height = height;
-			if (_width == 0) {
-				_width = 1;
-			}
-			if (_height == 0) {
-				_height = 1;
-			}
-			this.validateResize();
-		}
-		return this;
-	}
-
 	@Override
 	public void setX(Integer x) {
 		if (this.getX() != x || x == 0) {
@@ -712,27 +696,19 @@ public abstract class LComponent extends LObject<LContainer>
 		}
 	}
 
-	public void setBounds(int x, int y, int w, int h) {
-		setLocation(x, y);
-		setSize(w, h);
+	public LComponent setBounds(float dx, float dy, int width, int height) {
+		this.setLocation(dx, dy);
+		this.setSize(width, height);
+		return this;
 	}
 
-	public void setSize(float w, float h) {
-		setSize((int) w, (int) h);
-	}
-
-	public void setSize(int w, int h) {
+	public LComponent setSize(float w, float h) {
 		if (this._width != w || this._height != h) {
-			this._width = w;
-			this._height = h;
-			if (this._width == 0) {
-				this._width = 1;
-			}
-			if (this._height == 0) {
-				this._height = 1;
-			}
+			this._width = MathUtils.max(1f, w);
+			this._height = MathUtils.max(1f, h);
 			this.validateResize();
 		}
+		return this;
 	}
 
 	public void validatePosition() {
@@ -755,12 +731,18 @@ public abstract class LComponent extends LObject<LContainer>
 
 	@Override
 	public void setHeight(float height) {
-		this._height = height;
+		if (height != this._height) {
+			this.validateResize();
+		}
+		this._height = MathUtils.max(1f, height);
 	}
 
 	@Override
 	public void setWidth(float width) {
-		this._width = width;
+		if (width != this._width) {
+			this.validateResize();
+		}
+		this._width = MathUtils.max(1f, width);
 	}
 
 	@Override

@@ -601,16 +601,16 @@ public class Field2D implements IArray, Config {
 		return getTile(x, y);
 	}
 
-	public Field2D set(int[][] mapArrays, int tw, int th) {
+	public Field2D set(int[][] arrays, int tw, int th) {
 		if (this.allowMove == null) {
 			this.allowMove = new IntArray();
 		}
-		this.setMap(mapArrays);
+		this.setMap(arrays);
 		this.setTileWidth(tw);
 		this.setTileHeight(th);
-		if (mapArrays != null) {
-			this.width = mapArrays[0].length;
-			this.height = mapArrays.length;
+		if (arrays != null) {
+			this.width = arrays[0].length;
+			this.height = arrays.length;
 		}
 		if (_tileImpl == null) {
 			this._tileImpl = new TileHelper(tileWidth, tileHeight);
@@ -796,11 +796,11 @@ public class Field2D implements IArray, Config {
 		return CollectionUtils.copyOf(mapArrays);
 	}
 
-	public Field2D setMap(int[][] mapArrays) {
-		if (mapArrays == null) {
+	public Field2D setMap(int[][] arrays) {
+		if (arrays == null) {
 			return this;
 		}
-		this.mapArrays = mapArrays;
+		this.mapArrays = arrays;
 		return this;
 	}
 
