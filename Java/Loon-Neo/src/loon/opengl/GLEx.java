@@ -2738,6 +2738,45 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	/**
+	 * 绘制一个由虚线组成的矩形
+	 * 
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
+	 * @param color
+	 * @param divisions
+	 * @return
+	 */
+	public final GLEx drawDashRect(float x, float y, float width, float height, LColor color, int divisions) {
+		if (divisions <= 1) {
+			return drawRect(x, y, width, height, color);
+		}
+		int argb = this.lastBrush.baseColor;
+		setColor(color);
+		float tempX = x;
+		float tempY = y;
+		float tempWidth = tempX + width;
+		float tempHeight = tempY + height;
+		if (tempX > tempWidth) {
+			x = tempX;
+			tempX = tempWidth;
+			tempWidth = x;
+		}
+		if (tempY > tempHeight) {
+			y = tempY;
+			tempY = tempHeight;
+			tempHeight = y;
+		}
+		drawDashLine(tempX, tempY, tempWidth, tempY, divisions);
+		drawDashLine(tempX, tempY + 1, tempX, tempHeight, divisions);
+		drawDashLine(tempWidth, tempHeight, tempX + 1, tempHeight, divisions);
+		drawDashLine(tempWidth, tempHeight - 1, tempWidth, tempY + 1, divisions);
+		setColor(argb);
+		return this;
+	}
+
+	/**
 	 * 填充一个矩形
 	 * 
 	 * @param x1

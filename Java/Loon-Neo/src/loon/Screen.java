@@ -46,6 +46,7 @@ import loon.canvas.Pixmap;
 import loon.component.Desktop;
 import loon.component.LClickButton;
 import loon.component.LComponent;
+import loon.component.LDragging;
 import loon.component.LLabel;
 import loon.component.LLayer;
 import loon.component.LMenuSelect;
@@ -1303,7 +1304,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public Screen addTouchLimit(ActionBind act) {
-		if (act != null && !_action_limits.contains(act)) {
+		if (act != null && !_action_limits.contains(act) && !(act instanceof LDragging)) {
 			_action_limits.add(act);
 		}
 		return this;

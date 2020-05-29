@@ -140,8 +140,15 @@ public class Actions {
 	}
 
 	private void deleteElement(ActionElement element) {
-		element.actions.clear();
-		actions.remove(element.key);
+		if (element != null) {
+			for (ActionEvent eve : element.actions) {
+				if (eve != null) {
+					eve.forceCompleted();
+				}
+			}
+			element.actions.clear();
+			actions.remove(element.key);
+		}
 	}
 
 	public void removeAllActions(ActionBind actObject) {
@@ -152,6 +159,11 @@ public class Actions {
 		if (o != null) {
 			ActionElement element = (ActionElement) o;
 			if (element != null) {
+				for (ActionEvent eve : element.actions) {
+					if (eve != null) {
+						eve.forceCompleted();
+					}
+				}
 				element.actions.clear();
 				deleteElement(element);
 			}
@@ -159,7 +171,10 @@ public class Actions {
 	}
 
 	private void removeAction(int index, ActionElement element) {
-		element.actions.removeIndex(index);
+		ActionEvent eve = element.actions.removeIndex(index);
+		if (eve != null) {
+			eve.forceCompleted();
+		}
 		if (element.actionIndex >= index) {
 			element.actionIndex--;
 		}

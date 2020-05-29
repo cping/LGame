@@ -535,15 +535,15 @@ public class Field2D implements IArray, Config {
 	}
 
 	public Field2D(int w, int h) {
-		this(w, h, 32, 32, -1);
+		this(w, h, 32, 32, 0);
 	}
 
 	public Field2D(Screen screen, int tw, int th) {
-		this(MathUtils.floor(screen.getWidth() / tw), MathUtils.floor(screen.getHeight() / th), tw, th, -1);
+		this(MathUtils.floor(screen.getWidth() / tw), MathUtils.floor(screen.getHeight() / th), tw, th, 0);
 	}
 
 	public Field2D(int w, int h, int tw, int th) {
-		this(w, h, tw, th, -1);
+		this(w, h, tw, th, 0);
 	}
 
 	public Field2D(int w, int h, int tw, int th, int val) {

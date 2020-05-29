@@ -58,37 +58,42 @@ public class TransferTo extends ActionEvent {
 		this.controllingY = controlY;
 	}
 
-	public void setControl(boolean controlX, boolean controlY) {
+	public TransferTo setControl(boolean controlX, boolean controlY) {
 		this.controllingX = controlX;
 		this.controllingY = controlY;
+		return this;
 	}
 
-	public void reset() {
+	public TransferTo reset() {
 		currentPosition = startPos;
+		return this;
 	}
 
 	public float getStartPos() {
 		return startPos;
 	}
 
-	public void setStartPos(float startPos) {
+	public TransferTo setStartPos(float startPos) {
 		this.startPos = startPos;
+		return this;
 	}
 
 	public float getEndPos() {
 		return endPos;
 	}
 
-	public void setEndPos(float endPos) {
+	public TransferTo setEndPos(float endPos) {
 		this.endPos = endPos;
+		return this;
 	}
 
 	public boolean isControllingX() {
 		return controllingX;
 	}
 
-	public void setControllingX(boolean controllingX) {
+	public TransferTo setControllingX(boolean controllingX) {
 		this.controllingX = controllingX;
+		return this;
 	}
 
 	public boolean setControlX(boolean control) {

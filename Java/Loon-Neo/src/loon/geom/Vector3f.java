@@ -1161,8 +1161,7 @@ public class Vector3f implements Serializable, XYZ {
 		this.z = MathUtils.random();
 		return this;
 	}
-	
-	
+
 	@Override
 	public String toString() {
 		return "(" + x + ", " + y + ", " + z + ")";

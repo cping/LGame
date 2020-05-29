@@ -181,6 +181,18 @@ public abstract class ActionEvent {
 		original = e.original;
 		return this;
 	}
+	
+	public ActionEvent forceCompleted() {
+		if (!this._isCompleted && this.original != null) {
+			this._isCompleted = true;
+			String name = this.getName();
+			if ("flash".equals(name) || "fade".equals(name) || "show".equals(name)) {
+				original.setAlpha(1f);
+				original.setVisible(true);
+			}
+		}
+		return this;
+	}
 
 	public ActionEvent kill() {
 		this._isCompleted = true;
