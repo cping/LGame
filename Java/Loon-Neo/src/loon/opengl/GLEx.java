@@ -1849,25 +1849,27 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	public GLEx drawDashCircle(float x, float y, float radius, float width) {
+		final float newRadius = radius / 2f;
+		final float newX = x + newRadius;
+		final float newY = y + newRadius;
 		float scaleFactor = 0.6f;
-		int sides = 10 + MathUtils.floor(radius * scaleFactor);
+		int sides = 10 + MathUtils.floor(newRadius * scaleFactor);
 		if (sides % 2 == 1) {
 			sides++;
 		}
-
 		tempLocation.set(0f);
 
 		for (int i = 0; i < sides; i++) {
 			if (i % 2 == 0) {
 				continue;
 			}
-			tempLocation.set(radius, 0).setAngle(360f / sides * i + 90);
+			tempLocation.set(newRadius, 0).setAngle(360f / sides * i + 90);
 			float x1 = tempLocation.x;
 			float y1 = tempLocation.y;
 
-			tempLocation.set(radius, 0).setAngle(360f / sides * (i + 1) + 90);
+			tempLocation.set(newRadius, 0).setAngle(360f / sides * (i + 1) + 90);
 
-			drawLine(x1 + x, y1 + y, tempLocation.x + x, tempLocation.y + y, width);
+			drawLine(x1 + newX, y1 + newY, tempLocation.x + newX, tempLocation.y + newY, width);
 		}
 		return this;
 	}
@@ -2546,6 +2548,28 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		} else {
 			return this.drawArc(x1, y1, width, height, 32, 0, 360);
 		}
+	}
+
+	/**
+	 * 绘制椭圆
+	 * 
+	 * @param x1
+	 * @param y1
+	 * @param width
+	 * @param height
+	 * @param c
+	 * @return
+	 */
+	public GLEx drawOval(float x1, float y1, float width, float height, LColor c) {
+		int tint = color();
+		setTint(c);
+		if (this.lastBrush.alltextures) {
+			drawOvalImpl(x1, y1, width, height);
+		} else {
+			this.drawArc(x1, y1, width, height, 32, 0, 360);
+		}
+		setTint(tint);
+		return this;
 	}
 
 	/**

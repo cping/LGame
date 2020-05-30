@@ -367,6 +367,26 @@ public abstract class LContainer extends LComponent implements IArray {
 		return list;
 	}
 
+	public TArray<LComponent> findNameContains(String... names) {
+		if (_component_isClose) {
+			return null;
+		}
+		TArray<LComponent> list = new TArray<LComponent>();
+		final int size = this.childCount;
+		for (String name : names) {
+			for (int i = size - 1; i > -1; i--) {
+				LComponent comp = this._childs[i];
+				if (comp != null) {
+					String childName = comp.getName();
+					if (childName != null && childName.contains(name)) {
+						list.add(comp);
+					}
+				}
+			}
+		}
+		return list;
+	}
+
 	/**
 	 * 返回一组没有指定名的组件
 	 * 

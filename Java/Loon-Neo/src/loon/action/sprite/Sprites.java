@@ -594,9 +594,11 @@ public class Sprites implements IArray, Visible, LRelease {
 		for (Object tag : tags) {
 			for (int i = size - 1; i > -1; i--) {
 				if (this._sprites[i] instanceof ISprite) {
-					ISprite sp = (ISprite) this._sprites[i];
-					if (!tag.equals(sp.getTag())) {
-						list.add(sp);
+					ISprite sp = this._sprites[i];
+					if (sp != null) {
+						if (!tag.equals(sp.getTag())) {
+							list.add(sp);
+						}
 					}
 				}
 			}
@@ -619,9 +621,33 @@ public class Sprites implements IArray, Visible, LRelease {
 		for (String name : names) {
 			for (int i = size - 1; i > -1; i--) {
 				if (this._sprites[i] instanceof ISprite) {
-					ISprite sp = (ISprite) this._sprites[i];
-					if (name.equals(sp.getName())) {
-						list.add(sp);
+					ISprite sp = this._sprites[i];
+					if (sp != null) {
+						if (name.equals(sp.getName())) {
+							list.add(sp);
+						}
+					}
+				}
+			}
+		}
+		return list;
+	}
+
+	public TArray<ISprite> findNameContains(String... names) {
+		if (_closed) {
+			return null;
+		}
+		TArray<ISprite> list = new TArray<ISprite>();
+		final int size = this._size;
+		for (String name : names) {
+			for (int i = size - 1; i > -1; i--) {
+				if (this._sprites[i] instanceof ISprite) {
+					ISprite sp = this._sprites[i];
+					if (sp != null) {
+						String childName = sp.getName();
+						if (childName.contains(name)) {
+							list.add(sp);
+						}
 					}
 				}
 			}
@@ -1222,7 +1248,21 @@ public class Sprites implements IArray, Visible, LRelease {
 		}
 		return controls;
 	}
-
+	
+	public SpriteControls findNameContainsToSpriteControls(String... names) {
+		if (_closed) {
+			return new SpriteControls();
+		}
+		SpriteControls controls = null;
+		if (_sprites != null) {
+			TArray<ISprite> sps = findNameContains(names);
+			controls = new SpriteControls(sps);
+		} else {
+			controls = new SpriteControls();
+		}
+		return controls;
+	}
+	
 	public SpriteControls findNotNamesToSpriteControls(String... names) {
 		if (_closed) {
 			return new SpriteControls();

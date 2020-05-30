@@ -4423,7 +4423,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	/**
-	 * 插找桌面组件名包含在此序列中的组件控制器
+	 * 插找桌面组件名等于此序列中的组件控制器
 	 * 
 	 * @param name
 	 * @return
@@ -4431,6 +4431,19 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	public UIControls findNames(String... name) {
 		if (desktop != null) {
 			return desktop.findNamesToUIControls(name);
+		}
+		return new UIControls();
+	}
+
+	/**
+	 * 插找桌面组件名包含在此序列中的组件控制器
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public UIControls findNameContains(String... name) {
+		if (desktop != null) {
+			return desktop.findNameContainsToUIControls(name);
 		}
 		return new UIControls();
 	}
@@ -4487,7 +4500,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	/**
-	 * 查找在此序列中的精灵控制器
+	 * 查找等于指定名的精灵控制器
 	 * 
 	 * @param names
 	 * @return
@@ -4495,6 +4508,19 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	public SpriteControls findSpriteNames(String... names) {
 		if (sprites != null) {
 			return sprites.findNamesToSpriteControls(names);
+		}
+		return new SpriteControls();
+	}
+
+	/**
+	 * 查找包含在指定名中的精灵控制器
+	 * 
+	 * @param names
+	 * @return
+	 */
+	public SpriteControls findSpriteNameContains(String... names) {
+		if (sprites != null) {
+			return sprites.findNameContainsToSpriteControls(names);
 		}
 		return new SpriteControls();
 	}

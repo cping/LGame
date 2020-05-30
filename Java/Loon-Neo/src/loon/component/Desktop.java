@@ -852,6 +852,17 @@ public class Desktop implements Visible, LRelease {
 		return controls;
 	}
 
+	public UIControls findNameContainsToUIControls(String... name) {
+		UIControls controls = null;
+		if (contentPane != null && contentPane._childs != null) {
+			TArray<LComponent> comps = contentPane.findNameContains(name);
+			controls = new UIControls(comps);
+		} else {
+			controls = new UIControls();
+		}
+		return controls;
+	}
+	
 	public UIControls findNotNamesToUIControls(String... name) {
 		UIControls controls = null;
 		if (contentPane != null && contentPane._childs != null) {

@@ -101,6 +101,10 @@ public class SpriteControls {
 		this._sprs = new TArray<ISprite>();
 	}
 
+	public TArray<ISprite> list(){
+		return this._sprs;
+	}
+	
 	public TArray<ISprite> intersects(RectBox rect) {
 		TArray<ISprite> sprites = new TArray<ISprite>();
 		for (ISprite child : this._sprs) {

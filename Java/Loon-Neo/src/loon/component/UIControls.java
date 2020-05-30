@@ -105,6 +105,10 @@ public class UIControls {
 		this._comps = new TArray<LComponent>();
 	}
 
+	public TArray<LComponent> list(){
+		return this._comps;
+	}
+	
 	public TArray<LComponent> intersects(RectBox rect) {
 		TArray<LComponent> comps = new TArray<LComponent>();
 		for (LComponent child : this._comps) {

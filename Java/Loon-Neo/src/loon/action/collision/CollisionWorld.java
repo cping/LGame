@@ -404,6 +404,15 @@ public class CollisionWorld implements LRelease {
 		return result;
 	}
 
+	public CollisionWorld add(ActionBind... binds) {
+		for (ActionBind act : binds) {
+			if (act != null) {
+				add(act);
+			}
+		}
+		return this;
+	}
+
 	public ActionBind add(ActionBind bind) {
 		if (closed) {
 			return null;
@@ -469,6 +478,7 @@ public class CollisionWorld implements LRelease {
 		float x1 = rect.x, y1 = rect.y, w1 = rect.width, h1 = rect.height;
 		if (x1 != x2 || y1 != y2 || w1 != w2 || h1 != h2) {
 
+			// size limit 
 			RectF c1 = grid.toCellRect(cellSizeX, cellSizeY, x1, y1, w1, h1, update_c1);
 			RectF c2 = grid.toCellRect(cellSizeX, cellSizeY, x2, y2, w2, h2, update_c2);
 

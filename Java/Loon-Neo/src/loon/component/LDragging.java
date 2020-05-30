@@ -40,6 +40,8 @@ public class LDragging extends LComponent {
 
 	private boolean _dragging;
 
+	private boolean _circle;
+
 	private int _dashDivisions;
 
 	private RectBox _area;
@@ -66,19 +68,20 @@ public class LDragging extends LComponent {
 	 * 构造拖拽用组件,用于渲染出特定的拖拽区域(默认使用全天渲染模式,使用虚线边框,边框线宽4,每行虚线由5个子线条组成)
 	 */
 	public LDragging() {
-		this(true, true, 4f, 5);
+		this(false, true, true, 4f, 5);
 	}
 
 	/**
 	 * 构造拖拽用组件,用于渲染出特定的拖拽区域
 	 * 
+	 * @param circle
 	 * @param fill
 	 * @param dash
 	 * @param lineWidth
 	 * @param dashDivisions
 	 */
-	public LDragging(boolean fill, boolean dash, float lineWidth, int dashDivisions) {
-		this(0, 0, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), null, null, fill, dash, lineWidth,
+	public LDragging(boolean circle, boolean fill, boolean dash, float lineWidth, int dashDivisions) {
+		this(0, 0, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), null, null, circle, fill, dash, lineWidth,
 				dashDivisions);
 	}
 
@@ -97,6 +100,8 @@ public class LDragging extends LComponent {
 	 *            填充选中区域用的颜色(需要fill项为true)
 	 * @param rectColor
 	 *            填充选中区域边框的颜色(若fill项为false则直接使用fillColor颜色)
+	 * @param circle
+	 *            使用圆形选择区域而非矩形
 	 * @param fill
 	 *            是否填充整个选框
 	 * @param dash
@@ -106,8 +111,8 @@ public class LDragging extends LComponent {
 	 * @param dashDivisions
 	 *            若dash项为true时,每行显示多少个虚线
 	 */
-	public LDragging(int x, int y, int width, int height, LColor fillColor, LColor rectColor, boolean fill,
-			boolean dash, float lineWidth, int dashDivisions) {
+	public LDragging(int x, int y, int width, int height, LColor fillColor, LColor rectColor, boolean circle,
+			boolean fill, boolean dash, float lineWidth, int dashDivisions) {
 		super(x, y, width, height);
 		if (fillColor == null) {
 			this._fillColor = new LColor(LColor.yellow);
@@ -119,6 +124,7 @@ public class LDragging extends LComponent {
 		} else {
 			_rectColor = new LColor(rectColor);
 		}
+		this._circle = circle;
 		this._fillRect = fill;
 		this._dashRect = dash;
 		this._lineWidth = lineWidth;
@@ -233,30 +239,66 @@ public class LDragging extends LComponent {
 		final float areaY = this._display_area.y;
 		final float areaWidth = this._display_area.width;
 		final float areaHeight = this._display_area.height;
-		if (_fillRect) {
-			float alpha = _fillColor.a;
-			if (alpha >= 1f) {
-				_fillColor.a = 0.5f;
-			}
-			g.fillRect(areaX, areaY, areaWidth, areaHeight, _fillColor);
-			float oldLineWidth = g.getLineWidth();
-			g.setLineWidth(_lineWidth);
-			if (_dashRect) {
-				g.drawDashRect(areaX, areaY, areaWidth, areaHeight, _rectColor, _dashDivisions);
+		if (_circle) {
+			final float areaSize = MathUtils.max(areaWidth, areaHeight) + areaWidth / 32f;
+			if (_fillRect) {
+				float alpha = _fillColor.a;
+				if (alpha >= 1f) {
+					_fillColor.a = 0.5f;
+				}
+				int tint = g.getTint();
+				g.setColor(_fillColor);
+				g.fillCircle(areaX, areaY, areaSize);
+				float oldLineWidth = g.getLineWidth();
+				g.setLineWidth(_lineWidth);
+				g.setColor(_rectColor);
+				if (_dashRect) {
+					g.drawDashCircle(areaX, areaY, areaSize, _dashDivisions);
+				} else {
+					g.drawCircle(areaX, areaY, areaSize);
+				}
+				g.setLineWidth(oldLineWidth);
+				_fillColor.a = alpha;
+				g.setTint(tint);
 			} else {
-				g.drawRect(areaX, areaY, areaWidth, areaHeight, _rectColor);
+				int tint = g.getTint();
+				g.setColor(_fillColor);
+				float oldLineWidth = g.getLineWidth();
+				g.setLineWidth(_lineWidth);
+				if (_dashRect) {
+					g.drawDashCircle(areaX, areaY, areaSize, _dashDivisions);
+				} else {
+					g.drawCircle(areaX, areaY, areaSize);
+				}
+				g.setLineWidth(oldLineWidth);
+				g.setTint(tint);
 			}
-			g.setLineWidth(oldLineWidth);
-			_fillColor.a = alpha;
 		} else {
-			float oldLineWidth = g.getLineWidth();
-			g.setLineWidth(_lineWidth);
-			if (_dashRect) {
-				g.drawDashRect(areaX, areaY, areaWidth, areaHeight, _fillColor, _dashDivisions);
+			if (_fillRect) {
+				float alpha = _fillColor.a;
+				if (alpha >= 1f) {
+					_fillColor.a = 0.5f;
+				}
+				g.fillRect(areaX, areaY, areaWidth, areaHeight, _fillColor);
+				float oldLineWidth = g.getLineWidth();
+				g.setLineWidth(_lineWidth);
+				if (_dashRect) {
+					g.drawDashRect(areaX, areaY, areaWidth, areaHeight, _rectColor, _dashDivisions);
+				} else {
+					g.drawRect(areaX, areaY, areaWidth, areaHeight, _rectColor);
+				}
+				g.setLineWidth(oldLineWidth);
+				_fillColor.a = alpha;
 			} else {
-				g.drawRect(areaX, areaY, areaWidth, areaHeight, _fillColor);
+				float oldLineWidth = g.getLineWidth();
+				g.setLineWidth(_lineWidth);
+				if (_dashRect) {
+					g.drawDashRect(areaX, areaY, areaWidth, areaHeight, _fillColor, _dashDivisions);
+				} else {
+					g.drawRect(areaX, areaY, areaWidth, areaHeight, _fillColor);
+				}
+				g.setLineWidth(oldLineWidth);
 			}
-			g.setLineWidth(oldLineWidth);
 		}
 	}
 

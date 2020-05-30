@@ -734,6 +734,35 @@ public class Field2D implements IArray, Config {
 		return this;
 	}
 
+	public Field2D addActionBindToMap(TArray<ActionBind> acts, ActionBind other) {
+		return addActionBindToMap(acts, -1, other);
+	}
+
+	public Field2D addActionBindToMap(TArray<ActionBind> acts, int flagid, ActionBind other) {
+		for (ActionBind act : acts) {
+			if (act != null && act != other) {
+				float x = act.getX();
+				float y = act.getY();
+				float w = act.getWidth();
+				float h = act.getHeight();
+				int dstTileX = pixelsToTilesWidth(x);
+				int dstTileY = pixelsToTilesHeight(y);
+				int dstTileWidth = dstTileX + pixelsToTilesWidth(w);
+				int dstTileHeight = dstTileY + pixelsToTilesWidth(h);
+				int fieldWidth = mapArrays[0].length;
+				int fieldHeight = mapArrays.length;
+				for (int i = 0; i < fieldHeight; i++) {
+					for (int j = 0; j < fieldWidth; j++) {
+						if (j > dstTileX && j < dstTileWidth && i > dstTileY && i < dstTileHeight) {
+							mapArrays[i][j] = flagid;
+						}
+					}
+				}
+			}
+		}
+		return this;
+	}
+
 	public int[] getLimit() {
 		return moveLimited;
 	}

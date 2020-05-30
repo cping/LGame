@@ -24,6 +24,7 @@ import loon.Stage;
 import loon.action.ActionBind;
 import loon.action.ActionListener;
 import loon.action.MoveTo;
+import loon.action.collision.CollisionWorld;
 import loon.action.map.Field2D;
 import loon.action.sprite.AnimatedEntity;
 import loon.action.sprite.ISprite;
@@ -39,6 +40,8 @@ public class DragTest extends Stage {
 	public AnimatedEntity createRole(float x, float y) {
 		// 构建精灵以70x124的大小拆分图片，放置在坐标位置300x60,显示大小宽70,高124
 		final AnimatedEntity role = new AnimatedEntity("assets/rpg/sword.png", 70, 124, x, y, 70, 124);
+		role.setFixedWidthOffset(24);
+		role.setFixedHeightOffset(24);
 		// 播放动画,速度每帧220
 		// final long[] frames = { 220, 220, 220, 220 };
 		// 绑定字符串和帧索引关系,左右下上以及斜角(等距视角)上下左右共8方向的帧播放顺序(也可以理解为具体播放的帧)
@@ -71,7 +74,10 @@ public class DragTest extends Stage {
 		AnimatedEntity hero4 = createRole(360, 50);
 		// 注入角色到屏幕
 		add(hero1, hero2, hero3, hero4);
-
+		// 构建一个矩形碰撞世界
+		final CollisionWorld world = new CollisionWorld(this);
+		// 注入角色到碰撞计算
+		world.add(hero1, hero2, hero3, hero4);
 		// 让组件事件穿过Screen传递，也就是不限制组件的屏幕点击传递(否则down事件会被拦截,监听不到)
 		// setDesktopPenetrate(true);
 		// 构建拖拽器
@@ -98,6 +104,7 @@ public class DragTest extends Stage {
 			}
 		});
 		add(drag);
+
 		// 删除针对drag组件的屏幕事件拦截
 		// removeTouchLimit(drag);
 		// 当触屏按下时
@@ -112,6 +119,8 @@ public class DragTest extends Stage {
 						final AnimatedEntity hero = s;
 						// 8方向移动
 						final MoveTo move = new MoveTo(tempMap, x, y, true);
+						// 使用碰撞世界限制移动
+						move.setCollisionWorld(world);
 						// 监听移动
 						move.setActionListener(new ActionListener() {
 

@@ -108,8 +108,9 @@ public class TransferTo extends ActionEvent {
 		return controllingY;
 	}
 
-	public void setControllingY(boolean controllingY) {
+	public TransferTo setControllingY(boolean controllingY) {
 		this.controllingY = controllingY;
+		return this;
 	}
 
 	public float getDistance() {
