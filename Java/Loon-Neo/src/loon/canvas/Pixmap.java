@@ -452,6 +452,34 @@ public class Pixmap extends Limit implements LRelease {
 	}
 
 	/**
+	 * 让当前pixmap中color乘以指定color
+	 * 
+	 * @param pixel
+	 * @return
+	 */
+	public Pixmap multiply(LColor pixel) {
+		if (pixel == null) {
+			return this;
+		}
+		final LColor newColor = new LColor();
+		for (int i = 0; i < _length; i++) {
+			int color = _drawPixels[i];
+			if (color != LColor.TRANSPARENT) {
+				int[] rgba = LColor.getRGBAs(color);
+				int r = rgba[0];
+				int g = rgba[1];
+				int b = rgba[2];
+				int a = rgba[3];
+				newColor.setColor(r, g, b, a);
+				_drawPixels[i] = newColor.mul(pixel).getARGB();
+			} else {
+				_drawPixels[i] = _transparent;
+			}
+		}
+		return this;
+	}
+
+	/**
 	 * 向指定坐标插入像素
 	 * 
 	 * @param x
@@ -2452,6 +2480,91 @@ public class Pixmap extends Limit implements LRelease {
 		}
 	}
 
+	public Pixmap blendHorizontal(Pixmap pix) {
+		return blendHorizontal(pix, false);
+	}
+
+	/**
+	 * 混合当前pixmap和指定pixmap生成新的pixmap
+	 * 
+	 * @param pix
+	 * @param horizontal
+	 * @return
+	 */
+	public Pixmap blendHorizontal(Pixmap pix, boolean horizontal) {
+		Pixmap leftImage = null;
+		Pixmap rightImage = null;
+		if (horizontal) {
+			leftImage = pix;
+			rightImage = this;
+		} else {
+			leftImage = this;
+			rightImage = pix;
+		}
+		int width = (leftImage.getWidth() + rightImage.getWidth());
+		int height = Math.max(leftImage.getHeight(), rightImage.getHeight());
+		Pixmap image = new Pixmap(width, height, true);
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				int pixel = 0;
+				if (x < leftImage.getWidth()) {
+					if (y < leftImage.getHeight()) {
+						pixel = leftImage.getPixel(x, y);
+					} else {
+						pixel = _transparent;
+					}
+				} else {
+					if (y < rightImage.getHeight()) {
+						pixel = rightImage.getPixel(x - leftImage.getWidth(), y);
+					} else {
+						pixel = _transparent;
+					}
+				}
+				image.drawPoint(x, y, pixel);
+			}
+		}
+		return image;
+	}
+
+	public Pixmap blendVertical(Pixmap pix) {
+		return blendVertical(pix, false);
+	}
+
+	public Pixmap blendVertical(Pixmap pix, boolean vertical) {
+		Pixmap topImage = null;
+		Pixmap bottomImage = null;
+		if (vertical) {
+			topImage = this;
+			bottomImage = pix;
+		} else {
+			topImage = pix;
+			bottomImage = this;
+		}
+		int width = MathUtils.max(topImage.getWidth(), bottomImage.getWidth());
+		int height = (topImage.getHeight() + bottomImage.getHeight());
+		Pixmap image = new Pixmap(width, height, true);
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				int pixel = 0;
+				if (y < topImage.getHeight()) {
+					if (x < topImage.getWidth()) {
+						pixel = topImage.getPixel(x, y);
+					} else {
+						pixel = _transparent;
+					}
+				} else {
+					if (x < bottomImage.getWidth()) {
+						pixel = bottomImage.getPixel(x, y - topImage.getHeight());
+					} else {
+						pixel = _transparent;
+					}
+				}
+				image.drawPoint(x, y, pixel);
+			}
+		}
+		return image;
+	}
+
 	private boolean inside(int x, int y) {
 		return (x < clip.x || x >= clip.x + clip.width || y < clip.y || y >= clip.y + clip.height);
 	}
@@ -2714,10 +2827,10 @@ public class Pixmap extends Limit implements LRelease {
 		if (obj == null) {
 			return false;
 		}
-        if(obj instanceof Pixmap){
-        	return equals((Pixmap)obj);
-        }
-        return false;
+		if (obj instanceof Pixmap) {
+			return equals((Pixmap) obj);
+		}
+		return false;
 	}
 
 	public boolean equals(final Pixmap dst) {

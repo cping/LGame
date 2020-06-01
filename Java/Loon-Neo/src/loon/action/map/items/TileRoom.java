@@ -18,8 +18,9 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.1
  */
-package loon.action.map;
+package loon.action.map.items;
 
+import loon.action.map.Field2D;
 import loon.utils.ObjectMap;
 import loon.utils.TArray;
 

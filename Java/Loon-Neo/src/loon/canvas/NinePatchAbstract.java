@@ -280,6 +280,9 @@ public abstract class NinePatchAbstract<K, V> {
 	}
 
 	public Padding getPadding(int w, int h, TArray<Region> xRegions, TArray<Region> yRegions) {
+		if (xRegions.size < 1 || yRegions.size < 1) {
+			return null;
+		}
 		Region xRegion = xRegions.get(0);
 		Region yRegion = yRegions.get(0);
 
@@ -307,7 +310,7 @@ public abstract class NinePatchAbstract<K, V> {
 
 			Region region = new Region(start, i);
 
-			if (LColor.TRANSPARENT == lastPixel) {
+			if (LColor.TRANSPARENT == lastPixel || lastPixel == 0) {
 				patchArea.add(region);
 			} else {
 				fixArea.add(region);
@@ -323,7 +326,7 @@ public abstract class NinePatchAbstract<K, V> {
 		if (start == 0) {
 			Region region = new Region(start, pixels.length);
 
-			if (LColor.TRANSPARENT == lastPixel) {
+			if (LColor.TRANSPARENT == lastPixel|| lastPixel == 0) {
 				patchArea.add(region);
 			} else {
 				fixArea.add(region);
@@ -397,6 +400,9 @@ public abstract class NinePatchAbstract<K, V> {
 		NinePatchRegion right = getPatches(column);
 
 		this.padding = getPadding(width, height, bottom.getPatchRegions(), right.getPatchRegions());
+		if (this.padding == null) {
+			this.padding = new Padding(width, height, width, height);
+		}
 	}
 
 	protected K toImage(K image) {

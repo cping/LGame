@@ -85,6 +85,10 @@ public abstract class BaseIO extends DefUI {
 		return LSystem.loadNinePatchTexture(path, x, y, w, h);
 	}
 
+	public final static LTexture loadNinePatchTexture(String path, Repeat repeat, int x, int y, int w, int h) {
+		return LSystem.loadNinePatchTexture(path, repeat, x, y, w, h, Format.LINEAR);
+	}
+
 	public final static LTexture loadNinePatchTexture(String path, Repeat repeat, int x, int y, int w, int h,
 			Format config) {
 		return LSystem.loadNinePatchTexture(path, repeat, x, y, w, h, config);

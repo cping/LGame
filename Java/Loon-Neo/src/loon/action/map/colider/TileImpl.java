@@ -22,7 +22,7 @@ package loon.action.map.colider;
 
 import loon.LSystem;
 import loon.action.ActionBind;
-import loon.action.map.Attribute;
+import loon.action.map.items.Attribute;
 import loon.action.sprite.Animation;
 import loon.geom.RectI;
 import loon.geom.RectI.Range;

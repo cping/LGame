@@ -769,10 +769,6 @@ public class LColor implements Serializable {
 		return c;
 	}
 
-	public LColor multiply(LColor c) {
-		return new LColor(r * c.r, g * c.g, b * c.b, a * c.a);
-	}
-
 	public LColor add(LColor c) {
 		this.r += c.r;
 		this.g += c.g;
@@ -797,6 +793,10 @@ public class LColor implements Serializable {
 		return this;
 	}
 
+	public LColor multiply(LColor c) {
+		return new LColor(r * c.r, g * c.g, b * c.b, a * c.a);
+	}
+	
 	public LColor mulAlpha(float a) {
 		this.a *= a;
 		return this;

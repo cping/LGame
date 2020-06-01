@@ -20,8 +20,8 @@
  */
 package loon.action.sprite;
 
-import loon.action.map.Character;
-import loon.action.map.Item;
+import loon.action.map.items.Character;
+import loon.action.map.items.Item;
 import loon.opengl.GLEx;
 import loon.utils.TArray;
 

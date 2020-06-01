@@ -18,7 +18,7 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.action.map;
+package loon.action.map.items;
 
 import loon.utils.ObjectMap;
 import loon.utils.ObjectMap.Keys;

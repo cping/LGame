@@ -18,7 +18,7 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.action.map;
+package loon.action.map.items;
 
 /**
  * 一个简单的角色基本参数类,用于简单的rpg类游戏角色属性配置

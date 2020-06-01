@@ -1,5 +1,5 @@
 /**
- * Copyright 2008 - 2019 The Loon Game Engine Authors
+ * Copyright 2008 - 2015 The Loon Game Engine Authors
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -18,35 +18,37 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.geom;
+package loon.action.map.items;
 
-public class TypeValue<T> {
+public class Attribute {
 
-	public static final <T> TypeValue<T> getValue(T v) {
-		return new TypeValue<T>(v);
+	private String name;
+
+	private Object attribute;
+
+	public String getName() {
+		return this.name;
 	}
 
-	private T value;
-
-	public TypeValue(T v) {
-		this.set(v);
+	public void setName(String name) {
+		this.name = name;
 	}
 
-	public TypeValue<T> set(T res) {
-		this.value = res;
+	public Object getAttribute() {
+		return this.attribute;
+	}
+
+	public int getAttributeInt() {
+		return ((Integer) this.attribute).intValue();
+	}
+
+	public void setAttribute(Object attribute) {
+		this.attribute = attribute;
+	}
+
+	public Attribute cpy(Attribute other){
+		this.name = other.name;
+		this.attribute = other.attribute;
 		return this;
-	}
-
-	public T get() {
-		return result();
-	}
-
-	public T result() {
-		return value;
-	}
-
-	@Override
-	public String toString() {
-		return String.valueOf(value);
 	}
 }

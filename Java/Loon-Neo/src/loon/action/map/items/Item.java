@@ -18,30 +18,34 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.action.map;
+package loon.action.map.items;
 
 public class Item<T> {
 
-	private String name;
+	protected String _name;
 
-	private T object;
+	protected T _item;
 
 	public String getName() {
-		return this.name;
+		return this._name;
 	}
 
 	public Item<T> setName(String name) {
-		this.name = name;
+		this._name = name;
 		return this;
 	}
 
-	public T getObject() {
-		return this.object;
+	public T getItem() {
+		return this._item;
 	}
 
-	public Item<T> setObject(T o) {
-		this.object = o;
+	public Item<T> setItem(T o) {
+		this._item = o;
 		return this;
+	}
+
+	public int hashCode() {
+		return _item == null ? super.hashCode() : _item.hashCode();
 	}
 
 }

@@ -26,6 +26,7 @@ import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.event.Updateable;
 import loon.geom.Affine2f;
+import loon.geom.XYZW;
 import loon.opengl.BaseBatch;
 import loon.opengl.GL20;
 import loon.opengl.GLEx;
@@ -568,12 +569,20 @@ public class LTexture extends Painter implements LRelease {
 		return copy();
 	}
 
+	public LTexture cpy(XYZW rect) {
+		return copy(rect);
+	}
+
 	public LTexture cpy(final float x, final float y, final float width, final float height) {
 		return copy(x, y, width, height);
 	}
 
 	public LTexture copy() {
 		return copy(0, 0, width(), height());
+	}
+
+	public LTexture copy(XYZW rect) {
+		return copy(rect.getX(), rect.getY(), rect.getZ(), rect.getW());
 	}
 
 	public LTexture copy(final float x, final float y, final float width, final float height) {

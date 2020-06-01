@@ -30,6 +30,7 @@ import loon.LTexture.Format;
 import loon.action.ActionBind;
 import loon.action.ActionTween;
 import loon.action.map.colider.TileImpl;
+import loon.action.map.items.Attribute;
 import loon.action.sprite.Animation;
 import loon.action.sprite.ISprite;
 import loon.action.sprite.MoveControl;
