@@ -30,7 +30,7 @@ public class Path extends Shape {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private TArray<float[]> localPoints;
+	private TArray<PointF> localPoints;
 
 	private float cx;
 
@@ -38,36 +38,36 @@ public class Path extends Shape {
 
 	private boolean closed;
 
-	private TArray<TArray<float[]>> holes;
+	private TArray<TArray<PointF>> holes;
 
-	private TArray<float[]> hole;
+	private TArray<PointF> hole;
 
 	public Path() {
-		this(0,0);
+		this(0, 0);
 	}
-	
+
 	public Path(float sx, float sy) {
 		moveTo(sx, sy);
 	}
-	
-	public void reset(){
+
+	public void reset() {
 		this.clear();
 	}
 
 	public void set(float sx, float sy) {
-		localPoints.add(new float[] { sx, sy });
+		localPoints.add(new PointF(sx, sy));
 		cx = sx;
 		cy = sy;
 		pointsDirty = true;
 	}
 
 	public void addPath(Path p, float px, float py) {
-		for (Iterator<float[]> it = p.localPoints.iterator(); it.hasNext();) {
-			float[] pos = it.next();
+		for (Iterator<PointF> it = p.localPoints.iterator(); it.hasNext();) {
+			PointF pos = it.next();
 			if (hole != null) {
-				hole.add(new float[] { px + pos[0], py + pos[1] });
+				hole.add(new PointF(px + pos.x, py + pos.y));
 			} else {
-				localPoints.add(new float[] { px + pos[0], py + pos[1] });
+				localPoints.add(new PointF(px + pos.x, py + pos.y));
 			}
 		}
 		pointsDirty = true;
@@ -75,25 +75,36 @@ public class Path extends Shape {
 
 	public void moveTo(float sx, float sy) {
 		if (holes == null) {
-			holes = new TArray<TArray<float[]>>(10);
+			holes = new TArray<TArray<PointF>>(10);
 		}
 		if (localPoints == null) {
-			localPoints = new TArray<float[]>(10);
+			localPoints = new TArray<PointF>(10);
 		}
 		this.set(sx, sy);
 	}
 
 	public void quadTo(float x1, float y1, float x2, float y2) {
 		if (hole != null) {
-			hole.add(new float[] { x1, y1, x2, y2 });
+			hole.add(new PointF(x1, y1));
+			hole.add(new PointF(x2, y2));
 		} else {
-			localPoints.add(new float[] { x1, y1, x2, y2 });
+			localPoints.add(new PointF(x1, y1));
+			localPoints.add(new PointF(x2, y2));
 		}
 		cx = x2;
 		cy = y2;
 		pointsDirty = true;
 	}
 
+    public void push(PointF point) {
+        if (localPoints == null) {
+        	localPoints = new TArray<PointF>();
+        }
+        localPoints.add(point);
+    	pointsDirty = true;
+    }
+    
+	@Override
 	public void clear() {
 		if (hole != null) {
 			hole.clear();
@@ -106,9 +117,9 @@ public class Path extends Shape {
 
 	public void lineTo(float x, float y) {
 		if (hole != null) {
-			hole.add(new float[] { x, y });
+			hole.add(new PointF(x, y));
 		} else {
-			localPoints.add(new float[] { x, y });
+			localPoints.add(new PointF(x, y));
 		}
 		cx = x;
 		cy = y;
@@ -119,27 +130,25 @@ public class Path extends Shape {
 		closed = true;
 	}
 
-	public void curveTo(float x, float y, float cx1, float cy1, float cx2,
-			float cy2) {
+	public void curveTo(float x, float y, float cx1, float cy1, float cx2, float cy2) {
 		curveTo(x, y, cx1, cy1, cx2, cy2, 10);
 	}
 
-	public void curveTo(float x, float y, float cx1, float cy1, float cx2,
-			float cy2, int segments) {
+	public void curveTo(float x, float y, float cx1, float cy1, float cx2, float cy2, int segments) {
 		if ((cx == x) && (cy == y)) {
 			return;
 		}
-		Curve curve = new Curve(new Vector2f(cx, cy), new Vector2f(cx1, cy1),
-				new Vector2f(cx2, cy2), new Vector2f(x, y));
+		Curve curve = new Curve(new Vector2f(cx, cy), new Vector2f(cx1, cy1), new Vector2f(cx2, cy2),
+				new Vector2f(x, y));
 		float step = 1.0f / segments;
 
 		for (int i = 1; i < segments + 1; i++) {
 			float t = i * step;
 			Vector2f p = curve.pointAt(t);
 			if (hole != null) {
-				hole.add(new float[] { p.x, p.y });
+				hole.add(new PointF(p.x, p.y));
 			} else {
-				localPoints.add(new float[] { p.x, p.y });
+				localPoints.add(new PointF(p.x, p.y));
 			}
 			cx = p.x;
 			cy = p.y;
@@ -151,9 +160,9 @@ public class Path extends Shape {
 	protected void createPoints() {
 		points = new float[localPoints.size * 2];
 		for (int i = 0; i < localPoints.size; i++) {
-			float[] p = localPoints.get(i);
-			points[(i * 2)] = p[0];
-			points[(i * 2) + 1] = p[1];
+			PointF p = localPoints.get(i);
+			points[(i * 2)] = p.x;
+			points[(i * 2) + 1] = p.y;
 		}
 	}
 
@@ -168,18 +177,18 @@ public class Path extends Shape {
 		return p;
 	}
 
-	private TArray<float[]> transform(TArray<float[]> pts, Matrix3 t) {
+	private TArray<PointF> transform(TArray<PointF> pts, Matrix3 t) {
 		float[] in = new float[pts.size * 2];
 		float[] out = new float[pts.size * 2];
-
 		for (int i = 0; i < pts.size; i++) {
-			in[i * 2] = (pts.get(i))[0];
-			in[(i * 2) + 1] = (pts.get(i))[1];
+			PointF point = (pts.get(i));
+			in[i * 2] = point.x;
+			in[(i * 2) + 1] = point.y;
 		}
 		t.transform(in, 0, out, 0, pts.size);
-		TArray<float[]> outList = new TArray<float[]>();
+		TArray<PointF> outList = new TArray<PointF>();
 		for (int i = 0; i < pts.size; i++) {
-			outList.add(new float[] { out[(i * 2)], out[(i * 2) + 1] });
+			outList.add(new PointF(out[(i * 2)], out[(i * 2) + 1]));
 		}
 		return outList;
 	}

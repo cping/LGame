@@ -477,6 +477,15 @@ public class AnimatedEntity extends Entity {
 		return _animation.length;
 	}
 
+	public AnimatedEntity setMaxFrame(int max) {
+		_animation.setMaxFrame(max);
+		return this;
+	}
+	
+	public int getMaxFrame(){
+		return _animation.getMaxFrame();
+	}
+
 	public AnimatedEntity setPlayIndex(String key, PlayIndex play) {
 		_playEvents.put(key, play);
 		return this;
@@ -485,11 +494,11 @@ public class AnimatedEntity extends Entity {
 	public AnimatedEntity setPlayIndex(String key, int[] animates) {
 		return setPlayIndex(key, PlayIndex.at(animates));
 	}
-	
+
 	public AnimatedEntity setPlayIndex(String key, long frameTime, int[] animates) {
 		return setPlayIndex(key, PlayIndex.at(frameTime, animates));
 	}
-	
+
 	public AnimatedEntity setPlayIndex(String key, long frameTime, int startIdx, int endIdx) {
 		return setPlayIndex(key, PlayIndex.at(frameTime, startIdx, endIdx));
 	}
@@ -497,7 +506,7 @@ public class AnimatedEntity extends Entity {
 	public AnimatedEntity setPlayIndex(String key, long[] frameTime, int startIdx, int endIdx) {
 		return setPlayIndex(key, PlayIndex.at(frameTime, startIdx, endIdx));
 	}
-	
+
 	public PlayIndex getPlayIndex(String key) {
 		return _playEvents.get(key);
 	}
@@ -507,7 +516,7 @@ public class AnimatedEntity extends Entity {
 		return this;
 	}
 
-	public int size(){
+	public int size() {
 		return _playEvents.size;
 	}
 

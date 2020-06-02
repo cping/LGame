@@ -848,7 +848,7 @@ public class Field2D implements IArray, Config {
 	}
 
 	public boolean inside(int x, int y) {
-		return CollisionHelper.intersect(0, 0, getDrawWidth(), getDrawHeight(), x, y);
+		return CollisionHelper.intersects(0, 0, getDrawWidth(), getDrawHeight(), x, y);
 	}
 
 	public boolean inside(float x, float y) {

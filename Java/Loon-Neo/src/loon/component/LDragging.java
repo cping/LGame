@@ -157,24 +157,36 @@ public class LDragging extends LComponent {
 	}
 
 	public LDragging start() {
-		clearArea();
-		this._startX = getUITouchX();
-		this._startY = getUITouchY();
-		this._area.setLocation(this._startX, this._startY);
+		if ((getUITouchX() != this._startX || getUITouchY() != this._startY)) {
+			clearArea();
+			this._startX = getUITouchX();
+			this._startY = getUITouchY();
+			this._area.setLocation(this._startX, this._startY);
+			this._dragging = false;
+		}
 		return this;
 	}
 
 	public LDragging drag() {
-		this._lastX = getUITouchX();
-		this._lastY = getUITouchY();
-		this._area.setSize(this._lastX - this._startX, this._lastY - this._startY);
-		checkDisplayArea();
+		if (getUITouchX() != this._lastX || getUITouchY() != this._lastY) {
+			this._lastX = getUITouchX();
+			this._lastY = getUITouchY();
+			final float newSizeW = this._lastX - this._startX;
+			final float newSizeH = this._lastY - this._startY;
+			this._area.setSize(newSizeW, newSizeH);
+			this._dragging = true;
+			checkDisplayArea();
+		}
 		return this;
 	}
 
 	public LDragging stop() {
-		this._lastX = getUITouchX();
-		this._lastY = getUITouchY();
+		if (getUITouchX() != this._lastX || getUITouchY() != this._lastY && this._dragging) {
+			clearArea();
+			this._lastX = getUITouchX();
+			this._lastY = getUITouchY();
+			this._dragging = false;
+		}
 		return this;
 	}
 
@@ -195,7 +207,7 @@ public class LDragging extends LComponent {
 	@Override
 	public void processTouchPressed() {
 		super.processTouchPressed();
-		if (!SysTouch.isDrag()) {
+		if (!(SysTouch.isDrag() && input.isMoving())) {
 			if (!locked.isPressed()) {
 				start();
 				locked.press();
@@ -211,23 +223,21 @@ public class LDragging extends LComponent {
 			locked.press();
 		} else {
 			drag();
-			_dragging = true;
 		}
 	}
 
 	@Override
 	public void processTouchReleased() {
 		super.processTouchReleased();
-		if (locked.isPressed()) {
-			locked.release();
+		if (locked.isPressed() && _dragging) {
 			if (_selectArea != null) {
 				_selectArea.onArea(this._display_area.x, this._display_area.y,
-						this._display_area.width - ((this._display_area.width / 32) - _lineWidth - 1),
-						this._display_area.height - ((this._display_area.height / 32) - _lineWidth - 1));
+						this._display_area.width - ((this._display_area.width / 6) - _lineWidth - 1),
+						this._display_area.height - ((this._display_area.height / 6) - _lineWidth - 1));
 			}
 			stop();
-			_dragging = false;
 		}
+		locked.release();
 	}
 
 	@Override

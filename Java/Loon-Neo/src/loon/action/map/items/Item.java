@@ -44,6 +44,7 @@ public class Item<T> {
 		return this;
 	}
 
+	@Override
 	public int hashCode() {
 		return _item == null ? super.hashCode() : _item.hashCode();
 	}

@@ -146,6 +146,9 @@ public class SysInputFactory {
 
 	private EmulatorButtons ebuttons;
 
+	/**
+	 * 鼠标移动事件监听(仅在有鼠标的设备上生效,没有触屏的设备上(主要是台式机)触屏会由此监听模拟)
+	 */
 	public void callMouse(MouseMake.ButtonEvent event) {
 
 		if (LSystem.isLockAllTouchEvent()) {
@@ -158,6 +161,7 @@ public class SysInputFactory {
 
 		final boolean stopMoveDrag = LSystem.isNotAllowDragAndMove();
 		final Vector2f pos = process.convertXY(event.getX(), event.getY());
+
 		final float touchX = pos.x;
 		final float touchY = pos.y;
 		final int button = event.button;
@@ -266,6 +270,11 @@ public class SysInputFactory {
 		}
 	}
 
+	/**
+	 * 触屏事件监听
+	 * 
+	 * @param events
+	 */
 	public void callTouch(TouchMake.Event[] events) {
 
 		if (LSystem.isLockAllTouchEvent()) {
@@ -277,15 +286,18 @@ public class SysInputFactory {
 		}
 
 		final boolean stopMoveDrag = LSystem.isNotAllowDragAndMove();
+
 		int size = events.length;
 
 		ebuttons = process.getEmulatorButtons();
 
 		for (int i = 0; i < size; i++) {
 			TouchMake.Event e = events[i];
-			float touchX = (e.getX() - process.getX()) / LSystem.getScaleWidth();
-			float touchY = (e.getY() - process.getY()) / LSystem.getScaleHeight();
 
+			final Vector2f pos = process.convertXY(e.getX(), e.getY());
+			final float touchX = pos.x;
+			final float touchY = pos.y;
+			
 			finalTouch.isDraging = _isDraging;
 			finalTouch.x = touchX;
 			finalTouch.y = touchY;

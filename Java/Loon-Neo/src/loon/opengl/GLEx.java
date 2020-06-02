@@ -1848,6 +1848,14 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		return drawDashCircle(x, y, radius, this.lastBrush.lineWidth);
 	}
 
+	public GLEx drawDashCircle(float x, float y, float radius, float width, LColor color) {
+		int argb = this.lastBrush.baseColor;
+		setColor(color);
+		drawDashCircle(x, y, radius, width);
+		setColor(argb);
+		return this;
+	}
+
 	public GLEx drawDashCircle(float x, float y, float radius, float width) {
 		final float newRadius = radius / 2f;
 		final float newX = x + newRadius;
@@ -3186,8 +3194,24 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		return fillOval(x, y, radius, radius);
 	}
 
+	public GLEx fillCircle(float x, float y, float radius, LColor color) {
+		int argb = this.lastBrush.baseColor;
+		setColor(color);
+		fillCircle(x, y, radius);
+		setColor(argb);
+		return this;
+	}
+
 	public GLEx drawCircle(float x, float y, float radius) {
 		return drawOval(x, y, radius, radius);
+	}
+
+	public GLEx drawCircle(float x, float y, float radius, LColor color) {
+		int argb = this.lastBrush.baseColor;
+		setColor(color);
+		drawCircle(x, y, radius);
+		setColor(argb);
+		return this;
 	}
 
 	/**

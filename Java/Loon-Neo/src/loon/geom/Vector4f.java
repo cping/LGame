@@ -47,7 +47,7 @@ public class Vector4f implements Serializable, XYZW {
 	public final static Vector4f ZERO() {
 		return new Vector4f(0);
 	}
-	
+
 	public final static Vector4f ONE() {
 		return new Vector4f(1);
 	}
@@ -71,18 +71,12 @@ public class Vector4f implements Serializable, XYZW {
 	public final static Vector4f at(float x, float y, float z, float w) {
 		return new Vector4f(x, y, z, w);
 	}
-	
-    public final static Vector4f smoothStep(Vector4f a, Vector4f b, float amount)
-    {
-        return new Vector4f
-        (
-            MathUtils.smoothStep(a.x, b.x, amount),
-            MathUtils.smoothStep(a.y, b.y, amount),
-            MathUtils.smoothStep(a.z, b.z, amount),
-            MathUtils.smoothStep(a.w, b.w, amount)
-        );
-    }
-    
+
+	public final static Vector4f smoothStep(Vector4f a, Vector4f b, float amount) {
+		return new Vector4f(MathUtils.smoothStep(a.x, b.x, amount), MathUtils.smoothStep(a.y, b.y, amount),
+				MathUtils.smoothStep(a.z, b.z, amount), MathUtils.smoothStep(a.w, b.w, amount));
+	}
+
 	public float x, y, z, w;
 
 	public Vector4f() {
@@ -189,7 +183,7 @@ public class Vector4f implements Serializable, XYZW {
 	public Vector4f smoothStep(Vector4f v, float amount) {
 		return smoothStep(this, v, amount);
 	}
-	
+
 	public Vector4f subtract(Vector4f v) {
 		return add(-v.x, -v.y, -v.z, -v.w);
 	}
@@ -313,6 +307,14 @@ public class Vector4f implements Serializable, XYZW {
 		return set(x * sx, y * sy, z * sz, w * sw);
 	}
 
+	public Vector4f translate(float dx, float dy, float dz, float dw) {
+		return cpy().translateSelf(dx, dy, dz, dw);
+	}
+
+	public Vector4f translateSelf(float dx, float dy, float dz, float dw) {
+		return set(this.x + dx, this.y + dy, this.z + dz, this.w + dw);
+	}
+
 	public Vector4f lerp(Vector4f target, float alpha) {
 		return copy().lerpSelf(target, alpha);
 	}
@@ -431,6 +433,10 @@ public class Vector4f implements Serializable, XYZW {
 
 	public Vector4f set(float x, Vector3f v) {
 		return set(x, v.x, v.y, v.z);
+	}
+
+	public Vector4f cpy() {
+		return new Vector4f(this);
 	}
 
 	public Vector2f getXX() {
@@ -1074,13 +1080,13 @@ public class Vector4f implements Serializable, XYZW {
 	}
 
 	public Vector4f random() {
-		this.x = MathUtils.random(0f,LSystem.viewSize.getWidth());
-		this.y = MathUtils.random(0f,LSystem.viewSize.getHeight());
+		this.x = MathUtils.random(0f, LSystem.viewSize.getWidth());
+		this.y = MathUtils.random(0f, LSystem.viewSize.getHeight());
 		this.z = MathUtils.random();
 		this.w = MathUtils.random();
 		return this;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -1091,7 +1097,7 @@ public class Vector4f implements Serializable, XYZW {
 		result = prime * result + NumberUtils.floatToIntBits(w);
 		return result;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "(" + x + ", " + y + ", " + z + ", " + w + ")";

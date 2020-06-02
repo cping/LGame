@@ -416,7 +416,7 @@ public class GravityHandler implements LRelease {
 			return false;
 		}
 		if (g.bounds != null) {
-			return CollisionHelper.intersect(g.bounds, x, y);
+			return CollisionHelper.intersects(g.bounds, x, y);
 		}
 		return false;
 	}

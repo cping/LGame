@@ -633,6 +633,13 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	public Screen clearTouched() {
+		this.touchButtonPressed = SysInput.NO_BUTTON;
+		this.touchButtonReleased = SysInput.NO_BUTTON;
+		this.touchDX = -1;
+		this.touchDY = -1;
+		this.lastTouchX = -1;
+		this.lastTouchY = -1;
+		this.touchType.clear();
 		if (_touchListener != null) {
 			_touchListener.clear();
 		}
@@ -3946,7 +3953,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			error("Screen mousePressed() exception", ex);
 		}
 	}
-
+	
 	public abstract void touchDown(GameTouch e);
 
 	public void mouseReleased(GameTouch e) {
@@ -4229,11 +4236,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	public void setPivotX(float pX) {
-		_pivotX = pX;
+		this._pivotX = pX;
 	}
 
 	public void setPivotY(float pY) {
-		_pivotY = pY;
+		this._pivotY = pY;
 	}
 
 	public float getPivotX() {

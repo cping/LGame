@@ -46,7 +46,7 @@ public class Vector2f implements Serializable, XY {
 		}
 		return temp;
 	}
-	
+
 	public final static Vector2f ZERO() {
 		return new Vector2f(0);
 	}
@@ -647,19 +647,23 @@ public class Vector2f implements Serializable, XY {
 	}
 
 	public Vector2f up(float v) {
-		return new Vector2f(this.x, this.y - v);
+		return cpy().set(this.x, this.y - v);
 	}
 
 	public Vector2f down(float v) {
-		return new Vector2f(this.x, this.y + v);
+		return cpy().set(this.x, this.y + v);
 	}
 
 	public Vector2f left(float v) {
-		return new Vector2f(this.x - v, this.y);
+		return cpy().set(this.x - v, this.y);
 	}
 
 	public Vector2f right(float v) {
-		return new Vector2f(this.x + v, this.y);
+		return cpy().set(this.x + v, this.y);
+	}
+
+	public Vector2f translate(float dx, float dy) {
+		return cpy().set(this.x + dx, this.y + dy);
 	}
 
 	public Vector2f up() {
@@ -678,9 +682,19 @@ public class Vector2f implements Serializable, XY {
 		return right(1f);
 	}
 
-	public Vector2f move(Vector2f vector2D) {
-		this.x += vector2D.x;
-		this.y += vector2D.y;
+	public Vector2f translateSelf(float dx, float dy) {
+		return move(dx, dy);
+	}
+
+	public Vector2f move(float dx, float dy) {
+		this.x += dx;
+		this.y += dy;
+		return this;
+	}
+
+	public Vector2f move(Vector2f pos) {
+		this.x += pos.x;
+		this.y += pos.y;
 		return this;
 	}
 
@@ -692,12 +706,12 @@ public class Vector2f implements Serializable, XY {
 		return move(v.x() * multiples, v.y() * multiples);
 	}
 
-	public Vector2f moveX(int x) {
+	public Vector2f moveX(float x) {
 		this.x += x;
 		return this;
 	}
 
-	public Vector2f moveY(int y) {
+	public Vector2f moveY(float y) {
 		this.y += y;
 		return this;
 	}
@@ -712,12 +726,6 @@ public class Vector2f implements Serializable, XY {
 		int idX = MathUtils.round(dX);
 		int idY = MathUtils.round(dY);
 		return move(idX, idY);
-	}
-
-	public Vector2f move(float x, float y) {
-		this.x += x;
-		this.y += y;
-		return this;
 	}
 
 	public Vector2f move(float distance) {
@@ -738,9 +746,7 @@ public class Vector2f implements Serializable, XY {
 	}
 
 	public Vector2f setLocation(float x, float y) {
-		this.x = x;
-		this.y = y;
-		return this;
+		return set(x, y);
 	}
 
 	public Vector2f setX(float x) {
@@ -782,8 +788,8 @@ public class Vector2f implements Serializable, XY {
 	}
 
 	public final void setZero() {
-		x = 0.0f;
-		y = 0.0f;
+		x = 0f;
+		y = 0f;
 	}
 
 	public final Vector2f set(float v) {
@@ -841,19 +847,19 @@ public class Vector2f implements Serializable, XY {
 		y *= a;
 		return this;
 	}
-	
-    public final Vector2f setLength(float len){
-    	len = len*len;
-        float oldLength = lengthSquared();
-        return (oldLength == 0 || oldLength == len) ? this : scaleSelf(MathUtils.sqrt(len / oldLength));
-    }
-    
-    public final Vector2f setAngle(float radians){
-        this.set(length(), 0f);
-        this.rotate(radians);
-        return this;
-    }
-    
+
+	public final Vector2f setLength(float len) {
+		len = len * len;
+		float oldLength = lengthSquared();
+		return (oldLength == 0 || oldLength == len) ? this : scaleSelf(MathUtils.sqrt(len / oldLength));
+	}
+
+	public final Vector2f setAngle(float radians) {
+		this.set(length(), 0f);
+		this.rotate(radians);
+		return this;
+	}
+
 	public final float normalize() {
 		float length = length();
 		if (length < MathUtils.EPSILON) {
@@ -863,11 +869,6 @@ public class Vector2f implements Serializable, XY {
 		x *= invLength;
 		y *= invLength;
 		return length;
-	}
-
-	public final boolean isValid() {
-		return x != Float.NaN && x != Float.NEGATIVE_INFINITY && x != Float.POSITIVE_INFINITY && y != Float.NaN
-				&& y != Float.NEGATIVE_INFINITY && y != Float.POSITIVE_INFINITY;
 	}
 
 	public final Vector2f abs() {

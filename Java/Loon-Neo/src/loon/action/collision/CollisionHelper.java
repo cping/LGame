@@ -260,7 +260,7 @@ public final class CollisionHelper extends ShapeUtils {
 		return false;
 	}
 
-	public static final boolean intersect(RectBox rect, float x, float y) {
+	public static final boolean intersects(RectBox rect, float x, float y) {
 		if (rect != null) {
 			if (rect.Left() <= x && x < rect.Right() && rect.Top() <= y && y < rect.Bottom())
 				return true;
@@ -268,7 +268,7 @@ public final class CollisionHelper extends ShapeUtils {
 		return false;
 	}
 
-	public static final boolean intersect(float sx, float sy, float width, float height, float x, float y) {
+	public static final boolean intersects(float sx, float sy, float width, float height, float x, float y) {
 		return (x >= sx) && ((x - sx) < width) && (y >= sy) && ((y - sy) < height);
 	}
 
@@ -281,7 +281,7 @@ public final class CollisionHelper extends ShapeUtils {
 	 * @param dataB
 	 * @return
 	 */
-	public static boolean intersect(RectBox rectA, int[] dataA, RectBox rectB, int[] dataB) {
+	public static boolean intersects(RectBox rectA, int[] dataA, RectBox rectB, int[] dataB) {
 		int top = (int) MathUtils.max(rectA.getY(), rectB.getY());
 		int bottom = (int) MathUtils.min(rectA.getBottom(), rectB.getBottom());
 		int left = (int) MathUtils.max(rectA.getX(), rectB.getX());
@@ -315,7 +315,7 @@ public final class CollisionHelper extends ShapeUtils {
 		return s1.intersects(s2);
 	}
 
-	public static final int[] intersect(RectBox rect1, RectBox rect2) {
+	public static final int[] intersects(RectBox rect1, RectBox rect2) {
 		if (rect1.Left() < rect2.Right() && rect2.Left() < rect1.Right() && rect1.Top() < rect2.Bottom()
 				&& rect2.Top() < rect1.Bottom()) {
 			return new int[] { rect1.Left() < rect2.Left() ? rect2.Left() - rect1.Left() : 0,
@@ -349,7 +349,7 @@ public final class CollisionHelper extends ShapeUtils {
 				return true;
 			}
 		}
-		return rectTemp1.overlaps(rectTemp2);
+		return rectTemp1.intersects(rectTemp2);
 	}
 
 	/**

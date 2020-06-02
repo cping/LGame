@@ -52,7 +52,6 @@ public class LGesture extends LComponent {
 	private Path goalPath;
 
 	private int lineWidth;
-	
 
 	public LGesture(int x, int y, int w, int h, boolean c) {
 		this(x, y, w, h, c, LColor.orange);
@@ -91,21 +90,21 @@ public class LGesture extends LComponent {
 	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
 		if (isVisible() && goalPath != null) {
 			g.saveBrush();
-			int tmp = g.color();
+			int tint = g.getTint();
 			g.setLineWidth(lineWidth);
 			g.setColor(_component_baseColor);
 			g.drawPolyline(goalPath);
 			g.resetLineWidth();
-			g.setColor(tmp);
+			g.setTint(tint);
 			g.restoreBrush();
 		}
 	}
 
 	@Override
 	protected void processTouchPressed() {
-		final int x = SysTouch.x();
-		final int y = SysTouch.y();
-		if (getCollisionBox().contains(x, y)) {
+		final float x = getUITouchX();
+		final float y = getUITouchY();
+		if (isPointInUI(x, y)) {
 			mX = x;
 			mY = y;
 			if (resetGesture) {
@@ -136,10 +135,10 @@ public class LGesture extends LComponent {
 
 	@Override
 	protected void processTouchDragged() {
-		if (input.isMoving()) {
-			final int x = SysTouch.x();
-			final int y = SysTouch.y();
-			if (getCollisionBox().contains(x, y)) {
+		if (SysTouch.isDrag() && input.isMoving()) {
+			final float x = getUITouchX();
+			final float y = getUITouchY();
+			if (isPointInUI(x, y)) {
 				final float previousX = mX;
 				final float previousY = mY;
 
@@ -309,7 +308,7 @@ public class LGesture extends LComponent {
 	public URecognizerResult getRecognizer(String path, boolean resampledFirst) {
 		return getRecognizer(GestureData.loadUserPoints(path, resampledFirst), URecognizer.GESTURES_NONE);
 	}
-	
+
 	/**
 	 * 获得一个手势分析器
 	 * 
@@ -323,6 +322,5 @@ public class LGesture extends LComponent {
 	public String getUIName() {
 		return "Gesture";
 	}
-
 
 }

@@ -94,8 +94,6 @@ public class Sprite extends LObject<ISprite>
 
 	private boolean _debugDraw = false;
 
-	private int _maxFrame;
-
 	private Vector2f _pivot = new Vector2f(-1, -1);
 
 	private Sprites _sprites = null;
@@ -466,16 +464,7 @@ public class Sprite extends LObject<ISprite>
 	 * @param timer
 	 */
 	private void setAnimation(Animation myAnimation, LTexture[] images, int max, long timer) {
-		this._maxFrame = max;
-		if (_maxFrame != -1) {
-			for (int i = 0; i < _maxFrame && i < images.length; i++) {
-				myAnimation.addFrame(images[i], timer);
-			}
-		} else {
-			for (int i = 0; i < images.length; i++) {
-				myAnimation.addFrame(images[i], timer);
-			}
-		}
+		myAnimation.addFrame(images, max, timer);
 	}
 
 	/**
@@ -535,7 +524,6 @@ public class Sprite extends LObject<ISprite>
 	 */
 	public Sprite setAnimation(Animation animation) {
 		this.animation = animation;
-		this._maxFrame = animation.getTotalFrames();
 		return this;
 	}
 
@@ -670,9 +658,6 @@ public class Sprite extends LObject<ISprite>
 			return;
 		}
 
-		if (animation.getCurrentFrameIndex() > _maxFrame) {
-			animation.reset();
-		}
 		image = animation.getSpriteImage();
 
 		final boolean notImg = image == null;
@@ -908,11 +893,11 @@ public class Sprite extends LObject<ISprite>
 	}
 
 	public int getMaxFrame() {
-		return _maxFrame;
+		return animation.getMaxFrame();
 	}
 
 	public Sprite setMaxFrame(int maxFrame) {
-		this._maxFrame = maxFrame;
+		this.animation.setMaxFrame(maxFrame);
 		return this;
 	}
 
