@@ -769,7 +769,7 @@ public class LProcess {
 				offY = oldW / 2f - newH / 2f;
 				nx = (newX - offY);
 				ny = (newY - offX);
-				_tmpLocaltion.set(nx / getScaleX(), ny / getScaleY()).rotate(-90);
+				_tmpLocaltion.set(nx / getScaleX(), ny / getScaleY()).rotateSelf(-90);
 				_tmpLocaltion.set(-(_tmpLocaltion.x - getWidth()), MathUtils.abs(_tmpLocaltion.y));
 				break;
 			case 0:
@@ -781,12 +781,12 @@ public class LProcess {
 				offY = oldW / 2f - newH / 2f;
 				nx = (newX - offY);
 				ny = (newY - offX);
-				_tmpLocaltion.set(nx / getScaleX(), ny / getScaleY()).rotate(90);
+				_tmpLocaltion.set(nx / getScaleX(), ny / getScaleY()).rotateSelf(90);
 				_tmpLocaltion.set(-_tmpLocaltion.x, MathUtils.abs(_tmpLocaltion.y - getHeight()));
 				break;
 			case -180:
 			case 180:
-				_tmpLocaltion.set(nx / getScaleX(), ny / getScaleY()).rotate(getRotation()).addSelf(getWidth(),
+				_tmpLocaltion.set(nx / getScaleX(), ny / getScaleY()).rotateSelf(getRotation()).addSelf(getWidth(),
 						getHeight());
 				break;
 			default: // 原则上不处理非水平角度的触点

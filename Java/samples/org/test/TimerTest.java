@@ -21,103 +21,55 @@
 package org.test;
 
 import loon.LSystem;
-import loon.Screen;
-import loon.event.GameTouch;
+import loon.Stage;
+import loon.component.LLabel;
 import loon.event.Updateable;
-import loon.opengl.GLEx;
 import loon.utils.timer.LTimer;
-import loon.utils.timer.LTimerContext;
 
-public class TimerTest extends Screen{
-	
-	LTimer timer1 = new LTimer(LSystem.SECOND);
+public class TimerTest extends Stage {
 
 	@Override
-	public void draw(GLEx g) {
-		
-		
-	}
+	public void create() {
 
-	@Override
-	public void onLoad() {
+		final LTimer timer1 = new LTimer(LSystem.SECOND * 15);
 
-		LTimer timer2 = new LTimer(LSystem.SECOND);
-		//执行10次
+		final LLabel label = addLabel("test");
+
+		centerOn(label);
+
+		add(label);
+
+		final LTimer timer2 = new LTimer(LSystem.SECOND);
+		// 执行10次
 		timer2.setRepeats(10);
 		timer2.setUpdateable(new Updateable() {
-			
+
 			@Override
 			public void action(Object a) {
-				i("Timer2 running");
-				
+				label.setText("Timer2 running count:" + timer2.getTimesRepeated());
+				centerOn(label);
 			}
 		});
-		//提交计时器到Loon循环中
+		// 提交计时器到Loon循环中
 		timer2.submit();
-		
-		//关闭Screen时注销计时器
+
+		// 关闭Screen时注销计时器
 		putRelease(timer2);
+
+		setTimeout(new Updateable() {
+
+			@Override
+			public void action(Object a) {
+				// 满足Timer1延迟条件时
+				if (timer1.action(getElapsedTime())) {
+					// 打印info
+					label.setText("Timer1 Running");
+					centerOn(label);
+				}
+			}
+		}, 500);
 
 		add(MultiScreenTest.getBackButton(this, 2));
 	}
-
-	@Override
-	public void alter(LTimerContext context) {
-		//满足Timer1延迟条件时
-		if(timer1.action(context)){
-			//打印info
-			i("Timer1 Running");
-		}
-	}
-
-	@Override
-	public void resize(int width, int height) {
-		
-		
-	}
-
-	@Override
-	public void touchDown(GameTouch e) {
-		
-		
-	}
-
-	@Override
-	public void touchUp(GameTouch e) {
-		
-		
-	}
-
-	@Override
-	public void touchMove(GameTouch e) {
-		
-		
-	}
-
-	@Override
-	public void touchDrag(GameTouch e) {
-		
-		
-	}
-
-	@Override
-	public void resume() {
-		
-		
-	}
-
-	@Override
-	public void pause() {
-		
-		
-	}
-
-	@Override
-	public void close() {
-		
-		
-	}
-	
-	
 
 }

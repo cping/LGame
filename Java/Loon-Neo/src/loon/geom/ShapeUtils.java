@@ -158,7 +158,7 @@ public class ShapeUtils {
 
 	public void rotate(Vector2f[] vertices, float angle) {
 		for (int i = 0; i < vertices.length; i++) {
-			vertices[i].rotate(angle);
+			vertices[i].rotateSelf(angle);
 		}
 	}
 

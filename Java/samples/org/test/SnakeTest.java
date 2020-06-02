@@ -74,7 +74,7 @@ public class SnakeTest extends Screen {
 					} else if (type == 2) {
 						color.setColor(LColor.red);
 					}
-					//绘制'蛇'和果实(如果有图的话可以用图片替换这部分)
+					// 绘制'蛇'和果实(如果有图的话可以用图片替换这部分)
 					g.fillOval(map.tilesToWidthPixels(x), map.tilesToWidthPixels(y), map.getTileWidth(),
 							map.getTileHeight(), color);
 				}
@@ -106,7 +106,7 @@ public class SnakeTest extends Screen {
 		int tileHeight = 20;
 
 		// 构建一个等于屏幕大小的二维数组地图对象
-		map = new Field2D(getWidth() / tileWidth, getHeight() / tileHeight, tileWidth, tileHeight);
+		map = new Field2D(getWidth() / tileWidth, getHeight() / tileHeight, tileWidth, tileHeight, -1);
 
 		// 向上事件
 		final ActionKey gameUp = new ActionKey();
@@ -257,8 +257,8 @@ public class SnakeTest extends Screen {
 		moveTimer.submit();
 		// 注销Screen时销毁moveTimer
 		putRelease(moveTimer);
-		
-		//注入网格,总大小为Screen大小,单独网格大小为二维地图瓦片大小
+
+		// 注入网格,总大小为Screen大小,单独网格大小为二维地图瓦片大小
 		add(new GridEntity(0, 0, getWidth(), getHeight(), map.getTileWidth(), map.getTileHeight(), LColor.gray));
 
 		// 初始化游戏设定
@@ -275,7 +275,7 @@ public class SnakeTest extends Screen {
 		int h = map.getHeight() - 2;
 		int x = MathUtils.random(1, w);
 		int y = MathUtils.random(1, h);
-		if(map.getTileType(x, y) != -1){
+		if (map.getTileType(x, y) != -1) {
 			newFruit();
 			return;
 		}

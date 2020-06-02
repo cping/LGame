@@ -639,7 +639,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		this.touchDY = -1;
 		this.lastTouchX = -1;
 		this.lastTouchY = -1;
-		this.touchType.clear();
+		if (touchType != null) {
+			touchType.clear();
+		}
 		if (_touchListener != null) {
 			_touchListener.clear();
 		}
@@ -3953,7 +3955,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			error("Screen mousePressed() exception", ex);
 		}
 	}
-	
+
 	public abstract void touchDown(GameTouch e);
 
 	public void mouseReleased(GameTouch e) {
