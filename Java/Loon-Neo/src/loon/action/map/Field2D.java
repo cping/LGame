@@ -720,9 +720,17 @@ public class Field2D implements IArray, Config {
 		return tileHeight;
 	}
 
+	public int getTileHalfHeight() {
+		return tileHeight / 2;
+	}
+
 	public Field2D setTileHeight(int tileHeight) {
 		this.tileHeight = tileHeight;
 		return this;
+	}
+
+	public int getTileHalfWidth() {
+		return tileWidth / 2;
 	}
 
 	public int getTileWidth() {

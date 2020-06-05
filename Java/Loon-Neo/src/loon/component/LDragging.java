@@ -30,6 +30,9 @@ import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 
+/**
+ * 用于显示拖拽范围的拖拽效果组件
+ */
 public class LDragging extends LComponent {
 
 	private SelectAreaListener _selectArea;
@@ -65,7 +68,7 @@ public class LDragging extends LComponent {
 	private LColor _rectColor;
 
 	/**
-	 * 构造拖拽用组件,用于渲染出特定的拖拽区域(默认使用全天渲染模式,使用虚线边框,边框线宽4,每行虚线由5个子线条组成)
+	 * 构造拖拽用组件,用于渲染出特定的拖拽区域(默认使用矩形渲染,全局渲染模式,使用虚线边框,边框线宽4,每行虚线由5个子线条组成)
 	 */
 	public LDragging() {
 		this(false, true, true, 4f, 5);
@@ -242,13 +245,16 @@ public class LDragging extends LComponent {
 
 	@Override
 	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
+		if (_component_isClose) {
+			return;
+		}
 		if (!_dragging) {
 			return;
 		}
-		final float areaX = this._display_area.x;
-		final float areaY = this._display_area.y;
-		final float areaWidth = this._display_area.width;
-		final float areaHeight = this._display_area.height;
+		final float areaX = x + this._display_area.x;
+		final float areaY = y + this._display_area.y;
+		final float areaWidth = MathUtils.clamp(this._display_area.width, 1, getWidth());
+		final float areaHeight = MathUtils.clamp(this._display_area.height, 1, getHeight());
 		if (_circle) {
 			final float areaSize = MathUtils.max(areaWidth, areaHeight) + areaWidth / 32f;
 			if (_fillRect) {

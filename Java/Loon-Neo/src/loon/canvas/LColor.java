@@ -51,8 +51,7 @@ public class LColor implements Serializable {
 	 * @param value
 	 * @return
 	 */
-	public static final LColor fromRGB(int value)
-	{
+	public static final LColor fromRGB(int value) {
 		return new LColor(((value >> 16) & 0xFF), ((value >> 8) & 0xFF), (value & 0xFF), 255);
 	}
 
@@ -62,11 +61,20 @@ public class LColor implements Serializable {
 	 * @param value
 	 * @return
 	 */
-	public static final LColor fromRGBA(int value)
-	{
+	public static final LColor fromRGBA(int value) {
 		return new LColor(((value >> 16) & 0xFF), ((value >> 8) & 0xFF), (value & 0xFF), ((value >> 24) & 0xFF));
 	}
-	
+
+	/**
+	 * 解码指定颜色信息为argb颜色
+	 * 
+	 * @param colorString
+	 * @return
+	 */
+	public static final int parseColor(String colorString) {
+		return decode(colorString).getARGB();
+	}
+
 	/**
 	 * 解码字符串为color对象
 	 * 
@@ -796,7 +804,7 @@ public class LColor implements Serializable {
 	public LColor multiply(LColor c) {
 		return new LColor(r * c.r, g * c.g, b * c.b, a * c.a);
 	}
-	
+
 	public LColor mulAlpha(float a) {
 		this.a *= a;
 		return this;
@@ -1332,6 +1340,17 @@ public class LColor implements Serializable {
 	 */
 	public LColor getHSLtoRGB() {
 		return getHSLtoRGB(r, g, b);
+	}
+
+	/**
+	 * 注入一个与指定名称绑定的Color(可以使用findName函数再次获得)
+	 * 
+	 * @param colorName
+	 * @param color
+	 * @return
+	 */
+	public final static boolean putName(String colorName, LColor color) {
+		return LColorList.get().putColor(colorName, color);
 	}
 
 	/**

@@ -651,6 +651,14 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 		object.setLocation(w / 2 - object.getWidth() / 2, h / 2 - object.getHeight() / 2);
 	}
 
+	public static void centerTopOn(final LObject<?> object, float w, float h) {
+		object.setLocation(w / 2 - object.getWidth() / 2, 0);
+	}
+
+	public static void centerBottomOn(final LObject<?> object, float w, float h) {
+		object.setLocation(w / 2 - object.getWidth() / 2, h - object.getHeight());
+	}
+
 	public static void topOn(final LObject<?> object, float w, float h) {
 		object.setLocation(w / 2 - object.getWidth() / 2, 0);
 	}

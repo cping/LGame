@@ -31,7 +31,7 @@ public class LColorList {
 
 	private static LColorList instance;
 
-	public final static void freeStatic(){
+	public final static void freeStatic() {
 		instance = null;
 	}
 
@@ -59,6 +59,20 @@ public class LColorList {
 		colorList.put(name, color);
 	}
 
+	public boolean putColor(String name, LColor color) {
+		if(StringUtils.isEmpty(name)){
+			return false;
+		}
+		if (color == null) {
+			return false;
+		}
+		if (dirty) {
+			init();
+		}
+		pushColor(name, color);
+		return true;
+	}
+
 	public LColor find(String name) {
 		if (StringUtils.isEmpty(name)) {
 			return LColor.white.cpy();
@@ -68,7 +82,7 @@ public class LColorList {
 		}
 		LColor color = colorList.get(name.trim().toLowerCase());
 		if (color != null) {
-			return color;
+			return color.cpy();
 		}
 		return LColor.white.cpy();
 	}

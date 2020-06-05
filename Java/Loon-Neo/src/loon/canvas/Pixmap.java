@@ -257,7 +257,11 @@ public class Pixmap extends Limit implements LRelease {
 		}
 		return this;
 	}
-
+	
+	public Pixmap clearDraw(LColor color) {
+		return clearDraw(color.getARGB());
+	}
+	
 	public Pixmap setBackground(int color) {
 		this._background = color;
 		return this;

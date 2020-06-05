@@ -81,9 +81,9 @@ public class Scale {
 	public Pair<Vector2f, Vector2f> scaledSize(Mode mode, boolean powerOfTwo, float srcWidth, float srcHeight,
 			float tarWidth, float tarHeight) {
 
-		float targetRatio = 1f;
-		float sourceRatio = 1f;
-		float scaleValue = 1f;
+		float targetRatio = this.factor;
+		float sourceRatio = this.factor;
+		float scaleValue = this.factor;
 
 		Vector2f sizeResult = new Vector2f();
 		Vector2f scaleResult = new Vector2f();

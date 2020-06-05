@@ -3101,8 +3101,28 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return this;
 	}
 
+	public Screen centerTopOn(final LObject<?> object) {
+		LObject.centerTopOn(object, getWidth(), getHeight());
+		return this;
+	}
+
+	public Screen centerBottomOn(final LObject<?> object) {
+		LObject.centerBottomOn(object, getWidth(), getHeight());
+		return this;
+	}
+
 	public Screen topOn(final LObject<?> object) {
 		LObject.topOn(object, getWidth(), getHeight());
+		return this;
+	}
+
+	public Screen topLeftOn(final LObject<?> object) {
+		LObject.topLeftOn(object, getWidth(), getHeight());
+		return this;
+	}
+
+	public Screen topRightOn(final LObject<?> object) {
+		LObject.topRightOn(object, getWidth(), getHeight());
 		return this;
 	}
 
@@ -3118,6 +3138,16 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	public Screen bottomOn(final LObject<?> object) {
 		LObject.bottomOn(object, getWidth(), getHeight());
+		return this;
+	}
+
+	public Screen bottomLeftOn(final LObject<?> object) {
+		LObject.bottomLeftOn(object, getWidth(), getHeight());
+		return this;
+	}
+
+	public Screen bottomRightOn(final LObject<?> object) {
+		LObject.bottomRightOn(object, getWidth(), getHeight());
 		return this;
 	}
 

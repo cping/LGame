@@ -24,6 +24,7 @@ package loon.component;
 import loon.Director.Origin;
 import loon.LObject;
 import loon.LRelease;
+import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
 import loon.PlayerUtils;
@@ -291,15 +292,8 @@ public abstract class LComponent extends LObject<LContainer>
 	 */
 	public LComponent(int x, int y, int width, int height) {
 		this.setLocation(x, y);
-		this._width = width;
-		this._height = height;
-		if (this._width == 0) {
-			this._width = 10;
-		}
-		if (this._height == 0) {
-			this._height = 10;
-		}
-
+		this._width = MathUtils.max(1f, width);
+		this._height = MathUtils.max(1f, height);
 	}
 
 	public int getScreenWidth() {
@@ -754,7 +748,7 @@ public abstract class LComponent extends LObject<LContainer>
 	public float getHeight() {
 		return (this._height * _scaleY) - _fixedHeightOffset;
 	}
-
+    
 	public int width() {
 		return (int) getWidth();
 	}
@@ -1499,6 +1493,21 @@ public abstract class LComponent extends LObject<LContainer>
 	@Override
 	public boolean containsPoint(float x, float y) {
 		return getCollisionBox().contains(x, y, 1, 1);
+	}
+
+	public boolean isAscendantOf(LComponent o) {
+		if (o == null) {
+			throw new LSysException("Component cannot be null");
+		}
+		for (;;) {
+			if (o == null) {
+				return false;
+			}
+			if (o == this) {
+				return true;
+			}
+			o = o.getParent();
+		}
 	}
 
 	public Vector2f getOffset() {

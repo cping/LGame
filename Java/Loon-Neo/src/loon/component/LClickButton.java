@@ -488,6 +488,10 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 		return this;
 	}
 
+    public boolean isOver(){
+        return over;
+    }
+
 	@Override
 	public String getUIName() {
 		return "ClickButton";

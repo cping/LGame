@@ -22,6 +22,7 @@ package loon.action.sprite;
 
 import loon.Director.Origin;
 import loon.LObject;
+import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
 import loon.LTrans;
@@ -81,13 +82,13 @@ public class Sprite extends LObject<ISprite>
 	private LColor _debugDrawColor = LColor.red;
 
 	private ResizeListener<Sprite> _resizeListener;
-	
+
 	private int transform;
 
 	private float _scaleX = 1f, _scaleY = 1f;
 
 	private float _fixedWidthOffset = 0f;
-	
+
 	private float _fixedHeightOffset = 0f;
 
 	private boolean _flipX = false, _flipY = false;
@@ -901,6 +902,21 @@ public class Sprite extends LObject<ISprite>
 		return this;
 	}
 
+	public boolean isAscendantOf(ISprite actor) {
+		if (actor == null) {
+			throw new LSysException("Actor cannot be null");
+		}
+		for (;;) {
+			if (actor == null) {
+				return false;
+			}
+			if (actor == this) {
+				return true;
+			}
+			actor = actor.getParent();
+		}
+	}
+
 	@Override
 	public void setWidth(float w) {
 		this._scaleX = (w / getWidth());
@@ -1253,7 +1269,7 @@ public class Sprite extends LObject<ISprite>
 			_resizeListener.onResize(this);
 		}
 	}
-	
+
 	public boolean isClosed() {
 		return isDisposed();
 	}

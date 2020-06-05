@@ -24,6 +24,7 @@ import java.util.Comparator;
 
 import loon.Director.Origin;
 import loon.LObject;
+import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
 import loon.PlayerUtils;
@@ -1449,6 +1450,21 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		this._repaintAutoOffset = autoOffset;
 	}
 
+	public boolean isAscendantOf(ISprite actor) {
+		if (actor == null) {
+			throw new LSysException("Actor cannot be null");
+		}
+		for (;;) {
+			if (actor == null) {
+				return false;
+			}
+			if (actor == this) {
+				return true;
+			}
+			actor = actor.getParent();
+		}
+	}
+	
 	public boolean isClosed() {
 		return isDisposed();
 	}

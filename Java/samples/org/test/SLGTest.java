@@ -37,6 +37,7 @@ import loon.action.sprite.effect.StringEffect;
 import loon.action.sprite.effect.PixelChopEffect.ChopDirection;
 import loon.canvas.LColor;
 import loon.component.LMenuSelect;
+import loon.component.LRadar;
 import loon.component.LToast;
 import loon.component.LToast.Style;
 import loon.event.ActionUpdate;
@@ -1361,7 +1362,7 @@ public class SLGTest extends Stage {
 		// 玩家与敌方本回合操作对象临时存储用堆栈
 		final Array<Role> playerStack = new Array<Role>();
 		final Array<Role> enemyStack = new Array<Role>();
-		
+
 		// 玩家回合与敌方回合标识(事实上就是两个互斥锁,loon默认是单线程的,有且只有一个mainloop(为了兼容gwt),
 		// 所以异步处理上比较麻烦(当然写成多线程也可以,参考SRPG那个例子,不过那样就无法跑网页了(以后换成teavm后台应该可以)))
 		final BooleanValue playerRound = refBool();
@@ -1369,6 +1370,16 @@ public class SLGTest extends Stage {
 
 		// 回合数
 		final Counter roundCount = new Counter();
+
+		// 显示敌人坐标到雷达中
+		Field2D tmp = this.gameMap.getField2D().cpy();
+		updateEnemyPos(tmp);
+		LRadar radar = new LRadar(0, 0, 100, 100);
+		// 清空雷达中水滴样点
+		// radar.clearDrop();
+		radar.addField2DToDrop(tmp, LColor.blue, 'E');
+		topRightOn(radar);
+		add(radar);
 
 		// 触屏up事件处理(我方角色操作)
 		up(new Touched() {
