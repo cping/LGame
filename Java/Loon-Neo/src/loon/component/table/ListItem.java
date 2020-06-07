@@ -27,4 +27,20 @@ public class ListItem {
 	public String name;
 	
 	public TArray<Object> list = new TArray<Object>();
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public TArray<Object> getList() {
+		return list;
+	}
+
+	public void setList(TArray<Object> list) {
+		this.list = list;
+	}
 }

@@ -63,6 +63,9 @@ public class RippleKernel {
 		case RECT:
 			g.drawRect(mx + x - span / 2, my + y - span / 2, span, span);
 			break;
+		case RHOMBUS:
+			g.drawRhombus(6, mx + x - span / 2, my + y - span / 2, span);
+			break;
 		case TRIANGLE:
 			if (tempTriangle == null) {
 				tempTriangle = new Triangle2f(span, span);

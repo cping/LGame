@@ -38,6 +38,7 @@ import loon.action.sprite.effect.PixelChopEffect.ChopDirection;
 import loon.canvas.LColor;
 import loon.component.LMenuSelect;
 import loon.component.LRadar;
+import loon.component.LRadar.Mode;
 import loon.component.LToast;
 import loon.component.LToast.Style;
 import loon.event.ActionUpdate;
@@ -1374,7 +1375,7 @@ public class SLGTest extends Stage {
 		// 显示敌人坐标到雷达中
 		Field2D tmp = this.gameMap.getField2D().cpy();
 		updateEnemyPos(tmp);
-		LRadar radar = new LRadar(0, 0, 100, 100);
+		LRadar radar = new LRadar(Mode.Octagon,0, 0);
 		// 清空雷达中水滴样点
 		// radar.clearDrop();
 		radar.addField2DToDrop(tmp, LColor.blue, 'E');

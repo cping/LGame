@@ -1648,6 +1648,13 @@ public final class MathUtils {
 		return newAngle;
 	}
 
+    public static float getNormalizedAngle(float angle) {
+        while (angle < 0){
+            angle += MathUtils.RAD_FULL;
+        }
+        return angle % MathUtils.RAD_FULL;
+    }
+    
 	public static boolean inAngleRange(final float angle, final float startAngle, final float endAngle) {
 		float newAngle = adjust(angle);
 		float newStartAngle = adjust(startAngle);

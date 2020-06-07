@@ -36,6 +36,7 @@ import loon.geom.Affine2f;
 import loon.geom.Ellipse;
 import loon.geom.Matrix3;
 import loon.geom.Matrix4;
+import loon.geom.PointF;
 import loon.geom.Polygon;
 import loon.geom.RectBox;
 import loon.geom.RectF;
@@ -47,6 +48,7 @@ import loon.geom.XY;
 import loon.opengl.GLRenderer.GLType;
 import loon.utils.Array;
 import loon.utils.GLUtils;
+import loon.utils.IntMap;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
 
@@ -95,6 +97,8 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	private LColor tmpColor = new LColor();
 
 	private Vector2f tempLocation = new Vector2f();
+
+	private final IntMap<PointF> rhombusArray = new IntMap<PointF>();
 
 	private final Array<LTextureImage> frameBuffers = new Array<LTextureImage>();
 
@@ -1770,9 +1774,13 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	public GLEx drawLine(float x0, float y0, float x1, float y1, LColor color) {
+		return drawLine(x0, y0, x1, y1, this.lastBrush.lineWidth, color);
+	}
+
+	public GLEx drawLine(float x0, float y0, float x1, float y1, float width, LColor color) {
 		int tmp = this.lastBrush.baseColor;
 		setColor(color);
-		drawLine(x0, y0, x1, y1);
+		drawLine(x0, y0, x1, y1, width);
 		setColor(tmp);
 		return this;
 	}
@@ -1819,19 +1827,24 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 * @param width
 	 * @return
 	 */
-	public GLEx drawDashLine(float x1, float y1, float x2, float y2, int divisions, float width) {
+	public GLEx drawDashLine(float x1, float y1, float x2, float y2, int divisions, float width, LColor color) {
 		float dx = x2 - x1, dy = y2 - y1;
 		for (int i = 0; i < divisions; i++) {
 			if (i % 2 == 0) {
 				drawLine(x1 + ((float) i / divisions) * dx, y1 + ((float) i / divisions) * dy,
-						x1 + ((i + 1f) / divisions) * dx, y1 + ((i + 1f) / divisions) * dy, width);
+						x1 + ((i + 1f) / divisions) * dx, y1 + ((i + 1f) / divisions) * dy, width, color);
 			}
 		}
 		return this;
 	}
 
+	public GLEx drawDashLine(float x1, float y1, float x2, float y2, int divisions, LColor color) {
+		return drawDashLine(x1, y1, x2, y2, divisions, this.lastBrush.lineWidth, color);
+	}
+
 	public GLEx drawDashLine(float x1, float y1, float x2, float y2, int divisions) {
-		return drawDashLine(x1, y1, x2, y2, divisions, this.lastBrush.lineWidth);
+		return drawDashLine(x1, y1, x2, y2, divisions, this.lastBrush.lineWidth,
+				tmpColor.setColor(this.lastBrush.baseColor));
 	}
 
 	public GLEx drawAngleLine(float x, float y, float angle, float length) {
@@ -2538,6 +2551,183 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		ypos[1] = y + t.ypoints[1];
 		ypos[2] = y + t.ypoints[2];
 		drawPolygon(xpos, ypos, 3);
+		return this;
+	}
+
+	/**
+	 * 绘制菱形区域
+	 * 
+	 * @param g
+	 * @param amount
+	 * @param x
+	 * @param y
+	 * @param radius
+	 * @param color
+	 * @return
+	 */
+	public GLEx drawRhombus(int amount, float x, float y, float radius, LColor color) {
+		return drawRhombus(x, y, amount, 1, radius, 0, color);
+	}
+
+	/**
+	 * 以虚线绘制菱形区域
+	 * 
+	 * @param amount
+	 * @param x
+	 * @param y
+	 * @param radius
+	 * @param divisions
+	 * @param color
+	 * @return
+	 */
+	public GLEx drawDashRhombus(int amount, float x, float y, float radius, int divisions, LColor color) {
+		return drawDashRhombus(x, y, amount, 1, radius, 0, divisions, color);
+	}
+
+	/**
+	 * 以虚线绘制菱形区域
+	 * 
+	 * @param amount
+	 * @param x
+	 * @param y
+	 * @param radius
+	 * @param color
+	 * @return
+	 */
+	public GLEx drawDashRhombus(int amount, float x, float y, float radius, LColor color) {
+		return drawDashRhombus(x, y, amount, 1, radius, 0, 5, color);
+	}
+
+	/**
+	 * 绘制菱形区域
+	 * 
+	 * @param amount
+	 * @param x
+	 * @param y
+	 * @param radius
+	 * @return
+	 */
+	public GLEx drawRhombus(int amount, float x, float y, float radius) {
+		return drawRhombus(amount, x, y, radius, tmpColor.setColor(this.lastBrush.baseColor));
+	}
+
+	/**
+	 * 以虚线绘制菱形区域
+	 * 
+	 * @param amount
+	 * @param x
+	 * @param y
+	 * @param radius
+	 * @param divisions
+	 * @return
+	 */
+	public GLEx drawDashRhombus(int amount, float x, float y, float radius, int divisions) {
+		return drawDashRhombus(amount, x, y, radius, divisions, tmpColor.setColor(this.lastBrush.baseColor));
+	}
+
+	/**
+	 * 绘制菱形区域
+	 * 
+	 * @param x
+	 * @param y
+	 * @param pointAmount
+	 * @param pointStep
+	 * @param radius
+	 * @param beginAngle
+	 * @param color
+	 * @return
+	 */
+	public GLEx drawRhombus(float x, float y, int pointAmount, int pointStep, float radius, float beginAngle,
+			LColor color) {
+		return drawRhombus(x, y, pointAmount, pointStep, radius, beginAngle, false, 1, color);
+	}
+
+	/**
+	 * 以虚线绘制菱形区域
+	 * 
+	 * @param x
+	 * @param y
+	 * @param pointAmount
+	 * @param pointStep
+	 * @param radius
+	 * @param beginAngle
+	 * @param divisions
+	 * @param color
+	 * @return
+	 */
+	public GLEx drawDashRhombus(float x, float y, int pointAmount, int pointStep, float radius, float beginAngle,
+			int divisions, LColor color) {
+		return drawRhombus(x, y, pointAmount, pointStep, radius, beginAngle, true, divisions, color);
+	}
+
+	/**
+	 * 绘制菱形区域
+	 * 
+	 * @param x
+	 * @param y
+	 * @param pointAmount
+	 * @param pointStep
+	 * @param radius
+	 * @param beginAngle
+	 * @param dashLine
+	 * @param divisions
+	 * @param color
+	 * @return
+	 */
+	public GLEx drawRhombus(float x, float y, int pointAmount, int pointStep, float radius, float beginAngle,
+			boolean dashLine, int divisions, LColor color) {
+		final int steps = pointStep * pointAmount;
+		boolean update = false;
+		if (steps != rhombusArray.size) {
+			rhombusArray.clear();
+			update = true;
+		}
+		final float newRadius = radius / 2;
+		final float amount = 360f / pointAmount;
+		final float step = newRadius / pointStep;
+		int count = 0;
+		for (int j = 0; j < pointStep; j++) {
+			for (int i = 0; i < pointAmount; i++) {
+				float len = amount * i;
+				float newX = MathUtils.cos(MathUtils.toRadians(len - beginAngle)) * (j + 1) * step;
+				float newY = MathUtils.sin(MathUtils.toRadians(len - beginAngle)) * (j + 1) * step;
+				float rx = newX + x + newRadius;
+				float ry = -newY + y + newRadius;
+				if (update) {
+					rhombusArray.put(count++, new PointF(rx, ry));
+				} else {
+					PointF result = rhombusArray.get(count++);
+					if (result != null) {
+						result.set(rx, ry);
+					}
+				}
+			}
+		}
+		int size = rhombusArray.size();
+		for (int i = 1; i <= size; i++) {
+			PointF p1 = rhombusArray.get(i - 1);
+			if (p1 != null) {
+				if ((i) % (pointAmount) != 0) {
+					PointF opend = rhombusArray.get(i);
+					if (opend != null) {
+						if (dashLine) {
+							drawDashLine(p1.x, p1.y, opend.x, opend.y, divisions, color);
+						} else {
+							drawLine(p1.x, p1.y, opend.x, opend.y, color);
+						}
+					}
+				} else {
+					PointF closed = rhombusArray.get(i - pointAmount);
+					if (closed != null) {
+						if (dashLine) {
+							drawDashLine(p1.x, p1.y, closed.x, closed.y, divisions, color);
+						} else {
+							drawLine(p1.x, p1.y, closed.x, closed.y, color);
+						}
+					}
+				}
+			}
+		}
 		return this;
 	}
 
@@ -3729,6 +3919,9 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	public void close() {
 		this.isClosed = true;
 		this.useBegin = false;
+		if (rhombusArray != null) {
+			rhombusArray.clear();
+		}
 		if (glRenderer != null) {
 			glRenderer.close();
 		}

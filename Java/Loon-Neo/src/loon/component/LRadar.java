@@ -35,6 +35,10 @@ import loon.utils.TArray;
  */
 public class LRadar extends LComponent {
 
+	public static enum Mode {
+		Circle, Quad, Hexagon, Octagon, Decagon
+	}
+
 	private static class Drop {
 
 		protected float x;
@@ -57,6 +61,8 @@ public class LRadar extends LComponent {
 		}
 
 	}
+
+	private Mode _drawMode;
 
 	private LColor _circleColor;
 
@@ -102,29 +108,47 @@ public class LRadar extends LComponent {
 
 	private float _degrees;
 
+	public LRadar(int x, int y) {
+		this(x, y, 120, 120);
+	}
+
+	public LRadar(Mode mode, int x, int y) {
+		this(mode, x, y, 120, 120);
+	}
+
 	public LRadar(int x, int y, int width, int height) {
-		this(LColor.red, LColor.blue, LColor.red, true, true, true, true, false, true, 4, 4, 3f, 3f, 15, 3f, x, y,
+		this(Mode.Circle, x, y, width, height);
+	}
+
+	public LRadar(Mode mode, int x, int y, int width, int height) {
+		this(mode, LColor.red, LColor.blue, LColor.red, true, true, true, true, false, true, 4, 4, 3f, 3f, 15, 3f, x, y,
 				width, height);
 	}
 
-	public LRadar(LColor circleColor, LColor dropColor, LColor sweepColor, int x, int y, int width, int height) {
-		this(circleColor, dropColor, sweepColor, true, true, true, true, false, true, 4, 4, 3f, 3f, 15, 3f, x, y, width,
-				height);
+	public LRadar(Mode mode, LColor circleColor, LColor dropColor, LColor sweepColor, int x, int y, int width,
+			int height) {
+		this(mode, circleColor, dropColor, sweepColor, true, true, true, true, false, true, 4, 4, 3f, 3f, 15, 3f, x, y,
+				width, height);
 	}
 
-	public LRadar(boolean scan, boolean cross, boolean drop, boolean board, boolean rand, boolean ground,
+	public LRadar(Mode mode, boolean scan, boolean cross, boolean drop, boolean board, boolean rand, boolean ground,
 			int circleCount, int x, int y, int width, int height) {
-		this(LColor.red, LColor.blue, LColor.red, scan, cross, drop, board, rand, ground, 4, 4, 3f, 3f, 15, 3f, x, y,
-				width, height);
+		this(mode, LColor.red, LColor.blue, LColor.red, scan, cross, drop, board, rand, ground, 4, 4, 3f, 3f, 15, 3f, x,
+				y, width, height);
 	}
 
-	public LRadar(LColor circleColor, LColor dropColor, LColor sweepColor, boolean scan, boolean cross, boolean drop,
-			boolean board, boolean rand, boolean ground, int circleCount, int raindropCount, float speed, float flicker,
-			int dropSize, float lineWidth, int x, int y, int width, int height) {
+	public LRadar(Mode mode, LColor circleColor, LColor dropColor, LColor sweepColor, boolean scan, boolean cross,
+			boolean drop, boolean board, boolean rand, boolean ground, int circleCount, int raindropCount, float speed,
+			float flicker, int dropSize, float lineWidth, int x, int y, int width, int height) {
 		super(x, y, width, height);
 		this.setCircleColor(circleColor);
 		this.setDropColor(dropColor);
 		this.setSweepColor(sweepColor);
+		if (mode != null) {
+			this._drawMode = mode;
+		} else {
+			this._drawMode = Mode.Circle;
+		}
 		this._drops = new TArray<LRadar.Drop>();
 		this._randomDrops = new TArray<Drop>();
 		this._circleCount = MathUtils.max(1, circleCount);
@@ -133,6 +157,9 @@ public class LRadar extends LComponent {
 		this._flicker = flicker;
 		this._dropLimits = dropSize;
 		this._lineWidth = lineWidth;
+		if (width <= 120 && height <= 120) {
+			this._lineWidth = 1f;
+		}
 		this.showScanning = scan;
 		this.showCross = cross;
 		this.showDrop = drop;
@@ -204,8 +231,19 @@ public class LRadar extends LComponent {
 		return this;
 	}
 
+	public LRadar updateField2DToDrop(Field2D map, LColor color, int... flags) {
+		clearDrop();
+		return addField2DToDrop(map, color, 0, flags);
+	}
+
 	public LRadar addField2DToDrop(Field2D map, LColor color, int... flags) {
 		return addField2DToDrop(map, color, 0, flags);
+	}
+
+	public LRadar updateActionBindToDrop(TArray<ActionBind> actions, int screenWidth, int screenHeight, int tileWidth,
+			int tileHeight, LColor color) {
+		clearDrop();
+		return addActionBindToDrop(actions, screenWidth, screenHeight, tileWidth, tileHeight, color, 0f);
 	}
 
 	public LRadar addActionBindToDrop(TArray<ActionBind> actions, int screenWidth, int screenHeight, int tileWidth,
@@ -321,10 +359,11 @@ public class LRadar extends LComponent {
 
 	private void drawSweep(GLEx g, float cx, float cy, float radius) {
 		int color = g.color();
+		float newRadius = radius - _lineWidth;
 		float alpha = _sweepColor.a;
 		_sweepColor.a = 0.5f;
 		g.setColor(_sweepColor);
-		g.fillArc(cx - radius / 2f, cy - radius / 2f, radius, radius, _degrees, 45);
+		g.fillArc(cx - newRadius / 2f, cy - newRadius / 2f, newRadius, newRadius, _degrees, 45);
 		g.setColor(color);
 		_sweepColor.a = alpha;
 	}
@@ -386,12 +425,39 @@ public class LRadar extends LComponent {
 	}
 
 	private void drawCircle(GLEx g, float cx, float cy, float radius) {
+		int amount = -1;
 		for (int i = 0; i < _circleCount; i++) {
 			float newRadius = radius - (radius / _circleCount * i);
-			if (showDash) {
-				g.drawDashCircle(cx - newRadius / 2, cy - newRadius / 2, newRadius, _circleCount, _circleColor);
+			switch (_drawMode) {
+			default:
+			case Circle:
+				amount = -1;
+				break;
+			case Quad:
+				amount = 4;
+				break;
+			case Hexagon:
+				amount = 6;
+				break;
+			case Octagon:
+				amount = 8;
+				break;
+			case Decagon:
+				amount = 10;
+				break;
+			}
+			if (amount != -1) {
+				if (showDash) {
+					g.drawDashRhombus(amount, cx - newRadius / 2, cy - newRadius / 2, newRadius, _circleColor);
+				} else {
+					g.drawRhombus(amount, cx - newRadius / 2, cy - newRadius / 2, newRadius, _circleColor);
+				}
 			} else {
-				g.drawCircle(cx - newRadius / 2, cy - newRadius / 2, newRadius, _circleColor);
+				if (showDash) {
+					g.drawDashCircle(cx - newRadius / 2, cy - newRadius / 2, newRadius, _circleCount, _circleColor);
+				} else {
+					g.drawCircle(cx - newRadius / 2, cy - newRadius / 2, newRadius, _circleColor);
+				}
 			}
 		}
 	}
@@ -440,56 +506,72 @@ public class LRadar extends LComponent {
 		return showCross;
 	}
 
-	public void setShowCross(boolean showCross) {
+	public LRadar setShowCross(boolean showCross) {
 		this.showCross = showCross;
+		return this;
 	}
 
 	public boolean isShowDrop() {
 		return showDrop;
 	}
 
-	public void setShowDrop(boolean showDrop) {
+	public LRadar setShowDrop(boolean showDrop) {
 		this.showDrop = showDrop;
+		return this;
 	}
 
 	public boolean isShowDash() {
 		return showDash;
 	}
 
-	public void setShowDash(boolean showDash) {
+	public LRadar setShowDash(boolean showDash) {
 		this.showDash = showDash;
+		return this;
 	}
 
 	public boolean isShowBoard() {
 		return showBoard;
 	}
 
-	public void setShowBoard(boolean showBoard) {
+	public LRadar setShowBoard(boolean showBoard) {
 		this.showBoard = showBoard;
+		return this;
 	}
 
 	public boolean isShowScanning() {
 		return showScanning;
 	}
 
-	public void setShowScanning(boolean showScanning) {
+	public LRadar setShowScanning(boolean showScanning) {
 		this.showScanning = showScanning;
+		return this;
 	}
 
 	public boolean isShowRandDrop() {
 		return showRandDrop;
 	}
 
-	public void setShowRandDrop(boolean showRandDrop) {
+	public LRadar setShowRandDrop(boolean showRandDrop) {
 		this.showRandDrop = showRandDrop;
+		return this;
 	}
 
 	public boolean isShowGround() {
 		return showGround;
 	}
 
-	public void setShowGround(boolean showGround) {
+	public LRadar setShowGround(boolean showGround) {
 		this.showGround = showGround;
+		return this;
+	}
+
+	public Mode getDrawMode() {
+		return _drawMode;
+	}
+
+	public LRadar setDrawMode(Mode mode) {
+		this._drawMode = mode;
+		return this;
 	}
 
 	public LTexture getGroundTexture() {

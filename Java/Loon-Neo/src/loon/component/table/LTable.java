@@ -35,6 +35,7 @@ import loon.geom.Dimension;
 import loon.opengl.GLEx;
 import loon.utils.TArray;
 import loon.utils.ArrayMap;
+import loon.utils.HelperUtils;
 import loon.utils.MathUtils;
 
 /**
@@ -54,6 +55,60 @@ import loon.utils.MathUtils;
  * 
  */
 public class LTable extends LContainer implements FontSet<LTable> {
+
+	public static class TableView {
+
+		private TArray<ListItem> list;
+
+		public TableView() {
+			this.list = new TArray<ListItem>();
+		}
+
+		public TableView clear() {
+			list.clear();
+			return this;
+		}
+
+		public TableView setRows(int lineNo, Object... cols) {
+			if (lineNo < list.size) {
+				for (ListItem item : list) {
+					if (item != null) {
+						for (Object v : cols) {
+							item.list.set(lineNo, HelperUtils.toStr(v));
+						}
+					}
+				}
+			}
+			return this;
+		}
+
+		public TableView addColumn(int idx, Object o) {
+			ListItem item = list.get(idx);
+			if (item != null) {
+				item.list.add(HelperUtils.toStr(o));
+			}
+			return this;
+		}
+
+		public ListItem getIndex(int idx) {
+			return list.get(idx);
+		}
+
+		public ListItem removeIndex(int idx) {
+			return list.removeIndex(idx);
+		}
+
+		public TableView columns(String name, Object... cols) {
+			ListItem item = new ListItem();
+			item.name = name;
+			for (Object v : cols) {
+				item.list.add(HelperUtils.toStr(v));
+			}
+			list.add(item);
+			return this;
+		}
+
+	}
 
 	private ITableModel model = null;
 
@@ -85,7 +140,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 		}
 	}
 
-	static class HeaderControl {
+	class HeaderControl {
 		int headerY;
 		int mouseX = 0;
 		int columnResizeIndex = 0;
@@ -165,6 +220,11 @@ public class LTable extends LContainer implements FontSet<LTable> {
 		return this;
 	}
 
+	public LTable setData(TableView view, int width) {
+		setModel(new SimpleTableModel(view.list), width);
+		return this;
+	}
+
 	public LTable bindIcon(String name, LTexture texture) {
 		bindIcons.put(name, new BindIcon(name, texture));
 		return this;
@@ -209,7 +269,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 	}
 
 	public LTable mouseDragged(float x, float y) {
-		if (isTableHeadVisible()) {
+		if (isTableHeadVisible() && !readOnly) {
 			if (header.columnResizeIndex > -1) {
 				int newWidth = (int) (header.columnWidthBuffer + (x - header.mouseX));
 				int sum = getColumnWidth(header.columnResizeIndex) + getColumnWidth(header.columnResizeIndex + 1);
@@ -255,7 +315,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 				header.columnWidthBuffer = getColumnWidth(header.columnResizeIndex);
 				return this;
 			} else {
-				header.columnResizeIndex = 0;
+				mouseMoved(x, y);
 			}
 		}
 
@@ -615,9 +675,9 @@ public class LTable extends LContainer implements FontSet<LTable> {
 	}
 
 	public LTable setModel(ITableModel m, int width) {
-		model = m;
-		columns = new TableColumn[m.getColumnCount()];
-		selected = new boolean[m.getRowCount()];
+		this.model = m;
+		this.columns = new TableColumn[m.getColumnCount()];
+		this.selected = new boolean[m.getRowCount()];
 		for (int i = 0; i < columns.length; i++) {
 			columns[i] = new TableColumn(m.getColumnName(i), width);
 		}

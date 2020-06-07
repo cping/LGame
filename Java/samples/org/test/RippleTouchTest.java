@@ -15,7 +15,7 @@ public class RippleTouchTest extends Stage {
 		// 最后绘制精灵
 		setLastOrder(DRAW_SPRITE_PAINT());
 		// 构建Ripple特效并注入Screen
-		RippleEffect ripple = new RippleEffect();
+		RippleEffect ripple = new RippleEffect(RippleEffect.Model.RHOMBUS);
 		add(ripple);
 		add(MultiScreenTest.getBackButton(this,0));
 	}
