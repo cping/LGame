@@ -257,11 +257,11 @@ public class Pixmap extends Limit implements LRelease {
 		}
 		return this;
 	}
-	
+
 	public Pixmap clearDraw(LColor color) {
 		return clearDraw(color.getARGB());
 	}
-	
+
 	public Pixmap setBackground(int color) {
 		this._background = color;
 		return this;
@@ -2170,6 +2170,16 @@ public class Pixmap extends Limit implements LRelease {
 	/**
 	 * 绘制一个多边形
 	 * 
+	 * @param path
+	 * @return
+	 */
+	public Pixmap draw(Path2D path) {
+		return drawPolygon(path.getPointiX(), path.getPointiY(), path.size() / 2);
+	}
+
+	/**
+	 * 绘制一个多边形
+	 * 
 	 * @param xPoints
 	 * @param yPoints
 	 * @param nPoints
@@ -2211,6 +2221,16 @@ public class Pixmap extends Limit implements LRelease {
 	 */
 	public Pixmap fillPolygon(Pixmap pixmap, Polygon poly, int x, int y) {
 		return fillShapeImpl(pixmap, poly, x, y);
+	}
+
+	/**
+	 * 绘制并填充一个多边形
+	 * 
+	 * @param path
+	 * @return
+	 */
+	public Pixmap fill(Path2D path) {
+		return fillPolygon(path.getPointiX(), path.getPointiY(), path.size() / 2);
 	}
 
 	/**

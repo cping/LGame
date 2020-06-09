@@ -115,7 +115,6 @@ public class LGesture extends LComponent {
 			}
 			if (goalPath == null) {
 				goalPath = new Path(x, y);
-
 			} else {
 				goalPath.set(x, y);
 			}

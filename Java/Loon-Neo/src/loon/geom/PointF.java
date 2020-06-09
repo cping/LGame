@@ -27,6 +27,12 @@ import loon.utils.NumberUtils;
 /*最简化的浮点坐标处理类,以减少对象大小*/
 public class PointF implements XY {
 
+	public static boolean pointEquals(float x1, float y1, float x2, float y2, float tolerance) {
+		float dx = x2 - x1;
+		float dy = y2 - y1;
+		return dx * dx + dy * dy < tolerance * tolerance;
+	}
+
 	public float x = 0;
 	public float y = 0;
 

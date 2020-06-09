@@ -20,16 +20,18 @@
  */
 package loon.component.table;
 
+import loon.LSystem;
 import loon.utils.TArray;
 
 public class SimpleTableModel implements ITableModel {
-	
+
 	private TArray<ListItem> _list;
 
 	public SimpleTableModel(TArray<ListItem> list) {
 		_list = list;
 	}
 
+	@Override
 	public String getColumnName(int columnIndex) {
 		if (_list.size == 0) {
 			return "...";
@@ -37,17 +39,27 @@ public class SimpleTableModel implements ITableModel {
 		return _list.get(columnIndex).name;
 	}
 
+	@Override
 	public int getColumnCount() {
 		return _list.size;
 	}
 
+	@Override
 	public Object getValue(int row, int column) {
 		if (column > _list.size || row > _list.get(column).list.size) {
 			return "...";
 		}
-		return _list.get(column).list.get(row);
+		ListItem items = null;
+		if (_list.size > column) {
+			items = _list.get(column);
+		}
+		if (items != null && items.list.size > row) {
+			return items.list.get(row);
+		}
+		return LSystem.EMPTY;
 	}
 
+	@Override
 	public int getRowCount() {
 		if (_list.size == 0) {
 			return 0;

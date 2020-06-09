@@ -69,14 +69,52 @@ public class LTable extends LContainer implements FontSet<LTable> {
 			return this;
 		}
 
-		public TableView setRows(int lineNo, Object... cols) {
-			if (lineNo < list.size) {
+		public int size() {
+			return list.size;
+		}
+
+		public TableView removeLine(int lineNo) {
+			if (lineNo > -1) {
 				for (ListItem item : list) {
 					if (item != null) {
-						for (Object v : cols) {
-							item.list.set(lineNo, HelperUtils.toStr(v));
+						if (lineNo < item.list.size) {
+							item.list.removeIndex(lineNo);
 						}
 					}
+				}
+			}
+			return this;
+		}
+
+		public TableView addRows(Object... rows) {
+			final int size = rows.length;
+			if (size == list.size) {
+				int count = 0;
+				for (ListItem item : list) {
+					if (item != null) {
+						Object row = rows[count++];
+						item.list.add(HelperUtils.toStr(row));
+					}
+				}
+			} else {
+				throw new LSysException("Object row:" + size + " out table size range !");
+			}
+			return this;
+		}
+
+		public TableView setRows(int lineNo, Object... rows) {
+			if (lineNo > -1) {
+				final int size = rows.length;
+				if (size == list.size) {
+					int count = 0;
+					for (ListItem item : list) {
+						if (item != null) {
+							Object row = rows[count++];
+							item.list.set(lineNo, HelperUtils.toStr(row));
+						}
+					}
+				} else {
+					throw new LSysException("Object row:" + size + " out table size range !");
 				}
 			}
 			return this;
@@ -86,6 +124,18 @@ public class LTable extends LContainer implements FontSet<LTable> {
 			ListItem item = list.get(idx);
 			if (item != null) {
 				item.list.add(HelperUtils.toStr(o));
+			}
+			return this;
+		}
+
+		public TableView setValue(int rowLine, int colLine, Object o) {
+			ListItem item = list.get(rowLine);
+			if (item != null) {
+				if (colLine >= item.list.size) {
+					throw new LSysException("Object column:" + colLine + " out table size range !");
+				} else {
+					item.list.set(colLine, HelperUtils.toStr(o));
+				}
 			}
 			return this;
 		}
@@ -105,6 +155,15 @@ public class LTable extends LContainer implements FontSet<LTable> {
 				item.list.add(HelperUtils.toStr(v));
 			}
 			list.add(item);
+			return this;
+		}
+
+		public TableView columnNames(String... names) {
+			for (int i = 0; i < names.length; i++) {
+				ListItem item = new ListItem();
+				item.name = names[i];
+				list.add(item);
+			}
 			return this;
 		}
 
@@ -217,6 +276,11 @@ public class LTable extends LContainer implements FontSet<LTable> {
 
 	public LTable setData(TArray<ListItem> list, int width) {
 		setModel(new SimpleTableModel(list), width);
+		return this;
+	}
+
+	public LTable setData(TableView view) {
+		setModel(new SimpleTableModel(view.list), width() / view.size());
 		return this;
 	}
 
