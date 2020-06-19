@@ -67,18 +67,18 @@ public abstract class BaseBatch extends LTextureBind {
 		setTexture(tex);
 
 		if (tex.getParent() == null) {
-			float u2 = tex.getFormat().repeatX ? w / tex.width() : tex.widthRatio;
-			float uv = tex.getFormat().repeatY ? h / tex.height() : tex.heightRatio;
-			addQuad(tint, xf, x, y, x + w, y + h, tex.xOff, tex.yOff, u2, uv);
+			float u2 = tex.getFormat().repeatX ? w / tex.width() : tex.widthRatio();
+			float uv = tex.getFormat().repeatY ? h / tex.height() : tex.heightRatio();
+			addQuad(tint, xf, x, y, x + w, y + h, tex.xOff(), tex.yOff(), u2, uv);
 		} else {
 			LTexture forefather = LTexture.firstFather(tex);
-			float u2 = tex.getFormat().repeatX ? w / forefather.width() : tex.widthRatio;
-			float uv = tex.getFormat().repeatY ? h / forefather.height() : tex.heightRatio;
+			float u2 = tex.getFormat().repeatX ? w / forefather.width() : tex.widthRatio();
+			float uv = tex.getFormat().repeatY ? h / forefather.height() : tex.heightRatio();
 			if ((w < forefather.width() || h < forefather.height()) && !tex.isScale()) {
-				addQuad(tint, xf, x, y, x + w, y + h, tex.xOff, tex.yOff, u2, uv);
+				addQuad(tint, xf, x, y, x + w, y + h, tex.xOff(), tex.yOff(), u2, uv);
 			} else {
-				addQuad(tint, xf, x, y, x + w, y + h, tex.xOff, tex.yOff, forefather.widthRatio,
-						forefather.heightRatio);
+				addQuad(tint, xf, x, y, x + w, y + h, tex.xOff(), tex.yOff(), forefather.widthRatio(),
+						forefather.heightRatio());
 			}
 		}
 	}
@@ -97,21 +97,21 @@ public abstract class BaseBatch extends LTextureBind {
 		
 		setTexture(tex);
 		if (tex.getParent() == null) {
-			float displayWidth = tex.getDisplayWidth() * tex.widthRatio;
-			float displayHeight = tex.getDisplayHeight() * tex.heightRatio;
-			float xOff = ((sx / displayWidth) * tex.widthRatio) + tex.xOff;
-			float yOff = ((sy / displayHeight) * tex.heightRatio) + tex.yOff;
-			float widthRatio = ((sw / displayWidth) * tex.widthRatio) + xOff;
-			float heightRatio = ((sh / displayHeight) * tex.heightRatio) + yOff;
+			float displayWidth = tex.width();
+			float displayHeight = tex.height();
+			float xOff = ((sx / displayWidth) * tex.widthRatio()) + tex.xOff();
+			float yOff = ((sy / displayHeight) * tex.heightRatio()) + tex.yOff();
+			float widthRatio = ((sw / displayWidth) * tex.widthRatio()) + xOff;
+			float heightRatio = ((sh / displayHeight) * tex.heightRatio()) + yOff;
 			addQuad(tint, xf, dx, dy, dx + dw, dy + dh, xOff, yOff, widthRatio, heightRatio);
 		} else {
 			LTexture forefather = LTexture.firstFather(tex);
-			float displayWidth = forefather.getDisplayWidth() * forefather.widthRatio;
-			float displayHeight = forefather.getDisplayHeight() * forefather.heightRatio;
-			float xOff = ((sx / displayWidth) * forefather.widthRatio) + forefather.xOff + tex.xOff;
-			float yOff = ((sy / displayHeight) * forefather.heightRatio) + forefather.yOff + tex.yOff;
-			float widthRatio = ((sw / displayWidth) * forefather.widthRatio) + xOff;
-			float heightRatio = ((sh / displayHeight) * forefather.heightRatio) + yOff;
+			float displayWidth = forefather.width();
+			float displayHeight = forefather.height();
+			float xOff = ((sx / displayWidth) * forefather.widthRatio()) + forefather.xOff() + tex.xOff();
+			float yOff = ((sy / displayHeight) * forefather.heightRatio()) + forefather.yOff() + tex.yOff();
+			float widthRatio = ((sw / displayWidth) * forefather.widthRatio()) + xOff;
+			float heightRatio = ((sh / displayHeight) * forefather.heightRatio()) + yOff;
 			addQuad(tint, xf, dx, dy, dx + dw, dy + dh, xOff, yOff, widthRatio, heightRatio);
 		}
 	}

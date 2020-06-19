@@ -279,6 +279,15 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		setPivotY(ry);
 	}
 
+	public Entity setAnchor(final float scale) {
+		return setAnchor(scale, scale);
+	}
+
+	public Entity setAnchor(final float sx, final float sy) {
+		setPivot(_width * sx, _height * sy);
+		return this;
+	}
+
 	@Override
 	public boolean isScaled() {
 		return (this._scaleX != 1) || (this._scaleY != 1);
@@ -1464,7 +1473,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 			actor = actor.getParent();
 		}
 	}
-	
+
 	public boolean isClosed() {
 		return isDisposed();
 	}

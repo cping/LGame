@@ -593,16 +593,18 @@ public class Cycle extends Entity {
 		return displayWidth;
 	}
 
-	public void setDisplayWidth(float displayWidth) {
+	public Cycle setDisplayWidth(float displayWidth) {
 		this.displayWidth = displayWidth;
+		return this;
 	}
 
 	public float getDisplayHeight() {
 		return displayHeight;
 	}
 
-	public void setDisplayHeight(float displayHeight) {
+	public Cycle setDisplayHeight(float displayHeight) {
 		this.displayHeight = displayHeight;
+		return this;
 	}
 
 	@Override

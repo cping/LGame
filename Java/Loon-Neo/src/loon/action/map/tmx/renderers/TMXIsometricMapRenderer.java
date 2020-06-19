@@ -203,10 +203,10 @@ public class TMXIsometricMapRenderer extends TMXMapRenderer {
 						float srcHeight = srcY + tileHeight;
 
 						float xOff = srcX * batch.getInvTexWidth()
-								+ texture.xOff;
+								+ texture.xOff();
 						float widthRatio = srcWidth * batch.getInvTexWidth();
 						float yOff = srcY * batch.getInvTexHeight()
-								+ texture.yOff;
+								+ texture.yOff();
 						float heightRatio = srcHeight * batch.getInvTexHeight();
 
 						boolean flipX = mapTile.isFlippedHorizontally();

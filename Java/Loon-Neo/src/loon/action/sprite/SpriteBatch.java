@@ -513,13 +513,13 @@ public class SpriteBatch extends PixmapFImpl {
 			} else if (idx == expandVertices.length()) {
 				submit();
 			}
-			invTexWidth = (1f / texture.width()) * texture.widthRatio;
-			invTexHeight = (1f / texture.height()) * texture.heightRatio;
+			invTexWidth = (1f / texture.width()) * texture.widthRatio();
+			invTexHeight = (1f / texture.height()) * texture.heightRatio();
 		} else if (texture != lastTexture) {
 			submit();
 			lastTexture = texture;
-			invTexWidth = (1f / texture.width()) * texture.widthRatio;
-			invTexHeight = (1f / texture.height()) * texture.heightRatio;
+			invTexWidth = (1f / texture.width()) * texture.widthRatio();
+			invTexHeight = (1f / texture.height()) * texture.heightRatio();
 		} else if (idx == expandVertices.length()) {
 			submit();
 		}
@@ -607,8 +607,8 @@ public class SpriteBatch extends PixmapFImpl {
 			invTexWidth = (1f / texture.width());
 			invTexHeight = (1f / texture.height());
 		} else {
-			invTexWidth = (1f / texture.width()) * texture.widthRatio;
-			invTexHeight = (1f / texture.height()) * texture.heightRatio;
+			invTexWidth = (1f / texture.width()) * texture.widthRatio();
+			invTexHeight = (1f / texture.height()) * texture.heightRatio();
 		}
 	}
 
@@ -1136,8 +1136,8 @@ public class SpriteBatch extends PixmapFImpl {
 		x4 += worldOriginX;
 		y4 += worldOriginY;
 
-		float u = srcX * invTexWidth + texture.xOff;
-		float v = srcY * invTexHeight + texture.yOff;
+		float u = srcX * invTexWidth + texture.xOff();
+		float v = srcY * invTexHeight + texture.yOff();
 		float u2 = (srcX + srcWidth) * invTexWidth;
 		float v2 = (srcY + srcHeight) * invTexHeight;
 
@@ -1276,8 +1276,8 @@ public class SpriteBatch extends PixmapFImpl {
 			return;
 		}
 
-		float u = srcX * invTexWidth + texture.xOff;
-		float v = srcY * invTexHeight + texture.yOff;
+		float u = srcX * invTexWidth + texture.xOff();
+		float v = srcY * invTexHeight + texture.yOff();
 		float u2 = (srcX + srcWidth) * invTexWidth;
 		float v2 = (srcY + srcHeight) * invTexHeight;
 		final float fx2 = x + width;
@@ -1353,8 +1353,8 @@ public class SpriteBatch extends PixmapFImpl {
 			return;
 		}
 
-		float u = srcX * invTexWidth + texture.xOff;
-		float v = srcY * invTexHeight + texture.yOff;
+		float u = srcX * invTexWidth + texture.xOff();
+		float v = srcY * invTexHeight + texture.yOff();
 		float u2 = (srcX + srcWidth) * invTexWidth;
 		float v2 = (srcY + srcHeight) * invTexHeight;
 		final float fx2 = x + srcWidth;
@@ -1428,10 +1428,10 @@ public class SpriteBatch extends PixmapFImpl {
 
 		final float fx2 = x + width;
 		final float fy2 = y + height;
-		final float u = texture.xOff;
-		final float v = texture.yOff;
-		final float u2 = texture.widthRatio;
-		final float v2 = texture.heightRatio;
+		final float u = texture.xOff();
+		final float v = texture.yOff();
+		final float u2 = texture.widthRatio();
+		final float v2 = texture.heightRatio();
 
 		int idx = this.idx;
 

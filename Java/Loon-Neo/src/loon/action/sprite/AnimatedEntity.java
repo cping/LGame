@@ -21,6 +21,7 @@
 package loon.action.sprite;
 
 import loon.LTexture;
+import loon.event.FrameListener;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
@@ -233,6 +234,10 @@ public class AnimatedEntity extends Entity {
 			setTexture(_animation.getSpriteImage());
 
 		}
+	}
+
+	public Animation getAnimation() {
+		return this._animation;
 	}
 
 	public AnimatedEntity stopAnimation() {
@@ -468,6 +473,11 @@ public class AnimatedEntity extends Entity {
 		return this._animationRunning;
 	}
 
+	public AnimatedEntity setDelay(long d) {
+		_animation.setDelay(d);
+		return this;
+	}
+	
 	public AnimatedEntity setCurrentFrameIndex(int idx) {
 		_animation.setCurrentFrameIndex(idx);
 		return this;
@@ -481,8 +491,8 @@ public class AnimatedEntity extends Entity {
 		_animation.setMaxFrame(max);
 		return this;
 	}
-	
-	public int getMaxFrame(){
+
+	public int getMaxFrame() {
 		return _animation.getMaxFrame();
 	}
 
@@ -516,6 +526,7 @@ public class AnimatedEntity extends Entity {
 		return this;
 	}
 
+	@Override
 	public int size() {
 		return _playEvents.size;
 	}
@@ -524,8 +535,18 @@ public class AnimatedEntity extends Entity {
 		return _animationDispose;
 	}
 
-	public void setAnimationDispose(boolean dispose) {
+	public AnimatedEntity setAnimationDispose(boolean dispose) {
 		this._animationDispose = dispose;
+		return this;
+	}
+
+	public FrameListener getFrameListener() {
+		return _animation.getFrameListener();
+	}
+
+	public AnimatedEntity setFrameListener(FrameListener listener) {
+		this._animation.setFrameListener(listener);
+		return this;
 	}
 
 	@Override

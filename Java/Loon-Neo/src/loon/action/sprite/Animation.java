@@ -24,8 +24,8 @@ import loon.LRelease;
 import loon.LTexture;
 import loon.LSystem;
 import loon.canvas.LColor;
+import loon.event.FrameListener;
 import loon.opengl.TextureUtils;
-import loon.utils.CollectionUtils;
 import loon.utils.IArray;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
@@ -91,12 +91,14 @@ public class Animation implements IArray, LRelease {
 
 	private LTimer intervalTime = new LTimer(0);
 
+	private FrameListener frameListener;
+
 	public Animation() {
 		this(false);
 	}
 
 	public Animation(boolean reverse) {
-		this(new TArray<AnimationFrame>(CollectionUtils.INITIAL_CAPACITY), 0, -1, reverse);
+		this(new TArray<AnimationFrame>(), 0, -1, reverse);
 	}
 
 	public Animation(Animation a) {
@@ -339,6 +341,9 @@ public class Animation implements IArray, LRelease {
 		if (length > 0) {
 			currentFrameIndex = idx;
 		}
+		if (frameListener != null) {
+			frameListener.onFrameStarted(idx);
+		}
 		this.isRunning = true;
 		return this;
 	}
@@ -349,6 +354,9 @@ public class Animation implements IArray, LRelease {
 	 * @return
 	 */
 	public Animation stop() {
+		if (frameListener != null) {
+			frameListener.onFrameStopped(this.currentFrameIndex);
+		}
 		this.isRunning = false;
 		return this;
 	}
@@ -356,13 +364,13 @@ public class Animation implements IArray, LRelease {
 	public Animation pause() {
 		this.isRunning = true;
 		return this;
-    }
+	}
 
 	public Animation resume() {
-		this.isRunning = false;
+		stop();
 		return this;
-    }
-    
+	}
+
 	/**
 	 * 刷新动画为初始状态
 	 */
@@ -401,6 +409,9 @@ public class Animation implements IArray, LRelease {
 			return;
 		}
 		if (isRunning && intervalTime.action(timer)) {
+			if (frameListener != null) {
+				frameListener.onFrameChanged(this.currentFrameIndex);
+			}
 			if (length > 0) {
 				if (maxFrame <= 0) {
 					maxFrame = length;
@@ -735,12 +746,22 @@ public class Animation implements IArray, LRelease {
 		return this;
 	}
 
+	public FrameListener getFrameListener() {
+		return frameListener;
+	}
+
+	public Animation setFrameListener(FrameListener listener) {
+		this.frameListener = listener;
+		return this;
+	}
+	
 	public boolean isClosed() {
 		return aClosed;
 	}
 
 	@Override
 	public void close() {
+		this.stop();
 		this.clear();
 		this.aClosed = true;
 	}

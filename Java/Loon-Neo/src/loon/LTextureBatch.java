@@ -158,8 +158,8 @@ public class LTextureBatch implements LRelease {
 			invTexWidth = (1f / texture.width());
 			invTexHeight = (1f / texture.height());
 		} else {
-			invTexWidth = (1f / texture.width()) * texture.widthRatio;
-			invTexHeight = (1f / texture.height()) * texture.heightRatio;
+			invTexWidth = (1f / texture.width()) * texture.widthRatio();
+			invTexHeight = (1f / texture.height()) * texture.heightRatio();
 		}
 		return this;
 	}
@@ -369,13 +369,13 @@ public class LTextureBatch implements LRelease {
 			} else if (vertexIdx == expandVertices.length()) {
 				submit();
 			}
-			invTexWidth = (1f / texWidth) * texture.widthRatio;
-			invTexHeight = (1f / texHeight) * texture.heightRatio;
+			invTexWidth = (1f / texWidth) * texture.widthRatio();
+			invTexHeight = (1f / texHeight) * texture.heightRatio();
 		} else if (texture != lastTexture) {
 			submit();
 			lastTexture = texture;
-			invTexWidth = (1f / texWidth) * texture.widthRatio;
-			invTexHeight = (1f / texHeight) * texture.heightRatio;
+			invTexWidth = (1f / texWidth) * texture.widthRatio();
+			invTexHeight = (1f / texHeight) * texture.heightRatio();
 		} else if (vertexIdx == expandVertices.length()) {
 			submit();
 		}
@@ -657,8 +657,8 @@ public class LTextureBatch implements LRelease {
 			return this;
 		}
 
-		xOff = srcX * invTexWidth + texture.xOff;
-		yOff = srcY * invTexHeight + texture.yOff;
+		xOff = srcX * invTexWidth + texture.xOff();
+		yOff = srcY * invTexHeight + texture.yOff();
 		widthRatio = srcWidth * invTexWidth;
 		heightRatio = srcHeight * invTexHeight;
 
@@ -712,12 +712,12 @@ public class LTextureBatch implements LRelease {
 
 		drawWidth = drawX2 - drawX;
 		drawHeight = drawY2 - drawY;
-		textureSrcX = ((srcX / texWidth) * texture.widthRatio) + texture.xOff;
-		textureSrcY = ((srcY / texHeight) * texture.heightRatio) + texture.yOff;
+		textureSrcX = ((srcX / texWidth) * texture.widthRatio()) + texture.xOff();
+		textureSrcY = ((srcY / texHeight) * texture.heightRatio()) + texture.yOff();
 		srcWidth = srcX2 - srcX;
 		srcHeight = srcY2 - srcY;
-		renderWidth = ((srcWidth / texWidth) * texture.widthRatio);
-		renderHeight = ((srcHeight / texHeight) * texture.heightRatio);
+		renderWidth = ((srcWidth / texWidth) * texture.widthRatio());
+		renderHeight = ((srcHeight / texHeight) * texture.heightRatio());
 
 		glVertex2f(drawX, drawY);
 		glColor4f(c1);
@@ -848,8 +848,8 @@ public class LTextureBatch implements LRelease {
 		x4 += worldOriginX;
 		y4 += worldOriginY;
 
-		xOff = srcX * invTexWidth + texture.xOff;
-		yOff = srcY * invTexHeight + texture.yOff;
+		xOff = srcX * invTexWidth + texture.xOff();
+		yOff = srcY * invTexHeight + texture.yOff();
 		widthRatio = srcWidth * invTexWidth;
 		heightRatio = srcHeight * invTexHeight;
 
@@ -908,8 +908,8 @@ public class LTextureBatch implements LRelease {
 		if (!checkTexture(texture)) {
 			return this;
 		}
-		xOff = srcX * invTexWidth + texture.xOff;
-		yOff = srcY * invTexHeight + texture.yOff;
+		xOff = srcX * invTexWidth + texture.xOff();
+		yOff = srcY * invTexHeight + texture.yOff();
 		widthRatio = srcWidth * invTexWidth;
 		heightRatio = srcHeight * invTexHeight;
 

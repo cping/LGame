@@ -749,7 +749,7 @@ public abstract class LComponent extends LObject<LContainer>
 	public float getHeight() {
 		return (this._height * _scaleY) - _fixedHeightOffset;
 	}
-    
+
 	public int width() {
 		return (int) getWidth();
 	}
@@ -955,7 +955,7 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public LComponent clearBackground() {
-		return this.setBackground(LSystem.base().graphics().finalColorTex());
+		return this.setBackground(LSystem.base().graphics().finalColorTex(), false);
 	}
 
 	public LComponent setBackground(String fileName) {
@@ -963,7 +963,7 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public LComponent setBackground(LColor color) {
-		return setBackground(TextureUtils.createTexture(1, 1, color));
+		return setBackground(TextureUtils.createTexture(1, 1, color), false);
 	}
 
 	public LComponent setBackgroundString(String color) {
@@ -977,6 +977,10 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public LComponent setBackground(LTexture b) {
+		return setBackground(b, true);
+	}
+
+	public LComponent setBackground(LTexture b, boolean updateSize) {
 		if (b == null) {
 			return this;
 		}
@@ -984,13 +988,17 @@ public abstract class LComponent extends LObject<LContainer>
 			return this;
 		}
 		if (!_drawBackground) {
-			return setBackground(b, this._width, this._height);
+			return setBackground(b, this._width, this._height, updateSize);
 		} else {
-			return setBackground(b, b.getWidth(), b.getHeight());
+			return setBackground(b, b.getWidth(), b.getHeight(), updateSize);
 		}
 	}
 
 	public LComponent setBackground(LTexture b, float w, float h) {
+		return setBackground(b, w, h, true);
+	}
+
+	public LComponent setBackground(LTexture b, float w, float h, boolean updateSize) {
 		if (b == null) {
 			return this;
 		}
@@ -998,7 +1006,9 @@ public abstract class LComponent extends LObject<LContainer>
 			return this;
 		}
 		this._background = b;
-		this.setSize(w, h);
+		if (updateSize) {
+			this.setSize(w, h);
+		}
 		freeRes().add(_background);
 		return this;
 	}
@@ -1183,6 +1193,15 @@ public abstract class LComponent extends LObject<LContainer>
 	public LComponent setPivot(float pX, float pY) {
 		setPivotX(pX);
 		setPivotY(pY);
+		return this;
+	}
+
+	public LComponent setAnchor(final float scale) {
+		return setAnchor(scale, scale);
+	}
+
+	public LComponent setAnchor(final float sx, final float sy) {
+		setPivot(_width * sx, _height * sy);
 		return this;
 	}
 

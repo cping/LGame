@@ -116,6 +116,9 @@ public class PlayerUtils extends Director {
 	 * @param process
 	 */
 	public final static TArray<GameProcess> removeProcess(GameProcess process) {
+		if (process == null) {
+			return new TArray<GameProcess>();
+		}
 		return removeProcess(process.getId());
 	}
 
