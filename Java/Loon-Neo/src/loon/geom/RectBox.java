@@ -914,7 +914,7 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 	}
 
 	public float getAspectRatio() {
-		return (height == 0) ? Float.NaN : (float) width / (float) height;
+		return (height == 0) ? MathUtils.NaN : (float) width / (float) height;
 	}
 
 	public float area() {

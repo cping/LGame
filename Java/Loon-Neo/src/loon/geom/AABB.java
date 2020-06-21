@@ -58,10 +58,10 @@ public class AABB implements XY, BoxSize {
 	public final static AABB at(float x, float y, float w, float h) {
 		return new AABB(x, y, w, h);
 	}
-	
-    public final static AABB fromActor(ActionBind bind) {
-        return new AABB(bind.getX(), bind.getY(), bind.getWidth(), bind.getHeight());
-    }
+
+	public final static AABB fromActor(ActionBind bind) {
+		return new AABB(bind.getX(), bind.getY(), bind.getWidth(), bind.getHeight());
+	}
 
 	public float minX, minY;
 
@@ -76,6 +76,14 @@ public class AABB implements XY, BoxSize {
 		this.minY = minY;
 		this.maxX = maxX;
 		this.maxY = maxY;
+	}
+
+	public AABB setCentered(float x, float y, float size) {
+		return set(x - size / 2f, y - size / 2f, size, size);
+	}
+
+	public AABB setCentered(float x, float y, float width, float height) {
+		return set(x - width / 2f, y - height / 2f, width, height);
 	}
 
 	public int width() {
@@ -104,11 +112,86 @@ public class AABB implements XY, BoxSize {
 		return this.minX < b.maxX && b.minX < this.maxX && this.minY < b.maxY && b.minY < this.maxY;
 	}
 
-	public void set(float minX, float minY, float maxX, float maxY) {
+	public AABB set(float minX, float minY, float maxX, float maxY) {
 		this.minX = minX;
 		this.minY = minY;
 		this.maxX = maxX;
 		this.maxY = maxY;
+		return this;
+	}
+
+	public AABB move(float cx, float cy) {
+		this.minX += cx;
+		this.minY += cy;
+		return this;
+	}
+
+	public Vector2f getPosition(Vector2f pos) {
+		return pos.set(getX(), getY());
+	}
+
+	public AABB setPosition(XY pos) {
+		if (pos == null) {
+			return this;
+		}
+		setPosition(pos.getX(), pos.getY());
+		return this;
+	}
+
+	public AABB setPosition(float x, float y) {
+		setX(x);
+		setY(y);
+		return this;
+	}
+
+	public AABB setSize(float width, float height) {
+		setWidth(width);
+		setHeight(height);
+		return this;
+	}
+
+	public float getAspectRatio() {
+		return (getHeight() == 0) ? MathUtils.NaN : getWidth() / getHeight();
+	}
+
+	public Vector2f getCenter(Vector2f pos) {
+		pos.x = getX() + getWidth() / 2f;
+		pos.y = getY() + getHeight() / 2;
+		return pos;
+	}
+
+	public AABB setCenter(float x, float y) {
+		setPosition(x - getWidth() / 2, y - getHeight() / 2);
+		return this;
+	}
+
+	public AABB setCenter(XY pos) {
+		setPosition(pos.getX() - getWidth() / 2, pos.getY() - getHeight() / 2);
+		return this;
+	}
+
+	public AABB fitOutside(AABB rect) {
+		float ratio = getAspectRatio();
+		if (ratio > rect.getAspectRatio()) {
+			setSize(rect.getHeight() * ratio, rect.getHeight());
+		} else {
+			setSize(rect.getWidth(), rect.getWidth() / ratio);
+		}
+		setPosition((rect.getX() + rect.getWidth() / 2) - getWidth() / 2,
+				(rect.getY() + rect.getHeight() / 2) - getHeight() / 2);
+		return this;
+	}
+
+	public AABB fitInside(AABB rect) {
+		float ratio = getAspectRatio();
+		if (ratio < rect.getAspectRatio()) {
+			setSize(rect.getHeight() * ratio, rect.getHeight());
+		} else {
+			setSize(rect.getWidth(), rect.getWidth() / ratio);
+		}
+		setPosition((rect.getX() + rect.getWidth() / 2) - getWidth() / 2,
+				(rect.getY() + rect.getHeight() / 2) - getHeight() / 2);
+		return this;
 	}
 
 	@Override
@@ -157,10 +240,10 @@ public class AABB implements XY, BoxSize {
 	}
 
 	public AABB random() {
-		this.minX = MathUtils.random(0f,LSystem.viewSize.getWidth());
-		this.minY = MathUtils.random(0f,LSystem.viewSize.getHeight());
-		this.maxX = MathUtils.random(0f,LSystem.viewSize.getWidth());
-		this.maxY = MathUtils.random(0f,LSystem.viewSize.getHeight());
+		this.minX = MathUtils.random(0f, LSystem.viewSize.getWidth());
+		this.minY = MathUtils.random(0f, LSystem.viewSize.getHeight());
+		this.maxX = MathUtils.random(0f, LSystem.viewSize.getWidth());
+		this.maxY = MathUtils.random(0f, LSystem.viewSize.getHeight());
 		return this;
 	}
 
@@ -177,7 +260,7 @@ public class AABB implements XY, BoxSize {
 	public RectBox toRectBox() {
 		return new RectBox(this.minX, this.minY, this.maxX, this.maxY);
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

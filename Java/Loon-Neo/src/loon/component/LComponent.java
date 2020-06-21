@@ -91,6 +91,14 @@ public abstract class LComponent extends LObject<LContainer>
 		return setLocked(locked);
 	}
 
+	public LComponent dragLocked(){
+		return setDragLocked(true);
+	}
+	
+	public LComponent dragUnlocked(){
+		return setDragLocked(false);
+	}
+	
 	// 组件内部变量, 用于锁定当前组件的触屏（鼠标）与键盘事件
 	protected boolean _touchLocked = false, _keyLocked = false;
 
@@ -683,7 +691,7 @@ public abstract class LComponent extends LObject<LContainer>
 	@Override
 	public void move(float dx, float dy) {
 		if (dx != 0 || dy != 0) {
-			float moved = 32;
+			final float moved = 128f;
 			if (dx > -moved && dx < moved && dy > -moved && dy < moved) {
 				super.move(dx, dy);
 				this.validatePosition();

@@ -41,7 +41,9 @@ public final class MathUtils {
 	public static final int ONE_FIXED = 1 << 16;
 
 	public static final float EPSILON = 0.001f;
-
+	
+    public static final float NaN = 0.0f / 0.0f;
+    
 	public static final int PI_FIXED = 205887;
 
 	public static final int PI_OVER_2_FIXED = PI_FIXED / 2;

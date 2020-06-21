@@ -71,7 +71,7 @@ public class Animation implements IArray, LRelease {
 		return this.listener;
 	}
 
-	protected boolean isRunning, isReversed, aClosed;
+	protected boolean isRunning, isReversed, aniClosed;
 
 	private boolean checkReset = false;
 
@@ -402,6 +402,12 @@ public class Animation implements IArray, LRelease {
 	 * @param timer
 	 */
 	public void update(long timer) {
+		if (aniClosed) {
+			return;
+		}
+		if (length == 0) {
+			return;
+		}
 		if (loopCount != -1 && loopPlay > loopCount) {
 			return;
 		}
@@ -549,6 +555,9 @@ public class Animation implements IArray, LRelease {
 		if (length == 0) {
 			return null;
 		}
+		if (frames.size == 0) {
+			return null;
+		}
 		if (index < 0) {
 			return frames.get(0);
 		} else if (index > length - 1) {
@@ -653,6 +662,7 @@ public class Animation implements IArray, LRelease {
 
 	@Override
 	public void clear() {
+		length = 0;
 		if (frames != null) {
 			for (AnimationFrame frame : frames) {
 				if (frame != null) {
@@ -754,16 +764,16 @@ public class Animation implements IArray, LRelease {
 		this.frameListener = listener;
 		return this;
 	}
-	
+
 	public boolean isClosed() {
-		return aClosed;
+		return aniClosed;
 	}
 
 	@Override
 	public void close() {
+		this.aniClosed = true;
 		this.stop();
 		this.clear();
-		this.aClosed = true;
 	}
 
 }

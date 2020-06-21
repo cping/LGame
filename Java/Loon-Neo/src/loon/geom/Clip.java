@@ -21,6 +21,7 @@
 package loon.geom;
 
 import loon.utils.MathUtils;
+import loon.utils.StringKeyValue;
 
 /**
  * 矩形对象剪切用类
@@ -40,6 +41,10 @@ public class Clip {
 	private float _factor;
 
 	private int _regionWidth, _regionHeight;
+
+	public Clip(float x, float y, float w, float h) {
+		this(x, y, w, h, false);
+	}
 
 	public Clip(float x, float y, float w, float h, boolean updateSize) {
 		this(null, 1f, (int) x, (int) y, (int) w, (int) h, updateSize);
@@ -285,5 +290,13 @@ public class Clip {
 
 	public boolean isFlipY() {
 		return _offY > _heightRatio;
+	}
+
+	@Override
+	public String toString() {
+		StringKeyValue builder = new StringKeyValue("Clip");
+		builder.kv("x", getRegionX()).comma().kv("y", getRegionY()).comma().kv("width", getRegionWidth()).comma()
+				.kv("height", getRegionHeight());
+		return builder.toString();
 	}
 }
