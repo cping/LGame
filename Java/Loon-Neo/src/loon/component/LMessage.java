@@ -108,24 +108,28 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 		this.setLocked(true);
 	}
 
-	public void setWait(boolean flag) {
+	public LMessage setWait(boolean flag) {
 		print.setWait(flag);
+		return this;
 	}
 
 	public boolean isWait() {
 		return print.isWait();
 	}
 
-	public void complete() {
+	public LMessage complete() {
 		print.complete();
+		return this;
 	}
 
-	public void setLeftOffset(int left) {
+	public LMessage setLeftOffset(int left) {
 		print.setLeftOffset(left);
+		return this;
 	}
 
-	public void setTopOffset(int top) {
+	public LMessage setTopOffset(int top) {
 		print.setTopOffset(top);
+		return this;
 	}
 
 	public int getLeftOffset() {
@@ -140,24 +144,28 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 		return print.getMessageLength();
 	}
 
-	public void setMessageLength(int messageLength) {
+	public LMessage setMessageLength(int messageLength) {
 		print.setMessageLength(messageLength);
+		return this;
 	}
 
-	public void setTipIcon(String fileName) {
+	public LMessage setTipIcon(String fileName) {
 		setTipIcon(LSystem.loadTexture(fileName));
+		return this;
 	}
 
-	public void setTipIcon(LTexture icon) {
+	public LMessage setTipIcon(LTexture icon) {
 		if (icon != null) {
 			print.setCreeseIcon(icon);
 			setDisplayIconFlag(true);
 		}
+		return this;
 	}
 
-	public void setNotTipIcon() {
+	public LMessage setNotTipIcon() {
 		print.setCreeseIcon(null);
 		setDisplayIconFlag(false);
+		return this;
 	}
 
 	public LMessage setDisplayIconFlag(boolean flag) {
@@ -187,16 +195,18 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 		return this;
 	}
 
-	public void setEnglish(boolean e) {
+	public LMessage setEnglish(boolean e) {
 		print.setEnglish(true);
+		return this;
 	}
 
 	public boolean isEnglish() {
 		return print.isEnglish();
 	}
 
-	public void setDelay(long delay) {
+	public LMessage setDelay(long delay) {
 		this.totalDuration = (delay < 1 ? 1 : delay);
+		return this;
 	}
 
 	public long getDelay() {

@@ -217,7 +217,7 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 	public LMenuSelect update(String labels) {
 		return setLabels(labels);
 	}
-	
+
 	public LMenuSelect setLabels(String labels) {
 		return setLabels(StringUtils.split(labels, ','));
 	}
@@ -225,7 +225,7 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 	public LMenuSelect update(String[] labels) {
 		return setLabels(labels);
 	}
-	
+
 	public LMenuSelect setLabels(String[] labels) {
 		this._labels = labels;
 		if (_labels != null) {
@@ -620,16 +620,17 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 		return selectBackgroundColor.cpy();
 	}
 
-	public void setSelectBackgroundColor(LColor selectBackgroundColor) {
-		this.selectBackgroundColor = selectBackgroundColor;
+	public void setSelectBackgroundColor(LColor s) {
+		this.selectBackgroundColor = new LColor(s);
 	}
 
 	public LColor getSelectFlagColor() {
 		return selectFlagColor.cpy();
 	}
 
-	public void setSelectFlagColor(LColor selectFlagColor) {
-		this.selectFlagColor = selectFlagColor;
+	public LMenuSelect setSelectFlagColor(LColor s) {
+		this.selectFlagColor = new LColor(s);
+		return this;
 	}
 
 	@Override

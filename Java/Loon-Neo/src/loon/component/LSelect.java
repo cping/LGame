@@ -371,8 +371,9 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 		return space;
 	}
 
-	public void setSpace(int space) {
+	public LSelect setSpace(int space) {
 		this.space = space;
+		return this;
 	}
 
 	@Override

@@ -209,16 +209,18 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 			return this._leading;
 		}
 
-		public void setLeading(final float leading) {
+		public DrawMessageBox setLeading(final float leading) {
 			this._leading = leading;
+			return this;
 		}
 
 		public LColor getFlagColor() {
 			return flagColor.cpy();
 		}
 
-		public void setFlagColor(LColor c) {
-			this.flagColor = c;
+		public DrawMessageBox setFlagColor(LColor c) {
+			this.flagColor = new LColor(c);
+			return this;
 		}
 
 		@Override
@@ -234,17 +236,20 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 			return MathUtils.round(this.messageHeight);
 		}
 
-		public void setOffset(float x, float y) {
+		public DrawMessageBox setOffset(float x, float y) {
 			this.offsetX = x;
 			this.offsetY = y;
+			return this;
 		}
 
-		public void setOffsetX(float x) {
+		public DrawMessageBox setOffsetX(float x) {
 			this.offsetX = x;
+			return this;
 		}
 
-		public void setOffsetY(float y) {
+		public DrawMessageBox setOffsetY(float y) {
 			this.offsetY = y;
+			return this;
 		}
 
 		public float getOffsetX() {

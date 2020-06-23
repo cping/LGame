@@ -599,12 +599,14 @@ public class Print implements FontSet<Print>, LRelease {
 		}
 	}
 
-	public void setX(int x) {
+	public Print setX(int x) {
 		vector.setX(x);
+		return this;
 	}
 
-	public void setY(int y) {
+	public Print setY(int y) {
 		vector.setY(y);
+		return this;
 	}
 
 	public int getX() {
@@ -661,91 +663,100 @@ public class Print implements FontSet<Print>, LRelease {
 		return creeseIcon;
 	}
 
-	public void setCreeseIcon(LTexture icon) {
+	public Print setCreeseIcon(LTexture icon) {
 		if (this.creeseIcon != null) {
 			creeseIcon.close();
 			creeseIcon = null;
 		}
 		this.creeseIcon = icon;
-		if (icon == null) {
-			return;
-		}
+		return this;
 	}
 
 	public int getMessageLength() {
 		return messageLength;
 	}
 
-	public void setMessageLength(int messageLength) {
+	public Print setMessageLength(int messageLength) {
 		this.messageLength = messageLength;
+		return this;
 	}
 
 	public int getHeight() {
 		return height;
 	}
 
-	public void setHeight(int height) {
+	public Print setHeight(int height) {
 		this.height = height;
+		return this;
 	}
 
 	public int getWidth() {
 		return width;
 	}
 
-	public void setWidth(int width) {
+	public Print setWidth(int width) {
 		this.width = width;
+		return this;
 	}
 
 	public int getLeftOffset() {
 		return leftOffset;
 	}
 
-	public void setLeftOffset(int leftOffset) {
-		this.leftOffset = leftOffset;
+	public Print setLeftOffset(int l) {
+		this.leftOffset = l;
+		return this;
 	}
 
 	public int getTopOffset() {
 		return topOffset;
 	}
 
-	public void setTopOffset(int topOffset) {
-		this.topOffset = topOffset;
+	public Print setTopOffset(int t) {
+		this.topOffset = t;
+		return this;
 	}
 
 	public boolean isEnglish() {
 		return isEnglish;
 	}
 
-	public void setEnglish(boolean isEnglish) {
+	public Print setEnglish(boolean isEnglish) {
 		this.isEnglish = isEnglish;
+		return this;
 	}
 
 	public boolean isVisible() {
 		return visible;
 	}
 
-	public void setVisible(boolean visible) {
-		this.visible = visible;
+	public Print setVisible(boolean v) {
+		this.visible = v;
+		return this;
 	}
 
 	public Mode getTextMode() {
 		return dirmode;
 	}
 
-	public void setTextMode(Mode mode) {
+	public Print setTextMode(Mode mode) {
 		this.dirmode = mode;
+		return this;
 	}
 
-	public void left() {
+	public Print left() {
 		setTextMode(Mode.LEFT);
+		return this;
 	}
 
-	public void right() {
+	public Print right() {
 		setTextMode(Mode.RIGHT);
+		return this;
 	}
 
-	public void center() {
+	public Print center() {
 		setTextMode(Mode.CENTER);
+		return this;
 	}
 
 	@Override
@@ -774,16 +785,18 @@ public class Print implements FontSet<Print>, LRelease {
 		return isWait;
 	}
 
-	public void setWait(boolean isWait) {
+	public Print setWait(boolean isWait) {
 		this.isWait = isWait;
+		return this;
 	}
 
 	public boolean isIconFlag() {
 		return isIconFlag;
 	}
 
-	public void setIconFlag(boolean isIconFlag) {
+	public Print setIconFlag(boolean isIconFlag) {
 		this.isIconFlag = isIconFlag;
+		return this;
 	}
 
 	public float getIconX() {
@@ -798,16 +811,18 @@ public class Print implements FontSet<Print>, LRelease {
 		return offsetIconX;
 	}
 
-	public void setOffsetIconX(float offsetIconX) {
+	public Print setOffsetIconX(float offsetIconX) {
 		this.offsetIconX = offsetIconX;
+		return this;
 	}
 
 	public float getOffsetIconY() {
 		return offsetIconY;
 	}
 
-	public void setOffsetIconY(float offsetIconY) {
+	public Print setOffsetIconY(float offsetIconY) {
 		this.offsetIconY = offsetIconY;
+		return this;
 	}
 
 	public boolean isClosed() {

@@ -259,33 +259,37 @@ public class LPad extends LComponent {
 		return listener;
 	}
 
-	public void setListener(ClickListener listener) {
-		this.listener = listener;
+	public LPad setListener(ClickListener l) {
+		this.listener = l;
+		return this;
 	}
 
-	public float getOffsetX() {
+	public float getBoxOffsetX() {
 		return offsetX;
 	}
 
-	public void setOffsetX(float offsetX) {
+	public LPad setBoxOffsetX(float offsetX) {
 		this.offsetX = offsetX;
+		return this;
 	}
 
-	public float getOffsetY() {
+	public float getBoxOffsetY() {
 		return offsetY;
 	}
 
-	public void setOffsetY(float offsetY) {
+	public LPad setBoxOffsetY(float offsetY) {
 		this.offsetY = offsetY;
+		return this;
 	}
 
 	public boolean isLimitClick() {
 		return isLimitClick;
 	}
 
-	public void setLimitClick(boolean l) {
+	public LPad setLimitClick(boolean l) {
 		this.isLimitClick = l;
 		this.lockedKey.reset();
+		return this;
 	}
 	
 	@Override

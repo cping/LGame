@@ -30,8 +30,9 @@ public class Attribute {
 		return this.name;
 	}
 
-	public void setName(String name) {
+	public Attribute setName(String name) {
 		this.name = name;
+		return this;
 	}
 
 	public Object getAttribute() {
@@ -42,8 +43,9 @@ public class Attribute {
 		return ((Integer) this.attribute).intValue();
 	}
 
-	public void setAttribute(Object attribute) {
+	public Attribute setAttribute(Object attribute) {
 		this.attribute = attribute;
+		return this;
 	}
 
 	public Attribute cpy(Attribute other){

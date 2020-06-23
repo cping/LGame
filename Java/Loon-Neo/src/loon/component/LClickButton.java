@@ -418,8 +418,8 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 	}
 
 	@Override
-	public LClickButton setFontColor(LColor fontColor) {
-		this.fontColor = fontColor;
+	public LClickButton setFontColor(LColor c) {
+		this.fontColor = new LColor(c);
 		return this;
 	}
 
@@ -466,8 +466,9 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 		return lightClickedButton;
 	}
 
-	public void setLightClickedButton(boolean clickedButton) {
+	public LClickButton setLightClickedButton(boolean clickedButton) {
 		this.lightClickedButton = clickedButton;
+		return this;
 	}
 
 	public boolean isGrayButton() {

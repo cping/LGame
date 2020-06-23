@@ -255,8 +255,8 @@ public class LLabel extends LComponent implements FontSet<LLabel> {
 	}
 
 	@Override
-	public LLabel setFontColor(LColor color) {
-		_fontColor = color;
+	public LLabel setFontColor(LColor c) {
+		_fontColor = new LColor(c);
 		return this;
 	}
 

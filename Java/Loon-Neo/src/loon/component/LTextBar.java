@@ -374,29 +374,32 @@ public class LTextBar extends LComponent {
 		return hideBackground;
 	}
 
-	public void setHideBackground(boolean hideBackground) {
+	public LTextBar setHideBackground(boolean hideBackground) {
 		this.hideBackground = hideBackground;
+		return this;
+	}
+
+	public float getBoxOffsetX() {
+		return _offsetX;
+	}
+
+	public LTextBar setBoxOffsetX(float offsetX) {
+		this._offsetX = offsetX;
+		return this;
+	}
+
+	public float getBoxOffsetY() {
+		return _offsetY;
+	}
+
+	public LTextBar setBoxOffsetY(float offsetY) {
+		this._offsetY = offsetY;
+		return this;
 	}
 
 	@Override
 	public String getUIName() {
 		return "TextBar";
-	}
-
-	public float getOffsetX() {
-		return _offsetX;
-	}
-
-	public void setOffsetX(float offsetX) {
-		this._offsetX = offsetX;
-	}
-
-	public float getOffsetY() {
-		return _offsetY;
-	}
-
-	public void setOffsetY(float offsetY) {
-		this._offsetY = offsetY;
 	}
 
 }

@@ -82,7 +82,7 @@ public class ParticleSprite extends Entity {
 		}
 	}
 
-	public void setup(float lifespan, float gravityX, float gravityY,
+	public ParticleSprite setup(float lifespan, float gravityX, float gravityY,
 			float velocityX, float velocityY, float rotationAmount,
 			float opacity, boolean fadeOut) {
 
@@ -100,78 +100,88 @@ public class ParticleSprite extends Entity {
 			colorEffects = new ColorTo(new LColor(1f, 1f, 1f, 1f), new LColor(
 					1f, 1f, 1f, 0.0f), lifespan);
 		}
+		return this;
 	}
 
 	public float getCurrentLife() {
 		return currentLife;
 	}
 
-	public void setCurrentLife(float currentLife) {
+	public ParticleSprite setCurrentLife(float currentLife) {
 		this.currentLife = currentLife;
+		return this;
 	}
 
 	public float getLifespan() {
 		return lifespan;
 	}
 
-	public void setLifespan(float lifespan) {
+	public ParticleSprite setLifespan(float lifespan) {
 		this.lifespan = lifespan;
+		return this;
 	}
 
 	public float getGravityX() {
 		return gravityX;
 	}
 
-	public void setGravityX(float gravityX) {
+	public ParticleSprite setGravityX(float gravityX) {
 		this.gravityX = gravityX;
+		return this;
 	}
 
 	public float getGravityY() {
 		return gravityY;
 	}
 
-	public void setGravityY(float gravityY) {
+	public ParticleSprite setGravityY(float gravityY) {
 		this.gravityY = gravityY;
+		return this;
 	}
 
 	public float getVelocityX() {
 		return velocityX;
 	}
 
-	public void setVelocityX(float velocityX) {
+	public ParticleSprite setVelocityX(float velocityX) {
 		this.velocityX = velocityX;
+		return this;
 	}
 
 	public float getVelocityY() {
 		return velocityY;
 	}
 
-	public void setVelocityY(float velocityY) {
+	public ParticleSprite setVelocityY(float velocityY) {
 		this.velocityY = velocityY;
+		return this;
 	}
 
 	public float getRotationAmount() {
 		return rotationAmount;
 	}
 
-	public void setRotationAmount(float rotationAmount) {
+	public ParticleSprite setRotationAmount(float rotationAmount) {
 		this.rotationAmount = rotationAmount;
+		return this;
 	}
 
 	public float getOpacity() {
 		return opacity;
 	}
 
-	public void setOpacity(float opacity) {
+	public ParticleSprite setOpacity(float opacity) {
 		this.opacity = opacity;
+		return this;
 	}
 
 	public boolean isFadeOut() {
 		return fadeOut;
 	}
 
-	public void setFadeOut(boolean fadeOut) {
+	public ParticleSprite setFadeOut(boolean fadeOut) {
 		this.fadeOut = fadeOut;
+		return this;
 	}
 
 	public boolean needToRemove() {

@@ -802,8 +802,9 @@ public abstract class LComponent extends LObject<LContainer>
 		return this.tooltip;
 	}
 
-	public void setToolTipText(String text) {
+	public LComponent setToolTipText(String text) {
 		this.tooltip = text;
+		return this;
 	}
 
 	public void doClick() {
@@ -1468,12 +1469,13 @@ public abstract class LComponent extends LObject<LContainer>
 		return PlayerUtils.isActionCompleted(this);
 	}
 
-	public void setDesktop(Desktop d) {
+	public LComponent setDesktop(Desktop d) {
 		if (this._desktop == d) {
-			return;
+			return this;
 		}
 		this._desktop = d;
 		this.input = d.input;
+		return this;
 	}
 
 	public Desktop getDesktop() {
@@ -1542,28 +1544,32 @@ public abstract class LComponent extends LObject<LContainer>
 		return _offset;
 	}
 
-	public void setOffset(float x, float y) {
+	public LComponent setOffset(float x, float y) {
 		this._offset.set(x, y);
+		return this;
 	}
 
-	public void setOffset(Vector2f offset) {
+	public LComponent setOffset(Vector2f offset) {
 		this._offset = offset;
+		return this;
 	}
 
 	public float getOffsetX() {
 		return _offset.x;
 	}
 
-	public void setOffsetX(float offsetX) {
+	public LComponent setOffsetX(float offsetX) {
 		this._offset.setX(offsetX);
+		return this;
 	}
 
 	public float getOffsetY() {
 		return _offset.y;
 	}
 
-	public void setOffsetY(float offsetY) {
+	public LComponent setOffsetY(float offsetY) {
 		this._offset.setY(offsetY);
+		return this;
 	}
 
 	public ResizeListener<LComponent> getResizeListener() {

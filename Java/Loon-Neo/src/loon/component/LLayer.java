@@ -154,8 +154,9 @@ public class LLayer extends ActorLayer {
 		return this;
 	}
 
-	public void setVSync(boolean vsync) {
+	public LLayer setVSync(boolean vsync) {
 		this.isVSync = vsync;
+		return this;
 	}
 
 	public boolean isVSync() {
@@ -166,6 +167,7 @@ public class LLayer extends ActorLayer {
 		if (Click != null) {
 			Click.DownClick(this, x, y);
 		}
+		super.downClick();
 	}
 
 	public void upClick(int x, int y) {
@@ -191,8 +193,9 @@ public class LLayer extends ActorLayer {
 	 * 
 	 * @param delay
 	 */
-	public void setDelay(long delay) {
+	public LLayer setDelay(long delay) {
 		timer.setDelay(delay);
+		return this;
 	}
 
 	/**
@@ -340,35 +343,42 @@ public class LLayer extends ActorLayer {
 		}
 	}
 
-	public void moveCamera(Actor actor) {
+	public LLayer moveCamera(Actor actor) {
 		moveCamera(actor.x(), actor.y());
+		return this;
 	}
 
-	public void centerOn(final Actor object) {
+	public LLayer centerOn(final Actor object) {
 		object.setLocation(getWidth() / 2 - object.getWidth() / 2, getHeight() / 2 - object.getHeight() / 2);
+		return this;
 	}
 
-	public void topOn(final Actor object) {
+	public LLayer topOn(final Actor object) {
 		object.setLocation(getWidth() / 2 - object.getWidth() / 2, 0);
+		return this;
 	}
 
-	public void leftOn(final Actor object) {
+	public LLayer leftOn(final Actor object) {
 		object.setLocation(0, getHeight() / 2 - object.getHeight() / 2);
+		return this;
 	}
 
-	public void rightOn(final Actor object) {
+	public LLayer rightOn(final Actor object) {
 		object.setLocation(getWidth() - object.getWidth(), getHeight() / 2 - object.getHeight() / 2);
+		return this;
 	}
 
-	public void bottomOn(final Actor object) {
+	public LLayer bottomOn(final Actor object) {
 		object.setLocation(getWidth() / 2 - object.getWidth() / 2, getHeight() - object.getHeight());
+		return this;
 	}
 
-	public void setField2DBackground(Field2D field, ArrayMap pathMap) {
+	public LLayer setField2DBackground(Field2D field, ArrayMap pathMap) {
 		setField2DBackground(field, pathMap, null);
+		return this;
 	}
 
-	public void setField2DBackground(Field2D field, ArrayMap pathMap, String fileName) {
+	public LLayer setField2DBackground(Field2D field, ArrayMap pathMap, String fileName) {
 		setField2D(field);
 		Image background = null;
 		if (fileName != null) {
@@ -401,14 +411,17 @@ public class LLayer extends ActorLayer {
 			background.close();
 			background = null;
 		}
+		return this;
 	}
 
-	public void setTileBackground(String fileName) {
+	public LLayer setTileBackground(String fileName) {
 		setTileBackground(Image.createImage(fileName));
+		return this;
 	}
 
-	public void setTileBackground(Image image) {
+	public LLayer setTileBackground(Image image) {
 		setTileBackground(image, false);
+		return this;
 	}
 
 	public Image setTileBackground(Image image, boolean isReturn) {
@@ -632,24 +645,27 @@ public class LLayer extends ActorLayer {
 		return actorDrag;
 	}
 
-	public void setActorDrag(boolean actorDrag) {
-		this.actorDrag = actorDrag;
+	public LLayer setActorDrag(boolean d) {
+		this.actorDrag = d;
+		return this;
 	}
 
 	public boolean isLimitMove() {
 		return _isLimitMove;
 	}
 
-	public void setLimitMove(boolean isLimitMove) {
+	public LLayer setLimitMove(boolean isLimitMove) {
 		this._isLimitMove = isLimitMove;
+		return this;
 	}
 
 	public boolean isTouchClick() {
 		return isTouchClick;
 	}
 
-	public void setTouchClick(boolean isTouchClick) {
-		this.isTouchClick = isTouchClick;
+	public LLayer setTouchClick(boolean t) {
+		this.isTouchClick = t;
+		return this;
 	}
 
 	public float getLayerTouchX() {

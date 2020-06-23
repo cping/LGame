@@ -291,11 +291,6 @@ public class LButton extends LComponent implements FontSet<LButton> {
 	}
 
 	@Override
-	public String getUIName() {
-		return "Button";
-	}
-
-	@Override
 	public IFont getFont() {
 		return font;
 	}
@@ -310,8 +305,9 @@ public class LButton extends LComponent implements FontSet<LButton> {
 		return _function;
 	}
 
-	public void setFunction(CallFunction function) {
+	public LButton setFunction(CallFunction function) {
 		this._function = function;
+		return this;
 	}
 
 	@Override
@@ -320,8 +316,8 @@ public class LButton extends LComponent implements FontSet<LButton> {
 	}
 
 	@Override
-	public LButton setFontColor(LColor fontColor) {
-		this.fontColor = fontColor;
+	public LButton setFontColor(LColor c) {
+		this.fontColor = new LColor(c);
 		return this;
 	}
 
@@ -329,16 +325,23 @@ public class LButton extends LComponent implements FontSet<LButton> {
 		return offsetLeft;
 	}
 
-	public void setOffsetLeft(int offsetLeft) {
-		this.offsetLeft = offsetLeft;
+	public LButton setOffsetLeft(int l) {
+		this.offsetLeft = l;
+		return this;
 	}
 
 	public int getOffsetTop() {
 		return offsetTop;
 	}
 
-	public void setOffsetTop(int offsetTop) {
-		this.offsetTop = offsetTop;
+	public LButton setOffsetTop(int t) {
+		this.offsetTop = t;
+		return this;
+	}
+
+	@Override
+	public String getUIName() {
+		return "Button";
 	}
 
 }

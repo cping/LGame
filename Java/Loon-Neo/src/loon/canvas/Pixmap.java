@@ -2897,7 +2897,7 @@ public class Pixmap extends Limit implements LRelease {
 		for (int y = 0; y < getHeight(); y++) {
 			for (int x = 0; x < getWidth(); x++) {
 				final int pixel = getPixel(x, y);
-				if (pixel >> 24 != 0x00) {
+				if (pixel >> 24 != 0x00 || pixel != _transparent) {
 					return false;
 				}
 			}

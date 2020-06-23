@@ -444,20 +444,22 @@ public class LScrollBar extends LComponent {
 		createUI(g, x(), y(), null, null);
 	}
 
-	public float getOffsetX() {
+	public float getBoxOffsetX() {
 		return offsetX;
 	}
 
-	public void setOffsetX(float offsetX) {
+	public LScrollBar setBoxOffsetX(float offsetX) {
 		this.offsetX = offsetX;
+		return this;
 	}
 
-	public float getOffsetY() {
+	public float getBoxOffsetY() {
 		return offsetY;
 	}
 
-	public void setOffsetY(float offsetY) {
+	public LScrollBar setBoxOffsetY(float offsetY) {
 		this.offsetY = offsetY;
+		return this;
 	}
 
 	@Override

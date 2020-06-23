@@ -288,8 +288,9 @@ public class AStarFinder extends TileImplPathFind implements Updateable, LReleas
 
 	private int overflow = 4096;
 
-	public void setOverflow(int over) {
+	public AStarFinder setOverflow(int over) {
 		this.overflow = over;
+		return this;
 	}
 
 	public int getOverflow() {

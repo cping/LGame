@@ -966,8 +966,9 @@ public abstract class ActorLayer extends LContainer {
 		return tileSize;
 	}
 
-	public void setTileSize(int tileSize) {
+	public ActorLayer setTileSize(int tileSize) {
 		this.tileSize = tileSize;
+		return this;
 	}
 
 }

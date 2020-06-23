@@ -116,42 +116,48 @@ public class LSlider extends LComponent {
 		return _value;
 	}
 
-	public void setValue(float v) {
+	public LSlider setValue(float v) {
 		this._value = v;
+		return this;
 	}
 
 	public float getSliderWidth() {
 		return _sliderWidth;
 	}
 
-	public void setSliderWidth(float s) {
+	public LSlider setSliderWidth(float s) {
 		this._sliderWidth = s;
+		return this;
 	}
 
 	public float getSliderHeight() {
 		return _sliderHeight;
 	}
 
-	public void setSliderHeight(float s) {
+	public LSlider setSliderHeight(float s) {
 		this._sliderHeight = s;
+		return this;
 	}
 
 	public LTexture getSliderImage() {
 		return sliderImage;
 	}
 
-	public void setSliderImage(LTexture s) {
+	public LSlider setSliderImage(LTexture s) {
 		this.sliderImage = s;
+		return this;
 	}
 
-	public void setSliderImage(LTexture s, float width, float height) {
+	public LSlider setSliderImage(LTexture s, float width, float height) {
 		this.sliderImage = s;
 		setSliderWidth(width);
 		setSliderHeight(height);
+		return this;
 	}
 
-	public void setBarImage(LTexture b) {
+	public LSlider setBarImage(LTexture b) {
 		this.barImage = b;
+		return this;
 	}
 
 	public ValueListener getListener() {

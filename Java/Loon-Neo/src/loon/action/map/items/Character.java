@@ -49,8 +49,9 @@ public class Character extends CharacterValue {
 		super(name, info, maxHealth, maxMana, attack, defence, strength, intelligence, fitness, dexterity, agility);
 	}
 
-	public void addAttribute(Attribute attribute) {
+	public Character addAttribute(Attribute attribute) {
 		this.attributes.add(attribute);
+		return this;
 	}
 
 	public Attribute getAttribute(int index) {
@@ -74,16 +75,17 @@ public class Character extends CharacterValue {
 		return -1;
 	}
 
-	public void removeAttribute(int index) {
-		this.attributes.removeIndex(index);
+	public Attribute removeAttribute(int index) {
+		return this.attributes.removeIndex(index);
 	}
 
 	public int countAttributes() {
 		return this.attributes.size;
 	}
 
-	public void addItem(Item<Object> item) {
+	public Character addItem(Item<Object> item) {
 		this.items.add(item);
+		return this;
 	}
 
 	public Item<Object> getItem(int index) {
@@ -133,7 +135,8 @@ public class Character extends CharacterValue {
 		return roleObject;
 	}
 
-	public void setRoleObject(ISprite roleObject) {
-		this.roleObject = roleObject;
+	public Character setRoleObject(ISprite r) {
+		this.roleObject = r;
+		return this;
 	}
 }

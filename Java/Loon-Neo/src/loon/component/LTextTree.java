@@ -530,27 +530,30 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 		return subTreeFlag;
 	}
 
-	public void setSubTreeFlag(String subTreeFlag) {
+	public LTextTree setSubTreeFlag(String subTreeFlag) {
 		this.subTreeFlag = subTreeFlag;
 		this._dirty = true;
+		return this;
 	}
 
 	public String getSubTreeNextFlag() {
 		return subTreeNextFlag;
 	}
 
-	public void setSubTreeNextFlag(String subTreeNextFlag) {
+	public LTextTree setSubTreeNextFlag(String subTreeNextFlag) {
 		this.subTreeNextFlag = subTreeNextFlag;
 		this._dirty = true;
+		return this;
 	}
 
 	public String getSubLastTreeFlag() {
 		return subLastTreeFlag;
 	}
 
-	public void setSubLastTreeFlag(String subLastTreeFlag) {
+	public LTextTree setSubLastTreeFlag(String subLastTreeFlag) {
 		this.subLastTreeFlag = subLastTreeFlag;
 		this._dirty = true;
+		return this;
 	}
 
 	public String getRootName() {
@@ -567,8 +570,9 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 		return _selected;
 	}
 
-	public void setSelected(int selected) {
+	public LTextTree setSelected(int selected) {
 		this._selected = selected;
+		return this;
 	}
 
 	@Override

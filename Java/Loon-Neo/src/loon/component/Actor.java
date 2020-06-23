@@ -67,7 +67,7 @@ public class Actor extends LObject<Actor>
 
 	private int lastPaintSequenceNumber;
 
-	boolean visible = true, drag = true, click = true;
+	boolean visible = true, draged = true, clicked = true;
 
 	private ActorLayer gameLayer;
 
@@ -993,24 +993,26 @@ public class Actor extends LObject<Actor>
 	}
 
 	@Override
-	public void setVisible(boolean visible) {
-		this.visible = visible;
+	public void setVisible(boolean v) {
+		this.visible = v;
 	}
 
 	public boolean isDrag() {
-		return drag;
+		return draged;
 	}
 
-	public void setDrag(boolean drag) {
-		this.drag = drag;
+	public Actor setDrag(boolean d) {
+		this.draged = d;
+		return this;
 	}
 
 	public boolean isClick() {
-		return click;
+		return clicked;
 	}
 
-	public void setClick(boolean click) {
-		this.click = click;
+	public Actor setClick(boolean c) {
+		this.clicked = c;
+		return this;
 	}
 
 	final void setLastPaintSeqNum(int num) {
@@ -1029,21 +1031,23 @@ public class Actor extends LObject<Actor>
 		return animation;
 	}
 
-	public void setAnimation(Animation animation) {
+	public Actor setAnimation(Animation animation) {
 		if (animation == null) {
 			throw new LSysException("Animation is null !");
 		}
 		this.animation = animation;
 		this.isAnimation = true;
 		this.setImage(animation.getSpriteImage());
+		return this;
 	}
 
 	public boolean isAnimation() {
 		return isAnimation;
 	}
 
-	public void setAnimation(boolean isAnimation) {
+	public Actor setAnimation(boolean isAnimation) {
 		this.isAnimation = isAnimation;
+		return this;
 	}
 
 	@Override
@@ -1080,8 +1084,9 @@ public class Actor extends LObject<Actor>
 		return isFlipX();
 	}
 
-	public void setMirror(boolean m) {
+	public Actor setMirror(boolean m) {
 		this.setFlipX(m);
+		return this;
 	}
 
 	@Override

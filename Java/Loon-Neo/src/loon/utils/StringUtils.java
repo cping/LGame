@@ -435,7 +435,7 @@ final public class StringUtils extends CharUtils {
 	 */
 	public static String filter(CharSequence message, char[] chars, CharSequence newTag) {
 		if (size(message) <= 0) {
-			return "";
+			return LSystem.EMPTY;
 		}
 		StrBuilder sbr = new StrBuilder();
 		boolean addFlag;
@@ -464,7 +464,7 @@ final public class StringUtils extends CharUtils {
 	 */
 	public static String spaceFilter(CharSequence s) {
 		if (size(s) <= 0) {
-			return "";
+			return LSystem.EMPTY;
 		}
 		StrBuilder sbr = new StrBuilder();
 		final int size = s.length();
@@ -1038,7 +1038,7 @@ final public class StringUtils extends CharUtils {
 	 */
 	public static String toUpperCaseFirst(String mes) {
 		if (isEmpty(mes)) {
-			return "";
+			return LSystem.EMPTY;
 		}
 		if (mes.length() < 2) {
 			return mes.substring(0).toUpperCase();
@@ -1054,7 +1054,7 @@ final public class StringUtils extends CharUtils {
 	 */
 	public static String toLowerCaseFirst(String mes) {
 		if (isEmpty(mes)) {
-			return "";
+			return LSystem.EMPTY;
 		}
 		if (mes.length() < 2) {
 			return mes.substring(0).toLowerCase();
@@ -1070,7 +1070,7 @@ final public class StringUtils extends CharUtils {
 	 */
 	public static String toUpperFirstOtherAllLower(CharSequence cs) {
 		if (isNullOrEmpty(cs)) {
-			return "";
+			return LSystem.EMPTY;
 		}
 		final int len = cs.length();
 		StrBuilder sbr = new StrBuilder(len).append(toUpperAscii(cs.charAt(0)));
@@ -1088,7 +1088,7 @@ final public class StringUtils extends CharUtils {
 	 */
 	public static String toLowerFirstOtherAllUpper(CharSequence cs) {
 		if (isNullOrEmpty(cs)) {
-			return "";
+			return LSystem.EMPTY;
 		}
 		final int len = cs.length();
 		StrBuilder sbr = new StrBuilder(len).append(toLowerAscii(cs.charAt(0)));
@@ -1236,7 +1236,7 @@ final public class StringUtils extends CharUtils {
 			return value;
 		}
 		int count = 0;
-		String sbr = "";
+		String sbr = LSystem.EMPTY;
 		if (tag) {
 			if (value.charAt(0) >= 48 && value.charAt(0) <= 57) {
 				value = "+" + value;
@@ -1487,7 +1487,7 @@ final public class StringUtils extends CharUtils {
 
 	public static String merge(String[] messages) {
 		if (isEmpty(messages)) {
-			return "";
+			return LSystem.EMPTY;
 		}
 		StrBuilder sbr = new StrBuilder();
 		for (String mes : messages) {
@@ -1500,7 +1500,7 @@ final public class StringUtils extends CharUtils {
 
 	public static String merge(CharSequence[] messages) {
 		if (messages == null || messages.length == 0) {
-			return "";
+			return LSystem.EMPTY;
 		}
 		StrBuilder sbr = new StrBuilder();
 		for (CharSequence mes : messages) {
@@ -1525,7 +1525,7 @@ final public class StringUtils extends CharUtils {
 
 	public static String unificationStrings(CharArray tempChars, String mes, CharSequence limit) {
 		if (isEmpty(mes)) {
-			return "";
+			return LSystem.EMPTY;
 		}
 		tempChars.clear();
 		if (limit == null || limit.length() == 0) {
@@ -1552,7 +1552,7 @@ final public class StringUtils extends CharUtils {
 			}
 		}
 		if (tempChars.length == 0) {
-			return "";
+			return LSystem.EMPTY;
 		} else {
 			return tempChars.sort().getString().trim();
 		}
@@ -1572,7 +1572,7 @@ final public class StringUtils extends CharUtils {
 
 	public static String unificationCharSequence(CharArray tempChars, CharSequence[] messages, CharSequence limit) {
 		if (messages == null || messages.length == 0) {
-			return "";
+			return LSystem.EMPTY;
 		}
 		tempChars.clear();
 		boolean mode = (limit == null || limit.length() == 0);
@@ -1605,7 +1605,7 @@ final public class StringUtils extends CharUtils {
 			}
 		}
 		if (tempChars.length == 0) {
-			return "";
+			return LSystem.EMPTY;
 		} else {
 			return tempChars.sort().getString().trim();
 		}
@@ -1625,7 +1625,7 @@ final public class StringUtils extends CharUtils {
 
 	public static String unificationStrings(CharArray tempChars, String[] messages, CharSequence limit) {
 		if (isEmpty(messages)) {
-			return "";
+			return LSystem.EMPTY;
 		}
 		tempChars.clear();
 		boolean mode = (limit == null || limit.length() == 0);
@@ -1658,7 +1658,7 @@ final public class StringUtils extends CharUtils {
 			}
 		}
 		if (tempChars.length == 0) {
-			return "";
+			return LSystem.EMPTY;
 		} else {
 			return tempChars.sort().getString().trim();
 		}
@@ -1693,7 +1693,7 @@ final public class StringUtils extends CharUtils {
 	 */
 	public static String unificationChars(CharArray tempChars, char[] messages, CharSequence limit) {
 		if (messages == null || messages.length == 0) {
-			return "";
+			return LSystem.EMPTY;
 		}
 		tempChars.clear();
 		boolean mode = (limit == null || limit.length() == 0);
@@ -1722,7 +1722,7 @@ final public class StringUtils extends CharUtils {
 		}
 
 		if (tempChars.length == 0) {
-			return "";
+			return LSystem.EMPTY;
 		} else {
 			return tempChars.sort().getString().trim();
 		}
@@ -2008,7 +2008,7 @@ final public class StringUtils extends CharUtils {
 	 */
 	public static CharSequence notNull(final CharSequence mes) {
 		if (mes == null || mes.length() == 0) {
-			return "";
+			return LSystem.EMPTY;
 		}
 		return mes;
 	}
@@ -2085,7 +2085,7 @@ final public class StringUtils extends CharUtils {
 	 */
 	public static String reverse(final CharSequence v) {
 		if (size(v) <= 0) {
-			return "";
+			return LSystem.EMPTY;
 		}
 		final int size = v.length();
 		final StrBuilder sbr = new StrBuilder(size);
@@ -2096,13 +2096,26 @@ final public class StringUtils extends CharUtils {
 	}
 
 	/**
-	 * 返回指定字符序列长度
+	 * 返回指定字符序列长度(为null时返回-1)
 	 * 
 	 * @param v
 	 * @return
 	 */
 	public static int size(final CharSequence v) {
 		return v == null ? -1 : v.length();
+	}
+
+	/**
+	 * 返回指定字符序列长度(为null时返回0)
+	 * 
+	 * @param v
+	 * @return
+	 */
+	public static int length(final CharSequence v) {
+		if (isNullOrEmpty(v)) {
+			return 0;
+		}
+		return v.length();
 	}
 
 	/**
@@ -2124,7 +2137,7 @@ final public class StringUtils extends CharUtils {
 	 */
 	public static String formatCRLF(CharSequence cs) {
 		if (isEmpty(cs)) {
-			return "";
+			return LSystem.EMPTY;
 		}
 		String src = cs.toString();
 		int pos = src.indexOf("\r");
