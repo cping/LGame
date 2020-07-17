@@ -173,7 +173,7 @@ public class LTextField extends LTextBar {
 		if (!isPointInUI()) {
 			return;
 		}
-		if (keyLock.isPressed()) {
+		if(keyLock.isPressed()){
 			return;
 		}
 		char nextchar = key.getKeyChar();
@@ -181,7 +181,7 @@ public class LTextField extends LTextBar {
 			return;
 		}
 		boolean isatstart = _text.length() == startidx;
-		if (((key.getKeyCode() == SysKey.BACK) || (key.getKeyCode() == SysKey.DEL)
+		if (((key.getKeyCode() == SysKey.BACK) 
 				|| (key.getKeyCode() == SysKey.BACKSPACE)) && _text.length() != 0 && !isatstart) {
 			_text = _text.substring(0, _text.length() - 1);
 			return;
@@ -213,9 +213,14 @@ public class LTextField extends LTextBar {
 			} else {
 				_text += nextchar;
 			}
+		} else if (SysKey.getKeyCode() == SysKey.BACK || SysKey.getKeyCode() == SysKey.BACKSPACE) {
+			if (_text.length() > 0) {
+				_text = _text.substring(0, _text.length() - 1);
+			} else {
+				_text = "";
+			}
 		}
 		keyLock.release();
-
 	}
 
 	@Override

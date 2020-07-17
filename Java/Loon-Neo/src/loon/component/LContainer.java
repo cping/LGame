@@ -1060,6 +1060,10 @@ public abstract class LContainer extends LComponent implements IArray {
 		super.out();
 		return this;
 	}
+	
+	public int getChildCount(){
+		return size();
+	}
 
 	@Override
 	public int size() {

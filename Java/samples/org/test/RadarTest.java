@@ -30,6 +30,8 @@ public class RadarTest extends Stage {
 	public void create() {
 		setBackground(LColor.yellow);
 		LRadar radar = new LRadar(60, 60, 200, 300);
+		radar.setLocked(false);
+		
 		//radar.setDrawMode(Mode.Octagon);
 		radar.addDrop(125, 65, LColor.yellow);
 		centerOn(radar);

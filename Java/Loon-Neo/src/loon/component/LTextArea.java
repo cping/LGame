@@ -70,12 +70,12 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 
 	private int brightMax = 100;
 	private int brightSpeed = 1;
-	private int[] cr;
-	private int[] cg;
-	private int[] cb;
-	private int default_cr = 255 - this.brightMax;
-	private int default_cg = 255 - this.brightMax;
-	private int default_cb = 255 - this.brightMax;
+	private int[] crs;
+	private int[] cgs;
+	private int[] cbs;
+	private int default_cr;
+	private int default_cg;
+	private int default_cb;
 	private String[] getMessage;
 	private int[] getMessageLength;
 
@@ -84,22 +84,28 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 	private int max;
 	private int num;
 	private int drawY;
-	private boolean waitFlag;
-	private String str;
+
+	private String strTemp;
 	private int posx;
 	private int posy;
 	private int numBak;
+
+	private boolean centerText;
+	private boolean waitFlag;
+	private boolean flashFont;
 	private boolean over;
 	private boolean slideMessage;
 
 	private int[] slideX;
-	private boolean center;
-	private IFont font;
+
+	private IFont displayFont;
 	private int countFrame;
 	private LColor triangleColor = LColor.orange;
 	private LColor tmpcolor = new LColor(LColor.white);
 	private LColor fontColor = new LColor(LColor.white);
 	private String lineFlag = LSystem.FLAG_TAG;
+
+	private String waitFlagString;
 
 	public LTextArea(int x, int y, int w, int h) {
 		this(-1, x, y, w, h);
@@ -118,40 +124,69 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 	}
 
 	public LTextArea(int x, int y, int w, int h, String bgFile) {
-		this(LTextArea.TYPE_DOWN, w, SkinManager.get().getMessageSkin().getFont(), x, y, w, h,
+		this(LTextArea.TYPE_DOWN, -1, SkinManager.get().getMessageSkin().getFont(), x, y, w, h,
 				LSystem.loadTexture(bgFile));
 	}
 
 	public LTextArea(int x, int y, int w, int h, LTexture bg) {
-		this(LTextArea.TYPE_DOWN, w, SkinManager.get().getMessageSkin().getFont(), x, y, w, h, bg);
+		this(LTextArea.TYPE_DOWN, -1, SkinManager.get().getMessageSkin().getFont(), x, y, w, h, bg);
+	}
+
+	public LTextArea(int x, int y, int w, int h, boolean flashFont) {
+		this(LTextArea.TYPE_DOWN, -1, x, y, w, h, flashFont);
+	}
+
+	public LTextArea(int type, int max, int x, int y, int w, int h, boolean flashFont) {
+		this(type, max, SkinManager.get().getMessageSkin().getFont(), x, y, w, h, null, flashFont);
 	}
 
 	public LTextArea(MessageSkin skin, int type, int max, int x, int y, int w, int h) {
 		this(type, max, skin.getFont(), x, y, w, h, skin.getBackgroundTexture());
 	}
 
+	public LTextArea(int type, int max, IFont font, int x, int y, int w, int h, boolean flashFont) {
+		this(type, max, font, x, y, w, h, null, flashFont);
+	}
+
 	public LTextArea(int type, int max, IFont font, int x, int y, int w, int h, LTexture bg) {
+		this(type, max, font, x, y, w, h, bg, true);
+	}
+
+	public LTextArea(int type, int max, IFont font, int x, int y, int w, int h, LTexture bg, boolean flashFont) {
+		this(type, max, font, x, y, w, h, bg, flashFont, true, true);
+	}
+
+	public LTextArea(int type, int max, IFont textFont, int x, int y, int w, int h, LTexture bg, boolean flashFont,
+			boolean waitFlag, boolean slide) {
 		super(x, y, w, h);
-		this.setFont(font);
+		IFont tmp = textFont;
+		if (tmp == null) {
+			tmp = LSystem.getSystemGameFont();
+		}
+		this.setFont(tmp);
 		this.showType = type;
-		this.postLine = (h / font.getHeight());
+		this.postLine = (h / tmp.getHeight());
+		this.waitFlagString = "new";
 		if (max < 0) {
 			this.set(LSystem.isDesktop() ? postLine - 1 : postLine + 1);
 		} else {
 			this.set(max);
 		}
+		this.setDefaultColor(255, 255, 255, flashFont);
+		this.setWaitFlag(waitFlag);
+		this.setSlideMessage(slide);
 		this.setWidthLimit(w);
-		this.setWaitFlag(true);
-		this.setSlideMessage(true);
-		this.onlyBackground(bg);
+		if (bg != null) {
+			this.onlyBackground(bg);
+		}
 	}
 
-	public void set(int mMax) {
+	public LTextArea set(int mMax) {
 		this.max = (mMax + 1);
 		this.message = new String[this.max];
-		this.cr = new int[this.max];
-		this.cg = new int[this.max];
-		this.cb = new int[this.max];
+		this.crs = new int[this.max];
+		this.cgs = new int[this.max];
+		this.cbs = new int[this.max];
 		this.bright = new int[this.max];
 		this.brightType = new int[this.max];
 		this.getMessage = new String[this.max];
@@ -169,27 +204,35 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 			this.getMessageLength[i] = 0;
 			this.bright[i] = (this.brightMax * i / this.max);
 		}
+		return this;
 	}
 
-	public void setDefaultColor(int d_cr, int d_cg, int d_cb) {
-		this.default_cr = d_cr;
-		this.default_cg = d_cg;
-		this.default_cb = d_cb;
+	public LTextArea setDefaultColor(int r, int g, int b) {
+		return setDefaultColor(r, g, b, this.flashFont);
+	}
 
-		if (this.default_cr > 255 - this.brightMax) {
-			this.default_cr = (255 - this.brightMax);
+	public LTextArea setDefaultColor(int r, int g, int b, boolean flash) {
+		this.setFlashFont(flash);
+		this.default_cr = r;
+		this.default_cg = g;
+		this.default_cb = b;
+		if (this.flashFont) {
+			if (this.default_cr > 255 - this.brightMax) {
+				this.default_cr = (255 - this.brightMax);
+			}
+			if (this.default_cg > 255 - this.brightMax) {
+				this.default_cg = (255 - this.brightMax);
+			}
+			if (this.default_cb > 255 - this.brightMax) {
+				this.default_cb = (255 - this.brightMax);
+			}
 		}
-		if (this.default_cg > 255 - this.brightMax) {
-			this.default_cg = (255 - this.brightMax);
-		}
-		if (this.default_cb > 255 - this.brightMax) {
-			this.default_cb = (255 - this.brightMax);
-		}
+		return this;
 	}
 
 	@Override
 	public IFont getFont() {
-		return font;
+		return displayFont;
 	}
 
 	@Override
@@ -197,108 +240,122 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 		if (fn == null) {
 			return this;
 		}
-		this.font = fn;
-		this.useLFont = (this.font instanceof LFont);
+		this.displayFont = fn;
+		this.useLFont = (this.displayFont instanceof LFont);
 		return this;
 	}
 
-	public void setWidthLimit(int widthLimit) {
+	public LTextArea setWidthLimit(int widthLimit) {
 		this.messageWidthLimit = widthLimit;
+		return this;
 	}
 
-	public void setNewFlag() {
+	public LTextArea setNewFlag() {
 		this.drawNew[this.num] = true;
+		return this;
 	}
 
-	public void clear() {
+	public LTextArea clear() {
 		this.num = 0;
+		return this;
 	}
 
 	public int count() {
 		return this.num;
 	}
 
-	public void setSlideMessage(boolean bool) {
-		this.slideMessage = bool;
+	public LTextArea setSlideMessage(boolean b) {
+		this.slideMessage = b;
+		return this;
 	}
 
-	public void setCenter(boolean bool) {
-		this.center = bool;
+	public LTextArea setCenter(boolean b) {
+		this.centerText = b;
+		return this;
 	}
 
-	public void setColor(int d_cr, int d_cg, int d_cb) {
-		this.cr[this.num] = d_cr;
-		this.cg[this.num] = d_cg;
-		this.cb[this.num] = d_cb;
-		if (this.cr[this.num] > 255 - this.brightMax) {
-			this.cr[this.num] = (255 - this.brightMax);
+	public LTextArea setColor(int d_cr, int d_cg, int d_cb) {
+		this.crs[this.num] = d_cr;
+		this.cgs[this.num] = d_cg;
+		this.cbs[this.num] = d_cb;
+		if (flashFont) {
+			if (this.crs[this.num] > 255 - this.brightMax) {
+				this.crs[this.num] = (255 - this.brightMax);
+			}
+			if (this.cgs[this.num] > 255 - this.brightMax) {
+				this.cgs[this.num] = (255 - this.brightMax);
+			}
+			if (this.cbs[this.num] > 255 - this.brightMax) {
+				this.cbs[this.num] = (255 - this.brightMax);
+			}
 		}
-		if (this.cg[this.num] > 255 - this.brightMax) {
-			this.cg[this.num] = (255 - this.brightMax);
-		}
-		if (this.cb[this.num] > 255 - this.brightMax) {
-			this.cb[this.num] = (255 - this.brightMax);
-		}
+		return this;
 	}
 
-	public void put(String mes, LColor color) {
+	public LTextArea put(String mes, LColor color) {
 		if (StringUtils.isEmpty(mes)) {
-			return;
+			return this;
 		}
 		String[] messages = StringUtils.split(mes, '\n');
 		for (int i = messages.length - 1; i > -1; i--) {
 			setColor(color.getRed(), color.getGreen(), color.getBlue());
 			putOne(messages[i]);
 		}
+		return this;
 	}
 
-	public void put(String mes) {
+	public LTextArea put(String mes) {
 		if (StringUtils.isEmpty(mes)) {
-			return;
+			return this;
 		}
 		String[] messages = StringUtils.split(mes, '\n');
 		for (int i = messages.length - 1; i > -1; i--) {
 			putOne(messages[i]);
 		}
+		return this;
 	}
 
 	private void putOne(String mes) {
 		this.over = false;
 		this.numBak = this.num;
 
-		if (font != null && useLFont) {
-			LSTRDictionary.get().bind((LFont) font, mes);
+		if (displayFont != null && useLFont) {
+			LSTRDictionary.get().bind((LFont) displayFont, mes);
 		}
 
 		this.message[this.num] = mes;
-		if ((this.cr[this.num] == 0) && (this.cg[this.num] == 0) && (this.cb[this.num] == 0)) {
-			this.cr[this.num] = this.default_cr;
-			this.cg[this.num] = this.default_cg;
-			this.cb[this.num] = this.default_cb;
-		} else {
-			if (this.cr[this.num] + this.brightMax > 255) {
-				this.cr[this.num] = (255 - this.brightMax);
-			} else if (this.cr[this.num] < 0) {
-				this.cr[this.num] = 0;
-			}
-			if (this.cg[this.num] + this.brightMax > 255) {
-				this.cr[this.num] = (255 - this.brightMax);
-			} else if (this.cg[this.num] < 0) {
-				this.cg[this.num] = 0;
-			}
-			if (this.cb[this.num] + this.brightMax > 255) {
-				this.cr[this.num] = (255 - this.brightMax);
-			} else if (this.cb[this.num] < 0) {
-				this.cb[this.num] = 0;
+
+		if (this.flashFont) {
+			if ((this.crs[this.num] == 0) && (this.cgs[this.num] == 0) && (this.cbs[this.num] == 0)) {
+				this.crs[this.num] = this.default_cr;
+				this.cgs[this.num] = this.default_cg;
+				this.cbs[this.num] = this.default_cb;
+			} else {
+				if (this.crs[this.num] + this.brightMax > 255) {
+					this.crs[this.num] = (255 - this.brightMax);
+				} else if (this.crs[this.num] < 0) {
+					this.crs[this.num] = 0;
+				}
+				if (this.cgs[this.num] + this.brightMax > 255) {
+					this.crs[this.num] = (255 - this.brightMax);
+				} else if (this.cgs[this.num] < 0) {
+					this.cgs[this.num] = 0;
+				}
+				if (this.cbs[this.num] + this.brightMax > 255) {
+					this.crs[this.num] = (255 - this.brightMax);
+				} else if (this.cbs[this.num] < 0) {
+					this.cbs[this.num] = 0;
+				}
 			}
 		}
 
-		if ((this.font != null) && (this.font.stringWidth(this.message[this.num]) > this.messageWidthLimit)) {
+		if ((this.displayFont != null)
+				&& (this.displayFont.stringWidth(this.message[this.num]) > this.messageWidthLimit)) {
 			this.posx = 1;
 			for (;;) {
-				if (this.font.stringWidth(this.message[this.num].substring(0,
+				if (this.displayFont.stringWidth(this.message[this.num].substring(0,
 						this.message[this.num].length() - this.posx)) <= this.messageWidthLimit) {
-					this.str = this.message[this.num].substring(this.message[this.num].length() - this.posx,
+					this.strTemp = this.message[this.num].substring(this.message[this.num].length() - this.posx,
 							this.message[this.num].length());
 					this.message[this.num] = this.message[this.num].substring(0,
 							this.message[this.num].length() - this.posx);
@@ -315,9 +372,9 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 			this.num = 0;
 		}
 
-		this.cr[this.num] = this.default_cr;
-		this.cg[this.num] = this.default_cg;
-		this.cb[this.num] = this.default_cb;
+		this.crs[this.num] = this.default_cr;
+		this.cgs[this.num] = this.default_cg;
+		this.cbs[this.num] = this.default_cb;
 
 		this.getMessageLength[this.num] = 0;
 		this.getMessage[this.num] = LSystem.EMPTY;
@@ -327,8 +384,8 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 		this.slideX[this.num] = -200;
 
 		if (this.over) {
-			setColor(this.cr[this.numBak], this.cg[this.numBak], this.cb[this.numBak]);
-			put(this.str);
+			setColor(this.crs[this.numBak], this.cgs[this.numBak], this.cbs[this.numBak]);
+			put(this.strTemp);
 		}
 	}
 
@@ -375,6 +432,15 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 		return this;
 	}
 
+	public LTextArea setWaitFlagString(String s) {
+		this.waitFlagString = s;
+		return this;
+	}
+
+	public String getWaitFlagString() {
+		return this.waitFlagString;
+	}
+
 	public LTextArea draw(GLEx g, int dx, int dy, int d_type, int lines) {
 		if (_background != null) {
 			g.draw(_background, dx, dy, getWidth(), getHeight(), _component_baseColor);
@@ -383,7 +449,7 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 		boolean supportPack = false;
 
 		if (useLFont) {
-			LFont newFont = (LFont) font;
+			LFont newFont = (LFont) displayFont;
 			supportPack = newFont.isSupportCacheFontPack();
 			newFont.setSupportCacheFontPack(false);
 		}
@@ -407,15 +473,15 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 				}
 
 				if (d_type == 0) {
-					this.drawY = (dy + i * this.font.getSize());
+					this.drawY = (dy + i * this.displayFont.getSize());
 				} else {
-					this.drawY = (dy - i * this.font.getSize() - this.font.getSize());
+					this.drawY = (dy - i * this.displayFont.getSize() - this.displayFont.getSize());
 				}
 
 				this.posx = dx;
 
-				if (this.center) {
-					this.posx -= this.font.stringWidth(this.message[this.num]) / 2;
+				if (this.centerText) {
+					this.posx -= this.displayFont.stringWidth(this.message[this.num]) / 2;
 				}
 
 				if (this.slideMessage) {
@@ -468,18 +534,23 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 
 					tmpcolor.setColor(this.drawNewCr[this.num], this.drawNewCg[this.num], this.drawNewCb[this.num]);
 
-					this.str = "new";
-					drawString(g, this.str, this.posx, this.drawY, tmpcolor);
-					this.posx += this.font.stringWidth(this.str);
+					this.strTemp = waitFlagString;
+					drawMessage(g, this.strTemp, this.posx, this.drawY, tmpcolor);
+					this.posx += this.displayFont.stringWidth(this.strTemp);
 				}
-				tmpcolor.setColor(50, 50, 50);
-				drawString(g, this.getMessage[this.num], this.posx + 1, this.drawY + 1, tmpcolor);
-				tmpcolor.setColor(this.cr[this.num] + this.bright[i], this.cg[this.num] + this.bright[i],
-						this.cb[this.num] + this.bright[i]);
-				drawString(g, this.getMessage[this.num], this.posx, this.drawY, tmpcolor);
-				if ((this.waitFlag) && (i == 0) && index > 0) {
-					this.posy = (this.countFrame * 1 / 3 % this.font.getSize() / 2 - 2);
-					drawString(g, lineFlag, this.posx + this.font.stringWidth(this.getMessage[this.num]),
+				if (flashFont) {
+					tmpcolor.setColor(50, 50, 50);
+					drawMessage(g, this.getMessage[this.num], this.posx + 1, this.drawY + 1, tmpcolor);
+					tmpcolor.setColor(this.crs[this.num] + this.bright[i], this.cgs[this.num] + this.bright[i],
+							this.cbs[this.num] + this.bright[i]);
+				} else {
+					tmpcolor.setColor(this.crs[this.num], this.cgs[this.num], this.cbs[this.num], 255);
+				}
+				drawMessage(g, this.getMessage[this.num], this.posx, this.drawY, tmpcolor);
+				boolean showFlag = (this.waitFlag) && (i == 0) && index > 0;
+				if (showFlag) {
+					this.posy = (this.countFrame * 1 / 3 % this.displayFont.getSize() / 2 - 2);
+					drawMessage(g, lineFlag, this.posx + this.displayFont.stringWidth(this.getMessage[this.num]),
 							this.drawY - this.posy, this.triangleColor);
 				}
 				if (this.brightType[i] == TYPE_DOWN) {
@@ -504,7 +575,7 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 		g.setColor(oldColor);
 
 		if (useLFont && supportPack) {
-			LFont newFont = (LFont) font;
+			LFont newFont = (LFont) displayFont;
 			newFont.setSupportCacheFontPack(supportPack);
 		}
 
@@ -594,12 +665,13 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 		return setBackground(LSystem.loadTexture(path));
 	}
 
-	private void drawString(GLEx g, String str, int x, int y, LColor color) {
+	private void drawMessage(GLEx g, String str, int x, int y, LColor color) {
 		if (showType == TYPE_DOWN) {
-			font.drawString(g, str, x + leftOffset + 5, (y - 5) + topOffset + font.getAscent() / 2, color);
+			displayFont.drawString(g, str, x + leftOffset + 5, (y - 5) + topOffset + displayFont.getAscent() / 2,
+					color);
 		} else {
-			font.drawString(g, str, x + leftOffset + 5,
-					(y - 5) + topOffset + font.getAscent() / 2 + getHeight() - font.getHeight(), color);
+			displayFont.drawString(g, str, x + leftOffset + 5,
+					(y - 5) + topOffset + displayFont.getAscent() / 2 + getHeight() - displayFont.getHeight(), color);
 		}
 	}
 
@@ -632,6 +704,15 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 
 	public LTextArea setLineFlag(String flag) {
 		this.lineFlag = flag;
+		return this;
+	}
+
+	public boolean isFlashFont() {
+		return flashFont;
+	}
+
+	public LTextArea setFlashFont(boolean f) {
+		this.flashFont = f;
 		return this;
 	}
 

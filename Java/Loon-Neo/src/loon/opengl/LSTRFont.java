@@ -276,6 +276,8 @@ public class LSTRFont implements IFont, LRelease {
 
 	private boolean _outBounds = false;
 
+	private boolean _displayLazy = false;
+
 	private LSTRFont _childFont = null;
 
 	private int _initDraw = -1;
@@ -387,6 +389,7 @@ public class LSTRFont implements IFont, LRelease {
 		this._chars = new CharArray(chs.length());
 		this._maxTextureWidth = maxWidth;
 		this._maxTextureHeight = maxHeight;
+		this._displayLazy = true;
 		this.textureWidth = tw;
 		this.textureHeight = th;
 		this.displays = new IntMap<Cache>(totalCharSet);
@@ -428,11 +431,11 @@ public class LSTRFont implements IFont, LRelease {
 			return;
 		}
 		isDrawing = true;
-		updateX = 0;
-		updateY = LSystem.isHTML5() ? 1f : 0;
+		//updateX = 0;
+		//updateY = LSystem.isHTML5() ? 1f : 0;
 		Updateable update = new UpdateStringFont(this);
 		if (asyn) {
-			LSystem.load(update);
+			LSystem.unload(update);
 		} else {
 			update.action(null);
 		}
@@ -480,9 +483,11 @@ public class LSTRFont implements IFont, LRelease {
 		if (processing()) {
 			return false;
 		}
-		if (_initDraw < _drawLimit) {
-			_initDraw++;
-			return false;
+		if (_displayLazy) {
+			if (_initDraw < _drawLimit) {
+				_initDraw++;
+				return false;
+			}
 		}
 		if (texture.isClosed()) {
 			return false;
@@ -879,8 +884,8 @@ public class LSTRFont implements IFont, LRelease {
 	public void setUpdateY(float y) {
 		this.updateY = y;
 	}
-	
-	private boolean checkCharRunning(){
+
+	private boolean checkCharRunning() {
 		if (_isClose) {
 			return false;
 		}
@@ -888,9 +893,11 @@ public class LSTRFont implements IFont, LRelease {
 		if (processing()) {
 			return false;
 		}
-		if (_initDraw < _drawLimit) {
-			_initDraw++;
-			return false;
+		if (_displayLazy) {
+			if (_initDraw < _drawLimit) {
+				_initDraw++;
+				return false;
+			}
 		}
 		if (texture.isClosed()) {
 			return false;
@@ -899,7 +906,7 @@ public class LSTRFont implements IFont, LRelease {
 	}
 
 	public void addChar(char c, float x, float y, LColor color) {
-		if(!checkCharRunning()){
+		if (!checkCharRunning()) {
 			return;
 		}
 		if (!checkOutBounds() || containsChar(c)) {
@@ -939,7 +946,7 @@ public class LSTRFont implements IFont, LRelease {
 	}
 
 	public void startChar() {
-		if(!checkCharRunning()){
+		if (!checkCharRunning()) {
 			return;
 		}
 		clearChildString();
@@ -947,7 +954,7 @@ public class LSTRFont implements IFont, LRelease {
 	}
 
 	public void stopChar() {
-		if(!checkCharRunning()){
+		if (!checkCharRunning()) {
 			return;
 		}
 		GL20 g = LSystem.base().graphics().gl;
@@ -983,7 +990,7 @@ public class LSTRFont implements IFont, LRelease {
 	}
 
 	public void postCharCache() {
-		if(!checkCharRunning()){
+		if (!checkCharRunning()) {
 			return;
 		}
 		GL20 g = LSystem.base().graphics().gl;
@@ -997,7 +1004,7 @@ public class LSTRFont implements IFont, LRelease {
 	}
 
 	public Cache saveCharCache() {
-		if(!checkCharRunning()){
+		if (!checkCharRunning()) {
 			return null;
 		}
 		fontBatch.disposeLastCache();
@@ -1212,8 +1219,9 @@ public class LSTRFont implements IFont, LRelease {
 		return isasyn;
 	}
 
-	public void setAsyn(boolean a) {
+	public LSTRFont setAsyn(boolean a) {
 		this.isasyn = a;
+		return this;
 	}
 
 	@Override
@@ -1311,6 +1319,15 @@ public class LSTRFont implements IFont, LRelease {
 		return _outBounds;
 	}
 
+	public boolean isDisplayLazy() {
+		return _displayLazy;
+	}
+
+	public LSTRFont setDisplayLazy(boolean displayLazy) {
+		this._displayLazy = displayLazy;
+		return this;
+	}
+	
 	@Override
 	public synchronized void close() {
 		if (_isClose) {
@@ -1337,6 +1354,7 @@ public class LSTRFont implements IFont, LRelease {
 		}
 		charArray = null;
 		isDrawing = false;
+		_displayLazy = false;
 		_initChars = false;
 		_initDraw = -1;
 		_isClose = true;

@@ -434,20 +434,18 @@ public class Desktop implements Visible, LRelease {
 	}
 
 	public void keyPressed(GameKey key) {
-		if (this.selectedComponent != null && !this.selectedComponent._keyLocked) {
-			this.selectedComponent.keyPressed(key);
-		}
 		if (this.contentPane != null && this.contentPane != this.selectedComponent) {
 			this.contentPane.keyPressed(key);
+		} else if (this.selectedComponent != null && !this.selectedComponent._keyLocked) {
+			this.selectedComponent.keyPressed(key);
 		}
 	}
 
 	public void keyReleased(GameKey key) {
-		if (this.selectedComponent != null && !this.selectedComponent._keyLocked) {
-			this.selectedComponent.keyReleased(key);
-		}
 		if (this.contentPane != null && this.contentPane != this.selectedComponent) {
 			this.contentPane.keyReleased(key);
+		} else if (this.selectedComponent != null && !this.selectedComponent._keyLocked) {
+			this.selectedComponent.keyReleased(key);
 		}
 	}
 
@@ -862,7 +860,7 @@ public class Desktop implements Visible, LRelease {
 		}
 		return controls;
 	}
-	
+
 	public UIControls findNotNamesToUIControls(String... name) {
 		UIControls controls = null;
 		if (contentPane != null && contentPane._childs != null) {

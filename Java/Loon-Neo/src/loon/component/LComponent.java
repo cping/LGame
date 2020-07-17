@@ -91,14 +91,14 @@ public abstract class LComponent extends LObject<LContainer>
 		return setLocked(locked);
 	}
 
-	public LComponent dragLocked(){
+	public LComponent dragLocked() {
 		return setDragLocked(true);
 	}
-	
-	public LComponent dragUnlocked(){
+
+	public LComponent dragUnlocked() {
 		return setDragLocked(false);
 	}
-	
+
 	// 组件内部变量, 用于锁定当前组件的触屏（鼠标）与键盘事件
 	protected boolean _touchLocked = false, _keyLocked = false;
 
@@ -639,8 +639,19 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	protected final void setContainer(LContainer container) {
-		this.setSuper(container);
+		this.changeContainer(container);
 		this.validatePosition();
+	}
+
+	protected final void changeContainer(LContainer container) {
+		LContainer comp = getSuper();
+		if (comp == this) {
+			return;
+		}
+		if (comp != null) {
+			comp.remove(container);
+		}
+		this.setSuper(container);
 	}
 
 	@Override
@@ -929,9 +940,7 @@ public abstract class LComponent extends LObject<LContainer>
 	 */
 	protected void checkFocusKey() {
 		if (this.input.getKeyPressed() == SysKey.ENTER) {
-
 			this.transferFocus();
-
 		} else {
 			this.transferFocusBackward();
 		}

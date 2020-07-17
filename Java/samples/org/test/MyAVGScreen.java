@@ -1,5 +1,6 @@
 package org.test;
 
+import loon.LTransition;
 import loon.action.avg.AVGDialog;
 import loon.action.avg.AVGScreen;
 import loon.action.avg.drama.Command;
