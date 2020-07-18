@@ -72,6 +72,21 @@ final public class StringUtils extends CharUtils {
 	}
 
 	/**
+	 * 将指定字符串为指定长度字符串
+	 * 
+	 * @param ch
+	 * @param count
+	 * @return
+	 */
+	public static String cpy(char ch, int count) {
+		StrBuilder sbr = new StrBuilder(count);
+		for (int i = 0; i < count; i++) {
+			sbr.append(ch);
+		}
+		return sbr.toString();
+	}
+
+	/**
 	 * 判定指定字符序列是否在指定范围内
 	 * 
 	 * @param cs
@@ -981,9 +996,9 @@ final public class StringUtils extends CharUtils {
 	 * @param param
 	 * @return
 	 */
-	public static boolean isBlankAll(CharSequence param) {
-		for (int i = 0; i < param.length(); i++) {
-			if (param.charAt(i) != ' ') {
+	public static boolean isBlankAll(CharSequence v) {
+		for (int i = 0; i < v.length(); i++) {
+			if (v.charAt(i) != ' ') {
 				return false;
 			}
 		}
@@ -996,18 +1011,18 @@ final public class StringUtils extends CharUtils {
 	 * @param param
 	 * @return
 	 */
-	public static boolean isEmpty(CharSequence value) {
-		return value == null || value.length() == 0 || "".equals(value.toString().trim());
+	public static boolean isEmpty(CharSequence v) {
+		return v == null || v.length() == 0 || "".equals(v.toString().trim());
 	}
 
 	/**
 	 * 判断CharSequence是否非空(和isNotEmpty与isEmpty分开函数名,防止串类型,这个没有trim操作,也就是" "不算空)
 	 * 
-	 * @param value
+	 * @param v
 	 * @return
 	 */
-	public static boolean isNullOrEmpty(CharSequence value) {
-		return value == null || value.length() == 0;
+	public static boolean isNullOrEmpty(CharSequence v) {
+		return v == null || v.length() == 0;
 	}
 
 	/**
@@ -1016,8 +1031,8 @@ final public class StringUtils extends CharUtils {
 	 * @param param
 	 * @return
 	 */
-	public static boolean isNotEmpty(CharSequence value) {
-		return !isEmpty(value);
+	public static boolean isNotEmpty(CharSequence v) {
+		return !isEmpty(v);
 	}
 
 	/**
@@ -1026,8 +1041,8 @@ final public class StringUtils extends CharUtils {
 	 * @param param
 	 * @return
 	 */
-	public static boolean isEmpty(CharSequence... value) {
-		return value == null || value.length == 0;
+	public static boolean isEmpty(CharSequence... v) {
+		return v == null || v.length == 0;
 	}
 
 	/**
@@ -1142,24 +1157,24 @@ final public class StringUtils extends CharUtils {
 	 *            指定需要检查的字符串。
 	 * @return 逻辑值（True Or False）。
 	 */
-	public static boolean hasChinese(CharSequence checkStr) {
-		return getChineseCount(checkStr) > 0;
+	public static boolean hasChinese(CharSequence v) {
+		return getChineseCount(v) > 0;
 	}
 
 	/**
 	 * 检查是否为纯字母
 	 * 
-	 * @param value
+	 * @param v
 	 * @return
 	 */
-	public static boolean isAlphabet(CharSequence value) {
-		if (value == null || value.length() == 0) {
+	public static boolean isAlphabet(CharSequence v) {
+		if (v == null || v.length() == 0) {
 			return false;
 		}
-		int size = value.length();
+		int size = v.length();
 		int count = 0;
 		for (int i = 0; i < size; i++) {
-			if (isAlphabet(value.charAt(i))) {
+			if (isAlphabet(v.charAt(i))) {
 				count++;
 			} else {
 				break;
@@ -1216,38 +1231,38 @@ final public class StringUtils extends CharUtils {
 	/**
 	 * 变更数字字符串格式为指定分隔符货币格式(比如100000000用分隔符","分割后就是100,000,000)
 	 * 
-	 * @param value
+	 * @param v
 	 * @return
 	 */
-	public static String changFormatToMoney(String value) {
-		return changFormatToMoney(value, ",", false);
+	public static String changFormatToMoney(String v) {
+		return changFormatToMoney(v, ",", false);
 	}
 
 	/**
 	 * 变更数字字符串格式为指定分隔符货币格式
 	 * 
-	 * @param value
+	 * @param v
 	 * @param split
 	 * @param tag
 	 * @return
 	 */
-	public static String changFormatToMoney(String value, String split, boolean tag) {
-		if (!MathUtils.isNan(value)) {
-			return value;
+	public static String changFormatToMoney(String v, String split, boolean tag) {
+		if (!MathUtils.isNan(v)) {
+			return v;
 		}
 		int count = 0;
 		String sbr = LSystem.EMPTY;
 		if (tag) {
-			if (value.charAt(0) >= 48 && value.charAt(0) <= 57) {
-				value = "+" + value;
+			if (v.charAt(0) >= 48 && v.charAt(0) <= 57) {
+				v = "+" + v;
 			}
 		}
-		for (int i = value.length() - 1; i > -1; i--) {
-			sbr = value.charAt(i) + sbr;
-			int charCode = value.charAt(i);
+		for (int i = v.length() - 1; i > -1; i--) {
+			sbr = v.charAt(i) + sbr;
+			int charCode = v.charAt(i);
 			if (charCode >= 48 && charCode <= 57) {
 				if (i > 0) {
-					charCode = value.charAt(i - 1);
+					charCode = v.charAt(i - 1);
 					if (charCode >= 48 && charCode <= 57) {
 						count++;
 						if (count == 3) {
@@ -1266,15 +1281,15 @@ final public class StringUtils extends CharUtils {
 	/**
 	 * 检查是否为字母与数字混合
 	 * 
-	 * @param value
+	 * @param v
 	 * @return
 	 */
-	public static boolean isAlphabetNumeric(CharSequence value) {
-		if (value == null || value.length() == 0)
+	public static boolean isAlphabetNumeric(CharSequence v) {
+		if (v == null || v.length() == 0)
 			return true;
-		for (int i = 0; i < value.length(); i++) {
-			char letter = value.charAt(i);
-			if (('a' > letter || letter > 'z') && ('A' > letter || letter > 'Z') && ('0' > letter || letter > '9'))
+		for (int i = 0; i < v.length(); i++) {
+			char letter = v.charAt(i);
+			if (!isAlphaOrDigit(letter))
 				return false;
 		}
 		return true;

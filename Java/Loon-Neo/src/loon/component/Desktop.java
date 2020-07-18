@@ -37,6 +37,7 @@ import loon.event.ResizeListener;
 import loon.event.SysInput;
 import loon.event.SysTouch;
 import loon.geom.RectBox;
+import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
@@ -1075,6 +1076,49 @@ public class Desktop implements Visible, LRelease {
 			return new Margin(size, vertical);
 		}
 		return contentPane.margin(vertical, left, top, right, bottom);
+	}
+
+	public boolean isVisibleInParents() {
+		return isVisibleInParents(selectedComponent);
+	}
+
+	public boolean isVisibleInParents(LComponent comp) {
+		if (comp == null) {
+			return false;
+		}
+		TArray<LComponent> parentList = new TArray<LComponent>();
+		for (LComponent parent = comp.getParent(); parent != null; parent = parent.getParent()) {
+			parentList.add(parent);
+		}
+		if (parentList.size() > 0) {
+			Vector2f pos = new Vector2f(0, 0);
+			Vector2f rect = new Vector2f(0, 0);
+			Vector2f absolutePosition = comp.getAbsolutePosition();
+
+			Vector2f cSize = comp.getSize();
+			Vector2f cPos = comp.getPosition();
+
+			float lx = absolutePosition.x;
+			float rx = absolutePosition.x + cSize.x;
+			float ty = absolutePosition.y;
+			float by = absolutePosition.y + cSize.y;
+
+			if (cPos.x > comp.getParent().getSize().x || cPos.x + cSize.x < 0 || cPos.y > comp.getParent().getSize().y
+					|| cPos.y + cSize.y < 0) {
+				return false;
+			}
+			if (parentList.size() != 1) {
+				for (int i = parentList.size() - 1; i >= 1; i--) {
+					LComponent parent = parentList.get(i);
+					pos.addSelf(parent.getPosition());
+					rect.set(pos).addSelf(parent.getSize());
+					if (lx > rect.x || rx < pos.x || ty > rect.y || by < pos.y) {
+						return false;
+					}
+				}
+			}
+		}
+		return true;
 	}
 
 	public Screen getScreen() {

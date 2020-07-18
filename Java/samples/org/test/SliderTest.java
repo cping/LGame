@@ -16,6 +16,8 @@ public class SliderTest extends Stage {
 		LSlider slider = new LSlider(22, 22, 40, 150, true);
 		layer.add(slider);
 		LSlider slider2 = new LSlider(122, 122, 150, 40);
+		//slider2.setMaxValue(1000f);
+		//slider2.setValue(70);
 		layer.add(slider2);
 		layer.addSpriteAt(new Entity("ccc.png"), 150, 0);
 		layer.addSpriteAt(new Entity("ccc.png"), 200, 350);

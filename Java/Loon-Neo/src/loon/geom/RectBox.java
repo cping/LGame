@@ -134,6 +134,10 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 		setBounds(0, 0, 0, 0);
 	}
 
+	public RectBox(int width, int height) {
+		setBounds(0, 0, width, height);
+	}
+
 	public RectBox(int x, int y, int width, int height) {
 		setBounds(x, y, width, height);
 	}

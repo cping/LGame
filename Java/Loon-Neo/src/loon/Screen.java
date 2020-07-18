@@ -4223,6 +4223,19 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	/**
+	 * 检查指定组件是否显示于desktop当中
+	 * 
+	 * @param comp
+	 * @return
+	 */
+	public boolean isVisibleInParents(LComponent comp) {
+		if (desktop != null) {
+			return desktop.isVisibleInParents(comp);
+		}
+		return false;
+	}
+
+	/**
 	 * 获得指定名称的资源管理器
 	 */
 	public ResourceLocal RES(String path) {

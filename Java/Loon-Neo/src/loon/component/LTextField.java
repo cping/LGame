@@ -82,8 +82,6 @@ public class LTextField extends LTextBar {
 		SysInputFactory.setKeyBoard(keyboard);
 	}
 
-	private String cursor = "_";
-
 	protected int inputType = INPUT_STRING;
 	protected int startidx, limit;
 
@@ -134,6 +132,7 @@ public class LTextField extends LTextBar {
 		}
 		this.limit = limit + startidx;
 		this.setFocusable(true);
+		this.setFlashCursor(true);
 		freeRes().add(left, right, body);
 	}
 
@@ -148,7 +147,7 @@ public class LTextField extends LTextBar {
 
 	public String getInput() {
 		String result = _text.substring(startidx);
-		if ((result.endsWith("-") || result.length() == 0) && inputType != INPUT_STRING) {
+		if ((result.charAt(result.length() - 1) == cursor || result.length() == 0) && inputType != INPUT_STRING) {
 			return "0";
 		}
 		return result;
@@ -173,7 +172,7 @@ public class LTextField extends LTextBar {
 		if (!isPointInUI()) {
 			return;
 		}
-		if(keyLock.isPressed()){
+		if (keyLock.isPressed()) {
 			return;
 		}
 		char nextchar = key.getKeyChar();
@@ -181,8 +180,8 @@ public class LTextField extends LTextBar {
 			return;
 		}
 		boolean isatstart = _text.length() == startidx;
-		if (((key.getKeyCode() == SysKey.BACK) 
-				|| (key.getKeyCode() == SysKey.BACKSPACE)) && _text.length() != 0 && !isatstart) {
+		if (((key.getKeyCode() == SysKey.BACK) || (key.getKeyCode() == SysKey.BACKSPACE)) && _text.length() != 0
+				&& !isatstart) {
 			_text = _text.substring(0, _text.length() - 1);
 			return;
 		}
@@ -236,10 +235,6 @@ public class LTextField extends LTextBar {
 		removeCursor();
 	}
 
-	public void setCursor(String cursor) {
-		this.cursor = cursor;
-	}
-
 	protected void addCursor() {
 		if (!isFocusable()) {
 			return;
@@ -252,13 +247,14 @@ public class LTextField extends LTextBar {
 		if (!isFocusable()) {
 			return;
 		}
-		if (_text.endsWith(cursor)) {
-			_text = _text.substring(0, MathUtils.max(startidx, _text.length() - cursor.length()));
+		if (_text.charAt(_text.length() - 1) == cursor) {
+			_text = _text.substring(0, MathUtils.max(startidx, _text.length() - 1));
 		}
 	}
 
-	public void setLimit(int l) {
+	public LTextField setLimit(int l) {
 		this.limit = l;
+		return this;
 	}
 
 	public int getLimit() {

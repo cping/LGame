@@ -34,8 +34,17 @@ import loon.opengl.GLEx;
 public class LSlider extends LComponent {
 
 	private LTexture sliderImage, barImage;
+
 	private ValueListener _listener;
+
 	private float _value, _sliderWidth, _sliderHeight, _padding, _barImageHeight;
+
+	private float _stepSize = 0f;
+
+	private float _minValue = 0f;
+
+	private float _maxValue = 0f;
+
 	private boolean _vertical;
 
 	public LSlider(int x, int y, int width, int height) {
@@ -56,25 +65,34 @@ public class LSlider extends LComponent {
 
 	public LSlider(LTexture sliderText, LTexture barText, int x, int y, int width, int height, boolean vertical) {
 		super(x, y, width, height);
-		_vertical = vertical;
+		this._vertical = vertical;
 		if (vertical) {
 			this.sliderImage = sliderText;
 			this._sliderWidth = width * 0.5f;
 			this._sliderHeight = width * 0.5f;
 			this.barImage = barText;
-			this._padding = width / 100;
+			this._padding = width / 100f;
 			this._barImageHeight = height;
-			setWidth((int) (width * 0.12));
+			setWidth((int) (width * 0.12f));
 		} else {
 			this.sliderImage = sliderText;
 			this._sliderWidth = height * 0.5f;
 			this._sliderHeight = height * 0.5f;
 			this.barImage = barText;
-			this._padding = width / 100;
-			this._barImageHeight = height / 10;
+			this._padding = width / 100f;
+			this._barImageHeight = height / 10f;
 			setHeight(height);
 		}
+		this.reset();
 		freeRes().add(sliderText, barText);
+	}
+
+	public LSlider reset() {
+		this._stepSize = 0f;
+		this._value = 0f;
+		this._minValue = 0f;
+		this._maxValue = 100f;
+		return this;
 	}
 
 	@Override
@@ -112,13 +130,81 @@ public class LSlider extends LComponent {
 		}
 	}
 
+	public LSlider setValue(float v, float min, float max) {
+		setMinValue(min);
+		setMaxValue(max);
+		setValue(v);
+		return this;
+	}
+
+	public float getMinValue() {
+		return _minValue;
+	}
+
+	public void setMinValue(float minValue) {
+		if (minValue > this._maxValue) {
+			this._maxValue = minValue;
+			return;
+		}
+		this._minValue = minValue;
+		setStepSize(getStepSize());
+		setValue(getValue());
+	}
+
+	public float getMaxValue() {
+		return _maxValue;
+	}
+
+	public LSlider setMaxValue(float maxValue) {
+		if (maxValue < this._minValue) {
+			this._minValue = maxValue;
+			return this;
+		}
+		this._maxValue = maxValue;
+		setStepSize(getStepSize());
+		setValue(getValue());
+		return this;
+	}
+
+	public float getStepSize() {
+		return _stepSize < 0 ? 0f : _stepSize;
+	}
+
+	public LSlider setStepSize(float stepSize) {
+		this._stepSize = stepSize;
+		if (stepSize > 0) {
+			float difference = this._maxValue - this._minValue;
+			this._stepSize = difference < stepSize ? difference : stepSize;
+		}
+		setValue(getValue());
+		return this;
+	}
+
 	public float getValue() {
-		return _value;
+		return _value * this._maxValue;
 	}
 
 	public LSlider setValue(float v) {
 		this._value = v;
+		if (this._stepSize > 0) {
+			float halfStepSize = this._stepSize / 2f;
+			if (this._value < 0f) {
+				halfStepSize *= -1;
+			}
+			final int count = (int) ((this._value + halfStepSize) / this._stepSize);
+			this._value = this._stepSize * count;
+		}
+		if (this._value > this._maxValue) {
+			this._value = this._maxValue;
+		} else if (this._value < this._minValue) {
+			this._value = this._minValue;
+		}
+		this._value = this._value / this._maxValue;
 		return this;
+	}
+
+	public boolean isVertical() {
+		return this._vertical;
 	}
 
 	public float getSliderWidth() {

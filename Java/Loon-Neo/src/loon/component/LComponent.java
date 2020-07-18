@@ -1384,6 +1384,18 @@ public abstract class LComponent extends LObject<LContainer>
 		return y;
 	}
 
+	public Vector2f getAbsolutePosition() {
+		Vector2f screenPos = new Vector2f(getPosition());
+		for (LComponent p = this.getParent(); p != null; p = p.getParent()) {
+			screenPos.add(p.getPosition());
+		}
+		return screenPos;
+	}
+	
+	public Vector2f getSize(){
+		return new Vector2f(getWidth(),getHeight());
+	}
+	
 	@Override
 	public void setColor(LColor c) {
 		this._component_baseColor = new LColor(c);
