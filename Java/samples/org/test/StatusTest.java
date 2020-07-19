@@ -38,6 +38,7 @@ public class StatusTest extends Stage{
 		bar.setFormatNumber("HP : {0}");
 		// 状态变更为数值30
 		bar.setUpdate(30);
+		//bar.setPercentage(0.3f);
 		centerOn(bar);
 		add(bar);
 		up(new Touched() {
@@ -46,6 +47,7 @@ public class StatusTest extends Stage{
 			public void on(float x, float y) {
 				//触屏后数值归零
 				bar.setUpdate(0);
+				//bar.setPercentage(0f);
 			}
 		});
 		add(MultiScreenTest.getBackButton(this, 2));

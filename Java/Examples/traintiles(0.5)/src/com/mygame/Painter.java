@@ -273,7 +273,7 @@ public class Painter implements LRelease {
 
 	public void setOpacity(float aOpacity) {
 		this.opacity = aOpacity;
-		this.tmp_color = LColor.white.mul(opacity);
+		this.tmp_color = LColor.white.multiply(opacity);
 	}
 
 	public void translate(float x, float y) {

@@ -290,6 +290,10 @@ public abstract class LComponent extends LObject<LContainer>
 
 	protected SysInput input;
 
+	public LComponent(Vector2f position, Vector2f size) {
+		this(position.x(), position.y(), size.x(), size.y());
+	}
+
 	/**
 	 * 构造可用组件
 	 * 
@@ -1391,11 +1395,11 @@ public abstract class LComponent extends LObject<LContainer>
 		}
 		return screenPos;
 	}
-	
-	public Vector2f getSize(){
-		return new Vector2f(getWidth(),getHeight());
+
+	public Vector2f getSize() {
+		return new Vector2f(getWidth(), getHeight());
 	}
-	
+
 	@Override
 	public void setColor(LColor c) {
 		this._component_baseColor = new LColor(c);

@@ -331,7 +331,7 @@ public class StringEffect extends Entity implements BaseEffect {
 		if (_completed) {
 			return;
 		}
-		_font.paintString(g, drawX(offsetX), drawY(offsetY), _baseColor.mul(this._alpha));
+		_font.paintString(g, drawX(offsetX), drawY(offsetY), _baseColor.multiply(this._alpha));
 	}
 
 	public void setDelay(long d) {

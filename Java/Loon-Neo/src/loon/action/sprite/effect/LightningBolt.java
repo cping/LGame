@@ -62,7 +62,7 @@ public class LightningBolt implements ILightning {
 			return;
 		}
 		for (LightningLine segment : segments) {
-			segment.draw(spriteBatch, x, y, tint.mul(alpha * alphaMultiplier));
+			segment.draw(spriteBatch, x, y, tint.multiply(alpha * alphaMultiplier));
 		}
 	}
 

@@ -35,6 +35,10 @@ import loon.opengl.LTextureRegion;
  */
 public class LProgress extends LComponent {
 
+	private float minValue = 0f;
+
+	private float maxValue = 0f;
+
 	private boolean vertical = false;
 
 	// 默认提供了三种进度条模式，分别是游戏类血槽，普通的UI形式，以及用户自制图像.(默认为游戏模式)
@@ -42,7 +46,7 @@ public class LProgress extends LComponent {
 		GAME, UI, Custom
 	}
 
-	private static LTexture defaultColorTexture;
+	private LTexture defaultColorTexture;
 	private LTextureRegion bgTexture;
 	private LTextureRegion bgTextureEnd;
 	private LTextureRegion bgProgressTexture;
@@ -105,6 +109,7 @@ public class LProgress extends LComponent {
 			this.bgProgressTexture = new LTextureRegion(bgProgress);
 			break;
 		}
+		this.reset();
 	}
 
 	@Override
@@ -179,16 +184,68 @@ public class LProgress extends LComponent {
 		}
 	}
 
-	public void setPercentage(float p) {
-		if (p >= 0f && p <= 1f) {
-			this.percentage = p;
+	public LProgress reset() {
+		this.percentage = 1f;
+		this.minValue = 0f;
+		this.maxValue = 100f;
+		return this;
+	}
+
+	public float getValue() {
+		return this.percentage * this.maxValue;
+	}
+
+	public LProgress setValue(float v) {
+		float process = 0f;
+		if (v < minValue) {
+			process = minValue / maxValue;
+		} else if (v > maxValue) {
+			process = 1f;
 		} else {
-			if (p > 1f) {
-				this.percentage = 1f;
-			} else if (p < 0f) {
-				this.percentage = 0f;
-			}
+			process = v / maxValue;
 		}
+		this.percentage = process;
+		return this;
+	}
+
+	public float getMinValue() {
+		return minValue;
+	}
+
+	public LProgress setMinValue(float v) {
+		if (v > this.maxValue) {
+			this.maxValue = v;
+			return this;
+		}
+		this.minValue = v;
+		setValue(getValue());
+		return this;
+	}
+
+	public float getMaxValue() {
+		return maxValue;
+	}
+
+	public LProgress setMaxValue(float v) {
+		if (v < this.minValue) {
+			this.minValue = v;
+			return this;
+		}
+		this.maxValue = v;
+		setValue(getValue());
+		return this;
+	}
+
+	public LProgress setPercentage(float p) {
+		setValue(p * maxValue);
+		return this;
+	}
+
+	public LProgress setValue(float v, float min, float max) {
+		setMinValue(min);
+		setMaxValue(max);
+		setValue(v);
+		return this;
 	}
 
 	public boolean isVertical() {

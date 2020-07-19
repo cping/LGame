@@ -8,11 +8,13 @@ public class TextFieldTest extends Stage {
 	@Override
 	public void create() {
 		LTextField f = new LTextField("", 66, 66);
-		//没有背景框
-		//f.setHideBackground(true);
-		//最多输入触及到150个像素的宽度后换行
+		// 使用掩码字符掩盖实际显示内容
+		// f.setMasked(true);
+		// 没有背景框
+		// f.setHideBackground(true);
+		// 最多输入触及到150个像素的宽度后换行
 		f.setMaxWidth(150);
-		//最多允许输入32个字符
+		// 最多允许输入32个字符
 		f.setLimit(32);
 		add(f);
 		add(MultiScreenTest.getBackButton(this, 1));

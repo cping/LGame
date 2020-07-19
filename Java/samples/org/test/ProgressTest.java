@@ -26,8 +26,10 @@ public class ProgressTest extends Screen {
 
 		LProgress progress = new LProgress(ProgressType.UI, LColor.red, 55, 55,
 				100, 15);
+		progress.setMaxValue(800f);
 		// 进度一半
 		progress.setPercentage(0.5f);
+		//System.out.println(progress.getValue());
 		add(progress);
 
 		LProgress progress2 = new LProgress(ProgressType.GAME, LColor.red, 55,
@@ -48,6 +50,7 @@ public class ProgressTest extends Screen {
 		// 进度65%
 		progress4.setVertical(true);
 		progress4.setPercentage(0.65f);
+		//progress4.setValue(65f);
 		add(progress4);
 
 		add(MultiScreenTest.getBackButton(this,0));

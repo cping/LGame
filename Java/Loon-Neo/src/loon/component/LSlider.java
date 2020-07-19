@@ -130,6 +130,15 @@ public class LSlider extends LComponent {
 		}
 	}
 
+	public float getPercentage() {
+		return this._value;
+	}
+
+	public LSlider setPercentage(float p) {
+		setValue(p * _maxValue);
+		return this;
+	}
+
 	public LSlider setValue(float v, float min, float max) {
 		setMinValue(min);
 		setMaxValue(max);
@@ -141,14 +150,15 @@ public class LSlider extends LComponent {
 		return _minValue;
 	}
 
-	public void setMinValue(float minValue) {
+	public LSlider setMinValue(float minValue) {
 		if (minValue > this._maxValue) {
 			this._maxValue = minValue;
-			return;
+			return this;
 		}
 		this._minValue = minValue;
 		setStepSize(getStepSize());
 		setValue(getValue());
+		return this;
 	}
 
 	public float getMaxValue() {
@@ -278,19 +288,6 @@ public class LSlider extends LComponent {
 				_listener.onChange(this, _value);
 			}
 		}
-	}
-
-	public LSlider setPercentage(float p) {
-		if (p >= 0f && p <= 1f) {
-			this._value = p;
-		} else {
-			if (p > 1f) {
-				this._value = 1f;
-			} else if (p < 0f) {
-				this._value = 0f;
-			}
-		}
-		return this;
 	}
 
 	@Override
