@@ -35,10 +35,10 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, IArray, LRe
 
 	private SortedList<GameProcess> processes;
 
-	public static void freeStatic(){
+	public static void freeStatic() {
 		instance = null;
 	}
-	
+
 	public static final RealtimeProcessManager get() {
 		if (instance == null) {
 			synchronized (RealtimeProcessManager.class) {
@@ -186,7 +186,7 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, IArray, LRe
 		}
 		return list;
 	}
-	
+
 	public TArray<GameProcess> delete(String id) {
 		TArray<GameProcess> list = new TArray<GameProcess>();
 		if (processes != null && processes.size > 0) {
@@ -225,6 +225,10 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, IArray, LRe
 			}
 		}
 		return list;
+	}
+
+	public boolean hasEvents() {
+		return !isEmpty();
 	}
 
 	@Override

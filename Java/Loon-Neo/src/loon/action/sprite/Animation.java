@@ -652,6 +652,16 @@ public class Animation implements IArray, LRelease {
 		return this;
 	}
 
+	public boolean isFinished() {
+		if (isRunning) {
+			return false;
+		}
+		if (currentFrameIndex != frames.size - 1) {
+			return false;
+		}
+		return true;
+	}
+
 	public long getDelay() {
 		return intervalTime.getDelay();
 	}

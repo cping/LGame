@@ -758,11 +758,11 @@ public class LColor implements Serializable {
 	}
 
 	public LColor getHalfRGBA() {
-		return new LColor(this).div(2f);
+		return new LColor(this).divSelf(2f);
 	}
 
 	public LColor getHalfRGB() {
-		return new LColor(this.r, this.g, this.b).div(2f);
+		return new LColor(this.r, this.g, this.b).divSelf(2f);
 	}
 
 	public LColor setAll(float c) {
@@ -830,7 +830,7 @@ public class LColor implements Serializable {
 	 * @param v
 	 * @return
 	 */
-	public LColor add(float v) {
+	public LColor addSelf(float v) {
 		this.r += v;
 		this.g += v;
 		this.b += v;
@@ -844,7 +844,7 @@ public class LColor implements Serializable {
 	 * @param c
 	 * @return
 	 */
-	public LColor add(LColor c) {
+	public LColor addSelf(LColor c) {
 		if (c == null) {
 			return this;
 		}
@@ -861,7 +861,7 @@ public class LColor implements Serializable {
 	 * @param v
 	 * @return
 	 */
-	public LColor sub(float v) {
+	public LColor subSelf(float v) {
 		this.r -= v;
 		this.g -= v;
 		this.b -= v;
@@ -875,7 +875,7 @@ public class LColor implements Serializable {
 	 * @param c
 	 * @return
 	 */
-	public LColor sub(LColor c) {
+	public LColor subSelf(LColor c) {
 		if (c == null) {
 			return this;
 		}
@@ -892,7 +892,7 @@ public class LColor implements Serializable {
 	 * @param v
 	 * @return
 	 */
-	public LColor mul(float v) {
+	public LColor mulSelf(float v) {
 		this.r *= v;
 		this.g *= v;
 		this.b *= v;
@@ -906,7 +906,7 @@ public class LColor implements Serializable {
 	 * @param c
 	 * @return
 	 */
-	public LColor mul(LColor c) {
+	public LColor mulSelf(LColor c) {
 		if (c == null) {
 			return this;
 		}
@@ -917,16 +917,16 @@ public class LColor implements Serializable {
 		return this;
 	}
 
-	public LColor mulAlpha(float a) {
+	public LColor mulSelfAlpha(float a) {
 		this.a *= a;
 		return this;
 	}
 
-	public LColor mulAlpha(LColor c) {
+	public LColor mulSelfAlpha(LColor c) {
 		if (c == null) {
 			return this;
 		}
-		return mulAlpha(c.a);
+		return mulSelfAlpha(c.a);
 	}
 
 	/**
@@ -935,7 +935,7 @@ public class LColor implements Serializable {
 	 * @param v
 	 * @return
 	 */
-	public LColor div(float v) {
+	public LColor divSelf(float v) {
 		this.r /= v;
 		this.g /= v;
 		this.b /= v;
@@ -949,7 +949,7 @@ public class LColor implements Serializable {
 	 * @param c
 	 * @return
 	 */
-	public LColor div(LColor c) {
+	public LColor divSelf(LColor c) {
 		if (c == null) {
 			return this;
 		}
@@ -960,7 +960,7 @@ public class LColor implements Serializable {
 		return this;
 	}
 
-	public LColor divAlpha(float a) {
+	public LColor divSelfAlpha(float a) {
 		if (a <= 0) {
 			a = 0.01f;
 		}
@@ -968,8 +968,28 @@ public class LColor implements Serializable {
 		return this;
 	}
 
-	public LColor divAlpha(LColor c) {
-		return divAlpha(c.a);
+	public LColor divSelfAlpha(LColor c) {
+		return divSelfAlpha(c.a);
+	}
+
+	/**
+	 * 让当前色彩做乘法运算(将产生数值构建为新的Color)
+	 * 
+	 * @param v
+	 * @return
+	 */
+	public LColor mul(float v) {
+		return multiply(v);
+	}
+
+	/**
+	 * 让当前色彩做乘法运算(将产生数值构建为新的Color)
+	 * 
+	 * @param c
+	 * @return
+	 */
+	public LColor mul(LColor c) {
+		return multiply(c);
 	}
 
 	/**
@@ -990,9 +1010,29 @@ public class LColor implements Serializable {
 	 */
 	public LColor multiply(LColor c) {
 		if (c == null) {
-			return new LColor();
+			return cpy();
 		}
 		return new LColor(r * c.r, g * c.g, b * c.b, a * c.a);
+	}
+
+	/**
+	 * 让当前色彩做除法运算(将产生数值构建为新的Color)
+	 * 
+	 * @param v
+	 * @return
+	 */
+	public LColor div(float v) {
+		return divide(v);
+	}
+
+	/**
+	 * 让当前色彩做除法运算(将产生数值构建为新的Color)
+	 * 
+	 * @param c
+	 * @return
+	 */
+	public LColor div(LColor c) {
+		return divide(c);
 	}
 
 	/**
@@ -1013,9 +1053,29 @@ public class LColor implements Serializable {
 	 */
 	public LColor divide(LColor c) {
 		if (c == null) {
-			return new LColor();
+			return cpy();
 		}
 		return new LColor(r / c.r, g / c.g, b / c.b, a / c.a);
+	}
+
+	/**
+	 * 让当前色彩做加法运算(将产生数值构建为新的Color)
+	 * 
+	 * @param v
+	 * @return
+	 */
+	public LColor add(float v) {
+		return addition(v);
+	}
+
+	/**
+	 * 让当前色彩做加法运算(将产生数值构建为新的Color)
+	 * 
+	 * @param c
+	 * @return
+	 */
+	public LColor add(LColor c) {
+		return addition(c);
 	}
 
 	/**
@@ -1036,9 +1096,29 @@ public class LColor implements Serializable {
 	 */
 	public LColor addition(LColor c) {
 		if (c == null) {
-			return new LColor();
+			return cpy();
 		}
 		return new LColor(r + c.r, g + c.g, b + c.b, a + c.a);
+	}
+
+	/**
+	 * 让当前色彩做减法运算(将产生数值构建为新的Color)
+	 * 
+	 * @param v
+	 * @return
+	 */
+	public LColor sub(float v) {
+		return subtraction(v);
+	}
+
+	/**
+	 * 让当前色彩做减法运算(将产生数值构建为新的Color)
+	 * 
+	 * @param c
+	 * @return
+	 */
+	public LColor sub(LColor c) {
+		return subtraction(c);
 	}
 
 	/**
@@ -1059,7 +1139,7 @@ public class LColor implements Serializable {
 	 */
 	public LColor subtraction(LColor c) {
 		if (c == null) {
-			return new LColor();
+			return cpy();
 		}
 		return new LColor(r - c.r, g - c.g, b - c.b, a - c.a);
 	}

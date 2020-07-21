@@ -33,6 +33,7 @@ import loon.canvas.PixmapFImpl;
 import loon.canvas.Paint.Style;
 import loon.font.IFont;
 import loon.geom.Affine2f;
+import loon.geom.BoxSize;
 import loon.geom.Ellipse;
 import loon.geom.Matrix3;
 import loon.geom.Matrix4;
@@ -658,6 +659,13 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		scale(scaleX, scaleY);
 		affineStack.pop();
 		return this;
+	}
+
+	public boolean setClip(BoxSize rect) {
+		if (rect == null) {
+			return false;
+		}
+		return startClipped(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
 	}
 
 	public boolean setClip(float x, float y, float width, float height) {
@@ -3898,12 +3906,39 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	/**
+	 * 获得当前画布旋转角度
+	 * 
+	 * @return
+	 */
+	public float getAngle() {
+		return lastTrans == null ? 0f : lastTrans.getAngle();
+	}
+
+	/**
+	 * 获得当前画布偏移的X坐标
+	 * 
+	 * @return
+	 */
+	public float getTranslationX() {
+		return lastTrans == null ? 0f : lastTrans.tx();
+	}
+
+	/**
+	 * 获得当前画布偏移的Y坐标
+	 * 
+	 * @return
+	 */
+	public float getTranslationY() {
+		return lastTrans == null ? 0f : lastTrans.ty();
+	}
+
+	/**
 	 * width的缩放比例
 	 * 
 	 * @return
 	 */
 	public float getScaleX() {
-		return scaleX;
+		return lastTrans == null ? scaleX : lastTrans.scaleX();
 	}
 
 	/**
@@ -3912,7 +3947,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 * @return
 	 */
 	public float getScaleY() {
-		return scaleY;
+		return lastTrans == null ? scaleY : lastTrans.scaleY();
 	}
 
 	@Override

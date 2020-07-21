@@ -474,8 +474,7 @@ public class Pixmap extends Limit implements LRelease {
 				int g = rgba[1];
 				int b = rgba[2];
 				int a = rgba[3];
-				newColor.setColor(r, g, b, a);
-				_drawPixels[i] = newColor.mul(pixel).getARGB();
+				_drawPixels[i] = newColor.setColor(r, g, b, a).mulSelf(pixel).getARGB();
 			} else {
 				_drawPixels[i] = _transparent;
 			}

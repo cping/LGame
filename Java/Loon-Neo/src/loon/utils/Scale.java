@@ -62,6 +62,16 @@ public class Scale {
 		return factor * length;
 	}
 
+	/**
+	 * 成比例的缩放目标大小为指定大小
+	 * 
+	 * @param scaling
+	 * @param srcWidth
+	 * @param srcHeight
+	 * @param tarWidth
+	 * @param tarHeight
+	 * @return
+	 */
 	public Pair<Vector2f, Vector2f> scaledSize(Mode scaling, float srcWidth, float srcHeight, float tarWidth,
 			float tarHeight) {
 		return scaledSize(scaling, srcWidth, srcHeight, tarWidth, tarHeight);
@@ -70,7 +80,7 @@ public class Scale {
 	/**
 	 * 成比例的缩放目标大小为指定大小
 	 * 
-	 * @param scaling
+	 * @param mode
 	 * @param powerOfTwo
 	 * @param srcWidth
 	 * @param srcHeight
@@ -80,13 +90,28 @@ public class Scale {
 	 */
 	public Pair<Vector2f, Vector2f> scaledSize(Mode mode, boolean powerOfTwo, float srcWidth, float srcHeight,
 			float tarWidth, float tarHeight) {
+		return scaledSize(mode, new Vector2f(), new Vector2f(), powerOfTwo, srcWidth, srcHeight, tarWidth, tarHeight);
+	}
+
+	/**
+	 * 成比例的缩放目标大小为指定大小
+	 * 
+	 * @param mode
+	 * @param sizeResult
+	 * @param scaleResult
+	 * @param powerOfTwo
+	 * @param srcWidth
+	 * @param srcHeight
+	 * @param tarWidth
+	 * @param tarHeight
+	 * @return
+	 */
+	public Pair<Vector2f, Vector2f> scaledSize(Mode mode, Vector2f sizeResult, Vector2f scaleResult, boolean powerOfTwo,
+			float srcWidth, float srcHeight, float tarWidth, float tarHeight) {
 
 		float targetRatio = this.factor;
 		float sourceRatio = this.factor;
 		float scaleValue = this.factor;
-
-		Vector2f sizeResult = new Vector2f();
-		Vector2f scaleResult = new Vector2f();
 
 		switch (mode) {
 		case FILL:
