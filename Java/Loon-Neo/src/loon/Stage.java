@@ -274,12 +274,15 @@ public abstract class Stage extends Screen {
 			stateManager.paint(g);
 		}
 	}
-	
-	public void background(GLEx g){}
 
-	public void paint(GLEx g) {}
+	public void background(GLEx g) {
+	}
 
-	public void update(LTimerContext timer) {}
+	public void paint(GLEx g) {
+	}
+
+	public void update(LTimerContext timer) {
+	}
 
 	@Override
 	public void resize(int width, int height) {
@@ -427,12 +430,12 @@ public abstract class Stage extends Screen {
 		this.scrollBackground = new ScrollEffect(dir, path);
 		return this;
 	}
-	
-	public void dispose() {
-	}
 
 	public ScrollEffect getScrollBackground() {
 		return scrollBackground;
+	}
+	
+	public void dispose() {
 	}
 
 	@Override
@@ -463,5 +466,6 @@ public abstract class Stage extends Screen {
 		percent = maxPercent = 0;
 		dispose();
 	}
+
 
 }

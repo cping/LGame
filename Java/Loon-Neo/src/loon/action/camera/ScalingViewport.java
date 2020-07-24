@@ -42,6 +42,7 @@ public class ScalingViewport extends Viewport {
 
 	public ScalingViewport(Mode mode, Scale scaling, boolean powerOfTwo, float worldWidth, float worldHeight) {
 		super();
+		this.mode = mode;
 		this.scaling = scaling;
 		this.powerOfTwo = powerOfTwo;
 		this.worldWidth = worldWidth;
@@ -55,8 +56,8 @@ public class ScalingViewport extends Viewport {
 		final int viewWidth = MathUtils.round(size.x);
 		final int viewHeight = MathUtils.round(size.y);
 
-		setBounds((width - viewWidth) / MathUtils.round(2 * scale.x),
-				(height - viewHeight) / MathUtils.round(2 * scale.y), MathUtils.round(worldWidth),
+		setBounds((width - viewWidth) / MathUtils.round(2f * scale.x),
+				(height - viewHeight) / MathUtils.round(2f * scale.y), MathUtils.round(worldWidth),
 				MathUtils.round(worldHeight), scale.x, scale.y);
 	}
 

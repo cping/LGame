@@ -109,6 +109,10 @@ public class Scale {
 	public Pair<Vector2f, Vector2f> scaledSize(Mode mode, Vector2f sizeResult, Vector2f scaleResult, boolean powerOfTwo,
 			float srcWidth, float srcHeight, float tarWidth, float tarHeight) {
 
+		if (mode == null) {
+			mode = Mode.NONE;
+		}
+		
 		float targetRatio = this.factor;
 		float sourceRatio = this.factor;
 		float scaleValue = this.factor;

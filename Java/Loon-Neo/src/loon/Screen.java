@@ -25,6 +25,7 @@ import loon.action.ActionControl;
 import loon.action.ActionTween;
 import loon.action.camera.BaseCamera;
 import loon.action.camera.EmptyCamera;
+import loon.action.camera.Viewport;
 import loon.action.collision.CollisionHelper;
 import loon.action.collision.CollisionManager;
 import loon.action.collision.CollisionObject;
@@ -186,8 +187,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	private String _screenName;
 
-	private boolean _isExistCamera = false;
-
 	private BaseCamera _baseCamera;
 
 	private ScreenAction _screenAction = null;
@@ -212,6 +211,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	private GravityHandler gravityHandler;
 
 	private GameMode _gameMode;
+
+	private Viewport _baseViewport;
 
 	private LColor _backgroundColor;
 
@@ -238,6 +239,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	private TArray<FrameLoopEvent> _loopEvents;
 
 	private boolean _initLoopEvents = false;
+
+	private boolean _isExistCamera = false;
+	
+	private boolean _isExistViewport = false;
 
 	private Accelerometer.SensorDirection direction = Accelerometer.SensorDirection.EMPTY;
 
@@ -3281,6 +3286,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 				if (_isExistCamera) {
 					g.setCamera(_baseCamera);
 				}
+				if (_isExistViewport) {
+					_baseViewport.apply(g);
+				}
 				int repaintMode = getRepaintMode();
 				switch (repaintMode) {
 				case Screen.SCREEN_NOT_REPAINT:
@@ -3325,6 +3333,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 				// 最前一层渲染，可重载
 				beforeUI(g);
 			} finally {
+				if (_isExistViewport) {
+					_baseViewport.unapply(g);
+				}
 				// 若存在摄影机,则还原camera坐标
 				if (_isExistCamera) {
 					g.restoreTx();
@@ -5606,6 +5617,17 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		this._resizeListener = listener;
 	}
 
+	public Viewport getViewport() {
+		return _baseViewport;
+	}
+
+	public void setViewport(Viewport v) {
+		this._isExistViewport = (v != null);
+		if (this._isExistViewport) {
+			this._baseViewport = v;
+		}
+	}
+
 	/**
 	 * 释放函数内资源
 	 * 
@@ -5650,6 +5672,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 				isGravity = false;
 				isLock = true;
 				_isExistCamera = false;
+				_isExistViewport = false;
 				_desktopPenetrate = false;
 				if (sprites != null) {
 					spriteRun = false;
