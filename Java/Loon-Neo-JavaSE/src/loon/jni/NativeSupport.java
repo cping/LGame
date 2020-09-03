@@ -36,16 +36,82 @@ import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.UUID;
 import java.util.zip.CRC32;
 
 import loon.canvas.LColor;
 
 public final class NativeSupport {
 
+	private static HashSet<String> loadedLibraries = new HashSet<String>();
+
+	private static String getProperty(final String propName) {
+		return System.getProperty(propName, "");
+	}
+
 	static ClassLoader classLoader;
 
-	private static InputStream openResource(final String resName)
-			throws IOException {
+	static boolean isWindows = getProperty("os.name").contains("Windows");
+	static boolean isLinux = getProperty("os.name").contains("Linux");
+	static boolean isMac = getProperty("os.name").contains("Mac");
+	static boolean isARM = getProperty("os.arch").startsWith("arm") || getProperty("os.arch").startsWith("aarch64");
+	static boolean is64Bit = getProperty("os.arch").contains("64") || getProperty("os.arch").startsWith("armv8");
+	static boolean isUnknown = !(isWindows && isLinux && isMac && isARM && is64Bit);
+	static boolean isAndroid = false;
+	static boolean isIos = false;
+
+	static {
+		try {
+			classLoader = NativeSupport.class.getClassLoader();
+		} catch (Exception e) {
+			classLoader = Thread.currentThread().getContextClassLoader();
+		}
+		String vm = getProperty("java.vm.name");
+		if (vm != null && vm.contains("Dalvik")) {
+			isAndroid = true;
+			isWindows = false;
+			isLinux = false;
+			isMac = false;
+			is64Bit = false;
+		} else if (!isAndroid && !isWindows && !isLinux && !isMac) {
+			isIos = true;
+			isAndroid = false;
+			isWindows = false;
+			isLinux = false;
+			isMac = false;
+			is64Bit = false;
+		}
+		System.setProperty("org.lwjgl.input.Mouse.allowNegativeMouseCoords", "true");
+		if (!isInJavaWebStart()) {
+			File nativesDir = null;
+			try {
+				if (isWindows) {
+					nativesDir = export(is64Bit ? "lwjgl64.dll" : "lwjgl.dll", null).getParentFile();
+					export(is64Bit ? "OpenAL64.dll" : "OpenAL32.dll", nativesDir.getName());
+				} else if (isMac) {
+					nativesDir = export("liblwjgl.jnilib", null).getParentFile();
+					export("openal.dylib", nativesDir.getName());
+				} else if (isLinux) {
+					nativesDir = export(is64Bit ? "liblwjgl64.so" : "liblwjgl.so", null).getParentFile();
+					export(is64Bit ? "libopenal64.so" : "libopenal.so", nativesDir.getName());
+				}
+			} catch (Throwable ex) {
+				throw new RuntimeException("Unable to extract LWJGL natives.", ex);
+			}
+			System.setProperty("org.lwjgl.librarypath", nativesDir.getAbsolutePath());
+			try {
+				loadJNI("lplus");
+				useLoonNative = true;
+				System.out.println("Support of the native method call");
+			} catch (Throwable e) {
+				useLoonNative = false;
+			}
+		} else {
+			useLoonNative = true;
+		}
+	}
+
+	private static InputStream openResource(final String resName) throws IOException {
 		File file = new File(resName);
 		if (file.exists()) {
 			try {
@@ -72,14 +138,13 @@ public final class NativeSupport {
 		}
 	}
 
-	static boolean isWindows = System.getProperty("os.name")
-			.contains("Windows");
-	static boolean isLinux = System.getProperty("os.name").contains("Linux");
-	static boolean isMac = System.getProperty("os.name").contains("Mac");
-	static boolean isAndroid = false;
-	static boolean is64Bit = System.getProperty("os.arch").equals("amd64");
+	private static String getLoonPath(final String flag) {
+		return "/" + flag + "loon" + getProperty("user.name");
+	}
 
-	private static HashSet<String> loadedLibraries = new HashSet<String>();
+	private static String getLoonPath() {
+		return getLoonPath("");
+	}
 
 	public static String CRC(InputStream input) {
 		if (input == null) {
@@ -88,10 +153,11 @@ public final class NativeSupport {
 		CRC32 crc = new CRC32();
 		byte[] buffer = new byte[4096];
 		try {
-			while (true) {
+			for (;;) {
 				int length = input.read(buffer);
-				if (length == -1)
+				if (length == -1){
 					break;
+				}
 				crc.update(buffer, 0, length);
 			}
 		} catch (Exception ex) {
@@ -116,34 +182,97 @@ public final class NativeSupport {
 		return libraryName;
 	}
 
-	public static synchronized void loadJNI(String libraryName)
-			throws Throwable {
+	public static synchronized void loadJNI(String libraryName) throws Throwable {
 		libraryName = libNames(libraryName);
 		if (loadedLibraries.contains(libraryName)) {
 			return;
 		}
 		try {
-			if (isAndroid) {
-				System.loadLibrary(libraryName);
-			} else {
-				System.load(export(libraryName, null).getAbsolutePath());
+			synchronized (NativeSupport.class) {
+				if (isAndroid) {
+					System.loadLibrary(libraryName);
+				} else {
+					System.load(export(libraryName, null).getAbsolutePath());
+				}
+				loadedLibraries.add(libraryName);
 			}
 		} catch (Throwable ex) {
-			throw new Exception(ex);
+			throw new Exception("Couldn't load shared library '" + libraryName + "' for target: "
+					+ getProperty("os.name") + (is64Bit ? ", 64-bit" : ", 32-bit"), ex);
 		}
-		loadedLibraries.add(libraryName);
 	}
 
-	public static File export(String sourcePath, String dirName)
-			throws IOException {
-		String sourceCrc = CRC(openResource(sourcePath));
-		if (dirName == null) {
-			dirName = sourceCrc;
+	private static boolean canWrite(File file) {
+		File parent = file.getParentFile();
+		File tempFile;
+		if (file.exists()) {
+			if (!file.canWrite() || !canExecute(file)) {
+				return false;
+			}
+			tempFile = new File(parent, UUID.randomUUID().toString());
+		} else {
+			parent.mkdirs();
+			if (!parent.isDirectory()) {
+				return false;
+			}
+			tempFile = file;
 		}
-		File extractedDir = new File(System.getProperty("java.io.tmpdir")
-				+ "/loon" + System.getProperty("user.name") + "/" + dirName);
-		File extractedFile = new File(extractedDir,
-				new File(sourcePath).getName());
+		try {
+			new FileOutputStream(tempFile).close();
+			if (!canExecute(tempFile)) {
+				return false;
+			}
+			return true;
+		} catch (Throwable ex) {
+			return false;
+		} finally {
+			tempFile.delete();
+		}
+	}
+
+	private static boolean canExecute(File file) {
+		try {
+			Method canExecute = File.class.getMethod("canExecute");
+			if ((Boolean) canExecute.invoke(file)) {
+				return true;
+			}
+			Method setExecutable = File.class.getMethod("setExecutable", boolean.class, boolean.class);
+			setExecutable.invoke(file, true, false);
+			return (Boolean) canExecute.invoke(file);
+		} catch (Exception ignored) {
+		}
+		return false;
+	}
+
+	public static File export(String sourcePath, String dirName) throws IOException {
+		try {
+			InputStream ins = openResource(sourcePath);
+			if (ins == null) {
+				return null;
+			}
+			String sourceCrc = CRC(ins);
+			if (dirName == null) {
+				dirName = sourceCrc;
+			}
+			File extractedFile = getExportFile(dirName, new File(sourcePath).getName());
+			if (extractedFile == null) {
+				extractedFile = getExportFile(UUID.randomUUID().toString(), new File(sourcePath).getName());
+				if (extractedFile == null) {
+					throw new IOException(
+							"Unable to find writable path to extract file. Is the user home directory writable?");
+				}
+			}
+			return export(sourcePath, sourceCrc, extractedFile);
+		} catch (RuntimeException ex) {
+			File file = new File(getProperty("java.library.path"), sourcePath);
+			if (file.exists()) {
+				return file;
+			}
+			throw ex;
+		}
+	}
+
+	private static File export(String sourcePath, String sourceCrc, File extractedFile) throws IOException {
 		String extractedCrc = null;
 		if (extractedFile.exists()) {
 			try {
@@ -152,28 +281,72 @@ public final class NativeSupport {
 			}
 		}
 		if (extractedCrc == null || !extractedCrc.equals(sourceCrc)) {
+			InputStream input = null;
+			FileOutputStream output = null;
 			try {
-				InputStream input = openResource(sourcePath);
+				input = openResource(sourcePath);
 				if (input == null) {
 					return null;
 				}
-				extractedDir.mkdirs();
-				FileOutputStream output = new FileOutputStream(extractedFile);
+				boolean canCreated = extractedFile.getParentFile().mkdirs();
+				output = new FileOutputStream(extractedFile);
 				byte[] buffer = new byte[4096];
-				while (true) {
+				for (;;) {
 					int length = input.read(buffer);
-					if (length == -1)
+					if (length == -1) {
 						break;
+					}
 					output.write(buffer, 0, length);
 				}
-				input.close();
-				output.close();
+				if (!canCreated && !extractedFile.exists()) {
+					throw new IOException(
+							"Error extracting file: " + sourcePath + "\nTo: " + extractedFile.getAbsolutePath());
+				}
 			} catch (IOException ex) {
-				throw new RuntimeException("Error extracting file: "
-						+ sourcePath, ex);
+				throw new IOException(
+						"Error extracting file: " + sourcePath + "\nTo: " + extractedFile.getAbsolutePath(), ex);
+			} finally {
+				try {
+					input.close();
+					input = null;
+					output.close();
+					output = null;
+				} catch (Exception ignored) {
+				}
 			}
 		}
-		return extractedFile.exists() ? extractedFile : null;
+
+		return extractedFile;
+	}
+
+	private static File getExportFile(String dirName, String fileName) {
+		File idealFile = new File(getProperty("java.io.tmpdir") + getLoonPath() + "/" + dirName, fileName);
+		if (canWrite(idealFile)) {
+			return idealFile;
+		}
+		try {
+			File file = File.createTempFile(dirName, null);
+			if (file.delete()) {
+				file = new File(file, fileName);
+				if (canWrite(file)) {
+					return file;
+				}
+			}
+		} catch (IOException ignored) {
+		}
+
+		File file = new File(getProperty("user.home") + getLoonPath(".") + dirName, fileName);
+		if (canWrite(file)) {
+			return file;
+		}
+		file = new File(".temp/" + dirName, fileName);
+		if (canWrite(file)) {
+			return file;
+		}
+		if (System.getenv("APP_SANDBOX_CONTAINER_ID") != null) {
+			return idealFile;
+		}
+		return null;
 	}
 
 	private static boolean nativesLoaded;
@@ -194,66 +367,12 @@ public final class NativeSupport {
 
 	private static boolean isInJavaWebStart() {
 		try {
-			Method method = Class.forName("javax.jnlp.ServiceManager")
-					.getDeclaredMethod("lookup",
-							new Class<?>[] { String.class });
+			Method method = Class.forName("javax.jnlp.ServiceManager").getDeclaredMethod("lookup",
+					new Class<?>[] { String.class });
 			method.invoke(null, "javax.jnlp.PersistenceService");
 			return true;
 		} catch (Throwable ignored) {
 			return false;
-		}
-	}
-
-	static {
-		try {
-			classLoader = NativeSupport.class.getClassLoader();
-		} catch (Exception e) {
-			classLoader = Thread.currentThread().getContextClassLoader();
-		}
-		String vm = System.getProperty("java.vm.name");
-		if (vm != null && vm.contains("Dalvik")) {
-			isAndroid = true;
-			isWindows = false;
-			isLinux = false;
-			isMac = false;
-			is64Bit = false;
-		}
-		System.setProperty("org.lwjgl.input.Mouse.allowNegativeMouseCoords",
-				"true");
-		if (!isInJavaWebStart()) {
-			File nativesDir = null;
-			try {
-				if (isWindows) {
-					nativesDir = export(is64Bit ? "lwjgl64.dll" : "lwjgl.dll",
-							null).getParentFile();
-					export(is64Bit ? "OpenAL64.dll" : "OpenAL32.dll",
-							nativesDir.getName());
-				} else if (isMac) {
-					nativesDir = export("liblwjgl.jnilib", null)
-							.getParentFile();
-					export("openal.dylib", nativesDir.getName());
-				} else if (isLinux) {
-					nativesDir = export(
-							is64Bit ? "liblwjgl64.so" : "liblwjgl.so", null)
-							.getParentFile();
-					export(is64Bit ? "libopenal64.so" : "libopenal.so",
-							nativesDir.getName());
-				}
-			} catch (Throwable ex) {
-				throw new RuntimeException("Unable to extract LWJGL natives.",
-						ex);
-			}
-			System.setProperty("org.lwjgl.librarypath",
-					nativesDir.getAbsolutePath());
-			try {
-				loadJNI("lplus");
-				useLoonNative = true;
-				System.out.println("Support of the native method call");
-			} catch (Throwable e) {
-				useLoonNative = false;
-			}
-		} else {
-			useLoonNative = true;
 		}
 	}
 
@@ -306,15 +425,13 @@ public final class NativeSupport {
 		return buffer;
 	}
 
-	public static FloatBuffer newFloatBuffer(float[] src, int offset,
-			int numFloats) {
+	public static FloatBuffer newFloatBuffer(float[] src, int offset, int numFloats) {
 		FloatBuffer buffer = newFloatBuffer(numFloats);
 		copy(src, buffer, offset, numFloats);
 		return buffer;
 	}
 
-	public static void copy(byte[] src, int srcOffset, Buffer dst,
-			int numElements) {
+	public static void copy(byte[] src, int srcOffset, Buffer dst, int numElements) {
 		if (useLoonNative) {
 			bufferCopy(src, srcOffset, dst, positionInBytes(dst), numElements);
 			dst.limit(dst.position() + bytesToElements(dst, numElements));
@@ -323,65 +440,53 @@ public final class NativeSupport {
 		}
 	}
 
-	public static void copy(short[] src, int srcOffset, Buffer dst,
-			int numElements) {
+	public static void copy(short[] src, int srcOffset, Buffer dst, int numElements) {
 		if (useLoonNative) {
-			bufferCopy(src, srcOffset, dst, positionInBytes(dst),
-					numElements << 1);
+			bufferCopy(src, srcOffset, dst, positionInBytes(dst), numElements << 1);
 			dst.limit(dst.position() + bytesToElements(dst, numElements << 1));
 		} else {
 			putBuffer(dst, src, srcOffset, numElements);
 		}
 	}
 
-	public static void copy(char[] src, int srcOffset, Buffer dst,
-			int numElements) {
+	public static void copy(char[] src, int srcOffset, Buffer dst, int numElements) {
 		if (useLoonNative) {
-			bufferCopy(src, srcOffset, dst, positionInBytes(dst),
-					numElements << 1);
+			bufferCopy(src, srcOffset, dst, positionInBytes(dst), numElements << 1);
 			dst.limit(dst.position() + bytesToElements(dst, numElements << 1));
 		} else {
 			putBuffer(dst, src, srcOffset, numElements);
 		}
 	}
 
-	public static void copy(int[] src, int srcOffset, Buffer dst,
-			int numElements) {
+	public static void copy(int[] src, int srcOffset, Buffer dst, int numElements) {
 		if (useLoonNative) {
-			bufferCopy(src, srcOffset, dst, positionInBytes(dst),
-					numElements << 2);
+			bufferCopy(src, srcOffset, dst, positionInBytes(dst), numElements << 2);
 			dst.limit(dst.position() + bytesToElements(dst, numElements << 2));
 		} else {
 			putBuffer(dst, src, srcOffset, numElements);
 		}
 	}
 
-	public static void copy(long[] src, int srcOffset, Buffer dst,
-			int numElements) {
+	public static void copy(long[] src, int srcOffset, Buffer dst, int numElements) {
 		if (useLoonNative) {
-			bufferCopy(src, srcOffset, dst, positionInBytes(dst),
-					numElements << 3);
+			bufferCopy(src, srcOffset, dst, positionInBytes(dst), numElements << 3);
 		} else {
 			putBuffer(dst, src, srcOffset, numElements);
 		}
 	}
 
-	public static void copy(float[] src, int srcOffset, Buffer dst,
-			int numElements) {
+	public static void copy(float[] src, int srcOffset, Buffer dst, int numElements) {
 		if (useLoonNative) {
-			bufferCopy(src, srcOffset, dst, positionInBytes(dst),
-					numElements << 2);
+			bufferCopy(src, srcOffset, dst, positionInBytes(dst), numElements << 2);
 			dst.limit(dst.position() + bytesToElements(dst, numElements << 2));
 		} else {
 			putBuffer(dst, src, srcOffset, numElements);
 		}
 	}
 
-	public static void copy(double[] src, int srcOffset, Buffer dst,
-			int numElements) {
+	public static void copy(double[] src, int srcOffset, Buffer dst, int numElements) {
 		if (useLoonNative) {
-			bufferCopy(src, srcOffset, dst, positionInBytes(dst),
-					numElements << 3);
+			bufferCopy(src, srcOffset, dst, positionInBytes(dst), numElements << 3);
 			dst.limit(dst.position() + bytesToElements(dst, numElements << 3));
 		} else {
 			putBuffer(dst, src, srcOffset, numElements);
@@ -398,8 +503,7 @@ public final class NativeSupport {
 		} else if (dst instanceof FloatBuffer) {
 			return dst.position() << 2;
 		} else {
-			throw new RuntimeException("Can't copy to a "
-					+ dst.getClass().getName() + " instance");
+			throw new RuntimeException("Can't copy to a " + dst.getClass().getName() + " instance");
 		}
 	}
 
@@ -413,8 +517,7 @@ public final class NativeSupport {
 		} else if (dst instanceof FloatBuffer) {
 			return bytes >>> 2;
 		} else {
-			throw new RuntimeException("Can't copy to a "
-					+ dst.getClass().getName() + " instance");
+			throw new RuntimeException("Can't copy to a " + dst.getClass().getName() + " instance");
 		}
 	}
 
@@ -428,13 +531,11 @@ public final class NativeSupport {
 		} else if (dst instanceof FloatBuffer) {
 			return elements << 2;
 		} else {
-			throw new RuntimeException("Can't copy to a "
-					+ dst.getClass().getName() + " instance");
+			throw new RuntimeException("Can't copy to a " + dst.getClass().getName() + " instance");
 		}
 	}
 
-	private static void putBuffer(Buffer dst, Object src, int offset,
-			int numFloats) {
+	private static void putBuffer(Buffer dst, Object src, int offset, int numFloats) {
 		if (dst instanceof ByteBuffer) {
 			if (src instanceof byte[]) {
 				ByteBuffer byteBuffer = (ByteBuffer) dst;
@@ -471,8 +572,7 @@ public final class NativeSupport {
 			dst.position(0);
 			dst.limit(numFloats);
 		} else {
-			throw new RuntimeException("Can't copy to a "
-					+ dst.getClass().getName() + " instance");
+			throw new RuntimeException("Can't copy to a " + dst.getClass().getName() + " instance");
 		}
 		dst.position(0);
 
@@ -485,8 +585,7 @@ public final class NativeSupport {
 		else if (data instanceof FloatBuffer)
 			buffer = (FloatBuffer) data;
 		if (buffer == null)
-			throw new RuntimeException(
-					"data must be a ByteBuffer or FloatBuffer");
+			throw new RuntimeException("data must be a ByteBuffer or FloatBuffer");
 		return buffer;
 	}
 
@@ -570,8 +669,7 @@ public final class NativeSupport {
 		int size = buffer.capacity();
 		synchronized (unsafeBuffers) {
 			if (!unsafeBuffers.remove(buffer)) {
-				throw new IllegalArgumentException(
-						"buffer not allocated with newUnsafeByteBuffer or already disposed");
+				throw new IllegalArgumentException("buffer not allocated with newUnsafeByteBuffer or already disposed");
 			}
 		}
 		allocatedUnsafe -= size;
@@ -623,14 +721,13 @@ public final class NativeSupport {
 		}
 	}
 
-	public final static void filterColor(int maxPixel, int pixelStart,
-			int pixelEnd, int[] src, int[] dst, int[] colors, int c1, int c2) {
+	public final static void filterColor(int maxPixel, int pixelStart, int pixelEnd, int[] src, int[] dst, int[] colors,
+			int c1, int c2) {
 		if (useLoonNative) {
 			if (src == null) {
 				return;
 			}
-			updateArray(maxPixel, pixelStart, pixelEnd, src, dst, colors, c1,
-					c2);
+			updateArray(maxPixel, pixelStart, pixelEnd, src, dst, colors, c1, c2);
 		} else {
 			final int length = src.length;
 			if (pixelStart < pixelEnd) {
@@ -671,8 +768,8 @@ public final class NativeSupport {
 		}
 	}
 
-	public static void filterFractions(int size, float[] fractions, int width,
-			int height, int[] pixels, int numElements) {
+	public static void filterFractions(int size, float[] fractions, int width, int height, int[] pixels,
+			int numElements) {
 		if (useLoonNative) {
 			updateFractions(size, fractions, width, height, pixels, numElements);
 		} else {
@@ -720,38 +817,22 @@ public final class NativeSupport {
 			jnimul(mata, matb);
 		} else {
 			float[] tmp = new float[16];
-			tmp[M00] = mata[M00] * matb[M00] + mata[M01] * matb[M10]
-					+ mata[M02] * matb[M20] + mata[M03] * matb[M30];
-			tmp[M01] = mata[M00] * matb[M01] + mata[M01] * matb[M11]
-					+ mata[M02] * matb[M21] + mata[M03] * matb[M31];
-			tmp[M02] = mata[M00] * matb[M02] + mata[M01] * matb[M12]
-					+ mata[M02] * matb[M22] + mata[M03] * matb[M32];
-			tmp[M03] = mata[M00] * matb[M03] + mata[M01] * matb[M13]
-					+ mata[M02] * matb[M23] + mata[M03] * matb[M33];
-			tmp[M10] = mata[M10] * matb[M00] + mata[M11] * matb[M10]
-					+ mata[M12] * matb[M20] + mata[M13] * matb[M30];
-			tmp[M11] = mata[M10] * matb[M01] + mata[M11] * matb[M11]
-					+ mata[M12] * matb[M21] + mata[M13] * matb[M31];
-			tmp[M12] = mata[M10] * matb[M02] + mata[M11] * matb[M12]
-					+ mata[M12] * matb[M22] + mata[M13] * matb[M32];
-			tmp[M13] = mata[M10] * matb[M03] + mata[M11] * matb[M13]
-					+ mata[M12] * matb[M23] + mata[M13] * matb[M33];
-			tmp[M20] = mata[M20] * matb[M00] + mata[M21] * matb[M10]
-					+ mata[M22] * matb[M20] + mata[M23] * matb[M30];
-			tmp[M21] = mata[M20] * matb[M01] + mata[M21] * matb[M11]
-					+ mata[M22] * matb[M21] + mata[M23] * matb[M31];
-			tmp[M22] = mata[M20] * matb[M02] + mata[M21] * matb[M12]
-					+ mata[M22] * matb[M22] + mata[M23] * matb[M32];
-			tmp[M23] = mata[M20] * matb[M03] + mata[M21] * matb[M13]
-					+ mata[M22] * matb[M23] + mata[M23] * matb[M33];
-			tmp[M30] = mata[M30] * matb[M00] + mata[M31] * matb[M10]
-					+ mata[M32] * matb[M20] + mata[M33] * matb[M30];
-			tmp[M31] = mata[M30] * matb[M01] + mata[M31] * matb[M11]
-					+ mata[M32] * matb[M21] + mata[M33] * matb[M31];
-			tmp[M32] = mata[M30] * matb[M02] + mata[M31] * matb[M12]
-					+ mata[M32] * matb[M22] + mata[M33] * matb[M32];
-			tmp[M33] = mata[M30] * matb[M03] + mata[M31] * matb[M13]
-					+ mata[M32] * matb[M23] + mata[M33] * matb[M33];
+			tmp[M00] = mata[M00] * matb[M00] + mata[M01] * matb[M10] + mata[M02] * matb[M20] + mata[M03] * matb[M30];
+			tmp[M01] = mata[M00] * matb[M01] + mata[M01] * matb[M11] + mata[M02] * matb[M21] + mata[M03] * matb[M31];
+			tmp[M02] = mata[M00] * matb[M02] + mata[M01] * matb[M12] + mata[M02] * matb[M22] + mata[M03] * matb[M32];
+			tmp[M03] = mata[M00] * matb[M03] + mata[M01] * matb[M13] + mata[M02] * matb[M23] + mata[M03] * matb[M33];
+			tmp[M10] = mata[M10] * matb[M00] + mata[M11] * matb[M10] + mata[M12] * matb[M20] + mata[M13] * matb[M30];
+			tmp[M11] = mata[M10] * matb[M01] + mata[M11] * matb[M11] + mata[M12] * matb[M21] + mata[M13] * matb[M31];
+			tmp[M12] = mata[M10] * matb[M02] + mata[M11] * matb[M12] + mata[M12] * matb[M22] + mata[M13] * matb[M32];
+			tmp[M13] = mata[M10] * matb[M03] + mata[M11] * matb[M13] + mata[M12] * matb[M23] + mata[M13] * matb[M33];
+			tmp[M20] = mata[M20] * matb[M00] + mata[M21] * matb[M10] + mata[M22] * matb[M20] + mata[M23] * matb[M30];
+			tmp[M21] = mata[M20] * matb[M01] + mata[M21] * matb[M11] + mata[M22] * matb[M21] + mata[M23] * matb[M31];
+			tmp[M22] = mata[M20] * matb[M02] + mata[M21] * matb[M12] + mata[M22] * matb[M22] + mata[M23] * matb[M32];
+			tmp[M23] = mata[M20] * matb[M03] + mata[M21] * matb[M13] + mata[M22] * matb[M23] + mata[M23] * matb[M33];
+			tmp[M30] = mata[M30] * matb[M00] + mata[M31] * matb[M10] + mata[M32] * matb[M20] + mata[M33] * matb[M30];
+			tmp[M31] = mata[M30] * matb[M01] + mata[M31] * matb[M11] + mata[M32] * matb[M21] + mata[M33] * matb[M31];
+			tmp[M32] = mata[M30] * matb[M02] + mata[M31] * matb[M12] + mata[M32] * matb[M22] + mata[M33] * matb[M32];
+			tmp[M33] = mata[M30] * matb[M03] + mata[M31] * matb[M13] + mata[M32] * matb[M23] + mata[M33] * matb[M33];
 			System.arraycopy(tmp, 0, mata, 0, 16);
 		}
 	}
@@ -760,12 +841,9 @@ public final class NativeSupport {
 		if (useLoonNative) {
 			jnimulVec(mat, vec);
 		} else {
-			float x = vec[0] * mat[M00] + vec[1] * mat[M01] + vec[2] * mat[M02]
-					+ mat[M03];
-			float y = vec[0] * mat[M10] + vec[1] * mat[M11] + vec[2] * mat[M12]
-					+ mat[M13];
-			float z = vec[0] * mat[M20] + vec[1] * mat[M21] + vec[2] * mat[M22]
-					+ mat[M23];
+			float x = vec[0] * mat[M00] + vec[1] * mat[M01] + vec[2] * mat[M02] + mat[M03];
+			float y = vec[0] * mat[M10] + vec[1] * mat[M11] + vec[2] * mat[M12] + mat[M13];
+			float z = vec[0] * mat[M20] + vec[1] * mat[M21] + vec[2] * mat[M22] + mat[M23];
 			vec[0] = x;
 			vec[1] = y;
 			vec[2] = z;
@@ -773,8 +851,7 @@ public final class NativeSupport {
 
 	}
 
-	public static void mulVec(float[] mat, float[] vecs, int offset,
-			int numVecs, int stride) {
+	public static void mulVec(float[] mat, float[] vecs, int offset, int numVecs, int stride) {
 		if (useLoonNative) {
 			jnimulVec(mat, vecs, offset, numVecs, stride);
 		} else {
@@ -790,25 +867,17 @@ public final class NativeSupport {
 		if (useLoonNative) {
 			jniprj(mat, vec);
 		} else {
-			float inv_w = 1.0f / (vec[0] * mat[M30] + vec[1] * mat[M31]
-					+ vec[2] * mat[M32] + mat[M33]);
-			float x = (vec[0] * mat[M00] + vec[1] * mat[M01] + vec[2]
-					* mat[M02] + mat[M03])
-					* inv_w;
-			float y = (vec[0] * mat[M10] + vec[1] * mat[M11] + vec[2]
-					* mat[M12] + mat[M13])
-					* inv_w;
-			float z = (vec[0] * mat[M20] + vec[1] * mat[M21] + vec[2]
-					* mat[M22] + mat[M23])
-					* inv_w;
+			float inv_w = 1.0f / (vec[0] * mat[M30] + vec[1] * mat[M31] + vec[2] * mat[M32] + mat[M33]);
+			float x = (vec[0] * mat[M00] + vec[1] * mat[M01] + vec[2] * mat[M02] + mat[M03]) * inv_w;
+			float y = (vec[0] * mat[M10] + vec[1] * mat[M11] + vec[2] * mat[M12] + mat[M13]) * inv_w;
+			float z = (vec[0] * mat[M20] + vec[1] * mat[M21] + vec[2] * mat[M22] + mat[M23]) * inv_w;
 			vec[0] = x;
 			vec[1] = y;
 			vec[2] = z;
 		}
 	}
 
-	public static void prj(float[] mat, float[] vecs, int offset, int numVecs,
-			int stride) {
+	public static void prj(float[] mat, float[] vecs, int offset, int numVecs, int stride) {
 		if (useLoonNative) {
 			jniprj(mat, vecs, offset, numVecs, stride);
 		} else {
@@ -833,8 +902,7 @@ public final class NativeSupport {
 		}
 	}
 
-	public static void rot(float[] mat, float[] vecs, int offset, int numVecs,
-			int stride) {
+	public static void rot(float[] mat, float[] vecs, int offset, int numVecs, int stride) {
 		if (useLoonNative) {
 			jnirot(mat, vecs, offset, numVecs, stride);
 		} else {
@@ -854,86 +922,54 @@ public final class NativeSupport {
 			float l_det = det(values);
 			if (l_det == 0)
 				return false;
-			tmp[M00] = values[M12] * values[M23] * values[M31] - values[M13]
-					* values[M22] * values[M31] + values[M13] * values[M21]
-					* values[M32] - values[M11] * values[M23] * values[M32]
-					- values[M12] * values[M21] * values[M33] + values[M11]
-					* values[M22] * values[M33];
-			tmp[M01] = values[M03] * values[M22] * values[M31] - values[M02]
-					* values[M23] * values[M31] - values[M03] * values[M21]
-					* values[M32] + values[M01] * values[M23] * values[M32]
-					+ values[M02] * values[M21] * values[M33] - values[M01]
-					* values[M22] * values[M33];
-			tmp[M02] = values[M02] * values[M13] * values[M31] - values[M03]
-					* values[M12] * values[M31] + values[M03] * values[M11]
-					* values[M32] - values[M01] * values[M13] * values[M32]
-					- values[M02] * values[M11] * values[M33] + values[M01]
-					* values[M12] * values[M33];
-			tmp[M03] = values[M03] * values[M12] * values[M21] - values[M02]
-					* values[M13] * values[M21] - values[M03] * values[M11]
-					* values[M22] + values[M01] * values[M13] * values[M22]
-					+ values[M02] * values[M11] * values[M23] - values[M01]
-					* values[M12] * values[M23];
-			tmp[M10] = values[M13] * values[M22] * values[M30] - values[M12]
-					* values[M23] * values[M30] - values[M13] * values[M20]
-					* values[M32] + values[M10] * values[M23] * values[M32]
-					+ values[M12] * values[M20] * values[M33] - values[M10]
-					* values[M22] * values[M33];
-			tmp[M11] = values[M02] * values[M23] * values[M30] - values[M03]
-					* values[M22] * values[M30] + values[M03] * values[M20]
-					* values[M32] - values[M00] * values[M23] * values[M32]
-					- values[M02] * values[M20] * values[M33] + values[M00]
-					* values[M22] * values[M33];
-			tmp[M12] = values[M03] * values[M12] * values[M30] - values[M02]
-					* values[M13] * values[M30] - values[M03] * values[M10]
-					* values[M32] + values[M00] * values[M13] * values[M32]
-					+ values[M02] * values[M10] * values[M33] - values[M00]
-					* values[M12] * values[M33];
-			tmp[M13] = values[M02] * values[M13] * values[M20] - values[M03]
-					* values[M12] * values[M20] + values[M03] * values[M10]
-					* values[M22] - values[M00] * values[M13] * values[M22]
-					- values[M02] * values[M10] * values[M23] + values[M00]
-					* values[M12] * values[M23];
-			tmp[M20] = values[M11] * values[M23] * values[M30] - values[M13]
-					* values[M21] * values[M30] + values[M13] * values[M20]
-					* values[M31] - values[M10] * values[M23] * values[M31]
-					- values[M11] * values[M20] * values[M33] + values[M10]
-					* values[M21] * values[M33];
-			tmp[M21] = values[M03] * values[M21] * values[M30] - values[M01]
-					* values[M23] * values[M30] - values[M03] * values[M20]
-					* values[M31] + values[M00] * values[M23] * values[M31]
-					+ values[M01] * values[M20] * values[M33] - values[M00]
-					* values[M21] * values[M33];
-			tmp[M22] = values[M01] * values[M13] * values[M30] - values[M03]
-					* values[M11] * values[M30] + values[M03] * values[M10]
-					* values[M31] - values[M00] * values[M13] * values[M31]
-					- values[M01] * values[M10] * values[M33] + values[M00]
-					* values[M11] * values[M33];
-			tmp[M23] = values[M03] * values[M11] * values[M20] - values[M01]
-					* values[M13] * values[M20] - values[M03] * values[M10]
-					* values[M21] + values[M00] * values[M13] * values[M21]
-					+ values[M01] * values[M10] * values[M23] - values[M00]
-					* values[M11] * values[M23];
-			tmp[M30] = values[M12] * values[M21] * values[M30] - values[M11]
-					* values[M22] * values[M30] - values[M12] * values[M20]
-					* values[M31] + values[M10] * values[M22] * values[M31]
-					+ values[M11] * values[M20] * values[M32] - values[M10]
-					* values[M21] * values[M32];
-			tmp[M31] = values[M01] * values[M22] * values[M30] - values[M02]
-					* values[M21] * values[M30] + values[M02] * values[M20]
-					* values[M31] - values[M00] * values[M22] * values[M31]
-					- values[M01] * values[M20] * values[M32] + values[M00]
-					* values[M21] * values[M32];
-			tmp[M32] = values[M02] * values[M11] * values[M30] - values[M01]
-					* values[M12] * values[M30] - values[M02] * values[M10]
-					* values[M31] + values[M00] * values[M12] * values[M31]
-					+ values[M01] * values[M10] * values[M32] - values[M00]
-					* values[M11] * values[M32];
-			tmp[M33] = values[M01] * values[M12] * values[M20] - values[M02]
-					* values[M11] * values[M20] + values[M02] * values[M10]
-					* values[M21] - values[M00] * values[M12] * values[M21]
-					- values[M01] * values[M10] * values[M22] + values[M00]
-					* values[M11] * values[M22];
+			tmp[M00] = values[M12] * values[M23] * values[M31] - values[M13] * values[M22] * values[M31]
+					+ values[M13] * values[M21] * values[M32] - values[M11] * values[M23] * values[M32]
+					- values[M12] * values[M21] * values[M33] + values[M11] * values[M22] * values[M33];
+			tmp[M01] = values[M03] * values[M22] * values[M31] - values[M02] * values[M23] * values[M31]
+					- values[M03] * values[M21] * values[M32] + values[M01] * values[M23] * values[M32]
+					+ values[M02] * values[M21] * values[M33] - values[M01] * values[M22] * values[M33];
+			tmp[M02] = values[M02] * values[M13] * values[M31] - values[M03] * values[M12] * values[M31]
+					+ values[M03] * values[M11] * values[M32] - values[M01] * values[M13] * values[M32]
+					- values[M02] * values[M11] * values[M33] + values[M01] * values[M12] * values[M33];
+			tmp[M03] = values[M03] * values[M12] * values[M21] - values[M02] * values[M13] * values[M21]
+					- values[M03] * values[M11] * values[M22] + values[M01] * values[M13] * values[M22]
+					+ values[M02] * values[M11] * values[M23] - values[M01] * values[M12] * values[M23];
+			tmp[M10] = values[M13] * values[M22] * values[M30] - values[M12] * values[M23] * values[M30]
+					- values[M13] * values[M20] * values[M32] + values[M10] * values[M23] * values[M32]
+					+ values[M12] * values[M20] * values[M33] - values[M10] * values[M22] * values[M33];
+			tmp[M11] = values[M02] * values[M23] * values[M30] - values[M03] * values[M22] * values[M30]
+					+ values[M03] * values[M20] * values[M32] - values[M00] * values[M23] * values[M32]
+					- values[M02] * values[M20] * values[M33] + values[M00] * values[M22] * values[M33];
+			tmp[M12] = values[M03] * values[M12] * values[M30] - values[M02] * values[M13] * values[M30]
+					- values[M03] * values[M10] * values[M32] + values[M00] * values[M13] * values[M32]
+					+ values[M02] * values[M10] * values[M33] - values[M00] * values[M12] * values[M33];
+			tmp[M13] = values[M02] * values[M13] * values[M20] - values[M03] * values[M12] * values[M20]
+					+ values[M03] * values[M10] * values[M22] - values[M00] * values[M13] * values[M22]
+					- values[M02] * values[M10] * values[M23] + values[M00] * values[M12] * values[M23];
+			tmp[M20] = values[M11] * values[M23] * values[M30] - values[M13] * values[M21] * values[M30]
+					+ values[M13] * values[M20] * values[M31] - values[M10] * values[M23] * values[M31]
+					- values[M11] * values[M20] * values[M33] + values[M10] * values[M21] * values[M33];
+			tmp[M21] = values[M03] * values[M21] * values[M30] - values[M01] * values[M23] * values[M30]
+					- values[M03] * values[M20] * values[M31] + values[M00] * values[M23] * values[M31]
+					+ values[M01] * values[M20] * values[M33] - values[M00] * values[M21] * values[M33];
+			tmp[M22] = values[M01] * values[M13] * values[M30] - values[M03] * values[M11] * values[M30]
+					+ values[M03] * values[M10] * values[M31] - values[M00] * values[M13] * values[M31]
+					- values[M01] * values[M10] * values[M33] + values[M00] * values[M11] * values[M33];
+			tmp[M23] = values[M03] * values[M11] * values[M20] - values[M01] * values[M13] * values[M20]
+					- values[M03] * values[M10] * values[M21] + values[M00] * values[M13] * values[M21]
+					+ values[M01] * values[M10] * values[M23] - values[M00] * values[M11] * values[M23];
+			tmp[M30] = values[M12] * values[M21] * values[M30] - values[M11] * values[M22] * values[M30]
+					- values[M12] * values[M20] * values[M31] + values[M10] * values[M22] * values[M31]
+					+ values[M11] * values[M20] * values[M32] - values[M10] * values[M21] * values[M32];
+			tmp[M31] = values[M01] * values[M22] * values[M30] - values[M02] * values[M21] * values[M30]
+					+ values[M02] * values[M20] * values[M31] - values[M00] * values[M22] * values[M31]
+					- values[M01] * values[M20] * values[M32] + values[M00] * values[M21] * values[M32];
+			tmp[M32] = values[M02] * values[M11] * values[M30] - values[M01] * values[M12] * values[M30]
+					- values[M02] * values[M10] * values[M31] + values[M00] * values[M12] * values[M31]
+					+ values[M01] * values[M10] * values[M32] - values[M00] * values[M11] * values[M32];
+			tmp[M33] = values[M01] * values[M12] * values[M20] - values[M02] * values[M11] * values[M20]
+					+ values[M02] * values[M10] * values[M21] - values[M00] * values[M12] * values[M21]
+					- values[M01] * values[M10] * values[M22] + values[M00] * values[M11] * values[M22];
 
 			float inv_det = 1.0f / l_det;
 			values[M00] = tmp[M00] * inv_det;
@@ -1036,8 +1072,7 @@ public final class NativeSupport {
 				int r = LColor.getRed(pixel);
 				int g = LColor.getGreen(pixel);
 				int b = LColor.getBlue(pixel);
-				if ((r >= sred && g >= sgreen && b >= sblue)
-						&& (r <= ered && g <= egreen && b <= eblue)) {
+				if ((r >= sred && g >= sgreen && b >= sblue) && (r <= ered && g <= egreen && b <= eblue)) {
 					buffer[i] = 0x00FFFFFF;
 				}
 			}
@@ -1077,18 +1112,15 @@ public final class NativeSupport {
 
 	private native static void jnimulVec(float[] mat, float[] vec);
 
-	private native static void jnimulVec(float[] mat, float[] vecs, int offset,
-			int numVecs, int stride);
+	private native static void jnimulVec(float[] mat, float[] vecs, int offset, int numVecs, int stride);
 
 	private native static void jniprj(float[] mat, float[] vec);
 
-	private native static void jniprj(float[] mat, float[] vecs, int offset,
-			int numVecs, int stride);
+	private native static void jniprj(float[] mat, float[] vecs, int offset, int numVecs, int stride);
 
 	private native static void jnirot(float[] mat, float[] vec);
 
-	private native static void jnirot(float[] mat, float[] vecs, int offset,
-			int numVecs, int stride);
+	private native static void jnirot(float[] mat, float[] vecs, int offset, int numVecs, int stride);
 
 	private native static boolean jniinv(float[] values);
 
@@ -1100,48 +1132,37 @@ public final class NativeSupport {
 
 	private native static void bufferFreeDirect(final Buffer buffer);
 
-	private native static void bufferPut(final Buffer buffer,
-			final float[] source, final int length, final int offset);
+	private native static void bufferPut(final Buffer buffer, final float[] source, final int length, final int offset);
 
-	private native static void bufferCopy(float[] src, Buffer dst,
-			int numFloats, int offset);
+	private native static void bufferCopy(float[] src, Buffer dst, int numFloats, int offset);
 
-	private native static void bufferCopy(byte[] src, int srcOffset,
-			Buffer dst, int dstOffset, int numBytes);
+	private native static void bufferCopy(byte[] src, int srcOffset, Buffer dst, int dstOffset, int numBytes);
 
-	private native static void bufferCopy(char[] src, int srcOffset,
-			Buffer dst, int dstOffset, int numBytes);
+	private native static void bufferCopy(char[] src, int srcOffset, Buffer dst, int dstOffset, int numBytes);
 
-	private native static void bufferCopy(short[] src, int srcOffset,
-			Buffer dst, int dstOffset, int numBytes);
+	private native static void bufferCopy(short[] src, int srcOffset, Buffer dst, int dstOffset, int numBytes);
 
-	private native static void bufferCopy(int[] src, int srcOffset, Buffer dst,
-			int dstOffset, int numBytes);
+	private native static void bufferCopy(int[] src, int srcOffset, Buffer dst, int dstOffset, int numBytes);
 
-	private native static void bufferCopy(long[] src, int srcOffset,
-			Buffer dst, int dstOffset, int numBytes);
+	private native static void bufferCopy(long[] src, int srcOffset, Buffer dst, int dstOffset, int numBytes);
 
-	private native static void bufferCopy(float[] src, int srcOffset,
-			Buffer dst, int dstOffset, int numBytes);
+	private native static void bufferCopy(float[] src, int srcOffset, Buffer dst, int dstOffset, int numBytes);
 
-	private native static void bufferCopy(double[] src, int srcOffset,
-			Buffer dst, int dstOffset, int numBytes);
+	private native static void bufferCopy(double[] src, int srcOffset, Buffer dst, int dstOffset, int numBytes);
 
-	private native static void bufferCopy(Buffer src, int srcOffset,
-			Buffer dst, int dstOffset, int numBytes);
+	private native static void bufferCopy(Buffer src, int srcOffset, Buffer dst, int dstOffset, int numBytes);
 
-	private native static void updateArray(int maxPixel, int pixelStart,
-			int pixelEnd, int[] src, int[] dst, int[] colors, int c1, int c2);
+	private native static void updateArray(int maxPixel, int pixelStart, int pixelEnd, int[] src, int[] dst,
+			int[] colors, int c1, int c2);
 
-	private native static void updateFractions(int size, float[] src,
-			int width, int height, int[] dst, int numElements);
+	private native static void updateFractions(int size, float[] src, int width, int height, int[] dst,
+			int numElements);
 
 	private native static int[] setColorKey(int[] buffer, int colorKey);
 
 	private native static int[] setColorKeys(int[] buffer, int[] colorKey);
 
-	private native static int[] setColorKeyLimit(int[] buffer, int start,
-			int end);
+	private native static int[] setColorKeyLimit(int[] buffer, int start, int end);
 
 	private native static int[] getGray(int[] buffer, int w, int h);
 }

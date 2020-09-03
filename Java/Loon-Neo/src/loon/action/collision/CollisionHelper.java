@@ -29,7 +29,6 @@ import loon.geom.RectBox;
 import loon.geom.Shape;
 import loon.geom.ShapeUtils;
 import loon.geom.Vector2f;
-
 import loon.geom.XY;
 import loon.geom.XYZ;
 import loon.utils.MathUtils;
@@ -642,6 +641,25 @@ public final class CollisionHelper extends ShapeUtils {
 		return true;
 	}
 
+	public static final boolean lineIntersection(XY p1, XY p2, XY p3, XY p4, Vector2f ptIntersection) {
+		float num1 = ((p4.getY() - p3.getY()) * (p2.getX() - p1.getX()))
+				- ((p4.getX() - p3.getX()) * (p2.getY() - p1.getY()));
+		float num2 = ((p4.getX() - p3.getX()) * (p1.getY() - p3.getY()))
+				- ((p4.getY() - p3.getY()) * (p1.getX() - p3.getX()));
+		float num3 = ((p2.getX() - p1.getX()) * (p1.getY() - p3.getY()))
+				- ((p2.getY() - p1.getY()) * (p1.getX() - p3.getX()));
+		if (num1 != 0f) {
+			float num4 = num2 / num1;
+			float num5 = num3 / num1;
+			if (((num4 >= 0f) && (num4 <= 1f)) && ((num5 >= 0f) && (num5 <= 1f))) {
+				ptIntersection.x = (int) (p1.getX() + (num4 * (p2.getX() - p1.getX())));
+				ptIntersection.y = (int) (p1.getY() + (num4 * (p2.getY() - p1.getY())));
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public static final int whichSide(XY p1, float theta, XY p2) {
 		theta += MathUtils.PI / 2;
 		float x = (int) (p1.getX() + MathUtils.round(1000 * MathUtils.cos(theta)));
@@ -734,7 +752,7 @@ public final class CollisionHelper extends ShapeUtils {
 			stepRate = 1f;
 		}
 		TArray<Vector2f> results = new TArray<Vector2f>();
-	
+
 		float x1 = MathUtils.round(line.getX1());
 		float y1 = MathUtils.round(line.getY1());
 		float x2 = MathUtils.round(line.getX2());

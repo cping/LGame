@@ -27,10 +27,10 @@ import loon.canvas.LColor;
  */
 public class ActionBindData {
 
-	public static final ActionBindData save(ActionBind act){
+	public static final ActionBindData save(ActionBind act) {
 		return new ActionBindData(act);
 	}
-	
+
 	protected float oldX = 0f;
 	protected float oldY = 0f;
 	protected float oldAlpha = 0f;
@@ -49,16 +49,23 @@ public class ActionBindData {
 	protected float newScaleX = 0f;
 	protected float newScaleY = 0f;
 
+	protected float oldOffsetX;
+	protected float oldOffsetY;
+	protected float newOffsetX;
+	protected float newOffsetY;
+
 	protected boolean newVisible = false;
 
 	protected LColor newColor = null;
 
 	private final ActionBind bindObject;
 
-	public ActionBindData(ActionBind bind) {
+	public ActionBindData(ActionBind bind, float offX, float offY) {
 
 		this.oldX = bind.getX();
 		this.oldY = bind.getY();
+		this.oldOffsetX = offX;
+		this.oldOffsetY = offY;
 		this.oldAlpha = bind.getAlpha();
 		this.oldRotation = bind.getRotation();
 		this.oldScaleX = bind.getScaleX();
@@ -67,6 +74,18 @@ public class ActionBindData {
 		this.oldVisible = bind.isVisible();
 		this.bindObject = bind;
 
+	}
+
+	public ActionBindData(ActionBind bind) {
+		this(bind, 0f, 0f);
+	}
+
+	public float getX() {
+		return bindObject.getX() + oldOffsetX;
+	}
+
+	public float getY() {
+		return bindObject.getY() + oldOffsetY;
 	}
 
 	public ActionBind getObject() {
@@ -83,6 +102,8 @@ public class ActionBindData {
 		this.newScaleY = bindObject.getScaleY();
 		this.newColor = bindObject.getColor();
 		this.newVisible = bindObject.isVisible();
+		this.newOffsetX = oldOffsetX;
+		this.newOffsetY = oldOffsetY;
 
 		return this;
 	}
@@ -95,6 +116,7 @@ public class ActionBindData {
 		bindObject.setScale(oldScaleX, oldScaleY);
 		bindObject.setColor(oldColor);
 		bindObject.setVisible(oldVisible);
+		offset(oldOffsetX, oldOffsetY);
 
 		return this;
 	}
@@ -107,6 +129,7 @@ public class ActionBindData {
 		bindObject.setScale(newScaleX, newScaleY);
 		bindObject.setColor(newColor);
 		bindObject.setVisible(newVisible);
+		offset(newOffsetX, newOffsetY);
 
 		return this;
 	}
@@ -177,6 +200,30 @@ public class ActionBindData {
 
 	public LColor getNewColor() {
 		return newColor.cpy();
+	}
+
+	public float getOffsetX() {
+		return oldOffsetX;
+	}
+
+	public ActionBindData setOffsetX(float offsetX) {
+		this.oldOffsetX = offsetX;
+		return this;
+	}
+
+	public float getOffsetY() {
+		return oldOffsetY;
+	}
+
+	public ActionBindData setOffsetY(float offsetY) {
+		this.oldOffsetY = offsetY;
+		return this;
+	}
+
+	public ActionBindData offset(float offX, float offY) {
+		this.setOffsetX(offX);
+		this.setOffsetY(offY);
+		return this;
 	}
 
 }

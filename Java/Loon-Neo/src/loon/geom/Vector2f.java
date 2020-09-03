@@ -291,6 +291,22 @@ public class Vector2f implements Serializable, XY {
 		return pos.x * y - pos.y * x;
 	}
 
+	public final static Vector2f rotate(Vector2f pos, Vector2f origin, float angle) {
+		float rad = MathUtils.toRadians(angle);
+
+		Vector2f newVector = new Vector2f();
+
+		pos.x += -origin.x;
+		pos.y += -origin.y;
+		newVector.x = (pos.x * MathUtils.cos(rad) - (pos.y * MathUtils.sin(rad)));
+		newVector.y = (MathUtils.sin(rad * pos.x) + (MathUtils.cos(rad * pos.y)));
+
+		newVector.x += origin.x;
+		newVector.y += origin.y;
+
+		return newVector;
+	}
+
 	public final static Vector2f rotate(Vector2f pos, float angle) {
 		float rad = MathUtils.toRadians(angle);
 		float cos = MathUtils.cos(rad);
@@ -488,7 +504,25 @@ public class Vector2f implements Serializable, XY {
 	}
 
 	public float getAngle() {
-		float theta = MathUtils.toDegrees(MathUtils.atan2(y, x));
+		return angleTo(this);
+	}
+
+	public float angle() {
+		return getAngle();
+	}
+
+	public float angleRad(Vector2f v) {
+		if (null == v) {
+			return 0f;
+		}
+		return MathUtils.atan2(v.crs(this), v.dot(this));
+	}
+
+	public float angleDeg(Vector2f v) {
+		if (null == v) {
+			return getAngle();
+		}
+		float theta = MathUtils.toDegrees(MathUtils.atan2(v.crs(this), v.dot(this)));
 		if ((theta < -360) || (theta > 360)) {
 			theta = theta % 360;
 		}
@@ -496,10 +530,6 @@ public class Vector2f implements Serializable, XY {
 			theta = 360 + theta;
 		}
 		return theta;
-	}
-
-	public float angle() {
-		return getAngle();
 	}
 
 	public int angle(Vector2f v) {
@@ -551,7 +581,7 @@ public class Vector2f implements Serializable, XY {
 	public Vector2f rotateY(float angle) {
 		return cpy().rotateSelfY(angle);
 	}
-	
+
 	public Vector2f rotateSelf(float angle) {
 		if (angle != 0) {
 			float rad = MathUtils.toRadians(angle);
@@ -586,7 +616,7 @@ public class Vector2f implements Serializable, XY {
 		}
 		return this;
 	}
-	
+
 	public Vector2f lerp(Vector2f target, float alpha) {
 		Vector2f r = this.mul(1.0f - alpha);
 		r.add(target.tmp().mul(alpha));
