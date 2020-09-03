@@ -20,11 +20,16 @@
  */
 package loon.event;
 
+import loon.LSystem;
 import loon.geom.Vector2f;
 import loon.utils.StringKeyValue;
 import loon.utils.TimeUtils;
 
 public class GameTouch {
+
+	private Orientation _orientation;
+
+	private boolean _active;
 
 	protected int type;
 
@@ -48,7 +53,9 @@ public class GameTouch {
 		reset();
 	}
 
-	public void reset() {
+	public GameTouch reset() {
+		this._orientation = Orientation.Portrait;
+		this._active = true;
 		this.type = -1;
 		this.x = 0;
 		this.y = 0;
@@ -58,20 +65,27 @@ public class GameTouch {
 		this.button = -1;
 		this.pointer = -1;
 		this.id = -1;
+		return this;
 	}
 
 	public GameTouch(float x, float y, int pointer, int id) {
 		this.set(x, y, pointer, id);
 	}
 
-	public void set(float x, float y, int pointer, int id) {
+	public GameTouch set(float x, float y, int pointer, int id) {
 		this.x = x;
 		this.y = y;
 		this.pointer = pointer;
 		this.id = id;
+		return this;
 	}
 
 	GameTouch(GameTouch touch) {
+		if (touch == null) {
+			this.reset();
+		}
+		this._orientation = touch._orientation;
+		this._active = touch._active;
 		this.type = touch.type;
 		this.x = touch.x;
 		this.y = touch.y;
@@ -85,17 +99,52 @@ public class GameTouch {
 		this.timeDown = touch.timeDown;
 	}
 
-	public void offset(float x, float y) {
-		this.x += x;
-		this.y += y;
+	public GameTouch convertOrientation() {
+		return convertOrientation(this.x, this.y);
 	}
 
-	public void offsetX(float x) {
-		this.x += x;
+	public GameTouch convertOrientation(float posX, float posY) {
+		float tmpX = 0f;
+		switch (_orientation) {
+		case Portrait:
+			this.x = posX;
+			this.y = posY;
+			return this;
+		case PortraitUpsideDown:
+			this.x = LSystem.viewSize.getWidth() - this.x;
+			return this;
+		case LandscapeRight:
+			tmpX = this.x;
+			this.x = this.y;
+			this.y = tmpX;
+			return this;
+		case LandscapeLeft:
+			tmpX = this.x;
+			this.x = this.y;
+			this.y = tmpX;
+			this.x = LSystem.viewSize.getWidth() - this.x;
+			this.y = LSystem.viewSize.getHeight() - this.y;
+			return this;
+		}
+		this.x = posX;
+		this.y = posY;
+		return this;
 	}
 
-	public void offsetY(float y) {
-		this.y += y;
+	public GameTouch offset(float posX, float posY) {
+		this.x += posX;
+		this.y += posY;
+		return this;
+	}
+
+	public GameTouch offsetX(float posX) {
+		this.x += posX;
+		return this;
+	}
+
+	public GameTouch offsetY(float posY) {
+		this.y += posY;
+		return this;
 	}
 
 	public boolean equals(GameTouch e) {
@@ -168,11 +217,11 @@ public class GameTouch {
 	public boolean isMiddle() {
 		return button == SysTouch.MIDDLE;
 	}
-	
+
 	public boolean isRight() {
 		return button == SysTouch.RIGHT;
 	}
-	
+
 	public boolean isDown() {
 		return button == SysTouch.TOUCH_DOWN;
 	}
@@ -183,6 +232,15 @@ public class GameTouch {
 
 	public boolean isMove() {
 		return button == SysTouch.TOUCH_MOVE;
+	}
+
+	public GameTouch setState(int s) {
+		this.button = s;
+		return this;
+	}
+
+	public int getState() {
+		return this.button;
 	}
 
 	public boolean isDrag() {
@@ -200,7 +258,7 @@ public class GameTouch {
 	public boolean lowerRight() {
 		return type == SysTouch.LOWER_RIGHT;
 	}
-	
+
 	public boolean upperLeft() {
 		return type == SysTouch.UPPER_LEFT;
 	}
@@ -208,7 +266,7 @@ public class GameTouch {
 	public boolean upperRight() {
 		return type == SysTouch.UPPER_RIGHT;
 	}
-	
+
 	/**
 	 * 判断触屏按下事件是否超过了当前系统时间
 	 * 
@@ -283,11 +341,39 @@ public class GameTouch {
 		return new GameTouch(this);
 	}
 
+	public boolean isActive() {
+		return _active;
+	}
+
+	public GameTouch setActive(boolean active) {
+		this._active = active;
+		return this;
+	}
+
+	public Orientation getOrientation() {
+		return _orientation;
+	}
+
+	public GameTouch setOrientation(Orientation ori) {
+		if (ori == null) {
+			this._orientation = Orientation.Portrait;
+			return this;
+		}
+		this._orientation = ori;
+		return this;
+	}
+
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("GameTouch");
-		builder.kv("id", id).comma().kv("point", pointer).comma().kv("button", button).comma().kv("timeDown", timeDown)
-				.comma().kv("timeUp", timeUp).comma().kv("duration", duration);
+		builder.kv("id", id).comma()
+		.kv("point", pointer).comma()
+		.kv("button", button).comma()
+		.kv("timeDown", timeDown).comma()
+		.kv("timeUp", timeUp).comma()
+		.kv("duration", duration).comma()
+		.kv("active", _active).comma()
+		.kv("orientation", _orientation);
 		return builder.toString();
 	}
 

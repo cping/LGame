@@ -135,7 +135,7 @@ public class SpriteBatch extends PixmapFImpl {
 
 		public void update() {
 			pdirection = pend.sub(pstart);
-			pdirection.nor();
+			pdirection.normalizeSelf();
 			pangle = MathUtils.toDegrees(MathUtils.atan2(pend.y - pstart.y, pend.x - pstart.x));
 			plength = MathUtils.ceil(pstart.distance(pend));
 			pcentre = (pstart.add(pend).div(2));

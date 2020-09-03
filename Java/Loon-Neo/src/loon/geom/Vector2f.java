@@ -259,6 +259,13 @@ public class Vector2f implements Serializable, XY {
 		return pos;
 	}
 
+    public final static Vector2f direction(Vector2f v1, Vector2f v2)
+    {
+        Vector2f vector = v2.sub(v1);
+        vector.normalizeSelf();
+        return vector;
+    }
+
 	public final static float dst(Vector2f pos, Vector2f vectorB) {
 		final float x_d = vectorB.x - pos.x;
 		final float y_d = vectorB.y - pos.y;
@@ -383,12 +390,16 @@ public class Vector2f implements Serializable, XY {
 		return set(x / l, y / l);
 	}
 
-	public Vector2f nor() {
+	public Vector2f normalizeNew() {
+		return nor(len());
+	}
+	
+	public Vector2f norSelf(){
 		return normalizeSelf();
 	}
 
-	public Vector2f normalizeNew() {
-		return nor(len());
+	public Vector2f nor() {
+		return normalizeNew();
 	}
 
 	public Vector2f nor(float n) {
