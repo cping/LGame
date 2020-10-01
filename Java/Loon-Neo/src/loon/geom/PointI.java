@@ -40,6 +40,10 @@ public class PointI implements XY {
 		this(0, 0);
 	}
 
+	public PointI(int size) {
+		set(size, size);
+	}
+	
 	public PointI(int x1, int y1) {
 		set(x1, y1);
 	}

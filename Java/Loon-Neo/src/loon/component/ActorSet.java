@@ -22,7 +22,6 @@
 package loon.component;
 
 import loon.LSysException;
-import loon.component.Actor;
 import loon.utils.CollectionUtils;
 import loon.utils.LIterator;
 

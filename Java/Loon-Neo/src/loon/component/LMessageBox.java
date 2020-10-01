@@ -177,8 +177,8 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 									+ (this.font.getSize() * 0.10f) + (size * _leading),
 							this.flagColor);
 				} else {
-					this.font.drawString(g, _flagType,
-							this._boxX + this.pageX + this.offsetX, this._boxY + this.pageY
+					this.font.drawString(
+							g, _flagType, this._boxX + this.pageX + this.offsetX, this._boxY + this.pageY
 									+ this.font.stringHeight(message) + this.offsetY + (this.font.getSize() * 0.10f),
 							this.flagColor);
 				}
@@ -314,7 +314,7 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 	}
 
 	public static class Message {
-		
+
 		private String message;
 		private String comment;
 		private String face;
@@ -373,13 +373,14 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 	protected boolean stopMessage;
 	protected boolean noPaged;
 	protected boolean isPaged;
+
 	protected int pageBlinkTime;
 
 	protected int delay = 50;
 
 	protected int pageTime = 300;
 
-	protected final DrawMessageBox _box;
+	protected DrawMessageBox _box;
 
 	private IFont _font;
 
@@ -426,9 +427,64 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 		this(messages, typeFlag, font, box, x, y, width, height, color, false);
 	}
 
+	public LMessageBox(String[] messages, String typeFlag, IFont font, LTexture box, int x, int y) {
+		this(messages, typeFlag, font, null, box, x, y, 0, 0);
+	}
+
+	public LMessageBox(String[] messages, IFont font, LTexture box, int x, int y) {
+		this(messages, null, font, null, box, x, y, 0, 0);
+	}
+
+	public LMessageBox(String[] messages, LTexture box, int x, int y) {
+		this(messages, null, SkinManager.get().getMessageSkin().getFont(), null, box, x, y, 0, 0);
+	}
+
 	public LMessageBox(TArray<Message> messages, String typeFlag, IFont font, LTexture box, int x, int y, int width,
 			int height, LColor color, boolean shadow) {
 		super(x, y, width, height);
+		initMessages(messages, typeFlag, font, box, x, y, width, height, color, shadow);
+	}
+
+	public LMessageBox(String[] messages, String typeFlag, IFont font, String face, LTexture box, int x, int y,
+			int width, int height) {
+		this(messages, typeFlag, font, face, box, x, y, width, height,
+				SkinManager.get().getMessageSkin().getFontColor(), false);
+	}
+
+	/**
+	 * 若传递字符串数组，则只能构建统一头像位置的对话框
+	 * 
+	 * @param messages
+	 * @param typeFlag
+	 * @param font
+	 * @param face
+	 * @param box
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
+	 */
+	public LMessageBox(String[] messages, String typeFlag, IFont font, String face, LTexture box, int x, int y,
+			int width, int height, LColor color, boolean shadow) {
+		super(x, y, width, height);
+		initStrings(messages, typeFlag, font, face, box, x, y, width, height, color, shadow);
+	}
+
+	private void initStrings(String[] messages, String typeFlag, IFont font, String face, LTexture box, int x, int y,
+			int width, int height, LColor color, boolean shadow) {
+		TArray<LMessageBox.Message> tempMessages = new TArray<LMessageBox.Message>();
+		if (messages != null) {
+			for (String text : messages) {
+				tempMessages.add(new Message(text, null, face, Print.formatMessage(text, font, width())));
+			}
+		} else {
+			tempMessages.add(new Message("", null, face, Print.formatMessage("", font, width())));
+		}
+		initMessages(tempMessages, typeFlag, font, box, x, y, width, height, color, shadow);
+	}
+
+	private void initMessages(TArray<Message> messages, String typeFlag, IFont font, LTexture box, int x, int y,
+			int width, int height, LColor color, boolean shadow) {
 		this._component_baseColor = color;
 		this._showShadow = shadow;
 		if (box != null && width == 0 && height == 0) {
@@ -452,62 +508,6 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 		this._box.setLocation(x, y);
 		this._font = font;
 		freeRes().add(box);
-	}
-
-	public LMessageBox(String[] messages, String typeFlag, IFont font, LTexture box, int x, int y) {
-		this(messages, typeFlag, font, null, box, x, y, 0, 0);
-	}
-
-	public LMessageBox(String[] messages, IFont font, LTexture box, int x, int y) {
-		this(messages, null, font, null, box, x, y, 0, 0);
-	}
-
-	public LMessageBox(String[] messages, LTexture box, int x, int y) {
-		this(messages, null, SkinManager.get().getMessageSkin().getFont(), null, box, x, y, 0, 0);
-	}
-
-	/**
-	 * 若传递字符串数组，则只能构建统一头像位置的对话框
-	 * 
-	 * @param messages
-	 * @param typeFlag
-	 * @param font
-	 * @param face
-	 * @param box
-	 * @param x
-	 * @param y
-	 * @param width
-	 * @param height
-	 */
-	public LMessageBox(String[] messages, String typeFlag, IFont font, String face, LTexture box, int x, int y,
-			int width, int height) {
-		super(x, y, width, height);
-
-		if (box != null && width <= 1 && height <= 1) {
-			this.setSize(box.getWidth(), box.getHeight());
-		}
-
-		if (messages != null) {
-			_messageList = new TArray<LMessageBox.Message>();
-			for (String text : messages) {
-
-				_messageList.add(new Message(text, null, face, Print.formatMessage(text, font, width())));
-
-				_tmpString += text;
-			}
-		}
-		if (font instanceof LFont) {
-			this._box = new DrawMessageBox(
-					new ShadowFont((LFont) font, messages, typeFlag == null ? LSystem.FLAG_TAG : typeFlag, _showShadow),
-					null, box, typeFlag, width(), height());
-		} else {
-			this._box = new DrawMessageBox(font, null, box, typeFlag, width(), height());
-		}
-		this._box.setLocation(getX(), getY());
-		if (!StringUtils.isEmpty(face)) {
-			toFaceImage(face);
-		}
-		this._font = font;
 	}
 
 	@Override
@@ -800,8 +800,9 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 		return _box.getFlagColor();
 	}
 
-	public void setFlagColor(LColor c) {
+	public LMessageBox setFlagColor(LColor c) {
 		this._box.setFlagColor(c);
+		return this;
 	}
 
 	public int getDelay() {
@@ -817,8 +818,9 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 		return _showShadow;
 	}
 
-	public void setShowShadowFont(boolean s) {
+	public LMessageBox setShowShadowFont(boolean s) {
 		this._showShadow = s;
+		return this;
 	}
 
 	@Override
@@ -830,5 +832,6 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 	public String getUIName() {
 		return "MessageBox";
 	}
+
 
 }

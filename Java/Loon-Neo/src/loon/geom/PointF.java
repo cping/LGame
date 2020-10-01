@@ -40,6 +40,10 @@ public class PointF implements XY {
 		this(0, 0);
 	}
 
+	public PointF(float size) {
+		set(size, size);
+	}
+	
 	public PointF(float x1, float y1) {
 		set(x1, y1);
 	}

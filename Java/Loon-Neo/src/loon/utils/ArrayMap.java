@@ -22,8 +22,6 @@
 package loon.utils;
 
 import loon.LSysException;
-import loon.utils.CollectionUtils;
-import loon.utils.MathUtils;
 
 public class ArrayMap implements IArray {
 

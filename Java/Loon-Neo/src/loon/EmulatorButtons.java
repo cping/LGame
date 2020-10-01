@@ -20,7 +20,6 @@
  */
 package loon;
 
-import loon.LSystem;
 import loon.LTexture.Format;
 import loon.action.sprite.SpriteBatch;
 import loon.opengl.GLEx;

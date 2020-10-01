@@ -28,7 +28,6 @@ import java.util.Comparator;
 import loon.LRelease;
 import loon.LSysException;
 import loon.LSystem;
-import loon.utils.MathUtils;
 
 /**
  * Loon的Byte[]操作用类

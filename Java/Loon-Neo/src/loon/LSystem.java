@@ -930,7 +930,7 @@ public class LSystem {
 			base().invokeAsync(action);
 		}
 	}
-
+	
 	public static final int batchCacheSize() {
 		if (base() != null) {
 			return base().batchCacheSize();

@@ -21,10 +21,6 @@
 package loon.utils;
 
 import loon.LSysException;
-import loon.utils.CollectionUtils;
-import loon.utils.IArray;
-import loon.utils.LIterator;
-import loon.utils.MathUtils;
 
 /**
  * key-value形式的数据集合,无序排列,作用近似于HashMap,在大数据存储上性能比HashMap更好<br>

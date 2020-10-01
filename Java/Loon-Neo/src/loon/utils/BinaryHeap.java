@@ -20,8 +20,6 @@
  */
 package loon.utils;
 
-import loon.utils.TArray;
-
 public class BinaryHeap {
 
 	public interface ScoreFunction {

@@ -103,13 +103,13 @@ public class LToast extends LComponent implements FontSet<LToast> {
 			toast = new LToast(font, text, duration, 0, 0, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 		}
 		if (style == Style.SUCCESS) {
-			toast.mBackgroundColor = SUCCESS_GRAY;
+			toast.backgroundColor = SUCCESS_GRAY;
 		}
 		if (style == Style.ERROR) {
-			toast.mBackgroundColor = ERROR_RED;
+			toast.backgroundColor = ERROR_RED;
 		}
 		if (style == Style.NORMAL) {
-			toast.mBackgroundColor = NORMAL_ORANGE;
+			toast.backgroundColor = NORMAL_ORANGE;
 		}
 		return toast;
 	}
@@ -125,17 +125,19 @@ public class LToast extends LComponent implements FontSet<LToast> {
 	private int _frame_radius = 15;
 	private int _frame_length_multiplier = 10;
 	private float opacity = 0;
-	private String mText;
-	private int mDuration;
+	private String displayText;
+	private int duration;
 	private LTimer timer = new LTimer();
 	private LTimer lock = new LTimer(LSystem.SECOND * 2);
-	private LColor mBackgroundColor;
+	private LColor backgroundColor;
 	private IFont font;
-	private int displayX = 0;
-	private int displayY = 0;
+	private float displayX = 0f;
+	private float displayY = 0f;
+	private float displayTextX = 0f;
+	private float displayTextY = 0f;
 	private int cellHeight = 30;
 	private int cellWidth = 30;
-	private int mType;
+	private int displayType;
 	private boolean autoClose = true;
 
 	public LToast(IFont font, String text, int duration, int x, int y, int width, int height) {
@@ -155,30 +157,31 @@ public class LToast extends LComponent implements FontSet<LToast> {
 		super(x, y, width, height);
 		this.onlyBackground(bg);
 		this._component_baseColor = fontColor;
-		this.mType = ISprite.TYPE_FADE_IN;
+		this.displayType = ISprite.TYPE_FADE_IN;
 		this.opacity = 0f;
-		this.mDuration = duration;
+		this.duration = duration;
 		this.font = font;
-		this.mText = text;
-		this.cellWidth = font.stringWidth(mText) + (_frame_length_multiplier * 10);
+        this.displayText = text;
+		this.cellWidth = font.stringWidth(displayText) + (_frame_length_multiplier * 10);
 		this.cellHeight = font.getHeight() + 10;
 		if (this.cellHeight < 30) {
 			this.cellHeight = 30;
 		}
 		this.displayX = x + ((width / 2) - (cellWidth / 2));
 		this.displayY = (y + ((height / 2) - (cellHeight / 2))) - font.getHeight() / 2;
+		this.timer.setDelay(this.duration);
+		this.setText(text);
 		this.setSize(cellWidth, cellHeight);
 		this.setLayer(10000);
-		this.timer.setDelay(this.mDuration);
 	}
 
 	public void fadeIn() {
-		this.mType = ISprite.TYPE_FADE_IN;
+		this.displayType = ISprite.TYPE_FADE_IN;
 		this.opacity = 0f;
 	}
 
 	public void fadeOut() {
-		this.mType = ISprite.TYPE_FADE_OUT;
+		this.displayType = ISprite.TYPE_FADE_OUT;
 		this.opacity = MAX_OPACITY;
 	}
 
@@ -192,7 +195,7 @@ public class LToast extends LComponent implements FontSet<LToast> {
 		int oc = g.color();
 		float alpha = g.alpha();
 		try {
-			g.setColor(mBackgroundColor);
+			g.setColor(backgroundColor);
 			g.setAlpha(opacity);
 			if (_background == null) {
 				g.fillRoundRect(displayX, displayY, w, h, _frame_radius);
@@ -201,13 +204,31 @@ public class LToast extends LComponent implements FontSet<LToast> {
 			}
 			g.setColor(_component_baseColor);
 			g.setAlpha(opacity);
-			font.drawString(g, mText, displayX + (cellWidth - font.stringWidth(mText)) / 2, displayY + 2);
+			font.drawString(g, displayText, displayX + displayTextX, displayY + displayTextY);
 		} finally {
 			g.setColor(oc);
 			g.setAlpha(alpha);
 		}
 	}
+	
+	public float getDisplayTextX() {
+		return this.displayTextX;
+	}
 
+	public float getDisplayTextY() {
+		return this.displayTextY;
+	}
+	
+	public LToast setDisplayTextX(float x) {
+		this.displayTextX = x;
+		return this;
+	}
+
+	public LToast setDisplayTextY(float y) {
+		this.displayTextY = y;
+		return this;
+	}
+	
 	@Override
 	public LComponent setBackground(LTexture texture) {
 		this._background = texture;
@@ -224,7 +245,7 @@ public class LToast extends LComponent implements FontSet<LToast> {
 	public void update(long elapsedTime) {
 		super.update(elapsedTime);
 		if (timer.action(elapsedTime)) {
-			if (mType == ISprite.TYPE_FADE_IN) {
+			if (displayType == ISprite.TYPE_FADE_IN) {
 				opacity += OPACITY_INCREMENT;
 				opacity = (MathUtils.min(opacity, MAX_OPACITY));
 				if (opacity >= MAX_OPACITY) {
@@ -252,20 +273,22 @@ public class LToast extends LComponent implements FontSet<LToast> {
 	}
 
 	public LComponent setText(String text) {
-		mText = text;
+		displayText = text;
+		displayTextX = MathUtils.min(cellWidth / 2 - 1, (cellWidth - font.stringWidth(displayText)) / 2);
+		displayTextY = MathUtils.min(cellHeight / 2 - 1, (cellHeight - font.stringHeight(displayText)) / 2) - 1;
 		return this;
 	}
 
-	public LComponent setDuration(int duration) {
-		this.mDuration = duration;
-		timer.setDelay(this.mDuration);
+	public LComponent setDuration(int d) {
+		this.duration = d;
+		timer.setDelay(this.duration);
 		return this;
 	}
 
 	@Override
-	public LComponent setBackground(LColor backgroundColor) {
-		super.setBackground(backgroundColor);
-		mBackgroundColor = backgroundColor;
+	public LComponent setBackground(LColor color) {
+		super.setBackground(color);
+		backgroundColor = color;
 		return this;
 	}
 

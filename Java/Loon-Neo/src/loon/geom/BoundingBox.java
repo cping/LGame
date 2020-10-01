@@ -20,8 +20,6 @@
  */
 package loon.geom;
 
-import loon.geom.Matrix4;
-import loon.geom.Vector3f;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
 

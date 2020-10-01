@@ -108,6 +108,25 @@ public class FontUtils {
 		}
 	}
 
+	public static PointF getTextWidthAndHeight(IFont font, TArray<String> messages) {
+		return getTextWidthAndHeight(font, messages, 1f, 1f);
+	}
+
+	public static PointF getTextWidthAndHeight(IFont font, TArray<String> messages, float defWidth, float defHeight) {
+		PointF amountSize = new PointF();
+		float maxHeight = 0f;
+		for (String cs : messages) {
+			if (cs != null) {
+				PointF newSize = getTextWidthAndHeight(font, cs, defWidth, defHeight);
+				amountSize.x = MathUtils.max(newSize.x, amountSize.x);
+				amountSize.y = MathUtils.max(newSize.y, amountSize.y);
+				maxHeight += amountSize.y;
+			}
+		}
+		amountSize.y = maxHeight;
+		return amountSize;
+	}
+
 	public static PointF getTextWidthAndHeight(IFont font, String message) {
 		return getTextWidthAndHeight(font, message, 1f, 1f);
 	}

@@ -20,8 +20,6 @@
  */
 package loon.opengl;
 
-import loon.opengl.ShaderSource;
-
 public class GlobalSource extends ShaderSource {
 
 	@Override
