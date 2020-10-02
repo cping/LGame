@@ -61,6 +61,7 @@ import loon.opengl.LTextureFree;
 import loon.opengl.TextureUtils;
 import loon.utils.Flip;
 import loon.utils.MathUtils;
+import loon.utils.StringUtils;
 
 /**
  * Loon桌面组件的核心,所有UI类组件基于此类产生
@@ -818,6 +819,9 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public LComponent setToolTipText(String text) {
+		if (StringUtils.isEmpty(text)) {
+			return this;
+		}
 		this.tooltip = text;
 		return this;
 	}
