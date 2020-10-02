@@ -940,6 +940,15 @@ public class Desktop implements Visible, LRelease {
 		return contentPane.contains(comp);
 	}
 
+	public Desktop setSortableChildren(boolean v) {
+		contentPane.setSortableChildren(v);
+		return this;
+	}
+
+	public boolean isSortableChildren() {
+		return contentPane.isSortableChildren();
+	}
+
 	public LComponent get() {
 		return this.contentPane.get();
 	}

@@ -55,15 +55,18 @@ public abstract class LContainer extends LComponent implements IArray {
 	// 滚动y轴
 	protected float _component_scrollY;
 
+	private boolean _sortableChildren;
+
 	private final static LayerSorter<LComponent> compSorter = new LayerSorter<LComponent>(false);
 
 	private int childCount = 0;
 
 	private LComponent latestInserted = null;
-	
+
 	public LContainer(int x, int y, int w, int h) {
 		super(x, y, w, h);
 		this.setFocusable(false);
+		this.setSortableChildren(true);
 	}
 
 	@Override
@@ -221,7 +224,9 @@ public abstract class LContainer extends LComponent implements IArray {
 				comp.input = _desktop.input;
 			}
 		}
-		this.sortComponents();
+		if (_sortableChildren) {
+			this.sortComponents();
+		}
 		this.latestInserted = comp;
 		this.setDesktops(this._desktop);
 		return this;
@@ -251,7 +256,9 @@ public abstract class LContainer extends LComponent implements IArray {
 		this._childs = newChilds;
 		this._childs[index] = comp;
 		this._desktop.setDesktop(comp);
-		this.sortComponents();
+		if (_sortableChildren) {
+			this.sortComponents();
+		}
 		this.latestInserted = comp;
 		return this;
 	}
@@ -704,7 +711,9 @@ public abstract class LContainer extends LComponent implements IArray {
 				this._childs = CollectionUtils.cut(this._childs, i);
 				this._childs = CollectionUtils.expand(this._childs, 1, false);
 				this._childs[0] = comp;
-				this.sortComponents();
+				if (_sortableChildren) {
+					this.sortComponents();
+				}
 				break;
 			}
 		}
@@ -725,7 +734,9 @@ public abstract class LContainer extends LComponent implements IArray {
 				this._childs = CollectionUtils.cut(this._childs, i);
 				this._childs = CollectionUtils.expand(this._childs, 1, true);
 				this._childs[this.childCount - 1] = comp;
-				this.sortComponents();
+				if (_sortableChildren) {
+					this.sortComponents();
+				}
 				break;
 			}
 		}
@@ -1060,8 +1071,8 @@ public abstract class LContainer extends LComponent implements IArray {
 		super.out();
 		return this;
 	}
-	
-	public int getChildCount(){
+
+	public int getChildCount() {
 		return size();
 	}
 
@@ -1247,6 +1258,15 @@ public abstract class LContainer extends LComponent implements IArray {
 
 	public float getStageY() {
 		return (getX() - getScreenX()) / getScaleY();
+	}
+
+	public LContainer setSortableChildren(boolean v) {
+		this._sortableChildren = v;
+		return this;
+	}
+
+	public boolean isSortableChildren() {
+		return this._sortableChildren;
 	}
 
 	@Override

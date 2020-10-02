@@ -62,6 +62,8 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	private float _scrollY;
 
+	private boolean _sortableChildren;
+
 	private ResizeListener<Sprites> _resizeListener;
 
 	private int viewX;
@@ -106,7 +108,7 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	public Sprites(String name, Screen screen, int w, int h) {
 		this._screen = screen;
-		this._visible = true;
+		this._sortableChildren = this._visible = true;
 		this._sprites = new ISprite[CollectionUtils.INITIAL_CAPACITY];
 		this._sprites_name = StringUtils.isEmpty(name) ? "Sprites" + LSystem.getSpritesSize() : name;
 		this.setSize(w, h);
@@ -161,7 +163,9 @@ public class Sprites implements IArray, Visible, LRelease {
 				this._sprites = CollectionUtils.cut(this._sprites, i);
 				this._sprites = CollectionUtils.expand(this._sprites, 1, false);
 				this._sprites[0] = sprite;
-				this.sortSprites();
+				if (_sortableChildren) {
+					this.sortSprites();
+				}
 				break;
 			}
 		}
@@ -187,7 +191,9 @@ public class Sprites implements IArray, Visible, LRelease {
 				this._sprites = CollectionUtils.cut(this._sprites, i);
 				this._sprites = CollectionUtils.expand(this._sprites, 1, true);
 				this._sprites[this._size - 1] = sprite;
-				this.sortSprites();
+				if (_sortableChildren) {
+					this.sortSprites();
+				}
 				break;
 			}
 		}
@@ -211,6 +217,15 @@ public class Sprites implements IArray, Visible, LRelease {
 		} else {
 			spriteSorter.sort(this._sprites);
 		}
+	}
+	
+	public Sprites setSortableChildren(boolean v) {
+		this._sortableChildren = v;
+		return this;
+	}
+	
+	public boolean isSortableChildren() {
+		return this._sortableChildren;
 	}
 
 	/**
@@ -454,7 +469,9 @@ public class Sprites implements IArray, Visible, LRelease {
 			if (++this._size >= this._sprites.length) {
 				expandCapacity((_size + 1) * 2);
 			}
-			sortSprites();
+			if (_sortableChildren) {
+				sortSprites();
+			}
 			sprite.setState(State.ADDED);
 			sprite.setSprites(this);
 		}
@@ -539,7 +556,9 @@ public class Sprites implements IArray, Visible, LRelease {
 			expandCapacity((_size + 1) * 2);
 		}
 		boolean result = (_sprites[_size++] = sprite) != null;
-		sortSprites();
+		if (_sortableChildren) {
+			sortSprites();
+		}
 		sprite.setState(State.ADDED);
 		return result;
 	}
@@ -1248,7 +1267,7 @@ public class Sprites implements IArray, Visible, LRelease {
 		}
 		return controls;
 	}
-	
+
 	public SpriteControls findNameContainsToSpriteControls(String... names) {
 		if (_closed) {
 			return new SpriteControls();
@@ -1262,7 +1281,7 @@ public class Sprites implements IArray, Visible, LRelease {
 		}
 		return controls;
 	}
-	
+
 	public SpriteControls findNotNamesToSpriteControls(String... names) {
 		if (_closed) {
 			return new SpriteControls();

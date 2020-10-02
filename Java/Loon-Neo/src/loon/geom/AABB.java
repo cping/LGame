@@ -126,6 +126,22 @@ public class AABB implements XY, BoxSize {
 		return this;
 	}
 
+    public float distance(Vector2f other) {
+        float dx = getX() - other.x;
+        float dy = getY() - other.y;
+        return MathUtils.sqrt(dx * dx + dy * dy);
+    }
+    
+	public AABB merge(AABB other) {
+		float minX = MathUtils.min(this.getX(), other.getX());
+		float minY = MathUtils.min(this.getY(), other.getY());
+
+		float maxW = MathUtils.max(this.getWidth(), other.getWidth());
+		float maxH = MathUtils.max(this.getHeight(), other.getHeight());
+
+		return new AABB(minX, minY, maxW, maxH);
+	}
+
 	public Vector2f getPosition(Vector2f pos) {
 		return pos.set(getX(), getY());
 	}

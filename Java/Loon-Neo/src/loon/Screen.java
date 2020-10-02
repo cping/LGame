@@ -128,7 +128,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 *
 	 */
 	public static enum MoveMethod {
-		FROM_LEFT, FROM_UP, FROM_DOWN, FROM_RIGHT, FROM_UPPER_LEFT, FROM_UPPER_RIGHT, FROM_LOWER_LEFT, FROM_LOWER_RIGHT, OUT_LEFT, OUT_UP, OUT_DOWN, OUT_RIGHT, OUT_UPPER_LEFT, OUT_UPPER_RIGHT, OUT_LOWER_LEFT, OUT_LOWER_RIGHT;
+		FROM_LEFT, FROM_UP, FROM_DOWN, FROM_RIGHT, FROM_UPPER_LEFT, FROM_UPPER_RIGHT, FROM_LOWER_LEFT, FROM_LOWER_RIGHT,
+		OUT_LEFT, OUT_UP, OUT_DOWN, OUT_RIGHT, OUT_UPPER_LEFT, OUT_UPPER_RIGHT, OUT_LOWER_LEFT, OUT_LOWER_RIGHT;
 	}
 
 	/**
@@ -241,7 +242,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	private boolean _initLoopEvents = false;
 
 	private boolean _isExistCamera = false;
-	
+
 	private boolean _isExistViewport = false;
 
 	private Accelerometer.SensorDirection direction = Accelerometer.SensorDirection.EMPTY;
@@ -723,26 +724,24 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * 
 	 * @Deprecated public void yieldUpdate() { notifyUpdate(); waitDraw(); }
 	 * 
-	 * @Deprecated public synchronized void notifyDraw() { this.isDrawing =
-	 * true; this.notifyAll(); }
+	 * @Deprecated public synchronized void notifyDraw() { this.isDrawing = true;
+	 * this.notifyAll(); }
 	 * 
-	 * @Deprecated public synchronized void notifyUpdate() { this.isDrawing =
-	 * false; this.notifyAll(); }
+	 * @Deprecated public synchronized void notifyUpdate() { this.isDrawing = false;
+	 * this.notifyAll(); }
 	 * 
-	 * @Deprecated public synchronized void waitDraw() { for (; !isDrawing;) {
-	 * try { this.wait(); } catch (InterruptedException ex) { } } }
+	 * @Deprecated public synchronized void waitDraw() { for (; !isDrawing;) { try {
+	 * this.wait(); } catch (InterruptedException ex) { } } }
 	 * 
-	 * @Deprecated public synchronized void waitUpdate() { for (; isDrawing;) {
-	 * try { this.wait(); } catch (InterruptedException ex) { } } }
+	 * @Deprecated public synchronized void waitUpdate() { for (; isDrawing;) { try
+	 * { this.wait(); } catch (InterruptedException ex) { } } }
 	 * 
-	 * @Deprecated public synchronized void waitFrame(int i) { for (int wait =
-	 * frame + i; frame < wait;) { try { super.wait(); } catch (Throwable ex) {
-	 * } } }
+	 * @Deprecated public synchronized void waitFrame(int i) { for (int wait = frame
+	 * + i; frame < wait;) { try { super.wait(); } catch (Throwable ex) { } } }
 	 * 
 	 * @Deprecated public synchronized void waitTime(long i) { for (long time =
-	 * System.currentTimeMillis() + i; System .currentTimeMillis() < time;) try
-	 * { super.wait(time - System.currentTimeMillis()); } catch (Throwable ex) {
-	 * } }
+	 * System.currentTimeMillis() + i; System .currentTimeMillis() < time;) try {
+	 * super.wait(time - System.currentTimeMillis()); } catch (Throwable ex) { } }
 	 */
 	/** 受限函数结束 **/
 
@@ -5367,18 +5366,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	/**
 	 * 把指定对象布局,在指定的RectBox范围内部署,并注入Screen
 	 * 
-	 * @param objs
-	 *            要布局的对象集合
-	 * @param rectView
-	 *            显示范围
-	 * @param cellWidth
-	 *            单独对象的默认width(如果对象有width,并且比cellWidth大,则以对象自己的为主)
-	 * @param cellHeight
-	 *            单独对象的默认height(如果对象有width,并且比cellWidth大,则以对象自己的为主)
-	 * @param offsetX
-	 *            显示坐标偏移x轴
-	 * @param offsetY
-	 *            显示坐标偏移y轴
+	 * @param objs       要布局的对象集合
+	 * @param rectView   显示范围
+	 * @param cellWidth  单独对象的默认width(如果对象有width,并且比cellWidth大,则以对象自己的为主)
+	 * @param cellHeight 单独对象的默认height(如果对象有width,并且比cellWidth大,则以对象自己的为主)
+	 * @param offsetX    显示坐标偏移x轴
+	 * @param offsetY    显示坐标偏移y轴
 	 */
 	public final Screen elements(final TArray<ActionBind> objs, BoxSize rectView, float cellWidth, float cellHeight,
 			float offsetX, float offsetY) {
@@ -5566,6 +5559,30 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			this.sprites.sortSprites();
 		}
 		return this;
+	}
+
+	/**
+	 * 是否允许自动排序桌面和精灵组件
+	 * 
+	 * @param v
+	 * @return
+	 */
+	public Screen setSortableChildren(boolean v) {
+		if (this.sprites != null) {
+			this.sprites.setSortableChildren(v);
+		}
+		if (this.desktop != null) {
+			this.desktop.setSortableChildren(v);
+		}
+		return this;
+	}
+
+	public boolean isSpriteSortableChildren() {
+		return this.sprites != null ? this.sprites.isSortableChildren() : false;
+	}
+
+	public boolean isDesktopSortableChildren() {
+		return this.desktop != null ? this.desktop.isSortableChildren() : false;
 	}
 
 	/**
