@@ -145,8 +145,12 @@ public class MoveControl implements LRelease {
 	public final void call() {
 		move(_bindObject, _currentArrayMap, _direction);
 	}
-
+	
 	public MoveControl start() {
+		return submit();
+	}
+
+	public MoveControl submit() {
 		if (!_running) {
 			RealtimeProcess process = new RealtimeProcess() {
 

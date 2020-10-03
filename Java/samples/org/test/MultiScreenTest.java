@@ -157,7 +157,7 @@ public class MultiScreenTest extends Screen {
 			"Tetris", "Explosion", "FBird" };
 
 	final String[] page2 = { "Timer", "Snake", "TextEffect", "Margin", "DefineMove", "Interval", "Scheduler",
-			"Shader","FrameBuffer","Taichi","StatusBar","Drag","Radar"};
+			"Shader","FrameBuffer","Taichi","StatusBar","Drag","Radar","PathMove"};
 
 	static BMFont info_font;
 
@@ -288,6 +288,7 @@ public class MultiScreenTest extends Screen {
 			addScreen(page2[index++], new StatusTest());
 			addScreen(page2[index++], new DragTest());
 			addScreen(page2[index++], new RadarTest());
+			addScreen(page2[index++], new PathMoveTest());
 		}
 
 		// 默认按钮大小为100x25

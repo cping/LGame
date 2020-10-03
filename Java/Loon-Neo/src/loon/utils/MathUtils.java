@@ -41,9 +41,9 @@ public final class MathUtils {
 	public static final int ONE_FIXED = 1 << 16;
 
 	public static final float EPSILON = 0.001f;
-	
-    public static final float NaN = 0.0f / 0.0f;
-    
+
+	public static final float NaN = 0.0f / 0.0f;
+
 	public static final int PI_FIXED = 205887;
 
 	public static final int PI_OVER_2_FIXED = PI_FIXED / 2;
@@ -1650,13 +1650,13 @@ public final class MathUtils {
 		return newAngle;
 	}
 
-    public static float getNormalizedAngle(float angle) {
-        while (angle < 0){
-            angle += MathUtils.RAD_FULL;
-        }
-        return angle % MathUtils.RAD_FULL;
-    }
-    
+	public static float getNormalizedAngle(float angle) {
+		while (angle < 0) {
+			angle += MathUtils.RAD_FULL;
+		}
+		return angle % MathUtils.RAD_FULL;
+	}
+
 	public static boolean inAngleRange(final float angle, final float startAngle, final float endAngle) {
 		float newAngle = adjust(angle);
 		float newStartAngle = adjust(startAngle);
@@ -1784,10 +1784,20 @@ public final class MathUtils {
 	}
 
 	/**
+	 * 返回一个值在指定概率范围内是否可能被触发
+	 * 
+	 * @param k
+	 * @param p
+	 * @return
+	 */
+	public static boolean isSuccessful(float k, float p) {
+		return MathUtils.random(k) < p;
+	}
+
+	/**
 	 * 返回一个概率事件是否被触发的布尔值
 	 * 
-	 * @param chance
-	 *            >0 && < 100
+	 * @param chance >0 && < 100
 	 * @return
 	 */
 	public static boolean chanceRoll(float chance) {
@@ -1796,7 +1806,7 @@ public final class MathUtils {
 		} else if (chance >= 100f) {
 			return true;
 		} else {
-			if (MathUtils.random() * 100f >= chance) {
+			if (MathUtils.random(100f) >= chance) {
 				return false;
 			} else {
 				return true;
