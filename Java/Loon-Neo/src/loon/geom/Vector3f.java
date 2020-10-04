@@ -199,7 +199,6 @@ public class Vector3f implements Serializable, XYZ {
 	public static Vector3f lerp(Vector3f vectorA, Vector3f target, float alpha) {
 		Vector3f r = mul(vectorA, 1.0f - alpha);
 		add(r, mul(cpy(vectorA), alpha));
-
 		return r;
 	}
 
@@ -721,6 +720,17 @@ public class Vector3f implements Serializable, XYZ {
 		return dot(vector) < 0;
 	}
 
+	public Vector3f lerpSelf(float x, float y, float z, float alpha) {
+		this.x += alpha * (x - this.x);
+		this.y += alpha * (y - this.y);
+		this.z += alpha * (z - this.z);
+		return this;
+	}
+
+	public Vector3f lerp(float x, float y, float z, float alpha) {
+		return cpy().lerpSelf(x, y, z, alpha);
+	}
+
 	public Vector3f lerp(final Vector3f target, float alpha) {
 		return cpy().lerpSelf(target, alpha);
 	}
@@ -913,14 +923,14 @@ public class Vector3f implements Serializable, XYZ {
 		return cpy().set((this.x - origin.x) * dx + origin.x, (this.y - origin.y) * dy + origin.y,
 				(this.z - origin.z) * dz + origin.z);
 	}
-	
-    public Vector3f scale(Vector3f origin, float dx) {
-        return scale(origin, dx, dx, dx);
-    }
 
-    public Vector3f scale(Vector3f origin, float dx, float dy) {
-        return scale(origin, dx, dy, 1f);
-    }
+	public Vector3f scale(Vector3f origin, float dx) {
+		return scale(origin, dx, dx, dx);
+	}
+
+	public Vector3f scale(Vector3f origin, float dx, float dy) {
+		return scale(origin, dx, dy, 1f);
+	}
 
 	public Vector3f cross(Vector3f v) {
 		return cross(v.x, v.y, v.z);

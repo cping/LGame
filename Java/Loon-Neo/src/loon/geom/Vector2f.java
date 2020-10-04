@@ -259,12 +259,11 @@ public class Vector2f implements Serializable, XY {
 		return pos;
 	}
 
-    public final static Vector2f direction(Vector2f v1, Vector2f v2)
-    {
-        Vector2f vector = v2.sub(v1);
-        vector.normalizeSelf();
-        return vector;
-    }
+	public final static Vector2f direction(Vector2f v1, Vector2f v2) {
+		Vector2f vector = v2.sub(v1);
+		vector.normalizeSelf();
+		return vector;
+	}
 
 	public final static float dst(Vector2f pos, Vector2f vectorB) {
 		final float x_d = vectorB.x - pos.x;
@@ -393,8 +392,8 @@ public class Vector2f implements Serializable, XY {
 	public Vector2f normalizeNew() {
 		return nor(len());
 	}
-	
-	public Vector2f norSelf(){
+
+	public Vector2f norSelf() {
 		return normalizeSelf();
 	}
 
@@ -626,12 +625,6 @@ public class Vector2f implements Serializable, XY {
 			this.y = this.x * sin + this.y * cos;
 		}
 		return this;
-	}
-
-	public Vector2f lerp(Vector2f target, float alpha) {
-		Vector2f r = this.mul(1.0f - alpha);
-		r.add(target.tmp().mul(alpha));
-		return r;
 	}
 
 	public Vector2f(float value) {
@@ -932,6 +925,29 @@ public class Vector2f implements Serializable, XY {
 		return length;
 	}
 
+	public Vector2f lerp(Vector2f target, float alpha) {
+		Vector2f r = this.mul(1f - alpha);
+		r.add(target.tmp().mul(alpha));
+		return r;
+	}
+
+	public Vector2f lerpSelf(Vector2f target, float alpha) {
+		final float oneMinusAlpha = 1f - alpha;
+		float x = (this.x * oneMinusAlpha) + (target.x * alpha);
+		float y = (this.y * oneMinusAlpha) + (target.y * alpha);
+		return set(x, y);
+	}
+
+	public Vector2f lerpSelf(float x, float y, float alpha) {
+		this.x += alpha * (x - this.x);
+		this.y += alpha * (y - this.y);
+		return this;
+	}
+
+	public Vector2f lerp(float x, float y, float alpha) {
+		return cpy().lerpSelf(x, y, alpha);
+	}
+
 	public final Vector2f abs() {
 		return new Vector2f(MathUtils.abs(x), MathUtils.abs(y));
 	}
@@ -1102,15 +1118,6 @@ public class Vector2f implements Serializable, XY {
 
 	public float distanceSquared(Vector2f v) {
 		return (v.x - x) * (v.x - x) + (v.y - y) * (v.y - y);
-	}
-
-	public Vector2f lerpSelf(Vector2f target, float alpha) {
-		final float oneMinusAlpha = 1f - alpha;
-
-		float x = (this.x * oneMinusAlpha) + (target.x * alpha);
-		float y = (this.y * oneMinusAlpha) + (target.y * alpha);
-
-		return set(x, y);
 	}
 
 	public Vector2f perpendicular() {

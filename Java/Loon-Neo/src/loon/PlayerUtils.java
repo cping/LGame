@@ -26,6 +26,7 @@ import loon.action.ActionControl;
 import loon.action.ActionEvent;
 import loon.action.ActionScript;
 import loon.action.ActionTween;
+import loon.action.map.PathMove;
 import loon.action.sprite.CanvasPlayer;
 import loon.canvas.Canvas;
 import loon.canvas.LColor;
@@ -35,6 +36,7 @@ import loon.font.LFont;
 import loon.font.TextLayout;
 import loon.geom.BooleanValue;
 import loon.geom.RectBox;
+import loon.geom.Vector2f;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
 import loon.utils.processes.GameProcess;
@@ -311,6 +313,23 @@ public class PlayerUtils extends Director {
 		canvas.drawText(text, 0f, 0f);
 		CanvasPlayer player = new CanvasPlayer(LSystem.base().graphics(), canvas);
 		return player;
+	}
+
+	public final static PathMove createPathMove(Vector2f origin, Vector2f target, float speed, boolean limit) {
+		return new PathMove(origin, target, speed, limit);
+	}
+
+	public final static PathMove createPathMove(Vector2f origin, Vector2f target, float speed) {
+		return new PathMove(origin, target, speed);
+	}
+
+	public final static PathMove createPathMove(float srcX, float srcY, float destX, float destY, float speed,
+			boolean limit) {
+		return new PathMove(srcX, srcY, destX, destY, speed, limit);
+	}
+
+	public final static PathMove createPathMove(float srcX, float srcY, float destX, float destY, float speed) {
+		return new PathMove(srcX, srcY, destX, destY, speed);
 	}
 
 	/**
