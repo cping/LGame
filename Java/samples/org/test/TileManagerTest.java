@@ -25,6 +25,8 @@ import loon.Screen;
 import loon.Stage;
 import loon.action.map.AStarFindHeuristic;
 import loon.action.map.AStarFinder;
+import loon.action.map.CustomPath;
+import loon.action.map.Grid2D;
 import loon.action.map.colider.TileImpl;
 import loon.action.map.colider.TileManager;
 import loon.action.map.colider.TileManager.TileDrawListener;
@@ -39,8 +41,7 @@ public class TileManagerTest extends Stage {
 
 	@Override
 	public void create() {
-		final AnimatedEntity hero = new AnimatedEntity("assets/rpg/hero.gif", 32, 32,50,
-				50, 32, 32);
+		final AnimatedEntity hero = new AnimatedEntity("assets/rpg/hero.gif", 32, 32, 50, 50, 32, 32);
 		// 播放动画,速度每帧220
 		final long[] frames = { 220, 220, 220 };
 		// 左右下上四方向的帧播放顺序(也可以理解为具体播放的帧)
@@ -62,39 +63,41 @@ public class TileManagerTest extends Stage {
 		hero.setZ(100);
 		// 添加hero到地图上
 		add(hero);
-		
-		final TileManager manager = new TileManager(AStarFinder.ASTAR_MANHATTAN,getWidth(),getHeight());
-		
-		manager.put(new TileImpl(0, 80,100));
-		manager.put(new TileImpl(0, 280,100));
-		
-		final LTexture tex = loadTexture("assets/ccc.png");
-		
+
+		// 以Grid构建基础地图
+		final Grid2D grid = new Grid2D(getWidth() / 32, getHeight() / 32);
+		// 让Grid内部生成一个默认大小的Tile集合
+		grid.calcDefaultMap();
+
+		// 管理grid,8方位寻径
+		final TileManager manager = new TileManager(grid, true);
+
 		up(new Touched() {
-			
+
 			@Override
 			public void on(float x, float y) {
-				TArray<TileImpl> path = manager.findMovePath(hero.x(), hero.y(), (int)x, (int)y, true);
-				System.out.println(path);
+				TArray<Vector2f> path = manager.getFinder().findVectorPath(manager.toTileX(hero.x()),
+						manager.toTileY(hero.y()), manager.toTileX(x), manager.toTileY(y));
+				// 自定义行走路径
+				CustomPath cpath = new CustomPath(path);
+				cpath.setScale(grid.getTileWidth(), grid.getTileHeight());
+				// 让英雄按自定义路径行走
+				hero.selfAction().defineMoveTo(cpath).start();
 			}
 		});
-		
+
 		manager.setTileListener(new TileDrawListener<TileImpl>() {
-			
+
 			@Override
 			public void update(long elapsedTime, TileImpl tile) {
 			}
-			
+
 			@Override
 			public void draw(GLEx g, TileImpl tile, float x, float y) {
-				if(tile!=null){
-					g.draw(tex, tile.getX(), tile.getY());
-				}
-			
-	
+
 			}
 		});
-		
+
 		setDrawListener(new DrawListener<Screen>() {
 
 			@Override

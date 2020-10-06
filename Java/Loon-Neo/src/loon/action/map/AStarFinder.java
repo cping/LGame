@@ -22,7 +22,6 @@ package loon.action.map;
 
 import loon.LRelease;
 import loon.LSystem;
-import loon.action.map.colider.TileImplPathFind;
 import loon.action.map.heuristics.BestFirst;
 import loon.action.map.heuristics.Closest;
 import loon.action.map.heuristics.ClosestSquared;
@@ -43,7 +42,7 @@ import loon.utils.TArray;
 /**
  * A*寻径用类
  */
-public class AStarFinder extends TileImplPathFind implements Updateable, LRelease {
+public class AStarFinder implements Updateable, LRelease {
 
 	private static class ScoredPath {
 
