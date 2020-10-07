@@ -27,12 +27,19 @@ import loon.action.map.colider.TileImplFinder;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
 
+/**
+ * Tile对象到地图的转化管理用类(Field2D类是处理简单的数组地图用的,这个是处理复杂的Tile对象集合的(主要是Tile对象功能上比较复杂),需要和TileManager配合使用)
+ */
 public class Grid2D {
 
-	private TileImpl[][] data;
+	private TileImpl[][] data = null;
+
+	private Field2D fieldMap = null;
 
 	private int width;
 	private int height;
+	private int mapWidth;
+	private int mapHeight;
 	private int tileWidth;
 	private int tileHeight;
 
@@ -44,6 +51,10 @@ public class Grid2D {
 		this(mapWidth, mapHeight, 32, 32, generator);
 	}
 
+	public Grid2D(int mapWidth, int mapHeight, int tileWidth, int tileHeight) {
+		this(mapWidth, mapHeight, tileWidth, tileHeight, null);
+	}
+
 	public Grid2D(int mapWidth, int mapHeight, int tileWidth, int tileHeight, TileGenerator generator) {
 		if (mapWidth <= 0 || mapHeight <= 0) {
 			throw new IllegalArgumentException("Cannot create grid with 0 or negative size !");
@@ -52,6 +63,8 @@ public class Grid2D {
 			throw new IllegalArgumentException("Cannot create grid with tiles of negative size !");
 		}
 
+		this.mapWidth = mapWidth;
+		this.mapHeight = mapHeight;
 		this.tileWidth = tileWidth;
 		this.tileHeight = tileHeight;
 		this.width = mapWidth * tileWidth;
@@ -76,10 +89,15 @@ public class Grid2D {
 	}
 
 	public Grid2D calcDefaultMap(int mapWidth, int mapHeight, int tileWidth, int tileHeight) {
+
+		this.mapWidth = mapWidth;
+		this.mapHeight = mapHeight;
 		this.tileWidth = tileWidth;
 		this.tileHeight = tileHeight;
+
 		this.width = (tileWidth * mapWidth);
 		this.height = (tileHeight * mapHeight);
+
 		this.data = new TileImpl[mapWidth][mapHeight];
 		for (int x = 0; x < mapWidth; ++x) {
 			for (int y = 0; y < mapHeight; ++y) {
@@ -87,6 +105,14 @@ public class Grid2D {
 			}
 		}
 		return this;
+	}
+
+	public int getMapWidth() {
+		return mapWidth;
+	}
+
+	public int getMapHeight() {
+		return mapHeight;
 	}
 
 	public int getWidth() {
@@ -113,7 +139,15 @@ public class Grid2D {
 		return MathUtils.floor(y / tileHeight);
 	}
 
-	public boolean isWithin(int x, int y) {
+	public int toPixelX(float x) {
+		return MathUtils.floor(x * tileWidth);
+	}
+
+	public int toPixelY(float y) {
+		return MathUtils.floor(y * tileHeight);
+	}
+
+	public boolean isWithin(float x, float y) {
 		return x >= 0 && x < getWidth() && y >= 0 && y < getHeight();
 	}
 
@@ -126,10 +160,6 @@ public class Grid2D {
 		node.setHeight(tileHeight);
 		data[x][y] = node;
 		return this;
-	}
-
-	public TileImpl[][] getData() {
-		return data;
 	}
 
 	public TileImpl getRight(Tile tile) {
@@ -148,6 +178,22 @@ public class Grid2D {
 		return getDown(tile.getX(), tile.getY());
 	}
 
+	public TileImpl getRightUp(Tile tile) {
+		return getRightUp(tile.getX(), tile.getY());
+	}
+
+	public TileImpl getLeftUp(Tile tile) {
+		return getLeftUp(tile.getX(), tile.getY());
+	}
+
+	public TileImpl getRightDown(Tile tile) {
+		return getRightDown(tile.getX(), tile.getY());
+	}
+
+	public TileImpl getLeftDown(Tile tile) {
+		return getLeftDown(tile.getX(), tile.getY());
+	}
+
 	public TileImpl getRight(int x, int y) {
 		return getNotNull(x + 1, y);
 	}
@@ -164,6 +210,22 @@ public class Grid2D {
 		return getNotNull(x, y + 1);
 	}
 
+	public TileImpl getRightUp(int x, int y) {
+		return getNotNull(x + 1, y + 1);
+	}
+
+	public TileImpl getLeftUp(int x, int y) {
+		return getNotNull(x - 1, y + 1);
+	}
+
+	public TileImpl getRightDown(int x, int y) {
+		return getNotNull(x + 1, y - 1);
+	}
+
+	public TileImpl getLeftDown(int x, int y) {
+		return getNotNull(x - 1, y - 1);
+	}
+
 	public TileImpl getRandomTile() {
 		int x = MathUtils.nextInt(getWidth());
 		int y = MathUtils.nextInt(getHeight());
@@ -178,6 +240,10 @@ public class Grid2D {
 	}
 
 	public TArray<TileImpl> getNeighbors(int x, int y) {
+		return getNeighbors(x, y, false);
+	}
+
+	public TArray<TileImpl> getNeighbors(int x, int y, boolean all) {
 		TArray<TileImpl> result = new TArray<TileImpl>();
 		TileImpl left = getLeft(x, y);
 		TileImpl right = getRight(x, y);
@@ -195,6 +261,24 @@ public class Grid2D {
 		if (down != null) {
 			result.add(down);
 		}
+		if (all) {
+			TileImpl leftUp = getLeftUp(x, y);
+			TileImpl rightUp = getRightUp(x, y);
+			TileImpl leftDown = getLeftDown(x, y);
+			TileImpl rightDown = getRightUp(x, y);
+			if (leftUp != null) {
+				result.add(leftUp);
+			}
+			if (rightUp != null) {
+				result.add(rightUp);
+			}
+			if (leftDown != null) {
+				result.add(leftDown);
+			}
+			if (rightDown != null) {
+				result.add(rightDown);
+			}
+		}
 		return result;
 	}
 
@@ -208,6 +292,25 @@ public class Grid2D {
 		return tiles;
 	}
 
+	public Field2D getField2D() {
+		if (fieldMap == null) {
+			fieldMap = new Field2D(this.mapWidth, this.mapHeight, this.tileWidth, this.tileHeight);
+		}
+		for (int x = 0; x < fieldMap.getWidth(); x++) {
+			for (int y = 0; y < fieldMap.getHeight(); y++) {
+				TileImpl impl = get(x, y);
+				if (impl != null) {
+					fieldMap.setTileType(x, y, impl.getId());
+				}
+			}
+		}
+		return fieldMap;
+	}
+
+	public TileImpl[][] getData() {
+		return data;
+	}
+
 	public TileImplFinder getFinder() {
 		return new TileImplFinder(this);
 	}
@@ -219,4 +322,5 @@ public class Grid2D {
 	public TileImplFinder getFinder(AStarFindHeuristic heuristic, boolean all) {
 		return new TileImplFinder(this, heuristic, all);
 	}
+
 }

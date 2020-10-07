@@ -676,6 +676,22 @@ public class Field2D implements IArray, Config {
 		return new PointI(hx, hy);
 	}
 
+	public int toPixelX(float x) {
+		return tilesToWidthPixels(x);
+	}
+
+	public int toPixelY(float y) {
+		return tilesToHeightPixels(y);
+	}
+
+	public int toTileX(float x) {
+		return pixelsToTilesWidth(x);
+	}
+
+	public int toTileY(float y) {
+		return pixelsToTilesHeight(y);
+	}
+
 	public int pixelsToTilesWidth(float x) {
 		return MathUtils.floor(x / tileWidth);
 	}

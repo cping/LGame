@@ -240,6 +240,14 @@ public class CustomPath implements LRelease {
 		return scaleX != 1f && scaleY != 1f;
 	}
 
+	public CustomPath setTileSize(float size) {
+		return setScale(size);
+	}
+
+	public CustomPath setTileSize(float tileWidth, float tileHeight) {
+		return setScale(tileWidth, tileHeight);
+	}
+
 	public CustomPath setScale(float s) {
 		return setScale(s, s);
 	}
@@ -250,8 +258,20 @@ public class CustomPath implements LRelease {
 		return this;
 	}
 
+	public float getTileWidth() {
+		return getScaleX();
+	}
+
+	public float getTileHeight() {
+		return getScaleY();
+	}
+
 	public float getScaleX() {
 		return scaleX;
+	}
+
+	public CustomPath setTileWidth(float tileWidth) {
+		return setScaleX(tileWidth);
 	}
 
 	public CustomPath setScaleX(float scaleX) {
@@ -261,6 +281,10 @@ public class CustomPath implements LRelease {
 
 	public float getScaleY() {
 		return scaleY;
+	}
+
+	public CustomPath setTileHeight(float tileHeight) {
+		return setScaleY(tileHeight);
 	}
 
 	public CustomPath setScaleY(float scaleY) {
