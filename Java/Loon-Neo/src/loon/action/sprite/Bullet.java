@@ -281,8 +281,8 @@ public class Bullet extends LObject<Bullet> implements CollisionObject, ActionBi
 	}
 
 	@Override
-	public void setVisible(boolean visible) {
-		this.visible = visible;
+	public void setVisible(boolean v) {
+		this.visible = v;
 	}
 
 	@Override

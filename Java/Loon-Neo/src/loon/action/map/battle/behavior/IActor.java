@@ -76,8 +76,8 @@ public abstract class IActor {
 		return visible;
 	}
 
-	public void setVisible(boolean visible) {
-		this.visible = visible;
+	public void setVisible(boolean v) {
+		this.visible = v;
 	}
 
 	public float getPosX() {

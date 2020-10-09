@@ -773,8 +773,8 @@ public class Sprite extends LObject<ISprite>
 	}
 
 	@Override
-	public void setVisible(boolean visible) {
-		this.visible = visible;
+	public void setVisible(boolean v) {
+		this.visible = v;
 	}
 
 	public String getSpriteName() {

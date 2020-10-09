@@ -101,6 +101,10 @@ final public class StringUtils extends CharUtils {
 		return MathUtils.isLimit(cs.length(), minX, maxX);
 	}
 
+	private final static String[] BOOL_POOL_TRUE = { "true", "yes", "ok", "on" };
+
+	private final static String[] BOOL_POOL_FALSE = { "false", "no", "fake", "off" };
+
 	/**
 	 * 判断指定字符串内容是否为布尔值(不判定数字为布尔，并且只判定布尔值，不考虑值真假问题)
 	 * 
@@ -112,8 +116,7 @@ final public class StringUtils extends CharUtils {
 			return false;
 		}
 		String str = o.trim().toLowerCase();
-		return str.equals("true") || str.equals("false") || str.equals("yes") || str.equals("no") || str.equals("ok")
-				|| str.equals("on") || str.equals("off");
+		return contains(str, BOOL_POOL_TRUE) || contains(str, BOOL_POOL_FALSE);
 	}
 
 	/**
@@ -127,9 +130,9 @@ final public class StringUtils extends CharUtils {
 			return false;
 		}
 		String str = o.trim().toLowerCase();
-		if (str.equals("true") || str.equals("yes") || str.equals("ok") || str.equals("on")) {
+		if (contains(str, BOOL_POOL_TRUE)) {
 			return true;
-		} else if (str.equals("no") || str.equals("false") || str.equals("off")) {
+		} else if (contains(str, BOOL_POOL_FALSE)) {
 			return false;
 		} else if (MathUtils.isNan(str)) {
 			return Double.parseDouble(str) > 0;
@@ -164,10 +167,9 @@ final public class StringUtils extends CharUtils {
 	 * 
 	 * @param a
 	 * @param b
-	 * @param ignoreWhitespaces
-	 *            如果此项为true,则无视所有不显示的占位符,即StringUtils.equals("abc\n",
-	 *            "abc",true)
-	 *            这样含有换行符之类不显示字符的字符串在比较时此标记为true时将等值,为false时不等值,默认为false
+	 * @param ignoreWhitespaces 如果此项为true,则无视所有不显示的占位符,即StringUtils.equals("abc\n",
+	 *                          "abc",true)
+	 *                          这样含有换行符之类不显示字符的字符串在比较时此标记为true时将等值,为false时不等值,默认为false
 	 * @return
 	 */
 	public static boolean equals(final CharSequence a, final CharSequence b, final boolean ignoreWhitespaces) {
@@ -721,10 +723,8 @@ final public class StringUtils extends CharUtils {
 	/**
 	 * 以指定标记分割过滤字符序列并返回一个数据集合
 	 * 
-	 * @param chars
-	 *            要过滤的字符序列
-	 * @param flag
-	 *            以何种标记过滤分段
+	 * @param chars 要过滤的字符序列
+	 * @param flag  以何种标记过滤分段
 	 * @return
 	 */
 	public static TArray<CharSequence> splitArray(final CharSequence chars, final char flag) {
@@ -734,12 +734,9 @@ final public class StringUtils extends CharUtils {
 	/**
 	 * 以指定标记分割过滤字符序列并返回一个数据集合
 	 * 
-	 * @param chars
-	 *            要过滤的字符序列
-	 * @param flag
-	 *            以何种标记过滤分段
-	 * @param result
-	 *            返回结果用的集合对象
+	 * @param chars  要过滤的字符序列
+	 * @param flag   以何种标记过滤分段
+	 * @param result 返回结果用的集合对象
 	 * @return
 	 */
 	public static <T extends TArray<CharSequence>> T splitArray(final CharSequence chars, final char flag,
@@ -1153,8 +1150,7 @@ final public class StringUtils extends CharUtils {
 	/**
 	 * 检查指定字符串中是否存在中文字符。
 	 * 
-	 * @param checkStr
-	 *            指定需要检查的字符串。
+	 * @param checkStr 指定需要检查的字符串。
 	 * @return 逻辑值（True Or False）。
 	 */
 	public static boolean hasChinese(CharSequence v) {
@@ -1451,12 +1447,9 @@ final public class StringUtils extends CharUtils {
 	/**
 	 * 当字符序列长度不满足指定要求时，在字符串前(左侧)补位特定字符,字符序列增加为指定长度
 	 * 
-	 * @param chars
-	 *            原始字符序列
-	 * @param padChar
-	 *            字符序列长度不够时补位用字符
-	 * @param len
-	 *            字符序列长度补位生效的要求长度
+	 * @param chars   原始字符序列
+	 * @param padChar 字符序列长度不够时补位用字符
+	 * @param len     字符序列长度补位生效的要求长度
 	 * @return
 	 */
 	public static CharSequence padFront(final CharSequence chars, final char padChar, final int len) {
@@ -1933,8 +1926,7 @@ final public class StringUtils extends CharUtils {
 	/**
 	 * 统计指定集合中字符序列对象的总长度
 	 * 
-	 * @param chars
-	 *            字符序列集合
+	 * @param chars 字符序列集合
 	 * @return
 	 */
 	public static int countCharacters(final TArray<CharSequence> chars) {
@@ -1944,10 +1936,8 @@ final public class StringUtils extends CharUtils {
 	/**
 	 * 统计指定集合中字符序列对象的总长度
 	 * 
-	 * @param chars
-	 *            字符序列集合
-	 * @param ignoreWhitespaces
-	 *            是否跳过仅占位而不显示的字符
+	 * @param chars             字符序列集合
+	 * @param ignoreWhitespaces 是否跳过仅占位而不显示的字符
 	 * @return
 	 */
 	public static int countCharacters(final TArray<CharSequence> chars, final boolean ignoreWhitespaces) {

@@ -295,8 +295,8 @@ public class AVGChara implements Visible, XY, LRelease {
 	}
 
 	@Override
-	public void setVisible(boolean isVisible) {
-		this.visible = isVisible;
+	public void setVisible(boolean v) {
+		this.visible = v;
 	}
 
 	public LTexture getTexture() {

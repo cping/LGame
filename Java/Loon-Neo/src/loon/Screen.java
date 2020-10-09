@@ -2172,11 +2172,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @param visible
 	 */
 
-	public Screen emulatorButtonsVisible(boolean visible) {
+	public Screen emulatorButtonsVisible(boolean v) {
 		if (LSystem.getProcess() != null) {
 			try {
 				EmulatorButtons es = LSystem.getProcess().getEmulatorButtons();
-				es.setVisible(visible);
+				es.setVisible(v);
 			} catch (Throwable e) {
 			}
 		}

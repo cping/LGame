@@ -208,8 +208,8 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 	}
 
 	@Override
-	public void setVisible(boolean visible) {
-		this.visible = visible;
+	public void setVisible(boolean v) {
+		this.visible = v;
 	}
 
 	@Override

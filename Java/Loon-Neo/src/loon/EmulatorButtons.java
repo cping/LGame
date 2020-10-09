@@ -399,11 +399,11 @@ public class EmulatorButtons implements LRelease {
 		return visible;
 	}
 
-	public void setVisible(boolean visible) {
-		if (!visible) {
+	public void setVisible(boolean v) {
+		if (!v) {
 			release();
 		}
-		this.visible = visible;
+		this.visible = v;
 	}
 
 	public EmulatorListener getEmulatorListener() {

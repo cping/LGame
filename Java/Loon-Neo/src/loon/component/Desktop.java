@@ -1181,8 +1181,8 @@ public class Desktop implements Visible, LRelease {
 	}
 
 	@Override
-	public void setVisible(boolean visible) {
-		this.dvisible = visible;
+	public void setVisible(boolean v) {
+		this.dvisible = v;
 	}
 
 	@Override

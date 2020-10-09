@@ -1432,8 +1432,8 @@ public class Sprites implements IArray, Visible, LRelease {
 	}
 
 	@Override
-	public void setVisible(boolean visible) {
-		this._visible = visible;
+	public void setVisible(boolean v) {
+		this._visible = v;
 	}
 
 	public SpriteListener getSprListerner() {
