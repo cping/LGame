@@ -12,7 +12,7 @@ public class TestLoon extends Loon {
 
 		GWTSetting setting = new GWTSetting();
 		setting.fps = 60;
-		setting.isDebug = false;
+		setting.isDebug = true;
 		setting.isDisplayLog = false;
 		// source size
 		setting.width = 480;
@@ -23,6 +23,7 @@ public class TestLoon extends Loon {
 		setting.repaint = Repaint.AnimationScheduler;
 		setting.isFPS = true;
 		setting.fontName = "黑体";
+		setting.isConsoleLog = true;
 		setting.rootId = "embed-loon.test.TestLoon";
 		// 按屏幕缩放比例缩放
 		// setting.useRatioScaleFactor = true;

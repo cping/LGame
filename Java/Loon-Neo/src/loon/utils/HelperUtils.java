@@ -53,6 +53,30 @@ import loon.utils.timer.Interval;
  */
 public class HelperUtils {
 
+	public final static <T> boolean contains(T key, TArray<T> list) {
+		for (T o : list) {
+			if (key == null && o == null) {
+				return true;
+			}
+			if (o == key || (o != null && o.equals(key))) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public final static boolean contains(Object key, Object... objs) {
+		for (Object o : objs) {
+			if (key == null && o == null) {
+				return true;
+			}
+			if (o == key || (o != null && o.equals(key))) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public final static EmptyObject newEmptyObject() {
 		return new EmptyObject();
 	}

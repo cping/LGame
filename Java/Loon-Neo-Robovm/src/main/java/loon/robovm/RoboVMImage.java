@@ -84,14 +84,16 @@ public class RoboVMImage extends ImageImpl {
 		if (width <= 0 || height <= 0){
 			return;
 		}
-		int bytesPerRow = 4 * width;
+		final int bytesPerPixel = 4;
+		final int bytesPerRow = bytesPerPixel * width;
 		CGBitmapContext context = CGBitmapContext.create(width, height, 8,
 				bytesPerRow, CGColorSpace.createDeviceRGB(), new CGBitmapInfo(
 						CGImageAlphaInfo.PremultipliedFirst.value()));
 		context.setInterpolationQuality(CGInterpolationQuality.None);
 		draw(context, 0, 0, width, height, startX, startY, width, height);
 
-		int[] pixelData = new int[height * width * 4];
+		int[] pixelData = new int[height * bytesPerRow];
+		
 		context.getData().get(pixelData);
 
 		int i = 0;
@@ -115,14 +117,16 @@ public class RoboVMImage extends ImageImpl {
 		if (width <= 0 || height <= 0){
 			return;
 		}
-		int bytesPerRow = 4 * width;
+		final int bytesPerPixel = 4;
+		final int bytesPerRow = bytesPerPixel * width;
 		CGBitmapContext context = CGBitmapContext.create(width, height, 8,
 				bytesPerRow, CGColorSpace.createDeviceRGB(), new CGBitmapInfo(
 						CGImageAlphaInfo.PremultipliedFirst.value()));
 		context.setInterpolationQuality(CGInterpolationQuality.None);
 		draw(context, 0, 0, width, height, startX, startY, width, height);
-		int[] pixelData = new int[height * width * 4];
-		context.getData().get(pixelData);
+		int[] pixelData = new int[height * bytesPerRow];
+		IntPtr handle = context.getData();
+		handle.get(pixelData);
 		int i = 0;
 		int dst = offset;
 		for (int y = 0; y < height; y++) {
@@ -135,7 +139,10 @@ public class RoboVMImage extends ImageImpl {
 			}
 			dst += scanSize;
 		}
-		context.getData().set(pixelData);
+		handle.set(pixelData);
+		
+		setBitmap(context.toImage());
+		
 		context.dispose();
 	}
 
@@ -226,6 +233,10 @@ public class RoboVMImage extends ImageImpl {
 	protected void setBitmap(Object bitmap) {
 		image = (CGImage) bitmap;
 	}
+	
+	protected void setBitmap(CGBitmapContext context) {
+		setBitmap(context.toImage());
+	}
 
 	@Override
 	protected Object createErrorBitmap(int pixelWidth, int pixelHeight) {
@@ -272,10 +283,10 @@ public class RoboVMImage extends ImageImpl {
 
 	@Override
 	public int[] getPixels(int[] pixels) {
-		int width = (int) image.getWidth();
-		int height = (int) image.getHeight();
-		int length = width * height;
-		int[] rgbArray = new int[length];
+		final int width = (int) image.getWidth();
+		final int height = (int) image.getHeight();
+		final int length = width * height;
+		final int[] rgbArray = new int[length];
 		getRGB(0, 0, width, height, rgbArray, length, width);
 		return rgbArray;
 	}
@@ -288,7 +299,7 @@ public class RoboVMImage extends ImageImpl {
 	@Override
 	public int[] getPixels(int offset, int stride, int x, int y, int width,
 			int height) {
-		int[] rgbArray = new int[width * height];
+		final int[] rgbArray = new int[width * height];
 		getRGB(x, y, width, height, rgbArray, offset, width);
 		return rgbArray;
 	}
@@ -332,14 +343,14 @@ public class RoboVMImage extends ImageImpl {
 		int width = (int) image.getWidth();
 		int height = (int) image.getHeight();
 
-		byte bytesPerPixel = 4;
+		int bytesPerPixel = 4;
 		int bytesPerRow = bytesPerPixel * width;
 		CGBitmapContext context = CGBitmapContext.create(width, height, 8,
 				bytesPerRow, CGColorSpace.createDeviceRGB(), new CGBitmapInfo(
 						CGImageAlphaInfo.PremultipliedFirst.value()));
 		context.setInterpolationQuality(CGInterpolationQuality.None);
 		draw(context, 0, 0, width, height);
-		int[] pixelData = new int[height * width * 4];
+		int[] pixelData = new int[height * bytesPerRow];
 		context.getData().get(pixelData);
 
 		int rowOffset = y * bytesPerRow;
@@ -364,15 +375,52 @@ public class RoboVMImage extends ImageImpl {
 		int width = (int) image.getWidth();
 		int height = (int) image.getHeight();
 
-		byte bytesPerPixel = 4;
+		int bytesPerPixel = 4;
+		int bytesPerRow = bytesPerPixel * width;
+		CGBitmapContext context = CGBitmapContext.create(width, height, 8,
+				bytesPerRow, CGColorSpace.createDeviceRGB(), new CGBitmapInfo(
+						CGImageAlphaInfo.PremultipliedFirst.value()));
+		context.setInterpolationQuality(CGInterpolationQuality.None);
+		
+		y += height;
+		context.saveGState();
+		context.translateCTM(x, y);
+		context.scaleCTM(1, -1);
+		context.drawImage(new CGRect(0, 0, width, height), cgImage());
+
+		LColor color = new LColor(rgb);
+		
+		float r = color.r;
+		float g = color.g;
+		float b = color.b;
+		float a = color.a;
+		
+		context.setRGBStrokeColor(r, g, b, a);
+		context.setRGBFillColor(r, g, b, a);
+		context.setAlpha(a);
+
+		context.fillRect(new CGRect(x, y, 1f, 1f));
+		context.restoreGState();
+		
+		setBitmap(context.toImage());
+		
+		context.dispose();
+		
+		/**
+		 * 
+		int width = (int) image.getWidth();
+		int height = (int) image.getHeight();
+
+		int bytesPerPixel = 4;
 		int bytesPerRow = bytesPerPixel * width;
 		CGBitmapContext context = CGBitmapContext.create(width, height, 8,
 				bytesPerRow, CGColorSpace.createDeviceRGB(), new CGBitmapInfo(
 						CGImageAlphaInfo.PremultipliedFirst.value()));
 		context.setInterpolationQuality(CGInterpolationQuality.None);
 		draw(context, 0, 0, width, height);
-		int[] pixelData = new int[height * width * 4];
-		context.getData().get(pixelData);
+		int[] pixelData = new int[height * bytesPerRow];
+		IntPtr handle = context.getData();
+		handle.get(pixelData);
 
 		int rowOffset = y * bytesPerRow;
 		int colOffset = x * bytesPerPixel;
@@ -383,8 +431,13 @@ public class RoboVMImage extends ImageImpl {
 		pixelData[pixelDataLoc + 2] = (rgb) & 255;
 		pixelData[pixelDataLoc + 3] = (rgb >> 24) & 255;
 
-		context.getData().set(pixelData);
+		handle.set(pixelData);
+		
+		setBitmap(context.toImage());
+		
 		context.dispose();
+	
+		 */
 	}
 
 	@Override

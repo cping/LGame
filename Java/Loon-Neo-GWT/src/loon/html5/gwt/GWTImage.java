@@ -45,19 +45,18 @@ import com.google.gwt.dom.client.NativeEvent;
 public class GWTImage extends ImageImpl {
 
 	private static native boolean isComplete(ImageElement img) /*-{
-																return img.complete;
-																}-*/;
+		return img.complete;
+	}-*/;
 
 	private static native void setComplete(ImageElement img) /*-{
-																img.complete = true;
-																}-*/;
+		img.complete = true;
+	}-*/;
 
 	public static ImageData scaleImage(ImageElement image, float scale) {
 		return scaleImage(image, scale, scale);
 	}
 
-	public static ImageData scaleImage(ImageElement image, float scaleToRatioh,
-			float scaleToRatiow) {
+	public static ImageData scaleImage(ImageElement image, float scaleToRatioh, float scaleToRatiow) {
 		Canvas canvasTmp = Canvas.createIfSupported();
 		Context2d context = canvasTmp.getContext2d();
 		float ch = (image.getHeight() * scaleToRatioh);
@@ -94,8 +93,7 @@ public class GWTImage extends ImageImpl {
 	}
 
 	public GWTImage(Graphics gfx, Scale scale, ImageElement elem, String source) {
-		super(gfx, GoPromise.<Image> create(), scale, elem.getWidth(), elem
-				.getHeight(), source);
+		super(gfx, GoPromise.<Image>create(), scale, elem.getWidth(), elem.getHeight(), source);
 		img = elem;
 		final GoPromise<Image> pstate = ((GoPromise<Image>) state);
 		if (isComplete(img)) {
@@ -112,16 +110,14 @@ public class GWTImage extends ImageImpl {
 			GWTInputMake.addEventListener(img, "error", new EventHandler() {
 				@Override
 				public void handleEvent(NativeEvent evt) {
-					pstate.fail(new RuntimeException("Error loading image "
-							+ img.getSrc()));
+					pstate.fail(new RuntimeException("Error loading image " + img.getSrc()));
 				}
 			}, false);
 		}
 	}
 
 	public GWTImage(Graphics gfx, Throwable error) {
-		super(gfx, GoFuture.<Image> failure(error), Scale.ONE, 50, 50,
-				"<error>");
+		super(gfx, GoFuture.<Image>failure(error), Scale.ONE, 50, 50, "<error>");
 		setBitmap(createErrorBitmap(pixelWidth, pixelHeight));
 	}
 
@@ -151,8 +147,7 @@ public class GWTImage extends ImageImpl {
 	}
 
 	@Override
-	public void getRGB(int startX, int startY, int width, int height,
-			int[] rgbArray, int offset, int scanSize) {
+	public void getRGB(int startX, int startY, int width, int height, int[] rgbArray, int offset, int scanSize) {
 		assert isLoaded() : "Cannot getRgb() a non-ready image";
 		if (width <= 0 || height <= 0) {
 			return;
@@ -176,8 +171,7 @@ public class GWTImage extends ImageImpl {
 	}
 
 	@Override
-	public void setRGB(int startX, int startY, int width, int height,
-			int[] rgbArray, int offset, int scanSize) {
+	public void setRGB(int startX, int startY, int width, int height, int[] rgbArray, int offset, int scanSize) {
 		if (width <= 0 || height <= 0) {
 			return;
 		}
@@ -202,8 +196,7 @@ public class GWTImage extends ImageImpl {
 
 	@Override
 	public Image transform(BitmapTransformer xform) {
-		return new GWTImage(gfx, scale,
-				((GWTTransformer) xform).transform(img), source);
+		return new GWTImage(gfx, scale, ((GWTTransformer) xform).transform(img), source);
 	}
 
 	@Override
@@ -212,8 +205,7 @@ public class GWTImage extends ImageImpl {
 	}
 
 	@Override
-	public void draw(Object ctx, float dx, float dy, float dw, float dh,
-			float sx, float sy, float sw, float sh) {
+	public void draw(Object ctx, float dx, float dy, float dw, float dh, float sx, float sy, float sw, float sh) {
 		Context2d context = (Context2d) ctx;
 		float f = scale().factor;
 		sx *= f;
@@ -222,22 +214,18 @@ public class GWTImage extends ImageImpl {
 		sh *= f;
 		float scaleX = dw / (sw - sx), scaleY = dh / (sh - sy);
 		context.save();
-		context.rect(MathUtils.ifloor(dx), MathUtils.ifloor(dy),
-				MathUtils.iceil(dw), MathUtils.iceil(dh));
+		context.rect(MathUtils.ifloor(dx), MathUtils.ifloor(dy), MathUtils.iceil(dw), MathUtils.iceil(dh));
 		context.clip();
-		Affine2f affine = new Affine2f(scaleX, 0f, 0f, scaleY,
-				dx - sx * scaleX, dy - sy * scaleY);
-		context.transform(affine.m00, affine.m01, affine.m10, affine.m11,
-				affine.tx, affine.ty);
+		Affine2f affine = new Affine2f(scaleX, 0f, 0f, scaleY, dx - sx * scaleX, dy - sy * scaleY);
+		context.transform(affine.m00, affine.m01, affine.m10, affine.m11, affine.tx, affine.ty);
 		context.drawImage(img, 0, 0);
 		context.restore();
 	}
 
 	@Override
 	public String toString() {
-		return "Image[src=" + source + ", scale=" + scale + ", size=" + width()
-				+ "x" + height() + ", psize=" + pixelWidth + "x" + pixelHeight
-				+ ", img=" + img + ", canvas=" + canvas + "]";
+		return "Image[src=" + source + ", scale=" + scale + ", size=" + width() + "x" + height() + ", psize="
+				+ pixelWidth + "x" + pixelHeight + ", img=" + img + ", canvas=" + canvas + "]";
 	}
 
 	@Override
@@ -316,16 +304,14 @@ public class GWTImage extends ImageImpl {
 	}
 
 	@Override
-	public int[] getPixels(int offset, int stride, int x, int y, int width,
-			int height) {
+	public int[] getPixels(int offset, int stride, int x, int y, int width, int height) {
 		int[] pixels = new int[width * height];
 		getRGB(x, y, width, height, pixels, offset, stride);
 		return pixels;
 	}
 
 	@Override
-	public int[] getPixels(int[] pixels, int offset, int stride, int x, int y,
-			int width, int height) {
+	public int[] getPixels(int[] pixels, int offset, int stride, int x, int y, int width, int height) {
 		getRGB(x, y, width, height, pixels, offset, stride);
 		return pixels;
 	}
@@ -353,8 +339,7 @@ public class GWTImage extends ImageImpl {
 	}
 
 	@Override
-	public void setPixels(int[] pixels, int offset, int stride, int x, int y,
-			int width, int height) {
+	public void setPixels(int[] pixels, int offset, int stride, int x, int y, int width, int height) {
 		setRGB(x, y, width, height, pixels, 0, width * height);
 	}
 
@@ -372,24 +357,13 @@ public class GWTImage extends ImageImpl {
 	@Override
 	public void setPixel(int rgb, int x, int y) {
 		createCanvas();
-		int width = img.getWidth();
-		int height = img.getHeight();
 		Context2d ctx = canvas.getContext2d();
-		ImageData imageData = ctx.createImageData(width, height);
-		CanvasPixelArray pixelData = imageData.getData();
-
-		byte bytesPerPixel = 4;
-		int bytesPerRow = bytesPerPixel * width;
-
-		int rowOffset = y * bytesPerRow;
-		int colOffset = x * bytesPerPixel;
-		int pixelDataLoc = rowOffset + colOffset;
-
-		pixelData.set(pixelDataLoc + 0, (rgb >> 16) & 255);
-		pixelData.set(pixelDataLoc + 1, (rgb >> 8) & 255);
-		pixelData.set(pixelDataLoc + 2, (rgb) & 255);
-		pixelData.set(pixelDataLoc + 3, (rgb >> 24) & 255);
-
+		String css = LColor.cssColorString(rgb);
+		ctx.setStrokeStyle(css);
+		ctx.setFillStyle(css);
+		ctx.setGlobalAlpha(LColor.alpha(rgb));
+		float dot = MathUtils.max(1f, (float) ctx.getLineWidth());
+		ctx.fillRect(x, y, dot, dot);
 	}
 
 	@Override
@@ -397,8 +371,7 @@ public class GWTImage extends ImageImpl {
 		assert isLoaded() : "Cannot getRgb() a non-ready image";
 		createCanvas();
 		Context2d ctx = canvas.getContext2d();
-		ImageData imageData = ctx.getImageData(0, 0, img.getWidth(),
-				img.getHeight());
+		ImageData imageData = ctx.getImageData(0, 0, img.getWidth(), img.getHeight());
 		CanvasPixelArray pixelData = imageData.getData();
 		int width = img.getWidth();
 
@@ -425,7 +398,7 @@ public class GWTImage extends ImageImpl {
 
 	@Override
 	public void setRGB(int rgb, int x, int y) {
-		setRGB(rgb, x, y);
+		setPixel(rgb, x, y);
 	}
 
 	@Override

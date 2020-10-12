@@ -74,9 +74,9 @@ public class RoboVMViewController extends GLKViewController implements
 		};
 		view.setDelegate(this);
 		view.setDrawableColorFormat(game.config.glBufferFormat);
-		view.setDrawableDepthFormat(config.depthFormat);
-		view.setDrawableStencilFormat(config.stencilFormat);
-		view.setDrawableMultisample(config.multisample);
+		//view.setDrawableDepthFormat(config.depthFormat);
+		//view.setDrawableStencilFormat(config.stencilFormat);
+		//view.setDrawableMultisample(config.multisample);
 		view.setMultipleTouchEnabled(true);
 
 		setView(view);
