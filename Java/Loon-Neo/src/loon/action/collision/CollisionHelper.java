@@ -29,6 +29,7 @@ import loon.geom.RectBox;
 import loon.geom.Shape;
 import loon.geom.ShapeUtils;
 import loon.geom.Vector2f;
+import loon.geom.Vector3f;
 import loon.geom.XY;
 import loon.geom.XYZ;
 import loon.utils.MathUtils;
@@ -65,18 +66,63 @@ public final class CollisionHelper extends ShapeUtils {
 	}
 
 	/**
-	 * 获得两个矩形间初始XY位置的距离
+	 * 获得两个三维体间初始XYZ位置的距离
 	 * 
-	 * @param box1
-	 * @param box2
+	 * @param target
+	 * @param beforePlace
+	 * @param distance
 	 * @return
 	 */
-	public static float getDistance(final BoxSize box1, final BoxSize box2) {
-		if (box1 == null || box2 == null) {
+	public static Vector3f getDistantPoint(XYZ target, XYZ source, float distance) {
+		
+		float deltaX = target.getX() - source.getX();
+		float deltaY = target.getY() - source.getY();
+		float deltaZ = target.getZ() - source.getZ();
+
+		float dist = MathUtils.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
+
+		deltaX /= dist;
+		deltaY /= dist;
+		deltaZ /= dist;
+
+		return new Vector3f(target.getX() - distance * deltaX, target.getY() - distance * deltaY,
+				target.getZ() - distance * deltaZ);
+	}
+
+	/**
+	 * 获得两个三维体间初始XYZ位置的距离
+	 * 
+	 * @param target
+	 * @param source
+	 * @param distance
+	 * @return
+	 */
+	public static Vector2f distantPoint(XY target, XY source, float distance) {
+
+		float deltaX = target.getX() - source.getX();
+		float deltaY = target.getY() - source.getY();
+
+		float dist = MathUtils.sqrt(deltaX * deltaX + deltaY * deltaY);
+
+		deltaX /= dist;
+		deltaY /= dist;
+
+		return new Vector2f(target.getX() - distance * deltaX, target.getY() - distance * deltaY);
+	}
+
+	/**
+	 * 获得两个矩形间初始XY位置的距离
+	 * 
+	 * @param target
+	 * @param beforePlace
+	 * @return
+	 */
+	public static float getDistance(final BoxSize target, final BoxSize beforePlace) {
+		if (target == null || beforePlace == null) {
 			return 0f;
 		}
-		final float xdiff = box1.getX() - box2.getX();
-		final float ydiff = box1.getY() - box2.getY();
+		final float xdiff = target.getX() - beforePlace.getX();
+		final float ydiff = target.getY() - beforePlace.getY();
 		return MathUtils.sqrt(xdiff * xdiff + ydiff * ydiff);
 	}
 
@@ -483,6 +529,36 @@ public final class CollisionHelper extends ShapeUtils {
 		return (dx >= sx && dy >= sy && ((dx + dw) <= (sx + sw)) && ((dy + dh) <= (sy + sh)));
 	}
 
+    public static final boolean containsIsometric(int x, int y, int w, int h, int px, int py) {
+        float mx = w / 2;
+        float my = h / 2;
+        float ix = px - x;
+        float iy = py - y;
+        if (iy > my) {
+            iy = my - (iy - my);
+        }
+        if ((ix > mx + 1 + (2 * iy)) || (ix < mx - 1 - (2 * iy))) {
+            return false;
+        }
+        return true;
+    }
+
+    public static final boolean containsHexagon(int x, int y, int w, int h, int px, int py) {
+        float mx = w / 4;
+        float my = h / 2;
+        float hx = px - x;
+        float hy = py - y;
+        if (hx > mx * 3) {
+            hx = mx - (hx - mx * 3);
+        } else if (hx > mx) {
+            return py >= y && py <= y + h;
+        }
+        if ((hy > my + 1 + (2 * hx)) || (hy < my - 1 - (2 * hx))) {
+            return false;
+        }
+        return true;
+    }
+    
 	public static final void confine(RectBox rect, RectBox field) {
 		int x = rect.Right() > field.Right() ? field.Right() - (int) rect.getWidth() : rect.Left();
 		if (x < field.Left()) {

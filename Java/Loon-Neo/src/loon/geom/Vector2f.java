@@ -357,7 +357,7 @@ public class Vector2f implements Serializable, XY {
 		this.y = y;
 	}
 
-	public Vector2f(Vector2f v) {
+	public Vector2f(XY v) {
 		set(v);
 	}
 
@@ -590,6 +590,25 @@ public class Vector2f implements Serializable, XY {
 
 	public Vector2f rotateY(float angle) {
 		return cpy().rotateSelfY(angle);
+	}
+
+	public Vector2f rotate(float cx, float cy, float angle) {
+		return cpy().rotateSelf(cx, cy, angle);
+	}
+
+	public Vector2f rotateSelf(float cx, float cy, float angle) {
+		if (angle != 0) {
+			
+			float rad = MathUtils.toRadians(angle);
+			float cos = MathUtils.cos(rad);
+			float sin = MathUtils.sin(rad);
+			
+			float nx = cx + (this.x - cx) * MathUtils.cos(rad) - (this.y - cy) * sin;
+			float ny = cy + (this.x - cx) * MathUtils.sin(rad) + (this.y - cy) * cos;
+			
+			return set(nx, ny);
+		}
+		return this;
 	}
 
 	public Vector2f rotateSelf(float angle) {

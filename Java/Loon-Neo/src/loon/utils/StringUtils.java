@@ -38,7 +38,10 @@ final public class StringUtils extends CharUtils {
 	 * @param params
 	 * @return
 	 */
-	public static String format(String format, Object... params) {
+	public static String format(String format, Object... o) {
+		if (CollectionUtils.isEmpty(o)) {
+			return "";
+		}
 		StrBuilder b = new StrBuilder();
 		int p = 0;
 		for (;;) {
@@ -56,8 +59,8 @@ final public class StringUtils extends CharUtils {
 			String nstr = format.substring(i + 1, idx);
 			try {
 				int n = Integer.parseInt(nstr);
-				if (n >= 0 && n < params.length) {
-					b.append(params[n]);
+				if (n >= 0 && n < o.length) {
+					b.append(o[n]);
 				} else {
 					b.append('{').append(nstr).append('}');
 				}
@@ -322,6 +325,9 @@ final public class StringUtils extends CharUtils {
 	 * @return
 	 */
 	public static String join(Character flag, Object... o) {
+		if (CollectionUtils.isEmpty(o)) {
+			return "";
+		}
 		StrBuilder sbr = new StrBuilder();
 		int size = o.length;
 		for (int i = 0; i < size; i++) {
@@ -340,7 +346,10 @@ final public class StringUtils extends CharUtils {
 	 * @param o
 	 * @return
 	 */
-	public static String join(Character flag, float[] o) {
+	public static String join(Character flag, float... o) {
+		if (CollectionUtils.isEmpty(o)) {
+			return "";
+		}
 		StrBuilder sbr = new StrBuilder();
 		int size = o.length;
 		for (int i = 0; i < size; i++) {
@@ -359,7 +368,76 @@ final public class StringUtils extends CharUtils {
 	 * @param o
 	 * @return
 	 */
-	public static String join(Character flag, int[] o) {
+	public static String join(Character flag, int... o) {
+		if (CollectionUtils.isEmpty(o)) {
+			return "";
+		}
+		StrBuilder sbr = new StrBuilder();
+		int size = o.length;
+		for (int i = 0; i < size; i++) {
+			sbr.append(o[i]);
+			if (i < size - 1) {
+				sbr.append(flag);
+			}
+		}
+		return sbr.toString();
+	}
+
+	/**
+	 * 联合指定对象并输出为字符串
+	 * 
+	 * @param flag
+	 * @param o
+	 * @return
+	 */
+	public static String join(Character flag, long... o) {
+		if (CollectionUtils.isEmpty(o)) {
+			return "";
+		}
+		StrBuilder sbr = new StrBuilder();
+		int size = o.length;
+		for (int i = 0; i < size; i++) {
+			sbr.append(o[i]);
+			if (i < size - 1) {
+				sbr.append(flag);
+			}
+		}
+		return sbr.toString();
+	}
+
+	/**
+	 * 联合指定对象并输出为字符串
+	 * 
+	 * @param flag
+	 * @param o
+	 * @return
+	 */
+	public static String join(Character flag, boolean... o) {
+		if (CollectionUtils.isEmpty(o)) {
+			return "";
+		}
+		StrBuilder sbr = new StrBuilder();
+		int size = o.length;
+		for (int i = 0; i < size; i++) {
+			sbr.append(o[i]);
+			if (i < size - 1) {
+				sbr.append(flag);
+			}
+		}
+		return sbr.toString();
+	}
+
+	/**
+	 * 联合指定对象并输出为字符串
+	 * 
+	 * @param flag
+	 * @param o
+	 * @return
+	 */
+	public static String join(Character flag, CharSequence... o) {
+		if (CollectionUtils.isEmpty(o)) {
+			return "";
+		}
 		StrBuilder sbr = new StrBuilder();
 		int size = o.length;
 		for (int i = 0; i < size; i++) {
@@ -374,16 +452,19 @@ final public class StringUtils extends CharUtils {
 	/**
 	 * 拼接指定对象数组为String
 	 * 
-	 * @param res
+	 * @param o
 	 * @return
 	 */
-	public static String concat(final Object... res) {
-		StrBuilder sbr = new StrBuilder(res.length);
-		for (int i = 0; i < res.length; i++) {
-			if (res[i] instanceof Integer) {
-				sbr.append((Integer) res[i]);
+	public static String concat(final Object... o) {
+		if (CollectionUtils.isEmpty(o)) {
+			return "";
+		}
+		StrBuilder sbr = new StrBuilder(o.length);
+		for (int i = 0; i < o.length; i++) {
+			if (o[i] instanceof Integer) {
+				sbr.append((Integer) o[i]);
 			} else {
-				sbr.append(res[i]);
+				sbr.append(o[i]);
 			}
 		}
 		return sbr.toString();
@@ -392,17 +473,20 @@ final public class StringUtils extends CharUtils {
 	/**
 	 * 拼接指定字符数组
 	 * 
-	 * @param cs
+	 * @param o
 	 * @return
 	 */
-	public final static char[] concat(final char[]... res) {
+	public final static char[] concat(final char[]... o) {
+		if (CollectionUtils.isEmpty(o)) {
+			return new char[] {};
+		}
 		int size = 0;
-		for (final char[] e : res) {
+		for (final char[] e : o) {
 			size += e.length;
 		}
 		final char[] c = new char[size];
 		int ci = 0;
-		for (final char[] e : res) {
+		for (final char[] e : o) {
 			size = e.length;
 			System.arraycopy(e, 0, c, ci, size);
 			ci += size;
@@ -539,7 +623,7 @@ final public class StringUtils extends CharUtils {
 	 * @param flags
 	 * @return
 	 */
-	public static String[] split(String str, char[] flags) {
+	public static String[] split(String str, char... flags) {
 		return split(str, flags, false);
 	}
 
@@ -611,6 +695,9 @@ final public class StringUtils extends CharUtils {
 	 * @return
 	 */
 	public static String[] split(String str, String separator) {
+		if (isEmpty(str) || isEmpty(separator)) {
+			return new String[] {};
+		}
 		int sepLength = separator.length();
 		if (sepLength == 0) {
 			return new String[] { str };
@@ -1384,6 +1471,9 @@ final public class StringUtils extends CharUtils {
 	 * @return
 	 */
 	public static String unescape(String escaped) {
+		if (isEmpty(escaped)) {
+			return "";
+		}
 		int length = escaped.length();
 		int i = 0;
 		StrBuilder sbr = new StrBuilder(escaped.length() / 2);
@@ -1418,6 +1508,9 @@ final public class StringUtils extends CharUtils {
 	 * @return
 	 */
 	public static String escape(CharSequence raw) {
+		if (isEmpty(raw)) {
+			return "";
+		}
 		int length = raw.length();
 		int i = 0;
 		StrBuilder sbr = new StrBuilder(raw.length() / 2);
