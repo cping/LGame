@@ -34,28 +34,40 @@ import loon.utils.processes.RealtimeProcessManager;
 public class CountdownTimer extends RealtimeProcess {
 
 	// 因为考虑web平台的关系，所以毫秒精确不到小数点后3位，只能2位……（gwt没有实现精确的nanoTime,获取3位最后一个数也会是0）
-	private final static String DEF_FORMAT = "00{0}00";
+	private final static String DEF_FORMAT = "s{0}m";
 
 	private final static String SEPARATOR_FORMAT = ":";
 
 	private String _separator = SEPARATOR_FORMAT;
 
+	private String _format = DEF_FORMAT;
+
+	private String _result = DEF_FORMAT;
+
 	private float _second = 0;
 
 	private long _millisecond = 0;
 
-	private String _result = DEF_FORMAT;
+	private int _digits = 2;
 
 	private boolean _finished;
 
+	private boolean _displayMillisecond;
+
 	public CountdownTimer() {
-		this(0f);
+		this(0f, true);
 	}
 
 	public CountdownTimer(float second) {
+		this(second, true);
+	}
+
+	public CountdownTimer(float second, boolean displayMilliSecond) {
 		super(0);
+		this._digits = 2;
 		this.set(second);
 		this.setProcessType(GameProcessType.Time);
+		this.setDisplayMilliSecond(displayMilliSecond);
 	}
 
 	public void add(float second) {
@@ -87,22 +99,64 @@ public class CountdownTimer extends RealtimeProcess {
 	}
 
 	public float getMillisecond() {
-		return MathUtils.min((float) _millisecond / 1000f, 0);
+		return MathUtils.min((float) _millisecond / LSystem.SECOND, 0);
+	}
+
+	public long getSecond() {
+		return MathUtils.max(_millisecond / LSystem.SECOND, 0);
+	}
+
+	protected String formatZeroTimeData() {
+		return formatTimeData(null, null);
+	}
+
+	protected String formatTimeData(String m, String s) {
+		String f = StringUtils.format(_format, _separator);
+		if (!StringUtils.isEmpty(m)) {
+			this._result = StringUtils.replaceIgnoreCase(f, "s", MathUtils.addZeros(m, _digits));
+		} else {
+			this._result = StringUtils.replaceIgnoreCase(f, "s", MathUtils.addZeros(0, _digits));
+		}
+		if (_displayMillisecond) {
+			if (!StringUtils.isEmpty(s)) {
+				this._result = StringUtils.replaceIgnoreCase(_result, "m", MathUtils.addZeros(s, _digits));
+			} else {
+				this._result = StringUtils.replaceIgnoreCase(_result, "m", MathUtils.addZeros(0, _digits));
+			}
+		} else {
+			this._result = StringUtils.replaceIgnoreCase(_result, _separator, "");
+			this._result = StringUtils.replaceIgnoreCase(_result, "m", "");
+		}
+		return this._result;
 	}
 
 	public String nowSecond() {
-		if (_result == null) {
-			return StringUtils.format(DEF_FORMAT, _separator);
+		if (StringUtils.isEmpty(_result)) {
+			return StringUtils.format(_format, _separator);
 		}
-		String text = String.valueOf(_millisecond);
-		final int size = text.length();
-		final int len = size - 3;
-		if (size > 3) {
-			return MathUtils.addZeros(text.substring(0, len), 2) + _separator
-					+ MathUtils.addZeros(text.substring(len, size - 1), 2);
-		} else {
-			return StringUtils.format(DEF_FORMAT, _separator);
+		if (_millisecond >= 0) {
+			String text = null;
+			if (_displayMillisecond) {
+				text = String.valueOf(_millisecond);
+				final int size = text.length();
+				final int len = size - 3;
+				if (size > 3) {
+					String m = text.substring(0, len);
+					String s = text.substring(len, size - 1);
+					formatTimeData(m, s);
+				} else {
+					formatZeroTimeData();
+				}
+			} else {
+				text = String.valueOf(MathUtils.max(0, getSecond()));
+				if (text.length() > 0) {
+					formatTimeData(text, null);
+				} else {
+					formatZeroTimeData();
+				}
+			}
 		}
+		return this._result;
 	}
 
 	public CountdownTimer play() {
@@ -141,16 +195,47 @@ public class CountdownTimer extends RealtimeProcess {
 		return this;
 	}
 
+	public boolean isDisplayMilliSecond() {
+		return _displayMillisecond;
+	}
+
+	public CountdownTimer setDisplayMilliSecond(boolean d) {
+		this._displayMillisecond = d;
+		return this;
+	}
+
+	public CountdownTimer resetDefaultFormat() {
+		return setFormat(DEF_FORMAT);
+	}
+
+	public String getFormat() {
+		return _format;
+	}
+
+	public CountdownTimer setFormat(String f) {
+		this._format = f;
+		return this;
+	}
+
+	public int getDigits() {
+		return _digits;
+	}
+
+	public CountdownTimer setDigits(int d) {
+		this._digits = d;
+		return this;
+	}
+
+	public String getResult() {
+		return this._result;
+	}
+
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("CountdownTimer");
-		builder.kv("second", _second)
-		.comma()
-		.kv("millisecond", _millisecond)
-		.comma()
-		.kv("result", _result)
-		.comma()
-		.kv("finished", _finished);
+		builder.kv("second", _second).comma().kv("millisecond", _millisecond).comma().kv("result", _result).comma()
+				.kv("finished", _finished);
 		return builder.toString();
 	}
+
 }

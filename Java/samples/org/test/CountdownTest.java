@@ -15,6 +15,8 @@ public class CountdownTest extends Stage {
 		add(MultiScreenTest.getBackButton(this, 1));
 		//设置默认倒计时器,倒数30秒
 		final CountdownTimer timer = new CountdownTimer(30);
+		// 不显示毫秒,只显示秒
+		// final CountdownTimer timer = new CountdownTimer(30,false);
 		// 以CountdownTimer设置NumberSprite内容,显示色彩白色,构成数字的每块小格像素大小5（渲染为3x6的像素块）
 		NumberSprite sprite = new NumberSprite(timer, LColor.white, 5);
 		centerOn(sprite);
