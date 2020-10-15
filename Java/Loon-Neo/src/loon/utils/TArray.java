@@ -713,6 +713,31 @@ public class TArray<T> implements Iterable<T>, IArray {
 		}
 	}
 
+	public boolean retainAll(TArray<T> array) {
+		final T[] elementData = this.items;
+		int r = 0, w = 0;
+		boolean modified = false;
+		try {
+			for (; r < size; r++)
+				if (array.contains(elementData[r])) {
+					elementData[w++] = elementData[r];
+				}
+		} finally {
+			if (r != size) {
+				System.arraycopy(elementData, r, elementData, w, size - r);
+				w += size - r;
+			}
+			if (w != size) {
+				for (int i = w; i < size; i++) {
+					elementData[i] = null;
+				}
+				size = w;
+				modified = true;
+			}
+		}
+		return modified;
+	}
+
 	@Override
 	public int hashCode() {
 		if (!ordered) {

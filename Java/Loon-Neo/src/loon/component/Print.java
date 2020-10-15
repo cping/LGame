@@ -29,6 +29,7 @@ import loon.font.FontSet;
 import loon.font.FontUtils;
 import loon.font.IFont;
 import loon.font.LFont;
+import loon.geom.PointF;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.opengl.LSTRDictionary;
@@ -176,7 +177,9 @@ public class Print implements FontSet<Print>, LRelease {
 
 	private int size, wait, tmp_dir, left, fontSize, fontHeight;
 
-	private Vector2f vector;
+	private final PointF iconLocation;
+
+	private final Vector2f printLocation;
 
 	private LTexture creeseIcon;
 
@@ -195,18 +198,20 @@ public class Print implements FontSet<Print>, LRelease {
 	// 默认0，左1,右2
 	private Mode dirmode = Mode.NONE;
 
-	public Print(Vector2f vector, IFont font, int width, int height) {
-		this(LSystem.EMPTY, font, vector, width, height);
+	public Print(Vector2f printLocation, IFont font, int width, int height) {
+		this(LSystem.EMPTY, font, printLocation, width, height);
 	}
 
-	public Print(String context, IFont font, Vector2f vector, int width, int height) {
+	public Print(String context, IFont font, Vector2f pos, int width, int height) {
 		this.setMessage(context, font);
-		this.vector = vector;
+		this.printLocation = pos;
 		this.width = width;
 		this.height = height;
 		this.wait = 0;
+		this.messageLength = 10;
 		this.isWait = false;
 		this.isIconFlag = true;
+		iconLocation = new PointF();
 	}
 
 	public void setMessage(String context, IFont font) {
@@ -374,7 +379,8 @@ public class Print implements FontSet<Print>, LRelease {
 			if (hashCode == lazyHashCade) {
 				strings.postCharCache();
 				if (isIconFlag && iconX != 0 && iconY != 0) {
-					g.draw(creeseIcon, iconX + offsetIconX, iconY + offsetIconY);
+					fixIconPos();
+					g.draw(creeseIcon, iconLocation.x, iconLocation.y);
 				}
 				return;
 			}
@@ -446,13 +452,14 @@ public class Print implements FontSet<Print>, LRelease {
 					left += 12;
 				}
 				if (i != size - 1) {
-					strings.addChar(text, vector.x + left + leftOffset,
-							(offset * fontHeight) + vector.y + fontSize + topOffset, fontColor);
+					strings.addChar(text, printLocation.x + left + leftOffset,
+							(offset * fontHeight) + printLocation.y + fontSize + topOffset, fontColor);
 				} else if (!newLine && !onComplete) {
-					iconX = vector.x + left + leftOffset;
-					iconY = (offset * fontHeight) + vector.y + fontSize + topOffset + strings.getAscent();
+					iconX = printLocation.x + left + leftOffset;
+					iconY = (offset * fontHeight) + printLocation.y + fontSize + topOffset + strings.getAscent();
 					if (isIconFlag && iconX != 0 && iconY != 0) {
-						g.draw(creeseIcon, iconX + offsetIconX, iconY + offsetIconY);
+						fixIconPos();
+						g.draw(creeseIcon, iconLocation.x, iconLocation.y);
 					}
 				}
 				index++;
@@ -467,6 +474,20 @@ public class Print implements FontSet<Print>, LRelease {
 				onComplete = true;
 			}
 		}
+	}
+
+	protected PointF fixIconPos() {
+		final int iw = creeseIcon.getWidth();
+		final int ih = creeseIcon.getHeight();
+		final int fixValue = 2;
+		iconLocation.set(iconX + offsetIconX, iconY + offsetIconY);
+		if (iw + iconLocation.getX() >= printLocation.x + getWidth() - fixValue) {
+			iconLocation.x -= iw / fixValue - fixValue;
+		}
+		if (ih + iconLocation.getY() >= printLocation.y + getHeight() - fixValue) {
+			iconLocation.y += ih / fixValue  - fixValue;
+		}
+		return iconLocation;
 	}
 
 	public void drawBMFont(GLEx g, LColor old) {
@@ -562,20 +583,22 @@ public class Print implements FontSet<Print>, LRelease {
 					left += 12;
 				}
 				if (i != size - 1) {
-					ifont.drawString(g, tmpText, vector.x + left + leftOffset,
-							(offset * fontHeight) + vector.y + fontSize + topOffset, fontColor);
+					ifont.drawString(g, tmpText, printLocation.x + left + leftOffset,
+							(offset * fontHeight) + printLocation.y + fontSize + topOffset, fontColor);
 				} else if (!newLine && !onComplete) {
-					iconX = vector.x + left + leftOffset;
-					iconY = (offset * fontHeight) + vector.y + fontSize + topOffset + ifont.getAscent();
+					iconX = printLocation.x + left + leftOffset;
+					iconY = (offset * fontHeight) + printLocation.y + fontSize + topOffset + ifont.getAscent();
 					if (isIconFlag && iconX != 0 && iconY != 0) {
-						g.draw(creeseIcon, iconX + offsetIconX, iconY + offsetIconY);
+						fixIconPos();
+						g.draw(creeseIcon, iconLocation.x, iconLocation.y);
 					}
 				}
 				index++;
 			}
 			if (onComplete) {
 				if (isIconFlag && iconX != 0 && iconY != 0) {
-					g.draw(creeseIcon, iconX + offsetIconX, iconY + offsetIconY);
+					fixIconPos();
+					g.draw(creeseIcon, iconLocation.x, iconLocation.y);
 				}
 			}
 			if (messageCount == next) {
@@ -600,21 +623,21 @@ public class Print implements FontSet<Print>, LRelease {
 	}
 
 	public Print setX(int x) {
-		vector.setX(x);
+		printLocation.setX(x);
 		return this;
 	}
 
 	public Print setY(int y) {
-		vector.setY(y);
+		printLocation.setY(y);
 		return this;
 	}
 
 	public int getX() {
-		return vector.x();
+		return printLocation.x();
 	}
 
 	public int getY() {
-		return vector.y();
+		return printLocation.y();
 	}
 
 	public void complete() {

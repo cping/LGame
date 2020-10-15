@@ -1,15 +1,18 @@
 namespace java.lang 
 { 
-    public class Integer
+    public class Integer : Number
     {
         private readonly int value;
+
+        public const int MIN_VALUE_JAVA = -2147483648;
+        public const int MAX_VALUE_JAVA = 2147483647;
 
         public Integer(int v) 
         {   
             value = v;
         }
 
-        public int intValue() 
+        public override int IntValue() 
         {   
             return value;
         }
@@ -27,32 +30,45 @@ namespace java.lang
 
         public override string ToString()
         {   
-            return Integer.toString(value);
+            return Integer.ToString(value);
         }
 
-        public static int parseInt(string s)
+        public static int ParseInt(string s)
         {
             int result;
             if (System.Int32.TryParse(s, out result)) { return result; }            
             throw new NumberFormatException();
         }
 
-        public static string toString(int i)
+        public static string ToString(int i)
         {   
             return i.ToString("d");
         }    
         
-        public static string toHexString(int i)
+        public static string ToHexString(int i)
         {   
             return i.ToString("x");
         }
             
-        public static Integer valueOf(int i)
+        public static Integer ValueOf(int i)
         {   
             return new Integer(i);
         }
 
-        public const int MIN_005fVALUE_f = -2147483648;
-        public const int MAX_005fVALUE_f =  2147483647;        
+        public override double DoubleValue()
+        {
+            return this.value;
+        }
+
+        public override float FloatValue()
+        {
+            return this.value;
+        }
+
+        public override long LongValue()
+        {
+            return this.value;
+        }
+  
     }
 }

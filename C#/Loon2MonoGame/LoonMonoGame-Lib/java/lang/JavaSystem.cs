@@ -40,7 +40,27 @@ namespace java.lang
 
         public static long NanoTime()
         {
-            return (System.DateTimeOffset.Now.Ticks - startTicks_f) * 100;
+            return (System.DateTimeOffset.Now.Ticks - startTicks_f) * 100L;
+        }
+
+        public static long GetTotalMemory()
+        {
+            return System.Diagnostics.Process.GetCurrentProcess().VirtualMemorySize64;
+        }
+
+        public static long GetAvailableMemory()
+        {
+            return GetTotalMemory() - GetUsedMemory();
+        }
+
+        public static long GetUsedMemory()
+        {
+            return System.Diagnostics.Process.GetCurrentProcess().WorkingSet64;
+        }
+
+        public static bool IsMainThread()
+        {
+            return System.Threading.Thread.CurrentThread.ManagedThreadId == 1 && System.Threading.Thread.CurrentThread.Name == null;
         }
 
         public static T[][] Dim<T>(int n0, int n1)

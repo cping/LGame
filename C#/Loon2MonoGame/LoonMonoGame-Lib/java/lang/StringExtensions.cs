@@ -1,6 +1,6 @@
 ﻿using java.lang;
 
-namespace Game2.java.lang
+namespace java.lang
 {
     public static class StringExtensions
     {
