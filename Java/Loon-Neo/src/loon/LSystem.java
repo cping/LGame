@@ -31,7 +31,6 @@ import loon.action.sprite.effect.LightningEffect;
 import loon.canvas.LColorList;
 import loon.canvas.LColorPool;
 import loon.canvas.LGradation;
-import loon.canvas.NinePatchAbstract.Repeat;
 import loon.component.DefUI;
 import loon.component.Desktop;
 import loon.component.skin.SkinManager;
@@ -1096,28 +1095,6 @@ public class LSystem {
 	public static final LTexture newTexture(String path, Format config) {
 		if (base() != null) {
 			return base().newTexture(path, config);
-		}
-		return null;
-	}
-
-	public LTexture loadNinePatchTexture(String fileName, int w, int h) {
-		if (base() != null) {
-			return base().loadNinePatchTexture(fileName, w, h);
-		}
-		return null;
-	}
-
-	public static final LTexture loadNinePatchTexture(String fileName, int x, int y, int w, int h) {
-		if (base() != null) {
-			return base().loadNinePatchTexture(fileName, x, y, w, h);
-		}
-		return null;
-	}
-
-	public static final LTexture loadNinePatchTexture(String fileName, Repeat repeat, int x, int y, int w, int h,
-			Format config) {
-		if (base() != null) {
-			return base().loadNinePatchTexture(fileName, repeat, x, y, w, h, config);
 		}
 		return null;
 	}

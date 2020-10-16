@@ -24,7 +24,6 @@ import loon.LTexture.Format;
 import loon.action.sprite.Entity;
 import loon.action.sprite.Sprite;
 import loon.canvas.Image;
-import loon.canvas.NinePatchAbstract.Repeat;
 import loon.canvas.TGA;
 import loon.component.DefUI;
 import loon.geom.Vector2f;
@@ -81,19 +80,7 @@ public abstract class BaseIO extends DefUI {
 		return LSystem.loadTexture(path, config);
 	}
 
-	public final static LTexture loadNinePatchTexture(String path, int x, int y, int w, int h) {
-		return LSystem.loadNinePatchTexture(path, x, y, w, h);
-	}
-
-	public final static LTexture loadNinePatchTexture(String path, Repeat repeat, int x, int y, int w, int h) {
-		return LSystem.loadNinePatchTexture(path, repeat, x, y, w, h, Format.LINEAR);
-	}
-
-	public final static LTexture loadNinePatchTexture(String path, Repeat repeat, int x, int y, int w, int h,
-			Format config) {
-		return LSystem.loadNinePatchTexture(path, repeat, x, y, w, h, config);
-	}
-
+	
 	public final static Image loadImage(String path) {
 		return loadImage(path, true);
 	}

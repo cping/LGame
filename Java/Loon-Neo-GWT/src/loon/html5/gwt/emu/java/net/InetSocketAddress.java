@@ -15,8 +15,6 @@
  */
 package java.net;
 
-import java.net.InetAddress;
-
 public class InetSocketAddress {
 
   private final InetAddress address;

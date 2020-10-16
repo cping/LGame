@@ -22,8 +22,6 @@ package loon;
 
 import loon.LTexture.Format;
 import loon.action.sprite.Sprites;
-import loon.canvas.Image;
-import loon.canvas.NinePatchAbstract.Repeat;
 import loon.component.Desktop;
 import loon.event.InputMake;
 import loon.font.IFont;
@@ -824,84 +822,6 @@ public abstract class LGame {
 		}
 		log().debug("Texture : New " + path + " Loaded");
 		return BaseIO.loadImage(path).onHaveToClose(true).createTexture(config);
-	}
-
-	/**
-	 * 加载9.png图片
-	 * 
-	 * @param fileName
-	 * @param w
-	 * @param h
-	 * @return
-	 */
-	public LTexture loadNinePatchTexture(String fileName, int w, int h) {
-		return loadNinePatchTexture(fileName, null, 0, 0, w, h, Format.LINEAR);
-	}
-
-	/**
-	 * 加载9.png图片
-	 * 
-	 * @param fileName
-	 *            图片位置
-	 * @param x
-	 *            贴图初始x位置
-	 * @param y
-	 *            贴图初始y位置
-	 * @param w
-	 *            预计把9.png扩展的width大小
-	 * @param h
-	 *            预计把9.png扩展的height大小
-	 * @return
-	 */
-	public LTexture loadNinePatchTexture(String fileName, int x, int y, int w, int h) {
-		return loadNinePatchTexture(fileName, null, x, y, w, h, Format.LINEAR);
-	}
-
-	/**
-	 * 加载9.png图片
-	 * 
-	 * @param fileName
-	 *            文件名
-	 * @param repeat
-	 *            9.png图片延展模式
-	 * @param x
-	 *            贴图初始x位置
-	 * @param y
-	 *            贴图初始y位置
-	 * @param w
-	 *            预计把9.png扩展的width大小
-	 * @param h
-	 *            预计把9.png扩展的height大小
-	 * @param config
-	 *            纹理格式
-	 * @return
-	 */
-	public LTexture loadNinePatchTexture(String fileName, Repeat repeat, int x, int y, int w, int h, Format config) {
-		if (StringUtils.isEmpty(fileName)) {
-			return null;
-		}
-		synchronized (_texture_lazys) {
-			String key = fileName.trim().toLowerCase() + (repeat == null ? "" : repeat);
-			ObjectMap<String, LTexture> texs = new ObjectMap<String, LTexture>(_texture_lazys);
-			LTexture texture = texs.get(key);
-			if (texture == null) {
-				for (LTexture tex : texs.values()) {
-					if (tex.tmpLazy != null && tex.tmpLazy.toLowerCase().equals(key.toLowerCase())) {
-						texture = tex;
-						break;
-					}
-				}
-			}
-			if (texture != null && !texture.disposed()) {
-				texture.refCount++;
-				return texture;
-			}
-			texture = Image.createImageNicePatch(fileName, x, y, w, h).onHaveToClose(true).createTexture(config);
-			texture.tmpLazy = fileName;
-			_texture_lazys.put(key, texture);
-			log().debug("Texture : " + fileName + " Loaded");
-			return texture;
-		}
 	}
 
 	/**

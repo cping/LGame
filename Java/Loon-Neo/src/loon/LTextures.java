@@ -21,7 +21,6 @@
 package loon;
 
 import loon.LTexture.Format;
-import loon.canvas.NinePatchAbstract.Repeat;
 
 public class LTextures {
 
@@ -55,15 +54,6 @@ public class LTextures {
 
 	public static int getRefCount(String fileName) {
 		return LSystem.getRefTextureCount(fileName);
-	}
-
-	public static LTexture loadNinePatchTexture(String fileName, int x, int y, int w, int h) {
-		return LSystem.loadNinePatchTexture(fileName, x, y, w, h);
-	}
-
-	public static LTexture loadNinePatchTexture(String fileName, Repeat repeat, int x, int y, int w, int h,
-			Format config) {
-		return LSystem.loadNinePatchTexture(fileName, repeat, x, y, w, h, config);
 	}
 
 	public static LTexture loadTexture(String fileName, Format config) {

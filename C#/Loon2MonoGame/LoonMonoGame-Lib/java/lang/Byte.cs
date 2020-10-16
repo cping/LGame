@@ -1,6 +1,6 @@
 namespace java.lang 
 { 
-    public class Byte
+    public class Byte : Number
     {
         private readonly sbyte value;
 
@@ -41,6 +41,26 @@ namespace java.lang
         public static Byte ValueOf(sbyte b)
         {   
             return new Byte(b);
+        }
+
+        public override double DoubleValue()
+        {
+            return value;
+        }
+
+        public override float FloatValue()
+        {
+            return value;
+        }
+
+        public override int IntValue()
+        {
+            return value;
+        }
+
+        public override long LongValue()
+        {
+            return value;
         }
     }
 }

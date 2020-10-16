@@ -56,7 +56,6 @@ import static com.google.gwt.webgl.client.WebGLRenderingContext.COMPILE_STATUS;
 import static com.google.gwt.webgl.client.WebGLRenderingContext.ELEMENT_ARRAY_BUFFER;
 import static com.google.gwt.webgl.client.WebGLRenderingContext.FLOAT;
 import static com.google.gwt.webgl.client.WebGLRenderingContext.INT;
-import static com.google.gwt.webgl.client.WebGLRenderingContext.LINK_STATUS;
 import static com.google.gwt.webgl.client.WebGLRenderingContext.ONE;
 import static com.google.gwt.webgl.client.WebGLRenderingContext.SHORT;
 import static com.google.gwt.webgl.client.WebGLRenderingContext.STREAM_DRAW;
@@ -69,8 +68,7 @@ public final class GWTGL20 extends GL20 implements GLExt {
 	// //////////NYI(not yet implemented) method begin
 
 	@Override
-	public void glGetShaderPrecisionFormat(int shadertype, int precisiontype,
-			IntBuffer range, IntBuffer precision) {
+	public void glGetShaderPrecisionFormat(int shadertype, int precisiontype, IntBuffer range, IntBuffer precision) {
 		throw new RuntimeException("NYI glGetShaderInfoLog");
 	}
 
@@ -106,8 +104,7 @@ public final class GWTGL20 extends GL20 implements GLExt {
 	}
 
 	@Override
-	public void glReadPixels(int x, int y, int width, int height, int format,
-			int type, int pixelsBufferOffset) {
+	public void glReadPixels(int x, int y, int width, int height, int format, int type, int pixelsBufferOffset) {
 		throw new RuntimeException("NYI glReadPixels");
 	}
 
@@ -117,64 +114,57 @@ public final class GWTGL20 extends GL20 implements GLExt {
 	}
 
 	@Override
-	public void glShaderBinary(int n, IntBuffer shaders, int binaryformat,
-			Buffer binary, int length) {
+	public void glShaderBinary(int n, IntBuffer shaders, int binaryformat, Buffer binary, int length) {
 		throw new RuntimeException("NYI glReleaseShaderCompiler");
 	}
 
 	@Override
-	public void glShaderBinary(int n, int[] shaders, int offset,
-			int binaryformat, Buffer binary, int length) {
+	public void glShaderBinary(int n, int[] shaders, int offset, int binaryformat, Buffer binary, int length) {
 		throw new RuntimeException("NYI glShaderBinary");
 	}
 
 	@Override
-	public void glShaderSource(int shader, int count, String[] strings,
-			IntBuffer length) {
+	public void glShaderSource(int shader, int count, String[] strings, IntBuffer length) {
 		throw new RuntimeException("NYI glShaderSource");
 	}
 
 	@Override
-	public void glShaderSource(int shader, int count, String[] strings,
-			int[] length, int lengthOffset) {
+	public void glShaderSource(int shader, int count, String[] strings, int[] length, int lengthOffset) {
 		throw new RuntimeException("NYI glShaderSource");
 	}
 
 	@Override
-	public void glTexImage2D(int arg0, int arg1, int arg2, int arg3, int arg4,
-			int arg5, int arg6, int arg7, int arg8) {
+	public void glTexImage2D(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7, int arg8) {
 		throw new RuntimeException("NYI glTexImage2D");
 	}
 
 	@Override
-	public void glTexImage3D(int arg0, int arg1, int arg2, int arg3, int arg4,
-			int arg5, int arg6, int arg7, int arg8, Buffer arg9) {
+	public void glTexImage3D(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7, int arg8,
+			Buffer arg9) {
 		throw new RuntimeException("NYI glTexImage3D");
 	}
 
 	@Override
-	public void glTexImage3D(int arg0, int arg1, int arg2, int arg3, int arg4,
-			int arg5, int arg6, int arg7, int arg8, int arg9) {
+	public void glTexImage3D(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7, int arg8,
+			int arg9) {
 		throw new RuntimeException("NYI glTexImage3D");
 	}
 
 	@Override
-	public void glTexSubImage2D(int arg0, int arg1, int arg2, int arg3,
-			int arg4, int arg5, int arg6, int arg7, int arg8) {
+	public void glTexSubImage2D(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7,
+			int arg8) {
 		throw new RuntimeException("NYI glTexSubImage2D");
 	}
 
 	@Override
-	public void glTexSubImage3D(int arg0, int arg1, int arg2, int arg3,
-			int arg4, int arg5, int arg6, int arg7, int arg8, int arg9,
-			Buffer arg10) {
+	public void glTexSubImage3D(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7,
+			int arg8, int arg9, Buffer arg10) {
 		throw new RuntimeException("NYI glTexSubImage3D");
 	}
 
 	@Override
-	public void glTexSubImage3D(int arg0, int arg1, int arg2, int arg3,
-			int arg4, int arg5, int arg6, int arg7, int arg8, int arg9,
-			int arg10) {
+	public void glTexSubImage3D(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7,
+			int arg8, int arg9, int arg10) {
 		throw new RuntimeException("NYI glTexSubImage3D");
 	}
 
@@ -189,16 +179,14 @@ public final class GWTGL20 extends GL20 implements GLExt {
 	}
 
 	@Override
-	public void glCompressedTexImage2D(int target, int level,
-			int internalformat, int width, int height, int border,
+	public void glCompressedTexImage2D(int target, int level, int internalformat, int width, int height, int border,
 			int imageSize, Buffer data) {
 		throw new RuntimeException("NYI glCompressedTexImage2D");
 	}
 
 	@Override
-	public void glCompressedTexSubImage2D(int target, int level, int xoffset,
-			int yoffset, int width, int height, int format, int imageSize,
-			Buffer data) {
+	public void glCompressedTexSubImage2D(int target, int level, int xoffset, int yoffset, int width, int height,
+			int format, int imageSize, Buffer data) {
 		throw new RuntimeException("NYI glCompressedTexSubImage2D");
 	}
 
@@ -213,14 +201,12 @@ public final class GWTGL20 extends GL20 implements GLExt {
 	}
 
 	@Override
-	public void glGetFramebufferAttachmentParameteriv(int target,
-			int attachment, int pname, IntBuffer params) {
+	public void glGetFramebufferAttachmentParameteriv(int target, int attachment, int pname, IntBuffer params) {
 		throw new RuntimeException("NYI glGetFramebufferAttachmentParameteriv");
 	}
 
 	@Override
-	public void glGetRenderbufferParameteriv(int target, int pname,
-			IntBuffer params) {
+	public void glGetRenderbufferParameteriv(int target, int pname, IntBuffer params) {
 		throw new RuntimeException("NYI glGetRenderbufferParameteriv");
 	}
 
@@ -230,54 +216,48 @@ public final class GWTGL20 extends GL20 implements GLExt {
 	}
 
 	@Override
-	public void glCompressedTexImage3D(int arg0, int arg1, int arg2, int arg3,
-			int arg4, int arg5, int arg6, int arg7, Buffer arg8) {
+	public void glCompressedTexImage3D(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7,
+			Buffer arg8) {
 		throw new RuntimeException("NYI glCompressedTexImage3D");
 	}
 
 	@Override
-	public void glCompressedTexSubImage3D(int arg0, int arg1, int arg2,
-			int arg3, int arg4, int arg5, int arg6, int arg7, int arg8,
-			int arg9, Buffer arg10) {
+	public void glCompressedTexSubImage3D(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6,
+			int arg7, int arg8, int arg9, Buffer arg10) {
 		throw new RuntimeException("NYI glCompressedTexSubImage3D");
 	}
 
 	@Override
-	public void glCopyTexSubImage3D(int arg0, int arg1, int arg2, int arg3,
-			int arg4, int arg5, int arg6, int arg7, int arg8) {
+	public void glCopyTexSubImage3D(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7,
+			int arg8) {
 		throw new RuntimeException("NYI glCopyTexSubImage3D");
 	}
 
 	@Override
-	public void glFramebufferTexture3D(int target, int attachment,
-			int textarget, int texture, int level, int zoffset) {
+	public void glFramebufferTexture3D(int target, int attachment, int textarget, int texture, int level, int zoffset) {
 		throw new RuntimeException("NYI glFramebufferTexture3D");
 	}
 
 	@Override
-	public void glGetActiveAttrib(int program, int index, int bufsize,
-			int[] length, int lengthOffset, int[] size, int sizeOffset,
-			int[] type, int typeOffset, byte[] name, int nameOffset) {
+	public void glGetActiveAttrib(int program, int index, int bufsize, int[] length, int lengthOffset, int[] size,
+			int sizeOffset, int[] type, int typeOffset, byte[] name, int nameOffset) {
 		throw new RuntimeException("NYI glGetActiveAttrib");
 	}
 
 	@Override
-	public void glGetActiveUniform(int program, int index, int bufsize,
-			int[] length, int lengthOffset, int[] size, int sizeOffset,
-			int[] type, int typeOffset, byte[] name, int nameOffset) {
+	public void glGetActiveUniform(int program, int index, int bufsize, int[] length, int lengthOffset, int[] size,
+			int sizeOffset, int[] type, int typeOffset, byte[] name, int nameOffset) {
 		throw new RuntimeException("NYI glGetActiveUniform");
 	}
 
-
 	@Override
-	public void glGetAttachedShaders(int program, int maxcount, int[] count,
-			int countOffset, int[] shaders, int shadersOffset) {
+	public void glGetAttachedShaders(int program, int maxcount, int[] count, int countOffset, int[] shaders,
+			int shadersOffset) {
 		throw new RuntimeException("NYI glGetAttachedShaders");
 	}
 
 	@Override
-	public void glGetAttachedShaders(int program, int maxcount,
-			IntBuffer count, IntBuffer shaders) {
+	public void glGetAttachedShaders(int program, int maxcount, IntBuffer count, IntBuffer shaders) {
 		throw new RuntimeException("NYI glGetAttachedShaders");
 	}
 
@@ -292,70 +272,63 @@ public final class GWTGL20 extends GL20 implements GLExt {
 	}
 
 	@Override
-	public void glGetProgramBinary(int arg0, int arg1, IntBuffer arg2,
-			IntBuffer arg3, Buffer arg4) {
+	public void glGetProgramBinary(int arg0, int arg1, IntBuffer arg2, IntBuffer arg3, Buffer arg4) {
 		throw new RuntimeException("NYI glGetProgramBinary");
 	}
 
 	@Override
-	public void glGetProgramInfoLog(int program, int bufsize, IntBuffer length,
-			ByteBuffer infolog) {
+	public void glGetProgramInfoLog(int program, int bufsize, IntBuffer length, ByteBuffer infolog) {
 		throw new RuntimeException("NYI glGetProgramInfoLog");
 	}
 
 	@Override
-	public void glGetShaderInfoLog(int shader, int bufsize, IntBuffer length,
-			ByteBuffer infolog) {
+	public void glGetShaderInfoLog(int shader, int bufsize, IntBuffer length, ByteBuffer infolog) {
 		throw new RuntimeException("NYI glGetShaderInfoLog");
 	}
 
 	@Override
-	public void glGetShaderPrecisionFormat(int shadertype, int precisiontype,
-			int[] range, int rangeOffset, int[] precision, int precisionOffset) {
+	public void glGetShaderPrecisionFormat(int shadertype, int precisiontype, int[] range, int rangeOffset,
+			int[] precision, int precisionOffset) {
 		throw new RuntimeException("NYI glGetShaderPrecisionFormat");
 	}
 
 	@Override
-	public void glGetShaderSource(int shader, int bufsize, int[] length,
-			int lengthOffset, byte[] source, int sourceOffset) {
+	public void glGetShaderSource(int shader, int bufsize, int[] length, int lengthOffset, byte[] source,
+			int sourceOffset) {
 		throw new RuntimeException("NYI glGetShaderSource");
 	}
 
 	@Override
-	public void glGetShaderSource(int shader, int bufsize, IntBuffer length,
-			ByteBuffer source) {
+	public void glGetShaderSource(int shader, int bufsize, IntBuffer length, ByteBuffer source) {
 		throw new RuntimeException("NYI glGetShaderSource");
 	}
 
 	@Override
-	public void glCompressedTexImage2D(int arg0, int arg1, int arg2, int arg3,
-			int arg4, int arg5, int arg6, int arg7) {
+	public void glCompressedTexImage2D(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7) {
 		throw new RuntimeException("NYI glCompressedTexImage2D");
 	}
 
 	@Override
-	public void glCompressedTexImage3D(int arg0, int arg1, int arg2, int arg3,
-			int arg4, int arg5, int arg6, int arg7, int arg8) {
+	public void glCompressedTexImage3D(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7,
+			int arg8) {
 		throw new RuntimeException("NYI glCompressedTexImage3D");
 	}
 
 	@Override
-	public void glCompressedTexSubImage2D(int arg0, int arg1, int arg2,
-			int arg3, int arg4, int arg5, int arg6, int arg7, int arg8) {
+	public void glCompressedTexSubImage2D(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6,
+			int arg7, int arg8) {
 		throw new RuntimeException("NYI glCompressedTexSubImage2D");
 	}
 
 	@Override
-	public void glCompressedTexSubImage3D(int arg0, int arg1, int arg2,
-			int arg3, int arg4, int arg5, int arg6, int arg7, int arg8,
-			int arg9, int arg10) {
+	public void glCompressedTexSubImage3D(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6,
+			int arg7, int arg8, int arg9, int arg10) {
 		throw new RuntimeException("NYI glCompressedTexSubImage3D");
 	}
 
 	// ///////NYI method end
 
-	private final static class CacheMap<T extends JavaScriptObject> extends
-			JavaScriptObject {
+	private final static class CacheMap<T extends JavaScriptObject> extends JavaScriptObject {
 
 		protected CacheMap() {
 			super();
@@ -383,6 +356,14 @@ public final class GWTGL20 extends GL20 implements GLExt {
 			delete this[key];
 			return value;
 		}-*/;
+
+		public native int getKey(T value) /*-{
+			for (i = 0; i < this.length; i++) {
+				if (value === this[i]) {
+					return i;
+				}
+			}
+		}-*/;
 	}
 
 	static class VertexAttribArrayState {
@@ -404,8 +385,7 @@ public final class GWTGL20 extends GL20 implements GLExt {
 	private final CacheMap<WebGLFramebuffer> frameBuffers = CacheMap.create();
 	private final CacheMap<WebGLRenderbuffer> renderBuffers = CacheMap.create();
 	private final CacheMap<WebGLTexture> textures = CacheMap.create();
-	private final CacheMap<CacheMap<WebGLUniformLocation>> uniforms = CacheMap
-			.create();
+	private final CacheMap<CacheMap<WebGLUniformLocation>> uniforms = CacheMap.create();
 	private int currProgram = 0;
 
 	private int enabledArrays = 0;
@@ -433,18 +413,18 @@ public final class GWTGL20 extends GL20 implements GLExt {
 	}
 
 	public Float32Array copy(FloatBuffer buffer) {
-		return ((Float32Array) ((HasArrayBufferView) buffer).getTypedArray())
-				.subarray(buffer.position(), buffer.remaining());
+		return ((Float32Array) ((HasArrayBufferView) buffer).getTypedArray()).subarray(buffer.position(),
+				buffer.remaining());
 	}
 
 	public Int16Array copy(ShortBuffer buffer) {
-		return ((Int16Array) ((HasArrayBufferView) buffer).getTypedArray())
-				.subarray(buffer.position(), buffer.remaining());
+		return ((Int16Array) ((HasArrayBufferView) buffer).getTypedArray()).subarray(buffer.position(),
+				buffer.remaining());
 	}
 
 	public Int32Array copy(IntBuffer buffer) {
-		return ((Int32Array) ((HasArrayBufferView) buffer).getTypedArray())
-				.subarray(buffer.position(), buffer.remaining());
+		return ((Int32Array) ((HasArrayBufferView) buffer).getTypedArray()).subarray(buffer.position(),
+				buffer.remaining());
 	}
 
 	private static int getElementSize(Buffer buffer) {
@@ -455,8 +435,7 @@ public final class GWTGL20 extends GL20 implements GLExt {
 		else if (buffer instanceof ByteBuffer)
 			return 1;
 		else
-			throw new RuntimeException("Unrecognized buffer type: "
-					+ buffer.getClass());
+			throw new RuntimeException("Unrecognized buffer type: " + buffer.getClass());
 	}
 
 	private ArrayBufferView getTypedArray(Buffer buffer, int type, int byteSize) {
@@ -470,33 +449,25 @@ public final class GWTGL20 extends GL20 implements GLExt {
 		if (byteSize == -1) {
 			byteSize = buffer.remaining() * bufferElementSize;
 		}
-		if (byteSize == buffer.capacity() * bufferElementSize
-				&& type == arrayHolder.getElementType()) {
+		if (byteSize == buffer.capacity() * bufferElementSize && type == arrayHolder.getElementType()) {
 			return webGLArray;
 		}
 
-		int byteOffset = webGLArray.byteOffset() + buffer.position()
-				* bufferElementSize;
+		int byteOffset = webGLArray.byteOffset() + buffer.position() * bufferElementSize;
 
 		switch (type) {
 		case FLOAT:
-			return TypedArrays.createFloat32Array(webGLArray.buffer(),
-					byteOffset, byteSize / 4);
+			return TypedArrays.createFloat32Array(webGLArray.buffer(), byteOffset, byteSize / 4);
 		case UNSIGNED_BYTE:
-			return TypedArrays.createUint8Array(webGLArray.buffer(),
-					byteOffset, byteSize);
+			return TypedArrays.createUint8Array(webGLArray.buffer(), byteOffset, byteSize);
 		case UNSIGNED_SHORT:
-			return TypedArrays.createUint16Array(webGLArray.buffer(),
-					byteOffset, byteSize / 2);
+			return TypedArrays.createUint16Array(webGLArray.buffer(), byteOffset, byteSize / 2);
 		case INT:
-			return TypedArrays.createInt32Array(webGLArray.buffer(),
-					byteOffset, byteSize / 4);
+			return TypedArrays.createInt32Array(webGLArray.buffer(), byteOffset, byteSize / 4);
 		case SHORT:
-			return TypedArrays.createInt16Array(webGLArray.buffer(),
-					byteOffset, byteSize / 2);
+			return TypedArrays.createInt16Array(webGLArray.buffer(), byteOffset, byteSize / 2);
 		case BYTE:
-			return TypedArrays.createInt8Array(webGLArray.buffer(), byteOffset,
-					byteSize);
+			return TypedArrays.createInt8Array(webGLArray.buffer(), byteOffset, byteSize);
 		default:
 			throw new IllegalArgumentException("Type: " + type);
 		}
@@ -555,16 +526,14 @@ public final class GWTGL20 extends GL20 implements GLExt {
 			}
 			if (enabled != 0 && (useNioBuffer & mask) != 0) {
 				VertexAttribArrayState data = vertexAttribArrayState[i];
-				if (previousNio != null
-						&& previousNio.nioBuffer == data.nioBuffer
+				if (previousNio != null && previousNio.nioBuffer == data.nioBuffer
 						&& previousNio.nioBufferLimit >= data.nioBufferLimit) {
 					if (boundArrayBuffer != previousNio.webGlBuffer) {
 						glc.bindBuffer(ARRAY_BUFFER, previousNio.webGlBuffer);
 						boundArrayBuffer = data.webGlBuffer;
 					}
-					glc.vertexAttribPointer(i, data.size, data.type,
-							data.normalize, data.stride, data.nioBufferPosition
-									* previousElementSize);
+					glc.vertexAttribPointer(i, data.size, data.type, data.normalize, data.stride,
+							data.nioBufferPosition * previousElementSize);
 				} else {
 					if (boundArrayBuffer != data.webGlBuffer) {
 						glc.bindBuffer(ARRAY_BUFFER, data.webGlBuffer);
@@ -574,27 +543,18 @@ public final class GWTGL20 extends GL20 implements GLExt {
 					int savePosition = data.nioBuffer.position();
 					if (data.nioBufferPosition * elementSize < data.stride) {
 						data.nioBuffer.position(0);
-						glc.bufferData(
-								ARRAY_BUFFER,
-								getTypedArray(data.nioBuffer, data.type,
-										data.nioBufferLimit * elementSize),
+						glc.bufferData(ARRAY_BUFFER,
+								getTypedArray(data.nioBuffer, data.type, data.nioBufferLimit * elementSize),
 								STREAM_DRAW);
-						glc.vertexAttribPointer(i, data.size, data.type,
-								data.normalize, data.stride,
+						glc.vertexAttribPointer(i, data.size, data.type, data.normalize, data.stride,
 								data.nioBufferPosition * elementSize);
 						previousNio = data;
 						previousElementSize = elementSize;
 					} else {
 						data.nioBuffer.position(data.nioBufferPosition);
-						glc.bufferData(
-								ARRAY_BUFFER,
-								getTypedArray(
-										data.nioBuffer,
-										data.type,
-										(data.nioBufferLimit - data.nioBufferPosition)
-												* elementSize), STREAM_DRAW);
-						glc.vertexAttribPointer(i, data.size, data.type,
-								data.normalize, data.stride, 0);
+						glc.bufferData(ARRAY_BUFFER, getTypedArray(data.nioBuffer, data.type,
+								(data.nioBufferLimit - data.nioBufferPosition) * elementSize), STREAM_DRAW);
+						glc.vertexAttribPointer(i, data.size, data.type, data.normalize, data.stride, 0);
 					}
 					data.nioBuffer.position(savePosition);
 				}
@@ -669,8 +629,7 @@ public final class GWTGL20 extends GL20 implements GLExt {
 	}
 
 	@Override
-	public void glBlendFuncSeparate(int srcRGB, int dstRGB, int srcAlpha,
-			int dstAlpha) {
+	public void glBlendFuncSeparate(int srcRGB, int dstRGB, int srcAlpha, int dstAlpha) {
 		glc.blendFuncSeparate(srcRGB, dstRGB, srcAlpha, dstAlpha);
 	}
 
@@ -692,8 +651,7 @@ public final class GWTGL20 extends GL20 implements GLExt {
 
 	@Override
 	public void glBufferSubData(int target, int offset, int size, Buffer data) {
-		if (target == GL_ARRAY_BUFFER
-				&& requestedArrayBuffer != boundArrayBuffer) {
+		if (target == GL_ARRAY_BUFFER && requestedArrayBuffer != boundArrayBuffer) {
 			glc.bindBuffer(target, requestedArrayBuffer);
 			boundArrayBuffer = requestedArrayBuffer;
 		}
@@ -711,8 +669,7 @@ public final class GWTGL20 extends GL20 implements GLExt {
 	}
 
 	@Override
-	public final void glClearColor(float red, float green, float blue,
-			float alpha) {
+	public final void glClearColor(float red, float green, float blue, float alpha) {
 		glc.clearColor(red, green, blue, alpha);
 	}
 
@@ -732,8 +689,7 @@ public final class GWTGL20 extends GL20 implements GLExt {
 	}
 
 	@Override
-	public void glColorMask(boolean red, boolean green, boolean blue,
-			boolean alpha) {
+	public void glColorMask(boolean red, boolean green, boolean blue, boolean alpha) {
 		glc.colorMask(red, green, blue, alpha);
 	}
 
@@ -744,17 +700,15 @@ public final class GWTGL20 extends GL20 implements GLExt {
 	}
 
 	@Override
-	public void glCopyTexImage2D(int target, int level, int internalformat,
-			int x, int y, int width, int height, int border) {
-		glc.copyTexImage2D(target, level, internalformat, x, y, width, height,
-				border);
+	public void glCopyTexImage2D(int target, int level, int internalformat, int x, int y, int width, int height,
+			int border) {
+		glc.copyTexImage2D(target, level, internalformat, x, y, width, height, border);
 	}
 
 	@Override
-	public void glCopyTexSubImage2D(int target, int level, int xoffset,
-			int yoffset, int x, int y, int width, int height) {
-		glc.copyTexSubImage2D(target, level, xoffset, yoffset, x, y, width,
-				height);
+	public void glCopyTexSubImage2D(int target, int level, int xoffset, int yoffset, int x, int y, int width,
+			int height) {
+		glc.copyTexSubImage2D(target, level, xoffset, yoffset, x, y, width, height);
 	}
 
 	@Override
@@ -910,9 +864,7 @@ public final class GWTGL20 extends GL20 implements GLExt {
 			glc.bindBuffer(ELEMENT_ARRAY_BUFFER, elementBuffer);
 			boundElementArrayBuffer = elementBuffer;
 		}
-		glc.bufferData(ELEMENT_ARRAY_BUFFER,
-				getTypedArray(indices, type, count * getTypeSize(type)),
-				STREAM_DRAW);
+		glc.bufferData(ELEMENT_ARRAY_BUFFER, getTypedArray(indices, type, count * getTypeSize(type)), STREAM_DRAW);
 		glc.drawElements(mode, count, type, 0);
 	}
 
@@ -947,17 +899,13 @@ public final class GWTGL20 extends GL20 implements GLExt {
 	}
 
 	@Override
-	public void glFramebufferRenderbuffer(int target, int attachment,
-			int renderbuffertarget, int renderbuffer) {
-		glc.framebufferRenderbuffer(target, attachment, renderbuffertarget,
-				renderBuffers.get(renderbuffer));
+	public void glFramebufferRenderbuffer(int target, int attachment, int renderbuffertarget, int renderbuffer) {
+		glc.framebufferRenderbuffer(target, attachment, renderbuffertarget, renderBuffers.get(renderbuffer));
 	}
 
 	@Override
-	public void glFramebufferTexture2D(int target, int attachment,
-			int textarget, int texture, int level) {
-		glc.framebufferTexture2D(target, attachment, textarget,
-				textures.get(texture), level);
+	public void glFramebufferTexture2D(int target, int attachment, int textarget, int texture, int level) {
+		glc.framebufferTexture2D(target, attachment, textarget, textures.get(texture), level);
 	}
 
 	@Override
@@ -1053,20 +1001,16 @@ public final class GWTGL20 extends GL20 implements GLExt {
 	}
 
 	@Override
-	public String glGetActiveAttrib(int program, int index, IntBuffer size,
-			Buffer type) {
-		WebGLActiveInfo activeAttrib = glc.getActiveAttrib(
-				programs.get(program), index);
+	public String glGetActiveAttrib(int program, int index, IntBuffer size, Buffer type) {
+		WebGLActiveInfo activeAttrib = glc.getActiveAttrib(programs.get(program), index);
 		size.put(activeAttrib.getSize());
 		((IntBuffer) type).put(activeAttrib.getType());
 		return activeAttrib.getName();
 	}
 
 	@Override
-	public String glGetActiveUniform(int program, int index, IntBuffer size,
-			Buffer type) {
-		WebGLActiveInfo activeUniform = glc.getActiveUniform(
-				programs.get(program), index);
+	public String glGetActiveUniform(int program, int index, IntBuffer size, Buffer type) {
+		WebGLActiveInfo activeUniform = glc.getActiveUniform(programs.get(program), index);
 		size.put(activeUniform.getSize());
 		((IntBuffer) type).put(activeUniform.getType());
 		return activeUniform.getName();
@@ -1100,11 +1044,52 @@ public final class GWTGL20 extends GL20 implements GLExt {
 
 	@Override
 	public void glGetIntegerv(int pname, IntBuffer params) {
-		Int32Array result = (Int32Array) glc.getParameterv(pname);
-		int pos = params.position();
-		int len = result.length();
-		for (int i = 0; i < len; i++) {
-			params.put(pos + i, result.get(i));
+		if (pname == GL20.GL_ACTIVE_TEXTURE || pname == GL20.GL_ALPHA_BITS || pname == GL20.GL_BLEND_DST_ALPHA
+				|| pname == GL20.GL_BLEND_DST_RGB || pname == GL20.GL_BLEND_EQUATION_ALPHA
+				|| pname == GL20.GL_BLEND_EQUATION_RGB || pname == GL20.GL_BLEND_SRC_ALPHA
+				|| pname == GL20.GL_BLEND_SRC_RGB || pname == GL20.GL_BLUE_BITS || pname == GL20.GL_CULL_FACE_MODE
+				|| pname == GL20.GL_DEPTH_BITS || pname == GL20.GL_DEPTH_FUNC || pname == GL20.GL_FRONT_FACE
+				|| pname == GL20.GL_GENERATE_MIPMAP_HINT || pname == GL20.GL_GREEN_BITS
+				|| pname == GL20.GL_IMPLEMENTATION_COLOR_READ_FORMAT || pname == GL20.GL_IMPLEMENTATION_COLOR_READ_TYPE
+				|| pname == GL20.GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS || pname == GL20.GL_MAX_CUBE_MAP_TEXTURE_SIZE
+				|| pname == GL20.GL_MAX_FRAGMENT_UNIFORM_VECTORS || pname == GL20.GL_MAX_RENDERBUFFER_SIZE
+				|| pname == GL20.GL_MAX_TEXTURE_IMAGE_UNITS || pname == GL20.GL_MAX_TEXTURE_SIZE
+				|| pname == GL20.GL_MAX_VARYING_VECTORS || pname == GL20.GL_MAX_VERTEX_ATTRIBS
+				|| pname == GL20.GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS || pname == GL20.GL_MAX_VERTEX_UNIFORM_VECTORS
+				|| pname == GL20.GL_NUM_COMPRESSED_TEXTURE_FORMATS || pname == GL20.GL_PACK_ALIGNMENT
+				|| pname == GL20.GL_RED_BITS || pname == GL20.GL_SAMPLE_BUFFERS || pname == GL20.GL_SAMPLES
+				|| pname == GL20.GL_STENCIL_BACK_FAIL || pname == GL20.GL_STENCIL_BACK_FUNC
+				|| pname == GL20.GL_STENCIL_BACK_PASS_DEPTH_FAIL || pname == GL20.GL_STENCIL_BACK_PASS_DEPTH_PASS
+				|| pname == GL20.GL_STENCIL_BACK_REF || pname == GL20.GL_STENCIL_BACK_VALUE_MASK
+				|| pname == GL20.GL_STENCIL_BACK_WRITEMASK || pname == GL20.GL_STENCIL_BITS
+				|| pname == GL20.GL_STENCIL_CLEAR_VALUE || pname == GL20.GL_STENCIL_FAIL
+				|| pname == GL20.GL_STENCIL_FUNC || pname == GL20.GL_STENCIL_PASS_DEPTH_FAIL
+				|| pname == GL20.GL_STENCIL_PASS_DEPTH_PASS || pname == GL20.GL_STENCIL_REF
+				|| pname == GL20.GL_STENCIL_VALUE_MASK || pname == GL20.GL_STENCIL_WRITEMASK
+				|| pname == GL20.GL_SUBPIXEL_BITS || pname == GL20.GL_UNPACK_ALIGNMENT)
+			params.put(0, glc.getParameteri(pname));
+		else if (pname == GL20.GL_VIEWPORT) {
+			Int32Array array = glc.getParameterv(pname);
+			params.put(0, array.get(0));
+			params.put(1, array.get(1));
+			params.put(2, array.get(2));
+			params.put(3, array.get(3));
+			params.flip();
+		} else if (pname == GL20.GL_FRAMEBUFFER_BINDING) {
+			WebGLFramebuffer fbo = glc.getParametero(pname);
+			if (fbo == null) {
+				params.put(0);
+			} else {
+				params.put(frameBuffers.getKey(fbo));
+			}
+			params.flip();
+		} else {
+			Int32Array result = (Int32Array) glc.getParameterv(pname);
+			int pos = params.position();
+			int len = result.length();
+			for (int i = 0; i < len; i++) {
+				params.put(pos + i, result.get(i));
+			}
 		}
 	}
 
@@ -1114,11 +1099,14 @@ public final class GWTGL20 extends GL20 implements GLExt {
 	}
 
 	@Override
+	public String glGetProgramInfoLog(int program) {
+		return glc.getProgramInfoLog(programs.get(program));
+	}
+
+	@Override
 	public void glGetProgramiv(int program, int pname, IntBuffer params) {
-		if (pname == GL20.GL_DELETE_STATUS || pname == GL20.GL_LINK_STATUS
-				|| pname == GL20.GL_VALIDATE_STATUS) {
-			boolean result = glc.getProgramParameterb(programs.get(program),
-					pname);
+		if (pname == GL20.GL_DELETE_STATUS || pname == GL20.GL_LINK_STATUS || pname == GL20.GL_VALIDATE_STATUS) {
+			boolean result = glc.getProgramParameterb(programs.get(program), pname);
 			params.put(result ? GL20.GL_TRUE : GL20.GL_FALSE);
 		} else {
 			params.put(glc.getProgramParameteri(programs.get(program), pname));
@@ -1126,26 +1114,23 @@ public final class GWTGL20 extends GL20 implements GLExt {
 	}
 
 	@Override
-	public String glGetProgramInfoLog(int program) {
-		return glc.getProgramInfoLog(programs.get(program));
-	}
-
-	@Override
 	public void glGetProgramiv(int program, int pname, int[] params, int offset) {
-		if (pname == GL_LINK_STATUS)
-			params[offset] = glc.getProgramParameterb(programs.get(program),
-					LINK_STATUS) ? GL_TRUE : GL_FALSE;
-		else
-			throw new RuntimeException("NYI glGetProgramiv: " + pname);
+		if (pname == GL20.GL_DELETE_STATUS || pname == GL20.GL_LINK_STATUS || pname == GL20.GL_VALIDATE_STATUS) {
+			boolean result = glc.getProgramParameterb(programs.get(program), pname);
+			params[offset] = (result ? GL20.GL_TRUE : GL20.GL_FALSE);
+		} else {
+			params[offset] = (glc.getProgramParameteri(programs.get(program), pname));
+		}
 	}
 
 	@Override
 	public void glGetShaderiv(int shader, int pname, IntBuffer params) {
-		if (pname == GL_COMPILE_STATUS) {
-			params.put(glc.getShaderParameterb(shaders.get(shader),
-					COMPILE_STATUS) ? GL_TRUE : GL_FALSE);
+		if (pname == GL20.GL_COMPILE_STATUS || pname == GL20.GL_DELETE_STATUS) {
+			boolean result = glc.getShaderParameterb(shaders.get(shader), pname);
+			params.put(result ? GL20.GL_TRUE : GL20.GL_FALSE);
 		} else {
-			throw new RuntimeException("NYI glGetShaderiv: " + pname);
+			int result = glc.getShaderParameteri(shaders.get(shader), pname);
+			params.put(result);
 		}
 	}
 
@@ -1171,8 +1156,7 @@ public final class GWTGL20 extends GL20 implements GLExt {
 
 	@Override
 	public void glGetUniformfv(int program, int location, FloatBuffer params) {
-		Float32Array v = glc.getUniformv(programs.get(program),
-				uniforms.get(program).get(location));
+		Float32Array v = glc.getUniformv(programs.get(program), uniforms.get(program).get(location));
 		for (int i = 0; i < v.length(); i++) {
 			params.put(params.position() + i, v.get(i));
 		}
@@ -1180,8 +1164,7 @@ public final class GWTGL20 extends GL20 implements GLExt {
 
 	@Override
 	public void glGetUniformiv(int program, int location, IntBuffer params) {
-		Int32Array v = glc.getUniformv(programs.get(program),
-				uniforms.get(program).get(location));
+		Int32Array v = glc.getUniformv(programs.get(program), uniforms.get(program).get(location));
 		for (int i = 0; i < v.length(); i++) {
 			params.put(params.position() + i, v.get(i));
 		}
@@ -1189,11 +1172,13 @@ public final class GWTGL20 extends GL20 implements GLExt {
 
 	@Override
 	public int glGetUniformLocation(int program, String name) {
-		WebGLUniformLocation location = glc.getUniformLocation(
-				programs.get(program), name);
+		WebGLUniformLocation location = glc.getUniformLocation(programs.get(program), name);
+		if (location == null) {
+			return -1;
+		}
 		CacheMap<WebGLUniformLocation> progUniforms = uniforms.get(program);
 		if (progUniforms == null) {
-			progUniforms = CacheMap.<WebGLUniformLocation> create();
+			progUniforms = CacheMap.create();
 			uniforms.put(program, progUniforms);
 		}
 		int id = progUniforms.add(location);
@@ -1269,15 +1254,12 @@ public final class GWTGL20 extends GL20 implements GLExt {
 	}
 
 	@Override
-	public void glReadPixels(int x, int y, int width, int height, int format,
-			int type, Buffer pixels) {
-		glc.readPixels(x, y, width, height, format, type,
-				getTypedArray(pixels, type, -1));
+	public void glReadPixels(int x, int y, int width, int height, int format, int type, Buffer pixels) {
+		glc.readPixels(x, y, width, height, format, type, getTypedArray(pixels, type, -1));
 	}
 
 	@Override
-	public void glRenderbufferStorage(int target, int internalformat,
-			int width, int height) {
+	public void glRenderbufferStorage(int target, int internalformat, int width, int height) {
 		glc.renderbufferStorage(target, internalformat, width, height);
 	}
 
@@ -1327,30 +1309,24 @@ public final class GWTGL20 extends GL20 implements GLExt {
 	}
 
 	@Override
-	public void glTexImage2D(int target, int level, int internalformat,
-			int width, int height, int border, int format, int type,
-			Buffer pixels) {
-		ArrayBufferView buffer = (pixels == null) ? null : getTypedArray(
-				pixels, type, -1);
-		glc.texImage2D(target, level, internalformat, width, height, border,
-				format, type, buffer);
+	public void glTexImage2D(int target, int level, int internalformat, int width, int height, int border, int format,
+			int type, Buffer pixels) {
+		ArrayBufferView buffer = (pixels == null) ? null : getTypedArray(pixels, type, -1);
+		glc.texImage2D(target, level, internalformat, width, height, border, format, type, buffer);
 	}
 
-	public void glTexImage2D(int target, int level, int internalformat,
-			int format, int type, ImageElement image) {
+	public void glTexImage2D(int target, int level, int internalformat, int format, int type, ImageElement image) {
 		glc.texImage2D(target, level, internalformat, format, type, image);
 		checkError("texImage2D");
 	}
 
-	public void glTexImage2D(int target, int level, int internalformat,
-			int format, int type, CanvasElement image) {
+	public void glTexImage2D(int target, int level, int internalformat, int format, int type, CanvasElement image) {
 		glc.texImage2D(target, level, internalformat, format, type, image);
 		checkError("texImage2D");
 	}
 
 	@Override
-	public void glTexParameteri(int glTexture2d, int glTextureMinFilter,
-			int glFilterMin) {
+	public void glTexParameteri(int glTexture2d, int glTextureMinFilter, int glFilterMin) {
 		glc.texParameteri(glTexture2d, glTextureMinFilter, glFilterMin);
 	}
 
@@ -1370,11 +1346,10 @@ public final class GWTGL20 extends GL20 implements GLExt {
 	}
 
 	@Override
-	public void glTexSubImage2D(int target, int level, int xoffset,
-			int yoffset, int width, int height, int format, int type,
-			Buffer pixels) {
-		glc.texSubImage2D(target, level, xoffset, yoffset, width, height,
-				format, type, getTypedArray(pixels, type, -1));
+	public void glTexSubImage2D(int target, int level, int xoffset, int yoffset, int width, int height, int format,
+			int type, Buffer pixels) {
+		glc.texSubImage2D(target, level, xoffset, yoffset, width, height, format, type,
+				getTypedArray(pixels, type, -1));
 	}
 
 	@Override
@@ -1395,8 +1370,7 @@ public final class GWTGL20 extends GL20 implements GLExt {
 
 	@Override
 	public void glUniform1iv(int location, int count, IntBuffer v) {
-		glc.uniform1iv(getUniformLocation(location),
-				(Int32Array) getTypedArray(v, GL_INT, count * 4));
+		glc.uniform1iv(getUniformLocation(location), (Int32Array) getTypedArray(v, GL_INT, count * 4));
 	}
 
 	@Override
@@ -1406,8 +1380,7 @@ public final class GWTGL20 extends GL20 implements GLExt {
 
 	@Override
 	public void glUniform2fv(int location, int count, FloatBuffer v) {
-		glc.uniform2fv(getUniformLocation(location),
-				(Float32Array) getTypedArray(v, GL_FLOAT, count * 2 * 4));
+		glc.uniform2fv(getUniformLocation(location), (Float32Array) getTypedArray(v, GL_FLOAT, count * 2 * 4));
 	}
 
 	@Override
@@ -1468,8 +1441,7 @@ public final class GWTGL20 extends GL20 implements GLExt {
 
 	@Override
 	public void glUniform4fv(int location, int count, FloatBuffer v) {
-		glc.uniform4fv(getUniformLocation(location),
-				(Float32Array) getTypedArray(v, GL_FLOAT, 4 * 4 * count));
+		glc.uniform4fv(getUniformLocation(location), (Float32Array) getTypedArray(v, GL_FLOAT, 4 * 4 * count));
 	}
 
 	@Override
@@ -1491,36 +1463,31 @@ public final class GWTGL20 extends GL20 implements GLExt {
 	}
 
 	@Override
-	public void glUniformMatrix2fv(int location, int count, boolean transpose,
-			FloatBuffer value) {
+	public void glUniformMatrix2fv(int location, int count, boolean transpose, FloatBuffer value) {
 		WebGLUniformLocation loc = getUniformLocation(location);
 		glc.uniformMatrix2fv(loc, transpose, copy(value));
 	}
 
 	@Override
-	public void glUniformMatrix2fv(int location, int count, boolean transpose,
-			float[] value, int offset) {
+	public void glUniformMatrix2fv(int location, int count, boolean transpose, float[] value, int offset) {
 		WebGLUniformLocation loc = getUniformLocation(location);
 		glc.uniformMatrix2fv(loc, transpose, value);
 	}
 
 	@Override
-	public void glUniformMatrix3fv(int location, int count, boolean transpose,
-			FloatBuffer value) {
+	public void glUniformMatrix3fv(int location, int count, boolean transpose, FloatBuffer value) {
 		WebGLUniformLocation loc = getUniformLocation(location);
 		glc.uniformMatrix3fv(loc, transpose, copy(value));
 	}
 
 	@Override
-	public void glUniformMatrix3fv(int location, int count, boolean transpose,
-			float[] value, int offset) {
+	public void glUniformMatrix3fv(int location, int count, boolean transpose, float[] value, int offset) {
 		WebGLUniformLocation loc = getUniformLocation(location);
 		glc.uniformMatrix3fv(loc, transpose, value);
 	}
 
 	@Override
-	public void glUniformMatrix4fv(int location, int count, boolean transpose,
-			FloatBuffer value) {
+	public void glUniformMatrix4fv(int location, int count, boolean transpose, FloatBuffer value) {
 		glc.uniformMatrix4fv(getUniformLocation(location), transpose,
 				(Float32Array) getTypedArray(value, GL_FLOAT, count * 16 * 4));
 	}
@@ -1577,8 +1544,8 @@ public final class GWTGL20 extends GL20 implements GLExt {
 	}
 
 	@Override
-	public void glVertexAttribPointer(int arrayId, int size, int type,
-			boolean normalize, int byteStride, Buffer nioBuffer) {
+	public void glVertexAttribPointer(int arrayId, int size, int type, boolean normalize, int byteStride,
+			Buffer nioBuffer) {
 		VertexAttribArrayState data = vertexAttribArrayState[arrayId];
 		useNioBuffer |= 1 << arrayId;
 		data.nioBuffer = nioBuffer;
@@ -1591,8 +1558,7 @@ public final class GWTGL20 extends GL20 implements GLExt {
 	}
 
 	@Override
-	public void glVertexAttribPointer(int indx, int size, int type,
-			boolean normalized, int stride, int ptr) {
+	public void glVertexAttribPointer(int indx, int size, int type, boolean normalized, int stride, int ptr) {
 		useNioBuffer &= ~(1 << indx);
 		if (boundArrayBuffer != requestedArrayBuffer) {
 			glc.bindBuffer(GL_ARRAY_BUFFER, requestedArrayBuffer);
@@ -1615,8 +1581,7 @@ public final class GWTGL20 extends GL20 implements GLExt {
 	@Override
 	public void glGetShaderiv(int shader, int pname, int[] params, int offset) {
 		if (pname == GL_COMPILE_STATUS)
-			params[offset] = glc.getShaderParameterb(shaders.get(shader),
-					COMPILE_STATUS) ? GL_TRUE : GL_FALSE;
+			params[offset] = glc.getShaderParameterb(shaders.get(shader), COMPILE_STATUS) ? GL_TRUE : GL_FALSE;
 		else
 			throw new RuntimeException("NYI glGetShaderiv: " + pname);
 	}
@@ -1646,8 +1611,7 @@ public final class GWTGL20 extends GL20 implements GLExt {
 	}
 
 	@Override
-	public void glUniformMatrix4fv(int location, int count, boolean transpose,
-			float[] value, int offset) {
+	public void glUniformMatrix4fv(int location, int count, boolean transpose, float[] value, int offset) {
 		WebGLUniformLocation loc = getUniformLocation(location);
 		glc.uniformMatrix4fv(loc, transpose, value);
 	}

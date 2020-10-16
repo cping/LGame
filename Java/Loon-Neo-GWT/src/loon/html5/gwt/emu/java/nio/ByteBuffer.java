@@ -17,8 +17,6 @@
 
 package java.nio;
 
-import java.nio.ByteOrder;
-
 import com.google.gwt.typedarrays.shared.ArrayBuffer;
 import com.google.gwt.typedarrays.shared.ArrayBufferView;
 import com.google.gwt.typedarrays.shared.Int8Array;

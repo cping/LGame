@@ -26,7 +26,6 @@ import loon.LRelease;
 import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
-import loon.canvas.NinePatchAbstract.Repeat;
 import loon.geom.Vector2f;
 import loon.opengl.Painter;
 import loon.opengl.TextureSource;
@@ -65,17 +64,6 @@ public abstract class Image extends TextureSource implements Canvas.Drawable, LR
 
 	public static Image createImage(int w, int h) {
 		return LSystem.base().graphics().createCanvas(w, h).image;
-	}
-
-	public static Image createImageNicePatch(String path, int x, int y, int w, int h) {
-		return createImageNicePatch(path, null, x, y, w, h);
-	}
-
-	public static Image createImageNicePatch(String path, Repeat repeat, int x, int y, int w, int h) {
-		final ImageNinePatch np = new ImageNinePatch(createImage(path), repeat);
-		Canvas c = Image.createCanvas(w, h);
-		np.drawNinePatch(c, x, y, w, h);
-		return c.image;
 	}
 
 	public static Image createImage(final String path) {

@@ -29,7 +29,6 @@ import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
 import loon.Support;
-import loon.canvas.NinePatchAbstract.Repeat;
 import loon.geom.Limit;
 import loon.geom.Polygon;
 import loon.geom.RectI;
@@ -109,24 +108,6 @@ public class Pixmap extends Limit implements LRelease {
 
 	public LTexture toTexture() {
 		return getImage().texture();
-	}
-
-	public static Pixmap createImageNicePatch(String path, int x, int y, int w, int h) {
-		return createImageNicePatch(path, null, x, y, w, h);
-	}
-
-	public static Pixmap createImageNicePatch(String path, Repeat repeat, int x, int y, int w, int h) {
-		final PixmapNinePatch np = new PixmapNinePatch(Image.createImage(path).getPixmap(), repeat);
-		Pixmap c = Pixmap.createImage(w, h);
-		np.drawNinePatch(c, x, y, w, h);
-		int[] pixels = c.getData();
-		for (int i = 0; i < pixels.length; i++) {
-			if (pixels[i] == LColor.TRANSPARENT) {
-				pixels[i] = 0;
-			}
-		}
-		c.setData(pixels);
-		return c;
 	}
 
 	public static Pixmap createImage(int w, int h) {
