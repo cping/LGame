@@ -1,8 +1,9 @@
-# Java(Android)游戏开发领域常用资源 (游戏素材,游戏资源,不定期更新:本次更新日期 2019-05-15)
+# Java(Android)游戏开发领域常用资源 (游戏素材,游戏资源,不定期更新:本次更新日期 2020-10-17)
 
 ### Java游戏开发框架及资源(仅包含还在更新的)
 
 * jMonkeyEngine: 目前最完善的Java3D游戏开发引擎，也可以跨平台，不过非台式机效率有限…… [项目地址](https://github.com/jMonkeyEngine/jmonkeyengine/)
+* Korge: 一个基于Kotlin开发的2D/3D游戏引擎，基于Kotlin Native编译时可以支持多平台。[项目地址](https://github.com/korlibs/korge)
 * Slick2D: 最早出现的Java2D游戏引擎之一，只支持桌面游戏开发。[项目地址](http://slick.ninjacave.com/)
 * libGDX: 支持2D/3D的Java跨平台框架。[项目地址](https://github.com/libgdx/libgdx/)
 * LGame: 包括Java/C#/C++等多种语法版本，可能运行于全平台，并且支持2D/3D（含Live2D这类伪3D模型的导入）的游戏引擎。 [项目地址](https://github.com/cping/lgame/)
@@ -15,6 +16,7 @@
 * LWJGL: 目前最常用的，对OpenGL/CL/AL等渲染API进行本地封装的Java开发包。[官网](http://lwjgl.org/)
 * JavaFX: Java官方目前最推荐的UI库，号称是Swing以及Applet的后继者，也可以用于游戏开发官方提供有Android环境的本地支持库，通过Robovm也可以支持IOS平台。[官网](http://www.oracle.com/technetwork/java/javase/overview/javafx-overview-2158620.html)
 * Scene Builder: 开发JavaFX应用的可视化布局工具。[下载地址](http://gluonhq.com/open-source/scene-builder/)
+
 
 ### Java的跨平台工具(仅包含还在更新的)
 
