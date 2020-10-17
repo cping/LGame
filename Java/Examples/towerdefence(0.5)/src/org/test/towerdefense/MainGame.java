@@ -3,9 +3,9 @@
 import loon.LTransition;
 import loon.action.sprite.SpriteBatch;
 import loon.action.sprite.painting.DrawableScreen;
-import loon.event.GameKey;
-import loon.event.GameTouch;
-import loon.event.SysTouch;
+import loon.events.GameKey;
+import loon.events.GameTouch;
+import loon.events.SysTouch;
 import loon.utils.TArray;
 import loon.utils.timer.GameTime;
 

@@ -3,8 +3,8 @@ package loon.test.stggame;
 import loon.LTransition;
 import loon.canvas.LColor;
 import loon.component.LButton;
-import loon.event.GameTouch;
-import loon.event.SysKey;
+import loon.events.GameTouch;
+import loon.events.SysKey;
 import loon.opengl.GLEx;
 import loon.stg.STGScreen;
 

@@ -2,7 +2,7 @@
 
 import loon.action.sprite.SpriteBatch;
 import loon.canvas.LColorPool;
-import loon.event.SysInput;
+import loon.events.SysInput;
 import loon.utils.MathUtils;
 import loon.utils.timer.GameTime;
 

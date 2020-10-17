@@ -4,7 +4,7 @@ import loon.LTexture;
 import loon.action.sprite.SpriteBatch;
 import loon.action.sprite.SpriteBatch.SpriteEffects;
 import loon.canvas.LColor;
-import loon.event.LTouchLocation;
+import loon.events.LTouchLocation;
 import loon.geom.Vector2f;
 import loon.utils.MathUtils;
 

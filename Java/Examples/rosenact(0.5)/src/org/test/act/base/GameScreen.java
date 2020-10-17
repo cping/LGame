@@ -32,8 +32,8 @@ import org.test.act.stages.Title;
 
 import loon.action.sprite.SpriteBatch;
 import loon.action.sprite.painting.DrawableScreen;
-import loon.event.GameKey;
-import loon.event.GameTouch;
+import loon.events.GameKey;
+import loon.events.GameTouch;
 import loon.geom.Vector2f;
 import loon.utils.timer.GameTime;
 

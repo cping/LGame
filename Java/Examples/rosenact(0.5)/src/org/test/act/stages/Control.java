@@ -20,8 +20,8 @@
  */
 package org.test.act.stages;
 
-import loon.event.SysKey;
-import loon.event.SysTouch;
+import loon.events.SysKey;
+import loon.events.SysTouch;
 import loon.utils.timer.GameTime;
 
 import org.test.act.base.BaseContainer;

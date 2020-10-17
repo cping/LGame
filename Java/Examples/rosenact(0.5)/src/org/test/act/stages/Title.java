@@ -21,7 +21,7 @@
 package org.test.act.stages;
 import loon.LSystem;
 import loon.canvas.LColor;
-import loon.event.SysTouch;
+import loon.events.SysTouch;
 import loon.utils.timer.GameTime;
 
 import org.test.act.base.BaseSprite;

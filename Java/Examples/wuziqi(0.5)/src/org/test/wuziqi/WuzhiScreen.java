@@ -7,8 +7,8 @@ import loon.component.LCheckBox;
 import loon.component.LCheckGroup;
 import loon.component.LClickButton;
 import loon.component.LComponent;
-import loon.event.ClickListener;
-import loon.event.GameTouch;
+import loon.events.ClickListener;
+import loon.events.GameTouch;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimerContext;
 

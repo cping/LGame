@@ -3,9 +3,9 @@
 import loon.LRelease;
 import loon.LSystem;
 import loon.action.sprite.SpriteBatch;
-import loon.event.LTouchCollection;
-import loon.event.LTouchLocation;
-import loon.event.SysTouch;
+import loon.events.LTouchCollection;
+import loon.events.LTouchLocation;
+import loon.events.SysTouch;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.utils.MathUtils;

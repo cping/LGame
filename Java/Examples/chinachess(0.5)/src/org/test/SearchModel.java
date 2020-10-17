@@ -1,7 +1,7 @@
 package org.test;
 
 import loon.LSystem;
-import loon.event.Updateable;
+import loon.events.Updateable;
 import loon.utils.TArray;
 import loon.utils.ArrayMap.Entry;
 

@@ -21,7 +21,7 @@
 package loon.stg;
 
 import loon.canvas.LColor;
-import loon.event.SysInput;
+import loon.events.SysInput;
 import loon.font.LFont;
 import loon.geom.RectBox;
 import loon.stg.effect.Picture;

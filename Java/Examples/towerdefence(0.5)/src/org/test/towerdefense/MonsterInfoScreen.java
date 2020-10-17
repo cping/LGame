@@ -1,7 +1,7 @@
 ﻿package org.test.towerdefense;
 
 import loon.action.sprite.painting.IGameComponent;
-import loon.event.SysInput;
+import loon.events.SysInput;
 import loon.geom.Vector2f;
 import loon.utils.timer.GameTime;
 

@@ -22,9 +22,9 @@ package org.test.rtsgame;
 
 import loon.action.sprite.SpriteBatch;
 import loon.action.sprite.painting.DrawableScreen;
-import loon.event.GameKey;
-import loon.event.GameTouch;
-import loon.event.SysTouch;
+import loon.events.GameKey;
+import loon.events.GameTouch;
+import loon.events.SysTouch;
 import loon.utils.timer.GameTime;
 
 //主运行类

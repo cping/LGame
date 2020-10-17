@@ -6,7 +6,7 @@ import loon.action.sprite.SpriteBatch;
 import loon.action.sprite.painting.DrawableEvent;
 import loon.canvas.LColor;
 import loon.canvas.LColorPool;
-import loon.event.SysTouch;
+import loon.events.SysTouch;
 import loon.font.LFont;
 import loon.geom.Vector2f;
 import loon.utils.timer.GameTime;

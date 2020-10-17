@@ -15,7 +15,7 @@ import loon.component.Actor;
 import loon.component.ActorLayer;
 import loon.component.LLayer;
 import loon.component.LPaper;
-import loon.event.GameTouch;
+import loon.events.GameTouch;
 import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.utils.ArrayMap;

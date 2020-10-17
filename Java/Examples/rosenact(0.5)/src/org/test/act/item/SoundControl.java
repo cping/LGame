@@ -20,7 +20,7 @@
  */
 package org.test.act.item;
 
-import loon.event.SysTouch;
+import loon.events.SysTouch;
 import loon.utils.timer.GameTime;
 
 import org.test.act.base.BaseSprite;

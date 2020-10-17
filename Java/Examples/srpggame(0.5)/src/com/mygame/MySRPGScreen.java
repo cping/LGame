@@ -24,7 +24,7 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.action.avg.AVGDialog;
 import loon.action.sprite.AnimationHelper;
-import loon.event.GameTouch;
+import loon.events.GameTouch;
 import loon.jni.NativeSupport;
 import loon.srpg.SRPGScreen;
 import loon.srpg.ability.SRPGDamageData;

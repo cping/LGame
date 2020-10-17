@@ -3,8 +3,8 @@
 import loon.LTexture;
 import loon.action.sprite.SpriteBatch;
 import loon.canvas.LColorPool;
-import loon.event.SysKey;
-import loon.event.SysTouch;
+import loon.events.SysKey;
+import loon.events.SysTouch;
 import loon.geom.Vector2f;
 import loon.utils.timer.GameTime;
 

@@ -20,7 +20,7 @@
  */
 package loon.srpg;
 
-import loon.event.GameTouch;
+import loon.events.GameTouch;
 
 public class SRPGEvent {
 

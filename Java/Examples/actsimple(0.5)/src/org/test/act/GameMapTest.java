@@ -31,10 +31,10 @@ import loon.action.sprite.ActionObject;
 import loon.action.sprite.SpriteBatchScreen;
 import loon.canvas.LColor;
 import loon.component.LPad;
-import loon.event.ActionKey;
-import loon.event.GameKey;
-import loon.event.GameTouch;
-import loon.event.SysKey;
+import loon.events.ActionKey;
+import loon.events.GameKey;
+import loon.events.GameTouch;
+import loon.events.SysKey;
 import loon.geom.Vector2f;
 
 //PS:使用SpriteBatch时，请尽可能使用同一LTexture衍生出的图片，这样后台能有效的合并处理
