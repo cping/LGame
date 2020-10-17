@@ -37,8 +37,8 @@ import loon.Platform;
 import loon.android.AndroidGame.AndroidSetting;
 import loon.android.AndroidGame.LMode;
 import loon.canvas.LColor;
-import loon.event.KeyMake;
-import loon.event.SysInput;
+import loon.events.KeyMake;
+import loon.events.SysInput;
 import loon.geom.RectBox;
 import loon.geom.RectI;
 import loon.utils.MathUtils;
@@ -50,6 +50,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
@@ -188,7 +189,7 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 			webSettings.setAllowFileAccess(true);
 			// 密码保存与Form信息不保存
 			// webSettings.setSavePassword(false);
-			webSettings.setSaveFormData(false);
+			// webSettings.setSaveFormData(false);
 			// 允许JavaScript脚本打开新的窗口
 			webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
 			// 允许自动加载图像资源
@@ -216,12 +217,6 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 					public void onLoadResource(android.webkit.WebView view, String url) {
 						webProcess.onLoadResource(url);
 						super.onLoadResource(view, url);
-					}
-
-					@Override
-					public boolean shouldOverrideUrlLoading(android.webkit.WebView view, String url) {
-						webProcess.shouldOverrideUrlLoading(url);
-						return super.shouldOverrideUrlLoading(view, url);
 					}
 
 					@Override
@@ -500,9 +495,8 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 				android.content.pm.ActivityInfo info = this.getPackageManager()
 						.getActivityInfo(new android.content.ComponentName(context, this.getClass()), 0);
 				if ((info.configChanges & REQUIRED_CONFIG_CHANGES) != REQUIRED_CONFIG_CHANGES) {
-					new android.app.AlertDialog.Builder(this)
-							.setMessage(
-									"Loon Tip : Please add the following line to the Activity manifest .\n[configChanges=\"keyboardHidden|orientation\"]")
+					new android.app.AlertDialog.Builder(this).setMessage(
+							"Loon Tip : Please add the following line to the Activity manifest .\n[configChanges=\"keyboardHidden|orientation\"]")
 							.show();
 				}
 			} catch (Exception e) {
@@ -1090,10 +1084,7 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 	}
 
 	/**
-	 * 获取当前屏幕截图，包含状态栏
-	 * 
-	 * @return
-	 */
+	 
 	public Bitmap snapShotWithStatusBar() {
 		View view = getWindow().getDecorView();
 		view.setDrawingCacheEnabled(true);
@@ -1107,11 +1098,6 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 		return bp;
 	}
 
-	/**
-	 * 获取当前屏幕截图，不包含状态栏
-	 * 
-	 * @return
-	 */
 	public Bitmap snapShotWithoutStatusBar() {
 		View view = getWindow().getDecorView();
 		view.setDrawingCacheEnabled(true);
@@ -1126,7 +1112,59 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 		bp = Bitmap.createBitmap(bmp, 0, statusBarHeight, width, height - statusBarHeight);
 		view.destroyDrawingCache();
 		return bp;
+	}
+	
+	**/
+	
+	/**
+	 * 获取当前屏幕截图，包含状态栏
+	 * 
+	 * @return
+	 */
+	public Bitmap snapShotWithStatusBar() {
+		return snap();
+	}
 
+	/**
+	 * 获取当前屏幕截图，不包含状态栏
+	 * 
+	 * @return
+	 */
+	public Bitmap snapShotWithoutStatusBar() {
+		final View view = getWindow().getDecorView();
+		final int width = view.getWidth();
+		final int height = view.getHeight();
+		Bitmap bmp = snap(view);
+		Rect frame = new Rect();
+		view.getWindowVisibleDisplayFrame(frame);
+		int statusBarHeight = frame.top;
+		Bitmap bp = null;
+		bp = Bitmap.createBitmap(bmp, 0, statusBarHeight, width, height - statusBarHeight);
+		bmp.recycle();
+		bmp = null;
+		return bp;
+	}
+
+	public Bitmap snap(int width, int height) {
+		View view = getWindow().getDecorView();
+		return getBitmapFromView(view, width, height);
+	}
+
+	public Bitmap snap() {
+		return snap(getWindow().getDecorView());
+	}
+	
+	public Bitmap snap(View view) {
+		return getBitmapFromView(view, view.getWidth(), view.getHeight());
+	}
+
+	public static Bitmap getBitmapFromView(View view, int width, int height) {
+		Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+		Canvas canvas = new Canvas(bmp);
+		android.view.ViewGroup.LayoutParams layouts = view.getLayoutParams();
+		view.layout(0, 0, layouts.width, layouts.height);
+		view.draw(canvas);
+		return bmp;
 	}
 
 	@Override

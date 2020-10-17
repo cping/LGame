@@ -2,6 +2,8 @@ package org.test;
 
 import loon.LTransition;
 import loon.action.sprite.SpriteBatch;
+import loon.events.GameKey;
+import loon.events.GameTouch;
 import loon.action.node.LNEase;
 import loon.action.node.LNEnd;
 import loon.action.node.LNLabel;
@@ -10,8 +12,6 @@ import loon.action.node.LNRotateBy;
 import loon.action.node.LNSequence;
 import loon.action.node.LNSprite;
 import loon.action.node.NodeScreen;
-import loon.event.GameKey;
-import loon.event.GameTouch;
 import loon.utils.Easing;
 
 public class NodeTest extends NodeScreen {

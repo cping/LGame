@@ -27,7 +27,7 @@ import loon.LSetting;
 import loon.Log;
 import loon.Save;
 import loon.Support;
-import loon.event.InputMake;
+import loon.events.InputMake;
 import loon.html5.gwt.preloader.LocalAssetResources;
 import loon.jni.NativeSupport;
 import loon.jni.TimerCallback;

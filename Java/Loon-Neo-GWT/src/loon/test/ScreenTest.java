@@ -7,7 +7,7 @@ import loon.action.avg.AVGDialog;
 import loon.action.sprite.effect.NaturalEffect;
 import loon.canvas.Image;
 import loon.canvas.LColor;
-import loon.event.GameTouch;
+import loon.events.GameTouch;
 import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.utils.Scale;

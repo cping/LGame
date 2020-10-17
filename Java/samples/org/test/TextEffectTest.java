@@ -24,7 +24,7 @@ import loon.Screen;
 import loon.Stage;
 import loon.action.sprite.effect.TextEffect;
 import loon.canvas.LColor;
-import loon.event.FrameLoopEvent;
+import loon.events.FrameLoopEvent;
 import loon.utils.MathUtils;
 
 public class TextEffectTest extends Stage {

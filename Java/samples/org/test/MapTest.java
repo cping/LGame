@@ -15,10 +15,10 @@ import loon.action.sprite.effect.RippleEffect.Model;
 import loon.canvas.LColor;
 import loon.component.LClickButton;
 import loon.component.LPad;
-import loon.event.ActionKey;
-import loon.event.SysKey;
-import loon.event.Touched;
-import loon.event.Updateable;
+import loon.events.ActionKey;
+import loon.events.SysKey;
+import loon.events.Touched;
+import loon.events.Updateable;
 
 public class MapTest extends Stage {
 

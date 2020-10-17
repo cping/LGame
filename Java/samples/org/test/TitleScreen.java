@@ -4,8 +4,8 @@ import loon.Stage;
 import loon.component.LButton;
 import loon.component.LClickButton;
 import loon.component.LPaper;
-import loon.event.ActionKey;
-import loon.event.ActionUpdate;
+import loon.events.ActionKey;
+import loon.events.ActionUpdate;
 
 public class TitleScreen extends Stage {
 

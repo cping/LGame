@@ -28,7 +28,7 @@ import loon.LSetting;
 import loon.LSystem;
 import loon.LSystemView;
 import loon.Support;
-import loon.event.SysInputFactory;
+import loon.events.SysInputFactory;
 import loon.utils.json.JsonImpl;
 import android.content.Intent;
 import android.net.Uri;

@@ -30,8 +30,8 @@ import loon.action.sprite.AnimatedEntity;
 import loon.action.sprite.ISprite;
 import loon.action.sprite.AnimatedEntity.PlayIndex;
 import loon.component.LDragging;
-import loon.event.SelectAreaListener;
-import loon.event.Touched;
+import loon.events.SelectAreaListener;
+import loon.events.Touched;
 import loon.geom.BooleanValue;
 import loon.utils.TArray;
 

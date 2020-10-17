@@ -23,7 +23,7 @@ package org.test;
 import loon.Stage;
 import loon.action.map.HexagonMap;
 import loon.component.LClickButton;
-import loon.event.Touched;
+import loon.events.Touched;
 
 public class HexagonMapTest extends Stage {
 

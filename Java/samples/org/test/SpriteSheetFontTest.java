@@ -5,7 +5,7 @@ import loon.Screen;
 import loon.action.sprite.SpriteSheet;
 import loon.action.sprite.SpriteSheetFont;
 import loon.canvas.LColor;
-import loon.event.GameTouch;
+import loon.events.GameTouch;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimerContext;
 

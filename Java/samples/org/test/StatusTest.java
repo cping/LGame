@@ -22,7 +22,7 @@ package org.test;
 
 import loon.Stage;
 import loon.action.sprite.StatusBar;
-import loon.event.Touched;
+import loon.events.Touched;
 import loon.font.BMFont;
 
 public class StatusTest extends Stage{

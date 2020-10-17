@@ -28,8 +28,8 @@ import loon.LGame;
 import loon.LSetting;
 import loon.LazyLoading;
 import loon.Platform;
-import loon.event.KeyMake;
-import loon.event.SysInput;
+import loon.events.KeyMake;
+import loon.events.SysInput;
 
 public class Loon implements Platform {
 

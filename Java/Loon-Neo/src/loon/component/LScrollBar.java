@@ -25,7 +25,7 @@ import loon.LSystem;
 import loon.canvas.LColor;
 import loon.component.skin.ScrollBarSkin;
 import loon.component.skin.SkinManager;
-import loon.event.SysTouch;
+import loon.events.SysTouch;
 import loon.opengl.GLEx;
 
 /**

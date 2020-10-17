@@ -20,7 +20,7 @@
  */
 package loon.utils.timer;
 
-import loon.event.Updateable;
+import loon.events.Updateable;
 import loon.utils.StringKeyValue;
 import loon.utils.TimeUtils;
 

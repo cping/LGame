@@ -41,7 +41,7 @@ import loon.action.collision.CollisionObject;
 import loon.action.map.Field2D;
 import loon.action.sprite.ISprite;
 import loon.canvas.LColor;
-import loon.event.SysInput;
+import loon.events.SysInput;
 import loon.geom.RectBox;
 import loon.utils.MathUtils;
 import loon.utils.TArray;

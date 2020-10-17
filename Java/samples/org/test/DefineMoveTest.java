@@ -29,7 +29,7 @@ import loon.action.map.Config;
 import loon.action.map.CustomPath;
 import loon.action.sprite.AnimatedEntity;
 import loon.action.sprite.AnimatedEntity.PlayIndex;
-import loon.event.Touched;
+import loon.events.Touched;
 import loon.geom.Vector2f;
 
 public class DefineMoveTest extends Stage {

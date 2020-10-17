@@ -25,7 +25,7 @@ import loon.LTexture;
 import loon.action.collision.CollisionHelper;
 import loon.action.map.Config;
 import loon.component.skin.ControlSkin;
-import loon.event.SysTouch;
+import loon.events.SysTouch;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 

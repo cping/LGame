@@ -22,7 +22,7 @@ package org.test;
 
 import loon.Stage;
 import loon.action.map.TileMap;
-import loon.event.Touched;
+import loon.events.Touched;
 
 public class MapDragTest extends Stage {
 

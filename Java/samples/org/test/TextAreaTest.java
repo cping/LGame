@@ -4,7 +4,7 @@ import loon.LTexture;
 import loon.Stage;
 import loon.canvas.LColor;
 import loon.component.LTextArea;
-import loon.event.Touched;
+import loon.events.Touched;
 
 public class TextAreaTest extends Stage {
 

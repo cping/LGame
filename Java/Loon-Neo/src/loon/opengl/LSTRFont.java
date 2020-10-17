@@ -27,7 +27,7 @@ import loon.LTextureBatch;
 import loon.LTextureBatch.Cache;
 import loon.canvas.Canvas;
 import loon.canvas.LColor;
-import loon.event.Updateable;
+import loon.events.Updateable;
 import loon.font.IFont;
 import loon.font.LFont;
 import loon.font.TextLayout;

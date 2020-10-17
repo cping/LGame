@@ -22,7 +22,7 @@ package org.test;
 
 import loon.Stage;
 import loon.State;
-import loon.event.Touched;
+import loon.events.Touched;
 import loon.opengl.GLEx;
 
 public class StateTest extends Stage {

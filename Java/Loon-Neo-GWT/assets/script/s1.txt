@@ -1,13 +1,22 @@
 //在脚本中预设变量
-set back = "assets/background.png"
+set back = "assets/avg/background.png"
 //在LGame脚本中允许中文变量
-set 女性角色常态 = "assets/r0.png"
-set 女性角色惊异 = "assets/r1.png"
-set 女性角色微笑 = "assets/r2.png"
+set 女性角色常态 = "assets/avg/r0.png"
+set 女性角色惊异 = "assets/avg/r1.png"
+set 女性角色微笑 = "assets/avg/r2.png"
+set a=6
+set b=7
+if a>b
+mes 这样也成？！
+endif
 fadein black
 gb print(back) 
 cg print(女性角色微笑) 220
+//添加选项
+opt "跳转一下" 25,25,100,50 {label1}
+opt "跳转一下" 25,125,100,50 {label2}
 mes 啦啦啦，啦啦啦，我是编程的大行家～
+//task toast 12345
 //不加提示信息格式如下例:select {跳转到标记1,label1,跳转到标记2,label2}
 select "如果你想要跳转，那么？",{跳转到标记1,label1,跳转到标记2,label2}
 //跳转标记1
@@ -20,6 +29,7 @@ label2
 mes 再者，我了解，你方才选择了标签2
 label3
 mes 总之，百川到海，殊途同归。
+opt clear
 mesleft 20
 mes <oC#，C++/,Java，Ruby/>全学啦～
 mesleft 0

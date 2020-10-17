@@ -1,0 +1,24 @@
+#ifdef GL_ES
+#define LOWP lowp
+precision mediump float;
+#else
+#define LOWP 
+#endif
+uniform sampler2D u_texture;
+varying LOWP vec4 v_color;
+varying vec2 v_texCoords;
+void main() {
+vec4 o =  texture2D(u_texture, v_texCoords); 
+float L = (17.8824 * o.r) + (43.5161 * o.g) + (4.11935 * o.b); 
+float M = (3.45565 * o.r) + (27.1554 * o.g) + (3.86714 * o.b); 
+float S = (0.0299566 * o.r) + (0.184309 * o.g) + (1.46709 * o.b); 
+float l = 1.0 * L + 0.0 * M + 0.0 * S; 
+float m = 0.494207 * L + 0.0 * M + 1.24827 * S; 
+float s = 0.0 * L + 0.0 * M + 1.0 * S;
+vec4 error;
+error.r = (0.0809444479 * l) + (-0.130504409 * m) + (0.116721066 * s); 
+error.g = (-0.0102485335 * l) + (0.0540193266 * m) + (-0.113614708 * s); 
+error.b = (-0.000365296938 * l) + (-0.00412161469 * m) + (0.693511405 * s); 
+error.a = 1.0; 
+gl_FragColor = error.rgba;
+};

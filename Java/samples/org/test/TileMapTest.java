@@ -4,7 +4,7 @@ import loon.LTransition;
 import loon.Screen;
 import loon.action.map.tmx.TMXMap;
 import loon.action.map.tmx.renderers.TMXMapRenderer;
-import loon.event.GameTouch;
+import loon.events.GameTouch;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimerContext;
 

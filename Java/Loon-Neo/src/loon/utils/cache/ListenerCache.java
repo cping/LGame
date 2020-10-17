@@ -21,7 +21,7 @@
 package loon.utils.cache;
 
 import loon.LSysException;
-import loon.event.CacheListener;
+import loon.events.CacheListener;
 import loon.utils.TimeUtils;
 
 /**

@@ -2,7 +2,7 @@ package loon.test;
 
 import loon.Screen;
 import loon.canvas.LColor;
-import loon.event.GameTouch;
+import loon.events.GameTouch;
 import loon.opengl.GLEx;
 import loon.opengl.GLRenderer;
 import loon.opengl.GLRenderer.GLType;

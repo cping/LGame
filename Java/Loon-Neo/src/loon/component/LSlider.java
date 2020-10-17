@@ -24,8 +24,8 @@ import loon.LTexture;
 import loon.canvas.LColor;
 import loon.component.skin.SkinManager;
 import loon.component.skin.SliderSkin;
-import loon.event.SysTouch;
-import loon.event.ValueListener;
+import loon.events.SysTouch;
+import loon.events.ValueListener;
 import loon.opengl.GLEx;
 
 /**

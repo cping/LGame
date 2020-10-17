@@ -24,11 +24,11 @@ import java.util.Deque;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 import loon.LObject;
-import loon.event.InputMake;
-import loon.event.KeyMake;
-import loon.event.MouseMake;
-import loon.event.SysTouch;
-import loon.event.TouchMake;
+import loon.events.InputMake;
+import loon.events.KeyMake;
+import loon.events.MouseMake;
+import loon.events.SysTouch;
+import loon.events.TouchMake;
 import loon.geom.Vector2f;
 import loon.utils.reply.Port;
 

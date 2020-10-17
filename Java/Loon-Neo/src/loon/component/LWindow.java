@@ -32,7 +32,7 @@ import loon.component.layout.LayoutConstraints;
 import loon.component.layout.VerticalLayout;
 import loon.component.skin.SkinManager;
 import loon.component.skin.WindowSkin;
-import loon.event.CallFunction;
+import loon.events.CallFunction;
 import loon.font.FontSet;
 import loon.font.IFont;
 import loon.opengl.GLEx;

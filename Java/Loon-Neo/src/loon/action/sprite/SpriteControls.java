@@ -29,7 +29,7 @@ import loon.action.collision.CollisionHelper;
 import loon.action.map.Field2D;
 import loon.canvas.LColor;
 import loon.component.layout.Margin;
-import loon.event.EventDispatcher;
+import loon.events.EventDispatcher;
 import loon.font.FontSet;
 import loon.font.IFont;
 import loon.geom.RectBox;

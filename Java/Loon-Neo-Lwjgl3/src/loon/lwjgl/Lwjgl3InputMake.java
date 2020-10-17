@@ -22,8 +22,8 @@ package loon.lwjgl;
 
 import java.nio.DoubleBuffer;
 
-import loon.event.SysKey;
-import loon.event.SysTouch;
+import loon.events.SysKey;
+import loon.events.SysTouch;
 import loon.geom.Vector2f;
 import static org.lwjgl.glfw.GLFW.*;
 

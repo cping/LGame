@@ -8,7 +8,7 @@ import loon.action.node.LNMoveBy;
 import loon.action.node.LNRotateBy;
 import loon.action.node.LNSequence;
 import loon.action.node.LNSprite;
-import loon.event.GameTouch;
+import loon.events.GameTouch;
 import loon.opengl.GLEx;
 import loon.utils.Easing;
 import loon.utils.timer.LTimerContext;

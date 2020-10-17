@@ -29,8 +29,8 @@ import loon.action.collision.CollisionWorld;
 import loon.action.map.Field2D;
 import loon.action.sprite.AnimatedEntity;
 import loon.action.sprite.AnimatedEntity.PlayIndex;
+import loon.events.Touched;
 import loon.action.sprite.Entity;
-import loon.event.Touched;
 
 public class CollisionWorldTest extends Stage {
 

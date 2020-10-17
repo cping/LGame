@@ -4,7 +4,7 @@ import loon.Stage;
 import loon.action.sprite.NumberSprite;
 import loon.canvas.LColor;
 import loon.component.LClickButton;
-import loon.event.Touched;
+import loon.events.Touched;
 import loon.utils.timer.CountdownTimer;
 
 public class CountdownTest extends Stage {

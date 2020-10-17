@@ -21,13 +21,13 @@
 package loon.html5.gwt;
 
 import loon.LObject;
-import loon.event.Event;
-import loon.event.InputMake;
-import loon.event.KeyMake;
-import loon.event.MouseMake;
-import loon.event.SysKey;
-import loon.event.SysTouch;
-import loon.event.TouchMake;
+import loon.events.Event;
+import loon.events.InputMake;
+import loon.events.KeyMake;
+import loon.events.MouseMake;
+import loon.events.SysKey;
+import loon.events.SysTouch;
+import loon.events.TouchMake;
 import loon.geom.Vector2f;
 import loon.jni.EventHandler;
 

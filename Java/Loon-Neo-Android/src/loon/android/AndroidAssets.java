@@ -656,12 +656,13 @@ public class AndroidAssets extends Assets {
 		}
 	}
 
+
 	protected BitmapOptions createOptions(String path, boolean purgeable, Scale scale) {
 		BitmapOptions options = new BitmapOptions();
 		options.inScaled = false;
 		options.inMutable = true;
 		options.inPreferredConfig = game.graphics().preferredBitmapConfig;
-		options.inDither = true;
+		//options.inDither = true;
 		//options.inPurgeable = purgeable;
 		//options.inInputShareable = true;
 		options.scale = scale;

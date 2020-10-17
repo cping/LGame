@@ -27,7 +27,7 @@ import loon.action.map.TetrisField;
 import loon.action.map.TetrisField.TetrisListener;
 import loon.canvas.LColor;
 import loon.component.LPad;
-import loon.event.GameTouch;
+import loon.events.GameTouch;
 import loon.opengl.GLEx;
 import loon.opengl.TextureUtils;
 import loon.utils.reply.Port;

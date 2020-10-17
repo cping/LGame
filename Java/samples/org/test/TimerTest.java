@@ -23,7 +23,7 @@ package org.test;
 import loon.LSystem;
 import loon.Stage;
 import loon.component.LLabel;
-import loon.event.Updateable;
+import loon.events.Updateable;
 import loon.utils.timer.LTimer;
 
 public class TimerTest extends Stage {

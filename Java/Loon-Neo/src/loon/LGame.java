@@ -23,7 +23,7 @@ package loon;
 import loon.LTexture.Format;
 import loon.action.sprite.Sprites;
 import loon.component.Desktop;
-import loon.event.InputMake;
+import loon.events.InputMake;
 import loon.font.IFont;
 import loon.font.LFont;
 import loon.opengl.FrameBuffer;

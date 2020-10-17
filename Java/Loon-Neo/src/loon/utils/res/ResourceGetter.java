@@ -23,7 +23,7 @@ package loon.utils.res;
 import loon.Json;
 import loon.canvas.Image;
 import loon.canvas.Pixmap;
-import loon.event.EventDispatcher;
+import loon.events.EventDispatcher;
 import loon.font.BMFont;
 import loon.utils.TArray;
 import loon.utils.ObjectMap.Keys;

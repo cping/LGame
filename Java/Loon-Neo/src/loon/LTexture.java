@@ -24,7 +24,7 @@ import loon.LTextureBatch.Cache;
 import loon.canvas.Canvas;
 import loon.canvas.Image;
 import loon.canvas.LColor;
-import loon.event.Updateable;
+import loon.events.Updateable;
 import loon.geom.Affine2f;
 import loon.geom.Clip;
 import loon.geom.XYZW;

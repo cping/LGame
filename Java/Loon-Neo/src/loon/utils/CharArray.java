@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 import loon.LSysException;
 import loon.LSystem;
-import loon.event.QueryEvent;
+import loon.events.QueryEvent;
 
 public class CharArray implements IArray {
 

@@ -21,7 +21,7 @@
 package loon.action.node;
 
 
-import loon.event.SysTouch;
+import loon.events.SysTouch;
 import loon.geom.Vector2f;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;

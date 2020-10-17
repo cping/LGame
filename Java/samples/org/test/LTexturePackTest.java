@@ -3,7 +3,7 @@ package org.test;
 import loon.LTransition;
 import loon.Screen;
 import loon.canvas.LColor;
-import loon.event.GameTouch;
+import loon.events.GameTouch;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.opengl.LTexturePack;

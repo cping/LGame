@@ -38,7 +38,7 @@ import loon.action.map.tmx.tiles.TMXTile;
 import loon.action.sprite.ISprite;
 import loon.action.sprite.Sprites;
 import loon.canvas.LColor;
-import loon.event.ResizeListener;
+import loon.events.ResizeListener;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.utils.ObjectMap;

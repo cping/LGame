@@ -4,7 +4,7 @@ import loon.LTexture;
 import loon.Stage;
 import loon.component.LComponent;
 import loon.component.LMessageBox;
-import loon.event.ClickListener;
+import loon.events.ClickListener;
 
 public class LMessageBoxTest extends Stage {
 

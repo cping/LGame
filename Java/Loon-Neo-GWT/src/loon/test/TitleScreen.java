@@ -4,8 +4,8 @@ import loon.Screen;
 import loon.action.sprite.AnimationData;
 import loon.component.LButton;
 import loon.component.LPaper;
-import loon.event.ActionKey;
-import loon.event.GameTouch;
+import loon.events.ActionKey;
+import loon.events.GameTouch;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimerContext;
 

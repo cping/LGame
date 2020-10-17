@@ -25,7 +25,7 @@ import loon.LTexture;
 import loon.action.sprite.SpriteBatch;
 import loon.canvas.Canvas;
 import loon.canvas.LColor;
-import loon.event.CallFunction;
+import loon.events.CallFunction;
 import loon.opengl.GLEx;
 
 /**

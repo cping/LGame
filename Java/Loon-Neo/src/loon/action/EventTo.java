@@ -22,7 +22,7 @@ package loon.action;
 
 import loon.LSystem;
 import loon.Screen;
-import loon.event.FrameLoopEvent;
+import loon.events.FrameLoopEvent;
 import loon.utils.StringKeyValue;
 
 /**

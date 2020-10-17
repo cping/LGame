@@ -4,7 +4,7 @@ import loon.LTexture;
 import loon.LTransition;
 import loon.Screen;
 import loon.action.sprite.SpriteBatch;
-import loon.event.GameTouch;
+import loon.events.GameTouch;
 import loon.geom.Circle;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimerContext;

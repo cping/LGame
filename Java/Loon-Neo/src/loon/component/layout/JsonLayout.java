@@ -60,7 +60,7 @@ import loon.component.skin.CheckBoxSkin;
 import loon.component.skin.MenuSkin;
 import loon.component.skin.SkinManager;
 import loon.component.skin.TextBarSkin;
-import loon.event.Touched;
+import loon.events.Touched;
 import loon.font.BMFont;
 import loon.font.IFont;
 import loon.font.LFont;

@@ -27,7 +27,7 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.LTextureBatch.Cache;
 import loon.canvas.LColor;
-import loon.event.Updateable;
+import loon.events.Updateable;
 import loon.opengl.GLEx;
 
 public class SpriteSheet implements LRelease {

@@ -3,7 +3,7 @@ package org.test;
 import loon.Stage;
 import loon.action.sprite.effect.StringEffect;
 import loon.canvas.LColor;
-import loon.event.Touched;
+import loon.events.Touched;
 import loon.geom.Vector2f;
 import loon.utils.Calculator;
 

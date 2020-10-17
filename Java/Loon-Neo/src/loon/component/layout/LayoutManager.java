@@ -26,7 +26,7 @@ import loon.action.ActionBind;
 import loon.component.LClickButton;
 import loon.component.LComponent;
 import loon.component.LContainer;
-import loon.event.ClickListener;
+import loon.events.ClickListener;
 import loon.geom.BoxSize;
 import loon.geom.Circle;
 import loon.geom.Line;

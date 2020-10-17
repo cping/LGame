@@ -21,7 +21,7 @@
 package loon.utils.processes;
 
 import loon.LRelease;
-import loon.event.Updateable;
+import loon.events.Updateable;
 import loon.geom.BooleanValue;
 import loon.utils.LIterator;
 import loon.utils.SortedList;

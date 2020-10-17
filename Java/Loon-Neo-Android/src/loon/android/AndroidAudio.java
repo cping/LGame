@@ -33,7 +33,7 @@ import android.util.Log;
 import loon.LGame;
 import loon.LSystem;
 import loon.SoundImpl;
-import loon.event.Updateable;
+import loon.events.Updateable;
 import loon.media.SoundOpenAlBuffer;
 import loon.media.SoundOpenAlEnv;
 import loon.media.SoundOpenAlSource;

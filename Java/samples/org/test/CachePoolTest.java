@@ -22,8 +22,8 @@ package org.test;
 
 import loon.Stage;
 import loon.component.LLabel;
-import loon.event.CacheListener;
-import loon.event.Touched;
+import loon.events.CacheListener;
+import loon.events.Touched;
 import loon.utils.cache.CacheObjectManager;
 import loon.utils.cache.CacheObjectPool;
 import loon.utils.cache.ListenerCache;

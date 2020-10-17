@@ -25,7 +25,7 @@ import loon.action.map.AStarFindHeuristic;
 import loon.action.map.AStarFinder;
 import loon.action.map.Field2D;
 import loon.action.map.TileMap;
-import loon.event.GameTouch;
+import loon.events.GameTouch;
 import loon.geom.ShapeUtils;
 import loon.geom.Vector2f;
 import loon.utils.TArray;

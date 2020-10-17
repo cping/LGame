@@ -26,7 +26,7 @@ import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
-import loon.event.SysTouch;
+import loon.events.SysTouch;
 import loon.font.FontSet;
 import loon.font.FontUtils;
 import loon.font.IFont;

@@ -25,8 +25,8 @@ import loon.Stage;
 import loon.action.sprite.effect.explosion.ExplosionEffect;
 import loon.action.sprite.effect.explosion.ExplosionEffect.Mode;
 import loon.canvas.Image;
-import loon.event.Touched;
-import loon.event.Updateable;
+import loon.events.Touched;
+import loon.events.Updateable;
 import loon.utils.Easing.EasingMode;
 
 public class ExplosionTest extends Stage {

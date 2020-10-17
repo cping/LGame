@@ -4,8 +4,8 @@ import loon.LSystem;
 import loon.LTransition;
 import loon.Screen;
 import loon.component.LClickButton;
-import loon.event.GameTouch;
-import loon.event.KeyMake.TextType;
+import loon.events.GameTouch;
+import loon.events.KeyMake.TextType;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimerContext;
 

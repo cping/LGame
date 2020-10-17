@@ -4,7 +4,7 @@ import loon.Screen;
 import loon.Stage;
 import loon.action.sprite.effect.PShadowEffect;
 import loon.component.LClickButton;
-import loon.event.FrameLoopEvent;
+import loon.events.FrameLoopEvent;
 
 public class PShadowTest extends Stage {
 

@@ -30,7 +30,7 @@ import javax.sound.sampled.Clip;
 
 import loon.LSystem;
 import loon.SoundImpl;
-import loon.event.Updateable;
+import loon.events.Updateable;
 
 public class Lwjgl3Audio {
 

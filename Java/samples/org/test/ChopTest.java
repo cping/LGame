@@ -25,7 +25,7 @@ import loon.action.sprite.effect.PixelChopEffect;
 import loon.action.sprite.effect.PixelChopEffect.ChopDirection;
 import loon.action.sprite.effect.StringEffect;
 import loon.canvas.LColor;
-import loon.event.Touched;
+import loon.events.Touched;
 import loon.geom.Vector2f;
 
 public class ChopTest extends Stage {

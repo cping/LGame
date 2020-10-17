@@ -364,8 +364,8 @@ public class SRPGField implements LRelease {
 		return isVisible;
 	}
 
-	public void setVisible(boolean isVisible) {
-		this.isVisible = isVisible;
+	public void setVisible(boolean v) {
+		this.isVisible = v;
 	}
 
 	public LTexture getBigImageMap() {

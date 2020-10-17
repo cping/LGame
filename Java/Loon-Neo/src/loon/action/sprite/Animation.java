@@ -24,7 +24,7 @@ import loon.LRelease;
 import loon.LTexture;
 import loon.LSystem;
 import loon.canvas.LColor;
-import loon.event.FrameListener;
+import loon.events.FrameListener;
 import loon.opengl.TextureUtils;
 import loon.utils.IArray;
 import loon.utils.MathUtils;

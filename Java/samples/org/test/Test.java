@@ -2,7 +2,7 @@ package org.test;
 
 import loon.Stage;
 import loon.component.LClickButton;
-import loon.event.Touched;
+import loon.events.Touched;
 
 public class Test extends Stage {
 

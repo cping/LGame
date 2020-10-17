@@ -2,12 +2,16 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="samples"/>
-	<classpathentry kind="src" path="actgame2"/>
-	<classpathentry kind="src" path="tdtest"/>
-	<classpathentry kind="src" path="avgtest"/>
 	<classpathentry kind="src" path="test"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry kind="src" path="srpgtest"/>
+	<classpathentry kind="src" path="chinachess"/>
+	<classpathentry kind="src" path="wuziqi"/>
+	<classpathentry kind="src" path="doudizhu"/>
+	<classpathentry kind="src" path="snake"/>
+	<classpathentry kind="src" path="traintiles"/>
+	<classpathentry kind="src" path="test2"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Loon-Neo"/>
-	<classpathentry kind="lib" path="libs/lwjgl.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/lwjgl.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

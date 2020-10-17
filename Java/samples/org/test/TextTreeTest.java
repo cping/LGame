@@ -25,7 +25,7 @@ import loon.component.LClickButton;
 import loon.component.LTextTree;
 import loon.component.LToast;
 import loon.component.LTextTree.TreeElement;
-import loon.event.Touched;
+import loon.events.Touched;
 import loon.utils.TArray;
 
 public class TextTreeTest extends Stage {

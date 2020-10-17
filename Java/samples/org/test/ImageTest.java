@@ -4,7 +4,7 @@ import loon.Screen;
 import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.component.DefUI;
-import loon.event.GameTouch;
+import loon.events.GameTouch;
 import loon.font.BMFont;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimerContext;

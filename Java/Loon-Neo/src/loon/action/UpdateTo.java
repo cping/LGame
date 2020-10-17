@@ -20,7 +20,7 @@
  */
 package loon.action;
 
-import loon.event.Updateable;
+import loon.events.Updateable;
 import loon.utils.StringKeyValue;
 
 /**

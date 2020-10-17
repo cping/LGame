@@ -33,7 +33,7 @@ import loon.action.map.Field2D;
 import loon.action.map.TileMap;
 import loon.action.map.items.Attribute;
 import loon.canvas.LColor;
-import loon.event.ResizeListener;
+import loon.events.ResizeListener;
 import loon.geom.Affine2f;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;

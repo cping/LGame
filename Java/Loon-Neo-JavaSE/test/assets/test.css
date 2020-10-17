@@ -1,0 +1,63 @@
+body{
+    background-color: white;
+    color: #333;
+    font-family: Microsoft YaHei;
+    margin: 0;
+}
+
+
+.center{
+    text-align: center;
+    padding-top: 150px;
+}
+.cd{
+    display: table;
+    margin: 0 auto;
+}
+
+.left, .right{
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.left{
+    text-align: left;
+    padding-right: 150px;
+}
+
+.right{
+    font-size: 120px;
+}
+
+.title{
+    margin-bottom: 10px;
+    display: inline-block;
+    font-size: 24px;
+}
+
+.mtitle{
+    font-size: 46px;
+    font-weight: normal;
+    line-height: 50px;
+    margin: 0;
+}
+
+.desc{
+    padding-top: 50px;
+    color: #333;
+    display: inline-block;
+}
+.desc>span{
+    word-break: break-all;
+    display: block;
+    padding-top: 10px;
+}
+
+.right div{
+    font-size: 26px;
+    padding: 8px 10px;
+}
+
+span.slo{
+    color: #55C0AC;
+}

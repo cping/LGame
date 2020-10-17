@@ -24,7 +24,7 @@ import java.util.Comparator;
 
 import loon.LSysException;
 import loon.LSystem;
-import loon.event.QueryEvent;
+import loon.events.QueryEvent;
 import loon.utils.ObjectMap;
 import loon.utils.StringUtils;
 import loon.utils.TArray;

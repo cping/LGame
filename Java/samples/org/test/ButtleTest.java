@@ -27,8 +27,8 @@ import loon.action.map.Config;
 import loon.action.sprite.BulletEntity;
 import loon.action.sprite.Entity;
 import loon.canvas.LColor;
-import loon.event.Touched;
-import loon.event.Updateable;
+import loon.events.Touched;
+import loon.events.Updateable;
 import loon.utils.Easing.EasingMode;
 
 public class ButtleTest extends Stage {

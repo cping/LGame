@@ -3,7 +3,7 @@ package org.test;
 import loon.Screen;
 import loon.Stage;
 import loon.action.sprite.Sprite;
-import loon.event.FrameLoopEvent;
+import loon.events.FrameLoopEvent;
 import loon.utils.MathUtils;
 
 public class FrameLoopTest extends Stage {

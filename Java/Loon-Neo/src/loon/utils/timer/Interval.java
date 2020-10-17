@@ -21,7 +21,7 @@
 package loon.utils.timer;
 
 import loon.LRelease;
-import loon.event.ActionUpdate;
+import loon.events.ActionUpdate;
 
 /**
  * 这是一个指定循环事务延迟触发用抽象类,本身并没有实现关键的loop方法,loop部分需要用户根据实际需求实现.<br>

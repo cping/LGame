@@ -7,7 +7,7 @@ import loon.action.sprite.Animation;
 import loon.action.sprite.Sprite;
 import loon.action.sprite.SpriteLabel;
 import loon.canvas.LColor;
-import loon.event.FrameLoopEvent;
+import loon.events.FrameLoopEvent;
 import loon.font.Font.Style;
 import loon.utils.MathUtils;
 

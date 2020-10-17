@@ -2,7 +2,7 @@ package org.test;
 
 import loon.LTransition;
 import loon.Screen;
-import loon.event.GameTouch;
+import loon.events.GameTouch;
 import loon.font.BMFont;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimerContext;

@@ -6,7 +6,7 @@ import loon.component.LComponent;
 import loon.component.LToast;
 import loon.component.LToast.Style;
 import loon.component.layout.HorizontalLayout;
-import loon.event.ClickListener;
+import loon.events.ClickListener;
 
 
 public class ToastTest extends Stage {

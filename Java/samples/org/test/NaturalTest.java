@@ -4,7 +4,7 @@ import loon.Stage;
 import loon.action.sprite.effect.LightningEffect;
 import loon.action.sprite.effect.NaturalEffect;
 import loon.canvas.LColor;
-import loon.event.Touched;
+import loon.events.Touched;
 import loon.geom.Vector2f;
 
 public class NaturalTest extends Stage {

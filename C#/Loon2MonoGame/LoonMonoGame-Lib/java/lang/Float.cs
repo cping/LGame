@@ -142,7 +142,10 @@
             bits64 |= ((ulong)bits) << 29;
             return (float)Double.LongBitsToDouble((long)bits64);
         }
-
+        public static uint FloatToRawIntBits(float value)
+        {
+            return FloatToIntBits(value);
+        }
 
         public static bool IsNaN(float d)
         {

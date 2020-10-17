@@ -16,24 +16,9 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>actgame2</name>
-			<type>2</type>
-			<locationURI>WORKSPACE_LOC/actgame2</locationURI>
-		</link>
-		<link>
-			<name>avgtest</name>
-			<type>2</type>
-			<locationURI>WORKSPACE_LOC/avgtest</locationURI>
-		</link>
-		<link>
 			<name>samples</name>
 			<type>2</type>
-			<locationURI>WORKSPACE_LOC/samples</locationURI>
-		</link>
-		<link>
-			<name>tdtest</name>
-			<type>2</type>
-			<locationURI>WORKSPACE_LOC/tdtest</locationURI>
+			<location>D:/android_space/samples</location>
 		</link>
 	</linkedResources>
 </projectDescription>

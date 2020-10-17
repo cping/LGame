@@ -39,7 +39,7 @@ import static org.lwjgl.opengl.GL11.GL_FALSE;
 import loon.*;
 import loon.canvas.Image;
 import loon.canvas.Pixmap;
-import loon.event.KeyMake;
+import loon.events.KeyMake;
 import loon.geom.Dimension;
 import loon.jni.NativeSupport;
 import loon.utils.Scale;

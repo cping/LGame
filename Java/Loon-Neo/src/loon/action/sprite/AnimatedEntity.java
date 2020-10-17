@@ -21,7 +21,7 @@
 package loon.action.sprite;
 
 import loon.LTexture;
-import loon.event.FrameListener;
+import loon.events.FrameListener;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;

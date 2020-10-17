@@ -21,7 +21,7 @@
 package loon.utils.reply;
 
 import loon.LSysException;
-import loon.event.Updateable;
+import loon.events.Updateable;
 
 public abstract class Bypass {
 

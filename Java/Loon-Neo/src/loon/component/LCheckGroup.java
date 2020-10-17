@@ -22,7 +22,7 @@ package loon.component;
 
 import loon.LTexture;
 import loon.canvas.LColor;
-import loon.event.SysTouch;
+import loon.events.SysTouch;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.TArray;

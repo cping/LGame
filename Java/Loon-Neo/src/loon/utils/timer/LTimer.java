@@ -22,8 +22,8 @@ package loon.utils.timer;
 
 import loon.LRelease;
 import loon.LSystem;
-import loon.event.TimerEvent;
-import loon.event.Updateable;
+import loon.events.TimerEvent;
+import loon.events.Updateable;
 import loon.utils.MathUtils;
 import loon.utils.StringKeyValue;
 import loon.utils.processes.GameProcessType;

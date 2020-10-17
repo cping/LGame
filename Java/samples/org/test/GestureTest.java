@@ -4,7 +4,7 @@ import loon.Stage;
 import loon.canvas.LColor;
 import loon.component.LGesture;
 import loon.component.LLabel;
-import loon.event.Touched;
+import loon.events.Touched;
 
 public class GestureTest extends Stage {
 

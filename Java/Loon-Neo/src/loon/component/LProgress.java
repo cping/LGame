@@ -26,7 +26,7 @@ import loon.action.sprite.SpriteBatch;
 import loon.canvas.LColor;
 import loon.component.skin.ProgressSkin;
 import loon.component.skin.SkinManager;
-import loon.event.ValueListener;
+import loon.events.ValueListener;
 import loon.opengl.GLEx;
 import loon.opengl.LTextureRegion;
 

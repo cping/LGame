@@ -22,7 +22,7 @@ package loon.action.sprite.effect;
 
 import loon.action.sprite.SpriteBatch;
 import loon.canvas.LColor;
-import loon.event.QueryEvent;
+import loon.events.QueryEvent;
 import loon.geom.Quaternion;
 import loon.geom.Vector2f;
 import loon.geom.Vector3f;

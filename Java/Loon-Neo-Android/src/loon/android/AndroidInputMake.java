@@ -21,10 +21,10 @@
 package loon.android;
 
 import loon.LObject;
-import loon.event.InputMake;
-import loon.event.KeyMake;
-import loon.event.SysKey;
-import loon.event.TouchMake;
+import loon.events.InputMake;
+import loon.events.KeyMake;
+import loon.events.SysKey;
+import loon.events.TouchMake;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 

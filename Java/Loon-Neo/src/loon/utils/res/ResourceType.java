@@ -20,7 +20,7 @@
  */
 package loon.utils.res;
 
-import loon.event.EventDispatcher;
+import loon.events.EventDispatcher;
 
 public class ResourceType extends EventDispatcher {
 

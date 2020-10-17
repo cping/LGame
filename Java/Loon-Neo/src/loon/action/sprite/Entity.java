@@ -36,7 +36,7 @@ import loon.action.collision.CollisionObject;
 import loon.action.collision.Gravity;
 import loon.action.map.Field2D;
 import loon.canvas.LColor;
-import loon.event.ResizeListener;
+import loon.events.ResizeListener;
 import loon.geom.Affine2f;
 import loon.geom.BoxSize;
 import loon.geom.Dimension;

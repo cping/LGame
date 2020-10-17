@@ -6,7 +6,7 @@ import loon.component.LComponent;
 import loon.component.LToast;
 import loon.component.LWindow;
 import loon.component.LToast.Style;
-import loon.event.CallFunction;
+import loon.events.CallFunction;
 
 public class AlertTest extends Stage {
 

@@ -8,7 +8,7 @@ import loon.component.LButton;
 import loon.component.LMessage;
 import loon.component.LPaper;
 import loon.component.LSelect;
-import loon.event.GameTouch;
+import loon.events.GameTouch;
 import loon.opengl.GLEx;
 import loon.utils.Scale;
 

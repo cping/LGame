@@ -20,7 +20,7 @@
  */
 package loon;
 
-import loon.event.Updateable;
+import loon.events.Updateable;
 
 public class ActionCounter extends LimitedCounter {
 

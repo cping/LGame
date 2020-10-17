@@ -21,7 +21,7 @@
 package loon.utils;
 
 import loon.LSysException;
-import loon.event.QueryEvent;
+import loon.events.QueryEvent;
 
 public class BoolArray implements IArray {
 

@@ -21,8 +21,8 @@
 package loon.robovm;
 
 import loon.LObject;
-import loon.event.InputMake;
-import loon.event.TouchMake;
+import loon.events.InputMake;
+import loon.events.TouchMake;
 import loon.geom.Vector2f;
 
 import org.robovm.apple.coregraphics.CGPoint;

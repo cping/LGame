@@ -20,8 +20,8 @@
  */
 package loon;
 
-import loon.event.KeyMake;
-import loon.event.SysInput;
+import loon.events.KeyMake;
+import loon.events.SysInput;
 
 public interface Platform {
 

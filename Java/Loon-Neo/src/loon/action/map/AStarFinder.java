@@ -33,7 +33,7 @@ import loon.action.map.heuristics.EuclideanNoSQR;
 import loon.action.map.heuristics.Manhattan;
 import loon.action.map.heuristics.Mixing;
 import loon.action.map.heuristics.Octile;
-import loon.event.Updateable;
+import loon.events.Updateable;
 import loon.geom.Vector2f;
 import loon.utils.IntMap;
 import loon.utils.ObjectSet;

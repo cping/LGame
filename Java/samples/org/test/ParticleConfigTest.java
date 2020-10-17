@@ -5,7 +5,7 @@ import loon.LTexture;
 import loon.LTextures;
 import loon.LTransition;
 import loon.Screen;
-import loon.event.GameTouch;
+import loon.events.GameTouch;
 import loon.opengl.GLEx;
 import loon.particle.SimpleConfigurableEmitter;
 import loon.particle.SimpleParticleConfig;

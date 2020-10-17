@@ -3,7 +3,7 @@ package org.test;
 import loon.LTransition;
 import loon.Screen;
 import loon.canvas.LColor;
-import loon.event.GameTouch;
+import loon.events.GameTouch;
 import loon.live2d.framework.LAppLive2DManager;
 import loon.live2d.framework.LAppModel;
 import loon.opengl.GLEx;

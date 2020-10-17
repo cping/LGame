@@ -31,7 +31,7 @@ import loon.Director.Origin;
 import loon.Director.Position;
 import loon.Log.Level;
 import loon.canvas.LColor;
-import loon.event.Updateable;
+import loon.events.Updateable;
 import loon.geom.Affine2f;
 import loon.geom.BooleanValue;
 import loon.geom.FloatValue;

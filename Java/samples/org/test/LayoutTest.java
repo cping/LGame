@@ -5,7 +5,7 @@ import loon.component.LClickButton;
 import loon.component.layout.HorizontalLayout;
 import loon.component.layout.LayoutManager;
 import loon.component.layout.VerticalLayout;
-import loon.event.LTouchArea;
+import loon.events.LTouchArea;
 
 public class LayoutTest extends Stage {
 

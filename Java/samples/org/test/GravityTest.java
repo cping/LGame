@@ -27,7 +27,7 @@ import loon.action.collision.GravityHandler;
 import loon.action.collision.GravityHandler.GravityUpdate;
 import loon.action.sprite.Sprite;
 import loon.action.sprite.Sprites;
-import loon.event.Touched;
+import loon.events.Touched;
 import loon.utils.Easing.EasingMode;
 
 public class GravityTest extends Stage {

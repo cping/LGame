@@ -4,7 +4,7 @@ import loon.Stage;
 import loon.canvas.LColor;
 import loon.component.LClickButton;
 import loon.component.LSelectorIcon;
-import loon.event.LTouchArea;
+import loon.events.LTouchArea;
 
 public class SelectIconTest extends Stage {
 

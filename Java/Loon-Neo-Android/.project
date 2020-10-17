@@ -54,7 +54,7 @@
 		<link>
 			<name>samples</name>
 			<type>2</type>
-			<locationURI>WORKSPACE_LOC/samples</locationURI>
+			<location>D:/android_space/samples</location>
 		</link>
 		<link>
 			<name>src_core</name>

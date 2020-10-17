@@ -20,8 +20,8 @@
  */
 package loon;
 
-import loon.event.InputMake;
-import loon.event.InputMakeImpl;
+import loon.events.InputMake;
+import loon.events.InputMakeImpl;
 import loon.utils.ObjectMap;
 import loon.utils.TimeUtils;
 import loon.utils.reply.Act;

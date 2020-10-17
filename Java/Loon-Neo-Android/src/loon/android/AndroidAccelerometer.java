@@ -10,7 +10,7 @@ import loon.AccelerometerState;
 import loon.LSystem;
 import loon.action.collision.CollisionHelper;
 import loon.action.map.Config;
-import loon.event.SysKey;
+import loon.events.SysKey;
 import loon.utils.MathUtils;
 import loon.utils.TimeUtils;
 import loon.utils.processes.RealtimeProcess;

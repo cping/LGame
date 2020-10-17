@@ -20,7 +20,7 @@
  */
 package loon.action;
 
-import loon.event.ActionUpdate;
+import loon.events.ActionUpdate;
 import loon.geom.BooleanValue;
 import loon.utils.StringKeyValue;
 

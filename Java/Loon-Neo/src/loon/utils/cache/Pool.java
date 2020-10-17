@@ -21,7 +21,7 @@
 package loon.utils.cache;
 
 import loon.LSysException;
-import loon.event.QueryEvent;
+import loon.events.QueryEvent;
 import loon.utils.Array;
 import loon.utils.MathUtils;
 import loon.utils.TArray;

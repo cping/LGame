@@ -20,7 +20,7 @@
  */
 package loon.action.map.battle;
 
-import loon.event.ActionUpdate;
+import loon.events.ActionUpdate;
 
 public class BattleActive implements ActionUpdate {
 

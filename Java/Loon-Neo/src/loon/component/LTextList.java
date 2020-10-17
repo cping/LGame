@@ -27,7 +27,7 @@ import loon.LTexture;
 import loon.canvas.LColor;
 import loon.component.skin.SkinManager;
 import loon.component.skin.TextListSkin;
-import loon.event.SysTouch;
+import loon.events.SysTouch;
 import loon.font.FontSet;
 import loon.font.IFont;
 import loon.opengl.GLEx;

@@ -2,7 +2,7 @@ package org.test;
 
 import loon.EmulatorListener;
 import loon.Screen;
-import loon.event.GameTouch;
+import loon.events.GameTouch;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimerContext;
 

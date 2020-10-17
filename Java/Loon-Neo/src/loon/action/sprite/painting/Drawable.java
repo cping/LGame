@@ -22,9 +22,9 @@ package loon.action.sprite.painting;
 
 import loon.LRelease;
 import loon.action.sprite.SpriteBatch;
-import loon.event.GameKey;
-import loon.event.GameTouch;
-import loon.event.SysInput;
+import loon.events.GameKey;
+import loon.events.GameTouch;
+import loon.events.SysInput;
 import loon.geom.Vector2f;
 import loon.utils.MathUtils;
 import loon.utils.timer.GameTime;

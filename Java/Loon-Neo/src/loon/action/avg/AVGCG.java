@@ -26,7 +26,7 @@ import loon.LTexture;
 import loon.Screen;
 import loon.action.sprite.ISprite;
 import loon.action.sprite.Sprites;
-import loon.event.Updateable;
+import loon.events.Updateable;
 import loon.geom.PointI;
 import loon.opengl.GLEx;
 import loon.utils.ArrayMap;

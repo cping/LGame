@@ -22,9 +22,9 @@ package org.test;
 
 import loon.Screen;
 import loon.canvas.LColor;
-import loon.event.GameKey;
-import loon.event.GameTouch;
-import loon.event.SysKey;
+import loon.events.GameKey;
+import loon.events.GameTouch;
+import loon.events.SysKey;
 import loon.font.BMFont;
 import loon.font.IFont;
 import loon.opengl.GLEx;

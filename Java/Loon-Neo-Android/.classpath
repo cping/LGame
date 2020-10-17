@@ -11,5 +11,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/Loon-Neo"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
+	<classpathentry kind="lib" path="libs/android.jar" sourcepath="libs/android-stubs-src.jar"/>
+	<classpathentry kind="lib" path="libs/android-stubs-src.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
