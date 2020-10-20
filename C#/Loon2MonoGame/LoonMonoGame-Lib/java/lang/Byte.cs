@@ -12,11 +12,6 @@ namespace java.lang
             value = v;
         }
 
-        public sbyte ByteValue()
-        {   
-            return value;
-        }
-
         public override bool Equals(object o)
         {   
             if (o == null || !(o is Byte)) return false;

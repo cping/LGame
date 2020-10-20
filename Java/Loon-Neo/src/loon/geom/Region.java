@@ -32,17 +32,18 @@ public class Region {
 	private int end;
 
 	public Region(int start, int end) {
-		super();
 		this.start = start;
 		this.end = end;
 	}
 
-	public void setStart(int start) {
+	public Region setStart(int start) {
 		this.start = start;
+		return this;
 	}
 
-	public void setEnd(int end) {
+	public Region setEnd(int end) {
 		this.end = end;
+		return this;
 	}
 
 	public int getStart() {

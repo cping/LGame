@@ -6,7 +6,6 @@ namespace loon.utils
 {
     public interface Bundle<T> : IArray
     {
-	
         void Put(string key, T value);
 
         T Get(string key);

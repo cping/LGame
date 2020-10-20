@@ -126,8 +126,6 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 
 	public int height;
 
-	private int _ox, _oy, _ow, _oh;
-
 	private Matrix4 _matrix;
 
 	public RectBox() {
@@ -155,14 +153,14 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 	}
 
 	public RectBox offset(Vector2f offset) {
-		x += offset.x;
-		y += offset.y;
+		this.x += offset.x;
+		this.y += offset.y;
 		return this;
 	}
 
 	public RectBox offset(int offsetX, int offsetY) {
-		x += offsetX;
-		y += offsetY;
+		this.x += offsetX;
+		this.y += offsetY;
 		return this;
 	}
 
@@ -258,10 +256,7 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 		if (_matrix == null) {
 			_matrix = new Matrix4();
 		}
-		if (this._ox != this.x || this._oy != this.y || this._ow != this.width || this._oh != this.height) {
-			return _matrix.setToOrtho2D(this.x, this.y, this.width, this.height);
-		}
-		return _matrix;
+		return _matrix.setToOrtho2D(this.x, this.y, this.width, this.height);
 	}
 
 	public int x() {

@@ -1,7 +1,8 @@
 ﻿namespace loon.events
 {
-    public class QueryEvent
-   {
-      
-   }
+	public interface QueryEvent<T>
+	{
+		void Hit(T t);
+	}
+
 }

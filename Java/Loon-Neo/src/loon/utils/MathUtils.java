@@ -1199,10 +1199,8 @@ public final class MathUtils {
 	}
 
 	public static double normalizeLon(double lon) {
-		if (lon == lon) {
-			while ((lon < -180d) || (lon > 180d)) {
-				lon = IEEEremainder(lon, 360d);
-			}
+		while ((lon < -180d) || (lon > 180d)) {
+			lon = IEEEremainder(lon, 360d);
 		}
 		return lon;
 	}

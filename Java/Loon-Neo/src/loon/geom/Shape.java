@@ -115,7 +115,6 @@ public abstract class Shape implements Serializable, IArray, XY {
 				points[i * 2] += dx;
 			}
 			center[0] += dx;
-			x += dx;
 			maxX += dx;
 			minX += dx;
 			trianglesDirty = true;
@@ -133,7 +132,6 @@ public abstract class Shape implements Serializable, IArray, XY {
 				points[(i * 2) + 1] += dy;
 			}
 			center[1] += dy;
-			y += dy;
 			maxY += dy;
 			minY += dy;
 			trianglesDirty = true;

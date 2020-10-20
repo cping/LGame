@@ -1,4 +1,5 @@
-﻿using System;
+﻿using loon;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -12,6 +13,47 @@ namespace java.lang
         public static readonly java.io.PrintStream out_f = new java.io.PrintStream(false);
         public static readonly java.io.PrintStream err_f = new java.io.PrintStream(true);
         public static readonly long startTicks_f = System.DateTimeOffset.Now.Ticks;
+
+        public static Encoding GetEncoding()
+        {
+            return GetEncoding(LSystem.ENCODING);
+        }
+
+        public static Encoding GetEncoding(string e)
+        {
+            Encoding encode;
+
+           if ("ASCII".Equals(e))
+            {
+                encode = Encoding.ASCII;
+            }
+            else if ("Unicode".Equals(e))
+            {
+                encode = Encoding.Unicode;
+            }
+            else if ("Unicode".Equals(e))
+            {
+                encode = Encoding.Unicode;
+            }else if ("Default".Equals(e))
+            {
+                encode = Encoding.Default;
+            }
+            else
+            {
+                encode = Encoding.UTF8;
+            }
+            return encode;
+        }
+
+        public static byte[] GetBytes(String e,string v)
+        {
+            return GetEncoding(e).GetBytes(v);
+        }
+
+        public static byte[] GetBytes(string v)
+        {
+            return GetEncoding().GetBytes(v);
+        }
 
         public static void Exception(object o)
         {
@@ -31,6 +73,21 @@ namespace java.lang
         public static void Exit(int code)
         {
             System.Environment.Exit(code);
+        }
+
+        public static String GetProperty(string key)
+        {
+            return GetProperty("");
+        }
+
+            public static String GetProperty(string key, string def)
+        {
+            string result = Environment.GetEnvironmentVariable(key);
+            if (result != null && result.Length > 0)
+            {
+                return result;
+            }
+            return def;
         }
 
         public static long CurrentTimeMillis()
@@ -173,14 +230,13 @@ namespace java.lang
 
             string s = v.ToString("R");
             string s2 = v.ToString("G16");
-            double parseback;
-            if (s2.Length < s.Length && System.Double.TryParse(s2, out parseback))
+            if (s2.Length < s.Length && System.Double.TryParse(s2, out double parseback))
             {
                 if (parseback == v) { s = s2; }
             }
 
             s = s.Replace(',', '.');
-            if (s.IndexOf('.') < 0) { s = s + ".0"; }
+            if (s.IndexOf('.') < 0) { s += ".0"; }
             int idx = s.IndexOf("+");
             if (idx > 0) { s = s.Remove(idx, 1); }
 

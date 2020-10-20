@@ -1,3 +1,6 @@
+using System;
+using System.Globalization;
+
 namespace java.lang 
 { 
     public class Integer : Number
@@ -35,9 +38,12 @@ namespace java.lang
 
         public static int ParseInt(string s)
         {
-            int result;
-            if (System.Int32.TryParse(s, out result)) { return result; }            
+            if (System.Int32.TryParse(s, out int result)) { return result; }
             throw new NumberFormatException();
+        }
+        public static int ParseInt(string s,int radix)
+        {
+            return System.Convert.ToInt32(s,radix);
         }
 
         public static string ToString(int i)

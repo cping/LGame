@@ -2,9 +2,9 @@
 {
     public abstract class Number
     {
-        public byte ByteValue()
+        public sbyte ByteValue()
         {
-            return (byte)IntValue();
+            return (sbyte)IntValue();
         }
 
         public abstract double DoubleValue();

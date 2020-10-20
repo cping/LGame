@@ -24,11 +24,11 @@ import loon.utils.MathUtils;
 
 public interface LTrans {
 
-	final static public float ANGLE_90 = MathUtils.PI / 2;
+	public static final float ANGLE_90 = MathUtils.PI / 2;
 
-	final static public float ANGLE_270 = MathUtils.PI * 3 / 2;
+	public static final float ANGLE_270 = MathUtils.PI * 3 / 2;
 
-	final static public float ANGLE_360 = MathUtils.PI * 4 / 2;
+	public static final float ANGLE_360 = MathUtils.PI * 4 / 2;
 
 	public static final int SOLID = 0;
 
