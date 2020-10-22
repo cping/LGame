@@ -20,6 +20,10 @@ namespace java.lang
         {
             this.value = JavaSystem.GetEncoding().GetString(v);
         }
+        public JavaString(string encoding,params byte[] v)
+        {
+            this.value = JavaSystem.GetEncoding(encoding).GetString(v);
+        }
 
         public char CharAt(int index)
         {
@@ -103,6 +107,15 @@ namespace java.lang
         public string Substring(int beginIndex, int endIndex)
         {
             return StringExtensions.Substring(this.value, beginIndex, endIndex);
+        }
+
+        public byte[] GetBytes()
+        {
+            return JavaSystem.GetEncoding().GetBytes(this.value);
+        }
+        public byte[] GetBytes(string encoding)
+        {
+            return JavaSystem.GetEncoding(encoding).GetBytes(this.value);
         }
 
         public bool IsEmpty()

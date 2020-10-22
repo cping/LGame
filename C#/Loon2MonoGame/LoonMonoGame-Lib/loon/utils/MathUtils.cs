@@ -8,25 +8,25 @@ namespace loon.utils
     public partial class MathUtils
 {
 
-        public  static readonly System.Random random = new System.Random();
+        public readonly static System.Random random = new System.Random();
 
-        public readonly static float FLOAT_ROUNDING_ERROR = 0.000001f;
+        public const float FLOAT_ROUNDING_ERROR = 0.000001f;
 
-        public readonly static int ZERO_FIXED = 0;
+        public const int ZERO_FIXED = 0;
 
-        public readonly static int ONE_FIXED = 1 << 16;
+        public const int ONE_FIXED = 1 << 16;
 
-        public readonly static float EPSILON = 0.001f;
+        public const float EPSILON = 0.001f;
 
-        public readonly static float NaN = 0.0f / 0.0f;
+        public const float NaN = 0.0f / 0.0f;
 
-        public readonly static int PI_FIXED = 205887;
+        public const int PI_FIXED = 205887;
 
-        public readonly static int PI_OVER_2_FIXED = PI_FIXED / 2;
+        public const int PI_OVER_2_FIXED = PI_FIXED / 2;
 
-        public readonly static int E_FIXED = 178145;
+        public const int E_FIXED = 178145;
 
-        public readonly static int HALF_FIXED = 2 << 15;
+        public const int HALF_FIXED = 2 << 15;
 
         private readonly static string[] ZEROS = { "", "0", "00", "000", "0000", "00000", "000000", "0000000", "00000000",
 			"000000000", "0000000000" };
@@ -36,57 +36,57 @@ namespace loon.utils
             34846, 36327, 37837, 39378, 40951, 42560, 44205, 45889, 47615, 49385, 51202, 53070, 54991, 56970, 59009,
             61113, 63287, 65536 };
 
-		public readonly static float PI_OVER2 = 1.5708f;
+		public const float PI_OVER2 = 1.5708f;
 
-		public readonly static float PI_OVER4 = 0.785398f;
+		public const float PI_OVER4 = 0.785398f;
 
-		public readonly static float PHI = 0.618f;
+		public const float PHI = 0.618f;
 
-		private readonly static float CEIL = 0.9999999f;
+		private const float CEIL = 0.9999999f;
 
-		private readonly static int BIG_ENOUGH_INT = 16384;
+		private const int BIG_ENOUGH_INT = 16384;
 
-		private readonly static float BIG_ENOUGH_CEIL = 16384.998f;
+		private const float BIG_ENOUGH_CEIL = 16384.998f;
 
-		private readonly static float BIG_ENOUGH_ROUND = BIG_ENOUGH_INT + 0.5f;
+		private const float BIG_ENOUGH_ROUND = BIG_ENOUGH_INT + 0.5f;
 
-		private readonly static float BIG_ENOUGH_FLOOR = BIG_ENOUGH_INT;
+		private const float BIG_ENOUGH_FLOOR = BIG_ENOUGH_INT;
 
-		private readonly static int ATAN2_BITS = 7;
+		private const int ATAN2_BITS = 7;
 
-		private readonly static int ATAN2_BITS2 = ATAN2_BITS << 1;
+		private const int ATAN2_BITS2 = ATAN2_BITS << 1;
 
-		private readonly static int ATAN2_MASK = ~(-1 << ATAN2_BITS2);
+		private const int ATAN2_MASK = ~(-1 << ATAN2_BITS2);
 
-		private readonly static int ATAN2_COUNT = ATAN2_MASK + 1;
+		private const int ATAN2_COUNT = ATAN2_MASK + 1;
 
-		public readonly static int ATAN2_DIM = 128;
+		public const int ATAN2_DIM = 128;
 
-		private readonly static float INV_ATAN2_DIM_MINUS_1 = 1.0f / (ATAN2_DIM - 1);
+		private const float INV_ATAN2_DIM_MINUS_1 = 1.0f / (ATAN2_DIM - 1);
 
-		public readonly static float PI = 3.1415927f;
+		public const float PI = 3.1415927f;
 
-		public readonly static float TWO_PI = 6.28319f;
+		public const float TWO_PI = 6.28319f;
 
-		public readonly static float SQRT2 = 1.4142135f;
+		public const float SQRT2 = 1.4142135f;
 
-		private readonly static int SIN_BITS = 13;
+		private const int SIN_BITS = 13;
 
-		private readonly static int SIN_MASK = ~(-1 << SIN_BITS);
+		private const int SIN_MASK = ~(-1 << SIN_BITS);
 
-		private readonly static int SIN_COUNT = SIN_MASK + 1;
+		private const int SIN_COUNT = SIN_MASK + 1;
 
-		private readonly static float RAD_FULL = PI * 2;
+		private const float RAD_FULL = PI * 2;
 
-		private readonly static float DEG_FULL = 360;
+		private const float DEG_FULL = 360;
 
-		private readonly static float RAD_TO_INDEX = SIN_COUNT / RAD_FULL;
+		private const float RAD_TO_INDEX = SIN_COUNT / RAD_FULL;
 
-		private readonly static float DEG_TO_INDEX = SIN_COUNT / DEG_FULL;
+		private const float DEG_TO_INDEX = SIN_COUNT / DEG_FULL;
 
-		public readonly static float RAD_TO_DEG = 180.0f / PI;
+		public const float RAD_TO_DEG = 180.0f / PI;
 
-		public readonly static float DEG_TO_RAD = PI / 180.0f;
+		public const float DEG_TO_RAD = PI / 180.0f;
 
 		static class SinCosImpl
 		{
@@ -377,6 +377,369 @@ namespace loon.utils
 		{
 			long z = (((long)x) << 32);
 			return (float)((z / (long)y) >> 16);
+		}
+
+		public static int Mul(int x, int y)
+		{
+			long z = (long)x * (long)y;
+			return ((int)(z >> 16));
+		}
+
+		public static float Mul(float x, float y)
+		{
+			long z = (long)x * (long)y;
+			return ((float)(z >> 16));
+		}
+
+		public static int MulDiv(int f1, int f2, int f3)
+		{
+			return (int)((long)f1 * f2 / f3);
+		}
+
+		public static long MulDiv(long f1, long f2, long f3)
+		{
+			return f1 * f2 / f3;
+		}
+
+		public static int Mid(int i, int min, int max)
+		{
+			return MathUtils.Max(i, MathUtils.Min(min, max));
+		}
+
+		public static int Round(int n)
+		{
+			if (n > 0)
+			{
+				if ((n & 0x8000) != 0)
+				{
+					return (((n + 0x10000) >> 16) << 16);
+				}
+				else
+				{
+					return (((n) >> 16) << 16);
+				}
+			}
+			else
+			{
+				int k;
+				n = -n;
+				if ((n & 0x8000) != 0)
+				{
+					k = (((n + 0x10000) >> 16) << 16);
+				}
+				else
+				{
+					k = (((n) >> 16) << 16);
+				}
+				return -k;
+			}
+		}
+
+		public static bool Equal(int a, int b)
+		{
+			if (a > b)
+				return a - b <= EPSILON;
+			else
+				return b - a <= EPSILON;
+		}
+
+		public static bool Equal(float a, float b)
+		{
+			if (a > b)
+				return a - b <= EPSILON;
+			else
+				return b - a <= EPSILON;
+		}
+
+		public static int Sign(float x)
+		{
+			if (x > 0)
+			{
+				return 1;
+			}
+			else if (x < 0)
+			{
+				return -1;
+			}
+			return 0;
+		}
+
+		public static int RandomSign()
+		{
+			return (MathUtils.Random() > 0.5f) ? 1 : -1;
+		}
+
+		static int SK1 = 498;
+
+		static int SK2 = 10882;
+
+		public static int SinInt(int f)
+		{
+			int sign = 1;
+			if ((f > PI_OVER_2_FIXED) && (f <= PI_FIXED))
+			{
+				f = PI_FIXED - f;
+			}
+			else if ((f > PI_FIXED) && (f <= (PI_FIXED + PI_OVER_2_FIXED)))
+			{
+				f = f - PI_FIXED;
+				sign = -1;
+			}
+			else if (f > (PI_FIXED + PI_OVER_2_FIXED))
+			{
+				f = (PI_FIXED << 1) - f;
+				sign = -1;
+			}
+			int sqr = Mul(f, f);
+			int result = SK1;
+			result = Mul(result, sqr);
+			result -= SK2;
+			result = Mul(result, sqr);
+			result += ONE_FIXED;
+			result = Mul(result, f);
+			return sign * result;
+		}
+
+		const int CK1 = 2328;
+
+		const int CK2 = 32551;
+
+		public static int CosInt(int f)
+		{
+			int sign = 1;
+			if ((f > PI_OVER_2_FIXED) && (f <= PI_FIXED))
+			{
+				f = PI_FIXED - f;
+				sign = -1;
+			}
+			else if ((f > PI_OVER_2_FIXED) && (f <= (PI_FIXED + PI_OVER_2_FIXED)))
+			{
+				f = f - PI_FIXED;
+				sign = -1;
+			}
+			else if (f > (PI_FIXED + PI_OVER_2_FIXED))
+			{
+				f = (PI_FIXED << 1) - f;
+			}
+			int sqr = Mul(f, f);
+			int result = CK1;
+			result = Mul(result, sqr);
+			result -= CK2;
+			result = Mul(result, sqr);
+			result += ONE_FIXED;
+			return result * sign;
+		}
+
+		const int TK1 = 13323;
+
+		const int TK2 = 20810;
+
+		public static int TanInt(int f)
+		{
+			int sqr = Mul(f, f);
+			int result = TK1;
+			result = Mul(result, sqr);
+			result += TK2;
+			result = Mul(result, sqr);
+			result += ONE_FIXED;
+			result = Mul(result, f);
+			return result;
+		}
+
+		public static int AtanInt(int f)
+		{
+			int sqr = Mul(f, f);
+			int result = 1365;
+			result = Mul(result, sqr);
+			result -= 5579;
+			result = Mul(result, sqr);
+			result += 11805;
+			result = Mul(result, sqr);
+			result -= 21646;
+			result = Mul(result, sqr);
+			result += 65527;
+			result = Mul(result, f);
+			return result;
+		}
+
+		const int AS1 = -1228;
+
+		const int AS2 = 4866;
+
+		const int AS3 = 13901;
+
+		const int AS4 = 102939;
+
+		public static int AsinInt(int f)
+		{
+			int fRoot = SqrtInt(ONE_FIXED - f);
+			int result = AS1;
+			result = Mul(result, f);
+			result += AS2;
+			result = Mul(result, f);
+			result -= AS3;
+			result = Mul(result, f);
+			result += AS4;
+			result = PI_OVER_2_FIXED - (Mul(fRoot, result));
+			return result;
+		}
+
+		public static int AcosInt(int f)
+		{
+			int fRoot = SqrtInt(ONE_FIXED - f);
+			int result = AS1;
+			result = Mul(result, f);
+			result += AS2;
+			result = Mul(result, f);
+			result -= AS3;
+			result = Mul(result, f);
+			result += AS4;
+			result = Mul(fRoot, result);
+			return result;
+		}
+
+		public static float Trunc(float x)
+		{
+			return x < 0f ? MathUtils.Ceil(x) : MathUtils.Floor(x);
+		}
+
+		public static float Tan(float angle)
+		{
+			return (float)System.Math.Tan(angle);
+		}
+
+		public static float Asin(float value)
+		{
+			return (float)System.Math.Asin(value);
+		}
+
+		public static float Acos(float value)
+		{
+			return (float)System.Math.Acos(value);
+		}
+
+		public static float Atan(float value)
+		{
+			return (float)System.Math.Atan(value);
+		}
+
+		public static float Mag(float a, float b)
+		{
+			return Sqrt(a * a + b * b);
+		}
+
+		public static float Mag(float a, float b, float c)
+		{
+			return Sqrt(a * a + b * b + c * c);
+		}
+
+		public static float Median(float a, float b, float c)
+		{
+			return (a <= b) ? ((b <= c) ? b : ((a < c) ? c : a)) : ((a <= c) ? a : ((b < c) ? c : b));
+		}
+
+		public static float Distance(float x1, float x2)
+		{
+			return Abs(x1 - x2);
+		}
+
+		public static float Distance(float x1, float y1, float x2, float y2)
+		{
+			return Dist(x1, y1, x2, y2);
+		}
+
+		public static float Dist(float x1, float y1)
+		{
+			return Abs(x1 - y1);
+		}
+
+		public static float Dist(float x1, float y1, float x2, float y2)
+		{
+			return Sqrt(Sq(x2 - x1) + Sq(y2 - y1));
+		}
+
+		public static float Dist(float x1, float y1, float z1, float x2, float y2, float z2)
+		{
+			return Sqrt(Sq(x2 - x1) + Sq(y2 - y1) + Sq(z2 - z1));
+		}
+
+		public static float DistSquared(float x1, float y1, float x2, float y2)
+		{
+			return (x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1);
+		}
+
+		public static float DistRectPoint(float px, float py, float rx, float ry, float rw, float rh)
+		{
+			if (px >= rx && px <= rx + rw)
+			{
+				if (py >= ry && py <= ry + rh)
+				{
+					return 0f;
+				}
+				if (py > ry)
+				{
+					return py - (ry + rh);
+				}
+				return ry - py;
+			}
+			if (py >= ry && py <= ry + rh)
+			{
+				if (px > rx)
+				{
+					return px - (rx + rw);
+				}
+				return rx - px;
+			}
+			if (px > rx)
+			{
+				if (py > ry)
+				{
+					return Dist(px, py, rx + rw, ry + rh);
+				}
+				return Dist(px, py, rx + rw, ry);
+			}
+			if (py > ry)
+			{
+				return Dist(px, py, rx, ry + rh);
+			}
+			return Dist(px, py, rx, ry);
+		}
+
+		public static float DistRects(float x1, float y1, float w1, float h1, float x2, float y2, float w2, float h2)
+		{
+			if (x1 < x2 + w2 && x2 < x1 + w1)
+			{
+				if (y1 < y2 + h2 && y2 < y1 + h1)
+				{
+					return 0f;
+				}
+				if (y1 > y2)
+				{
+					return y1 - (y2 + h2);
+				}
+				return y2 - (y1 + h1);
+			}
+			if (y1 < y2 + h2 && y2 < y1 + h1)
+			{
+				if (x1 > x2)
+				{
+					return x1 - (x2 + w2);
+				}
+				return x2 - (x1 + w1);
+			}
+			if (x1 > x2)
+			{
+				if (y1 > y2)
+				{
+					return Dist(x1, y1, (x2 + w2), (y2 + h2));
+				}
+				return Dist(x1, y1 + h1, x2 + w2, y2);
+			}
+			if (y1 > y2)
+			{
+				return Dist(x1 + w1, y1, x2, y2 + h2);
+			}
+			return Dist(x1 + w1, y1 + h1, x2, y2);
 		}
 
 		public static float Exp(float a)

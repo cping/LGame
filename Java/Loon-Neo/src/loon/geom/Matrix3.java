@@ -22,7 +22,6 @@ package loon.geom;
 
 import java.io.Serializable;
 import java.nio.FloatBuffer;
-import java.util.Collection;
 
 import loon.LSysException;
 import loon.LSystem;
@@ -30,6 +29,7 @@ import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 import loon.utils.StringKeyValue;
 import loon.utils.StringUtils;
+import loon.utils.TArray;
 
 public class Matrix3 implements Serializable, XY {
 
@@ -71,7 +71,7 @@ public class Matrix3 implements Serializable, XY {
 		this.set(values);
 	}
 
-	public Matrix3(float mat[], int offset) {
+	public Matrix3(float[] mat, int offset) {
 		this.val = new float[9];
 		for (int i = 0; i < 9; i++) {
 			this.val[i] = mat[i + offset];
@@ -585,7 +585,7 @@ public class Matrix3 implements Serializable, XY {
 
 	public void transform(float[] source, int sourceOffset, float[] destination, int destOffset, int numberOfPoints) {
 
-		float result[] = source == destination ? new float[numberOfPoints * 2] : destination;
+		float[] result = source == destination ? new float[numberOfPoints * 2] : destination;
 
 		for (int i = 0; i < numberOfPoints * 2; i += 2) {
 			for (int j = 0; j < 6; j += 3) {
@@ -708,7 +708,7 @@ public class Matrix3 implements Serializable, XY {
 		this.val[8] = 1;
 	}
 
-	private float[] result = new float[16];
+	private final float[] result = new float[16];
 
 	public float[] get() {
 		result[0] = this.val[0];
@@ -904,7 +904,7 @@ public class Matrix3 implements Serializable, XY {
 		return valid;
 	}
 
-	public final static Matrix3 avg(Collection<Matrix3> set) {
+	public final static Matrix3 avg(TArray<Matrix3> set) {
 		Matrix3 average = new Matrix3();
 		average.set(0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f);
 		float hist = 0;
@@ -964,7 +964,7 @@ public class Matrix3 implements Serializable, XY {
 		}
 	}
 
-	public static void mul(float result[], Matrix3 m, float v[]) {
+	public static void mul(float[] result, Matrix3 m, float[] v) {
 		float a, b, c;
 		a = m.get(0, 0) * v[0] + m.get(1, 0) * v[1] + m.get(2, 0) * v[2];
 		b = m.get(0, 1) * v[0] + m.get(1, 1) * v[1] + m.get(2, 1) * v[2];
@@ -981,9 +981,9 @@ public class Matrix3 implements Serializable, XY {
 		float sinay = MathUtils.sin(MathUtils.toRadians(ay));
 		float cosaz = MathUtils.cos(MathUtils.toRadians(az));
 		float sinaz = MathUtils.sin(MathUtils.toRadians(az));
-		float tx[] = { 1, 0, 0, 0, cosax, -sinax, 0, sinax, cosax };
-		float ty[] = { cosay, 0, sinay, 0, 1.f, 0.f, -sinay, 0, cosay };
-		float tz[] = { cosaz, -sinaz, 0, sinaz, cosaz, 0, 0, 0, 1 };
+		float[] tx = { 1, 0, 0, 0, cosax, -sinax, 0, sinax, cosax };
+		float[] ty = { cosay, 0, sinay, 0, 1f, 0f, -sinay, 0, cosay };
+		float[] tz = { cosaz, -sinaz, 0, sinaz, cosaz, 0, 0, 0, 1 };
 		Matrix3 Rx = new Matrix3(tx);
 		Matrix3 Ry = new Matrix3(ty);
 		Matrix3 Rz = new Matrix3(tz);
@@ -995,7 +995,7 @@ public class Matrix3 implements Serializable, XY {
 	}
 
 	public static float distance2d(float x1, float y1, float x2, float y2) {
-		return distance(x1, y1, 0.f, x2, y2, 0.f);
+		return distance(x1, y1, 0f, x2, y2, 0f);
 	}
 
 	public static float distance(float x1, float y1, float z1, float x2, float y2, float z2) {
@@ -1008,7 +1008,7 @@ public class Matrix3 implements Serializable, XY {
 		boolean s;
 		boolean s2;
 
-		if (x2 - x1 != 0.f) {
+		if (x2 - x1 != 0f) {
 			a = (y2 - y1) / (x2 - x1);
 			b = y1 - a * x1;
 
@@ -1043,7 +1043,7 @@ public class Matrix3 implements Serializable, XY {
 			}
 		}
 
-		if (x3 - x2 != 0.f) {
+		if (x3 - x2 != 0f) {
 			a = (y3 - y2) / (x3 - x2);
 			b = y2 - a * x2;
 
@@ -1077,7 +1077,7 @@ public class Matrix3 implements Serializable, XY {
 			}
 		}
 
-		if (x1 - x3 != 0.f) {
+		if (x1 - x3 != 0f) {
 			a = (y1 - y3) / (x1 - x3);
 			b = y3 - a * x3;
 
@@ -1118,8 +1118,8 @@ public class Matrix3 implements Serializable, XY {
 
 	}
 
-	public static float[] convert33to44(float m33[], int offset) {
-		float m44[] = new float[16];
+	public static float[] convert33to44(float[] m33, int offset) {
+		float[] m44 = new float[16];
 
 		m44[0] = m33[0 + offset];
 		m44[1] = m33[1 + offset];

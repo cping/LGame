@@ -522,9 +522,9 @@ public final class MathUtils {
 		return (MathUtils.random() > 0.5f) ? 1 : -1;
 	}
 
-	static int SK1 = 498;
+	final static int SK1 = 498;
 
-	static int SK2 = 10882;
+	final static int SK2 = 10882;
 
 	public static int sinInt(int f) {
 		int sign = 1;
@@ -547,9 +547,9 @@ public final class MathUtils {
 		return sign * result;
 	}
 
-	static int CK1 = 2328;
+	final static int CK1 = 2328;
 
-	static int CK2 = 32551;
+	final static int CK2 = 32551;
 
 	public static int cosInt(int f) {
 		int sign = 1;
@@ -571,9 +571,9 @@ public final class MathUtils {
 		return result * sign;
 	}
 
-	static int TK1 = 13323;
+	final static int TK1 = 13323;
 
-	static int TK2 = 20810;
+	final static int TK2 = 20810;
 
 	public static int tanInt(int f) {
 		int sqr = mul(f, f);
@@ -601,13 +601,13 @@ public final class MathUtils {
 		return result;
 	}
 
-	static int AS1 = -1228;
+	final static int AS1 = -1228;
 
-	static int AS2 = 4866;
+	final static int AS2 = 4866;
 
-	static int AS3 = 13901;
+	final static int AS3 = 13901;
 
-	static int AS4 = 102939;
+	final static int AS4 = 102939;
 
 	public static int asinInt(int f) {
 		int fRoot = sqrtInt(ONE_FIXED - f);

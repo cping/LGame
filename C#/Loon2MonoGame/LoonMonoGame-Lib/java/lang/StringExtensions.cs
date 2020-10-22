@@ -1,9 +1,19 @@
 ﻿using java.lang;
+using loon.utils;
 
 namespace java.lang
 {
     public static class StringExtensions
     {
+        public static byte[] GetBytes(this string str)
+        {
+            return new JavaString(str).GetBytes();
+        }
+        public static byte[] GetBytes(this string str,string encoding)
+        {
+            return new JavaString(str).GetBytes(encoding);
+        }
+
         public static char CharAt(this string str, int index)
         {
             return str[index];

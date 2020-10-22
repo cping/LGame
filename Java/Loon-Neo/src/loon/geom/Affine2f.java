@@ -489,13 +489,14 @@ public class Affine2f implements LTrans, XY {
 		return this;
 	}
 
-	public final void setThis(final Affine2f aff) {
+	public final Affine2f setThis(final Affine2f aff) {
 		this.m00 = aff.m00;
 		this.m11 = aff.m11;
 		this.m01 = aff.m01;
 		this.m10 = aff.m10;
 		this.tx = aff.tx;
 		this.ty = aff.ty;
+		return this;
 	}
 
 	public Affine2f set(Affine2f other) {
@@ -633,7 +634,7 @@ public class Affine2f implements LTrans, XY {
 	}
 
 	public Affine2f setUniformScale(float scale) {
-		return (Affine2f) setScale(scale, scale);
+		return setScale(scale, scale);
 	}
 
 	public Affine2f setScaleX(float scaleX) {
