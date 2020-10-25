@@ -14,6 +14,11 @@ namespace java.lang
             content = new System.Text.StringBuilder(startValue);
         }
 
+        public StringBuilder(int capacity)
+        {
+            content = new System.Text.StringBuilder(capacity);
+        }
+
         public StringBuilder Append(object o)
         {   
             content.Append(JavaSystem.Str(o));

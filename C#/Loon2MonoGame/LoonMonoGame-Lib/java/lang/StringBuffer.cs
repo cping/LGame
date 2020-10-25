@@ -14,6 +14,11 @@ namespace java.lang
             content = new System.Text.StringBuilder(startValue);
         }
 
+        public StringBuffer(int capacity)
+        {
+            content = new System.Text.StringBuilder(capacity);
+        }
+
         public StringBuffer Append(object o)
         {   
             lock (content)

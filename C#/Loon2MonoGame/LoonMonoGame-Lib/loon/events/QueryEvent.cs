@@ -2,7 +2,7 @@
 {
 	public interface QueryEvent<T>
 	{
-		void Hit(T t);
+		bool Hit(T t);
 	}
 
 }
