@@ -10,14 +10,14 @@ namespace loon
         public readonly static string ENCODING = "UTF-8";
 
         // 默认的字符串打印完毕flag
-        public readonly static string FLAG_TAG = "▼";
+        public const string FLAG_TAG = "▼";
 
-        public readonly static string FLAG_SELECT_TAG = "◆";
+        public const string FLAG_SELECT_TAG = "◆";
 
         /** 表示空值和无效的占位用字符串 **/
-        public readonly static string EMPTY = "";
+        public const string EMPTY = "";
 
-        public readonly static string NULL = "null";
+        public const string NULL = "null";
 
         public readonly static string UNKNOWN = "unknown";
 

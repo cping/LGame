@@ -8,6 +8,14 @@ namespace loon.utils
 		{
 			return v == null || v.Length == 0 || "".Equals(v.Trim());
 		}
+		public static bool IsEmpty(params CharSequence[] v)
+		{
+			return v == null || v.Length == 0 || "".Equals(v.ToString().Trim());
+		}
+		public static bool IsEmpty(params string[] v)
+		{
+			return v == null || v.Length == 0 || "".Equals(v.ToString().Trim());
+		}
 
 		public static bool IsEmpty(params char[] v)
 		{

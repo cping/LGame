@@ -77,6 +77,31 @@ namespace java.lang
         	content.Length = l;
         }
 
+        public void GetChars(int srcBegin, int srcEnd, char[] dst, int dstBegin)
+        {
+            if (srcBegin < 0)
+            {
+                throw new StringIndexOutOfBoundsException(srcBegin);
+            }
+            if (srcEnd > content.Length)
+            {
+                throw new StringIndexOutOfBoundsException(srcEnd);
+            }
+            if (srcBegin > srcEnd)
+            {
+                throw new StringIndexOutOfBoundsException(srcEnd - srcBegin);
+            }
+            while (srcBegin < srcEnd)
+            {
+                dst[dstBegin++] = CharAt(srcBegin++);
+            }
+        }
+
+        public char CharAt(int idx)
+        {
+            return content[idx];
+        }
+
         public override string ToString()
         {   
             return content.ToString();

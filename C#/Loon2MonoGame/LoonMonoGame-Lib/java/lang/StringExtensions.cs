@@ -232,5 +232,29 @@ namespace java.lang
         {
             return str.Trim();
         }
+        public static void GetChars(this string str, int srcBegin, int srcEnd, char[] dst, int dstBegin)
+        {
+            if (srcBegin < 0)
+            {
+                throw new StringIndexOutOfBoundsException(srcBegin);
+            }
+            if (srcEnd > str.Length)
+            {
+                throw new StringIndexOutOfBoundsException(srcEnd);
+            }
+            if (srcBegin > srcEnd)
+            {
+                throw new StringIndexOutOfBoundsException(srcEnd - srcBegin);
+            }
+            while (srcBegin < srcEnd)
+            {
+                dst[dstBegin++] = CharAt(str,srcBegin++);
+            }
+        }
+
+        public static JavaString ToJavaString(this string str)
+        {
+            return new JavaString(str);
+        }
     }
 }

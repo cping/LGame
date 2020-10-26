@@ -1074,6 +1074,124 @@ namespace loon.utils
 		{
 			return double.IsNaN(v);
 		}
+		public static bool IsNan(string str)
+		{
+			if (StringUtils.IsEmpty(str))
+			{
+				return false;
+			}
+			char[] chars = str.ToCharArray();
+			int sz = chars.Length;
+			bool hasExp = false;
+			bool hasDecPoint = false;
+			bool allowSigns = false;
+			bool foundDigit = false;
+			int start = (chars[0] == '-') ? 1 : 0;
+			int i;
+			if (sz > start + 1)
+			{
+				if (chars[start] == '0' && chars[start + 1] == 'x')
+				{
+					i = start + 2;
+					if (i == sz)
+					{
+						return false;
+					}
+					for (; i < chars.Length; i++)
+					{
+						if ((chars[i] < '0' || chars[i] > '9') && (chars[i] < 'a' || chars[i] > 'f')
+								&& (chars[i] < 'A' || chars[i] > 'F'))
+						{
+							return false;
+						}
+					}
+					return true;
+				}
+			}
+			sz--;
+			i = start;
+			while (i < sz || (i < sz + 1 && allowSigns && !foundDigit))
+			{
+				if (chars[i] >= '0' && chars[i] <= '9')
+				{
+					foundDigit = true;
+					allowSigns = false;
+				}
+				else if (chars[i] == '.')
+				{
+					if (hasDecPoint || hasExp)
+					{
+						return false;
+					}
+					hasDecPoint = true;
+				}
+				else if (chars[i] == 'e' || chars[i] == 'E')
+				{
+					if (hasExp)
+					{
+						return false;
+					}
+					if (!foundDigit)
+					{
+						return false;
+					}
+					hasExp = true;
+					allowSigns = true;
+				}
+				else if (chars[i] == '+' || chars[i] == '-')
+				{
+					if (!allowSigns)
+					{
+						return false;
+					}
+					allowSigns = false;
+					foundDigit = false;
+				}
+				else
+				{
+					return false;
+				}
+				i++;
+			}
+			if (i < chars.Length)
+			{
+				if (chars[i] >= '0' && chars[i] <= '9')
+				{
+					return true;
+				}
+				if (chars[i] == 'e' || chars[i] == 'E')
+				{
+					return false;
+				}
+				if (!allowSigns && (chars[i] == 'd' || chars[i] == 'D' || chars[i] == 'f' || chars[i] == 'F'))
+				{
+					return foundDigit;
+				}
+				if (chars[i] == 'l' || chars[i] == 'L')
+				{
+					return foundDigit && !hasExp;
+				}
+				return false;
+			}
+			return !allowSigns && foundDigit;
+		}
+		public static bool IsNumber(string num)
+		{
+			if (StringUtils.IsEmpty(num))
+			{
+				return false;
+			}
+			return IsNan(num);
+		}
+
+		public static bool IsNumber(CharSequence num)
+		{
+			if (StringUtils.IsEmpty(num))
+			{
+				return false;
+			}
+			return IsNan(num.ToString());
+		}
 
 		public static double IEEEremainder(double f1, double f2)
 		{

@@ -28,8 +28,97 @@ import loon.events.QueryEvent;
 import loon.utils.ObjectMap.Keys;
 import loon.utils.ObjectMap.Values;
 
-@SuppressWarnings({ "rawtypes", "unchecked" })
+@SuppressWarnings({ "unchecked" })
 public class TArray<T> implements Iterable<T>, IArray {
+	
+
+	public final static class ArrayIterable<T> implements Iterable<T> {
+
+		private final TArray<T> array;
+		private final boolean allowRemove;
+		private ArrayIterator<T> iterator1, iterator2;
+
+		public ArrayIterable(TArray<T> array) {
+			this(array, true);
+		}
+
+		public ArrayIterable(TArray<T> array, boolean allowRemove) {
+			this.array = array;
+			this.allowRemove = allowRemove;
+		}
+
+		@Override
+		public Iterator<T> iterator() {
+			if (iterator1 == null) {
+				iterator1 = new ArrayIterator<T>(array, allowRemove);
+				iterator2 = new ArrayIterator<T>(array, allowRemove);
+			}
+			if (!iterator1.valid) {
+				iterator1.index = 0;
+				iterator1.valid = true;
+				iterator2.valid = false;
+				return iterator1;
+			}
+			iterator2.index = 0;
+			iterator2.valid = true;
+			iterator1.valid = false;
+			return iterator2;
+		}
+	}
+
+	public final static class ArrayIterator<T> implements LIterator<T>, Iterable<T> {
+
+		private final TArray<T> array;
+		private final boolean allowRemove;
+		int index;
+		boolean valid = true;
+
+		public ArrayIterator(TArray<T> array) {
+			this(array, true);
+		}
+
+		public ArrayIterator(TArray<T> array, boolean allowRemove) {
+			this.array = array;
+			this.allowRemove = allowRemove;
+		}
+
+		@Override
+		public boolean hasNext() {
+			if (!valid) {
+				throw new LSysException("iterator() cannot be used nested.");
+			}
+			return index < array.size;
+		}
+
+		@Override
+		public T next() {
+			if (index >= array.size) {
+				return null;
+			}
+			if (!valid) {
+				throw new LSysException("iterator() cannot be used nested.");
+			}
+			return array.items[index++];
+		}
+
+		@Override
+		public void remove() {
+			if (!allowRemove) {
+				throw new LSysException("Remove not allowed.");
+			}
+			index--;
+			array.removeIndex(index);
+		}
+
+		public void reset() {
+			index = 0;
+		}
+
+		@Override
+		public Iterator<T> iterator() {
+			return this;
+		}
+	}
 
 	public static final <T> TArray<T> at(int capacity) {
 		return new TArray<T>(capacity);
@@ -41,6 +130,10 @@ public class TArray<T> implements Iterable<T>, IArray {
 
 	public static final <T> TArray<T> at() {
 		return at(0);
+	}
+
+	public final static <T> TArray<T> with(T... array) {
+		return new TArray<T>(array);
 	}
 
 	public T[] items;
@@ -67,7 +160,7 @@ public class TArray<T> implements Iterable<T>, IArray {
 		System.arraycopy(array.items, 0, items, 0, size);
 	}
 
-	public TArray(T[] array) {
+	public TArray(T... array) {
 		this(true, array, 0, array.length);
 	}
 
@@ -123,7 +216,7 @@ public class TArray<T> implements Iterable<T>, IArray {
 		if (start + count > array.size) {
 			throw new LSysException("start + count must be <= size: " + start + " + " + count + " <= " + array.size);
 		}
-		addAll((T[]) array.items, start, count);
+		addAll(array.items, start, count);
 	}
 
 	public void addAll(T... array) {
@@ -295,7 +388,7 @@ public class TArray<T> implements Iterable<T>, IArray {
 	}
 
 	public boolean remove(T value, boolean identity) {
-		Object[] items = this.items;
+		T[] items = this.items;
 		if (identity || value == null) {
 			for (int i = 0; i < size; i++) {
 				if (items[i] == value) {
@@ -513,22 +606,23 @@ public class TArray<T> implements Iterable<T>, IArray {
 		return a;
 	}
 
-	private ArrayIterable iterable;
+	private ArrayIterable<T> iterable;
 
 	@Override
 	public Iterator<T> iterator() {
 		if (iterable == null) {
-			iterable = new ArrayIterable(this);
+			iterable = new ArrayIterable<T>(this);
 		}
 		return iterable.iterator();
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		if (o == this)
 			return true;
 		if (!(o instanceof TArray))
 			return false;
-		TArray array = (TArray) o;
+		TArray<?> array = (TArray<?>) o;
 		int n = size;
 		if (n != array.size)
 			return false;
@@ -579,64 +673,6 @@ public class TArray<T> implements Iterable<T>, IArray {
 		return buffer.toString();
 	}
 
-	public final static <T> TArray<T> with(T... array) {
-		return new TArray(array);
-	}
-
-	public final static class ArrayIterator<T> implements LIterator<T>, Iterator<T>, Iterable<T> {
-
-		private final TArray<T> array;
-		private final boolean allowRemove;
-		int index;
-		boolean valid = true;
-
-		public ArrayIterator(TArray<T> array) {
-			this(array, true);
-		}
-
-		public ArrayIterator(TArray<T> array, boolean allowRemove) {
-			this.array = array;
-			this.allowRemove = allowRemove;
-		}
-
-		@Override
-		public boolean hasNext() {
-			if (!valid) {
-				throw new LSysException("iterator() cannot be used nested.");
-			}
-			return index < array.size;
-		}
-
-		@Override
-		public T next() {
-			if (index >= array.size) {
-				return null;
-			}
-			if (!valid) {
-				throw new LSysException("iterator() cannot be used nested.");
-			}
-			return array.items[index++];
-		}
-
-		@Override
-		public void remove() {
-			if (!allowRemove) {
-				throw new LSysException("Remove not allowed.");
-			}
-			index--;
-			array.removeIndex(index);
-		}
-
-		public void reset() {
-			index = 0;
-		}
-
-		@Override
-		public Iterator<T> iterator() {
-			return this;
-		}
-	}
-
 	public TArray<T> where(QueryEvent<T> test) {
 		TArray<T> list = new TArray<T>();
 		for (T t : this) {
@@ -665,39 +701,6 @@ public class TArray<T> implements Iterable<T>, IArray {
 		return false;
 	}
 
-	public final static class ArrayIterable<T> implements Iterable<T> {
-
-		private final TArray<T> array;
-		private final boolean allowRemove;
-		private ArrayIterator iterator1, iterator2;
-
-		public ArrayIterable(TArray<T> array) {
-			this(array, true);
-		}
-
-		public ArrayIterable(TArray<T> array, boolean allowRemove) {
-			this.array = array;
-			this.allowRemove = allowRemove;
-		}
-
-		@Override
-		public Iterator<T> iterator() {
-			if (iterator1 == null) {
-				iterator1 = new ArrayIterator(array, allowRemove);
-				iterator2 = new ArrayIterator(array, allowRemove);
-			}
-			if (!iterator1.valid) {
-				iterator1.index = 0;
-				iterator1.valid = true;
-				iterator2.valid = false;
-				return iterator1;
-			}
-			iterator2.index = 0;
-			iterator2.valid = true;
-			iterator1.valid = false;
-			return iterator2;
-		}
-	}
 
 	public void sort(Comparator<T> compar) {
 		if (size <= 1) {

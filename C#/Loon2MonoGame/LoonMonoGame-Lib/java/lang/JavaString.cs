@@ -117,6 +117,10 @@ namespace java.lang
         {
             return JavaSystem.GetEncoding(encoding).GetBytes(this.value);
         }
+        public void GetChars(int srcBegin, int srcEnd, char[] dst, int dstBegin)
+        {
+            StringExtensions.GetChars(this.value, srcBegin, srcEnd, dst, dstBegin);
+        }
 
         public bool IsEmpty()
         {

@@ -369,9 +369,10 @@ public final class MathUtils {
 		boolean allowSigns = false;
 		boolean foundDigit = false;
 		int start = (chars[0] == '-') ? 1 : 0;
+		int i = 0;
 		if (sz > start + 1) {
 			if (chars[start] == '0' && chars[start + 1] == 'x') {
-				int i = start + 2;
+				i = start + 2;
 				if (i == sz) {
 					return false;
 				}
@@ -385,7 +386,7 @@ public final class MathUtils {
 			}
 		}
 		sz--;
-		int i = start;
+		i = start;
 		while (i < sz || (i < sz + 1 && allowSigns && !foundDigit)) {
 			if (chars[i] >= '0' && chars[i] <= '9') {
 				foundDigit = true;

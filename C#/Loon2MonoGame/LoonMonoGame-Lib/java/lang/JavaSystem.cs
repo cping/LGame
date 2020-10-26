@@ -217,9 +217,32 @@ namespace java.lang
             return v.ToString();
         }
 
+        public static string Str(byte v)
+        {
+            return v.ToString();
+        }
+
         public static string Str(char v)
         {
             return v.ToString();
+        }
+        public static string Str(short v)
+        {
+            return v.ToString("d");
+        }
+
+        public static string Str(long v)
+        {
+            return v.ToString("d");
+        }
+        public static string Str(ulong v)
+        {
+            return v.ToString("d");
+        }
+
+        public static string Str(uint v)
+        {
+            return v.ToString("d");
         }
 
         public static string Str(double v)
