@@ -1,7 +1,4 @@
 ﻿using java.lang;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace java.io
 {

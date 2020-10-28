@@ -1,28 +1,28 @@
 ﻿namespace loon.geom
 {
-	public interface BoxSize
-	{
+    public interface BoxSize
+    {
 
-		 float GetX();
+        float GetX();
 
-		 float GetY();
+        float GetY();
 
-		 float GetCenterX();
+        float GetCenterX();
 
-		 float GetCenterY();
+        float GetCenterY();
 
-		 float GetWidth();
+        float GetWidth();
 
-		 float GetHeight();
+        float GetHeight();
 
-		 void SetX(float x);
+        void SetX(float x);
 
-		 void SetY(float y);
+        void SetY(float y);
 
-		 void SetWidth(float w);
+        void SetWidth(float w);
 
-		 void SetHeight(float h);
+        void SetHeight(float h);
 
-	}
+    }
 
 }

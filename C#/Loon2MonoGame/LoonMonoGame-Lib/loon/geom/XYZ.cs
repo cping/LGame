@@ -1,10 +1,10 @@
 ﻿namespace loon.geom
 {
-public interface XYZ : XY
-{
+    public interface XYZ : XY
+    {
 
-	 float GetZ();
+        float GetZ();
 
-}
+    }
 
 }

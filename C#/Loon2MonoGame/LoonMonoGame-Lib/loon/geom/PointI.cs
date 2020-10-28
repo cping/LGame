@@ -1,7 +1,7 @@
 ﻿namespace loon.geom
 {
-   public class PointI
-{
+    public class PointI
+    {
         public int x;
 
         public int y;

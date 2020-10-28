@@ -1,10 +1,10 @@
 ﻿namespace loon
 {
-	public interface ZIndex
-	{
+    public interface ZIndex
+    {
 
-		int GetLayer();
+        int GetLayer();
 
-	}
+    }
 
 }

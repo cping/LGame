@@ -1,17 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace loon.utils
 {
-	public interface IArray
-	{
+    public interface IArray
+    {
 
-		int Size();
+        int Size();
 
-		void Clear();
+        void Clear();
 
-		bool IsEmpty();
-	}
+        bool IsEmpty();
+    }
 
 }

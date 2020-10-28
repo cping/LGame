@@ -5,7 +5,7 @@ namespace java.io
 
     public class CharArrayReader : TextReader
     {
-  
+
         protected char[] buffer;
         protected int curMarkedPos;
         protected int length;

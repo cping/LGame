@@ -47,7 +47,7 @@
 
         public static uint FloatToIntBits(float value)
         {
-   
+
             if (IsNaN(value))
             {
                 return 0x7fc00000;
@@ -57,7 +57,7 @@
             {
                 if (1.0 / value == NEGATIVE_INFINITY_JAVA)
                 {
-                    return 0x80000000; 
+                    return 0x80000000;
                 }
                 else
                 {
@@ -91,7 +91,7 @@
                 mantissa = (0x800000 | mantissa) >> (-127 - exp + 1);
                 exp = -127;
             }
-     
+
             long bits = negative ? POWER_31_INT : 0x0L;
 #pragma warning disable CS0675 // 对进行了带符号扩展的操作数使用了按位或运算符
             bits |= (exp + 127) << 23;
@@ -136,7 +136,7 @@
                 bits &= 0x7fffff;
             }
 
-    
+
             ulong bits64 = negative ? 0x8000000000000000L : 0x0L;
             bits64 |= ((ulong)(exp + 896)) << 52;
             bits64 |= ((ulong)bits) << 29;
@@ -157,7 +157,7 @@
             return System.Double.IsInfinity(d);
         }
 
-        public static float ParseFloat (string s)
+        public static float ParseFloat(string s)
         {
             double result;
             if

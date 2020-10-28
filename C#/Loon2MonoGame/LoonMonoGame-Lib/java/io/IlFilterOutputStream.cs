@@ -3,9 +3,9 @@ namespace java.io
     using System;
     using System.IO;
 
-    public class IlFilterOutputStream :Stream
+    public class IlFilterOutputStream : Stream
     {
- 
+
         protected Stream xout;
 
         public IlFilterOutputStream(Stream xout)

@@ -1,5 +1,4 @@
 using java.lang;
-using System.Collections.Generic;
 namespace java.util
 {
     public class Vector<T> : ArrayListImpl<T>

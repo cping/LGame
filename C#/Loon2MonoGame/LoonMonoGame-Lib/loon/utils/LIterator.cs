@@ -2,8 +2,9 @@
 
 namespace loon.utils
 {
-    public interface LIterator<E> : Iterator<E>{
+    public interface LIterator<E> : Iterator<E>
+    {
 
-     }
+    }
 
 }

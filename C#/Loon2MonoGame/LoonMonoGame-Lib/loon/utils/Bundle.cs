@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace loon.utils
+﻿namespace loon.utils
 {
     public interface Bundle<T> : IArray
     {
@@ -15,5 +11,5 @@ namespace loon.utils
         T Remove(string key);
 
         T Remove(string key, T defaultValue);
-        }
     }
+}

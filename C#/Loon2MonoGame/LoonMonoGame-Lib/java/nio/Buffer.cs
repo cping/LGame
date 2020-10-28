@@ -3,7 +3,7 @@
 namespace java.nio
 {
     public abstract class Buffer
-{
+    {
         protected int capacity;
         protected int position;
         protected int limit;

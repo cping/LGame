@@ -7,7 +7,7 @@
         public float y;
         public Vector2f() : this(0, 0)
         {
-           
+
         }
 
         public Vector2f(float x, float y)

@@ -1,6 +1,6 @@
 ﻿namespace java.util
 {
-    public interface Map<K,V>
+    public interface Map<K, V>
     {
         void Clear();
         bool ContainsKey(K key);
@@ -13,15 +13,15 @@
         bool IsEmpty();
         Set<K> KeySet();
         V Put(K key, V value);
-        void PutAll(Map<K,V> m);
+        void PutAll(Map<K, V> m);
         V Remove(K key);
         int Size();
         Collection<V> Values();
         string ToString();
     }
-    public static class Map_Java<K,V>
+    public static class Map_Java<K, V>
     {
-        public static V GetOrDefault(Map<K,V> @this, K key, V def)
+        public static V GetOrDefault(Map<K, V> @this, K key, V def)
         {
             return @this.ContainsKey(key) ? @this.Get(key) : def;
         }

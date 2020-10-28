@@ -1,21 +1,20 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace java.util
 {
-    public class IEnumeratorAdapter<V> : IEnumerator
+    public class IEnumeratorAdapter<V> : IEnumerator<V>, IDisposable, IEnumerator
     {
-        private object current;
+        private V current;
         private readonly Iterator<V> enume;
 
         public IEnumeratorAdapter(Iterator<V> enume)
         {
+            this.current = default;
             if (enume != null)
             {
                 this.enume = enume;
-                if (enume.HasNext())
-                {
-                    this.current = enume.Next();
-                }
             }
         }
 
@@ -33,12 +32,25 @@ namespace java.util
         {
         }
 
-        public object Current
+        public void Dispose()
+        {
+        }
+
+        public V Current
         {
             get
             {
                 return this.current;
             }
         }
+
+        object IEnumerator.Current
+        {
+            get
+            {
+                return this.current;
+            }
+        }
+
     }
 }

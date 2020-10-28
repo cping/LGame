@@ -1,7 +1,7 @@
 using java.lang;
 
-namespace java.util.function 
-{ 
+namespace java.util.function
+{
     public interface Consumer
     {
         void Accept(object s);
@@ -11,9 +11,9 @@ namespace java.util.function
     public static class Consumer_Java
     {
         public static Consumer AndThen(Consumer @this, Consumer other)
-        {   
-            if (@this==null || other==null) { throw new NullPointerException(); }
-            return new ConsumerAndThen(@this,other);
+        {
+            if (@this == null || other == null) { throw new NullPointerException(); }
+            return new ConsumerAndThen(@this, other);
         }
     }
 
@@ -21,21 +21,21 @@ namespace java.util.function
     {
         private readonly Consumer a;
         private readonly Consumer b;
-        
-        public ConsumerAndThen(Consumer a, Consumer b) 
-        {   
+
+        public ConsumerAndThen(Consumer a, Consumer b)
+        {
             this.a = a;
             this.b = b;
         }
         public void Accept(object o)
-        {   
+        {
             a.Accept(o);
             b.Accept(o);
         }
         public virtual Consumer AndThen(Consumer other)
-        {   
-            return Consumer_Java.AndThen(this,other);
+        {
+            return Consumer_Java.AndThen(this, other);
         }
     }
-}        
+}
 

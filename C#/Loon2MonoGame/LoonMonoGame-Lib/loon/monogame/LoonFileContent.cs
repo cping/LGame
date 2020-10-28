@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace loon.monogame
+﻿namespace loon.monogame
 {
     public class LoonFileContent
     {

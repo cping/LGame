@@ -1,12 +1,12 @@
 ﻿namespace loon.geom
 {
-   public class PointF
-{
+    public class PointF
+    {
         public float x;
 
         public float y;
 
-        public PointF(float x,float y)
+        public PointF(float x, float y)
         {
             this.Set(x, y);
         }
@@ -17,5 +17,5 @@
             this.y = y;
             return this;
         }
-}
+    }
 }

@@ -1,4 +1,4 @@
-namespace java.lang 
+namespace java.lang
 {
     public class Boolean
     {
@@ -6,7 +6,7 @@ namespace java.lang
 
         public static readonly Boolean FALSE_JAVA = new Boolean(false);
         public static readonly Boolean TRUE_JAVA = new Boolean(true);
-        public Boolean(bool v) 
+        public Boolean(bool v)
         {
             value = v;
         }
@@ -18,27 +18,27 @@ namespace java.lang
 
         public override bool Equals(object o)
         {
-            if (o==null || !(o is Boolean)) return false;
+            if (o == null || !(o is Boolean)) return false;
             return ((Boolean)o).value == value;
         }
 
         public override int GetHashCode()
-        {   
+        {
             return value ? 1231 : 1237;
         }
 
         public override string ToString()
-        {   
+        {
             return Boolean.ToString(value);
         }
-            
+
         public static string ToString(bool b)
-        {   
+        {
             return JavaSystem.Str(b);
         }
-            
+
         public static Boolean ValueOf(bool b)
-        {   
+        {
             return b ? TRUE_JAVA : FALSE_JAVA;
         }
 

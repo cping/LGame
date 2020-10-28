@@ -3,14 +3,14 @@ using System;
 
 namespace loon.utils
 {
-  public  class HelperUtils
-{
-		public static string ToStr(object o)
-		{
-			if (o == null)
-			{
-				return LSystem.NULL;
-			}
+    public class HelperUtils
+    {
+        public static string ToStr(object o)
+        {
+            if (o == null)
+            {
+                return LSystem.NULL;
+            }
             if (o is short s)
             {
                 return JavaSystem.Str(s);
@@ -19,7 +19,8 @@ namespace loon.utils
             {
                 return JavaSystem.Str(ui);
             }
-            if (o is int i) {
+            if (o is int i)
+            {
                 return JavaSystem.Str(i);
             }
             if (o is long l)
@@ -66,6 +67,6 @@ namespace loon.utils
                 }
             }
             return Convert.ToString(o);
-		}
-	}
+        }
+    }
 }

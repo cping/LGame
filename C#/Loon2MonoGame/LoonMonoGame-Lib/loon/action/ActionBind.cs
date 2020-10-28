@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace loon.action
+﻿namespace loon.action
 {
-     public class ActionBind
+    public class ActionBind
     {
     }
 }

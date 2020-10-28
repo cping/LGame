@@ -1,7 +1,7 @@
 ﻿namespace java.lang
 {
-   public class UnicodeUtils
-{
+    public class UnicodeUtils
+    {
         private UnicodeUtils()
         {
         }

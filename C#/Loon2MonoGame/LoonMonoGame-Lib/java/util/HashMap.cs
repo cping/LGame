@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace java.util
+﻿namespace java.util
 {
-    public class HashMap<K,V> : HashMapImpl<K, V>
+    public class HashMap<K, V> : HashMapImpl<K, V>
     {
         public HashMap() : base()
         {

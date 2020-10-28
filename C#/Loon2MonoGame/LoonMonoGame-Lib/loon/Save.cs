@@ -17,16 +17,16 @@ namespace loon
     {
 
 
-         void SetItem(string key, string data);
+        void SetItem(string key, string data);
 
-         void RemoveItem(string key);
+        void RemoveItem(string key);
 
-         string GetItem(string key);
+        string GetItem(string key);
 
-         Batch StartBatch();
+        Batch StartBatch();
 
-         IEnumerable<string> Keys();
+        IEnumerable<string> Keys();
 
-         bool IsPersisted();
+        bool IsPersisted();
     }
 }

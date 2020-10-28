@@ -1,4 +1,4 @@
-namespace java.util.function 
+namespace java.util.function
 {
     public interface Supplier
     {

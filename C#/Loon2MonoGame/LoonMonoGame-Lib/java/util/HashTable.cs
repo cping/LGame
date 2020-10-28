@@ -1,6 +1,6 @@
 ﻿namespace java.util
 {
-    public class HashTable<K,V> : HashMapImpl<K, V>
+    public class HashTable<K, V> : HashMapImpl<K, V>
     {
         public HashTable() : base()
         {
@@ -55,7 +55,7 @@
             lock (this) { return base.Put(key, value); }
         }
 
-        public override void PutAll(Map<K,V> m)
+        public override void PutAll(Map<K, V> m)
         {
             lock (this) { base.PutAll(m); }
         }
@@ -82,7 +82,7 @@
 
         public virtual object Clone()
         {
-            lock (this) { return new HashTable<K,V>(this); }
+            lock (this) { return new HashTable<K, V>(this); }
         }
 
         public virtual bool Contains(V value)
@@ -92,7 +92,7 @@
 
         public virtual Enumeration<V> Elements()
         {
-            lock (this) { return new HashMapValueIterator<K,V>(this); }
+            lock (this) { return new HashMapValueIterator<K, V>(this); }
         }
 
         public virtual Enumeration<K> Keys()

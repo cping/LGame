@@ -264,9 +264,9 @@ public class ArrayByte implements IArray, LRelease {
 		return position;
 	}
 
-	public void setPosition(int position) throws IndexOutOfBoundsException {
+	public void setPosition(int position) throws LSysException {
 		if (position < 0 || position > data.length) {
-			throw new IndexOutOfBoundsException();
+			throw new LSysException("ArrayByte Index Out Of Bounds !");
 		}
 		this.position = position;
 	}
@@ -279,27 +279,27 @@ public class ArrayByte implements IArray, LRelease {
 		return length() - position();
 	}
 
-	private void checkAvailable(int length) throws IndexOutOfBoundsException {
+	private void checkAvailable(int length) throws LSysException {
 		if (available() < length) {
-			throw new IndexOutOfBoundsException();
+			throw new LSysException("ArrayByte Index Out Of Bounds !");
 		}
 	}
 
-	public int read() throws IndexOutOfBoundsException {
+	public int read() throws LSysException {
 		checkAvailable(1);
 		return data[position++] & 0xff;
 	}
 
-	public byte readByte() throws IndexOutOfBoundsException {
+	public byte readByte() throws LSysException {
 		checkAvailable(1);
 		return data[position++];
 	}
 
-	public int read(byte[] buffer) throws IndexOutOfBoundsException {
+	public int read(byte[] buffer) throws LSysException {
 		return read(buffer, 0, buffer.length);
 	}
 
-	public int read(byte[] buffer, int offset, int length) throws IndexOutOfBoundsException {
+	public int read(byte[] buffer, int offset, int length) throws LSysException {
 		if (length == 0) {
 			return 0;
 		}
@@ -332,11 +332,11 @@ public class ArrayByte implements IArray, LRelease {
 		position = data.length;
 	}
 
-	public boolean readBoolean() throws IndexOutOfBoundsException {
+	public boolean readBoolean() throws LSysException {
 		return (readByte() != 0);
 	}
 
-	protected int read2Byte() throws IndexOutOfBoundsException {
+	protected int read2Byte() throws LSysException {
 		checkAvailable(2);
 		if (byteOrder == LITTLE_ENDIAN) {
 			return ((data[position++] & 0xff) | ((data[position++] & 0xff) << 8));
@@ -345,19 +345,19 @@ public class ArrayByte implements IArray, LRelease {
 		}
 	}
 
-	public char readChar() throws IndexOutOfBoundsException {
+	public char readChar() throws LSysException {
 		return (char) read2Byte();
 	}
 
-	public short readShort() throws IndexOutOfBoundsException {
+	public short readShort() throws LSysException {
 		return (short) read2Byte();
 	}
 
-	public long readUInt8() throws IndexOutOfBoundsException {
+	public long readUInt8() throws LSysException {
 		return (0x000000FF & (int) readByte());
 	}
 
-	public long readUInt16() throws IndexOutOfBoundsException {
+	public long readUInt16() throws LSysException {
 		int firstByte = (0x000000FF & (int) readByte());
 		int secondByte = (0x000000FF & (int) readByte());
 		long result = 0;
@@ -369,7 +369,7 @@ public class ArrayByte implements IArray, LRelease {
 		return result;
 	}
 
-	public long readUInt32() throws IndexOutOfBoundsException {
+	public long readUInt32() throws LSysException {
 		int firstByte = (0x000000FF & (int) readByte());
 		int secondByte = (0x000000FF & (int) readByte());
 		int thirdByte = (0x000000FF & (int) readByte());
@@ -383,7 +383,7 @@ public class ArrayByte implements IArray, LRelease {
 		return result;
 	}
 
-	public int readInt() throws IndexOutOfBoundsException {
+	public int readInt() throws LSysException {
 		checkAvailable(4);
 		if (byteOrder == LITTLE_ENDIAN) {
 			return (data[position++] & 0xff) | ((data[position++] & 0xff) << 8) | ((data[position++] & 0xff) << 16)
@@ -394,11 +394,11 @@ public class ArrayByte implements IArray, LRelease {
 		}
 	}
 
-	public double readDouble() throws IndexOutOfBoundsException {
+	public double readDouble() throws LSysException {
 		return NumberUtils.longBitsToDouble(readLong());
 	}
 
-	public long readLong() throws IndexOutOfBoundsException {
+	public long readLong() throws LSysException {
 		checkAvailable(8);
 		if (byteOrder == LITTLE_ENDIAN) {
 			return (readInt() & 0xffffffffL) | ((readInt() & 0xffffffffL) << 32L);
@@ -407,7 +407,7 @@ public class ArrayByte implements IArray, LRelease {
 		}
 	}
 
-	public float readFloat() throws IndexOutOfBoundsException {
+	public float readFloat() throws LSysException {
 		return NumberUtils.intBitsToFloat(readInt());
 	}
 

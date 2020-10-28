@@ -1,13 +1,13 @@
 ﻿namespace loon
 {
-	public enum GameMode
-	{
-		Playing,
-		Won,
-		Lost,
-		Start,
-		End,
-		Unknown
-	}
+    public enum GameMode
+    {
+        Playing,
+        Won,
+        Lost,
+        Start,
+        End,
+        Unknown
+    }
 
 }

@@ -2,93 +2,93 @@
 
 namespace loon.geom
 {
-   public class RectBox : Shape , BoxSize, XYZW
-	{
+    public class RectBox : Shape, BoxSize, XYZW
+    {
 
-		public int width;
+        public int width;
 
-		public int height;
+        public int height;
 
-		private Matrix4 _matrix;
+        private Matrix4 _matrix;
 
-		public RectBox()
-		{
-			SetBounds(0, 0, 0, 0);
-		}
+        public RectBox()
+        {
+            SetBounds(0, 0, 0, 0);
+        }
 
-		public RectBox(int width, int height)
-		{
-			SetBounds(0, 0, width, height);
-		}
+        public RectBox(int width, int height)
+        {
+            SetBounds(0, 0, width, height);
+        }
 
-		public RectBox(int x, int y, int width, int height)
-		{
-			SetBounds(x, y, width, height);
-		}
+        public RectBox(int x, int y, int width, int height)
+        {
+            SetBounds(x, y, width, height);
+        }
 
-		public RectBox(float x, float y, float width, float height)
-		{
-			SetBounds(x, y, width, height);
-		}
+        public RectBox(float x, float y, float width, float height)
+        {
+            SetBounds(x, y, width, height);
+        }
 
-		public RectBox(double x, double y, double width, double height)
-		{
-			SetBounds(x, y, width, height);
-		}
+        public RectBox(double x, double y, double width, double height)
+        {
+            SetBounds(x, y, width, height);
+        }
 
-		public RectBox(RectBox rect)
-		{
-			SetBounds(rect.x, rect.y, rect.width, rect.height);
-		}
+        public RectBox(RectBox rect)
+        {
+            SetBounds(rect.x, rect.y, rect.width, rect.height);
+        }
 
-		public RectBox Offset(Vector2f offset)
-		{
-			x += offset.x;
-			y += offset.y;
-			return this;
-		}
+        public RectBox Offset(Vector2f offset)
+        {
+            x += offset.x;
+            y += offset.y;
+            return this;
+        }
 
-		public RectBox Offset(int offsetX, int offsetY)
-		{
-			x += offsetX;
-			y += offsetY;
-			return this;
-		}
+        public RectBox Offset(int offsetX, int offsetY)
+        {
+            x += offsetX;
+            y += offsetY;
+            return this;
+        }
 
-		public RectBox SetBoundsFromCenter(float centerX, float centerY, float cornerX, float cornerY)
-		{
-			float halfW = MathUtils.Abs(cornerX - centerX);
-			float halfH = MathUtils.Abs(cornerY - centerY);
-			SetBounds(centerX - halfW, centerY - halfH, halfW * 2.0, halfH * 2.0);
-			return this;
-		}
+        public RectBox SetBoundsFromCenter(float centerX, float centerY, float cornerX, float cornerY)
+        {
+            float halfW = MathUtils.Abs(cornerX - centerX);
+            float halfH = MathUtils.Abs(cornerY - centerY);
+            SetBounds(centerX - halfW, centerY - halfH, halfW * 2.0, halfH * 2.0);
+            return this;
+        }
 
-		public RectBox SetBounds(RectBox rect)
-		{
-			SetBounds(rect.x, rect.y, rect.width, rect.height);
-			return this;
-		}
+        public RectBox SetBounds(RectBox rect)
+        {
+            SetBounds(rect.x, rect.y, rect.width, rect.height);
+            return this;
+        }
 
-		public RectBox SetBounds(double x, double y, double width, double height)
-		{
-			SetBounds((float)x, (float)y, (float)width, (float)height);
-			return this;
-		}
+        public RectBox SetBounds(double x, double y, double width, double height)
+        {
+            SetBounds((float)x, (float)y, (float)width, (float)height);
+            return this;
+        }
 
-		public RectBox SetBounds(float x, float y, float width, float height)
-		{
-			this.x = x;
-			this.y = y;
-			this.width = (int)width;
-			this.height = (int)height;
-			this.minX = x;
-			this.minY = y;
-			this.maxX = x + width;
-			this.maxY = y + height;
-			this.pointsDirty = true;
-			this.CheckPoints();
-			return this;
-		}
+        public RectBox SetBounds(float x, float y, float width, float height)
+        {
+            this.x = x;
+            this.y = y;
+            this.width = (int)width;
+            this.height = (int)height;
+            this.minX = x;
+            this.minY = y;
+            this.maxX = x + width;
+            this.maxY = y + height;
+            this.pointsDirty = true;
+            this.CheckPoints();
+            return this;
+        }
 
         public override Shape Transform(Matrix3 transform)
         {

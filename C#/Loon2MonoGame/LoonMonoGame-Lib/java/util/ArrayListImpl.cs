@@ -1,7 +1,4 @@
 ﻿using java.lang;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace java.util
 {
@@ -22,7 +19,7 @@ namespace java.util
         }
         public ArrayListImpl(params V[] array) : this()
         {
-            foreach(V o in array)
+            foreach (V o in array)
             {
                 Add(o);
             }
@@ -101,7 +98,7 @@ namespace java.util
         public override void Clear()
         {
             for (int i = 0; i < len; i++)
-            {  
+            {
                 buffer[i] = default;
             }
             len = 0;

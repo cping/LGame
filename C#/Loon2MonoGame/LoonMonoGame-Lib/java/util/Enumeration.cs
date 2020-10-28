@@ -1,4 +1,4 @@
-namespace java.util 
+namespace java.util
 {
     public interface Enumeration<V>
     {

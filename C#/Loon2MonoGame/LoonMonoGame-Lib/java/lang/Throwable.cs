@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace java.lang
+﻿namespace java.lang
 {
     public class Throwable : System.Exception
     {
@@ -13,7 +9,7 @@ namespace java.lang
         public Throwable() : this((string)null)
         {
         }
-        public Throwable(Throwable cause):base(cause == null ? null : cause.ToString(),cause)
+        public Throwable(Throwable cause) : base(cause == null ? null : cause.ToString(), cause)
         {
             this.cause = cause;
         }
@@ -25,7 +21,7 @@ namespace java.lang
             this.trace = System.Environment.StackTrace;
         }
 
-        public Throwable(string message,Throwable cause) : base()
+        public Throwable(string message, Throwable cause) : base()
         {
             this.cause = cause;
             this.message = message;
@@ -34,8 +30,9 @@ namespace java.lang
 
         public Throwable GetCause()
         {
-            lock (this) { 
-               return (cause == this ? null : cause);
+            lock (this)
+            {
+                return (cause == this ? null : cause);
             }
         }
 

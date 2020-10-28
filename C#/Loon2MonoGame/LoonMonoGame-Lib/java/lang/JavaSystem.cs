@@ -1,6 +1,5 @@
 ﻿using loon;
 using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace java.lang
@@ -23,7 +22,7 @@ namespace java.lang
         {
             Encoding encode;
 
-           if ("ASCII".Equals(e))
+            if ("ASCII".Equals(e))
             {
                 encode = Encoding.ASCII;
             }
@@ -34,7 +33,8 @@ namespace java.lang
             else if ("Unicode".Equals(e))
             {
                 encode = Encoding.Unicode;
-            }else if ("Default".Equals(e))
+            }
+            else if ("Default".Equals(e))
             {
                 encode = Encoding.Default;
             }
@@ -45,7 +45,7 @@ namespace java.lang
             return encode;
         }
 
-        public static byte[] GetBytes(String e,string v)
+        public static byte[] GetBytes(String e, string v)
         {
             return GetEncoding(e).GetBytes(v);
         }
@@ -80,7 +80,7 @@ namespace java.lang
             return GetProperty("");
         }
 
-            public static String GetProperty(string key, string def)
+        public static String GetProperty(string key, string def)
         {
             string result = Environment.GetEnvironmentVariable(key);
             if (result != null && result.Length > 0)
@@ -173,35 +173,35 @@ namespace java.lang
         }
 
         public static int CastToInt(double a)
-        {   
+        {
             if (System.Double.IsNaN(a))
             {
                 return 0;
             }
             else if (a >= 0)
-            { 
+            {
                 if (a > 2147483647) { return 2147483647; }
                 return (int)System.Math.Floor(a);
             }
             else
-            { 
+            {
                 if (a < -2147483648) { return -2147483648; }
                 return (int)System.Math.Ceiling(a);
             }
         }
         public static long CastToLong(double a)
-        {  
+        {
             if (System.Double.IsNaN(a))
             {
                 return 0;
             }
             else if (a >= 0)
-            { 
+            {
                 if (a > 9223372036854775807) { return 9223372036854775807; }
                 return (long)System.Math.Floor(a);
             }
             else
-            { 
+            {
                 if (a < -9223372036854775808) { return -9223372036854775808; }
                 return (long)System.Math.Ceiling(a);
             }

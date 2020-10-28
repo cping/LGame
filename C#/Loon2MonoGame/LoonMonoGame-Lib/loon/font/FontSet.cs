@@ -2,15 +2,15 @@
 
 namespace loon.font
 {
-	public interface FontSet<T>
-	{
+    public interface FontSet<T>
+    {
 
-		 T SetFont(IFont font);
+        T SetFont(IFont font);
 
-		 IFont GetFont();
+        IFont GetFont();
 
-		 T SetFontColor(LColor color);
+        T SetFontColor(LColor color);
 
-		 LColor GetFontColor();
-	}
+        LColor GetFontColor();
+    }
 }

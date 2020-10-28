@@ -1,7 +1,4 @@
-﻿using java.lang;
-using loon.utils;
-
-namespace java.lang
+﻿namespace java.lang
 {
     public static class StringExtensions
     {
@@ -9,7 +6,7 @@ namespace java.lang
         {
             return new JavaString(str).GetBytes();
         }
-        public static byte[] GetBytes(this string str,string encoding)
+        public static byte[] GetBytes(this string str, string encoding)
         {
             return new JavaString(str).GetBytes(encoding);
         }
@@ -248,7 +245,7 @@ namespace java.lang
             }
             while (srcBegin < srcEnd)
             {
-                dst[dstBegin++] = CharAt(str,srcBegin++);
+                dst[dstBegin++] = CharAt(str, srcBegin++);
             }
         }
 

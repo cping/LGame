@@ -2,43 +2,43 @@
 
 namespace loon.geom
 {
-	public class IntValue
-	{
+    public class IntValue
+    {
 
-		private int value;
+        private int value;
 
-		public IntValue(): this(0)
-		{
-			
-		}
+        public IntValue() : this(0)
+        {
 
-		public IntValue(int v)
-		{
-			this.Set(v);
-		}
+        }
 
-		public IntValue Set(int v)
-		{
-			this.value = v;
-			return this;
-		}
+        public IntValue(int v)
+        {
+            this.Set(v);
+        }
 
-		public int Get()
-		{
-			return Result();
-		}
+        public IntValue Set(int v)
+        {
+            this.value = v;
+            return this;
+        }
 
-		public int Result()
-		{
-			return value;
-		}
+        public int Get()
+        {
+            return Result();
+        }
 
-		
-		public override string ToString()
-		{
-			return JavaSystem.Str(value);
-		}
+        public int Result()
+        {
+            return value;
+        }
 
-	}
+
+        public override string ToString()
+        {
+            return JavaSystem.Str(value);
+        }
+
+    }
 
 }

@@ -1,8 +1,8 @@
 ﻿namespace loon
 {
-	public enum VerticalAlign
-	{
-		TOP, CENTER, BOTTOM
-	}
+    public enum VerticalAlign
+    {
+        TOP, CENTER, BOTTOM
+    }
 
 }

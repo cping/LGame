@@ -260,8 +260,8 @@ namespace java.io
 
         public string ReadLine()
         {
-            int num=0;
-            int num2=0;
+            int num = 0;
+            int num2 = 0;
             StringBuilder builder = new StringBuilder(80);
             bool flag = false;
             while (true)

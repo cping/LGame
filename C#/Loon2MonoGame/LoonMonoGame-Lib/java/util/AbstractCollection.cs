@@ -54,7 +54,7 @@ namespace java.util
             return true;
         }
 
-       
+
         public virtual bool Remove(V o)
         {
             java.util.Iterator<V> i = Iterator();
@@ -105,7 +105,7 @@ namespace java.util
                 }
             }
             return didremove;
-        }  
+        }
 
         public virtual bool IsEmpty()
         {

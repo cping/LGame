@@ -1,6 +1,4 @@
-﻿using java.io;
-
-namespace java.lang
+﻿namespace java.lang
 {
     public interface Appendable
     {

@@ -1,6 +1,6 @@
 ﻿namespace java.util
 {
-    public class HashMapImpl<K,V> : Map<K, V>
+    public class HashMapImpl<K, V> : Map<K, V>
     {
         internal readonly System.Collections.Generic.Dictionary<K, V> data;
         private bool hasNullKey;
@@ -49,7 +49,7 @@
 
         public override bool Equals(object o)
         {
-            if (o == null || !(o is Map<K,V>)) { return false; }
+            if (o == null || !(o is Map<K, V>)) { return false; }
             Map<K, V> m = (Map<K, V>)o;
             if (Size() != m.Size()) { return false; }
             for (Iterator<K> it = KeySet().Iterator(); it.HasNext();)
@@ -91,7 +91,7 @@
 
         public virtual Set<K> KeySet()
         {
-            return new HashMapKeyView<K,V>(this);
+            return new HashMapKeyView<K, V>(this);
         }
 
         public virtual V Put(K key, V value)
@@ -112,7 +112,7 @@
             }
         }
 
-        public virtual void PutAll(Map<K,V> m)
+        public virtual void PutAll(Map<K, V> m)
         {
             for (Iterator<K> it = m.KeySet().Iterator(); it.HasNext();)
             {
@@ -176,17 +176,17 @@
 
         public virtual Collection<V> Values()
         {
-            return new HashMapValueView<K,V>(this);
+            return new HashMapValueView<K, V>(this);
         }
 
         public virtual V GetOrDefault(K key, V def)
         {
-            return java.util.Map_Java<K,V>.GetOrDefault(this, key, def);
+            return java.util.Map_Java<K, V>.GetOrDefault(this, key, def);
         }
 
         public virtual void ForEach(java.util.function.BiConsumer biconsumer)
         {
-            java.util.Map_Java<K,V>.ForEach(this, biconsumer);
+            java.util.Map_Java<K, V>.ForEach(this, biconsumer);
         }
     }
 
@@ -211,7 +211,7 @@
 
         public override bool Equals(object o)
         {
-            if (o == null || !(o is HashMapKeyView<K,V>)) { return false; }
+            if (o == null || !(o is HashMapKeyView<K, V>)) { return false; }
             HashMapKeyView<K, V> c = (HashMapKeyView<K, V>)o;
             if (Size() != c.Size())
             {
@@ -237,7 +237,7 @@
 
         public override Iterator<K> Iterator()
         {
-            return new HashMapKeyIterator<K,V>(map);
+            return new HashMapKeyIterator<K, V>(map);
         }
 
         public override bool Remove(K o)
@@ -254,10 +254,10 @@
         {
             return map.Size();
         }
-    
+
     }
 
-    class HashMapValueView<K,V> : AbstractCollection<V>
+    class HashMapValueView<K, V> : AbstractCollection<V>
     {
         private readonly HashMapImpl<K, V> map;
 
@@ -273,7 +273,7 @@
 
         public override Iterator<V> Iterator()
         {
-            return new HashMapValueIterator<K,V>(map);
+            return new HashMapValueIterator<K, V>(map);
         }
 
         public override int Size()
@@ -283,7 +283,7 @@
 
     }
 
-    class HashMapValueIterator<K,V> : Iterator<V>, Enumeration<V>
+    class HashMapValueIterator<K, V> : Iterator<V>, Enumeration<V>
     {
         private readonly HashMapImpl<K, V> map;
         private readonly K[] keys;

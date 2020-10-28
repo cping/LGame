@@ -1,11 +1,13 @@
 ﻿using java.lang;
 using java.util;
 using java.util.function;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace loon.utils
 {
 
-    public class TArray<T> : Iterable<T>, IArray
+    public class TArray<T> : Iterable<T>, IArray, ICollection<T>, IEnumerable<T>
     {
 
 
@@ -728,6 +730,11 @@ namespace loon.utils
 
 
         private ArrayIterable<T> iterable;
+
+        public int Count => throw new System.NotImplementedException();
+
+        public bool IsReadOnly => throw new System.NotImplementedException();
+
         public Iterator<T> Iterator()
         {
             if (iterable == null)
@@ -824,6 +831,30 @@ namespace loon.utils
         public int Size()
         {
             return size;
+        }
+
+        void ICollection<T>.Add(T item)
+        {
+            Add(item);
+        }
+
+        public void CopyTo(T[] array, int arrayIndex)
+        {
+            T[] localArray = this.items;
+            for (int i = 0; i < this.Count; i++)
+            {
+                array[i] = localArray[i];
+            }
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            return new IEnumeratorAdapter<T>(this.Iterator());
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

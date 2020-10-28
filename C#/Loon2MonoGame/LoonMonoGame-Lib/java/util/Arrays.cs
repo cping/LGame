@@ -1,11 +1,9 @@
 namespace java.util
 {
 
+    using java.lang;
     using System;
     using System.Collections.Generic;
-    using System.Linq;
-    using System.Collections;
-    using java.lang;
 
     public class Arrays
     {
@@ -75,7 +73,7 @@ namespace java.util
                 int readtmppos = 0;
                 int readpart2 = start + halve;
                 int writepos = start;
- 
+
                 while (readtmppos < halve)
                 {
                     if (readpart2 >= start + len)

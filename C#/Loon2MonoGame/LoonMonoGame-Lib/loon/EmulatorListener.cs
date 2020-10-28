@@ -1,43 +1,39 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace loon
+﻿namespace loon
 {
-	public interface EmulatorListener
-	{
+    public interface EmulatorListener
+    {
 
-		 void OnUpClick();
+        void OnUpClick();
 
-		 void OnLeftClick();
+        void OnLeftClick();
 
-		 void OnRightClick();
+        void OnRightClick();
 
-		 void OnDownClick();
+        void OnDownClick();
 
-		 void OnTriangleClick();
+        void OnTriangleClick();
 
-		 void OnSquareClick();
+        void OnSquareClick();
 
-		 void OnCircleClick();
+        void OnCircleClick();
 
-		 void OnCancelClick();
+        void OnCancelClick();
 
-		 void UnUpClick();
+        void UnUpClick();
 
-		 void UnLeftClick();
+        void UnLeftClick();
 
-		 void UnRightClick();
+        void UnRightClick();
 
-		 void UnDownClick();
+        void UnDownClick();
 
-		 void UnTriangleClick();
+        void UnTriangleClick();
 
-		 void UnSquareClick();
+        void UnSquareClick();
 
-		 void UnCircleClick();
+        void UnCircleClick();
 
-		 void UnCancelClick();
+        void UnCancelClick();
 
-	}
+    }
 }

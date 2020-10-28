@@ -28,7 +28,7 @@ namespace loon.geom
 
         protected Triangle triangle;
 
-	    protected bool trianglesDirty;
+        protected bool trianglesDirty;
 
         public Shape()
         {

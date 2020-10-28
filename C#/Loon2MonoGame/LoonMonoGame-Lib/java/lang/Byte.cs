@@ -1,5 +1,5 @@
-namespace java.lang 
-{ 
+namespace java.lang
+{
     public class Byte : Number
     {
         private readonly sbyte value;
@@ -8,33 +8,33 @@ namespace java.lang
         public const sbyte MAX_VALUE_JAVA = 127;
 
         public Byte(sbyte v)
-        {   
+        {
             value = v;
         }
 
         public override bool Equals(object o)
-        {   
+        {
             if (o == null || !(o is Byte)) return false;
             return ((Byte)o).value == value;
         }
 
         public override int GetHashCode()
-        {   
-            return (int) value;
+        {
+            return (int)value;
         }
 
         public override string ToString()
-        {   
+        {
             return Byte.ToString(value);
         }
-    
+
         public static string ToString(sbyte b)
-        {   
+        {
             return b.ToString();
         }
 
         public static Byte ValueOf(sbyte b)
-        {   
+        {
             return new Byte(b);
         }
 

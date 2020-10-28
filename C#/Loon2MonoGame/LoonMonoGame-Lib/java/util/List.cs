@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace java.util
+﻿namespace java.util
 {
     public interface List<V> : Collection<V>
     {
- 
+
         void Add(int index, V element);
 
         bool AddAll(int index, Collection<V> c);

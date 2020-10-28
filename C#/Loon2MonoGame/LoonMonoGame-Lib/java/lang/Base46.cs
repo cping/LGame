@@ -1,7 +1,7 @@
 ﻿namespace java.lang
 {
     public class Base46
-{
+    {
         private Base46()
         {
         }

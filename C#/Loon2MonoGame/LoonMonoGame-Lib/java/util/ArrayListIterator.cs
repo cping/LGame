@@ -1,11 +1,10 @@
-using java.util;
 using System;
 using System.Collections;
 
 namespace java.util
 {
 
-    public class ArrayListIterator<V>:IListIterator<V>, IRemoveableIterator<V>, Iterator<V>
+    public class ArrayListIterator<V> : IListIterator<V>, IRemoveableIterator<V>, Iterator<V>
     {
         private int index;
         private readonly IList list;

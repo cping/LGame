@@ -1,12 +1,12 @@
 ﻿namespace loon.utils
 {
-	public abstract class HeapNode
-	{
+    public abstract class HeapNode
+    {
 
-		public float h;
-		public float g;
-		public float f;
+        public float h;
+        public float g;
+        public float f;
 
-	}
+    }
 
 }

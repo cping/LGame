@@ -113,7 +113,7 @@ namespace java.io
 
         public void Write(byte[] buffer)
         {
-             Write(buffer, 0, buffer.Length);
+            Write(buffer, 0, buffer.Length);
         }
 
         public void Write(byte[] buffer, int offset, int count)

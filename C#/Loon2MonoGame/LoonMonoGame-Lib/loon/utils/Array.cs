@@ -20,10 +20,12 @@ namespace loon.utils
     public class Array<T> : IArray, LRelease
     {
 
-        public static Array<T> At() {
+        public static Array<T> At()
+        {
             return new Array<T>();
         }
-        public static Array<T> At(Array<T> data) {
+        public static Array<T> At(Array<T> data)
+        {
             return new Array<T>(data);
         }
 
@@ -652,7 +654,6 @@ namespace loon.utils
             this._items.next = this._items;
             this._items.previous = this._items;
         }
-
 
         public int Size()
         {

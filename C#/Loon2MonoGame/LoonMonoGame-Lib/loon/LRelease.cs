@@ -1,7 +1,7 @@
 ﻿namespace loon
 {
-	public interface LRelease
-	{
-		void Close();
-	}
+    public interface LRelease
+    {
+        void Close();
+    }
 }

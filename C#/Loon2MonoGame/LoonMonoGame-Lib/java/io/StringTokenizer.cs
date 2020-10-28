@@ -1,14 +1,13 @@
 namespace java.io
 {
     using System;
-    using System.Text;
 
     /// <summary>
     /// ·ÂÐ´JavaÖÐStringTokenizer
     /// </summary>
     public class StringTokenizer
     {
-  
+
         private string delimiters;
         private int position;
         private bool returnDelimiters;
@@ -130,7 +129,7 @@ namespace java.io
                 {
                     if (this.delimiters.IndexOf(this.str[this.position], 0) >= 0)
                     {
-                        return  "" + (this.str[this.position++]);
+                        return "" + (this.str[this.position++]);
                     }
                     this.position++;
                     while (this.position < length)

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Text;
-
-namespace java.lang
+﻿namespace java.lang
 {
     public class JavaString : CharSequence
     {
@@ -20,7 +17,7 @@ namespace java.lang
         {
             this.value = JavaSystem.GetEncoding().GetString(v);
         }
-        public JavaString(string encoding,params byte[] v)
+        public JavaString(string encoding, params byte[] v)
         {
             this.value = JavaSystem.GetEncoding(encoding).GetString(v);
         }

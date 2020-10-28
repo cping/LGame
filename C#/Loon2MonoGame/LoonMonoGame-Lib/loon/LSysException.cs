@@ -2,22 +2,26 @@
 
 namespace loon
 {
-	public class LSysException : RuntimeException
-	{
+    public class LSysException : RuntimeException
+    {
 
-	public LSysException(string message):base(message)
-	{
-	}
+        public LSysException() : this("Loon System Exception !")
+        {
+       
+        }
+        public LSysException(string message) : base(message)
+        {
+        }
 
-	public LSysException(string message, Throwable cause) : base(message, cause)
-	{
+        public LSysException(string message, Throwable cause) : base(message, cause)
+        {
 
-	}
+        }
 
-	public LSysException(string message, int line) :base(message)
-	{
+        public LSysException(string message, int line) : base(message)
+        {
 
-	}
-}
+        }
+    }
 
 }

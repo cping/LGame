@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace java.lang
+﻿namespace java.lang
 {
     public class Math
     {
@@ -159,7 +155,7 @@ namespace java.lang
             {
                 return (long)x;
             }
-  
+
             return (long)System.Math.Floor(x + 0.5);
         }
 

@@ -6,9 +6,11 @@ package loon.utils;
  */
 public class MessageQueue {
 
-	private static class Message {
-		String text;
-		int ticksRemaining;
+	public static class Message {
+		
+		public String text;
+		
+		public int ticksRemaining;
 
 		public Message(String text) {
 			this.text = text;

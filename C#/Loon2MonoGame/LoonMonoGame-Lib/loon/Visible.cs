@@ -1,9 +1,9 @@
 ﻿namespace loon
 {
-	public interface Visible
-	{
-		 bool IsVisible();
+    public interface Visible
+    {
+        bool IsVisible();
 
-		 void SetVisible(bool visible);
-	}
+        void SetVisible(bool visible);
+    }
 }

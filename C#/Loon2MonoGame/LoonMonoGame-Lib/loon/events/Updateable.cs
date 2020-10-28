@@ -1,10 +1,10 @@
 ﻿
 namespace loon.events
 {
-	public interface Updateable
-	{
+    public interface Updateable
+    {
 
-	 void Action(object a);
+        void Action(object a);
 
-	}
+    }
 }

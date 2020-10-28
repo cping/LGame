@@ -148,7 +148,7 @@ namespace java.lang
                         exp -= bit;
                     }
                 }
-   
+
                 if (value < 1.0 && exp - 1 >= -1023)
                 {
                     value *= 2.0;

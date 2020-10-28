@@ -1,9 +1,5 @@
 namespace java.util
 {
-
-    using System;
-    using System.Collections.Generic;
-    using System.Collections;
     using java.lang;
 
     public class LinkedList<V> : AbstractList<V>
