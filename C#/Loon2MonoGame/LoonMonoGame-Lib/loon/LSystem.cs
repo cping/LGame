@@ -72,5 +72,45 @@ namespace loon
 
         // 换行标记
         public readonly static string NL = "\r\n";
+
+
+        public static int Unite(int hashCode, bool value)
+        {
+            int v = value ? 1231 : 1237;
+            return Unite(hashCode, v);
+        }
+
+        public static int Unite(int hashCode, long value)
+        {
+            int v = (int)(value ^ ((long)((ulong)value >> 32)));
+            return Unite(hashCode, v);
+        }
+
+        public static int Unite(int hashCode, float value)
+        {
+            int v = (int)(value);
+            return Unite(hashCode, v);
+        }
+
+        public static int Unite(int hashCode, double value)
+        {
+            long v = (long)(value);
+            return Unite(hashCode, v);
+        }
+
+        public static int Unite(int hashCode, object value)
+        {
+            return Unite(hashCode, value.GetHashCode());
+        }
+
+        public static int Unite(int hashCode, int value)
+        {
+            return 31 * hashCode + value;
+        }
+
+        public static uint Unite(uint hashCode, uint value)
+        {
+            return 31 * hashCode + value;
+        }
     }
 }

@@ -69,8 +69,8 @@ public class ARC4 {
 		}
 	}
 
-	private byte[] key;
-	private byte[] state;
+	private final byte[] key;
+	private final byte[] state;
 	private int x;
 	private int y;
 

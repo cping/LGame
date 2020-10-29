@@ -8,22 +8,22 @@ namespace loon.utils
     public class ArrayByte : IArray, LRelease
     {
 
-        public interface ByteArrayComparator : Comparator<byte[]>
+        public interface ByteArrayComparator : Comparator<sbyte[]>
         {
 
-            int Compare(byte[] buffer1, int offset1, int length1, byte[] buffer2, int offset2,
+            int Compare(sbyte[] buffer1, int offset1, int length1, sbyte[] buffer2, int offset2,
                      int length2);
         }
 
         internal class ByteArrayDataComparator : ByteArrayComparator
         {
 
-            public int Compare(byte[] buffer1, byte[] buffer2)
+            public int Compare(sbyte[] buffer1, sbyte[] buffer2)
             {
                 return Compare(buffer1, 0, buffer1.Length, buffer2, 0, buffer2.Length);
             }
 
-            public int Compare(byte[] buffer1, int offset1, int length1, byte[] buffer2,
+            public int Compare(sbyte[] buffer1, int offset1, int length1, sbyte[] buffer2,
                      int offset2, int length2)
             {
                 if (buffer1 == buffer2 && offset1 == offset2 && length1 == length2)
@@ -44,20 +44,20 @@ namespace loon.utils
                 return length1 - length2;
             }
 
-            public Comparator<byte[]> Reversed()
+            public Comparator<sbyte[]> Reversed()
             {
-                return Comparator_Java<byte[]>.Reversed(this);
+                return Comparator_Java<sbyte[]>.Reversed(this);
             }
 
-            public Comparator<byte[]> ThenComparing(Comparator<byte[]> other)
+            public Comparator<sbyte[]> ThenComparing(Comparator<sbyte[]> other)
             {
-                return Comparator_Java<byte[]>.ThenComparing(this, other);
+                return Comparator_Java<sbyte[]>.ThenComparing(this, other);
             }
         }
 
         private readonly static ByteArrayDataComparator BYTES_COMPARATOR = new ByteArrayDataComparator();
 
-        public static bool CheckHead(byte[] head, byte[] target)
+        public static bool CheckHead(sbyte[] head, sbyte[] target)
         {
             if (head == null || target == null)
             {
@@ -73,27 +73,27 @@ namespace loon.utils
             return BYTES_COMPARATOR;
         }
 
-        public static int Compare(byte[] a, byte[] b)
+        public static int Compare(sbyte[] a, sbyte[] b)
         {
             return GetDefaultByteArrayComparator().Compare(a, b);
         }
 
-        public static byte[] Max(byte[] a, byte[] b)
+        public static sbyte[] Max(sbyte[] a, sbyte[] b)
         {
             return GetDefaultByteArrayComparator().Compare(a, b) > 0 ? a : b;
         }
 
-        public static byte[] Min(byte[] a, byte[] b)
+        public static sbyte[] Min(sbyte[] a, sbyte[] b)
         {
             return GetDefaultByteArrayComparator().Compare(a, b) < 0 ? a : b;
         }
 
-        public static byte[] NullToEmpty(byte[] bytes)
+        public static sbyte[] NullToEmpty(sbyte[] bytes)
         {
-            return bytes == null ? new byte[0] : bytes;
+            return bytes == null ? new sbyte[0] : bytes;
         }
 
-        public static bool IsEmpty(byte[] bytes)
+        public static bool IsEmpty(sbyte[] bytes)
         {
             return bytes == null || bytes.Length == 0;
         }
@@ -179,7 +179,7 @@ namespace loon.utils
 
         public const int LITTLE_ENDIAN = 1;
 
-        private byte[] data;
+        private sbyte[] data;
 
         private int position;
 
@@ -192,7 +192,7 @@ namespace loon.utils
 
         }
 
-        public ArrayByte(int length) : this(new byte[length])
+        public ArrayByte(int length) : this(new sbyte[length])
         {
 
         }
@@ -207,7 +207,7 @@ namespace loon.utils
             Reset();
         }
 
-        public ArrayByte(byte[] data)
+        public ArrayByte(sbyte[] data)
         {
             this.data = data;
             Reset();
@@ -225,12 +225,12 @@ namespace loon.utils
             byteOrder = type;
         }
 
-        public byte Get(int idx)
+        public sbyte Get(int idx)
         {
             return data[idx];
         }
 
-        public byte Get()
+        public sbyte Get()
         {
             return data[position++];
         }
@@ -245,10 +245,10 @@ namespace loon.utils
             this.byteOrder = byteOrder;
         }
 
-        public byte[] ReadByteArray(int readLength)
+        public sbyte[] ReadByteArray(int readLength)
         {
-            byte[]
-        readBytes = new byte[readLength];
+            sbyte[]
+        readBytes = new sbyte[readLength];
             Read(readBytes);
             return readBytes;
         }
@@ -262,8 +262,8 @@ namespace loon.utils
         {
             if (length != data.Length)
             {
-                byte[] oldData = data;
-                data = new byte[length];
+                sbyte[] oldData = data;
+                data = new sbyte[length];
                 JavaSystem.Arraycopy(oldData, 0, data, 0, MathUtils.Min(oldData.Length, length));
                 if (position > length)
                 {
@@ -310,18 +310,18 @@ namespace loon.utils
             return data[position++] & 0xff;
         }
 
-        public byte ReadByte()
+        public sbyte ReadByte()
         {
             CheckAvailable(1);
             return data[position++];
         }
 
-        public int Read(byte[] buffer)
+        public int Read(sbyte[] buffer)
         {
             return Read(buffer, 0, buffer.Length);
         }
 
-        public int Read(byte[] buffer, int offset, int length)
+        public int Read(sbyte[] buffer, int offset, int length)
         {
             if (length == 0)
             {
@@ -342,7 +342,7 @@ namespace loon.utils
                 return 0;
             }
             int size = (int)MathUtils.Min(2048, remaining);
-            byte[] skipBuffer = new byte[size];
+            sbyte[] skipBuffer = new sbyte[size];
             while (remaining > 0)
             {
                 nr = Read(skipBuffer, 0, (int)MathUtils.Min(size, remaining));
@@ -357,7 +357,8 @@ namespace loon.utils
 
         public void Read(OutputStream outs)
         {
-            outs.Write(data, position, data.Length - position);
+            byte[] bytes = GetUNBytes();
+            outs.Write(bytes, position, data.Length - position);
             position = data.Length;
         }
 
@@ -381,7 +382,7 @@ namespace loon.utils
 
         public char ReadChar()
         {
-            return Convert.ToChar(Read2Byte());
+            return (char)(Read2Byte());
         }
 
         public short ReadShort()
@@ -529,7 +530,7 @@ namespace loon.utils
             }
         }
 
-        public void WriteByte(byte v)
+        public void WriteByte(sbyte v)
         {
             EnsureCapacity(1);
             data[position++] = v;
@@ -538,15 +539,15 @@ namespace loon.utils
         public void WriteByte(int v)
         {
             EnsureCapacity(1);
-            data[position++] = (byte)v;
+            data[position++] = (sbyte)v;
         }
 
-        public void Write(byte[] buffer)
+        public void Write(sbyte[] buffer)
         {
             Write(buffer, 0, buffer.Length);
         }
 
-        public void Write(byte[] buffer, int offset, int length)
+        public void Write(sbyte[] buffer, int offset, int length)
         {
             if (length == 0)
             {
@@ -572,17 +573,17 @@ namespace loon.utils
             EnsureCapacity(2);
             if (byteOrder == LITTLE_ENDIAN)
             {
-                data[position++] = (byte)(v & 0xff);
-                data[position++] = (byte)((v >> 8) & 0xff);
+                data[position++] = (sbyte)(v & 0xff);
+                data[position++] = (sbyte)((v >> 8) & 0xff);
             }
             else
             {
-                data[position++] = (byte)((v >> 8) & 0xff);
-                data[position++] = (byte)(v & 0xff);
+                data[position++] = (sbyte)((v >> 8) & 0xff);
+                data[position++] = (sbyte)(v & 0xff);
             }
         }
 
-        public void WriteInt(byte[] ba, int start, int len)
+        public void WriteInt(sbyte[] ba, int start, int len)
         {
             int end = start + len;
             for (int i = start; i < end; i++)
@@ -596,17 +597,17 @@ namespace loon.utils
             EnsureCapacity(4);
             if (byteOrder == LITTLE_ENDIAN)
             {
-                data[position++] = (byte)(v & 0xff);
-                data[position++] = (byte)((v >> 8) & 0xff);
-                data[position++] = (byte)((v >> 16) & 0xff);
-                data[position++] = (byte)((int)((uint)v >> 24));
+                data[position++] = (sbyte)(v & 0xff);
+                data[position++] = (sbyte)((v >> 8) & 0xff);
+                data[position++] = (sbyte)((v >> 16) & 0xff);
+                data[position++] = (sbyte)((int)((uint)v >> 24));
             }
             else
             {
-                data[position++] = (byte)((int)((uint)v >> 24));
-                data[position++] = (byte)((v >> 16) & 0xff);
-                data[position++] = (byte)((v >> 8) & 0xff);
-                data[position++] = (byte)(v & 0xff);
+                data[position++] = (sbyte)((int)((uint)v >> 24));
+                data[position++] = (sbyte)((v >> 16) & 0xff);
+                data[position++] = (sbyte)((v >> 8) & 0xff);
+                data[position++] = (sbyte)(v & 0xff);
             }
         }
 
@@ -680,12 +681,16 @@ namespace loon.utils
             }
         }
 
-        public byte[] GetData()
+        public sbyte[] GetData()
         {
             return data;
         }
+        public byte[] GetUNBytes()
+        {
+            return CharUtils.ToBytes(GetBytes());
+        }
 
-        public byte[] GetBytes()
+        public sbyte[] GetBytes()
         {
             Truncate();
             return data;
@@ -727,7 +732,7 @@ namespace loon.utils
 
         public string ToUTF8String()
         {
-            return new JavaString(GetData()).ToString();
+            return new JavaString(GetUNBytes()).ToString();
         }
 
         public int Size()
@@ -739,7 +744,7 @@ namespace loon.utils
         public void Clear()
         {
             this.Reset();
-            this.data = new byte[Length()];
+            this.data = new sbyte[Length()];
         }
 
 
@@ -751,7 +756,7 @@ namespace loon.utils
 
         public override string ToString()
         {
-            return new JavaString(Base64Coder.Encode(data)).ToString();
+            return new JavaString(StringUtils.GetSBytesToBytes(Base64Coder.Encode(data))).ToString();
         }
 
         public override int GetHashCode()

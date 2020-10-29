@@ -16,7 +16,7 @@ namespace java.io
             this.line = new System.Text.StringBuilder();
             this.redirection = null;
         }
-        private void FinishLine()       // must be called with a lock on 'line'
+        private void FinishLine()
         {
             string l = line.ToString();
             line.Clear();
@@ -26,15 +26,22 @@ namespace java.io
             }
             else if (iserr)
             {
-                System.Console.Error.WriteLine(l);
+#if DEBUG
+                JavaSystem.DebugWrite(l);
+#else
+                 System.Console.Error.WriteLine(l);
+#endif
+
             }
             else
             {
+#if DEBUG
+                JavaSystem.DebugWrite(l);
+#else
                 System.Console.WriteLine(l);
+#endif
             }
         }
-
-        // public interface is thread-safe
 
         public void Print(bool b)
         {
@@ -129,8 +136,6 @@ namespace java.io
             }
         }
 
-        // installation hook to re-direct the output to some
-        // arbitrary location    
         public void Redirect(LineConsumer r)
         {
             lock (line)

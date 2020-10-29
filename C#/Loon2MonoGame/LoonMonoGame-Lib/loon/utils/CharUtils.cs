@@ -2,7 +2,7 @@
 
 namespace loon.utils
 {
-    class CharUtils
+    public class CharUtils
     {
 
         public readonly static char MIN_HIGH_SURROGATE = '\uD800';
@@ -24,6 +24,63 @@ namespace loon.utils
                 'e', 'f' };
         }
 
+        public static sbyte[] ToSBytes(params byte[] bytes)
+        {
+            return (sbyte[])(System.Array)bytes;
+        }
+
+        public static byte[] ToBytes(params sbyte[] bytes)
+        {
+            return (byte[])(System.Array)bytes;
+        }
+
+        public static sbyte ToSByte(byte b)
+        {
+            return (sbyte)b;
+        }
+
+        public static sbyte GetByteToSByte(byte b)
+        {
+            sbyte result;
+            if (b > 127)
+            {
+                result = (sbyte)(b - 256);
+            }
+            else
+            {
+                result = (sbyte)b;
+            }
+            return result;
+        }
+
+        public static byte ToByte(sbyte b)
+        {
+            return unchecked((byte)b);
+        }
+
+        /// <summary>
+        /// 上下这两个结果一样,但是上面的用了C#系统转换,这个是算出来……
+        /// </summary>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static byte GetSByteToByte(sbyte b)
+        {
+            byte result;
+            if (b < 0)
+            {
+                result = (byte)(b + 256);
+            }
+            else
+            {
+                result = (byte)b;
+            }
+            return result;
+        }
+
+        public static char ToChar(sbyte b)
+        {
+            return (char)(b & 0xFF);
+        }
 
         public static char ToChar(byte b)
         {
@@ -170,6 +227,11 @@ namespace loon.utils
         }
 
         public static long B2iu(byte b)
+        {
+            return b < 0 ? b & 0x7F + 128 : b;
+        }
+
+        public static long B2iu(sbyte b)
         {
             return b < 0 ? b & 0x7F + 128 : b;
         }

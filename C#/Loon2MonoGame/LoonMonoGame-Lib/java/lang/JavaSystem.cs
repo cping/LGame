@@ -9,8 +9,8 @@ namespace java.lang
     /// </summary>
     public class JavaSystem
     {
-        public static readonly java.io.PrintStream out_f = new java.io.PrintStream(false);
-        public static readonly java.io.PrintStream err_f = new java.io.PrintStream(true);
+        public static readonly java.io.PrintStream Out = new java.io.PrintStream(false);
+        public static readonly java.io.PrintStream Err = new java.io.PrintStream(true);
         public static readonly long startTicks_f = System.DateTimeOffset.Now.Ticks;
 
         public static Encoding GetEncoding()
@@ -62,7 +62,7 @@ namespace java.lang
 
         public static void DebugWrite(string text)
         {
-            System.Diagnostics.Debug.WriteLine("[" + System.DateTime.Now.ToLocalTime().ToString() + "] " + text);
+            System.Diagnostics.Debug.WriteLine(text);
         }
 
         public static void Arraycopy(object src, int srcPos, object dest, int destPos, int length)

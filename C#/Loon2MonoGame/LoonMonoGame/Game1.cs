@@ -1,6 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using java.lang;
+using loon.utils;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 
 namespace LoonMonoGame
 {
@@ -14,10 +17,15 @@ namespace LoonMonoGame
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+
+            //1123418112
+
+            JavaSystem.Out.Println(NumberUtils.FloatToIntBits(123f));
         }
 
         protected override void Initialize()
         {
+
             // TODO: Add your initialization logic here
 
             base.Initialize();

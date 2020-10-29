@@ -1,28 +1,23 @@
 ﻿using java.lang;
-using java.util;
 using loon.events;
 
 namespace loon.utils
 {
-	public class IntArray : IArray
+
+	public class BoolArray : IArray
 	{
 
-	public static IntArray Range(int start, int end)
+	public static BoolArray Range(int start, int end, bool value)
 	{
-		IntArray array = new IntArray(end - start);
+		BoolArray array = new BoolArray(end - start);
 		for (int i = start; i < end; i++)
 		{
-			array.Add(i);
+			array.Add(value);
 		}
 		return array;
 	}
 
-	public static IntArray RangeRandom(int begin, int end)
-	{
-		return RangeRandom(begin, end, (end - begin));
-	}
-
-	public static IntArray RangeRandom(int begin, int end, int size)
+	public static BoolArray RangeRandom(int begin, int end)
 	{
 		if (begin > end)
 		{
@@ -30,71 +25,60 @@ namespace loon.utils
 			begin = end;
 			end = temp;
 		}
-		if ((end - begin) < size)
-		{
-			throw new LSysException("Size out Range between begin and end !");
-		}
-		int[] randSeed = new int[end - begin];
-		for (int i = begin; i < end; i++)
-		{
-			randSeed[i - begin] = i;
-		}
-		int[] intArrays = new int[size];
+		int size = end - begin;
+		bool[] boolArrays = new bool[size];
 		for (int i = 0; i < size; i++)
 		{
-			int len = randSeed.Length - i - 1;
-			int j = MathUtils.Random(len);
-			intArrays[i] = randSeed[j];
-			randSeed[j] = randSeed[len];
+			boolArrays[i] = MathUtils.RandomBoolean();
 		}
-		return new IntArray(intArrays);
+		return new BoolArray(boolArrays);
 	}
 
-	public int[] items;
+	public bool[] items;
 	public int length;
 	public bool ordered;
 
-	public IntArray() : this(true, CollectionUtils.INITIAL_CAPACITY)
-	{
-
-	}
-
-	public IntArray(int capacity) : this(true, capacity)
-	{
-	
-	}
-
-	public IntArray(bool ordered, int capacity)
-	{
-		this.ordered = ordered;
-		items = new int[capacity];
-	}
-
-	public IntArray(IntArray array)
-	{
-		this.ordered = array.ordered;
-		length = array.length;
-		items = new int[length];
-		JavaSystem.Arraycopy(array.items, 0, items, 0, length);
-	}
-
-	public IntArray(int[] array):this(true, array, 0, array.Length)
+	public BoolArray(): this(true, CollectionUtils.INITIAL_CAPACITY)
 	{
 		
 	}
 
-	public IntArray(bool ordered, int[] array, int startIndex, int count): this(ordered, count)
+	public BoolArray(int capacity): this(true, capacity)
+	{
+		
+	}
+
+	public BoolArray(bool ordered, int capacity)
+	{
+		this.ordered = ordered;
+		items = new bool[capacity];
+	}
+
+	public BoolArray(BoolArray array)
+	{
+		this.ordered = array.ordered;
+		length = array.length;
+		items = new bool[length];
+		JavaSystem.Arraycopy(array.items, 0, items, 0, length);
+	}
+
+	public BoolArray(bool[] array): this(true, array, 0, array.Length)
+	{
+		
+	}
+
+	public BoolArray(bool ordered, bool[] array, int startIndex, int count): this(ordered, count)
 	{
 		length = count;
 		JavaSystem.Arraycopy(array, startIndex, items, 0, count);
 	}
 
-	public void Unshift(int value)
+	public void Unshift(bool value)
 	{
 		if (length > 0)
 		{
-			int[] items = this.items;
-			int[] newItems = new int[length + 1];
+			bool[] items = this.items;
+			bool[] newItems = new bool[length + 1];
 			newItems[0] = value;
 			JavaSystem.Arraycopy(items, 0, newItems, 1, length);
 			this.length = newItems.Length;
@@ -106,14 +90,14 @@ namespace loon.utils
 		}
 	}
 
-	public void Push(int value)
+	public void Push(bool value)
 	{
 		Add(value);
 	}
 
-	public void Add(int value)
+	public void Add(bool value)
 	{
-		int[] items = this.items;
+		bool[] items = this.items;
 		if (length == items.Length)
 		{
 			items = Relength(MathUtils.Max(8, (int)(length * 1.75f)));
@@ -121,12 +105,12 @@ namespace loon.utils
 		items[length++] = value;
 	}
 
-	public void AddAll(IntArray array)
+	public void AddAll(BoolArray array)
 	{
 		AddAll(array, 0, array.length);
 	}
 
-	public void AddAll(IntArray array, int offset, int length)
+	public void AddAll(BoolArray array, int offset, int length)
 	{
 		if (offset + length > array.length)
 			throw new LSysException(
@@ -134,14 +118,14 @@ namespace loon.utils
 		AddAll(array.items, offset, length);
 	}
 
-	public void AddAll(params int[] array)
+	public void AddAll(params bool[] array)
 	{
 		AddAll(array, 0, array.Length);
 	}
 
-	public void AddAll(int[] array, int offset, int len)
+	public void AddAll(bool[] array, int offset, int len)
 	{
-		int[] items = this.items;
+		bool[] items = this.items;
 		int lengthNeeded = this.length + len;
 		if (lengthNeeded > items.Length)
 		{
@@ -151,23 +135,23 @@ namespace loon.utils
 		this.length += len;
 	}
 
-	public int Get(int index)
+	public bool Get(int index)
 	{
 		if (index >= length)
 		{
-			return 0;
+			return false;
 		}
 		return items[index];
 	}
 
-	public void Set(int index, int value)
+	public void Set(int index, bool value)
 	{
 		if (index >= length)
 		{
 			int size = length;
 			for (int i = size; i < index + 1; i++)
 			{
-				Add(0);
+				Add(false);
 			}
 			items[index] = value;
 			return;
@@ -175,27 +159,27 @@ namespace loon.utils
 		items[index] = value;
 	}
 
-	public void Incr(int index, int value)
+	public void Incr(int index, bool value)
 	{
 		if (index >= length)
 			throw new LSysException("index can't be >= length: " + index + " >= " + length);
-		items[index] += value;
+		items[index] = !value;
 	}
 
-	public void Mul(int index, int value)
+	public void Mul(int index, bool value)
 	{
 		if (index >= length)
 			throw new LSysException("index can't be >= length: " + index + " >= " + length);
-		items[index] *= value;
+		items[index] |= value;
 	}
 
-	public void Insert(int index, int value)
+	public void Insert(int index, bool value)
 	{
 		if (index > length)
 		{
 			throw new LSysException("index can't be > length: " + index + " > " + length);
 		}
-		int[] items = this.items;
+		bool[] items = this.items;
 		if (length == items.Length)
 			items = Relength(MathUtils.Max(8, (int)(length * 1.75f)));
 		if (ordered)
@@ -212,43 +196,43 @@ namespace loon.utils
 			throw new LSysException("first can't be >= length: " + first + " >= " + length);
 		if (second >= length)
 			throw new LSysException("second can't be >= length: " + second + " >= " + length);
-		int[] items = this.items;
-		int firstValue = items[first];
+		bool[] items = this.items;
+		bool firstValue = items[first];
 		items[first] = items[second];
 		items[second] = firstValue;
 	}
 
-	public bool Contains(int value)
+	public bool Contains(bool value)
 	{
 		int i = length - 1;
-		int[] items = this.items;
+		bool[] items = this.items;
 		while (i >= 0)
 			if (items[i--] == value)
 				return true;
 		return false;
 	}
 
-	public int IndexOf(int value)
+	public int IndexOf(bool value)
 	{
-		int[] items = this.items;
+		bool[] items = this.items;
 		for (int i = 0, n = length; i < n; i++)
 			if (items[i] == value)
 				return i;
 		return -1;
 	}
 
-	public int LastIndexOf(int value)
+	public int LastIndexOf(bool value)
 	{
-		int[] items = this.items;
+		bool[] items = this.items;
 		for (int i = length - 1; i >= 0; i--)
 			if (items[i] == value)
 				return i;
 		return -1;
 	}
 
-	public bool RemoveValue(int value)
+	public bool RemoveValue(bool value)
 	{
-		int[] items = this.items;
+		bool[] items = this.items;
 		for (int i = 0, n = length; i < n; i++)
 		{
 			if (items[i] == value)
@@ -260,14 +244,14 @@ namespace loon.utils
 		return false;
 	}
 
-	public int RemoveIndex(int index)
+	public bool RemoveIndex(int index)
 	{
 		if (index >= length)
 		{
 			throw new LSysException("index can't be >= length: " + index + " >= " + length);
 		}
-		int[] items = this.items;
-		int value = items[index];
+		bool[] items = this.items;
+		bool value = items[index];
 		length--;
 		if (ordered)
 		{
@@ -290,7 +274,7 @@ namespace loon.utils
 		{
 			throw new LSysException("start can't be > end: " + start + " > " + end);
 		}
-		int[] items = this.items;
+		bool[] items = this.items;
 		int count = end - start + 1;
 		if (ordered)
 		{
@@ -305,14 +289,14 @@ namespace loon.utils
 		length -= count;
 	}
 
-	public bool RemoveAll(IntArray array)
+	public bool RemoveAll(BoolArray array)
 	{
 		int length = this.length;
 		int startlength = length;
-		int[] items = this.items;
+		bool[] items = this.items;
 		for (int i = 0, n = array.length; i < n; i++)
 		{
-			int item = array.Get(i);
+			bool item = array.Get(i);
 			for (int ii = 0; ii < length; ii++)
 			{
 				if (item == items[ii])
@@ -326,22 +310,22 @@ namespace loon.utils
 		return length != startlength;
 	}
 
-	public int Pop()
+	public bool Pop()
 	{
 		return items[--length];
 	}
 
-	public int Shift()
+	public bool Shift()
 	{
 		return RemoveIndex(0);
 	}
 
-	public int Peek()
+	public bool Peek()
 	{
 		return items[length - 1];
 	}
 
-	public int First()
+	public bool First()
 	{
 		if (length == 0)
 		{
@@ -355,14 +339,14 @@ namespace loon.utils
 		length = 0;
 	}
 
-	public int[] Shrink()
+	public bool[] Shrink()
 	{
 		if (items.Length != length)
 			Relength(length);
 		return items;
 	}
 
-	public int[] EnsureCapacity(int additionalCapacity)
+	public bool[] EnsureCapacity(int additionalCapacity)
 	{
 		int lengthNeeded = length + additionalCapacity;
 		if (lengthNeeded > items.Length)
@@ -370,56 +354,45 @@ namespace loon.utils
 		return items;
 	}
 
-	protected int[] Relength(int newlength)
+	protected bool[] Relength(int newlength)
 	{
-		int[] newItems = new int[newlength];
-		int[] items = this.items;
+		bool[] newItems = new bool[newlength];
+		bool[] items = this.items;
 		JavaSystem.Arraycopy(items, 0, newItems, 0, MathUtils.Min(length, newItems.Length));
 		this.items = newItems;
 		return newItems;
 	}
 
-	public IntArray Sort()
+	public BoolArray Sort()
 	{
-		Arrays.Sort(items, 0, length);
-		return this;
-	}
-
-	public bool IsSorted(bool order)
-	{
-		int[] arrays = this.items;
-		int orderCount = 0;
-		int temp = -1;
-		int v = order ? Integer.MIN_VALUE_JAVA : Integer.MAX_VALUE_JAVA;
 		for (int i = 0; i < length; i++)
 		{
-			temp = v;
-			v = arrays[i];
-			if (order)
+			bool swap = false;
+			for (int j = 0; j < length - i; j++)
 			{
-				if (temp <= v)
+				if (items[j + 1])
 				{
-					orderCount++;
+					bool temp = items[j + 1];
+					items[j + 1] = items[j];
+					items[j] = temp;
+					swap = true;
 				}
 			}
-			else
+			if (!swap)
 			{
-				if (temp >= v)
-				{
-					orderCount++;
-				}
+				break;
 			}
 		}
-		return orderCount == length;
+		return this;
 	}
 
 	public void Reverse()
 	{
-		int[] items = this.items;
+		bool[] items = this.items;
 		for (int i = 0, lastIndex = length - 1, n = length / 2; i < n; i++)
 		{
 			int ii = lastIndex - i;
-			int temp = items[i];
+			bool temp = items[i];
 			items[i] = items[ii];
 			items[ii] = temp;
 		}
@@ -427,11 +400,11 @@ namespace loon.utils
 
 	public void Shuffle()
 	{
-		int[] items = this.items;
+		bool[] items = this.items;
 		for (int i = length - 1; i >= 0; i--)
 		{
 			int ii = MathUtils.Random(i);
-			int temp = items[i];
+			bool temp = items[i];
 			items[i] = items[ii];
 			items[ii] = temp;
 		}
@@ -443,28 +416,28 @@ namespace loon.utils
 			length = newlength;
 	}
 
-	public int Random()
+	public bool Random()
 	{
 		if (length == 0)
 		{
-			return 0;
+			return false;
 		}
 		return items[MathUtils.Random(0, length - 1)];
 	}
 
-	public IntArray RandomIntArray()
+	public BoolArray RandomBoolArray()
 	{
-		return new IntArray(RandomArrays());
+		return new BoolArray(RandomArrays());
 	}
 
-	public int[] RandomArrays()
+	public bool[] RandomArrays()
 	{
 		if (length == 0)
 		{
-			return new int[0];
+			return new bool[0];
 		}
-		int v = 0;
-		int[] newArrays = CollectionUtils.CopyOf(items, length);
+		bool v = false;
+		bool[] newArrays = CollectionUtils.CopyOf(items, length);
 		for (int i = 0; i < length; i++)
 		{
 			v = Random();
@@ -482,9 +455,9 @@ namespace loon.utils
 		return newArrays;
 	}
 
-	public int[] ToArray()
+	public bool[] ToArray()
 	{
-		int[] array = new int[length];
+		bool[] array = new bool[length];
 		JavaSystem.Arraycopy(items, 0, array, 0, length);
 		return array;
 	}
@@ -493,9 +466,9 @@ namespace loon.utils
 	{
 		if (o == this)
 			return true;
-		if (!(o is IntArray))
+		if (!(o is BoolArray))
 			return false;
-		IntArray array = (IntArray)o;
+		BoolArray array = (BoolArray)o;
 		int n = length;
 		if (n != array.length)
 			return false;
@@ -505,18 +478,17 @@ namespace loon.utils
 		return true;
 	}
 
-
-	static public IntArray With(params int[] array)
+	static public BoolArray With(params bool[] array)
 	{
-		return new IntArray(array);
+		return new BoolArray(array);
 	}
 
-	public IntArray Splice(int begin, int end)
+	public BoolArray Splice(int begin, int end)
 	{
-		IntArray longs = new IntArray(Slice(begin, end));
+		BoolArray longs = new BoolArray(Slice(begin, end));
 		if (end - begin >= length)
 		{
-			items = new int[0];
+			items = new bool[0];
 			length = 0;
 			return longs;
 		}
@@ -527,11 +499,11 @@ namespace loon.utils
 		return longs;
 	}
 
-	public static int[] Slice(int[] array, int begin, int end)
+	public static bool[] Slice(bool[] array, int begin, int end)
 	{
 		if (begin > end)
 		{
-			throw new LSysException("IntArray begin > end");
+			throw new LSysException("BoolArray begin > end");
 		}
 		if (begin < 0)
 		{
@@ -542,49 +514,51 @@ namespace loon.utils
 			end = array.Length + end;
 		}
 		int elements = end - begin;
-		int[] ret = new int[elements];
+		bool[] ret = new bool[elements];
 		JavaSystem.Arraycopy(array, begin, ret, 0, elements);
 		return ret;
 	}
 
-	public static int[] Slice(int[] array, int begin)
+	public static bool[] Slice(bool[] array, int begin)
 	{
 		return Slice(array, begin, array.Length);
 	}
 
-	public IntArray Slice(int size)
+	public BoolArray Slice(int size)
 	{
-		return new IntArray(Slice(this.items, size, this.length));
+		return new BoolArray(Slice(this.items, size, this.length));
 	}
 
-	public IntArray Slice(int begin, int end)
+	public BoolArray Slice(int begin, int end)
 	{
-		return new IntArray(Slice(this.items, begin, end));
+		return new BoolArray(Slice(this.items, begin, end));
 	}
 
-	public static int[] Concat(int[] array, int[] other)
+	public static bool[] Concat(bool[] array, bool[] other)
 	{
 		return Concat(array, array.Length, other, other.Length);
 	}
 
-	public static int[] Concat(int[] array, int alen, int[] other, int blen)
+	public static bool[] Concat(bool[] array, int alen, bool[] other, int blen)
 	{
-		int[] ret = new int[alen + blen];
+		bool[] ret = new bool[alen + blen];
 		JavaSystem.Arraycopy(array, 0, ret, 0, alen);
 		JavaSystem.Arraycopy(other, 0, ret, alen, blen);
 		return ret;
 	}
 
-	public IntArray Concat(IntArray o)
+	public BoolArray Concat(BoolArray o)
 	{
-		return new IntArray(Concat(this.items, this.length, o.items, o.length));
+		return new BoolArray(Concat(this.items, this.length, o.items, o.length));
 	}
 
+	
 	public int Size()
 	{
 		return length;
 	}
 
+	
 	public bool IsEmpty()
 	{
 		return length == 0 || items == null;
@@ -597,108 +571,54 @@ namespace loon.utils
 
 	public sbyte[] GetBytes(int order)
 	{
-		int[] items = this.items;
-		ArrayByte bytes = new ArrayByte(items.Length * 4);
+		bool[] items = this.items;
+		ArrayByte bytes = new ArrayByte(items.Length);
 		bytes.SetOrder(order);
 		for (int i = 0; i < items.Length; i++)
 		{
-			bytes.WriteInt(items[i]);
+			bytes.WriteBoolean(items[i]);
 		}
 		return bytes.GetBytes();
 	}
 
-	public IntArray Where(QueryEvent<Integer> test)
+	public BoolArray Where(QueryEvent<Boolean> test)
 	{
-		IntArray list = new IntArray();
+		BoolArray list = new BoolArray();
 		for (int i = 0; i < length; i++)
 		{
-			Integer t = Integer.ValueOf(Get(i));
+			Boolean t = Boolean.ValueOf(Get(i));
 			if (test.Hit(t))
 			{
-				list.Add(t.IntValue());
+				list.Add(t.BooleanValue());
 			}
 		}
 		return list;
 	}
 
-	public Integer Find(QueryEvent<Integer> test)
+	public bool Find(QueryEvent<Boolean> test)
 	{
 		for (int i = 0; i < length; i++)
 		{
-			Integer t = Integer.ValueOf(Get(i));
+			Boolean t = Boolean.ValueOf(Get(i));
 			if (test.Hit(t))
 			{
-				return t;
-			}
-		}
-		return null;
-	}
-
-	public bool Remove(QueryEvent<Integer> test)
-	{
-		for (int i = length - 1; i > -1; i--)
-		{
-			Integer t = Integer.ValueOf(Get(i));
-			if (test.Hit(t))
-			{
-				return RemoveValue(t.IntValue());
+				return t.BooleanValue();
 			}
 		}
 		return false;
 	}
 
-
-	public int Sum()
+	public bool Remove(QueryEvent<Boolean> test)
 	{
-		if (length == 0)
-		{
-			return 0;
-		}
-		int total = 0;
 		for (int i = length - 1; i > -1; i--)
 		{
-			total += items[i];
-		}
-		return total;
-	}
-
-	public int Average()
-	{
-		if (length == 0)
-		{
-			return 0;
-		}
-		return this.Sum() / length;
-	}
-
-	public int Min()
-	{
-		int v = this.items[0];
-		int size = this.length;
-		for (int i = size - 1; i > -1; i--)
-		{
-			int n = this.items[i];
-			if (n < v)
+			Boolean t = Boolean.ValueOf(Get(i));
+			if (test.Hit(t))
 			{
-				v = n;
+				return RemoveValue(t.BooleanValue());
 			}
 		}
-		return v;
-	}
-
-	public int Max()
-	{
-		int v = this.items[0];
-		int size = this.length;
-		for (int i = size - 1; i > -1; i--)
-		{
-			int n = this.items[i];
-			if (n > v)
-			{
-				v = n;
-			}
-		}
-		return v;
+		return false;
 	}
 
 	public string ToString(char split)
@@ -707,8 +627,8 @@ namespace loon.utils
 		{
 			return "[]";
 		}
-		int[] items = this.items;
-		StrBuilder buffer = new StrBuilder();
+		bool[] items = this.items;
+		StrBuilder buffer = new StrBuilder(32);
 		buffer.Append('[');
 		buffer.Append(items[0]);
 		for (int i = 1; i < length; i++)
@@ -730,7 +650,7 @@ namespace loon.utils
 		int hashCode = 1;
 		for (int i = length - 1; i > -1; i--)
 		{
-			hashCode = 31 * hashCode + items[i];
+			hashCode = hashCode * 31 + (items[i] ? 1231 : 1237);
 		}
 		return hashCode;
 	}

@@ -5,7 +5,12 @@
         public readonly static long MIN_VALUE_JAVA = -0x8000000000000000L;
         public readonly static long MAX_VALUE_JAVA = 0x7FFFFFFFFFFFFFFFL;
         public readonly static int SIZE = 64;
-        private long value;
+        private readonly long value;
+
+        public Long(long v)
+        {
+            this.value = v;
+        }
 
         public override double DoubleValue()
         {

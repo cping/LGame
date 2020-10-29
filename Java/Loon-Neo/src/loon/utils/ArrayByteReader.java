@@ -8,7 +8,7 @@ public class ArrayByteReader implements LRelease {
 	private static final byte R = '\r';
 	private static final byte N = '\n';
 
-	private ArrayByte in;
+	private final ArrayByte in;
 
 	public ArrayByteReader(ArrayByte stream) {
 		in = stream;

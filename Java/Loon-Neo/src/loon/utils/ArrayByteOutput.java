@@ -7,7 +7,7 @@ import loon.LRelease;
 
 public class ArrayByteOutput extends OutputStream implements LRelease {
 
-	private ArrayByte _buffer;
+	private final ArrayByte _buffer;
 
 	public ArrayByteOutput(int size) {
 		_buffer = new ArrayByte(size);

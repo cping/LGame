@@ -60,6 +60,11 @@ public class Alpha {
 		}
 	}
 
+	public Alpha setAlpha(final float newColorAlpha) {
+		alpha = newColorAlpha;
+		return this;
+	}
+	
 	private boolean isShortMode(final String color) {
 		return color.length() == 2;
 	}
@@ -73,7 +78,4 @@ public class Alpha {
 		return "(" + alpha + ")";
 	}
 
-	public void setAlpha(final float newColorAlpha) {
-		alpha = newColorAlpha;
-	}
 }

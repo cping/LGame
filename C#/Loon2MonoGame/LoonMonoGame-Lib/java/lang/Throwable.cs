@@ -38,7 +38,7 @@
 
         public void PrintStackTrace()
         {
-            JavaSystem.err_f.Println(this.trace);
+            JavaSystem.Err.Println(this.trace);
         }
 
         virtual public string GetMessage()

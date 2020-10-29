@@ -20,38 +20,38 @@ namespace loon.utils
 
         private const int SIGN = -128;
 
-        private const byte PAD = (byte)'=';
+        private const sbyte PAD = (sbyte)'=';
 
-        private static byte[] BASE64_ALPHABET;
+        private static sbyte[] BASE64_ALPHABET;
 
-        private static byte[] LOOKUP_BASE64_ALPHABET;
+        private static sbyte[] LOOKUP_BASE64_ALPHABET;
 
         private Base64Coder()
         {
 
         }
 
-        public static byte[] FromBinHexString(string s)
+        public static sbyte[] FromBinHexString(string s)
         {
             char[] chars = s.ToCharArray();
-            byte[] bytes = new byte[chars.Length / 2 + chars.Length % 2];
+            sbyte[] bytes = new sbyte[chars.Length / 2 + chars.Length % 2];
             FromBinHexString(chars, 0, chars.Length, bytes);
             return bytes;
         }
 
-        public static int FromBinHexString(char[] chars, int offset, int charLength, byte[] buffer)
+        public static int FromBinHexString(char[] chars, int offset, int charLength, sbyte[] buffer)
         {
             int bufIndex = offset;
             for (int i = 0; i < charLength - 1; i += 2)
             {
-                buffer[bufIndex] = (chars[i] > '9' ? (byte)(chars[i] - 'A' + 10) : (byte)(chars[i] - '0'));
+                buffer[bufIndex] = (chars[i] > '9' ? (sbyte)(chars[i] - 'A' + 10) : (sbyte)(chars[i] - '0'));
                 buffer[bufIndex] <<= 4;
-                buffer[bufIndex] += chars[i + 1] > '9' ? (byte)(chars[i + 1] - 'A' + 10) : (byte)(chars[i + 1] - '0');
+                buffer[bufIndex] += chars[i + 1] > '9' ? (sbyte)(chars[i + 1] - 'A' + 10) : (sbyte)(chars[i + 1] - '0');
                 bufIndex++;
             }
             if (charLength % 2 != 0)
-                buffer[bufIndex++] = (byte)((chars[charLength - 1] > '9' ? (byte)(chars[charLength - 1] - 'A' + 10)
-                        : (byte)(chars[charLength - 1] - '0')) << 4);
+                buffer[bufIndex++] = (sbyte)((chars[charLength - 1] > '9' ? (sbyte)(chars[charLength - 1] - 'A' + 10)
+                        : (sbyte)(chars[charLength - 1] - '0')) << 4);
 
             return bufIndex - offset;
         }
@@ -60,23 +60,23 @@ namespace loon.utils
         {
             if (BASE64_ALPHABET == null)
             {
-                BASE64_ALPHABET = new byte[BASELENGTH];
+                BASE64_ALPHABET = new sbyte[BASELENGTH];
                 for (int i = 0; i < BASELENGTH; i++)
                 {
-                    BASE64_ALPHABET[i] = Convert.ToByte(-1);
+                    BASE64_ALPHABET[i] = -1;
                 }
                 for (int i = 'Z'; i >= 'A'; i--)
                 {
-                    BASE64_ALPHABET[i] = (byte)(i - 'A');
+                    BASE64_ALPHABET[i] = (sbyte)(i - 'A');
                 }
                 for (int i = 'z'; i >= 'a'; i--)
                 {
-                    BASE64_ALPHABET[i] = (byte)(i - 'a' + 26);
+                    BASE64_ALPHABET[i] = (sbyte)(i - 'a' + 26);
                 }
 
                 for (int i = '9'; i >= '0'; i--)
                 {
-                    BASE64_ALPHABET[i] = (byte)(i - '0' + 52);
+                    BASE64_ALPHABET[i] = (sbyte)(i - '0' + 52);
                 }
 
                 BASE64_ALPHABET['+'] = 62;
@@ -84,32 +84,32 @@ namespace loon.utils
             }
             if (LOOKUP_BASE64_ALPHABET == null)
             {
-                LOOKUP_BASE64_ALPHABET = new byte[LOOKUPLENGTH];
+                LOOKUP_BASE64_ALPHABET = new sbyte[LOOKUPLENGTH];
                 for (int i = 0; i <= 25; i++)
                 {
-                    LOOKUP_BASE64_ALPHABET[i] = (byte)('A' + i);
+                    LOOKUP_BASE64_ALPHABET[i] = (sbyte)('A' + i);
                 }
 
                 for (int i = 26, j = 0; i <= 51; i++, j++)
                 {
-                    LOOKUP_BASE64_ALPHABET[i] = (byte)('a' + j);
+                    LOOKUP_BASE64_ALPHABET[i] = (sbyte)('a' + j);
                 }
 
                 for (int i = 52, j = 0; i <= 61; i++, j++)
                 {
-                    LOOKUP_BASE64_ALPHABET[i] = (byte)('0' + j);
+                    LOOKUP_BASE64_ALPHABET[i] = (sbyte)('0' + j);
                 }
-                LOOKUP_BASE64_ALPHABET[62] = (byte)'+';
-                LOOKUP_BASE64_ALPHABET[63] = (byte)'/';
+                LOOKUP_BASE64_ALPHABET[62] = (sbyte)'+';
+                LOOKUP_BASE64_ALPHABET[63] = (sbyte)'/';
             }
         }
 
         public static bool IsBase64(string v)
         {
-            return IsArrayByteBase64(v.GetBytes());
+            return IsArrayByteBase64(v.GetSBytes());
         }
 
-        public static bool IsArrayByteBase64(byte[] bytes)
+        public static bool IsArrayByteBase64(sbyte[] bytes)
         {
             Checking();
             int length = bytes.Length;
@@ -127,33 +127,33 @@ namespace loon.utils
             return true;
         }
 
-        private static bool IsBase64(byte octect)
+        private static bool IsBase64(sbyte octect)
         {
-            return octect == PAD || BASE64_ALPHABET[octect] != Convert.ToByte(-1);
+            return octect == PAD || BASE64_ALPHABET[octect] != -1;
         }
-        
-        public static byte[] Encode(byte[] binaryData)
+
+        public static sbyte[] Encode(sbyte[] binaryData)
         {
             Checking();
             int lengthDataBits = binaryData.Length * EIGHTBIT;
             int fewerThan24bits = lengthDataBits % TWENTYFOURBITGROUP;
             int numberTriplets = lengthDataBits / TWENTYFOURBITGROUP;
-            byte[] encodedData;
+            sbyte[] encodedData;
 
             if (fewerThan24bits != 0)
             {
-                encodedData = new byte[(numberTriplets + 1) * 4];
+                encodedData = new sbyte[(numberTriplets + 1) * 4];
             }
             else
             {
-                encodedData = new byte[numberTriplets * 4];
+                encodedData = new sbyte[numberTriplets * 4];
             }
 
-            byte k = 0;
-            byte l = 0;
-            byte b1 = 0;
-            byte b2 = 0;
-            byte b3 = 0;
+            sbyte k = 0;
+            sbyte l = 0;
+            sbyte b1 = 0;
+            sbyte b2 = 0;
+            sbyte b3 = 0;
             int encodedIndex = 0;
             int dataIndex = 0;
             int i = 0;
@@ -165,14 +165,14 @@ namespace loon.utils
                 b2 = binaryData[dataIndex + 1];
                 b3 = binaryData[dataIndex + 2];
 
-                l = (byte)(b2 & 0x0f);
-                k = (byte)(b1 & 0x03);
+                l = (sbyte)(b2 & 0x0f);
+                k = (sbyte)(b1 & 0x03);
 
                 encodedIndex = i * 4;
-                byte val1 = ((b1 & SIGN) == 0) ? (byte)(b1 >> 2) : (byte)((b1) >> 2 ^ 0xc0);
+                sbyte val1 = ((b1 & SIGN) == 0) ? (sbyte)(b1 >> 2) : (sbyte)((b1) >> 2 ^ 0xc0);
 
-                byte val2 = ((b2 & SIGN) == 0) ? (byte)(b2 >> 4) : (byte)((b2) >> 4 ^ 0xf0);
-                byte val3 = ((b3 & SIGN) == 0) ? (byte)(b3 >> 6) : (byte)((b3) >> 6 ^ 0xfc);
+                sbyte val2 = ((b2 & SIGN) == 0) ? (sbyte)(b2 >> 4) : (sbyte)((b2) >> 4 ^ 0xf0);
+                sbyte val3 = ((b3 & SIGN) == 0) ? (sbyte)(b3 >> 6) : (sbyte)((b3) >> 6 ^ 0xfc);
 
                 encodedData[encodedIndex] = LOOKUP_BASE64_ALPHABET[val1];
                 encodedData[encodedIndex + 1] = LOOKUP_BASE64_ALPHABET[val2 | (k << 4)];
@@ -185,8 +185,8 @@ namespace loon.utils
             if (fewerThan24bits == EIGHTBIT)
             {
                 b1 = binaryData[dataIndex];
-                k = (byte)(b1 & 0x03);
-                byte val1 = ((b1 & SIGN) == 0) ? (byte)(b1 >> 2) : (byte)((b1) >> 2 ^ 0xc0);
+                k = (sbyte)(b1 & 0x03);
+                sbyte val1 = ((b1 & SIGN) == 0) ? (sbyte)(b1 >> 2) : (sbyte)((b1) >> 2 ^ 0xc0);
                 encodedData[encodedIndex] = LOOKUP_BASE64_ALPHABET[val1];
                 encodedData[encodedIndex + 1] = LOOKUP_BASE64_ALPHABET[k << 4];
                 encodedData[encodedIndex + 2] = PAD;
@@ -196,11 +196,11 @@ namespace loon.utils
             {
                 b1 = binaryData[dataIndex];
                 b2 = binaryData[dataIndex + 1];
-                l = (byte)(b2 & 0x0f);
-                k = (byte)(b1 & 0x03);
+                l = (sbyte)(b2 & 0x0f);
+                k = (sbyte)(b1 & 0x03);
 
-                byte val1 = ((b1 & SIGN) == 0) ? (byte)(b1 >> 2) : (byte)((b1) >> 2 ^ 0xc0);
-                byte val2 = ((b2 & SIGN) == 0) ? (byte)(b2 >> 4) : (byte)((b2) >> 4 ^ 0xf0);
+                sbyte val1 = ((b1 & SIGN) == 0) ? (sbyte)(b1 >> 2) : (sbyte)((b1) >> 2 ^ 0xc0);
+                sbyte val2 = ((b2 & SIGN) == 0) ? (sbyte)(b2 >> 4) : (sbyte)((b2) >> 4 ^ 0xf0);
 
                 encodedData[encodedIndex] = LOOKUP_BASE64_ALPHABET[val1];
                 encodedData[encodedIndex + 1] = LOOKUP_BASE64_ALPHABET[val2 | (k << 4)];
@@ -210,17 +210,17 @@ namespace loon.utils
             return encodedData;
         }
 
-        public static byte[] Decode(byte[] base64Data)
+        public static sbyte[] Decode(sbyte[] base64Data)
         {
             Checking();
             if (base64Data.Length == 0)
             {
-                return new byte[0];
+                return new sbyte[0];
             }
 
             int numberQuadruple = base64Data.Length / FOURBYTE;
-            byte[] decodedData = null;
-            byte b1 = 0, b2 = 0, b3 = 0, b4 = 0, marker0 = 0, marker1 = 0;
+            sbyte[] decodedData = null;
+            sbyte b1 = 0, b2 = 0, b3 = 0, b4 = 0, marker0 = 0, marker1 = 0;
 
             int encodedIndex = 0;
             int dataIndex = 0;
@@ -230,10 +230,10 @@ namespace loon.utils
                 {
                     if (--lastData == 0)
                     {
-                        return new byte[0];
+                        return new sbyte[0];
                     }
                 }
-                decodedData = new byte[lastData - numberQuadruple];
+                decodedData = new sbyte[lastData - numberQuadruple];
             }
 
             for (int i = 0; i < numberQuadruple; i++)
@@ -250,31 +250,31 @@ namespace loon.utils
                     b3 = BASE64_ALPHABET[marker0];
                     b4 = BASE64_ALPHABET[marker1];
 
-                    decodedData[encodedIndex] = (byte)(b1 << 2 | b2 >> 4);
-                    decodedData[encodedIndex + 1] = (byte)(((b2 & 0xf) << 4) | ((b3 >> 2) & 0xf));
-                    decodedData[encodedIndex + 2] = (byte)(b3 << 6 | b4);
+                    decodedData[encodedIndex] = (sbyte)(b1 << 2 | b2 >> 4);
+                    decodedData[encodedIndex + 1] = (sbyte)(((b2 & 0xf) << 4) | ((b3 >> 2) & 0xf));
+                    decodedData[encodedIndex + 2] = (sbyte)(b3 << 6 | b4);
                 }
                 else if (marker0 == PAD)
                 {
-                    decodedData[encodedIndex] = (byte)(b1 << 2 | b2 >> 4);
+                    decodedData[encodedIndex] = (sbyte)(b1 << 2 | b2 >> 4);
                 }
                 else if (marker1 == PAD)
                 {
                     b3 = BASE64_ALPHABET[marker0];
-                    decodedData[encodedIndex] = (byte)(b1 << 2 | b2 >> 4);
-                    decodedData[encodedIndex + 1] = (byte)(((b2 & 0xf) << 4) | ((b3 >> 2) & 0xf));
+                    decodedData[encodedIndex] = (sbyte)(b1 << 2 | b2 >> 4);
+                    decodedData[encodedIndex + 1] = (sbyte)(((b2 & 0xf) << 4) | ((b3 >> 2) & 0xf));
                 }
                 encodedIndex += 3;
             }
             return decodedData;
         }
 
-        public static byte[] Decode(string data)
+        public static sbyte[] Decode(string data)
         {
             return DecodeBase64(data.ToCharArray());
         }
 
-        public static byte[] DecodeBase64(char[] data)
+        public static sbyte[] DecodeBase64(char[] data)
         {
             Checking();
 
@@ -298,7 +298,7 @@ namespace loon.utils
             {
                 len += 1;
             }
-            byte[] outs = new byte[len];
+            sbyte[] outs = new sbyte[len];
 
             int shift = 0;
             int accum = 0;
@@ -316,12 +316,13 @@ namespace loon.utils
                     if (shift >= 8)
                     {
                         shift -= 8;
-					    outs[index++] = (byte)((accum >> shift) & 0xff);
+                        outs[index++] = (sbyte)((accum >> shift) & 0xff);
                     }
                 }
             }
 
-            if (index != outs.Length) {
+            if (index != outs.Length)
+            {
                 throw new LSysException("index != " + outs.Length);
             }
 
