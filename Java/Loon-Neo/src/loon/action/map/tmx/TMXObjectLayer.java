@@ -80,10 +80,10 @@ public class TMXObjectLayer extends TMXMapLayer {
 			for (int i = 0; i < list.size; i++) {
 				XMLElement objectNode = list.get(i);
 
-				TMXObject object = new TMXObject();
-				object.parse(objectNode);
+				TMXObject o = new TMXObject();
+				o.parse(objectNode);
 
-				objects.add(object);
+				objects.add(o);
 			}
 		}
 	}

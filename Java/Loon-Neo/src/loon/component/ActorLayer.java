@@ -64,18 +64,18 @@ public abstract class ActorLayer extends LContainer {
 
 	private int tileSize = 32;
 
-	private final static Actor collisionObjectToActor(CollisionObject object) {
-		if (object instanceof Actor) {
-			return (Actor) object;
+	private final static Actor collisionObjectToActor(CollisionObject o) {
+		if (o instanceof Actor) {
+			return (Actor) o;
 		}
 		return null;
 	}
 
 	private final static TArray<Actor> collisionObjectToActors(TArray<CollisionObject> list) {
 		TArray<Actor> newActors = new TArray<Actor>(list.size);
-		for (CollisionObject object : list) {
-			if (object instanceof Actor) {
-				newActors.add((Actor) object);
+		for (CollisionObject o : list) {
+			if (o instanceof Actor) {
+				newActors.add((Actor) o);
 			}
 		}
 		return newActors;

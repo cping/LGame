@@ -66,8 +66,8 @@ final class JsonBuilder<T> implements JsonSink<JsonBuilder<T>> {
 	}
 
 	@Override
-	public JsonBuilder<T> object(Json.Object object) {
-		return value(object);
+	public JsonBuilder<T> object(Json.Object o) {
+		return value(o);
 	}
 
 	@Override
@@ -76,8 +76,8 @@ final class JsonBuilder<T> implements JsonSink<JsonBuilder<T>> {
 	}
 
 	@Override
-	public JsonBuilder<T> object(String key, Json.Object object) {
-		return value(key, object);
+	public JsonBuilder<T> object(String key, Json.Object o) {
+		return value(key, o);
 	}
 
 	@Override

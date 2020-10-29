@@ -643,36 +643,6 @@ public class TArray<T> implements Iterable<T>, IArray {
 		return all;
 	}
 
-	@Override
-	public String toString() {
-		if (size == 0)
-			return "[]";
-		T[] items = this.items;
-		StrBuilder buffer = new StrBuilder(32);
-		buffer.append('[');
-		buffer.append(items[0]);
-		for (int i = 1; i < size; i++) {
-			buffer.append(", ");
-			buffer.append(items[i]);
-		}
-		buffer.append(']');
-		return buffer.toString();
-	}
-
-	public String toString(String separator) {
-		if (size == 0) {
-			return "";
-		}
-		T[] items = this.items;
-		StrBuilder buffer = new StrBuilder(32);
-		buffer.append(items[0]);
-		for (int i = 1; i < size; i++) {
-			buffer.append(separator);
-			buffer.append(items[i]);
-		}
-		return buffer.toString();
-	}
-
 	public TArray<T> where(QueryEvent<T> test) {
 		TArray<T> list = new TArray<T>();
 		for (T t : this) {
@@ -758,4 +728,23 @@ public class TArray<T> implements Iterable<T>, IArray {
 		return size;
 	}
 
+	@Override
+	public String toString() {
+		return toString(',');
+	}
+
+	public String toString(char separator) {
+		if (size == 0)
+			return "[]";
+		T[] items = this.items;
+		StrBuilder buffer = new StrBuilder(32);
+		buffer.append('[');
+		buffer.append(items[0]);
+		for (int i = 1; i < size; i++) {
+			buffer.append(separator);
+			buffer.append(items[i]);
+		}
+		buffer.append(']');
+		return buffer.toString();
+	}
 }

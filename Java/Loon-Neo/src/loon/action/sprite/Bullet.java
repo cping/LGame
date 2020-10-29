@@ -256,8 +256,8 @@ public class Bullet extends LObject<Bullet> implements CollisionObject, ActionBi
 	}
 
 	@Override
-	public boolean intersects(CollisionObject object) {
-		return getCollisionArea().intersects(object.getRectBox());
+	public boolean intersects(CollisionObject o) {
+		return getCollisionArea().intersects(o.getRectBox());
 	}
 
 	@Override

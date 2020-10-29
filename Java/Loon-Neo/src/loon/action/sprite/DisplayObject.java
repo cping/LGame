@@ -358,8 +358,8 @@ public abstract class DisplayObject extends EventDispatcher implements Collision
 	}
 
 	@Override
-	public boolean intersects(CollisionObject object) {
-		return getCollisionBox().intersects(object.getRectBox());
+	public boolean intersects(CollisionObject o) {
+		return getCollisionBox().intersects(o.getRectBox());
 	}
 
 	@Override

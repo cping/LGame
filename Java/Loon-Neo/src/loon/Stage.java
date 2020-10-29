@@ -177,8 +177,7 @@ public abstract class Stage extends Screen {
 			final int additionCount = pendingAdd.size;
 			if (additionCount > 0) {
 				for (int i = 0; i < additionCount; i++) {
-					ActionObject object = pendingAdd.get(i);
-					objects.add(object);
+					objects.add(pendingAdd.get(i));
 				}
 				pendingAdd.clear();
 			}
@@ -187,8 +186,7 @@ public abstract class Stage extends Screen {
 			final int removalCount = pendingRemove.size;
 			if (removalCount > 0) {
 				for (int i = 0; i < removalCount; i++) {
-					ActionObject object = pendingRemove.get(i);
-					objects.remove(object);
+					objects.remove(pendingRemove.get(i));
 				}
 				pendingRemove.clear();
 			}
@@ -382,14 +380,14 @@ public abstract class Stage extends Screen {
 		return this;
 	}
 
-	public ActionObject add(ActionObject object) {
-		pendingAdd.add(object);
-		return object;
+	public ActionObject add(ActionObject o) {
+		pendingAdd.add(o);
+		return o;
 	}
 
-	public ActionObject remove(ActionObject object) {
-		pendingRemove.add(object);
-		return object;
+	public ActionObject remove(ActionObject o) {
+		pendingRemove.add(o);
+		return o;
 	}
 
 	public Stage removeTileObjects() {

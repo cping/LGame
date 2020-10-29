@@ -554,4 +554,27 @@ public class SortedList<E> implements Iterable<E>, IArray {
 		return hashCode;
 	}
 
+	@Override
+	public String toString() {
+		return toString(',');
+	}
+
+	public String toString(char separator) {
+		if (size == 0) {
+			return "[]";
+		}
+		StrBuilder buffer = new StrBuilder(32);
+		buffer.append('[');
+		for (Node<E> x = first; x != null; x = x.next) {
+			E o = x.item;
+			if (o != null) {
+				buffer.append(x.item);
+				if (x.next != null) {
+					buffer.append(separator);
+				}
+			}
+		}
+		buffer.append(']');
+		return buffer.toString();
+	}
 }

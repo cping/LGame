@@ -1373,8 +1373,8 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	}
 
 	@Override
-	public boolean intersects(CollisionObject object) {
-		return getCollisionBox().intersects(object.getRectBox());
+	public boolean intersects(CollisionObject o) {
+		return getCollisionBox().intersects(o.getRectBox());
 	}
 
 	@Override

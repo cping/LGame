@@ -3,7 +3,6 @@ package loon.utils;
 import java.util.Arrays;
 
 import loon.LSysException;
-import loon.LSystem;
 import loon.events.QueryEvent;
 
 public class CharArray implements IArray {
@@ -405,12 +404,12 @@ public class CharArray implements IArray {
 		return array;
 	}
 
-	public boolean equals(Object object) {
-		if (object == this)
+	public boolean equals(Object o) {
+		if (o == this)
 			return true;
-		if (!(object instanceof CharArray))
+		if (!(o instanceof CharArray))
 			return false;
-		CharArray array = (CharArray) object;
+		CharArray array = (CharArray) o;
 		int n = length;
 		if (n != array.length)
 			return false;
@@ -418,19 +417,6 @@ public class CharArray implements IArray {
 			if (items[i] != array.items[i])
 				return false;
 		return true;
-	}
-
-	public String toString(String separator) {
-		if (length == 0)
-			return LSystem.EMPTY;
-		char[] items = this.items;
-		StrBuilder buffer = new StrBuilder(32);
-		buffer.append(items[0]);
-		for (int i = 1; i < length; i++) {
-			buffer.append(separator);
-			buffer.append(items[i]);
-		}
-		return buffer.toString();
 	}
 
 	static public CharArray with(char... array) {

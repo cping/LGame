@@ -793,41 +793,6 @@ namespace loon.utils
             return hashCode;
         }
 
-
-        public override string ToString()
-        {
-            if (size == 0)
-                return "[]";
-            T[] items = this.items;
-            StrBuilder buffer = new StrBuilder(32);
-            buffer.Append('[');
-            buffer.Append(items[0]);
-            for (int i = 1; i < size; i++)
-            {
-                buffer.Append(", ");
-                buffer.Append(items[i]);
-            }
-            buffer.Append(']');
-            return buffer.ToString();
-        }
-
-        public string ToString(string separator)
-        {
-            if (size == 0)
-            {
-                return "";
-            }
-            T[] items = this.items;
-            StrBuilder buffer = new StrBuilder(32);
-            buffer.Append(items[0]);
-            for (int i = 1; i < size; i++)
-            {
-                buffer.Append(separator);
-                buffer.Append(items[i]);
-            }
-            return buffer.ToString();
-        }
-
         public int Size()
         {
             return size;
@@ -855,6 +820,28 @@ namespace loon.utils
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        public override string ToString()
+        {
+            return ToString(',');
+        }
+
+        public string ToString(char separator)
+        {
+            if (size == 0)
+                return "[]";
+            T[] items = this.items;
+            StrBuilder buffer = new StrBuilder(32);
+            buffer.Append('[');
+            buffer.Append(items[0]);
+            for (int i = 1; i < size; i++)
+            {
+                buffer.Append(separator);
+                buffer.Append(items[i]);
+            }
+            buffer.Append(']');
+            return buffer.ToString();
         }
     }
 }

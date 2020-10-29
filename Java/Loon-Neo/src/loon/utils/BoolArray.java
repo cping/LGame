@@ -417,12 +417,12 @@ public class BoolArray implements IArray {
 	}
 
 	@Override
-	public boolean equals(Object object) {
-		if (object == this)
+	public boolean equals(Object o) {
+		if (o == this)
 			return true;
-		if (!(object instanceof BoolArray))
+		if (!(o instanceof BoolArray))
 			return false;
-		BoolArray array = (BoolArray) object;
+		BoolArray array = (BoolArray) o;
 		int n = length;
 		if (n != array.length)
 			return false;
@@ -430,19 +430,6 @@ public class BoolArray implements IArray {
 			if (items[i] != array.items[i])
 				return false;
 		return true;
-	}
-
-	public String toString(String separator) {
-		if (length == 0)
-			return "";
-		boolean[] items = this.items;
-		StrBuilder buffer = new StrBuilder(32);
-		buffer.append(items[0]);
-		for (int i = 1; i < length; i++) {
-			buffer.append(separator);
-			buffer.append(items[i]);
-		}
-		return buffer.toString();
 	}
 
 	static public BoolArray with(boolean... array) {

@@ -401,9 +401,9 @@ public class ArrayByte implements IArray, LRelease {
 	public long readLong() throws LSysException {
 		checkAvailable(8);
 		if (byteOrder == LITTLE_ENDIAN) {
-			return (readInt() & 0xffffffffL) | ((readInt() & 0xffffffffL) << 32L);
+			return (readInt() & 0xffffffffL) | ((readInt() & 0xffffffffL) << 32);
 		} else {
-			return ((readInt() & 0xffffffffL) << 32L) | (readInt() & 0xffffffffL);
+			return ((readInt() & 0xffffffffL) << 32) | (readInt() & 0xffffffffL);
 		}
 	}
 

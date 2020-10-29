@@ -544,12 +544,12 @@ public class UIntArray implements IArray {
 	}
 
 	@Override
-	public boolean equals(Object object) {
-		if (object == this)
+	public boolean equals(Object o) {
+		if (o == this)
 			return true;
-		if (!(object instanceof UIntArray))
+		if (!(o instanceof UIntArray))
 			return false;
-		UIntArray array = (UIntArray) object;
+		UIntArray array = (UIntArray) o;
 		int n = length;
 		if (n != array.length)
 			return false;
@@ -673,19 +673,6 @@ public class UIntArray implements IArray {
 			}
 		}
 		return v;
-	}
-
-	public String toString(String separator) {
-		if (length == 0)
-			return "";
-		byte[] bytebuffer = this.bytebuffer;
-		StrBuilder buffer = new StrBuilder(32);
-		buffer.append(StringUtils.toHex(bytebuffer[0]));
-		for (int i = 1; i < length; i++) {
-			buffer.append(separator);
-			buffer.append(StringUtils.toHex(bytebuffer[i]));
-		}
-		return buffer.toString();
 	}
 
 	public String toString(char split) {
