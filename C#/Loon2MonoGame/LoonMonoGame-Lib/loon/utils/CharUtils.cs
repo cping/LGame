@@ -29,7 +29,7 @@ namespace loon.utils
             return (sbyte[])(System.Array)bytes;
         }
 
-        public static byte[] ToBytes(params sbyte[] bytes)
+        public static byte[] ToUNBytes(params sbyte[] bytes)
         {
             return (byte[])(System.Array)bytes;
         }
@@ -39,7 +39,7 @@ namespace loon.utils
             return (sbyte)b;
         }
 
-        public static sbyte GetByteToSByte(byte b)
+        public static sbyte GetUNByteToSByte(byte b)
         {
             sbyte result;
             if (b > 127)
@@ -53,7 +53,7 @@ namespace loon.utils
             return result;
         }
 
-        public static byte ToByte(sbyte b)
+        public static byte ToUNByte(sbyte b)
         {
             return unchecked((byte)b);
         }
@@ -63,7 +63,7 @@ namespace loon.utils
         /// </summary>
         /// <param name="b"></param>
         /// <returns></returns>
-        public static byte GetSByteToByte(sbyte b)
+        public static byte GetSByteToUNByte(sbyte b)
         {
             byte result;
             if (b < 0)

@@ -238,6 +238,31 @@ namespace loon.utils
             JavaSystem.Arraycopy(obj, 0, tempArr, 0, MathUtils.Min(obj.Length, newSize));
             return tempArr;
         }
+
+        public static byte[] CopyOf(byte[] obj)
+        {
+            return CopyOf(obj, obj.Length);
+        }
+
+        public static byte[] CopyOf(byte[] obj, int newSize)
+        {
+            byte[] tempArr = new byte[newSize];
+            JavaSystem.Arraycopy(obj, 0, tempArr, 0, MathUtils.Min(obj.Length, newSize));
+            return tempArr;
+        }
+
+        public static sbyte[] CopyOf(sbyte[] obj)
+        {
+            return CopyOf(obj, obj.Length);
+        }
+
+        public static sbyte[] CopyOf(sbyte[] obj, int newSize)
+        {
+            sbyte[] tempArr = new sbyte[newSize];
+            JavaSystem.Arraycopy(obj, 0, tempArr, 0, MathUtils.Min(obj.Length, newSize));
+            return tempArr;
+        }
+
         public static char[] CopyOf(char[] obj)
         {
             return CopyOf(obj, obj.Length);
@@ -249,7 +274,17 @@ namespace loon.utils
             JavaSystem.Arraycopy(obj, 0, tempArr, 0, MathUtils.Min(obj.Length, newSize));
             return tempArr;
         }
+        public static float[] CopyOf(float[] obj)
+        {
+            return CopyOf(obj, obj.Length);
+        }
 
+        public static float[] CopyOf(float[] obj, int newSize)
+        {
+            float[] tempArr = new float[newSize];
+            JavaSystem.Arraycopy(obj, 0, tempArr, 0, MathUtils.Min(obj.Length, newSize));
+            return tempArr;
+        }
         public static bool[] CopyOf(bool[] data)
         {
             return CopyOf(data, data.Length);

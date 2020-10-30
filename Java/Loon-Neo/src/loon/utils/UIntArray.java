@@ -27,7 +27,7 @@ import loon.LSysException;
 public class UIntArray implements IArray {
 
 	public enum UIntMode {
-		UINT8, UINT16, UINT32
+		UINT8, UINT16, UINT32, UINT64
 	}
 
 	private final UIntMode uintmode;
@@ -38,9 +38,9 @@ public class UIntArray implements IArray {
 
 	private int position = 0;
 
-	private boolean ordered;
+	private final boolean ordered;
 
-	private boolean littleEndian;
+	private final boolean littleEndian;
 
 	public UIntArray() {
 		this(false);
@@ -172,6 +172,31 @@ public class UIntArray implements IArray {
 				writeByte(fourthByte);
 			}
 			return true;
+		case UINT64:
+			byte firstByte2 = (byte) ((value & 0xFF000000L) >> 56);
+			byte secondByte2 = (byte) ((value & 0x00FF0000L) >> 48);
+			byte thirdByte2 = (byte) ((value & 0x0000FF00L) >> 40);
+			byte fourthByte2 = (byte) ((value & 0x0000FF00L) >> 32);
+			if (this.littleEndian) {
+				writeByte(fourthByte);
+				writeByte(thirdByte);
+				writeByte(secondByte);
+				writeByte(firstByte);
+				writeByte(fourthByte2);
+				writeByte(thirdByte2);
+				writeByte(secondByte2);
+				writeByte(firstByte2);
+			} else {
+				writeByte(firstByte2);
+				writeByte(secondByte2);
+				writeByte(thirdByte2);
+				writeByte(fourthByte2);
+				writeByte(firstByte);
+				writeByte(secondByte);
+				writeByte(thirdByte);
+				writeByte(fourthByte);
+			}
+			return true;
 		}
 		return false;
 	}
@@ -203,6 +228,24 @@ public class UIntArray implements IArray {
 				result = ((long) (fourthByte << 24 | thirdByte << 16 | secondByte << 8 | firstByte)) & 0xFFFFFFFFL;
 			} else {
 				result = ((long) (firstByte << 24 | secondByte << 16 | thirdByte << 8 | fourthByte)) & 0xFFFFFFFFL;
+
+			}
+			return result;
+		case UINT64:
+			firstByte = (0x000000FF & (int) readByte());
+			secondByte = (0x000000FF & (int) readByte());
+			thirdByte = (0x000000FF & (int) readByte());
+			fourthByte = (0x000000FF & (int) readByte());
+			int firstByte2 = (0x000000FF & (int) readByte());
+			int secondByte2 = (0x000000FF & (int) readByte());
+			int thirdByte2 = (0x000000FF & (int) readByte());
+			int fourthByte2 = (0x000000FF & (int) readByte());
+			if (littleEndian) {
+				result = ((long) (fourthByte2 << 56 | thirdByte2 << 48 | secondByte2 << 40 | firstByte2 << 32
+						| fourthByte << 24 | thirdByte << 16 | secondByte << 8 | firstByte)) & 0xFFFFFFFFL;
+			} else {
+				result = ((long) (firstByte << 56 | secondByte << 48 | thirdByte << 40 | fourthByte << 32
+						| firstByte2 << 24 | secondByte2 << 16 | thirdByte2 << 8 | fourthByte2)) & 0xFFFFFFFFL;
 
 			}
 			return result;

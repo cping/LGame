@@ -28,25 +28,77 @@ import loon.LSystem;
  */
 public class CharUtils {
 
-    public static final char MIN_HIGH_SURROGATE = '\uD800';
+	public static final char MIN_HIGH_SURROGATE = '\uD800';
 
-    public static final char MAX_HIGH_SURROGATE = '\uDBFF';
+	public static final char MAX_HIGH_SURROGATE = '\uDBFF';
 
-    public static final char MIN_LOW_SURROGATE  = '\uDC00';
+	public static final char MIN_LOW_SURROGATE = '\uDC00';
 
-    public static final char MAX_LOW_SURROGATE  = '\uDFFF';
+	public static final char MAX_LOW_SURROGATE = '\uDFFF';
 
-    public static final char MIN_SURROGATE = MIN_HIGH_SURROGATE;
+	public static final char MIN_SURROGATE = MIN_HIGH_SURROGATE;
 
-    public static final char MAX_SURROGATE = MAX_LOW_SURROGATE;
-    
+	public static final char MAX_SURROGATE = MAX_LOW_SURROGATE;
+
 	static final private class HexChars {
 
 		static final char[] TABLE = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd',
 				'e', 'f' };
 
 	}
-	
+
+	public static byte[] toSBytes(int... bytes) {
+		final int size = bytes.length;
+		final byte[] result = new byte[size];
+		for (int i = 0; i < size; i++) {
+			result[i] = getUNByteToSByte(bytes[i]);
+		}
+		return result;
+	}
+
+	public static int[] toUNBytes(byte... bytes) {
+		final int size = bytes.length;
+		final int[] result = new int[size];
+		for (int i = 0; i < size; i++) {
+			result[i] = getSByteToUNByte(bytes[i]);
+		}
+		return result;
+	}
+
+	public static byte ToSByte(int b) {
+		return getUNByteToSByte(b);
+	}
+
+	public static byte getUNByteToSByte(int b) {
+		byte result = 0;
+		if (b > 127) {
+			result = (byte) (b - 256);
+		} else if (b > 255) {
+			b = 255;
+		} else {
+			result = (byte) b;
+		}
+		return result;
+	}
+
+	public static int toSByte(byte b) {
+		return getUNByteToSByte(b);
+	}
+
+	public static int getSByteToUNByte(byte b) {
+		int result = 0;
+		if (b < 0) {
+			result = (b + 256);
+		} else {
+			result = b;
+		}
+		return result;
+	}
+
+	public static int toUNByte(byte b) {
+		return getSByteToUNByte(b);
+	}
+
 	public static char toChar(byte b) {
 		return (char) (b & 0xFF);
 	}
@@ -414,26 +466,26 @@ public class CharUtils {
 		}
 	}
 
-    public static boolean isHighSurrogate(char ch) {
-        return ch >= MIN_HIGH_SURROGATE && ch < (MAX_HIGH_SURROGATE + 1);
-    }
+	public static boolean isHighSurrogate(char ch) {
+		return ch >= MIN_HIGH_SURROGATE && ch < (MAX_HIGH_SURROGATE + 1);
+	}
 
-    public static boolean isLowSurrogate(char ch) {
-        return ch >= MIN_LOW_SURROGATE && ch < (MAX_LOW_SURROGATE + 1);
-    }
+	public static boolean isLowSurrogate(char ch) {
+		return ch >= MIN_LOW_SURROGATE && ch < (MAX_LOW_SURROGATE + 1);
+	}
 
-    public static boolean isSurrogate(char ch) {
-        return ch >= MIN_SURROGATE && ch < (MAX_SURROGATE + 1);
-    }
+	public static boolean isSurrogate(char ch) {
+		return ch >= MIN_SURROGATE && ch < (MAX_SURROGATE + 1);
+	}
 
-    public static boolean isSurrogatePair(char high, char low) {
-        return isHighSurrogate(high) && isLowSurrogate(low);
-    }
+	public static boolean isSurrogatePair(char high, char low) {
+		return isHighSurrogate(high) && isLowSurrogate(low);
+	}
 
-    public static boolean isInherited(char c) {
-        return c == '~';
-    }
-    
+	public static boolean isInherited(char c) {
+		return c == '~';
+	}
+
 	protected static boolean isReserved(int c) {
 		return isGenericDelimiter(c) || isSubDelimiter(c);
 	}

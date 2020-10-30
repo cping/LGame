@@ -779,6 +779,11 @@ namespace loon.utils
             return modified;
         }
 
+        public SwappableArray<T> GetSwappableArray()
+        {
+            return new SwappableArray<T>(this);
+        }
+
         public override int GetHashCode()
         {
             if (!ordered)

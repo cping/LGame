@@ -41,6 +41,10 @@ public class SwappableArray<T> {
 		this.data = new TArray<T>(array);
 	}
 
+	public SwappableArray(TArray<T> array) {
+		this.data = array;
+	}
+
 	public T previousLoop() {
 		if (this.currentIndex > 0) {
 			this.currentIndex--;

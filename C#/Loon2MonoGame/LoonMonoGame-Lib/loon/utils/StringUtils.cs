@@ -5,10 +5,6 @@ namespace loon.utils
 {
     public sealed class StringUtils : CharUtils
     {
-		public static byte[] GetSBytesToBytes(sbyte[] bytes)
-        {
-			return ToBytes(bytes);
-        }
 
 		public static bool IsHex(CharSequence ch)
 		{

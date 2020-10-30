@@ -1,10 +1,12 @@
 ﻿using java.lang;
 using java.util;
 using java.util.function;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace loon.utils
 {
-    public class IntMap<T> : IArray, Iterable<T>
+    public class IntMap<T> : IArray,IEnumerable<T>, Iterable<T>
     {
 
 #pragma warning disable CS0693 // 类型参数与外部类型中的类型参数同名
@@ -502,6 +504,16 @@ namespace loon.utils
             Iterable_Java<T>.ForEach(this, consumer);
         }
 
+        public IEnumerator<T> GetEnumerator()
+        {
+            return new IEnumeratorAdapter<T>(this.Iterator());
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
         public override string ToString()
         {
             if (size == 0)
@@ -536,6 +548,7 @@ namespace loon.utils
             buffer.Append(']');
             return buffer.ToString();
         }
+
     }
 
 

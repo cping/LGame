@@ -710,6 +710,10 @@ public class TArray<T> implements Iterable<T>, IArray {
 		}
 		return modified;
 	}
+	
+	public SwappableArray<T> GetSwappableArray() {
+		return new SwappableArray<T>(this);
+	}
 
 	@Override
 	public int hashCode() {

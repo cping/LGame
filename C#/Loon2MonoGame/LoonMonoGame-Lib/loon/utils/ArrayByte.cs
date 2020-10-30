@@ -687,7 +687,7 @@ namespace loon.utils
         }
         public byte[] GetUNBytes()
         {
-            return CharUtils.ToBytes(GetBytes());
+            return CharUtils.ToUNBytes(GetBytes());
         }
 
         public sbyte[] GetBytes()
@@ -753,10 +753,19 @@ namespace loon.utils
             return this.data == null || Length() == 0;
         }
 
+        public ArrayByte CryptARC4Data(string privateKey)
+        {
+            return ARC4.CryptData(privateKey, this);
+        }
+
+        public string CryptMD5Data()
+        {
+            return MD5.Get().EncryptBytes(this);
+        }
 
         public override string ToString()
         {
-            return new JavaString(StringUtils.GetSBytesToBytes(Base64Coder.Encode(data))).ToString();
+            return new JavaString(CharUtils.ToUNBytes(Base64Coder.Encode(data))).ToString();
         }
 
         public override int GetHashCode()
