@@ -34,8 +34,10 @@ public class ActionKey {
 
 	private static final int STATE_WAITING_FOR_RELEASE = 2;
 
-	private int mode;
+	private final int mode;
 
+    public long elapsedTime;
+    
 	private int amount;
 
 	private int state;
@@ -55,7 +57,8 @@ public class ActionKey {
 		act(0);
 	}
 
-	public void act(long elapsedTime) {
+	public void act(long elapsed) {
+		this.elapsedTime = elapsed;
 		if (_function != null) {
 			_function.action(this);
 		}

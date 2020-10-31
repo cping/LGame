@@ -1,4 +1,6 @@
 ﻿using java.lang;
+using loon;
+using loon.canvas;
 using loon.utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -21,6 +23,16 @@ namespace LoonMonoGame
             //1123418112
 
             JavaSystem.Out.Println(NumberUtils.FloatToIntBits(123f));
+
+
+            //2079648233
+            JavaSystem.Out.Println(LColor.GetARGB(244,233,233,123));
+            //ff000000
+            JavaSystem.Out.Println(new LColor(LColor.TRANSPARENT));
+            //7bf4e9e9
+            JavaSystem.Out.Println(new LColor(244, 233, 233, 123));
+            //1,2,3,4
+            JavaSystem.Out.Println(new LColor(1, 2, 3, 4).GetXNAColor());
         }
 
         protected override void Initialize()

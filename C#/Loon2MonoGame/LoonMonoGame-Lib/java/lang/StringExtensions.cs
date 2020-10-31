@@ -1,6 +1,4 @@
-﻿using loon.utils;
-using System;
-
+﻿
 namespace java.lang
 {
     public static class StringExtensions
@@ -8,14 +6,12 @@ namespace java.lang
 
         public static sbyte[] GetSBytes(this string str)
         {
-            byte[] result = new JavaString(str).GetBytes();
-            return CharUtils.ToSBytes(result);
+            return new JavaString(str).GetSBytes();
         }
 
         public static sbyte[] GetSBytes(this string str, string encoding)
         {
-            byte[] result = new JavaString(str).GetBytes(encoding);
-            return CharUtils.ToSBytes(result);
+            return new JavaString(str).GetSBytes(encoding);
         }
 
         public static byte[] GetBytes(this string str)

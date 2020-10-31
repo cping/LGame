@@ -73,7 +73,28 @@ namespace loon
         // 换行标记
         public readonly static string NL = "\r\n";
 
+        public readonly static float MIN_SECONE_SPEED_FIXED = 0.008f;
 
+        // 兆秒
+        public const long MSEC = 1;
+
+        // 秒
+        public const long SECOND = 1000;
+
+        // 分
+        public const long MINUTE = SECOND * 60;
+
+        // 小时
+        public const long HOUR = MINUTE * 60;
+
+        // 天
+        public const long DAY = HOUR * 24;
+
+        // 周
+        public const long WEEK = DAY * 7;
+
+        // 理论上一年
+        public const long YEAR = DAY * 365;
         public static int Unite(int hashCode, bool value)
         {
             int v = value ? 1231 : 1237;

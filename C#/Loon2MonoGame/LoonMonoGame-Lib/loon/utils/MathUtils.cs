@@ -311,7 +311,6 @@ namespace loon.utils
             return (Atan2Impl.TABLE[yi * ATAN2_DIM + xi] + add) * mul;
         }
 
-
         public static int Random(int range)
         {
             return random.Next(range + 1);
@@ -324,6 +323,53 @@ namespace loon.utils
         {
             return (float)random.NextDouble() * range;
         }
+
+        public static string AddZeros(long number, int numDigits)
+        {
+            return AddZeros(JavaSystem.Str(number), numDigits);
+        }
+
+        public static string AddZeros(string number, int numDigit)
+        {
+            return AddZeros(number, numDigit, false);
+        }
+
+        public static string AddZeros(string number, int numDigits, bool reverse)
+        {
+            int length = numDigits - number.Length;
+            if (length > -1)
+            {
+                if (length - 1 < ZEROS.Length)
+                {
+                    if (reverse)
+                    {
+                        number = number + ZEROS[length];
+                    }
+                    else
+                    {
+                        number = ZEROS[length] + number;
+                    }
+                }
+                else
+                {
+                    StrBuilder sbr = new StrBuilder();
+                    for (int i = 0; i < length; i++)
+                    {
+                        sbr.Append('0');
+                    }
+                    if (reverse)
+                    {
+                        number = number + sbr.ToString();
+                    }
+                    else
+                    {
+                        number = sbr.ToString() + number;
+                    }
+                }
+            }
+            return number;
+        }
+
 
         public static float Abs(float n)
         {

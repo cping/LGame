@@ -1,4 +1,6 @@
-﻿namespace java.lang
+﻿using loon.utils;
+
+namespace java.lang
 {
     public class JavaString : CharSequence
     {
@@ -106,14 +108,26 @@
             return StringExtensions.Substring(this.value, beginIndex, endIndex);
         }
 
+        public sbyte[] GetSBytes()
+        {
+            return CharUtils.ToSBytes(JavaSystem.GetEncoding().GetBytes(this.value));
+        }
+
+        public sbyte[] GetSBytes(string encoding)
+        {
+            return CharUtils.ToSBytes(JavaSystem.GetEncoding(encoding).GetBytes(this.value));
+        }
+
         public byte[] GetBytes()
         {
             return JavaSystem.GetEncoding().GetBytes(this.value);
         }
+
         public byte[] GetBytes(string encoding)
         {
             return JavaSystem.GetEncoding(encoding).GetBytes(this.value);
         }
+
         public void GetChars(int srcBegin, int srcEnd, char[] dst, int dstBegin)
         {
             StringExtensions.GetChars(this.value, srcBegin, srcEnd, dst, dstBegin);

@@ -197,6 +197,14 @@ public class LColor implements Serializable {
 		return argb(alpha, red, green, blue);
 	}
 
+	public static final int abgr(float a, float r, float g, float b) {
+		int alpha = (int) (a * 255);
+		int red = (int) (r * 255);
+		int green = (int) (g * 255);
+		int blue = (int) (b * 255);
+		return abgr(alpha, red, green, blue);
+	}
+
 	/**
 	 * 获得ARGB格式数据
 	 * 
@@ -210,7 +218,15 @@ public class LColor implements Serializable {
 		return (a << 24) | (r << 16) | (g << 8) | b;
 	}
 
+	public static final int abgr(int a, int r, int g, int b) {
+		return (a << 24) | (b << 16) | (g << 8) | r;
+	}
+
 	public static final int rgb(int r, int g, int b) {
+		return argb(0xFF, r, g, b);
+	}
+
+	public static final int bgr(int r, int g, int b) {
 		return argb(0xFF, r, g, b);
 	}
 
@@ -1216,6 +1232,10 @@ public class LColor implements Serializable {
 		return argb(getAlpha(), getRed(), getGreen(), getBlue());
 	}
 
+	public int getABGR() {
+		return abgr(getAlpha(), getRed(), getGreen(), getBlue());
+	}
+
 	/**
 	 * 返回ARGB
 	 * 
@@ -1226,6 +1246,10 @@ public class LColor implements Serializable {
 		return argb((int) (a * alpha * 255), getRed(), getGreen(), getBlue());
 	}
 
+	public int getABGR(float alpha) {
+		return abgr((int) (a * alpha * 255), getRed(), getGreen(), getBlue());
+	}
+
 	/**
 	 * 返回RGB
 	 * 
@@ -1233,6 +1257,10 @@ public class LColor implements Serializable {
 	 */
 	public int getRGB() {
 		return rgb(getRed(), getGreen(), getBlue());
+	}
+
+	public int getBgr() {
+		return bgr(getRed(), getGreen(), getBlue());
 	}
 
 	/**
@@ -1245,6 +1273,10 @@ public class LColor implements Serializable {
 	 */
 	public static final int getRGB(int r, int g, int b) {
 		return rgb(r, g, b);
+	}
+	
+	public static final int getBGR(int r, int g, int b) {
+		return bgr(r, g, b);
 	}
 
 	/**
@@ -1259,6 +1291,13 @@ public class LColor implements Serializable {
 		int b = pixels & 0xFF;
 		return rgb(r, g, b);
 	}
+	
+	public static final int getBgr(int pixels) {
+		int r = (pixels >> 16) & 0xFF;
+		int g = (pixels >> 8) & 0xFF;
+		int b = pixels & 0xFF;
+		return bgr(r, g, b);
+	}
 
 	/**
 	 * 获得32位色
@@ -1272,7 +1311,11 @@ public class LColor implements Serializable {
 	public static final int getARGB(int r, int g, int b, int alpha) {
 		return argb(alpha, r, g, b);
 	}
-
+	
+	public static final int getABgr(int r, int g, int b, int alpha) {
+		return abgr(alpha, r, g, b);
+	}
+	
 	/**
 	 * 获得Aplha
 	 * 
@@ -1442,8 +1485,7 @@ public class LColor implements Serializable {
 	/**
 	 * 按照特定百分比改变当前色彩，并返回一个新的LColor对象
 	 * 
-	 * @param percent
-	 *            最大值为1f，最小值为0f
+	 * @param percent 最大值为1f，最小值为0f
 	 * @return
 	 */
 	public LColor percent(float percent) {

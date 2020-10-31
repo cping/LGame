@@ -82,7 +82,7 @@ public class LongArray implements IArray {
 		}
 		return new LongArray(longArrays);
 	}
-	
+
 	public long[] items;
 	public int length;
 	public boolean ordered;
@@ -149,8 +149,7 @@ public class LongArray implements IArray {
 	public void addAll(LongArray array, int offset, int length) {
 		if (offset + length > array.length)
 			throw new LSysException(
-					"offset + length must be <= length: " + offset + " + "
-							+ length + " <= " + array.length);
+					"offset + length must be <= length: " + offset + " + " + length + " <= " + array.length);
 		addAll(array.items, offset, length);
 	}
 
@@ -189,22 +188,19 @@ public class LongArray implements IArray {
 
 	public void incr(int index, int value) {
 		if (index >= length)
-			throw new LSysException("index can't be >= length: "
-					+ index + " >= " + length);
+			throw new LSysException("index can't be >= length: " + index + " >= " + length);
 		items[index] += value;
 	}
 
 	public void mul(int index, int value) {
 		if (index >= length)
-			throw new LSysException("index can't be >= length: "
-					+ index + " >= " + length);
+			throw new LSysException("index can't be >= length: " + index + " >= " + length);
 		items[index] *= value;
 	}
 
 	public void insert(int index, long value) {
 		if (index > length) {
-			throw new LSysException("index can't be > length: "
-					+ index + " > " + length);
+			throw new LSysException("index can't be > length: " + index + " > " + length);
 		}
 		long[] items = this.items;
 		if (length == items.length)
@@ -219,11 +215,9 @@ public class LongArray implements IArray {
 
 	public void swap(int first, int second) {
 		if (first >= length)
-			throw new LSysException("first can't be >= length: "
-					+ first + " >= " + length);
+			throw new LSysException("first can't be >= length: " + first + " >= " + length);
 		if (second >= length)
-			throw new LSysException("second can't be >= length: "
-					+ second + " >= " + length);
+			throw new LSysException("second can't be >= length: " + second + " >= " + length);
 		long[] items = this.items;
 		long firstValue = items[first];
 		items[first] = items[second];
@@ -291,8 +285,7 @@ public class LongArray implements IArray {
 
 	public long removeIndex(int index) {
 		if (index >= length) {
-			throw new LSysException("index can't be >= length: "
-					+ index + " >= " + length);
+			throw new LSysException("index can't be >= length: " + index + " >= " + length);
 		}
 		long[] items = this.items;
 		long value = items[index];
@@ -307,18 +300,15 @@ public class LongArray implements IArray {
 
 	public void removeRange(int start, int end) {
 		if (end >= length) {
-			throw new LSysException("end can't be >= length: "
-					+ end + " >= " + length);
+			throw new LSysException("end can't be >= length: " + end + " >= " + length);
 		}
 		if (start > end) {
-			throw new LSysException("start can't be > end: "
-					+ start + " > " + end);
+			throw new LSysException("start can't be > end: " + start + " > " + end);
 		}
 		long[] items = this.items;
 		int count = end - start + 1;
 		if (ordered) {
-			System.arraycopy(items, start + count, items, start, length
-					- (start + count));
+			System.arraycopy(items, start + count, items, start, length - (start + count));
 		} else {
 			int lastIndex = this.length - 1;
 			for (int i = 0; i < count; i++)
@@ -383,8 +373,7 @@ public class LongArray implements IArray {
 	protected long[] relength(int newlength) {
 		long[] newItems = new long[newlength];
 		long[] items = this.items;
-		System.arraycopy(items, 0, newItems, 0,
-				MathUtils.min(length, newItems.length));
+		System.arraycopy(items, 0, newItems, 0, MathUtils.min(length, newItems.length));
 		this.items = newItems;
 		return newItems;
 	}
@@ -523,7 +512,7 @@ public class LongArray implements IArray {
 		}
 		return this.sum() / length;
 	}
-	
+
 	public long min() {
 		long v = this.items[0];
 		final int size = this.length;
@@ -547,7 +536,7 @@ public class LongArray implements IArray {
 		}
 		return v;
 	}
-	
+
 	@Override
 	public int size() {
 		return length;
@@ -556,6 +545,15 @@ public class LongArray implements IArray {
 	@Override
 	public boolean isEmpty() {
 		return length == 0 || items == null;
+	}
+
+	@Override
+	public int hashCode() {
+		long hashCode = 1;
+		for (int i = length - 1; i > -1; i--) {
+			hashCode = 31 * hashCode + items[i];
+		}
+		return (int) hashCode;
 	}
 
 	public byte[] getBytes() {

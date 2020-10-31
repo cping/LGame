@@ -88,7 +88,7 @@ namespace loon.canvas
             return Find(color.GetRGB());
         }
 
-        public string Find(uint pixel)
+        public string Find(int pixel)
         {
             if (dirty)
             {
@@ -565,7 +565,7 @@ namespace loon.canvas
 
         }
 
-        public bool isDirty()
+        public bool IsDirty()
         {
             return dirty;
         }

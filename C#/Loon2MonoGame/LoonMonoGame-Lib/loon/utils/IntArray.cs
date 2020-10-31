@@ -389,7 +389,7 @@ namespace loon.utils
 	{
 		int[] arrays = this.items;
 		int orderCount = 0;
-		int temp = -1;
+		int temp;
 		int v = order ? Integer.MIN_VALUE_JAVA : Integer.MAX_VALUE_JAVA;
 		for (int i = 0; i < length; i++)
 		{
@@ -463,7 +463,7 @@ namespace loon.utils
 		{
 			return new int[0];
 		}
-		int v = 0;
+		int v;
 		int[] newArrays = CollectionUtils.CopyOf(items, length);
 		for (int i = 0; i < length; i++)
 		{

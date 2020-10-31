@@ -1,6 +1,7 @@
 ﻿using java.lang;
 using loon.geom;
 using loon.utils;
+using Microsoft.Xna.Framework;
 
 namespace loon.canvas
 {
@@ -16,7 +17,7 @@ namespace loon.canvas
             return new LColor(((value >> 16) & 0xFF), ((value >> 8) & 0xFF), (value & 0xFF), ((value >> 24) & 0xFF));
         }
 
-        public static uint ParseColor(string colorString)
+        public static int ParseColor(string colorString)
         {
             return Decode(colorString).GetARGB();
         }
@@ -31,12 +32,12 @@ namespace loon.canvas
             return new LColor(colorString);
         }
 
-        public static float[] ToRGBA(uint pixel)
+        public static float[] ToRGBA(int pixel)
         {
-            int r = (int)((pixel & 0x00FF0000) >> 16);
-            int g = (int)((pixel & 0x0000FF00) >> 8);
-            int b = (int)((pixel & 0x000000FF));
-            int a = (int)((pixel & 0xFF000000) >> 24);
+            int r = (pixel & 0x00FF0000) >> 16;
+            int g = (pixel & 0x0000FF00) >> 8;
+            int b = (pixel & 0x000000FF);
+            int a = (int)((uint)pixel & 0xFF000000) >> 24;
             if (a < 0)
             {
                 a += 256;
@@ -44,40 +45,40 @@ namespace loon.canvas
             return new float[] { r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f };
         }
 
-        public static uint Combine(uint curColor, uint dstColor)
+        public static int Combine(int curColor, int dstColor)
         {
-            uint newA = ((((curColor >> 24) & 0xFF) * (((dstColor >> 24) & 0xFF) + 1)) & 0xFF00) << 16;
+            int newA = ((((curColor >> 24) & 0xFF) * (((dstColor >> 24) & 0xFF) + 1)) & 0xFF00) << 16;
             if ((dstColor & 0xFFFFFF) == 0xFFFFFF)
             {
                 return newA | (curColor & 0xFFFFFF);
             }
-            uint newR = ((((curColor >> 16) & 0xFF) * (((dstColor >> 16) & 0xFF) + 1)) & 0xFF00) << 8;
-            uint newG = (((curColor >> 8) & 0xFF) * (((dstColor >> 8) & 0xFF) + 1)) & 0xFF00;
-            uint newB = (((curColor & 0xFF) * ((dstColor & 0xFF) + 1)) >> 8) & 0xFF;
+            int newR = ((((curColor >> 16) & 0xFF) * (((dstColor >> 16) & 0xFF) + 1)) & 0xFF00) << 8;
+            int newG = (((curColor >> 8) & 0xFF) * (((dstColor >> 8) & 0xFF) + 1)) & 0xFF00;
+            int newB = (((curColor & 0xFF) * ((dstColor & 0xFF) + 1)) >> 8) & 0xFF;
             return newA | newR | newG | newB;
         }
 
-        public static uint Rgb565(float r, float g, float b)
+        public static int Rgb565(float r, float g, float b)
         {
-            return ((uint)(r * 31) << 11) | ((uint)(g * 63) << 5) | (uint)(b * 31);
+            return ((int)(r * 31) << 11) | ((int)(g * 63) << 5) | (int)(b * 31);
         }
 
-        public static uint Rgba4444(float r, float g, float b, float a)
+        public static int Rgba4444(float r, float g, float b, float a)
         {
-            return ((uint)(r * 15) << 12) | ((uint)(g * 15) << 8) | ((uint)(b * 15) << 4) | (uint)(a * 15);
+            return ((int)(r * 15) << 12) | ((int)(g * 15) << 8) | ((int)(b * 15) << 4) | (int)(a * 15);
         }
 
-        public static uint Rgb888(float r, float g, float b)
+        public static int Rgb888(float r, float g, float b)
         {
-            return ((uint)(r * 255) << 16) | ((uint)(g * 255) << 8) | (uint)(b * 255);
+            return ((int)(r * 255) << 16) | ((int)(g * 255) << 8) | (int)(b * 255);
         }
 
-        public static uint Rgba8888(float r, float g, float b, float a)
+        public static int Rgba8888(float r, float g, float b, float a)
         {
-            return ((uint)(r * 255) << 24) | ((uint)(g * 255) << 16) | ((uint)(b * 255) << 8) | (uint)(a * 255);
+            return ((int)(r * 255) << 24) | ((int)(g * 255) << 16) | ((int)(b * 255) << 8) | (int)(a * 255);
         }
 
-        public static uint Argb(float a, float r, float g, float b)
+        public static int Argb(float a, float r, float g, float b)
         {
             int alpha = (int)(a * 255);
             int red = (int)(r * 255);
@@ -86,17 +87,36 @@ namespace loon.canvas
             return Argb(alpha, red, green, blue);
         }
 
-        public static uint Argb(int a, int r, int g, int b)
+        public static int Abgr(float a, float r, float g, float b)
         {
-            return ((uint)a << 24) | ((uint)r << 16) | ((uint)g << 8) | (uint)b;
+            int alpha = (int)(a * 255);
+            int red = (int)(r * 255);
+            int green = (int)(g * 255);
+            int blue = (int)(b * 255);
+            return Abgr(alpha, red, green, blue);
         }
 
-        public static uint Rgb(int r, int g, int b)
+        public static int Argb(int a, int r, int g, int b)
+        {
+            return (a << 24) | (r << 16) | (g << 8) | b;
+        }
+
+        public static int Abgr(int a, int r, int g, int b)
+        {
+            return (a << 24) | (b << 16) | (g << 8) | r;
+        }
+
+        public static int Rgb(int r, int g, int b)
         {
             return Argb(0xFF, r, g, b);
         }
 
-        public static uint Alpha(int color, float a)
+        public static int Bgr(int r, int g, int b)
+        {
+            return Argb(0xFF, r, g, b);
+        }
+
+        public static int Alpha(int color, float a)
         {
             if (a < 0f)
             {
@@ -107,35 +127,35 @@ namespace loon.canvas
                 a = 1f;
             }
             int ialpha = (int)(0xFF * MathUtils.Clamp(a, 0, 1f));
-            return ((uint)ialpha << 24) | ((uint)color & 0xFFFFFF);
+            return (ialpha << 24) | (color & 0xFFFFFF);
         }
 
-        public static int Alpha(uint color)
+        public static int Alpha(int color)
         {
-            return (int)((uint)color >> 24) & 0xFF;
+            return (color >> 24) & 0xFF;
         }
 
-        public static int Red(uint color)
+        public static int Red(int color)
         {
-            return (int)(color >> 16) & 0xFF;
+            return (color >> 16) & 0xFF;
         }
 
-        public static int Green(uint color)
+        public static int Green(int color)
         {
-            return (int)((uint)color >> 8) & 0xFF;
+            return (color >> 8) & 0xFF;
         }
 
-        public static int Blue(uint color)
+        public static int Blue(int color)
         {
-            return (int)(color & 0xFF);
+            return color & 0xFF;
         }
 
-        public static int WithAlpha(uint color, int alpha)
+        public static int WithAlpha(int color, int alpha)
         {
-            return (int)(color & 0x00ffffff) | (int)(alpha << 24);
+            return (color & 0x00ffffff) | (alpha << 24);
         }
 
-        private static uint ConvertInt(string value)
+        private static int ConvertInt(string value)
         {
             if (!MathUtils.IsNan(value))
             {
@@ -143,9 +163,9 @@ namespace loon.canvas
             }
             if (value.IndexOf('.') == -1)
             {
-                return (uint)Integer.ParseInt(value);
+                return Integer.ParseInt(value);
             }
-            return (uint)Double.ParseDouble(value);
+            return (int)Double.ParseDouble(value);
         }
 
         public static float Encode(float upper, float lower)
@@ -265,6 +285,8 @@ namespace loon.canvas
             return targetColor;
         }
 
+        // xna(monogame)用color
+        protected Color _xna_color;
 
         // 默认色彩
         public const uint DEF_COLOR = 0xFFFFFFFF;
@@ -412,7 +434,7 @@ namespace loon.canvas
             }
             else if (c.StartsWith("transparent"))
             {
-                SetColor(TRANSPARENT);
+                SetColor(unchecked((int)TRANSPARENT));
             }
             else if (MathUtils.IsNan(c))
             {
@@ -471,12 +493,17 @@ namespace loon.canvas
             SetColor(r, g, b, a);
         }
 
-        public LColor(uint value)
+        public LColor(uint value) : this(unchecked((int)value))
         {
-            uint r = (value & 0x00FF0000) >> 16;
-            uint g = (value & 0x0000FF00) >> 8;
-            uint b = (value & 0x000000FF);
-            uint a = (value & 0xFF000000) >> 24;
+
+        }
+
+        public LColor(int value)
+        {
+            int r = (value & 0x00FF0000) >> 16;
+            int g = (value & 0x0000FF00) >> 8;
+            int b = (value & 0x000000FF);
+            int a = (int)((uint)value & 0xFF000000) >> 24;
 
             if (a < 0)
             {
@@ -657,17 +684,17 @@ namespace loon.canvas
             return SetColor(color.r, color.g, color.b, color.a);
         }
 
-        public LColor SetColor(uint pixel)
+        public LColor SetColor(int pixel)
         {
             return SetColorARGB(pixel);
         }
 
-        public LColor SetColorARGB(uint pixel)
+        public LColor SetColorARGB(int pixel)
         {
-            uint r = (pixel & 0x00FF0000) >> 16;
-            uint g = (pixel & 0x0000FF00) >> 8;
-            uint b = (pixel & 0x000000FF);
-            uint a = (pixel & 0xFF000000) >> 24;
+            int r = (pixel & 0x00FF0000) >> 16;
+            int g = (pixel & 0x0000FF00) >> 8;
+            int b = (pixel & 0x000000FF);
+            int a = (int)((uint)pixel & 0xFF000000) >> 24;
             if (a < 0)
             {
                 a += 256;
@@ -675,11 +702,11 @@ namespace loon.canvas
             return SetColor(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
         }
 
-        public LColor SetColorRGB(uint pixel)
+        public LColor SetColorRGB(int pixel)
         {
-            uint r = (pixel & 0x00FF0000) >> 16;
-            uint g = (pixel & 0x0000FF00) >> 8;
-            uint b = (pixel & 0x000000FF);
+            int r = (pixel & 0x00FF0000) >> 16;
+            int g = (pixel & 0x0000FF00) >> 8;
+            int b = (pixel & 0x000000FF);
             return SetColor(r / 255.0f, g / 255.0f, b / 255.0f, 1f);
         }
 
@@ -1059,9 +1086,9 @@ namespace loon.canvas
                     Lerp(value1.GetAlpha(), value2.GetAlpha(), amount));
         }
 
-        private static uint Lerp(int color1, int color2, float amount)
+        private static int Lerp(int color1, int color2, float amount)
         {
-            return (uint)color1 + (uint)((color2 - color1) * amount);
+            return (int)(color1 + (color2 - color1) * amount);
         }
 
         public LColor Lerp(LColor target, float alpha)
@@ -1069,62 +1096,95 @@ namespace loon.canvas
             return Lerp(this, target, alpha);
         }
 
-        public uint GetARGB()
+        public int GetARGB()
         {
             return Argb(GetAlpha(), GetRed(), GetGreen(), GetBlue());
         }
 
-        public uint GetARGB(float alpha)
+        public int GetABGR()
+        {
+            return Abgr(GetAlpha(), GetRed(), GetGreen(), GetBlue());
+        }
+
+        public int GetARGB(float alpha)
         {
             return Argb((int)(a * alpha * 255), GetRed(), GetGreen(), GetBlue());
         }
 
-        public uint GetRGB()
+        public int GetABGR(float alpha)
+        {
+            return Abgr((int)(a * alpha * 255), GetRed(), GetGreen(), GetBlue());
+        }
+
+        public int GetRGB()
         {
             return Rgb(GetRed(), GetGreen(), GetBlue());
         }
 
-        public static uint GetRGB(int r, int g, int b)
+        public int GetBgr()
+        {
+            return Bgr(GetRed(), GetGreen(), GetBlue());
+        }
+
+        public static int GetRGB(int r, int g, int b)
         {
             return Rgb(r, g, b);
         }
 
-        public static uint GetRGB(uint pixels)
+        public static int GetBGR(int r, int g, int b)
         {
-            int r = (int)(pixels >> 16) & 0xFF;
-            int g = (int)(pixels >> 8) & 0xFF;
-            int b = (int)pixels & 0xFF;
+            return Bgr(r, g, b);
+        }
+
+        public static int GetRGB(int pixels)
+        {
+            int r = (pixels >> 16) & 0xFF;
+            int g = (pixels >> 8) & 0xFF;
+            int b = pixels & 0xFF;
             return Rgb(r, g, b);
         }
 
-        public static uint GetARGB(int r, int g, int b, int alpha)
+        public static int GetBgr(int pixels)
+        {
+            int r = (pixels >> 16) & 0xFF;
+            int g = (pixels >> 8) & 0xFF;
+            int b = pixels & 0xFF;
+            return Bgr(r, g, b);
+        }
+
+        public static int GetARGB(int r, int g, int b, int alpha)
         {
             return Argb(alpha, r, g, b);
         }
 
-        public static int GetAlpha(uint color)
+        public static int GetABGR(int r, int g, int b, int alpha)
         {
-            return (int)(color >> 24);
+            return Abgr(alpha, r, g, b);
         }
 
-        public static int GetRed(uint color)
+        public static int GetAlpha(int color)
         {
-            return (int)((color >> 16) & 0xFF);
+            return (int)((uint)color >> 24);
         }
 
-        public static int GetGreen(uint color)
+        public static int GetRed(int color)
         {
-            return (int)(color >> 8) & 0xFF;
+            return (color >> 16) & 0xFF;
         }
 
-        public static int GetBlue(uint color)
+        public static int GetGreen(int color)
         {
-            return (int)(color & 0xFF);
+            return (color >> 8) & 0xFF;
         }
 
-        public static uint Premultiply(uint argbColor)
+        public static int GetBlue(int color)
         {
-            int a = (int)(argbColor >> 24);
+            return color & 0xFF;
+        }
+
+        public static int Premultiply(int argbColor)
+        {
+            int a = (int)((uint)argbColor >> 24);
             if (a == 0)
             {
                 return 0;
@@ -1135,32 +1195,32 @@ namespace loon.canvas
             }
             else
             {
-                int r = (int)((argbColor >> 16) & 0xFF);
-                int g = (int)((argbColor >> 8) & 0xFF);
-                int b = (int)(argbColor & 0xFF);
+                int r = (argbColor >> 16) & 0xFF;
+                int g = (argbColor >> 8) & 0xFF;
+                int b = argbColor & 0xFF;
                 r = (a * r + 127) / 255;
                 g = (a * g + 127) / 255;
                 b = (a * b + 127) / 255;
-                return (uint)((a << 24) | (r << 16) | (g << 8) | b);
+                return (a << 24) | (r << 16) | (g << 8) | b;
             }
         }
 
-        public static int[] GetRGBs(uint pixel)
+        public static int[] GetRGBs(int pixel)
         {
             int[] rgbs = new int[3];
-            rgbs[0] = (int)((pixel >> 16) & 0xFF);
-            rgbs[1] = (int)((pixel >> 8) & 0xFF);
-            rgbs[2] = (int)((pixel) & 0xFF);
+            rgbs[0] = (pixel >> 16) & 0xFF;
+            rgbs[1] = (pixel >> 8) & 0xFF;
+            rgbs[2] = (pixel) & 0xFF;
             return rgbs;
         }
 
-        public static int[] GetRGBAs(uint pixel)
+        public static int[] GetRGBAs(int pixel)
         {
             int[] rgbas = new int[4];
-            rgbas[0] = (int)((pixel >> 16) & 0xFF);
-            rgbas[1] = (int)((pixel >> 8) & 0xFF);
-            rgbas[2] = (int)((pixel) & 0xFF);
-            rgbas[3] = (int)(pixel >> 24);
+            rgbas[0] = (pixel >> 16) & 0xFF;
+            rgbas[1] = (pixel >> 8) & 0xFF;
+            rgbas[2] = (pixel) & 0xFF;
+            rgbas[3] = (int)((uint)pixel >> 24);
             return rgbas;
         }
 
@@ -1174,21 +1234,21 @@ namespace loon.canvas
             return new byte[] { (byte)GetRed(), (byte)GetGreen(), (byte)GetBlue() };
         }
 
-        public uint ToIntBits()
+        public int ToIntBits()
         {
-            uint color = ((uint)(255 * a) << 24) | ((uint)(255 * b) << 16) | ((uint)(255 * g) << 8) | ((uint)(255 * r));
+            int color = ((int)(255 * a) << 24) | ((int)(255 * b) << 16) | ((int)(255 * g) << 8) | ((int)(255 * r));
             return color;
         }
 
         public static float ToFloatBits(float r, float g, float b, float a)
         {
-            uint color = ((uint)(255 * a) << 24) | ((uint)(255 * b) << 16) | ((uint)(255 * g) << 8) | ((uint)(255 * r));
+            int color = ((int)(255 * a) << 24) | ((int)(255 * b) << 16) | ((int)(255 * g) << 8) | ((int)(255 * r));
             return NumberUtils.IntBitsToFloat((int)(color & 0xfeffffff));
         }
 
         public float ToFloatBits()
         {
-            uint color = ((uint)(255 * a) << 24) | ((uint)(255 * b) << 16) | ((uint)(255 * g) << 8) | ((uint)(255 * r));
+            int color = ((int)(255 * a) << 24) | ((int)(255 * b) << 16) | ((int)(255 * g) << 8) | ((int)(255 * r));
             return NumberUtils.IntBitsToFloat((int)(color & 0xfeffffff));
         }
 
@@ -1228,12 +1288,12 @@ namespace loon.canvas
             }
         }
 
-        public static string CssColorString(uint color)
+        public static string CssColorString(int color)
         {
             double a = ((color >> 24) & 0xFF) / 255.0;
-            int r = (int)((color >> 16) & 0xFF);
-            int g = (int)((color >> 8) & 0xFF);
-            int b = (int)((color >> 0) & 0xFF);
+            int r = (color >> 16) & 0xFF;
+            int g = (color >> 8) & 0xFF;
+            int b = (color >> 0) & 0xFF;
             return "rgba(" + r + "," + g + "," + b + "," + a + ")";
         }
 
@@ -1247,7 +1307,7 @@ namespace loon.canvas
                 }
                 else
                 {
-                    return new LColor((uint)CharUtils.FromHexToLong(c));
+                    return new LColor((int)CharUtils.FromHexToLong(c));
                 }
             }
             catch (Throwable)
@@ -1281,13 +1341,6 @@ namespace loon.canvas
             return new Alpha(a);
         }
 
-        /**
-		 * 按照特定百分比改变当前色彩，并返回一个新的LColor对象
-		 * 
-		 * @param percent
-		 *            最大值为1f，最小值为0f
-		 * @return
-		 */
         public LColor Percent(float percent)
         {
             if (percent < -1)
@@ -1368,7 +1421,7 @@ namespace loon.canvas
         {
             int max = (int)MathUtils.Max(r, g, b);
             int min = (int)MathUtils.Min(r, g, b);
-            float h = 0, s = 0, l = (max + min) / 2;
+            float h = 0, s, l = (max + min) / 2;
             if (max == min)
             {
                 h = s = 0;
@@ -1455,7 +1508,7 @@ namespace loon.canvas
             return LColorList.Get().Find(colorName);
         }
 
-        public static string GetColorName(uint pixel)
+        public static string GetColorName(int pixel)
         {
             return LColorList.Get().Find(pixel);
         }
@@ -1465,9 +1518,27 @@ namespace loon.canvas
             return LColorList.Get().Find(color);
         }
 
-        public string ToString(uint color)
+        public uint GetXNAPixel()
         {
-            string value = CharUtils.ToHex((int)color);
+            return unchecked((uint)GetABGR());
+        }
+
+        public Color GetXNAColor()
+        {
+            if (_xna_color == null)
+            {
+                _xna_color = new Color(unchecked((uint)GetABGR()));
+            }
+            else
+            {
+                _xna_color.PackedValue = unchecked((uint)GetABGR());
+            }
+            return _xna_color;
+        }
+
+        public string ToString(int color)
+        {
+            string value = CharUtils.ToHex(color);
             for (; value.Length() < 8;)
             {
                 value = "0" + value;
@@ -1496,7 +1567,7 @@ namespace loon.canvas
             }
             else if ("alpha".Equals(newFormat))
             {
-                return ToString((uint)GetAlpha());
+                return ToString(GetAlpha());
             }
             return ToString();
         }

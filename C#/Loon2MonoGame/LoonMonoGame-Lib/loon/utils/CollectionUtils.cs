@@ -296,6 +296,17 @@ namespace loon.utils
             JavaSystem.Arraycopy(data, 0, tempArr, 0, MathUtils.Min(data.Length, newSize));
             return tempArr;
         }
+        public static long[] CopyOf(long[] obj)
+        {
+            return CopyOf(obj, obj.Length);
+        }
+
+        public static long[] CopyOf(long[] obj, int newSize)
+        {
+            long[] tempArr = new long[newSize];
+            JavaSystem.Arraycopy(obj, 0, tempArr, 0, MathUtils.Min(obj.Length, newSize));
+            return tempArr;
+        }
 
         public static object[] CopyOf(object[] obj)
         {

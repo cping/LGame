@@ -5,6 +5,52 @@ namespace loon.utils
 {
     public sealed class StringUtils : CharUtils
     {
+		public static string Format(string format,params object[] o)
+		{
+			if (CollectionUtils.IsEmpty(o))
+			{
+				return "";
+			}
+			StrBuilder b = new StrBuilder();
+			int p = 0;
+			for (; ; )
+			{
+				int i = format.IndexOf('{', p);
+				if (i == -1)
+				{
+					break;
+				}
+				int idx = format.IndexOf('}', i + 1);
+				if (idx == -1)
+				{
+					break;
+				}
+				if (p != i)
+				{
+					b.Append(format.Substring(p, i));
+				}
+				String nstr = format.Substring(i + 1, idx);
+				try
+				{
+					int n = Integer.ParseInt(nstr);
+					if (n >= 0 && n < o.Length)
+					{
+						b.Append(o[n]);
+					}
+					else
+					{
+						b.Append('{').Append(nstr).Append('}');
+					}
+				}
+				catch (java.lang.Exception e)
+				{
+					b.Append('{').Append(nstr).Append('}');
+				}
+				p = idx + 1;
+			}
+			b.Append(format.Substring(p));
+			return b.ToString();
+		}
 
 		public static bool IsHex(CharSequence ch)
 		{

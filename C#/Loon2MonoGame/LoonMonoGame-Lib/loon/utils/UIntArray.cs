@@ -220,7 +220,7 @@ namespace loon.utils
 
         public long ReadUInt()
         {
-            long result = 0l;
+            long result = 0;
             int firstByte = 0;
             int secondByte = 0;
             int thirdByte = 0;
