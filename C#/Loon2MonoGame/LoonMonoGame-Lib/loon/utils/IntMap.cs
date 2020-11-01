@@ -76,7 +76,7 @@ namespace loon.utils
 
         private const int EMPTY = 0;
 
-        private float loader_factor;
+        private readonly float loader_factor;
 
         private bool locked;
         private int capacity;

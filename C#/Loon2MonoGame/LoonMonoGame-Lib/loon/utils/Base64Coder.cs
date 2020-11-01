@@ -149,14 +149,14 @@ namespace loon.utils
                 encodedData = new sbyte[numberTriplets * 4];
             }
 
-            sbyte k = 0;
-            sbyte l = 0;
-            sbyte b1 = 0;
-            sbyte b2 = 0;
-            sbyte b3 = 0;
-            int encodedIndex = 0;
-            int dataIndex = 0;
-            int i = 0;
+            sbyte k ;
+            sbyte l ;
+            sbyte b1 ;
+            sbyte b2 ;
+            sbyte b3 ;
+            int encodedIndex ;
+            int dataIndex ;
+            int i ;
             for (i = 0; i < numberTriplets; i++)
             {
 
@@ -175,8 +175,10 @@ namespace loon.utils
                 sbyte val3 = ((b3 & SIGN) == 0) ? (sbyte)(b3 >> 6) : (sbyte)((b3) >> 6 ^ 0xfc);
 
                 encodedData[encodedIndex] = LOOKUP_BASE64_ALPHABET[val1];
+#pragma warning disable CS0675 // 对进行了带符号扩展的操作数使用了按位或运算符
                 encodedData[encodedIndex + 1] = LOOKUP_BASE64_ALPHABET[val2 | (k << 4)];
                 encodedData[encodedIndex + 2] = LOOKUP_BASE64_ALPHABET[(l << 2) | val3];
+#pragma warning restore CS0675 // 对进行了带符号扩展的操作数使用了按位或运算符
                 encodedData[encodedIndex + 3] = LOOKUP_BASE64_ALPHABET[b3 & 0x3f];
             }
 
@@ -203,8 +205,10 @@ namespace loon.utils
                 sbyte val2 = ((b2 & SIGN) == 0) ? (sbyte)(b2 >> 4) : (sbyte)((b2) >> 4 ^ 0xf0);
 
                 encodedData[encodedIndex] = LOOKUP_BASE64_ALPHABET[val1];
+#pragma warning disable CS0675 // 对进行了带符号扩展的操作数使用了按位或运算符
                 encodedData[encodedIndex + 1] = LOOKUP_BASE64_ALPHABET[val2 | (k << 4)];
                 encodedData[encodedIndex + 2] = LOOKUP_BASE64_ALPHABET[l << 2];
+#pragma warning restore CS0675 // 对进行了带符号扩展的操作数使用了按位或运算符
                 encodedData[encodedIndex + 3] = PAD;
             }
             return encodedData;
@@ -220,7 +224,7 @@ namespace loon.utils
 
             int numberQuadruple = base64Data.Length / FOURBYTE;
             sbyte[] decodedData = null;
-            sbyte b1 = 0, b2 = 0, b3 = 0, b4 = 0, marker0 = 0, marker1 = 0;
+            sbyte b1 , b2 , b3 , b4 , marker0 , marker1 ;
 
             int encodedIndex = 0;
             int dataIndex = 0;
@@ -250,19 +254,21 @@ namespace loon.utils
                     b3 = BASE64_ALPHABET[marker0];
                     b4 = BASE64_ALPHABET[marker1];
 
-                    decodedData[encodedIndex] = (sbyte)(b1 << 2 | b2 >> 4);
-                    decodedData[encodedIndex + 1] = (sbyte)(((b2 & 0xf) << 4) | ((b3 >> 2) & 0xf));
-                    decodedData[encodedIndex + 2] = (sbyte)(b3 << 6 | b4);
+                    decodedData[0] = (sbyte)(b1 << 2 | b2 >> 4);
+                    decodedData[0 + 1] = (sbyte)(((b2 & 0xf) << 4) | ((b3 >> 2) & 0xf));
+#pragma warning disable CS0675 // 对进行了带符号扩展的操作数使用了按位或运算符
+                    decodedData[0 + 2] = (sbyte)(b3 << 6 | b4);
+#pragma warning restore CS0675 // 对进行了带符号扩展的操作数使用了按位或运算符
                 }
                 else if (marker0 == PAD)
                 {
-                    decodedData[encodedIndex] = (sbyte)(b1 << 2 | b2 >> 4);
+                    decodedData[0] = (sbyte)(b1 << 2 | b2 >> 4);
                 }
                 else if (marker1 == PAD)
                 {
                     b3 = BASE64_ALPHABET[marker0];
-                    decodedData[encodedIndex] = (sbyte)(b1 << 2 | b2 >> 4);
-                    decodedData[encodedIndex + 1] = (sbyte)(((b2 & 0xf) << 4) | ((b3 >> 2) & 0xf));
+                    decodedData[0] = (sbyte)(b1 << 2 | b2 >> 4);
+                    decodedData[0 + 1] = (sbyte)(((b2 & 0xf) << 4) | ((b3 >> 2) & 0xf));
                 }
                 encodedIndex += 3;
             }

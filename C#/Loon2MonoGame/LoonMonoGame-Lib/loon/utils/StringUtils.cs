@@ -42,7 +42,7 @@ namespace loon.utils
 						b.Append('{').Append(nstr).Append('}');
 					}
 				}
-				catch (java.lang.Exception e)
+				catch (java.lang.Exception)
 				{
 					b.Append('{').Append(nstr).Append('}');
 				}

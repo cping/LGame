@@ -31,7 +31,7 @@
 		public override string ToString()
 		{
 			StringKeyValue builder = new StringKeyValue("LTimerContext");
-			builder.KV("timeSinceLastUpdate", timeSinceLastUpdate).Comma().KV("tick", tick).Comma().KV("alpha", alpha);
+			builder.Kv("timeSinceLastUpdate", timeSinceLastUpdate).Comma().Kv("tick", tick).Comma().Kv("alpha", alpha);
 			return builder.ToString();
 		}
 

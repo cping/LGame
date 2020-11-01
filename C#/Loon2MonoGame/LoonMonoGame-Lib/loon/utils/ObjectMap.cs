@@ -9,7 +9,7 @@ namespace loon.utils
     public class ObjectMap<K, V> : Iterable<ObjectMap<K, V>.Entry<K, V>>, IEnumerable<ObjectMap<K, V>.Entry<K, V>>, IArray
     {
 #pragma warning disable CS0693 // 类型参数与外部类型中的类型参数同名
-        public class Values<V> : Iterable<V>, LIterator<V>
+        public class Values<V> : Iterable<V>, LIterator<V>, IEnumerable<V>
         {
 #pragma warning restore CS0693 // 类型参数与外部类型中的类型参数同名
 
@@ -109,6 +109,16 @@ namespace loon.utils
             {
                 Iterable_Java<V>.ForEach(this, consumer);
             }
+
+            public IEnumerator<V> GetEnumerator()
+            {
+                return new IEnumeratorAdapter<V>(this.Iterator());
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
         }
 
         private Values<V> values1, values2;
@@ -140,7 +150,7 @@ namespace loon.utils
 
 
 #pragma warning disable CS0693 // 类型参数与外部类型中的类型参数同名
-        public class Keys<K> : Iterable<K>, LIterator<K>
+        public class Keys<K> : Iterable<K>, LIterator<K>, IEnumerable<K>
 #pragma warning restore CS0693 // 类型参数与外部类型中的类型参数同名
         {
 
@@ -238,6 +248,16 @@ namespace loon.utils
             {
                 Iterable_Java<K>.ForEach(this, consumer);
             }
+
+            public IEnumerator<K> GetEnumerator()
+            {
+                return new IEnumeratorAdapter<K>(this.Iterator());
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
         }
 
         private Keys<K> keys1, keys2;
@@ -246,7 +266,7 @@ namespace loon.utils
         {
             return GetKeys();
         }
-            
+
         public Keys<K> GetKeys()
         {
             if (keys1 == null)
@@ -269,7 +289,7 @@ namespace loon.utils
 
 
 #pragma warning disable CS0693 // 类型参数与外部类型中的类型参数同名
-        public class Entries<K, V> : Iterable<ObjectMap<K, V>.Entry<K, V>>, LIterator<Entry<K, V>>
+        public class Entries<K, V> : Iterable<ObjectMap<K, V>.Entry<K, V>>, LIterator<Entry<K, V>>, IEnumerable<Entry<K, V>>
 #pragma warning restore CS0693 // 类型参数与外部类型中的类型参数同名
         {
 
@@ -363,17 +383,30 @@ namespace loon.utils
                 Iterable_Java<ObjectMap<K, V>.Entry<K, V>>.ForEach(this, consumer);
             }
 
-
             Iterator<ObjectMap<K, V>.Entry<K, V>> Iterable<ObjectMap<K, V>.Entry<K, V>>.Iterator()
             {
                 return (Iterator<ObjectMap<K, V>.Entry<K, V>>)this;
             }
 
+            public IEnumerator<Entry<K, V>> GetEnumerator()
+            {
+                return new IEnumeratorAdapter<Entry<K, V>>(this.Iterator());
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
         }
 
         private Entries<K, V> entries1, entries2;
 
         public Entries<K, V> Iterator()
+        {
+            return GetEntries();
+        }
+
+        public Entries<K,V> ENTRIES()
         {
             return GetEntries();
         }

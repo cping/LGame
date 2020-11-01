@@ -175,7 +175,7 @@ namespace loon.utils
             return AddValue(" , ");
         }
 
-        public StringKeyValue KV(CharSequence key, object[] values)
+        public StringKeyValue Kv(CharSequence key, object[] values)
         {
             if (key == null && values == null)
             {
@@ -193,10 +193,10 @@ namespace loon.utils
                 }
             }
             sbr.Append('}');
-            return KV(key, sbr.ToString());
+            return Kv(key, sbr.ToString());
         }
 
-        public StringKeyValue KV(CharSequence key, object value)
+        public StringKeyValue Kv(CharSequence key, object value)
         {
             if (key == null && value == null)
             {
@@ -213,7 +213,7 @@ namespace loon.utils
             return this;
         }
 
-        public StringKeyValue KV(string key, object[] values)
+        public StringKeyValue Kv(string key, object[] values)
         {
             if (key == null && values == null)
             {
@@ -231,10 +231,10 @@ namespace loon.utils
                 }
             }
             sbr.Append('}');
-            return KV(key, sbr.ToString());
+            return Kv(key, sbr.ToString());
         }
 
-        public StringKeyValue KV(string key, object value)
+        public StringKeyValue Kv(string key, object value)
         {
             if (key == null && value == null)
             {

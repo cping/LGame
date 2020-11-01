@@ -1,6 +1,8 @@
 ﻿using java.lang;
 using java.util;
 using loon.utils;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace loon.geom
 {
@@ -945,7 +947,7 @@ namespace loon.geom
             return result;
         }
 
-        public bool isFloatValid()
+        public bool IsFloatValid()
         {
 
             bool valid = true;
@@ -965,22 +967,21 @@ namespace loon.geom
             return valid;
         }
 
-        public static Matrix3 Avg(Collection<Matrix3> Set)
+        public static Matrix3 Avg(ICollection<Matrix3> Set)
         {
-            /*Matrix3 average = new Matrix3();
+            Matrix3 average = new Matrix3();
 			average.Set(0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f);
 			float hist = 0;
-			for (Matrix3 matrix3d : Set)
+			foreach (Matrix3 matrix3d in Set)
 			{
-				if (matrix3d.isFloatValid())
+				if (matrix3d.IsFloatValid())
 				{
-					average.add(matrix3d);
+					average.Add(matrix3d);
 					hist++;
 				}
 			}
 			average.Mul(1f / hist);
-			return average;*/
-            return null;
+			return average;
         }
 
         public void Cpy(Matrix3 m)
@@ -1275,9 +1276,9 @@ namespace loon.geom
 
         public static void SetRotateEulerM(float[] rm, int rmOffset, float x, float y, float z)
         {
-            x = x * 0.01745329f;
-            y = y * 0.01745329f;
-            z = z * 0.01745329f;
+            x *= 0.01745329f;
+            y *= 0.01745329f;
+            z *= 0.01745329f;
             float sx = MathUtils.Sin(x);
             float sy = MathUtils.Sin(y);
             float sz = MathUtils.Sin(z);

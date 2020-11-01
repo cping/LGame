@@ -1,4 +1,5 @@
 ﻿using java.lang;
+using loon.geom;
 
 namespace loon
 {
@@ -95,6 +96,9 @@ namespace loon
 
         // 理论上一年
         public const long YEAR = DAY * 365;
+
+        public static readonly Dimension viewSize = new Dimension(480, 320);
+
         public static int Unite(int hashCode, bool value)
         {
             int v = value ? 1231 : 1237;

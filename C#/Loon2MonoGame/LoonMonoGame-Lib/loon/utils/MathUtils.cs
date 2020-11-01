@@ -1921,6 +1921,73 @@ namespace loon.utils
                 }
             }
         }
+
+        public static bool IsZero(float value)
+        {
+            return MathUtils.Abs(value) <= 0.00000001;
+        }
+
+        protected static int TO_STRING_DECIMAL_PLACES = 3;
+
+        public static string ToString(float value)
+        {
+            return ToString(value, TO_STRING_DECIMAL_PLACES);
+        }
+
+        public static string ToString(float value, bool showTag)
+        {
+            return ToString(value, TO_STRING_DECIMAL_PLACES, showTag);
+        }
+
+        public static string ToString(float value, int decimalPlaces)
+        {
+            return ToString(value, decimalPlaces, false);
+        }
+
+        public static string ToString(float value, int decimalPlaces, bool showTag)
+        {
+            if (IsNan(value))
+            {
+                return "NaN";
+            }
+            StrBuilder buf = new StrBuilder();
+            if (value >= 0)
+            {
+                if (showTag)
+                {
+                    buf.Append("+");
+                }
+            }
+            else
+            {
+                if (showTag)
+                {
+                    buf.Append("-");
+                }
+                value = -value;
+            }
+            int ivalue = (int)value;
+            buf.Append(ivalue);
+            if (decimalPlaces > 0)
+            {
+                buf.Append(".");
+                for (int ii = 0; ii < decimalPlaces; ii++)
+                {
+                    value = (value - ivalue) * 10;
+                    ivalue = (int)value;
+                    buf.Append(ivalue);
+                }
+                for (int ii = 0; ii < decimalPlaces - 1; ii++)
+                {
+                    if (buf.CharAt(buf.Length() - 1) == '0')
+                    {
+                        buf.SetLength(buf.Length() - 1);
+                    }
+                }
+            }
+            return buf.ToString();
+        }
+
     }
 }
 
