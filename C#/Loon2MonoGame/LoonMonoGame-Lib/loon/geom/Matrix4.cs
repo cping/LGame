@@ -52,7 +52,7 @@ namespace loon.geom
 
 		public readonly float[] val = new float[16];
 
-		//private Support //support;
+		private Support support;
 
 		private void Init()
 		{
@@ -245,7 +245,7 @@ namespace loon.geom
 
 		public Matrix4 Mul(Matrix4 matrix)
 		{
-			//support.Mul(val, matrix.val);
+			support.Mul(val, matrix.val);
 			return this;
 		}
 
@@ -253,14 +253,14 @@ namespace loon.geom
 		{
 			Matrix4 m = new Matrix4();
 			m.Set(aff);
-			////support.Mul(val, m.val);
+			//support.Mul(val, m.val);
 			return this;
 		}
 
 		public Matrix4 MulLeft(Matrix4 matrix)
 		{
 			tmpMat.Set(matrix);
-			////support.Mul(tmpMat.val, this.val);
+			//support.Mul(tmpMat.val, this.val);
 			return Set(tmpMat);
 		}
 
@@ -905,7 +905,7 @@ namespace loon.geom
 			tmp[M32] = 0;
 			tmp[M33] = 1;
 
-			//support.Mul(val, tmp);
+			support.Mul(val, tmp);
 			return this;
 		}
 
@@ -944,7 +944,7 @@ namespace loon.geom
 		public Matrix4 Rotate(Quaternion rotation)
 		{
 			rotation.ToMatrix(tmp);
-			//support.Mul(val, tmp);
+			support.Mul(val, tmp);
 			return this;
 		}
 
@@ -972,7 +972,7 @@ namespace loon.geom
 			tmp[M32] = 0;
 			tmp[M33] = 1;
 
-			//support.Mul(val, tmp);
+			support.Mul(val, tmp);
 			return this;
 		}
 

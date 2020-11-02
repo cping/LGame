@@ -1,5 +1,0 @@
-#WebServer config file
-#Tue Nov 03 13:19:36 CST 2015
-port=8899
-dir=www
-key=282340664

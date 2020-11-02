@@ -2,7 +2,7 @@
  * Copyright 2008 - 2015 The Loon Game Engine Authors
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
+ * use this file except in compliance with the License. You may obtain a cpy of
  * the License at
  * 
  * http://www.apache.org/licenses/LICENSE-2.0
@@ -129,15 +129,11 @@ public class Vector4f implements Serializable, XYZW {
 	}
 
 	public Vector4f add(float x, float y, float z, float w) {
-		return copy().addSelf(x, y, z, w);
+		return cpy().addSelf(x, y, z, w);
 	}
 
 	public Vector4f addSelf(float x, float y, float z, float w) {
 		return set(this.x + x, this.y + y, this.z + z, this.w + w);
-	}
-
-	public Vector4f copy() {
-		return new Vector4f(this);
 	}
 
 	public Vector4f add(Vector3f v, float w) {
@@ -253,7 +249,7 @@ public class Vector4f implements Serializable, XYZW {
 	}
 
 	public Vector4f normalize() {
-		return copy().normalizeSelf();
+		return cpy().normalizeSelf();
 	}
 
 	public Vector4f normalizeSelf() {
@@ -266,7 +262,7 @@ public class Vector4f implements Serializable, XYZW {
 	}
 
 	public Vector4f normalize3() {
-		return copy().normalize3Self();
+		return cpy().normalize3Self();
 	}
 
 	public Vector4f normalize3Self() {
@@ -316,7 +312,7 @@ public class Vector4f implements Serializable, XYZW {
 	}
 
 	public Vector4f lerp(Vector4f target, float alpha) {
-		return copy().lerpSelf(target, alpha);
+		return cpy().lerpSelf(target, alpha);
 	}
 
 	public Vector4f lerpSelf(Vector4f target, float alpha) {
