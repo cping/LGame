@@ -43,7 +43,7 @@ public class PointF implements XY {
 	public PointF(float size) {
 		set(size, size);
 	}
-	
+
 	public PointF(float x1, float y1) {
 		set(x1, y1);
 	}
@@ -163,6 +163,10 @@ public class PointF implements XY {
 		this.x = MathUtils.random(0f, LSystem.viewSize.getWidth());
 		this.y = MathUtils.random(0f, LSystem.viewSize.getHeight());
 		return this;
+	}
+
+	public float[] toArray() {
+		return new float[] { x, y };
 	}
 
 	public String toCSS() {

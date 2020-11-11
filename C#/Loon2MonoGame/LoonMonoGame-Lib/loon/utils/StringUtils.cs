@@ -143,5 +143,140 @@ namespace loon.utils
         {
             return v == null || v.Length == 0 || "".Equals(v.ToString().Trim());
         }
-    }
+
+
+		public static string Join(char flag,params object[] o)
+		{
+			if (CollectionUtils.IsEmpty(o))
+			{
+				return "";
+			}
+			StrBuilder sbr = new StrBuilder();
+			int size = o.Length;
+			for (int i = 0; i < size; i++)
+			{
+				sbr.Append(o[i]);
+				if (i < size - 1)
+				{
+					sbr.Append(flag);
+				}
+			}
+			return sbr.ToString();
+		}
+
+		public static string Join(char flag,params float[] o)
+		{
+			if (CollectionUtils.IsEmpty(o))
+			{
+				return "";
+			}
+			StrBuilder sbr = new StrBuilder();
+			int size = o.Length;
+			for (int i = 0; i < size; i++)
+			{
+				sbr.Append(o[i]);
+				if (i < size - 1)
+				{
+					sbr.Append(flag);
+				}
+			}
+			return sbr.ToString();
+		}
+
+		public static string Join(char flag,params int[] o)
+		{
+			if (CollectionUtils.IsEmpty(o))
+			{
+				return "";
+			}
+			StrBuilder sbr = new StrBuilder();
+			int size = o.Length;
+			for (int i = 0; i < size; i++)
+			{
+				sbr.Append(o[i]);
+				if (i < size - 1)
+				{
+					sbr.Append(flag);
+				}
+			}
+			return sbr.ToString();
+		}
+
+		public static string Join(char flag,params long[] o)
+		{
+			if (CollectionUtils.IsEmpty(o))
+			{
+				return "";
+			}
+			StrBuilder sbr = new StrBuilder();
+			int size = o.Length;
+			for (int i = 0; i < size; i++)
+			{
+				sbr.Append(o[i]);
+				if (i < size - 1)
+				{
+					sbr.Append(flag);
+				}
+			}
+			return sbr.ToString();
+		}
+
+		public static string Join(char flag,params bool[] o)
+		{
+			if (CollectionUtils.IsEmpty(o))
+			{
+				return "";
+			}
+			StrBuilder sbr = new StrBuilder();
+			int size = o.Length;
+			for (int i = 0; i < size; i++)
+			{
+				sbr.Append(o[i]);
+				if (i < size - 1)
+				{
+					sbr.Append(flag);
+				}
+			}
+			return sbr.ToString();
+		}
+
+		public static string Join(char flag,params CharSequence[] o)
+		{
+			if (CollectionUtils.IsEmpty(o))
+			{
+				return "";
+			}
+			StrBuilder sbr = new StrBuilder();
+			int size = o.Length;
+			for (int i = 0; i < size; i++)
+			{
+				sbr.Append(o[i]);
+				if (i < size - 1)
+				{
+					sbr.Append(flag);
+				}
+			}
+			return sbr.ToString();
+		}
+
+		public static string Join(char flag, params string[] o)
+		{
+			if (CollectionUtils.IsEmpty(o))
+			{
+				return "";
+			}
+			StrBuilder sbr = new StrBuilder();
+			int size = o.Length;
+			for (int i = 0; i < size; i++)
+			{
+				sbr.Append(o[i]);
+				if (i < size - 1)
+				{
+					sbr.Append(flag);
+				}
+			}
+			return sbr.ToString();
+		}
+
+	}
 }

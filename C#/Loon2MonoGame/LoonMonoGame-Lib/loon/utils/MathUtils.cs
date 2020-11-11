@@ -1927,6 +1927,16 @@ namespace loon.utils
             return MathUtils.Abs(value) <= 0.00000001;
         }
 
+        public static float Nearest(float x, float a, float b)
+        {
+            if (Abs(a - x) < Abs(b - x))
+            {
+                return a;
+            }
+            return b;
+        }
+
+
         protected static int TO_STRING_DECIMAL_PLACES = 3;
 
         public static string ToString(float value)

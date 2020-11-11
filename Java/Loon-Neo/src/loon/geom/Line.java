@@ -62,9 +62,9 @@ public class Line extends Shape {
 
 	private Vector2f vec;
 
-	private Vector2f loc = new Vector2f(0, 0);
+	private final Vector2f loc = new Vector2f(0, 0);
 
-	private Vector2f closest = new Vector2f(0, 0);
+	private final Vector2f closest = new Vector2f(0, 0);
 
 	public Line() {
 		this(0f, 0f);

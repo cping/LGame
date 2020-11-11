@@ -34,9 +34,6 @@ public class Polygon extends Shape implements BoxSize {
 	 */
 	private static final long serialVersionUID = 7491444927273846690L;
 
-	public static class Polygon2i {
-	}
-
 	private boolean allowDups = false;
 
 	private boolean closed = true;

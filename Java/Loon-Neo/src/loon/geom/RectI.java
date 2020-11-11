@@ -60,6 +60,17 @@ public class RectI implements XY {
 		}
 
 		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + NumberUtils.floatToIntBits(left);
+			result = prime * result + NumberUtils.floatToIntBits(top);
+			result = prime * result + NumberUtils.floatToIntBits(right);
+			result = prime * result + NumberUtils.floatToIntBits(bottom);
+			return result;
+		}
+		
+		@Override
 		public boolean equals(Object obj) {
 			Range r = (Range) obj;
 			if (r != null) {

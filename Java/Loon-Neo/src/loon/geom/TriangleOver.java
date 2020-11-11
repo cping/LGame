@@ -26,7 +26,7 @@ public class TriangleOver implements Triangle {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private float[][] triangles;
+	private final float[][] triangles;
 
 	public TriangleOver(Triangle t) {
 		triangles = new float[t.getTriangleCount() * 6 * 3][2];
