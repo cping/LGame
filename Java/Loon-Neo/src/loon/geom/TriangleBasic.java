@@ -31,9 +31,9 @@ public class TriangleBasic implements Triangle {
 
 	private static final float EPSILON = 0.0000000001f;
 
-	private TArray<PointF> poly = new TArray<PointF>();
+	private final TArray<PointF> poly = new TArray<PointF>();
 
-	private TArray<PointF> tris = new TArray<PointF>();
+	private final TArray<PointF> tris = new TArray<PointF>();
 
 	private boolean tried;
 

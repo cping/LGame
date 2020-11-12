@@ -515,14 +515,15 @@ namespace loon.geom
 	
 	public override bool Equals(object obj)
 	{
-		if (obj is RectBox) {
-			RectBox rect = (RectBox)obj;
-			return Equals(rect.x, rect.y, rect.width, rect.height);
-		} else
-		{
-			return false;
-		}
-	}
+            if (obj is RectBox rect)
+            {
+                return Equals(rect.x, rect.y, rect.width, rect.height);
+            }
+            else
+            {
+                return false;
+            }
+        }
 
 	public bool Equals(float x, float y, float width, float height)
 	{
@@ -602,7 +603,7 @@ namespace loon.geom
 
 	public bool Intersects(float x, float y)
 	{
-		return Intersects(0, 0, width, height);
+		return Intersects(x, y, width, height);
 	}
 
 	public bool Intersects(float x, float y, float width, float height)

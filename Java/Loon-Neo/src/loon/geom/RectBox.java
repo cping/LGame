@@ -569,7 +569,7 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 	 * @return
 	 */
 	public boolean intersects(float x, float y) {
-		return intersects(0, 0, width, height);
+		return intersects(x, y, width, height);
 	}
 
 	/**

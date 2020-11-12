@@ -131,11 +131,11 @@ public class ShapeUtils {
 	}
 
 	public static final void calculateBounds(Vector2f[] vertices, RectBox bounds) {
-		bounds.x = Float.MAX_VALUE;
-		bounds.y = Float.MAX_VALUE;
+		bounds.x = Integer.MAX_VALUE;
+		bounds.y = Integer.MAX_VALUE;
 
-		bounds.width = (int) -Float.MAX_VALUE;
-		bounds.height = (int) -Float.MAX_VALUE;
+		bounds.width = -Integer.MAX_VALUE;
+		bounds.height = -Integer.MAX_VALUE;
 
 		for (int i = 0; i < vertices.length; i++) {
 			Vector2f v = vertices[i];

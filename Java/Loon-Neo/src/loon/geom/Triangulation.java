@@ -24,8 +24,8 @@ import loon.utils.TArray;
 
 public class Triangulation {
 
-	private TArray<Vector2f> points;
-	private TArray<Vector2f> nonconvexPoints;
+	private final TArray<Vector2f> points;
+	private final TArray<Vector2f> nonconvexPoints;
 
 	private boolean isCw;
 
