@@ -9,5 +9,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="loon\opengl\" />
+    <Folder Include="loon\particle\" />
   </ItemGroup>
 </Project>

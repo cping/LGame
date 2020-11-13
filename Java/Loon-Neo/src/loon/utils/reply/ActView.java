@@ -24,7 +24,7 @@ public interface ActView<T>
 {
     interface Listener<T> extends Bypass.GoListener {
 
-        void onEmit (T event);
+        void onEmit (T e);
     }
 
     <M> ActView<M> map (Function<? super T, M> func);

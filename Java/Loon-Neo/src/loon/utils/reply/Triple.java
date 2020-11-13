@@ -69,7 +69,7 @@ public class Triple<T1, T2, T3> {
 
 	@Override
 	public final boolean equals(final Object o) {
-		if (!(o instanceof Pair)) {
+		if (!(o instanceof Triple)) {
 			return false;
 		}
 		final Triple<?, ?, ?> p = (Triple<?, ?, ?>) o;

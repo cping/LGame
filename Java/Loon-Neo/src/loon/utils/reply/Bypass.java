@@ -25,6 +25,20 @@ import loon.events.Updateable;
 
 public abstract class Bypass {
 
+	protected static abstract class Runs implements Updateable {
+		
+		public Runs next;
+		
+		@Override
+		public abstract void action(Object a);
+	}
+
+	protected static abstract class Notifier {
+		
+		public abstract void notify(Object listener, Object a1, Object a2, Object a3);
+		
+	}
+	
 	protected static final Cons DISPATCHING = new Cons(null, null);
 
 	protected Cons _listeners;
@@ -184,12 +198,5 @@ public abstract class Bypass {
 		return head;
 	}
 
-	protected static abstract class Runs implements Updateable {
-		public Runs next;
-	}
-
-	protected static abstract class Notifier {
-		public abstract void notify(Object listener, Object a1, Object a2, Object a3);
-	}
 
 }

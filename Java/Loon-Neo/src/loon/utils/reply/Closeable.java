@@ -63,7 +63,8 @@ public interface Closeable extends LRelease {
 			}
 		}
 	}
-
+	
 	@Override
-	public void close();
+    public abstract void close();
+
 }

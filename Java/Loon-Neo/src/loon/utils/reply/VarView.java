@@ -22,7 +22,7 @@ package loon.utils.reply;
 
 public interface VarView<T>
 {
-    interface Listener<T> extends Bypass.GoListener {
+	public interface Listener<T> extends Bypass.GoListener {
         void onChange (T value, T oldValue);
     }
 

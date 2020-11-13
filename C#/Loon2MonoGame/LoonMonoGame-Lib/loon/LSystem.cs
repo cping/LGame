@@ -137,5 +137,16 @@ namespace loon
         {
             return 31 * hashCode + value;
         }
+
+        public static new bool Equals(object o1, object o2)
+        {
+            return (o1 == null) ? (o2 == null) : o1.Equals(o2);
+        }
+
+        public static bool IsMobile()
+        {
+            return false;
+        }
+
     }
 }

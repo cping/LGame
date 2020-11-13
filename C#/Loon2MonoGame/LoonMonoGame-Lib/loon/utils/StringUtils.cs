@@ -277,6 +277,9 @@ namespace loon.utils
 			}
 			return sbr.ToString();
 		}
-
+		public static string ToString(object o)
+		{
+			return o?.ToString();
+		}
 	}
 }
