@@ -80,14 +80,14 @@ public class AbstractAct<T> extends Bypass implements ActView<T> {
 		return p;
 	}
 
-	protected void notifyEmit(T event) {
-		notify(EMIT, event, null, null);
+	protected void notifyEmit(T e) {
+		notify(EMIT, e, null, null);
 	}
 
 	@SuppressWarnings("unchecked")
 	protected static final Notifier EMIT = new Notifier() {
-		public void notify(Object port, Object event, Object _1, Object _2) {
-			((Listener<Object>) port).onEmit(event);
+		public void notify(Object port, Object e, Object _1, Object _2) {
+			((Listener<Object>) port).onEmit(e);
 		}
 	};
 }

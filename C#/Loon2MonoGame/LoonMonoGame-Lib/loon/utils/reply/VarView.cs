@@ -1,24 +1,25 @@
 ﻿namespace loon.utils.reply
 {
-
-    public abstract class VarView<T>
+    public interface Listener<T> : Bypass.GoListener
     {
-        public interface Listener<T> : Bypass.GoListener
-        {
-            void OnChange(T value, T oldValue);
-        }
+        void OnChange(T value, T oldValue);
+    }
 
-        public abstract T Get();
+    public interface VarView<T>
+    {
 
-        public abstract VarView<M> Map<M>(Function<T, M> func);
 
-        public abstract Connection Connect(Listener<T> listener);
+        T Get();
 
-        public abstract void Disconnect(Listener<T> listener);
+        VarView<M> Map<M>(Function<T, M> func);
 
-        public abstract Connection Connect(ActView<T>.Listener<T> listener);
+        Connection Connect(Listener<T> listener);
 
-        public abstract Connection Connect(Port<T> listener);
+        void Disconnect(Listener<T> listener);
+
+        Connection Connect(ActView<T>.Listener<T> listener);
+
+        Connection Connect(Port<T> listener);
 
     }
 

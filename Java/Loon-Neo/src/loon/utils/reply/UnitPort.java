@@ -47,7 +47,7 @@ public abstract class UnitPort extends Port<Object> implements Updateable {
 	}
 
 	@Override
-	public final void onEmit(Object event) {
+	public final void onEmit(Object e) {
 		onEmit();
 	}
 

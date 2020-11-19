@@ -26,7 +26,7 @@ public class GoFuture<T> {
 	protected VarView<Boolean> _isComplete;
 
 	public static <T> GoFuture<T> success(T value) {
-		return result(Try.success(value));
+		return result(Try.createSuccess(value));
 	}
 
 	public static GoFuture<Void> success() {
@@ -34,7 +34,7 @@ public class GoFuture<T> {
 	}
 
 	public static <T> GoFuture<T> failure(Throwable cause) {
-		return result(Try.<T>failure(cause));
+		return result(Try.<T>createFailure(cause));
 	}
 
 	public static <T> GoFuture<T> result(Try<T> result) {

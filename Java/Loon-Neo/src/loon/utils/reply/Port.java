@@ -45,9 +45,9 @@ public abstract class Port<T> implements VarView.Listener<T>, ActView.Listener<T
 	public <P extends T> Port<P> andThen(final Port<? super P> after) {
 		final Port<T> before = this;
 		return new Port<P>() {
-			public void onEmit(P event) {
-				before.onEmit(event);
-				after.onEmit(event);
+			public void onEmit(P e) {
+				before.onEmit(e);
+				after.onEmit(e);
 			}
 		};
 	}

@@ -1,7 +1,7 @@
 ﻿namespace loon.utils.reply
 {
 
-    public abstract class Port<T> : VarView<T>.Listener<T>, ActView<T>.Listener<T>
+    public abstract class Port<T> : Listener<T>, ActView<T>.Listener<T>
     {
 
         internal class ComposePort<P> : Port<P>

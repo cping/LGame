@@ -31,11 +31,11 @@ public class GoPromise<T> extends GoFuture<T> {
 	}
 
 	public void succeed(T value) {
-		_result.update(Try.success(value));
+		_result.update(Try.createSuccess(value));
 	}
 
 	public void fail(Throwable cause) {
-		_result.update(Try.<T> failure(cause));
+		_result.update(Try.<T> createFailure(cause));
 	}
 
 	public Port<Try<T>> completer() {
