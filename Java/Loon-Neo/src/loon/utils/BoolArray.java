@@ -91,6 +91,10 @@ public class BoolArray implements IArray {
 		this(true, array, 0, array.length);
 	}
 
+	public BoolArray(boolean[] array,int size) {
+		this(true, array, 0, size);
+	}
+
 	public BoolArray(boolean ordered, boolean[] array, int startIndex, int count) {
 		this(ordered, count);
 		length = count;
@@ -546,6 +550,10 @@ public class BoolArray implements IArray {
 		return false;
 	}
 
+	public BoolArray cpy() {
+		return new BoolArray(items, length);
+	}
+	
 	public String toString(char split) {
 		if (length == 0) {
 			return "[]";

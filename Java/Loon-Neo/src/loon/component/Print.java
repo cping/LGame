@@ -47,18 +47,7 @@ public class Print implements FontSet<Print>, LRelease {
 	public static enum Mode {
 		NONE, LEFT, RIGHT, CENTER
 	}
-
-	protected static class WarpChars {
-
-		// they is other char flags
-		protected final static char[] TABLE = { '\u3002', '\u3001', '\uff0c', '\uff0e', '\u300d', '\uff3d', '\u3011',
-				'\u300f', '\u30fc', '\uff5e', '\uff09', '\u3041', '\u3043', '\u3045', '\u3047', '\u3049', '\u30a1',
-				'\u30a3', '\u30a5', '\u30a7', '\u30a9', '\u30c3', '\u30e3', '\u30e5', '\u30e7', '\u30ee', '\u308e',
-				'\u3083', '\u3085', '\u3087', '\u3063', '\u2026', '\uff0d', '\uff01', '\uff1f' };
-	}
-
-	private final static int _otherFlagsSize = 35;
-
+	
 	/**
 	 * 解析并重构字符串,为超过指定长度的字符串加换行符
 	 * 
@@ -96,59 +85,7 @@ public class Print implements FontSet<Print>, LRelease {
 	 * @return
 	 */
 	public static TArray<String> formatMessage(String text, IFont font, float width) {
-
-		TArray<String> list = new TArray<String>();
-		if (text == null) {
-			return list;
-		}
-
-		if (width <= 1) {
-			if (text.indexOf('\n') == -1) {
-				width = (int) FontUtils.measureText(font, text);
-			} else {
-				width = (int) FontUtils.measureText(font, StringUtils.split(text, '\n')[0]);
-			}
-		}
-
-		char c1 = '〜';
-		char c2 = 65374;
-		String str = text.replace(c1, c2);
-		String line = LSystem.EMPTY;
-
-		int i = 0;
-
-		while (i <= str.length()) {
-			if (i == str.length()) {
-				list.add(line);
-				break;
-			}
-
-			char c = str.charAt(i);
-
-			if ((c == '\n') || (font.stringWidth(line + c) > width)) {
-				line = str.substring(0, i);
-
-				for (int j = 0; j < _otherFlagsSize; j++) {
-					if (c == WarpChars.TABLE[j]) {
-						int delta = (int) (font.stringWidth(line + c) - width);
-						if (delta < 15) {
-							line = str.substring(0, ++i);
-							break;
-						}
-					}
-				}
-				i += (c == '\n' ? 1 : 0);
-				list.add(line);
-				line = LSystem.EMPTY;
-				str = str.substring(i);
-				i = 0;
-			} else {
-				line = line + c;
-				i++;
-			}
-		}
-
-		return list;
+		return FontUtils.splitLines(text, font, width);
 	}
 
 	private int index, offset, font, tmp_font;

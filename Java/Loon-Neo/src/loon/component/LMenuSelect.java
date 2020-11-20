@@ -74,11 +74,11 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 
 	}
 
+	private final ActionKey _touchEvent = new ActionKey(ActionKey.NORMAL);
+
+	private final ActionKey _keyEvent = new ActionKey(ActionKey.NORMAL);
+
 	private ClickEvent _menuSelectedEvent;
-
-	private ActionKey _touchEvent = new ActionKey(ActionKey.NORMAL);
-
-	private ActionKey _keyEvent = new ActionKey(ActionKey.NORMAL);
 
 	private CallFunction _function;
 

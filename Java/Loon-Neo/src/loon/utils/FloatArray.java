@@ -112,6 +112,10 @@ public class FloatArray implements IArray {
 		this(true, array, 0, array.length);
 	}
 
+	public FloatArray(float[] array, int size) {
+		this(true, array, 0, size);
+	}
+
 	public FloatArray(boolean ordered, float[] array, int startIndex, int count) {
 		this(ordered, count);
 		length = count;
@@ -623,6 +627,10 @@ public class FloatArray implements IArray {
 			hashCode = 31 * hashCode + NumberUtils.floatToIntBits(items[i]);
 		}
 		return hashCode;
+	}
+
+	public FloatArray cpy() {
+		return new FloatArray(items, length);
 	}
 
 	public String toString(char split) {

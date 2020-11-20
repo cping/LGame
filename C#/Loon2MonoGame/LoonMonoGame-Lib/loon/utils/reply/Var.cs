@@ -38,6 +38,10 @@
             return oldValue;
         }
 
+        public override GoListener DefaultListener()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 
 }

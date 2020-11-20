@@ -257,7 +257,7 @@ public final class LSTRDictionary implements LRelease {
 
 	private StrBuilder tmpBuffer = null;
 
-	public final Dict bind(final LFont font, final TArray<CharSequence> chars) {
+	public final Dict bind(final LFont font, final TArray<? extends CharSequence> chars) {
 		CharSequence[] buffers = new CharSequence[chars.size];
 		for (int i = 0, size = buffers.length; i < size; i++) {
 			buffers[i] = chars.get(i);
@@ -265,6 +265,7 @@ public final class LSTRDictionary implements LRelease {
 		return bind(font, StringUtils.unificationCharSequence(templateChars, buffers, ADDED), false);
 	}
 
+	
 	public final Dict bind(final LFont font, final String[] messages) {
 		return bind(font, StringUtils.unificationStrings(templateChars, messages, ADDED), false);
 	}

@@ -60,7 +60,7 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 	private String text = null;
 
 	private CallFunction _function;
-	
+
 	public static LClickButton makePath(String path) {
 		LTexture tex = LSystem.loadTexture(path);
 		return new LClickButton(null, SkinManager.get().getClickButtonSkin().getFont(),
@@ -106,6 +106,10 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 	public static LClickButton make(String text, int width, int height, LTexture clicked) {
 		return new LClickButton(text, SkinManager.get().getClickButtonSkin().getFont(),
 				SkinManager.get().getClickButtonSkin().getFontColor(), 0, 0, width, height, clicked, clicked, clicked);
+	}
+
+	public static LClickButton make(IFont font, String text, int x, int y, int width, int height) {
+		return new LClickButton(text, font, SkinManager.get().getClickButtonSkin().getFontColor(), x, y, width, height);
 	}
 
 	public static LClickButton make(IFont font, String text, int width, int height) {
@@ -489,9 +493,9 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 		return this;
 	}
 
-    public boolean isOver(){
-        return over;
-    }
+	public boolean isOver() {
+		return over;
+	}
 
 	@Override
 	public String getUIName() {

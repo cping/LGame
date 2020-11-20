@@ -26,6 +26,7 @@ import loon.canvas.LColor;
 import loon.component.skin.MessageSkin;
 import loon.component.skin.SkinManager;
 import loon.font.FontSet;
+import loon.font.FontUtils;
 import loon.font.IFont;
 import loon.font.LFont;
 import loon.font.ShadowFont;
@@ -475,10 +476,10 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 		TArray<LMessageBox.Message> tempMessages = new TArray<LMessageBox.Message>();
 		if (messages != null) {
 			for (String text : messages) {
-				tempMessages.add(new Message(text, null, face, Print.formatMessage(text, font, width())));
+				tempMessages.add(new Message(text, null, face, FontUtils.splitLines(text, font, width())));
 			}
 		} else {
-			tempMessages.add(new Message("", null, face, Print.formatMessage("", font, width())));
+			tempMessages.add(new Message("", null, face, FontUtils.splitLines("", font, width())));
 		}
 		initMessages(tempMessages, typeFlag, font, box, x, y, width, height, color, shadow);
 	}

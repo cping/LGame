@@ -2,10 +2,10 @@
 {
     public abstract class ActView<T>
     {
-        public interface Listener<T> : Bypass.GoListener
+        public interface Listener<T1> : Bypass.GoListener
         {
 
-            void OnEmit(T e);
+            void OnEmit(T1 e);
         }
 
         public abstract ActView<T> Map<M>(Function<T, M> func);

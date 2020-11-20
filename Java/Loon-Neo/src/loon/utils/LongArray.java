@@ -111,6 +111,10 @@ public class LongArray implements IArray {
 		this(true, array, 0, array.length);
 	}
 
+	public LongArray(long[] array,int size) {
+		this(true, array, 0, size);
+	}
+
 	public LongArray(boolean ordered, long[] array, int startIndex, int count) {
 		this(ordered, count);
 		length = count;
@@ -565,6 +569,10 @@ public class LongArray implements IArray {
 		return bytes.getBytes();
 	}
 
+	public LongArray cpy() {
+		return new LongArray(items,length);
+	}
+	
 	public String toString(char split) {
 		if (length == 0) {
 			return "[]";

@@ -2317,7 +2317,10 @@ final public class StringUtils extends CharUtils {
 	 * @return
 	 */
 	public static String toString(final Object o) {
-		return o == null ? null : o.toString();
+		return toString(o, null);
 	}
-
+	
+	public static String toString(final Object o,final String def) {
+		return o == null ? def : o.toString();
+	}
 }

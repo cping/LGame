@@ -74,7 +74,7 @@ public class AbstractAct<T> extends Bypass implements ActView<T> {
 	}
 
 	@Override
-	Listener<T> defaultListener() {
+	public Listener<T> defaultListener() {
 		@SuppressWarnings("unchecked")
 		Listener<T> p = (Listener<T>) AbstractAct.DEF;
 		return p;

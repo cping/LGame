@@ -30,7 +30,6 @@ import loon.utils.ObjectMap.Values;
 
 @SuppressWarnings({ "unchecked" })
 public class TArray<T> implements Iterable<T>, IArray {
-	
 
 	public final static class ArrayIterable<T> implements Iterable<T> {
 
@@ -162,6 +161,10 @@ public class TArray<T> implements Iterable<T>, IArray {
 
 	public TArray(T... array) {
 		this(true, array, 0, array.length);
+	}
+
+	protected TArray(int size, T... array) {
+		this(true, array, 0, size);
 	}
 
 	public TArray(boolean ordered, T[] array, int start, int count) {
@@ -444,10 +447,6 @@ public class TArray<T> implements Iterable<T>, IArray {
 		return size != startSize;
 	}
 
-	public TArray<T> cpy() {
-		return new TArray<T>(items);
-	}
-
 	public T pop() {
 		if (size == 0)
 			throw new LSysException("TArray is empty.");
@@ -606,6 +605,10 @@ public class TArray<T> implements Iterable<T>, IArray {
 		return a;
 	}
 
+	public TArray<T> cpy() {
+		return new TArray<T>(this.size, items);
+	}
+
 	private ArrayIterable<T> iterable;
 
 	@Override
@@ -671,7 +674,6 @@ public class TArray<T> implements Iterable<T>, IArray {
 		return false;
 	}
 
-
 	public void sort(Comparator<T> compar) {
 		if (size <= 1) {
 			return;
@@ -710,7 +712,7 @@ public class TArray<T> implements Iterable<T>, IArray {
 		}
 		return modified;
 	}
-	
+
 	public SwappableArray<T> GetSwappableArray() {
 		return new SwappableArray<T>(this);
 	}

@@ -32,6 +32,7 @@ public abstract class AbstractValue<T> extends Bypass implements VarView<T> {
 
 			@Override
 			public String toString() {
+				
 				return outer + ".map(" + func + ")";
 			}
 
@@ -100,7 +101,7 @@ public abstract class AbstractValue<T> extends Bypass implements VarView<T> {
 	}
 
 	@Override
-	Listener<T> defaultListener() {
+	public Listener<T> defaultListener() {
 		@SuppressWarnings("unchecked")
 		Listener<T> p = (Listener<T>) AbstractAct.DEF;
 		return p;

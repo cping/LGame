@@ -24,7 +24,7 @@ import loon.LSysException;
 import loon.utils.StringKeyValue;
 import loon.utils.reply.Bypass.GoListener;
 
-class Cons extends Connection {
+public class Cons extends Connection {
 
 	private Bypass _owner;
 	private ListenerRef _ref;

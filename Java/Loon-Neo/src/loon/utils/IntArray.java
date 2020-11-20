@@ -108,6 +108,10 @@ public class IntArray implements IArray {
 		System.arraycopy(array.items, 0, items, 0, length);
 	}
 
+	public IntArray(int[] array, int size) {
+		this(true, array, 0, size);
+	}
+
 	public IntArray(int[] array) {
 		this(true, array, 0, array.length);
 	}
@@ -615,6 +619,10 @@ public class IntArray implements IArray {
 			}
 		}
 		return v;
+	}
+
+	public IntArray cpy() {
+		return new IntArray(items, length);
 	}
 
 	public String toString(char split) {

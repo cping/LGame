@@ -21,6 +21,7 @@
 package loon.font;
 
 import loon.HorizontalAlign;
+import loon.LSystem;
 import loon.canvas.LColor;
 import loon.geom.PointF;
 import loon.opengl.GLEx;
@@ -34,6 +35,17 @@ import loon.utils.TArray;
  */
 public class FontUtils {
 
+	protected static class WarpChars {
+
+		// they is other char flags
+		protected final static char[] TABLE = { '\u3002', '\u3001', '\uff0c', '\uff0e', '\u300d', '\uff3d', '\u3011',
+				'\u300f', '\u30fc', '\uff5e', '\uff09', '\u3041', '\u3043', '\u3045', '\u3047', '\u3049', '\u30a1',
+				'\u30a3', '\u30a5', '\u30a7', '\u30a9', '\u30c3', '\u30e3', '\u30e5', '\u30e7', '\u30ee', '\u308e',
+				'\u3083', '\u3085', '\u3087', '\u3063', '\u2026', '\uff0d', '\uff01', '\uff1f' };
+	}
+
+	private final static int FLAGS = 35;
+	
 	private static final int UNSPECIFIED = -1;
 
 	public static void drawLeft(GLEx g, String s, int x, int y) {
@@ -150,6 +162,72 @@ public class FontUtils {
 		return new PointF(defWidth, defHeight);
 	}
 
+	/**
+	 * 返回指定字符串，匹配指定字体后，在指定宽度内的每行应显示字符串.
+	 * 
+	 * PS:此项不处理'\n'外的特殊操作符
+	 * 
+	 * @param text
+	 * @param font
+	 * @param width
+	 * @return
+	 */
+	public static TArray<String> splitLines(String text, IFont font, float width) {
+		
+		TArray<String> list = new TArray<String>();
+		if (text == null) {
+			return list;
+		}
+
+		if (width <= 1) {
+			if (text.indexOf('\n') == -1) {
+				width = (int) measureText(font, text);
+			} else {
+				width = (int) measureText(font, StringUtils.split(text, '\n')[0]);
+			}
+		}
+
+		char c1 = '〜';
+		char c2 = 65374;
+		String str = text.replace(c1, c2);
+		String line = LSystem.EMPTY;
+
+		int i = 0;
+
+		while (i <= str.length()) {
+			if (i == str.length()) {
+				list.add(line);
+				break;
+			}
+
+			char c = str.charAt(i);
+
+			if ((c == '\n') || (font.stringWidth(line + c) > width)) {
+				line = str.substring(0, i);
+
+				for (int j = 0; j < FLAGS; j++) {
+					if (c == WarpChars.TABLE[j]) {
+						int delta = (int) (font.stringWidth(line + c) - width);
+						if (delta < 15) {
+							line = str.substring(0, ++i);
+							break;
+						}
+					}
+				}
+				i += (c == '\n' ? 1 : 0);
+				list.add(line);
+				line = LSystem.EMPTY;
+				str = str.substring(i);
+				i = 0;
+			} else {
+				line = line + c;
+				i++;
+			}
+		}
+
+		return list;
+	}
+	
 	public static <T extends TArray<CharSequence>> T splitLines(final CharSequence chars, final T result) {
 		return StringUtils.splitArray(chars, '\n', result);
 	}

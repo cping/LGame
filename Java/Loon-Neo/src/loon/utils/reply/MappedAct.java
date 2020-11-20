@@ -20,7 +20,7 @@
  */
 package loon.utils.reply;
 
-abstract class MappedAct<T> extends AbstractAct<T>
+public abstract class MappedAct<T> extends AbstractAct<T>
 {
 
     protected Connection _conn;

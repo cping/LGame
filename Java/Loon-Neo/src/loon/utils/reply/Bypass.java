@@ -38,15 +38,37 @@ public abstract class Bypass {
 		public abstract void notify(Object listener, Object a1, Object a2, Object a3);
 		
 	}
-	
+
+	public interface GoListener {
+	}
+
 	protected static final Cons DISPATCHING = new Cons(null, null);
 
 	protected Cons _listeners;
 	protected Runs _pendingRuns;
 
-	public interface GoListener {
+	public abstract GoListener defaultListener();
+
+	protected static <T> boolean areEqual(T o1, T o2) {
+		return (o1 == o2 || (o1 != null && o1.equals(o2)));
 	}
 
+	protected static Runs append(Runs head, Runs action) {
+		if (head == null)
+			return action;
+		head.next = append(head.next, action);
+		return head;
+	}
+	
+	protected void checkMutate() {
+	}
+
+	protected void connectionAdded() {
+	}
+
+	protected void connectionRemoved() {
+	}
+	
 	public boolean hasConnections() {
 		return _listeners != null;
 	}
@@ -57,8 +79,6 @@ public abstract class Bypass {
 		}
 		_listeners = null;
 	}
-
-	abstract GoListener defaultListener();
 
 	protected synchronized Cons addConnection(GoListener listener) {
 		if (listener == null)
@@ -112,17 +132,6 @@ public abstract class Bypass {
 		}
 	}
 
-	protected void checkMutate() {
-
-	}
-
-	protected void connectionAdded() {
-
-	}
-
-	protected void connectionRemoved() {
-
-	}
 
 	protected void notify(final Notifier notifier, final Object a1, final Object a2, final Object a3) {
 		Cons lners;
@@ -186,17 +195,5 @@ public abstract class Bypass {
 	public boolean isClosed() {
 		return isDispatching();
 	}
-
-	protected static <T> boolean areEqual(T o1, T o2) {
-		return (o1 == o2 || (o1 != null && o1.equals(o2)));
-	}
-
-	protected static Runs append(Runs head, Runs action) {
-		if (head == null)
-			return action;
-		head.next = append(head.next, action);
-		return head;
-	}
-
 
 }

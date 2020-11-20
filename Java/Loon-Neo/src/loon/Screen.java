@@ -2775,6 +2775,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return menu;
 	}
 
+	public LClickButton addButton(IFont font, String text, int x, int y, int width, int height) {
+		LClickButton click = LClickButton.make(font, text, x, y, width, height);
+		add(click);
+		return click;
+	}
+
 	public LClickButton addButton(String text, int x, int y, int width, int height) {
 		LClickButton click = LClickButton.make(text, x, y, width, height);
 		add(click);
