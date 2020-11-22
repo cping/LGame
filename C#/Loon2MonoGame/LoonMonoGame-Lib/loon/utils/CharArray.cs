@@ -83,6 +83,10 @@ namespace loon.utils
         {
 
         }
+        public CharArray(char[] array,int size) : this(true, array, 0, size)
+        {
+
+        }
 
         public CharArray(bool ordered, char[] array, int startIndex, int count) : this(ordered, count)
         {
@@ -560,6 +564,11 @@ namespace loon.utils
         public bool IsEmpty()
         {
             return length == 0 || items == null;
+        }
+
+        public CharArray Cpy()
+        {
+            return new CharArray(this);
         }
 
         public sbyte[] GetBytes()

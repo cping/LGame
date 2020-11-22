@@ -182,6 +182,11 @@ namespace loon.utils
 
         }
 
+        protected TArray(int size,params T[] array) : this(true, array, 0, size)
+        {
+
+        }
+
         public TArray(bool ordered, T[] array, int start, int count) : this(ordered, count)
         {
             size = count;
@@ -507,7 +512,7 @@ namespace loon.utils
 
         public TArray<T> Cpy()
         {
-            return new TArray<T>(items);
+            return new TArray<T>(this);
         }
 
         public T Pop()

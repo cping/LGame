@@ -218,12 +218,12 @@ public class Sprites implements IArray, Visible, LRelease {
 			spriteSorter.sort(this._sprites);
 		}
 	}
-	
+
 	public Sprites setSortableChildren(boolean v) {
 		this._sortableChildren = v;
 		return this;
 	}
-	
+
 	public boolean isSortableChildren() {
 		return this._sortableChildren;
 	}
@@ -1416,6 +1416,10 @@ public class Sprites implements IArray, Visible, LRelease {
 	@Override
 	public int size() {
 		return this._size;
+	}
+
+	public RectBox getBoundingBox() {
+		return new RectBox(this.viewX, this.viewY, this.viewWidth, this.viewHeight);
 	}
 
 	public int getHeight() {

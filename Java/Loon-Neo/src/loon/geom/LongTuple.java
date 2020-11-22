@@ -20,33 +20,33 @@
  */
 package loon.geom;
 
-public class FloatTuple {
+public class LongTuple {
 
-	public float val1;
+	public long val1;
 	
-	public float val2;
+	public long val2;
 
-	public FloatTuple() {
+	public LongTuple() {
 	}
 
-	public FloatTuple(float val) {
+	public LongTuple(long val) {
 		val1 = val;
 		val2 = val;
 	}
 
-	public FloatTuple(float val1, float val2) {
+	public LongTuple(long val1, long val2) {
 		this.val1 = val1;
 		this.val2 = val2;
 	}
 
-	public FloatTuple set(float val1, float val2) {
+	public LongTuple set(long val1, long val2) {
 		this.val1 = val1;
 		this.val2 = val2;
 		return this;
 	}
 
-	public FloatTuple reverse() {
-		float swap = val1;
+	public LongTuple reverse() {
+		long swap = val1;
 		val1 = val2;
 		val2 = swap;
 		return this;
@@ -56,4 +56,5 @@ public class FloatTuple {
 	public String toString() {
 		return "(" + val1 + ',' + val2 + ")";
 	}
+
 }

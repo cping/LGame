@@ -44,6 +44,8 @@ public class CountdownTimer extends RealtimeProcess {
 
 	private String _result = DEF_FORMAT;
 
+	private String _currentName;
+
 	private float _second = 0;
 
 	private long _millisecond = 0;
@@ -63,8 +65,13 @@ public class CountdownTimer extends RealtimeProcess {
 	}
 
 	public CountdownTimer(float second, boolean displayMilliSecond) {
+		this("", second, displayMilliSecond);
+	}
+
+	public CountdownTimer(String name, float second, boolean displayMilliSecond) {
 		super(0);
 		this._digits = 2;
+		this._currentName = name;
 		this.set(second);
 		this.setProcessType(GameProcessType.Time);
 		this.setDisplayMilliSecond(displayMilliSecond);
@@ -230,11 +237,20 @@ public class CountdownTimer extends RealtimeProcess {
 		return this._result;
 	}
 
+	public CountdownTimer setName(String n) {
+		this._currentName = n;
+		return this;
+	}
+
+	public String getName() {
+		return this._currentName;
+	}
+
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("CountdownTimer");
-		builder.kv("second", _second).comma().kv("millisecond", _millisecond).comma().kv("result", _result).comma()
-				.kv("finished", _finished);
+		builder.kv("name", _currentName).comma().kv("second", _second).comma().kv("millisecond", _millisecond).comma()
+				.kv("result", _result).comma().kv("finished", _finished);
 		return builder.toString();
 	}
 

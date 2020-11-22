@@ -630,7 +630,7 @@ public class FloatArray implements IArray {
 	}
 
 	public FloatArray cpy() {
-		return new FloatArray(items, length);
+		return new FloatArray(this);
 	}
 
 	public String toString(char split) {

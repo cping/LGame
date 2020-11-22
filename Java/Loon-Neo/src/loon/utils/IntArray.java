@@ -622,7 +622,7 @@ public class IntArray implements IArray {
 	}
 
 	public IntArray cpy() {
-		return new IntArray(items, length);
+		return new IntArray(this);
 	}
 
 	public String toString(char split) {

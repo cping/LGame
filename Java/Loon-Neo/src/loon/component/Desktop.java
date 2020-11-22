@@ -1175,6 +1175,10 @@ public class Desktop implements Visible, LRelease {
 		return this;
 	}
 
+	public RectBox getBoundingBox() {
+		return this.contentPane == null ? input.getRectBox().cpy() : this.contentPane.getRectBox().cpy();
+	}
+
 	@Override
 	public boolean isVisible() {
 		return dvisible;

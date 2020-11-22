@@ -29,6 +29,8 @@ import loon.utils.TimeUtils;
  */
 public class StopwatchTimer {
 
+	private String _currentName;
+
 	private long _from;
 
 	private long _to;
@@ -38,10 +40,19 @@ public class StopwatchTimer {
 	private long _target;
 
 	public StopwatchTimer() {
-		this(0);
+		this("");
+	}
+
+	public StopwatchTimer(String name) {
+		this(name, 0);
 	}
 
 	public StopwatchTimer(long target) {
+		this("", target);
+	}
+
+	public StopwatchTimer(String name, long target) {
+		this._currentName = name;
 		this._target = target;
 		this.reset();
 	}
@@ -121,10 +132,20 @@ public class StopwatchTimer {
 		return this._to;
 	}
 
+	public StopwatchTimer setName(String n) {
+		this._currentName = n;
+		return this;
+	}
+
+	public String getName() {
+		return this._currentName;
+	}
+
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("StopwatchTimer");
-		builder.kv("from", _from).comma().kv("to", _to).comma().kv("lastStop", _lastStop).comma().kv("target", _target);
+		builder.kv("name", _currentName).comma().kv("from", _from).comma().kv("to", _to).comma()
+				.kv("lastStop", _lastStop).comma().kv("target", _target);
 		return builder.toString();
 	}
 }

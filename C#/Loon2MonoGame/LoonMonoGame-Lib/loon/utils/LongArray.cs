@@ -78,6 +78,11 @@ namespace loon.utils
             JavaSystem.Arraycopy(array.items, 0, items, 0, length);
         }
 
+        public LongArray(long[] array,int size) : this(true, array, 0, size)
+        {
+
+        }
+
         public LongArray(long[] array) : this(true, array, 0, array.Length)
         {
 
@@ -645,6 +650,11 @@ namespace loon.utils
                 hashCode = 31 * hashCode + items[i];
             }
             return (int)hashCode;
+        }
+
+        public LongArray Cpy()
+        {
+            return new LongArray(this);
         }
 
         public string ToString(char split)

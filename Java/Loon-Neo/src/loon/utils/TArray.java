@@ -606,7 +606,7 @@ public class TArray<T> implements Iterable<T>, IArray {
 	}
 
 	public TArray<T> cpy() {
-		return new TArray<T>(this.size, items);
+		return new TArray<T>(this);
 	}
 
 	private ArrayIterable<T> iterable;

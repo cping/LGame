@@ -83,6 +83,11 @@ namespace loon.utils
 
         }
 
+        public FloatArray(float[] array,int size) : this(true, array, 0, size)
+        {
+
+        }
+
         public FloatArray(bool ordered, float[] array, int startIndex, int count) : this(ordered, count)
         {
             length = count;
@@ -708,6 +713,11 @@ namespace loon.utils
                 hashCode = 31 * hashCode + NumberUtils.FloatToIntBits(items[i]);
             }
             return (int)hashCode;
+        }
+
+        public FloatArray Cpy()
+        {
+            return new FloatArray(this);
         }
 
         public string ToString(char split)

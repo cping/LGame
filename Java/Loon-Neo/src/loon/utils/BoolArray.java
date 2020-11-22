@@ -551,7 +551,7 @@ public class BoolArray implements IArray {
 	}
 
 	public BoolArray cpy() {
-		return new BoolArray(items, length);
+		return new BoolArray(this);
 	}
 	
 	public String toString(char split) {

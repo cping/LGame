@@ -1254,6 +1254,44 @@ public class Sprite extends LObject<ISprite>
 		return getY() + getHeight() / 2f;
 	}
 
+	public Sprite softCenterOn(float x, float y) {
+		final RectBox rect = getSprites() == null ? LSystem.viewSize.getRect() : getSprites().getBoundingBox();
+		final ISprite sprite = this.getSuper();
+		if (x != 0) {
+			float dx = (x - rect.getWidth() / 2 / this.getScaleX() - this.getX()) / 3;
+			if (sprite != null) {
+				RectBox boundingBox = sprite.getRectBox();
+				if (this.getX() + dx < boundingBox.getMinX()) {
+					setX(boundingBox.getMinX() / this.getScaleX());
+				} else if (this.getX() + dx > (boundingBox.getMaxX() - rect.getWidth()) / this.getScaleX()) {
+					setX(MathUtils.max(boundingBox.getMaxX() - rect.getWidth(), boundingBox.getMinX())
+							/ this.getScaleX());
+				} else {
+					this.setX(this.getX() + dx);
+				}
+			} else {
+				this.setX(this.getX() + dx);
+			}
+		}
+		if (y != 0) {
+			float dy = (y - rect.getHeight() / 2 / this.getScaleY() - this.getY()) / 3;
+			if (sprite != null) {
+				RectBox boundingBox = sprite.getRectBox();
+				if (this.getY() + dy < boundingBox.getMinY()) {
+					this.setY(boundingBox.getMinY() / this.getScaleY());
+				} else if (this.getY() + dy > (boundingBox.getMaxY() - rect.getHeight()) / this.getScaleY()) {
+					this.setY(MathUtils.max(boundingBox.getMaxY() - rect.getHeight(), boundingBox.getMinY())
+							/ this.getScaleY());
+				} else {
+					this.setY(this.getY() + dy);
+				}
+			} else {
+				this.setY(this.getY() + dy);
+			}
+		}
+		return this;
+	}
+
 	public ResizeListener<Sprite> getResizeListener() {
 		return _resizeListener;
 	}

@@ -1,4 +1,4 @@
-﻿namespace loon.geom
+﻿namespace loon.utils.reply
 {
     public class Tuple<V>
     {

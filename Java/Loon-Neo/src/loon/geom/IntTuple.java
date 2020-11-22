@@ -20,40 +20,41 @@
  */
 package loon.geom;
 
-public class FloatTuple {
+public class IntTuple {
 
-	public float val1;
-	
-	public float val2;
+	public int val1;
 
-	public FloatTuple() {
+	public int val2;
+
+	public IntTuple() {
 	}
 
-	public FloatTuple(float val) {
+	public IntTuple(int val) {
 		val1 = val;
 		val2 = val;
 	}
 
-	public FloatTuple(float val1, float val2) {
+	public IntTuple(int val1, int val2) {
 		this.val1 = val1;
 		this.val2 = val2;
 	}
 
-	public FloatTuple set(float val1, float val2) {
+	public IntTuple set(int val1, int val2) {
 		this.val1 = val1;
 		this.val2 = val2;
 		return this;
 	}
 
-	public FloatTuple reverse() {
-		float swap = val1;
+	public IntTuple reverse() {
+		int swap = val1;
 		val1 = val2;
 		val2 = swap;
 		return this;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "(" + val1 + ',' + val2 + ")";
 	}
+
 }

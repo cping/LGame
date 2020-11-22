@@ -35,8 +35,12 @@
             float swap = val1;
             val1 = val2;
             val2 = swap;
-
             return this;
+        }
+
+        public override string ToString()
+        {
+            return "(" + val1 + ',' + val2 + ")";
         }
     }
 }

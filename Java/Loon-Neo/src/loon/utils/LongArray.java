@@ -570,7 +570,7 @@ public class LongArray implements IArray {
 	}
 
 	public LongArray cpy() {
-		return new LongArray(items,length);
+		return new LongArray(this);
 	}
 	
 	public String toString(char split) {
