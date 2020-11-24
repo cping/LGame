@@ -1,20 +1,21 @@
 ﻿namespace loon.utils.reply
 {
-    public abstract class ActView<T>
+    public interface ActViewListener<T> : Bypass.GoListener
     {
-        public interface Listener<T1> : Bypass.GoListener
-        {
 
-            void OnEmit(T1 e);
-        }
+        void OnEmit(T e);
+    }
 
-        public abstract ActView<T> Map<M>(Function<T, M> func);
+    public interface ActView<T>
+    {
 
-        public abstract ActView<T> Filter(Function<T, bool> pred);
+        ActView<M> Map<M>(Function<T, M> func);
 
-        public abstract Connection Connect(Listener<T> slot);
+        ActView<T> Filter(Function<T, bool> pred);
 
-        public abstract void Disconnect(Listener<T> slot);
+        Connection Connect(ActViewListener<T> slot);
+
+        void Disconnect(ActViewListener<T> slot);
     }
 
 }

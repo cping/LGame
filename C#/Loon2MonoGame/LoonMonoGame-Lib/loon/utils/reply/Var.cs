@@ -4,9 +4,9 @@
     public class Var<T> : AbstractValue<T>
     {
 
-        protected T _value;
+        protected internal T _value;
 
-        public static  Var<T1> Create<T1>(T1 value)
+        public static Var<T1> Create<T1>(T1 value)
         {
             return new Var<T1>(value);
         }
@@ -16,14 +16,34 @@
             _value = value;
         }
 
-        public T Update(T value)
+        public virtual T Update(T value)
         {
-            return default;// UpdateAndNotifyIf(value);
+            return UpdateAndNotifyIf(value);
         }
 
-        public T UpdateForce(T value)
+        public virtual T UpdateForce(T value)
         {
-            return default;// UpdateAndNotify(value);
+            return UpdateAndNotify(value);
+        }
+
+        public virtual Port<T> Port()
+        {
+            return new PortImpl<T>(this);
+        }
+
+        private class PortImpl<T1> : Port<T1>
+        {
+            private readonly Var<T1> outerInstance;
+
+            public PortImpl(Var<T1> outerInstance)
+            {
+                this.outerInstance = outerInstance;
+            }
+
+            public override void OnEmit(T1 value)
+            {
+                outerInstance.Update(value);
+            }
         }
 
         public override T Get()
@@ -31,17 +51,13 @@
             return _value;
         }
 
-        protected virtual T UpdateLocal(T value)
+        protected internal override T UpdateLocal(T value)
         {
             T oldValue = _value;
             _value = value;
             return oldValue;
         }
 
-        public override GoListener DefaultListener()
-        {
-            throw new System.NotImplementedException();
-        }
     }
 
 }

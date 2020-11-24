@@ -25,17 +25,17 @@ package loon.utils.reply;
  */
 public class AbstractAct<T> extends Bypass implements ActView<T> {
 	
-    public static UnitPort DEF = new UnitPort() {
+    public final static UnitPort DEF = new UnitPort() {
         public void onEmit () {} 
     };
 	
 	@Override
-	public <M> ActView<M> map(final Function<? super T, M> func) {
+	public <M> ActView<M> map(final Function<T, M> func) {
 		final AbstractAct<T> outer = this;
 		return new MappedAct<M>() {
 			@Override
 			protected Connection connect() {
-				return outer.connect(new Listener<T>() {
+				return outer.connect(new ActViewListener<T>() {
 					@Override
 					public void onEmit(T value) {
 						notifyEmit(func.apply(value));
@@ -46,12 +46,12 @@ public class AbstractAct<T> extends Bypass implements ActView<T> {
 	}
 
 	@Override
-	public ActView<T> filter(final Function<? super T, Boolean> pred) {
+	public ActView<T> filter(final Function<T, Boolean> pred) {
 		final AbstractAct<T> outer = this;
 		return new MappedAct<T>() {
 			@Override
 			protected Connection connect() {
-				return outer.connect(new Listener<T>() {
+				return outer.connect(new ActViewListener<T>() {
 					@Override
 					public void onEmit(T value) {
 						if (pred.apply(value)) {
@@ -64,19 +64,19 @@ public class AbstractAct<T> extends Bypass implements ActView<T> {
 	}
 
 	@Override
-	public Connection connect(Listener<? super T> port) {
+	public Connection connect(ActViewListener<? super T> port) {
 		return addConnection(port);
 	}
 
 	@Override
-	public void disconnect(Listener<? super T> port) {
+	public void disconnect(ActViewListener<? super T> port) {
 		removeConnection(port);
 	}
 
 	@Override
-	public Listener<T> defaultListener() {
+	public GoListener defaultListener() {
 		@SuppressWarnings("unchecked")
-		Listener<T> p = (Listener<T>) AbstractAct.DEF;
+		ActViewListener<T> p = (ActViewListener<T>) AbstractAct.DEF;
 		return p;
 	}
 
@@ -87,7 +87,7 @@ public class AbstractAct<T> extends Bypass implements ActView<T> {
 	@SuppressWarnings("unchecked")
 	protected static final Notifier EMIT = new Notifier() {
 		public void notify(Object port, Object e, Object _1, Object _2) {
-			((Listener<Object>) port).onEmit(e);
+			((ActViewListener<Object>) port).onEmit(e);
 		}
 	};
 }

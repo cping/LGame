@@ -277,9 +277,177 @@ namespace loon.utils
 			}
 			return sbr.ToString();
 		}
+
+		public static bool IsNullOrEmpty(string v)
+		{
+			return v == null || v.Length() == 0;
+		}
+
+		public static string Quote(string cs)
+		{
+			if (IsNullOrEmpty(cs))
+			{
+				return "\"\"";
+			}
+			return "\"" + cs + "\"";
+		}
+		public static string Escape(string raw)
+		{
+			if (IsEmpty(raw))
+			{
+				return "";
+			}
+			int length = raw.Length();
+			int i = 0;
+			StrBuilder sbr = new StrBuilder(raw.Length() / 2);
+
+			while (i < length)
+			{
+				char c = raw.CharAt(i++);
+
+				if (CharUtils.IsLetterOrDigit(c) || CharUtils.IsEscapeExempt(c))
+				{
+					sbr.Append(c);
+				}
+				else
+				{
+					int i1 = raw.CharAt(i - 1);
+					string escape = CharUtils.ToHex(i1);
+
+					sbr.Append('%');
+
+					if (escape.Length > 2)
+					{
+						sbr.Append('u');
+					}
+					sbr.Append(escape.ToUpper());
+
+				}
+			}
+
+			return sbr.ToString();
+		}
+
+		public static int Size(string v)
+		{
+			return v == null ? -1 : v.Length();
+		}
+
+		public static int Length(string v)
+		{
+			if (IsNullOrEmpty(v))
+			{
+				return 0;
+			}
+			return v.Length();
+		}
+
+		public static char CharAt(string v, int i)
+		{
+			return Size(v) <= i ? (char)0 : v.CharAt(i);
+		}
+
+		public static string FormatCRLF(string cs)
+		{
+			if (IsEmpty(cs))
+			{
+				return LSystem.EMPTY;
+			}
+			string src = cs.ToString();
+			int pos = src.IndexOf("\r", StringComparison.Ordinal);
+			if (pos != -1)
+			{
+				int len = src.Length;
+				StrBuilder buffer = new StrBuilder();
+				int lastPos = 0;
+				while (pos != -1)
+				{
+					buffer.Append(src, lastPos, pos);
+					if (pos == len - 1 || src[pos + 1] != '\n')
+					{
+						buffer.Append('\n');
+					}
+					lastPos = pos + 1;
+					if (lastPos >= len)
+					{
+						break;
+					}
+					pos = src.IndexOf("\r", lastPos, StringComparison.Ordinal);
+				}
+				if (lastPos < len)
+				{
+					buffer.Append(src, lastPos, len);
+				}
+				src = buffer.ToString();
+			}
+			return src;
+		}
+
+		public static string FormatEscape(string cs, string indent)
+		{
+			
+			string text = cs.ToString();
+			if (text.IndexOf('\n') != -1)
+			{
+				if (text.Length == 1)
+				{
+					return Quote("\\n");
+				}
+				StrBuilder sbr = new StrBuilder();
+				sbr.Append("|");
+				string[] lines = Split(text, '\n');
+				for (int i = 0; i < lines.Length; i++)
+				{
+					string line = lines[i];
+					sbr.Append("\n" + indent + line);
+				}
+				if (text[text.Length - 1] == '\n')
+				{
+					sbr.Append("\n" + indent);
+				}
+				return sbr.ToString();
+			}
+			else if ("".Equals(text))
+			{
+				return Quote(text);
+			}
+			else
+			{
+				const string indicators = ":[]{},\"'|*&";
+				bool quoteIt = false;
+				foreach (char c in indicators.ToCharArray())
+				{
+					if (text.IndexOf(c) != -1)
+					{
+						quoteIt = true;
+						break;
+					}
+				}
+				if (text.Trim().Length != text.Length)
+				{
+					quoteIt = true;
+				}
+				if (MathUtils.IsNumber(text))
+				{
+					quoteIt = true;
+				}
+				if (quoteIt)
+				{
+					text = Escape(text);
+					text = Quote(text);
+				}
+				return text;
+			}
+		}
+
 		public static string ToString(object o)
 		{
-			return o?.ToString();
+			return ToString(o, null);
+		}
+
+		public static string ToString(object o, string def)
+		{
+			return o == null ? def : o.ToString();
 		}
 	}
 }

@@ -106,7 +106,7 @@ namespace loon.utils
 
         public static bool IsBase64(string v)
         {
-            return IsArrayByteBase64(v.GetSBytes());
+            return IsArrayByteBase64(v.GetBytes());
         }
 
         public static bool IsArrayByteBase64(sbyte[] bytes)

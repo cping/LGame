@@ -1,7 +1,7 @@
 ﻿namespace loon.utils.reply
 {
 
-    public abstract class Port<T> : Listener<T>, ActView<T>.Listener<T>
+    public abstract class Port<T> : VarViewListener<T>, ActViewListener<T>
     {
 
         internal class ComposePort<P> : Port<P>
@@ -77,9 +77,6 @@
             OnEmit(value);
         }
 
-        public virtual void OnEmit(T e)
-        {
-            throw new System.NotImplementedException();
-        }
+        public abstract void OnEmit(T e);
     }
 }

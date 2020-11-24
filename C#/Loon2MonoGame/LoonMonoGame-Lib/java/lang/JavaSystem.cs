@@ -30,17 +30,17 @@ namespace java.lang
             {
                 encode = Encoding.Unicode;
             }
-            else if ("Unicode".Equals(e))
-            {
-                encode = Encoding.Unicode;
-            }
             else if ("Default".Equals(e))
             {
                 encode = Encoding.Default;
             }
-            else
+            else if ("UTF-8".Equals(e))
             {
                 encode = Encoding.UTF8;
+            }
+            else
+            {
+                encode = System.Text.Encoding.GetEncoding(e);
             }
             return encode;
         }

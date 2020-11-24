@@ -1,26 +1,60 @@
 ﻿
+using System;
+
 namespace java.lang
 {
     public static class StringExtensions
     {
-
-        public static sbyte[] GetSBytes(this string str)
+        public static string NewString(sbyte[] bytes)
         {
-            return new JavaString(str).GetSBytes();
+            return NewString(bytes, 0, bytes.Length);
         }
 
-        public static sbyte[] GetSBytes(this string str, string encoding)
+        public static sbyte[] NewString(this string str, sbyte[] bytes)
         {
-            return new JavaString(str).GetSBytes(encoding);
+            return NewString(str, bytes);
         }
 
-        public static byte[] GetBytes(this string str)
+        public static string NewString(sbyte[] bytes, int index, int count)
         {
-            return new JavaString(str).GetBytes();
+            return System.Text.Encoding.UTF8.GetString((byte[])(object)bytes, index, count);
         }
-        public static byte[] GetBytes(this string str, string encoding)
+
+        public static string NewString(sbyte[] bytes, string encoding)
         {
-            return new JavaString(str).GetBytes(encoding);
+            return NewString(bytes, 0, bytes.Length, encoding);
+        }
+
+        public static sbyte[] NewString(this string str, sbyte[] bytes, string encoding)
+        {
+            return NewString(str, bytes, encoding);
+        }
+
+        public static string NewString(sbyte[] bytes, int index, int count, string encoding)
+        {
+            return System.Text.Encoding.GetEncoding(encoding).GetString((byte[])(object)bytes, index, count);
+        }
+
+        public static sbyte[] GetBytes(this string self)
+        {
+            return GetSBytes(System.Text.Encoding.UTF8, self);
+        }
+
+        public static sbyte[] GetBytes(this string self, System.Text.Encoding encoding)
+        {
+            return GetSBytes(encoding, self);
+        }
+
+        public static sbyte[] GetBytes(this string self, string encoding)
+        {
+            return GetSBytes(JavaSystem.GetEncoding(encoding), self);
+        }
+
+        private static sbyte[] GetSBytes(System.Text.Encoding encoding, string s)
+        {
+            sbyte[] sbytes = new sbyte[encoding.GetByteCount(s)];
+            encoding.GetBytes(s, 0, s.Length, (byte[])(object)sbytes, 0);
+            return sbytes;
         }
 
         public static char CharAt(this string str, int index)
@@ -59,7 +93,7 @@ namespace java.lang
 
         public static int IndexOf(this string str, string other)
         {
-            return str.IndexOf(other);
+            return str.IndexOf(other, StringComparison.Ordinal);
         }
 
         public static int IndexOf(this string str, int c)
@@ -69,7 +103,7 @@ namespace java.lang
 
         public static int IndexOf(this string str, string other, int from)
         {
-            return str.IndexOf(other, from);
+            return str.IndexOf(other, from, StringComparison.Ordinal);
         }
 
         public static int IndexOf(this string str, int c, int from)
@@ -173,6 +207,36 @@ namespace java.lang
         public static bool StartsWith(this string str, string other)
         {
             return str.StartsWith(other);
+        }
+
+        public static bool StartsWith(this string str, string prefix, int toffset)
+        {
+            return str.IndexOf(prefix, toffset, System.StringComparison.Ordinal) == toffset;
+        }
+
+        public static string[] Split(this string str, string regexDelimiter, bool trimTrailingEmptyStrings)
+        {
+            string[] splitArray = System.Text.RegularExpressions.Regex.Split(str, regexDelimiter);
+
+            if (trimTrailingEmptyStrings)
+            {
+                if (splitArray.Length > 1)
+                {
+                    for (int i = splitArray.Length; i > 0; i--)
+                    {
+                        if (splitArray[i - 1].Length > 0)
+                        {
+                            if (i < splitArray.Length)
+                            {
+                                System.Array.Resize(ref splitArray, i);
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return splitArray;
         }
 
         public static string[] Split(this string str, string delim, int limit = 0)

@@ -54,7 +54,7 @@ namespace loon.utils
         public string EncryptString(string buffer)
         {
             Md5Init();
-            Md5Update(buffer.GetSBytes(), buffer.Length);
+            Md5Update(buffer.GetBytes(), buffer.Length);
             Md5Final();
             StrBuilder buf = new StrBuilder();
             for (int i = 0; i < 16; i++)

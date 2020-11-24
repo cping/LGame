@@ -23,11 +23,11 @@ namespace loon.utils
             try
             {
                 ARC4 rc4 = new ARC4(key);
-                return rc4.GetCrypt(value.GetSBytes(LSystem.ENCODING));
+                return rc4.GetCrypt(value.GetBytes(LSystem.ENCODING));
             }
             catch (Throwable)
             {
-                return new ArrayByte(value.GetSBytes());
+                return new ArrayByte(value.GetBytes());
             }
         }
 
@@ -41,7 +41,7 @@ namespace loon.utils
 
         }
 
-        public ARC4(string key) : this(key.GetSBytes(LSystem.ENCODING))
+        public ARC4(string key) : this(key.GetBytes(LSystem.ENCODING))
         {
 
         }

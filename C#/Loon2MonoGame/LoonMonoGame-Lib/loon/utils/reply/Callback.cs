@@ -6,7 +6,7 @@ namespace loon.utils.reply
 	{
 		void OnSuccess(T result);
 
-		void OnFailure(Throwable cause);
+		void OnFailure(System.Exception cause);
 
 	}
 }

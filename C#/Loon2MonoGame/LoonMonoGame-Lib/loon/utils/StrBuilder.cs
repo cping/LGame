@@ -167,6 +167,11 @@ namespace loon.utils
             return Insert(this._currentIndex, cs, start, end);
         }
 
+        public StrBuilder Append(string cs, int start, int end)
+        {
+            return Insert(this._currentIndex, cs, start, end);
+        }
+
         public StrBuilder Insert(int index, object o)
         {
             if (o is CharSequence sequence)

@@ -20,7 +20,10 @@
  */
 package loon.utils.reply;
 
-public abstract class Port<T> implements VarView.Listener<T>, ActView.Listener<T> {
+import loon.utils.reply.ActView.ActViewListener;
+import loon.utils.reply.VarView.VarViewListener;
+
+public abstract class Port<T> implements VarViewListener<T>, ActViewListener<T> {
 
 	public <P> Port<P> compose(final Function<P, T> fn) {
 		final Port<T> outer = this;

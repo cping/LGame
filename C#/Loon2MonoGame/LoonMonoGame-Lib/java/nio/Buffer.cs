@@ -9,30 +9,30 @@ namespace java.nio
         protected int limit;
         protected int mark = -1;
 
-        Buffer(int c)
+        public Buffer(int c)
         {
             this.capacity = c;
             limit = c;
         }
 
-        public int Capacity()
+        public virtual int Capacity()
         {
             return capacity;
         }
 
-        public int Position()
+        public virtual long Position()
         {
             return position;
         }
 
-        public Buffer Position(int newPosition)
+        public virtual Buffer Position(long newPosition)
         {
             if (newPosition < 0 || newPosition > limit)
             {
                 throw new IllegalArgumentException("New position " + newPosition + " is outside of range [0;"
                         + limit + "]");
             }
-            position = newPosition;
+            position = (int)newPosition;
             if (newPosition < mark)
             {
                 mark = 0;
@@ -40,12 +40,12 @@ namespace java.nio
             return this;
         }
 
-        public int Limit()
+        public virtual long Limit()
         {
             return this.limit;
         }
 
-        public Buffer Limit(int newLimit)
+        public virtual Buffer Limit(int newLimit)
         {
             if (newLimit < 0 || newLimit > capacity)
             {
@@ -64,13 +64,13 @@ namespace java.nio
             return this;
         }
 
-        public Buffer Mark()
+        public virtual Buffer Mark()
         {
             mark = position;
             return this;
         }
 
-        public Buffer Reset()
+        public virtual Buffer Reset()
         {
             if (mark < 0)
             {
@@ -80,7 +80,7 @@ namespace java.nio
             return this;
         }
 
-        public Buffer Clear()
+        public virtual Buffer Clear()
         {
             position = 0;
             limit = capacity;
@@ -88,7 +88,7 @@ namespace java.nio
             return this;
         }
 
-        public Buffer Flip()
+        public virtual Buffer Flip()
         {
             limit = position;
             position = 0;
@@ -96,19 +96,19 @@ namespace java.nio
             return this;
         }
 
-        public Buffer Rewind()
+        public virtual Buffer Rewind()
         {
             mark = -1;
             position = 0;
             return this;
         }
 
-        public int Remaining()
+        public virtual long Remaining()
         {
             return limit - position;
         }
 
-        public bool HasRemaining()
+        public virtual bool HasRemaining()
         {
             return position < limit;
         }
