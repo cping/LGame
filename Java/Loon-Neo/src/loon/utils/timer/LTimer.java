@@ -98,18 +98,18 @@ public class LTimer implements LRelease {
 		return new LTimer();
 	}
 
-	public static LTimer at(long _delay) {
-		return new LTimer(_delay);
+	public static LTimer at(long d) {
+		return new LTimer(d);
 	}
 
-	public static LTimer at(Duration _delay) {
-		return new LTimer(_delay);
+	public static LTimer at(Duration d) {
+		return new LTimer(d);
 	}
 
 	private static int GLOBAL_ID = 0;
 
 	private TimerProcess _process = null;
-	private int _idx = 0;
+	private final int _idx;
 	private int _maxNumberOfRepeats = -1;
 	private int _numberOfTicks = 0;
 

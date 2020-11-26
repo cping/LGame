@@ -433,6 +433,9 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 
 		Context context = getApplicationContext();
 		this.onMain();
+		if (setting == null) {
+			setting = new AndroidSetting();
+		}
 		LMode mode = setting.showMode;
 		if (mode == null) {
 			mode = LMode.Fill;
@@ -1084,38 +1087,25 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 	}
 
 	/**
-	 
-	public Bitmap snapShotWithStatusBar() {
-		View view = getWindow().getDecorView();
-		view.setDrawingCacheEnabled(true);
-		view.buildDrawingCache();
-		Bitmap bmp = view.getDrawingCache();
-		int width = getContainerWidth();
-		int height = getContainerHeight();
-		Bitmap bp = null;
-		bp = Bitmap.createBitmap(bmp, 0, 0, width, height);
-		view.destroyDrawingCache();
-		return bp;
-	}
+	 * 
+	 * public Bitmap snapShotWithStatusBar() { View view =
+	 * getWindow().getDecorView(); view.setDrawingCacheEnabled(true);
+	 * view.buildDrawingCache(); Bitmap bmp = view.getDrawingCache(); int width =
+	 * getContainerWidth(); int height = getContainerHeight(); Bitmap bp = null; bp
+	 * = Bitmap.createBitmap(bmp, 0, 0, width, height); view.destroyDrawingCache();
+	 * return bp; }
+	 * 
+	 * public Bitmap snapShotWithoutStatusBar() { View view =
+	 * getWindow().getDecorView(); view.setDrawingCacheEnabled(true);
+	 * view.buildDrawingCache(); Bitmap bmp = view.getDrawingCache(); Rect frame =
+	 * new Rect(); getWindow().getDecorView().getWindowVisibleDisplayFrame(frame);
+	 * int statusBarHeight = frame.top; int width = getContainerWidth(); int height
+	 * = getContainerHeight(); Bitmap bp = null; bp = Bitmap.createBitmap(bmp, 0,
+	 * statusBarHeight, width, height - statusBarHeight);
+	 * view.destroyDrawingCache(); return bp; }
+	 * 
+	 **/
 
-	public Bitmap snapShotWithoutStatusBar() {
-		View view = getWindow().getDecorView();
-		view.setDrawingCacheEnabled(true);
-		view.buildDrawingCache();
-		Bitmap bmp = view.getDrawingCache();
-		Rect frame = new Rect();
-		getWindow().getDecorView().getWindowVisibleDisplayFrame(frame);
-		int statusBarHeight = frame.top;
-		int width = getContainerWidth();
-		int height = getContainerHeight();
-		Bitmap bp = null;
-		bp = Bitmap.createBitmap(bmp, 0, statusBarHeight, width, height - statusBarHeight);
-		view.destroyDrawingCache();
-		return bp;
-	}
-	
-	**/
-	
 	/**
 	 * 获取当前屏幕截图，包含状态栏
 	 * 
@@ -1153,7 +1143,7 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 	public Bitmap snap() {
 		return snap(getWindow().getDecorView());
 	}
-	
+
 	public Bitmap snap(View view) {
 		return getBitmapFromView(view, view.getWidth(), view.getHeight());
 	}

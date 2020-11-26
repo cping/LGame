@@ -26,5 +26,11 @@ namespace loon
             }
         }
 
+        protected internal Display displayImpl;
+
+        public virtual Display Register(Screen screen)
+        {
+            return null;
+        }
     }
 }

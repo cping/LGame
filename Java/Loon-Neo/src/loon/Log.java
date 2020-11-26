@@ -84,7 +84,7 @@ public abstract class Log {
 	}
 
 	public void debug(String msg, Throwable e) {
-		log(Level.DEBUG, msg, e);
+		call(Level.DEBUG, msg, e);
 	}
 
 	public void info(String msg) {
@@ -96,7 +96,7 @@ public abstract class Log {
 	}
 
 	public void info(String msg, Throwable e) {
-		log(Level.INFO, msg, e);
+		call(Level.INFO, msg, e);
 	}
 
 	public void warn(String msg) {
@@ -108,7 +108,7 @@ public abstract class Log {
 	}
 
 	public void warn(String msg, Throwable e) {
-		log(Level.WARN, msg, e);
+		call(Level.WARN, msg, e);
 	}
 
 	public void error(String msg) {
@@ -120,14 +120,14 @@ public abstract class Log {
 	}
 
 	public void error(String msg, Throwable e) {
-		log(Level.ERROR, msg, e);
+		call(Level.ERROR, msg, e);
 	}
 
 	protected String format(String msg, Object[] args) {
 		return msg;
 	}
 
-	protected void log(Level level, String msg, Throwable e) {
+	protected void call(Level level, String msg, Throwable e) {
 		if (LSystem.isConsoleLog()) {
 			if (collector != null) {
 				collector.logged(level, msg, e);

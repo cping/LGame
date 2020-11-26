@@ -209,11 +209,6 @@ public class LSetting {
 	public boolean lockAllTouchEvent = false;
 
 	/**
-	 * 当前游戏类型，默认为"未知"
-	 */
-	public GameType gameType = GameType.UNKNOWN;
-
-	/**
 	 * 初始化游戏时传参用，默认无数据
 	 */
 	public String[] args = new String[] { "" };
@@ -223,7 +218,7 @@ public class LSetting {
 	 * 
 	 * @param setting
 	 */
-	public void copy(LSetting setting) {
+	public LSetting copy(LSetting setting) {
 		this.isSyncTween = setting.isSyncTween;
 		this.isFPS = setting.isFPS;
 		this.isLogo = setting.isLogo;
@@ -241,7 +236,6 @@ public class LSetting {
 		this.convertImagesOnLoad = setting.convertImagesOnLoad;
 		this.saveTexturePixels = setting.saveTexturePixels;
 		this.appName = setting.appName;
-		this.gameType = setting.gameType;
 		this.logoPath = setting.logoPath;
 		this.fontName = setting.fontName;
 		this.version = setting.version;
@@ -252,50 +246,58 @@ public class LSetting {
 		this.notAllowDragAndMove = setting.notAllowDragAndMove;
 		this.lockAllTouchEvent = setting.lockAllTouchEvent;
 		this.args = setting.args;
+		return this;
 	}
 
 	/**
 	 * 全局的log显示用字体,不设置则默认使用LFont贴图本地字体
 	 */
-	public void setSystemLogFont(IFont font) {
+	public LSetting setSystemLogFont(IFont font) {
 		defaultLogFont = font;
+		return this;
 	}
 
 	/**
 	 * 全局的游戏画面用字体,不设置则默认使用LFont贴图本地字体
 	 */
-	public void setSystemGameFont(IFont font) {
+	public LSetting setSystemGameFont(IFont font) {
 		defaultGameFont = font;
+		return this;
 	}
 
 	/**
 	 * loon中一切字体的统一设置
 	 */
-	public void setSystemGlobalFont(IFont font) {
+	public LSetting setSystemGlobalFont(IFont font) {
 		setSystemLogFont(font);
 		setSystemGameFont(font);
+		return this;
 	}
 
 	/**
 	 * 锁死paint刷新为1/60帧
 	 */
-	public void fixedPaintTime() {
+	public LSetting fixedPaintTime() {
 		fixedPaintTime(1f / 60f);
+		return this;
 	}
 
-	public void fixedPaintTime(float time) {
+	public LSetting fixedPaintTime(float time) {
 		this.fixedPaintLoopTime = (long) (time * 1000f);
+		return this;
 	}
 
 	/**
 	 * 锁死update刷新为3.5/60帧
 	 */
-	public void fixedUpdateTime() {
+	public LSetting fixedUpdateTime() {
 		fixedPaintTime(3.5f / 60f);
+		return this;
 	}
 
-	public void fixedUpdateTime(float time) {
+	public LSetting fixedUpdateTime(float time) {
 		this.fixedUpdateLoopTime = (long) (time * 1000f);
+		return this;
 	}
 
 	public boolean landscape() {
@@ -306,7 +308,7 @@ public class LSetting {
 		return this.height >= this.width;
 	}
 
-	public void updateScale() {
+	public LSetting updateScale() {
 		if (scaling()) {
 			LSystem.setScaleWidth((float) width_zoom / (float) width);
 			LSystem.setScaleHeight((float) height_zoom / (float) height);
@@ -315,6 +317,7 @@ public class LSetting {
 				LSystem.getProcess().resize(width, height);
 			}
 		}
+		return this;
 	}
 
 	public boolean scaling() {

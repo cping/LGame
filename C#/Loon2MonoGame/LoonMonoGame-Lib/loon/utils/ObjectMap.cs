@@ -1,6 +1,7 @@
 ﻿using java.lang;
 using java.util;
 using java.util.function;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -8,26 +9,24 @@ namespace loon.utils
 {
     public class ObjectMap<K, V> : Iterable<ObjectMap<K, V>.Entry<K, V>>, IEnumerable<ObjectMap<K, V>.Entry<K, V>>, IArray
     {
-#pragma warning disable CS0693 // 类型参数与外部类型中的类型参数同名
-        public class Values<V> : Iterable<V>, LIterator<V>, IEnumerable<V>
+        public class Values<V1> : Iterable<V1>, LIterator<V1>, IEnumerable<V1>
         {
-#pragma warning restore CS0693 // 类型参数与外部类型中的类型参数同名
 
             public bool _valid;
             internal bool _simpleOrder;
             internal int _nextIndex;
             internal int _lastIndex;
             internal int _expectedModCount;
-            internal ObjectMap<K, V> _map;
+            internal ObjectMap<K, V1> _map;
 
-            internal Values(ObjectMap<K, V> map)
+            public Values(ObjectMap<K, V1> map)
             {
                 this._map = map;
             }
 
             public void Reset()
             {
-                this._simpleOrder = !(_map is OrderedMap<K, V>);
+                this._simpleOrder = !(_map is OrderedMap<K, V1>);
                 this._nextIndex = _map.IterateFirst();
                 this._lastIndex = NO_INDEX;
                 this._expectedModCount = _map.modCount;
@@ -41,7 +40,7 @@ namespace loon.utils
                 return _nextIndex != NO_INDEX && _nextIndex < _map.firstUnusedIndex;
             }
 
-            public V Next()
+            public V1 Next()
             {
                 if (!_valid)
                 {
@@ -72,7 +71,7 @@ namespace loon.utils
                 {
                     return default;
                 }
-                return ((V)(_map.keyValueTable[(_lastIndex << 1) + 2]));
+                return ((V1)(_map.keyValueTable[(_lastIndex << 1) + 2]));
             }
 
             public void Remove()
@@ -95,24 +94,24 @@ namespace loon.utils
                 _expectedModCount = _map.modCount;
             }
 
-            public Values<V> Iterator()
+            public Values<V1> Iterator()
             {
                 return this;
             }
 
-            Iterator<V> Iterable<V>.Iterator()
+            Iterator<V1> Iterable<V1>.Iterator()
             {
                 return this;
             }
 
             public void ForEach(Consumer consumer)
             {
-                Iterable_Java<V>.ForEach(this, consumer);
+                Iterable_Java<V1>.ForEach(this, consumer);
             }
 
-            public IEnumerator<V> GetEnumerator()
+            public IEnumerator<V1> GetEnumerator()
             {
-                return new IEnumeratorAdapter<V>(this.Iterator());
+                return new IEnumeratorAdapter<V1>(this.Iterator());
             }
 
             IEnumerator IEnumerable.GetEnumerator()
@@ -149,9 +148,7 @@ namespace loon.utils
         }
 
 
-#pragma warning disable CS0693 // 类型参数与外部类型中的类型参数同名
-        public class Keys<K> : Iterable<K>, LIterator<K>, IEnumerable<K>
-#pragma warning restore CS0693 // 类型参数与外部类型中的类型参数同名
+        public class Keys<K1> : Iterable<K1>, LIterator<K1>, IEnumerable<K1>  
         {
 
 
@@ -160,9 +157,9 @@ namespace loon.utils
             internal int _nextIndex;
             internal int _lastIndex;
             internal int _expectedModCount;
-            internal ObjectMap<K, V> _map;
+            internal ObjectMap<K1, V> _map;
 
-            internal Keys(ObjectMap<K, V> map)
+            public Keys(ObjectMap<K1, V> map)
             {
                 this._map = map;
             }
@@ -183,7 +180,7 @@ namespace loon.utils
                 return _nextIndex != NO_INDEX && _nextIndex < _map.firstUnusedIndex;
             }
 
-            public K Next()
+            public K1 Next()
             {
                 if (!_valid)
                 {
@@ -211,7 +208,7 @@ namespace loon.utils
                     _nextIndex = _map.IterateNext(_nextIndex);
                 }
 
-                return _lastIndex == NULL_INDEX ? default : (K)_map.keyValueTable[(_lastIndex << _map.keyIndexShift) + 1];
+                return _lastIndex == NULL_INDEX ? default : (K1)_map.keyValueTable[(_lastIndex << _map.keyIndexShift) + 1];
 
             }
             public void Remove()
@@ -234,24 +231,24 @@ namespace loon.utils
                 _expectedModCount = _map.modCount;
             }
 
-            public Keys<K> Iterator()
+            public Keys<K1> Iterator()
             {
                 return this;
             }
 
-            Iterator<K> Iterable<K>.Iterator()
+            Iterator<K1> Iterable<K1>.Iterator()
             {
                 return this;
             }
 
             public void ForEach(Consumer consumer)
             {
-                Iterable_Java<K>.ForEach(this, consumer);
+                Iterable_Java<K1>.ForEach(this, consumer);
             }
 
-            public IEnumerator<K> GetEnumerator()
+            public IEnumerator<K1> GetEnumerator()
             {
-                return new IEnumeratorAdapter<K>(this.Iterator());
+                return new IEnumeratorAdapter<K1>(this.Iterator());
             }
 
             IEnumerator IEnumerable.GetEnumerator()

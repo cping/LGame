@@ -1,15 +1,15 @@
 ﻿namespace loon
 {
-    public abstract class LazyLoading
+    public interface Data
     {
-        public abstract class Data
-        {
+        Screen OnScreen();
 
-            public abstract Screen OnScreen();
+    }
 
-        }
+    public interface LazyLoading
+    {
 
-        public abstract void Register(LSetting setting, LazyLoading.Data lazy);
+        void Register(LSetting setting, Data lazy);
     }
 
 }

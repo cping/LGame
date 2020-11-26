@@ -182,7 +182,7 @@ namespace loon.utils
 
         }
 
-        protected TArray(int size,params T[] array) : this(true, array, 0, size)
+        protected TArray(int size, params T[] array) : this(true, array, 0, size)
         {
 
         }
@@ -191,6 +191,15 @@ namespace loon.utils
         {
             size = count;
             JavaSystem.Arraycopy(array, start, items, 0, size);
+        }
+
+        public TArray(SortedList<T> vals) : this()
+        {
+
+            for (LIterator<T> it = vals.ListIterator(); it.HasNext();)
+            {
+                Add(it.Next());
+            }
         }
 
         public TArray(Array<T> vals) : this()
@@ -203,6 +212,23 @@ namespace loon.utils
             vals.StopNext();
         }
 
+        public  TArray(loon.utils.ObjectMap<T, object>.Keys<T> vals) : this()
+        {
+
+            foreach (T t in vals)
+            {
+                Add(t);
+            }
+        }
+
+        public TArray(loon.utils.ObjectMap<T, object>.Values<T> vals) : this()
+        {
+
+            foreach (T t in vals)
+            {
+                Add(t);
+            }
+        }
 
         public bool Add(T value)
         {

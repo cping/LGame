@@ -36,9 +36,9 @@ public abstract class RealtimeProcess implements GameProcess, LRelease {
 
 	protected final String id;
 
-	private GameProcessType processType = GameProcessType.Other;
+	private final LTimer timer = new LTimer(LSystem.SECOND);
 
-	private LTimer timer = new LTimer(LSystem.SECOND);
+	private GameProcessType processType = GameProcessType.Other;
 
 	private RealtimeProcessHost processHost;
 

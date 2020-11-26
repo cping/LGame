@@ -4,13 +4,13 @@ namespace loon.utils
 {
     public class StringKeyValue
     {
-        private int capacity;
+        private readonly int capacity;
 
         private string key;
 
         private string value;
 
-        private Array<string> flags;
+        private readonly Array<string> flags;
 
         private StrBuilder _buffer;
 

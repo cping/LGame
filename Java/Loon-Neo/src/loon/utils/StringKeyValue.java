@@ -32,13 +32,13 @@ import loon.LSystem;
  */
 public class StringKeyValue {
 
-	private int capacity;
+	private final int capacity;
 
 	private String key;
 
 	private String value;
 
-	private Array<CharSequence> flags;
+	private final Array<CharSequence> flags;
 
 	private StrBuilder _buffer;
 

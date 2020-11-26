@@ -1998,6 +1998,116 @@ namespace loon.utils
             return buf.ToString();
         }
 
+        /// <summary>
+        /// 返回数字的位数长度
+        /// </summary>
+        /// <param name="num">
+        /// @return </param>
+        public static int GetBitSize(int num)
+        {
+            int numBits = 0;
+            if (num < 10)
+            {
+                numBits = 1;
+            }
+            else if (num < 100)
+            {
+                numBits = 2;
+            }
+            else if (num < 1000)
+            {
+                numBits = 3;
+            }
+            else if (num < 10000)
+            {
+                numBits = 4;
+            }
+            else if (num < 100000)
+            {
+                numBits = 5;
+            }
+            else if (num < 1000000)
+            {
+                numBits = 6;
+            }
+            else if (num < 10000000)
+            {
+                numBits = 7;
+            }
+            else if (num < 100000000)
+            {
+                numBits = 8;
+            }
+            else if (num < 1000000000)
+            {
+                numBits = 9;
+            }
+            else
+            {
+                numBits = (num.ToString().Length - 1);
+            }
+            return numBits;
+        }
+
+        /// <summary>
+        /// 返回浮点数'.'后长度
+        /// </summary>
+        /// <param name="num">
+        /// @return </param>
+        public static int GetFloatDotBackSize(float num)
+        {
+            if (num < 0f)
+            {
+                num = -num;
+            }
+            if (num < 1f)
+            {
+                int numBits = 1;
+                if (num >= 1f - 0.01f)
+                {
+                    numBits = 1;
+                }
+                else if (num >= 1f - 0.001f)
+                {
+                    numBits = 2;
+                }
+                else if (num >= 1f - 0.0001f)
+                {
+                    numBits = 3;
+                }
+                else if (num >= 1f - 0.00001f)
+                {
+                    numBits = 4;
+                }
+                else if (num >= 1f - 0.000001f)
+                {
+                    numBits = 5;
+                }
+                else if (num >= 1f - 0.0000001f)
+                {
+                    numBits = 6;
+                }
+                else if (num >= 1f - 0.00000001f)
+                {
+                    numBits = 7;
+                }
+                else if (num >= 1f - 0.000000001f)
+                {
+                    numBits = 8;
+                }
+                else if (num >= 1f - 0.0000000001f)
+                {
+                    numBits = 9;
+                }
+                else
+                {
+                    string v = num.ToString();
+                    numBits = v.Substring(v.IndexOf('.'), v.Length()).Length() - 1;
+                }
+                return numBits;
+            }
+            return 0;
+        }
     }
 }
 

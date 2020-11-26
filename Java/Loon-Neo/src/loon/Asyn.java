@@ -37,7 +37,7 @@ public abstract class Asyn {
 		}
 
 		@Override
-		public void onEmit(Object event) {
+		public void onEmit(T e) {
 			_def.dispatch();
 		}
 		

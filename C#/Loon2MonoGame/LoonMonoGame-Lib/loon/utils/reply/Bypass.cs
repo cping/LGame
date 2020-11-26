@@ -76,7 +76,9 @@ namespace loon.utils.reply
             lock (this)
             {
                 if (listener == null)
+                {
                     throw new LSysException("null listener");
+                }
                 return AddCons(new Cons(this, listener));
             }
         }
@@ -102,9 +104,9 @@ namespace loon.utils.reply
         {
             private readonly Bypass outerInstance;
 
-            private readonly loon.utils.reply.Cons cons;
+            private readonly Cons cons;
 
-            public AddConsImpl(Bypass outerInstance, loon.utils.reply.Cons cons)
+            public AddConsImpl(Bypass outerInstance, Cons cons)
             {
                 this.outerInstance = outerInstance;
                 this.cons = cons;
@@ -136,9 +138,9 @@ namespace loon.utils.reply
         {
             private readonly Bypass outerInstance;
 
-            private readonly loon.utils.reply.Cons cons;
+            private readonly Cons cons;
 
-            public DisconnectImpl(Bypass outerInstance, loon.utils.reply.Cons cons)
+            public DisconnectImpl(Bypass outerInstance, Cons cons)
             {
                 this.outerInstance = outerInstance;
                 this.cons = cons;
@@ -170,9 +172,9 @@ namespace loon.utils.reply
         {
             private readonly Bypass outerInstance;
 
-            private readonly loon.utils.reply.Bypass.GoListener listener;
+            private readonly GoListener listener;
 
-            public RemoveConnectionImpl(Bypass outerInstance, loon.utils.reply.Bypass.GoListener listener)
+            public RemoveConnectionImpl(Bypass outerInstance, GoListener listener)
             {
                 this.outerInstance = outerInstance;
                 this.listener = listener;
@@ -247,12 +249,12 @@ namespace loon.utils.reply
         {
             private readonly Bypass outerInstance;
 
-            private loon.utils.reply.Bypass.Notifier notifier;
+            private readonly Notifier notifier;
             private readonly object a1;
             private readonly object a2;
             private readonly object a3;
 
-            public RunsNotifyImpl(Bypass outerInstance, loon.utils.reply.Bypass.Notifier notifier, object a1, object a2, object a3)
+            public RunsNotifyImpl(Bypass outerInstance, Notifier notifier, object a1, object a2, object a3)
             {
                 this.outerInstance = outerInstance;
                 this.notifier = notifier;

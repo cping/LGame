@@ -11,7 +11,7 @@ namespace loon.utils.reply
 
         public static readonly DefUnitPort DEF = new DefUnitPort();
 
-		public virtual ActView<M> Map<M>(Function<T, M> func) where M:T
+		public virtual ActView<M> Map<M>(Function<T, M> func) 
 		{
 			AbstractAct<T> outer = this;
 			return new MappedActImpl<M>(func, outer);

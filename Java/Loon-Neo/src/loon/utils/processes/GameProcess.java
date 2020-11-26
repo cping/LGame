@@ -25,21 +25,21 @@ import loon.utils.timer.LTimerContext;
 
 public interface GameProcess {
 	
-	public GameProcessType getProcessType();
+	 GameProcessType getProcessType();
 
-	public void setProcessType(GameProcessType processType);
+	 void setProcessType(GameProcessType processType);
 	
-	public void setProcessHost(RealtimeProcessHost host);
+	 void setProcessHost(RealtimeProcessHost host);
 
-	public void fireThisWhenFinished(GameProcess process);
+	 void fireThisWhenFinished(GameProcess process);
 
-	public void tick(LTimerContext time);
+	 void tick(LTimerContext time);
 
-	public void kill();
+	 void kill();
 
-	public boolean isDead();
+	 boolean isDead();
 
-	public String getId();
+	 String getId();
 
-	public void finish();
+	 void finish();
 }
