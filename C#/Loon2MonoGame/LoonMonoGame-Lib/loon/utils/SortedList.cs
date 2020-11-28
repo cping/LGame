@@ -8,17 +8,15 @@ namespace loon.utils
     public class SortedList<E> : Iterable<E>, IArray
     {
 
-#pragma warning disable CS0693 // 类型参数与外部类型中的类型参数同名
-        internal class ListItr<E> : LIterator<E>
+        internal class ListItr<E1> : LIterator<E1>
         {
-#pragma warning restore CS0693 // 类型参数与外部类型中的类型参数同名
-            private SortedList<E>.Node<E> lastReturned;
-            private SortedList<E>.Node<E> next;
+            private SortedList<E1>.Node<E1> lastReturned;
+            private SortedList<E1>.Node<E1> next;
             private int nextIndex;
             private int expectedModCount;
-            private SortedList<E> _list;
+            private SortedList<E1> _list;
 
-            internal ListItr(SortedList<E> l, int idx)
+            internal ListItr(SortedList<E1> l, int idx)
             {
                 this._list = l;
                 this.next = (idx == _list.size) ? null : _list.LoadNode(idx);
@@ -31,7 +29,7 @@ namespace loon.utils
                 return nextIndex < _list.size;
             }
 
-            public E Next()
+            public E1 Next()
             {
                 CheckForComodification();
                 if (!HasNext())
@@ -52,7 +50,7 @@ namespace loon.utils
                     return;
                 }
 
-                loon.utils.SortedList<E>.Node<E> lastNext = lastReturned.next;
+                loon.utils.SortedList<E1>.Node<E1> lastNext = lastReturned.next;
                 _list.Unlink(lastReturned);
                 if (next == lastReturned)
                     next = lastNext;

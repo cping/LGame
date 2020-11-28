@@ -29,7 +29,7 @@ namespace loon.utils
 				{
 					b.Append(format.Substring(p, i));
 				}
-				String nstr = format.Substring(i + 1, idx);
+				string nstr = format.Substring(i + 1, idx);
 				try
 				{
 					int n = Integer.ParseInt(nstr);
@@ -124,6 +124,35 @@ namespace loon.utils
 				}
 			}
 			return strings;
+		}
+		public static string Replace(string message, string oldString, string newString)
+		{
+			if (message == null)
+				return null;
+			if (newString == null)
+				return message;
+			int i = 0;
+			if ((i = message.IndexOf(oldString, i)) >= 0)
+			{
+				char[] string2 = message.ToCharArray();
+				char[] newString2 = newString.ToCharArray();
+				int oLength = oldString.Length();
+				StrBuilder buf = new StrBuilder(string2.Length);
+				buf.Append(string2, 0, i).Append(newString2);
+				i += oLength;
+				int j;
+				for (j = i; (i = message.IndexOf(oldString, i)) > 0; j = i)
+				{
+					buf.Append(string2, j, i - j).Append(newString2);
+					i += oLength;
+				}
+				buf.Append(string2, j, string2.Length - j);
+				return buf.ToString();
+			}
+			else
+			{
+				return message;
+			}
 		}
 
 		public static bool IsEmpty(string v)
@@ -448,6 +477,23 @@ namespace loon.utils
 		public static string ToString(object o, string def)
 		{
 			return o == null ? def : o.ToString();
+		}
+
+		public static string GetRandString()
+		{
+			return GetRandString(32);
+		}
+
+		public static string GetRandString(int size)
+		{
+			StrBuilder str = new StrBuilder(size);
+			char ch;
+			for (int i = 0; i < size; i++)
+			{
+				ch = Convert.ToChar(Convert.ToInt32(MathUtils.Floor(MathUtils.Random() * 26 + 65)));
+				str.Append(ch);
+			}
+			return str.ToString();
 		}
 	}
 }

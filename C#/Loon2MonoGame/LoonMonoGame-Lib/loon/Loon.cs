@@ -4,12 +4,13 @@ using loon.geom;
 using loon.monogame;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Framework.Utilities;
 using System;
 using System.Transactions;
 
 namespace loon
 {
-    public abstract class Loon : Game
+    public abstract class Loon : Game, Platform
     {
         private DisplayMode _displayMode;
 
@@ -37,7 +38,7 @@ namespace loon
             Content.RootDirectory = dir;
         }
 
-        protected virtual MonoGameGame InitializeGame()
+        protected internal virtual MonoGameGame InitializeGame()
         {
             if (_game != null && _mainDelegateData != null)
             {
@@ -47,11 +48,12 @@ namespace loon
             {
                 _game.Register(_mainInterfaceData.OnScreen());
             }
-            return null;
+            return _game;
         }
-        protected MonoGameGame CreateGame()
+
+        protected internal virtual MonoGameGame CreateGame()
         {
-            return this._game = new MonoGameGame();
+            return this._game = new MonoGameGame(this._setting, this);
         }
 
         /// <summary>
@@ -112,12 +114,14 @@ namespace loon
             {
                 _setting = new MonoGameSetting();
             }
-            
+     
             this.CreateGame();
-
+            
             Window.AllowUserResizing = _setting.allowUserResizing;
+            Window.Title = _setting.appName;
 #if WINDOWS || DEBUG
             IsMouseVisible = _setting.isMouseVisible;
+    
 #endif
             IsFixedTimeStep = _setting.isFixedTimeStep;
 
@@ -132,7 +136,7 @@ namespace loon
             _graphics.IsFullScreen = _setting.fullscreen;
             _graphics.SynchronizeWithVerticalRetrace = _setting.synchronizeVerticalRetrace;
             _graphics.PreferMultiSampling = _setting.preferMultiSampling;
-
+         
             if (_setting.Landscape())
             {
                 _graphics.SupportedOrientations = DisplayOrientation.LandscapeLeft | DisplayOrientation.LandscapeRight;
@@ -217,8 +221,33 @@ namespace loon
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Black);
             base.Draw(gameTime);
+        }
+
+        public void Close()
+        {
+            throw new NotImplementedException();
+        }
+
+        public int GetContainerWidth()
+        {
+            throw new NotImplementedException();
+        }
+
+        public int GetContainerHeight()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Platform_Orientation GetOrientation()
+        {
+            throw new NotImplementedException();
+        }
+
+        public LGame GetGame()
+        {
+            return this._game;
         }
     }
 }

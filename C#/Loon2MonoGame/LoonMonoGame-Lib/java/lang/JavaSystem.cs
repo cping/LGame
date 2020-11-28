@@ -65,6 +65,11 @@ namespace java.lang
             System.Diagnostics.Debug.WriteLine(text);
         }
 
+        public static void DebugFail(string text)
+        {
+            System.Diagnostics.Debug.Fail(text);
+        }
+
         public static void Arraycopy(object src, int srcPos, object dest, int destPos, int length)
         {
             System.Array.Copy((System.Array)src, srcPos, (System.Array)dest, destPos, length);

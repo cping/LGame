@@ -29,19 +29,19 @@ public interface Platform {
 		Portrait, Landscape;
 	}
 
-	public abstract void close();
+	void close();
 
-	public abstract int getContainerWidth();
+	int getContainerWidth();
 
-	public abstract int getContainerHeight();
+	int getContainerHeight();
 
-	public abstract Orientation getOrientation();
+	Orientation getOrientation();
 
-	public abstract LGame getGame();
+	LGame getGame();
 
-	public void sysText(SysInput.TextEvent event, KeyMake.TextType textType,
+	void sysText(SysInput.TextEvent event, KeyMake.TextType textType,
 			String label, String initialValue);
 
-	public void sysDialog(SysInput.ClickEvent event, String title, String text,
+	void sysDialog(SysInput.ClickEvent event, String title, String text,
 			String ok, String cancel);
 }

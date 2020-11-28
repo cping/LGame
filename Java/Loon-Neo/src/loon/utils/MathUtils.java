@@ -1027,6 +1027,14 @@ public final class MathUtils {
 		return end <= 0 ? 0 : start + random.nextInt(end - start);
 	}
 
+	public static int nextFloat(int range) {
+		return random(range);
+	}
+
+	public static int nextFloat(int start, int end) {
+		return random(start, end);
+	}
+
 	public static int random(int range) {
 		return random.nextInt(range + 1);
 	}

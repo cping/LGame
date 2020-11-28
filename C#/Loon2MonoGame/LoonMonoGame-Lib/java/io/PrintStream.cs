@@ -64,6 +64,10 @@ namespace java.io
             lock (line)
             {
                 line.Append(c);
+                if (c == '\n')
+                {
+                    FinishLine();
+                }
             }
         }
 
@@ -75,11 +79,33 @@ namespace java.io
             }
         }
 
+        public void Print(string s)
+        {
+            string newLine = "\n";
+            if (s.IndexOf(newLine) >= 0)
+            {
+                if (s.EndsWith(newLine) && s.Length > 1)
+                {
+                    line.Append(s.Substring(0, s.Length - 1));
+                    FinishLine();
+                }
+                else
+                {
+                    line.Append(s);
+                }
+
+            }
+            else
+            {
+                line.Append(s);
+            }
+        }
+
         public void Print(object o)
         {
             lock (line)
             {
-                line.Append(JavaSystem.Str(o));
+                Print(JavaSystem.Str(o));
             }
         }
 
@@ -127,13 +153,18 @@ namespace java.io
             }
         }
 
-        public void Println(object o)
+        public void Println(string s)
         {
             lock (line)
             {
-                line.Append(JavaSystem.Str(o));
+                line.Append(s);
                 FinishLine();
             }
+        }
+
+        public void Println(object o)
+        {
+            Println(JavaSystem.Str(o));
         }
 
         public void Redirect(LineConsumer r)

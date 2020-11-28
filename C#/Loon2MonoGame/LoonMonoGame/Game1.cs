@@ -19,7 +19,10 @@ namespace LoonMonoGame
         {
             public MyScreen()
             {
-                JavaSystem.Out.Println("test");
+
+                LSystem.I("log format testing...");
+                LSystem.I("newline");
+                LSystem.I("newline");
             }
 
         }
@@ -36,13 +39,14 @@ namespace LoonMonoGame
                 fullscreen = false,
                 width = 480,
                 height = 320,
+                width_zoom = 640,
+                height_zoom = 480,
                 logoPath = "loon_logo.png",
                 fps = 60,
                 fontName = "Dialog",
                 appName = "test",
                 emulateTouch = false
             };
-
 
             //Lambda方式注入运行参数与显示用Screen
             Register(setting, () => { return new MyScreen(); });

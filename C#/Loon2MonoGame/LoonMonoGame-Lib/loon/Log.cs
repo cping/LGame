@@ -2,7 +2,7 @@
 {
     public abstract class Log
     {
-
+        protected internal abstract void CallNativeLog(Level level, string msg, System.Exception e);
         public abstract void OnError(System.Exception e);
 
         public class Level
@@ -55,12 +55,9 @@
             this.collector = collector;
         }
 
-        public virtual Level MinLevel
+        public virtual void SetMinLevel(Level v)
         {
-            set
-            {
-                minLevel = value;
-            }
+               this.minLevel = v;
         }
 
         public virtual void Debug(string msg)
@@ -130,10 +127,52 @@
 
         internal virtual void Call(Level level, string msg, System.Exception e)
         {
-            //todo
+
+            if (LSystem.IsConsoleLog())
+            {
+                if (collector != null)
+                {
+                    collector.Logged(level, msg, e);
+                }
+                if (level.id >= minLevel.id)
+                {
+                    CallNativeLog(level, msg, e);
+                    LGame game = LSystem.Base;
+                    if (game != null)
+                    {
+                        LSetting setting = game.setting;
+                        // 待实现GLEx
+                      /*  LProcess process = LSystem.GetProcess();
+                        if (process != null && (setting.isDebug || setting.isDisplayLog))
+                        {
+                            LColor color = LColor.white;
+                            if (level.id > Level.INFO.id)
+                            {
+                                color = LColor.red;
+                            }
+                            if (process != null)
+                            {
+                                if (e == null)
+                                {
+                                    process.addLog(msg, color);
+                                }
+                                else
+                                {
+                                    process.addLog(msg + " [ " + e.getMessage() + " ] ", color);
+                                }
+                            }
+                      */
+                        }
+                    }
+                }
+                if (e != null)
+                {
+                  OnError(e);
+                }
+            }
+
         }
 
-        protected internal abstract void CallNativeLog(Level level, string msg, System.Exception e);
-    }
+    
 
 }

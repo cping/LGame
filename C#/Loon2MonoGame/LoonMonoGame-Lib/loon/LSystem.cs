@@ -1,5 +1,7 @@
 ﻿using java.lang;
 using loon.geom;
+using System;
+using static loon.Log;
 
 namespace loon
 {
@@ -99,6 +101,165 @@ namespace loon
 
         public static readonly Dimension viewSize = new Dimension(480, 320);
 
+        // 是否允许屏幕画面刷新
+        protected internal static bool _auto_repaint = true;
+
+        public static Platform Platform
+        {
+            get
+            {
+                return LGame._platform;
+            }
+        }
+
+        public static LGame Base
+        {
+            get
+            {
+                LGame game = LGame._base;
+                if (game != null)
+                {
+                    return game;
+                }
+                else if (Platform != null)
+                {
+                    game = Platform.GetGame();
+                }
+                return game;
+            }
+        }
+
+        public static string GetSystemAppName()
+        {
+            if (Base != null)
+            {
+                return Base.setting.appName;
+            }
+            return LGame.APP_NAME;
+        }
+
+        public static bool IsLockAllTouchEvent()
+        {
+            if (Base != null)
+            {
+                return Base.setting.lockAllTouchEvent;
+            }
+            return false;
+
+        }
+
+        public static bool IsNotAllowDragAndMove()
+        {
+            if (Base != null)
+            {
+                return Base.setting.notAllowDragAndMove;
+            }
+            return false;
+
+        }
+
+        public static float GetEmulatorScale()
+        {
+            if (Base != null)
+            {
+                return Base.setting.emulatorScale;
+            }
+            return 1f;
+        }
+
+        public static bool IsTrueFontClip()
+        {
+            if (Base != null)
+            {
+                return Base.setting.useTrueFontClip;
+            }
+            return true;
+        }
+
+        public static bool IsConsoleLog()
+        {
+            if (Base != null)
+            {
+                return Base.setting.isConsoleLog;
+            }
+            return true;
+        }
+
+        public static string GetSystemGameFontName()
+        {
+            if (Base != null)
+            {
+                return Base.setting.fontName;
+            }
+            return LGame.FONT_NAME;
+        }
+
+        public static string GetVersion()
+        {
+            return _version;
+        }
+
+        public static void StopRepaint()
+        {
+            LSystem._auto_repaint = false;
+        }
+
+        public static void StartRepaint()
+        {
+            LSystem._auto_repaint = true;
+        }
+
+        public static string GetAllFileName(string name)
+        {
+            if (string.ReferenceEquals(name, null))
+            {
+                return "";
+            }
+            int idx = name.LastIndexOf('.');
+            return idx == -1 ? name : name.Substring(0, idx);
+        }
+
+        public static string GetFileName(string name)
+        {
+            if (string.ReferenceEquals(name, null))
+            {
+                return "";
+            }
+            int length = name.Length;
+            int idx = name.LastIndexOf('/');
+            if (idx == -1)
+            {
+                idx = name.LastIndexOf('\\');
+            }
+            int size = idx + 1;
+            if (size < length)
+            {
+                return name.Substring(size, length);
+            }
+            else
+            {
+                return "";
+            }
+        }
+
+        public static string GetExtension(string name)
+        {
+            if (string.ReferenceEquals(name, null))
+            {
+                return "";
+            }
+
+            int index = name.LastIndexOf(".", StringComparison.Ordinal);
+            if (index == -1)
+            {
+                return "";
+            }
+            else
+            {
+                return name.Substring(index + 1);
+            }
+        }
+
         public static int Unite(int hashCode, bool value)
         {
             int v = value ? 1231 : 1237;
@@ -146,6 +307,179 @@ namespace loon
         public static bool IsMobile()
         {
             return false;
+        }
+
+
+        public static void Debug(string msg)
+        {
+            if (Base != null)
+            {
+                Base.Log().Debug(msg);
+            }
+        }
+
+        public static void Debug(string msg, params object[] args)
+        {
+            if (Base != null)
+            {
+                Base.Log().Debug(msg, args);
+            }
+        }
+
+        public static void Debug(string msg, System.Exception throwable)
+        {
+            if (Base != null)
+            {
+                Base.Log().Debug(msg, throwable);
+            }
+        }
+
+        public static void Info(string msg)
+        {
+            if (Base != null)
+            {
+                Base.Log().Info(msg);
+            }
+        }
+
+        public static void Info(string msg, params object[] args)
+        {
+            if (Base != null)
+            {
+                Base.Log().Info(msg, args);
+            }
+        }
+
+        public static void Info(string msg, System.Exception throwable)
+        {
+            if (Base != null)
+            {
+                Base.Log().Info(msg, throwable);
+            }
+        }
+
+        public static void Warn(string msg)
+        {
+            if (Base != null)
+            {
+                Base.Log().Warn(msg);
+            }
+        }
+
+        public static void Warn(string msg, params object[] args)
+        {
+            if (Base != null)
+            {
+                Base.Log().Warn(msg, args);
+            }
+        }
+
+        public static void Warn(string msg, System.Exception throwable)
+        {
+            if (Base != null)
+            {
+                Base.Log().Warn(msg, throwable);
+            }
+        }
+
+        public static void Error(string msg)
+        {
+            if (Base != null)
+            {
+                Base.Log().Error(msg);
+            }
+        }
+
+        public static void Error(string msg, params object[] args)
+        {
+            if (Base != null)
+            {
+                Base.Log().Error(msg, args);
+            }
+        }
+
+        public static void Error(string msg, System.Exception throwable)
+        {
+            if (Base != null)
+            {
+                Base.Log().Error(msg, throwable);
+            }
+        }
+
+        public static void ReportError(string msg, System.Exception throwable)
+        {
+            if (Base != null)
+            {
+                Base.ReportError(msg, throwable);
+            }
+        }
+
+        public static void D(string msg)
+        {
+            Debug(msg);
+        }
+
+        public static void D(string msg, params object[] args)
+        {
+            Debug(msg, args);
+        }
+
+        public static void D(string msg, System.Exception throwable)
+        {
+            Debug(msg, throwable);
+        }
+
+        public static void I(string msg)
+        {
+            Info(msg);
+        }
+
+        public static void I(string msg, params object[] args)
+        {
+            Info(msg, args);
+        }
+
+        public static void I(string msg, System.Exception throwable)
+        {
+            Info(msg, throwable);
+        }
+
+        public static void W(string msg)
+        {
+            Warn(msg);
+        }
+
+        public static void W(string msg, params object[] args)
+        {
+            Warn(msg, args);
+        }
+
+        public static void W(string msg, System.Exception throwable)
+        {
+            Warn(msg, throwable);
+        }
+
+        public static void E(string msg)
+        {
+            Error(msg);
+        }
+
+        public static void E(string msg, params object[] args)
+        {
+            Error(msg, args);
+        }
+
+        public static void E(string msg, System.Exception throwable)
+        {
+            Error(msg, throwable);
+        }
+
+        public static void SetLogMinLevel(Level level)
+        {
+            if (Base != null)
+            {
+                Base.Log().SetMinLevel(level);
+            }
         }
 
     }

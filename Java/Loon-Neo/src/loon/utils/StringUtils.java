@@ -2319,8 +2319,23 @@ final public class StringUtils extends CharUtils {
 	public static String toString(final Object o) {
 		return toString(o, null);
 	}
-	
-	public static String toString(final Object o,final String def) {
+
+	public static String toString(final Object o, final String def) {
 		return o == null ? def : o.toString();
 	}
+
+	public static String getRandString() {
+		return getRandString(32);
+	}
+	
+	public static String getRandString(final int size) {
+		StrBuilder str = new StrBuilder(size);
+		char ch;
+		for (int i = 0; i < size; i++) {
+			ch = (char) MathUtils.floor(MathUtils.random() * 26 + 65);
+			str.append(ch);
+		}
+		return str.toString();
+	}
+
 }

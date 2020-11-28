@@ -33,8 +33,9 @@ namespace loon.utils.reply
 
         protected static Runs Append(Runs head, Runs action)
         {
-            if (head == null)
+            if (head == null) { 
                 return action;
+            }
             head.next = Append(head.next, action);
             return head;
         }
