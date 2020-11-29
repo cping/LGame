@@ -30,4 +30,9 @@
   <ItemGroup>
     <ProjectReference Include="..\LoonMonoGame-Lib\LoonMonoGame-Lib.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <None Update="Content\test.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>

@@ -17,7 +17,7 @@ namespace java.lang
 
         public static string NewString(sbyte[] bytes, int index, int count)
         {
-            return System.Text.Encoding.UTF8.GetString((byte[])(object)bytes, index, count);
+            return System.Text.Encoding.UTF8.GetString((byte[])(Array)bytes, index, count);
         }
 
         public static string NewString(sbyte[] bytes, string encoding)
@@ -32,7 +32,7 @@ namespace java.lang
 
         public static string NewString(sbyte[] bytes, int index, int count, string encoding)
         {
-            return System.Text.Encoding.GetEncoding(encoding).GetString((byte[])(object)bytes, index, count);
+            return System.Text.Encoding.GetEncoding(encoding).GetString((byte[])(Array)bytes, index, count);
         }
 
         public static sbyte[] GetBytes(this string self)
@@ -53,7 +53,7 @@ namespace java.lang
         private static sbyte[] GetSBytes(System.Text.Encoding encoding, string s)
         {
             sbyte[] sbytes = new sbyte[encoding.GetByteCount(s)];
-            encoding.GetBytes(s, 0, s.Length, (byte[])(object)sbytes, 0);
+            encoding.GetBytes(s, 0, s.Length, (byte[])(Array)sbytes, 0);
             return sbytes;
         }
 

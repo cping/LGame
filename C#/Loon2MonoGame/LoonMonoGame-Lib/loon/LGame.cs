@@ -73,6 +73,38 @@ namespace loon
             }
         }
 
+        public virtual void SetPlatform(Platform plat)
+        {
+            if (plat != null)
+            {
+                LGame._platform = plat;
+                LGame._base = plat.GetGame();
+            }
+        }
+        protected internal virtual LGame CheckBaseGame(LGame game)
+        {
+            LGame oldGame = _base;
+            if (game != oldGame && game != null)
+            {
+                oldGame = game;
+            }
+            else if (game == null)
+            {
+                if (oldGame != null && _platform != null && _platform.GetGame() != null)
+                {
+                    if (oldGame != _platform.GetGame())
+                    {
+                        oldGame = _platform.GetGame();
+                    }
+                }
+            }
+            if (_base != game || _base != oldGame)
+            {
+                _base = oldGame;
+            }
+            return LSystem.Base;
+        }
+
         public virtual LGame ReportError(string message, System.Exception cause)
         {
             return ReportError(message, cause, true);
@@ -133,6 +165,8 @@ namespace loon
         public abstract double Time();
         public abstract int Tick();
         public abstract Log Log();
+        public abstract Asyn Asyn();
+        public abstract Assets Assets();
 
         public virtual void Close()
         {

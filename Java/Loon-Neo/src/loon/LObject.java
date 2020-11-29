@@ -20,6 +20,8 @@
  */
 package loon;
 
+import java.util.Comparator;
+
 import loon.action.ActionBind;
 import loon.action.ActionControl;
 import loon.action.ActionEvent;
@@ -41,7 +43,7 @@ import loon.utils.reply.VarView;
 /**
  * 一个通用的Loon对象,除Screen外,Loon中所有可移动并展示的对象都继承于此类
  */
-public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
+public abstract class LObject<T> extends BlendMode implements Comparator<T>, XY, ZIndex {
 
 	private static int _SYS_GLOBAL_SEQNO = 0;
 
@@ -875,6 +877,23 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 		this.Tag = t;
 	}
 
+	@Override
+	public int compare(T o1, T o2) {
+		if (o1 == null || o2 == null) {
+			return 0;
+		}
+		if(o1 instanceof ZIndex && o2 instanceof ZIndex) {
+			int diff = MathUtils.abs(((ZIndex)o1).getLayer()) - MathUtils.abs(((ZIndex)o2).getLayer());
+			if (diff > 0) {
+				return 1;
+			}
+			if (diff < 0) {
+				return -1;
+			}
+		}
+		return 0;
+	}
+	
 	@Override
 	public int hashCode() {
 		return _seqNo;

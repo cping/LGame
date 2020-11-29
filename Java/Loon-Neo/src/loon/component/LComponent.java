@@ -22,6 +22,7 @@
 package loon.component;
 
 import loon.Director.Origin;
+
 import loon.LObject;
 import loon.LRelease;
 import loon.LSysException;
@@ -66,8 +67,8 @@ import loon.utils.StringUtils;
 /**
  * Loon桌面组件的核心,所有UI类组件基于此类产生
  */
-public abstract class LComponent extends LObject<LContainer>
-		implements Flip<LComponent>, CollisionObject, Visible, ActionBind, XY, BoxSize, LRelease {
+public abstract class LComponent extends LObject<LContainer> implements Flip<LComponent>,
+		CollisionObject, Visible, ActionBind, XY, BoxSize, LRelease {
 
 	// 充当卓面容器
 	protected boolean desktopContainer;
@@ -1647,7 +1648,7 @@ public abstract class LComponent extends LObject<LContainer>
 		}
 		return this;
 	}
-	
+
 	@Override
 	public void close() {
 		if (!_component_autoDestroy) {

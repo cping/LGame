@@ -50,7 +50,7 @@ public abstract class LGame {
 	 * 支持的运行库(Java版不支持的会由C++版和C#版实现)
 	 */
 	public static enum Type {
-		JAVASE, ANDROID, IOS, WP, HTML5, UNITY, SWITCH, STUB
+		JAVASE, MONO, ANDROID, IOS, WP, HTML5, UNITY, SWITCH, PS, XBOX, STUB
 	}
 
 	/**
@@ -226,7 +226,7 @@ public abstract class LGame {
 	 * 
 	 * @param game
 	 */
-	protected final void checkBaseGame(LGame game) {
+	protected final LGame checkBaseGame(LGame game) {
 		LGame oldGame = _base;
 		if (game != oldGame && game != null) {
 			oldGame = game;
@@ -240,7 +240,7 @@ public abstract class LGame {
 		if (_base != game || _base != oldGame) {
 			_base = oldGame;
 		}
-		LSystem.base();
+		return LSystem.base();
 	}
 
 	/**
@@ -485,7 +485,7 @@ public abstract class LGame {
 			}
 		}
 	}
-	
+
 	/**
 	 * 获得指定名称大小的MeshPool池中对象
 	 * 
@@ -534,7 +534,6 @@ public abstract class LGame {
 		}
 	}
 
-
 	/**
 	 * 刷新指定的Mesh池中Mesh数据
 	 * 
@@ -562,7 +561,7 @@ public abstract class LGame {
 			}
 		}
 	}
-	
+
 	/**
 	 * 获得MeshPool大小
 	 * 
@@ -1153,25 +1152,23 @@ public abstract class LGame {
 	 */
 	/*
 	 * private Class<?> getType(Object o) { if (o instanceof Integer) { return
-	 * Integer.TYPE; } else if (o instanceof Float) { return Float.TYPE; } else
-	 * if (o instanceof Double) { return Double.TYPE; } else if (o instanceof
-	 * Long) { return Long.TYPE; } else if (o instanceof Short) { return
-	 * Short.TYPE; } else if (o instanceof Short) { return Short.TYPE; } else if
-	 * (o instanceof Boolean) { return Boolean.TYPE; } else { return
-	 * o.getClass(); } }
+	 * Integer.TYPE; } else if (o instanceof Float) { return Float.TYPE; } else if
+	 * (o instanceof Double) { return Double.TYPE; } else if (o instanceof Long) {
+	 * return Long.TYPE; } else if (o instanceof Short) { return Short.TYPE; } else
+	 * if (o instanceof Short) { return Short.TYPE; } else if (o instanceof Boolean)
+	 * { return Boolean.TYPE; } else { return o.getClass(); } }
 	 * 
 	 * public Display register(Class<? extends Screen> clazz, Object... args) {
-	 * LSystem.viewSize.setSize(setting.width, setting.height); this.display =
-	 * new Display(this, setting.fps); if (args == null) { args = new Object[0];
-	 * } if (clazz != null) { if (args != null) { try { int funs = args.length;
-	 * if (funs == 0) { display.setScreen(ClassReflection.newInstance(clazz)); }
-	 * else { Class<?>[] functions = new Class<?>[funs]; for (int i = 0; i <
-	 * funs; i++) { functions[i] = getType(args[i]); } Constructor constructor =
-	 * ClassReflection .getConstructor(clazz, functions); Object o =
-	 * constructor.newInstance(args);
+	 * LSystem.viewSize.setSize(setting.width, setting.height); this.display = new
+	 * Display(this, setting.fps); if (args == null) { args = new Object[0]; } if
+	 * (clazz != null) { if (args != null) { try { int funs = args.length; if (funs
+	 * == 0) { display.setScreen(ClassReflection.newInstance(clazz)); } else {
+	 * Class<?>[] functions = new Class<?>[funs]; for (int i = 0; i < funs; i++) {
+	 * functions[i] = getType(args[i]); } Constructor constructor = ClassReflection
+	 * .getConstructor(clazz, functions); Object o = constructor.newInstance(args);
 	 * 
-	 * if (o != null && (o instanceof Screen)) { display.setScreen((Screen) o);
-	 * } } } catch (Exception e) { e.printStackTrace(); } } } return display; }
+	 * if (o != null && (o instanceof Screen)) { display.setScreen((Screen) o); } }
+	 * } catch (Exception e) { e.printStackTrace(); } } } return display; }
 	 */
 
 }

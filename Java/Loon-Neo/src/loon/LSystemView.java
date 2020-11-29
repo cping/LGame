@@ -32,19 +32,18 @@ public abstract class LSystemView extends BaseIO {
 
 	private final LTimerContext updateClock = new LTimerContext();
 	private final LTimerContext paintClock = new LTimerContext();
+
+	private final LGame _game;
+
 	private final long updateRate;
-	private int nextUpdate;
-	private LGame game;
-
-	public LGame getGame() {
-		return game;
-	}
-
+	
+	private long nextUpdate;
+	
 	public LSystemView(LGame g, long updateRate) {
 		this.updateRate = updateRate;
-		this.game = g;
-		game.checkBaseGame(g);
-		game.frame.connect(new Port<LGame>() {
+		this._game = g;
+		_game.checkBaseGame(g);
+		_game.frame.connect(new Port<LGame>() {
 			@Override
 			public void onEmit(LGame game) {
 				onFrame();
@@ -64,12 +63,12 @@ public abstract class LSystemView extends BaseIO {
 		if (!LSystem._auto_repaint) {
 			return;
 		}
-		final int updateTick = game.tick();
-		final LSetting setting = game.setting;
+		final int updateTick = _game.tick();
+		final LSetting setting = _game.setting;
 		final long paintLoop = setting.fixedPaintLoopTime;
 		final long updateLoop = setting.fixedUpdateLoopTime;
 		
-		int nextUpdate = this.nextUpdate;
+		long nextUpdate = this.nextUpdate;
 
 		if (updateTick >= nextUpdate) {
 			long updateRate = this.updateRate;
@@ -88,7 +87,7 @@ public abstract class LSystemView extends BaseIO {
 			}
 			update(updateClock);
 		}
-		long paintTick = game.tick();
+		long paintTick = _game.tick();
 		if (paintLoop == -1) {
 			paintClock.timeSinceLastUpdate = paintTick - paintClock.tick;
 		} else {
@@ -106,4 +105,9 @@ public abstract class LSystemView extends BaseIO {
 	public final LTimerContext getPaint() {
 		return paintClock;
 	}
+
+	public LGame getGame() {
+		return _game;
+	}
+
 }

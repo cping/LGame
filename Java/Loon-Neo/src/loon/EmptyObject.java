@@ -126,4 +126,5 @@ public class EmptyObject extends LObject<Object> implements ActionBind, LRelease
 	public void close() {
 		setState(State.DISPOSED);
 	}
+
 }

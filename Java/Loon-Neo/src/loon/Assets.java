@@ -36,11 +36,11 @@ public abstract class Assets {
 	// PS:别提delegate，委托那玩意写出来太不优雅了，而且大多数J2C#的工具也不能直接转换过去……
 	private static class ImageRunnable implements Runnable {
 
-		private ImageImpl _impl;
+		private final ImageImpl _impl;
 
-		private String _path;
+		private final String _path;
 
-		private Assets _assets;
+		private final Assets _assets;
 
 		ImageRunnable(ImageImpl img, String path, Assets assets) {
 			this._impl = img;
@@ -61,11 +61,11 @@ public abstract class Assets {
 
 	private static class TextRunnable implements Runnable {
 
-		private GoPromise<String> _result;
+		private final GoPromise<String> _result;
 
-		private String _path;
+		private final String _path;
 
-		private Assets _assets;
+		private final Assets _assets;
 
 		TextRunnable(GoPromise<String> res, String path, Assets assets) {
 			this._result = res;
@@ -86,11 +86,11 @@ public abstract class Assets {
 
 	private static class ByteRunnable implements Runnable {
 
-		private GoPromise<byte[]> _result;
+		private final GoPromise<byte[]> _result;
 
-		private String _path;
+		private final String _path;
 
-		private Assets _assets;
+		private final Assets _assets;
 
 		ByteRunnable(GoPromise<byte[]> res, String path, Assets assets) {
 			this._result = res;

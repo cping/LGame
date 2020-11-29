@@ -151,8 +151,7 @@ public class LToolTip extends LComponent {
 		if (this.tooltip != null) {
 			if (!this.tooltip.getToolTipText().equals(this.tipText)) {
 				this.tipText = this.tooltip.getToolTipText();
-				String[] componentTipText = StringUtils.split(this.tipText, '\n');
-				this.dismissTime = (this.dismissDelay * componentTipText.length);
+				this.dismissTime = (this.dismissDelay * StringUtils.split(this.tipText, '\n').length);
 			}
 		}
 		this._alpha = 0f;
@@ -224,7 +223,7 @@ public class LToolTip extends LComponent {
 		}
 		float posX = tooltip.getScreenX() + tooltip.getWidth() / 2;
 		float posY = tooltip.getScreenY() + tooltip.getHeight() / 2;
-		float width = _text.getWidth() + 5;
+		float width = _text.getWidth() + 6;
 		float height = _text.getHeight() + 8;
 		if (getScreen().contains(posX, posY, width, height)) {
 			if (_background == null) {
@@ -232,14 +231,17 @@ public class LToolTip extends LComponent {
 			} else {
 				g.draw(_background, posX, posY, width, height);
 			}
-			_text.paintString(g, posX + 2, posY, _fontColor);
+			_text.paintString(g, posX + (width - _text.getWidth()) / 2, posY + (height - _text.getHeight()) / 2,
+					_fontColor);
 		} else {
+			float newX = posX - width;
 			if (_background == null) {
-				g.fillRect(posX - width, posY, width, height, LColor.darkGray);
+				g.fillRect(newX, posY, width, height, LColor.darkGray);
 			} else {
-				g.draw(_background, posX - width, posY, width, height);
+				g.draw(_background, newX, posY, width, height);
 			}
-			_text.paintString(g, posX + 2 - width, posY, _fontColor);
+			_text.paintString(g, newX + (width - _text.getWidth()) / 2, posY + (height - _text.getHeight()) / 2,
+					_fontColor);
 		}
 
 	}

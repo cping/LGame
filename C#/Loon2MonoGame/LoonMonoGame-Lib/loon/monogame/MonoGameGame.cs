@@ -14,29 +14,36 @@ namespace loon.monogame
 
         private readonly static bool _isMac;
 
-        static MonoGameGame(){
+        static MonoGameGame()
+        {
             _isWindows = Environment.OSVersion.Platform == PlatformID.Win32NT;
             _isLinux = Environment.OSVersion.Platform == PlatformID.Unix;
             _isMac = !_isWindows && !_isLinux;
         }
 
-        private Log _log;
+        private readonly Log _log;
+
+        private readonly Assets _assets;
+
+        private readonly Asyn _asyn;
 
         public MonoGameGame(LSetting config, Loon game) : base(config, game)
         {
 
             this._start = JavaSystem.NanoTime();
             this._log = new MonoGameLog();
+            this._assets = new MonoGameAssets(this);
+            this._asyn = new MonoGameAsyn(this._log, frame);
         }
 
-    public override int Tick()
+        public override int Tick()
         {
             return (int)((JavaSystem.NanoTime() - _start) / 1000000L);
         }
 
         public bool IsMac()
         {
-            return IsDesktop() && _isMac; 
+            return IsDesktop() && _isMac;
         }
 
         public bool IsWindows()
@@ -76,7 +83,18 @@ namespace loon.monogame
 
         public override double Time()
         {
-            throw new NotImplementedException();
+            return JavaSystem.CurrentTimeMillis();
+        }
+
+
+        public override Assets Assets()
+        {
+            return _assets;
+        }
+
+        public override Asyn Asyn()
+        {
+            return this._asyn;
         }
 
         public override Type TYPE

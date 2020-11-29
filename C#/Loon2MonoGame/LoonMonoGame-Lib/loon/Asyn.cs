@@ -1,7 +1,6 @@
 ﻿using java.lang;
 using loon.utils;
 using loon.utils.reply;
-using System.Threading;
 
 namespace loon
 {
@@ -24,19 +23,19 @@ namespace loon
 
         }
 
-        private class Default : Asyn
+        public class Default : Asyn
         {
             internal readonly TArray<Runnable> pending = new TArray<Runnable>();
             internal readonly TArray<Runnable> running = new TArray<Runnable>();
             protected internal readonly Log log;
 
-            public Default(Log log, Act<object> frame) 
-			{
-				this.log = log;
-				frame.Connect(new CallDefaultPort<object>(this)).SetPriority(Short.MAX_VALUE_JAVA);
+            public Default(Log log, Act<LGame> frame)
+            {
+                this.log = log;
+                frame.Connect(new CallDefaultPort<LGame>(this)).SetPriority(Short.MAX_VALUE_JAVA);
             }
 
-        public override bool IsAsyncSupported()
+            public override bool IsAsyncSupported()
             {
                 return false;
             }

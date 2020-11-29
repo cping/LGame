@@ -13,7 +13,7 @@ namespace LoonMonoGame
     public class Game1 : Loon
     {
         /// <summary>
-        /// Screen代码待移植中，暂时无功能，尽量做到1:1移植，所以进度比较慢……
+        /// Screen代码待移植中，暂时无功能，尽量做到1:1移植，所以进度比较慢(每天抽空写一点，计划是今年(2020)12月移植完C#版,明年1月左右移植完C++版,然后写Java版到C++与C#版自动转化代码)……
         /// </summary>
 		public class MyScreen : Screen
         {
@@ -23,6 +23,9 @@ namespace LoonMonoGame
                 LSystem.I("log format testing...");
                 LSystem.I("newline");
                 LSystem.I("newline");
+                //get file
+                JavaSystem.Out.Println(LSystem.Base.Assets().GetTextSync("test.txt"));
+                JavaSystem.Out.Println(LSystem.Base.Assets().GetBytesSync("test.txt").Length == 14);
             }
 
         }
@@ -47,7 +50,7 @@ namespace LoonMonoGame
                 appName = "test",
                 emulateTouch = false
             };
-
+ 
             //Lambda方式注入运行参数与显示用Screen
             Register(setting, () => { return new MyScreen(); });
 
