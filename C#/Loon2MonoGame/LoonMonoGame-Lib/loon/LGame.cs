@@ -1,9 +1,10 @@
-﻿using loon.utils;
+﻿using java.lang;
+using loon.utils;
 using loon.utils.reply;
 
 namespace loon
 {
-    public abstract class LGame
+    public abstract class LGame : object
     {
         public enum Type
         {
@@ -38,13 +39,13 @@ namespace loon
         protected internal static Platform _platform = null;
 
         // 错误接口
-        public Act<Error> errors = Act<Error>.Create<Error>();
+        public Act<object> errors = Act<object>.Create<object>();
 
         // 状态接口
-        public Act<Status> status = Act<Status>.Create<Status>();
+        public Act<object> status = Act<object>.Create<object>();
 
         // 游戏窗体刷新接口
-        public Act<LGame> frame = Act<LGame>.Create<LGame>();
+        public Act<object> frame = Act<object>.Create<object>();
 
         // 游戏基本设置
         public LSetting setting;

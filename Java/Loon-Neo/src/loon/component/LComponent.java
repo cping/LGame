@@ -481,7 +481,7 @@ public abstract class LComponent extends LObject<LContainer> implements Flip<LCo
 						tx.translate(-centerX, -centerY);
 					}
 				}
-				g.setBlendMode(_blend);
+				g.setBlendMode(_GL_BLEND);
 				if (_drawBackground && _background != null) {
 					g.draw(_background, this._screenX + offsetX, this._screenY + offsetY, width, height,
 							_component_baseColor);

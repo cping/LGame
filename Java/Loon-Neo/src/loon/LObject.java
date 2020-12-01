@@ -32,7 +32,7 @@ import loon.component.layout.LayoutAlign;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.geom.XY;
-import loon.opengl.BlendMode;
+import loon.opengl.BlendMethod;
 import loon.utils.MathUtils;
 import loon.utils.StringKeyValue;
 import loon.utils.StringUtils;
@@ -43,7 +43,7 @@ import loon.utils.reply.VarView;
 /**
  * 一个通用的Loon对象,除Screen外,Loon中所有可移动并展示的对象都继承于此类
  */
-public abstract class LObject<T> extends BlendMode implements Comparator<T>, XY, ZIndex {
+public abstract class LObject<T> extends BlendMethod implements Comparator<T>, XY, ZIndex {
 
 	private static int _SYS_GLOBAL_SEQNO = 0;
 

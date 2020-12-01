@@ -225,25 +225,17 @@ public class LToolTip extends LComponent {
 		float posY = tooltip.getScreenY() + tooltip.getHeight() / 2;
 		float width = _text.getWidth() + 6;
 		float height = _text.getHeight() + 8;
-		if (getScreen().contains(posX, posY, width, height)) {
-			if (_background == null) {
-				g.fillRect(posX, posY, width, height, LColor.darkGray);
-			} else {
-				g.draw(_background, posX, posY, width, height);
-			}
-			_text.paintString(g, posX + (width - _text.getWidth()) / 2, posY + (height - _text.getHeight()) / 2,
-					_fontColor);
-		} else {
-			float newX = posX - width;
-			if (_background == null) {
-				g.fillRect(newX, posY, width, height, LColor.darkGray);
-			} else {
-				g.draw(_background, newX, posY, width, height);
-			}
-			_text.paintString(g, newX + (width - _text.getWidth()) / 2, posY + (height - _text.getHeight()) / 2,
-					_fontColor);
+		float currentX = posX;
+		if (!getScreen().contains(posX, posY, width, height)) {
+			currentX = posX - width;
 		}
-
+		if (_background == null) {
+			g.fillRect(currentX, posY, width, height, LColor.darkGray);
+		} else {
+			g.draw(_background, currentX, posY, width, height);
+		}
+		_text.paintString(g, currentX + (width - _text.getWidth()) / 2, posY + (height - _text.getHeight()) / 2,
+				_fontColor);
 	}
 
 	public int getDismiss() {

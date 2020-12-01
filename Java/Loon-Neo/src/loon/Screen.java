@@ -54,6 +54,7 @@ import loon.component.LMenuSelect;
 import loon.component.LPaper;
 import loon.component.LSpriteUI;
 import loon.component.UIControls;
+import loon.component.layout.HorizontalAlign;
 import loon.component.layout.LayoutConstraints;
 import loon.component.layout.LayoutManager;
 import loon.component.layout.LayoutPort;
@@ -210,8 +211,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	// 0.3.2版新增的简易重力控制接口
 	private GravityHandler gravityHandler;
-
-	private GameMode _gameMode;
 
 	private Viewport _baseViewport;
 
@@ -5591,24 +5590,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return this.desktop != null ? this.desktop.isSortableChildren() : false;
 	}
 
-	/**
-	 * 获得当前游戏进行的状态
-	 * 
-	 * @return
-	 */
-	public GameMode getGameMode() {
-		return _gameMode == null ? GameMode.Unknown : _gameMode;
-	}
-
-	/**
-	 * 认定当前游戏进行的状态
-	 * 
-	 * @param gameMode
-	 */
-	public void setGameMode(GameMode gameMode) {
-		this._gameMode = gameMode;
-	}
-
 	@Override
 	public String toString() {
 		StringKeyValue sbr = new StringKeyValue(getClass().getName());
@@ -5667,7 +5648,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 				_rotation = 0;
 				_scaleX = _scaleY = _alpha = 1f;
 				_baseColor = null;
-				_gameMode = null;
 				_visible = false;
 				_drawListener = null;
 				_touchListener = null;

@@ -738,7 +738,7 @@ public class LSTRFont implements IFont, LRelease {
 		final boolean update = scale || angle || anchor;
 		final int blend = gl.getBlendMode();
 		try {
-			gl.setBlendMode(LSystem.MODE_NORMAL);
+			gl.setBlendMode(BlendMethod.MODE_NORMAL);
 			gl.setTint(c);
 			if (update) {
 				gl.saveTx();
@@ -820,7 +820,7 @@ public class LSTRFont implements IFont, LRelease {
 		final boolean update = scale || angle || anchor;
 		final int blend = gl.getBlendMode();
 		try {
-			gl.setBlendMode(LSystem.MODE_NORMAL);
+			gl.setBlendMode(BlendMethod.MODE_NORMAL);
 			gl.setTint(c);
 			if (update) {
 				gl.saveTx();
@@ -960,7 +960,7 @@ public class LSTRFont implements IFont, LRelease {
 		GL20 g = LSystem.base().graphics().gl;
 		if (g != null) {
 			int old = GLUtils.getBlendMode();
-			GLUtils.setBlendMode(g, LSystem.MODE_NORMAL);
+			GLUtils.setBlendMode(g, BlendMethod.MODE_NORMAL);
 			fontBatch.end();
 			GLUtils.setBlendMode(g, old);
 		}
@@ -996,7 +996,7 @@ public class LSTRFont implements IFont, LRelease {
 		GL20 g = LSystem.base().graphics().gl;
 		if (g != null) {
 			int old = GLUtils.getBlendMode();
-			GLUtils.setBlendMode(g, LSystem.MODE_NORMAL);
+			GLUtils.setBlendMode(g, BlendMethod.MODE_NORMAL);
 			fontBatch.postLastCache();
 			GLUtils.setBlendMode(g, old);
 		}

@@ -1,6 +1,11 @@
 ﻿namespace loon
 {
-   public class Display
-{
-}
+    public class Display : LSystemView
+    {
+
+        public Display(LGame game, int updateRate) : base(game, updateRate)
+        {
+
+        }
+    }
 }

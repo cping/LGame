@@ -6,12 +6,12 @@ namespace loon
 {
     public abstract class Asyn
     {
-        private class CallDefaultPort<T> : Port<T>
+        public class CallDefaultPort<T> : Port<T>
         {
 
-            internal Default _def;
+            public Default<T> _def;
 
-            internal CallDefaultPort(Default d)
+            public CallDefaultPort(Default<T> d)
             {
                 this._def = d;
             }
@@ -23,16 +23,16 @@ namespace loon
 
         }
 
-        public class Default : Asyn
+        public class Default<T> : Asyn
         {
             internal readonly TArray<Runnable> pending = new TArray<Runnable>();
             internal readonly TArray<Runnable> running = new TArray<Runnable>();
             protected internal readonly Log log;
 
-            public Default(Log log, Act<LGame> frame)
+            public Default(Log log, Act<T> frame)
             {
                 this.log = log;
-                frame.Connect(new CallDefaultPort<LGame>(this)).SetPriority(Short.MAX_VALUE_JAVA);
+                frame.Connect(new CallDefaultPort<T>(this)).SetPriority(Short.MAX_VALUE_JAVA);
             }
 
             public override bool IsAsyncSupported()

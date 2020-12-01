@@ -20,9 +20,9 @@
  */
 package loon.utils;
 
-import loon.HorizontalAlign;
 import loon.LSystem;
 import loon.canvas.LColor;
+import loon.component.layout.HorizontalAlign;
 
 /**
  * Html构建器,用于构建html字符串内容.这是一个前置工具类,后面loon会提供有专门的html内容解析器.<br>

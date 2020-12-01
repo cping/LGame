@@ -1,6 +1,7 @@
 ﻿
 using loon.utils.reply;
 using loon.utils.timer;
+using System;
 
 namespace loon
 {
@@ -28,7 +29,7 @@ namespace loon
             _game.frame.Connect(new PortImpl(this));
         }
 
-        private class PortImpl : Port<LGame>
+        private class PortImpl : Port<object>
         {
             private readonly LSystemView outer;
 
@@ -37,7 +38,7 @@ namespace loon
                 this.outer = outer;
             }
 
-            public override void OnEmit(LGame game)
+            public override void OnEmit(object game)
             {
                 outer.OnFrame();
             }

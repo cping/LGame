@@ -121,12 +121,6 @@ namespace loon.utils.reply
 			this.Notify(EMIT, e, null, null);
 		}
 
-        ActView<M> ActView<T>.Map<M>(Function<T, M> func)
-        {
-            throw new System.NotImplementedException();
-        }
-
-
         protected internal static readonly Notifier EMIT = new NotifyEmitImpl();
 
 		private class NotifyEmitImpl : Notifier

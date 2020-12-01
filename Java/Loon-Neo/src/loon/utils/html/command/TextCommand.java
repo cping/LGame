@@ -20,10 +20,10 @@
  */
 package loon.utils.html.command;
 
-import loon.HorizontalAlign;
 import loon.LSystem;
 import loon.canvas.LColor;
 import loon.component.Print;
+import loon.component.layout.HorizontalAlign;
 import loon.font.Font.Style;
 import loon.font.FontUtils;
 import loon.font.IFont;

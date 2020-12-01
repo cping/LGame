@@ -145,33 +145,6 @@ public class LSystem {
 	 */
 	public static final float MIN_SECONE_SPEED_FIXED = 0.008f;
 
-	public static final int MODE_NORMAL = 1;
-
-	public static final int MODE_ALPHA_MAP = 2;
-
-	public static final int MODE_ALPHA_BLEND = 3;
-
-	public static final int MODE_COLOR_MULTIPLY = 4;
-
-	public static final int MODE_ADD = 5;
-
-	public static final int MODE_SCREEN = 6;
-
-	public static final int MODE_ALPHA = 7;
-
-	public static final int MODE_SPEED = 8;
-
-	public static final int MODE_ALPHA_ONE = 9;
-
-	public static final int MODE_NONE = 10;
-
-	public static final int MODE_MASK = 11;
-
-	public static final int MODE_LIGHT = 12;
-
-	public static final int MODE_ALPHA_ADD = 13;
-
-	public static final int MODE_MULTIPLY = 14;
 	// 兆秒
 	public static final long MSEC = 1;
 

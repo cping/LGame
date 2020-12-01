@@ -18,7 +18,7 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon;
+package loon.component.layout;
 
 public enum VerticalAlign {
 	TOP, CENTER, BOTTOM;

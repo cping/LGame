@@ -20,9 +20,9 @@
  */
 package loon.component;
 
-import loon.HorizontalAlign;
 import loon.LTexture;
 import loon.canvas.LColor;
+import loon.component.layout.HorizontalAlign;
 import loon.component.skin.MessageSkin;
 import loon.component.skin.SkinManager;
 import loon.font.Font.Style;

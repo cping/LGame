@@ -24,40 +24,41 @@ import loon.LSysException;
 import loon.LSystem;
 import loon.canvas.LColor;
 import loon.geom.Vector2f;
-import loon.particle.SimpleConfigurableEmitter.LinearInterpolator;
-import loon.particle.SimpleConfigurableEmitter.RandomValue;
-import loon.particle.SimpleConfigurableEmitter.SimpleValue;
+import loon.opengl.BlendMethod;
+import loon.particle.ConfigurableEmitter.LinearInterpolator;
+import loon.particle.ConfigurableEmitter.RandomValue;
+import loon.particle.ConfigurableEmitter.SimpleValue;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 import loon.utils.xml.XMLDocument;
 import loon.utils.xml.XMLElement;
 import loon.utils.xml.XMLParser;
 
-public class SimpleParticleConfig {
+public class ParticleConfig {
 
 	public interface ConfigurableEmitterFactory {
 
-		public SimpleConfigurableEmitter createEmitter(String name);
+		public ConfigurableEmitter createEmitter(String name);
 	}
 
-	public static SimpleParticleSystem loadConfiguredSystem(String path, LColor mask) {
+	public static ParticleSystem loadConfiguredSystem(String path, LColor mask) {
 		return loadConfiguredSystem(path, null, null, mask);
 	}
 
-	public static SimpleParticleSystem loadConfiguredSystem(String path) {
+	public static ParticleSystem loadConfiguredSystem(String path) {
 		return loadConfiguredSystem(path, null, null, null);
 	}
 
-	public static SimpleParticleSystem loadConfiguredSystem(String path, ConfigurableEmitterFactory factory) {
+	public static ParticleSystem loadConfiguredSystem(String path, ConfigurableEmitterFactory factory) {
 		return loadConfiguredSystem(path, factory, null, null);
 	}
 
-	public static SimpleParticleSystem loadConfiguredSystem(String path, ConfigurableEmitterFactory factory,
-			SimpleParticleSystem system, LColor mask) {
+	public static ParticleSystem loadConfiguredSystem(String path, ConfigurableEmitterFactory factory,
+			ParticleSystem system, LColor mask) {
 		if (factory == null) {
 			factory = new ConfigurableEmitterFactory() {
-				public SimpleConfigurableEmitter createEmitter(String name) {
-					return new SimpleConfigurableEmitter(name);
+				public ConfigurableEmitter createEmitter(String name) {
+					return new ConfigurableEmitter(name);
 				}
 			};
 		}
@@ -71,13 +72,13 @@ public class SimpleParticleConfig {
 			}
 
 			if (system == null) {
-				system = new SimpleParticleSystem(LSystem.getSystemImagePath() + "par.png", 2000, mask);
+				system = new ParticleSystem(LSystem.getSystemImagePath() + "par.png", 2000, mask);
 			}
 			boolean additive = docElement.getBoolAttribute("additive", false);
 			if (additive) {
-				system.setBlendingState(LSystem.MODE_ADD);
+				system.setBlendingState(BlendMethod.MODE_ADD);
 			} else {
-				system.setBlendingState(LSystem.MODE_ALPHA_ONE);
+				system.setBlendingState(BlendMethod.MODE_ALPHA_ONE);
 			}
 			boolean points = docElement.getBoolAttribute("points", false);
 			system.setUsePoints(points);
@@ -86,7 +87,7 @@ public class SimpleParticleConfig {
 			for (int i = 0; i < list.size; i++) {
 				XMLElement em = list.get(i);
 
-				SimpleConfigurableEmitter emitter = factory.createEmitter("new");
+				ConfigurableEmitter emitter = factory.createEmitter("new");
 				elementToEmitter(em, emitter);
 
 				system.addEmitter(emitter);
@@ -99,15 +100,15 @@ public class SimpleParticleConfig {
 		}
 	}
 
-	public static SimpleConfigurableEmitter loadEmitter(String path) {
+	public static ConfigurableEmitter loadEmitter(String path) {
 		return loadEmitter(path, null);
 	}
 
-	public static SimpleConfigurableEmitter loadEmitter(String path, ConfigurableEmitterFactory factory) {
+	public static ConfigurableEmitter loadEmitter(String path, ConfigurableEmitterFactory factory) {
 		if (factory == null) {
 			factory = new ConfigurableEmitterFactory() {
-				public SimpleConfigurableEmitter createEmitter(String name) {
-					return new SimpleConfigurableEmitter(name);
+				public ConfigurableEmitter createEmitter(String name) {
+					return new ConfigurableEmitter(name);
 				}
 			};
 		}
@@ -120,7 +121,7 @@ public class SimpleParticleConfig {
 				throw new LSysException("Not a particle emitter file");
 			}
 
-			SimpleConfigurableEmitter emitter = factory.createEmitter("new");
+			ConfigurableEmitter emitter = factory.createEmitter("new");
 			elementToEmitter(docElement, emitter);
 
 			return emitter;
@@ -137,18 +138,18 @@ public class SimpleParticleConfig {
 		return list.get(0);
 	}
 
-	private static void elementToEmitter(XMLElement element, SimpleConfigurableEmitter emitter) {
+	private static void elementToEmitter(XMLElement element, ConfigurableEmitter emitter) {
 
 		emitter.name = element.getAttribute("name", LSystem.EMPTY);
 		emitter.setImageName(element.getAttribute("imageName", LSystem.EMPTY));
 
 		String renderType = element.getAttribute("renderType", LSystem.EMPTY);
-		emitter.usePoints = SimpleParticle.INHERIT_POINTS;
+		emitter.usePoints = ParticleParticle.INHERIT_POINTS;
 		if (renderType.equals("quads")) {
-			emitter.usePoints = SimpleParticle.USE_QUADS;
+			emitter.usePoints = ParticleParticle.USE_QUADS;
 		}
 		if (renderType.equals("points")) {
-			emitter.usePoints = SimpleParticle.USE_POINTS;
+			emitter.usePoints = ParticleParticle.USE_POINTS;
 		}
 
 		emitter.useOriented = element.getBoolAttribute("useOriented", false);
@@ -195,7 +196,7 @@ public class SimpleParticleConfig {
 		emitter.replay();
 	}
 
-	private static void parseRangeElement(XMLElement element, SimpleConfigurableEmitter.Range range) {
+	private static void parseRangeElement(XMLElement element, ConfigurableEmitter.Range range) {
 		if (element == null) {
 			return;
 		}
@@ -204,7 +205,7 @@ public class SimpleParticleConfig {
 		range.setEnabled(element.getBoolAttribute("enabled", false));
 	}
 
-	private static void parseValueElement(XMLElement element, SimpleConfigurableEmitter.Value value) {
+	private static void parseValueElement(XMLElement element, ConfigurableEmitter.Value value) {
 		if (element == null) {
 			return;
 		}

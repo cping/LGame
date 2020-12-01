@@ -20,11 +20,11 @@
  */
 package loon.font;
 
-import loon.HorizontalAlign;
 import loon.LRelease;
 import loon.LSysException;
 import loon.LSystem;
 import loon.canvas.LColor;
+import loon.component.layout.HorizontalAlign;
 import loon.opengl.GLEx;
 import loon.opengl.LSTRDictionary;
 import loon.opengl.LSTRFont;

@@ -1198,7 +1198,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		int blend = g.getBlendMode();
 		int tmp = g.color();
 		try {
-			g.setBlendMode(_blend);
+			g.setBlendMode(_GL_BLEND);
 			g.setAlpha(_alpha);
 			if (this.roll) {
 				this.offset = toRollPosition(this.offset);

@@ -29,6 +29,7 @@ import loon.canvas.Canvas;
 import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.canvas.Pixmap;
+import loon.opengl.BlendMethod;
 import loon.opengl.GL20;
 
 public class GLUtils {
@@ -123,66 +124,66 @@ public class GLUtils {
 		if (gl == null) {
 			return;
 		}
-		if (currentBlendMode == LSystem.MODE_NORMAL) {
+		if (currentBlendMode == BlendMethod.MODE_NORMAL) {
 			GLUtils.enableBlend(gl);
 			gl.glColorMask(true, true, true, false);
 			gl.glBlendFunc(GL20.GL_ONE, GL20.GL_ONE_MINUS_SRC_ALPHA);
 			return;
-		} else if (currentBlendMode == LSystem.MODE_SPEED) {
+		} else if (currentBlendMode == BlendMethod.MODE_SPEED) {
 			GLUtils.enableBlend(gl);
 			gl.glColorMask(true, true, true, true);
 			gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 			return;
-		} else if (currentBlendMode == LSystem.MODE_ALPHA_MAP) {
+		} else if (currentBlendMode == BlendMethod.MODE_ALPHA_MAP) {
 			GLUtils.disableBlend(gl);
 			gl.glColorMask(false, false, false, true);
 			return;
-		} else if (currentBlendMode == LSystem.MODE_ALPHA_BLEND) {
+		} else if (currentBlendMode == BlendMethod.MODE_ALPHA_BLEND) {
 			GLUtils.enableBlend(gl);
 			gl.glColorMask(true, true, true, false);
 			gl.glBlendFunc(GL20.GL_DST_ALPHA, GL20.GL_ONE_MINUS_DST_ALPHA);
 			return;
-		} else if (currentBlendMode == LSystem.MODE_COLOR_MULTIPLY) {
+		} else if (currentBlendMode == BlendMethod.MODE_COLOR_MULTIPLY) {
 			GLUtils.enableBlend(gl);
 			gl.glColorMask(true, true, true, true);
 			gl.glBlendFunc(GL20.GL_ONE_MINUS_SRC_COLOR, GL20.GL_SRC_COLOR);
 			return;
-		} else if (currentBlendMode == LSystem.MODE_ADD) {
+		} else if (currentBlendMode == BlendMethod.MODE_ADD) {
 			GLUtils.enableBlend(gl);
 			gl.glColorMask(true, true, true, true);
 			gl.glBlendFunc(GL20.GL_ONE, GL20.GL_ONE);
 			return;
-		} else if (currentBlendMode == LSystem.MODE_SCREEN) {
+		} else if (currentBlendMode == BlendMethod.MODE_SCREEN) {
 			GLUtils.enableBlend(gl);
 			gl.glColorMask(true, true, true, true);
 			gl.glBlendFunc(GL20.GL_ONE, GL20.GL_ONE_MINUS_SRC_COLOR);
 			return;
-		} else if (currentBlendMode == LSystem.MODE_ALPHA_ONE) {
+		} else if (currentBlendMode == BlendMethod.MODE_ALPHA_ONE) {
 			GLUtils.enableBlend(gl);
 			gl.glColorMask(true, true, true, true);
 			gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
 			return;
-		} else if (currentBlendMode == LSystem.MODE_ALPHA) {
+		} else if (currentBlendMode == BlendMethod.MODE_ALPHA) {
 			GLUtils.enableBlend(gl);
 			gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 			return;
-		} else if (currentBlendMode == LSystem.MODE_MASK) {
+		} else if (currentBlendMode == BlendMethod.MODE_MASK) {
 			GLUtils.enableBlend(gl);
 			gl.glBlendFunc(GL20.GL_ZERO, GL20.GL_SRC_ALPHA);
 			return;
-		} else if (currentBlendMode == LSystem.MODE_LIGHT) {
+		} else if (currentBlendMode == BlendMethod.MODE_LIGHT) {
 			GLUtils.enableBlend(gl);
 			gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
 			return;
-		} else if (currentBlendMode == LSystem.MODE_ALPHA_ADD) {
+		} else if (currentBlendMode == BlendMethod.MODE_ALPHA_ADD) {
 			GLUtils.enableBlend(gl);
 			gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_DST_ALPHA);
 			return;
-		} else if (currentBlendMode == LSystem.MODE_MULTIPLY) {
+		} else if (currentBlendMode == BlendMethod.MODE_MULTIPLY) {
 			GLUtils.enableBlend(gl);
 			gl.glBlendFunc(GL20.GL_DST_COLOR, GL20.GL_ONE_MINUS_SRC_ALPHA);
 			return;
-		} else if (currentBlendMode == LSystem.MODE_NONE) {
+		} else if (currentBlendMode == BlendMethod.MODE_NONE) {
 			GLUtils.disableBlend(gl);
 			gl.glColorMask(true, true, true, false);
 			return;

@@ -5,9 +5,10 @@ import loon.LTextures;
 import loon.LTransition;
 import loon.Screen;
 import loon.events.GameTouch;
+import loon.opengl.BlendMethod;
 import loon.opengl.GLEx;
-import loon.particle.SimpleFireEmitter;
-import loon.particle.SimpleParticleSystem;
+import loon.particle.ParticleFireEmitter;
+import loon.particle.ParticleSystem;
 import loon.utils.timer.LTimerContext;
 
 public class ParticleTest extends Screen {
@@ -25,12 +26,12 @@ public class ParticleTest extends Screen {
 	@Override
 	public void onLoad() {
 
-		SimpleParticleSystem particleSystem = new SimpleParticleSystem(
+		ParticleSystem particleSystem = new ParticleSystem(
 				LTextures.loadTexture("particle.tga"));
-		particleSystem.setBlendingState(LSystem.MODE_ALPHA_ONE);
-		particleSystem.addEmitter(new SimpleFireEmitter(300, 300, 25));
-		particleSystem.addEmitter(new SimpleFireEmitter(100, 300, 30));
-		particleSystem.addEmitter(new SimpleFireEmitter(200, 300, 20));
+		particleSystem.setBlendingState(BlendMethod.MODE_ALPHA_ONE);
+		particleSystem.addEmitter(new ParticleFireEmitter(300, 300, 25));
+		particleSystem.addEmitter(new ParticleFireEmitter(100, 300, 30));
+		particleSystem.addEmitter(new ParticleFireEmitter(200, 300, 20));
 		add(particleSystem);
 		
 		add(MultiScreenTest.getBackButton(this,0));

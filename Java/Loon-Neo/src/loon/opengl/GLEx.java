@@ -67,7 +67,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		int pixSkip = def_skip;
 		float lineWidth = 1f;
 		float baseAlpha = 1f;
-		int blend = LSystem.MODE_NORMAL;
+		int blend = BlendMethod.MODE_NORMAL;
 
 		boolean alltextures = false;
 		IFont font = null;
@@ -159,7 +159,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		this.lastBrush.font = LSystem.getSystemGameFont();
 		this.lastBrush.alltextures = alltex;
 		this.lastBrush.pixSkip = LSystem.isHTML5() ? def_skip_html5 : def_skip;
-		this.lastBrush.blend = LSystem.MODE_NORMAL;
+		this.lastBrush.blend = BlendMethod.MODE_NORMAL;
 		this.brushStack.add(lastBrush);
 		this.saveToFrameBufferTexture = saveFrameBuffer;
 		this.update();
@@ -398,7 +398,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			GLUtils.disableCulling(gl);
 		}
 		// 设定画布渲染模式为默认
-		this.setBlendMode(LSystem.MODE_NORMAL);
+		this.setBlendMode(BlendMethod.MODE_NORMAL);
 		return this;
 	}
 
@@ -481,7 +481,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		this.setPixSkip(lastBrush.alltextures ? def_skip_html5 : def_skip);
 		this.setFont(LSystem.getSystemGameFont());
 		this.setLineWidth(1f);
-		this.setBlendMode(LSystem.MODE_NORMAL);
+		this.setBlendMode(BlendMethod.MODE_NORMAL);
 		brushStack.pop();
 		return this;
 	}
@@ -907,7 +907,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		this.lastBrush.fillColor = LColor.DEF_COLOR;
 		this.lastBrush.baseAlpha = 1f;
 		this.lastBrush.patternTex = null;
-		this.setBlendMode(LSystem.MODE_NORMAL);
+		this.setBlendMode(BlendMethod.MODE_NORMAL);
 		this.resetLineWidth();
 		return this;
 	}

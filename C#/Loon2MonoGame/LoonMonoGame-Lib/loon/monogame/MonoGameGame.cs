@@ -33,7 +33,7 @@ namespace loon.monogame
             this._start = JavaSystem.NanoTime();
             this._log = new MonoGameLog();
             this._assets = new MonoGameAssets(this);
-            this._asyn = new MonoGameAsyn(this._log, frame);
+            this._asyn = new MonoGameAsyn<object>(this._log,frame);
         }
 
         public override int Tick()
@@ -74,6 +74,11 @@ namespace loon.monogame
         public override bool IsDesktop()
         {
             return PlatformInfo.MonoGamePlatform == MonoGamePlatform.DesktopGL;
+        }
+
+        protected internal void ProcessFrame()
+        {
+            EmitFrame();
         }
 
         public override Log Log()

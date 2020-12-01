@@ -592,7 +592,7 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 		}
 		int blend = GLUtils.getBlendMode();
 		GL20 gl = LSystem.base().graphics().gl;
-		GLUtils.setBlendMode(gl, _blend);
+		GLUtils.setBlendMode(gl, _GL_BLEND);
 		float tmp = batch.alpha();
 		batch.setAlpha(_alpha);
 		for (int i = this._childCount - 1; i >= 0; i--) {
@@ -632,7 +632,7 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 		}
 		int blend = gl.getBlendMode();
 		float tmp = gl.alpha();
-		gl.setBlendMode(_blend);
+		gl.setBlendMode(_GL_BLEND);
 		gl.setAlpha(_alpha);
 		for (int i = this._childCount - 1; i >= 0; i--) {
 			if (childs[i] != null && childs[i].getZOrder() < 0) {

@@ -24,12 +24,11 @@ import loon.LRelease;
 import loon.LSystem;
 import loon.LTexture;
 import loon.action.map.Field2D;
+import loon.opengl.BlendMethod;
 import loon.opengl.GLEx;
 import loon.srpg.SRPGType;
 import loon.srpg.actor.SRPGActor;
 import loon.srpg.actor.SRPGActors;
-
-
 
 public class SRPGField implements LRelease {
 
@@ -287,7 +286,7 @@ public class SRPGField implements LRelease {
 
 		int old = g.getBlendMode();
 
-		g.setBlendMode(LSystem.MODE_SPEED);
+		g.setBlendMode(BlendMethod.MODE_SPEED);
 
 		switch (fieldMode) {
 		case SRPGType.FIELD_NORMAL:

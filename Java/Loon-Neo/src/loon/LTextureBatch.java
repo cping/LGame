@@ -24,6 +24,7 @@ import loon.canvas.LColor;
 import loon.geom.Matrix4;
 import loon.geom.Vector2f;
 import loon.opengl.BlendState;
+import loon.opengl.BlendMethod;
 import loon.opengl.ExpandVertices;
 import loon.opengl.GL20;
 import loon.opengl.MeshDefault;
@@ -404,16 +405,16 @@ public class LTextureBatch implements LRelease {
 		try {
 			switch (lastBlendState) {
 			case Additive:
-				GLUtils.setBlendMode(gl, LSystem.MODE_ALPHA_ONE);
+				GLUtils.setBlendMode(gl, BlendMethod.MODE_ALPHA_ONE);
 				break;
 			case AlphaBlend:
-				GLUtils.setBlendMode(gl, LSystem.MODE_NORMAL);
+				GLUtils.setBlendMode(gl, BlendMethod.MODE_NORMAL);
 				break;
 			case Opaque:
-				GLUtils.setBlendMode(gl, LSystem.MODE_NONE);
+				GLUtils.setBlendMode(gl, BlendMethod.MODE_NONE);
 				break;
 			case NonPremultiplied:
-				GLUtils.setBlendMode(gl, LSystem.MODE_SPEED);
+				GLUtils.setBlendMode(gl, BlendMethod.MODE_SPEED);
 				break;
 			case Null:
 				break;
@@ -537,16 +538,16 @@ public class LTextureBatch implements LRelease {
 			int old = GLUtils.getBlendMode();
 			switch (lastBlendState) {
 			case Additive:
-				GLUtils.setBlendMode(gl, LSystem.MODE_ALPHA_ONE);
+				GLUtils.setBlendMode(gl, BlendMethod.MODE_ALPHA_ONE);
 				break;
 			case AlphaBlend:
-				GLUtils.setBlendMode(gl, LSystem.MODE_NORMAL);
+				GLUtils.setBlendMode(gl, BlendMethod.MODE_NORMAL);
 				break;
 			case Opaque:
-				GLUtils.setBlendMode(gl, LSystem.MODE_NONE);
+				GLUtils.setBlendMode(gl, BlendMethod.MODE_NONE);
 				break;
 			case NonPremultiplied:
-				GLUtils.setBlendMode(gl, LSystem.MODE_SPEED);
+				GLUtils.setBlendMode(gl, BlendMethod.MODE_SPEED);
 				break;
 			case Null:
 				break;

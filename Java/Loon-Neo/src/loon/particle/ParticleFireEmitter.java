@@ -23,7 +23,7 @@ package loon.particle;
 import loon.LTexture;
 import loon.utils.MathUtils;
 
-public class SimpleFireEmitter implements SimpleEmitter {
+public class ParticleFireEmitter implements ParticleEmitter {
 	
 	private int _x;
 
@@ -35,26 +35,26 @@ public class SimpleFireEmitter implements SimpleEmitter {
 
 	private float _size = 40;
 	
-	public SimpleFireEmitter() {
+	public ParticleFireEmitter() {
 	}
 
-	public SimpleFireEmitter(int x, int y) {
+	public ParticleFireEmitter(int x, int y) {
 		this._x = x;
 		this._y = y;
 	}
 
-	public SimpleFireEmitter(int x, int y, float size) {
+	public ParticleFireEmitter(int x, int y, float size) {
 		this._x = x;
 		this._y = y;
 		this._size = size;
 	}
 	
 	@Override
-	public void update(SimpleParticleSystem system, long delta) {
+	public void update(ParticleSystem system, long delta) {
 		_timer -= delta;
 		if (_timer <= 0) {
 			_timer = _interval;
-			SimpleParticle p = system.getNewParticle(this, 1000);
+			ParticleParticle p = system.getNewParticle(this, 1000);
 			p.setColor(1, 1, 1, 0.5f);
 			p.setPosition(_x, _y);
 			p.setSize(_size);
@@ -65,7 +65,7 @@ public class SimpleFireEmitter implements SimpleEmitter {
 	}
 
 	@Override
-	public void updateParticle(SimpleParticle particle, long delta) {
+	public void updateParticle(ParticleParticle particle, long delta) {
 		if (particle.getLife() > 600) {
 			particle.adjustSize(0.07f * delta);
 		} else {
@@ -100,7 +100,7 @@ public class SimpleFireEmitter implements SimpleEmitter {
 	}
 
 	@Override
-	public boolean usePoints(SimpleParticleSystem system) {
+	public boolean usePoints(ParticleSystem system) {
 		return false;
 	}
 

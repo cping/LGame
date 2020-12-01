@@ -223,6 +223,10 @@ namespace loon
         {
             GraphicsDevice.Clear(Color.Black);
             base.Draw(gameTime);
+            if (_game != null)
+            {
+                _game.ProcessFrame();
+            }
         }
 
         public void Close()
@@ -232,17 +236,26 @@ namespace loon
 
         public int GetContainerWidth()
         {
-            throw new NotImplementedException();
+            return GetScreenDimension().width;
         }
 
         public int GetContainerHeight()
         {
-            throw new NotImplementedException();
+            return GetScreenDimension().height;
         }
 
         public Platform_Orientation GetOrientation()
         {
-            throw new NotImplementedException();
+
+            if (GetContainerHeight() > GetContainerWidth())
+            {
+                return Platform_Orientation.Portrait;
+            }
+            else
+            {
+                return Platform_Orientation.Landscape;
+            }
+
         }
 
         public LGame GetGame()

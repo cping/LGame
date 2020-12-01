@@ -21,7 +21,6 @@
 package loon.component.layout;
 
 import loon.BaseIO;
-import loon.HorizontalAlign;
 import loon.Json;
 import loon.LRelease;
 import loon.LSysException;

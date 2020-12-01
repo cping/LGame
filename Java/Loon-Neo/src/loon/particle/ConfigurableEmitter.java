@@ -28,7 +28,7 @@ import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
-public class SimpleConfigurableEmitter implements SimpleEmitter {
+public class ConfigurableEmitter implements ParticleEmitter {
 
 	private String relativePath = "";
 
@@ -83,7 +83,7 @@ public class SimpleConfigurableEmitter implements SimpleEmitter {
 
 	public Range emitCount = new Range(1000, 1000);
 
-	public int usePoints = SimpleParticle.INHERIT_POINTS;
+	public int usePoints = ParticleParticle.INHERIT_POINTS;
 
 	public boolean useOriented = false;
 
@@ -109,7 +109,7 @@ public class SimpleConfigurableEmitter implements SimpleEmitter {
 
 	private int particleCount;
 
-	private SimpleParticleSystem engine;
+	private ParticleSystem engine;
 
 	private int leftToEmit;
 
@@ -123,7 +123,7 @@ public class SimpleConfigurableEmitter implements SimpleEmitter {
 
 	protected float adjusty;
 
-	public SimpleConfigurableEmitter(String name) {
+	public ConfigurableEmitter(String name) {
 		this.name = name;
 		leftToEmit = (int) emitCount.random();
 		timeout = (int) (length.random());
@@ -152,7 +152,7 @@ public class SimpleConfigurableEmitter implements SimpleEmitter {
 		scaleY = new LinearInterpolator(curve, 0, 1);
 	}
 
-	public SimpleConfigurableEmitter setImageName(String imageName) {
+	public ConfigurableEmitter setImageName(String imageName) {
 		if (StringUtils.isEmpty(imageName)) {
 			imageName = null;
 		}
@@ -203,7 +203,7 @@ public class SimpleConfigurableEmitter implements SimpleEmitter {
 	}
 
 	@Override
-	public void update(SimpleParticleSystem system, long delta) {
+	public void update(ParticleSystem system, long delta) {
 		this.engine = system;
 
 		if (!adjust) {
@@ -250,7 +250,7 @@ public class SimpleConfigurableEmitter implements SimpleEmitter {
 			int count = (int) spawnCount.random();
 
 			for (int i = 0; i < count; i++) {
-				SimpleParticle p = system.getNewParticle(this,
+				ParticleParticle p = system.getNewParticle(this,
 						initialLife.random());
 				p.setSize(initialSize.random());
 				p.setPosition(x + xOffset.random(), y + yOffset.random());
@@ -293,7 +293,7 @@ public class SimpleConfigurableEmitter implements SimpleEmitter {
 	}
 
 	@Override
-	public void updateParticle(SimpleParticle particle, long delta) {
+	public void updateParticle(ParticleParticle particle, long delta) {
 		particleCount++;
 
 		particle.x += adjustx;
@@ -382,7 +382,7 @@ public class SimpleConfigurableEmitter implements SimpleEmitter {
 		return false;
 	}
 
-	public SimpleConfigurableEmitter replay() {
+	public ConfigurableEmitter replay() {
 		reset();
 		nextSpawn = 0;
 		leftToEmit = (int) emitCount.random();
@@ -390,7 +390,7 @@ public class SimpleConfigurableEmitter implements SimpleEmitter {
 		return this;
 	}
 
-	public SimpleConfigurableEmitter reset() {
+	public ConfigurableEmitter reset() {
 		completed = false;
 		if (engine != null) {
 			engine.releaseAll(this);
@@ -398,7 +398,7 @@ public class SimpleConfigurableEmitter implements SimpleEmitter {
 		return this;
 	}
 
-	public SimpleConfigurableEmitter replayCheck() {
+	public ConfigurableEmitter replayCheck() {
 		if (completed()) {
 			if (engine != null) {
 				if (engine.getParticleCount() == 0) {
@@ -536,7 +536,7 @@ public class SimpleConfigurableEmitter implements SimpleEmitter {
 		}
 	}
 
-	public SimpleConfigurableEmitter addColorPoint(float pos, LColor col) {
+	public ConfigurableEmitter addColorPoint(float pos, LColor col) {
 		colors.add(new ColorRecord(pos, col));
 		return this;
 	}
@@ -597,10 +597,10 @@ public class SimpleConfigurableEmitter implements SimpleEmitter {
 	}
 
 	@Override
-	public boolean usePoints(SimpleParticleSystem system) {
-		return (this.usePoints == SimpleParticle.INHERIT_POINTS)
+	public boolean usePoints(ParticleSystem system) {
+		return (this.usePoints == ParticleParticle.INHERIT_POINTS)
 				&& (system.usePoints())
-				|| (this.usePoints == SimpleParticle.USE_POINTS);
+				|| (this.usePoints == ParticleParticle.USE_POINTS);
 	}
 
 	@Override

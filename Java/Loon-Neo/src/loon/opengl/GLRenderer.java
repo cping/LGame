@@ -604,7 +604,7 @@ public class GLRenderer implements LRelease {
 					_gl = LSystem.base().display().GL();
 				}
 				if (!LColor.white.equals(_color)) {
-					_gl.setBlendMode(LSystem.MODE_SPEED);
+					_gl.setBlendMode(BlendMethod.MODE_SPEED);
 				}
 			} catch (Throwable ex) {
 				LSystem.error("GLRenderer end() error", ex);

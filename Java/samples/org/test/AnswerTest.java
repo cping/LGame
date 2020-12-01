@@ -35,7 +35,7 @@ public class AnswerTest extends Stage {
 
 		// 构建问答器
 		final LQuestionAnswer qaer = new LQuestionAnswer(50, 65, 300, 300);
-
+		
 		// 构建问答对象
 		QAObject qa1 = new QAObject("“粉身碎骨浑不怕,要留清白在人间”写的是__。", "A.石膏", "B.玉石", "C.石灰", "D.瓷器");
 		// 设定正确答案

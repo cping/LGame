@@ -761,7 +761,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		boolean exist = _image != null || (_width > 0 && _height > 0) || _repaintDraw;
 		if (exist) {
 			int blend = g.getBlendMode();
-			g.setBlendMode(_blend);
+			g.setBlendMode(_GL_BLEND);
 			boolean update = ((_rotation != 0 || !(_scaleX == 1f && _scaleY == 1f) || !(_skewX == 0 && _skewY == 0))
 					|| _flipX || _flipY) && _deform;
 			float nx = offsetX + this._location.x + _offset.x;

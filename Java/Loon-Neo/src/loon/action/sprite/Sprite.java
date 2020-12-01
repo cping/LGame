@@ -675,7 +675,7 @@ public class Sprite extends LObject<ISprite>
 		int tmp = g.color();
 		int blend = g.getBlendMode();
 		try {
-			g.setBlendMode(_blend);
+			g.setBlendMode(_GL_BLEND);
 			float nx = this._location.x + offsetX;
 			float ny = this._location.y + offsetY;
 			if (update) {

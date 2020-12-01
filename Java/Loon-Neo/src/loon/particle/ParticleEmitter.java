@@ -1,5 +1,5 @@
 /**
- * Copyright 2008 - 2015 The Loon Game Engine Authors
+ * Copyright 2008 - 2012
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -16,12 +16,33 @@
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
- * @version 0.5
+ * @version 0.3.3
  */
-package loon;
+package loon.particle;
 
-public enum HorizontalAlign {
-	LEFT,
-	CENTER,
-	RIGHT;
+import loon.LTexture;
+
+public interface ParticleEmitter {
+
+	public void update(ParticleSystem system, long delta);
+
+	public boolean completed();
+	
+	public void up();
+	
+	public void updateParticle(ParticleParticle particle, long delta);
+	
+	public boolean isEnabled();
+	
+	public void setEnabled(boolean enabled);
+	
+	public boolean useAdditive();
+	
+	public LTexture getImage();
+
+	public boolean isOriented();
+	
+	public boolean usePoints(ParticleSystem system);
+	
+	public void resetState();
 }

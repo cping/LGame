@@ -6,19 +6,20 @@ import loon.LTextures;
 import loon.LTransition;
 import loon.Screen;
 import loon.events.GameTouch;
+import loon.opengl.BlendMethod;
 import loon.opengl.GLEx;
-import loon.particle.SimpleConfigurableEmitter;
-import loon.particle.SimpleParticleConfig;
-import loon.particle.SimpleParticleSystem;
+import loon.particle.ConfigurableEmitter;
+import loon.particle.ParticleConfig;
+import loon.particle.ParticleSystem;
 import loon.utils.timer.LTimerContext;
 
 public class ParticleConfigTest extends Screen {
 
 	private LTexture image;
 
-	private SimpleParticleSystem trail;
+	private ParticleSystem trail;
 
-	private SimpleParticleSystem fire;
+	private ParticleSystem fire;
 
 	private float rx = 100;
 
@@ -32,7 +33,7 @@ public class ParticleConfigTest extends Screen {
 	@Override
 	public void draw(GLEx g) {
 		if (isOnLoadComplete()) {
-			((SimpleConfigurableEmitter) trail.getEmitter(0)).setPosition(
+			((ConfigurableEmitter) trail.getEmitter(0)).setPosition(
 					rx + 14, ry + 35);
 			trail.setPosition(rx + 14, ry + 35);
 			trail.render(g);
@@ -45,10 +46,10 @@ public class ParticleConfigTest extends Screen {
 	@Override
 	public void onLoad() {
 		try {
-			fire = SimpleParticleConfig.loadConfiguredSystem("system.xml");
-			fire.setBlendingState(LSystem.MODE_ALPHA_ONE);
-			trail = SimpleParticleConfig.loadConfiguredSystem("smoketrail.xml");
-			trail.setBlendingState(LSystem.MODE_ALPHA_ONE);
+			fire = ParticleConfig.loadConfiguredSystem("system.xml");
+			fire.setBlendingState(BlendMethod.MODE_ALPHA_ONE);
+			trail = ParticleConfig.loadConfiguredSystem("smoketrail.xml");
+			trail.setBlendingState(BlendMethod.MODE_ALPHA_ONE);
 			image = LTextures.loadTexture("rocket.png");
 
 		} catch (Exception ex) {

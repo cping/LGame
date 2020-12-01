@@ -26,6 +26,7 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.action.sprite.Entity;
 import loon.canvas.LColor;
+import loon.opengl.BlendMethod;
 import loon.opengl.BlendState;
 import loon.opengl.GLEx;
 import loon.opengl.TextureUtils;
@@ -33,21 +34,21 @@ import loon.utils.GLUtils;
 import loon.utils.ObjectMap;
 import loon.utils.TArray;
 
-public class SimpleParticleSystem extends Entity {
+public class ParticleSystem extends Entity {
 
 	private static final int DEFAULT_PARTICLES = 100;
 
-	private int state = LSystem.MODE_ADD;
+	private int state = BlendMethod.MODE_ADD;
 
-	private TArray<SimpleEmitter> removeMe = new TArray<SimpleEmitter>();
+	private TArray<ParticleEmitter> removeMe = new TArray<ParticleEmitter>();
 
 	private static class ParticlePool {
-		public SimpleParticle[] particles;
-		public TArray<SimpleParticle> available;
+		public ParticleParticle[] particles;
+		public TArray<ParticleParticle> available;
 
-		public ParticlePool(SimpleParticleSystem system, int maxParticles) {
-			particles = new SimpleParticle[maxParticles];
-			available = new TArray<SimpleParticle>();
+		public ParticlePool(ParticleSystem system, int maxParticles) {
+			particles = new ParticleParticle[maxParticles];
+			available = new TArray<ParticleParticle>();
 
 			for (int i = 0; i < particles.length; i++) {
 				particles[i] = system.createParticle(system);
@@ -56,7 +57,7 @@ public class SimpleParticleSystem extends Entity {
 			reset(system);
 		}
 
-		public void reset(SimpleParticleSystem system) {
+		public void reset(ParticleSystem system) {
 			available.clear();
 
 			for (int i = 0; i < particles.length; i++) {
@@ -65,13 +66,13 @@ public class SimpleParticleSystem extends Entity {
 		}
 	}
 
-	protected ObjectMap<SimpleEmitter, ParticlePool> particlesByEmitter = new ObjectMap<SimpleEmitter, ParticlePool>();
+	protected ObjectMap<ParticleEmitter, ParticlePool> particlesByEmitter = new ObjectMap<ParticleEmitter, ParticlePool>();
 
 	protected int maxParticlesPerEmitter;
 
-	protected TArray<SimpleEmitter> emitters = new TArray<SimpleEmitter>();
+	protected TArray<ParticleEmitter> emitters = new TArray<ParticleEmitter>();
 
-	protected SimpleParticle dummy;
+	protected ParticleParticle dummy;
 
 	private int pCount;
 
@@ -85,11 +86,11 @@ public class SimpleParticleSystem extends Entity {
 
 	private LColor mask;
 
-	public SimpleParticleSystem(LTexture defaultSprite) {
+	public ParticleSystem(LTexture defaultSprite) {
 		this(defaultSprite, DEFAULT_PARTICLES);
 	}
 
-	public SimpleParticleSystem(String defaultSpriteRef) {
+	public ParticleSystem(String defaultSpriteRef) {
 		this(defaultSpriteRef, DEFAULT_PARTICLES);
 	}
 
@@ -102,7 +103,7 @@ public class SimpleParticleSystem extends Entity {
 		}
 
 		for (int i = 0; i < emitters.size; i++) {
-			SimpleEmitter emitter = emitters.get(i);
+			ParticleEmitter emitter = emitters.get(i);
 			emitter.resetState();
 		}
 		super.reset();
@@ -120,11 +121,11 @@ public class SimpleParticleSystem extends Entity {
 		return usePoints;
 	}
 
-	public SimpleParticleSystem(String defaultSpriteRef, int maxParticles) {
+	public ParticleSystem(String defaultSpriteRef, int maxParticles) {
 		this(defaultSpriteRef, maxParticles, null);
 	}
 
-	public SimpleParticleSystem(String defaultSpriteRef, int maxParticles, LColor mask) {
+	public ParticleSystem(String defaultSpriteRef, int maxParticles, LColor mask) {
 		this.maxParticlesPerEmitter = maxParticles;
 		this.mask = mask;
 		this.setRepaint(true);
@@ -132,7 +133,7 @@ public class SimpleParticleSystem extends Entity {
 		dummy = createParticle(this);
 	}
 
-	public SimpleParticleSystem(LTexture defaultSprite, int maxParticles) {
+	public ParticleSystem(LTexture defaultSprite, int maxParticles) {
 		this.maxParticlesPerEmitter = maxParticles;
 		this.setRepaint(true);
 		sprite = defaultSprite;
@@ -148,26 +149,26 @@ public class SimpleParticleSystem extends Entity {
 		return GLUtils.getBlendMode();
 	}
 
-	protected SimpleParticle createParticle(SimpleParticleSystem system) {
-		return new SimpleParticle(system);
+	protected ParticleParticle createParticle(ParticleSystem system) {
+		return new ParticleParticle(system);
 	}
 
 	public int getEmitterCount() {
 		return emitters.size;
 	}
 
-	public SimpleEmitter getEmitter(int index) {
+	public ParticleEmitter getEmitter(int index) {
 		return emitters.get(index);
 	}
 
-	public void addEmitter(SimpleEmitter emitter) {
+	public void addEmitter(ParticleEmitter emitter) {
 		emitters.add(emitter);
 
 		ParticlePool pool = new ParticlePool(this, maxParticlesPerEmitter);
 		particlesByEmitter.put(emitter, pool);
 	}
 
-	public void removeEmitter(SimpleEmitter emitter) {
+	public void removeEmitter(ParticleEmitter emitter) {
 		emitters.remove(emitter);
 		particlesByEmitter.remove(emitter);
 	}
@@ -204,7 +205,7 @@ public class SimpleParticleSystem extends Entity {
 
 		for (int emitterIdx = 0; emitterIdx < emitters.size; emitterIdx++) {
 
-			SimpleEmitter emitter = emitters.get(emitterIdx);
+			ParticleEmitter emitter = emitters.get(emitterIdx);
 
 			if (!emitter.isEnabled()) {
 				continue;
@@ -213,7 +214,7 @@ public class SimpleParticleSystem extends Entity {
 			int mode = g.getBlendMode();
 
 			if (emitter.useAdditive()) {
-				g.setBlendMode(LSystem.MODE_ADD);
+				g.setBlendMode(BlendMethod.MODE_ADD);
 			} else {
 				g.setBlendMode(state);
 			}
@@ -266,9 +267,9 @@ public class SimpleParticleSystem extends Entity {
 		}
 
 		removeMe.clear();
-		TArray<SimpleEmitter> emitters = new TArray<SimpleEmitter>(this.emitters);
+		TArray<ParticleEmitter> emitters = new TArray<ParticleEmitter>(this.emitters);
 		for (int i = 0; i < emitters.size; i++) {
-			SimpleEmitter emitter = emitters.get(i);
+			ParticleEmitter emitter = emitters.get(i);
 			if (emitter.isEnabled()) {
 				emitter.update(this, delta);
 				if (removeCompletedEmitters) {
@@ -284,7 +285,7 @@ public class SimpleParticleSystem extends Entity {
 		pCount = 0;
 
 		if (!particlesByEmitter.isEmpty()) {
-			for (SimpleEmitter emitter : particlesByEmitter.keys()) {
+			for (ParticleEmitter emitter : particlesByEmitter.keys()) {
 				if (emitter.isEnabled()) {
 					ParticlePool pool = particlesByEmitter.get(emitter);
 					for (int i = 0; i < pool.particles.length; i++) {
@@ -302,11 +303,11 @@ public class SimpleParticleSystem extends Entity {
 		return pCount;
 	}
 
-	public SimpleParticle getNewParticle(SimpleEmitter emitter, float life) {
+	public ParticleParticle getNewParticle(ParticleEmitter emitter, float life) {
 		ParticlePool pool = particlesByEmitter.get(emitter);
-		TArray<SimpleParticle> available = pool.available;
+		TArray<ParticleParticle> available = pool.available;
 		if (available.size > 0) {
-			SimpleParticle p = available.removeIndex(available.size - 1);
+			ParticleParticle p = available.removeIndex(available.size - 1);
 			p.init(emitter, life);
 			p.setImage(sprite);
 
@@ -315,7 +316,7 @@ public class SimpleParticleSystem extends Entity {
 		return dummy;
 	}
 
-	public SimpleParticleSystem release(SimpleParticle particle) {
+	public ParticleSystem release(ParticleParticle particle) {
 		if (particle != dummy) {
 			ParticlePool pool = particlesByEmitter.get(particle.getEmitter());
 			pool.available.add(particle);
@@ -323,7 +324,7 @@ public class SimpleParticleSystem extends Entity {
 		return this;
 	}
 
-	public SimpleParticleSystem releaseAll(SimpleEmitter emitter) {
+	public ParticleSystem releaseAll(ParticleEmitter emitter) {
 		if (!particlesByEmitter.isEmpty()) {
 			Iterator<ParticlePool> it = particlesByEmitter.values().iterator();
 			while (it.hasNext()) {
@@ -341,7 +342,7 @@ public class SimpleParticleSystem extends Entity {
 		return this;
 	}
 
-	public SimpleParticleSystem moveAll(SimpleEmitter emitter, float x, float y) {
+	public ParticleSystem moveAll(ParticleEmitter emitter, float x, float y) {
 		ParticlePool pool = particlesByEmitter.get(emitter);
 		for (int i = 0; i < pool.particles.length; i++) {
 			if (pool.particles[i].inUse()) {
@@ -355,7 +356,7 @@ public class SimpleParticleSystem extends Entity {
 		return state;
 	}
 
-	public SimpleParticleSystem setBlendingState(int s) {
+	public ParticleSystem setBlendingState(int s) {
 		this.state = s;
 		return this;
 	}

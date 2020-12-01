@@ -1,5 +1,5 @@
 /**
- * Copyright 2008 - 2012
+ * Copyright 2008 - 2015 The Loon Game Engine Authors
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -16,33 +16,12 @@
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
- * @version 0.3.3
+ * @version 0.5
  */
-package loon.particle;
+package loon.component.layout;
 
-import loon.LTexture;
-
-public interface SimpleEmitter {
-
-	public void update(SimpleParticleSystem system, long delta);
-
-	public boolean completed();
-	
-	public void up();
-	
-	public void updateParticle(SimpleParticle particle, long delta);
-	
-	public boolean isEnabled();
-	
-	public void setEnabled(boolean enabled);
-	
-	public boolean useAdditive();
-	
-	public LTexture getImage();
-
-	public boolean isOriented();
-	
-	public boolean usePoints(SimpleParticleSystem system);
-	
-	public void resetState();
+public enum HorizontalAlign {
+	LEFT,
+	CENTER,
+	RIGHT;
 }

@@ -1,4 +1,5 @@
-﻿using loon.events;
+﻿using java.lang;
+using loon.events;
 
 namespace loon.utils.reply
 {
@@ -212,6 +213,7 @@ namespace loon.utils.reply
                     }
                     catch (System.Exception ex)
                     {
+                        JavaSystem.Out.Println(ex.Message);
                         exn = ex;
                     }
                     if (cons.OneShot())

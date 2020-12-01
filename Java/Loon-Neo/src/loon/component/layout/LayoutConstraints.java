@@ -20,8 +20,6 @@
  */
 package loon.component.layout;
 
-import loon.HorizontalAlign;
-import loon.VerticalAlign;
 import loon.geom.SizeValue;
 
 public class LayoutConstraints {

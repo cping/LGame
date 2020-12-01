@@ -1,4 +1,4 @@
-﻿namespace loon
+﻿namespace loon.component.layout
 {
     public enum VerticalAlign
     {

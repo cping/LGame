@@ -23,6 +23,7 @@ package loon.action.sprite;
 import loon.LSystem;
 import loon.canvas.LColor;
 import loon.geom.RectBox;
+import loon.opengl.BlendMethod;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
@@ -113,7 +114,7 @@ public class WaitSprite extends Entity {
 				break;
 			case 1:
 				int old = g.getBlendMode();
-				g.setBlendMode(LSystem.MODE_NORMAL);
+				g.setBlendMode(BlendMethod.MODE_NORMAL);
 				g.setLineWidth(10);
 				g.setColor(fill);
 				g.drawOval(x, y, width, height);

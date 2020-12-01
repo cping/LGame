@@ -45,8 +45,6 @@ public abstract class State implements LRelease {
 
 	protected boolean syncCamera;
 	
-	protected GameMode runMode;
-	
 	private boolean isScalePos;
 
 	public State() {
@@ -142,11 +140,4 @@ public abstract class State implements LRelease {
 		this.syncCamera = sync;
 	}
 
-	public GameMode getRunMode() {
-		return runMode;
-	}
-
-	public void setRunMode(GameMode runMode) {
-		this.runMode = runMode;
-	}
 }

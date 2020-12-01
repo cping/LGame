@@ -177,7 +177,7 @@ public abstract class ActionObject extends LObject<ISprite> implements Flip<Acti
 		int blend = gl.getBlendMode();
 		boolean update = (_rotation != 0) || !(scaleX == 1f && scaleY == 1f) || flipX || flipY;
 		try {
-			gl.setBlendMode(_blend);
+			gl.setBlendMode(_GL_BLEND);
 			gl.setAlpha(_alpha);
 			float nx = this._location.x + offsetX;
 			float ny = this._location.y + offsetY;

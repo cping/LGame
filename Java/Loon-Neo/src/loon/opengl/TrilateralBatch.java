@@ -87,9 +87,9 @@ public class TrilateralBatch extends BaseBatch {
 			GL20 gl = LSystem.base().graphics().gl;
 			int tmp = GLUtils.getBlendMode();
 			if (tmpColor.a >= 0.98f) {
-				GLUtils.setBlendMode(gl, LSystem.MODE_NORMAL);
+				GLUtils.setBlendMode(gl, BlendMethod.MODE_NORMAL);
 			} else {
-				GLUtils.setBlendMode(gl, LSystem.MODE_SPEED);
+				GLUtils.setBlendMode(gl, BlendMethod.MODE_SPEED);
 			}
 			mesh.post(_batch_name, expandVertices.getSize(), shader, expandVertices.getVertices(), idx, count);
 			GLUtils.setBlendMode(gl, tmp);
