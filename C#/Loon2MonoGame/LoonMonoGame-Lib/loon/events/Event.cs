@@ -96,12 +96,12 @@ namespace loon.events
                 this.time = time;
             }
 
-            protected virtual string Name()
+            protected internal virtual string Name()
             {
                 return "Input";
             }
 
-            protected virtual void AddFields(StrBuilder builder)
+            protected internal virtual void AddFields(StrBuilder builder)
             {
                 builder.Append("time=").Append(time).Append(", flags=")
                         .Append(flags);
@@ -134,13 +134,13 @@ namespace loon.events
             }
 
 
-            protected override string Name()
+            protected internal override string Name()
             {
                 return "XY";
             }
 
 
-            protected override void AddFields(StrBuilder builder)
+            protected internal override void AddFields(StrBuilder builder)
             {
                 base.AddFields(builder);
                 builder.Append(", x=").Append(x).Append(", y=").Append(y);

@@ -6,12 +6,12 @@ namespace loon
 {
     public abstract class Asyn
     {
-        public class CallDefaultPort<T> : Port<T>
+        private class CallDefaultPort<T> : Port<T>
         {
 
-            public Default<T> _def;
+            internal Default<T> _def;
 
-            public CallDefaultPort(Default<T> d)
+            internal CallDefaultPort(Default<T> d)
             {
                 this._def = d;
             }

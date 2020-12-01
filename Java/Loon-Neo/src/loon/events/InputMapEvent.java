@@ -22,21 +22,21 @@ package loon.events;
 
 public class InputMapEvent {
 
-	public static int NO_TYPE = -1;
+	public final static int NO_TYPE = -1;
 
-	public static int CONFIRM = 0;
+	public final static int CONFIRM = 0;
 
-	public static int CANCEL = 1;
+	public final static int CANCEL = 1;
 
-	public static int PAINT = 2;
+	public final static int PAINT = 2;
 
-	public static int NEXT = 3;
+	public final static int NEXT = 3;
 
-	public static int INFO = 4;
+	public final static int INFO = 4;
 
-	public static int MOVE = 5;
+	public final static int MOVE = 5;
 
-	public static int BATTLE = 6;
+	public final static int BATTLE = 6;
 
 	public static InputMapEvent setID(int id) {
 		return setID(NO_TYPE, id);
