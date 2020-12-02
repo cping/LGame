@@ -69,7 +69,7 @@ public class RefObject<T> implements LRelease {
 	
 	@Override
 	public String toString() {
-		return String.valueOf(argvalue != null ? argvalue : LSystem.NULL);
+		return StringUtils.toString(argvalue, LSystem.NULL);
 	}
 
 	@Override

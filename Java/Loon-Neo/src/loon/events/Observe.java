@@ -1,5 +1,5 @@
 /**
- * Copyright 2008 - 2019 The Loon Game Engine Authors
+ * Copyright 2008 - 2020 The Loon Game Engine Authors
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -20,8 +20,19 @@
  */
 package loon.events;
 
-public interface Observer {
+/**
+ * 数据异步传递用类,会返回完成状态（ActionUpdate子类,可传递泛型对象）
+ *
+ * @param <T>
+ */
+public abstract class Observe<T> extends UpdateableT<T> implements ActionUpdate {
 
-	public void onNotify(InputMapEvent event, Observed notifier);
+	public Observe() {
+		super(null, null);
+	}
+
+	public Observe(T context, String name) {
+		super(context, name);
+	}
 
 }

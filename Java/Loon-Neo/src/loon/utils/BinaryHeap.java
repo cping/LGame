@@ -21,6 +21,14 @@
 package loon.utils;
 
 public class BinaryHeap {
+	
+	public abstract class HeapNode {
+
+		public float h;
+		public float g;
+		public float f;
+		
+	}
 
 	public interface ScoreFunction {
 

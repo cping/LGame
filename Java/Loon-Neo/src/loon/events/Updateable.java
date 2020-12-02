@@ -20,6 +20,9 @@
  */
 package loon.events;
 
+/**
+ * 数据异步传递用类
+ */
 public interface Updateable {
 
 	public void action(Object a);

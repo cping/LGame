@@ -1,5 +1,5 @@
 /**
- * Copyright 2008 - 2019 The Loon Game Engine Authors
+ * Copyright 2008 - 2020 The Loon Game Engine Authors
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -18,12 +18,30 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.utils;
+package loon.events;
 
-public abstract class HeapNode {
+/**
+ * 数据异步传递用类（Updateable子类,可传递泛型对象）
+ * 
+ * @param <T>
+ */
+public abstract class UpdateableT<T> implements Updateable {
 
-	public float h;
-	public float g;
-	public float f;
-	
+	protected T _context;
+
+	protected String _name;
+
+	public UpdateableT(T context, String name) {
+		this._context = context;
+		this._name = name;
+	}
+
+	public T getContext() {
+		return _context;
+	}
+
+	public String getName() {
+		return _name;
+	}
+
 }
