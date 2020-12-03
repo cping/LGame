@@ -64,6 +64,8 @@ public class Display extends LSystemView {
 
 	private boolean videoScreenToGif;
 
+	private boolean memorySelf;
+
 	private ArrayByteOutput videoCache;
 
 	private final LTimer videoDelay = new LTimer();
@@ -286,6 +288,7 @@ public class Display extends LSystemView {
 		super(game, updateRate);
 		Graphics graphics = game.graphics();
 		GL20 gl = graphics.gl;
+		memorySelf = game.isHTML5();
 		_setting = game.setting;
 		_process = game.process();
 		_glEx = new GLEx(graphics, graphics.defaultRenderTarget, gl);
@@ -421,7 +424,7 @@ public class Display extends LSystemView {
 			_glEx.saveTx();
 			_glEx.reset(cred, cgreen, cblue, calpha);
 			_glEx.begin();
-			
+
 			_process.drawFrist(_glEx);
 			_process.load();
 			_process.runTimer(clock);
@@ -511,19 +514,26 @@ public class Display extends LSystemView {
 				this.frameDelta = 0;
 				this.frameCount = 0;
 
-				if (runtime == null) {
-					runtime = Runtime.getRuntime();
+				if (this.memorySelf) {
+					displayMessage.delete(0, displayMessage.length());
+					displayMessage.append(MEMORY_STR);
+					displayMessage.append(((float) ((LTextures.getMemSize() * 100) >> 20) / 10f));
+					displayMessage.append(" of ");
+					displayMessage.append('?');
+					displayMessage.append(" MB");
+				} else {
+					if (runtime == null) {
+						runtime = Runtime.getRuntime();
+					}
+					long totalMemory = runtime.totalMemory();
+					long currentMemory = totalMemory - runtime.freeMemory();
+					displayMessage.delete(0, displayMessage.length());
+					displayMessage.append(MEMORY_STR);
+					displayMessage.append(((float) ((currentMemory * 10) >> 20) / 10f));
+					displayMessage.append(" of ");
+					displayMessage.append(((float) ((runtime.maxMemory() * 10) >> 20) / 10f));
+					displayMessage.append(" MB");
 				}
-				long totalMemory = runtime.totalMemory();
-				long currentMemory = totalMemory - runtime.freeMemory();
-
-				displayMessage.delete(0, displayMessage.length());
-				displayMessage.append(MEMORY_STR);
-				displayMessage.append(((float) ((currentMemory * 10) >> 20) / 10f));
-				displayMessage.append(" of ");
-				displayMessage.append(((float) ((runtime.maxMemory() * 10) >> 20) / 10f));
-				displayMessage.append(" MB");
-
 				displayMemony = displayMessage.toString();
 
 				LGame game = getGame();

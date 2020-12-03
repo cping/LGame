@@ -2658,6 +2658,10 @@ public class Pixmap extends Limit implements LRelease {
 		return _drawPixels;
 	}
 
+	public int[] getABGRData() {
+		return LColor.convertToABGR(this._width, this._height, this._drawPixels,new int[_length] );
+	}
+	
 	public void setData(int[] pixels) {
 		if (_isClosed) {
 			return;

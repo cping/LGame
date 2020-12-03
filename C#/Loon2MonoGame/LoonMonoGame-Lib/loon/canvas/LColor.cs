@@ -7,6 +7,26 @@ namespace loon.canvas
 {
     public class LColor
     {
+        public static int[] ConvertToABGR(int pixelHeight, int pixelWidth, int[] srcPixels)
+        {
+            return ConvertToABGR(pixelHeight, pixelWidth, srcPixels, srcPixels);
+        }
+
+        public static int[] ConvertToABGR(int pixelHeight, int pixelWidth, int[] srcPixels, int[] dstPixels)
+        {
+            int pixelCount = pixelWidth * pixelHeight;
+            for (int i = 0; i < pixelCount; ++i)
+            {
+                uint pixel = (uint)srcPixels[i];
+                uint r = (pixel & 0x00FF0000) >> 16;
+                uint g = (pixel & 0x0000FF00) >> 8;
+                uint b = (pixel & 0x000000FF);
+                uint a = (pixel & 0xFF000000) >> 24;
+                dstPixels[i] = LColor.Abgr((int)r, (int)g, (int)b, (int)a);
+            }
+            return dstPixels;
+        }
+
         public static LColor FromRGB(int value)
         {
             return new LColor(((value >> 16) & 0xFF), ((value >> 8) & 0xFF), (value & 0xFF), 255);
@@ -1121,7 +1141,7 @@ namespace loon.canvas
             return Rgb(GetRed(), GetGreen(), GetBlue());
         }
 
-        public int GetBgr()
+        public int GetBGR()
         {
             return Bgr(GetRed(), GetGreen(), GetBlue());
         }
@@ -1144,7 +1164,7 @@ namespace loon.canvas
             return Rgb(r, g, b);
         }
 
-        public static int GetBgr(int pixels)
+        public static int GetBGR(int pixels)
         {
             int r = (pixels >> 16) & 0xFF;
             int g = (pixels >> 8) & 0xFF;

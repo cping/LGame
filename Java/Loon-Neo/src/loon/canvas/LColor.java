@@ -45,6 +45,23 @@ public class LColor implements Serializable {
 	// 默认黑色透明区域
 	public static final int TRANSPARENT = 0xFF000000;
 
+	public static final int[] convertToABGR(int pixelHeight, int pixelWidth, int[] srcPixels) {
+		return convertToABGR(pixelHeight, pixelWidth, srcPixels, srcPixels);
+	}
+
+	public static final int[] convertToABGR(int pixelHeight, int pixelWidth, int[] srcPixels, int[] dstPixels) {
+		int pixelCount = pixelWidth * pixelHeight;
+		for (int i = 0; i < pixelCount; ++i) {
+			int pixel = srcPixels[i];
+			int r = (pixel & 0x00FF0000) >> 16;
+			int g = (pixel & 0x0000FF00) >> 8;
+			int b = (pixel & 0x000000FF);
+			int a = (pixel & 0xFF000000) >> 24;
+			dstPixels[i] = LColor.abgr(r, g, b, a);
+		}
+		return dstPixels;
+	}
+
 	/**
 	 * 转换颜色为RGB格式的Color
 	 * 
@@ -1259,7 +1276,7 @@ public class LColor implements Serializable {
 		return rgb(getRed(), getGreen(), getBlue());
 	}
 
-	public int getBgr() {
+	public int getBGR() {
 		return bgr(getRed(), getGreen(), getBlue());
 	}
 
@@ -1274,7 +1291,7 @@ public class LColor implements Serializable {
 	public static final int getRGB(int r, int g, int b) {
 		return rgb(r, g, b);
 	}
-	
+
 	public static final int getBGR(int r, int g, int b) {
 		return bgr(r, g, b);
 	}
@@ -1291,8 +1308,8 @@ public class LColor implements Serializable {
 		int b = pixels & 0xFF;
 		return rgb(r, g, b);
 	}
-	
-	public static final int getBgr(int pixels) {
+
+	public static final int getBGR(int pixels) {
 		int r = (pixels >> 16) & 0xFF;
 		int g = (pixels >> 8) & 0xFF;
 		int b = pixels & 0xFF;
@@ -1311,11 +1328,11 @@ public class LColor implements Serializable {
 	public static final int getARGB(int r, int g, int b, int alpha) {
 		return argb(alpha, r, g, b);
 	}
-	
-	public static final int getABgr(int r, int g, int b, int alpha) {
+
+	public static final int getABGR(int r, int g, int b, int alpha) {
 		return abgr(alpha, r, g, b);
 	}
-	
+
 	/**
 	 * 获得Aplha
 	 * 

@@ -146,14 +146,14 @@ public class LTexture extends Painter implements LRelease {
 		}
 	}
 
-	private int id = -1;
+	private int _id = -1;
 
-	private int lazyHashCode = -1;
+	private int _lazyHashCode = -1;
 
 	private Format config;
 
 	public int getID() {
-		return id;
+		return _id;
 	}
 
 	public Format getFormat() {
@@ -197,10 +197,10 @@ public class LTexture extends Painter implements LRelease {
 		this._isLoaded = false;
 	}
 
-	public LTexture(Graphics gfx, int id, Format config, int pixWidth, int pixHeight, Scale scale, float dispWidth,
+	public LTexture(Graphics gfx, int _id, Format config, int pixWidth, int pixHeight, Scale scale, float dispWidth,
 			float dispHeight) {
 		this.gfx = gfx;
-		this.id = id;
+		this._id = _id;
 		this.config = config;
 		this.pixelWidth = pixWidth;
 		this.pixelHeight = pixHeight;
@@ -443,7 +443,7 @@ public class LTexture extends Painter implements LRelease {
 			_isReload = false;
 			if (childs != null) {
 				for (LTexture tex : childs.values()) {
-					tex.id = id;
+					tex._id = _id;
 					tex._isLoaded = _isLoaded;
 					tex._isReload = _isReload;
 				}
@@ -452,12 +452,12 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	public void bind() {
-		GLUtils.bindTexture(gfx.gl, id);
+		GLUtils.bindTexture(gfx.gl, _id);
 	}
 
 	public void bind(int unit) {
 		gfx.gl.glActiveTexture(GL20.GL_TEXTURE0 + unit);
-		GLUtils.bindTexture(gfx.gl, id);
+		GLUtils.bindTexture(gfx.gl, _id);
 	}
 
 	public Clip getClip() {
@@ -541,7 +541,7 @@ public class LTexture extends Painter implements LRelease {
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("LTexture");
-		builder.kv("id", id).comma().kv("pixelSize", (pixelWidth + "x" + pixelHeight)).comma()
+		builder.kv("_id", _id).comma().kv("pixelSize", (pixelWidth + "x" + pixelHeight)).comma()
 				.kv("displaySize",
 						(_textureClip.getRegionWidth() + "x" + _textureClip.getRegionHeight() + " @ " + scale))
 				.comma().kv("config", config);
@@ -601,8 +601,8 @@ public class LTexture extends Painter implements LRelease {
 
 			refCount++;
 			copy.parent = LTexture.this;
-			copy.id = id;
-			copy.lazyHashCode = hashCode;
+			copy._id = _id;
+			copy._lazyHashCode = hashCode;
 			copy._isLoaded = _isLoaded;
 			copy.gfx = gfx;
 			copy.config = config;
@@ -659,8 +659,8 @@ public class LTexture extends Painter implements LRelease {
 
 			refCount++;
 			copy.parent = LTexture.this;
-			copy.id = id;
-			copy.lazyHashCode = hashCode;
+			copy._id = _id;
+			copy._lazyHashCode = hashCode;
 			copy._isLoaded = _isLoaded;
 			copy.gfx = gfx;
 			copy.config = config;
@@ -1080,7 +1080,7 @@ public class LTexture extends Painter implements LRelease {
 			if ((tmp.width() != width()) || (tmp.height() != height())) {
 				return false;
 			}
-			if (this.id == tmp.id && this._textureClip.getRegionX() == tmp._textureClip.getRegionX()
+			if (this._id == tmp._id && this._textureClip.getRegionX() == tmp._textureClip.getRegionX()
 					&& this._textureClip.getRegionY() == tmp._textureClip.getRegionY()
 					&& this._textureClip.getRegionWidth() == tmp._textureClip.getRegionWidth()
 					&& this._textureClip.getRegionHeight() == tmp._textureClip.getRegionHeight()
@@ -1102,62 +1102,64 @@ public class LTexture extends Painter implements LRelease {
 		if (_disabledTexture) {
 			return;
 		}
-		final int textureId = id;
-		if (!gfx.game.containsTexture(textureId)) {
-			return;
-		}
-		if (parent != null) {
-			parent.close();
-			return;
-		}
-		synchronized (LTextures.class) {
-			gfx.game.removeTexture(this);
-			if (batch != null) {
-				gfx.game.disposeBatchCache(batch, false);
+		final int textureId = _id;
+		if (textureId > 0) {
+			if (!gfx.game.containsTexture(textureId)) {
+				return;
 			}
-			final Updateable update = new Updateable() {
-
-				@Override
-				public void action(Object a) {
-					synchronized (LTexture.class) {
-						if (gfx.game.delTexture(textureId)) {
-							if (gfx.game.setting.disposeTexture && !_disposed && _closed) {
-								GLUtils.deleteTexture(gfx.gl, textureId);
-								_disposed = true;
-							}
-							if (_image != null) {
-								_image.close();
-								_image = null;
-							}
-							if (childs != null) {
-								childs.clear();
-								childs = null;
-							}
-							_cachePixels = null;
-							_isLoaded = false;
-							_closed = true;
-							_memorySize = 0;
-							freeBatch();
-							gfx.game.log().debug("Texture : " + getSource() + " Closed,Size = " + getWidth() + ","
-									+ getHeight() + (Tag != null ? ",Tag = " + Tag : ""));
-						}
-					}
+			if (parent != null) {
+				parent.close();
+				return;
+			}
+			synchronized (LTextures.class) {
+				gfx.game.removeTexture(this);
+				if (batch != null) {
+					gfx.game.disposeBatchCache(batch, false);
 				}
-			};
-			if (!LTextureBatch.isRunningCache() && isDrawCanvas()) {
-				RealtimeProcess process = new RealtimeProcess() {
+				final Updateable update = new Updateable() {
 
 					@Override
-					public void run(LTimerContext time) {
-						gfx.game.processImpl.addLoad(update);
-						kill();
+					public void action(Object a) {
+						synchronized (LTexture.class) {
+							if (gfx.game.delTexture(textureId)) {
+								if (gfx.game.setting.disposeTexture && !_disposed && _closed) {
+									GLUtils.deleteTexture(gfx.gl, textureId);
+									_disposed = true;
+								}
+								if (_image != null) {
+									_image.close();
+									_image = null;
+								}
+								if (childs != null) {
+									childs.clear();
+									childs = null;
+								}
+								_cachePixels = null;
+								_isLoaded = false;
+								_closed = true;
+								_memorySize = 0;
+								freeBatch();
+								gfx.game.log().debug("Texture : " + getSource() + " Closed,Size = " + getWidth() + ","
+										+ getHeight() + (Tag != null ? ",Tag = " + Tag : ""));
+							}
+						}
 					}
 				};
-				process.setProcessType(GameProcessType.Texture);
-				process.setDelay(LSystem.SECOND);
-				RealtimeProcessManager.get().addProcess(process);
-			} else {
-				gfx.game.processImpl.addLoad(update);
+				if (!LTextureBatch.isRunningCache() && isDrawCanvas()) {
+					RealtimeProcess process = new RealtimeProcess() {
+
+						@Override
+						public void run(LTimerContext time) {
+							gfx.game.processImpl.addLoad(update);
+							kill();
+						}
+					};
+					process.setProcessType(GameProcessType.Texture);
+					process.setDelay(LSystem.SECOND);
+					RealtimeProcessManager.get().addProcess(process);
+				} else {
+					gfx.game.processImpl.addLoad(update);
+				}
 			}
 		}
 	}
@@ -1315,7 +1317,7 @@ public class LTexture extends Painter implements LRelease {
 		if (isChild()) {
 			IntMap<LTexture> list = parent.childs;
 			if (list != null) {
-				list.remove(lazyHashCode);
+				list.remove(_lazyHashCode);
 			}
 			parent.close();
 			return;

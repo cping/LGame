@@ -48,6 +48,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -356,6 +357,8 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 	private AndroidGameViewGL gameView;
 	private AndroidSetting setting;
 
+	private AndroidScreenReceiver screenReceiver;
+
 	private LazyLoading.Data mainData;
 
 	public static String getResourcePath(String name) throws IOException {
@@ -426,6 +429,14 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		IntentFilter filter = new IntentFilter();
+		filter.addAction(Intent.ACTION_SCREEN_OFF);
+		filter.addAction(Intent.ACTION_SCREEN_ON);
+		filter.addAction(Intent.ACTION_USER_PRESENT);
+
+		this.screenReceiver = new AndroidScreenReceiver();
+		this.registerReceiver(screenReceiver, filter);
 
 		LSystem.freeStaticObject();
 
@@ -565,9 +576,12 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 			win.setFlags(flagHardwareAccelerated, flagHardwareAccelerated);
 		}
 		if (fullScreen) {
-			win.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+			try {
+				requestWindowFeature(Window.FEATURE_NO_TITLE);
+			} catch (Exception ex) {
+			}
+			win.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 			win.clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
-			win.requestFeature(android.view.Window.FEATURE_NO_TITLE);
 		} else {
 			win.setFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN,
 					WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
@@ -582,6 +596,10 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 	@Override
 	protected void onDestroy() {
 		AndroidGame.debugLog("onDestroy");
+		if (screenReceiver != null) {
+			unregisterReceiver(screenReceiver);
+			screenReceiver.screenLocked = false;
+		}
 		if (setting != null && setting.listener != null) {
 			setting.listener.onExit();
 		}
@@ -740,7 +758,7 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 		return game.json();
 	}
 
-	public Display getDisplay() {
+	public Display getViewDisplay() {
 		return game.display();
 	}
 
