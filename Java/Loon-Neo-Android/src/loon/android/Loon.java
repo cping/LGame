@@ -492,8 +492,9 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 
 		createWakeLock(setting.useWakelock);
 		hideStatusBar(setting.hideStatusBar);
-		setImmersiveMode(setting.useImmersiveMode);
-		if (setting.useImmersiveMode && AndroidGame.getSDKVersion() >= 19) {
+		final boolean hideButtons = setting.useImmersiveMode || setting.fullscreen;
+		setImmersiveMode(hideButtons);
+		if (hideButtons && AndroidGame.getSDKVersion() >= 19) {
 			try {
 				Class<?> vlistener = Class.forName("loon.android.AndroidVisibilityListener");
 				Object o = vlistener.newInstance();
@@ -522,8 +523,9 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 	@Override
 	public void onWindowFocusChanged(boolean hasFocus) {
 		AndroidGame.debugLog("onWindowFocusChanged(" + hasFocus + ")");
+		super.onWindowFocusChanged(hasFocus);
 		if (setting != null) {
-			setImmersiveMode(setting.useImmersiveMode);
+			setImmersiveMode(setting.useImmersiveMode || setting.fullscreen);
 			hideStatusBar(setting.hideStatusBar);
 		}
 		if (game != null && game.assets != null && game.assets._audio != null) {
@@ -802,14 +804,7 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 		if (!hide || AndroidGame.getSDKVersion() < 11) {
 			return;
 		}
-		View rootView = getWindow().getDecorView();
-		try {
-			java.lang.reflect.Method m = View.class.getMethod("setSystemUiVisibility", int.class);
-			if (AndroidGame.getSDKVersion() <= 13)
-				m.invoke(rootView, 0x0);
-			m.invoke(rootView, 0x1);
-		} catch (Exception e) {
-		}
+		getWindow().getDecorView().setSystemUiVisibility(0x1);
 	}
 
 	private void setContentView(LMode mode, AndroidGameViewGL view, int w, int h) {
@@ -1039,16 +1034,66 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 		}
 	}
 
+	public void showSystemButtonUI() {
+		if (AndroidGame.getSDKVersion() > 11 && AndroidGame.getSDKVersion() < 19) {
+			try {
+				View view = getWindow().getDecorView();
+				view.setSystemUiVisibility(View.VISIBLE);
+			} catch (Exception e) {
+			}
+			return;
+		}
+		if (AndroidGame.getSDKVersion() < 19) {
+			return;
+		}
+		try {
+			View view = getWindow().getDecorView();
+			int code = View.SYSTEM_UI_FLAG_FULLSCREEN;
+			view.setSystemUiVisibility(code);
+		} catch (Exception e) {
+		}
+	}
+
+	public void hideSystemButtonUI() {
+		if (AndroidGame.getSDKVersion() > 11 && AndroidGame.getSDKVersion() < 19) {
+			try {
+				View view = getWindow().getDecorView();
+				view.setSystemUiVisibility(View.GONE);
+			} catch (Exception e) {
+			}
+			return;
+		}
+		if (AndroidGame.getSDKVersion() < 19) {
+			return;
+		}
+		try {
+			View view = getWindow().getDecorView();
+			int code = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+					| View.SYSTEM_UI_FLAG_FULLSCREEN;
+			view.setSystemUiVisibility(code);
+		} catch (Exception e) {
+		}
+	}
+
 	@Override
 	public void setImmersiveMode(boolean use) {
+		if (use && AndroidGame.getSDKVersion() > 11 && AndroidGame.getSDKVersion() < 19) {
+			try {
+				View view = getWindow().getDecorView();
+				view.setSystemUiVisibility(View.GONE);
+			} catch (Exception e) {
+			}
+			return;
+		}
 		if (!use || AndroidGame.getSDKVersion() < 19) {
 			return;
 		}
-		View view = getWindow().getDecorView();
 		try {
-			java.lang.reflect.Method m = View.class.getMethod("setSystemUiVisibility", int.class);
-			int code = 0x00000100 | 0x00000200 | 0x00000400 | 0x00000002 | 0x00000004 | 0x00001000;
-			m.invoke(view, code);
+			View view = getWindow().getDecorView();
+			int code = View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+					| View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+					| View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+			view.setSystemUiVisibility(code);
 		} catch (Exception e) {
 		}
 	}
@@ -1068,6 +1113,10 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 
 	public FrameLayout getLayout() {
 		return frameLayout;
+	}
+
+	public AndroidScreenReceiver getScreenReceiver() {
+		return screenReceiver;
 	}
 
 	public RectBox getScreenDimension() {
