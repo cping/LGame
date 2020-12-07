@@ -28,13 +28,11 @@ import loon.LRelease;
 import loon.LSysException;
 import loon.LSystem;
 import loon.geom.Affine2f;
-import loon.geom.BoundingBox;
 import loon.geom.Matrix3;
 import loon.geom.Matrix4;
 import loon.geom.Vector2f;
 import loon.geom.Vector3f;
 import loon.opengl.VertexAttributes.Usage;
-import loon.utils.MathUtils;
 import loon.utils.TArray;
 
 public class Mesh implements LRelease {
@@ -73,15 +71,6 @@ public class Mesh implements LRelease {
 		addManagedMesh(this);
 	}
 
-	public Mesh(boolean staticVertices, boolean staticIndices, int maxVertices, int maxIndices,
-			VertexAttributes attributes) {
-		vertices = new VertexBufferObject(staticVertices, maxVertices, attributes);
-		indices = new IndexBufferObject(staticIndices, maxIndices);
-		isVertexArray = false;
-
-		addManagedMesh(this);
-	}
-
 	public Mesh(VertexDataType type, boolean isStatic, int maxVertices, int maxIndices, VertexAttribute... attributes) {
 		if (type == VertexDataType.VertexBufferObject) {
 			vertices = new VertexBufferObject(isStatic, maxVertices, attributes);
@@ -97,86 +86,6 @@ public class Mesh implements LRelease {
 			isVertexArray = true;
 		}
 		addManagedMesh(this);
-	}
-
-	public static Mesh create(boolean isStatic, final Mesh base, final Matrix4[] transformations) {
-		final VertexAttribute posAttr = base.getVertexAttribute(Usage.Position);
-		final int offset = posAttr.offset / 4;
-		final int numComponents = posAttr.numComponents;
-		final int numVertices = base.getNumVertices();
-		final int vertexSize = base.getVertexSize() / 4;
-		final int baseSize = numVertices * vertexSize;
-		final int numIndices = base.getNumIndices();
-
-		final float vertices[] = new float[numVertices * vertexSize * transformations.length];
-		final short indices[] = new short[numIndices * transformations.length];
-
-		base.getIndices(indices);
-
-		for (int i = 0; i < transformations.length; i++) {
-			base.getVertices(0, baseSize, vertices, baseSize * i);
-			transform(transformations[i], vertices, vertexSize, offset, numComponents, numVertices * i, numVertices);
-			if (i > 0)
-				for (int j = 0; j < numIndices; j++)
-					indices[(numIndices * i) + j] = (short) (indices[j] + (numVertices * i));
-		}
-
-		final Mesh result = new Mesh(isStatic, vertices.length / vertexSize, indices.length,
-				base.getVertexAttributes());
-		result.setVertices(vertices);
-		result.setIndices(indices);
-		return result;
-	}
-
-	public static Mesh create(boolean isStatic, final Mesh[] meshes) {
-		return create(isStatic, meshes, null);
-	}
-
-	public static Mesh create(boolean isStatic, final Mesh[] meshes, final Matrix4[] transformations) {
-		if (transformations != null && transformations.length < meshes.length)
-			throw new LSysException("Not enough transformations specified");
-		final VertexAttributes attributes = meshes[0].getVertexAttributes();
-		int vertCount = meshes[0].getNumVertices();
-		int idxCount = meshes[0].getNumIndices();
-		for (int i = 1; i < meshes.length; i++) {
-			if (!meshes[i].getVertexAttributes().equals(attributes))
-				throw new LSysException("Inconsistent VertexAttributes");
-			vertCount += meshes[i].getNumVertices();
-			idxCount += meshes[i].getNumIndices();
-		}
-		final VertexAttribute posAttr = meshes[0].getVertexAttribute(Usage.Position);
-		final int offset = posAttr.offset / 4;
-		final int numComponents = posAttr.numComponents;
-		final int vertexSize = attributes.vertexSize / 4;
-
-		final float vertices[] = new float[vertCount * vertexSize];
-		final short indices[] = new short[idxCount];
-
-		meshes[0].getVertices(vertices);
-		meshes[0].getIndices(indices);
-		int vcount = meshes[0].getNumVertices();
-		if (transformations != null)
-			transform(transformations[0], vertices, vertexSize, offset, numComponents, 0, vcount);
-		int voffset = vcount;
-		int ioffset = meshes[0].getNumIndices();
-		for (int i = 1; i < meshes.length; i++) {
-			final Mesh mesh = meshes[i];
-			vcount = mesh.getNumVertices();
-			final int isize = mesh.getNumIndices();
-			mesh.getVertices(0, vcount * vertexSize, vertices, voffset * vertexSize);
-			if (transformations != null)
-				transform(transformations[i], vertices, vertexSize, offset, numComponents, voffset, vcount);
-			mesh.getIndices(indices, ioffset);
-			for (int j = 0; j < isize; j++)
-				indices[ioffset + j] = (short) (indices[ioffset + j] + voffset);
-			ioffset += isize;
-			voffset += vcount;
-		}
-
-		final Mesh result = new Mesh(isStatic, vertices.length / vertexSize, indices.length, attributes);
-		result.setVertices(vertices);
-		result.setIndices(indices);
-		return result;
 	}
 
 	public Mesh setVertices(float[] vertices) {
@@ -236,13 +145,11 @@ public class Mesh implements LRelease {
 
 	public Mesh setIndices(short[] indices) {
 		this.indices.setIndices(indices, 0, indices.length);
-
 		return this;
 	}
 
 	public Mesh setIndices(short[] indices, int offset, int count) {
 		this.indices.setIndices(indices, offset, count);
-
 		return this;
 	}
 
@@ -317,7 +224,7 @@ public class Mesh implements LRelease {
 		if (indices.getNumIndices() > 0)
 			indices.unbind();
 	}
-
+	
 	public void render(ShaderProgram shader, int primitiveType) {
 		render(shader, primitiveType, 0, indices.getNumMaxIndices() > 0 ? getNumIndices() : getNumVertices(), autoBind);
 	}
@@ -394,186 +301,6 @@ public class Mesh implements LRelease {
 
 	public FloatBuffer getVerticesBuffer() {
 		return vertices.getBuffer();
-	}
-
-	public BoundingBox calculateBoundingBox() {
-		BoundingBox bbox = new BoundingBox();
-		calculateBoundingBox(bbox);
-		return bbox;
-	}
-
-	public void calculateBoundingBox(BoundingBox bbox) {
-		final int numVertices = getNumVertices();
-		if (numVertices == 0) {
-			throw new LSysException("No vertices defined");
-		}
-
-		final FloatBuffer verts = vertices.getBuffer();
-		bbox.inf();
-		final VertexAttribute posAttrib = getVertexAttribute(Usage.Position);
-		final int offset = posAttrib.offset / 4;
-		final int vertexSize = vertices.getAttributes().vertexSize / 4;
-		int idx = offset;
-
-		switch (posAttrib.numComponents) {
-		case 1:
-			for (int i = 0; i < numVertices; i++) {
-				bbox.ext(verts.get(idx), 0, 0);
-				idx += vertexSize;
-			}
-			break;
-		case 2:
-			for (int i = 0; i < numVertices; i++) {
-				bbox.ext(verts.get(idx), verts.get(idx + 1), 0);
-				idx += vertexSize;
-			}
-			break;
-		case 3:
-			for (int i = 0; i < numVertices; i++) {
-				bbox.ext(verts.get(idx), verts.get(idx + 1), verts.get(idx + 2));
-				idx += vertexSize;
-			}
-			break;
-		}
-	}
-
-	public BoundingBox calculateBoundingBox(final BoundingBox out, int offset, int count) {
-		return extendBoundingBox(out.inf(), offset, count);
-	}
-
-	public BoundingBox calculateBoundingBox(final BoundingBox out, int offset, int count, final Matrix4 transform) {
-		return extendBoundingBox(out.inf(), offset, count, transform);
-	}
-
-	public BoundingBox extendBoundingBox(final BoundingBox out, int offset, int count) {
-		return extendBoundingBox(out, offset, count, null);
-	}
-
-	private final Vector3f tmpV = new Vector3f();
-
-	public BoundingBox extendBoundingBox(final BoundingBox out, int offset, int count, final Matrix4 transform) {
-		int numIndices = getNumIndices();
-		if (offset < 0 || count < 1 || offset + count > numIndices) {
-			throw new LSysException(
-					"Not enough indices ( offset=" + offset + ", count=" + count + ", max=" + numIndices + " )");
-		}
-
-		final FloatBuffer verts = vertices.getBuffer();
-		final ShortBuffer index = indices.getBuffer();
-		final VertexAttribute posAttrib = getVertexAttribute(Usage.Position);
-		final int posoff = posAttrib.offset / 4;
-		final int vertexSize = vertices.getAttributes().vertexSize / 4;
-		final int end = offset + count;
-
-		switch (posAttrib.numComponents) {
-		case 1:
-			for (int i = offset; i < end; i++) {
-				final int idx = index.get(i) * vertexSize + posoff;
-				tmpV.set(verts.get(idx), 0, 0);
-				if (transform != null)
-					tmpV.mulSelf(transform);
-				out.ext(tmpV);
-			}
-			break;
-		case 2:
-			for (int i = offset; i < end; i++) {
-				final int idx = index.get(i) * vertexSize + posoff;
-				tmpV.set(verts.get(idx), verts.get(idx + 1), 0);
-				if (transform != null)
-					tmpV.mulSelf(transform);
-				out.ext(tmpV);
-			}
-			break;
-		case 3:
-			for (int i = offset; i < end; i++) {
-				final int idx = index.get(i) * vertexSize + posoff;
-				tmpV.set(verts.get(idx), verts.get(idx + 1), verts.get(idx + 2));
-				if (transform != null)
-					tmpV.mulSelf(transform);
-				out.ext(tmpV);
-			}
-			break;
-		}
-		return out;
-	}
-
-	public float calculateRadiusSquared(final float centerX, final float centerY, final float centerZ, int offset,
-			int count, final Matrix4 transform) {
-		int numIndices = getNumIndices();
-		if (offset < 0 || count < 1 || offset + count > numIndices) {
-			throw new LSysException("Not enough indices");
-		}
-
-		final FloatBuffer verts = vertices.getBuffer();
-		final ShortBuffer index = indices.getBuffer();
-		final VertexAttribute posAttrib = getVertexAttribute(Usage.Position);
-		final int posoff = posAttrib.offset / 4;
-		final int vertexSize = vertices.getAttributes().vertexSize / 4;
-		final int end = offset + count;
-
-		float result = 0;
-
-		switch (posAttrib.numComponents) {
-		case 1:
-			for (int i = offset; i < end; i++) {
-				final int idx = index.get(i) * vertexSize + posoff;
-				tmpV.set(verts.get(idx), 0, 0);
-				if (transform != null)
-					tmpV.mulSelf(transform);
-				final float r = tmpV.subtractSelf(centerX, centerY, centerZ).len2();
-				if (r > result)
-					result = r;
-			}
-			break;
-		case 2:
-			for (int i = offset; i < end; i++) {
-				final int idx = index.get(i) * vertexSize + posoff;
-				tmpV.set(verts.get(idx), verts.get(idx + 1), 0);
-				if (transform != null)
-					tmpV.mulSelf(transform);
-				final float r = tmpV.subtractSelf(centerX, centerY, centerZ).len2();
-				if (r > result)
-					result = r;
-			}
-			break;
-		case 3:
-			for (int i = offset; i < end; i++) {
-				final int idx = index.get(i) * vertexSize + posoff;
-				tmpV.set(verts.get(idx), verts.get(idx + 1), verts.get(idx + 2));
-				if (transform != null)
-					tmpV.mulSelf(transform);
-				final float r = tmpV.subtractSelf(centerX, centerY, centerZ).len2();
-				if (r > result)
-					result = r;
-			}
-			break;
-		}
-		return result;
-	}
-
-	public float calculateRadius(final float centerX, final float centerY, final float centerZ, int offset, int count,
-			final Matrix4 transform) {
-		return MathUtils.sqrt(calculateRadiusSquared(centerX, centerY, centerZ, offset, count, transform));
-	}
-
-	public float calculateRadius(final Vector3f center, int offset, int count, final Matrix4 transform) {
-		return calculateRadius(center.x, center.y, center.z, offset, count, transform);
-	}
-
-	public float calculateRadius(final float centerX, final float centerY, final float centerZ, int offset, int count) {
-		return calculateRadius(centerX, centerY, centerZ, offset, count, null);
-	}
-
-	public float calculateRadius(final Vector3f center, int offset, int count) {
-		return calculateRadius(center.x, center.y, center.z, offset, count, null);
-	}
-
-	public float calculateRadius(final float centerX, final float centerY, final float centerZ) {
-		return calculateRadius(centerX, centerY, centerZ, 0, getNumIndices(), null);
-	}
-
-	public float calculateRadius(final Vector3f center) {
-		return calculateRadius(center.x, center.y, center.z, 0, getNumIndices(), null);
 	}
 
 	public ShortBuffer getIndicesBuffer() {
@@ -764,97 +491,4 @@ public class Mesh implements LRelease {
 		}
 	}
 
-	public Mesh copy(boolean isStatic, boolean removeDuplicates, final int[] usage) {
-		final int vertexSize = getVertexSize() / 4;
-		int numVertices = getNumVertices();
-		float[] vertices = new float[numVertices * vertexSize];
-		getVertices(0, vertices.length, vertices);
-		short[] checks = null;
-		VertexAttribute[] attrs = null;
-		int newVertexSize = 0;
-		if (usage != null) {
-			int size = 0;
-			int as = 0;
-			for (int i = 0; i < usage.length; i++)
-				if (getVertexAttribute(usage[i]) != null) {
-					size += getVertexAttribute(usage[i]).numComponents;
-					as++;
-				}
-			if (size > 0) {
-				attrs = new VertexAttribute[as];
-				checks = new short[size];
-				int idx = -1;
-				int ai = -1;
-				for (int i = 0; i < usage.length; i++) {
-					VertexAttribute a = getVertexAttribute(usage[i]);
-					if (a == null)
-						continue;
-					for (int j = 0; j < a.numComponents; j++) {
-						checks[++idx] = (short) (a.offset + j);
-					}
-					attrs[++ai] = new VertexAttribute(a.usage, a.numComponents, a.alias);
-					newVertexSize += a.numComponents;
-				}
-			}
-		}
-		if (checks == null) {
-			checks = new short[vertexSize];
-			for (short i = 0; i < vertexSize; i++)
-				checks[i] = i;
-			newVertexSize = vertexSize;
-		}
-
-		int numIndices = getNumIndices();
-		short[] indices = null;
-		if (numIndices > 0) {
-			indices = new short[numIndices];
-			getIndices(indices);
-			if (removeDuplicates || newVertexSize != vertexSize) {
-				float[] tmp = new float[vertices.length];
-				int size = 0;
-				for (int i = 0; i < numIndices; i++) {
-					final int idx1 = indices[i] * vertexSize;
-					short newIndex = -1;
-					if (removeDuplicates) {
-						for (short j = 0; j < size && newIndex < 0; j++) {
-							final int idx2 = j * newVertexSize;
-							boolean found = true;
-							for (int k = 0; k < checks.length && found; k++) {
-								if (tmp[idx2 + k] != vertices[idx1 + checks[k]])
-									found = false;
-							}
-							if (found)
-								newIndex = j;
-						}
-					}
-					if (newIndex > 0)
-						indices[i] = newIndex;
-					else {
-						final int idx = size * newVertexSize;
-						for (int j = 0; j < checks.length; j++)
-							tmp[idx + j] = vertices[idx1 + checks[j]];
-						indices[i] = (short) size;
-						size++;
-					}
-				}
-				vertices = tmp;
-				numVertices = size;
-			}
-		}
-
-		Mesh result;
-		if (attrs == null) {
-			result = new Mesh(isStatic, numVertices, indices == null ? 0 : indices.length, getVertexAttributes());
-		} else {
-			result = new Mesh(isStatic, numVertices, indices == null ? 0 : indices.length, attrs);
-		}
-		result.setVertices(vertices, 0, numVertices * newVertexSize);
-		result.setIndices(indices);
-		return result;
-
-	}
-
-	public Mesh copy(boolean isStatic) {
-		return copy(isStatic, false, null);
-	}
 }

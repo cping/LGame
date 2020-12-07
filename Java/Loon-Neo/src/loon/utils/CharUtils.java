@@ -517,18 +517,18 @@ public class CharUtils {
 		}
 	}
 
-	public static int toUpperAscii(int c) {
+	public static char toUpper(int c) {
 		if (isLowercaseAlpha(c)) {
-			c -= (char) 0x20;
+			c -= 0x20;
 		}
-		return c;
+		return (char) c;
 	}
 
-	public static int toLowerAscii(int c) {
+	public static char toLower(int c) {
 		if (isUppercaseAlpha(c)) {
-			c += (char) 0x20;
+			c += 0x20;
 		}
-		return c;
+		return (char) c;
 	}
 
 	public static int hex2int(char c) {

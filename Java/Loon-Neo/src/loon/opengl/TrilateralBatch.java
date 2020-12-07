@@ -47,7 +47,7 @@ public class TrilateralBatch extends BaseBatch {
 
 	private boolean lockSubmit = false;
 
-	private MeshDefault mesh;
+	private Submit submit;
 
 	public int getSize() {
 		return expandVertices.getSize();
@@ -91,13 +91,13 @@ public class TrilateralBatch extends BaseBatch {
 			} else {
 				GLUtils.setBlendMode(gl, BlendMethod.MODE_SPEED);
 			}
-			mesh.post(_batch_name, expandVertices.getSize(), shader, expandVertices.getVertices(), idx, count);
+			submit.post(_batch_name, expandVertices.getSize(), shader, expandVertices.getVertices(), idx, count);
 			GLUtils.setBlendMode(gl, tmp);
 		} catch (Throwable ex) {
 			LSystem.error("Batch submit() error", ex);
 		} finally {
 			if (expandVertices.expand(this.idx)) {
-				mesh.reset(_batch_name, expandVertices.length());
+				submit.reset(_batch_name, expandVertices.length());
 			}
 			if (!lockSubmit) {
 				idx = 0;
@@ -131,7 +131,7 @@ public class TrilateralBatch extends BaseBatch {
 
 	@Override
 	public void init() {
-		this.mesh = new MeshDefault();
+		this.submit = new Submit();
 	}
 
 	protected float addX(float m00, float m01, float m10, float m11, float x, float y, float sx, float sy, float tx,

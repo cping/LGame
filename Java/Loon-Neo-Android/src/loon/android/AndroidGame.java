@@ -20,8 +20,6 @@
  */
 package loon.android;
 
-import loon.Accelerometer;
-import loon.Asyn;
 import loon.Json;
 import loon.LGame;
 import loon.LSetting;
@@ -133,6 +131,7 @@ public class AndroidGame extends LGame {
 	protected final AndroidLog log;
 	protected final AndroidSave save;
 	protected final AndroidAccelerometer accelerometer;
+    protected final AndroidClipboard clipboard;
 	protected final Json json;
 	protected final long start = System.nanoTime();
 
@@ -152,6 +151,7 @@ public class AndroidGame extends LGame {
 		this.input = new AndroidInputMake(this);
 		this.save = new AndroidSave(this);
 		this.accelerometer = new AndroidAccelerometer(game);
+		this.clipboard = new AndroidClipboard(game);
 		SysInputFactory.setKeyBoard(new SysInputFactory.OnscreenKeyboard() {
 
 			@Override
@@ -215,20 +215,25 @@ public class AndroidGame extends LGame {
 	}
 
 	@Override
-	public Asyn asyn() {
+	public AndroidAsyn asyn() {
 		return syn;
 	}
 
 	@Override
-	public Accelerometer accel() {
+	public AndroidAccelerometer accel() {
 		return accelerometer;
 	}
 
 	@Override
+	public AndroidClipboard clipboard() {
+		return clipboard;
+	}
+	
+	@Override
 	public Support support() {
 		return support;
 	}
-
+	
 	void onPause() {
 		state = State.PAUSED;
 		status.emit(Status.PAUSE);

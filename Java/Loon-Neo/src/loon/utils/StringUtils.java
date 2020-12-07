@@ -1172,9 +1172,9 @@ final public class StringUtils extends CharUtils {
 			return LSystem.EMPTY;
 		}
 		final int len = cs.length();
-		StrBuilder sbr = new StrBuilder(len).append(toUpperAscii(cs.charAt(0)));
+		StrBuilder sbr = new StrBuilder(len).append(toUpper(cs.charAt(0)));
 		for (int i = 1; i < len; i++) {
-			sbr.append(toLowerAscii(cs.charAt(i)));
+			sbr.append(toLower(cs.charAt(i)));
 		}
 		return sbr.toString();
 	}
@@ -1190,9 +1190,9 @@ final public class StringUtils extends CharUtils {
 			return LSystem.EMPTY;
 		}
 		final int len = cs.length();
-		StrBuilder sbr = new StrBuilder(len).append(toLowerAscii(cs.charAt(0)));
+		StrBuilder sbr = new StrBuilder(len).append(toLower(cs.charAt(0)));
 		for (int i = 1; i < len; i++) {
-			sbr.append(toUpperAscii(cs.charAt(i)));
+			sbr.append(toUpper(cs.charAt(i)));
 		}
 		return sbr.toString();
 	}

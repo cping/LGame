@@ -93,6 +93,7 @@ import loon.utils.ArrayByte;
 import loon.utils.ArrayMap;
 import loon.utils.Calculator;
 import loon.utils.ConfigReader;
+import loon.utils.Disposes;
 import loon.utils.Easing.EasingMode;
 import loon.utils.GLUtils;
 import loon.utils.IntMap;
@@ -254,14 +255,14 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	protected LProcess handler;
 
-	private TArray<LRelease> releases;
-
 	private int width, height, halfWidth, halfHeight;
 	// 精灵集合
 	private Sprites sprites;
 
 	// 桌面集合
 	private Desktop desktop;
+
+	private final Disposes _disposes;
 
 	private final PointF _lastTocuh = new PointF();
 
@@ -396,6 +397,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	public Screen(String name, int w, int h) {
+		this._disposes = new Disposes();
 		init(name, w, h);
 	}
 
@@ -973,36 +975,21 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	public Screen putRelease(LRelease r) {
-		if (releases == null) {
-			releases = new TArray<LRelease>(10);
-		}
-		releases.add(r);
+		_disposes.put(r);
 		return this;
 	}
 
 	public boolean containsRelease(LRelease r) {
-		if (releases == null) {
-			return false;
-		}
-		return releases.contains(r);
+		return _disposes.contains(r);
 	}
 
 	public Screen removeRelease(LRelease r) {
-		if (releases == null) {
-			releases = new TArray<LRelease>(10);
-		}
-		releases.remove(r);
+		_disposes.remove(r);
 		return this;
 	}
 
 	public Screen putReleases(LRelease... rs) {
-		if (releases == null) {
-			releases = new TArray<LRelease>(10);
-		}
-		final int size = rs.length;
-		for (int i = 0; i < size; i++) {
-			releases.add(rs[i]);
-		}
+		_disposes.put(rs);
 		return this;
 	}
 
@@ -5698,14 +5685,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 				if (_screenAction != null) {
 					removeAllActions(_screenAction);
 				}
-				if (releases != null) {
-					for (LRelease r : releases) {
-						if (r != null) {
-							r.close();
-						}
-					}
-					releases.clear();
-				}
+				_disposes.close();
 				if (_conns != null) {
 					_conns.close();
 				}

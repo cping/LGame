@@ -600,22 +600,22 @@ namespace loon.utils
             }
         }
 
-        public static int ToUpperAscii(int c)
+        public static char ToUpper(int c)
         {
             if (IsLowercaseAlpha(c))
             {
-                c -= (char)0x20;
+                c -= 0x20;
             }
-            return c;
+            return (char)c;
         }
 
-        public static int ToLowerAscii(int c)
+        public static char ToLower(int c)
         {
             if (IsUppercaseAlpha(c))
             {
-                c += (char)0x20;
+                c += 0x20;
             }
-            return c;
+            return (char)c;
         }
 
         public static int Hex2int(char c)

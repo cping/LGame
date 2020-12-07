@@ -22,7 +22,7 @@ package loon.opengl;
 
 import loon.LSystem;
 
-public class MeshDefault {
+public class Submit {
 
 	private int type = GL20.GL_TRIANGLES;
 

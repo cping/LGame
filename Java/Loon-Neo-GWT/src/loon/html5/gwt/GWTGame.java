@@ -20,14 +20,10 @@
  */
 package loon.html5.gwt;
 
-import loon.Accelerometer;
 import loon.Asyn;
 import loon.LGame;
 import loon.LSetting;
-import loon.Log;
-import loon.Save;
 import loon.Support;
-import loon.events.InputMake;
 import loon.html5.gwt.preloader.LocalAssetResources;
 import loon.jni.NativeSupport;
 import loon.jni.TimerCallback;
@@ -99,7 +95,7 @@ public class GWTGame extends LGame {
 
 		// 初始化时的进度条样式（不实现则默认加载）
 		public GWTProgress progress = null;
-		
+
 		// 如果此项为true,则仅以异步加载资源
 		public boolean asynResource = false;
 
@@ -111,36 +107,36 @@ public class GWTGame extends LGame {
 
 	public static class AgentInfo extends JavaScriptObject {
 		public final native boolean isFirefox() /*-{
-												return this.isFirefox;
-												}-*/;
+			return this.isFirefox;
+		}-*/;
 
 		public final native boolean isChrome() /*-{
-												return this.isChrome;
-												}-*/;
+			return this.isChrome;
+		}-*/;
 
 		public final native boolean isSafari() /*-{
-												return this.isSafari;
-												}-*/;
+			return this.isSafari;
+		}-*/;
 
 		public final native boolean isOpera() /*-{
-												return this.isOpera;
-												}-*/;
+			return this.isOpera;
+		}-*/;
 
 		public final native boolean isIE() /*-{
-											return this.isIE;
-											}-*/;
+			return this.isIE;
+		}-*/;
 
 		public final native boolean isMacOS() /*-{
-												return this.isMacOS;
-												}-*/;
+			return this.isMacOS;
+		}-*/;
 
 		public final native boolean isLinux() /*-{
-												return this.isLinux;
-												}-*/;
+			return this.isLinux;
+		}-*/;
 
 		public final native boolean isWindows() /*-{
-												return this.isWindows;
-												}-*/;
+			return this.isWindows;
+		}-*/;
 
 		protected AgentInfo() {
 		}
@@ -167,7 +163,7 @@ public class GWTGame extends LGame {
 
 	static final AgentInfo agentInfo = computeAgentInfo();
 	final GWTSetting gwtconfig;
-	
+
 	private final double start = initNow();
 
 	public Act<LGame> frame = Act.create();
@@ -179,6 +175,7 @@ public class GWTGame extends LGame {
 	private final GWTGraphics graphics;
 	private final GWTInputMake input;
 	private final GWTSave save;
+	private final GWTClipboard clipboard;
 
 	private final Loon game;
 
@@ -191,12 +188,11 @@ public class GWTGame extends LGame {
 			}
 		});
 		this.game = game;
-        this.gwtconfig = config;  
+		this.gwtconfig = config;
 		log.info("Browser orientation: " + game.getOrientation());
-		log.info("Browser screen width: " + game.getContainerWidth()
-				+ ", screen height: " + game.getContainerHeight());
-		log.info("devicePixelRatio: " + Loon.devicePixelRatio()
-				+ " backingStorePixelRatio: " + Loon.backingStorePixelRatio());
+		log.info("Browser screen width: " + game.getContainerWidth() + ", screen height: " + game.getContainerHeight());
+		log.info("devicePixelRatio: " + Loon.devicePixelRatio() + " backingStorePixelRatio: "
+				+ Loon.backingStorePixelRatio());
 
 		if (config.useRatioScaleFactor) {
 			int width = setting.width;
@@ -214,7 +210,7 @@ public class GWTGame extends LGame {
 			input = new GWTInputMake(this, graphics.rootElement);
 			assets = new GWTAssets(this);
 			save = new GWTSave(this);
-
+			clipboard = new GWTClipboard();
 		} catch (Throwable e) {
 			log.error("init()", e);
 			Window.alert("failed to init(): " + e.getMessage());
@@ -256,17 +252,15 @@ public class GWTGame extends LGame {
 			});
 			break;
 		case AnimationScheduler:
-			AnimationScheduler.get().requestAnimationFrame(
-					new AnimationCallback() {
+			AnimationScheduler.get().requestAnimationFrame(new AnimationCallback() {
 
-						@Override
-						public void execute(double timestamp) {
-							init();
-							emitFrame();
-							AnimationScheduler.get().requestAnimationFrame(
-									this, graphics.canvas);
-						}
-					}, graphics.canvas);
+				@Override
+				public void execute(double timestamp) {
+					init();
+					emitFrame();
+					AnimationScheduler.get().requestAnimationFrame(this, graphics.canvas);
+				}
+			}, graphics.canvas);
 			break;
 		case Schedule:
 			final int framed = (int) ((1f / game.setting.fps) * 1000f);
@@ -276,8 +270,7 @@ public class GWTGame extends LGame {
 					init();
 					Duration duration = new Duration();
 					emitFrame();
-					this.schedule(Math.max(MIN_DELAY,
-							framed - duration.elapsedMillis()));
+					this.schedule(Math.max(MIN_DELAY, framed - duration.elapsedMillis()));
 
 				}
 			}.schedule(framed);
@@ -306,6 +299,16 @@ public class GWTGame extends LGame {
 	}
 
 	@Override
+	public Asyn asyn() {
+		return syn;
+	}
+
+	@Override
+	public GWTAccelerometer accel() {
+		return accelerometer;
+	}
+
+	@Override
 	public GWTAssets assets() {
 		return assets;
 	}
@@ -316,23 +319,23 @@ public class GWTGame extends LGame {
 	}
 
 	@Override
-	public Asyn asyn() {
-		return syn;
-	}
-
-	@Override
-	public InputMake input() {
+	public GWTInputMake input() {
 		return input;
 	}
 
 	@Override
-	public Log log() {
+	public GWTLog log() {
 		return log;
 	}
 
 	@Override
-	public Save save() {
+	public GWTSave save() {
 		return save;
+	}
+
+	@Override
+	public GWTClipboard clipboard() {
+		return clipboard;
 	}
 
 	@Override
@@ -340,70 +343,65 @@ public class GWTGame extends LGame {
 		return support;
 	}
 
-	@Override
-	public Accelerometer accel() {
-		return accelerometer;
-	}
-
 	private native JavaScriptObject getWindow() /*-{
-												return $wnd;
-												}-*/;
+		return $wnd;
+	}-*/;
 
-	private native void requestAnimationFrame(float frameRate,
-			TimerCallback callback) /*-{
-									var fn = function() {
-									callback.@loon.jni.TimerCallback::fire()();
-									};
-									if (frameRate < 60) {
-									$wnd.setTimeout(fn, 1000 / frameRate);
-									} else {
-									if ($wnd.requestAnimationFrame) {
-									$wnd.requestAnimationFrame(fn);
-									} else if ($wnd.mozRequestAnimationFrame) {
-									$wnd.mozRequestAnimationFrame(fn);
-									} else if ($wnd.webkitRequestAnimationFrame) {
-									$wnd.webkitRequestAnimationFrame(fn);
-									} else if ($wnd.oRequestAnimationFrame) {
-									$wnd.oRequestAnimationFrame(fn);
-									} else if ($wnd.msRequestAnimationFrame) {
-									$wnd.msRequestAnimationFrame(fn);
-									} else {
-									$wnd.setTimeout(fn, 16);
-									}
-									}
-									}-*/;
+	private native void requestAnimationFrame(float frameRate, TimerCallback callback) /*-{
+		var fn = function() {
+			callback.@loon.jni.TimerCallback::fire()();
+		};
+		if (frameRate < 60) {
+			$wnd.setTimeout(fn, 1000 / frameRate);
+		} else {
+			if ($wnd.requestAnimationFrame) {
+				$wnd.requestAnimationFrame(fn);
+			} else if ($wnd.mozRequestAnimationFrame) {
+				$wnd.mozRequestAnimationFrame(fn);
+			} else if ($wnd.webkitRequestAnimationFrame) {
+				$wnd.webkitRequestAnimationFrame(fn);
+			} else if ($wnd.oRequestAnimationFrame) {
+				$wnd.oRequestAnimationFrame(fn);
+			} else if ($wnd.msRequestAnimationFrame) {
+				$wnd.msRequestAnimationFrame(fn);
+			} else {
+				$wnd.setTimeout(fn, 16);
+			}
+		}
+	}-*/;
 
 	private static native AgentInfo computeAgentInfo() /*-{
-														var userAgent = navigator.userAgent.toLowerCase();
-														return {
-														isFirefox : userAgent.indexOf("firefox") != -1,
-														isChrome : userAgent.indexOf("chrome") != -1,
-														isSafari : $wnd.opera || userAgent.indexOf("safari") != -1,
-														isOpera : userAgent.indexOf("opera") != -1,
-														isIE : userAgent.indexOf("msie") != -1 || userAgent.indexOf("trident") != -1,
-														isMacOS : userAgent.indexOf("mac") != -1,
-														isLinux : userAgent.indexOf("linux") != -1,
-														isWindows : userAgent.indexOf("win") != -1
-														};
-														}-*/;
+		var userAgent = navigator.userAgent.toLowerCase();
+		return {
+			isFirefox : userAgent.indexOf("firefox") != -1,
+			isChrome : userAgent.indexOf("chrome") != -1,
+			isSafari : $wnd.opera || userAgent.indexOf("safari") != -1,
+			isOpera : userAgent.indexOf("opera") != -1,
+			isIE : userAgent.indexOf("msie") != -1
+					|| userAgent.indexOf("trident") != -1,
+			isMacOS : userAgent.indexOf("mac") != -1,
+			isLinux : userAgent.indexOf("linux") != -1,
+			isWindows : userAgent.indexOf("win") != -1
+		};
+	}-*/;
 
 	private static native void disableRightClickImpl(JavaScriptObject target) /*-{
-																				target.oncontextmenu = function() {
-																				return false;
-																				};
-																				}-*/;
+		target.oncontextmenu = function() {
+			return false;
+		};
+	}-*/;
 
 	private static native double initNow() /*-{
-											if (!Date.now)
-											Date.now = function now() {
-											return +(new Date);
-											};
-											return Date.now();
-											}-*/;
+		if (!Date.now)
+			Date.now = function now() {
+				return +(new Date);
+			};
+		return Date.now();
+	}-*/;
 
 	private static native double now() /*-{
-										return Date.now();
-										}-*/;
+		return Date.now();
+	}-*/;
 
 	/**
 	 * 检测浏览器窗体是否被隐藏起来
@@ -411,8 +409,8 @@ public class GWTGame extends LGame {
 	 * @return
 	 */
 	private native boolean isHidden() /*-{
-										return $doc.hidden;
-										}-*/;
+		return $doc.hidden;
+	}-*/;
 
 	public boolean isShow() {
 		return isHidden();

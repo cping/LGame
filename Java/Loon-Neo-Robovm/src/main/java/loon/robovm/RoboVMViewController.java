@@ -36,6 +36,7 @@ import org.robovm.objc.annotation.BindSelector;
 import org.robovm.objc.annotation.Method;
 import org.robovm.rt.bro.annotation.Callback;
 
+@SuppressWarnings("deprecation")
 public class RoboVMViewController extends GLKViewController implements
 		GLKViewControllerDelegate {
 
@@ -113,14 +114,12 @@ public class RoboVMViewController extends GLKViewController implements
 		EAGLContext.setCurrentContext(null);
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void willRotate(UIInterfaceOrientation toOrient, double duration) {
 		super.willRotate(toOrient, duration);
 		game.orient.emit(new RoboVMOrientEvent.WillRotate(toOrient, duration));
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	// from ViewController
 	public void didRotate(UIInterfaceOrientation fromOrient) {

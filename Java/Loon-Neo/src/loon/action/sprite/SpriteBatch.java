@@ -36,7 +36,7 @@ import loon.opengl.BlendState;
 import loon.opengl.ExpandVertices;
 import loon.opengl.GL20;
 import loon.opengl.LTextureRegion;
-import loon.opengl.MeshDefault;
+import loon.opengl.Submit;
 import loon.opengl.ShaderProgram;
 import loon.opengl.ShaderSource;
 import loon.utils.GLUtils;
@@ -80,7 +80,7 @@ public class SpriteBatch extends PixmapFImpl {
 
 	private boolean lockSubmit = false;
 
-	private MeshDefault mesh;
+	private Submit mesh;
 
 	private BlendState lastBlendState = BlendState.NonPremultiplied;
 
@@ -210,7 +210,7 @@ public class SpriteBatch extends PixmapFImpl {
 		this.source = src;
 		this.font = LSystem.getSystemGameFont();
 		this.colorTexture = LSystem.base().graphics().finalColorTex();
-		this.mesh = new MeshDefault();
+		this.mesh = new Submit();
 		this.shader = defaultShader;
 		this.expandVertices = new ExpandVertices(size);
 	}

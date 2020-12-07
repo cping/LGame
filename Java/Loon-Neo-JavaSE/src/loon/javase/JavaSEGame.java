@@ -143,8 +143,10 @@ public class JavaSEGame extends LGame {
 	private final ExecutorService pool = Executors.newFixedThreadPool(4);
 
 	private final JavaSELog log = new JavaSELog();
-	private final Asyn asyn = new JavaSEAsyn(pool, log, frame);
-
+	private final JavaSEAsyn asyn = new JavaSEAsyn(pool, log, frame);
+	
+	private final JavaSEClipboard clipboard;
+	
 	private final JavaSEAccelerometer accelerometer = new JavaSEAccelerometer();
 	private final JavaSESave save;
 	private final JavaSEGraphics graphics;
@@ -204,6 +206,7 @@ public class JavaSEGame extends LGame {
 		this.graphics = createGraphics();
 		this.input = createInput();
 		this.save = new JavaSESave(log, config.appName);
+		this.clipboard = new JavaSEClipboard();
 		if (config.activationKey != -1) {
 			input.keyboardEvents.connect(new Port<KeyMake.Event>() {
 				public void onEmit(KeyMake.Event event) {
@@ -252,7 +255,7 @@ public class JavaSEGame extends LGame {
 	}
 
 	@Override
-	public Asyn asyn() {
+	public JavaSEAsyn asyn() {
 		return asyn;
 	}
 
@@ -267,20 +270,25 @@ public class JavaSEGame extends LGame {
 	}
 
 	@Override
-	public Log log() {
+	public JavaSELog log() {
 		return log;
 	}
 
 	@Override
-	public Save save() {
+	public JavaSESave save() {
 		return save;
 	}
 
 	@Override
-	public Accelerometer accel() {
+	public JavaSEAccelerometer accel() {
 		return accelerometer;
 	}
 
+	@Override
+	public JavaSEClipboard clipboard() {
+		return clipboard;
+	}
+	
 	@Override
 	public Support support() {
 		return support;
@@ -439,4 +447,5 @@ public class JavaSEGame extends LGame {
 		}
 		shutdown();
 	}
+
 }

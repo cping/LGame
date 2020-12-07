@@ -1114,6 +1114,8 @@ public abstract class LGame {
 
 	public abstract InputMake input();
 
+	public abstract Clipboard clipboard();
+	
 	public abstract Log log();
 
 	public abstract Save save();

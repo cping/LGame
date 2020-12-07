@@ -1,5 +1,5 @@
 /**
- * Copyright 2008 - 2012
+ * Copyright 2008 - 2020 The Loon Game Engine Authors
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -16,39 +16,33 @@
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
- * @version 0.3.3
+ * @version 0.5
  */
-package loon.utils;
+package loon.html5.gwt;
 
-import loon.LRelease;
-//引用管理器，作用是保存实现了LRelease接口的对象，然后统一释放。
-public class RefManager implements LRelease {
+import loon.Clipboard;
 
-	public TArray<LRelease> objects = new TArray<LRelease>();
+public class GWTClipboard extends Clipboard {
 
-	public RefManager() {
-	}
+	private String content = "";
 
-	public RefManager(LRelease... res) {
-		objects.addAll(res);
-	}
-
-	public RefManager(TArray<LRelease> res) {
-		objects.addAll(res);
-	}
-
-	public boolean add(LRelease res) {
-		return objects.add(res);
+	@Override
+	public String getContent() {
+		return content;
 	}
 
 	@Override
-	public void close() {
-		for (LRelease release : objects) {
-			if (release != null) {
-				release.close();
-			}
+	public void setContent(String content) {
+		try {
+			setContentJSNI(this.content = content);
+		} catch (Throwable ex) {
 		}
-		objects.clear();
 	}
+
+	private native void setContentJSNI(String content) /*-{
+		if ("clipboard" in $wnd.navigator) {
+			$wnd.navigator.clipboard.writeText(content);
+		}
+	}-*/;
 
 }

@@ -49,7 +49,7 @@ public class Lwjgl3Game extends LGame {
 
 	private Lwjgl3Sync sync;
 
-	private final long window;
+	private final long windowId;
 
 	public static class JavaSetting extends LSetting {
 		public boolean vSyncEnabled = true;
@@ -153,12 +153,13 @@ public class Lwjgl3Game extends LGame {
 	private final ExecutorService pool = Executors.newFixedThreadPool(4);
 
 	private final Lwjgl3Log log = new Lwjgl3Log();
-	private final Asyn asyn = new Lwjgl3Asyn(pool, log, frame);
+	private final Lwjgl3Asyn asyn = new Lwjgl3Asyn(pool, log, frame);
 
 	private final Lwjgl3Accelerometer accelerometer = new Lwjgl3Accelerometer();
 	private final Lwjgl3Save save;
 	private final Lwjgl3ImplGraphics graphics;
 	private final Lwjgl3Input input;
+	private final Lwjgl3Clipboard clipboard;
 	private final Lwjgl3Assets assets = new Lwjgl3Assets(this);
 
 	public static class Headless extends Lwjgl3Game {
@@ -251,15 +252,15 @@ public class Lwjgl3Game extends LGame {
 		glfwWindowHint(GLFW_STENCIL_BITS, 0);
 		glfwWindowHint(GLFW_DEPTH_BITS, 16);
 		glfwWindowHint(GLFW_SAMPLES, 0);
-		window = glfwCreateWindow(width, height, config.appName, monitor, 0);
-		if (window == 0) {
-			throw new RuntimeException("Failed to create window; see error log.");
+		windowId = glfwCreateWindow(width, height, config.appName, monitor, 0);
+		if (windowId == 0) {
+			throw new RuntimeException("Failed to create windowId; see error log.");
 		}
 		this.graphics = createGraphics();
 		this.input = createInput();
 
-		glfwSetWindowPos(window, (vidMode.width() - width) / 2, (vidMode.height() - height) / 2);
-		glfwMakeContextCurrent(window);
+		glfwSetWindowPos(windowId, (vidMode.width() - width) / 2, (vidMode.height() - height) / 2);
+		glfwMakeContextCurrent(windowId);
 
 		graphics.setSize(config.width, config.height, config.fullscreen);
 
@@ -271,6 +272,7 @@ public class Lwjgl3Game extends LGame {
 		GL.createCapabilities();
 
 		this.save = new Lwjgl3Save(log, config.appName);
+		this.clipboard = new Lwjgl3Clipboard();
 
 		if (config.activationKey != -1) {
 			input.keyboardEvents.connect(new Port<KeyMake.Event>() {
@@ -288,19 +290,23 @@ public class Lwjgl3Game extends LGame {
 		this.setTitle(config.appName);
 		this.initProcess();
 		if (config instanceof JavaSetting) {
-			setIcon(window, ((JavaSetting) config).iconPaths);
+			setIcon(windowId, ((JavaSetting) config).iconPaths);
 		}
 		this.graphics.init();
 		this.input.init();
-		glfwShowWindow(window);
+		glfwShowWindow(windowId);
 		for (int i = 0; i < 2; i++) {
 			GL11.glClearColor(0, 0, 0, 1);
 			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
-			glfwSwapBuffers(window);
+			glfwSwapBuffers(windowId);
 		}
 
 	}
 
+	public long getWindowHandle() {
+		return windowId;
+	}
+	
 	public void setTitle(String title) {
 		((Lwjgl3Graphics) graphics()).setTitle(title);
 	}
@@ -326,7 +332,7 @@ public class Lwjgl3Game extends LGame {
 	}
 
 	@Override
-	public Asyn asyn() {
+	public Lwjgl3Asyn asyn() {
 		return asyn;
 	}
 
@@ -341,20 +347,25 @@ public class Lwjgl3Game extends LGame {
 	}
 
 	@Override
-	public Log log() {
+	public Lwjgl3Log log() {
 		return log;
 	}
 
 	@Override
-	public Save save() {
+	public Lwjgl3Save save() {
 		return save;
 	}
 
 	@Override
-	public Accelerometer accel() {
+	public Lwjgl3Accelerometer accel() {
 		return accelerometer;
 	}
 
+	@Override
+	public Lwjgl3Clipboard clipboard() {
+		return clipboard;
+	}
+	
 	@Override
 	public Support support() {
 		return support;
@@ -438,11 +449,11 @@ public class Lwjgl3Game extends LGame {
 	}
 
 	protected Lwjgl3ImplGraphics createGraphics() {
-		return new Lwjgl3Graphics(this, window);
+		return new Lwjgl3Graphics(this, windowId);
 	}
 
 	protected Lwjgl3Input createInput() {
-		return new Lwjgl3InputMake(this, window);
+		return new Lwjgl3InputMake(this, windowId);
 	}
 
 	protected void shutdown() {
@@ -517,9 +528,9 @@ public class Lwjgl3Game extends LGame {
 	}
 
 	public void reset() {
-		boolean wasActive = glfwGetWindowAttrib(window, GLFW_VISIBLE) > 0;
-		while (!glfwWindowShouldClose(window)) {
-			boolean newActive = active && glfwGetWindowAttrib(window, GLFW_VISIBLE) > 0;
+		boolean wasActive = glfwGetWindowAttrib(windowId, GLFW_VISIBLE) > 0;
+		while (!glfwWindowShouldClose(windowId)) {
+			boolean newActive = active && glfwGetWindowAttrib(windowId, GLFW_VISIBLE) > 0;
 			if (wasActive != newActive) {
 				status.emit(wasActive ? Status.PAUSE : Status.RESUME);
 				wasActive = newActive;
@@ -529,12 +540,13 @@ public class Lwjgl3Game extends LGame {
 			}
 			glfwPollEvents();
 			sync.sync(setting.fps);
-			glfwSwapBuffers(window);
+			glfwSwapBuffers(windowId);
 		}
 		((Lwjgl3InputMake) input).shutdown();
 		((Lwjgl3Graphics) graphics).shutdown();
 		errorCallback.close();
-		glfwDestroyWindow(window);
+		glfwDestroyWindow(windowId);
 		glfwTerminate();
 	}
+
 }

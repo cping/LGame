@@ -23,12 +23,9 @@ package loon.robovm;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import loon.Accelerometer;
 import loon.Asyn;
 import loon.LGame;
 import loon.LSetting;
-import loon.Log;
-import loon.Save;
 import loon.Support;
 import loon.utils.reply.Act;
 
@@ -107,7 +104,8 @@ public class RoboVMGame extends LGame {
 	private final RoboVMGraphics graphics;
 	private final RoboVMInputMake input;
 	private final RoboVMSave save;
-	private final RobmVMAccelerometer accelerometer;
+	private final RoboVMAccelerometer accelerometer;
+	private final RoboVMClipboard clipboard;
 
 	protected RoboVMGame(Loon game, IOSSetting config, CGRect initBounds) {
 		super(config, game);
@@ -115,8 +113,9 @@ public class RoboVMGame extends LGame {
 		this.assets = new RoboVMAssets(this);
 		this.graphics = new RoboVMGraphics(this, initBounds);
 		this.input = new RoboVMInputMake(this);
-		this.accelerometer = new RobmVMAccelerometer(this);
+		this.accelerometer = new RoboVMAccelerometer(this);
 		this.save = new RoboVMSave(this);
+		this.clipboard = new RoboVMClipboard();
 		this.initProcess();
 	}
 
@@ -144,17 +143,17 @@ public class RoboVMGame extends LGame {
 	}
 
 	@Override
-	public RoboVMAssets assets() {
-		return assets;
-	}
-
-	@Override
 	public Asyn asyn() {
 		return syn;
 	}
 
 	@Override
-	public Log log() {
+	public RoboVMAssets assets() {
+		return assets;
+	}
+
+	@Override
+	public RoboVMLog log() {
 		return log;
 	}
 
@@ -169,13 +168,18 @@ public class RoboVMGame extends LGame {
 	}
 
 	@Override
-	public Save save() {
+	public RoboVMSave save() {
 		return save;
 	}
 
 	@Override
-	public Accelerometer accel() {
+	public RoboVMAccelerometer accel() {
 		return accelerometer;
+	}
+
+	@Override
+	public RoboVMClipboard clipboard() {
+		return clipboard;
 	}
 
 	@Override
@@ -188,7 +192,7 @@ public class RoboVMGame extends LGame {
 		int version = Integer.parseInt(systemVersion.split("\\.")[0]);
 		return version;
 	}
-	
+
 	void processFrame() {
 		emitFrame();
 	}
@@ -217,6 +221,5 @@ public class RoboVMGame extends LGame {
 		pool.shutdown();
 		dispatchEvent(status, Status.EXIT);
 	}
-
 
 }

@@ -306,7 +306,7 @@ public class RocScript {
 				tflag = !tflag;
 			}
 			if (tflag) {
-				sbr.append(CharUtils.toLowerAscii(ch));
+				sbr.append(CharUtils.toLower(ch));
 			} else {
 				sbr.append(ch);
 			}
@@ -318,13 +318,13 @@ public class RocScript {
 	private String filtrScript(String script) {
 		StrBuilder out = new StrBuilder();
 		String[] context = StringUtils.split(script, new char[] { '\r', '\n', '\t' }, true);
-		for (String c : context) {
-			if (c == null) {
+	
+		for (String s : context) {
+			if (s == null) {
 				continue;
 			}
 
-			String cmd = filterCommand(c).trim();
-
+			String cmd = filterCommand(s).trim();
 			if (cmd.startsWith("print") && cmd.indexOf("\"") != -1 && cmd.indexOf(",") == -1) {
 				char[] chars = cmd.toCharArray();
 				boolean flag = false;
@@ -347,6 +347,7 @@ public class RocScript {
 			}
 			out.append(LSystem.LS);
 		}
+
 		return out.toString();
 	}
 
@@ -1240,6 +1241,7 @@ public class RocScript {
 	 * @throws ScriptException
 	 */
 	private boolean nextCommand() throws ScriptException {
+
 		if (itemType == MACROS && macroType != -1) {
 			char flag = macros[1].toCharArray()[0];
 			StrBuilder sbr = new StrBuilder(1024);
@@ -1262,7 +1264,6 @@ public class RocScript {
 		itemType = NONE;
 		commType = UNKNCOM;
 		macroType = -1;
-
 		while (textIdx < _temp_contexts.length && isSpaceOrTab(_temp_contexts[textIdx])) {
 			textIdx++;
 		}

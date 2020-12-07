@@ -164,12 +164,35 @@ public class EmptyGame extends LGame {
 	public Save save() {
 		return save;
 	}
-	
-	Accelerometer accelerometer = new AccelerometerDefault();
+
+	private Accelerometer accelerometer = new AccelerometerDefault();
 
 	@Override
 	public Accelerometer accel() {
 		return accelerometer;
+	}
+
+	private class ClipboardDefault extends Clipboard {
+
+		private String _context;
+
+		@Override
+		public void setContent(String content) {
+			this._context = content;
+		}
+
+		@Override
+		public String getContent() {
+			return _context;
+		}
+
+	}
+
+	private Clipboard clipboardDefault = new ClipboardDefault();
+
+	@Override
+	public Clipboard clipboard() {
+		return clipboardDefault;
 	}
 
 }

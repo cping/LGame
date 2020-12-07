@@ -57,7 +57,7 @@ public class ShaderProgram implements LRelease {
 
 	private String log = LSystem.EMPTY;
 
-	private boolean isCompiled;
+	private boolean _compiled;
 
 	private final IntMap<Integer> uniforms = new IntMap<Integer>();
 
@@ -75,7 +75,7 @@ public class ShaderProgram implements LRelease {
 
 	private String[] attributeNames;
 
-	private int program;
+	private int programId;
 
 	private int vertexShaderHandle;
 
@@ -113,6 +113,9 @@ public class ShaderProgram implements LRelease {
 		this.intbuf = LSystem.base().support().newIntBuffer(1);
 		this.vertexShaderSource = vertexShader;
 		this.fragmentShaderSource = fragmentShader;
+		this.programId = -1;
+		this.vertexShaderHandle = -1;
+		this.fragmentShaderHandle = -1;
 		compileShaders(glslVersion + vertexShader, glslVersion + fragmentShader);
 		if (isCompiled()) {
 			fetchAttributesAndUniforms();
@@ -124,16 +127,16 @@ public class ShaderProgram implements LRelease {
 		vertexShaderHandle = loadShader(GL20.GL_VERTEX_SHADER, vertexShader);
 		fragmentShaderHandle = loadShader(GL20.GL_FRAGMENT_SHADER, fragmentShader);
 		if (vertexShaderHandle == -1 || fragmentShaderHandle == -1) {
-			isCompiled = false;
+			_compiled = false;
 			return;
 		}
-		program = linkProgram(createProgram());
-		if (program == -1) {
-			isCompiled = false;
+		programId = linkProgram(createProgram());
+		if (programId == -1) {
+			_compiled = false;
 			return;
 		}
 
-		isCompiled = true;
+		_compiled = true;
 	}
 
 	private int loadShader(int type, String source) {
@@ -160,36 +163,36 @@ public class ShaderProgram implements LRelease {
 
 	protected int createProgram() {
 		GL20 gl = LSystem.base().graphics().gl;
-		int program = gl.glCreateProgram();
-		return program != 0 ? program : -1;
+		int programId = gl.glCreateProgram();
+		return programId != 0 ? programId : -1;
 	}
 
-	private int linkProgram(int program) {
+	private int linkProgram(int programId) {
 		GL20 gl = LSystem.base().graphics().gl;
-		if (program == -1) {
+		if (programId == -1) {
 			return -1;
 		}
 
-		gl.glAttachShader(program, vertexShaderHandle);
-		gl.glAttachShader(program, fragmentShaderHandle);
-		gl.glLinkProgram(program);
+		gl.glAttachShader(programId, vertexShaderHandle);
+		gl.glAttachShader(programId, fragmentShaderHandle);
+		gl.glLinkProgram(programId);
 
 		ByteBuffer tmp = ByteBuffer.allocateDirect(4);
 		tmp.order(ByteOrder.nativeOrder());
 		IntBuffer intbuf = tmp.asIntBuffer();
 
-		gl.glGetProgramiv(program, GL20.GL_LINK_STATUS, intbuf);
+		gl.glGetProgramiv(programId, GL20.GL_LINK_STATUS, intbuf);
 		int linked = intbuf.get(0);
 		if (linked == 0) {
-			log = LSystem.base().graphics().gl.glGetProgramInfoLog(program);
+			log = LSystem.base().graphics().gl.glGetProgramInfoLog(programId);
 			return -1;
 		}
-		return program;
+		return programId;
 	}
 
 	public String getLog() {
-		if (isCompiled) {
-			log = LSystem.base().graphics().gl.glGetProgramInfoLog(program);
+		if (_compiled) {
+			log = LSystem.base().graphics().gl.glGetProgramInfoLog(programId);
 			return log;
 		} else {
 			return log;
@@ -197,14 +200,14 @@ public class ShaderProgram implements LRelease {
 	}
 
 	public boolean isCompiled() {
-		return isCompiled;
+		return _compiled;
 	}
 
 	private int fetchAttributeLocation(String name) {
 		GL20 gl = LSystem.base().graphics().gl;
 		int location;
 		if ((location = attributes.get(name, -2)) == -2) {
-			location = gl.glGetAttribLocation(program, name);
+			location = gl.glGetAttribLocation(programId, name);
 			attributes.put(name, location);
 		}
 		return location;
@@ -218,16 +221,16 @@ public class ShaderProgram implements LRelease {
 		GL20 gl = LSystem.base().graphics().gl;
 		int location = -1;
 		if ((location = uniforms.get(name, -2)) == -2) {
-			location = gl.glGetUniformLocation(program, name);
+			location = gl.glGetUniformLocation(programId, name);
 		}
 		return location;
 	}
-	
+
 	public int fetchUniformLocation(String name, boolean pedantic) {
 		GL20 gl = LSystem.base().graphics().gl;
 		int location;
 		if ((location = uniforms.get(name, -2)) == -2) {
-			location = gl.glGetUniformLocation(program, name);
+			location = gl.glGetUniformLocation(programId, name);
 			if (location == -1 && pedantic) {
 				throw new LSysException("no uniform with name '" + name + "' in shader");
 			}
@@ -530,12 +533,12 @@ public class ShaderProgram implements LRelease {
 	public void begin() {
 		GL20 gl = LSystem.base().graphics().gl;
 		checkManaged();
-		gl.glUseProgram(program);
+		gl.glUseProgram(programId);
 	}
 
 	public void glUseProgramBind() {
 		GL20 gl = LSystem.base().graphics().gl;
-		gl.glUseProgram(program);
+		gl.glUseProgram(programId);
 	}
 
 	public void glUseProgramUnBind() {
@@ -552,15 +555,25 @@ public class ShaderProgram implements LRelease {
 		}
 	}
 
+	@Override
 	public void close() {
 		GL20 gl = LSystem.base().graphics().gl;
 		if (gl != null) {
 			if (!LSystem.mainDrawRunning()) {
 				gl.glUseProgram(0);
 			}
-			gl.glDeleteShader(vertexShaderHandle);
-			gl.glDeleteShader(fragmentShaderHandle);
-			gl.glDeleteProgram(program);
+			if (vertexShaderHandle != -1) {
+				gl.glDeleteShader(vertexShaderHandle);
+				vertexShaderHandle = -1;
+			}
+			if (fragmentShaderHandle != -1) {
+				gl.glDeleteShader(fragmentShaderHandle);
+				fragmentShaderHandle = -1;
+			}
+			if (programId != -1) {
+				gl.glDeleteProgram(programId);
+				programId = -1;
+			}
 			LSystem.removeShader(this);
 		}
 	}
@@ -647,7 +660,7 @@ public class ShaderProgram implements LRelease {
 			IntBuffer type = LSystem.base().support().newIntBuffer(1);
 
 			params.clear();
-			gl.glGetProgramiv(program, GL20.GL_ACTIVE_ATTRIBUTES, params);
+			gl.glGetProgramiv(programId, GL20.GL_ACTIVE_ATTRIBUTES, params);
 			int numAttributes = params.get(0);
 
 			attributeNames = new String[numAttributes];
@@ -658,8 +671,8 @@ public class ShaderProgram implements LRelease {
 				params.clear();
 				params.put(0, 1);
 				type.clear();
-				String name = ext.glGetActiveAttrib(program, i, params, type);
-				int location = gl.glGetAttribLocation(program, name);
+				String name = ext.glGetActiveAttrib(programId, i, params, type);
+				int location = gl.glGetAttribLocation(programId, name);
 				attributes.put(name, location);
 				attributeTypes.put(name, type.get(0));
 				attributeSizes.put(name, params.get(0));
@@ -667,7 +680,7 @@ public class ShaderProgram implements LRelease {
 			}
 
 			params.clear();
-			gl.glGetProgramiv(program, GL20.GL_ACTIVE_UNIFORMS, params);
+			gl.glGetProgramiv(programId, GL20.GL_ACTIVE_UNIFORMS, params);
 			int numUniforms = params.get(0);
 
 			uniformNames = new String[numUniforms];
@@ -676,8 +689,8 @@ public class ShaderProgram implements LRelease {
 				params.clear();
 				params.put(0, 1);
 				type.clear();
-				String name = ext.glGetActiveUniform(program, i, params, type);
-				int location = gl.glGetUniformLocation(program, name);
+				String name = ext.glGetActiveUniform(programId, i, params, type);
+				int location = gl.glGetUniformLocation(programId, name);
 				uniforms.put(name, location);
 				uniformTypes.put(name, type.get(0));
 				uniformSizes.put(name, params.get(0));
@@ -685,30 +698,30 @@ public class ShaderProgram implements LRelease {
 			}
 		} else {
 
-			gl.glGetProgramiv(program, GL20.GL_ACTIVE_ATTRIBUTES, params, 0);
-			gl.glGetProgramiv(program, GL20.GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, params, 1);
+			gl.glGetProgramiv(programId, GL20.GL_ACTIVE_ATTRIBUTES, params, 0);
+			gl.glGetProgramiv(programId, GL20.GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, params, 1);
 			int numAttributes = params[0];
 			int maxAttributeLength = params[1];
 			namebytes = new byte[maxAttributeLength];
 			attributeNames = new String[numAttributes];
 			for (int i = 0; i < numAttributes; i++) {
-				gl.glGetActiveAttrib(program, i, maxAttributeLength, length, 0, size, 0, type, 0, namebytes, 0);
+				gl.glGetActiveAttrib(programId, i, maxAttributeLength, length, 0, size, 0, type, 0, namebytes, 0);
 				String name = new String(namebytes, 0, length[0]);
-				attributes.put(name, gl.glGetAttribLocation(program, name));
+				attributes.put(name, gl.glGetAttribLocation(programId, name));
 				attributeTypes.put(name, type[0]);
 				attributeSizes.put(name, params[0]);
 				attributeNames[i] = name;
 			}
-			gl.glGetProgramiv(program, GL20.GL_ACTIVE_UNIFORMS, params, 0);
-			gl.glGetProgramiv(program, GL20.GL_ACTIVE_UNIFORM_MAX_LENGTH, params, 1);
+			gl.glGetProgramiv(programId, GL20.GL_ACTIVE_UNIFORMS, params, 0);
+			gl.glGetProgramiv(programId, GL20.GL_ACTIVE_UNIFORM_MAX_LENGTH, params, 1);
 			int numUniforms = params[0];
 			int maxUniformLength = params[1];
 			namebytes = new byte[maxUniformLength];
 			uniformNames = new String[numUniforms];
 			for (int i = 0; i < numUniforms; i++) {
-				gl.glGetActiveUniform(program, i, maxUniformLength, length, 0, size, 0, type, 0, namebytes, 0);
+				gl.glGetActiveUniform(programId, i, maxUniformLength, length, 0, size, 0, type, 0, namebytes, 0);
 				String name = new String(namebytes, 0, length[0]);
-				uniforms.put(name, gl.glGetUniformLocation(program, name));
+				uniforms.put(name, gl.glGetUniformLocation(programId, name));
 				uniformTypes.put(name, type[0]);
 				uniformSizes.put(name, params[0]);
 				uniformNames[i] = name;
