@@ -5,9 +5,9 @@ namespace loon.geom
     public class Affine2f : LTrans
     {
 
-        public static Affine2f transform(Affine2f tx, float x, float y, int transform)
+        public static Affine2f Transform(Affine2f tx, float x, float y, int Transform)
         {
-            switch (transform)
+            switch (Transform)
             {
                 case TRANS_ROT90:
                     {
@@ -67,9 +67,9 @@ namespace loon.geom
             return tx;
         }
 
-        public static Affine2f Transform(Affine2f tx, float x, float y, int transform, float width, float height)
+        public static Affine2f Transform(Affine2f tx, float x, float y, int Transform, float width, float height)
         {
-            switch (transform)
+            switch (Transform)
             {
                 case TRANS_ROT90:
                     {
@@ -145,10 +145,10 @@ namespace loon.geom
             return tx;
         }
 
-        public static Affine2f TransformRegion(Affine2f tx, float x, float y, int transform, float width,
+        public static Affine2f TransformRegion(Affine2f tx, float x, float y, int Transform, float width,
                 float height)
         {
-            switch (transform)
+            switch (Transform)
             {
                 case TRANS_ROT90:
                     {
@@ -1314,6 +1314,24 @@ namespace loon.geom
         public float GetY()
         {
             return Ty();
+        }
+
+        public virtual Matrix4 ToViewMatrix4()
+        {
+            Dimension dim = LSystem.viewSize;
+            if (projectionMatrix == null)
+            {
+                projectionMatrix = new Matrix4();
+            }
+            projectionMatrix.SetToOrtho2D(0, 0, dim.width * LSystem.GetScaleWidth(), dim.height * LSystem.GetScaleHeight());
+            projectionMatrix.ThisCombine(this);
+            return projectionMatrix;
+        }
+        public override string ToString()
+        {
+            StringKeyValue builder = new StringKeyValue("Affine");
+            builder.NewLine().PushBracket().AddValue(MathUtils.ToString((m00))).Comma().AddValue(MathUtils.ToString(m10)).Comma().AddValue(MathUtils.ToString(tx)).PopBracket().NewLine().PushBracket().AddValue(MathUtils.ToString(m01)).Comma().AddValue(MathUtils.ToString(m11)).Comma().AddValue(MathUtils.ToString(ty)).PopBracket().NewLine().AddValue("[0.0,0.0,1.0]").NewLine();
+            return builder.ToString();
         }
 
     }

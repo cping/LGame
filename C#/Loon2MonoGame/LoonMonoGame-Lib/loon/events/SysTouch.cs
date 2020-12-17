@@ -27,6 +27,35 @@ namespace loon.events
 
 		public const int LOWER_RIGHT = 3;
 
+		public static int X()
+		{
+			return SysInputFactory.finalTouch.X();
+		}
+
+		public static int Y()
+		{
+			return SysInputFactory.finalTouch.Y();
+		}
+
+		public static float GetX()
+        {
+			return SysInputFactory.finalTouch.x;
+        }
+
+		public static float GetY()
+		{
+			return SysInputFactory.finalTouch.y;
+		}
+
+		public static float GetDX()
+		{
+			return SysInputFactory.finalTouch.dx;
+		}
+
+		public static float GetDY()
+		{
+			return SysInputFactory.finalTouch.dy;
+		}
 
 		public static bool IsLeft()
 		{

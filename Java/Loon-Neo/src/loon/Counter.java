@@ -29,9 +29,9 @@ import loon.utils.MathUtils;
  */
 public class Counter {
 
-	private int _min;
+	private final int _min;
 
-	private int _max;
+	private final int _max;
 
 	private int _value;
 

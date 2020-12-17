@@ -115,6 +115,16 @@ public abstract class Event {
 		public final float x;
 
 		public final float y;
+		
+		public int x()
+        {
+            return (int)x;
+        }
+
+        public int y()
+        {
+            return (int)y;
+        }
 
 		@Override
 		public float getX() {

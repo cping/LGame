@@ -203,7 +203,7 @@ public class Director extends SoundBox {
 		point[1] -= viewRect.Top();
 	}
 
-	int[] point = new int[2];
+	final int[] point = new int[2];
 
 	public int[] view(int x, int y) {
 		point[0] = x - viewRect.Left();

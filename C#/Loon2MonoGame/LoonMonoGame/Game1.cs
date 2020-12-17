@@ -2,6 +2,7 @@
 using loon;
 using loon.canvas;
 using loon.monogame;
+using loon.opengl;
 using loon.utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -28,6 +29,15 @@ namespace LoonMonoGame
                 JavaSystem.Out.Println(LSystem.Base.Assets().GetBytesSync("test.txt").Length == 14);
             }
 
+            public override void Draw(GLEx g)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override void Resize(int width, int height)
+            {
+                throw new NotImplementedException();
+            }
         }
 
         public override void OnMain()

@@ -25,7 +25,7 @@ package loon;
  */
 public class LimitedCounter extends Counter {
 
-	private int _limit;
+	private final int _limit;
 
 	public LimitedCounter(int limit) {
 		this(limit, 0);

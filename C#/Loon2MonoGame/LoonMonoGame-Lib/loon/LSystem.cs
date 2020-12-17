@@ -104,6 +104,20 @@ namespace loon
         // 是否允许屏幕画面刷新
         protected internal static bool _auto_repaint = true;
 
+        private static float _scaleWidth = 1f;
+
+        private static float _scaleHeight = 1f;
+
+        public static float GetScaleWidth()
+        {
+            return LSystem._scaleWidth;
+        }
+
+        public static float GetScaleHeight()
+        {
+            return LSystem._scaleHeight;
+        }
+
         public static Platform Platform
         {
             get
@@ -306,9 +320,21 @@ namespace loon
 
         public static bool IsMobile()
         {
+            if (Base != null)
+            {
+                return Base.IsMobile();
+            }
             return false;
         }
 
+        public static LProcess GetProcess()
+        {
+            if (Base != null)
+            {
+                return Base.processImpl;
+            }
+            return null;
+        }
 
         public static void Debug(string msg)
         {

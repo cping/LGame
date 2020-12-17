@@ -88,11 +88,11 @@ public class SysTouch {
 	}
 
 	public static int x() {
-		return (int) SysInputFactory.finalTouch.x;
+		return SysInputFactory.finalTouch.x();
 	}
 
 	public static int y() {
-		return (int) SysInputFactory.finalTouch.y;
+		return SysInputFactory.finalTouch.y();
 	}
 
 	public static float getX() {

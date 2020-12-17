@@ -98,7 +98,7 @@ public abstract class Graphics {
 
 	}
 
-	public RenderTarget defaultRenderTarget = new DefaultRender(this);
+	protected final RenderTarget defaultRenderTarget ;
 
 	/**
 	 * 返回一个缩放比例，用以让当前设备加载的资源按照此比例进行资源缩放
@@ -194,6 +194,7 @@ public abstract class Graphics {
 		this.game = game;
 		this.gl = gl;
 		this.scale = scale;
+		this.defaultRenderTarget = new DefaultRender(this);
 	}
 
 	protected int defaultFramebuffer() {

@@ -849,6 +849,14 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 		return _collisionData;
 	}
 
+	public boolean landscape() {
+		return this.getHeight() < this.getWidth();
+	}
+
+	public boolean portrait() {
+		return this.getHeight() >= this.getWidth();
+	}
+
 	public abstract float getWidth();
 
 	public abstract float getHeight();

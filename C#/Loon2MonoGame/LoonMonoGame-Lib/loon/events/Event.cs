@@ -115,6 +115,16 @@ namespace loon.events
 
             public readonly float y;
 
+            public int X()
+            {
+                return (int)x;
+            }
+
+            public int Y()
+            {
+                return (int)y;
+            }
+
             public float GetX()
             {
                 return x;

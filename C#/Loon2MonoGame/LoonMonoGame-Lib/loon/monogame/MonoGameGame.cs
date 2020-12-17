@@ -71,6 +71,16 @@ namespace loon.monogame
             return PlatformInfo.MonoGamePlatform == MonoGamePlatform.NintendoSwitch;
         }
 
+        public override bool IsMobile()
+        {
+            return PlatformInfo.MonoGamePlatform == MonoGamePlatform.Android || PlatformInfo.MonoGamePlatform == MonoGamePlatform.iOS || PlatformInfo.MonoGamePlatform == MonoGamePlatform.tvOS;
+        }
+
+        public override bool IsHTML5()
+        {
+            return PlatformInfo.MonoGamePlatform == MonoGamePlatform.WebGL;
+        }
+
         public override bool IsDesktop()
         {
             return PlatformInfo.MonoGamePlatform == MonoGamePlatform.DesktopGL;

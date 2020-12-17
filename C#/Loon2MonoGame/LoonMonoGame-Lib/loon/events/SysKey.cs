@@ -279,5 +279,119 @@ namespace loon.events
 
         public const int BUTTON_CIRCLE = 255;
 
+        internal static readonly ActionKey only_key = new ActionKey(ActionKey.DETECT_INITIAL_PRESS_ONLY);
+
+        public static void AddKey(int key)
+        {
+            keys.Add(key);
+        }
+
+        public static void RemoveKey(int key)
+        {
+            keys.RemoveValue(key);
+        }
+
+        public static void Clear()
+        {
+            keys.Clear();
+        }
+
+        public static ActionKey GetOnlyKey()
+        {
+                return only_key;
+        }
+
+        public static bool IsKeyPressed(int key)
+        {
+            if (USE_ONLY_DOWN)
+            {
+                if (key == SysKey.ANY_KEY)
+                {
+                    return keys.length > 0 && only_key.IsPressed();
+                }
+                else
+                {
+                    return keys.Contains(key) && only_key.IsPressed();
+                }
+            }
+            else
+            {
+                if (key == SysKey.ANY_KEY)
+                {
+                    return keys.length > 0;
+                }
+                else
+                {
+                    return keys.Contains(key);
+                }
+            }
+        }
+
+        public static bool IsKeyRelease(int key)
+        {
+            if (key == SysKey.ANY_KEY)
+            {
+                return keys.length > 0 && !only_key.IsPressed();
+            }
+            else
+            {
+                return keys.Contains(key) && !only_key.IsPressed();
+            }
+        }
+
+        public static char KeyChar
+        {
+            get
+            {
+                return SysInputFactory.finalKey.keyChar;
+            }
+        }
+
+        public static int KeyCode
+        {
+            get
+            {
+                return SysInputFactory.finalKey.keyCode;
+            }
+        }
+
+        public static int Type
+        {
+            get
+            {
+                return SysInputFactory.finalKey.keyCode;
+            }
+        }
+
+        public virtual bool IsShift()
+        {
+                return SysInputFactory.finalKey.IsShift();
+        }
+
+        public virtual bool IsCtrl()
+        {
+                return SysInputFactory.finalKey.IsCtrl();
+        }
+
+        public virtual bool IsAlt()
+        {
+                return SysInputFactory.finalKey.IsAlt();
+        }
+
+        public static bool IsDown()
+        {
+                return SysInputFactory.finalKey.IsDown();   
+        }
+
+        public static bool IsUp()
+        {
+                return SysInputFactory.finalKey.IsUp(); 
+        }
+
+        public static GameKey Cpy()
+        {
+            return SysInputFactory.finalKey.Cpy();
+        }
+
     }
 }

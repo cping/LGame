@@ -157,9 +157,23 @@ namespace loon
             LGame._platform = null;
             LGame._base = null;
         }
+
+        public virtual bool IsMobile()
+        {
+            Type type = this.TYPE;
+            return (type == LGame.Type.ANDROID || type == LGame.Type.IOS || type == LGame.Type.WP
+                    || type == LGame.Type.SWITCH);
+        }
+
+        public virtual bool IsHTML5()
+        {
+            Type type = this.TYPE;
+            return type == LGame.Type.HTML5;
+        }
+
         public virtual bool IsDesktop()
         {
-            return false;
+            return !IsMobile() && !IsHTML5();
         }
 
         public abstract LGame.Type TYPE { get; }

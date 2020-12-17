@@ -34,6 +34,7 @@ import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.opengl.LSTRDictionary;
 import loon.opengl.ShaderSource;
+import loon.utils.HelperUtils;
 import loon.utils.ListMap;
 import loon.utils.MathUtils;
 import loon.utils.ObjectBundle;
@@ -156,10 +157,13 @@ public class LProcess {
 				list.clear();
 			}
 			for (int i = 0, size = loadCache.size; i < size; i++) {
-				Updateable _running = loadCache.get(i);
-				synchronized (_running) {
+				Updateable r = loadCache.get(i);
+				if (r == null) {
+					continue;
+				}
+				synchronized (r) {
 					try {
-						_running.action(null);
+						r.action(null);
 					} catch (Throwable cause) {
 						LSystem.error("Updateable dispatch failure", cause);
 					}
@@ -556,7 +560,7 @@ public class LProcess {
 			_currentScreen.drawFrist(g);
 		}
 	}
-	
+
 	public void drawLast(GLEx g) {
 		if (isInstance && !_waitTransition) {
 			_currentScreen.drawLast(g);
@@ -797,7 +801,7 @@ public class LProcess {
 			_tmpLocaltion.set(newX, newY);
 		}
 		if (isFlipX() || isFlipY()) {
-			Director.local2Global(isFlipX(), isFlipY(), getWidth() / 2, getHeight() / 2, _tmpLocaltion.x,
+			HelperUtils.local2Global(isFlipX(), isFlipY(), getWidth() / 2, getHeight() / 2, _tmpLocaltion.x,
 					_tmpLocaltion.y, _tmpLocaltion);
 			return _tmpLocaltion;
 		}
@@ -873,7 +877,7 @@ public class LProcess {
 		}
 		return null;
 	}
-    
+
 	public void runPopScreen() {
 		int size = _screens.size;
 		if (size > 0) {

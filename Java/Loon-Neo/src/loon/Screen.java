@@ -5623,6 +5623,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * 释放函数内资源
 	 * 
 	 */
+	@Override
 	public abstract void close();
 
 	/**

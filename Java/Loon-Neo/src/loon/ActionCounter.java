@@ -34,8 +34,9 @@ public class ActionCounter extends LimitedCounter {
 		super(limit);
 	}
 
-	public void setActionListener(Updateable u) {
+	public ActionCounter setActionListener(Updateable u) {
 		this.actListener = u;
+		return this;
 	}
 
 	public Updateable getActionListener() {
