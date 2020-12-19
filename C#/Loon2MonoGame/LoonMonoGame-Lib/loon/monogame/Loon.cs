@@ -3,12 +3,13 @@ using java.lang;
 using loon.geom;
 using loon.monogame;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Framework.Utilities;
 using System;
 using System.Transactions;
 
-namespace loon
+namespace loon.monogame
 {
     public abstract class Loon : Game, Platform
     {
@@ -42,7 +43,6 @@ namespace loon
             CheckDisplayMode();
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = dir;
-            _contentManager = new MonoGameContentManager(Content.ServiceProvider, Content.RootDirectory);
         }
 
 
@@ -175,10 +175,6 @@ namespace loon
             return this._graphicsDevice;
         }
 
-        public MonoGameContentManager GetMonoGameContentManager()
-        {
-            return _contentManager;
-        }
 
         public RectBox GetScreenDimension()
         {
@@ -254,6 +250,11 @@ namespace loon
             }
         }
 
+        public ContentManager GetContentManager()
+        {
+            return this.Content;
+        }
+
         public void Close()
         {
             throw new NotImplementedException();
@@ -287,5 +288,6 @@ namespace loon
         {
             return this._game;
         }
+
     }
 }

@@ -1,5 +1,6 @@
 ﻿using java.lang;
 using loon.utils;
+using Microsoft.Xna.Framework;
 
 namespace loon.geom
 {
@@ -56,7 +57,7 @@ namespace loon.geom
 
 		private void Init()
 		{
-		
+			support = LSystem.Base.Support();
 		}
 
 		public Matrix4()
@@ -1269,7 +1270,31 @@ namespace loon.geom
 			return (int)result;
 		}
 
-		
+		public virtual Matrix4 SetMatrix(Matrix xnamatrix)
+        {
+
+			xnamatrix.M11 = val[M00];
+			xnamatrix.M12 = val[M01];
+			xnamatrix.M13 = val[M02];
+			xnamatrix.M14 = val[M03];
+
+			xnamatrix.M21 = val[M10];
+			xnamatrix.M22 = val[M11];
+			xnamatrix.M23 = val[M12];
+			xnamatrix.M24 = val[M13];
+
+			xnamatrix.M31 = val[M20];
+			xnamatrix.M32 = val[M21];
+			xnamatrix.M33 = val[M22];
+			xnamatrix.M34 = val[M23];
+
+			xnamatrix.M41 = val[M30];
+			xnamatrix.M42 = val[M31];
+			xnamatrix.M43 = val[M32];
+			xnamatrix.M44 = val[M33];
+
+			return this;
+		}
 	public override string ToString()
 		{
 			StringKeyValue builder = new StringKeyValue("Matrix4");

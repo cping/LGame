@@ -24,7 +24,6 @@ import loon.Json;
 import loon.LGame;
 import loon.LSetting;
 import loon.LSystem;
-import loon.LSystemView;
 import loon.Support;
 import loon.events.SysInputFactory;
 import loon.utils.json.JsonImpl;
@@ -115,8 +114,7 @@ public class AndroidGame extends LGame {
 		EMULATOR = BULID_BRAND.indexOf("generic") != -1 && BULID_MODEL.indexOf("sdk") != -1;
 		USE_BITMAP_MEMORY_HACK = BULIDM_SDK < ICE_CREAM_SANDWICH;
 	}
-	LSystemView game;
-	Loon activity;
+
 
 	private enum State {
 		RUNNING, PAUSED, EXITED
@@ -135,6 +133,8 @@ public class AndroidGame extends LGame {
 	protected final Json json;
 	protected final long start = System.nanoTime();
 
+	protected Loon activity;
+	
 	public AndroidGame(Loon game, LSetting config) {
 		super(config, game);
 		this.activity = game;

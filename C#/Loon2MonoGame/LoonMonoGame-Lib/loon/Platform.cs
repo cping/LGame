@@ -1,4 +1,7 @@
-﻿namespace loon
+﻿using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
+
+namespace loon
 {
 	public interface Platform
 	{
@@ -13,6 +16,9 @@
 
 		LGame GetGame();
 
+		GraphicsDevice GetGraphicsDevice();
+
+		ContentManager GetContentManager();
 	}
 
 	public enum Platform_Orientation

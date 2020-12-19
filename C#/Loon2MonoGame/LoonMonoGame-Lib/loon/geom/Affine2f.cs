@@ -1,4 +1,5 @@
 ﻿using loon.utils;
+using Microsoft.Xna.Framework;
 
 namespace loon.geom
 {
@@ -1327,6 +1328,12 @@ namespace loon.geom
             projectionMatrix.ThisCombine(this);
             return projectionMatrix;
         }
+
+        public virtual Matrix4 SetMatrix(Matrix matrix)
+        {
+            return ToViewMatrix4().SetMatrix(matrix);
+        }
+
         public override string ToString()
         {
             StringKeyValue builder = new StringKeyValue("Affine");

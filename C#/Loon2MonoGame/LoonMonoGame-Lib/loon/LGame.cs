@@ -1,6 +1,7 @@
 ﻿using java.lang;
 using loon.utils;
 using loon.utils.reply;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace loon
 {
@@ -152,6 +153,11 @@ namespace loon
             return null;
         }
 
+        public virtual GraphicsDevice GetGraphicsDevice()
+        {
+            return _platform.GetGraphicsDevice();
+        }
+
         public static void FreeStatic()
         {
             LGame._platform = null;
@@ -182,7 +188,7 @@ namespace loon
         public abstract Log Log();
         public abstract Asyn Asyn();
         public abstract Assets Assets();
-
+        public abstract Support Support();
         public virtual void Close()
         {
             if (!errors.IsClosed())

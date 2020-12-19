@@ -37,96 +37,12 @@ import loon.utils.MathUtils;
 import loon.utils.StrBuilder;
 import loon.utils.StringUtils;
 import loon.utils.processes.RealtimeProcessManager;
+import loon.utils.reply.Act;
 import loon.utils.reply.Port;
 import loon.utils.timer.LTimer;
 import loon.utils.timer.LTimerContext;
 
-/**
- * Loon显示实际载体用类,主渲染器GLEx于此类中被构建,但用户无需直接使用此类,细节操作已被融入Screen中
- */
-public class Display extends LSystemView {
-
-	private final static String FPS_STR = "FPS:";
-
-	private final static String MEMORY_STR = "MEMORY:";
-
-	private final static String SPRITE_STR = "SPRITE:";
-
-	private final static String DESKTOP_STR = "DESKTOP:";
-
-	private String displayMemony = MEMORY_STR;
-
-	private String displaySprites = SPRITE_STR;
-
-	private StrBuilder displayMessage = new StrBuilder(32);
-
-	private GifEncoder gifEncoder;
-
-	private boolean videoScreenToGif;
-
-	private boolean memorySelf;
-
-	private ArrayByteOutput videoCache;
-
-	private final LTimer videoDelay = new LTimer();
-
-	/**
-	 * 返回video的缓存结果(不设置out对象时才会有效)
-	 * 
-	 * @return
-	 */
-	public ArrayByte getVideoCache() {
-		return videoCache.getArrayByte();
-	}
-
-	/**
-	 * 开始录像(默认使用ArrayByte缓存录像结果到内存中)
-	 * 
-	 * @return
-	 */
-	public GifEncoder startVideo() {
-		return startVideo(videoCache = new ArrayByteOutput());
-	}
-
-	/**
-	 * 开始录像(指定一个OutputStream对象,比如FileOutputStream 输出录像结果到指定硬盘位置)
-	 * 
-	 * @param output
-	 * @return
-	 */
-	public GifEncoder startVideo(OutputStream output) {
-		return startVideo(output, LSystem.isDesktop() ? LSystem.SECOND : LSystem.SECOND + LSystem.SECOND / 2);
-	}
-
-	/**
-	 * 开始录像(指定一个OutputStream对象,比如FileOutputStream 输出录像结果到指定硬盘位置)
-	 * 
-	 * @param output
-	 * @param delay
-	 * @return
-	 */
-	public GifEncoder startVideo(OutputStream output, long delay) {
-		stopVideo();
-		videoDelay.setDelay(delay);
-		gifEncoder = new GifEncoder();
-		gifEncoder.start(output);
-		gifEncoder.setDelay((int) delay);
-		videoScreenToGif = true;
-		return gifEncoder;
-	}
-
-	/**
-	 * 结束录像
-	 * 
-	 * @return
-	 */
-	public GifEncoder stopVideo() {
-		if (gifEncoder != null) {
-			gifEncoder.finish();
-		}
-		videoScreenToGif = false;
-		return gifEncoder;
-	}
+public class Display extends BaseIO {
 
 	// 为了方便直接转码到C#和C++，无法使用匿名内部类(也就是在构造内直接构造实现的方式)，只能都写出具体类来……
 	// PS:别提delegate，委托那玩意写出来太不优雅了(对于凭空实现某接口或抽象，而非局部重载来说)，而且大多数J2C#的工具也不能直接转换过去……
@@ -246,6 +162,44 @@ public class Display extends LSystemView {
 		}
 	}
 
+	public final Act<LTimerContext> update = Act.create();
+
+	public final Act<LTimerContext> paint = Act.create();
+
+	private final LTimerContext updateClock = new LTimerContext();
+	
+	private final LTimerContext paintClock = new LTimerContext();
+
+	private final LGame _game;
+
+	private final long updateRate;
+	
+	private long nextUpdate;
+
+	private final static String FPS_STR = "FPS:";
+
+	private final static String MEMORY_STR = "MEMORY:";
+
+	private final static String SPRITE_STR = "SPRITE:";
+
+	private final static String DESKTOP_STR = "DESKTOP:";
+
+	private String displayMemony = MEMORY_STR;
+
+	private String displaySprites = SPRITE_STR;
+
+	private StrBuilder displayMessage = new StrBuilder(32);
+
+	private GifEncoder gifEncoder;
+
+	private boolean videoScreenToGif;
+
+	private boolean memorySelf;
+
+	private ArrayByteOutput videoCache;
+
+	private final LTimer videoDelay = new LTimer();
+
 	private Runtime runtime;
 
 	private long frameCount = 0l;
@@ -274,6 +228,31 @@ public class Display extends LSystemView {
 
 	private UpdatePort updatePort;
 
+	public Display(LGame g, long updateRate) {
+		this.updateRate = updateRate;
+		this._game = g;
+		this._game.checkBaseGame(g);
+		this._setting = _game.setting;
+		this._process = _game.process();
+		this.memorySelf = _game.isHTML5();
+		Graphics graphics = _game.graphics();
+		GL20 gl = graphics.gl;
+		this._glEx = new GLEx(graphics, graphics.defaultRenderTarget, gl);
+		this._glEx.update();
+		updateSyncTween(_setting.isSyncTween);
+		this.displayMemony = MEMORY_STR + "0";
+		this.displaySprites = SPRITE_STR + "0, " + DESKTOP_STR + "0";
+		if (!_setting.isLogo) {
+			_process.start();
+		}
+		_game.frame.connect(new Port<LGame>() {
+			@Override
+			public void onEmit(LGame game) {
+				onFrame();
+			}
+		});
+	}
+
 	protected void newDefView(boolean show) {
 		if (show && (fpsFont == null || (fpsFont != LSystem.getSystemLogFont()))) {
 			this.fpsFont = LSystem.getSystemLogFont();
@@ -284,22 +263,6 @@ public class Display extends LSystemView {
 		}
 	}
 
-	public Display(LGame game, int updateRate) {
-		super(game, updateRate);
-		Graphics graphics = game.graphics();
-		GL20 gl = graphics.gl;
-		memorySelf = game.isHTML5();
-		_setting = game.setting;
-		_process = game.process();
-		_glEx = new GLEx(graphics, graphics.defaultRenderTarget, gl);
-		_glEx.update();
-		updateSyncTween(_setting.isSyncTween);
-		this.displayMemony = MEMORY_STR + "0";
-		this.displaySprites = SPRITE_STR + "0, " + DESKTOP_STR + "0";
-		if (!_setting.isLogo) {
-			_process.start();
-		}
-	}
 
 	public void updateSyncTween(boolean sync) {
 		if (paintAllPort != null) {
@@ -317,14 +280,6 @@ public class Display extends LSystemView {
 			paint.connect(paintPort = new PaintPort(this));
 			update.connect(updatePort = new UpdatePort());
 		}
-	}
-
-	public void setScreen(Screen screen) {
-		_process.setScreen(screen);
-	}
-
-	public LProcess getProcess() {
-		return _process;
 	}
 
 	/**
@@ -374,6 +329,14 @@ public class Display extends LSystemView {
 		if (_glEx != null) {
 			_glEx.disableFrameBuffer();
 		}
+	}
+
+	public void update(LTimerContext clock) {
+		update.emit(clock);
+	}
+
+	public void paint(LTimerContext clock) {
+		paint.emit(clock);
 	}
 
 	protected void draw(LTimerContext clock) {
@@ -471,23 +434,45 @@ public class Display extends LSystemView {
 
 	}
 
-	public void setShaderSource(ShaderSource src) {
-		if (_glEx != null && src != null) {
-			_glEx.setShaderSource(src);
+	private void onFrame() {
+		if (!LSystem._auto_repaint) {
+			return;
 		}
-	}
+		final int updateTick = _game.tick();
+		final LSetting setting = _game.setting;
+		final long paintLoop = setting.fixedPaintLoopTime;
+		final long updateLoop = setting.fixedUpdateLoopTime;
+		
+		long nextUpdate = this.nextUpdate;
 
-	public ShaderSource getShaderSource() {
-		if (_glEx != null) {
-			return _glEx.getShaderSource();
+		if (updateTick >= nextUpdate) {
+			long updateRate = this.updateRate;
+			long updates = 0;
+			while (updateTick >= nextUpdate) {
+				nextUpdate += updateRate;
+				updates++;
+			}
+			this.nextUpdate = nextUpdate;
+			long updateDt = updates * updateRate;
+			updateClock.tick += updateDt;
+			if (updateLoop == -1) {
+				updateClock.timeSinceLastUpdate = updateDt;
+			} else {
+				updateClock.timeSinceLastUpdate = updateLoop;
+			}
+			update(updateClock);
 		}
-		return LSystem.DEF_SOURCE;
+		long paintTick = _game.tick();
+		if (paintLoop == -1) {
+			paintClock.timeSinceLastUpdate = paintTick - paintClock.tick;
+		} else {
+			paintClock.timeSinceLastUpdate = paintLoop;
+		}
+		paintClock.tick = paintTick;
+		paintClock.alpha = 1f - (nextUpdate - paintTick) / (float) updateRate;
+		paint(paintClock);
 	}
-
-	public Display resize(int viewWidth, int viewHeight) {
-		_process.resize(viewWidth, viewHeight);
-		return this;
-	}
+	
 
 	/**
 	 * 渲染debug信息到游戏画面
@@ -599,6 +584,102 @@ public class Display extends LSystemView {
 		return LSystem.viewSize.height;
 	}
 
+	/**
+	 * 返回video的缓存结果(不设置out对象时才会有效)
+	 * 
+	 * @return
+	 */
+	public ArrayByte getVideoCache() {
+		return videoCache.getArrayByte();
+	}
+
+	/**
+	 * 开始录像(默认使用ArrayByte缓存录像结果到内存中)
+	 * 
+	 * @return
+	 */
+	public GifEncoder startVideo() {
+		return startVideo(videoCache = new ArrayByteOutput());
+	}
+
+	/**
+	 * 开始录像(指定一个OutputStream对象,比如FileOutputStream 输出录像结果到指定硬盘位置)
+	 * 
+	 * @param output
+	 * @return
+	 */
+	public GifEncoder startVideo(OutputStream output) {
+		return startVideo(output, LSystem.isDesktop() ? LSystem.SECOND : LSystem.SECOND + LSystem.SECOND / 2);
+	}
+
+	/**
+	 * 开始录像(指定一个OutputStream对象,比如FileOutputStream 输出录像结果到指定硬盘位置)
+	 * 
+	 * @param output
+	 * @param delay
+	 * @return
+	 */
+	public GifEncoder startVideo(OutputStream output, long delay) {
+		stopVideo();
+		videoDelay.setDelay(delay);
+		gifEncoder = new GifEncoder();
+		gifEncoder.start(output);
+		gifEncoder.setDelay((int) delay);
+		videoScreenToGif = true;
+		return gifEncoder;
+	}
+
+	/**
+	 * 结束录像
+	 * 
+	 * @return
+	 */
+	public GifEncoder stopVideo() {
+		if (gifEncoder != null) {
+			gifEncoder.finish();
+		}
+		videoScreenToGif = false;
+		return gifEncoder;
+	}
+
+	public final LTimerContext getUpdate() {
+		return updateClock;
+	}
+
+	public final LTimerContext getPaint() {
+		return paintClock;
+	}
+
+	public void setShaderSource(ShaderSource src) {
+		if (_glEx != null && src != null) {
+			_glEx.setShaderSource(src);
+		}
+	}
+
+	public ShaderSource getShaderSource() {
+		if (_glEx != null) {
+			return _glEx.getShaderSource();
+		}
+		return LSystem.DEF_SOURCE;
+	}
+
+	public Display resize(int viewWidth, int viewHeight) {
+		_process.resize(viewWidth, viewHeight);
+		return this;
+	}
+
+	public void setScreen(Screen screen) {
+		_process.setScreen(screen);
+	}
+
+	public LProcess getProcess() {
+		return _process;
+	}
+
+	public LGame getGame() {
+		return _game;
+	}
+
 	public void close() {
 		if (this.fpsFont != null) {
 			this.fpsFont.close();
@@ -610,4 +691,5 @@ public class Display extends LSystemView {
 		}
 		initDrawConfig = false;
 	}
+
 }

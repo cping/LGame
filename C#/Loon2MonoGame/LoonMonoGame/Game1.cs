@@ -1,12 +1,7 @@
 ﻿using java.lang;
 using loon;
-using loon.canvas;
 using loon.monogame;
 using loon.opengl;
-using loon.utils;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using System;
 
 namespace LoonMonoGame
@@ -20,7 +15,6 @@ namespace LoonMonoGame
         {
             public MyScreen()
             {
-
                 LSystem.I("log format testing...");
                 LSystem.I("newline");
                 LSystem.I("newline");

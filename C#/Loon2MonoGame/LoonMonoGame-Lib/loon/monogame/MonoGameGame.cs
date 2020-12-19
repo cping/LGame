@@ -1,4 +1,6 @@
 ﻿using java.lang;
+using loon.jni;
+using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Framework.Utilities;
 using System;
 
@@ -14,6 +16,7 @@ namespace loon.monogame
 
         private readonly static bool _isMac;
 
+
         static MonoGameGame()
         {
             _isWindows = Environment.OSVersion.Platform == PlatformID.Win32NT;
@@ -27,11 +30,17 @@ namespace loon.monogame
 
         private readonly Asyn _asyn;
 
+        private readonly Support _support;
+
+        private readonly MonoGameContentManager _contentManager;
+
         public MonoGameGame(LSetting config, Loon game) : base(config, game)
         {
 
             this._start = JavaSystem.NanoTime();
+            this._contentManager = new MonoGameContentManager(game.GetContentManager().ServiceProvider, game.GetContentManager().RootDirectory);
             this._log = new MonoGameLog();
+            this._support = new NativeSupport();
             this._assets = new MonoGameAssets(this);
             this._asyn = new MonoGameAsyn<object>(this._log,frame);
         }
@@ -86,6 +95,11 @@ namespace loon.monogame
             return PlatformInfo.MonoGamePlatform == MonoGamePlatform.DesktopGL;
         }
 
+        public MonoGameContentManager GetMonoGameContentManager()
+        {
+            return _contentManager;
+        }
+
         protected internal void ProcessFrame()
         {
             EmitFrame();
@@ -110,6 +124,11 @@ namespace loon.monogame
         public override Asyn Asyn()
         {
             return this._asyn;
+        }
+
+        public override Support Support()
+        {
+            return _support;
         }
 
         public override Type TYPE

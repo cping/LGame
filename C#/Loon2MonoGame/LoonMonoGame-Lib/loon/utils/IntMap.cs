@@ -9,15 +9,14 @@ namespace loon.utils
     public class IntMap<T> : IArray,IEnumerable<T>, Iterable<T>
     {
 
-#pragma warning disable CS0693 // 类型参数与外部类型中的类型参数同名
-        public class Entry<T>
-#pragma warning restore CS0693 // 类型参数与外部类型中的类型参数同名
+
+        public class Entry<T1>
         {
 
             public long key;
-            public T value;
+            public T1 value;
 
-            public Entry(long k, T v)
+            public Entry(long k, T1 v)
             {
                 key = k;
                 value = v;
@@ -28,31 +27,31 @@ namespace loon.utils
                 return key;
             }
 
-            public T GetValue()
+            public T1 GetValue()
             {
                 return value;
             }
 
-            public T SetValue(T newValue)
+            public T1 SetValue(T1 newValue)
             {
-                T oldValue = value;
+                T1 oldValue = value;
                 value = newValue;
                 return oldValue;
             }
 
             public override bool Equals(object o)
             {
-                if (!(o is Entry<T>))
+                if (!(o is Entry<T1>))
                 {
                     return false;
                 }
-                Entry<T> e = (Entry<T>)o;
+                Entry<T1> e = (Entry<T1>)o;
                 long k1 = GetKey();
                 long k2 = e.GetKey();
                 if (k1 == k2)
                 {
-                    T v1 = GetValue();
-                    T v2 = e.GetValue();
+                    T1 v1 = GetValue();
+                    T1 v2 = e.GetValue();
                     if ((object)v1 == (object)v2 || (v1 != null && v1.Equals(v2)))
                     {
                         return true;
