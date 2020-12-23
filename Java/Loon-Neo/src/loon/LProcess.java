@@ -883,7 +883,7 @@ public class LProcess {
 		if (size > 0) {
 			Screen o = _screens.pop();
 			if (o != _currentScreen) {
-				setScreen((Screen) o, false);
+				setScreen(o, false);
 			}
 		}
 	}
@@ -897,7 +897,7 @@ public class LProcess {
 		if (size > 0) {
 			Screen o = _screens.first();
 			if (o != _currentScreen) {
-				setScreen((Screen) o, false);
+				setScreen(o, false);
 			}
 		}
 	}
@@ -967,7 +967,7 @@ public class LProcess {
 	}
 
 	public TArray<Screen> getScreens() {
-		return _screens;
+		return _screens.cpy();
 	}
 
 	public int getScreenCount() {

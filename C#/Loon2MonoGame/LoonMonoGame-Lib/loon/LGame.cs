@@ -1,11 +1,12 @@
 ﻿using java.lang;
+using loon.events;
 using loon.utils;
 using loon.utils.reply;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace loon
 {
-    public abstract class LGame : object
+    public abstract class LGame : LRelease
     {
         public enum Type
         {
@@ -40,10 +41,10 @@ namespace loon
         protected internal static Platform _platform = null;
 
         // 错误接口
-        public Act<object> errors = Act<object>.Create<object>();
+        public Act<Error> errors = Act<Error>.Create<Error>();
 
         // 状态接口
-        public Act<object> status = Act<object>.Create<object>();
+        public Act<Status> status = Act<Status>.Create<Status>();
 
         // 游戏窗体刷新接口
         public Act<object> frame = Act<object>.Create<object>();
@@ -73,6 +74,35 @@ namespace loon
             {
                 setting.fontName = FONT_NAME;
             }
+        }
+
+        protected void InitProcess(LGame game)
+        {
+            _base = game;
+            if (_base == null && _platform != null)
+            {
+                _base = _platform.GetGame();
+            }
+            processImpl = new LProcess(game);
+            Log().Debug("The Loon Game Engine is Begin");
+        }
+
+        public LGame InitProcess()
+        {
+            InitProcess(this);
+           /* if (setting.defaultGameFont == null)
+            {
+                setting.defaultGameFont = LFont.getFont(setting.fontName, 20);
+            }
+            if (setting.defaultLogFont == null)
+            {
+                setting.defaultLogFont = LSTRFont.getFont(LSystem.isDesktop() ? 16 : 20);
+            }
+            if (jsonImpl == null)
+            {
+                jsonImpl = new JsonImpl();
+            }*/
+            return this;
         }
 
         public virtual void SetPlatform(Platform plat)
@@ -105,6 +135,11 @@ namespace loon
                 _base = oldGame;
             }
             return LSystem.Base;
+        }
+
+        public virtual LProcess Process()
+        {
+            return this.processImpl;
         }
 
         public virtual LGame ReportError(string message, System.Exception cause)
@@ -150,12 +185,9 @@ namespace loon
 
         public virtual Display Register(Screen screen)
         {
-            return null;
-        }
-
-        public virtual GraphicsDevice GetGraphicsDevice()
-        {
-            return _platform.GetGraphicsDevice();
+            this.displayImpl = new Display(this, setting.fps);
+            this.displayImpl.SetScreen(screen);
+            return displayImpl;
         }
 
         public static void FreeStatic()
@@ -189,6 +221,10 @@ namespace loon
         public abstract Asyn Asyn();
         public abstract Assets Assets();
         public abstract Support Support();
+        public abstract InputMake Input();
+
+        public abstract Graphics Graphics();
+
         public virtual void Close()
         {
             if (!errors.IsClosed())

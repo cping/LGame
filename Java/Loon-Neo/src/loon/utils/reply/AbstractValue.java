@@ -138,10 +138,11 @@ public abstract class AbstractValue<T> extends Bypass implements VarView<T> {
 		throw new UnsupportedOperationException();
 	}
 
-	@SuppressWarnings("unchecked")
-	protected static final Notifier CHANGE = new Notifier() {
-		public void notify(Object lner, Object value, Object oldValue, Object ignored) {
-			((VarViewListener<Object>) lner).onChange(value, oldValue);
+	protected final Notifier<T> CHANGE = new Notifier<T>() {
+		@SuppressWarnings("unchecked")
+		@Override
+		public void notify(Bypass.GoListener lner, T value, T oldValue, T ignored) {
+			((VarViewListener<T>) lner).onChange(value, oldValue);
 		}
 	};
 }

@@ -1,5 +1,8 @@
 ﻿
+using java.lang;
+using loon.opengl;
 using loon.utils;
+using loon.utils.processes;
 using loon.utils.reply;
 using loon.utils.timer;
 using System;
@@ -8,6 +11,90 @@ namespace loon
 {
     public class Display
     {
+        private sealed class PaintPort : Port<LTimerContext>
+        {
+
+            internal readonly Display _display;
+
+            internal PaintPort(Display d)
+            {
+                this._display = d;
+            }
+
+            public override void OnEmit(LTimerContext clock)
+            {
+                    lock (clock)
+                    {
+                        if (!LSystem.PAUSED)
+                        {
+                            RealtimeProcessManager.Get().Tick(clock);
+                            // _display.Draw(clock);
+                        }
+                    }
+            }
+
+        }
+
+        private sealed class PaintAllPort : Port<LTimerContext>
+        {
+
+            internal readonly Display _display;
+
+            internal PaintAllPort(Display d)
+            {
+                this._display = d;
+            }
+
+            public override void OnEmit(LTimerContext clock)
+            {
+                    lock (clock)
+                    {
+                        if (!LSystem.PAUSED)
+                        {
+                            RealtimeProcessManager.Get().Tick(clock);
+                            //ActionControl.Get().Call(clock.timeSinceLastUpdate);
+                            //_display.draw(clock);
+                        }
+                    }
+            }
+
+        }
+
+        private sealed class UpdatePort : Port<LTimerContext>
+        {
+
+            internal UpdatePort()
+            {
+            }
+
+            public override void OnEmit(LTimerContext clock)
+            {
+                lock (clock)
+                {
+                    if (!LSystem.PAUSED)
+                    {
+                        //ActionControl.get().call(clock.timeSinceLastUpdate);
+                    }
+                }
+            }
+        }
+        private class PortImpl : Port<object>
+        {
+            private readonly Display _outer;
+
+            public PortImpl(Display o)
+            {
+                this._outer = o;
+            }
+
+            public override void OnEmit(object game)
+            {
+                _outer.OnFrame();
+            }
+        }
+
+
+
         private const string FPS_STR = "FPS:";
 
         private const string MEMORY_STR = "MEMORY:";
@@ -27,7 +114,14 @@ namespace loon
         public readonly Act<LTimerContext> paint = Act<LTimerContext>.Create<LTimerContext>();
 
         private readonly LTimerContext updateClock = new LTimerContext();
+
         private readonly LTimerContext paintClock = new LTimerContext();
+
+        private readonly GLEx _glEx;
+
+        private readonly LProcess _process;
+
+        private LSetting _setting;
 
         private readonly LGame _game;
 
@@ -35,26 +129,58 @@ namespace loon
 
         private long nextUpdate;
 
+        private readonly bool memorySelf;
+
+        private PaintAllPort paintAllPort;
+
+        private PaintPort paintPort;
+
+        private UpdatePort updatePort;
+
         public Display(LGame g, long updateRate)
         {
             this.updateRate = updateRate;
             this._game = g;
-            _game.CheckBaseGame(g);
+            this._game.CheckBaseGame(g);
+            this._setting = _game.setting;
+            this._process = _game.Process();
+            this.memorySelf = _game.IsHTML5();
+            Graphics graphics = _game.Graphics();
+            GL20 gl = graphics.gl;
+            this._glEx = new GLEx(graphics, graphics.defaultRenderTarget, gl);
+            this._glEx.Update();
+            UpdateSyncTween(_setting.isSyncTween);
+            this.displayMemony = MEMORY_STR + "0";
+            this.displaySprites = SPRITE_STR + "0, " + DESKTOP_STR + "0";
+            if (!_setting.isLogo)
+            {
+                _process.Start();
+            }
             _game.frame.Connect(new PortImpl(this));
         }
 
-        private class PortImpl : Port<object>
+        public virtual void UpdateSyncTween(bool sync)
         {
-            private readonly Display outer;
-
-            public PortImpl(Display outer)
+            if (paintAllPort != null)
             {
-                this.outer = outer;
+                paint.Disconnect(paintAllPort);
             }
-
-            public override void OnEmit(object game)
+            if (paintPort != null)
             {
-                outer.OnFrame();
+                paint.Disconnect(paintPort);
+            }
+            if (update != null)
+            {
+                update.Disconnect(updatePort);
+            }
+            if (sync)
+            {
+                paint.Connect(paintAllPort = new PaintAllPort(this));
+            }
+            else
+            {
+                paint.Connect(paintPort = new PaintPort(this));
+                update.Connect(updatePort = new UpdatePort());
             }
         }
 
@@ -122,9 +248,24 @@ namespace loon
             return updateClock;
         }
 
+        public virtual float Width()
+        {
+            return LSystem.viewSize.Width();
+        }
+
+        public virtual float Height()
+        {
+            return LSystem.viewSize.Height();
+        }
+
         public LTimerContext GetPaint()
         {
             return paintClock;
+        }
+
+        public virtual LGame GetGame()
+        {
+            return Game;
         }
 
         public virtual LGame Game
@@ -135,5 +276,37 @@ namespace loon
             }
         }
 
+
+        public virtual Display Resize(int viewWidth, int viewHeight)
+        {
+            _process.Resize(viewWidth, viewHeight);
+            return this;
+        }
+
+        public virtual void SetScreen(Screen v)
+        {
+            Screen = v;
+        }
+
+        public virtual Screen Screen
+        {
+            set
+            {
+                _process.SetScreen(value);
+            }
+        }
+
+        public virtual LProcess GetProcess()
+        {
+            return this.Process;
+        }
+
+        public virtual LProcess Process
+        {
+            get
+            {
+                return _process;
+            }
+        }
     }
 }

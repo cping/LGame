@@ -118,17 +118,18 @@ namespace loon.utils.reply
 
 		protected internal virtual void NotifyEmit(T e)
 		{
-			this.Notify(EMIT, e, null, null);
+			this.Notify(EMIT, e, default, default);
 		}
 
-        protected internal static readonly Notifier EMIT = new NotifyEmitImpl();
+        protected internal readonly Notifier<T> EMIT = new NotifyEmitImpl();
 
-		private class NotifyEmitImpl : Notifier
+		private class NotifyEmitImpl : Notifier<T>
 		{
-			public override void Notify(object port, object e, object a, object b)
+			public override void Notify(GoListener port, T e, T a, T b)
 			{
-				((ActViewListener<object>)port).OnEmit(e);
+				((ActViewListener<T>)port).OnEmit(e);
 			}
-		}
+
+        }
 	}
 }

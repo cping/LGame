@@ -112,7 +112,7 @@ namespace loon.events
 					finalKey.type = SysKey.DOWN;
 					SysKey.only_key.Press();
 					SysKey.AddKey(finalKey.keyCode);
-					//process.KeyDown(finalKey);
+					process.KeyDown(finalKey);
 				}
 				else
 				{
@@ -121,7 +121,7 @@ namespace loon.events
 					//finalKey.keyCode = e.keyCode;
 					finalKey.type = SysKey.UP;
 					SysKey.RemoveKey(finalKey.keyCode);
-					//process.keyUp(finalKey);
+					process.KeyUp(finalKey);
 				}
 			}
 		}
@@ -314,7 +314,7 @@ namespace loon.events
 
 				switch (e.kind.innerEnumValue)
 				{
-					case loon.events.TouchMake.Event.Kind.InnerEnum.START:
+					case TouchMake.Event.Kind.InnerEnum.START:
 						if (useTouchCollection)
 						{
 							touchCollection.Add(finalTouch.id, finalTouch.x, finalTouch.y);
@@ -347,7 +347,7 @@ namespace loon.events
 							ebuttons.hit(i, touchX, touchY, false);
 						}*/
 						break;
-					case loon.events.TouchMake.Event.Kind.InnerEnum.MOVE:
+					case TouchMake.Event.Kind.InnerEnum.MOVE:
 						_offsetMoveX = touchX;
 						_offsetMoveY = touchY;
 						finalTouch.dx = _offsetTouchX - _offsetMoveX;

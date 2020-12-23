@@ -130,7 +130,6 @@ namespace loon.monogame
             Window.Title = _setting.appName;
 #if WINDOWS || DEBUG
             IsMouseVisible = _setting.isMouseVisible;
-    
 #endif
             IsFixedTimeStep = _setting.isFixedTimeStep;
 

@@ -3742,11 +3742,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	public int getScreenWidth() {
-		return width;
+		return (int) (width * this._scaleX);
 	}
 
 	public int getScreenHeight() {
-		return height;
+		return (int) (height * this._scaleY);
 	}
 
 	@Override

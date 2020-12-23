@@ -33,9 +33,9 @@ public abstract class Bypass {
 		public abstract void action(Object a);
 	}
 
-	protected static abstract class Notifier {
+	protected static abstract class Notifier<T> {
 		
-		public abstract void notify(Object listener, Object a1, Object a2, Object a3);
+		public abstract void notify(Bypass.GoListener listener, T a1, T a2, T a3);
 		
 	}
 
@@ -133,7 +133,7 @@ public abstract class Bypass {
 	}
 
 
-	protected void notify(final Notifier notifier, final Object a1, final Object a2, final Object a3) {
+	protected <T> void  notify(final Notifier<T> notifier, final T a1, final T a2, final T a3) {
 		Cons lners;
 		synchronized (this) {
 			if (_listeners == DISPATCHING) {

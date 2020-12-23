@@ -16,9 +16,6 @@ namespace loon
 
 		LGame GetGame();
 
-		GraphicsDevice GetGraphicsDevice();
-
-		ContentManager GetContentManager();
 	}
 
 	public enum Platform_Orientation

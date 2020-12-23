@@ -1,4 +1,5 @@
 ﻿using loon.geom;
+using loon.opengl;
 using loon.utils;
 using loon.utils.reply;
 
@@ -20,6 +21,9 @@ namespace loon
 
         private LTexture colorTex;
 
+        protected internal GL20 gl;
+
+        protected internal readonly RenderTarget defaultRenderTarget;
         private class DisposePort : UnitPort
         {
 

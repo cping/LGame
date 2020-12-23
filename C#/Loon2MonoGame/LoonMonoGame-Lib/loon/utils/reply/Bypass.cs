@@ -12,9 +12,9 @@ namespace loon.utils.reply
             public abstract void Action(object a);
         }
 
-        protected internal abstract class Notifier
+        protected internal abstract class Notifier<T>
         {
-            public abstract void Notify(object listener, object a1, object a2, object a3);
+            public abstract void Notify(GoListener listener, T a1, T a2, T a3);
         }
 
         public interface GoListener
@@ -188,14 +188,14 @@ namespace loon.utils.reply
                 outerInstance.ConnectionRemoved();
             }
         }
-        protected internal virtual void Notify(Notifier notifier, object a1, object a2, object a3)
+        protected internal virtual void Notify<T>(Notifier<T> notifier, T a1, T a2, T a3)
         {
             Cons lners;
             lock (this)
             {
                 if (_listeners == DISPATCHING)
                 {
-                    _pendingRuns = Append(_pendingRuns, new RunsNotifyImpl(this, notifier, a1, a2, a3));
+                    _pendingRuns = Append(_pendingRuns, new RunsNotifyImpl<T>(this, notifier, a1, a2, a3));
                     return;
                 }
                 lners = _listeners;
@@ -248,16 +248,16 @@ namespace loon.utils.reply
             }
         }
 
-        private class RunsNotifyImpl : Runs
+        private class RunsNotifyImpl<T> : Runs
         {
             private readonly Bypass outerInstance;
 
-            private readonly Notifier notifier;
-            private readonly object a1;
-            private readonly object a2;
-            private readonly object a3;
+            private readonly Notifier<T> notifier;
+            private readonly T a1;
+            private readonly T a2;
+            private readonly T a3;
 
-            public RunsNotifyImpl(Bypass outerInstance, Notifier notifier, object a1, object a2, object a3)
+            public RunsNotifyImpl(Bypass outerInstance, Notifier<T> notifier, T a1, T a2, T a3)
             {
                 this.outerInstance = outerInstance;
                 this.notifier = notifier;
@@ -268,7 +268,7 @@ namespace loon.utils.reply
 
             public override void Action(object o)
             {
-                outerInstance.Notify(notifier, a1, a2, a3);
+                outerInstance.Notify<T>(notifier, a1, a2, a3);
             }
         }
 

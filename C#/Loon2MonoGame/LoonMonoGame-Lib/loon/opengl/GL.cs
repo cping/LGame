@@ -306,7 +306,7 @@ namespace loon.opengl
         private CompareFunction _depthFunc;
         private bool _depthMask;
 
-        private BlendState _blendState;
+        private  Microsoft.Xna.Framework.Graphics.BlendState _blendState;
 
         private GraphicsDevice _graphicsDevice;
         public GL(GraphicsDevice d, int w, int h)
@@ -518,12 +518,12 @@ namespace loon.opengl
             }
         }
 
-        public void SetBlendState(BlendState b)
+        public void SetBlendState(Microsoft.Xna.Framework.Graphics.BlendState b)
         {
             this._blendState = b;
         }
 
-        public BlendState GetBlendState()
+        public Microsoft.Xna.Framework.Graphics.BlendState GetBlendState()
         {
             return this._blendState;
         }
@@ -693,10 +693,10 @@ namespace loon.opengl
             }
             if (_blendState == null)
             {
-                BlendState blendState = _graphicsDevice.BlendState;
+                Microsoft.Xna.Framework.Graphics.BlendState blendState = _graphicsDevice.BlendState;
                 if (((blendState.AlphaDestinationBlend != this._alphaDestinationBlend) || (blendState.ColorWriteChannels != this._colorWriteChannels)) || (blendState.AlphaBlendFunction != _alphaBlendFunction))
                 {
-                    blendState = new BlendState();
+                    blendState = new Microsoft.Xna.Framework.Graphics.BlendState();
                     blendState.ColorSourceBlend = Blend.SourceAlpha;
                     blendState.AlphaSourceBlend = Blend.SourceAlpha;
                     blendState.ColorDestinationBlend = this._alphaDestinationBlend;
@@ -787,6 +787,7 @@ namespace loon.opengl
             {
                 tex.Dispose();
                 this._textures.Remove(texid);
+                this._textureTypes.Remove(tex);
             }
         }
 
@@ -1170,10 +1171,10 @@ namespace loon.opengl
             }
             if (_blendState == null)
             {
-                BlendState blendState = _graphicsDevice.BlendState;
+                Microsoft.Xna.Framework.Graphics.BlendState blendState = _graphicsDevice.BlendState;
                 if (((blendState.AlphaDestinationBlend != this._alphaDestinationBlend) || (blendState.ColorWriteChannels != this._colorWriteChannels)) || (blendState.AlphaBlendFunction != _alphaBlendFunction))
                 {
-                    blendState = new BlendState();
+                    blendState = new Microsoft.Xna.Framework.Graphics.BlendState();
                     blendState.ColorSourceBlend = Blend.SourceAlpha;
                     blendState.AlphaSourceBlend = Blend.SourceAlpha;
                     blendState.ColorDestinationBlend = this._alphaDestinationBlend;

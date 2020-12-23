@@ -163,7 +163,7 @@
 
 		protected internal virtual void NotifyChange(T value, T oldValue)
 		{
-			this.Notify(CHANGE, value, oldValue, null);
+			this.Notify(CHANGE, value, oldValue, default);
 		}
 
 		protected internal virtual T UpdateLocal(T value)
@@ -171,13 +171,13 @@
 			throw new System.NotSupportedException();
 		}
 
-        protected internal static readonly Notifier CHANGE = new NotifierAnonymousInnerClass();
+        protected internal readonly Notifier<T> CHANGE = new NotifierImpl();
 
-		private class NotifierAnonymousInnerClass : Notifier
+		private class NotifierImpl : Notifier<T>
 		{
-			public override void Notify(object lner, object value, object oldValue, object ignored)
+			public override void Notify(GoListener lner, T value, T oldValue, T ignored)
 			{
-				((VarViewListener<object>)lner).OnChange(value, oldValue);
+				((VarViewListener<T>)lner).OnChange(value, oldValue);
 			}
 		}
 	}

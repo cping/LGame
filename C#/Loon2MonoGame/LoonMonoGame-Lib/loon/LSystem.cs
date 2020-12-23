@@ -108,6 +108,8 @@ namespace loon
 
         private static float _scaleHeight = 1f;
 
+        public static bool PAUSED = false;
+
         public static float GetScaleWidth()
         {
             return LSystem._scaleWidth;

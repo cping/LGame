@@ -30,6 +30,20 @@ namespace loon
 			SPRITE, DESKTOP, USER
 		}
 
+		private float _alpha = 1f;
+
+		private float _rotation = 0;
+
+		private float _pivotX = -1f, _pivotY = -1f;
+
+		private float _scaleX = 1f, _scaleY = 1f;
+
+		private bool _flipX = false, _flipY = false;
+
+		private bool _visible = true;
+
+		protected internal LProcess handler;
+
 		private readonly IntMap<bool> keyType = new IntMap<bool>();
 
 		private readonly IntMap<bool> touchType = new IntMap<bool>();
@@ -38,6 +52,47 @@ namespace loon
 
 		private int keyButtonPressed = SysInput_Item.NO_KEY, keyButtonReleased = SysInput_Item.NO_KEY;
 
+		private int width,height;
+
+		public int GetScreenWidth()
+		{
+			return (int)(width * this._scaleX);
+		}
+
+		public int GetScreenHeight()
+		{
+			return (int)(height * this._scaleY);
+		}
+
+	public int GetWidth()
+		{
+			return width;
+		}
+
+	public int GetHeight()
+		{
+			return height;
+		}
+
+		public string GetName()
+        {
+			 return this.GetType().Name ;
+        }
+
+		public string GetScreenName()
+        {
+			return null;
+        }
+
+		public void OnCreate(int w, int h)
+        {
+
+        }
+
+		public bool IsOnLoadComplete()
+        {
+			return true;
+        }
 		public float GetRotation()
         {
 			return 0;

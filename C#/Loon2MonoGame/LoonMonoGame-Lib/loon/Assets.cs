@@ -2,6 +2,7 @@
 using loon.utils;
 using loon.utils.reply;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace loon
 {
@@ -81,7 +82,6 @@ namespace loon
             this.asyn = s;
         }
 
-
         public void SetPathPrefix(string prefix)
         {
             if (prefix.StartsWith("/") || prefix.EndsWith("/"))
@@ -131,7 +131,7 @@ namespace loon
             do
             {
                 pathLen = path.Length();
-                path = path.Replace("[^/]+/\\.\\./", "");
+                path = Regex.Replace(path, "[^/]+/\\.\\./", "");
             } while (path.Length() != pathLen);
             return path.Replace("\\", "/");
         }

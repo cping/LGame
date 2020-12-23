@@ -1,4 +1,5 @@
 ﻿using java.lang;
+using loon.events;
 using loon.jni;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Framework.Utilities;
@@ -34,15 +35,22 @@ namespace loon.monogame
 
         private readonly MonoGameContentManager _contentManager;
 
+        private readonly MonoGameInputMake _inputer;
+
+        private readonly MonoGameGraphics _graphics;
+
         public MonoGameGame(LSetting config, Loon game) : base(config, game)
         {
 
             this._start = JavaSystem.NanoTime();
             this._contentManager = new MonoGameContentManager(game.GetContentManager().ServiceProvider, game.GetContentManager().RootDirectory);
+            this._inputer = new MonoGameInputMake();
+            this._graphics = new MonoGameGraphics();
             this._log = new MonoGameLog();
             this._support = new NativeSupport();
             this._assets = new MonoGameAssets(this);
             this._asyn = new MonoGameAsyn<object>(this._log,frame);
+            this.InitProcess();
         }
 
         public override int Tick()
@@ -102,7 +110,8 @@ namespace loon.monogame
 
         protected internal void ProcessFrame()
         {
-            EmitFrame();
+            this._inputer.Update();
+            this.EmitFrame();
         }
 
         public override Log Log()
@@ -114,7 +123,6 @@ namespace loon.monogame
         {
             return JavaSystem.CurrentTimeMillis();
         }
-
 
         public override Assets Assets()
         {
@@ -129,6 +137,16 @@ namespace loon.monogame
         public override Support Support()
         {
             return _support;
+        }
+
+        public override InputMake Input()
+        {
+            return this._inputer;
+        }
+
+        public override Graphics Graphics()
+        {
+            return this._graphics;
         }
 
         public override Type TYPE

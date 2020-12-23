@@ -84,6 +84,7 @@ public abstract class InputMake {
 		mouseEvents.emit(event);
 	}
 
+	
 	public abstract void callback(LObject<?> o);
 
 
