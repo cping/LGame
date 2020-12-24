@@ -58,7 +58,7 @@ public class TileMapConfig {
 			line = br.nextToken();
 			for (int j = 0; j < height; j++) {
 				char temp = line.charAt(j);
-				if (temp == ' ') {
+				if (temp == LSystem.SPACE) {
 					temp = 0;
 				} else if (CharUtils.isDigit(temp)) {
 					temp = (char) CharUtils.toInt(temp);
@@ -94,7 +94,7 @@ public class TileMapConfig {
 					int[] intArray = new int[size];
 					for (int i = 0; i < size; i++) {
 						char temp = charArray[i];
-						if (temp == ' ') {
+						if (temp == LSystem.SPACE) {
 							temp = 0;
 						} else if (CharUtils.isDigit(temp)) {
 							temp = (char) CharUtils.toInt(temp);

@@ -302,7 +302,7 @@ public class RocScript {
 		char lastChar = 0;
 		for (int i = 0; i < cmd.length(); i++) {
 			char ch = cmd.charAt(i);
-			if (ch == '\'' && (lastChar != '\\')) {
+			if (ch == LSystem.SINGLE_QUOTE && (lastChar != '\\')) {
 				tflag = !tflag;
 			}
 			if (tflag) {
@@ -325,11 +325,11 @@ public class RocScript {
 			}
 
 			String cmd = filterCommand(s).trim();
-			if (cmd.startsWith("print") && cmd.indexOf("\"") != -1 && cmd.indexOf(",") == -1) {
+			if (cmd.startsWith("print") && cmd.indexOf(LSystem.DOUBLE_QUOTES) != -1 && cmd.indexOf(",") == -1) {
 				char[] chars = cmd.toCharArray();
 				boolean flag = false;
 				for (int i = 0; i < chars.length; i++) {
-					if (chars[i] == '"') {
+					if (chars[i] == LSystem.DOUBLE_QUOTES) {
 						flag = !flag;
 					}
 					if (!flag) {
@@ -1335,10 +1335,10 @@ public class RocScript {
 			textIdx++;
 			itemType = DELIMITER;
 			return true;
-		} else if (ch == '"') {
+		} else if (ch == LSystem.DOUBLE_QUOTES) {
 			textIdx++;
 			ch = _temp_contexts[textIdx];
-			while (ch != '"' && ch != '\r') {
+			while (ch != LSystem.DOUBLE_QUOTES && ch != '\r') {
 				item += ch;
 				textIdx++;
 				ch = _temp_contexts[textIdx];
@@ -2109,7 +2109,7 @@ public class RocScript {
 	}
 
 	private Object getVarVal(String vname) throws ScriptException {
-		if (vname.indexOf('\'') == 0 || vname.indexOf('\"') == 0) {
+		if (vname.indexOf(LSystem.SINGLE_QUOTE) == 0 || vname.indexOf(LSystem.DOUBLE_QUOTES) == 0) {
 			if (vname.length() > 2) {
 				return vname.substring(1, vname.length() - 1);
 			}

@@ -87,7 +87,7 @@ public class AVGChara implements Visible, XY, LRelease {
 
 	public AVGChara(final String resName, final int x, final int y, final int w, final int h) {
 		String path = resName;
-		if (StringUtils.startsWith(path, '"')) {
+		if (StringUtils.startsWith(path, LSystem.DOUBLE_QUOTES)) {
 			path = resName.replaceAll("\"", LSystem.EMPTY);
 		}
 		if (path.endsWith(".an")) {

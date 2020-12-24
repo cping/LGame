@@ -34,6 +34,8 @@ import loon.utils.StringUtils;
  */
 public class SpriteSheetFont implements IFont {
 
+	private final char newLineFlag = LSystem.LF;
+	
 	private SpriteSheet _font;
 
 	private int _size = -1;
@@ -51,6 +53,8 @@ public class SpriteSheetFont implements IFont {
 	private int verticalCount;
 
 	private int numChars;
+	
+	private float fontSpace = 0f;
 
 	private float fontScaleX = 1f, fontScaleY = 1f;
 
@@ -59,7 +63,7 @@ public class SpriteSheetFont implements IFont {
 	private boolean _closed;
 
 	public SpriteSheetFont(String fileName, int tileWidth, int tileHeight) {
-		this(new SpriteSheet(fileName, tileWidth, tileHeight), ' ');
+		this(new SpriteSheet(fileName, tileWidth, tileHeight), LSystem.SPACE);
 	}
 
 	public SpriteSheetFont(String fileName, int tileWidth, int tileHeight, char startingCharacter) {
@@ -103,12 +107,12 @@ public class SpriteSheetFont implements IFont {
 			if (index < numChars) {
 				int xPos = (index % horizontalCount);
 				int yPos = (index / horizontalCount);
-				if ('\n' == flag) {
-					lines += heightSize + 0.5f;
+				if (newLineFlag == flag) {
+					lines += heightSize + fontSpace;
 					sx = x;
 					continue;
 				} else {
-					sx += widthSize + 0.5f;
+					sx += widthSize + fontSpace;
 				}
 				if ((i >= startIndex) || (i <= endIndex)) {
 					if (_font.contains(xPos, yPos)) {
@@ -152,12 +156,12 @@ public class SpriteSheetFont implements IFont {
 			if (index < numChars) {
 				int xPos = (index % horizontalCount);
 				int yPos = (index / horizontalCount);
-				if ('\n' == flag) {
-					lines += heightSize + 0.5f;
+				if (newLineFlag == flag) {
+					lines += heightSize + fontSpace;
 					sx = x;
 					continue;
 				} else {
-					sx += widthSize + 0.5f;
+					sx += widthSize + fontSpace;
 				}
 				if ((i >= startIndex) || (i <= endIndex)) {
 					if (_font.contains(xPos, yPos)) {
@@ -265,7 +269,7 @@ public class SpriteSheetFont implements IFont {
 
 	@Override
 	public int stringHeight(String text) {
-		int count = StringUtils.charCount(text, '\n') + 1;
+		int count = StringUtils.charCount(text, newLineFlag) + 1;
 		return (int) (charHeight * fontScaleY * count);
 	}
 
@@ -302,6 +306,15 @@ public class SpriteSheetFont implements IFont {
 		return s;
 	}
 
+	public float getFontSpace() {
+		return fontSpace;
+	}
+
+	public SpriteSheetFont setFontSpace(float f) {
+		this.fontSpace = f;
+		return this;
+	}
+	
 	public int getHorizontalCount() {
 		return horizontalCount;
 	}
@@ -385,5 +398,6 @@ public class SpriteSheetFont implements IFont {
 		.kv("numChars", numChars);
 		return builder.toString();
 	}
+
 
 }

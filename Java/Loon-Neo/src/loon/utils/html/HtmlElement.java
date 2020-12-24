@@ -394,11 +394,11 @@ public class HtmlElement {
 	}
 
 	public String getClassesAttribute() {
-		return StringUtils.filter(getAttribute("class", ""), '\'', '"');
+		return StringUtils.filter(getAttribute("class", ""), LSystem.SINGLE_QUOTE, '"');
 	}
 
 	public String[] getClasses() {
-		String context = StringUtils.filter(getAttribute("class", ""), '\'', '"');
+		String context = StringUtils.filter(getAttribute("class", ""), LSystem.SINGLE_QUOTE, '"');
 		if (context.length() == 0) {
 			return new String[] { "" };
 		}

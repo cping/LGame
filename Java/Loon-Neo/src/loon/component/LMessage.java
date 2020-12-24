@@ -44,10 +44,14 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 	private long printTime, totalDuration;
 
 	private int tempColor;
-	
+
 	private float dx, dy, dw, dh;
 
 	private Print print;
+
+	public LMessage(int width, int height) {
+		this(SkinManager.get().getMessageSkin().getFont(), 0, 0, width, height);
+	}
 
 	public LMessage(IFont font, int width, int height) {
 		this(font, 0, 0, width, height);

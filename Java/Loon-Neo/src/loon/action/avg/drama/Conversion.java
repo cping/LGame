@@ -87,7 +87,7 @@ public abstract class Conversion implements Expression {
 	}
 
 	public static final String updateOperator(String context) {
-		if (context != null && (StringUtils.startsWith(context, '"') || StringUtils.startsWith(context, '\''))) {
+		if (context != null && (StringUtils.startsWith(context, LSystem.DOUBLE_QUOTES) || StringUtils.startsWith(context, LSystem.SINGLE_QUOTE))) {
 			return context;
 		}
 		int size = context.length();
@@ -96,22 +96,22 @@ public abstract class Conversion implements Expression {
 		boolean operator;
 		for (int i = 0; i < size; i++) {
 			char ch = context.charAt(i);
-			if (ch == '"' || ch == '\'') {
+			if (ch == LSystem.DOUBLE_QUOTES || ch == LSystem.SINGLE_QUOTE) {
 				notFlag = !notFlag;
 			}
 			if (notFlag) {
 				sbr.append(ch);
 				continue;
 			}
-			if (ch == ' ') {
-				if (i > 0 && context.charAt(i - 1) != ' ') {
+			if (ch == LSystem.SPACE) {
+				if (i > 0 && context.charAt(i - 1) != LSystem.SPACE) {
 					sbr.append(FLAG);
 				}
 			} else {
 				operator = isOperator(ch);
 				if (i > 0) {
 					if (operator && !isOperator(context.charAt(i - 1))) {
-						if (context.charAt(i - 1) != ' ') {
+						if (context.charAt(i - 1) != LSystem.SPACE) {
 							sbr.append(FLAG);
 						}
 					}
@@ -119,7 +119,7 @@ public abstract class Conversion implements Expression {
 				sbr.append(ch);
 				if (i < size - 1) {
 					if (operator && !isOperator(context.charAt(i + 1))) {
-						if (context.charAt(i + 1) != ' ') {
+						if (context.charAt(i + 1) != LSystem.SPACE) {
 							sbr.append(FLAG);
 						}
 					}

@@ -78,23 +78,23 @@ public class AVGCG implements LRelease {
 		this.background = backgroundCG;
 	}
 
-	private final static String _update(final String n) {
+	private final static String update(final String n) {
 		String name = n;
-		if (StringUtils.startsWith(name, '"')) {
+		if (StringUtils.startsWith(name, LSystem.DOUBLE_QUOTES)) {
 			name = StringUtils.replace(name, "\"", LSystem.EMPTY);
 		}
 		return name;
 	}
 
 	public void setBackgroundCG(final String resName) {
-		this.setBackgroundCG(LSystem.loadTexture(_update(resName)));
+		this.setBackgroundCG(LSystem.loadTexture(update(resName)));
 	}
 
 	public void add(final String resName, AVGChara chara) {
 		if (chara == null) {
 			return;
 		}
-		String path = _update(resName);
+		String path = update(resName);
 		synchronized (charas) {
 			chara.setFlag(ISprite.TYPE_FADE_OUT, charaShowDelay);
 			this.charas.put(path.replaceAll(" ", LSystem.EMPTY).toLowerCase(), chara);
@@ -110,7 +110,7 @@ public class AVGCG implements LRelease {
 	}
 
 	public void add(final String resName, int x, int y, int w, int h) {
-		String path = _update(resName);
+		String path = update(resName);
 		synchronized (charas) {
 			String keyName = path.replaceAll(" ", LSystem.EMPTY).toLowerCase();
 			AVGChara chara = (AVGChara) charas.get(keyName);
@@ -127,7 +127,7 @@ public class AVGCG implements LRelease {
 	}
 
 	public AVGChara remove(final String resName) {
-		String path = _update(resName);
+		String path = update(resName);
 		synchronized (charas) {
 			final String name = path.replaceAll(" ", LSystem.EMPTY).toLowerCase();
 			AVGChara chara = null;
@@ -147,8 +147,8 @@ public class AVGCG implements LRelease {
 	}
 
 	public void replace(String res1, String res2) {
-		String path1 = _update(res1);
-		String path2 = _update(res2);
+		String path1 = update(res1);
+		String path2 = update(res2);
 		synchronized (charas) {
 			final String name = path1.replaceAll(" ", LSystem.EMPTY).toLowerCase();
 			AVGChara old = null;

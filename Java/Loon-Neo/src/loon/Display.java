@@ -241,7 +241,7 @@ public class Display extends BaseIO {
 		this._glEx.update();
 		updateSyncTween(_setting.isSyncTween);
 		this.displayMemony = MEMORY_STR + "0";
-		this.displaySprites = SPRITE_STR + "0, " + DESKTOP_STR + "0";
+		this.displaySprites = SPRITE_STR + "0 " + DESKTOP_STR + "0";
 		if (!_setting.isLogo) {
 			_process.start();
 		}
@@ -526,7 +526,7 @@ public class Display extends BaseIO {
 				displayMessage.delete(0, displayMessage.length());
 				displayMessage.append(SPRITE_STR);
 				displayMessage.append(game.allSpritesCount());
-				displayMessage.append(", ");
+				displayMessage.append(" ");
 				displayMessage.append(DESKTOP_STR);
 				displayMessage.append(game.allDesktopCount());
 

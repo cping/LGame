@@ -215,7 +215,7 @@ final public class StringUtils extends CharUtils {
 	 */
 	public static String rtrim(String s) {
 		int off = s.length() - 1;
-		while (off >= 0 && s.charAt(off) <= ' ') {
+		while (off >= 0 && s.charAt(off) <= LSystem.SPACE) {
 			off--;
 		}
 		return off < s.length() - 1 ? s.substring(0, off + 1) : s;
@@ -229,7 +229,7 @@ final public class StringUtils extends CharUtils {
 	 */
 	public static String ltrim(String s) {
 		int off = 0;
-		while (off < s.length() && s.charAt(off) <= ' ') {
+		while (off < s.length() && s.charAt(off) <= LSystem.SPACE) {
 			off++;
 		}
 		return off > 0 ? s.substring(off) : s;
@@ -508,7 +508,7 @@ final public class StringUtils extends CharUtils {
 		int amount = 0;
 		for (int j = 0; j < size; j++) {
 			int letter = cs.charAt(j);
-			if (isEnglishAndNumeric(letter) || letter == ' ') {
+			if (isEnglishAndNumeric(letter) || letter == LSystem.SPACE) {
 				amount++;
 			}
 		}
@@ -733,14 +733,14 @@ final public class StringUtils extends CharUtils {
 		String tempString;
 		StrBuilder sbr = new StrBuilder();
 		for (int i = 0; i < str.length(); i++) {
-			if (str.charAt(i) == '"') {
+			if (str.charAt(i) == LSystem.DOUBLE_QUOTES) {
 				i++;
 				while (i < str.length()) {
-					if (str.charAt(i) == '"' && str.charAt(i + 1) == '"') {
-						sbr.append('"');
+					if (str.charAt(i) == LSystem.DOUBLE_QUOTES && str.charAt(i + 1) == LSystem.DOUBLE_QUOTES) {
+						sbr.append(LSystem.DOUBLE_QUOTES);
 						i = i + 2;
 					}
-					if (str.charAt(i) == '"') {
+					if (str.charAt(i) == LSystem.DOUBLE_QUOTES) {
 						break;
 					} else {
 						sbr.append(str.charAt(i));
@@ -1082,7 +1082,7 @@ final public class StringUtils extends CharUtils {
 	 */
 	public static boolean isBlankAll(CharSequence v) {
 		for (int i = 0; i < v.length(); i++) {
-			if (v.charAt(i) != ' ') {
+			if (v.charAt(i) != LSystem.SPACE) {
 				return false;
 			}
 		}
@@ -1583,7 +1583,7 @@ final public class StringUtils extends CharUtils {
 	}
 
 	private static boolean unificationAllow(char ch) {
-		return ch != '\n' && ch != '\t' && ch != '\r' && ch != ' ';
+		return !isSpace(ch);
 	}
 
 	public static String merge(String[] messages) {

@@ -40,9 +40,9 @@ namespace loon.events
 			}
 		}
 
-		public abstract class ButtonSlot : Port<object>
+		public abstract class ButtonSlot : Port<Event>
 		{
-			public override void OnEmit(object e)
+			public override void OnEmit(Event e)
 			{
 				if (e is ButtonEvent eve)
 				{

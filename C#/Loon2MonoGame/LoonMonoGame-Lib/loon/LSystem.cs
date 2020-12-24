@@ -1,4 +1,5 @@
 ﻿using java.lang;
+using loon.font;
 using loon.geom;
 using System;
 using static loon.Log;
@@ -109,6 +110,41 @@ namespace loon
         private static float _scaleHeight = 1f;
 
         public static bool PAUSED = false;
+
+
+        public static bool IsHTML5()
+        {
+                if (Base != null)
+                {
+                    return Base.IsHTML5();
+                }
+                return false;
+            
+        }
+
+        public static bool IsMobile()
+        {
+                if (Base != null)
+                {
+                    return Base.IsMobile();
+                }
+                return false;
+        }
+
+        public static bool IsDesktop()
+        {
+                if (Base != null)
+                {
+                    return Base.IsDesktop();
+                }
+                return false;
+            
+        }
+
+        public static IFont GetSystemGameFont()
+        {
+            return null;
+        }
 
         public static float GetScaleWidth()
         {
@@ -318,15 +354,6 @@ namespace loon
         public static new bool Equals(object o1, object o2)
         {
             return (o1 == null) ? (o2 == null) : o1.Equals(o2);
-        }
-
-        public static bool IsMobile()
-        {
-            if (Base != null)
-            {
-                return Base.IsMobile();
-            }
-            return false;
         }
 
         public static LProcess GetProcess()

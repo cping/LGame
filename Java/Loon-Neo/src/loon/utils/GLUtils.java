@@ -37,6 +37,8 @@ public class GLUtils {
 	private GLUtils() {
 	}
 
+	private static int currentBlendMode = -1;
+
 	private static int currentHardwareBufferID = -1;
 
 	private static int currentHardwareTextureID = -1;
@@ -109,8 +111,6 @@ public class GLUtils {
 	public static boolean isPowerOfTwo(int width, int height) {
 		return (width > 0 && (width & (width - 1)) == 0 && height > 0 && (height & (height - 1)) == 0);
 	}
-
-	private static int currentBlendMode = -1;
 
 	public static final int getBlendMode() {
 		return currentBlendMode;

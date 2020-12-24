@@ -257,7 +257,7 @@ public class FontUtils {
 
 		for (int i = 0; i < textLength; i++) {
 			final char character = chars.charAt(i);
-			if (character != ' ') {
+			if (character != LSystem.SPACE) {
 				if (charsAvailable) {
 					lastNonWhitespace = i + 1;
 				} else {
@@ -304,7 +304,7 @@ public class FontUtils {
 			return result;
 		}
 
-		final float spaceWidth = font.charWidth(' ');
+		final float spaceWidth = font.charWidth(LSystem.SPACE);
 
 		int lastWordEnd = FontUtils.UNSPECIFIED;
 		int lineStart = FontUtils.UNSPECIFIED;
@@ -315,7 +315,7 @@ public class FontUtils {
 		int i = 0;
 		while (i < textLength) {
 			int spacesSkipped = 0;
-			while ((i < textLength) && (chars.charAt(i) == ' ')) {
+			while ((i < textLength) && (chars.charAt(i) == LSystem.SPACE)) {
 				i++;
 				spacesSkipped++;
 			}
@@ -325,7 +325,7 @@ public class FontUtils {
 				lineStart = wordStart;
 			}
 
-			while ((i < textLength) && (chars.charAt(i) != ' ')) {
+			while ((i < textLength) && (chars.charAt(i) != LSystem.SPACE)) {
 				i++;
 			}
 
@@ -402,7 +402,7 @@ public class FontUtils {
 		int lineStart = 0;
 		int lineEnd = 0;
 
-		while ((lineStart < textLength) && (chars.charAt(lineStart) == ' ')) {
+		while ((lineStart < textLength) && (chars.charAt(lineStart) == LSystem.SPACE)) {
 			lineStart++;
 			lineEnd++;
 		}
@@ -416,7 +416,7 @@ public class FontUtils {
 
 				int j = lineEnd;
 				while (j < textLength) {
-					if (chars.charAt(j) == ' ') {
+					if (chars.charAt(j) == LSystem.SPACE) {
 						j++;
 					} else {
 						break;

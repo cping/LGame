@@ -50,9 +50,9 @@ namespace loon.events
 			}
 		}
 
-		public abstract class KeyPort : Port<object>
+		public abstract class KeyPort : Port<Event>
 		{
-			public override void OnEmit(object e)
+			public override void OnEmit(Event e)
 			{
 				if (e is KeyEvent eve)
 				{

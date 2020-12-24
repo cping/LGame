@@ -110,7 +110,7 @@ public class StrBuilder implements CharSequence, Appendable {
 		if (index < this._currentIndex) {
 			System.arraycopy(this._values, index, this._values, index + length, this._currentIndex - index);
 		} else if (index > this._currentIndex) {
-			CollectionUtils.fill(this._values, this._currentIndex, index, ' ');
+			CollectionUtils.fill(this._values, this._currentIndex, index, LSystem.SPACE);
 		}
 		this._dirty = true;
 	}

@@ -217,6 +217,11 @@ namespace loon
         public abstract LGame.Type TYPE { get; }
         public abstract double Time();
         public abstract int Tick();
+
+        public virtual Display Display()
+        {
+            return displayImpl;
+        }
         public abstract Log Log();
         public abstract Asyn Asyn();
         public abstract Assets Assets();

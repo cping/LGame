@@ -264,6 +264,14 @@ public class LSTRFont implements IFont, LRelease {
 
 	}
 
+	private final char newLineFlag = LSystem.LF;
+
+	private final char newSpaceFlag = LSystem.SPACE;
+
+	private final char newTabSpaceFlag = LSystem.TAB;
+
+	private final char newRFlag = LSystem.CR;
+	
 	private final PointI _offset = new PointI();
 
 	private final CharArray _chars;
@@ -288,9 +296,9 @@ public class LSTRFont implements IFont, LRelease {
 
 	private int textureHeight = 512;
 
-	private float updateX = 0, updateY = 0;
+	private int advanceSpace = 8;
 
-	private char newLineFlag = '\n';
+	private float updateX = 0, updateY = 0;
 
 	private LTexture texture;
 
@@ -385,7 +393,7 @@ public class LSTRFont implements IFont, LRelease {
 	}
 
 	public LSTRFont(LFont font, char[] charMessage, boolean asyn, int tw, int th, int maxWidth, int maxHeight) {
-		CharSequence chs = " " + StringUtils.unificationChars(charMessage);
+		CharSequence chs = StringUtils.unificationChars(charMessage);
 		this._chars = new CharArray(chs.length());
 		this._maxTextureWidth = maxWidth;
 		this._maxTextureHeight = maxHeight;
@@ -399,6 +407,7 @@ public class LSTRFont implements IFont, LRelease {
 		this.fontSize = font.getSize();
 		this.fontHeight = font.getHeight();
 		this.ascent = font.getAscent();
+		this.advanceSpace = MathUtils.max(1, fontSize / 2);
 		int customCharsLength = (additionalChars != null) ? additionalChars.length : 0;
 		this.totalCharSet = customCharsLength == 0 ? totalCharSet : 0;
 		if (chs != null && chs.length() > 0) {
@@ -410,7 +419,7 @@ public class LSTRFont implements IFont, LRelease {
 			}
 			this.make(asyn);
 		}
-		if (StringUtils.isEmpty(text.trim())) {
+		if (StringUtils.isEmpty(text)) {
 			_isClose = true;
 		}
 		this._drawLimit = 0;
@@ -431,8 +440,8 @@ public class LSTRFont implements IFont, LRelease {
 			return;
 		}
 		isDrawing = true;
-		//updateX = 0;
-		//updateY = LSystem.isHTML5() ? 1f : 0;
+		// updateX = 0;
+		// updateY = LSystem.isHTML5() ? 1f : 0;
 		Updateable update = new UpdateStringFont(this);
 		if (asyn) {
 			LSystem.unload(update);
@@ -533,15 +542,26 @@ public class LSTRFont implements IFont, LRelease {
 				for (int i = startIndex; i < endIndex; i++) {
 					char ch = chars.charAt(i);
 					charCurrent = ch;
-					if (charCurrent < totalCharSet) {
-						intObject = charArray[charCurrent];
-
-					} else {
-						intObject = customChars.get(charCurrent);
+					if (charCurrent == newRFlag) {
+						continue;
 					}
 					if (charCurrent == newLineFlag) {
 						totalHeight += fontSize;
 						totalWidth = 0;
+						continue;
+					}
+					if (charCurrent == newSpaceFlag) {
+						totalWidth += advanceSpace;
+						continue;
+					}
+					if (charCurrent == newTabSpaceFlag) {
+						totalWidth += (advanceSpace * 3);
+						continue;
+					}
+					if (charCurrent < totalCharSet) {
+						intObject = charArray[charCurrent];
+					} else {
+						intObject = customChars.get(charCurrent);
 					}
 					if (intObject != null) {
 						if (!checkOutBounds() || containsChar(ch)) {
@@ -572,14 +592,26 @@ public class LSTRFont implements IFont, LRelease {
 			for (int i = startIndex; i < endIndex; i++) {
 				char ch = chars.charAt(i);
 				charCurrent = ch;
-				if (charCurrent < totalCharSet) {
-					intObject = charArray[charCurrent];
-				} else {
-					intObject = customChars.get(charCurrent);
+				if (charCurrent == newRFlag) {
+					continue;
 				}
 				if (charCurrent == newLineFlag) {
 					totalHeight += fontSize;
 					totalWidth = 0;
+					continue;
+				}
+				if (charCurrent == newSpaceFlag) {
+					totalWidth += advanceSpace;
+					continue;
+				}
+				if (charCurrent == newTabSpaceFlag) {
+					totalWidth += (advanceSpace * 3);
+					continue;
+				}
+				if (charCurrent < totalCharSet) {
+					intObject = charArray[charCurrent];
+				} else {
+					intObject = customChars.get(charCurrent);
 				}
 				if (intObject != null) {
 					if (!checkOutBounds() || containsChar(ch)) {
@@ -769,9 +801,21 @@ public class LSTRFont implements IFont, LRelease {
 				} else {
 					intObject = customChars.get(charCurrent);
 				}
+				if (charCurrent == newRFlag) {
+					continue;
+				}
 				if (charCurrent == newLineFlag) {
 					totalHeight += fontSize;
 					totalWidth = 0;
+					continue;
+				}
+				if (charCurrent == newSpaceFlag) {
+					totalWidth += advanceSpace;
+					continue;
+				}
+				if (charCurrent == newTabSpaceFlag) {
+					totalWidth += (advanceSpace * 3);
+					continue;
 				}
 				if (intObject != null) {
 					if (!checkOutBounds() || containsChar(ch)) {
@@ -907,6 +951,9 @@ public class LSTRFont implements IFont, LRelease {
 
 	public void addChar(char c, float x, float y, LColor color) {
 		if (!checkCharRunning()) {
+			return;
+		}
+		if (c == newLineFlag || c == newRFlag || c == newSpaceFlag || c == newTabSpaceFlag) {
 			return;
 		}
 		if (!checkOutBounds() || containsChar(c)) {
@@ -1064,7 +1111,7 @@ public class LSTRFont implements IFont, LRelease {
 			return 0;
 		}
 		make();
-		if (c == '\n') {
+		if (c == newLineFlag) {
 			return 0;
 		}
 		if (processing()) {
@@ -1191,14 +1238,6 @@ public class LSTRFont implements IFont, LRelease {
 		}
 	}
 
-	public char getNewLineFlag() {
-		return newLineFlag;
-	}
-
-	public void setNewLineFlag(char newLineFlag) {
-		this.newLineFlag = newLineFlag;
-	}
-
 	public float getOffsetX() {
 		return offsetX;
 	}
@@ -1295,6 +1334,15 @@ public class LSTRFont implements IFont, LRelease {
 		return font.getFontName();
 	}
 
+	public int getAdvanceSpace() {
+		return advanceSpace;
+	}
+
+	public LSTRFont setAdvanceSpace(int s) {
+		this.advanceSpace = s;
+		return this;
+	}
+
 	public boolean isClosed() {
 		return _isClose;
 	}
@@ -1327,7 +1375,7 @@ public class LSTRFont implements IFont, LRelease {
 		this._displayLazy = displayLazy;
 		return this;
 	}
-	
+
 	@Override
 	public synchronized void close() {
 		if (_isClose) {

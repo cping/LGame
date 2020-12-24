@@ -78,6 +78,14 @@ public class BMFont implements IFont {
 
 	private static final int DEFAULT_MAX_CHAR = 256;
 
+	private final char newLineFlag = LSystem.LF;
+
+	private final char newSpaceFlag = LSystem.SPACE;
+
+	private final char newTabSpaceFlag = LSystem.TAB;
+
+	private final char newRFlag = LSystem.CR;
+
 	private int totalCharSet = DEFAULT_MAX_CHAR;
 
 	private int _initDraw = -1;
@@ -91,6 +99,8 @@ public class BMFont implements IFont {
 	private IntMap<CharDef> customChars = new IntMap<CharDef>();
 
 	private PointI _offset = new PointI();
+
+	private int advanceSpace = 8;
 
 	private int _size = -1;
 
@@ -223,7 +233,7 @@ public class BMFont implements IFont {
 			StrBuilder sbr = new StrBuilder();
 			for (int i = 0; i < size; i++) {
 				char ch = info.charAt(i);
-				if (ch == ' ' && sbr.length() > 0) {
+				if (ch == newSpaceFlag && sbr.length() > 0) {
 					String result = sbr.toString().toLowerCase().trim();
 					String[] list = StringUtils.split(result, '=');
 					if (list.length == 2) {
@@ -308,6 +318,8 @@ public class BMFont implements IFont {
 				customChars.get((int) first).kerning = valueArray;
 			}
 		}
+		this.advanceSpace = MathUtils.max(1,
+				(_size == -1 ? (int) (lineHeight * this.fontScaleY) - halfHeight / 4 : _size) / 2);
 		LSystem.pushFontPool(this);
 	}
 
@@ -338,7 +350,7 @@ public class BMFont implements IFont {
 		tokens.nextToken();
 		def.advance = Short.parseShort(tokens.nextToken());
 
-		if (def.id != (short) ' ') {
+		if (def.id != (short) newSpaceFlag) {
 			lineHeight = MathUtils.max(def.height + def.yoffset, lineHeight);
 			halfHeight = lineHeight >> 1;
 		}
@@ -402,10 +414,21 @@ public class BMFont implements IFont {
 
 			CharDef lastCharDef = null;
 			for (int i = startIndex; i < endIndex; i++) {
-				int id = text.charAt(i);
-				if (id == '\n') {
+				char id = text.charAt(i);
+				if (id == newRFlag) {
+					continue;
+				}
+				if (id == newLineFlag) {
 					x = 0;
 					y += lineHeight;
+					continue;
+				}
+				if (id == newSpaceFlag) {
+					x += advanceSpace;
+					continue;
+				}
+				if (id == newTabSpaceFlag) {
+					x += (advanceSpace * 3);
 					continue;
 				}
 				CharDef charDef = null;
@@ -489,10 +512,21 @@ public class BMFont implements IFont {
 		int x = 0, y = 0;
 		CharDef lastCharDef = null;
 		for (int i = startIndex; i < endIndex; i++) {
-			int id = text.charAt(i);
-			if (id == '\n') {
+			char id = text.charAt(i);
+			if (id == newRFlag) {
+				continue;
+			}
+			if (id == newLineFlag) {
 				x = 0;
 				y += lineHeight;
+				continue;
+			}
+			if (id == newSpaceFlag) {
+				x += advanceSpace;
+				continue;
+			}
+			if (id == newTabSpaceFlag) {
+				x += (advanceSpace * 3);
 				continue;
 			}
 			CharDef charDef = null;
@@ -601,12 +635,12 @@ public class BMFont implements IFont {
 		int lines = 0;
 		for (int i = 0; i < text.length(); i++) {
 			int id = text.charAt(i);
-			if (id == '\n') {
+			if (id == newLineFlag) {
 				lines++;
 				display.height = 0;
 				continue;
 			}
-			if (id == ' ') {
+			if (id == newSpaceFlag) {
 				continue;
 			}
 			CharDef charDef = null;
@@ -626,7 +660,7 @@ public class BMFont implements IFont {
 
 	@Override
 	public int charWidth(char c) {
-		if (c == '\n') {
+		if (c == newLineFlag) {
 			return 0;
 		}
 		make();
@@ -665,7 +699,7 @@ public class BMFont implements IFont {
 		CharDef lastCharDef = null;
 		for (int i = 0, n = text.length(); i < n; i++) {
 			int id = text.charAt(i);
-			if (id == '\n') {
+			if (id == newLineFlag) {
 				width = 0;
 				continue;
 			}

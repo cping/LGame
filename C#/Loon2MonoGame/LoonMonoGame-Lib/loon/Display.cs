@@ -308,5 +308,18 @@ namespace loon
                 return _process;
             }
         }
+
+        public virtual GLEx GetGL()
+        {
+            return GL;
+        }
+
+        public virtual GLEx GL
+        {
+            get
+            {
+                return _glEx;
+            }
+        }
     }
 }

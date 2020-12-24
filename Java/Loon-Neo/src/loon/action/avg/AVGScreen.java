@@ -928,7 +928,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 					break;
 				}
 
-				TArray<String> commands = Conversion.splitToList(result, ' ');
+				TArray<String> commands = Conversion.splitToList(result, LSystem.SPACE);
 				int size = commands.size;
 				String cmdFlag = (String) commands.get(0);
 

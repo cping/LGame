@@ -35,9 +35,9 @@ namespace loon.opengl
 
 		public abstract float Ty();
 
-		public abstract void AddToBatch(BaseBatch batch, int tint, Affine2f tx, float x, float y, float width, float height);
+		public abstract void AddToBatch(BaseBatch batch, uint tint, Affine2f tx, float x, float y, float width, float height);
 
-		public abstract void AddToBatch(BaseBatch batch, int tint, Affine2f tx, float dx, float dy, float dw, float dh, float sx, float sy, float sw, float sh);
+		public abstract void AddToBatch(BaseBatch batch, uint tint, Affine2f tx, float dx, float dy, float dw, float dh, float sx, float sy, float sw, float sh);
 
 		public override bool IsLoaded()
 		{

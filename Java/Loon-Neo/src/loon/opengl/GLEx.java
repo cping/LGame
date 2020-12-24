@@ -137,8 +137,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 
 	/**
 	 * 创建一个默认的GL渲染封装，将其作为默认的渲染器来使用。与0.5以前版本不同的是,此GLEX将不再唯一，允许复数构建.
-	 * 如果使用HTML5，则禁止非纹理的渲染方式（因为部分浏览器不支持，会自动用纹理方式替代，但是glBegin到glEnd的
-	 * 直接像素渲染方式则会禁用）.
+	 * 如果使用HTML5，则禁止非纹理的渲染方式（因为部分浏览器不支持，会自动用纹理方式替代，但是glBegin到glEnd的 直接像素渲染方式则会禁用）.
 	 * 
 	 * PS:只有在LGame中注入的，可以影响全局渲染.
 	 * 
@@ -154,7 +153,11 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		this.batch = def;
 		this.affineStack.add(lastTrans = new Affine2f());
 		this.colorTex = gfx.finalColorTex();
-		this.scale(scaleX = target.xscale(), scaleY = target.yscale());
+		if (target != null) {
+			this.scale(scaleX = target.xscale(), scaleY = target.yscale());
+		} else {
+			this.scale(scaleX = LSystem.getScaleWidth(), scaleY = LSystem.getScaleHeight());
+		}
 		this.lastBrush = new BrushSave();
 		this.lastBrush.font = LSystem.getSystemGameFont();
 		this.lastBrush.alltextures = alltex;
@@ -384,21 +387,23 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-		GL20 gl = batch.gl;
-		// 刷新原始设置
-		GLUtils.reset(gl);
-		// 清空背景为黑色
-		GLUtils.setClearColor(gl, LColor.black);
-		if (!LSystem.isHTML5()) {
-			// 禁用色彩抖动
-			GLUtils.disableDither(gl);
-			// 禁用深度测试
-			GLUtils.disableDepthTest(gl);
-			// 禁用双面剪切
-			GLUtils.disableCulling(gl);
+		if (batch != null) {
+			GL20 gl = batch.gl;
+			// 刷新原始设置
+			GLUtils.reset(gl);
+			// 清空背景为黑色
+			GLUtils.setClearColor(gl, LColor.black);
+			if (!LSystem.isHTML5()) {
+				// 禁用色彩抖动
+				GLUtils.disableDither(gl);
+				// 禁用深度测试
+				GLUtils.disableDepthTest(gl);
+				// 禁用双面剪切
+				GLUtils.disableCulling(gl);
+			}
+			// 设定画布渲染模式为默认
+			this.setBlendMode(BlendMethod.MODE_NORMAL);
 		}
-		// 设定画布渲染模式为默认
-		this.setBlendMode(BlendMethod.MODE_NORMAL);
 		return this;
 	}
 
@@ -987,15 +992,13 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		} else {
 			this.lastBrush.baseColor = c;
 		}
-		this.lastBrush.baseAlpha = this.lastBrush.baseAlpha;
-		this.lastBrush.baseColor = this.lastBrush.baseColor;
 		return this;
 	}
 
 	public int combineColor(int c) {
 		int otint = this.lastBrush.baseColor;
 		if (c != LColor.DEF_COLOR) {
-			this.lastBrush.baseColor = LColor.combine(c, otint);
+			this.lastBrush.baseColor = otint = LColor.combine(c, otint);
 		}
 		return otint;
 	}

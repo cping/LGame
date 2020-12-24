@@ -65,6 +65,11 @@ namespace loon.canvas
             return new float[] { r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f };
         }
 
+        public static int Combine(uint curColor, uint dstColor)
+        {
+            return Combine((int)curColor, (int)dstColor);
+        }
+
         public static int Combine(int curColor, int dstColor)
         {
             int newA = ((((curColor >> 24) & 0xFF) * (((dstColor >> 24) & 0xFF) + 1)) & 0xFF00) << 16;
@@ -704,9 +709,19 @@ namespace loon.canvas
             return SetColor(color.r, color.g, color.b, color.a);
         }
 
+        public LColor SetColor(uint pixel)
+        {
+            return SetColorARGB((int)pixel);
+        }
+
         public LColor SetColor(int pixel)
         {
             return SetColorARGB(pixel);
+        }
+
+        public LColor SetColorARGB(uint pixel)
+        {
+            return SetColorARGB((int)pixel);
         }
 
         public LColor SetColorARGB(int pixel)
@@ -1180,6 +1195,11 @@ namespace loon.canvas
         public static int GetABGR(int r, int g, int b, int alpha)
         {
             return Abgr(alpha, r, g, b);
+        }
+
+        public static int GetAlpha(uint color)
+        {
+            return GetAlpha((int)color);
         }
 
         public static int GetAlpha(int color)

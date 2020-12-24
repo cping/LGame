@@ -20,7 +20,6 @@ namespace loon.monogame
             {
                 name += ".fx";
             }
-
             ContentManager contentManager = game.GetContentManager();
             shader = contentManager.Load<Effect>(name);
             shader.CurrentTechnique = shader.Techniques[0];

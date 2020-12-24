@@ -47,7 +47,7 @@ public class Print implements FontSet<Print>, LRelease {
 	public static enum Mode {
 		NONE, LEFT, RIGHT, CENTER
 	}
-	
+
 	/**
 	 * 解析并重构字符串,为超过指定长度的字符串加换行符
 	 * 
@@ -167,6 +167,13 @@ public class Print implements FontSet<Print>, LRelease {
 
 		private PrintUpdate(Print print, String context, IFont font, boolean isComplete, boolean drawFont) {
 			_print = print;
+			if (context != null) {
+				if (StringUtils.isEnglishAndNumeric(context)) {
+					_print.setEnglish(true);
+				} else {
+					_print.setEnglish(false);
+				}
+			}
 			_context = context;
 			_font = font;
 			_isComplete = isComplete;
@@ -422,7 +429,7 @@ public class Print implements FontSet<Print>, LRelease {
 			iconLocation.x -= iw / fixValue - fixValue;
 		}
 		if (ih + iconLocation.getY() >= printLocation.y + getHeight() - fixValue) {
-			iconLocation.y += ih / fixValue  - fixValue;
+			iconLocation.y += ih / fixValue - fixValue;
 		}
 		return iconLocation;
 	}

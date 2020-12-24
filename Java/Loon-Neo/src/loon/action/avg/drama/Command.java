@@ -616,12 +616,12 @@ public class Command extends Conversion implements LRelease {
 				for (int i = 0; i < setEnvironmentList.size(); i++) {
 
 					Entry entry = setEnvironmentList.getEntry(i);
-					if (!(StringUtils.startsWith(result, '"') && StringUtils.endsWith(result, '"'))) {
+					if (!(StringUtils.startsWith(result, LSystem.DOUBLE_QUOTES) && StringUtils.endsWith(result, LSystem.DOUBLE_QUOTES))) {
 						result = StringUtils.replaceMatch(result, (String) entry.getKey(), (String) entry.getValue());
 					}
 				}
 				// 当为普通字符串时
-				if (StringUtils.startsWith(result, '"') && StringUtils.endsWith(result, '"')) {
+				if (StringUtils.startsWith(result, LSystem.DOUBLE_QUOTES) && StringUtils.endsWith(result, LSystem.DOUBLE_QUOTES)) {
 					setEnvironmentList.put(temps.get(1), result.substring(1, result.length() - 1));
 				} else if (StringUtils.isChinaLanguage(result) || StringUtils.isEnglishAndNumeric(result)) {
 					setEnvironmentList.put(temps.get(1), result);
@@ -830,7 +830,7 @@ public class Command extends Conversion implements LRelease {
 				ifing = true;
 				// 条件判断b
 			} else if (elseif_bool) {
-				String[] value = StringUtils.split(cmd, ' ');
+				String[] value = StringUtils.split(cmd, LSystem.SPACE);
 				if (!backIfBool && !esleflag) {
 					// 存在if判断
 					if (value.length > 1 && IF_TAG.equals(value[1])) {

@@ -233,8 +233,10 @@ namespace loon.opengl
         public const int GL_NORMAL_ARRAY = 0x8075;
         public const int GL_NOTEQUAL = 0x205;
         public const int GL_NUM_COMPRESSED_TEXTURE_FORMATS = 0x86a2;
+        public const int GL_ZERO = 0;
         public const int GL_ONE = 1;
         public const int GL_ONE_MINUS_SRC_ALPHA = 0x303;
+        public const int GL_DST_COLOR = 0x0306;
         public const int GL_PALETTE8_RGBA4_OES = 0x8b98;
         public const int GL_PALETTE8_RGBA8_OES = 0x8b96;
         public const int GL_PERSPECTIVE_CORRECTION_HINT = 0xc50;
@@ -247,6 +249,7 @@ namespace loon.opengl
         public const int GL_SCISSOR_TEST = 0xc11;
         public const int GL_SHORT = 0x1402;
         public const int GL_SMOOTH = 0x1d01;
+   
         public const int GL_SRC_ALPHA = 770;
         public const int GL_STENCIL_BUFFER_BIT = 0x400;
         public const int GL_STENCIL_TEST = 0xb90;
@@ -288,11 +291,13 @@ namespace loon.opengl
 
         private int _textureId;
 
-        private Vertex[] _vertex;
+        private float _lineWidth = 1f;
 
+        private Vertex[] _vertex;
 
         private BlendFunction _alphaBlendFunction = BlendFunction.Add;
         private Blend _alphaDestinationBlend;
+        private Blend _alphaSourceBlend;
         private bool _alphaTest;
         private AlphaTestEffect _alphaTestEffect;
 
@@ -320,6 +325,7 @@ namespace loon.opengl
             this._color = new float[4];
             this._clearColor = Color.Black;
             this._colorWriteChannels = ColorWriteChannels.All;
+            this._alphaSourceBlend = Blend.SourceAlpha;
             this._alphaDestinationBlend = Blend.InverseSourceAlpha;
             this._depthFunc = CompareFunction.Always;
             this._vertex = new Vertex[8];
@@ -408,6 +414,10 @@ namespace loon.opengl
                 }
             }
         }
+        public void GLBlendFunc(int sfactor, int dfactor)
+        {
+            this._alphaDestinationBlend = (dfactor == 1) ? Blend.One : Blend.InverseSourceAlpha;
+        }
 
         public void GLBlendEquationOES(int equ)
         {
@@ -487,6 +497,11 @@ namespace loon.opengl
             this._textures.Get(this._textureId).SetData<byte>(destinationArray);
         }
 
+        public void GLDisable(int cap)
+        {
+            this.GLEnable(cap, false);
+        }
+
         public void GLEnable(int cap)
         {
             this.GLEnable(cap, true);
@@ -521,6 +536,11 @@ namespace loon.opengl
         public void SetBlendState(Microsoft.Xna.Framework.Graphics.BlendState b)
         {
             this._blendState = b;
+        }
+
+        public void NullBlendState()
+        {
+            this._blendState = null;
         }
 
         public Microsoft.Xna.Framework.Graphics.BlendState GetBlendState()
@@ -694,11 +714,11 @@ namespace loon.opengl
             if (_blendState == null)
             {
                 Microsoft.Xna.Framework.Graphics.BlendState blendState = _graphicsDevice.BlendState;
-                if (((blendState.AlphaDestinationBlend != this._alphaDestinationBlend) || (blendState.ColorWriteChannels != this._colorWriteChannels)) || (blendState.AlphaBlendFunction != _alphaBlendFunction))
+                if ((blendState.AlphaSourceBlend != this._alphaSourceBlend) || (blendState.AlphaDestinationBlend != this._alphaDestinationBlend) || (blendState.ColorWriteChannels != this._colorWriteChannels) || (blendState.AlphaBlendFunction != _alphaBlendFunction))
                 {
                     blendState = new Microsoft.Xna.Framework.Graphics.BlendState();
-                    blendState.ColorSourceBlend = Blend.SourceAlpha;
-                    blendState.AlphaSourceBlend = Blend.SourceAlpha;
+                    blendState.ColorSourceBlend = this._alphaSourceBlend;
+                    blendState.AlphaSourceBlend = this._alphaSourceBlend;
                     blendState.ColorDestinationBlend = this._alphaDestinationBlend;
                     blendState.AlphaDestinationBlend = this._alphaDestinationBlend;
                     blendState.ColorWriteChannels = this._colorWriteChannels;
@@ -794,6 +814,11 @@ namespace loon.opengl
         public int GetCurrentTextureID()
         {
             return _textureId;
+        }
+
+        public void GLBindTexture(int target, int texid)
+        {
+            GLBindTexture(texid);
         }
 
         public void GLBindTexture(int texid)
@@ -1172,11 +1197,11 @@ namespace loon.opengl
             if (_blendState == null)
             {
                 Microsoft.Xna.Framework.Graphics.BlendState blendState = _graphicsDevice.BlendState;
-                if (((blendState.AlphaDestinationBlend != this._alphaDestinationBlend) || (blendState.ColorWriteChannels != this._colorWriteChannels)) || (blendState.AlphaBlendFunction != _alphaBlendFunction))
+                if ((blendState.AlphaSourceBlend!=this._alphaSourceBlend)||(blendState.AlphaDestinationBlend != this._alphaDestinationBlend) || (blendState.ColorWriteChannels != this._colorWriteChannels) || (blendState.AlphaBlendFunction != _alphaBlendFunction))
                 {
                     blendState = new Microsoft.Xna.Framework.Graphics.BlendState();
-                    blendState.ColorSourceBlend = Blend.SourceAlpha;
-                    blendState.AlphaSourceBlend = Blend.SourceAlpha;
+                    blendState.ColorSourceBlend = this._alphaSourceBlend;
+                    blendState.AlphaSourceBlend = this._alphaSourceBlend;
                     blendState.ColorDestinationBlend = this._alphaDestinationBlend;
                     blendState.AlphaDestinationBlend = this._alphaDestinationBlend;
                     blendState.ColorWriteChannels = this._colorWriteChannels;
@@ -1243,6 +1268,16 @@ namespace loon.opengl
             }
         }
 
+        public virtual void BindRenderTarget2D(RenderTarget2D target)
+        {
+            _graphicsDevice.SetRenderTarget(target);
+        }
+
+        public virtual void UnbindRenderTarget2D()
+        {
+            _graphicsDevice.SetRenderTarget(null);
+        }
+
         public void GLAlphaFunc(int func, float r)
         {
             GLAlphaFunc(func, (int)(r * 255f));
@@ -1278,6 +1313,15 @@ namespace loon.opengl
             }
         }
 
+        public float GetLineWidth()
+        {
+            return _lineWidth;
+        }
+        
+        public void GLLineWidth(float line)
+        {
+            this._lineWidth = line;
+        }
 
         public void GLRotate(float r)
         {

@@ -13,11 +13,11 @@ namespace loon.events
 
 		public bool keyboardEnabled = true;
 
-		public Act<object> mouseEvents = Act<object>.Create<object>();
+		public Act<MouseMake.Event> mouseEvents = Act<MouseMake.Event>.Create<MouseMake.Event>();
 
-		public Act<object> touchEvents = Act<object>.Create<object>();
+		public Act<TouchMake.Event[]> touchEvents = Act<TouchMake.Event[]>.Create<TouchMake.Event[]>();
 
-		public Act<object> keyboardEvents = Act<object>.Create<object>();
+		public Act<KeyMake.Event> keyboardEvents = Act<KeyMake.Event>.Create<KeyMake.Event>();
 
 		public virtual bool HasMouse()
 		{
