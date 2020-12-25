@@ -9,6 +9,13 @@ namespace loon.monogame
 {
     public class MonoGameGame : LGame
     {
+        public enum State
+        {
+            RUNNING, PAUSED, EXITED
+        }
+
+        private State _state = State.RUNNING;
+
         private readonly long _start;
 
         private readonly static bool _isWindows;
@@ -45,11 +52,11 @@ namespace loon.monogame
             this._start = JavaSystem.NanoTime();
             this._contentManager = new MonoGameContentManager(game.GetContentManager().ServiceProvider, game.GetContentManager().RootDirectory);
             this._inputer = new MonoGameInputMake();
-            this._graphics = new MonoGameGraphics();
             this._log = new MonoGameLog();
             this._support = new NativeSupport();
             this._assets = new MonoGameAssets(this);
-            this._asyn = new MonoGameAsyn<object>(this._log,frame);
+            this._asyn = new MonoGameAsyn<object>(_log,frame);
+            this._graphics = new MonoGameGraphics(this, game.GetGraphicsDevice(), config.Width, config.Height);
             this.InitProcess();
         }
 
@@ -108,10 +115,37 @@ namespace loon.monogame
             return _contentManager;
         }
 
-        protected internal void ProcessFrame()
+        protected internal void OnPause()
+        {
+            _state = State.PAUSED;
+            status.Emit(Status.PAUSE);
+        }
+
+        protected internal void OnResume()
+        {
+            _state = State.RUNNING;
+            status.Emit(Status.RESUME);
+        }
+
+        protected internal void OnExit()
+        {
+            _state = State.EXITED;
+            status.Emit(Status.EXIT);
+        }
+
+        protected internal void Update()
         {
             this._inputer.Update();
+        }
+
+        protected internal void ProcessFrame()
+        {
             this.EmitFrame();
+        }
+
+        public State GetState()
+        {
+            return this._state;
         }
 
         public override Log Log()

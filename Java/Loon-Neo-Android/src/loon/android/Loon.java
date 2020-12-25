@@ -361,6 +361,10 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 
 	private LazyLoading.Data mainData;
 
+	private int maxWidth, maxHeight;
+
+	private int zoomWidth, zoomHeight;
+	
 	public static String getResourcePath(String name) throws IOException {
 		if (self == null) {
 			return name;
@@ -480,6 +484,13 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 			setting.height_zoom = this.maxHeight;
 			setting.updateScale();
 			mode = LMode.Fill;
+		} else {
+			this.maxWidth = setting.width;
+			this.maxHeight = setting.height;
+			this.zoomWidth = setting.width_zoom;
+			this.zoomHeight = setting.height_zoom;
+			updateViewSizeData(mode);
+			setting.updateScale();
 		}
 
 		this.game = createGame();
@@ -840,9 +851,6 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 		return layoutParams;
 	}
 
-	private int maxWidth, maxHeight;
-
-	private int zoomWidth, zoomHeight;
 
 	protected void updateViewSize(final boolean landscape, int width, int height, LMode mode) {
 
@@ -940,6 +948,10 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 			LSystem.setScaleHeight(1f);
 
 		}
+		updateViewSizeData(mode);
+	}
+
+	private void updateViewSizeData(LMode mode) {
 		if (zoomWidth <= 0) {
 			zoomWidth = maxWidth;
 		}

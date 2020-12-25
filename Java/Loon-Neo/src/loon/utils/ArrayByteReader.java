@@ -5,8 +5,8 @@ import loon.LSystem;
 
 public class ArrayByteReader implements LRelease {
 
-	private static final byte R = '\r';
-	private static final byte N = '\n';
+	private final int R = LSystem.CR;
+	private final int N = LSystem.LF;
 
 	private final ArrayByte in;
 

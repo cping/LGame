@@ -70,7 +70,7 @@ public class HtmlElement {
 			return;
 		}
 		if (!d.equals(tempData)) {
-			this.buffer.append(StringUtils.filter(d, '\r', '\n', '\t'));
+			this.buffer.append(StringUtils.filter(d, LSystem.CR, LSystem.LF, LSystem.TF));
 		}
 		tempData = d;
 		dirty = true;

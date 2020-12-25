@@ -317,15 +317,16 @@ public class RocScript {
 
 	private String filtrScript(String script) {
 		StrBuilder out = new StrBuilder();
-		String[] context = StringUtils.split(script, new char[] { '\r', '\n', '\t' }, true);
-	
+		String[] context = StringUtils.split(script, new char[] { LSystem.LF, LSystem.CR, LSystem.TF }, true);
+
 		for (String s : context) {
 			if (s == null) {
 				continue;
 			}
 
 			String cmd = filterCommand(s).trim();
-			if (cmd.startsWith("print") && cmd.indexOf(LSystem.DOUBLE_QUOTES) != -1 && cmd.indexOf(",") == -1) {
+			if (cmd.startsWith("print") && cmd.indexOf(LSystem.DOUBLE_QUOTES) != -1
+					&& cmd.indexOf(LSystem.COMMA) == -1) {
 				char[] chars = cmd.toCharArray();
 				boolean flag = false;
 				for (int i = 0; i < chars.length; i++) {
@@ -340,8 +341,8 @@ public class RocScript {
 				}
 				cmd = new String(chars);
 			}
-			if (cmd.indexOf('{') != -1) {
-				splitFlag(cmd, out, '{');
+			if (cmd.indexOf(LSystem.DELIM_START) != -1) {
+				splitFlag(cmd, out, LSystem.DELIM_START);
 			} else {
 				out.append(cmd);
 			}
@@ -1779,7 +1780,7 @@ public class RocScript {
 	}
 
 	boolean isSpaceOrTab(char c) {
-		if (c == ' ' || c == '\t') {
+		if (c == LSystem.CR || c == LSystem.TF) {
 			return true;
 		}
 		return false;

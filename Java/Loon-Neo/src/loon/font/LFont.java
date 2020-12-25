@@ -263,7 +263,7 @@ public class LFont implements IFont {
 					fontTempPack.draw(entry, g, x, y, rotation, c);
 					g.setTint(tint);
 				}
-				
+
 				return true;
 
 			} else {
@@ -406,13 +406,13 @@ public class LFont implements IFont {
 	@Override
 	public int getHeight() {
 		initLayout(tmp);
-		return MathUtils.max(getSize(), textLayout.bounds.height);
+		return MathUtils.max(getSize(), textLayout == null ? 0 : textLayout.bounds.height);
 	}
 
 	@Override
 	public float getAscent() {
 		initLayout(tmp);
-		return this._ascent == -1 ? textLayout.ascent() : this._ascent;
+		return this._ascent == -1 ? textLayout == null ? 0 : textLayout.ascent() : this._ascent;
 	}
 
 	public float getDescent() {

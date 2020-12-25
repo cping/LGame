@@ -54,8 +54,9 @@ public class AndroidGraphics extends Graphics {
 	private final Map<Pair<String, Font.Style>, Typeface> fonts = new HashMap<Pair<String, Font.Style>, Typeface>();
 	private final Map<Pair<String, Font.Style>, String[]> ligatureHacks = new HashMap<Pair<String, Font.Style>, String[]>();
 
-	private Dimension screenSize = new Dimension();
+	private final Dimension screenSize = new Dimension();
 	private ScaleFunc canvasScaleFunc = new ScaleFunc() {
+		@Override
 		public Scale computeScale(float width, float height, Scale gfxScale) {
 			return gfxScale;
 		}

@@ -40,16 +40,16 @@ final public class StringUtils extends CharUtils {
 	 */
 	public static String format(String format, Object... o) {
 		if (CollectionUtils.isEmpty(o)) {
-			return "";
+			return LSystem.EMPTY;
 		}
 		StrBuilder b = new StrBuilder();
 		int p = 0;
 		for (;;) {
-			int i = format.indexOf('{', p);
+			int i = format.indexOf(LSystem.DELIM_START, p);
 			if (i == -1) {
 				break;
 			}
-			int idx = format.indexOf('}', i + 1);
+			int idx = format.indexOf(LSystem.DELIM_END, i + 1);
 			if (idx == -1) {
 				break;
 			}
@@ -62,10 +62,10 @@ final public class StringUtils extends CharUtils {
 				if (n >= 0 && n < o.length) {
 					b.append(o[n]);
 				} else {
-					b.append('{').append(nstr).append('}');
+					b.append(LSystem.DELIM_START).append(nstr).append(LSystem.DELIM_END);
 				}
 			} catch (Exception e) {
-				b.append('{').append(nstr).append('}');
+				b.append(LSystem.DELIM_START).append(nstr).append(LSystem.DELIM_END);
 			}
 			p = idx + 1;
 		}
@@ -326,7 +326,7 @@ final public class StringUtils extends CharUtils {
 	 */
 	public static String join(Character flag, Object... o) {
 		if (CollectionUtils.isEmpty(o)) {
-			return "";
+			return LSystem.EMPTY;
 		}
 		StrBuilder sbr = new StrBuilder();
 		int size = o.length;
@@ -348,7 +348,7 @@ final public class StringUtils extends CharUtils {
 	 */
 	public static String join(Character flag, float... o) {
 		if (CollectionUtils.isEmpty(o)) {
-			return "";
+			return LSystem.EMPTY;
 		}
 		StrBuilder sbr = new StrBuilder();
 		int size = o.length;
@@ -370,7 +370,7 @@ final public class StringUtils extends CharUtils {
 	 */
 	public static String join(Character flag, int... o) {
 		if (CollectionUtils.isEmpty(o)) {
-			return "";
+			return LSystem.EMPTY;
 		}
 		StrBuilder sbr = new StrBuilder();
 		int size = o.length;
@@ -392,7 +392,7 @@ final public class StringUtils extends CharUtils {
 	 */
 	public static String join(Character flag, long... o) {
 		if (CollectionUtils.isEmpty(o)) {
-			return "";
+			return LSystem.EMPTY;
 		}
 		StrBuilder sbr = new StrBuilder();
 		int size = o.length;
@@ -414,7 +414,7 @@ final public class StringUtils extends CharUtils {
 	 */
 	public static String join(Character flag, boolean... o) {
 		if (CollectionUtils.isEmpty(o)) {
-			return "";
+			return LSystem.EMPTY;
 		}
 		StrBuilder sbr = new StrBuilder();
 		int size = o.length;
@@ -436,7 +436,7 @@ final public class StringUtils extends CharUtils {
 	 */
 	public static String join(Character flag, CharSequence... o) {
 		if (CollectionUtils.isEmpty(o)) {
-			return "";
+			return LSystem.EMPTY;
 		}
 		StrBuilder sbr = new StrBuilder();
 		int size = o.length;
@@ -457,7 +457,7 @@ final public class StringUtils extends CharUtils {
 	 */
 	public static String concat(final Object... o) {
 		if (CollectionUtils.isEmpty(o)) {
-			return "";
+			return LSystem.EMPTY;
 		}
 		StrBuilder sbr = new StrBuilder(o.length);
 		for (int i = 0; i < o.length; i++) {
@@ -523,7 +523,7 @@ final public class StringUtils extends CharUtils {
 	 * @return
 	 */
 	public static String filter(CharSequence message, char... chars) {
-		return filter(message, chars, "");
+		return filter(message, chars, LSystem.EMPTY);
 	}
 
 	/**
@@ -886,7 +886,7 @@ final public class StringUtils extends CharUtils {
 	 * @return
 	 */
 	public static String replacesTrim(String message, String newTag, String... oldStrings) {
-		return replaces(message, "", oldStrings);
+		return replaces(message, LSystem.EMPTY, oldStrings);
 	}
 
 	/**
@@ -1096,7 +1096,7 @@ final public class StringUtils extends CharUtils {
 	 * @return
 	 */
 	public static boolean isEmpty(CharSequence v) {
-		return v == null || v.length() == 0 || "".equals(v.toString().trim());
+		return v == null || v.length() == 0 || LSystem.EMPTY.equals(v.toString().trim());
 	}
 
 	/**
@@ -1472,7 +1472,7 @@ final public class StringUtils extends CharUtils {
 	 */
 	public static String unescape(String escaped) {
 		if (isEmpty(escaped)) {
-			return "";
+			return LSystem.EMPTY;
 		}
 		int length = escaped.length();
 		int i = 0;
@@ -1509,7 +1509,7 @@ final public class StringUtils extends CharUtils {
 	 */
 	public static String escape(CharSequence raw) {
 		if (isEmpty(raw)) {
-			return "";
+			return LSystem.EMPTY;
 		}
 		int length = raw.length();
 		int i = 0;
@@ -2238,21 +2238,21 @@ final public class StringUtils extends CharUtils {
 			return LSystem.EMPTY;
 		}
 		String src = cs.toString();
-		int pos = src.indexOf("\r");
+		int pos = src.indexOf(LSystem.CR);
 		if (pos != -1) {
 			int len = src.length();
 			StrBuilder buffer = new StrBuilder();
 			int lastPos = 0;
 			while (pos != -1) {
 				buffer.append(src, lastPos, pos);
-				if (pos == len - 1 || src.charAt(pos + 1) != '\n') {
-					buffer.append('\n');
+				if (pos == len - 1 || src.charAt(pos + 1) != LSystem.LF) {
+					buffer.append(LSystem.LF);
 				}
 				lastPos = pos + 1;
 				if (lastPos >= len) {
 					break;
 				}
-				pos = src.indexOf("\r", lastPos);
+				pos = src.indexOf(LSystem.CR, lastPos);
 			}
 			if (lastPos < len) {
 				buffer.append(src, lastPos, len);
@@ -2286,7 +2286,7 @@ final public class StringUtils extends CharUtils {
 				sbr.append("\n" + indent);
 			}
 			return sbr.toString();
-		} else if ("".equals(text)) {
+		} else if (LSystem.EMPTY.equals(text)) {
 			return quote(text);
 		} else {
 			final String indicators = ":[]{},\"'|*&";

@@ -57,6 +57,6 @@ public abstract class TextLayout {
 	}
 
 	public static String normalizeEOL(String text) {
-		return text.replace(LSystem.NL, "\n").replace('\r', '\n');
+		return text.replace(LSystem.NL, LSystem.LS).replace(LSystem.CR, LSystem.LF);
 	}
 }

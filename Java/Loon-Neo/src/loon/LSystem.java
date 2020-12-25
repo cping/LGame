@@ -94,6 +94,8 @@ public class LSystem {
 
 	public static final char LF = '\n';
 
+	public static final char TF = '\t';
+	
 	public static final char UNDERLINE = '_';
 
 	public static final char DASHED = '-';

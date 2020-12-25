@@ -110,7 +110,12 @@ namespace loon
             if (plat != null)
             {
                 LGame._platform = plat;
-                LGame._base = plat.GetGame();
+                LGame game = plat.GetGame();
+                if (game != null)
+                {
+                    LGame._base = game;
+                  //  LGame._base.resetShader();
+                }
             }
         }
         protected internal virtual LGame CheckBaseGame(LGame game)

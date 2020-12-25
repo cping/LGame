@@ -205,8 +205,11 @@ public abstract class LGame {
 	public void setPlatform(Platform plat) {
 		if (plat != null) {
 			LGame._platform = plat;
-			LGame._base = plat.getGame();
-			LGame._base.resetShader();
+			LGame game = plat.getGame();
+			if (game != null) {
+				LGame._base = game;
+				LGame._base.resetShader();
+			}
 		}
 	}
 
@@ -1115,7 +1118,7 @@ public abstract class LGame {
 	public abstract InputMake input();
 
 	public abstract Clipboard clipboard();
-	
+
 	public abstract Log log();
 
 	public abstract Save save();

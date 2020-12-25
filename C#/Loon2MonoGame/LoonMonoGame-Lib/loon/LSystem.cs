@@ -111,6 +111,10 @@ namespace loon
 
         public static bool PAUSED = false;
 
+        public static void FreeStaticObject()
+        {
+
+        }
 
         public static bool IsHTML5()
         {
@@ -154,6 +158,16 @@ namespace loon
         public static float GetScaleHeight()
         {
             return LSystem._scaleHeight;
+        }
+
+        public static void SetScaleWidth(float sw)
+        {
+            LSystem._scaleWidth = sw;
+        }
+
+        public static void SetScaleHeight(float sh)
+        {
+            LSystem._scaleHeight = sh;
         }
 
         public static Platform Platform
@@ -536,6 +550,14 @@ namespace loon
                 Base.Log().SetMinLevel(level);
             }
         }
+        public static float InvXScaled(float length)
+        {
+            return length / LSystem.GetScaleWidth();
+        }
 
+        public static float InvYScaled(float length)
+        {
+            return length / LSystem.GetScaleWidth();
+        }
     }
 }
