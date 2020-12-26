@@ -90,10 +90,10 @@ namespace loon.utils.reply
             {
                 throw new LSysException("cannot change priority of disconnected connection.");
             }
-            //_owner.Disconnect(this);
+            _owner.Disconnect(this);
             next = null;
             _priority = priority;
-            //_owner.AddCons(this);
+            _owner.AddCons(this);
             return this;
         }
 

@@ -1,7 +1,9 @@
 ﻿using java.lang;
 using loon;
+using loon.events;
 using loon.monogame;
 using loon.opengl;
+using loon.utils.timer;
 using System;
 
 namespace LoonMonoGame
@@ -23,6 +25,11 @@ namespace LoonMonoGame
                 JavaSystem.Out.Println(LSystem.Base.Assets().GetBytesSync("test.txt").Length == 14);
             }
 
+            public override void Alter(LTimerContext context)
+            {
+                throw new NotImplementedException();
+            }
+
             public override void Draw(GLEx g)
             {
                 throw new NotImplementedException();
@@ -31,6 +38,27 @@ namespace LoonMonoGame
             public override void Resize(int width, int height)
             {
                 throw new NotImplementedException();
+            }
+
+            public override void TouchDown(GameTouch e)
+            {
+
+                JavaSystem.Out.Println("down");
+            }
+
+            public override void TouchDrag(GameTouch e)
+            {
+                JavaSystem.Out.Println("drag");
+            }
+
+            public override void TouchMove(GameTouch e)
+            {
+                JavaSystem.Out.Println("move");
+            }
+
+            public override void TouchUp(GameTouch e)
+            {
+                JavaSystem.Out.Println("up");
             }
         }
 
@@ -57,21 +85,6 @@ namespace LoonMonoGame
  
             //Lambda方式注入运行参数与显示用Screen
             Register(setting, () => { return new MyScreen(); });
-
-			/**
-			 * //1123418112
-
-			JavaSystem.Out.Println(NumberUtils.FloatToIntBits(123f));
-
-
-            //2079648233
-            JavaSystem.Out.Println(LColor.GetARGB(244, 233, 233, 123));
-            //ff000000
-            JavaSystem.Out.Println(new LColor(LColor.TRANSPARENT));
-            //7bf4e9e9
-            JavaSystem.Out.Println(new LColor(244, 233, 233, 123));
-            //1,2,3,4
-            JavaSystem.Out.Println(new LColor(1, 2, 3, 4).GetXNAColor());*/
         }
     }
 }

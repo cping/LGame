@@ -214,6 +214,7 @@ namespace loon.utils.reply
                     catch (System.Exception ex)
                     {
                         JavaSystem.Out.Println(ex.Message);
+                        JavaSystem.Out.Println(ex.StackTrace);
                         exn = ex;
                     }
                     if (cons.OneShot())

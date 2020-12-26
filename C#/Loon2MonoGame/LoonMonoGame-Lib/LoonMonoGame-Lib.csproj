@@ -1,9 +1,44 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+	<AssemblyName>loon</AssemblyName>
+	<RootNamespace>loon</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Remove="loon\Loon.cs" />
+    <None Remove="Content\loon_bar.png" />
+    <None Remove="Content\loon_control_base.png" />
+    <None Remove="Content\loon_control_dot.png" />
+    <None Remove="Content\loon_creese.png" />
+    <None Remove="Content\loon_deffont.png" />
+    <None Remove="Content\loon_deffont.txt" />
+    <None Remove="Content\loon_e1.png" />
+    <None Remove="Content\loon_e2.png" />
+    <None Remove="Content\loon_logo.png" />
+    <None Remove="Content\loon_natural.png" />
+    <None Remove="Content\loon_natural.txt" />
+    <None Remove="Content\loon_pad_ui.png" />
+    <None Remove="Content\loon_pad_ui.txt" />
+    <None Remove="Content\loon_par.png" />
+    <None Remove="Content\loon_ui.png" />
+    <None Remove="Content\loon_wbar.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Content\loon_bar.png" />
+    <EmbeddedResource Include="Content\loon_control_base.png" />
+    <EmbeddedResource Include="Content\loon_control_dot.png" />
+    <EmbeddedResource Include="Content\loon_creese.png" />
+    <EmbeddedResource Include="Content\loon_deffont.png" />
+    <EmbeddedResource Include="Content\loon_deffont.txt" />
+    <EmbeddedResource Include="Content\loon_e1.png" />
+    <EmbeddedResource Include="Content\loon_e2.png" />
+    <EmbeddedResource Include="Content\loon_logo.png" />
+    <EmbeddedResource Include="Content\loon_natural.png" />
+    <EmbeddedResource Include="Content\loon_natural.txt" />
+    <EmbeddedResource Include="Content\loon_pad_ui.png" />
+    <EmbeddedResource Include="Content\loon_pad_ui.txt" />
+    <EmbeddedResource Include="Content\loon_par.png" />
+    <EmbeddedResource Include="Content\loon_ui.png" />
+    <EmbeddedResource Include="Content\loon_wbar.png" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.0.1641">

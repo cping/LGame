@@ -375,6 +375,37 @@ namespace loon.utils
 		{
 			return Size(v) <= i ? (char)0 : v.CharAt(i);
 		}
+		public static bool Contains(CharSequence key,params CharSequence[] texts)
+		{
+			foreach (CharSequence text in texts)
+			{
+				if (key == null && text == null)
+				{
+					return true;
+				}
+				if (text == key || (text != null && string.ReferenceEquals(text?.ToString(),key?.ToString())))
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+
+		public static bool Contains(string key, params string[] texts)
+		{
+			foreach (string text in texts)
+			{
+				if (key == null && text == null)
+				{
+					return true;
+				}
+				if (text == key || (text != null && string.ReferenceEquals(text, key)))
+				{
+					return true;
+				}
+			}
+			return false;
+		}
 
 		public static string FormatCRLF(string cs)
 		{

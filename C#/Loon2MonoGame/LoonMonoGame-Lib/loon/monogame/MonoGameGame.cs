@@ -1,6 +1,7 @@
 ﻿using java.lang;
 using loon.events;
 using loon.jni;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Framework.Utilities;
 using System;
@@ -46,18 +47,38 @@ namespace loon.monogame
 
         private readonly MonoGameGraphics _graphics;
 
+        private readonly Loon _plat;
+
         public MonoGameGame(LSetting config, Loon game) : base(config, game)
         {
-
+            this._plat = game;
             this._start = JavaSystem.NanoTime();
             this._contentManager = new MonoGameContentManager(game.GetContentManager().ServiceProvider, game.GetContentManager().RootDirectory);
-            this._inputer = new MonoGameInputMake();
-            this._log = new MonoGameLog();
+            this._asyn = new MonoGameAsyn<object>(_log, frame);
+            this._log = new MonoGameLog(config.appName);
             this._support = new NativeSupport();
             this._assets = new MonoGameAssets(this);
-            this._asyn = new MonoGameAsyn<object>(_log,frame);
+            this._inputer = new MonoGameInputMake(this);
             this._graphics = new MonoGameGraphics(this, game.GetGraphicsDevice(), config.Width, config.Height);
             this.InitProcess();
+        }
+
+        public void OnSizeChanged(int width, int height)
+        {
+            if (_graphics != null)
+            {
+                _graphics.OnSizeChanged(width,height);
+                if (!_graphics.IsAllowResize(width, height))
+                {
+                    return;
+                }
+                GraphicsDeviceManager gdm = _plat.GetGraphicsDeviceManager();
+                if (gdm != null)
+                {
+                    gdm.PreferredBackBufferWidth = setting.Width;
+                    gdm.PreferredBackBufferHeight = setting.Height;
+                }
+            }
         }
 
         public override int Tick()
@@ -97,17 +118,17 @@ namespace loon.monogame
 
         public override bool IsMobile()
         {
-            return PlatformInfo.MonoGamePlatform == MonoGamePlatform.Android || PlatformInfo.MonoGamePlatform == MonoGamePlatform.iOS || PlatformInfo.MonoGamePlatform == MonoGamePlatform.tvOS;
+            return PlatformInfo.MonoGamePlatform == MonoGamePlatform.Android || PlatformInfo.MonoGamePlatform == MonoGamePlatform.iOS  || PlatformInfo.MonoGamePlatform == MonoGamePlatform.tvOS;
         }
 
         public override bool IsHTML5()
         {
-            return PlatformInfo.MonoGamePlatform == MonoGamePlatform.WebGL;
+            return PlatformInfo.MonoGamePlatform == MonoGamePlatform.WebGL || base.IsHTML5();
         }
 
         public override bool IsDesktop()
         {
-            return PlatformInfo.MonoGamePlatform == MonoGamePlatform.DesktopGL;
+            return PlatformInfo.MonoGamePlatform == MonoGamePlatform.DesktopGL || base.IsDesktop();
         }
 
         public MonoGameContentManager GetMonoGameContentManager()

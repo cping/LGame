@@ -1,4 +1,5 @@
 ﻿using java.lang;
+using java.util;
 
 namespace loon.utils.reply
 {
@@ -20,13 +21,14 @@ namespace loon.utils.reply
             {
                 if (_set != null)
                 {
-                    foreach (LRelease c in _set)
+                    for (Iterator<LRelease> it=_set.Iterator(); it.HasNext();)
                     {
+                        LRelease c = it.Next();
                         try
                         {
                             c.Close();
                         }
-                        catch (Throwable)
+                        catch (System.Exception)
                         {
                         }
                     }
@@ -53,7 +55,6 @@ namespace loon.utils.reply
                 }
             }
         }
-
 
         public abstract void Close();
     }

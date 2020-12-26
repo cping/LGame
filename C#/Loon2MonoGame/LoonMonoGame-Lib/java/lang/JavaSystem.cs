@@ -1,5 +1,6 @@
 ﻿using loon;
 using System;
+using System.Diagnostics;
 using System.Text;
 
 namespace java.lang
@@ -95,14 +96,14 @@ namespace java.lang
             return def;
         }
 
-        public static long CurrentTimeMillis()
-        {
-            return System.DateTimeOffset.Now.ToUnixTimeMilliseconds();
-        }
-
         public static long NanoTime()
         {
-            return (System.DateTimeOffset.Now.Ticks - startTicks_f) * 100L;
+            return Stopwatch.GetTimestamp() * 100L;
+        }
+
+        public static long CurrentTimeMillis()
+        {
+            return Stopwatch.GetTimestamp() / TimeSpan.TicksPerMillisecond;
         }
 
         public static long GetTotalMemory()

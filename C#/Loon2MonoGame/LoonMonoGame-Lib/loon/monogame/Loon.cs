@@ -4,6 +4,7 @@ using loon.utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input.Touch;
 using MonoGame.Framework.Utilities;
 using System;
 
@@ -39,7 +40,7 @@ namespace loon.monogame
 
         private DisplayMode _displayMode;
 
-        private GraphicsDeviceManager _graphics;
+        private readonly GraphicsDeviceManager _graphics;
 
         private MonoGameSetting _setting;
 
@@ -50,12 +51,10 @@ namespace loon.monogame
         private Data _mainInterfaceData;
 
         private MonoGameGame _game;
-
-        public Loon() : this("")
+        public Loon() : this("Content")
         {
 
         }
-
         public Loon(string dir)
         {
             LSystem.FreeStaticObject();
@@ -110,10 +109,7 @@ namespace loon.monogame
         }
         protected internal void CheckDisplayMode()
         {
-            if (_displayMode == null)
-            {
-                this._displayMode = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode;
-            }
+             this._displayMode = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode;
         }
 
         /// <summary>
@@ -178,7 +174,7 @@ namespace loon.monogame
                 _setting.UpdateScale();
                 mode = LMode.MaxRatio;
             }
-            else if (PlatformInfo.MonoGamePlatform != MonoGamePlatform.DesktopGL && (_setting.width_zoom <= 0 || _setting.height_zoom <= 0))
+            else if (!(PlatformInfo.MonoGamePlatform == MonoGamePlatform.DesktopGL || PlatformInfo.MonoGamePlatform == MonoGamePlatform.Windows || PlatformInfo.MonoGamePlatform == MonoGamePlatform.WindowsUniversal) && (_setting.width_zoom <= 0 || _setting.height_zoom <= 0))
             {
                 UpdateViewSize(_setting.Landscape(), _setting.width, _setting.height, mode);
                 width = this.maxWidth;
@@ -200,6 +196,9 @@ namespace loon.monogame
 
             Window.AllowUserResizing = _setting.allowUserResizing;
             Window.Title = _setting.appName;
+            Window.OrientationChanged += OnOrientationChanged;
+            Window.ClientSizeChanged += OnClientSizeChanged;
+
 #if WINDOWS || DEBUG
             IsMouseVisible = _setting.isMouseVisible;
 #endif
@@ -209,6 +208,7 @@ namespace loon.monogame
             {
                 args.GraphicsDeviceInformation.PresentationParameters.RenderTargetUsage = RenderTargetUsage.PreserveContents;
             };
+            _graphics.DeviceReset += OnGraphicsDeviceReset;
             _graphics.PreferredDepthStencilFormat = DepthFormat.Depth24Stencil8;
             _graphics.PreferredBackBufferFormat = _displayMode.Format;
             _graphics.PreferredBackBufferWidth = _setting.Width;
@@ -230,8 +230,34 @@ namespace loon.monogame
 
             base.Initialize();
 
+            this.SetFPS(_setting.fps);
             this.InitializeGame();
 
+        }
+
+        protected virtual void OnGraphicsDeviceReset(object sender, EventArgs e)
+        {
+            TouchPanel.DisplayWidth = GraphicsDevice.Viewport.Width;
+            TouchPanel.DisplayHeight = GraphicsDevice.Viewport.Height;
+            TouchPanel.DisplayOrientation = GraphicsDevice.PresentationParameters.DisplayOrientation;
+        }
+
+        public virtual void OnOrientationChanged(object sender,EventArgs e)
+        {
+            if (_game != null)
+            {
+                RectBox rect =  GetScreenDimension();
+                _game.OnSizeChanged(rect.Width(), rect.Height()) ;
+            }    
+        }
+
+        public virtual void OnClientSizeChanged(object sender, EventArgs e)
+        {
+            if (_game != null)
+            {
+                RectBox rect = GetScreenDimension();
+                _game.OnSizeChanged(rect.Width(), rect.Height());
+            }
         }
 
         public virtual float ScaleFactor()
@@ -239,7 +265,7 @@ namespace loon.monogame
             return 1f;
         }
 
-        protected void UpdateViewSize(bool landscape, int width, int height, LMode mode)
+        protected virtual void UpdateViewSize(bool landscape, int width, int height, LMode mode)
         {
 
             RectBox d = GetScreenDimension();
@@ -365,7 +391,7 @@ namespace loon.monogame
             UpdateViewSizeData(mode);
         }
 
-        public void UpdateViewSizeData(LMode mode)
+        public virtual void UpdateViewSizeData(LMode mode)
         {
             if (zoomWidth <= 0)
             {
@@ -462,10 +488,15 @@ namespace loon.monogame
             {
                 _xnalistener.LoadContent();
             }
+            base.LoadContent();
         }
 
         protected override void Update(GameTime gameTime)
         {
+            if (_game != null)
+            {
+                _game.Update();
+            }
             if (_xnalistener != null)
             {
                 _xnalistener.Update(gameTime);
@@ -493,10 +524,7 @@ namespace loon.monogame
             {
                 _xnalistener.UnloadContent();
             }
-            if (Content != null)
-            {
-                Content.Unload();
-            }
+            base.UnloadContent();
         }
 
         public void SetXNAListener(XNAListener l)
@@ -509,7 +537,6 @@ namespace loon.monogame
             return this._xnalistener;
         }
 
-
         public GraphicsDeviceManager GetGraphicsDeviceManager()
         {
             return this._graphics;
@@ -520,14 +547,13 @@ namespace loon.monogame
             return base.GraphicsDevice;
         }
 
-
-        public RectBox GetScreenDimension()
+        public virtual RectBox GetScreenDimension()
         {
             CheckDisplayMode();
             return new RectBox(0, 0, _displayMode.Width, _displayMode.Height);
         }
 
-        public Loon SetSleepTime(int time)
+        public virtual Loon SetSleepTime(int time)
         {
             if (time <= 0)
             {
@@ -540,7 +566,7 @@ namespace loon.monogame
             return this;
         }
 
-        public Loon SetFPS(int fps)
+        public virtual Loon SetFPS(int fps)
         {
             if (fps <= 0)
             {
@@ -578,22 +604,25 @@ namespace loon.monogame
             return this.Content;
         }
 
-        public void Close()
+        public virtual void Close()
         {
-            throw new NotImplementedException();
+            if (_game != null)
+            {
+                _game.Close();
+            }
         }
 
-        public int GetContainerWidth()
+        public virtual int GetContainerWidth()
         {
             return GetScreenDimension().width;
         }
 
-        public int GetContainerHeight()
+        public virtual int GetContainerHeight()
         {
             return GetScreenDimension().height;
         }
 
-        public Platform_Orientation GetOrientation()
+        public virtual Platform_Orientation GetOrientation()
         {
 
             if (GetContainerHeight() > GetContainerWidth())
@@ -607,7 +636,7 @@ namespace loon.monogame
 
         }
 
-        public LGame GetGame()
+        public virtual LGame GetGame()
         {
             return this._game;
         }

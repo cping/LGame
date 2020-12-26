@@ -1,49 +1,182 @@
-﻿using java.lang;
-using loon.events;
+﻿using loon.events;
 using loon.geom;
 using loon.utils;
+using loon.utils.reply;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using static loon.events.TouchMake.Event;
+using Microsoft.Xna.Framework.Input.Touch;
 
 namespace loon.monogame
 {
     public class MonoGameInputMake : InputMake
     {
 
-        private MouseState _previousMouseState;
-        private Keys[] _previousPressedKeys;
-        private MouseState _currentMouseState;
-        private Keys[] _currentPressedKeys;
-        private Vector2f _currentPos = new Vector2f();
-
-        public MonoGameInputMake()
+        private class EmulateKeyPort : Port<KeyMake.Event>
         {
-            _currentMouseState = _previousMouseState = Mouse.GetState();
-            _currentPressedKeys = _previousPressedKeys = new Keys[0];
+            private readonly MonoGameInputMake outer;
+
+            public EmulateKeyPort(MonoGameInputMake outer)
+            {
+                this.outer = outer;
+            }
+
+            public override void OnEmit(KeyMake.Event e)
+            {
+
+                if (e is KeyMake.KeyEvent eve)
+                {
+                    KeyMake.KeyEvent kevent = eve;
+                    if (kevent.down)
+                    {
+                        outer._pivot = new Vector2f(outer._emx, outer._emy);
+                    }
+                }
+
+            }
+        }
+
+        private class EmulateTouchPort : Port<MouseMake.Event>
+        {
+            private readonly MonoGameInputMake outer;
+
+            public EmulateTouchPort(MonoGameInputMake outer)
+            {
+                this.outer = outer;
+            }
+
+            public override void OnEmit(MouseMake.Event e)
+            {
+                if (e is MouseMake.ButtonEvent eve)
+                {
+                    MouseMake.ButtonEvent bevent = eve;
+                    if (bevent.button == SysTouch.LEFT)
+                    {
+                        if (outer._mouseDown = bevent.down)
+                        {
+                            outer._currentId += 2;
+                            outer.DispatchTouch(e, TouchMake.Event.Kind.START);
+                        }
+                        else
+                        {
+                            outer._pivot = null;
+                            outer.DispatchTouch(e, TouchMake.Event.Kind.END);
+                        }
+                    }
+                    if (outer._mouseDown)
+                    {
+                        outer.DispatchTouch(e, TouchMake.Event.Kind.MOVE);
+                    }
+                    outer._emx = e.x;
+                    outer._emy = e.y;
+                }
+
+            }
+        }
+
+        private Keys[] _previousPressedKeys;
+        private Keys[] _currentPressedKeys;
+
+        private MouseState _previousMouseState;
+        private MouseState _currentMouseState;
+
+        private readonly bool _isConnected;
+        private TouchCollection _currentTouches;
+
+        private readonly Vector2f _currentPos = new Vector2f();
+
+        private readonly LGame _game;
+
+        private int _currentId;
+
+        private bool _mouseDown;
+
+        private float _emx, _emy;
+
+        private Vector2f _pivot;
+
+        public MonoGameInputMake(LGame game)
+        {
+            this._game = game;
+            this._currentMouseState = _previousMouseState = Mouse.GetState();
+            this._currentPressedKeys = _previousPressedKeys = new Keys[0];
+            this._isConnected = TouchPanel.GetCapabilities().IsConnected;
+            if (game.setting.emulateTouch && !_isConnected)
+            {
+                EmulateTouch();
+            }
         }
 
         public void Update()
         {
-            this._previousMouseState = _currentMouseState;
             this._previousPressedKeys = _currentPressedKeys;
-            this._currentMouseState = Mouse.GetState();
             this._currentPressedKeys = Keyboard.GetState().GetPressedKeys();
             int flags = ModifierFlags(IsKeyDown(Keys.LeftAlt) || IsKeyDown(Keys.RightAlt),
                         IsKeyDown(Keys.LeftControl) || IsKeyDown(Keys.RightControl),
                         IsKeyDown(Keys.LeftWindows) || IsKeyDown(Keys.RightWindows),
                         IsKeyDown(Keys.LeftShift) || IsKeyDown(Keys.RightShift));
-            UpdateMouseInput(flags);
             UpdateKeyboardInput(flags);
+            if (_isConnected)
+            {
+                UpdateTouchInput(flags);
+            }
+            else
+            {
+
+                UpdateMouseInput(flags);
+            }
         }
 
+        public bool IsTouchConnected()
+        {
+            return _isConnected;
+        }
+
+        protected void UpdateTouchInput(int flags)
+        {
+            if (!_isConnected)
+            {
+                return;
+            }
+            _currentTouches = TouchPanel.GetState();
+            int count = _currentTouches.Count;
+            int idx = 0;
+            TouchMake.Event[] touchs = new TouchMake.Event[count];
+            foreach (TouchLocation touch in _currentTouches)
+            {
+                Vector2 pos = touch.Position;
+                switch (touch.State)
+                {
+                    case TouchLocationState.Pressed:
+                        touchs[idx] = new TouchMake.Event(flags, TimeUtils.Millis(), pos.X, pos.Y, TouchMake.Event.Kind.START, touch.Id, touch.Pressure, idx);
+                        break;
+                    case TouchLocationState.Released:
+                        touchs[idx] = new TouchMake.Event(flags, TimeUtils.Millis(), pos.X, pos.Y, TouchMake.Event.Kind.END, touch.Id, touch.Pressure, idx);
+                        break;
+                    case TouchLocationState.Moved:
+                        touchs[idx] = new TouchMake.Event(flags, TimeUtils.Millis(), pos.X, pos.Y, TouchMake.Event.Kind.MOVE, touch.Id, touch.Pressure, idx);
+                        break;
+                    case TouchLocationState.Invalid:
+                        touchs[idx] = new TouchMake.Event(flags, TimeUtils.Millis(), pos.X, pos.Y, TouchMake.Event.Kind.CANCEL, touch.Id, touch.Pressure, idx);
+                        break;
+                }
+                idx++;
+            }
+            touchEvents.Emit(touchs);
+        }
 
         protected void UpdateMouseInput(int flags)
         {
+            this._previousMouseState = _currentMouseState;
+            this._currentMouseState = Mouse.GetState();
             _currentPos.Set(_currentMouseState.X, _currentMouseState.Y);
 
-            if (_previousMouseState.X != _currentMouseState.X || _previousMouseState.Y != _currentMouseState.Y)
+            if ((_previousMouseState.X != _currentMouseState.X || _previousMouseState.Y != _currentMouseState.Y))
             {
-                if (!IsAnyMouseButtonPressed(_currentMouseState))
+                if (IsAnyMouseButtonPressed(_currentMouseState))
+                {
+                    EmitMouseButton(TimeUtils.Millis(), _currentPos.x, _currentPos.y, -1, true, flags);
+                }
+                else
                 {
                     EmitMouseButton(TimeUtils.Millis(), _currentPos.x, _currentPos.y, -1, false, flags);
                 }
@@ -67,11 +200,11 @@ namespace loon.monogame
                 {
                     if (_currentMouseState.MiddleButton == ButtonState.Pressed)
                     {
-                        EmitMouseButton(TimeUtils.Millis(), _currentPos.x, _currentPos.y, SysTouch.MIDDLE, true, SysTouch.MIDDLE);
+                        EmitMouseButton(TimeUtils.Millis(), _currentPos.x, _currentPos.y, SysTouch.MIDDLE, true, flags);
                     }
                     else
                     {
-                        EmitMouseButton(TimeUtils.Millis(), _currentPos.x, _currentPos.y, SysTouch.MIDDLE, false, SysTouch.MIDDLE);
+                        EmitMouseButton(TimeUtils.Millis(), _currentPos.x, _currentPos.y, SysTouch.MIDDLE, false, flags);
                     }
                 }
 
@@ -421,6 +554,33 @@ namespace loon.monogame
             }
         }
 
+
+        protected virtual void EmulateTouch()
+        {
+            keyboardEvents.Connect(new EmulateKeyPort(this));
+            mouseEvents.Connect(new EmulateTouchPort(this));
+        }
+
+        private void DispatchTouch(MouseMake.Event e, TouchMake.Event.Kind kind)
+        {
+            float ex = e.x, ey = e.y;
+            TouchMake.Event touch = ToTouch(e.time, ex, ey, kind, 0);
+            TouchMake.Event[]
+            evs = (_pivot == null) ? new TouchMake.Event[] { touch }
+                    : new TouchMake.Event[] { touch, ToTouch(e.time, 2 * _pivot.x - ex, 2 * _pivot.y - ey, kind, 1) };
+            touchEvents.Emit(evs);
+        }
+
+        private TouchMake.Event ToTouch(double time, float x, float y, TouchMake.Event.Kind kind, int idoff)
+        {
+            return new TouchMake.Event(0, time, x, y, kind, _currentId + idoff);
+        }
+
+        public override bool HasTouch()
+        {
+            return _game.setting.emulateTouch || _isConnected;
+        }
+
         public bool IsKeyJustPressed(int i)
         {
             var monogameKey = ToMonoGameKey(i);
@@ -457,8 +617,8 @@ namespace loon.monogame
         {
             return state.LeftButton == ButtonState.Pressed ||
                    state.MiddleButton == ButtonState.Pressed ||
-                   state.RightButton == ButtonState.Pressed || 
-                   state.XButton1 == ButtonState.Pressed || 
+                   state.RightButton == ButtonState.Pressed ||
+                   state.XButton1 == ButtonState.Pressed ||
                    state.XButton2 == ButtonState.Pressed;
         }
 

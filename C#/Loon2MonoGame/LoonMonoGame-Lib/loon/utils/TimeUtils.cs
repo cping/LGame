@@ -143,7 +143,7 @@ namespace loon.utils
 
 	public static long NanoTime()
 	{
-		return JavaSystem.CurrentTimeMillis() * nanosPerMilli;
+		return JavaSystem.NanoTime();
 	}
 
 	public static long Millis()

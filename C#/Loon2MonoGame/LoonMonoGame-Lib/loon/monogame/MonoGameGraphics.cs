@@ -13,6 +13,18 @@ namespace loon.monogame
             screenSize.height = scale.InvScaled(h);
         }
 
+        protected internal void OnSizeChanged(int viewWidth, int viewHeight)
+        {
+            if (!IsAllowResize(viewWidth, viewHeight))
+            {
+                return;
+            }
+            screenSize.width = viewWidth / scale.factor;
+            screenSize.height = viewHeight / scale.factor;
+            game.Log().Info("Updating size " + viewWidth + "x" + viewHeight + " / " + scale.factor + " -> " + screenSize);
+            ViewportChanged(scale, viewWidth, viewHeight);
+        }
+
         private readonly Dimension screenSize = new Dimension();
         public override Dimension ScreenSize()
         {

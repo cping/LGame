@@ -283,13 +283,13 @@ namespace loon
 		{
 			if (Scaling())
 			{
-				/*LSystem.SetScaleWidth((float)width_zoom / (float)width);
+				LSystem.SetScaleWidth((float)width_zoom / (float)width);
 				LSystem.SetScaleHeight((float)height_zoom / (float)height);
 				LSystem.viewSize.SetSize(width, height);
 				if (LSystem.GetProcess() != null)
 				{
 					LSystem.GetProcess().Resize(width, height);
-				}*/
+				}
 			}
 			return this;
 		}

@@ -50,10 +50,8 @@ public class Lwjgl3Input extends InputMake {
 		}
 	}
 
-	public void postKey(long time, int keyCode, boolean pressed, char typedCh,
-			int modFlags) {
-		KeyMake.Event event = new KeyMake.KeyEvent(0, time, typedCh, keyCode,
-				pressed);
+	public void postKey(long time, int keyCode, boolean pressed, char typedCh, int modFlags) {
+		KeyMake.Event event = new KeyMake.KeyEvent(0, time, typedCh, keyCode, pressed);
 		event.setFlag(modFlags);
 		kevQueue.add(event);
 	}
@@ -62,6 +60,7 @@ public class Lwjgl3Input extends InputMake {
 
 	protected void emulateTouch() {
 		keyboardEvents.connect(new Port<KeyMake.Event>() {
+			@Override
 			public void onEmit(KeyMake.Event event) {
 				if (event instanceof KeyMake.KeyEvent) {
 					KeyMake.KeyEvent kevent = (KeyMake.KeyEvent) event;
@@ -73,22 +72,25 @@ public class Lwjgl3Input extends InputMake {
 		});
 
 		mouseEvents.connect(new Port<MouseMake.Event>() {
+			@Override
 			public void onEmit(MouseMake.Event event) {
-				MouseMake.ButtonEvent bevent = (MouseMake.ButtonEvent) event;
-				if (bevent.button == SysTouch.LEFT) {
-					if (mouseDown = bevent.down) {
-						currentId += 2;
-						dispatchTouch(event, TouchMake.Event.Kind.START);
-					} else {
-						pivot = null;
-						dispatchTouch(event, TouchMake.Event.Kind.END);
+				if (event instanceof MouseMake.ButtonEvent) {
+					MouseMake.ButtonEvent bevent = (MouseMake.ButtonEvent) event;
+					if (bevent.button == SysTouch.LEFT) {
+						if (mouseDown = bevent.down) {
+							currentId += 2;
+							dispatchTouch(event, TouchMake.Event.Kind.START);
+						} else {
+							pivot = null;
+							dispatchTouch(event, TouchMake.Event.Kind.END);
+						}
 					}
+					if (mouseDown) {
+						dispatchTouch(event, TouchMake.Event.Kind.MOVE);
+					}
+					x = event.x;
+					y = event.y;
 				}
-				if (mouseDown) {
-					dispatchTouch(event, TouchMake.Event.Kind.MOVE);
-				}
-				x = event.x;
-				y = event.y;
 			}
 		});
 	}
@@ -122,15 +124,11 @@ public class Lwjgl3Input extends InputMake {
 		float ex = event.x, ey = event.y;
 		TouchMake.Event main = toTouch(event.time, ex, ey, kind, 0);
 		TouchMake.Event[] evs = (pivot == null) ? new TouchMake.Event[] { main }
-				: new TouchMake.Event[] {
-						main,
-						toTouch(event.time, 2 * pivot.x - ex, 2 * pivot.y - ey,
-								kind, 1) };
+				: new TouchMake.Event[] { main, toTouch(event.time, 2 * pivot.x - ex, 2 * pivot.y - ey, kind, 1) };
 		touchEvents.emit(evs);
 	}
 
-	private TouchMake.Event toTouch(double time, float x, float y,
-			TouchMake.Event.Kind kind, int idoff) {
+	private TouchMake.Event toTouch(double time, float x, float y, TouchMake.Event.Kind kind, int idoff) {
 		return new TouchMake.Event(0, time, x, y, kind, currentId + idoff);
 	}
 

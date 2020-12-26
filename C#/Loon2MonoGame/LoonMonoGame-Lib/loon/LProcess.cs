@@ -58,10 +58,18 @@ namespace loon
             InputMake input = game.Input();
             if (input != null)
             {
-                input.mouseEvents.Connect(new ButtonPort(this));
+                //这部分与Java版没必要1:1实现,因为XNA有TouchPanel.GetCapabilities().IsConnected方法判定是否支持触屏
+                if (!game.setting.emulateTouch && !_game.Input().HasTouch())
+                {
+                    input.mouseEvents.Connect(new ButtonPort(this));
+                }
+                else
+                {
+                    input.touchEvents.Connect(new TouchPort(this));
+                }
                 input.keyboardEvents.Connect(new KeyPort(this));
             }
-            game.status.Connect(new PortImpl(this));
+            game.status.Connect(new StatusPort(this));
         }
 
         private class ButtonPort : MouseMake.ButtonSlot
@@ -78,6 +86,23 @@ namespace loon
                 outer._currentInput.CallMouse(e);
             }
         }
+
+
+        private class TouchPort : Port<TouchMake.Event[]>
+        {
+            private readonly LProcess outer;
+
+            public TouchPort(LProcess outer)
+            {
+                this.outer = outer;
+            }
+
+            public override void OnEmit(TouchMake.Event[] events)
+            {
+                outer._currentInput.CallTouch(events);
+            }
+        }
+
         private void SetScreen(Screen screen, bool put)
         {
             if (_loadingScreen != null && _loadingScreen.IsOnLoadComplete())
@@ -206,11 +231,11 @@ namespace loon
             }
         }
 
-        private class PortImpl : Port<LGame.Status>
+        private class StatusPort : Port<LGame.Status>
         {
             private readonly LProcess outer;
 
-            public PortImpl(LProcess outer)
+            public StatusPort(LProcess outer)
             {
                 this.outer = outer;
             }
@@ -529,7 +554,7 @@ namespace loon
 
         public virtual int GetHeight()
         {
-            return GetHeight();
+            return Height;
         }
 
         public virtual int Height
@@ -546,7 +571,7 @@ namespace loon
 
         public virtual int GetWidth()
         {
-            return GetWidth();
+            return Width;
         }
 
         public virtual int Width
