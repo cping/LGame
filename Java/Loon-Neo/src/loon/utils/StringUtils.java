@@ -695,12 +695,15 @@ final public class StringUtils extends CharUtils {
 	 * @return
 	 */
 	public static String[] split(String str, String separator) {
-		if (isEmpty(str) || isEmpty(separator)) {
+		if (isNullOrEmpty(str) || isNullOrEmpty(separator)) {
 			return new String[] {};
 		}
 		int sepLength = separator.length();
 		if (sepLength == 0) {
 			return new String[] { str };
+		}
+		if (separator.length() == 1) {
+			return split(str, separator.charAt(0));
 		}
 		TArray<String> tokens = new TArray<String>();
 		int length = str.length();
@@ -795,7 +798,7 @@ final public class StringUtils extends CharUtils {
 	}
 
 	/**
-	 * 给指定支付序列加上引号
+	 * 给指定序列加上引号
 	 * 
 	 * @param cs
 	 * @return
@@ -805,6 +808,26 @@ final public class StringUtils extends CharUtils {
 			return "\"\"";
 		}
 		return "\"" + cs + "\"";
+	}
+
+	/**
+	 * 给指定序列删去引号
+	 * 
+	 * @param cs
+	 * @return
+	 */
+	public static String dequote(CharSequence cs) {
+		if (isNullOrEmpty(cs)) {
+			return LSystem.EMPTY;
+		}
+		String ch = cs.toString();
+		if (ch.length() < 2) {
+			return ch;
+		} else if (ch.toString().startsWith("\"") && ch.endsWith("\"")) {
+			return ch.substring(1, ch.length() - 1);
+		} else {
+			return ch;
+		}
 	}
 
 	/**
@@ -2327,7 +2350,7 @@ final public class StringUtils extends CharUtils {
 	public static String getRandString() {
 		return getRandString(32);
 	}
-	
+
 	public static String getRandString(final int size) {
 		StrBuilder str = new StrBuilder(size);
 		char ch;

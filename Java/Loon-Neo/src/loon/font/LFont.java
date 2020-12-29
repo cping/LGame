@@ -333,18 +333,18 @@ public class LFont implements IFont {
 
 	@Override
 	public int stringWidth(String message) {
-		if (LSystem.base() == null || StringUtils.isEmpty(message)) {
+		if (LSystem.base() == null || StringUtils.isNullOrEmpty(message)) {
 			return 0;
 		}
 		initLayout(message);
-		if (message.indexOf('\n') == -1) {
+		if (message.indexOf(LSystem.LF) == -1) {
 			return textLayout.stringWidth(message);
 		} else {
 			StrBuilder sbr = new StrBuilder();
 			int width = 0;
 			for (int i = 0, size = message.length(); i < size; i++) {
 				char ch = message.charAt(i);
-				if (ch == '\n') {
+				if (ch == LSystem.LF) {
 					width = MathUtils.max(textLayout.stringWidth(sbr.toString()), width);
 					sbr.delete(0, sbr.length());
 				} else {
@@ -366,14 +366,14 @@ public class LFont implements IFont {
 
 	@Override
 	public int stringHeight(String message) {
-		if (LSystem.base() == null || StringUtils.isEmpty(message)) {
+		if (LSystem.base() == null || StringUtils.isNullOrEmpty(message)) {
 			return 0;
 		}
 		initLayout(message);
-		if (message.indexOf('\n') == -1) {
+		if (message.indexOf(LSystem.LF) == -1) {
 			return getHeight();
 		} else {
-			String[] list = StringUtils.split(message, '\n');
+			String[] list = StringUtils.split(message, LSystem.LF);
 			return list.length * getHeight();
 		}
 	}

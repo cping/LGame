@@ -130,7 +130,6 @@ public class LSTRFont implements IFont, LRelease {
 				if (charwidth <= 0) {
 					charwidth = 1;
 				}
-
 				int charheight = (int) layout.getHeight();
 				if (charheight <= 0) {
 					charheight = strfont.fontSize;
