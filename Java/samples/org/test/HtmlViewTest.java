@@ -20,10 +20,10 @@
  */
 package org.test;
 
-import loon.HorizontalAlign;
 import loon.Stage;
 import loon.canvas.LColor;
 import loon.component.LHtmlView;
+import loon.component.layout.HorizontalAlign;
 import loon.utils.HtmlCmd;
 
 public class HtmlViewTest extends Stage {

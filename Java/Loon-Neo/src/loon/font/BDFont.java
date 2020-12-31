@@ -353,13 +353,14 @@ public class BDFont implements IFont, LRelease {
 				newIntObject.storedX = positionX;
 				newIntObject.storedY = positionY;
 
-				if (newIntObject.height > strfont.fontHeight) {
-					strfont.fontHeight = newIntObject.height;
+				if (newIntObject.height < strfont.fontHeight) {
+					newIntObject.height = (int) strfont.fontHeight;
 				}
 
 				if (newIntObject.height > rowHeight) {
-					rowHeight = newIntObject.height;
+					rowHeight = newIntObject.height + 1;
 				}
+
 				positionX += newIntObject.width;
 
 				if (i < strfont.totalCharSet) {

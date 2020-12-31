@@ -20,10 +20,10 @@
  */
 package org.test;
 
-import loon.HorizontalAlign;
 import loon.Stage;
 import loon.canvas.LColor;
 import loon.component.LLabel;
+import loon.component.layout.HorizontalAlign;
 import loon.font.TextOptions;
 
 public class LabelTest extends Stage{

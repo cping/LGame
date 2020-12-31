@@ -19,7 +19,7 @@ public class BMFontTest extends Screen {
 	@Override
 	public void draw(GLEx g) {
 		if (font != null) {
-			font.drawString(g, "ABCFGHAX", 60, 66 - font.getAscent());
+			font.drawString(g, "ABCF GHAX", 60, 66 - font.getAscent());
 			font.drawString(g, "ZXXC\n01234", 60, 166);
 			font.drawString("Cache ZXXC\n01234", 160, 200);
 		}

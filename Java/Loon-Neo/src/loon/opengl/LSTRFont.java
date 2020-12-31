@@ -209,13 +209,14 @@ public class LSTRFont implements IFont, LRelease {
 				newIntObject.storedX = positionX;
 				newIntObject.storedY = positionY;
 
-				if (newIntObject.height > strfont.fontHeight) {
-					strfont.fontHeight = newIntObject.height;
+				if (newIntObject.height < strfont.fontHeight) {
+					newIntObject.height = strfont.fontHeight;
 				}
 
 				if (newIntObject.height > rowHeight) {
 					rowHeight = newIntObject.height;
 				}
+
 				positionX += newIntObject.width;
 				if (i < strfont.totalCharSet) {
 					strfont.charArray[i] = newIntObject;
@@ -270,7 +271,7 @@ public class LSTRFont implements IFont, LRelease {
 	private final char newTabSpaceFlag = LSystem.TAB;
 
 	private final char newRFlag = LSystem.CR;
-	
+
 	private final PointI _offset = new PointI();
 
 	private final CharArray _chars;
