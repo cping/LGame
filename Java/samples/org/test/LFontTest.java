@@ -34,8 +34,9 @@ public class LFontTest extends Screen{
 	@Override
 	public void draw(GLEx g) {
 		if(font!=null) {
-			font.drawString(g, "悠然半步,平山河萬里.\n偷闲一子,定紅塵千秋.\nabcdD", 55, 55);
-			g.draw(font.getTexture(), 128,128);
+			font.drawString(g,"悠然半步,平山河萬里.\n偷闲一子,定紅塵千秋.\nabcdD", 55, 55);
+			//实际产生的纹理
+			g.draw(font.getTexture(), 0,128);
 		}
 	}
 	
@@ -43,7 +44,11 @@ public class LFontTest extends Screen{
 
 	@Override
 	public void onLoad() {
+		//setBackground(LColor.red);
+		//加载一个默认的本地字体(和运行环境有关,不同操作系统效果不一样,需要一致请使用BMFont或者BDFont)，并且注入需要初始化到纹理的文字(重复字符会自动去除)
 		font = new LSTRFont(LFont.getDefaultFont(),",.，。abcdefgABCD1234悠然半步平山河萬里偷闲一子定紅塵千秋半是率性半是癫一念超然红尘元");
+		//font.setPixelColor(LColor.yellow);
+	    //font.setFontSize(25);
 	}
 
 	@Override

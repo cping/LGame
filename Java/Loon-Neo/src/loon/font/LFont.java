@@ -389,7 +389,7 @@ public class LFont implements IFont {
 	public boolean isPlain() {
 		return textFormat.font.style == Style.PLAIN;
 	}
-
+	
 	@Override
 	public int getSize() {
 		return this._size == -1 ? (int) textFormat.font.size : this._size;

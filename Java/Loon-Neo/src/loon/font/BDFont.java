@@ -143,13 +143,17 @@ public class BDFont implements IFont, LRelease {
 		}
 
 		public float paint(Canvas g, float x, float y, float scale) {
+			return paint(g, x, y, scale, LColor.DEF_COLOR);
+		}
+
+		public float paint(Canvas g, float x, float y, float scale, int color) {
 			int w = ((glyph.length < 1) ? 0 : (glyph[0].length));
 			int h = glyph.length;
 			Image img = Image.createImage(w, h);
 			int[] glyphPixels = new int[w * h];
 			for (int k = 0, j = 0; j < h; j++) {
 				for (int i = 0; i < w; k++, i++) {
-					glyphPixels[k] = glyph[j][i];
+					glyphPixels[k] = LColor.combine(glyph[j][i], color);
 				}
 			}
 			img.setPixels(glyphPixels, w, h);
@@ -312,11 +316,11 @@ public class BDFont implements IFont, LRelease {
 				int ocharwidth = charwidth;
 
 				if (charwidth <= 15 && !StringUtils.isAlphaOrDigit(ch)) {
-					if (charwidth < strfont.getFontSize()) {
-						charwidth = (int) strfont.getFontSize();
+					if (charwidth < strfont.getPixelFontSize()) {
+						charwidth = (int) strfont.getPixelFontSize();
 					}
 				} else if (fullflags.indexOf(ch) != -1 || halfflags.indexOf(ch) != -1) {
-					charwidth = (int) (ocharwidth * strfont.scaleFont);
+					charwidth = (int) (ocharwidth * strfont.scalePixelFont);
 				}
 
 				if (charwidth >= 22) {
@@ -328,7 +332,7 @@ public class BDFont implements IFont, LRelease {
 				int charheight = strfont.getHeight();
 
 				if (charheight <= 0) {
-					charheight = (int) strfont.getFontSize();
+					charheight = (int) strfont.getPixelFontSize();
 				}
 
 				IntObject newIntObject = new IntObject();
@@ -356,7 +360,9 @@ public class BDFont implements IFont, LRelease {
 				if (newIntObject.height < strfont.fontHeight) {
 					newIntObject.height = (int) strfont.fontHeight;
 				}
-
+				if (newIntObject.height - 1 <= strfont.getPixelFontSize()) {
+					newIntObject.height += 1;
+				}
 				if (newIntObject.height > rowHeight) {
 					rowHeight = newIntObject.height + 1;
 				}
@@ -375,7 +381,7 @@ public class BDFont implements IFont, LRelease {
 			}
 
 			if (sbr.length() > 0) {
-				if (positionY <= strfont.textureHeight - strfont.getFontSize()) {
+				if (positionY <= strfont.textureHeight - strfont.getPixelFontSize()) {
 					strfont.draw(canvas, sbr.toString(), 0, positionY);
 				} else {
 					for (int i = 0; i < sbr.length(); i++) {
@@ -441,23 +447,23 @@ public class BDFont implements IFont, LRelease {
 
 	private PointI offset;
 
-	protected IntMap<String> names = new IntMap<String>();
+	private IntMap<String> names = new IntMap<String>();
 
-	protected IntMap<BDFGlyph> characters = new IntMap<BDFGlyph>();
+	private IntMap<BDFGlyph> characters = new IntMap<BDFGlyph>();
 
-	protected String fontVersionName;
+	private String fontVersionName;
 
-	protected String encoding;
+	private String encoding;
 
-	protected float pixelSize, fontSize;
+	private float pixelSize, pixelFontSize;
 
-	protected float ascent, descent;
+	private float ascent, descent;
 
-	protected float typoascent, typodescent;
+	private float typoascent, typodescent;
 
-	protected float xheight, fontHeight, linegap;
+	private float xheight, fontHeight, linegap;
 
-	protected float scaleFont;
+	private int pixelColor = LColor.DEF_COLOR;
 
 	private String path;
 
@@ -499,7 +505,9 @@ public class BDFont implements IFont, LRelease {
 
 	private boolean useCache, isDrawing, isasyn;
 
-	private float offsetX = 1, offsetY = 1;
+	private float fontScale = 1f, scalePixelFont = 1f, fontSize;
+
+	private float offsetX = 0, offsetY = 0;
 
 	private IntMap<Cache> displays;
 
@@ -574,7 +582,6 @@ public class BDFont implements IFont, LRelease {
 			if (additionalChars != null && additionalChars.length > totalCharSet) {
 				textureWidth *= 2;
 			}
-			this.make(asyn);
 		}
 		if (StringUtils.isEmpty(text)) {
 			_isClose = true;
@@ -588,7 +595,7 @@ public class BDFont implements IFont, LRelease {
 		this.fontVersionName = font.fontVersionName;
 		this.encoding = font.encoding;
 		this.pixelSize = font.pixelSize;
-		this.fontSize = font.fontSize;
+		this.pixelFontSize = font.pixelFontSize;
 		this.ascent = font.ascent;
 		this.descent = font.descent;
 		this.typoascent = font.typoascent;
@@ -596,7 +603,7 @@ public class BDFont implements IFont, LRelease {
 		this.xheight = font.xheight;
 		this.fontHeight = font.fontHeight;
 		this.linegap = font.linegap;
-		this.scaleFont = font.scaleFont;
+		this.scalePixelFont = font.scalePixelFont;
 		this.path = font.path;
 		this.isLoading = font.isLoading;
 		this.isLoaded = font.isLoaded;
@@ -607,18 +614,15 @@ public class BDFont implements IFont, LRelease {
 	}
 
 	private synchronized void make(boolean asyn) {
-
 		if (_isClose) {
 			return;
 		}
-
 		if (_initChars) {
 			return;
 		}
 		if (isDrawing) {
 			return;
 		}
-
 		isDrawing = true;
 		Updateable update = new UpdateFont(this);
 		if (asyn) {
@@ -644,8 +648,18 @@ public class BDFont implements IFont, LRelease {
 	}
 
 	public BDFont reset() {
+		this._initDraw = 0;
+		this._initChars = false;
+		this.isDrawing = false;
 		this.isLoaded = false;
 		this.isLoading = false;
+		if (texture != null) {
+			texture.close();
+			texture = null;
+		}
+		if (_childChars != null) {
+			_childChars.clear();
+		}
 		return this;
 	}
 
@@ -674,7 +688,7 @@ public class BDFont implements IFont, LRelease {
 		this.typodescent = typodescent;
 		this.xheight = xheight;
 		this.linegap = linegap;
-		this.scaleFont = scale;
+		this.scalePixelFont = scale;
 		return this;
 	}
 
@@ -863,60 +877,60 @@ public class BDFont implements IFont, LRelease {
 	}
 
 	public float getScale() {
-		return scaleFont;
+		return scalePixelFont;
 	}
 
 	public BDFont setScale(float scale) {
 		this.loadFont();
-		this.scaleFont = scale;
+		this.scalePixelFont = scale;
 		return this;
 	}
 
-	public BDFont setFontSize(float size) {
+	public BDFont setPixelFontSize(float size) {
 		this.loadFont();
 		if (size > 15) {
-			this.fontSize = size + 1;
+			this.pixelFontSize = size + 1;
 		} else {
-			this.fontSize = size;
+			this.pixelFontSize = size;
 		}
-		this.scaleFont = (fontSize / this.pixelSize);
+		this.scalePixelFont = (pixelFontSize / this.pixelSize);
 		return this;
 	}
 
-	public float getFontSize() {
+	public float getPixelFontSize() {
 		this.loadFont();
-		return fontSize <= 0 ? this.pixelSize : fontSize;
+		return pixelFontSize <= 0 ? this.pixelSize : pixelFontSize;
 	}
 
 	@Override
 	public float getAscent() {
 		this.loadFont();
-		return ascent * scaleFont;
+		return ascent * scalePixelFont;
 	}
 
 	public float getDescent() {
 		this.loadFont();
-		return descent * scaleFont;
+		return descent * scalePixelFont;
 	}
 
 	public float getLineAscent() {
 		this.loadFont();
-		return typoascent * scaleFont;
+		return typoascent * scalePixelFont;
 	}
 
 	public float getLineDescent() {
 		this.loadFont();
-		return typodescent * scaleFont;
+		return typodescent * scalePixelFont;
 	}
 
 	public float getXHeight() {
 		this.loadFont();
-		return xheight * scaleFont;
+		return xheight * scalePixelFont;
 	}
 
 	public float getLineGap() {
 		this.loadFont();
-		return linegap * scaleFont;
+		return linegap * scalePixelFont;
 	}
 
 	public BDFont setAscent(float v) {
@@ -997,7 +1011,7 @@ public class BDFont implements IFont, LRelease {
 			case LSystem.LF:
 			case LSystem.CR:
 				cx = bx;
-				cy += ((h + 1) * scaleFont);
+				cy += ((h + 1) * scalePixelFont);
 				break;
 			default:
 				if (characters.containsKey(ch)) {
@@ -1007,11 +1021,11 @@ public class BDFont implements IFont, LRelease {
 						cy += h;
 					}
 					float pos = offsetPos((char) ch, bm);
-					float hl = (bm.getCharacterWidth() * scaleFont);
+					float hl = (bm.getCharacterWidth() * scalePixelFont);
 					if (halfflags.indexOf(ch) != -1 || StringUtils.isAlphaOrDigit(ch)) {
 						hl *= 2;
 					}
-					cx += bm.paint(g, cx + pos, cy + hl, scaleFont);
+					cx += bm.paint(g, cx + pos, cy + hl, scalePixelFont, pixelColor);
 				} else if (characters.containsKey(-1)) {
 					BDFGlyph bm = characters.get(-1);
 					if (cx - bx + bm.getCharacterWidth() >= w) {
@@ -1019,11 +1033,11 @@ public class BDFont implements IFont, LRelease {
 						cy += h;
 					}
 					float pos = offsetPos((char) ch, bm);
-					float hl = (bm.getCharacterWidth() * scaleFont);
+					float hl = (bm.getCharacterWidth() * scalePixelFont);
 					if (halfflags.indexOf(ch) != -1 || StringUtils.isAlphaOrDigit(ch)) {
 						hl *= 2;
 					}
-					cx += bm.paint(g, cx + pos, cy + hl, scaleFont);
+					cx += bm.paint(g, cx + pos, cy + hl, scalePixelFont, pixelColor);
 				}
 				break;
 			}
@@ -1066,57 +1080,11 @@ public class BDFont implements IFont, LRelease {
 				cy += h;
 			}
 			float pos = offsetPos((char) ch, bm);
-			float hl = (bm.getCharacterWidth() * scaleFont);
+			float hl = (bm.getCharacterWidth() * scalePixelFont);
 			if (halfflags.indexOf(ch) != -1 || StringUtils.isAlphaOrDigit(ch)) {
 				hl *= 2;
 			}
-			cx += bm.paint(g, cx + pos, cy + hl, scaleFont);
-		}
-		return new PointF(cx, cy);
-	}
-
-	public PointF drawAlphabet(Canvas g, PointF b) {
-		return drawAlphabet(g, b.x, b.y, Integer.MAX_VALUE, typoascent + typodescent + linegap);
-	}
-
-	public PointF drawAlphabet(Canvas g, PointF b, float w) {
-		return drawAlphabet(g, b.x, b.y, w, typoascent + typodescent + linegap);
-	}
-
-	public PointF drawAlphabet(Canvas g, PointF b, float w, float h) {
-		return drawAlphabet(g, b.x, b.y, w, h);
-	}
-
-	public PointF drawAlphabet(Canvas g, float bx, float by) {
-		return drawAlphabet(g, bx, by, Integer.MAX_VALUE, typoascent + typodescent + linegap);
-	}
-
-	public PointF drawAlphabet(Canvas g, float bx, float by, float w) {
-		return drawAlphabet(g, bx, by, w, typoascent + typodescent + linegap);
-	}
-
-	public PointF drawAlphabet(Canvas g, float bx, float by, float w, float h) {
-		if (!loadFont()) {
-			return null;
-		}
-		if (characters.size == 0) {
-			return null;
-		}
-		float cx = bx, cy = by;
-		for (int ch = 0; ch < 0x110000; ch++) {
-			if (characters.containsKey(ch)) {
-				BDFGlyph bm = characters.get(ch);
-				if (cx - bx + bm.getCharacterWidth() >= w) {
-					cx = bx;
-					cy += h;
-				}
-				float pos = offsetPos((char) ch, bm);
-				float hl = (bm.getCharacterWidth() * scaleFont);
-				if (halfflags.indexOf(ch) != -1 || StringUtils.isAlphaOrDigit(ch)) {
-					hl *= 2;
-				}
-				cx += bm.paint(g, cx + pos, cy + hl, scaleFont);
-			}
+			cx += bm.paint(g, cx + pos, cy + hl, scalePixelFont, pixelColor);
 		}
 		return new PointF(cx, cy);
 	}
@@ -1322,6 +1290,10 @@ public class BDFont implements IFont, LRelease {
 		drawString(x, y, 1f, 1f, 0, 0, rotation, chars, LColor.white, 0, chars.length());
 	}
 
+	public void drawString(String chars, float x, float y, float sx, float sy, float rotation, LColor c) {
+		drawString(x, y, sx, sy, 0, 0, rotation, chars, c, 0, chars.length());
+	}
+
 	public void drawString(String chars, float x, float y, float sx, float sy, float ax, float ay, float rotation,
 			LColor c) {
 		drawString(x, y, sx, sy, ax, ay, rotation, chars, c, 0, chars.length());
@@ -1335,6 +1307,9 @@ public class BDFont implements IFont, LRelease {
 
 		if (StringUtils.isEmpty(chars)) {
 			return false;
+		}
+		if (!isLoaded) {
+			return loadFont();
 		}
 
 		make();
@@ -1369,7 +1344,8 @@ public class BDFont implements IFont, LRelease {
 			}
 			displays.clear();
 		}
-
+		final float nsx = sx * fontScale;
+		final float nsy = sy * fontScale;
 		final float x = mx + offset.x;
 		final float y = my + offset.y;
 		this.intObject = null;
@@ -1394,7 +1370,7 @@ public class BDFont implements IFont, LRelease {
 						continue;
 					}
 					if (charCurrent == newLineFlag) {
-						totalHeight += getFontSize();
+						totalHeight += getPixelFontSize();
 						totalWidth = 0;
 						continue;
 					}
@@ -1425,11 +1401,11 @@ public class BDFont implements IFont, LRelease {
 					}
 				}
 				fontBatch.setBlendState(BlendState.AlphaBlend);
-				fontBatch.commit(x, y, sx, sy, ax, ay, rotation);
+				fontBatch.commit(x, y, nsx, nsy, ax, ay, rotation);
 				fontBatch.setColor(old);
 				displays.put(chars, display = fontBatch.newCache());
 			} else if (display != null && fontBatch != null && fontBatch.toTexture() != null) {
-				fontBatch.postCache(display, c, x, y, sx, sy, ax, ay, rotation);
+				fontBatch.postCache(display, c, x, y, nsx, nsy, ax, ay, rotation);
 			}
 		} else {
 			clearChildString();
@@ -1444,7 +1420,7 @@ public class BDFont implements IFont, LRelease {
 					continue;
 				}
 				if (charCurrent == newLineFlag) {
-					totalHeight += getFontSize();
+					totalHeight += getPixelFontSize();
 					totalWidth = 0;
 					continue;
 				}
@@ -1476,7 +1452,7 @@ public class BDFont implements IFont, LRelease {
 			}
 			fontBatch.setColor(old);
 			fontBatch.setBlendState(BlendState.AlphaBlend);
-			fontBatch.commit(x, y, sx, sy, ax, ay, rotation);
+			fontBatch.commit(x, y, nsx, nsy, ax, ay, rotation);
 		}
 		if (checkOutBounds() && _childChars != null) {
 			_childFont._drawChildString(_childChars, mx, my, sx, sy, ax, ay, rotation, chars, c, startIndex, endIndex);
@@ -1502,6 +1478,8 @@ public class BDFont implements IFont, LRelease {
 			}
 			displays.clear();
 		}
+		final float nsx = sx * fontScale;
+		final float nsy = sy * fontScale;
 		final float x = mx + offset.x;
 		final float y = my + offset.y;
 		this.intObject = null;
@@ -1533,11 +1511,11 @@ public class BDFont implements IFont, LRelease {
 					}
 				}
 				fontBatch.setBlendState(BlendState.AlphaBlend);
-				fontBatch.commit(x, y, sx, sy, ax, ay, rotation);
+				fontBatch.commit(x, y, nsx, nsy, ax, ay, rotation);
 				fontBatch.setColor(old);
 				displays.put(chars, display = fontBatch.newCache());
 			} else if (display != null && fontBatch != null && fontBatch.toTexture() != null) {
-				fontBatch.postCache(display, c, x, y, sx, sy, ax, ay, rotation);
+				fontBatch.postCache(display, c, x, y, nsx, nsy, ax, ay, rotation);
 			}
 		} else {
 			fontBatch.begin();
@@ -1559,7 +1537,7 @@ public class BDFont implements IFont, LRelease {
 			}
 			fontBatch.setColor(old);
 			fontBatch.setBlendState(BlendState.AlphaBlend);
-			fontBatch.commit(x, y, sx, sy, ax, ay, rotation);
+			fontBatch.commit(x, y, nsx, nsy, ax, ay, rotation);
 		}
 		if (checkOutBounds() && _childChars != null) {
 			_childFont._drawChildString(_childChars, mx, my, sx, sy, ax, ay, rotation, chars, c, startIndex, endIndex);
@@ -1603,6 +1581,8 @@ public class BDFont implements IFont, LRelease {
 		if (!cehckRunning(chars)) {
 			return;
 		}
+		final float nsx = sx * fontScale;
+		final float nsy = sy * fontScale;
 		final float x = mx + offset.x;
 		final float y = my + offset.y;
 		this.intObject = null;
@@ -1612,9 +1592,8 @@ public class BDFont implements IFont, LRelease {
 		int old = gl.color();
 		boolean childDraw = false;
 		final boolean anchor = ax != 0 || ay != 0;
-		final boolean scale = sx != 1f || sy != 1f;
 		final boolean angle = rotation != 0;
-		final boolean update = scale || angle || anchor;
+		final boolean update = angle || anchor;
 		final int blend = gl.getBlendMode();
 		try {
 			gl.setBlendMode(BlendMethod.MODE_NORMAL);
@@ -1627,13 +1606,6 @@ public class BDFont implements IFont, LRelease {
 					float centerY = y + this.getHeight(chars) / 2;
 					xf.translate(centerX, centerY);
 					xf.preRotate(rotation);
-					xf.translate(-centerX, -centerY);
-				}
-				if (scale) {
-					float centerX = x + this.getWidth(chars) / 2;
-					float centerY = y + this.getHeight(chars) / 2;
-					xf.translate(centerX, centerY);
-					xf.preScale(sx, sy);
 					xf.translate(-centerX, -centerY);
 				}
 				if (anchor) {
@@ -1652,7 +1624,7 @@ public class BDFont implements IFont, LRelease {
 					continue;
 				}
 				if (charCurrent == newLineFlag) {
-					totalHeight += getFontSize();
+					totalHeight += getPixelFontSize();
 					totalWidth = 0;
 					continue;
 				}
@@ -1666,11 +1638,12 @@ public class BDFont implements IFont, LRelease {
 				}
 				if (intObject != null) {
 					if (!checkOutBounds() || containsChar(ch)) {
-						gl.draw(texture, x + totalWidth, y + totalHeight, intObject.width * sx, intObject.height * sy,
-								intObject.storedX, intObject.storedY, intObject.width, intObject.height, c);
+						gl.draw(texture, x + (totalWidth * nsx), y + (totalHeight * nsy), intObject.width * nsx,
+								intObject.height * nsy, intObject.storedX, intObject.storedY, intObject.width,
+								intObject.height, c);
 					} else if (checkOutBounds()) {
-						putChildChars(ch, x + totalWidth, y + totalHeight, intObject.width * sx, intObject.height * sy,
-								null);
+						putChildChars(ch, x + (totalWidth * nsx), y + (totalHeight * nsy), intObject.width * nsx,
+								intObject.height * sy, null);
 						childDraw = true;
 					}
 					totalWidth += intObject.width;
@@ -1704,9 +1677,8 @@ public class BDFont implements IFont, LRelease {
 		int old = gl.color();
 		boolean childDraw = false;
 		final boolean anchor = ax != 0 || ay != 0;
-		final boolean scale = sx != 1f || sy != 1f;
 		final boolean angle = rotation != 0;
-		final boolean update = scale || angle || anchor;
+		final boolean update = angle || anchor;
 		final int blend = gl.getBlendMode();
 		try {
 			gl.setBlendMode(BlendMethod.MODE_NORMAL);
@@ -1719,13 +1691,6 @@ public class BDFont implements IFont, LRelease {
 					float centerY = y + this.getHeight(chars) / 2;
 					xf.translate(centerX, centerY);
 					xf.preRotate(rotation);
-					xf.translate(-centerX, -centerY);
-				}
-				if (scale) {
-					float centerX = x + this.getWidth(chars) / 2;
-					float centerY = y + this.getHeight(chars) / 2;
-					xf.translate(centerX, centerY);
-					xf.preScale(sx, sy);
 					xf.translate(-centerX, -centerY);
 				}
 				if (anchor) {
@@ -1804,12 +1769,14 @@ public class BDFont implements IFont, LRelease {
 				}
 				fontBatch.setBlendState(BlendState.AlphaBlend);
 				if (c == newLineFlag) {
-					fontBatch.draw(colors, x, y + getFontSize(), intObject.width - offsetX, intObject.height - offsetY,
-							intObject.storedX, intObject.storedY, intObject.storedX + intObject.width - offsetX,
+					fontBatch.draw(colors, x, y + getPixelFontSize(), intObject.width * fontScale - offsetX,
+							intObject.height * fontScale - offsetY, intObject.storedX, intObject.storedY,
+							intObject.storedX + intObject.width - offsetX,
 							intObject.storedY + intObject.height - offsetY);
 				} else {
-					fontBatch.draw(colors, x, y, intObject.width - offsetX, intObject.height - offsetY,
-							intObject.storedX, intObject.storedY, intObject.storedX + intObject.width - offsetX,
+					fontBatch.draw(colors, x, y, intObject.width * fontScale - offsetX,
+							intObject.height * fontScale - offsetY, intObject.storedX, intObject.storedY,
+							intObject.storedX + intObject.width - offsetX,
 							intObject.storedY + intObject.height - offsetY);
 				}
 				if (colors != null) {
@@ -1940,6 +1907,18 @@ public class BDFont implements IFont, LRelease {
 		return count == len;
 	}
 
+	public int getPixelColor() {
+		return this.pixelColor;
+	}
+
+	public void setPixelColor(int pixel) {
+		this.pixelColor = pixel;
+	}
+
+	public void setPixelColor(LColor color) {
+		this.pixelColor = (color == null ? LColor.DEF_COLOR : color.getARGB());
+	}
+
 	public int charHeight(char c) {
 		return charWidth(c);
 	}
@@ -1950,9 +1929,9 @@ public class BDFont implements IFont, LRelease {
 		if (characters.containsKey(c)) {
 			BDFGlyph g = characters.get(c);
 			if (fullflags.indexOf(c) != -1) {
-				return (int) (g.getCharacterWidth() * 1.4f * scaleFont);
+				return (int) (g.getCharacterWidth() * 1.4f * scalePixelFont);
 			} else {
-				return (int) (g.getCharacterWidth() * scaleFont);
+				return (int) (g.getCharacterWidth() * scalePixelFont);
 			}
 		}
 		return 0;
@@ -1969,9 +1948,9 @@ public class BDFont implements IFont, LRelease {
 			if (characters.containsKey(ch)) {
 				BDFGlyph g = characters.get(ch);
 				if (fullflags.indexOf(ch) != -1) {
-					count += (int) (g.getCharacterWidth() * 1.4f * scaleFont);
+					count += (int) (g.getCharacterWidth() * 1.4f * scalePixelFont);
 				} else {
-					count += (int) (g.getCharacterWidth() * scaleFont);
+					count += (int) (g.getCharacterWidth() * scalePixelFont);
 				}
 			}
 		}
@@ -2018,7 +1997,7 @@ public class BDFont implements IFont, LRelease {
 
 	@Override
 	public int getHeight() {
-		return (int) MathUtils.max(fontHeight, getSize()) + 1;
+		return (int) MathUtils.max(fontHeight, getPixelFontSize()) + 1;
 	}
 
 	@Override
@@ -2031,14 +2010,23 @@ public class BDFont implements IFont, LRelease {
 		return names.get(NAME_FAMILY);
 	}
 
+	public void setFontSize(float size) {
+		setSize((int) size);
+	}
+
 	@Override
 	public void setSize(int size) {
-		this.setFontSize(size);
+		this.fontSize = size;
+		this.fontScale = fontSize / getPixelFontSize();
+	}
+
+	public int getFontSize() {
+		return getSize();
 	}
 
 	@Override
 	public int getSize() {
-		return (int) getFontSize();
+		return this.fontSize == 0 ? (int) getPixelFontSize() : (int) fontSize;
 	}
 
 	@Override
@@ -2153,4 +2141,5 @@ public class BDFont implements IFont, LRelease {
 		names.clear();
 		characters.clear();
 	}
+
 }
