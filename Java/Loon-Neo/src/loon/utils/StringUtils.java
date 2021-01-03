@@ -39,8 +39,12 @@ final public class StringUtils extends CharUtils {
 	 * @return
 	 */
 	public static String format(String format, Object... o) {
-		if (CollectionUtils.isEmpty(o)) {
+		boolean fempty = isEmpty(format);
+		if (fempty) {
 			return LSystem.EMPTY;
+		}
+		if (!fempty && CollectionUtils.isEmpty(o)) {
+			return format;
 		}
 		StrBuilder b = new StrBuilder();
 		int p = 0;
@@ -314,7 +318,7 @@ final public class StringUtils extends CharUtils {
 	 * @return
 	 */
 	public static boolean endsWith(CharSequence n, char tag) {
-		return (n != null) && n.charAt(n.length() - 1) == tag;
+		return (n != null) && n.length() > 0 && n.charAt(n.length() - 1) == tag;
 	}
 
 	/**
@@ -605,12 +609,12 @@ final public class StringUtils extends CharUtils {
 		int idx = -1;
 		String[] strings = new String[count];
 		for (int i = 0, len = strings.length; i < len; i++) {
-			int IndexStart = idx + 1;
+			int indexStart = idx + 1;
 			idx = str.indexOf(flag, idx + 1);
 			if (idx == -1) {
-				strings[i] = str.substring(IndexStart).trim();
+				strings[i] = str.substring(indexStart).trim();
 			} else {
-				strings[i] = str.substring(IndexStart, idx).trim();
+				strings[i] = str.substring(indexStart, idx).trim();
 			}
 		}
 		return strings;
@@ -2026,7 +2030,7 @@ final public class StringUtils extends CharUtils {
 		switch (c) {
 		case ' ':
 			return true;
-		case '\n':
+		case LSystem.LF:
 			return true;
 		case '\t':
 			return true;
@@ -2084,7 +2088,7 @@ final public class StringUtils extends CharUtils {
 	 * @return
 	 */
 	public static String notLineBreaks(String s) {
-		final int h = s.indexOf('\n');
+		final int h = s.indexOf(LSystem.LF);
 		if (h >= 0) {
 			return s.substring(0, h);
 		}
@@ -2251,7 +2255,7 @@ final public class StringUtils extends CharUtils {
 	}
 
 	/**
-	 * 格式化回车符，使字符串中只出现'\n'
+	 * 格式化回车符，使字符串中只出现LSystem.LF
 	 * 
 	 * @param src
 	 * @return
@@ -2294,18 +2298,18 @@ final public class StringUtils extends CharUtils {
 	 */
 	public static String formatEscape(CharSequence cs, CharSequence indent) {
 		String text = cs.toString();
-		if (text.indexOf('\n') != -1) {
+		if (text.indexOf(LSystem.LF) != -1) {
 			if (text.length() == 1) {
 				return quote("\\n");
 			}
 			StrBuilder sbr = new StrBuilder();
 			sbr.append("|");
-			String[] lines = split(text, '\n');
+			String[] lines = split(text, LSystem.LF);
 			for (int i = 0; i < lines.length; i++) {
 				String line = lines[i];
 				sbr.append("\n" + indent + line);
 			}
-			if (text.charAt(text.length() - 1) == '\n') {
+			if (text.charAt(text.length() - 1) == LSystem.LF) {
 				sbr.append("\n" + indent);
 			}
 			return sbr.toString();

@@ -52,6 +52,8 @@ public final class MathUtils {
 
 	public static final int HALF_FIXED = 2 << 15;
 
+	protected final static int TO_STRING_DECIMAL_PLACES = 3;
+
 	private static final String[] ZEROS = { "", "0", "00", "000", "0000", "00000", "000000", "0000000", "00000000",
 			"000000000", "0000000000" };
 
@@ -1035,6 +1037,10 @@ public final class MathUtils {
 		return random(start, end);
 	}
 
+	public static long randomLong(long start, long end) {
+		return (long) (start + random.nextFloat() * (end - start));
+	}
+	
 	public static int random(int range) {
 		return random.nextInt(range + 1);
 	}
@@ -1283,8 +1289,6 @@ public final class MathUtils {
 	public static boolean isInBounds(final float minValue, final float maxValue, final float val) {
 		return val >= minValue && val <= maxValue;
 	}
-
-	protected static int TO_STRING_DECIMAL_PLACES = 3;
 
 	public static String toString(float value) {
 		return toString(value, TO_STRING_DECIMAL_PLACES);

@@ -20,6 +20,7 @@ namespace LoonMonoGame
                 LSystem.I("log format testing...");
                 LSystem.I("newline");
                 LSystem.I("newline");
+                LSystem.I("\n{3}\n{1}\n{2}\n{0}", "只缘身在此山中", "远近高低各不同", "不识庐山真面目", "远看成岭侧成峰");
                 //get file
                 JavaSystem.Out.Println(LSystem.Base.Assets().GetTextSync("test.txt"));
                 JavaSystem.Out.Println(LSystem.Base.Assets().GetBytesSync("test.txt").Length == 14);
@@ -82,7 +83,7 @@ namespace LoonMonoGame
                 appName = "test",
                 emulateTouch = false
             };
- 
+
             //Lambda方式注入运行参数与显示用Screen
             Register(setting, () => { return new MyScreen(); });
         }

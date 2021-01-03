@@ -1,3 +1,5 @@
+using System;
+
 namespace java.lang
 {
     public class Integer : Number
@@ -56,6 +58,11 @@ namespace java.lang
         public static Integer ValueOf(int i)
         {
             return new Integer(i);
+        }
+
+        public static int ValueOf(string i,int v)
+        {
+            return Convert.ToInt32(i, v);
         }
 
         public override double DoubleValue()

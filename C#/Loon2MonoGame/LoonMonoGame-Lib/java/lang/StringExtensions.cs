@@ -96,12 +96,22 @@ namespace java.lang
             return str.IndexOf(other, StringComparison.Ordinal);
         }
 
+        public static int JavaIndexOf(this string str, string other)
+        {
+            return str.IndexOf(other, StringComparison.Ordinal);
+        }
+
         public static int IndexOf(this string str, int c)
         {
             return str.IndexOf((char)c);
         }
 
         public static int IndexOf(this string str, string other, int from)
+        {
+            return str.IndexOf(other, from, StringComparison.Ordinal);
+        }
+
+        public static int JavaIndexOf(this string str, string other, int from)
         {
             return str.IndexOf(other, from, StringComparison.Ordinal);
         }
@@ -171,7 +181,7 @@ namespace java.lang
 
         public static int LastIndexOf(this string str, string other)
         {
-            return str.LastIndexOf(other);
+            return str.LastIndexOf(other, StringComparison.Ordinal);
         }
 
         public static int LastIndexOf(this string str, int c)
@@ -181,7 +191,7 @@ namespace java.lang
 
         public static int LastIndexOf(this string str, string other, int from)
         {
-            return str.LastIndexOf(other, from);
+            return str.LastIndexOf(other, from, StringComparison.Ordinal);
         }
 
         public static int LastIndexOf(this string str, int c, int from)
@@ -291,7 +301,17 @@ namespace java.lang
             return str.Substring(beginIndex);
         }
 
+        public static string JavaSubstring(this string str, int beginIndex)
+        {
+            return str.Substring(beginIndex);
+        }
+
         public static string Substring(this string str, int beginIndex, int endIndex)
+        {
+            return str.Substring(beginIndex, endIndex - beginIndex);
+        }
+
+        public static string JavaSubstring(this string str, int beginIndex, int endIndex)
         {
             return str.Substring(beginIndex, endIndex - beginIndex);
         }

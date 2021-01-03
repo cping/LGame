@@ -21,6 +21,7 @@
 package loon;
 
 import loon.canvas.LColor;
+import loon.utils.StringUtils;
 
 public abstract class Log {
 
@@ -124,7 +125,10 @@ public abstract class Log {
 	}
 
 	protected String format(String msg, Object[] args) {
-		return msg;
+		if (args == null) {
+			return msg;
+		}
+		return StringUtils.format(msg, args);
 	}
 
 	protected void call(Level level, String msg, Throwable e) {

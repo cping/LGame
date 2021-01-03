@@ -1,4 +1,6 @@
-﻿namespace loon
+﻿using loon.utils;
+
+namespace loon
 {
     public abstract class Log
     {
@@ -122,7 +124,11 @@
 
         protected internal virtual string Format(string msg, object[] args)
         {
-            return msg;
+            if (args == null)
+            {
+                return msg;
+            }
+            return StringUtils.Format(msg, args);
         }
 
         internal virtual void Call(Level level, string msg, System.Exception e)

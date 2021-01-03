@@ -311,19 +311,6 @@ namespace loon.utils
             return (Atan2Impl.TABLE[yi * ATAN2_DIM + xi] + add) * mul;
         }
 
-        public static int Random(int range)
-        {
-            return random.Next(range + 1);
-        }
-        public static float Random()
-        {
-            return (float)random.NextDouble();
-        }
-        public static float Random(float range)
-        {
-            return (float)random.NextDouble() * range;
-        }
-
         public static string AddZeros(long number, int numDigits)
         {
             return AddZeros(JavaSystem.Str(number), numDigits);
@@ -923,13 +910,39 @@ namespace loon.utils
             return end <= 0 ? 0 : start + random.Next(end - start);
         }
 
+        public static int NextFloat(int start, int end)
+        {
+            return Random(start, end);
+        }
+
+        public static long RandomLong(long start, long end)
+        {
+            return (long)(start + random.NextDouble() * (end - start));
+        }
+
+        public static int Random(int range)
+        {
+            return random.Next(range + 1);
+        }
+
         public static int Random(int start, int end)
         {
             return start + random.Next(end - start + 1);
         }
+
         public static bool RandomBoolean()
         {
             return (random.Next(0, 1) == 1 ? true : false);
+        }
+
+        public static float Random()
+        {
+            return (float)random.NextDouble();
+        }
+
+        public static float Random(float range)
+        {
+            return (float)random.NextDouble() * range;
         }
 
         public static float Random(float start, float end)
@@ -1937,7 +1950,7 @@ namespace loon.utils
         }
 
 
-        protected static int TO_STRING_DECIMAL_PLACES = 3;
+        protected static readonly int TO_STRING_DECIMAL_PLACES = 3;
 
         public static string ToString(float value)
         {
@@ -2102,12 +2115,13 @@ namespace loon.utils
                 else
                 {
                     string v = num.ToString();
-                    numBits = v.Substring(v.IndexOf('.'), v.Length()).Length() - 1;
+                    numBits = v.JavaSubstring(v.IndexOf('.'), v.Length()).Length() - 1;
                 }
                 return numBits;
             }
             return 0;
         }
+
     }
 }
 
