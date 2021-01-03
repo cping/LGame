@@ -562,16 +562,14 @@ public class BDFont implements IFont, LRelease {
 		this.set(0f, 0f, 0f, 0f, 0f, 0f, 1f);
 		this.path = path;
 		this.fontIndex = idx;
-		this.isLoading = false;
-		this.isLoaded = false;
+		this.isLoading = isLoaded = false;
+		this._displayLazy = useCache = true;
 		this._chars = new CharArray(chs.length());
 		this._maxTextureWidth = maxWidth;
 		this._maxTextureHeight = maxHeight;
-		this._displayLazy = true;
 		this.textureWidth = tw;
 		this.textureHeight = th;
 		this.displays = new IntMap<Cache>(totalCharSet);
-		this.useCache = true;
 		this.isasyn = asyn;
 		int customCharsLength = (additionalChars != null) ? additionalChars.length : 0;
 		this.totalCharSet = customCharsLength == 0 ? totalCharSet : 0;
@@ -587,6 +585,105 @@ public class BDFont implements IFont, LRelease {
 			_isClose = true;
 		}
 		this._drawLimit = 0;
+	}
+
+	public boolean containsTexture(String mes) {
+		if (StringUtils.isEmpty(text)) {
+			return false;
+		}
+		if (StringUtils.isEmpty(mes)) {
+			return true;
+		}
+		String find = StringUtils.unificationStrings(mes);
+		for (int i = 0; i < find.length(); i++) {
+			char ch = find.charAt(i);
+			if (!StringUtils.isSpace(ch) && text.indexOf(ch) == -1) {
+				boolean child = false;
+				if (_childFont != null) {
+					child = _childFont.containsTexture(mes);
+				}
+				return child;
+			}
+		}
+		return true;
+	}
+
+	public boolean containsTexture(char ch) {
+		if (StringUtils.isEmpty(text)) {
+			return false;
+		}
+		if (StringUtils.isSpace(ch)) {
+			return true;
+		}
+		boolean child = false;
+		if (_childFont != null) {
+			child = _childFont.containsTexture(ch);
+		}
+		return child || text.indexOf(ch) != -1;
+	}
+
+	public BDFont updateTexture(String message) {
+		return updateTexture(message, this.isasyn);
+	}
+
+	public BDFont updateTexture(String message, boolean asyn) {
+		return updateTexture(message != null ? message.toCharArray() : null, asyn);
+	}
+
+	public BDFont updateTexture(char[] charMessage) {
+		return updateTexture(charMessage, this.isasyn);
+	}
+
+	public BDFont updateTexture(char[] charMessage, boolean asyn) {
+		if (_isClose) {
+			return this;
+		}
+		this._chars.clear();
+		for (Cache c : displays.values()) {
+			if (c != null) {
+				c.close();
+			}
+		}
+		displays.clear();
+		if (checkOutBounds()) {
+			_childFont.close();
+			_childFont = null;
+		}
+		if (fontBatch != null) {
+			fontBatch.close();
+			fontBatch = null;
+		}
+		if (texture != null) {
+			texture.close(true);
+			texture = null;
+		}
+		if (customChars != null) {
+			customChars.clear();
+		}
+		if (_childChars != null) {
+			_childChars.clear();
+		}
+		CharSequence chs = StringUtils.unificationChars(charMessage);
+		this._displayLazy = useCache = true;
+		this._initChars = _outBounds = isDrawing = false;
+		this._initDraw = 0;
+		this.displays = new IntMap<Cache>(totalCharSet);
+		this.isasyn = asyn;
+		int customCharsLength = (additionalChars != null) ? additionalChars.length : 0;
+		this.totalCharSet = customCharsLength == 0 ? totalCharSet : 0;
+		if (chs != null && chs.length() > 0) {
+			StrBuilder tmp = new StrBuilder(chs);
+			this.text = tmp.toString();
+			this.additionalChars = text.toCharArray();
+			if (additionalChars != null && additionalChars.length > totalCharSet) {
+				textureWidth *= 2;
+			}
+		}
+		if (StringUtils.isEmpty(text)) {
+			_isClose = true;
+		}
+		this._drawLimit = 0;
+		return this;
 	}
 
 	public void cpy(BDFont font) {
@@ -648,18 +745,15 @@ public class BDFont implements IFont, LRelease {
 	}
 
 	public BDFont reset() {
+		if (_isClose) {
+			return this;
+		}
+		this.updateTexture(this.text);
 		this._initDraw = 0;
 		this._initChars = false;
 		this.isDrawing = false;
 		this.isLoaded = false;
 		this.isLoading = false;
-		if (texture != null) {
-			texture.close();
-			texture = null;
-		}
-		if (_childChars != null) {
-			_childChars.clear();
-		}
 		return this;
 	}
 

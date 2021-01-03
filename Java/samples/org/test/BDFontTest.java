@@ -31,7 +31,6 @@ public class BDFontTest extends Screen {
 	@Override
 	public void draw(GLEx g) {
 		if (font != null) {
-	
 			font.drawString(g,"悠然半步,平山河萬里.\n偷闲一子,定紅塵千秋.\nabcdD", 55, 55);
 			//实际产生的纹理
 			g.draw(font.getTexture(), 0,128);
@@ -51,6 +50,8 @@ public class BDFontTest extends Screen {
 		//font.setPixelColor(LColor.yellow);
 		//改变字体显示时大小(直接按比例缩放，放大看有可能剪切不齐或者模糊)
 		font.setSize(20);
+		//变更渲染到纹理的字体内容
+		//font.updateTexture("新的紋理字体内容");
 	}
 
 	@Override

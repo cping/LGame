@@ -401,11 +401,10 @@ public class LSTRFont implements IFont, LRelease {
 		this._chars = new CharArray(chs.length());
 		this._maxTextureWidth = maxWidth;
 		this._maxTextureHeight = maxHeight;
-		this._displayLazy = true;
+		this._displayLazy = useCache = true;
 		this.textureWidth = tw;
 		this.textureHeight = th;
 		this.displays = new IntMap<Cache>(totalCharSet);
-		this.useCache = true;
 		this.font = font;
 		this.isasyn = asyn;
 		this.pixelFontSize = font.getSize();
@@ -429,6 +428,105 @@ public class LSTRFont implements IFont, LRelease {
 		this._drawLimit = 0;
 	}
 
+	public boolean containsTexture(String mes) {
+		if (StringUtils.isEmpty(text)) {
+			return false;
+		}
+		if (StringUtils.isEmpty(mes)) {
+			return true;
+		}
+		String find = StringUtils.unificationStrings(mes);
+		for (int i = 0; i < find.length(); i++) {
+			char ch = find.charAt(i);
+			if (!StringUtils.isSpace(ch) && text.indexOf(ch) == -1) {
+				boolean child = false;
+				if (_childFont != null) {
+					child = _childFont.containsTexture(mes);
+				}
+				return child;
+			}
+		}
+		return true;
+	}
+
+	public boolean containsTexture(char ch) {
+		if (StringUtils.isEmpty(text)) {
+			return false;
+		}
+		if (StringUtils.isSpace(ch)) {
+			return true;
+		}
+		boolean child = false;
+		if (_childFont != null) {
+			child = _childFont.containsTexture(ch);
+		}
+		return child || text.indexOf(ch) != -1;
+	}
+
+	public LSTRFont updateTexture(String message) {
+		return updateTexture(message, this.isasyn);
+	}
+
+	public LSTRFont updateTexture(String message, boolean asyn) {
+		return updateTexture(message != null ? message.toCharArray() : null, asyn);
+	}
+
+	public LSTRFont updateTexture(char[] charMessage) {
+		return updateTexture(charMessage, this.isasyn);
+	}
+
+	public LSTRFont updateTexture(char[] charMessage, boolean asyn) {
+		if (_isClose) {
+			return this;
+		}
+		this._chars.clear();
+		for (Cache c : displays.values()) {
+			if (c != null) {
+				c.close();
+			}
+		}
+		displays.clear();
+		if (checkOutBounds()) {
+			_childFont.close();
+			_childFont = null;
+		}
+		if (fontBatch != null) {
+			fontBatch.close();
+			fontBatch = null;
+		}
+		if (texture != null) {
+			texture.close(true);
+			texture = null;
+		}
+		if (customChars != null) {
+			customChars.clear();
+		}
+		if (_childChars != null) {
+			_childChars.clear();
+		}
+		CharSequence chs = StringUtils.unificationChars(charMessage);
+		this._displayLazy = useCache = true;
+		this._initChars = _outBounds = isDrawing = false;
+		this._initDraw = 0;
+		this.displays = new IntMap<Cache>(totalCharSet);
+		this.isasyn = asyn;
+		int customCharsLength = (additionalChars != null) ? additionalChars.length : 0;
+		this.totalCharSet = customCharsLength == 0 ? totalCharSet : 0;
+		if (chs != null && chs.length() > 0) {
+			StrBuilder tmp = new StrBuilder(chs);
+			this.text = tmp.toString();
+			this.additionalChars = text.toCharArray();
+			if (additionalChars != null && additionalChars.length > totalCharSet) {
+				textureWidth *= 2;
+			}
+		}
+		if (StringUtils.isEmpty(text)) {
+			_isClose = true;
+		}
+		this._drawLimit = 0;
+		return this;
+	}
+
 	private void make() {
 		make(isasyn);
 	}
@@ -444,8 +542,6 @@ public class LSTRFont implements IFont, LRelease {
 			return;
 		}
 		isDrawing = true;
-		// updateX = 0;
-		// updateY = LSystem.isHTML5() ? 1f : 0;
 		Updateable update = new UpdateStringFont(this);
 		if (asyn) {
 			LSystem.unload(update);
@@ -490,19 +586,13 @@ public class LSTRFont implements IFont, LRelease {
 	}
 
 	public LSTRFont reset() {
-		this._initDraw = 0;
-		this._initChars = false;
-		this.isDrawing = false;
-		if (texture != null) {
-			texture.close();
-			texture = null;
+		if (_isClose) {
+			return this;
 		}
-		if (_childChars != null) {
-			_childChars.clear();
-		}
+		this.updateTexture(this.text);
 		return this;
 	}
-	
+
 	private final boolean cehckRunning(String chars) {
 		if (_isClose) {
 			return false;
