@@ -84,11 +84,11 @@ public class LSTRFont implements IFont, LRelease {
 
 	}
 
-	private static class UpdateStringFont implements Updateable {
+	private static class UpdateFont implements Updateable {
 
 		private LSTRFont strfont;
 
-		public UpdateStringFont(LSTRFont strf) {
+		public UpdateFont(LSTRFont strf) {
 			this.strfont = strf;
 		}
 
@@ -264,6 +264,8 @@ public class LSTRFont implements IFont, LRelease {
 
 	}
 
+	private Updateable _submitUpdate;
+
 	private final char newLineFlag = LSystem.LF;
 
 	private final char newSpaceFlag = LSystem.SPACE;
@@ -306,7 +308,7 @@ public class LSTRFont implements IFont, LRelease {
 
 	private float offsetX = 1, offsetY = 1;
 
-	private IntMap<Cache> displays;
+	private final IntMap<Cache> displays;
 
 	private int totalCharSet = 256;
 
@@ -479,6 +481,7 @@ public class LSTRFont implements IFont, LRelease {
 		if (_isClose) {
 			return this;
 		}
+		cancelSubmit();
 		this._chars.clear();
 		for (Cache c : displays.values()) {
 			if (c != null) {
@@ -505,10 +508,8 @@ public class LSTRFont implements IFont, LRelease {
 			_childChars.clear();
 		}
 		CharSequence chs = StringUtils.unificationChars(charMessage);
-		this._displayLazy = useCache = true;
 		this._initChars = _outBounds = isDrawing = false;
-		this._initDraw = 0;
-		this.displays = new IntMap<Cache>(totalCharSet);
+		this._initDraw = -1;
 		this.isasyn = asyn;
 		int customCharsLength = (additionalChars != null) ? additionalChars.length : 0;
 		this.totalCharSet = customCharsLength == 0 ? totalCharSet : 0;
@@ -541,13 +542,25 @@ public class LSTRFont implements IFont, LRelease {
 		if (isDrawing) {
 			return;
 		}
+		cancelSubmit();
 		isDrawing = true;
-		Updateable update = new UpdateStringFont(this);
+		_submitUpdate = new UpdateFont(this);
 		if (asyn) {
-			LSystem.unload(update);
+			LSystem.unload(_submitUpdate);
 		} else {
-			update.action(null);
+			_submitUpdate.action(null);
 		}
+	}
+
+	public boolean isSubmitting() {
+		return _submitUpdate == null ? false : LSystem.containsUnLoad(_submitUpdate);
+	}
+
+	public LSTRFont cancelSubmit() {
+		if (_submitUpdate != null) {
+			LSystem.removeUnLoad(_submitUpdate);
+		}
+		return this;
 	}
 
 	public LTexture getTexture() {
@@ -1513,13 +1526,13 @@ public class LSTRFont implements IFont, LRelease {
 		if (_isClose) {
 			return;
 		}
+		cancelSubmit();
 		for (Cache c : displays.values()) {
 			if (c != null) {
 				c.close();
 			}
 		}
 		displays.clear();
-		displays = null;
 		if (fontBatch != null) {
 			fontBatch.close();
 			fontBatch = null;

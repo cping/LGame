@@ -219,7 +219,7 @@ public class LFont implements IFont {
 
 	protected boolean drawStringTemp(GLEx g, String text, float x, float y, float rotation, LColor c) {
 
-		if (!tooManyChars && supportCacheFontPack && text.length() > fontPackCharsLimit && text.indexOf('\n') == -1) {
+		if (!tooManyChars && supportCacheFontPack && text.length() > fontPackCharsLimit && text.indexOf(LSystem.LF) == -1) {
 
 			if (!initTempFontPack) {
 

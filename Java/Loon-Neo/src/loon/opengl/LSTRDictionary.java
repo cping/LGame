@@ -32,6 +32,9 @@ import loon.utils.ArrayMap.Entry;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
+/**
+ * 纹理字体缓存用字典类,用于派生与管理默认的LFont本地系统字体
+ */
 public final class LSTRDictionary implements LRelease {
 
 	private final CharArray templateChars = new CharArray(256);
@@ -40,10 +43,10 @@ public final class LSTRDictionary implements LRelease {
 
 	private static LSTRDictionary instance;
 
-	public static void freeStatic(){
+	public static void freeStatic() {
 		instance = null;
 	}
-	
+
 	public final static LSTRDictionary make() {
 		return new LSTRDictionary();
 	}
@@ -265,7 +268,6 @@ public final class LSTRDictionary implements LRelease {
 		return bind(font, StringUtils.unificationCharSequence(templateChars, buffers, ADDED), false);
 	}
 
-	
 	public final Dict bind(final LFont font, final String[] messages) {
 		return bind(font, StringUtils.unificationStrings(templateChars, messages, ADDED), false);
 	}

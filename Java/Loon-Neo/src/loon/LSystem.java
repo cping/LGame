@@ -812,12 +812,40 @@ public class LSystem {
 		}
 	}
 
+	public static final boolean removeLoad(Updateable u) {
+		if (getProcess() != null) {
+			return getProcess().removeLoad(u);
+		}
+		return false;
+	}
+	
+	public static final boolean containsLoad(Updateable u) {
+		if (getProcess() != null) {
+			return getProcess().containsLoad(u);
+		}
+		return false;
+	}
+	
 	public static final void unload(Updateable u) {
 		if (getProcess() != null) {
 			getProcess().addUnLoad(u);
 		}
 	}
 
+	public static final boolean removeUnLoad(Updateable u) {
+		if (getProcess() != null) {
+			return getProcess().removeUnLoad(u);
+		}
+		return false;
+	}
+	
+	public static final boolean containsUnLoad(Updateable u) {
+		if (getProcess() != null) {
+			return getProcess().containsUnLoad(u);
+		}
+		return false;
+	}
+	
 	public static ShaderProgram createShader(String ver, String fragment) {
 		ShaderProgram shader = new ShaderProgram(ver, fragment);
 		if (shader.isCompiled() == false) {

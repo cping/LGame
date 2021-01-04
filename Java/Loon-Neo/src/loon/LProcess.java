@@ -203,9 +203,9 @@ public class LProcess {
 		}
 	}
 
-	public void removeLoad(Updateable u) {
+	public boolean removeLoad(Updateable u) {
 		synchronized (loads) {
-			loads.remove(u);
+			return loads.remove(u);
 		}
 	}
 
@@ -240,9 +240,9 @@ public class LProcess {
 		}
 	}
 
-	public void removeUnLoad(Updateable u) {
+	public boolean removeUnLoad(Updateable u) {
 		synchronized (unloads) {
-			unloads.remove(u);
+			return unloads.remove(u);
 		}
 	}
 

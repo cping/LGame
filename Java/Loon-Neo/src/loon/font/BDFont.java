@@ -441,6 +441,8 @@ public class BDFont implements IFont, LRelease {
 	protected static final int NAME_WWS_FAMILY = 21;
 	protected static final int NAME_WWS_STYLE = 22;
 
+	private Updateable _submitUpdate;
+
 	private final static String fullflags = "，。？；：“‘‘”【】{}《》（）~！·￥";
 
 	private final static String halfflags = ",.:;\"'?[]{}\\|!`~@#$%^&*()-+=";
@@ -509,7 +511,7 @@ public class BDFont implements IFont, LRelease {
 
 	private float offsetX = 0, offsetY = 0;
 
-	private IntMap<Cache> displays;
+	private final IntMap<Cache> displays;
 
 	private int totalCharSet = 256;
 
@@ -638,6 +640,7 @@ public class BDFont implements IFont, LRelease {
 		if (_isClose) {
 			return this;
 		}
+		cancelSubmit();
 		this._chars.clear();
 		for (Cache c : displays.values()) {
 			if (c != null) {
@@ -664,10 +667,8 @@ public class BDFont implements IFont, LRelease {
 			_childChars.clear();
 		}
 		CharSequence chs = StringUtils.unificationChars(charMessage);
-		this._displayLazy = useCache = true;
 		this._initChars = _outBounds = isDrawing = false;
-		this._initDraw = 0;
-		this.displays = new IntMap<Cache>(totalCharSet);
+		this._initDraw = -1;
 		this.isasyn = asyn;
 		int customCharsLength = (additionalChars != null) ? additionalChars.length : 0;
 		this.totalCharSet = customCharsLength == 0 ? totalCharSet : 0;
@@ -720,13 +721,25 @@ public class BDFont implements IFont, LRelease {
 		if (isDrawing) {
 			return;
 		}
+		cancelSubmit();
 		isDrawing = true;
-		Updateable update = new UpdateFont(this);
+		_submitUpdate = new UpdateFont(this);
 		if (asyn) {
-			LSystem.unload(update);
+			LSystem.unload(_submitUpdate);
 		} else {
-			update.action(null);
+			_submitUpdate.action(null);
 		}
+	}
+
+	public boolean isSubmitting() {
+		return _submitUpdate == null ? false : LSystem.containsUnLoad(_submitUpdate);
+	}
+
+	public BDFont cancelSubmit() {
+		if (_submitUpdate != null) {
+			LSystem.removeUnLoad(_submitUpdate);
+		}
+		return this;
 	}
 
 	public boolean loadFont() {
@@ -749,6 +762,12 @@ public class BDFont implements IFont, LRelease {
 			return this;
 		}
 		this.updateTexture(this.text);
+		if (names != null) {
+			names.clear();
+		}
+		if (characters != null) {
+			characters.clear();
+		}
 		this._initDraw = 0;
 		this._initChars = false;
 		this.isDrawing = false;
@@ -2230,10 +2249,44 @@ public class BDFont implements IFont, LRelease {
 		return (int) (lines * getLineAscent() + height);
 	}
 
+	public boolean isClosed() {
+		return this._isClose;
+	}
+
 	@Override
 	public void close() {
-		names.clear();
-		characters.clear();
+		if (_isClose) {
+			return;
+		}
+		cancelSubmit();
+		for (Cache c : displays.values()) {
+			if (c != null) {
+				c.close();
+			}
+		}
+		displays.clear();
+		if (fontBatch != null) {
+			fontBatch.close();
+			fontBatch = null;
+		}
+		if (texture != null) {
+			texture.close(true);
+			texture = null;
+		}
+		if (customChars != null) {
+			customChars.clear();
+			customChars = null;
+		}
+		charArray = null;
+		isDrawing = false;
+		_displayLazy = false;
+		_initChars = false;
+		_initDraw = -1;
+		_isClose = true;
+		if (checkOutBounds()) {
+			_childFont.close();
+			_childFont = null;
+		}
 	}
 
 }

@@ -43,29 +43,31 @@ public class LGradation implements LRelease {
 
 	private Image drawImgWidth, drawImgHeight;
 
-	public static void freeStatic(){
+	public static void freeStatic() {
 		COLOR_GRADATIONS = null;
 	}
-	
+
 	public static LGradation getInstance(LColor s, LColor e, int w, int h) {
 		return getInstance(s, e, w, h, 125);
 	}
 
 	public static LGradation getInstance(LColor s, LColor e, int w, int h, int alpha) {
-		if (COLOR_GRADATIONS == null) {
-			COLOR_GRADATIONS = new IntMap<LGradation>(10);
+		synchronized (LGradation.class) {
+			if (COLOR_GRADATIONS == null) {
+				COLOR_GRADATIONS = new IntMap<LGradation>(10);
+			}
+			int hashCode = 1;
+			hashCode = LSystem.unite(hashCode, s.getRGB());
+			hashCode = LSystem.unite(hashCode, e.getRGB());
+			hashCode = LSystem.unite(hashCode, w);
+			hashCode = LSystem.unite(hashCode, h);
+			hashCode = LSystem.unite(hashCode, alpha);
+			LGradation o = COLOR_GRADATIONS.get(hashCode);
+			if (o == null) {
+				COLOR_GRADATIONS.put(hashCode, o = new LGradation(s, e, w, h, alpha));
+			}
+			return o;
 		}
-		int hashCode = 1;
-		hashCode = LSystem.unite(hashCode, s.getRGB());
-		hashCode = LSystem.unite(hashCode, e.getRGB());
-		hashCode = LSystem.unite(hashCode, w);
-		hashCode = LSystem.unite(hashCode, h);
-		hashCode = LSystem.unite(hashCode, alpha);
-		LGradation o = COLOR_GRADATIONS.get(hashCode);
-		if (o == null) {
-			COLOR_GRADATIONS.put(hashCode, o = new LGradation(s, e, w, h, alpha));
-		}
-		return o;
 	}
 
 	private LGradation() {
