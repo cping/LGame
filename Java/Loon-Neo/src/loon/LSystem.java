@@ -95,7 +95,7 @@ public class LSystem {
 	public static final char LF = '\n';
 
 	public static final char TF = '\t';
-	
+
 	public static final char UNDERLINE = '_';
 
 	public static final char DASHED = '-';
@@ -274,8 +274,8 @@ public class LSystem {
 			game.closeFontTempTexture();
 		}
 	}
-	
-	public static final void closeTemp(){
+
+	public static final void closeTemp() {
 		DefUI.selfClear();
 		LSystem.closeFontCache();
 	}
@@ -806,10 +806,25 @@ public class LSystem {
 		return null;
 	}
 
-	public static final void load(Updateable u) {
+	public static final boolean addResume(Updateable u) {
 		if (getProcess() != null) {
-			getProcess().addLoad(u);
+			return getProcess().addResume(u);
 		}
+		return false;
+	}
+
+	public static final boolean removeResume(Updateable u) {
+		if (getProcess() != null) {
+			return getProcess().removeResume(u);
+		}
+		return false;
+	}
+
+	public static final boolean load(Updateable u) {
+		if (getProcess() != null) {
+			return getProcess().addLoad(u);
+		}
+		return false;
 	}
 
 	public static final boolean removeLoad(Updateable u) {
@@ -818,18 +833,19 @@ public class LSystem {
 		}
 		return false;
 	}
-	
+
 	public static final boolean containsLoad(Updateable u) {
 		if (getProcess() != null) {
 			return getProcess().containsLoad(u);
 		}
 		return false;
 	}
-	
-	public static final void unload(Updateable u) {
+
+	public static final boolean unload(Updateable u) {
 		if (getProcess() != null) {
-			getProcess().addUnLoad(u);
+			return getProcess().addUnLoad(u);
 		}
+		return false;
 	}
 
 	public static final boolean removeUnLoad(Updateable u) {
@@ -838,14 +854,14 @@ public class LSystem {
 		}
 		return false;
 	}
-	
+
 	public static final boolean containsUnLoad(Updateable u) {
 		if (getProcess() != null) {
 			return getProcess().containsUnLoad(u);
 		}
 		return false;
 	}
-	
+
 	public static ShaderProgram createShader(String ver, String fragment) {
 		ShaderProgram shader = new ShaderProgram(ver, fragment);
 		if (shader.isCompiled() == false) {
@@ -932,7 +948,7 @@ public class LSystem {
 			base().invokeAsync(action);
 		}
 	}
-	
+
 	public static final int batchCacheSize() {
 		if (base() != null) {
 			return base().batchCacheSize();

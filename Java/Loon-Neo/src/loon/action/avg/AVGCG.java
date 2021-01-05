@@ -139,7 +139,7 @@ public class AVGCG implements LRelease {
 			} else {
 				chara = (AVGChara) charas.remove(name);
 				if (chara != null) {
-					android_dispose(chara);
+					dispose(chara);
 				}
 			}
 			return chara;
@@ -160,7 +160,7 @@ public class AVGCG implements LRelease {
 			} else {
 				old = (AVGChara) charas.remove(name);
 				if (old != null) {
-					android_dispose(old);
+					dispose(old);
 				}
 			}
 			if (old != null) {
@@ -175,8 +175,8 @@ public class AVGCG implements LRelease {
 		}
 	}
 
-	private final static void android_dispose(final AVGChara c) {
-		Updateable remove = new Updateable() {
+	private final static void dispose(final AVGChara c) {
+		final Updateable remove = new Updateable() {
 			@Override
 			public void action(Object a) {
 				c.close();

@@ -48,7 +48,7 @@ import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.reply.UnitPort;
 import loon.utils.timer.LTimerContext;
-import static loon.opengl.GL20.*;
+
 
 public class LTexture extends Painter implements LRelease {
 
@@ -77,6 +77,8 @@ public class LTexture extends Painter implements LRelease {
 
 	private boolean _scaleSize = false;
 
+	private Updateable _closeSubmit;
+
 	private int[] _cachePixels;
 
 	private String source;
@@ -99,11 +101,11 @@ public class LTexture extends Painter implements LRelease {
 
 	public final static class Format {
 
-		public static Format NEAREST = new Format(true, false, false, GL_NEAREST, GL_NEAREST, false);
+		public static Format NEAREST = new Format(true, false, false, GL20.GL_NEAREST, GL20.GL_NEAREST, false);
 
-		public static Format LINEAR = new Format(true, false, false, GL_LINEAR, GL_LINEAR, false);
+		public static Format LINEAR = new Format(true, false, false, GL20.GL_LINEAR, GL20.GL_LINEAR, false);
 
-		public static Format UNMANAGED = new Format(false, false, false, GL_NEAREST, GL_LINEAR, false);
+		public static Format UNMANAGED = new Format(false, false, false, GL20.GL_NEAREST, GL20.GL_LINEAR, false);
 
 		public static Format DEFAULT = LINEAR;
 
@@ -268,14 +270,14 @@ public class LTexture extends Painter implements LRelease {
 		if (fb == 0) {
 			throw new LSysException("Failed to gen framebuffer: " + gl.glGetError());
 		}
-		gl.glBindFramebuffer(GL_FRAMEBUFFER, fb);
-		gl.glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, getID(), 0);
+		gl.glBindFramebuffer(GL20.GL_FRAMEBUFFER, fb);
+		gl.glFramebufferTexture2D(GL20.GL_FRAMEBUFFER, GL20.GL_COLOR_ATTACHMENT0, GL20.GL_TEXTURE_2D, getID(), 0);
 		boolean canRead = GLUtils.isFrameBufferCompleted(gl);
 		if (!canRead) {
 			return null;
 		}
 		Image image = GLUtils.getFrameBuffeImage(gl, 0, 0, getWidth(), getHeight(), false, true);
-		gl.glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		gl.glBindFramebuffer(GL20.GL_FRAMEBUFFER, 0);
 		gl.glDeleteFramebuffer(fb);
 		if (saved) {
 			glex.enableFrameBuffer();
@@ -412,7 +414,7 @@ public class LTexture extends Painter implements LRelease {
 			imageWidth = image.getWidth();
 			imageHeight = image.getHeight();
 			if (config.mipmaps) {
-				gfx.gl.glGenerateMipmap(GL_TEXTURE_2D);
+				gfx.gl.glGenerateMipmap(GL20.GL_TEXTURE_2D);
 			}
 		}
 		if (config.mipmaps) {
@@ -1095,11 +1097,25 @@ public class LTexture extends Painter implements LRelease {
 		return false;
 	}
 
-	void free() {
+	public boolean isCloseSubmitting() {
+		return _closeSubmit != null && gfx.game.processImpl.containsUnLoad(_closeSubmit);
+	}
+
+	public LTexture cancalSubmit() {
+		if (isCloseSubmitting()) {
+			gfx.game.processImpl.removeUnLoad(_closeSubmit);
+		}
+		return this;
+	}
+
+	protected void freeTexture() {
 		if (disposed()) {
 			return;
 		}
 		if (_disabledTexture) {
+			return;
+		}
+		if (isCloseSubmitting()) {
 			return;
 		}
 		final int textureId = _id;
@@ -1116,7 +1132,7 @@ public class LTexture extends Painter implements LRelease {
 				if (batch != null) {
 					gfx.game.disposeBatchCache(batch, false);
 				}
-				final Updateable update = new Updateable() {
+				_closeSubmit = new Updateable() {
 
 					@Override
 					public void action(Object a) {
@@ -1150,7 +1166,7 @@ public class LTexture extends Painter implements LRelease {
 
 						@Override
 						public void run(LTimerContext time) {
-							gfx.game.processImpl.addLoad(update);
+							gfx.game.processImpl.addLoad(_closeSubmit);
 							kill();
 						}
 					};
@@ -1158,7 +1174,7 @@ public class LTexture extends Painter implements LRelease {
 					process.setDelay(LSystem.SECOND);
 					RealtimeProcessManager.get().addProcess(process);
 				} else {
-					gfx.game.processImpl.addLoad(update);
+					gfx.game.processImpl.addLoad(_closeSubmit);
 				}
 			}
 		}
@@ -1334,7 +1350,7 @@ public class LTexture extends Painter implements LRelease {
 			} else {
 				_closed = true;
 				_countTexture--;
-				free();
+				freeTexture();
 			}
 		} else if (refCount <= 0 && gfx.game.getRefTextureCount(getSource()) <= 0) {
 			if (parent != null && parent.isChildAllClose()) {
@@ -1342,7 +1358,7 @@ public class LTexture extends Painter implements LRelease {
 			} else {
 				_closed = true;
 				_countTexture--;
-				free();
+				freeTexture();
 			}
 		}
 	}

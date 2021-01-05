@@ -177,23 +177,23 @@ public class LProcess {
 		return _currentInput;
 	}
 
-	public void addResume(Updateable u) {
+	public boolean addResume(Updateable u) {
 		synchronized (resumes) {
-			resumes.add(u);
+			return resumes.add(u);
 		}
 	}
 
-	public void removeResume(Updateable u) {
+	public boolean removeResume(Updateable u) {
 		synchronized (resumes) {
-			resumes.remove(u);
+			return resumes.remove(u);
 		}
 	}
 
 	// --- Load start ---//
 
-	public void addLoad(Updateable u) {
+	public boolean addLoad(Updateable u) {
 		synchronized (loads) {
-			loads.add(u);
+			return loads.add(u);
 		}
 	}
 
@@ -228,9 +228,9 @@ public class LProcess {
 
 	// --- UnLoad start ---//
 
-	public void addUnLoad(Updateable u) {
+	public boolean addUnLoad(Updateable u) {
 		synchronized (unloads) {
-			unloads.add(u);
+			return unloads.add(u);
 		}
 	}
 
