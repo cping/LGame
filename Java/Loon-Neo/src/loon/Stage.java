@@ -432,13 +432,13 @@ public abstract class Stage extends Screen {
 	public ScrollEffect getScrollBackground() {
 		return scrollBackground;
 	}
-	
+
 	public void dispose() {
 	}
 
 	@Override
 	public void close() {
-		existing = false;
+		this.existing = false;
 		if (this.pendingAdd != null) {
 			this.pendingAdd.clear();
 		}
@@ -461,9 +461,12 @@ public abstract class Stage extends Screen {
 			stateManager.close();
 			stateManager = null;
 		}
+		if (scrollBackground != null) {
+			scrollBackground.close();
+			scrollBackground = null;
+		}
 		percent = maxPercent = 0;
 		dispose();
 	}
-
 
 }
