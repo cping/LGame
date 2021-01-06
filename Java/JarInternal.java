@@ -45,18 +45,18 @@ import java.util.jar.Manifest;
  */
 public class JarInternal {
 
-	static final String REDIRECTED_CLASS_PATH_MANIFEST_NAME = "Rsrc-Class-Path"; 
-	static final String REDIRECTED_MAIN_CLASS_MANIFEST_NAME = "Rsrc-Main-Class"; 
-	static final String DEFAULT_REDIRECTED_CLASSPATH = ""; 
-	static final String MAIN_METHOD_NAME = "main"; 
-	static final String JAR_INTERNAL_URL_PROTOCOL_WITH_COLON = "jar:rsrc:"; 
-	static final String JAR_INTERNAL_SEPARATOR = "!/"; 
-	static final String INTERNAL_URL_PROTOCOL_WITH_COLON = "rsrc:"; 
-	static final String INTERNAL_URL_PROTOCOL = "rsrc"; 
-	static final String PATH_SEPARATOR = "/"; 
-	static final String CURRENT_DIR = "./"; 
-	static final String UTF8_ENCODING = "UTF-8"; 
-	static final String RUNTIME = "#runtime"; 
+	static final String REDIRECTED_CLASS_PATH_MANIFEST_NAME = "Rsrc-Class-Path";
+	static final String REDIRECTED_MAIN_CLASS_MANIFEST_NAME = "Rsrc-Main-Class";
+	static final String DEFAULT_REDIRECTED_CLASSPATH = "";
+	static final String MAIN_METHOD_NAME = "main";
+	static final String JAR_INTERNAL_URL_PROTOCOL_WITH_COLON = "jar:rsrc:";
+	static final String JAR_INTERNAL_SEPARATOR = "!/";
+	static final String INTERNAL_URL_PROTOCOL_WITH_COLON = "rsrc:";
+	static final String INTERNAL_URL_PROTOCOL = "rsrc";
+	static final String PATH_SEPARATOR = "/";
+	static final String CURRENT_DIR = "./";
+	static final String UTF8_ENCODING = "UTF-8";
+	static final String RUNTIME = "#runtime";
 
 	public static class RsrcURLStreamHandlerFactory implements URLStreamHandlerFactory {
 
@@ -127,125 +127,144 @@ public class JarInternal {
 			String file;
 			if (spec.startsWith(INTERNAL_URL_PROTOCOL_WITH_COLON)) {
 				file = spec.substring(5);
-			}
-			else if (url.getFile().equals(CURRENT_DIR)) {
+			} else if (url.getFile().equals(CURRENT_DIR)) {
 				file = spec;
-			}
-			else if (url.getFile().endsWith(PATH_SEPARATOR)) {
+			} else if (url.getFile().endsWith(PATH_SEPARATOR)) {
 				file = url.getFile() + spec;
-			}
-			else if (RUNTIME.equals(spec)) {
+			} else if (RUNTIME.equals(spec)) {
 				file = url.getFile();
-			}
-			else {
+			} else {
 				file = spec;
 			}
-			setURL(url, INTERNAL_URL_PROTOCOL, "", -1, null, null, file, null, null);  }
+			setURL(url, INTERNAL_URL_PROTOCOL, "", -1, null, null, file, null, null);
 		}
+	}
 
-		private static ManifestInfo getManifestInfo() throws IOException {
-			Enumeration<?> resEnum;
-			resEnum = Thread.currentThread().getContextClassLoader().getResources(JarFile.MANIFEST_NAME);
-			while (resEnum.hasMoreElements()) {
-				try {
-					URL url = (URL) resEnum.nextElement();
-					InputStream is = url.openStream();
-					if (is != null) {
-						ManifestInfo result = new ManifestInfo();
-						Manifest manifest = new Manifest(is);
-						Attributes mainAttribs = manifest.getMainAttributes();
-						result.rsrcMainClass = mainAttribs.getValue(REDIRECTED_MAIN_CLASS_MANIFEST_NAME);
-						String rsrcCP = mainAttribs.getValue(REDIRECTED_CLASS_PATH_MANIFEST_NAME);
-						if (rsrcCP == null)
-							rsrcCP = DEFAULT_REDIRECTED_CLASSPATH;
-						result.rsrcClassPath = splitSpaces(rsrcCP);
-						if ((result.rsrcMainClass != null) && !result.rsrcMainClass.trim().isEmpty())
-							return result;
-					}
-				} catch (Exception e) {
+	private static ManifestInfo getManifestInfo() throws IOException {
+		Enumeration<?> resEnum;
+		resEnum = Thread.currentThread().getContextClassLoader().getResources(JarFile.MANIFEST_NAME);
+		while (resEnum.hasMoreElements()) {
+			try {
+				URL url = (URL) resEnum.nextElement();
+				InputStream is = url.openStream();
+				if (is != null) {
+					ManifestInfo result = new ManifestInfo();
+					Manifest manifest = new Manifest(is);
+					Attributes mainAttribs = manifest.getMainAttributes();
+					result.rsrcMainClass = mainAttribs.getValue(REDIRECTED_MAIN_CLASS_MANIFEST_NAME);
+					String rsrcCP = mainAttribs.getValue(REDIRECTED_CLASS_PATH_MANIFEST_NAME);
+					if (rsrcCP == null)
+						rsrcCP = DEFAULT_REDIRECTED_CLASSPATH;
+					result.rsrcClassPath = splitSpaces(rsrcCP);
+					if ((result.rsrcMainClass != null) && !result.rsrcMainClass.trim().isEmpty())
+						return result;
 				}
+			} catch (Exception e) {
 			}
-			System.err.println("Missing attributes for JarRsrcLoader in Manifest (" 
-					+ REDIRECTED_MAIN_CLASS_MANIFEST_NAME + ", " + REDIRECTED_CLASS_PATH_MANIFEST_NAME + ")");  
+		}
+		System.err.println("Missing attributes for JarRsrcLoader in Manifest (" + REDIRECTED_MAIN_CLASS_MANIFEST_NAME
+				+ ", " + REDIRECTED_CLASS_PATH_MANIFEST_NAME + ")");
+		return null;
+	}
+
+	private static String[] splitSpaces(String line) {
+		if (line == null) {
 			return null;
 		}
-
-		private static String[] splitSpaces(String line) {
-			if (line == null) {
-				return null;
+		ArrayList<String> result = new ArrayList<String>();
+		int firstPos = 0;
+		while (firstPos < line.length()) {
+			int lastPos = line.indexOf(' ', firstPos);
+			if (lastPos == -1) {
+				lastPos = line.length();
 			}
-			ArrayList<String> result = new ArrayList<String>();
-			int firstPos = 0;
-			while (firstPos < line.length()) {
-				int lastPos = line.indexOf(' ', firstPos);
-				if (lastPos == -1) {
-					lastPos = line.length();
-				}
-				if (lastPos > firstPos) {
-					result.add(line.substring(firstPos, lastPos));
-				}
-				firstPos = lastPos + 1;
+			if (lastPos > firstPos) {
+				result.add(line.substring(firstPos, lastPos));
 			}
-			return result.toArray(new String[result.size()]);
+			firstPos = lastPos + 1;
 		}
+		return result.toArray(new String[result.size()]);
+	}
 
-		private static class ManifestInfo {
-			String rsrcMainClass;
-			String[] rsrcClassPath;
+	private static class ManifestInfo {
+		String rsrcMainClass;
+		String[] rsrcClassPath;
+	}
+
+	public static void main(String[] args) throws ClassNotFoundException, IllegalArgumentException,
+			IllegalAccessException, InvocationTargetException, SecurityException, NoSuchMethodException, IOException {
+		ManifestInfo mi = getManifestInfo();
+		ClassLoader cl = Thread.currentThread().getContextClassLoader();
+		URL.setURLStreamHandlerFactory(new RsrcURLStreamHandlerFactory(cl));
+		URL[] rsrcUrls = new URL[mi.rsrcClassPath.length];
+		for (int i = 0; i < mi.rsrcClassPath.length; i++) {
+			String rsrcPath = mi.rsrcClassPath[i];
+			if (rsrcPath.endsWith(PATH_SEPARATOR)) {
+				rsrcUrls[i] = new URL(INTERNAL_URL_PROTOCOL_WITH_COLON + rsrcPath);
+			} else {
+				rsrcUrls[i] = new URL(JAR_INTERNAL_URL_PROTOCOL_WITH_COLON + rsrcPath + JAR_INTERNAL_SEPARATOR);
+			}
 		}
+		ClassLoader jceClassLoader = new URLClassLoader(rsrcUrls, getParentClassLoader());
+		Thread.currentThread().setContextClassLoader(jceClassLoader);
+		Class<?> c = Class.forName(mi.rsrcMainClass, true, jceClassLoader);
+		Method main = c.getMethod(MAIN_METHOD_NAME, new Class[] { args.getClass() });
+		main.invoke(null, new Object[] { args });
+	}
 
-		public static void main(String[] args)
-				throws ClassNotFoundException, IllegalArgumentException, IllegalAccessException,
-				InvocationTargetException, SecurityException, NoSuchMethodException, IOException {
-			ManifestInfo mi = getManifestInfo();
-			ClassLoader cl = Thread.currentThread().getContextClassLoader();
-			URL.setURLStreamHandlerFactory(new RsrcURLStreamHandlerFactory(cl));
-			URL[] rsrcUrls = new URL[mi.rsrcClassPath.length];
-			for (int i = 0; i < mi.rsrcClassPath.length; i++) {
-				String rsrcPath = mi.rsrcClassPath[i];
-				if (rsrcPath.endsWith(PATH_SEPARATOR)) {
-					rsrcUrls[i] = new URL(INTERNAL_URL_PROTOCOL_WITH_COLON + rsrcPath);
-				} else {
-					rsrcUrls[i] = new URL(JAR_INTERNAL_URL_PROTOCOL_WITH_COLON + rsrcPath + JAR_INTERNAL_SEPARATOR);
+	private static int charCount(String str, char chr) {
+		int count = 0;
+		if (str != null) {
+			int length = str.length();
+			for (int i = 0; i < length; i++) {
+				if (str.charAt(i) == chr) {
+					count++;
 				}
 			}
-			ClassLoader jceClassLoader = new URLClassLoader(rsrcUrls, getParentClassLoader());
-			Thread.currentThread().setContextClassLoader(jceClassLoader);
-			Class<?> c = Class.forName(mi.rsrcMainClass, true, jceClassLoader);
-			Method main = c.getMethod(MAIN_METHOD_NAME, new Class[] { args.getClass() });
-			main.invoke(null, new Object[] { args });
+			return count;
 		}
+		return count;
+	}
 
-		public static float getJavaVersion() {
-			String version = System.getProperty("java.version", null);
+	public static float getJavaVersion() {
+		try {
+			String version =  System.getProperty("java.version", null);
 			if (version != null) {
 				int lastIdx = version.lastIndexOf('.');
 				if (lastIdx == -1) {
 					return Float.parseFloat(version.replace("_", ""));
 				}
-				String ver = version.substring(0, lastIdx);
-				return Float.parseFloat(ver.replace("_", ""));
+				int count = charCount(version, '.');
+				if (count <= 1) {
+					return Float.parseFloat(version.replace("_", ""));
+				} else {
+					lastIdx = version.indexOf('.', 2);
+					String ver = version.substring(0, lastIdx);
+					return Float.parseFloat(ver.replace("_", ""));
+				} 
 			}
+		} catch (Throwable ex) {
 			return -1f;
 		}
+		return -1f;
+	}
 
-		/**
-		 * 获得getPlatformClassLoader，以满足java9以上版本的必须依赖getPlatformClassLoader加载限制
-		 * 
-		 * @return
-		 */
-		private static ClassLoader getParentClassLoader() throws InvocationTargetException, IllegalAccessException {
-			float ver = getJavaVersion();
-			if (ver != -1 && ver <= 1.8f) {
-				return null;
-			}
-			try {
-				Method platformClassLoader = ClassLoader.class.getMethod("getPlatformClassLoader", (Class[]) null);
-				return (ClassLoader) platformClassLoader.invoke(null, (Object[]) null);
-			} catch (NoSuchMethodException e) {
-				return null;
-			}
+	/**
+	 * 获得getPlatformClassLoader，以满足java9以上版本的必须依赖getPlatformClassLoader加载限制
+	 * 
+	 * @return
+	 */
+	private static ClassLoader getParentClassLoader() throws InvocationTargetException, IllegalAccessException {
+		float ver = getJavaVersion();
+		if (ver != -1 && ver <= 1.8f) {
+			return null;
 		}
-	
+		try {
+			Method platformClassLoader = ClassLoader.class.getMethod("getPlatformClassLoader", (Class[]) null);
+			return (ClassLoader) platformClassLoader.invoke(null, (Object[]) null);
+		} catch (NoSuchMethodException e) {
+			return null;
+		}
+	}
 
 }
