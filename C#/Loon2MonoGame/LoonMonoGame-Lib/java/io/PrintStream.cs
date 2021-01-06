@@ -86,7 +86,7 @@ namespace java.io
             {
                 if (s.EndsWith(newLine) && s.Length > 1)
                 {
-                    line.Append(s.Substring(0, s.Length - 1));
+                    line.Append(s.JavaSubstring(0, s.Length - 1));
                     FinishLine();
                 }
                 else

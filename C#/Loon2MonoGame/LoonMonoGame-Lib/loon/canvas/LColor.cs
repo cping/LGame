@@ -425,7 +425,7 @@ namespace loon.canvas
                 int end = c.LastIndexOf(')');
                 if (start != -1 && end != -1 && end > start)
                 {
-                    string result = c.Substring(start + 1, end).Trim();
+                    string result = c.JavaSubstring(start + 1, end).Trim();
                     string[] list = StringUtils.Split(result, ',');
                     if (list.Length == 3)
                     {
@@ -444,7 +444,7 @@ namespace loon.canvas
                 int end = c.LastIndexOf(')');
                 if (start != -1 && end != -1 && end > start)
                 {
-                    string result = c.Substring(start + 1, end).Trim();
+                    string result = c.JavaSubstring(start + 1, end).Trim();
                     string[] list = StringUtils.Split(result, ',');
                     if (list.Length == 3)
                     {
@@ -1343,7 +1343,7 @@ namespace loon.canvas
             {
                 if (c.StartsWith("#"))
                 {
-                    return HexToColor(c.Substring(1));
+                    return HexToColor(c.JavaSubstring(1));
                 }
                 else
                 {

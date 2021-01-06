@@ -36,7 +36,7 @@ namespace java.lang
 
         public CharSequence SubSequence(int start, int end)
         {
-            return new JavaString(StringExtensions.Substring(this.value, start, end));
+            return new JavaString(StringExtensions.SubString(this.value, start, end));
         }
 
         public int IndexOf(string str)
@@ -84,7 +84,7 @@ namespace java.lang
         }
         public bool StartsWith(string prefix, int toffset)
         {
-            return toffset >= 0 && StringExtensions.Substring(this.value, toffset, prefix.Length).Equals(prefix);
+            return toffset >= 0 && StringExtensions.SubString(this.value, toffset, prefix.Length).Equals(prefix);
         }
         public bool EndsWith(string prefix)
         {
@@ -100,12 +100,12 @@ namespace java.lang
         }
         public string Substring(int beginIndex)
         {
-            return StringExtensions.Substring(this.value, beginIndex);
+            return StringExtensions.SubString(this.value, beginIndex);
         }
 
         public string Substring(int beginIndex, int endIndex)
         {
-            return StringExtensions.Substring(this.value, beginIndex, endIndex);
+            return StringExtensions.SubString(this.value, beginIndex, endIndex);
         }
 
         public sbyte[] GetSBytes()

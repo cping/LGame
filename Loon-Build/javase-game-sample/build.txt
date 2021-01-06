@@ -9,7 +9,7 @@ sourceDir:".",
  */
 list:[
  [TDGameTest,.,{main:"loon.JarInternal",jars:["libs"],
- manifests:["Rsrc-Main-Class: org.test.TestTD","Rsrc-Class-Path:./ lwjgl.jar loon-core-0.5.jar loon-javase-0.5.jar","Class-Path: ."],
+ manifests:["Rsrc-Main-Class: org.test.TestTD","Rsrc-Class-Path:./ lwjgl.jar loon-javase-0.5.jar loon-core-0.5.jar","Class-Path: ."],
  classpath:["libs/loon-core-0.5.jar","libs/loon-javase-0.5.jar"]}]
 ],
 /*输出目录*/

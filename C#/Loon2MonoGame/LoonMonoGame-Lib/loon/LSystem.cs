@@ -282,7 +282,7 @@ namespace loon
                 return "";
             }
             int idx = name.LastIndexOf('.');
-            return idx == -1 ? name : name.Substring(0, idx);
+            return idx == -1 ? name : name.JavaSubstring(0, idx);
         }
 
         public static string GetFileName(string name)
@@ -300,7 +300,7 @@ namespace loon
             int size = idx + 1;
             if (size < length)
             {
-                return name.Substring(size, length);
+                return name.JavaSubstring(size, length);
             }
             else
             {
@@ -322,7 +322,7 @@ namespace loon
             }
             else
             {
-                return name.Substring(index + 1);
+                return name.JavaSubstring(index + 1);
             }
         }
 

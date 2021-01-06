@@ -39,12 +39,12 @@ namespace loon.geom
                 if (valueParam.EndsWith(PERCENT + WIDTH_SUFFIX))
                 {
                     hasWidthSuffix = true;
-                    this.value = valueParam.Substring(0, valueParam.Length() - 1);
+                    this.value = valueParam.JavaSubstring(0, valueParam.Length() - 1);
                 }
                 else if (valueParam.EndsWith(PERCENT + HEIGHT_SUFFIX))
                 {
                     hasHeightSuffix = true;
-                    this.value = valueParam.Substring(0, valueParam.Length() - 1);
+                    this.value = valueParam.JavaSubstring(0, valueParam.Length() - 1);
                 }
                 else
                 {
@@ -89,7 +89,7 @@ namespace loon.geom
         {
             if (IsPercent())
             {
-                string percent = value.Substring(0,
+                string percent = value.JavaSubstring(0,
                         value.Length() - PERCENT.Length());
                 return Float.ParseFloat(percent);
             }
@@ -107,7 +107,7 @@ namespace loon.geom
                 {
                     return Integer.ParseInt(value);
                 }
-                string pixel = value.Substring(0, value.Length() - PIXEL.Length());
+                string pixel = value.JavaSubstring(0, value.Length() - PIXEL.Length());
                 return Integer.ParseInt(pixel);
             }
             else

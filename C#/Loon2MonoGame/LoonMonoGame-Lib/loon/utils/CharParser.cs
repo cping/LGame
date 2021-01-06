@@ -31,7 +31,7 @@ namespace loon.utils
 
 		public bool StartsWith(string prefix)
 		{
-			return context.Substring(poistion, context.Length()).StartsWith(prefix);
+			return context.JavaSubstring(poistion, context.Length()).StartsWith(prefix);
 		}
 
 		public bool Eof()

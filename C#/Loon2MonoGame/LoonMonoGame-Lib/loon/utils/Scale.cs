@@ -1,4 +1,5 @@
-﻿using loon.geom;
+﻿using java.lang;
+using loon.geom;
 using loon.utils.reply;
 using System;
 
@@ -226,7 +227,7 @@ namespace loon.utils
 			}
 			else
 			{
-				return path.Substring(0, didx) + "@" + scaleFactor + "x" + path.Substring(didx);
+				return path.JavaSubstring(0, didx) + "@" + scaleFactor + "x" + path.JavaSubstring(didx);
 			}
 		}
 

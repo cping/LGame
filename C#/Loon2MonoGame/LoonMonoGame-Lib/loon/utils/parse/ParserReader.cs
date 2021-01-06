@@ -39,7 +39,7 @@
 				}
 				else
 				{
-					return _tempBuffer.Substring(begin, end - begin);
+					return _tempBuffer.Substring(begin, end);
 				}
 			
 		}

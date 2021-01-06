@@ -37,12 +37,12 @@ namespace loon.canvas
 		{
 			if (IsShortMode(color))
 			{
-				return (Integer.ParseInt(color.Substring(1, 2), HEX_BASE) * SCALE_SHORT_MODE)
+				return (Integer.ParseInt(color.JavaSubstring(1, 2), HEX_BASE) * SCALE_SHORT_MODE)
 						/ MAX_INT_VALUE;
 			}
 			else
 			{
-				return Integer.ParseInt(color.Substring(1, 3), HEX_BASE)
+				return Integer.ParseInt(color.JavaSubstring(1, 3), HEX_BASE)
 						/ MAX_INT_VALUE;
 			}
 		}

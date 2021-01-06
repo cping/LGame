@@ -62,7 +62,7 @@ namespace loon.monogame
 					int size = str[i].Length;
 					if (size > logTypeStyle[i] || size > limitTagSize)
 					{
-						sbr.Append(str[i].Substring(0, logTypeStyle[i]) + sp);
+						sbr.Append(str[i].JavaSubstring(0, logTypeStyle[i]) + sp);
 						continue;
 					}
 					sbr.Append(str[i]);
@@ -79,7 +79,7 @@ namespace loon.monogame
 				{
 					if (str[i].Length > logTypeStyle[i])
 					{
-						sbr.Append(str[i].Substring(0, logTypeStyle[i]) + sp);
+						sbr.Append(str[i].JavaSubstring(0, logTypeStyle[i]) + sp);
 						continue;
 					}
 					sbr.Append(str[i]);

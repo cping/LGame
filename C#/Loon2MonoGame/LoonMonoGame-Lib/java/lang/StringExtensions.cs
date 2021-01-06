@@ -296,7 +296,22 @@ namespace java.lang
             }
         }
 
-        public static string Substring(this string str, int beginIndex)
+        public static CharSequence ToSequence(this string str)
+        {
+            return new JavaString(str);
+        }
+
+        public static CharSequence SubSequence(this string str, int beginIndex)
+        {
+            return new JavaString(str.Substring(beginIndex));
+        }
+
+        public static CharSequence SubSequence(this string str, int beginIndex, int endIndex)
+        {
+            return new JavaString(str.Substring(beginIndex, endIndex - beginIndex));
+        }
+
+        public static string SubString(this string str, int beginIndex)
         {
             return str.Substring(beginIndex);
         }
@@ -306,7 +321,7 @@ namespace java.lang
             return str.Substring(beginIndex);
         }
 
-        public static string Substring(this string str, int beginIndex, int endIndex)
+        public static string SubString(this string str, int beginIndex, int endIndex)
         {
             return str.Substring(beginIndex, endIndex - beginIndex);
         }
