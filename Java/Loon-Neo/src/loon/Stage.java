@@ -198,11 +198,10 @@ public abstract class Stage extends Screen {
 	@Override
 	public void onLoad() {
 		try {
-			int size = 8;
-			this.objects = new TArray<ActionObject>(size);
-			this.pendingAdd = new TArray<ActionObject>(size);
-			this.pendingRemove = new TArray<ActionObject>(size);
-			this.tiles = new TArray<TileMap>(size);
+			this.objects = new TArray<ActionObject>();
+			this.pendingAdd = new TArray<ActionObject>();
+			this.pendingRemove = new TArray<ActionObject>();
+			this.tiles = new TArray<TileMap>();
 			this.offset = Vector2f.ZERO();
 			create();
 			if (existing) {

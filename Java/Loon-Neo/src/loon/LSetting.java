@@ -189,14 +189,14 @@ public class LSetting {
 	public String version = LSystem.UNKNOWN;
 
 	/**
-	 * 允许注销纹理(为false所有纹理都不被注销)
+	 * 允许注销纹理(为false所有纹理都不被注销),需要纹理长期保存时可以选择false
 	 */
 	public boolean disposeTexture = true;
 
 	/**
-	 * 保存注入纹理的像素(为false不保存)
+	 * 保存注入纹理的像素(为false不保存),需要频繁从纹理返回像素时可以选择保存,但会占用更多内存
 	 */
-	public boolean saveTexturePixels = true;
+	public boolean saveTexturePixels = false;
 
 	/**
 	 * 此项为true时,drag与move事件全游戏无效

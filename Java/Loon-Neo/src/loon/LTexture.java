@@ -49,7 +49,6 @@ import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.reply.UnitPort;
 import loon.utils.timer.LTimerContext;
 
-
 public class LTexture extends Painter implements LRelease {
 
 	public static LTexture createTexture(int w, int h, Format config) {
@@ -84,6 +83,8 @@ public class LTexture extends Painter implements LRelease {
 	private String source;
 
 	private Image _image;
+
+	private int _memorySize = 0;
 
 	private int imageWidth = 1, imageHeight = 1;
 
@@ -243,6 +244,10 @@ public class LTexture extends Painter implements LRelease {
 		return StringUtils.isEmpty(source) ? "" : source;
 	}
 
+	public boolean isImageCanvas() {
+		return StringUtils.isEmpty(source) || (source.indexOf('<') != -1 && source.indexOf('>') != -1);
+	}
+
 	/**
 	 * 拷贝当前纹理图像到缓冲区并转化为Image
 	 * 
@@ -286,18 +291,46 @@ public class LTexture extends Painter implements LRelease {
 		return image;
 	}
 
+	public int getPixel(int x, int y) {
+		if (_closed || _disposed) {
+			return -1;
+		}
+		if (x < 0 || x >= getDisplayWidth() || y < 0 || y >= getDisplayHeight()) {
+			return -1;
+		} else {
+			int[] pixels = null;
+			if (_cachePixels != null) {
+				pixels = _cachePixels;
+			} else {
+				pixels = getPixels();
+			}
+			if (pixels != null) {
+				return pixels[(int) (y * getDisplayWidth() + x)];
+			}
+			return -1;
+		}
+	}
+
 	public int[] getPixels() {
+		if (_closed || _disposed) {
+			return null;
+		}
 		if (_cachePixels != null) {
 			return CollectionUtils.copyOf(_cachePixels);
 		}
 		if (_image != null) {
 			return _image.getPixels();
 		}
-		return getImage().getPixels();
+
+		Image img = getImage();
+		return img == null ? null : img.getPixels();
 	}
 
 	public Image getImage() {
-		if ((_image == null || _image.isClosed()) && !StringUtils.isEmpty(source)) {
+		if (_closed || _disposed) {
+			return null;
+		}
+		if ((_image == null || _image.isClosed()) && !isImageCanvas()) {
 			_image = BaseIO.loadImage(source);
 		}
 		if (_image == null && _cachePixels != null) {
@@ -359,7 +392,7 @@ public class LTexture extends Painter implements LRelease {
 		if (_image != null && !_isLoaded) {
 			update(_image);
 		} else if (!_isLoaded) {
-			if (!StringUtils.isEmpty(source) && (source.indexOf('<') == -1 && source.indexOf('>') == -1)) {
+			if (!isImageCanvas()) {
 				_image = BaseIO.loadImage(source);
 			} else if (_cachePixels != null) {
 				_image = Image.createCanvas(imageWidth, imageHeight).image;
@@ -371,8 +404,6 @@ public class LTexture extends Painter implements LRelease {
 		}
 
 	}
-
-	private int _memorySize = 0;
 
 	public void update(final Image image) {
 		update(image, true);
@@ -395,7 +426,6 @@ public class LTexture extends Painter implements LRelease {
 		}
 		this._drawing = true;
 		this.source = image.getSource();
-
 		if (image != null) {
 			if (config.repeatX || config.repeatY || config.mipmaps) {
 				int pixWidth = image.pixelWidth(), pixHeight = image.pixelHeight();
@@ -423,20 +453,22 @@ public class LTexture extends Painter implements LRelease {
 			_memorySize = imageWidth * imageHeight * 4;
 		}
 		if (closed && !_isReload) {
-			if (image != null && (image.getSource() == null || image.getSource().indexOf("<canvas>") != -1)
-					&& gfx.game != null && gfx.game.setting.saveTexturePixels) {
+			if (image != null && gfx.game != null && gfx.game.setting.saveTexturePixels) {
 				int[] pixels = image.getPixels();
 				if (pixels != null) {
-					_cachePixels = CollectionUtils.copyOf(pixels);
+					_cachePixels = pixels;
 				}
 			}
 			if (image != null && image.toClose()) {
 				image.destroy();
 			}
 		}
-		_image = image;
+		if (closed) {
+			_image = null;
+		} else {
+			_image = image;
+		}
 		_drawing = false;
-
 		if (updated) {
 			_isLoaded = true;
 			return;

@@ -438,6 +438,7 @@ public class LProcess {
 	public void stop() {
 		try {
 			synchronized (LProcess.class) {
+				LSystem.debug("The Loon Game Engine is End");
 				_running = false;
 				if (isInstance) {
 					_currentScreen.stop();
@@ -465,9 +466,7 @@ public class LProcess {
 				}
 			}
 		} catch (Throwable cause) {
-			cause.printStackTrace();
 		}
-		LSystem.debug("The Loon Game Engine is End");
 	}
 
 	public void resetTouch() {
