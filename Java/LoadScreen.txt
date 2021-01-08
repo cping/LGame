@@ -68,6 +68,8 @@ public class MainActivity extends Loon {
 		setting.height = 320;
 		//禁止使用配置文件的旋转设置,直接以width,height大小决定屏幕横竖
 		setting.useOrientation = false;
+		//屏幕旋转方式(useOrientation为false时不生效)
+		//setting.orientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR;
 		//若启动此模式，则画面等比压缩，不会失真
 		setting.useRatioScaleFactor = false;
 		//强制一个显示大小(在android模式下，不填则默认全屏，此模式可能会造成画面失真)

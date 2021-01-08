@@ -545,6 +545,7 @@ public class Lwjgl3Game extends LGame {
 		((Lwjgl3InputMake) input).shutdown();
 		((Lwjgl3Graphics) graphics).shutdown();
 		errorCallback.close();
+		shutdown();
 		glfwDestroyWindow(windowId);
 		glfwTerminate();
 	}

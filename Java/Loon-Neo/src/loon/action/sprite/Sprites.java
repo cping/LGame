@@ -74,7 +74,7 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	private int viewHeight;
 
-	private boolean _isViewWindowSet = false, _visible = true, _closed = false;
+	private boolean _isViewWindowSet = false, _limitViewWindows = false, _visible = true, _closed = false;
 
 	private SpriteListener sprListerner;
 
@@ -1089,16 +1089,18 @@ public class Sprites implements IArray, Visible, LRelease {
 		float spriteY;
 		float spriteWidth;
 		float spriteHeight;
-
 		for (int i = 0; i < this._size; i++) {
 			ISprite spr = this._sprites[i];
 			if (spr != null && spr.isVisible()) {
-				spriteX = minX + spr.getX();
-				spriteY = minY + spr.getY();
-				spriteWidth = spr.getWidth();
-				spriteHeight = spr.getHeight();
-				if (spriteX + spriteWidth < minX || spriteX > maxX || spriteY + spriteHeight < minY || spriteY > maxY) {
-					continue;
+				if (_limitViewWindows) {
+					spriteX = minX + spr.getX();
+					spriteY = minY + spr.getY();
+					spriteWidth = spr.getWidth();
+					spriteHeight = spr.getHeight();
+					if (spriteX + spriteWidth < minX || spriteX > maxX || spriteY + spriteHeight < minY
+							|| spriteY > maxY) {
+						continue;
+					}
 				}
 				spr.createUI(g);
 			}
@@ -1175,12 +1177,14 @@ public class Sprites implements IArray, Visible, LRelease {
 		for (int i = 0; i < this._size; i++) {
 			ISprite spr = this._sprites[i];
 			if (spr != null && spr.isVisible()) {
-				int layerX = spr.x();
-				int layerY = spr.y();
-				float layerWidth = spr.getWidth() + 1;
-				float layerHeight = spr.getHeight() + 1;
-				if (layerX + layerWidth < minX || layerX > maxX || layerY + layerHeight < minY || layerY > maxY) {
-					continue;
+				if (_limitViewWindows) {
+					int layerX = spr.x();
+					int layerY = spr.y();
+					float layerWidth = spr.getWidth() + 1;
+					float layerHeight = spr.getHeight() + 1;
+					if (layerX + layerWidth < minX || layerX > maxX || layerY + layerHeight < minY || layerY > maxY) {
+						continue;
+					}
 				}
 				spr.createUI(g);
 			}
@@ -1554,6 +1558,15 @@ public class Sprites implements IArray, Visible, LRelease {
 		return this;
 	}
 
+	public boolean isLimitViewWindows() {
+		return _limitViewWindows;
+	}
+
+	public Sprites setLimitViewWindows(boolean limit) {
+		this._limitViewWindows = limit;
+		return this;
+	}
+
 	public String getName() {
 		return this._sprites_name;
 	}
@@ -1590,4 +1603,5 @@ public class Sprites implements IArray, Visible, LRelease {
 		this._resizeListener = null;
 		LSystem.popSpritesPool(this);
 	}
+
 }
