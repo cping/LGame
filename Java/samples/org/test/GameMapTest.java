@@ -56,7 +56,7 @@ public class GameMapTest extends Stage {
 		}
 
 		@Override
-		public void update(long e) {
+		public void onManagedUpdate(long e) {
 
 			float x = getX();
 			float y = getY();
@@ -94,8 +94,6 @@ public class GameMapTest extends Stage {
 					vy = 0;
 				}
 			}
-
-			animation.update(elapsedTime);
 			// 注入新坐标
 			setLocation(x, y);
 		}
@@ -112,11 +110,6 @@ public class GameMapTest extends Stage {
 		public void use(JumpObject hero) {
 			hero.setJumperTwo(true);
 		}
-
-		@Override
-		public void update(long elapsedTime) {
-			animation.update(elapsedTime);
-		}
 	}
 
 	// 加速用类（物品）
@@ -129,11 +122,6 @@ public class GameMapTest extends Stage {
 		public void use(JumpObject hero) {
 			hero.setSpeed(hero.getSpeed() * 2);
 		}
-
-		@Override
-		public void update(long elapsedTime) {
-			animation.update(elapsedTime);
-		}
 	}
 
 	// 金币用类（物品）
@@ -142,12 +130,6 @@ public class GameMapTest extends Stage {
 		public Coin(float x, float y, Animation animation, TileMap tiles) {
 			super(x, y, 32, 32, animation, tiles);
 		}
-
-		@Override
-		public void update(long elapsedTime) {
-			animation.update(elapsedTime);
-		}
-
 	}
 
 	// 锁定主角操作
@@ -393,7 +375,7 @@ public class GameMapTest extends Stage {
 
 				@Override
 				public void stop(ActionBind o) {
-					hero.setFilterColor(LColor.white);
+					hero.setColor(LColor.white);
 					hero.setRotation(0);
 					// 解除锁定
 					heroLocked.set(false);
@@ -402,7 +384,7 @@ public class GameMapTest extends Stage {
 
 				@Override
 				public void start(ActionBind o) {
-					hero.setFilterColor(LColor.red);
+					hero.setColor(LColor.red);
 					hero.jump();
 					// 锁定操作
 					heroLocked.set(true);

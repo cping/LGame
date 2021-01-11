@@ -142,11 +142,6 @@ public class AVGChara implements Visible, XY, LRelease {
 		}
 	}
 
-	@Override
-	public void finalize() {
-		flush();
-	}
-
 	public int getScreenWidth() {
 		return maxWidth;
 	}

@@ -29,6 +29,7 @@ import loon.ZIndex;
 import loon.action.ActionBind;
 import loon.canvas.LColor;
 import loon.geom.RectBox;
+import loon.geom.Vector2f;
 import loon.geom.XY;
 import loon.opengl.GLEx;
 
@@ -101,6 +102,12 @@ public interface ISprite extends ActionBind, Visible, LRelease, ZIndex, XY {
 	Sprites getSprites();
 
 	Screen getScreen();
+	
+	ISprite setOffset(Vector2f v);
+	
+	float getOffsetX();
+	
+	float getOffsetY();
 
 	float getFixedWidthOffset();
 

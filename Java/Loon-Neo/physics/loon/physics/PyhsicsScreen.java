@@ -30,13 +30,11 @@ import loon.action.sprite.ActionObject;
 import loon.action.sprite.Animation;
 import loon.action.sprite.JumpObject;
 import loon.action.sprite.MoveObject;
-import loon.action.sprite.SpriteBatch;
 import loon.events.GameKey;
 import loon.events.UpdateListener;
 import loon.geom.AABB;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
-import loon.opengl.BlendState;
 import loon.opengl.GLEx;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
@@ -51,11 +49,9 @@ import loon.utils.timer.LTimerContext;
  * 并且支持直接绑定Loon的物理引擎。
  * 
  */
-public abstract class SpriteBatchScreen extends Screen implements Config {
+public abstract class PyhsicsScreen extends Screen implements Config {
 
 	private float objX = 0, objY = 0;
-
-	private SpriteBatch _batch;
 
 	private TArray<ActionObject> objects;
 
@@ -78,8 +74,6 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 	private PPhysManager _manager;
 
 	private PWorldBox _box;
-
-	private boolean _useGLEx = false;
 
 	private boolean _fixed = false;
 
@@ -197,12 +191,8 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		return _fixed;
 	}
 
-	public SpriteBatchScreen() {
+	public PyhsicsScreen() {
 		super();
-	}
-
-	public SpriteBatch getSpriteBatch() {
-		return _batch;
 	}
 
 	protected void init() {
@@ -284,10 +274,6 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 	public final void onLoad() {
 		try {
 			init();
-			if (_batch == null) {
-				_batch = new SpriteBatch(512);
-			}
-			_batch.setBlendState(BlendState.Null);
 			onLoading();
 		} catch (Throwable cause) {
 			LSystem.error("SpriteBatchScreen onLoad exception", cause);
@@ -524,54 +510,31 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 		commits();
 	}
 
-	protected void drawing(GLEx g, SpriteBatch batch) {
+	protected void drawing(GLEx g) {
 
 	}
 
 	@Override
 	public final void draw(GLEx g) {
 		if (isOnLoadComplete()) {
-			if (_batch == null || _useGLEx) {
-				for (TileMap tile : tiles) {
-					tile.draw(g, _batch, offset.x(), offset.y());
-				}
-				for (ActionObject o : objects) {
-					objX = o.getX() + offset.x;
-					objY = o.getY() + offset.y;
-					if (intersects(objX, objY, o.getWidth(), o.getHeight()) || contains(objX, objY)) {
-						o.draw(g, offset.x, offset.y);
-					}
-				}
-				drawing(g, _batch);
-			} else {
-				synchronized (_batch) {
-					try {
-						_batch.begin();
-						before(_batch);
-						for (TileMap tile : tiles) {
-							tile.draw(g, _batch, offset.x(), offset.y());
-						}
-						for (ActionObject o : objects) {
-							objX = o.getX() + offset.x;
-							objY = o.getY() + offset.y;
-							if (intersects(objX, objY, o.getWidth(), o.getHeight()) || contains(objX, objY)) {
-								o.draw(_batch, offset.x, offset.y);
-							}
-						}
-						drawing(g, _batch);
-						after(_batch);
-					} finally {
-						_batch.end();
-					}
+			for (TileMap tile : tiles) {
+				tile.draw(g, offset.x(), offset.y());
+			}
+			for (ActionObject o : objects) {
+				objX = o.getX() + offset.x;
+				objY = o.getY() + offset.y;
+				if (intersects(objX, objY, o.getWidth(), o.getHeight()) || contains(objX, objY)) {
+					o.createUI(g, offset.x, offset.y);
 				}
 			}
+			drawing(g);
 		}
 
 	}
 
-	public abstract void after(SpriteBatch _batch);
+	public abstract void after(GLEx g);
 
-	public abstract void before(SpriteBatch _batch);
+	public abstract void before(GLEx g);
 
 	@Override
 	public final void onKeyDown(GameKey e) {
@@ -591,24 +554,12 @@ public abstract class SpriteBatchScreen extends Screen implements Config {
 
 	public abstract void dispose();
 
-	public boolean isUseGLEx() {
-		return _useGLEx;
-	}
-
-	public void setUseGLEx(boolean u) {
-		this._useGLEx = u;
-	}
-
 	@Override
 	public void close() {
 		if (usePhysics) {
 			_manager.setStart(false);
 			_manager.setEnableGravity(false);
 			_bodys.clear();
-		}
-		if (_batch != null) {
-			_batch.close();
-			_batch = null;
 		}
 		if (indexTile != null) {
 			indexTile.close();

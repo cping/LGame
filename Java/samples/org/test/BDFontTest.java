@@ -52,6 +52,8 @@ public class BDFontTest extends Screen {
 		font.setSize(20);
 		//变更渲染到纹理的字体内容
 		//font.updateTexture("新的紋理字体内容");
+
+		add(MultiScreenTest.getBackButton(this,0));
 	}
 
 	@Override

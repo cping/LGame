@@ -145,7 +145,7 @@ public class MultiScreenTest extends Screen {
 	}
 
 	final String[] page0 = { "MessageBox", "Live2d", "Action", "Effect", "Emulator", "TileMap", "SpriteBatch",
-			"BatchScreen", "BMFont", "Layout", "Table", "Menu", "Names", "Toast", "List", "Sprite", "TexturePack",
+			"BDFont", "BMFont", "Layout", "Table", "Menu", "Names", "Toast", "List", "Sprite", "TexturePack",
 			"LNode", "Scroll", "Cycle", "TextArea", "Progress", "Particle", "SelectIcon", "Control", "JsonRes",
 			"SheetFont", "ParConfig", "RippleTouch", "Sound", "Gesture", "Physical", "LNode2", "Input", "Depth",
 			"Canvas", "GameMap", "MoveClip", "TextureImage", "Session" };
@@ -200,7 +200,7 @@ public class MultiScreenTest extends Screen {
 			addScreen(page0[index++], new EmulatorTest());
 			addScreen(page0[index++], new TileMapTest());
 			addScreen(page0[index++], new SpriteBatchTest());
-			addScreen(page0[index++], new SpriteBatchScreenTest());
+			addScreen(page0[index++], new BDFontTest());
 			addScreen(page0[index++], new BMFontTest());
 			addScreen(page0[index++], new LayoutTest());
 			addScreen(page0[index++], new TableTest());

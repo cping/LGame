@@ -49,8 +49,6 @@ public class LFontTest extends Screen{
 		font = new LSTRFont(LFont.getDefaultFont(),",.，。abcdefgABCD1234悠然半步平山河萬里偷闲一子定紅塵千秋半是率性半是癫一念超然红尘元");
 		//font.setPixelColor(LColor.yellow);
 	    //font.setFontSize(25);
-		//变更渲染到纹理的字体内容
-		//font.updateTexture("新的紋理字体内容");
 	}
 
 	@Override

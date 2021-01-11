@@ -1,13 +1,13 @@
 package org.test;
 
-import loon.action.sprite.SpriteBatch;
 import loon.action.sprite.ActionObject;
 import loon.action.sprite.TextureObject;
 import loon.events.GameKey;
 import loon.events.GameTouch;
-import loon.physics.SpriteBatchScreen;
+import loon.opengl.GLEx;
+import loon.physics.PyhsicsScreen;
 
-public class PhysicalTest extends SpriteBatchScreen {
+public class PhysicalTest extends PyhsicsScreen {
 
 	@Override
 	public void onResume() {
@@ -31,12 +31,12 @@ public class PhysicalTest extends SpriteBatchScreen {
 	}
 
 	@Override
-	public void after(SpriteBatch batch) {
+	public void after(GLEx batch) {
 
 	}
 
 	@Override
-	public void before(SpriteBatch batch) {
+	public void before(GLEx batch) {
 
 	}
 

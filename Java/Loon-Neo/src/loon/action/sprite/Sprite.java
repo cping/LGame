@@ -86,11 +86,13 @@ public class Sprite extends LObject<ISprite>
 
 	private int transform;
 
+	private LColor filterColor;
+
 	private float _scaleX = 1f, _scaleY = 1f;
 
-	private float _fixedWidthOffset = 0f;
+	private float _fixedWidthOffset = 0f, _fixedHeightOffset = 0f;
 
-	private float _fixedHeightOffset = 0f;
+	private Vector2f _offset = new Vector2f();
 
 	private boolean _flipX = false, _flipY = false;
 
@@ -644,11 +646,9 @@ public class Sprite extends LObject<ISprite>
 		return CollisionHelper.isRectToCirc(this.getCollisionBox(), sprite.getCollisionBox());
 	}
 
-	private LColor filterColor;
-
 	@Override
 	public void createUI(GLEx g) {
-		createUI(g, 0, 0);
+		createUI(g, 0f, 0f);
 	}
 
 	@Override
@@ -676,8 +676,8 @@ public class Sprite extends LObject<ISprite>
 		int blend = g.getBlendMode();
 		try {
 			g.setBlendMode(_GL_BLEND);
-			float nx = this._location.x + offsetX;
-			float ny = this._location.y + offsetY;
+			float nx = this._location.x + offsetX + _offset.x;
+			float ny = this._location.y + offsetY + _offset.y;
 			if (update) {
 				g.saveTx();
 				Affine2f tx = g.tx();
@@ -1291,6 +1291,34 @@ public class Sprite extends LObject<ISprite>
 			}
 		}
 		return this;
+	}
+
+	@Override
+	public ISprite setOffset(Vector2f v) {
+		if (v != null) {
+			this._offset = v;
+		}
+		return this;
+	}
+
+	public Sprite setOffsetX(float sx) {
+		this._offset.setX(sx);
+		return this;
+	}
+
+	public Sprite setOffsetY(float sy) {
+		this._offset.setY(sy);
+		return this;
+	}
+
+	@Override
+	public float getOffsetX() {
+		return _offset.x;
+	}
+
+	@Override
+	public float getOffsetY() {
+		return _offset.y;
 	}
 
 	public ResizeListener<Sprite> getResizeListener() {

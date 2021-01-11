@@ -112,11 +112,11 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	private final PointF _scrollDrag = new PointF();
 
 	private float _fixedWidthOffset = 0f;
-	
-	private float _fixedHeightOffset = 0f;
 
-	private ResizeListener<HexagonMap> _resizeListener;
+	private float _fixedHeightOffset = 0f;
 	
+	private ResizeListener<HexagonMap> _resizeListener;
+
 	private int[] position = new int[2];
 
 	private int[][] positions = new int[6][2];
@@ -143,13 +143,13 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 
 	private IFont displayFont;
 
-	private Vector2f offset = new Vector2f(0, 0);
-
 	private DrawListener<HexagonMap> listener;
 
 	private LColor _baseColor;
 
 	private LTexture _background;
+
+	private Vector2f _offset = new Vector2f(0, 0);
 
 	private float _scaleX, _scaleY;
 
@@ -668,9 +668,9 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	}
 
 	public int[] adjacent(int[] position, int orientation) {
-		int[] offset = hexagonByOrientation[orientation + 3];
-		this.position[0] = position[0] + offset[0];
-		this.position[1] = position[1] + offset[1];
+		int[] _offset = hexagonByOrientation[orientation + 3];
+		this.position[0] = position[0] + _offset[0];
+		this.position[1] = position[1] + _offset[1];
 		return this.position;
 	}
 
@@ -1028,7 +1028,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	public HexagonMap followDonot() {
 		return setFollow(null);
 	}
-	
+
 	public HexagonMap followAction(ActionBind follow) {
 		return setFollow(follow);
 	}
@@ -1131,7 +1131,8 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		if (this._screenSprites == null) {
 			return LSystem.getProcess().getScreen();
 		}
-		return this._screenSprites.getScreen() == null ? LSystem.getProcess().getScreen() : this._screenSprites.getScreen();
+		return this._screenSprites.getScreen() == null ? LSystem.getProcess().getScreen()
+				: this._screenSprites.getScreen();
 	}
 
 	public float getScreenX() {
@@ -1186,7 +1187,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 
 	@Override
 	public void createUI(GLEx g) {
-		createUI(g, 0, 0);
+		createUI(g, 0f, 0f);
 	}
 
 	@Override
@@ -1201,10 +1202,10 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 			g.setBlendMode(_GL_BLEND);
 			g.setAlpha(_alpha);
 			if (this.roll) {
-				this.offset = toRollPosition(this.offset);
+				this._offset = toRollPosition(this._offset);
 			}
-			float newX = this._location.x + offsetX + offset.getX();
-			float newY = this._location.y + offsetY + offset.getY();
+			float newX = this._location.x + offsetX + _offset.getX();
+			float newY = this._location.y + offsetY + _offset.getY();
 			if (update) {
 				g.saveTx();
 				Affine2f tx = g.tx();
@@ -1249,13 +1250,13 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	public int getPixelY(float y) {
 		return MathUtils.iceil((y - _location.y) / _scaleY);
 	}
-	
+
 	public float offsetXPixel(float x) {
-		return MathUtils.iceil((x - offset.x - _location.x) / _scaleX);
+		return MathUtils.iceil((x - _offset.x - _location.x) / _scaleX);
 	}
 
 	public float offsetYPixel(float y) {
-		return MathUtils.iceil((y - offset.y - _location.y) / _scaleY);
+		return MathUtils.iceil((y - _offset.y - _location.y) / _scaleY);
 	}
 
 	public boolean inMap(int x, int y) {
@@ -1277,7 +1278,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	}
 
 	public HexagonMap setOffset(float x, float y) {
-		this.offset.set(x, y);
+		this._offset.set(x, y);
 		return this;
 	}
 
@@ -1287,7 +1288,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 			float offsetY = limitOffsetY(follow.getY());
 			if (offsetX != 0 || offsetY != 0) {
 				setOffset(offsetX, offsetY);
-				field2d.setOffset(offset);
+				field2d.setOffset(_offset);
 			}
 		}
 		return this;
@@ -1322,10 +1323,10 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	 * @return
 	 */
 	public HexagonMap centerOffset() {
-		this.offset.set(centerX(), centerY());
+		this._offset.set(centerX(), centerY());
 		return this;
 	}
-	
+
 	@Override
 	public Field2D getField2D() {
 		return field2d;
@@ -1374,10 +1375,10 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		if (distance == 0) {
 			return this;
 		}
-		this.offset.y = MathUtils.min((this.offset.y + distance),
+		this._offset.y = MathUtils.min((this._offset.y + distance),
 				(MathUtils.max(0, this.getContainerHeight() - this.getHeight())));
-		if (this.offset.y >= 0) {
-			this.offset.y = 0;
+		if (this._offset.y >= 0) {
+			this._offset.y = 0;
 		}
 		return this;
 	}
@@ -1386,10 +1387,10 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		if (distance == 0) {
 			return this;
 		}
-		this.offset.x = MathUtils.min(this.offset.x - distance, this.getX());
+		this._offset.x = MathUtils.min(this._offset.x - distance, this.getX());
 		float limitX = (getContainerWidth() - getWidth());
-		if (this.offset.x <= limitX) {
-			this.offset.x = limitX;
+		if (this._offset.x <= limitX) {
+			this._offset.x = limitX;
 		}
 		return this;
 	}
@@ -1398,10 +1399,10 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		if (distance == 0) {
 			return this;
 		}
-		this.offset.x = MathUtils.min((this.offset.x + distance),
+		this._offset.x = MathUtils.min((this._offset.x + distance),
 				(MathUtils.max(0, this.getWidth() - getContainerWidth())));
-		if (this.offset.x >= 0) {
-			this.offset.x = 0;
+		if (this._offset.x >= 0) {
+			this._offset.x = 0;
 		}
 		return this;
 	}
@@ -1410,10 +1411,10 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		if (distance == 0) {
 			return this;
 		}
-		this.offset.y = MathUtils.min(this.offset.y - distance, 0);
+		this._offset.y = MathUtils.min(this._offset.y - distance, 0);
 		float limitY = (getContainerHeight() - getHeight());
-		if (this.offset.y <= limitY) {
-			this.offset.y = limitY;
+		if (this._offset.y <= limitY) {
+			this._offset.y = limitY;
 		}
 		return this;
 	}
@@ -1431,8 +1432,8 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	}
 
 	public HexagonMap scrollClear() {
-		if (!this.offset.equals(0f, 0f)) {
-			this.offset.set(0, 0);
+		if (!this._offset.equals(0f, 0f)) {
+			this._offset.set(0, 0);
 		}
 		return this;
 	}
@@ -1533,8 +1534,8 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	}
 
 	public int getTileIDFromPixels(float sx, float sy) {
-		float x = (sx + offset.getX());
-		float y = (sy + offset.getY());
+		float x = (sx + _offset.getX());
+		float y = (sy + _offset.getY());
 		Vector2f tileCoordinates = pixelsToTiles(x, y);
 		return getTileID(MathUtils.round(tileCoordinates.getX()), MathUtils.round(tileCoordinates.getY()));
 	}
@@ -2079,11 +2080,39 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		this._resizeListener = listener;
 		return this;
 	}
-	
+
+	@Override
+	public HexagonMap setOffset(Vector2f v) {
+		if (v != null) {
+			this._offset = v;
+		}
+		return this;
+	}
+
+	public HexagonMap setOffsetX(float sx) {
+		this._offset.setX(sx);
+		return this;
+	}
+
+	public HexagonMap setOffsetY(float sy) {
+		this._offset.setY(sy);
+		return this;
+	}
+
+	@Override
+	public float getOffsetX() {
+		return _offset.x;
+	}
+
+	@Override
+	public float getOffsetY() {
+		return _offset.y;
+	}
+
 	public boolean isClosed() {
 		return isDisposed();
 	}
-	
+
 	@Override
 	public void close() {
 		roll = false;

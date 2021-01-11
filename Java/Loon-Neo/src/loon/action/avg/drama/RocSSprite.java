@@ -14,6 +14,7 @@ import loon.action.sprite.Sprites;
 import loon.canvas.LColor;
 import loon.events.ResizeListener;
 import loon.geom.RectBox;
+import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimer;
 
@@ -300,6 +301,16 @@ public class RocSSprite extends LObject<ISprite> implements ISprite {
 		return false;
 	}
 
+	@Override
+	public float getOffsetX() {
+		return 0;
+	}
+
+	@Override
+	public float getOffsetY() {
+		return 0;
+	}
+	
 	public ResizeListener<RocSSprite> getResizeListener() {
 		return _resizeListener;
 	}
@@ -316,6 +327,11 @@ public class RocSSprite extends LObject<ISprite> implements ISprite {
 		}
 	}
 
+	@Override
+	public RocSSprite setOffset(Vector2f v) {
+		return this;
+	}
+	
 	@Override
 	public void close() {
 		setState(State.DISPOSED);

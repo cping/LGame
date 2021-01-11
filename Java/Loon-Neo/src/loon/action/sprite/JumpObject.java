@@ -63,7 +63,7 @@ public class JumpObject extends ActionObject {
 	public JumpObject(float x, float y, Animation animation) {
 		this(x, y, 0, 0, animation, null);
 	}
-	
+
 	public JumpObject(float x, float y, Animation animation, TileMap map) {
 		super(x, y, 0, 0, animation, map);
 		vx = 0;
@@ -76,8 +76,7 @@ public class JumpObject extends ActionObject {
 		canJumperTwo = true;
 	}
 
-	public JumpObject(float x, float y, float dw, float dh,
-			Animation animation, TileMap map) {
+	public JumpObject(float x, float y, float dw, float dh, Animation animation, TileMap map) {
 		super(x, y, dw, dh, animation, map);
 		vx = 0;
 		vy = 0;
@@ -147,9 +146,7 @@ public class JumpObject extends ActionObject {
 
 	@Override
 	public void update(long elapsedTime) {
-		if (animation != null) {
-			animation.update(elapsedTime);
-		}
+		super.update(elapsedTime);
 		final TileMap map = tiles;
 		float x = getX();
 		float y = getY();

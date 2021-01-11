@@ -2,15 +2,14 @@ package loon.action.node;
 
 import loon.LSystem;
 import loon.Screen;
-import loon.action.sprite.SpriteBatch;
 import loon.events.SysInput;
 import loon.events.SysTouch;
 import loon.events.UpdateListener;
 import loon.opengl.GLEx;
-import loon.physics.SpriteBatchScreen;
+import loon.physics.PyhsicsScreen;
 import loon.utils.timer.LTimerContext;
 
-public abstract class NodeScreen extends SpriteBatchScreen {
+public abstract class NodeScreen extends PyhsicsScreen {
 
 	private LNNode content;
 
@@ -324,15 +323,10 @@ public abstract class NodeScreen extends SpriteBatchScreen {
 		}
 	}
 
-	protected void drawing(GLEx g, SpriteBatch batch) {
-		if (batch == null || isUseGLEx()) {
-			if (content != null && content.isVisible()) {
-				content.drawNode(g);
-			}
-		} else {
-			if (content != null && content.isVisible()) {
-				content.drawNode(batch);
-			}
+	@Override
+	protected void drawing(GLEx g) {
+		if (content != null && content.isVisible()) {
+			content.drawNode(g);
 		}
 	}
 

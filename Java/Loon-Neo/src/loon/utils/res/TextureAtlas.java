@@ -24,7 +24,6 @@ import loon.Json;
 import loon.LRelease;
 import loon.Json.TypedArray;
 import loon.LTexture;
-import loon.action.sprite.DisplayObject;
 import loon.utils.ListMap;
 import loon.utils.TArray;
 
@@ -78,6 +77,10 @@ public class TextureAtlas implements LRelease {
 	}
 
 	public ListMap<String, TextureData> getDatas(Json.Object jsonObj) {
+		return getDatas(jsonObj, 1f, 1f);
+	}
+
+	public ListMap<String, TextureData> getDatas(Json.Object jsonObj, float sx, float sy) {
 		Json.Object jsonFrames = jsonObj.getObject("frames");
 		if (jsonFrames != null) {
 			TypedArray<String> keys = jsonFrames.keys();
@@ -105,14 +108,14 @@ public class TextureAtlas implements LRelease {
 				} else {
 					data.sourceH = data.h + data.offY;
 				}
-				data.x *= DisplayObject.morphX;
-				data.w *= DisplayObject.morphX;
-				data.offX *= DisplayObject.morphX;
-				data.sourceW *= DisplayObject.morphX;
-				data.y *= DisplayObject.morphY;
-				data.h *= DisplayObject.morphY;
-				data.offY *= DisplayObject.morphY;
-				data.sourceH *= DisplayObject.morphY;
+				data.x *= sx;
+				data.w *= sx;
+				data.offX *= sx;
+				data.sourceW *= sx;
+				data.y *= sy;
+				data.h *= sy;
+				data.offY *= sy;
+				data.sourceH *= sy;
 				frames.put(key, data);
 			}
 			return frames;
@@ -147,14 +150,14 @@ public class TextureAtlas implements LRelease {
 						} else {
 							data.sourceH = data.h + data.offY;
 						}
-						data.x *= DisplayObject.morphX;
-						data.w *= DisplayObject.morphX;
-						data.offX *= DisplayObject.morphX;
-						data.sourceW *= DisplayObject.morphX;
-						data.y *= DisplayObject.morphY;
-						data.h *= DisplayObject.morphY;
-						data.offY *= DisplayObject.morphY;
-						data.sourceH *= DisplayObject.morphY;
+						data.x *= sx;
+						data.w *= sx;
+						data.offX *= sx;
+						data.sourceW *= sx;
+						data.y *= sy;
+						data.h *= sy;
+						data.offY *= sy;
+						data.sourceH *= sy;
 						frames.put(name, data);
 
 					}

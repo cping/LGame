@@ -663,10 +663,22 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 		this._offset.set(x, y);
 	}
 
-	public void setOffset(Vector2f v) {
+	@Override
+	public LNNode setOffset(Vector2f v) {
 		this._offset.set(v);
+		return this;
+	}
+	
+	@Override
+	public float getOffsetX() {
+		return this._offset.x;
 	}
 
+	@Override
+	public float getOffsetY() {
+		return this._offset.y;
+	}
+	
 	public Vector2f getOffset() {
 		return this._offset;
 	}

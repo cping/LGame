@@ -4,6 +4,7 @@ import loon.LTransition;
 import loon.action.sprite.SpriteBatch;
 import loon.events.GameKey;
 import loon.events.GameTouch;
+import loon.opengl.GLEx;
 import loon.action.node.LNEase;
 import loon.action.node.LNEnd;
 import loon.action.node.LNLabel;
@@ -49,11 +50,11 @@ public class NodeTest extends NodeScreen {
 
 	}
 
-	public void after(SpriteBatch batch) {
+	public void after(GLEx g) {
 
 	}
 
-	public void before(SpriteBatch batch) {
+	public void before(GLEx g) {
 
 	}
 

@@ -198,7 +198,7 @@ public class BulletEntity extends Entity {
 			Bullet bu = bullets.get(i);
 			if (bu != null) {
 				movePos(bu);
-				bu.draw(g, offsetX + getX(), offsetY + getY());
+				bu.draw(g, drawX(offsetX), drawY(offsetX));
 			}
 		}
 	}

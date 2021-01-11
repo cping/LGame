@@ -22,6 +22,7 @@ package loon.action.sprite;
 
 import loon.LSysException;
 import loon.LSystem;
+import loon.LTexture;
 import loon.LTrans;
 import loon.PlayerUtils;
 import loon.action.ActionTween;
@@ -53,7 +54,7 @@ public class MovieClip extends DisplayObject {
 	private boolean _isLoop = false;
 
 	private RectBox _tempRect;
-	
+
 	public MovieClip(MovieSpriteSheet sheet, int interval) {
 		init(sheet, interval, DisplayObject.ANCHOR_TOP_LEFT);
 	}
@@ -123,7 +124,7 @@ public class MovieClip extends DisplayObject {
 		}
 		return null;
 	}
-	
+
 	public MovieClip gotoAndStop(String label) {
 		if (null != _sheet) {
 			TextureData ssd = _sheet.getSSD(label);
@@ -202,7 +203,7 @@ public class MovieClip extends DisplayObject {
 
 	@Override
 	public void createUI(GLEx g) {
-		this.createUI(g, 0, 0);
+		this.createUI(g, 0f, 0f);
 	}
 
 	@Override
@@ -216,8 +217,8 @@ public class MovieClip extends DisplayObject {
 		if (_ssd == null) {
 			return;
 		}
-		float x = _location.x + _ssd.offX() + offsetX;
-		float y = _location.y + _ssd.offY() + offsetY;
+		float x = _location.x + _ssd.offX() + offsetX + _offset.x;
+		float y = _location.y + _ssd.offY() + offsetY + _offset.y;
 		if (_anchor == DisplayObject.ANCHOR_CENTER) {
 			x -= _ssd.sourceW() >> 1;
 			y -= _ssd.sourceH() >> 1;
@@ -236,8 +237,8 @@ public class MovieClip extends DisplayObject {
 		}
 		RectBox drawRect = RectBox.getIntersection(_tempRect, rect);
 		if (drawRect != null) {
-			int destX = (int) (drawRect.x() * morphX);
-			int destY = (int) (drawRect.y() * morphY);
+			int destX = (int) (drawRect.x() * _morphX);
+			int destY = (int) (drawRect.y() * _morphY);
 
 			float rotate = 0;
 			Direction dir = Direction.TRANS_NONE;
@@ -293,6 +294,11 @@ public class MovieClip extends DisplayObject {
 
 	}
 
+	@Override
+	public LTexture getBitmap() {
+		return _sheet.sheet();
+	}
+	
 	@Override
 	public ActionTween selfAction() {
 		return PlayerUtils.set(this);

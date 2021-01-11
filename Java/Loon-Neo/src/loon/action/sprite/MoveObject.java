@@ -323,7 +323,9 @@ public class MoveObject extends ActionObject {
 
 	private boolean isMoving;
 
+	@Override
 	public void update(long elapsedTime) {
+		super.update(elapsedTime);
 		if (timer.action(elapsedTime)) {
 
 			isMoving = moveState();

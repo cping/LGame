@@ -254,7 +254,7 @@ public abstract class Stage extends Screen {
 		}
 		if (tiles != null && tiles.size > 0) {
 			for (TileMap tile : tiles) {
-				tile.draw(g, null, offset.x(), offset.y());
+				tile.draw(g, offset.x(), offset.y());
 			}
 		}
 		if (objects != null && objects.size > 0) {
@@ -262,7 +262,7 @@ public abstract class Stage extends Screen {
 				drawPosX = o.getX() + offset.x;
 				drawPosY = o.getY() + offset.y;
 				if (intersects(drawPosX, drawPosY, o.getWidth(), o.getHeight()) || contains(drawPosX, drawPosY)) {
-					o.draw(g, offset.x, offset.y);
+					o.createUI(g, offset.x, offset.y);
 				}
 			}
 		}

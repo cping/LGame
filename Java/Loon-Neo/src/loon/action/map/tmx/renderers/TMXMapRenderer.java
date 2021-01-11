@@ -40,6 +40,7 @@ import loon.action.sprite.Sprites;
 import loon.canvas.LColor;
 import loon.events.ResizeListener;
 import loon.geom.RectBox;
+import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.utils.ObjectMap;
 import loon.utils.TimeUtils;
@@ -50,7 +51,8 @@ import loon.utils.TimeUtils;
 public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite {
 
 	private ResizeListener<TMXMapRenderer> _resizeListener;
-	
+
+	protected Vector2f _offset = new Vector2f();
 	protected float _fixedWidthOffset = 0f;
 	protected float _fixedHeightOffset = 0f;
 
@@ -218,6 +220,11 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 	}
 
 	@Override
+	public void createUI(GLEx g) {
+		createUI(g, 0f, 0f);
+	}
+
+	@Override
 	public void createUI(GLEx g, float offsetX, float offsetY) {
 		float tmp = g.alpha();
 		float tmpAlpha = baseColor.a;
@@ -228,7 +235,7 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 		renderBackgroundColor(g);
 		float ox = getX();
 		float oy = getY();
-		setLocation(ox + offsetX, oy + offsetY);
+		setLocation(ox + offsetX + _offset.x, oy + offsetY + _offset.y);
 		for (TMXMapLayer mapLayer : map.getLayers()) {
 			if (mapLayer instanceof TMXTileLayer) {
 				renderTileLayer(g, (TMXTileLayer) mapLayer);
@@ -244,35 +251,14 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 	}
 
 	@Override
-	public void createUI(GLEx g) {
-		float tmp = g.alpha();
-		float tmpAlpha = baseColor.a;
-		int color = g.color();
-		g.setAlpha(_alpha);
-		baseColor.a = _alpha;
-		g.setColor(baseColor);
-		renderBackgroundColor(g);
-		for (TMXMapLayer mapLayer : map.getLayers()) {
-			if (mapLayer instanceof TMXTileLayer) {
-				renderTileLayer(g, (TMXTileLayer) mapLayer);
-			}
-			if (mapLayer instanceof TMXImageLayer) {
-				renderImageLayer(g, (TMXImageLayer) mapLayer);
-			}
-		}
-		baseColor.a = tmpAlpha;
-		g.setColor(color);
-		g.setAlpha(tmp);
-	}
-
-	@Override
 	public RectBox getCollisionBox() {
 		return getCollisionArea();
 	}
 
 	@Override
 	public LTexture getBitmap() {
-		return null;
+		ObjectMap.Keys<String> keys = textureMap.keys();
+		return textureMap.size > 0 ? textureMap.get(keys.next()) : null;
 	}
 
 	@Override
@@ -427,6 +413,24 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 	public TMXMapRenderer setResizeListener(ResizeListener<TMXMapRenderer> listener) {
 		this._resizeListener = listener;
 		return this;
+	}
+
+	@Override
+	public TMXMapRenderer setOffset(Vector2f v) {
+		if (v != null) {
+			this._offset = v;
+		}
+		return this;
+	}
+
+	@Override
+	public float getOffsetX() {
+		return _offset.x;
+	}
+
+	@Override
+	public float getOffsetY() {
+		return _offset.y;
 	}
 
 	public boolean isClosed() {

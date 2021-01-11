@@ -34,7 +34,6 @@ import loon.action.map.items.Attribute;
 import loon.action.sprite.Animation;
 import loon.action.sprite.ISprite;
 import loon.action.sprite.MoveControl;
-import loon.action.sprite.SpriteBatch;
 import loon.action.sprite.Sprites;
 import loon.canvas.Image;
 import loon.canvas.LColor;
@@ -94,7 +93,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	private ActionBind follow;
 
-	private Vector2f offset;
+	private Vector2f offset = new Vector2f(0f, 0f);
 
 	private Format format;
 
@@ -451,20 +450,15 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		if (this.roll) {
 			this.offset = this.toRollPosition(this.offset);
 		}
-		draw(g, null, x() + offset.x(), y() + offset.y());
+		draw(g, x() + offset.x(), y() + offset.y());
 	}
 
-	public void draw(GLEx g, SpriteBatch batch, int offsetX, int offsetY) {
-		final boolean useBatch = (batch != null);
-		if (useBatch) {
-			if (_background != null) {
-				batch.draw(_background, offsetX, offsetY);
-			}
-		} else {
-			if (_background != null) {
-				g.draw(_background, offsetX, offsetY);
-			}
+	public void draw(GLEx g, int offsetX, int offsetY) {
+
+		if (_background != null) {
+			g.draw(_background, offsetX, offsetY);
 		}
+
 		if (!active || texturePack == null) {
 			completed();
 			return;
@@ -488,16 +482,8 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 							final float posY = field2d.tilesToHeightPixels(j) + offsetY;
 							for (TileImpl tile : arrays) {
 								if (tile.isAnimation() && tile.getId() == id) {
-									if (useBatch) {
-										LColor tmp = batch.getColor();
-										batch.setColor(baseColor);
-										batch.draw(tile.getAnimation().getSpriteImage(), posX, posY, tileWidth,
-												tileHeight);
-										batch.setColor(tmp);
-									} else {
-										g.draw(tile.getAnimation().getSpriteImage(), posX, posY, tileWidth, tileHeight,
-												baseColor);
-									}
+									g.draw(tile.getAnimation().getSpriteImage(), posX, posY, tileWidth, tileHeight,
+											baseColor);
 								}
 							}
 						}
@@ -534,16 +520,8 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 							if (playAnimation) {
 								if (tile.getId() == id) {
 									if (tile.isAnimation()) {
-										if (useBatch) {
-											LColor tmp = batch.getColor();
-											batch.setColor(baseColor);
-											batch.draw(tile.getAnimation().getSpriteImage(), posX, posY, tileWidth,
-													tileHeight);
-											batch.setColor(tmp);
-										} else {
-											g.draw(tile.getAnimation().getSpriteImage(), posX, posY, tileWidth,
-													tileHeight, baseColor);
-										}
+										g.draw(tile.getAnimation().getSpriteImage(), posX, posY, tileWidth, tileHeight,
+												baseColor);
 									} else {
 										texturePack.draw(tile.getImgId(), posX, posY, tileWidth, tileHeight, baseColor);
 									}
@@ -815,14 +793,6 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		return offset;
 	}
 
-	public float getOffsetX() {
-		return offset.x;
-	}
-
-	public float getOffsetY() {
-		return offset.y;
-	}
-
 	public int getTileWidth() {
 		return field2d.getTileWidth();
 	}
@@ -887,6 +857,11 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	}
 
 	@Override
+	public void createUI(GLEx g) {
+		createUI(g, 0f, 0f);
+	}
+
+	@Override
 	public void createUI(GLEx g, float offsetX, float offsetY) {
 		if (!visible) {
 			return;
@@ -923,7 +898,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 			followActionObject();
 			int moveX = (int) newX;
 			int moveY = (int) newY;
-			draw(g, null, moveX, moveY);
+			draw(g, moveX, moveY);
 			if (_mapSprites != null) {
 				_mapSprites.paintPos(g, moveX, moveY);
 			}
@@ -936,11 +911,6 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 			g.setBlendMode(blend);
 			g.setColor(tmp);
 		}
-	}
-
-	@Override
-	public void createUI(GLEx g) {
-		createUI(g, 0, 0);
 	}
 
 	@Override
@@ -1386,6 +1356,26 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	public TileMap setResizeListener(ResizeListener<TileMap> listener) {
 		this._resizeListener = listener;
 		return this;
+	}
+
+	public TileMap setOffsetX(float sx) {
+		this.offset.setX(sx);
+		return this;
+	}
+
+	public TileMap setOffsetY(float sy) {
+		this.offset.setY(sy);
+		return this;
+	}
+
+	@Override
+	public float getOffsetX() {
+		return offset.x;
+	}
+
+	@Override
+	public float getOffsetY() {
+		return offset.y;
 	}
 
 	public boolean isClosed() {

@@ -667,7 +667,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	@Override
 	public final void createUI(final GLEx g) {
-		this.createUI(g, 0, 0);
+		this.createUI(g, 0f, 0f);
 	}
 
 	@Override
@@ -939,6 +939,15 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		}
 	}
 
+	public boolean isCollision(Entity o) {
+		RectBox src = getCollisionArea();
+		RectBox dst = o.getCollisionArea();
+		if (src.intersects(dst) || src.contains(dst)) {
+			return true;
+		}
+		return false;
+	}
+	
 	public int width() {
 		return (int) getWidth();
 	}
@@ -949,12 +958,14 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	@Override
 	public float getWidth() {
-		return (_width * this._scaleX) - _fixedWidthOffset;
+		return _width > 1 ? (_width * this._scaleX) - _fixedWidthOffset
+				: _image == null ? 0 : (_image.getWidth() * this._scaleX) - _fixedWidthOffset;
 	}
 
 	@Override
 	public float getHeight() {
-		return (_height * this._scaleY) - _fixedHeightOffset;
+		return _height > 1 ? (_height * this._scaleY) - _fixedHeightOffset
+				: _image == null ? 0 : (_image.getHeight() * this._scaleY) - _fixedHeightOffset;
 	}
 
 	@Override
@@ -1202,13 +1213,6 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	}
 
 	@Override
-	protected void finalize() throws Throwable {
-		if (!isDisposed()) {
-			this.close();
-		}
-	}
-
-	@Override
 	public int size() {
 		return _childrens == null ? 0 : _childrens.size;
 	}
@@ -1229,28 +1233,35 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		return _offset;
 	}
 
-	public void setOffset(float x, float y) {
+	public Entity setOffset(float x, float y) {
 		this._offset.set(x, y);
+		return this;
 	}
 
-	public void setOffset(Vector2f offset) {
+	@Override
+	public Entity setOffset(Vector2f offset) {
 		this._offset = offset;
+		return this;
 	}
 
+	@Override
 	public float getOffsetX() {
 		return _offset.x;
 	}
 
-	public void setOffsetX(float offsetX) {
+	public Entity setOffsetX(float offsetX) {
 		this._offset.setX(offsetX);
+		return this;
 	}
 
+	@Override
 	public float getOffsetY() {
 		return _offset.y;
 	}
 
-	public void setOffsetY(float offsetY) {
+	public Entity setOffsetY(float offsetY) {
 		this._offset.setY(offsetY);
+		return this;
 	}
 
 	protected float drawX(float offsetX) {
@@ -1423,7 +1434,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		}
 		return this;
 	}
-	
+
 	public boolean isDebugDraw() {
 		return _debugDraw;
 	}
@@ -1495,6 +1506,14 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	public void setRepaintAutoOffset(boolean autoOffset) {
 		this._repaintAutoOffset = autoOffset;
+	}
+
+	public boolean isMirror() {
+		return this._flipX;
+	}
+
+	public Entity setMirror(boolean mirror) {
+		return setFlipX(mirror);
 	}
 
 	public boolean isAscendantOf(ISprite actor) {
