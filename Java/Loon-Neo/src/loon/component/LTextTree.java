@@ -66,8 +66,6 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 
 	private float _space = 0;
 
-	private boolean _useLFont;
-
 	private String templateResult = null;
 
 	private int totalElementsCount;
@@ -270,23 +268,11 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 			return;
 		}
 
-		boolean supportPack = false;
-
-		if (_useLFont) {
-			LFont newFont = (LFont) _font;
-			supportPack = newFont.isSupportCacheFontPack();
-			newFont.setSupportCacheFontPack(false);
-		}
-
 		IFont tmp = g.getFont();
 		g.setFont(_font);
 		renderSub(g, offsetX, offsetY, x, y);
 		g.setFont(tmp);
 
-		if (_useLFont && supportPack) {
-			LFont newFont = (LFont) _font;
-			newFont.setSupportCacheFontPack(supportPack);
-		}
 	}
 
 	private void renderSub(GLEx g, float offsetX, float offsetY, float x, float y) {
@@ -342,7 +328,7 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 			maxHeight += height;
 		}
 		setSize(maxWidth + _space * 2 - _font.getSize(), maxHeight + _space * 2);
-		if (_useLFont) {
+		if (_font instanceof LFont) {
 			LSTRDictionary.get().bind((LFont) _font, StringUtils.getListToStrings(_lines));
 		}
 		_dirty = false;
@@ -510,7 +496,6 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 			return this;
 		}
 		this._font = fn;
-		this._useLFont = (this._font instanceof LFont);
 		this._dirty = true;
 		return this;
 	}

@@ -24,7 +24,6 @@ import loon.LSysException;
 import loon.LTexture;
 import loon.canvas.LColor;
 import loon.font.IFont;
-import loon.font.LFont;
 import loon.geom.Vector2f;
 import loon.geom.XY;
 import loon.opengl.GLEx;
@@ -49,8 +48,6 @@ public abstract class AbstractBox implements XY {
 	
 	protected LTexture _textureBox;
 	protected int _radius;
-	
-	protected boolean useLFont;
 
 	protected AbstractBox(IFont font) {
 		if (font == null) {
@@ -75,7 +72,6 @@ public abstract class AbstractBox implements XY {
 			return this;
 		}
 		this.font = fn;
-		this.useLFont = (this.font instanceof LFont);
 		dirty();
 		return this;
 	}

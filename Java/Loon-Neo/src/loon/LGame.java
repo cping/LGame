@@ -1161,15 +1161,6 @@ public abstract class LGame implements LRelease {
 		return null;
 	}
 
-	protected final void closeFontTempTexture() {
-		for (int i = _font_pools.size - 1; i > -1; i--) {
-			IFont font = _font_pools.get(i);
-			if (font != null && font instanceof LFont) {
-				((LFont) font).closeTempTexture();
-			}
-		}
-	}
-
 	public void closeFontPool() {
 		for (int i = _font_pools.size - 1; i > -1; i--) {
 			IFont font = _font_pools.get(i);

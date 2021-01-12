@@ -30,7 +30,6 @@ import loon.component.skin.SkinManager;
 import loon.component.skin.TableSkin;
 import loon.font.FontSet;
 import loon.font.IFont;
-import loon.font.LFont;
 import loon.geom.Dimension;
 import loon.opengl.GLEx;
 import loon.utils.TArray;
@@ -215,8 +214,6 @@ public class LTable extends LContainer implements FontSet<LTable> {
 	private boolean gridVisible = true;
 
 	private boolean tableHeaderVisible = true;
-
-	private boolean useLFont;
 
 	private LColor headerBackgroundColor = LColor.gray.cpy();
 
@@ -516,14 +513,6 @@ public class LTable extends LContainer implements FontSet<LTable> {
 				g.draw(backgroundTexture, x, y, wid, hei, LColor.white);
 			}
 
-			boolean supportPack = false;
-
-			if (useLFont) {
-				LFont newFont = (LFont) font;
-				supportPack = newFont.isSupportCacheFontPack();
-				newFont.setSupportCacheFontPack(false);
-			}
-
 			for (int row = 0; row < size && row < model.getRowCount(); row++) {
 				x = displayX;
 				if (isSelected(row)) {
@@ -605,11 +594,6 @@ public class LTable extends LContainer implements FontSet<LTable> {
 				}
 			}
 
-			if (useLFont && supportPack) {
-				LFont newFont = (LFont) font;
-				newFont.setSupportCacheFontPack(supportPack);
-			}
-
 		} finally {
 			g.restoreBrush();
 		}
@@ -629,7 +613,6 @@ public class LTable extends LContainer implements FontSet<LTable> {
 			return this;
 		}
 		this.font = fn;
-		this.useLFont = (this.font instanceof LFont);
 		this.cellHeight = font.getHeight();
 		return this;
 	}

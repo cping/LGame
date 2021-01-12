@@ -61,7 +61,6 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 	private int[] brightType;
 
 	private boolean[] drawNew;
-	private boolean useLFont;
 
 	private int[] drawNewCr;
 	private int[] drawNewCg;
@@ -82,7 +81,7 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 	private int messageWidthLimit = 200;
 	private int postLine = 0;
 	private int max;
-	private int num;
+	private int amount;
 	private int drawY;
 
 	private String strTemp;
@@ -197,7 +196,7 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 		this.drawNewCb = new int[this.max];
 		this.drawNewLV = new int[this.max];
 		this.slideX = new int[this.max];
-		this.num = 0;
+		this.amount = 0;
 		for (int i = 0; i < this.max; i++) {
 			this.message[i] = LSystem.EMPTY;
 			this.getMessage[i] = LSystem.EMPTY;
@@ -241,7 +240,6 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 			return this;
 		}
 		this.displayFont = fn;
-		this.useLFont = (this.displayFont instanceof LFont);
 		return this;
 	}
 
@@ -251,17 +249,17 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 	}
 
 	public LTextArea setNewFlag() {
-		this.drawNew[this.num] = true;
+		this.drawNew[this.amount] = true;
 		return this;
 	}
 
 	public LTextArea clear() {
-		this.num = 0;
+		this.amount = 0;
 		return this;
 	}
 
 	public int count() {
-		return this.num;
+		return this.amount;
 	}
 
 	public LTextArea setSlideMessage(boolean b) {
@@ -275,28 +273,30 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 	}
 
 	public LTextArea setColor(int d_cr, int d_cg, int d_cb) {
-		this.crs[this.num] = d_cr;
-		this.cgs[this.num] = d_cg;
-		this.cbs[this.num] = d_cb;
+		this.crs[this.amount] = d_cr;
+		this.cgs[this.amount] = d_cg;
+		this.cbs[this.amount] = d_cb;
 		if (flashFont) {
-			if (this.crs[this.num] > 255 - this.brightMax) {
-				this.crs[this.num] = (255 - this.brightMax);
+			if (this.crs[this.amount] > 255 - this.brightMax) {
+				this.crs[this.amount] = (255 - this.brightMax);
 			}
-			if (this.cgs[this.num] > 255 - this.brightMax) {
-				this.cgs[this.num] = (255 - this.brightMax);
+			if (this.cgs[this.amount] > 255 - this.brightMax) {
+				this.cgs[this.amount] = (255 - this.brightMax);
 			}
-			if (this.cbs[this.num] > 255 - this.brightMax) {
-				this.cbs[this.num] = (255 - this.brightMax);
+			if (this.cbs[this.amount] > 255 - this.brightMax) {
+				this.cbs[this.amount] = (255 - this.brightMax);
 			}
 		}
 		return this;
 	}
 
+	private boolean _dirty;
+
 	public LTextArea put(String mes, LColor color) {
 		if (StringUtils.isEmpty(mes)) {
 			return this;
 		}
-		String[] messages = StringUtils.split(mes, '\n');
+		String[] messages = StringUtils.split(mes, LSystem.LF);
 		for (int i = messages.length - 1; i > -1; i--) {
 			setColor(color.getRed(), color.getGreen(), color.getBlue());
 			putOne(messages[i]);
@@ -308,7 +308,7 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 		if (StringUtils.isEmpty(mes)) {
 			return this;
 		}
-		String[] messages = StringUtils.split(mes, '\n');
+		String[] messages = StringUtils.split(mes, LSystem.LF);
 		for (int i = messages.length - 1; i > -1; i--) {
 			putOne(messages[i]);
 		}
@@ -317,48 +317,44 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 
 	private void putOne(String mes) {
 		this.over = false;
-		this.numBak = this.num;
+		this.numBak = this.amount;
 
-		if (displayFont != null && useLFont) {
-			LSTRDictionary.get().bind((LFont) displayFont, mes);
-		}
-
-		this.message[this.num] = mes;
+		this.message[this.amount] = mes;
 
 		if (this.flashFont) {
-			if ((this.crs[this.num] == 0) && (this.cgs[this.num] == 0) && (this.cbs[this.num] == 0)) {
-				this.crs[this.num] = this.default_cr;
-				this.cgs[this.num] = this.default_cg;
-				this.cbs[this.num] = this.default_cb;
+			if ((this.crs[this.amount] == 0) && (this.cgs[this.amount] == 0) && (this.cbs[this.amount] == 0)) {
+				this.crs[this.amount] = this.default_cr;
+				this.cgs[this.amount] = this.default_cg;
+				this.cbs[this.amount] = this.default_cb;
 			} else {
-				if (this.crs[this.num] + this.brightMax > 255) {
-					this.crs[this.num] = (255 - this.brightMax);
-				} else if (this.crs[this.num] < 0) {
-					this.crs[this.num] = 0;
+				if (this.crs[this.amount] + this.brightMax > 255) {
+					this.crs[this.amount] = (255 - this.brightMax);
+				} else if (this.crs[this.amount] < 0) {
+					this.crs[this.amount] = 0;
 				}
-				if (this.cgs[this.num] + this.brightMax > 255) {
-					this.crs[this.num] = (255 - this.brightMax);
-				} else if (this.cgs[this.num] < 0) {
-					this.cgs[this.num] = 0;
+				if (this.cgs[this.amount] + this.brightMax > 255) {
+					this.crs[this.amount] = (255 - this.brightMax);
+				} else if (this.cgs[this.amount] < 0) {
+					this.cgs[this.amount] = 0;
 				}
-				if (this.cbs[this.num] + this.brightMax > 255) {
-					this.crs[this.num] = (255 - this.brightMax);
-				} else if (this.cbs[this.num] < 0) {
-					this.cbs[this.num] = 0;
+				if (this.cbs[this.amount] + this.brightMax > 255) {
+					this.crs[this.amount] = (255 - this.brightMax);
+				} else if (this.cbs[this.amount] < 0) {
+					this.cbs[this.amount] = 0;
 				}
 			}
 		}
 
 		if ((this.displayFont != null)
-				&& (this.displayFont.stringWidth(this.message[this.num]) > this.messageWidthLimit)) {
+				&& (this.displayFont.stringWidth(this.message[this.amount]) > this.messageWidthLimit)) {
 			this.posx = 1;
 			for (;;) {
-				if (this.displayFont.stringWidth(this.message[this.num].substring(0,
-						this.message[this.num].length() - this.posx)) <= this.messageWidthLimit) {
-					this.strTemp = this.message[this.num].substring(this.message[this.num].length() - this.posx,
-							this.message[this.num].length());
-					this.message[this.num] = this.message[this.num].substring(0,
-							this.message[this.num].length() - this.posx);
+				if (this.displayFont.stringWidth(this.message[this.amount].substring(0,
+						this.message[this.amount].length() - this.posx)) <= this.messageWidthLimit) {
+					this.strTemp = this.message[this.amount].substring(this.message[this.amount].length() - this.posx,
+							this.message[this.amount].length());
+					this.message[this.amount] = this.message[this.amount].substring(0,
+							this.message[this.amount].length() - this.posx);
 					this.over = true;
 					break;
 				}
@@ -367,30 +363,31 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 
 		}
 
-		this.num += 1;
-		if (this.num >= this.max) {
-			this.num = 0;
+		this.amount += 1;
+		if (this.amount >= this.max) {
+			this.amount = 0;
 		}
 
-		this.crs[this.num] = this.default_cr;
-		this.cgs[this.num] = this.default_cg;
-		this.cbs[this.num] = this.default_cb;
+		this.crs[this.amount] = this.default_cr;
+		this.cgs[this.amount] = this.default_cg;
+		this.cbs[this.amount] = this.default_cb;
 
-		this.getMessageLength[this.num] = 0;
-		this.getMessage[this.num] = LSystem.EMPTY;
+		this.getMessageLength[this.amount] = 0;
+		this.getMessage[this.amount] = LSystem.EMPTY;
 
-		this.drawNew[this.num] = false;
+		this.drawNew[this.amount] = false;
 
-		this.slideX[this.num] = -200;
+		this.slideX[this.amount] = -200;
 
 		if (this.over) {
 			setColor(this.crs[this.numBak], this.cgs[this.numBak], this.cbs[this.numBak]);
 			put(this.strTemp);
 		}
+		_dirty = true;
 	}
 
 	private void setGetMessageLength(int d_length) {
-		this.getMessageLength[this.num] = d_length;
+		this.getMessageLength[this.amount] = d_length;
 	}
 
 	@Override
@@ -412,12 +409,12 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 		if (color != null) {
 			setColor(color.getRed(), color.getGreen(), color.getBlue());
 		}
-		this.num -= 1;
-		if (this.num < 0) {
-			this.num = (this.max - 1);
+		this.amount -= 1;
+		if (this.amount < 0) {
+			this.amount = (this.max - 1);
 		}
-		setGetMessageLength(this.getMessageLength[this.num]);
-		put(this.message[this.num] + mes);
+		setGetMessageLength(this.getMessageLength[this.amount]);
+		put(this.message[this.amount] + mes);
 		return this;
 	}
 
@@ -442,33 +439,35 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 	}
 
 	public LTextArea draw(GLEx g, int dx, int dy, int d_type, int lines) {
+		if (_dirty) {
+			if (displayFont instanceof LFont) {
+				String[] list = new String[this.amount];
+				for (int i = 0; i < amount && i < message.length; i++) {
+					list[i] = message[i];
+				}
+				LSTRDictionary.get().bind((LFont) displayFont, list);
+			}
+			_dirty = false;
+		}
 		if (_background != null) {
 			g.draw(_background, dx, dy, getWidth(), getHeight(), _component_baseColor);
 		}
 
-		boolean supportPack = false;
-
-		if (useLFont) {
-			LFont newFont = (LFont) displayFont;
-			supportPack = newFont.isSupportCacheFontPack();
-			newFont.setSupportCacheFontPack(false);
-		}
-
 		int oldColor = g.color();
 		this.countFrame += 1;
-		int index = num;
+		int index = amount;
 		for (int i = 0; i < this.max - 1; i++) {
-			this.num -= 1;
-			if (this.num < 0) {
-				this.num = (this.max - 1);
+			this.amount -= 1;
+			if (this.amount < 0) {
+				this.amount = (this.max - 1);
 			}
 			if (i <= lines) {
 				for (int i2 = 0; i2 < 2; i2++) {
-					if (this.getMessageLength[this.num] < this.message[this.num].length()) {
+					if (this.getMessageLength[this.amount] < this.message[this.amount].length()) {
 						String[] temp = this.getMessage;
-						temp[this.num] = (temp[this.num] + this.message[this.num]
-								.substring(this.getMessageLength[this.num], this.getMessageLength[this.num] + 1));
-						this.getMessageLength[this.num] += 1;
+						temp[this.amount] = (temp[this.amount] + this.message[this.amount]
+								.substring(this.getMessageLength[this.amount], this.getMessageLength[this.amount] + 1));
+						this.getMessageLength[this.amount] += 1;
 					}
 				}
 
@@ -481,58 +480,59 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 				this.posx = dx;
 
 				if (this.centerText) {
-					this.posx -= this.displayFont.stringWidth(this.message[this.num]) / 2;
+					this.posx -= this.displayFont.stringWidth(this.message[this.amount]) / 2;
 				}
 
 				if (this.slideMessage) {
-					this.posx += this.slideX[this.num];
-					if (this.slideX[this.num] < 0)
-						this.slideX[this.num] += 10;
+					this.posx += this.slideX[this.amount];
+					if (this.slideX[this.amount] < 0)
+						this.slideX[this.amount] += 10;
 					else {
-						this.slideX[this.num] = 0;
+						this.slideX[this.amount] = 0;
 					}
 				}
 
-				if (this.drawNew[this.num]) {
-					if (this.drawNewLV[this.num] == 0) {
-						this.drawNewCr[this.num] += 20;
-						if (this.drawNewCr[this.num] >= 255) {
-							this.drawNewCr[this.num] = 255;
-							this.drawNewLV[this.num] = 1;
+				if (this.drawNew[this.amount]) {
+					if (this.drawNewLV[this.amount] == 0) {
+						this.drawNewCr[this.amount] += 20;
+						if (this.drawNewCr[this.amount] >= 255) {
+							this.drawNewCr[this.amount] = 255;
+							this.drawNewLV[this.amount] = 1;
 						}
-					} else if (this.drawNewLV[this.num] == 1) {
-						this.drawNewCg[this.num] += 20;
-						if (this.drawNewCg[this.num] >= 255) {
-							this.drawNewCg[this.num] = 255;
-							this.drawNewLV[this.num] = 2;
+					} else if (this.drawNewLV[this.amount] == 1) {
+						this.drawNewCg[this.amount] += 20;
+						if (this.drawNewCg[this.amount] >= 255) {
+							this.drawNewCg[this.amount] = 255;
+							this.drawNewLV[this.amount] = 2;
 						}
-					} else if (this.drawNewLV[this.num] == 2) {
-						this.drawNewCb[this.num] += 20;
-						if (this.drawNewCb[this.num] >= 255) {
-							this.drawNewCb[this.num] = 255;
-							this.drawNewLV[this.num] = 3;
+					} else if (this.drawNewLV[this.amount] == 2) {
+						this.drawNewCb[this.amount] += 20;
+						if (this.drawNewCb[this.amount] >= 255) {
+							this.drawNewCb[this.amount] = 255;
+							this.drawNewLV[this.amount] = 3;
 						}
-					} else if (this.drawNewLV[this.num] == 3) {
-						this.drawNewCr[this.num] -= 20;
-						if (this.drawNewCr[this.num] <= 0) {
-							this.drawNewCr[this.num] = 0;
-							this.drawNewLV[this.num] = 4;
+					} else if (this.drawNewLV[this.amount] == 3) {
+						this.drawNewCr[this.amount] -= 20;
+						if (this.drawNewCr[this.amount] <= 0) {
+							this.drawNewCr[this.amount] = 0;
+							this.drawNewLV[this.amount] = 4;
 						}
-					} else if (this.drawNewLV[this.num] == 4) {
-						this.drawNewCg[this.num] -= 20;
-						if (this.drawNewCg[this.num] <= 0) {
-							this.drawNewCg[this.num] = 0;
-							this.drawNewLV[this.num] = 5;
+					} else if (this.drawNewLV[this.amount] == 4) {
+						this.drawNewCg[this.amount] -= 20;
+						if (this.drawNewCg[this.amount] <= 0) {
+							this.drawNewCg[this.amount] = 0;
+							this.drawNewLV[this.amount] = 5;
 						}
-					} else if (this.drawNewLV[this.num] == 5) {
-						this.drawNewCb[this.num] -= 20;
-						if (this.drawNewCb[this.num] <= 0) {
-							this.drawNewCb[this.num] = 0;
-							this.drawNewLV[this.num] = 0;
+					} else if (this.drawNewLV[this.amount] == 5) {
+						this.drawNewCb[this.amount] -= 20;
+						if (this.drawNewCb[this.amount] <= 0) {
+							this.drawNewCb[this.amount] = 0;
+							this.drawNewLV[this.amount] = 0;
 						}
 					}
 
-					tmpcolor.setColor(this.drawNewCr[this.num], this.drawNewCg[this.num], this.drawNewCb[this.num]);
+					tmpcolor.setColor(this.drawNewCr[this.amount], this.drawNewCg[this.amount],
+							this.drawNewCb[this.amount]);
 
 					this.strTemp = waitFlagString;
 					drawMessage(g, this.strTemp, this.posx, this.drawY, tmpcolor);
@@ -540,17 +540,17 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 				}
 				if (flashFont) {
 					tmpcolor.setColor(50, 50, 50);
-					drawMessage(g, this.getMessage[this.num], this.posx + 1, this.drawY + 1, tmpcolor);
-					tmpcolor.setColor(this.crs[this.num] + this.bright[i], this.cgs[this.num] + this.bright[i],
-							this.cbs[this.num] + this.bright[i]);
+					drawMessage(g, this.getMessage[this.amount], this.posx + 1, this.drawY + 1, tmpcolor);
+					tmpcolor.setColor(this.crs[this.amount] + this.bright[i], this.cgs[this.amount] + this.bright[i],
+							this.cbs[this.amount] + this.bright[i]);
 				} else {
-					tmpcolor.setColor(this.crs[this.num], this.cgs[this.num], this.cbs[this.num], 255);
+					tmpcolor.setColor(this.crs[this.amount], this.cgs[this.amount], this.cbs[this.amount], 255);
 				}
-				drawMessage(g, this.getMessage[this.num], this.posx, this.drawY, tmpcolor);
+				drawMessage(g, this.getMessage[this.amount], this.posx, this.drawY, tmpcolor);
 				boolean showFlag = (this.waitFlag) && (i == 0) && index > 0;
 				if (showFlag) {
 					this.posy = (this.countFrame * 1 / 3 % this.displayFont.getSize() / 2 - 2);
-					drawMessage(g, lineFlag, this.posx + this.displayFont.stringWidth(this.getMessage[this.num]),
+					drawMessage(g, lineFlag, this.posx + this.displayFont.stringWidth(this.getMessage[this.amount]),
 							this.drawY - this.posy, this.triangleColor);
 				}
 				if (this.brightType[i] == TYPE_DOWN) {
@@ -568,22 +568,26 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 				}
 			}
 		}
-		this.num -= 1;
-		if (this.num < 0) {
-			this.num = (this.max - 1);
+		this.amount -= 1;
+		if (this.amount < 0) {
+			this.amount = (this.max - 1);
 		}
 		g.setColor(oldColor);
-
-		if (useLFont && supportPack) {
-			LFont newFont = (LFont) displayFont;
-			newFont.setSupportCacheFontPack(supportPack);
-		}
 
 		return this;
 	}
 
 	public LTextArea setWaitFlag(boolean w) {
 		this.waitFlag = w;
+		return this;
+	}
+
+	public boolean isDirty() {
+		return this._dirty;
+	}
+
+	public LTextArea setDirty(boolean d) {
+		this._dirty = d;
 		return this;
 	}
 

@@ -71,8 +71,6 @@ public class LDecideName extends LComponent implements FontSet<LDecideName> {
 
 	private int text_width_space = 5;
 
-	private boolean useLFont;
-
 	private String enterFlag;
 
 	private String name;
@@ -161,14 +159,6 @@ public class LDecideName extends LComponent implements FontSet<LDecideName> {
 			g.draw(_background, x, y, getWidth(), getHeight());
 		}
 		
-		boolean supportPack = false;
-
-		if (useLFont) {
-			LFont newFont = (LFont) _font;
-			supportPack = newFont.isSupportCacheFontPack();
-			newFont.setSupportCacheFontPack(false);
-		}
-		
 		g.setFont(_font);
 		float posX = x + leftOffset;
 		if (labelName != null) {
@@ -195,12 +185,6 @@ public class LDecideName extends LComponent implements FontSet<LDecideName> {
 		g.fillRect(posX + MathUtils.round((this.cursorX * dx) * getWidth()) - 1,
 				posY + MathUtils.round((this.cursorY * dy) * getHeight()) - 1, MathUtils.round(dx * getWidth()) + 2,
 				MathUtils.round(dy * getHeight()) + 2);
-		
-
-		if (useLFont && supportPack) {
-			LFont newFont = (LFont) _font;
-			newFont.setSupportCacheFontPack(supportPack);
-		}
 		
 		g.setFont(oldFont);
 		g.setColor(oldColor);
@@ -448,7 +432,6 @@ public class LDecideName extends LComponent implements FontSet<LDecideName> {
 			return this;
 		}
 		this._font = font;
-		this.useLFont = (this._font instanceof LFont);
 		return this;
 	}
 

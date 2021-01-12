@@ -228,6 +228,8 @@ public class LQuestionAnswer extends LContainer {
 
 	private int _questionIndex = 0;
 
+	private boolean _dirty = false;
+
 	private boolean questionAdded;
 
 	private boolean questionSubed;
@@ -404,6 +406,7 @@ public class LQuestionAnswer extends LContainer {
 		if (o == null) {
 			return this;
 		}
+		_dirty = true;
 		for (int i = _objects.size - 1; i > -1; i--) {
 			QAData data = _objects.get(i);
 			if (o.equals(data.object)) {
@@ -418,6 +421,7 @@ public class LQuestionAnswer extends LContainer {
 		if (o == null) {
 			return this;
 		}
+		_dirty = true;
 		for (int i = _objects.size - 1; i > -1; i--) {
 			QAData data = _objects.get(i);
 			if (o.equals(data.object)) {
@@ -666,14 +670,37 @@ public class LQuestionAnswer extends LContainer {
 		return -1;
 	}
 
+	public TArray<String> getMessageData() {
+		final TArray<String> list = new TArray<String>();
+		for (int j = 0; j < _objects.size; j++) {
+			QAData o = _objects.get(j);
+			if (o != null && o.object != null) {
+				final TArray<TArray<String>> as = o.alist;
+				for (int i = 0; i < as.size; i++) {
+					TArray<String> a = as.get(i);
+					for (int n = 0; n < a.size; n++) {
+						String mes = a.get(n);
+						list.add(mes);
+					}
+				}
+
+			}
+		}
+		return list;
+	}
+
 	@Override
 	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
-
+		if (_dirty) {
+			if (_qFont instanceof LFont) {
+				LSTRDictionary.get().bind((LFont) _aFont, getMessageData());
+			}
+			_dirty = false;
+		}
+		
 		final int idx = this._questionIndex;
 		if (idx != -1 && _objects.size > 0) {
-
 			QAData o = _objects.get(idx);
-
 			if (o != null && o.object != null) {
 				g.setClip(x, y, getWidth(), getHeight());
 				IFont tmpFont = g.getFont();
@@ -681,7 +708,6 @@ public class LQuestionAnswer extends LContainer {
 				g.clearClip();
 				g.setFont(tmpFont);
 			}
-
 		}
 	}
 
@@ -722,6 +748,15 @@ public class LQuestionAnswer extends LContainer {
 				count++;
 			}
 		}
+	}
+	
+	public boolean isDirty() {
+		return this._dirty;
+	}
+	
+	public LQuestionAnswer setDirty(boolean d) {
+		this._dirty = d;
+		return this;
 	}
 
 	public float getQuestionFontSpace() {

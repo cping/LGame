@@ -28,7 +28,6 @@ import loon.component.skin.SkinManager;
 import loon.component.skin.TextBarSkin;
 import loon.font.FontUtils;
 import loon.font.IFont;
-import loon.font.LFont;
 import loon.geom.PointF;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
@@ -62,8 +61,6 @@ public class LTextBar extends LComponent {
 	private TArray<String> _messages = null;
 
 	private boolean _displayFlag;
-
-	private boolean _useLFont;
 
 	private boolean masked = false;
 
@@ -249,12 +246,6 @@ public class LTextBar extends LComponent {
 	}
 
 	private final void drawMessage(GLEx g, IFont font, String mes, float x, float y, LColor fontColor) {
-		boolean supportPack = false;
-		if (_useLFont) {
-			LFont newFont = (LFont) font;
-			supportPack = newFont.isSupportCacheFontPack();
-			newFont.setSupportCacheFontPack(false);
-		}
 		if (flashCursor) {
 			int len = mes.length() - 1;
 			char end = mes.charAt(len);
@@ -285,10 +276,6 @@ public class LTextBar extends LComponent {
 			}
 		} else {
 			font.drawString(g, mes, x, y, fontColor);
-		}
-		if (_useLFont && supportPack) {
-			LFont newFont = (LFont) font;
-			newFont.setSupportCacheFontPack(supportPack);
 		}
 	}
 
@@ -342,7 +329,6 @@ public class LTextBar extends LComponent {
 			return this;
 		}
 		this._font = font;
-		this._useLFont = (this._font instanceof LFont);
 		return this;
 	}
 

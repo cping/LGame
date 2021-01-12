@@ -100,11 +100,12 @@ public class LSTRFont implements IFont, LRelease {
 			strfont.pixelFontSize = strfont.font.getSize();
 			strfont.ascent = strfont.font.getAscent();
 			if (strfont.additionalChars != null && strfont.additionalChars.length > strfont.totalCharSet) {
-				strfont.textureWidth *= 2;
+				strfont.expandTexture();
 			}
 			if (strfont.textureWidth > strfont._maxTextureWidth || strfont.textureHeight > strfont._maxTextureHeight) {
 				strfont._outBounds = true;
 			}
+
 			Canvas canvas = LSystem.base().graphics().createCanvas(strfont.textureWidth, strfont.textureHeight);
 			canvas.setFillColor(strfont.pixelColor);
 			canvas.setFont(strfont.font);
@@ -420,7 +421,7 @@ public class LSTRFont implements IFont, LRelease {
 			this.text = tmp.toString();
 			this.additionalChars = text.toCharArray();
 			if (additionalChars != null && additionalChars.length > totalCharSet) {
-				textureWidth *= 2;
+				expandTexture();
 			}
 			this.make(asyn);
 		}
@@ -428,6 +429,11 @@ public class LSTRFont implements IFont, LRelease {
 			_isClose = true;
 		}
 		this._drawLimit = 0;
+	}
+
+	private void expandTexture() {
+		textureWidth = MathUtils.min(textureWidth * 2, this._maxTextureWidth);
+		textureHeight = MathUtils.min(textureHeight * 2, this._maxTextureHeight);
 	}
 
 	public boolean containsTexture(String mes) {
@@ -518,7 +524,7 @@ public class LSTRFont implements IFont, LRelease {
 			this.text = tmp.toString();
 			this.additionalChars = text.toCharArray();
 			if (additionalChars != null && additionalChars.length > totalCharSet) {
-				textureWidth *= 2;
+				expandTexture();
 			}
 		}
 		if (StringUtils.isEmpty(text)) {
@@ -1033,6 +1039,10 @@ public class LSTRFont implements IFont, LRelease {
 					endIndex);
 			_childChars.clear();
 		}
+	}
+
+	public boolean isSizeLimit() {
+		return texture != null && (texture.getWidth() > _maxTextureWidth || texture.getHeight() > _maxTextureHeight);
 	}
 
 	public int getPixelColor() {
