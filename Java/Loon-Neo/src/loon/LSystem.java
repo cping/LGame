@@ -176,9 +176,6 @@ public class LSystem {
 
 	public static boolean PAUSED = false;
 
-	// 是否允许屏幕画面刷新
-	protected static boolean _auto_repaint = true;
-
 	private static float _scaleWidth = 1f;
 
 	private static float _scaleHeight = 1f;
@@ -249,7 +246,6 @@ public class LSystem {
 		GameTime.freeStatic();
 		LTimer.freeStatic();
 		PAUSED = false;
-		_auto_repaint = true;
 		_scaleWidth = 1f;
 		_scaleHeight = 1f;
 	}
@@ -920,11 +916,15 @@ public class LSystem {
 	}
 
 	public static final void stopRepaint() {
-		LSystem._auto_repaint = false;
+		if (base() != null) {
+			base().stopRepaint();
+		}
 	}
 
 	public static final void startRepaint() {
-		LSystem._auto_repaint = true;
+		if (base() != null) {
+			base().startRepaint();
+		}
 	}
 
 	public static final <E> void dispatchEvent(Act<E> signal, E event) {

@@ -20,7 +20,6 @@
  */
 package loon;
 
-import loon.LGame.Status;
 import loon.canvas.LColor;
 import loon.events.GameKey;
 import loon.events.GameTouch;
@@ -32,7 +31,6 @@ import loon.events.TouchMake;
 import loon.events.Updateable;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
-import loon.opengl.LSTRDictionary;
 import loon.opengl.ShaderSource;
 import loon.utils.HelperUtils;
 import loon.utils.ListMap;
@@ -46,7 +44,7 @@ import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.reply.Port;
 import loon.utils.timer.LTimerContext;
 
-public class LProcess {
+public class LProcess implements LRelease {
 
 	protected TArray<Updateable> resumes;
 
@@ -117,27 +115,6 @@ public class LProcess {
 				}
 			});
 		}
-		game.status.connect(new Port<LGame.Status>() {
-
-			@Override
-			public void onEmit(Status event) {
-				switch (event) {
-				case EXIT:
-					stop();
-					break;
-				case RESUME:
-					LSystem.PAUSED = false;
-					resume();
-					break;
-				case PAUSE:
-					LSystem.PAUSED = true;
-					pause();
-					break;
-				default:
-					break;
-				}
-			}
-		});
 	}
 
 	public LProcess setShaderSource(ShaderSource src) {
@@ -432,40 +409,6 @@ public class LProcess {
 		if (isInstance) {
 			_currentInput.reset();
 			_currentScreen.pause();
-		}
-	}
-
-	public void stop() {
-		try {
-			synchronized (LProcess.class) {
-				LSystem.debug("The Loon Game Engine is End");
-				_running = false;
-				if (isInstance) {
-					_currentScreen.stop();
-				}
-				endTransition();
-				if (isInstance) {
-					isInstance = false;
-					unloads.clear();
-					if (_currentScreen != null) {
-						_currentScreen.destroy();
-						_currentScreen = null;
-					}
-					if (_game != null && _game.display() != null) {
-						_game.assets().close();
-						_game.display().close();
-					}
-					RealtimeProcessManager.get().dispose();
-					LSTRDictionary.get().dispose();
-					LSystem.disposeTextureAll();
-					LSystem.stopRepaint();
-					LSystem.freeStaticObject();
-					if (_game != null) {
-						_game.close();
-					}
-				}
-			}
-		} catch (Throwable cause) {
 		}
 	}
 
@@ -1142,5 +1085,30 @@ public class LProcess {
 
 	public LGame getGame() {
 		return _game;
+	}
+
+	@Override
+	public void close() {
+		_running = false;
+		if (isInstance) {
+			_currentScreen.stop();
+		}
+		endTransition();
+		if (isInstance) {
+			isInstance = false;
+			if (loads != null) {
+				loads.clear();
+			}
+			if (unloads != null) {
+				unloads.clear();
+			}
+			if (resumes != null) {
+				resumes.clear();
+			}
+			if (_currentScreen != null) {
+				_currentScreen.destroy();
+				_currentScreen = null;
+			}
+		}
 	}
 }

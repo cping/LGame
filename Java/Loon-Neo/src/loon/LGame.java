@@ -28,6 +28,7 @@ import loon.font.IFont;
 import loon.font.LFont;
 import loon.opengl.FrameBuffer;
 import loon.opengl.GLFrameBuffer;
+import loon.opengl.LSTRDictionary;
 import loon.opengl.LSTRFont;
 import loon.opengl.Mesh;
 import loon.opengl.ShaderProgram;
@@ -39,12 +40,14 @@ import loon.utils.ObjectMap;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 import loon.utils.json.JsonImpl;
+import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.reply.Act;
+import loon.utils.reply.Port;
 
 /**
  * 此类为最主要的游戏功能类集合对象，所有Loon初始化由此开始，其中涵盖了Loon的基础对象实例。
  */
-public abstract class LGame {
+public abstract class LGame implements LRelease {
 
 	/**
 	 * 支持的运行库(Java版不支持的会由C++版和C#版实现)
@@ -154,6 +157,85 @@ public abstract class LGame {
 		String fontName = config.fontName;
 		if (StringUtils.isEmpty(fontName)) {
 			setting.fontName = FONT_NAME;
+		}
+	}
+
+	public LGame addStatus(Port<LGame> game) {
+		frame.connect(game);
+		status.connect(new Port<LGame.Status>() {
+
+			@Override
+			public void onEmit(Status event) {
+				switch (event) {
+				case EXIT:
+					stop();
+					break;
+				case RESUME:
+					LSystem.PAUSED = false;
+					resume();
+					break;
+				case PAUSE:
+					LSystem.PAUSED = true;
+					pause();
+					break;
+				default:
+					break;
+				}
+			}
+		});
+		return this;
+	}
+
+	public LGame removeStatus() {
+		if (!errors.isClosed()) {
+			errors.clearConnections();
+		}
+		if (!status.isClosed()) {
+			status.clearConnections();
+		}
+		if (!frame.isClosed()) {
+			frame.clearConnections();
+		}
+		return this;
+	}
+
+	public LGame pause() {
+		try {
+			synchronized (LGame.class) {
+				if (displayImpl != null) {
+					displayImpl.pause();
+				}
+			}
+		} catch (Throwable cause) {
+			LSystem.error("Pause Exception:", cause);
+		}
+		return this;
+	}
+
+	public LGame resume() {
+		try {
+			synchronized (LGame.class) {
+				if (displayImpl != null) {
+					displayImpl.resume();
+				}
+			}
+		} catch (Throwable cause) {
+			LSystem.error("Resume Exception:", cause);
+		}
+		return this;
+	}
+
+	public void stop() {
+		try {
+			synchronized (LGame.class) {
+				LSystem.debug("The Loon Game Engine is End");
+				RealtimeProcessManager.get().dispose();
+				LSTRDictionary.get().dispose();
+				LSystem.disposeTextureAll();
+				LSystem.freeStaticObject();
+				close();
+			}
+		} catch (Throwable cause) {
 		}
 	}
 
@@ -325,7 +407,9 @@ public abstract class LGame {
 			frame.emit(this);
 		} catch (Throwable cause) {
 			log().error("Frame tick exception :", cause);
-			LSystem.stopRepaint();
+			if (displayImpl != null) {
+				displayImpl.stopRepaint();
+			}
 		}
 	}
 
@@ -1139,41 +1223,29 @@ public abstract class LGame {
 		return displayImpl;
 	}
 
-	public void close() {
-		if (!errors.isClosed()) {
-			errors.clearConnections();
+	public LGame startRepaint() {
+		if (displayImpl != null) {
+			displayImpl.startRepaint();
 		}
-		if (!status.isClosed()) {
-			status.clearConnections();
-		}
-		if (!frame.isClosed()) {
-			frame.clearConnections();
-		}
+		return this;
 	}
 
-	/**
-	 * 由于GWT不支持真实的反射，而完全模拟反射需要耗费大量资源，精确反射又难以控制用户具体使用的类，所以统一放弃外部反射方法，
-	 * 不让用户有机会使用自定义的类操作。
-	 */
-	/*
-	 * private Class<?> getType(Object o) { if (o instanceof Integer) { return
-	 * Integer.TYPE; } else if (o instanceof Float) { return Float.TYPE; } else if
-	 * (o instanceof Double) { return Double.TYPE; } else if (o instanceof Long) {
-	 * return Long.TYPE; } else if (o instanceof Short) { return Short.TYPE; } else
-	 * if (o instanceof Short) { return Short.TYPE; } else if (o instanceof Boolean)
-	 * { return Boolean.TYPE; } else { return o.getClass(); } }
-	 * 
-	 * public Display register(Class<? extends Screen> clazz, Object... args) {
-	 * LSystem.viewSize.setSize(setting.width, setting.height); this.display = new
-	 * Display(this, setting.fps); if (args == null) { args = new Object[0]; } if
-	 * (clazz != null) { if (args != null) { try { int funs = args.length; if (funs
-	 * == 0) { display.setScreen(ClassReflection.newInstance(clazz)); } else {
-	 * Class<?>[] functions = new Class<?>[funs]; for (int i = 0; i < funs; i++) {
-	 * functions[i] = getType(args[i]); } Constructor constructor = ClassReflection
-	 * .getConstructor(clazz, functions); Object o = constructor.newInstance(args);
-	 * 
-	 * if (o != null && (o instanceof Screen)) { display.setScreen((Screen) o); } }
-	 * } catch (Exception e) { e.printStackTrace(); } } } return display; }
-	 */
+	public LGame stopRepaint() {
+		if (displayImpl != null) {
+			displayImpl.stopRepaint();
+		}
+		return this;
+	}
+
+	@Override
+	public void close() {
+		removeStatus();
+		if (assets() != null) {
+			assets().close();
+		}
+		if (displayImpl != null) {
+			displayImpl.close();
+		}
+	}
 
 }

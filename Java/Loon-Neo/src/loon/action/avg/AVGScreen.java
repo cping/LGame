@@ -883,6 +883,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 				effectSprites.createUI(g);
 			}
 		} else {
+			float oalpha = g.alpha();
 			scrCG.sleep--;
 			if (gameColor != null) {
 				float alpha = (float) (scrCG.sleepMax - scrCG.sleep) / scrCG.sleepMax;
@@ -905,7 +906,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 				scrCG.sleep = 0;
 				gameColor = null;
 			}
-			g.setAlpha(1.0f);
+			g.setAlpha(oalpha);
 		}
 	}
 

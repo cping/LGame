@@ -42,7 +42,7 @@ import loon.utils.reply.Port;
 import loon.utils.timer.LTimer;
 import loon.utils.timer.LTimerContext;
 
-public class Display extends BaseIO {
+public class Display extends BaseIO implements LRelease {
 
 	// 为了方便直接转码到C#和C++，无法使用匿名内部类(也就是在构造内直接构造实现的方式)，只能都写出具体类来……
 	// PS:别提delegate，委托那玩意写出来太不优雅了(对于凭空实现某接口或抽象，而非局部重载来说)，而且大多数J2C#的工具也不能直接转换过去……
@@ -167,13 +167,15 @@ public class Display extends BaseIO {
 	public final Act<LTimerContext> paint = Act.create();
 
 	private final LTimerContext updateClock = new LTimerContext();
-	
+
 	private final LTimerContext paintClock = new LTimerContext();
 
 	private final LGame _game;
 
+	private boolean _closed, _autoRepaint;
+
 	private final long updateRate;
-	
+
 	private long nextUpdate;
 
 	private final static String FPS_STR = "FPS:";
@@ -245,12 +247,13 @@ public class Display extends BaseIO {
 		if (!_setting.isLogo) {
 			_process.start();
 		}
-		_game.frame.connect(new Port<LGame>() {
+		_game.addStatus(new Port<LGame>() {
 			@Override
 			public void onEmit(LGame game) {
 				onFrame();
 			}
 		});
+		this._autoRepaint = true;
 	}
 
 	protected void newDefView(boolean show) {
@@ -262,7 +265,6 @@ public class Display extends BaseIO {
 			logoTex = new Logo(newTexture(_setting.logoPath));
 		}
 	}
-
 
 	public void updateSyncTween(boolean sync) {
 		if (paintAllPort != null) {
@@ -340,7 +342,9 @@ public class Display extends BaseIO {
 	}
 
 	protected void draw(LTimerContext clock) {
-
+		if (_closed) {
+			return;
+		}
 		// fix渲染时机，避免调用渲染在纹理构造前
 		if (!initDrawConfig) {
 			newDefView(
@@ -435,14 +439,17 @@ public class Display extends BaseIO {
 	}
 
 	private void onFrame() {
-		if (!LSystem._auto_repaint) {
+		if (_closed) {
+			return;
+		}
+		if (!_autoRepaint) {
 			return;
 		}
 		final int updateTick = _game.tick();
 		final LSetting setting = _game.setting;
 		final long paintLoop = setting.fixedPaintLoopTime;
 		final long updateLoop = setting.fixedUpdateLoopTime;
-		
+
 		long nextUpdate = this.nextUpdate;
 
 		if (updateTick >= nextUpdate) {
@@ -472,7 +479,6 @@ public class Display extends BaseIO {
 		paintClock.alpha = 1f - (nextUpdate - paintTick) / (float) updateRate;
 		paint(paintClock);
 	}
-	
 
 	/**
 	 * 渲染debug信息到游戏画面
@@ -482,7 +488,9 @@ public class Display extends BaseIO {
 	 * @param delta
 	 */
 	private final void drawDebug(final GLEx gl, final LSetting setting, final float delta) {
-
+		if (_closed) {
+			return;
+		}
 		final boolean debug = setting.isDebug;
 
 		if (debug || setting.isFPS || setting.isMemory || setting.isSprites) {
@@ -550,6 +558,25 @@ public class Display extends BaseIO {
 				_process.paintLog(gl, 5, 65);
 			}
 		}
+	}
+
+	public boolean isAutoRepaint() {
+		return _autoRepaint;
+	}
+
+	public Display setAutoRepaint(boolean r) {
+		this._autoRepaint = r;
+		return this;
+	}
+
+	public Display stopRepaint() {
+		this._autoRepaint = false;
+		return this;
+	}
+
+	public Display startRepaint() {
+		this._autoRepaint = true;
+		return this;
 	}
 
 	public int getFPS() {
@@ -668,8 +695,19 @@ public class Display extends BaseIO {
 		return this;
 	}
 
-	public void setScreen(Screen screen) {
+	public Display setScreen(Screen screen) {
 		_process.setScreen(screen);
+		return this;
+	}
+
+	public Display resume() {
+		_process.resume();
+		return this;
+	}
+
+	public Display pause() {
+		_process.pause();
+		return this;
 	}
 
 	public LProcess getProcess() {
@@ -680,7 +718,14 @@ public class Display extends BaseIO {
 		return _game;
 	}
 
+	public boolean isClosed() {
+		return this._closed;
+	}
+
+	@Override
 	public void close() {
+		this._closed = true;
+		this._autoRepaint = false;
 		if (this.fpsFont != null) {
 			this.fpsFont.close();
 			this.fpsFont = null;
@@ -688,6 +733,9 @@ public class Display extends BaseIO {
 		if (this.logoTex != null) {
 			this.logoTex.close();
 			this.logoTex = null;
+		}
+		if (this._process != null) {
+			_process.close();
 		}
 		initDrawConfig = false;
 	}
