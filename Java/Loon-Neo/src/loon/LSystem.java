@@ -301,10 +301,7 @@ public class LSystem {
 	 */
 	public static final IFont getSystemLogFont() {
 		if (base() != null) {
-			if (base().setting.defaultLogFont == null) {
-				base().setting.defaultLogFont = LSTRFont.getFont(LSystem.isDesktop() ? 16 : 20);
-			}
-			return base().setting.defaultLogFont;
+			return base().setDefaultLogFont();
 		}
 		return LSTRFont.getFont(LSystem.isDesktop() ? 16 : 20);
 	}
@@ -327,10 +324,7 @@ public class LSystem {
 	 */
 	public static final IFont getSystemGameFont() {
 		if (base() != null) {
-			if (base().setting.defaultGameFont == null) {
-				base().setting.defaultGameFont = LFont.getFont(20);
-			}
-			return base().setting.defaultGameFont;
+			return base().setDefaultGameFont();
 		}
 		return LFont.getFont(20);
 	}

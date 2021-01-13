@@ -150,6 +150,7 @@ public abstract class LGame implements LRelease {
 			config = new LSetting();
 		}
 		this.setting = config;
+		this.jsonImpl = new JsonImpl();
 		String appName = config.appName;
 		if (StringUtils.isEmpty(appName)) {
 			setting.appName = APP_NAME;
@@ -267,16 +268,21 @@ public abstract class LGame implements LRelease {
 	 */
 	public LGame initProcess() {
 		initProcess(this);
+		return this;
+	}
+
+	public IFont setDefaultGameFont() {
 		if (setting.defaultGameFont == null) {
 			setting.defaultGameFont = LFont.getFont(setting.fontName, 20);
 		}
+		return setting.defaultGameFont;
+	}
+
+	public IFont setDefaultLogFont() {
 		if (setting.defaultLogFont == null) {
 			setting.defaultLogFont = LSTRFont.getFont(LSystem.isDesktop() ? 16 : 20);
 		}
-		if (jsonImpl == null) {
-			jsonImpl = new JsonImpl();
-		}
-		return this;
+		return setting.defaultLogFont;
 	}
 
 	/**

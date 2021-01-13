@@ -72,8 +72,6 @@ public class LProcess implements LRelease {
 
 	private LTransition _transition;
 
-	private LogDisplay _logDisplay;
-
 	private final ObjectBundle _bundle;
 
 	private final SysInputFactory _currentInput;
@@ -250,7 +248,7 @@ public class LProcess implements LRelease {
 					this.isInstance = false;
 					throw new LSysException("Cannot create a [Screen] instance !");
 				}
-				if (!_game.display().showLogo) {
+				if (!_game.displayImpl.showLogo) {
 					if (_currentScreen != null) {
 						setTransition(screen.onTransition());
 					} else {
@@ -306,7 +304,7 @@ public class LProcess implements LRelease {
 						setTransition(_transition);
 					}
 				}
-				clearLog();
+				_game.displayImpl.clearLog();
 				screen.setOnLoadState(false);
 				if (_currentScreen == null) {
 					_currentScreen = screen;
@@ -327,7 +325,7 @@ public class LProcess implements LRelease {
 
 					@Override
 					public void run(LTimerContext time) {
-						if (_game != null && !_game.display().showLogo) {
+						if (_game != null && !_game.displayImpl.showLogo) {
 							try {
 								startTransition();
 								screen.setClose(false);
@@ -921,7 +919,7 @@ public class LProcess implements LRelease {
 			screen.resetOrder();
 			screen.resetSize();
 		}
-		if (_game.setting.isLogo && _game.display().showLogo) {
+		if (_game.setting.isLogo && _game.displayImpl.showLogo) {
 			_loadingScreen = screen;
 		} else {
 			setScreen(screen, true);
@@ -1010,37 +1008,6 @@ public class LProcess implements LRelease {
 		if (isInstance) {
 			_currentScreen.mouseDragged(e);
 		}
-	}
-
-	public void clearLog() {
-		if (_logDisplay != null) {
-			_logDisplay.clear();
-		}
-	}
-
-	public void addLog(String mes, LColor col) {
-		if (_logDisplay == null) {
-			_logDisplay = new LogDisplay();
-		}
-		_logDisplay.addText(mes, col);
-	}
-
-	public void addLog(String mes) {
-		if (_logDisplay == null) {
-			_logDisplay = new LogDisplay();
-		}
-		_logDisplay.addText(mes);
-	}
-
-	public LogDisplay getLogDisplay() {
-		return _logDisplay;
-	}
-
-	protected void paintLog(final GLEx g, int x, int y) {
-		if (_logDisplay == null) {
-			_logDisplay = new LogDisplay();
-		}
-		_logDisplay.paint(g, x, y);
 	}
 
 	public LProcess addBundle(String key, Object val) {
