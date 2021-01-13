@@ -287,9 +287,8 @@ public class BDFont implements IFont, LRelease {
 				return;
 			}
 			strfont.loadFont();
-			if (strfont.additionalChars != null && strfont.additionalChars.length > strfont.totalCharSet) {
-				strfont.textureWidth *= 2;
-			}
+			strfont.expandTexture();
+
 			if (strfont.textureWidth > strfont._maxTextureWidth || strfont.textureHeight > strfont._maxTextureHeight) {
 				strfont._outBounds = true;
 			}
@@ -298,15 +297,14 @@ public class BDFont implements IFont, LRelease {
 			int positionX = 0;
 			int positionY = 0;
 			int customCharsLength = (strfont.additionalChars != null) ? strfont.additionalChars.length : 0;
-			strfont.totalCharSet = customCharsLength == 0 ? strfont.totalCharSet : 0;
-			StrBuilder sbr = new StrBuilder(strfont.totalCharSet);
+			StrBuilder sbr = new StrBuilder(customCharsLength);
 
 			final OrderedSet<Character> outchached = new OrderedSet<Character>();
-			for (int i = 0, size = strfont.totalCharSet + customCharsLength; i < size; i++) {
+			for (int i = 0, size = customCharsLength; i < size; i++) {
 
 				boolean outchar = false;
 
-				char ch = (i < strfont.totalCharSet) ? (char) i : strfont.additionalChars[i - strfont.totalCharSet];
+				char ch = strfont.additionalChars[i];
 
 				int charwidth = strfont.charWidth(ch);
 
@@ -369,11 +367,7 @@ public class BDFont implements IFont, LRelease {
 
 				positionX += newIntObject.width;
 
-				if (i < strfont.totalCharSet) {
-					strfont.charArray[i] = newIntObject;
-				} else {
-					strfont.customChars.put(ch, newIntObject);
-				}
+				strfont.customChars.put(ch, newIntObject);
 
 				if (!outchar) {
 					strfont._chars.add(ch);
@@ -404,9 +398,9 @@ public class BDFont implements IFont, LRelease {
 				for (LIterator<Character> it = outchached.iterator(); it.hasNext();) {
 					temp.append(it.next());
 				}
-				strfont._childFont = new BDFont(strfont.path, strfont.fontIndex, temp.toString().toCharArray(),
-						strfont.isasyn, strfont.textureWidth, strfont.textureHeight, strfont._maxTextureWidth,
-						strfont._maxTextureHeight);
+				strfont._childFont = new BDFont(strfont.path, strfont.fontIndex, strfont.pixelSize,
+						temp.toString().toCharArray(), strfont.isasyn, strfont.textureWidth, strfont.textureHeight,
+						strfont._maxTextureWidth, strfont._maxTextureHeight);
 				strfont._childFont.cpy(strfont);
 			}
 			if (positionX > strfont.textureWidth || positionY > strfont.textureHeight) {
@@ -447,6 +441,8 @@ public class BDFont implements IFont, LRelease {
 
 	private final static String halfflags = ",.:;\"'?[]{}\\|!`~@#$%^&*()-+=";
 
+	private final static int defaultPixelMinFontSize = 12;
+	
 	private PointI offset;
 
 	private IntMap<String> names = new IntMap<String>();
@@ -517,8 +513,6 @@ public class BDFont implements IFont, LRelease {
 
 	private IntMap<IntObject> customChars = new IntMap<IntObject>();
 
-	private IntObject[] charArray = new IntObject[totalCharSet];
-
 	private LColor[] colors = null;
 
 	private String text;
@@ -540,48 +534,53 @@ public class BDFont implements IFont, LRelease {
 	private TArray<CharRect> _childChars;
 
 	public BDFont(String path) {
-		this(path, 0);
+		this(path, defaultPixelMinFontSize);
 	}
 
-	public BDFont(String path, int idx) {
-		this(path, idx, (char[]) null);
+	public BDFont(String path, float fontSize) {
+		this(path, 0, fontSize);
+	}
+
+	public BDFont(String path, int idx, float fontSize) {
+		this(path, idx, fontSize, (char[]) null);
 	}
 
 	public BDFont(String path, String message) {
-		this(path, 0, message);
+		this(path, 0, defaultPixelMinFontSize, message);
 	}
 
-	public BDFont(String path, int idx, String message) {
-		this(path, idx, message == null ? null : message.toCharArray(), true, 512, 512, 1024, 1024);
+	public BDFont(String path, float fontSize, String message) {
+		this(path, 0, fontSize, message);
 	}
 
-	public BDFont(String path, int idx, char[] charMessage) {
-		this(path, idx, charMessage, true, 512, 512, 1024, 1024);
+	public BDFont(String path, int idx, float fontSize, String message) {
+		this(path, idx, fontSize, message == null ? null : message.toCharArray(), true, 512, 512, 1024, 1024);
 	}
 
-	public BDFont(String path, int idx, char[] charMessage, boolean asyn, int tw, int th, int maxWidth, int maxHeight) {
+	public BDFont(String path, int idx, float fontSize, char[] charMessage) {
+		this(path, idx, fontSize, charMessage, true, 512, 512, 1024, 1024);
+	}
+
+	public BDFont(String path, int idx, float fontSize, char[] charMessage, boolean asyn, int tw, int th, int maxWidth,
+			int maxHeight) {
 		CharSequence chs = StringUtils.unificationChars(charMessage);
 		this.set(0f, 0f, 0f, 0f, 0f, 0f, 1f);
 		this.path = path;
 		this.fontIndex = idx;
 		this.isLoading = isLoaded = false;
+		this.pixelSize = fontSize;
 		this._displayLazy = useCache = true;
 		this._chars = new CharArray(chs.length());
 		this._maxTextureWidth = maxWidth;
 		this._maxTextureHeight = maxHeight;
 		this.textureWidth = tw;
 		this.textureHeight = th;
+		this.totalCharSet = getMaxTextCount();
 		this.displays = new IntMap<Cache>(totalCharSet);
 		this.isasyn = asyn;
-		int customCharsLength = (additionalChars != null) ? additionalChars.length : 0;
-		this.totalCharSet = customCharsLength == 0 ? totalCharSet : 0;
 		if (chs != null && chs.length() > 0) {
-			StrBuilder tmp = new StrBuilder(chs);
-			this.text = tmp.toString();
-			this.additionalChars = text.toCharArray();
-			if (additionalChars != null && additionalChars.length > totalCharSet) {
-				textureWidth *= 2;
-			}
+			this.text = StringUtils.getString(chs);
+			this.expandTexture();
 		}
 		if (StringUtils.isEmpty(text)) {
 			_isClose = true;
@@ -670,15 +669,9 @@ public class BDFont implements IFont, LRelease {
 		this._initChars = _outBounds = isDrawing = false;
 		this._initDraw = -1;
 		this.isasyn = asyn;
-		int customCharsLength = (additionalChars != null) ? additionalChars.length : 0;
-		this.totalCharSet = customCharsLength == 0 ? totalCharSet : 0;
 		if (chs != null && chs.length() > 0) {
-			StrBuilder tmp = new StrBuilder(chs);
-			this.text = tmp.toString();
-			this.additionalChars = text.toCharArray();
-			if (additionalChars != null && additionalChars.length > totalCharSet) {
-				textureWidth *= 2;
-			}
+			this.text = StringUtils.getString(chs);
+			this.expandTexture();
 		}
 		if (StringUtils.isEmpty(text)) {
 			_isClose = true;
@@ -951,6 +944,14 @@ public class BDFont implements IFont, LRelease {
 		}
 	}
 
+	public int getTextureWidth() {
+		return this.textureWidth;
+	}
+
+	public int getTextureHeight() {
+		return this.textureHeight;
+	}
+
 	public LTexture getTexture() {
 		return texture;
 	}
@@ -1082,6 +1083,15 @@ public class BDFont implements IFont, LRelease {
 			xheight = g.getGlyphAscent();
 		}
 		return this;
+	}
+
+	private void expandTexture() {
+		this.additionalChars = text == null ? null : text.toCharArray();
+		totalCharSet = getMaxTextCount();
+		if (additionalChars != null && additionalChars.length > totalCharSet) {
+			textureWidth = MathUtils.min(textureWidth * 2, this._maxTextureWidth);
+			textureHeight = MathUtils.min(textureHeight * 2, this._maxTextureHeight);
+		}
 	}
 
 	public PointF draw(Canvas g, String s, PointF b) {
@@ -1495,11 +1505,9 @@ public class BDFont implements IFont, LRelease {
 						totalWidth += (getAscent() * 3);
 						continue;
 					}
-					if (charCurrent < totalCharSet) {
-						intObject = charArray[charCurrent];
-					} else {
-						intObject = customChars.get(charCurrent);
-					}
+
+					intObject = customChars.get(charCurrent);
+
 					if (intObject != null) {
 						if (!checkOutBounds() || containsChar(ch)) {
 							fontBatch.drawQuad(totalWidth, totalHeight, (totalWidth + intObject.width) - offsetX,
@@ -1545,11 +1553,9 @@ public class BDFont implements IFont, LRelease {
 					totalWidth += (getAscent() * 3);
 					continue;
 				}
-				if (charCurrent < totalCharSet) {
-					intObject = charArray[charCurrent];
-				} else {
-					intObject = customChars.get(charCurrent);
-				}
+
+				intObject = customChars.get(charCurrent);
+
 				if (intObject != null) {
 					if (!checkOutBounds() || containsChar(ch)) {
 						fontBatch.drawQuad(totalWidth, totalHeight, (totalWidth + intObject.width) - offsetX,
@@ -1728,11 +1734,9 @@ public class BDFont implements IFont, LRelease {
 			for (int i = startIndex; i < endIndex; i++) {
 				char ch = chars.charAt(i);
 				charCurrent = ch;
-				if (charCurrent < totalCharSet) {
-					intObject = charArray[charCurrent];
-				} else {
-					intObject = customChars.get(charCurrent);
-				}
+
+				intObject = customChars.get(charCurrent);
+
 				if (charCurrent == newRFlag) {
 					continue;
 				}
@@ -1838,6 +1842,15 @@ public class BDFont implements IFont, LRelease {
 		}
 	}
 
+	public int getMaxTextCount() {
+		float size = MathUtils.max(defaultPixelMinFontSize, pixelSize) + 1;
+		return MathUtils.max(0, (int) ((textureWidth / size) * (textureHeight / size)));
+	}
+
+	public int getTextCount() {
+		return _chars != null ? _chars.size() : 0;
+	}
+
 	public String getChars() {
 		return _chars.getString();
 	}
@@ -1871,11 +1884,9 @@ public class BDFont implements IFont, LRelease {
 		}
 		if (!checkOutBounds() || containsChar(c)) {
 			this.charCurrent = c;
-			if (charCurrent < totalCharSet) {
-				intObject = charArray[charCurrent];
-			} else {
-				intObject = customChars.get(charCurrent);
-			}
+
+			intObject = customChars.get(charCurrent);
+
 			if (intObject != null) {
 				if (color != null) {
 					setImageColor(color);
@@ -2198,11 +2209,8 @@ public class BDFont implements IFont, LRelease {
 		int maxWidth = 0;
 		for (int i = 0; i < charList.length; i++) {
 			currentChar = charList[i];
-			if (currentChar < totalCharSet) {
-				intObject = charArray[currentChar];
-			} else {
-				intObject = customChars.get(currentChar);
-			}
+			intObject = customChars.get(currentChar);
+
 			if (intObject != null) {
 				if (currentChar == newLineFlag) {
 					maxWidth = MathUtils.max(maxWidth, totalWidth);
@@ -2232,11 +2240,8 @@ public class BDFont implements IFont, LRelease {
 		int maxHeight = 0;
 		for (int i = 0; i < charList.length; i++) {
 			currentChar = charList[i];
-			if (currentChar < totalCharSet) {
-				intObject = charArray[currentChar];
-			} else {
-				intObject = customChars.get(currentChar);
-			}
+			intObject = customChars.get(currentChar);
+
 			if (intObject != null) {
 				maxHeight = MathUtils.max(maxHeight, intObject.height);
 				height = maxHeight;
@@ -2277,7 +2282,6 @@ public class BDFont implements IFont, LRelease {
 			customChars.clear();
 			customChars = null;
 		}
-		charArray = null;
 		isDrawing = false;
 		_displayLazy = false;
 		_initChars = false;

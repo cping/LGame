@@ -24,7 +24,7 @@ import loon.Json;
 import loon.LSysException;
 
 public class JsonImpl implements Json {
-
+	
 	@Override
 	public Array createArray() {
 		return new JsonArray();

@@ -2307,10 +2307,10 @@ final public class StringUtils extends CharUtils {
 			String[] lines = split(text, LSystem.LF);
 			for (int i = 0; i < lines.length; i++) {
 				String line = lines[i];
-				sbr.append("\n" + indent + line);
+				sbr.append(LSystem.LS + indent + line);
 			}
 			if (text.charAt(text.length() - 1) == LSystem.LF) {
-				sbr.append("\n" + indent);
+				sbr.append(LSystem.LS + indent);
 			}
 			return sbr.toString();
 		} else if (LSystem.EMPTY.equals(text)) {
@@ -2349,6 +2349,10 @@ final public class StringUtils extends CharUtils {
 
 	public static String toString(final Object o, final String def) {
 		return o == null ? def : o.toString();
+	}
+	
+	public static String getString(final CharSequence... chs) {
+		return new StrBuilder(chs).toString();
 	}
 
 	public static String getRandString() {

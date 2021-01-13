@@ -141,17 +141,17 @@ public abstract class Log {
 				LGame game = LSystem.base();
 				if (game != null) {
 					LSetting setting = game.setting;
-					LProcess process = LSystem.getProcess();
-					if (process != null && (setting.isDebug || setting.isDisplayLog)) {
+					Display display = game.displayImpl;
+					if (display != null && (setting.isDebug || setting.isDisplayLog)) {
 						LColor color = LColor.white;
 						if (level.id > Level.INFO.id) {
 							color = LColor.red;
 						}
-						if (process != null) {
+						if (display != null) {
 							if (e == null) {
-								process.addLog(msg, color);
+								display.addLog(msg, color);
 							} else {
-								process.addLog(msg + " [ " + e.getMessage() + " ] ", color);
+								display.addLog(msg + " [ " + e.getMessage() + " ] ", color);
 							}
 						}
 
