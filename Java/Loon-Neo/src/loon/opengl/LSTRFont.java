@@ -99,8 +99,9 @@ public class LSTRFont implements IFont, LRelease {
 			}
 			strfont.pixelFontSize = strfont.font.getSize();
 			strfont.ascent = strfont.font.getAscent();
-			strfont.expandTexture();
-
+			if (strfont.additionalChars != null && strfont.additionalChars.length > strfont.totalCharSet) {
+				strfont.expandTexture();
+			}
 			if (strfont.textureWidth > strfont._maxTextureWidth || strfont.textureHeight > strfont._maxTextureHeight) {
 				strfont._outBounds = true;
 			}
@@ -112,15 +113,16 @@ public class LSTRFont implements IFont, LRelease {
 			int positionX = 0;
 			int positionY = 0;
 			int customCharsLength = (strfont.additionalChars != null) ? strfont.additionalChars.length : 0;
-			StrBuilder sbr = new StrBuilder(customCharsLength);
+			strfont.totalCharSet = customCharsLength == 0 ? strfont.totalCharSet : 0;
+			StrBuilder sbr = new StrBuilder(strfont.totalCharSet);
 			final boolean clipFont = LSystem.isTrueFontClip();
 			final OrderedSet<Character> outchached = new OrderedSet<Character>();
 			// 本地字体怎么都不如ttf或者fnt字体清晰准确,差异太大，只能尽量保证显示效果……
-			for (int i = 0, size = customCharsLength; i < size; i++) {
+			for (int i = 0, size = strfont.totalCharSet + customCharsLength; i < size; i++) {
 
 				boolean outchar = false;
 
-				char ch = strfont.additionalChars[i];
+				char ch = (i < strfont.totalCharSet) ? (char) i : strfont.additionalChars[i - strfont.totalCharSet];
 
 				TextLayout layout = strfont.font.getLayoutText(String.valueOf(ch));
 
@@ -217,8 +219,11 @@ public class LSTRFont implements IFont, LRelease {
 				}
 
 				positionX += newIntObject.width;
-
-				strfont.customChars.put(ch, newIntObject);
+				if (i < strfont.totalCharSet) {
+					strfont.charArray[i] = newIntObject;
+				} else {
+					strfont.customChars.put(ch, newIntObject);
+				}
 
 				if (!outchar) {
 					strfont._chars.add(ch);
@@ -310,6 +315,8 @@ public class LSTRFont implements IFont, LRelease {
 
 	private IntMap<IntObject> customChars = new IntMap<IntObject>();
 
+	private IntObject[] charArray = new IntObject[totalCharSet];
+
 	private LColor[] colors = null;
 
 	private String text;
@@ -400,17 +407,22 @@ public class LSTRFont implements IFont, LRelease {
 		this._displayLazy = useCache = true;
 		this.textureWidth = tw;
 		this.textureHeight = th;
+		this.displays = new IntMap<Cache>(totalCharSet);
 		this.font = font;
 		this.isasyn = asyn;
 		this.pixelFontSize = font.getSize();
 		this.fontHeight = font.getHeight();
 		this.ascent = font.getAscent();
 		this.advanceSpace = MathUtils.max(1, pixelFontSize / 2);
-		this.totalCharSet = getMaxTextCount();
-		this.displays = new IntMap<Cache>(totalCharSet);
+		int customCharsLength = (additionalChars != null) ? additionalChars.length : 0;
+		this.totalCharSet = customCharsLength == 0 ? totalCharSet : 0;
 		if (chs != null && chs.length() > 0) {
-			this.text = StringUtils.getString(chs);
-			this.expandTexture();
+			StrBuilder tmp = new StrBuilder(chs);
+			this.text = tmp.toString();
+			this.additionalChars = text.toCharArray();
+			if (additionalChars != null && additionalChars.length > totalCharSet) {
+				expandTexture();
+			}
 			this.make(asyn);
 		}
 		if (StringUtils.isEmpty(text)) {
@@ -420,12 +432,8 @@ public class LSTRFont implements IFont, LRelease {
 	}
 
 	private void expandTexture() {
-		this.additionalChars = text == null ? null : text.toCharArray();
-		totalCharSet = getMaxTextCount();
-		if (additionalChars != null && additionalChars.length > totalCharSet) {
-			textureWidth = MathUtils.min(textureWidth * 2, this._maxTextureWidth);
-			textureHeight = MathUtils.min(textureHeight * 2, this._maxTextureHeight);
-		}
+		textureWidth = MathUtils.min(textureWidth * 2, this._maxTextureWidth);
+		textureHeight = MathUtils.min(textureHeight * 2, this._maxTextureHeight);
 	}
 
 	public boolean containsTexture(String mes) {
@@ -509,9 +517,15 @@ public class LSTRFont implements IFont, LRelease {
 		this._initChars = _outBounds = isDrawing = false;
 		this._initDraw = -1;
 		this.isasyn = asyn;
+		int customCharsLength = (additionalChars != null) ? additionalChars.length : 0;
+		this.totalCharSet = customCharsLength == 0 ? totalCharSet : 0;
 		if (chs != null && chs.length() > 0) {
-			this.text = StringUtils.getString(chs);
-			this.expandTexture();
+			StrBuilder tmp = new StrBuilder(chs);
+			this.text = tmp.toString();
+			this.additionalChars = text.toCharArray();
+			if (additionalChars != null && additionalChars.length > totalCharSet) {
+				expandTexture();
+			}
 		}
 		if (StringUtils.isEmpty(text)) {
 			_isClose = true;
@@ -553,14 +567,6 @@ public class LSTRFont implements IFont, LRelease {
 			LSystem.removeUnLoad(_submitUpdate);
 		}
 		return this;
-	}
-
-	public int getTextureWidth() {
-		return this.textureWidth;
-	}
-
-	public int getTextureHeight() {
-		return this.textureHeight;
 	}
 
 	public LTexture getTexture() {
@@ -685,9 +691,11 @@ public class LSTRFont implements IFont, LRelease {
 						totalWidth += (advanceSpace * 3);
 						continue;
 					}
-
-					intObject = customChars.get(charCurrent);
-
+					if (charCurrent < totalCharSet) {
+						intObject = charArray[charCurrent];
+					} else {
+						intObject = customChars.get(charCurrent);
+					}
 					if (intObject != null) {
 						if (!checkOutBounds() || containsChar(ch)) {
 							fontBatch.drawQuad(totalWidth, totalHeight, (totalWidth + intObject.width) - offsetX,
@@ -733,9 +741,11 @@ public class LSTRFont implements IFont, LRelease {
 					totalWidth += (advanceSpace * 3);
 					continue;
 				}
-
-				intObject = customChars.get(charCurrent);
-
+				if (charCurrent < totalCharSet) {
+					intObject = charArray[charCurrent];
+				} else {
+					intObject = customChars.get(charCurrent);
+				}
 				if (intObject != null) {
 					if (!checkOutBounds() || containsChar(ch)) {
 						fontBatch.drawQuad(totalWidth, totalHeight, (totalWidth + intObject.width) - offsetX,
@@ -916,11 +926,12 @@ public class LSTRFont implements IFont, LRelease {
 			}
 			for (int i = startIndex; i < endIndex; i++) {
 				char ch = chars.charAt(i);
-
 				charCurrent = ch;
-
-				intObject = customChars.get(charCurrent);
-
+				if (charCurrent < totalCharSet) {
+					intObject = charArray[charCurrent];
+				} else {
+					intObject = customChars.get(charCurrent);
+				}
 				if (charCurrent == newRFlag) {
 					continue;
 				}
@@ -941,7 +952,8 @@ public class LSTRFont implements IFont, LRelease {
 					if (!checkOutBounds() || containsChar(ch)) {
 						gl.draw(texture, x + (totalWidth * nsx), y + (totalHeight * nsy), intObject.width * nsx,
 								intObject.height * nsy,
-								StringUtils.isChinese(ch) ? intObject.storedX - updateX : intObject.storedX,
+								StringUtils.isChinese((char) charCurrent) ? intObject.storedX - updateX
+										: intObject.storedX,
 								intObject.storedY, intObject.width, intObject.height - updateY, c);
 					} else if (checkOutBounds()) {
 						putChildChars(ch, x + (totalWidth * nsx), y + (totalHeight * nsy), intObject.width * nsx,
@@ -1045,15 +1057,6 @@ public class LSTRFont implements IFont, LRelease {
 		this.pixelColor = (color == null ? LColor.DEF_COLOR : color.getARGB());
 	}
 
-	public int getMaxTextCount() {
-		float size = MathUtils.max(1, pixelFontSize) + 1;
-		return MathUtils.max(0, (int) ((textureWidth / size) * (textureHeight / size)));
-	}
-
-	public int getTextCount() {
-		return _chars != null ? _chars.size() : 0;
-	}
-
 	public String getChars() {
 		return _chars.getString();
 	}
@@ -1095,9 +1098,11 @@ public class LSTRFont implements IFont, LRelease {
 		}
 		if (!checkOutBounds() || containsChar(c)) {
 			this.charCurrent = c;
-
-			intObject = customChars.get(charCurrent);
-
+			if (charCurrent < totalCharSet) {
+				intObject = charArray[charCurrent];
+			} else {
+				intObject = customChars.get(charCurrent);
+			}
 			if (intObject != null) {
 				if (color != null) {
 					setImageColor(color);
@@ -1275,9 +1280,11 @@ public class LSTRFont implements IFont, LRelease {
 		if (texture.isClosed()) {
 			return 0;
 		}
-
-		intObject = customChars.get((int) c);
-
+		if (c < totalCharSet) {
+			intObject = charArray[c];
+		} else {
+			intObject = customChars.get((int) c);
+		}
 		if (intObject != null) {
 			return intObject.width;
 		}
@@ -1302,9 +1309,11 @@ public class LSTRFont implements IFont, LRelease {
 		int maxWidth = 0;
 		for (int i = 0; i < charList.length; i++) {
 			currentChar = charList[i];
-
-			intObject = customChars.get(currentChar);
-
+			if (currentChar < totalCharSet) {
+				intObject = charArray[currentChar];
+			} else {
+				intObject = customChars.get(currentChar);
+			}
 			if (intObject != null) {
 				if (currentChar == newLineFlag) {
 					maxWidth = MathUtils.max(maxWidth, totalWidth);
@@ -1334,7 +1343,11 @@ public class LSTRFont implements IFont, LRelease {
 		int maxHeight = 0;
 		for (int i = 0; i < charList.length; i++) {
 			currentChar = charList[i];
-			intObject = customChars.get(currentChar);
+			if (currentChar < totalCharSet) {
+				intObject = charArray[currentChar];
+			} else {
+				intObject = customChars.get(currentChar);
+			}
 			if (intObject != null) {
 				maxHeight = MathUtils.max(maxHeight, intObject.height);
 				height = maxHeight;
@@ -1542,6 +1555,7 @@ public class LSTRFont implements IFont, LRelease {
 			customChars.clear();
 			customChars = null;
 		}
+		charArray = null;
 		isDrawing = false;
 		_displayLazy = false;
 		_initChars = false;

@@ -210,11 +210,9 @@ public class Display extends BaseIO implements LRelease {
 
 	private float frameDelta = 0f;
 
-	private IFont displayFont;
+	private IFont fpsFont;
 
 	private float cred, cgreen, cblue, calpha;
-
-	private LogDisplay _logDisplay;
 
 	private final GLEx _glEx;
 
@@ -223,8 +221,6 @@ public class Display extends BaseIO implements LRelease {
 	private LSetting _setting;
 
 	protected boolean showLogo = false, initDrawConfig = false;
-
-	private boolean logDisplayCreated = false;
 
 	private Logo logoTex;
 
@@ -261,56 +257,13 @@ public class Display extends BaseIO implements LRelease {
 	}
 
 	protected void newDefView(boolean show) {
-		if (show && displayFont == null) {
-			this.displayFont = LSystem.getSystemLogFont();
-		}
-		if (show && _setting.isDisplayLog) {
-			if (displayFont != null) {
-				_logDisplay = new LogDisplay(displayFont);
-			} else {
-				_logDisplay = new LogDisplay();
-			}
-			logDisplayCreated = true;
+		if (show && (fpsFont == null || (fpsFont != LSystem.getSystemLogFont()))) {
+			this.fpsFont = LSystem.getSystemLogFont();
 		}
 		showLogo = _setting.isLogo;
 		if (showLogo && !StringUtils.isEmpty(_setting.logoPath)) {
 			logoTex = new Logo(newTexture(_setting.logoPath));
 		}
-	}
-
-	public boolean isLogDisplay() {
-		return logDisplayCreated;
-	}
-
-	public void clearLog() {
-		if (logDisplayCreated) {
-			_logDisplay.clear();
-		}
-	}
-
-	public void addLog(String mes, LColor col) {
-		if (!logDisplayCreated) {
-			return;
-		}
-		_logDisplay.addText(mes, col);
-	}
-
-	public void addLog(String mes) {
-		if (!logDisplayCreated) {
-			return;
-		}
-		_logDisplay.addText(mes);
-	}
-
-	public LogDisplay getLogDisplay() {
-		return _logDisplay;
-	}
-
-	protected void paintLog(final GLEx g, int x, int y) {
-		if (!logDisplayCreated) {
-			return;
-		}
-		_logDisplay.paint(g, x, y);
 	}
 
 	public void updateSyncTween(boolean sync) {
@@ -590,25 +543,21 @@ public class Display extends BaseIO implements LRelease {
 			}
 			// 显示fps速度
 			if (debug || setting.isFPS) {
-				displayFont.drawString(gl, FPS_STR + frameRate, 5, 5, 0, LColor.white);
+				fpsFont.drawString(gl, FPS_STR + frameRate, 5, 5, 0, LColor.white);
 			}
 			// 显示内存占用
 			if (debug || setting.isMemory) {
-				displayFont.drawString(gl, displayMemony, 5, 25, 0, LColor.white);
+				fpsFont.drawString(gl, displayMemony, 5, 25, 0, LColor.white);
 			}
 			// 显示精灵与组件数量
 			if (debug || setting.isSprites) {
-				displayFont.drawString(gl, displaySprites, 5, 45, 0, LColor.white);
+				fpsFont.drawString(gl, displaySprites, 5, 45, 0, LColor.white);
 			}
 			// 若打印日志到界面,很可能挡住游戏界面内容,所以isDisplayLog为true并且debug才显示
 			if (debug && setting.isDisplayLog) {
-				paintLog(gl, 5, 65);
+				_process.paintLog(gl, 5, 65);
 			}
 		}
-	}
-
-	public boolean isRunning() {
-		return initDrawConfig;
 	}
 
 	public boolean isAutoRepaint() {
@@ -761,15 +710,6 @@ public class Display extends BaseIO implements LRelease {
 		return this;
 	}
 
-	public IFont getDisplayFont() {
-		return displayFont;
-	}
-
-	public Display setDisplayFont(IFont displayFont) {
-		this.displayFont = displayFont;
-		return this;
-	}
-
 	public LProcess getProcess() {
 		return _process;
 	}
@@ -786,9 +726,9 @@ public class Display extends BaseIO implements LRelease {
 	public void close() {
 		this._closed = true;
 		this._autoRepaint = false;
-		if (this.displayFont != null) {
-			this.displayFont.close();
-			this.displayFont = null;
+		if (this.fpsFont != null) {
+			this.fpsFont.close();
+			this.fpsFont = null;
 		}
 		if (this.logoTex != null) {
 			this.logoTex.close();
@@ -797,8 +737,7 @@ public class Display extends BaseIO implements LRelease {
 		if (this._process != null) {
 			_process.close();
 		}
-		this.initDrawConfig = false;
-		logDisplayCreated = false;
+		initDrawConfig = false;
 	}
 
 }
