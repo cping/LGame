@@ -2,6 +2,7 @@
 using loon.opengl;
 using loon.utils;
 using loon.utils.reply;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace loon
 {
@@ -189,6 +190,28 @@ namespace loon
 			{
 				return true;
 			}
+		}
+
+		public LTexture CreateTexture(string path, LTexture.Format config)
+		{
+			System.IO.Stream stream = game.Assets().OpenStream(path);
+			Texture2D texture = Texture2D.FromStream(gl._device,stream);
+			int width = texture.Width;
+			int height = texture.Height;
+			int texWidth = scale.ScaledCeil(width);
+			int texHeight = scale.ScaledCeil(height);
+			if (texWidth <= 0 || texHeight <= 0)
+			{
+				throw new LSysException("Invalid texture size: " + texWidth + "x" + texHeight);
+			}
+			int id = gl.CreateTexture(texture);
+			GLUtils.BindTexture(gl, id);
+			gl.GLTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, config.magFilter);
+			int minFilter = Mipmapify(config.minFilter, config.mipmaps);
+			gl.GLTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, minFilter);
+			gl.GLTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, config.repeatX ? GL.GL_REPEAT : GL.GL_CLAMP_TO_EDGE);
+			gl.GLTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, config.repeatY ? GL.GL_REPEAT : GL.GL_CLAMP_TO_EDGE);
+			return new LTexture(this, id, config, texWidth, texHeight, scale, width, height);
 		}
 
 		public LTexture CreateTexture(float width, float height, LTexture.Format config)

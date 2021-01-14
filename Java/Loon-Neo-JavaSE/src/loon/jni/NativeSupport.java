@@ -46,14 +46,15 @@ public final class NativeSupport {
 	private static HashSet<String> loadedLibraries = new HashSet<String>();
 
 	private static String getProperty(final String propName) {
-		return System.getProperty(propName, "");
+		return System.getProperty(propName, "").toLowerCase();
 	}
 
 	static ClassLoader classLoader;
 
-	static boolean isWindows = getProperty("os.name").contains("Windows");
-	static boolean isLinux = getProperty("os.name").contains("Linux");
-	static boolean isMac = getProperty("os.name").contains("Mac");
+	static boolean isWindows = getProperty("os.name").contains("windows");
+	static boolean isLinux = getProperty("os.name").contains("linux");
+	static boolean isFreeBSD = getProperty("os.name").contains("bsd");
+	static boolean isMac = getProperty("os.name").contains("mac");
 	static boolean isARM = getProperty("os.arch").startsWith("arm") || getProperty("os.arch").startsWith("aarch64");
 	static boolean is64Bit = getProperty("os.arch").contains("64") || getProperty("os.arch").startsWith("armv8");
 	static boolean isUnknown = !(isWindows && isLinux && isMac && isARM && is64Bit);
@@ -71,13 +72,15 @@ public final class NativeSupport {
 			isAndroid = true;
 			isWindows = false;
 			isLinux = false;
+			isFreeBSD = false;
 			isMac = false;
 			is64Bit = false;
-		} else if (!isAndroid && !isWindows && !isLinux && !isMac) {
+		} else if (!isAndroid && !isWindows && !isLinux && !isMac && !isFreeBSD) {
 			isIos = true;
 			isAndroid = false;
 			isWindows = false;
 			isLinux = false;
+			isFreeBSD = false;
 			isMac = false;
 			is64Bit = false;
 		}
@@ -91,7 +94,7 @@ public final class NativeSupport {
 				} else if (isMac) {
 					nativesDir = export("liblwjgl.jnilib", null).getParentFile();
 					export("openal.dylib", nativesDir.getName());
-				} else if (isLinux) {
+				} else if (isLinux || isFreeBSD) {
 					nativesDir = export(is64Bit ? "liblwjgl64.so" : "liblwjgl.so", null).getParentFile();
 					export(is64Bit ? "libopenal64.so" : "libopenal.so", nativesDir.getName());
 				}
@@ -155,7 +158,7 @@ public final class NativeSupport {
 		try {
 			for (;;) {
 				int length = input.read(buffer);
-				if (length == -1){
+				if (length == -1) {
 					break;
 				}
 				crc.update(buffer, 0, length);
@@ -173,7 +176,7 @@ public final class NativeSupport {
 		if (isWindows) {
 			return libraryName + (is64Bit ? "64.dll" : ".dll");
 		}
-		if (isLinux) {
+		if (isLinux || isFreeBSD) {
 			return "lib" + libraryName + (is64Bit ? "64.so" : ".so");
 		}
 		if (isMac) {

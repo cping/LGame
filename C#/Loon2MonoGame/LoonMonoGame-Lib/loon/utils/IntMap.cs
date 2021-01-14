@@ -84,6 +84,8 @@ namespace loon.utils
 
         public int size;
 
+        private IntMapIterator<T> _mapIterator1, _mapIterator2;
+
         public IntMap() : this(CollectionUtils.INITIAL_CAPACITY)
         {
 
@@ -430,35 +432,63 @@ namespace loon.utils
 
         public Iterator<T> Iterator()
         {
-            return new IntMapIterator<T>(this);
+            if (_mapIterator1 == null)
+            {
+                _mapIterator1 = new IntMapIterator<T>(this);
+                _mapIterator2 = new IntMapIterator<T>(this);
+            }
+            if (!_mapIterator1._valid)
+            {
+                _mapIterator1.Reset();
+                _mapIterator1._valid = true;
+                _mapIterator2._valid = false;
+                return _mapIterator1;
+            }
+            _mapIterator2.Reset();
+            _mapIterator2._valid = true;
+            _mapIterator1._valid = false;
+            return _mapIterator2;
         }
 
-#pragma warning disable CS0693 // 类型参数与外部类型中的类型参数同名
-        public class IntMapIterator<T> : LIterator<T>, Iterable<T>
-#pragma warning restore CS0693 // 类型参数与外部类型中的类型参数同名
+        public class IntMapIterator<T1> : LIterator<T1>, Iterable<T1>
         {
 
+            public bool _valid;
             int _index = 0;
             int _found = 0;
-            readonly IntMap<T> _map;
+            readonly IntMap<T1> _map;
 
-            internal IntMapIterator(IntMap<T> map)
+            internal IntMapIterator(IntMap<T1> map)
             {
                 this._map = map;
+                this.Reset();
             }
 
+            public void Reset()
+            {
+                this._index = 0;
+                this._found = 0;
+            }
 
             public bool HasNext()
             {
+                if (!_valid)
+                {
+                    return false;
+                }
                 return _found < _map.size;
             }
 
 
-            public T Next()
+            public T1 Next()
             {
+                if (!_valid)
+                {
+                    return default;
+                }
                 for (; _index < _map.capacity; ++_index)
                 {
-                    T value = _map.valuesTable[_index];
+                    T1 value = _map.valuesTable[_index];
                     if (value != null)
                     {
                         ++_index;
@@ -475,14 +505,14 @@ namespace loon.utils
             }
 
 
-            public Iterator<T> Iterator()
+            public Iterator<T1> Iterator()
             {
                 return this;
             }
 
             public void ForEach(Consumer consumer)
             {
-                Iterable_Java<T>.ForEach(this, consumer);
+                Iterable_Java<T1>.ForEach(this, consumer);
             }
         }
 

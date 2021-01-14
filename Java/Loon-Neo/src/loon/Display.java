@@ -555,7 +555,7 @@ public class Display extends BaseIO implements LRelease {
 				this.frameCount = 0;
 
 				if (this.memorySelf) {
-					displayMessage.delete(0, displayMessage.length());
+					displayMessage.setLength(0);
 					displayMessage.append(MEMORY_STR);
 					displayMessage.append(((float) ((LTextures.getMemSize() * 100) >> 20) / 10f));
 					displayMessage.append(" of ");
@@ -567,7 +567,7 @@ public class Display extends BaseIO implements LRelease {
 					}
 					long totalMemory = runtime.totalMemory();
 					long currentMemory = totalMemory - runtime.freeMemory();
-					displayMessage.delete(0, displayMessage.length());
+					displayMessage.setLength(0);
 					displayMessage.append(MEMORY_STR);
 					displayMessage.append(((float) ((currentMemory * 10) >> 20) / 10f));
 					displayMessage.append(" of ");
@@ -578,7 +578,7 @@ public class Display extends BaseIO implements LRelease {
 
 				LGame game = getGame();
 
-				displayMessage.delete(0, displayMessage.length());
+				displayMessage.setLength(0);
 				displayMessage.append(SPRITE_STR);
 				displayMessage.append(game.allSpritesCount());
 				displayMessage.append(" ");

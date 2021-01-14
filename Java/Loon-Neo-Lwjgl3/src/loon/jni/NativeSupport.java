@@ -46,14 +46,15 @@ public final class NativeSupport {
 	private static HashSet<String> loadedLibraries = new HashSet<String>();
 
 	private static String getProperty(final String propName) {
-		return System.getProperty(propName, "");
+		return System.getProperty(propName, "").toLowerCase();
 	}
 
 	static ClassLoader classLoader;
 
-	static boolean isWindows = getProperty("os.name").contains("Windows");
-	static boolean isLinux = getProperty("os.name").contains("Linux");
-	static boolean isMac = getProperty("os.name").contains("Mac");
+	static boolean isWindows = getProperty("os.name").contains("windows");
+	static boolean isLinux = getProperty("os.name").contains("linux");
+	static boolean isFreeBSD = getProperty("os.name").contains("bsd");
+	static boolean isMac = getProperty("os.name").contains("mac");
 	static boolean isARM = getProperty("os.arch").startsWith("arm") || getProperty("os.arch").startsWith("aarch64");
 	static boolean is64Bit = getProperty("os.arch").contains("64") || getProperty("os.arch").startsWith("armv8");
 	static boolean isUnknown = !(isWindows && isLinux && isMac && isARM && is64Bit);
@@ -71,13 +72,15 @@ public final class NativeSupport {
 			isAndroid = true;
 			isWindows = false;
 			isLinux = false;
+			isFreeBSD = false;
 			isMac = false;
 			is64Bit = false;
-		} else if (!isAndroid && !isWindows && !isLinux && !isMac) {
+		} else if (!isAndroid && !isWindows && !isLinux && !isMac && !isFreeBSD) {
 			isIos = true;
 			isAndroid = false;
 			isWindows = false;
 			isLinux = false;
+			isFreeBSD = false;
 			isMac = false;
 			is64Bit = false;
 		}
@@ -85,31 +88,21 @@ public final class NativeSupport {
 		if (!isInJavaWebStart()) {
 			File nativesDir = null;
 			try {
-
 				if (isWindows) {
-					nativesDir = export(is64Bit ? "lwjgl.dll" : "lwjgl32.dll",
-							null).getParentFile();
-					export(is64Bit ? "OpenAL.dll" : "OpenAL32.dll",
-							nativesDir.getName());
-					export(is64Bit ? "glfw.dll" : "glfw32.dll",
-							nativesDir.getName());
-					export(is64Bit ? "jemalloc.dll" : "jemalloc32.dll",
-							nativesDir.getName());
+					nativesDir = export(is64Bit ? "lwjgl.dll" : "lwjgl32.dll", null).getParentFile();
+					export(is64Bit ? "OpenAL.dll" : "OpenAL32.dll", nativesDir.getName());
+					export(is64Bit ? "glfw.dll" : "glfw32.dll", nativesDir.getName());
+					export(is64Bit ? "jemalloc.dll" : "jemalloc32.dll", nativesDir.getName());
 				} else if (isMac) {
 					nativesDir = export("liblwjgl.dylib", null).getParentFile();
 					export("libglfw.dylib", nativesDir.getName());
 					export("libjemalloc.dylib", nativesDir.getName());
 					export("libopenal.dylib", nativesDir.getName());
-				} else if (isLinux) {
-					nativesDir = export(
-							is64Bit ? "liblwjgl.so" : "liblwjgl32.so", null)
-							.getParentFile();
-					export(is64Bit ? "libglfw.so" : "libglfw32.so",
-							nativesDir.getName());
-					export(is64Bit ? "libjemalloc.so" : "libjemalloc32.so",
-							nativesDir.getName());
-					export(is64Bit ? "libopenal.so" : "libopenal32.so",
-							nativesDir.getName());
+				} else if (isLinux || isFreeBSD) {
+					nativesDir = export(is64Bit ? "liblwjgl.so" : "liblwjgl32.so", null).getParentFile();
+					export(is64Bit ? "libglfw.so" : "libglfw32.so", nativesDir.getName());
+					export(is64Bit ? "libjemalloc.so" : "libjemalloc32.so", nativesDir.getName());
+					export(is64Bit ? "libopenal.so" : "libopenal32.so", nativesDir.getName());
 				}
 			} catch (Throwable ex) {
 				throw new RuntimeException("Unable to extract LWJGL natives.", ex);
@@ -171,7 +164,7 @@ public final class NativeSupport {
 		try {
 			for (;;) {
 				int length = input.read(buffer);
-				if (length == -1){
+				if (length == -1) {
 					break;
 				}
 				crc.update(buffer, 0, length);
@@ -189,7 +182,7 @@ public final class NativeSupport {
 		if (isWindows) {
 			return libraryName + (is64Bit ? "64.dll" : ".dll");
 		}
-		if (isLinux) {
+		if (isLinux || isFreeBSD) {
 			return "lib" + libraryName + (is64Bit ? "64.so" : ".so");
 		}
 		if (isMac) {

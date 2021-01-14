@@ -219,7 +219,7 @@ public class Print implements FontSet<Print>, LRelease {
 			_print.onComplete = false;
 			_print.newLine = false;
 			_print.messageCount = 0;
-			_print.messageBuffer.delete(0, _print.messageBuffer.length());
+			_print.messageBuffer.setLength(0);
 			if (_isComplete) {
 				_print.complete();
 			}

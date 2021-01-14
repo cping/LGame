@@ -145,8 +145,8 @@ public class XMLParser {
 								}
 							}
 							end = 0;
-							sbr1.delete(0, sbr1.length());
-							sbr2.delete(0, sbr2.length());
+							sbr1.setLength(0);
+							sbr2.setLength(0);
 						}
 						break;
 					case '=':

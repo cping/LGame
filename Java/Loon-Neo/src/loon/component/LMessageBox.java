@@ -653,7 +653,7 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 			_initNativeDraw = true;
 		}
 		Message message = _messageList.get(messageIndex);
-		_message.delete(0, _message.length());
+		_message.setLength(0);
 
 		if (!message.lines.isEmpty()) {
 			for (int i = 0; i < this.renderRow + 1; i++) {

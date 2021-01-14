@@ -248,7 +248,7 @@ public class BMFont implements IFont {
 							continue;
 						}
 					}
-					sbr.delete(0, sbr.length());
+					sbr.setLength(0);
 				}
 				sbr.append(ch);
 			}

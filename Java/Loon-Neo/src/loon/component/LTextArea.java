@@ -40,6 +40,7 @@ import loon.font.IFont;
 import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.opengl.LSTRDictionary;
+import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 
 /**
@@ -80,7 +81,7 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 
 	private int messageWidthLimit = 200;
 	private int postLine = 0;
-	private int max;
+	private int maxAmount;
 	private int amount;
 	private int drawY;
 
@@ -94,6 +95,8 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 	private boolean flashFont;
 	private boolean over;
 	private boolean slideMessage;
+
+	private boolean _dirty;
 
 	private int[] slideX;
 
@@ -110,16 +113,16 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 		this(-1, x, y, w, h);
 	}
 
-	public LTextArea(int max, int x, int y, int w, int h) {
-		this(LTextArea.TYPE_DOWN, max, SkinManager.get().getMessageSkin().getFont(), x, y, w, h);
+	public LTextArea(int maxAmount, int x, int y, int w, int h) {
+		this(LTextArea.TYPE_DOWN, maxAmount, SkinManager.get().getMessageSkin().getFont(), x, y, w, h);
 	}
 
-	public LTextArea(int max, IFont font, int x, int y, int w, int h) {
-		this(LTextArea.TYPE_DOWN, max, font, x, y, w, h);
+	public LTextArea(int maxAmount, IFont font, int x, int y, int w, int h) {
+		this(LTextArea.TYPE_DOWN, maxAmount, font, x, y, w, h);
 	}
 
-	public LTextArea(int type, int max, IFont font, int x, int y, int w, int h) {
-		this(type, max, font, x, y, w, h, SkinManager.get().getMessageSkin().getBackgroundTexture());
+	public LTextArea(int type, int maxAmount, IFont font, int x, int y, int w, int h) {
+		this(type, maxAmount, font, x, y, w, h, SkinManager.get().getMessageSkin().getBackgroundTexture());
 	}
 
 	public LTextArea(int x, int y, int w, int h, String bgFile) {
@@ -135,28 +138,28 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 		this(LTextArea.TYPE_DOWN, -1, x, y, w, h, flashFont);
 	}
 
-	public LTextArea(int type, int max, int x, int y, int w, int h, boolean flashFont) {
-		this(type, max, SkinManager.get().getMessageSkin().getFont(), x, y, w, h, null, flashFont);
+	public LTextArea(int type, int maxAmount, int x, int y, int w, int h, boolean flashFont) {
+		this(type, maxAmount, SkinManager.get().getMessageSkin().getFont(), x, y, w, h, null, flashFont);
 	}
 
-	public LTextArea(MessageSkin skin, int type, int max, int x, int y, int w, int h) {
-		this(type, max, skin.getFont(), x, y, w, h, skin.getBackgroundTexture());
+	public LTextArea(MessageSkin skin, int type, int maxAmount, int x, int y, int w, int h) {
+		this(type, maxAmount, skin.getFont(), x, y, w, h, skin.getBackgroundTexture());
 	}
 
-	public LTextArea(int type, int max, IFont font, int x, int y, int w, int h, boolean flashFont) {
-		this(type, max, font, x, y, w, h, null, flashFont);
+	public LTextArea(int type, int maxAmount, IFont font, int x, int y, int w, int h, boolean flashFont) {
+		this(type, maxAmount, font, x, y, w, h, null, flashFont);
 	}
 
-	public LTextArea(int type, int max, IFont font, int x, int y, int w, int h, LTexture bg) {
-		this(type, max, font, x, y, w, h, bg, true);
+	public LTextArea(int type, int maxAmount, IFont font, int x, int y, int w, int h, LTexture bg) {
+		this(type, maxAmount, font, x, y, w, h, bg, true);
 	}
 
-	public LTextArea(int type, int max, IFont font, int x, int y, int w, int h, LTexture bg, boolean flashFont) {
-		this(type, max, font, x, y, w, h, bg, flashFont, true, true);
+	public LTextArea(int type, int maxAmount, IFont font, int x, int y, int w, int h, LTexture bg, boolean flashFont) {
+		this(type, maxAmount, font, x, y, w, h, bg, flashFont, true, true);
 	}
 
-	public LTextArea(int type, int max, IFont textFont, int x, int y, int w, int h, LTexture bg, boolean flashFont,
-			boolean waitFlag, boolean slide) {
+	public LTextArea(int type, int maxAmount, IFont textFont, int x, int y, int w, int h, LTexture bg,
+			boolean flashFont, boolean waitFlag, boolean slide) {
 		super(x, y, w, h);
 		IFont tmp = textFont;
 		if (tmp == null) {
@@ -166,10 +169,10 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 		this.showType = type;
 		this.postLine = (h / tmp.getHeight());
 		this.waitFlagString = "new";
-		if (max < 0) {
+		if (maxAmount < 0) {
 			this.set(LSystem.isDesktop() ? postLine - 1 : postLine + 1);
 		} else {
-			this.set(max);
+			this.set(maxAmount);
 		}
 		this.setDefaultColor(255, 255, 255, flashFont);
 		this.setWaitFlag(waitFlag);
@@ -180,28 +183,28 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 		}
 	}
 
-	public LTextArea set(int mMax) {
-		this.max = (mMax + 1);
-		this.message = new String[this.max];
-		this.crs = new int[this.max];
-		this.cgs = new int[this.max];
-		this.cbs = new int[this.max];
-		this.bright = new int[this.max];
-		this.brightType = new int[this.max];
-		this.getMessage = new String[this.max];
-		this.getMessageLength = new int[this.max];
-		this.drawNew = new boolean[this.max];
-		this.drawNewCr = new int[this.max];
-		this.drawNewCg = new int[this.max];
-		this.drawNewCb = new int[this.max];
-		this.drawNewLV = new int[this.max];
-		this.slideX = new int[this.max];
+	public LTextArea set(int max) {
+		this.maxAmount = MathUtils.max(1, (max + 1));
+		this.message = new String[this.maxAmount];
+		this.crs = new int[this.maxAmount];
+		this.cgs = new int[this.maxAmount];
+		this.cbs = new int[this.maxAmount];
+		this.bright = new int[this.maxAmount];
+		this.brightType = new int[this.maxAmount];
+		this.getMessage = new String[this.maxAmount];
+		this.getMessageLength = new int[this.maxAmount];
+		this.drawNew = new boolean[this.maxAmount];
+		this.drawNewCr = new int[this.maxAmount];
+		this.drawNewCg = new int[this.maxAmount];
+		this.drawNewCb = new int[this.maxAmount];
+		this.drawNewLV = new int[this.maxAmount];
+		this.slideX = new int[this.maxAmount];
 		this.amount = 0;
-		for (int i = 0; i < this.max; i++) {
+		for (int i = 0; i < this.maxAmount; i++) {
 			this.message[i] = LSystem.EMPTY;
 			this.getMessage[i] = LSystem.EMPTY;
 			this.getMessageLength[i] = 0;
-			this.bright[i] = (this.brightMax * i / this.max);
+			this.bright[i] = (this.brightMax * i / this.maxAmount);
 		}
 		return this;
 	}
@@ -290,8 +293,6 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 		return this;
 	}
 
-	private boolean _dirty;
-
 	public LTextArea put(String mes, LColor color) {
 		if (StringUtils.isEmpty(mes)) {
 			return this;
@@ -364,7 +365,7 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 		}
 
 		this.amount += 1;
-		if (this.amount >= this.max) {
+		if (this.amount >= this.maxAmount) {
 			this.amount = 0;
 		}
 
@@ -411,15 +412,15 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 		}
 		this.amount -= 1;
 		if (this.amount < 0) {
-			this.amount = (this.max - 1);
+			this.amount = (this.maxAmount - 1);
 		}
 		setGetMessageLength(this.getMessageLength[this.amount]);
 		put(this.message[this.amount] + mes);
 		return this;
 	}
 
-	public LTextArea setBright(int max, int speed) {
-		this.brightMax = max;
+	public LTextArea setBright(int maxAmount, int speed) {
+		this.brightMax = maxAmount;
 		this.brightSpeed = speed;
 		return this;
 	}
@@ -456,10 +457,10 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 		int oldColor = g.color();
 		this.countFrame += 1;
 		int index = amount;
-		for (int i = 0; i < this.max - 1; i++) {
+		for (int i = 0; i < this.maxAmount - 1; i++) {
 			this.amount -= 1;
 			if (this.amount < 0) {
-				this.amount = (this.max - 1);
+				this.amount = (this.maxAmount - 1);
 			}
 			if (i <= lines) {
 				for (int i2 = 0; i2 < 2; i2++) {
@@ -570,7 +571,7 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 		}
 		this.amount -= 1;
 		if (this.amount < 0) {
-			this.amount = (this.max - 1);
+			this.amount = (this.maxAmount - 1);
 		}
 		g.setColor(oldColor);
 
@@ -592,7 +593,7 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 	}
 
 	public int getMax() {
-		return this.max - 1;
+		return this.maxAmount - 1;
 	}
 
 	public int getShowType() {

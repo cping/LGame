@@ -20,6 +20,8 @@
  */
 package loon;
 
+import java.util.Iterator;
+
 import loon.action.ActionBind;
 import loon.action.ActionControl;
 import loon.action.ActionTween;
@@ -90,7 +92,6 @@ import loon.opengl.GLEx;
 import loon.opengl.LTextureImage;
 import loon.opengl.ShaderSource;
 import loon.utils.ArrayByte;
-import loon.utils.ArrayMap;
 import loon.utils.Calculator;
 import loon.utils.ConfigReader;
 import loon.utils.Disposes;
@@ -182,7 +183,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	private boolean _collisionClosed;
 
-	private ArrayMap _keyActions = new ArrayMap();
+	private IntMap<ActionKey> _keyActions = new IntMap<ActionKey>();
 
 	private Updateable _closeUpdate;
 
@@ -581,27 +582,27 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		setLastOrder(DRAW_USER_PAINT());
 	}
 
-	public boolean containsActionKey(Integer keyCode) {
+	public boolean containsActionKey(int keyCode) {
 		return _keyActions.containsKey(keyCode);
 	}
 
-	public void addActionKey(Integer keyCode, ActionKey e) {
+	public void addActionKey(int keyCode, ActionKey e) {
 		_keyActions.put(keyCode, e);
 	}
 
-	public void removeActionKey(Integer keyCode) {
+	public void removeActionKey(int keyCode) {
 		_keyActions.remove(keyCode);
 	}
 
-	public void pressActionKey(Integer keyCode) {
-		ActionKey key = (ActionKey) _keyActions.getValue(keyCode);
+	public void pressActionKey(int keyCode) {
+		ActionKey key = _keyActions.get(keyCode);
 		if (key != null) {
 			key.press();
 		}
 	}
 
-	public void releaseActionKey(Integer keyCode) {
-		ActionKey key = (ActionKey) _keyActions.getValue(keyCode);
+	public void releaseActionKey(int keyCode) {
+		ActionKey key = _keyActions.get(keyCode);
 		if (key != null) {
 			key.release();
 		}
@@ -614,9 +615,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	public void releaseActionKeys() {
 		int keySize = _keyActions.size();
 		if (keySize > 0) {
-			for (int i = 0; i < keySize; i++) {
-				ActionKey act = (ActionKey) _keyActions.get(i);
-				act.release();
+			for (Iterator<ActionKey> it = _keyActions.iterator(); it.hasNext();) {
+				ActionKey act = it.next();
+				if (act != null) {
+					act.release();
+				}
 			}
 		}
 	}
@@ -1475,11 +1478,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		if (this._touchAreas == null) {
 			this._touchAreas = new TArray<LTouchArea>();
 		}
+		if (this._keyActions == null) {
+			this._keyActions = new IntMap<ActionKey>();
+		}
 		if (this._conns == null) {
 			this._conns = new Closeable.Set();
-		}
-		if (this._keyActions == null) {
-			this._keyActions = new ArrayMap();
 		}
 	}
 
@@ -3474,9 +3477,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	private final void process(final LTimerContext timer) {
 		this.elapsedTime = timer.timeSinceLastUpdate;
-		for (int i = _keyActions.size() - 1; i >= 0; i--) {
-			ActionKey act = (ActionKey) _keyActions.get(i);
-			if (act.isPressed()) {
+		for (Iterator<ActionKey> it = _keyActions.iterator(); it.hasNext();) {
+			ActionKey act = it.next();
+			if (act != null && act.isPressed()) {
 				act.act(elapsedTime);
 				if (act.isReturn) {
 					return;
@@ -3869,12 +3872,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			int keySize = _keyActions.size();
 			if (keySize > 0) {
 				int keyCode = e.getKeyCode();
-				for (int i = keySize - 1; i >= 0; i--) {
-					Integer c = (Integer) _keyActions.getKey(i);
-					if (c == keyCode) {
-						ActionKey act = (ActionKey) _keyActions.getValue(c);
-						act.press();
-					}
+				ActionKey act = _keyActions.get(keyCode);
+				if (act != null) {
+					act.press();
 				}
 			}
 			this.onKeyDown(e);
@@ -3911,12 +3911,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			int keySize = _keyActions.size();
 			if (keySize > 0) {
 				int keyCode = e.getKeyCode();
-				for (int i = 0; i < keySize; i++) {
-					Integer c = (Integer) _keyActions.getKey(i);
-					if (c == keyCode) {
-						ActionKey act = (ActionKey) _keyActions.getValue(c);
-						act.release();
-					}
+				ActionKey act = _keyActions.get(keyCode);
+				if (act != null) {
+					act.release();
 				}
 			}
 			this.onKeyUp(e);
@@ -3927,7 +3924,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			keyType.put(type, Boolean.valueOf(false));
 			keyButtonReleased = code;
 			keyButtonPressed = SysInput.NO_KEY;
-		} catch (Throwable ex) {
+		} catch (
+
+		Throwable ex) {
 			keyButtonPressed = SysInput.NO_KEY;
 			keyButtonReleased = SysInput.NO_KEY;
 			error("Screen keyReleased() exception", ex);

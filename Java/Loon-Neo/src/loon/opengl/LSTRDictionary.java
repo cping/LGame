@@ -349,7 +349,7 @@ public final class LSTRDictionary implements LRelease {
 					if (tmpBuffer == null) {
 						tmpBuffer = new StrBuilder(newSize);
 					} else {
-						tmpBuffer.delete(0, tmpBuffer.length());
+						tmpBuffer.setLength(0);
 					}
 					for (int i = 0; i < newSize; i++) {
 						tmpBuffer.append(charas.get(i));
@@ -435,7 +435,7 @@ public final class LSTRDictionary implements LRelease {
 			_lazyKey.append(split);
 			_lazyKey.append(text);
 		} else {
-			_lazyKey.delete(0, _lazyKey.length());
+			_lazyKey.setLength(0);
 			_lazyKey.append(font.getFontName().toLowerCase());
 			_lazyKey.append(hashCode);
 			_lazyKey.append(split);

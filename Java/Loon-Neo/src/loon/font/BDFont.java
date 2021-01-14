@@ -2096,7 +2096,7 @@ public class BDFont implements IFont, LRelease {
 				char ch = message.charAt(i);
 				if (ch == LSystem.LF) {
 					width = MathUtils.max(getLineWidth(sbr.toString()), width);
-					sbr.delete(0, sbr.length());
+					sbr.setLength(0);
 				} else {
 					sbr.append(ch);
 				}

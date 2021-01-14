@@ -24,18 +24,21 @@ import loon.LSystem;
 import loon.utils.CharUtils;
 import loon.utils.MathUtils;
 import loon.utils.StrBuilder;
+import loon.utils.StringUtils;
 
 /**
  * 自带的json解析用类
  */
 final class JsonParser {
 
+	private final static String HEXCHARS = "0123456789abcdef0123456789ABCDEF";
+
+	private final static String JSONTOKENS = " \b\r\t\n\r\f{}[]:,/\\\"";
+
 	private static enum Token {
-		EOF(false), NULL(true), TRUE(true), 
-		FALSE(true), STRING(true), NUMBER(true), 
-		COMMA(false), COLON(false),
-		OBJECT_START(true), OBJECT_END(false), 
-		ARRAY_START(true), ARRAY_END(false);
+		EOF(false), NULL(true), TRUE(true), FALSE(true), STRING(true), NUMBER(true), COMMA(false), COLON(false),
+		OBJECT_START(true), OBJECT_END(false), ARRAY_START(true), ARRAY_END(false);
+
 		public boolean isValue;
 
 		Token(boolean isValue) {
@@ -51,14 +54,19 @@ final class JsonParser {
 		}
 
 		public T from(String s) throws JsonParserException {
-			return new JsonParser(s).parse(clazz);
+			return from(s, true);
 		}
+
+		public T from(String s, boolean filter) throws JsonParserException {
+			return new JsonParser(s, filter).parse(clazz);
+		}
+
 	}
 
 	private static final char[] TRUE = { 'r', 'u', 'e' };
-	
+
 	private static final char[] FALSE = { 'a', 'l', 's', 'e' };
-	
+
 	private static final char[] NULL = { 'u', 'l', 'l' };
 
 	private StrBuilder _reusableBuffer = new StrBuilder();
@@ -74,17 +82,17 @@ final class JsonParser {
 	private int _bufferLength;
 
 	private boolean _eof;
-	
+
 	private Object value;
 
 	private Token token;
 
-	JsonParser(String s) throws JsonParserException {
+	JsonParser(String s, boolean filter) throws JsonParserException {
 		if (s == null) {
-			throw new JsonParserException(new Exception(), "The json is null !", 0, 0, 0);
+			throw new JsonParserException("The json is null !", 0, 0, 0);
 		}
-		this._strings = s;
-		this._bufferLength = s.length();
+		this._strings = filter ? quotesFilter(s) : s;
+		this._bufferLength = _strings.length();
 		this._eof = (s.length() == 0);
 	}
 
@@ -105,28 +113,64 @@ final class JsonParser {
 		advanceToken();
 		Object parsed = currentValue();
 		if (advanceToken() != Token.EOF) {
-			throw createParseException(null, "Expected end of input, got " + token, true);
+			throw createParseException("Expected end of input, got " + token, true);
 		}
 		if (clazz != Object.class && (parsed == null || clazz != parsed.getClass())) {
-			throw createParseException(null, "JSON did not contain the correct type, expected " + clazz.getName() + ".",
+			throw createParseException("JSON did not contain the correct type, expected " + clazz.getName() + ".",
 					true);
 		}
 		return (T) (parsed);
+	}
+
+	public static String quotesFilter(String jsonText) {
+		if (StringUtils.isEmpty(jsonText)) {
+			return LSystem.EMPTY;
+		}
+		final StrBuilder jsonContext = new StrBuilder();
+		final StrBuilder jsonValue = new StrBuilder();
+		int len = jsonText.length();
+		boolean quote = false;
+		char c = '\0';
+		for (int i = 0; i < len; i++) {
+			c = jsonText.charAt(i);
+			if (c == LSystem.DOUBLE_QUOTES) {
+				quote = !quote;
+			}
+			if (JSONTOKENS.indexOf(c) != -1) {
+				if (jsonValue.length() > 0) {
+					String value = jsonValue.toString();
+					if (MathUtils.isNan(value)) {
+						jsonContext.append(value);
+					} else {
+						jsonContext.append(LSystem.DOUBLE_QUOTES);
+						jsonContext.append(value);
+						jsonContext.append(LSystem.DOUBLE_QUOTES);
+					}
+					jsonValue.setLength(0);
+				}
+				jsonContext.append(c);
+			} else if (quote) {
+				jsonContext.append(c);
+			} else {
+				jsonValue.append(c);
+			}
+		}
+		return jsonContext.toString();
 	}
 
 	private Object currentValue() throws JsonParserException {
 		if (token.isValue) {
 			return value;
 		}
-		throw createParseException(null, "Expected JSON value, got " + token, true);
+		throw createParseException("Expected JSON value, got " + token, true);
 	}
 
 	private Token advanceToken() throws JsonParserException {
 		int c = advanceChar();
+
 		while (CharUtils.isWhitespace(c)) {
 			c = advanceChar();
 		}
-
 		_tokenLinePos = _linePos;
 		_tokenCharPos = _index - _rowPos - _utf8adjust;
 		_tokenCharOffset = _charOffset + _index;
@@ -139,13 +183,15 @@ final class JsonParser {
 			if (advanceToken() != Token.ARRAY_END)
 				while (true) {
 					list.add(currentValue());
-					if (advanceToken() == Token.ARRAY_END)
+					if (advanceToken() == Token.ARRAY_END) {
 						break;
-					if (token != Token.COMMA)
-						throw createParseException(null, "Expected a comma or end of the array instead of " + token,
-								true);
-					if (advanceToken() == Token.ARRAY_END)
-						throw createParseException(null, "Trailing comma found in array", true);
+					}
+					if (token != Token.COMMA) {
+						throw createParseException("Expected a comma or end of the array instead of " + token, true);
+					}
+					if (advanceToken() == Token.ARRAY_END) {
+						throw createParseException("Trailing comma found in array", true);
+					}
 				}
 			value = list;
 			return token = Token.ARRAY_START;
@@ -160,11 +206,11 @@ final class JsonParser {
 			if (advanceToken() != Token.OBJECT_END)
 				while (true) {
 					if (token != Token.STRING) {
-						throw createParseException(null, "Expected STRING, got " + token, true);
+						throw createParseException("Expected STRING, got " + token, true);
 					}
 					String key = (String) value;
 					if (advanceToken() != Token.COLON) {
-						throw createParseException(null, "Expected COLON, got " + token, true);
+						throw createParseException("Expected COLON, got " + token, true);
 					}
 					advanceToken();
 					map.put(key, currentValue());
@@ -172,11 +218,10 @@ final class JsonParser {
 						break;
 					}
 					if (token != Token.COMMA) {
-						throw createParseException(null, "Expected a comma or end of the object instead of " + token,
-								true);
+						throw createParseException("Expected a comma or end of the object instead of " + token, true);
 					}
 					if (advanceToken() == Token.OBJECT_END) {
-						throw createParseException(null, "Trailing object found in array", true);
+						throw createParseException("Trailing object found in array", true);
 					}
 				}
 			value = map;
@@ -213,14 +258,16 @@ final class JsonParser {
 			return token = Token.NUMBER;
 		case '+':
 		case '.':
-			throw createParseException(null, "Numbers may not start with '" + (char) c + "'", true);
+			throw createParseException("Numbers may not start with '" + (char) c + "'", true);
 		default:
 		}
+
 		if (CharUtils.isAsciiLetter(c)) {
-			throw createHelpfulException((char) c, null, 0);
+			throw createHelpfulException((char) c, (char[]) null, 0);
 		}
 
-		throw createParseException(null, "Unexpected character: " + (char) c, true);
+		throw createParseException("Unexpected character: " + (char) c, true);
+
 	}
 
 	private void consumeKeyword(char first, char[] expected) throws JsonParserException {
@@ -254,19 +301,19 @@ final class JsonParser {
 				if (number.charAt(0) == '0') {
 					if (number.charAt(1) == '.') {
 						if (number.length() == 2)
-							throw createParseException(null, "Malformed number: " + number, true);
+							throw createParseException("Malformed number: " + number, true);
 					} else if (number.charAt(1) != 'e' && number.charAt(1) != 'E')
-						throw createParseException(null, "Malformed number: " + number, true);
+						throw createParseException("Malformed number: " + number, true);
 				}
 				if (number.charAt(0) == '-') {
 					if (number.charAt(1) == '0') {
 						if (number.charAt(2) == '.') {
 							if (number.length() == 3)
-								throw createParseException(null, "Malformed number: " + number, true);
+								throw createParseException("Malformed number: " + number, true);
 						} else if (number.charAt(2) != 'e' && number.charAt(2) != 'E')
-							throw createParseException(null, "Malformed number: " + number, true);
+							throw createParseException("Malformed number: " + number, true);
 					} else if (number.charAt(1) == '.') {
-						throw createParseException(null, "Malformed number: " + number, true);
+						throw createParseException("Malformed number: " + number, true);
 					}
 				}
 
@@ -277,13 +324,13 @@ final class JsonParser {
 				if (number.length() == 1) {
 					return 0;
 				}
-				throw createParseException(null, "Malformed number: " + number, true);
+				throw createParseException("Malformed number: " + number, true);
 			}
 			if (number.length() > 1 && number.charAt(0) == '-' && number.charAt(1) == '0') {
 				if (number.length() == 2) {
 					return -0.0;
 				}
-				throw createParseException(null, "Malformed number: " + number, true);
+				throw createParseException("Malformed number: " + number, true);
 			}
 			int length = number.charAt(0) == '-' ? number.length() - 1 : number.length();
 			if (length < 10) {
@@ -294,7 +341,7 @@ final class JsonParser {
 			}
 			return new java.math.BigInteger(number);
 		} catch (NumberFormatException e) {
-			throw createParseException(e, "Malformed number: " + number, true);
+			throw createParseException("Malformed number: " + number, true);
 		}
 	}
 
@@ -310,7 +357,7 @@ final class JsonParser {
 				int escape = advanceChar();
 				switch (escape) {
 				case -1:
-					throw createParseException(null, "EOF encountered in the middle of a _strings escape", false);
+					throw createParseException("EOF encountered in the middle of a strings escape", false);
 				case 'b':
 					_reusableBuffer.append('\b');
 					break;
@@ -336,7 +383,7 @@ final class JsonParser {
 							| stringHexChar() << 4 | stringHexChar()));
 					break;
 				default:
-					throw createParseException(null, "Invalid escape: \\" + (char) escape, false);
+					throw createParseException("Invalid escape: \\" + (char) escape, false);
 				}
 				break;
 			default:
@@ -347,20 +394,21 @@ final class JsonParser {
 
 	private char stringChar() throws JsonParserException {
 		int c = advanceChar();
+
 		if (c == -1) {
-			throw createParseException(null, "String was not terminated before end of input", true);
+			throw createParseException("String was not terminated before end of input", true);
 		}
 		if (c < 32) {
-			throw createParseException(null, "Strings may not contain control characters: 0x" + Integer.toString(c, 16),
+			throw createParseException("Strings may not contain control characters: 0x" + Integer.toString(c, 16),
 					false);
 		}
 		return (char) c;
 	}
 
 	private int stringHexChar() throws JsonParserException {
-		int c = "0123456789abcdef0123456789ABCDEF".indexOf(advanceChar()) % 16;
+		int c = HEXCHARS.indexOf(advanceChar()) % 16;
 		if (c == -1) {
-			throw createParseException(null, "Expected unicode hex escape character", false);
+			throw createParseException("Expected unicode hex escape character", false);
 		}
 		return c;
 	}
@@ -374,7 +422,8 @@ final class JsonParser {
 			return -1;
 		}
 		int c = _strings.charAt(_index);
-		if (c == '\n') {
+
+		if (c == LSystem.LF) {
 			_linePos++;
 			_rowPos = _index + 1;
 			_utf8adjust = 0;
@@ -398,17 +447,19 @@ final class JsonParser {
 			errorToken.append((char) advanceChar());
 		}
 
-		return createParseException(null, "Unexpected token '" + errorToken.toString() + "'"
-				+ (expected == null ? LSystem.EMPTY : ". Did you mean '" + first + new String(expected) + "'?"), true);
+		return createParseException(
+				"Unexpected token '" + errorToken.toString() + "'"
+						+ (expected == null ? LSystem.EMPTY : ". Did you mean '" + first + new String(expected) + "'?"),
+				true);
 	}
 
-	private JsonParserException createParseException(Exception e, String message, boolean tokenPos) {
-		if (tokenPos)
-			return new JsonParserException(e, message + " on line " + _tokenLinePos + ", char " + _tokenCharPos,
+	private JsonParserException createParseException(String message, boolean tokenPos) {
+		if (tokenPos) {
+			return new JsonParserException(message + " on line " + _tokenLinePos + ", char " + _tokenCharPos,
 					_tokenLinePos, _tokenCharPos, _tokenCharOffset);
-		else {
+		} else {
 			int charPos = MathUtils.max(1, _index - _rowPos - _utf8adjust);
-			return new JsonParserException(e, message + " on line " + _linePos + ", char " + charPos, _linePos, charPos,
+			return new JsonParserException(message + " on line " + _linePos + ", char " + charPos, _linePos, charPos,
 					_index + _charOffset);
 		}
 	}

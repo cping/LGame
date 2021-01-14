@@ -21,6 +21,7 @@
 package loon.utils.res;
 
 import loon.Json;
+import loon.LTexture;
 import loon.canvas.Image;
 import loon.canvas.Pixmap;
 import loon.events.EventDispatcher;
@@ -38,6 +39,8 @@ public abstract class ResourceGetter extends EventDispatcher {
 	abstract public String getText(String name);
 	
 	abstract public Texture getTexture(String name);
+
+	abstract public LTexture getTextureData(String name);
 	
 	abstract public Image getImage(String name);
 

@@ -3,6 +3,7 @@ using loon.events;
 using loon.utils;
 using loon.utils.reply;
 using Microsoft.Xna.Framework.Graphics;
+using static loon.LTexture;
 
 namespace loon
 {
@@ -74,6 +75,7 @@ namespace loon
             {
                 setting.fontName = FONT_NAME;
             }
+
         }
 
         protected void InitProcess(LGame game)
@@ -103,6 +105,27 @@ namespace loon
                 jsonImpl = new JsonImpl();
             }*/
             return this;
+        }
+
+        public virtual LTexture CreateTexture(int width, int height, Format config)
+        {
+            return Graphics().CreateTexture(width, height, config);
+        }
+
+        public virtual LTexture NewTexture(string path)
+        {
+            return NewTexture(path, Format.LINEAR);
+        }
+
+
+        public virtual LTexture NewTexture(string path, Format config)
+        {
+            if (StringUtils.IsEmpty(path))
+            {
+                return null;
+            }
+            Log().Debug("Texture : New " + path + " Loaded");
+            return this.Graphics().CreateTexture(path,config);
         }
 
         public virtual void SetPlatform(Platform plat)

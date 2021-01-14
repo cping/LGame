@@ -363,7 +363,7 @@ public class JsonLayout implements LRelease {
 
 	private String layoutType;
 
-	private String path;
+	private String jsonPath;
 
 	private Screen currentScreen;
 
@@ -375,7 +375,7 @@ public class JsonLayout implements LRelease {
 		if (StringUtils.isEmpty(path)) {
 			throw new LSysException("Path is null");
 		}
-		this.path = path;
+		this.jsonPath = path;
 		this.container = new TArray<LContainer>();
 		this.sprites = new ObjectMap<String, ISprite>();
 		createGameWindowImage = false;
@@ -397,7 +397,7 @@ public class JsonLayout implements LRelease {
 
 	public void parse() {
 		try {
-			String text = BaseIO.loadText(path);
+			String text = BaseIO.loadText(jsonPath);
 			if (StringUtils.isEmpty(text)) {
 				throw new LSysException("File Context is null");
 			}
@@ -1395,7 +1395,7 @@ public class JsonLayout implements LRelease {
 	}
 
 	public String getPath() {
-		return this.path;
+		return this.jsonPath;
 	}
 
 	public void setListener(JsonLayoutListener listener) {

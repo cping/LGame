@@ -202,7 +202,7 @@ public class Command extends Conversion implements LRelease {
 		if (readBuffer == null) {
 			readBuffer = new StrBuilder(256);
 		} else {
-			readBuffer.delete(0, readBuffer.length());
+			readBuffer.setLength(0);
 		}
 		this.scriptName = name;
 		this.scriptList = res;
@@ -253,7 +253,7 @@ public class Command extends Conversion implements LRelease {
 						} else {
 							valueA = sbr.toString();
 							valueA = String.valueOf(exp.parse(valueA));
-							sbr.delete(0, sbr.length());
+							sbr.setLength(0);
 							condition = res;
 						}
 					}
@@ -444,7 +444,7 @@ public class Command extends Conversion implements LRelease {
 				length = sbr.length();
 				if (length > 0) {
 					tagList.add(sbr.substring(1, sbr.length() - elength));
-					sbr.delete(0, length);
+					sbr.setLength(0);
 				}
 			}
 		}
@@ -890,7 +890,7 @@ public class Command extends Conversion implements LRelease {
 			}
 			// 选择项列表
 			if (cmd.startsWith(IN_TAG)) {
-				readBuffer.delete(0, readBuffer.length());
+				readBuffer.setLength(0);
 				isRead = true;
 				return executeCommand;
 			}

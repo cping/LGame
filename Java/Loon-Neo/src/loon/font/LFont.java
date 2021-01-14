@@ -215,7 +215,7 @@ public class LFont implements IFont {
 				char ch = message.charAt(i);
 				if (ch == LSystem.LF) {
 					width = MathUtils.max(textLayout.stringWidth(sbr.toString()), width);
-					sbr.delete(0, sbr.length());
+					sbr.setLength(0);
 				} else {
 					sbr.append(ch);
 				}

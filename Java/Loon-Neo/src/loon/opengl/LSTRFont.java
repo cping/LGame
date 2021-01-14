@@ -191,7 +191,7 @@ public class LSTRFont implements IFont, LRelease {
 								}
 							}
 						}
-						sbr.delete(0, sbr.length());
+						sbr.setLength(0);
 						positionX = 0;
 						positionY += rowHeight;
 						rowHeight = 0;

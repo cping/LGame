@@ -48,13 +48,13 @@ public class AStarFinder implements Updateable, LRelease {
 
 	public static final int ASTAR = 1;
 
-	private static class ScoredPath {
+	private class ScoredPath {
 
 		private float score;
 
 		private TArray<Vector2f> pathList;
 
-		ScoredPath(float score, TArray<Vector2f> pathList) {
+		private ScoredPath(float score, TArray<Vector2f> pathList) {
 			this.score = score;
 			this.pathList = pathList;
 		}
@@ -339,7 +339,6 @@ public class AStarFinder implements Updateable, LRelease {
 				if (!map.isHit(next) && !flying) {
 					continue;
 				}
-
 				if (algorithm == ASTAR) {
 					if (closedList.contains(next)) {
 						continue;
@@ -390,6 +389,10 @@ public class AStarFinder implements Updateable, LRelease {
 
 	public boolean isFlying() {
 		return flying;
+	}
+
+	public boolean isAllDirectionMove() {
+		return alldirMove;
 	}
 
 	@Override

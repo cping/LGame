@@ -159,7 +159,7 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 			if (record.length() > 0 && !record.startsWith(FLAG_L_TAG) && !record.startsWith(FLAG_C_TAG)
 					&& !record.startsWith(FLAG_I_TAG)) {
 				if (record.startsWith("begin")) {
-					mapBuffer.delete(0, mapBuffer.length());
+					mapBuffer.setLength(0);
 					String mes = filter(record.substring(5, record.length()));
 					if (mes.startsWith("name")) {
 						mapName = loadItem(mes, false);
@@ -185,7 +185,7 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 		}
 		char[] chars = mes.toCharArray();
 		int size = chars.length;
-		StrBuilder sbr = template_values.delete(0, template_values.length());
+		StrBuilder sbr = template_values.setLength(0);
 		String key = null;
 		String value = null;
 		int idx = 0;
@@ -198,7 +198,7 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 					equals++;
 					if (idx == 0) {
 						key = sbr.toString();
-						sbr.delete(0, sbr.length());
+						sbr.setLength(0);
 					}
 					idx++;
 				}
@@ -382,14 +382,14 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 				case '}':
 					pFlag = false;
 					String row = sbr.toString();
-					String[] strings = row.split(",");
+					String[] strings = StringUtils.split(row, LSystem.COMMA);
 					int length = strings.length;
 					int[] arrays = new int[length];
 					for (int j = 0; j < length; j++) {
 						arrays[j] = Integer.parseInt(strings[j]);
 					}
 					records.add(arrays);
-					sbr.delete(0, sbr.length());
+					sbr.setLength(0);
 					break;
 				case ' ':
 					break;
