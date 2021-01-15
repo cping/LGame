@@ -903,6 +903,22 @@ public class Sprite extends LObject<ISprite>
 		return this;
 	}
 
+	public boolean isDescendantOf(ISprite actor) {
+		if (actor == null) {
+			throw new LSysException("Actor cannot be null");
+		}
+		ISprite parent = this;
+		for (;;) {
+			if (parent == null) {
+				return false;
+			}
+			if (parent == actor) {
+				return true;
+			}
+			parent = parent.getParent();
+		}
+	}
+
 	public boolean isAscendantOf(ISprite actor) {
 		if (actor == null) {
 			throw new LSysException("Actor cannot be null");

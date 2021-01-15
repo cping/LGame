@@ -74,6 +74,10 @@ public abstract class LContainer extends LComponent implements IArray {
 		return true;
 	}
 
+	public boolean hasChilds () {
+		return childCount > 0;
+	}
+
 	public LComponent addPadding(LComponent comp, float offX, float offY) {
 		return addPadding(comp, offX, offY, 2);
 	}

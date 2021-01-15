@@ -39,43 +39,48 @@ public class AVGCG implements LRelease {
 
 	protected Sprites actionRole;
 
-	private long charaShowDelay = 60;
+	private float _roleDelay = 60;
 
-	private LTexture background;
+	private LTexture _background;
 
-	private ArrayMap charas;
+	private ArrayMap _roles;
 
-	private boolean style, loop, closed;
+	private boolean _style, _loop, _closed;
 
 	protected int sleep, sleepMax, shakeNumber;
 
 	public AVGCG(Screen screen) {
+		this(screen, 60f);
+	}
+
+	public AVGCG(Screen screen, float delay) {
 		this.actionRole = new Sprites(screen);
-		this.charas = new ArrayMap(10);
-		this.style = true;
-		this.loop = true;
+		this._roles = new ArrayMap();
+		this._style = true;
+		this._loop = true;
+		this._roleDelay = delay;
 	}
 
 	public LTexture getBackgroundCG() {
-		return background;
+		return _background;
 	}
 
 	public void noneBackgroundCG() {
-		if (background != null) {
-			background.close();
-			background = null;
+		if (_background != null) {
+			_background.close();
+			_background = null;
 		}
 	}
 
 	public void setBackgroundCG(LTexture backgroundCG) {
-		if (backgroundCG == this.background) {
+		if (backgroundCG == this._background) {
 			return;
 		}
-		if (background != null) {
-			background.close();
-			background = null;
+		if (_background != null) {
+			_background.close();
+			_background = null;
 		}
-		this.background = backgroundCG;
+		this._background = backgroundCG;
 	}
 
 	private final static String update(final String n) {
@@ -95,9 +100,9 @@ public class AVGCG implements LRelease {
 			return;
 		}
 		String path = update(resName);
-		synchronized (charas) {
-			chara.setFlag(ISprite.TYPE_FADE_OUT, charaShowDelay);
-			this.charas.put(path.replaceAll(" ", LSystem.EMPTY).toLowerCase(), chara);
+		synchronized (_roles) {
+			chara.setFlag(ISprite.TYPE_FADE_OUT, _roleDelay);
+			this._roles.put(path.replaceAll(" ", LSystem.EMPTY).toLowerCase(), chara);
 		}
 	}
 
@@ -111,15 +116,15 @@ public class AVGCG implements LRelease {
 
 	public void add(final String resName, int x, int y, int w, int h) {
 		String path = update(resName);
-		synchronized (charas) {
+		synchronized (_roles) {
 			String keyName = path.replaceAll(" ", LSystem.EMPTY).toLowerCase();
-			AVGChara chara = (AVGChara) charas.get(keyName);
+			AVGChara chara = (AVGChara) _roles.get(keyName);
 			if (chara == null) {
 				chara = new AVGChara(path, x, y, w, h);
-				chara.setFlag(ISprite.TYPE_FADE_OUT, charaShowDelay);
-				charas.put(keyName, chara);
+				chara.setFlag(ISprite.TYPE_FADE_OUT, _roleDelay);
+				_roles.put(keyName, chara);
 			} else {
-				chara.setFlag(ISprite.TYPE_FADE_OUT, charaShowDelay);
+				chara.setFlag(ISprite.TYPE_FADE_OUT, _roleDelay);
 				chara.setX(x);
 				chara.setY(y);
 			}
@@ -128,16 +133,16 @@ public class AVGCG implements LRelease {
 
 	public AVGChara remove(final String resName) {
 		String path = update(resName);
-		synchronized (charas) {
+		synchronized (_roles) {
 			final String name = path.replaceAll(" ", LSystem.EMPTY).toLowerCase();
 			AVGChara chara = null;
-			if (style) {
-				chara = (AVGChara) charas.get(name);
+			if (_style) {
+				chara = (AVGChara) _roles.get(name);
 				if (chara != null) {
-					chara.setFlag(ISprite.TYPE_FADE_IN, charaShowDelay);
+					chara.setFlag(ISprite.TYPE_FADE_IN, _roleDelay);
 				}
 			} else {
-				chara = (AVGChara) charas.remove(name);
+				chara = (AVGChara) _roles.remove(name);
 				if (chara != null) {
 					dispose(chara);
 				}
@@ -149,16 +154,16 @@ public class AVGCG implements LRelease {
 	public void replace(String res1, String res2) {
 		String path1 = update(res1);
 		String path2 = update(res2);
-		synchronized (charas) {
+		synchronized (_roles) {
 			final String name = path1.replaceAll(" ", LSystem.EMPTY).toLowerCase();
 			AVGChara old = null;
-			if (style) {
-				old = (AVGChara) charas.get(name);
+			if (_style) {
+				old = (AVGChara) _roles.get(name);
 				if (old != null) {
-					old.setFlag(ISprite.TYPE_FADE_IN, charaShowDelay);
+					old.setFlag(ISprite.TYPE_FADE_IN, _roleDelay);
 				}
 			} else {
-				old = (AVGChara) charas.remove(name);
+				old = (AVGChara) _roles.remove(name);
 				if (old != null) {
 					dispose(old);
 				}
@@ -190,21 +195,21 @@ public class AVGCG implements LRelease {
 	}
 
 	public void paint(GLEx g) {
-		if (background != null) {
+		if (_background != null) {
 			if (shakeNumber > 0) {
-				g.draw(background, shakeNumber / 2 - MathUtils.random(shakeNumber),
+				g.draw(_background, shakeNumber / 2 - MathUtils.random(shakeNumber),
 						shakeNumber / 2 - MathUtils.random(shakeNumber));
 			} else {
-				g.draw(background, 0, 0);
+				g.draw(_background, 0, 0);
 			}
 		}
-		synchronized (charas) {
-			for (int i = 0; i < charas.size(); i++) {
-				AVGChara chara = (AVGChara) charas.get(i);
+		synchronized (_roles) {
+			for (int i = 0; i < _roles.size(); i++) {
+				AVGChara chara = (AVGChara) _roles.get(i);
 				if (chara == null || !chara.visible) {
 					continue;
 				}
-				if (style) {
+				if (_style) {
 					if (chara.flag != -1) {
 						if (chara.flag == ISprite.TYPE_FADE_IN) {
 							chara.currentFrame--;
@@ -212,7 +217,7 @@ public class AVGCG implements LRelease {
 								chara.opacity = 0;
 								chara.flag = -1;
 								chara.close();
-								charas.remove(chara);
+								_roles.remove(chara);
 							}
 						} else {
 							chara.currentFrame++;
@@ -229,9 +234,9 @@ public class AVGCG implements LRelease {
 				}
 				if (chara.showAnimation) {
 					AVGAnm animation = chara.anm;
-					if (animation.load) {
+					if (animation.loaded) {
 						if (animation.loop && animation.startTime == -1) {
-							animation.start(0, loop);
+							animation.start(0, _loop);
 						}
 						PointI point = animation.getPos(TimeUtils.millis());
 						if (animation.alpha != 1f) {
@@ -248,7 +253,7 @@ public class AVGCG implements LRelease {
 					chara.next();
 					chara.draw(g);
 				}
-				if (style) {
+				if (_style) {
 					if (chara.flag != -1 && chara.opacity > 0) {
 						g.setAlpha(1f);
 					}
@@ -259,45 +264,45 @@ public class AVGCG implements LRelease {
 	}
 
 	public void clear() {
-		synchronized (charas) {
-			charas.clear();
+		synchronized (_roles) {
+			_roles.clear();
 			actionRole.clear();
 		}
 	}
 
 	public ArrayMap getCharas() {
-		return charas;
+		return _roles;
 	}
 
 	public int count() {
-		if (charas != null) {
-			return charas.size();
+		if (_roles != null) {
+			return _roles.size();
 		}
 		return 0;
 	}
 
-	public long getCharaShowDelay() {
-		return charaShowDelay;
+	public float getRoleDelay() {
+		return _roleDelay;
 	}
 
-	public void setCharaShowDelay(long charaShowDelay) {
-		this.charaShowDelay = charaShowDelay;
+	public void setRoleDelay(float roleDelay) {
+		this._roleDelay = roleDelay;
 	}
 
 	public boolean isStyle() {
-		return style;
+		return _style;
 	}
 
 	public void setStyle(boolean style) {
-		this.style = style;
+		this._style = style;
 	}
 
 	public boolean isLoop() {
-		return loop;
+		return _loop;
 	}
 
 	public void setLoop(boolean loop) {
-		this.loop = loop;
+		this._loop = loop;
 	}
 
 	public Sprites getSprites() {
@@ -309,32 +314,32 @@ public class AVGCG implements LRelease {
 	}
 
 	public boolean isClosed() {
-		return closed;
+		return _closed;
 	}
 
 	@Override
 	public void close() {
-		synchronized (charas) {
-			if (style) {
-				for (int i = 0; i < charas.size(); i++) {
-					AVGChara ch = (AVGChara) charas.get(i);
+		synchronized (_roles) {
+			if (_style) {
+				for (int i = 0; i < _roles.size(); i++) {
+					AVGChara ch = (AVGChara) _roles.get(i);
 					if (ch != null) {
-						ch.setFlag(ISprite.TYPE_FADE_IN, charaShowDelay);
+						ch.setFlag(ISprite.TYPE_FADE_IN, _roleDelay);
 					}
 				}
 			} else {
-				for (int i = 0; i < charas.size(); i++) {
-					AVGChara ch = (AVGChara) charas.get(i);
+				for (int i = 0; i < _roles.size(); i++) {
+					AVGChara ch = (AVGChara) _roles.get(i);
 					if (ch != null) {
 						ch.close();
 						ch = null;
 					}
 				}
-				charas.clear();
+				_roles.clear();
 			}
 			actionRole.clear();
 		}
-		closed = true;
+		_closed = true;
 	}
 
 }

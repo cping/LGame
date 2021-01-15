@@ -304,6 +304,14 @@ public class Command extends Conversion implements LRelease {
 				float numberA = Float.parseFloat(valueA.toString());
 				float numberB = Float.parseFloat(valueB.toString());
 				conditionEnvironmentList.put(nowPosFlagName, Boolean.valueOf(result = numberA <= numberB));
+			} else if ("&&".equals(condition)) {
+				float numberA = Float.parseFloat(valueA.toString());
+				float numberB = Float.parseFloat(valueB.toString());
+				conditionEnvironmentList.put(nowPosFlagName, Boolean.valueOf(result = (numberA > 0 && numberB > 0)));
+			} else if ("||".equals(condition)) {
+				float numberA = Float.parseFloat(valueA.toString());
+				float numberB = Float.parseFloat(valueB.toString());
+				conditionEnvironmentList.put(nowPosFlagName, Boolean.valueOf(result = (numberA > 0 || numberB > 0)));
 			}
 		} catch (Throwable ex) {
 			LSystem.error("Command parse exception", ex);
@@ -616,12 +624,14 @@ public class Command extends Conversion implements LRelease {
 				for (int i = 0; i < setEnvironmentList.size(); i++) {
 
 					Entry entry = setEnvironmentList.getEntry(i);
-					if (!(StringUtils.startsWith(result, LSystem.DOUBLE_QUOTES) && StringUtils.endsWith(result, LSystem.DOUBLE_QUOTES))) {
+					if (!(StringUtils.startsWith(result, LSystem.DOUBLE_QUOTES)
+							&& StringUtils.endsWith(result, LSystem.DOUBLE_QUOTES))) {
 						result = StringUtils.replaceMatch(result, (String) entry.getKey(), (String) entry.getValue());
 					}
 				}
 				// 当为普通字符串时
-				if (StringUtils.startsWith(result, LSystem.DOUBLE_QUOTES) && StringUtils.endsWith(result, LSystem.DOUBLE_QUOTES)) {
+				if (StringUtils.startsWith(result, LSystem.DOUBLE_QUOTES)
+						&& StringUtils.endsWith(result, LSystem.DOUBLE_QUOTES)) {
 					setEnvironmentList.put(temps.get(1), result.substring(1, result.length() - 1));
 				} else if (StringUtils.isChinaLanguage(result) || StringUtils.isEnglishAndNumeric(result)) {
 					setEnvironmentList.put(temps.get(1), result);
@@ -834,8 +844,8 @@ public class Command extends Conversion implements LRelease {
 				if (!backIfBool && !esleflag) {
 					// 存在if判断
 					if (value.length > 1 && IF_TAG.equals(value[1])) {
-						esleover = esleflag = setupIF(StringUtils.replace(cmd, ELSE_TAG, LSystem.EMPTY).trim(), nowPosFlagName,
-								setEnvironmentList, conditionEnvironmentList);
+						esleover = esleflag = setupIF(StringUtils.replace(cmd, ELSE_TAG, LSystem.EMPTY).trim(),
+								nowPosFlagName, setEnvironmentList, conditionEnvironmentList);
 						addCommand = false;
 						// 单纯的else
 					} else if (value.length == 1 && ELSE_TAG.equals(value[0])) {
@@ -1208,8 +1218,8 @@ public class Command extends Conversion implements LRelease {
 		}
 
 	}
-	
-	public static void freeStatic(){
+
+	public static void freeStatic() {
 		scriptLazy = null;
 		scriptContext = null;
 		functions = null;

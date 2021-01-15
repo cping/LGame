@@ -22,6 +22,8 @@ package loon.utils;
 
 import java.util.Iterator;
 
+import loon.LSysException;
+
 public class IntMap<T> implements IArray, Iterable<T> {
 
 	public static class Entry<T> {
@@ -271,10 +273,16 @@ public class IntMap<T> implements IArray, Iterable<T> {
 		if (index < 0) {
 			return null;
 		}
+		return removeIndex(index);
+	}
+
+	public T removeIndex(final int index) {
+		if (_locked) {
+			return null;
+		}
 		for (int i = 0; i < _capacity; ++i) {
 			final int curr = (index + i) & (_capacity - 1);
 			final int next = (index + i + 1) & (_capacity - 1);
-
 			final int h = (int) _keysTable[next];
 			if (h == 0 || findIndex(h, next) == 0) {
 				T data = _valuesTable[curr];
@@ -426,11 +434,14 @@ public class IntMap<T> implements IArray, Iterable<T> {
 				return null;
 			}
 			for (; _index < _map._capacity; ++_index) {
-				final T value = _map._valuesTable[_index];
-				if (value != null) {
-					++_index;
-					++_found;
-					return value;
+				final T[] values = _map._valuesTable;
+				if (_index < values.length) {
+					final T value = values[_index];
+					if (value != null) {
+						++_index;
+						++_found;
+						return value;
+					}
 				}
 			}
 			return null;
@@ -438,6 +449,17 @@ public class IntMap<T> implements IArray, Iterable<T> {
 
 		@Override
 		public void remove() {
+			int i = _found;
+			if (i < 0) {
+				throw new LSysException("next must be called before remove.");
+			} else {
+				final long hashCode = _map._keysTable[i];
+				final int idx = _map.find(hashCode);
+				if (idx < 0) {
+					return;
+				}
+				_map.removeIndex(idx);
+			}
 		}
 
 		@Override

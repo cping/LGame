@@ -137,5 +137,10 @@ namespace java.lang
         {
             return this.value == null || this.value.Length == 0;
         }
+
+        public override string ToString()
+        {
+            return this.value;
+        }
     }
 }

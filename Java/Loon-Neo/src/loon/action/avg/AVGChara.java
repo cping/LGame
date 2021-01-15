@@ -50,7 +50,7 @@ public class AVGChara implements Visible, XY, LRelease {
 
 	protected float opacity;
 
-	protected boolean moved, showAnimation, visible = true;
+	protected boolean moved, showAnimation, visible;
 
 	protected int maxWidth, maxHeight;
 
@@ -100,12 +100,7 @@ public class AVGChara implements Visible, XY, LRelease {
 		} else {
 			this.load(LSystem.loadTexture(path), x, y);
 		}
-	}
-
-	String tmp_path;
-
-	void update(String path) {
-		this.tmp_path = path;
+		this.visible = true;
 	}
 
 	private void load(LTexture image, final int x, final int y) {
@@ -119,6 +114,7 @@ public class AVGChara implements Visible, XY, LRelease {
 		this.showAnimation = false;
 		this.characterCG = image;
 		this.moved = true;
+		this.visible = true;
 		this.width = width;
 		this.height = height;
 		this.x = x;

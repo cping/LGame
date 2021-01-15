@@ -27,9 +27,9 @@ import loon.LTexture;
 import loon.action.avg.drama.Expression;
 import loon.canvas.LColor;
 import loon.geom.PointI;
+import loon.utils.IntArray;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
-import loon.utils.TArray;
 import loon.utils.parse.StrTokenizer;
 
 //0.3.3新增类,用以按指定的格式循环播放动画图像
@@ -37,25 +37,23 @@ public class AVGAnm implements Expression, LRelease {
 
 	protected final PointI point = new PointI();
 
-	private String path;
-
-	protected float alpha = 1.0f;
+	protected float alpha = 1f;
 
 	protected float angle;
 
 	protected int width, height, imageWidth, imageHeight;
 
-	protected TArray<Integer> posxTmps = new TArray<Integer>();
+	protected IntArray posxTmps = new IntArray();
 
-	protected TArray<Integer> posyTmps = new TArray<Integer>();
+	protected IntArray posyTmps = new IntArray();
 
 	protected int[] posx = null;
 
 	protected int[] posy = null;
 
-	protected TArray<Integer> time = new TArray<Integer>();
+	protected IntArray time = new IntArray();
 
-	protected int tmp_time = 20;
+	protected int anmtime = 20;
 
 	protected int alltime = 0;
 
@@ -63,18 +61,18 @@ public class AVGAnm implements Expression, LRelease {
 
 	protected long startTime = -1;
 
-	protected boolean loop = true, load = false, closed = false;;
+	protected boolean loop = true, loaded = false, closed = false;;
 
 	protected LTexture texture;
 
 	protected LColor color;
 
+	private String anmPath;
+
+	private String texturePath;
+
 	public AVGAnm(String resName) {
-		open(BaseIO.loadText(resName));
-	}
-
-	public AVGAnm() {
-
+		open(BaseIO.loadText(this.anmPath = resName));
 	}
 
 	public void open(String text) {
@@ -92,12 +90,12 @@ public class AVGAnm implements Expression, LRelease {
 				}
 			}
 		} catch (Throwable ex) {
-			this.load = false;
+			this.loaded = false;
 			LSystem.error("AVGAnm exception", ex);
 			return;
 		}
-		this.load = true;
-		this.count = posxTmps.size;
+		this.loaded = true;
+		this.count = posxTmps.size();
 		this.posx = new int[count];
 		this.posy = new int[count];
 		for (int i = 0; i < count; i++) {
@@ -113,20 +111,21 @@ public class AVGAnm implements Expression, LRelease {
 	}
 
 	private void load(String script) {
-		String[] op = script.split("=");
+		String[] op = StringUtils.split(script, '=');
 		if (op.length == 2) {
 			final String key = op[0].trim();
 			final String value = op[1].trim();
 			if ("path".equalsIgnoreCase(key)) {
-				path = StringUtils.replace(value, "\"", LSystem.EMPTY);
+				texturePath = StringUtils.replace(value, "\"", LSystem.EMPTY);
 				if (texture != null) {
 					texture.close();
 					texture = null;
 				}
-				texture = LSystem.loadTexture(path);
-				imageWidth = texture.getWidth();
-				imageHeight = texture.getHeight();
-
+				texture = LSystem.loadTexture(texturePath);
+				if (texture != null) {
+					imageWidth = texture.getWidth();
+					imageHeight = texture.getHeight();
+				}
 			}
 			if ("imagewidth".equalsIgnoreCase(key)) {
 				if (MathUtils.isNan(value)) {
@@ -167,7 +166,7 @@ public class AVGAnm implements Expression, LRelease {
 				}
 			} else if ("time".equalsIgnoreCase(key)) {
 				if (MathUtils.isNan(value)) {
-					tmp_time = Integer.parseInt(value);
+					anmtime = Integer.parseInt(value);
 				}
 			} else if ("pos".equalsIgnoreCase(key)) {
 				String[] p = value.split(",");
@@ -179,16 +178,16 @@ public class AVGAnm implements Expression, LRelease {
 					if (MathUtils.isNan(p[0])) {
 						posxTmps.add(Integer.parseInt(p[0]));
 						posyTmps.add(Integer.parseInt(p[0]));
-						time.add(tmp_time);
-						alltime += tmp_time;
+						time.add(anmtime);
+						alltime += anmtime;
 					}
 					break;
 				case 2:
 					if (MathUtils.isNan(p[0]) && MathUtils.isNan(p[1])) {
 						posxTmps.add(Integer.parseInt(p[0]));
 						posyTmps.add(Integer.parseInt(p[1]));
-						time.add(tmp_time);
-						alltime += tmp_time;
+						time.add(anmtime);
+						alltime += anmtime;
 					}
 					break;
 				}
@@ -196,8 +195,12 @@ public class AVGAnm implements Expression, LRelease {
 		}
 	}
 
-	public String getPath() {
-		return path;
+	public String getTexturePath() {
+		return texturePath;
+	}
+
+	public String getAnmPath() {
+		return anmPath;
 	}
 
 	public int getWidth() {
@@ -240,7 +243,7 @@ public class AVGAnm implements Expression, LRelease {
 		return posy;
 	}
 
-	public TArray<Integer> getTime() {
+	public IntArray getTime() {
 		return time;
 	}
 

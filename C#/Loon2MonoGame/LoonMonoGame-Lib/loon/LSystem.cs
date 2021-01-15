@@ -326,6 +326,66 @@ namespace loon
             }
         }
 
+        public static int Unites(params float[] value)
+        {
+            return Unites(31, value);
+        }
+
+        public static int Unites(int hashCode,params float[] value)
+        {
+            int code = hashCode;
+            for (int i = 0; i < value.Length; i++)
+            {
+                code = Unite(code, value[i]);
+            }
+            return code;
+        }
+
+        public static int Unites(params int[] value)
+        {
+            return Unites(31, value);
+        }
+
+        public static int Unites(int hashCode,params int[] value)
+        {
+            int code = hashCode;
+            for (int i = 0; i < value.Length; i++)
+            {
+                code = Unite(code, value[i]);
+            }
+            return code;
+        }
+
+        public static int Unites(params bool[] value)
+        {
+            return Unites(31, value);
+        }
+
+        public static int Unites(int hashCode,params bool[] value)
+        {
+            int code = hashCode;
+            for (int i = 0; i < value.Length; i++)
+            {
+                code = Unite(code, value[i]);
+            }
+            return code;
+        }
+
+        public static int Unites(params long[] value)
+        {
+            return Unites(31, value);
+        }
+
+        public static int Unites(int hashCode,params long[] value)
+        {
+            int code = hashCode;
+            for (int i = 0; i < value.Length; i++)
+            {
+                code = Unite(code, value[i]);
+            }
+            return code;
+        }
+
         public static int Unite(int hashCode, bool value)
         {
             int v = value ? 1231 : 1237;

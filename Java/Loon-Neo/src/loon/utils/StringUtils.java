@@ -328,7 +328,7 @@ final public class StringUtils extends CharUtils {
 	 * @param o
 	 * @return
 	 */
-	public static String join(Character flag, Object... o) {
+	public static String join(CharSequence flag, Object... o) {
 		if (CollectionUtils.isEmpty(o)) {
 			return LSystem.EMPTY;
 		}

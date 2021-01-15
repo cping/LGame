@@ -686,6 +686,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		this._childrenIgnoreUpdate = false;
 
 		this._rotation = 0f;
+		this._previousRotation = 0f;
 		this._scaleX = 1f;
 		this._scaleY = 1f;
 		this._skewX = 0f;
@@ -1439,11 +1440,15 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		return _debugDraw;
 	}
 
-	public ISprite setDebugDraw(boolean debugDraw) {
-		this._debugDraw = debugDraw;
+	public ISprite setDebugDraw(boolean debug) {
+		this._debugDraw = debug;
 		return this;
 	}
-
+	
+	public ISprite debug () {
+		return 	setDebugDraw(true);
+	}
+	
 	public LColor getDebugDrawColor() {
 		return _debugDrawColor.cpy();
 	}
@@ -1514,6 +1519,22 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	public Entity setMirror(boolean mirror) {
 		return setFlipX(mirror);
+	}
+	
+	public boolean isDescendantOf(ISprite actor) {
+		if (actor == null) {
+			throw new LSysException("Actor cannot be null");
+		}
+		ISprite parent = this;
+		for (;;) {
+			if (parent == null) {
+				return false;
+			}
+			if (parent == actor) {
+				return true;
+			}
+			parent = parent.getParent();
+		}
 	}
 
 	public boolean isAscendantOf(ISprite actor) {

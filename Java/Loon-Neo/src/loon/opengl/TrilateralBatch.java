@@ -29,89 +29,29 @@ import loon.LSystem;
 
 public class TrilateralBatch extends BaseBatch {
 
-	private final static String _batch_name = "trilbatch";
+	private final static String BATCHNAME = "trilbatch";
 
-	private final Matrix4 viewMatrix;
+	private final LColor _batchColor = new LColor();
 
-	private final ExpandVertices expandVertices;
+	private final Matrix4 _viewMatrix;
 
-	private int idx = 0;
+	private final ExpandVertices _expandVertices;
 
-	private final LColor tmpColor = new LColor();
+	private float _ubufWidth = 0;
 
-	private ShaderProgram shader;
+	private float _ubufHeight = 0;
 
-	private int maxSpritesInBatch = 0;
+	private boolean _uflip = true;
 
-	private boolean isLoaded;
+	private boolean _loaded = false, _locked = false;
 
-	private boolean lockSubmit = false;
+	private int _maxSpritesInBatch = 0;
 
-	private Submit submit;
+	private int _indexCount = 0;
 
-	public int getSize() {
-		return expandVertices.getSize();
-	}
+	private ShaderProgram _batchShader;
 
-	public void setShaderUniformf(String name, LColor color) {
-		if (shader != null) {
-			shader.setUniformf(name, color);
-		}
-	}
-
-	public void setShaderUniformf(int name, LColor color) {
-		if (shader != null) {
-			shader.setUniformf(name, color);
-		}
-	}
-
-	public boolean isLockSubmit() {
-		return lockSubmit;
-	}
-
-	public void setLockSubmit(boolean lockSubmit) {
-		this.lockSubmit = lockSubmit;
-	}
-
-	public void submit() {
-		if (idx == 0) {
-			return;
-		}
-		try {
-			int spritesInBatch = idx / 20;
-			if (spritesInBatch > maxSpritesInBatch) {
-				maxSpritesInBatch = spritesInBatch;
-			}
-			int count = spritesInBatch * 6;
-			bindTexture();
-			GL20 gl = LSystem.base().graphics().gl;
-			int tmp = GLUtils.getBlendMode();
-			if (tmpColor.a >= 0.98f) {
-				GLUtils.setBlendMode(gl, BlendMethod.MODE_NORMAL);
-			} else {
-				GLUtils.setBlendMode(gl, BlendMethod.MODE_SPEED);
-			}
-			submit.post(_batch_name, expandVertices.getSize(), shader, expandVertices.getVertices(), idx, count);
-			GLUtils.setBlendMode(gl, tmp);
-		} catch (Throwable ex) {
-			LSystem.error("Batch submit() error", ex);
-		} finally {
-			if (expandVertices.expand(this.idx)) {
-				submit.reset(_batch_name, expandVertices.length());
-			}
-			if (!lockSubmit) {
-				idx = 0;
-			}
-		}
-	}
-
-	private void setupMatrices() {
-		if (shader != null) {
-			shader.setUniformMatrix("u_projTrans", viewMatrix);
-			shader.setUniformi("u_texture", 0);
-			_shader_source.setupShader(shader);
-		}
-	}
+	private Submit _submit;
 
 	public TrilateralBatch(GL20 gl) {
 		this(gl, LSystem.DEF_SOURCE);
@@ -123,15 +63,15 @@ public class TrilateralBatch extends BaseBatch {
 
 	public TrilateralBatch(GL20 gl, int maxSize, ShaderSource src) {
 		super(gl);
-		this.expandVertices = new ExpandVertices(maxSize);
+		this._expandVertices = new ExpandVertices(maxSize);
 		this._shader_source = src;
-		this.viewMatrix = new Matrix4();
+		this._viewMatrix = new Matrix4();
 		this.init();
 	}
 
 	@Override
 	public void init() {
-		this.submit = new Submit();
+		this._submit = new Submit();
 	}
 
 	protected float addX(float m00, float m01, float m10, float m11, float x, float y, float sx, float sy, float tx,
@@ -149,97 +89,92 @@ public class TrilateralBatch extends BaseBatch {
 			float sx1, float sy1, float x2, float y2, float sx2, float sy2, float x3, float y3, float sx3, float sy3,
 			float x4, float y4, float sx4, float sy4) {
 
-		if (lockSubmit) {
+		if (_locked) {
 			return;
 		}
 
-		float colorFloat = tmpColor.setColor(tint).toFloatBits();
+		float colorFloat = _batchColor.setColor(tint).toFloatBits();
 
-		int index = this.idx;
+		int index = this._indexCount;
 
-		expandVertices.setVertice(index++, addX(m00, m01, m10, m11, x1, y1, sx1, sy1, tx, ty));
-		expandVertices.setVertice(index++, addY(m00, m01, m10, m11, x1, y1, sx1, sy1, tx, ty));
-		expandVertices.setVertice(index++, colorFloat);
-		expandVertices.setVertice(index++, sx1);
-		expandVertices.setVertice(index++, sy1);
+		_expandVertices.setVertice(index++, addX(m00, m01, m10, m11, x1, y1, sx1, sy1, tx, ty));
+		_expandVertices.setVertice(index++, addY(m00, m01, m10, m11, x1, y1, sx1, sy1, tx, ty));
+		_expandVertices.setVertice(index++, colorFloat);
+		_expandVertices.setVertice(index++, sx1);
+		_expandVertices.setVertice(index++, sy1);
 
-		expandVertices.setVertice(index++, addX(m00, m01, m10, m11, x2, y2, sx2, sy2, tx, ty));
-		expandVertices.setVertice(index++, addY(m00, m01, m10, m11, x2, y2, sx2, sy2, tx, ty));
-		expandVertices.setVertice(index++, colorFloat);
-		expandVertices.setVertice(index++, sx2);
-		expandVertices.setVertice(index++, sy2);
+		_expandVertices.setVertice(index++, addX(m00, m01, m10, m11, x2, y2, sx2, sy2, tx, ty));
+		_expandVertices.setVertice(index++, addY(m00, m01, m10, m11, x2, y2, sx2, sy2, tx, ty));
+		_expandVertices.setVertice(index++, colorFloat);
+		_expandVertices.setVertice(index++, sx2);
+		_expandVertices.setVertice(index++, sy2);
 
-		expandVertices.setVertice(index++, addX(m00, m01, m10, m11, x4, y4, sx4, sy4, tx, ty));
-		expandVertices.setVertice(index++, addY(m00, m01, m10, m11, x4, y4, sx4, sy4, tx, ty));
-		expandVertices.setVertice(index++, colorFloat);
-		expandVertices.setVertice(index++, sx4);
-		expandVertices.setVertice(index++, sy4);
+		_expandVertices.setVertice(index++, addX(m00, m01, m10, m11, x4, y4, sx4, sy4, tx, ty));
+		_expandVertices.setVertice(index++, addY(m00, m01, m10, m11, x4, y4, sx4, sy4, tx, ty));
+		_expandVertices.setVertice(index++, colorFloat);
+		_expandVertices.setVertice(index++, sx4);
+		_expandVertices.setVertice(index++, sy4);
 
-		expandVertices.setVertice(index++, addX(m00, m01, m10, m11, x3, y3, sx3, sy3, tx, ty));
-		expandVertices.setVertice(index++, addY(m00, m01, m10, m11, x3, y3, sx3, sy3, tx, ty));
-		expandVertices.setVertice(index++, colorFloat);
-		expandVertices.setVertice(index++, sx3);
-		expandVertices.setVertice(index++, sy3);
+		_expandVertices.setVertice(index++, addX(m00, m01, m10, m11, x3, y3, sx3, sy3, tx, ty));
+		_expandVertices.setVertice(index++, addY(m00, m01, m10, m11, x3, y3, sx3, sy3, tx, ty));
+		_expandVertices.setVertice(index++, colorFloat);
+		_expandVertices.setVertice(index++, sx3);
+		_expandVertices.setVertice(index++, sy3);
 
-		this.idx = index;
+		this._indexCount = index;
 
 		if (lastTexId != curTexId) {
 			flush();
 		}
 	}
 
-	private float ubufWidth = 0;
-
-	private float ubufHeight = 0;
-
-	private boolean uflip = true;
-
 	@Override
 	public void begin(float fbufWidth, float fbufHeight, boolean flip) {
-		if (this.ubufWidth != fbufWidth || this.ubufHeight != fbufHeight || this.uflip != flip) {
-			this.ubufWidth = fbufWidth;
-			this.ubufHeight = fbufHeight;
-			this.viewMatrix.setToOrtho2D(0, 0, ubufWidth, ubufHeight);
-			this.uflip = flip;
+		if (this._ubufWidth != fbufWidth || this._ubufHeight != fbufHeight || this._uflip != flip) {
+			this._ubufWidth = fbufWidth;
+			this._ubufHeight = fbufHeight;
+			this._viewMatrix.setToOrtho2D(0, 0, _ubufWidth, _ubufHeight);
+			this._uflip = flip;
 			if (!flip) {
 				Affine2f a2f = new Affine2f();
-				float w = ubufWidth / 2;
-				float h = ubufHeight / 2;
+				float w = _ubufWidth / 2;
+				float h = _ubufHeight / 2;
 				a2f.translate(w, h);
 				a2f.scale(-1, 1);
 				a2f.translate(-w, -h);
 				a2f.translate(w, h);
 				a2f.rotate(MathUtils.PI);
 				a2f.translate(-w, -h);
-				this.viewMatrix.mul(a2f);
+				this._viewMatrix.mul(a2f);
 			}
 		}
-		if (!isLoaded || isShaderDirty()) {
-			if (shader == null || isShaderDirty()) {
-				if (shader != null) {
-					shader.close();
-					shader = null;
+		final boolean dirty = isShaderDirty();
+		if (!_loaded || dirty) {
+			if (_batchShader == null || dirty) {
+				if (_batchShader != null) {
+					_batchShader.close();
+					_batchShader = null;
 				}
-				shader = LSystem.createShader(_shader_source.vertexShader(), _shader_source.fragmentShader());
+				_batchShader = LSystem.createShader(_shader_source.vertexShader(), _shader_source.fragmentShader());
 				setShaderDirty(false);
 			}
-			isLoaded = true;
+			_loaded = true;
 		}
-		shader.begin();
+		_batchShader.begin();
 		setupMatrices();
 	}
 
 	@Override
 	public void flush() {
 		super.flush();
-		if (idx > 0) {
+		if (_indexCount > 0) {
 			submit();
 		}
-		shader.end();
+		_batchShader.end();
 	}
 
 	protected int vertexSize() {
-		return expandVertices.vertexSize();
+		return _expandVertices.vertexSize();
 	}
 
 	@Override
@@ -247,17 +182,85 @@ public class TrilateralBatch extends BaseBatch {
 		super.end();
 	}
 
+	public int getSize() {
+		return _expandVertices.getSize();
+	}
+
+	public TrilateralBatch setShaderUniformf(String name, LColor color) {
+		if (_batchShader != null) {
+			_batchShader.setUniformf(name, color);
+		}
+		return this;
+	}
+
+	public TrilateralBatch setShaderUniformf(int name, LColor color) {
+		if (_batchShader != null) {
+			_batchShader.setUniformf(name, color);
+		}
+		return this;
+	}
+
+	public boolean isLockSubmit() {
+		return _locked;
+	}
+
+	public TrilateralBatch setLockSubmit(boolean locked) {
+		this._locked = locked;
+		return this;
+	}
+
+	public void submit() {
+		if (_indexCount == 0) {
+			return;
+		}
+		try {
+			int spritesInBatch = _indexCount / 20;
+			if (spritesInBatch > _maxSpritesInBatch) {
+				_maxSpritesInBatch = spritesInBatch;
+			}
+			int count = spritesInBatch * 6;
+			bindTexture();
+			GL20 gl = LSystem.base().graphics().gl;
+			int tmp = GLUtils.getBlendMode();
+			if (_batchColor.a >= 0.98f) {
+				GLUtils.setBlendMode(gl, BlendMethod.MODE_NORMAL);
+			} else {
+				GLUtils.setBlendMode(gl, BlendMethod.MODE_SPEED);
+			}
+			_submit.post(BATCHNAME, _expandVertices.getSize(), _batchShader, _expandVertices.getVertices(), _indexCount,
+					count);
+			GLUtils.setBlendMode(gl, tmp);
+		} catch (Throwable ex) {
+			LSystem.error("Batch _submit() error", ex);
+		} finally {
+			if (_expandVertices.expand(this._indexCount)) {
+				_submit.reset(BATCHNAME, _expandVertices.length());
+			}
+			if (!_locked) {
+				_indexCount = 0;
+			}
+		}
+	}
+
+	private void setupMatrices() {
+		if (_batchShader != null) {
+			_batchShader.setUniformMatrix("u_projTrans", _viewMatrix);
+			_batchShader.setUniformi("u_texture", 0);
+			_shader_source.setupShader(_batchShader);
+		}
+	}
+
 	@Override
 	public void close() {
 		super.close();
-		if (shader != null) {
-			shader.close();
+		if (_batchShader != null) {
+			_batchShader.close();
 		}
 	}
 
 	@Override
 	public String toString() {
-		return "tris/" + expandVertices.length();
+		return "tris/" + _expandVertices.length();
 	}
 
 }

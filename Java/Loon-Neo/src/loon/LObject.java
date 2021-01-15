@@ -244,7 +244,7 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 
 	protected float _alpha = 1f;
 
-	protected float _rotation;
+	protected float _rotation, _previousRotation;
 
 	protected RectBox _rect;
 
@@ -265,6 +265,7 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 	public LObject() {
 		this._seqNo = _SYS_GLOBAL_SEQNO;
 		this._rotation = 0;
+		this._previousRotation = 0;
 		this._layer = 0;
 		this._alpha = 1f;
 		_SYS_GLOBAL_SEQNO++;
@@ -329,12 +330,30 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 	}
 
 	public void setRotation(float r) {
+		if (r == this._rotation) {
+			return;
+		}
+		this._previousRotation = this._rotation;
 		this._rotation = MathUtils.fixRotation(r);
 		if (_rect != null) {
 			_rect.setBounds(MathUtils.getBounds(_location.x, _location.y, getWidth(), getHeight(), r, _rect));
 		} else {
 			_rect = MathUtils.getBounds(_location.x, _location.y, getWidth(), getHeight(), r, _rect);
 		}
+	}
+
+	public void rotateBy(float r) {
+		if (r != 0f) {
+			setRotation(this._rotation + r);
+		}
+	}
+
+	public boolean isRotated() {
+		return _rotation != _previousRotation;
+	}
+
+	public float getPreviousRotation() {
+		return this._previousRotation;
 	}
 
 	public float getRotation() {
@@ -597,7 +616,7 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 	public Vector2f getPosition() {
 		return this._location;
 	}
-	
+
 	public void pos(float x, float y) {
 		setLocation(x, y);
 	}
@@ -890,8 +909,8 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 		if (o1 == null || o2 == null) {
 			return 0;
 		}
-		if(o1 instanceof ZIndex && o2 instanceof ZIndex) {
-			int diff = MathUtils.abs(((ZIndex)o1).getLayer()) - MathUtils.abs(((ZIndex)o2).getLayer());
+		if (o1 instanceof ZIndex && o2 instanceof ZIndex) {
+			int diff = MathUtils.abs(((ZIndex) o1).getLayer()) - MathUtils.abs(((ZIndex) o2).getLayer());
 			if (diff > 0) {
 				return 1;
 			}
@@ -901,7 +920,7 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 		}
 		return 0;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return _seqNo;

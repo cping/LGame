@@ -1727,8 +1727,11 @@ namespace loon.utils
             return v == null || v.Length == 0 || "".Equals(v.ToString().Trim());
         }
 
-
-        public static string Join(char flag, params object[] o)
+        public static string Join(CharSequence flag, params object[] o)
+        {
+            return Join(flag.ToString(),o);
+        }
+        public static string Join(string flag, params object[] o)
         {
             if (CollectionUtils.IsEmpty(o))
             {

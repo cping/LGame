@@ -67,8 +67,8 @@ import loon.utils.StringUtils;
 /**
  * Loon桌面组件的核心,所有UI类组件基于此类产生
  */
-public abstract class LComponent extends LObject<LContainer> implements Flip<LComponent>,
-		CollisionObject, Visible, ActionBind, XY, BoxSize, LRelease {
+public abstract class LComponent extends LObject<LContainer>
+		implements Flip<LComponent>, CollisionObject, Visible, ActionBind, XY, BoxSize, LRelease {
 
 	// 充当卓面容器
 	protected boolean desktopContainer;
@@ -221,6 +221,13 @@ public abstract class LComponent extends LObject<LContainer> implements Flip<LCo
 
 	public CallListener getCall() {
 		return Call;
+	}
+
+	public LComponent clearListener() {
+		this.Call = null;
+		this.Click = null;
+		this._touchListener = null;
+		return this;
 	}
 
 	private Origin _origin = Origin.CENTER;
@@ -437,77 +444,74 @@ public abstract class LComponent extends LObject<LContainer> implements Flip<LCo
 		if (_alpha < 0.01f) {
 			return;
 		}
-		synchronized (this) {
-			int blend = g.getBlendMode();
-			float offsetX = _offset.x;
-			float offsetY = _offset.y;
-			boolean update = _rotation != 0 || !(_scaleX == 1f && _scaleY == 1f) || _flipX || _flipY;
-			try {
-				g.saveBrush();
-				float screenAlpha = 1f;
-				if (getScreen() != null) {
-					screenAlpha = getScreen().getAlpha();
-				}
-				g.setAlpha(_alpha * screenAlpha);
-				final int width = (int) this.getWidth();
-				final int height = (int) this.getHeight();
-				if (this._component_elastic) {
-					g.setClip(this._screenX + offsetX, this._screenY + offsetY, width, height);
-				}
-				if (update) {
-					g.saveTx();
-					Affine2f tx = g.tx();
-					final float centerX = (_pivotX == -1 ? this._screenX + _origin.ox(width) : this._screenX + _pivotX)
-							+ offsetX;
-					final float centerY = (_pivotY == -1 ? this._screenY + _origin.oy(height) : this._screenY + _pivotY)
-							+ offsetY;
-					if (_rotation != 0) {
-						tx.translate(centerX, centerY);
-						tx.preRotate(_rotation);
-						tx.translate(-centerX, -centerY);
-					}
-					if (_flipX || _flipY) {
-						if (_flipX && _flipY) {
-							Affine2f.transform(tx, centerX, centerY, Affine2f.TRANS_ROT180);
-						} else if (_flipX) {
-							Affine2f.transform(tx, centerX, centerY, Affine2f.TRANS_MIRROR);
-						} else if (_flipY) {
-							Affine2f.transform(tx, centerX, centerY, Affine2f.TRANS_MIRROR_ROT180);
-						}
-					}
-					if (!(_scaleX == 1f && _scaleY == 1f)) {
-						tx.translate(centerX, centerY);
-						tx.preScale(_scaleX, _scaleY);
-						tx.translate(-centerX, -centerY);
-					}
-				}
-				g.setBlendMode(_GL_BLEND);
-				if (_drawBackground && _background != null) {
-					g.draw(_background, this._screenX + offsetX, this._screenY + offsetY, width, height,
-							_component_baseColor);
-				}
-				if (this.customRendering) {
-					this.createCustomUI(g, (int) (this._screenX + offsetX), (int) (this._screenY + offsetY), width,
-							height);
-				} else {
-					this.createUI(g, (int) (this._screenX + offsetX), (int) (this._screenY + offsetY), this,
-							this._imageUI);
-				}
-				if (isDrawSelect()) {
-					g.drawRect(this._screenX + offsetX, this._screenY + offsetY, width - 1f, height - 1f,
-							_component_baseColor);
-				}
-			} finally {
-				if (update) {
-					g.restoreTx();
-				}
-				if (this._component_elastic) {
-					g.clearClip();
-				}
-				g.setBlendMode(blend);
-				g.restoreBrush();
+		int blend = g.getBlendMode();
+		float offsetX = _offset.x;
+		float offsetY = _offset.y;
+		boolean update = _rotation != 0 || !(_scaleX == 1f && _scaleY == 1f) || _flipX || _flipY;
+		try {
+			g.saveBrush();
+			float screenAlpha = 1f;
+			if (getScreen() != null) {
+				screenAlpha = getScreen().getAlpha();
 			}
+			g.setAlpha(_alpha * screenAlpha);
+			final int width = (int) this.getWidth();
+			final int height = (int) this.getHeight();
+			if (this._component_elastic) {
+				g.setClip(this._screenX + offsetX, this._screenY + offsetY, width, height);
+			}
+			if (update) {
+				g.saveTx();
+				Affine2f tx = g.tx();
+				final float centerX = (_pivotX == -1 ? this._screenX + _origin.ox(width) : this._screenX + _pivotX)
+						+ offsetX;
+				final float centerY = (_pivotY == -1 ? this._screenY + _origin.oy(height) : this._screenY + _pivotY)
+						+ offsetY;
+				if (_rotation != 0) {
+					tx.translate(centerX, centerY);
+					tx.preRotate(_rotation);
+					tx.translate(-centerX, -centerY);
+				}
+				if (_flipX || _flipY) {
+					if (_flipX && _flipY) {
+						Affine2f.transform(tx, centerX, centerY, Affine2f.TRANS_ROT180);
+					} else if (_flipX) {
+						Affine2f.transform(tx, centerX, centerY, Affine2f.TRANS_MIRROR);
+					} else if (_flipY) {
+						Affine2f.transform(tx, centerX, centerY, Affine2f.TRANS_MIRROR_ROT180);
+					}
+				}
+				if (!(_scaleX == 1f && _scaleY == 1f)) {
+					tx.translate(centerX, centerY);
+					tx.preScale(_scaleX, _scaleY);
+					tx.translate(-centerX, -centerY);
+				}
+			}
+			g.setBlendMode(_GL_BLEND);
+			if (_drawBackground && _background != null) {
+				g.draw(_background, this._screenX + offsetX, this._screenY + offsetY, width, height,
+						_component_baseColor);
+			}
+			if (this.customRendering) {
+				this.createCustomUI(g, (int) (this._screenX + offsetX), (int) (this._screenY + offsetY), width, height);
+			} else {
+				this.createUI(g, (int) (this._screenX + offsetX), (int) (this._screenY + offsetY), this, this._imageUI);
+			}
+			if (isDrawSelect()) {
+				g.drawRect(this._screenX + offsetX, this._screenY + offsetY, width - 1f, height - 1f,
+						_component_baseColor);
+			}
+		} finally {
+			if (update) {
+				g.restoreTx();
+			}
+			if (this._component_elastic) {
+				g.clearClip();
+			}
+			g.setBlendMode(blend);
+			g.restoreBrush();
 		}
+
 	}
 
 	/**
@@ -1073,6 +1077,10 @@ public abstract class LComponent extends LObject<LContainer> implements Flip<LCo
 		return this;
 	}
 
+	public LComponent debug(boolean select) {
+		return setDrawSelect(select);
+	}
+
 	public LComponent setScale(final float s) {
 		this.setScale(s, s);
 		return this;
@@ -1553,6 +1561,22 @@ public abstract class LComponent extends LObject<LContainer> implements Flip<LCo
 	@Override
 	public boolean containsPoint(float x, float y) {
 		return getCollisionBox().contains(x, y, 1, 1);
+	}
+
+	public boolean isDescendantOf(LComponent o) {
+		if (o == null) {
+			throw new LSysException("Component cannot be null");
+		}
+		LComponent parent = this;
+		for (;;) {
+			if (parent == null) {
+				return false;
+			}
+			if (parent == o) {
+				return true;
+			}
+			parent = parent.getParent();
+		}
 	}
 
 	public boolean isAscendantOf(LComponent o) {

@@ -35,6 +35,11 @@ public interface Closeable extends LRelease {
 			return _closed;
 		}
 
+		public void reset() {
+			this.close();
+			this._closed = false;
+		}
+
 		@Override
 		public void close() {
 			if (_set != null) {
@@ -63,8 +68,8 @@ public interface Closeable extends LRelease {
 			}
 		}
 	}
-	
+
 	@Override
-    public abstract void close();
+	public abstract void close();
 
 }
