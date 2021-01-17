@@ -251,7 +251,7 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 				lastHeight = maxHeight;
 				for (CharSequence ch : chars) {
 					maxWidth = MathUtils.max(maxWidth,
-							FontUtils.measureText(_font, ch) + _font.getHeight() + _flagWidth + _flag_text_space);
+							FontUtils.measureText(_font, ch) + _font.getHeight() + _flagWidth + _flag_text_space) ;
 					height += MathUtils.max(_font.stringHeight(new StrBuilder(ch).toString()), _flagHeight);
 				}
 				if (maxWidth > lastWidth) {
@@ -273,10 +273,8 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 				maxHeight += height;
 			}
 			setSize(maxWidth + _flag_text_space * 2, maxHeight + _flag_text_space * 2);
-			if (!LSystem.isSupportTempFont()) {
-				if (_font instanceof LFont) {
-					LSTRDictionary.get().bind((LFont) _font, _labels);
-				}
+			if (_font instanceof LFont) {
+				LSTRDictionary.get().bind((LFont) _font, _labels);
 			}
 		}
 		return this;
@@ -364,8 +362,8 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 		int color = g.color();
 		g.setColor(selectedFillColor.getRed(), selectedFillColor.getGreen(), selectedFillColor.getBlue(),
 				(int) (155 * MathUtils.max(0.5f, colorUpdate.getPercentage())));
-		g.fillRect(x, y, width, height);
-		g.drawRect(x, y, width - 2, height - 2);
+		g.fillRect(x, y - 2, width, height);
+		g.drawRect(x, y - 2, width - 2, height - 2);
 		g.setColor(color);
 
 	}

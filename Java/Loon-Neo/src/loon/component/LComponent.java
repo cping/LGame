@@ -267,6 +267,8 @@ public abstract class LComponent extends LObject<LContainer>
 
 	private LTextureFree _freeTextures;
 
+	private final Vector2f _touchPoint = new Vector2f();
+
 	private boolean _downClick = false;
 	// 中心点
 	protected float _pivotX = -1, _pivotY = -1;
@@ -1142,30 +1144,108 @@ public abstract class LComponent extends LObject<LContainer>
 		return toPixelScaleY(input == null ? SysTouch.getY() : input.getTouchY());
 	}
 
-	public float getUITouchX() {
-		if (_super == null) {
-			return toPixelScaleX(SysTouch.getX() - getX());
-		} else {
-			if (_super.isContainer() && (_super instanceof LScrollContainer)) {
-				return toPixelScaleX(
-						SysTouch.getX() + ((LScrollContainer) _super).getScrollX() - _super.getX() - getX());
+	public Vector2f getUITouch(float x, float y) {
+		return getUITouch(x, y, null);
+	}
+
+	public Vector2f getUITouch(float x, float y, Vector2f pointResult) {
+		if (!(x == -1 && y == -1 && pointResult != null)) {
+			if (pointResult == null) {
+				pointResult = new Vector2f(x, y);
 			} else {
-				return toPixelScaleX(SysTouch.getX() - _super.getX() - getX());
+				pointResult.set(x, y);
 			}
 		}
+		float newX = 0f;
+		float newY = 0f;
+		LComponent parent = getParent();
+		if (parent != null) {
+			newX = pointResult.x - parent.getX() - getX();
+			newY = pointResult.y - parent.getX() - getY();
+		} else {
+			newX = pointResult.x - getX();
+			newY = pointResult.y - getY();
+		}
+		final float angle = getRotation();
+		if (angle == 0 || angle == 360) {
+			pointResult.x = toPixelScaleX(newX);
+			pointResult.y = toPixelScaleY(newY);
+			return pointResult;
+		}
+		float oldWidth = _width;
+		float oldHeight = _height;
+		float newWidth = getWidth();
+		float newHeight = getHeight();
+		float offX = oldWidth / 2f - newWidth / 2f;
+		float offY = oldHeight / 2f - newHeight / 2f;
+		float posX = (newX - offX);
+		float posY = (newY - offY);
+		if (angle == 90) {
+			offX = oldHeight / 2f - newWidth / 2f;
+			offY = oldWidth / 2f - newHeight / 2f;
+			posX = (newX - offY);
+			posY = (newY - offX);
+			pointResult.set(posX / getScaleX(), posY / getScaleY()).rotateSelf(90);
+			pointResult.set(-pointResult.x, MathUtils.abs(pointResult.y - this._height));
+		} else if (angle == -90) {
+			offX = oldHeight / 2f - newWidth / 2f;
+			offY = oldWidth / 2f - newHeight / 2f;
+			posX = (newX - offY);
+			posY = (newY - offX);
+			pointResult.set(posX / getScaleX(), posY / getScaleY()).rotateSelf(-90);
+			pointResult.set(-(pointResult.x - this._width), MathUtils.abs(pointResult.y));
+		} else if (angle == -180 || angle == 180) {
+			pointResult.set(posX / getScaleX(), posY / getScaleY()).rotateSelf(getRotation()).addSelf(_width, _height);
+		} else {
+			float rad = MathUtils.toRadians(angle);
+			float sin = MathUtils.sin(rad);
+			float cos = MathUtils.cos(rad);
+			float dx = offX / getScaleX();
+			float dy = offY / getScaleY();
+			float dx2 = cos * dx - sin * dy;
+			float dy2 = sin * dx + cos * dy;
+			pointResult.x = _width - (newX - dx2);
+			pointResult.y = _height - (newY - dy2);
+		}
+		return pointResult;
+	}
+
+	public Vector2f getUITouchXY() {
+		if (getRotation() == 0) {
+			float newX = 0f;
+			float newY = 0f;
+			if (_super == null) {
+				newX = toPixelScaleX(SysTouch.getX() - getX());
+				newY = toPixelScaleY(SysTouch.getY() - getY());
+			} else {
+				if (_super.isContainer() && (_super instanceof LScrollContainer)) {
+					LScrollContainer scroll = (LScrollContainer) _super;
+					newX = toPixelScaleX(SysTouch.getX() + scroll.getScrollX() - _super.getX() - getX());
+					newY = toPixelScaleY(SysTouch.getY() + scroll.getScrollY() - _super.getY() - getY());
+				} else {
+					newX = toPixelScaleX(SysTouch.getX() - _super.getX() - getX());
+					newY = toPixelScaleY(SysTouch.getY() - _super.getY() - getY());
+				}
+			}
+			_touchPoint.set(newX, newY);
+		} else {
+			if (_super.isContainer() && (_super instanceof LScrollContainer)) {
+				LScrollContainer scroll = (LScrollContainer) _super;
+				return getUITouch(SysTouch.getX() + scroll.getScrollX(), SysTouch.getY() + scroll.getScrollY(),
+						_touchPoint);
+			} else {
+				return getUITouch(SysTouch.getX(), SysTouch.getY(), _touchPoint);
+			}
+		}
+		return _touchPoint;
+	}
+
+	public float getUITouchX() {
+		return getUITouchXY().x;
 	}
 
 	public float getUITouchY() {
-		if (_super == null) {
-			return toPixelScaleY(SysTouch.getY() - getY());
-		} else {
-			if (_super.isContainer() && (_super instanceof LScrollContainer)) {
-				return toPixelScaleY(
-						SysTouch.getY() + ((LScrollContainer) _super).getScrollY() - _super.getY() - getY());
-			} else {
-				return toPixelScaleY(SysTouch.getY() - _super.getY() - getY());
-			}
-		}
+		return getUITouchXY().y;
 	}
 
 	protected LComponent validateResize() {

@@ -184,10 +184,8 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 		if (doubleSizeFont == 0) {
 			doubleSizeFont = 20;
 		}
-		if (!LSystem.isSupportTempFont()) {
-			if (messageFont instanceof LFont) {
-				LSTRDictionary.get().bind((LFont) messageFont, selects);
-			}
+		if (messageFont instanceof LFont) {
+			LSTRDictionary.get().bind((LFont) messageFont, selects);
 		}
 	}
 

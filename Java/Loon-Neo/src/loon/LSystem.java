@@ -549,13 +549,6 @@ public class LSystem {
 		return false;
 	}
 
-	public static boolean isSupportTempFont() {
-		if (base() != null) {
-			return base().setting.supportTempSysFont;
-		}
-		return false;
-	}
-
 	/**
 	 * 返回当前游戏屏幕宽的缩放比例
 	 * 

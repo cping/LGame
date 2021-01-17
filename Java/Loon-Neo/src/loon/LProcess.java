@@ -692,7 +692,7 @@ public class LProcess implements LRelease {
 		return 0;
 	}
 
-	private final static Vector2f _tmpLocaltion = new Vector2f();
+	private final Vector2f _pointLocaltion = new Vector2f();
 
 	public Vector2f convertXY(float x, float y) {
 		float newX = ((x - getX()) / (LSystem.getScaleWidth()));
@@ -704,48 +704,56 @@ public class LProcess implements LRelease {
 			float newH = getHeight() * getScaleY();
 			float offX = oldW / 2f - newW / 2f;
 			float offY = oldH / 2f - newH / 2f;
-			float nx = (newX - offX);
-			float ny = (newY - offY);
+			float posX = (newX - offX);
+			float posY = (newY - offY);
 			final int r = (int) getRotation();
 			switch (r) {
 			case -90:
 				offX = oldH / 2f - newW / 2f;
 				offY = oldW / 2f - newH / 2f;
-				nx = (newX - offY);
-				ny = (newY - offX);
-				_tmpLocaltion.set(nx / getScaleX(), ny / getScaleY()).rotateSelf(-90);
-				_tmpLocaltion.set(-(_tmpLocaltion.x - getWidth()), MathUtils.abs(_tmpLocaltion.y));
+				posX = (newX - offY);
+				posY = (newY - offX);
+				_pointLocaltion.set(posX / getScaleX(), posY / getScaleY()).rotateSelf(-90);
+				_pointLocaltion.set(-(_pointLocaltion.x - getWidth()), MathUtils.abs(_pointLocaltion.y));
 				break;
 			case 0:
 			case 360:
-				_tmpLocaltion.set(nx / getScaleX(), ny / getScaleY());
+				_pointLocaltion.set(posX / getScaleX(), posY / getScaleY());
 				break;
 			case 90:
 				offX = oldH / 2f - newW / 2f;
 				offY = oldW / 2f - newH / 2f;
-				nx = (newX - offY);
-				ny = (newY - offX);
-				_tmpLocaltion.set(nx / getScaleX(), ny / getScaleY()).rotateSelf(90);
-				_tmpLocaltion.set(-_tmpLocaltion.x, MathUtils.abs(_tmpLocaltion.y - getHeight()));
+				posX = (newX - offY);
+				posY = (newY - offX);
+				_pointLocaltion.set(posX / getScaleX(), posY / getScaleY()).rotateSelf(90);
+				_pointLocaltion.set(-_pointLocaltion.x, MathUtils.abs(_pointLocaltion.y - getHeight()));
 				break;
 			case -180:
 			case 180:
-				_tmpLocaltion.set(nx / getScaleX(), ny / getScaleY()).rotateSelf(getRotation()).addSelf(getWidth(),
+				_pointLocaltion.set(posX / getScaleX(), posY / getScaleY()).rotateSelf(getRotation()).addSelf(getWidth(),
 						getHeight());
 				break;
 			default: // 原则上不处理非水平角度的触点
-				_tmpLocaltion.set(newX, newY);
+				float rad = MathUtils.toRadians(getRotation());
+				float sin = MathUtils.sin(rad);
+				float cos = MathUtils.cos(rad);
+				float dx = offX / getScaleX();
+				float dy = offY / getScaleY();
+				float dx2 = cos * dx - sin * dy;
+				float dy2 = sin * dx + cos * dy;
+				_pointLocaltion.x = getWidth() - (newX - dx2);
+				_pointLocaltion.y = getHeight() - (newY - dy2);
 				break;
 			}
 		} else {
-			_tmpLocaltion.set(newX, newY);
+			_pointLocaltion.set(newX, newY);
 		}
 		if (isFlipX() || isFlipY()) {
-			HelperUtils.local2Global(isFlipX(), isFlipY(), getWidth() / 2, getHeight() / 2, _tmpLocaltion.x,
-					_tmpLocaltion.y, _tmpLocaltion);
-			return _tmpLocaltion;
+			HelperUtils.local2Global(isFlipX(), isFlipY(), getWidth() / 2, getHeight() / 2, _pointLocaltion.x,
+					_pointLocaltion.y, _pointLocaltion);
+			return _pointLocaltion;
 		}
-		return _tmpLocaltion;
+		return _pointLocaltion;
 	}
 
 	public Screen getScreen() {

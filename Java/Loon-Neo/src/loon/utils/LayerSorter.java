@@ -8,10 +8,16 @@ import loon.ZIndex;
 public class LayerSorter<T> extends InsertionSorter<T> {
 
 	public static int calcLowToHigh(ZIndex p1, ZIndex p2) {
+		if (p1 == p2) {
+			return 0;
+		}
 		return p1.getLayer() - p2.getLayer();
 	}
 
 	public static int calcHighToLow(ZIndex p1, ZIndex p2) {
+		if (p1 == p2) {
+			return 0;
+		}
 		return p2.getLayer() - p1.getLayer();
 	}
 
@@ -25,27 +31,11 @@ public class LayerSorter<T> extends InsertionSorter<T> {
 
 		@Override
 		public int compare(final T ea, final T eb) {
-			if (ea != null && eb == null) {
-				if (_sorter.positive) {
-					if (ea instanceof ZIndex) {
-						return ((ZIndex) ea).getLayer();
-					}
-				} else {
-					if (ea instanceof ZIndex) {
-						return -((ZIndex) ea).getLayer();
-					}
-				}
+			if (ea == eb) {
+				return 0;
 			}
-			if (ea == null && eb != null) {
-				if (_sorter.positive) {
-					if (eb instanceof ZIndex) {
-						return ((ZIndex) eb).getLayer();
-					}
-				} else {
-					if (eb instanceof ZIndex) {
-						return -((ZIndex) eb).getLayer();
-					}
-				}
+			if (ea == null || eb == null) {
+				return 0;
 			}
 			if (ea instanceof ZIndex && eb instanceof ZIndex) {
 				ZIndex src = ((ZIndex) ea);
@@ -69,7 +59,7 @@ public class LayerSorter<T> extends InsertionSorter<T> {
 		this.positive = p;
 		this.zindexComparator = new ZIndexComparator(this);
 	}
-	
+
 	public int calc(ZIndex p1, ZIndex p2) {
 		return positive ? calcLowToHigh(p1, p2) : calcHighToLow(p1, p2);
 	}

@@ -653,6 +653,14 @@ public class Affine2f implements LTrans, XY {
 		return this;
 	}
 
+	public float rotationX() {
+		return MathUtils.atan2(m01, m00);
+	}
+
+	public float rotationY() {
+		return MathUtils.atan2(-m11, m10);
+	}
+
 	public Affine2f setRotation(float angle) {
 		// 提取比例，然后重新应用旋转和缩放在一起
 		float sx = scaleX(), sy = scaleY();
@@ -1278,6 +1286,35 @@ public class Affine2f implements LTrans, XY {
 		}
 	}
 
+	public RectBox transformRect(RectBox rect) {
+
+		float top = rect.getMinX();
+		float left = rect.getMinX();
+		float right = rect.getMaxX();
+		float bottom = rect.getMaxY();
+
+		PointF topLeft = new PointF(left, top);
+		PointF topRight = new PointF(right, top);
+		PointF bottomLeft = new PointF(left, bottom);
+		PointF bottomRight = new PointF(right, bottom);
+
+		transformPoint(topLeft);
+		transformPoint(topRight);
+		transformPoint(bottomLeft);
+		transformPoint(bottomRight);
+
+		float minX = MathUtils.min(MathUtils.min(topLeft.x, topRight.x), MathUtils.min(bottomLeft.x, bottomRight.x));
+		float maxX = MathUtils.max(MathUtils.max(topLeft.x, topRight.x), MathUtils.max(bottomLeft.x, bottomRight.x));
+		float minY = MathUtils.min(MathUtils.min(topLeft.y, topRight.y), MathUtils.min(bottomLeft.y, bottomRight.y));
+		float maxY = MathUtils.max(MathUtils.max(topLeft.y, topRight.y), MathUtils.max(bottomLeft.y, bottomRight.y));
+
+		return rect.setBounds(minX, minY, (maxX - minX), (maxY - minY));
+	}
+
+	public PointI transformPoint(PointI resultPoint) {
+		return transformPoint(resultPoint.x, resultPoint.y, resultPoint);
+	}
+
 	public PointI transformPoint(int pointX, int pointY, PointI resultPoint) {
 		int x = (int) (this.m00 * pointX + this.m01 * pointY + this.tx);
 		int y = (int) (this.m10 * pointX + this.m11 * pointY + this.ty);
@@ -1288,6 +1325,10 @@ public class Affine2f implements LTrans, XY {
 		return new PointI(x, y);
 	}
 
+	public PointF transformPoint(PointF resultPoint) {
+		return transformPoint(resultPoint.x, resultPoint.y, resultPoint);
+	}
+
 	public PointF transformPoint(float pointX, float pointY, PointF resultPoint) {
 		float x = this.m00 * pointX + this.m01 * pointY + this.tx;
 		float y = this.m10 * pointX + this.m11 * pointY + this.ty;
@@ -1296,6 +1337,10 @@ public class Affine2f implements LTrans, XY {
 			return resultPoint;
 		}
 		return new PointF(x, y);
+	}
+
+	public Vector2f transformPoint(Vector2f resultPoint) {
+		return transformPoint(resultPoint.x, resultPoint.y, resultPoint);
 	}
 
 	public Vector2f transformPoint(float pointX, float pointY, Vector2f resultPoint) {

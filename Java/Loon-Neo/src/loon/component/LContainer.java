@@ -74,7 +74,7 @@ public abstract class LContainer extends LComponent implements IArray {
 		return true;
 	}
 
-	public boolean hasChilds () {
+	public boolean hasChilds() {
 		return childCount > 0;
 	}
 
@@ -1211,6 +1211,19 @@ public abstract class LContainer extends LComponent implements IArray {
 			controls = new UIControls();
 		}
 		return controls;
+	}
+
+	@Override
+	public void setRotation(float rotate) {
+		super.setRotation(rotate);
+		if (_childs != null) {
+			for (int i = _childs.length - 1; i > -1; i--) {
+				LComponent comp = _childs[i];
+				if (comp != null) {
+					comp.setRotation(rotate);
+				}
+			}
+		}
 	}
 
 	public UIControls controls() {

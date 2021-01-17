@@ -126,7 +126,7 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 
 	public int height;
 
-	private Matrix4 _matrix;
+	private Matrix4 _rectMatrix;
 
 	public RectBox() {
 		setBounds(0, 0, 0, 0);
@@ -195,11 +195,35 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 		return this;
 	}
 
+	public RectBox set(BoxSize size) {
+		if (size == null) {
+			return this;
+		}
+		return setBounds(size.getX(), size.getY(), size.getWidth(), size.getHeight());
+	}
+
+	public RectBox set(float x, float y, float width, float height) {
+		return setBounds(x, y, width, height);
+	}
+
+	public Polygon getPolygon() {
+		this.pointsDirty = true;
+		this.checkPoints();
+		Polygon poly = new Polygon(this.points);
+		return poly;
+	}
+
 	public RectBox inflate(int horizontalValue, int verticalValue) {
 		this.x -= horizontalValue;
 		this.y -= verticalValue;
 		this.width += horizontalValue * 2;
 		this.height += verticalValue * 2;
+		this.minX = x;
+		this.minY = y;
+		this.maxX = x + width;
+		this.maxY = y + height;
+		this.pointsDirty = true;
+		this.checkPoints();
 		return this;
 	}
 
@@ -241,10 +265,29 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 		}
 	}
 
-	public RectBox setSize(float width, float height) {
-		setWidth(width);
-		setHeight(height);
+	public RectBox setRotate(float r) {
+		if (r != this.rotation) {
+			this.rotation = r;
+			int[] rect = MathUtils.getLimit(x, y, width, height, rotation);
+			return setBounds(rect[0], rect[1], rect[2], rect[3]);
+		}
 		return this;
+	}
+
+	@Override
+	public Shape setRotation(float r, float x, float y) {
+		if (r != this.rotation) {
+			super.setRotation(r, x, y);
+			setBounds(minX, minY, (maxX - minX), (maxY - minY));
+		}
+		return this;
+	}
+
+	public RectBox setSize(float width, float height) {
+		if (this.width == width && this.height == height) {
+			return this;
+		}
+		return setBounds(this.x, this.y, width, height);
 	}
 
 	public boolean overlaps(RectBox rectangle) {
@@ -253,10 +296,10 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 	}
 
 	public Matrix4 getMatrix() {
-		if (_matrix == null) {
-			_matrix = new Matrix4();
+		if (_rectMatrix == null) {
+			_rectMatrix = new Matrix4();
 		}
-		return _matrix.setToOrtho2D(this.x, this.y, this.width, this.height);
+		return _rectMatrix.setToOrtho2D(this.x, this.y, this.width, this.height);
 	}
 
 	public int x() {
@@ -485,7 +528,7 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 	 */
 	@Override
 	public boolean contains(float x, float y) {
-		return contains(x, y, 0, 0);
+		return contains(x, y, 1f, 1f);
 	}
 
 	/**
@@ -556,7 +599,6 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 	 * @param rect
 	 * @return
 	 */
-
 	public boolean intersects(RectBox rect) {
 		return intersects(rect.x, rect.y, rect.width, rect.height);
 	}
@@ -569,7 +611,20 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 	 * @return
 	 */
 	public boolean intersects(float x, float y) {
-		return intersects(x, y, width, height);
+		return intersects(x, y, 1f, 1f);
+	}
+
+	/**
+	 * 判定矩形选框交集
+	 * 
+	 * @param xy
+	 * @return
+	 */
+	public boolean intersects(XY xy) {
+		if (xy == null) {
+			return false;
+		}
+		return intersects(xy.getX(), xy.getY());
 	}
 
 	/**

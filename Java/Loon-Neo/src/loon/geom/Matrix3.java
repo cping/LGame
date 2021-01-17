@@ -171,6 +171,13 @@ public class Matrix3 implements Serializable, XY {
 		return this;
 	}
 
+	public Matrix3 mul(Affine2f aff) {
+		Matrix3 m = new Matrix3();
+		m.set(aff);
+		mul(val, m.val);
+		return this;
+	}
+
 	public Matrix3 mulLeft(Matrix3 m) {
 		float v00 = m.val[M00] * val[M00] + m.val[M01] * val[M10] + m.val[M02] * val[M20];
 		float v01 = m.val[M00] * val[M01] + m.val[M01] * val[M11] + m.val[M02] * val[M21];
@@ -933,6 +940,49 @@ public class Matrix3 implements Serializable, XY {
 		transform(in, 0, out, 0, 1);
 
 		return new Vector2f(out[0], out[1]);
+	}
+
+	public RectBox transform(RectBox rect) {
+
+		float top = rect.getMinX();
+		float left = rect.getMinX();
+		float right = rect.getMaxX();
+		float bottom = rect.getMaxY();
+
+		PointF topLeft = new PointF(left, top);
+		PointF topRight = new PointF(right, top);
+		PointF bottomLeft = new PointF(left, bottom);
+		PointF bottomRight = new PointF(right, bottom);
+
+		transform(topLeft);
+		transform(topRight);
+		transform(bottomLeft);
+		transform(bottomRight);
+
+		float minX = MathUtils.min(MathUtils.min(topLeft.x, topRight.x), MathUtils.min(bottomLeft.x, bottomRight.x));
+		float maxX = MathUtils.max(MathUtils.max(topLeft.x, topRight.x), MathUtils.max(bottomLeft.x, bottomRight.x));
+		float minY = MathUtils.min(MathUtils.min(topLeft.y, topRight.y), MathUtils.min(bottomLeft.y, bottomRight.y));
+		float maxY = MathUtils.max(MathUtils.max(topLeft.y, topRight.y), MathUtils.max(bottomLeft.y, bottomRight.y));
+
+		return rect.setBounds(minX, minY, (maxX - minX), (maxY - minY));
+	}
+
+	public PointF transform(PointF pt) {
+		float[] in = new float[] { pt.x, pt.y };
+		float[] out = new float[2];
+
+		transform(in, 0, out, 0, 1);
+
+		return new PointF(out[0], out[1]);
+	}
+
+	public PointI transform(PointI pt) {
+		float[] in = new float[] { pt.x, pt.y };
+		float[] out = new float[2];
+
+		transform(in, 0, out, 0, 1);
+
+		return new PointI((int) out[0], (int) out[1]);
 	}
 
 	public Matrix3 cpy() {

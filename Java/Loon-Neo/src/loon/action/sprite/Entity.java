@@ -948,7 +948,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		}
 		return false;
 	}
-	
+
 	public int width() {
 		return (int) getWidth();
 	}
@@ -1340,6 +1340,93 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		return this._sprites;
 	}
 
+	private float toPixelScaleX(float x) {
+		return MathUtils.iceil(x / _scaleX);
+	}
+
+	private float toPixelScaleY(float y) {
+		return MathUtils.iceil(y / _scaleY);
+	}
+
+	public Vector2f getUITouch(float x, float y) {
+		return getUITouch(x, y, null);
+	}
+
+	public Vector2f getUITouch(float x, float y, Vector2f pointResult) {
+		if (!(x == -1 && y == -1 && pointResult != null)) {
+			if (pointResult == null) {
+				pointResult = new Vector2f(x, y);
+			} else {
+				pointResult.set(x, y);
+			}
+		}
+		float newX = 0f;
+		float newY = 0f;
+		IEntity parent = getParent();
+		if (parent != null) {
+			newX = pointResult.x - parent.getX() - getX();
+			newY = pointResult.y - parent.getX() - getY();
+		} else {
+			newX = pointResult.x - getX();
+			newY = pointResult.y - getY();
+		}
+		final float angle = getRotation();
+		if (angle == 0 || angle == 360) {
+			pointResult.x = toPixelScaleX(newX);
+			pointResult.y = toPixelScaleY(newY);
+			return pointResult;
+		}
+		float oldWidth = _width;
+		float oldHeight = _height;
+		float newWidth = getWidth();
+		float newHeight = getHeight();
+		float offX = oldWidth / 2f - newWidth / 2f;
+		float offY = oldHeight / 2f - newHeight / 2f;
+		float posX = (newX - offX);
+		float posY = (newY - offY);
+		if (angle == 90) {
+			offX = oldHeight / 2f - newWidth / 2f;
+			offY = oldWidth / 2f - newHeight / 2f;
+			posX = (newX - offY);
+			posY = (newY - offX);
+			pointResult.set(posX / getScaleX(), posY / getScaleY()).rotateSelf(90);
+			pointResult.set(-pointResult.x, MathUtils.abs(pointResult.y - this._height));
+		} else if (angle == -90) {
+			offX = oldHeight / 2f - newWidth / 2f;
+			offY = oldWidth / 2f - newHeight / 2f;
+			posX = (newX - offY);
+			posY = (newY - offX);
+			pointResult.set(posX / getScaleX(), posY / getScaleY()).rotateSelf(-90);
+			pointResult.set(-(pointResult.x - this._width), MathUtils.abs(pointResult.y));
+		} else if (angle == -180 || angle == 180) {
+			pointResult.set(posX / getScaleX(), posY / getScaleY()).rotateSelf(getRotation()).addSelf(_width, _height);
+		} else {
+			float rad = MathUtils.toRadians(angle);
+			float sin = MathUtils.sin(rad);
+			float cos = MathUtils.cos(rad);
+			float dx = offX / getScaleX();
+			float dy = offY / getScaleY();
+			float dx2 = cos * dx - sin * dy;
+			float dy2 = sin * dx + cos * dy;
+			pointResult.x = _width - (newX - dx2);
+			pointResult.y = _height - (newY - dy2);
+		}
+		return pointResult;
+	}
+
+	@Override
+	public void setRotation(float rotate) {
+		super.setRotation(rotate);
+		if (_childrens != null) {
+			for (int i = _childrens.size - 1; i > -1; i--) {
+				IEntity entity = _childrens.items[i];
+				if (entity != null) {
+					entity.setRotation(rotate);
+				}
+			}
+		}
+	}
+
 	@Override
 	public Screen getScreen() {
 		if (this._sprites == null) {
@@ -1444,11 +1531,11 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		this._debugDraw = debug;
 		return this;
 	}
-	
-	public ISprite debug () {
-		return 	setDebugDraw(true);
+
+	public ISprite debug() {
+		return setDebugDraw(true);
 	}
-	
+
 	public LColor getDebugDrawColor() {
 		return _debugDrawColor.cpy();
 	}
@@ -1520,7 +1607,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	public Entity setMirror(boolean mirror) {
 		return setFlipX(mirror);
 	}
-	
+
 	public boolean isDescendantOf(ISprite actor) {
 		if (actor == null) {
 			throw new LSysException("Actor cannot be null");
