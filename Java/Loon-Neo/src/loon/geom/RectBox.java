@@ -155,12 +155,16 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 	public RectBox offset(Vector2f offset) {
 		this.x += offset.x;
 		this.y += offset.y;
+		this.pointsDirty = true;
+		checkPoints();
 		return this;
 	}
 
 	public RectBox offset(int offsetX, int offsetY) {
 		this.x += offsetX;
 		this.y += offsetY;
+		this.pointsDirty = true;
+		checkPoints();
 		return this;
 	}
 
@@ -182,6 +186,9 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 	}
 
 	public RectBox setBounds(float x, float y, float width, float height) {
+		if (this.x == x && this.y == y && this.width == width && this.height == height) {
+			return this;
+		}
 		this.x = x;
 		this.y = y;
 		this.width = (int) width;
@@ -207,7 +214,6 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 	}
 
 	public Polygon getPolygon() {
-		this.pointsDirty = true;
 		this.checkPoints();
 		Polygon poly = new Polygon(this.points);
 		return poly;
@@ -227,30 +233,46 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 		return this;
 	}
 
-	public RectBox setLocation(RectBox r) {
-		this.x = r.x;
-		this.y = r.y;
-		return this;
+	public RectBox setLocation(BoxSize r) {
+		if (r == null) {
+			return this;
+		}
+		return setLocation(r.getX(), r.getY());
+	}
+
+	public RectBox setLocation(XY r) {
+		if (r == null) {
+			return this;
+		}
+		return setLocation(r.getX(), r.getY());
 	}
 
 	public RectBox setLocation(Point r) {
-		this.x = r.x;
-		this.y = r.y;
+		if (r == null) {
+			return this;
+		}
+		return setLocation(r.x, r.y);
+	}
+
+	@Override
+	public RectBox setLocation(float x, float y) {
+		if (this.x == x && this.y == y) {
+			return this;
+		}
+		super.setLocation(x, y);
 		return this;
 	}
 
 	public RectBox setLocation(int x, int y) {
-		this.x = x;
-		this.y = y;
+		if (this.x == x && this.y == y) {
+			return this;
+		}
+		super.setLocation(x, y);
 		return this;
 	}
 
 	public RectBox grow(float h, float v) {
-		setX(getX() - h);
-		setY(getY() - v);
-		setWidth(getWidth() + (h * 2));
-		setHeight(getHeight() + (v * 2));
-		return this;
+		return setBounds(getX() - h, getY() - v, getWidth() + (h * 2), getHeight() + (v * 2));
 	}
 
 	public RectBox scaleGrow(float h, float v) {
@@ -716,6 +738,7 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 		return this;
 	}
 
+	@Override
 	protected void createPoints() {
 
 		float useWidth = width;
@@ -742,6 +765,7 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 		calculateRadius();
 	}
 
+	@Override
 	public Shape transform(Matrix3 transform) {
 		checkPoints();
 		Polygon resultPolygon = new Polygon();
@@ -760,6 +784,8 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 	 */
 	public final RectBox modX(float xMod) {
 		x += xMod;
+		this.pointsDirty = true;
+		this.checkPoints();
 		return this;
 	}
 
@@ -770,6 +796,8 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 	 */
 	public final RectBox modY(float yMod) {
 		y += yMod;
+		this.pointsDirty = true;
+		this.checkPoints();
 		return this;
 	}
 
@@ -780,6 +808,8 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 	 */
 	public RectBox modWidth(float w) {
 		this.width += w;
+		this.pointsDirty = true;
+		this.checkPoints();
 		return this;
 	}
 
@@ -790,6 +820,8 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 	 */
 	public RectBox modHeight(float h) {
 		this.height += h;
+		this.pointsDirty = true;
+		this.checkPoints();
 		return this;
 	}
 
@@ -842,28 +874,30 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 	}
 
 	public RectBox setEmpty() {
-		this.x = 0;
-		this.y = 0;
-		this.width = 0;
-		this.height = 0;
-		return this;
+		return this.setBounds(0f, 0f, 0f, 0f);
 	}
 
 	public RectBox offset(Point point) {
 		x += point.x;
 		y += point.y;
+		this.pointsDirty = true;
+		checkPoints();
 		return this;
 	}
 
 	public RectBox offset(PointF point) {
 		x += point.x;
 		y += point.y;
+		this.pointsDirty = true;
+		checkPoints();
 		return this;
 	}
 
 	public RectBox offset(PointI point) {
 		x += point.x;
 		y += point.y;
+		this.pointsDirty = true;
+		checkPoints();
 		return this;
 	}
 

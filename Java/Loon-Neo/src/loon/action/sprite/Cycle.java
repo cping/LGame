@@ -411,9 +411,9 @@ public class Cycle extends Entity {
 			} else {
 				point = points.get(index - pointsLength);
 			}
-			this._alpha = (i / (l - 1));
+			this._objectAlpha = (i / (l - 1));
 			frameD = frame / (pointsLength - 1);
-			indexD = (int) _alpha;
+			indexD = (int) _objectAlpha;
 			if (lineWidth > 0) {
 				g.setLineWidth(lineWidth);
 			}
@@ -422,12 +422,12 @@ public class Cycle extends Entity {
 				g.scale(_scaleX, _scaleY);
 			}
 			tmpColor = g.color();
-			if (_alpha > 0 && _alpha < 1) {
-				g.setAlpha(_alpha);
+			if (_objectAlpha > 0 && _objectAlpha < 1) {
+				g.setAlpha(_objectAlpha);
 			}
 			g.setTint(_baseColor);
-			step(g, point, indexD, frameD, _baseColor, _alpha, offsetX + _offset.x, offsetY + _offset.y);
-			if (_alpha != 1f) {
+			step(g, point, indexD, frameD, _baseColor, _objectAlpha, offsetX + _offset.x, offsetY + _offset.y);
+			if (_objectAlpha != 1f) {
 				g.setAlpha(1f);
 			}
 			g.setTint(tmpColor);

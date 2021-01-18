@@ -664,7 +664,7 @@ public class Sprite extends LObject<ISprite>
 		if (!visible) {
 			return;
 		}
-		if (_alpha < 0.01) {
+		if (_objectAlpha < 0.01) {
 			return;
 		}
 
@@ -679,21 +679,21 @@ public class Sprite extends LObject<ISprite>
 		float width = notImg ? getContainerWidth() : image.getWidth();
 		float height = notImg ? getContainerHeight() : image.getHeight();
 
-		boolean update = (_rotation != 0) || !(_scaleX == 1f && _scaleY == 1f) || _flipX || _flipY;
+		boolean update = (_objectRotation != 0) || !(_scaleX == 1f && _scaleY == 1f) || _flipX || _flipY;
 		int tmp = g.color();
 		int blend = g.getBlendMode();
 		try {
 			g.setBlendMode(_GL_BLEND);
-			float nx = this._location.x + offsetX + _offset.x;
-			float ny = this._location.y + offsetY + _offset.y;
+			float nx = this._objectLocation.x + offsetX + _offset.x;
+			float ny = this._objectLocation.y + offsetY + _offset.y;
 			if (update) {
 				g.saveTx();
 				Affine2f tx = g.tx();
 				final float centerX = this._pivot.x == -1 ? (nx + _origin.ox(width)) : nx + this._pivot.x;
 				final float centerY = this._pivot.y == -1 ? (ny + _origin.oy(height)) : ny + this._pivot.y;
-				if (_rotation != 0 && notImg) {
+				if (_objectRotation != 0 && notImg) {
 					tx.translate(centerX, centerY);
-					tx.preRotate(_rotation);
+					tx.preRotate(_objectRotation);
 					tx.translate(-centerX, -centerY);
 				}
 				if (_flipX || _flipY) {
@@ -711,13 +711,13 @@ public class Sprite extends LObject<ISprite>
 					tx.translate(-centerX, -centerY);
 				}
 			}
-			g.setAlpha(_alpha);
+			g.setAlpha(_objectAlpha);
 			if (!notImg) {
 				if (LTrans.TRANS_NONE == transform) {
-					g.draw(image, nx, ny, width, height, filterColor, _rotation, _pivot, _scaleX, _scaleY);
+					g.draw(image, nx, ny, width, height, filterColor, _objectRotation, _pivot, _scaleX, _scaleY);
 				} else {
 					g.drawRegion(image, 0, 0, (int) width, (int) height, transform, (int) nx, (int) ny,
-							LTrans.TOP | LTrans.LEFT, filterColor, _pivot, _scaleX, _scaleY, _rotation);
+							LTrans.TOP | LTrans.LEFT, filterColor, _pivot, _scaleX, _scaleY, _objectRotation);
 				}
 			}
 			if (_childrens != null && _childrens.size > 0) {
@@ -754,7 +754,7 @@ public class Sprite extends LObject<ISprite>
 
 	public float getScreenX() {
 		float x = 0;
-		ISprite parent = _super;
+		ISprite parent = _objectSuper;
 		if (parent != null) {
 			x += parent.getX();
 			for (; (parent = parent.getParent()) != null;) {
@@ -766,7 +766,7 @@ public class Sprite extends LObject<ISprite>
 
 	public float getScreenY() {
 		float y = 0;
-		ISprite parent = _super;
+		ISprite parent = _objectSuper;
 		if (parent != null) {
 			y += parent.getY();
 			for (; (parent = parent.getParent()) != null;) {
@@ -1135,7 +1135,7 @@ public class Sprite extends LObject<ISprite>
 
 	@Override
 	public float getContainerX() {
-		if (_super != null) {
+		if (_objectSuper != null) {
 			return getScreenX() - getX();
 		}
 		return this._sprites == null ? super.getContainerX() : this._sprites.getX();
@@ -1143,7 +1143,7 @@ public class Sprite extends LObject<ISprite>
 
 	@Override
 	public float getContainerY() {
-		if (_super != null) {
+		if (_objectSuper != null) {
 			return getScreenY() - getY();
 		}
 		return this._sprites == null ? super.getContainerY() : this._sprites.getY();

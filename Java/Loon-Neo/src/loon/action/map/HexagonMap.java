@@ -389,7 +389,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 			texturePack = new LTexturePack();
 		}
 		this._scaleX = this._scaleY = 1f;
-		this._rotation = 0f;
+		this._objectRotation = 0f;
 		this.visible = true;
 		this.active = true;
 		this.dirty = true;
@@ -1127,7 +1127,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 
 	public float getScreenX() {
 		float x = 0;
-		ISprite parent = _super;
+		ISprite parent = _objectSuper;
 		if (parent != null) {
 			x += parent.getX();
 			for (; (parent = parent.getParent()) != null;) {
@@ -1139,7 +1139,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 
 	public float getScreenY() {
 		float y = 0;
-		ISprite parent = _super;
+		ISprite parent = _objectSuper;
 		if (parent != null) {
 			y += parent.getY();
 			for (; (parent = parent.getParent()) != null;) {
@@ -1151,7 +1151,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 
 	@Override
 	public float getContainerX() {
-		if (_super != null) {
+		if (_objectSuper != null) {
 			return getScreenX() - getX();
 		}
 		return this._screenSprites == null ? super.getContainerX() : this._screenSprites.getX();
@@ -1159,7 +1159,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 
 	@Override
 	public float getContainerY() {
-		if (_super != null) {
+		if (_objectSuper != null) {
 			return getScreenY() - getY();
 		}
 		return this._screenSprites == null ? super.getContainerY() : this._screenSprites.getY();
@@ -1185,25 +1185,25 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		if (!visible) {
 			return;
 		}
-		boolean update = (_rotation != 0) || !(_scaleX == 1f && _scaleY == 1f);
+		boolean update = (_objectRotation != 0) || !(_scaleX == 1f && _scaleY == 1f);
 		int blend = g.getBlendMode();
 		int tmp = g.color();
 		try {
 			g.setBlendMode(_GL_BLEND);
-			g.setAlpha(_alpha);
+			g.setAlpha(_objectAlpha);
 			if (this.roll) {
 				this._offset = toRollPosition(this._offset);
 			}
-			float newX = this._location.x + offsetX + _offset.getX();
-			float newY = this._location.y + offsetY + _offset.getY();
+			float newX = this._objectLocation.x + offsetX + _offset.getX();
+			float newY = this._objectLocation.y + offsetY + _offset.getY();
 			if (update) {
 				g.saveTx();
 				Affine2f tx = g.tx();
-				if (_rotation != 0) {
+				if (_objectRotation != 0) {
 					final float rotationCenterX = newX + getWidth() / 2f;
 					final float rotationCenterY = newY + getHeight() / 2f;
 					tx.translate(rotationCenterX, rotationCenterY);
-					tx.preRotate(_rotation);
+					tx.preRotate(_objectRotation);
 					tx.translate(-rotationCenterX, -rotationCenterY);
 				}
 				if ((_scaleX != 1) || (_scaleY != 1)) {
@@ -1234,19 +1234,19 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	}
 
 	public int getPixelX(float x) {
-		return MathUtils.iceil((x - _location.x) / _scaleX);
+		return MathUtils.iceil((x - _objectLocation.x) / _scaleX);
 	}
 
 	public int getPixelY(float y) {
-		return MathUtils.iceil((y - _location.y) / _scaleY);
+		return MathUtils.iceil((y - _objectLocation.y) / _scaleY);
 	}
 
 	public float offsetXPixel(float x) {
-		return MathUtils.iceil((x - _offset.x - _location.x) / _scaleX);
+		return MathUtils.iceil((x - _offset.x - _objectLocation.x) / _scaleX);
 	}
 
 	public float offsetYPixel(float y) {
-		return MathUtils.iceil((y - _offset.y - _location.y) / _scaleY);
+		return MathUtils.iceil((y - _offset.y - _objectLocation.y) / _scaleY);
 	}
 
 	public boolean inMap(int x, int y) {

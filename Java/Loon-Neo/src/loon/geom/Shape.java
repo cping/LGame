@@ -73,9 +73,10 @@ public abstract class Shape implements Serializable, IArray, XY {
 		scaleX = scaleY = 1f;
 	}
 
-	public void setLocation(float x, float y) {
+	public Shape setLocation(float x, float y) {
 		setX(x);
 		setY(y);
+		return this;
 	}
 
 	public abstract Shape transform(Matrix3 transform);

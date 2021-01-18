@@ -181,11 +181,11 @@ public class ParticleSystem extends Entity {
 	}
 
 	public float getPositionX() {
-		return _location.x;
+		return _objectLocation.x;
 	}
 
 	public float getPositionY() {
-		return _location.y;
+		return _objectLocation.y;
 	}
 
 	public void setPosition(float x, float y) {
@@ -193,7 +193,7 @@ public class ParticleSystem extends Entity {
 	}
 
 	public void render(GLEx g) {
-		repaint(g, _location.x, _location.y);
+		repaint(g, _objectLocation.x, _objectLocation.y);
 	}
 
 	@Override

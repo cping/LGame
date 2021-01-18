@@ -211,14 +211,14 @@ public class MovieClip extends DisplayObject {
 		if (!_visible) {
 			return;
 		}
-		if (_alpha < 0.01f) {
+		if (_objectAlpha < 0.01f) {
 			return;
 		}
 		if (_ssd == null) {
 			return;
 		}
-		float x = _location.x + _ssd.offX() + offsetX + _offset.x;
-		float y = _location.y + _ssd.offY() + offsetY + _offset.y;
+		float x = _objectLocation.x + _ssd.offX() + offsetX + _offset.x;
+		float y = _objectLocation.y + _ssd.offY() + offsetY + _offset.y;
 		if (_anchor == DisplayObject.ANCHOR_CENTER) {
 			x -= _ssd.sourceW() >> 1;
 			y -= _ssd.sourceH() >> 1;
@@ -281,11 +281,11 @@ public class MovieClip extends DisplayObject {
 			default:
 				throw new LSysException("Bad transform");
 			}
-			float r = rotate + _rotation;
+			float r = rotate + _objectRotation;
 			if (r > 360) {
 				rotate = r - 360;
 			} else {
-				rotate += _rotation;
+				rotate += _objectRotation;
 			}
 			g.draw(_sheet.sheet(), destX, destY, drawRect.width, drawRect.height, _ssd.x(), _ssd.y(), _ssd.w(),
 					_ssd.h(), _baseColor, rotate, _scaleX, _scaleY, _anchorValue, _pivotValue, dir);

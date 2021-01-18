@@ -52,7 +52,7 @@ public class LNProgressBar extends LNSprite {
 			rotation = super.convertToWorldRot();
 			scale = super.convertToWorldScale();
 			batch.setColor(super._color.r, super._color.g, super._color.b,
-					super._alpha);
+					super._objectAlpha);
 			if (this._type == BarType.PROGRESS_BAR_LEFT) {
 				batch.draw(_texture, pos[0], pos[1], _anchor.x, _anchor.y,
 						super._size_width, super._size_height, scale[0],
@@ -97,7 +97,7 @@ public class LNProgressBar extends LNSprite {
 			rotation = super.convertToWorldRot();
 			scale = super.convertToWorldScale();
 			g.setColor(super._color.r, super._color.g, super._color.b,
-					super._alpha);
+					super._objectAlpha);
 			if (this._type == BarType.PROGRESS_BAR_LEFT) {
 				g.draw(_texture, pos[0]-_anchor.x, pos[1]-_anchor.y, _anchor, super._size_width,
 						super._size_height, scale[0], scale[1],

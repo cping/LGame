@@ -885,12 +885,12 @@ public abstract class LContainer extends LComponent implements IArray {
 	}
 
 	private RectBox getBox() {
-		return setRect(MathUtils.getBounds(0, 0, getWidth() * _scaleX, getHeight() * _scaleY, _rotation, _rect));
+		return setRect(MathUtils.getBounds(0, 0, getWidth() * _scaleX, getHeight() * _scaleY, _objectRotation, _objectRect));
 	}
 
 	@Override
 	public LayoutPort getLayoutPort() {
-		if (_super == null) {
+		if (_objectSuper == null) {
 			return new LayoutPort(getBox(), getRootConstraints());
 		} else {
 			return new LayoutPort(this, getRootConstraints());

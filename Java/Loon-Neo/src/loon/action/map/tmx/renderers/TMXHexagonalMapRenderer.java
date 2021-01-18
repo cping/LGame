@@ -60,9 +60,9 @@ public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 		float tileWidth = map.getTileWidth();
 		float tileHeight = map.getTileHeight();
 		float posX = (imageLayer.getY() * tileWidth / 2)
-				+ (imageLayer.getX() * tileWidth / 2) + _location.x;
+				+ (imageLayer.getX() * tileWidth / 2) + _objectLocation.x;
 		float posY = (imageLayer.getX() * tileHeight / 2)
-				- (imageLayer.getY() * tileHeight / 2) + _location.y;
+				- (imageLayer.getY() * tileHeight / 2) + _objectLocation.y;
 		g.draw(current, posX, posY, imageLayer.getWidth() * map.getTileWidth(),
 				imageLayer.getHeight() * map.getTileHeight(), baseColor);
 		baseColor.a = tmpAlpha;
@@ -82,8 +82,8 @@ public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 				opacity = 1f;
 			}
 
-			int tx = _location.x() / map.getTileWidth();
-			int ty = _location.y() / map.getTileHeight();
+			int tx = _objectLocation.x() / map.getTileWidth();
+			int ty = _objectLocation.y() / map.getTileHeight();
 			float windowWidth = LSystem.viewSize.getWidth()
 					/ map.getTileWidth() * 3f;
 			float windowHeight = LSystem.viewSize.getHeight()
@@ -111,7 +111,7 @@ public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 					hashCode = LSystem.unite(hashCode, windowHeight);
 					hashCode = LSystem.unite(hashCode, scaleX);
 					hashCode = LSystem.unite(hashCode, scaleY);
-					hashCode = LSystem.unite(hashCode, _rotation);
+					hashCode = LSystem.unite(hashCode, _objectRotation);
 
 					if (hashCode != lastHashCode) {
 						lastHashCode = hashCode;
@@ -228,9 +228,9 @@ public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 							nx = x + 0.5f;
 						}
 
-						float nx1 = _location.x + nx * tileWidth * 0.75f
+						float nx1 = _objectLocation.x + nx * tileWidth * 0.75f
 								* scaleX;
-						float ny1 = _location.y + y * tileWidth * 0.5f * scaleY;
+						float ny1 = _objectLocation.y + y * tileWidth * 0.5f * scaleY;
 
 						float nx2 = (nx1 + tileWidth) * scaleX;
 						float ny2 = (ny1 + tileHeight) * scaleY;
@@ -240,7 +240,7 @@ public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 						float uvCorrectionY = (0.2f / tileSet.getImage()
 								.getHeight());
 
-						if (_rotation != 0f || scaleX != 1f || scaleY != 1f) {
+						if (_objectRotation != 0f || scaleX != 1f || scaleY != 1f) {
 
 							float originX = tileWidth / 2;
 							float originY = tileHeight / 2;
@@ -276,9 +276,9 @@ public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 							float x4;
 							float y4;
 
-							if (_rotation != 0) {
-								final float cos = MathUtils.cosDeg(_rotation);
-								final float sin = MathUtils.sinDeg(_rotation);
+							if (_objectRotation != 0) {
+								final float cos = MathUtils.cosDeg(_objectRotation);
+								final float sin = MathUtils.sinDeg(_objectRotation);
 
 								x1 = cos * p1x - sin * p1y;
 								y1 = sin * p1x + cos * p1y;

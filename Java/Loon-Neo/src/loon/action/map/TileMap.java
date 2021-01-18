@@ -866,25 +866,25 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		if (!visible) {
 			return;
 		}
-		boolean update = (_rotation != 0) || !(scaleX == 1f && scaleY == 1f);
+		boolean update = (_objectRotation != 0) || !(scaleX == 1f && scaleY == 1f);
 		int blend = g.getBlendMode();
 		int tmp = g.color();
 		try {
 			g.setBlendMode(_GL_BLEND);
-			g.setAlpha(_alpha);
+			g.setAlpha(_objectAlpha);
 			if (this.roll) {
 				this.offset = toRollPosition(this.offset);
 			}
-			float newX = this._location.x + offsetX + offset.getX();
-			float newY = this._location.y + offsetY + offset.getY();
+			float newX = this._objectLocation.x + offsetX + offset.getX();
+			float newY = this._objectLocation.y + offsetY + offset.getY();
 			if (update) {
 				g.saveTx();
 				Affine2f tx = g.tx();
-				if (_rotation != 0) {
+				if (_objectRotation != 0) {
 					final float rotationCenterX = newX + getWidth() / 2f;
 					final float rotationCenterY = newY + getHeight() / 2f;
 					tx.translate(rotationCenterX, rotationCenterY);
-					tx.preRotate(_rotation);
+					tx.preRotate(_objectRotation);
 					tx.translate(-rotationCenterX, -rotationCenterY);
 				}
 				if ((scaleX != 1) || (scaleY != 1)) {
@@ -1085,19 +1085,19 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	}
 
 	public int getPixelX(float x) {
-		return MathUtils.iceil((x - _location.x) / scaleX);
+		return MathUtils.iceil((x - _objectLocation.x) / scaleX);
 	}
 
 	public int getPixelY(float y) {
-		return MathUtils.iceil((y - _location.y) / scaleY);
+		return MathUtils.iceil((y - _objectLocation.y) / scaleY);
 	}
 
 	public int offsetXPixel(float x) {
-		return MathUtils.iceil((x - offset.x - _location.x) / scaleX);
+		return MathUtils.iceil((x - offset.x - _objectLocation.x) / scaleX);
 	}
 
 	public int offsetYPixel(float y) {
-		return MathUtils.iceil((y - offset.y - _location.y) / scaleY);
+		return MathUtils.iceil((y - offset.y - _objectLocation.y) / scaleY);
 	}
 
 	public boolean inMap(int x, int y) {
@@ -1239,7 +1239,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	public float getScreenX() {
 		float x = 0;
-		ISprite parent = _super;
+		ISprite parent = _objectSuper;
 		if (parent != null) {
 			x += parent.getX();
 			for (; (parent = parent.getParent()) != null;) {
@@ -1251,7 +1251,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	public float getScreenY() {
 		float y = 0;
-		ISprite parent = _super;
+		ISprite parent = _objectSuper;
 		if (parent != null) {
 			y += parent.getY();
 			for (; (parent = parent.getParent()) != null;) {
@@ -1263,7 +1263,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	@Override
 	public float getContainerX() {
-		if (_super != null) {
+		if (_objectSuper != null) {
 			return getScreenX() - getX();
 		}
 		return this._screenSprites == null ? super.getContainerX() : this._screenSprites.getX();
@@ -1271,7 +1271,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	@Override
 	public float getContainerY() {
-		if (_super != null) {
+		if (_objectSuper != null) {
 			return getScreenY() - getY();
 		}
 		return this._screenSprites == null ? super.getContainerY() : this._screenSprites.getY();

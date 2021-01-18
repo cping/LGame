@@ -76,8 +76,8 @@ public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
 				opacity = 1f;
 			}
 
-			int tx = _location.x() / map.getTileWidth();
-			int ty = _location.y() / map.getTileHeight();
+			int tx = _objectLocation.x() / map.getTileWidth();
+			int ty = _objectLocation.y() / map.getTileHeight();
 			int windowWidth = (int) (LSystem.viewSize.getWidth()
 					/ map.getTileWidth() / scaleX);
 			int windowHeight = (int) (LSystem.viewSize.getHeight()
@@ -103,7 +103,7 @@ public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
 					hashCode = LSystem.unite(hashCode, windowHeight);
 					hashCode = LSystem.unite(hashCode, scaleX);
 					hashCode = LSystem.unite(hashCode, scaleY);
-					hashCode = LSystem.unite(hashCode, _rotation);
+					hashCode = LSystem.unite(hashCode, _objectRotation);
 
 					if (hashCode != lastHashCode) {
 						lastHashCode = hashCode;
@@ -177,8 +177,8 @@ public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
 						float tileWidth = map.getTileWidth();
 						float tileHeight = map.getTileHeight();
 
-						float posX = (x * tileWidth + _location.x) * scaleX;
-						float posY = (y * tileHeight + _location.y) * scaleY;
+						float posX = (x * tileWidth + _objectLocation.x) * scaleX;
+						float posY = (y * tileHeight + _objectLocation.y) * scaleY;
 
 						float srcX = (tileSet.getMargin() + (tileSet
 								.getTileWidth() + tileSet.getSpacing())
@@ -222,7 +222,7 @@ public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
 						float uvCorrectionY = (0.2f / tileSet.getImage()
 								.getHeight());
 
-						if (_rotation != 0f || scaleX != 1f || scaleY != 1f) {
+						if (_objectRotation != 0f || scaleX != 1f || scaleY != 1f) {
 
 							float originX = tileWidth / 2;
 							float originY = tileHeight / 2;
@@ -258,9 +258,9 @@ public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
 							float x4;
 							float y4;
 
-							if (_rotation != 0) {
-								final float cos = MathUtils.cosDeg(_rotation);
-								final float sin = MathUtils.sinDeg(_rotation);
+							if (_objectRotation != 0) {
+								final float cos = MathUtils.cosDeg(_objectRotation);
+								final float sin = MathUtils.sinDeg(_objectRotation);
 
 								x1 = cos * p1x - sin * p1y;
 								y1 = sin * p1x + cos * p1y;

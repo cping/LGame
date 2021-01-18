@@ -116,14 +116,16 @@ public class Point extends Shape {
 		this.y = y;
 	}
 
-	public void setLocation(float x, float y) {
+	public Point setLocation(float x, float y) {
 		this.x = x;
 		this.y = y;
+		return this;
 	}
 
-	public void setLocation(Point p) {
+	public Point setLocation(Point p) {
 		this.x = p.getX();
 		this.y = p.getY();
+		return this;
 	}
 
 	public void translate(float dx, float dy) {

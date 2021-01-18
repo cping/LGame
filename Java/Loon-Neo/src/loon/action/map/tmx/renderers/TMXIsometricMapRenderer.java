@@ -39,16 +39,14 @@ import loon.opengl.GLEx;
  */
 public class TMXIsometricMapRenderer extends TMXMapRenderer {
 
-	private Vector2f tempVector = new Vector2f();
-
 	public TMXIsometricMapRenderer(TMXMap map) {
 		super(map);
 	}
 
 	private Vector2f orthoToIso(float x, float y) {
-		tempVector.x = (x - y) * map.getTileWidth() / 2 + _location.x;
-		tempVector.y = (x + y) * map.getTileHeight() / 2 + _location.y;
-		return tempVector.addSelf(map.getWidth() * map.getTileWidth() / 2, 0);
+		_mapLocation.x = (x - y) * map.getTileWidth() / 2 + _objectLocation.x;
+		_mapLocation.y = (x + y) * map.getTileHeight() / 2 + _objectLocation.y;
+		return _mapLocation.addSelf(map.getWidth() * map.getTileWidth() / 2f, 0);
 	}
 
 	@Override
@@ -69,9 +67,9 @@ public class TMXIsometricMapRenderer extends TMXMapRenderer {
 		float tileWidth = map.getTileWidth();
 		float tileHeight = map.getTileHeight();
 		float posX = (imageLayer.getY() * tileWidth / 2)
-				+ (imageLayer.getX() * tileWidth / 2) + _location.x;
+				+ (imageLayer.getX() * tileWidth / 2) + _objectLocation.x;
 		float posY = (imageLayer.getX() * tileHeight / 2)
-				- (imageLayer.getY() * tileHeight / 2) + _location.y;
+				- (imageLayer.getY() * tileHeight / 2) + _objectLocation.y;
 		g.draw(current, posX, posY, imageLayer.getWidth() * map.getTileWidth(),
 				imageLayer.getHeight() * map.getTileHeight(), baseColor);
 		baseColor.a = tmpAlpha;
@@ -91,8 +89,8 @@ public class TMXIsometricMapRenderer extends TMXMapRenderer {
 				opacity = 1f;
 			}
 
-			int tx = _location.x() / map.getTileWidth();
-			int ty = _location.y() / map.getTileHeight();
+			int tx = _objectLocation.x() / map.getTileWidth();
+			int ty = _objectLocation.y() / map.getTileHeight();
 			float windowWidth = LSystem.viewSize.getWidth()
 					/ map.getTileWidth() * 2f;
 			float windowHeight = LSystem.viewSize.getHeight()
@@ -120,7 +118,7 @@ public class TMXIsometricMapRenderer extends TMXMapRenderer {
 					hashCode = LSystem.unite(hashCode, windowHeight);
 					hashCode = LSystem.unite(hashCode, scaleX);
 					hashCode = LSystem.unite(hashCode, scaleY);
-					hashCode = LSystem.unite(hashCode, _rotation);
+					hashCode = LSystem.unite(hashCode, _objectRotation);
 
 					if (hashCode != lastHashCode) {
 						lastHashCode = hashCode;
@@ -235,12 +233,12 @@ public class TMXIsometricMapRenderer extends TMXMapRenderer {
 						float uvCorrectionY = (0.5f / tileSet.getImage()
 								.getHeight());
 
-						if (_rotation != 0f || scaleX != 1f || scaleY != 1f) {
+						if (_objectRotation != 0f || scaleX != 1f || scaleY != 1f) {
 
-							if (_rotation != 0f) {
+							if (_objectRotation != 0f) {
 
 								batch.glVertex2f(orthoToIso(x, y).addSelf(
-										-tileWidth / 2, 0).rotate(_rotation));
+										-tileWidth / 2, 0).rotate(_objectRotation));
 								batch.glColor4f();
 								batch.glTexCoord2f(xOff + uvCorrectionX, yOff
 										+ uvCorrectionY);
@@ -249,7 +247,7 @@ public class TMXIsometricMapRenderer extends TMXMapRenderer {
 										.addSelf(-tileWidth / 2, 0)
 										.addSelf(flipZ ? tileWidth : 0,
 												flipZ ? 0 : tileHeight)
-										.rotate(_rotation));
+										.rotate(_objectRotation));
 								batch.glColor4f();
 								batch.glTexCoord2f(xOff + uvCorrectionX,
 										heightRatio - uvCorrectionY);
@@ -257,7 +255,7 @@ public class TMXIsometricMapRenderer extends TMXMapRenderer {
 								batch.glVertex2f(orthoToIso(x, y)
 										.addSelf(-tileWidth / 2, 0)
 										.addSelf(tileWidth, tileHeight)
-										.rotate(_rotation));
+										.rotate(_objectRotation));
 								batch.glColor4f();
 								batch.glTexCoord2f(widthRatio - uvCorrectionX,
 										heightRatio - uvCorrectionY);
@@ -266,7 +264,7 @@ public class TMXIsometricMapRenderer extends TMXMapRenderer {
 										.addSelf(-tileWidth / 2, 0)
 										.addSelf(flipZ ? 0 : tileWidth,
 												flipZ ? tileHeight : 0)
-										.rotate(_rotation));
+										.rotate(_objectRotation));
 								batch.glColor4f();
 								batch.glTexCoord2f(widthRatio - uvCorrectionX,
 										yOff + uvCorrectionY);
@@ -309,7 +307,7 @@ public class TMXIsometricMapRenderer extends TMXMapRenderer {
 								batch.glVertex2f(orthoToIso(x, y)
 										.addSelf(-tileWidth / 2, 0)
 										.mul(scaleX, scaleY)
-										.rotate(_rotation));
+										.rotate(_objectRotation));
 								batch.glColor4f();
 								batch.glTexCoord2f(xOff + uvCorrectionX, yOff
 										+ uvCorrectionY);
@@ -319,7 +317,7 @@ public class TMXIsometricMapRenderer extends TMXMapRenderer {
 										.addSelf(flipZ ? tileWidth : 0,
 												flipZ ? 0 : tileHeight)
 										.mul(scaleX, scaleY)
-										.rotate(_rotation));
+										.rotate(_objectRotation));
 								batch.glColor4f();
 								batch.glTexCoord2f(xOff + uvCorrectionX,
 										heightRatio - uvCorrectionY);
@@ -328,7 +326,7 @@ public class TMXIsometricMapRenderer extends TMXMapRenderer {
 										.addSelf(-tileWidth / 2, 0)
 										.addSelf(tileWidth, tileHeight)
 										.mul(scaleX, scaleY)
-										.rotate(_rotation));
+										.rotate(_objectRotation));
 								batch.glColor4f();
 								batch.glTexCoord2f(widthRatio - uvCorrectionX,
 										heightRatio - uvCorrectionY);
@@ -338,7 +336,7 @@ public class TMXIsometricMapRenderer extends TMXMapRenderer {
 										.addSelf(flipZ ? 0 : tileWidth,
 												flipZ ? tileHeight : 0)
 										.mul(scaleX, scaleY)
-										.rotate(_rotation));
+										.rotate(_objectRotation));
 								batch.glColor4f();
 								batch.glTexCoord2f(widthRatio - uvCorrectionX,
 										yOff + uvCorrectionY);

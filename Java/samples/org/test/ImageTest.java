@@ -6,6 +6,7 @@ import loon.canvas.LColor;
 import loon.component.DefUI;
 import loon.events.GameTouch;
 import loon.font.BMFont;
+import loon.font.BMFontCache;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimerContext;
 
@@ -34,7 +35,7 @@ public class ImageTest extends Screen {
 			g.drawOval((i * 5) + 25, (i * 3) + 25, 50, 50);
 		}
 		// 使用默认的bmfont
-		g.setFont(BMFont.getDefaultFont());
+		g.setFont(BMFontCache.getDefaultFont());
 		g.drawString(message, 0, 0, LColor.yellow);
 		// 还原默认配置
 		g.resetFont();

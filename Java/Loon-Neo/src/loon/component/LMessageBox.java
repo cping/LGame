@@ -760,7 +760,7 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 	@Override
 	public void update(long elapsedTime) {
 		super.update(elapsedTime);
-		this._box.setLocation(this._location);
+		this._box.setLocation(this._objectLocation);
 		if (!this.noMessage) {
 			Message message = _messageList.get(messageIndex);
 			if (!StringUtils.isEmpty(message.face)) {

@@ -150,8 +150,8 @@ public class Bullet extends LObject<Bullet> implements CollisionObject, ActionBi
 			LTexture texture = animation.getSpriteImage();
 			float tmp = baseColor.a;
 			if (texture != null) {
-				g.draw(texture, getX() + offsetX, getY() + offsetY, getWidth(), getHeight(), baseColor.setAlpha(_alpha),
-						_rotation);
+				g.draw(texture, getX() + offsetX, getY() + offsetY, getWidth(), getHeight(), baseColor.setAlpha(_objectAlpha),
+						_objectRotation);
 				width = MathUtils.max(width, texture.width());
 				height = MathUtils.max(height, texture.height());
 			}

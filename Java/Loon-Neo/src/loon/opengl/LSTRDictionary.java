@@ -77,8 +77,6 @@ public final class LSTRDictionary implements LRelease {
 
 	private boolean tmp_asyn = true;
 
-	private final Dict emptyDict = new Dict();
-
 	private final ArrayMap cacheList = new ArrayMap(32);
 
 	private final ArrayMap fontList = new ArrayMap(32);
@@ -93,7 +91,7 @@ public final class LSTRDictionary implements LRelease {
 	public final static char split = '$';
 
 	private StrBuilder tmpBuffer = null;
-	
+
 	private Dict _lastDict;
 
 	private String _lastMessage;
@@ -102,7 +100,7 @@ public final class LSTRDictionary implements LRelease {
 
 	public static class Dict implements LRelease {
 
-		protected TArray<Character> dicts;
+		protected CharArray dicts;
 
 		protected LSTRFont font;
 
@@ -111,7 +109,7 @@ public final class LSTRDictionary implements LRelease {
 		}
 
 		public Dict() {
-			dicts = new TArray<Character>(512);
+			dicts = new CharArray(128);
 		}
 
 		public LTexture getTexture() {
@@ -262,7 +260,6 @@ public final class LSTRDictionary implements LRelease {
 		return count == len;
 	}
 
-
 	public final Dict bind(final LFont font, final TArray<? extends CharSequence> chars) {
 		CharSequence[] buffers = new CharSequence[chars.size];
 		for (int i = 0, size = buffers.length; i < size; i++) {
@@ -281,7 +278,7 @@ public final class LSTRDictionary implements LRelease {
 
 	public final Dict bind(final LFont font, final String mes, final boolean autoStringFilter) {
 		if (StringUtils.isEmpty(mes)) {
-			return emptyDict;
+			return null;
 		}
 		if (mes.equals(_lastMessage) && _lastDict != null && !_lastDict.isClosed()) {
 			return _lastDict;
@@ -330,8 +327,8 @@ public final class LSTRDictionary implements LRelease {
 			}
 			synchronized (pDict) {
 				cacheList.put(message, font);
-				TArray<Character> charas = pDict.dicts;
-				int oldSize = charas.size;
+				CharArray charas = pDict.dicts;
+				int oldSize = charas.length;
 				int size = message.length();
 				for (int i = 0; i < size; i++) {
 					char flag = message.charAt(i);
@@ -339,7 +336,7 @@ public final class LSTRDictionary implements LRelease {
 						charas.add(flag);
 					}
 				}
-				int newSize = charas.size;
+				int newSize = charas.length;
 				// 如果旧有大小，不等于新的纹理字符大小，重新扩展LSTRFont纹理字符
 				if (oldSize != newSize) {
 					if (pDict.font != null) {
@@ -367,6 +364,9 @@ public final class LSTRDictionary implements LRelease {
 
 	public final void drawString(LFont font, String message, float x, float y, float angle, LColor c) {
 		Dict pDict = bind(font, message);
+		if (pDict == null) {
+			return;
+		}
 		if (pDict.font != null && !pDict.font.isClosed()) {
 			synchronized (pDict.font) {
 				pDict.font.drawString(message, x, y, angle, c);
@@ -377,6 +377,9 @@ public final class LSTRDictionary implements LRelease {
 	public final void drawString(LFont font, String message, float x, float y, float sx, float sy, float ax, float ay,
 			float angle, LColor c) {
 		Dict pDict = bind(font, message);
+		if (pDict == null) {
+			return;
+		}
 		if (pDict.font != null && !pDict.font.isClosed()) {
 			synchronized (pDict.font) {
 				pDict.font.drawString(message, x, y, sx, sy, ax, ay, angle, c);
@@ -386,6 +389,9 @@ public final class LSTRDictionary implements LRelease {
 
 	public final void drawString(GLEx gl, LFont font, String message, float x, float y, float angle, LColor c) {
 		Dict pDict = bind(font, message);
+		if (pDict == null) {
+			return;
+		}
 		if (pDict.font != null && !pDict.font.isClosed()) {
 			synchronized (pDict.font) {
 				pDict.font.drawString(gl, message, x, y, angle, c);
@@ -396,6 +402,9 @@ public final class LSTRDictionary implements LRelease {
 	public final void drawString(GLEx gl, LFont font, String message, float x, float y, float sx, float sy, float angle,
 			LColor c) {
 		Dict pDict = bind(font, message);
+		if (pDict == null) {
+			return;
+		}
 		if (pDict.font != null && !pDict.font.isClosed()) {
 			synchronized (pDict.font) {
 				pDict.font.drawString(gl, message, x, y, sx, sy, angle, c);
@@ -406,6 +415,9 @@ public final class LSTRDictionary implements LRelease {
 	public final void drawString(GLEx gl, LFont font, String message, float x, float y, float sx, float sy, float ax,
 			float ay, float angle, LColor c) {
 		Dict pDict = bind(font, message);
+		if (pDict == null) {
+			return;
+		}
 		if (pDict.font != null && !pDict.font.isClosed()) {
 			synchronized (pDict.font) {
 				pDict.font.drawString(gl, x, y, sx, sy, ax, ay, angle, message, c);

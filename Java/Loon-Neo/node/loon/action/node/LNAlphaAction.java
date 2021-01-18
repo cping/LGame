@@ -40,7 +40,7 @@ public class LNAlphaAction extends LNAction {
 	public void step(float dt) {
 		super._target.setAlpha(this._alpha);
 		super._isEnd = true;
-		oldAlpha = _target._alpha;
+		oldAlpha = _target.getAlpha();
 	}
 	
 	@Override

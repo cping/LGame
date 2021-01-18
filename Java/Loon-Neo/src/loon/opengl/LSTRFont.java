@@ -237,7 +237,7 @@ public class LSTRFont implements IFont, LRelease {
 				sbr = null;
 			}
 			LTextureBatch tmpbatch = strfont.fontBatch;
-			strfont.fontBatch = new LTextureBatch(strfont.texture = canvas.toTexture());
+			strfont.fontBatch = new LTextureBatch(strfont.displayList = canvas.toTexture());
 			strfont.fontBatch.setBlendState(BlendState.AlphaBlend);
 			if (tmpbatch != null) {
 				tmpbatch.close();
@@ -298,7 +298,7 @@ public class LSTRFont implements IFont, LRelease {
 
 	private float updateX = 0, updateY = 0;
 
-	private LTexture texture;
+	private LTexture displayList;
 
 	private boolean useCache, isDrawing, isasyn;
 
@@ -495,9 +495,9 @@ public class LSTRFont implements IFont, LRelease {
 			fontBatch.close();
 			fontBatch = null;
 		}
-		if (texture != null) {
-			texture.close(true);
-			texture = null;
+		if (displayList != null) {
+			displayList.close(true);
+			displayList = null;
 		}
 		if (customChars != null) {
 			customChars.clear();
@@ -564,7 +564,7 @@ public class LSTRFont implements IFont, LRelease {
 	}
 
 	public LTexture getTexture() {
-		return texture;
+		return displayList;
 	}
 
 	@Override
@@ -623,7 +623,7 @@ public class LSTRFont implements IFont, LRelease {
 				return false;
 			}
 		}
-		if (texture.isClosed()) {
+		if (displayList.isClosed()) {
 			return false;
 		}
 		return true;
@@ -939,7 +939,7 @@ public class LSTRFont implements IFont, LRelease {
 				}
 				if (intObject != null) {
 					if (!checkOutBounds() || containsChar(ch)) {
-						gl.draw(texture, x + (totalWidth * nsx), y + (totalHeight * nsy), intObject.width * nsx,
+						gl.draw(displayList, x + (totalWidth * nsx), y + (totalHeight * nsy), intObject.width * nsx,
 								intObject.height * nsy,
 								StringUtils.isChinese(ch) ? intObject.storedX - updateX : intObject.storedX,
 								intObject.storedY, intObject.width, intObject.height - updateY, c);
@@ -1005,7 +1005,7 @@ public class LSTRFont implements IFont, LRelease {
 					char ch = rect.name;
 					intObject = customChars.get(ch);
 					if (intObject != null && containsChar(ch)) {
-						gl.draw(texture, rect.x, rect.y, rect.width, rect.height,
+						gl.draw(displayList, rect.x, rect.y, rect.width, rect.height,
 								StringUtils.isChinese((char) charCurrent) ? intObject.storedX - updateX
 										: intObject.storedX,
 								intObject.storedY, intObject.width, intObject.height - updateY, c);
@@ -1030,7 +1030,7 @@ public class LSTRFont implements IFont, LRelease {
 	}
 
 	public boolean isSizeLimit() {
-		return texture != null && (texture.getWidth() > _maxTextureWidth || texture.getHeight() > _maxTextureHeight);
+		return displayList != null && (displayList.getWidth() > _maxTextureWidth || displayList.getHeight() > _maxTextureHeight);
 	}
 
 	public int getPixelColor() {
@@ -1080,7 +1080,7 @@ public class LSTRFont implements IFont, LRelease {
 				return false;
 			}
 		}
-		if (texture.isClosed()) {
+		if (displayList.isClosed()) {
 			return false;
 		}
 		return true;
@@ -1272,7 +1272,7 @@ public class LSTRFont implements IFont, LRelease {
 		if (processing()) {
 			return font.charWidth(c);
 		}
-		if (texture.isClosed()) {
+		if (displayList.isClosed()) {
 			return 0;
 		}
 
@@ -1292,7 +1292,7 @@ public class LSTRFont implements IFont, LRelease {
 		if (processing()) {
 			return font.stringWidth(s);
 		}
-		if (texture.isClosed()) {
+		if (displayList.isClosed()) {
 			return 0;
 		}
 		int totalWidth = 0;
@@ -1324,7 +1324,7 @@ public class LSTRFont implements IFont, LRelease {
 		if (processing()) {
 			return font.stringHeight(s);
 		}
-		if (texture.isClosed()) {
+		if (displayList.isClosed()) {
 			return 0;
 		}
 		int currentChar = 0;
@@ -1534,9 +1534,9 @@ public class LSTRFont implements IFont, LRelease {
 			fontBatch.close();
 			fontBatch = null;
 		}
-		if (texture != null) {
-			texture.close(true);
-			texture = null;
+		if (displayList != null) {
+			displayList.close(true);
+			displayList = null;
 		}
 		if (customChars != null) {
 			customChars.clear();

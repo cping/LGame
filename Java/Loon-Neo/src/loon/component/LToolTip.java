@@ -104,7 +104,7 @@ public class LToolTip extends LComponent {
 							return;
 						}
 					}
-					_alpha = (currentFrame / fadeTime);
+					_objectAlpha = (currentFrame / fadeTime);
 				}
 				if (this.dismiss++ >= this.dismissTime) {
 					this.setToolTipComponent(null);
@@ -154,7 +154,7 @@ public class LToolTip extends LComponent {
 				this.dismissTime = (this.dismissDelay * StringUtils.split(this.tipText, '\n').length);
 			}
 		}
-		this._alpha = 0f;
+		this._objectAlpha = 0f;
 		this.running = true;
 		this.fadeCompleted = false;
 		return this;

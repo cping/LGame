@@ -71,7 +71,7 @@ public class LNLabel extends LNNode {
 			scale = super.convertToWorldScale();
 			rotation = super.convertToWorldRot();
 			batch.setColor(super._color.r, super._color.g, super._color.b,
-					super._alpha);
+					super._objectAlpha);
 			IFont font = batch.getFont();
 			batch.setFont(_spriteFont);
 			batch.drawString(this._text, pos[0], pos[1], scale[0], scale[1],
@@ -95,7 +95,7 @@ public class LNLabel extends LNNode {
 			g.drawString(this._text, pos[0], pos[1], scale[0], scale[1],
 					_anchor.x, _anchor.y, MathUtils.toDegrees(rotation),
 					tempColor.setColor(super._color.r, super._color.g,
-							super._color.b, super._alpha));
+							super._color.b, super._objectAlpha));
 			g.setFont(font);
 		}
 	}

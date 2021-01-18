@@ -80,7 +80,7 @@ public class LNButton extends LNUI {
 	
 	@Override
 	public void setAlpha(float a) {
-		super._alpha = a;
+		super._objectAlpha = a;
 		super._color.a = a;
 		for (String name : this._buttonElement.keys()) {
 			LNNode node = this._buttonElement.get(name);

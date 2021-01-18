@@ -118,16 +118,16 @@ public class LNSprite extends LNNode implements Flip<LNSprite> {
 			pos = super.convertToWorldPos();
 			if (_screenRect.intersects(pos[0], pos[1], getWidth(), getHeight())
 					|| _screenRect.contains(pos[0], pos[1])) {
-				if (_super != null) {
+				if (_objectSuper != null) {
 					rotation = convertToWorldRot();
 					scale = convertToWorldScale();
 				} else {
-					rotation = super._rotation;
+					rotation = super._objectRotation;
 					scale[0] = _scale.x;
 					scale[1] = _scale.y;
 				}
 				batch.setColor(super._color.r, super._color.g, super._color.b,
-						super._alpha);
+						super._objectAlpha);
 				if (rotation == 0 && scale[0] == 1f && scale[1] == 1f) {
 					batch.draw(_texture, pos[0], pos[1], super._size_width,
 							super._size_height, super._left, super._top,
@@ -163,16 +163,16 @@ public class LNSprite extends LNNode implements Flip<LNSprite> {
 			if (_screenRect.intersects(pos[0], pos[1], getWidth(), getHeight())
 					|| _screenRect.contains(pos[0], pos[1])) {
 				int color = g.color();
-				if (_super != null) {
+				if (_objectSuper != null) {
 					rotation = convertToWorldRot();
 					scale = convertToWorldScale();
 				} else {
-					rotation = super._rotation;
+					rotation = super._objectRotation;
 					scale[0] = _scale.x;
 					scale[1] = _scale.y;
 				}
 				g.setColor(super._color.r, super._color.g, super._color.b,
-						super._alpha);
+						super._objectAlpha);
 				g.draw(_texture, pos[0] - _anchor.x, pos[1] - _anchor.y,
 						_anchor, super._size_width, super._size_height,
 						scale[0], scale[1], MathUtils.toDegrees(rotation),

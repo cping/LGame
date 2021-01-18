@@ -114,12 +114,12 @@ public abstract class PixelBaseEffect extends Entity {
 				for (int i = 0; i < size; i++) {
 					TriangleEffect te = ts[i];
 					if (te != null) {
-						_rotation = te.next();
+						_objectRotation = te.next();
 					}
 				}
 			}
 		}
-		return _rotation;
+		return _objectRotation;
 	}
 
 	@Override

@@ -102,12 +102,12 @@ public class WaitSprite extends Entity {
 			g.setColor(color);
 			switch (style) {
 			case 0:
-				float _alpha = 0.0f;
+				float alpha = 0f;
 				float nx = x + width / 2 - (int) r * 4;
 				float ny = y + height / 2 - (int) r * 4;
 				for (RectBox s : list) {
-					_alpha = _alpha + 0.1f;
-					g.setAlpha(_alpha);
+					alpha = alpha + 0.1f;
+					g.setAlpha(alpha);
 					g.fillOval(nx + s.x, ny + s.y, s.width, s.height);
 				}
 				g.setAlpha(1.0F);

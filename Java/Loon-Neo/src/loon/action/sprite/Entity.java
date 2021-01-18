@@ -222,7 +222,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	@Override
 	public boolean isRotated() {
-		return this._rotation != 0;
+		return this._objectRotation != 0;
 	}
 
 	@Override
@@ -416,7 +416,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	@Override
 	public boolean isRotatedOrScaledOrSkewed() {
-		return (this._rotation != 0) || (this._scaleX != 1) || (this._scaleY != 1) || (this._skewX != 0)
+		return (this._objectRotation != 0) || (this._scaleX != 1) || (this._scaleY != 1) || (this._skewX != 0)
 				|| (this._skewY != 0);
 	}
 
@@ -576,7 +576,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	@Override
 	public boolean removeSelf() {
-		final IEntity parent = this._super;
+		final IEntity parent = this._objectSuper;
 		if (parent != null) {
 			return parent.removeChild(this);
 		} else {
@@ -685,7 +685,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		this._childrenVisible = true;
 		this._childrenIgnoreUpdate = false;
 
-		this._rotation = 0f;
+		this._objectRotation = 0f;
 		this._previousRotation = 0f;
 		this._scaleX = 1f;
 		this._scaleY = 1f;
@@ -709,7 +709,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	public float getScreenX() {
 		float x = 0;
-		ISprite parent = _super;
+		ISprite parent = _objectSuper;
 		if (parent != null) {
 			x += parent.getX();
 			for (; (parent = parent.getParent()) != null;) {
@@ -721,7 +721,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	public float getScreenY() {
 		float y = 0;
-		ISprite parent = _super;
+		ISprite parent = _objectSuper;
 		if (parent != null) {
 			y += parent.getY();
 			for (; (parent = parent.getParent()) != null;) {
@@ -756,22 +756,22 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	}
 
 	public void paint(final GLEx g, float offsetX, float offsetY) {
-		if (_alpha < 0.01) {
+		if (_objectAlpha < 0.01) {
 			return;
 		}
 		boolean exist = _image != null || (_width > 0 && _height > 0) || _repaintDraw;
 		if (exist) {
 			int blend = g.getBlendMode();
 			g.setBlendMode(_GL_BLEND);
-			boolean update = ((_rotation != 0 || !(_scaleX == 1f && _scaleY == 1f) || !(_skewX == 0 && _skewY == 0))
+			boolean update = ((_objectRotation != 0 || !(_scaleX == 1f && _scaleY == 1f) || !(_skewX == 0 && _skewY == 0))
 					|| _flipX || _flipY) && _deform;
-			float nx = offsetX + this._location.x + _offset.x;
-			float ny = offsetY + this._location.y + _offset.y;
+			float nx = offsetX + this._objectLocation.x + _offset.x;
+			float ny = offsetY + this._objectLocation.y + _offset.y;
 			if (update) {
 				g.saveTx();
 				g.saveBrush();
 				Affine2f tx = g.tx();
-				final float rotation = this._rotation;
+				final float rotation = this._objectRotation;
 				final float scaleX = this._scaleX;
 				final float scaleY = this._scaleY;
 				if (rotation != 0) {
@@ -825,7 +825,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 					g.setClip(drawX(offsetX + _shear.x), drawY(offsetY + _shear.y), _shear.width, _shear.height);
 				}
 				float tmp = g.alpha();
-				g.setAlpha(_alpha);
+				g.setAlpha(_objectAlpha);
 				if (_repaintAutoOffset) {
 					repaint(g, nx, ny);
 				} else {
@@ -1266,11 +1266,11 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	}
 
 	protected float drawX(float offsetX) {
-		return offsetX + this._location.x + _offset.x;
+		return offsetX + this._objectLocation.x + _offset.x;
 	}
 
 	protected float drawY(float offsetY) {
-		return offsetY + this._location.y + _offset.y;
+		return offsetY + this._objectLocation.y + _offset.y;
 	}
 
 	@Override
@@ -1437,7 +1437,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	@Override
 	public float getContainerX() {
-		if (_super != null) {
+		if (_objectSuper != null) {
 			return getScreenX() - getX();
 		}
 		return this._sprites == null ? super.getContainerX() : this._sprites.getX();
@@ -1445,7 +1445,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	@Override
 	public float getContainerY() {
-		if (_super != null) {
+		if (_objectSuper != null) {
 			return getScreenX() - getY();
 		}
 		return this._sprites == null ? super.getContainerY() : this._sprites.getY();

@@ -222,8 +222,8 @@ public abstract class DisplayObject extends EventDispatcher implements Collision
 	}
 
 	public RectBox getBounds() {
-		float x = _location.x;
-		float y = _location.y;
+		float x = _objectLocation.x;
+		float y = _objectLocation.y;
 		switch (_anchor) {
 		case ANCHOR_TOP_LEFT:
 		default:

@@ -52,6 +52,8 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 
 	private ResizeListener<TMXMapRenderer> _resizeListener;
 
+	protected Vector2f _mapLocation = new Vector2f();
+	
 	protected Vector2f _offset = new Vector2f();
 	protected float _fixedWidthOffset = 0f;
 	protected float _fixedHeightOffset = 0f;
@@ -148,7 +150,7 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 	}
 
 	protected void renderBackgroundColor(GLEx gl) {
-		gl.fillRect(_location.x, _location.y, map.getWidth() * map.getTileWidth(),
+		gl.fillRect(_objectLocation.x, _objectLocation.y, map.getWidth() * map.getTileWidth(),
 				map.getHeight() * map.getTileHeight(), map.getBackgroundColor());
 	}
 
@@ -229,8 +231,8 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 		float tmp = g.alpha();
 		float tmpAlpha = baseColor.a;
 		int color = g.color();
-		g.setAlpha(_alpha);
-		baseColor.a = _alpha;
+		g.setAlpha(_objectAlpha);
+		baseColor.a = _objectAlpha;
 		g.setColor(baseColor);
 		renderBackgroundColor(g);
 		float ox = getX();
@@ -305,14 +307,14 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 	@Override
 	public int hashCode() {
 		int result = map.getTileSets().size;
-		result = LSystem.unite(result, _location.x);
-		result = LSystem.unite(result, _location.y);
+		result = LSystem.unite(result, _objectLocation.x);
+		result = LSystem.unite(result, _objectLocation.y);
 		result = LSystem.unite(result, map.getTileHeight());
 		result = LSystem.unite(result, map.getTileWidth());
 		result = LSystem.unite(result, map.getTileHeight());
 		result = LSystem.unite(result, scaleX);
 		result = LSystem.unite(result, scaleY);
-		result = LSystem.unite(result, _rotation);
+		result = LSystem.unite(result, _objectRotation);
 		return result;
 	}
 

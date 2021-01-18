@@ -72,17 +72,17 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 		public int compare(LNNode p1, LNNode p2) {
 			if (p1 == null || p2 == null) {
 				if (p1 != null) {
-					return p1._layer;
+					return p1._objectLayer;
 				}
 				if (p2 != null) {
-					return p2._layer;
+					return p2._objectLayer;
 				}
 				return 0;
 			}
 			if (SysTouch.isDrag()) {
-				return p2._layer - p1._layer;
+				return p2._objectLayer - p1._objectLayer;
 			}
-			return match(p2._layer, p1._layer);
+			return match(p2._objectLayer, p1._objectLayer);
 		}
 	};
 
@@ -182,8 +182,6 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 
 	protected int _left;
 
-	protected float _alpha;
-
 	protected float _rotationAlongX;
 
 	protected float _rotationAlongY;
@@ -234,12 +232,12 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 
 	public LNNode(NodeScreen screen, int x, int y, int width, int height) {
 		this.setLocation(x, y);
-		this._rotation = 0f;
+		this._objectRotation = 0f;
 		this.scale[0] = 1f;
 		this.scale[1] = 1f;
 		this._scale.x = 1f;
 		this._scale.y = 1f;
-		this._alpha = 1f;
+		this._objectAlpha = 1f;
 		this._left = 0;
 		this._top = 0;
 		this._screen = screen;
@@ -413,7 +411,7 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 		}
 		float dt = (float) elapsedTime / 1000f;
 		synchronized (childs) {
-			if (_super != null) {
+			if (_objectSuper != null) {
 				validatePosition();
 			}
 			if (Call != null) {
@@ -587,14 +585,14 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 		if (!this._visible) {
 			return;
 		}
-		if (_alpha < 0.01) {
+		if (_objectAlpha < 0.01) {
 			return;
 		}
 		int blend = GLUtils.getBlendMode();
 		GL20 gl = LSystem.base().graphics().gl;
 		GLUtils.setBlendMode(gl, _GL_BLEND);
 		float tmp = batch.alpha();
-		batch.setAlpha(_alpha);
+		batch.setAlpha(_objectAlpha);
 		for (int i = this._childCount - 1; i >= 0; i--) {
 			if (childs[i] != null && childs[i].getZOrder() < 0) {
 				childs[i].drawNode(batch);
@@ -627,13 +625,13 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 		if (!this._visible) {
 			return;
 		}
-		if (_alpha < 0.01) {
+		if (_objectAlpha < 0.01) {
 			return;
 		}
 		int blend = gl.getBlendMode();
 		float tmp = gl.alpha();
 		gl.setBlendMode(_GL_BLEND);
-		gl.setAlpha(_alpha);
+		gl.setAlpha(_objectAlpha);
 		for (int i = this._childCount - 1; i >= 0; i--) {
 			if (childs[i] != null && childs[i].getZOrder() < 0) {
 				childs[i].drawNode(gl);
@@ -686,10 +684,10 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 	private float[] pos = new float[2];
 
 	public float[] convertToWorldPos() {
-		pos[0] = _offset.x + _location.x;
-		pos[1] = _offset.y + _location.y;
-		if (this._super != null) {
-			float[] result = this._super.convertToWorldPos();
+		pos[0] = _offset.x + _objectLocation.x;
+		pos[1] = _offset.y + _objectLocation.y;
+		if (this._objectSuper != null) {
+			float[] result = this._objectSuper.convertToWorldPos();
 			pos[0] += result[0];
 			pos[1] += result[1];
 		}
@@ -701,8 +699,8 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 	public float[] convertToWorldScale() {
 		scale[0] = _scale.x;
 		scale[1] = _scale.y;
-		if (this._super != null) {
-			float[] result = this._super.convertToWorldScale();
+		if (this._objectSuper != null) {
+			float[] result = this._objectSuper.convertToWorldScale();
 			scale[0] *= result[0];
 			scale[1] *= result[1];
 		}
@@ -711,10 +709,10 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 
 	public float convertToWorldRot() {
 		float num = 0f;
-		if (this._super != null) {
-			num += this._super.convertToWorldRot();
+		if (this._objectSuper != null) {
+			num += this._objectSuper.convertToWorldRot();
 		}
-		return (num + this._rotation);
+		return (num + this._objectRotation);
 	}
 
 	public void onSceneActive() {
@@ -783,7 +781,7 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 	}
 
 	public void setPosition(float x, float y) {
-		this._location.set(x, y);
+		this._objectLocation.set(x, y);
 	}
 
 	public void setPositionOrig(Vector2f v) {
@@ -791,12 +789,12 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 	}
 
 	public void setPositionOrig(float x, float y) {
-		this._location.set((x + this._anchor.x) - (_screenRect.width / 2),
+		this._objectLocation.set((x + this._anchor.x) - (_screenRect.width / 2),
 				(_screenRect.height / 2) - (y + this._anchor.y));
 	}
 
 	public void setPosition(Vector2f newPosition) {
-		if (!newPosition.equals(this._location)) {
+		if (!newPosition.equals(this._objectLocation)) {
 			this.position(newPosition);
 		}
 	}
@@ -836,44 +834,44 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 	}
 
 	public float getAlpha() {
-		return _alpha;
+		return _objectAlpha;
 	}
 
 	public float getOpacity() {
-		return _alpha * 255;
+		return _objectAlpha * 255;
 	}
 
 	public void setOpacity(float o) {
-		this._alpha = o / 255f;
+		this._objectAlpha = o / 255f;
 	}
 
 	public void setAlpha(float v) {
-		this._alpha = v;
-		this._color.a = this._alpha;
+		this._objectAlpha = v;
+		this._color.a = this._objectAlpha;
 	}
 
 	public LNNode getParent() {
-		return this._super;
+		return this._objectSuper;
 	}
 
 	public void setParent(LNNode v) {
-		this._super = v;
+		this._objectSuper = v;
 	}
 
 	public Vector2f getPosition() {
-		return this._location;
+		return this._objectLocation;
 	}
 
 	public void position(Vector2f v) {
-		this._location.set(v);
+		this._objectLocation.set(v);
 	}
 
 	public float getRotation() {
-		return MathUtils.toDegrees(this._rotation);
+		return MathUtils.toDegrees(this._objectRotation);
 	}
 
 	public final void setRotation(float v) {
-		this._rotation = MathUtils.toRadians(v);
+		this._objectRotation = MathUtils.toRadians(v);
 	}
 
 	public final Vector2f getScale() {
@@ -905,11 +903,11 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 	}
 
 	public final int getZOrder() {
-		return this._layer;
+		return this._objectLayer;
 	}
 
 	public final void setZOrder(int value) {
-		this._layer = value;
+		this._objectLayer = value;
 	}
 
 	public int getScreenWidth() {
@@ -947,7 +945,7 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 			if (limitX > tempWidth) {
 				tempX = (int) (_screenRect.width - _size_width);
 			} else if (limitX < 1) {
-				tempX = _location.x();
+				tempX = _objectLocation.x();
 			}
 		} else {
 			return;
@@ -956,7 +954,7 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 			if (limitY > tempHeight) {
 				tempY = (int) (_screenRect.height - _size_height);
 			} else if (limitY < 1) {
-				tempY = _location.y();
+				tempY = _objectLocation.y();
 			}
 		} else {
 			return;
@@ -1039,7 +1037,7 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 	}
 
 	public boolean isEnabled() {
-		return (this._super == null) ? this._enabled : (this._enabled && this._super.isEnabled());
+		return (this._objectSuper == null) ? this._enabled : (this._enabled && this._objectSuper.isEnabled());
 	}
 
 	public void setEnabled(boolean b) {
@@ -1073,14 +1071,14 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 	}
 
 	public void transferFocus() {
-		if (this.isSelected() && this._super != null) {
-			this._super.transferFocus(this);
+		if (this.isSelected() && this._objectSuper != null) {
+			this._objectSuper.transferFocus(this);
 		}
 	}
 
 	public void transferFocusBackward() {
-		if (this.isSelected() && this._super != null) {
-			this._super.transferFocusBackward(this);
+		if (this.isSelected() && this._objectSuper != null) {
+			this._objectSuper.transferFocusBackward(this);
 		}
 	}
 
@@ -1093,11 +1091,11 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 	}
 
 	public LNNode getContainer() {
-		return this._super;
+		return this._objectSuper;
 	}
 
 	final void setContainer(LNNode node) {
-		this._super = node;
+		this._objectSuper = node;
 		this.validatePosition();
 	}
 
@@ -1126,55 +1124,55 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 
 	@Override
 	public float getX() {
-		return _location.x;
+		return _objectLocation.x;
 	}
 
 	@Override
 	public float getY() {
-		return _location.y;
+		return _objectLocation.y;
 	}
 
 	@Override
 	public void setX(Integer x) {
-		if (this._location.x != x || x == 0) {
-			this._location.x = x;
+		if (this._objectLocation.x != x || x == 0) {
+			this._objectLocation.x = x;
 			this.validatePosition();
 		}
 	}
 
 	@Override
 	public void setX(float x) {
-		if (this._location.x != x || x == 0) {
-			this._location.x = x;
+		if (this._objectLocation.x != x || x == 0) {
+			this._objectLocation.x = x;
 			this.validatePosition();
 		}
 	}
 
 	@Override
 	public void setY(Integer y) {
-		if (this._location.y != y || y == 0) {
-			this._location.y = y;
+		if (this._objectLocation.y != y || y == 0) {
+			this._objectLocation.y = y;
 			this.validatePosition();
 		}
 	}
 
 	@Override
 	public void setY(float y) {
-		if (this._location.y != y || y == 0) {
-			this._location.y = y;
+		if (this._objectLocation.y != y || y == 0) {
+			this._objectLocation.y = y;
 			this.validatePosition();
 		}
 	}
 
 	@Override
-	public void setLocation(Vector2f _location) {
-		setLocation(_location.x, _location.y);
+	public void setLocation(Vector2f _objectLocation) {
+		setLocation(_objectLocation.x, _objectLocation.y);
 	}
 
 	@Override
 	public void setLocation(float dx, float dy) {
-		if (this._location.x != dx || this._location.y != dy || dx == 0 || dy == 0) {
-			this._location.set(dx, dy);
+		if (this._objectLocation.x != dx || this._objectLocation.y != dy || dx == 0 || dy == 0) {
+			this._objectLocation.set(dx, dy);
 			this.validatePosition();
 		}
 	}
@@ -1183,13 +1181,13 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 	public void move(float dx, float dy) {
 		if (dx != 0 || dy != 0) {
 			if (dx > -100 && dx < 100 && dy > -100 && dy < 100) {
-				if (_super != null && _limitMove) {
-					if (_super.contains((int) (pos[0] + dx), (int) (pos[1] + dy), _size_width, _size_height)) {
-						this._location.move(dx, dy);
+				if (_objectSuper != null && _limitMove) {
+					if (_objectSuper.contains((int) (pos[0] + dx), (int) (pos[1] + dy), _size_width, _size_height)) {
+						this._objectLocation.move(dx, dy);
 						this.validatePosition();
 					}
 				} else {
-					this._location.move(dx, dy);
+					this._objectLocation.move(dx, dy);
 					this.validatePosition();
 				}
 			}
@@ -1214,12 +1212,12 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 		if (_isClose) {
 			return;
 		}
-		if (_super != null) {
+		if (_objectSuper != null) {
 			this._screenX = (int) pos[0];
 			this._screenY = (int) pos[1];
 		} else {
-			this._screenX = _location.x();
-			this._screenY = _location.y();
+			this._screenX = _objectLocation.x();
+			this._screenY = _objectLocation.y();
 		}
 		for (int i = 0; i < this._childCount; i++) {
 			if (this.childs[i] != null) {
@@ -1241,9 +1239,9 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 	private RectBox temp_rect;
 
 	public RectBox getRectBox() {
-		if (_rotation != 0) {
-			int[] result = MathUtils.getLimit(_location.getX(), _location.getY(), getWidth(), getHeight(),
-					MathUtils.toDegrees(_rotation));
+		if (_objectRotation != 0) {
+			int[] result = MathUtils.getLimit(_objectLocation.getX(), _objectLocation.getY(), getWidth(), getHeight(),
+					MathUtils.toDegrees(_objectRotation));
 			if (temp_rect == null) {
 				temp_rect = new RectBox(result[0], result[1], result[2], result[3]);
 			} else {
@@ -1251,9 +1249,9 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 			}
 		} else {
 			if (temp_rect == null) {
-				temp_rect = new RectBox(_location.getX(), _location.getY(), getWidth(), getHeight());
+				temp_rect = new RectBox(_objectLocation.getX(), _objectLocation.getY(), getWidth(), getHeight());
 			} else {
-				temp_rect.setBounds(_location.getX(), _location.getY(), getWidth(), getHeight());
+				temp_rect.setBounds(_objectLocation.getX(), _objectLocation.getY(), getWidth(), getHeight());
 			}
 		}
 		return temp_rect;
@@ -1321,11 +1319,11 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 	}
 
 	public int getCamX() {
-		return cam_x == 0 ? _location.x() : cam_x;
+		return cam_x == 0 ? _objectLocation.x() : cam_x;
 	}
 
 	public int getCamY() {
-		return cam_y == 0 ? _location.y() : cam_y;
+		return cam_y == 0 ? _objectLocation.y() : cam_y;
 	}
 
 	public boolean isClosed() {
@@ -1497,8 +1495,8 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 	@Override
 	public void close() {
 		this._isClose = true;
-		if (this._super != null) {
-			this._super.removeNode(this);
+		if (this._objectSuper != null) {
+			this._objectSuper.removeNode(this);
 		}
 		this._selected = false;
 		this._visible = false;

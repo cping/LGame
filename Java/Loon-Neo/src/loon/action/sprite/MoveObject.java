@@ -478,7 +478,7 @@ public class MoveObject extends ActionObject {
 
 	public float getRotationTo(float x, float y) {
 		float r = MathUtils.atan2(x - x(), y - y());
-		return ShapeUtils.getAngleDiff(_rotation, r);
+		return ShapeUtils.getAngleDiff(_objectRotation, r);
 	}
 
 	public AStarFindHeuristic getHeuristic() {

@@ -387,7 +387,7 @@ public class BDFont implements IFont, LRelease {
 			}
 
 			LTextureBatch tmpbatch = strfont.fontBatch;
-			strfont.fontBatch = new LTextureBatch(strfont.texture = canvas.toTexture());
+			strfont.fontBatch = new LTextureBatch(strfont.displayList = canvas.toTexture());
 			strfont.fontBatch.setBlendState(BlendState.AlphaBlend);
 			if (tmpbatch != null) {
 				tmpbatch.close();
@@ -499,7 +499,7 @@ public class BDFont implements IFont, LRelease {
 
 	private int textureHeight = 512;
 
-	private LTexture texture;
+	private LTexture displayList;
 
 	private boolean useCache, isDrawing, isasyn;
 
@@ -655,9 +655,9 @@ public class BDFont implements IFont, LRelease {
 			fontBatch.close();
 			fontBatch = null;
 		}
-		if (texture != null) {
-			texture.close(true);
-			texture = null;
+		if (displayList != null) {
+			displayList.close(true);
+			displayList = null;
 		}
 		if (customChars != null) {
 			customChars.clear();
@@ -953,7 +953,7 @@ public class BDFont implements IFont, LRelease {
 	}
 
 	public LTexture getTexture() {
-		return texture;
+		return displayList;
 	}
 
 	public boolean isEmpty() {
@@ -1445,7 +1445,7 @@ public class BDFont implements IFont, LRelease {
 				return false;
 			}
 		}
-		if (texture.isClosed()) {
+		if (displayList.isClosed()) {
 			return false;
 		}
 		return true;
@@ -1755,7 +1755,7 @@ public class BDFont implements IFont, LRelease {
 				}
 				if (intObject != null) {
 					if (!checkOutBounds() || containsChar(ch)) {
-						gl.draw(texture, x + (totalWidth * nsx), y + (totalHeight * nsy), intObject.width * nsx,
+						gl.draw(displayList, x + (totalWidth * nsx), y + (totalHeight * nsy), intObject.width * nsx,
 								intObject.height * nsy, intObject.storedX, intObject.storedY, intObject.width,
 								intObject.height, c);
 					} else if (checkOutBounds()) {
@@ -1820,7 +1820,7 @@ public class BDFont implements IFont, LRelease {
 					char ch = rect.name;
 					intObject = customChars.get(ch);
 					if (intObject != null && containsChar(ch)) {
-						gl.draw(texture, rect.x, rect.y, rect.width, rect.height, intObject.storedX, intObject.storedY,
+						gl.draw(displayList, rect.x, rect.y, rect.width, rect.height, intObject.storedX, intObject.storedY,
 								intObject.width, intObject.height, c);
 					} else if (checkOutBounds()) {
 						putChildChars(ch, rect.x, rect.y, rect.width, rect.height, null);
@@ -1869,7 +1869,7 @@ public class BDFont implements IFont, LRelease {
 				return false;
 			}
 		}
-		if (texture.isClosed()) {
+		if (displayList.isClosed()) {
 			return false;
 		}
 		return true;
@@ -2199,7 +2199,7 @@ public class BDFont implements IFont, LRelease {
 		if (processing()) {
 			return stringWidth(s);
 		}
-		if (texture.isClosed()) {
+		if (displayList.isClosed()) {
 			return 0;
 		}
 		int totalWidth = 0;
@@ -2230,7 +2230,7 @@ public class BDFont implements IFont, LRelease {
 		if (processing()) {
 			return stringHeight(s);
 		}
-		if (texture.isClosed()) {
+		if (displayList.isClosed()) {
 			return 0;
 		}
 		int currentChar = 0;
@@ -2255,9 +2255,9 @@ public class BDFont implements IFont, LRelease {
 	}
 
 	public boolean isClosed() {
-		return this._isClose;
+		return _isClose;
 	}
-
+	
 	@Override
 	public void close() {
 		if (_isClose) {
@@ -2274,9 +2274,9 @@ public class BDFont implements IFont, LRelease {
 			fontBatch.close();
 			fontBatch = null;
 		}
-		if (texture != null) {
-			texture.close(true);
-			texture = null;
+		if (displayList != null) {
+			displayList.close(true);
+			displayList = null;
 		}
 		if (customChars != null) {
 			customChars.clear();

@@ -46,36 +46,6 @@ import loon.utils.parse.StrTokenizer;
 // 但缺点在于，没有提供图像的文字不能被渲染).
 public class BMFont implements IFont {
 
-	private final static String DEF_BMF_ONT = "deffont";
-
-	private static BMFont _font;
-
-	/**
-	 * 获得一个默认的BMFont.
-	 * 
-	 * 比如:
-	 * 
-	 * 游戏全局使用默认BMFont(除log字体外,log字体需要设置setSystemLogFont)
-	 *
-	 * LSystem.setSystemGameFont(BMFont.getDefaultFont());
-	 * 
-	 */
-	public static BMFont getDefaultFont() {
-		if (_font == null) {
-			try {
-				_font = new BMFont(LSystem.getSystemImagePath() + DEF_BMF_ONT + ".txt",
-						LSystem.getSystemImagePath() + DEF_BMF_ONT + ".png");
-			} catch (Throwable e) {
-				LSystem.error("BMFont error !", e);
-			}
-		}
-		return _font;
-	}
-
-	public static void setDefaultFont(BMFont font) {
-		_font = font;
-	}
-
 	private static final int DEFAULT_MAX_CHAR = 256;
 
 	private final char newLineFlag = LSystem.LF;

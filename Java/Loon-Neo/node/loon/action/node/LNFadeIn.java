@@ -44,7 +44,7 @@ public class LNFadeIn extends LNAction {
 		super._firstTick = true;
 		super._isEnd = false;
 		super._target = node;
-		this._orgOpacity = node._alpha * 255f;
+		this._orgOpacity = node.getAlpha() * 255f;
 		this._diff = this._tarOpacity - this._orgOpacity;
 	}
 	
