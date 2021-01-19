@@ -27,6 +27,7 @@ import loon.events.InputMake;
 import loon.events.KeyMake;
 import loon.events.MouseMake;
 import loon.events.SysInputFactory;
+import loon.events.SysInputFactoryImpl;
 import loon.events.TouchMake;
 import loon.events.Updateable;
 import loon.geom.Vector2f;
@@ -54,15 +55,15 @@ public class LProcess implements LRelease {
 
 	protected EmulatorListener emulatorListener;
 
-	private EmulatorButtons emulatorButtons;
+	private EmulatorButtons _emulatorButtons;
 
 	private final ListMap<CharSequence, Screen> _screenMap;
 
 	private final TArray<Screen> _screens;
 
-	private boolean isInstance;
+	private boolean _isInstance;
 
-	private int id;
+	private int _curId;
 
 	private boolean _waitTransition;
 
@@ -72,47 +73,76 @@ public class LProcess implements LRelease {
 
 	private LTransition _transition;
 
-	private final ObjectBundle _bundle;
+	private SysInputFactory _currentInput;
 
-	private final SysInputFactory _currentInput;
+	private final ObjectBundle _bundle;
 
 	private final LGame _game;
 
 	public LProcess(LGame game) {
-		super();
 		this._game = game;
-		LSetting setting = _game.setting;
-		setting.updateScale();
-		LSystem.viewSize.setSize(setting.width, setting.height);
 		this._bundle = new ObjectBundle();
-		this._currentInput = new SysInputFactory();
 		this._screens = new TArray<Screen>();
 		this._screenMap = new ListMap<CharSequence, Screen>();
-		this.clear();
-		InputMake input = game.input();
+		this.initSetting();
+	}
+
+	public LProcess initSetting() {
+		if (_game != null) {
+			LSetting setting = _game.setting;
+			setting.updateScale();
+			setInputFactory(null);
+			clearProcess();
+		}
+		return this;
+	}
+
+	public LProcess setInputFactory(SysInputFactory factory) {
+		if (factory == null) {
+			this._currentInput = new SysInputFactoryImpl();
+		} else {
+			this._currentInput = factory;
+		}
+		InputMake input = _game.input();
 		if (input != null) {
-			if (!game.setting.emulateTouch && !game.isMobile() && !game.input().hasTouch()) {
-				input.mouseEvents.connect(new MouseMake.ButtonSlot() {
+			if (input.mouseEvents.hasConnections()) {
+				input.mouseEvents.clearConnections();
+			}
+			if (input.touchEvents.hasConnections()) {
+				input.touchEvents.clearConnections();
+			}
+			if (input.keyboardEvents.hasConnections()) {
+				input.keyboardEvents.clearConnections();
+			}
+			if (input != null) {
+				if (!_game.setting.emulateTouch && !_game.isMobile() && !_game.input().hasTouch()) {
+					input.mouseEvents.connect(new MouseMake.ButtonSlot() {
+						@Override
+						public void onEmit(MouseMake.ButtonEvent event) {
+							_currentInput.callMouse(event);
+						}
+					});
+				} else {
+					input.touchEvents.connect(new Port<TouchMake.Event[]>() {
+						@Override
+						public void onEmit(TouchMake.Event[] events) {
+							_currentInput.callTouch(events);
+						}
+					});
+				}
+				input.keyboardEvents.connect(new KeyMake.KeyPort() {
 					@Override
-					public void onEmit(MouseMake.ButtonEvent event) {
-						_currentInput.callMouse(event);
-					}
-				});
-			} else {
-				input.touchEvents.connect(new Port<TouchMake.Event[]>() {
-					@Override
-					public void onEmit(TouchMake.Event[] events) {
-						_currentInput.callTouch(events);
+					public void onEmit(KeyMake.KeyEvent e) {
+						_currentInput.callKey(e);
 					}
 				});
 			}
-			input.keyboardEvents.connect(new KeyMake.KeyPort() {
-				@Override
-				public void onEmit(KeyMake.KeyEvent e) {
-					_currentInput.callKey(e);
-				}
-			});
 		}
+		return this;
+	}
+
+	public SysInputFactory getSysInputFactory() {
+		return this._currentInput;
 	}
 
 	public LProcess setShaderSource(ShaderSource src) {
@@ -191,7 +221,7 @@ public class LProcess implements LRelease {
 	}
 
 	public void load() {
-		if (isInstance) {
+		if (_isInstance) {
 			final int count = loads.size;
 			if (count > 0) {
 				callUpdateable(loads);
@@ -228,7 +258,7 @@ public class LProcess implements LRelease {
 	}
 
 	public void unload() {
-		if (isInstance) {
+		if (_isInstance) {
 			final int count = unloads.size;
 			if (count > 0) {
 				callUpdateable(unloads);
@@ -245,7 +275,7 @@ public class LProcess implements LRelease {
 		try {
 			synchronized (this) {
 				if (screen == null) {
-					this.isInstance = false;
+					this._isInstance = false;
 					throw new LSysException("Cannot create a [Screen] instance !");
 				}
 				if (!_game.displayImpl.showLogo) {
@@ -311,7 +341,7 @@ public class LProcess implements LRelease {
 				} else {
 					killScreen(screen);
 				}
-				this.isInstance = true;
+				this._isInstance = true;
 
 				if (screen instanceof EmulatorListener) {
 					setEmulatorListener((EmulatorListener) screen);
@@ -386,14 +416,14 @@ public class LProcess implements LRelease {
 	}
 
 	public void resize(int w, int h) {
-		if (isInstance) {
+		if (_isInstance) {
 			_currentInput.reset();
 			_currentScreen.resetSize(w, h);
 		}
 	}
 
 	public void resume() {
-		if (isInstance) {
+		if (_isInstance) {
 			final int count = resumes.size;
 			if (count > 0) {
 				callUpdateable(resumes);
@@ -404,7 +434,7 @@ public class LProcess implements LRelease {
 	}
 
 	public void pause() {
-		if (isInstance) {
+		if (_isInstance) {
 			_currentInput.reset();
 			_currentScreen.pause();
 		}
@@ -414,19 +444,19 @@ public class LProcess implements LRelease {
 		_currentInput.resetSysTouch();
 	}
 
-	public void clear() {
+	public void clearProcess() {
 		if (resumes == null) {
-			resumes = new TArray<Updateable>(10);
+			resumes = new TArray<Updateable>();
 		} else {
 			resumes.clear();
 		}
 		if (loads == null) {
-			loads = new TArray<Updateable>(10);
+			loads = new TArray<Updateable>();
 		} else {
 			loads.clear();
 		}
 		if (unloads == null) {
-			unloads = new TArray<Updateable>(10);
+			unloads = new TArray<Updateable>();
 		} else {
 			unloads.clear();
 		}
@@ -434,7 +464,7 @@ public class LProcess implements LRelease {
 	}
 
 	public boolean next() {
-		if (isInstance) {
+		if (_isInstance) {
 			if (_currentScreen.next() && !LSystem.PAUSED) {
 				return true;
 			}
@@ -443,7 +473,7 @@ public class LProcess implements LRelease {
 	}
 
 	public void runTimer(LTimerContext context) {
-		if (isInstance) {
+		if (_isInstance) {
 			if (_waitTransition) {
 				if (_transition != null) {
 					switch (_transition.code) {
@@ -469,7 +499,7 @@ public class LProcess implements LRelease {
 	}
 
 	public void draw(GLEx g) {
-		if (isInstance) {
+		if (_isInstance) {
 			if (_waitTransition) {
 				if (_transition != null) {
 					if (_transition.isDisplayGameUI) {
@@ -496,74 +526,74 @@ public class LProcess implements LRelease {
 	}
 
 	public void drawFrist(GLEx g) {
-		if (isInstance && !_waitTransition) {
+		if (_isInstance && !_waitTransition) {
 			_currentScreen.drawFrist(g);
 		}
 	}
 
 	public void drawLast(GLEx g) {
-		if (isInstance && !_waitTransition) {
+		if (_isInstance && !_waitTransition) {
 			_currentScreen.drawLast(g);
 		}
 	}
 
 	public void drawEmulator(GLEx gl) {
-		if (emulatorButtons != null) {
-			emulatorButtons.draw(gl);
+		if (_emulatorButtons != null) {
+			_emulatorButtons.draw(gl);
 		}
 	}
 
 	public LColor getBackgroundColor() {
-		if (isInstance) {
+		if (_isInstance) {
 			return _currentScreen.getBackgroundColor();
 		}
 		return null;
 	}
 
 	public float getScaleX() {
-		if (isInstance) {
+		if (_isInstance) {
 			return _currentScreen.getScaleX();
 		}
 		return 1f;
 	}
 
 	public float getScaleY() {
-		if (isInstance) {
+		if (_isInstance) {
 			return _currentScreen.getScaleY();
 		}
 		return 1f;
 	}
 
 	public boolean isFlipX() {
-		if (isInstance) {
+		if (_isInstance) {
 			return _currentScreen.isFlipX();
 		}
 		return false;
 	}
 
 	public boolean isFlipY() {
-		if (isInstance) {
+		if (_isInstance) {
 			return _currentScreen.isFlipY();
 		}
 		return false;
 	}
 
 	public float getRotation() {
-		if (isInstance) {
+		if (_isInstance) {
 			return _currentScreen.getRotation();
 		}
 		return 0;
 	}
 
 	public LTexture getBackground() {
-		if (isInstance || _currentScreen != null) {
+		if (_isInstance || _currentScreen != null) {
 			return _currentScreen.getBackground();
 		}
 		return null;
 	}
 
 	public int getRepaintMode() {
-		if (isInstance) {
+		if (_isInstance) {
 			return _currentScreen.getRepaintMode();
 		}
 		return Screen.SCREEN_NOT_REPAINT;
@@ -577,14 +607,14 @@ public class LProcess implements LRelease {
 	public void setEmulatorListener(EmulatorListener emulator) {
 		this.emulatorListener = emulator;
 		if (emulatorListener != null) {
-			if (emulatorButtons == null) {
-				emulatorButtons = new EmulatorButtons(emulatorListener, LSystem.viewSize.getWidth(),
+			if (_emulatorButtons == null) {
+				_emulatorButtons = new EmulatorButtons(emulatorListener, LSystem.viewSize.getWidth(),
 						LSystem.viewSize.getHeight());
 			} else {
-				emulatorButtons.setEmulatorListener(emulator);
+				_emulatorButtons.setEmulatorListener(emulator);
 			}
 		} else {
-			emulatorButtons = null;
+			_emulatorButtons = null;
 		}
 	}
 
@@ -603,25 +633,25 @@ public class LProcess implements LRelease {
 	 * @return
 	 */
 	public EmulatorButtons getEmulatorButtons() {
-		return emulatorButtons;
+		return _emulatorButtons;
 	}
 
-	public void setScreenID(int id) {
-		if (isInstance) {
-			_currentScreen.setID(id);
+	public void setScreenID(int _curId) {
+		if (_isInstance) {
+			_currentScreen.setID(_curId);
 		}
 	}
 
 	public int getScreenID() {
-		return isInstance ? -1 : _currentScreen.getID();
+		return _isInstance ? -1 : _currentScreen.getID();
 	}
 
-	public void setID(int id) {
-		this.id = id;
+	public void setID(int i) {
+		this._curId = i;
 	}
 
 	public int getID() {
-		return id;
+		return _curId;
 	}
 
 	public final void setTransition(LTransition t) {
@@ -643,7 +673,7 @@ public class LProcess implements LRelease {
 	private final void startTransition() {
 		if (_transition != null) {
 			_waitTransition = true;
-			if (isInstance) {
+			if (_isInstance) {
 				_currentScreen.setLock(true);
 			}
 		}
@@ -663,7 +693,7 @@ public class LProcess implements LRelease {
 				}
 				break;
 			}
-			if (isInstance) {
+			if (_isInstance) {
 				_currentScreen.setLock(false);
 			}
 		} else {
@@ -672,21 +702,21 @@ public class LProcess implements LRelease {
 	}
 
 	public LColor getColor() {
-		if (isInstance) {
+		if (_isInstance) {
 			return _currentScreen.getColor();
 		}
 		return LColor.white;
 	}
 
 	public float getX() {
-		if (isInstance) {
+		if (_isInstance) {
 			return _currentScreen.getX();
 		}
 		return 0;
 	}
 
 	public float getY() {
-		if (isInstance) {
+		if (_isInstance) {
 			return _currentScreen.getY();
 		}
 		return 0;
@@ -697,7 +727,7 @@ public class LProcess implements LRelease {
 	public Vector2f convertXY(float x, float y) {
 		float newX = ((x - getX()) / (LSystem.getScaleWidth()));
 		float newY = ((y - getY()) / (LSystem.getScaleHeight()));
-		if (isInstance && _currentScreen.isTxUpdate()) {
+		if (_isInstance && _currentScreen.isTxUpdate()) {
 			float oldW = getWidth();
 			float oldH = getHeight();
 			float newW = getWidth() * getScaleX();
@@ -730,8 +760,8 @@ public class LProcess implements LRelease {
 				break;
 			case -180:
 			case 180:
-				_pointLocaltion.set(posX / getScaleX(), posY / getScaleY()).rotateSelf(getRotation()).addSelf(getWidth(),
-						getHeight());
+				_pointLocaltion.set(posX / getScaleX(), posY / getScaleY()).rotateSelf(getRotation())
+						.addSelf(getWidth(), getHeight());
 				break;
 			default: // 原则上不处理非水平角度的触点
 				float rad = MathUtils.toRadians(getRotation());
@@ -935,14 +965,14 @@ public class LProcess implements LRelease {
 	}
 
 	public int getHeight() {
-		if (isInstance) {
+		if (_isInstance) {
 			return _currentScreen.getHeight();
 		}
 		return 0;
 	}
 
 	public int getWidth() {
-		if (isInstance) {
+		if (_isInstance) {
 			return _currentScreen.getWidth();
 		}
 		return 0;
@@ -954,7 +984,7 @@ public class LProcess implements LRelease {
 
 	public void setCurrentScreen(final Screen screen, boolean closed) {
 		if (screen != null) {
-			this.isInstance = false;
+			this._isInstance = false;
 			if (closed && _currentScreen != null) {
 				_currentScreen.destroy();
 			}
@@ -966,7 +996,7 @@ public class LProcess implements LRelease {
 			if (screen.getBackground() != null) {
 				_currentScreen.setRepaintMode(Screen.SCREEN_TEXTURE_REPAINT);
 			}
-			this.isInstance = true;
+			this._isInstance = true;
 			if (screen instanceof EmulatorListener) {
 				setEmulatorListener((EmulatorListener) screen);
 			} else {
@@ -977,43 +1007,43 @@ public class LProcess implements LRelease {
 	}
 
 	public void keyDown(GameKey e) {
-		if (isInstance) {
+		if (_isInstance) {
 			_currentScreen.keyPressed(e);
 		}
 	}
 
 	public void keyUp(GameKey e) {
-		if (isInstance) {
+		if (_isInstance) {
 			_currentScreen.keyReleased(e);
 		}
 	}
 
 	public void keyTyped(GameKey e) {
-		if (isInstance) {
+		if (_isInstance) {
 			_currentScreen.keyTyped(e);
 		}
 	}
 
 	public void mousePressed(GameTouch e) {
-		if (isInstance) {
+		if (_isInstance) {
 			_currentScreen.mousePressed(e);
 		}
 	}
 
 	public void mouseReleased(GameTouch e) {
-		if (isInstance) {
+		if (_isInstance) {
 			_currentScreen.mouseReleased(e);
 		}
 	}
 
 	public void mouseMoved(GameTouch e) {
-		if (isInstance) {
+		if (_isInstance) {
 			_currentScreen.mouseMoved(e);
 		}
 	}
 
 	public void mouseDragged(GameTouch e) {
-		if (isInstance) {
+		if (_isInstance) {
 			_currentScreen.mouseDragged(e);
 		}
 	}
@@ -1065,12 +1095,12 @@ public class LProcess implements LRelease {
 	@Override
 	public void close() {
 		_running = false;
-		if (isInstance) {
+		if (_isInstance) {
 			_currentScreen.stop();
 		}
 		endTransition();
-		if (isInstance) {
-			isInstance = false;
+		if (_isInstance) {
+			_isInstance = false;
 			if (loads != null) {
 				loads.clear();
 			}

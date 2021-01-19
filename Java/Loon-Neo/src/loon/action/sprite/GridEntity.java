@@ -38,28 +38,28 @@ import loon.utils.TArray;
  */
 public class GridEntity extends Entity {
 
-	private RectBox gridRect;
+	private RectBox _gridRect;
 
-	private TArray<AABB> gridLines;
+	private TArray<AABB> _gridLines;
 
-	private float gridScale;
+	private float _gridScale;
 
-	private float cellWidth;
+	private float _cellWidth;
 
-	private float cellHeight;
+	private float _cellHeight;
 
-	private float lineWidth;
+	private float _lineWidth;
 
-	private boolean drity;
+	private boolean _drity;
 
-	private boolean drawCache;
+	private boolean _drawCache;
 
-	private boolean alltextures;
+	private boolean _alltextures;
 
 	public GridEntity() {
 		this(LColor.green);
 	}
-	
+
 	public GridEntity(LColor color) {
 		this(LSystem.viewSize.getRect(), 32, 32, 0f, 0f, 1f, 1f, color);
 	}
@@ -91,44 +91,45 @@ public class GridEntity extends Entity {
 		this.setLocation(viewRect.x, viewRect.y);
 		this.setSize(viewRect.width, viewRect.height);
 		this.setColor(color);
-		this.cellWidth = cellWidth;
-		this.cellHeight = cellHeight;
-		this.gridRect = new RectBox(viewRect.x / cellWidth, viewRect.y / cellHeight, viewRect.width / cellWidth,
-				viewRect.height / cellHeight);
-		this.gridScale = scale;
-		this.lineWidth = lineWidth;
-		this.drawCache = true;
-		this.alltextures = true;
+		this._cellWidth = cellWidth;
+		this._cellHeight = cellHeight;
+		this._gridRect = new RectBox(viewRect.x / _cellWidth, viewRect.y / _cellHeight, viewRect.width / _cellWidth,
+				viewRect.height / _cellHeight);
+		this._gridScale = scale;
+		this._lineWidth = lineWidth;
+		this._drawCache = true;
+		this._alltextures = true;
 		this._repaintDraw = true;
-		drity = true;
+		_drity = true;
 	}
 
-	public void pack() {
-		if (drity) {
-			if (drawCache && _image != null) {
+	public GridEntity pack() {
+		if (_drity) {
+			if (_drawCache && _image != null) {
 				_image.close();
 			}
-			if (gridLines == null) {
-				gridLines = new TArray<AABB>();
+			if (_gridLines == null) {
+				_gridLines = new TArray<AABB>();
 			} else {
-				gridLines.clear();
+				_gridLines.clear();
 			}
-			for (int x = 0; x < gridRect.width() + 1; x++) {
-				gridLines.add(new AABB(x * cellWidth * gridScale, 0, x * cellWidth * gridScale,
-						gridRect.height() * cellHeight * gridScale));
+			for (int x = 0; x < _gridRect.width() + 1; x++) {
+				_gridLines.add(new AABB(x * _cellWidth * _gridScale, 0, x * _cellWidth * _gridScale,
+						_gridRect.height() * _cellHeight * _gridScale));
 			}
-			for (int y = 0; y < gridRect.height() + 1; y++) {
-				gridLines.add(new AABB(0, y * cellHeight * gridScale, gridRect.width() * cellWidth * gridScale,
-						y * cellHeight * gridScale));
+			for (int y = 0; y < _gridRect.height() + 1; y++) {
+				_gridLines.add(new AABB(0, y * _cellHeight * _gridScale, _gridRect.width() * _cellWidth * _gridScale,
+						y * _cellHeight * _gridScale));
 			}
-			drity = false;
+			_drity = false;
 		}
+		return this;
 	}
 
 	@Override
 	protected void repaint(GLEx g, float offsetX, float offsetY) {
 		pack();
-		if (drawCache) {
+		if (_drawCache) {
 			if (_image == null || _image.isClosed()) {
 				Image img = Image.createImage(width(), height());
 				Canvas canvas = img.getCanvas();
@@ -137,17 +138,17 @@ public class GridEntity extends Entity {
 			} else {
 				g.draw(_image, drawX(offsetX), drawY(offsetY));
 			}
-			return;
+		} else {
+			draw(g, offsetX, offsetY);
 		}
-		draw(g, offsetX, offsetY);
 	}
 
 	protected void draw(Canvas g, float offsetX, float offsetY) {
 		int tint = g.getFillColor();
-		g.setStrokeWidth(lineWidth);
+		g.setStrokeWidth(_lineWidth);
 		g.setColor(_baseColor);
-		for (int i = 0; i < gridLines.size; i++) {
-			AABB line = gridLines.get(i);
+		for (int i = 0; i < _gridLines.size; i++) {
+			AABB line = _gridLines.get(i);
 			g.drawLine(drawX(line.minX + offsetX), drawY(line.minY + offsetY), drawX(line.maxX + offsetX),
 					drawY(line.maxY + offsetY));
 		}
@@ -158,11 +159,11 @@ public class GridEntity extends Entity {
 		boolean allTex = g.isAlltextures();
 		float lw = g.getLineWidth();
 		int tint = g.color();
-		g.setAlltextures(alltextures);
-		g.setLineWidth(lineWidth);
+		g.setAlltextures(_alltextures);
+		g.setLineWidth(_lineWidth);
 		g.setColor(_baseColor);
-		for (int i = 0; i < gridLines.size; i++) {
-			AABB line = gridLines.get(i);
+		for (int i = 0; i < _gridLines.size; i++) {
+			AABB line = _gridLines.get(i);
 			g.drawLine(drawX(line.minX + offsetX), drawY(line.minY + offsetY), drawX(line.maxX + offsetX),
 					drawY(line.maxY + offsetY));
 		}
@@ -172,58 +173,64 @@ public class GridEntity extends Entity {
 	}
 
 	public TArray<AABB> getGridLines() {
-		return gridLines.cpy();
+		return _gridLines.cpy();
 	}
 
 	public boolean isDrity() {
-		return drity;
+		return _drity;
 	}
 
-	public void setDrity(boolean drity) {
-		this.drity = drity;
+	public GridEntity setDrity(boolean d) {
+		this._drity = d;
+		return this;
 	}
 
 	public boolean isAlltextures() {
-		return alltextures;
+		return _alltextures;
 	}
 
-	public void setAlltextures(boolean alltextures) {
-		this.alltextures = alltextures;
+	public GridEntity setAlltextures(boolean alltextures) {
+		this._alltextures = alltextures;
+		return this;
 	}
 
 	public boolean isDrawCache() {
-		return drawCache;
+		return _drawCache;
 	}
 
-	public void setDrawCache(boolean drawCache) {
-		this.drawCache = drawCache;
+	public GridEntity setDrawCache(boolean drawCache) {
+		this._drawCache = drawCache;
+		return this;
 	}
 
 	public float getCellWidth() {
-		return cellWidth;
+		return _cellWidth;
 	}
 
-	public void setCellWidth(float cellWidth) {
-		this.cellWidth = cellWidth;
+	public GridEntity setCellWidth(float w) {
+		this._cellWidth = w;
 		this.setDrity(true);
+		return this;
 	}
 
 	public float getCellHeight() {
-		return cellHeight;
+		return _cellHeight;
 	}
 
-	public void setCellHeight(float cellHeight) {
-		this.cellHeight = cellHeight;
+	public GridEntity setCellHeight(float h) {
+		this._cellHeight = h;
 		this.setDrity(true);
+		return this;
 	}
 
 	public float getLineWidth() {
-		return lineWidth;
+		return _lineWidth;
 	}
 
-	public void setLineWidth(float lineWidth) {
-		this.lineWidth = lineWidth;
+	public GridEntity setLineWidth(float lineWidth) {
+		this._lineWidth = lineWidth;
 		this.setDrity(true);
+		return this;
 	}
 
 }

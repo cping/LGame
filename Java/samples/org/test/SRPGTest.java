@@ -27,7 +27,7 @@ public class SRPGTest extends SRPGScreen {
 
 	public SRPGTest() {
 		//
-		super("assets/srpg/map.txt", AVGDialog.getRMXPDialog("assets/srpg/w11.png", 460,
+		super("assets/srpg/map.txt", AVGDialog.shared().getRMXPDialog("assets/srpg/w11.png", 460,
 				150), 48, 48);
 
 		// 不使用回合交替特效进行提示

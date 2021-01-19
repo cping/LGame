@@ -29,31 +29,31 @@ import loon.utils.MathUtils;
  */
 public abstract class CharacterValue {
 
-	private String roleName;
+	private String _roleName;
 	
-	private int maxHealth;
-	private int maxMana;
-	private int health;
-	private int mana;
-	private int attack;
-	private int defence;
-	private int strength;
-	private int intelligence;
-	private int agility;
-	private int fitness;
-	private int dexterity;
-	private int level;
-	private int team;
-	private int movePoints;
-	private int turnPoints;
-	private int actionPoints;
+	protected int maxHealth;
+	protected int maxMana;
+	protected int health;
+	protected int mana;
+	protected int attack;
+	protected int defence;
+	protected int strength;
+	protected int intelligence;
+	protected int agility;
+	protected int fitness;
+	protected int dexterity;
+	protected int level;
+	protected int team;
+	protected int movePoints;
+	protected int turnPoints;
+	protected int actionPoints;
 
-	private boolean isAttack;
-	private boolean isDefense;
-	private boolean isSkill;
-	private boolean isMoved;
+	protected boolean isAttack;
+	protected boolean isDefense;
+	protected boolean isSkill;
+	protected boolean isMoved;
 
-	private CharacterInfo info;
+	protected CharacterInfo info;
 
 	public CharacterValue(CharacterInfo info, int maxHealth, int maxMana, int attack, int defence, int strength,
 			int intelligence, int fitness, int dexterity, int agility) {
@@ -63,7 +63,7 @@ public abstract class CharacterValue {
 
 	public CharacterValue(String name, CharacterInfo info, int maxHealth, int maxMana, int attack, int defence,
 			int strength, int intelligence, int fitness, int dexterity, int agility) {
-		this.roleName = name;
+		this._roleName = name;
 		this.info = info;
 		this.maxHealth = maxHealth;
 		this.maxMana = maxMana;
@@ -397,10 +397,10 @@ public abstract class CharacterValue {
 	}
 
 	public String getRoleName() {
-		return roleName;
+		return _roleName;
 	}
 
-	public void setRoleName(String roleName) {
-		this.roleName = roleName;
+	public void setRoleName(String n) {
+		this._roleName = n;
 	}
 }

@@ -216,7 +216,7 @@ public class SRPGChoiceView extends SRPGView {
 		if (o == null) {
 			Image tmp = Image.createImage(w, h);
 			Canvas g = tmp.getCanvas();
-			LGradation.getInstance(LColor.white, LColor.black, w, h)
+			LGradation.create(LColor.white, LColor.black, w, h)
 					.drawHeight(g, 0, 0);
 			g.setColor(LColor.black);
 			g.strokeRect(0, 0, w - 1, h - 1);
@@ -257,7 +257,7 @@ public class SRPGChoiceView extends SRPGView {
 			// 选中项
 			int i = getDrawContent();
 			if (i >= 0 && i < maxSize) {
-				LGradation.getInstance(LColor.white, LColor.black,
+				LGradation.create(LColor.white, LColor.black,
 						getWidth() + 6, getSpace()).drawHeight(g, x1 + 14,
 						y1 + getSpace() * getDrawContent() + 2);
 				g.setColor(LColor.darkGray);

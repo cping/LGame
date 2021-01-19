@@ -230,6 +230,7 @@ public abstract class LGame implements LRelease {
 		try {
 			synchronized (LGame.class) {
 				LSystem.debug("The Loon Game Engine is End");
+				LSystem.PAUSED = true;
 				RealtimeProcessManager.get().dispose();
 				LSTRDictionary.get().dispose();
 				LSystem.disposeTextureAll();

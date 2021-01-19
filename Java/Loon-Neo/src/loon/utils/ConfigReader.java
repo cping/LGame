@@ -43,10 +43,10 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 	private String FLAG_I_TAG = "'";
 
 	public static ConfigReader at(final String path) {
-		return getInstance(path);
+		return shared(path);
 	}
 
-	public static ConfigReader getInstance(final String path) {
+	public static ConfigReader shared(final String path) {
 		synchronized (ConfigReader.class) {
 			ConfigReader reader = CONFIG_CACHE.get(path);
 			if (reader == null || reader._closed) {

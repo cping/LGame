@@ -37,6 +37,8 @@ import loon.component.skin.SkinManager;
 import loon.events.KeyMake;
 import loon.events.SysInput;
 import loon.events.Updateable;
+import loon.font.BDFontCache;
+import loon.font.BMFontCache;
 import loon.font.IFont;
 import loon.font.LFont;
 import loon.geom.Dimension;
@@ -180,6 +182,13 @@ public class LSystem {
 
 	private static float _scaleHeight = 1f;
 
+	public static final void setSize(int w, int h) {
+		if (w < 0 || h < 0) {
+			return;
+		}
+		viewSize.setSize(w, h);
+	}
+
 	public static final String getGLExVertexShader() {
 		ShaderCmd cmd = ShaderCmd.getCmd("glex_vertex");
 		if (cmd.isCache()) {
@@ -233,18 +242,20 @@ public class LSystem {
 		LSTRDictionary.freeStatic();
 		ActionControl.freeStatic();
 		RealtimeProcessManager.freeStatic();
+		BDFontCache.freeStatic();
+		BMFontCache.freeStatic();
 		LGradation.freeStatic();
-		DefUI.freeStatic();
 		SkinManager.freeStatic();
+		AVGDialog.freeStatic();
 		LColorPool.freeStatic();
 		LColorList.freeStatic();
 		CollisionFilter.freeStatic();
-		AVGDialog.freeStatic();
 		LightningEffect.freeStatic();
 		Command.freeStatic();
-		Duration.freeStatic();
-		GameTime.freeStatic();
 		LTimer.freeStatic();
+		GameTime.freeStatic();
+		Duration.freeStatic();
+		DefUI.freeStatic();
 		PAUSED = false;
 		_scaleWidth = 1f;
 		_scaleHeight = 1f;
@@ -653,7 +664,7 @@ public class LSystem {
 
 	public static String getAllFileName(String name) {
 		if (name == null) {
-			return "";
+			return LSystem.EMPTY;
 		}
 		int idx = name.lastIndexOf('.');
 		return idx == -1 ? name : name.substring(0, idx);
@@ -661,7 +672,7 @@ public class LSystem {
 
 	public static String getFileName(String name) {
 		if (name == null) {
-			return "";
+			return LSystem.EMPTY;
 		}
 		int length = name.length();
 		int idx = name.lastIndexOf('/');
@@ -672,19 +683,31 @@ public class LSystem {
 		if (size < length) {
 			return name.substring(size, length);
 		} else {
-			return "";
+			return LSystem.EMPTY;
 		}
 	}
 
 	public static String getExtension(String name) {
 		if (name == null) {
-			return "";
+			return LSystem.EMPTY;
 		}
 		int index = name.lastIndexOf(".");
 		if (index == -1) {
-			return "";
+			return LSystem.EMPTY;
 		} else {
 			return name.substring(index + 1);
+		}
+	}
+
+	public static String getNotExtension(String name) {
+		if (name == null) {
+			return LSystem.EMPTY;
+		}
+		int index = name.lastIndexOf(".");
+		if (index == -1) {
+			return name;
+		} else {
+			return name.substring(0, index);
 		}
 	}
 
@@ -885,7 +908,7 @@ public class LSystem {
 		}
 		return code;
 	}
-	
+
 	public static final int unites(long... value) {
 		return unites(31, value);
 	}
@@ -897,7 +920,7 @@ public class LSystem {
 		}
 		return code;
 	}
-	
+
 	public static final int unite(int hashCode, boolean value) {
 		int v = value ? 1231 : 1237;
 		return unite(hashCode, v);

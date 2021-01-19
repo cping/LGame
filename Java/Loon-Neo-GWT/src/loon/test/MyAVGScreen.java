@@ -10,7 +10,6 @@ import loon.component.LPaper;
 import loon.component.LSelect;
 import loon.events.GameTouch;
 import loon.opengl.GLEx;
-import loon.utils.Scale;
 
 public class MyAVGScreen extends AVGScreen {
 
@@ -24,7 +23,7 @@ public class MyAVGScreen extends AVGScreen {
 	int type;
 
 	public MyAVGScreen() {
-		super("assets/script/s1.txt", AVGDialog.getRMXPDialog("assets/w6.png",
+		super("assets/script/s1.txt", AVGDialog.shared().getRMXPDialog("assets/w6.png",
 				460, 150));
 	}
 

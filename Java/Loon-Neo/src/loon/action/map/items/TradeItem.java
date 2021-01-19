@@ -43,32 +43,36 @@ public class TradeItem<T> extends Item<T> {
 		return description;
 	}
 
-	public void setDescription(String description) {
+	public TradeItem<T> setDescription(String description) {
 		this.description = description;
+		return this;
 	}
 
 	public float getSellPrice() {
 		return sellPrice;
 	}
 
-	public void setSellPrice(float sellPrice) {
+	public TradeItem<T> setSellPrice(float sellPrice) {
 		this.sellPrice = sellPrice;
+		return this;
 	}
 
 	public float getBuyPrice() {
 		return buyPrice;
 	}
 
-	public void setBuyPrice(float buyPrice) {
+	public TradeItem<T> setBuyPrice(float buyPrice) {
 		this.buyPrice = buyPrice;
+		return this;
 	}
 
 	public float getQuantity() {
 		return quantity;
 	}
 
-	public void setQuantity(float quantity) {
+	public TradeItem<T> setQuantity(float quantity) {
 		this.quantity = quantity;
+		return this;
 	}
 
 	public TradeItem<T> cpy() {

@@ -54,9 +54,9 @@ public class Pixmap extends Limit implements LRelease {
 
 	public final static int SRC_OVER = 2;
 
-	private Canvas tmpCanvas = null;
+	private Canvas _paintCanvas = null;
 
-	private Vector2f tempLocation = new Vector2f();
+	private Vector2f _pointLocation = new Vector2f();
 
 	private int _composite = -1;
 
@@ -74,32 +74,32 @@ public class Pixmap extends Limit implements LRelease {
 	public Image getImage(boolean scaleUpdate) {
 		Scale scale = LSystem.getScale();
 		if (scale.factor == 1f) {
-			if (tmpCanvas == null) {
-				tmpCanvas = getGraphics().createCanvas(getWidth(), getHeight());
+			if (_paintCanvas == null) {
+				_paintCanvas = getGraphics().createCanvas(getWidth(), getHeight());
 			}
 			if (_dirty) {
-				tmpCanvas.image.setPixmap(this);
+				_paintCanvas.image.setPixmap(this);
 			}
 		} else if (scaleUpdate) {
 			int newWidth = scale.scaledCeil(getWidth());
 			int newHeight = scale.scaledCeil(getHeight());
-			if (tmpCanvas == null) {
-				tmpCanvas = getGraphics().createCanvas(newWidth, newHeight);
+			if (_paintCanvas == null) {
+				_paintCanvas = getGraphics().createCanvas(newWidth, newHeight);
 			}
 			if (_dirty) {
-				tmpCanvas.image.setPixmap(Pixmap.getResize(this, newWidth, newHeight));
+				_paintCanvas.image.setPixmap(Pixmap.getResize(this, newWidth, newHeight));
 			}
 		} else {
 			int newWidth = scale.invScaledCeil(getWidth());
 			int newHeight = scale.invScaledCeil(getHeight());
-			if (tmpCanvas == null) {
-				tmpCanvas = getGraphics().createCanvas(newWidth, newHeight);
+			if (_paintCanvas == null) {
+				_paintCanvas = getGraphics().createCanvas(newWidth, newHeight);
 			}
 			if (_dirty) {
-				tmpCanvas.image.setPixmap(this);
+				_paintCanvas.image.setPixmap(this);
 			}
 		}
-		return tmpCanvas.image;
+		return _paintCanvas.image;
 	}
 
 	public LTexture texture() {
@@ -1463,8 +1463,8 @@ public class Pixmap extends Limit implements LRelease {
 	}
 
 	public Pixmap drawAngleLine(int x, int y, float angle, float length) {
-		tempLocation.set(1f).setLength(length).setAngle(angle);
-		return drawLine(x, y, x + tempLocation.x(), y + tempLocation.y());
+		_pointLocation.set(1f).setLength(length).setAngle(angle);
+		return drawLine(x, y, x + _pointLocation.x(), y + _pointLocation.y());
 	}
 
 	public Pixmap drawDashCircle(int x, int y, float radius) {
@@ -1474,34 +1474,34 @@ public class Pixmap extends Limit implements LRelease {
 			sides++;
 		}
 
-		tempLocation.set(0f);
+		_pointLocation.set(0f);
 
 		for (int i = 0; i < sides; i++) {
 			if (i % 2 == 0) {
 				continue;
 			}
-			tempLocation.set(radius, 0).setAngle(360f / sides * i + 90);
-			int x1 = tempLocation.x();
-			int y1 = tempLocation.y();
+			_pointLocation.set(radius, 0).setAngle(360f / sides * i + 90);
+			int x1 = _pointLocation.x();
+			int y1 = _pointLocation.y();
 
-			tempLocation.set(radius, 0).setAngle(360f / sides * (i + 1) + 90);
+			_pointLocation.set(radius, 0).setAngle(360f / sides * (i + 1) + 90);
 
-			drawLine(x1 + x, y1 + y, tempLocation.x() + x, tempLocation.y() + y);
+			drawLine(x1 + x, y1 + y, _pointLocation.x() + x, _pointLocation.y() + y);
 		}
 		return this;
 	}
 
 	public Pixmap drawSpikes(int x, int y, float radius, float length, int spikes, float rot) {
-		tempLocation.set(0f, 1f);
+		_pointLocation.set(0f, 1f);
 		float step = 360f / spikes;
 
 		for (int i = 0; i < spikes; i++) {
-			tempLocation.setAngle(i * step + rot);
-			tempLocation.setLength(radius);
-			int x1 = tempLocation.x(), y1 = tempLocation.y();
-			tempLocation.setLength(radius + length);
+			_pointLocation.setAngle(i * step + rot);
+			_pointLocation.setLength(radius);
+			int x1 = _pointLocation.x(), y1 = _pointLocation.y();
+			_pointLocation.setLength(radius + length);
 
-			drawLine(x + x1, y + y1, x + tempLocation.x(), y + tempLocation.y());
+			drawLine(x + x1, y + y1, x + _pointLocation.x(), y + _pointLocation.y());
 		}
 		return this;
 	}

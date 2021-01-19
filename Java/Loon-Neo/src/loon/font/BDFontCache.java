@@ -29,7 +29,11 @@ public class BDFontCache extends CacheMap<BDFont> {
 	private final static String DEF_PIXFONT = "pixfont";
 
 	private static BDFontCache _fontCache = null;
-
+	
+	public static void freeStatic(){
+		_fontCache = null;
+	}
+	
 	public static BDFontCache shared() {
 		if (_fontCache == null) {
 			synchronized (BDFontCache.class) {
@@ -56,10 +60,13 @@ public class BDFontCache extends CacheMap<BDFont> {
 	@Override
 	public BDFont create(String fntName) {
 		BDFont bitmapFont;
+		String suffix = LSystem.getExtension(fntName);
 		if (fntName.equals(DEF_PIXFONT)) {
-			bitmapFont = new BDFont(LSystem.getSystemImagePath() + DEF_PIXFONT + ".bdf", 12);
+			bitmapFont = new BDFont(
+					LSystem.getSystemImagePath() + DEF_PIXFONT + (StringUtils.isEmpty(suffix) ? ".bdf" : LSystem.EMPTY),
+					12);
 		} else {
-			bitmapFont = new BDFont(fntName + ".bdf", 12);
+			bitmapFont = new BDFont(fntName + (StringUtils.isEmpty(suffix) ? ".bdf" : LSystem.EMPTY), 12);
 		}
 		return bitmapFont;
 	}

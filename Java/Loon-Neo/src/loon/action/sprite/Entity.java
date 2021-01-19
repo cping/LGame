@@ -155,11 +155,11 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	}
 
-	public void setTexture(String path) {
-		setTexture(LSystem.loadTexture(path));
+	public Entity setTexture(String path) {
+		return setTexture(LSystem.loadTexture(path));
 	}
 
-	public void setTexture(LTexture tex) {
+	public Entity setTexture(LTexture tex) {
 		this._image = tex;
 		if (_width <= 0) {
 			_width = _image.width();
@@ -168,6 +168,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 			_height = _image.height();
 		}
 		this._repaintDraw = (tex == null);
+		return this;
 	}
 
 	@Override
@@ -176,8 +177,8 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	}
 
 	@Override
-	public void setVisible(final boolean pVisible) {
-		this._visible = pVisible;
+	public void setVisible(final boolean v) {
+		this._visible = v;
 	}
 
 	@Override
@@ -763,8 +764,8 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		if (exist) {
 			int blend = g.getBlendMode();
 			g.setBlendMode(_GL_BLEND);
-			boolean update = ((_objectRotation != 0 || !(_scaleX == 1f && _scaleY == 1f) || !(_skewX == 0 && _skewY == 0))
-					|| _flipX || _flipY) && _deform;
+			boolean update = ((_objectRotation != 0 || !(_scaleX == 1f && _scaleY == 1f)
+					|| !(_skewX == 0 && _skewY == 0)) || _flipX || _flipY) && _deform;
 			float nx = offsetX + this._objectLocation.x + _offset.x;
 			float ny = offsetY + this._objectLocation.y + _offset.y;
 			if (update) {

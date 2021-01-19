@@ -47,11 +47,11 @@ public class LGradation implements LRelease {
 		COLOR_GRADATIONS = null;
 	}
 
-	public static LGradation getInstance(LColor s, LColor e, int w, int h) {
-		return getInstance(s, e, w, h, 125);
+	public static LGradation create(LColor s, LColor e, int w, int h) {
+		return create(s, e, w, h, 125);
 	}
 
-	public static LGradation getInstance(LColor s, LColor e, int w, int h, int alpha) {
+	public static LGradation create(LColor s, LColor e, int w, int h, int alpha) {
 		synchronized (LGradation.class) {
 			if (COLOR_GRADATIONS == null) {
 				COLOR_GRADATIONS = new IntMap<LGradation>(10);

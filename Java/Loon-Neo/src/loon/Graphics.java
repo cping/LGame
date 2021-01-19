@@ -205,7 +205,7 @@ public abstract class Graphics {
 
 	protected void viewportChanged(Scale scale, int viewWidth, int viewHeight) {
 		Display d = game.display();
-		LSystem.viewSize.setSize((int) (viewWidth / LSystem.getScaleWidth()),
+		LSystem.setSize((int) (viewWidth / LSystem.getScaleWidth()),
 				(int) (viewHeight / LSystem.getScaleHeight()));
 		if (viewMatrix != null) {
 			LSystem.viewSize.getMatrix().mul(viewMatrix);

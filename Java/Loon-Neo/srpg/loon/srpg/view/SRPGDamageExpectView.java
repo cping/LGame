@@ -82,7 +82,7 @@ public class SRPGDamageExpectView extends SRPGDrawView {
 	private void drawLazy(Canvas g) {
 		float offsetY = -15;
 		g.setFont(deffont);
-		LGradation.getInstance(LColor.blue, LColor.black, super.width,
+		LGradation.create(LColor.blue, LColor.black, super.width,
 				super.height).drawHeight(g, 0, 0);
 		SRPGStatus status = attacker.getActorStatus();
 		g.setColor(LColor.black);

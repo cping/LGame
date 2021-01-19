@@ -61,7 +61,7 @@ public class SRPGAbilityNameView extends SRPGDrawView {
 			color = LColor.red;
 		}
 		LColor color1 = LColor.black;
-		LGradation.getInstance(color, color1, super.width, super.height)
+		LGradation.create(color, color1, super.width, super.height)
 				.drawWidth(g, super.left, super.top);
 		g.setColor(LColor.white);
 		g.drawString(ab.getAbilityName(), 5 + super.left, 12 + super.top);

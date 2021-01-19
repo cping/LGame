@@ -41,10 +41,10 @@ public class Duration implements Comparable<Duration> {
 	}
 
 	public static Duration get() {
-		return getInstance();
+		return shared();
 	}
 
-	public static Duration getInstance() {
+	public static Duration shared() {
 		if (_instance == null) {
 			synchronized (Duration.class) {
 				if (_instance == null) {

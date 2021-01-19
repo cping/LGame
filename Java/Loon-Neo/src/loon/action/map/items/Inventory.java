@@ -25,32 +25,32 @@ import loon.utils.ObjectMap.Keys;
 
 public class Inventory<T> {
 
-	private ObjectMap<String, Item<T>> items;
+	private ObjectMap<String, Item<T>> _items;
 
-	private int gold;
+	private int _gold;
 
 	public Inventory() {
 		super();
-		items = new ObjectMap<String, Item<T>>(128);
-		gold = 0;
+		_items = new ObjectMap<String, Item<T>>(128);
+		_gold = 0;
 	}
 
 	public Inventory<T> subtractGold(int i) {
-		gold -= i;
+		_gold -= i;
 		return this;
 	}
 
 	public Inventory<T> addGold(int i) {
-		gold += i;
+		_gold += i;
 		return this;
 	}
 
 	public int getGold() {
-		return gold;
+		return _gold;
 	}
 
 	public Inventory<T> setGold(int i) {
-		gold = i;
+		_gold = i;
 		return this;
 	}
 
@@ -58,20 +58,20 @@ public class Inventory<T> {
 		if (obj == null) {
 			return false;
 		}
-		return items.put(key, obj) == null;
+		return _items.put(key, obj) == null;
 	}
 
 	public boolean removeItem(String key) {
-		return items.remove(key) == null;
+		return _items.remove(key) == null;
 	}
 
 	public int getItemCount() {
-		return items.size;
+		return _items.size;
 	}
 
 	public String[] getItemList() {
-		Keys<String> keys = items.keys();
-		String[] names = new String[items.size];
+		Keys<String> keys = _items.keys();
+		String[] names = new String[_items.size];
 		int idx = 0;
 		for (String name : keys) {
 			names[idx++] = name;
@@ -80,13 +80,13 @@ public class Inventory<T> {
 	}
 
 	public Inventory<T> merge(Inventory<T> i) {
-		items.putAll(i.items);
+		_items.putAll(i._items);
 		this.addGold(i.getGold());
 		return this;
 	}
 
 	public Inventory<T> clear() {
-		items.clear();
+		_items.clear();
 		return this;
 	}
 

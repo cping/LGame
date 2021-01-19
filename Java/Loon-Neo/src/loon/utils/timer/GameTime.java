@@ -32,10 +32,10 @@ public class GameTime {
 	}
 
 	public static GameTime get() {
-		return getInstance();
+		return shared();
 	}
 
-	public static GameTime getInstance() {
+	public static GameTime shared() {
 		if (_instance == null) {
 			synchronized (GameTime.class) {
 				if (_instance == null) {

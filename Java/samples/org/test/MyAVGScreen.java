@@ -24,7 +24,7 @@ public class MyAVGScreen extends AVGScreen {
 	int type;
 
 	public MyAVGScreen() {
-		super("assets/avg/script/s1.txt", AVGDialog.getRMXPDialog("assets/avg/w6.png",
+		super("assets/avg/script/s1.txt", AVGDialog.shared().getRMXPDialog("assets/avg/w6.png",
 				460, 150));
 	/*
 	 * 使用bmfont字体用此设置

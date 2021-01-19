@@ -51,23 +51,23 @@ public class Print implements FontSet<Print>, LRelease {
 	/**
 	 * 解析并重构字符串,为超过指定长度的字符串加换行符
 	 * 
-	 * @param text
-	 * @param font
-	 * @param width
+	 * @param _textChar
+	 * @param _curfontSize
+	 * @param _width
 	 * @return
 	 */
-	public static String prepareString(String text, IFont font, float width) {
+	public static String prepareString(String text, IFont font, float _width) {
 		if (font == null || StringUtils.isEmpty(text)) {
 			return "";
 		}
 		StrBuilder sbr = new StrBuilder();
-		TArray<String> list = formatMessage(text, font, width);
+		TArray<String> list = formatMessage(text, font, _width);
 		for (int i = 0; i < list.size; i++) {
 			String temp = list.get(i);
 			if (!StringUtils.isEmpty(temp)) {
 				sbr.append(list.get(i));
 				if (i < list.size - 1) {
-					sbr.append('\n');
+					sbr.append(LSystem.LF);
 				}
 			}
 		}
@@ -79,76 +79,77 @@ public class Print implements FontSet<Print>, LRelease {
 	 * 
 	 * PS:此项不处理'\n'外的特殊操作符
 	 * 
-	 * @param text
-	 * @param font
-	 * @param width
+	 * @param _textChar
+	 * @param _curfontSize
+	 * @param _width
 	 * @return
 	 */
-	public static TArray<String> formatMessage(String text, IFont font, float width) {
-		return FontUtils.splitLines(text, font, width);
+	public static TArray<String> formatMessage(String _textChar, IFont _curfontSize, float _width) {
+		return FontUtils.splitLines(_textChar, _curfontSize, _width);
 	}
 
-	private int index, offset, font, tmp_font;
+	private int _index, _offsettext, _curfontSize, _perfontSize;
 
-	private char text;
+	private char _textChar;
 
-	private char[] showMessages;
+	private char[] _showMessages;
 
-	private LColor fontColor = new LColor(LColor.white);
+	private LColor _fontColor = new LColor(LColor.white);
 
-	private int interceptMaxString;
+	private int _interceptMaxString;
 
-	private int interceptCount;
+	private int _interceptCount;
 
-	private int messageLength = 10;
+	private int _messageLength = 10;
 
-	private String messages;
+	private int _lazyFlag = 1;
+	
+	private String _messages;
 
-	private boolean onComplete, newLine, visible, closed;
+	private boolean _onComplete, _newLine, _visible, _closed;
 
-	private StrBuilder messageBuffer = new StrBuilder(messageLength);
+	private StrBuilder _messageBuffer = new StrBuilder(_messageLength);
 
-	private int width, height, leftOffset, topOffset, next, messageCount;
+	private float _alpha;
+	
+	private int _width, _height, _leftoffset, _topoffset, _nextflag, _messageCount;
 
-	private float alpha;
+	private int _textsize, _waitdelay, _textoffsetSize, _leftsize, _fontSize, _fontHeight;
 
-	private int size, wait, tmp_dir, left, fontSize, fontHeight;
+	private final PointF _iconLocation;
 
-	private final PointF iconLocation;
+	private final Vector2f _printLocation;
 
-	private final Vector2f printLocation;
+	private LTexture _creeseIcon;
 
-	private LTexture creeseIcon;
+	private LSTRFont _defaultFont;
 
-	private LSTRFont strings;
+	private IFont _curFont;
 
-	private IFont ifont;
+	private boolean _nativeFont = false;
 
-	private boolean nativeFont = false;
+	private boolean _isEnglish, _isWait, _isIconFlag;
 
-	private boolean isEnglish, isWait, isIconFlag;
-
-	private float iconX, iconY, offsetIconX, offsetIconY;
-
-	private int lazyHashCade = 1;
+	private float _iconX, _iconY, _offsetIconX, _offsetIconY;
 
 	// 默认0，左1,右2
 	private Mode dirmode = Mode.NONE;
 
-	public Print(Vector2f printLocation, IFont font, int width, int height) {
-		this(LSystem.EMPTY, font, printLocation, width, height);
+	public Print(Vector2f _printLocation, IFont font, int width, int height) {
+		this(LSystem.EMPTY,  font, _printLocation, width, height);
 	}
 
-	public Print(String context, IFont font, Vector2f pos, int width, int height) {
-		this.setMessage(context, font);
-		this.printLocation = pos;
-		this.width = width;
-		this.height = height;
-		this.wait = 0;
-		this.messageLength = 10;
-		this.isWait = false;
-		this.isIconFlag = true;
-		iconLocation = new PointF();
+	public Print(String context, IFont size, Vector2f pos, int width, int height) {
+		this.setMessage(context, size);
+		this._printLocation = pos;
+		this._width = width;
+		this._height = height;
+		this._waitdelay = 0;
+		this._lazyFlag = 1;
+		this._messageLength = 10;
+		this._isWait = false;
+		this._isIconFlag = true;
+		_iconLocation = new PointF();
 	}
 
 	public void setMessage(String context, IFont font) {
@@ -165,7 +166,7 @@ public class Print implements FontSet<Print>, LRelease {
 
 		private String _context = null;
 
-		private PrintUpdate(Print print, String context, IFont font, boolean isComplete, boolean drawFont) {
+		private PrintUpdate(Print print, String context, IFont font, boolean complete, boolean drawFont) {
 			_print = print;
 			if (context != null) {
 				if (StringUtils.isEnglishAndNumeric(context)) {
@@ -176,7 +177,7 @@ public class Print implements FontSet<Print>, LRelease {
 			}
 			_context = context;
 			_font = font;
-			_isComplete = isComplete;
+			_isComplete = complete;
 			_drawDrawingFont = drawFont;
 		}
 
@@ -185,58 +186,58 @@ public class Print implements FontSet<Print>, LRelease {
 			if (_context == null) {
 				return;
 			}
-			if (_print.strings != null && !_print.strings.isClosed() && !_drawDrawingFont) {
-				_print.strings.close();
+			if (_print._defaultFont != null && !_print._defaultFont.isClosed() && !_drawDrawingFont) {
+				_print._defaultFont.close();
 			}
 			// 如果是默认的loon系统字体
 			if (_font instanceof LFont) {
 				if (_drawDrawingFont) {
 					LSTRDictionary.Dict dict = LSTRDictionary.get().bind((LFont) _font, _context);
-					_print.strings = dict.getSTR();
-					_print.ifont = _font;
+					_print._defaultFont = dict.getSTR();
+					_print._curFont = _font;
 				} else {
-					_print.strings = new LSTRFont((LFont) _font, _context, LSystem.isHTML5());
+					_print._defaultFont = new LSTRFont((LFont) _font, _context, LSystem.isHTML5());
 				}
 				// 其他字体(一般是Bitmap Font)
 			} else {
-				_print.ifont = _font;
+				_print._curFont = _font;
 			}
-			_print.lazyHashCade = 1;
-			_print.wait = 0;
-			_print.visible = false;
-			_print.showMessages = new char[] { '\0' };
-			_print.interceptMaxString = 0;
-			_print.next = 0;
-			_print.messageCount = 0;
-			_print.interceptCount = 0;
-			_print.size = 0;
-			_print.tmp_dir = 0;
-			_print.left = 0;
-			_print.fontSize = 0;
-			_print.fontHeight = 0;
-			_print.messages = _context;
-			_print.next = _context.length();
-			_print.onComplete = false;
-			_print.newLine = false;
-			_print.messageCount = 0;
-			_print.messageBuffer.setLength(0);
+			_print._lazyFlag = 1;
+			_print._waitdelay = 0;
+			_print._visible = false;
+			_print._showMessages = new char[] { '\0' };
+			_print._interceptMaxString = 0;
+			_print._nextflag = 0;
+			_print._messageCount = 0;
+			_print._interceptCount = 0;
+			_print._textsize = 0;
+			_print._textoffsetSize = 0;
+			_print._leftsize = 0;
+			_print._fontSize = 0;
+			_print._fontHeight = 0;
+			_print._messages = _context;
+			_print._nextflag = _context.length();
+			_print._onComplete = false;
+			_print._newLine = false;
+			_print._messageCount = 0;
+			_print._messageBuffer.setLength(0);
 			if (_isComplete) {
 				_print.complete();
 			}
-			_print.visible = true;
+			_print._visible = true;
 		}
 	}
 
-	public void setMessage(String context, IFont font, boolean isComplete) {
-		setMessage(context, font, isComplete, false);
+	public void setMessage(String context, IFont _curfontSize, boolean isComplete) {
+		setMessage(context, _curfontSize, isComplete, false);
 	}
 
-	public void setMessage(String context, IFont font, boolean isComplete, boolean drawFont) {
-		LSystem.load(new PrintUpdate(this, context, font, isComplete, this.nativeFont = drawFont));
+	public void setMessage(String context, IFont _curfontSize, boolean isComplete, boolean drawFont) {
+		LSystem.load(new PrintUpdate(this, context, _curfontSize, isComplete, this._nativeFont = drawFont));
 	}
 
 	public String getMessage() {
-		return messages;
+		return _messages;
 	}
 
 	private LColor getColor(char flagName) {
@@ -269,356 +270,356 @@ public class Print implements FontSet<Print>, LRelease {
 	}
 
 	private void drawMessage(GLEx gl, LColor old) {
-		if (!visible) {
+		if (!_visible) {
 			return;
 		}
-		if ((strings == null && ifont != null) || nativeFont) {
+		if ((_defaultFont == null && _curFont != null) || _nativeFont) {
 			drawBMFont(gl, old);
-		} else if (strings != null) {
+		} else if (_defaultFont != null) {
 			drawDefFont(gl, old);
 		}
 	}
 
-	protected int maxFontHeignt(IFont font, char[] showMessages, int size) {
-		int height = 0;
-		for (int i = 0; i < size; i++) {
-			height = MathUtils.max(height, font.stringHeight(String.valueOf(showMessages[i])));
+	protected int maxFontHeignt(IFont _curfontSize, char[] _showMessages, int _textsize) {
+		int _height = 0;
+		for (int i = 0; i < _textsize; i++) {
+			_height = MathUtils.max(_height, _curfontSize.stringHeight(String.valueOf(_showMessages[i])));
 		}
-		return MathUtils.max(font.getHeight(), height);
+		return MathUtils.max(_curfontSize.getHeight(), _height);
 	}
 
 	public void drawDefFont(GLEx g, LColor old) {
-		synchronized (showMessages) {
-			this.size = showMessages.length;
-			this.fontSize = strings.getSize();
-			this.fontHeight = maxFontHeignt(strings, showMessages, size);
+		synchronized (_showMessages) {
+			this._textsize = _showMessages.length;
+			this._fontSize = _defaultFont.getSize();
+			this._fontHeight = maxFontHeignt(_defaultFont, _showMessages, _textsize);
 			switch (dirmode) {
 			default:
 			case NONE:
-				this.tmp_dir = 2;
+				this._textoffsetSize = 2;
 				break;
 			case LEFT:
-				this.tmp_dir = (width - (fontSize * messageLength)) / 2 - (int) (fontSize * 1.5);
+				this._textoffsetSize = (_width - (_fontSize * _messageLength)) / 2 - (int) (_fontSize * 1.5);
 				break;
 			case RIGHT:
-				this.tmp_dir = (fontSize * messageLength) / 2;
+				this._textoffsetSize = (_fontSize * _messageLength) / 2;
 				break;
 			case CENTER:
-				this.tmp_dir = width / 2 - (fontSize * messageLength) / 2 + (int) (fontSize * 4);
+				this._textoffsetSize = _width / 2 - (_fontSize * _messageLength) / 2 + (int) (_fontSize * 4);
 				break;
 			}
-			this.left = tmp_dir;
-			this.index = offset = font = tmp_font = 0;
+			this._leftsize = _textoffsetSize;
+			this._index = _offsettext = _curfontSize = _perfontSize = 0;
 
 			int hashCode = 1;
-			hashCode = LSystem.unite(hashCode, size);
-			hashCode = LSystem.unite(hashCode, left);
-			hashCode = LSystem.unite(hashCode, fontSize);
-			hashCode = LSystem.unite(hashCode, fontHeight);
+			hashCode = LSystem.unite(hashCode, _textsize);
+			hashCode = LSystem.unite(hashCode, _leftsize);
+			hashCode = LSystem.unite(hashCode, _fontSize);
+			hashCode = LSystem.unite(hashCode, _fontHeight);
 
-			if (strings == null) {
+			if (_defaultFont == null) {
 				return;
 			}
 
-			if (hashCode == lazyHashCade) {
-				strings.postCharCache();
-				if (isIconFlag && iconX != 0 && iconY != 0) {
+			if (hashCode == _lazyFlag) {
+				_defaultFont.postCharCache();
+				if (_isIconFlag && _iconX != 0 && _iconY != 0) {
 					fixIconPos();
-					g.draw(creeseIcon, iconLocation.x, iconLocation.y);
+					g.draw(_creeseIcon, _iconLocation.x, _iconLocation.y);
 				}
 				return;
 			}
 
-			strings.startChar();
-			fontColor = old;
+			_defaultFont.startChar();
+			_fontColor = old;
 
-			for (int i = 0; i < size; i++) {
-				text = showMessages[i];
-				if (text == '\0') {
+			for (int i = 0; i < _textsize; i++) {
+				_textChar = _showMessages[i];
+				if (_textChar == '\0') {
 					continue;
 				}
-				if (interceptCount < interceptMaxString) {
-					interceptCount++;
+				if (_interceptCount < _interceptMaxString) {
+					_interceptCount++;
 					continue;
 				} else {
-					interceptMaxString = 0;
-					interceptCount = 0;
+					_interceptMaxString = 0;
+					_interceptCount = 0;
 				}
-				if (showMessages[i] == 'n' && showMessages[i > 0 ? i - 1 : 0] == '\\') {
-					index = 0;
-					left = tmp_dir;
-					offset++;
+				if (_showMessages[i] == 'n' && _showMessages[i > 0 ? i - 1 : 0] == '\\') {
+					_index = 0;
+					_leftsize = _textoffsetSize;
+					_offsettext++;
 					continue;
-				} else if (text == '\n') {
-					index = 0;
-					left = tmp_dir;
-					offset++;
+				} else if (_textChar == '\n') {
+					_index = 0;
+					_leftsize = _textoffsetSize;
+					_offsettext++;
 					continue;
-				} else if (text == '<') {
-					LColor color = getColor(showMessages[i < size - 1 ? i + 1 : i]);
+				} else if (_textChar == '<') {
+					LColor color = getColor(_showMessages[i < _textsize - 1 ? i + 1 : i]);
 					if (color != null) {
-						interceptMaxString = 1;
-						fontColor = color;
+						_interceptMaxString = 1;
+						_fontColor = color;
 					}
 					continue;
-				} else if (showMessages[i > 0 ? i - 1 : i] == '<' && getColor(text) != null) {
+				} else if (_showMessages[i > 0 ? i - 1 : i] == '<' && getColor(_textChar) != null) {
 					continue;
-				} else if (text == '/') {
-					if (showMessages[i < size - 1 ? i + 1 : i] == '>') {
-						interceptMaxString = 1;
-						fontColor = old;
+				} else if (_textChar == '/') {
+					if (_showMessages[i < _textsize - 1 ? i + 1 : i] == '>') {
+						_interceptMaxString = 1;
+						_fontColor = old;
 					}
 					continue;
-				} else if (index > messageLength) {
-					index = 0;
-					left = tmp_dir;
-					offset++;
-					newLine = false;
-				} else if (text == '\\') {
+				} else if (_index > _messageLength) {
+					_index = 0;
+					_leftsize = _textoffsetSize;
+					_offsettext++;
+					_newLine = false;
+				} else if (_textChar == '\\') {
 					continue;
 				}
-				tmp_font = strings.charWidth(text);
-				if (!isEnglish) {
-					if (Character.isLetter(text)) {
-						if (tmp_font < fontSize) {
-							font = fontSize;
+				_perfontSize = _defaultFont.charWidth(_textChar);
+				if (!_isEnglish) {
+					if (Character.isLetter(_textChar)) {
+						if (_perfontSize < _fontSize) {
+							_curfontSize = _fontSize;
 						} else {
-							font = tmp_font;
+							_curfontSize = _perfontSize;
 						}
 					} else {
-						font = fontSize;
+						_curfontSize = _fontSize;
 					}
 				} else {
-					font = tmp_font;
+					_curfontSize = _perfontSize;
 				}
-				left += font;
-				if (font <= 10 && StringUtils.isSingle(text)) {
-					left += 12;
+				_leftsize += _curfontSize;
+				if (_curfontSize <= 10 && StringUtils.isSingle(_textChar)) {
+					_leftsize += 12;
 				}
-				if (i != size - 1) {
-					strings.addChar(text, printLocation.x + left + leftOffset,
-							(offset * fontHeight) + printLocation.y + fontSize + topOffset, fontColor);
-				} else if (!newLine && !onComplete) {
-					iconX = printLocation.x + left + leftOffset;
-					iconY = (offset * fontHeight) + printLocation.y + fontSize + topOffset + strings.getAscent();
-					if (isIconFlag && iconX != 0 && iconY != 0) {
+				if (i != _textsize - 1) {
+					_defaultFont.addChar(_textChar, _printLocation.x + _leftsize + _leftoffset,
+							(_offsettext * _fontHeight) + _printLocation.y + _fontSize + _topoffset, _fontColor);
+				} else if (!_newLine && !_onComplete) {
+					_iconX = _printLocation.x + _leftsize + _leftoffset;
+					_iconY = (_offsettext * _fontHeight) + _printLocation.y + _fontSize + _topoffset + _defaultFont.getAscent();
+					if (_isIconFlag && _iconX != 0 && _iconY != 0) {
 						fixIconPos();
-						g.draw(creeseIcon, iconLocation.x, iconLocation.y);
+						g.draw(_creeseIcon, _iconLocation.x, _iconLocation.y);
 					}
 				}
-				index++;
+				_index++;
 			}
 
-			strings.stopChar();
-			strings.saveCharCache();
+			_defaultFont.stopChar();
+			_defaultFont.saveCharCache();
 
-			lazyHashCade = hashCode;
+			_lazyFlag = hashCode;
 
-			if (messageCount == next) {
-				onComplete = true;
+			if (_messageCount == _nextflag) {
+				_onComplete = true;
 			}
 		}
 	}
 
 	protected PointF fixIconPos() {
-		final int iw = creeseIcon.getWidth();
-		final int ih = creeseIcon.getHeight();
+		final int iw = _creeseIcon.getWidth();
+		final int ih = _creeseIcon.getHeight();
 		final int fixValue = 2;
-		iconLocation.set(iconX + offsetIconX, iconY + offsetIconY);
-		if (iw + iconLocation.getX() >= printLocation.x + getWidth() - fixValue) {
-			iconLocation.x -= iw / fixValue - fixValue;
+		_iconLocation.set(_iconX + _offsetIconX, _iconY + _offsetIconY);
+		if (iw + _iconLocation.getX() >= _printLocation.x + getWidth() - fixValue) {
+			_iconLocation.x -= iw / fixValue - fixValue;
 		}
-		if (ih + iconLocation.getY() >= printLocation.y + getHeight() - fixValue) {
-			iconLocation.y += ih / fixValue - fixValue;
+		if (ih + _iconLocation.getY() >= _printLocation.y + getHeight() - fixValue) {
+			_iconLocation.y += ih / fixValue - fixValue;
 		}
-		return iconLocation;
+		return _iconLocation;
 	}
 
 	public void drawBMFont(GLEx g, LColor old) {
-		synchronized (showMessages) {
-			this.size = showMessages.length;
-			if (nativeFont) {
-				this.fontSize = strings.getSize();
-				this.fontHeight = maxFontHeignt(strings, showMessages, size);
+		synchronized (_showMessages) {
+			this._textsize = _showMessages.length;
+			if (_nativeFont) {
+				this._fontSize = _defaultFont.getSize();
+				this._fontHeight = maxFontHeignt(_defaultFont, _showMessages, _textsize);
 			} else {
-				this.fontSize = ifont.getSize();
-				this.fontHeight = maxFontHeignt(ifont, showMessages, size);
+				this._fontSize = _curFont.getSize();
+				this._fontHeight = maxFontHeignt(_curFont, _showMessages, _textsize);
 			}
 			switch (dirmode) {
 			default:
 			case NONE:
-				this.tmp_dir = 0;
+				this._textoffsetSize = 0;
 				break;
 			case LEFT:
-				this.tmp_dir = (width - (fontSize * messageLength)) / 2 - (int) (fontSize * 1.5);
+				this._textoffsetSize = (_width - (_fontSize * _messageLength)) / 2 - (int) (_fontSize * 1.5);
 				break;
 			case RIGHT:
-				this.tmp_dir = (fontSize * messageLength) / 2;
+				this._textoffsetSize = (_fontSize * _messageLength) / 2;
 				break;
 			case CENTER:
-				this.tmp_dir = width / 2 - (fontSize * messageLength) / 2 + (int) (fontSize * 4);
+				this._textoffsetSize = _width / 2 - (_fontSize * _messageLength) / 2 + (int) (_fontSize * 4);
 				break;
 			}
-			this.left = tmp_dir;
-			this.index = offset = font = tmp_font = 0;
-			fontColor = old;
-			for (int i = 0; i < size; i++) {
-				text = showMessages[i];
-				if (text == '\0') {
+			this._leftsize = _textoffsetSize;
+			this._index = _offsettext = _curfontSize = _perfontSize = 0;
+			_fontColor = old;
+			for (int i = 0; i < _textsize; i++) {
+				_textChar = _showMessages[i];
+				if (_textChar == '\0') {
 					continue;
 				}
-				if (interceptCount < interceptMaxString) {
-					interceptCount++;
+				if (_interceptCount < _interceptMaxString) {
+					_interceptCount++;
 					continue;
 				} else {
-					interceptMaxString = 0;
-					interceptCount = 0;
+					_interceptMaxString = 0;
+					_interceptCount = 0;
 				}
-				if (showMessages[i] == 'n' && showMessages[i > 0 ? i - 1 : 0] == '\\') {
-					index = 0;
-					left = tmp_dir;
-					offset++;
+				if (_showMessages[i] == 'n' && _showMessages[i > 0 ? i - 1 : 0] == '\\') {
+					_index = 0;
+					_leftsize = _textoffsetSize;
+					_offsettext++;
 					continue;
-				} else if (text == '\n') {
-					index = 0;
-					left = tmp_dir;
-					offset++;
+				} else if (_textChar == '\n') {
+					_index = 0;
+					_leftsize = _textoffsetSize;
+					_offsettext++;
 					continue;
-				} else if (text == '<') {
-					LColor color = getColor(showMessages[i < size - 1 ? i + 1 : i]);
+				} else if (_textChar == '<') {
+					LColor color = getColor(_showMessages[i < _textsize - 1 ? i + 1 : i]);
 					if (color != null) {
-						interceptMaxString = 1;
-						fontColor = color;
+						_interceptMaxString = 1;
+						_fontColor = color;
 					}
 					continue;
-				} else if (showMessages[i > 0 ? i - 1 : i] == '<' && getColor(text) != null) {
+				} else if (_showMessages[i > 0 ? i - 1 : i] == '<' && getColor(_textChar) != null) {
 					continue;
-				} else if (text == '/') {
-					if (showMessages[i < size - 1 ? i + 1 : i] == '>') {
-						interceptMaxString = 1;
-						fontColor = old;
+				} else if (_textChar == '/') {
+					if (_showMessages[i < _textsize - 1 ? i + 1 : i] == '>') {
+						_interceptMaxString = 1;
+						_fontColor = old;
 					}
 					continue;
-				} else if (index > messageLength) {
-					index = 0;
-					left = tmp_dir;
-					offset++;
-					newLine = false;
-				} else if (text == '\\') {
+				} else if (_index > _messageLength) {
+					_index = 0;
+					_leftsize = _textoffsetSize;
+					_offsettext++;
+					_newLine = false;
+				} else if (_textChar == '\\') {
 					continue;
 				}
-				String tmpText = String.valueOf(text);
-				tmp_font = ifont.charWidth(text);
-				if (!isEnglish) {
-					if (Character.isLetter(text)) {
-						if (tmp_font < fontSize) {
-							font = fontSize;
+				String tmpText = String.valueOf(_textChar);
+				_perfontSize = _curFont.charWidth(_textChar);
+				if (!_isEnglish) {
+					if (Character.isLetter(_textChar)) {
+						if (_perfontSize < _fontSize) {
+							_curfontSize = _fontSize;
 						} else {
-							font = tmp_font;
+							_curfontSize = _perfontSize;
 						}
 					} else {
-						font = fontSize;
+						_curfontSize = _fontSize;
 					}
 				} else {
-					font = tmp_font;
+					_curfontSize = _perfontSize;
 				}
-				left += font;
-				if (font <= 10 && StringUtils.isSingle(text)) {
-					left += 12;
+				_leftsize += _curfontSize;
+				if (_curfontSize <= 10 && StringUtils.isSingle(_textChar)) {
+					_leftsize += 12;
 				}
-				if (i != size - 1) {
-					ifont.drawString(g, tmpText, printLocation.x + left + leftOffset,
-							(offset * fontHeight) + printLocation.y + fontSize + topOffset, fontColor);
-				} else if (!newLine && !onComplete) {
-					iconX = printLocation.x + left + leftOffset;
-					iconY = (offset * fontHeight) + printLocation.y + fontSize + topOffset + ifont.getAscent();
-					if (isIconFlag && iconX != 0 && iconY != 0) {
+				if (i != _textsize - 1) {
+					_curFont.drawString(g, tmpText, _printLocation.x + _leftsize + _leftoffset,
+							(_offsettext * _fontHeight) + _printLocation.y + _fontSize + _topoffset, _fontColor);
+				} else if (!_newLine && !_onComplete) {
+					_iconX = _printLocation.x + _leftsize + _leftoffset;
+					_iconY = (_offsettext * _fontHeight) + _printLocation.y + _fontSize + _topoffset + _curFont.getAscent();
+					if (_isIconFlag && _iconX != 0 && _iconY != 0) {
 						fixIconPos();
-						g.draw(creeseIcon, iconLocation.x, iconLocation.y);
+						g.draw(_creeseIcon, _iconLocation.x, _iconLocation.y);
 					}
 				}
-				index++;
+				_index++;
 			}
-			if (onComplete) {
-				if (isIconFlag && iconX != 0 && iconY != 0) {
+			if (_onComplete) {
+				if (_isIconFlag && _iconX != 0 && _iconY != 0) {
 					fixIconPos();
-					g.draw(creeseIcon, iconLocation.x, iconLocation.y);
+					g.draw(_creeseIcon, _iconLocation.x, _iconLocation.y);
 				}
 			}
-			if (messageCount == next) {
-				onComplete = true;
+			if (_messageCount == _nextflag) {
+				_onComplete = true;
 			}
 
 		}
 	}
 
 	public synchronized void draw(GLEx g, LColor old) {
-		if (!visible) {
+		if (!_visible) {
 			return;
 		}
-		alpha = g.alpha();
-		if (alpha != 1f) {
+		_alpha = g.alpha();
+		if (_alpha != 1f) {
 			g.setAlpha(1f);
 		}
 		drawMessage(g, old);
-		if (alpha != 1f) {
-			g.setAlpha(alpha);
+		if (_alpha != 1f) {
+			g.setAlpha(_alpha);
 		}
 	}
 
 	public Print setX(int x) {
-		printLocation.setX(x);
+		_printLocation.setX(x);
 		return this;
 	}
 
 	public Print setY(int y) {
-		printLocation.setY(y);
+		_printLocation.setY(y);
 		return this;
 	}
 
 	public int getX() {
-		return printLocation.x();
+		return _printLocation.x();
 	}
 
 	public int getY() {
-		return printLocation.y();
+		return _printLocation.y();
 	}
 
 	public void complete() {
-		synchronized (showMessages) {
-			this.onComplete = true;
-			this.messageCount = messages.length();
-			this.next = messageCount;
-			this.showMessages = (messages + "_").toCharArray();
-			this.size = showMessages.length;
+		synchronized (_showMessages) {
+			this._onComplete = true;
+			this._messageCount = _messages.length();
+			this._nextflag = _messageCount;
+			this._showMessages = (_messages + "_").toCharArray();
+			this._textsize = _showMessages.length;
 		}
 	}
 
 	public boolean isComplete() {
-		if (isWait) {
-			if (onComplete) {
-				wait++;
+		if (_isWait) {
+			if (_onComplete) {
+				_waitdelay++;
 			}
-			return onComplete && wait > 100;
+			return _onComplete && _waitdelay > 100;
 		}
-		return onComplete;
+		return _onComplete;
 	}
 
 	public boolean next() {
-		synchronized (messageBuffer) {
-			if (!onComplete) {
-				if (messageCount == next) {
-					onComplete = true;
+		synchronized (_messageBuffer) {
+			if (!_onComplete) {
+				if (_messageCount == _nextflag) {
+					_onComplete = true;
 					return false;
 				}
-				if (messageBuffer.length() > 0) {
-					messageBuffer.delete(messageBuffer.length() - 1, messageBuffer.length());
+				if (_messageBuffer.length() > 0) {
+					_messageBuffer.delete(_messageBuffer.length() - 1, _messageBuffer.length());
 				}
-				this.messageBuffer.append(messages.charAt(messageCount));
-				this.messageBuffer.append('_');
-				this.showMessages = messageBuffer.toString().toCharArray();
-				this.size = showMessages.length;
-				this.messageCount++;
+				this._messageBuffer.append(_messages.charAt(_messageCount));
+				this._messageBuffer.append('_');
+				this._showMessages = _messageBuffer.toString().toCharArray();
+				this._textsize = _showMessages.length;
+				this._messageCount++;
 			} else {
 				return false;
 			}
@@ -627,78 +628,78 @@ public class Print implements FontSet<Print>, LRelease {
 	}
 
 	public LTexture getCreeseIcon() {
-		return creeseIcon;
+		return _creeseIcon;
 	}
 
 	public Print setCreeseIcon(LTexture icon) {
-		if (this.creeseIcon != null) {
-			creeseIcon.close();
-			creeseIcon = null;
+		if (this._creeseIcon != null) {
+			_creeseIcon.close();
+			_creeseIcon = null;
 		}
-		this.creeseIcon = icon;
+		this._creeseIcon = icon;
 		return this;
 	}
 
 	public int getMessageLength() {
-		return messageLength;
+		return _messageLength;
 	}
 
-	public Print setMessageLength(int messageLength) {
-		this.messageLength = messageLength;
+	public Print setMessageLength(int l) {
+		this._messageLength = l;
 		return this;
 	}
 
 	public int getHeight() {
-		return height;
+		return _height;
 	}
 
-	public Print setHeight(int height) {
-		this.height = height;
+	public Print setHeight(int h) {
+		this._height = h;
 		return this;
 	}
 
 	public int getWidth() {
-		return width;
+		return _width;
 	}
 
-	public Print setWidth(int width) {
-		this.width = width;
+	public Print setWidth(int w) {
+		this._width = w;
 		return this;
 	}
 
 	public int getLeftOffset() {
-		return leftOffset;
+		return _leftoffset;
 	}
 
 	public Print setLeftOffset(int l) {
-		this.leftOffset = l;
+		this._leftoffset = l;
 		return this;
 	}
 
 	public int getTopOffset() {
-		return topOffset;
+		return _topoffset;
 	}
 
 	public Print setTopOffset(int t) {
-		this.topOffset = t;
+		this._topoffset = t;
 		return this;
 	}
 
 	public boolean isEnglish() {
-		return isEnglish;
+		return _isEnglish;
 	}
 
-	public Print setEnglish(boolean isEnglish) {
-		this.isEnglish = isEnglish;
+	public Print setEnglish(boolean e) {
+		this._isEnglish = e;
 		return this;
 	}
 
 	public boolean isVisible() {
-		return visible;
+		return _visible;
 	}
 
 	public Print setVisible(boolean v) {
-		this.visible = v;
+		this._visible = v;
 		return this;
 	}
 
@@ -727,88 +728,88 @@ public class Print implements FontSet<Print>, LRelease {
 	}
 
 	@Override
-	public Print setFont(IFont font) {
-		this.ifont = font;
+	public Print setFont(IFont f) {
+		this._curFont = f;
 		return this;
 	}
 
 	@Override
 	public IFont getFont() {
-		return ifont;
+		return _curFont;
 	}
 
 	@Override
 	public Print setFontColor(LColor color) {
-		this.fontColor = color;
+		this._fontColor = color;
 		return this;
 	}
 
 	@Override
 	public LColor getFontColor() {
-		return fontColor.cpy();
+		return _fontColor.cpy();
 	}
 
 	public boolean isWait() {
-		return isWait;
+		return _isWait;
 	}
 
-	public Print setWait(boolean isWait) {
-		this.isWait = isWait;
+	public Print setWait(boolean w) {
+		this._isWait = w;
 		return this;
 	}
 
 	public boolean isIconFlag() {
-		return isIconFlag;
+		return _isIconFlag;
 	}
 
-	public Print setIconFlag(boolean isIconFlag) {
-		this.isIconFlag = isIconFlag;
+	public Print setIconFlag(boolean f) {
+		this._isIconFlag = f;
 		return this;
 	}
 
 	public float getIconX() {
-		return iconX;
+		return _iconX;
 	}
 
 	public float getIconY() {
-		return iconY;
+		return _iconY;
 	}
 
 	public float getOffsetIconX() {
-		return offsetIconX;
+		return _offsetIconX;
 	}
 
-	public Print setOffsetIconX(float offsetIconX) {
-		this.offsetIconX = offsetIconX;
+	public Print setOffsetIconX(float x) {
+		this._offsetIconX = x;
 		return this;
 	}
 
 	public float getOffsetIconY() {
-		return offsetIconY;
+		return _offsetIconY;
 	}
 
-	public Print setOffsetIconY(float offsetIconY) {
-		this.offsetIconY = offsetIconY;
+	public Print setOffsetIconY(float y) {
+		this._offsetIconY = y;
 		return this;
 	}
 
 	public boolean isClosed() {
-		return closed;
+		return _closed;
 	}
 
 	@Override
 	public void close() {
-		if (!nativeFont) {
-			if (strings != null) {
-				strings.close();
-				strings = null;
+		if (!_nativeFont) {
+			if (_defaultFont != null) {
+				_defaultFont.close();
+				_defaultFont = null;
 			}
 		}
-		if (creeseIcon != null) {
-			creeseIcon.close();
-			creeseIcon = null;
+		if (_creeseIcon != null) {
+			_creeseIcon.close();
+			_creeseIcon = null;
 		}
-		closed = true;
+		_closed = true;
 	}
 
 }

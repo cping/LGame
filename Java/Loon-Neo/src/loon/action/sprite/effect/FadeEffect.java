@@ -40,17 +40,17 @@ public class FadeEffect extends Entity implements BaseEffect {
 	
 	private boolean autoRemoved;
 
-	public static FadeEffect getInstance(int type, LColor c) {
-		return getInstance(type, c, LSystem.viewSize.getWidth(),
+	public static FadeEffect create(int type, LColor c) {
+		return create(type, c, LSystem.viewSize.getWidth(),
 				LSystem.viewSize.getHeight());
 	}
 
-	public static FadeEffect getInstance(int type, int timer, LColor c) {
+	public static FadeEffect create(int type, int timer, LColor c) {
 		return new FadeEffect(c, timer, type, LSystem.viewSize.getWidth(),
 				LSystem.viewSize.getHeight());
 	}
 
-	public static FadeEffect getInstance(int type, LColor c, int w, int h) {
+	public static FadeEffect create(int type, LColor c, int w, int h) {
 		return new FadeEffect(c, 120, type, w, h);
 	}
 

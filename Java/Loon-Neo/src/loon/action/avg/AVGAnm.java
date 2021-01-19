@@ -47,11 +47,11 @@ public class AVGAnm implements Expression, LRelease {
 
 	protected IntArray posyTmps = new IntArray();
 
+	protected IntArray time = new IntArray();
+	
 	protected int[] posx = null;
 
 	protected int[] posy = null;
-
-	protected IntArray time = new IntArray();
 
 	protected int anmtime = 20;
 
@@ -67,12 +67,12 @@ public class AVGAnm implements Expression, LRelease {
 
 	protected LColor color;
 
-	private String anmPath;
+	private String _anmPath;
 
-	private String texturePath;
+	private String _texturePath;
 
 	public AVGAnm(String resName) {
-		open(BaseIO.loadText(this.anmPath = resName));
+		open(BaseIO.loadText(this._anmPath = resName));
 	}
 
 	public void open(String text) {
@@ -116,12 +116,12 @@ public class AVGAnm implements Expression, LRelease {
 			final String key = op[0].trim();
 			final String value = op[1].trim();
 			if ("path".equalsIgnoreCase(key)) {
-				texturePath = StringUtils.replace(value, "\"", LSystem.EMPTY);
+				_texturePath = StringUtils.replace(value, "\"", LSystem.EMPTY);
 				if (texture != null) {
 					texture.close();
 					texture = null;
 				}
-				texture = LSystem.loadTexture(texturePath);
+				texture = LSystem.loadTexture(_texturePath);
 				if (texture != null) {
 					imageWidth = texture.getWidth();
 					imageHeight = texture.getHeight();
@@ -196,11 +196,11 @@ public class AVGAnm implements Expression, LRelease {
 	}
 
 	public String getTexturePath() {
-		return texturePath;
+		return _texturePath;
 	}
 
 	public String getAnmPath() {
-		return anmPath;
+		return _anmPath;
 	}
 
 	public int getWidth() {

@@ -28,7 +28,6 @@ import loon.utils.NumberUtils;
  */
 public class LSetting {
 
-
 	/**
 	 * 若此项不为-1,则loon的Display类中LTimerContext在被传参时,以此数值替换动态计算出的paint刷新数值(也就是强制锁值),
 	 * 默认单位是毫秒，比如锁定1/60帧就是(long)((1f/60f) * 1000)
@@ -299,7 +298,14 @@ public class LSetting {
 		if (scaling()) {
 			LSystem.setScaleWidth((float) width_zoom / (float) width);
 			LSystem.setScaleHeight((float) height_zoom / (float) height);
-			LSystem.viewSize.setSize(width, height);
+			LSystem.setSize(width, height);
+			if (LSystem.getProcess() != null) {
+				LSystem.getProcess().resize(width, height);
+			}
+		} else {
+			LSystem.setScaleWidth(1f);
+			LSystem.setScaleHeight(1f);
+			LSystem.setSize(width, height);
 			if (LSystem.getProcess() != null) {
 				LSystem.getProcess().resize(width, height);
 			}

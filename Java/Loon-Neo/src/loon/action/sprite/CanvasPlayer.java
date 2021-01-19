@@ -66,7 +66,7 @@ public class CanvasPlayer extends Entity {
 	}
 
 	@Override
-	public void setTexture(LTexture tex) {
+	public Entity setTexture(LTexture tex) {
 		setSize(tex.width(), tex.height());
 		if (this.getBitmap() != tex) {
 			if (this.getBitmap() != null) {
@@ -77,6 +77,7 @@ public class CanvasPlayer extends Entity {
 				tex.texture().reference();
 			}
 		}
+		return this;
 	}
 
 	public Canvas begin() {

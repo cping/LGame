@@ -28,11 +28,11 @@ import loon.utils.TArray;
  */
 public class Character extends CharacterValue {
 
-	private TArray<Attribute> attributes = new TArray<Attribute>();
+	private TArray<Attribute> _attributes = new TArray<Attribute>();
 
-	private TArray<Item<Object>> items = new TArray<Item<Object>>();
+	private TArray<Item<Object>> _items = new TArray<Item<Object>>();
 
-	private ISprite roleObject;
+	private ISprite _roleObject;
 
 	public Character(String name) {
 		this(null, name, 100, 100, 5, 5, 5, 5, 5, 5, 5);
@@ -50,12 +50,12 @@ public class Character extends CharacterValue {
 	}
 
 	public Character addAttribute(Attribute attribute) {
-		this.attributes.add(attribute);
+		this._attributes.add(attribute);
 		return this;
 	}
 
 	public Attribute getAttribute(int index) {
-		return this.attributes.get(index);
+		return this._attributes.get(index);
 	}
 
 	public Attribute getAttribute(String name) {
@@ -67,7 +67,7 @@ public class Character extends CharacterValue {
 	}
 
 	public int findAttribute(String name) {
-		for (int i = 0; i < this.attributes.size; i++) {
+		for (int i = 0; i < this._attributes.size; i++) {
 			if (getAttribute(i).getName().equalsIgnoreCase(name)) {
 				return i;
 			}
@@ -76,20 +76,20 @@ public class Character extends CharacterValue {
 	}
 
 	public Attribute removeAttribute(int index) {
-		return this.attributes.removeIndex(index);
+		return this._attributes.removeIndex(index);
 	}
 
 	public int countAttributes() {
-		return this.attributes.size;
+		return this._attributes.size;
 	}
 
 	public Character addItem(Item<Object> item) {
-		this.items.add(item);
+		this._items.add(item);
 		return this;
 	}
 
 	public Item<Object> getItem(int index) {
-		return this.items.get(index);
+		return this._items.get(index);
 	}
 
 	public Item<Object> getItem(String name) {
@@ -101,7 +101,7 @@ public class Character extends CharacterValue {
 	}
 
 	public int findItem(String name) {
-		for (int i = 0; i < this.items.size; i++) {
+		for (int i = 0; i < this._items.size; i++) {
 			if (getItem(i).getName().equalsIgnoreCase(name)) {
 				return i;
 			}
@@ -110,33 +110,33 @@ public class Character extends CharacterValue {
 	}
 
 	public Item<Object> removeItem(int index) {
-		return this.items.removeIndex(index);
+		return this._items.removeIndex(index);
 	}
 
 	public int countItems() {
-		return this.items.size;
+		return this._items.size;
 	}
 
 	public float getX() {
-		if (roleObject != null) {
-			return roleObject.getX();
+		if (_roleObject != null) {
+			return _roleObject.getX();
 		}
 		return 0f;
 	}
 
 	public float getY() {
-		if (roleObject != null) {
-			return roleObject.getY();
+		if (_roleObject != null) {
+			return _roleObject.getY();
 		}
 		return 0f;
 	}
 
 	public ISprite getRoleObject() {
-		return roleObject;
+		return _roleObject;
 	}
 
 	public Character setRoleObject(ISprite r) {
-		this.roleObject = r;
+		this._roleObject = r;
 		return this;
 	}
 }

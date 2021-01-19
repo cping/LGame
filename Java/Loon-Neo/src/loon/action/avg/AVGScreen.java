@@ -1198,9 +1198,9 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 					if (effectSprites != null) {
 						effectSprites.removeAll();
 						if (cmdFlag.equalsIgnoreCase(CommandType.L_FADEIN)) {
-							effectSprites.add(FadeEffect.getInstance(ISprite.TYPE_FADE_IN, 30, _gameColor));
+							effectSprites.add(FadeEffect.create(ISprite.TYPE_FADE_IN, 30, _gameColor));
 						} else {
-							effectSprites.add(FadeEffect.getInstance(ISprite.TYPE_FADE_OUT, 30, _gameColor));
+							effectSprites.add(FadeEffect.create(ISprite.TYPE_FADE_OUT, 30, _gameColor));
 						}
 					}
 					continue;

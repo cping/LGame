@@ -94,7 +94,7 @@ public class SRPGPhaseEffect extends SRPGEffect {
 			break;
 		}
 		LGradation
-				.getInstance(color, LColor.black, LSystem.viewSize.getWidth(), 80)
+				.create(color, LColor.black, LSystem.viewSize.getWidth(), 80)
 				.drawHeight(g, 0, (LSystem.viewSize.getHeight() - 80) / 2);
 		IFont old = g.getFont();
 		g.setFont(SRPGType.DEFAULT_BIG_FONT);

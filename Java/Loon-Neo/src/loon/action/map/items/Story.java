@@ -26,34 +26,34 @@ import loon.utils.TimeUtils;
 
 public class Story {
 
-	private long timer;
+	private long _timer;
 
-	private String storyName;
+	private String _storyName;
 
-	private TArray<Scene> scenes;
+	private TArray<Scene> _scenes;
 
 	public Story() {
-		timer = TimeUtils.millis();
-		storyName = String.valueOf(timer);
-		scenes = new TArray<Scene>(10);
+		_timer = TimeUtils.millis();
+		_storyName = String.valueOf(_timer);
+		_scenes = new TArray<Scene>(10);
 	}
 
 	public String getStoryName() {
-		return this.storyName;
+		return this._storyName;
 	}
 
-	public Story setStoryName(String storyName) {
-		this.storyName = storyName;
+	public Story setStoryName(String _storyName) {
+		this._storyName = _storyName;
 		return this;
 	}
 
 	public Story addScene(Scene scene) {
-		this.scenes.add(scene);
+		this._scenes.add(scene);
 		return this;
 	}
 
 	public Scene getScene(int index) {
-		return this.scenes.get(index);
+		return this._scenes.get(index);
 	}
 
 	public Scene getScene(String name) {
@@ -65,7 +65,7 @@ public class Story {
 	}
 
 	public int findScene(String name) {
-		for (int i = 0; i < this.scenes.size; i++) {
+		for (int i = 0; i < this._scenes.size; i++) {
 			if (getScene(i).getName().equalsIgnoreCase(name)) {
 				return i;
 			}
@@ -74,23 +74,23 @@ public class Story {
 	}
 
 	public Scene removeScene(int index) {
-		return this.scenes.removeIndex(index);
+		return this._scenes.removeIndex(index);
 	}
 
 	public int countScenes() {
-		return this.scenes.size;
+		return this._scenes.size;
 	}
 
 	public TArray<Scene> getScenes() {
-		return new TArray<Scene>(scenes);
+		return new TArray<Scene>(_scenes);
 	}
 
 	public long getTimer() {
-		return timer;
+		return _timer;
 	}
 
-	public Story setTimer(long timer) {
-		this.timer = timer;
+	public Story setTimer(long t) {
+		this._timer = t;
 		return this;
 	}
 

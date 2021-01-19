@@ -38,10 +38,10 @@ import loon.utils.MathUtils;
 
 public class DefUI extends HelperUtils {
 
-	private static DefUI instance;
+	private static DefUI _instance;
 
 	public static void freeStatic() {
-		instance = null;
+		_instance = null;
 	}
 
 	public final static DefUI make() {
@@ -49,14 +49,14 @@ public class DefUI extends HelperUtils {
 	}
 
 	public final static DefUI self() {
-		if (instance == null) {
+		if (_instance == null) {
 			synchronized (DefUI.class) {
-				if (instance == null) {
-					instance = make();
+				if (_instance == null) {
+					_instance = make();
 				}
 			}
 		}
-		return instance;
+		return _instance;
 	}
 
 	public final static DefUI selfClear() {
@@ -326,7 +326,7 @@ public class DefUI extends HelperUtils {
 			boolean drawHeigth) {
 		DefUI tool = new DefUI();
 		Canvas g = LSystem.base().graphics().createCanvas(width, height);
-		LGradation gradation = LGradation.getInstance(start, end, width, height, 125);
+		LGradation gradation = LGradation.create(start, end, width, height, 125);
 		if (drawHeigth) {
 			gradation.drawHeight(g, 0, 0);
 		} else {
@@ -364,7 +364,7 @@ public class DefUI extends HelperUtils {
 	public final static LTexture getGameWinFrame(int width, int height, LColor start, LColor end, boolean drawHeigth) {
 		DefUI tool = new DefUI();
 		Canvas g = LSystem.base().graphics().createCanvas(width, height);
-		LGradation gradation = LGradation.getInstance(start, end, width, height, 125);
+		LGradation gradation = LGradation.create(start, end, width, height, 125);
 		if (drawHeigth) {
 			gradation.drawHeight(g, 0, 0);
 		} else {
@@ -387,7 +387,7 @@ public class DefUI extends HelperUtils {
 		Canvas g = LSystem.base().graphics().createCanvas(width, height);
 		DefUI tool = new DefUI();
 		Pixmap pix = Pixmap.createImage(width, height);
-		LGradation gradation = LGradation.getInstance(start, end, width, height, 125);
+		LGradation gradation = LGradation.create(start, end, width, height, 125);
 		if (drawHeigth) {
 			gradation.drawHeight(pix, 0, 0);
 		} else {

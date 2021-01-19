@@ -112,7 +112,7 @@ public class SRPGActorStatusView extends SRPGDrawView {
 			color = LColor.red;
 		}
 		float offsetY = -15;
-		LGradation.getInstance(color, LColor.black, super.width, super.height)
+		LGradation.create(color, LColor.black, super.width, super.height)
 				.drawHeight(g, 0, 0);
 		g.setColor(LColor.black);
 		g.fillRect(130 + 0, 77 + 0, 100, 3);

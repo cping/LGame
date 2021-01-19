@@ -33,134 +33,134 @@ public class TileRoom {
 
 		private TileRoom room;
 
-		int x, y;
+		int _roomx, _roomy;
 
-		public RoomLink(TileRoom room, int x, int y) {
-			this.x = x;
-			this.y = y;
+		public RoomLink(TileRoom room, int _roomx, int _roomy) {
+			this._roomx = _roomx;
+			this._roomy = _roomy;
 			this.room = room;
 		}
 
 		@Override
 		public int hashCode() {
-			return this.room.hashCode() + this.x + this.y;
+			return this.room.hashCode() + this._roomx + this._roomy;
 		}
 
 		@Override
 		public boolean equals(Object other) {
 			RoomLink o = (RoomLink) other;
-			return (o.room == this.room) && (this.x == o.x) && (this.y == o.y);
+			return (o.room == this.room) && (this._roomx == o._roomx) && (this._roomy == o._roomy);
 		}
 
 		public int getX() {
-			return this.x;
+			return this._roomx;
 		}
 
 		public int getY() {
-			return this.y;
+			return this._roomy;
 		}
 	}
 
-	private int id;
+	private int _roomId;
 
-	private int x;
+	private int _roomx;
 
-	private int y;
+	private int _roomy;
 
-	private int width;
+	private int _roomwidth;
 
-	private int height;
+	private int _roomheight;
 
-	private ObjectMap<TileRoom, RoomLink> connected = new ObjectMap<TileRoom, RoomLink>();
+	private ObjectMap<TileRoom, RoomLink> _connected = new ObjectMap<TileRoom, RoomLink>();
 
-	private TArray<TileRoom> connectedRooms = new TArray<TileRoom>();
+	private TArray<TileRoom> _connectedRooms = new TArray<TileRoom>();
 
-	private boolean locked = false;
+	private boolean _locked = false;
 
-	private boolean joined;
+	private boolean _joined;
 
-	public TileRoom(int i, int x, int y, int width, int height) {
-		this.id = i;
-		this.x = x;
-		this.y = y;
-		this.width = width;
-		this.height = height;
+	public TileRoom(int i, int _roomx, int _roomy, int _roomwidth, int _roomheight) {
+		this._roomId = i;
+		this._roomx = _roomx;
+		this._roomy = _roomy;
+		this._roomwidth = _roomwidth;
+		this._roomheight = _roomheight;
 	}
 
 	public int getWidth() {
-		return this.width;
+		return this._roomwidth;
 	}
 
 	public int getHeight() {
-		return this.height;
+		return this._roomheight;
 	}
 
 	public int getX() {
-		return this.x;
+		return this._roomx;
 	}
 
 	public int getY() {
-		return this.y;
+		return this._roomy;
 	}
 
 	public TileRoom setLock(boolean l) {
-		this.locked = l;
+		this._locked = l;
 		return this;
 	}
 
 	public boolean isLock() {
-		return this.locked;
+		return this._locked;
 	}
 
 	public int getDoorX(TileRoom other) {
-		RoomLink record = this.connected.get(other);
-		return record.x;
+		RoomLink record = this._connected.get(other);
+		return record._roomx;
 	}
 
 	public int getDoorY(TileRoom other) {
-		RoomLink record = this.connected.get(other);
-		return record.y;
+		RoomLink record = this._connected.get(other);
+		return record._roomy;
 	}
 
-	public TileRoom connect(TileRoom other, int x, int y) {
-		RoomLink record = new RoomLink(other, x, y);
-		if (this.connected.get(other) == null) {
-			this.connected.put(other, record);
-			this.connectedRooms.add(other);
-			other.connect(this, x, y);
+	public TileRoom connect(TileRoom other, int _roomx, int _roomy) {
+		RoomLink record = new RoomLink(other, _roomx, _roomy);
+		if (this._connected.get(other) == null) {
+			this._connected.put(other, record);
+			this._connectedRooms.add(other);
+			other.connect(this, _roomx, _roomy);
 		}
 		return this;
 	}
 
 	public boolean contains(int xp, int yp) {
-		return (xp >= this.x) && (yp >= this.y) && (xp < this.x + this.width) && (yp < this.y + this.height);
+		return (xp >= this._roomx) && (yp >= this._roomy) && (xp < this._roomx + this._roomwidth) && (yp < this._roomy + this._roomheight);
 	}
 
-	public ObjectMap<TileRoom, RoomLink> connected() {
-		return this.connected;
+	public ObjectMap<TileRoom, RoomLink> _connected() {
+		return this._connected;
 	}
 
 	public int getCenterX() {
-		return this.x + this.width / 2;
+		return this._roomx + this._roomwidth / 2;
 	}
 
 	public int getCenterY() {
-		return this.y + this.height / 2;
+		return this._roomy + this._roomheight / 2;
 	}
 
-	public TArray<TileRoom> connectedRooms() {
-		return this.connectedRooms;
+	public TArray<TileRoom> _connectedRooms() {
+		return this._connectedRooms;
 	}
 
 	public RoomLink getDoor(TileRoom room) {
-		return this.connected.get(room);
+		return this._connected.get(room);
 	}
 
 	public TileRoom convert(Field2D field, int in, int out) {
-		for (int xp = 0; xp < this.width; xp++) {
-			for (int yp = 0; yp < this.height; yp++) {
-				if (field.getTileType(this.x + xp, this.y + yp) == in) {
-					field.setTileType(this.x + xp, this.y + yp, out);
+		for (int xp = 0; xp < this._roomwidth; xp++) {
+			for (int yp = 0; yp < this._roomheight; yp++) {
+				if (field.getTileType(this._roomx + xp, this._roomy + yp) == in) {
+					field.setTileType(this._roomx + xp, this._roomy + yp, out);
 				}
 			}
 		}
@@ -168,19 +168,19 @@ public class TileRoom {
 	}
 
 	public boolean isJoined() {
-		return this.joined;
+		return this._joined;
 	}
 
 	public TileRoom setJoined(boolean j) {
-		this.joined = j;
+		this._joined = j;
 		return this;
 	}
 
 	public int getId() {
-		return id;
+		return _roomId;
 	}
 
 	public void setId(int i) {
-		this.id = i;
+		this._roomId = i;
 	}
 }

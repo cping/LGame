@@ -305,7 +305,7 @@ public class SRPGMessageView extends SRPGView implements LRelease {
 			}
 			g.setFont(mes.getFont());
 			if (background == null) {
-				LGradation.getInstance(LColor.white, LColor.black,
+				LGradation.create(LColor.white, LColor.black,
 						mes.getWidth(), mes.getHeight()).drawHeight(g,
 						mes.getX(), mes.getY());
 				g.setColor(LColor.black);

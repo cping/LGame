@@ -66,13 +66,10 @@ public class Sprite extends LObject<ISprite>
 	private TArray<ISprite> _childrens = null;
 
 	// 默认每帧刷新时间
-	final static private long defaultTimer = 150;
+	private static final long defaultDelay = 150;
 
 	// 是否可见
 	private boolean visible = true;
-
-	// 精灵名称
-	private String spriteName;
 
 	// 精灵图片
 	private LTexture image;
@@ -84,9 +81,9 @@ public class Sprite extends LObject<ISprite>
 
 	private ResizeListener<Sprite> _resizeListener;
 
-	private int transform;
+	private int _transform;
 
-	private LColor filterColor;
+	private LColor _filterColor;
 
 	private float _scaleX = 1f, _scaleY = 1f;
 
@@ -129,9 +126,9 @@ public class Sprite extends LObject<ISprite>
 	 */
 	private Sprite(String spriteName, float x, float y) {
 		this.setLocation(x, y);
-		this.spriteName = spriteName;
+		this._objectName = spriteName;
 		this.visible = true;
-		this.transform = LTrans.TRANS_NONE;
+		this._transform = LTrans.TRANS_NONE;
 	}
 
 	/**
@@ -142,7 +139,7 @@ public class Sprite extends LObject<ISprite>
 	 * @param col
 	 */
 	public Sprite(String fileName, int row, int col) {
-		this(fileName, -1, 0, 0, row, col, defaultTimer);
+		this(fileName, -1, 0, 0, row, col, defaultDelay);
 	}
 
 	/**
@@ -167,7 +164,7 @@ public class Sprite extends LObject<ISprite>
 	 * @param col
 	 */
 	public Sprite(String fileName, float x, float y, int row, int col) {
-		this(fileName, x, y, row, col, defaultTimer);
+		this(fileName, x, y, row, col, defaultDelay);
 	}
 
 	/**
@@ -195,7 +192,7 @@ public class Sprite extends LObject<ISprite>
 	 * @param col
 	 */
 	public Sprite(String fileName, int maxFrame, float x, float y, int row, int col) {
-		this(fileName, maxFrame, x, y, row, col, defaultTimer);
+		this(fileName, maxFrame, x, y, row, col, defaultDelay);
 	}
 
 	/**
@@ -264,7 +261,7 @@ public class Sprite extends LObject<ISprite>
 	 * @param y
 	 */
 	public Sprite(LTexture[] images, float x, float y) {
-		this(images, x, y, defaultTimer);
+		this(images, x, y, defaultDelay);
 	}
 
 	/**
@@ -274,7 +271,7 @@ public class Sprite extends LObject<ISprite>
 	 * @param timer
 	 */
 	public Sprite(LTexture[] images, long timer) {
-		this(images, -1, 0, 0, defaultTimer);
+		this(images, -1, 0, 0, defaultDelay);
 	}
 
 	/**
@@ -327,10 +324,10 @@ public class Sprite extends LObject<ISprite>
 	 */
 	public Sprite(String spriteName, LTexture[] images, int maxFrame, float x, float y, long timer) {
 		this.setLocation(x, y);
-		this.spriteName = spriteName;
+		this._objectName = spriteName;
 		this.setAnimation(animation, images, maxFrame, timer);
 		this.visible = true;
-		this.transform = LTrans.TRANS_NONE;
+		this._transform = LTrans.TRANS_NONE;
 	}
 
 	/**
@@ -356,11 +353,11 @@ public class Sprite extends LObject<ISprite>
 	 */
 	public Sprite(String spriteName, MovieSpriteSheet sheet, float x, float y, long timer) {
 		this.setLocation(x, y);
-		this.spriteName = spriteName;
+		this._objectName = spriteName;
 		LTexture[] texs = sheet.getTextures();
 		this.setAnimation(animation, texs, texs.length, timer);
 		this.visible = true;
-		this.transform = LTrans.TRANS_NONE;
+		this._transform = LTrans.TRANS_NONE;
 	}
 
 	/**
@@ -713,11 +710,11 @@ public class Sprite extends LObject<ISprite>
 			}
 			g.setAlpha(_objectAlpha);
 			if (!notImg) {
-				if (LTrans.TRANS_NONE == transform) {
-					g.draw(image, nx, ny, width, height, filterColor, _objectRotation, _pivot, _scaleX, _scaleY);
+				if (LTrans.TRANS_NONE == _transform) {
+					g.draw(image, nx, ny, width, height, _filterColor, _objectRotation, _pivot, _scaleX, _scaleY);
 				} else {
-					g.drawRegion(image, 0, 0, (int) width, (int) height, transform, (int) nx, (int) ny,
-							LTrans.TOP | LTrans.LEFT, filterColor, _pivot, _scaleX, _scaleY, _objectRotation);
+					g.drawRegion(image, 0, 0, (int) width, (int) height, _transform, (int) nx, (int) ny,
+							LTrans.TOP | LTrans.LEFT, _filterColor, _pivot, _scaleX, _scaleY, _objectRotation);
 				}
 			}
 			if (_childrens != null && _childrens.size > 0) {
@@ -787,29 +784,29 @@ public class Sprite extends LObject<ISprite>
 	}
 
 	public String getSpriteName() {
-		return spriteName;
+		return _objectName;
 	}
 
 	public Sprite setSpriteName(String spriteName) {
-		this.spriteName = spriteName;
+		this._objectName = spriteName;
 		return this;
 	}
 
 	public int getTransform() {
-		return transform;
+		return _transform;
 	}
 
-	public Sprite setTransform(int transform) {
-		this.transform = transform;
+	public Sprite setTransform(int t) {
+		this._transform = t;
 		return this;
 	}
 
 	public LColor getFilterColor() {
-		return new LColor(filterColor);
+		return new LColor(_filterColor);
 	}
 
-	public Sprite setFilterColor(LColor filterColor) {
-		this.filterColor = filterColor;
+	public Sprite setFilterColor(LColor f) {
+		this._filterColor = f;
 		return this;
 	}
 

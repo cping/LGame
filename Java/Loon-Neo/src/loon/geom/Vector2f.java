@@ -597,52 +597,49 @@ public class Vector2f implements Serializable, XY {
 	}
 
 	public Vector2f rotateSelf(float cx, float cy, float angle) {
-		if (angle != 0) {
-			
-			float rad = MathUtils.toRadians(angle);
-			float cos = MathUtils.cos(rad);
-			float sin = MathUtils.sin(rad);
-			
-			float nx = cx + (this.x - cx) * MathUtils.cos(rad) - (this.y - cy) * sin;
-			float ny = cy + (this.x - cx) * MathUtils.sin(rad) + (this.y - cy) * cos;
-			
-			return set(nx, ny);
-		}
-		return this;
+
+		float rad = MathUtils.toRadians(angle);
+		float cos = MathUtils.cos(rad);
+		float sin = MathUtils.sin(rad);
+
+		float nx = cx + (this.x - cx) * MathUtils.cos(rad) - (this.y - cy) * sin;
+		float ny = cy + (this.x - cx) * MathUtils.sin(rad) + (this.y - cy) * cos;
+
+		return set(nx, ny);
 	}
 
 	public Vector2f rotateSelf(float angle) {
-		if (angle != 0) {
-			float rad = MathUtils.toRadians(angle);
-			float cos = MathUtils.cos(rad);
-			float sin = MathUtils.sin(rad);
 
-			float newX = this.x * cos - this.y * sin;
-			float newY = this.x * sin + this.y * cos;
+		float rad = MathUtils.toRadians(angle);
+		float cos = MathUtils.cos(rad);
+		float sin = MathUtils.sin(rad);
 
-			this.x = newX;
-			this.y = newY;
-		}
+		float newX = this.x * cos - this.y * sin;
+		float newY = this.x * sin + this.y * cos;
+
+		this.x = newX;
+		this.y = newY;
+
 		return this;
 	}
 
 	public Vector2f rotateSelfX(float angle) {
-		if (angle != 0) {
-			float rad = MathUtils.toRadians(angle);
-			float cos = MathUtils.cos(rad);
-			float sin = MathUtils.sin(rad);
-			this.x = this.x * cos - this.y * sin;
-		}
+
+		float rad = MathUtils.toRadians(angle);
+		float cos = MathUtils.cos(rad);
+		float sin = MathUtils.sin(rad);
+		this.x = this.x * cos - this.y * sin;
+
 		return this;
 	}
 
 	public Vector2f rotateSelfY(float angle) {
-		if (angle != 0) {
-			float rad = MathUtils.toRadians(angle);
-			float cos = MathUtils.cos(rad);
-			float sin = MathUtils.sin(rad);
-			this.y = this.x * sin + this.y * cos;
-		}
+
+		float rad = MathUtils.toRadians(angle);
+		float cos = MathUtils.cos(rad);
+		float sin = MathUtils.sin(rad);
+		this.y = this.x * sin + this.y * cos;
+
 		return this;
 	}
 

@@ -79,7 +79,7 @@ public class LTimer implements LRelease {
 		_instance = null;
 	}
 
-	public static LTimer getInstance() {
+	public static LTimer shared() {
 		if (_instance == null) {
 			synchronized (LTimer.class) {
 				if (_instance == null) {
@@ -91,7 +91,7 @@ public class LTimer implements LRelease {
 	}
 
 	public static LTimer get() {
-		return getInstance();
+		return shared();
 	}
 
 	public static LTimer at() {

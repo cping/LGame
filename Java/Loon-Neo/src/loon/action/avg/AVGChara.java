@@ -32,12 +32,22 @@ import loon.utils.StringUtils;
 
 public class AVGChara implements Visible, XY, LRelease {
 
-	private LTexture characterCG;
+	private LTexture _cgTexture;
 
-	private float width;
+	private float _cgWidth;
 
-	private float height;
+	private float _cgHeight;
+	
+	private float _cgMovePos;
 
+	private int _cgDirection;
+
+	private int _cgMoveSleep = 10;
+
+	private boolean _cgMoving, _closed;
+
+	protected AVGAnm anm;
+	
 	protected float x;
 
 	protected float y;
@@ -54,15 +64,6 @@ public class AVGChara implements Visible, XY, LRelease {
 
 	protected int maxWidth, maxHeight;
 
-	private float moveX;
-
-	private int direction;
-
-	private int moveSleep = 10;
-
-	private boolean moving, closed;
-
-	protected AVGAnm anm;
 
 	/**
 	 * 构造函数，初始化角色图
@@ -70,11 +71,11 @@ public class AVGChara implements Visible, XY, LRelease {
 	 * @param image
 	 * @param x
 	 * @param y
-	 * @param width
-	 * @param height
+	 * @param _cgWidth
+	 * @param _cgHeight
 	 */
-	public AVGChara(LTexture image, final int x, final int y, int width, int height) {
-		this.load(image, x, y, width, height, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
+	public AVGChara(LTexture image, final int x, final int y, int _cgWidth, int _cgHeight) {
+		this.load(image, x, y, _cgWidth, _cgHeight, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 	}
 
 	public AVGChara(LTexture image, final int x, final int y) {
@@ -108,23 +109,23 @@ public class AVGChara implements Visible, XY, LRelease {
 				LSystem.viewSize.getHeight());
 	}
 
-	private void load(LTexture image, final int x, final int y, int width, int height, final int w, final int h) {
+	private void load(LTexture image, final int x, final int y, int _cgWidth, int _cgHeight, final int w, final int h) {
 		this.maxWidth = w;
 		this.maxHeight = h;
 		this.showAnimation = false;
-		this.characterCG = image;
+		this._cgTexture = image;
 		this.moved = true;
 		this.visible = true;
-		this.width = width;
-		this.height = height;
+		this._cgWidth = _cgWidth;
+		this._cgHeight = _cgHeight;
 		this.x = x;
 		this.y = y;
-		this.moveX = 0;
-		this.direction = getDirection();
-		if (direction == 0) {
-			this.moveX = -(width / 2);
+		this._cgMovePos = 0;
+		this._cgDirection = getDirection();
+		if (_cgDirection == 0) {
+			this._cgMovePos = -(_cgWidth / 2);
 		} else {
-			this.moveX = maxWidth;
+			this._cgMovePos = maxWidth;
 		}
 	}
 
@@ -164,13 +165,13 @@ public class AVGChara implements Visible, XY, LRelease {
 	}
 
 	public void flush() {
-		characterCG = null;
+		_cgTexture = null;
 		x = 0;
 		y = 0;
 	}
 
 	public float getNext() {
-		return moveX;
+		return _cgMovePos;
 	}
 
 	public float getMaxNext() {
@@ -178,32 +179,32 @@ public class AVGChara implements Visible, XY, LRelease {
 	}
 
 	public boolean next() {
-		moving = false;
-		if (moveX != x) {
-			for (int sleep = 0; sleep < moveSleep; sleep++) {
-				if (direction == 0) {
-					moving = (x > moveX);
+		_cgMoving = false;
+		if (_cgMovePos != x) {
+			for (int sleep = 0; sleep < _cgMoveSleep; sleep++) {
+				if (_cgDirection == 0) {
+					_cgMoving = (x > _cgMovePos);
 				} else {
-					moving = (x < moveX);
+					_cgMoving = (x < _cgMovePos);
 				}
-				if (moving) {
-					switch (direction) {
+				if (_cgMoving) {
+					switch (_cgDirection) {
 					case 0:
-						moveX += 1;
+						_cgMovePos += 1;
 						break;
 					case 1:
-						moveX -= 1;
+						_cgMovePos -= 1;
 						break;
 					default:
-						moveX = x;
+						_cgMovePos = x;
 						break;
 					}
 				} else {
-					moveX = x;
+					_cgMovePos = x;
 				}
 			}
 		}
-		return moving;
+		return _cgMoving;
 	}
 
 	void update(long t) {
@@ -211,7 +212,7 @@ public class AVGChara implements Visible, XY, LRelease {
 	}
 
 	void draw(GLEx g) {
-		g.draw(characterCG, moveX, y);
+		g.draw(_cgTexture, _cgMovePos, y);
 	}
 
 	public float getX() {
@@ -220,17 +221,17 @@ public class AVGChara implements Visible, XY, LRelease {
 
 	public void setX(float x) {
 		if (moved) {
-			float move = x - this.moveX;
+			float move = x - this._cgMovePos;
 			if (move < 0) {
-				this.moveX = this.x;
+				this._cgMovePos = this.x;
+				this._cgDirection = 1;
 				this.x = x;
-				direction = 1;
 			} else {
-				this.moveX = move;
+				this._cgMovePos = move;
 				this.x = x;
 			}
 		} else {
-			this.moveX = x;
+			this._cgMovePos = x;
 			this.x = x;
 		}
 
@@ -245,31 +246,31 @@ public class AVGChara implements Visible, XY, LRelease {
 	}
 
 	public float getHeight() {
-		return height;
+		return _cgHeight;
 	}
 
-	public void setHeight(float height) {
-		this.height = height;
+	public void setHeight(float h) {
+		this._cgHeight = h;
 	}
 
 	public float getWidth() {
-		return width;
+		return _cgWidth;
 	}
 
-	public void setWidth(float width) {
-		this.width = width;
+	public void setWidth(float w) {
+		this._cgWidth = w;
 	}
 
 	public int getMoveSleep() {
-		return moveSleep;
+		return _cgMoveSleep;
 	}
 
-	public void setMoveSleep(int moveSleep) {
-		this.moveSleep = moveSleep;
+	public void setMoveSleep(int s) {
+		this._cgMoveSleep = s;
 	}
 
 	public float getMoveX() {
-		return moveX;
+		return _cgMovePos;
 	}
 
 	public boolean isAnimation() {
@@ -291,26 +292,26 @@ public class AVGChara implements Visible, XY, LRelease {
 	}
 
 	public LTexture getTexture() {
-		return characterCG;
+		return _cgTexture;
 	}
 
 	public boolean isClosed() {
-		return closed;
+		return _closed;
 	}
 	
 	@Override
 	public void close() {
 		this.visible = false;
-		if (characterCG != null) {
-			characterCG.close();
-			characterCG = null;
+		if (_cgTexture != null) {
+			_cgTexture.close();
+			_cgTexture = null;
 		}
 		if (anm != null) {
 			anm.close();
 			anm = null;
 			showAnimation = false;
 		}
-		closed = true;
+		_closed = true;
 	}
 
 }

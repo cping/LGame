@@ -342,18 +342,16 @@ public class SysKey {
 		keys.removeValue(key);
 	}
 
-	final static ActionKey only_key = new ActionKey(ActionKey.DETECT_INITIAL_PRESS_ONLY);
-
 	public static ActionKey getOnlyKey() {
-		return only_key;
+		return SysInputFactory.onlyKey;
 	}
 
 	public static boolean isKeyPressed(int key) {
 		if (USE_ONLY_DOWN) {
 			if (key == SysKey.ANY_KEY) {
-				return keys.length > 0 && only_key.isPressed();
+				return keys.length > 0 && SysInputFactory.onlyKey.isPressed();
 			} else {
-				return keys.contains(key) && only_key.isPressed();
+				return keys.contains(key) && SysInputFactory.onlyKey.isPressed();
 			}
 		} else {
 			if (key == SysKey.ANY_KEY) {
@@ -366,9 +364,9 @@ public class SysKey {
 
 	public static boolean isKeyRelease(int key) {
 		if (key == SysKey.ANY_KEY) {
-			return keys.length > 0 && !only_key.isPressed();
+			return keys.length > 0 && !SysInputFactory.onlyKey.isPressed();
 		} else {
-			return keys.contains(key) && !only_key.isPressed();
+			return keys.contains(key) && !SysInputFactory.onlyKey.isPressed();
 		}
 	}
 

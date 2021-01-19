@@ -47,7 +47,7 @@ public class Field2D implements IArray, Config {
 
 	private final static float ANGULAR = 0.706F;
 
-	private String _objectName = "Field2D";
+	private String _fieldName = "Field2D";
 
 	private Vector2f _offset = new Vector2f();
 
@@ -1162,12 +1162,12 @@ public class Field2D implements IArray, Config {
 	}
 
 	public Field2D setName(String n) {
-		this._objectName = n;
+		this._fieldName = n;
 		return this;
 	}
 
 	public String getName() {
-		return this._objectName;
+		return this._fieldName;
 	}
 
 	@Override

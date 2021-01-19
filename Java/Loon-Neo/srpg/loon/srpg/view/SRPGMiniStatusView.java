@@ -87,7 +87,7 @@ public class SRPGMiniStatusView extends SRPGDrawView {
 		if (status.team != 0) {
 			color = LColor.red;
 		}
-		LGradation.getInstance(color, LColor.black, super.width, super.height)
+		LGradation.create(color, LColor.black, super.width, super.height)
 				.drawHeight(g, 0, 0);
 		int hp = 0;
 		int width = super.width - 10;

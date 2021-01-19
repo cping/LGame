@@ -20,24 +20,25 @@
  */
 package loon.events;
 
+import loon.LSystem;
 import loon.geom.Vector2f;
 
 public class SysTouch {
 
 	public static void startTouchCollection() {
-		SysInputFactory.startTouchCollection();
+		LSystem.getProcess().getSysInputFactory().startTouchCollection();
 	}
 
 	public static void stopTouchCollection() {
-		SysInputFactory.stopTouchCollection();
+		LSystem.getProcess().getSysInputFactory().stopTouchCollection();
 	}
 
 	public static LTouchCollection getTouchState() {
-		return SysInputFactory.getTouchState();
+		return LSystem.getProcess().getSysInputFactory().getTouchState();
 	}
 
 	public static void resetTouch() {
-		SysInputFactory.resetTouch();
+		LSystem.getProcess().getSysInputFactory().resetTouch();
 	}
 
 	public static ActionKey getOnlyKey() {
@@ -164,7 +165,7 @@ public class SysTouch {
 	}
 
 	public static boolean isDrag() {
-		return SysInputFactory._isDraging;
+		return SysInputFactory.isDraging;
 	}
 
 	public static GameTouch cpy() {

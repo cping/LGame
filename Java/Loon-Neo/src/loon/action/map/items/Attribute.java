@@ -22,35 +22,35 @@ package loon.action.map.items;
 
 public class Attribute {
 
-	private String name;
+	private String _name;
 
-	private Object attribute;
+	private Object _attribute;
 
 	public String getName() {
-		return this.name;
+		return this._name;
 	}
 
 	public Attribute setName(String name) {
-		this.name = name;
+		this._name = name;
 		return this;
 	}
 
 	public Object getAttribute() {
-		return this.attribute;
+		return this._attribute;
 	}
 
 	public int getAttributeInt() {
-		return ((Integer) this.attribute).intValue();
+		return ((Integer) this._attribute).intValue();
 	}
 
 	public Attribute setAttribute(Object attribute) {
-		this.attribute = attribute;
+		this._attribute = attribute;
 		return this;
 	}
 
 	public Attribute cpy(Attribute other){
-		this.name = other.name;
-		this.attribute = other.attribute;
+		this._name = other._name;
+		this._attribute = other._attribute;
 		return this;
 	}
 }
