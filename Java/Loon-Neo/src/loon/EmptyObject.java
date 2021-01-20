@@ -28,7 +28,7 @@ import loon.geom.RectBox;
 
 public class EmptyObject extends LObject<Object> implements ActionBind, LRelease {
 
-	private boolean visible;
+	private boolean _visible;
 
 	@Override
 	public void update(long elapsedTime) {
@@ -52,12 +52,12 @@ public class EmptyObject extends LObject<Object> implements ActionBind, LRelease
 
 	@Override
 	public void setVisible(boolean v) {
-		this.visible = v;
+		this._visible = v;
 	}
 
 	@Override
 	public boolean isVisible() {
-		return visible;
+		return _visible;
 	}
 
 	private float scaleX = 1f, scaleY = 1f;

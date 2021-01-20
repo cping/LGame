@@ -31,25 +31,25 @@ public class TileRoom {
 
 	class RoomLink {
 
-		private TileRoom room;
+		private TileRoom _room;
 
 		int _roomx, _roomy;
 
-		public RoomLink(TileRoom room, int _roomx, int _roomy) {
-			this._roomx = _roomx;
-			this._roomy = _roomy;
-			this.room = room;
+		public RoomLink(TileRoom room, int x, int y) {
+			this._roomx = x;
+			this._roomy = y;
+			this._room = room;
 		}
 
 		@Override
 		public int hashCode() {
-			return this.room.hashCode() + this._roomx + this._roomy;
+			return this._room.hashCode() + this._roomx + this._roomy;
 		}
 
 		@Override
 		public boolean equals(Object other) {
 			RoomLink o = (RoomLink) other;
-			return (o.room == this.room) && (this._roomx == o._roomx) && (this._roomy == o._roomy);
+			return (o._room == this._room) && (this._roomx == o._roomx) && (this._roomy == o._roomy);
 		}
 
 		public int getX() {

@@ -47,7 +47,6 @@ public class OrderedMap<K,V> extends ObjectMap<K, V> {
 	}
 
 	public OrderedMap() {
-		super();
 		ordered = false;
 	}
 

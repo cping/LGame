@@ -22,83 +22,87 @@ package loon.action.collision;
 
 public class CollisionNode {
 
-	private CollisionObject actor;
+	private CollisionObject _actor;
 
-	private BSPCollisionNode node;
+	private BSPCollisionNode _node;
 
-	private CollisionNode next;
+	private CollisionNode _next;
 
-	private CollisionNode prev;
+	private CollisionNode _prev;
 
-	private boolean mark;
+	private boolean _mark;
 
-	public CollisionNode(CollisionObject actor, BSPCollisionNode node) {
-		this.actor = actor;
-		this.node = node;
-		CollisionNode first = BSPCollisionChecker.getNodeForActor(actor);
-		this.next = first;
-		BSPCollisionChecker.setNodeForActor(actor, this);
-		if (this.next != null) {
-			this.next.prev = this;
+	public CollisionNode(CollisionObject _actor, BSPCollisionNode _node) {
+		this._actor = _actor;
+		this._node = _node;
+		CollisionNode first = BSPCollisionChecker.getNodeForActor(_actor);
+		this._next = first;
+		BSPCollisionChecker.setNodeForActor(_actor, this);
+		if (this._next != null) {
+			this._next._prev = this;
 		}
 
-		this.mark = true;
+		this._mark = true;
 	}
 
-	public void clearMark() {
-		this.mark = false;
+	public CollisionNode clearMark() {
+		this._mark = false;
+		return this;
 	}
 
-	public void mark() {
-		this.mark = true;
+	public CollisionNode mark() {
+		this._mark = true;
+		return this;
 	}
 
 	public boolean checkMark() {
-		boolean markVal = this.mark;
-		this.mark = false;
+		boolean markVal = this._mark;
+		this._mark = false;
 		return markVal;
 	}
 
 	public CollisionObject getActor() {
-		return this.actor;
+		return this._actor;
 	}
 
 	public BSPCollisionNode getBSPNode() {
-		return this.node;
+		return this._node;
 	}
 
 	public CollisionNode getNext() {
-		return this.next;
+		return this._next;
 	}
 
-	public void remove() {
+	public CollisionNode remove() {
 		this.removed();
-		this.node.actorRemoved(this.actor);
+		this._node.actorRemoved(this._actor);
+		return this;
 	}
 
-	public void removed() {
-		if (this.prev == null) {
-			BSPCollisionChecker.setNodeForActor(this.actor, this.next);
+	public CollisionNode removed() {
+		if (this._prev == null) {
+			BSPCollisionChecker.setNodeForActor(this._actor, this._next);
 		} else {
-			this.prev.next = this.next;
+			this._prev._next = this._next;
 		}
-		if (this.next != null) {
-			this.next.prev = this.prev;
+		if (this._next != null) {
+			this._next._prev = this._prev;
 		}
+		return this;
 	}
 
-	public void dispose() {
-		if (node != null) {
-			node = null;
+	public CollisionNode dispose() {
+		if (_node != null) {
+			_node = null;
 		}
-		if (next != null) {
-			next.dispose();
-			next = null;
+		if (_next != null) {
+			_next.dispose();
+			_next = null;
 		}
-		if (prev != null) {
-			prev.dispose();
-			prev = null;
+		if (_prev != null) {
+			_prev.dispose();
+			_prev = null;
 		}
-
+		return this;
 	}
 }

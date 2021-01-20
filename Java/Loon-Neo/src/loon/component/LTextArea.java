@@ -54,7 +54,7 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 	// 数据向上推入
 	public static final int TYPE_UP = 1;
 
-	private int leftOffset, topOffset;
+	private int _leftOffset, _topOffset;
 
 	private int showType;
 	private String[] message;
@@ -672,29 +672,29 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 
 	private void drawMessage(GLEx g, String str, int x, int y, LColor color) {
 		if (showType == TYPE_DOWN) {
-			displayFont.drawString(g, str, x + leftOffset + 5, (y - 5) + topOffset + displayFont.getAscent() / 2,
+			displayFont.drawString(g, str, x + _leftOffset + 5, (y - 5) + _topOffset + displayFont.getAscent() / 2,
 					color);
 		} else {
-			displayFont.drawString(g, str, x + leftOffset + 5,
-					(y - 5) + topOffset + displayFont.getAscent() / 2 + getHeight() - displayFont.getHeight(), color);
+			displayFont.drawString(g, str, x + _leftOffset + 5,
+					(y - 5) + _topOffset + displayFont.getAscent() / 2 + getHeight() - displayFont.getHeight(), color);
 		}
 	}
 
 	public int getLeftOffset() {
-		return leftOffset;
+		return _leftOffset;
 	}
 
-	public LTextArea setLeftOffset(int leftOffset) {
-		this.leftOffset = leftOffset;
+	public LTextArea setLeftOffset(int l) {
+		this._leftOffset = l;
 		return this;
 	}
 
 	public int getTopOffset() {
-		return topOffset;
+		return _topOffset;
 	}
 
-	public LTextArea setTopOffset(int topOffset) {
-		this.topOffset = topOffset;
+	public LTextArea setTopOffset(int t) {
+		this._topOffset = t;
 		return this;
 	}
 

@@ -31,7 +31,7 @@ import loon.utils.TArray;
 
 public class LogDisplay {
 
-	private static class LogDisplayItem {
+	private class LogDisplayItem {
 		public String text;
 		public LColor color;
 
@@ -65,7 +65,7 @@ public class LogDisplay {
 	}
 
 	public LogDisplay(IFont font, int w, int h, LColor color) {
-		this._texts = new TArray<LogDisplayItem>(18);
+		this._texts = new TArray<LogDisplayItem>();
 		this._textFontColor = color;
 		this.setSize(w, h);
 		this.setFont(font);

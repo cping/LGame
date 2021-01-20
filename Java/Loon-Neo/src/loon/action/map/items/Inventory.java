@@ -30,7 +30,6 @@ public class Inventory<T> {
 	private int _gold;
 
 	public Inventory() {
-		super();
 		_items = new ObjectMap<String, Item<T>>(128);
 		_gold = 0;
 	}

@@ -80,7 +80,6 @@ public abstract class DisplayObject extends EventDispatcher implements Collision
 	protected Sprites _sprites = null;
 
 	public DisplayObject() {
-
 	}
 
 	@Override

@@ -142,7 +142,6 @@ public class PixelFireEffect extends Entity implements BaseEffect {
 
 	public PixelFireEffect(float x, float y, float width, float height, int size, int amount, float speed, float angle,
 			LColor color) {
-		super();
 		this.setLocation(x, y);
 		this.setSize(width, height);
 		this.setColor(color);

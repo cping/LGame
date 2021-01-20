@@ -26,65 +26,65 @@ import loon.utils.MathUtils;
 
 public class CollisionNeighbourQuery implements CollisionQuery {
 
-	private float x;
+	private float _x;
 
-	private float y;
+	private float _y;
 
-	private float distance;
+	private float _distance;
 
-	private boolean diag;
+	private boolean _diag;
 
-	private String flag;
+	private String _flag;
 
-	private Vector2f offsetLocation;
+	private Vector2f _offsetLocation;
 
 	public CollisionNeighbourQuery init(float x, float y, float distance, boolean diag, String flag, Vector2f offset) {
-		this.x = offsetX(x);
-		this.y = offsetY(y);
-		this.distance = distance;
-		this.diag = diag;
-		this.flag = flag;
-		this.offsetLocation = offset;
+		this._x = offsetX(x);
+		this._y = offsetY(y);
+		this._distance = distance;
+		this._diag = diag;
+		this._flag = flag;
+		this._offsetLocation = offset;
 		return this;
 	}
 
 	private float offsetX(float x) {
-		if (offsetLocation == null) {
+		if (_offsetLocation == null) {
 			return x;
 		}
-		return x + offsetLocation.x;
+		return x + _offsetLocation.x;
 	}
 
 	private float offsetY(float y) {
-		if (offsetLocation == null) {
+		if (_offsetLocation == null) {
 			return y;
 		}
-		return y + offsetLocation.y;
+		return y + _offsetLocation.y;
 	}
 	
 	@Override
 	public boolean checkCollision(CollisionObject actor) {
-		if (this.flag != null && !flag.equals(actor.getObjectFlag())) {
+		if (this._flag != null && !_flag.equals(actor.getObjectFlag())) {
 			return false;
 		} else {
 			float actorX = actor.getX();
 			float actorY = actor.getY();
-			if (actorX == this.x && actorY == this.y) {
+			if (actorX == this._x && actorY == this._y) {
 				return false;
 			} else {
 				float ax = actor.getX();
 				float ay = actor.getY();
 				float dx;
 				float dy;
-				if (!this.diag) {
-					dx = MathUtils.abs(ax - this.x);
-					dy = MathUtils.abs(ay - this.y);
-					return dx + dy <= this.distance;
+				if (!this._diag) {
+					dx = MathUtils.abs(ax - this._x);
+					dy = MathUtils.abs(ay - this._y);
+					return dx + dy <= this._distance;
 				} else {
-					dx = this.x - this.distance;
-					dy = this.y - this.distance;
-					float x2 = this.x + this.distance;
-					float y2 = this.y + this.distance;
+					dx = this._x - this._distance;
+					dy = this._y - this._distance;
+					float x2 = this._x + this._distance;
+					float y2 = this._y + this._distance;
 					return ax >= dx && ay >= dy && ax <= x2 && ay <= y2;
 				}
 			}
@@ -93,11 +93,11 @@ public class CollisionNeighbourQuery implements CollisionQuery {
 
 	@Override
 	public void setOffsetPos(Vector2f offset) {
-		offsetLocation = offset;
+		_offsetLocation = offset;
 	}
 
 	@Override
 	public Vector2f getOffsetPos() {
-		return offsetLocation;
+		return _offsetLocation;
 	}
 }

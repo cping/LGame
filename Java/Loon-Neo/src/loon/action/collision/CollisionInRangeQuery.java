@@ -27,64 +27,64 @@ import loon.utils.MathUtils;
 
 public class CollisionInRangeQuery implements CollisionQuery {
 
-	private float dx;
+	private float _dx;
 
-	private float dy;
+	private float _dy;
 
-	private float dist;
+	private float _dist;
 
-	private float x;
+	private float _x;
 
-	private float y;
+	private float _y;
 
-	private float r;
+	private float _r;
 
-	private RectBox object;
+	private RectBox _object;
 
-	private Vector2f offsetLocation;
+	private Vector2f _offsetLocation;
 
 	public CollisionInRangeQuery init(float x, float y, float r, Vector2f offset) {
-		this.x = offsetX(x);
-		this.y = offsetY(y);
-		this.r = r;
-		this.offsetLocation = offset;
+		this._x = offsetX(x);
+		this._y = offsetY(y);
+		this._r = r;
+		this._offsetLocation = offset;
 		return this;
 	}
 
 	private float offsetX(float x) {
-		if (offsetLocation == null) {
+		if (_offsetLocation == null) {
 			return x;
 		}
-		return x + offsetLocation.x;
+		return x + _offsetLocation.x;
 	}
 
 	private float offsetY(float y) {
-		if (offsetLocation == null) {
+		if (_offsetLocation == null) {
 			return y;
 		}
-		return y + offsetLocation.y;
+		return y + _offsetLocation.y;
 	}
 	
 	@Override
 	public boolean checkCollision(CollisionObject actor) {
 
-		object = actor.getRectBox();
+		_object = actor.getRectBox();
 
-		dx = MathUtils.abs(object.getCenterX() - x);
-		dy = MathUtils.abs(object.getCenterY() - y);
+		_dx = MathUtils.abs(_object.getCenterX() - _x);
+		_dy = MathUtils.abs(_object.getCenterY() - _y);
 
-		dist = MathUtils.sqrt(dx * dx + dy * dy);
+		_dist = MathUtils.sqrt(_dx * _dx + _dy * _dy);
 
-		return dist <= this.r;
+		return _dist <= this._r;
 	}
 
 	@Override
 	public void setOffsetPos(Vector2f offset) {
-		offsetLocation = offset;
+		_offsetLocation = offset;
 	}
 
 	@Override
 	public Vector2f getOffsetPos() {
-		return offsetLocation;
+		return _offsetLocation;
 	}
 }

@@ -25,48 +25,48 @@ import loon.geom.Vector2f;
 
 public class CollisionPointQuery implements CollisionQuery {
 
-	private float x;
+	private float _x;
 
-	private float y;
+	private float _y;
 
-	private String flag;
+	private String _flag;
 
-	private Vector2f offsetLocation;
+	private Vector2f _offsetLocation;
 
 	public CollisionPointQuery init(float x, float y, String flag, Vector2f offset) {
-		this.x = offsetX(x);
-		this.y = offsetY(y);
-		this.flag = flag;
-		this.offsetLocation = offset;
+		this._x = offsetX(x);
+		this._y = offsetY(y);
+		this._flag = flag;
+		this._offsetLocation = offset;
 		return this;
 	}
 
 	private float offsetX(float x) {
-		if (offsetLocation == null) {
+		if (_offsetLocation == null) {
 			return x;
 		}
-		return x + offsetLocation.x;
+		return x + _offsetLocation.x;
 	}
 
 	private float offsetY(float y) {
-		if (offsetLocation == null) {
+		if (_offsetLocation == null) {
 			return y;
 		}
-		return y + offsetLocation.y;
+		return y + _offsetLocation.y;
 	}
 
 	@Override
 	public boolean checkCollision(CollisionObject actor) {
-		return this.flag != null && !flag.equals(actor.getObjectFlag()) ? false : actor.containsPoint(this.x, this.y);
+		return this._flag != null && !_flag.equals(actor.getObjectFlag()) ? false : actor.containsPoint(this._x, this._y);
 	}
 
 	@Override
 	public void setOffsetPos(Vector2f offset) {
-		offsetLocation = offset;
+		_offsetLocation = offset;
 	}
 
 	@Override
 	public Vector2f getOffsetPos() {
-		return offsetLocation;
+		return _offsetLocation;
 	}
 }

@@ -69,13 +69,13 @@ public class Sprite extends LObject<ISprite>
 	private static final long defaultDelay = 150;
 
 	// 是否可见
-	private boolean visible = true;
+	private boolean _visible = true;
 
 	// 精灵图片
-	private LTexture image;
+	private LTexture _image;
 
 	// 动画
-	private Animation animation = new Animation();
+	private Animation _animation = new Animation();
 
 	private LColor _debugDrawColor = LColor.red;
 
@@ -127,7 +127,7 @@ public class Sprite extends LObject<ISprite>
 	private Sprite(String spriteName, float x, float y) {
 		this.setLocation(x, y);
 		this._objectName = spriteName;
-		this.visible = true;
+		this._visible = true;
 		this._transform = LTrans.TRANS_NONE;
 	}
 
@@ -303,13 +303,13 @@ public class Sprite extends LObject<ISprite>
 	/**
 	 * 以下参数分别为 精灵图，坐标x,坐标y
 	 * 
-	 * @param image
+	 * @param _image
 	 * @param x
 	 * @param y
 	 * @param timer
 	 */
-	public Sprite(LTexture image, float x, float y) {
-		this(new LTexture[] { image }, -1, x, y, 0);
+	public Sprite(LTexture _image, float x, float y) {
+		this(new LTexture[] { _image }, -1, x, y, 0);
 	}
 
 	/**
@@ -325,8 +325,8 @@ public class Sprite extends LObject<ISprite>
 	public Sprite(String spriteName, LTexture[] images, int maxFrame, float x, float y, long timer) {
 		this.setLocation(x, y);
 		this._objectName = spriteName;
-		this.setAnimation(animation, images, maxFrame, timer);
-		this.visible = true;
+		this.setAnimation(_animation, images, maxFrame, timer);
+		this._visible = true;
 		this._transform = LTrans.TRANS_NONE;
 	}
 
@@ -355,8 +355,8 @@ public class Sprite extends LObject<ISprite>
 		this.setLocation(x, y);
 		this._objectName = spriteName;
 		LTexture[] texs = sheet.getTextures();
-		this.setAnimation(animation, texs, texs.length, timer);
-		this.visible = true;
+		this.setAnimation(_animation, texs, texs.length, timer);
+		this._visible = true;
 		this._transform = LTrans.TRANS_NONE;
 	}
 
@@ -366,7 +366,7 @@ public class Sprite extends LObject<ISprite>
 	 * @param running
 	 */
 	public Sprite setRunning(boolean running) {
-		animation.setRunning(running);
+		_animation.setRunning(running);
 		return this;
 	}
 
@@ -376,7 +376,7 @@ public class Sprite extends LObject<ISprite>
 	 * @return
 	 */
 	public int getTotalFrames() {
-		return animation.getTotalFrames();
+		return _animation.getTotalFrames();
 	}
 
 	/**
@@ -385,7 +385,7 @@ public class Sprite extends LObject<ISprite>
 	 * @param index
 	 */
 	public Sprite setCurrentFrameIndex(int index) {
-		animation.setCurrentFrameIndex(index);
+		_animation.setCurrentFrameIndex(index);
 		return this;
 	}
 
@@ -395,7 +395,7 @@ public class Sprite extends LObject<ISprite>
 	 * @return
 	 */
 	public int getCurrentFrameIndex() {
-		return animation.getCurrentFrameIndex();
+		return _animation.getCurrentFrameIndex();
 	}
 
 	/**
@@ -521,15 +521,15 @@ public class Sprite extends LObject<ISprite>
 	/**
 	 * 插入指定动画
 	 * 
-	 * @param animation
+	 * @param _animation
 	 */
-	public Sprite setAnimation(Animation animation) {
-		this.animation = animation;
+	public Sprite setAnimation(Animation _animation) {
+		this._animation = _animation;
 		return this;
 	}
 
 	public Animation getAnimation() {
-		return animation;
+		return _animation;
 	}
 
 	protected void onUpdate(long elapsedTime) {
@@ -539,8 +539,8 @@ public class Sprite extends LObject<ISprite>
 	 * 变更动画
 	 */
 	public void update(long elapsedTime) {
-		if (visible) {
-			animation.update(elapsedTime);
+		if (_visible) {
+			_animation.update(elapsedTime);
 			onUpdate(elapsedTime);
 			if (_childrens != null && _childrens.size > 0) {
 				for (ISprite spr : _childrens) {
@@ -564,11 +564,11 @@ public class Sprite extends LObject<ISprite>
 	}
 
 	public LTexture getImage() {
-		return animation.getSpriteImage();
+		return _animation.getSpriteImage();
 	}
 
 	public float getAniWidth() {
-		LTexture si = animation.getSpriteImage();
+		LTexture si = _animation.getSpriteImage();
 		if (si == null) {
 			return -1;
 		}
@@ -576,7 +576,7 @@ public class Sprite extends LObject<ISprite>
 	}
 
 	public float getAniHeight() {
-		LTexture si = animation.getSpriteImage();
+		LTexture si = _animation.getSpriteImage();
 		if (si == null) {
 			return -1;
 		}
@@ -658,23 +658,23 @@ public class Sprite extends LObject<ISprite>
 
 	@Override
 	public void createUI(GLEx g, float offsetX, float offsetY) {
-		if (!visible) {
+		if (!_visible) {
 			return;
 		}
 		if (_objectAlpha < 0.01) {
 			return;
 		}
 
-		image = animation.getSpriteImage();
+		_image = _animation.getSpriteImage();
 
-		final boolean notImg = image == null;
+		final boolean notImg = _image == null;
 
-		if (animation != null && animation.length > 0 && notImg) {
+		if (_animation != null && _animation.length > 0 && notImg) {
 			return;
 		}
 
-		float width = notImg ? getContainerWidth() : image.getWidth();
-		float height = notImg ? getContainerHeight() : image.getHeight();
+		float width = notImg ? getContainerWidth() : _image.getWidth();
+		float height = notImg ? getContainerHeight() : _image.getHeight();
 
 		boolean update = (_objectRotation != 0) || !(_scaleX == 1f && _scaleY == 1f) || _flipX || _flipY;
 		int tmp = g.color();
@@ -711,9 +711,9 @@ public class Sprite extends LObject<ISprite>
 			g.setAlpha(_objectAlpha);
 			if (!notImg) {
 				if (LTrans.TRANS_NONE == _transform) {
-					g.draw(image, nx, ny, width, height, _filterColor, _objectRotation, _pivot, _scaleX, _scaleY);
+					g.draw(_image, nx, ny, width, height, _filterColor, _objectRotation, _pivot, _scaleX, _scaleY);
 				} else {
-					g.drawRegion(image, 0, 0, (int) width, (int) height, _transform, (int) nx, (int) ny,
+					g.drawRegion(_image, 0, 0, (int) width, (int) height, _transform, (int) nx, (int) ny,
 							LTrans.TOP | LTrans.LEFT, _filterColor, _pivot, _scaleX, _scaleY, _objectRotation);
 				}
 			}
@@ -775,12 +775,12 @@ public class Sprite extends LObject<ISprite>
 
 	@Override
 	public boolean isVisible() {
-		return visible;
+		return _visible;
 	}
 
 	@Override
 	public void setVisible(boolean v) {
-		this.visible = v;
+		this._visible = v;
 	}
 
 	public String getSpriteName() {
@@ -812,7 +812,7 @@ public class Sprite extends LObject<ISprite>
 
 	@Override
 	public LTexture getBitmap() {
-		return this.image;
+		return this._image;
 	}
 
 	@Override
@@ -900,11 +900,11 @@ public class Sprite extends LObject<ISprite>
 	}
 
 	public int getMaxFrame() {
-		return animation.getMaxFrame();
+		return _animation.getMaxFrame();
 	}
 
 	public Sprite setMaxFrame(int maxFrame) {
-		this.animation.setMaxFrame(maxFrame);
+		this._animation.setMaxFrame(maxFrame);
 		return this;
 	}
 
@@ -1452,12 +1452,12 @@ public class Sprite extends LObject<ISprite>
 
 	@Override
 	public void close() {
-		this.visible = false;
-		if (image != null) {
-			image.close();
+		this._visible = false;
+		if (_image != null) {
+			_image.close();
 		}
-		if (animation != null) {
-			animation.close();
+		if (_animation != null) {
+			_animation.close();
 		}
 		setState(State.DISPOSED);
 		removeChilds();

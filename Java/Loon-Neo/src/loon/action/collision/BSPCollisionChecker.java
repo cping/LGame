@@ -34,15 +34,15 @@ public class BSPCollisionChecker implements CollisionChecker {
 
 	private final static int MAX_SIZE = 2048;
 
-	private final static BSPCollisionNode[] cache = new BSPCollisionNode[MAX_SIZE];
+	private final BSPCollisionNode[] _collisionCache = new BSPCollisionNode[MAX_SIZE];
 
-	private int tail = 0;
+	private int _tail = 0;
 
-	private int size = 0;
+	private int _size = 0;
 
-	private boolean itlayer = false;
+	private boolean _itlayer = false;
 
-	private Vector2f offsetLocation = new Vector2f(0, 0);
+	private final Vector2f _offsetLocation = new Vector2f();
 
 	public final static CollisionNode getNodeForActor(CollisionObject obj) {
 		return (CollisionNode) obj.getCollisionData();
@@ -53,26 +53,26 @@ public class BSPCollisionChecker implements CollisionChecker {
 	}
 
 	private final BSPCollisionNode getBSPNode() {
-		if (size == 0) {
+		if (_size == 0) {
 			return new BSPCollisionNode(new RectBox(), 0, 0);
 		} else {
-			int ppos = tail - size;
+			int ppos = _tail - _size;
 			if (ppos < 0) {
 				ppos += MAX_SIZE;
 			}
-			BSPCollisionNode node = cache[ppos];
+			BSPCollisionNode node = _collisionCache[ppos];
 			node.setParent((BSPCollisionNode) null);
-			--size;
+			--_size;
 			return node;
 		}
 	}
 
 	private final void returnNode(BSPCollisionNode node) {
-		cache[tail++] = node;
-		if (tail == MAX_SIZE) {
-			tail = 0;
+		_collisionCache[_tail++] = node;
+		if (_tail == MAX_SIZE) {
+			_tail = 0;
 		}
-		size = MathUtils.min(size + 1, MAX_SIZE);
+		_size = MathUtils.min(_size + 1, MAX_SIZE);
 		if (node.getLeft() != null || node.getRight() != null) {
 			throw new LSysException("Size Error !");
 		}
@@ -103,8 +103,8 @@ public class BSPCollisionChecker implements CollisionChecker {
 	private SortedList<BSPCollisionNode> cacheNodeStack = new SortedList<BSPCollisionNode>();
 
 	@Override
-	public void initialize(int size) {
-		this.initialize(size, size);
+	public void initialize(int _size) {
+		this.initialize(_size, _size);
 	}
 
 	@Override
@@ -572,7 +572,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 		synchronized (this.pointQuery) {
 			float px = x * this.cellSizeX + this.cellSizeX / 2f;
 			float py = y * this.cellSizeY + this.cellSizeY / 2f;
-			this.pointQuery.init(px, py, flag, this.offsetLocation);
+			this.pointQuery.init(px, py, flag, this._offsetLocation);
 			float[] r = { px, py, 1, 1 };
 			return this.getIntersectingObjects(r, this.pointQuery);
 		}
@@ -582,7 +582,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 	public synchronized TArray<CollisionObject> getIntersectingObjects(CollisionObject actor, String flag) {
 		RectBox r = this.getActorBounds(actor);
 		synchronized (this.actorQuery) {
-			this.actorQuery.init(flag, actor, offsetLocation);
+			this.actorQuery.init(flag, actor, _offsetLocation);
 			return getInTheLayerObjects(actor.getLayer(), this.getIntersectingObjects(r.toFloat(), this.actorQuery));
 		}
 	}
@@ -600,12 +600,12 @@ public class BSPCollisionChecker implements CollisionChecker {
 		float[] rect = { (x - r) * this.cellSizeX + halfCellX, (y - r) * this.cellSizeY + halfCellY, sizeRX, sizeRY };
 		cacheSet.clear();
 		synchronized (this.actorQuery) {
-			this.actorQuery.init(flag, null, this.offsetLocation);
+			this.actorQuery.init(flag, null, this._offsetLocation);
 			intersectingObjects(rect, this.actorQuery, cacheSet);
 		}
 		synchronized (this.inRangeQuery) {
 			this.inRangeQuery.init(x * this.cellSizeX + halfCellX, y * this.cellSizeY + halfCellY,
-					r * getRadius(this.cellSizeX, this.cellSizeY), this.offsetLocation);
+					r * getRadius(this.cellSizeX, this.cellSizeY), this._offsetLocation);
 			TArray<CollisionObject> rangeResult = new TArray<CollisionObject>();
 			LIterator<CollisionObject> it = cacheSet.iterator();
 			for (; it.hasNext();) {
@@ -629,7 +629,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 		float dyPixel = distance * this.cellSizeY;
 		float[] r = { xPixel - dxPixel, yPixel - dyPixel, dxPixel * 2 + 1, dyPixel * 2 + 1 };
 		synchronized (this.neighbourQuery) {
-			this.neighbourQuery.init(x, y, distance, diag, flag, this.offsetLocation);
+			this.neighbourQuery.init(x, y, distance, diag, flag, this._offsetLocation);
 			return getInTheLayerObjects(actor.getLayer(), this.getIntersectingObjects(r, this.neighbourQuery));
 		}
 	}
@@ -644,10 +644,10 @@ public class BSPCollisionChecker implements CollisionChecker {
 		synchronized (this.pointQuery) {
 			float px = dx * this.cellSizeX + this.cellSizeX / 2f;
 			float py = dy * this.cellSizeY + this.cellSizeY / 2f;
-			this.pointQuery.init(px, py, flag, offsetLocation);
+			this.pointQuery.init(px, py, flag, _offsetLocation);
 			Object query = this.pointQuery;
 			if (flag != null) {
-				query = new CollisionClassQuery(flag, this.pointQuery, this.offsetLocation);
+				query = new CollisionClassQuery(flag, this.pointQuery, this._offsetLocation);
 			}
 			return getInTheLayerObject(obj.getLayer(),
 					this.getOnlyIntersectingDown(new RectBox(px, py, 1, 1), (CollisionQuery) query, obj));
@@ -659,7 +659,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 		int layer = actor.getLayer();
 		RectBox rect = this.getActorBounds(actor);
 		synchronized (this.actorQuery) {
-			this.actorQuery.init(flag, actor, this.offsetLocation);
+			this.actorQuery.init(flag, actor, this._offsetLocation);
 			CollisionNode node = getNodeForActor(actor);
 			if (node == null) {
 				return null;
@@ -681,7 +681,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 	}
 
 	private CollisionObject getInTheLayerObject(int layer, CollisionObject obj) {
-		if (!itlayer) {
+		if (!_itlayer) {
 			return obj;
 		}
 		if (obj != null && obj.getLayer() == layer) {
@@ -691,7 +691,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 	}
 
 	private TArray<CollisionObject> getInTheLayerObjects(int layer, TArray<CollisionObject> lists) {
-		if (!itlayer) {
+		if (!_itlayer) {
 			return lists;
 		}
 		TArray<CollisionObject> tmp = new TArray<CollisionObject>(lists.size);
@@ -741,32 +741,32 @@ public class BSPCollisionChecker implements CollisionChecker {
 
 	@Override
 	public void setInTheLayer(boolean yes) {
-		this.itlayer = yes;
+		this._itlayer = yes;
 	}
 
 	@Override
 	public boolean getInTheLayer() {
-		return itlayer;
+		return _itlayer;
 	}
 
 	@Override
 	public void setOffsetPos(float x, float y) {
-		offsetLocation.set(x, y);
+		_offsetLocation.set(x, y);
 	}
 
 	@Override
 	public void setOffsetX(float x) {
-		offsetLocation.setX(x);
+		_offsetLocation.setX(x);
 	}
 
 	@Override
 	public void setOffsetY(float y) {
-		offsetLocation.setY(y);
+		_offsetLocation.setY(y);
 	}
 
 	@Override
 	public Vector2f getOffsetPos() {
-		return offsetLocation;
+		return _offsetLocation;
 	}
 
 	@Override
@@ -777,10 +777,10 @@ public class BSPCollisionChecker implements CollisionChecker {
 		if (cacheNodeStack != null) {
 			cacheNodeStack.clear();
 		}
-		if (cache != null) {
-			for (int i = 0; i < cache.length; i++) {
-				if (cache[i] != null) {
-					cache[i] = null;
+		if (_collisionCache != null) {
+			for (int i = 0; i < _collisionCache.length; i++) {
+				if (_collisionCache[i] != null) {
+					_collisionCache[i] = null;
 				}
 			}
 		}

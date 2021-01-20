@@ -51,17 +51,17 @@ public class Print implements FontSet<Print>, LRelease {
 	/**
 	 * 解析并重构字符串,为超过指定长度的字符串加换行符
 	 * 
-	 * @param _textChar
-	 * @param _curfontSize
-	 * @param _width
+	 * @param text
+	 * @param font
+	 * @param width
 	 * @return
 	 */
-	public static String prepareString(String text, IFont font, float _width) {
+	public static String prepareString(String text, IFont font, float width) {
 		if (font == null || StringUtils.isEmpty(text)) {
 			return "";
 		}
 		StrBuilder sbr = new StrBuilder();
-		TArray<String> list = formatMessage(text, font, _width);
+		TArray<String> list = formatMessage(text, font, width);
 		for (int i = 0; i < list.size; i++) {
 			String temp = list.get(i);
 			if (!StringUtils.isEmpty(temp)) {
@@ -79,13 +79,13 @@ public class Print implements FontSet<Print>, LRelease {
 	 * 
 	 * PS:此项不处理'\n'外的特殊操作符
 	 * 
-	 * @param _textChar
-	 * @param _curfontSize
-	 * @param _width
+	 * @param text
+	 * @param font
+	 * @param width
 	 * @return
 	 */
-	public static TArray<String> formatMessage(String _textChar, IFont _curfontSize, float _width) {
-		return FontUtils.splitLines(_textChar, _curfontSize, _width);
+	public static TArray<String> formatMessage(String text, IFont font, float width) {
+		return FontUtils.splitLines(text, font, width);
 	}
 
 	private int _index, _offsettext, _curfontSize, _perfontSize;

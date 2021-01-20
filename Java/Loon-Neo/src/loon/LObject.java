@@ -252,9 +252,9 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 
 	protected String _object_flag;
 
-	protected Vector2f _objectLocation = new Vector2f(0, 0);
+	protected final Vector2f _objectLocation = new Vector2f(0, 0);
 
-	protected Vector2f _objectPreviousLocation = new Vector2f(0, 0);
+	protected final Vector2f _objectPreviousLocation = new Vector2f(0, 0);
 
 	protected int _objectLayer;
 

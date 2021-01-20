@@ -31,8 +31,7 @@ final public class CollectionUtils {
 
 	final static public int INITIAL_CAPACITY = 16;
 
-	protected CollectionUtils() {
-		super();
+	private CollectionUtils() {
 	}
 
 	/**

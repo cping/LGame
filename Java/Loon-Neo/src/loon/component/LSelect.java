@@ -41,9 +41,9 @@ import loon.utils.timer.LTimer;
  */
 public class LSelect extends LContainer implements FontSet<LSelect> {
 
-	private IFont messageFont;
+	private IFont _messageFont;
 
-	private LColor fontColor = LColor.white;
+	private LColor _fontColor = LColor.white;
 
 	private int left, top, type, nTop;
 
@@ -100,7 +100,7 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 		this(skin.getFont(), skin.getBackgroundTexture(), x, y, width, height, skin.getFontColor());
 	}
 
-	public LSelect(IFont font, LTexture formImage, int x, int y, int width, int height, LColor fontColor) {
+	public LSelect(IFont font, LTexture formImage, int x, int y, int width, int height, LColor _fontColor) {
 		super(x, y, width, height);
 		if (formImage == null) {
 			this.setBackground(LSystem.createTexture(width, height, LTexture.Format.LINEAR));
@@ -108,8 +108,8 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 		} else {
 			this.setBackground(formImage);
 		}
-		this.fontColor = fontColor;
-		this.messageFont = (font == null ? LSystem.getSystemGameFont() : font);
+		this._fontColor = _fontColor;
+		this._messageFont = (font == null ? LSystem.getSystemGameFont() : font);
 		this.customRendering = true;
 		this.selectFlag = -1;
 		this.space = 30;
@@ -184,8 +184,8 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 		if (doubleSizeFont == 0) {
 			doubleSizeFont = 20;
 		}
-		if (messageFont instanceof LFont) {
-			LSTRDictionary.get().bind((LFont) messageFont, selects);
+		if (_messageFont instanceof LFont) {
+			LSTRDictionary.get().bind((LFont) _messageFont, selects);
 		}
 	}
 
@@ -224,7 +224,7 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 			return;
 		}
 		int oldColor = g.color();
-		sizeFont = messageFont.getSize();
+		sizeFont = _messageFont.getSize();
 		doubleSizeFont = sizeFont * 2;
 		if (doubleSizeFont == 0) {
 			doubleSizeFont = 20;
@@ -232,7 +232,7 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 		messageLeft = (x + doubleSizeFont + sizeFont / 2) + tmpOffset + left + doubleSizeFont;
 		if (message != null) {
 			messageTop = y + doubleSizeFont + top - 10;
-			messageFont.drawString(g, message, messageLeft, messageTop - messageFont.getAscent(), fontColor);
+			_messageFont.drawString(g, message, messageLeft, messageTop - _messageFont.getAscent(), _fontColor);
 		} else {
 			messageTop = y + top;
 		}
@@ -248,7 +248,7 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 					g.draw(buoyage, nLeft, nTop - (int) (buoyage.getHeight() / 1.5), _component_baseColor);
 					g.setAlpha(1F);
 				}
-				messageFont.drawString(g, selects[i], messageLeft, nTop - messageFont.getAscent(), fontColor);
+				_messageFont.drawString(g, selects[i], messageLeft, nTop - _messageFont.getAscent(), _fontColor);
 				if ((cursor != null) && isSelect) {
 					g.draw(cursor, nLeft, nTop - cursor.getHeight() / 2, LColor.white);
 				}
@@ -293,20 +293,20 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 
 	@Override
 	public LColor getFontColor() {
-		return fontColor.cpy();
+		return _fontColor.cpy();
 	}
 
-	public LSelect setFontColor(LColor fontColor) {
-		this.fontColor = fontColor;
+	public LSelect setFontColor(LColor f) {
+		this._fontColor = f;
 		return this;
 	}
 
 	public IFont getMessageFont() {
-		return messageFont;
+		return _messageFont;
 	}
 
-	public LSelect setMessageFont(IFont messageFont) {
-		this.messageFont = messageFont;
+	public LSelect setMessageFont(IFont m) {
+		this._messageFont = m;
 		return this;
 	}
 

@@ -25,7 +25,6 @@ import loon.opengl.GLEx;
 public abstract class Draw extends Entity {
 
 	public Draw() {
-		super();
 		setRepaint(true);
 	}
 

@@ -86,7 +86,6 @@ public class GridEntity extends Entity {
 
 	public GridEntity(RectBox viewRect, int cellWidth, int cellHeight, float offsetX, float offsetY, float scale,
 			float lineWidth, LColor color) {
-		super();
 		this.setOffset(offsetX, offsetY);
 		this.setLocation(viewRect.x, viewRect.y);
 		this.setSize(viewRect.width, viewRect.height);

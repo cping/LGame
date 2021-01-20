@@ -64,7 +64,6 @@ public class EventDispatcher extends LObject<ISprite> {
 	private ListMap<Integer, TArray<IEventListener>> _events = new ListMap<Integer, TArray<IEventListener>>();
 
 	public EventDispatcher() {
-
 	}
 
 	public void dispatchEvent(int type) {

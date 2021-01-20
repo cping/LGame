@@ -43,7 +43,6 @@ public class FPSCamera extends EmptyCamera {
 	}
 
 	public FPSCamera(float fovy, float aspect, float zNear, float zFar) {
-		super();
 		_viewMatrix4 = Transforms.createPerspective(fovy, aspect, zNear, zFar);
 
 		position = new Vector3f(0, 0, 1);

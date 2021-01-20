@@ -40,7 +40,7 @@ import loon.utils.timer.LTimer;
  */
 public class LTextBar extends LComponent {
 
-	private LTimer waitTimer = new LTimer();
+	private LTimer _waitTimer = new LTimer();
 
 	private boolean _drawUI = false;
 
@@ -398,18 +398,18 @@ public class LTextBar extends LComponent {
 		if (this.pressedTime > 0 && --this.pressedTime <= 0) {
 			this.pressed = false;
 		}
-		if (flashCursor && waitTimer.action(elapsedTime)) {
+		if (flashCursor && _waitTimer.action(elapsedTime)) {
 			_displayFlag = !_displayFlag;
 		}
 	}
 
 	public LTextBar setCursorWaitDelay(long time) {
-		waitTimer.setDelay(time);
+		_waitTimer.setDelay(time);
 		return this;
 	}
 
 	public long getCursorWaitDelay() {
-		return waitTimer.getDelay();
+		return _waitTimer.getDelay();
 	}
 
 	public boolean isTouchOver() {

@@ -35,27 +35,27 @@ import loon.utils.StringUtils;
 public class LToolTip extends LComponent {
 
 	// 默认悬浮时间
-	private int initialDelay = 60;
+	private int _initialDelay = 60;
 
 	// 默认关闭时间
-	private int dismissDelay = 180;
+	private int _dismissDelay = 180;
 
 	// 中间延迟
-	private int reshowDelay = 30;
+	private int _reshowDelay = 30;
 
-	public int initial, dismiss, reshow, dismissTime;
+	protected int _initialFlag, _dismiss, _reshow, _dismissTime;
 
-	private LComponent tooltip;
+	private LComponent _tooltip;
 
-	private String tipText = LSystem.EMPTY;
+	private String _tipText = LSystem.EMPTY;
 
-	public boolean tooltipChanged, dismissing;
+	protected boolean _tooltipChanged, _dismissing;
 
-	private boolean fadeCompleted;
+	private boolean _fadeCompleted;
 
-	private boolean running;
+	private boolean _running;
 
-	private float currentFrame = 0, fadeTime = 60;
+	private float _currentFrame = 0, _fadeTime = 60;
 
 	private Text _text;
 
@@ -93,35 +93,35 @@ public class LToolTip extends LComponent {
 	public void update(long elapsedTime) {
 		super.update(elapsedTime);
 		if (this.isVisible()) {
-			if (this.tooltip != null && !this.tooltipChanged) {
-				if (dismissing && running) {
+			if (this._tooltip != null && !this._tooltipChanged) {
+				if (_dismissing && _running) {
 
-					if (!fadeCompleted) {
-						currentFrame++;
-						if (currentFrame == fadeTime) {
+					if (!_fadeCompleted) {
+						_currentFrame++;
+						if (_currentFrame == _fadeTime) {
 							setAlpha(1f);
-							fadeCompleted = true;
+							_fadeCompleted = true;
 							return;
 						}
 					}
-					_objectAlpha = (currentFrame / fadeTime);
+					_objectAlpha = (_currentFrame / _fadeTime);
 				}
-				if (this.dismiss++ >= this.dismissTime) {
+				if (this._dismiss++ >= this._dismissTime) {
 					this.setToolTipComponent(null);
 					this.setVisible(false);
-					this.dismissing = false;
-					this.dismiss = 0;
-					this.reshow = 0;
+					this._dismissing = false;
+					this._dismiss = 0;
+					this._reshow = 0;
 				}
 			} else {
 				this.setVisible(false);
 			}
 
 		} else {
-			if (this.reshow > 0) {
-				this.reshow--;
+			if (this._reshow > 0) {
+				this._reshow--;
 			}
-			if (this.tooltip != null && (this.reshow > 0 || ++this.initial >= this.initialDelay)) {
+			if (this._tooltip != null && (this._reshow > 0 || ++this._initialFlag >= this._initialDelay)) {
 				this.showTip();
 
 			}
@@ -130,99 +130,99 @@ public class LToolTip extends LComponent {
 	}
 
 	public LToolTip setFadeTime(float delay) {
-		this.fadeTime = delay;
+		this._fadeTime = delay;
 		return this;
 	}
 
 	public float getFadeTime() {
-		return this.fadeTime;
+		return this._fadeTime;
 	}
 
 	public LToolTip showTip() {
-		if (this.tooltip == null) {
+		if (this._tooltip == null) {
 			return this;
 		}
 		this.setVisible(true);
-		this.initial = 0;
-		this.dismiss = 0;
-		this.currentFrame = 0;
-		this.reshow = this.reshowDelay;
-		this.tooltipChanged = false;
-		if (this.tooltip != null) {
-			if (!this.tooltip.getToolTipText().equals(this.tipText)) {
-				this.tipText = this.tooltip.getToolTipText();
-				this.dismissTime = (this.dismissDelay * StringUtils.split(this.tipText, '\n').length);
+		this._initialFlag = 0;
+		this._dismiss = 0;
+		this._currentFrame = 0;
+		this._reshow = this._reshowDelay;
+		this._tooltipChanged = false;
+		if (this._tooltip != null) {
+			if (!this._tooltip.getToolTipText().equals(this._tipText)) {
+				this._tipText = this._tooltip.getToolTipText();
+				this._dismissTime = (this._dismissDelay * StringUtils.split(this._tipText, LSystem.LF).length);
 			}
 		}
 		this._objectAlpha = 0f;
-		this.running = true;
-		this.fadeCompleted = false;
+		this._running = true;
+		this._fadeCompleted = false;
 		return this;
 	}
 
 	public LComponent getToolTipComponent() {
-		return this.tooltip;
+		return this._tooltip;
 	}
 
-	public LToolTip setToolTipComponent(LComponent tooltip) {
-		if (tooltip != null) {
-			if (tooltip.getToolTipParent() != null) {
-				tooltip = tooltip.getToolTipParent();
+	public LToolTip setToolTipComponent(LComponent _tooltip) {
+		if (_tooltip != null) {
+			if (_tooltip.getToolTipParent() != null) {
+				_tooltip = _tooltip.getToolTipParent();
 			}
-			if (tooltip.getToolTipText() == null) {
-				tooltip = null;
+			if (_tooltip.getToolTipText() == null) {
+				_tooltip = null;
 			}
 		}
-		if (this.tooltip == tooltip) {
+		if (this._tooltip == _tooltip) {
 			return this;
 		}
-		this.tooltip = tooltip;
-		this.tooltipChanged = true;
+		this._tooltip = _tooltip;
+		this._tooltipChanged = true;
 		if (!this.isVisible()) {
-			this.initial = 0;
+			this._initialFlag = 0;
 		}
 		return this;
 	}
 
 	public int getInitialDelay() {
-		return this.initialDelay;
+		return this._initialDelay;
 	}
 
 	public LToolTip setInitialDelay(int i) {
-		this.initialDelay = i;
+		this._initialDelay = i;
 		return this;
 	}
 
 	public int getDismissDelay() {
-		return this.dismissDelay;
+		return this._dismissDelay;
 	}
 
 	public LToolTip setDismissDelay(int i) {
-		this.dismissDelay = i;
+		this._dismissDelay = i;
 		return this;
 	}
 
 	public int getReshowDelay() {
-		return this.reshowDelay;
+		return this._reshowDelay;
 	}
 
 	public LToolTip setReshowDelay(int i) {
-		this.reshowDelay = i;
+		this._reshowDelay = i;
 		return this;
 	}
 
 	@Override
 	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
-		if (component == null || tooltip == null) {
+		if (component == null || _tooltip == null) {
 			return;
 		}
-		LComponent tooltip = ((LToolTip) component).getToolTipComponent();
-		String tipText = tooltip.getToolTipText();
+		LComponent _tooltip = ((LToolTip) component).getToolTipComponent();
+		String tipText = _tooltip.getToolTipText();
 		if (!_text.getText().equals(tipText)) {
 			_text.setText(tipText);
 		}
-		float posX = tooltip.getScreenX() + tooltip.getWidth() / 2;
-		float posY = tooltip.getScreenY() + tooltip.getHeight() / 2;
+		float posX = _tooltip.getScreenX() + _tooltip.getWidth() / 2;
+		float posY = _tooltip.getScreenY() + _tooltip.getHeight() / 2;
 		float width = _text.getWidth() + 6;
 		float height = _text.getHeight() + 8;
 		float currentX = posX;
@@ -239,27 +239,27 @@ public class LToolTip extends LComponent {
 	}
 
 	public int getDismiss() {
-		return dismiss;
+		return _dismiss;
 	}
 
-	public void setDismiss(int dismiss) {
-		this.dismiss = dismiss;
+	public void setDismiss(int d) {
+		this._dismiss = d;
 	}
 
 	public int getDismissTime() {
-		return dismissTime;
+		return _dismissTime;
 	}
 
-	public void setDismissTime(int dismissTime) {
-		this.dismissTime = dismissTime;
+	public void setDismissTime(int d) {
+		this._dismissTime = d;
 	}
 
 	public boolean isDismissing() {
-		return dismissing;
+		return _dismissing;
 	}
 
-	public void setDismissing(boolean dismissing) {
-		this.dismissing = dismissing;
+	public void setDismissing(boolean d) {
+		this._dismissing = d;
 	}
 
 	@Override

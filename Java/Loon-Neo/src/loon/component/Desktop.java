@@ -495,8 +495,8 @@ public class Desktop implements Visible, LRelease {
 				if (LSystem.isMobile() || LSystem.base().setting.emulateTouch) {
 					if (tooltip != null) {
 						this.tooltip.setToolTipComponent(hoverComponent);
-						this.tooltip.reshow = 0;
-						this.tooltip.initial = 0;
+						this.tooltip._reshow = 0;
+						this.tooltip._initialFlag = 0;
 						this.tooltip.showTip();
 					}
 				}
@@ -515,10 +515,10 @@ public class Desktop implements Visible, LRelease {
 				if (touchDx != 0 || touchDy != 0 || SysTouch.getDX() != 0 || SysTouch.getDY() != 0) {
 					comp.processTouchMoved();
 					if (tooltip != null) {
-						if (!this.tooltip.dismissing && comp.isPointInUI()) {
+						if (!this.tooltip._dismissing && comp.isPointInUI()) {
 							// 刷新提示
-							this.tooltip.dismiss = 0;
-							this.tooltip.dismissing = true;
+							this.tooltip._dismiss = 0;
+							this.tooltip._dismissing = true;
 						}
 					}
 				}
@@ -578,8 +578,8 @@ public class Desktop implements Visible, LRelease {
 				}
 			}
 			if (tooltip != null) {
-				this.tooltip.reshow = 0;
-				this.tooltip.initial = 0;
+				this.tooltip._reshow = 0;
+				this.tooltip._initialFlag = 0;
 			}
 			if (!isClicked && this.hoverComponent != null && !this.hoverComponent._touchLocked) {
 				this.hoverComponent.processTouchPressed();

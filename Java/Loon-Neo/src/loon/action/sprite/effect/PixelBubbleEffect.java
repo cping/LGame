@@ -109,7 +109,6 @@ public class PixelBubbleEffect extends Entity implements BaseEffect {
 
 	public PixelBubbleEffect(float x, float y, float width, float height, int size, int radius, float speed,
 			LColor color) {
-		super();
 		this.setLocation(x, y);
 		this.setSize(width, height);
 		this.setColor(color);

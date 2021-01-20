@@ -33,7 +33,7 @@ import loon.opengl.GLEx;
  */
 public class LSlider extends LComponent {
 
-	private LTexture sliderImage, barImage;
+	private LTexture _sliderImage, _barImage;
 
 	private ValueListener _listener;
 
@@ -67,18 +67,18 @@ public class LSlider extends LComponent {
 		super(x, y, width, height);
 		this._vertical = vertical;
 		if (vertical) {
-			this.sliderImage = sliderText;
+			this._sliderImage = sliderText;
 			this._sliderWidth = width * 0.5f;
 			this._sliderHeight = width * 0.5f;
-			this.barImage = barText;
+			this._barImage = barText;
 			this._padding = width / 100f;
 			this._barImageHeight = height;
 			setWidth((int) (width * 0.12f));
 		} else {
-			this.sliderImage = sliderText;
+			this._sliderImage = sliderText;
 			this._sliderWidth = height * 0.5f;
 			this._sliderHeight = height * 0.5f;
-			this.barImage = barText;
+			this._barImage = barText;
 			this._padding = width / 100f;
 			this._barImageHeight = height / 10f;
 			setHeight(height);
@@ -118,14 +118,14 @@ public class LSlider extends LComponent {
 	@Override
 	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
 		if (_vertical) {
-			g.draw(barImage, x + _padding, y + getHeight() / 2 - _barImageHeight / 2, getWidth() - _padding * 2,
+			g.draw(_barImage, x + _padding, y + getHeight() / 2 - _barImageHeight / 2, getWidth() - _padding * 2,
 					_barImageHeight);
-			g.draw(sliderImage, x + _padding * (getWidth() - _padding * 2) - _sliderWidth / 2 + getWidth() / 2,
+			g.draw(_sliderImage, x + _padding * (getWidth() - _padding * 2) - _sliderWidth / 2 + getWidth() / 2,
 					y + _value * (getHeight()) - _sliderHeight / 2, _sliderWidth, _sliderHeight);
 		} else {
-			g.draw(barImage, x + _padding, y + getHeight() / 2 - _barImageHeight / 2, getWidth() - _padding * 2,
+			g.draw(_barImage, x + _padding, y + getHeight() / 2 - _barImageHeight / 2, getWidth() - _padding * 2,
 					_barImageHeight);
-			g.draw(sliderImage, x + _padding + _value * (getWidth() - _padding * 2) - _sliderWidth / 2,
+			g.draw(_sliderImage, x + _padding + _value * (getWidth() - _padding * 2) - _sliderWidth / 2,
 					y + getHeight() / 2 - _sliderHeight / 2, _sliderWidth, _sliderHeight);
 		}
 	}
@@ -236,23 +236,23 @@ public class LSlider extends LComponent {
 	}
 
 	public LTexture getSliderImage() {
-		return sliderImage;
+		return _sliderImage;
 	}
 
 	public LSlider setSliderImage(LTexture s) {
-		this.sliderImage = s;
+		this._sliderImage = s;
 		return this;
 	}
 
 	public LSlider setSliderImage(LTexture s, float width, float height) {
-		this.sliderImage = s;
+		this._sliderImage = s;
 		setSliderWidth(width);
 		setSliderHeight(height);
 		return this;
 	}
 
 	public LSlider setBarImage(LTexture b) {
-		this.barImage = b;
+		this._barImage = b;
 		return this;
 	}
 

@@ -25,31 +25,31 @@ import loon.geom.Vector2f;
 
 public class CollisionClassQuery implements CollisionQuery {
 
-	private String flag;
+	private String _flag;
 
-	private CollisionQuery subQuery;
+	private CollisionQuery _subQuery;
 	
-	private Vector2f offsetLocation;
+	private Vector2f _offsetLocation;
 
-	public CollisionClassQuery(String flag, CollisionQuery subQuery,Vector2f offset) {
-		this.flag = flag;
-		this.subQuery = subQuery;
-		this.offsetLocation = offset;
+	public CollisionClassQuery(String _flag, CollisionQuery _subQuery,Vector2f offset) {
+		this._flag = _flag;
+		this._subQuery = _subQuery;
+		this._offsetLocation = offset;
 	}
 
 	@Override
 	public boolean checkCollision(CollisionObject actor) {
-		return flag.equals(actor.getObjectFlag()) ? this.subQuery.checkCollision(actor)
+		return _flag.equals(actor.getObjectFlag()) ? this._subQuery.checkCollision(actor)
 				: false;
 	}
 
 	@Override
 	public void setOffsetPos(Vector2f offset) {
-		offsetLocation = offset;
+		_offsetLocation = offset;
 	}
 
 	@Override
 	public Vector2f getOffsetPos() {
-		return offsetLocation;
+		return _offsetLocation;
 	}
 }

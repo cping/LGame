@@ -30,7 +30,6 @@ public class OrthographicCamera extends EmptyCamera {
 	private float height;
 
 	public OrthographicCamera() {
-		super();
 	}
 
 	public OrthographicCamera(float width, float height) {
@@ -38,7 +37,6 @@ public class OrthographicCamera extends EmptyCamera {
 	}
 
 	public OrthographicCamera(float left, float right, float bottom, float top) {
-		super();
 		width = right - left;
 		height = bottom - top;
 		_viewMatrix4 = Transforms.createOrtho2d(left, right, bottom, top, 0,

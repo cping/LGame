@@ -58,8 +58,8 @@ public class LToast extends LComponent implements FontSet<LToast> {
 		return makeText(SkinManager.get().getMessageSkin().getFont(), null, text, LENGTH_SHORT, style);
 	}
 
-	public static LToast makeText(String text, int duration) {
-		return makeText(SkinManager.get().getMessageSkin().getFont(), null, text, duration, Style.NORMAL);
+	public static LToast makeText(String text, int _duration) {
+		return makeText(SkinManager.get().getMessageSkin().getFont(), null, text, _duration, Style.NORMAL);
 	}
 
 	public static LToast makeText(LComponent owner, String text) {
@@ -70,119 +70,125 @@ public class LToast extends LComponent implements FontSet<LToast> {
 		return makeText(SkinManager.get().getMessageSkin().getFont(), owner, text, LENGTH_SHORT, style);
 	}
 
-	public static LToast makeText(LComponent owner, String text, int duration) {
-		return makeText(SkinManager.get().getMessageSkin().getFont(), owner, text, duration, Style.NORMAL);
+	public static LToast makeText(LComponent owner, String text, int _duration) {
+		return makeText(SkinManager.get().getMessageSkin().getFont(), owner, text, _duration, Style.NORMAL);
 	}
 
-	public static LToast makeText(IFont font, LComponent owner, String text) {
-		return makeText(font, owner, text, LENGTH_SHORT);
+	public static LToast makeText(IFont _toastFont, LComponent owner, String text) {
+		return makeText(_toastFont, owner, text, LENGTH_SHORT);
 	}
 
-	public static LToast makeText(IFont font, LComponent owner, String text, Style style) {
-		return makeText(font, owner, text, LENGTH_SHORT, style);
+	public static LToast makeText(IFont _toastFont, LComponent owner, String text, Style style) {
+		return makeText(_toastFont, owner, text, LENGTH_SHORT, style);
 	}
 
-	public static LToast makeText(IFont font, LComponent owner, String text, int duration) {
-		return makeText(font, owner, text, duration, Style.NORMAL);
+	public static LToast makeText(IFont _toastFont, LComponent owner, String text, int _duration) {
+		return makeText(_toastFont, owner, text, _duration, Style.NORMAL);
 	}
 
-	public static LToast makeText(IFont font, LComponent owner, String text, int duration, Style style) {
+	public static LToast makeText(IFont _toastFont, LComponent owner, String text, int _duration, Style style) {
 		LToast toast = null;
 		if (owner != null) {
 			if (owner instanceof LToast) {
 				return (LToast) owner;
 			} else if (owner instanceof LContainer) {
-				toast = new LToast(font, text, duration, owner.x(), owner.y(), (int) owner.getWidth(),
+				toast = new LToast(_toastFont, text, _duration, owner.x(), owner.y(), (int) owner.getWidth(),
 						(int) owner.getHeight());
 				((LContainer) owner).add(toast);
 			} else {
-				toast = new LToast(font, text, duration, owner.x(), owner.y(), (int) owner.getWidth(),
+				toast = new LToast(_toastFont, text, _duration, owner.x(), owner.y(), (int) owner.getWidth(),
 						(int) owner.getHeight());
 			}
 		} else {
-			toast = new LToast(font, text, duration, 0, 0, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
+			toast = new LToast(_toastFont, text, _duration, 0, 0, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 		}
 		if (style == Style.SUCCESS) {
-			toast.backgroundColor = SUCCESS_GRAY;
+			toast._backgroundColor = SUCCESS_GRAY;
 		}
 		if (style == Style.ERROR) {
-			toast.backgroundColor = ERROR_RED;
+			toast._backgroundColor = ERROR_RED;
 		}
 		if (style == Style.NORMAL) {
-			toast.backgroundColor = NORMAL_ORANGE;
+			toast._backgroundColor = NORMAL_ORANGE;
 		}
 		return toast;
 	}
 
-	private boolean stop = false;
 	public static final int LENGTH_SHORT = 30;
 	public static final int LENGTH_LONG = 60;
 	public static final LColor ERROR_RED = LColor.maroon;
 	public static final LColor SUCCESS_GRAY = LColor.gray;
 	public static final LColor NORMAL_ORANGE = LColor.orange.cpy();
-	private final float MAX_OPACITY = 1.0f;
+	
+	private final float MAX_OPACITY = 1f;
 	private final float OPACITY_INCREMENT = 0.05f;
+
+	private boolean _toastStop = false;
+	
+	private String _displayText;
+
+	private LTimer _timer = new LTimer();
+	private LTimer _locked = new LTimer(LSystem.SECOND * 2);
+	private LColor _backgroundColor;
+	private IFont _toastFont;
+	
+	private float _displayX = 0f;
+	private float _displayY = 0f;
+	private float _displayTextX = 0f;
+	private float _displayTextY = 0f;
+
 	private int _frame_radius = 15;
 	private int _frame_length_multiplier = 10;
-	private float opacity = 0;
-	private String displayText;
-	private int duration;
-	private LTimer timer = new LTimer();
-	private LTimer lock = new LTimer(LSystem.SECOND * 2);
-	private LColor backgroundColor;
-	private IFont font;
-	private float displayX = 0f;
-	private float displayY = 0f;
-	private float displayTextX = 0f;
-	private float displayTextY = 0f;
-	private int cellHeight = 30;
-	private int cellWidth = 30;
-	private int displayType;
-	private boolean autoClose = true;
+	private int _duration;
+	private int _cellHeight = 30;
+	private int _cellWidth = 30;
+	private int _displayType;
+	
+	private boolean _autoClose = true;
 
-	public LToast(IFont font, String text, int duration, int x, int y, int width, int height) {
-		this(font, SkinManager.get().getMessageSkin().getFontColor(), text, duration, x, y, width, height);
+	public LToast(IFont font, String text, int d, int x, int y, int width, int height) {
+		this(font, SkinManager.get().getMessageSkin().getFontColor(), text, d, x, y, width, height);
 	}
 
-	public LToast(IFont font, LColor fontColor, String text, int duration, int x, int y, int width, int height) {
-		this(font, null, fontColor, text, duration, x, y, width, height);
+	public LToast(IFont font, LColor fontColor, String text, int d, int x, int y, int width, int height) {
+		this(font, null, fontColor, text, d, x, y, width, height);
 	}
 
-	public LToast(MessageSkin skin, String text, int duration, int x, int y, int width, int height) {
-		this(skin.getFont(), skin.getBackgroundTexture(), skin.getFontColor(), text, duration, x, y, width, height);
+	public LToast(MessageSkin skin, String text, int d, int x, int y, int width, int height) {
+		this(skin.getFont(), skin.getBackgroundTexture(), skin.getFontColor(), text, d, x, y, width, height);
 	}
 
-	public LToast(IFont font, LTexture bg, LColor fontColor, String text, int duration, int x, int y, int width,
+	public LToast(IFont font, LTexture bg, LColor fontColor, String text, int d, int x, int y, int width,
 			int height) {
 		super(x, y, width, height);
 		this.onlyBackground(bg);
 		this._component_baseColor = fontColor;
-		this.displayType = ISprite.TYPE_FADE_IN;
-		this.opacity = 0f;
-		this.duration = duration;
-		this.font = font;
-        this.displayText = text;
-		this.cellWidth = font.stringWidth(displayText) + (_frame_length_multiplier * 10);
-		this.cellHeight = font.getHeight() + 10;
-		if (this.cellHeight < 30) {
-			this.cellHeight = 30;
+		this._displayType = ISprite.TYPE_FADE_IN;
+		this._objectAlpha = 0f;
+		this._duration = d;
+		this._toastFont = font;
+        this._displayText = text;
+		this._cellWidth = _toastFont.stringWidth(_displayText) + (_frame_length_multiplier * 10);
+		this._cellHeight = _toastFont.getHeight() + 10;
+		if (this._cellHeight < 30) {
+			this._cellHeight = 30;
 		}
-		this.displayX = x + ((width / 2) - (cellWidth / 2));
-		this.displayY = (y + ((height / 2) - (cellHeight / 2))) - font.getHeight() / 2;
-		this.timer.setDelay(this.duration);
+		this._displayX = x + ((width / 2) - (_cellWidth / 2));
+		this._displayY = (y + ((height / 2) - (_cellHeight / 2))) - _toastFont.getHeight() / 2;
+		this._timer.setDelay(this._duration);
 		this.setText(text);
-		this.setSize(cellWidth, cellHeight);
+		this.setSize(_cellWidth, _cellHeight);
 		this.setLayer(10000);
 	}
 
 	public void fadeIn() {
-		this.displayType = ISprite.TYPE_FADE_IN;
-		this.opacity = 0f;
+		this._displayType = ISprite.TYPE_FADE_IN;
+		this._objectAlpha = 0f;
 	}
 
 	public void fadeOut() {
-		this.displayType = ISprite.TYPE_FADE_OUT;
-		this.opacity = MAX_OPACITY;
+		this._displayType = ISprite.TYPE_FADE_OUT;
+		this._objectAlpha = MAX_OPACITY;
 	}
 
 	@Override
@@ -195,16 +201,16 @@ public class LToast extends LComponent implements FontSet<LToast> {
 		int oc = g.color();
 		float alpha = g.alpha();
 		try {
-			g.setColor(backgroundColor);
-			g.setAlpha(opacity);
+			g.setColor(_backgroundColor);
+			g.setAlpha(_objectAlpha);
 			if (_background == null) {
-				g.fillRoundRect(displayX, displayY, w, h, _frame_radius);
+				g.fillRoundRect(_displayX, _displayY, w, h, _frame_radius);
 			} else {
-				g.draw(_background, displayX, displayY, w, h);
+				g.draw(_background, _displayX, _displayY, w, h);
 			}
 			g.setColor(_component_baseColor);
-			g.setAlpha(opacity);
-			font.drawString(g, displayText, displayX + displayTextX, displayY + displayTextY);
+			g.setAlpha(_objectAlpha);
+			_toastFont.drawString(g, _displayText, _displayX + _displayTextX, _displayY + _displayTextY);
 		} finally {
 			g.setColor(oc);
 			g.setAlpha(alpha);
@@ -212,20 +218,20 @@ public class LToast extends LComponent implements FontSet<LToast> {
 	}
 	
 	public float getDisplayTextX() {
-		return this.displayTextX;
+		return this._displayTextX;
 	}
 
 	public float getDisplayTextY() {
-		return this.displayTextY;
+		return this._displayTextY;
 	}
 	
 	public LToast setDisplayTextX(float x) {
-		this.displayTextX = x;
+		this._displayTextX = x;
 		return this;
 	}
 
 	public LToast setDisplayTextY(float y) {
-		this.displayTextY = y;
+		this._displayTextY = y;
 		return this;
 	}
 	
@@ -244,18 +250,18 @@ public class LToast extends LComponent implements FontSet<LToast> {
 	@Override
 	public void update(long elapsedTime) {
 		super.update(elapsedTime);
-		if (timer.action(elapsedTime)) {
-			if (displayType == ISprite.TYPE_FADE_IN) {
-				opacity += OPACITY_INCREMENT;
-				opacity = (MathUtils.min(opacity, MAX_OPACITY));
-				if (opacity >= MAX_OPACITY) {
-					stop = true;
+		if (_timer.action(elapsedTime)) {
+			if (_displayType == ISprite.TYPE_FADE_IN) {
+				_objectAlpha += OPACITY_INCREMENT;
+				_objectAlpha = (MathUtils.min(_objectAlpha, MAX_OPACITY));
+				if (_objectAlpha >= MAX_OPACITY) {
+					_toastStop = true;
 				}
 			} else {
-				opacity -= OPACITY_INCREMENT;
-				opacity = (MathUtils.max(opacity, 0));
-				if (opacity <= 0) {
-					stop = true;
+				_objectAlpha -= OPACITY_INCREMENT;
+				_objectAlpha = (MathUtils.max(_objectAlpha, 0));
+				if (_objectAlpha <= 0) {
+					_toastStop = true;
 					setVisible(false);
 					close();
 					if (getScreen() != null) {
@@ -267,28 +273,28 @@ public class LToast extends LComponent implements FontSet<LToast> {
 				}
 			}
 		}
-		if (stop && autoClose && lock.action(elapsedTime)) {
+		if (_toastStop && _autoClose && _locked.action(elapsedTime)) {
 			fadeOut();
 		}
 	}
 
 	public LComponent setText(String text) {
-		displayText = text;
-		displayTextX = MathUtils.min(cellWidth / 2 - 1, (cellWidth - font.stringWidth(displayText)) / 2);
-		displayTextY = MathUtils.min(cellHeight / 2 - 1, (cellHeight - font.stringHeight(displayText)) / 2) - 1;
+		_displayText = text;
+		_displayTextX = MathUtils.min(_cellWidth / 2 - 1, (_cellWidth - _toastFont.stringWidth(_displayText)) / 2);
+		_displayTextY = MathUtils.min(_cellHeight / 2 - 1, (_cellHeight - _toastFont.stringHeight(_displayText)) / 2) - 1;
 		return this;
 	}
 
 	public LComponent setDuration(int d) {
-		this.duration = d;
-		timer.setDelay(this.duration);
+		this._duration = d;
+		_timer.setDelay(this._duration);
 		return this;
 	}
 
 	@Override
 	public LComponent setBackground(LColor color) {
 		super.setBackground(color);
-		backgroundColor = color;
+		_backgroundColor = color;
 		return this;
 	}
 
@@ -298,25 +304,25 @@ public class LToast extends LComponent implements FontSet<LToast> {
 	}
 
 	public boolean isStop() {
-		return stop;
+		return _toastStop;
 	}
 
 	public boolean isAutoClose() {
-		return autoClose;
+		return _autoClose;
 	}
 
 	public float getOpacity() {
-		return opacity;
+		return _objectAlpha;
 	}
 
 	@Override
 	public IFont getFont() {
-		return font;
+		return _toastFont;
 	}
 
 	@Override
 	public LToast setFont(IFont f) {
-		this.font = f;
+		this._toastFont = f;
 		return this;
 	}
 
@@ -331,8 +337,8 @@ public class LToast extends LComponent implements FontSet<LToast> {
 		return _component_baseColor.cpy();
 	}
 
-	public LToast setAutoClose(boolean autoClose) {
-		this.autoClose = autoClose;
+	public LToast setAutoClose(boolean c) {
+		this._autoClose = c;
 		return this;
 	}
 

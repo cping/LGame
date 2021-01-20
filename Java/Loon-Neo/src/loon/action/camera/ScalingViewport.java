@@ -41,7 +41,6 @@ public class ScalingViewport extends Viewport {
 	}
 
 	public ScalingViewport(Mode mode, Scale scaling, boolean powerOfTwo, float worldWidth, float worldHeight) {
-		super();
 		this.mode = mode;
 		this.scaling = scaling;
 		this.powerOfTwo = powerOfTwo;
