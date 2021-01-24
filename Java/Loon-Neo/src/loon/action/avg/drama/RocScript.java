@@ -39,7 +39,7 @@ public class RocScript {
 
 	private Command macros_executer = null;
 
-	private TArray<IMacros> macros_listeners = new TArray<IMacros>(10);
+	private TArray<IMacros> macros_listeners = new TArray<IMacros>();
 
 	private final IScriptLog scriptLog;
 
@@ -154,7 +154,7 @@ public class RocScript {
 	// 函数
 	private ArrayMap functs;
 
-	private char[] _temp_contexts;
+	private char[] _cmdcontexts;
 	protected long _sleep = -1;
 
 	private boolean _stop = false;
@@ -287,7 +287,7 @@ public class RocScript {
 			char ch = chars[i];
 			if (ch == flag) {
 				out.append(flag);
-				if (i + 1 < chars.length && chars[i + 1] != '\n') {
+				if (i + 1 < chars.length && chars[i + 1] != LSystem.LF) {
 					out.append(LSystem.LS);
 				}
 			} else {
@@ -317,14 +317,14 @@ public class RocScript {
 
 	private String filtrScript(String script) {
 		StrBuilder out = new StrBuilder();
-		String[] context = StringUtils.split(script, new char[] { LSystem.LF, LSystem.CR, LSystem.TF }, true);
-
-		for (String s : context) {
-			if (s == null) {
+		String[] context = StringUtils.split(script, new char[] { LSystem.CR, LSystem.LF, LSystem.TF }, true);
+		for (String c : context) {
+			if (c == null) {
 				continue;
 			}
 
-			String cmd = filterCommand(s).trim();
+			String cmd = filterCommand(c).trim();
+
 			if (cmd.startsWith("print") && cmd.indexOf(LSystem.DOUBLE_QUOTES) != -1
 					&& cmd.indexOf(LSystem.COMMA) == -1) {
 				char[] chars = cmd.toCharArray();
@@ -335,7 +335,7 @@ public class RocScript {
 					}
 					if (!flag) {
 						if (chars[i] == '+') {
-							chars[i] = ',';
+							chars[i] = LSystem.COMMA;
 						}
 					}
 				}
@@ -348,7 +348,6 @@ public class RocScript {
 			}
 			out.append(LSystem.LS);
 		}
-
 		return out.toString();
 	}
 
@@ -398,8 +397,8 @@ public class RocScript {
 			size = MAX_TEXT_SIZE;
 		}
 		if (size != -1) {
-			_temp_contexts = new char[size];
-			System.arraycopy(charlist, 0, _temp_contexts, 0, size);
+			_cmdcontexts = new char[size];
+			System.arraycopy(charlist, 0, _cmdcontexts, 0, size);
 		}
 	}
 
@@ -699,7 +698,7 @@ public class RocScript {
 			return;
 		}
 		Command.resetCache();
-		String[] res = StringUtils.split(context, '\n');
+		String[] res = StringUtils.split(context, LSystem.LF);
 		if (macros_executer == null) {
 			macros_executer = new Command("script" + id, res);
 		} else {
@@ -1040,7 +1039,7 @@ public class RocScript {
 					}
 				}
 			} else if (value.indexOf(",") != -1) {
-				String[] split = StringUtils.split(value, ',');
+				String[] split = StringUtils.split(value, LSystem.COMMA);
 				StrBuilder sbr = new StrBuilder();
 				for (String s : split) {
 					if (s.indexOf("\"") == -1 && value.indexOf("/") == -1 && !isNumber(s)) {
@@ -1053,7 +1052,7 @@ public class RocScript {
 					} else {
 						sbr.append(s);
 					}
-					sbr.append(',');
+					sbr.append(LSystem.COMMA);
 				}
 				value = sbr.toString();
 				if (value.endsWith(",")) {
@@ -1242,12 +1241,11 @@ public class RocScript {
 	 * @throws ScriptException
 	 */
 	private boolean nextCommand() throws ScriptException {
-
 		if (itemType == MACROS && macroType != -1) {
 			char flag = macros[1].toCharArray()[0];
 			StrBuilder sbr = new StrBuilder(1024);
-			while (textIdx < _temp_contexts.length) {
-				char ch = _temp_contexts[textIdx++];
+			while (textIdx < _cmdcontexts.length) {
+				char ch = _cmdcontexts[textIdx++];
 				if (flag == ch) {
 					break;
 				}
@@ -1259,23 +1257,24 @@ public class RocScript {
 			return true;
 		}
 
-		char ch = ' ';
+		char ch = LSystem.SPACE;
 
 		item = LSystem.EMPTY;
 		itemType = NONE;
 		commType = UNKNCOM;
 		macroType = -1;
-		while (textIdx < _temp_contexts.length && isSpaceOrTab(_temp_contexts[textIdx])) {
+
+		while (textIdx < _cmdcontexts.length && isSpaceOrTab(_cmdcontexts[textIdx])) {
 			textIdx++;
 		}
 
-		if (textIdx >= _temp_contexts.length) {
+		if (textIdx >= _cmdcontexts.length) {
 			itemType = EOP;
 			item = " ";
 			return false;
 		}
 
-		if (_temp_contexts[textIdx] == '\r') {
+		if (_cmdcontexts[textIdx] == LSystem.CR) {
 			textIdx += 2;
 			itemType = EOL;
 			item = " ";
@@ -1283,10 +1282,10 @@ public class RocScript {
 			return true;
 		}
 
-		ch = _temp_contexts[textIdx];
+		ch = _cmdcontexts[textIdx];
 
-		if (ch == '#' || (ch == '/' && textIdx + 1 < _temp_contexts.length && _temp_contexts[textIdx + 1] == '/')) {
-			while (textIdx < _temp_contexts.length && _temp_contexts[textIdx] != '\r') {
+		if (ch == '#' || (ch == '/' && textIdx + 1 < _cmdcontexts.length && _cmdcontexts[textIdx + 1] == '/')) {
+			while (textIdx < _cmdcontexts.length && _cmdcontexts[textIdx] != LSystem.CR) {
 				textIdx++;
 			}
 			textIdx += 2;
@@ -1299,7 +1298,7 @@ public class RocScript {
 		if (ch == '<' || ch == '>' || ch == '=') {
 			switch (ch) {
 			case '<':
-				if (_temp_contexts[textIdx + 1] == '=') {
+				if (_cmdcontexts[textIdx + 1] == '=') {
 					item = String.valueOf(LE);
 					textIdx += 2;
 				} else {
@@ -1308,7 +1307,7 @@ public class RocScript {
 				}
 				break;
 			case '>':
-				if (_temp_contexts[textIdx + 1] == '=') {
+				if (_cmdcontexts[textIdx + 1] == '=') {
 					item = String.valueOf(GE);
 					textIdx += 2;
 				} else {
@@ -1317,7 +1316,7 @@ public class RocScript {
 				}
 				break;
 			case '=':
-				if (_temp_contexts[textIdx + 1] == '=') {
+				if (_cmdcontexts[textIdx + 1] == '=') {
 					item = String.valueOf(EQ);
 					textIdx += 2;
 				} else {
@@ -1332,19 +1331,19 @@ public class RocScript {
 		}
 
 		if (isDelim(ch)) {
-			item += _temp_contexts[textIdx];
+			item += _cmdcontexts[textIdx];
 			textIdx++;
 			itemType = DELIMITER;
 			return true;
-		} else if (ch == LSystem.DOUBLE_QUOTES) {
+		} else if (ch == '"') {
 			textIdx++;
-			ch = _temp_contexts[textIdx];
-			while (ch != LSystem.DOUBLE_QUOTES && ch != '\r') {
+			ch = _cmdcontexts[textIdx];
+			while (ch != '"' && ch != LSystem.CR) {
 				item += ch;
 				textIdx++;
-				ch = _temp_contexts[textIdx];
+				ch = _cmdcontexts[textIdx];
 			}
-			if (ch == '\r') {
+			if (ch == LSystem.CR) {
 				handleError(MISSQUOTE);
 				return false;
 			}
@@ -1352,8 +1351,8 @@ public class RocScript {
 			itemType = STRING;
 			return true;
 		} else {
-			while (textIdx < _temp_contexts.length && !isDelim(_temp_contexts[textIdx])) {
-				item += _temp_contexts[textIdx];
+			while (textIdx < _cmdcontexts.length && !isDelim(_cmdcontexts[textIdx])) {
+				item += _cmdcontexts[textIdx];
 				textIdx++;
 			}
 			if (isNumber(item)) {
@@ -1371,16 +1370,16 @@ public class RocScript {
 				if (commType == WAIT) {
 					item = LSystem.EMPTY;
 					int count = 0;
-					while (textIdx < _temp_contexts.length) {
-						ch = _temp_contexts[textIdx];
-						if ((ch == ' ') || (ch == '\n') || (ch == '\t') || (ch == '\r')) {
+					while (textIdx < _cmdcontexts.length) {
+						ch = _cmdcontexts[textIdx];
+						if ((ch == LSystem.SPACE) || (ch == LSystem.LF) || (ch == LSystem.TF) || (ch == LSystem.CR)) {
 							count++;
 						}
 						if (count > 1) {
 							break;
 						}
-						if (ch != ' ') {
-							item += _temp_contexts[textIdx];
+						if (ch != LSystem.SPACE) {
+							item += _cmdcontexts[textIdx];
 						}
 						textIdx++;
 					}
@@ -1772,15 +1771,17 @@ public class RocScript {
 		}
 	}
 
+	private final static String _delimString = " \r,<>+-/*%^=();#";
+
 	private boolean isDelim(char c) {
-		if ((" \r,<>+-/*%^=();#".indexOf(c) != -1)) {
+		if ((_delimString.indexOf(c) != -1)) {
 			return true;
 		}
 		return false;
 	}
 
 	boolean isSpaceOrTab(char c) {
-		if (c == LSystem.CR || c == LSystem.TF) {
+		if (c == LSystem.SPACE || c == LSystem.TF) {
 			return true;
 		}
 		return false;
@@ -1812,11 +1813,17 @@ public class RocScript {
 	}
 
 	protected boolean isBoolean(Object o) {
+		if (o == null) {
+			return false;
+		}
 		String str = o.toString().toLowerCase();
 		return StringUtils.isBoolean(str) || MathUtils.isNan(str);
 	}
 
 	protected boolean isNumber(Object o) {
+		if (o == null) {
+			return false;
+		}
 		String str = o.toString();
 		return MathUtils.isNan(str);
 	}
@@ -1943,10 +1950,10 @@ public class RocScript {
 				packName = vname.substring(size, vname.length());
 			}
 			json = (Json.Object) o;
-			if (packName.indexOf("[") != -1 && packName.indexOf("]") != -1) {
-				if (packName.indexOf(".") == -1) {
-					start = packName.indexOf('[');
-					end = packName.indexOf(']');
+			if (packName.indexOf(LSystem.BRACKET_START) != -1 && packName.indexOf(LSystem.BRACKET_END) != -1) {
+				if (packName.indexOf(LSystem.DOT) == -1) {
+					start = packName.indexOf(LSystem.BRACKET_START);
+					end = packName.indexOf(LSystem.BRACKET_END);
 					String idxName = packName.substring(start + 1, end);
 					packName = packName.substring(0, start);
 					if (json.containsKey(packName)) {
@@ -1967,14 +1974,14 @@ public class RocScript {
 						}
 					}
 				} else {
-					String[] split = StringUtils.split(packName, ".");
+					String[] split = StringUtils.split(packName, LSystem.DOT);
 					Object obj = null;
 					for (String n : split) {
 						if (obj == null) {
-							if (n.indexOf("[") != -1 && n.indexOf("]") != -1) {
-								if (n.indexOf(".") == -1) {
-									start = n.indexOf('[');
-									end = n.indexOf(']');
+							if (n.indexOf(LSystem.BRACKET_START) != -1 && n.indexOf(LSystem.BRACKET_END) != -1) {
+								if (n.indexOf(LSystem.DOT) == -1) {
+									start = n.indexOf(LSystem.BRACKET_START);
+									end = n.indexOf(LSystem.BRACKET_END);
 									String idxName = n.substring(start + 1, end);
 									n = n.substring(0, start);
 									if (json.containsKey(n)) {
@@ -1996,7 +2003,7 @@ public class RocScript {
 									}
 								}
 							} else {
-								if (packName.indexOf(".") == -1) {
+								if (packName.indexOf(LSystem.DOT) == -1) {
 									if (o != null && o instanceof Json.Object) {
 										if (json.containsKey(packName)) {
 											o = json.getObject(packName);
@@ -2004,7 +2011,7 @@ public class RocScript {
 									}
 								} else {
 									if (o != null && o instanceof Json.Object) {
-										String[] splits = StringUtils.split(packName, ',');
+										String[] splits = StringUtils.split(packName, LSystem.COMMA);
 										Object v = null;
 										for (String s : splits) {
 											if (v == null) {
@@ -2023,10 +2030,10 @@ public class RocScript {
 								}
 							}
 						} else {
-							if (n.indexOf("[") != -1 && n.indexOf("]") != -1) {
-								if (n.indexOf(".") == -1) {
-									start = n.indexOf('[');
-									end = n.indexOf(']');
+							if (n.indexOf(LSystem.BRACKET_START) != -1 && n.indexOf(LSystem.BRACKET_END) != -1) {
+								if (n.indexOf(LSystem.DOT) == -1) {
+									start = n.indexOf(LSystem.BRACKET_START);
+									end = n.indexOf(LSystem.BRACKET_END);
 									String idxName = n.substring(start + 1, end);
 									n = n.substring(0, start);
 									if (((Json.Object) obj).containsKey(n)) {
@@ -2047,7 +2054,7 @@ public class RocScript {
 										}
 									}
 								}
-							} else if (n.indexOf(".") == -1) {
+							} else if (n.indexOf(LSystem.DOT) == -1) {
 								if (obj != null && obj instanceof Json.Object) {
 									if (((Json.Object) obj).containsKey(n)) {
 										obj = ((Json.Object) obj).getObject(n);
@@ -2055,7 +2062,7 @@ public class RocScript {
 								}
 							} else {
 								if (obj != null && obj instanceof Json.Object) {
-									String[] splits = StringUtils.split(n, ',');
+									String[] splits = StringUtils.split(n, LSystem.COMMA);
 									Object v = null;
 									for (String s : splits) {
 										if (v == null) {
@@ -2079,7 +2086,7 @@ public class RocScript {
 				}
 
 			} else {
-				if (packName.indexOf(".") == -1) {
+				if (packName.indexOf(LSystem.DOT) == -1) {
 					if (o != null && o instanceof Json.Object) {
 						if (json.containsKey(packName)) {
 							o = json.getObject(packName);
@@ -2087,7 +2094,7 @@ public class RocScript {
 					}
 				} else {
 					if (o != null && o instanceof Json.Object) {
-						String[] split = StringUtils.split(packName, ',');
+						String[] split = StringUtils.split(packName, LSystem.COMMA);
 						Object v = null;
 						for (String n : split) {
 							if (v == null) {
@@ -2222,6 +2229,6 @@ public class RocScript {
 
 	@Override
 	public String toString() {
-		return "{" + new String(_temp_contexts) + "}";
+		return "{" + new String(_cmdcontexts) + "}";
 	}
 }

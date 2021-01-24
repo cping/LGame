@@ -138,7 +138,7 @@ public class TArray<T> implements Iterable<T>, IArray {
 	public T[] items;
 
 	public int size;
-	public boolean ordered;
+	private boolean ordered;
 
 	public TArray() {
 		this(true, CollectionUtils.INITIAL_CAPACITY);
@@ -609,14 +609,14 @@ public class TArray<T> implements Iterable<T>, IArray {
 		return new TArray<T>(this);
 	}
 
-	private ArrayIterable<T> iterable;
+	private ArrayIterable<T> _iterable;
 
 	@Override
 	public Iterator<T> iterator() {
-		if (iterable == null) {
-			iterable = new ArrayIterable<T>(this);
+		if (_iterable == null) {
+			_iterable = new ArrayIterable<T>(this);
 		}
-		return iterable.iterator();
+		return _iterable.iterator();
 	}
 
 	@Override

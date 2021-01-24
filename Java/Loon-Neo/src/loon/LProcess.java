@@ -38,6 +38,7 @@ import loon.utils.ListMap;
 import loon.utils.MathUtils;
 import loon.utils.ObjectBundle;
 import loon.utils.Resolution;
+import loon.utils.StringUtils;
 import loon.utils.TArray;
 import loon.utils.processes.GameProcessType;
 import loon.utils.processes.RealtimeProcess;
@@ -58,8 +59,6 @@ public class LProcess implements LRelease {
 	private EmulatorButtons _emulatorButtons;
 
 	private final ListMap<CharSequence, Screen> _screenMap;
-
-	private final TArray<Screen> _screens;
 
 	private boolean _isInstance;
 
@@ -82,7 +81,6 @@ public class LProcess implements LRelease {
 	public LProcess(LGame game) {
 		this._game = game;
 		this._bundle = new ObjectBundle();
-		this._screens = new TArray<Screen>();
 		this._screenMap = new ListMap<CharSequence, Screen>();
 		this.initSetting();
 	}
@@ -380,7 +378,7 @@ public class LProcess implements LRelease {
 				RealtimeProcessManager.get().addProcess(process);
 
 				if (put) {
-					_screens.add(screen);
+					addScreen(screen);
 				}
 				_loadingScreen = null;
 			}
@@ -790,25 +788,35 @@ public class LProcess implements LRelease {
 		return _currentScreen;
 	}
 
-	public void clearScreens() {
-		_screenMap.clear();
-		for (Screen screen : _screens) {
+	public LProcess clearScreens() {
+		for (Screen screen : _screenMap) {
 			if (screen != null) {
 				screen.destroy();
 			}
 		}
-		_screens.clear();
-	}
-
-	public void clearScreenMaps() {
 		_screenMap.clear();
+		return this;
 	}
 
-	public void addScreen(CharSequence name, Screen screen) {
-		if (!_screenMap.containsKey(name)) {
-			_screenMap.put(name, screen);
-			addScreen(screen);
+	public LProcess addScreen(CharSequence name, Screen screen) {
+		if (screen == null) {
+			throw new LSysException("Cannot create a Screen instance !");
 		}
+		CharSequence key = StringUtils.isEmpty(name) ? LSystem.UNKNOWN : name;
+		if (!_screenMap.containsKey(key)) {
+			_screenMap.put(key, screen);
+		}
+		return this;
+	}
+
+	public LProcess addScreen(final Screen screen) {
+		if (screen == null) {
+			throw new LSysException("Cannot create a Screen instance !");
+		}
+		if (!_screenMap.containsValue(screen)) {
+			addScreen(screen.getName(), screen);
+		}
+		return this;
 	}
 
 	public boolean containsScreen(CharSequence name) {
@@ -824,7 +832,7 @@ public class LProcess implements LRelease {
 	}
 
 	public Screen runScreenClassName(CharSequence name) {
-		for (Screen screen : _screens) {
+		for (Screen screen : _screenMap) {
 			if (screen != null) {
 				if (name.equals(screen.getName())) {
 					setScreen(screen);
@@ -836,7 +844,7 @@ public class LProcess implements LRelease {
 	}
 
 	public Screen runScreenName(CharSequence name) {
-		for (Screen screen : _screens) {
+		for (Screen screen : _screenMap) {
 			if (screen != null) {
 				if (name.equals(screen.getScreenName())) {
 					setScreen(screen);
@@ -857,9 +865,9 @@ public class LProcess implements LRelease {
 	}
 
 	public void runPopScreen() {
-		int size = _screens.size;
+		int size = _screenMap.size;
 		if (size > 0) {
-			Screen o = _screens.pop();
+			Screen o = _screenMap.pop();
 			if (o != _currentScreen) {
 				setScreen(o, false);
 			}
@@ -871,9 +879,9 @@ public class LProcess implements LRelease {
 	}
 
 	public void runFirstScreen() {
-		int size = _screens.size;
+		int size = _screenMap.size;
 		if (size > 0) {
-			Screen o = _screens.first();
+			Screen o = _screenMap.first();
 			if (o != _currentScreen) {
 				setScreen(o, false);
 			}
@@ -881,9 +889,9 @@ public class LProcess implements LRelease {
 	}
 
 	public void runLastScreen() {
-		int size = _screens.size;
+		int size = _screenMap.size;
 		if (size > 0) {
-			Screen o = _screens.last();
+			Screen o = _screenMap.last();
 			if (o != _currentScreen) {
 				setScreen(o, false);
 			}
@@ -891,12 +899,12 @@ public class LProcess implements LRelease {
 	}
 
 	public void runPreviousScreen() {
-		int size = _screens.size;
+		int size = _screenMap.size;
 		if (size > 0) {
 			for (int i = 0; i < size; i++) {
-				if (_currentScreen == _screens.get(i)) {
+				if (_currentScreen == _screenMap.getValueAt(i)) {
 					if (i - 1 > -1) {
-						setScreen(_screens.get(i - 1), false);
+						setScreen(_screenMap.getValueAt(i - 1), false);
 						return;
 					}
 				}
@@ -905,12 +913,12 @@ public class LProcess implements LRelease {
 	}
 
 	public void runNextScreen() {
-		int size = _screens.size;
+		int size = _screenMap.size;
 		if (size > 0) {
 			for (int i = 0; i < size; i++) {
-				if (_currentScreen == _screens.get(i)) {
+				if (_currentScreen == _screenMap.getValueAt(i)) {
 					if (i + 1 < size) {
-						setScreen(_screens.get(i + 1), false);
+						setScreen(_screenMap.getValueAt(i + 1), false);
 						return;
 					}
 				}
@@ -919,37 +927,28 @@ public class LProcess implements LRelease {
 	}
 
 	public void runIndexScreen(int index) {
-		int size = _screens.size;
+		int size = _screenMap.size;
 		if (size > 0 && index > -1 && index < size) {
-			Object o = _screens.get(index);
+			Object o = _screenMap.getValueAt(index);
 			if (_currentScreen != o) {
-				setScreen(_screens.get(index), false);
+				setScreen(_screenMap.getValueAt(index), false);
 			}
 		}
 	}
 
 	public boolean containsScreen(final Screen screen) {
 		if (screen == null) {
-			throw new LSysException("Cannot create a [IScreen] instance !");
+			throw new LSysException("Cannot create a Screen instance !");
 		}
-		return _screens.contains(screen);
-	}
-
-	public void addScreen(final Screen screen) {
-		if (screen == null) {
-			throw new LSysException("Cannot create a [IScreen] instance !");
-		}
-		if (!_screens.contains(screen)) {
-			_screens.add(screen);
-		}
+		return _screenMap.containsValue(screen);
 	}
 
 	public TArray<Screen> getScreens() {
-		return _screens.cpy();
+		return _screenMap.valuesToArray();
 	}
 
 	public int getScreenCount() {
-		return _screens.size;
+		return _screenMap.size;
 	}
 
 	public void setScreen(final Screen screen) {
@@ -1002,7 +1001,7 @@ public class LProcess implements LRelease {
 			} else {
 				setEmulatorListener(null);
 			}
-			this._screens.add(screen);
+			addScreen(screen);
 		}
 	}
 

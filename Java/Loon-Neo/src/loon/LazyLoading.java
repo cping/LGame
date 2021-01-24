@@ -22,7 +22,7 @@ package loon;
 
 public interface LazyLoading {
 
-	public static interface Data {
+	public interface Data {
 		 Screen onScreen();
 	}
 
