@@ -27,6 +27,7 @@ import loon.canvas.LColor;
 import loon.font.FontSet;
 import loon.font.IFont;
 import loon.opengl.GLEx;
+import loon.utils.MathUtils;
 import loon.utils.TArray;
 
 /**
@@ -34,28 +35,28 @@ import loon.utils.TArray;
  */
 public class LLabels extends LComponent implements FontSet<LLabels> {
 
-	class Info {
+	public class Info {
 
-		LColor color;
+		public LColor color;
 
-		String message;
+		public String message;
 
-		float x;
-		float y;
+		public float x;
+		public float y;
 
-		float stateTime;
-		float length;
+		public float stateTime;
+		public float length;
 
-		float speed;
+		public float speed;
 	}
 
 	private IFont font;
 
 	private LColor fontColor;
 
-	public TArray<Info> labels = new TArray<Info>();
+	public final TArray<Info> labels = new TArray<Info>();
 
-	private float speed = 0;
+	private float speed = 0f;
 
 	public LLabels(int x, int y, int width, int height) {
 		this(LSystem.getSystemGameFont(), x, y, width, height);
@@ -73,7 +74,7 @@ public class LLabels extends LComponent implements FontSet<LLabels> {
 			return;
 		}
 		super.update(elapsedTime);
-		this.speed = elapsedTime / 1000f;
+		this.speed = MathUtils.max(elapsedTime / 1000f, LSystem.MIN_SECONE_SPEED_FIXED);
 
 	}
 
@@ -98,15 +99,15 @@ public class LLabels extends LComponent implements FontSet<LLabels> {
 		}
 	}
 
-	public void addLabel(String message, LColor color) {
-		addLabel(0, 0, message, -1, color, -1);
+	public LLabels addLabel(String message, LColor color) {
+		return addLabel(0, 0, message, -1, color, -1);
 	}
 
-	public void addLabel(float x, float y, String message, LColor color) {
-		addLabel(x, y, message, -1, color, -1);
+	public LLabels addLabel(float x, float y, String message, LColor color) {
+		return addLabel(x, y, message, -1, color, -1);
 	}
 
-	public void addLabel(float x, float y, String message, float length, LColor color, float speed) {
+	public LLabels addLabel(float x, float y, String message, float length, LColor color, float speed) {
 		Info label = new Info();
 		label.x = x;
 		label.y = y;
@@ -114,7 +115,19 @@ public class LLabels extends LComponent implements FontSet<LLabels> {
 		label.color = color;
 		label.length = length;
 		label.speed = speed;
-		labels.add(label);
+		return addLabel(label);
+	}
+
+	public LLabels addLabel(Info info) {
+		labels.add(info);
+		return this;
+	}
+
+	public LLabels clear() {
+		synchronized (labels) {
+			labels.clear();
+		}
+		return this;
 	}
 
 	@Override
@@ -147,6 +160,12 @@ public class LLabels extends LComponent implements FontSet<LLabels> {
 	@Override
 	public String getUIName() {
 		return "Labels";
+	}
+
+	@Override
+	public void close() {
+		super.close();
+		clear();
 	}
 
 }

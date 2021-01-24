@@ -117,8 +117,8 @@ public class ListMap<K, V> implements Iterable<V>, IArray  {
 	public ListMap(ListMap<K, V> array) {
 		this(array.ordered, array.size);
 		size = array.size;
-		System.arraycopy(this.keys, 0, this.keys, 0, size);
-		System.arraycopy(this.values, 0, this.values, 0, size);
+		System.arraycopy(array.keys, 0, this.keys, 0, size);
+		System.arraycopy(array.values, 0, this.values, 0, size);
 	}
 
 	public void put(K key, V value) {

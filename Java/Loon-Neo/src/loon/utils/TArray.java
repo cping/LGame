@@ -138,7 +138,8 @@ public class TArray<T> implements Iterable<T>, IArray {
 	public T[] items;
 
 	public int size;
-	private boolean ordered;
+	
+	public boolean ordered;
 
 	public TArray() {
 		this(true, CollectionUtils.INITIAL_CAPACITY);

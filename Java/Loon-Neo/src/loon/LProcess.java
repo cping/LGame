@@ -823,19 +823,19 @@ public class LProcess implements LRelease {
 		return _screenMap.containsKey(name);
 	}
 
+	public boolean containsScreenValue(Screen screen) {
+		return _screenMap.containsValue(screen);
+	}
+
 	public Screen getScreen(CharSequence name) {
-		Screen screen = _screenMap.get(name);
-		if (screen != null) {
-			return screen;
-		}
-		return null;
+		return _screenMap.get(name);
 	}
 
 	public Screen runScreenClassName(CharSequence name) {
 		for (Screen screen : _screenMap) {
 			if (screen != null) {
 				if (name.equals(screen.getName())) {
-					setScreen(screen);
+					setScreen(screen, false);
 					return screen;
 				}
 			}
@@ -847,7 +847,7 @@ public class LProcess implements LRelease {
 		for (Screen screen : _screenMap) {
 			if (screen != null) {
 				if (name.equals(screen.getScreenName())) {
-					setScreen(screen);
+					setScreen(screen, false);
 					return screen;
 				}
 			}
@@ -858,7 +858,7 @@ public class LProcess implements LRelease {
 	public Screen runScreen(CharSequence name) {
 		Screen screen = getScreen(name);
 		if (screen != null) {
-			setScreen(screen);
+			setScreen(screen, false);
 			return screen;
 		}
 		return null;

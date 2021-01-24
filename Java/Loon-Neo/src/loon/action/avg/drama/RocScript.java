@@ -302,7 +302,7 @@ public class RocScript {
 		char lastChar = 0;
 		for (int i = 0; i < cmd.length(); i++) {
 			char ch = cmd.charAt(i);
-			if (ch == LSystem.SINGLE_QUOTE && (lastChar != '\\')) {
+			if (ch == LSystem.SINGLE_QUOTE && (lastChar != LSystem.BACKSLASH)) {
 				tflag = !tflag;
 			}
 			if (tflag) {
@@ -1031,18 +1031,19 @@ public class RocScript {
 				}
 			}
 
-			if (value.length() > 0 && value.indexOf(",") == -1) {
-				if (value.indexOf("\"") == -1 && value.indexOf("/") == -1 && !isNumber(value)) {
+			if (value.length() > 0 && value.indexOf(LSystem.COMMA) == -1) {
+				if (value.indexOf(LSystem.DOUBLE_QUOTES) == -1 && value.indexOf(LSystem.SLASH) == -1
+						&& !isNumber(value)) {
 					String tmp = getVarVal(value).toString();
 					if (!LSystem.UNKNOWN.equalsIgnoreCase(tmp)) {
 						value = tmp;
 					}
 				}
-			} else if (value.indexOf(",") != -1) {
+			} else if (value.indexOf(LSystem.COMMA) != -1) {
 				String[] split = StringUtils.split(value, LSystem.COMMA);
 				StrBuilder sbr = new StrBuilder();
 				for (String s : split) {
-					if (s.indexOf("\"") == -1 && value.indexOf("/") == -1 && !isNumber(s)) {
+					if (s.indexOf(LSystem.DOUBLE_QUOTES) == -1 && value.indexOf(LSystem.SLASH) == -1 && !isNumber(s)) {
 						String tmp = getVarVal(s).toString();
 						if (!LSystem.UNKNOWN.equalsIgnoreCase(tmp)) {
 							sbr.append(tmp.toString());
@@ -1426,7 +1427,7 @@ public class RocScript {
 		debug("Analysis");
 		Object result;
 
-		if (item.equals(EOL) || item.equals(EOP)) {
+		if (itemType == EOL || itemType == EOP) {
 			handleError(EXPERR);
 		}
 		result = evalExp1();
