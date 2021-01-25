@@ -20,12 +20,15 @@
  */
 package loon.geom;
 
-public class StrValue {
+import loon.LRelease;
+import loon.LSystem;
+
+public class StrValue implements LRelease{
 
 	private String value;
 
 	public StrValue() {
-		this("");
+		this(LSystem.EMPTY);
 	}
 
 	public StrValue(String v) {
@@ -48,6 +51,11 @@ public class StrValue {
 	@Override
 	public String toString() {
 		return value;
+	}
+
+	@Override
+	public void close() {
+		this.value = LSystem.EMPTY;
 	}
 
 }

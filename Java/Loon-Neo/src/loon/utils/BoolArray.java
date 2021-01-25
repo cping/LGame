@@ -20,10 +20,11 @@
  */
 package loon.utils;
 
+import loon.LRelease;
 import loon.LSysException;
 import loon.events.QueryEvent;
 
-public class BoolArray implements IArray {
+public class BoolArray implements IArray, LRelease {
 
 	/**
 	 * 产生一组指定范围的数据
@@ -91,7 +92,7 @@ public class BoolArray implements IArray {
 		this(true, array, 0, array.length);
 	}
 
-	public BoolArray(boolean[] array,int size) {
+	public BoolArray(boolean[] array, int size) {
 		this(true, array, 0, size);
 	}
 
@@ -413,7 +414,7 @@ public class BoolArray implements IArray {
 		}
 		return newArrays;
 	}
-	
+
 	public boolean[] toArray() {
 		boolean[] array = new boolean[length];
 		System.arraycopy(items, 0, array, 0, length);
@@ -553,7 +554,7 @@ public class BoolArray implements IArray {
 	public BoolArray cpy() {
 		return new BoolArray(this);
 	}
-	
+
 	public String toString(char split) {
 		if (length == 0) {
 			return "[]";
@@ -582,5 +583,11 @@ public class BoolArray implements IArray {
 			hashCode = hashCode * 31 + (items[i] ? 1231 : 1237);
 		}
 		return hashCode;
+	}
+
+	@Override
+	public void close() {
+		this.items = null;
+		this.length = 0;
 	}
 }

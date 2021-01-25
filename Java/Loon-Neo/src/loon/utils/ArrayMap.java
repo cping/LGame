@@ -21,9 +21,10 @@
  */
 package loon.utils;
 
+import loon.LRelease;
 import loon.LSysException;
 
-public class ArrayMap implements IArray {
+public class ArrayMap implements IArray, LRelease {
 
 	public static class Entry {
 
@@ -541,6 +542,13 @@ public class ArrayMap implements IArray {
 		}
 		buffer.append(']');
 		return buffer.toString();
+	}
+
+	@Override
+	public void close() {
+		this.keysTable = null;
+		this.valuesTable = null;
+		this.size = 0;
 	}
 
 }

@@ -20,6 +20,7 @@
  */
 package loon.geom;
 
+import loon.LRelease;
 import loon.LSystem;
 import loon.action.ActionBind;
 import loon.utils.MathUtils;
@@ -30,7 +31,7 @@ import loon.utils.StringUtils;
 /**
  * 一个最基础的矩形碰撞器
  */
-public class AABB implements XY, BoxSize {
+public class AABB implements XY, BoxSize, LRelease {
 
 	public final static AABB at(String v) {
 		if (StringUtils.isEmpty(v)) {
@@ -126,12 +127,12 @@ public class AABB implements XY, BoxSize {
 		return this;
 	}
 
-    public float distance(Vector2f other) {
-        float dx = getX() - other.x;
-        float dy = getY() - other.y;
-        return MathUtils.sqrt(dx * dx + dy * dy);
-    }
-    
+	public float distance(Vector2f other) {
+		float dx = getX() - other.x;
+		float dy = getY() - other.y;
+		return MathUtils.sqrt(dx * dx + dy * dy);
+	}
+
 	public AABB merge(AABB other) {
 		float minX = MathUtils.min(this.getX(), other.getX());
 		float minY = MathUtils.min(this.getY(), other.getY());
@@ -293,6 +294,11 @@ public class AABB implements XY, BoxSize {
 		StringKeyValue builder = new StringKeyValue("AABB");
 		builder.kv("minX", minX).comma().kv("minY", minY).comma().kv("maxX", maxX).comma().kv("maxY", maxY);
 		return builder.toString();
+	}
+
+	@Override
+	public void close() {
+		this.minX = this.minY = this.maxX = this.maxY = 0;
 	}
 
 }

@@ -22,9 +22,10 @@ package loon.utils;
 
 import java.util.Iterator;
 
+import loon.LRelease;
 import loon.LSysException;
 
-public class IntMap<T> implements IArray, Iterable<T> {
+public class IntMap<T> implements IArray, Iterable<T>, LRelease {
 
 	public static class Entry<T> {
 
@@ -80,7 +81,7 @@ public class IntMap<T> implements IArray, Iterable<T> {
 		}
 	}
 
-	private static final int EMPTY = 0;
+	private static final int MAP_EMPTY = 0;
 
 	private float loader_factor;
 
@@ -217,7 +218,7 @@ public class IntMap<T> implements IArray, Iterable<T> {
 		int found = 0;
 		for (int i = 0; i < _capacity; i++) {
 			final long key = _keysTable[i];
-			if (key != EMPTY) {
+			if (key != MAP_EMPTY) {
 				entrys[found] = new Entry<T>(key, _valuesTable[i]);
 				found++;
 			}
@@ -490,7 +491,7 @@ public class IntMap<T> implements IArray, Iterable<T> {
 		int i = keyTable.length;
 		while (i-- > 0) {
 			long key = keyTable[i];
-			if (key == EMPTY)
+			if (key == MAP_EMPTY)
 				continue;
 			buffer.append(key);
 			buffer.append('=');
@@ -499,7 +500,7 @@ public class IntMap<T> implements IArray, Iterable<T> {
 		}
 		while (i-- > 0) {
 			long key = keyTable[i];
-			if (key == EMPTY)
+			if (key == MAP_EMPTY)
 				continue;
 			buffer.append(", ");
 			buffer.append(key);
@@ -508,6 +509,13 @@ public class IntMap<T> implements IArray, Iterable<T> {
 		}
 		buffer.append(']');
 		return buffer.toString();
+	}
+
+	@Override
+	public void close() {
+		this._capacity = 0;
+		this._keysTable = null;
+		this._valuesTable = null;
 	}
 
 }

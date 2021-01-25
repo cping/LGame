@@ -20,7 +20,9 @@
  */
 package loon.geom;
 
-public class XYValue {
+import loon.LRelease;
+
+public class XYValue implements LRelease {
 
 	private XY value = null;
 
@@ -44,6 +46,11 @@ public class XYValue {
 	@Override
 	public String toString() {
 		return value.toString();
+	}
+
+	@Override
+	public void close() {
+		this.value = null;
 	}
 
 }

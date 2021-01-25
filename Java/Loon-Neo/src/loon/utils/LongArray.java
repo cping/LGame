@@ -22,9 +22,10 @@ package loon.utils;
 
 import java.util.Arrays;
 
+import loon.LRelease;
 import loon.LSysException;
 
-public class LongArray implements IArray {
+public class LongArray implements IArray, LRelease {
 
 	/**
 	 * 产生一组指定范围的数据
@@ -111,7 +112,7 @@ public class LongArray implements IArray {
 		this(true, array, 0, array.length);
 	}
 
-	public LongArray(long[] array,int size) {
+	public LongArray(long[] array, int size) {
 		this(true, array, 0, size);
 	}
 
@@ -572,7 +573,7 @@ public class LongArray implements IArray {
 	public LongArray cpy() {
 		return new LongArray(this);
 	}
-	
+
 	public String toString(char split) {
 		if (length == 0) {
 			return "[]";
@@ -592,5 +593,11 @@ public class LongArray implements IArray {
 	@Override
 	public String toString() {
 		return toString(',');
+	}
+
+	@Override
+	public void close() {
+		this.length = 0;
+		this.items = null;
 	}
 }

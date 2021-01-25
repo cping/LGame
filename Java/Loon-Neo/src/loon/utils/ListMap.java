@@ -2,9 +2,10 @@ package loon.utils;
 
 import java.util.Iterator;
 
+import loon.LRelease;
 import loon.LSysException;
 
-public class ListMap<K, V> implements Iterable<V>, IArray  {
+public class ListMap<K, V> implements Iterable<V>, IArray, LRelease {
 
 	public final static class ListMapIterable<T> implements Iterable<T> {
 
@@ -93,7 +94,7 @@ public class ListMap<K, V> implements Iterable<V>, IArray  {
 			return this;
 		}
 	}
-	
+
 	public K[] keys;
 	public V[] values;
 	public int size;
@@ -498,7 +499,7 @@ public class ListMap<K, V> implements Iterable<V>, IArray  {
 		}
 		return _iterable.iterator();
 	}
-	
+
 	@Override
 	public int hashCode() {
 		int hashCode = 1;
@@ -538,6 +539,13 @@ public class ListMap<K, V> implements Iterable<V>, IArray  {
 		}
 		buffer.append(']');
 		return buffer.toString();
+	}
+
+	@Override
+	public void close() {
+		this.keys = null;
+		this.values = null;
+		this.size = 0;
 	}
 
 }

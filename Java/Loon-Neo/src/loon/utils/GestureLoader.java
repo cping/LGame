@@ -20,9 +20,10 @@
  */
 package loon.utils;
 
+import loon.LRelease;
 import loon.geom.PointF;
 
-public class GestureLoader {
+public class GestureLoader implements LRelease {
 
 	protected String name;
 
@@ -56,5 +57,12 @@ public class GestureLoader {
 
 	public String getName() {
 		return name;
+	}
+
+	@Override
+	public void close() {
+		if (points != null) {
+			points.clear();
+		}
 	}
 }

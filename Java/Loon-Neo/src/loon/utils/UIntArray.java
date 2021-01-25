@@ -22,9 +22,10 @@ package loon.utils;
 
 import java.util.Arrays;
 
+import loon.LRelease;
 import loon.LSysException;
 
-public class UIntArray implements IArray {
+public class UIntArray implements IArray, LRelease {
 
 	public enum UIntMode {
 		UINT8, UINT16, UINT32, UINT64
@@ -754,6 +755,13 @@ public class UIntArray implements IArray {
 
 	public boolean isLittleEndian() {
 		return littleEndian;
+	}
+
+	@Override
+	public void close() {
+		this.bytebuffer = null;
+		this.length = 0;
+		this.position = 0;
 	}
 
 }

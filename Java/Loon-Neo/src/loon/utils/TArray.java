@@ -23,13 +23,14 @@ package loon.utils;
 import java.util.Comparator;
 import java.util.Iterator;
 
+import loon.LRelease;
 import loon.LSysException;
 import loon.events.QueryEvent;
 import loon.utils.ObjectMap.Keys;
 import loon.utils.ObjectMap.Values;
 
 @SuppressWarnings({ "unchecked" })
-public class TArray<T> implements Iterable<T>, IArray {
+public class TArray<T> implements Iterable<T>, IArray,LRelease{
 
 	public final static class ArrayIterable<T> implements Iterable<T> {
 
@@ -753,5 +754,11 @@ public class TArray<T> implements Iterable<T>, IArray {
 		}
 		buffer.append(']');
 		return buffer.toString();
+	}
+
+	@Override
+	public void close() {
+		this.size = 0;
+		this.items = null;
 	}
 }

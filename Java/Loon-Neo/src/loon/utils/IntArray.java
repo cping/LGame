@@ -22,10 +22,11 @@ package loon.utils;
 
 import java.util.Arrays;
 
+import loon.LRelease;
 import loon.LSysException;
 import loon.events.QueryEvent;
 
-public class IntArray implements IArray {
+public class IntArray implements IArray,LRelease {
 
 	/**
 	 * 产生一组指定范围的数据
@@ -653,5 +654,11 @@ public class IntArray implements IArray {
 			hashCode = 31 * hashCode + items[i];
 		}
 		return hashCode;
+	}
+
+	@Override
+	public void close() {
+		this.items = null;
+		this.length = 0;
 	}
 }

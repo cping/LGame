@@ -20,7 +20,9 @@
  */
 package loon.geom;
 
-public class IntValue {
+import loon.LRelease;
+
+public class IntValue implements LRelease{
 
 	private int value;
 
@@ -48,6 +50,11 @@ public class IntValue {
 	@Override
 	public String toString() {
 		return String.valueOf(value);
+	}
+
+	@Override
+	public void close() {
+		this.value = 0;
 	}
 
 }

@@ -22,10 +22,11 @@ package loon.utils;
 
 import java.util.Arrays;
 
+import loon.LRelease;
 import loon.LSysException;
 import loon.events.QueryEvent;
 
-public class FloatArray implements IArray {
+public class FloatArray implements IArray, LRelease {
 
 	/**
 	 * 产生一组指定范围的数据
@@ -652,5 +653,11 @@ public class FloatArray implements IArray {
 	@Override
 	public String toString() {
 		return toString(',');
+	}
+
+	@Override
+	public void close() {
+		this.items = null;
+		this.length = 0;
 	}
 }

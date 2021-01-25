@@ -20,6 +20,7 @@
  */
 package loon.utils;
 
+import loon.LRelease;
 import loon.LSysException;
 
 /**
@@ -29,7 +30,7 @@ import loon.LSysException;
  * @param <K>
  * @param <V>
  */
-public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray {
+public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray,LRelease {
 
 	private Values<V> values1, values2;
 
@@ -1122,6 +1123,12 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray 
 			sbr.append(value == this ? "(this Map)" : value);
 		}
 		return sbr.append(']').toString();
+	}
+
+	@Override
+	public void close() {
+		this.size = 0;
+		this.keyValueTable = null;
 	}
 
 }

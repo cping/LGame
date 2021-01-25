@@ -20,7 +20,9 @@
  */
 package loon.geom;
 
-public class LongValue {
+import loon.LRelease;
+
+public class LongValue implements LRelease{
 
 	private long value;
 
@@ -48,6 +50,11 @@ public class LongValue {
 	@Override
 	public String toString() {
 		return String.valueOf(value);
+	}
+
+	@Override
+	public void close() {
+		this.value = 0;
 	}
 
 }

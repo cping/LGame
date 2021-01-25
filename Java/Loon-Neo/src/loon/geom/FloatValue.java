@@ -20,7 +20,9 @@
  */
 package loon.geom;
 
-public class FloatValue {
+import loon.LRelease;
+
+public class FloatValue implements LRelease {
 
 	private float value = 0f;
 
@@ -48,6 +50,11 @@ public class FloatValue {
 	@Override
 	public String toString() {
 		return String.valueOf(value);
+	}
+
+	@Override
+	public void close() {
+		this.value = 0f;
 	}
 
 }

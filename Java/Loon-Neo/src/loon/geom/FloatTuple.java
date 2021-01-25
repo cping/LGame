@@ -20,7 +20,9 @@
  */
 package loon.geom;
 
-public class FloatTuple {
+import loon.LRelease;
+
+public class FloatTuple implements LRelease {
 
 	public float val1;
 	
@@ -55,5 +57,10 @@ public class FloatTuple {
 	@Override
 	public String toString() {
 		return "(" + val1 + ',' + val2 + ")";
+	}
+
+	@Override
+	public void close() {
+		this.val1 = this.val2 = 0f;
 	}
 }

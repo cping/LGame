@@ -20,7 +20,9 @@
  */
 package loon.geom;
 
-public class BooleanValue {
+import loon.LRelease;
+
+public class BooleanValue implements LRelease{
 
 	private boolean value = false;
 
@@ -48,5 +50,10 @@ public class BooleanValue {
 	@Override
 	public String toString() {
 		return String.valueOf(value);
+	}
+
+	@Override
+	public void close() {
+		this.value = false;
 	}
 }

@@ -20,7 +20,9 @@
  */
 package loon.geom;
 
-public class IntTuple {
+import loon.LRelease;
+
+public class IntTuple implements LRelease{
 
 	public int val1;
 
@@ -55,6 +57,11 @@ public class IntTuple {
 	@Override
 	public String toString() {
 		return "(" + val1 + ',' + val2 + ")";
+	}
+
+	@Override
+	public void close() {
+		this.val1 = this.val2 = 0;
 	}
 
 }
