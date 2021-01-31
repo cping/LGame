@@ -25,45 +25,49 @@ import loon.utils.MathUtils;
 import loon.utils.TArray;
 
 /**
- * State管理器
+ * State管理器(简单的FSM状态机实现)
  */
 public class StateManager implements LRelease {
 
-	private final TArray<State> states;
+	public State _currentState;
 
-	private int index;
+	public State _previousState;
+
+	private final TArray<State> _states;
+
+	private int _currentIndex;
 
 	public StateManager() {
-		this.index = -1;
-		this.states = new TArray<State>();
+		this._currentIndex = -1;
+		this._states = new TArray<State>();
 	}
 
 	public void add(String name, State state) {
 		if (state != null) {
-			if (!states.contains(state)) {
-				states.add(state);
+			if (!_states.contains(state)) {
+				_states.add(state);
 				state.setName(name);
 				state.setStateManager(this);
 			}
-			index = 0;
+			_currentIndex = 0;
 		}
 	}
 
 	public void play(int idx) {
-		if (idx != this.index) {
-			State state = states.get(idx);
-			if (state != null) {
-				state.close();
-				state.isLoaded = false;
-			}
+		if (idx == -1) {
+			return;
 		}
-		this.index = MathUtils.clamp(idx, 0, states.size - 1);
+		if (this._currentIndex == idx && this._currentState != null) {
+			return;
+		}
+		int newidx = MathUtils.clamp(idx, 0, _states.size - 1);
+		this.changeState(this._currentIndex, newidx);
 	}
 
 	public void play(String name) {
 		int idx = -1;
-		for (int i = states.size - 1; i > -1; i--) {
-			State state = states.get(i);
+		for (int i = _states.size - 1; i > -1; i--) {
+			State state = _states.get(i);
 			if (state != null && name.equals(state.stateName)) {
 				idx = i;
 				break;
@@ -73,58 +77,132 @@ public class StateManager implements LRelease {
 	}
 
 	public void remove(int idx) {
-		if (idx > -1) {
-			states.removeIndex(idx);
-		} else {
-			idx = 0;
+		if (idx == -1) {
+			return;
 		}
-		while (idx == index) {
-			index--;
-		}
-		if (index < 0) {
-			index = -1;
+		if (idx < _states.size) {
+			State oldState = _states.removeIndex(idx);
+			int oldidx = _currentIndex;
+			int newidx = _currentIndex;
+			while (idx == newidx) {
+				newidx--;
+			}
+			if (newidx < 0) {
+				newidx = -1;
+			}
+			if (newidx != -1 && newidx != this._currentIndex) {
+				this.changeState(oldidx, newidx);
+			} else if (oldState != null) {
+				oldState.end();
+				oldState.close();
+				oldState.isLoaded = false;
+			}
+			this._currentIndex = newidx;
 		}
 	}
 
 	public void remove(String name) {
 		int idx = -1;
-		for (int i = states.size - 1; i > -1; i--) {
-			State state = states.get(i);
+		for (int i = _states.size - 1; i > -1; i--) {
+			State state = _states.get(i);
 			if (state != null && name.equals(state.stateName)) {
 				idx = i;
-				return;
+				break;
 			}
 		}
 		remove(idx);
 	}
 
+	public State getCurrentState() {
+		return this._currentState;
+	}
+
+	public State getPreviousState() {
+		return this._previousState;
+	}
+
+	private State changeState(int oldidx, int newidx) {
+		if (this._currentIndex == newidx && oldidx != this._currentIndex) {
+			if (oldidx < _states.size) {
+				this._currentState = _states.get(oldidx);
+				if (_currentState != null) {
+					_currentState.end();
+					_currentState.close();
+					_currentState.isLoaded = false;
+				}
+				this._previousState = _currentState;
+			}
+		} else {
+			if (oldidx != newidx) {
+				if (oldidx < _states.size) {
+					this._currentState = _states.get(oldidx);
+					if (_currentState != null) {
+						_currentState.end();
+						_currentState.close();
+						_currentState.isLoaded = false;
+					}
+					this._previousState = _currentState;
+				}
+				this._currentIndex = newidx;
+				if (newidx < _states.size) {
+					this._currentState = _states.get(newidx);
+					if (_currentState != null) {
+						_currentState.begin();
+					}
+				}
+			} else {
+				this._currentIndex = newidx;
+				this._currentState = _states.get(_currentIndex);
+				this._previousState = _currentState;
+				if (_currentState != null) {
+					_currentState.begin();
+				}
+			}
+		}
+		return _currentState;
+	}
+
+	public State getState() {
+		return peek();
+	}
+
 	public State peek() {
-		if (index > -1) {
-			return states.get(index);
+		if (_currentIndex > -1) {
+			return _states.get(_currentIndex);
 		}
 		return null;
 	}
 
 	public void pop() {
-		State s = states.pop();
-		if (s != null) {
-			s.close();
-			s.isLoaded = false;
+		State oldState = _states.pop();
+		if (oldState != null) {
+			oldState.end();
+			oldState.close();
+			oldState.isLoaded = false;
+			_previousState = oldState;
 		}
-		index = (states.size - 1);
+		if (_currentIndex >= _states.size) {
+			_currentIndex = (_states.size - 1);
+			if (_currentIndex > -1) {
+				this._currentState = _states.get(_currentIndex);
+				if (_currentState != null) {
+					_currentState.begin();
+				}
+			}
+		}
 	}
 
 	public void load() {
-		for (int i = states.size - 1; i > -1; i--) {
-			State state = states.get(i);
+		for (int i = _states.size - 1; i > -1; i--) {
+			State state = _states.get(i);
 			state.load();
 			state.isLoaded = true;
 		}
 	}
 
 	public void update(float delta) {
-		if (index > -1) {
-			State state = states.get(index);
+		if (_currentIndex > -1) {
+			State state = _states.get(_currentIndex);
 			if (!state.isLoaded) {
 				state.load();
 				state.isLoaded = true;
@@ -134,8 +212,8 @@ public class StateManager implements LRelease {
 	}
 
 	public void paint(GLEx g) {
-		if (index > -1) {
-			State state = states.get(index);
+		if (_currentIndex > -1) {
+			State state = _states.get(_currentIndex);
 			if (!state.isLoaded) {
 				state.load();
 				state.isLoaded = true;
@@ -155,15 +233,16 @@ public class StateManager implements LRelease {
 
 	@Override
 	public void close() {
-		for (int i = states.size - 1; i > -1; i--) {
-			State state = states.get(i);
+		for (int i = _states.size - 1; i > -1; i--) {
+			State state = _states.get(i);
 			if (state != null) {
+				state.end();
 				state.close();
 				state.isLoaded = false;
 			}
 		}
-		states.clear();
-		index = -1;
+		_states.clear();
+		_currentIndex = -1;
 	}
 
 }
