@@ -42,79 +42,79 @@ import loon.utils.timer.LTimerContext;
  */
 public abstract class Stage extends Screen {
 
-	private float drawPosX;
+	private float _drawPosX;
 
-	private float drawPosY;
+	private float _drawPosY;
 
-	private ScrollEffect scrollBackground;
+	private ScrollEffect _scrollBackground;
 
-	private UpdateListener updateListener;
+	private UpdateListener _updateListener;
 
-	private TArray<ActionObject> objects;
+	private TArray<ActionObject> _objects;
 
-	private TArray<ActionObject> pendingAdd;
+	private TArray<ActionObject> _pendingAdd;
 
-	private TArray<ActionObject> pendingRemove;
+	private TArray<ActionObject> _pendingRemove;
 
-	private TArray<TileMap> tiles;
+	private TArray<TileMap> _childTiles;
 
-	private TileMap currentTileMap;
+	private TileMap _currentTileMap;
 
-	private Vector2f offset;
+	private Vector2f _currentOffset;
 
-	private ActionBind follow;
+	private ActionBind _currentFollow;
 
-	private StateManager stateManager;
+	private StateManager _stateManager;
 
-	private boolean existing;
+	private boolean _existing;
 
-	private float percent;
+	private float _percent;
 
-	private float maxPercent;
+	private float _maxPercent;
 
 	public final Stage setPercentMaximum(float max) {
-		this.maxPercent = MathUtils.clamp(max, 0f, 100f);
+		this._maxPercent = MathUtils.clamp(max, 0f, 100f);
 		return this;
 	}
 
 	public final Stage setPercent(float cur, float max) {
-		this.percent = MathUtils.clamp(cur, 0f, 100f);
-		this.maxPercent = MathUtils.clamp(max, 0f, 100f);
+		this._percent = MathUtils.clamp(cur, 0f, 100f);
+		this._maxPercent = MathUtils.clamp(max, 0f, 100f);
 		return this;
 	}
 
 	public final Stage updatePercent(float num) {
-		this.percent = MathUtils.clamp(num, 0f, 100f) / maxPercent;
+		this._percent = MathUtils.clamp(num, 0f, 100f) / _maxPercent;
 		return this;
 	}
 
 	public final Stage addPercent() {
-		return updatePercent(percent++);
+		return updatePercent(_percent++);
 	}
 
 	public final Stage removePercent() {
-		return updatePercent(percent--);
+		return updatePercent(_percent--);
 	}
 
 	public final Stage resetPercent() {
-		this.percent = 0f;
+		this._percent = 0f;
 		return this;
 	}
 
 	public final int getMaximumPercent() {
-		return (int) maxPercent;
+		return (int) _maxPercent;
 	}
 
 	public final int getPercent() {
-		return (int) percent;
+		return (int) _percent;
 	}
 
 	protected StateManager createStateManager() {
-		if (stateManager == null) {
-			stateManager = new StateManager();
-			existing = true;
+		if (_stateManager == null) {
+			_stateManager = new StateManager();
+			_existing = true;
 		}
-		return this.stateManager;
+		return this._stateManager;
 	}
 
 	public StateManager getStateManager() {
@@ -126,31 +126,43 @@ public abstract class Stage extends Screen {
 	}
 
 	public State peekState() {
-		this.stateManager = createStateManager();
-		return stateManager.peek();
+		this._stateManager = createStateManager();
+		return _stateManager.peek();
 	}
 
 	public Stage playState(String name) {
-		this.stateManager = createStateManager();
-		stateManager.play(name);
+		this._stateManager = createStateManager();
+		_stateManager.play(name);
 		return this;
 	}
 
 	public Stage playState(int idx) {
-		this.stateManager = createStateManager();
-		stateManager.play(idx);
+		this._stateManager = createStateManager();
+		_stateManager.play(idx);
 		return this;
 	}
 
+	public Stage playNextState() {
+		this._stateManager = createStateManager();
+		_stateManager.playNext();
+		return this;
+	}
+
+	public Stage playBackState() {
+		this._stateManager = createStateManager();
+		_stateManager.playBack();
+		return this;
+	}
+	
 	public Stage removeState(String name) {
-		this.stateManager = createStateManager();
-		stateManager.remove(name);
+		this._stateManager = createStateManager();
+		_stateManager.remove(name);
 		return this;
 	}
 
 	public Stage removeState(int idx) {
-		this.stateManager = createStateManager();
-		stateManager.remove(idx);
+		this._stateManager = createStateManager();
+		_stateManager.remove(idx);
 		return this;
 	}
 
@@ -159,8 +171,8 @@ public abstract class Stage extends Screen {
 	}
 
 	public Stage addState(String name, State state) {
-		this.stateManager = createStateManager();
-		stateManager.add(name, state);
+		this._stateManager = createStateManager();
+		_stateManager.add(name, state);
 		return this;
 	}
 
@@ -173,22 +185,22 @@ public abstract class Stage extends Screen {
 		if (isClosed()) {
 			return;
 		}
-		if (pendingAdd != null) {
-			final int additionCount = pendingAdd.size;
+		if (_pendingAdd != null) {
+			final int additionCount = _pendingAdd.size;
 			if (additionCount > 0) {
 				for (int i = 0; i < additionCount; i++) {
-					objects.add(pendingAdd.get(i));
+					_objects.add(_pendingAdd.get(i));
 				}
-				pendingAdd.clear();
+				_pendingAdd.clear();
 			}
 		}
-		if (pendingRemove != null) {
-			final int removalCount = pendingRemove.size;
+		if (_pendingRemove != null) {
+			final int removalCount = _pendingRemove.size;
 			if (removalCount > 0) {
 				for (int i = 0; i < removalCount; i++) {
-					objects.remove(pendingRemove.get(i));
+					_objects.remove(_pendingRemove.get(i));
 				}
-				pendingRemove.clear();
+				_pendingRemove.clear();
 			}
 		}
 	}
@@ -198,14 +210,14 @@ public abstract class Stage extends Screen {
 	@Override
 	public void onLoad() {
 		try {
-			this.objects = new TArray<ActionObject>();
-			this.pendingAdd = new TArray<ActionObject>();
-			this.pendingRemove = new TArray<ActionObject>();
-			this.tiles = new TArray<TileMap>();
-			this.offset = Vector2f.ZERO();
+			this._objects = new TArray<ActionObject>();
+			this._pendingAdd = new TArray<ActionObject>();
+			this._pendingRemove = new TArray<ActionObject>();
+			this._childTiles = new TArray<TileMap>();
+			this._currentOffset = Vector2f.ZERO();
 			create();
-			if (existing) {
-				stateManager.load();
+			if (_existing) {
+				_stateManager.load();
 			}
 		} catch (Throwable cause) {
 			LSystem.error("Screen create failure", cause);
@@ -214,16 +226,16 @@ public abstract class Stage extends Screen {
 
 	@Override
 	public void alter(LTimerContext timer) {
-		if (scrollBackground != null) {
-			scrollBackground.update(timer.timeSinceLastUpdate);
+		if (_scrollBackground != null) {
+			_scrollBackground.update(timer.timeSinceLastUpdate);
 		}
-		if (follow != null && tiles != null && tiles.size > 0) {
-			for (TileMap tile : tiles) {
-				float offsetX = getHalfWidth() - follow.getX();
+		if (_currentFollow != null && _childTiles != null && _childTiles.size > 0) {
+			for (TileMap tile : _childTiles) {
+				float offsetX = getHalfWidth() - _currentFollow.getX();
 				offsetX = MathUtils.min(offsetX, 0);
 				offsetX = MathUtils.max(offsetX, getWidth() - tile.getWidth());
 
-				float offsetY = getHalfHeight() - follow.getY();
+				float offsetY = getHalfHeight() - _currentFollow.getY();
 				offsetY = MathUtils.min(offsetY, 0);
 				offsetY = MathUtils.max(offsetY, getHeight() - tile.getHeight());
 
@@ -231,44 +243,44 @@ public abstract class Stage extends Screen {
 				tile.update(timer.timeSinceLastUpdate);
 			}
 		}
-		if (objects != null && objects.size > 0) {
-			for (ActionObject o : objects) {
-				if (updateListener != null) {
-					updateListener.act(o, timer.timeSinceLastUpdate);
+		if (_objects != null && _objects.size > 0) {
+			for (ActionObject o : _objects) {
+				if (_updateListener != null) {
+					_updateListener.act(o, timer.timeSinceLastUpdate);
 				}
 				o.update(timer.timeSinceLastUpdate);
 			}
 		}
 		update(timer);
 		commits();
-		if (existing) {
-			stateManager.update(timer.getMilliseconds());
+		if (_existing) {
+			_stateManager.update(timer.getMilliseconds());
 		}
 	}
 
 	@Override
 	public void draw(GLEx g) {
 		background(g);
-		if (scrollBackground != null) {
-			scrollBackground.paint(g);
+		if (_scrollBackground != null) {
+			_scrollBackground.paint(g);
 		}
-		if (tiles != null && tiles.size > 0) {
-			for (TileMap tile : tiles) {
-				tile.draw(g, offset.x(), offset.y());
+		if (_childTiles != null && _childTiles.size > 0) {
+			for (TileMap tile : _childTiles) {
+				tile.draw(g, _currentOffset.x(), _currentOffset.y());
 			}
 		}
-		if (objects != null && objects.size > 0) {
-			for (ActionObject o : objects) {
-				drawPosX = o.getX() + offset.x;
-				drawPosY = o.getY() + offset.y;
-				if (intersects(drawPosX, drawPosY, o.getWidth(), o.getHeight()) || contains(drawPosX, drawPosY)) {
-					o.createUI(g, offset.x, offset.y);
+		if (_objects != null && _objects.size > 0) {
+			for (ActionObject o : _objects) {
+				_drawPosX = o.getX() + _currentOffset.x;
+				_drawPosY = o.getY() + _currentOffset.y;
+				if (intersects(_drawPosX, _drawPosY, o.getWidth(), o.getHeight()) || contains(_drawPosX, _drawPosY)) {
+					o.createUI(g, _currentOffset.x, _currentOffset.y);
 				}
 			}
 		}
 		paint(g);
-		if (existing) {
-			stateManager.paint(g);
+		if (_existing) {
+			_stateManager.paint(g);
 		}
 	}
 
@@ -310,36 +322,36 @@ public abstract class Stage extends Screen {
 	}
 
 	public TileMap getIndexTile() {
-		return this.currentTileMap;
+		return this._currentTileMap;
 	}
 
 	public Stage setIndexTile(TileMap indexTile) {
-		this.currentTileMap = indexTile;
+		this._currentTileMap = indexTile;
 		return this;
 	}
 
 	public Stage follow(ActionObject o) {
-		this.follow = o;
+		this._currentFollow = o;
 		return this;
 	}
 
 	public Stage setOffset(TileMap tile, float sx, float sy) {
-		offset.set(sx, sy);
-		tile.setOffset(offset);
+		_currentOffset.set(sx, sy);
+		tile.setOffset(_currentOffset);
 		return this;
 	}
 
 	public final Vector2f getOffset() {
-		return offset;
+		return _currentOffset;
 	}
 
 	public Stage putTileMap(TileMap t) {
-		tiles.add(t);
+		_childTiles.add(t);
 		return this;
 	}
 
 	public Stage removeTileMap(TileMap t) {
-		tiles.remove(t);
+		_childTiles.remove(t);
 		return this;
 	}
 
@@ -350,10 +362,10 @@ public abstract class Stage extends Screen {
 
 	public JumpObject addJumpObject(float x, float y, float w, float h, Animation a) {
 		JumpObject o = null;
-		if (currentTileMap != null) {
-			o = new JumpObject(x, y, w, h, a, currentTileMap);
-		} else if (tiles.size > 0) {
-			o = new JumpObject(x, y, w, h, a, tiles.get(0));
+		if (_currentTileMap != null) {
+			o = new JumpObject(x, y, w, h, a, _currentTileMap);
+		} else if (_childTiles.size > 0) {
+			o = new JumpObject(x, y, w, h, a, _childTiles.get(0));
 		} else {
 			return null;
 		}
@@ -363,10 +375,10 @@ public abstract class Stage extends Screen {
 
 	public MoveObject addMoveObject(float x, float y, float w, float h, Animation a) {
 		MoveObject o = null;
-		if (currentTileMap != null) {
-			o = new MoveObject(x, y, w, h, a, currentTileMap);
-		} else if (tiles.size > 0) {
-			o = new MoveObject(x, y, w, h, a, tiles.get(0));
+		if (_currentTileMap != null) {
+			o = new MoveObject(x, y, w, h, a, _currentTileMap);
+		} else if (_childTiles.size > 0) {
+			o = new MoveObject(x, y, w, h, a, _childTiles.get(0));
 		} else {
 			return null;
 		}
@@ -380,28 +392,28 @@ public abstract class Stage extends Screen {
 	}
 
 	public ActionObject add(ActionObject o) {
-		pendingAdd.add(o);
+		_pendingAdd.add(o);
 		return o;
 	}
 
 	public ActionObject remove(ActionObject o) {
-		pendingRemove.add(o);
+		_pendingRemove.add(o);
 		return o;
 	}
 
 	public Stage removeTileObjects() {
-		final int count = objects.size;
-		final Object[] objectArray = objects.toArray();
+		final int count = _objects.size;
+		final Object[] objectArray = _objects.toArray();
 		for (int i = 0; i < count; i++) {
 			ActionObject o = (ActionObject) objectArray[i];
-			pendingRemove.add(o);
+			_pendingRemove.add(o);
 		}
-		pendingAdd.clear();
+		_pendingAdd.clear();
 		return this;
 	}
 
 	public ActionObject findObject(float x, float y) {
-		for (ActionObject o : objects) {
+		for (ActionObject o : _objects) {
 			if ((o.getX() == x && o.getY() == y) || o.getRectBox().contains(x, y)) {
 				return o;
 			}
@@ -410,26 +422,26 @@ public abstract class Stage extends Screen {
 	}
 
 	public UpdateListener getUpdateListener() {
-		return updateListener;
+		return _updateListener;
 	}
 
 	public Stage setUpdateListener(UpdateListener update) {
-		this.updateListener = update;
+		this._updateListener = update;
 		return this;
 	}
 
-	public Stage setScrollBackground(ScrollEffect scrollBackground) {
-		this.scrollBackground = scrollBackground;
+	public Stage setScrollBackground(ScrollEffect _scrollBackground) {
+		this._scrollBackground = _scrollBackground;
 		return this;
 	}
 
 	public Stage setScrollBackground(int dir, String path) {
-		this.scrollBackground = new ScrollEffect(dir, path);
+		this._scrollBackground = new ScrollEffect(dir, path);
 		return this;
 	}
 
 	public ScrollEffect getScrollBackground() {
-		return scrollBackground;
+		return _scrollBackground;
 	}
 
 	public void dispose() {
@@ -437,34 +449,34 @@ public abstract class Stage extends Screen {
 
 	@Override
 	public void close() {
-		this.existing = false;
-		if (this.pendingAdd != null) {
-			this.pendingAdd.clear();
+		this._existing = false;
+		if (this._pendingAdd != null) {
+			this._pendingAdd.clear();
 		}
-		if (this.pendingRemove != null) {
-			this.pendingRemove.clear();
+		if (this._pendingRemove != null) {
+			this._pendingRemove.clear();
 		}
-		if (this.tiles != null) {
-			this.tiles.clear();
+		if (this._childTiles != null) {
+			this._childTiles.clear();
 		}
-		if (objects != null) {
-			for (int i = 0; i < objects.size; i++) {
-				ActionObject obj = objects.get(i);
+		if (_objects != null) {
+			for (int i = 0; i < _objects.size; i++) {
+				ActionObject obj = _objects.get(i);
 				if (obj != null) {
 					obj.close();
 				}
 			}
-			objects.clear();
+			_objects.clear();
 		}
-		if (stateManager != null) {
-			stateManager.close();
-			stateManager = null;
+		if (_stateManager != null) {
+			_stateManager.close();
+			_stateManager = null;
 		}
-		if (scrollBackground != null) {
-			scrollBackground.close();
-			scrollBackground = null;
+		if (_scrollBackground != null) {
+			_scrollBackground.close();
+			_scrollBackground = null;
 		}
-		percent = maxPercent = 0;
+		_percent = _maxPercent = 0;
 		dispose();
 	}
 

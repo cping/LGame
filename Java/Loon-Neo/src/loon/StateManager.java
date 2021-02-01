@@ -42,7 +42,7 @@ public class StateManager implements LRelease {
 		this._states = new TArray<State>();
 	}
 
-	public void add(String name, State state) {
+	public StateManager add(String name, State state) {
 		if (state != null) {
 			if (!_states.contains(state)) {
 				_states.add(state);
@@ -51,34 +51,51 @@ public class StateManager implements LRelease {
 			}
 			_currentIndex = 0;
 		}
+		return this;
 	}
 
-	public void play(int idx) {
+	public StateManager playNext() {
+		if (this._currentIndex < _states.size - 1) {
+			play(this._currentIndex + 1);
+		}
+		return this;
+	}
+
+	public StateManager playBack() {
+		if (this._currentIndex > 0) {
+			play(this._currentIndex - 1);
+		}
+		return this;
+	}
+
+	public StateManager play(int idx) {
 		if (idx == -1) {
-			return;
+			return this;
 		}
 		if (this._currentIndex == idx && this._currentState != null) {
-			return;
+			return this;
 		}
 		int newidx = MathUtils.clamp(idx, 0, _states.size - 1);
 		this.changeState(this._currentIndex, newidx);
+		return this;
 	}
 
-	public void play(String name) {
+	public StateManager play(String name) {
 		int idx = -1;
 		for (int i = _states.size - 1; i > -1; i--) {
 			State state = _states.get(i);
-			if (state != null && name.equals(state.stateName)) {
+			if (state != null && name.equals(state._stateName)) {
 				idx = i;
 				break;
 			}
 		}
 		play(idx);
+		return this;
 	}
 
-	public void remove(int idx) {
+	public StateManager remove(int idx) {
 		if (idx == -1) {
-			return;
+			return this;
 		}
 		if (idx < _states.size) {
 			State oldState = _states.removeIndex(idx);
@@ -95,22 +112,24 @@ public class StateManager implements LRelease {
 			} else if (oldState != null) {
 				oldState.end();
 				oldState.close();
-				oldState.isLoaded = false;
+				oldState._isLoaded = false;
 			}
 			this._currentIndex = newidx;
 		}
+		return this;
 	}
 
-	public void remove(String name) {
+	public StateManager remove(String name) {
 		int idx = -1;
 		for (int i = _states.size - 1; i > -1; i--) {
 			State state = _states.get(i);
-			if (state != null && name.equals(state.stateName)) {
+			if (state != null && name.equals(state._stateName)) {
 				idx = i;
 				break;
 			}
 		}
 		remove(idx);
+		return this;
 	}
 
 	public State getCurrentState() {
@@ -128,7 +147,7 @@ public class StateManager implements LRelease {
 				if (_currentState != null) {
 					_currentState.end();
 					_currentState.close();
-					_currentState.isLoaded = false;
+					_currentState._isLoaded = false;
 				}
 				this._previousState = _currentState;
 			}
@@ -139,7 +158,7 @@ public class StateManager implements LRelease {
 					if (_currentState != null) {
 						_currentState.end();
 						_currentState.close();
-						_currentState.isLoaded = false;
+						_currentState._isLoaded = false;
 					}
 					this._previousState = _currentState;
 				}
@@ -173,12 +192,12 @@ public class StateManager implements LRelease {
 		return null;
 	}
 
-	public void pop() {
+	public StateManager pop() {
 		State oldState = _states.pop();
 		if (oldState != null) {
 			oldState.end();
 			oldState.close();
-			oldState.isLoaded = false;
+			oldState._isLoaded = false;
 			_previousState = oldState;
 		}
 		if (_currentIndex >= _states.size) {
@@ -190,22 +209,24 @@ public class StateManager implements LRelease {
 				}
 			}
 		}
+		return this;
 	}
 
-	public void load() {
+	public StateManager load() {
 		for (int i = _states.size - 1; i > -1; i--) {
 			State state = _states.get(i);
 			state.load();
-			state.isLoaded = true;
+			state._isLoaded = true;
 		}
+		return this;
 	}
 
 	public void update(float delta) {
 		if (_currentIndex > -1) {
 			State state = _states.get(_currentIndex);
-			if (!state.isLoaded) {
+			if (!state._isLoaded) {
 				state.load();
-				state.isLoaded = true;
+				state._isLoaded = true;
 			}
 			state.update(delta);
 		}
@@ -214,17 +235,17 @@ public class StateManager implements LRelease {
 	public void paint(GLEx g) {
 		if (_currentIndex > -1) {
 			State state = _states.get(_currentIndex);
-			if (!state.isLoaded) {
+			if (!state._isLoaded) {
 				state.load();
-				state.isLoaded = true;
+				state._isLoaded = true;
 			}
 			try {
-				if (state.syncCamera) {
-					g.concat(state.camera);
+				if (state._syncCamera) {
+					g.concat(state._camera);
 				}
 				state.paint(g);
 			} finally {
-				if (state.syncCamera) {
+				if (state._syncCamera) {
 					g.restoreTx();
 				}
 			}
@@ -238,7 +259,7 @@ public class StateManager implements LRelease {
 			if (state != null) {
 				state.end();
 				state.close();
-				state.isLoaded = false;
+				state._isLoaded = false;
 			}
 		}
 		_states.clear();

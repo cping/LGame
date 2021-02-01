@@ -35,52 +35,52 @@ import loon.utils.StringUtils;
  */
 public abstract class State implements LRelease {
 
-	protected StateManager stateManager;
+	protected StateManager _stateManager;
 
-	protected String stateName;
+	protected String _stateName;
 
-	protected Affine2f camera;
+	protected Affine2f _camera;
 
-	protected boolean isLoaded;
+	protected boolean _isLoaded;
 
-	protected boolean syncCamera;
-
-	private boolean isScalePos;
+	protected boolean _isScalePos;
+	
+	protected boolean _syncCamera;
 
 	public State() {
 		this(LSystem.UNKNOWN);
 	}
 
 	public State(String name) {
-		this.stateName = name;
-		this.syncCamera = true;
-		this.isScalePos = false;
-		this.camera = new Affine2f();
+		this._stateName = name;
+		this._syncCamera = true;
+		this._isScalePos = false;
+		this._camera = new Affine2f();
 	}
 
 	protected void setName(String name) {
 		if (!StringUtils.isEmpty(name)) {
-			this.stateName = name;
+			this._stateName = name;
 		}
 	}
 
 	public String getName() {
-		return this.stateName;
+		return this._stateName;
 	}
 
 	public Affine2f getCamera() {
-		return this.camera;
+		return this._camera;
 	}
 
 	public State setCameraX(float x) {
-		camera.tx = x;
-		isScalePos = false;
+		_camera.tx = x;
+		_isScalePos = false;
 		return this;
 	}
 
 	public State setCameraY(float y) {
-		camera.ty = y;
-		isScalePos = false;
+		_camera.ty = y;
+		_isScalePos = false;
 		return this;
 	}
 
@@ -90,7 +90,7 @@ public abstract class State implements LRelease {
 
 	public State camera(float x, float y, float scaleX, float scaleY) {
 		posCamera(-(x * scaleX), -(y * scaleY));
-		isScalePos = true;
+		_isScalePos = true;
 		return this;
 	}
 
@@ -105,25 +105,25 @@ public abstract class State implements LRelease {
 	}
 
 	public State scaleCamera(float sx, float sy) {
-		camera.scale(sx, sy);
+		_camera.scale(sx, sy);
 		return this;
 	}
 
 	public State rotateCamera(float angle, float x, float y) {
-		camera.rotate(angle, x, y);
+		_camera.rotate(angle, x, y);
 		return this;
 	}
 
 	public float getCameraX() {
-		return MathUtils.abs(isScalePos ? (camera.tx / camera.scaleX()) : camera.tx);
+		return MathUtils.abs(_isScalePos ? (_camera.tx / _camera.scaleX()) : _camera.tx);
 	}
 
 	public float getCameraY() {
-		return MathUtils.abs(isScalePos ? (camera.ty / camera.scaleY()) : camera.ty);
+		return MathUtils.abs(_isScalePos ? (_camera.ty / _camera.scaleY()) : _camera.ty);
 	}
 
 	protected void setStateManager(StateManager smr) {
-		this.stateManager = smr;
+		this._stateManager = smr;
 	}
 
 	public void begin() {
@@ -139,11 +139,11 @@ public abstract class State implements LRelease {
 	public abstract void paint(GLEx g);
 
 	public boolean isSyncCamera() {
-		return syncCamera;
+		return _syncCamera;
 	}
 
 	public void setSyncCamera(boolean sync) {
-		this.syncCamera = sync;
+		this._syncCamera = sync;
 	}
 
 }
