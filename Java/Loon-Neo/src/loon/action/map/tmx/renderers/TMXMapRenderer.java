@@ -24,8 +24,10 @@ import loon.LObject;
 import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
+import loon.LTextureBatch;
 import loon.PlayerUtils;
 import loon.Screen;
+import loon.LTextureBatch.Cache;
 import loon.action.ActionTween;
 import loon.action.map.Field2D;
 import loon.action.map.tmx.TMXImageLayer;
@@ -41,7 +43,9 @@ import loon.canvas.LColor;
 import loon.events.ResizeListener;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
+import loon.opengl.BlendState;
 import loon.opengl.GLEx;
+import loon.utils.IntMap;
 import loon.utils.ObjectMap;
 import loon.utils.TimeUtils;
 
@@ -94,6 +98,8 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 	protected abstract void renderImageLayer(GLEx gl, TMXImageLayer imageLayer);
 
 	protected TMXMap map;
+
+	protected IntMap<LTextureBatch.Cache> textureCaches;
 	protected ObjectMap<String, LTexture> textureMap;
 	protected ObjectMap<TMXTile, TileAnimator> tileAnimators;
 
@@ -103,10 +109,13 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 
 	protected LColor baseColor = new LColor(LColor.white);
 
+	protected boolean allowCache;
+
 	public TMXMapRenderer(TMXMap map) {
+		this.textureCaches = new IntMap<LTextureBatch.Cache>();
 		this.textureMap = new ObjectMap<String, LTexture>();
 		this.tileAnimators = new ObjectMap<TMXTile, TileAnimator>();
-		this.visible = true;
+		this.visible = allowCache = true;
 		this.map = map;
 
 		for (TMXTileSet tileSet : map.getTileSets()) {
@@ -136,11 +145,41 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 			return new TMXIsometricMapRenderer(map);
 		case ORTHOGONAL:
 			return new TMXOrthogonalMapRenderer(map);
+		case HEXAGONAL:
+			return new TMXHexagonalMapRenderer(map);
+		case STAGGERED:
+			return new TMXStaggeredMapRenderer(map);
 		default:
 			break;
 		}
 		throw new LSysException(
 				"A TmxMapRenderer has not yet been implemented for " + map.getOrientation() + " orientation");
+	}
+
+	public void saveCache(LTextureBatch batch) {
+		if (!allowCache) {
+			return;
+		}
+		if (batch != null) {
+			textureCaches.put(lastHashCode, batch.newCache());
+		}
+	}
+
+	public boolean postCache(LTextureBatch batch, int hashCode) {
+		if (!allowCache) {
+			return false;
+		}
+		Cache cache = textureCaches.get(lastHashCode = hashCode);
+		if (cache == null || cache.isClosed()) {
+			batch.begin();
+		} else if (cache != null && !cache.isClosed()) {
+			batch.setBlendState(BlendState.AlphaBlend);
+			batch.postCache(cache, baseColor, 0);
+			return true;
+		} else {
+			batch.begin();
+		}
+		return false;
 	}
 
 	public void update(long delta) {
@@ -287,7 +326,7 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 	}
 
 	public TMXMapRenderer setScale(float scale) {
-		this.setScale(scale,scale);
+		this.setScale(scale, scale);
 		return this;
 	}
 
@@ -455,6 +494,15 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 		return isDisposed();
 	}
 
+	public boolean isAllowCache() {
+		return allowCache;
+	}
+
+	public TMXMapRenderer setAllowCache(boolean a) {
+		this.allowCache = a;
+		return this;
+	}
+
 	@Override
 	public void close() {
 		visible = false;
@@ -464,6 +512,9 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 		if (tileAnimators != null) {
 			tileAnimators.clear();
 		}
+		if (textureCaches != null) {
+			textureCaches.clear();
+		}
 		for (LTexture texture : textureMap.values()) {
 			texture.close();
 		}
@@ -471,4 +522,5 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 		_resizeListener = null;
 		setState(State.DISPOSED);
 	}
+
 }

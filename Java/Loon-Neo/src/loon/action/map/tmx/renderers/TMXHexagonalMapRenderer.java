@@ -140,7 +140,7 @@ public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 
 			final float layerHexLength = hexSideLength;
 
-			final boolean onlyTexture = textureMap.size == 1;
+			final boolean saveCache = textureMap.size == 1 && allowCache;
 
 			texCurrent = textureMap.get(map.getTileset(0).getImage().getSource());
 			texBatch = texCurrent.getTextureBatch();
@@ -151,7 +151,7 @@ public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 
 			try {
 
-				if (onlyTexture) {
+				if (saveCache) {
 					int hashCode = 1;
 					hashCode = LSystem.unite(hashCode, tx);
 					hashCode = LSystem.unite(hashCode, ty);
@@ -170,19 +170,8 @@ public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 					hashCode = LSystem.unite(hashCode, tileLayer.isDirty());
 					hashCode = LSystem.unite(hashCode, _objectRotation);
 
-					if (hashCode != lastHashCode) {
-						lastHashCode = hashCode;
-						texBatch.disposeLastCache();
-						texBatch.begin();
-					} else {
-						if (texBatch.existCache()) {
-							texBatch.setBlendState(BlendState.AlphaBlend);
-							texBatch.postCache(baseColor, 0);
-							isCached = true;
-							return;
-						} else {
-							texBatch.begin();
-						}
+					if (isCached = postCache(texBatch, hashCode)) {
+						return;
 					}
 
 				} else {
@@ -255,8 +244,8 @@ public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 			} finally {
 				if (!isCached) {
 					texBatch.end();
-					if (onlyTexture) {
-						texBatch.newCache();
+					if (saveCache) {
+						saveCache(texBatch);
 					}
 				}
 				baseColor.a = tmpAlpha;

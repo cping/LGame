@@ -37,7 +37,7 @@ import loon.utils.MathUtils;
  * 直角(2D平面)地图纹理渲染器
  */
 public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
-	
+
 	public TMXOrthogonalMapRenderer(TMXMap map) {
 		super(map);
 	}
@@ -55,14 +55,11 @@ public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
 		}
 		float tmpAlpha = baseColor.a;
 		baseColor.a *= opacity;
-		LTexture originalTexture = textureMap.get(imageLayer.getImage()
-				.getSource());
+		LTexture originalTexture = textureMap.get(imageLayer.getImage().getSource());
 		g.draw(originalTexture, imageLayer.getRenderOffsetX(), imageLayer.getRenderOffsetY(),
-				imageLayer.getWidth() * map.getTileWidth(),
-				imageLayer.getHeight() * map.getTileHeight(), baseColor);
+				imageLayer.getWidth() * map.getTileWidth(), imageLayer.getHeight() * map.getTileHeight(), baseColor);
 		baseColor.a = tmpAlpha;
 	}
-	
 
 	protected void renderTileLayer(GLEx g, TMXTileLayer tileLayer) {
 		synchronized (this) {
@@ -76,15 +73,13 @@ public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
 			if (opacity > 1f) {
 				opacity = 1f;
 			}
-			
+
 			final int screenWidth = LSystem.viewSize.getWidth();
 			final int screenHeight = LSystem.viewSize.getHeight();
 			final int tx = (int) (getRenderX() / map.getTileWidth());
 			final int ty = (int) (getRenderY() / map.getTileHeight());
-			final int windowWidth = (int) (screenWidth
-					/ map.getTileWidth() / scaleX);
-			final int windowHeight = (int) (screenHeight
-					/ map.getTileHeight() / scaleY);
+			final int windowWidth = (int) (screenWidth / map.getTileWidth() / scaleX);
+			final int windowHeight = (int) (screenHeight / map.getTileHeight() / scaleY);
 
 			final int layerWidth = tileLayer.getWidth();
 			final int layerHeight = tileLayer.getHeight();
@@ -95,11 +90,10 @@ public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
 			final float layerOffsetX = tileLayer.getRenderOffsetX() - (tileLayer.getParallaxX() - 1f);
 			final float layerOffsetY = tileLayer.getRenderOffsetY() - (tileLayer.getParallaxY() - 1f);
 
-			final boolean onlyTexture = textureMap.size == 1;
+			final boolean saveCache = textureMap.size == 1 && allowCache;
 
-			LTexture current = textureMap.get(map.getTileset(0).getImage()
-					.getSource());
-			LTextureBatch batch = current.getTextureBatch();
+			LTexture current = textureMap.get(map.getTileset(0).getImage().getSource());
+			LTextureBatch texBatch = current.getTextureBatch();
 
 			float tmpAlpha = baseColor.a;
 			boolean isCached = false;
@@ -107,7 +101,7 @@ public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
 
 			try {
 
-				if (onlyTexture) {
+				if (saveCache) {
 					int hashCode = 1;
 					hashCode = LSystem.unite(hashCode, tx);
 					hashCode = LSystem.unite(hashCode, ty);
@@ -124,33 +118,21 @@ public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
 					hashCode = LSystem.unite(hashCode, tileLayer.isDirty());
 					hashCode = LSystem.unite(hashCode, _objectRotation);
 
-					if (hashCode != lastHashCode) {
-						lastHashCode = hashCode;
-						batch.disposeLastCache();
-						batch.begin();
-					} else {
-						if (batch.existCache()) {
-							batch.setBlendState(BlendState.AlphaBlend);
-							batch.postCache(baseColor, 0);
-							isCached = true;
-							return;
-						} else {
-							batch.begin();
-						}
+					if (isCached = postCache(texBatch, hashCode)) {
+						return;
 					}
 
 				} else {
-					batch.begin();
+					texBatch.begin();
 				}
-				batch.setBlendState(BlendState.AlphaBlend);
-				batch.setColor(baseColor);
+				texBatch.setBlendState(BlendState.AlphaBlend);
+				texBatch.setColor(baseColor);
 				for (int x = 0; x < layerWidth; x++) {
 					for (int y = 0; y < layerHeight; y++) {
 						if ((tx + x < 0) || (ty + y < 0)) {
 							continue;
 						}
-						if ((tx + x >= layerWidth)
-								|| (ty + y >= layerHeight)) {
+						if ((tx + x >= layerWidth) || (ty + y >= layerHeight)) {
 							continue;
 						}
 						if ((x >= windowWidth) || (y >= windowHeight)) {
@@ -162,32 +144,27 @@ public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
 							continue;
 						}
 
-						TMXTileSet tileSet = map.getTileset(mapTile
-								.getTileSetID());
-						TMXTile tile = tileSet.getTile(mapTile.getGID()
-								- tileSet.getFirstGID());
+						TMXTileSet tileSet = map.getTileset(mapTile.getTileSetID());
+						TMXTile tile = tileSet.getTile(mapTile.getGID() - tileSet.getFirstGID());
 
-						LTexture texture = textureMap.get(tileSet.getImage()
-								.getSource());
+						LTexture texture = textureMap.get(tileSet.getImage().getSource());
 
 						if (texture.getID() != current.getID()) {
-							batch.end();
+							texBatch.end();
 							current = texture;
-							batch = current.getTextureBatch();
-							batch.begin();
-							batch.setBlendState(BlendState.AlphaBlend);
-							batch.checkTexture(current);
+							texBatch = current.getTextureBatch();
+							texBatch.begin();
+							texBatch.setBlendState(BlendState.AlphaBlend);
+							texBatch.checkTexture(current);
 						}
 
 						int tileID = mapTile.getGID() - tileSet.getFirstGID();
 
 						if (tile != null && tile.isAnimated()) {
-							tileID = tileAnimators.get(tile).getCurrentFrame()
-									.getTileID();
+							tileID = tileAnimators.get(tile).getCurrentFrame().getTileID();
 						}
 
-						int numColsPerRow = tileSet.getImage().getWidth()
-								/ tileSet.getTileWidth();
+						int numColsPerRow = tileSet.getImage().getWidth() / tileSet.getTileWidth();
 
 						int tileSetCol = tileID % numColsPerRow;
 						int tileSetRow = tileID / numColsPerRow;
@@ -198,21 +175,17 @@ public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
 						float posX = (x * tileWidth + getRenderX()) * scaleX;
 						float posY = (y * tileHeight + getRenderY()) * scaleY;
 
-						float srcX = (tileSet.getMargin() + (tileSet
-								.getTileWidth() + tileSet.getSpacing())
-								* tileSetCol);
-						float srcY = (tileSet.getMargin() + (tileSet
-								.getTileHeight() + tileSet.getSpacing())
-								* tileSetRow);
+						float srcX = (tileSet.getMargin()
+								+ (tileSet.getTileWidth() + tileSet.getSpacing()) * tileSetCol);
+						float srcY = (tileSet.getMargin()
+								+ (tileSet.getTileHeight() + tileSet.getSpacing()) * tileSetRow);
 						float srcWidth = srcX + tileWidth;
 						float srcHeight = srcY + tileHeight;
 
-						float xOff = srcX * batch.getInvTexWidth()
-								+ texture.xOff();
-						float widthRatio = srcWidth * batch.getInvTexWidth();
-						float yOff = srcY * batch.getInvTexHeight()
-								+ texture.yOff();
-						float heightRatio = srcHeight * batch.getInvTexHeight();
+						float xOff = srcX * texBatch.getInvTexWidth() + texture.xOff();
+						float widthRatio = srcWidth * texBatch.getInvTexWidth();
+						float yOff = srcY * texBatch.getInvTexHeight() + texture.yOff();
+						float heightRatio = srcHeight * texBatch.getInvTexHeight();
 
 						boolean flipX = mapTile.isFlippedHorizontally();
 						boolean flipY = mapTile.isFlippedVertically();
@@ -235,10 +208,8 @@ public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
 							heightRatio = temp;
 						}
 
-						float uvCorrectionX = (0.2f / tileSet.getImage()
-								.getWidth());
-						float uvCorrectionY = (0.2f / tileSet.getImage()
-								.getHeight());
+						float uvCorrectionX = (0.2f / tileSet.getImage().getWidth());
+						float uvCorrectionY = (0.2f / tileSet.getImage().getHeight());
 
 						if (_objectRotation != 0f || scaleX != 1f || scaleY != 1f) {
 
@@ -321,57 +292,46 @@ public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
 								y4 += tileHeight;
 							}
 
-							batch.glVertex2f(x1, y1);
-							batch.glColor4f();
-							batch.glTexCoord2f(xOff + uvCorrectionX, yOff
-									+ uvCorrectionY);
+							texBatch.glVertex2f(x1, y1);
+							texBatch.glColor4f();
+							texBatch.glTexCoord2f(xOff + uvCorrectionX, yOff + uvCorrectionY);
 
-							batch.glVertex2f(x2, y2);
-							batch.glColor4f();
-							batch.glTexCoord2f(xOff + uvCorrectionX,
-									heightRatio - uvCorrectionY);
+							texBatch.glVertex2f(x2, y2);
+							texBatch.glColor4f();
+							texBatch.glTexCoord2f(xOff + uvCorrectionX, heightRatio - uvCorrectionY);
 
-							batch.glVertex2f(x3, y3);
-							batch.glColor4f();
-							batch.glTexCoord2f(widthRatio - uvCorrectionX,
-									heightRatio - uvCorrectionY);
+							texBatch.glVertex2f(x3, y3);
+							texBatch.glColor4f();
+							texBatch.glTexCoord2f(widthRatio - uvCorrectionX, heightRatio - uvCorrectionY);
 
-							batch.glVertex2f(x4, y4);
-							batch.glColor4f();
-							batch.glTexCoord2f(widthRatio - uvCorrectionX, yOff
-									+ uvCorrectionY);
+							texBatch.glVertex2f(x4, y4);
+							texBatch.glColor4f();
+							texBatch.glTexCoord2f(widthRatio - uvCorrectionX, yOff + uvCorrectionY);
 						} else {
-							batch.glVertex2f(posX, posY);
-							batch.glColor4f();
-							batch.glTexCoord2f(xOff + uvCorrectionX, yOff
-									+ uvCorrectionY);
+							texBatch.glVertex2f(posX, posY);
+							texBatch.glColor4f();
+							texBatch.glTexCoord2f(xOff + uvCorrectionX, yOff + uvCorrectionY);
 
-							batch.glVertex2f(flipZ ? posX + tileWidth : posX,
-									flipZ ? posY : posY + tileHeight);
-							batch.glColor4f();
-							batch.glTexCoord2f(xOff + uvCorrectionX,
-									heightRatio - uvCorrectionY);
+							texBatch.glVertex2f(flipZ ? posX + tileWidth : posX, flipZ ? posY : posY + tileHeight);
+							texBatch.glColor4f();
+							texBatch.glTexCoord2f(xOff + uvCorrectionX, heightRatio - uvCorrectionY);
 
-							batch.glVertex2f(posX + tileWidth, posY
-									+ tileHeight);
-							batch.glColor4f();
-							batch.glTexCoord2f(widthRatio - uvCorrectionX,
-									heightRatio - uvCorrectionY);
+							texBatch.glVertex2f(posX + tileWidth, posY + tileHeight);
+							texBatch.glColor4f();
+							texBatch.glTexCoord2f(widthRatio - uvCorrectionX, heightRatio - uvCorrectionY);
 
-							batch.glVertex2f(flipZ ? posX : posX + tileWidth,
-									flipZ ? posY + tileHeight : posY);
-							batch.glColor4f();
-							batch.glTexCoord2f(widthRatio - uvCorrectionX, yOff
-									+ uvCorrectionY);
+							texBatch.glVertex2f(flipZ ? posX : posX + tileWidth, flipZ ? posY + tileHeight : posY);
+							texBatch.glColor4f();
+							texBatch.glTexCoord2f(widthRatio - uvCorrectionX, yOff + uvCorrectionY);
 						}
 
 					}
 				}
 			} finally {
 				if (!isCached) {
-					batch.end();
-					if (onlyTexture) {
-						batch.newCache();
+					texBatch.end();
+					if (saveCache) {
+						saveCache(texBatch);
 					}
 				}
 				baseColor.a = tmpAlpha;
