@@ -72,6 +72,11 @@ public class EmptyObject extends LObject<Object> implements ActionBind, LRelease
 		return scaleY;
 	}
 
+	public EmptyObject setScale(float scale) {
+		this.setScale(scale,scale);
+		return this;
+	}
+
 	@Override
 	public void setScale(float sx, float sy) {
 		this.scaleX = sx;

@@ -614,6 +614,9 @@ public class SpriteBatch extends PixmapFImpl {
 	}
 
 	public void setShader(ShaderProgram shader) {
+		if (shader == customShader) {
+			return;
+		}
 		if (drawing) {
 			submit();
 			if (customShader != null) {

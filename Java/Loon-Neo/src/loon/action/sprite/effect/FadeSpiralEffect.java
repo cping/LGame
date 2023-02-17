@@ -75,7 +75,7 @@ public class FadeSpiralEffect extends Entity implements BaseEffect {
 	}
 
 	@Override
-	public void reset() {
+	public FadeSpiralEffect reset() {
 		super.reset();
 		int tmp = _baseColor.getARGB();
 		if (type == ISprite.TYPE_FADE_IN) {
@@ -96,6 +96,7 @@ public class FadeSpiralEffect extends Entity implements BaseEffect {
 		this.cy = 0;
 		this.tilescovered = 0;
 		_baseColor.setColor(tmp);
+		return this;
 	}
 
 	public float getDelay() {

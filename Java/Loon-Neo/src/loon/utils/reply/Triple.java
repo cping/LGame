@@ -25,16 +25,43 @@ import loon.utils.StringUtils;
 
 public class Triple<T1, T2, T3> {
 
-	private final T1 o1;
+	private T1 o1;
 
-	private final T2 o2;
+	private T2 o2;
 
-	private final T3 o3;
+	private T3 o3;
 
 	private Triple(final T1 o1, final T2 o2, final T3 o3) {
 		this.o1 = o1;
 		this.o2 = o2;
 		this.o3 = o3;
+	}
+
+	public T1 getFirst() {
+		return o1;
+	}
+
+	public T2 getSecond() {
+		return o2;
+	}
+
+	public T3 getThird() {
+		return o3;
+	}
+
+	public Triple<T1, T2, T3> setFirst(T1 first) {
+		this.o1 = first;
+		return this;
+	}
+
+	public Triple<T1, T2, T3> setSecond(T2 second) {
+		this.o2 = second;
+		return this;
+	}
+
+	public Triple<T1, T2, T3> setThird(T3 third) {
+		this.o3 = third;
+		return this;
 	}
 
 	public final static <T1, T2, T3> Triple<T1, T2, T3> get(final T1 o1, final T2 o2, final T3 o3) {

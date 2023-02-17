@@ -25,13 +25,31 @@ import loon.utils.StringUtils;
 
 public class Pair<T1, T2> {
 
-	private final T1 o1;
+	private T1 o1;
 
-	private final T2 o2;
+	private T2 o2;
 
 	private Pair(final T1 o1, final T2 o2) {
 		this.o1 = o1;
 		this.o2 = o2;
+	}
+
+	public T1 getLeft() {
+		return o1;
+	}
+
+	public Pair<T1, T2> setLeft(T1 left) {
+		this.o1 = left;
+		return this;
+	}
+
+	public T2 getRight() {
+		return o2;
+	}
+
+	public Pair<T1, T2> setRight(T2 right) {
+		this.o2 = right;
+		return this;
 	}
 
 	public final static <T1, T2> Pair<T1, T2> get(final T1 o1, final T2 o2) {
@@ -60,7 +78,7 @@ public class Pair<T1, T2> {
 		final Pair<?, ?> p = (Pair<?, ?>) o;
 		return LSystem.equals(o1, p.o1) && LSystem.equals(o2, p.o2);
 	}
-	
+
 	public final T1 get1() {
 		return o1;
 	}

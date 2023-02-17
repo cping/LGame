@@ -131,11 +131,12 @@ public class ArcEffect extends Entity implements BaseEffect {
 	}
 
 	@Override
-	public void reset() {
+	public ArcEffect reset() {
 		super.reset();
 		this.completed = false;
 		this.step = 0;
 		this.curTurn = 1;
+		return this;
 	}
 
 	public int getTurn() {

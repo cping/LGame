@@ -95,7 +95,7 @@ public class ParticleSystem extends Entity {
 	}
 
 	@Override
-	public void reset() {
+	public ParticleSystem reset() {
 		Iterator<ParticlePool> pools = particlesByEmitter.values().iterator();
 		while (pools.hasNext()) {
 			ParticlePool pool = pools.next();
@@ -107,6 +107,7 @@ public class ParticleSystem extends Entity {
 			emitter.resetState();
 		}
 		super.reset();
+		return this;
 	}
 
 	public void setRemoveCompletedEmitters(boolean remove) {

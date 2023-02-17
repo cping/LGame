@@ -45,6 +45,7 @@ public final class Field {
 		return field.getDeclaringClass();
 	}
 
+	@SuppressWarnings("deprecation")
 	public boolean isAccessible() {
 		return field.isAccessible();
 	}

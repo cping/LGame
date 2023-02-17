@@ -297,6 +297,14 @@ public class StringEffect extends Entity implements BaseEffect {
 		this.setRepaint(true);
 	}
 
+	public float getFontWidth() {
+		return _font == null ? 0 : _font.getWidth();
+	}
+
+	public IFont getFont() {
+		return _font == null ? null : _font.getFont();
+	}
+
 	public Text getText() {
 		return _font;
 	}

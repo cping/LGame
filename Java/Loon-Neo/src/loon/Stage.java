@@ -33,6 +33,10 @@ import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
+import loon.utils.processes.GameProcessType;
+import loon.utils.processes.RealtimeProcess;
+import loon.utils.processes.RealtimeProcessManager;
+import loon.utils.res.loaders.PreloadAssets;
 import loon.utils.timer.LTimerContext;
 
 /**
@@ -42,6 +46,42 @@ import loon.utils.timer.LTimerContext;
  */
 public abstract class Stage extends Screen {
 
+	/**
+	 * 预加载进度管理器
+	 */
+	protected class PreloadProcess extends RealtimeProcess {
+
+		private Stage _stage;
+
+		private PreloadAssets _assets;
+
+		private float _maxValue;
+
+		public PreloadProcess(Stage stage, PreloadAssets assets, float max) {
+			this._stage = stage;
+			this._assets = assets;
+			this._maxValue = max;
+		}
+
+		@Override
+		public void run(LTimerContext time) {
+
+			if (!_assets.completed()) {
+				_assets.detection();
+			}
+
+			_stage.updatePercent((_maxValue - _assets.waiting()), _maxValue);
+			_stage.preloadProgress(_stage._percent);
+
+			if (_assets.completed()) {
+				_stage.create();
+				_stage.createState();
+				kill();
+			}
+
+		}
+	}
+
 	private float _drawPosX;
 
 	private float _drawPosY;
@@ -49,6 +89,8 @@ public abstract class Stage extends Screen {
 	private ScrollEffect _scrollBackground;
 
 	private UpdateListener _updateListener;
+
+	private PreloadAssets _preAssets;
 
 	private TArray<ActionObject> _objects;
 
@@ -68,23 +110,35 @@ public abstract class Stage extends Screen {
 
 	private boolean _existing;
 
+	private float _preMaxFileCount;
+
 	private float _percent;
 
 	private float _maxPercent;
 
-	public final Stage setPercentMaximum(float max) {
-		this._maxPercent = MathUtils.clamp(max, 0f, 100f);
+	private long _preloadInterval;
+
+	public final Stage setPercentMax(float max) {
+		this._maxPercent = MathUtils.clamp(max, 0f, LSystem.DEFAULT_MAX_PRE_SIZE);
 		return this;
 	}
 
+	public final Stage setPercent(float cur) {
+		return setPercent(cur, LSystem.DEFAULT_MAX_PRE_SIZE);
+	}
+
 	public final Stage setPercent(float cur, float max) {
-		this._percent = MathUtils.clamp(cur, 0f, 100f);
-		this._maxPercent = MathUtils.clamp(max, 0f, 100f);
+		this._percent = MathUtils.clamp(cur, 0f, LSystem.DEFAULT_MAX_PRE_SIZE);
+		this._maxPercent = MathUtils.clamp(max, 0f, LSystem.DEFAULT_MAX_PRE_SIZE);
 		return this;
 	}
 
 	public final Stage updatePercent(float num) {
-		this._percent = MathUtils.clamp(num, 0f, 100f) / _maxPercent;
+		return updatePercent(num, _maxPercent);
+	}
+
+	public final Stage updatePercent(float num, float max) {
+		this._percent = MathUtils.clamp(num, 0f, LSystem.DEFAULT_MAX_PRE_SIZE) / max;
 		return this;
 	}
 
@@ -101,12 +155,12 @@ public abstract class Stage extends Screen {
 		return this;
 	}
 
-	public final int getMaximumPercent() {
-		return (int) _maxPercent;
+	public final float getMaxPercent() {
+		return _maxPercent;
 	}
 
-	public final int getPercent() {
-		return (int) _percent;
+	public final float getPercent() {
+		return _percent;
 	}
 
 	protected StateManager createStateManager() {
@@ -153,7 +207,7 @@ public abstract class Stage extends Screen {
 		_stateManager.playBack();
 		return this;
 	}
-	
+
 	public Stage removeState(String name) {
 		this._stateManager = createStateManager();
 		_stateManager.remove(name);
@@ -207,20 +261,63 @@ public abstract class Stage extends Screen {
 
 	public abstract void create();
 
+	/**
+	 * 资源预加载用函数,异步加载指定资源
+	 * 
+	 * @param assets
+	 */
+	protected void preload(PreloadAssets assets) {
+	}
+
+	/**
+	 * 预载资源已完成进度
+	 * 
+	 * @param percent
+	 */
+	protected void preloadProgress(float percent) {
+
+	}
+
+	public PreloadAssets getPreloadAssets() {
+		return this._preAssets;
+	}
+
 	@Override
 	public void onLoad() {
 		try {
 			this._objects = new TArray<ActionObject>();
+			this._preAssets = new PreloadAssets();
 			this._pendingAdd = new TArray<ActionObject>();
 			this._pendingRemove = new TArray<ActionObject>();
 			this._childTiles = new TArray<TileMap>();
 			this._currentOffset = Vector2f.ZERO();
-			create();
-			if (_existing) {
-				_stateManager.load();
+
+			this.preload(_preAssets);
+
+			this.setPercentMax(this._preMaxFileCount = _preAssets.waiting());
+
+			if (_preMaxFileCount > LSystem.DEFAULT_MAX_PRE_SIZE) {
+				throw new LSysException(
+						"The count of preloaded data cannot be greater than " + LSystem.DEFAULT_MAX_PRE_SIZE);
+			}
+
+			if (_preMaxFileCount == 0) {
+				this.create();
+				this.createState();
+			} else {
+				PreloadProcess preload = new PreloadProcess(this, _preAssets, this._preMaxFileCount);
+				preload.setProcessType(GameProcessType.Preload);
+				preload.setDelay(this._preloadInterval);
+				RealtimeProcessManager.get().addProcess(preload);
 			}
 		} catch (Throwable cause) {
 			LSystem.error("Screen create failure", cause);
+		}
+	}
+
+	private void createState() {
+		if (_existing) {
+			_stateManager.load();
 		}
 	}
 
@@ -421,6 +518,15 @@ public abstract class Stage extends Screen {
 		return null;
 	}
 
+	public float getPreloadInterval() {
+		return _preloadInterval / LSystem.SECOND;
+	}
+
+	public Stage setPreloadInterval(float second) {
+		this._preloadInterval = (long) (LSystem.SECOND * second);
+		return this;
+	}
+
 	public UpdateListener getUpdateListener() {
 		return _updateListener;
 	}
@@ -476,7 +582,12 @@ public abstract class Stage extends Screen {
 			_scrollBackground.close();
 			_scrollBackground = null;
 		}
-		_percent = _maxPercent = 0;
+		if (_preAssets != null) {
+			_preAssets.close();
+			_preAssets = null;
+		}
+		_preMaxFileCount = _percent = _maxPercent = 0;
+		_preloadInterval = 0;
 		dispose();
 	}
 

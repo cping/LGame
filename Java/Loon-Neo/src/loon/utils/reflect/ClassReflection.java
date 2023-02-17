@@ -56,6 +56,7 @@ public final class ClassReflection {
 		return Modifier.isStatic(c.getModifiers());
 	}
 
+	@SuppressWarnings("deprecation")
 	static public <T> T newInstance(Class<T> c) throws ReflectionException {
 		try {
 			return c.newInstance();

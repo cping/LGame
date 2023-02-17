@@ -29,7 +29,7 @@ import loon.opengl.LSTRFont;
  * 一个IFont的阴影字体实现,内部是LFont
  */
 public class ShadowFont implements IFont {
-
+	
 	private boolean withShadow = false, closed = false;
 	private LColor shadowColor = new LColor(0f, 0f, 0f, 1f);
 	private float shadowAlpha = 1f;
@@ -141,12 +141,12 @@ public class ShadowFont implements IFont {
 
 	@Override
 	public int stringWidth(String width) {
-		return strfont.getWidth(width);
+		return strfont.getWidth(width,true);
 	}
 
 	@Override
 	public int stringHeight(String height) {
-		return strfont.getHeight(height);
+		return strfont.getHeight(height,true);
 	}
 
 	@Override
@@ -160,21 +160,8 @@ public class ShadowFont implements IFont {
 	}
 
 	@Override
-	public String confineLength(String s, int width) {
-		int length = 0;
-		for (int i = 0; i < s.length(); i++) {
-			length += stringWidth(String.valueOf(s.charAt(i)));
-			if (length >= width) {
-				int pLength = stringWidth("...");
-				while (length + pLength >= width && i >= 0) {
-					length -= stringWidth(String.valueOf(s.charAt(i)));
-					i--;
-				}
-				s = s.substring(0, ++i) + "...";
-				break;
-			}
-		}
-		return s;
+	public String confineLength(String msg, int width) {
+		return strfont.confineLength(msg, width);
 	}
 
 	@Override
@@ -234,6 +221,16 @@ public class ShadowFont implements IFont {
 	@Override
 	public String toString() {
 		return getFont().toString();
+	}
+
+	@Override
+	public ITranslator getTranslator() {
+		return strfont.getTranslator();
+	}
+
+	@Override
+	public IFont setTranslator(ITranslator translator) {
+		return strfont.setTranslator(translator);
 	}
 
 }

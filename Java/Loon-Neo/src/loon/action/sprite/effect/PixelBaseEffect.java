@@ -92,11 +92,12 @@ public abstract class PixelBaseEffect extends Entity {
 	}
 
 	@Override
-	public void reset() {
+	public PixelBaseEffect reset() {
 		super.reset();
 		this.startLocation = new float[2];
 		this.targetLocation = new float[2];
 		this.frame = 0;
+		return this;
 	}
 
 	public void setEffectPosition(float x1, float y1, float x2, float y2) {

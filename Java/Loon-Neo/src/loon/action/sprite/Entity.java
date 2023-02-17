@@ -65,7 +65,11 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	protected boolean _childrenSortPending = false;
 	protected boolean _debugDraw = false;
 
-	protected int _idxTag = IEntity.TAG_INVALID;
+	protected boolean _followRotation = true;
+	protected boolean _followScale = true;
+	protected boolean _followColor = true;
+
+	protected int _idxTag = Entity.TAG_INVALID;
 
 	protected boolean _repaintDraw = false;
 
@@ -102,7 +106,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	private final static LayerSorter<IEntity> entitySorter = new LayerSorter<IEntity>(false);
 
-	private ResizeListener<Entity> _resizeListener;
+	private ResizeListener<IEntity> _resizeListener;
 
 	private boolean _stopUpdate = false;
 
@@ -155,11 +159,11 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	}
 
-	public Entity setTexture(String path) {
+	public IEntity setTexture(String path) {
 		return setTexture(LSystem.loadTexture(path));
 	}
 
-	public Entity setTexture(LTexture tex) {
+	public IEntity setTexture(LTexture tex) {
 		this._image = tex;
 		if (_width <= 0) {
 			_width = _image.width();
@@ -187,8 +191,9 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	}
 
 	@Override
-	public void setChildrenVisible(final boolean v) {
+	public IEntity setChildrenVisible(final boolean v) {
 		this._childrenVisible = v;
+		return this;
 	}
 
 	@Override
@@ -207,8 +212,9 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	}
 
 	@Override
-	public void setChildrenIgnoreUpdate(final boolean c) {
+	public IEntity setChildrenIgnoreUpdate(final boolean c) {
 		this._childrenIgnoreUpdate = c;
+		return this;
 	}
 
 	@Override
@@ -217,13 +223,14 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	}
 
 	@Override
-	public void setIndexTag(final int idx) {
+	public IEntity setIndexTag(final int idx) {
 		this._idxTag = idx;
+		return this;
 	}
 
 	@Override
 	public boolean isRotated() {
-		return this._objectRotation != 0;
+		return this._objectRotation != 0f;
 	}
 
 	@Override
@@ -280,11 +287,11 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		setPivotY(ry);
 	}
 
-	public Entity setAnchor(final float scale) {
+	public IEntity setAnchor(final float scale) {
 		return setAnchor(scale, scale);
 	}
 
-	public Entity setAnchor(final float sx, final float sy) {
+	public IEntity setAnchor(final float sx, final float sy) {
 		setPivot(_width * sx, _height * sy);
 		return this;
 	}
@@ -314,16 +321,27 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		this._scaleY = pScaleY;
 	}
 
+	protected void onScale() {
+	}
+
 	@Override
 	public void setScale(final float pScale) {
-		this._scaleX = pScale;
-		this._scaleY = pScale;
+		this.setScale(pScale, pScale);
 	}
 
 	@Override
 	public void setScale(final float pScaleX, final float pScaleY) {
 		this._scaleX = pScaleX;
 		this._scaleY = pScaleY;
+		if (_childrens != null) {
+			for (int i = this._childrens.size - 1; i >= 0; i--) {
+				final IEntity child = this._childrens.get(i);
+				if (child != null && child.isFollowScale() && child != this) {
+					child.setScale(pScaleX, pScaleY);
+				}
+			}
+		}
+		this.onScale();
 	}
 
 	@Override
@@ -445,29 +463,47 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	public LColor getColor() {
 		return this._baseColor.cpy();
 	}
+	
+	private void updateAlpha(final float alpha) {
+		if (_childrens != null) {
+			for (int i = _childrens.size - 1; i > -1; i--) {
+				IEntity entity = _childrens.get(i);
+				if (entity != null && entity.isFollowColor() && entity != this) {
+					entity.setAlpha(alpha);
+				}
+			}
+		}
+	}
+	
+	private void updateColor(final LColor color) {
+		if (_childrens != null) {
+			for (int i = _childrens.size - 1; i > -1; i--) {
+				IEntity entity = _childrens.get(i);
+				if (entity != null && entity.isFollowColor() && entity != this) {
+					entity.setColor(color);
+				}
+			}
+		}
+	}
 
 	@Override
 	public void setColor(final LColor pColor) {
 		this._baseColor.setColor(pColor);
+		this.updateColor(_baseColor);
 		this.onUpdateColor();
 	}
 
 	@Override
 	public void setColor(final int pColor) {
 		this._baseColor.setColor(pColor);
-		this.onUpdateColor();
-	}
-
-	@Override
-	public void setAlpha(final float a) {
-		super.setAlpha(a);
-		this._baseColor.a = a;
+		this.updateColor(_baseColor);
 		this.onUpdateColor();
 	}
 
 	@Override
 	public void setColor(final float r, final float g, final float b) {
 		this._baseColor.setColor(r, g, b);
+		this.updateColor(_baseColor);
 		this.onUpdateColor();
 
 	}
@@ -475,9 +511,18 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	@Override
 	public void setColor(final float r, final float g, final float b, final float a) {
 		this._baseColor.setColor(r, g, b, a);
+		this.updateColor(_baseColor);
 		this.onUpdateColor();
 	}
 
+	@Override
+	public void setAlpha(final float a) {
+		super.setAlpha(a);
+		this._baseColor.a = a;
+		this.updateAlpha(a);
+		this.onUpdateColor();
+	}
+	
 	@Override
 	public int getChildCount() {
 		if (this._childrens == null) {
@@ -525,12 +570,12 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	}
 
 	@Override
-	public void addChild(final IEntity e) {
+	public IEntity addChild(final IEntity e) {
 		if (e == null) {
-			return;
+			return this;
 		}
 		if (e == this) {
-			return;
+			return this;
 		}
 		if (this._childrens == null) {
 			this.allocateChildren();
@@ -540,39 +585,43 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		e.setSprites(this._sprites);
 		e.setState(State.ADDED);
 		e.onAttached();
+		return this;
 	}
 
 	@Override
-	public void addChildAt(final IEntity e, float x, float y) {
+	public IEntity addChildAt(final IEntity e, float x, float y) {
 		if (e != null) {
 			e.setLocation(x, y);
 			addChild(e);
 		}
+		return this;
 	}
 
 	@Override
-	public void sortChildren() {
-		this.sortChildren(true);
+	public IEntity sortChildren() {
+		return this.sortChildren(true);
 	}
 
 	@Override
-	public void sortChildren(final boolean i) {
+	public IEntity sortChildren(final boolean i) {
 		if (this._childrens == null) {
-			return;
+			return this;
 		}
 		if (i) {
 			entitySorter.sort(this._childrens);
 		} else {
 			this._childrenSortPending = true;
 		}
+		return this;
 	}
 
 	@Override
-	public void sortChildren(final Comparator<IEntity> e) {
+	public IEntity sortChildren(final Comparator<IEntity> e) {
 		if (this._childrens == null) {
-			return;
+			return this;
 		}
 		entitySorter.sort(this._childrens, e);
+		return this;
 	}
 
 	@Override
@@ -586,9 +635,9 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	}
 
 	@Override
-	public void removeChildren() {
+	public IEntity removeChildren() {
 		if (this._childrens == null) {
-			return;
+			return this;
 		}
 		for (int i = this._childrens.size - 1; i >= 0; i--) {
 			final IEntity removed = this._childrens.get(i);
@@ -602,6 +651,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 			}
 		}
 		this._childrens.clear();
+		return this;
 	}
 
 	@Override
@@ -662,8 +712,9 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	}
 
 	@Override
-	public void setUserData(final Object u) {
+	public IEntity setUserData(final Object u) {
 		this.Tag = u;
+		return this;
 	}
 
 	@Override
@@ -679,7 +730,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	}
 
 	@Override
-	public void reset() {
+	public IEntity reset() {
 		this._visible = true;
 		this._debugDraw = false;
 		this._ignoreUpdate = false;
@@ -706,6 +757,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 				}
 			}
 		}
+		return this;
 	}
 
 	public float getScreenX() {
@@ -862,7 +914,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		}
 	}
 
-	public Entity setRepaint(boolean r) {
+	public IEntity setRepaint(boolean r) {
 		this._repaintDraw = r;
 		return this;
 	}
@@ -885,7 +937,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	protected void onManagedPaint(final GLEx g, float offsetX, float offsetY) {
 		final TArray<IEntity> children = this._childrens;
-		if ((children == null) || !this._childrenVisible) {
+		if (!this._childrenVisible || (children == null)) {
 			this.prePaint(g);
 			this.paint(g, offsetX, offsetY);
 			this.postPaint(g);
@@ -895,24 +947,26 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 				this._childrenSortPending = false;
 			}
 			final int childCount = children.size;
-			int i = 0;
-			for (; i < childCount; i++) {
-				final IEntity child = children.get(i);
-				if (child != null && child.getLayer() < 0) {
-					child.createUI(g, offsetX, offsetY);
-				} else {
-					break;
-				}
-			}
 			this.prePaint(g);
 			this.paint(g, offsetX, offsetY);
-			this.postPaint(g);
-			for (; i < childCount; i++) {
+			for (int i = 0; i < childCount; i++) {
 				final IEntity child = children.get(i);
-				if (child != null && child.getLayer() >= 0) {
-					child.createUI(g, offsetX, offsetY);
+				if (child != null) {
+					float px = 0, py = 0;
+					ISprite parent = child.getParent();
+					if (parent == null) {
+						parent = this;
+					}
+					px += parent.getX() + parent.getOffsetX();
+					py += parent.getY() + parent.getOffsetY();
+					for (; (parent = parent.getParent()) != null;) {
+						px += parent.getX() + parent.getOffsetX();
+						py += parent.getY() + parent.getOffsetY();
+					}
+					child.createUI(g, px + offsetX + child.getOffsetX(), py + offsetY + child.getOffsetY());
 				}
 			}
+			this.postPaint(g);
 		}
 	}
 
@@ -1028,7 +1082,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		this._height = MathUtils.max(1f, h);
 	}
 
-	public Entity setSize(float w, float h) {
+	public IEntity setSize(float w, float h) {
 		if (this._width != w || this._height != h) {
 			this._width = MathUtils.max(1f, w);
 			this._height = MathUtils.max(1f, h);
@@ -1037,11 +1091,11 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		return this;
 	}
 
-	public Entity setBounds(RectBox rect) {
+	public IEntity setBounds(RectBox rect) {
 		return this.setBounds(rect.x, rect.y, rect.width, rect.height);
 	}
 
-	public Entity setBounds(float x, float y, float width, float height) {
+	public IEntity setBounds(float x, float y, float width, float height) {
 		this.setLocation(x, y);
 		this.setSize(width, height);
 		return this;
@@ -1066,19 +1120,19 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		return _shear;
 	}
 
-	public Entity setShear(RectBox s) {
+	public IEntity setShear(RectBox s) {
 		allocateShear();
 		this._shear.setBounds(s);
 		return this;
 	}
 
-	public Entity setShear(float x, float y, float w, float h) {
+	public IEntity setShear(float x, float y, float w, float h) {
 		allocateShear();
 		this._shear.setBounds(x, y, w, h);
 		return this;
 	}
 
-	public Entity setClip(float x, float y, float w, float h) {
+	public IEntity setClip(float x, float y, float w, float h) {
 		setShear(x, y, w, h);
 		return this;
 	}
@@ -1087,7 +1141,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		return _deform;
 	}
 
-	public Entity setDeform(boolean d) {
+	public IEntity setDeform(boolean d) {
 		this._deform = d;
 		return this;
 	}
@@ -1105,7 +1159,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		return _origin;
 	}
 
-	public Entity setOrigin(Origin o) {
+	public IEntity setOrigin(Origin o) {
 		this._origin = o;
 		return this;
 	}
@@ -1114,25 +1168,25 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		return _stopUpdate;
 	}
 
-	public Entity setStopUpdate(boolean s) {
+	public IEntity setStopUpdate(boolean s) {
 		this._stopUpdate = s;
 		return this;
 	}
 
 	@Override
-	public Entity setFlipX(boolean x) {
+	public IEntity setFlipX(boolean x) {
 		this._flipX = x;
 		return this;
 	}
 
 	@Override
-	public Entity setFlipY(boolean y) {
+	public IEntity setFlipY(boolean y) {
 		this._flipY = y;
 		return this;
 	}
 
 	@Override
-	public Entity setFlipXY(boolean x, boolean y) {
+	public IEntity setFlipXY(boolean x, boolean y) {
 		setFlipX(x);
 		setFlipY(y);
 		return this;
@@ -1235,13 +1289,13 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		return _offset;
 	}
 
-	public Entity setOffset(float x, float y) {
+	public IEntity setOffset(float x, float y) {
 		this._offset.set(x, y);
 		return this;
 	}
 
 	@Override
-	public Entity setOffset(Vector2f offset) {
+	public IEntity setOffset(Vector2f offset) {
 		this._offset = offset;
 		return this;
 	}
@@ -1251,7 +1305,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		return _offset.x;
 	}
 
-	public Entity setOffsetX(float offsetX) {
+	public IEntity setOffsetX(float offsetX) {
 		this._offset.setX(offsetX);
 		return this;
 	}
@@ -1261,7 +1315,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		return _offset.y;
 	}
 
-	public Entity setOffsetY(float offsetY) {
+	public IEntity setOffsetY(float offsetY) {
 		this._offset.setY(offsetY);
 		return this;
 	}
@@ -1284,21 +1338,21 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		return getY() + getHeight() / 2f;
 	}
 
-	public Entity in() {
+	public IEntity in() {
 		return in(30);
 	}
 
-	public Entity in(float speed) {
+	public IEntity in(float speed) {
 		this.setAlpha(0f);
 		this.selfAction().fadeIn(speed).start();
 		return this;
 	}
 
-	public Entity out() {
+	public IEntity out() {
 		return out(30);
 	}
 
-	public Entity out(float speed) {
+	public IEntity out(float speed) {
 		this.selfAction().fadeOut(speed).start().setActionListener(new ActionListener() {
 
 			@Override
@@ -1329,11 +1383,12 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	}
 
 	@Override
-	public void setSprites(Sprites ss) {
+	public ISprite setSprites(Sprites ss) {
 		if (this._sprites == ss) {
-			return;
+			return this;
 		}
 		this._sprites = ss;
+		return this;
 	}
 
 	@Override
@@ -1415,17 +1470,21 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		return pointResult;
 	}
 
+	protected void onRotation() {
+	}
+
 	@Override
 	public void setRotation(float rotate) {
 		super.setRotation(rotate);
 		if (_childrens != null) {
 			for (int i = _childrens.size - 1; i > -1; i--) {
-				IEntity entity = _childrens.items[i];
-				if (entity != null) {
+				IEntity entity = _childrens.get(i);
+				if (entity != null && entity.isFollowRotation() && entity != this) {
 					entity.setRotation(rotate);
 				}
 			}
 		}
+		onRotation();
 	}
 
 	@Override
@@ -1483,10 +1542,10 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	}
 
 	public Gravity getGravity() {
-		return new Gravity("Entity", this);
+		return new Gravity("IEntity", this);
 	}
 
-	public Entity softCenterOn(float x, float y) {
+	public IEntity softCenterOn(float x, float y) {
 		final RectBox rect = getSprites() == null ? LSystem.viewSize.getRect() : getSprites().getBoundingBox();
 		final IEntity sprite = this.getSuper();
 		if (x != 0) {
@@ -1549,11 +1608,11 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		return this;
 	}
 
-	public ResizeListener<Entity> getResizeListener() {
+	public ResizeListener<IEntity> getResizeListener() {
 		return _resizeListener;
 	}
 
-	public Entity setResizeListener(ResizeListener<Entity> listener) {
+	public IEntity setResizeListener(ResizeListener<IEntity> listener) {
 		this._resizeListener = listener;
 		return this;
 	}
@@ -1574,13 +1633,41 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	}
 
 	@Override
+	public IEntity setFollowRotation(boolean r) {
+		this._followRotation = r;
+		return this;
+	}
+
+	@Override
+	public IEntity setFollowScale(boolean s) {
+		this._followScale = s;
+		return this;
+	}
+
+	@Override
+	public boolean isFollowRotation() {
+		return _followRotation;
+	}
+
+	@Override
+	public boolean isFollowScale() {
+		return _followScale;
+	}
+
+	@Override
+	public boolean isFollowColor() {
+		return _followColor;
+	}
+
+	@Override
 	public float getFixedWidthOffset() {
 		return _fixedWidthOffset;
 	}
 
 	@Override
-	public void setFixedWidthOffset(float fixedWidthOffset) {
+	public ISprite setFixedWidthOffset(float fixedWidthOffset) {
 		this._fixedWidthOffset = fixedWidthOffset;
+		return this;
 	}
 
 	@Override
@@ -1589,23 +1676,25 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	}
 
 	@Override
-	public void setFixedHeightOffset(float fixedHeightOffset) {
+	public ISprite setFixedHeightOffset(float fixedHeightOffset) {
 		this._fixedHeightOffset = fixedHeightOffset;
+		return this;
 	}
 
 	public boolean isRepaintAutoOffset() {
 		return _repaintAutoOffset;
 	}
 
-	public void setRepaintAutoOffset(boolean autoOffset) {
+	public IEntity setRepaintAutoOffset(boolean autoOffset) {
 		this._repaintAutoOffset = autoOffset;
+		return this;
 	}
 
 	public boolean isMirror() {
 		return this._flipX;
 	}
 
-	public Entity setMirror(boolean mirror) {
+	public IEntity setMirror(boolean mirror) {
 		return setFlipX(mirror);
 	}
 
@@ -1657,6 +1746,12 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		setState(State.DISPOSED);
 		removeChildren();
 		removeActionEvents(this);
+	}
+
+	@Override
+	public IEntity setFollowColor(boolean c) {
+		this._followColor = c;
+		return this;
 	}
 
 }

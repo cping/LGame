@@ -55,7 +55,7 @@ import loon.utils.parse.StrTokenizer;
 /**
  * Adobe的DBF格式字体文件支持(主要是给C#版monogame环境用的,本地字库默认没法调用,除非调用本地api,问题是不想自己写环境适配才用的monogame……)
  */
-public class BDFont implements IFont, LRelease {
+public class BDFont extends FontTrans implements IFont, LRelease {
 
 	public static class BDFGlyph {
 
@@ -1451,9 +1451,12 @@ public class BDFont implements IFont, LRelease {
 		return true;
 	}
 
-	private void drawString(float mx, float my, float sx, float sy, float ax, float ay, float rotation, String chars,
-			LColor c, int startIndex, int endIndex) {
-		if (!cehckRunning(chars)) {
+	private void drawString(float mx, float my, float sx, float sy, float ax, float ay, float rotation, String msg,			LColor c, int startIndex, int endIndex) {
+		if (StringUtils.isEmpty(msg)) {
+			return;
+		}
+		String newMessage = toMessage(msg);
+		if (!cehckRunning(newMessage)) {
 			return;
 		}
 		if (displays.size > LSystem.DEFAULT_MAX_CACHE_SIZE) {
@@ -1476,18 +1479,18 @@ public class BDFont implements IFont, LRelease {
 		this.totalWidth = 0;
 		this.totalHeight = 0;
 		if (rotation != 0 && (ax == 0 && ay == 0)) {
-			ax = stringWidth(chars) / 2;
+			ax = stringWidth(newMessage) / 2;
 			ay = getHeight();
 		}
 		if (useCache) {
-			display = displays.get(chars);
+			display = displays.get(newMessage);
 			if (display == null) {
 				clearChildString();
 				fontBatch.begin();
 				float old = fontBatch.getFloatColor();
 				fontBatch.setColor(c);
 				for (int i = startIndex; i < endIndex; i++) {
-					char ch = chars.charAt(i);
+					char ch = newMessage.charAt(i);
 					charCurrent = ch;
 					if (charCurrent == newRFlag) {
 						continue;
@@ -1524,7 +1527,7 @@ public class BDFont implements IFont, LRelease {
 				fontBatch.setBlendState(BlendState.AlphaBlend);
 				fontBatch.commit(x, y, nsx, nsy, ax, ay, rotation);
 				fontBatch.setColor(old);
-				displays.put(chars, display = fontBatch.newCache());
+				displays.put(newMessage, display = fontBatch.newCache());
 			} else if (display != null && fontBatch != null && fontBatch.toTexture() != null) {
 				fontBatch.postCache(display, c, x, y, nsx, nsy, ax, ay, rotation);
 			}
@@ -1535,7 +1538,7 @@ public class BDFont implements IFont, LRelease {
 			fontBatch.setColor(c);
 
 			for (int i = startIndex; i < endIndex; i++) {
-				char ch = chars.charAt(i);
+				char ch = newMessage.charAt(i);
 				charCurrent = ch;
 				if (charCurrent == newRFlag) {
 					continue;
@@ -1574,16 +1577,23 @@ public class BDFont implements IFont, LRelease {
 			fontBatch.commit(x, y, nsx, nsy, ax, ay, rotation);
 		}
 		if (checkOutBounds() && _childChars != null) {
-			_childFont._drawChildString(_childChars, mx, my, sx, sy, ax, ay, rotation, chars, c, startIndex, endIndex);
+			_childFont._drawChildString(_childChars, mx, my, sx, sy, ax, ay, rotation, newMessage, c, startIndex, endIndex);
 		}
 	}
 
 	private void _drawChildString(TArray<CharRect> child, float mx, float my, float sx, float sy, float ax, float ay,
-			float rotation, String chars, LColor c, int startIndex, int endIndex) {
+			float rotation, String msg, LColor c, int startIndex, int endIndex) {
 		if (child == null) {
 			return;
 		}
-		if (!cehckRunning(chars)) {
+		if (StringUtils.isEmpty(msg)) {
+			return;
+		}
+		String newMessage = toMessage(msg);
+		if (checkEndIndexUpdate(endIndex, msg, newMessage)) {
+			endIndex = newMessage.length();
+		}
+		if (!cehckRunning(newMessage)) {
 			return;
 		}
 		if (displays.size > LSystem.DEFAULT_MAX_CACHE_SIZE) {
@@ -1606,11 +1616,11 @@ public class BDFont implements IFont, LRelease {
 		this.totalWidth = 0;
 		this.totalHeight = 0;
 		if (rotation != 0 && (ax == 0 && ay == 0)) {
-			ax = stringWidth(chars) / 2;
+			ax = stringWidth(newMessage) / 2;
 			ay = getHeight();
 		}
 		if (useCache) {
-			display = displays.get(chars);
+			display = displays.get(newMessage);
 			if (display == null) {
 				fontBatch.begin();
 				float old = fontBatch.getFloatColor();
@@ -1632,7 +1642,7 @@ public class BDFont implements IFont, LRelease {
 				fontBatch.setBlendState(BlendState.AlphaBlend);
 				fontBatch.commit(x, y, nsx, nsy, ax, ay, rotation);
 				fontBatch.setColor(old);
-				displays.put(chars, display = fontBatch.newCache());
+				displays.put(newMessage, display = fontBatch.newCache());
 			} else if (display != null && fontBatch != null && fontBatch.toTexture() != null) {
 				fontBatch.postCache(display, c, x, y, nsx, nsy, ax, ay, rotation);
 			}
@@ -1659,7 +1669,7 @@ public class BDFont implements IFont, LRelease {
 			fontBatch.commit(x, y, nsx, nsy, ax, ay, rotation);
 		}
 		if (checkOutBounds() && _childChars != null) {
-			_childFont._drawChildString(_childChars, mx, my, sx, sy, ax, ay, rotation, chars, c, startIndex, endIndex);
+			_childFont._drawChildString(_childChars, mx, my, sx, sy, ax, ay, rotation, newMessage, c, startIndex, endIndex);
 		}
 	}
 
@@ -1696,8 +1706,15 @@ public class BDFont implements IFont, LRelease {
 	}
 
 	private void drawString(GLEx gl, float mx, float my, float sx, float sy, float ax, float ay, float rotation,
-			String chars, LColor c, int startIndex, int endIndex) {
-		if (!cehckRunning(chars)) {
+			String msg, LColor c, int startIndex, int endIndex) {
+		if (StringUtils.isEmpty(msg)) {
+			return;
+		}
+		String newMessage = toMessage(msg);
+		if (checkEndIndexUpdate(endIndex, msg, newMessage)) {
+			endIndex = newMessage.length();
+		}
+		if (!cehckRunning(newMessage)) {
 			return;
 		}
 		final float nsx = sx * fontScale;
@@ -1721,8 +1738,8 @@ public class BDFont implements IFont, LRelease {
 				gl.saveTx();
 				Affine2f xf = gl.tx();
 				if (angle) {
-					float centerX = x + this.getWidth(chars) / 2;
-					float centerY = y + this.getHeight(chars) / 2;
+					float centerX = x + this.getWidth(newMessage) / 2;
+					float centerY = y + this.getHeight(newMessage) / 2;
 					xf.translate(centerX, centerY);
 					xf.preRotate(rotation);
 					xf.translate(-centerX, -centerY);
@@ -1732,7 +1749,7 @@ public class BDFont implements IFont, LRelease {
 				}
 			}
 			for (int i = startIndex; i < endIndex; i++) {
-				char ch = chars.charAt(i);
+				char ch = newMessage.charAt(i);
 				charCurrent = ch;
 
 				intObject = customChars.get(charCurrent);
@@ -1774,15 +1791,15 @@ public class BDFont implements IFont, LRelease {
 			}
 		}
 		if (childDraw && _childChars != null) {
-			_childFont._drawChildString(_childChars, gl, mx, my, sx, sy, ax, ay, rotation, chars, c, startIndex,
+			_childFont._drawChildString(_childChars, gl, mx, my, sx, sy, ax, ay, rotation, newMessage, c, startIndex,
 					endIndex);
 			_childChars.clear();
 		}
 	}
 
 	private void _drawChildString(TArray<CharRect> child, GLEx gl, float mx, float my, float sx, float sy, float ax,
-			float ay, float rotation, String chars, LColor c, int startIndex, int endIndex) {
-		if (!cehckRunning(chars)) {
+			float ay, float rotation, String msg, LColor c, int startIndex, int endIndex) {
+		if (!cehckRunning(msg)) {
 			return;
 		}
 		final float x = mx + offset.x;
@@ -1804,8 +1821,8 @@ public class BDFont implements IFont, LRelease {
 				gl.saveTx();
 				Affine2f xf = gl.tx();
 				if (angle) {
-					float centerX = x + this.getWidth(chars) / 2;
-					float centerY = y + this.getHeight(chars) / 2;
+					float centerX = x + this.getWidth(msg) / 2;
+					float centerY = y + this.getHeight(msg) / 2;
 					xf.translate(centerX, centerY);
 					xf.preRotate(rotation);
 					xf.translate(-centerX, -centerY);
@@ -1836,7 +1853,7 @@ public class BDFont implements IFont, LRelease {
 			}
 		}
 		if (childDraw && _childChars != null) {
-			_childFont._drawChildString(_childChars, gl, mx, my, sx, sy, ax, ay, rotation, chars, c, startIndex,
+			_childFont._drawChildString(_childChars, gl, mx, my, sx, sy, ax, ay, rotation, msg, c, startIndex,
 					endIndex);
 			_childChars.clear();
 		}
@@ -2017,14 +2034,15 @@ public class BDFont implements IFont, LRelease {
 		return _chars.contains(c);
 	}
 
-	public boolean containsChars(String str) {
-		if (StringUtils.isEmpty(str)) {
-			return true;
+	public boolean containsChars(String msg) {
+		if (StringUtils.isEmpty(msg)) {
+			return false;
 		}
+		String newMessage = toMessage(msg);
 		int count = 0;
-		int len = str.length();
+		int len = newMessage.length();
 		for (int i = 0; i < len; i++) {
-			if (_chars.contains(str.charAt(i))) {
+			if (_chars.contains(newMessage.charAt(i))) {
 				count++;
 			}
 		}
@@ -2061,14 +2079,15 @@ public class BDFont implements IFont, LRelease {
 		return 0;
 	}
 
-	public int getLineWidth(String message) {
-		if (StringUtils.isNullOrEmpty(message)) {
+	public int getLineWidth(String msg) {
+		if (StringUtils.isNullOrEmpty(msg)) {
 			return 0;
 		}
+		String newMessage = toMessage(msg);
 		loadFont();
 		int count = 0;
-		for (int i = 0, size = message.length(); i < size; i++) {
-			char ch = message.charAt(i);
+		for (int i = 0, size = newMessage.length(); i < size; i++) {
+			char ch = newMessage.charAt(i);
 			if (characters.containsKey(ch)) {
 				BDFGlyph g = characters.get(ch);
 				if (fullflags.indexOf(ch) != -1) {
@@ -2082,18 +2101,19 @@ public class BDFont implements IFont, LRelease {
 	}
 
 	@Override
-	public int stringWidth(String message) {
-		if (StringUtils.isNullOrEmpty(message)) {
+	public int stringWidth(String msg) {
+		if (StringUtils.isNullOrEmpty(msg)) {
 			return 0;
 		}
+		String newMessage = toMessage(msg);
 		loadFont();
-		if (message.indexOf(LSystem.LF) == -1) {
-			return getLineWidth(message);
+		if (newMessage.indexOf(LSystem.LF) == -1) {
+			return getLineWidth(newMessage);
 		} else {
 			StrBuilder sbr = new StrBuilder();
 			int width = 0;
-			for (int i = 0, size = message.length(); i < size; i++) {
-				char ch = message.charAt(i);
+			for (int i = 0, size = newMessage.length(); i < size; i++) {
+				char ch = newMessage.charAt(i);
 				if (ch == LSystem.LF) {
 					width = MathUtils.max(getLineWidth(sbr.toString()), width);
 					sbr.setLength(0);
@@ -2106,15 +2126,16 @@ public class BDFont implements IFont, LRelease {
 	}
 
 	@Override
-	public int stringHeight(String message) {
-		if (StringUtils.isNullOrEmpty(message)) {
+	public int stringHeight(String msg) {
+		if (StringUtils.isNullOrEmpty(msg)) {
 			return 0;
 		}
+		String newMessage = toMessage(msg);
 		loadFont();
-		if (message.indexOf(LSystem.LF) == -1) {
+		if (newMessage.indexOf(LSystem.LF) == -1) {
 			return getHeight();
 		} else {
-			String[] list = StringUtils.split(message, LSystem.LF);
+			String[] list = StringUtils.split(newMessage, LSystem.LF);
 			return list.length * getHeight();
 		}
 	}
@@ -2174,30 +2195,32 @@ public class BDFont implements IFont, LRelease {
 	}
 
 	@Override
-	public String confineLength(String s, int width) {
+	public String confineLength(String msg, int width) {
+		String newMessage = toMessage(msg);
 		int length = 0;
-		for (int i = 0; i < s.length(); i++) {
-			length += stringWidth(String.valueOf(s.charAt(i)));
+		for (int i = 0; i < newMessage.length(); i++) {
+			length += stringWidth(String.valueOf(newMessage.charAt(i)));
 			if (length >= width) {
 				int pLength = stringWidth("...");
 				while (length + pLength >= width && i >= 0) {
-					length -= stringWidth(String.valueOf(s.charAt(i)));
+					length -= stringWidth(String.valueOf(newMessage.charAt(i)));
 					i--;
 				}
-				s = s.substring(0, ++i) + "...";
+				newMessage = newMessage.substring(0, ++i) + "...";
 				break;
 			}
 		}
-		return s;
+		return newMessage;
 	}
 
-	public int getWidth(String s) {
+	public int getWidth(String msg) {
 		if (_isClose) {
 			return 0;
 		}
+		String newMessage = toMessage(msg);
 		make();
 		if (processing()) {
-			return stringWidth(s);
+			return stringWidth(newMessage);
 		}
 		if (displayList.isClosed()) {
 			return 0;
@@ -2205,7 +2228,7 @@ public class BDFont implements IFont, LRelease {
 		int totalWidth = 0;
 		IntObject intObject = null;
 		int currentChar = 0;
-		char[] charList = s.toCharArray();
+		char[] charList = newMessage.toCharArray();
 		int maxWidth = 0;
 		for (int i = 0; i < charList.length; i++) {
 			currentChar = charList[i];
@@ -2222,19 +2245,20 @@ public class BDFont implements IFont, LRelease {
 		return MathUtils.max(maxWidth, totalWidth);
 	}
 
-	public int getHeight(String s) {
+	public int getHeight(String msg) {
 		if (_isClose) {
 			return 0;
 		}
+		String newMessage = toMessage(msg);
 		make();
 		if (processing()) {
-			return stringHeight(s);
+			return stringHeight(newMessage);
 		}
 		if (displayList.isClosed()) {
 			return 0;
 		}
 		int currentChar = 0;
-		char[] charList = s.toCharArray();
+		char[] charList = newMessage.toCharArray();
 		int lines = 0;
 		int height = 0;
 		int maxHeight = 0;
@@ -2252,6 +2276,17 @@ public class BDFont implements IFont, LRelease {
 			}
 		}
 		return (int) (lines * getLineAscent() + height);
+	}
+
+	@Override
+	public ITranslator getTranslator() {
+		return this._translator;
+	}
+
+	@Override
+	public IFont setTranslator(ITranslator translator) {
+		this._translator = translator;
+		return this;
 	}
 
 	public boolean isClosed() {

@@ -39,6 +39,10 @@ import loon.opengl.GLEx;
  */
 public class TMXIsometricMapRenderer extends TMXMapRenderer {
 
+	private LTexture texCurrent;
+
+	private LTextureBatch texBatch;
+
 	public TMXIsometricMapRenderer(TMXMap map) {
 		super(map);
 	}
@@ -63,14 +67,14 @@ public class TMXIsometricMapRenderer extends TMXMapRenderer {
 		}
 		float tmpAlpha = baseColor.a;
 		baseColor.a *= opacity;
-		LTexture current = textureMap.get(imageLayer.getImage().getSource());
+		LTexture texCurrent = textureMap.get(imageLayer.getImage().getSource());
 		float tileWidth = map.getTileWidth();
 		float tileHeight = map.getTileHeight();
-		float posX = (imageLayer.getY() * tileWidth / 2)
-				+ (imageLayer.getX() * tileWidth / 2) + _objectLocation.x;
-		float posY = (imageLayer.getX() * tileHeight / 2)
-				- (imageLayer.getY() * tileHeight / 2) + _objectLocation.y;
-		g.draw(current, posX, posY, imageLayer.getWidth() * map.getTileWidth(),
+		float posX = (imageLayer.getRenderOffsetY() * tileWidth / 2) + (imageLayer.getRenderOffsetX() * tileWidth / 2)
+				+ getRenderX();
+		float posY = (imageLayer.getRenderOffsetX() * tileHeight / 2) - (imageLayer.getRenderOffsetY() * tileHeight / 2)
+				+ getRenderY();
+		g.draw(texCurrent, posX, posY, imageLayer.getWidth() * map.getTileWidth(),
 				imageLayer.getHeight() * map.getTileHeight(), baseColor);
 		baseColor.a = tmpAlpha;
 	}
@@ -89,23 +93,32 @@ public class TMXIsometricMapRenderer extends TMXMapRenderer {
 				opacity = 1f;
 			}
 
-			int tx = _objectLocation.x() / map.getTileWidth();
-			int ty = _objectLocation.y() / map.getTileHeight();
-			float windowWidth = LSystem.viewSize.getWidth()
-					/ map.getTileWidth() * 2f;
-			float windowHeight = LSystem.viewSize.getHeight()
-					/ map.getTileHeight() * 2f;
-			float doubleWidth = tileLayer.getWidth() * 2f;
-			float doubleHeight = tileLayer.getHeight() * 2f;
+			final int screenWidth = LSystem.viewSize.getWidth();
+			final int screenHeight = LSystem.viewSize.getHeight();
 
-			boolean onlyTexture = textureMap.size == 1;
+			final int tx = (int) (getRenderX() / map.getTileWidth());
+			final int ty = (int) (getRenderY() / map.getTileHeight());
+			final float windowWidth = screenWidth / map.getTileWidth() * 2f;
+			final float windowHeight = screenHeight / map.getTileHeight() * 2f;
+			final float doubleWidth = tileLayer.getWidth() * 2f;
+			final float doubleHeight = tileLayer.getHeight() * 2f;
 
-			LTexture current = textureMap.get(map.getTileset(0).getImage()
-					.getSource());
-			LTextureBatch batch = current.getTextureBatch();
+			final int layerWidth = tileLayer.getWidth();
+			final int layerHeight = tileLayer.getHeight();
 
-			float tmpAlpha = baseColor.a;
-			boolean cache = false;
+			final float layerTileWidth = tileLayer.getTileWidth();
+			final float layerTileHeight = tileLayer.getTileHeight();
+
+			final float layerOffsetX = tileLayer.getRenderOffsetX() - (tileLayer.getParallaxX() - 1f);
+			final float layerOffsetY = tileLayer.getRenderOffsetY() - (tileLayer.getParallaxY() - 1f);
+
+			final boolean onlyTexture = textureMap.size == 1;
+
+			texCurrent = textureMap.get(map.getTileset(0).getImage().getSource());
+			texBatch = texCurrent.getTextureBatch();
+
+			final float tmpAlpha = baseColor.a;
+			boolean isCached = false;
 			baseColor.a *= opacity;
 
 			try {
@@ -116,33 +129,40 @@ public class TMXIsometricMapRenderer extends TMXMapRenderer {
 					hashCode = LSystem.unite(hashCode, ty);
 					hashCode = LSystem.unite(hashCode, windowWidth);
 					hashCode = LSystem.unite(hashCode, windowHeight);
+					hashCode = LSystem.unite(hashCode, layerWidth);
+					hashCode = LSystem.unite(hashCode, layerHeight);
+					hashCode = LSystem.unite(hashCode, layerTileWidth);
+					hashCode = LSystem.unite(hashCode, layerTileHeight);
+					hashCode = LSystem.unite(hashCode, layerOffsetX);
+					hashCode = LSystem.unite(hashCode, layerOffsetY);
 					hashCode = LSystem.unite(hashCode, scaleX);
 					hashCode = LSystem.unite(hashCode, scaleY);
+					hashCode = LSystem.unite(hashCode, tileLayer.isDirty());
 					hashCode = LSystem.unite(hashCode, _objectRotation);
 
 					if (hashCode != lastHashCode) {
 						lastHashCode = hashCode;
-						batch.disposeLastCache();
-						batch.begin();
+						texBatch.disposeLastCache();
+						texBatch.begin();
 					} else {
-						if (batch.existCache()) {
-							batch.setBlendState(BlendState.AlphaBlend);
-							batch.postCache(baseColor, 0);
-							cache = true;
+						if (texBatch.existCache()) {
+							texBatch.setBlendState(BlendState.AlphaBlend);
+							texBatch.postCache(baseColor, 0);
+							isCached = true;
 							return;
 						} else {
-							batch.begin();
+							texBatch.begin();
 						}
 					}
 
 				} else {
-					batch.begin();
+					texBatch.begin();
 				}
-				batch.setBlendState(BlendState.AlphaBlend);
-				batch.setColor(baseColor);
+				texBatch.setBlendState(BlendState.AlphaBlend);
+				texBatch.setColor(baseColor);
+
 				for (int x = 0; x < tileLayer.getWidth(); x++) {
 					for (int y = 0; y < tileLayer.getHeight(); y++) {
-
 						if ((tx + x < 0) || (ty + y < 0)) {
 							continue;
 						}
@@ -152,238 +172,177 @@ public class TMXIsometricMapRenderer extends TMXMapRenderer {
 						if ((tx + x >= windowWidth) || (ty + y >= windowHeight)) {
 							continue;
 						}
-
-						TMXMapTile mapTile = tileLayer.getTile(x, y);
-
-						if (mapTile.getTileSetID() == -1) {
-							continue;
-						}
-
-						TMXTileSet tileSet = map.getTileset(mapTile
-								.getTileSetID());
-						TMXTile tile = tileSet.getTile(mapTile.getGID()
-								- tileSet.getFirstGID());
-
-						LTexture texture = textureMap.get(tileSet.getImage()
-								.getSource());
-
-						if (texture.getID() != current.getID()) {
-							batch.end();
-							current = texture;
-							batch = current.getTextureBatch();
-							batch.begin();
-							batch.setBlendState(BlendState.AlphaBlend);
-							batch.checkTexture(current);
-						}
-
-						int tileID = mapTile.getGID() - tileSet.getFirstGID();
-						if (tile != null && tile.isAnimated()) {
-							tileID = tileAnimators.get(tile).getCurrentFrame()
-									.getTileID();
-						}
-
-						int numColsPerRow = tileSet.getImage().getWidth()
-								/ tileSet.getTileWidth();
-
-						int tileSetCol = tileID % numColsPerRow;
-						int tileSetRow = tileID / numColsPerRow;
-
-						float tileWidth = tileSet.getTileWidth();
-						float tileHeight = tileSet.getTileHeight();
-
-						float srcX = (tileSet.getMargin() + (tileSet
-								.getTileWidth() + tileSet.getSpacing())
-								* tileSetCol);
-						float srcY = (tileSet.getMargin() + (tileSet
-								.getTileHeight() + tileSet.getSpacing())
-								* tileSetRow);
-						float srcWidth = srcX + tileWidth;
-						float srcHeight = srcY + tileHeight;
-
-						float xOff = srcX * batch.getInvTexWidth()
-								+ texture.xOff();
-						float widthRatio = srcWidth * batch.getInvTexWidth();
-						float yOff = srcY * batch.getInvTexHeight()
-								+ texture.yOff();
-						float heightRatio = srcHeight * batch.getInvTexHeight();
-
-						boolean flipX = mapTile.isFlippedHorizontally();
-						boolean flipY = mapTile.isFlippedVertically();
-						boolean flipZ = mapTile.isFlippedDiagonally();
-
-						if (flipZ) {
-							flipX = !flipX;
-							flipY = !flipY;
-						}
-
-						if (flipX) {
-							float temp = xOff;
-							xOff = widthRatio;
-							widthRatio = temp;
-						}
-
-						if (flipY) {
-							float temp = yOff;
-							yOff = heightRatio;
-							heightRatio = temp;
-						}
-
-						float uvCorrectionX = (0.5f / tileSet.getImage()
-								.getWidth());
-						float uvCorrectionY = (0.5f / tileSet.getImage()
-								.getHeight());
-
-						if (_objectRotation != 0f || scaleX != 1f || scaleY != 1f) {
-
-							if (_objectRotation != 0f) {
-
-								batch.glVertex2f(orthoToIso(x, y).addSelf(
-										-tileWidth / 2, 0).rotate(_objectRotation));
-								batch.glColor4f();
-								batch.glTexCoord2f(xOff + uvCorrectionX, yOff
-										+ uvCorrectionY);
-
-								batch.glVertex2f(orthoToIso(x, y)
-										.addSelf(-tileWidth / 2, 0)
-										.addSelf(flipZ ? tileWidth : 0,
-												flipZ ? 0 : tileHeight)
-										.rotate(_objectRotation));
-								batch.glColor4f();
-								batch.glTexCoord2f(xOff + uvCorrectionX,
-										heightRatio - uvCorrectionY);
-
-								batch.glVertex2f(orthoToIso(x, y)
-										.addSelf(-tileWidth / 2, 0)
-										.addSelf(tileWidth, tileHeight)
-										.rotate(_objectRotation));
-								batch.glColor4f();
-								batch.glTexCoord2f(widthRatio - uvCorrectionX,
-										heightRatio - uvCorrectionY);
-
-								batch.glVertex2f(orthoToIso(x, y)
-										.addSelf(-tileWidth / 2, 0)
-										.addSelf(flipZ ? 0 : tileWidth,
-												flipZ ? tileHeight : 0)
-										.rotate(_objectRotation));
-								batch.glColor4f();
-								batch.glTexCoord2f(widthRatio - uvCorrectionX,
-										yOff + uvCorrectionY);
-
-							} else if (scaleX != 1f || srcY != 1f) {
-
-								batch.glVertex2f(orthoToIso(x, y).addSelf(
-										-tileWidth / 2, 0).mul(scaleX, scaleY));
-								batch.glColor4f();
-								batch.glTexCoord2f(xOff + uvCorrectionX, yOff
-										+ uvCorrectionY);
-
-								batch.glVertex2f(orthoToIso(x, y)
-										.addSelf(-tileWidth / 2, 0)
-										.addSelf(flipZ ? tileWidth : 0,
-												flipZ ? 0 : tileHeight)
-										.mul(scaleX, scaleY));
-								batch.glColor4f();
-								batch.glTexCoord2f(xOff + uvCorrectionX,
-										heightRatio - uvCorrectionY);
-
-								batch.glVertex2f(orthoToIso(x, y)
-										.addSelf(-tileWidth / 2, 0)
-										.addSelf(tileWidth, tileHeight)
-										.mul(scaleX, scaleY));
-								batch.glColor4f();
-								batch.glTexCoord2f(widthRatio - uvCorrectionX,
-										heightRatio - uvCorrectionY);
-
-								batch.glVertex2f(orthoToIso(x, y)
-										.addSelf(-tileWidth / 2, 0)
-										.addSelf(flipZ ? 0 : tileWidth,
-												flipZ ? tileHeight : 0)
-										.mul(scaleX, scaleY));
-								batch.glColor4f();
-								batch.glTexCoord2f(widthRatio - uvCorrectionX,
-										yOff + uvCorrectionY);
-
-							} else {
-								batch.glVertex2f(orthoToIso(x, y)
-										.addSelf(-tileWidth / 2, 0)
-										.mul(scaleX, scaleY)
-										.rotate(_objectRotation));
-								batch.glColor4f();
-								batch.glTexCoord2f(xOff + uvCorrectionX, yOff
-										+ uvCorrectionY);
-
-								batch.glVertex2f(orthoToIso(x, y)
-										.addSelf(-tileWidth / 2, 0)
-										.addSelf(flipZ ? tileWidth : 0,
-												flipZ ? 0 : tileHeight)
-										.mul(scaleX, scaleY)
-										.rotate(_objectRotation));
-								batch.glColor4f();
-								batch.glTexCoord2f(xOff + uvCorrectionX,
-										heightRatio - uvCorrectionY);
-
-								batch.glVertex2f(orthoToIso(x, y)
-										.addSelf(-tileWidth / 2, 0)
-										.addSelf(tileWidth, tileHeight)
-										.mul(scaleX, scaleY)
-										.rotate(_objectRotation));
-								batch.glColor4f();
-								batch.glTexCoord2f(widthRatio - uvCorrectionX,
-										heightRatio - uvCorrectionY);
-
-								batch.glVertex2f(orthoToIso(x, y)
-										.addSelf(-tileWidth / 2, 0)
-										.addSelf(flipZ ? 0 : tileWidth,
-												flipZ ? tileHeight : 0)
-										.mul(scaleX, scaleY)
-										.rotate(_objectRotation));
-								batch.glColor4f();
-								batch.glTexCoord2f(widthRatio - uvCorrectionX,
-										yOff + uvCorrectionY);
-
-							}
-						} else {
-							batch.glVertex2f(orthoToIso(x, y).addSelf(
-									-tileWidth / 2, 0));
-							batch.glColor4f();
-							batch.glTexCoord2f(xOff + uvCorrectionX, yOff
-									+ uvCorrectionY);
-
-							batch.glVertex2f(orthoToIso(x, y).addSelf(
-									-tileWidth / 2, 0).addSelf(
-									flipZ ? tileWidth : 0,
-									flipZ ? 0 : tileHeight));
-							batch.glColor4f();
-							batch.glTexCoord2f(xOff + uvCorrectionX,
-									heightRatio - uvCorrectionY);
-
-							batch.glVertex2f(orthoToIso(x, y).addSelf(
-									-tileWidth / 2, 0).addSelf(tileWidth,
-									tileHeight));
-							batch.glColor4f();
-							batch.glTexCoord2f(widthRatio - uvCorrectionX,
-									heightRatio - uvCorrectionY);
-
-							batch.glVertex2f(orthoToIso(x, y).addSelf(
-									-tileWidth / 2, 0).addSelf(
-									flipZ ? 0 : tileWidth,
-									flipZ ? tileHeight : 0));
-							batch.glColor4f();
-							batch.glTexCoord2f(widthRatio - uvCorrectionX, yOff
-									+ uvCorrectionY);
-						}
-
+						drawTile(tileLayer, x, y);
 					}
 				}
+
 			} finally {
-				if (!cache) {
-					batch.end();
+				if (!isCached) {
+					texBatch.end();
 					if (onlyTexture) {
-						batch.newCache();
+						texBatch.newCache();
 					}
 				}
 				baseColor.a = tmpAlpha;
 			}
+		}
+	}
+
+	private void drawTile(final TMXTileLayer tileLayer, final int x, final int y) {
+
+		TMXMapTile mapTile = tileLayer.getTile(x, y);
+
+		if (mapTile.getTileSetID() == -1) {
+			return;
+		}
+
+		TMXTileSet tileSet = map.getTileset(mapTile.getTileSetID());
+		TMXTile tile = tileSet.getTile(mapTile.getGID() - tileSet.getFirstGID());
+
+		LTexture texture = textureMap.get(tileSet.getImage().getSource());
+
+		if (texture.getID() != texCurrent.getID()) {
+			texBatch.end();
+			texCurrent = texture;
+			texBatch = texCurrent.getTextureBatch();
+			texBatch.begin();
+			texBatch.setBlendState(BlendState.AlphaBlend);
+			texBatch.checkTexture(texCurrent);
+		}
+
+		int tileID = mapTile.getGID() - tileSet.getFirstGID();
+		if (tile != null && tile.isAnimated()) {
+			tileID = tileAnimators.get(tile).getCurrentFrame().getTileID();
+		}
+
+		int numColsPerRow = tileSet.getImage().getWidth() / tileSet.getTileWidth();
+
+		int tileSetCol = tileID % numColsPerRow;
+		int tileSetRow = tileID / numColsPerRow;
+
+		float tileWidth = tileSet.getTileWidth();
+		float tileHeight = tileSet.getTileHeight();
+
+		float srcX = (tileSet.getMargin() + (tileSet.getTileWidth() + tileSet.getSpacing()) * tileSetCol);
+		float srcY = (tileSet.getMargin() + (tileSet.getTileHeight() + tileSet.getSpacing()) * tileSetRow);
+		float srcWidth = srcX + tileWidth;
+		float srcHeight = srcY + tileHeight;
+
+		float xOff = srcX * texBatch.getInvTexWidth() + texture.xOff();
+		float widthRatio = srcWidth * texBatch.getInvTexWidth();
+		float yOff = srcY * texBatch.getInvTexHeight() + texture.yOff();
+		float heightRatio = srcHeight * texBatch.getInvTexHeight();
+
+		boolean flipX = mapTile.isFlippedHorizontally();
+		boolean flipY = mapTile.isFlippedVertically();
+		boolean flipZ = mapTile.isFlippedDiagonally();
+
+		if (flipZ) {
+			flipX = !flipX;
+			flipY = !flipY;
+		}
+
+		if (flipX) {
+			float temp = xOff;
+			xOff = widthRatio;
+			widthRatio = temp;
+		}
+
+		if (flipY) {
+			float temp = yOff;
+			yOff = heightRatio;
+			heightRatio = temp;
+		}
+
+		float uvCorrectionX = (0.5f / tileSet.getImage().getWidth());
+		float uvCorrectionY = (0.5f / tileSet.getImage().getHeight());
+
+		if (_objectRotation != 0f || scaleX != 1f || scaleY != 1f) {
+
+			if (_objectRotation != 0f) {
+
+				texBatch.glVertex2f(orthoToIso(x, y).addSelf(-tileWidth / 2, 0).rotate(_objectRotation));
+				texBatch.glColor4f();
+				texBatch.glTexCoord2f(xOff + uvCorrectionX, yOff + uvCorrectionY);
+
+				texBatch.glVertex2f(orthoToIso(x, y).addSelf(-tileWidth / 2, 0)
+						.addSelf(flipZ ? tileWidth : 0, flipZ ? 0 : tileHeight).rotate(_objectRotation));
+				texBatch.glColor4f();
+				texBatch.glTexCoord2f(xOff + uvCorrectionX, heightRatio - uvCorrectionY);
+
+				texBatch.glVertex2f(orthoToIso(x, y).addSelf(-tileWidth / 2, 0).addSelf(tileWidth, tileHeight)
+						.rotate(_objectRotation));
+				texBatch.glColor4f();
+				texBatch.glTexCoord2f(widthRatio - uvCorrectionX, heightRatio - uvCorrectionY);
+
+				texBatch.glVertex2f(orthoToIso(x, y).addSelf(-tileWidth / 2, 0)
+						.addSelf(flipZ ? 0 : tileWidth, flipZ ? tileHeight : 0).rotate(_objectRotation));
+				texBatch.glColor4f();
+				texBatch.glTexCoord2f(widthRatio - uvCorrectionX, yOff + uvCorrectionY);
+
+			} else if (scaleX != 1f || srcY != 1f) {
+
+				texBatch.glVertex2f(orthoToIso(x, y).addSelf(-tileWidth / 2, 0).mul(scaleX, scaleY));
+				texBatch.glColor4f();
+				texBatch.glTexCoord2f(xOff + uvCorrectionX, yOff + uvCorrectionY);
+
+				texBatch.glVertex2f(orthoToIso(x, y).addSelf(-tileWidth / 2, 0)
+						.addSelf(flipZ ? tileWidth : 0, flipZ ? 0 : tileHeight).mul(scaleX, scaleY));
+				texBatch.glColor4f();
+				texBatch.glTexCoord2f(xOff + uvCorrectionX, heightRatio - uvCorrectionY);
+
+				texBatch.glVertex2f(
+						orthoToIso(x, y).addSelf(-tileWidth / 2, 0).addSelf(tileWidth, tileHeight).mul(scaleX, scaleY));
+				texBatch.glColor4f();
+				texBatch.glTexCoord2f(widthRatio - uvCorrectionX, heightRatio - uvCorrectionY);
+
+				texBatch.glVertex2f(orthoToIso(x, y).addSelf(-tileWidth / 2, 0)
+						.addSelf(flipZ ? 0 : tileWidth, flipZ ? tileHeight : 0).mul(scaleX, scaleY));
+				texBatch.glColor4f();
+				texBatch.glTexCoord2f(widthRatio - uvCorrectionX, yOff + uvCorrectionY);
+
+			} else {
+				texBatch.glVertex2f(
+						orthoToIso(x, y).addSelf(-tileWidth / 2, 0).mul(scaleX, scaleY).rotate(_objectRotation));
+				texBatch.glColor4f();
+				texBatch.glTexCoord2f(xOff + uvCorrectionX, yOff + uvCorrectionY);
+
+				texBatch.glVertex2f(orthoToIso(x, y).addSelf(-tileWidth / 2, 0)
+						.addSelf(flipZ ? tileWidth : 0, flipZ ? 0 : tileHeight).mul(scaleX, scaleY)
+						.rotate(_objectRotation));
+				texBatch.glColor4f();
+				texBatch.glTexCoord2f(xOff + uvCorrectionX, heightRatio - uvCorrectionY);
+
+				texBatch.glVertex2f(orthoToIso(x, y).addSelf(-tileWidth / 2, 0).addSelf(tileWidth, tileHeight)
+						.mul(scaleX, scaleY).rotate(_objectRotation));
+				texBatch.glColor4f();
+				texBatch.glTexCoord2f(widthRatio - uvCorrectionX, heightRatio - uvCorrectionY);
+
+				texBatch.glVertex2f(orthoToIso(x, y).addSelf(-tileWidth / 2, 0)
+						.addSelf(flipZ ? 0 : tileWidth, flipZ ? tileHeight : 0).mul(scaleX, scaleY)
+						.rotate(_objectRotation));
+				texBatch.glColor4f();
+				texBatch.glTexCoord2f(widthRatio - uvCorrectionX, yOff + uvCorrectionY);
+
+			}
+		} else {
+			texBatch.glVertex2f(orthoToIso(x, y).addSelf(-tileWidth / 2, 0));
+			texBatch.glColor4f();
+			texBatch.glTexCoord2f(xOff + uvCorrectionX, yOff + uvCorrectionY);
+
+			texBatch.glVertex2f(
+					orthoToIso(x, y).addSelf(-tileWidth / 2, 0).addSelf(flipZ ? tileWidth : 0, flipZ ? 0 : tileHeight));
+			texBatch.glColor4f();
+			texBatch.glTexCoord2f(xOff + uvCorrectionX, heightRatio - uvCorrectionY);
+
+			texBatch.glVertex2f(orthoToIso(x, y).addSelf(-tileWidth / 2, 0).addSelf(tileWidth, tileHeight));
+			texBatch.glColor4f();
+			texBatch.glTexCoord2f(widthRatio - uvCorrectionX, heightRatio - uvCorrectionY);
+
+			texBatch.glVertex2f(
+					orthoToIso(x, y).addSelf(-tileWidth / 2, 0).addSelf(flipZ ? 0 : tileWidth, flipZ ? tileHeight : 0));
+			texBatch.glColor4f();
+			texBatch.glTexCoord2f(widthRatio - uvCorrectionX, yOff + uvCorrectionY);
 		}
 	}
 

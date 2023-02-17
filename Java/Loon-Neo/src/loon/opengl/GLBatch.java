@@ -36,7 +36,7 @@ public class GLBatch implements LRelease {
 	private int numVertices;
 
 	private Mesh mesh;
-	private ShaderProgram shader;
+	private ShaderProgram customShader;
 	private boolean ownsShader, closed;
 	private int numTexCoords;
 	private int vertexSize;
@@ -62,7 +62,7 @@ public class GLBatch implements LRelease {
 	public GLBatch(int maxVertices, boolean hasNormals, boolean hasColors, int numTexCoords, ShaderProgram shader) {
 		this.maxVertices = maxVertices;
 		this.numTexCoords = numTexCoords;
-		this.shader = shader;
+		this.customShader = shader;
 		this.hasNormals = hasNormals;
 		this.hasColors = hasColors;
 	}
@@ -88,10 +88,13 @@ public class GLBatch implements LRelease {
 	}
 
 	public void setShader(ShaderProgram shader) {
-		if (ownsShader) {
-			this.shader.close();
+		if (shader == customShader) {
+			return;
 		}
-		this.shader = shader;
+		if (ownsShader) {
+			this.customShader.close();
+		}
+		this.customShader = shader;
 		ownsShader = false;
 	}
 
@@ -100,7 +103,7 @@ public class GLBatch implements LRelease {
 	}
 
 	public void begin(int maxSize, Affine2f projModelView, int primitiveType) {
-		if (shader == null) {
+		if (customShader == null) {
 			VertexAttribute[] attribs = buildVertexAttributes(hasNormals, hasColors, numTexCoords);
 			mesh = new Mesh(false, maxSize, 0, attribs);
 			expandVertices = new ExpandVertices(maxSize * (mesh.getVertexAttributes().vertexSize / 4));
@@ -116,7 +119,7 @@ public class GLBatch implements LRelease {
 			for (int i = 0; i < numTexCoords; i++) {
 				shaderUniformNames[i] = "u_sampler" + i;
 			}
-			shader = createDefaultShader(hasNormals, hasColors, numTexCoords);
+			customShader = createDefaultShader(hasNormals, hasColors, numTexCoords);
 		}
 		this.numSetTexCoords = 0;
 		this.vertexIdx = 0;
@@ -126,9 +129,9 @@ public class GLBatch implements LRelease {
 	}
 
 	public void reset(int verticesSize) {
-		if (shader != null) {
-			shader.close();
-			shader = null;
+		if (customShader != null) {
+			customShader.close();
+			customShader = null;
 		}
 		if (mesh != null) {
 			mesh.close();
@@ -147,7 +150,7 @@ public class GLBatch implements LRelease {
 		for (int i = 0; i < numTexCoords; i++) {
 			shaderUniformNames[i] = "u_sampler" + i;
 		}
-		shader = createDefaultShader(hasNormals, hasColors, numTexCoords);
+		customShader = createDefaultShader(hasNormals, hasColors, numTexCoords);
 		this.numSetTexCoords = 0;
 		this.vertexIdx = 0;
 		this.numVertices = 0;
@@ -199,17 +202,17 @@ public class GLBatch implements LRelease {
 			return;
 		}
 		try {
-			shader.begin();
-			shader.setUniformMatrix("u_projModelView", projModelView.toViewMatrix4());
+			customShader.begin();
+			customShader.setUniformMatrix("u_projModelView", projModelView.toViewMatrix4());
 			for (int i = 0; i < numTexCoords; i++) {
-				shader.setUniformi(shaderUniformNames[i], i);
+				customShader.setUniformi(shaderUniformNames[i], i);
 			}
 			mesh.setVertices(expandVertices.getVertices(), 0, vertexIdx);
-			mesh.render(shader, primitiveType);
+			mesh.render(customShader, primitiveType);
 		} catch (Throwable ex) {
 			LSystem.error("Batch error flush()", ex);
 		} finally {
-			shader.end();
+			customShader.end();
 		}
 	}
 
@@ -307,8 +310,8 @@ public class GLBatch implements LRelease {
 
 	@Override
 	public void close() {
-		if (ownsShader && shader != null) {
-			shader.close();
+		if (ownsShader && customShader != null) {
+			customShader.close();
 		}
 		if (mesh != null) {
 			mesh.close();

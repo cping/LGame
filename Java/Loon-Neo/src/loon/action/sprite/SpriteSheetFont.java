@@ -22,7 +22,9 @@ package loon.action.sprite;
 
 import loon.LSystem;
 import loon.canvas.LColor;
+import loon.font.FontTrans;
 import loon.font.IFont;
+import loon.font.ITranslator;
 import loon.geom.Affine2f;
 import loon.geom.PointI;
 import loon.opengl.GLEx;
@@ -32,10 +34,10 @@ import loon.utils.StringUtils;
 /**
  * 精灵字体,单纯图片字体显示用类(这是不用配置文件的,不是标准的bmfont,简单的图片自定义字体时可以用这个)
  */
-public class SpriteSheetFont implements IFont {
+public class SpriteSheetFont extends FontTrans implements IFont {
 
 	private final char newLineFlag = LSystem.LF;
-	
+
 	private SpriteSheet _font;
 
 	private int _size = -1;
@@ -89,20 +91,24 @@ public class SpriteSheetFont implements IFont {
 		drawString(text, x, y, col, 0, text.length() - 1);
 	}
 
-	public void drawString(String text, float x, float y, LColor col, int startIndex, int endIndex) {
+	public void drawString(String msg, float x, float y, LColor col, int startIndex, int endIndex) {
 		if(_closed){
 			return;
 		}
-		if (StringUtils.isEmpty(text)) {
+		if (StringUtils.isEmpty(msg)) {
 			return;
+		}
+		String newMessage = toMessage(msg);
+		if (checkEndIndexUpdate(endIndex, msg, newMessage)) {
+			endIndex = newMessage.length();
 		}
 		int lines = 0;
 		float sx = x + _offset.x;
 		float sy = y + _offset.y;
 		float widthSize = charWidth * fontScaleX;
 		float heightSize = charHeight * fontScaleY;
-		for (int i = 0, size = text.length(); i < size; i++) {
-			char flag = text.charAt(i);
+		for (int i = 0, size = newMessage.length(); i < size; i++) {
+			char flag = newMessage.charAt(i);
 			int index = flag - startingCharacter;
 			if (index < numChars) {
 				int xPos = (index % horizontalCount);
@@ -137,21 +143,25 @@ public class SpriteSheetFont implements IFont {
 		drawString(gl, text, x, y, col, 0, text.length() - 1);
 	}
 
-	public void drawString(GLEx gl, String text, final float x, final float y, LColor col, int startIndex,
+	public void drawString(GLEx gl, String msg, final float x, final float y, LColor col, int startIndex,
 			int endIndex) {
 		if(_closed){
 			return;
 		}
-		if (StringUtils.isEmpty(text)) {
+		if (StringUtils.isEmpty(msg)) {
 			return;
+		}
+		String newMessage = toMessage(msg);
+		if (checkEndIndexUpdate(endIndex, msg, newMessage)) {
+			endIndex = newMessage.length();
 		}
 		int lines = 0;
 		float sx = x + _offset.x;
 		float sy = y + _offset.y;
 		float widthSize = charWidth * fontScaleX;
 		float heightSize = charHeight * fontScaleY;
-		for (int i = 0, size = text.length(); i < size; i++) {
-			char flag = text.charAt(i);
+		for (int i = 0, size = newMessage.length(); i < size; i++) {
+			char flag = newMessage.charAt(i);
 			int index = flag - startingCharacter;
 			if (index < numChars) {
 				int xPos = (index % horizontalCount);
@@ -200,14 +210,15 @@ public class SpriteSheetFont implements IFont {
 	}
 
 	@Override
-	public void drawString(GLEx gl, String text, float x, float y, float sx, float sy, float ax, float ay,
+	public void drawString(GLEx gl, String msg, float x, float y, float sx, float sy, float ax, float ay,
 			float rotation, LColor c) {
 		if(_closed){
 			return;
 		}
-		if (StringUtils.isEmpty(text)) {
+		if (StringUtils.isEmpty(msg)) {
 			return;
 		}
+		String newMessage = toMessage(msg);
 		final boolean anchor = ax != 0 || ay != 0;
 		final boolean scale = sx != 1f || sy != 1f;
 		final boolean angle = rotation != 0;
@@ -217,15 +228,15 @@ public class SpriteSheetFont implements IFont {
 				gl.saveTx();
 				Affine2f xf = gl.tx();
 				if (angle) {
-					float centerX = x + this.stringWidth(text) / 2;
-					float centerY = y + this.stringHeight(text) / 2;
+					float centerX = x + this.stringWidth(newMessage) / 2;
+					float centerY = y + this.stringHeight(newMessage) / 2;
 					xf.translate(centerX, centerY);
 					xf.preRotate(rotation);
 					xf.translate(-centerX, -centerY);
 				}
 				if (scale) {
-					float centerX = x + this.stringWidth(text) / 2;
-					float centerY = y + this.stringHeight(text) / 2;
+					float centerX = x + this.stringWidth(newMessage) / 2;
+					float centerY = y + this.stringHeight(newMessage) / 2;
 					xf.translate(centerX, centerY);
 					xf.preScale(sx, sy);
 					xf.translate(-centerX, -centerY);
@@ -234,7 +245,7 @@ public class SpriteSheetFont implements IFont {
 					xf.translate(ax, ay);
 				}
 			}
-			drawString(gl, text, x, y, c);
+			drawString(gl, newMessage, x, y, c);
 		} finally {
 			if (update) {
 				gl.restoreTx();
@@ -268,14 +279,16 @@ public class SpriteSheetFont implements IFont {
 	}
 
 	@Override
-	public int stringHeight(String text) {
-		int count = StringUtils.charCount(text, newLineFlag) + 1;
+	public int stringHeight(String msg) {
+		String newMessage = toMessage(msg);
+		int count = StringUtils.charCount(newMessage, newLineFlag) + 1;
 		return (int) (charHeight * fontScaleY * count);
 	}
 
 	@Override
-	public int stringWidth(String text) {
-		return (int) (charWidth * fontScaleX * text.length());
+	public int stringWidth(String msg) {
+		String newMessage = toMessage(msg);
+		return (int) (charWidth * fontScaleX * newMessage.length());
 	}
 
 	@Override
@@ -289,21 +302,22 @@ public class SpriteSheetFont implements IFont {
 	}
 
 	@Override
-	public String confineLength(String s, int width) {
+	public String confineLength(String msg, int width) {
+		String newMessage = toMessage(msg);
 		int length = 0;
-		for (int i = 0; i < s.length(); i++) {
-			length += stringWidth(String.valueOf(s.charAt(i)));
+		for (int i = 0; i < newMessage.length(); i++) {
+			length += stringWidth(String.valueOf(newMessage.charAt(i)));
 			if (length >= width) {
 				int pLength = stringWidth("...");
 				while (length + pLength >= width && i >= 0) {
-					length -= stringWidth(String.valueOf(s.charAt(i)));
+					length -= stringWidth(String.valueOf(newMessage.charAt(i)));
 					i--;
 				}
-				s = s.substring(0, ++i) + "...";
+				newMessage = newMessage.substring(0, ++i) + "...";
 				break;
 			}
 		}
-		return s;
+		return newMessage;
 	}
 
 	public float getFontSpace() {
@@ -368,6 +382,17 @@ public class SpriteSheetFont implements IFont {
 	}
 
 	@Override
+	public ITranslator getTranslator() {
+		return this._translator;
+	}
+
+	@Override
+	public IFont setTranslator(ITranslator translator) {
+		this._translator = translator;
+		return this;
+	}
+
+	@Override
 	public void close() {
 		if (_font != null) {
 			_font.close();
@@ -376,6 +401,7 @@ public class SpriteSheetFont implements IFont {
 		_closed = true;
 		LSystem.popFontPool(this);
 	}
+
 
 	@Override
 	public String getFontName() {
@@ -398,6 +424,5 @@ public class SpriteSheetFont implements IFont {
 		.kv("numChars", numChars);
 		return builder.toString();
 	}
-
 
 }

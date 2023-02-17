@@ -143,10 +143,11 @@ public class ExplosionEffect extends Entity implements BaseEffect {
 	}
 
 	@Override
-	public void reset() {
+	public ExplosionEffect reset() {
 		super.reset();
 		this.stop();
 		this.packed = false;
+		return this;
 	}
 
 	@Override

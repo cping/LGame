@@ -91,6 +91,8 @@ public class Sprite extends LObject<ISprite>
 
 	private Vector2f _offset = new Vector2f();
 
+	private boolean _spritesVisible = true;
+
 	private boolean _flipX = false, _flipY = false;
 
 	private boolean _debugDraw = false;
@@ -655,7 +657,7 @@ public class Sprite extends LObject<ISprite>
 	public void createUI(GLEx g) {
 		createUI(g, 0f, 0f);
 	}
-
+	
 	@Override
 	public void createUI(GLEx g, float offsetX, float offsetY) {
 		if (!_visible) {
@@ -717,20 +719,21 @@ public class Sprite extends LObject<ISprite>
 							LTrans.TOP | LTrans.LEFT, _filterColor, _pivot, _scaleX, _scaleY, _objectRotation);
 				}
 			}
-			if (_childrens != null && _childrens.size > 0) {
+			if (_spritesVisible && _childrens != null && _childrens.size > 0) {
 				for (ISprite spr : _childrens) {
 					if (spr != null) {
 						float px = 0, py = 0;
 						ISprite parent = spr.getParent();
-						if (parent != null) {
-							px += parent.getX();
-							py += parent.getY();
-							for (; (parent = parent.getParent()) != null;) {
-								px += parent.getX();
-								py += parent.getY();
-							}
+						if (parent == null) {
+							parent = this;
 						}
-						spr.createUI(g, px, py);
+						px += parent.getX() + parent.getOffsetX();
+						py += parent.getY() + parent.getOffsetY();
+						for (; (parent = parent.getParent()) != null;) {
+							px += parent.getX() + parent.getOffsetX();
+							py += parent.getY() + parent.getOffsetY();
+						}
+						spr.createUI(g, px + offsetX + spr.getOffsetX(), py + offsetY + spr.getOffsetY());
 					}
 				}
 			}
@@ -781,6 +784,15 @@ public class Sprite extends LObject<ISprite>
 	@Override
 	public void setVisible(boolean v) {
 		this._visible = v;
+	}
+
+	public boolean isChildrenVisible() {
+		return this._spritesVisible;
+	}
+
+	public Sprite setChildrenVisible(final boolean v) {
+		this._spritesVisible = v;
+		return this;
 	}
 
 	public String getSpriteName() {
@@ -1052,7 +1064,7 @@ public class Sprite extends LObject<ISprite>
 		super.setRotation(rotate);
 		if (_childrens != null) {
 			for (int i = _childrens.size - 1; i > -1; i--) {
-				ISprite sprite = _childrens.items[i];
+				ISprite sprite = _childrens.get(i);
 				if (sprite != null) {
 					sprite.setRotation(rotate);
 				}
@@ -1162,11 +1174,12 @@ public class Sprite extends LObject<ISprite>
 	}
 
 	@Override
-	public void setSprites(Sprites ss) {
+	public ISprite setSprites(Sprites ss) {
 		if (this._sprites == ss) {
-			return;
+			return this;
 		}
 		this._sprites = ss;
+		return this;
 	}
 
 	@Override
@@ -1308,8 +1321,9 @@ public class Sprite extends LObject<ISprite>
 	}
 
 	@Override
-	public void setFixedWidthOffset(float fixedWidthOffset) {
+	public Sprite setFixedWidthOffset(float fixedWidthOffset) {
 		this._fixedWidthOffset = fixedWidthOffset;
+		return this;
 	}
 
 	@Override
@@ -1318,8 +1332,9 @@ public class Sprite extends LObject<ISprite>
 	}
 
 	@Override
-	public void setFixedHeightOffset(float fixedHeightOffset) {
+	public Sprite setFixedHeightOffset(float fixedHeightOffset) {
 		this._fixedHeightOffset = fixedHeightOffset;
+		return this;
 	}
 
 	@Override

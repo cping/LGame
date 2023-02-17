@@ -151,7 +151,7 @@ public abstract class Assets {
 	}
 
 	public Image getRemoteImage(String url, int width, int height) {
-		Exception error = new Exception("Remote image loading not yet supported: " + url + "@" + width + "x" + height);
+		LSysException error = new LSysException("Remote image loading not yet supported: " + url + "@" + width + "x" + height);
 		ImageImpl image = createImage(false, width, height, url);
 		image.fail(error);
 		return image;

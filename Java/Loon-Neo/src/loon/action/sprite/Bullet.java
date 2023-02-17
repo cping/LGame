@@ -310,6 +310,11 @@ public class Bullet extends LObject<Bullet> implements CollisionObject, ActionBi
 		return scaleY;
 	}
 
+	public Bullet setScale(float scale) {
+		setScale(scale,scale);		
+		return this;
+	}
+	
 	@Override
 	public void setScale(float sx, float sy) {
 		this.scaleX = sx;

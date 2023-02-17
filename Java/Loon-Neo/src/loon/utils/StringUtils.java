@@ -1261,6 +1261,67 @@ final public class StringUtils extends CharUtils {
 		return split(result, sep);
 	}
 
+	public static String toTimeCN(long ms) {
+		return toTime(ms, true);
+	}
+
+	public static String toTimeEN(long ms) {
+		return toTime(ms, false);
+	}
+	
+	public static String toTime(long ms, boolean cn) {
+
+		final long ss = LSystem.SECOND;
+		final long mi = LSystem.MINUTE;
+		final long hh = LSystem.HOUR;
+		final long dd = LSystem.DAY;
+
+		final long day = ms / dd;
+		final long hour = (ms - day * dd) / hh;
+		final long minute = (ms - day * dd - hour * hh) / mi;
+		final long second = (ms - day * dd - hour * hh - minute * mi) / ss;
+		final long milliSecond = ms - day * dd - hour * hh - minute * mi - second * ss;
+
+		StrBuilder sbr = new StrBuilder();
+		if (cn) {
+			if (day > 0) {
+				sbr.append(day).append(" 天,");
+			}
+			if (hour > 0) {
+				sbr.append(hour).append(" 小时,");
+			}
+			if (minute > 0) {
+				sbr.append(minute).append(" 分钟,");
+			}
+			if (second > 0) {
+				sbr.append(second).append(" 秒,");
+			}
+			if (milliSecond > 0) {
+				sbr.append(milliSecond).append(" 毫秒,");
+			}
+		} else {
+			if (day > 0) {
+				sbr.append(day).append(" day,");
+			}
+			if (hour > 0) {
+				sbr.append(hour).append(" hour,");
+			}
+			if (minute > 0) {
+				sbr.append(minute).append(" minute,");
+			}
+			if (second > 0) {
+				sbr.append(second).append(" second,");
+			}
+			if (milliSecond > 0) {
+				sbr.append(milliSecond).append(" millisecond,");
+			}
+		}
+		if (sbr.length() > 0) {
+			sbr = sbr.deleteCharAt(sbr.length() - 1);
+		}
+		return sbr.toString();
+	}
+
 	/**
 	 * 检查指定字符串中是否存在中文字符。
 	 * 
@@ -2350,7 +2411,7 @@ final public class StringUtils extends CharUtils {
 	public static String toString(final Object o, final String def) {
 		return o == null ? def : o.toString();
 	}
-	
+
 	public static String getString(final CharSequence... chs) {
 		return new StrBuilder(chs).toString();
 	}

@@ -44,8 +44,8 @@ public class TMXStaggeredMapRenderer extends TMXMapRenderer {
 	}
 
 	private Vector2f orthoToIso(float x, float y) {
-		_mapLocation.x = (x - y) * map.getTileWidth() / 2 + _objectLocation.x;
-		_mapLocation.y = (x + y) * map.getTileHeight() / 2 + _objectLocation.y;
+		_mapLocation.x = (x - y) * map.getTileWidth() / 2 + getRenderX();
+		_mapLocation.y = (x + y) * map.getTileHeight() / 2 + getRenderY();
 		return _mapLocation.addSelf(map.getWidth() * map.getTileWidth() / 2, 0);
 	}
 
@@ -66,10 +66,10 @@ public class TMXStaggeredMapRenderer extends TMXMapRenderer {
 		LTexture current = textureMap.get(imageLayer.getImage().getSource());
 		float tileWidth = map.getTileWidth();
 		float tileHeight = map.getTileHeight();
-		float posX = (imageLayer.getY() * tileWidth / 2)
-				+ (imageLayer.getX() * tileWidth / 2) + _objectLocation.x;
-		float posY = (imageLayer.getX() * tileHeight / 2)
-				- (imageLayer.getY() * tileHeight / 2) + _objectLocation.y;
+		float posX = (imageLayer.getRenderOffsetY() * tileWidth / 2)
+				+ (imageLayer.getRenderOffsetX() * tileWidth / 2) + getRenderX();
+		float posY = (imageLayer.getRenderOffsetX() * tileHeight / 2)
+				- (imageLayer.getRenderOffsetY() * tileHeight / 2) + getRenderY();
 		g.draw(current, posX, posY, imageLayer.getWidth() * map.getTileWidth(),
 				imageLayer.getHeight() * map.getTileHeight(), baseColor);
 		baseColor.a = tmpAlpha;
@@ -88,23 +88,33 @@ public class TMXStaggeredMapRenderer extends TMXMapRenderer {
 			if (opacity > 1f) {
 				opacity = 1f;
 			}
-
-			int tx = _objectLocation.x() / map.getTileWidth();
-			int ty = _objectLocation.y() / map.getTileHeight();
-			int windowWidth = LSystem.viewSize.getWidth() / map.getTileWidth();
-			int windowHeight = LSystem.viewSize.getHeight()
+			final int screenWidth = LSystem.viewSize.getWidth();
+			final int screenHeight = LSystem.viewSize.getHeight();
+			int tx = (int) (getRenderX() / map.getTileWidth());
+			int ty = (int) (getRenderY() / map.getTileHeight());
+			int windowWidth = screenWidth / map.getTileWidth();
+			int windowHeight = screenHeight
 					/ map.getTileHeight();
 			float doubleWidth = tileLayer.getWidth() * 2f;
 			float doubleHeight = tileLayer.getHeight() * 2f;
 
-			boolean onlyTexture = textureMap.size == 1;
+			final int layerWidth = tileLayer.getWidth();
+			final int layerHeight = tileLayer.getHeight();
+
+			final float layerTileWidth = tileLayer.getTileWidth();
+			final float layerTileHeight = tileLayer.getTileHeight();
+
+			final float layerOffsetX = tileLayer.getRenderOffsetX() - (tileLayer.getParallaxX() - 1f);
+			final float layerOffsetY = tileLayer.getRenderOffsetY() - (tileLayer.getParallaxY() - 1f);
+			
+			final boolean onlyTexture = textureMap.size == 1;
 
 			LTexture current = textureMap.get(map.getTileset(0).getImage()
 					.getSource());
 			LTextureBatch batch = current.getTextureBatch();
 
 			float tmpAlpha = baseColor.a;
-			boolean cache = false;
+			boolean isCached = false;
 			baseColor.a *= opacity;
 
 			try {
@@ -115,8 +125,15 @@ public class TMXStaggeredMapRenderer extends TMXMapRenderer {
 					hashCode = LSystem.unite(hashCode, ty);
 					hashCode = LSystem.unite(hashCode, windowWidth);
 					hashCode = LSystem.unite(hashCode, windowHeight);
+					hashCode = LSystem.unite(hashCode, layerWidth);
+					hashCode = LSystem.unite(hashCode, layerHeight);
+					hashCode = LSystem.unite(hashCode, layerTileWidth);
+					hashCode = LSystem.unite(hashCode, layerTileHeight);
+					hashCode = LSystem.unite(hashCode, layerOffsetX);
+					hashCode = LSystem.unite(hashCode, layerOffsetY);
 					hashCode = LSystem.unite(hashCode, scaleX);
 					hashCode = LSystem.unite(hashCode, scaleY);
+					hashCode = LSystem.unite(hashCode, tileLayer.isDirty());
 					hashCode = LSystem.unite(hashCode, _objectRotation);
 
 					if (hashCode != lastHashCode) {
@@ -127,7 +144,7 @@ public class TMXStaggeredMapRenderer extends TMXMapRenderer {
 						if (batch.existCache()) {
 							batch.setBlendState(BlendState.AlphaBlend);
 							batch.postCache(baseColor, 0);
-							cache = true;
+							isCached = true;
 							return;
 						} else {
 							batch.begin();
@@ -375,7 +392,7 @@ public class TMXStaggeredMapRenderer extends TMXMapRenderer {
 					}
 				}
 			} finally {
-				if (!cache) {
+				if (!isCached) {
 					batch.end();
 					if (onlyTexture) {
 						batch.newCache();

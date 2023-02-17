@@ -29,6 +29,7 @@ import loon.component.skin.SkinManager;
 import loon.events.ValueListener;
 import loon.opengl.GLEx;
 import loon.opengl.LTextureRegion;
+import loon.utils.MathUtils;
 
 /**
  * 一个进度条用UI
@@ -41,9 +42,9 @@ public class LProgress extends LComponent {
 
 	private boolean vertical = false;
 
-	// 默认提供了三种进度条模式，分别是游戏类血槽，普通的UI形式，以及用户自制图像.(默认为游戏模式)
+	// 默认提供了四种进度条模式，分别是游戏类血槽，普通的UI形式，圆形UI模式，以及用户自制图像.(默认为游戏模式)
 	public enum ProgressType {
-		GAME, UI, Custom
+		GAME, UI, CircleUI, Custom
 	}
 
 	private LTexture defaultColorTexture;
@@ -70,8 +71,12 @@ public class LProgress extends LComponent {
 		this(ProgressType.GAME, color, x, y, width, height, null, null);
 	}
 
-	public LProgress(ProgressType type, LColor _component_baseColor, int x, int y, int width, int height) {
-		this(type, _component_baseColor, x, y, width, height, null, null);
+	public LProgress(ProgressType type, int x, int y, int width, int height) {
+		this(type, LColor.red, x, y, width, height, null, null);
+	}
+
+	public LProgress(ProgressType type, LColor color, int x, int y, int width, int height) {
+		this(type, color, x, y, width, height, null, null);
 	}
 
 	public LProgress(ProgressSkin skin, int x, int y, int width, int height) {
@@ -84,7 +89,7 @@ public class LProgress extends LComponent {
 		super(x, y, width, height);
 		this.progressType = type;
 		this.batch = new SpriteBatch(128);
-		this._component_baseColor = color;
+		this._component_baseColor = color == null ? LColor.red : color;
 		switch (progressType) {
 		case GAME:
 			this.texture = new LTextureRegion(LSystem.getSystemImagePath() + "bar.png");
@@ -98,6 +103,7 @@ public class LProgress extends LComponent {
 					1, texture.getRegionHeight() - 2);
 			break;
 		case UI:
+		case CircleUI:
 			if (defaultColorTexture == null || defaultColorTexture.isClosed()) {
 				defaultColorTexture = LSystem.base().graphics().finalColorTex();
 			}
@@ -114,10 +120,19 @@ public class LProgress extends LComponent {
 
 	@Override
 	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
-		if (batch != null) {
-			batch.begin();
-			draw(batch, x, y);
-			batch.end();
+		if (progressType != ProgressType.CircleUI) {
+			if (batch != null) {
+				batch.begin();
+				draw(batch, x, y);
+				batch.end();
+			}
+		} else {
+			float radius = MathUtils.min(getWidth(), getHeight());
+			float size = radius / 6f;
+			g.drawStrokeGradientCircle(x, y, 0, 360f, getWidth(), getHeight(), size, LColor.gray, LColor.darkGray);
+			g.drawStrokeGradientCircle(x, y, 0, 360f * percentage, getWidth(), getHeight(), size,
+					_component_baseColor.darker(), _component_baseColor);
+
 		}
 	}
 

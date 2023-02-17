@@ -129,9 +129,10 @@ public class Scene extends Entity {
 	}
 
 	@Override
-	public void reset() {
+	public Scene reset() {
 		super.reset();
 		this.clearChildScene();
+		return this;
 	}
 
 	@Override

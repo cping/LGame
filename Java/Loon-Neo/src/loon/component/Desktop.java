@@ -34,7 +34,6 @@ import loon.component.layout.Margin;
 import loon.events.GameKey;
 import loon.events.QueryEvent;
 import loon.events.ResizeListener;
-import loon.events.SysInput;
 import loon.events.SysTouch;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
@@ -571,7 +570,7 @@ public class Desktop implements Visible, LRelease {
 	 */
 	private void processTouchEvent() {
 		int pressed = this.input.getTouchPressed(), released = this.input.getTouchReleased();
-		if (pressed > SysInput.NO_BUTTON) {
+		if (pressed > Screen.NO_BUTTON) {
 			if (!LSystem.isMobile() && !LSystem.base().setting.emulateTouch) {
 				if (tooltip != null) {
 					this.tooltip.setToolTipComponent(null);
@@ -592,7 +591,7 @@ public class Desktop implements Visible, LRelease {
 				}
 			}
 		}
-		if (released > SysInput.NO_BUTTON) {
+		if (released > Screen.NO_BUTTON) {
 			if (!isClicked && this.hoverComponent != null && !this.hoverComponent._touchLocked) {
 				this.hoverComponent.processTouchReleased();
 				// 当释放鼠标时，点击事件生效
@@ -611,11 +610,11 @@ public class Desktop implements Visible, LRelease {
 	 */
 	private void processKeyEvent() {
 		if (this.selectedComponent != null && !this.selectedComponent._keyLocked
-				&& this.input.getKeyPressed() != SysInput.NO_KEY) {
+				&& this.input.getKeyPressed() != Screen.NO_KEY) {
 			this.selectedComponent.keyPressed();
 		}
 		if (this.selectedComponent != null && !this.selectedComponent._keyLocked
-				&& this.input.getKeyReleased() != SysInput.NO_KEY && this.selectedComponent != null) {
+				&& this.input.getKeyReleased() != Screen.NO_KEY && this.selectedComponent != null) {
 			this.selectedComponent.processKeyReleased();
 		}
 	}

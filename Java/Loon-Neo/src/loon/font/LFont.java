@@ -37,7 +37,7 @@ import loon.utils.StringUtils;
 /**
  * Loon内置的Font实现,当用户无自定义IFont时,默认使用此类实现文字渲染
  */
-public class LFont implements IFont {
+public class LFont extends FontTrans implements IFont {
 
 	public static LFont getDefaultFont() {
 		return newFont();
@@ -51,13 +51,13 @@ public class LFont implements IFont {
 		return LFont.getFont(LSystem.getSystemGameFontName(), Style.PLAIN, size);
 	}
 
-	private IntMap<Vector2f> fontSizes = new IntMap<Vector2f>(50);
-
 	private final static String tmp = "H";
 
-	private String lastText = tmp;
+	private IntMap<Vector2f> fontSizes = new IntMap<Vector2f>(50);
 
 	private PointI _offset = new PointI();
+
+	private String lastText = tmp;
 
 	private TextFormat textFormat = null;
 
@@ -134,59 +134,54 @@ public class LFont implements IFont {
 	}
 
 	@Override
-	public void drawString(GLEx g, String chars, float tx, float ty) {
-		drawString(g, chars, tx, ty, LColor.white);
+	public void drawString(GLEx g, String msg, float tx, float ty) {
+		drawString(g, msg, tx, ty, LColor.white);
 	}
 
 	@Override
-	public void drawString(GLEx g, String chars, float tx, float ty, LColor c) {
-		drawString(g, chars, tx, ty, 0, c);
+	public void drawString(GLEx g, String msg, float tx, float ty, LColor c) {
+		drawString(g, msg, tx, ty, 0, c);
 	}
 
 	@Override
-	public void drawString(GLEx g, String chars, float tx, float ty, float angle, LColor c) {
+	public void drawString(GLEx g, String msg, float tx, float ty, float angle, LColor c) {
 		if (c == null || c.a <= 0.01) {
 			return;
 		}
-		if (StringUtils.isEmpty(chars)) {
+		if (StringUtils.isEmpty(msg)) {
 			return;
 		}
+		String newMessage = toMessage(msg);
 		if (useCache) {
-			LSTRDictionary.get().drawString(this, chars, _offset.x + tx, _offset.y + ty, angle, c);
+			LSTRDictionary.get().drawString(this, newMessage, _offset.x + tx, _offset.y + ty, angle, c);
 		} else {
-			/*if (drawStringTemp(g, chars, _offset.x + tx, _offset.y + ty, angle, c)) {
-				return;
-			}*/
-			LSTRDictionary.get().drawString(g, this, chars, _offset.x + tx, _offset.y + ty, angle, c);
+			LSTRDictionary.get().drawString(g, this, newMessage, _offset.x + tx, _offset.y + ty, angle, c);
 		}
 	}
 
 	@Override
-	public void drawString(GLEx g, String chars, float tx, float ty, float sx, float sy, float ax, float ay,
-			float angle, LColor c) {
+	public void drawString(GLEx g, String msg, float tx, float ty, float sx, float sy, float ax, float ay, float angle,
+			LColor c) {
 		if (c == null || c.a <= 0.01) {
 			return;
 		}
-		if (StringUtils.isEmpty(chars)) {
+		if (StringUtils.isEmpty(msg)) {
 			return;
 		}
+		String newMessage = toMessage(msg);
 		if (useCache) {
-			LSTRDictionary.get().drawString(this, chars, _offset.x + tx, _offset.y + ty, sx, sy, ax, ay, angle, c);
+			LSTRDictionary.get().drawString(this, newMessage, _offset.x + tx, _offset.y + ty, sx, sy, ax, ay, angle, c);
 		} else {
-			/*if (sx == 1f && sy == 1f && ax == 0 && ay == 0) {
-				if (drawStringTemp(g, chars, _offset.x + tx, _offset.y + ty, angle, c)) {
-					return;
-				}
-			}*/
-			LSTRDictionary.get().drawString(g, this, chars, _offset.x + tx, _offset.y + ty, sx, sy, ax, ay, angle, c);
+			LSTRDictionary.get().drawString(g, this, newMessage, _offset.x + tx, _offset.y + ty, sx, sy, ax, ay, angle,
+					c);
 		}
 	}
 
-	private void initLayout(String text) {
+	private void initLayout(String msg) {
 		if (LSystem.base() == null) {
 			return;
 		}
-		if (text == null || textLayout == null || !text.equals(lastText)) {
+		if (msg == null || textLayout == null || !msg.equals(lastText)) {
 			textLayout = LSystem.base().graphics().layoutText(tmp, this.textFormat);
 		}
 	}
@@ -201,18 +196,19 @@ public class LFont implements IFont {
 	}
 
 	@Override
-	public int stringWidth(String message) {
-		if (LSystem.base() == null || StringUtils.isNullOrEmpty(message)) {
+	public int stringWidth(String msg) {
+		if (LSystem.base() == null || StringUtils.isNullOrEmpty(msg)) {
 			return 0;
 		}
-		initLayout(message);
-		if (message.indexOf(LSystem.LF) == -1) {
-			return textLayout.stringWidth(message);
+		String newMessage = toMessage(msg);
+		initLayout(newMessage);
+		if (newMessage.indexOf(LSystem.LF) == -1) {
+			return textLayout.stringWidth(newMessage);
 		} else {
 			StrBuilder sbr = new StrBuilder();
 			int width = 0;
-			for (int i = 0, size = message.length(); i < size; i++) {
-				char ch = message.charAt(i);
+			for (int i = 0, size = newMessage.length(); i < size; i++) {
+				char ch = newMessage.charAt(i);
 				if (ch == LSystem.LF) {
 					width = MathUtils.max(textLayout.stringWidth(sbr.toString()), width);
 					sbr.setLength(0);
@@ -234,15 +230,16 @@ public class LFont implements IFont {
 	}
 
 	@Override
-	public int stringHeight(String message) {
-		if (LSystem.base() == null || StringUtils.isNullOrEmpty(message)) {
+	public int stringHeight(String msg) {
+		if (LSystem.base() == null || StringUtils.isNullOrEmpty(msg)) {
 			return 0;
 		}
-		initLayout(message);
-		if (message.indexOf(LSystem.LF) == -1) {
+		String newMessage = toMessage(msg);
+		initLayout(newMessage);
+		if (newMessage.indexOf(LSystem.LF) == -1) {
 			return getHeight();
 		} else {
-			String[] list = StringUtils.split(message, LSystem.LF);
+			String[] list = StringUtils.split(newMessage, LSystem.LF);
 			return list.length * getHeight();
 		}
 	}
@@ -258,7 +255,7 @@ public class LFont implements IFont {
 	public boolean isPlain() {
 		return textFormat.font.style == Style.PLAIN;
 	}
-	
+
 	@Override
 	public int getSize() {
 		return this._size == -1 ? (int) textFormat.font.size : this._size;
@@ -333,35 +330,52 @@ public class LFont implements IFont {
 		return false;
 	}
 
-	public Vector2f getOrigin(String text) {
-		Vector2f result = fontSizes.get(text);
+	public Vector2f getOrigin(String msg) {
+		return getOrigin(msg, true);
+	}
+
+	public Vector2f getOrigin(String msg, boolean filter) {
+		String newMessage = msg;
+		if (filter) {
+			newMessage = toMessage(msg);
+		}
+		Vector2f result = fontSizes.get(newMessage);
 		if (result == null) {
-			result = new Vector2f(stringWidth(text) / 2f, getHeight() / 2f);
-			fontSizes.put(text, result);
+			result = new Vector2f(stringWidth(newMessage) / 2f, getHeight() / 2f);
+			fontSizes.put(newMessage, result);
 		}
 		return result;
 	}
 
-	public TextLayout getLayoutText(String text) {
-		return LSystem.base().graphics().layoutText(text, this.textFormat);
+	public TextLayout getLayoutText(String msg) {
+		return getLayoutText(msg, true);
+	}
+
+	public TextLayout getLayoutText(String msg, boolean filter) {
+		String newMessage = msg;
+		if (filter) {
+			newMessage = toMessage(msg);
+		}
+		return LSystem.base().graphics().layoutText(newMessage, this.textFormat);
 	}
 
 	@Override
-	public String confineLength(String s, int width) {
+	public String confineLength(String msg, int width) {
+		String newMessage = toMessage(msg);
 		int length = 0;
-		for (int i = 0; i < s.length(); i++) {
-			length += stringWidth(String.valueOf(s.charAt(i)));
+		for (int i = 0; i < newMessage.length(); i++) {
+			length += stringWidth(String.valueOf(newMessage.charAt(i)));
 			if (length >= width) {
 				int pLength = stringWidth("...");
 				while (length + pLength >= width && i >= 0) {
-					length -= stringWidth(String.valueOf(s.charAt(i)));
+					length -= stringWidth(String.valueOf(newMessage.charAt(i)));
 					i--;
 				}
-				s = s.substring(0, ++i) + "...";
+				newMessage = newMessage.substring(0, ++i) + "...";
 				break;
 			}
 		}
-		return s;
+		return newMessage;
 	}
 
 	@Override
@@ -401,6 +415,17 @@ public class LFont implements IFont {
 		return builder.toString();
 	}
 
+	@Override
+	public ITranslator getTranslator() {
+		return _translator;
+	}
+
+	@Override
+	public IFont setTranslator(ITranslator translator) {
+		this._translator = translator;
+		return this;
+	}
+
 	public boolean isClosed() {
 		return closed;
 	}
@@ -410,5 +435,4 @@ public class LFont implements IFont {
 		closed = true;
 		LSystem.popFontPool(this);
 	}
-
 }

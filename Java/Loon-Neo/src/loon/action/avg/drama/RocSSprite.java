@@ -209,6 +209,11 @@ public class RocSSprite extends LObject<ISprite> implements ISprite {
 		return 0;
 	}
 
+	public RocSSprite setScale(float scale) {
+		setScale(scale,scale);
+		return this;
+	}
+
 	@Override
 	public void setScale(float sx, float sy) {
 	}
@@ -244,11 +249,12 @@ public class RocSSprite extends LObject<ISprite> implements ISprite {
 	}
 
 	@Override
-	public void setSprites(Sprites ss) {
+	public ISprite setSprites(Sprites ss) {
 		if (this._sprites == ss) {
-			return;
+			return this;
 		}
 		this._sprites = ss;
+		return this;
 	}
 
 	@Override
@@ -274,7 +280,8 @@ public class RocSSprite extends LObject<ISprite> implements ISprite {
 	}
 
 	@Override
-	public void setFixedWidthOffset(float widthOffset) {
+	public ISprite setFixedWidthOffset(float widthOffset) {
+		return this;
 	}
 
 	@Override
@@ -283,7 +290,8 @@ public class RocSSprite extends LObject<ISprite> implements ISprite {
 	}
 
 	@Override
-	public void setFixedHeightOffset(float heightOffset) {
+	public ISprite setFixedHeightOffset(float heightOffset) {
+		return this;
 	}
 
 	@Override

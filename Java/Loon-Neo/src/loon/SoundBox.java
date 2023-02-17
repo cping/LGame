@@ -25,7 +25,7 @@ import loon.utils.ObjectMap;
 
 public abstract class SoundBox extends BaseIO {
 
-	private ObjectMap<String, Sound> SOUND_CACHE = new ObjectMap<String, Sound>(
+	private ObjectMap<String, Sound> _soundCache = new ObjectMap<String, Sound>(
 			CollectionUtils.INITIAL_CAPACITY);
 
 	public void playSound(String path) {
@@ -33,10 +33,10 @@ public abstract class SoundBox extends BaseIO {
 	}
 
 	public void playSound(String path, boolean loop) {
-		Sound sound = SOUND_CACHE.get(path);
+		Sound sound = _soundCache.get(path);
 		if (sound == null) {
 			sound = LSystem.base().assets().getSound(path);
-			SOUND_CACHE.put(path, sound);
+			_soundCache.put(path, sound);
 		} else {
 			sound.stop();
 		}
@@ -45,21 +45,21 @@ public abstract class SoundBox extends BaseIO {
 	}
 
 	public void volume(String path, float volume) {
-		Sound sound = SOUND_CACHE.get(path);
+		Sound sound = _soundCache.get(path);
 		if (sound != null) {
 			sound.setVolume(volume);
 		}
 	}
 
 	public void stopSound(String path) {
-		Sound sound = SOUND_CACHE.get(path);
+		Sound sound = _soundCache.get(path);
 		if (sound != null) {
 			sound.stop();
 		}
 	}
 
 	public void stopSound() {
-		for (Sound s : SOUND_CACHE.values()) {
+		for (Sound s : _soundCache.values()) {
 			if (s != null) {
 				s.stop();
 			}
@@ -67,12 +67,12 @@ public abstract class SoundBox extends BaseIO {
 	}
 
 	public void release() {
-		for (Sound s : SOUND_CACHE.values()) {
+		for (Sound s : _soundCache.values()) {
 			if (s != null) {
 				s.release();
 			}
 		}
-		SOUND_CACHE.clear();
+		_soundCache.clear();
 	}
 	
 	@Override

@@ -945,7 +945,11 @@ public final class MathUtils {
 	public static float toRadians(final float degrees) {
 		return degrees * DEG_TO_RAD;
 	}
-
+	
+    public static int dip2px(float scale, float dpValue) {
+        return (int) (dpValue * scale + 0.5f);
+    }
+    
 	public static float degToRad(float deg) {
 		return deg * 360 / TWO_PI;
 	}

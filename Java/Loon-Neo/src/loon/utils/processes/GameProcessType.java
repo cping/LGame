@@ -34,6 +34,8 @@ public enum GameProcessType {
 	
 	Initialize,
 	
+	Preload,
+	
 	Progress,
 	
 	Tween,

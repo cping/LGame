@@ -1881,18 +1881,22 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	public GLEx drawDashCircle(float x, float y, float radius, float width) {
-		final float newRadius = radius / 2f;
+		return drawDashCircle(x, y, 2, radius, width);
+	}
+
+	public GLEx drawDashCircle(float x, float y, int side, float radius, float width) {
+		final float newRadius = radius / side;
 		final float newX = x + newRadius;
 		final float newY = y + newRadius;
 		float scaleFactor = 0.6f;
 		int sides = 10 + MathUtils.floor(newRadius * scaleFactor);
-		if (sides % 2 == 1) {
+		if (sides % side == 1) {
 			sides++;
 		}
 		tempLocation.set(0f);
 
 		for (int i = 0; i < sides; i++) {
-			if (i % 2 == 0) {
+			if (i % side == 0) {
 				continue;
 			}
 			tempLocation.set(newRadius, 0).setAngle(360f / sides * i + 90);
@@ -1903,6 +1907,262 @@ public class GLEx extends PixmapFImpl implements LRelease {
 
 			drawLine(x1 + newX, y1 + newY, tempLocation.x + newX, tempLocation.y + newY, width);
 		}
+		return this;
+	}
+
+	/**
+	 * 从指定开始角度到终止角度绘制不合口圆形
+	 * 
+	 * @param x
+	 * @param y
+	 * @param startAngle
+	 * @param endAngle
+	 * @param radius
+	 * @param color
+	 * @return
+	 */
+	public GLEx drawStrokeCircle(float x, float y, float startAngle, float endAngle, float radius, LColor color) {
+		return drawStrokeCircle(x, y, startAngle, endAngle, radius, 2, true, color);
+	}
+
+	/**
+	 * 从指定开始角度到终止角度绘制不合口圆形
+	 * 
+	 * @param x
+	 * @param y
+	 * @param startAngle
+	 * @param endAngle
+	 * @param radius
+	 * @param width
+	 * @param clockwise
+	 * @param color
+	 * @return
+	 */
+	public GLEx drawStrokeCircle(float x, float y, float startAngle, float endAngle, float radius, float width,
+			LColor color) {
+		return drawStrokeCircle(x, y, startAngle, endAngle, radius, width, true, color);
+	}
+
+	/**
+	 * 从指定开始角度到终止角度绘制不合口圆形
+	 * 
+	 * @param x
+	 * @param y
+	 * @param startAngle
+	 * @param endAngle
+	 * @param radius
+	 * @param width
+	 * @param clockwise
+	 * @param color
+	 * @return
+	 */
+	public GLEx drawStrokeCircle(float x, float y, float startAngle, float endAngle, float radius, float width,
+			boolean clockwise, LColor color) {
+		int argb = this.lastBrush.baseColor;
+		setColor(color);
+		drawStrokeCircle(x, y, startAngle, endAngle, radius, width, clockwise);
+		setColor(argb);
+		return this;
+	}
+
+	/**
+	 * 从指定开始角度到终止角度绘制不合口圆形
+	 * 
+	 * @param x
+	 * @param y
+	 * @param startAngle
+	 * @param endAngle
+	 * @param radius
+	 * @param width
+	 * @param clockwise
+	 * @param color
+	 * @return
+	 */
+	public GLEx drawStrokeCircle(float x, float y, float startAngle, float endAngle, float radius, float width,
+			boolean clockwise, int color) {
+		int argb = this.lastBrush.baseColor;
+		setColor(color);
+		drawStrokeCircle(x, y, startAngle, endAngle, radius, width, clockwise);
+		setColor(argb);
+		return this;
+	}
+
+	/**
+	 * 从指定开始角度到终止角度绘制不合口圆形
+	 * 
+	 * @param x
+	 * @param y
+	 * @param startAngle
+	 * @param endAngle
+	 * @param radius
+	 * @param width
+	 * @param clockwise
+	 * @return
+	 */
+	public GLEx drawStrokeCircle(float x, float y, float startAngle, float endAngle, float radius, float width,
+			boolean clockwise) {
+		if (startAngle > endAngle) {
+			float newAngle = startAngle - endAngle;
+			endAngle = startAngle;
+			startAngle = newAngle;
+		}
+
+		final float newRadius = radius;
+		final float newX = x + newRadius;
+		final float newY = y + newRadius;
+
+		final float fixV = clockwise ? -90 : +90;
+
+		float scaleFactor = 0.6f;
+		int sides = 10 + MathUtils.floor(newRadius * scaleFactor);
+
+		final int startSide = (int) (sides / 360f * startAngle);
+
+		tempLocation.set(0f);
+
+		for (int i = startSide; i < sides; i++) {
+
+			float v = endAngle / sides * i;
+
+			tempLocation.set(newRadius, 0).setAngle(v + fixV);
+			float x1 = tempLocation.x;
+			float y1 = tempLocation.y;
+
+			tempLocation.set(newRadius, 0).setAngle(endAngle / sides * (i + 1) + fixV);
+
+			drawLine(x1 + newX, y1 + newY, tempLocation.x + newX, tempLocation.y + newY, width);
+
+		}
+		return this;
+	}
+
+	public GLEx drawStrokeGradientCircle(float x, float y, float startAngle, float endAngle, float radius, float width,
+			int startColor, int endColor, float angle) {
+		return drawStrokeGradientCircle(x, y, startAngle, endAngle, radius, width, startColor, endColor, true, 1.15f,
+				angle);
+	}
+
+	public GLEx drawStrokeGradientCircle(float x, float y, float startAngle, float endAngle, float radius, float width,
+			LColor startColor, LColor endColor, float angle) {
+		return drawStrokeGradientCircle(x, y, startAngle, endAngle, radius, width,
+				startColor == null ? -1 : startColor.getARGB(), endColor == null ? -1 : endColor.getARGB(), true, 1.15f,
+				angle);
+	}
+
+	public GLEx drawStrokeGradientCircle(float x, float y, float startAngle, float endAngle, float radius, float width,
+			int startColor, int endColor) {
+		return drawStrokeGradientCircle(x, y, startAngle, endAngle, radius, width, startColor, endColor, 0f);
+	}
+
+	public GLEx drawStrokeGradientCircle(float x, float y, float startAngle, float endAngle, float radius, float width,
+			LColor startColor, LColor endColor) {
+		return drawStrokeGradientCircle(x, y, startAngle, endAngle, radius, width,
+				startColor == null ? -1 : startColor.getARGB(), endColor == null ? -1 : endColor.getARGB(), 0f);
+	}
+
+	public GLEx drawStrokeGradientCircle(float x, float y, float startAngle, float endAngle, float width, float height,
+			float size, int startColor, int endColor, float angle) {
+		return drawStrokeGradientCircle(x, y, startAngle, endAngle, width, height, size, startColor, endColor, true,
+				1.15f, angle);
+	}
+
+	public GLEx drawStrokeGradientCircle(float x, float y, float startAngle, float endAngle, float width, float height,
+			float size, LColor startColor, LColor endColor, float angle) {
+		return drawStrokeGradientCircle(x, y, startAngle, endAngle, width, height, size,
+				startColor == null ? -1 : startColor.getARGB(), endColor == null ? -1 : endColor.getARGB(), true, 1.15f,
+				angle);
+	}
+
+	public GLEx drawStrokeGradientCircle(float x, float y, float startAngle, float endAngle, float width, float height,
+			float size, int startColor, int endColor) {
+		return drawStrokeGradientCircle(x, y, startAngle, endAngle, width, height, size, startColor, endColor, 0f);
+	}
+
+	public GLEx drawStrokeGradientCircle(float x, float y, float startAngle, float endAngle, float width, float height,
+			float size, LColor startColor, LColor endColor) {
+		return drawStrokeGradientCircle(x, y, startAngle, endAngle, width, height, size,
+				startColor == null ? -1 : startColor.getARGB(), endColor == null ? -1 : endColor.getARGB(), 0f);
+	}
+
+	public GLEx drawStrokeGradientCircle(float x, float y, float startAngle, float endAngle, float width, float height,
+			float size, int startColor, int endColor, boolean clockwise, float space, float angle) {
+		final float radiusW = width / 2f;
+		final float radiusH = height / 2f;
+		final float radius = (radiusW > radiusH ? (radiusH) : (radiusW));
+		float centerX = 0f;
+		float centerY = 0f;
+		if (radiusH > radiusW) {
+			centerX = x - (radiusW - radius);
+			centerY = y + (radiusH - radius);
+		} else if (radiusH < radiusW) {
+			centerX = x + (radiusW - radius);
+			centerY = y - (radiusH - radius);
+		} else {
+			centerX = x - (radiusW - radius);
+			centerY = y - (radiusH - radius);
+		}
+		return drawStrokeGradientCircle(centerX, centerY, startAngle, endAngle, radius, size, startColor, endColor,
+				angle);
+	}
+
+	/**
+	 * 从指定开始角度到终止角度绘制不合口圆形并进行渐变
+	 * 
+	 * @param x
+	 * @param y
+	 * @param startAngle
+	 * @param endAngle
+	 * @param radius
+	 * @param width
+	 * @param startColor
+	 * @param endColor
+	 * @param clockwise
+	 * @param space
+	 * @return
+	 */
+	public GLEx drawStrokeGradientCircle(float x, float y, float startAngle, float endAngle, float radius, float width,
+			int startColor, int endColor, boolean clockwise, float space, float angle) {
+		if (startAngle == 0f && endAngle == 0f) {
+			return this;
+		}
+		if ((startColor == -1 && endColor == -1) || (startColor == endColor)) {
+			return drawStrokeCircle(x, y, startAngle, endAngle, radius, width, clockwise, endColor);
+		}
+		if (startAngle > endAngle) {
+			float newAngle = startAngle - endAngle;
+			endAngle = startAngle;
+			startAngle = newAngle;
+		}
+
+		final float newRadius = radius;
+		final float newX = x + newRadius;
+		final float newY = y + newRadius;
+
+		final float fixV = clockwise ? -90 : +90;
+
+		int sides = MathUtils.floor(newRadius);
+
+		final int startSide = (int) (sides / 360f * startAngle);
+
+		tempLocation.set(0f);
+
+		final int argb = this.lastBrush.baseColor;
+
+		for (int i = startSide; i < sides; i++) {
+
+			tempLocation.set(newRadius, 0).setAngle((endAngle / sides * i + fixV) + angle);
+			float x1 = tempLocation.x;
+			float y1 = tempLocation.y;
+
+			tempLocation.set(newRadius, 0).setAngle((endAngle / sides * (i + space) + fixV) + angle);
+
+			int color = LColor.getGradient(startColor, endColor, i / (float) sides);
+
+			setColor(color);
+			drawLine(x1 + newX, y1 + newY, tempLocation.x + newX, tempLocation.y + newY, width);
+		}
+		setColor(argb);
+
 		return this;
 	}
 
@@ -3164,8 +3424,8 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (this.lastBrush.alltextures) {
 			drawArcImpl(x1, y1, width, height, start, end);
 		} else {
-			float radiusW = width / 2.0f;
-			float radiusH = height / 2.0f;
+			float radiusW = width / 2f;
+			float radiusH = height / 2f;
 			float cx = x1 + radiusW;
 			float cy = y1 + radiusH;
 			if ((int) radiusW == (int) radiusH) {
@@ -3265,8 +3525,8 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (this.lastBrush.alltextures) {
 			fillArcImpl(x1, y1, width, height, start, end);
 		} else {
-			float radiusW = width / 2.0f;
-			float radiusH = height / 2.0f;
+			float radiusW = width / 2f;
+			float radiusH = height / 2f;
 			float cx = x1 + radiusW;
 			float cy = y1 + radiusH;
 			beginRenderer(GLType.Filled);

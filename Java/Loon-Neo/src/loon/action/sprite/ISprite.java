@@ -97,7 +97,7 @@ public interface ISprite extends ActionBind, Visible, LRelease, ZIndex, XY {
 
 	State getState();
 
-	void setSprites(Sprites ss);
+	ISprite setSprites(Sprites ss);
 
 	Sprites getSprites();
 
@@ -111,11 +111,11 @@ public interface ISprite extends ActionBind, Visible, LRelease, ZIndex, XY {
 
 	float getFixedWidthOffset();
 
-	void setFixedWidthOffset(float widthOffset);
+	ISprite setFixedWidthOffset(float widthOffset);
 
 	float getFixedHeightOffset();
 
-	void setFixedHeightOffset(float heightOffset);
+	ISprite setFixedHeightOffset(float heightOffset);
 
 	boolean collides(ISprite other);
 

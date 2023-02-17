@@ -73,7 +73,10 @@ public class TMXMap {
 	private LColor backgroundColor;
 
 	private double version;
-
+	private double tiledversion;
+	
+	private boolean renderOffsetDirty;
+	
 	private Orientation orientation;
 	private RenderOrder renderOrder;
 	private StaggerAxis staggerAxis;
@@ -83,9 +86,16 @@ public class TMXMap {
 	private int height;
 	private int tileWidth;
 	private int tileHeight;
+	private int infinite;
 	private int nextObjectID;
+	private int nextlayerid;
 	private int hexSideLength;
 
+	private float offsetX;
+	private float offsetY;
+	private float renderOffsetX;
+	private float renderOffsetY;
+	
 	private TArray<TMXMapLayer> layers;
 	private TArray<TMXTileLayer> tileLayers;
 	private TArray<TMXImageLayer> imageLayers;
@@ -114,6 +124,7 @@ public class TMXMap {
 
 		this.filePath = filePath;
 		this.tilesLocation = tilesLocation;
+		this.updateRenderOffset();
 
 		XMLDocument doc = XMLParser.parse(filePath);
 		XMLElement docElement = doc.getRoot();
@@ -172,6 +183,36 @@ public class TMXMap {
 		return version;
 	}
 
+	public double getTiledversion() {
+		return tiledversion;
+	}
+
+	public float getX() {
+		return getOffsetX();
+	}
+
+	public float getY() {
+		return getOffsetY();
+	}
+
+	public float getOffsetX() {
+		return offsetX;
+	}
+
+	public float getOffsetY() {
+		return offsetY;
+	}
+
+	public void setOffsetX (float offsetX) {
+		this.offsetX = offsetX;
+		updateRenderOffset();
+	}
+	
+	public void setOffsetY (float offsetY) {
+		this.offsetY = offsetY;
+		updateRenderOffset();
+	}
+	
 	public int getWidth() {
 		return width;
 	}
@@ -190,6 +231,14 @@ public class TMXMap {
 
 	public int getNextObjectID() {
 		return nextObjectID;
+	}
+
+	public int getNextlayerid() {
+		return nextlayerid;
+	}
+	
+	public int getInfinite() {
+		return infinite;
 	}
 
 	public int getHexSideLength() {
@@ -216,6 +265,26 @@ public class TMXMap {
 		return tileLayers.size;
 	}
 
+	public float getRenderOffsetX () {
+		if (renderOffsetDirty) {
+			calcRenderOffsets();
+		}
+		return renderOffsetX;
+	}
+
+	public float getRenderOffsetY () {
+		if (renderOffsetDirty) {
+			calcRenderOffsets();
+		}
+		return renderOffsetY;
+	}
+	
+	protected void calcRenderOffsets () {
+		renderOffsetX = offsetX;
+		renderOffsetY = offsetY;
+		renderOffsetDirty = false;
+	}
+	
 	public TArray<TMXTileLayer> getTileLayers() {
 		return tileLayers;
 	}
@@ -244,6 +313,10 @@ public class TMXMap {
 		return imageLayers;
 	}
 
+	public void updateRenderOffset () {
+		renderOffsetDirty = true;
+	}
+	
 	public int findTileSetIndex(int gid) {
 		gid &= ~(FLIPPED_HORIZONTALLY_FLAG | FLIPPED_VERTICALLY_FLAG | FLIPPED_DIAGONALLY_FLAG);
 
@@ -284,12 +357,22 @@ public class TMXMap {
 	private void parse(XMLElement element, String tilesLocation) {
 
 		version = element.getDoubleAttribute("version", 0);
+		tiledversion = element.getDoubleAttribute("tiledversion", 0);
+
+		offsetX = element.getFloatAttribute("x", 0);
+		offsetY = element.getFloatAttribute("y", 0);
+		offsetX = element.getFloatAttribute("offsetx", offsetX);
+		offsetY = element.getFloatAttribute("offsety", offsetY);
+		
 		width = element.getIntAttribute("width", 0);
 		height = element.getIntAttribute("height", 0);
 		tileWidth = element.getIntAttribute("tilewidth", 0);
 		tileHeight = element.getIntAttribute("tileheight", 0);
+		infinite = element.getIntAttribute("infinite", 0);
+		
+		nextlayerid = element.getIntAttribute("nextlayerid", 0);
 		nextObjectID = element.getIntAttribute("nextobjectid", 0);
-
+		
 		if (element.hasAttribute("background")) {
 			String hexColor = element.getAttribute("background",
 					LColor.white.toString()).trim();
@@ -322,7 +405,7 @@ public class TMXMap {
 		}
 
 		if (element.hasAttribute("staggeraxis")) {
-			switch (element.getAttribute("staggeraxis", "RIGHT_DOWN").trim()
+			switch (element.getAttribute("staggeraxis", LSystem.EMPTY).trim()
 					.toLowerCase()) {
 			case "x":
 				staggerAxis = StaggerAxis.AXIS_X;

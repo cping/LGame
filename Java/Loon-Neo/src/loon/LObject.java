@@ -336,9 +336,11 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 		this._previousRotation = this._objectRotation;
 		this._objectRotation = MathUtils.fixRotation(r);
 		if (_objectRect != null) {
-			_objectRect.setBounds(MathUtils.getBounds(_objectLocation.x, _objectLocation.y, getWidth(), getHeight(), r, _objectRect));
+			_objectRect.setBounds(
+					MathUtils.getBounds(_objectLocation.x, _objectLocation.y, getWidth(), getHeight(), r, _objectRect));
 		} else {
-			_objectRect = MathUtils.getBounds(_objectLocation.x, _objectLocation.y, getWidth(), getHeight(), r, _objectRect);
+			_objectRect = MathUtils.getBounds(_objectLocation.x, _objectLocation.y, getWidth(), getHeight(), r,
+					_objectRect);
 		}
 	}
 
@@ -929,7 +931,8 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 	@Override
 	public String toString() {
 		return new StringKeyValue("LObject").kv("sequence", _objectSeqNo).comma().kv("name", getName()).comma()
-				.kv("state", _objectState.get()).comma().kv("super", _objectSuper == null ? "empty" : _objectSuper.getClass()).comma()
+				.kv("state", _objectState.get()).comma()
+				.kv("super", _objectSuper == null ? "empty" : _objectSuper.getClass()).comma()
 				.kv("pos", _objectLocation).comma().kv("size", _objectRect).comma().kv("alpha", _objectAlpha).comma()
 				.kv("rotation", _objectRotation).comma().kv("layer", _objectLayer).comma().kv("tag", Tag).toString();
 	}

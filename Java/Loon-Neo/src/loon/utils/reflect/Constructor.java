@@ -39,6 +39,7 @@ public final class Constructor {
 		return constructor.getDeclaringClass();
 	}
 
+	@SuppressWarnings("deprecation")
 	public boolean isAccessible() {
 		return constructor.isAccessible();
 	}

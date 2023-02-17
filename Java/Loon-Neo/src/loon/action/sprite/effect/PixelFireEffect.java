@@ -213,10 +213,11 @@ public class PixelFireEffect extends Entity implements BaseEffect {
 	}
 
 	@Override
-	public void reset() {
+	public PixelFireEffect reset() {
 		super.reset();
 		this._dirty = true;
 		this._completed = false;
+		return this;
 	}
 
 	@Override

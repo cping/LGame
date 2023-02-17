@@ -1104,11 +1104,12 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	}
 
 	@Override
-	public void setSprites(Sprites ss) {
+	public ISprite setSprites(Sprites ss) {
 		if (this._screenSprites == ss) {
-			return;
+			return this;
 		}
 		this._screenSprites = ss;
+		return this;
 	}
 
 	@Override
@@ -2006,8 +2007,9 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	}
 
 	@Override
-	public void setFixedWidthOffset(float fixedWidthOffset) {
+	public ISprite setFixedWidthOffset(float fixedWidthOffset) {
 		this._fixedWidthOffset = fixedWidthOffset;
+		return this;
 	}
 
 	@Override
@@ -2016,8 +2018,9 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	}
 
 	@Override
-	public void setFixedHeightOffset(float fixedHeightOffset) {
+	public ISprite setFixedHeightOffset(float fixedHeightOffset) {
 		this._fixedHeightOffset = fixedHeightOffset;
+		return this;
 	}
 
 	@Override

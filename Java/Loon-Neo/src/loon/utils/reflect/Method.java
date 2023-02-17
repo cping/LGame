@@ -48,6 +48,7 @@ public final class Method {
 		return method.getDeclaringClass();
 	}
 
+	@SuppressWarnings("deprecation")
 	public boolean isAccessible() {
 		return method.isAccessible();
 	}

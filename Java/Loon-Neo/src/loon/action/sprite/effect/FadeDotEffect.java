@@ -169,9 +169,10 @@ public class FadeDotEffect extends Entity implements BaseEffect {
 	}
 
 	@Override
-	public void reset() {
+	public FadeDotEffect reset() {
 		super.reset();
 		updateDots();
+		return this;
 	}
 
 	public float getDelay() {

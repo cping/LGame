@@ -24,5 +24,5 @@ public interface Visible
 {
 	public boolean isVisible();
 
-	public void setVisible(boolean visible);
+	public void setVisible(boolean v);
 }

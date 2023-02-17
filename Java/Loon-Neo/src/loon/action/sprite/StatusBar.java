@@ -119,7 +119,9 @@ public class StatusBar extends Entity {
 	}
 
 	private void drawBar(GLEx g, float v1, float v2, float size, float x, float y) {
-		float cv1 = (_width * v1) / size;
+		final float alpha = g.alpha();
+		g.setAlpha(_objectAlpha);
+		final float cv1 = (_width * v1) / size;
 		float cv2;
 		if (v1 == v2) {
 			cv2 = cv1;
@@ -127,25 +129,26 @@ public class StatusBar extends Entity {
 			cv2 = (_width * v2) / size;
 		}
 		if (cv1 < _width || cv2 < _height) {
-			g.fillRect(x, y, _width, _height, colorback);
+			g.fillRect(x, y, _width, _height, colorback.mul(_baseColor));
 		}
 		if (minValue < value) {
 			if (cv1 == _width) {
-				g.fillRect(x, y, cv1, _height, colorbefore);
+				g.fillRect(x, y, cv1, _height, colorbefore.mul(_baseColor));
 			} else {
 				if (!deadObject) {
-					g.fillRect(x, y, cv2, _height, colorafter);
+					g.fillRect(x, y, cv2, _height, colorafter.mul(_baseColor));
 				}
-				g.fillRect(x, y, cv1, _height, colorbefore);
+				g.fillRect(x, y, cv1, _height, colorbefore.mul(_baseColor));
 			}
 		} else {
 			if (cv2 == _width) {
-				g.fillRect(x, y, cv2, _height, colorbefore);
+				g.fillRect(x, y, cv2, _height, colorbefore.mul(_baseColor));
 			} else {
-				g.fillRect(x, y, cv1, _height, colorafter);
-				g.fillRect(x, y, cv2, _height, colorbefore);
+				g.fillRect(x, y, cv1, _height, colorafter.mul(_baseColor));
+				g.fillRect(x, y, cv2, _height, colorbefore.mul(_baseColor));
 			}
 		}
+		g.setAlpha(alpha);
 	}
 
 	/**

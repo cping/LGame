@@ -127,6 +127,9 @@ public class LSystem {
 	// 默认缓存数量
 	public static final int DEFAULT_MAX_CACHE_SIZE = 32;
 
+	// 默认最大预加载数量
+	public static final float DEFAULT_MAX_PRE_SIZE = 10000f;
+	
 	// 默认缓动函数延迟
 	public static final float DEFAULT_EASE_DELAY = 1f / 60f;
 

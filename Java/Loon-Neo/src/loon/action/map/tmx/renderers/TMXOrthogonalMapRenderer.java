@@ -37,7 +37,7 @@ import loon.utils.MathUtils;
  * 直角(2D平面)地图纹理渲染器
  */
 public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
-
+	
 	public TMXOrthogonalMapRenderer(TMXMap map) {
 		super(map);
 	}
@@ -57,11 +57,12 @@ public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
 		baseColor.a *= opacity;
 		LTexture originalTexture = textureMap.get(imageLayer.getImage()
 				.getSource());
-		g.draw(originalTexture, imageLayer.getX(), imageLayer.getY(),
+		g.draw(originalTexture, imageLayer.getRenderOffsetX(), imageLayer.getRenderOffsetY(),
 				imageLayer.getWidth() * map.getTileWidth(),
 				imageLayer.getHeight() * map.getTileHeight(), baseColor);
 		baseColor.a = tmpAlpha;
 	}
+	
 
 	protected void renderTileLayer(GLEx g, TMXTileLayer tileLayer) {
 		synchronized (this) {
@@ -75,22 +76,33 @@ public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
 			if (opacity > 1f) {
 				opacity = 1f;
 			}
-
-			int tx = _objectLocation.x() / map.getTileWidth();
-			int ty = _objectLocation.y() / map.getTileHeight();
-			int windowWidth = (int) (LSystem.viewSize.getWidth()
+			
+			final int screenWidth = LSystem.viewSize.getWidth();
+			final int screenHeight = LSystem.viewSize.getHeight();
+			final int tx = (int) (getRenderX() / map.getTileWidth());
+			final int ty = (int) (getRenderY() / map.getTileHeight());
+			final int windowWidth = (int) (screenWidth
 					/ map.getTileWidth() / scaleX);
-			int windowHeight = (int) (LSystem.viewSize.getHeight()
+			final int windowHeight = (int) (screenHeight
 					/ map.getTileHeight() / scaleY);
 
-			boolean onlyTexture = textureMap.size == 1;
+			final int layerWidth = tileLayer.getWidth();
+			final int layerHeight = tileLayer.getHeight();
+
+			final float layerTileWidth = tileLayer.getTileWidth();
+			final float layerTileHeight = tileLayer.getTileHeight();
+
+			final float layerOffsetX = tileLayer.getRenderOffsetX() - (tileLayer.getParallaxX() - 1f);
+			final float layerOffsetY = tileLayer.getRenderOffsetY() - (tileLayer.getParallaxY() - 1f);
+
+			final boolean onlyTexture = textureMap.size == 1;
 
 			LTexture current = textureMap.get(map.getTileset(0).getImage()
 					.getSource());
 			LTextureBatch batch = current.getTextureBatch();
 
 			float tmpAlpha = baseColor.a;
-			boolean cache = false;
+			boolean isCached = false;
 			baseColor.a *= opacity;
 
 			try {
@@ -101,8 +113,15 @@ public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
 					hashCode = LSystem.unite(hashCode, ty);
 					hashCode = LSystem.unite(hashCode, windowWidth);
 					hashCode = LSystem.unite(hashCode, windowHeight);
+					hashCode = LSystem.unite(hashCode, layerWidth);
+					hashCode = LSystem.unite(hashCode, layerHeight);
+					hashCode = LSystem.unite(hashCode, layerTileWidth);
+					hashCode = LSystem.unite(hashCode, layerTileHeight);
+					hashCode = LSystem.unite(hashCode, layerOffsetX);
+					hashCode = LSystem.unite(hashCode, layerOffsetY);
 					hashCode = LSystem.unite(hashCode, scaleX);
 					hashCode = LSystem.unite(hashCode, scaleY);
+					hashCode = LSystem.unite(hashCode, tileLayer.isDirty());
 					hashCode = LSystem.unite(hashCode, _objectRotation);
 
 					if (hashCode != lastHashCode) {
@@ -113,7 +132,7 @@ public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
 						if (batch.existCache()) {
 							batch.setBlendState(BlendState.AlphaBlend);
 							batch.postCache(baseColor, 0);
-							cache = true;
+							isCached = true;
 							return;
 						} else {
 							batch.begin();
@@ -125,17 +144,16 @@ public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
 				}
 				batch.setBlendState(BlendState.AlphaBlend);
 				batch.setColor(baseColor);
-				for (int x = 0; x < tileLayer.getWidth(); x++) {
-					for (int y = 0; y < tileLayer.getHeight(); y++) {
+				for (int x = 0; x < layerWidth; x++) {
+					for (int y = 0; y < layerHeight; y++) {
 						if ((tx + x < 0) || (ty + y < 0)) {
 							continue;
 						}
-						if ((tx + x >= tileLayer.getWidth())
-								|| (ty + y >= tileLayer.getHeight())) {
+						if ((tx + x >= layerWidth)
+								|| (ty + y >= layerHeight)) {
 							continue;
 						}
 						if ((x >= windowWidth) || (y >= windowHeight)) {
-
 							continue;
 						}
 						TMXMapTile mapTile = tileLayer.getTile(x, y);
@@ -177,8 +195,8 @@ public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
 						float tileWidth = map.getTileWidth();
 						float tileHeight = map.getTileHeight();
 
-						float posX = (x * tileWidth + _objectLocation.x) * scaleX;
-						float posY = (y * tileHeight + _objectLocation.y) * scaleY;
+						float posX = (x * tileWidth + getRenderX()) * scaleX;
+						float posY = (y * tileHeight + getRenderY()) * scaleY;
 
 						float srcX = (tileSet.getMargin() + (tileSet
 								.getTileWidth() + tileSet.getSpacing())
@@ -350,7 +368,7 @@ public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
 					}
 				}
 			} finally {
-				if (!cache) {
+				if (!isCached) {
 					batch.end();
 					if (onlyTexture) {
 						batch.newCache();

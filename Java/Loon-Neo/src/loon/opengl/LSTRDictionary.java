@@ -127,7 +127,7 @@ public final class LSTRDictionary implements LRelease {
 			int size = mes.length();
 			for (int i = 0; i < size; i++) {
 				char flag = mes.charAt(i);
-				if (!dicts.contains(flag)) {
+				if (dicts != null && !dicts.contains(flag)) {
 					return false;
 				}
 			}
@@ -148,6 +148,11 @@ public final class LSTRDictionary implements LRelease {
 				dicts.clear();
 				dicts = null;
 			}
+		}
+
+		@Override
+		public String toString() {
+			return dicts.toString();
 		}
 
 	}
@@ -305,9 +310,11 @@ public final class LSTRDictionary implements LRelease {
 		}
 		// 查询字典缓存
 		Dict cacheDict = searchCacheDict(font, message);
+
 		if (cacheDict != null && !cacheDict.isClosed()) {
 			return _lastDict = cacheDict;
 		}
+
 		if (cacheList.size() > CACHE_SIZE) {
 			clearStringLazy();
 		}
@@ -360,6 +367,21 @@ public final class LSTRDictionary implements LRelease {
 			return (_lastDict = null);
 		}
 		return (_lastDict = pDict);
+	}
+
+	public final LSTRDictionary unbind(final LFont font) {
+		String fontFlag = toFontString(font);
+		Dict cDict = (Dict) fontList.remove(fontFlag);
+		if (cDict != null) {
+			cDict.close();
+			cDict = null;
+		}
+		Dict eDict = (Dict) englishFontList.remove(font);
+		if (eDict != null) {
+			eDict.close();
+			eDict = null;
+		}
+		return this;
 	}
 
 	public final void drawString(LFont font, String message, float x, float y, float angle, LColor c) {

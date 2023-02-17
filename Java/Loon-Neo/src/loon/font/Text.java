@@ -104,11 +104,20 @@ public class Text implements LRelease {
 		if (LSystem.base() == null || chars == null) {
 			return;
 		}
-		if(_closed){
+		if (_closed) {
 			return;
 		}
 		this._chars = chars != null ? chars : LSystem.EMPTY;
 		final IFont font = this._font;
+		if (font != null) {
+			ITranslator translator = font.getTranslator();
+			// 如果font被注入了多语言翻译器且允许翻译
+			if (translator != null && translator.isAllow()) {
+				String src = chars.toString();
+				String dst = translator.toTanslation(src, src);
+				this._chars = dst != null ? dst : LSystem.EMPTY;
+			}
+		}
 		if (this._lines == null) {
 			this._lines = new TArray<CharSequence>();
 		}
@@ -135,7 +144,7 @@ public class Text implements LRelease {
 		}
 		this._width = this._lineAlignmentWidth;
 		if (_width <= 0) {
-			_width = _lineWidths.get(0) * StringUtils.countOccurrences(chars, '\n');
+			_width = _lineWidths.get(0) * StringUtils.countOccurrences(this._chars, '\n');
 		}
 		this._height = lineCount * font.getHeight() + (lineCount - 1) * this._textOptions._leading;
 		if (_height <= 0) {
@@ -154,7 +163,7 @@ public class Text implements LRelease {
 			mes = ((StringBuilder) ch).toString();
 		} else if (ch instanceof StrBuilder) {
 			mes = ((StrBuilder) ch).toString();
-		}else {
+		} else {
 			mes = new StrBuilder(ch).toString();
 		}
 		return mes;

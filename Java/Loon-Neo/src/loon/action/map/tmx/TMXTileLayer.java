@@ -50,7 +50,7 @@ public class TMXTileLayer extends TMXMapLayer {
 
 	private Encoding encoding;
 	private Compression compression;
-
+	
 	public TMXTileLayer(TMXMap map) {
 		super(map, LSystem.EMPTY, 0, 0, map.getWidth(), map.getHeight(), 1.0f, true, TmxLayerType.TILE);
 
@@ -60,14 +60,21 @@ public class TMXTileLayer extends TMXMapLayer {
 
 	public void parse(XMLElement element) {
 
+		id = element.getIntAttribute("id", 0);
 		name = element.getAttribute("name", LSystem.EMPTY);
 
-		x = element.getIntAttribute("x", 0);
-		y = element.getIntAttribute("y", 0);
+		offsetX = element.getFloatAttribute("x", 0);
+		offsetY = element.getFloatAttribute("y", 0);
 
+		offsetX = element.getFloatAttribute("offsetx", offsetX);
+		offsetY = element.getFloatAttribute("offsety", offsetY);
+
+		parallaxX = element.getFloatAttribute("parallaxx", 0f);
+		parallaxY = element.getFloatAttribute("parallaxy", 0f);
+		
 		opacity = element.getFloatAttribute("opacity", 1f);
 		visible = element.getBoolAttribute("visible", true);
-
+		
 		XMLElement nodes = element.getChildrenByName("properties");
 		if (nodes != null)
 			properties.parse(nodes);
@@ -130,10 +137,10 @@ public class TMXTileLayer extends TMXMapLayer {
 
 			int gid = MathUtils.parseUnsignedInt(tileElement.getAttribute("gid", "-1"));
 
-			int tileSetIndex = map.findTileSetIndex(gid);
+			int tileSetIndex = parent.findTileSetIndex(gid);
 
 			if (tileSetIndex != -1) {
-				TMXTileSet tileSet = map.getTileset(tileSetIndex);
+				TMXTileSet tileSet = parent.getTileset(tileSetIndex);
 				tileMap[tileCount] = new TMXMapTile(gid, tileSet.getFirstGID(), tileSetIndex);
 			} else
 				tileMap[tileCount] = new TMXMapTile(gid, 0, -1);
@@ -167,13 +174,14 @@ public class TMXTileLayer extends TMXMapLayer {
 				if (read != temp.length) {
 					throw new LSysException("Error Reading TMX Layer Data: Premature end of tile data");
 				}
+
 				int gid = byteToInt(temp[0]) | byteToInt(temp[1]) << 8 | byteToInt(temp[2]) << 16
 						| byteToInt(temp[3]) << 24;
 
-				int tileSetIndex = map.findTileSetIndex(gid);
+				int tileSetIndex = parent.findTileSetIndex(gid);
 
 				if (tileSetIndex != -1) {
-					TMXTileSet tileSet = map.getTileset(tileSetIndex);
+					TMXTileSet tileSet = parent.getTileset(tileSetIndex);
 					tileMap[y * width + x] = new TMXMapTile(gid, tileSet.getFirstGID(), tileSetIndex);
 				} else {
 					tileMap[y * width + x] = new TMXMapTile(gid, 0, -1);
@@ -189,10 +197,10 @@ public class TMXTileLayer extends TMXMapLayer {
 		for (String token : tokens) {
 			int gid = MathUtils.parseUnsignedInt(token.trim());
 
-			int tileSetIndex = map.findTileSetIndex(gid);
+			int tileSetIndex = parent.findTileSetIndex(gid);
 
 			if (tileSetIndex != -1) {
-				TMXTileSet tileSet = map.getTileset(tileSetIndex);
+				TMXTileSet tileSet = parent.getTileset(tileSetIndex);
 				tileMap[tileCount] = new TMXMapTile(gid, tileSet.getFirstGID(), tileSetIndex);
 			} else {
 				tileMap[tileCount] = new TMXMapTile(gid, 0, -1);
@@ -203,9 +211,9 @@ public class TMXTileLayer extends TMXMapLayer {
 	}
 
 	public void setTileGID(int x, int y, int gid) {
-		int tileSetIndex = map.findTileSetIndex(gid);
+		int tileSetIndex = parent.findTileSetIndex(gid);
 		if (tileSetIndex != -1) {
-			TMXTileSet tileSet = map.getTileset(tileSetIndex);
+			TMXTileSet tileSet = parent.getTileset(tileSetIndex);
 			tileMap[y * width + x] = new TMXMapTile(gid, tileSet.getFirstGID(), tileSetIndex);
 		} else {
 			tileMap[y * width + x] = new TMXMapTile(gid, 0, -1);
@@ -239,7 +247,7 @@ public class TMXTileLayer extends TMXMapLayer {
 	public TMXMapTile getTile(int x, int y) {
 		return tileMap[y * width + x];
 	}
-
+	
 	public Encoding getEncoding() {
 		return encoding;
 	}

@@ -34,13 +34,15 @@ import loon.utils.timer.LTimer;
  */
 public class WaitSprite extends Entity {
 
-	private static class DrawWait {
+	public static class DrawWait {
 
-		private final float sx = 1.0f, sy = 1.0f;
+		private final static int MAX = 4;
 
-		private final int ANGLE_STEP = 15;
+		private final float sx = 1f, sy = 1f;
 
-		private final int ARCRADIUS = 120;
+		private final int angleStep = 15;
+
+		private final int arcradius = 120;
 
 		private LColor color;
 
@@ -50,9 +52,9 @@ public class WaitSprite extends Entity {
 
 		int width, height;
 
-		private int angle;
+		private int angle = 0;
 
-		private int style;
+		private int style = 0;
 
 		private int paintX, paintY, paintWidth, paintHeight;
 
@@ -78,10 +80,16 @@ public class WaitSprite extends Entity {
 				break;
 			case 1:
 				this.fill = new LColor(165, 0, 0, 255);
-				this.paintX = (width - ARCRADIUS);
-				this.paintY = (height - ARCRADIUS);
-				this.paintWidth = paintX + ARCRADIUS;
-				this.paintHeight = paintY + ARCRADIUS;
+				this.paintX = (width - arcradius);
+				this.paintY = (height - arcradius);
+				this.paintWidth = paintX + arcradius;
+				this.paintHeight = paintY + arcradius;
+				break;
+			case 2:
+				this.fill = LColor.green;
+				break;
+			case 3:
+				this.fill = LColor.yellow;
 				break;
 			}
 		}
@@ -91,8 +99,8 @@ public class WaitSprite extends Entity {
 			case 0:
 				list.add(list.removeIndex(0));
 				break;
-			case 1:
-				angle += ANGLE_STEP;
+			default:
+				angle += angleStep;
 				break;
 			}
 		}
@@ -110,7 +118,7 @@ public class WaitSprite extends Entity {
 					g.setAlpha(alpha);
 					g.fillOval(nx + s.x, ny + s.y, s.width, s.height);
 				}
-				g.setAlpha(1.0F);
+				g.setAlpha(1f);
 				break;
 			case 1:
 				int old = g.getBlendMode();
@@ -120,13 +128,30 @@ public class WaitSprite extends Entity {
 				g.drawOval(x, y, width, height);
 				int sa = angle % 360;
 				g.fillArc(x + (width - paintWidth) / 2, y + (height - paintHeight) / 2, paintWidth, paintHeight, sa,
-						ANGLE_STEP);
+						angleStep);
 				g.resetLineWidth();
 				g.setBlendMode(old);
+				break;
+			case 2:
+			case 3:
+				int newAngle = angle % 360;
+				final float radiusW = width / 2f;
+				final float radiusH = height / 2f;
+				final float radius = (radiusW > radiusH ? (radiusH / 2f) : (radiusW / 2f));
+				float size = radius / 6f;
+				float centerX = x + (width / 2f - radius);
+				float centerY = y + (height / 2f - radius);
+				if (style == 2) {
+					g.drawStrokeGradientCircle(centerX, centerY, 65, newAngle, radius, size, fill, fill.darker());
+				} else {
+					g.drawStrokeGradientCircle(centerX, centerY, 0, 90, radius, size, fill, fill.darker(), newAngle);
+					g.drawStrokeGradientCircle(centerX, centerY, 230, 270, radius, size, fill, fill.darker(), newAngle);
+				}
 				break;
 			}
 			g.setColor(oldColor);
 		}
+
 	}
 
 	private LTimer delay;
@@ -145,10 +170,15 @@ public class WaitSprite extends Entity {
 		this.style = s;
 		this.wait = new DrawWait(s, w, h);
 		this.delay = new LTimer(120);
+		if (s == 2) {
+			delay.setDelay(30);
+		} else if (s == 3) {
+			delay.setDelay(60);
+		}
 		this.setRepaint(true);
 		this.setSize(w, h);
-		if (s > 1) {
-			int idx = s - 2;
+		if (s > DrawWait.MAX - 1) {
+			int idx = s - DrawWait.MAX;
 			int width = w / 2;
 			int height = h / 2;
 			cycle = newSample(idx, width, height);
@@ -234,7 +264,7 @@ public class WaitSprite extends Entity {
 
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
-		if (style < 2) {
+		if (style < DrawWait.MAX) {
 			wait.draw(g, drawX(offsetX), drawY(offsetY));
 		} else if (cycle != null) {
 			cycle.createUI(g, drawX(offsetX), drawY(offsetY));

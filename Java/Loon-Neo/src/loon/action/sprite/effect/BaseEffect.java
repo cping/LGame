@@ -35,6 +35,6 @@ public interface BaseEffect {
 
 	public boolean isVisible();
 
-	public void setVisible(boolean visible) ;
+	public void setVisible(boolean v) ;
 
 }

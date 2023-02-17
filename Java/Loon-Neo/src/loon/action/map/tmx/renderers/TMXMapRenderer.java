@@ -53,7 +53,7 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 	private ResizeListener<TMXMapRenderer> _resizeListener;
 
 	protected Vector2f _mapLocation = new Vector2f();
-	
+
 	protected Vector2f _offset = new Vector2f();
 	protected float _fixedWidthOffset = 0f;
 	protected float _fixedHeightOffset = 0f;
@@ -211,6 +211,14 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 		return map;
 	}
 
+	protected float getRenderX() {
+		return map.getRenderOffsetX();
+	}
+
+	protected float getRenderY() {
+		return map.getRenderOffsetY();
+	}
+
 	@Override
 	public void setVisible(boolean v) {
 		this.visible = v;
@@ -278,6 +286,11 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 		return scaleY;
 	}
 
+	public TMXMapRenderer setScale(float scale) {
+		this.setScale(scale,scale);
+		return this;
+	}
+
 	@Override
 	public void setScale(float sx, float sy) {
 		this.scaleX = sx;
@@ -329,11 +342,12 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 	}
 
 	@Override
-	public void setSprites(Sprites ss) {
+	public ISprite setSprites(Sprites ss) {
 		if (this.sprites == ss) {
-			return;
+			return this;
 		}
 		this.sprites = ss;
+		return this;
 	}
 
 	@Override
@@ -355,8 +369,9 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 	}
 
 	@Override
-	public void setFixedWidthOffset(float fixedWidthOffset) {
+	public ISprite setFixedWidthOffset(float fixedWidthOffset) {
 		this._fixedWidthOffset = fixedWidthOffset;
+		return this;
 	}
 
 	@Override
@@ -365,8 +380,9 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 	}
 
 	@Override
-	public void setFixedHeightOffset(float fixedHeightOffset) {
+	public ISprite setFixedHeightOffset(float fixedHeightOffset) {
 		this._fixedHeightOffset = fixedHeightOffset;
+		return this;
 	}
 
 	@Override

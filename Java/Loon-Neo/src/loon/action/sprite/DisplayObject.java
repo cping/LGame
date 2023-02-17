@@ -205,6 +205,10 @@ public abstract class DisplayObject extends EventDispatcher implements Collision
 		return _scaleY;
 	}
 
+	public void setScale(float scale) {
+		setScale(scale,scale);
+	}
+	
 	@Override
 	public void setScale(float sx, float sy) {
 		this._scaleX = sx;
@@ -312,11 +316,12 @@ public abstract class DisplayObject extends EventDispatcher implements Collision
 	}
 
 	@Override
-	public void setSprites(Sprites ss) {
+	public ISprite setSprites(Sprites ss) {
 		if (this._sprites == ss) {
-			return;
+			return this;
 		}
 		this._sprites = ss;
+		return this;
 	}
 
 	@Override
@@ -378,8 +383,9 @@ public abstract class DisplayObject extends EventDispatcher implements Collision
 	}
 
 	@Override
-	public void setFixedWidthOffset(float fixedWidthOffset) {
+	public ISprite setFixedWidthOffset(float fixedWidthOffset) {
 		this._fixedWidthOffset = fixedWidthOffset;
+		return this;
 	}
 
 	@Override
@@ -388,8 +394,9 @@ public abstract class DisplayObject extends EventDispatcher implements Collision
 	}
 
 	@Override
-	public void setFixedHeightOffset(float fixedHeightOffset) {
+	public ISprite setFixedHeightOffset(float fixedHeightOffset) {
 		this._fixedHeightOffset = fixedHeightOffset;
+		return this;
 	}
 
 	@Override

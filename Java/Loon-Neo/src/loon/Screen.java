@@ -126,6 +126,18 @@ import loon.utils.timer.LTimerContext;
  */
 public abstract class Screen extends PlayerUtils implements SysInput, LRelease, XY {
 
+	public final static int NO_BUTTON = -1;
+
+	public final static int NO_KEY = -1;
+
+	public final static int UPPER_LEFT = 0;
+
+	public final static int UPPER_RIGHT = 1;
+
+	public final static int LOWER_LEFT = 2;
+
+	public final static int LOWER_RIGHT = 3;
+	
 	/**
 	 * Screen切换方式(单纯移动)
 	 *
@@ -283,9 +295,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	private final IntMap<Boolean> touchType = new IntMap<Boolean>();
 
-	private int touchButtonPressed = SysInput.NO_BUTTON, touchButtonReleased = SysInput.NO_BUTTON;
+	private int touchButtonPressed = NO_BUTTON, touchButtonReleased = NO_BUTTON;
 
-	private int keyButtonPressed = SysInput.NO_KEY, keyButtonReleased = SysInput.NO_KEY;
+	private int keyButtonPressed = NO_KEY, keyButtonReleased = NO_KEY;
 
 	protected boolean isNext;
 
@@ -642,8 +654,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	public Screen clearTouched() {
-		this.touchButtonPressed = SysInput.NO_BUTTON;
-		this.touchButtonReleased = SysInput.NO_BUTTON;
+		this.touchButtonPressed = NO_BUTTON;
+		this.touchButtonReleased = NO_BUTTON;
 		this.touchDX = -1;
 		this.touchDY = -1;
 		this.lastTouchX = -1;
@@ -3771,12 +3783,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	@Override
 	public int getTouchPressed() {
-		return touchButtonPressed > SysInput.NO_BUTTON ? touchButtonPressed : SysInput.NO_BUTTON;
+		return touchButtonPressed > NO_BUTTON ? touchButtonPressed : NO_BUTTON;
 	}
 
 	@Override
 	public int getTouchReleased() {
-		return touchButtonReleased > SysInput.NO_BUTTON ? touchButtonReleased : SysInput.NO_BUTTON;
+		return touchButtonReleased > NO_BUTTON ? touchButtonReleased : NO_BUTTON;
 	}
 
 	@Override
@@ -3820,7 +3832,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	@Override
 	public int getKeyPressed() {
-		return keyButtonPressed > SysInput.NO_KEY ? keyButtonPressed : SysInput.NO_KEY;
+		return keyButtonPressed > NO_KEY ? keyButtonPressed : NO_KEY;
 	}
 
 	@Override
@@ -3830,7 +3842,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	@Override
 	public int getKeyReleased() {
-		return keyButtonReleased > SysInput.NO_KEY ? keyButtonReleased : SysInput.NO_KEY;
+		return keyButtonReleased > NO_KEY ? keyButtonReleased : NO_KEY;
 	}
 
 	@Override
@@ -3868,10 +3880,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			}
 			keyType.put(type, Boolean.valueOf(true));
 			keyButtonPressed = code;
-			keyButtonReleased = SysInput.NO_KEY;
+			keyButtonReleased = NO_KEY;
 		} catch (Throwable ex) {
-			keyButtonPressed = SysInput.NO_KEY;
-			keyButtonReleased = SysInput.NO_KEY;
+			keyButtonPressed = NO_KEY;
+			keyButtonReleased = NO_KEY;
 			error("Screen keyPressed() exception", ex);
 		}
 	}
@@ -3883,7 +3895,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 */
 	public void setKeyDown(int button) {
 		keyButtonPressed = button;
-		keyButtonReleased = SysInput.NO_KEY;
+		keyButtonReleased = NO_KEY;
 	}
 
 	public final void keyReleased(GameKey e) {
@@ -3908,12 +3920,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			this.releaseActionKeys();
 			keyType.put(type, Boolean.valueOf(false));
 			keyButtonReleased = code;
-			keyButtonPressed = SysInput.NO_KEY;
+			keyButtonPressed = NO_KEY;
 		} catch (
 
 		Throwable ex) {
-			keyButtonPressed = SysInput.NO_KEY;
-			keyButtonReleased = SysInput.NO_KEY;
+			keyButtonPressed = NO_KEY;
+			keyButtonReleased = NO_KEY;
 			error("Screen keyReleased() exception", ex);
 		}
 	}
@@ -3921,7 +3933,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	@Override
 	public void setKeyUp(int button) {
 		keyButtonReleased = button;
-		keyButtonPressed = SysInput.NO_KEY;
+		keyButtonPressed = NO_KEY;
 	}
 
 	public void keyTyped(GameKey e) {
@@ -3956,7 +3968,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		try {
 			touchType.put(type, Boolean.TRUE);
 			touchButtonPressed = button;
-			touchButtonReleased = SysInput.NO_BUTTON;
+			touchButtonReleased = NO_BUTTON;
 			if (!isClickLimit(e)) {
 				updateTouchArea(Event.DOWN, e.getX(), e.getY());
 				touchDown(e);
@@ -3966,8 +3978,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			}
 			_lastTocuh.set(e.getX(), e.getY());
 		} catch (Throwable ex) {
-			touchButtonPressed = SysInput.NO_BUTTON;
-			touchButtonReleased = SysInput.NO_BUTTON;
+			touchButtonPressed = NO_BUTTON;
+			touchButtonReleased = NO_BUTTON;
 			error("Screen mousePressed() exception", ex);
 		}
 	}
@@ -3987,7 +3999,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		try {
 			touchType.put(type, Boolean.FALSE);
 			touchButtonReleased = button;
-			touchButtonPressed = SysInput.NO_BUTTON;
+			touchButtonPressed = NO_BUTTON;
 			if (!isClickLimit(e)) {
 				updateTouchArea(Event.UP, e.getX(), e.getY());
 				touchUp(e);
@@ -3997,8 +4009,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			}
 			_lastTocuh.set(e.getX(), e.getY());
 		} catch (Throwable ex) {
-			touchButtonPressed = SysInput.NO_BUTTON;
-			touchButtonReleased = SysInput.NO_BUTTON;
+			touchButtonPressed = NO_BUTTON;
+			touchButtonReleased = NO_BUTTON;
 			error("Screen mouseReleased() exception", ex);
 		}
 	}
@@ -5640,10 +5652,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 				if (_touchAreas != null) {
 					_touchAreas.clear();
 				}
-				touchButtonPressed = SysInput.NO_BUTTON;
-				touchButtonReleased = SysInput.NO_BUTTON;
-				keyButtonPressed = SysInput.NO_KEY;
-				keyButtonReleased = SysInput.NO_KEY;
+				touchButtonPressed = NO_BUTTON;
+				touchButtonReleased = NO_BUTTON;
+				keyButtonPressed = NO_KEY;
+				keyButtonReleased = NO_KEY;
 				replaceLoading = false;
 				if (replaceDelay != null) {
 					replaceDelay.setDelay(10);

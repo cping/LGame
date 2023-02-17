@@ -593,7 +593,8 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public boolean isEnabled() {
-		return (this._objectSuper == null) ? this._component_enabled : (this._component_enabled && this._objectSuper.isEnabled());
+		return (this._objectSuper == null) ? this._component_enabled
+				: (this._component_enabled && this._objectSuper.isEnabled());
 	}
 
 	public LComponent setEnabled(boolean b) {
@@ -1571,6 +1572,14 @@ public abstract class LComponent extends LObject<LContainer>
 
 	public boolean isClickDrag() {
 		return input.getTouchPressed() == SysTouch.TOUCH_DRAG || SysTouch.isDrag();
+	}
+
+	public boolean isTouchResponseEvent(float x, float y) {
+		return isVisible() && isEnabled() && !isLocked() && contains(x, y);
+	}
+
+	public boolean isTouchNotResponseEvent(float x, float y) {
+		return !isVisible() || !isEnabled() || isLocked() || !contains(x, y);
 	}
 
 	public Dimension getDimension() {

@@ -57,7 +57,7 @@ public class LColor implements Serializable {
 			int g = (pixel & 0x0000FF00) >> 8;
 			int b = (pixel & 0x000000FF);
 			int a = (pixel & 0xFF000000) >> 24;
-			dstPixels[i] = LColor.abgr(r, g, b, a);
+			dstPixels[i] = abgr(r, g, b, a);
 		}
 		return dstPixels;
 	}
@@ -374,14 +374,14 @@ public class LColor implements Serializable {
 
 	public static final LColor toBlackWhite(LColor color) {
 		if (color == null) {
-			return LColor.gray.cpy();
+			return gray.cpy();
 		}
 		return toBlackWhite(color, new LColor());
 	}
 
 	public static final LColor toBlackWhite(LColor color, LColor targetColor) {
 		if (color == null) {
-			return LColor.gray.cpy();
+			return gray.cpy();
 		}
 		if (targetColor == null) {
 			targetColor = new LColor();
@@ -500,7 +500,7 @@ public class LColor implements Serializable {
 	 */
 	public LColor(String c) {
 		if (c == null) {
-			setColor(LColor.white);
+			setColor(white);
 			return;
 		}
 		c = c.trim().toLowerCase();
@@ -550,12 +550,12 @@ public class LColor implements Serializable {
 	}
 
 	public LColor() {
-		this(LColor.white);
+		this(white);
 	}
 
 	public LColor(LColor color) {
 		if (color == null) {
-			setColor(LColor.white);
+			setColor(white);
 			return;
 		}
 		setColor(color.r, color.g, color.b, color.a);
@@ -1331,6 +1331,48 @@ public class LColor implements Serializable {
 
 	public static final int getABGR(int r, int g, int b, int alpha) {
 		return abgr(alpha, r, g, b);
+	}
+	
+	/**
+	 * 以指定颜色指定百分比获得渐变色彩
+	 * 
+	 * @param startColor
+	 * @param endColor
+	 * @return
+	 */
+	public static final int getGradient(int startColor, int endColor) {
+		return getGradient(startColor, endColor, 1f);
+	}
+	
+	/**
+	 * 以指定颜色指定百分比获得渐变色彩
+	 *  
+	 * @param startColor
+	 * @param endColor
+	 * @param percentage
+	 * @return
+	 */
+	public static final int getGradient(int startColor, int endColor,float percentage) {
+		if (percentage > 1f) {
+			percentage = 1f;
+		}
+		int alphaStart = alpha(startColor);
+		int redStart = red(startColor);
+		int blueStart = blue(startColor);
+		int greenStart = green(startColor);
+		int alphaEnd = alpha(endColor);
+		int redEnd = red(endColor);
+		int blueEnd = blue(endColor);
+		int greenEnd = green(endColor);
+		int alphaDiff = alphaEnd - alphaStart;
+		int redDiff = redEnd - redStart;
+		int blueDiff = blueEnd - blueStart;
+		int greenDiff = greenEnd - greenStart;
+		int alphaCurrent = (int) (alphaStart + percentage * alphaDiff);
+		int redCurrent = (int) (redStart + percentage * redDiff);
+		int blueCurrent = (int) (blueStart + percentage * blueDiff);
+		int greenCurrent = (int) (greenStart + percentage * greenDiff);
+		return argb(alphaCurrent, redCurrent, greenCurrent, blueCurrent);
 	}
 
 	/**

@@ -44,7 +44,7 @@ import loon.utils.parse.StrTokenizer;
 
 // AngelCode图像字体专用类(因为仅处理限定范围内的字体，此类速度会比较早前版本中提供的文字渲染类更快，
 // 但缺点在于，没有提供图像的文字不能被渲染).
-public class BMFont implements IFont {
+public class BMFont extends FontTrans implements IFont {
 
 	private static final int DEFAULT_MAX_CHAR = 256;
 
@@ -336,12 +336,16 @@ public class BMFont implements IFont {
 		drawBatchString(text, x, y, col, 0, text.length());
 	}
 
-	private void drawBatchString(String text, float tx, float ty, LColor c, int startIndex, int endIndex) {
+	private void drawBatchString(String msg, float tx, float ty, LColor c, int startIndex, int endIndex) {
 		if (_isClose) {
 			return;
 		}
-		if (StringUtils.isEmpty(text)) {
+		if (StringUtils.isEmpty(msg)) {
 			return;
+		}
+		String newMessage = toMessage(msg);
+		if (checkEndIndexUpdate(endIndex, msg, newMessage)) {
+			endIndex = newMessage.length();
 		}
 		make();
 		if (displayList == null || displayList.isClosed()) {
@@ -366,7 +370,7 @@ public class BMFont implements IFont {
 		}
 
 		int keyCode = 1;
-		keyCode = LSystem.unite(keyCode, text.hashCode());
+		keyCode = LSystem.unite(keyCode, newMessage.hashCode());
 		keyCode = LSystem.unite(keyCode, lazyHashCode);
 
 		Display display = displays.get(keyCode);
@@ -384,7 +388,7 @@ public class BMFont implements IFont {
 
 			CharDef lastCharDef = null;
 			for (int i = startIndex; i < endIndex; i++) {
-				char id = text.charAt(i);
+				char id = newMessage.charAt(i);
 				if (id == newRFlag) {
 					continue;
 				}
@@ -428,7 +432,7 @@ public class BMFont implements IFont {
 			display = new Display();
 
 			display.cache = displayList.newBatchCache();
-			display.text = text;
+			display.text = newMessage;
 			display.width = 0;
 			display.height = 0;
 
@@ -463,12 +467,16 @@ public class BMFont implements IFont {
 		}
 	}
 
-	private void drawString(GLEx g, String text, float tx, float ty, LColor c, int startIndex, int endIndex) {
+	private void drawString(GLEx g, String msg, float tx, float ty, LColor c, int startIndex, int endIndex) {
 		if (_isClose) {
 			return;
 		}
-		if (StringUtils.isEmpty(text)) {
+		if (StringUtils.isEmpty(msg)) {
 			return;
+		}
+		String newMessage = toMessage(msg);
+		if (checkEndIndexUpdate(endIndex, msg, newMessage)) {
+			endIndex = newMessage.length();
 		}
 		make();
 		if (displayList == null || displayList.isClosed()) {
@@ -482,7 +490,7 @@ public class BMFont implements IFont {
 		int x = 0, y = 0;
 		CharDef lastCharDef = null;
 		for (int i = startIndex; i < endIndex; i++) {
-			char id = text.charAt(i);
+			char id = newMessage.charAt(i);
 			if (id == newRFlag) {
 				continue;
 			}
@@ -541,14 +549,15 @@ public class BMFont implements IFont {
 	}
 
 	@Override
-	public void drawString(GLEx gl, String text, float x, float y, float sx, float sy, float ax, float ay,
+	public void drawString(GLEx gl, String msg, float x, float y, float sx, float sy, float ax, float ay,
 			float rotation, LColor c) {
 		if (_isClose) {
 			return;
 		}
-		if (StringUtils.isEmpty(text)) {
+		if (StringUtils.isEmpty(msg)) {
 			return;
 		}
+		String newMessage = toMessage(msg);
 		boolean anchor = ax != 0 || ay != 0;
 		boolean scale = sx != 1f || sy != 1f;
 		boolean angle = rotation != 0;
@@ -558,15 +567,15 @@ public class BMFont implements IFont {
 				gl.saveTx();
 				Affine2f xf = gl.tx();
 				if (angle) {
-					float centerX = x + this.stringWidth(text) / 2;
-					float centerY = y + this.stringHeight(text) / 2;
+					float centerX = x + this.stringWidth(newMessage) / 2;
+					float centerY = y + this.stringHeight(newMessage) / 2;
 					xf.translate(centerX, centerY);
 					xf.preRotate(rotation);
 					xf.translate(-centerX, -centerY);
 				}
 				if (scale) {
-					float centerX = x + this.stringWidth(text) / 2;
-					float centerY = y + this.stringHeight(text) / 2;
+					float centerX = x + this.stringWidth(newMessage) / 2;
+					float centerY = y + this.stringHeight(newMessage) / 2;
 					xf.translate(centerX, centerY);
 					xf.preScale(sx, sy);
 					xf.translate(-centerX, -centerY);
@@ -575,7 +584,7 @@ public class BMFont implements IFont {
 					xf.translate(ax, ay);
 				}
 			}
-			drawString(gl, text, x, y, c);
+			drawString(gl, newMessage, x, y, c);
 		} finally {
 			if (update) {
 				gl.restoreTx();
@@ -584,14 +593,15 @@ public class BMFont implements IFont {
 	}
 
 	@Override
-	public int stringHeight(String text) {
-		if (StringUtils.isEmpty(text)) {
+	public int stringHeight(String msg) {
+		if (StringUtils.isEmpty(msg)) {
 			return 0;
 		}
+		String newMessage = toMessage(msg);
 		make();
 		Display display = null;
 		for (Display d : displays.values()) {
-			if (d != null && text.equals(d.text)) {
+			if (d != null && newMessage.equals(d.text)) {
 				display = d;
 				break;
 			}
@@ -603,8 +613,8 @@ public class BMFont implements IFont {
 			display = new Display();
 		}
 		int lines = 0;
-		for (int i = 0; i < text.length(); i++) {
-			int id = text.charAt(i);
+		for (int i = 0; i < newMessage.length(); i++) {
+			int id = newMessage.charAt(i);
 			if (id == newLineFlag) {
 				lines++;
 				display.height = 0;
@@ -647,14 +657,15 @@ public class BMFont implements IFont {
 	}
 
 	@Override
-	public int stringWidth(String text) {
-		if (StringUtils.isEmpty(text)) {
+	public int stringWidth(String msg) {
+		if (StringUtils.isEmpty(msg)) {
 			return 0;
 		}
 		make();
+		String newMessage = toMessage(msg);
 		Display display = null;
 		for (Display d : displays.values()) {
-			if (d != null && text.equals(d.text)) {
+			if (d != null && newMessage.equals(d.text)) {
 				display = d;
 				break;
 			}
@@ -667,8 +678,8 @@ public class BMFont implements IFont {
 		}
 		int width = 0;
 		CharDef lastCharDef = null;
-		for (int i = 0, n = text.length(); i < n; i++) {
-			int id = text.charAt(i);
+		for (int i = 0, n = newMessage.length(); i < n; i++) {
+			int id = newMessage.charAt(i);
 			if (id == newLineFlag) {
 				width = 0;
 				continue;
@@ -753,21 +764,22 @@ public class BMFont implements IFont {
 	}
 
 	@Override
-	public String confineLength(String s, int width) {
+	public String confineLength(String msg, int width) {
+		String newMessage = toMessage(msg);
 		int length = 0;
-		for (int i = 0; i < s.length(); i++) {
-			length += stringWidth(String.valueOf(s.charAt(i)));
+		for (int i = 0; i < newMessage.length(); i++) {
+			length += stringWidth(String.valueOf(newMessage.charAt(i)));
 			if (length >= width) {
 				int pLength = stringWidth("...");
 				while (length + pLength >= width && i >= 0) {
-					length -= stringWidth(String.valueOf(s.charAt(i)));
+					length -= stringWidth(String.valueOf(newMessage.charAt(i)));
 					i--;
 				}
-				s = s.substring(0, ++i) + "...";
+				newMessage = newMessage.substring(0, ++i) + "...";
 				break;
 			}
 		}
-		return s;
+		return newMessage;
 	}
 
 	@Override
@@ -813,6 +825,17 @@ public class BMFont implements IFont {
 		return getFace();
 	}
 
+	@Override
+	public ITranslator getTranslator() {
+		return _translator;
+	}
+
+	@Override
+	public IFont setTranslator(ITranslator translator) {
+		this._translator = translator;
+		return this;
+	}
+	
 	public boolean isClosed() {
 		return _isClose;
 	}
@@ -846,5 +869,6 @@ public class BMFont implements IFont {
 		builder.kv("info", info).comma().kv("common", common).comma().kv("page", page);
 		return builder.toString();
 	}
+
 
 }

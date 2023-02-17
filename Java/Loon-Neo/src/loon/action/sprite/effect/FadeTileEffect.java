@@ -279,7 +279,7 @@ public class FadeTileEffect extends Entity implements BaseEffect {
 	}
 
 	@Override
-	public void reset() {
+	public FadeTileEffect reset() {
 		super.reset();
 		this.completed = false;
 		this.tmpflag = 0;
@@ -306,6 +306,7 @@ public class FadeTileEffect extends Entity implements BaseEffect {
 						.random(1, tileHeight) - 1] = false;
 			}
 		}
+		return this;
 	}
 
 	public int getFadeType() {

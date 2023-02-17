@@ -198,7 +198,7 @@ public class TextEffect extends Entity implements BaseEffect {
 	}
 
 	@Override
-	public void reset() {
+	public TextEffect reset() {
 		super.reset();
 		completed = false;
 		texts.clear();
@@ -208,6 +208,7 @@ public class TextEffect extends Entity implements BaseEffect {
 				texts.add(block.cpy());
 			}
 		}
+		return this;
 	}
 
 	@Override
