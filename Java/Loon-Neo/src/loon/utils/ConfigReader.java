@@ -81,12 +81,15 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 
 	public void parseMap(final String path) {
 		if (StringUtils.isEmpty(path)) {
-			throw new LSysException("Resource path cannot be Empty!");
+			throw new LSysException("Resource path cannot be Empty !");
 		}
 		if (_loaders == null) {
 			_loaders = new TArray<StringKeyValue>();
 		}
 		String context = BaseIO.loadText(path);
+		if (StringUtils.isEmpty(context)) {
+			throw new LSysException("The loaded data does not exist !");
+		}
 		StrTokenizer reader = new StrTokenizer(context, LSystem.NL);
 		String curTemplate = LSystem.EMPTY;
 		StringKeyValue curBuffer = null;

@@ -15,7 +15,6 @@ import loon.events.ClickListener;
 import loon.events.GameTouch;
 import loon.events.Touched;
 import loon.font.BMFont;
-import loon.font.BMFontCache;
 import loon.opengl.GLEx;
 import loon.utils.TArray;
 import loon.utils.processes.RealtimeProcess;
@@ -158,7 +157,9 @@ public class MultiScreenTest extends Screen {
 			"Tetris", "Explosion", "FBird" };
 
 	final String[] page2 = { "Timer", "Snake", "TextEffect", "Margin", "DefineMove", "Interval", "Scheduler",
-			"Shader","FrameBuffer","Taichi","StatusBar","Drag","Radar","PathMove","Answer"};
+			"Shader","FrameBuffer","Taichi","StatusBar","Drag","Radar","PathMove","Answer","Preload"};
+
+	static BMFont info_font;
 
 	@Override
 	public void onLoad() {
@@ -169,9 +170,17 @@ public class MultiScreenTest extends Screen {
 		// 创建一个普通的Entity
 
 		String[][] pages = { page0, page1, page2 };
-		BMFont info = BMFontCache.shared().get("assets/info");
 		// 使用图片字体(如果不设置，则loon默认使用当前系统字体)
-		info.setFontScale(0.6f);
+		if (info_font == null) {
+			try {
+				// 加载
+				info_font = new BMFont("assets/info.fnt", "assets/info.png");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			// 缩放为0.6倍
+			info_font.setFontScale(0.6f);
+		}
 		int index = 0;
 		// 构建一个通用的监听器
 		MyClickListener clickListener = new MyClickListener();
@@ -281,6 +290,7 @@ public class MultiScreenTest extends Screen {
 			addScreen(page2[index++], new RadarTest());
 			addScreen(page2[index++], new PathMoveTest());
 			addScreen(page2[index++], new AnswerTest());
+			addScreen(page2[index++], new PreloadTest());
 		}
 
 		// 默认按钮大小为100x25
@@ -300,7 +310,7 @@ public class MultiScreenTest extends Screen {
 			// 设置提示信息为按钮名
 			btn.setToolTipText(pages[page][i]);
 			// 设置位图字体()
-			btn.setFont(info);
+			btn.setFont(info_font);
 			// 为按钮设置事件，并加载入一个集合
 			// tweens.add(set(btn));
 		}
@@ -329,7 +339,7 @@ public class MultiScreenTest extends Screen {
 			nextClick.S(clickListener);
 			// 初始透明度0
 			nextClick.setAlpha(0);
-			nextClick.setFont(info);
+			nextClick.setFont(info_font);
 			// 偏移Screen大小-按钮大小-5
 			nextClick.setX(getWidth() - nextClick.getWidth() - 5);
 			nextClick.setY(getHeight() - nextClick.getHeight() - 55);
@@ -352,7 +362,7 @@ public class MultiScreenTest extends Screen {
 		nextClick.S(clickListener);
 		// 初始透明度0
 		nextClick.setAlpha(0);
-		nextClick.setFont(info);
+		nextClick.setFont(info_font);
 		// 偏移Screen大小-按钮大小-5
 		nextClick.setX(getWidth() - nextClick.getWidth() - 5);
 		nextClick.setY(getHeight() - nextClick.getHeight() - 24);

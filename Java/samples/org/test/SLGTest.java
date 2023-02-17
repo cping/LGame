@@ -32,6 +32,7 @@ import loon.action.map.Field2D;
 import loon.action.map.TileMap;
 import loon.action.sprite.AnimatedEntity;
 import loon.action.sprite.Draw;
+import loon.action.sprite.StatusBar;
 import loon.action.sprite.effect.PixelChopEffect;
 import loon.action.sprite.effect.StringEffect;
 import loon.action.sprite.effect.PixelChopEffect.ChopDirection;
@@ -731,6 +732,8 @@ public class SLGTest extends Stage {
 		// 行动状态(0:未行动 1:已行动 2:战斗完毕)
 		int action;
 
+		StatusBar hpstatus;
+
 		/**
 		 * 设定角色参数
 		 * 
@@ -758,6 +761,23 @@ public class SLGTest extends Stage {
 			this.action = 2;
 			this.hp = 10;
 			this.move = move;
+			// 血条
+			this.hpstatus = new StatusBar(width() - 4, height() / 6);
+			hpstatus.set(hp);
+			hpstatus.setOffsetX(2);
+			//不跟随父精灵旋转
+			hpstatus.setFollowRotation(false);
+			if (team == PLAYER_TEAM) {
+				hpstatus.setColorbefore(LColor.blue);
+			} else {
+				hpstatus.setColorbefore(LColor.red);
+			}
+			this.addChild(hpstatus);
+
+		}
+
+		public StatusBar getHPStatus() {
+			return hpstatus;
 		}
 
 		public boolean isStop() {
@@ -931,7 +951,7 @@ public class SLGTest extends Stage {
 		// 如果目标是敌人
 		if (enemy.team != attacker.team) {
 
-			int centerSize = gameTile / 2;
+			int centerSize = (gameTile) / 2;
 
 			// 获得攻击位置中值(加入地图偏移量)
 			float attackX = enemy.x() + gameMap.getOffsetX() + centerSize;
@@ -946,8 +966,10 @@ public class SLGTest extends Stage {
 
 			// 文字上浮
 			StringEffect str = StringEffect.up(String.valueOf(khp), Vector2f.at(attackX, attackY), LColor.red);
+			str.setOffsetX(-str.getFontWidth() / 2);
 			str.setAutoRemoved(true);
 			str.setZ(1500);
+
 			add(str);
 
 			// 敌人颤抖
@@ -956,7 +978,10 @@ public class SLGTest extends Stage {
 				@Override
 				public void stop(ActionBind o) {
 					// 改变hp
-					enemy.setHp(enemy.getHp() - khp);
+					int curhp = enemy.getHp();
+					int newhp = curhp - khp;
+					enemy.setHp(newhp);
+					enemy.getHPStatus().setUpdate(newhp);
 					if (enemy.getHp() <= 0) {
 						// 死亡则删除角色
 						removeRole(gameRunning, 1, enemy);
@@ -1375,7 +1400,7 @@ public class SLGTest extends Stage {
 		// 显示敌人坐标到雷达中
 		Field2D tmp = this.gameMap.getField2D().cpy();
 		updateEnemyPos(tmp);
-		LRadar radar = new LRadar(Mode.Octagon,0, 0);
+		LRadar radar = new LRadar(Mode.Octagon, 0, 0);
 		// 清空雷达中水滴样点
 		// radar.clearDrop();
 		radar.addField2DToDrop(tmp, LColor.blue, 'E');
@@ -1745,7 +1770,7 @@ public class SLGTest extends Stage {
 						@Override
 						public void process(ActionBind o) {
 							gameRunning.set(true);
-							// 存储上一个移动方向，避免反复刷新动画事件
+							// 判定移动方向是否变更，避免反复刷新动画事件
 							if (move.isDirectionUpdate()) {
 								switch (move.getDirection()) {
 								case Field2D.TUP:

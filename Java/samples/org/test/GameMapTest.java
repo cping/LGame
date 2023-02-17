@@ -152,7 +152,6 @@ public class GameMapTest extends Stage {
 
 	@Override
 	public void create() {
-		heroLocked.set(false);
 		// 最先绘制用户画面
 		// setFristOrder(DRAW_USER_PAINT());
 		// 其次绘制精灵

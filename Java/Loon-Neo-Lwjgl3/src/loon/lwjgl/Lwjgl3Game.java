@@ -259,11 +259,10 @@ public class Lwjgl3Game extends LGame {
 		this.graphics = createGraphics();
 		this.input = createInput();
 
-		glfwSetWindowPos(windowId, (vidMode.width() - width) / 2, (vidMode.height() - height) / 2);
-		glfwMakeContextCurrent(windowId);
-
 		graphics.setSize(config.width, config.height, config.fullscreen);
 
+		glfwMakeContextCurrent(windowId);
+		
 		if (config instanceof JavaSetting) {
 			glfwSwapInterval(((JavaSetting) config).vSyncEnabled ? 1 : 0);
 		} else {

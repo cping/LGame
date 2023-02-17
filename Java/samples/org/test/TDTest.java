@@ -529,7 +529,7 @@ public class TDTest extends Screen {
 			pathMap.put(5, new Begin("assets/td/base.png"));
 			pathMap.put(6, new End("assets/td/castle.png"));
 
-			ConfigReader config = ConfigReader.getInstance("assets/td/map.txt");
+			ConfigReader config = ConfigReader.shared("assets/td/map.txt");
 
 			// 为Layer加入简单的2D地图背景，瓦片大小32x32，以rock图片铺底
 			setField2DBackground(config.getField2D("test", 32, 32), pathMap, "assets/td/rock.png");

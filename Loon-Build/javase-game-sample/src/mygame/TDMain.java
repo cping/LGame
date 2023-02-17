@@ -15,6 +15,7 @@ import loon.component.Actor;
 import loon.component.ActorLayer;
 import loon.component.LLayer;
 import loon.component.LPaper;
+import loon.events.ActionUpdate;
 import loon.events.FrameLoopEvent;
 import loon.events.GameTouch;
 import loon.font.LFont;
@@ -528,7 +529,7 @@ public class TDMain extends Screen {
 			pathMap.put(5, new Begin("assets/base.png"));
 			pathMap.put(6, new End("assets/castle.png"));
 
-			ConfigReader config = ConfigReader.getInstance("assets/map.txt");
+			ConfigReader config = ConfigReader.shared("assets/map.txt");
 
 			// 为Layer加入简单的2D地图背景，瓦片大小32x32，以rock图片铺底
 			setField2DBackground(config.getField2D("test", 32, 32), pathMap, "assets/rock.png");
@@ -610,6 +611,7 @@ public class TDMain extends Screen {
 	}
 
 	public void onLoad() {
+
 		// 构建地图用Layer
 		MapLayer layer = new MapLayer();
 		layer.setAutoDestroy(true);
@@ -624,6 +626,7 @@ public class TDMain extends Screen {
 		menu.setY(0);
 		// 添加menu到Screen
 		add(menu);
+
 	}
 
 	@Override
@@ -685,4 +688,5 @@ public class TDMain extends Screen {
 		// TODO Auto-generated method stub
 
 	}
+
 }

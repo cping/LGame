@@ -171,8 +171,8 @@ public class Info {
 		blocksizes[0] = 1 << opb.read(4);
 		blocksizes[1] = 1 << opb.read(4);
 
-		if ((rate < 1) || (channels < 1) || (blocksizes[0] < 8)
-				|| (blocksizes[1] < blocksizes[0]) || (opb.read(1) != 1)) {
+		if ((rate < 1) || (channels < 1) || (blocksizes[0] < 8) || (blocksizes[1] < blocksizes[0])
+				|| (opb.read(1) != 1)) {
 			clear();
 			return (-1);
 		}
@@ -250,8 +250,7 @@ public class Info {
 				clear();
 				return (-1);
 			}
-			residue_param[i] = FuncResidue.residue_P[residue_type[i]].unpack(
-					this, opb);
+			residue_param[i] = FuncResidue.residue_P[residue_type[i]].unpack(this, opb);
 			if (residue_param[i] == null) {
 				clear();
 				return (-1);
@@ -288,8 +287,7 @@ public class Info {
 			mode_param[i].transformtype = opb.read(16);
 			mode_param[i].mapping = opb.read(8);
 
-			if ((mode_param[i].windowtype >= VI_WINDOWB)
-					|| (mode_param[i].transformtype >= VI_WINDOWB)
+			if ((mode_param[i].windowtype >= VI_WINDOWB) || (mode_param[i].transformtype >= VI_WINDOWB)
 					|| (mode_param[i].mapping >= maps)) {
 				clear();
 				return (-1);
@@ -321,8 +319,7 @@ public class Info {
 				byte[] buffer = new byte[6];
 				int packtype = opb.read(8);
 				opb.read(buffer, 6);
-				if (buffer[0] != 'v' || buffer[1] != 'o' || buffer[2] != 'r'
-						|| buffer[3] != 'b' || buffer[4] != 'i'
+				if (buffer[0] != 'v' || buffer[1] != 'o' || buffer[2] != 'r' || buffer[3] != 'b' || buffer[4] != 'i'
 						|| buffer[5] != 's') {
 					// not a vorbis header
 					return (-1);
@@ -465,10 +462,8 @@ public class Info {
 	}
 
 	public String toString() {
-		return "version:" + new Integer(version) + ", channels:"
-				+ new Integer(channels) + ", rate:" + new Integer(rate)
-				+ ", bitrate:" + new Integer(bitrate_upper) + ","
-				+ new Integer(bitrate_nominal) + ","
-				+ new Integer(bitrate_lower);
+		return "version:" + Integer.valueOf(version) + ", channels:" + Integer.valueOf(channels) + ", rate:"
+				+ Integer.valueOf(rate) + ", bitrate:" + Integer.valueOf(bitrate_upper) + ","
+				+ Integer.valueOf(bitrate_nominal) + "," + Integer.valueOf(bitrate_lower);
 	}
 }
