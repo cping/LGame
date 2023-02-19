@@ -26,40 +26,40 @@ import loon.LSystem;
 /**
  * @info:
  *
- * 		StrBuilder是一个简化的,基本等价于StringBuilder的字符串操作类,作用是当Loon处于不存在Java类库的环境时(比如typescript版之类)
- * 取代StringBuilder.总之是为了移植多平台的产物,如果能明确使用平台的话就没必要用……
+ *        StrBuilder是一个简化的,基本等价于StringBuilder的字符串操作类,作用是当Loon处于不存在Java类库的环境时(比如typescript版之类)
+ *        取代StringBuilder.总之是为了移植多平台的产物,如果能明确使用平台的话就没必要用……
  * 
  * @code:
  * 
-*         <pre>
- * 		  StringBuilder sbr = new StringBuilder(); 
+ *        <pre>
+ *        StringBuilder sbr = new StringBuilder();
  *        sbr.append("ssssssssttts");
- *        StrBuilder str = new StrBuilder(); 
+ *        StrBuilder str = new StrBuilder();
  *        str.append("ssssssssttts");
- *        System.out.println("A: " + sbr); 
+ *        System.out.println("A: " + sbr);
  *        System.out.println("B: " + str);
- *        sbr.deleteCharAt(5); 
- *        str.deleteCharAt(5); 
- *        System.out.println("A: " + sbr); 
- *        System.out.println("B: " + str); 
+ *        sbr.deleteCharAt(5);
+ *        str.deleteCharAt(5);
+ *        System.out.println("A: " + sbr);
+ *        System.out.println("B: " + str);
  *        sbr.append(12345);
- *        sbr.append((String) null); 
- *        str.append(12345); 
- *        str.append((String)null); 
- *        System.out.println("A: " + sbr); 
- *        System.out.println("B: " + str); 
- *        System.out.println(str.equals(sbr)); 
- *        String a = sbr.substring(4,15); 
- *        String b = str.substring(4, 15); 
+ *        sbr.append((String) null);
+ *        str.append(12345);
+ *        str.append((String) null);
+ *        System.out.println("A: " + sbr);
+ *        System.out.println("B: " + str);
+ *        System.out.println(str.equals(sbr));
+ *        String a = sbr.substring(4, 15);
+ *        String b = str.substring(4, 15);
  *        System.out.println("A: " + a);
- *        System.out.println("B: " + b); 
- *        System.out.println(str.equals(sbr)); 
+ *        System.out.println("B: " + b);
+ *        System.out.println(str.equals(sbr));
  *        a = sbr.toString();
- *        b = str.toString(); 
+ *        b = str.toString();
  *        str.delete(3, a.length());
- *        String nb = str.toString(); 
+ *        String nb = str.toString();
  *        System.out.println(a);
- *        System.out.println(b); 
+ *        System.out.println(b);
  *        System.out.println("nb:" + nb);
  *        System.out.println(b);
  *        </pre>
@@ -301,6 +301,14 @@ public class StrBuilder implements CharSequence, Appendable {
 		return this;
 	}
 
+	public boolean hasStart() {
+		return this._currentIndex == 0;
+	}
+
+	public boolean hasEnd() {
+		return this._currentIndex >= this._values.length;
+	}
+
 	public boolean hasContent() {
 		return _currentIndex > 0;
 	}
@@ -310,6 +318,92 @@ public class StrBuilder implements CharSequence, Appendable {
 			return false;
 		}
 		return _currentIndex < _values.length;
+	}
+
+	public char last() {
+		if (this._currentIndex <= 1) {
+			return (char) 0;
+		}
+		return this._values[this._currentIndex - 2];
+	}
+
+	public char next() {
+		if (this._currentIndex >= this._values.length) {
+			return (char) -1;
+		}
+		char next = this._values[this._currentIndex];
+		this._currentIndex++;
+		return next;
+	}
+
+	public char current() {
+		if (hasEnd()) {
+			return this._values[this._values.length - 1];
+		}
+		if (this._currentIndex <= 0) {
+			return (char) 0;
+		}
+		return this._values[this._currentIndex - 1];
+	}
+
+	public char peekPrevious() {
+		if (this._currentIndex <= 1) {
+			return (char) 0;
+		}
+		return this._values[this._currentIndex - 2];
+	}
+
+	public char peek() {
+		if (hasEnd()) {
+			return (char) -1;
+		}
+		return this._values[this._currentIndex];
+	}
+
+	public char previous() {
+		this._currentIndex--;
+		char previous = current();
+		return previous;
+	}
+
+	public StrBuilder skip() {
+		if (this._currentIndex >= this._values.length) {
+			return this;
+		}
+		this._currentIndex++;
+		return this;
+	}
+
+	public StrBuilder skip(int count) {
+		this._currentIndex = MathUtils.min(this._currentIndex + count, this._values.length);
+		return this;
+	}
+
+	public StrBuilder backup(int count) {
+		this._currentIndex = MathUtils.max(this._currentIndex - count, 0);
+		return this;
+	}
+
+	public StrBuilder backup() {
+		if (this._currentIndex > 0) {
+			this._currentIndex--;
+		}
+		return this;
+	}
+
+	public String peek(int count) {
+		int start = this._currentIndex;
+		int end = MathUtils.min(this._currentIndex + count, this._values.length);
+		return this.substring(start, end);
+	}
+
+	public String previous(int count) {
+		int end = this._currentIndex - 2;
+		if (end <= 0) {
+			return LSystem.EMPTY;
+		}
+		int start = MathUtils.max(end - count, 0);
+		return this.substring(start, end);
 	}
 
 	public boolean isEmpty() {
@@ -420,39 +514,38 @@ public class StrBuilder implements CharSequence, Appendable {
 		return this._currentIndex;
 	}
 
-    public StrBuilder reverse() {
-        boolean hasSurrogates = false;
-        int n = _currentIndex - 1;
-        for (int j = (n-1) >> 1; j >= 0; j--) {
-            int k = n - j;
-            char cj = _values[j];
-            char ck = _values[k];
-            _values[j] = ck;
-            _values[k] = cj;
-            if (CharUtils.isSurrogate(cj) ||
-            		CharUtils.isSurrogate(ck)) {
-                hasSurrogates = true;
-            }
-        }
-        if (hasSurrogates) {
-            reverseAllValidSurrogatePairs();
-        }
-        return this;
-    }
+	public StrBuilder reverse() {
+		boolean hasSurrogates = false;
+		int n = _currentIndex - 1;
+		for (int j = (n - 1) >> 1; j >= 0; j--) {
+			int k = n - j;
+			char cj = _values[j];
+			char ck = _values[k];
+			_values[j] = ck;
+			_values[k] = cj;
+			if (CharUtils.isSurrogate(cj) || CharUtils.isSurrogate(ck)) {
+				hasSurrogates = true;
+			}
+		}
+		if (hasSurrogates) {
+			reverseAllValidSurrogatePairs();
+		}
+		return this;
+	}
 
-    private void reverseAllValidSurrogatePairs() {
-        for (int i = 0; i < _currentIndex - 1; i++) {
-            char c2 = _values[i];
-            if (CharUtils.isLowSurrogate(c2)) {
-                char c1 = _values[i + 1];
-                if (CharUtils.isHighSurrogate(c1)) {
-                	_values[i++] = c1;
-                	_values[i] = c2;
-                }
-            }
-        }
-    }
-    
+	private void reverseAllValidSurrogatePairs() {
+		for (int i = 0; i < _currentIndex - 1; i++) {
+			char c2 = _values[i];
+			if (CharUtils.isLowSurrogate(c2)) {
+				char c1 = _values[i + 1];
+				if (CharUtils.isHighSurrogate(c1)) {
+					_values[i++] = c1;
+					_values[i] = c2;
+				}
+			}
+		}
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (o == null) {

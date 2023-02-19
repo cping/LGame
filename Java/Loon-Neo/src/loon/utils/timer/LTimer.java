@@ -215,10 +215,6 @@ public class LTimer implements LRelease {
 		return false;
 	}
 
-	public TimerEvent makeEvent() {
-		return new TimerEvent(_currentTick);
-	}
-
 	public LTimer refresh() {
 		return reset();
 	}

@@ -181,12 +181,18 @@ public class LProcess implements LRelease {
 	}
 
 	public boolean addResume(Updateable u) {
+		if (u == null) {
+			return false;
+		}
 		synchronized (resumes) {
 			return resumes.add(u);
 		}
 	}
 
 	public boolean removeResume(Updateable u) {
+		if (u == null) {
+			return false;
+		}
 		synchronized (resumes) {
 			return resumes.remove(u);
 		}
@@ -195,18 +201,27 @@ public class LProcess implements LRelease {
 	// --- Load start ---//
 
 	public boolean addLoad(Updateable u) {
+		if (u == null) {
+			return false;
+		}
 		synchronized (loads) {
 			return loads.add(u);
 		}
 	}
 
 	public boolean containsLoad(Updateable u) {
+		if (u == null) {
+			return false;
+		}
 		synchronized (loads) {
 			return loads.contains(u);
 		}
 	}
 
 	public boolean removeLoad(Updateable u) {
+		if (u == null) {
+			return false;
+		}
 		synchronized (loads) {
 			return loads.remove(u);
 		}
@@ -232,18 +247,27 @@ public class LProcess implements LRelease {
 	// --- UnLoad start ---//
 
 	public boolean addUnLoad(Updateable u) {
+		if (u == null) {
+			return false;
+		}
 		synchronized (unloads) {
 			return unloads.add(u);
 		}
 	}
 
 	public boolean containsUnLoad(Updateable u) {
+		if (u == null) {
+			return false;
+		}
 		synchronized (unloads) {
 			return unloads.contains(u);
 		}
 	}
 
 	public boolean removeUnLoad(Updateable u) {
+		if (u == null) {
+			return false;
+		}
 		synchronized (unloads) {
 			return unloads.remove(u);
 		}
