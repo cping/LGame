@@ -20,16 +20,128 @@
  */
 package loon.utils.xml;
 
+import java.util.Iterator;
+
 import loon.BaseIO;
+import loon.Json;
 import loon.LSysException;
 import loon.LSystem;
 import loon.utils.StrBuilder;
+import loon.utils.StringUtils;
 import loon.utils.TArray;
 
 /**
  * 自带的XML解析用类
  */
 public class XMLParser {
+
+	public final static String jsonToXml(String data) {
+		if (StringUtils.isEmpty(data)) {
+			return LSystem.EMPTY;
+		}
+		Object jsonData = BaseIO.loadJsonObjectContext(data);
+		return jsonToXml(null, jsonData);
+	}
+
+	public final static String jsonToXml(String name, Object data) {
+		String nameValue = (name == null) ? "" : name;
+		if (data instanceof Json.Array) {
+			StrBuilder builder = new StrBuilder("<" + nameValue + ">");
+			builder.append(LSystem.LS);
+			Json.Array arrays = (Json.Array) data;
+			for (int i = 0; i < arrays.length(); i++) {
+				builder.append(jsonToXml(null, arrays.getObject(i)));
+			}
+			builder.append("</" + nameValue + ">");
+			builder.append(LSystem.LS);
+			return builder.toString();
+		} else if (data instanceof Json.Object) {
+			StrBuilder builder = new StrBuilder(StringUtils.isEmpty(nameValue) ? "<objects>\n" : "<" + nameValue + ">");
+			Json.Object objects = ((Json.Object) data);
+			Json.TypedArray<String> keys = objects.keys();
+			if (keys.length() > 0) {
+				for (Iterator<String> it = keys.iterator(); it.hasNext();) {
+					String key = it.next();
+					if (objects.isArray(key)) {
+						builder.append(jsonToXml(key, (Json.Array) objects.getArray(key)));
+					} else if (objects.isString(key)) {
+						builder.append(jsonToXml(key, objects.getString(key)));
+					} else if (objects.isBoolean(key)) {
+						builder.append(jsonToXml(key, objects.getBoolean(key)));
+					} else if (objects.isNumber(key)) {
+						builder.append(jsonToXml(key, objects.getNumber(key)));
+					} else {
+						builder.append(jsonToXml(key, objects.getObject(key)));
+					}
+				}
+				builder.append(StringUtils.isEmpty(nameValue) ? "</objects>" : "</" + nameValue + ">");
+
+			}
+			return builder.toString();
+		} else if (data instanceof Object) {
+			return "<" + nameValue + ">" + data + "</" + nameValue + ">" + LSystem.LS;
+		} else if (data == null) {
+			return "<" + nameValue.trim() + "/>" + LSystem.LS;
+		} else {
+			throw new LSysException("Data type " + data.getClass() + " not yet supported");
+		}
+	}
+
+	public final static String jsonToTypeXml(String data) {
+		if (StringUtils.isEmpty(data)) {
+			return "<null/>";
+		}
+		Object jsonData = BaseIO.loadJsonObjectContext(data);
+		return jsonToTypeXml(null, jsonData);
+	}
+
+	public final static String jsonToTypeXml(String name, Object data) {
+		String nameValue = ((name == null) ? "" : " name=\"" + name + "\"");
+		if (data instanceof Number) {
+			return "<number" + nameValue + ">" + data + "</number>";
+		} else if (data instanceof String) {
+			return "<string" + nameValue + ">" + data + "</string>";
+		} else if (data instanceof Boolean) {
+			return "<boolean" + nameValue + ">" + data + "</boolean>";
+		} else if (data instanceof Json.Array) {
+			StrBuilder builder = new StrBuilder("<array" + nameValue + ">");
+			builder.append(LSystem.LS);
+			Json.Array arrays = (Json.Array) data;
+			for (int i = 0; i < arrays.length(); i++) {
+				builder.append(jsonToTypeXml(null, arrays.getObject(i)));
+			}
+			builder.append(LSystem.LS);
+			builder.append("</array>");
+			return builder.toString();
+		} else if (data instanceof Json.Object) {
+			StrBuilder builder = new StrBuilder("<objects" + nameValue + ">");
+			builder.append(LSystem.LS);
+			Json.Object objects = ((Json.Object) data);
+			Json.TypedArray<String> keys = objects.keys();
+			for (Iterator<String> it = keys.iterator(); it.hasNext();) {
+				String key = it.next();
+				if (objects.isArray(key)) {
+					builder.append(jsonToTypeXml(key, (Json.Array) objects.getArray(key)));
+				} else if (objects.isString(key)) {
+					builder.append(jsonToTypeXml(key, objects.getString(key)));
+				} else if (objects.isBoolean(key)) {
+					builder.append(jsonToTypeXml(key, objects.getBoolean(key)));
+				} else if (objects.isNumber(key)) {
+					builder.append(jsonToTypeXml(key, objects.getNumber(key)));
+				} else {
+					builder.append(jsonToTypeXml(key, objects.getObject(key)));
+				}
+			}
+			builder.append("</objects>");
+			return builder.toString();
+		} else if (data instanceof Object) {
+			return "<object" + nameValue + ">" + data + "</object>";
+		} else if (data == null) {
+			return "<" + nameValue.trim() + "/>";
+		} else {
+			throw new LSysException("Data type " + data.getClass() + " not yet supported");
+		}
+	}
 
 	public static final int OPEN_TAG = 0;
 

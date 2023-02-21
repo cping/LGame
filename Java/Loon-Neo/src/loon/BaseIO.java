@@ -76,7 +76,6 @@ public abstract class BaseIO extends DefUI {
 		return LSystem.loadTexture(path, config);
 	}
 
-	
 	public final static Image loadImage(String path) {
 		return loadImage(path, true);
 	}
@@ -201,6 +200,29 @@ public abstract class BaseIO extends DefUI {
 		final LGame base = LSystem.base();
 		if (base != null) {
 			return base.assets().getRemoteImage(url, w, h);
+		}
+		return null;
+	}
+
+	public final static Object loadJsonObject(String path) {
+		return loadJsonObjectContext(loadText(path));
+	}
+
+	public final static Object loadJsonObjectContext(String text) {
+		if (StringUtils.isEmpty(text)) {
+			return null;
+		}
+		final LGame base = LSystem.base();
+		if (base != null) {
+			try {
+				return base.json().parse(text);
+			} catch (Exception e) {
+				try {
+					return base.json().parseArray(text);
+				} catch (Exception ex) {
+					return null;
+				}
+			}
 		}
 		return null;
 	}
