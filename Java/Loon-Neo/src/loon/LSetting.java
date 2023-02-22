@@ -21,7 +21,9 @@
 package loon;
 
 import loon.font.IFont;
+import loon.utils.DPI;
 import loon.utils.NumberUtils;
+import loon.utils.Resolution;
 
 /**
  * LGame的基础配置类,游戏初始化属性由此产生
@@ -311,6 +313,10 @@ public class LSetting {
 			}
 		}
 		return this;
+	}
+
+	public DPI getDpi() {
+		return new Resolution(width, height).compareDPI(new Resolution(width_zoom, height_zoom));
 	}
 
 	public boolean scaling() {

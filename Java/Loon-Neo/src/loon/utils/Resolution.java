@@ -21,8 +21,33 @@
 package loon.utils;
 
 import loon.geom.RectI;
+import loon.geom.XYZW;
 
 public class Resolution implements Comparable<Resolution> {
+
+	private final static DPI compareDPI(Resolution source, Resolution target) {
+		if (source == null || target == null) {
+			return DPI.MDPI;
+		}
+		final float x = (float) target.getWidth() / (float) source.getWidth();
+		final float y = (float) target.getHeight() / (float) source.getHeight();
+		final float factor = MathUtils.min(x, y);
+		final DPI dpiv;
+		if (factor < 1f) {
+			dpiv = DPI.LDPI;
+		} else if (factor < 1.5f) {
+			dpiv = DPI.MDPI;
+		} else if (factor < 2f) {
+			dpiv = DPI.HDPI;
+		} else if (factor < 3f) {
+			dpiv = DPI.XHDPI;
+		} else if (factor < 4f) {
+			dpiv = DPI.XXHDPI;
+		} else {
+			dpiv = DPI.XXXHDPI;
+		}
+		return dpiv;
+	}
 
 	private static final Resolution[] resolutions4x3 = new Resolution[] { new Resolution(480, 320),
 			new Resolution(640, 480), new Resolution(800, 600), new Resolution(1024, 768), new Resolution(1152, 864),
@@ -40,6 +65,10 @@ public class Resolution implements Comparable<Resolution> {
 
 	public Resolution(int w, int h) {
 		rectangle = new RectI(w, h);
+	}
+
+	public Resolution(XYZW rect) {
+		this((int) rect.getZ(), (int) rect.getW());
 	}
 
 	public String matchMode() {
@@ -62,6 +91,18 @@ public class Resolution implements Comparable<Resolution> {
 			}
 		}
 		return "Mode [unknown] " + toString();
+	}
+
+	public int getWidth() {
+		return rectangle.getWidth();
+	}
+
+	public int getHeight() {
+		return rectangle.getHeight();
+	}
+
+	public DPI compareDPI(Resolution target) {
+		return compareDPI(this, target);
 	}
 
 	public RectI getRect() {

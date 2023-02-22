@@ -43,7 +43,9 @@ import loon.canvas.LColor;
 
 public final class NativeSupport {
 
-	private static HashSet<String> loadedLibraries = new HashSet<String>();
+	public static boolean isAllowLoonLoadLwjglLib = true;
+
+	private final static HashSet<String> loadedLibraries = new HashSet<String>();
 
 	private static String getProperty(final String propName) {
 		return System.getProperty(propName, "").toLowerCase();
@@ -86,28 +88,30 @@ public final class NativeSupport {
 		}
 		System.setProperty("org.lwjgl.input.Mouse.allowNegativeMouseCoords", "true");
 		if (!isInJavaWebStart()) {
-			File nativesDir = null;
-			try {
-				if (isWindows) {
-					nativesDir = export(is64Bit ? "lwjgl.dll" : "lwjgl32.dll", null).getParentFile();
-					export(is64Bit ? "OpenAL.dll" : "OpenAL32.dll", nativesDir.getName());
-					export(is64Bit ? "glfw.dll" : "glfw32.dll", nativesDir.getName());
-					export(is64Bit ? "jemalloc.dll" : "jemalloc32.dll", nativesDir.getName());
-				} else if (isMac) {
-					nativesDir = export("liblwjgl.dylib", null).getParentFile();
-					export("libglfw.dylib", nativesDir.getName());
-					export("libjemalloc.dylib", nativesDir.getName());
-					export("libopenal.dylib", nativesDir.getName());
-				} else if (isLinux || isFreeBSD) {
-					nativesDir = export(is64Bit ? "liblwjgl.so" : "liblwjgl32.so", null).getParentFile();
-					export(is64Bit ? "libglfw.so" : "libglfw32.so", nativesDir.getName());
-					export(is64Bit ? "libjemalloc.so" : "libjemalloc32.so", nativesDir.getName());
-					export(is64Bit ? "libopenal.so" : "libopenal32.so", nativesDir.getName());
+			if (isAllowLoonLoadLwjglLib) {
+				File nativesDir = null;
+				try {
+					if (isWindows) {
+						nativesDir = export(is64Bit ? "lwjgl.dll" : "lwjgl32.dll", null).getParentFile();
+						export(is64Bit ? "OpenAL.dll" : "OpenAL32.dll", nativesDir.getName());
+						export(is64Bit ? "glfw.dll" : "glfw32.dll", nativesDir.getName());
+						export(is64Bit ? "jemalloc.dll" : "jemalloc32.dll", nativesDir.getName());
+					} else if (isMac) {
+						nativesDir = export("liblwjgl.dylib", null).getParentFile();
+						export("libglfw.dylib", nativesDir.getName());
+						export("libjemalloc.dylib", nativesDir.getName());
+						export("libopenal.dylib", nativesDir.getName());
+					} else if (isLinux || isFreeBSD) {
+						nativesDir = export(is64Bit ? "liblwjgl.so" : "liblwjgl32.so", null).getParentFile();
+						export(is64Bit ? "libglfw.so" : "libglfw32.so", nativesDir.getName());
+						export(is64Bit ? "libjemalloc.so" : "libjemalloc32.so", nativesDir.getName());
+						export(is64Bit ? "libopenal.so" : "libopenal32.so", nativesDir.getName());
+					}
+				} catch (Throwable ex) {
+					throw new RuntimeException("Unable to extract LWJGL natives.", ex);
 				}
-			} catch (Throwable ex) {
-				throw new RuntimeException("Unable to extract LWJGL natives.", ex);
+				System.setProperty("org.lwjgl.librarypath", nativesDir.getAbsolutePath());
 			}
-			System.setProperty("org.lwjgl.librarypath", nativesDir.getAbsolutePath());
 			try {
 				loadJNI("lplus");
 				useLoonNative = true;
