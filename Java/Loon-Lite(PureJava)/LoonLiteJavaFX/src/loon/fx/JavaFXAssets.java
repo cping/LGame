@@ -1,5 +1,5 @@
 /**
- * Copyright 2008 - 2015 The Loon Game Engine Authors
+ * Copyright 2008 - 2019 The Loon Game Engine Authors
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -18,11 +18,8 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.lwjgl;
+package loon.fx;
 
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.awt.Font;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -35,10 +32,11 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.util.Arrays;
 
-import javax.imageio.ImageIO;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-
+import javafx.scene.SnapshotParameters;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.WritableImage;
+import javafx.scene.text.Font;
 import loon.Assets;
 import loon.LRelease;
 import loon.LSystem;
@@ -49,11 +47,11 @@ import loon.utils.MathUtils;
 import loon.utils.Scale;
 import loon.utils.StringUtils;
 
-public class Lwjgl3Assets extends Assets {
+public class JavaFXAssets extends Assets {
 
 	private final static String DEF_RES = "assets/";
 
-	public static interface JavaSEResource extends LRelease {
+	public static interface JavaFXResource extends LRelease {
 
 		InputStream getInputStream();
 
@@ -91,7 +89,7 @@ public class Lwjgl3Assets extends Assets {
 		}
 	}
 
-	public static class ClassRes extends DataRes implements JavaSEResource {
+	public static class ClassRes extends DataRes implements JavaFXResource {
 
 		private ClassLoader classLoader;
 
@@ -109,7 +107,7 @@ public class Lwjgl3Assets extends Assets {
 		public InputStream getInputStream() {
 			try {
 				if (classLoader == null) {
-					return (in = Lwjgl3Assets.classLoader.getResourceAsStream(path));
+					return (in = getMainClass().getResourceAsStream(path));
 				} else {
 					return (in = classLoader.getResourceAsStream(path));
 				}
@@ -165,7 +163,7 @@ public class Lwjgl3Assets extends Assets {
 
 	}
 
-	public static class FileRes extends DataRes implements JavaSEResource {
+	public static class FileRes extends DataRes implements JavaFXResource {
 
 		public FileRes(String path) {
 			this.path = path;
@@ -230,7 +228,7 @@ public class Lwjgl3Assets extends Assets {
 		}
 	}
 
-	public static class RemoteRes extends DataRes implements JavaSEResource {
+	public static class RemoteRes extends DataRes implements JavaFXResource {
 
 		public RemoteRes(String url) {
 			this.path = url;
@@ -291,7 +289,7 @@ public class Lwjgl3Assets extends Assets {
 		}
 	}
 
-	public static class SDRes extends DataRes implements JavaSEResource {
+	public static class SDRes extends DataRes implements JavaFXResource {
 
 		public SDRes(String path) {
 			path = StringUtils.replaceIgnoreCase(path, "\\", "/");
@@ -359,19 +357,19 @@ public class Lwjgl3Assets extends Assets {
 		}
 	}
 
-	public static JavaSEResource classRes(String path) {
+	public static JavaFXResource classRes(String path) {
 		return new ClassRes(path);
 	}
 
-	public static JavaSEResource fileRes(String path) {
+	public static JavaFXResource fileRes(String path) {
 		return new FileRes(path);
 	}
 
-	public static JavaSEResource remoteRes(String path) {
+	public static JavaFXResource remoteRes(String path) {
 		return new RemoteRes(path);
 	}
 
-	public static JavaSEResource sdRes(String path) {
+	public static JavaFXResource sdRes(String path) {
 		return new SDRes(path);
 	}
 
@@ -385,7 +383,7 @@ public class Lwjgl3Assets extends Assets {
 				if (file.exists()) {
 					return new FileInputStream(file);
 				} else {
-					return classLoader.getResourceAsStream(path);
+					return getMainClass().getResourceAsStream(path);
 				}
 			}
 		} catch (Throwable t) {
@@ -415,15 +413,15 @@ public class Lwjgl3Assets extends Assets {
 		return in;
 	}
 
-	private final Lwjgl3Game game;
+	private final JavaFXGame game;
 	private File[] directories = {};
 
 	private Scale assetScale = null;
 
-	public Lwjgl3Assets(Lwjgl3Game game) {
+	public JavaFXAssets(JavaFXGame game) {
 		super(game.asyn());
 		this.game = game;
-		Lwjgl3Assets.pathPrefix = "assets/";
+		JavaFXAssets.pathPrefix = "assets/";
 	}
 
 	public void addDirectory(File dir) {
@@ -439,12 +437,14 @@ public class Lwjgl3Assets extends Assets {
 
 	@Override
 	public Image getRemoteImage(final String url, int width, int height) {
-		final Lwjgl3Image image = new Lwjgl3Image(game, true, width, height, url);
+		final JavaFXImage image = new JavaFXImage(game, true, width, height, url);
 		asyn.invokeAsync(new Runnable() {
 			public void run() {
 				try {
-					BufferedImage bmp = ImageIO.read(new URL(url));
-					image.succeed(new ImageImpl.Data(Scale.ONE, bmp, bmp.getWidth(), bmp.getHeight()));
+					javafx.scene.image.Image bmp = new javafx.scene.image.Image(new URL(url).openStream());
+					WritableImage img = new WritableImage(bmp.getPixelReader(), (int) bmp.getWidth(),
+							(int) bmp.getHeight());
+					image.succeed(new ImageImpl.Data(Scale.ONE, img, (int) img.getWidth(), (int) img.getHeight()));
 				} catch (Exception error) {
 					image.fail(error);
 				}
@@ -473,11 +473,11 @@ public class Lwjgl3Assets extends Assets {
 		return requireResource(path).readBytes();
 	}
 
-	private static Lwjgl3Audio _audio;
+	private static JavaFXAudio _audio;
 
 	protected Sound getSound(String path, boolean music) {
 		if (_audio == null) {
-			_audio = new Lwjgl3Audio();
+			_audio = new JavaFXAudio();
 		}
 		Exception err = null;
 		String ext = LSystem.getExtension(path);
@@ -502,30 +502,30 @@ public class Lwjgl3Assets extends Assets {
 		return new Sound.Error(err);
 	}
 
-	static ClassLoader classLoader;
-
-	static {
-		try {
-			classLoader = Lwjgl3Assets.class.getClassLoader();
-		} catch (Exception e) {
-			classLoader = Thread.currentThread().getContextClassLoader();
-		}
+	private final static Class<?> getMainClass() {
+		return LSystem.base() == null ? JavaFXApplication.class : LSystem.base().setting.mainClass;
 	}
 
 	protected Resource requireResource(final String path) throws IOException {
 		String serachPath = getPath(path);
-		URL url = classLoader.getResource(serachPath);
+		URL url = getMainClass().getResource(serachPath);
 		if (url == null && !path.startsWith("/")) {
 			serachPath = "/" + getPath(path);
-			url = classLoader.getResource(serachPath);
+			url = getMainClass().getResource(serachPath);
 		}
 		if (url == null && !path.startsWith("\\")) {
 			serachPath = "\\" + getPath(path);
-			url = classLoader.getResource(serachPath);
+			url = getMainClass().getResource(serachPath);
 		}
 		if (url == null) {
 			serachPath = getPath(path);
-			url = getClass().getResource(serachPath);
+			final int idx = serachPath.indexOf(pathPrefix);
+			final int len = pathPrefix.length();
+			serachPath = serachPath.substring(idx + len, serachPath.length());
+			url = getMainClass().getResource("/" + serachPath);
+			if (url == null) {
+				getMainClass().getResource("\\" + serachPath);
+			}
 		}
 		if (url != null) {
 			boolean isFile = url.getProtocol().equals("file");
@@ -593,14 +593,15 @@ public class Lwjgl3Assets extends Assets {
 		}
 	}
 
-	protected BufferedImage scaleImage(BufferedImage image, float viewImageRatio) {
-		int swidth = MathUtils.iceil(viewImageRatio * image.getWidth());
-		int sheight = MathUtils.iceil(viewImageRatio * image.getHeight());
-		BufferedImage scaled = new BufferedImage(swidth, sheight, BufferedImage.TYPE_INT_ARGB_PRE);
-		Graphics2D gfx = scaled.createGraphics();
-		gfx.drawImage(image.getScaledInstance(swidth, sheight, java.awt.Image.SCALE_SMOOTH), 0, 0, null);
-		gfx.dispose();
-		return scaled;
+	protected WritableImage scaleImage(WritableImage image, float viewImageRatio) {
+		int swidth = MathUtils.iceil(viewImageRatio * (float) image.getWidth());
+		int sheight = MathUtils.iceil(viewImageRatio * (float) image.getHeight());
+		Canvas canvas = new Canvas(image.getWidth(), image.getHeight());
+		GraphicsContext context = canvas.getGraphicsContext2D();
+		context.drawImage(image, 0, 0, swidth, sheight);
+		WritableImage temp = new WritableImage(swidth, sheight);
+		canvas.snapshot(new SnapshotParameters(), temp);
+		return temp;
 	}
 
 	protected Scale assetScale() {
@@ -608,16 +609,13 @@ public class Lwjgl3Assets extends Assets {
 	}
 
 	abstract static class Resource {
-		public abstract BufferedImage readImage() throws IOException;
+
+		public abstract WritableImage readImage() throws IOException;
 
 		public abstract InputStream openStream() throws IOException;
 
-		public AudioInputStream openAudioStream() throws Exception {
-			return AudioSystem.getAudioInputStream(openStream());
-		}
-
 		public Font createFont() throws Exception {
-			return Font.createFont(Font.TRUETYPE_FONT, openStream());
+			return new Font("Arial", 20);
 		}
 
 		public byte[] readBytes() throws IOException {
@@ -632,9 +630,9 @@ public class Lwjgl3Assets extends Assets {
 	protected static class URLResource extends Resource {
 		public final String url;
 
-		private Lwjgl3Assets assets;
+		private JavaFXAssets assets;
 
-		public URLResource(Lwjgl3Assets assets, String url) {
+		public URLResource(JavaFXAssets assets, String url) {
 			this.url = url;
 			this.assets = assets;
 		}
@@ -645,8 +643,11 @@ public class Lwjgl3Assets extends Assets {
 		}
 
 		@Override
-		public BufferedImage readImage() throws IOException {
-			return ImageIO.read(assets.strRes(url));
+		public WritableImage readImage() throws IOException {
+			javafx.scene.image.Image img = new javafx.scene.image.Image(assets.strRes(url));
+			WritableImage newImage = new WritableImage(img.getPixelReader(), (int) img.getWidth(),
+					(int) img.getHeight());
+			return newImage;
 		}
 	}
 
@@ -654,9 +655,9 @@ public class Lwjgl3Assets extends Assets {
 
 		public final File file;
 
-		private Lwjgl3Assets assets;
+		private JavaFXAssets assets;
 
-		public FileResource(Lwjgl3Assets assets, File file) {
+		public FileResource(JavaFXAssets assets, File file) {
 			this.assets = assets;
 			this.file = file;
 		}
@@ -667,18 +668,16 @@ public class Lwjgl3Assets extends Assets {
 		}
 
 		@Override
-		public BufferedImage readImage() throws IOException {
-			return ImageIO.read(assets.strRes(file.getPath()));
-		}
-
-		@Override
-		public AudioInputStream openAudioStream() throws Exception {
-			return AudioSystem.getAudioInputStream(file);
+		public WritableImage readImage() throws IOException {
+			javafx.scene.image.Image img = new javafx.scene.image.Image(assets.strRes(file.getPath()));
+			WritableImage newImage = new WritableImage(img.getPixelReader(), (int) img.getWidth(),
+					(int) img.getHeight());
+			return newImage;
 		}
 
 		@Override
 		public Font createFont() throws Exception {
-			return Font.createFont(Font.TRUETYPE_FONT, file);
+			return new Font("Arial", 20);
 		}
 
 		@Override
@@ -702,21 +701,14 @@ public class Lwjgl3Assets extends Assets {
 		Exception error = null;
 		for (Scale.ScaledResource rsrc : assetScale().getScaledResources(path)) {
 			try {
-				BufferedImage image = requireResource(rsrc.path).readImage();
+				WritableImage image = requireResource(rsrc.path).readImage();
 				Scale viewScale = game.graphics().scale(), imageScale = rsrc.scale;
 				float viewImageRatio = viewScale.factor / imageScale.factor;
 				if (viewImageRatio < 1) {
 					image = scaleImage(image, viewImageRatio);
 					imageScale = viewScale;
 				}
-				if (game.setting.convertImagesOnLoad) {
-					BufferedImage convertedImage = Lwjgl3ImplGraphics.convertImage(image);
-					if (convertedImage != image) {
-						game.log().debug("Converted image: " + path + " [type=" + image.getType() + "]");
-						image = convertedImage;
-					}
-				}
-				return new ImageImpl.Data(imageScale, image, image.getWidth(), image.getHeight());
+				return new ImageImpl.Data(imageScale, image, (int) image.getWidth(), (int) image.getHeight());
 			} catch (FileNotFoundException ex) {
 				error = ex;
 			}
@@ -727,7 +719,7 @@ public class Lwjgl3Assets extends Assets {
 
 	@Override
 	protected ImageImpl createImage(boolean async, int rwid, int rhei, String source) {
-		return new Lwjgl3Image(game, async, rwid, rhei, source);
+		return new JavaFXImage(game, async, rwid, rhei, source);
 	}
 
 }

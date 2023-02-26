@@ -521,9 +521,21 @@ public class JavaSEAssets extends Assets {
 		}
 	}
 
-	protected Resource requireResource(String path) throws IOException {
-		final String serachPath = getPath(path);
+	protected Resource requireResource(final String path) throws IOException {
+		String serachPath = getPath(path);
 		URL url = classLoader.getResource(serachPath);
+		if (url == null && !path.startsWith("/")) {
+			serachPath = "/" + getPath(path);
+			url = classLoader.getResource(serachPath);
+		}
+		if (url == null && !path.startsWith("\\")) {
+			serachPath = "\\" + getPath(path);
+			url = classLoader.getResource(serachPath);
+		}
+		if (url == null) {
+			serachPath = getPath(path);
+			url = getClass().getResource(serachPath);
+		}
 		if (url != null) {
 			boolean isFile = url.getProtocol().equals("file");
 			if (isFile) {
