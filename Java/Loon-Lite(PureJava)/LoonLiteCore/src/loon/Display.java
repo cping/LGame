@@ -424,7 +424,7 @@ public class Display extends BaseIO implements LRelease {
 			// 如果存在屏幕录像设置
 			if (videoScreenToGif && !LSystem.PAUSED && gifEncoder != null) {
 				if (videoDelay.action(clock)) {
-					Image tmp = null;//GLUtils.getScreenshot();
+					Image tmp = GLUtils.getScreenshot();
 					Image image = null;
 					if (LSystem.isDesktop()) {
 						image = tmp;

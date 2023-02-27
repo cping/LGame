@@ -273,15 +273,11 @@ public abstract class Canvas implements LRelease {
 	public abstract Canvas strokeText(TextLayout text, float x, float y);
 
 	public LTexture toTexture() {
-		return toTexture(LTexture.Format.LINEAR);
-	}
-
-	public LTexture toTexture(LTexture.Format config) {
 		try {
 			if (this.isDirty) {
 				snapshot();
 			}
-			return image.createTexture(config);
+			return image.createTexture();
 		} finally {
 			close();
 		}

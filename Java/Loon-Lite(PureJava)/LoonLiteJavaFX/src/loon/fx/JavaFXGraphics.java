@@ -24,6 +24,7 @@ import javafx.scene.image.WritableImage;
 import loon.Graphics;
 import loon.LSetting;
 import loon.canvas.Canvas;
+import loon.canvas.Canvas.Composite;
 import loon.font.TextFormat;
 import loon.font.TextLayout;
 import loon.font.TextWrap;

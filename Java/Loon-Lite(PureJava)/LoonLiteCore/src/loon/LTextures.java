@@ -20,9 +20,6 @@
  */
 package loon;
 
-import loon.LTexture.Format;
-import loon.canvas.NinePatchAbstract.Repeat;
-
 public class LTextures {
 
 	public static boolean contains(int id) {
@@ -33,16 +30,12 @@ public class LTextures {
 		return LSystem.getTextureMemSize();
 	}
 
-	public static LTexture createTexture(int width, int height, Format config) {
-		return LSystem.createTexture(width, height, config);
+	public static LTexture createTexture(int width, int height) {
+		return LSystem.createTexture(width, height);
 	}
 
 	public static LTexture newTexture(String path) {
 		return LSystem.newTexture(path);
-	}
-
-	public static LTexture newTexture(String path, Format config) {
-		return LSystem.newTexture(path, config);
 	}
 
 	public static int count() {
@@ -55,10 +48,6 @@ public class LTextures {
 
 	public static int getRefCount(String fileName) {
 		return LSystem.getRefTextureCount(fileName);
-	}
-
-	public static LTexture loadTexture(String fileName, Format config) {
-		return LSystem.loadTexture(fileName, config);
 	}
 
 	public static LTexture loadTexture(String fileName) {

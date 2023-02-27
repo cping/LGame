@@ -26,7 +26,6 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.PlayerUtils;
 import loon.Screen;
-import loon.LTexture.Format;
 import loon.action.ActionBind;
 import loon.action.ActionTween;
 import loon.action.map.colider.TileImpl;
@@ -95,8 +94,6 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	private Vector2f offset = new Vector2f(0f, 0f);
 
-	private Format format;
-
 	private boolean active, dirty;
 
 	private boolean visible, roll;
@@ -108,45 +105,27 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	private float scaleX = 1f, scaleY = 1f;
 
 	public TileMap(String fileName, int tileWidth, int tileHeight) {
-		this(fileName, tileWidth, tileHeight, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), Format.LINEAR);
+		this(fileName, tileWidth, tileHeight, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 	}
 
 	public TileMap(String fileName, Screen screen, int tileWidth, int tileHeight) {
-		this(fileName, screen, tileWidth, tileHeight, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(),
-				Format.LINEAR);
+		this(fileName, screen, tileWidth, tileHeight, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 	}
 
 	public TileMap(String fileName, int tileWidth, int tileHeight, int mWidth, int mHeight) {
-		this(fileName, tileWidth, tileHeight, mWidth, mHeight, Format.LINEAR);
+		this(TileMapConfig.loadAthwartArray(fileName), tileWidth, tileHeight, mWidth, mHeight);
 	}
 
 	public TileMap(String fileName, Screen screen, int tileWidth, int tileHeight, int mWidth, int mHeight) {
-		this(fileName, screen, tileWidth, tileHeight, mWidth, mHeight, Format.LINEAR);
-	}
-
-	public TileMap(String fileName, int tileWidth, int tileHeight, int mWidth, int mHeight, Format format) {
-		this(TileMapConfig.loadAthwartArray(fileName), tileWidth, tileHeight, mWidth, mHeight, format);
-	}
-
-	public TileMap(String fileName, Screen screen, int tileWidth, int tileHeight, int mWidth, int mHeight,
-			Format format) {
-		this(TileMapConfig.loadAthwartArray(fileName), screen, tileWidth, tileHeight, mWidth, mHeight, format);
-	}
-
-	public TileMap(int[][] maps, int tileWidth, int tileHeight, int mWidth, int mHeight, Format format) {
-		this(new Field2D(maps, tileWidth, tileHeight), mWidth, mHeight, format);
-	}
-
-	public TileMap(int[][] maps, Screen screen, int tileWidth, int tileHeight, int mWidth, int mHeight, Format format) {
-		this(new Field2D(maps, tileWidth, tileHeight), screen, mWidth, mHeight, format);
+		this(TileMapConfig.loadAthwartArray(fileName), screen, tileWidth, tileHeight, mWidth, mHeight);
 	}
 
 	public TileMap(int[][] maps, int tileWidth, int tileHeight, int mWidth, int mHeight) {
-		this(maps, tileWidth, tileHeight, mWidth, mHeight, Format.LINEAR);
+		this(new Field2D(maps, tileWidth, tileHeight), mWidth, mHeight);
 	}
 
 	public TileMap(int[][] maps, Screen screen, int tileWidth, int tileHeight, int mWidth, int mHeight) {
-		this(maps, screen, tileWidth, tileHeight, mWidth, mHeight, Format.LINEAR);
+		this(new Field2D(maps, tileWidth, tileHeight), screen, mWidth, mHeight);
 	}
 
 	public TileMap(int[][] maps, int tileWidth, int tileHeight) {
@@ -158,26 +137,18 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	}
 
 	public TileMap(Field2D field2d) {
-		this(field2d, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), Format.LINEAR);
+		this(field2d, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 	}
 
 	public TileMap(Field2D field2d, Screen screen) {
-		this(field2d, screen, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), Format.LINEAR);
+		this(field2d, screen, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 	}
 
-	public TileMap(Field2D field2d, Format format) {
-		this(field2d, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), format);
+	public TileMap(Field2D field2d, int mWidth, int mHeight) {
+		this(field2d, null, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 	}
 
-	public TileMap(Field2D field2d, Screen screen, Format format) {
-		this(field2d, screen, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), format);
-	}
-
-	public TileMap(Field2D field2d, int mWidth, int mHeight, Format format) {
-		this(field2d, null, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), format);
-	}
-
-	public TileMap(Field2D field2d, Screen screen, int mWidth, int mHeight, Format format) {
+	public TileMap(Field2D field2d, Screen screen, int mWidth, int mHeight) {
 		this.field2d = field2d;
 		if (field2d != null && mWidth == -1 && mHeight == -1) {
 			this.maxWidth = field2d.getViewWidth();
@@ -192,7 +163,6 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 			this.offset = field2d.getOffset();
 		}
 		this.texturePack = new LTexturePack();
-		this.format = format;
 		this.lastOffsetX = -1;
 		this.lastOffsetY = -1;
 		this.active = true;
@@ -200,7 +170,6 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		this.visible = true;
 		this._mapSprites = new Sprites("TileMapSprites", screen == null ? LSystem.getProcess().getScreen() : screen,
 				maxWidth, maxHeight);
-		this.texturePack.setFormat(format);
 	}
 
 	public static TileMap loadCharsMap(String resName, int tileWidth, int tileHeight) {
@@ -213,7 +182,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 			texturePack = null;
 		}
 		texturePack = new LTexturePack(fileName, LTexturePackClip.getTextureSplit(fileName, tileWidth, tileHeight));
-		texturePack.packed(format);
+		texturePack.packed();
 		return this;
 	}
 
@@ -229,7 +198,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		this.active = false;
 		this.dirty = true;
 		texturePack = new LTexturePack(fileName, clips);
-		texturePack.packed(format);
+		texturePack.packed();
 		return this;
 	}
 
@@ -241,7 +210,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		this.active = false;
 		this.dirty = true;
 		texturePack = new LTexturePack(file);
-		texturePack.packed(format);
+		texturePack.packed();
 		return this;
 	}
 
@@ -384,7 +353,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	public TileMap completed() {
 		if (texturePack != null) {
 			if (!texturePack.isPacked()) {
-				texturePack.packed(format);
+				texturePack.packed();
 			}
 			int[] list = texturePack.getIdList();
 			active = true;
@@ -395,10 +364,6 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 			}
 		}
 		return this;
-	}
-
-	public Format getFormat() {
-		return format;
 	}
 
 	public TileMap replaceType(int oldid, int newid) {

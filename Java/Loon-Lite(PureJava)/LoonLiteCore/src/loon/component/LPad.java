@@ -22,7 +22,6 @@ package loon.component;
 
 import loon.LSystem;
 import loon.LTexture;
-import loon.LTexture.Format;
 import loon.action.map.Config;
 import loon.events.ActionKey;
 import loon.events.SysTouch;
@@ -102,7 +101,6 @@ public class LPad extends LComponent {
 		this.centerY = (baseHeight - dotHeight) / 2f + offsetY;
 		this.scale_pad = scale;
 		this.lockedKey = new ActionKey();
-		p.setFormat(Format.LINEAR);
 	}
 
 	public float getScale() {

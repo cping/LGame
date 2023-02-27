@@ -21,6 +21,7 @@
 package loon.fx;
 
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.effect.BlendMode;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.effect.Light;
 import javafx.scene.effect.Lighting;
@@ -29,6 +30,7 @@ import loon.LSysException;
 import loon.LTexture;
 import loon.canvas.Canvas;
 import loon.canvas.Image;
+import loon.canvas.LColor;
 import loon.geom.Affine2f;
 import loon.opengl.Mesh;
 import loon.opengl.MeshData;
@@ -292,24 +294,29 @@ public class JavaFXMesh implements Mesh {
 			float right, float bottom, float sl, float st, float sr, float sb) {
 		LTexture texture = mesh.texture;
 		Image img = texture.getSourceImage();
+
 		if (img != null) {
 
 			int r = (tint & 0x00FF0000) >> 16;
 			int g = (tint & 0x0000FF00) >> 8;
 			int b = (tint & 0x000000FF);
 			int a = (tint & 0xFF000000) >> 24;
+
 			if (a < 0) {
 				a += 256;
 			}
-			if (a > 0) {
+			if (a == 0) {
 				a = 255;
 			}
-			Color paint = Color.rgb(r, g, b, (float) a / 255f);
-			// context.save();
-			context.setFill(paint);
-			context.setStroke(paint);
+
+			final Color paint = Color.rgb(r, g, b);
+			final double tmp = context.getGlobalAlpha();
+			final float alpha = (float) a / 255f;
+			if (alpha != 1f) {
+				context.setGlobalAlpha(alpha);
+			}
 			context.setTransform(m00, m01, m10, m11, tx, ty);
-			if (!texture.isChild()) {
+			if (!texture.isChild() && sl == 0f && st == 0f && sr == 1f && sb == 1f) {
 				context.drawImage(((JavaFXImage) img).buffer, left, top, (right - left), (bottom - top));
 			} else {
 				float textureWidth = texture.getDisplayWidth();
@@ -332,6 +339,9 @@ public class JavaFXMesh implements Mesh {
 				}
 				context.drawImage(((JavaFXImage) img).buffer, dstX, dstY, dstWidth - dstX, dstHeight - dstY, left, top,
 						(right - left), (bottom - top));
+			}
+			if (alpha != 1f) {
+				context.setGlobalAlpha(tmp);
 			}
 		}
 	}

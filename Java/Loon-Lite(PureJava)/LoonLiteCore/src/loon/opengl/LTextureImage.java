@@ -9,8 +9,7 @@ public class LTextureImage extends GLEx {
 
 	public LTextureImage(Graphics gfx, BaseBatch defaultBatch, float width,
 			float height) {
-		this(gfx, defaultBatch, gfx.createTexture(width, height,
-				LTexture.Format.LINEAR));
+		this(gfx, defaultBatch, gfx.createTexture(width, height));
 	}
 
 	public LTextureImage(Graphics gfx, BaseBatch defaultBatch,

@@ -8,6 +8,7 @@ module loon.core {
 	exports loon.action.map;
 	exports loon.action.map.colider;
 	exports loon.action.map.heuristics;
+	exports loon.action.map.items;
 	exports loon.action.map.tmx.objects;
 	exports loon.action.map.tmx.renderers;
 	exports loon.action.map.tmx.tiles;
@@ -31,6 +32,8 @@ module loon.core {
 	exports loon.utils.qrcode;
 	exports loon.utils.reply;
 	exports loon.utils.res;
+	exports loon.utils.res.loaders;
 	exports loon.utils.timer;
+	exports loon.utils.parse;
 	exports loon.utils.xml;
 }

@@ -35,9 +35,9 @@ import loon.utils.reply.UnitPort;
 public abstract class Graphics {
 
 	protected Canvas defaultRenderTarget;
-	
+
 	protected final Counter amount;
-	
+
 	protected boolean flipScreen;
 
 	protected final LGame game;
@@ -65,7 +65,7 @@ public abstract class Graphics {
 		display = game.display();
 		return display.GL().tx();
 	}
-	
+
 	public Matrix4 getViewMatrix() {
 		display = game.display();
 		Dimension view = LSystem.viewSize;
@@ -88,20 +88,20 @@ public abstract class Graphics {
 	public void restore() {
 		viewMatrix = matrixsStack.pop();
 	}
-	
-	public int width(){
+
+	public int width() {
 		return screenSize().getWidth();
 	}
 
-	public int height(){
+	public int height() {
 		return screenSize().getHeight();
 	}
 
 	public void setFlip(boolean flip) {
 		this.flipScreen = flip;
 	}
-	
-	public boolean flip(){
+
+	public boolean flip() {
 		return this.flipScreen;
 	}
 
@@ -115,18 +115,18 @@ public abstract class Graphics {
 		return createCanvas(size.width, size.height);
 	}
 
-	public LTexture createTexture(float width, float height, LTexture.Format config) {
+	public LTexture createTexture(float width, float height) {
 		int texWidth = scale.scaledCeil(width);
 		int texHeight = scale.scaledCeil(height);
 		if (texWidth <= 0 || texHeight <= 0) {
 			throw new LSysException("Invalid texture size: " + texWidth + "x" + texHeight);
 		}
-		int id = createTexture(config);
-		return new LTexture(this, id, config, texWidth, texHeight, scale, width, height);
+		int id = createTexture();
+		return new LTexture(this, id, texWidth, texHeight, scale, width, height);
 	}
 
-	public LTexture createTexture(Dimension size, LTexture.Format config) {
-		return createTexture(size.width, size.height, config);
+	public LTexture createTexture(Dimension size) {
+		return createTexture(size.width, size.height);
 	}
 
 	public abstract TextLayout layoutText(String text, TextFormat format);
@@ -156,7 +156,7 @@ public abstract class Graphics {
 		if (colorTex == null) {
 			Canvas canvas = createCanvas(1, 1);
 			canvas.setFillColor(0xFFFFFFFF).fillRect(0, 0, canvas.width, canvas.height);
-			colorTex = canvas.toTexture(LTexture.Format.NEAREST);
+			colorTex = canvas.toTexture();
 			colorTex.setDisabledTexture(true);
 		}
 		return colorTex;
@@ -210,17 +210,17 @@ public abstract class Graphics {
 		}
 	}
 
-	public int createTexture(LTexture.Format config) {
-		return createTexture(config, 0);
+	public int createTexture() {
+		return createTexture(0);
 	}
 
-	public int createTexture(LTexture.Format config, int count) {
+	public int createTexture(int count) {
 		int id = amount.increment() + count;
 		if (LSystem.containsTexture(id)) {
-			return createTexture(config, 1);
+			return createTexture(1);
 		}
 		if (GLUtils.getCurrentHardwareTextureID() == id) {
-			return createTexture(config, 1);
+			return createTexture(1);
 		}
 		GLUtils.bindTexture(id);
 		return id;

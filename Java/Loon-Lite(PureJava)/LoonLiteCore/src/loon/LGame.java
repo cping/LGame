@@ -20,7 +20,6 @@
  */
 package loon;
 
-import loon.LTexture.Format;
 import loon.action.sprite.Sprites;
 import loon.canvas.Canvas;
 import loon.component.Desktop;
@@ -700,46 +699,33 @@ public abstract class LGame implements LRelease {
 	 * 
 	 * @param width
 	 * @param height
-	 * @param config
 	 * @return
 	 */
-	public LTexture createTexture(int width, int height, Format config) {
-		return graphics().createTexture(width, height, config);
-	}
-
-	/**
-	 * 以指定位置图片创建一个新纹理
-	 * 
-	 * @param path
-	 * @return
-	 */
-	public LTexture newTexture(String path) {
-		return newTexture(path, Format.LINEAR);
+	public LTexture createTexture(int width, int height) {
+		return graphics().createTexture(width, height);
 	}
 
 	/**
 	 * 以指定位置图片和格式创建一个新纹理
 	 * 
 	 * @param path
-	 * @param config
 	 * @return
 	 */
-	public LTexture newTexture(String path, Format config) {
+	public LTexture newTexture(String path) {
 		if (StringUtils.isEmpty(path)) {
 			return null;
 		}
 		log().debug("Texture : New " + path + " Loaded");
-		return BaseIO.loadImage(path).createTexture(config);
+		return BaseIO.loadImage(path).createTexture();
 	}
 
 	/**
 	 * 从缓存加载一个指定文件名纹理为指定格式(存在缓存时会得到缓存图片)
 	 * 
 	 * @param fileName
-	 * @param config
 	 * @return
 	 */
-	public LTexture loadTexture(String fileName, Format config) {
+	public LTexture loadTexture(String fileName) {
 		if (StringUtils.isEmpty(fileName)) {
 			return null;
 		}
@@ -759,22 +745,12 @@ public abstract class LGame implements LRelease {
 				texture.refCount++;
 				return texture;
 			}
-			texture = BaseIO.loadImage(fileName).createTexture(config);
+			texture = BaseIO.loadImage(fileName).createTexture();
 			texture.tmpLazy = fileName;
 			_texture_lazys.put(key, texture);
 			log().debug("Texture : " + fileName + " Loaded");
 			return texture;
 		}
-	}
-
-	/**
-	 * 从缓存加载一个指定位置图片
-	 * 
-	 * @param fileName
-	 * @return
-	 */
-	public LTexture loadTexture(String fileName) {
-		return loadTexture(fileName, Format.LINEAR);
 	}
 
 	/**

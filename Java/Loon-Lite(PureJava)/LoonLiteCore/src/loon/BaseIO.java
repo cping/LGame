@@ -20,7 +20,6 @@
  */
 package loon;
 
-import loon.LTexture.Format;
 import loon.canvas.Image;
 import loon.canvas.TGA;
 import loon.component.DefUI;
@@ -64,16 +63,8 @@ public abstract class BaseIO extends DefUI {
 		return LSystem.newTexture(path);
 	}
 
-	public final static LTexture newTexture(String path, Format config) {
-		return LSystem.newTexture(path, config);
-	}
-
 	public final static LTexture loadTexture(String path) {
 		return LSystem.loadTexture(path);
-	}
-
-	public final static LTexture loadTexture(String path, Format config) {
-		return LSystem.loadTexture(path, config);
 	}
 
 	public final static Image loadImage(String path) {

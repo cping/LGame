@@ -53,7 +53,7 @@ public class CanvasPlayer extends Entity {
 	public CanvasPlayer(Graphics gfx, Canvas canvas) {
 		this.gfx = gfx;
 		this.canvas = canvas;
-		setTexture(canvas.getImage().createTexture(LTexture.Format.DEFAULT));
+		setTexture(canvas.getImage().createTexture());
 	}
 
 	public CanvasPlayer resize(float width, float height) {

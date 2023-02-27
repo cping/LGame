@@ -20,10 +20,8 @@
  */
 package loon;
 
-import loon.LTexture.Format;
 import loon.Log.Level;
 import loon.action.sprite.Sprites;
-import loon.canvas.NinePatchAbstract.Repeat;
 import loon.component.Desktop;
 import loon.events.KeyMake;
 import loon.events.SysInput;
@@ -36,7 +34,6 @@ import loon.opengl.LSTRFont;
 import loon.opengl.Mesh;
 import loon.utils.NumberUtils;
 import loon.utils.Scale;
-import loon.utils.TArray;
 import loon.utils.json.JsonImpl;
 import loon.utils.reply.Act;
 
@@ -613,6 +610,18 @@ public class LSystem {
 		return extension.equals("mp3") || extension.equals("ogg") || extension.equals("wav") || extension.equals("mid");
 	}
 
+	public static String getNotExtension(String name) {
+		if (name == null) {
+			return LSystem.EMPTY;
+		}
+		int index = name.lastIndexOf(".");
+		if (index == -1) {
+			return name;
+		} else {
+			return name.substring(0, index);
+		}
+	}
+	
 	public static final void stopRepaint() {
 		LSystem._auto_repaint = false;
 	}
@@ -758,9 +767,9 @@ public class LSystem {
 		return 0;
 	}
 
-	public static final LTexture createTexture(int width, int height, Format config) {
+	public static final LTexture createTexture(int width, int height) {
 		if (base() != null) {
-			return base().createTexture(width, height, config);
+			return base().createTexture(width, height);
 		}
 		return null;
 	}
@@ -768,20 +777,6 @@ public class LSystem {
 	public static final LTexture newTexture(String path) {
 		if (base() != null) {
 			return base().newTexture(path);
-		}
-		return null;
-	}
-
-	public static final LTexture newTexture(String path, Format config) {
-		if (base() != null) {
-			return base().newTexture(path, config);
-		}
-		return null;
-	}
-
-	public static final LTexture loadTexture(String fileName, Format config) {
-		if (base() != null) {
-			return base().loadTexture(fileName, config);
 		}
 		return null;
 	}

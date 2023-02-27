@@ -24,7 +24,6 @@ import loon.BaseIO;
 import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
-import loon.LTexture.Format;
 import loon.canvas.Canvas;
 import loon.canvas.Image;
 import loon.canvas.LColor;
@@ -32,12 +31,7 @@ import loon.canvas.LColor;
 public class TextureUtils {
 
 	public static LTexture filterGray(String res) {
-		return filterGray(res, Format.LINEAR);
-	}
-
-	public static LTexture filterGray(String res, Format cofing) {
 		Image tmp = BaseIO.loadImage(res).cpy(true);
-		tmp.setFormat(cofing);
 		int[] pixels = LSystem.base().support()
 				.toGray(tmp.getPixels(), (int) tmp.width(), (int) tmp.height());
 		tmp.setPixels(pixels, (int) tmp.width(), (int) tmp.height());
@@ -47,14 +41,9 @@ public class TextureUtils {
 	}
 
 	public static LTexture filterColor(String res, LColor col) {
-		return TextureUtils.filterColor(res, col, Format.DEFAULT);
-	}
-
-	public static LTexture filterColor(String res, LColor col, Format format) {
 		Image tmp = BaseIO.loadImage(res).cpy(true);
 		int[] pixels = LSystem.base().support()
 				.toColorKey(tmp.getPixels(), col.getRGB());
-		tmp.setFormat(format);
 		tmp.setPixels(pixels, (int) tmp.width(), (int) tmp.height());
 		LTexture texture = tmp.texture();
 		pixels = null;
@@ -62,31 +51,20 @@ public class TextureUtils {
 	}
 
 	public static LTexture filterColor(String res, int[] colors) {
-		return TextureUtils.filterColor(res, colors, Format.DEFAULT);
-	}
-
-	public static LTexture filterColor(String res, int[] colors, Format format) {
 		Image tmp = BaseIO.loadImage(res).cpy(true);
 		int[] pixels = LSystem.base().support()
 				.toColorKeys(tmp.getPixels(), colors);
-		tmp.setFormat(format);
 		tmp.setPixels(pixels, (int) tmp.width(), (int) tmp.height());
 		LTexture texture = tmp.texture();
 		pixels = null;
 		return texture;
 	}
 
-	public static LTexture filterLimitColor(String res, LColor start, LColor end) {
-		return TextureUtils.filterLimitColor(res, start, end, Format.DEFAULT);
-	}
-
 	public static LTexture filterLimitColor(String res, LColor start,
-			LColor end, Format format) {
+			LColor end) {
 		Image tmp = BaseIO.loadImage(res).cpy(true);
 		int[] pixels = LSystem.base().support()
 				.toColorKeyLimit(tmp.getPixels(), start.getRGB(), end.getRGB());
-
-		tmp.setFormat(format);
 		tmp.setPixels(pixels, (int) tmp.width(), (int) tmp.height());
 		LTexture texture = tmp.texture();
 		pixels = null;

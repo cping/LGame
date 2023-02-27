@@ -26,7 +26,6 @@ import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
 import loon.LTextureBatch;
-import loon.LTexture.Format;
 import loon.canvas.Canvas;
 import loon.canvas.Image;
 import loon.canvas.LColor;
@@ -62,8 +61,6 @@ public class LTexturePack implements LRelease {
 	protected boolean useAlpha, packed, packing;
 
 	private String fileName, name;
-
-	private Format format = Format.DEFAULT;
 
 	public LTexture getTexture(String name) {
 		this.pack();
@@ -375,10 +372,6 @@ public class LTexturePack implements LRelease {
 	}
 
 	public synchronized LTexture pack() {
-		return pack(format);
-	}
-
-	public synchronized LTexture pack(Format format) {
 		if (texture != null && !packing && !texture.isClosed()) {
 			return texture;
 		}
@@ -386,7 +379,7 @@ public class LTexturePack implements LRelease {
 			_glex = LSystem.base().display().GL();
 		}
 		if (fileName != null) {
-			texture = LSystem.loadTexture(fileName, format);
+			texture = LSystem.loadTexture(fileName);
 		} else {
 			Image image = packImage();
 			if (image == null) {
@@ -408,10 +401,6 @@ public class LTexturePack implements LRelease {
 				image.setPixels(pixels, (int) image.width(), (int) image.height());
 			}
 			texture = image.texture();
-			if (image != null) {
-				image.close();
-				image = null;
-			}
 		}
 		return texture;
 	}
@@ -753,17 +742,12 @@ public class LTexturePack implements LRelease {
 		}
 	}
 
-	public LTexturePack packed() {
-		this.packed(Format.DEFAULT);
-		return this;
-	}
-
 	public boolean isPacked() {
 		return packed;
 	}
 
-	public synchronized void packed(Format format) {
-		this.pack(format);
+	public synchronized void packed() {
+		this.pack();
 		this.packed = true;
 		this.free();
 	}
@@ -919,15 +903,6 @@ public class LTexturePack implements LRelease {
 		}
 		sbr.append("</pack>");
 		return sbr.toString();
-	}
-
-	public Format getFormat() {
-		return format;
-	}
-
-	public LTexturePack setFormat(Format format) {
-		this.format = format;
-		return this;
 	}
 
 	public LTexturePack setDisabledTexture(boolean d) {

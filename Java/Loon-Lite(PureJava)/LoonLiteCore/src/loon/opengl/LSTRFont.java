@@ -35,7 +35,6 @@ import loon.font.LFont;
 import loon.font.TextLayout;
 import loon.geom.Affine2f;
 import loon.geom.PointI;
-import loon.utils.GLUtils;
 import loon.utils.IntMap;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;

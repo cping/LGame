@@ -45,8 +45,6 @@ import loon.geom.RectBox;
 import loon.geom.RectF;
 import loon.geom.RectI;
 import loon.geom.Vector2f;
-import loon.utils.reply.Pair;
-import loon.utils.reply.Triple;
 import loon.utils.timer.Duration;
 import loon.utils.timer.Interval;
 

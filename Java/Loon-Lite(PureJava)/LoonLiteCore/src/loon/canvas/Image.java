@@ -133,21 +133,16 @@ public abstract class Image extends TextureSource implements Canvas.Drawable, LR
 
 	public abstract int pixelHeight();
 
-	public Image setFormat(LTexture.Format config) {
-		texconf = config;
-		return this;
-	}
-
 	public LTexture texture() {
 		if (texture == null || texture.disposed()) {
-			texture = createTexture(texconf);
+			texture = createTexture();
 		}
 		return texture;
 	}
 
 	public LTexture updateTexture() {
 		if (texture == null || texture.disposed()) {
-			texture = createTexture(texconf);
+			texture = createTexture();
 		} else {
 			texture.update(this);
 		}
@@ -163,7 +158,7 @@ public abstract class Image extends TextureSource implements Canvas.Drawable, LR
 		});
 	}
 
-	public LTexture createTexture(LTexture.Format config) {
+	public LTexture createTexture() {
 		if (!isLoaded()) {
 			throw new LSysException("Cannot create texture from unready image: " + this);
 		}
@@ -173,8 +168,9 @@ public abstract class Image extends TextureSource implements Canvas.Drawable, LR
 			throw new LSysException("Invalid texture size: " + texWidth + "x" + texHeight + " from: " + this);
 		}
 		this.isTexture = true;
-		LTexture tex = new LTexture(gfx, gfx.createTexture(config), config, texWidth, texHeight, scale(), width(),
+		LTexture tex = new LTexture(gfx, gfx.createTexture(), texWidth, texHeight, scale(), width(),
 				height());
+
 		tex.update(this);
 		return tex;
 	}
@@ -247,7 +243,6 @@ public abstract class Image extends TextureSource implements Canvas.Drawable, LR
 	}
 
 	protected final Graphics gfx;
-	protected LTexture.Format texconf = LTexture.Format.LINEAR;
 	protected LTexture texture;
 
 	protected Image(Graphics gfx, GoFuture<Image> state) {

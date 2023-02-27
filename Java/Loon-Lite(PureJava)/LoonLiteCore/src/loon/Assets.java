@@ -22,7 +22,6 @@ package loon;
 
 import loon.canvas.Image;
 import loon.canvas.ImageImpl;
-import loon.opengl.Mesh;
 import loon.utils.ArrayByte;
 import loon.utils.TArray;
 import loon.utils.reply.GoFuture;

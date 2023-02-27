@@ -103,7 +103,7 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 	public LSelect(IFont font, LTexture formImage, int x, int y, int width, int height, LColor _fontColor) {
 		super(x, y, width, height);
 		if (formImage == null) {
-			this.setBackground(LSystem.createTexture(width, height, LTexture.Format.LINEAR));
+			this.setBackground(LSystem.createTexture(width, height));
 			this.setAlpha(0.3F);
 		} else {
 			this.setBackground(formImage);

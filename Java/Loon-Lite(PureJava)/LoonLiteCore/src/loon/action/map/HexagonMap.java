@@ -25,7 +25,6 @@ import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
 import loon.PlayerUtils;
-import loon.LTexture.Format;
 import loon.Screen;
 import loon.action.ActionBind;
 import loon.action.ActionTween;
@@ -95,8 +94,6 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	private AStarFindHeuristic heuristic = null;
 
 	private SortedList<int[]> focuses;
-
-	private Format format = Format.LINEAR;
 
 	protected int cols, rows;
 
@@ -873,7 +870,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 			texturePack = null;
 		}
 		texturePack = new LTexturePack(fileName, LTexturePackClip.getTextureSplit(fileName, tileWidth, tileHeight));
-		texturePack.packed(format);
+		texturePack.packed();
 		return this;
 	}
 
@@ -883,7 +880,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 			texturePack = null;
 		}
 		texturePack = new LTexturePack(fileName, clips);
-		texturePack.packed(format);
+		texturePack.packed();
 		return this;
 	}
 
@@ -893,7 +890,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 			texturePack = null;
 		}
 		texturePack = new LTexturePack(file);
-		texturePack.packed(format);
+		texturePack.packed();
 		return this;
 	}
 
@@ -905,7 +902,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	public HexagonMap completed() {
 		if (texturePack != null) {
 			if (!texturePack.isPacked()) {
-				texturePack.packed(format);
+				texturePack.packed();
 			}
 			int[] list = texturePack.getIdList();
 			active = true;
@@ -916,14 +913,6 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 			}
 		}
 		return this;
-	}
-
-	public Format getFormat() {
-		return format;
-	}
-
-	public void setFormat(Format format) {
-		this.format = format;
 	}
 
 	public boolean isAllowDisplayPosition() {

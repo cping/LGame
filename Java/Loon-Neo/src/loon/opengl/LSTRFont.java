@@ -569,12 +569,6 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 		return displayList;
 	}
 
-	@Override
-	public void drawString(GLEx g, String chars, float x, float y, float sx, float sy, float ax, float ay,
-			float rotation, LColor c) {
-		drawString(chars, x, y, sx, sy, ax, ay, rotation, c);
-	}
-
 	public void drawString(String chars, float x, float y) {
 		drawString(x, y, 1f, 1f, 0, 0, 0, chars, LColor.white, 0, chars.length());
 	}
@@ -885,6 +879,12 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 	public void drawString(GLEx gl, float x, float y, float sx, float sy, float ax, float ay, float rotation,
 			String chars, LColor c) {
 		drawString(gl, x, y, sx, sy, ax, ay, rotation, chars, c, 0, chars.length());
+	}
+
+	@Override
+	public void drawString(GLEx gl, String chars, float x, float y, float sx, float sy, float ax, float ay,
+			float rotation, LColor c) {
+		drawString(gl, chars, x, y, sx, sy, ax, ay, rotation, c);
 	}
 
 	private void drawString(GLEx gl, float mx, float my, float sx, float sy, float ax, float ay, float rotation,

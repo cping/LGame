@@ -40,16 +40,10 @@ public abstract class BaseBatch extends LTextureBind {
 
 		setTexture(tex);
 
-		if (tex.getParent() == null) {
-			float u2 = tex.getFormat().repeatX ? w / tex.width() : tex.widthRatio();
-			float uv = tex.getFormat().repeatY ? h / tex.height() : tex.heightRatio();
-			addQuad(tint, xf, x, y, x + w, y + h, tex.xOff(), tex.yOff(), u2, uv);
-		} else {
-			LTexture forefather = LTexture.firstFather(tex);
-			float u2 = tex.getFormat().repeatX ? w / forefather.width() : tex.widthRatio();
-			float uv = tex.getFormat().repeatY ? h / forefather.height() : tex.heightRatio();
-			addQuad(tint, xf, x, y, x + w, y + h, tex.xOff(), tex.yOff(), u2, uv);
-		}
+		float u2 = tex.widthRatio();
+		float uv = tex.heightRatio();
+		addQuad(tint, xf, x, y, x + w, y + h, tex.xOff(), tex.yOff(), u2, uv);
+
 	}
 
 	public void addQuad(LTexture tex, int tint, Affine2f xf, float dx, float dy, float dw, float dh, float sx, float sy,
@@ -66,8 +60,8 @@ public abstract class BaseBatch extends LTextureBind {
 
 		setTexture(tex);
 		if (tex.getParent() == null) {
-			float displayWidth = tex.width();
-			float displayHeight = tex.height();
+			float displayWidth = tex.getDisplayWidth();
+			float displayHeight = tex.getDisplayHeight();
 			float xOff = ((sx / displayWidth) * tex.widthRatio()) + tex.xOff();
 			float yOff = ((sy / displayHeight) * tex.heightRatio()) + tex.yOff();
 			float widthRatio = ((sw / displayWidth) * tex.widthRatio()) + xOff;
@@ -75,8 +69,8 @@ public abstract class BaseBatch extends LTextureBind {
 			addQuad(tint, xf, dx, dy, dx + dw, dy + dh, xOff, yOff, widthRatio, heightRatio);
 		} else {
 			LTexture forefather = LTexture.firstFather(tex);
-			float displayWidth = forefather.width();
-			float displayHeight = forefather.height();
+			float displayWidth = forefather.getDisplayWidth();
+			float displayHeight = forefather.getDisplayHeight();
 			float xOff = ((sx / displayWidth) * forefather.widthRatio()) + forefather.xOff() + tex.xOff();
 			float yOff = ((sy / displayHeight) * forefather.heightRatio()) + forefather.yOff() + tex.yOff();
 			float widthRatio = ((sw / displayWidth) * forefather.widthRatio()) + xOff;

@@ -29,7 +29,7 @@ import loon.utils.TArray;
  */
 public class TileRoom {
 
-	class RoomLink {
+	public static class RoomLink {
 
 		private TileRoom _room;
 

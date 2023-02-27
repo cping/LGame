@@ -31,9 +31,17 @@ import loon.opengl.GLEx;
 
 public class TextCellRenderer implements ICellRenderer, FontSet<TextCellRenderer> {
 
-	private IFont font = LSystem.getSystemGameFont();
+	private IFont font;
 	private LColor textColor = LColor.white;
 	private Alignment alignment = Alignment.LEFT;
+
+	public TextCellRenderer(IFont font) {
+		this.font = font;
+	}
+
+	public TextCellRenderer() {
+		this(LSystem.getSystemGameFont());
+	}
 
 	@Override
 	public void paint(GLEx g, Object value, int x, int y, int width, int height) {
@@ -42,21 +50,17 @@ public class TextCellRenderer implements ICellRenderer, FontSet<TextCellRenderer
 			BindIcon icon = (BindIcon) value;
 			String s = icon.name;
 			s = font.confineLength(s, width - size - 4);
-			int entryOffset = 4 + alignment.alignX(width - 4,
-					font.stringWidth(s));
+			int entryOffset = 4 + alignment.alignX(width - 4, font.stringWidth(s));
 			if (icon.texture != null) {
-				g.draw(icon.texture, x + 4, y + (font.getHeight() - size) / 2,
-						size, size);
-				font.drawString(g, s, x + size + entryOffset + 4, y - 4,
-						textColor);
+				g.draw(icon.texture, x + 4, y + (font.getHeight() - size) / 2, size, size);
+				font.drawString(g, s, x + size + entryOffset + 4, y - 4, textColor);
 			} else {
 				font.drawString(g, s, x + entryOffset, y - 4, textColor);
 			}
 		} else {
 			String s = value.toString();
 			s = font.confineLength(s, width - 4);
-			int entryOffset = 4 + alignment.alignX(width - 4,
-					font.stringWidth(s));
+			int entryOffset = 4 + alignment.alignX(width - 4, font.stringWidth(s));
 			font.drawString(g, s, x + entryOffset, y - 4, textColor);
 		}
 	}
@@ -66,9 +70,9 @@ public class TextCellRenderer implements ICellRenderer, FontSet<TextCellRenderer
 		this.font = font;
 		return this;
 	}
-	
+
 	@Override
-	public IFont getFont(){
+	public IFont getFont() {
 		return this.font;
 	}
 

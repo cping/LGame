@@ -80,8 +80,6 @@ public class BMFont extends FontTrans implements IFont {
 
 	private IntMap<Display> displays;
 
-	private int lazyHashCode = 1;
-
 	private LTexture displayList;
 
 	private CharDef[] charArray;
@@ -127,14 +125,6 @@ public class BMFont extends FontTrans implements IFont {
 
 		public CharDef(BMFont font) {
 			this._bmFont = font;
-		}
-
-		public void draw(float x, float y, LColor c) {
-			if (_bmFont._isClose) {
-				return;
-			}
-			_bmFont.displayList.draw((x + xoffset) * _bmFont.fontScaleX, (y + yoffset) * _bmFont.fontScaleY,
-					width * _bmFont.fontScaleX, height * _bmFont.fontScaleY, tx, ty, tx + width, ty + height, c);
 		}
 
 		public void draw(GLEx g, float sx, float sy, float x, float y, LColor c) {
@@ -326,124 +316,6 @@ public class BMFont extends FontTrans implements IFont {
 		}
 
 		return def;
-	}
-
-	public void drawString(String text, float x, float y) {
-		drawString(text, x, y, null);
-	}
-
-	public void drawString(String text, float x, float y, LColor col) {
-		drawBatchString(text, x, y, col, 0, text.length());
-	}
-
-	private void drawBatchString(String msg, float tx, float ty, LColor c, int startIndex, int endIndex) {
-		if (_isClose) {
-			return;
-		}
-		if (StringUtils.isEmpty(msg)) {
-			return;
-		}
-		String newMessage = toMessage(msg);
-		if (checkEndIndexUpdate(endIndex, msg, newMessage)) {
-			endIndex = newMessage.length();
-		}
-		make();
-		if (displayList == null || displayList.isClosed()) {
-			this.displayList = BaseIO.loadTexture(_imagePath);
-			return;
-		}
-		if (_initDraw < 1) {
-			_initDraw++;
-			return;
-		}
-		if (displays.size > DEFAULT_MAX_CHAR) {
-			displays.clear();
-		}
-
-		lazyHashCode = 1;
-
-		if (c != null) {
-			lazyHashCode = LSystem.unite(lazyHashCode, c.r);
-			lazyHashCode = LSystem.unite(lazyHashCode, c.g);
-			lazyHashCode = LSystem.unite(lazyHashCode, c.b);
-			lazyHashCode = LSystem.unite(lazyHashCode, c.a);
-		}
-
-		int keyCode = 1;
-		keyCode = LSystem.unite(keyCode, newMessage.hashCode());
-		keyCode = LSystem.unite(keyCode, lazyHashCode);
-
-		Display display = displays.get(keyCode);
-
-		if (display == null) {
-
-			int x = 0, y = 0;
-
-			displayList.glBegin();
-			displayList.setBatchPos(tx + _offset.x, ty + _offset.y);
-
-			if (c != null) {
-				displayList.setImageColor(c);
-			}
-
-			CharDef lastCharDef = null;
-			for (int i = startIndex; i < endIndex; i++) {
-				char id = newMessage.charAt(i);
-				if (id == newRFlag) {
-					continue;
-				}
-				if (id == newLineFlag) {
-					x = 0;
-					y += lineHeight;
-					continue;
-				}
-				if (id == newSpaceFlag) {
-					x += advanceSpace;
-					continue;
-				}
-				if (id == newTabSpaceFlag) {
-					x += (advanceSpace * 3);
-					continue;
-				}
-				CharDef charDef = null;
-				if (id < totalCharSet) {
-					charDef = charArray[id];
-				} else {
-					charDef = customChars.get(id);
-				}
-				if (charDef == null) {
-					continue;
-				}
-				if (lastCharDef != null) {
-					x += lastCharDef.getKerning(id);
-				}
-
-				lastCharDef = charDef;
-				charDef.draw(x, y, c);
-				x += charDef.advance;
-			}
-
-			if (c != null) {
-				displayList.setImageColor(LColor.white);
-			}
-
-			displayList.glEnd();
-
-			display = new Display();
-
-			display.cache = displayList.newBatchCache();
-			display.text = newMessage;
-			display.width = 0;
-			display.height = 0;
-
-			displays.put(keyCode, display);
-
-		} else if (display.cache != null) {
-			display.cache.x = tx + _offset.x;
-			display.cache.y = ty + _offset.y;
-			displayList.postCache(display.cache);
-		}
-
 	}
 
 	@Override

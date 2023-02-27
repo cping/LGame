@@ -85,67 +85,12 @@ public class LTexture extends Painter implements LRelease {
 
 	protected int refCount;
 
-	public final static class Format {
-
-		public static Format NEAREST = new Format(true, false, false, 0, 0, false);
-
-		public static Format LINEAR = new Format(true, false, false, 0, 0, false);
-
-		public static Format UNMANAGED = new Format(false, false, false, 0, 0, false);
-
-		public static Format DEFAULT = LINEAR;
-
-		public final boolean managed;
-
-		public final boolean repeatX, repeatY;
-
-		public final int minFilter, magFilter;
-
-		public final boolean mipmaps;
-
-		public Format(boolean managed, boolean repeatX, boolean repeatY, int minFilter, int magFilter,
-				boolean mipmaps) {
-			this.managed = managed;
-			this.repeatX = repeatX;
-			this.repeatY = repeatY;
-			this.minFilter = minFilter;
-			this.magFilter = magFilter;
-			this.mipmaps = mipmaps;
-		}
-
-		public Format repeat(boolean repeatX, boolean repeatY) {
-			return new Format(managed, repeatX, repeatY, minFilter, magFilter, mipmaps);
-		}
-
-		public int toTexWidth(int sourceWidth) {
-			return (repeatX || mipmaps) ? GLUtils.nextPOT(sourceWidth) : sourceWidth;
-		}
-
-		public int toTexHeight(int sourceHeight) {
-			return (repeatY || mipmaps) ? GLUtils.nextPOT(sourceHeight) : sourceHeight;
-		}
-
-		@Override
-		public String toString() {
-			StringKeyValue builder = new StringKeyValue("Managed");
-			builder.kv("managed", managed).comma().kv("repeat", (repeatX ? "x" : "") + (repeatY ? "y" : "")).comma()
-					.kv("filter", (minFilter + "/" + magFilter)).comma().kv("mipmaps", mipmaps);
-			return builder.toString();
-		}
-	}
-
 	private int _id = -1;
 
 	private int _lazyHashCode = -1;
 
-	private Format config;
-
 	public int getID() {
 		return _id;
-	}
-
-	public Format getFormat() {
-		return config;
 	}
 
 	private int pixelWidth;
@@ -185,11 +130,10 @@ public class LTexture extends Painter implements LRelease {
 		this._isLoaded = false;
 	}
 
-	public LTexture(Graphics gfx, int _id, Format config, int pixWidth, int pixHeight, Scale scale, float dispWidth,
+	public LTexture(Graphics gfx, int _id, int pixWidth, int pixHeight, Scale scale, float dispWidth,
 			float dispHeight) {
 		this.gfx = gfx;
 		this._id = _id;
-		this.config = config;
 		this.pixelWidth = pixWidth;
 		this.pixelHeight = pixHeight;
 		this.scale = scale;
@@ -199,25 +143,13 @@ public class LTexture extends Painter implements LRelease {
 		_countTexture++;
 	}
 
-	public float toTexWidth() {
-		return config.toTexWidth(pixelWidth);
-	}
-
-	public float toTexHeight() {
-		return config.toTexHeight(pixelHeight);
-	}
-
 	public void reference() {
-		if (config.managed) {
-			refCount++;
-		}
+		refCount++;
 	}
 
 	public void release() {
-		if (config.managed) {
-			if (--refCount == 0) {
-				close(true);
-			}
+		if (--refCount == 0) {
+			close(true);
 		}
 	}
 
@@ -357,12 +289,13 @@ public class LTexture extends Painter implements LRelease {
 		if (image != null) {
 			imageWidth = image.getWidth();
 			imageHeight = image.getHeight();
+			if (_image == null) {
+				_image = image;
+			} else {
+				_image.draw(image, 0, 0, imageWidth, imageHeight);
+			}
 		}
-		if (config.mipmaps) {
-			_memorySize = imageWidth * imageHeight * 4 * (1 + 1 / 3);
-		} else {
-			_memorySize = imageWidth * imageHeight * 4;
-		}
+		_memorySize = imageWidth * imageHeight * 4;
 		_drawing = false;
 		if (updated) {
 			_isLoaded = true;
@@ -378,7 +311,12 @@ public class LTexture extends Painter implements LRelease {
 				}
 			}
 		}
-		_image = image;
+		if (_image == null) {
+			_image = image;
+		} else {
+			_image.draw(image, 0, 0, imageWidth, imageHeight);
+		}
+		
 	}
 
 	public void bind() {
@@ -466,10 +404,8 @@ public class LTexture extends Painter implements LRelease {
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("LTexture");
-		builder.kv("_id", _id).comma().kv("pixelSize", (pixelWidth + "x" + pixelHeight)).comma()
-				.kv("displaySize",
-						(_textureClip.getRegionWidth() + "x" + _textureClip.getRegionHeight() + " @ " + scale))
-				.comma().kv("config", config);
+		builder.kv("_id", _id).comma().kv("pixelSize", (pixelWidth + "x" + pixelHeight)).comma().kv("displaySize",
+				(_textureClip.getRegionWidth() + "x" + _textureClip.getRegionHeight() + " @ " + scale));
 		return builder.toString();
 	}
 
@@ -530,7 +466,6 @@ public class LTexture extends Painter implements LRelease {
 			copy._lazyHashCode = hashCode;
 			copy._isLoaded = _isLoaded;
 			copy.gfx = gfx;
-			copy.config = config;
 			copy.source = source;
 			copy.scale = scale;
 			copy.imageWidth = imageWidth;
@@ -587,7 +522,6 @@ public class LTexture extends Painter implements LRelease {
 			copy._lazyHashCode = hashCode;
 			copy._isLoaded = _isLoaded;
 			copy.gfx = gfx;
-			copy.config = config;
 			copy.source = source;
 			copy.scale = scale;
 			copy.imageWidth = imageWidth;
@@ -963,7 +897,7 @@ public class LTexture extends Painter implements LRelease {
 					&& this._textureClip.getRegionY() == tmp._textureClip.getRegionY()
 					&& this._textureClip.getRegionWidth() == tmp._textureClip.getRegionWidth()
 					&& this._textureClip.getRegionHeight() == tmp._textureClip.getRegionHeight()
-					&& this.config == tmp.config && this.parent == tmp.parent && this.pixelWidth == tmp.pixelWidth
+					&& this.parent == tmp.parent && this.pixelWidth == tmp.pixelWidth
 					&& this.pixelHeight == tmp.pixelHeight) {
 				if (_image != null && tmp._image != null) {
 					return CollectionUtils.equals(_image.getPixels(), tmp._image.getPixels());

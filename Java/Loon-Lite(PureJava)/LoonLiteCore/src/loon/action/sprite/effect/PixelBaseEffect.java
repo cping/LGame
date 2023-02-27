@@ -20,7 +20,6 @@
  */
 package loon.action.sprite.effect;
 
-import loon.LSystem;
 import loon.action.sprite.Entity;
 import loon.canvas.LColor;
 import loon.opengl.GLEx;

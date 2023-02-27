@@ -22,8 +22,6 @@ package loon.action.sprite.effect;
 
 import loon.LSystem;
 import loon.action.sprite.Entity;
-import loon.canvas.LColor;
-import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.opengl.LTexturePack;
 import loon.utils.MathUtils;

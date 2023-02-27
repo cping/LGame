@@ -15,16 +15,9 @@
  */
 package loon;
 
-import loon.Log.Level;
 import loon.action.collision.CollisionHelper;
-import loon.events.Updateable;
-import loon.geom.Affine2f;
 import loon.geom.Dimension;
 import loon.geom.RectBox;
-import loon.geom.Vector2f;
-import loon.utils.Calculator;
-import loon.utils.MathUtils;
-import loon.utils.TArray;
 
 /**
  * 此类被Screen继承,所有功能可以在Screen直接使用
@@ -241,41 +234,6 @@ public class Director extends SoundBox {
 			return true;
 		} else {
 			return false;
-		}
-	}
-
-	private static Vector2f createOrigin(LObject<?> o, Origin origin) {
-		Vector2f v = new Vector2f(o.x(), o.y());
-		switch (origin) {
-		case CENTER:
-			v.set(o.getWidth() / 2f, o.getHeight() / 2f);
-			return v;
-		case TOP_LEFT:
-			v.set(0.0f, o.getHeight());
-			return v;
-		case TOP_RIGHT:
-			v.set(o.getWidth(), o.getHeight());
-			return v;
-		case BOTTOM_LEFT:
-			v.set(0.0f, 0.0f);
-			return v;
-		case BOTTOM_RIGHT:
-			v.set(o.getWidth(), 0.0f);
-			return v;
-		case LEFT_CENTER:
-			v.set(0.0f, o.getHeight() / 2f);
-			return v;
-		case TOP_CENTER:
-			v.set(o.getWidth() / 2f, o.getHeight());
-			return v;
-		case BOTTOM_CENTER:
-			v.set(o.getWidth() / 2f, 0.0f);
-			return v;
-		case RIGHT_CENTER:
-			v.set(o.getWidth(), o.getHeight() / 2f);
-			return v;
-		default:
-			return v;
 		}
 	}
 }

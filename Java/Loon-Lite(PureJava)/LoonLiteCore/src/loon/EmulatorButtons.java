@@ -20,8 +20,6 @@
  */
 package loon;
 
-import loon.LSystem;
-import loon.LTexture.Format;
 import loon.opengl.GLEx;
 import loon.opengl.LTexturePack;
 
@@ -37,7 +35,7 @@ public class EmulatorButtons implements LRelease {
 
 	private int offsetX, offsetY, width, height;
 
-	private final static int offset = 10;
+	private final static int offset = 15;
 
 	private boolean visible, closed;
 
@@ -59,8 +57,7 @@ public class EmulatorButtons implements LRelease {
 			pack = new LTexturePack();
 			pack.putImage(LSystem.getSystemImagePath() + "e1.png");
 			pack.putImage(LSystem.getSystemImagePath() + "e2.png");
-			pack.pack(Format.LINEAR);
-
+			pack.pack();
 		}
 
 		this.dpad = pack.getTextureAll(0);
@@ -211,14 +208,7 @@ public class EmulatorButtons implements LRelease {
 				}
 			}
 		};
-		if (dpad != null) {
-			dpad.close();
-			dpad = null;
-		}
-		if (buttons != null) {
-			buttons.close();
-			buttons = null;
-		}
+
 		this.visible = true;
 
 		this.setLocation(0, 0);
@@ -243,22 +233,22 @@ public class EmulatorButtons implements LRelease {
 		down.setLocation((offsetX + down.getWidth()) + offset, offsetY + (height - down.getHeight()) - offset);
 
 		if (LSystem.viewSize.height >= LSystem.viewSize.width) {
-			triangle.setLocation(offsetX + (width - triangle.getWidth() * 2) - offset,
+			triangle.setLocation(offsetX + (width - triangle.getWidth() * 2) - offset * 2,
 					height - (triangle.getHeight() * 4) - (offset * 2));
-			square.setLocation(offsetX + (width - square.getWidth()) - offset,
+			square.setLocation(offsetX + (width - square.getWidth()) - offset * 2,
 					height - (square.getHeight() * 3) - (offset * 2));
-			circle.setLocation(offsetX + (width - circle.getWidth() * 3) - offset,
+			circle.setLocation(offsetX + (width - circle.getWidth() * 3) - offset * 2,
 					height - (circle.getHeight() * 3) - (offset * 2));
-			cancel.setLocation(offsetX + (width - cancel.getWidth() * 2) - offset,
+			cancel.setLocation(offsetX + (width - cancel.getWidth() * 2) - offset * 2,
 					offsetY + height - (circle.getHeight() * 2) - (offset * 2));
 		} else {
-			triangle.setLocation(offsetX + (width - triangle.getWidth() * 2) - offset,
+			triangle.setLocation(offsetX + (width - triangle.getWidth() * 2) - offset * 2,
 					height - (triangle.getHeight() * 3) - offset);
-			square.setLocation(offsetX + (width - square.getWidth()) - offset,
+			square.setLocation(offsetX + (width - square.getWidth()) - offset * 2,
 					height - (square.getHeight() * 2) - offset);
-			circle.setLocation(offsetX + (width - circle.getWidth() * 3) - offset,
+			circle.setLocation(offsetX + (width - circle.getWidth() * 3) - offset * 2,
 					height - (circle.getHeight() * 2) - offset);
-			cancel.setLocation(offsetX + (width - cancel.getWidth() * 2) - offset,
+			cancel.setLocation(offsetX + (width - cancel.getWidth() * 2) - offset * 2,
 					offsetY + height - (circle.getHeight()) - offset);
 		}
 	}

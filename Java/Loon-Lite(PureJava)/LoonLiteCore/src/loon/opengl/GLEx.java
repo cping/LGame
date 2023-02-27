@@ -28,6 +28,7 @@ import loon.LTexture;
 import loon.LTrans;
 import loon.action.camera.BaseCamera;
 import loon.canvas.Canvas;
+import loon.canvas.Canvas.Composite;
 import loon.canvas.LColor;
 import loon.canvas.Paint;
 import loon.canvas.Paint.Style;
@@ -632,6 +633,7 @@ public class GLEx implements LRelease {
 		if (isClosed) {
 			return;
 		}
+		getCanvas().setCompositeOperation(Composite.SRC_OVER);
 		tmpColor.setColor(this.lastBrush.baseColor);
 		resetClear();
 	}

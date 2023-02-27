@@ -20,23 +20,18 @@
  */
 package loon.utils;
 
-import java.nio.ByteBuffer;
-
 import loon.LSystem;
 import loon.LTexture;
-import loon.Support;
-import loon.canvas.Canvas;
 import loon.canvas.Image;
-import loon.canvas.LColor;
-import loon.canvas.Pixmap;
 
 public class GLUtils {
-	
-	private GLUtils(){}
+
+	private GLUtils() {
+	}
 
 	private static int currentHardwareTextureID = -1;
-	
-	public static int getCurrentHardwareTextureID(){
+
+	public static int getCurrentHardwareTextureID() {
 		return currentHardwareTextureID;
 	}
 
@@ -75,16 +70,19 @@ public class GLUtils {
 		return value + 1;
 	}
 
-
 	public static void bindTexture(int id) {
 		currentHardwareTextureID = id;
 	}
-	
+
 	public static void bindTexture(LTexture tex2d) {
 		if (!tex2d.isLoaded()) {
 			tex2d.loadTexture();
 		}
 		currentHardwareTextureID = tex2d.getID();
+	}
+
+	public static Image getScreenshot() {
+		return LSystem.base().graphics().getCanvas().snapshot();
 	}
 
 }

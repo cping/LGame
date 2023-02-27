@@ -197,11 +197,6 @@ public class LSetting {
 	public boolean lockAllTouchEvent = false;
 
 	/**
-	 * 当前游戏类型，默认为"未知"
-	 */
-	public GameType gameType = GameType.UNKOWN;
-
-	/**
 	 * 初始化游戏时传参用，默认无数据
 	 */
 	public String[] args = new String[] { "" };
@@ -228,7 +223,6 @@ public class LSetting {
 		this.activationKey = setting.activationKey;
 		this.saveTexturePixels = setting.saveTexturePixels;
 		this.appName = setting.appName;
-		this.gameType = setting.gameType;
 		this.logoPath = setting.logoPath;
 		this.fontName = setting.fontName;
 		this.version = setting.version;

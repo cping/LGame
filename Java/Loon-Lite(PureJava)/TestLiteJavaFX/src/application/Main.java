@@ -1,35 +1,51 @@
 package application;
 
+import loon.EmulatorListener;
+import loon.LSystem;
 import loon.LTexture;
 import loon.LTransition;
 import loon.Screen;
 import loon.canvas.LColor;
 import loon.events.GameTouch;
+import loon.font.BDFont;
+import loon.font.BDFontCache;
+import loon.font.BMFont;
 import loon.fx.JavaFXSetting;
 import loon.fx.Loon;
 import loon.opengl.GLEx;
+import loon.opengl.LTexturePack;
 import loon.utils.timer.LTimerContext;
 
 public class Main extends Loon {
 
-	public static class ScreenTest extends Screen {
+	public static class ScreenTest extends Screen implements EmulatorListener {
 
 		LTexture texture = loadTexture("player.png");
 
+		BDFont bdFont;
+		BMFont font;
 		public LTransition onTransition() {
-			return LTransition.newArc(LColor.red);
+			return LTransition.newEmpty();
 		}
 		
 		@Override
 		public void draw(GLEx g) {
-		//	 g.fillRect(66, 66, 388, 388,LColor.red);
-			g.draw(texture, 77, 77,128,128);
+			 g.fillRect(66, 66, 388, 388,LColor.red);
+			g.draw(texture, 77, 77,64,64);
 			g.drawString("数据测试avddf", 77, 77);
+			if(bdFont!=null) {
+				bdFont.drawString(g, "AfdBC", 55, 55);
+			}
 		}
-
+		
 		@Override
 		public void onLoad() {
 			texture = texture.cpy(0,32,32,32);
+	
+			bdFont = new BDFont("pixfont.bdf", "MNBVCXZLKJHGFDSAPOIUYTREWQqwertyuiopasdfghjklzxcvbnm");
+			bdFont.setFontSize(20);
+			font=new BMFont("test.fnt");
+			
 		}
 
 		@Override
@@ -75,6 +91,102 @@ public class Main extends Loon {
 		@Override
 		public void close() {
 
+		}
+
+		@Override
+		public void onUpClick() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onLeftClick() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onRightClick() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onDownClick() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onTriangleClick() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onSquareClick() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onCircleClick() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onCancelClick() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void unUpClick() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void unLeftClick() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void unRightClick() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void unDownClick() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void unTriangleClick() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void unSquareClick() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void unCircleClick() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void unCancelClick() {
+			// TODO Auto-generated method stub
+			
 		}
 
 	}
