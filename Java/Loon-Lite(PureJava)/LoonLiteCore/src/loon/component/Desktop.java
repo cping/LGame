@@ -33,13 +33,14 @@ import loon.component.layout.LayoutPort;
 import loon.component.layout.Margin;
 import loon.events.GameKey;
 import loon.events.QueryEvent;
-import loon.events.SysInput;
+import loon.events.ResizeListener;
 import loon.events.SysTouch;
 import loon.geom.RectBox;
+import loon.geom.Vector2f;
 import loon.opengl.GLEx;
-import loon.utils.CollectionUtils;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
+import loon.utils.reply.Callback;
 
 /**
  * 桌面组件总父类，用来注册，控制，以及渲染所有桌面组件（所有默认支持触屏的组件，被置于此）
@@ -49,6 +50,8 @@ public class Desktop implements Visible, LRelease {
 
 	// 输入设备监听
 	protected final Screen input;
+
+	private ResizeListener<Desktop> _resizeListener;
 
 	private LContainer contentPane;
 
@@ -131,19 +134,24 @@ public class Desktop implements Visible, LRelease {
 		return contentPane.getComponentCount();
 	}
 
-	public void addAt(LComponent comp, float x, float y) {
+	public Desktop addAt(LComponent comp, float x, float y) {
 		if (comp != null) {
 			comp.setLocation(x, y);
 			add(comp);
 		}
+		return this;
 	}
 
-	public void addSprite(ISprite sprite) {
-		add(new LSpriteUI(sprite));
+	public LSpriteUI addSprite(ISprite sprite) {
+		LSpriteUI ui = new LSpriteUI(sprite);
+		add(ui);
+		return ui;
 	}
 
-	public void addSpriteAt(ISprite sprite, float x, float y) {
-		addAt(new LSpriteUI(sprite), x, y);
+	public LSpriteUI addSpriteAt(ISprite sprite, float x, float y) {
+		LSpriteUI ui = new LSpriteUI(sprite);
+		addAt(ui, x, y);
+		return ui;
 	}
 
 	public LComponent addPadding(LComponent comp, float offX, float offY) {
@@ -426,20 +434,18 @@ public class Desktop implements Visible, LRelease {
 	}
 
 	public void keyPressed(GameKey key) {
-		if (this.selectedComponent != null && !this.selectedComponent._keyLocked) {
-			this.selectedComponent.keyPressed(key);
-		}
 		if (this.contentPane != null && this.contentPane != this.selectedComponent) {
 			this.contentPane.keyPressed(key);
+		} else if (this.selectedComponent != null && !this.selectedComponent._keyLocked) {
+			this.selectedComponent.keyPressed(key);
 		}
 	}
 
 	public void keyReleased(GameKey key) {
-		if (this.selectedComponent != null && !this.selectedComponent._keyLocked) {
-			this.selectedComponent.keyReleased(key);
-		}
 		if (this.contentPane != null && this.contentPane != this.selectedComponent) {
 			this.contentPane.keyReleased(key);
+		} else if (this.selectedComponent != null && !this.selectedComponent._keyLocked) {
+			this.selectedComponent.keyReleased(key);
 		}
 	}
 
@@ -488,8 +494,8 @@ public class Desktop implements Visible, LRelease {
 				if (LSystem.isMobile() || LSystem.base().setting.emulateTouch) {
 					if (tooltip != null) {
 						this.tooltip.setToolTipComponent(hoverComponent);
-						this.tooltip.reshow = 0;
-						this.tooltip.initial = 0;
+						this.tooltip._reshow = 0;
+						this.tooltip._initialFlag = 0;
 						this.tooltip.showTip();
 					}
 				}
@@ -508,10 +514,10 @@ public class Desktop implements Visible, LRelease {
 				if (touchDx != 0 || touchDy != 0 || SysTouch.getDX() != 0 || SysTouch.getDY() != 0) {
 					comp.processTouchMoved();
 					if (tooltip != null) {
-						if (!this.tooltip.dismissing && comp.isPointInUI()) {
+						if (!this.tooltip._dismissing && comp.isPointInUI()) {
 							// 刷新提示
-							this.tooltip.dismiss = 0;
-							this.tooltip.dismissing = true;
+							this.tooltip._dismiss = 0;
+							this.tooltip._dismissing = true;
 						}
 					}
 				}
@@ -564,15 +570,15 @@ public class Desktop implements Visible, LRelease {
 	 */
 	private void processTouchEvent() {
 		int pressed = this.input.getTouchPressed(), released = this.input.getTouchReleased();
-		if (pressed > SysInput.NO_BUTTON) {
+		if (pressed > Screen.NO_BUTTON) {
 			if (!LSystem.isMobile() && !LSystem.base().setting.emulateTouch) {
 				if (tooltip != null) {
 					this.tooltip.setToolTipComponent(null);
 				}
 			}
 			if (tooltip != null) {
-				this.tooltip.reshow = 0;
-				this.tooltip.initial = 0;
+				this.tooltip._reshow = 0;
+				this.tooltip._initialFlag = 0;
 			}
 			if (!isClicked && this.hoverComponent != null && !this.hoverComponent._touchLocked) {
 				this.hoverComponent.processTouchPressed();
@@ -585,7 +591,7 @@ public class Desktop implements Visible, LRelease {
 				}
 			}
 		}
-		if (released > SysInput.NO_BUTTON) {
+		if (released > Screen.NO_BUTTON) {
 			if (!isClicked && this.hoverComponent != null && !this.hoverComponent._touchLocked) {
 				this.hoverComponent.processTouchReleased();
 				// 当释放鼠标时，点击事件生效
@@ -604,11 +610,11 @@ public class Desktop implements Visible, LRelease {
 	 */
 	private void processKeyEvent() {
 		if (this.selectedComponent != null && !this.selectedComponent._keyLocked
-				&& this.input.getKeyPressed() != SysInput.NO_KEY) {
+				&& this.input.getKeyPressed() != Screen.NO_KEY) {
 			this.selectedComponent.keyPressed();
 		}
 		if (this.selectedComponent != null && !this.selectedComponent._keyLocked
-				&& this.input.getKeyReleased() != SysInput.NO_KEY && this.selectedComponent != null) {
+				&& this.input.getKeyReleased() != Screen.NO_KEY && this.selectedComponent != null) {
 			this.selectedComponent.processKeyReleased();
 		}
 	}
@@ -752,7 +758,7 @@ public class Desktop implements Visible, LRelease {
 	}
 
 	public LComponent[] getComponents() {
-		return CollectionUtils.copyOf(contentPane._childs);
+		return contentPane.getComponents();
 	}
 
 	public LComponent getTopComponent() {
@@ -810,7 +816,7 @@ public class Desktop implements Visible, LRelease {
 	public UIControls controls() {
 		return createUIControls();
 	}
-	
+
 	public UIControls findUINamesToUIControls(String... uiName) {
 		UIControls controls = null;
 		if (contentPane != null && contentPane._childs != null) {
@@ -837,6 +843,17 @@ public class Desktop implements Visible, LRelease {
 		UIControls controls = null;
 		if (contentPane != null && contentPane._childs != null) {
 			TArray<LComponent> comps = contentPane.findNames(name);
+			controls = new UIControls(comps);
+		} else {
+			controls = new UIControls();
+		}
+		return controls;
+	}
+
+	public UIControls findNameContainsToUIControls(String... name) {
+		UIControls controls = null;
+		if (contentPane != null && contentPane._childs != null) {
+			TArray<LComponent> comps = contentPane.findNameContains(name);
 			controls = new UIControls(comps);
 		} else {
 			controls = new UIControls();
@@ -922,18 +939,35 @@ public class Desktop implements Visible, LRelease {
 		return contentPane.contains(comp);
 	}
 
+	public Desktop setSortableChildren(boolean v) {
+		contentPane.setSortableChildren(v);
+		return this;
+	}
+
+	public boolean isSortableChildren() {
+		return contentPane.isSortableChildren();
+	}
+
 	public LComponent get() {
 		return this.contentPane.get();
 	}
 
-	public void removeAll() {
-		clear();
+	public Desktop removeAll() {
+		return clear();
 	}
 
-	public void clear() {
+	public Desktop clear() {
 		if (contentPane != null) {
 			contentPane.clear();
 		}
+		return this;
+	}
+
+	public Desktop sortDesktop() {
+		if (contentPane != null) {
+			contentPane.sortComponents();
+		}
+		return this;
 	}
 
 	public Desktop scrollBy(float x, float y) {
@@ -978,14 +1012,30 @@ public class Desktop implements Visible, LRelease {
 		return this;
 	}
 
-	public void resize() {
+	public Desktop freeComponent() {
 		this.isClicked = false;
 		this.hoverComponent = null;
 		this.selectedComponent = null;
 		this.clickComponent[0] = null;
+		return this;
+	}
+
+	public Desktop resize() {
+		freeComponent();
+		if (_resizeListener != null) {
+			_resizeListener.onResize(this);
+		}
 		if (contentPane != null) {
 			contentPane.processResize();
 		}
+		return this;
+	}
+
+	public Desktop forChildren(Callback<LComponent> callback) {
+		if (contentPane != null) {
+			contentPane.forChildren(callback);
+		}
+		return this;
 	}
 
 	/**
@@ -1036,6 +1086,77 @@ public class Desktop implements Visible, LRelease {
 		return contentPane.margin(vertical, left, top, right, bottom);
 	}
 
+	public boolean isVisibleInParents() {
+		return isVisibleInParents(selectedComponent);
+	}
+
+	public boolean isVisibleInParents(LComponent comp) {
+		if (comp == null) {
+			return false;
+		}
+		TArray<LComponent> parentList = new TArray<LComponent>();
+		for (LComponent parent = comp.getParent(); parent != null; parent = parent.getParent()) {
+			parentList.add(parent);
+		}
+		if (parentList.size() > 0) {
+			Vector2f pos = new Vector2f(0, 0);
+			Vector2f rect = new Vector2f(0, 0);
+			Vector2f absolutePosition = comp.getAbsolutePosition();
+
+			Vector2f cSize = comp.getSize();
+			Vector2f cPos = comp.getPosition();
+
+			float lx = absolutePosition.x;
+			float rx = absolutePosition.x + cSize.x;
+			float ty = absolutePosition.y;
+			float by = absolutePosition.y + cSize.y;
+
+			if (cPos.x > comp.getParent().getSize().x || cPos.x + cSize.x < 0 || cPos.y > comp.getParent().getSize().y
+					|| cPos.y + cSize.y < 0) {
+				return false;
+			}
+			if (parentList.size() != 1) {
+				for (int i = parentList.size() - 1; i >= 1; i--) {
+					LComponent parent = parentList.get(i);
+					pos.addSelf(parent.getPosition());
+					rect.set(pos).addSelf(parent.getSize());
+					if (lx > rect.x || rx < pos.x || ty > rect.y || by < pos.y) {
+						return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
+
+	public Screen getScreen() {
+		return input;
+	}
+
+	public float getScreenX() {
+		return input == null ? 0 : input.getX();
+	}
+
+	public float getScreenY() {
+		return input == null ? 0 : input.getY();
+	}
+
+	public float getX() {
+		return contentPane == null ? 0 : contentPane.getX();
+	}
+
+	public float getY() {
+		return contentPane == null ? 0 : contentPane.getY();
+	}
+
+	public float getStageX() {
+		return (getX() - getScreenX()) / contentPane.getScaleX();
+	}
+
+	public float getStageY() {
+		return (getX() - getScreenX()) / contentPane.getScaleY();
+	}
+
 	public Screen getInput() {
 		return input;
 	}
@@ -1044,14 +1165,27 @@ public class Desktop implements Visible, LRelease {
 		return desktop_name;
 	}
 
+	public ResizeListener<Desktop> getResizeListener() {
+		return _resizeListener;
+	}
+
+	public Desktop setResizeListener(ResizeListener<Desktop> listener) {
+		this._resizeListener = listener;
+		return this;
+	}
+
+	public RectBox getBoundingBox() {
+		return this.contentPane == null ? input.getRectBox().cpy() : this.contentPane.getRectBox().cpy();
+	}
+
 	@Override
 	public boolean isVisible() {
 		return dvisible;
 	}
 
 	@Override
-	public void setVisible(boolean visible) {
-		this.dvisible = visible;
+	public void setVisible(boolean v) {
+		this.dvisible = v;
 	}
 
 	@Override
@@ -1071,6 +1205,7 @@ public class Desktop implements Visible, LRelease {
 			contentPane.close();
 		}
 		this.dclosed = true;
+		this._resizeListener = null;
 		LSystem.popDesktopPool(this);
 	}
 

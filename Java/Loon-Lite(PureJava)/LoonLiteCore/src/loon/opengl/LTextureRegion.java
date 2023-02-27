@@ -92,11 +92,11 @@ public class LTextureRegion implements LRelease {
 			invTexWidth = (1f / texture.width());
 			invTexHeight = (1f / texture.height());
 		} else {
-			invTexWidth = (1f / texture.width()) * texture.widthRatio;
-			invTexHeight = (1f / texture.height()) * texture.heightRatio;
+			invTexWidth = (1f / texture.width()) * texture.widthRatio();
+			invTexHeight = (1f / texture.height()) * texture.heightRatio();
 		}
-		setRegion(x * invTexWidth + texture.xOff, y * invTexHeight
-				+ texture.yOff, (x + width) * invTexWidth, (y + height)
+		setRegion(x * invTexWidth + texture.xOff(), y * invTexHeight
+				+ texture.yOff(), (x + width) * invTexWidth, (y + height)
 				* invTexHeight);
 	}
 

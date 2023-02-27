@@ -169,9 +169,10 @@ public class FadeDotEffect extends Entity implements BaseEffect {
 	}
 
 	@Override
-	public void reset() {
+	public FadeDotEffect reset() {
 		super.reset();
 		updateDots();
+		return this;
 	}
 
 	public float getDelay() {
@@ -221,13 +222,11 @@ public class FadeDotEffect extends Entity implements BaseEffect {
 		if (finished) {
 			return;
 		}
-
 		int tmp = g.color();
 		g.setColor(_baseColor);
 		for (int i = 0; i < dots.size; i++) {
 			((Dot) dots.get(i)).paint(g, drawX(offsetX), drawY(offsetY));
 		}
-	
 		g.setColor(tmp);
 	}
 

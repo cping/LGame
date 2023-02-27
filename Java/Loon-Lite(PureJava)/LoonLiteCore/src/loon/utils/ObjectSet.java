@@ -23,8 +23,7 @@ package loon.utils;
 /**
  * 存储单独value的线性数据集合,内部数据无序排列,不允许重复
  * 
- * @param <K>
- * @param <V>
+ * @param <E>
  */
 public class ObjectSet<E> implements Iterable<E>, IArray {
 
@@ -101,5 +100,24 @@ public class ObjectSet<E> implements Iterable<E>, IArray {
 	public void clear() {
 		_map.clear();
 	}
+	
+	@Override
+    public String toString() {
+		LIterator<E> it = iterator();
+        if (! it.hasNext()) {
+            return "[]";
+        }
+        StrBuilder sbr = new StrBuilder();
+        sbr.append('[');
+        for (it = _map.keys(); it.hasNext();) {
+            E e = it.next();
+            sbr.append(e == this ? "(this ObjectSet)" : e);
+            if (! it.hasNext()) {
+                return sbr.append(']').toString();
+            }
+            sbr.append(',').append(' ');
+        }
+        return sbr.toString();
+    }
 
 }

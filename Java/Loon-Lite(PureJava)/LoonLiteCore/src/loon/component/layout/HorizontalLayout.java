@@ -20,7 +20,6 @@
  */
 package loon.component.layout;
 
-import loon.VerticalAlign;
 import loon.geom.BoxSize;
 import loon.geom.SizeValue;
 import loon.utils.TArray;

@@ -27,7 +27,6 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.LTextureBatch;
 import loon.LTexture.Format;
-import loon.action.sprite.SpriteRegion;
 import loon.canvas.Canvas;
 import loon.canvas.Image;
 import loon.canvas.LColor;
@@ -102,50 +101,6 @@ public class LTexturePack implements LRelease {
 			return null;
 		}
 		return texture.copy(entry.bounds.left, entry.bounds.top, entry.bounds.right, entry.bounds.bottom);
-	}
-
-	public SpriteRegion createSpriteRegion(int id) {
-		this.pack();
-		PackEntry entry = getEntry(id);
-		if (entry == null) {
-			return null;
-		}
-		SpriteRegion region = new SpriteRegion(texture, entry.bounds.left, entry.bounds.top,
-				entry.bounds.right - entry.bounds.left, entry.bounds.bottom - entry.bounds.top);
-		return region;
-	}
-
-	public SpriteRegion createSpriteRegionAll(int id) {
-		this.pack();
-		PackEntry entry = getEntry(id);
-		if (entry == null) {
-			return null;
-		}
-		SpriteRegion region = new SpriteRegion(texture, entry.bounds.left, entry.bounds.top, entry.bounds.right,
-				entry.bounds.bottom);
-		return region;
-	}
-
-	public SpriteRegion createSpriteRegion(String name) {
-		this.pack();
-		PackEntry entry = getEntry(name);
-		if (entry == null) {
-			return null;
-		}
-		SpriteRegion region = new SpriteRegion(texture, entry.bounds.left, entry.bounds.top,
-				entry.bounds.right - entry.bounds.left, entry.bounds.bottom - entry.bounds.top);
-		return region;
-	}
-
-	public SpriteRegion createSpriteRegionAll(String name) {
-		this.pack();
-		PackEntry entry = getEntry(name);
-		if (entry == null) {
-			return null;
-		}
-		SpriteRegion region = new SpriteRegion(texture, entry.bounds.left, entry.bounds.top, entry.bounds.right,
-				entry.bounds.bottom);
-		return region;
 	}
 
 	public LTextureRegion createTextureRegion(int id) {
@@ -520,7 +475,7 @@ public class LTexturePack implements LRelease {
 	}
 
 	public LTextureBatch getTextureBatch() {
-		return texture.getTextureBatch();
+		return null;//texture.getTextureBatch();
 	}
 
 	public LTexturePack glEnd() {

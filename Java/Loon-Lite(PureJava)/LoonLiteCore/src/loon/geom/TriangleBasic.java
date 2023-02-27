@@ -31,9 +31,9 @@ public class TriangleBasic implements Triangle {
 
 	private static final float EPSILON = 0.0000000001f;
 
-	private PointList poly = new PointList();
+	private final TArray<PointF> poly = new TArray<PointF>();
 
-	private PointList tris = new PointList();
+	private final TArray<PointF> tris = new TArray<PointF>();
 
 	private boolean tried;
 
@@ -42,7 +42,7 @@ public class TriangleBasic implements Triangle {
 	
 	@Override
 	public void addPolyPoint(float x, float y) {
-		Point p = new Point(x, y);
+		PointF p = new PointF(x, y);
 		if (!poly.contains(p)) {
 			poly.add(p);
 		}
@@ -81,14 +81,14 @@ public class TriangleBasic implements Triangle {
 		return tris.get((t * 3) + i).toArray();
 	}
 
-	private float area(PointList contour) {
+	private float area(TArray<PointF> contour) {
 		int n = contour.size();
 
 		float sA = 0.0f;
 
 		for (int p = n - 1, q = 0; q < n; p = q++) {
-			Point contourP = contour.get(p);
-			Point contourQ = contour.get(q);
+			PointF contourP = contour.get(p);
+			PointF contourQ = contour.get(q);
 
 			sA += contourP.getX() * contourQ.getY() - contourQ.getX()
 					* contourP.getY();
@@ -121,7 +121,7 @@ public class TriangleBasic implements Triangle {
 		return ((aCROSSbp >= 0.0f) && (bCROSScp >= 0.0f) && (cCROSSap >= 0.0f));
 	}
 
-	private boolean snip(PointList contour, int u, int v, int w, int n, int[] V) {
+	private boolean snip(TArray<PointF> contour, int u, int v, int w, int n, int[] V) {
 		int p;
 		float Ax, Ay, Bx, By, Cx, Cy, Px, Py;
 
@@ -154,7 +154,7 @@ public class TriangleBasic implements Triangle {
 		return true;
 	}
 
-	private boolean process(PointList contour, PointList result) {
+	private boolean process(TArray<PointF> contour, TArray<PointF> result) {
 		result.clear();
 
 		int n = contour.size();
@@ -218,76 +218,8 @@ public class TriangleBasic implements Triangle {
 		return true;
 	}
 
-	private static class Point {
 
-		private float x;
-
-		private float y;
-
-		private float[] array;
-
-		public Point(float x, float y) {
-			this.x = x;
-			this.y = y;
-			array = new float[] { x, y };
-		}
-
-		public float getX() {
-			return x;
-		}
-
-		public float getY() {
-			return y;
-		}
-
-		public float[] toArray() {
-			return array;
-		}
-
-		@Override
-		public int hashCode() {
-			return (int) (x * y * 31);
-		}
-
-		@Override
-		public boolean equals(Object other) {
-			if (other instanceof Point) {
-				Point p = (Point) other;
-				return (p.x == x) && (p.y == y);
-			}
-
-			return false;
-		}
-	}
-
-	private static class PointList {
-
-		private TArray<Point> points = new TArray<Point>();
-
-		public PointList() {
-		}
-
-		public boolean contains(Point p) {
-			return points.contains(p);
-		}
-
-		public void add(Point point) {
-			points.add(point);
-		}
-
-		public int size() {
-			return points.size;
-		}
-
-		public Point get(int i) {
-			return points.get(i);
-		}
-
-		public void clear() {
-			points.clear();
-		}
-	}
-
+	@Override
 	public void startHole() {
 
 	}

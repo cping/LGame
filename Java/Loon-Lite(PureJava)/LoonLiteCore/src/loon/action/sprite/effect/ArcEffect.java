@@ -62,6 +62,7 @@ public class ArcEffect extends Entity implements BaseEffect {
 		this.timer = new LTimer(200);
 		this.setColor(c == null ? LColor.black : c);
 		this.setRepaint(true);
+		this.setTurn(1);
 		arcDiv = div;
 	}
 
@@ -83,9 +84,11 @@ public class ArcEffect extends Entity implements BaseEffect {
 		if (completed) {
 			return;
 		}
+
 		if (this.step >= this.arcDiv) {
 			this.completed = true;
 		}
+
 		if (timer.action(elapsedTime)) {
 			step++;
 		}
@@ -103,7 +106,6 @@ public class ArcEffect extends Entity implements BaseEffect {
 		}
 		tmpColor = g.color();
 		g.setColor(_baseColor);
-
 		if (step <= 1) {
 			g.fillRect(drawX(offsetX), drawY(offsetY), _width, _height);
 		} else {
@@ -114,19 +116,19 @@ public class ArcEffect extends Entity implements BaseEffect {
 				float y = drawY(_height / 2 - length + offsetY);
 				float w = _width / 2 + length - x;
 				float h = _height / 2 + length - y;
-				g.fillArc(x, y, w, h, 20, 0, this.sign[this.curTurn] * deg);
+				g.fillArc(x, y, w, h, 0, this.sign[this.curTurn] * deg);
 			}
 		}
-
 		g.setColor(tmpColor);
 	}
 
 	@Override
-	public void reset() {
+	public ArcEffect reset() {
 		super.reset();
 		this.completed = false;
 		this.step = 0;
 		this.curTurn = 1;
+		return this;
 	}
 
 	public int getTurn() {

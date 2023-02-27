@@ -21,10 +21,12 @@
  */
 package loon.utils;
 
+import loon.LRelease;
+
 /**
- * 简单的四则运算类,脚本用
+ * 简单的四则运算类,脚本用,也可用于跨域传参(单纯跨域传参推荐使用 @see Counter 类,因为该类可以限制最大和最小值,更适合简单增减用).
  */
-public class Calculator {
+public class Calculator implements LRelease{
 
 	public static final int ADD = 1;
 
@@ -185,6 +187,11 @@ public class Calculator {
 	@Override
 	public String toString() {
 		return currentTotal % 1f == 0 ? Integer.toString(getInt()) : String.valueOf(currentTotal);
+	}
+
+	@Override
+	public void close() {
+		this.currentTotal = 0f;
 	}
 
 }

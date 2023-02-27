@@ -20,17 +20,48 @@
  */
 package loon.utils;
 
+import loon.LRelease;
 import loon.LSysException;
 import loon.events.QueryEvent;
 
-public class BoolArray implements IArray {
+public class BoolArray implements IArray, LRelease {
 
+	/**
+	 * 产生一组指定范围的数据
+	 * 
+	 * @param start
+	 * @param end
+	 * @param value
+	 * @return
+	 */
 	public static BoolArray range(int start, int end, boolean value) {
 		BoolArray array = new BoolArray(end - start);
 		for (int i = start; i < end; i++) {
 			array.add(value);
 		}
 		return array;
+	}
+
+	/**
+	 * 产生一组指定范围的随机数据
+	 * 
+	 * @param begin
+	 * @param end
+	 * @param size
+	 * @return
+	 */
+	public static BoolArray rangeRandom(int begin, int end) {
+		if (begin > end) {
+			int temp = begin;
+			begin = end;
+			end = temp;
+		}
+		int size = end - begin;
+		boolean[] boolArrays = new boolean[size];
+		for (int i = 0; i < size; i++) {
+			boolArrays[i] = MathUtils.randomBoolean();
+		}
+		return new BoolArray(boolArrays);
 	}
 
 	public boolean[] items;
@@ -59,6 +90,10 @@ public class BoolArray implements IArray {
 
 	public BoolArray(boolean[] array) {
 		this(true, array, 0, array.length);
+	}
+
+	public BoolArray(boolean[] array, int size) {
+		this(true, array, 0, size);
 	}
 
 	public BoolArray(boolean ordered, boolean[] array, int startIndex, int count) {
@@ -107,14 +142,14 @@ public class BoolArray implements IArray {
 		addAll(array, 0, array.length);
 	}
 
-	public void addAll(boolean[] array, int offset, int length) {
+	public void addAll(boolean[] array, int offset, int len) {
 		boolean[] items = this.items;
-		int lengthNeeded = length + length;
+		int lengthNeeded = this.length + len;
 		if (lengthNeeded > items.length) {
 			items = relength(MathUtils.max(8, (int) (lengthNeeded * 1.75f)));
 		}
-		System.arraycopy(array, offset, items, length, length);
-		length += length;
+		System.arraycopy(array, offset, items, this.length, len);
+		this.length += len;
 	}
 
 	public boolean get(int index) {
@@ -379,7 +414,7 @@ public class BoolArray implements IArray {
 		}
 		return newArrays;
 	}
-	
+
 	public boolean[] toArray() {
 		boolean[] array = new boolean[length];
 		System.arraycopy(items, 0, array, 0, length);
@@ -387,12 +422,12 @@ public class BoolArray implements IArray {
 	}
 
 	@Override
-	public boolean equals(Object object) {
-		if (object == this)
+	public boolean equals(Object o) {
+		if (o == this)
 			return true;
-		if (!(object instanceof BoolArray))
+		if (!(o instanceof BoolArray))
 			return false;
-		BoolArray array = (BoolArray) object;
+		BoolArray array = (BoolArray) o;
 		int n = length;
 		if (n != array.length)
 			return false;
@@ -400,19 +435,6 @@ public class BoolArray implements IArray {
 			if (items[i] != array.items[i])
 				return false;
 		return true;
-	}
-
-	public String toString(String separator) {
-		if (length == 0)
-			return "";
-		boolean[] items = this.items;
-		StringBuilder buffer = new StringBuilder(32);
-		buffer.append(items[0]);
-		for (int i = 1; i < length; i++) {
-			buffer.append(separator);
-			buffer.append(items[i]);
-		}
-		return buffer.toString();
 	}
 
 	static public BoolArray with(boolean... array) {
@@ -529,12 +551,16 @@ public class BoolArray implements IArray {
 		return false;
 	}
 
+	public BoolArray cpy() {
+		return new BoolArray(this);
+	}
+
 	public String toString(char split) {
 		if (length == 0) {
 			return "[]";
 		}
 		boolean[] items = this.items;
-		StringBuilder buffer = new StringBuilder(CollectionUtils.INITIAL_CAPACITY);
+		StrBuilder buffer = new StrBuilder(32);
 		buffer.append('[');
 		buffer.append(items[0]);
 		for (int i = 1; i < length; i++) {
@@ -557,5 +583,11 @@ public class BoolArray implements IArray {
 			hashCode = hashCode * 31 + (items[i] ? 1231 : 1237);
 		}
 		return hashCode;
+	}
+
+	@Override
+	public void close() {
+		this.items = null;
+		this.length = 0;
 	}
 }

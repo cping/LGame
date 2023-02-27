@@ -20,33 +20,21 @@
  */
 package loon;
 
-import java.io.IOException;
-
 import loon.LTexture.Format;
-import loon.action.sprite.Entity;
-import loon.action.sprite.Sprite;
-import loon.canvas.Canvas;
 import loon.canvas.Image;
-import loon.canvas.NinePatchAbstract.Repeat;
 import loon.canvas.TGA;
 import loon.component.DefUI;
-import loon.geom.Vector2f;
-import loon.opengl.Mesh;
 import loon.utils.ArrayByte;
 import loon.utils.ArrayByteReader;
 import loon.utils.GifDecoder;
 import loon.utils.StringUtils;
-import loon.utils.TArray;
+import loon.utils.parse.StrTokenizer;
 import loon.utils.reply.GoFuture;
 
 /**
  * Loon的基础资源加载器
  */
 public abstract class BaseIO extends DefUI {
-	
-	public final static Mesh createMesh(Canvas canvas){
-		return LSystem.base().makeMesh(canvas);
-	}
 
 	public final static GoFuture<String> loadAsynText(String path) {
 		final LGame base = LSystem.base();
@@ -88,14 +76,6 @@ public abstract class BaseIO extends DefUI {
 		return LSystem.loadTexture(path, config);
 	}
 
-	public final static LTexture loadNinePatchTexture(String path, int x, int y, int w, int h) {
-		return LSystem.loadNinePatchTexture(path, x, y, w, h);
-	}
-
-	public final static LTexture loadNinePatchTexture(String path, Repeat repeat, int x, int y, int w, int h, Format config) {
-		return LSystem.loadNinePatchTexture(path, repeat, x, y, w, h, config);
-	}
-
 	public final static Image loadImage(String path) {
 		return loadImage(path, true);
 	}
@@ -114,7 +94,7 @@ public abstract class BaseIO extends DefUI {
 						tga.close();
 						tga = null;
 					}
-				} catch (IOException e) {
+				} catch (Exception e) {
 					throw new LSysException(e.getMessage());
 				}
 				return tmp;
@@ -151,6 +131,25 @@ public abstract class BaseIO extends DefUI {
 			return new ArrayByte(1);
 		}
 		return new ArrayByte(buffer);
+	}
+
+	public final static StrTokenizer loadStrTokenizer(String path) {
+		return loadStrTokenizer(path, null);
+	}
+
+	public final static StrTokenizer loadStrTokenizer(String path, String delimiters) {
+		if (StringUtils.isEmpty(path)) {
+			return new StrTokenizer("");
+		}
+		String text = loadText(path);
+		if (text == null) {
+			return new StrTokenizer("");
+		}
+		if (delimiters == null) {
+			return new StrTokenizer(text);
+		} else {
+			return new StrTokenizer(text, delimiters);
+		}
 	}
 
 	public final static GoFuture<byte[]> loadAsynBytes(String path) {
@@ -205,101 +204,27 @@ public abstract class BaseIO extends DefUI {
 		return null;
 	}
 
-	public final static Sprite createSprite(String path) {
-		return new Sprite(path);
+	public final static Object loadJsonObject(String path) {
+		return loadJsonObjectContext(loadText(path));
 	}
 
-	public final static Sprite createSprite(LTexture tex2d) {
-		return new Sprite(tex2d);
-	}
-
-	public final static Sprite createSprite(String path, float scale) {
-		Sprite spr = new Sprite(path);
-		spr.setScale(scale);
-		return spr;
-	}
-
-	public final static Sprite createSprite(LTexture tex2d, float scale) {
-		Sprite spr = new Sprite(tex2d);
-		spr.setScale(scale);
-		return spr;
-	}
-
-	public final static Sprite createSprite(String path, Vector2f pos) {
-		Sprite spr = new Sprite(path);
-		spr.setLocation(pos);
-		return spr;
-	}
-
-	public final static Sprite createSprite(LTexture tex2d, Vector2f pos) {
-		Sprite spr = new Sprite(tex2d);
-		spr.setLocation(pos);
-		return spr;
-	}
-
-	public final static Entity createEntity(String path) {
-		return new Entity(path);
-	}
-
-	public final static Entity createEntity(LTexture tex2d) {
-		return new Entity(tex2d);
-	}
-
-	public final static Entity createEntity(String path, float scale) {
-		Entity spr = new Entity(path);
-		spr.setScale(scale);
-		return spr;
-	}
-
-	public final static Entity createEntity(LTexture tex2d, float scale) {
-		Entity spr = new Entity(tex2d);
-		spr.setScale(scale);
-		return spr;
-	}
-
-	public final static Entity createEntity(String path, Vector2f pos) {
-		Entity spr = new Entity(path);
-		spr.setLocation(pos);
-		return spr;
-	}
-
-	public final static Entity createEntity(LTexture tex2d, Vector2f pos) {
-		Entity spr = new Entity(tex2d);
-		spr.setLocation(pos);
-		return spr;
-	}
-
-	public final static TArray<Sprite> createMultiSprite(String[] path, Vector2f[] pos) {
-		return createMultiSprite(path, pos, 1f);
-	}
-
-	public final static TArray<Sprite> createMultiSprite(String[] path, Vector2f[] pos, float scale) {
-		if (StringUtils.isEmpty(path)) {
-			return new TArray<Sprite>();
+	public final static Object loadJsonObjectContext(String text) {
+		if (StringUtils.isEmpty(text)) {
+			return null;
 		}
-		final int size = path.length;
-		TArray<Sprite> list = new TArray<Sprite>(path.length);
-		for (int i = 0; i < size; i++) {
-			Sprite sprite = createSprite(path[i], pos[i]);
-			sprite.setScale(scale);
+		final LGame base = LSystem.base();
+		if (base != null) {
+			try {
+				return base.json().parse(text);
+			} catch (Exception e) {
+				try {
+					return base.json().parseArray(text);
+				} catch (Exception ex) {
+					return null;
+				}
+			}
 		}
-		return list;
+		return null;
 	}
 
-	public final static TArray<Entity> createMultiEntity(String[] path, Vector2f[] pos) {
-		return createMultiEntity(path, pos, 1f);
-	}
-
-	public final static TArray<Entity> createMultiEntity(String[] path, Vector2f[] pos, float scale) {
-		if (StringUtils.isEmpty(path)) {
-			return new TArray<Entity>();
-		}
-		final int size = path.length;
-		TArray<Entity> list = new TArray<Entity>(path.length);
-		for (int i = 0; i < size; i++) {
-			Entity sprite = createEntity(path[i], pos[i]);
-			sprite.setScale(scale);
-		}
-		return list;
-	}
 }

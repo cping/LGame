@@ -25,14 +25,50 @@ import loon.events.Updateable;
 
 public abstract class Bypass {
 
+	protected static abstract class Runs implements Updateable {
+		
+		public Runs next;
+		
+		@Override
+		public abstract void action(Object a);
+	}
+
+	protected static abstract class Notifier<T> {
+		
+		public abstract void notify(Bypass.GoListener listener, T a1, T a2, T a3);
+		
+	}
+
+	public interface GoListener {
+	}
+
 	protected static final Cons DISPATCHING = new Cons(null, null);
 
 	protected Cons _listeners;
 	protected Runs _pendingRuns;
 
-	public abstract interface GoListener {
+	public abstract GoListener defaultListener();
+
+	protected static <T> boolean areEqual(T o1, T o2) {
+		return (o1 == o2 || (o1 != null && o1.equals(o2)));
 	}
 
+	protected static Runs append(Runs head, Runs action) {
+		if (head == null)
+			return action;
+		head.next = append(head.next, action);
+		return head;
+	}
+	
+	protected void checkMutate() {
+	}
+
+	protected void connectionAdded() {
+	}
+
+	protected void connectionRemoved() {
+	}
+	
 	public boolean hasConnections() {
 		return _listeners != null;
 	}
@@ -44,8 +80,6 @@ public abstract class Bypass {
 		_listeners = null;
 	}
 
-	abstract GoListener defaultListener();
-
 	protected synchronized Cons addConnection(GoListener listener) {
 		if (listener == null)
 			throw new LSysException("null listener");
@@ -55,6 +89,7 @@ public abstract class Bypass {
 	protected synchronized Cons addCons(final Cons cons) {
 		if (isDispatching()) {
 			_pendingRuns = append(_pendingRuns, new Runs() {
+				@Override
 				public void action(Object o) {
 					_listeners = Cons.insert(_listeners, cons);
 					connectionAdded();
@@ -70,6 +105,7 @@ public abstract class Bypass {
 	protected synchronized void disconnect(final Cons cons) {
 		if (isDispatching()) {
 			_pendingRuns = append(_pendingRuns, new Runs() {
+				@Override
 				public void action(Object o) {
 					_listeners = Cons.remove(_listeners, cons);
 					connectionRemoved();
@@ -96,19 +132,8 @@ public abstract class Bypass {
 		}
 	}
 
-	protected void checkMutate() {
 
-	}
-
-	protected void connectionAdded() {
-
-	}
-
-	protected void connectionRemoved() {
-
-	}
-
-	protected void notify(final Notifier notifier, final Object a1, final Object a2, final Object a3) {
+	protected <T> void  notify(final Notifier<T> notifier, final T a1, final T a2, final T a3) {
 		Cons lners;
 		synchronized (this) {
 			if (_listeners == DISPATCHING) {
@@ -169,25 +194,6 @@ public abstract class Bypass {
 
 	public boolean isClosed() {
 		return isDispatching();
-	}
-
-	protected static <T> boolean areEqual(T o1, T o2) {
-		return (o1 == o2 || (o1 != null && o1.equals(o2)));
-	}
-
-	protected static Runs append(Runs head, Runs action) {
-		if (head == null)
-			return action;
-		head.next = append(head.next, action);
-		return head;
-	}
-
-	protected static abstract class Runs implements Updateable {
-		public Runs next;
-	}
-
-	protected static abstract class Notifier {
-		public abstract void notify(Object listener, Object a1, Object a2, Object a3);
 	}
 
 }

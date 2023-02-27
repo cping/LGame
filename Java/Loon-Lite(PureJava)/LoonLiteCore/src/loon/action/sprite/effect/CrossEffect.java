@@ -161,10 +161,11 @@ public class CrossEffect extends Entity implements BaseEffect {
 	}
 
 	@Override
-	public void reset() {
+	public CrossEffect reset() {
 		super.reset();
 		this.completed = false;
 		this.count = 0;
+		return this;
 	}
 
 	@Override

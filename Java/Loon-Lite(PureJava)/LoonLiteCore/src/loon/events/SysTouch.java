@@ -20,29 +20,32 @@
  */
 package loon.events;
 
+import loon.LSystem;
 import loon.geom.Vector2f;
 
 public class SysTouch {
 
 	public static void startTouchCollection() {
-		SysInputFactory.startTouchCollection();
+		LSystem.getProcess().getSysInputFactory().startTouchCollection();
 	}
 
 	public static void stopTouchCollection() {
-		SysInputFactory.stopTouchCollection();
+		LSystem.getProcess().getSysInputFactory().stopTouchCollection();
 	}
 
 	public static LTouchCollection getTouchState() {
-		return SysInputFactory.getTouchState();
+		return LSystem.getProcess().getSysInputFactory().getTouchState();
 	}
 
 	public static void resetTouch() {
-		SysInputFactory.resetTouch();
+		LSystem.getProcess().getSysInputFactory().resetTouch();
 	}
 
 	public static ActionKey getOnlyKey() {
 		return SysInputFactory.getOnlyKey();
 	}
+
+	public static final int TOUCH_UNKNOWN = -1;
 	
 	public static final int TOUCH_DOWN = 0;
 
@@ -51,7 +54,7 @@ public class SysTouch {
 	public static final int TOUCH_MOVE = 2;
 
 	public static final int TOUCH_DRAG = 3;
-	
+
 	public static final int LEFT = 0;
 
 	public static final int RIGHT = 1;
@@ -86,11 +89,11 @@ public class SysTouch {
 	}
 
 	public static int x() {
-		return (int) SysInputFactory.finalTouch.x;
+		return SysInputFactory.finalTouch.x();
 	}
 
 	public static int y() {
-		return (int) SysInputFactory.finalTouch.y;
+		return SysInputFactory.finalTouch.y();
 	}
 
 	public static float getX() {
@@ -108,7 +111,19 @@ public class SysTouch {
 	public static float getDY() {
 		return SysInputFactory.finalTouch.dy;
 	}
-	
+
+	public static boolean isLeft() {
+		return SysInputFactory.finalTouch.isLeft();
+	}
+
+	public static boolean isMiddle() {
+		return SysInputFactory.finalTouch.isMiddle();
+	}
+
+	public static boolean isRight() {
+		return SysInputFactory.finalTouch.isRight();
+	}
+
 	public static boolean isDown() {
 		return SysInputFactory.finalTouch.isDown();
 	}
@@ -121,7 +136,40 @@ public class SysTouch {
 		return SysInputFactory.finalTouch.isMove();
 	}
 
-	public static boolean isDrag() {
-		return SysInputFactory._isDraging;
+	public static boolean lowerLeft() {
+		return SysInputFactory.finalTouch.lowerLeft();
 	}
+
+	public static boolean lowerRight() {
+		return SysInputFactory.finalTouch.lowerRight();
+	}
+
+	public static boolean upperLeft() {
+		return SysInputFactory.finalTouch.upperLeft();
+	}
+
+	public static boolean upperRight() {
+		return SysInputFactory.finalTouch.upperRight();
+	}
+
+	public static long getDuration() {
+		return SysInputFactory.finalTouch.duration;
+	}
+
+	public static long getTimeDown() {
+		return SysInputFactory.finalTouch.timeDown;
+	}
+
+	public static long getTimeUp() {
+		return SysInputFactory.finalTouch.timeUp;
+	}
+
+	public static boolean isDrag() {
+		return SysInputFactory.isDraging;
+	}
+
+	public static GameTouch cpy() {
+		return SysInputFactory.finalTouch.cpy();
+	}
+
 }

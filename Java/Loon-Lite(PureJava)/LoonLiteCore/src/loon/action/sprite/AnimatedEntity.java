@@ -21,6 +21,7 @@
 package loon.action.sprite;
 
 import loon.LTexture;
+import loon.events.FrameListener;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
@@ -30,6 +31,10 @@ import loon.utils.ObjectMap;
  */
 public class AnimatedEntity extends Entity {
 
+	/**
+	 * 动画具体播放速度值及帧索引存储用类
+	 *
+	 */
 	public static class PlayIndex {
 
 		public final static PlayIndex at(int[] animates) {
@@ -229,6 +234,10 @@ public class AnimatedEntity extends Entity {
 			setTexture(_animation.getSpriteImage());
 
 		}
+	}
+
+	public Animation getAnimation() {
+		return this._animation;
 	}
 
 	public AnimatedEntity stopAnimation() {
@@ -464,6 +473,11 @@ public class AnimatedEntity extends Entity {
 		return this._animationRunning;
 	}
 
+	public AnimatedEntity setDelay(long d) {
+		_animation.setDelay(d);
+		return this;
+	}
+	
 	public AnimatedEntity setCurrentFrameIndex(int idx) {
 		_animation.setCurrentFrameIndex(idx);
 		return this;
@@ -473,9 +487,34 @@ public class AnimatedEntity extends Entity {
 		return _animation.length;
 	}
 
+	public AnimatedEntity setMaxFrame(int max) {
+		_animation.setMaxFrame(max);
+		return this;
+	}
+
+	public int getMaxFrame() {
+		return _animation.getMaxFrame();
+	}
+
 	public AnimatedEntity setPlayIndex(String key, PlayIndex play) {
 		_playEvents.put(key, play);
 		return this;
+	}
+
+	public AnimatedEntity setPlayIndex(String key, int[] animates) {
+		return setPlayIndex(key, PlayIndex.at(animates));
+	}
+
+	public AnimatedEntity setPlayIndex(String key, long frameTime, int[] animates) {
+		return setPlayIndex(key, PlayIndex.at(frameTime, animates));
+	}
+
+	public AnimatedEntity setPlayIndex(String key, long frameTime, int startIdx, int endIdx) {
+		return setPlayIndex(key, PlayIndex.at(frameTime, startIdx, endIdx));
+	}
+
+	public AnimatedEntity setPlayIndex(String key, long[] frameTime, int startIdx, int endIdx) {
+		return setPlayIndex(key, PlayIndex.at(frameTime, startIdx, endIdx));
 	}
 
 	public PlayIndex getPlayIndex(String key) {
@@ -487,12 +526,27 @@ public class AnimatedEntity extends Entity {
 		return this;
 	}
 
+	@Override
+	public int size() {
+		return _playEvents.size;
+	}
+
 	public boolean isAnimationDispose() {
 		return _animationDispose;
 	}
 
-	public void setAnimationDispose(boolean dispose) {
+	public AnimatedEntity setAnimationDispose(boolean dispose) {
 		this._animationDispose = dispose;
+		return this;
+	}
+
+	public FrameListener getFrameListener() {
+		return _animation.getFrameListener();
+	}
+
+	public AnimatedEntity setFrameListener(FrameListener listener) {
+		this._animation.setFrameListener(listener);
+		return this;
 	}
 
 	@Override

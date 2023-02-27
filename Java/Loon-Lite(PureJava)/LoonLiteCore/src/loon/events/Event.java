@@ -20,6 +20,8 @@
  */
 package loon.events;
 
+import loon.utils.StrBuilder;
+
 public abstract class Event {
 
 	public static final int F_PREVENT_DEFAULT = 1 << 0;
@@ -29,7 +31,7 @@ public abstract class Event {
 	protected static final int F_SHIFT_DOWN = 1 << 3;
 	protected static final int F_META_DOWN = 1 << 4;
 
-	public static class Input extends Event {
+	public static class InputEvent extends Event {
 
 		public int flags;
 
@@ -74,7 +76,7 @@ public abstract class Event {
 
 		@Override
 		public String toString() {
-			StringBuilder builder = new StringBuilder(name()).append('[');
+			StrBuilder builder = new StrBuilder(name()).append('[');
 			addFields(builder);
 			return builder.append(']').toString();
 		}
@@ -93,7 +95,7 @@ public abstract class Event {
 			return flags;
 		}
 
-		protected Input(int flags, double time) {
+		protected InputEvent(int flags, double time) {
 			this.flags = flags;
 			this.time = time;
 		}
@@ -102,17 +104,27 @@ public abstract class Event {
 			return "Input";
 		}
 
-		protected void addFields(StringBuilder builder) {
+		protected void addFields(StrBuilder builder) {
 			builder.append("time=").append(time).append(", flags=")
 					.append(flags);
 		}
 	}
 
-	public static class XY extends Input implements loon.geom.XY {
+	public static class XYEvent extends InputEvent implements loon.geom.XY {
 
 		public final float x;
 
 		public final float y;
+		
+		public int x()
+        {
+            return (int)x;
+        }
+
+        public int y()
+        {
+            return (int)y;
+        }
 
 		@Override
 		public float getX() {
@@ -124,7 +136,7 @@ public abstract class Event {
 			return y;
 		}
 
-		protected XY(int flags, double time, float x, float y) {
+		protected XYEvent(int flags, double time, float x, float y) {
 			super(flags, time);
 			this.x = x;
 			this.y = y;
@@ -136,7 +148,7 @@ public abstract class Event {
 		}
 
 		@Override
-		protected void addFields(StringBuilder builder) {
+		protected void addFields(StrBuilder builder) {
 			super.addFields(builder);
 			builder.append(", x=").append(x).append(", y=").append(y);
 		}

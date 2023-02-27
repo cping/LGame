@@ -36,6 +36,7 @@ import loon.geom.RectF;
 import loon.opengl.GLEx;
 import loon.opengl.LSTRDictionary;
 import loon.utils.MathUtils;
+import loon.utils.StrBuilder;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 import loon.utils.timer.LTimer;
@@ -73,11 +74,11 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 
 	}
 
+	private final ActionKey _touchEvent = new ActionKey(ActionKey.NORMAL);
+
+	private final ActionKey _keyEvent = new ActionKey(ActionKey.NORMAL);
+
 	private ClickEvent _menuSelectedEvent;
-
-	private ActionKey _touchEvent = new ActionKey(ActionKey.NORMAL);
-
-	private ActionKey _keyEvent = new ActionKey(ActionKey.NORMAL);
 
 	private CallFunction _function;
 
@@ -129,44 +130,44 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 		return new LMenuSelect(labels, 0, 0);
 	}
 
-	public static LMenuSelect make(String labels, int x, int y) {
+	public static LMenuSelect make(String labels, float x, float y) {
 		return new LMenuSelect(labels, x, y);
 	}
 
-	public static LMenuSelect make(String[] labels, int x, int y) {
+	public static LMenuSelect make(String[] labels, float x, float y) {
 		return new LMenuSelect(labels, x, y);
 	}
 
-	public static LMenuSelect make(IFont font, String[] labels, int x, int y) {
+	public static LMenuSelect make(IFont font, String[] labels, float x, float y) {
 		return new LMenuSelect(font, labels, x, y);
 	}
 
-	public static LMenuSelect make(IFont font, String[] labels, String path, int x, int y) {
+	public static LMenuSelect make(IFont font, String[] labels, String path, float x, float y) {
 		return new LMenuSelect(font, labels, path, x, y);
 	}
 
-	public static LMenuSelect make(IFont font, String[] labels, LTexture bg, int x, int y) {
+	public static LMenuSelect make(IFont font, String[] labels, LTexture bg, float x, float y) {
 		return new LMenuSelect(font, labels, bg, x, y);
 	}
 
-	public LMenuSelect(String labels, int x, int y) {
+	public LMenuSelect(String labels, float x, float y) {
 		this(StringUtils.split(labels, ','), x, y);
 	}
 
-	public LMenuSelect(String[] labels, int x, int y) {
+	public LMenuSelect(String[] labels, float x, float y) {
 		this(LSystem.getSystemGameFont(), labels, x, y);
 	}
 
-	public LMenuSelect(IFont font, String[] labels, int x, int y) {
+	public LMenuSelect(IFont font, String[] labels, float x, float y) {
 		this(font, labels, (LTexture) null, x, y);
 	}
 
-	public LMenuSelect(IFont font, String[] labels, String path, int x, int y) {
+	public LMenuSelect(IFont font, String[] labels, String path, float x, float y) {
 		this(font, labels, LSystem.loadTexture(path), x, y);
 	}
 
-	public LMenuSelect(IFont font, String[] labels, LTexture bg, int x, int y) {
-		this(x, y, 1, 1);
+	public LMenuSelect(IFont font, String[] labels, LTexture bg, float x, float y) {
+		this((int) x, (int) y, 1, 1);
 		this.selectRectColor = LColor.white;
 		this.selectedFillColor = LColor.blue;
 		this.selectBackgroundColor = LColor.blue.darker();
@@ -213,12 +214,20 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 		return setImageFlag(LSystem.loadTexture(path));
 	}
 
+	public LMenuSelect update(String labels) {
+		return setLabels(labels);
+	}
+
 	public LMenuSelect setLabels(String labels) {
 		return setLabels(StringUtils.split(labels, ','));
 	}
 
+	public LMenuSelect update(String[] labels) {
+		return setLabels(labels);
+	}
+
 	public LMenuSelect setLabels(String[] labels) {
-		_labels = labels;
+		this._labels = labels;
 		if (_labels != null) {
 			_selectCountMax = labels.length;
 			_selectRects = new RectF[_selectCountMax];
@@ -242,8 +251,8 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 				lastHeight = maxHeight;
 				for (CharSequence ch : chars) {
 					maxWidth = MathUtils.max(maxWidth,
-							FontUtils.measureText(_font, ch) + _font.getHeight() + _flagWidth + _flag_text_space);
-					height += MathUtils.max(_font.stringHeight(new StringBuilder(ch).toString()), _flagHeight);
+							FontUtils.measureText(_font, ch) + _font.getHeight() + _flagWidth + _flag_text_space) ;
+					height += MathUtils.max(_font.stringHeight(new StrBuilder(ch).toString()), _flagHeight);
 				}
 				if (maxWidth > lastWidth) {
 					for (int j = 0; j < _selectRects.length; j++) {
@@ -267,7 +276,6 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 			if (_font instanceof LFont) {
 				LSTRDictionary.get().bind((LFont) _font, _labels);
 			}
-
 		}
 		return this;
 	}
@@ -354,8 +362,8 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 		int color = g.color();
 		g.setColor(selectedFillColor.getRed(), selectedFillColor.getGreen(), selectedFillColor.getBlue(),
 				(int) (155 * MathUtils.max(0.5f, colorUpdate.getPercentage())));
-		g.fillRect(x, y, width, height);
-		g.drawRect(x, y, width - 2, height - 2);
+		g.fillRect(x, y - 2, width, height);
+		g.drawRect(x, y - 2, width - 2, height - 2);
 		g.setColor(color);
 
 	}
@@ -610,16 +618,17 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 		return selectBackgroundColor.cpy();
 	}
 
-	public void setSelectBackgroundColor(LColor selectBackgroundColor) {
-		this.selectBackgroundColor = selectBackgroundColor;
+	public void setSelectBackgroundColor(LColor s) {
+		this.selectBackgroundColor = new LColor(s);
 	}
 
 	public LColor getSelectFlagColor() {
 		return selectFlagColor.cpy();
 	}
 
-	public void setSelectFlagColor(LColor selectFlagColor) {
-		this.selectFlagColor = selectFlagColor;
+	public LMenuSelect setSelectFlagColor(LColor s) {
+		this.selectFlagColor = new LColor(s);
+		return this;
 	}
 
 	@Override

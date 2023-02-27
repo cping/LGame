@@ -31,24 +31,24 @@ import loon.utils.TArray;
  */
 public class Hitbox {
 
-	private TArray<Polygon> shapes;
+	private TArray<Polygon> _shapes;
 
 	public Hitbox() {
-		shapes = new TArray<Polygon>();
+		_shapes = new TArray<Polygon>();
 	}
 
 	public Hitbox(Polygon shape) {
-		shapes = new TArray<Polygon>();
-		shapes.add(shape);
+		_shapes = new TArray<Polygon>();
+		_shapes.add(shape);
 	}
 
 	public void addShape(Polygon shape) {
-		shapes.add(shape);
+		_shapes.add(shape);
 	}
 
 	public boolean contains(Hitbox other) {
-		for (Shape s : shapes) {
-			for (Shape o : other.shapes) {
+		for (Shape s : _shapes) {
+			for (Shape o : other._shapes) {
 				if (s.contains(o)) {
 					return true;
 				}
@@ -58,8 +58,8 @@ public class Hitbox {
 	}
 
 	public boolean intersects(Hitbox other) {
-		for (Shape s : shapes) {
-			for (Shape o : other.shapes) {
+		for (Shape s : _shapes) {
+			for (Shape o : other._shapes) {
 				if (s.intersects(o)) {
 					return true;
 				}
@@ -69,13 +69,13 @@ public class Hitbox {
 	}
 
 	public void moveX(float d) {
-		for (Shape s : shapes) {
+		for (Shape s : _shapes) {
 			s.setX((float) (s.getX() + d));
 		}
 	}
 
 	public void moveY(float d) {
-		for (Shape s : shapes) {
+		for (Shape s : _shapes) {
 			s.setY((float) (s.getY() + d));
 		}
 	}
@@ -83,7 +83,7 @@ public class Hitbox {
 	public void draw(GLEx g, LColor color) {
 		int current = g.color();
 		g.setColor(color);
-		for (Shape s : shapes) {
+		for (Shape s : _shapes) {
 			g.fill(s);
 			g.draw(s);
 		}
@@ -91,32 +91,32 @@ public class Hitbox {
 	}
 
 	public void setX(float x) {
-		for (Shape s : shapes) {
+		for (Shape s : _shapes) {
 			s.setX(x);
 		}
 	}
 
 	public void setY(float y) {
-		for (Shape s : shapes) {
+		for (Shape s : _shapes) {
 			s.setY(y);
 		}
 	}
 
 	public void setCenterX(float x) {
-		for (Shape s : shapes) {
+		for (Shape s : _shapes) {
 			s.setCenterX(x);
 		}
 	}
 
 	public void setCenterY(float y) {
-		for (Polygon s : shapes) {
+		for (Polygon s : _shapes) {
 			s.setCenterY(y);
 		}
 	}
 
 	public Hitbox copy(float dx, float dy) {
 		Hitbox copy = new Hitbox();
-		for (Polygon s : shapes) {
+		for (Polygon s : _shapes) {
 			Polygon shapeCopy = s.cpy();
 			copy.addShape(shapeCopy);
 		}

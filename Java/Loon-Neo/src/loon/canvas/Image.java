@@ -76,6 +76,12 @@ public abstract class Image extends TextureSource implements Canvas.Drawable, LR
 		return canvas.image;
 	}
 
+	public static Image getResize(final Image image, float x, float y, float w, float h) {
+		Canvas canvas = LSystem.base().graphics().createCanvas(w, h);
+		canvas.draw(image, 0, 0, w, h, x, y, image.width(), image.height());
+		return canvas.image;
+	}
+
 	public static Image drawClipImage(final Image image, int objectWidth, int objectHeight, int x1, int y1, int x2,
 			int y2) {
 		Canvas canvas = LSystem.base().graphics().createCanvas(objectWidth, objectHeight);
@@ -457,10 +463,10 @@ public abstract class Image extends TextureSource implements Canvas.Drawable, LR
 		if (obj == null) {
 			return false;
 		}
-        if(obj instanceof Image){
-        	return equals((Image)obj);
-        }
-        return false;
+		if (obj instanceof Image) {
+			return equals((Image) obj);
+		}
+		return false;
 	}
 
 	public boolean equals(final Image dst) {
@@ -490,7 +496,7 @@ public abstract class Image extends TextureSource implements Canvas.Drawable, LR
 		}
 		return true;
 	}
-	
+
 	@Override
 	public final void close() {
 		if (!this.isTexture) {
@@ -506,5 +512,5 @@ public abstract class Image extends TextureSource implements Canvas.Drawable, LR
 	}
 
 	protected abstract void closeImpl();
-	
+
 }

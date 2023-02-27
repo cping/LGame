@@ -15,7 +15,6 @@ module loon.core {
 	exports loon.action.page;
 	exports loon.action.sprite;
 	exports loon.action.sprite.effect;
-	exports loon.action.sprite.painting;
 	exports loon.canvas;
 	exports loon.component;
 	exports loon.component.layout;

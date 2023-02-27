@@ -52,6 +52,10 @@ public class Triangle2f extends Shape implements Triangle {
 		set(x, y, w, h);
 	}
 
+	public Triangle2f(Vector2f t1, Vector2f t2, Vector2f t3) {
+		this(t1.x, t1.y, t2.x, t2.y, t3.x, t3.y);
+	}
+
 	public Triangle2f(float x1, float y1, float x2, float y2, float x3, float y3) {
 		this();
 		float dx1 = x2 - x1;
@@ -191,6 +195,23 @@ public class Triangle2f extends Shape implements Triangle {
 		findCenter();
 		calculateRadius();
 		pointsDirty = true;
+	}
+
+	public boolean isInside(XY p) {
+		return isInside(new Vector2f(getX1(), getY1()), new Vector2f(getX2(), getY2()), new Vector2f(getX3(), getY3()),
+				p);
+	}
+
+	public static boolean isInside(XY x, XY y, XY z, XY p) {
+		Vector2f v1 = new Vector2f(y.getX() - x.getX(), y.getY() - x.getY());
+		Vector2f v2 = new Vector2f(z.getX() - x.getX(), z.getY() - x.getY());
+
+		float det = v1.x * v2.y - v2.x * v1.y;
+		Vector2f tmp = new Vector2f(p.getX() - x.getX(), p.getY() - x.getY());
+		float lambda = (tmp.x * v2.y - v2.x * tmp.y) / det;
+		float mue = (v1.x * tmp.y - tmp.x * v1.y) / det;
+
+		return (lambda > 0 && mue > 0 && (lambda + mue) < 1);
 	}
 
 	public boolean isInside(float nx, float ny) {

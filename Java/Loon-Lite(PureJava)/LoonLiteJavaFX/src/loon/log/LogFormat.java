@@ -21,7 +21,6 @@
 package loon.log;
 
 import loon.LSystem;
-import loon.fx.JavaFXGame;
 
 public class LogFormat {
 
@@ -46,7 +45,7 @@ public class LogFormat {
 	private boolean show;
 
 	protected final int[] logTypeStyle;
-
+	
 	protected int logType;
 
 	public LogFormat(boolean s, int t) {
@@ -134,20 +133,16 @@ public class LogFormat {
 	}
 
 	public synchronized void out(String tm, String app, String level, String msg) {
-		if (JavaFXGame.isJavaFXDesktop()) {
-			String value[] = { tm, app, level, msg };
-			if (count++ % 9999 == 0) {
-				logMsg = new StringBuffer(formatString(LOG_TAG, "-", " ")).append(LSystem.LS)
-						.append(formatString(LOG_TITLE, " ", " ")).append(LSystem.LS)
-						.append(formatString(LOG_TAG, "-", " ")).append(LSystem.LS)
-						.append(formatString(value, " ", " ")).append(LSystem.LS).toString();
-			} else {
-				logMsg = formatString(value, " ", " ", false) + LSystem.LS;
-			}
-			out(logMsg);
+		String value[] = { tm, app, level, msg };
+		if (count++ % 9999 == 0) {
+			logMsg = new StringBuffer(formatString(LOG_TAG, "-", " ")).append(LSystem.LS)
+					.append(formatString(LOG_TITLE, " ", " ")).append(LSystem.LS)
+					.append(formatString(LOG_TAG, "-", " ")).append(LSystem.LS).append(formatString(value, " ", " "))
+					.append(LSystem.LS).toString();
 		} else {
-			out(msg);
+			logMsg = formatString(value, " ", " ", false) + LSystem.LS;
 		}
+		out(logMsg);
 	}
 
 }

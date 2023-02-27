@@ -20,11 +20,8 @@
  */
 package loon.utils;
 
+import loon.LRelease;
 import loon.LSysException;
-import loon.utils.CollectionUtils;
-import loon.utils.IArray;
-import loon.utils.LIterator;
-import loon.utils.MathUtils;
 
 /**
  * key-value形式的数据集合,无序排列,作用近似于HashMap,在大数据存储上性能比HashMap更好<br>
@@ -33,7 +30,7 @@ import loon.utils.MathUtils;
  * @param <K>
  * @param <V>
  */
-public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray {
+public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray,LRelease {
 
 	private Values<V> values1, values2;
 
@@ -1110,22 +1107,28 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray 
 		if (size == 0) {
 			return "[]";
 		}
-		StringBuilder sb = new StringBuilder();
-		sb.append('[');
+		StrBuilder sbr = new StrBuilder();
+		sbr.append('[');
 		boolean first = true;
 		for (int i = iterateFirst(); i != NO_INDEX; i = iterateNext(i)) {
 			if (first) {
 				first = false;
 			} else {
-				sb.append(", ");
+				sbr.append(", ");
 			}
 			Object key = i == NULL_INDEX ? null : keyValueTable[(i << keyIndexShift) + 1];
 			Object value = keyIndexShift > 0 ? keyValueTable[(i << keyIndexShift) + 2] : FINAL_VALUE;
-			sb.append(key == this ? "(this Map)" : key);
-			sb.append('=');
-			sb.append(value == this ? "(this Map)" : value);
+			sbr.append(key == this ? "(this Map)" : key);
+			sbr.append('=');
+			sbr.append(value == this ? "(this Map)" : value);
 		}
-		return sb.append(']').toString();
+		return sbr.append(']').toString();
+	}
+
+	@Override
+	public void close() {
+		this.size = 0;
+		this.keyValueTable = null;
 	}
 
 }

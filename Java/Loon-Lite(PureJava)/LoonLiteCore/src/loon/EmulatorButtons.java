@@ -22,7 +22,6 @@ package loon;
 
 import loon.LSystem;
 import loon.LTexture.Format;
-import loon.action.sprite.SpriteBatch;
 import loon.opengl.GLEx;
 import loon.opengl.LTexturePack;
 
@@ -320,23 +319,6 @@ public class EmulatorButtons implements LRelease {
 	}
 
 	public void draw(GLEx g) {
-		if (!visible) {
-			return;
-		}
-		float tmp = g.alpha();
-		g.setAlpha(ealpha);
-		up.draw(g);
-		left.draw(g);
-		right.draw(g);
-		down.draw(g);
-		triangle.draw(g);
-		square.draw(g);
-		circle.draw(g);
-		cancel.draw(g);
-		g.setAlpha(tmp);
-	}
-
-	public void draw(SpriteBatch g) {
 		if (!visible) {
 			return;
 		}

@@ -25,18 +25,23 @@ import loon.LSysException;
 import loon.PlayerUtils;
 import loon.action.ActionBind;
 import loon.action.ActionTween;
+import loon.action.collision.CollisionHelper;
 import loon.action.map.Field2D;
 import loon.canvas.LColor;
 import loon.component.layout.Margin;
 import loon.events.EventDispatcher;
 import loon.font.FontSet;
 import loon.font.IFont;
+import loon.geom.RectBox;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
 import loon.utils.TArray;
 import loon.utils.Easing.EasingMode;
 
+/**
+ * Sprite组件的群组化操作控制器，可以同时改变一组精灵的参数或动画事件
+ */
 public class SpriteControls {
 
 	public static float getChildrenHeight(Sprites s) {
@@ -96,6 +101,60 @@ public class SpriteControls {
 		this._sprs = new TArray<ISprite>();
 	}
 
+	public TArray<ISprite> list(){
+		return this._sprs;
+	}
+	
+	public TArray<ISprite> intersects(RectBox rect) {
+		TArray<ISprite> sprites = new TArray<ISprite>();
+		for (ISprite child : this._sprs) {
+			if (child != null) {
+				if (rect.intersects(child.getX(), child.getY(), child.getWidth(), child.getHeight())) {
+					sprites.add(child);
+				}
+			}
+		}
+		return sprites;
+	}
+
+	public TArray<ISprite> intersects(float x, float y, float width, float height) {
+		TArray<ISprite> sprites = new TArray<ISprite>();
+		for (ISprite child : this._sprs) {
+			if (child != null) {
+				if (CollisionHelper.intersects(x, y, width, height, child.getX(), child.getY(), child.getWidth(),
+						child.getHeight())) {
+					sprites.add(child);
+				}
+			}
+		}
+		return sprites;
+	}
+
+	public TArray<ISprite> contains(RectBox rect) {
+		TArray<ISprite> sprites = new TArray<ISprite>();
+		for (ISprite child : this._sprs) {
+			if (child != null) {
+				if (rect.contains(child.getX(), child.getY(), child.getWidth(), child.getHeight())) {
+					sprites.add(child);
+				}
+			}
+		}
+		return sprites;
+	}
+
+	public TArray<ISprite> contains(float x, float y, float width, float height) {
+		TArray<ISprite> sprites = new TArray<ISprite>();
+		for (ISprite child : this._sprs) {
+			if (child != null) {
+				if (CollisionHelper.contains(x, y, width, height, child.getX(), child.getY(), child.getWidth(),
+						child.getHeight())) {
+					sprites.add(child);
+				}
+			}
+		}
+		return sprites;
+	}
+	
 	public SpriteControls add(ISprite spr) {
 		if (spr == null) {
 			throw new LSysException("ISprite cannot be null.");

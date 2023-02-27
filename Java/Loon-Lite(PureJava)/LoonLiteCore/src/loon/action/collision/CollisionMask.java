@@ -27,6 +27,9 @@ import loon.canvas.LColor;
 import loon.canvas.Pixmap;
 import loon.geom.PointF;
 import loon.geom.Polygon;
+import loon.geom.RectBox;
+import loon.geom.Vector2f;
+import loon.utils.FloatArray;
 import loon.utils.TArray;
 
 /**
@@ -163,4 +166,40 @@ public class CollisionMask {
 		return polygon;
 	}
 
+	/**
+	 * 转换顶点数据为Vector2f对象
+	 * 
+	 * @param vertices
+	 * @return
+	 */
+	public TArray<Vector2f> convertPoints(float[] vertices) {
+		TArray<Vector2f> vectores = new TArray<Vector2f>();
+		for (int i = 0; i < vertices.length; i = i + 2) {
+			vectores.add(new Vector2f(vertices[i], vertices[i + 1]));
+		}
+		return vectores;
+	}
+	
+	/**
+	 * 转换矩形对象为顶点数据
+	 * 
+	 * @param rect
+	 * @return
+	 */
+	public static float[] getRectVertices(RectBox rect) {
+		FloatArray vertices = new FloatArray();
+		float x1 = rect.x, y1 = rect.y, x2 = rect.x + rect.width, y2 = rect.y,
+				x3 = rect.x + rect.width, y3 = rect.y + rect.height, x4 = rect.x,
+				y4 = rect.y + rect.height;
+		vertices.add(x1);
+		vertices.add(y1);
+		vertices.add(x2);
+		vertices.add(y2);
+		vertices.add(x3);
+		vertices.add(y3);
+		vertices.add(x4);
+		vertices.add(y4);
+		return vertices.toArray();
+	}
+	
 }

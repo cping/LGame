@@ -22,7 +22,6 @@ package loon.geom;
 
 import java.io.Serializable;
 import java.nio.FloatBuffer;
-import java.util.Collection;
 
 import loon.LSysException;
 import loon.LSystem;
@@ -30,6 +29,7 @@ import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 import loon.utils.StringKeyValue;
 import loon.utils.StringUtils;
+import loon.utils.TArray;
 
 public class Matrix3 implements Serializable, XY {
 
@@ -71,7 +71,7 @@ public class Matrix3 implements Serializable, XY {
 		this.set(values);
 	}
 
-	public Matrix3(float mat[], int offset) {
+	public Matrix3(float[] mat, int offset) {
 		this.val = new float[9];
 		for (int i = 0; i < 9; i++) {
 			this.val[i] = mat[i + offset];
@@ -95,6 +95,39 @@ public class Matrix3 implements Serializable, XY {
 		val[M02] = affine.tx;
 		val[M12] = affine.ty;
 		val[M22] = 1;
+
+		return this;
+	}
+
+	public Matrix3 setToOrtho2D(float x, float y, float width, float height) {
+		setToOrtho(x, x + width, y + height, y, 1f, -1f);
+		return this;
+	}
+
+	public Matrix3 setToOrtho2D(float x, float y, float width, float height, float near, float far) {
+		setToOrtho(x, x + width, y + height, y, near, far);
+		return this;
+	}
+
+	public Matrix3 setToOrtho(float left, float right, float bottom, float top, float near, float far) {
+
+		float x_orth = 2 / (right - left);
+		float y_orth = 2 / (top - bottom);
+		float z_orth = -2 / (far - near);
+
+		float tx = -(right + left) / (right - left);
+		float ty = -(top + bottom) / (top - bottom);
+		float tz = -(far + near) / (far - near);
+
+		val[M00] = x_orth;
+		val[M10] = 0;
+		val[M20] = z_orth;
+		val[M01] = y_orth;
+		val[M11] = 0;
+		val[M21] = z_orth;
+		val[M02] = tx;
+		val[M12] = ty;
+		val[M22] = tz;
 
 		return this;
 	}
@@ -135,6 +168,13 @@ public class Matrix3 implements Serializable, XY {
 		val[M12] = v12;
 		val[M22] = v22;
 
+		return this;
+	}
+
+	public Matrix3 mul(Affine2f aff) {
+		Matrix3 m = new Matrix3();
+		m.set(aff);
+		mul(val, m.val);
 		return this;
 	}
 
@@ -552,7 +592,7 @@ public class Matrix3 implements Serializable, XY {
 
 	public void transform(float[] source, int sourceOffset, float[] destination, int destOffset, int numberOfPoints) {
 
-		float result[] = source == destination ? new float[numberOfPoints * 2] : destination;
+		float[] result = source == destination ? new float[numberOfPoints * 2] : destination;
 
 		for (int i = 0; i < numberOfPoints * 2; i += 2) {
 			for (int j = 0; j < 6; j += 3) {
@@ -675,7 +715,7 @@ public class Matrix3 implements Serializable, XY {
 		this.val[8] = 1;
 	}
 
-	private float[] result = new float[16];
+	private final float[] result = new float[16];
 
 	public float[] get() {
 		result[0] = this.val[0];
@@ -871,7 +911,7 @@ public class Matrix3 implements Serializable, XY {
 		return valid;
 	}
 
-	public final static Matrix3 avg(Collection<Matrix3> set) {
+	public final static Matrix3 avg(TArray<Matrix3> set) {
 		Matrix3 average = new Matrix3();
 		average.set(0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f);
 		float hist = 0;
@@ -900,6 +940,49 @@ public class Matrix3 implements Serializable, XY {
 		transform(in, 0, out, 0, 1);
 
 		return new Vector2f(out[0], out[1]);
+	}
+
+	public RectBox transform(RectBox rect) {
+
+		float top = rect.getMinX();
+		float left = rect.getMinX();
+		float right = rect.getMaxX();
+		float bottom = rect.getMaxY();
+
+		PointF topLeft = new PointF(left, top);
+		PointF topRight = new PointF(right, top);
+		PointF bottomLeft = new PointF(left, bottom);
+		PointF bottomRight = new PointF(right, bottom);
+
+		transform(topLeft);
+		transform(topRight);
+		transform(bottomLeft);
+		transform(bottomRight);
+
+		float minX = MathUtils.min(MathUtils.min(topLeft.x, topRight.x), MathUtils.min(bottomLeft.x, bottomRight.x));
+		float maxX = MathUtils.max(MathUtils.max(topLeft.x, topRight.x), MathUtils.max(bottomLeft.x, bottomRight.x));
+		float minY = MathUtils.min(MathUtils.min(topLeft.y, topRight.y), MathUtils.min(bottomLeft.y, bottomRight.y));
+		float maxY = MathUtils.max(MathUtils.max(topLeft.y, topRight.y), MathUtils.max(bottomLeft.y, bottomRight.y));
+
+		return rect.setBounds(minX, minY, (maxX - minX), (maxY - minY));
+	}
+
+	public PointF transform(PointF pt) {
+		float[] in = new float[] { pt.x, pt.y };
+		float[] out = new float[2];
+
+		transform(in, 0, out, 0, 1);
+
+		return new PointF(out[0], out[1]);
+	}
+
+	public PointI transform(PointI pt) {
+		float[] in = new float[] { pt.x, pt.y };
+		float[] out = new float[2];
+
+		transform(in, 0, out, 0, 1);
+
+		return new PointI((int) out[0], (int) out[1]);
 	}
 
 	public Matrix3 cpy() {
@@ -931,7 +1014,7 @@ public class Matrix3 implements Serializable, XY {
 		}
 	}
 
-	public static void mul(float result[], Matrix3 m, float v[]) {
+	public static void mul(float[] result, Matrix3 m, float[] v) {
 		float a, b, c;
 		a = m.get(0, 0) * v[0] + m.get(1, 0) * v[1] + m.get(2, 0) * v[2];
 		b = m.get(0, 1) * v[0] + m.get(1, 1) * v[1] + m.get(2, 1) * v[2];
@@ -948,9 +1031,9 @@ public class Matrix3 implements Serializable, XY {
 		float sinay = MathUtils.sin(MathUtils.toRadians(ay));
 		float cosaz = MathUtils.cos(MathUtils.toRadians(az));
 		float sinaz = MathUtils.sin(MathUtils.toRadians(az));
-		float tx[] = { 1, 0, 0, 0, cosax, -sinax, 0, sinax, cosax };
-		float ty[] = { cosay, 0, sinay, 0, 1.f, 0.f, -sinay, 0, cosay };
-		float tz[] = { cosaz, -sinaz, 0, sinaz, cosaz, 0, 0, 0, 1 };
+		float[] tx = { 1, 0, 0, 0, cosax, -sinax, 0, sinax, cosax };
+		float[] ty = { cosay, 0, sinay, 0, 1f, 0f, -sinay, 0, cosay };
+		float[] tz = { cosaz, -sinaz, 0, sinaz, cosaz, 0, 0, 0, 1 };
 		Matrix3 Rx = new Matrix3(tx);
 		Matrix3 Ry = new Matrix3(ty);
 		Matrix3 Rz = new Matrix3(tz);
@@ -962,7 +1045,7 @@ public class Matrix3 implements Serializable, XY {
 	}
 
 	public static float distance2d(float x1, float y1, float x2, float y2) {
-		return distance(x1, y1, 0.f, x2, y2, 0.f);
+		return distance(x1, y1, 0f, x2, y2, 0f);
 	}
 
 	public static float distance(float x1, float y1, float z1, float x2, float y2, float z2) {
@@ -975,7 +1058,7 @@ public class Matrix3 implements Serializable, XY {
 		boolean s;
 		boolean s2;
 
-		if (x2 - x1 != 0.f) {
+		if (x2 - x1 != 0f) {
 			a = (y2 - y1) / (x2 - x1);
 			b = y1 - a * x1;
 
@@ -1010,7 +1093,7 @@ public class Matrix3 implements Serializable, XY {
 			}
 		}
 
-		if (x3 - x2 != 0.f) {
+		if (x3 - x2 != 0f) {
 			a = (y3 - y2) / (x3 - x2);
 			b = y2 - a * x2;
 
@@ -1044,7 +1127,7 @@ public class Matrix3 implements Serializable, XY {
 			}
 		}
 
-		if (x1 - x3 != 0.f) {
+		if (x1 - x3 != 0f) {
 			a = (y1 - y3) / (x1 - x3);
 			b = y3 - a * x3;
 
@@ -1085,8 +1168,8 @@ public class Matrix3 implements Serializable, XY {
 
 	}
 
-	public static float[] convert33to44(float m33[], int offset) {
-		float m44[] = new float[16];
+	public static float[] convert33to44(float[] m33, int offset) {
+		float[] m44 = new float[16];
 
 		m44[0] = m33[0 + offset];
 		m44[1] = m33[1 + offset];
@@ -1155,14 +1238,22 @@ public class Matrix3 implements Serializable, XY {
 		return true;
 	}
 
+	public float getX(float x, float y) {
+		return x * val[M00] + y * val[M01] + val[M02];
+	}
+
+	public float getY(float x, float y) {
+		return x * val[M10] + y * val[M11] + val[M12];
+	}
+
 	@Override
 	public float getX() {
-		return tmp[M02];
+		return val[M02];
 	}
 
 	@Override
 	public float getY() {
-		return tmp[M12];
+		return val[M12];
 	}
 
 	@Override
@@ -1174,20 +1265,14 @@ public class Matrix3 implements Serializable, XY {
 		}
 		return result;
 	}
-	
+
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("Matrix3");
-		builder.newLine()
-		.addValue("[{0},{1},{2}]")
-		.newLine()
-		.addValue("[{3},{4}.{5}]")
-		.newLine()
-		.addValue("[{6},{7},{8}]")
-		.newLine();
-		return StringUtils.format(builder.toString(), val[M00], val[M01], val[M02], 
-				val[M10], val[M11], val[M12], 
+		builder.newLine().addValue("[{0},{1},{2}]").newLine().addValue("[{3},{4}.{5}]").newLine()
+				.addValue("[{6},{7},{8}]").newLine();
+		return StringUtils.format(builder.toString(), val[M00], val[M01], val[M02], val[M10], val[M11], val[M12],
 				val[M20], val[M21], val[M22]);
 	}
-	
+
 }

@@ -32,7 +32,9 @@ import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.utils.CollectionUtils;
 import loon.utils.IArray;
+import loon.utils.IntArray;
 import loon.utils.MathUtils;
+import loon.utils.StrBuilder;
 import loon.utils.TArray;
 
 /**
@@ -45,7 +47,7 @@ public class Field2D implements IArray, Config {
 
 	private final static float ANGULAR = 0.706F;
 
-	private String _objectName = "Field2D";
+	private String _fieldName = "Field2D";
 
 	private Vector2f _offset = new Vector2f();
 
@@ -68,6 +70,196 @@ public class Field2D implements IArray, Config {
 
 	private int width, height;
 
+	private IntArray allowMove;
+
+	public TArray<PointI> getPosOfLine(int x0, int y0, int x1, int y1) {
+		TArray<PointI> list = new TArray<PointI>();
+		int dx = MathUtils.abs(x1 - x0);
+		int dy = MathUtils.abs(y1 - y0);
+		int sx = (x0 < x1) ? 1 : -1;
+		int sy = (y0 < y1) ? 1 : -1;
+		int err = dx - dy;
+		for (;;) {
+			list.add(new PointI(x0, y1));
+			if ((x0 == x1) && (y0 == y1)) {
+				break;
+			}
+			int e2 = 2 * err;
+			if (e2 > -dy) {
+				err -= dy;
+				x0 += sx;
+			}
+			if (e2 < dx) {
+				err += dx;
+				y0 += sy;
+			}
+		}
+		return list;
+	}
+
+	public TArray<PointI> getPosOfParabola(int x0, int y0, int x1, int y1, int height) {
+		if (x0 == x1) {
+			return this.getPosOfLine(x0, y0, x1, y1);
+		}
+		TArray<PointI> list = new TArray<PointI>();
+		int top_y, start_x, start_y, dest_x, dest_y;
+		top_y = (y0 + y1) / 2 - height;
+		if (y0 > y1) {
+			start_y = y1;
+			dest_y = y0;
+		} else {
+			start_y = y0;
+			dest_y = y1;
+		}
+		if (x0 > x1) {
+			start_x = x1;
+			dest_x = x0;
+		} else {
+			dest_x = x1;
+			start_x = x0;
+		}
+		int k = (int) -MathUtils.sqrt((top_y - start_y) / (top_y - dest_y));
+		int v = (k * dest_x - start_x) / (k - 1);
+		int u = (top_y - start_y) / ((start_x - v) * (start_x - v));
+		for (int x = start_x; x <= dest_x; x++) {
+			int y = top_y - u * (x - v) * (x - v);
+			list.add(new PointI(x, y));
+		}
+		if (x0 > x1) {
+			list = list.reverse();
+		}
+		return list;
+	}
+
+	public TArray<PointI> getPosOfParabola(int x1, int y1, int x2, int y2, int x3, int y3) {
+		TArray<PointI> list = new TArray<PointI>();
+		int a = (x1 * (y3 - y2) - x2 * y3 + y2 * x3 + y1 * (x2 - x3))
+				/ (x1 * ((x3 * x3) - (x2 * x2)) - x2 * (x3 * x3) + (x2 * x2) * x3 + (x1 * x1) * (x2 - x3));
+		int b = -((x1 * x1) * (y3 - y2) - (x2 * x2) * y3 + y2 * (x3 * x3) + y1 * ((x2 * x2) - (x3 * x3)))
+				/ (x1 * ((x3 * x3) - (x2 * x2)) - x2 * (x3 * x3) + (x2 * x2) * x3 + (x1 * x1) * (x2 - x3));
+		int c = (x1 * (y2 * (x3 * x3) - (x2 * x2) * y3) + (x1 * x1) * (x2 * y3 - y2 * x3)
+				+ y1 * ((x2 * x2) * x3 - x2 * (x3 * x3)))
+				/ (x1 * ((x3 * x3) - (x2 * x2)) - x2 * (x3 * x3) + (x2 * x2) * x3 + (x1 * x1) * (x2 - x3));
+		int start_x;
+		int end_x;
+		if (x1 <= x3) {
+			start_x = x1;
+			end_x = x3;
+		} else {
+			start_x = x3;
+			end_x = x1;
+		}
+		for (int x = start_x; x <= end_x; x++) {
+			int y = a * x * x + b * x + c;
+			list.add(new PointI(x, y));
+		}
+		return list;
+	}
+
+	public static final Vector2f shiftPosition(TArray<ActionBind> items, float x, float y, int direction) {
+		return shiftPosition(items, x, y, direction, null);
+	}
+
+	public static final Vector2f shiftPosition(TArray<ActionBind> items, float x, float y, int direction,
+			Vector2f output) {
+
+		if (output == null) {
+			output = new Vector2f();
+		}
+
+		float px;
+		float py;
+
+		if (items.size > 1) {
+			int i = 0;
+			float cx = 0f;
+			float cy = 0f;
+			ActionBind cur = null;
+
+			if (direction == 0) {
+				// 下方坐标转上方坐标
+
+				int len = items.size - 1;
+
+				ActionBind obj = items.get(len);
+				px = obj.getX();
+				py = obj.getY();
+
+				for (i = len - 1; i >= 0; i--) {
+
+					cur = items.get(i);
+					cx = cur.getX();
+					cy = cur.getX();
+
+					cur.setX(px);
+					cur.setY(py);
+
+					px = cx;
+					py = cy;
+				}
+				obj.setX(x);
+				obj.setX(y);
+			} else {
+				// 上方坐标转下方坐标
+
+				ActionBind obj = items.get(0);
+				px = obj.getX();
+				py = obj.getY();
+
+				for (i = 1; i < items.size; i++) {
+
+					cur = items.get(i);
+					cx = cur.getX();
+					cy = cur.getX();
+
+					cur.setX(px);
+					cur.setY(py);
+
+					px = cx;
+					py = cy;
+				}
+				obj.setX(x);
+				obj.setX(y);
+			}
+		} else {
+
+			ActionBind obj = items.get(0);
+			px = obj.getX();
+			py = obj.getY();
+			obj.setX(x);
+			obj.setX(y);
+		}
+
+		output.x = px;
+		output.y = py;
+
+		return output;
+	}
+
+	public final static Vector2f toXY(int index, int width, int height) {
+		Vector2f out = new Vector2f();
+		float nx = 0f;
+		float ny = 0f;
+		int total = width * height;
+		if (index > 0 && index <= total) {
+			if (index > width - 1) {
+				ny = MathUtils.floor(index / width);
+				nx = index - (ny * width);
+			} else {
+				nx = index;
+			}
+			out.set(nx, ny);
+		}
+		return out;
+	}
+
+	public static final float getRelation(float x, float x1, float x2, float y1, float y2, float scale) {
+		if (scale <= 0f) {
+			scale = 1f;
+		}
+		return ((y2 - y1) / MathUtils.pow((x2 - x1), scale) * 1f) * MathUtils.pow((x - x1), scale) + y1;
+	}
+
 	public static final float rotation(Vector2f source, Vector2f target) {
 		int nx = MathUtils.floor(target.getX() - source.getX());
 		int ny = MathUtils.floor(target.getY() - source.getY());
@@ -75,9 +267,9 @@ public class Field2D implements IArray, Config {
 	}
 
 	public static final int angle(Vector2f source, Vector2f target) {
-		int nx = target.x() - source.x();
-		int ny = target.y() - source.y();
-		int r = MathUtils.sqrt(nx * nx + ny * ny);
+		float nx = target.getX() - source.getX();
+		float ny = target.getY() - source.getY();
+		float r = MathUtils.sqrt(nx * nx + ny * ny);
 		float cos = nx / r;
 		int angle = MathUtils.floor(MathUtils.acos(cos) * 180 / MathUtils.PI);
 		if (ny < 0) {
@@ -193,6 +385,30 @@ public class Field2D implements IArray, Config {
 		return getDirectionToPoint(type, 1).cpy();
 	}
 
+	public static final String toDirection(int id) {
+		switch (id) {
+		default:
+		case Config.EMPTY:
+			return "EMPTY";
+		case Config.LEFT:
+			return "LEFT";
+		case Config.RIGHT:
+			return "RIGHT";
+		case Config.UP:
+			return "UP";
+		case Config.DOWN:
+			return "DOWN";
+		case Config.TLEFT:
+			return "TLEFT";
+		case Config.TRIGHT:
+			return "TRIGHT";
+		case Config.TDOWN:
+			return "TDOWN";
+		case Config.TUP:
+			return "TUP";
+		}
+	}
+
 	private static void insertArrays(int[][] arrays, int index, int px, int py) {
 		arrays[index][0] = px;
 		arrays[index][1] = py;
@@ -251,26 +467,30 @@ public class Field2D implements IArray, Config {
 	}
 
 	public static final int getDirection(Vector2f source, Vector2f target) {
-		if (source.x - target.x > 0) {
-			if (source.y - target.y > 0) {
+		return getDirection(source.x, source.y, target.x, target.y);
+	}
+
+	public static final int getDirection(float srcX, float srcY, float destX, float destY) {
+		if (srcX - destX > 0) {
+			if (srcY - destY > 0) {
 				return Config.LEFT;
-			} else if (source.y - target.y < 0) {
+			} else if (srcY - destY < 0) {
 				return Config.DOWN;
 			} else {
 				return Config.TLEFT;
 			}
-		} else if (source.x - target.x < 0) {
-			if (source.y - target.y > 0) {
+		} else if (srcX - destX < 0) {
+			if (srcY - destY > 0) {
 				return Config.UP;
-			} else if (source.y - target.y < 0) {
+			} else if (srcY - destY < 0) {
 				return Config.RIGHT;
 			} else {
 				return Config.TRIGHT;
 			}
 		} else {
-			if (source.y - target.y > 0) {
+			if (srcY - destY > 0) {
 				return Config.TUP;
-			} else if (source.y - target.y < 0) {
+			} else if (srcY - destY < 0) {
 				return Config.TDOWN;
 			} else {
 				return Config.EMPTY;
@@ -315,15 +535,15 @@ public class Field2D implements IArray, Config {
 	}
 
 	public Field2D(int w, int h) {
-		this(w, h, 32, 32, -1);
+		this(w, h, 32, 32, 0);
 	}
 
 	public Field2D(Screen screen, int tw, int th) {
-		this(MathUtils.floor(screen.getWidth() / tw), MathUtils.floor(screen.getHeight() / th), tw, th, -1);
+		this(MathUtils.floor(screen.getWidth() / tw), MathUtils.floor(screen.getHeight() / th), tw, th, 0);
 	}
 
 	public Field2D(int w, int h, int tw, int th) {
-		this(w, h, tw, th, -1);
+		this(w, h, tw, th, 0);
 	}
 
 	public Field2D(int w, int h, int tw, int th, int val) {
@@ -340,8 +560,31 @@ public class Field2D implements IArray, Config {
 		return setValues(val);
 	}
 
+	public Field2D cpy() {
+		return new Field2D(this);
+	}
+
 	public Field2D cpy(Field2D field) {
 		this.set(CollectionUtils.copyOf(field.mapArrays), field.tileWidth, field.tileHeight);
+		if (field._offset != null) {
+			this._offset = field._offset.cpy();
+		}
+		if (field._rectTemp != null) {
+			this._rectTemp = field._rectTemp.cpy();
+		}
+		this._tileImpl = field._tileImpl;
+		this.Tag = field.Tag;
+		if (field.result != null) {
+			this.result = field.result.cpy();
+		}
+		if (field.moveLimited != null) {
+			this.moveLimited = CollectionUtils.copyOf(field.moveLimited);
+		}
+		this.width = field.width;
+		this.height = field.height;
+		if (field.allowMove != null) {
+			this.allowMove = new IntArray(field.allowMove);
+		}
 		return this;
 	}
 
@@ -358,12 +601,17 @@ public class Field2D implements IArray, Config {
 		return getTile(x, y);
 	}
 
-	public Field2D set(int[][] mapArrays, int tw, int th) {
-		this.setMap(mapArrays);
+	public Field2D set(int[][] arrays, int tw, int th) {
+		if (this.allowMove == null) {
+			this.allowMove = new IntArray();
+		}
+		this.setMap(arrays);
 		this.setTileWidth(tw);
 		this.setTileHeight(th);
-		this.width = mapArrays[0].length;
-		this.height = mapArrays.length;
+		if (arrays != null) {
+			this.width = arrays[0].length;
+			this.height = arrays.length;
+		}
 		if (_tileImpl == null) {
 			this._tileImpl = new TileHelper(tileWidth, tileHeight);
 		} else {
@@ -402,18 +650,46 @@ public class Field2D implements IArray, Config {
 	}
 
 	public int getHexagonWidth() {
-		return MathUtils.floor(width / 3 * 2);
+		return MathUtils.floor(width / 3f * 2f);
 	}
 
 	public int getHexagonHeight() {
-		return MathUtils.floor(height / MathUtils.sqrt(3)) - 1;
+		return MathUtils.floor(height / MathUtils.sqrt(3f)) - 1;
 	}
 
 	public PointI pixelsHexagonToTiles(float x, float y) {
-		int sqrte = MathUtils.sqrt(3) / 3;
+		float sqrte = MathUtils.sqrt(3f) / 3f;
 		int hx = MathUtils.floor(2 / 3 * x / tileWidth);
-		int hy = (int) (sqrte * y / tileHeight + MathUtils.round(hx) % 2) * sqrte;
+		int hy = (int) ((sqrte * y / tileHeight + MathUtils.round(hx) % 2f) * sqrte);
 		return new PointI(hx, hy);
+	}
+
+	public PointI pixelsIsometricToTiles(float x, float y) {
+		int hx = MathUtils.floor(x / (tileWidth * 0.5f));
+		int hy = MathUtils.floor((y - hx * (tileHeight / 2f)) / tileHeight);
+		return new PointI(hx + hy, hy);
+	}
+
+	public PointI pixelsOrthogonalToTiles(float x, float y) {
+		int hx = MathUtils.floor(x / tileWidth);
+		int hy = MathUtils.floor(y / tileHeight);
+		return new PointI(hx, hy);
+	}
+
+	public int toPixelX(float x) {
+		return tilesToWidthPixels(x);
+	}
+
+	public int toPixelY(float y) {
+		return tilesToHeightPixels(y);
+	}
+
+	public int toTileX(float x) {
+		return pixelsToTilesWidth(x);
+	}
+
+	public int toTileY(float y) {
+		return pixelsToTilesHeight(y);
 	}
 
 	public int pixelsToTilesWidth(float x) {
@@ -460,9 +736,17 @@ public class Field2D implements IArray, Config {
 		return tileHeight;
 	}
 
+	public int getTileHalfHeight() {
+		return tileHeight / 2;
+	}
+
 	public Field2D setTileHeight(int tileHeight) {
 		this.tileHeight = tileHeight;
 		return this;
+	}
+
+	public int getTileHalfWidth() {
+		return tileWidth / 2;
 	}
 
 	public int getTileWidth() {
@@ -471,6 +755,35 @@ public class Field2D implements IArray, Config {
 
 	public Field2D setTileWidth(int tileWidth) {
 		this.tileWidth = tileWidth;
+		return this;
+	}
+
+	public Field2D addActionBindToMap(TArray<ActionBind> acts, ActionBind other) {
+		return addActionBindToMap(acts, -1, other);
+	}
+
+	public Field2D addActionBindToMap(TArray<ActionBind> acts, int flagid, ActionBind other) {
+		for (ActionBind act : acts) {
+			if (act != null && act != other) {
+				float x = act.getX();
+				float y = act.getY();
+				float w = act.getWidth();
+				float h = act.getHeight();
+				int dstTileX = pixelsToTilesWidth(x);
+				int dstTileY = pixelsToTilesHeight(y);
+				int dstTileWidth = dstTileX + pixelsToTilesWidth(w);
+				int dstTileHeight = dstTileY + pixelsToTilesWidth(h);
+				int fieldWidth = mapArrays[0].length;
+				int fieldHeight = mapArrays.length;
+				for (int i = 0; i < fieldHeight; i++) {
+					for (int j = 0; j < fieldWidth; j++) {
+						if (j > dstTileX && j < dstTileWidth && i > dstTileY && i < dstTileHeight) {
+							mapArrays[i][j] = flagid;
+						}
+					}
+				}
+			}
+		}
 		return this;
 	}
 
@@ -483,8 +796,27 @@ public class Field2D implements IArray, Config {
 		return this;
 	}
 
+	public Field2D setAllowMove(int[] args) {
+		this.allowMove.addAll(args);
+		return this;
+	}
+
 	public boolean contains(int x, int y) {
 		return x >= 0 && x < width && y >= 0 && y < height;
+	}
+
+	public Field2D replaceType(int oldid, int newid) {
+		int w = mapArrays[0].length;
+		int h = mapArrays.length;
+		for (int i = 0; i < h; i++) {
+			for (int j = 0; j < w; j++) {
+				int id = mapArrays[i][j];
+				if (id == oldid) {
+					mapArrays[i][j] = newid;
+				}
+			}
+		}
+		return this;
 	}
 
 	public boolean isTileType(int x, int y, int type) {
@@ -517,8 +849,11 @@ public class Field2D implements IArray, Config {
 		return CollectionUtils.copyOf(mapArrays);
 	}
 
-	public Field2D setMap(int[][] mapArrays) {
-		this.mapArrays = mapArrays;
+	public Field2D setMap(int[][] arrays) {
+		if (arrays == null) {
+			return this;
+		}
+		this.mapArrays = arrays;
 		return this;
 	}
 
@@ -532,8 +867,12 @@ public class Field2D implements IArray, Config {
 		return getPixelsAtFieldType(itsX, itsY);
 	}
 
+	public IntArray getAllowMove() {
+		return this.allowMove;
+	}
+
 	public boolean inside(int x, int y) {
-		return CollisionHelper.intersect(0, 0, getDrawWidth(), getDrawHeight(), x, y);
+		return CollisionHelper.intersects(0, 0, getDrawWidth(), getDrawHeight(), x, y);
 	}
 
 	public boolean inside(float x, float y) {
@@ -565,11 +904,12 @@ public class Field2D implements IArray, Config {
 
 	public boolean isHit(int px, int py) {
 		int type = get(mapArrays, px, py);
-		if (type == -1) {
+		if (type == -1 && !allowMove.contains(type)) {
 			return false;
 		}
 		if (moveLimited != null) {
-			for (int i = 0; i < moveLimited.length; i++) {
+			final int size = moveLimited.length - 1;
+			for (int i = size; i > -1; i--) {
 				if (moveLimited[i] == type) {
 					return false;
 				}
@@ -653,8 +993,20 @@ public class Field2D implements IArray, Config {
 		return false;
 	}
 
+	public boolean notWidth(final int x) {
+		return x < 0 || x >= width;
+	}
+
+	public boolean notHeight(final int y) {
+		return y < 0 || y >= height;
+	}
+
+	public Vector2f toXY(int index) {
+		return toXY(index, this.width, this.height);
+	}
+
 	public int[][] neighbors(int px, int py, boolean flag) {
-		int[][] pos = new int[8][2];
+		int[][] pos = new int[flag ? 8 : 4][2];
 		insertArrays(pos, 0, px, py - 1);
 		insertArrays(pos, 0, px + 1, py);
 		insertArrays(pos, 0, px, py + 1);
@@ -670,7 +1022,7 @@ public class Field2D implements IArray, Config {
 
 	public TArray<Vector2f> neighbors(Vector2f pos, boolean flag) {
 		if (result == null) {
-			result = new TArray<Vector2f>(8);
+			result = new TArray<Vector2f>(flag ? 8 : 4);
 		} else {
 			result.clear();
 		}
@@ -734,31 +1086,57 @@ public class Field2D implements IArray, Config {
 		return this;
 	}
 
-	public int getNeighborType(int x, int y, int d) {
-		int[] n = NEIGHBORS[x & 1][d];
-		int nx = x + n[0];
-		int ny = y + n[1];
-		if (nx < 0 || nx >= getHexagonWidth() || ny < 0 || ny >= getHexagonHeight()) {
-			return -1;
-		}
-		if (!contains(nx, ny)) {
-			return -1;
-		}
-		return mapArrays[ny][nx];
+	public int clampX(int x) {
+		return MathUtils.clamp(x, 0, this.width - 1);
 	}
 
-	public Field2D setNeighborType(int x, int y, int d, int t) {
-		int[] n = NEIGHBORS[x & 1][d];
-		int nx = x + n[0];
-		int ny = y + n[1];
+	public int clampY(int y) {
+		return MathUtils.clamp(y, 0, this.height - 1);
+	}
+
+	public boolean canOffsetTile(float x, float y) {
+		return this._offset.x >= x - width && this._offset.x <= x + width && this._offset.y >= y - height
+				&& this._offset.y <= y + height;
+	}
+
+	public float getIsometricType(float px, float py) {
+		float halfWidth = this.getDrawWidth() * 0.5f;
+		if (px < 0 || px >= halfWidth || py < 0 || py >= this.getDrawHeight()) {
+			return -1;
+		}
+		PointI point = this.pixelsIsometricToTiles(px, py);
+		return this.getTileType(point.x, point.y);
+	}
+
+	public Field2D setIsometricType(float px, float py, int t) {
+		float halfWidth = this.getDrawWidth() * 0.5f;
+		if (px < 0 || px >= halfWidth || py < 0 || py >= this.getDrawHeight()) {
+			return this;
+		}
+		PointI point = this.pixelsIsometricToTiles(px, py);
+		return this.setTileType(point.x, point.y, t);
+	}
+
+	public int getNeighborType(float px, float py, int d) {
+		PointI point = this.pixelsHexagonToTiles(px, py);
+		int[] n = NEIGHBORS[point.x & 1][d];
+		int nx = point.x + n[0];
+		int ny = point.y + n[1];
+		if (nx < 0 || nx >= getHexagonWidth() || ny < 0 || ny >= getHexagonHeight()) {
+			return -1;
+		}
+		return getTileType(nx, ny);
+	}
+
+	public Field2D setNeighborType(float px, float py, int d, int t) {
+		PointI point = this.pixelsHexagonToTiles(px, py);
+		int[] n = NEIGHBORS[point.x & 1][d];
+		int nx = point.x + n[0];
+		int ny = point.y + n[1];
 		if (nx < 0 || nx >= getHexagonWidth() || ny < 0 || ny >= getHexagonHeight()) {
 			return this;
 		}
-		if (!contains(nx, ny)) {
-			return this;
-		}
-		mapArrays[ny][nx] = t;
-		return this;
+		return setTileType(nx, ny, t);
 	}
 
 	public Vector2f getOffset() {
@@ -784,12 +1162,12 @@ public class Field2D implements IArray, Config {
 	}
 
 	public Field2D setName(String n) {
-		this._objectName = n;
+		this._fieldName = n;
 		return this;
 	}
 
 	public String getName() {
-		return this._objectName;
+		return this._fieldName;
 	}
 
 	@Override
@@ -811,7 +1189,7 @@ public class Field2D implements IArray, Config {
 		if (isEmpty()) {
 			return "[]";
 		}
-		StringBuilder buffer = new StringBuilder(size() * 2 + height + 2);
+		StrBuilder buffer = new StrBuilder(size() * 2 + height + 2);
 		buffer.append('[');
 		buffer.append(LSystem.LS);
 		for (int i = 0; i < height; i++) {

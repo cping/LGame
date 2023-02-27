@@ -65,7 +65,7 @@ public abstract class InputMake {
 
 	protected int modifierFlags(boolean altP, boolean ctrlP, boolean metaP,
 			boolean shiftP) {
-		return Event.Input.modifierFlags(altP, ctrlP, metaP, shiftP);
+		return Event.InputEvent.modifierFlags(altP, ctrlP, metaP, shiftP);
 	}
 
 	protected void emitKeyPress(double time, int keyCode, char keyChar,
@@ -84,6 +84,7 @@ public abstract class InputMake {
 		mouseEvents.emit(event);
 	}
 
+	
 	public abstract void callback(LObject<?> o);
 
 

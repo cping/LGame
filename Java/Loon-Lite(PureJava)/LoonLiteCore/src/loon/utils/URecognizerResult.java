@@ -33,7 +33,7 @@ public class URecognizerResult {
 	protected float _theta;
 
 	public URecognizerResult() {
-		this(LSystem.UNKOWN, 0, 0);
+		this(LSystem.UNKNOWN, 0, 0);
 	}
 
 	public URecognizerResult(String name, float score, int index) {

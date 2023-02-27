@@ -41,15 +41,15 @@ public class SwipeEffect extends Entity implements BaseEffect {
 
 	protected boolean autoRemoved;
 
-	public static SwipeEffect getInstance(int type, LColor c) {
-		return getInstance(type, c, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
+	public static SwipeEffect create(int type, LColor c) {
+		return create(type, c, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 	}
 
-	public static SwipeEffect getInstance(int type, int timer, LColor c) {
+	public static SwipeEffect create(int type, int timer, LColor c) {
 		return new SwipeEffect(c, timer, type, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 	}
 
-	public static SwipeEffect getInstance(int type, LColor c, int w, int h) {
+	public static SwipeEffect create(int type, LColor c, int w, int h) {
 		return new SwipeEffect(c, 3000, type, w, h);
 	}
 

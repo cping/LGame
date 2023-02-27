@@ -25,12 +25,13 @@ import loon.component.Print;
 import loon.font.IFont;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
+import loon.utils.StrBuilder;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
 public class LogDisplay {
 
-	private static class LogDisplayItem {
+	private class LogDisplayItem {
 		public String text;
 		public LColor color;
 
@@ -43,11 +44,11 @@ public class LogDisplay {
 
 	private final TArray<LogDisplayItem> _texts;
 
-	private IFont _font;
+	private IFont _textFont;
 
-	private LColor _fontColor;
+	private LColor _textFontColor;
 
-	private int _displayAmount = 5;
+	private int _textAmount = 5;
 
 	private int _textHeight = 20;
 
@@ -56,12 +57,16 @@ public class LogDisplay {
 	private int _space = 5;
 
 	public LogDisplay() {
-		this(LSystem.getSystemLogFont(), LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), LColor.white);
+		this(LSystem.getSystemLogFont());
+	}
+
+	public LogDisplay(IFont font) {
+		this(font, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), LColor.white);
 	}
 
 	public LogDisplay(IFont font, int w, int h, LColor color) {
-		this._texts = new TArray<LogDisplayItem>(18);
-		this._fontColor = color;
+		this._texts = new TArray<LogDisplayItem>();
+		this._textFontColor = color;
 		this.setSize(w, h);
 		this.setFont(font);
 	}
@@ -90,11 +95,11 @@ public class LogDisplay {
 	}
 
 	private void paintText(GLEx g, String message, int x, int y, int offset, int height, LColor color) {
-		_font.drawString(g, message, x, y + height - ((offset + 1) * _textHeight), color);
+		_textFont.drawString(g, message, x, y + height - ((offset + 1) * _textHeight), color);
 	}
 
 	public LogDisplay addText(String message) {
-		return addText(message, _fontColor);
+		return addText(message, _textFontColor);
 	}
 
 	public LogDisplay addText(String message, LColor color) {
@@ -103,11 +108,11 @@ public class LogDisplay {
 		}
 
 		int limitWidth = _width - _space;
-		TArray<String> textList = Print.formatMessage(message, _font, limitWidth);
-		boolean limit = (textList.size * _font.getSize() > limitWidth);
-		if (limit || textList.size > 0 || message.indexOf('\n') != -1) {
+		TArray<String> textList = Print.formatMessage(message, _textFont, limitWidth);
+		boolean limit = (textList.size * _textFont.getSize() > limitWidth);
+		if (limit || textList.size > 0 || message.indexOf(LSystem.LF) != -1) {
 			if (limit) {
-				textList = Print.formatMessage(message, _font, limitWidth - _space);
+				textList = Print.formatMessage(message, _textFont, limitWidth - _space);
 			}
 			for (String text : textList) {
 				_texts.add(new LogDisplayItem(text, color));
@@ -115,17 +120,17 @@ public class LogDisplay {
 		} else {
 			_texts.add(new LogDisplayItem(message, color));
 		}
-		if (LSystem.isMobile() && _texts.size() > MathUtils.max(_displayAmount, 1) - 1) {
+		if (LSystem.isMobile() && _texts.size() > MathUtils.max(_textAmount, 1) - 1) {
 			_texts.removeIndex(0);
-		} else if (_texts.size() > _displayAmount) {
+		} else if (_texts.size() > _textAmount) {
 			_texts.removeIndex(0);
 		}
-		
+
 		return this;
 	}
 
 	public String getText() {
-		StringBuffer sbr = new StringBuffer();
+		StrBuilder sbr = new StrBuilder();
 		if (_texts != null) {
 			for (int i = 0; i < _texts.size; i++) {
 				sbr.append(_texts.get(i));
@@ -148,22 +153,22 @@ public class LogDisplay {
 	}
 
 	public void setFont(IFont font) {
-		this._font = font;
+		this._textFont = font;
 		this._textHeight = font.getSize() + 5;
-		this._displayAmount = ((_height - font.getHeight()) / this._textHeight) - 3;
-		this._space = _font.getSize() / 4;
+		this._textAmount = ((_height - font.getHeight()) / this._textHeight) - 3;
+		this._space = _textFont.getSize() / 4;
 	}
 
 	public IFont getFont() {
-		return _font;
+		return _textFont;
 	}
 
 	public LColor getFontColor() {
-		return _fontColor;
+		return _textFontColor;
 	}
 
 	public void setFontColor(LColor fontColor) {
-		this._fontColor = fontColor;
+		this._textFontColor = fontColor;
 	}
 
 }

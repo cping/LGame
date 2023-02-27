@@ -20,6 +20,7 @@
  */
 package loon.action.sprite;
 
+import loon.LTexture;
 import loon.PlayerUtils;
 import loon.action.ActionBind;
 import loon.action.ActionTween;
@@ -171,16 +172,21 @@ public class MovieSprite extends DisplayObject implements IArray {
 
 	@Override
 	public void createUI(GLEx g) {
-		createUI(g, 0, 0);
+		createUI(g, 0f, 0f);
 	}
 
 	@Override
 	public void createUI(GLEx g, float offsetX, float offsetY) {
 		for (DisplayObject obj : _childs) {
 			if (obj.isVisible()) {
-				obj.createUI(g, offsetX, offsetY);
+				obj.createUI(g, offsetX + _offset.x, offsetY + _offset.y);
 			}
 		}
+	}
+
+	@Override
+	public LTexture getBitmap() {
+		return null;
 	}
 
 	@Override
@@ -220,4 +226,5 @@ public class MovieSprite extends DisplayObject implements IArray {
 		_childs.clear();
 		setState(State.DISPOSED);
 	}
+
 }

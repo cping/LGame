@@ -28,6 +28,7 @@ import loon.LTexture;
 import loon.PlayerUtils;
 import loon.action.ActionBind;
 import loon.action.ActionTween;
+import loon.action.collision.CollisionHelper;
 import loon.action.map.Field2D;
 import loon.canvas.LColor;
 import loon.component.layout.Margin;
@@ -35,6 +36,7 @@ import loon.events.ClickListener;
 import loon.events.Touched;
 import loon.font.FontSet;
 import loon.font.IFont;
+import loon.geom.RectBox;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
@@ -42,7 +44,7 @@ import loon.utils.TArray;
 import loon.utils.Easing.EasingMode;
 
 /**
- * 组件的群组化操作控制器，可以同时改变一组组件的参数或动画事件
+ * UI组件的群组化操作控制器，可以同时改变一组组件的参数或动画事件
  */
 public class UIControls {
 
@@ -103,6 +105,60 @@ public class UIControls {
 		this._comps = new TArray<LComponent>();
 	}
 
+	public TArray<LComponent> list(){
+		return this._comps;
+	}
+	
+	public TArray<LComponent> intersects(RectBox rect) {
+		TArray<LComponent> comps = new TArray<LComponent>();
+		for (LComponent child : this._comps) {
+			if (child != null) {
+				if (rect.intersects(child.getX(), child.getY(), child.getWidth(), child.getHeight())) {
+					comps.add(child);
+				}
+			}
+		}
+		return comps;
+	}
+
+	public TArray<LComponent> intersects(float x, float y, float width, float height) {
+		TArray<LComponent> comps = new TArray<LComponent>();
+		for (LComponent child : this._comps) {
+			if (child != null) {
+				if (CollisionHelper.intersects(x, y, width, height, child.getX(), child.getY(), child.getWidth(),
+						child.getHeight())) {
+					comps.add(child);
+				}
+			}
+		}
+		return comps;
+	}
+
+	public TArray<LComponent> contains(RectBox rect) {
+		TArray<LComponent> comps = new TArray<LComponent>();
+		for (LComponent child : this._comps) {
+			if (child != null) {
+				if (rect.contains(child.getX(), child.getY(), child.getWidth(), child.getHeight())) {
+					comps.add(child);
+				}
+			}
+		}
+		return comps;
+	}
+
+	public TArray<LComponent> contains(float x, float y, float width, float height) {
+		TArray<LComponent> comps = new TArray<LComponent>();
+		for (LComponent child : this._comps) {
+			if (child != null) {
+				if (CollisionHelper.contains(x, y, width, height, child.getX(), child.getY(), child.getWidth(),
+						child.getHeight())) {
+					comps.add(child);
+				}
+			}
+		}
+		return comps;
+	}
+	
 	public UIControls add(LComponent comp) {
 		if (comp == null) {
 			throw new LSysException("LComponent cannot be null.");
@@ -562,10 +618,7 @@ public class UIControls {
 		for (int i = 0, n = _comps.size; i < n; i++) {
 			Object o = _comps.get(i);
 			if (o != null) {
-				if (o instanceof LProgress) {
-					LProgress progress = (LProgress) o;
-					progress.setPercentage(p);
-				} else if (o instanceof LSlider) {
+				if (o instanceof LSlider) {
 					LSlider progress = (LSlider) o;
 					progress.setPercentage(p);
 				}

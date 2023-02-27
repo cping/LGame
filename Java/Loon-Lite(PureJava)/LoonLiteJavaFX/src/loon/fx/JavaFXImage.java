@@ -20,12 +20,17 @@
  */
 package loon.fx;
 
+import java.nio.IntBuffer;
+
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
+import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
+import javafx.scene.image.WritablePixelFormat;
 import javafx.scene.paint.Color;
 import loon.Graphics;
 import loon.canvas.ImageImpl;
@@ -68,11 +73,12 @@ public class JavaFXImage extends ImageImpl {
 		sw *= f;
 		sh *= f;
 		JavaFXCanvas gfx = (JavaFXCanvas) ctx;
-		gfx.context.drawImage(buffer, MathUtils.ifloor(dx), MathUtils.ifloor(dy), MathUtils.ifloor(dw),
-				MathUtils.ifloor(dh), MathUtils.ifloor(sx), MathUtils.ifloor(sy), MathUtils.ifloor(sw),
-				MathUtils.ifloor(sh));
+		gfx.context.drawImage(buffer, MathUtils.ifloor(sx), MathUtils.ifloor(sy), MathUtils.ifloor(sw - sx),
+				MathUtils.ifloor(sh - sy), MathUtils.ifloor(dx), MathUtils.ifloor(dy), MathUtils.ifloor(dw - dx),
+				MathUtils.ifloor(dh - dy));
 	}
 
+	@Override
 	public void getLight(loon.canvas.Image buffer, int v) {
 		int width = (int) buffer.width();
 		int height = (int) buffer.height();
@@ -87,6 +93,7 @@ public class JavaFXImage extends ImageImpl {
 		}
 	}
 
+	@Override
 	public int getLight(int color, int v) {
 		int red = LColor.getRed(color);
 		int green = LColor.getGreen(color);
@@ -103,61 +110,47 @@ public class JavaFXImage extends ImageImpl {
 		return LColor.getRGB(red, green, blue);
 	}
 
-	/**
-	 * public static int[] getRGB(Image image, int x, int y, int width, int height)
-	 * { int[] rgb = new int[width * height]; PixelReader reader =
-	 * image.getPixelReader(); reader.getPixels(x, y, width, height,
-	 * PixelFormat.getIntArgbInstance(), rgb, 0, width); return rgb; } public int[]
-	 * getPixels(Image img, int x, int y, int w, int h) { int[] pixels = new int[w *
-	 * h]; PixelReader reader = img.getPixelReader(); PixelFormat.Type type =
-	 * reader.getPixelFormat().getType(); WritablePixelFormat<IntBuffer> format =
-	 * null; if(type == PixelFormat.Type.INT_ARGB_PRE) { format =
-	 * PixelFormat.getIntArgbPreInstance(); } else { format =
-	 * PixelFormat.getIntArgbInstance(); } reader.getPixels(x, y, w, h, format,
-	 * pixels, 0, w); return pixels; }
-	 * 
-	 **/
-
-	public int[] getPixels() {
-		int w = (int) width();
-		int h = (int) height();
-		int pixels[] = new int[w * h];
-		PixelReader reader = buffer.getPixelReader();
-		for (int i = 0; i < w; i++) {
-			for (int j = 0; j < h; j++) {
-				pixels[j * w + i] = reader.getArgb(i, j);
-			}
+	public static int[] getRGB(Image image, int x, int y, int width, int height) {
+		int[] rgb = new int[width * height];
+		PixelReader reader = image.getPixelReader();
+		PixelFormat.Type type = reader.getPixelFormat().getType();
+		WritablePixelFormat<IntBuffer> format = null;
+		if (type == PixelFormat.Type.INT_ARGB_PRE) {
+			format = PixelFormat.getIntArgbPreInstance();
+		} else {
+			format = PixelFormat.getIntArgbInstance();
 		}
-		return pixels;
+		reader.getPixels(x, y, width, height, format, rgb, 0, width);
+		return rgb;
 	}
 
+	@Override
+	public int[] getPixels() {
+		return getRGB(buffer, 0, 0, (int) width(), (int) height());
+	}
+
+	@Override
 	public int getPixel(int x, int y) {
 		PixelReader reader = buffer.getPixelReader();
 		return reader.getArgb(x, y);
 	}
 
+	@Override
 	public int getRGB(int x, int y) {
 		PixelReader reader = buffer.getPixelReader();
 		return reader.getArgb(x, y);
 	}
 
-	public int[] getPixels(int pixels[]) {
+	@Override
+	public int[] getPixels(int[] pixels) {
 		int w = (int) width();
 		int h = (int) height();
+		if (pixels == null) {
+			pixels = new int[w * h];
+		}
 		PixelReader reader = buffer.getPixelReader();
 		for (int i = 0; i < w; i++) {
 			for (int j = 0; j < h; j++) {
-				pixels[i * w + j] = reader.getArgb(i, j);
-			}
-		}
-		return pixels;
-	}
-
-	public int[] getPixels(int x, int y, int w, int h) {
-		int[] pixels = new int[w * h];
-		PixelReader reader = buffer.getPixelReader();
-		for (int i = x; i < w; i++) {
-			for (int j = y; j < h; j++) {
 				pixels[i * w + j] = reader.getArgb(i, j);
 			}
 		}
@@ -165,7 +158,15 @@ public class JavaFXImage extends ImageImpl {
 	}
 
 	@Override
+	public int[] getPixels(int x, int y, int w, int h) {
+		return getRGB(buffer, x, y, w, h);
+	}
+
+	@Override
 	public int[] getPixels(int[] pixels, int offset, int stride, int x, int y, int width, int height) {
+		if (pixels == null) {
+			pixels = new int[offset + height * width];
+		}
 		getRGB(x, y, width, height, pixels, offset, stride);
 		return pixels;
 	}
@@ -178,54 +179,42 @@ public class JavaFXImage extends ImageImpl {
 	}
 
 	public int[] getPixels(int startX, int startY, int w, int h, int[] rgbArray, int offset, int scansize) {
-		int yoff = offset;
-		int off;
 		if (rgbArray == null) {
 			rgbArray = new int[offset + h * scansize];
 		}
-		PixelReader reader = buffer.getPixelReader();
-		for (int y = startY; y < startY + h; y++, yoff += scansize) {
-			off = yoff;
-			for (int x = startX; x < startX + w; x++) {
-				rgbArray[off++] = reader.getArgb(x, y);
-			}
-		}
+		getRGB(startX, startY, w, h, rgbArray, offset, scansize);
 		return rgbArray;
 	}
 
+	@Override
 	public void setPixels(int[] pixels, int width, int height) {
-		PixelWriter out = buffer.getPixelWriter();
-		for (int i = 0; i < width; i++) {
-			for (int j = 0; j < height; j++) {
-				out.setArgb(i, j, pixels[i]);
-			}
-		}
+		setRGB(0, 0, width, height, pixels, 0, width);
 	}
 
+	@Override
 	public void setPixels(int[] pixels, int offset, int stride, int x, int y, int width, int height) {
 		setRGB(x, y, width, height, pixels, offset, stride);
 	}
 
+	@Override
 	public int[] setPixels(int[] pixels, int x, int y, int w, int h) {
-		PixelWriter out = buffer.getPixelWriter();
-		for (int i = 0; i < w; i++) {
-			for (int j = 0; j < h; j++) {
-				out.setArgb(i, j, pixels[i]);
-			}
-		}
+		setRGB(x, y, w, h, pixels, 0, w);
 		return pixels;
 	}
 
+	@Override
 	public void setPixel(LColor c, int x, int y) {
 		PixelWriter out = buffer.getPixelWriter();
 		out.setArgb(x, y, c.getRGB());
 	}
 
+	@Override
 	public void setPixel(int rgb, int x, int y) {
 		PixelWriter out = buffer.getPixelWriter();
 		out.setArgb(x, y, rgb);
 	}
 
+	@Override
 	public void setRGB(int rgb, int x, int y) {
 		setPixel(x, y, rgb);
 	}
@@ -235,34 +224,31 @@ public class JavaFXImage extends ImageImpl {
 		if (width <= 0 || height <= 0) {
 			return;
 		}
-		int yoff = offset;
-		int off;
-		if (rgbArray == null) {
-			rgbArray = new int[offset + height * scanSize];
-		}
 		PixelReader reader = buffer.getPixelReader();
-		for (int y = startY; y < startY + height; y++, yoff += scanSize) {
-			off = yoff;
-			for (int x = startX; x < startX + width; x++) {
-				rgbArray[off++] = reader.getArgb(x, y);
-			}
+		PixelFormat.Type type = reader.getPixelFormat().getType();
+		WritablePixelFormat<IntBuffer> format = null;
+		if (type == PixelFormat.Type.INT_ARGB_PRE) {
+			format = PixelFormat.getIntArgbPreInstance();
+		} else {
+			format = PixelFormat.getIntArgbInstance();
 		}
+		reader.getPixels(startX, startY, width, height, format, rgbArray, offset, scanSize);
 	}
 
+	@Override
 	public void setRGB(int startX, int startY, int width, int height, int[] rgbArray, int offset, int scansize) {
 		if (width <= 0 || height <= 0) {
 			return;
 		}
-		PixelWriter out = buffer.getPixelWriter();
-		int yoff = offset;
-		int off;
-		for (int y = startY; y < startY + height; y++, yoff += scansize) {
-			off = yoff;
-			for (int x = startX; x < startX + width; x++) {
-				int pixel = rgbArray[off++];
-				out.setArgb(x, y, pixel);
-			}
+		PixelWriter writer = buffer.getPixelWriter();
+		PixelFormat.Type type = writer.getPixelFormat().getType();
+		WritablePixelFormat<IntBuffer> format = null;
+		if (type == PixelFormat.Type.INT_ARGB_PRE) {
+			format = PixelFormat.getIntArgbPreInstance();
+		} else {
+			format = PixelFormat.getIntArgbInstance();
 		}
+		writer.setPixels(startX, startY, width, height, format, rgbArray, offset, scansize);
 	}
 
 	@Override
@@ -291,7 +277,15 @@ public class JavaFXImage extends ImageImpl {
 		return image;
 	}
 
+	@Override
 	public boolean hasAlpha() {
+		if (buffer == null) {
+			return false;
+		}
+		PixelFormat.Type type = buffer.getPixelReader().getPixelFormat().getType();
+		if (type == PixelFormat.Type.BYTE_RGB) {
+			return false;
+		}
 		return true;
 	}
 

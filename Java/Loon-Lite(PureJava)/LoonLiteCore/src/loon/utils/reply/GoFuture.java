@@ -20,31 +20,33 @@
  */
 package loon.utils.reply;
 
+import loon.utils.reply.ActView.ActViewListener;
+
 public class GoFuture<T> {
 
 	protected final VarView<Try<T>> _result;
 	protected VarView<Boolean> _isComplete;
 
 	public static <T> GoFuture<T> success(T value) {
-		return result(Try.success(value));
+		return result(Try.createSuccess(value));
 	}
 
-	public static GoFuture<Void> success() {
+	public static GoFuture<Object> success() {
 		return success(null);
 	}
 
 	public static <T> GoFuture<T> failure(Throwable cause) {
-		return result(Try.<T>failure(cause));
+		return result(Try.<T>createFailure(cause));
 	}
 
 	public static <T> GoFuture<T> result(Try<T> result) {
 		return new GoFuture<T>(Var.create(result));
 	}
 
-	public GoFuture<T> onSuccess(final ActView.Listener<? super T> slot) {
+	public GoFuture<T> onSuccess(final ActViewListener<? super T> slot) {
 		Try<T> result = _result.get();
 		if (result == null)
-			_result.connect(new ActView.Listener<Try<T>>() {
+			_result.connect(new ActViewListener<Try<T>>() {
 				public void onEmit(Try<T> result) {
 					if (result.isSuccess()) {
 						slot.onEmit(result.get());
@@ -57,10 +59,10 @@ public class GoFuture<T> {
 		return this;
 	}
 
-	public GoFuture<T> onFailure(final ActView.Listener<? super Throwable> slot) {
+	public GoFuture<T> onFailure(final ActViewListener<? super Throwable> slot) {
 		Try<T> result = _result.get();
 		if (result == null)
-			_result.connect(new ActView.Listener<Try<T>>() {
+			_result.connect(new ActViewListener<Try<T>>() {
 				public void onEmit(Try<T> result) {
 					if (result.isFailure()) {
 						slot.onEmit(result.getFailure());
@@ -73,7 +75,7 @@ public class GoFuture<T> {
 		return this;
 	}
 
-	public GoFuture<T> onComplete(final ActView.Listener<? super Try<T>> slot) {
+	public GoFuture<T> onComplete(final ActViewListener<? super Try<T>> slot) {
 		Try<T> result = _result.get();
 		if (result == null) {
 			_result.connect(slot);

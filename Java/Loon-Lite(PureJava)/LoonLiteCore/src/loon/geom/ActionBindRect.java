@@ -31,6 +31,8 @@ public class ActionBindRect implements ActionBind, BoxSize {
 
 	private final ActionBind actionBind;
 
+	private Vector2f position;
+
 	public ActionBindRect(ActionBind bind) {
 		this(bind, bind.getX(), bind.getY());
 	}
@@ -41,6 +43,7 @@ public class ActionBindRect implements ActionBind, BoxSize {
 
 	public ActionBindRect(ActionBind bind, float x, float y, float w, float h) {
 		this.actionBind = bind;
+		this.position = new Vector2f();
 		this.rect = new RectBox(x, y, w, h);
 	}
 
@@ -61,22 +64,22 @@ public class ActionBindRect implements ActionBind, BoxSize {
 
 	@Override
 	public int x() {
-		return rect.x();
+		return rect.x() + position.x();
 	}
 
 	@Override
 	public int y() {
-		return rect.y();
+		return rect.y() + position.y();
 	}
 
 	@Override
 	public float getX() {
-		return rect.getX();
+		return rect.getX() + position.x;
 	}
 
 	@Override
 	public float getY() {
-		return rect.getY();
+		return rect.getY() + position.y;
 	}
 
 	@Override
@@ -201,6 +204,41 @@ public class ActionBindRect implements ActionBind, BoxSize {
 	@Override
 	public void setHeight(float h) {
 		rect.setHeight(h);
+	}
+
+	@Override
+	public float getCenterX() {
+		return rect.getCenterX() + position.x;
+	}
+
+	@Override
+	public float getCenterY() {
+		return rect.getCenterY() + position.y;
+	}
+
+	public ActionBind offset(Vector2f v) {
+		if (v != null) {
+			this.position = v;
+		}
+		return this;
+	}
+
+	public float getOffsetX() {
+		return position.x;
+	}
+
+	public float getOffsetY() {
+		return position.y;
+	}
+
+	public ActionBind setOffsetX(float x) {
+		this.position.setX(x);
+		return this;
+	}
+
+	public ActionBind getOffsetY(float y) {
+		this.position.setY(y);
+		return this;
 	}
 
 }

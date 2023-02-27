@@ -168,7 +168,7 @@ public class GravityHandler implements LRelease {
 
 		easeTimer.action(elapsedTime);
 
-		final float delta = MathUtils.max(elapsedTime / 1000f, 0.01f) * easeTimer.getProgress();
+		final float delta = MathUtils.max(elapsedTime / 1000f, LSystem.MIN_SECONE_SPEED_FIXED) * easeTimer.getProgress();
 
 		for (Gravity g : objects) {
 
@@ -416,7 +416,7 @@ public class GravityHandler implements LRelease {
 			return false;
 		}
 		if (g.bounds != null) {
-			return CollisionHelper.intersect(g.bounds, x, y);
+			return CollisionHelper.intersects(g.bounds, x, y);
 		}
 		return false;
 	}

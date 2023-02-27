@@ -70,6 +70,10 @@ public class JavaFXGraphics extends Graphics {
 		viewportChanged(scale, viewWidth, viewHeight);
 	}
 
+	void onFocused(boolean o, boolean n) {
+
+	}
+
 	@Override
 	public Dimension screenSize() {
 		return this.screenSize;

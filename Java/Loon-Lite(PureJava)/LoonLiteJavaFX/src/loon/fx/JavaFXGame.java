@@ -26,6 +26,7 @@ import javafx.scene.canvas.GraphicsContext;
 import loon.Accelerometer;
 import loon.Assets;
 import loon.Asyn;
+import loon.Clipboard;
 import loon.Graphics;
 import loon.LGame;
 import loon.LSetting;
@@ -52,22 +53,30 @@ public class JavaFXGame extends LGame {
 
 	final static private boolean osBit64;
 
+	final static private String OS_ARCH;
+
 	final static private String OS_NAME;
 
 	final static private String JAVA_SPEC;
 
 	final static private String JAVA_VERSION;
 
+	final static private String JAVAFX_VERSION;
+
+	final static private String JAVAFX_PLATFORM;
+
 	static {
 		OS_NAME = getProperty("os.name").toLowerCase();
 		JAVA_SPEC = getProperty("java.specification.version").toLowerCase();
 		JAVA_VERSION = getProperty("java.version").toLowerCase();
+		JAVAFX_VERSION = getProperty("javafx.version").toLowerCase();
+		JAVAFX_PLATFORM = getProperty("javafx.platform").toLowerCase();
 		osIsLinux = OS_NAME.indexOf("linux") != -1;
 		osIsUnix = OS_NAME.indexOf("nix") != -1 || OS_NAME.indexOf("nux") != 1;
 		osIsMacOs = OS_NAME.indexOf("mac") != -1;
 		osIsWindows = OS_NAME.indexOf("windows") != -1;
-		String arch = getProperty("os.arch");
-		osBit64 = arch.indexOf("amd64") != -1 || arch.indexOf("x86_64") != -1;
+		OS_ARCH = getProperty("os.arch");
+		osBit64 = OS_ARCH.indexOf("amd64") != -1 || OS_ARCH.indexOf("x86_64") != -1;
 		checkAndroid();
 	}
 
@@ -77,6 +86,10 @@ public class JavaFXGame extends LGame {
 
 	public static String getJavaVersion() {
 		return JAVA_VERSION;
+	}
+
+	public static String getJavaFXVersion() {
+		return JAVAFX_VERSION;
 	}
 
 	public static boolean checkAndroid() {
@@ -215,18 +228,20 @@ public class JavaFXGame extends LGame {
 		loopRunner.start();
 	}
 
-	protected void resume() {
+	public LGame resume() {
 		if (loopRunner == null) {
-			return;
+			return this;
 		}
 		start();
+		return this;
 	}
 
-	protected void pause() {
+	public LGame pause() {
 		stop();
+		return this;
 	}
 
-	protected void stop() {
+	public void stop() {
 		if (loopRunner == null) {
 			return;
 		}
@@ -273,8 +288,8 @@ public class JavaFXGame extends LGame {
 	}
 
 	@Override
-	public Type type() {
-		return Type.JAVAFX;
+	public Environment env() {
+		return Environment.JAVAFX;
 	}
 
 	@Override
@@ -287,7 +302,7 @@ public class JavaFXGame extends LGame {
 		return (int) ((System.nanoTime() - start) / 1000000L);
 	}
 
-	public javafx.scene.canvas.Canvas getFxCanvas() {
+	public JavaFXResizeCanvas getFxCanvas() {
 		return graphics.canvas.fxCanvas;
 	}
 
@@ -331,19 +346,22 @@ public class JavaFXGame extends LGame {
 		return support;
 	}
 
-	@Override
-	public Mesh makeMesh(Canvas canvas) {
-		return new JavaFXMesh(canvas);
-	}
 
 	@Override
 	public boolean isMobile() {
-		return !isDesktop();
+		Sys sys = getPlatform();
+		return (!isDesktop()) || sys == Sys.IOS || sys == Sys.ANDROID;
 	}
 
 	@Override
 	public boolean isDesktop() {
-		return isJavaFXDesktop();
+		Sys sys = getPlatform();
+		return isJavaFXDesktop() || sys == Sys.WINDOWS || sys == Sys.LINUX || sys == Sys.MAC;
+	}
+
+	@Override
+	public boolean isBrowser() {
+		return !isDesktop() && !isMobile();
 	}
 
 	public String getProperty() {
@@ -351,11 +369,47 @@ public class JavaFXGame extends LGame {
 	}
 
 	public String getDevice() {
-		return getProperty("os.arch").toLowerCase();
+		return getProperty(OS_ARCH).toLowerCase();
 	}
 
 	public boolean isARMDevice() {
 		return getDevice().indexOf("arm") != -1;
+	}
+
+	@Override
+	public Sys getPlatform() {
+		if (JAVAFX_PLATFORM.contains("android") || isAndroid()) {
+			return Sys.ANDROID;
+		}
+		if (JAVAFX_PLATFORM.contains("ios")) {
+			return Sys.IOS;
+		}
+		String monoclePlatformName = getProperty("monocle.platform", "");
+		String glassPlatformName = getProperty("glass.platform", "");
+		if (monoclePlatformName == "EGL" && glassPlatformName == "Monocle") {
+			return Sys.EMBEDDED;
+		}
+		if (isMacOS()) {
+			return Sys.MAC;
+		}
+		if (isLinux()) {
+			return Sys.LINUX;
+		}
+		if (isWindows()) {
+			return Sys.WINDOWS;
+		}
+		return Sys.BROWSER;
+	}
+
+	@Override
+	public Clipboard clipboard() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Mesh makeMesh(Canvas canvas) {
+		return new JavaFXMesh(canvas);
 	}
 
 }

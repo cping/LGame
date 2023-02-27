@@ -20,6 +20,7 @@
  */
 package loon.events;
 
+import loon.utils.StrBuilder;
 import loon.utils.reply.Port;
 
 public abstract class KeyMake {
@@ -28,7 +29,7 @@ public abstract class KeyMake {
 		DEFAULT, NUMBER, EMAIL, URL;
 	}
 	
-	public static class Event extends loon.events.Event.Input {
+	public static class Event extends loon.events.Event.InputEvent {
 		public char keyChar;
 
 		protected Event(int flags, char ch, double time) {
@@ -56,7 +57,7 @@ public abstract class KeyMake {
 		}
 
 		@Override
-		protected void addFields(StringBuilder builder) {
+		protected void addFields(StrBuilder builder) {
 			super.addFields(builder);
 			builder.append(", keyCode=").append(keyCode).append(", down=")
 					.append(down);

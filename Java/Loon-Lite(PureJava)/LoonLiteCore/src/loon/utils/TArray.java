@@ -23,13 +23,102 @@ package loon.utils;
 import java.util.Comparator;
 import java.util.Iterator;
 
+import loon.LRelease;
 import loon.LSysException;
 import loon.events.QueryEvent;
 import loon.utils.ObjectMap.Keys;
 import loon.utils.ObjectMap.Values;
 
-@SuppressWarnings({ "rawtypes", "unchecked" })
-public class TArray<T> implements Iterable<T>, IArray {
+@SuppressWarnings({ "unchecked" })
+public class TArray<T> implements Iterable<T>, IArray,LRelease{
+
+	public final static class ArrayIterable<T> implements Iterable<T> {
+
+		private final TArray<T> array;
+		private final boolean allowRemove;
+		private ArrayIterator<T> iterator1, iterator2;
+
+		public ArrayIterable(TArray<T> array) {
+			this(array, true);
+		}
+
+		public ArrayIterable(TArray<T> array, boolean allowRemove) {
+			this.array = array;
+			this.allowRemove = allowRemove;
+		}
+
+		@Override
+		public Iterator<T> iterator() {
+			if (iterator1 == null) {
+				iterator1 = new ArrayIterator<T>(array, allowRemove);
+				iterator2 = new ArrayIterator<T>(array, allowRemove);
+			}
+			if (!iterator1.valid) {
+				iterator1.index = 0;
+				iterator1.valid = true;
+				iterator2.valid = false;
+				return iterator1;
+			}
+			iterator2.index = 0;
+			iterator2.valid = true;
+			iterator1.valid = false;
+			return iterator2;
+		}
+	}
+
+	public final static class ArrayIterator<T> implements LIterator<T>, Iterable<T> {
+
+		private final TArray<T> array;
+		private final boolean allowRemove;
+		int index;
+		boolean valid = true;
+
+		public ArrayIterator(TArray<T> array) {
+			this(array, true);
+		}
+
+		public ArrayIterator(TArray<T> array, boolean allowRemove) {
+			this.array = array;
+			this.allowRemove = allowRemove;
+		}
+
+		@Override
+		public boolean hasNext() {
+			if (!valid) {
+				throw new LSysException("iterator() cannot be used nested.");
+			}
+			return index < array.size;
+		}
+
+		@Override
+		public T next() {
+			if (index >= array.size) {
+				return null;
+			}
+			if (!valid) {
+				throw new LSysException("iterator() cannot be used nested.");
+			}
+			return array.items[index++];
+		}
+
+		@Override
+		public void remove() {
+			if (!allowRemove) {
+				throw new LSysException("Remove not allowed.");
+			}
+			index--;
+			array.removeIndex(index);
+		}
+
+		public void reset() {
+			index = 0;
+		}
+
+		@Override
+		public Iterator<T> iterator() {
+			return this;
+		}
+	}
 
 	public static final <T> TArray<T> at(int capacity) {
 		return new TArray<T>(capacity);
@@ -43,9 +132,14 @@ public class TArray<T> implements Iterable<T>, IArray {
 		return at(0);
 	}
 
+	public final static <T> TArray<T> with(T... array) {
+		return new TArray<T>(array);
+	}
+
 	public T[] items;
 
 	public int size;
+	
 	public boolean ordered;
 
 	public TArray() {
@@ -67,8 +161,12 @@ public class TArray<T> implements Iterable<T>, IArray {
 		System.arraycopy(array.items, 0, items, 0, size);
 	}
 
-	public TArray(T[] array) {
+	public TArray(T... array) {
 		this(true, array, 0, array.length);
+	}
+
+	protected TArray(int size, T... array) {
+		this(true, array, 0, size);
 	}
 
 	public TArray(boolean ordered, T[] array, int start, int count) {
@@ -123,7 +221,7 @@ public class TArray<T> implements Iterable<T>, IArray {
 		if (start + count > array.size) {
 			throw new LSysException("start + count must be <= size: " + start + " + " + count + " <= " + array.size);
 		}
-		addAll((T[]) array.items, start, count);
+		addAll(array.items, start, count);
 	}
 
 	public void addAll(T... array) {
@@ -295,7 +393,7 @@ public class TArray<T> implements Iterable<T>, IArray {
 	}
 
 	public boolean remove(T value, boolean identity) {
-		Object[] items = this.items;
+		T[] items = this.items;
 		if (identity || value == null) {
 			for (int i = 0; i < size; i++) {
 				if (items[i] == value) {
@@ -351,10 +449,6 @@ public class TArray<T> implements Iterable<T>, IArray {
 		return size != startSize;
 	}
 
-	public TArray<T> cpy() {
-		return new TArray<T>(items);
-	}
-
 	public T pop() {
 		if (size == 0)
 			throw new LSysException("TArray is empty.");
@@ -376,6 +470,7 @@ public class TArray<T> implements Iterable<T>, IArray {
 		return items[0];
 	}
 
+	@Override
 	public void clear() {
 		T[] items = this.items;
 		for (int i = 0, n = size; i < n; i++)
@@ -383,6 +478,7 @@ public class TArray<T> implements Iterable<T>, IArray {
 		size = 0;
 	}
 
+	@Override
 	public boolean isEmpty() {
 		return this.size == 0;
 	}
@@ -427,6 +523,17 @@ public class TArray<T> implements Iterable<T>, IArray {
 			items[i] = items[ii];
 			items[ii] = temp;
 		}
+		return this;
+	}
+
+	public TArray<T> unshift(T o) {
+		T[] items = this.items;
+		int len = items.length;
+		T[] newItems = (T[]) new Object[len + 1];
+		newItems[0] = o;
+		System.arraycopy(items, 0, newItems, 1, items.length);
+		this.items = newItems;
+		this.size++;
 		return this;
 	}
 
@@ -500,22 +607,27 @@ public class TArray<T> implements Iterable<T>, IArray {
 		return a;
 	}
 
-	private ArrayIterable iterable;
+	public TArray<T> cpy() {
+		return new TArray<T>(this);
+	}
+
+	private ArrayIterable<T> _iterable;
 
 	@Override
 	public Iterator<T> iterator() {
-		if (iterable == null) {
-			iterable = new ArrayIterable(this);
+		if (_iterable == null) {
+			_iterable = new ArrayIterable<T>(this);
 		}
-		return iterable.iterator();
+		return _iterable.iterator();
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		if (o == this)
 			return true;
 		if (!(o instanceof TArray))
 			return false;
-		TArray array = (TArray) o;
+		TArray<?> array = (TArray<?>) o;
 		int n = size;
 		if (n != array.size)
 			return false;
@@ -534,94 +646,6 @@ public class TArray<T> implements Iterable<T>, IArray {
 		TArray<T> all = new TArray<T>(this);
 		all.addAll(array);
 		return all;
-	}
-
-	@Override
-	public String toString() {
-		if (size == 0)
-			return "[]";
-		T[] items = this.items;
-		StringBuilder buffer = new StringBuilder(32);
-		buffer.append('[');
-		buffer.append(items[0]);
-		for (int i = 1; i < size; i++) {
-			buffer.append(", ");
-			buffer.append(items[i]);
-		}
-		buffer.append(']');
-		return buffer.toString();
-	}
-
-	public String toString(String separator) {
-		if (size == 0) {
-			return "";
-		}
-		T[] items = this.items;
-		StringBuilder buffer = new StringBuilder(32);
-		buffer.append(items[0]);
-		for (int i = 1; i < size; i++) {
-			buffer.append(separator);
-			buffer.append(items[i]);
-		}
-		return buffer.toString();
-	}
-
-	public final static <T> TArray<T> with(T... array) {
-		return new TArray(array);
-	}
-
-	public final static class ArrayIterator<T> implements Iterator<T>, Iterable<T> {
-
-		private final TArray<T> array;
-		private final boolean allowRemove;
-		int index;
-		boolean valid = true;
-
-		public ArrayIterator(TArray<T> array) {
-			this(array, true);
-		}
-
-		public ArrayIterator(TArray<T> array, boolean allowRemove) {
-			this.array = array;
-			this.allowRemove = allowRemove;
-		}
-
-		@Override
-		public boolean hasNext() {
-			if (!valid) {
-				throw new LSysException("iterator() cannot be used nested.");
-			}
-			return index < array.size;
-		}
-
-		@Override
-		public T next() {
-			if (index >= array.size) {
-				return null;
-			}
-			if (!valid) {
-				throw new LSysException("iterator() cannot be used nested.");
-			}
-			return array.items[index++];
-		}
-
-		@Override
-		public void remove() {
-			if (!allowRemove) {
-				throw new LSysException("Remove not allowed.");
-			}
-			index--;
-			array.removeIndex(index);
-		}
-
-		public void reset() {
-			index = 0;
-		}
-
-		@Override
-		public Iterator<T> iterator() {
-			return this;
-		}
 	}
 
 	public TArray<T> where(QueryEvent<T> test) {
@@ -652,40 +676,6 @@ public class TArray<T> implements Iterable<T>, IArray {
 		return false;
 	}
 
-	public final static class ArrayIterable<T> implements Iterable<T> {
-
-		private final TArray<T> array;
-		private final boolean allowRemove;
-		private ArrayIterator iterator1, iterator2;
-
-		public ArrayIterable(TArray<T> array) {
-			this(array, true);
-		}
-
-		public ArrayIterable(TArray<T> array, boolean allowRemove) {
-			this.array = array;
-			this.allowRemove = allowRemove;
-		}
-
-		@Override
-		public Iterator<T> iterator() {
-			if (iterator1 == null) {
-				iterator1 = new ArrayIterator(array, allowRemove);
-				iterator2 = new ArrayIterator(array, allowRemove);
-			}
-			if (!iterator1.valid) {
-				iterator1.index = 0;
-				iterator1.valid = true;
-				iterator2.valid = false;
-				return iterator1;
-			}
-			iterator2.index = 0;
-			iterator2.valid = true;
-			iterator1.valid = false;
-			return iterator2;
-		}
-	}
-
 	public void sort(Comparator<T> compar) {
 		if (size <= 1) {
 			return;
@@ -698,6 +688,35 @@ public class TArray<T> implements Iterable<T>, IArray {
 				items[count++] = obj[i];
 			}
 		}
+	}
+
+	public boolean retainAll(TArray<T> array) {
+		final T[] elementData = this.items;
+		int r = 0, w = 0;
+		boolean modified = false;
+		try {
+			for (; r < size; r++)
+				if (array.contains(elementData[r])) {
+					elementData[w++] = elementData[r];
+				}
+		} finally {
+			if (r != size) {
+				System.arraycopy(elementData, r, elementData, w, size - r);
+				w += size - r;
+			}
+			if (w != size) {
+				for (int i = w; i < size; i++) {
+					elementData[i] = null;
+				}
+				size = w;
+				modified = true;
+			}
+		}
+		return modified;
+	}
+
+	public SwappableArray<T> GetSwappableArray() {
+		return new SwappableArray<T>(this);
 	}
 
 	@Override
@@ -717,4 +736,29 @@ public class TArray<T> implements Iterable<T>, IArray {
 		return size;
 	}
 
+	@Override
+	public String toString() {
+		return toString(',');
+	}
+
+	public String toString(char separator) {
+		if (size == 0)
+			return "[]";
+		T[] items = this.items;
+		StrBuilder buffer = new StrBuilder(32);
+		buffer.append('[');
+		buffer.append(items[0]);
+		for (int i = 1; i < size; i++) {
+			buffer.append(separator);
+			buffer.append(items[i]);
+		}
+		buffer.append(']');
+		return buffer.toString();
+	}
+
+	@Override
+	public void close() {
+		this.size = 0;
+		this.items = null;
+	}
 }

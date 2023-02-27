@@ -77,16 +77,24 @@ public class EaseTimer {
 		this._timeInAfter = timer._timeInAfter;
 	}
 
+	public boolean action(LTimerContext context) {
+		return action(context.timeSinceLastUpdate);
+	}
+
 	public boolean action(long elapsedTime) {
 		update(elapsedTime);
 		return isCompleted();
+	}
+
+	public void update(LTimerContext context) {
+		update(context.timeSinceLastUpdate);
 	}
 
 	public void update(long elapsedTime) {
 		if (this._finished) {
 			return;
 		}
-		this._delta = MathUtils.min(elapsedTime / 1000f, 0.1f);
+		this._delta = MathUtils.max(elapsedTime / 1000f, LSystem.MIN_SECONE_SPEED_FIXED);
 		this._timer += _delta;
 		if (this._timer >= _delay) {
 			_timeInAfter += _delta / _duration;
@@ -185,15 +193,20 @@ public class EaseTimer {
 		}
 	}
 
-	public void reset() {
+	public EaseTimer reset(float delay) {
 		this._ease_value_max = 1f;
 		this._ease_value_min = 0f;
 		this._timer = 0;
 		this._progress = 0.0f;
 		this._finished = false;
 		this._delta = 0;
-		this._delay = LSystem.DEFAULT_EASE_DELAY;
+		this._delay = delay;
 		this._timeInAfter = 0;
+		return this;
+	}
+	
+	public EaseTimer reset() {
+		return reset(LSystem.DEFAULT_EASE_DELAY);
 	}
 
 	public EaseTimer setEasingMode(EasingMode ease) {

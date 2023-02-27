@@ -21,7 +21,9 @@
 package loon.action.sprite;
 
 import loon.Director.Origin;
+
 import loon.LObject;
+import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
 import loon.LTrans;
@@ -34,6 +36,7 @@ import loon.action.collision.CollisionObject;
 import loon.action.collision.Gravity;
 import loon.action.map.Field2D;
 import loon.canvas.LColor;
+import loon.events.ResizeListener;
 import loon.geom.Affine2f;
 import loon.geom.BoxSize;
 import loon.geom.Point;
@@ -49,6 +52,10 @@ import loon.utils.TArray;
 import loon.utils.TimeUtils;
 import loon.utils.res.MovieSpriteSheet;
 
+/**
+ * 一个精灵类的具体实现,仿照J2ME的Sprite同名类实现的精灵类
+ *
+ */
 public class Sprite extends LObject<ISprite>
 		implements Flip<Sprite>, CollisionObject, ISprite, IArray, LTrans, BoxSize {
 
@@ -56,38 +63,39 @@ public class Sprite extends LObject<ISprite>
 
 	private Origin _origin = Origin.CENTER;
 
-	private TArray<ISprite> _childList = null;
+	private TArray<ISprite> _childrens = null;
 
 	// 默认每帧刷新时间
-	final static private long defaultTimer = 150;
+	private static final long defaultDelay = 150;
 
 	// 是否可见
-	private boolean visible = true;
-
-	// 精灵名称
-	private String spriteName;
+	private boolean _visible = true;
 
 	// 精灵图片
-	private LTexture image;
+	private LTexture _image;
 
 	// 动画
-	private Animation animation = new Animation();
+	private Animation _animation = new Animation();
 
 	private LColor _debugDrawColor = LColor.red;
 
-	private int transform;
+	private ResizeListener<Sprite> _resizeListener;
+
+	private int _transform;
+
+	private LColor _filterColor;
 
 	private float _scaleX = 1f, _scaleY = 1f;
 
-	private float _fixedWidthOffset = 0f;
-	
-	private float _fixedHeightOffset = 0f;
+	private float _fixedWidthOffset = 0f, _fixedHeightOffset = 0f;
+
+	private Vector2f _offset = new Vector2f();
+
+	private boolean _spritesVisible = true;
 
 	private boolean _flipX = false, _flipY = false;
 
 	private boolean _debugDraw = false;
-
-	private int _maxFrame;
 
 	private Vector2f _pivot = new Vector2f(-1, -1);
 
@@ -120,9 +128,9 @@ public class Sprite extends LObject<ISprite>
 	 */
 	private Sprite(String spriteName, float x, float y) {
 		this.setLocation(x, y);
-		this.spriteName = spriteName;
-		this.visible = true;
-		this.transform = LTrans.TRANS_NONE;
+		this._objectName = spriteName;
+		this._visible = true;
+		this._transform = LTrans.TRANS_NONE;
 	}
 
 	/**
@@ -133,7 +141,7 @@ public class Sprite extends LObject<ISprite>
 	 * @param col
 	 */
 	public Sprite(String fileName, int row, int col) {
-		this(fileName, -1, 0, 0, row, col, defaultTimer);
+		this(fileName, -1, 0, 0, row, col, defaultDelay);
 	}
 
 	/**
@@ -158,7 +166,7 @@ public class Sprite extends LObject<ISprite>
 	 * @param col
 	 */
 	public Sprite(String fileName, float x, float y, int row, int col) {
-		this(fileName, x, y, row, col, defaultTimer);
+		this(fileName, x, y, row, col, defaultDelay);
 	}
 
 	/**
@@ -186,7 +194,7 @@ public class Sprite extends LObject<ISprite>
 	 * @param col
 	 */
 	public Sprite(String fileName, int maxFrame, float x, float y, int row, int col) {
-		this(fileName, maxFrame, x, y, row, col, defaultTimer);
+		this(fileName, maxFrame, x, y, row, col, defaultDelay);
 	}
 
 	/**
@@ -255,7 +263,7 @@ public class Sprite extends LObject<ISprite>
 	 * @param y
 	 */
 	public Sprite(LTexture[] images, float x, float y) {
-		this(images, x, y, defaultTimer);
+		this(images, x, y, defaultDelay);
 	}
 
 	/**
@@ -265,7 +273,7 @@ public class Sprite extends LObject<ISprite>
 	 * @param timer
 	 */
 	public Sprite(LTexture[] images, long timer) {
-		this(images, -1, 0, 0, defaultTimer);
+		this(images, -1, 0, 0, defaultDelay);
 	}
 
 	/**
@@ -297,13 +305,13 @@ public class Sprite extends LObject<ISprite>
 	/**
 	 * 以下参数分别为 精灵图，坐标x,坐标y
 	 * 
-	 * @param image
+	 * @param _image
 	 * @param x
 	 * @param y
 	 * @param timer
 	 */
-	public Sprite(LTexture image, float x, float y) {
-		this(new LTexture[] { image }, -1, x, y, 0);
+	public Sprite(LTexture _image, float x, float y) {
+		this(new LTexture[] { _image }, -1, x, y, 0);
 	}
 
 	/**
@@ -318,10 +326,10 @@ public class Sprite extends LObject<ISprite>
 	 */
 	public Sprite(String spriteName, LTexture[] images, int maxFrame, float x, float y, long timer) {
 		this.setLocation(x, y);
-		this.spriteName = spriteName;
-		this.setAnimation(animation, images, maxFrame, timer);
-		this.visible = true;
-		this.transform = LTrans.TRANS_NONE;
+		this._objectName = spriteName;
+		this.setAnimation(_animation, images, maxFrame, timer);
+		this._visible = true;
+		this._transform = LTrans.TRANS_NONE;
 	}
 
 	/**
@@ -347,11 +355,11 @@ public class Sprite extends LObject<ISprite>
 	 */
 	public Sprite(String spriteName, MovieSpriteSheet sheet, float x, float y, long timer) {
 		this.setLocation(x, y);
-		this.spriteName = spriteName;
+		this._objectName = spriteName;
 		LTexture[] texs = sheet.getTextures();
-		this.setAnimation(animation, texs, texs.length, timer);
-		this.visible = true;
-		this.transform = LTrans.TRANS_NONE;
+		this.setAnimation(_animation, texs, texs.length, timer);
+		this._visible = true;
+		this._transform = LTrans.TRANS_NONE;
 	}
 
 	/**
@@ -360,7 +368,7 @@ public class Sprite extends LObject<ISprite>
 	 * @param running
 	 */
 	public Sprite setRunning(boolean running) {
-		animation.setRunning(running);
+		_animation.setRunning(running);
 		return this;
 	}
 
@@ -370,7 +378,7 @@ public class Sprite extends LObject<ISprite>
 	 * @return
 	 */
 	public int getTotalFrames() {
-		return animation.getTotalFrames();
+		return _animation.getTotalFrames();
 	}
 
 	/**
@@ -379,7 +387,7 @@ public class Sprite extends LObject<ISprite>
 	 * @param index
 	 */
 	public Sprite setCurrentFrameIndex(int index) {
-		animation.setCurrentFrameIndex(index);
+		_animation.setCurrentFrameIndex(index);
 		return this;
 	}
 
@@ -389,7 +397,7 @@ public class Sprite extends LObject<ISprite>
 	 * @return
 	 */
 	public int getCurrentFrameIndex() {
-		return animation.getCurrentFrameIndex();
+		return _animation.getCurrentFrameIndex();
 	}
 
 	/**
@@ -459,16 +467,7 @@ public class Sprite extends LObject<ISprite>
 	 * @param timer
 	 */
 	private void setAnimation(Animation myAnimation, LTexture[] images, int max, long timer) {
-		this._maxFrame = max;
-		if (_maxFrame != -1) {
-			for (int i = 0; i < _maxFrame && i < images.length; i++) {
-				myAnimation.addFrame(images[i], timer);
-			}
-		} else {
-			for (int i = 0; i < images.length; i++) {
-				myAnimation.addFrame(images[i], timer);
-			}
-		}
+		myAnimation.addFrame(images, max, timer);
 	}
 
 	/**
@@ -524,16 +523,15 @@ public class Sprite extends LObject<ISprite>
 	/**
 	 * 插入指定动画
 	 * 
-	 * @param animation
+	 * @param _animation
 	 */
-	public Sprite setAnimation(Animation animation) {
-		this.animation = animation;
-		this._maxFrame = animation.getTotalFrames();
+	public Sprite setAnimation(Animation _animation) {
+		this._animation = _animation;
 		return this;
 	}
 
 	public Animation getAnimation() {
-		return animation;
+		return _animation;
 	}
 
 	protected void onUpdate(long elapsedTime) {
@@ -543,11 +541,11 @@ public class Sprite extends LObject<ISprite>
 	 * 变更动画
 	 */
 	public void update(long elapsedTime) {
-		if (visible) {
-			animation.update(elapsedTime);
+		if (_visible) {
+			_animation.update(elapsedTime);
 			onUpdate(elapsedTime);
-			if (_childList != null && _childList.size > 0) {
-				for (ISprite spr : _childList) {
+			if (_childrens != null && _childrens.size > 0) {
+				for (ISprite spr : _childrens) {
 					if (spr != null) {
 						spr.update(elapsedTime);
 					}
@@ -568,25 +566,33 @@ public class Sprite extends LObject<ISprite>
 	}
 
 	public LTexture getImage() {
-		return animation.getSpriteImage();
+		return _animation.getSpriteImage();
+	}
+
+	public float getAniWidth() {
+		LTexture si = _animation.getSpriteImage();
+		if (si == null) {
+			return -1;
+		}
+		return si.width();
+	}
+
+	public float getAniHeight() {
+		LTexture si = _animation.getSpriteImage();
+		if (si == null) {
+			return -1;
+		}
+		return si.height();
 	}
 
 	@Override
 	public float getWidth() {
-		LTexture si = animation.getSpriteImage();
-		if (si == null) {
-			return -1;
-		}
-		return (si.width() * _scaleX) - _fixedWidthOffset;
+		return (getAniWidth() * _scaleX) - _fixedWidthOffset;
 	}
 
 	@Override
 	public float getHeight() {
-		LTexture si = animation.getSpriteImage();
-		if (si == null) {
-			return -1;
-		}
-		return (si.height() * _scaleY) - _fixedHeightOffset;
+		return (getAniHeight() * _scaleY) - _fixedHeightOffset;
 	}
 
 	/**
@@ -647,49 +653,45 @@ public class Sprite extends LObject<ISprite>
 		return CollisionHelper.isRectToCirc(this.getCollisionBox(), sprite.getCollisionBox());
 	}
 
-	private LColor filterColor;
-
 	@Override
 	public void createUI(GLEx g) {
-		createUI(g, 0, 0);
+		createUI(g, 0f, 0f);
 	}
-
+	
 	@Override
 	public void createUI(GLEx g, float offsetX, float offsetY) {
-		if (!visible) {
+		if (!_visible) {
 			return;
 		}
-		if (_alpha < 0.01) {
-			return;
-		}
-
-		if (animation.getCurrentFrameIndex() > _maxFrame) {
-			animation.reset();
-		}
-		image = animation.getSpriteImage();
-
-		final boolean notImg = image == null;
-
-		if (animation != null && animation.length > 0 && notImg) {
+		if (_objectAlpha < 0.01) {
 			return;
 		}
 
-		float width = notImg ? getContainerWidth() : image.getWidth();
-		float height = notImg ? getContainerHeight() : image.getHeight();
+		_image = _animation.getSpriteImage();
 
-		boolean update = (_rotation != 0) || !(_scaleX == 1f && _scaleY == 1f) || _flipX || _flipY;
+		final boolean notImg = _image == null;
+
+		if (_animation != null && _animation.length > 0 && notImg) {
+			return;
+		}
+
+		float width = notImg ? getContainerWidth() : _image.getWidth();
+		float height = notImg ? getContainerHeight() : _image.getHeight();
+
+		boolean update = (_objectRotation != 0) || !(_scaleX == 1f && _scaleY == 1f) || _flipX || _flipY;
 		int tmp = g.color();
+		int blend = g.getBlendMode();
 		try {
-			float nx = this._location.x + offsetX;
-			float ny = this._location.y + offsetY;
+			float nx = this._objectLocation.x + offsetX + _offset.x;
+			float ny = this._objectLocation.y + offsetY + _offset.y;
 			if (update) {
 				g.saveTx();
 				Affine2f tx = g.tx();
 				final float centerX = this._pivot.x == -1 ? (nx + _origin.ox(width)) : nx + this._pivot.x;
 				final float centerY = this._pivot.y == -1 ? (ny + _origin.oy(height)) : ny + this._pivot.y;
-				if (_rotation != 0 && notImg) {
+				if (_objectRotation != 0 && notImg) {
 					tx.translate(centerX, centerY);
-					tx.preRotate(_rotation);
+					tx.preRotate(_objectRotation);
 					tx.translate(-centerX, -centerY);
 				}
 				if (_flipX || _flipY) {
@@ -707,29 +709,30 @@ public class Sprite extends LObject<ISprite>
 					tx.translate(-centerX, -centerY);
 				}
 			}
-			g.setAlpha(_alpha);
+			g.setAlpha(_objectAlpha);
 			if (!notImg) {
-				if (LTrans.TRANS_NONE == transform) {
-					g.draw(image, nx, ny, width, height, filterColor, _rotation, _pivot, _scaleX, _scaleY);
+				if (LTrans.TRANS_NONE == _transform) {
+					g.draw(_image, nx, ny, width, height, _filterColor, _objectRotation, _pivot, _scaleX, _scaleY);
 				} else {
-					g.drawRegion(image, 0, 0, (int) width, (int) height, transform, (int) nx, (int) ny,
-							LTrans.TOP | LTrans.LEFT, filterColor, _pivot, _scaleX, _scaleY, _rotation);
+					g.drawRegion(_image, 0, 0, (int) width, (int) height, _transform, (int) nx, (int) ny,
+							LTrans.TOP | LTrans.LEFT, _filterColor, _pivot, _scaleX, _scaleY, _objectRotation);
 				}
 			}
-			if (_childList != null && _childList.size > 0) {
-				for (ISprite spr : _childList) {
+			if (_spritesVisible && _childrens != null && _childrens.size > 0) {
+				for (ISprite spr : _childrens) {
 					if (spr != null) {
 						float px = 0, py = 0;
 						ISprite parent = spr.getParent();
-						if (parent != null) {
-							px += parent.getX();
-							py += parent.getY();
-							for (; (parent = parent.getParent()) != null;) {
-								px += parent.getX();
-								py += parent.getY();
-							}
+						if (parent == null) {
+							parent = this;
 						}
-						spr.createUI(g, px, py);
+						px += parent.getX() + parent.getOffsetX();
+						py += parent.getY() + parent.getOffsetY();
+						for (; (parent = parent.getParent()) != null;) {
+							px += parent.getX() + parent.getOffsetX();
+							py += parent.getY() + parent.getOffsetY();
+						}
+						spr.createUI(g, px + offsetX + spr.getOffsetX(), py + offsetY + spr.getOffsetY());
 					}
 				}
 			}
@@ -741,12 +744,13 @@ public class Sprite extends LObject<ISprite>
 			if (update) {
 				g.restoreTx();
 			}
+			g.setBlendMode(blend);
 		}
 	}
 
 	public float getScreenX() {
 		float x = 0;
-		ISprite parent = _super;
+		ISprite parent = _objectSuper;
 		if (parent != null) {
 			x += parent.getX();
 			for (; (parent = parent.getParent()) != null;) {
@@ -758,7 +762,7 @@ public class Sprite extends LObject<ISprite>
 
 	public float getScreenY() {
 		float y = 0;
-		ISprite parent = _super;
+		ISprite parent = _objectSuper;
 		if (parent != null) {
 			y += parent.getY();
 			for (; (parent = parent.getParent()) != null;) {
@@ -770,44 +774,53 @@ public class Sprite extends LObject<ISprite>
 
 	@Override
 	public boolean isVisible() {
-		return visible;
+		return _visible;
 	}
 
 	@Override
-	public void setVisible(boolean visible) {
-		this.visible = visible;
+	public void setVisible(boolean v) {
+		this._visible = v;
+	}
+
+	public boolean isChildrenVisible() {
+		return this._spritesVisible;
+	}
+
+	public Sprite setChildrenVisible(final boolean v) {
+		this._spritesVisible = v;
+		return this;
 	}
 
 	public String getSpriteName() {
-		return spriteName;
+		return _objectName;
 	}
 
 	public Sprite setSpriteName(String spriteName) {
-		this.spriteName = spriteName;
+		this._objectName = spriteName;
 		return this;
 	}
 
 	public int getTransform() {
-		return transform;
+		return _transform;
 	}
 
-	public Sprite setTransform(int transform) {
-		this.transform = transform;
+	public Sprite setTransform(int t) {
+		this._transform = t;
 		return this;
 	}
 
 	public LColor getFilterColor() {
-		return new LColor(filterColor);
+		return new LColor(_filterColor);
 	}
 
-	public Sprite setFilterColor(LColor filterColor) {
-		this.filterColor = filterColor;
+	public Sprite setFilterColor(LColor f) {
+		this._filterColor = f;
 		return this;
 	}
 
 	@Override
 	public LTexture getBitmap() {
-		return this.image;
+		return this._image;
 	}
 
 	@Override
@@ -864,7 +877,7 @@ public class Sprite extends LObject<ISprite>
 
 	@Override
 	public boolean isContainer() {
-		return _childList != null && _childList.size > 0;
+		return _childrens != null && _childrens.size > 0;
 	}
 
 	@Override
@@ -895,12 +908,43 @@ public class Sprite extends LObject<ISprite>
 	}
 
 	public int getMaxFrame() {
-		return _maxFrame;
+		return _animation.getMaxFrame();
 	}
 
 	public Sprite setMaxFrame(int maxFrame) {
-		this._maxFrame = maxFrame;
+		this._animation.setMaxFrame(maxFrame);
 		return this;
+	}
+
+	public boolean isDescendantOf(ISprite actor) {
+		if (actor == null) {
+			throw new LSysException("Actor cannot be null");
+		}
+		ISprite parent = this;
+		for (;;) {
+			if (parent == null) {
+				return false;
+			}
+			if (parent == actor) {
+				return true;
+			}
+			parent = parent.getParent();
+		}
+	}
+
+	public boolean isAscendantOf(ISprite actor) {
+		if (actor == null) {
+			throw new LSysException("Actor cannot be null");
+		}
+		for (;;) {
+			if (actor == null) {
+				return false;
+			}
+			if (actor == this) {
+				return true;
+			}
+			actor = actor.getParent();
+		}
 	}
 
 	@Override
@@ -928,14 +972,14 @@ public class Sprite extends LObject<ISprite>
 		if (spr == this) {
 			return this;
 		}
-		if (_childList == null) {
-			_childList = new TArray<ISprite>();
+		if (_childrens == null) {
+			_childrens = new TArray<ISprite>();
 		}
 		spr.setParent(this);
 		spr.setSprites(this._sprites);
 		spr.setState(State.ADDED);
-		_childList.add(spr);
-		childSorter.sort(_childList);
+		_childrens.add(spr);
+		childSorter.sort(_childrens);
 		return this;
 	}
 
@@ -943,10 +987,10 @@ public class Sprite extends LObject<ISprite>
 		if (spr == null) {
 			return true;
 		}
-		if (_childList == null) {
-			_childList = new TArray<ISprite>();
+		if (_childrens == null) {
+			_childrens = new TArray<ISprite>();
 		}
-		boolean removed = _childList.remove(spr);
+		boolean removed = _childrens.remove(spr);
 		if (removed) {
 			spr.setState(State.REMOVED);
 		}
@@ -961,12 +1005,12 @@ public class Sprite extends LObject<ISprite>
 		if (idx < 0) {
 			return true;
 		}
-		if (_childList == null) {
-			_childList = new TArray<ISprite>();
+		if (_childrens == null) {
+			_childrens = new TArray<ISprite>();
 		}
-		for (int i = this._childList.size - 1; i >= 0; i--) {
+		for (int i = this._childrens.size - 1; i >= 0; i--) {
 			if (i == idx) {
-				final ISprite removed = this._childList.removeIndex(i);
+				final ISprite removed = this._childrens.removeIndex(i);
 				final boolean exist = (removed == null);
 				if (exist) {
 					removed.setState(State.REMOVED);
@@ -982,11 +1026,11 @@ public class Sprite extends LObject<ISprite>
 	}
 
 	public Sprite removeChilds() {
-		if (this._childList == null) {
+		if (this._childrens == null) {
 			return this;
 		}
-		for (int i = this._childList.size - 1; i >= 0; i--) {
-			final ISprite removed = this._childList.get(i);
+		for (int i = this._childrens.size - 1; i >= 0; i--) {
+			final ISprite removed = this._childrens.get(i);
 			boolean exist = (removed == null);
 			if (exist) {
 				removed.setState(State.REMOVED);
@@ -996,7 +1040,7 @@ public class Sprite extends LObject<ISprite>
 				removeActionEvents((ActionBind) removed);
 			}
 		}
-		this._childList.clear();
+		this._childrens.clear();
 		return this;
 	}
 
@@ -1005,10 +1049,23 @@ public class Sprite extends LObject<ISprite>
 	}
 
 	public ISprite getChildByIndex(int idx) {
-		if (_childList != null && idx >= 0 && idx < size()) {
-			return _childList.get(idx);
+		if (_childrens != null && idx >= 0 && idx < size()) {
+			return _childrens.get(idx);
 		}
 		return null;
+	}
+
+	@Override
+	public void setRotation(float rotate) {
+		super.setRotation(rotate);
+		if (_childrens != null) {
+			for (int i = _childrens.size - 1; i > -1; i--) {
+				ISprite sprite = _childrens.get(i);
+				if (sprite != null) {
+					sprite.setRotation(rotate);
+				}
+			}
+		}
 	}
 
 	@Override
@@ -1071,19 +1128,19 @@ public class Sprite extends LObject<ISprite>
 
 	@Override
 	public int size() {
-		return (_childList == null ? 0 : _childList.size);
+		return (_childrens == null ? 0 : _childrens.size);
 	}
 
 	@Override
 	public void clear() {
-		if (_childList != null) {
+		if (_childrens != null) {
 			removeChilds();
 		}
 	}
 
 	@Override
 	public float getContainerX() {
-		if (_super != null) {
+		if (_objectSuper != null) {
 			return getScreenX() - getX();
 		}
 		return this._sprites == null ? super.getContainerX() : this._sprites.getX();
@@ -1091,7 +1148,7 @@ public class Sprite extends LObject<ISprite>
 
 	@Override
 	public float getContainerY() {
-		if (_super != null) {
+		if (_objectSuper != null) {
 			return getScreenY() - getY();
 		}
 		return this._sprites == null ? super.getContainerY() : this._sprites.getY();
@@ -1113,11 +1170,12 @@ public class Sprite extends LObject<ISprite>
 	}
 
 	@Override
-	public void setSprites(Sprites ss) {
+	public ISprite setSprites(Sprites ss) {
 		if (this._sprites == ss) {
-			return;
+			return this;
 		}
 		this._sprites = ss;
+		return this;
 	}
 
 	@Override
@@ -1144,8 +1202,8 @@ public class Sprite extends LObject<ISprite>
 	}
 
 	@Override
-	public boolean intersects(CollisionObject object) {
-		return getCollisionBox().intersects(object.getRectBox());
+	public boolean intersects(CollisionObject o) {
+		return getCollisionBox().intersects(o.getRectBox());
 	}
 
 	@Override
@@ -1155,6 +1213,81 @@ public class Sprite extends LObject<ISprite>
 
 	public Gravity getGravity() {
 		return new Gravity("Sprite", this);
+	}
+
+	private float toPixelScaleX(float x) {
+		return MathUtils.iceil(x / _scaleX);
+	}
+
+	private float toPixelScaleY(float y) {
+		return MathUtils.iceil(y / _scaleY);
+	}
+
+	public Vector2f getUITouch(float x, float y) {
+		return getUITouch(x, y, null);
+	}
+
+	public Vector2f getUITouch(float x, float y, Vector2f pointResult) {
+		if (!(x == -1 && y == -1 && pointResult != null)) {
+			if (pointResult == null) {
+				pointResult = new Vector2f(x, y);
+			} else {
+				pointResult.set(x, y);
+			}
+		}
+		float newX = 0f;
+		float newY = 0f;
+		ISprite parent = getParent();
+		if (parent != null) {
+			newX = pointResult.x - parent.getX() - getX();
+			newY = pointResult.y - parent.getX() - getY();
+		} else {
+			newX = pointResult.x - getX();
+			newY = pointResult.y - getY();
+		}
+		final float angle = getRotation();
+		if (angle == 0 || angle == 360) {
+			pointResult.x = toPixelScaleX(newX);
+			pointResult.y = toPixelScaleY(newY);
+			return pointResult;
+		}
+		float oldWidth = getAniWidth();
+		float oldHeight = getAniHeight();
+		float newWidth = getWidth();
+		float newHeight = getHeight();
+		float offX = oldWidth / 2f - newWidth / 2f;
+		float offY = oldHeight / 2f - newHeight / 2f;
+		float posX = (newX - offX);
+		float posY = (newY - offY);
+		if (angle == 90) {
+			offX = oldHeight / 2f - newWidth / 2f;
+			offY = oldWidth / 2f - newHeight / 2f;
+			posX = (newX - offY);
+			posY = (newY - offX);
+			pointResult.set(posX / getScaleX(), posY / getScaleY()).rotateSelf(90);
+			pointResult.set(-pointResult.x, MathUtils.abs(pointResult.y - this.getAniHeight()));
+		} else if (angle == -90) {
+			offX = oldHeight / 2f - newWidth / 2f;
+			offY = oldWidth / 2f - newHeight / 2f;
+			posX = (newX - offY);
+			posY = (newY - offX);
+			pointResult.set(posX / getScaleX(), posY / getScaleY()).rotateSelf(-90);
+			pointResult.set(-(pointResult.x - this.getAniWidth()), MathUtils.abs(pointResult.y));
+		} else if (angle == -180 || angle == 180) {
+			pointResult.set(posX / getScaleX(), posY / getScaleY()).rotateSelf(getRotation())
+					.addSelf(this.getAniWidth(), this.getAniHeight());
+		} else {
+			float rad = MathUtils.toRadians(angle);
+			float sin = MathUtils.sin(rad);
+			float cos = MathUtils.cos(rad);
+			float dx = offX / getScaleX();
+			float dy = offY / getScaleY();
+			float dx2 = cos * dx - sin * dy;
+			float dy2 = sin * dx + cos * dy;
+			pointResult.x = getAniWidth() - (newX - dx2);
+			pointResult.y = getAniHeight() - (newY - dy2);
+		}
+		return pointResult;
 	}
 
 	public boolean isDebugDraw() {
@@ -1184,8 +1317,9 @@ public class Sprite extends LObject<ISprite>
 	}
 
 	@Override
-	public void setFixedWidthOffset(float fixedWidthOffset) {
+	public Sprite setFixedWidthOffset(float fixedWidthOffset) {
 		this._fixedWidthOffset = fixedWidthOffset;
+		return this;
 	}
 
 	@Override
@@ -1194,8 +1328,9 @@ public class Sprite extends LObject<ISprite>
 	}
 
 	@Override
-	public void setFixedHeightOffset(float fixedHeightOffset) {
+	public Sprite setFixedHeightOffset(float fixedHeightOffset) {
 		this._fixedHeightOffset = fixedHeightOffset;
+		return this;
 	}
 
 	@Override
@@ -1229,23 +1364,116 @@ public class Sprite extends LObject<ISprite>
 		RectBox b = new RectBox(0, rectDst.getY(), rectDst.getWidth(), rectDst.getHeight());
 		return a.intersects(b);
 	}
-	
+
+	@Override
+	public float getCenterX() {
+		return getX() + getWidth() / 2f;
+	}
+
+	@Override
+	public float getCenterY() {
+		return getY() + getHeight() / 2f;
+	}
+
+	public Sprite softCenterOn(float x, float y) {
+		final RectBox rect = getSprites() == null ? LSystem.viewSize.getRect() : getSprites().getBoundingBox();
+		final ISprite sprite = this.getSuper();
+		if (x != 0) {
+			float dx = (x - rect.getWidth() / 2 / this.getScaleX() - this.getX()) / 3;
+			if (sprite != null) {
+				RectBox boundingBox = sprite.getRectBox();
+				if (this.getX() + dx < boundingBox.getMinX()) {
+					setX(boundingBox.getMinX() / this.getScaleX());
+				} else if (this.getX() + dx > (boundingBox.getMaxX() - rect.getWidth()) / this.getScaleX()) {
+					setX(MathUtils.max(boundingBox.getMaxX() - rect.getWidth(), boundingBox.getMinX())
+							/ this.getScaleX());
+				} else {
+					this.setX(this.getX() + dx);
+				}
+			} else {
+				this.setX(this.getX() + dx);
+			}
+		}
+		if (y != 0) {
+			float dy = (y - rect.getHeight() / 2 / this.getScaleY() - this.getY()) / 3;
+			if (sprite != null) {
+				RectBox boundingBox = sprite.getRectBox();
+				if (this.getY() + dy < boundingBox.getMinY()) {
+					this.setY(boundingBox.getMinY() / this.getScaleY());
+				} else if (this.getY() + dy > (boundingBox.getMaxY() - rect.getHeight()) / this.getScaleY()) {
+					this.setY(MathUtils.max(boundingBox.getMaxY() - rect.getHeight(), boundingBox.getMinY())
+							/ this.getScaleY());
+				} else {
+					this.setY(this.getY() + dy);
+				}
+			} else {
+				this.setY(this.getY() + dy);
+			}
+		}
+		return this;
+	}
+
+	@Override
+	public ISprite setOffset(Vector2f v) {
+		if (v != null) {
+			this._offset = v;
+		}
+		return this;
+	}
+
+	public Sprite setOffsetX(float sx) {
+		this._offset.setX(sx);
+		return this;
+	}
+
+	public Sprite setOffsetY(float sy) {
+		this._offset.setY(sy);
+		return this;
+	}
+
+	@Override
+	public float getOffsetX() {
+		return _offset.x;
+	}
+
+	@Override
+	public float getOffsetY() {
+		return _offset.y;
+	}
+
+	public ResizeListener<Sprite> getResizeListener() {
+		return _resizeListener;
+	}
+
+	public Sprite setResizeListener(ResizeListener<Sprite> listener) {
+		this._resizeListener = listener;
+		return this;
+	}
+
+	@Override
+	public void onResize() {
+		if (_resizeListener != null) {
+			_resizeListener.onResize(this);
+		}
+	}
+
 	public boolean isClosed() {
 		return isDisposed();
 	}
 
 	@Override
 	public void close() {
-		this.visible = false;
-		if (image != null) {
-			image.close();
+		this._visible = false;
+		if (_image != null) {
+			_image.close();
 		}
-		if (animation != null) {
-			animation.close();
+		if (_animation != null) {
+			_animation.close();
 		}
 		setState(State.DISPOSED);
 		removeChilds();
 		removeActionEvents(this);
+		_resizeListener = null;
 	}
 
 }

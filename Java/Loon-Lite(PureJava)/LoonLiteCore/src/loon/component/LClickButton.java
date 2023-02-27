@@ -108,6 +108,10 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 				SkinManager.get().getClickButtonSkin().getFontColor(), 0, 0, width, height, clicked, clicked, clicked);
 	}
 
+	public static LClickButton make(IFont font, String text, int x, int y, int width, int height) {
+		return new LClickButton(text, font, SkinManager.get().getClickButtonSkin().getFontColor(), x, y, width, height);
+	}
+
 	public static LClickButton make(IFont font, String text, int width, int height) {
 		return new LClickButton(text, font, SkinManager.get().getClickButtonSkin().getFontColor(), 0, 0, width, height);
 	}
@@ -416,8 +420,8 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 	}
 
 	@Override
-	public LClickButton setFontColor(LColor fontColor) {
-		this.fontColor = fontColor;
+	public LClickButton setFontColor(LColor c) {
+		this.fontColor = new LColor(c);
 		return this;
 	}
 
@@ -464,8 +468,9 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 		return lightClickedButton;
 	}
 
-	public void setLightClickedButton(boolean clickedButton) {
+	public LClickButton setLightClickedButton(boolean clickedButton) {
 		this.lightClickedButton = clickedButton;
+		return this;
 	}
 
 	public boolean isGrayButton() {
@@ -484,6 +489,10 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 	public LClickButton setFunction(CallFunction function) {
 		this._function = function;
 		return this;
+	}
+
+	public boolean isOver() {
+		return over;
 	}
 
 	@Override

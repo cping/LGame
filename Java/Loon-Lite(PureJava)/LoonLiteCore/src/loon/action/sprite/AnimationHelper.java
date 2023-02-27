@@ -20,6 +20,7 @@
  */
 package loon.action.sprite;
 
+import loon.LRelease;
 import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.Canvas;
@@ -28,9 +29,11 @@ import loon.opengl.TextureUtils;
 import loon.utils.CollectionUtils;
 import loon.utils.ObjectMap;
 
-public class AnimationHelper {
+public class AnimationHelper implements LRelease {
 
 	final static ObjectMap<String, AnimationHelper> ANIS = new ObjectMap<String, AnimationHelper>();
+
+	private boolean closed;
 
 	private String flag = null;
 	// 角色向下
@@ -123,7 +126,7 @@ public class AnimationHelper {
 	public static AnimationHelper makeObject(String fileName, int row, int col, int tileWidth, int tileHeight) {
 		String key = fileName.trim().toLowerCase();
 		AnimationHelper animation = ANIS.get(key);
-		if (animation == null) {
+		if (animation == null || animation.isClosed()) {
 			LTexture[][] images = TextureUtils.getSplit2Textures(fileName, tileWidth, tileHeight);
 			LTexture[][] result = new LTexture[row][col];
 			for (int y = 0; y < col; y++) {
@@ -140,7 +143,7 @@ public class AnimationHelper {
 	public static AnimationHelper makeObject(String fileName, int tileWidth, int tileHeight, LColor col) {
 		String key = fileName.trim().toLowerCase();
 		AnimationHelper animation = ANIS.get(key);
-		if (animation == null) {
+		if (animation == null || animation.isClosed()) {
 
 			LTexture texture = TextureUtils.filterColor(fileName, col);
 
@@ -190,17 +193,30 @@ public class AnimationHelper {
 		if (images == null) {
 			return;
 		}
-		for (int i = 0; i < images.length; i++) {
-			images[i].close();
-			images[i] = null;
+		for (int i = images.length - 1; i > -1; i--) {
+			LTexture texture = images[i];
+			if (texture != null) {
+				texture.close();
+				texture = null;
+			}
 		}
 	}
 
+	public boolean isClosed() {
+		return closed;
+	}
+
 	public void dispose() {
+		closed = true;
 		dispose(downImages);
 		dispose(upImages);
 		dispose(leftImages);
 		dispose(rightImages);
 		ANIS.remove(flag);
+	}
+
+	@Override
+	public void close() {
+		dispose();
 	}
 }

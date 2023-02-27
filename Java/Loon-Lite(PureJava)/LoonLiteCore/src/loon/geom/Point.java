@@ -21,8 +21,10 @@
  */
 package loon.geom;
 
+import loon.LSystem;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
+import loon.utils.StringUtils;
 
 public class Point extends Shape {
 	/**
@@ -30,8 +32,25 @@ public class Point extends Shape {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public final static Point at(float x,float y){
-		return new Point(x,y);
+	public static Point at(String v) {
+		if (StringUtils.isEmpty(v)) {
+			return new Point();
+		}
+		String[] result = StringUtils.split(v, ',');
+		int len = result.length;
+		if (len > 1) {
+			try {
+				float x = Float.parseFloat(result[0].trim());
+				float y = Float.parseFloat(result[1].trim());
+				return new Point(x, y);
+			} catch (Exception ex) {
+			}
+		}
+		return new Point();
+	}
+
+	public final static Point at(float x, float y) {
+		return new Point(x, y);
 	}
 
 	public int clazz;
@@ -39,6 +58,10 @@ public class Point extends Shape {
 	public static final int POINT_CONVEX = 1;
 
 	public static final int POINT_CONCAVE = 2;
+
+	public Point() {
+		this(0f, 0f);
+	}
 
 	public Point(float x, float y) {
 		this.checkPoints();
@@ -93,14 +116,16 @@ public class Point extends Shape {
 		this.y = y;
 	}
 
-	public void setLocation(float x, float y) {
+	public Point setLocation(float x, float y) {
 		this.x = x;
 		this.y = y;
+		return this;
 	}
 
-	public void setLocation(Point p) {
+	public Point setLocation(Point p) {
 		this.x = p.getX();
 		this.y = p.getY();
+		return this;
 	}
 
 	public void translate(float dx, float dy) {
@@ -117,21 +142,27 @@ public class Point extends Shape {
 		this.x -= p.x;
 		this.y -= p.y;
 	}
-
+	
 	public final int distanceTo(Point p) {
-		final int tx = (int) (this.x - p.x);
-		final int ty = (int) (this.y - p.y);
-		return MathUtils.sqrt(MathUtils.mul(tx, tx) + MathUtils.mul(ty, ty));
+		final float tx = (this.x - p.x);
+		final float ty = (this.y - p.y);
+		return (int) MathUtils.sqrt(MathUtils.mul(tx, tx) + MathUtils.mul(ty, ty));
 	}
 
 	public final int distanceTo(int x, int y) {
-		final int tx = (int) (this.x - x);
-		final int ty = (int) (this.y - y);
-		return MathUtils.sqrt(MathUtils.mul(tx, tx) + MathUtils.mul(ty, ty));
+		final float tx = (int) (this.x - x);
+		final float ty = (int) (this.y - y);
+		return (int) MathUtils.sqrt(MathUtils.mul(tx, tx) + MathUtils.mul(ty, ty));
 	}
 
 	public void getLocation(Point dest) {
 		dest.setLocation(this.x, this.y);
+	}
+
+	public Point random() {
+		this.x = MathUtils.random(0f, LSystem.viewSize.getWidth());
+		this.y = MathUtils.random(0f, LSystem.viewSize.getHeight());
+		return this;
 	}
 
 	@Override
@@ -148,7 +179,7 @@ public class Point extends Shape {
 		Point p = (Point) obj;
 		return p.x == this.x && p.y == this.y && p.clazz == this.clazz;
 	}
-	
+
 	@Override
 	public final String toString() {
 		return "(" + x + "," + y + ")";

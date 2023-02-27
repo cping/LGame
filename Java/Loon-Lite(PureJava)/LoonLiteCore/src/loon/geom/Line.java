@@ -24,6 +24,7 @@ import loon.action.map.Config;
 import loon.action.map.Field2D;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
+import loon.utils.StringUtils;
 import loon.utils.TArray;
 
 public class Line extends Shape {
@@ -31,6 +32,25 @@ public class Line extends Shape {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+
+	public static Line at(String v) {
+		if (StringUtils.isEmpty(v)) {
+			return new Line();
+		}
+		String[] result = StringUtils.split(v, ',');
+		int len = result.length;
+		if (len > 3) {
+			try {
+				float x = Float.parseFloat(result[0].trim());
+				float y = Float.parseFloat(result[1].trim());
+				float x1 = Float.parseFloat(result[2].trim());
+				float y1 = Float.parseFloat(result[3].trim());
+				return new Line(x, y, x1, y1);
+			} catch (Exception ex) {
+			}
+		}
+		return new Line();
+	}
 
 	public final static Line at(float x1, float y1, float x2, float y2) {
 		return new Line(x1, y1, x2, y2);
@@ -42,9 +62,13 @@ public class Line extends Shape {
 
 	private Vector2f vec;
 
-	private Vector2f loc = new Vector2f(0, 0);
+	private final Vector2f loc = new Vector2f(0, 0);
 
-	private Vector2f closest = new Vector2f(0, 0);
+	private final Vector2f closest = new Vector2f(0, 0);
+
+	public Line() {
+		this(0f, 0f);
+	}
 
 	public Line(float x, float y, boolean inner, boolean outer) {
 		this(0, 0, x, y);
@@ -54,8 +78,8 @@ public class Line extends Shape {
 		this(x, y, true, true);
 	}
 
-	public Line(Point p1, Point p2) {
-		this(p1.x, p1.y, p2.x, p2.y);
+	public Line(XY p1, XY p2) {
+		this(p1.getX(), p1.getY(), p2.getX(), p2.getY());
 	}
 
 	public Line(float x1, float y1, float x2, float y2) {
@@ -98,7 +122,8 @@ public class Line extends Shape {
 
 	@Override
 	public float length() {
-		return vec.len();
+		return (int) MathUtils
+				.sqrt((getX2() - getX1()) * (getX2() - getX2()) + (getY2() - getY1()) * (getY2() - getY1()));
 	}
 
 	public float lengthSquared() {
@@ -130,7 +155,6 @@ public class Line extends Shape {
 		float dx = (ex - sx);
 		float dy = (ey - sy);
 		vec.set(dx, dy);
-
 	}
 
 	public float getDX() {
@@ -217,16 +241,13 @@ public class Line extends Shape {
 
 	public boolean on(Vector2f point) {
 		getClosestPoint(point, closest);
-
 		return point.equals(closest);
 	}
 
 	public float distanceSquared(Vector2f point) {
 		getClosestPoint(point, closest);
 		closest.sub(point);
-
 		float result = closest.lengthSquared();
-
 		return result;
 	}
 
@@ -251,58 +272,112 @@ public class Line extends Shape {
 		result.y = start.getY() + projDistance * vec.getY();
 	}
 
-	public Vector2f intersect(Line other) {
-		return intersect(other, false);
+	public boolean intersects(Line other) {
+		return intersects(other, null);
 	}
 
-	public Vector2f intersect(Line other, boolean limit) {
-		Vector2f temp = new Vector2f();
-
-		if (!intersect(other, limit, temp)) {
-			return null;
+	public boolean intersects(Line other, Vector2f result) {
+		if (other == null) {
+			return false;
 		}
 
-		return temp;
-	}
+		float x1 = getX1();
+		float y1 = getY1();
+		float x2 = getX2();
+		float y2 = getY2();
 
-	public boolean intersect(Line other, boolean limit, Vector2f result) {
-		float dx1 = end.getX() - start.getX();
-		float dx2 = other.end.getX() - other.start.getX();
-		float dy1 = end.getY() - start.getY();
-		float dy2 = other.end.getY() - other.start.getY();
-		float denom = (dy2 * dx1) - (dx2 * dy1);
+		float x3 = other.getX1();
+		float y3 = other.getY1();
+		float x4 = other.getX2();
+		float y4 = other.getY2();
+
+		float numA = (x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3);
+		float numB = (x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3);
+		float denom = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
 
 		if (denom == 0) {
 			return false;
 		}
 
-		float ua = (dx2 * (start.getY() - other.start.getY())) - (dy2 * (start.getX() - other.start.getX()));
-		ua /= denom;
-		float ub = (dx1 * (start.getY() - other.start.getY())) - (dy1 * (start.getX() - other.start.getX()));
-		ub /= denom;
+		float uA = numA / denom;
+		float uB = numB / denom;
 
-		if ((limit) && ((ua < 0) || (ua > 1) || (ub < 0) || (ub > 1))) {
+		if (uA >= 0 && uA <= 1 && uB >= 0 && uB <= 1) {
+			if (result != null) {
+				result.x = x1 + (uA * (x2 - x1));
+				result.y = y1 + (uA * (y2 - y1));
+			}
+			return true;
+		}
+
+		return false;
+	}
+
+	public boolean intersects(RectBox rect) {
+		if (rect == null) {
 			return false;
 		}
 
-		float u = ua;
+		float x1 = start.getX();
+		float y1 = start.getY();
 
-		float ix = start.getX() + (u * (end.getX() - start.getX()));
-		float iy = start.getY() + (u * (end.getY() - start.getY()));
+		float x2 = end.getX() + start.getX();
+		float y2 = end.getY() + start.getY();
 
-		result.set(ix, iy);
-		return true;
+		float bx1 = rect.x;
+		float by1 = rect.y;
+		float bx2 = rect.getRight();
+		float by2 = rect.getBottom();
+
+		float t = 0;
+		if ((x1 >= bx1 && x1 <= bx2 && y1 >= by1 && y1 <= by2) || (x2 >= bx1 && x2 <= bx2 && y2 >= by1 && y2 <= by2)) {
+			return true;
+		}
+
+		if (x1 < bx1 && x2 >= bx1) {
+			t = y1 + (y2 - y1) * (bx1 - x1) / (x2 - x1);
+			if (t > by1 && t <= by2) {
+				return rect.intersects(this);
+			}
+		} else if (x1 > bx2 && x2 <= bx2) {
+			t = y1 + (y2 - y1) * (bx2 - x1) / (x2 - x1);
+			if (t >= by1 && t <= by2) {
+				return rect.intersects(this);
+			}
+		}
+
+		if (y1 < by1 && y2 >= by1) {
+			t = x1 + (x2 - x1) * (by1 - y1) / (y2 - y1);
+			if (t >= bx1 && t <= bx2) {
+				return rect.intersects(this);
+			}
+
+		} else if (y1 > by2 && y2 <= by2) {
+			t = x1 + (x2 - x1) * (by2 - y1) / (y2 - y1);
+			if (t >= bx1 && t <= bx2) {
+				return rect.intersects(this);
+			}
+		}
+
+		return false;
 	}
 
-	public float side(Vector2f v) {
+	public float side(XY v) {
 		if (v == null) {
 			return 0f;
 		}
-		return side(v.x, v.y);
+		return side(v.getX(), v.getY());
 	}
 
 	public float side(float x, float y) {
 		return (end.x - start.x) * (y - start.y) - (end.y - start.y) * (x - start.x);
+	}
+
+	public Vector2f getMidPoint() {
+		Vector2f out = new Vector2f();
+		out.x = (getX1() + getX2()) / 2f;
+		out.y = (getY1() + getY2()) / 2f;
+		return out;
 	}
 
 	public Vector2f project(Vector2f v) {
@@ -328,7 +403,7 @@ public class Line extends Shape {
 		points[3] = getY2();
 	}
 
-	public float ptSegDistSq(Point pt) {
+	public float ptSegDistSq(XY pt) {
 		return ShapeUtils.ptSegDistSq(getX1(), getY1(), getX2(), getY2(), pt.getX(), pt.getY());
 	}
 
@@ -336,7 +411,7 @@ public class Line extends Shape {
 		return ShapeUtils.ptSegDistSq(getX1(), getY1(), getX2(), getY2(), px, py);
 	}
 
-	public float ptLineDist(Point pt) {
+	public float ptLineDist(XY pt) {
 		return ShapeUtils.ptLineDist(getX1(), getY1(), getX2(), getY2(), pt.getX(), pt.getY());
 	}
 
@@ -344,8 +419,42 @@ public class Line extends Shape {
 		return ShapeUtils.ptLineDistSq(getX1(), getY1(), getX2(), getY2(), px, py);
 	}
 
-	public float ptLineDistSq(Point pt) {
+	public float ptLineDistSq(XY pt) {
 		return ShapeUtils.ptLineDistSq(getX1(), getY1(), getX2(), getY2(), pt.getX(), pt.getY());
+	}
+
+	public float slope() {
+		return (this.getY2() - this.getY1()) / (this.getX2() - this.getX1());
+	}
+
+	public float perpSlope() {
+		return -((this.getX2() - this.getX1()) / (this.getY2() - this.getY1()));
+	}
+
+	public float angle() {
+		return MathUtils.atan2(this.getY2() - this.getY1(), this.getX2() - this.getX1());
+	}
+
+	public boolean isPointOnLine(float x, float y) {
+		return (x - this.getX1()) * (this.getY2() - this.getY1()) == (this.getX2() - this.getX1()) * (y - this.getY1());
+	}
+
+	public boolean isPointOnLineSegment(float x, float y) {
+		float xMin = MathUtils.min(this.getX1(), this.getX2());
+		float xMax = MathUtils.max(this.getX1(), this.getX2());
+		float yMin = MathUtils.min(this.getY1(), this.getY2());
+		float yMax = MathUtils.max(this.getY1(), this.getY2());
+		return this.isPointOnLine(x, y) && (x >= xMin && x <= xMax) && (y >= yMin && y <= yMax);
+	}
+
+	public boolean isPointOnRay(float x, float y) {
+		if ((x - this.getX1()) * (this.getY2() - this.getY1()) == (this.getX2() - this.getX1()) * (y - this.getY1())) {
+			if (MathUtils.atan2(y - this.getY1(), x - this.getX1()) == MathUtils.atan2(this.getY2() - this.getY1(),
+					this.getX2() - this.getX1())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override

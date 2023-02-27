@@ -24,8 +24,10 @@ import loon.LObject;
 import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
+import loon.LTextureBatch;
 import loon.PlayerUtils;
 import loon.Screen;
+import loon.LTextureBatch.Cache;
 import loon.action.ActionTween;
 import loon.action.map.Field2D;
 import loon.action.map.tmx.TMXImageLayer;
@@ -38,13 +40,24 @@ import loon.action.map.tmx.tiles.TMXTile;
 import loon.action.sprite.ISprite;
 import loon.action.sprite.Sprites;
 import loon.canvas.LColor;
+import loon.events.ResizeListener;
 import loon.geom.RectBox;
+import loon.geom.Vector2f;
 import loon.opengl.GLEx;
+import loon.utils.IntMap;
 import loon.utils.ObjectMap;
 import loon.utils.TimeUtils;
 
+/**
+ * TMX地图渲染用基本抽象类,所有TMX地图文件的渲染皆由此类的子类负责具体实现
+ */
 public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite {
 
+	private ResizeListener<TMXMapRenderer> _resizeListener;
+
+	protected Vector2f _mapLocation = new Vector2f();
+
+	protected Vector2f _offset = new Vector2f();
 	protected float _fixedWidthOffset = 0f;
 	protected float _fixedHeightOffset = 0f;
 
@@ -84,6 +97,8 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 	protected abstract void renderImageLayer(GLEx gl, TMXImageLayer imageLayer);
 
 	protected TMXMap map;
+
+	protected IntMap<LTextureBatch.Cache> textureCaches;
 	protected ObjectMap<String, LTexture> textureMap;
 	protected ObjectMap<TMXTile, TileAnimator> tileAnimators;
 
@@ -93,10 +108,13 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 
 	protected LColor baseColor = new LColor(LColor.white);
 
+	protected boolean allowCache;
+
 	public TMXMapRenderer(TMXMap map) {
+		this.textureCaches = new IntMap<LTextureBatch.Cache>();
 		this.textureMap = new ObjectMap<String, LTexture>();
 		this.tileAnimators = new ObjectMap<TMXTile, TileAnimator>();
-		this.visible = true;
+		this.visible = allowCache = true;
 		this.map = map;
 
 		for (TMXTileSet tileSet : map.getTileSets()) {
@@ -126,11 +144,40 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 			return new TMXIsometricMapRenderer(map);
 		case ORTHOGONAL:
 			return new TMXOrthogonalMapRenderer(map);
+		case HEXAGONAL:
+			return new TMXHexagonalMapRenderer(map);
+		case STAGGERED:
+			return new TMXStaggeredMapRenderer(map);
 		default:
 			break;
 		}
 		throw new LSysException(
 				"A TmxMapRenderer has not yet been implemented for " + map.getOrientation() + " orientation");
+	}
+
+	public void saveCache(LTextureBatch batch) {
+		if (!allowCache) {
+			return;
+		}
+		if (batch != null) {
+			textureCaches.put(lastHashCode, batch.newCache());
+		}
+	}
+
+	public boolean postCache(LTextureBatch batch, int hashCode) {
+		if (!allowCache) {
+			return false;
+		}
+		Cache cache = textureCaches.get(lastHashCode = hashCode);
+		if (cache == null || cache.isClosed()) {
+			batch.begin();
+		} else if (cache != null && !cache.isClosed()) {
+			batch.postCache(cache, baseColor, 0);
+			return true;
+		} else {
+			batch.begin();
+		}
+		return false;
 	}
 
 	public void update(long delta) {
@@ -140,7 +187,7 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 	}
 
 	protected void renderBackgroundColor(GLEx gl) {
-		gl.fillRect(_location.x, _location.y, map.getWidth() * map.getTileWidth(),
+		gl.fillRect(_objectLocation.x, _objectLocation.y, map.getWidth() * map.getTileWidth(),
 				map.getHeight() * map.getTileHeight(), map.getBackgroundColor());
 	}
 
@@ -201,9 +248,17 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 		return map;
 	}
 
+	protected float getRenderX() {
+		return map.getRenderOffsetX();
+	}
+
+	protected float getRenderY() {
+		return map.getRenderOffsetY();
+	}
+
 	@Override
-	public void setVisible(boolean visible) {
-		this.visible = visible;
+	public void setVisible(boolean v) {
+		this.visible = v;
 	}
 
 	@Override
@@ -212,17 +267,22 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 	}
 
 	@Override
+	public void createUI(GLEx g) {
+		createUI(g, 0f, 0f);
+	}
+
+	@Override
 	public void createUI(GLEx g, float offsetX, float offsetY) {
 		float tmp = g.alpha();
 		float tmpAlpha = baseColor.a;
 		int color = g.color();
-		g.setAlpha(_alpha);
-		baseColor.a = _alpha;
+		g.setAlpha(_objectAlpha);
+		baseColor.a = _objectAlpha;
 		g.setColor(baseColor);
 		renderBackgroundColor(g);
 		float ox = getX();
 		float oy = getY();
-		setLocation(ox + offsetX, oy + offsetY);
+		setLocation(ox + offsetX + _offset.x, oy + offsetY + _offset.y);
 		for (TMXMapLayer mapLayer : map.getLayers()) {
 			if (mapLayer instanceof TMXTileLayer) {
 				renderTileLayer(g, (TMXTileLayer) mapLayer);
@@ -238,35 +298,14 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 	}
 
 	@Override
-	public void createUI(GLEx g) {
-		float tmp = g.alpha();
-		float tmpAlpha = baseColor.a;
-		int color = g.color();
-		g.setAlpha(_alpha);
-		baseColor.a = _alpha;
-		g.setColor(baseColor);
-		renderBackgroundColor(g);
-		for (TMXMapLayer mapLayer : map.getLayers()) {
-			if (mapLayer instanceof TMXTileLayer) {
-				renderTileLayer(g, (TMXTileLayer) mapLayer);
-			}
-			if (mapLayer instanceof TMXImageLayer) {
-				renderImageLayer(g, (TMXImageLayer) mapLayer);
-			}
-		}
-		baseColor.a = tmpAlpha;
-		g.setColor(color);
-		g.setAlpha(tmp);
-	}
-
-	@Override
 	public RectBox getCollisionBox() {
 		return getCollisionArea();
 	}
 
 	@Override
 	public LTexture getBitmap() {
-		return null;
+		ObjectMap.Keys<String> keys = textureMap.keys();
+		return textureMap.size > 0 ? textureMap.get(keys.next()) : null;
 	}
 
 	@Override
@@ -282,6 +321,11 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 	@Override
 	public float getScaleY() {
 		return scaleY;
+	}
+
+	public TMXMapRenderer setScale(float scale) {
+		this.setScale(scale, scale);
+		return this;
 	}
 
 	@Override
@@ -313,14 +357,14 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 	@Override
 	public int hashCode() {
 		int result = map.getTileSets().size;
-		result = LSystem.unite(result, _location.x);
-		result = LSystem.unite(result, _location.y);
+		result = LSystem.unite(result, _objectLocation.x);
+		result = LSystem.unite(result, _objectLocation.y);
 		result = LSystem.unite(result, map.getTileHeight());
 		result = LSystem.unite(result, map.getTileWidth());
 		result = LSystem.unite(result, map.getTileHeight());
 		result = LSystem.unite(result, scaleX);
 		result = LSystem.unite(result, scaleY);
-		result = LSystem.unite(result, _rotation);
+		result = LSystem.unite(result, _objectRotation);
 		return result;
 	}
 
@@ -335,11 +379,12 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 	}
 
 	@Override
-	public void setSprites(Sprites ss) {
+	public ISprite setSprites(Sprites ss) {
 		if (this.sprites == ss) {
-			return;
+			return this;
 		}
 		this.sprites = ss;
+		return this;
 	}
 
 	@Override
@@ -361,8 +406,9 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 	}
 
 	@Override
-	public void setFixedWidthOffset(float fixedWidthOffset) {
+	public ISprite setFixedWidthOffset(float fixedWidthOffset) {
 		this._fixedWidthOffset = fixedWidthOffset;
+		return this;
 	}
 
 	@Override
@@ -371,8 +417,9 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 	}
 
 	@Override
-	public void setFixedHeightOffset(float fixedHeightOffset) {
+	public ISprite setFixedHeightOffset(float fixedHeightOffset) {
 		this._fixedHeightOffset = fixedHeightOffset;
+		return this;
 	}
 
 	@Override
@@ -406,10 +453,52 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 		RectBox b = new RectBox(0, rectDst.getY(), rectDst.getWidth(), rectDst.getHeight());
 		return a.intersects(b);
 	}
-	
-	
+
+	@Override
+	public void onResize() {
+		if (_resizeListener != null) {
+			_resizeListener.onResize(this);
+		}
+	}
+
+	public ResizeListener<TMXMapRenderer> getResizeListener() {
+		return _resizeListener;
+	}
+
+	public TMXMapRenderer setResizeListener(ResizeListener<TMXMapRenderer> listener) {
+		this._resizeListener = listener;
+		return this;
+	}
+
+	@Override
+	public TMXMapRenderer setOffset(Vector2f v) {
+		if (v != null) {
+			this._offset = v;
+		}
+		return this;
+	}
+
+	@Override
+	public float getOffsetX() {
+		return _offset.x;
+	}
+
+	@Override
+	public float getOffsetY() {
+		return _offset.y;
+	}
+
 	public boolean isClosed() {
 		return isDisposed();
+	}
+
+	public boolean isAllowCache() {
+		return allowCache;
+	}
+
+	public TMXMapRenderer setAllowCache(boolean a) {
+		this.allowCache = a;
+		return this;
 	}
 
 	@Override
@@ -421,10 +510,15 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 		if (tileAnimators != null) {
 			tileAnimators.clear();
 		}
+		if (textureCaches != null) {
+			textureCaches.clear();
+		}
 		for (LTexture texture : textureMap.values()) {
 			texture.close();
 		}
 		lastHashCode = 1;
+		_resizeListener = null;
 		setState(State.DISPOSED);
 	}
+
 }

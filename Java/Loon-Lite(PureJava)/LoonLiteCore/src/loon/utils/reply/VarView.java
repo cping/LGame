@@ -20,22 +20,23 @@
  */
 package loon.utils.reply;
 
-public interface VarView<T>
-{
-    interface Listener<T> extends Bypass.GoListener {
-        void onChange (T value, T oldValue);
-    }
+import loon.utils.reply.ActView.ActViewListener;
 
-    T get ();
+public interface VarView<T> {
+	public interface VarViewListener<T> extends Bypass.GoListener {
+		void onChange(T value, T oldValue);
+	}
 
-    <M> VarView<M> map (Function<? super T, M> func);
+	T get();
 
-    Connection connect (Listener<? super T> listener);
+	<M> VarView<M> map(Function<T, M> func);
 
-    void disconnect (Listener<? super T> listener);
+	Connection connect(VarViewListener<? super T> listener);
 
-    Connection connect (ActView.Listener<? super T> listener);
+	void disconnect(VarViewListener<? super T> listener);
 
-    Connection connect (Port<? super T> listener);
+	Connection connect(ActViewListener<? super T> listener);
+
+	Connection connect(Port<? super T> listener);
 
 }

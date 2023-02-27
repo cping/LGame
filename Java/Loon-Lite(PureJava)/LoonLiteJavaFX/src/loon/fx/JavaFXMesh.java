@@ -227,11 +227,12 @@ public class JavaFXMesh implements Mesh {
 
 		context.transform(deltaA * dDelta, deltaD * dDelta, deltaB * dDelta, deltaE * dDelta, deltaC * dDelta,
 				deltaF * dDelta);
-
-		context.drawImage(((JavaFXImage) source).buffer, texture.widthRatio * sourceWidth,
-				texture.heightRatio * sourceHeight, textureWidth, textureHeight, texture.widthRatio * sourceWidth,
-				texture.heightRatio * sourceHeight, textureWidth, textureHeight);
-
+		/*
+		 * context.drawImage(((JavaFXImage) source).buffer, texture.widthRatio *
+		 * sourceWidth, texture.heightRatio * sourceHeight, textureWidth, textureHeight,
+		 * texture.widthRatio * sourceWidth, texture.heightRatio * sourceHeight,
+		 * textureWidth, textureHeight);
+		 */
 		context.restore();
 
 	}
@@ -270,48 +271,68 @@ public class JavaFXMesh implements Mesh {
 		return adjust;
 	}
 
+	public void save() {
+		context.save();
+	}
+
+	public void restore() {
+		context.restore();
+	}
+
+	public void transform(float m00, float m01, float m10, float m11, float tx, float ty) {
+		context.transform(m00, m01, m10, m11, tx, ty);
+	}
+
+	public void transform(Affine2f aff) {
+		context.transform(aff.m00, aff.m01, aff.m10, aff.m11, aff.tx, aff.ty);
+	}
+
 	@Override
 	public void paint(int tint, float m00, float m01, float m10, float m11, float tx, float ty, float left, float top,
 			float right, float bottom, float sl, float st, float sr, float sb) {
 		LTexture texture = mesh.texture;
-		Image source = texture.getImage();
-		float textureWidth = texture.getDisplayWidth();
-		float textureHeight = texture.getDisplayHeight();
+		Image img = texture.getSourceImage();
+		if (img != null) {
 
-		float dstX = textureWidth * (sl);
-		float dstY = textureHeight * (st);
-		float dstWidth = textureWidth * (sr);
-		float dstHeight = textureHeight * (sb);
-
-		int r = (tint & 0x00FF0000) >> 16;
-		int g = (tint & 0x0000FF00) >> 8;
-		int b = (tint & 0x000000FF);
-		int a = (tint & 0xFF000000) >> 24;
-		if (a < 0) {
-			a += 256;
-		}
-		if (a > 0) {
-			a = 255;
-		}
-		Color paint = Color.rgb(r, g, b, (float) a / 255f);
-		context.save();
-		context.setFill(paint);
-		context.setStroke(paint);
-
-		if (tint != -1) {
-			if (textureWidth == 1 && textureHeight == 1) {
-				context.setEffect(getAdjust(paint));
+			int r = (tint & 0x00FF0000) >> 16;
+			int g = (tint & 0x0000FF00) >> 8;
+			int b = (tint & 0x000000FF);
+			int a = (tint & 0xFF000000) >> 24;
+			if (a < 0) {
+				a += 256;
+			}
+			if (a > 0) {
+				a = 255;
+			}
+			Color paint = Color.rgb(r, g, b, (float) a / 255f);
+			// context.save();
+			context.setFill(paint);
+			context.setStroke(paint);
+			context.setTransform(m00, m01, m10, m11, tx, ty);
+			if (!texture.isChild()) {
+				context.drawImage(((JavaFXImage) img).buffer, left, top, (right - left), (bottom - top));
 			} else {
-				if (tint != lastTint || light == null) {
-					light = new Light.Distant(65, 65, paint);
-					lastTint = tint;
+				float textureWidth = texture.getDisplayWidth();
+				float textureHeight = texture.getDisplayHeight();
+				float dstX = textureWidth * (sl);
+				float dstY = textureHeight * (st);
+				float dstWidth = textureWidth * (sr);
+				float dstHeight = textureHeight * (sb);
+				if (tint != -1) {
+					if (textureWidth == 1 && textureHeight == 1) {
+						context.setEffect(getAdjust(paint));
+					} else {
+						if (tint != lastTint || light == null) {
+							light = new Light.Distant(65, 65, paint);
+							lastTint = tint;
+						}
+						lighting.setLight(light);
+						context.setEffect(lighting);
+					}
 				}
-				lighting.setLight(light);
-				context.setEffect(lighting);
+				context.drawImage(((JavaFXImage) img).buffer, dstX, dstY, dstWidth - dstX, dstHeight - dstY, left, top,
+						(right - left), (bottom - top));
 			}
 		}
-		context.transform(m00, m01, m10, m11, tx, ty);
-		context.drawImage(((JavaFXImage) source).buffer, dstX, dstY, dstWidth, dstHeight, left, top, right, bottom);
-		context.restore();
 	}
 }

@@ -288,13 +288,21 @@ public class StringEffect extends Entity implements BaseEffect {
 	public StringEffect(TextOptions opt, IFont font, String mes, Vector2f pos, Vector2f update, LColor color) {
 		this._font = new Text(font, mes, opt);
 		this._updatePos = update;
-		this._alpha = 1f;
+		this._objectAlpha = 1f;
 		this._completed = false;
 		this.setLocation(pos);
 		this.setColor(color);
 		this.setSize(_font.getWidth(), _font.getHeight());
 		this.setLocation(pos.x, pos.y);
 		this.setRepaint(true);
+	}
+
+	public float getFontWidth() {
+		return _font == null ? 0 : _font.getWidth();
+	}
+
+	public IFont getFont() {
+		return _font == null ? null : _font.getFont();
 	}
 
 	public Text getText() {
@@ -308,8 +316,8 @@ public class StringEffect extends Entity implements BaseEffect {
 		}
 		if (delayTimer.action(elapsedTime)) {
 			getLocation().addSelf(this._updatePos);
-			this._alpha -= 0.0125f;
-			if (_alpha <= 0) {
+			this._objectAlpha -= 0.0125f;
+			if (_objectAlpha <= 0) {
 				_completed = true;
 			}
 			if (_completed) {
@@ -331,7 +339,7 @@ public class StringEffect extends Entity implements BaseEffect {
 		if (_completed) {
 			return;
 		}
-		_font.paintString(g, drawX(offsetX), drawY(offsetY), _baseColor.mul(this._alpha));
+		_font.paintString(g, drawX(offsetX), drawY(offsetY), _baseColor.multiply(this._objectAlpha));
 	}
 
 	public void setDelay(long d) {

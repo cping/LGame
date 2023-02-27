@@ -150,8 +150,8 @@ public class Bullet extends LObject<Bullet> implements CollisionObject, ActionBi
 			LTexture texture = animation.getSpriteImage();
 			float tmp = baseColor.a;
 			if (texture != null) {
-				g.draw(texture, getX() + offsetX, getY() + offsetY, getWidth(), getHeight(), baseColor.setAlpha(_alpha),
-						_rotation);
+				g.draw(texture, getX() + offsetX, getY() + offsetY, getWidth(), getHeight(), baseColor.setAlpha(_objectAlpha),
+						_objectRotation);
 				width = MathUtils.max(width, texture.width());
 				height = MathUtils.max(height, texture.height());
 			}
@@ -256,8 +256,8 @@ public class Bullet extends LObject<Bullet> implements CollisionObject, ActionBi
 	}
 
 	@Override
-	public boolean intersects(CollisionObject object) {
-		return getCollisionArea().intersects(object.getRectBox());
+	public boolean intersects(CollisionObject o) {
+		return getCollisionArea().intersects(o.getRectBox());
 	}
 
 	@Override
@@ -281,8 +281,8 @@ public class Bullet extends LObject<Bullet> implements CollisionObject, ActionBi
 	}
 
 	@Override
-	public void setVisible(boolean visible) {
-		this.visible = visible;
+	public void setVisible(boolean v) {
+		this.visible = v;
 	}
 
 	@Override
@@ -310,6 +310,11 @@ public class Bullet extends LObject<Bullet> implements CollisionObject, ActionBi
 		return scaleY;
 	}
 
+	public Bullet setScale(float scale) {
+		setScale(scale,scale);		
+		return this;
+	}
+	
 	@Override
 	public void setScale(float sx, float sy) {
 		this.scaleX = sx;

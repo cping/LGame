@@ -118,11 +118,6 @@ public class EmptyGame extends LGame {
 	private final long start = TimeUtils.millis();
 
 	@Override
-	public LGame.Type type() {
-		return LGame.Type.STUB;
-	}
-
-	@Override
 	public double time() {
 		return (double) TimeUtils.millis();
 	}
@@ -161,12 +156,45 @@ public class EmptyGame extends LGame {
 	public Save save() {
 		return save;
 	}
-	
-	Accelerometer accelerometer = new AccelerometerDefault();
+
+	private Accelerometer accelerometer = new AccelerometerDefault();
 
 	@Override
 	public Accelerometer accel() {
 		return accelerometer;
+	}
+
+	private class ClipboardDefault extends Clipboard {
+
+		private String _context;
+
+		@Override
+		public void setContent(String content) {
+			this._context = content;
+		}
+
+		@Override
+		public String getContent() {
+			return _context;
+		}
+
+	}
+
+	private Clipboard clipboardDefault = new ClipboardDefault();
+
+	@Override
+	public Clipboard clipboard() {
+		return clipboardDefault;
+	}
+
+	@Override
+	public Environment env() {
+		return Environment.JAVASE;
+	}
+
+	@Override
+	public Sys getPlatform() {
+		return Sys.EMBEDDED;
 	}
 
 	@Override
@@ -180,8 +208,14 @@ public class EmptyGame extends LGame {
 	}
 
 	@Override
+	public boolean isBrowser() {
+		return false;
+	}
+
+	@Override
 	public Mesh makeMesh(Canvas canvas) {
-		throw new UnsupportedOperationException();
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

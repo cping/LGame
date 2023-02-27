@@ -77,11 +77,10 @@ public class AStarFinderPool {
 		pathfinderProcess.kill();
 	}
 
-	public void search(AStarFindHeuristic heuristic, int startx, int starty,
-			int endx, int endy, boolean flying, boolean flag,
-			AStarFinderListener callback) {
-		AStarFinder pathfinderTask = new AStarFinder(heuristic, field, startx,
-				starty, endx, endy, flying, flag, callback);
+	public void search(AStarFindHeuristic heuristic, int startx, int starty, int endx, int endy, boolean flying,
+			boolean flag, AStarFinderListener callback) {
+		AStarFinder pathfinderTask = new AStarFinder(heuristic, field, startx, starty, endx, endy, flying, flag,
+				callback, AStarFinder.ASTAR);
 		AStarFinder existing = pathQueue.contains(pathfinderTask);
 		if (existing != null) {
 			existing.update(pathfinderTask);
@@ -91,26 +90,26 @@ public class AStarFinderPool {
 		pathfinderProcess.kill();
 	}
 
-	public void search(AStarFindHeuristic heuristic, int startx, int starty,
-			int endx, int endy, boolean flying, AStarFinderListener callback) {
+	public void search(AStarFindHeuristic heuristic, int startx, int starty, int endx, int endy, boolean flying,
+			AStarFinderListener callback) {
 		search(heuristic, startx, starty, endx, endy, flying, false, callback);
 	}
 
-	public TArray<Vector2f> search(AStarFindHeuristic heuristic, int startX,
-			int startY, int endX, int endY, boolean flying, boolean flag) {
+	public TArray<Vector2f> search(AStarFindHeuristic heuristic, int startX, int startY, int endX, int endY,
+			boolean flying, boolean flag) {
 		TArray<Vector2f> result = null;
-		AStarFinder astar = new AStarFinder(heuristic, field, startX, startY,
-				endX, endY, flying, flag);
+		AStarFinder astar = new AStarFinder(heuristic, field, startX, startY, endX, endY, flying, flag,
+				AStarFinder.ASTAR);
 		result = astar.findPath();
 		astar.close();
 		return result;
 	}
 
-	public TArray<Vector2f> search(AStarFindHeuristic heuristic, int startX,
-			int startY, int endX, int endY, boolean flying) {
+	public TArray<Vector2f> search(AStarFindHeuristic heuristic, int startX, int startY, int endX, int endY,
+			boolean flying) {
 		TArray<Vector2f> result = null;
-		AStarFinder astar = new AStarFinder(heuristic, field, startX, startY,
-				endX, endY, flying, false);
+		AStarFinder astar = new AStarFinder(heuristic, field, startX, startY, endX, endY, flying, false,
+				AStarFinder.ASTAR);
 		result = astar.findPath();
 		astar.close();
 		return result;

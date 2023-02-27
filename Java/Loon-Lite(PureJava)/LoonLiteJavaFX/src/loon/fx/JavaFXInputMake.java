@@ -23,7 +23,6 @@ package loon.fx;
 import java.util.List;
 
 import javafx.event.EventHandler;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
@@ -100,7 +99,7 @@ public class JavaFXInputMake extends InputMake {
 
 	public JavaFXInputMake(JavaFXGame game) {
 		this.game = game;
-		Canvas canvas = this.game.getFxCanvas();
+		JavaFXResizeCanvas canvas = this.game.getFxCanvas();
 		canvas.setOnKeyPressed(new EventHandler<KeyEvent>() {
 
 			@Override

@@ -20,9 +20,9 @@
  */
 package loon.component;
 
-import loon.HorizontalAlign;
 import loon.LTexture;
 import loon.canvas.LColor;
+import loon.component.layout.HorizontalAlign;
 import loon.component.skin.MessageSkin;
 import loon.component.skin.SkinManager;
 import loon.font.Font.Style;
@@ -213,8 +213,17 @@ public class LLabel extends LComponent implements FontSet<LLabel> {
 		return _text.getText();
 	}
 
+	public LLabel setText(float v) {
+		return setText(String.valueOf(v));
+	}
+	
 	public LLabel setText(CharSequence ch) {
+		if (_text == null || ch == null) {
+			return this;
+		}
 		_text.setText(ch);
+		setWidth(MathUtils.max(_text.getWidth(), getWidth()));
+		setHeight(MathUtils.max(_text.getHeight(), getHeight()));
 		return this;
 	}
 
@@ -250,8 +259,8 @@ public class LLabel extends LComponent implements FontSet<LLabel> {
 	}
 
 	@Override
-	public LLabel setFontColor(LColor color) {
-		_fontColor = color;
+	public LLabel setFontColor(LColor c) {
+		_fontColor = new LColor(c);
 		return this;
 	}
 

@@ -20,9 +20,6 @@
  */
 package loon.geom;
 
-import loon.geom.PointI;
-import loon.geom.RectF;
-import loon.geom.RectI;
 import loon.utils.MathUtils;
 
 public class Limit {

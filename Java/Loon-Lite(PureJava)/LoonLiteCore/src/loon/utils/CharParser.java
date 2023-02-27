@@ -48,6 +48,10 @@ public class CharParser {
 		return context.substring(poistion, context.length()).startsWith(prefix);
 	}
 
+	public boolean isEnd(int pos) {
+		return (pos >= context.length());
+	}
+
 	public boolean eof() {
 		return (poistion >= context.length());
 	}

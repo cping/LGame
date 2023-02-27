@@ -27,14 +27,23 @@ public class LSysException extends RuntimeException {
 	 */
 	private static final long serialVersionUID = -3689299562639868277L;
 
-	public LSysException(String message) {
-        super(message);
-        LSystem.error(message);
-    }
+	public LSysException() {
+		this("Loon System Exception !");
+	}
 	
+	public LSysException(String message) {
+		super(message);
+		LSystem.error(message);
+	}
+
 	public LSysException(String message, Throwable cause) {
-        super(message, cause);
-        LSystem.error(message, cause);
-    }
+		super(message, cause);
+		LSystem.error(message, cause);
+	}
+
+	public LSysException(String message, int line) {
+		super(message);
+		LSystem.error("exception for line : " + line + "\n" + message);
+	}
     
 }

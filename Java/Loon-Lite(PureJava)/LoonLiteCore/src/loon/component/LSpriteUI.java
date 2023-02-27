@@ -131,7 +131,7 @@ public class LSpriteUI extends LContainer {
 
 	@Override
 	public String getUIName() {
-		return "LSprite:" + _sprite == null ? LSystem.UNKOWN : _sprite.getName();
+		return "LSprite:" + _sprite == null ? LSystem.UNKNOWN : _sprite.getName();
 	}
 
 	@Override

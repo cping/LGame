@@ -36,7 +36,7 @@ import loon.utils.ObjectMap.Keys;
  */
 public class CollisionWorld implements LRelease {
 
-	public static class Cell {
+	public class Cell {
 		public int itemCount = 0;
 		public float x;
 		public float y;
@@ -45,9 +45,9 @@ public class CollisionWorld implements LRelease {
 
 	private final static float DELTA = 1e-5f;
 
-	private CollisionFilter worldCollisionFilter;
+	private CollisionFilter _worldCollisionFilter;
 
-	private final Screen gameScreen;
+	private final Screen _gameScreen;
 
 	private final RectF detectCollisionDiff = new RectF();
 	private final PointF nearestCorner = new PointF();
@@ -61,8 +61,8 @@ public class CollisionWorld implements LRelease {
 	private ObjectMap<Cell, Boolean> nonEmptyCells = new ObjectMap<Cell, Boolean>();
 	private CollisionGrid grid = new CollisionGrid();
 
-	private boolean tileMode = false;
-	private boolean closed = false;
+	private boolean _tileMode = false;
+	private boolean _closed = false;
 
 	private CollisionManager collisionManager;
 
@@ -99,15 +99,15 @@ public class CollisionWorld implements LRelease {
 	}
 
 	public CollisionWorld(Screen s, float cellx, float celly, boolean mode) {
-		this.gameScreen = s;
+		this._gameScreen = s;
 		this.cellSizeX = cellx;
 		this.cellSizeY = celly;
-		this.tileMode = mode;
-		this.worldCollisionFilter = CollisionFilter.getDefault();
+		this._tileMode = mode;
+		this._worldCollisionFilter = CollisionFilter.getDefault();
 	}
 
 	public CollisionManager getCollisionManager() {
-		if (closed) {
+		if (_closed) {
 			return collisionManager;
 		}
 		if (collisionManager == null) {
@@ -119,7 +119,7 @@ public class CollisionWorld implements LRelease {
 
 	public CollisionData detectCollision(float x1, float y1, float w1, float h1, float x2, float y2, float w2, float h2,
 			float goalX, float goalY) {
-		if (closed) {
+		if (_closed) {
 			return null;
 		}
 		CollisionData col = segmentIntersectionIndicescol;
@@ -200,16 +200,16 @@ public class CollisionWorld implements LRelease {
 		return col;
 	}
 
-	public void setTileMode(boolean tileMode) {
-		this.tileMode = tileMode;
+	public void setTileMode(boolean _tileMode) {
+		this._tileMode = _tileMode;
 	}
 
 	public boolean isTileMode() {
-		return tileMode;
+		return _tileMode;
 	}
 
 	private void addItemToCell(ActionBind bind, float cx, float cy) {
-		if (closed) {
+		if (_closed) {
 			return;
 		}
 		if (!rows.containsKey(cy)) {
@@ -229,7 +229,7 @@ public class CollisionWorld implements LRelease {
 	}
 
 	private boolean removeItemFromCell(ActionBind bind, float cx, float cy) {
-		if (closed) {
+		if (_closed) {
 			return false;
 		}
 		if (!rows.containsKey(cy)) {
@@ -253,7 +253,7 @@ public class CollisionWorld implements LRelease {
 
 	private ObjectMap<ActionBind, Boolean> getDictItemsInCellRect(float cl, float ct, float cw, float ch,
 			ObjectMap<ActionBind, Boolean> result) {
-		if (closed) {
+		if (_closed) {
 			return null;
 		}
 		result.clear();
@@ -277,7 +277,7 @@ public class CollisionWorld implements LRelease {
 	}
 
 	public TArray<Cell> getCellsTouchedBySegment(float x1, float y1, float x2, float y2, final TArray<Cell> result) {
-		if (closed) {
+		if (_closed) {
 			return null;
 		}
 		result.clear();
@@ -308,12 +308,12 @@ public class CollisionWorld implements LRelease {
 
 	public Collisions project(ActionBind bind, float x, float y, float w, float h, float goalX, float goalY,
 			Collisions collisions) {
-		return project(bind, x, y, w, h, goalX, goalY, worldCollisionFilter, collisions);
+		return project(bind, x, y, w, h, goalX, goalY, _worldCollisionFilter, collisions);
 	}
 
 	public Collisions project(ActionBind bind, float x, float y, float w, float h, float goalX, float goalY,
 			CollisionFilter filter, Collisions collisions) {
-		if (closed) {
+		if (_closed) {
 			return null;
 		}
 		collisions.clear();
@@ -352,21 +352,21 @@ public class CollisionWorld implements LRelease {
 				}
 			}
 		}
-		if (tileMode) {
+		if (_tileMode) {
 			collisions.sort();
 		}
 		return collisions;
 	}
 
 	public RectF getRect(ActionBind bind) {
-		if (closed) {
+		if (_closed) {
 			return null;
 		}
 		return rects.get(bind);
 	}
 
 	public int countCells() {
-		if (closed) {
+		if (_closed) {
 			return 0;
 		}
 		int count = 0;
@@ -381,14 +381,14 @@ public class CollisionWorld implements LRelease {
 	}
 
 	public boolean hasItem(ActionBind bind) {
-		if (closed) {
+		if (_closed) {
 			return false;
 		}
 		return rects.containsKey(bind);
 	}
 
 	public int countItems() {
-		if (closed) {
+		if (_closed) {
 			return 0;
 		}
 		return rects.size();
@@ -404,22 +404,31 @@ public class CollisionWorld implements LRelease {
 		return result;
 	}
 
+	public CollisionWorld add(ActionBind... binds) {
+		for (ActionBind act : binds) {
+			if (act != null) {
+				add(act);
+			}
+		}
+		return this;
+	}
+
 	public ActionBind add(ActionBind bind) {
-		if (closed) {
+		if (_closed) {
 			return null;
 		}
 		return add(bind, bind.getX(), bind.getY(), bind.getWidth(), bind.getHeight());
 	}
 
 	public ActionBind add(ActionBind bind, float x, float y, float w, float h) {
-		if (closed) {
+		if (_closed) {
 			return null;
 		}
 		if (rects.containsKey(bind)) {
 			return bind;
 		}
-		if (gameScreen != null) {
-			gameScreen.add(bind);
+		if (_gameScreen != null) {
+			_gameScreen.add(bind);
 		}
 		rects.put(bind, new RectF(x, y, w, h));
 		grid.toCellRect(cellSizeX, cellSizeY, x, y, w, h, add_c);
@@ -433,13 +442,13 @@ public class CollisionWorld implements LRelease {
 	}
 
 	public void remove(ActionBind bind) {
-		if (closed) {
+		if (_closed) {
 			return;
 		}
 		RectF rect = getRect(bind);
 		float x = rect.x, y = rect.y, w = rect.width, h = rect.height;
-		if (gameScreen != null) {
-			gameScreen.remove(bind);
+		if (_gameScreen != null) {
+			_gameScreen.remove(bind);
 		}
 		rects.remove(bind);
 		grid.toCellRect(cellSizeX, cellSizeY, x, y, w, h, remove_c);
@@ -453,7 +462,7 @@ public class CollisionWorld implements LRelease {
 	}
 
 	public void update(ActionBind bind, float x2, float y2) {
-		if (closed) {
+		if (_closed) {
 			return;
 		}
 		RectF rect = getRect(bind);
@@ -462,13 +471,14 @@ public class CollisionWorld implements LRelease {
 	}
 
 	public void update(ActionBind bind, float x2, float y2, float w2, float h2) {
-		if (closed) {
+		if (_closed) {
 			return;
 		}
 		RectF rect = getRect(bind);
 		float x1 = rect.x, y1 = rect.y, w1 = rect.width, h1 = rect.height;
 		if (x1 != x2 || y1 != y2 || w1 != w2 || h1 != h2) {
 
+			// size limit 
 			RectF c1 = grid.toCellRect(cellSizeX, cellSizeY, x1, y1, w1, h1, update_c1);
 			RectF c2 = grid.toCellRect(cellSizeX, cellSizeY, x2, y2, w2, h2, update_c2);
 
@@ -503,11 +513,11 @@ public class CollisionWorld implements LRelease {
 	}
 
 	public CollisionResult.Result check(ActionBind bind, float goalX, float goalY) {
-		return check(bind, goalX, goalY, worldCollisionFilter);
+		return check(bind, goalX, goalY, _worldCollisionFilter);
 	}
 
 	public CollisionResult.Result check(ActionBind bind, float goalX, float goalY, final CollisionFilter filter) {
-		if (closed || rects.size == 0) {
+		if (_closed || rects.size == 0) {
 			check_result.goalX = goalX;
 			check_result.goalY = goalY;
 			return check_result;
@@ -523,7 +533,7 @@ public class CollisionWorld implements LRelease {
 					return null;
 				}
 				if (filter == null) {
-					return worldCollisionFilter.filter(bind, other);
+					return _worldCollisionFilter.filter(bind, other);
 				}
 				return filter.filter(bind, other);
 			}
@@ -559,11 +569,11 @@ public class CollisionWorld implements LRelease {
 	}
 
 	public CollisionResult.Result move(ActionBind bind, float goalX, float goalY) {
-		return move(bind, goalX, goalY, worldCollisionFilter);
+		return move(bind, goalX, goalY, _worldCollisionFilter);
 	}
 
 	public CollisionResult.Result move(ActionBind bind, float goalX, float goalY, CollisionFilter filter) {
-		if (closed) {
+		if (_closed) {
 			check_result.goalX = goalX;
 			check_result.goalY = goalY;
 			return check_result;
@@ -574,27 +584,27 @@ public class CollisionWorld implements LRelease {
 	}
 
 	public CollisionFilter getWorldCollisionFilter() {
-		return worldCollisionFilter;
+		return _worldCollisionFilter;
 	}
 
 	public void setWorldCollisionFilter(CollisionFilter collisionFilter) {
-		this.worldCollisionFilter = collisionFilter;
+		this._worldCollisionFilter = collisionFilter;
 	}
 
 	public Screen getGameScreen() {
-		return gameScreen;
+		return _gameScreen;
 	}
 
 	public boolean isClose() {
-		return closed;
+		return _closed;
 	}
 
 	@Override
 	public void close() {
-		if (closed) {
+		if (_closed) {
 			return;
 		}
-		closed = true;
+		_closed = true;
 		if (rects != null) {
 			rects.clear();
 		}

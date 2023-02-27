@@ -57,7 +57,10 @@ public class TMXObjectLayer extends TMXMapLayer {
 	}
 
 	public void parse(XMLElement element) {
+
+		id = element.getIntAttribute("id", 0);
 		name = element.getAttribute("name", LSystem.EMPTY);
+		
 		if (element.hasAttribute("color")) {
 			String colorString = element.getAttribute("color",
 					LColor.white.toString()).trim();
@@ -66,6 +69,7 @@ public class TMXObjectLayer extends TMXMapLayer {
 			}
 			color = new LColor(Integer.decode(colorString));
 		}
+		
 		opacity = element.getFloatAttribute("opacity", 1f);
 		visible = element.getBoolAttribute("visible", true);
 
@@ -80,10 +84,10 @@ public class TMXObjectLayer extends TMXMapLayer {
 			for (int i = 0; i < list.size; i++) {
 				XMLElement objectNode = list.get(i);
 
-				TMXObject object = new TMXObject();
-				object.parse(objectNode);
+				TMXObject o = new TMXObject();
+				o.parse(objectNode);
 
-				objects.add(object);
+				objects.add(o);
 			}
 		}
 	}

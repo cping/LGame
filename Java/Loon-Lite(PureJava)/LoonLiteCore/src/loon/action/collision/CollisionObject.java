@@ -32,7 +32,7 @@ public interface CollisionObject {
 
 	public boolean containsPoint(float x, float y);
 
-	public boolean intersects(CollisionObject object);
+	public boolean intersects(CollisionObject o);
 
 	public boolean intersects(RectBox rect);
 

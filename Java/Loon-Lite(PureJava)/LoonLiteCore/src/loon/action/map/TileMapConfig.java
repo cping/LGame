@@ -20,14 +20,14 @@
  */
 package loon.action.map;
 
-import java.util.StringTokenizer;
-
 import loon.BaseIO;
 import loon.LSystem;
+import loon.utils.CharUtils;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
+import loon.utils.parse.StrTokenizer;
 
 public class TileMapConfig {
 
@@ -48,11 +48,7 @@ public class TileMapConfig {
 
 	public static int[][] loadCharsMap(String resName) {
 		int[][] map = null;
-		String result = BaseIO.loadText(resName);
-		if (result == null) {
-			return map;
-		}
-		StringTokenizer br = new StringTokenizer(result, LSystem.NL);
+		StrTokenizer br = BaseIO.loadStrTokenizer(resName, LSystem.NL);
 		String line = br.nextToken();
 		int width = Integer.parseInt(line);
 		line = br.nextToken();
@@ -61,29 +57,52 @@ public class TileMapConfig {
 		for (int i = 0; i < width; i++) {
 			line = br.nextToken();
 			for (int j = 0; j < height; j++) {
-				map[i][j] = line.charAt(j);
+				char temp = line.charAt(j);
+				if (temp == LSystem.SPACE) {
+					temp = 0;
+				} else if (CharUtils.isDigit(temp)) {
+					temp = (char) CharUtils.toInt(temp);
+				}
+				map[i][j] = temp;
 			}
 		}
 		return map;
 	}
 
 	public static TArray<int[]> loadList(final String fileName) {
-		String result = BaseIO.loadText(fileName);
-		if (result == null) {
-			return null;
-		}
-		StringTokenizer br = new StringTokenizer(result, LSystem.NL);
+		String result = null;
+		StrTokenizer br = BaseIO.loadStrTokenizer(fileName, LSystem.NL);
 		TArray<int[]> records = new TArray<int[]>(CollectionUtils.INITIAL_CAPACITY);
 		for (; br.hasMoreTokens();) {
 			result = StringUtils.replace(br.nextToken().trim(), LSystem.LS, LSystem.EMPTY);
 			if (!StringUtils.isEmpty(result)) {
-				String[] stringArray = result.split(",");
-				int size = stringArray.length;
-				int[] intArray = new int[size];
-				for (int i = 0; i < size; i++) {
-					intArray[i] = Integer.parseInt(stringArray[i]);
+				char flag = ',';
+				if (result.indexOf(flag) != -1) {
+					String[] stringArray = StringUtils.split(result, flag);
+					int size = stringArray.length;
+					int[] intArray = new int[size];
+					for (int i = 0; i < size; i++) {
+						String temp = stringArray[i];
+						if (temp.length() > 0) {
+							intArray[i] = stringToInt(temp);
+						}
+					}
+					records.add(intArray);
+				} else {
+					char[] charArray = result.toCharArray();
+					int size = charArray.length;
+					int[] intArray = new int[size];
+					for (int i = 0; i < size; i++) {
+						char temp = charArray[i];
+						if (temp == LSystem.SPACE) {
+							temp = 0;
+						} else if (CharUtils.isDigit(temp)) {
+							temp = (char) CharUtils.toInt(temp);
+						}
+						intArray[i] = temp;
+					}
+					records.add(intArray);
 				}
-				records.add(intArray);
 			}
 		}
 		return records;
@@ -140,7 +159,7 @@ public class TileMapConfig {
 				String[] strPrms = StringUtils.split(strLns[i], ',');
 				resArr[i] = new int[strPrms.length];
 				for (int j = 0; j < strPrms.length; j++) {
-					resArr[i][j] = stingToInt(strPrms[j]);
+					resArr[i][j] = stringToInt(strPrms[j]);
 				}
 			}
 		} catch (Throwable ex) {
@@ -149,14 +168,28 @@ public class TileMapConfig {
 		return resArr;
 	}
 
-	private static int stingToInt(String srcStr) {
+	public static int stringToIntCode(String src) {
+		int len = src.length();
+		if (len == 1) {
+			return src.charAt(0);
+		}
+		int code = 0;
+		for (int n = 0; n < len; n++) {
+			code = LSystem.unite(code, src.charAt(n));
+		}
+		return code;
+	}
+
+	private static int stringToInt(String src) {
 		int resNo = 0;
-		if (MathUtils.isNan(srcStr)) {
+		if (MathUtils.isNan(src)) {
 			try {
-				resNo = Integer.parseInt(srcStr);
+				resNo = Integer.parseInt(src);
 			} catch (Throwable ex) {
 				LSystem.error("TileMapConfig stringToInt exception", ex);
 			}
+		} else {
+			return stringToIntCode(src);
 		}
 		return resNo;
 	}

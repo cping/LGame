@@ -23,7 +23,22 @@ package loon.utils;
 import loon.LSysException;
 import loon.LSystem;
 
+/**
+ * 字符处理用工具类(此类被StringUtils继承,直接使用StringUtils也可以)
+ */
 public class CharUtils {
+
+	public static final char MIN_HIGH_SURROGATE = '\uD800';
+
+	public static final char MAX_HIGH_SURROGATE = '\uDBFF';
+
+	public static final char MIN_LOW_SURROGATE = '\uDC00';
+
+	public static final char MAX_LOW_SURROGATE = '\uDFFF';
+
+	public static final char MIN_SURROGATE = MIN_HIGH_SURROGATE;
+
+	public static final char MAX_SURROGATE = MAX_LOW_SURROGATE;
 
 	static final private class HexChars {
 
@@ -32,10 +47,62 @@ public class CharUtils {
 
 	}
 
+	public static byte[] toSBytes(int... bytes) {
+		final int size = bytes.length;
+		final byte[] result = new byte[size];
+		for (int i = 0; i < size; i++) {
+			result[i] = getUNByteToSByte(bytes[i]);
+		}
+		return result;
+	}
+
+	public static int[] toUNBytes(byte... bytes) {
+		final int size = bytes.length;
+		final int[] result = new int[size];
+		for (int i = 0; i < size; i++) {
+			result[i] = getSByteToUNByte(bytes[i]);
+		}
+		return result;
+	}
+
+	public static byte ToSByte(int b) {
+		return getUNByteToSByte(b);
+	}
+
+	public static byte getUNByteToSByte(int b) {
+		byte result = 0;
+		if (b > 127) {
+			result = (byte) (b - 256);
+		} else if (b > 255) {
+			b = 255;
+		} else {
+			result = (byte) b;
+		}
+		return result;
+	}
+
+	public static int toSByte(byte b) {
+		return getUNByteToSByte(b);
+	}
+
+	public static int getSByteToUNByte(byte b) {
+		int result = 0;
+		if (b < 0) {
+			result = (b + 256);
+		} else {
+			result = b;
+		}
+		return result;
+	}
+
+	public static int toUNByte(byte b) {
+		return getSByteToUNByte(b);
+	}
+
 	public static char toChar(byte b) {
 		return (char) (b & 0xFF);
 	}
-	
+
 	public static long getBytesToLong(final byte[] bytes) {
 		return getBytesToLong(bytes, 0, bytes.length);
 	}
@@ -117,7 +184,7 @@ public class CharUtils {
 			hexChars[j * 2 + 1] = HexChars.TABLE[v & 0x0F];
 		}
 		if (removeZero) {
-			StringBuilder sbr = new StringBuilder(hexChars.length);
+			StrBuilder sbr = new StrBuilder(hexChars.length);
 			final char tag = '0';
 			boolean flag = false;
 			for (int i = 0; i < hexChars.length; i++) {
@@ -140,6 +207,16 @@ public class CharUtils {
 		ob[0] = HexChars.TABLE[(ib >>> 4) & 0X0F];
 		ob[1] = HexChars.TABLE[ib & 0X0F];
 		return new String(ob);
+	}
+
+	public static int toInt(char c) {
+		char[] chars = HexChars.TABLE;
+		for (int i = 0; i < 10; i++) {
+			if (c == chars[i]) {
+				return i;
+			}
+		}
+		return c;
 	}
 
 	public static long b2iu(byte b) {
@@ -316,7 +393,7 @@ public class CharUtils {
 	}
 
 	public static boolean isAsciiLetter(int c) {
-		return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
+		return isLowercaseAlpha(c) || isUppercaseAlpha(c);
 	}
 
 	public static boolean isLowercaseAlpha(int c) {
@@ -325,6 +402,18 @@ public class CharUtils {
 
 	public static boolean isUppercaseAlpha(int c) {
 		return (c >= 'A') && (c <= 'Z');
+	}
+
+	public static boolean isAlphabetUpper(char letter) {
+		return isUppercaseAlpha(letter);
+	}
+
+	public static boolean isAlphabetLower(char letter) {
+		return isLowercaseAlpha(letter);
+	}
+
+	public static boolean isAlphabet(char letter) {
+		return isAsciiLetter(letter);
 	}
 
 	public static boolean isAlpha(int c) {
@@ -377,6 +466,26 @@ public class CharUtils {
 		}
 	}
 
+	public static boolean isHighSurrogate(char ch) {
+		return ch >= MIN_HIGH_SURROGATE && ch < (MAX_HIGH_SURROGATE + 1);
+	}
+
+	public static boolean isLowSurrogate(char ch) {
+		return ch >= MIN_LOW_SURROGATE && ch < (MAX_LOW_SURROGATE + 1);
+	}
+
+	public static boolean isSurrogate(char ch) {
+		return ch >= MIN_SURROGATE && ch < (MAX_SURROGATE + 1);
+	}
+
+	public static boolean isSurrogatePair(char high, char low) {
+		return isHighSurrogate(high) && isLowSurrogate(low);
+	}
+
+	public static boolean isInherited(char c) {
+		return c == '~';
+	}
+
 	protected static boolean isReserved(int c) {
 		return isGenericDelimiter(c) || isSubDelimiter(c);
 	}
@@ -408,18 +517,18 @@ public class CharUtils {
 		}
 	}
 
-	public static int toUpperAscii(int c) {
+	public static char toUpper(int c) {
 		if (isLowercaseAlpha(c)) {
-			c -= (char) 0x20;
+			c -= 0x20;
 		}
-		return c;
+		return (char) c;
 	}
 
-	public static int toLowerAscii(int c) {
+	public static char toLower(int c) {
 		if (isUppercaseAlpha(c)) {
-			c += (char) 0x20;
+			c += 0x20;
 		}
-		return c;
+		return (char) c;
 	}
 
 	public static int hex2int(char c) {

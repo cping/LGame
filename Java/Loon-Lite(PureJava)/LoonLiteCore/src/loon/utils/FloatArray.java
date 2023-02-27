@@ -22,17 +22,67 @@ package loon.utils;
 
 import java.util.Arrays;
 
+import loon.LRelease;
 import loon.LSysException;
 import loon.events.QueryEvent;
 
-public class FloatArray implements IArray {
+public class FloatArray implements IArray, LRelease {
 
+	/**
+	 * 产生一组指定范围的数据
+	 * 
+	 * @param start
+	 * @param end
+	 * @return
+	 */
 	public static FloatArray range(int start, int end) {
 		FloatArray array = new FloatArray(end - start);
 		for (int i = start; i < end; i++) {
-			array.add(i);
+			array.add(i + MathUtils.random(0f, 0.99f));
 		}
 		return array;
+	}
+
+	/**
+	 * 产生一组指定范围的随机数据
+	 * 
+	 * @param begin
+	 * @param end
+	 * @return
+	 */
+	public static FloatArray rangeRandom(int begin, int end) {
+		return rangeRandom(begin, end, (end - begin));
+	}
+
+	/**
+	 * 产生一组指定范围的随机数据
+	 * 
+	 * @param begin
+	 * @param end
+	 * @param size
+	 * @return
+	 */
+	public static FloatArray rangeRandom(int begin, int end, int size) {
+		if (begin > end) {
+			int temp = begin;
+			begin = end;
+			end = temp;
+		}
+		if ((end - begin) < size) {
+			throw new LSysException("Size out Range between begin and end !");
+		}
+		float[] randSeed = new float[end - begin];
+		for (int i = begin; i < end; i++) {
+			randSeed[i - begin] = i + MathUtils.random(0f, 0.99f);
+		}
+		float[] floatArrays = new float[size];
+		for (int i = 0; i < size; i++) {
+			final int len = randSeed.length - i - 1;
+			int j = MathUtils.random(len);
+			floatArrays[i] = randSeed[j];
+			randSeed[j] = randSeed[len];
+		}
+		return new FloatArray(floatArrays);
 	}
 
 	public float[] items;
@@ -61,6 +111,10 @@ public class FloatArray implements IArray {
 
 	public FloatArray(float[] array) {
 		this(true, array, 0, array.length);
+	}
+
+	public FloatArray(float[] array, int size) {
+		this(true, array, 0, size);
 	}
 
 	public FloatArray(boolean ordered, float[] array, int startIndex, int count) {
@@ -109,14 +163,14 @@ public class FloatArray implements IArray {
 		addAll(array, 0, array.length);
 	}
 
-	public void addAll(float[] array, int offset, int length) {
+	public void addAll(float[] array, int offset, int len) {
 		float[] items = this.items;
-		int lengthNeeded = length + length;
+		int lengthNeeded = this.length + len;
 		if (lengthNeeded > items.length) {
 			items = relength(MathUtils.max(8, (int) (lengthNeeded * 1.75f)));
 		}
-		System.arraycopy(array, offset, items, length, length);
-		length += length;
+		System.arraycopy(array, offset, items, this.length, len);
+		this.length += len;
 	}
 
 	public float get(int index) {
@@ -332,7 +386,7 @@ public class FloatArray implements IArray {
 		}
 		return orderCount == length;
 	}
-	
+
 	public void reverse() {
 		float[] items = this.items;
 		for (int i = 0, lastIndex = length - 1, n = length / 2; i < n; i++) {
@@ -395,12 +449,13 @@ public class FloatArray implements IArray {
 		return array;
 	}
 
-	public boolean equals(Object object) {
-		if (object == this)
+	@Override
+	public boolean equals(Object o) {
+		if (o == this)
 			return true;
-		if (!(object instanceof FloatArray))
+		if (!(o instanceof FloatArray))
 			return false;
-		FloatArray array = (FloatArray) object;
+		FloatArray array = (FloatArray) o;
 		int n = length;
 		if (n != array.length)
 			return false;
@@ -408,19 +463,6 @@ public class FloatArray implements IArray {
 			if (items[i] != array.items[i])
 				return false;
 		return true;
-	}
-
-	public String toString(String separator) {
-		if (length == 0)
-			return "";
-		float[] items = this.items;
-		StringBuilder buffer = new StringBuilder(32);
-		buffer.append(items[0]);
-		for (int i = 1; i < length; i++) {
-			buffer.append(separator);
-			buffer.append(items[i]);
-		}
-		return buffer.toString();
 	}
 
 	static public FloatArray with(float... array) {
@@ -540,7 +582,31 @@ public class FloatArray implements IArray {
 		}
 		return this.sum() / length;
 	}
-	
+
+	public float min() {
+		float v = this.items[0];
+		final int size = this.length;
+		for (int i = size - 1; i > -1; i--) {
+			float n = this.items[i];
+			if (n < v) {
+				v = n;
+			}
+		}
+		return v;
+	}
+
+	public float max() {
+		float v = this.items[0];
+		final int size = this.length;
+		for (int i = size - 1; i > -1; i--) {
+			float n = this.items[i];
+			if (n > v) {
+				v = n;
+			}
+		}
+		return v;
+	}
+
 	public byte[] getBytes() {
 		return getBytes(0);
 	}
@@ -564,12 +630,16 @@ public class FloatArray implements IArray {
 		return hashCode;
 	}
 
+	public FloatArray cpy() {
+		return new FloatArray(this);
+	}
+
 	public String toString(char split) {
 		if (length == 0) {
 			return "[]";
 		}
 		float[] items = this.items;
-		StringBuilder buffer = new StringBuilder(CollectionUtils.INITIAL_CAPACITY);
+		StrBuilder buffer = new StrBuilder(32);
 		buffer.append('[');
 		buffer.append(items[0]);
 		for (int i = 1; i < length; i++) {
@@ -583,5 +653,11 @@ public class FloatArray implements IArray {
 	@Override
 	public String toString() {
 		return toString(',');
+	}
+
+	@Override
+	public void close() {
+		this.items = null;
+		this.length = 0;
 	}
 }

@@ -23,16 +23,16 @@ package loon.action.collision;
 import loon.action.ActionBind;
 
 public abstract class CollisionFilter {
-
+	
 	public abstract CollisionResult filter(ActionBind obj, ActionBind other);
 
-	private static CollisionFilter defaultFilter;
+	private static CollisionFilter _defaultFilter;
 
 	public static CollisionFilter getDefault() {
-		if (defaultFilter == null) {
+		if (_defaultFilter == null) {
 			synchronized (CollisionFilter.class) {
-				if (defaultFilter == null) {
-					defaultFilter = new CollisionFilter() {
+				if (_defaultFilter == null) {
+					_defaultFilter = new CollisionFilter() {
 						@Override
 						public CollisionResult filter(ActionBind obj, ActionBind other) {
 							return CollisionResult.newSlide();
@@ -42,15 +42,15 @@ public abstract class CollisionFilter {
 				}
 			}
 		}
-		return defaultFilter;
+		return _defaultFilter;
 	}
 
-	private static CollisionFilter crossFilter;
+	private static CollisionFilter _crossFilter;
 
 	public static CollisionFilter getCross() {
-		if (crossFilter == null) {
+		if (_crossFilter == null) {
 			synchronized (CollisionFilter.class) {
-				crossFilter = new CollisionFilter() {
+				_crossFilter = new CollisionFilter() {
 					@Override
 					public CollisionResult filter(ActionBind obj, ActionBind other) {
 						return CollisionResult.newCross();
@@ -58,16 +58,16 @@ public abstract class CollisionFilter {
 				};
 			}
 		}
-		return crossFilter;
+		return _crossFilter;
 	}
 
-	private static CollisionFilter touchFilter;
+	private static CollisionFilter _touchFilter;
 
 	public static CollisionFilter getTouch() {
-		if (touchFilter == null) {
+		if (_touchFilter == null) {
 			synchronized (CollisionFilter.class) {
-				if (touchFilter == null) {
-					touchFilter = new CollisionFilter() {
+				if (_touchFilter == null) {
+					_touchFilter = new CollisionFilter() {
 						@Override
 						public CollisionResult filter(ActionBind obj, ActionBind other) {
 							return CollisionResult.newTouch();
@@ -76,16 +76,16 @@ public abstract class CollisionFilter {
 				}
 			}
 		}
-		return touchFilter;
+		return _touchFilter;
 	}
 
-	private static CollisionFilter bulletFilter;
+	private static CollisionFilter _bulletFilter;
 
 	public static CollisionFilter getBullet() {
-		if (bulletFilter == null) {
+		if (_bulletFilter == null) {
 			synchronized (CollisionFilter.class) {
-				if (bulletFilter == null) {
-					bulletFilter = new CollisionFilter() {
+				if (_bulletFilter == null) {
+					_bulletFilter = new CollisionFilter() {
 						@Override
 						public CollisionResult filter(ActionBind obj, ActionBind other) {
 							if (obj == null || other == null) {
@@ -101,7 +101,14 @@ public abstract class CollisionFilter {
 				}
 			}
 		}
-		return bulletFilter;
+		return _bulletFilter;
+	}
+
+	public static void freeStatic(){
+		_defaultFilter = null;
+		_crossFilter = null;
+		_touchFilter = null;
+		_bulletFilter = null;
 	}
 
 }

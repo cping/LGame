@@ -36,7 +36,7 @@ public class URecognizerAnalyze {
 
 	protected TArray<PointF> points = new TArray<PointF>(256);
 
-	protected URecognizerResult result = new URecognizerResult(LSystem.UNKOWN, 0, -1);
+	protected URecognizerResult result = new URecognizerResult(LSystem.UNKNOWN, 0, -1);
 
 	protected boolean active = false;
 

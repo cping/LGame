@@ -21,13 +21,13 @@
 package loon.action.sprite;
 
 import loon.LSystem;
-import loon.LTexture;
 import loon.LTrans;
 import loon.Screen;
 import loon.action.collision.CollisionObject;
 import loon.action.map.Field2D;
 import loon.canvas.LColor;
 import loon.events.EventDispatcher;
+import loon.events.ResizeListener;
 import loon.geom.BoxSize;
 import loon.geom.PointF;
 import loon.geom.RectBox;
@@ -37,9 +37,11 @@ import loon.opengl.GLEx;
 
 public abstract class DisplayObject extends EventDispatcher implements CollisionObject, ISprite, XY, BoxSize {
 
-	public static float morphX = 1f;
+	protected float _morphX = 1f;
 
-	public static float morphY = 1f;
+	protected float _morphY = 1f;
+
+	protected ResizeListener<DisplayObject> _resizeListener;
 
 	protected float _fixedWidthOffset = 0f;
 
@@ -54,6 +56,8 @@ public abstract class DisplayObject extends EventDispatcher implements Collision
 	protected float _height = 0;
 
 	protected float _scaleX = 1f, _scaleY = 1f;
+
+	protected Vector2f _offset = new Vector2f();
 
 	protected boolean _inStage = false;
 
@@ -76,7 +80,6 @@ public abstract class DisplayObject extends EventDispatcher implements Collision
 	protected Sprites _sprites = null;
 
 	public DisplayObject() {
-
 	}
 
 	@Override
@@ -202,6 +205,10 @@ public abstract class DisplayObject extends EventDispatcher implements Collision
 		return _scaleY;
 	}
 
+	public void setScale(float scale) {
+		setScale(scale,scale);
+	}
+	
 	@Override
 	public void setScale(float sx, float sy) {
 		this._scaleX = sx;
@@ -218,8 +225,8 @@ public abstract class DisplayObject extends EventDispatcher implements Collision
 	}
 
 	public RectBox getBounds() {
-		float x = _location.x;
-		float y = _location.y;
+		float x = _objectLocation.x;
+		float y = _objectLocation.y;
 		switch (_anchor) {
 		case ANCHOR_TOP_LEFT:
 		default:
@@ -294,11 +301,6 @@ public abstract class DisplayObject extends EventDispatcher implements Collision
 	}
 
 	@Override
-	public LTexture getBitmap() {
-		return null;
-	}
-
-	@Override
 	public Field2D getField2D() {
 		return null;
 	}
@@ -314,11 +316,12 @@ public abstract class DisplayObject extends EventDispatcher implements Collision
 	}
 
 	@Override
-	public void setSprites(Sprites ss) {
+	public ISprite setSprites(Sprites ss) {
 		if (this._sprites == ss) {
-			return;
+			return this;
 		}
 		this._sprites = ss;
+		return this;
 	}
 
 	@Override
@@ -355,8 +358,8 @@ public abstract class DisplayObject extends EventDispatcher implements Collision
 	}
 
 	@Override
-	public boolean intersects(CollisionObject object) {
-		return getCollisionBox().intersects(object.getRectBox());
+	public boolean intersects(CollisionObject o) {
+		return getCollisionBox().intersects(o.getRectBox());
 	}
 
 	@Override
@@ -380,8 +383,9 @@ public abstract class DisplayObject extends EventDispatcher implements Collision
 	}
 
 	@Override
-	public void setFixedWidthOffset(float fixedWidthOffset) {
+	public ISprite setFixedWidthOffset(float fixedWidthOffset) {
 		this._fixedWidthOffset = fixedWidthOffset;
+		return this;
 	}
 
 	@Override
@@ -390,10 +394,20 @@ public abstract class DisplayObject extends EventDispatcher implements Collision
 	}
 
 	@Override
-	public void setFixedHeightOffset(float fixedHeightOffset) {
+	public ISprite setFixedHeightOffset(float fixedHeightOffset) {
 		this._fixedHeightOffset = fixedHeightOffset;
+		return this;
 	}
-	
+
+	@Override
+	public float getCenterX() {
+		return getX() + getWidth() / 2f;
+	}
+
+	@Override
+	public float getCenterY() {
+		return getY() + getHeight() / 2f;
+	}
 
 	@Override
 	public boolean collides(ISprite e) {
@@ -427,4 +441,64 @@ public abstract class DisplayObject extends EventDispatcher implements Collision
 		return a.intersects(b);
 	}
 
+	public ResizeListener<DisplayObject> getResizeListener() {
+		return _resizeListener;
+	}
+
+	public DisplayObject setResizeListener(ResizeListener<DisplayObject> listener) {
+		this._resizeListener = listener;
+		return this;
+	}
+
+	public DisplayObject setOffsetX(float sx) {
+		this._offset.setX(sx);
+		return this;
+	}
+
+	public DisplayObject setOffsetY(float sy) {
+		this._offset.setY(sy);
+		return this;
+	}
+
+	public DisplayObject setOffset(Vector2f v) {
+		if (v != null) {
+			this._offset = v;
+		}
+		return this;
+	}
+
+	@Override
+	public float getOffsetX() {
+		return _offset.x;
+	}
+
+	@Override
+	public float getOffsetY() {
+		return _offset.y;
+	}
+
+	@Override
+	public void onResize() {
+		if (_resizeListener != null) {
+			_resizeListener.onResize(this);
+		}
+	}
+
+	public float getMorphX() {
+		return _morphX;
+	}
+
+	public DisplayObject setMorphX(float x) {
+		this._morphX = x;
+		return this;
+	}
+
+	public float getMorphY() {
+		return _morphY;
+	}
+
+	public DisplayObject setMorphY(float y) {
+		this._morphY = y;
+		return this;
+	}
 }

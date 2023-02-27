@@ -20,7 +20,6 @@
  */
 package loon.action.map;
 
-
 import loon.LObject;
 import loon.LSysException;
 import loon.LSystem;
@@ -31,6 +30,7 @@ import loon.Screen;
 import loon.action.ActionBind;
 import loon.action.ActionTween;
 import loon.action.map.colider.TileImpl;
+import loon.action.map.items.Attribute;
 import loon.action.sprite.Animation;
 import loon.action.sprite.ISprite;
 import loon.action.sprite.MoveControl;
@@ -39,10 +39,11 @@ import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.canvas.Pixmap;
 import loon.events.DrawListener;
+import loon.events.ResizeListener;
 import loon.font.FontSet;
 import loon.font.IFont;
-import loon.font.LFont;
 import loon.geom.Affine2f;
+import loon.geom.PointF;
 import loon.geom.Polygon;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
@@ -58,10 +59,11 @@ import loon.utils.StringUtils;
 import loon.utils.TArray;
 
 /**
- * 一个简单的,渲染六边形瓦片地图用的,二维数组地图构造以及显示类.复杂地图请使用tmx包
+ * 一个简单(易于操作)的渲染六边形瓦片地图用的,二维数组地图构造以及显示类.复杂地图请使用tmx包
  */
 public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>, ISprite {
 
+	// 默认的六边形参数
 	public static final int LEFT = -3;
 	public static final int DOWNLEFT = -2;
 	public static final int UPLEFT = -1;
@@ -106,8 +108,13 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 
 	private Field2D field2d;
 
+	private final PointF _scrollDrag = new PointF();
+
 	private float _fixedWidthOffset = 0f;
+
 	private float _fixedHeightOffset = 0f;
+	
+	private ResizeListener<HexagonMap> _resizeListener;
 
 	private int[] position = new int[2];
 
@@ -135,19 +142,19 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 
 	private IFont displayFont;
 
-	private Vector2f offset = new Vector2f(0, 0);
-
 	private DrawListener<HexagonMap> listener;
 
 	private LColor _baseColor;
 
 	private LTexture _background;
 
+	private Vector2f _offset = new Vector2f(0, 0);
+
 	private float _scaleX, _scaleY;
 
 	private Sprites _mapSprites;
 
-	private Sprites _sprites;
+	private Sprites _screenSprites;
 
 	protected static class Node implements Comparable<Node> {
 
@@ -382,7 +389,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 			texturePack = new LTexturePack();
 		}
 		this._scaleX = this._scaleY = 1f;
-		this._rotation = 0f;
+		this._objectRotation = 0f;
 		this.visible = true;
 		this.active = true;
 		this.dirty = true;
@@ -396,7 +403,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	}
 
 	public int getLimitType(int[] position) {
-		int id = getTile(position).idx;
+		int id = getTile(position).getId();
 		if (getLimit() != null) {
 			for (int i = 0; i < getLimit().length; i++) {
 				if (getLimit()[i] == id) {
@@ -419,7 +426,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		for (int j = 0; j < cols; j++) {
 			for (int i = 0; i < rows; i++) {
 				tiles[i][j] = new TileImpl(id, i, j);
-				tiles[i][j].imgId = imgId;
+				tiles[i][j].setImgId(imgId);
 				maps[i][j] = id;
 			}
 		}
@@ -440,12 +447,12 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	}
 
 	public HexagonMap putImageIdTile(int id, int x, int y) {
-		getTile(x, y).imgId = id;
+		getTile(x, y).setImgId(id);
 		return this;
 	}
 
 	public int getImageIdTile(int x, int y) {
-		return getTile(x, y).imgId;
+		return getTile(x, y).getImgId();
 	}
 
 	public HexagonMap createMap(int startWidth, int midHeight, int endHeight, int cols, int rows) {
@@ -660,9 +667,9 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	}
 
 	public int[] adjacent(int[] position, int orientation) {
-		int[] offset = hexagonByOrientation[orientation + 3];
-		this.position[0] = position[0] + offset[0];
-		this.position[1] = position[1] + offset[1];
+		int[] _offset = hexagonByOrientation[orientation + 3];
+		this.position[0] = position[0] + _offset[0];
+		this.position[1] = position[1] + _offset[1];
 		return this.position;
 	}
 
@@ -792,7 +799,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		if (position != null) {
 			TileImpl tile = getTile(position);
 			if (allowDisplayClicked) {
-				setTile(position, new TileImpl((tile.idx < getLimit().length - 1) ? tile.idx + 1 : 0));
+				setTile(position, new TileImpl((tile.getId() < getLimit().length - 1) ? tile.getId() + 1 : 0));
 			}
 			return tile;
 		}
@@ -1008,6 +1015,10 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		return this;
 	}
 
+	public HexagonMap followDonot() {
+		return setFollow(null);
+	}
+
 	public HexagonMap followAction(ActionBind follow) {
 		return setFollow(follow);
 	}
@@ -1093,29 +1104,31 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	}
 
 	@Override
-	public void setSprites(Sprites ss) {
-		if (this._sprites == ss) {
-			return;
+	public ISprite setSprites(Sprites ss) {
+		if (this._screenSprites == ss) {
+			return this;
 		}
-		this._sprites = ss;
+		this._screenSprites = ss;
+		return this;
 	}
 
 	@Override
 	public Sprites getSprites() {
-		return this._sprites;
+		return this._screenSprites;
 	}
 
 	@Override
 	public Screen getScreen() {
-		if (this._sprites == null) {
+		if (this._screenSprites == null) {
 			return LSystem.getProcess().getScreen();
 		}
-		return this._sprites.getScreen() == null ? LSystem.getProcess().getScreen() : this._sprites.getScreen();
+		return this._screenSprites.getScreen() == null ? LSystem.getProcess().getScreen()
+				: this._screenSprites.getScreen();
 	}
 
 	public float getScreenX() {
 		float x = 0;
-		ISprite parent = _super;
+		ISprite parent = _objectSuper;
 		if (parent != null) {
 			x += parent.getX();
 			for (; (parent = parent.getParent()) != null;) {
@@ -1127,7 +1140,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 
 	public float getScreenY() {
 		float y = 0;
-		ISprite parent = _super;
+		ISprite parent = _objectSuper;
 		if (parent != null) {
 			y += parent.getY();
 			for (; (parent = parent.getParent()) != null;) {
@@ -1139,33 +1152,33 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 
 	@Override
 	public float getContainerX() {
-		if (_super != null) {
+		if (_objectSuper != null) {
 			return getScreenX() - getX();
 		}
-		return this._sprites == null ? super.getContainerX() : this._sprites.getX();
+		return this._screenSprites == null ? super.getContainerX() : this._screenSprites.getX();
 	}
 
 	@Override
 	public float getContainerY() {
-		if (_super != null) {
+		if (_objectSuper != null) {
 			return getScreenY() - getY();
 		}
-		return this._sprites == null ? super.getContainerY() : this._sprites.getY();
+		return this._screenSprites == null ? super.getContainerY() : this._screenSprites.getY();
 	}
 
 	@Override
 	public float getContainerWidth() {
-		return this._sprites == null ? super.getContainerWidth() : this._sprites.getWidth();
+		return this._screenSprites == null ? super.getContainerWidth() : this._screenSprites.getWidth();
 	}
 
 	@Override
 	public float getContainerHeight() {
-		return this._sprites == null ? super.getContainerHeight() : this._sprites.getHeight();
+		return this._screenSprites == null ? super.getContainerHeight() : this._screenSprites.getHeight();
 	}
 
 	@Override
 	public void createUI(GLEx g) {
-		createUI(g, 0, 0);
+		createUI(g, 0f, 0f);
 	}
 
 	@Override
@@ -1173,23 +1186,24 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		if (!visible) {
 			return;
 		}
-		boolean update = (_rotation != 0) || !(_scaleX == 1f && _scaleY == 1f);
+		boolean update = (_objectRotation != 0) || !(_scaleX == 1f && _scaleY == 1f);
+		int blend = g.getBlendMode();
 		int tmp = g.color();
 		try {
-			g.setAlpha(_alpha);
+			g.setAlpha(_objectAlpha);
 			if (this.roll) {
-				this.offset = toRollPosition(this.offset);
+				this._offset = toRollPosition(this._offset);
 			}
-			float newX = this._location.x + offsetX + offset.getX();
-			float newY = this._location.y + offsetY + offset.getY();
+			float newX = this._objectLocation.x + offsetX + _offset.getX();
+			float newY = this._objectLocation.y + offsetY + _offset.getY();
 			if (update) {
 				g.saveTx();
 				Affine2f tx = g.tx();
-				if (_rotation != 0) {
+				if (_objectRotation != 0) {
 					final float rotationCenterX = newX + getWidth() / 2f;
 					final float rotationCenterY = newY + getHeight() / 2f;
 					tx.translate(rotationCenterX, rotationCenterY);
-					tx.preRotate(_rotation);
+					tx.preRotate(_objectRotation);
 					tx.translate(-rotationCenterX, -rotationCenterY);
 				}
 				if ((_scaleX != 1) || (_scaleY != 1)) {
@@ -1213,17 +1227,26 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 			if (update) {
 				g.restoreTx();
 			}
+			g.setBlendMode(blend);
 			g.setColor(tmp);
 		}
 
 	}
 
+	public int getPixelX(float x) {
+		return MathUtils.iceil((x - _objectLocation.x) / _scaleX);
+	}
+
+	public int getPixelY(float y) {
+		return MathUtils.iceil((y - _objectLocation.y) / _scaleY);
+	}
+
 	public float offsetXPixel(float x) {
-		return MathUtils.iceil((x - offset.x - _location.x) / _scaleX);
+		return MathUtils.iceil((x - _offset.x - _objectLocation.x) / _scaleX);
 	}
 
 	public float offsetYPixel(float y) {
-		return MathUtils.iceil((y - offset.y - _location.y) / _scaleY);
+		return MathUtils.iceil((y - _offset.y - _objectLocation.y) / _scaleY);
 	}
 
 	public boolean inMap(int x, int y) {
@@ -1245,7 +1268,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	}
 
 	public HexagonMap setOffset(float x, float y) {
-		this.offset.set(x, y);
+		this._offset.set(x, y);
 		return this;
 	}
 
@@ -1253,8 +1276,10 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		if (follow != null) {
 			float offsetX = limitOffsetX(follow.getX());
 			float offsetY = limitOffsetY(follow.getY());
-			setOffset(offsetX, offsetY);
-			field2d.setOffset(offset);
+			if (offsetX != 0 || offsetY != 0) {
+				setOffset(offsetX, offsetY);
+				field2d.setOffset(_offset);
+			}
 		}
 		return this;
 	}
@@ -1280,6 +1305,16 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		int itsX = pixelsToTilesWidth(x);
 		int itsY = pixelsToTilesHeight(y);
 		return field2d.getPixelsAtFieldType(itsX, itsY);
+	}
+
+	/**
+	 * 地图居中偏移
+	 * 
+	 * @return
+	 */
+	public HexagonMap centerOffset() {
+		this._offset.set(centerX(), centerY());
+		return this;
 	}
 
 	@Override
@@ -1318,36 +1353,113 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		return field2d.getRect().contains(x, y, w, h);
 	}
 
-	public void scrollDown(float distance) {
-		this.offset.y = limitOffsetY(MathUtils.min((this.offset.y + distance),
-				(MathUtils.max(0, this.field2d.getViewHeight() - getContainerHeight()))));
+	public float centerX() {
+		return (getContainerWidth() - getWidth()) / 2f;
 	}
 
-	public void scrollLeft(float distance) {
-		this.offset.x = limitOffsetX(MathUtils.max(this.offset.x - distance, 0));
+	public float centerY() {
+		return (getContainerHeight() - getHeight()) / 2f;
 	}
 
-	public void scrollLeftUp(float distance) {
+	public HexagonMap scrollDown(float distance) {
+		if (distance == 0) {
+			return this;
+		}
+		this._offset.y = MathUtils.min((this._offset.y + distance),
+				(MathUtils.max(0, this.getContainerHeight() - this.getHeight())));
+		if (this._offset.y >= 0) {
+			this._offset.y = 0;
+		}
+		return this;
+	}
+
+	public HexagonMap scrollLeft(float distance) {
+		if (distance == 0) {
+			return this;
+		}
+		this._offset.x = MathUtils.min(this._offset.x - distance, this.getX());
+		float limitX = (getContainerWidth() - getWidth());
+		if (this._offset.x <= limitX) {
+			this._offset.x = limitX;
+		}
+		return this;
+	}
+
+	public HexagonMap scrollRight(float distance) {
+		if (distance == 0) {
+			return this;
+		}
+		this._offset.x = MathUtils.min((this._offset.x + distance),
+				(MathUtils.max(0, this.getWidth() - getContainerWidth())));
+		if (this._offset.x >= 0) {
+			this._offset.x = 0;
+		}
+		return this;
+	}
+
+	public HexagonMap scrollUp(float distance) {
+		if (distance == 0) {
+			return this;
+		}
+		this._offset.y = MathUtils.min(this._offset.y - distance, 0);
+		float limitY = (getContainerHeight() - getHeight());
+		if (this._offset.y <= limitY) {
+			this._offset.y = limitY;
+		}
+		return this;
+	}
+
+	public HexagonMap scrollLeftUp(float distance) {
 		this.scrollUp(distance);
 		this.scrollLeft(distance);
+		return this;
 	}
 
-	public void scrollRight(float distance) {
-		this.offset.x = limitOffsetX(MathUtils.min((this.offset.x + distance),
-				(MathUtils.max(0, this.field2d.getViewWidth() - getContainerWidth()))));
-	}
-
-	public void scrollUp(float distance) {
-		this.offset.y = limitOffsetY(MathUtils.max(this.offset.y - distance, 0));
-	}
-
-	public void scrollRightDown(float distance) {
+	public HexagonMap scrollRightDown(float distance) {
 		this.scrollDown(distance);
 		this.scrollRight(distance);
+		return this;
 	}
 
-	public void scrollClear() {
-		this.offset.set(0, 0);
+	public HexagonMap scrollClear() {
+		if (!this._offset.equals(0f, 0f)) {
+			this._offset.set(0, 0);
+		}
+		return this;
+	}
+
+	public HexagonMap scroll(float x, float y) {
+		return scroll(x, y, 4f);
+	}
+
+	public HexagonMap scroll(float x, float y, float distance) {
+		if (_scrollDrag.x == 0f && _scrollDrag.y == 0f) {
+			_scrollDrag.set(x, y);
+			return this;
+		}
+		return scroll(_scrollDrag.x, _scrollDrag.y, x, y, distance);
+	}
+
+	public HexagonMap scroll(float x1, float y1, float x2, float y2) {
+		return scroll(x1, y1, x2, y2, 4f);
+	}
+
+	public HexagonMap scroll(float x1, float y1, float x2, float y2, float distance) {
+		if (this.follow != null) {
+			return this;
+		}
+		if (x1 < x2 && x1 > centerX()) {
+			scrollRight(distance);
+		} else if (x1 > x2) {
+			scrollLeft(distance);
+		}
+		if (y1 < y2 && y1 > centerY()) {
+			scrollDown(distance);
+		} else if (y1 > y2) {
+			scrollUp(distance);
+		}
+		_scrollDrag.set(x2, y2);
+		return this;
 	}
 
 	public boolean isHit(int px, int py) {
@@ -1391,6 +1503,11 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		return getTileIDFromPixels(v.x, v.y);
 	}
 
+	public HexagonMap replaceType(int oldid, int newid) {
+		field2d.replaceType(oldid, newid);
+		return this;
+	}
+
 	public int getTileID(int x, int y) {
 		if (x >= 0 && x < field2d.getWidth() && y >= 0 && y < field2d.getHeight()) {
 			return field2d.getTileType(x, y);
@@ -1399,9 +1516,16 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		}
 	}
 
+	public HexagonMap setTileID(int x, int y, int id) {
+		if (x >= 0 && x < field2d.getWidth() && y >= 0 && y < field2d.getHeight()) {
+			field2d.setTileType(x, y, id);
+		}
+		return this;
+	}
+
 	public int getTileIDFromPixels(float sx, float sy) {
-		float x = (sx + offset.getX());
-		float y = (sy + offset.getY());
+		float x = (sx + _offset.getX());
+		float y = (sy + _offset.getY());
 		Vector2f tileCoordinates = pixelsToTiles(x, y);
 		return getTileID(MathUtils.round(tileCoordinates.getX()), MathUtils.round(tileCoordinates.getY()));
 	}
@@ -1440,11 +1564,15 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		return active;
 	}
 
+	public boolean isValid(int x, int y) {
+		return this.field2d.inside(x, y);
+	}
+
 	public HexagonMap removeTile(int id) {
 		for (TileImpl tile : tileBinds) {
-			if (tile.idx == id) {
-				if (tile.isAnimation) {
-					animations.remove(tile.animation);
+			if (tile.getId() == id) {
+				if (tile.isAnimation()) {
+					animations.remove(tile.getAnimation());
 				}
 				tileBinds.remove(tile);
 			}
@@ -1459,17 +1587,16 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	public int putAnimationTile(int id, Animation animation, Attribute attribute) {
 		if (active) {
 			TileImpl tile = new TileImpl(id);
-			tile.imgId = -1;
-			tile.attribute = attribute;
+			tile.setImgId(-1);
+			tile.setAttribute(attribute);
 			if (animation != null && animation.getTotalFrames() > 0) {
-				tile.isAnimation = true;
-				tile.animation = animation;
+				tile.setAnimation(animation);
 				playAnimation = true;
 			}
 			animations.add(animation);
 			tileBinds.add(tile);
 			dirty = true;
-			return tile.imgId;
+			return tile.getImgId();
 		} else {
 			throw new LSysException("Map is no longer active, you can not add new tiles !");
 		}
@@ -1494,11 +1621,11 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	public int putTile(int id, Image img, Attribute attribute) {
 		if (active) {
 			TileImpl tile = new TileImpl(id);
-			tile.imgId = texturePack.putImage(img);
-			tile.attribute = attribute;
+			tile.setImgId(texturePack.putImage(img));
+			tile.setAttribute(attribute);
 			tileBinds.add(tile);
 			dirty = true;
-			return tile.imgId;
+			return tile.getImgId();
 		} else {
 			throw new LSysException("Map is no longer active, you can not add new tiles !");
 		}
@@ -1511,11 +1638,11 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	public int putTile(int id, LTexture img, Attribute attribute) {
 		if (active) {
 			TileImpl tile = new TileImpl(id);
-			tile.imgId = texturePack.putImage(img);
-			tile.attribute = attribute;
+			tile.setImgId(texturePack.putImage(img));
+			tile.setAttribute(attribute);
 			tileBinds.add(tile);
 			dirty = true;
-			return tile.imgId;
+			return tile.getImgId();
 		} else {
 			throw new LSysException("Map is no longer active, you can not add new tiles !");
 		}
@@ -1528,11 +1655,11 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	public int putTile(int id, String res, Attribute attribute) {
 		if (active) {
 			TileImpl tile = new TileImpl(id);
-			tile.imgId = texturePack.putImage(res);
-			tile.attribute = attribute;
+			tile.setImgId(texturePack.putImage(res));
+			tile.setAttribute(attribute);
 			tileBinds.add(tile);
 			dirty = true;
-			return tile.imgId;
+			return tile.getImgId();
 		} else {
 			throw new LSysException("Map is no longer active, you can not add new tiles !");
 		}
@@ -1545,8 +1672,8 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	public HexagonMap putTile(int id, int imgId, Attribute attribute) {
 		if (active) {
 			TileImpl tile = new TileImpl(id);
-			tile.imgId = imgId;
-			tile.attribute = attribute;
+			tile.setImgId(imgId);
+			tile.setAttribute(attribute);
 			tileBinds.add(tile);
 			dirty = true;
 		} else {
@@ -1561,7 +1688,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 
 	public TileImpl getTile(int id) {
 		for (TileImpl tile : tileBinds) {
-			if (tile.idx == id) {
+			if (tile.getId() == id) {
 				return tile;
 			}
 		}
@@ -1609,9 +1736,9 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 					Hexagon hexagon = coordinate(visit.position);
 					if (getViewRect().intersects(hexagon.getFrameRect())) {
 						TileImpl tile = visit.tile;
-						TileImpl bindImpl = getTile(tile.idx);
-						if (bindImpl != null && playAnimation && bindImpl.isAnimation) {
-							LTexture texture = bindImpl.animation.getSpriteImage();
+						TileImpl bindImpl = getTile(tile.getId());
+						if (bindImpl != null && playAnimation && bindImpl.isAnimation()) {
+							LTexture texture = bindImpl.getAnimation().getSpriteImage();
 							if (texture != null) {
 								int newWidth = MathUtils.max(texture.getWidth(), hexagon.getWidth());
 								int newHeight = MathUtils.max(texture.getHeight(), hexagon.getHeight());
@@ -1623,7 +1750,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 								}
 							}
 						} else if (bindImpl != null) {
-							LTexture texture = texturePack.getTexture(bindImpl.imgId);
+							LTexture texture = texturePack.getTexture(bindImpl.getImgId());
 							if (texture != null) {
 								int newWidth = MathUtils.max(texture.getWidth(), hexagon.getWidth());
 								int newHeight = MathUtils.max(texture.getHeight(), hexagon.getHeight());
@@ -1638,7 +1765,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 								step = 0;
 							}
 							LColor color = LColor.white;
-							switch (tile.idx) {
+							switch (tile.getId()) {
 							case 0:
 								color = LColor.red;
 								break;
@@ -1704,9 +1831,9 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 							Hexagon hexagon = coordinate(visit.position);
 							if (getViewRect().intersects(hexagon.getFrameRect())) {
 								TileImpl tile = visit.tile;
-								TileImpl bindImpl = getTile(tile.idx);
-								if (bindImpl != null && playAnimation && bindImpl.isAnimation) {
-									LTexture texture = bindImpl.animation.getSpriteImage();
+								TileImpl bindImpl = getTile(tile.getId());
+								if (bindImpl != null && playAnimation && bindImpl.isAnimation()) {
+									LTexture texture = bindImpl.getAnimation().getSpriteImage();
 									int newWidth = MathUtils.max(texture.getWidth(), hexagon.getWidth());
 									int newHeight = MathUtils.max(texture.getHeight(), hexagon.getHeight());
 									g.draw(texture, hexagon.getX() + offsetX, hexagon.getY() + offsetY, newWidth,
@@ -1725,9 +1852,9 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 						Hexagon hexagon = coordinate(visit.position);
 						if (getViewRect().intersects(hexagon.getFrameRect())) {
 							TileImpl tile = visit.tile;
-							TileImpl bindImpl = getTile(tile.idx);
-							if (bindImpl != null && playAnimation && bindImpl.isAnimation) {
-								LTexture texture = bindImpl.animation.getSpriteImage();
+							TileImpl bindImpl = getTile(tile.getId());
+							if (bindImpl != null && playAnimation && bindImpl.isAnimation()) {
+								LTexture texture = bindImpl.getAnimation().getSpriteImage();
 								if (texture != null) {
 									int newWidth = MathUtils.max(texture.getWidth(), hexagon.getWidth());
 									int newHeight = MathUtils.max(texture.getHeight(), hexagon.getHeight());
@@ -1735,7 +1862,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 											newHeight);
 								}
 							} else if (bindImpl != null) {
-								int id = bindImpl.imgId;
+								int id = bindImpl.getImgId();
 								LTexture texture = texturePack.getTexture(id);
 								if (texture != null) {
 									int newWidth = MathUtils.max(texture.getWidth(), hexagon.getWidth());
@@ -1879,8 +2006,9 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	}
 
 	@Override
-	public void setFixedWidthOffset(float fixedWidthOffset) {
+	public ISprite setFixedWidthOffset(float fixedWidthOffset) {
 		this._fixedWidthOffset = fixedWidthOffset;
+		return this;
 	}
 
 	@Override
@@ -1889,8 +2017,9 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	}
 
 	@Override
-	public void setFixedHeightOffset(float fixedHeightOffset) {
+	public ISprite setFixedHeightOffset(float fixedHeightOffset) {
 		this._fixedHeightOffset = fixedHeightOffset;
+		return this;
 	}
 
 	@Override
@@ -1924,7 +2053,54 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		RectBox b = new RectBox(0, rectDst.getY(), rectDst.getWidth(), rectDst.getHeight());
 		return a.intersects(b);
 	}
-	
+
+	@Override
+	public void onResize() {
+		if (_resizeListener != null) {
+			_resizeListener.onResize(this);
+		}
+		if (_mapSprites != null) {
+			_mapSprites.resize(getWidth(), getHeight(), false);
+		}
+	}
+
+	public ResizeListener<HexagonMap> getResizeListener() {
+		return _resizeListener;
+	}
+
+	public HexagonMap setResizeListener(ResizeListener<HexagonMap> listener) {
+		this._resizeListener = listener;
+		return this;
+	}
+
+	@Override
+	public HexagonMap setOffset(Vector2f v) {
+		if (v != null) {
+			this._offset = v;
+		}
+		return this;
+	}
+
+	public HexagonMap setOffsetX(float sx) {
+		this._offset.setX(sx);
+		return this;
+	}
+
+	public HexagonMap setOffsetY(float sy) {
+		this._offset.setY(sy);
+		return this;
+	}
+
+	@Override
+	public float getOffsetX() {
+		return _offset.x;
+	}
+
+	@Override
+	public float getOffsetY() {
+		return _offset.y;
+	}
+
 	public boolean isClosed() {
 		return isDisposed();
 	}
@@ -1955,6 +2131,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 			_background.close();
 			_background = null;
 		}
+		_resizeListener = null;
 		removeActionEvents(this);
 		setState(State.DISPOSED);
 	}

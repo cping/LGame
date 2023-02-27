@@ -30,6 +30,7 @@ import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.events.Updateable;
 import loon.font.IFont;
+import loon.font.ITranslator;
 import loon.font.LFont;
 import loon.font.TextLayout;
 import loon.geom.Affine2f;
@@ -171,7 +172,6 @@ public class LSTRFont implements IFont, LRelease {
 			}
 			LTextureBatch tmpbatch = strfont.fontBatch;
 			strfont.fontBatch = new LTextureBatch(strfont.texture = canvas.toTexture());
-			strfont.fontBatch.setBlendState(BlendState.AlphaBlend);
 			if (tmpbatch != null) {
 				tmpbatch.close();
 			}
@@ -312,7 +312,7 @@ public class LSTRFont implements IFont, LRelease {
 		}
 		isDrawing = true;
 		updateX = 0;
-		updateY = LSystem.isHTML5() ? 1f : 0;
+		updateY = LSystem.isBrowser() ? 1f : 0;
 		if (LSystem.isEmulateFullVer()) {
 			Updateable update = new UpdateStringFont(this);
 			if (asyn) {
@@ -425,7 +425,6 @@ public class LSTRFont implements IFont, LRelease {
 						totalWidth += intObject.width;
 					}
 				}
-				fontBatch.setBlendState(BlendState.AlphaBlend);
 				fontBatch.commit(x, y, sx, sy, ax, ay, rotation);
 				fontBatch.setColor(old);
 				displays.put(chars, display = fontBatch.newCache());
@@ -460,7 +459,6 @@ public class LSTRFont implements IFont, LRelease {
 				}
 			}
 			fontBatch.setColor(old);
-			fontBatch.setBlendState(BlendState.AlphaBlend);
 			fontBatch.commit(x, y, sx, sy, ax, ay, rotation);
 		}
 	}
@@ -573,11 +571,9 @@ public class LSTRFont implements IFont, LRelease {
 					}
 				}
 			} else {
-				gl.saveCanvas();
-				gl.postform();
+				gl.synchTransform();
 				gl.getCanvas().setFont(font);
 				gl.getCanvas().drawText(chars, x, y, c);
-				gl.restoreCanvas();
 			}
 
 		} finally {
@@ -624,7 +620,6 @@ public class LSTRFont implements IFont, LRelease {
 			if (color != null) {
 				setImageColor(color);
 			}
-			fontBatch.setBlendState(BlendState.AlphaBlend);
 			if (c == newLineFlag) {
 				fontBatch.draw(colors, x, y + fontSize, intObject.width - offsetX, intObject.height - offsetY,
 						intObject.storedX, intObject.storedY, intObject.storedX + intObject.width - offsetX,
@@ -1020,6 +1015,18 @@ public class LSTRFont implements IFont, LRelease {
 		_initChars = false;
 		_initDraw = -1;
 		_isClose = true;
+	}
+
+	@Override
+	public ITranslator getTranslator() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public IFont setTranslator(ITranslator translator) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

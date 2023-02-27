@@ -22,7 +22,6 @@
 package loon.component;
 
 import loon.LTexture;
-import loon.action.sprite.SpriteBatch;
 import loon.canvas.Canvas;
 import loon.canvas.LColor;
 import loon.events.CallFunction;
@@ -102,20 +101,6 @@ public class LSelectorIcon extends LComponent {
 		g.setColor(color);
 	}
 
-	public void draw(SpriteBatch batch, int mainX, int mainY) {
-		float color = batch.getFloatColor();
-		batch.setColor(_component_baseColor.getRed(), _component_baseColor.getGreen(),
-				_component_baseColor.getBlue(), 125);
-		batch.fillRect(mainX + (x * pSize) - 1, mainY + (y * pSize) - 1, pSize,
-				pSize);
-		batch.drawRect(mainX + (x * pSize), mainY + (y * pSize), pSize - 2,
-				pSize - 2);
-		batch.setColor(borderColor.getRed(), borderColor.getGreen(),
-				borderColor.getBlue(), (int) alpha);
-		batch.drawRect(mainX + (x * pSize) - 1, mainY + (y * pSize) - 1,
-				pSize + 1, pSize + 1);
-		batch.setColor(color);
-	}
 
 	public void move(int direction) {
 		switch (direction) {

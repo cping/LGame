@@ -39,6 +39,10 @@ import loon.utils.TimeUtils;
 import loon.utils.xml.XMLDocument;
 import loon.utils.xml.XMLParser;
 
+/**
+ * loon默认提供的本地资源加载器
+ *
+ */
 public class ResourceLocal extends ResourceGetter implements IEventListener {
 
 	private ObjectMap<String, TArray<String>> _groupTable;
@@ -142,8 +146,8 @@ public class ResourceLocal extends ResourceGetter implements IEventListener {
 		}
 		return obj;
 	}
-	
-	protected XMLDocument loadXML(ResourceItem item){
+
+	protected XMLDocument loadXML(ResourceItem item) {
 		return XMLParser.parse(item.url());
 	}
 
@@ -236,10 +240,11 @@ public class ResourceLocal extends ResourceGetter implements IEventListener {
 		return pixmap;
 	}
 
-	public LTexture getLTexture(String name) {
+	@Override
+	public LTexture getTextureData(String name) {
 		return getTexture(name).img();
 	}
-
+	
 	@Override
 	public Texture getTexture(String name) {
 		init();
@@ -427,9 +432,21 @@ public class ResourceLocal extends ResourceGetter implements IEventListener {
 		return item;
 	}
 
+	public int count() {
+		return _dataTable.size();
+	}
+
+	public ResourceLocal clear() {
+		_dataTable.clear();
+		_resourceTable.clear();
+		_groupTable.clear();
+		return this;
+	}
+
 	@Override
 	public void onReciveEvent(int type, EventDispatcher dispatcher, Object data) {
 		this.dispatchEvent(type, data);
 	}
+
 
 }

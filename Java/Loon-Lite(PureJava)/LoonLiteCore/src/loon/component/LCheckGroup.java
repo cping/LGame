@@ -59,7 +59,7 @@ public class LCheckGroup extends LComponent {
 		}
 	}
 
-	public void add(LCheckBox check) {
+	public LCheckGroup add(LCheckBox check) {
 		if (minX == -1) {
 			minX = check.getX();
 		}
@@ -71,8 +71,9 @@ public class LCheckGroup extends LComponent {
 		maxX += MathUtils.max(maxY, check.getWidth());
 		maxY += MathUtils.max(maxY, check.getHeight());
 		setLocation(minX, minY);
-		setSize((int) maxX, (int) maxY);
+		setSize(maxX, maxY);
 		checks.add(check);
+		return this;
 	}
 
 	@Override

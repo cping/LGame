@@ -78,9 +78,9 @@ public class Matrix4 implements Serializable, XY {
 
 	public static final int M33 = 15;
 
-	public final float tmp[] = new float[16];
-	
-	public final float val[] = new float[16];
+	public final float[] tmp = new float[16];
+
+	public final float[] val = new float[16];
 
 	private Support support;
 
@@ -131,27 +131,20 @@ public class Matrix4 implements Serializable, XY {
 		return set(quaternion.x, quaternion.y, quaternion.z, quaternion.w);
 	}
 
-	public Matrix4 set(float quaternionX, float quaternionY, float quaternionZ,
-			float quaternionW) {
-		return set(0f, 0f, 0f, quaternionX, quaternionY, quaternionZ,
-				quaternionW);
+	public Matrix4 set(float quaternionX, float quaternionY, float quaternionZ, float quaternionW) {
+		return set(0f, 0f, 0f, quaternionX, quaternionY, quaternionZ, quaternionW);
 	}
 
 	public Matrix4 set(Vector3f position, Quaternion orientation) {
-		return set(position.x, position.y, position.z, orientation.x,
-				orientation.y, orientation.z, orientation.w);
+		return set(position.x, position.y, position.z, orientation.x, orientation.y, orientation.z, orientation.w);
 	}
 
-	public Matrix4 set(float translationX, float translationY,
-			float translationZ, float quaternionX, float quaternionY,
+	public Matrix4 set(float translationX, float translationY, float translationZ, float quaternionX, float quaternionY,
 			float quaternionZ, float quaternionW) {
 		final float xs = quaternionX * 2f, ys = quaternionY * 2f, zs = quaternionZ * 2f;
-		final float wx = quaternionW * xs, wy = quaternionW * ys, wz = quaternionW
-				* zs;
-		final float xx = quaternionX * xs, xy = quaternionX * ys, xz = quaternionX
-				* zs;
-		final float yy = quaternionY * ys, yz = quaternionY * zs, zz = quaternionZ
-				* zs;
+		final float wx = quaternionW * xs, wy = quaternionW * ys, wz = quaternionW * zs;
+		final float xx = quaternionX * xs, xy = quaternionX * ys, xz = quaternionX * zs;
+		final float yy = quaternionY * ys, yz = quaternionY * zs, zz = quaternionZ * zs;
 
 		val[M00] = (1.0f - (yy + zz));
 		val[M01] = (xy - wz);
@@ -176,23 +169,17 @@ public class Matrix4 implements Serializable, XY {
 	}
 
 	public Matrix4 set(Vector3f position, Quaternion orientation, Vector3f scale) {
-		return set(position.x, position.y, position.z, orientation.x,
-				orientation.y, orientation.z, orientation.w, scale.x, scale.y,
-				scale.z);
+		return set(position.x, position.y, position.z, orientation.x, orientation.y, orientation.z, orientation.w,
+				scale.x, scale.y, scale.z);
 	}
 
-	public Matrix4 set(float translationX, float translationY,
-			float translationZ, float quaternionX, float quaternionY,
-			float quaternionZ, float quaternionW, float scaleX, float scaleY,
-			float scaleZ) {
+	public Matrix4 set(float translationX, float translationY, float translationZ, float quaternionX, float quaternionY,
+			float quaternionZ, float quaternionW, float scaleX, float scaleY, float scaleZ) {
 
 		final float xs = quaternionX * 2f, ys = quaternionY * 2f, zs = quaternionZ * 2f;
-		final float wx = quaternionW * xs, wy = quaternionW * ys, wz = quaternionW
-				* zs;
-		final float xx = quaternionX * xs, xy = quaternionX * ys, xz = quaternionX
-				* zs;
-		final float yy = quaternionY * ys, yz = quaternionY * zs, zz = quaternionZ
-				* zs;
+		final float wx = quaternionW * xs, wy = quaternionW * ys, wz = quaternionW * zs;
+		final float xx = quaternionX * xs, xy = quaternionX * ys, xz = quaternionX * zs;
+		final float yy = quaternionY * ys, yz = quaternionY * zs, zz = quaternionZ * zs;
 
 		val[M00] = scaleX * (1.0f - (yy + zz));
 		val[M01] = scaleY * (xy - wz);
@@ -216,8 +203,7 @@ public class Matrix4 implements Serializable, XY {
 		return this;
 	}
 
-	public Matrix4 set(Vector3f xAxis, Vector3f yAxis, Vector3f zAxis,
-			Vector3f pos) {
+	public Matrix4 set(Vector3f xAxis, Vector3f yAxis, Vector3f zAxis, Vector3f pos) {
 		val[M00] = xAxis.x;
 		val[M01] = xAxis.y;
 		val[M02] = xAxis.z;
@@ -347,94 +333,54 @@ public class Matrix4 implements Serializable, XY {
 	}
 
 	public Matrix4 inv() {
-		float l_det = val[M30] * val[M21] * val[M12] * val[M03] - val[M20]
-				* val[M31] * val[M12] * val[M03] - val[M30] * val[M11]
-				* val[M22] * val[M03] + val[M10] * val[M31] * val[M22]
-				* val[M03] + val[M20] * val[M11] * val[M32] * val[M03]
-				- val[M10] * val[M21] * val[M32] * val[M03] - val[M30]
-				* val[M21] * val[M02] * val[M13] + val[M20] * val[M31]
-				* val[M02] * val[M13] + val[M30] * val[M01] * val[M22]
-				* val[M13] - val[M00] * val[M31] * val[M22] * val[M13]
-				- val[M20] * val[M01] * val[M32] * val[M13] + val[M00]
-				* val[M21] * val[M32] * val[M13] + val[M30] * val[M11]
-				* val[M02] * val[M23] - val[M10] * val[M31] * val[M02]
-				* val[M23] - val[M30] * val[M01] * val[M12] * val[M23]
-				+ val[M00] * val[M31] * val[M12] * val[M23] + val[M10]
-				* val[M01] * val[M32] * val[M23] - val[M00] * val[M11]
-				* val[M32] * val[M23] - val[M20] * val[M11] * val[M02]
-				* val[M33] + val[M10] * val[M21] * val[M02] * val[M33]
-				+ val[M20] * val[M01] * val[M12] * val[M33] - val[M00]
-				* val[M21] * val[M12] * val[M33] - val[M10] * val[M01]
-				* val[M22] * val[M33] + val[M00] * val[M11] * val[M22]
-				* val[M33];
+		float l_det = val[M30] * val[M21] * val[M12] * val[M03] - val[M20] * val[M31] * val[M12] * val[M03]
+				- val[M30] * val[M11] * val[M22] * val[M03] + val[M10] * val[M31] * val[M22] * val[M03]
+				+ val[M20] * val[M11] * val[M32] * val[M03] - val[M10] * val[M21] * val[M32] * val[M03]
+				- val[M30] * val[M21] * val[M02] * val[M13] + val[M20] * val[M31] * val[M02] * val[M13]
+				+ val[M30] * val[M01] * val[M22] * val[M13] - val[M00] * val[M31] * val[M22] * val[M13]
+				- val[M20] * val[M01] * val[M32] * val[M13] + val[M00] * val[M21] * val[M32] * val[M13]
+				+ val[M30] * val[M11] * val[M02] * val[M23] - val[M10] * val[M31] * val[M02] * val[M23]
+				- val[M30] * val[M01] * val[M12] * val[M23] + val[M00] * val[M31] * val[M12] * val[M23]
+				+ val[M10] * val[M01] * val[M32] * val[M23] - val[M00] * val[M11] * val[M32] * val[M23]
+				- val[M20] * val[M11] * val[M02] * val[M33] + val[M10] * val[M21] * val[M02] * val[M33]
+				+ val[M20] * val[M01] * val[M12] * val[M33] - val[M00] * val[M21] * val[M12] * val[M33]
+				- val[M10] * val[M01] * val[M22] * val[M33] + val[M00] * val[M11] * val[M22] * val[M33];
 		if (l_det == 0f) {
 			throw new LSysException("non-invertible matrix");
 		}
 		float inv_det = 1.0f / l_det;
-		tmp[M00] = val[M12] * val[M23] * val[M31] - val[M13] * val[M22]
-				* val[M31] + val[M13] * val[M21] * val[M32] - val[M11]
-				* val[M23] * val[M32] - val[M12] * val[M21] * val[M33]
-				+ val[M11] * val[M22] * val[M33];
-		tmp[M01] = val[M03] * val[M22] * val[M31] - val[M02] * val[M23]
-				* val[M31] - val[M03] * val[M21] * val[M32] + val[M01]
-				* val[M23] * val[M32] + val[M02] * val[M21] * val[M33]
-				- val[M01] * val[M22] * val[M33];
-		tmp[M02] = val[M02] * val[M13] * val[M31] - val[M03] * val[M12]
-				* val[M31] + val[M03] * val[M11] * val[M32] - val[M01]
-				* val[M13] * val[M32] - val[M02] * val[M11] * val[M33]
-				+ val[M01] * val[M12] * val[M33];
-		tmp[M03] = val[M03] * val[M12] * val[M21] - val[M02] * val[M13]
-				* val[M21] - val[M03] * val[M11] * val[M22] + val[M01]
-				* val[M13] * val[M22] + val[M02] * val[M11] * val[M23]
-				- val[M01] * val[M12] * val[M23];
-		tmp[M10] = val[M13] * val[M22] * val[M30] - val[M12] * val[M23]
-				* val[M30] - val[M13] * val[M20] * val[M32] + val[M10]
-				* val[M23] * val[M32] + val[M12] * val[M20] * val[M33]
-				- val[M10] * val[M22] * val[M33];
-		tmp[M11] = val[M02] * val[M23] * val[M30] - val[M03] * val[M22]
-				* val[M30] + val[M03] * val[M20] * val[M32] - val[M00]
-				* val[M23] * val[M32] - val[M02] * val[M20] * val[M33]
-				+ val[M00] * val[M22] * val[M33];
-		tmp[M12] = val[M03] * val[M12] * val[M30] - val[M02] * val[M13]
-				* val[M30] - val[M03] * val[M10] * val[M32] + val[M00]
-				* val[M13] * val[M32] + val[M02] * val[M10] * val[M33]
-				- val[M00] * val[M12] * val[M33];
-		tmp[M13] = val[M02] * val[M13] * val[M20] - val[M03] * val[M12]
-				* val[M20] + val[M03] * val[M10] * val[M22] - val[M00]
-				* val[M13] * val[M22] - val[M02] * val[M10] * val[M23]
-				+ val[M00] * val[M12] * val[M23];
-		tmp[M20] = val[M11] * val[M23] * val[M30] - val[M13] * val[M21]
-				* val[M30] + val[M13] * val[M20] * val[M31] - val[M10]
-				* val[M23] * val[M31] - val[M11] * val[M20] * val[M33]
-				+ val[M10] * val[M21] * val[M33];
-		tmp[M21] = val[M03] * val[M21] * val[M30] - val[M01] * val[M23]
-				* val[M30] - val[M03] * val[M20] * val[M31] + val[M00]
-				* val[M23] * val[M31] + val[M01] * val[M20] * val[M33]
-				- val[M00] * val[M21] * val[M33];
-		tmp[M22] = val[M01] * val[M13] * val[M30] - val[M03] * val[M11]
-				* val[M30] + val[M03] * val[M10] * val[M31] - val[M00]
-				* val[M13] * val[M31] - val[M01] * val[M10] * val[M33]
-				+ val[M00] * val[M11] * val[M33];
-		tmp[M23] = val[M03] * val[M11] * val[M20] - val[M01] * val[M13]
-				* val[M20] - val[M03] * val[M10] * val[M21] + val[M00]
-				* val[M13] * val[M21] + val[M01] * val[M10] * val[M23]
-				- val[M00] * val[M11] * val[M23];
-		tmp[M30] = val[M12] * val[M21] * val[M30] - val[M11] * val[M22]
-				* val[M30] - val[M12] * val[M20] * val[M31] + val[M10]
-				* val[M22] * val[M31] + val[M11] * val[M20] * val[M32]
-				- val[M10] * val[M21] * val[M32];
-		tmp[M31] = val[M01] * val[M22] * val[M30] - val[M02] * val[M21]
-				* val[M30] + val[M02] * val[M20] * val[M31] - val[M00]
-				* val[M22] * val[M31] - val[M01] * val[M20] * val[M32]
-				+ val[M00] * val[M21] * val[M32];
-		tmp[M32] = val[M02] * val[M11] * val[M30] - val[M01] * val[M12]
-				* val[M30] - val[M02] * val[M10] * val[M31] + val[M00]
-				* val[M12] * val[M31] + val[M01] * val[M10] * val[M32]
-				- val[M00] * val[M11] * val[M32];
-		tmp[M33] = val[M01] * val[M12] * val[M20] - val[M02] * val[M11]
-				* val[M20] + val[M02] * val[M10] * val[M21] - val[M00]
-				* val[M12] * val[M21] - val[M01] * val[M10] * val[M22]
-				+ val[M00] * val[M11] * val[M22];
+		tmp[M00] = val[M12] * val[M23] * val[M31] - val[M13] * val[M22] * val[M31] + val[M13] * val[M21] * val[M32]
+				- val[M11] * val[M23] * val[M32] - val[M12] * val[M21] * val[M33] + val[M11] * val[M22] * val[M33];
+		tmp[M01] = val[M03] * val[M22] * val[M31] - val[M02] * val[M23] * val[M31] - val[M03] * val[M21] * val[M32]
+				+ val[M01] * val[M23] * val[M32] + val[M02] * val[M21] * val[M33] - val[M01] * val[M22] * val[M33];
+		tmp[M02] = val[M02] * val[M13] * val[M31] - val[M03] * val[M12] * val[M31] + val[M03] * val[M11] * val[M32]
+				- val[M01] * val[M13] * val[M32] - val[M02] * val[M11] * val[M33] + val[M01] * val[M12] * val[M33];
+		tmp[M03] = val[M03] * val[M12] * val[M21] - val[M02] * val[M13] * val[M21] - val[M03] * val[M11] * val[M22]
+				+ val[M01] * val[M13] * val[M22] + val[M02] * val[M11] * val[M23] - val[M01] * val[M12] * val[M23];
+		tmp[M10] = val[M13] * val[M22] * val[M30] - val[M12] * val[M23] * val[M30] - val[M13] * val[M20] * val[M32]
+				+ val[M10] * val[M23] * val[M32] + val[M12] * val[M20] * val[M33] - val[M10] * val[M22] * val[M33];
+		tmp[M11] = val[M02] * val[M23] * val[M30] - val[M03] * val[M22] * val[M30] + val[M03] * val[M20] * val[M32]
+				- val[M00] * val[M23] * val[M32] - val[M02] * val[M20] * val[M33] + val[M00] * val[M22] * val[M33];
+		tmp[M12] = val[M03] * val[M12] * val[M30] - val[M02] * val[M13] * val[M30] - val[M03] * val[M10] * val[M32]
+				+ val[M00] * val[M13] * val[M32] + val[M02] * val[M10] * val[M33] - val[M00] * val[M12] * val[M33];
+		tmp[M13] = val[M02] * val[M13] * val[M20] - val[M03] * val[M12] * val[M20] + val[M03] * val[M10] * val[M22]
+				- val[M00] * val[M13] * val[M22] - val[M02] * val[M10] * val[M23] + val[M00] * val[M12] * val[M23];
+		tmp[M20] = val[M11] * val[M23] * val[M30] - val[M13] * val[M21] * val[M30] + val[M13] * val[M20] * val[M31]
+				- val[M10] * val[M23] * val[M31] - val[M11] * val[M20] * val[M33] + val[M10] * val[M21] * val[M33];
+		tmp[M21] = val[M03] * val[M21] * val[M30] - val[M01] * val[M23] * val[M30] - val[M03] * val[M20] * val[M31]
+				+ val[M00] * val[M23] * val[M31] + val[M01] * val[M20] * val[M33] - val[M00] * val[M21] * val[M33];
+		tmp[M22] = val[M01] * val[M13] * val[M30] - val[M03] * val[M11] * val[M30] + val[M03] * val[M10] * val[M31]
+				- val[M00] * val[M13] * val[M31] - val[M01] * val[M10] * val[M33] + val[M00] * val[M11] * val[M33];
+		tmp[M23] = val[M03] * val[M11] * val[M20] - val[M01] * val[M13] * val[M20] - val[M03] * val[M10] * val[M21]
+				+ val[M00] * val[M13] * val[M21] + val[M01] * val[M10] * val[M23] - val[M00] * val[M11] * val[M23];
+		tmp[M30] = val[M12] * val[M21] * val[M30] - val[M11] * val[M22] * val[M30] - val[M12] * val[M20] * val[M31]
+				+ val[M10] * val[M22] * val[M31] + val[M11] * val[M20] * val[M32] - val[M10] * val[M21] * val[M32];
+		tmp[M31] = val[M01] * val[M22] * val[M30] - val[M02] * val[M21] * val[M30] + val[M02] * val[M20] * val[M31]
+				- val[M00] * val[M22] * val[M31] - val[M01] * val[M20] * val[M32] + val[M00] * val[M21] * val[M32];
+		tmp[M32] = val[M02] * val[M11] * val[M30] - val[M01] * val[M12] * val[M30] - val[M02] * val[M10] * val[M31]
+				+ val[M00] * val[M12] * val[M31] + val[M01] * val[M10] * val[M32] - val[M00] * val[M11] * val[M32];
+		tmp[M33] = val[M01] * val[M12] * val[M20] - val[M02] * val[M11] * val[M20] + val[M02] * val[M10] * val[M21]
+				- val[M00] * val[M12] * val[M21] - val[M01] * val[M10] * val[M22] + val[M00] * val[M11] * val[M22];
 		val[M00] = tmp[M00] * inv_det;
 		val[M01] = tmp[M01] * inv_det;
 		val[M02] = tmp[M02] * inv_det;
@@ -455,36 +401,26 @@ public class Matrix4 implements Serializable, XY {
 	}
 
 	public float det() {
-		return val[M30] * val[M21] * val[M12] * val[M03] - val[M20] * val[M31]
-				* val[M12] * val[M03] - val[M30] * val[M11] * val[M22]
-				* val[M03] + val[M10] * val[M31] * val[M22] * val[M03]
-				+ val[M20] * val[M11] * val[M32] * val[M03] - val[M10]
-				* val[M21] * val[M32] * val[M03] - val[M30] * val[M21]
-				* val[M02] * val[M13] + val[M20] * val[M31] * val[M02]
-				* val[M13] + val[M30] * val[M01] * val[M22] * val[M13]
-				- val[M00] * val[M31] * val[M22] * val[M13] - val[M20]
-				* val[M01] * val[M32] * val[M13] + val[M00] * val[M21]
-				* val[M32] * val[M13] + val[M30] * val[M11] * val[M02]
-				* val[M23] - val[M10] * val[M31] * val[M02] * val[M23]
-				- val[M30] * val[M01] * val[M12] * val[M23] + val[M00]
-				* val[M31] * val[M12] * val[M23] + val[M10] * val[M01]
-				* val[M32] * val[M23] - val[M00] * val[M11] * val[M32]
-				* val[M23] - val[M20] * val[M11] * val[M02] * val[M33]
-				+ val[M10] * val[M21] * val[M02] * val[M33] + val[M20]
-				* val[M01] * val[M12] * val[M33] - val[M00] * val[M21]
-				* val[M12] * val[M33] - val[M10] * val[M01] * val[M22]
-				* val[M33] + val[M00] * val[M11] * val[M22] * val[M33];
+		return val[M30] * val[M21] * val[M12] * val[M03] - val[M20] * val[M31] * val[M12] * val[M03]
+				- val[M30] * val[M11] * val[M22] * val[M03] + val[M10] * val[M31] * val[M22] * val[M03]
+				+ val[M20] * val[M11] * val[M32] * val[M03] - val[M10] * val[M21] * val[M32] * val[M03]
+				- val[M30] * val[M21] * val[M02] * val[M13] + val[M20] * val[M31] * val[M02] * val[M13]
+				+ val[M30] * val[M01] * val[M22] * val[M13] - val[M00] * val[M31] * val[M22] * val[M13]
+				- val[M20] * val[M01] * val[M32] * val[M13] + val[M00] * val[M21] * val[M32] * val[M13]
+				+ val[M30] * val[M11] * val[M02] * val[M23] - val[M10] * val[M31] * val[M02] * val[M23]
+				- val[M30] * val[M01] * val[M12] * val[M23] + val[M00] * val[M31] * val[M12] * val[M23]
+				+ val[M10] * val[M01] * val[M32] * val[M23] - val[M00] * val[M11] * val[M32] * val[M23]
+				- val[M20] * val[M11] * val[M02] * val[M33] + val[M10] * val[M21] * val[M02] * val[M33]
+				+ val[M20] * val[M01] * val[M12] * val[M33] - val[M00] * val[M21] * val[M12] * val[M33]
+				- val[M10] * val[M01] * val[M22] * val[M33] + val[M00] * val[M11] * val[M22] * val[M33];
 	}
 
 	public float det3x3() {
-		return val[M00] * val[M11] * val[M22] + val[M01] * val[M12] * val[M20]
-				+ val[M02] * val[M10] * val[M21] - val[M00] * val[M12]
-				* val[M21] - val[M01] * val[M10] * val[M22] - val[M02]
-				* val[M11] * val[M20];
+		return val[M00] * val[M11] * val[M22] + val[M01] * val[M12] * val[M20] + val[M02] * val[M10] * val[M21]
+				- val[M00] * val[M12] * val[M21] - val[M01] * val[M10] * val[M22] - val[M02] * val[M11] * val[M20];
 	}
 
-	public Matrix4 setToProjection(float near, float far, float fovy,
-			float aspectRatio) {
+	public Matrix4 setToProjection(float near, float far, float fovy, float aspectRatio) {
 
 		float l_fd = (1f / MathUtils.tan(fovy * MathUtils.DEG_TO_RAD) / 2f);
 		float l_a1 = (far + near) / (near - far);
@@ -513,15 +449,13 @@ public class Matrix4 implements Serializable, XY {
 		setToOrtho(x, x + width, y + height, y, 1f, -1f);
 		return this;
 	}
-	
-	public Matrix4 setToOrtho2D(float x, float y, float width, float height,
-			float near, float far) {
+
+	public Matrix4 setToOrtho2D(float x, float y, float width, float height, float near, float far) {
 		setToOrtho(x, x + width, y + height, y, near, far);
 		return this;
 	}
 
-	public Matrix4 setToOrtho(float left, float right, float bottom, float top,
-			float near, float far) {
+	public Matrix4 setToOrtho(float left, float right, float bottom, float top, float near, float far) {
 
 		float x_orth = 2 / (right - left);
 		float y_orth = 2 / (top - bottom);
@@ -581,8 +515,7 @@ public class Matrix4 implements Serializable, XY {
 		return this;
 	}
 
-	public Matrix4 setToTranslationAndScaling(Vector3f translation,
-			Vector3f scaling) {
+	public Matrix4 setToTranslationAndScaling(Vector3f translation, Vector3f scaling) {
 		idt();
 		val[M03] = translation.x;
 		val[M13] = translation.y;
@@ -593,9 +526,8 @@ public class Matrix4 implements Serializable, XY {
 		return this;
 	}
 
-	public Matrix4 setToTranslationAndScaling(float translationX,
-			float translationY, float translationZ, float scalingX,
-			float scalingY, float scalingZ) {
+	public Matrix4 setToTranslationAndScaling(float translationX, float translationY, float translationZ,
+			float scalingX, float scalingY, float scalingZ) {
 		idt();
 		val[M03] = translationX;
 		val[M13] = translationY;
@@ -625,8 +557,7 @@ public class Matrix4 implements Serializable, XY {
 		return set(quat.setFromAxisRad(axis, radians));
 	}
 
-	public Matrix4 setToRotation(float axisX, float axisY, float axisZ,
-			float degrees) {
+	public Matrix4 setToRotation(float axisX, float axisY, float axisZ, float degrees) {
 		if (degrees == 0) {
 			idt();
 			return this;
@@ -634,8 +565,7 @@ public class Matrix4 implements Serializable, XY {
 		return set(quat.setFromAxis(axisX, axisY, axisZ, degrees));
 	}
 
-	public Matrix4 setToRotationRad(float axisX, float axisY, float axisZ,
-			float radians) {
+	public Matrix4 setToRotationRad(float axisX, float axisY, float axisZ, float radians) {
 		if (radians == 0) {
 			idt();
 			return this;
@@ -647,8 +577,8 @@ public class Matrix4 implements Serializable, XY {
 		return set(quat.setFromCross(v1, v2));
 	}
 
-	public Matrix4 setToRotation(final float x1, final float y1,
-			final float z1, final float x2, final float y2, final float z2) {
+	public Matrix4 setToRotation(final float x1, final float y1, final float z1, final float x2, final float y2,
+			final float z2) {
 		return set(quat.setFromCross(x1, y1, z1, x2, y2, z2));
 	}
 
@@ -719,7 +649,7 @@ public class Matrix4 implements Serializable, XY {
 		this.set(right, tmpUp, tmpForward.scaleSelf(-1), position);
 		return this;
 	}
-	
+
 	public Matrix4 lerp(Matrix4 matrix, float alpha) {
 		for (int i = 0; i < 16; i++)
 			this.val[i] = this.val[i] * (1 - alpha) + matrix.val[i] * alpha;
@@ -864,36 +794,33 @@ public class Matrix4 implements Serializable, XY {
 	}
 
 	public float getScaleXSquared() {
-		return val[Matrix4.M00] * val[Matrix4.M00] + val[Matrix4.M01]
-				* val[Matrix4.M01] + val[Matrix4.M02] * val[Matrix4.M02];
+		return val[Matrix4.M00] * val[Matrix4.M00] + val[Matrix4.M01] * val[Matrix4.M01]
+				+ val[Matrix4.M02] * val[Matrix4.M02];
 	}
 
 	public float getScaleYSquared() {
-		return val[Matrix4.M10] * val[Matrix4.M10] + val[Matrix4.M11]
-				* val[Matrix4.M11] + val[Matrix4.M12] * val[Matrix4.M12];
+		return val[Matrix4.M10] * val[Matrix4.M10] + val[Matrix4.M11] * val[Matrix4.M11]
+				+ val[Matrix4.M12] * val[Matrix4.M12];
 	}
 
 	public float getScaleZSquared() {
-		return val[Matrix4.M20] * val[Matrix4.M20] + val[Matrix4.M21]
-				* val[Matrix4.M21] + val[Matrix4.M22] * val[Matrix4.M22];
+		return val[Matrix4.M20] * val[Matrix4.M20] + val[Matrix4.M21] * val[Matrix4.M21]
+				+ val[Matrix4.M22] * val[Matrix4.M22];
 	}
 
 	public float getScaleX() {
-		return (MathUtils.isZero(val[Matrix4.M01]) && MathUtils
-				.isZero(val[Matrix4.M02])) ? MathUtils.abs(val[Matrix4.M00])
-				: MathUtils.sqrt(getScaleXSquared());
+		return (MathUtils.isZero(val[Matrix4.M01]) && MathUtils.isZero(val[Matrix4.M02]))
+				? MathUtils.abs(val[Matrix4.M00]) : MathUtils.sqrt(getScaleXSquared());
 	}
 
 	public float getScaleY() {
-		return (MathUtils.isZero(val[Matrix4.M10]) && MathUtils
-				.isZero(val[Matrix4.M12])) ? MathUtils.abs(val[Matrix4.M11])
-				: MathUtils.sqrt(getScaleYSquared());
+		return (MathUtils.isZero(val[Matrix4.M10]) && MathUtils.isZero(val[Matrix4.M12]))
+				? MathUtils.abs(val[Matrix4.M11]) : MathUtils.sqrt(getScaleYSquared());
 	}
 
 	public float getScaleZ() {
-		return (MathUtils.isZero(val[Matrix4.M20]) && MathUtils
-				.isZero(val[Matrix4.M21])) ? MathUtils.abs(val[Matrix4.M22])
-				: MathUtils.sqrt(getScaleZSquared());
+		return (MathUtils.isZero(val[Matrix4.M20]) && MathUtils.isZero(val[Matrix4.M21]))
+				? MathUtils.abs(val[Matrix4.M22]) : MathUtils.sqrt(getScaleZSquared());
 	}
 
 	public Vector3f getScale(Vector3f scale) {
@@ -954,8 +881,7 @@ public class Matrix4 implements Serializable, XY {
 		return rotate(quat);
 	}
 
-	public Matrix4 rotateRad(float axisX, float axisY, float axisZ,
-			float radians) {
+	public Matrix4 rotateRad(float axisX, float axisY, float axisZ, float radians) {
 		if (radians == 0)
 			return this;
 		quat.setFromAxisRad(axisX, axisY, axisZ, radians);
@@ -1058,38 +984,22 @@ public class Matrix4 implements Serializable, XY {
 		float m23 = 0;
 		float m33 = 1;
 
-		float nm00 = val[M00] * m00 + val[M01] * m10 + val[M02] * m20
-				+ val[M03] * m30;
-		float nm01 = val[M00] * m01 + val[M01] * m11 + val[M02] * m21
-				+ val[M03] * m31;
-		float nm02 = val[M00] * m02 + val[M01] * m12 + val[M02] * m22
-				+ val[M03] * m32;
-		float nm03 = val[M00] * m03 + val[M01] * m13 + val[M02] * m23
-				+ val[M03] * m33;
-		float nm10 = val[M10] * m00 + val[M11] * m10 + val[M12] * m20
-				+ val[M13] * m30;
-		float nm11 = val[M10] * m01 + val[M11] * m11 + val[M12] * m21
-				+ val[M13] * m31;
-		float nm12 = val[M10] * m02 + val[M11] * m12 + val[M12] * m22
-				+ val[M13] * m32;
-		float nm13 = val[M10] * m03 + val[M11] * m13 + val[M12] * m23
-				+ val[M13] * m33;
-		float nm20 = val[M20] * m00 + val[M21] * m10 + val[M22] * m20
-				+ val[M23] * m30;
-		float nm21 = val[M20] * m01 + val[M21] * m11 + val[M22] * m21
-				+ val[M23] * m31;
-		float nm22 = val[M20] * m02 + val[M21] * m12 + val[M22] * m22
-				+ val[M23] * m32;
-		float nm23 = val[M20] * m03 + val[M21] * m13 + val[M22] * m23
-				+ val[M23] * m33;
-		float nm30 = val[M30] * m00 + val[M31] * m10 + val[M32] * m20
-				+ val[M33] * m30;
-		float nm31 = val[M30] * m01 + val[M31] * m11 + val[M32] * m21
-				+ val[M33] * m31;
-		float nm32 = val[M30] * m02 + val[M31] * m12 + val[M32] * m22
-				+ val[M33] * m32;
-		float nm33 = val[M30] * m03 + val[M31] * m13 + val[M32] * m23
-				+ val[M33] * m33;
+		float nm00 = val[M00] * m00 + val[M01] * m10 + val[M02] * m20 + val[M03] * m30;
+		float nm01 = val[M00] * m01 + val[M01] * m11 + val[M02] * m21 + val[M03] * m31;
+		float nm02 = val[M00] * m02 + val[M01] * m12 + val[M02] * m22 + val[M03] * m32;
+		float nm03 = val[M00] * m03 + val[M01] * m13 + val[M02] * m23 + val[M03] * m33;
+		float nm10 = val[M10] * m00 + val[M11] * m10 + val[M12] * m20 + val[M13] * m30;
+		float nm11 = val[M10] * m01 + val[M11] * m11 + val[M12] * m21 + val[M13] * m31;
+		float nm12 = val[M10] * m02 + val[M11] * m12 + val[M12] * m22 + val[M13] * m32;
+		float nm13 = val[M10] * m03 + val[M11] * m13 + val[M12] * m23 + val[M13] * m33;
+		float nm20 = val[M20] * m00 + val[M21] * m10 + val[M22] * m20 + val[M23] * m30;
+		float nm21 = val[M20] * m01 + val[M21] * m11 + val[M22] * m21 + val[M23] * m31;
+		float nm22 = val[M20] * m02 + val[M21] * m12 + val[M22] * m22 + val[M23] * m32;
+		float nm23 = val[M20] * m03 + val[M21] * m13 + val[M22] * m23 + val[M23] * m33;
+		float nm30 = val[M30] * m00 + val[M31] * m10 + val[M32] * m20 + val[M33] * m30;
+		float nm31 = val[M30] * m01 + val[M31] * m11 + val[M32] * m21 + val[M33] * m31;
+		float nm32 = val[M30] * m02 + val[M31] * m12 + val[M32] * m22 + val[M33] * m32;
+		float nm33 = val[M30] * m03 + val[M31] * m13 + val[M32] * m23 + val[M33] * m33;
 
 		Matrix4 m = new Matrix4();
 
@@ -1113,6 +1023,29 @@ public class Matrix4 implements Serializable, XY {
 		return m;
 	}
 
+	public boolean equalsAffine(Affine2f affine) {
+		int count = 0;
+		if (affine.m00 == val[M00]) {
+			count++;
+		}
+		if (affine.m01 == val[M01]) {
+			count++;
+		}
+		if (affine.m10 == val[M10]) {
+			count++;
+		}
+		if (affine.m11 == val[M11]) {
+			count++;
+		}
+		if (affine.tx == val[M03]) {
+			count++;
+		}
+		if (affine.ty == val[M13]) {
+			count++;
+		}
+		return count == 6;
+	}
+
 	public Matrix4 thisCombine(Affine2f affine) {
 
 		final float m00 = affine.m00;
@@ -1132,38 +1065,22 @@ public class Matrix4 implements Serializable, XY {
 		final float m23 = 0;
 		final float m33 = 1;
 
-		final float nm00 = val[M00] * m00 + val[M01] * m10 + val[M02] * m20
-				+ val[M03] * m30;
-		final float nm01 = val[M00] * m01 + val[M01] * m11 + val[M02] * m21
-				+ val[M03] * m31;
-		final float nm02 = val[M00] * m02 + val[M01] * m12 + val[M02] * m22
-				+ val[M03] * m32;
-		final float nm03 = val[M00] * m03 + val[M01] * m13 + val[M02] * m23
-				+ val[M03] * m33;
-		final float nm10 = val[M10] * m00 + val[M11] * m10 + val[M12] * m20
-				+ val[M13] * m30;
-		final float nm11 = val[M10] * m01 + val[M11] * m11 + val[M12] * m21
-				+ val[M13] * m31;
-		final float nm12 = val[M10] * m02 + val[M11] * m12 + val[M12] * m22
-				+ val[M13] * m32;
-		final float nm13 = val[M10] * m03 + val[M11] * m13 + val[M12] * m23
-				+ val[M13] * m33;
-		final float nm20 = val[M20] * m00 + val[M21] * m10 + val[M22] * m20
-				+ val[M23] * m30;
-		final float nm21 = val[M20] * m01 + val[M21] * m11 + val[M22] * m21
-				+ val[M23] * m31;
-		final float nm22 = val[M20] * m02 + val[M21] * m12 + val[M22] * m22
-				+ val[M23] * m32;
-		final float nm23 = val[M20] * m03 + val[M21] * m13 + val[M22] * m23
-				+ val[M23] * m33;
-		final float nm30 = val[M30] * m00 + val[M31] * m10 + val[M32] * m20
-				+ val[M33] * m30;
-		final float nm31 = val[M30] * m01 + val[M31] * m11 + val[M32] * m21
-				+ val[M33] * m31;
-		final float nm32 = val[M30] * m02 + val[M31] * m12 + val[M32] * m22
-				+ val[M33] * m32;
-		final float nm33 = val[M30] * m03 + val[M31] * m13 + val[M32] * m23
-				+ val[M33] * m33;
+		final float nm00 = val[M00] * m00 + val[M01] * m10 + val[M02] * m20 + val[M03] * m30;
+		final float nm01 = val[M00] * m01 + val[M01] * m11 + val[M02] * m21 + val[M03] * m31;
+		final float nm02 = val[M00] * m02 + val[M01] * m12 + val[M02] * m22 + val[M03] * m32;
+		final float nm03 = val[M00] * m03 + val[M01] * m13 + val[M02] * m23 + val[M03] * m33;
+		final float nm10 = val[M10] * m00 + val[M11] * m10 + val[M12] * m20 + val[M13] * m30;
+		final float nm11 = val[M10] * m01 + val[M11] * m11 + val[M12] * m21 + val[M13] * m31;
+		final float nm12 = val[M10] * m02 + val[M11] * m12 + val[M12] * m22 + val[M13] * m32;
+		final float nm13 = val[M10] * m03 + val[M11] * m13 + val[M12] * m23 + val[M13] * m33;
+		final float nm20 = val[M20] * m00 + val[M21] * m10 + val[M22] * m20 + val[M23] * m30;
+		final float nm21 = val[M20] * m01 + val[M21] * m11 + val[M22] * m21 + val[M23] * m31;
+		final float nm22 = val[M20] * m02 + val[M21] * m12 + val[M22] * m22 + val[M23] * m32;
+		final float nm23 = val[M20] * m03 + val[M21] * m13 + val[M22] * m23 + val[M23] * m33;
+		final float nm30 = val[M30] * m00 + val[M31] * m10 + val[M32] * m20 + val[M33] * m30;
+		final float nm31 = val[M30] * m01 + val[M31] * m11 + val[M32] * m21 + val[M33] * m31;
+		final float nm32 = val[M30] * m02 + val[M31] * m12 + val[M32] * m22 + val[M33] * m32;
+		final float nm33 = val[M30] * m03 + val[M31] * m13 + val[M32] * m23 + val[M33] * m33;
 
 		this.val[M00] = nm00;
 		this.val[M10] = nm10;
@@ -1186,38 +1103,38 @@ public class Matrix4 implements Serializable, XY {
 	}
 
 	public static Matrix4 newCombine(Matrix4 m1, Matrix4 m2) {
-		float m00 = m1.val[M00] * m2.val[M00] + m1.val[M01] * m2.val[M10]
-				+ m1.val[M02] * m2.val[M20] + m1.val[M03] * m2.val[M30];
-		float m01 = m1.val[M00] * m2.val[M01] + m1.val[M01] * m2.val[M11]
-				+ m1.val[M02] * m2.val[M21] + m1.val[M03] * m2.val[M31];
-		float m02 = m1.val[M00] * m2.val[M02] + m1.val[M01] * m2.val[M12]
-				+ m1.val[M02] * m2.val[M22] + m1.val[M03] * m2.val[M32];
-		float m03 = m1.val[M00] * m2.val[M03] + m1.val[M01] * m2.val[M13]
-				+ m1.val[M02] * m2.val[M23] + m1.val[M03] * m2.val[M33];
-		float m10 = m1.val[M10] * m2.val[M00] + m1.val[M11] * m2.val[M10]
-				+ m1.val[M12] * m2.val[M20] + m1.val[M13] * m2.val[M30];
-		float m11 = m1.val[M10] * m2.val[M01] + m1.val[M11] * m2.val[M11]
-				+ m1.val[M12] * m2.val[M21] + m1.val[M13] * m2.val[M31];
-		float m12 = m1.val[M10] * m2.val[M02] + m1.val[M11] * m2.val[M12]
-				+ m1.val[M12] * m2.val[M22] + m1.val[M13] * m2.val[M32];
-		float m13 = m1.val[M10] * m2.val[M03] + m1.val[M11] * m2.val[M13]
-				+ m1.val[M12] * m2.val[M23] + m1.val[M13] * m2.val[M33];
-		float m20 = m1.val[M20] * m2.val[M00] + m1.val[M21] * m2.val[M10]
-				+ m1.val[M22] * m2.val[M20] + m1.val[M23] * m2.val[M30];
-		float m21 = m1.val[M20] * m2.val[M01] + m1.val[M21] * m2.val[M11]
-				+ m1.val[M22] * m2.val[M21] + m1.val[M23] * m2.val[M31];
-		float m22 = m1.val[M20] * m2.val[M02] + m1.val[M21] * m2.val[M12]
-				+ m1.val[M22] * m2.val[M22] + m1.val[M23] * m2.val[M32];
-		float m23 = m1.val[M20] * m2.val[M03] + m1.val[M21] * m2.val[M13]
-				+ m1.val[M22] * m2.val[M23] + m1.val[M23] * m2.val[M33];
-		float m30 = m1.val[M30] * m2.val[M00] + m1.val[M31] * m2.val[M10]
-				+ m1.val[M32] * m2.val[M20] + m1.val[M33] * m2.val[M30];
-		float m31 = m1.val[M30] * m2.val[M01] + m1.val[M31] * m2.val[M11]
-				+ m1.val[M32] * m2.val[M21] + m1.val[M33] * m2.val[M31];
-		float m32 = m1.val[M30] * m2.val[M02] + m1.val[M31] * m2.val[M12]
-				+ m1.val[M32] * m2.val[M22] + m1.val[M33] * m2.val[M32];
-		float m33 = m1.val[M30] * m2.val[M03] + m1.val[M31] * m2.val[M13]
-				+ m1.val[M32] * m2.val[M23] + m1.val[M33] * m2.val[M33];
+		float m00 = m1.val[M00] * m2.val[M00] + m1.val[M01] * m2.val[M10] + m1.val[M02] * m2.val[M20]
+				+ m1.val[M03] * m2.val[M30];
+		float m01 = m1.val[M00] * m2.val[M01] + m1.val[M01] * m2.val[M11] + m1.val[M02] * m2.val[M21]
+				+ m1.val[M03] * m2.val[M31];
+		float m02 = m1.val[M00] * m2.val[M02] + m1.val[M01] * m2.val[M12] + m1.val[M02] * m2.val[M22]
+				+ m1.val[M03] * m2.val[M32];
+		float m03 = m1.val[M00] * m2.val[M03] + m1.val[M01] * m2.val[M13] + m1.val[M02] * m2.val[M23]
+				+ m1.val[M03] * m2.val[M33];
+		float m10 = m1.val[M10] * m2.val[M00] + m1.val[M11] * m2.val[M10] + m1.val[M12] * m2.val[M20]
+				+ m1.val[M13] * m2.val[M30];
+		float m11 = m1.val[M10] * m2.val[M01] + m1.val[M11] * m2.val[M11] + m1.val[M12] * m2.val[M21]
+				+ m1.val[M13] * m2.val[M31];
+		float m12 = m1.val[M10] * m2.val[M02] + m1.val[M11] * m2.val[M12] + m1.val[M12] * m2.val[M22]
+				+ m1.val[M13] * m2.val[M32];
+		float m13 = m1.val[M10] * m2.val[M03] + m1.val[M11] * m2.val[M13] + m1.val[M12] * m2.val[M23]
+				+ m1.val[M13] * m2.val[M33];
+		float m20 = m1.val[M20] * m2.val[M00] + m1.val[M21] * m2.val[M10] + m1.val[M22] * m2.val[M20]
+				+ m1.val[M23] * m2.val[M30];
+		float m21 = m1.val[M20] * m2.val[M01] + m1.val[M21] * m2.val[M11] + m1.val[M22] * m2.val[M21]
+				+ m1.val[M23] * m2.val[M31];
+		float m22 = m1.val[M20] * m2.val[M02] + m1.val[M21] * m2.val[M12] + m1.val[M22] * m2.val[M22]
+				+ m1.val[M23] * m2.val[M32];
+		float m23 = m1.val[M20] * m2.val[M03] + m1.val[M21] * m2.val[M13] + m1.val[M22] * m2.val[M23]
+				+ m1.val[M23] * m2.val[M33];
+		float m30 = m1.val[M30] * m2.val[M00] + m1.val[M31] * m2.val[M10] + m1.val[M32] * m2.val[M20]
+				+ m1.val[M33] * m2.val[M30];
+		float m31 = m1.val[M30] * m2.val[M01] + m1.val[M31] * m2.val[M11] + m1.val[M32] * m2.val[M21]
+				+ m1.val[M33] * m2.val[M31];
+		float m32 = m1.val[M30] * m2.val[M02] + m1.val[M31] * m2.val[M12] + m1.val[M32] * m2.val[M22]
+				+ m1.val[M33] * m2.val[M32];
+		float m33 = m1.val[M30] * m2.val[M03] + m1.val[M31] * m2.val[M13] + m1.val[M32] * m2.val[M23]
+				+ m1.val[M33] * m2.val[M33];
 
 		Matrix4 m = new Matrix4();
 
@@ -1284,20 +1201,11 @@ public class Matrix4 implements Serializable, XY {
 
 	@Override
 	public String toString() {
-			StringKeyValue builder = new StringKeyValue("Matrix4");
-			builder.newLine()
-			.addValue("[{0},{1},{2},{3}]")
-			.newLine()
-			.addValue("[{4},{5}.{6},{7}]")
-			.newLine()
-			.addValue("[{8},{9},{10},{11}]")
-			.newLine()
-			.addValue("[{12},{13},{14},{15}]")
-			.newLine();
-			return StringUtils.format(builder.toString(), val[M00], val[M01],val[M02], val[M03], 
-					val[M10], val[M11], val[M12], val[M13],
-					val[M20], val[M21], val[M22], val[M23], 
-					val[M30], val[M31],val[M32], val[M33]);
+		StringKeyValue builder = new StringKeyValue("Matrix4");
+		builder.newLine().addValue("[{0},{1},{2},{3}]").newLine().addValue("[{4},{5}.{6},{7}]").newLine()
+				.addValue("[{8},{9},{10},{11}]").newLine().addValue("[{12},{13},{14},{15}]").newLine();
+		return StringUtils.format(builder.toString(), val[M00], val[M01], val[M02], val[M03], val[M10], val[M11],
+				val[M12], val[M13], val[M20], val[M21], val[M22], val[M23], val[M30], val[M31], val[M32], val[M33]);
 	}
 
 }

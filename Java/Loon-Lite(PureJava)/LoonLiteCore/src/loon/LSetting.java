@@ -174,7 +174,7 @@ public class LSetting {
 	/**
 	 * 当前应用版本号
 	 */
-	public String version = LSystem.UNKOWN;
+	public String version = LSystem.UNKNOWN;
 
 	/**
 	 * 允许注销纹理(为false所有纹理都不被注销)

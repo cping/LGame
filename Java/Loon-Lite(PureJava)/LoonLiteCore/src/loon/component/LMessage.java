@@ -43,9 +43,15 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 
 	private long printTime, totalDuration;
 
+	private int tempColor;
+
 	private float dx, dy, dw, dh;
 
 	private Print print;
+
+	public LMessage(int width, int height) {
+		this(SkinManager.get().getMessageSkin().getFont(), 0, 0, width, height);
+	}
 
 	public LMessage(IFont font, int width, int height) {
 		this(font, 0, 0, width, height);
@@ -106,24 +112,28 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 		this.setLocked(true);
 	}
 
-	public void setWait(boolean flag) {
+	public LMessage setWait(boolean flag) {
 		print.setWait(flag);
+		return this;
 	}
 
 	public boolean isWait() {
 		return print.isWait();
 	}
 
-	public void complete() {
+	public LMessage complete() {
 		print.complete();
+		return this;
 	}
 
-	public void setLeftOffset(int left) {
+	public LMessage setLeftOffset(int left) {
 		print.setLeftOffset(left);
+		return this;
 	}
 
-	public void setTopOffset(int top) {
+	public LMessage setTopOffset(int top) {
 		print.setTopOffset(top);
+		return this;
 	}
 
 	public int getLeftOffset() {
@@ -138,24 +148,28 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 		return print.getMessageLength();
 	}
 
-	public void setMessageLength(int messageLength) {
+	public LMessage setMessageLength(int messageLength) {
 		print.setMessageLength(messageLength);
+		return this;
 	}
 
-	public void setTipIcon(String fileName) {
+	public LMessage setTipIcon(String fileName) {
 		setTipIcon(LSystem.loadTexture(fileName));
+		return this;
 	}
 
-	public void setTipIcon(LTexture icon) {
+	public LMessage setTipIcon(LTexture icon) {
 		if (icon != null) {
 			print.setCreeseIcon(icon);
 			setDisplayIconFlag(true);
 		}
+		return this;
 	}
 
-	public void setNotTipIcon() {
+	public LMessage setNotTipIcon() {
 		print.setCreeseIcon(null);
 		setDisplayIconFlag(false);
+		return this;
 	}
 
 	public LMessage setDisplayIconFlag(boolean flag) {
@@ -185,16 +199,18 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 		return this;
 	}
 
-	public void setEnglish(boolean e) {
+	public LMessage setEnglish(boolean e) {
 		print.setEnglish(true);
+		return this;
 	}
 
 	public boolean isEnglish() {
 		return print.isEnglish();
 	}
 
-	public void setDelay(long delay) {
+	public LMessage setDelay(long delay) {
 		this.totalDuration = (delay < 1 ? 1 : delay);
+		return this;
 	}
 
 	public long getDelay() {
@@ -263,14 +279,12 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 		}
 	}
 
-	private int tmpColor;
-
 	@Override
 	protected synchronized void createCustomUI(GLEx g, int x, int y, int w, int h) {
 		if (!isVisible()) {
 			return;
 		}
-		tmpColor = g.color();
+		tempColor = g.color();
 		print.draw(g, fontColor);
 		if (print.isComplete() && animation != null) {
 			if (animation.getSpriteImage() != null) {
@@ -281,7 +295,7 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 				g.setAlpha(alpha);
 			}
 		}
-		g.setColor(tmpColor);
+		g.setColor(tempColor);
 	}
 
 	@Override

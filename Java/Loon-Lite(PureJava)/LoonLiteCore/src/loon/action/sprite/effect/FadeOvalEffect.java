@@ -129,7 +129,6 @@ public class FadeOvalEffect extends Entity implements BaseEffect {
 			return;
 		}
 		if (this.elapsed > -1) {
-
 			int old = g.color();
 			int size = maxColorSize;
 			for (int i = size - 1; i >= 0; i--) {
@@ -140,7 +139,6 @@ public class FadeOvalEffect extends Entity implements BaseEffect {
 						w, h);
 			}
 			g.setColor(old);
-
 		}
 	}
 

@@ -21,16 +21,38 @@
 package loon.geom;
 
 import loon.LObject;
+import loon.LSystem;
+import loon.action.ActionBind;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 import loon.utils.StringKeyValue;
+import loon.utils.StringUtils;
 
-public class RectBox extends Shape implements BoxSize {
+public class RectBox extends Shape implements BoxSize, XYZW {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+
+	public final static RectBox at(String v) {
+		if (StringUtils.isEmpty(v)) {
+			return new RectBox();
+		}
+		String[] result = StringUtils.split(v, ',');
+		int len = result.length;
+		if (len > 3) {
+			try {
+				float x = Float.parseFloat(result[0].trim());
+				float y = Float.parseFloat(result[1].trim());
+				float width = Float.parseFloat(result[2].trim());
+				float height = Float.parseFloat(result[3].trim());
+				return new RectBox(x, y, width, height);
+			} catch (Exception ex) {
+			}
+		}
+		return new RectBox();
+	}
 
 	public final static RectBox at(int x, int y, int w, int h) {
 		return new RectBox(x, y, w, h);
@@ -40,16 +62,78 @@ public class RectBox extends Shape implements BoxSize {
 		return new RectBox(x, y, w, h);
 	}
 
+	public final static RectBox fromActor(ActionBind bind) {
+		return new RectBox(bind.getX(), bind.getY(), bind.getWidth(), bind.getHeight());
+	}
+
+	public final static RectBox inflate(RectBox src, int xScale, int yScale) {
+		float destWidth = src.width + xScale;
+		float destHeight = src.height + yScale;
+		float destX = src.x - xScale / 2;
+		float destY = src.y - yScale / 2;
+		return new RectBox(destX, destY, destWidth, destHeight);
+	}
+
+	public final static RectBox intersect(RectBox src1, RectBox src2, RectBox dest) {
+		if (dest == null) {
+			dest = new RectBox();
+		}
+		float x1 = MathUtils.max(src1.getMinX(), src2.getMinX());
+		float y1 = MathUtils.max(src1.getMinY(), src2.getMinY());
+		float x2 = MathUtils.min(src1.getMaxX(), src2.getMaxX());
+		float y2 = MathUtils.min(src1.getMaxY(), src2.getMaxY());
+		dest.setBounds(x1, y1, x2 - x1, y2 - y1);
+		return dest;
+	}
+
+	public final static RectBox getIntersection(RectBox a, RectBox b) {
+		float a_x = a.getX();
+		float a_r = a.getRight();
+		float a_y = a.getY();
+		float a_t = a.getBottom();
+		float b_x = b.getX();
+		float b_r = b.getRight();
+		float b_y = b.getY();
+		float b_t = b.getBottom();
+		float i_x = MathUtils.max(a_x, b_x);
+		float i_r = MathUtils.min(a_r, b_r);
+		float i_y = MathUtils.max(a_y, b_y);
+		float i_t = MathUtils.min(a_t, b_t);
+		return i_x < i_r && i_y < i_t ? new RectBox(i_x, i_y, i_r - i_x, i_t - i_y) : null;
+	}
+
+	public final static RectBox getIntersection(RectBox a, RectBox b, RectBox result) {
+		float a_x = a.getX();
+		float a_r = a.getRight();
+		float a_y = a.getY();
+		float a_t = a.getBottom();
+		float b_x = b.getX();
+		float b_r = b.getRight();
+		float b_y = b.getY();
+		float b_t = b.getBottom();
+		float i_x = MathUtils.max(a_x, b_x);
+		float i_r = MathUtils.min(a_r, b_r);
+		float i_y = MathUtils.max(a_y, b_y);
+		float i_t = MathUtils.min(a_t, b_t);
+		if (i_x < i_r && i_y < i_t) {
+			result.setBounds(i_x, i_y, i_r - i_x, i_t - i_y);
+			return result;
+		}
+		return null;
+	}
+
 	public int width;
 
 	public int height;
 
-	private int _ox, _oy, _ow, _oh;
-
-	private Matrix4 _matrix;
+	private Matrix4 _rectMatrix;
 
 	public RectBox() {
 		setBounds(0, 0, 0, 0);
+	}
+
+	public RectBox(int width, int height) {
+		setBounds(0, 0, width, height);
 	}
 
 	public RectBox(int x, int y, int width, int height) {
@@ -69,14 +153,18 @@ public class RectBox extends Shape implements BoxSize {
 	}
 
 	public RectBox offset(Vector2f offset) {
-		x += offset.x;
-		y += offset.y;
+		this.x += offset.x;
+		this.y += offset.y;
+		this.pointsDirty = true;
+		checkPoints();
 		return this;
 	}
 
 	public RectBox offset(int offsetX, int offsetY) {
-		x += offsetX;
-		y += offsetY;
+		this.x += offsetX;
+		this.y += offsetY;
+		this.pointsDirty = true;
+		checkPoints();
 		return this;
 	}
 
@@ -98,6 +186,9 @@ public class RectBox extends Shape implements BoxSize {
 	}
 
 	public RectBox setBounds(float x, float y, float width, float height) {
+		if (this.x == x && this.y == y && this.width == width && this.height == height) {
+			return this;
+		}
 		this.x = x;
 		this.y = y;
 		this.width = (int) width;
@@ -111,38 +202,77 @@ public class RectBox extends Shape implements BoxSize {
 		return this;
 	}
 
+	public RectBox set(BoxSize size) {
+		if (size == null) {
+			return this;
+		}
+		return setBounds(size.getX(), size.getY(), size.getWidth(), size.getHeight());
+	}
+
+	public RectBox set(float x, float y, float width, float height) {
+		return setBounds(x, y, width, height);
+	}
+
+	public Polygon getPolygon() {
+		this.checkPoints();
+		Polygon poly = new Polygon(this.points);
+		return poly;
+	}
+
 	public RectBox inflate(int horizontalValue, int verticalValue) {
 		this.x -= horizontalValue;
 		this.y -= verticalValue;
 		this.width += horizontalValue * 2;
 		this.height += verticalValue * 2;
+		this.minX = x;
+		this.minY = y;
+		this.maxX = x + width;
+		this.maxY = y + height;
+		this.pointsDirty = true;
+		this.checkPoints();
 		return this;
 	}
 
-	public RectBox setLocation(RectBox r) {
-		this.x = r.x;
-		this.y = r.y;
-		return this;
+	public RectBox setLocation(BoxSize r) {
+		if (r == null) {
+			return this;
+		}
+		return setLocation(r.getX(), r.getY());
+	}
+
+	public RectBox setLocation(XY r) {
+		if (r == null) {
+			return this;
+		}
+		return setLocation(r.getX(), r.getY());
 	}
 
 	public RectBox setLocation(Point r) {
-		this.x = r.x;
-		this.y = r.y;
+		if (r == null) {
+			return this;
+		}
+		return setLocation(r.x, r.y);
+	}
+
+	@Override
+	public RectBox setLocation(float x, float y) {
+		if (this.x == x && this.y == y) {
+			return this;
+		}
+		super.setLocation(x, y);
 		return this;
 	}
 
 	public RectBox setLocation(int x, int y) {
-		this.x = x;
-		this.y = y;
+		if (this.x == x && this.y == y) {
+			return this;
+		}
+		super.setLocation(x, y);
 		return this;
 	}
 
 	public RectBox grow(float h, float v) {
-		setX(getX() - h);
-		setY(getY() - v);
-		setWidth(getWidth() + (h * 2));
-		setHeight(getHeight() + (v * 2));
-		return this;
+		return setBounds(getX() - h, getY() - v, getWidth() + (h * 2), getHeight() + (v * 2));
 	}
 
 	public RectBox scaleGrow(float h, float v) {
@@ -157,10 +287,29 @@ public class RectBox extends Shape implements BoxSize {
 		}
 	}
 
-	public RectBox setSize(float width, float height) {
-		setWidth(width);
-		setHeight(height);
+	public RectBox setRotate(float r) {
+		if (r != this.rotation) {
+			this.rotation = r;
+			int[] rect = MathUtils.getLimit(x, y, width, height, rotation);
+			return setBounds(rect[0], rect[1], rect[2], rect[3]);
+		}
 		return this;
+	}
+
+	@Override
+	public Shape setRotation(float r, float x, float y) {
+		if (r != this.rotation) {
+			super.setRotation(r, x, y);
+			setBounds(minX, minY, (maxX - minX), (maxY - minY));
+		}
+		return this;
+	}
+
+	public RectBox setSize(float width, float height) {
+		if (this.width == width && this.height == height) {
+			return this;
+		}
+		return setBounds(this.x, this.y, width, height);
 	}
 
 	public boolean overlaps(RectBox rectangle) {
@@ -169,13 +318,10 @@ public class RectBox extends Shape implements BoxSize {
 	}
 
 	public Matrix4 getMatrix() {
-		if (_matrix == null) {
-			_matrix = new Matrix4();
+		if (_rectMatrix == null) {
+			_rectMatrix = new Matrix4();
 		}
-		if (this._ox != this.x || this._oy != this.y || this._ow != this.width || this._oh != this.height) {
-			return _matrix.setToOrtho2D(this.x, this.y, this.width, this.height);
-		}
-		return _matrix;
+		return _rectMatrix.setToOrtho2D(this.x, this.y, this.width, this.height);
 	}
 
 	public int x() {
@@ -212,6 +358,16 @@ public class RectBox extends Shape implements BoxSize {
 	@Override
 	public void setY(float y) {
 		this.y = y;
+	}
+
+	@Override
+	public float getZ() {
+		return getWidth();
+	}
+
+	@Override
+	public float getW() {
+		return getHeight();
 	}
 
 	public RectBox copy(RectBox other) {
@@ -338,42 +494,6 @@ public class RectBox extends Shape implements BoxSize {
 		return this;
 	}
 
-	public static final RectBox getIntersection(RectBox a, RectBox b) {
-		float a_x = a.getX();
-		float a_r = a.getRight();
-		float a_y = a.getY();
-		float a_t = a.getBottom();
-		float b_x = b.getX();
-		float b_r = b.getRight();
-		float b_y = b.getY();
-		float b_t = b.getBottom();
-		float i_x = MathUtils.max(a_x, b_x);
-		float i_r = MathUtils.min(a_r, b_r);
-		float i_y = MathUtils.max(a_y, b_y);
-		float i_t = MathUtils.min(a_t, b_t);
-		return i_x < i_r && i_y < i_t ? new RectBox(i_x, i_y, i_r - i_x, i_t - i_y) : null;
-	}
-
-	public static final RectBox getIntersection(RectBox a, RectBox b, RectBox result) {
-		float a_x = a.getX();
-		float a_r = a.getRight();
-		float a_y = a.getY();
-		float a_t = a.getBottom();
-		float b_x = b.getX();
-		float b_r = b.getRight();
-		float b_y = b.getY();
-		float b_t = b.getBottom();
-		float i_x = MathUtils.max(a_x, b_x);
-		float i_r = MathUtils.min(a_r, b_r);
-		float i_y = MathUtils.max(a_y, b_y);
-		float i_t = MathUtils.min(a_t, b_t);
-		if (i_x < i_r && i_y < i_t) {
-			result.setBounds(i_x, i_y, i_r - i_x, i_t - i_y);
-			return result;
-		}
-		return null;
-	}
-
 	public float[] toFloat() {
 		return new float[] { x, y, width, height };
 	}
@@ -430,7 +550,7 @@ public class RectBox extends Shape implements BoxSize {
 	 */
 	@Override
 	public boolean contains(float x, float y) {
-		return contains(x, y, 0, 0);
+		return contains(x, y, 1f, 1f);
 	}
 
 	/**
@@ -462,10 +582,10 @@ public class RectBox extends Shape implements BoxSize {
 	}
 
 	public boolean contains(Circle circle) {
-		float xmin = circle.x - circle.radius;
-		float xmax = xmin + 2f * circle.radius;
-		float ymin = circle.y - circle.radius;
-		float ymax = ymin + 2f * circle.radius;
+		float xmin = circle.x - circle.boundingCircleRadius;
+		float xmax = xmin + 2f * circle.boundingCircleRadius;
+		float ymin = circle.y - circle.boundingCircleRadius;
+		float ymax = ymin + 2f * circle.boundingCircleRadius;
 		return ((xmin > x && xmin < x + width) && (xmax > x && xmax < x + width))
 				&& ((ymin > y && ymin < y + height) && (ymax > y && ymax < y + height));
 	}
@@ -501,7 +621,6 @@ public class RectBox extends Shape implements BoxSize {
 	 * @param rect
 	 * @return
 	 */
-
 	public boolean intersects(RectBox rect) {
 		return intersects(rect.x, rect.y, rect.width, rect.height);
 	}
@@ -514,7 +633,20 @@ public class RectBox extends Shape implements BoxSize {
 	 * @return
 	 */
 	public boolean intersects(float x, float y) {
-		return intersects(0, 0, width, height);
+		return intersects(x, y, 1f, 1f);
+	}
+
+	/**
+	 * 判定矩形选框交集
+	 * 
+	 * @param xy
+	 * @return
+	 */
+	public boolean intersects(XY xy) {
+		if (xy == null) {
+			return false;
+		}
+		return intersects(xy.getX(), xy.getY());
 	}
 
 	/**
@@ -606,6 +738,7 @@ public class RectBox extends Shape implements BoxSize {
 		return this;
 	}
 
+	@Override
 	protected void createPoints() {
 
 		float useWidth = width;
@@ -632,6 +765,7 @@ public class RectBox extends Shape implements BoxSize {
 		calculateRadius();
 	}
 
+	@Override
 	public Shape transform(Matrix3 transform) {
 		checkPoints();
 		Polygon resultPolygon = new Polygon();
@@ -650,6 +784,8 @@ public class RectBox extends Shape implements BoxSize {
 	 */
 	public final RectBox modX(float xMod) {
 		x += xMod;
+		this.pointsDirty = true;
+		this.checkPoints();
 		return this;
 	}
 
@@ -660,6 +796,8 @@ public class RectBox extends Shape implements BoxSize {
 	 */
 	public final RectBox modY(float yMod) {
 		y += yMod;
+		this.pointsDirty = true;
+		this.checkPoints();
 		return this;
 	}
 
@@ -670,6 +808,8 @@ public class RectBox extends Shape implements BoxSize {
 	 */
 	public RectBox modWidth(float w) {
 		this.width += w;
+		this.pointsDirty = true;
+		this.checkPoints();
 		return this;
 	}
 
@@ -680,6 +820,8 @@ public class RectBox extends Shape implements BoxSize {
 	 */
 	public RectBox modHeight(float h) {
 		this.height += h;
+		this.pointsDirty = true;
+		this.checkPoints();
 		return this;
 	}
 
@@ -718,14 +860,6 @@ public class RectBox extends Shape implements BoxSize {
 		return dest;
 	}
 
-	public static final void intersect(RectBox src1, RectBox src2, RectBox dest) {
-		float x1 = MathUtils.max(src1.getMinX(), src2.getMinX());
-		float y1 = MathUtils.max(src1.getMinY(), src2.getMinY());
-		float x2 = MathUtils.min(src1.getMaxX(), src2.getMaxX());
-		float y2 = MathUtils.min(src1.getMaxY(), src2.getMaxY());
-		dest.setBounds(x1, y1, x2 - x1, y2 - y1);
-	}
-
 	public float maxX() {
 		return x() + width();
 	}
@@ -734,33 +868,36 @@ public class RectBox extends Shape implements BoxSize {
 		return y() + height();
 	}
 
+	@Override
 	public boolean isEmpty() {
 		return getWidth() <= 0 || height() <= 0;
 	}
 
 	public RectBox setEmpty() {
-		this.x = 0;
-		this.y = 0;
-		this.width = 0;
-		this.height = 0;
-		return this;
+		return this.setBounds(0f, 0f, 0f, 0f);
 	}
 
 	public RectBox offset(Point point) {
 		x += point.x;
 		y += point.y;
+		this.pointsDirty = true;
+		checkPoints();
 		return this;
 	}
 
 	public RectBox offset(PointF point) {
 		x += point.x;
 		y += point.y;
+		this.pointsDirty = true;
+		checkPoints();
 		return this;
 	}
 
 	public RectBox offset(PointI point) {
 		x += point.x;
 		y += point.y;
+		this.pointsDirty = true;
+		checkPoints();
 		return this;
 	}
 
@@ -861,6 +998,26 @@ public class RectBox extends Shape implements BoxSize {
 			ty2 = Integer.MAX_VALUE;
 		}
 		setBounds(tx1, ty1, tx2, ty2);
+		return this;
+	}
+
+	public float getAspectRatio() {
+		return (height == 0) ? MathUtils.NaN : (float) width / (float) height;
+	}
+
+	public float area() {
+		return this.width * this.height;
+	}
+
+	public float perimeter() {
+		return 2f * (this.width + this.height);
+	}
+
+	public RectBox random() {
+		this.x = MathUtils.random(0f, LSystem.viewSize.getWidth());
+		this.y = MathUtils.random(0f, LSystem.viewSize.getHeight());
+		this.width = MathUtils.random(0, LSystem.viewSize.getWidth());
+		this.height = MathUtils.random(0, LSystem.viewSize.getHeight());
 		return this;
 	}
 

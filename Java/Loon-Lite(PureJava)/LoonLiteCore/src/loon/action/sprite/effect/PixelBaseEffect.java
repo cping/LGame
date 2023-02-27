@@ -28,7 +28,9 @@ import loon.utils.TArray;
 import loon.utils.timer.LTimer;
 
 /**
- * 此像素非真像素,而是指'像素风格',实际是三角形纹理贴图效果……
+ * PixelBaseEffect效果包含一系列不需要图片的,也不必依赖Shader的,可以直接使用在任意游戏中的效果.
+ * 
+ * PS:此像素非真像素,而是指'像素风格',实际还是三角形纹理贴图效果……
  *
  */
 public abstract class PixelBaseEffect extends Entity {
@@ -90,11 +92,12 @@ public abstract class PixelBaseEffect extends Entity {
 	}
 
 	@Override
-	public void reset() {
+	public PixelBaseEffect reset() {
 		super.reset();
 		this.startLocation = new float[2];
 		this.targetLocation = new float[2];
 		this.frame = 0;
+		return this;
 	}
 
 	public void setEffectPosition(float x1, float y1, float x2, float y2) {
@@ -112,12 +115,12 @@ public abstract class PixelBaseEffect extends Entity {
 				for (int i = 0; i < size; i++) {
 					TriangleEffect te = ts[i];
 					if (te != null) {
-						_rotation = te.next();
+						_objectRotation = te.next();
 					}
 				}
 			}
 		}
-		return _rotation;
+		return _objectRotation;
 	}
 
 	@Override

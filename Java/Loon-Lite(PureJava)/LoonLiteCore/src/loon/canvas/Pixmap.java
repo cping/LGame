@@ -29,7 +29,6 @@ import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
 import loon.Support;
-import loon.canvas.NinePatchAbstract.Repeat;
 import loon.geom.Limit;
 import loon.geom.Polygon;
 import loon.geom.RectI;
@@ -40,6 +39,7 @@ import loon.utils.ArrayByte;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 import loon.utils.Scale;
+import loon.utils.StrBuilder;
 import loon.utils.TArray;
 
 /**
@@ -54,9 +54,11 @@ public class Pixmap extends Limit implements LRelease {
 
 	public final static int SRC_OVER = 2;
 
-	private int _composite = -1;
+	private Canvas _paintCanvas = null;
 
-	private Canvas tmpCanvas = null;
+	private Vector2f _pointLocation = new Vector2f();
+
+	private int _composite = -1;
 
 	protected Graphics getGraphics() {
 		if (LSystem.base() != null) {
@@ -72,32 +74,32 @@ public class Pixmap extends Limit implements LRelease {
 	public Image getImage(boolean scaleUpdate) {
 		Scale scale = LSystem.getScale();
 		if (scale.factor == 1f) {
-			if (tmpCanvas == null) {
-				tmpCanvas = getGraphics().createCanvas(getWidth(), getHeight());
+			if (_paintCanvas == null) {
+				_paintCanvas = getGraphics().createCanvas(getWidth(), getHeight());
 			}
 			if (_dirty) {
-				tmpCanvas.getImage().setPixmap(this);
+				_paintCanvas.image.setPixmap(this);
 			}
 		} else if (scaleUpdate) {
 			int newWidth = scale.scaledCeil(getWidth());
 			int newHeight = scale.scaledCeil(getHeight());
-			if (tmpCanvas == null) {
-				tmpCanvas = getGraphics().createCanvas(newWidth, newHeight);
+			if (_paintCanvas == null) {
+				_paintCanvas = getGraphics().createCanvas(newWidth, newHeight);
 			}
 			if (_dirty) {
-				tmpCanvas.getImage().setPixmap(Pixmap.getResize(this, newWidth, newHeight));
+				_paintCanvas.image.setPixmap(Pixmap.getResize(this, newWidth, newHeight));
 			}
 		} else {
 			int newWidth = scale.invScaledCeil(getWidth());
 			int newHeight = scale.invScaledCeil(getHeight());
-			if (tmpCanvas == null) {
-				tmpCanvas = getGraphics().createCanvas(newWidth, newHeight);
+			if (_paintCanvas == null) {
+				_paintCanvas = getGraphics().createCanvas(newWidth, newHeight);
 			}
 			if (_dirty) {
-				tmpCanvas.getImage().setPixmap(this);
+				_paintCanvas.image.setPixmap(this);
 			}
 		}
-		return tmpCanvas.getImage();
+		return _paintCanvas.image;
 	}
 
 	public LTexture texture() {
@@ -106,24 +108,6 @@ public class Pixmap extends Limit implements LRelease {
 
 	public LTexture toTexture() {
 		return getImage().texture();
-	}
-
-	public static Pixmap createImageNicePatch(String path, int x, int y, int w, int h) {
-		return createImageNicePatch(path, null, x, y, w, h);
-	}
-
-	public static Pixmap createImageNicePatch(String path, Repeat repeat, int x, int y, int w, int h) {
-		final PixmapNinePatch np = new PixmapNinePatch(Image.createImage(path).getPixmap(), repeat);
-		Pixmap c = Pixmap.createImage(w, h);
-		np.drawNinePatch(c, x, y, w, h);
-		int[] pixels = c.getData();
-		for (int i = 0; i < pixels.length; i++) {
-			if (pixels[i] == LColor.TRANSPARENT) {
-				pixels[i] = 0;
-			}
-		}
-		c.setData(pixels);
-		return c;
 	}
 
 	public static Pixmap createImage(int w, int h) {
@@ -191,7 +175,7 @@ public class Pixmap extends Limit implements LRelease {
 
 	private int[] _drawPixels;
 
-	private int _translateX, _translateY, _width, _height, size;
+	private int _translateX, _translateY, _width, _height, _length;
 
 	private LColor xorColor;
 
@@ -206,6 +190,10 @@ public class Pixmap extends Limit implements LRelease {
 	private RectI defClip;
 
 	private RectI clip;
+
+	public Pixmap(int w, int h) {
+		this(w, h, true);
+	}
 
 	public Pixmap(int w, int h, boolean hasAlpha) {
 		this.set(new int[w * h], w, h, hasAlpha);
@@ -224,7 +212,7 @@ public class Pixmap extends Limit implements LRelease {
 		this._height = h;
 		this._drawPixels = pixelsData;
 		this._hasAlpha = hasAlpha;
-		this.size = _drawPixels.length;
+		this._length = _drawPixels.length;
 		if (hasAlpha) {
 			this._transparent = 0;
 		} else {
@@ -245,10 +233,14 @@ public class Pixmap extends Limit implements LRelease {
 		if (_isClosed) {
 			return this;
 		}
-		for (int i = 0; i < this.size; i++) {
+		for (int i = 0; i < this._length; i++) {
 			drawPoint(_drawPixels, i, c);
 		}
 		return this;
+	}
+
+	public Pixmap clearDraw(LColor color) {
+		return clearDraw(color.getARGB());
 	}
 
 	public Pixmap setBackground(int color) {
@@ -269,7 +261,7 @@ public class Pixmap extends Limit implements LRelease {
 	 *
 	 */
 	public Pixmap clear() {
-		for (int i = 0; i < size; i++) {
+		for (int i = 0; i < _length; i++) {
 			_drawPixels[i] = 0;
 		}
 		_dirty = true;
@@ -292,7 +284,7 @@ public class Pixmap extends Limit implements LRelease {
 	 * @return
 	 */
 	public Pixmap filter(int src, int dst) {
-		for (int i = 0; i < size; i++) {
+		for (int i = 0; i < _length; i++) {
 			if (_drawPixels[i] == src) {
 				_drawPixels[i] = dst;
 			}
@@ -340,7 +332,7 @@ public class Pixmap extends Limit implements LRelease {
 	 */
 	public Pixmap greyScale(float mix) {
 		mix = MathUtils.min(MathUtils.max(mix, 0f), 1f);
-		for (int i = 0; i < size; i++) {
+		for (int i = 0; i < _length; i++) {
 			int color = _drawPixels[i];
 			if (color != LColor.TRANSPARENT) {
 				int[] rgba = LColor.getRGBAs(color);
@@ -375,7 +367,7 @@ public class Pixmap extends Limit implements LRelease {
 	 */
 	public Pixmap threshold(int threshold) {
 		threshold = (threshold | 127);
-		for (int i = 0; i < size; i++) {
+		for (int i = 0; i < _length; i++) {
 			int color = _drawPixels[i];
 			if (color != LColor.TRANSPARENT) {
 				int[] rgba = LColor.getRGBAs(color);
@@ -400,7 +392,7 @@ public class Pixmap extends Limit implements LRelease {
 	 */
 	public Pixmap invert(float mix) {
 		mix = MathUtils.min(MathUtils.max(mix, 0f), 1f);
-		for (int i = 0; i < size; i++) {
+		for (int i = 0; i < _length; i++) {
 			int color = _drawPixels[i];
 			if (color != LColor.TRANSPARENT) {
 				int[] rgba = LColor.getRGBAs(color);
@@ -425,7 +417,7 @@ public class Pixmap extends Limit implements LRelease {
 	 */
 	public Pixmap sepia(float mix) {
 		mix = MathUtils.min(MathUtils.max(mix, 0f), 1f);
-		for (int i = 0; i < size; i++) {
+		for (int i = 0; i < _length; i++) {
 			int color = _drawPixels[i];
 			if (color != LColor.TRANSPARENT) {
 				int[] rgba = LColor.getRGBAs(color);
@@ -437,6 +429,33 @@ public class Pixmap extends Limit implements LRelease {
 				float ng = (0.349f * r + 0.686f * g + 0.168f * b) * mix + g * (1f - mix);
 				float nb = (0.272f * r + 0.534f * g + 0.131f * b) * mix + b * (1f - mix);
 				_drawPixels[i] = LColor.argb(a, nr, ng, nb);
+			} else {
+				_drawPixels[i] = _transparent;
+			}
+		}
+		return this;
+	}
+
+	/**
+	 * 让当前pixmap中color乘以指定color
+	 * 
+	 * @param pixel
+	 * @return
+	 */
+	public Pixmap multiply(LColor pixel) {
+		if (pixel == null) {
+			return this;
+		}
+		final LColor newColor = new LColor();
+		for (int i = 0; i < _length; i++) {
+			int color = _drawPixels[i];
+			if (color != LColor.TRANSPARENT) {
+				int[] rgba = LColor.getRGBAs(color);
+				int r = rgba[0];
+				int g = rgba[1];
+				int b = rgba[2];
+				int a = rgba[3];
+				_drawPixels[i] = newColor.setColor(r, g, b, a).mulSelf(pixel).getARGB();
 			} else {
 				_drawPixels[i] = _transparent;
 			}
@@ -1422,6 +1441,132 @@ public class Pixmap extends Limit implements LRelease {
 	}
 
 	/**
+	 * 虚线绘制
+	 * 
+	 * @param x1
+	 * @param y1
+	 * @param x2
+	 * @param y2
+	 * @param divisions
+	 * @param width
+	 * @return
+	 */
+	public Pixmap drawDashLine(int x1, int y1, int x2, int y2, int divisions) {
+		int dx = x2 - x1, dy = y2 - y1;
+		for (int i = 0; i < divisions; i++) {
+			if (i % 2 == 0) {
+				drawLine(x1 + (int) ((float) i / divisions) * dx, y1 + (int) ((float) i / divisions) * dy,
+						x1 + (int) ((i + 1f) / divisions) * dx, y1 + (int) ((i + 1f) / divisions) * dy);
+			}
+		}
+		return this;
+	}
+
+	public Pixmap drawAngleLine(int x, int y, float angle, float length) {
+		_pointLocation.set(1f).setLength(length).setAngle(angle);
+		return drawLine(x, y, x + _pointLocation.x(), y + _pointLocation.y());
+	}
+
+	public Pixmap drawDashCircle(int x, int y, float radius) {
+		float scaleFactor = 0.6f;
+		int sides = 10 + MathUtils.floor(radius * scaleFactor);
+		if (sides % 2 == 1) {
+			sides++;
+		}
+
+		_pointLocation.set(0f);
+
+		for (int i = 0; i < sides; i++) {
+			if (i % 2 == 0) {
+				continue;
+			}
+			_pointLocation.set(radius, 0).setAngle(360f / sides * i + 90);
+			int x1 = _pointLocation.x();
+			int y1 = _pointLocation.y();
+
+			_pointLocation.set(radius, 0).setAngle(360f / sides * (i + 1) + 90);
+
+			drawLine(x1 + x, y1 + y, _pointLocation.x() + x, _pointLocation.y() + y);
+		}
+		return this;
+	}
+
+	public Pixmap drawSpikes(int x, int y, float radius, float length, int spikes, float rot) {
+		_pointLocation.set(0f, 1f);
+		float step = 360f / spikes;
+
+		for (int i = 0; i < spikes; i++) {
+			_pointLocation.setAngle(i * step + rot);
+			_pointLocation.setLength(radius);
+			int x1 = _pointLocation.x(), y1 = _pointLocation.y();
+			_pointLocation.setLength(radius + length);
+
+			drawLine(x + x1, y + y1, x + _pointLocation.x(), y + _pointLocation.y());
+		}
+		return this;
+	}
+
+	/**
+	 * 绘制弧线
+	 * 
+	 * @param x1
+	 * @param y1
+	 * @param cx1
+	 * @param cy1
+	 * @param cx2
+	 * @param cy2
+	 * @param x2
+	 * @param y2
+	 * @param segments
+	 * @param width
+	 * @return
+	 */
+	public Pixmap drawCurve(float x1, float y1, float cx1, float cy1, float cx2, float cy2, float x2, float y2,
+			int segments, float width) {
+
+		final float subdivstep = 1f / segments;
+		final float subdiv_stepa = subdivstep * subdivstep;
+		final float subdiv_stepb = subdivstep * subdivstep * subdivstep;
+
+		final float pre1 = 3 * subdivstep;
+		final float pre2 = 3 * subdiv_stepa;
+		final float pre4 = 6 * subdiv_stepa;
+		final float pre5 = 6 * subdiv_stepb;
+
+		final float tmp1x = x1 - cx1 * 2 + cx2;
+		final float tmp1y = y1 - cy1 * 2 + cy2;
+
+		final float tmp2x = (cx1 - cx2) * 3 - x1 + x2;
+		final float tmp2y = (cy1 - cy2) * 3 - y1 + y2;
+
+		float fx = x1;
+		float fy = y1;
+
+		float dfx = (cx1 - x1) * pre1 + tmp1x * pre2 + tmp2x * subdiv_stepb;
+		float dfy = (cy1 - y1) * pre1 + tmp1y * pre2 + tmp2y * subdiv_stepb;
+
+		float ddfx = tmp1x * pre4 + tmp2x * pre5;
+		float ddfy = tmp1y * pre4 + tmp2y * pre5;
+
+		float dddfx = tmp2x * pre5;
+		float dddfy = tmp2y * pre5;
+
+		for (; segments-- > 0;) {
+			float fxold = fx, fyold = fy;
+			fx += dfx;
+			fy += dfy;
+			dfx += ddfx;
+			dfy += ddfy;
+			ddfx += dddfx;
+			ddfy += dddfy;
+			drawLine((int) fxold, (int) fyold, (int) fx, (int) fy);
+		}
+
+		drawLine((int) fx, (int) fy, (int) x2, (int) y2);
+		return this;
+	}
+
+	/**
 	 * 绘制一个矩形
 	 * 
 	 * @param x1
@@ -1447,10 +1592,10 @@ public class Pixmap extends Limit implements LRelease {
 			tempY = tempHeight;
 			tempHeight = y1;
 		}
-		drawLine(tempX, tempY, tempHeight, tempY);
+		drawLine(tempX, tempY, tempWidth, tempY);
 		drawLine(tempX, tempY + 1, tempX, tempHeight);
-		drawLine(tempHeight, tempHeight, tempX + 1, tempHeight);
-		drawLine(tempHeight, tempHeight - 1, tempHeight, tempY + 1);
+		drawLine(tempWidth, tempHeight, tempX + 1, tempHeight);
+		drawLine(tempWidth, tempHeight - 1, tempWidth, tempY + 1);
 		return this;
 	}
 
@@ -1761,20 +1906,49 @@ public class Pixmap extends Limit implements LRelease {
 	}
 
 	public Pixmap fillRect(int x, int y, int width, int height) {
+		return fillRect(x, y, width, height, _baseColor);
+	}
+
+	public Pixmap fillRect(int x, int y, int width, int height, int color) {
 		if (_isClosed) {
 			return this;
 		}
 		if (x == 0 && y == 0 && width == _width && height == _height) {
-			clearDraw(_baseColor);
+			clearDraw(color);
 			return this;
 		}
 		int maxX = MathUtils.min(x + width - 1 + _translateX, clip.x + clip.width - 1);
 		int maxY = MathUtils.min(y + height - 1 + _translateY, clip.y + clip.height - 1);
-		for (int row = MathUtils.max(y + _translateY, clip.y); row <= maxY; row++) {
-			for (int col = MathUtils.max(x + _translateX, clip.x); col <= maxX; col++) {
-				drawPoint(col, row, _baseColor);
+		for (int i = MathUtils.max(y + _translateY, clip.y); i <= maxY; i++) {
+			for (int j = MathUtils.max(x + _translateX, clip.x); j <= maxX; j++) {
+				drawPoint(j, i, color);
 			}
 		}
+		return this;
+	}
+
+	public Pixmap fillRectTilted(int xpos, int ypos, int width, int height, int color, int xtilt, int ytilt) {
+		if (_isClosed) {
+			return this;
+		}
+		int maxX = MathUtils.min(xpos + width - 1 + _translateX, clip.x + clip.width - 1);
+		int maxY = MathUtils.min(ypos + height - 1 + _translateY, clip.y + clip.height - 1);
+		for (int y = MathUtils.max(ypos + _translateY, clip.y); y <= maxY; y++) {
+			for (int x = MathUtils.max(xpos + _translateX, clip.x); x <= maxX; x++) {
+				int ypix = (x - xpos) * ytilt;
+				int xpix = (y - ypos) * xtilt;
+				if ((x + xpix >= 0) && (x + xpix < this._width) && (y + ypix >= 0) && (y + ypix < this._height)) {
+					drawPoint(x + xpix, y + ypix, color);
+				}
+			}
+		}
+		return this;
+	}
+
+	public Pixmap drawColumn(int xpos, int ypos, int w, int h, int p, int color1, int color2, int color3) {
+		fillRect(xpos, ypos, w, h, color1);
+		fillRectTilted(xpos - p, ypos - p, p, h, color2, 0, 1);
+		fillRectTilted(xpos - p, ypos - p, w, p, color3, 1, 0);
 		return this;
 	}
 
@@ -1820,8 +1994,9 @@ public class Pixmap extends Limit implements LRelease {
 		drawCircle(x, y, width, height, true, new CircleUpdate() {
 			public void newPoint(int xLeft, int yTop, int xRight, int yBottom) {
 				drawLineImpl(xLeft, xRight, yTop);
-				if (yTop != yBottom)
+				if (yTop != yBottom) {
 					drawLineImpl(xLeft, xRight, yBottom);
+				}
 			}
 		});
 		return this;
@@ -1882,7 +2057,7 @@ public class Pixmap extends Limit implements LRelease {
 	}
 
 	/**
-	 * 填充一个弧线
+	 * 填充一个圆弧
 	 * 
 	 * @param x
 	 * @param y
@@ -1892,22 +2067,42 @@ public class Pixmap extends Limit implements LRelease {
 	 * @param arcAngle
 	 */
 	public Pixmap fillArc(int x, int y, int width, int height, int start, int arcAngle) {
+		return fillArc(x, y, width, height, start, arcAngle, false);
+	}
+
+	/**
+	 * 填充一个圆弧
+	 * 
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
+	 * @param start
+	 * @param arcAngle
+	 * @param reverse
+	 * @return
+	 */
+	public Pixmap fillArc(int x, int y, int width, int height, int start, int arcAngle, boolean reverse) {
 		if (_isClosed) {
 			return this;
 		}
-		if (arcAngle < 0) {
-			start = 360 - arcAngle;
-			arcAngle = 360 + arcAngle;
-		}
-		start %= 360;
-		if (start < 0) {
-			start += 360;
-		}
-		if (arcAngle % 360 == 0) {
-			fillOval(x, y, width, height);
-			return this;
+		if (reverse) {
+			if (arcAngle < 0) {
+				start = 360 - arcAngle;
+				arcAngle = 360 + arcAngle;
+			}
+			start %= 360;
+			if (start < 0) {
+				start += 360;
+			}
+			if (arcAngle % 360 == 0) {
+				fillOval(x, y, width, height);
+				return this;
+			} else {
+				arcAngle %= 360;
+			}
 		} else {
-			arcAngle %= 360;
+			arcAngle = -arcAngle;
 		}
 		final int startAngle = arcAngle > 0 ? start
 				: (start + arcAngle < 0 ? start + arcAngle + 360 : start + arcAngle);
@@ -1929,6 +2124,10 @@ public class Pixmap extends Limit implements LRelease {
 		return this;
 	}
 
+	public Pixmap fillCircle(int x, int y, int radius) {
+		return fillOval(x, y, radius, radius);
+	}
+
 	public Pixmap drawPolyline(int xPoints[], int yPoints[], int nPoints) {
 		if (_isClosed) {
 			return this;
@@ -1946,6 +2145,16 @@ public class Pixmap extends Limit implements LRelease {
 	 */
 	public Pixmap drawPolygon(Polygon p) {
 		return drawShapeImpl(p, 0, 0);
+	}
+
+	/**
+	 * 绘制一个多边形
+	 * 
+	 * @param path
+	 * @return
+	 */
+	public Pixmap draw(Path2D path) {
+		return drawPolygon(path.getPointiX(), path.getPointiY(), path.size() / 2);
 	}
 
 	/**
@@ -1992,6 +2201,16 @@ public class Pixmap extends Limit implements LRelease {
 	 */
 	public Pixmap fillPolygon(Pixmap pixmap, Polygon poly, int x, int y) {
 		return fillShapeImpl(pixmap, poly, x, y);
+	}
+
+	/**
+	 * 绘制并填充一个多边形
+	 * 
+	 * @param path
+	 * @return
+	 */
+	public Pixmap fill(Path2D path) {
+		return fillPolygon(path.getPointiX(), path.getPointiY(), path.size() / 2);
 	}
 
 	/**
@@ -2163,6 +2382,16 @@ public class Pixmap extends Limit implements LRelease {
 		}
 	}
 
+	public Pixmap blendTo(int colorTo, int alpha) {
+		for (int i = 0; i < this._length; i++) {
+			int colorFrom = this._drawPixels[i];
+			int blendRB = (colorFrom & 0xFF00FF) * alpha + (colorTo & 0xFF00FF) * (256 - alpha) & 0xFF00FF00;
+			int blendG = (colorFrom & 0xFF00) * alpha + (colorTo & 0xFF00) * (256 - alpha) & 0xFF0000;
+			this._drawPixels[i] = ((blendRB | blendG) >>> 8);
+		}
+		return this;
+	}
+
 	public int getComposite() {
 		return this._composite;
 	}
@@ -2255,6 +2484,91 @@ public class Pixmap extends Limit implements LRelease {
 		}
 	}
 
+	public Pixmap blendHorizontal(Pixmap pix) {
+		return blendHorizontal(pix, false);
+	}
+
+	/**
+	 * 混合当前pixmap和指定pixmap生成新的pixmap
+	 * 
+	 * @param pix
+	 * @param horizontal
+	 * @return
+	 */
+	public Pixmap blendHorizontal(Pixmap pix, boolean horizontal) {
+		Pixmap leftImage = null;
+		Pixmap rightImage = null;
+		if (horizontal) {
+			leftImage = pix;
+			rightImage = this;
+		} else {
+			leftImage = this;
+			rightImage = pix;
+		}
+		int width = (leftImage.getWidth() + rightImage.getWidth());
+		int height = Math.max(leftImage.getHeight(), rightImage.getHeight());
+		Pixmap image = new Pixmap(width, height, true);
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				int pixel = 0;
+				if (x < leftImage.getWidth()) {
+					if (y < leftImage.getHeight()) {
+						pixel = leftImage.getPixel(x, y);
+					} else {
+						pixel = _transparent;
+					}
+				} else {
+					if (y < rightImage.getHeight()) {
+						pixel = rightImage.getPixel(x - leftImage.getWidth(), y);
+					} else {
+						pixel = _transparent;
+					}
+				}
+				image.drawPoint(x, y, pixel);
+			}
+		}
+		return image;
+	}
+
+	public Pixmap blendVertical(Pixmap pix) {
+		return blendVertical(pix, false);
+	}
+
+	public Pixmap blendVertical(Pixmap pix, boolean vertical) {
+		Pixmap topImage = null;
+		Pixmap bottomImage = null;
+		if (vertical) {
+			topImage = this;
+			bottomImage = pix;
+		} else {
+			topImage = pix;
+			bottomImage = this;
+		}
+		int width = MathUtils.max(topImage.getWidth(), bottomImage.getWidth());
+		int height = (topImage.getHeight() + bottomImage.getHeight());
+		Pixmap image = new Pixmap(width, height, true);
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				int pixel = 0;
+				if (y < topImage.getHeight()) {
+					if (x < topImage.getWidth()) {
+						pixel = topImage.getPixel(x, y);
+					} else {
+						pixel = _transparent;
+					}
+				} else {
+					if (x < bottomImage.getWidth()) {
+						pixel = bottomImage.getPixel(x, y - topImage.getHeight());
+					} else {
+						pixel = _transparent;
+					}
+				}
+				image.drawPoint(x, y, pixel);
+			}
+		}
+		return image;
+	}
+
 	private boolean inside(int x, int y) {
 		return (x < clip.x || x >= clip.x + clip.width || y < clip.y || y >= clip.y + clip.height);
 	}
@@ -2337,13 +2651,17 @@ public class Pixmap extends Limit implements LRelease {
 	}
 
 	public int getSize() {
-		return size;
+		return _length;
 	}
 
 	public int[] getData() {
 		return _drawPixels;
 	}
 
+	public int[] getABGRData() {
+		return LColor.convertToABGR(this._width, this._height, this._drawPixels,new int[_length] );
+	}
+	
 	public void setData(int[] pixels) {
 		if (_isClosed) {
 			return;
@@ -2512,6 +2830,45 @@ public class Pixmap extends Limit implements LRelease {
 		}
 	}
 
+	@Override
+	public boolean equals(final Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (obj instanceof Pixmap) {
+			return equals((Pixmap) obj);
+		}
+		return false;
+	}
+
+	public boolean equals(final Pixmap dst) {
+		return equals(this, dst);
+	}
+
+	public static boolean equals(final Pixmap src, final Pixmap dst) {
+		if (src == dst) {
+			return true;
+		}
+		if (src == null) {
+			return false;
+		}
+		if (dst == null) {
+			return false;
+		}
+		if (src.getWidth() != dst.getWidth() || src.getHeight() != dst.getHeight()
+				|| src.hasAlpha() != dst.hasAlpha()) {
+			return false;
+		}
+		for (int x = 0; x < dst.getWidth(); x++) {
+			for (int y = 0; y < dst.getHeight(); y++) {
+				if (src.getPixel(x, y) != dst.getPixel(x, y)) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
 	public int size() {
 		return _width * _height;
 	}
@@ -2520,9 +2877,21 @@ public class Pixmap extends Limit implements LRelease {
 		return _width == 0 && _height == 0;
 	}
 
+	public boolean isColorEmpty() {
+		for (int y = 0; y < getHeight(); y++) {
+			for (int x = 0; x < getWidth(); x++) {
+				final int pixel = getPixel(x, y);
+				if (pixel >> 24 != 0x00 || pixel != _transparent) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
 	@Override
 	public String toString() {
-		StringBuilder sbr = new StringBuilder();
+		StrBuilder sbr = new StrBuilder();
 		for (int y = 0; y < _height; y++) {
 			sbr.append('[');
 			for (int x = 0; x < _width; x++) {

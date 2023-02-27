@@ -24,24 +24,35 @@ import loon.LSystem;
 
 public class UNInt {
 
-	private long unInt;
+	private long unInt = 0;
 
-	public UNInt() {
-	}
+	private boolean littleEndian = false;
 
 	public UNInt(int unsigned) {
+		this(unsigned, false);
+	}
+
+	public UNInt(int unsigned, boolean little) {
+		this.setLittleEndian(little);
 		this.read(unsigned);
 	}
 
 	public UNInt(long tobecomeunsigned) {
+		this(tobecomeunsigned, false);
+	}
+
+	public UNInt(long tobecomeunsigned, boolean little) {
+		this.setLittleEndian(little);
 		this.setValue(tobecomeunsigned);
 	}
 
-	public UNInt(ArrayByte bb, int offset) {
+	public UNInt(ArrayByte bb, int offset, boolean little) {
+		this.setLittleEndian(little);
 		this.read(bb, offset);
 	}
 
-	public UNInt(byte[] bytes, int offset) {
+	public UNInt(byte[] bytes, int offset, boolean little) {
+		this.setLittleEndian(little);
 		this.read(bytes, offset);
 	}
 
@@ -55,7 +66,11 @@ public class UNInt {
 		int thirdByte = (0x000000FF & ((int) bb.get(2)));
 		int fourthByte = (0x000000FF & ((int) bb.get(3)));
 
-		unInt = ((long) (firstByte << 24 | secondByte << 16 | thirdByte << 8 | fourthByte)) & 0xFFFFFFFFL;
+		if (littleEndian) {
+			unInt = ((long) (fourthByte << 24 | thirdByte << 16 | secondByte << 8 | firstByte)) & 0xFFFFFFFFL;
+		} else {
+			unInt = ((long) (firstByte << 24 | secondByte << 16 | thirdByte << 8 | fourthByte)) & 0xFFFFFFFFL;
+		}
 	}
 
 	public void read(ArrayByte bb, int offset) {
@@ -67,7 +82,12 @@ public class UNInt {
 		int thirdByte = (0x000000FF & ((int) bb.get()));
 		int fourthByte = (0x000000FF & ((int) bb.get()));
 
-		unInt = ((long) (firstByte << 24 | secondByte << 16 | thirdByte << 8 | fourthByte)) & 0xFFFFFFFFL;
+		if (littleEndian) {
+			unInt = ((long) (firstByte << 24 | secondByte << 16 | thirdByte << 8 | fourthByte)) & 0xFFFFFFFFL;
+		} else {
+			unInt = ((long) (fourthByte << 24 | thirdByte << 16 | secondByte << 8 | firstByte)) & 0xFFFFFFFFL;
+		}
+
 		bb.setPosition(initial_pos);
 	}
 
@@ -78,16 +98,27 @@ public class UNInt {
 		int thirdByte = (0x000000FF & ((int) bytes[offset + 2]));
 		int fourthByte = (0x000000FF & ((int) bytes[offset + 3]));
 
-		unInt = ((long) (firstByte << 24 | secondByte << 16 | thirdByte << 8 | fourthByte)) & 0xFFFFFFFFL;
+		if (littleEndian) {
+			unInt = ((long) (firstByte << 24 | secondByte << 16 | thirdByte << 8 | fourthByte)) & 0xFFFFFFFFL;
+		} else {
+			unInt = ((long) (fourthByte << 24 | thirdByte << 16 | secondByte << 8 | firstByte)) & 0xFFFFFFFFL;
+		}
 	}
 
 	public byte[] write() {
 		byte[] buf = new byte[4];
 
-		buf[0] = (byte) ((unInt & 0xFF000000L) >> 24);
-		buf[1] = (byte) ((unInt & 0x00FF0000L) >> 16);
-		buf[2] = (byte) ((unInt & 0x0000FF00L) >> 8);
-		buf[3] = (byte) (unInt & 0x000000FFL);
+		if (littleEndian) {
+			buf[0] = (byte) ((unInt & 0xFF000000L) >> 24);
+			buf[1] = (byte) ((unInt & 0x00FF0000L) >> 16);
+			buf[2] = (byte) ((unInt & 0x0000FF00L) >> 8);
+			buf[3] = (byte) (unInt & 0x000000FFL);
+		} else {
+			buf[3] = (byte) ((unInt & 0xFF000000L) >> 24);
+			buf[2] = (byte) ((unInt & 0x00FF0000L) >> 16);
+			buf[1] = (byte) ((unInt & 0x0000FF00L) >> 8);
+			buf[0] = (byte) (unInt & 0x000000FFL);
+		}
 
 		return buf;
 	}
@@ -100,10 +131,17 @@ public class UNInt {
 
 		byte[] buf = new byte[4];
 
-		buf[0] = (byte) ((unInt & 0xFF000000L) >> 24);
-		buf[1] = (byte) ((unInt & 0x00FF0000L) >> 16);
-		buf[2] = (byte) ((unInt & 0x0000FF00L) >> 8);
-		buf[3] = (byte) (unInt & 0x000000FFL);
+		if (littleEndian) {
+			buf[0] = (byte) ((unInt & 0xFF000000L) >> 24);
+			buf[1] = (byte) ((unInt & 0x00FF0000L) >> 16);
+			buf[2] = (byte) ((unInt & 0x0000FF00L) >> 8);
+			buf[3] = (byte) (unInt & 0x000000FFL);
+		} else {
+			buf[3] = (byte) ((unInt & 0xFF000000L) >> 24);
+			buf[2] = (byte) ((unInt & 0x00FF0000L) >> 16);
+			buf[1] = (byte) ((unInt & 0x0000FF00L) >> 8);
+			buf[0] = (byte) (unInt & 0x000000FFL);
+		}
 
 		bb.write(buf);
 		return true;
@@ -114,10 +152,17 @@ public class UNInt {
 			return false;
 		}
 
-		bytes[offset] = (byte) ((unInt & 0xFF000000L) >> 24);
-		bytes[offset + 1] = (byte) ((unInt & 0x00FF0000L) >> 16);
-		bytes[offset + 2] = (byte) ((unInt & 0x0000FF00L) >> 8);
-		bytes[offset + 3] = (byte) (unInt & 0x000000FFL);
+		if (littleEndian) {
+			bytes[offset] = (byte) ((unInt & 0xFF000000L) >> 24);
+			bytes[offset + 1] = (byte) ((unInt & 0x00FF0000L) >> 16);
+			bytes[offset + 2] = (byte) ((unInt & 0x0000FF00L) >> 8);
+			bytes[offset + 3] = (byte) (unInt & 0x000000FFL);
+		} else {
+			bytes[offset + 3] = (byte) ((unInt & 0xFF000000L) >> 24);
+			bytes[offset + 2] = (byte) ((unInt & 0x00FF0000L) >> 16);
+			bytes[offset + 1] = (byte) ((unInt & 0x0000FF00L) >> 8);
+			bytes[offset] = (byte) (unInt & 0x000000FFL);
+		}
 
 		return true;
 	}
@@ -130,10 +175,19 @@ public class UNInt {
 		unInt = value;
 	}
 
+	public boolean isLittleEndian() {
+		return littleEndian;
+	}
+
+	public void setLittleEndian(boolean little) {
+		this.littleEndian = little;
+	}
+
 	@Override
 	public int hashCode() {
 		int hashCode = 17;
 		hashCode = LSystem.unite(hashCode, unInt);
 		return hashCode;
 	}
+
 }

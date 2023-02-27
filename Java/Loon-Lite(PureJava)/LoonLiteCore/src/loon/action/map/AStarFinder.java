@@ -22,22 +22,44 @@ package loon.action.map;
 
 import loon.LRelease;
 import loon.LSystem;
-import loon.action.map.colider.TileImplPathFind;
+import loon.action.map.heuristics.BestFirst;
 import loon.action.map.heuristics.Closest;
 import loon.action.map.heuristics.ClosestSquared;
 import loon.action.map.heuristics.Diagonal;
+import loon.action.map.heuristics.DiagonalMin;
 import loon.action.map.heuristics.DiagonalShort;
 import loon.action.map.heuristics.Euclidean;
 import loon.action.map.heuristics.EuclideanNoSQR;
 import loon.action.map.heuristics.Manhattan;
 import loon.action.map.heuristics.Mixing;
+import loon.action.map.heuristics.Octile;
 import loon.events.Updateable;
 import loon.geom.Vector2f;
 import loon.utils.IntMap;
 import loon.utils.ObjectSet;
 import loon.utils.TArray;
 
-public class AStarFinder extends TileImplPathFind implements Updateable, LRelease {
+/**
+ * A*寻径用类
+ */
+public class AStarFinder implements Updateable, LRelease {
+
+	public static final int DIJKSTRA = 0;
+
+	public static final int ASTAR = 1;
+
+	private class ScoredPath {
+
+		private float score;
+
+		private TArray<Vector2f> pathList;
+
+		private ScoredPath(float score, TArray<Vector2f> pathList) {
+			this.score = score;
+			this.pathList = pathList;
+		}
+
+	}
 
 	public final static AStarFindHeuristic ASTAR_CLOSEST = new Closest();
 
@@ -54,6 +76,12 @@ public class AStarFinder extends TileImplPathFind implements Updateable, LReleas
 	public final static AStarFindHeuristic ASTAR_MIXING = new Mixing();
 
 	public final static AStarFindHeuristic ASTAR_DIAGONAL_SHORT = new DiagonalShort();
+
+	public final static AStarFindHeuristic ASTAR_BEST_FIRST = new BestFirst();
+
+	public final static AStarFindHeuristic ASTAR_OCTILE = new Octile();
+
+	public final static AStarFindHeuristic ASTAR_DIAGONAL_MIN = new DiagonalMin();
 
 	private final static IntMap<TArray<Vector2f>> FINDER_LAZY = new IntMap<TArray<Vector2f>>(100);
 
@@ -91,7 +119,7 @@ public class AStarFinder extends TileImplPathFind implements Updateable, LReleas
 			int key = makeLazyKey(heuristic, maps, limits, x1, y1, x2, y2, flag);
 			TArray<Vector2f> result = FINDER_LAZY.get(key);
 			if (result == null) {
-				AStarFinder astar = new AStarFinder(heuristic);
+				AStarFinder astar = new AStarFinder(heuristic, ASTAR);
 				Field2D fieldMap = new Field2D(maps);
 				if (limits != null) {
 					fieldMap.setLimit(limits);
@@ -114,9 +142,25 @@ public class AStarFinder extends TileImplPathFind implements Updateable, LReleas
 		}
 	}
 
+	public static TArray<Vector2f> find(int[][] maps, int x1, int y1, int x2, int y2, boolean flag) {
+		return find(null, maps, x1, y1, x2, y2, flag);
+	}
+
 	public static TArray<Vector2f> find(AStarFindHeuristic heuristic, int[][] maps, int x1, int y1, int x2, int y2,
 			boolean flag) {
 		return find(heuristic, maps, x1, y1, x2, y2, flag);
+	}
+
+	public static TArray<Vector2f> find(HexagonMap map, int x1, int y1, int x2, int y2, boolean flag) {
+		return find(null, map.getField2D().getMap(), map.getLimit(), x1, y1, x2, y2, flag);
+	}
+
+	public static TArray<Vector2f> find(TileMap map, int x1, int y1, int x2, int y2, boolean flag) {
+		return find(null, map.getField2D().getMap(), map.getLimit(), x1, y1, x2, y2, flag);
+	}
+
+	public static TArray<Vector2f> find(Field2D maps, int x1, int y1, int x2, int y2, boolean flag) {
+		return find(null, maps.getMap(), maps.getLimit(), x1, y1, x2, y2, flag);
 	}
 
 	public static TArray<Vector2f> find(AStarFindHeuristic heuristic, Field2D maps, int x1, int y1, int x2, int y2,
@@ -136,17 +180,23 @@ public class AStarFinder extends TileImplPathFind implements Updateable, LReleas
 
 	private Vector2f goal;
 
-	private TArray<ScoredPath> pathes;
+	private TArray<ScoredPath> nextList;
 
-	private TArray<Vector2f> path;
+	private TArray<Vector2f> pathList;
 
-	private ObjectSet<Vector2f> visitedCache;
+	private ObjectSet<Vector2f> openList;
+
+	private ObjectSet<Vector2f> closedList;
 
 	private ScoredPath spath;
 
-	private boolean flying, flag, closed;
+	private boolean flying, alldirMove, closed, running;
 
-	private Field2D field;
+	private Field2D findMap;
+
+	private int algorithm = ASTAR;
+
+	private int overflow = 4096;
 
 	private int startX, startY, endX, endY;
 
@@ -154,48 +204,46 @@ public class AStarFinder extends TileImplPathFind implements Updateable, LReleas
 
 	private AStarFindHeuristic findHeuristic;
 
-	public AStarFinder(AStarFindHeuristic heuristic) {
-		this(heuristic, false);
+	public AStarFinder(AStarFindHeuristic heuristic, int algorithm) {
+		this(heuristic, false, algorithm);
 	}
 
-	public AStarFinder(AStarFindHeuristic heuristic, boolean flying) {
-		this.flying = flying;
-		this.findHeuristic = heuristic;
+	public AStarFinder(AStarFindHeuristic heuristic, boolean flying, int algorithm) {
+		this(heuristic, (Field2D) null, 0, 0, 0, 0, flying, false, algorithm);
 	}
 
-	public AStarFinder(AStarFindHeuristic heuristic, Field2D field, int startX, int startY, int endX, int endY,
-			boolean flying, boolean flag, AStarFinderListener callback) {
-		this.field = field;
+	public AStarFinder(AStarFindHeuristic heuristic, Field2D m, int startX, int startY, int endX, int endY,
+			boolean flying, boolean flag, int algorithm) {
+		this(heuristic, m, startX, startY, endX, endY, flying, flag, null, algorithm);
+	}
+
+	public AStarFinder(AStarFindHeuristic heuristic, Field2D m, int startX, int startY, int endX, int endY,
+			boolean flying, boolean flag, AStarFinderListener callback, int algorithm) {
+		this.findMap = m;
 		this.startX = startX;
 		this.startY = startY;
 		this.endX = endX;
 		this.endY = endY;
 		this.flying = flying;
-		this.flag = flag;
+		this.alldirMove = flag;
 		this.pathFoundListener = callback;
 		this.findHeuristic = heuristic;
+		this.algorithm = algorithm;
 	}
 
-	public AStarFinder(AStarFindHeuristic heuristic, Field2D field, int startX, int startY, int endX, int endY,
-			boolean flying, boolean flag) {
-		this(heuristic, field, startX, startY, endX, endY, flying, flag, null);
-	}
-
-	public void update(AStarFinder find) {
-		this.field = find.field;
+	public AStarFinder update(AStarFinder find) {
+		this.findMap = find.findMap;
 		this.startX = find.startX;
 		this.startY = find.startY;
 		this.endX = find.endX;
 		this.endY = find.endY;
 		this.flying = find.flying;
-		this.flag = find.flag;
+		this.alldirMove = find.alldirMove;
 		this.findHeuristic = find.findHeuristic;
+		return this;
 	}
 
-	public int hashCode() {
-		return super.hashCode();
-	}
-
+	@Override
 	public boolean equals(Object o) {
 		if (o instanceof AStarFinder) {
 			return this.pathFoundListener == ((AStarFinder) o).pathFoundListener;
@@ -203,97 +251,124 @@ public class AStarFinder extends TileImplPathFind implements Updateable, LReleas
 		return false;
 	}
 
-	public TArray<Vector2f> findPath() {
-		Vector2f start = new Vector2f(startX, startY);
-		Vector2f over = new Vector2f(endX, endY);
-		return calc(field, start, over, flag);
-	}
-
-	private TArray<Vector2f> calc(Field2D field, Vector2f start, Vector2f goal, boolean flag) {
+	private TArray<Vector2f> calc(Field2D m, Vector2f start, Vector2f goal, boolean flag) {
 		if (start.equals(goal)) {
 			TArray<Vector2f> v = new TArray<Vector2f>();
 			v.add(start);
 			return v;
 		}
 		this.goal = goal;
-		if (visitedCache == null) {
-			visitedCache = new ObjectSet<Vector2f>();
+		if (openList == null) {
+			openList = new ObjectSet<Vector2f>();
 		} else {
-			visitedCache.clear();
+			openList.clear();
 		}
-		if (pathes == null) {
-			pathes = new TArray<ScoredPath>();
+		if (closedList == null) {
+			closedList = new ObjectSet<Vector2f>();
 		} else {
-			pathes.clear();
+			closedList.clear();
 		}
-		visitedCache.add(start);
-		if (path == null) {
-			path = new TArray<Vector2f>();
+		if (nextList == null) {
+			nextList = new TArray<ScoredPath>();
 		} else {
-			path.clear();
+			nextList.clear();
 		}
-		path.add(start);
+		openList.add(start);
+		if (pathList == null) {
+			pathList = new TArray<Vector2f>();
+		} else {
+			pathList.clear();
+		}
+		pathList.add(start);
 		if (spath == null) {
-			spath = new ScoredPath(0, path);
+			spath = new ScoredPath(0, pathList);
 		} else {
 			spath.score = 0;
-			spath.path = path;
+			spath.pathList = pathList;
 		}
-		pathes.add(spath);
-		return astar(field, flag);
+		nextList.add(spath);
+		return findPath(m, flag, algorithm);
 	}
 
-	private int overflow = 4096;
-
-	public void setOverflow(int over) {
+	public AStarFinder setOverflow(int over) {
 		this.overflow = over;
+		return this;
 	}
 
 	public int getOverflow() {
 		return this.overflow;
 	}
 
-	private TArray<Vector2f> astar(Field2D field, boolean flag) {
-		for (int j = 0; pathes.size > 0; j++) {
+	public AStarFinder stop() {
+		this.running = false;
+		return this;
+	}
+
+	public boolean isRunning() {
+		return this.running;
+	}
+
+	public TArray<Vector2f> findPath() {
+		Vector2f start = new Vector2f(startX, startY);
+		Vector2f over = new Vector2f(endX, endY);
+		return calc(findMap, start, over, alldirMove);
+	}
+
+	public TArray<Vector2f> findPath(Field2D map, boolean flag, int algorithm) {
+		running = true;
+		for (int j = 0; nextList.size > 0; j++) {
 			if (j > overflow) {
-				pathes.clear();
-				continue;
+				nextList.clear();
+				break;
 			}
-			ScoredPath spath = pathes.removeIndex(0);
-			Vector2f current = spath.path.get(spath.path.size - 1);
+			if (!running) {
+				break;
+			}
+			ScoredPath spath = nextList.removeIndex(0);
+			Vector2f current = spath.pathList.get(spath.pathList.size - 1);
+			if (algorithm == ASTAR) {
+				closedList.add(current);
+			}
 			if (current.equals(goal)) {
-				return new TArray<Vector2f>(spath.path);
+				return new TArray<Vector2f>(spath.pathList);
 			}
-			TArray<Vector2f> list = field.neighbors(current, flag);
-			int size = list.size;
+			TArray<Vector2f> step = map.neighbors(current, flag);
+			final int size = step.size;
 			for (int i = 0; i < size; i++) {
-				Vector2f next = list.get(i);
-				if (visitedCache.contains(next)) {
+				Vector2f next = step.get(i);
+				if (!map.isHit(next) && !flying) {
 					continue;
 				}
-				visitedCache.add(next);
-				if (!field.isHit(next) && !flying) {
-					continue;
+				if (algorithm == ASTAR) {
+					if (closedList.contains(next)) {
+						continue;
+					}
+					if (!openList.add(next)) {
+						continue;
+					}
+				} else {
+					openList.add(next);
 				}
-				TArray<Vector2f> path = new TArray<Vector2f>(spath.path);
-				path.add(next);
+
+				TArray<Vector2f> pathList = new TArray<Vector2f>(spath.pathList);
+				pathList.add(next);
 				float score = spath.score + findHeuristic.getScore(goal.x, goal.y, next.x, next.y);
-				insert(score, path);
+				insert(score, pathList);
 			}
 		}
 		return null;
 	}
 
-	private void insert(float score, TArray<Vector2f> path) {
-		int size = pathes.size;
+	private void insert(float score, TArray<Vector2f> list) {
+		int size = nextList.size;
 		for (int i = 0; i < size; i++) {
-			ScoredPath spath = pathes.get(i);
+			ScoredPath spath = nextList.get(i);
 			if (spath.score >= score) {
-				pathes.add(new ScoredPath(score, path));
+				nextList.add(new ScoredPath(score, list));
 				return;
 			}
 		}
-		pathes.add(new ScoredPath(score, path));
+		nextList.add(new ScoredPath(score, list));
 	}
 
 	public int getStartX() {
@@ -316,24 +391,15 @@ public class AStarFinder extends TileImplPathFind implements Updateable, LReleas
 		return flying;
 	}
 
+	public boolean isAllDirectionMove() {
+		return alldirMove;
+	}
+
 	@Override
 	public void action(Object o) {
 		if (pathFoundListener != null) {
 			pathFoundListener.pathFound(findPath());
 		}
-	}
-
-	private static class ScoredPath {
-
-		private float score;
-
-		private TArray<Vector2f> path;
-
-		ScoredPath(float score, TArray<Vector2f> path) {
-			this.score = score;
-			this.path = path;
-		}
-
 	}
 
 	public boolean isClosed() {
@@ -342,24 +408,26 @@ public class AStarFinder extends TileImplPathFind implements Updateable, LReleas
 
 	@Override
 	public void close() {
-		try {
-			if (path == null) {
-				path.clear();
-				path = null;
-			}
-			if (pathes != null) {
-				pathes.clear();
-				pathes = null;
-			}
-			if (visitedCache != null) {
-				visitedCache.clear();
-				visitedCache = null;
-			}
-			spath = null;
-			goal = null;
-			closed = true;
-		} catch (Throwable e) {
+		if (pathList != null) {
+			pathList.clear();
+			pathList = null;
 		}
+		if (nextList != null) {
+			nextList.clear();
+			nextList = null;
+		}
+		if (openList != null) {
+			openList.clear();
+			openList = null;
+		}
+		if (closedList != null) {
+			closedList.clear();
+			closedList = null;
+		}
+		spath = null;
+		goal = null;
+		closed = true;
+		running = false;
 	}
 
 }

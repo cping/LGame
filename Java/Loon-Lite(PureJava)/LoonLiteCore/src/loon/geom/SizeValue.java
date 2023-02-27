@@ -34,18 +34,18 @@ public class SizeValue {
 
 	private static final float MAX_PERCENT = 100.0f;
 
-	private String value;
+	private final String value;
 
-	private float percentValue;
+	private final float percentValue;
 
-	private float pixelValue;
+	private final float pixelValue;
 
 	private boolean hasWidthSuffix;
 
 	private boolean hasHeightSuffix;
 
 	public SizeValue(final int size) {
-		this(size + "px");
+		this(size + PIXEL);
 	}
 
 	public SizeValue(final String valueParam) {
@@ -145,7 +145,7 @@ public class SizeValue {
 	}
 
 	public boolean hasWildcard() {
-		return "*".equals(value);
+		return WILDCARD.equals(value);
 	}
 
 	@Override

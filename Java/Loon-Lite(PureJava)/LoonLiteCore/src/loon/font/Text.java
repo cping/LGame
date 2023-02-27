@@ -20,16 +20,17 @@
  */
 package loon.font;
 
-import loon.HorizontalAlign;
 import loon.LRelease;
 import loon.LSysException;
 import loon.LSystem;
 import loon.canvas.LColor;
+import loon.component.layout.HorizontalAlign;
 import loon.opengl.GLEx;
 import loon.opengl.LSTRDictionary;
 import loon.opengl.LSTRFont;
 import loon.utils.FloatArray;
 import loon.utils.MathUtils;
+import loon.utils.StrBuilder;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
@@ -103,8 +104,23 @@ public class Text implements LRelease {
 		if (LSystem.base() == null || chars == null) {
 			return;
 		}
+		if (_closed) {
+			return;
+		}
 		this._chars = chars != null ? chars : LSystem.EMPTY;
 		final IFont font = this._font;
+		if (font != null) {
+			ITranslator translator = font.getTranslator();
+			// 如果font被注入了多语言翻译器且允许翻译
+			if (translator != null && translator.isAllow()) {
+				String src = chars.toString();
+				String dst = translator.toTanslation(src, src);
+				this._chars = dst != null ? dst : LSystem.EMPTY;
+			}
+		}
+		if (this._lines == null) {
+			this._lines = new TArray<CharSequence>();
+		}
 		this._lines.clear();
 		this._lineWidths.clear();
 		if (this._textOptions._autoWrap == AutoWrap.NONE) {
@@ -128,7 +144,7 @@ public class Text implements LRelease {
 		}
 		this._width = this._lineAlignmentWidth;
 		if (_width <= 0) {
-			_width = _lineWidths.get(0) * StringUtils.countOccurrences(chars, '\n');
+			_width = _lineWidths.get(0) * StringUtils.countOccurrences(this._chars, '\n');
 		}
 		this._height = lineCount * font.getHeight() + (lineCount - 1) * this._textOptions._leading;
 		if (_height <= 0) {
@@ -145,8 +161,10 @@ public class Text implements LRelease {
 			mes = ((StringBuffer) ch).toString();
 		} else if (ch instanceof StringBuilder) {
 			mes = ((StringBuilder) ch).toString();
+		} else if (ch instanceof StrBuilder) {
+			mes = ((StrBuilder) ch).toString();
 		} else {
-			mes = new StringBuffer(ch).toString();
+			mes = new StrBuilder(ch).toString();
 		}
 		return mes;
 	}
@@ -430,7 +448,7 @@ public class Text implements LRelease {
 
 	@Override
 	public String toString() {
-		return new StringBuffer(_chars).toString();
+		return new StrBuilder(_chars).toString();
 	}
 
 	@Override

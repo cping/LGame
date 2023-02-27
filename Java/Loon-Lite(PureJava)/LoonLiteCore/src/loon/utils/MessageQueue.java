@@ -1,10 +1,16 @@
 package loon.utils;
 
+/**
+ * 一个简单的信息存储池
+ *
+ */
 public class MessageQueue {
 
-	private static class Message {
-		String text;
-		int ticksRemaining;
+	public static class Message {
+		
+		public String text;
+		
+		public int ticksRemaining;
 
 		public Message(String text) {
 			this.text = text;

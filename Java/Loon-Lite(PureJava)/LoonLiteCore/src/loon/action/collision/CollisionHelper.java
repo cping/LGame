@@ -22,6 +22,7 @@ package loon.action.collision;
 
 import loon.canvas.Image;
 import loon.canvas.LColor;
+import loon.geom.BoxSize;
 import loon.geom.Line;
 import loon.geom.Point;
 import loon.geom.RectBox;
@@ -29,10 +30,13 @@ import loon.geom.Shape;
 import loon.geom.ShapeUtils;
 import loon.geom.Vector2f;
 import loon.geom.Vector3f;
+import loon.geom.XY;
+import loon.geom.XYZ;
 import loon.utils.MathUtils;
+import loon.utils.TArray;
 
 /**
- * 碰撞事件检测与处理工具
+ * 碰撞事件检测与处理工具类,内部是一系列碰撞检测与处理方法的集合
  */
 public final class CollisionHelper extends ShapeUtils {
 
@@ -62,15 +66,63 @@ public final class CollisionHelper extends ShapeUtils {
 	}
 
 	/**
-	 * 获得两个矩形间距离
+	 * 获得两个三维体间初始XYZ位置的距离
 	 * 
-	 * @param box1
-	 * @param box2
+	 * @param target
+	 * @param beforePlace
+	 * @param distance
 	 * @return
 	 */
-	public static float getDistance(final RectBox box1, final RectBox box2) {
-		final float xdiff = box1.x - box2.x;
-		final float ydiff = box1.y - box2.y;
+	public static Vector3f getDistantPoint(XYZ target, XYZ source, float distance) {
+		
+		float deltaX = target.getX() - source.getX();
+		float deltaY = target.getY() - source.getY();
+		float deltaZ = target.getZ() - source.getZ();
+
+		float dist = MathUtils.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
+
+		deltaX /= dist;
+		deltaY /= dist;
+		deltaZ /= dist;
+
+		return new Vector3f(target.getX() - distance * deltaX, target.getY() - distance * deltaY,
+				target.getZ() - distance * deltaZ);
+	}
+
+	/**
+	 * 获得两个三维体间初始XYZ位置的距离
+	 * 
+	 * @param target
+	 * @param source
+	 * @param distance
+	 * @return
+	 */
+	public static Vector2f distantPoint(XY target, XY source, float distance) {
+
+		float deltaX = target.getX() - source.getX();
+		float deltaY = target.getY() - source.getY();
+
+		float dist = MathUtils.sqrt(deltaX * deltaX + deltaY * deltaY);
+
+		deltaX /= dist;
+		deltaY /= dist;
+
+		return new Vector2f(target.getX() - distance * deltaX, target.getY() - distance * deltaY);
+	}
+
+	/**
+	 * 获得两个矩形间初始XY位置的距离
+	 * 
+	 * @param target
+	 * @param beforePlace
+	 * @return
+	 */
+	public static float getDistance(final BoxSize target, final BoxSize beforePlace) {
+		if (target == null || beforePlace == null) {
+			return 0f;
+		}
+		final float xdiff = target.getX() - beforePlace.getX();
+		final float ydiff = target.getY() - beforePlace.getY();
 		return MathUtils.sqrt(xdiff * xdiff + ydiff * ydiff);
 	}
 
@@ -83,7 +135,7 @@ public final class CollisionHelper extends ShapeUtils {
 	 * @param distance
 	 * @return
 	 */
-	public static final float getDistance(Vector2f target, Vector2f beforePlace, Vector2f afterPlace, float distance) {
+	public static final float getDistance(XY target, XY beforePlace, XY afterPlace, float distance) {
 		return getDistance(target, beforePlace, afterPlace, distance, false);
 	}
 
@@ -97,8 +149,7 @@ public final class CollisionHelper extends ShapeUtils {
 	 * @param limit
 	 * @return
 	 */
-	public static final float getDistance(Vector2f target, Vector2f beforePlace, Vector2f afterPlace, float distance,
-			boolean limit) {
+	public static final float getDistance(XY target, XY beforePlace, XY afterPlace, float distance, boolean limit) {
 		float before = MathUtils.abs(target.getX() - beforePlace.getX())
 				+ MathUtils.abs(target.getY() - beforePlace.getY());
 		float after = MathUtils.abs(target.getX() - afterPlace.getX())
@@ -116,8 +167,12 @@ public final class CollisionHelper extends ShapeUtils {
 	 * @param rect2
 	 * @return
 	 */
-	public static boolean isRectToRect(RectBox rect1, RectBox rect2) {
-		return rect1.intersects(rect2);
+	public static boolean isRectToRect(BoxSize rect1, BoxSize rect2) {
+		if (rect1 == null || rect2 == null) {
+			return false;
+		}
+		return intersects(rect1.getX(), rect1.getY(), rect1.getWidth(), rect1.getHeight(), rect2.getX(), rect2.getY(),
+				rect2.getWidth(), rect2.getHeight());
 	}
 
 	/**
@@ -127,7 +182,7 @@ public final class CollisionHelper extends ShapeUtils {
 	 * @param rect2
 	 * @return
 	 */
-	public static boolean isCircToCirc(RectBox rect1, RectBox rect2) {
+	public static boolean isCircToCirc(BoxSize rect1, BoxSize rect2) {
 		Point middle1 = getMiddlePoint(rect1);
 		Point middle2 = getMiddlePoint(rect2);
 		float distance = middle1.distanceTo(middle2);
@@ -143,13 +198,17 @@ public final class CollisionHelper extends ShapeUtils {
 	 * @param rect2
 	 * @return
 	 */
-	public static boolean isRectToCirc(RectBox rect1, RectBox rect2) {
+	public static boolean isRectToCirc(BoxSize rect1, BoxSize rect2) {
 		float radius = rect2.getWidth() / 2;
+		float minX = rect1.getX();
+		float minY = rect1.getY();
+		float maxX = rect1.getX() + rect1.getWidth();
+		float maxY = rect1.getY() + rect1.getHeight();
 		Point middle = getMiddlePoint(rect2);
-		Point upperLeft = new Point(rect1.getMinX(), rect1.getMinY());
-		Point upperRight = new Point(rect1.getMaxX(), rect1.getMinY());
-		Point downLeft = new Point(rect1.getMinX(), rect1.getMaxY());
-		Point downRight = new Point(rect1.getMaxX(), rect1.getMaxY());
+		Point upperLeft = new Point(minX, minY);
+		Point upperRight = new Point(maxX, minY);
+		Point downLeft = new Point(minX, maxY);
+		Point downRight = new Point(maxX, maxY);
 		boolean collided = true;
 		if (!isPointToLine(upperLeft, upperRight, middle, radius)) {
 			if (!isPointToLine(upperRight, downRight, middle, radius)) {
@@ -172,7 +231,7 @@ public final class CollisionHelper extends ShapeUtils {
 	 * @param radius
 	 * @return
 	 */
-	private static boolean isPointToLine(Point point1, Point point2, Point middle, float radius) {
+	private static boolean isPointToLine(XY point1, XY point2, XY middle, float radius) {
 		Line line = new Line(point1, point2);
 		float distance = line.ptLineDist(middle);
 		return distance < radius;
@@ -184,7 +243,7 @@ public final class CollisionHelper extends ShapeUtils {
 	 * @param rectangle
 	 * @return
 	 */
-	private static Point getMiddlePoint(RectBox rectangle) {
+	private static Point getMiddlePoint(BoxSize rectangle) {
 		return new Point(rectangle.getCenterX(), rectangle.getCenterY());
 	}
 
@@ -246,7 +305,7 @@ public final class CollisionHelper extends ShapeUtils {
 		return false;
 	}
 
-	public static final boolean intersect(RectBox rect, float x, float y) {
+	public static final boolean intersects(RectBox rect, float x, float y) {
 		if (rect != null) {
 			if (rect.Left() <= x && x < rect.Right() && rect.Top() <= y && y < rect.Bottom())
 				return true;
@@ -254,7 +313,7 @@ public final class CollisionHelper extends ShapeUtils {
 		return false;
 	}
 
-	public static final boolean intersect(float sx, float sy, float width, float height, float x, float y) {
+	public static final boolean intersects(float sx, float sy, float width, float height, float x, float y) {
 		return (x >= sx) && ((x - sx) < width) && (y >= sy) && ((y - sy) < height);
 	}
 
@@ -267,7 +326,7 @@ public final class CollisionHelper extends ShapeUtils {
 	 * @param dataB
 	 * @return
 	 */
-	public static boolean intersect(RectBox rectA, int[] dataA, RectBox rectB, int[] dataB) {
+	public static boolean intersects(RectBox rectA, int[] dataA, RectBox rectB, int[] dataB) {
 		int top = (int) MathUtils.max(rectA.getY(), rectB.getY());
 		int bottom = (int) MathUtils.min(rectA.getBottom(), rectB.getBottom());
 		int left = (int) MathUtils.max(rectA.getX(), rectB.getX());
@@ -301,7 +360,7 @@ public final class CollisionHelper extends ShapeUtils {
 		return s1.intersects(s2);
 	}
 
-	public static final int[] intersect(RectBox rect1, RectBox rect2) {
+	public static final int[] intersects(RectBox rect1, RectBox rect2) {
 		if (rect1.Left() < rect2.Right() && rect2.Left() < rect1.Right() && rect1.Top() < rect2.Bottom()
 				&& rect2.Top() < rect1.Bottom()) {
 			return new int[] { rect1.Left() < rect2.Left() ? rect2.Left() - rect1.Left() : 0,
@@ -335,7 +394,116 @@ public final class CollisionHelper extends ShapeUtils {
 				return true;
 			}
 		}
-		return rectTemp1.overlaps(rectTemp2);
+		return rectTemp1.intersects(rectTemp2);
+	}
+
+	/**
+	 * 计算并返回两个正方形之间的碰撞间距值
+	 * 
+	 * @param rect1
+	 * @param rect2
+	 * @return
+	 */
+	public static float squareRects(BoxSize rect1, BoxSize rect2) {
+		if (rect1 == null || rect2 == null) {
+			return 0f;
+		}
+		return squareRects(rect1.getX(), rect1.getY(), rect1.getWidth(), rect1.getHeight(), rect2.getX(), rect2.getY(),
+				rect2.getWidth(), rect2.getHeight());
+	}
+
+	/**
+	 * 计算并返回两个正方形之间的碰撞间距值
+	 * 
+	 * @param x1
+	 * @param y1
+	 * @param w1
+	 * @param h1
+	 * @param x2
+	 * @param y2
+	 * @param w2
+	 * @param h2
+	 * @return
+	 */
+	public static float squareRects(float x1, float y1, float w1, float h1, float x2, float y2, float w2, float h2) {
+		if (x1 < x2 + w2 && x2 < x1 + w1) {
+			if (y1 < y2 + h2 && y2 < y1 + h1) {
+				return 0f;
+			}
+			if (y1 > y2) {
+				return (y1 - (y2 + h2)) * (y1 - (y2 + h2));
+			}
+			return (y2 - (y1 + h1)) * (y2 - (y1 + h1));
+		}
+		if (y1 < y2 + h2 && y2 < y1 + h1) {
+			if (x1 > x2) {
+				return (x1 - (x2 + w2)) * (x1 - (x2 + w2));
+			}
+			return (x2 - (x1 + w1)) * (x2 - (x1 + w1));
+		}
+		if (x1 > x2) {
+			if (y1 > y2) {
+				return MathUtils.distSquared((x2 + w2), (y2 + h2), x1, y1);
+			}
+			return MathUtils.distSquared(x2 + w2, y2, x1, y1 + h1);
+		}
+		if (y1 > y2) {
+			return MathUtils.distSquared(x2, y2 + h2, x1 + w1, y1);
+		}
+		return MathUtils.distSquared(x2, y2, x1 + w1, y1 + h1);
+	}
+
+	/**
+	 * 计算并返回指定位置与指定正方形之间的碰撞间距值
+	 * 
+	 * @param xy
+	 * @param box
+	 * @return
+	 */
+	public static float squarePointRect(XY xy, BoxSize box) {
+		if (xy == null || box == null) {
+			return 0f;
+		}
+		return squarePointRect(xy.getX(), xy.getY(), box.getX(), box.getY(), box.getWidth(), box.getHeight());
+	}
+
+	/**
+	 * 计算并返回指定位置与指定正方形之间的碰撞间距值
+	 * 
+	 * @param px
+	 * @param py
+	 * @param rx
+	 * @param ry
+	 * @param rw
+	 * @param rh
+	 * @return
+	 */
+	public static float squarePointRect(float px, float py, float rx, float ry, float rw, float rh) {
+		if (px >= rx && px <= rx + rw) {
+			if (py >= ry && py <= ry + rh) {
+				return 0f;
+			}
+			if (py > ry) {
+				return (py - (ry + rh)) * (py - (ry + rh));
+			}
+			return (ry - py) * (ry - py);
+		}
+		if (py >= ry && py <= ry + rh) {
+			if (px > rx) {
+				return (px - (rx + rw)) * (px - (rx + rw));
+			}
+			return (rx - px) * (rx - px);
+		}
+		if (px > rx) {
+			if (py > ry) {
+				return MathUtils.distSquared(rx + rw, ry + rh, px, py);
+			}
+			return MathUtils.distSquared(rx + rw, ry, px, py);
+		}
+		if (py > ry) {
+			return MathUtils.distSquared(rx, ry + rh, px, py);
+		}
+		return MathUtils.distSquared(rx, ry, px, py);
 	}
 
 	/**
@@ -361,6 +529,36 @@ public final class CollisionHelper extends ShapeUtils {
 		return (dx >= sx && dy >= sy && ((dx + dw) <= (sx + sw)) && ((dy + dh) <= (sy + sh)));
 	}
 
+    public static final boolean containsIsometric(int x, int y, int w, int h, int px, int py) {
+        float mx = w / 2;
+        float my = h / 2;
+        float ix = px - x;
+        float iy = py - y;
+        if (iy > my) {
+            iy = my - (iy - my);
+        }
+        if ((ix > mx + 1 + (2 * iy)) || (ix < mx - 1 - (2 * iy))) {
+            return false;
+        }
+        return true;
+    }
+
+    public static final boolean containsHexagon(int x, int y, int w, int h, int px, int py) {
+        float mx = w / 4;
+        float my = h / 2;
+        float hx = px - x;
+        float hy = py - y;
+        if (hx > mx * 3) {
+            hx = mx - (hx - mx * 3);
+        } else if (hx > mx) {
+            return py >= y && py <= y + h;
+        }
+        if ((hy > my + 1 + (2 * hx)) || (hy < my - 1 - (2 * hx))) {
+            return false;
+        }
+        return true;
+    }
+    
 	public static final void confine(RectBox rect, RectBox field) {
 		int x = rect.Right() > field.Right() ? field.Right() - (int) rect.getWidth() : rect.Left();
 		if (x < field.Left()) {
@@ -386,8 +584,8 @@ public final class CollisionHelper extends ShapeUtils {
 		return line;
 	}
 
-	public static final boolean checkAABBvsAABB(Vector2f p1, float w1, float h1, Vector2f p2, float w2, float h2) {
-		return checkAABBvsAABB(p1.x, p1.y, w1, h1, p2.x, p2.y, w2, h2);
+	public static final boolean checkAABBvsAABB(XY p1, float w1, float h1, XY p2, float w2, float h2) {
+		return checkAABBvsAABB(p1.getX(), p1.getY(), w1, h1, p2.getX(), p2.getY(), w2, h2);
 	}
 
 	public static final boolean checkAABBvsAABB(float x1, float y1, float w1, float h1, float x2, float y2, float w2,
@@ -395,14 +593,15 @@ public final class CollisionHelper extends ShapeUtils {
 		return !(x1 > x2 + w2 || x1 + w1 < x2) && !(y1 > y2 + h2 || y1 + h1 < y2);
 	}
 
-	public static final boolean checkAABBvsAABB(Vector2f p1Min, Vector2f p1Max, Vector2f p2Min, Vector2f p2Max) {
-		return checkAABBvsAABB(p1Min.x, p1Min.y, p1Max.x - p1Min.x, p1Max.y - p1Min.y, p2Min.x, p2Min.y,
-				p2Max.x - p2Min.x, p2Max.y - p2Min.y);
+	public static final boolean checkAABBvsAABB(XY p1Min, XY p1Max, XY p2Min, XY p2Max) {
+		return checkAABBvsAABB(p1Min.getX(), p1Min.getY(), p1Max.getX() - p1Min.getX(), p1Max.getY() - p1Min.getY(),
+				p2Min.getX(), p2Min.getY(), p2Max.getX() - p2Min.getX(), p2Max.getY() - p2Min.getY());
 	}
 
-	public static final boolean checkAABBvsAABB(Vector3f p1, float w1, float h1, float t1, Vector3f p2, float w2,
-			float h2, float t2) {
-		return checkAABBvsAABB(p1.x, p1.y, p1.z, w1, h1, t1, p2.x, p2.y, p2.z, w2, h2, t2);
+	public static final boolean checkAABBvsAABB(XYZ p1, float w1, float h1, float t1, XYZ p2, float w2, float h2,
+			float t2) {
+		return checkAABBvsAABB(p1.getX(), p1.getY(), p1.getZ(), w1, h1, t1, p2.getX(), p2.getY(), p2.getZ(), w2, h2,
+				t2);
 	}
 
 	public static final boolean checkAABBvsAABB(float x1, float y1, float z1, float w1, float h1, float t1, float x2,
@@ -410,13 +609,14 @@ public final class CollisionHelper extends ShapeUtils {
 		return !(x1 > x2 + w2 || x1 + w1 < x2) && !(y1 > y2 + h2 || y1 + h1 < y2) && !(z1 > z2 + t2 || z1 + t1 < z2);
 	}
 
-	public static final boolean checkAABBvsAABB(Vector3f p1Min, Vector3f p1Max, Vector3f p2Min, Vector3f p2Max) {
-		return checkAABBvsAABB(p1Min.x, p1Min.y, p1Min.z, p1Max.x - p1Min.x, p1Max.y - p1Min.y, p1Max.z - p1Min.z,
-				p2Min.x, p2Min.y, p1Min.z, p2Max.x - p2Min.x, p2Max.y - p2Min.y, p2Max.z - p2Min.z);
+	public static final boolean checkAABBvsAABB(XYZ p1Min, XYZ p1Max, XYZ p2Min, XYZ p2Max) {
+		return checkAABBvsAABB(p1Min.getX(), p1Min.getY(), p1Min.getZ(), p1Max.getX() - p1Min.getX(),
+				p1Max.getY() - p1Min.getY(), p1Max.getZ() - p1Min.getZ(), p2Min.getX(), p2Min.getY(), p1Min.getZ(),
+				p2Max.getX() - p2Min.getX(), p2Max.getY() - p2Min.getY(), p2Max.getZ() - p2Min.getZ());
 	}
 
-	public static final boolean checkCircleCircle(Vector2f p1, float r1, Vector2f p2, float r2) {
-		return checkCircleCircle(p1.x, p1.y, r1, p2.x, p2.y, r2);
+	public static final boolean checkCircleCircle(XY p1, float r1, XY p2, float r2) {
+		return checkCircleCircle(p1.getX(), p1.getY(), r1, p2.getX(), p2.getY(), r2);
 	}
 
 	public static final boolean checkCircleCircle(float x1, float y1, float r1, float x2, float y2, float r2) {
@@ -426,8 +626,8 @@ public final class CollisionHelper extends ShapeUtils {
 		return distance <= radiusSumSq;
 	}
 
-	public static final boolean checkSphereSphere(Vector3f p1, float r1, Vector3f p2, float r2) {
-		return checkSphereSphere(p1.x, p1.y, p1.z, r1, p2.x, p2.y, p2.z, r2);
+	public static final boolean checkSphereSphere(XYZ p1, float r1, XYZ p2, float r2) {
+		return checkSphereSphere(p1.getX(), p1.getY(), p1.getZ(), r1, p2.getX(), p2.getY(), p2.getZ(), r2);
 	}
 
 	public static final boolean checkSphereSphere(float x1, float y1, float z1, float r1, float x2, float y2, float z2,
@@ -438,7 +638,7 @@ public final class CollisionHelper extends ShapeUtils {
 		return distance <= radiusSumSq;
 	}
 
-	public static final float getJumpVelo(float gravity, float distance) {
+	public static final float getJumpVelocity(float gravity, float distance) {
 		return MathUtils.sqrt(2 * distance * gravity);
 	}
 
@@ -454,8 +654,8 @@ public final class CollisionHelper extends ShapeUtils {
 	 * @param endPoint
 	 * @return
 	 */
-	public static final boolean isMoved(float distance, Vector2f startPoints, Vector2f endPoint) {
-		return isMoved(distance, startPoints.x, startPoints.y, endPoint.x, endPoint.y);
+	public static final boolean isMoved(float distance, XY startPoints, XY endPoint) {
+		return isMoved(distance, startPoints.getX(), startPoints.getY(), endPoint.getX(), endPoint.getY());
 	}
 
 	/**
@@ -486,8 +686,8 @@ public final class CollisionHelper extends ShapeUtils {
 		return n;
 	}
 
-	public static final boolean lineIntersection(Vector2f p1, Vector2f p2, boolean seg1, Vector2f p3, Vector2f p4,
-			boolean seg2, Vector2f result) {
+	public static final boolean lineIntersection(XY p1, XY p2, boolean seg1, XY p3, XY p4, boolean seg2,
+			Vector2f result) {
 		float y43 = p4.getY() - p3.getY();
 		float x21 = p2.getX() - p1.getX();
 		float x43 = p4.getX() - p3.getX();
@@ -517,11 +717,30 @@ public final class CollisionHelper extends ShapeUtils {
 		return true;
 	}
 
-	public static final int whichSide(Vector2f p1, float theta, Vector2f p2) {
+	public static final boolean lineIntersection(XY p1, XY p2, XY p3, XY p4, Vector2f ptIntersection) {
+		float num1 = ((p4.getY() - p3.getY()) * (p2.getX() - p1.getX()))
+				- ((p4.getX() - p3.getX()) * (p2.getY() - p1.getY()));
+		float num2 = ((p4.getX() - p3.getX()) * (p1.getY() - p3.getY()))
+				- ((p4.getY() - p3.getY()) * (p1.getX() - p3.getX()));
+		float num3 = ((p2.getX() - p1.getX()) * (p1.getY() - p3.getY()))
+				- ((p2.getY() - p1.getY()) * (p1.getX() - p3.getX()));
+		if (num1 != 0f) {
+			float num4 = num2 / num1;
+			float num5 = num3 / num1;
+			if (((num4 >= 0f) && (num4 <= 1f)) && ((num5 >= 0f) && (num5 <= 1f))) {
+				ptIntersection.x = (int) (p1.getX() + (num4 * (p2.getX() - p1.getX())));
+				ptIntersection.y = (int) (p1.getY() + (num4 * (p2.getY() - p1.getY())));
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static final int whichSide(XY p1, float theta, XY p2) {
 		theta += MathUtils.PI / 2;
-		int x = (int) (p1.x + MathUtils.round(1000 * MathUtils.cos(theta)));
-		int y = (int) (p1.y + MathUtils.round(1000 * MathUtils.sin(theta)));
-		return dot(p1.x(), p1.y(), p2.x(), p2.y(), x, y);
+		float x = (int) (p1.getX() + MathUtils.round(1000 * MathUtils.cos(theta)));
+		float y = (int) (p1.getY() + MathUtils.round(1000 * MathUtils.sin(theta)));
+		return MathUtils.iceil(dotf(p1.getX(), p1.getY(), p2.getX(), p2.getY(), x, y));
 	}
 
 	public static final void shiftToContain(RectBox tainer, RectBox tained) {
@@ -595,6 +814,57 @@ public final class CollisionHelper extends ShapeUtils {
 			result.setBounds(tileWidth * col, tileHeight * row, tileWidth, tileHeight);
 		}
 		return result;
+	}
+
+	/**
+	 * 获得指定线经过的点
+	 * 
+	 * @param line
+	 * @param stepRate
+	 * @return
+	 */
+	public static final TArray<Vector2f> getBresenhamPoints(Line line, float stepRate) {
+		if (stepRate < 1f) {
+			stepRate = 1f;
+		}
+		TArray<Vector2f> results = new TArray<Vector2f>();
+
+		float x1 = MathUtils.round(line.getX1());
+		float y1 = MathUtils.round(line.getY1());
+		float x2 = MathUtils.round(line.getX2());
+		float y2 = MathUtils.round(line.getY2());
+
+		float dx = MathUtils.abs(x2 - x1);
+		float dy = MathUtils.abs(y2 - y1);
+		float sx = (x1 < x2) ? 1 : -1;
+		float sy = (y1 < y2) ? 1 : -1;
+		int err = MathUtils.ceil(dx) - MathUtils.ceil(dy);
+
+		results.add(new Vector2f(x1, y1));
+
+		int i = 1;
+
+		while (!((x1 == x2) && (y1 == y2))) {
+			int e2 = err << 1;
+
+			if (e2 > -dy) {
+				err -= dy;
+				x1 += sx;
+			}
+
+			if (e2 < dx) {
+				err += dx;
+				y1 += sy;
+			}
+
+			if (i % stepRate == 0) {
+				results.add(new Vector2f(x1, y1));
+			}
+
+			i++;
+		}
+
+		return results;
 	}
 
 }

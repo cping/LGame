@@ -53,15 +53,59 @@ public class LSystem {
 
 	public static final String FLAG_SELECT_TAG = "◆";
 
+	/** 表示空值和无效的占位用字符串 **/
 	public static final String EMPTY = "";
 
-	public static final String UNKOWN = "unkown";
+	public static final String NULL = "null";
+
+	public static final String UNKNOWN = "unknown";
+
+	/** 常见字符串操作用符号 **/
+	public static final char DOT = '.';
+
+	public static final char SLASH = '/';
+
+	public static final char BACKSLASH = '\\';
+
+	public static final char CR = '\r';
+
+	public static final char LF = '\n';
+
+	public static final char TF = '\t';
+
+	public static final char UNDERLINE = '_';
+
+	public static final char DASHED = '-';
+
+	public static final char COMMA = ',';
+
+	public static final char DELIM_START = '{';
+
+	public static final char DELIM_END = '}';
+
+	public static final char BRACKET_START = '[';
+
+	public static final char BRACKET_END = ']';
+
+	public static final char COLON = ':';
+
+	public static final char DOUBLE_QUOTES = '"';
+
+	public static final char SINGLE_QUOTE = '\'';
+
+	public static final char AMP = '&';
+
+	public static final char SPACE = ' ';
+
+	public static final char TAB = '	';
+
 	// 默认缓存数量
 	public static final int DEFAULT_MAX_CACHE_SIZE = 32;
 
 	// 默认缓动函数延迟
 	public static final float DEFAULT_EASE_DELAY = 1f / 60f;
-
+	
+	public static final float MIN_SECONE_SPEED_FIXED = 0.008f;
 	// 行分隔符
 	public static final String LS = System.getProperty("line.separator", "\n");
 
@@ -323,9 +367,9 @@ public class LSystem {
 		return new JsonImpl();
 	}
 
-	public static boolean isHTML5() {
+	public static boolean isBrowser() {
 		if (base() != null) {
-			return base().isHTML5();
+			return base().isBrowser();
 		}
 		return false;
 	}
@@ -359,7 +403,7 @@ public class LSystem {
 	public static void setScaleHeight(float sy) {
 		LSystem._scaleHeight = sy;
 	}
-
+	
 	public static Scale getScale() {
 		Graphics graphics = null;
 		if (LSystem.base() != null) {
@@ -460,7 +504,7 @@ public class LSystem {
 			}
 		}
 	}
-
+	
 	public static final LProcess getProcess() {
 		if (base() != null) {
 			return base().processImpl;
@@ -468,16 +512,60 @@ public class LSystem {
 		return null;
 	}
 
-	public static final void load(Updateable u) {
+	public static final boolean addResume(Updateable u) {
 		if (getProcess() != null) {
-			getProcess().addLoad(u);
+			return getProcess().addResume(u);
 		}
+		return false;
 	}
 
-	public static final void unload(Updateable u) {
+	public static final boolean removeResume(Updateable u) {
 		if (getProcess() != null) {
-			getProcess().addUnLoad(u);
+			return getProcess().removeResume(u);
 		}
+		return false;
+	}
+
+	public static final boolean load(Updateable u) {
+		if (getProcess() != null) {
+			return getProcess().addLoad(u);
+		}
+		return false;
+	}
+
+	public static final boolean removeLoad(Updateable u) {
+		if (getProcess() != null) {
+			return getProcess().removeLoad(u);
+		}
+		return false;
+	}
+
+	public static final boolean containsLoad(Updateable u) {
+		if (getProcess() != null) {
+			return getProcess().containsLoad(u);
+		}
+		return false;
+	}
+
+	public static final boolean unload(Updateable u) {
+		if (getProcess() != null) {
+			return getProcess().addUnLoad(u);
+		}
+		return false;
+	}
+
+	public static final boolean removeUnLoad(Updateable u) {
+		if (getProcess() != null) {
+			return getProcess().removeUnLoad(u);
+		}
+		return false;
+	}
+
+	public static final boolean containsUnLoad(Updateable u) {
+		if (getProcess() != null) {
+			return getProcess().containsUnLoad(u);
+		}
+		return false;
 	}
 
 	public static final String format(float value) {
@@ -616,18 +704,18 @@ public class LSystem {
 		return indices;
 	}
 
-	public static final boolean containsTexture(int id) {
-		if (base() != null) {
-			return base().containsTexture(id);
-		}
-		return false;
-	}
-
 	public static final LTexture getTexture(int id) {
 		if (base() != null) {
 			return base().getTexture(id);
 		}
 		return null;
+	}
+	
+	public static final boolean containsTexture(int id) {
+		if (base() != null) {
+			return base().containsTexture(id);
+		}
+		return false;
 	}
 
 	public static final void reloadTexture() {
@@ -687,28 +775,6 @@ public class LSystem {
 	public static final LTexture newTexture(String path, Format config) {
 		if (base() != null) {
 			return base().newTexture(path, config);
-		}
-		return null;
-	}
-
-	public LTexture loadNinePatchTexture(String fileName, int w, int h) {
-		if (base() != null) {
-			return base().loadNinePatchTexture(fileName, w, h);
-		}
-		return null;
-	}
-
-	public static final LTexture loadNinePatchTexture(String fileName, int x, int y, int w, int h) {
-		if (base() != null) {
-			return base().loadNinePatchTexture(fileName, x, y, w, h);
-		}
-		return null;
-	}
-
-	public static final LTexture loadNinePatchTexture(String fileName, Repeat repeat, int x, int y, int w, int h,
-			Format config) {
-		if (base() != null) {
-			return base().loadNinePatchTexture(fileName, repeat, x, y, w, h, config);
 		}
 		return null;
 	}
@@ -998,4 +1064,7 @@ public class LSystem {
 		}
 	}
 
+	public static final boolean equals(final Object o1, final Object o2) {
+		return (o1 == null) ? (o2 == null) : o1.equals(o2);
+	}
 }

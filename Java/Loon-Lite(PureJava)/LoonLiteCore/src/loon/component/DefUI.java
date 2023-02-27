@@ -30,41 +30,41 @@ import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.canvas.LGradation;
 import loon.canvas.Pixmap;
-import loon.geom.BooleanValue;
-import loon.geom.FloatValue;
-import loon.geom.IntValue;
-import loon.geom.PointF;
-import loon.geom.PointI;
-import loon.geom.RectBox;
-import loon.geom.RectF;
-import loon.geom.RectI;
-import loon.geom.Vector2f;
 import loon.opengl.LSubTexture;
 import loon.utils.TArray;
 import loon.utils.ArrayMap;
+import loon.utils.HelperUtils;
 import loon.utils.MathUtils;
 
-public class DefUI {
+public class DefUI extends HelperUtils {
 
-	private static DefUI instance;
+	private static DefUI _instance;
 
-	public static void freeStatic(){
-		instance = null;
+	public static void freeStatic() {
+		_instance = null;
 	}
-	
+
 	public final static DefUI make() {
 		return new DefUI();
 	}
 
 	public final static DefUI self() {
-		if (instance == null) {
+		if (_instance == null) {
 			synchronized (DefUI.class) {
-				if (instance == null) {
-					instance = make();
+				if (_instance == null) {
+					_instance = make();
 				}
 			}
 		}
-		return instance;
+		return _instance;
+	}
+
+	public final static DefUI selfClear() {
+		DefUI ui = self();
+		if (ui != null) {
+			ui.clearDefaultUI();
+		}
+		return ui;
 	}
 
 	public final static String win_frame_UI = LSystem.getSystemImagePath() + "wbar.png";
@@ -326,7 +326,7 @@ public class DefUI {
 			boolean drawHeigth) {
 		DefUI tool = new DefUI();
 		Canvas g = LSystem.base().graphics().createCanvas(width, height);
-		LGradation gradation = LGradation.getInstance(start, end, width, height, 125);
+		LGradation gradation = LGradation.create(start, end, width, height, 125);
 		if (drawHeigth) {
 			gradation.drawHeight(g, 0, 0);
 		} else {
@@ -364,7 +364,7 @@ public class DefUI {
 	public final static LTexture getGameWinFrame(int width, int height, LColor start, LColor end, boolean drawHeigth) {
 		DefUI tool = new DefUI();
 		Canvas g = LSystem.base().graphics().createCanvas(width, height);
-		LGradation gradation = LGradation.getInstance(start, end, width, height, 125);
+		LGradation gradation = LGradation.create(start, end, width, height, 125);
 		if (drawHeigth) {
 			gradation.drawHeight(g, 0, 0);
 		} else {
@@ -387,7 +387,7 @@ public class DefUI {
 		Canvas g = LSystem.base().graphics().createCanvas(width, height);
 		DefUI tool = new DefUI();
 		Pixmap pix = Pixmap.createImage(width, height);
-		LGradation gradation = LGradation.getInstance(start, end, width, height, 125);
+		LGradation gradation = LGradation.create(start, end, width, height, 125);
 		if (drawHeigth) {
 			gradation.drawHeight(pix, 0, 0);
 		} else {
@@ -514,6 +514,48 @@ public class DefUI {
 		}
 	}
 
+	/**
+	 * 产生一个游戏用按钮纹理
+	 * 
+	 * @param width
+	 * @param height
+	 * @return
+	 */
+	public final static LTexture getGameWinButton(final int width, final int height) {
+		return getGameWinButton(width, height, LColor.gray);
+	}
+
+	/**
+	 * 产生一个指定色彩的游戏用按钮纹理
+	 * 
+	 * @param width
+	 * @param height
+	 * @param fill
+	 * @return
+	 */
+	public final static LTexture getGameWinButton(final int width, final int height, final LColor fill) {
+		Pixmap img = Pixmap.createImage(width, height);
+		final int t = LColor.white.darker().getARGB(), b = LColor.black.getARGB();
+		final int f = new LColor(fill).darker().getARGB();
+		final int w1 = width - 1, h1 = height - 1;
+		for (int j = 1; j < h1; j++) {
+			img.putPixel(0, j, b);
+			img.putPixel(1, j, t);
+			img.putPixel(w1, h1 - j, b);
+		}
+		for (int i = 1; i < w1; i++) {
+			img.putPixel(i, 0, b);
+			img.putPixel(i, 1, t);
+			img.putPixel(w1 - i, h1, b);
+		}
+		for (int j = 2; j < h1; j++) {
+			for (int i = 2; i < w1; i++) {
+				img.putPixel(i, j, f);
+			}
+		}
+		return img.texture();
+	}
+
 	private final void setTransmission(Canvas g, int x, int y, int w, int h, LColor col, float t) {
 		g.setAlpha(t);
 		g.setColor(col);
@@ -616,42 +658,6 @@ public class DefUI {
 			defaultTextures.add(textfieldbody.get());
 		}
 		return defaultTextures.get(index);
-	}
-
-	public static Vector2f point(float x, float y) {
-		return new Vector2f(x, y);
-	}
-
-	public static PointF pointf(float x, float y) {
-		return new PointF(x, y);
-	}
-
-	public static PointI pointi(int x, int y) {
-		return new PointI(x, y);
-	}
-
-	public static RectBox rect(float x, float y, float w, float h) {
-		return new RectBox(x, y, w, h);
-	}
-
-	public static RectF rectf(float x, float y, float w, float h) {
-		return new RectF(x, y, w, h);
-	}
-
-	public static RectI recti(int x, int y, int w, int h) {
-		return new RectI(x, y, w, h);
-	}
-
-	public static BooleanValue boolValue(boolean v) {
-		return new BooleanValue(v);
-	}
-
-	public static FloatValue floatValue(float v) {
-		return new FloatValue(v);
-	}
-
-	public static IntValue intValue(int v) {
-		return new IntValue(v);
 	}
 
 	public final void clearDefaultUI() {

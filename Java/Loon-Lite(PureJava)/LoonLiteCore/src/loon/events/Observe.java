@@ -1,0 +1,38 @@
+/**
+ * Copyright 2008 - 2020 The Loon Game Engine Authors
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ * 
+ * @project loon
+ * @author cping
+ * @email：javachenpeng@yahoo.com
+ * @version 0.5
+ */
+package loon.events;
+
+/**
+ * 数据异步传递用类,会返回完成状态（ActionUpdate子类,可传递泛型对象）
+ *
+ * @param <T>
+ */
+public abstract class Observe<T> extends UpdateableT<T> implements ActionUpdate {
+
+	public Observe() {
+		super(null, null);
+	}
+
+	public Observe(T context, String name) {
+		super(context, name);
+	}
+
+}

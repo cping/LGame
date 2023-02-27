@@ -34,9 +34,9 @@ import loon.canvas.Paint.Style;
 import loon.canvas.Path;
 import loon.font.IFont;
 import loon.geom.Affine2f;
-import loon.geom.Ellipse;
 import loon.geom.Matrix3;
 import loon.geom.Matrix4;
+import loon.geom.PointF;
 import loon.geom.Polygon;
 import loon.geom.RectBox;
 import loon.geom.RectF;
@@ -47,6 +47,7 @@ import loon.geom.Vector2f;
 import loon.geom.XY;
 import loon.utils.Array;
 import loon.utils.GLUtils;
+import loon.utils.IntMap;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
 
@@ -87,6 +88,10 @@ public class GLEx implements LRelease {
 
 	private LColor tmpColor = new LColor();
 
+	private Vector2f tempLocation = new Vector2f();
+
+	private final IntMap<PointF> rhombusArray = new IntMap<PointF>();
+
 	private final Array<Affine2f> affineStack = new Array<Affine2f>();
 
 	private final Array<BrushSave> brushStack = new Array<BrushSave>();
@@ -115,8 +120,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 创建一个默认的GL渲染封装，将其作为默认的渲染器来使用。与0.5以前版本不同的是,此GLEX将不再唯一，允许复数构建.
-	 * 如果使用HTML5，则禁止非纹理的渲染方式（因为部分浏览器不支持，会自动用纹理方式替代，但是glBegin到glEnd的
-	 * 直接像素渲染方式则会禁用）.
+	 * 如果使用HTML5，则禁止非纹理的渲染方式（因为部分浏览器不支持，会自动用纹理方式替代，但是glBegin到glEnd的 直接像素渲染方式则会禁用）.
 	 * 
 	 * PS:只有在LGame中注入的，可以影响全局渲染.
 	 * 
@@ -263,11 +267,24 @@ public class GLEx implements LRelease {
 	}
 
 	public static BaseBatch createDefaultBatch(Canvas gl) {
-		return new TrilateralBatch(gl);
+		return new MeshBatch(gl);
 	}
 
 	public Affine2f tx() {
 		return lastTrans;
+	}
+
+	public GLEx setBlendMode(int mode) {
+		if (isClosed) {
+			return this;
+		}
+		lastBrush.blend = mode;
+		// GLUtils.setBlendMode(batch.gl, mode);
+		return this;
+	}
+
+	public int getBlendMode() {
+		return 0;// GLUtils.getBlendMode();
 	}
 
 	public GLEx saveBrush() {
@@ -476,12 +493,11 @@ public class GLEx implements LRelease {
 		return this;
 	}
 
-	public GLEx postform() {
+	public GLEx synchTransform() {
 		if (isClosed) {
 			return this;
 		}
-		Affine2f post = tx();
-		gfx.getCanvas().transform(post.m00, post.m01, post.m10, post.m11, post.tx, post.ty);
+		gfx.getCanvas().setTransform(tx());
 		return this;
 	}
 
@@ -1469,6 +1485,14 @@ public class GLEx implements LRelease {
 		return this;
 	}
 
+	public GLEx drawLine(float x0, float y0, float x1, float y1, float width, LColor color) {
+		int tmp = this.lastBrush.baseColor;
+		setColor(color);
+		drawLine(x0, y0, x1, y1, width);
+		setColor(tmp);
+		return this;
+	}
+
 	public GLEx drawLine(float x0, float y0, float x1, float y1, float width) {
 		if (isClosed) {
 			return this;
@@ -1505,6 +1529,7 @@ public class GLEx implements LRelease {
 			return this;
 		}
 		Canvas canvas = gfx.getCanvas();
+		canvas.setTransform(tx());
 		canvas.fillRect(x, y, width, height, tmpColor.setColor(lastBrush.baseColor));
 		return this;
 	}
@@ -1580,6 +1605,7 @@ public class GLEx implements LRelease {
 
 	public GLEx drawLine(float x1, float y1, float x2, float y2) {
 		Canvas canvas = gfx.getCanvas();
+		canvas.setTransform(tx());
 		LColor color = canvas.getFilltoLColor();
 		canvas.setColor(tmpColor.setColor(lastBrush.baseColor));
 		canvas.drawLine(x1, y1, x2, y2);
@@ -1611,6 +1637,7 @@ public class GLEx implements LRelease {
 		}
 		int argb = LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor);
 		Canvas canvas = gfx.getCanvas();
+		canvas.setTransform(tx());
 		Path path = canvas.createPath();
 		float[] points = shape.getPoints();
 		for (int i = 0; i < points.length; i += 2) {
@@ -1669,6 +1696,7 @@ public class GLEx implements LRelease {
 		}
 		int argb = LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor);
 		Canvas canvas = gfx.getCanvas();
+		canvas.setTransform(tx());
 		Path path = canvas.createPath();
 		for (int i = 0; i < points.length; i += 2) {
 			path.lineTo(points[i], points[i + 1]);
@@ -1705,6 +1733,7 @@ public class GLEx implements LRelease {
 		}
 		int argb = LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor);
 		Canvas canvas = gfx.getCanvas();
+		canvas.setTransform(tx());
 		Path path = canvas.createPath();
 		float[] points = shape.getPoints();
 		for (int i = 0; i < points.length; i += 2) {
@@ -1804,8 +1833,8 @@ public class GLEx implements LRelease {
 		/*
 		 * beginRenderer(GLType.Line); int argb =
 		 * LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor);
-		 * glRenderer.setColor(argb); glRenderer.triangle(x1, y1, x2, y2, x3,
-		 * y3); endRenderer();
+		 * glRenderer.setColor(argb); glRenderer.triangle(x1, y1, x2, y2, x3, y3);
+		 * endRenderer();
 		 */
 		return this;
 	}
@@ -1825,8 +1854,8 @@ public class GLEx implements LRelease {
 		/*
 		 * beginRenderer(GLType.Filled); int argb =
 		 * LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor);
-		 * glRenderer.setColor(argb); glRenderer.triangle(x1, y1, x2, y2, x3,
-		 * y3); endRenderer();
+		 * glRenderer.setColor(argb); glRenderer.triangle(x1, y1, x2, y2, x3, y3);
+		 * endRenderer();
 		 */
 		return this;
 	}
@@ -1958,7 +1987,10 @@ public class GLEx implements LRelease {
 	 * @param Aa
 	 */
 	public GLEx drawOval(float x1, float y1, float width, float height) {
-			return this.drawArc(x1, y1, width, height, 32, 0, 360);
+		Canvas canvas = getCanvas();
+		canvas.setTransform(tx());
+		canvas.drawOval(x1, y1, width, height, tmpColor.setColor(lastBrush.baseColor));
+		return this;
 	}
 
 	/**
@@ -1970,9 +2002,214 @@ public class GLEx implements LRelease {
 	 * @param Aa
 	 */
 	public GLEx fillOval(float x1, float y1, float width, float height) {
+		Canvas canvas = getCanvas();
+		canvas.setTransform(tx());
+		LColor color = canvas.getFilltoLColor();
+		canvas.setColor(tmpColor.setColor(lastBrush.baseColor));
+		canvas.fillOval(x1, y1, width, height);
+		canvas.setColor(color);
+		return this;
+	}
 
-		return this.fillArc(x1, y1, width, height, 32, 0, 360);
+	public GLEx fillCircle(float x, float y, float radius) {
+		return fillOval(x, y, radius, radius);
+	}
 
+	public GLEx fillCircle(float x, float y, float radius, LColor color) {
+		int argb = this.lastBrush.baseColor;
+		setColor(color);
+		fillCircle(x, y, radius);
+		setColor(argb);
+		return this;
+	}
+
+	public GLEx drawCircle(float x, float y, float radius) {
+		return drawOval(x, y, radius, radius);
+	}
+
+	public GLEx drawCircle(float x, float y, float radius, LColor color) {
+		int argb = this.lastBrush.baseColor;
+		setColor(color);
+		drawCircle(x, y, radius);
+		setColor(argb);
+		return this;
+	}
+
+	/**
+	 * 绘制菱形区域
+	 * 
+	 * @param g
+	 * @param amount
+	 * @param x
+	 * @param y
+	 * @param radius
+	 * @param color
+	 * @return
+	 */
+	public GLEx drawRhombus(int amount, float x, float y, float radius, LColor color) {
+		return drawRhombus(x, y, amount, 1, radius, 0, color);
+	}
+
+	/**
+	 * 以虚线绘制菱形区域
+	 * 
+	 * @param amount
+	 * @param x
+	 * @param y
+	 * @param radius
+	 * @param divisions
+	 * @param color
+	 * @return
+	 */
+	public GLEx drawDashRhombus(int amount, float x, float y, float radius, int divisions, LColor color) {
+		return drawDashRhombus(x, y, amount, 1, radius, 0, divisions, color);
+	}
+
+	/**
+	 * 以虚线绘制菱形区域
+	 * 
+	 * @param amount
+	 * @param x
+	 * @param y
+	 * @param radius
+	 * @param color
+	 * @return
+	 */
+	public GLEx drawDashRhombus(int amount, float x, float y, float radius, LColor color) {
+		return drawDashRhombus(x, y, amount, 1, radius, 0, 5, color);
+	}
+
+	/**
+	 * 绘制菱形区域
+	 * 
+	 * @param amount
+	 * @param x
+	 * @param y
+	 * @param radius
+	 * @return
+	 */
+	public GLEx drawRhombus(int amount, float x, float y, float radius) {
+		return drawRhombus(amount, x, y, radius, tmpColor.setColor(this.lastBrush.baseColor));
+	}
+
+	/**
+	 * 以虚线绘制菱形区域
+	 * 
+	 * @param amount
+	 * @param x
+	 * @param y
+	 * @param radius
+	 * @param divisions
+	 * @return
+	 */
+	public GLEx drawDashRhombus(int amount, float x, float y, float radius, int divisions) {
+		return drawDashRhombus(amount, x, y, radius, divisions, tmpColor.setColor(this.lastBrush.baseColor));
+	}
+
+	/**
+	 * 绘制菱形区域
+	 * 
+	 * @param x
+	 * @param y
+	 * @param pointAmount
+	 * @param pointStep
+	 * @param radius
+	 * @param beginAngle
+	 * @param color
+	 * @return
+	 */
+	public GLEx drawRhombus(float x, float y, int pointAmount, int pointStep, float radius, float beginAngle,
+			LColor color) {
+		return drawRhombus(x, y, pointAmount, pointStep, radius, beginAngle, false, 1, color);
+	}
+
+	/**
+	 * 以虚线绘制菱形区域
+	 * 
+	 * @param x
+	 * @param y
+	 * @param pointAmount
+	 * @param pointStep
+	 * @param radius
+	 * @param beginAngle
+	 * @param divisions
+	 * @param color
+	 * @return
+	 */
+	public GLEx drawDashRhombus(float x, float y, int pointAmount, int pointStep, float radius, float beginAngle,
+			int divisions, LColor color) {
+		return drawRhombus(x, y, pointAmount, pointStep, radius, beginAngle, true, divisions, color);
+	}
+
+	/**
+	 * 绘制菱形区域
+	 * 
+	 * @param x
+	 * @param y
+	 * @param pointAmount
+	 * @param pointStep
+	 * @param radius
+	 * @param beginAngle
+	 * @param dashLine
+	 * @param divisions
+	 * @param color
+	 * @return
+	 */
+	public GLEx drawRhombus(float x, float y, int pointAmount, int pointStep, float radius, float beginAngle,
+			boolean dashLine, int divisions, LColor color) {
+		final int steps = pointStep * pointAmount;
+		boolean update = false;
+		if (steps != rhombusArray.size) {
+			rhombusArray.clear();
+			update = true;
+		}
+		final float newRadius = radius / 2;
+		final float amount = 360f / pointAmount;
+		final float step = newRadius / pointStep;
+		int count = 0;
+		for (int j = 0; j < pointStep; j++) {
+			for (int i = 0; i < pointAmount; i++) {
+				float len = amount * i;
+				float newX = MathUtils.cos(MathUtils.toRadians(len - beginAngle)) * (j + 1) * step;
+				float newY = MathUtils.sin(MathUtils.toRadians(len - beginAngle)) * (j + 1) * step;
+				float rx = newX + x + newRadius;
+				float ry = -newY + y + newRadius;
+				if (update) {
+					rhombusArray.put(count++, new PointF(rx, ry));
+				} else {
+					PointF result = rhombusArray.get(count++);
+					if (result != null) {
+						result.set(rx, ry);
+					}
+				}
+			}
+		}
+		int size = rhombusArray.size();
+		for (int i = 1; i <= size; i++) {
+			PointF p1 = rhombusArray.get(i - 1);
+			if (p1 != null) {
+				if ((i) % (pointAmount) != 0) {
+					PointF opend = rhombusArray.get(i);
+					if (opend != null) {
+						if (dashLine) {
+							drawDashLine(p1.x, p1.y, opend.x, opend.y, divisions, color);
+						} else {
+							drawLine(p1.x, p1.y, opend.x, opend.y, color);
+						}
+					}
+				} else {
+					PointF closed = rhombusArray.get(i - pointAmount);
+					if (closed != null) {
+						if (dashLine) {
+							drawDashLine(p1.x, p1.y, closed.x, closed.y, divisions, color);
+						} else {
+							drawLine(p1.x, p1.y, closed.x, closed.y, color);
+						}
+					}
+				}
+			}
+		}
+		return this;
 	}
 
 	/**
@@ -1995,6 +2232,7 @@ public class GLEx implements LRelease {
 		Canvas canvas = gfx.getCanvas();
 		LColor tmp = canvas.getFilltoLColor();
 		canvas.setColor(tmpColor.setColor(color));
+		canvas.setTransform(tx());
 		canvas.drawPoint(x, y);
 		canvas.setColor(tmp);
 		return this;
@@ -2009,12 +2247,16 @@ public class GLEx implements LRelease {
 	 */
 	public GLEx drawPoints(float[] x, float[] y, int size) {
 		Canvas canvas = gfx.getCanvas();
+		canvas.setTransform(tx());
+		LColor tmp = canvas.getFilltoLColor();
+		canvas.setColor(tmpColor);
 		Path path = canvas.createPath();
 		for (int i = 0; i < size; i++) {
 			path.lineTo(x[i], y[i]);
 		}
 		path.close();
 		canvas.strokePath(path);
+		canvas.setColor(tmp);
 		return this;
 	}
 
@@ -2029,9 +2271,7 @@ public class GLEx implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-
 		fill(new Polygon(xPoints, yPoints, nPoints));
-
 		return this;
 	}
 
@@ -2046,9 +2286,7 @@ public class GLEx implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-
 		draw(new Polygon(xPoints, yPoints, nPoints));
-
 		return this;
 	}
 
@@ -2061,8 +2299,7 @@ public class GLEx implements LRelease {
 	 * @param y2
 	 */
 	public final GLEx drawRect(final float x1, final float y1, final float x2, final float y2) {
-		setRect(x1, y1, x2, y2, false);
-		return this;
+		return drawRect(x1, y1, x2, y2, tmpColor);
 	}
 
 	/**
@@ -2075,11 +2312,7 @@ public class GLEx implements LRelease {
 	 * @param color
 	 */
 	public final GLEx drawRect(final float x1, final float y1, final float x2, final float y2, LColor color) {
-		int argb = this.lastBrush.baseColor;
-		setColor(color);
-		setRect(x1, y1, x2, y2, false);
-		setColor(argb);
-		return this;
+		return drawRect(x1, y1, x2, y2, color.getARGB());
 	}
 
 	/**
@@ -2092,9 +2325,48 @@ public class GLEx implements LRelease {
 	 * @param color
 	 */
 	public final GLEx drawRect(final float x1, final float y1, final float x2, final float y2, int color) {
+		tmpColor.setColor(LColor.combine(color, this.lastBrush.baseColor));
+		Canvas canvas = gfx.getCanvas();
+		canvas.setTransform(tx());
+		canvas.drawRect(x2, y1, y2, color, tmpColor);
+		return this;
+	}
+
+	/**
+	 * 绘制一个由虚线组成的矩形
+	 * 
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
+	 * @param color
+	 * @param divisions
+	 * @return
+	 */
+	public final GLEx drawDashRect(float x, float y, float width, float height, LColor color, int divisions) {
+		if (divisions <= 1) {
+			return drawRect(x, y, width, height, color);
+		}
 		int argb = this.lastBrush.baseColor;
 		setColor(color);
-		setRect(x1, y1, x2, y2, false);
+		float tempX = x;
+		float tempY = y;
+		float tempWidth = tempX + width;
+		float tempHeight = tempY + height;
+		if (tempX > tempWidth) {
+			x = tempX;
+			tempX = tempWidth;
+			tempWidth = x;
+		}
+		if (tempY > tempHeight) {
+			y = tempY;
+			tempY = tempHeight;
+			tempHeight = y;
+		}
+		drawDashLine(tempX, tempY, tempWidth, tempY, divisions);
+		drawDashLine(tempX, tempY + 1, tempX, tempHeight, divisions);
+		drawDashLine(tempWidth, tempHeight, tempX + 1, tempHeight, divisions);
+		drawDashLine(tempWidth, tempHeight - 1, tempWidth, tempY + 1, divisions);
 		setColor(argb);
 		return this;
 	}
@@ -2108,10 +2380,7 @@ public class GLEx implements LRelease {
 	 * @param y2
 	 */
 	public final GLEx fillRect(final float x1, final float y1, final float x2, final float y2, LColor color) {
-		LColor c = new LColor(LColor.combine(color.getARGB(), this.lastBrush.baseColor));
-		Canvas canvas = gfx.getCanvas();
-		canvas.fillRect(x1, y1, x2, y2, c);
-		return this;
+		return fillRect(x1, y1, x2, y2, color.getARGB());
 	}
 
 	/**
@@ -2123,71 +2392,10 @@ public class GLEx implements LRelease {
 	 * @param y2
 	 */
 	public final GLEx fillRect(final float x1, final float y1, final float x2, final float y2, int color) {
-		int argb = this.lastBrush.baseColor;
-		setColor(color);
-		setRect(x1, y1, x2, y2, true);
-		setColor(argb);
-		return this;
-	}
-
-	private float[] temp_xs = new float[4];
-
-	private float[] temp_ys = new float[4];
-
-	/**
-	 * 设置矩形图案
-	 * 
-	 * @param x
-	 * @param y
-	 * @param width
-	 * @param height
-	 * @param fill
-	 */
-	public final GLEx setRect(float x, float y, float width, float height, boolean fill) {
-		if (isClosed) {
-			return this;
-		}
-
-		if (fill) {
-			// fillRectNative(x, y, width, height);
-		} else {
-			float tempX = x;
-			float tempY = y;
-			float tempWidth = x + width;
-			float tempHeight = y + height;
-			if (tempX > tempWidth) {
-				x = tempX;
-				tempX = tempWidth;
-				tempWidth = x;
-			}
-			if (tempY > tempHeight) {
-				y = tempY;
-				tempY = tempHeight;
-				tempHeight = y;
-			}
-			drawLine(tempX, tempY, tempHeight, tempY, this.lastBrush.lineWidth);
-			drawLine(tempX, tempY + 1, tempX, tempHeight, this.lastBrush.lineWidth);
-			drawLine(tempHeight, tempHeight, tempX + 1, tempHeight, this.lastBrush.lineWidth);
-			drawLine(tempHeight, tempHeight - 1, tempHeight, tempY + 1, this.lastBrush.lineWidth);
-
-			return this;
-		}
-
-		temp_xs[0] = x;
-		temp_xs[1] = x + width;
-		temp_xs[2] = x + width;
-		temp_xs[3] = x;
-
-		temp_ys[0] = y;
-		temp_ys[1] = y;
-		temp_ys[2] = y + height;
-		temp_ys[3] = y + height;
-
-		if (fill) {
-			fillPolygon(temp_xs, temp_ys, 4);
-		} else {
-			drawPolygon(temp_xs, temp_ys, 4);
-		}
+		tmpColor.setColor(LColor.combine(color, this.lastBrush.baseColor));
+		Canvas canvas = gfx.getCanvas();
+		canvas.setTransform(tx());
+		canvas.fillRect(x1, y1, x2, y2, tmpColor);
 		return this;
 	}
 
@@ -2199,23 +2407,8 @@ public class GLEx implements LRelease {
 	 * @param start
 	 * @param end
 	 */
-	public final GLEx drawArc(RectBox rect, int segments, float start, float end) {
-		return drawArc(rect.x, rect.y, rect.width, rect.height, segments, start, end);
-	}
-
-	/**
-	 * 绘制指定大小的弧度
-	 * 
-	 * @param x1
-	 * @param y1
-	 * @param width
-	 * @param height
-	 * @param start
-	 * @param end
-	 * @return
-	 */
-	public final GLEx drawArc(float x1, float y1, float width, float height, float start, float end) {
-		return drawArc(x1, y1, width, height, 40, start, end);
+	public final GLEx drawArc(RectBox rect, float start, float end) {
+		return drawArc(rect.x, rect.y, rect.width, rect.height, start, end);
 	}
 
 	/**
@@ -2229,31 +2422,16 @@ public class GLEx implements LRelease {
 	 * @param start
 	 * @param end
 	 */
-	public final GLEx drawArc(float x1, float y1, float width, float height, int segments, float start, float end) {
+	public final GLEx drawArc(float x1, float y1, float width, float height, float start, float end) {
 		if (isClosed) {
 			return this;
 		}
-
 		while (end < start) {
 			end += 360;
 		}
-		float radiusW = width / 2.0f;
-		float radiusH = height / 2.0f;
-		float cx = x1 + radiusW;
-		float cy = y1 + radiusH;
-		if ((int) radiusW == (int) radiusH) {
-			/*
-			 * beginRenderer(GLType.Line); int argb =
-			 * LColor.combine(this.lastBrush.fillColor,
-			 * this.lastBrush.baseColor); glRenderer.setColor(argb); if (end -
-			 * start == 360) { glRenderer.oval(cx, cy, MathUtils.min(radiusW,
-			 * radiusH)); } else { glRenderer.arc(cx, cy, MathUtils.min(radiusW,
-			 * radiusH), start, end, segments); } endRenderer();
-			 */
-		} else {
-			draw(new Ellipse(cx, cy, radiusW, radiusH, start, end, segments));
-		}
-
+		Canvas canvas = getCanvas();
+		canvas.setTransform(tx());
+		canvas.drawArc(x1, y1, width, height, start, end, tmpColor.setColor(lastBrush.baseColor));
 		return this;
 	}
 
@@ -2264,48 +2442,26 @@ public class GLEx implements LRelease {
 	 * @param y1
 	 * @param width
 	 * @param height
+	 * @param segments
 	 * @param start
 	 * @param end
 	 */
 	public final GLEx fillArc(float x1, float y1, float width, float height, float start, float end) {
-		return fillArc(x1, y1, width, height, 40, start, end);
-	}
-
-	/**
-	 * 填充指定大小的弧度
-	 * 
-	 * @param x1
-	 * @param y1
-	 * @param width
-	 * @param height
-	 * @param segments
-	 * @param start
-	 * @param end
-	 */
-	public final GLEx fillArc(float x1, float y1, float width, float height, int segments, float start, float end) {
 		if (isClosed) {
 			return this;
 		}
-
 		while (end < start) {
 			end += 360;
 		}
-		float radiusW = width / 2.0f;
-		float radiusH = height / 2.0f;
-		float cx = x1 + radiusW;
-		float cy = y1 + radiusH;
-		/*
-		 * beginRenderer(GLType.Filled); int argb =
-		 * LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor);
-		 * glRenderer.setColor(argb); if (end - start == 360) {
-		 * glRenderer.oval(cx, cy, MathUtils.min(radiusW, radiusH)); } else {
-		 * glRenderer.arc(cx, cy, MathUtils.min(radiusW, radiusH), start, end,
-		 * segments); } endRenderer();
-		 */
-
+		Canvas canvas = getCanvas();
+		canvas.setTransform(tx());
+		LColor color = canvas.getFilltoLColor();
+		canvas.setColor(tmpColor.setColor(lastBrush.baseColor));
+		canvas.fillArc(x1, y1, width, height, start, end);
+		canvas.setColor(color);
 		return this;
 	}
-
+	
 	/**
 	 * 绘制圆形边框
 	 * 
@@ -2316,20 +2472,6 @@ public class GLEx implements LRelease {
 	 * @param radius
 	 */
 	public final GLEx drawRoundRect(float x, float y, float width, float height, int radius) {
-		return drawRoundRect(x, y, width, height, radius, 40);
-	}
-
-	/**
-	 * 绘制圆形边框
-	 * 
-	 * @param x
-	 * @param y
-	 * @param width
-	 * @param height
-	 * @param radius
-	 * @param segs
-	 */
-	public final GLEx drawRoundRect(float x, float y, float width, float height, int radius, int segs) {
 		if (isClosed) {
 			return this;
 		}
@@ -2350,25 +2492,11 @@ public class GLEx implements LRelease {
 		drawLine(x + width, y + radius, x + width, y + height - radius);
 		drawLine(x + radius, y + height, x + width - radius, y + height);
 		float d = radius * 2;
-		drawArc(x + width - d, y + height - d, d, d, segs, 0, 90);
-		drawArc(x, y + height - d, d, d, segs, 90, 180);
-		drawArc(x + width - d, y, d, d, segs, 270, 360);
-		drawArc(x, y, d, d, segs, 180, 270);
-
+		drawArc(x + width - d, y + height - d, d, d, 0, 90);
+		drawArc(x, y + height - d, d, d, 90, 180);
+		drawArc(x + width - d, y, d, d, 270, 360);
+		drawArc(x, y, d, d, 180, 270);
 		return this;
-	}
-
-	/**
-	 * 填充圆形边框
-	 * 
-	 * @param x
-	 * @param y
-	 * @param width
-	 * @param height
-	 * @param cornerRadius
-	 */
-	public final GLEx fillRoundRect(float x, float y, float width, float height, int cornerRadius) {
-		return fillRoundRect(x, y, width, height, cornerRadius, 40);
 	}
 
 	/**
@@ -2381,7 +2509,7 @@ public class GLEx implements LRelease {
 	 * @param radius
 	 * @param segs
 	 */
-	public final GLEx fillRoundRect(float x, float y, float width, float height, int radius, int segs) {
+	public final GLEx fillRoundRect(float x, float y, float width, float height, int radius) {
 		if (isClosed) {
 			return this;
 		}
@@ -2402,11 +2530,437 @@ public class GLEx implements LRelease {
 		fillRect(x + width - radius, y + radius, radius, height - d);
 		fillRect(x + radius, y + height - radius, width - d, radius);
 		fillRect(x + radius, y + radius, width - d, height - d);
-		fillArc(x + width - d, y + height - d, d, d, segs, 0, 90);
-		fillArc(x, y + height - d, d, d, segs, 90, 180);
-		fillArc(x + width - d, y, d, d, segs, 270, 360);
-		fillArc(x, y, d, d, segs, 180, 270);
+		fillArc(x + width - d, y + height - d, d, d, 0, 90);
+		fillArc(x, y + height - d, d, d, 90, 180);
+		fillArc(x + width - d, y, d, d, 270, 360);
+		fillArc(x, y, d, d, 180, 270);
+		return this;
+	}
 
+	/**
+	 * 虚线绘制
+	 * 
+	 * @param x1
+	 * @param y1
+	 * @param x2
+	 * @param y2
+	 * @param divisions
+	 * @param width
+	 * @return
+	 */
+	public GLEx drawDashLine(float x1, float y1, float x2, float y2, int divisions, float width, LColor color) {
+		float dx = x2 - x1, dy = y2 - y1;
+		for (int i = 0; i < divisions; i++) {
+			if (i % 2 == 0) {
+				drawLine(x1 + ((float) i / divisions) * dx, y1 + ((float) i / divisions) * dy,
+						x1 + ((i + 1f) / divisions) * dx, y1 + ((i + 1f) / divisions) * dy, width, color);
+			}
+		}
+		return this;
+	}
+
+	public GLEx drawDashLine(float x1, float y1, float x2, float y2, int divisions, LColor color) {
+		return drawDashLine(x1, y1, x2, y2, divisions, this.lastBrush.lineWidth, color);
+	}
+
+	public GLEx drawDashLine(float x1, float y1, float x2, float y2, int divisions) {
+		return drawDashLine(x1, y1, x2, y2, divisions, this.lastBrush.lineWidth,
+				tmpColor.setColor(this.lastBrush.baseColor));
+	}
+
+	public GLEx drawAngleLine(float x, float y, float angle, float length) {
+		tempLocation.set(1f).setLength(length).setAngle(angle);
+		return drawLine(x, y, x + tempLocation.x(), y + tempLocation.y(), this.lastBrush.lineWidth);
+	}
+
+	public GLEx drawAngleLine(float x, float y, float angle, float length, float width) {
+		tempLocation.set(1f).setLength(length).setAngle(angle);
+		return drawLine(x, y, x + tempLocation.x(), y + tempLocation.y(), width);
+	}
+
+	public GLEx drawDashCircle(float x, float y, float radius) {
+		return drawDashCircle(x, y, radius, this.lastBrush.lineWidth);
+	}
+
+	public GLEx drawDashCircle(float x, float y, float radius, float width, LColor color) {
+		int argb = this.lastBrush.baseColor;
+		setColor(color);
+		drawDashCircle(x, y, radius, width);
+		setColor(argb);
+		return this;
+	}
+
+	public GLEx drawDashCircle(float x, float y, float radius, float width) {
+		return drawDashCircle(x, y, 2, radius, width);
+	}
+
+	public GLEx drawDashCircle(float x, float y, int side, float radius, float width) {
+		final float newRadius = radius / side;
+		final float newX = x + newRadius;
+		final float newY = y + newRadius;
+		float scaleFactor = 0.6f;
+		int sides = 10 + MathUtils.floor(newRadius * scaleFactor);
+		if (sides % side == 1) {
+			sides++;
+		}
+		tempLocation.set(0f);
+
+		for (int i = 0; i < sides; i++) {
+			if (i % side == 0) {
+				continue;
+			}
+			tempLocation.set(newRadius, 0).setAngle(360f / sides * i + 90);
+			float x1 = tempLocation.x;
+			float y1 = tempLocation.y;
+
+			tempLocation.set(newRadius, 0).setAngle(360f / sides * (i + 1) + 90);
+
+			drawLine(x1 + newX, y1 + newY, tempLocation.x + newX, tempLocation.y + newY, width);
+		}
+		return this;
+	}
+
+	/**
+	 * 从指定开始角度到终止角度绘制不合口圆形
+	 * 
+	 * @param x
+	 * @param y
+	 * @param startAngle
+	 * @param endAngle
+	 * @param radius
+	 * @param color
+	 * @return
+	 */
+	public GLEx drawStrokeCircle(float x, float y, float startAngle, float endAngle, float radius, LColor color) {
+		return drawStrokeCircle(x, y, startAngle, endAngle, radius, 2, true, color);
+	}
+
+	/**
+	 * 从指定开始角度到终止角度绘制不合口圆形
+	 * 
+	 * @param x
+	 * @param y
+	 * @param startAngle
+	 * @param endAngle
+	 * @param radius
+	 * @param width
+	 * @param clockwise
+	 * @param color
+	 * @return
+	 */
+	public GLEx drawStrokeCircle(float x, float y, float startAngle, float endAngle, float radius, float width,
+			LColor color) {
+		return drawStrokeCircle(x, y, startAngle, endAngle, radius, width, true, color);
+	}
+
+	/**
+	 * 从指定开始角度到终止角度绘制不合口圆形
+	 * 
+	 * @param x
+	 * @param y
+	 * @param startAngle
+	 * @param endAngle
+	 * @param radius
+	 * @param width
+	 * @param clockwise
+	 * @param color
+	 * @return
+	 */
+	public GLEx drawStrokeCircle(float x, float y, float startAngle, float endAngle, float radius, float width,
+			boolean clockwise, LColor color) {
+		int argb = this.lastBrush.baseColor;
+		setColor(color);
+		drawStrokeCircle(x, y, startAngle, endAngle, radius, width, clockwise);
+		setColor(argb);
+		return this;
+	}
+
+	/**
+	 * 从指定开始角度到终止角度绘制不合口圆形
+	 * 
+	 * @param x
+	 * @param y
+	 * @param startAngle
+	 * @param endAngle
+	 * @param radius
+	 * @param width
+	 * @param clockwise
+	 * @param color
+	 * @return
+	 */
+	public GLEx drawStrokeCircle(float x, float y, float startAngle, float endAngle, float radius, float width,
+			boolean clockwise, int color) {
+		int argb = this.lastBrush.baseColor;
+		setColor(color);
+		drawStrokeCircle(x, y, startAngle, endAngle, radius, width, clockwise);
+		setColor(argb);
+		return this;
+	}
+
+	/**
+	 * 从指定开始角度到终止角度绘制不合口圆形
+	 * 
+	 * @param x
+	 * @param y
+	 * @param startAngle
+	 * @param endAngle
+	 * @param radius
+	 * @param width
+	 * @param clockwise
+	 * @return
+	 */
+	public GLEx drawStrokeCircle(float x, float y, float startAngle, float endAngle, float radius, float width,
+			boolean clockwise) {
+		if (startAngle > endAngle) {
+			float newAngle = startAngle - endAngle;
+			endAngle = startAngle;
+			startAngle = newAngle;
+		}
+
+		final float newRadius = radius;
+		final float newX = x + newRadius;
+		final float newY = y + newRadius;
+
+		final float fixV = clockwise ? -90 : +90;
+
+		float scaleFactor = 0.6f;
+		int sides = 10 + MathUtils.floor(newRadius * scaleFactor);
+
+		final int startSide = (int) (sides / 360f * startAngle);
+
+		tempLocation.set(0f);
+
+		for (int i = startSide; i < sides; i++) {
+
+			float v = endAngle / sides * i;
+
+			tempLocation.set(newRadius, 0).setAngle(v + fixV);
+			float x1 = tempLocation.x;
+			float y1 = tempLocation.y;
+
+			tempLocation.set(newRadius, 0).setAngle(endAngle / sides * (i + 1) + fixV);
+
+			drawLine(x1 + newX, y1 + newY, tempLocation.x + newX, tempLocation.y + newY, width);
+
+		}
+		return this;
+	}
+
+	public GLEx drawStrokeGradientCircle(float x, float y, float startAngle, float endAngle, float radius, float width,
+			int startColor, int endColor, float angle) {
+		return drawStrokeGradientCircle(x, y, startAngle, endAngle, radius, width, startColor, endColor, true, 1.15f,
+				angle);
+	}
+
+	public GLEx drawStrokeGradientCircle(float x, float y, float startAngle, float endAngle, float radius, float width,
+			LColor startColor, LColor endColor, float angle) {
+		return drawStrokeGradientCircle(x, y, startAngle, endAngle, radius, width,
+				startColor == null ? -1 : startColor.getARGB(), endColor == null ? -1 : endColor.getARGB(), true, 1.15f,
+				angle);
+	}
+
+	public GLEx drawStrokeGradientCircle(float x, float y, float startAngle, float endAngle, float radius, float width,
+			int startColor, int endColor) {
+		return drawStrokeGradientCircle(x, y, startAngle, endAngle, radius, width, startColor, endColor, 0f);
+	}
+
+	public GLEx drawStrokeGradientCircle(float x, float y, float startAngle, float endAngle, float radius, float width,
+			LColor startColor, LColor endColor) {
+		return drawStrokeGradientCircle(x, y, startAngle, endAngle, radius, width,
+				startColor == null ? -1 : startColor.getARGB(), endColor == null ? -1 : endColor.getARGB(), 0f);
+	}
+
+	public GLEx drawStrokeGradientCircle(float x, float y, float startAngle, float endAngle, float width, float height,
+			float size, int startColor, int endColor, float angle) {
+		return drawStrokeGradientCircle(x, y, startAngle, endAngle, width, height, size, startColor, endColor, true,
+				1.15f, angle);
+	}
+
+	public GLEx drawStrokeGradientCircle(float x, float y, float startAngle, float endAngle, float width, float height,
+			float size, LColor startColor, LColor endColor, float angle) {
+		return drawStrokeGradientCircle(x, y, startAngle, endAngle, width, height, size,
+				startColor == null ? -1 : startColor.getARGB(), endColor == null ? -1 : endColor.getARGB(), true, 1.15f,
+				angle);
+	}
+
+	public GLEx drawStrokeGradientCircle(float x, float y, float startAngle, float endAngle, float width, float height,
+			float size, int startColor, int endColor) {
+		return drawStrokeGradientCircle(x, y, startAngle, endAngle, width, height, size, startColor, endColor, 0f);
+	}
+
+	public GLEx drawStrokeGradientCircle(float x, float y, float startAngle, float endAngle, float width, float height,
+			float size, LColor startColor, LColor endColor) {
+		return drawStrokeGradientCircle(x, y, startAngle, endAngle, width, height, size,
+				startColor == null ? -1 : startColor.getARGB(), endColor == null ? -1 : endColor.getARGB(), 0f);
+	}
+
+	public GLEx drawStrokeGradientCircle(float x, float y, float startAngle, float endAngle, float width, float height,
+			float size, int startColor, int endColor, boolean clockwise, float space, float angle) {
+		final float radiusW = width / 2f;
+		final float radiusH = height / 2f;
+		final float radius = (radiusW > radiusH ? (radiusH) : (radiusW));
+		float centerX = 0f;
+		float centerY = 0f;
+		if (radiusH > radiusW) {
+			centerX = x - (radiusW - radius);
+			centerY = y + (radiusH - radius);
+		} else if (radiusH < radiusW) {
+			centerX = x + (radiusW - radius);
+			centerY = y - (radiusH - radius);
+		} else {
+			centerX = x - (radiusW - radius);
+			centerY = y - (radiusH - radius);
+		}
+		return drawStrokeGradientCircle(centerX, centerY, startAngle, endAngle, radius, size, startColor, endColor,
+				angle);
+	}
+
+	/**
+	 * 从指定开始角度到终止角度绘制不合口圆形并进行渐变
+	 * 
+	 * @param x
+	 * @param y
+	 * @param startAngle
+	 * @param endAngle
+	 * @param radius
+	 * @param width
+	 * @param startColor
+	 * @param endColor
+	 * @param clockwise
+	 * @param space
+	 * @return
+	 */
+	public GLEx drawStrokeGradientCircle(float x, float y, float startAngle, float endAngle, float radius, float width,
+			int startColor, int endColor, boolean clockwise, float space, float angle) {
+		if (startAngle == 0f && endAngle == 0f) {
+			return this;
+		}
+		if ((startColor == -1 && endColor == -1) || (startColor == endColor)) {
+			return drawStrokeCircle(x, y, startAngle, endAngle, radius, width, clockwise, endColor);
+		}
+		if (startAngle > endAngle) {
+			float newAngle = startAngle - endAngle;
+			endAngle = startAngle;
+			startAngle = newAngle;
+		}
+
+		final float newRadius = radius;
+		final float newX = x + newRadius;
+		final float newY = y + newRadius;
+
+		final float fixV = clockwise ? -90 : +90;
+
+		int sides = MathUtils.floor(newRadius);
+
+		final int startSide = (int) (sides / 360f * startAngle);
+
+		tempLocation.set(0f);
+
+		final int argb = this.lastBrush.baseColor;
+
+		for (int i = startSide; i < sides; i++) {
+
+			tempLocation.set(newRadius, 0).setAngle((endAngle / sides * i + fixV) + angle);
+			float x1 = tempLocation.x;
+			float y1 = tempLocation.y;
+
+			tempLocation.set(newRadius, 0).setAngle((endAngle / sides * (i + space) + fixV) + angle);
+
+			int color = LColor.getGradient(startColor, endColor, i / (float) sides);
+
+			setColor(color);
+			drawLine(x1 + newX, y1 + newY, tempLocation.x + newX, tempLocation.y + newY, width);
+		}
+		setColor(argb);
+
+		return this;
+	}
+
+	public GLEx drawSpikes(float x, float y, float radius, float length, int spikes, float rot, float width) {
+		tempLocation.set(0f, 1f);
+		float step = 360f / spikes;
+
+		for (int i = 0; i < spikes; i++) {
+			tempLocation.setAngle(i * step + rot);
+			tempLocation.setLength(radius);
+			float x1 = tempLocation.x, y1 = tempLocation.y;
+			tempLocation.setLength(radius + length);
+
+			drawLine(x + x1, y + y1, x + tempLocation.x, y + tempLocation.y, width);
+		}
+		return this;
+	}
+
+	public GLEx drawSpikes(float x, float y, float rad, float length, int spikes) {
+		return drawSpikes(x, y, rad, length, spikes, 0, this.lastBrush.lineWidth);
+	}
+
+	public GLEx drawSpikes(float x, float y, float rad, float length, int spikes, float width) {
+		return drawSpikes(x, y, rad, length, spikes, 0, width);
+	}
+
+	public GLEx drawCurve(float x1, float y1, float cx1, float cy1, float cx2, float cy2, float x2, float y2,
+			int segments) {
+		return drawCurve(x1, y1, cx1, cy1, cx2, cy2, x2, y2, segments, this.lastBrush.lineWidth);
+	}
+
+	/**
+	 * 绘制弧线
+	 * 
+	 * @param x1
+	 * @param y1
+	 * @param cx1
+	 * @param cy1
+	 * @param cx2
+	 * @param cy2
+	 * @param x2
+	 * @param y2
+	 * @param segments
+	 * @param width
+	 * @return
+	 */
+	public GLEx drawCurve(float x1, float y1, float cx1, float cy1, float cx2, float cy2, float x2, float y2,
+			int segments, float width) {
+
+		final float subdivstep = 1f / segments;
+		final float subdiv_stepa = subdivstep * subdivstep;
+		final float subdiv_stepb = subdivstep * subdivstep * subdivstep;
+
+		final float pre1 = 3 * subdivstep;
+		final float pre2 = 3 * subdiv_stepa;
+		final float pre4 = 6 * subdiv_stepa;
+		final float pre5 = 6 * subdiv_stepb;
+
+		final float tmp1x = x1 - cx1 * 2 + cx2;
+		final float tmp1y = y1 - cy1 * 2 + cy2;
+
+		final float tmp2x = (cx1 - cx2) * 3 - x1 + x2;
+		final float tmp2y = (cy1 - cy2) * 3 - y1 + y2;
+
+		float fx = x1;
+		float fy = y1;
+
+		float dfx = (cx1 - x1) * pre1 + tmp1x * pre2 + tmp2x * subdiv_stepb;
+		float dfy = (cy1 - y1) * pre1 + tmp1y * pre2 + tmp2y * subdiv_stepb;
+
+		float ddfx = tmp1x * pre4 + tmp2x * pre5;
+		float ddfy = tmp1y * pre4 + tmp2y * pre5;
+
+		float dddfx = tmp2x * pre5;
+		float dddfy = tmp2y * pre5;
+
+		for (; segments-- > 0;) {
+			float fxold = fx, fyold = fy;
+			fx += dfx;
+			fy += dfy;
+			dfx += ddfx;
+			dfy += ddfy;
+			ddfx += dddfx;
+			ddfy += dddfy;
+			drawLine(fxold, fyold, fx, fy, width);
+		}
+
+		drawLine(fx, fy, x2, y2, width);
 		return this;
 	}
 
@@ -2834,7 +3388,8 @@ public class GLEx implements LRelease {
 		}
 		if (width != this.lastBrush.lineWidth) {
 			this.lastBrush.lineWidth = width;
-			// batch.gl.glLineWidth(width);
+			Canvas canvas = gfx.getCanvas();
+			canvas.setLineWidth(width);
 		}
 		return this;
 	}
@@ -2844,7 +3399,8 @@ public class GLEx implements LRelease {
 			return this;
 		}
 		if (this.lastBrush.lineWidth != 1f) {
-			// batch.gl.glLineWidth(1f);
+			Canvas canvas = gfx.getCanvas();
+			canvas.setLineWidth(1f);
 			this.lastBrush.lineWidth = 1f;
 		}
 		return this;
@@ -2859,12 +3415,39 @@ public class GLEx implements LRelease {
 	}
 
 	/**
+	 * 获得当前画布旋转角度
+	 * 
+	 * @return
+	 */
+	public float getAngle() {
+		return lastTrans == null ? 0f : lastTrans.getAngle();
+	}
+
+	/**
+	 * 获得当前画布偏移的X坐标
+	 * 
+	 * @return
+	 */
+	public float getTranslationX() {
+		return lastTrans == null ? 0f : lastTrans.tx();
+	}
+
+	/**
+	 * 获得当前画布偏移的Y坐标
+	 * 
+	 * @return
+	 */
+	public float getTranslationY() {
+		return lastTrans == null ? 0f : lastTrans.ty();
+	}
+
+	/**
 	 * width的缩放比例
 	 * 
 	 * @return
 	 */
 	public float getScaleX() {
-		return scaleX;
+		return lastTrans == null ? scaleX : lastTrans.scaleX();
 	}
 
 	/**
@@ -2873,7 +3456,7 @@ public class GLEx implements LRelease {
 	 * @return
 	 */
 	public float getScaleY() {
-		return scaleY;
+		return lastTrans == null ? scaleY : lastTrans.scaleY();
 	}
 
 	@Override

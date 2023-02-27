@@ -20,6 +20,7 @@
  */
 package loon.action.sprite.effect;
 
+import loon.LSystem;
 import loon.action.sprite.Entity;
 import loon.canvas.LColor;
 import loon.opengl.GLEx;
@@ -77,7 +78,7 @@ public class PixelFireEffect extends Entity implements BaseEffect {
 		}
 
 		void update(long elapsedTime) {
-			float delta = MathUtils.max(elapsedTime / 1000f, 0.01f) * _effect._speed;
+			float delta = MathUtils.max(elapsedTime / 1000f, LSystem.MIN_SECONE_SPEED_FIXED) * _effect._speed;
 			_y -= _vy;
 			if (_id % 2 == 0) {
 				_x += MathUtils.sin(_vx, _effect._angle, 1f, true);
@@ -141,7 +142,6 @@ public class PixelFireEffect extends Entity implements BaseEffect {
 
 	public PixelFireEffect(float x, float y, float width, float height, int size, int amount, float speed, float angle,
 			LColor color) {
-		super();
 		this.setLocation(x, y);
 		this.setSize(width, height);
 		this.setColor(color);
@@ -213,10 +213,11 @@ public class PixelFireEffect extends Entity implements BaseEffect {
 	}
 
 	@Override
-	public void reset() {
+	public PixelFireEffect reset() {
 		super.reset();
 		this._dirty = true;
 		this._completed = false;
+		return this;
 	}
 
 	@Override

@@ -82,6 +82,12 @@ public abstract class Image extends TextureSource implements Canvas.Drawable, LR
 		return canvas.getImage();
 	}
 
+	public static Image getResize(final Image image, int x, int y, int w, int h) {
+		Canvas canvas = LSystem.base().graphics().createCanvas(w, h);
+		canvas.draw(image, 0, 0, w, h, x, y, image.width(), image.height());
+		return canvas.getImage();
+	}
+
 	public static Image drawClipImage(final Image image, int objectWidth, int objectHeight, int x1, int y1, int x2,
 			int y2) {
 		Canvas canvas = LSystem.base().graphics().createCanvas(objectWidth, objectHeight);
@@ -164,8 +170,7 @@ public abstract class Image extends TextureSource implements Canvas.Drawable, LR
 		int texWidth = pixelWidth();
 		int texHeight = pixelHeight();
 		if (texWidth <= 0 || texHeight <= 0) {
-			throw new LSysException(
-					"Invalid texture size: " + texWidth + "x" + texHeight + " from: " + this);
+			throw new LSysException("Invalid texture size: " + texWidth + "x" + texHeight + " from: " + this);
 		}
 		this.isTexture = true;
 		LTexture tex = new LTexture(gfx, gfx.createTexture(config), config, texWidth, texHeight, scale(), width(),

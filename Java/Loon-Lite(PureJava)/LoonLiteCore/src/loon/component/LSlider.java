@@ -33,9 +33,18 @@ import loon.opengl.GLEx;
  */
 public class LSlider extends LComponent {
 
-	private LTexture sliderImage, barImage;
+	private LTexture _sliderImage, _barImage;
+
 	private ValueListener _listener;
+
 	private float _value, _sliderWidth, _sliderHeight, _padding, _barImageHeight;
+
+	private float _stepSize = 0f;
+
+	private float _minValue = 0f;
+
+	private float _maxValue = 0f;
+
 	private boolean _vertical;
 
 	public LSlider(int x, int y, int width, int height) {
@@ -56,25 +65,34 @@ public class LSlider extends LComponent {
 
 	public LSlider(LTexture sliderText, LTexture barText, int x, int y, int width, int height, boolean vertical) {
 		super(x, y, width, height);
-		_vertical = vertical;
+		this._vertical = vertical;
 		if (vertical) {
-			this.sliderImage = sliderText;
+			this._sliderImage = sliderText;
 			this._sliderWidth = width * 0.5f;
 			this._sliderHeight = width * 0.5f;
-			this.barImage = barText;
-			this._padding = width / 100;
+			this._barImage = barText;
+			this._padding = width / 100f;
 			this._barImageHeight = height;
-			setWidth((int) (width * 0.12));
+			setWidth((int) (width * 0.12f));
 		} else {
-			this.sliderImage = sliderText;
+			this._sliderImage = sliderText;
 			this._sliderWidth = height * 0.5f;
 			this._sliderHeight = height * 0.5f;
-			this.barImage = barText;
-			this._padding = width / 100;
-			this._barImageHeight = height / 10;
+			this._barImage = barText;
+			this._padding = width / 100f;
+			this._barImageHeight = height / 10f;
 			setHeight(height);
 		}
+		this.reset();
 		freeRes().add(sliderText, barText);
+	}
+
+	public LSlider reset() {
+		this._stepSize = 0f;
+		this._value = 0f;
+		this._minValue = 0f;
+		this._maxValue = 100f;
+		return this;
 	}
 
 	@Override
@@ -100,58 +118,142 @@ public class LSlider extends LComponent {
 	@Override
 	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
 		if (_vertical) {
-			g.draw(barImage, x + _padding, y + getHeight() / 2 - _barImageHeight / 2, getWidth() - _padding * 2,
+			g.draw(_barImage, x + _padding, y + getHeight() / 2 - _barImageHeight / 2, getWidth() - _padding * 2,
 					_barImageHeight);
-			g.draw(sliderImage, x + _padding * (getWidth() - _padding * 2) - _sliderWidth / 2 + getWidth() / 2,
+			g.draw(_sliderImage, x + _padding * (getWidth() - _padding * 2) - _sliderWidth / 2 + getWidth() / 2,
 					y + _value * (getHeight()) - _sliderHeight / 2, _sliderWidth, _sliderHeight);
 		} else {
-			g.draw(barImage, x + _padding, y + getHeight() / 2 - _barImageHeight / 2, getWidth() - _padding * 2,
+			g.draw(_barImage, x + _padding, y + getHeight() / 2 - _barImageHeight / 2, getWidth() - _padding * 2,
 					_barImageHeight);
-			g.draw(sliderImage, x + _padding + _value * (getWidth() - _padding * 2) - _sliderWidth / 2,
+			g.draw(_sliderImage, x + _padding + _value * (getWidth() - _padding * 2) - _sliderWidth / 2,
 					y + getHeight() / 2 - _sliderHeight / 2, _sliderWidth, _sliderHeight);
 		}
 	}
 
-	public float getValue() {
-		return _value;
+	public float getPercentage() {
+		return this._value;
 	}
 
-	public void setValue(float v) {
+	public LSlider setPercentage(float p) {
+		setValue(p * _maxValue);
+		return this;
+	}
+
+	public LSlider setValue(float v, float min, float max) {
+		setMinValue(min);
+		setMaxValue(max);
+		setValue(v);
+		return this;
+	}
+
+	public float getMinValue() {
+		return _minValue;
+	}
+
+	public LSlider setMinValue(float minValue) {
+		if (minValue > this._maxValue) {
+			this._maxValue = minValue;
+			return this;
+		}
+		this._minValue = minValue;
+		setStepSize(getStepSize());
+		setValue(getValue());
+		return this;
+	}
+
+	public float getMaxValue() {
+		return _maxValue;
+	}
+
+	public LSlider setMaxValue(float maxValue) {
+		if (maxValue < this._minValue) {
+			this._minValue = maxValue;
+			return this;
+		}
+		this._maxValue = maxValue;
+		setStepSize(getStepSize());
+		setValue(getValue());
+		return this;
+	}
+
+	public float getStepSize() {
+		return _stepSize < 0 ? 0f : _stepSize;
+	}
+
+	public LSlider setStepSize(float stepSize) {
+		this._stepSize = stepSize;
+		if (stepSize > 0) {
+			float difference = this._maxValue - this._minValue;
+			this._stepSize = difference < stepSize ? difference : stepSize;
+		}
+		setValue(getValue());
+		return this;
+	}
+
+	public float getValue() {
+		return _value * this._maxValue;
+	}
+
+	public LSlider setValue(float v) {
 		this._value = v;
+		if (this._stepSize > 0) {
+			float halfStepSize = this._stepSize / 2f;
+			if (this._value < 0f) {
+				halfStepSize *= -1;
+			}
+			final int count = (int) ((this._value + halfStepSize) / this._stepSize);
+			this._value = this._stepSize * count;
+		}
+		if (this._value > this._maxValue) {
+			this._value = this._maxValue;
+		} else if (this._value < this._minValue) {
+			this._value = this._minValue;
+		}
+		this._value = this._value / this._maxValue;
+		return this;
+	}
+
+	public boolean isVertical() {
+		return this._vertical;
 	}
 
 	public float getSliderWidth() {
 		return _sliderWidth;
 	}
 
-	public void setSliderWidth(float s) {
+	public LSlider setSliderWidth(float s) {
 		this._sliderWidth = s;
+		return this;
 	}
 
 	public float getSliderHeight() {
 		return _sliderHeight;
 	}
 
-	public void setSliderHeight(float s) {
+	public LSlider setSliderHeight(float s) {
 		this._sliderHeight = s;
+		return this;
 	}
 
 	public LTexture getSliderImage() {
-		return sliderImage;
+		return _sliderImage;
 	}
 
-	public void setSliderImage(LTexture s) {
-		this.sliderImage = s;
+	public LSlider setSliderImage(LTexture s) {
+		this._sliderImage = s;
+		return this;
 	}
 
-	public void setSliderImage(LTexture s, float width, float height) {
-		this.sliderImage = s;
+	public LSlider setSliderImage(LTexture s, float width, float height) {
+		this._sliderImage = s;
 		setSliderWidth(width);
 		setSliderHeight(height);
+		return this;
 	}
 
-	public void setBarImage(LTexture b) {
-		this.barImage = b;
+	public LSlider setBarImage(LTexture b) {
+		this._barImage = b;
+		return this;
 	}
 
 	public ValueListener getListener() {
@@ -186,19 +288,6 @@ public class LSlider extends LComponent {
 				_listener.onChange(this, _value);
 			}
 		}
-	}
-
-	public LSlider setPercentage(float p) {
-		if (p >= 0f && p <= 1f) {
-			this._value = p;
-		} else {
-			if (p > 1f) {
-				this._value = 1f;
-			} else if (p < 0f) {
-				this._value = 0f;
-			}
-		}
-		return this;
 	}
 
 	@Override

@@ -51,6 +51,10 @@ public abstract class Painter extends TextureSource {
 
 	public abstract float height();
 
+	public abstract float getDisplayWidth();
+
+	public abstract float getDisplayHeight();
+	
 	public abstract float sx();
 
 	public abstract float sy();

@@ -30,7 +30,7 @@ public class DiagonalShort implements AStarFindHeuristic {
 		float diagonal = MathUtils.min(MathUtils.abs(sx - tx),
 				MathUtils.abs(sy - ty));
 		float straight = (MathUtils.abs(sx - tx) + MathUtils.abs(sy - ty));
-		return 2 * diagonal + (straight - 2 * diagonal);
+		return 2f * diagonal + (straight - 2f * diagonal);
 	}
 	
 	@Override

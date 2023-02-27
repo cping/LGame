@@ -1,13 +1,12 @@
 package loon.utils;
 
-import java.util.StringTokenizer;
-
 import loon.BaseIO;
 import loon.LRelease;
 import loon.LSysException;
 import loon.LSystem;
 import loon.action.avg.drama.Expression;
 import loon.action.map.Field2D;
+import loon.utils.parse.StrTokenizer;
 
 /**
  * 一个简单的多文本数据存储及读取用类,作用类似于ini文件
@@ -44,10 +43,10 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 	private String FLAG_I_TAG = "'";
 
 	public static ConfigReader at(final String path) {
-		return getInstance(path);
+		return shared(path);
 	}
 
-	public static ConfigReader getInstance(final String path) {
+	public static ConfigReader shared(final String path) {
 		synchronized (ConfigReader.class) {
 			ConfigReader reader = CONFIG_CACHE.get(path);
 			if (reader == null || reader._closed) {
@@ -66,7 +65,7 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 
 	private final String _path;
 
-	private final StringBuffer template_values = new StringBuffer();
+	private final StrBuilder template_values = new StrBuilder();
 
 	public ConfigReader(final String resName) {
 		if (StringUtils.isEmpty(resName)) {
@@ -82,13 +81,16 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 
 	public void parseMap(final String path) {
 		if (StringUtils.isEmpty(path)) {
-			throw new LSysException("Resource path cannot be Empty!");
+			throw new LSysException("Resource path cannot be Empty !");
 		}
 		if (_loaders == null) {
 			_loaders = new TArray<StringKeyValue>();
 		}
 		String context = BaseIO.loadText(path);
-		StringTokenizer reader = new StringTokenizer(context, LSystem.NL);
+		if (StringUtils.isEmpty(context)) {
+			throw new LSysException("The loaded data does not exist !");
+		}
+		StrTokenizer reader = new StrTokenizer(context, LSystem.NL);
 		String curTemplate = LSystem.EMPTY;
 		StringKeyValue curBuffer = null;
 		String result = null;
@@ -150,9 +152,9 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 		if (StringUtils.isEmpty(text)) {
 			return;
 		}
-		StringTokenizer reader = new StringTokenizer(text, LSystem.NL);
+		StrTokenizer reader = new StrTokenizer(text, LSystem.NL);
 		String record = null;
-		StringBuffer mapBuffer = new StringBuffer();
+		StrBuilder mapBuffer = new StrBuilder();
 		boolean mapFlag = false;
 		String mapName = null;
 		for (; reader.hasMoreTokens();) {
@@ -160,7 +162,7 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 			if (record.length() > 0 && !record.startsWith(FLAG_L_TAG) && !record.startsWith(FLAG_C_TAG)
 					&& !record.startsWith(FLAG_I_TAG)) {
 				if (record.startsWith("begin")) {
-					mapBuffer.delete(0, mapBuffer.length());
+					mapBuffer.setLength(0);
 					String mes = filter(record.substring(5, record.length()));
 					if (mes.startsWith("name")) {
 						mapName = loadItem(mes, false);
@@ -186,7 +188,7 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 		}
 		char[] chars = mes.toCharArray();
 		int size = chars.length;
-		StringBuffer sbr = template_values.delete(0, template_values.length());
+		StrBuilder sbr = template_values.setLength(0);
 		String key = null;
 		String value = null;
 		int idx = 0;
@@ -199,7 +201,7 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 					equals++;
 					if (idx == 0) {
 						key = sbr.toString();
-						sbr.delete(0, sbr.length());
+						sbr.setLength(0);
 					}
 					idx++;
 				}
@@ -372,7 +374,7 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 			boolean pFlag = false;
 			char[] chars = v.toCharArray();
 			int size = chars.length;
-			StringBuffer sbr = new StringBuffer(128);
+			StrBuilder sbr = new StrBuilder(128);
 			TArray<int[]> records = new TArray<int[]>(CollectionUtils.INITIAL_CAPACITY);
 			for (int i = 0; i < size; i++) {
 				char pValue = chars[i];
@@ -383,14 +385,14 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 				case '}':
 					pFlag = false;
 					String row = sbr.toString();
-					String[] strings = row.split(",");
+					String[] strings = StringUtils.split(row, LSystem.COMMA);
 					int length = strings.length;
 					int[] arrays = new int[length];
 					for (int j = 0; j < length; j++) {
 						arrays[j] = Integer.parseInt(strings[j]);
 					}
 					records.add(arrays);
-					sbr.delete(0, sbr.length());
+					sbr.setLength(0);
 					break;
 				case ' ':
 					break;

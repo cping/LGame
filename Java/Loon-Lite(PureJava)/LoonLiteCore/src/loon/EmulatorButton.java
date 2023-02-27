@@ -20,7 +20,6 @@
  */
 package loon;
 
-import loon.action.sprite.SpriteBatch;
 import loon.canvas.LColor;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
@@ -244,19 +243,6 @@ public class EmulatorButton {
 		this.bitmap = on;
 		this.setSize(on.width(), on.height());
 		return this;
-	}
-
-	public void draw(SpriteBatch batch) {
-		if (!disabled) {
-			if (onClick) {
-				float old = batch.getFloatColor();
-				batch.setColor(color);
-				batch.draw(bitmap, bounds.x, bounds.y, scaleWidth, scaleHeight);
-				batch.setColor(old);
-			} else {
-				batch.draw(bitmap, bounds.x, bounds.y, scaleWidth, scaleHeight);
-			}
-		}
 	}
 
 	public void draw(GLEx g) {

@@ -20,9 +20,11 @@
  */
 package loon.events;
 
+import loon.utils.StrBuilder;
+
 public class TouchMake {
 
-	public static class Event extends loon.events.Event.XY {
+	public static class Event extends loon.events.Event.XYEvent {
 
 		public static enum Kind {
 			START(true, false), MOVE(false, false), END(false, true), CANCEL(
@@ -62,7 +64,7 @@ public class TouchMake {
 		}
 
 		@Override
-		protected void addFields(StringBuilder builder) {
+		protected void addFields(StrBuilder builder) {
 			super.addFields(builder);
 			builder.append(", kind=").append(kind).append(", id=").append(id)
 					.append(", pressure=").append(pressure).append(", size=")

@@ -34,16 +34,21 @@ public abstract class AbstractBox implements XY {
 	protected int _height;
 	protected int _boxWidth;
 	protected int _boxHeight;
+	
 	protected float _boxX;
 	protected float _boxY;
 	protected float _borderW;
-	protected LColor borderColor = LColor.white.cpy();
+
 	protected float _alpha = 1f;
-	protected IFont font;
+	
+	protected LColor borderColor = LColor.white.cpy();
 	protected LColor fontColor = LColor.white.cpy();
+	
+	protected IFont font;
+	
 	protected LTexture _textureBox;
 	protected int _radius;
-	
+
 	protected AbstractBox(IFont font) {
 		if (font == null) {
 			throw new LSysException("IFont is null");
@@ -62,17 +67,19 @@ public abstract class AbstractBox implements XY {
 
 	public abstract void dirty();
 
-	public void setFont(IFont fn) {
+	public AbstractBox setFont(IFont fn) {
 		if (fn == null) {
-			return;
+			return this;
 		}
 		this.font = fn;
 		dirty();
+		return this;
 	}
 
-	public void setBorderWidth(float b) {
+	public AbstractBox setBorderWidth(float b) {
 		this._borderW = b;
 		dirty();
+		return this;
 	}
 
 	public void setBoxAlpha(float alpha) {
@@ -107,9 +114,10 @@ public abstract class AbstractBox implements XY {
 		this._boxY = y;
 	}
 
-	public void setLocation(Vector2f pos) {
+	public AbstractBox setLocation(Vector2f pos) {
 		this._boxX = pos.x;
 		this._boxY = pos.y;
+		return this;
 	}
 
 	protected void drawBorder(GLEx g, float x, float y, LColor c) {

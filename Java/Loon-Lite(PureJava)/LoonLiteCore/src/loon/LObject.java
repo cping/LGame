@@ -20,6 +20,8 @@
  */
 package loon;
 
+import java.util.Comparator;
+
 import loon.action.ActionBind;
 import loon.action.ActionControl;
 import loon.action.ActionEvent;
@@ -30,14 +32,17 @@ import loon.component.layout.LayoutAlign;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.geom.XY;
-import loon.opengl.BlendMode;
 import loon.utils.MathUtils;
 import loon.utils.StringKeyValue;
 import loon.utils.StringUtils;
+import loon.utils.reply.Callback;
 import loon.utils.reply.Var;
 import loon.utils.reply.VarView;
 
-public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
+/**
+ * 一个通用的Loon对象,除Screen外,Loon中所有可移动并展示的对象都继承于此类
+ */
+public abstract class LObject<T> implements Comparator<T>, XY, ZIndex {
 
 	private static int _SYS_GLOBAL_SEQNO = 0;
 
@@ -46,33 +51,33 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	}
 
 	public static enum State {
-		UNKOWN, REMOVED, ADDED, DISPOSED
+		UNKNOWN, REMOVED, ADDED, DISPOSED
 	}
 
-	protected final VarView<State> _state = Var.create(State.UNKOWN);
+	protected final VarView<State> _objectState = Var.create(State.UNKNOWN);
 
 	public final void setState(State state) {
-		((Var<State>) this._state).update(state);
+		((Var<State>) this._objectState).update(state);
 	}
 
 	public final State getState() {
-		return this._state.get();
+		return this._objectState.get();
 	}
 
 	public final boolean isDisposed() {
-		return _state.get() == State.DISPOSED;
+		return _objectState.get() == State.DISPOSED;
 	}
 
 	public final boolean isRemoved() {
-		return _state.get() == State.REMOVED;
+		return _objectState.get() == State.REMOVED;
 	}
 
 	public final boolean isAdded() {
-		return _state.get() == State.ADDED;
+		return _objectState.get() == State.ADDED;
 	}
 
-	public final boolean isUnkown() {
-		return _state.get() == State.UNKOWN;
+	public final boolean isUnknown() {
+		return _objectState.get() == State.UNKNOWN;
 	}
 
 	// 无状态
@@ -82,18 +87,18 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	// 假
 	public static final int FALSE = 2;
 
-	protected T _super = null;
+	protected T _objectSuper = null;
 
 	public void setSuper(T s) {
-		this._super = s;
+		this._objectSuper = s;
 	}
 
 	public T getSuper() {
-		return this._super;
+		return this._objectSuper;
 	}
 
 	public boolean hasSuper() {
-		return this._super != null;
+		return this._objectSuper != null;
 	}
 
 	public boolean hasParent() {
@@ -232,44 +237,45 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	}
 
 	// 附注用的Tag标记对象(加上什么都可以,传参也行,标记对象也行)
-	public Object Tag;
+	public Object Tag = null;
 
-	private Object _collisionData;
+	private Object _collisionData = null;
 
-	protected float _alpha = 1f;
+	protected float _objectAlpha = 1f;
 
-	protected float _rotation;
+	protected float _objectRotation, _previousRotation;
 
-	protected RectBox _rect;
+	protected RectBox _objectRect;
 
-	protected String _name;
+	protected String _objectName;
 
 	protected String _object_flag;
 
-	protected Vector2f _location = new Vector2f(0, 0);
+	protected final Vector2f _objectLocation = new Vector2f(0, 0);
 
-	protected Vector2f _previous_location = new Vector2f(0, 0);
+	protected final Vector2f _objectPreviousLocation = new Vector2f(0, 0);
 
-	protected int _layer;
+	protected int _objectLayer;
 
-	private int _objStatus = NOT;
+	private int _objectStatus = NOT;
 
-	private int _seqNo = 0;
+	private int _objectSeqNo = 0;
 
 	public LObject() {
-		this._seqNo = _SYS_GLOBAL_SEQNO;
-		this._rotation = 0;
-		this._layer = 0;
-		this._alpha = 1f;
+		this._objectSeqNo = _SYS_GLOBAL_SEQNO;
+		this._objectRotation = 0;
+		this._previousRotation = 0;
+		this._objectLayer = 0;
+		this._objectAlpha = 1f;
 		_SYS_GLOBAL_SEQNO++;
 	}
 
 	public final int getSequenceNo() {
-		return _seqNo;
+		return _objectSeqNo;
 	}
 
 	public final LObject<T> setStatus(int status) {
-		this._objStatus = status;
+		this._objectStatus = status;
 		return this;
 	}
 
@@ -278,15 +284,15 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	}
 
 	public final LObject<T> addLife() {
-		return setStatus(_objStatus++);
+		return setStatus(_objectStatus++);
 	}
 
 	public final int getStatus() {
-		return this._objStatus;
+		return this._objectStatus;
 	}
 
 	public final LObject<T> removeLife() {
-		return setStatus(_objStatus--);
+		return setStatus(_objectStatus--);
 	}
 
 	public final int getLife() {
@@ -307,32 +313,52 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	}
 
 	public int getTransparency() {
-		return (int) (_alpha * 255);
+		return (int) (_objectAlpha * 255);
 	}
 
 	public Alpha getAlphaObject() {
-		return new Alpha(_alpha);
+		return new Alpha(_objectAlpha);
 	}
 
 	public void setAlpha(float a) {
-		this._alpha = MathUtils.clamp(a, 0f, 1f);
+		this._objectAlpha = MathUtils.clamp(a, 0f, 1f);
 	}
 
 	public float getAlpha() {
-		return this._alpha;
+		return this._objectAlpha;
 	}
 
 	public void setRotation(float r) {
-		this._rotation = MathUtils.fixRotation(r);
-		if (_rect != null) {
-			_rect.setBounds(MathUtils.getBounds(_location.x, _location.y, getWidth(), getHeight(), r, _rect));
+		if (r == this._objectRotation) {
+			return;
+		}
+		this._previousRotation = this._objectRotation;
+		this._objectRotation = MathUtils.fixRotation(r);
+		if (_objectRect != null) {
+			_objectRect.setBounds(
+					MathUtils.getBounds(_objectLocation.x, _objectLocation.y, getWidth(), getHeight(), r, _objectRect));
 		} else {
-			_rect = MathUtils.getBounds(_location.x, _location.y, getWidth(), getHeight(), r, _rect);
+			_objectRect = MathUtils.getBounds(_objectLocation.x, _objectLocation.y, getWidth(), getHeight(), r,
+					_objectRect);
 		}
 	}
 
+	public void rotateBy(float r) {
+		if (r != 0f) {
+			setRotation(this._objectRotation + r);
+		}
+	}
+
+	public boolean isRotated() {
+		return _objectRotation != _previousRotation;
+	}
+
+	public float getPreviousRotation() {
+		return this._previousRotation;
+	}
+
 	public float getRotation() {
-		return _rotation;
+		return _objectRotation;
 	}
 
 	public abstract void update(long elapsedTime);
@@ -362,21 +388,21 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	}
 
 	protected RectBox setRect(RectBox rect) {
-		if (_rect == null) {
-			_rect = rect;
+		if (_objectRect == null) {
+			_objectRect = rect;
 		} else {
-			_rect.setBounds(rect);
+			_objectRect.setBounds(rect);
 		}
-		return this._rect;
+		return this._objectRect;
 	}
 
 	protected RectBox getRect(float x, float y, float w, float h) {
-		if (_rect == null) {
-			_rect = new RectBox(x, y, w, h);
+		if (_objectRect == null) {
+			_objectRect = new RectBox(x, y, w, h);
 		} else {
-			_rect.setBounds(x, y, w, h);
+			_objectRect.setBounds(x, y, w, h);
 		}
-		return _rect;
+		return _objectRect;
 	}
 
 	public boolean isContains(LObject<T> o) {
@@ -400,37 +426,41 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	}
 
 	public void setName(String name) {
-		this._name = name;
+		this._objectName = name;
 	}
 
 	public String getName() {
-		if (_name == null) {
-			_name = getClass().getName();
-			int idx = _name.lastIndexOf('.');
+		if (_objectName == null) {
+			_objectName = getClass().getName();
+			int idx = _objectName.lastIndexOf('.');
 			if (idx != -1 && idx > 0) {
-				_name = _name.substring(idx + 1).intern();
+				_objectName = _objectName.substring(idx + 1).intern();
 			} else {
-				_name = "LObject";
+				_objectName = "LObject";
 			}
 		}
-		return _name;
+		return _objectName;
 	}
 
 	@Override
 	public int getLayer() {
-		return _layer;
+		return _objectLayer;
 	}
 
 	public void setLayer(int z) {
-		this._layer = z;
+		this._objectLayer = z;
 	}
 
 	public void setZ(int z) {
-		setLayer(-z);
+		this.setZOrder(z);
 	}
 
 	public void setZOrder(int z) {
-		setLayer(-z);
+		int orderZ = z;
+		if (this._objectSuper != null && this._objectSuper instanceof ZIndex) {
+			orderZ = z - MathUtils.abs(((ZIndex) this._objectSuper).getLayer());
+		}
+		setLayer(-orderZ);
 	}
 
 	public int getZOrder() {
@@ -438,31 +468,49 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	}
 
 	public int getZ() {
-		return MathUtils.abs(getLayer());
+		return getZOrder();
 	}
 
+	/**
+	 * 上一个经过的X坐标
+	 * 
+	 * @return
+	 */
 	public float getPreviousX() {
-		return _previous_location.x;
+		return _objectPreviousLocation.x;
 	}
 
+	/**
+	 * 上一个经过的Y坐标
+	 * 
+	 * @return
+	 */
 	public float getPreviousY() {
-		return _previous_location.y;
+		return _objectPreviousLocation.y;
 	}
 
 	public int previousX() {
-		return _previous_location.x();
+		return _objectPreviousLocation.x();
 	}
 
 	public int previousY() {
-		return _previous_location.y();
+		return _objectPreviousLocation.y();
 	}
 
+	/**
+	 * 判定当前坐标是否发生了移动
+	 * 
+	 * @return
+	 */
 	public boolean hasMoved() {
-		return (_previous_location.x != _location.x || _previous_location.y != _location.y);
+		return (_objectPreviousLocation.x != _objectLocation.x || _objectPreviousLocation.y != _objectLocation.y);
 	}
 
+	/**
+	 * 同步保存上一个移动地址
+	 */
 	protected void syncPreviousPos() {
-		_previous_location.set(_location);
+		_objectPreviousLocation.set(_objectLocation);
 	}
 
 	public void move_45D_up() {
@@ -471,7 +519,7 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 
 	public void move_45D_up(int multiples) {
 		syncPreviousPos();
-		_location.move_multiples(Field2D.UP, multiples);
+		_objectLocation.move_multiples(Field2D.UP, multiples);
 	}
 
 	public void move_45D_left() {
@@ -480,7 +528,7 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 
 	public void move_45D_left(int multiples) {
 		syncPreviousPos();
-		_location.move_multiples(Field2D.LEFT, multiples);
+		_objectLocation.move_multiples(Field2D.LEFT, multiples);
 	}
 
 	public void move_45D_right() {
@@ -489,7 +537,7 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 
 	public void move_45D_right(int multiples) {
 		syncPreviousPos();
-		_location.move_multiples(Field2D.RIGHT, multiples);
+		_objectLocation.move_multiples(Field2D.RIGHT, multiples);
 	}
 
 	public void move_45D_down() {
@@ -498,7 +546,7 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 
 	public void move_45D_down(int multiples) {
 		syncPreviousPos();
-		_location.move_multiples(Field2D.DOWN, multiples);
+		_objectLocation.move_multiples(Field2D.DOWN, multiples);
 	}
 
 	public void move_up() {
@@ -507,7 +555,7 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 
 	public void move_up(int multiples) {
 		syncPreviousPos();
-		_location.move_multiples(Field2D.TUP, multiples);
+		_objectLocation.move_multiples(Field2D.TUP, multiples);
 	}
 
 	public void move_left() {
@@ -516,7 +564,7 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 
 	public void move_left(int multiples) {
 		syncPreviousPos();
-		_location.move_multiples(Field2D.TLEFT, multiples);
+		_objectLocation.move_multiples(Field2D.TLEFT, multiples);
 	}
 
 	public void move_right() {
@@ -525,7 +573,7 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 
 	public void move_right(int multiples) {
 		syncPreviousPos();
-		_location.move_multiples(Field2D.TRIGHT, multiples);
+		_objectLocation.move_multiples(Field2D.TRIGHT, multiples);
 	}
 
 	public void move_down() {
@@ -534,7 +582,7 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 
 	public void move_down(int multiples) {
 		syncPreviousPos();
-		_location.move_multiples(Field2D.TDOWN, multiples);
+		_objectLocation.move_multiples(Field2D.TDOWN, multiples);
 	}
 
 	public void move(Vector2f v) {
@@ -543,7 +591,7 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 
 	public void move(float x, float y) {
 		syncPreviousPos();
-		_location.move(x, y);
+		_objectLocation.move(x, y);
 	}
 
 	public void setLocation(XY local) {
@@ -554,8 +602,20 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 		setLocation(v.x, v.y);
 	}
 
+	public void setPosition(Vector2f position) {
+		if (position != null) {
+			this.setLocation(position);
+		} else {
+			this.setLocation(0f, 0f);
+		}
+	}
+
 	public void setPosition(float x, float y) {
 		setLocation(x, y);
+	}
+
+	public Vector2f getPosition() {
+		return this._objectLocation;
 	}
 
 	public void pos(float x, float y) {
@@ -564,25 +624,25 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 
 	public void setLocation(float x, float y) {
 		syncPreviousPos();
-		_location.setLocation(x, y);
+		_objectLocation.setLocation(x, y);
 	}
 
 	public int x() {
-		return _location.x();
+		return _objectLocation.x();
 	}
 
 	public int y() {
-		return _location.y();
+		return _objectLocation.y();
 	}
 
 	@Override
 	public float getX() {
-		return _location.getX();
+		return _objectLocation.getX();
 	}
 
 	@Override
 	public float getY() {
-		return _location.getY();
+		return _objectLocation.getY();
 	}
 
 	public void setX(Integer x) {
@@ -591,7 +651,7 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 
 	public void setX(float x) {
 		syncPreviousPos();
-		_location.setX(x);
+		_objectLocation.setX(x);
 	}
 
 	public void setY(Integer y) {
@@ -600,7 +660,7 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 
 	public void setY(float y) {
 		syncPreviousPos();
-		_location.setY(y);
+		_objectLocation.setY(y);
 	}
 
 	public void nextXY(float nextValue) {
@@ -618,11 +678,19 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	}
 
 	public Vector2f getLocation() {
-		return _location;
+		return _objectLocation;
 	}
 
 	public static void centerOn(final LObject<?> object, float w, float h) {
 		object.setLocation(w / 2 - object.getWidth() / 2, h / 2 - object.getHeight() / 2);
+	}
+
+	public static void centerTopOn(final LObject<?> object, float w, float h) {
+		object.setLocation(w / 2 - object.getWidth() / 2, 0);
+	}
+
+	public static void centerBottomOn(final LObject<?> object, float w, float h) {
+		object.setLocation(w / 2 - object.getWidth() / 2, h - object.getHeight());
 	}
 
 	public static void topOn(final LObject<?> object, float w, float h) {
@@ -727,12 +795,86 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 		bottomRightOn(object, getWidth(), getHeight());
 	}
 
+	/**
+	 * 调用时以指定速度向指定X轴移动(到目标X后停止)
+	 * 
+	 * 注意,此函数没有调用缓动的moveTo方法,只有调用时才会累加移动,不能自动累加
+	 * 
+	 * @param destX
+	 * @param speed
+	 * @return
+	 */
+	public final LObject<T> moveToX(float destX, float speed) {
+		if (this.getX() == destX) {
+			return this;
+		}
+		int dir = (this.getX() > destX) ? -1 : 1;
+		this.setX(this.getX() + speed * dir);
+		if (dir == 1 && this.getX() >= destX || dir == -1 && this.getX() <= destX) {
+			this.setX(destX);
+		}
+		return this;
+	}
+
+	/**
+	 * 调用时以指定速度向指定Y轴移动(到目标Y后停止)
+	 * 
+	 * 注意,此函数没有调用缓动的moveTo方法,只有调用时才会累加移动,不能自动累加
+	 * 
+	 * @param destY
+	 * @param speed
+	 * @return
+	 */
+	public final LObject<T> moveToY(float destY, float speed) {
+		if (this.getY() == destY) {
+			return this;
+		}
+		int dir = (this.getY() > destY) ? -1 : 1;
+		this.setY(this.getY() + speed * dir);
+		if (dir == 1 && this.getY() >= destY || dir == -1 && this.getY() <= destY) {
+			this.setY(destY);
+		}
+		return this;
+	}
+
+	/**
+	 * 调用时以指定速度向指定方向移动(到目标后停止),移动结束后Callback自身
+	 * 
+	 * 注意,此函数没有调用缓动的moveTo方法,只有调用时才会累加移动,不能自动累加
+	 * 
+	 * @param destX
+	 * @param destY
+	 * @param speed
+	 * @param callback
+	 * @return
+	 */
+	public final LObject<T> moveTo(float destX, float destY, float speed, Callback<LObject<T>> callback) {
+		if (this.getX() == destX && this.getY() == destY && callback != null) {
+			callback.onSuccess(this);
+			return this;
+		}
+		this.moveToX(destX, speed);
+		this.moveToY(destY, speed);
+		if (this.getX() == destX && this.getY() == destY && callback != null) {
+			callback.onSuccess(this);
+		}
+		return this;
+	}
+
 	public final void setCollisionData(Object data) {
 		this._collisionData = data;
 	}
 
 	public final Object getCollisionData() {
 		return _collisionData;
+	}
+
+	public boolean landscape() {
+		return this.getHeight() < this.getWidth();
+	}
+
+	public boolean portrait() {
+		return this.getHeight() >= this.getWidth();
 	}
 
 	public abstract float getWidth();
@@ -764,16 +906,34 @@ public abstract class LObject<T> extends BlendMode implements XY, ZIndex {
 	}
 
 	@Override
+	public int compare(T o1, T o2) {
+		if (o1 == null || o2 == null) {
+			return 0;
+		}
+		if (o1 instanceof ZIndex && o2 instanceof ZIndex) {
+			int diff = MathUtils.abs(((ZIndex) o1).getLayer()) - MathUtils.abs(((ZIndex) o2).getLayer());
+			if (diff > 0) {
+				return 1;
+			}
+			if (diff < 0) {
+				return -1;
+			}
+		}
+		return 0;
+	}
+
+	@Override
 	public int hashCode() {
-		return _seqNo;
+		return _objectSeqNo;
 	}
 
 	@Override
 	public String toString() {
-		return new StringKeyValue("LObject").kv("sequence", _seqNo).comma().kv("name", getName()).comma()
-				.kv("state", _state.get()).comma().kv("super", _super == null ? "empty" : _super.getClass()).comma()
-				.kv("pos", _location).comma().kv("size", _rect).comma().kv("alpha", _alpha).comma()
-				.kv("rotation", _rotation).comma().kv("layer", _layer).comma().kv("tag", Tag).toString();
+		return new StringKeyValue("LObject").kv("sequence", _objectSeqNo).comma().kv("name", getName()).comma()
+				.kv("state", _objectState.get()).comma()
+				.kv("super", _objectSuper == null ? "empty" : _objectSuper.getClass()).comma()
+				.kv("pos", _objectLocation).comma().kv("size", _objectRect).comma().kv("alpha", _objectAlpha).comma()
+				.kv("rotation", _objectRotation).comma().kv("layer", _objectLayer).comma().kv("tag", Tag).toString();
 	}
 
 }

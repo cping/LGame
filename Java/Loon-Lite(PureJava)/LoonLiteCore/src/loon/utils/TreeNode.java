@@ -37,11 +37,11 @@ public class TreeNode<T> implements Iterable<TreeNode<T>> {
 	private T data = null;
 
 	public TreeNode() {
-		this(LSystem.UNKOWN, null);
+		this(LSystem.UNKNOWN, null);
 	}
 
 	public TreeNode(T data) {
-		this(LSystem.UNKOWN, data);
+		this(LSystem.UNKNOWN, data);
 	}
 
 	public TreeNode(String name, T data) {
@@ -287,7 +287,7 @@ public class TreeNode<T> implements Iterable<TreeNode<T>> {
 	
 	@Override
 	public String toString() {
-		StringBuilder sbr = new StringBuilder();
+		StrBuilder sbr = new StrBuilder();
 		sbr.append("\n" + this.name);
 		sbr.append("\n[");
 		for (TreeNode<T> node : children) {

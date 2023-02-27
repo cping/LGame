@@ -57,7 +57,7 @@ public class LTexturePackClip {
 	}
 
 	public LTexturePackClip(int id, float x, float y, float w, float h) {
-		this(id, LSystem.UNKOWN, new RectBox(x, y, w + x, h + y));
+		this(id, LSystem.UNKNOWN, new RectBox(x, y, w + x, h + y));
 	}
 
 	public LTexturePackClip(int id, String name, RectBox rect) {

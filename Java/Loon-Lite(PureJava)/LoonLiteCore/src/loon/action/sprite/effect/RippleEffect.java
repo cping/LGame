@@ -73,7 +73,7 @@ public class RippleEffect extends Entity implements LTouchArea, BaseEffect {
 	}
 
 	public enum Model {
-		OVAL, RECT, TRIANGLE;
+		OVAL, RECT, TRIANGLE, RHOMBUS;
 	}
 
 	private ActionKey touchLocked = new ActionKey();

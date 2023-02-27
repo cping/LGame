@@ -45,6 +45,53 @@ public class LColor implements Serializable {
 	// 默认黑色透明区域
 	public static final int TRANSPARENT = 0xFF000000;
 
+	public static final int[] convertToABGR(int pixelHeight, int pixelWidth, int[] srcPixels) {
+		return convertToABGR(pixelHeight, pixelWidth, srcPixels, srcPixels);
+	}
+
+	public static final int[] convertToABGR(int pixelHeight, int pixelWidth, int[] srcPixels, int[] dstPixels) {
+		int pixelCount = pixelWidth * pixelHeight;
+		for (int i = 0; i < pixelCount; ++i) {
+			int pixel = srcPixels[i];
+			int r = (pixel & 0x00FF0000) >> 16;
+			int g = (pixel & 0x0000FF00) >> 8;
+			int b = (pixel & 0x000000FF);
+			int a = (pixel & 0xFF000000) >> 24;
+			dstPixels[i] = abgr(r, g, b, a);
+		}
+		return dstPixels;
+	}
+
+	/**
+	 * 转换颜色为RGB格式的Color
+	 * 
+	 * @param value
+	 * @return
+	 */
+	public static final LColor fromRGB(int value) {
+		return new LColor(((value >> 16) & 0xFF), ((value >> 8) & 0xFF), (value & 0xFF), 255);
+	}
+
+	/**
+	 * 转换颜色为RGBA格式的Color
+	 * 
+	 * @param value
+	 * @return
+	 */
+	public static final LColor fromRGBA(int value) {
+		return new LColor(((value >> 16) & 0xFF), ((value >> 8) & 0xFF), (value & 0xFF), ((value >> 24) & 0xFF));
+	}
+
+	/**
+	 * 解码指定颜色信息为argb颜色
+	 * 
+	 * @param colorString
+	 * @return
+	 */
+	public static final int parseColor(String colorString) {
+		return decode(colorString).getARGB();
+	}
+
 	/**
 	 * 解码字符串为color对象
 	 * 
@@ -167,6 +214,14 @@ public class LColor implements Serializable {
 		return argb(alpha, red, green, blue);
 	}
 
+	public static final int abgr(float a, float r, float g, float b) {
+		int alpha = (int) (a * 255);
+		int red = (int) (r * 255);
+		int green = (int) (g * 255);
+		int blue = (int) (b * 255);
+		return abgr(alpha, red, green, blue);
+	}
+
 	/**
 	 * 获得ARGB格式数据
 	 * 
@@ -180,8 +235,16 @@ public class LColor implements Serializable {
 		return (a << 24) | (r << 16) | (g << 8) | b;
 	}
 
+	public static final int abgr(int a, int r, int g, int b) {
+		return (a << 24) | (b << 16) | (g << 8) | r;
+	}
+
 	public static final int rgb(int r, int g, int b) {
-		return argb(0xff, r, g, b);
+		return argb(0xFF, r, g, b);
+	}
+
+	public static final int bgr(int r, int g, int b) {
+		return argb(0xFF, r, g, b);
 	}
 
 	public static final int alpha(int color, float a) {
@@ -309,6 +372,33 @@ public class LColor implements Serializable {
 		return bytes;
 	}
 
+	public static final LColor toBlackWhite(LColor color) {
+		if (color == null) {
+			return gray.cpy();
+		}
+		return toBlackWhite(color, new LColor());
+	}
+
+	public static final LColor toBlackWhite(LColor color, LColor targetColor) {
+		if (color == null) {
+			return gray.cpy();
+		}
+		if (targetColor == null) {
+			targetColor = new LColor();
+		}
+		if ((color.r * 0.299f + color.g * 0.587f + color.b * 0.114f) >= 0.667f) {
+			targetColor.r = 0f;
+			targetColor.g = 0f;
+			targetColor.b = 0f;
+		} else {
+			targetColor.r = 1f;
+			targetColor.g = 1f;
+			targetColor.b = 1f;
+		}
+		targetColor.a = color.a;
+		return targetColor;
+	}
+
 	public static final LColor silver = new LColor(0xffc0c0c0);
 
 	public static final LColor lightBlue = new LColor(0xffadd8e6);
@@ -410,7 +500,7 @@ public class LColor implements Serializable {
 	 */
 	public LColor(String c) {
 		if (c == null) {
-			setColor(LColor.white);
+			setColor(white);
 			return;
 		}
 		c = c.trim().toLowerCase();
@@ -460,12 +550,12 @@ public class LColor implements Serializable {
 	}
 
 	public LColor() {
-		this(LColor.white);
+		this(white);
 	}
 
 	public LColor(LColor color) {
 		if (color == null) {
-			setColor(LColor.white);
+			setColor(white);
 			return;
 		}
 		setColor(color.r, color.g, color.b, color.a);
@@ -560,13 +650,31 @@ public class LColor implements Serializable {
 	}
 
 	public LColor darker(float scale) {
-		scale = 1f - scale;
+		scale = 1f - MathUtils.clamp(scale, 0f, 1f);
 		LColor temp = new LColor(r * scale, g * scale, b * scale, a);
 		return temp;
 	}
 
+	public LColor lighter() {
+		return lighter(0.5f);
+	}
+
+	public LColor lighter(float scale) {
+		scale = MathUtils.clamp(scale, 0f, 1f);
+		float newRed = MathUtils.clamp(this.r + (1f - this.r) * scale, 0f, 1f);
+		float newGreen = MathUtils.clamp(this.g + (1f - this.g) * scale, 0f, 1f);
+		float newBlue = MathUtils.clamp(this.b + (1f - b) * scale, 0f, 1f);
+		return new LColor(newRed, newGreen, newBlue, a);
+	}
+
 	public LColor brighter() {
 		return brighter(0.2f);
+	}
+
+	public LColor brighter(float scale) {
+		scale = MathUtils.clamp(scale, 0f, 1f) + 1f;
+		LColor temp = new LColor(r * scale, g * scale, b * scale, a);
+		return temp;
 	}
 
 	public LColor setColorValue(int r, int g, int b, int a) {
@@ -618,10 +726,17 @@ public class LColor implements Serializable {
 	}
 
 	public LColor setColor(LColor color) {
+		if (color == null) {
+			return this;
+		}
 		return setColor(color.r, color.g, color.b, color.a);
 	}
 
 	public LColor setColor(int pixel) {
+		return setColorARGB(pixel);
+	}
+
+	public LColor setColorARGB(int pixel) {
 		int r = (pixel & 0x00FF0000) >> 16;
 		int g = (pixel & 0x0000FF00) >> 8;
 		int b = (pixel & 0x000000FF);
@@ -629,8 +744,14 @@ public class LColor implements Serializable {
 		if (a < 0) {
 			a += 256;
 		}
-		setColor(r, g, b, a);
-		return this;
+		return setColor(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
+	}
+
+	public LColor setColorRGB(int pixel) {
+		int r = (pixel & 0x00FF0000) >> 16;
+		int g = (pixel & 0x0000FF00) >> 8;
+		int b = (pixel & 0x000000FF);
+		return setColor(r / 255.0f, g / 255.0f, b / 255.0f, 1f);
 	}
 
 	public float red() {
@@ -649,6 +770,10 @@ public class LColor implements Serializable {
 		return a;
 	}
 
+	public LColor getBlackWhite() {
+		return toBlackWhite(this);
+	}
+
 	public int getRed() {
 		return (int) (r * 255);
 	}
@@ -665,22 +790,97 @@ public class LColor implements Serializable {
 		return (int) (a * 255);
 	}
 
+	public LColor getHalfRGBA() {
+		return new LColor(this).divSelf(2f);
+	}
+
+	public LColor getHalfRGB() {
+		return new LColor(this.r, this.g, this.b).divSelf(2f);
+	}
+
+	public LColor setAll(float c) {
+		return setColor(c, c, c, c);
+	}
+
+	public LColor setAll(int c) {
+		return setColor(c, c, c, c);
+	}
+
 	public LColor setAlpha(float alpha) {
 		this.a = alpha;
 		return this;
 	}
 
-	public LColor brighter(float scale) {
-		scale += 1;
-		LColor temp = new LColor(r * scale, g * scale, b * scale, a);
-		return temp;
+	public boolean addRed(final float red) {
+		final float n = added(this.r, red);
+		if (n == this.r) {
+			return false;
+		}
+		this.r = n;
+		return true;
 	}
 
-	public LColor multiply(LColor c) {
-		return new LColor(r * c.r, g * c.g, b * c.b, a * c.a);
+	public boolean addGreen(final float green) {
+		final float n = added(this.g, green);
+		if (n == this.g) {
+			return false;
+		}
+		this.g = n;
+		return true;
 	}
 
-	public LColor add(LColor c) {
+	public boolean addBlue(final float blue) {
+		final float n = added(this.b, blue);
+		if (n == this.b) {
+			return false;
+		}
+		this.b = n;
+		return true;
+	}
+
+	public boolean addAlpha(final float alpha) {
+		final float n = added(this.a, alpha);
+		if (n == this.a) {
+			return false;
+		}
+		this.a = n;
+		return true;
+	}
+
+	private final static float added(float c, final float i) {
+		c += i;
+		if (c > 1f) {
+			c = 1f;
+		} else if (c < 0f) {
+			c = 0f;
+		}
+		return c;
+	}
+
+	/**
+	 * 让当前色彩做加法运算(将产生数值赋予自身)
+	 * 
+	 * @param v
+	 * @return
+	 */
+	public LColor addSelf(float v) {
+		this.r += v;
+		this.g += v;
+		this.b += v;
+		this.a += v;
+		return this;
+	}
+
+	/**
+	 * 让当前色彩做加法运算(将产生数值赋予自身)
+	 * 
+	 * @param c
+	 * @return
+	 */
+	public LColor addSelf(LColor c) {
+		if (c == null) {
+			return this;
+		}
 		this.r += c.r;
 		this.g += c.g;
 		this.b += c.b;
@@ -688,7 +888,30 @@ public class LColor implements Serializable {
 		return this;
 	}
 
-	public LColor sub(LColor c) {
+	/**
+	 * 让当前色彩做减法运算(将产生数值赋予自身)
+	 * 
+	 * @param v
+	 * @return
+	 */
+	public LColor subSelf(float v) {
+		this.r -= v;
+		this.g -= v;
+		this.b -= v;
+		this.a -= v;
+		return this;
+	}
+
+	/**
+	 * 让当前色彩做减法运算(将产生数值赋予自身)
+	 * 
+	 * @param c
+	 * @return
+	 */
+	public LColor subSelf(LColor c) {
+		if (c == null) {
+			return this;
+		}
 		this.r -= c.r;
 		this.g -= c.g;
 		this.b -= c.b;
@@ -696,7 +919,30 @@ public class LColor implements Serializable {
 		return this;
 	}
 
-	public LColor mul(LColor c) {
+	/**
+	 * 让当前色彩做乘法运算(将产生数值赋予自身)
+	 * 
+	 * @param v
+	 * @return
+	 */
+	public LColor mulSelf(float v) {
+		this.r *= v;
+		this.g *= v;
+		this.b *= v;
+		this.a *= v;
+		return this;
+	}
+
+	/**
+	 * 让当前色彩做乘法运算(将产生数值赋予自身)
+	 * 
+	 * @param c
+	 * @return
+	 */
+	public LColor mulSelf(LColor c) {
+		if (c == null) {
+			return this;
+		}
 		this.r *= c.r;
 		this.g *= c.g;
 		this.b *= c.b;
@@ -704,16 +950,42 @@ public class LColor implements Serializable {
 		return this;
 	}
 
-	public LColor mulAlpha(float a) {
+	public LColor mulSelfAlpha(float a) {
 		this.a *= a;
 		return this;
 	}
 
-	public LColor mulAlpha(LColor c) {
-		return mulAlpha(c.a);
+	public LColor mulSelfAlpha(LColor c) {
+		if (c == null) {
+			return this;
+		}
+		return mulSelfAlpha(c.a);
 	}
 
-	public LColor div(LColor c) {
+	/**
+	 * 让当前色彩做除法运算(将产生数值赋予自身)
+	 * 
+	 * @param v
+	 * @return
+	 */
+	public LColor divSelf(float v) {
+		this.r /= v;
+		this.g /= v;
+		this.b /= v;
+		this.a /= v;
+		return this;
+	}
+
+	/**
+	 * 让当前色彩做除法运算(将产生数值赋予自身)
+	 * 
+	 * @param c
+	 * @return
+	 */
+	public LColor divSelf(LColor c) {
+		if (c == null) {
+			return this;
+		}
 		this.r /= c.r;
 		this.g /= c.g;
 		this.b /= c.b;
@@ -721,7 +993,7 @@ public class LColor implements Serializable {
 		return this;
 	}
 
-	public LColor divAlpha(float a) {
+	public LColor divSelfAlpha(float a) {
 		if (a <= 0) {
 			a = 0.01f;
 		}
@@ -729,8 +1001,180 @@ public class LColor implements Serializable {
 		return this;
 	}
 
-	public LColor divAlpha(LColor c) {
-		return divAlpha(c.a);
+	public LColor divSelfAlpha(LColor c) {
+		return divSelfAlpha(c.a);
+	}
+
+	/**
+	 * 让当前色彩做乘法运算(将产生数值构建为新的Color)
+	 * 
+	 * @param v
+	 * @return
+	 */
+	public LColor mul(float v) {
+		return multiply(v);
+	}
+
+	/**
+	 * 让当前色彩做乘法运算(将产生数值构建为新的Color)
+	 * 
+	 * @param c
+	 * @return
+	 */
+	public LColor mul(LColor c) {
+		return multiply(c);
+	}
+
+	/**
+	 * 让当前色彩做乘法运算(将产生数值构建为新的Color)
+	 * 
+	 * @param v
+	 * @return
+	 */
+	public LColor multiply(float v) {
+		return new LColor(r * v, g * v, b * v, a * v);
+	}
+
+	/**
+	 * 让当前色彩做乘法运算(将产生数值构建为新的Color)
+	 * 
+	 * @param c
+	 * @return
+	 */
+	public LColor multiply(LColor c) {
+		if (c == null) {
+			return cpy();
+		}
+		return new LColor(r * c.r, g * c.g, b * c.b, a * c.a);
+	}
+
+	/**
+	 * 让当前色彩做除法运算(将产生数值构建为新的Color)
+	 * 
+	 * @param v
+	 * @return
+	 */
+	public LColor div(float v) {
+		return divide(v);
+	}
+
+	/**
+	 * 让当前色彩做除法运算(将产生数值构建为新的Color)
+	 * 
+	 * @param c
+	 * @return
+	 */
+	public LColor div(LColor c) {
+		return divide(c);
+	}
+
+	/**
+	 * 让当前色彩做除法运算(将产生数值构建为新的Color)
+	 * 
+	 * @param v
+	 * @return
+	 */
+	public LColor divide(float v) {
+		return new LColor(r / v, g / v, b / v, a / v);
+	}
+
+	/**
+	 * 让当前色彩做除法运算(将产生数值构建为新的Color)
+	 * 
+	 * @param c
+	 * @return
+	 */
+	public LColor divide(LColor c) {
+		if (c == null) {
+			return cpy();
+		}
+		return new LColor(r / c.r, g / c.g, b / c.b, a / c.a);
+	}
+
+	/**
+	 * 让当前色彩做加法运算(将产生数值构建为新的Color)
+	 * 
+	 * @param v
+	 * @return
+	 */
+	public LColor add(float v) {
+		return addition(v);
+	}
+
+	/**
+	 * 让当前色彩做加法运算(将产生数值构建为新的Color)
+	 * 
+	 * @param c
+	 * @return
+	 */
+	public LColor add(LColor c) {
+		return addition(c);
+	}
+
+	/**
+	 * 让当前色彩做加法运算(将产生数值构建为新的Color)
+	 * 
+	 * @param v
+	 * @return
+	 */
+	public LColor addition(float v) {
+		return new LColor(r + v, g + v, b + v, a + v);
+	}
+
+	/**
+	 * 让当前色彩做加法运算(将产生数值构建为新的Color)
+	 * 
+	 * @param c
+	 * @return
+	 */
+	public LColor addition(LColor c) {
+		if (c == null) {
+			return cpy();
+		}
+		return new LColor(r + c.r, g + c.g, b + c.b, a + c.a);
+	}
+
+	/**
+	 * 让当前色彩做减法运算(将产生数值构建为新的Color)
+	 * 
+	 * @param v
+	 * @return
+	 */
+	public LColor sub(float v) {
+		return subtraction(v);
+	}
+
+	/**
+	 * 让当前色彩做减法运算(将产生数值构建为新的Color)
+	 * 
+	 * @param c
+	 * @return
+	 */
+	public LColor sub(LColor c) {
+		return subtraction(c);
+	}
+
+	/**
+	 * 让当前色彩做减法运算(将产生数值构建为新的Color)
+	 * 
+	 * @param v
+	 * @return
+	 */
+	public LColor subtraction(float v) {
+		return new LColor(r - v, g - v, b - v, a - v);
+	}
+
+	/**
+	 * 让当前色彩做减法运算(将产生数值构建为新的Color)
+	 * 
+	 * @param c
+	 * @return
+	 */
+	public LColor subtraction(LColor c) {
+		if (c == null) {
+			return cpy();
+		}
+		return new LColor(r - c.r, g - c.g, b - c.b, a - c.a);
 	}
 
 	/**
@@ -749,12 +1193,7 @@ public class LColor implements Serializable {
 	 * @return
 	 */
 	public LColor addCopy(LColor c) {
-		LColor copy = new LColor(r, g, b, a);
-		copy.r += c.r;
-		copy.g += c.g;
-		copy.b += c.b;
-		copy.a += c.a;
-		return copy;
+		return addition(c);
 	}
 
 	/**
@@ -764,12 +1203,17 @@ public class LColor implements Serializable {
 	 * @return
 	 */
 	public LColor subCopy(LColor c) {
-		LColor copy = new LColor(r, g, b, a);
-		copy.r -= c.r;
-		copy.g -= c.g;
-		copy.b -= c.b;
-		copy.a -= c.a;
-		return copy;
+		return subtraction(c);
+	}
+
+	/**
+	 * 获得像素相除的Color
+	 * 
+	 * @param c
+	 * @return
+	 */
+	public LColor divCopy(LColor c) {
+		return divide(c);
 	}
 
 	/**
@@ -779,16 +1223,7 @@ public class LColor implements Serializable {
 	 * @return
 	 */
 	public LColor mulCopy(LColor c) {
-		LColor copy = new LColor(r, g, b, a);
-		copy.r *= c.r;
-		copy.g *= c.g;
-		copy.b *= c.b;
-		copy.a *= c.a;
-		return copy;
-	}
-
-	public LColor mul(float s) {
-		return new LColor(r * s, g * s, b * s, a * s);
+		return multiply(c);
 	}
 
 	public static final LColor lerp(LColor value1, LColor value2, float amount) {
@@ -814,6 +1249,10 @@ public class LColor implements Serializable {
 		return argb(getAlpha(), getRed(), getGreen(), getBlue());
 	}
 
+	public int getABGR() {
+		return abgr(getAlpha(), getRed(), getGreen(), getBlue());
+	}
+
 	/**
 	 * 返回ARGB
 	 * 
@@ -824,6 +1263,10 @@ public class LColor implements Serializable {
 		return argb((int) (a * alpha * 255), getRed(), getGreen(), getBlue());
 	}
 
+	public int getABGR(float alpha) {
+		return abgr((int) (a * alpha * 255), getRed(), getGreen(), getBlue());
+	}
+
 	/**
 	 * 返回RGB
 	 * 
@@ -831,6 +1274,10 @@ public class LColor implements Serializable {
 	 */
 	public int getRGB() {
 		return rgb(getRed(), getGreen(), getBlue());
+	}
+
+	public int getBGR() {
+		return bgr(getRed(), getGreen(), getBlue());
 	}
 
 	/**
@@ -845,6 +1292,10 @@ public class LColor implements Serializable {
 		return rgb(r, g, b);
 	}
 
+	public static final int getBGR(int r, int g, int b) {
+		return bgr(r, g, b);
+	}
+
 	/**
 	 * 获得RGB颜色
 	 * 
@@ -852,10 +1303,17 @@ public class LColor implements Serializable {
 	 * @return
 	 */
 	public static final int getRGB(int pixels) {
-		int r = (pixels >> 16) & 0xff;
-		int g = (pixels >> 8) & 0xff;
-		int b = pixels & 0xff;
+		int r = (pixels >> 16) & 0xFF;
+		int g = (pixels >> 8) & 0xFF;
+		int b = pixels & 0xFF;
 		return rgb(r, g, b);
+	}
+
+	public static final int getBGR(int pixels) {
+		int r = (pixels >> 16) & 0xFF;
+		int g = (pixels >> 8) & 0xFF;
+		int b = pixels & 0xFF;
+		return bgr(r, g, b);
 	}
 
 	/**
@@ -869,6 +1327,52 @@ public class LColor implements Serializable {
 	 */
 	public static final int getARGB(int r, int g, int b, int alpha) {
 		return argb(alpha, r, g, b);
+	}
+
+	public static final int getABGR(int r, int g, int b, int alpha) {
+		return abgr(alpha, r, g, b);
+	}
+	
+	/**
+	 * 以指定颜色指定百分比获得渐变色彩
+	 * 
+	 * @param startColor
+	 * @param endColor
+	 * @return
+	 */
+	public static final int getGradient(int startColor, int endColor) {
+		return getGradient(startColor, endColor, 1f);
+	}
+	
+	/**
+	 * 以指定颜色指定百分比获得渐变色彩
+	 *  
+	 * @param startColor
+	 * @param endColor
+	 * @param percentage
+	 * @return
+	 */
+	public static final int getGradient(int startColor, int endColor,float percentage) {
+		if (percentage > 1f) {
+			percentage = 1f;
+		}
+		int alphaStart = alpha(startColor);
+		int redStart = red(startColor);
+		int blueStart = blue(startColor);
+		int greenStart = green(startColor);
+		int alphaEnd = alpha(endColor);
+		int redEnd = red(endColor);
+		int blueEnd = blue(endColor);
+		int greenEnd = green(endColor);
+		int alphaDiff = alphaEnd - alphaStart;
+		int redDiff = redEnd - redStart;
+		int blueDiff = blueEnd - blueStart;
+		int greenDiff = greenEnd - greenStart;
+		int alphaCurrent = (int) (alphaStart + percentage * alphaDiff);
+		int redCurrent = (int) (redStart + percentage * redDiff);
+		int blueCurrent = (int) (blueStart + percentage * blueDiff);
+		int greenCurrent = (int) (greenStart + percentage * greenDiff);
+		return argb(alphaCurrent, redCurrent, greenCurrent, blueCurrent);
 	}
 
 	/**
@@ -888,7 +1392,7 @@ public class LColor implements Serializable {
 	 * @return
 	 */
 	public static final int getRed(int color) {
-		return (color >> 16) & 0xff;
+		return (color >> 16) & 0xFF;
 	}
 
 	/**
@@ -898,7 +1402,7 @@ public class LColor implements Serializable {
 	 * @return
 	 */
 	public static final int getGreen(int color) {
-		return (color >> 8) & 0xff;
+		return (color >> 8) & 0xFF;
 	}
 
 	/**
@@ -908,7 +1412,7 @@ public class LColor implements Serializable {
 	 * @return
 	 */
 	public static final int getBlue(int color) {
-		return color & 0xff;
+		return color & 0xFF;
 	}
 
 	/**
@@ -924,9 +1428,9 @@ public class LColor implements Serializable {
 		} else if (a == 255) {
 			return argbColor;
 		} else {
-			int r = (argbColor >> 16) & 0xff;
-			int g = (argbColor >> 8) & 0xff;
-			int b = argbColor & 0xff;
+			int r = (argbColor >> 16) & 0xFF;
+			int g = (argbColor >> 8) & 0xFF;
+			int b = argbColor & 0xFF;
 			r = (a * r + 127) / 255;
 			g = (a * g + 127) / 255;
 			b = (a * b + 127) / 255;
@@ -936,17 +1440,17 @@ public class LColor implements Serializable {
 
 	public static final int[] getRGBs(final int pixel) {
 		int[] rgbs = new int[3];
-		rgbs[0] = (pixel >> 16) & 0xff;
-		rgbs[1] = (pixel >> 8) & 0xff;
-		rgbs[2] = (pixel) & 0xff;
+		rgbs[0] = (pixel >> 16) & 0xFF;
+		rgbs[1] = (pixel >> 8) & 0xFF;
+		rgbs[2] = (pixel) & 0xFF;
 		return rgbs;
 	}
 
 	public static final int[] getRGBAs(final int pixel) {
 		int[] rgbas = new int[4];
-		rgbas[0] = (pixel >> 16) & 0xff;
-		rgbas[1] = (pixel >> 8) & 0xff;
-		rgbas[2] = (pixel) & 0xff;
+		rgbas[0] = (pixel >> 16) & 0xFF;
+		rgbas[1] = (pixel >> 8) & 0xFF;
+		rgbas[2] = (pixel) & 0xFF;
 		rgbas[3] = pixel >>> 24;
 		return rgbas;
 	}
@@ -998,10 +1502,10 @@ public class LColor implements Serializable {
 	}
 
 	public static final String cssColorString(int color) {
-		double a = ((color >> 24) & 0xff) / 255.0;
-		int r = (color >> 16) & 0xff;
-		int g = (color >> 8) & 0xff;
-		int b = (color >> 0) & 0xff;
+		double a = ((color >> 24) & 0xFF) / 255.0;
+		int r = (color >> 16) & 0xFF;
+		int g = (color >> 8) & 0xFF;
+		int b = (color >> 0) & 0xFF;
 		return "rgba(" + r + "," + g + "," + b + "," + a + ")";
 	}
 
@@ -1040,8 +1544,7 @@ public class LColor implements Serializable {
 	/**
 	 * 按照特定百分比改变当前色彩，并返回一个新的LColor对象
 	 * 
-	 * @param percent
-	 *            最大值为1f，最小值为0f
+	 * @param percent 最大值为1f，最小值为0f
 	 * @return
 	 */
 	public LColor percent(float percent) {
@@ -1239,6 +1742,17 @@ public class LColor implements Serializable {
 	 */
 	public LColor getHSLtoRGB() {
 		return getHSLtoRGB(r, g, b);
+	}
+
+	/**
+	 * 注入一个与指定名称绑定的Color(可以使用findName函数再次获得)
+	 * 
+	 * @param colorName
+	 * @param color
+	 * @return
+	 */
+	public final static boolean putName(String colorName, LColor color) {
+		return LColorList.get().putColor(colorName, color);
 	}
 
 	/**

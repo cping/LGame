@@ -50,7 +50,7 @@ public class MD5 {
 		md5Init();
 		md5Update(buffer.getBytes(), buffer.length());
 		md5Final();
-		StringBuffer buf = new StringBuffer();
+		StrBuilder buf = new StrBuilder();
 		for (int i = 0; i < 16; i++) {
 			buf.append(CharUtils.toHex(digest[i]));
 		}
@@ -65,7 +65,7 @@ public class MD5 {
 		md5Init();
 		md5Update(buffer, buffer.length);
 		md5Final();
-		StringBuffer buf = new StringBuffer();
+		StrBuilder buf = new StrBuilder();
 		for (int i = 0; i < 16; i++) {
 			buf.append(CharUtils.toHex(digest[i]));
 		}

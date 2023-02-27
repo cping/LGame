@@ -539,7 +539,7 @@ public class LTransition {
 
 			transition.setTransitionListener(new TransitionListener() {
 
-				final FadeEffect fade = FadeEffect.getInstance(type, c);
+				final FadeEffect fade = FadeEffect.create(type, c);
 
 				@Override
 				public void draw(GLEx g) {

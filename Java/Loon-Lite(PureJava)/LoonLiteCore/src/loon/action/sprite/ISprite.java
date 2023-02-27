@@ -25,34 +25,45 @@ import loon.LRelease;
 import loon.LTexture;
 import loon.Screen;
 import loon.Visible;
+import loon.ZIndex;
 import loon.action.ActionBind;
 import loon.canvas.LColor;
 import loon.geom.RectBox;
+import loon.geom.Vector2f;
 import loon.geom.XY;
 import loon.opengl.GLEx;
 
-public interface ISprite extends ActionBind, Visible, LRelease, XY {
+public interface ISprite extends ActionBind, Visible, LRelease, ZIndex, XY {
 
 	public static final int TYPE_FADE_IN = 0;
 
 	public static final int TYPE_FADE_OUT = 1;
 
+	@Override
 	float getWidth();
 
+	@Override
 	float getHeight();
 
+	@Override
 	float getAlpha();
 
+	@Override
 	int x();
 
+	@Override
 	int y();
 
+	@Override
 	float getX();
 
+	@Override
 	float getY();
 
+	@Override
 	void setColor(LColor c);
 
+	@Override
 	LColor getColor();
 
 	void createUI(GLEx g);
@@ -60,7 +71,10 @@ public interface ISprite extends ActionBind, Visible, LRelease, XY {
 	void createUI(GLEx g, float offsetX, float offsetY);
 
 	void update(long elapsedTime);
+	
+	void onResize();
 
+	@Override
 	int getLayer();
 
 	void setLayer(int layer);
@@ -83,19 +97,25 @@ public interface ISprite extends ActionBind, Visible, LRelease, XY {
 
 	State getState();
 
-	void setSprites(Sprites ss);
+	ISprite setSprites(Sprites ss);
 
 	Sprites getSprites();
 
 	Screen getScreen();
+	
+	ISprite setOffset(Vector2f v);
+	
+	float getOffsetX();
+	
+	float getOffsetY();
 
 	float getFixedWidthOffset();
 
-	void setFixedWidthOffset(float widthOffset);
+	ISprite setFixedWidthOffset(float widthOffset);
 
 	float getFixedHeightOffset();
 
-	void setFixedHeightOffset(float heightOffset);
+	ISprite setFixedHeightOffset(float heightOffset);
 
 	boolean collides(ISprite other);
 

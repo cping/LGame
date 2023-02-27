@@ -50,7 +50,19 @@ public class PixelChopEffect extends PixelBaseEffect {
 		/**
 		 * Left to Right
 		 */
-		LTR;
+		LTR,
+		/**
+		 * WNTES and NETSW combined to Cross
+		 */
+		WNCROSS,
+		/**
+		 * TTB and LTR combined to Cross
+		 */
+		LTCROSS,
+		/**
+		 * ALL combined to Cross
+		 */
+		ALLCROSS;
 	}
 
 	private ChopDirection direction;
@@ -60,6 +72,31 @@ public class PixelChopEffect extends PixelBaseEffect {
 	private float width;
 
 	private int mode;
+
+	public static PixelChopEffect get(ChopDirection dir, LColor color, float x, float y, int width, int frameLimit) {
+		return new PixelChopEffect(dir, color, x, y, width, frameLimit);
+	}
+
+	public static PixelChopEffect getRandom(LColor color, float x, float y, int width, int frameLimit) {
+		int rand = MathUtils.random(0, 7);
+		switch (rand) {
+		case 0:
+		default:
+			return new PixelChopEffect(ChopDirection.WNTES, color, x, y, width, frameLimit);
+		case 1:
+			return new PixelChopEffect(ChopDirection.NETSW, color, x, y, width, frameLimit);
+		case 2:
+			return new PixelChopEffect(ChopDirection.LTR, color, x, y, width, frameLimit);
+		case 3:
+			return new PixelChopEffect(ChopDirection.TTB, color, x, y, width, frameLimit);
+		case 4:
+			return new PixelChopEffect(ChopDirection.LTCROSS, color, x, y, width, frameLimit);
+		case 5:
+			return new PixelChopEffect(ChopDirection.WNCROSS, color, x, y, width, frameLimit);
+		case 6:
+			return new PixelChopEffect(ChopDirection.ALLCROSS, color, x, y, width, frameLimit);
+		}
+	}
 
 	public PixelChopEffect(LColor color, float x, float y) {
 		this(ChopDirection.WNTES, color, 0, x, y, 2);
@@ -89,6 +126,10 @@ public class PixelChopEffect extends PixelBaseEffect {
 		this(dir, color, mode, x, y, 2, 25);
 	}
 
+	public PixelChopEffect(LColor color, int x, int y, int width, int frameLimit) {
+		this(ChopDirection.WNTES, color, 0, x, y, width, frameLimit);
+	}
+
 	public PixelChopEffect(ChopDirection dir, LColor color, float x, float y, float width, int frameLimit) {
 		this(dir, color, 0, x, y, width, frameLimit);
 	}
@@ -113,26 +154,20 @@ public class PixelChopEffect extends PixelBaseEffect {
 		setEffectDelay(0);
 	}
 
-	@Override
-	public void draw(GLEx g, float tx, float ty) {
-		if (super.completed) {
-			return;
-		}
-		int tmp = g.color();
-		g.setColor(_baseColor);
+	private void paintChop(GLEx g, ChopDirection dir, float tx, float ty) {
 		float x = viewX - tx;
 		float y = viewY - ty;
 		int f = super.frame;
 		if (f > limit) {
 			f = limit - f;
 		}
-		float x1 = 0.0f;
-		float y1 = 0.0f;
-		float x2 = 0.0f;
-		float y2 = 0.0f;
-		float offset = 0.0f;
+		float x1 = 0f;
+		float y1 = 0f;
+		float x2 = 0f;
+		float y2 = 0f;
+		float offset = 0f;
 		if (mode == 0) {
-			switch (direction) {
+			switch (dir) {
 			case LTR:
 				offset = MathUtils.floor(f / 3);
 				x1 = x - f - offset;
@@ -162,7 +197,7 @@ public class PixelChopEffect extends PixelBaseEffect {
 				break;
 			}
 		} else if (mode == 1) {
-			switch (direction) {
+			switch (dir) {
 			case LTR:
 				offset = MathUtils.floor(limit / 3);
 				x1 = x - limit - offset + f;
@@ -192,7 +227,7 @@ public class PixelChopEffect extends PixelBaseEffect {
 				break;
 			}
 		} else {
-			switch (direction) {
+			switch (dir) {
 			case LTR:
 				offset = MathUtils.floor(limit / 3);
 				x1 = x - limit - offset;
@@ -222,8 +257,35 @@ public class PixelChopEffect extends PixelBaseEffect {
 				break;
 			}
 		}
-
 		g.drawLine(x1, y1, x2, y2, width);
+	}
+
+	@Override
+	public void draw(GLEx g, float tx, float ty) {
+		if (super.completed) {
+			return;
+		}
+		int tmp = g.color();
+		g.setColor(_baseColor);
+		switch (this.direction) {
+		case LTCROSS:
+			paintChop(g, ChopDirection.LTR, tx, ty);
+			paintChop(g, ChopDirection.TTB, tx, ty);
+			break;
+		case WNCROSS:
+			paintChop(g, ChopDirection.WNTES, tx, ty);
+			paintChop(g, ChopDirection.NETSW, tx, ty);
+			break;
+		case ALLCROSS:
+			paintChop(g, ChopDirection.LTR, tx, ty);
+			paintChop(g, ChopDirection.TTB, tx, ty);
+			paintChop(g, ChopDirection.WNTES, tx, ty);
+			paintChop(g, ChopDirection.NETSW, tx, ty);
+			break;
+		default:
+			paintChop(g, this.direction, tx, ty);
+			break;
+		}
 		g.setColor(tmp);
 		if (super.frame >= limit) {
 			super.completed = true;
@@ -242,8 +304,9 @@ public class PixelChopEffect extends PixelBaseEffect {
 	 * @param mode
 	 * 
 	 */
-	public void setMode(int mode) {
+	public PixelChopEffect setMode(int mode) {
 		this.mode = mode;
+		return this;
 	}
 
 }

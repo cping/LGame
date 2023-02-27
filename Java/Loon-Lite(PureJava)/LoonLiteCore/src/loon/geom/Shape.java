@@ -73,9 +73,10 @@ public abstract class Shape implements Serializable, IArray, XY {
 		scaleX = scaleY = 1f;
 	}
 
-	public void setLocation(float x, float y) {
+	public Shape setLocation(float x, float y) {
 		setX(x);
 		setY(y);
+		return this;
 	}
 
 	public abstract Shape transform(Matrix3 transform);
@@ -99,6 +100,7 @@ public abstract class Shape implements Serializable, IArray, XY {
 		return new Vector2f(getCenterX(), getCenterY());
 	}
 
+	@Override
 	public float getX() {
 		return x;
 	}
@@ -114,7 +116,6 @@ public abstract class Shape implements Serializable, IArray, XY {
 				points[i * 2] += dx;
 			}
 			center[0] += dx;
-			x += dx;
 			maxX += dx;
 			minX += dx;
 			trianglesDirty = true;
@@ -132,13 +133,13 @@ public abstract class Shape implements Serializable, IArray, XY {
 				points[(i * 2) + 1] += dy;
 			}
 			center[1] += dy;
-			y += dy;
 			maxY += dy;
 			minY += dy;
 			trianglesDirty = true;
 		}
 	}
 
+	@Override
 	public float getY() {
 		return y;
 	}
@@ -258,10 +259,11 @@ public abstract class Shape implements Serializable, IArray, XY {
 		return new float[] { tx / len, ty / len };
 	}
 
+	public boolean contains(XY xy) {
+		return xy == null ? false : contains(xy.getX(), xy.getY());
+	}
+
 	public boolean contains(Shape other) {
-		if (other.intersects(this)) {
-			return false;
-		}
 		for (int i = 0; i < other.getPointCount(); i++) {
 			float[] pt = other.getPoint(i);
 			if (!contains(pt[0], pt[1])) {
@@ -493,21 +495,20 @@ public abstract class Shape implements Serializable, IArray, XY {
 		return scaleY;
 	}
 
-	public void setRotation(float r) {
-		if (rotation != r) {
-			this.callTransform(Matrix3.createRotateTransform(rotation = (r / 180f * MathUtils.PI), this.center[0],
-					this.center[1]));
-		}
-	}
-
-	public void setRotation(float r, float x, float y) {
-		if (rotation != r) {
-			this.callTransform(Matrix3.createRotateTransform(rotation = (r / 180f * MathUtils.PI), x, y));
-		}
-	}
-
 	public float getRotation() {
-		return (rotation * 180f / MathUtils.PI);
+		return rotation;
+	}
+
+	public Shape setRotation(float r) {
+		return this.setRotation(r, this.center[0], this.center[1]);
+	}
+
+	public Shape setRotation(float r, float x, float y) {
+		if (rotation != r) {
+			this.callTransform(Matrix3.createRotateTransform(rotation = (r * MathUtils.RAD_TO_DEG), x, y));
+			this.updatePoints();
+		}
+		return this;
 	}
 
 	public void increaseTriangulation() {
@@ -523,7 +524,24 @@ public abstract class Shape implements Serializable, IArray, XY {
 		return triangle;
 	}
 
-	protected synchronized final void checkPoints() {
+	protected final void updatePoints() {
+		final int size = points.length;
+		if (size > 0) {
+			maxX = points[0];
+			maxY = points[1];
+			minX = points[0];
+			minY = points[1];
+			for (int i = 0; i < size / 2; i++) {
+				int idx = i * 2;
+				maxX = MathUtils.max(points[idx], maxX);
+				maxY = MathUtils.max(points[idx + 1], maxY);
+				minX = MathUtils.min(points[idx], minX);
+				minY = MathUtils.min(points[idx + 1], minY);
+			}
+		}
+	}
+
+	protected final void checkPoints() {
 		if (pointsDirty) {
 			createPoints();
 			findCenter();
@@ -531,23 +549,9 @@ public abstract class Shape implements Serializable, IArray, XY {
 			if (points == null) {
 				return;
 			}
-			synchronized (points) {
-				final int size = points.length;
-				if (size > 0) {
-					maxX = points[0];
-					maxY = points[1];
-					minX = points[0];
-					minY = points[1];
-					for (int i = 0; i < size / 2; i++) {
-						maxX = MathUtils.max(points[i * 2], maxX);
-						maxY = MathUtils.max(points[(i * 2) + 1], maxY);
-						minX = MathUtils.min(points[i * 2], minX);
-						minY = MathUtils.min(points[(i * 2) + 1], minY);
-					}
-				}
-				pointsDirty = false;
-				trianglesDirty = true;
-			}
+			updatePoints();
+			pointsDirty = false;
+			trianglesDirty = true;
 		}
 	}
 

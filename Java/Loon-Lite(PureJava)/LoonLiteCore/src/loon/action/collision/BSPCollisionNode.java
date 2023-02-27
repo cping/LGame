@@ -29,146 +29,146 @@ import loon.utils.TArray;
 
 public final class BSPCollisionNode {
 
-	private ObjectMap<CollisionObject, CollisionNode> actors;
+	private ObjectMap<CollisionObject, CollisionNode> _actors;
 
-	private BSPCollisionNode parent;
+	private BSPCollisionNode _parent;
 
-	private RectBox area;
+	private RectBox _area;
 
-	private float splitAxis;
+	private float _splitAxis;
 
-	private float splitPos;
+	private float _splitPos;
 
-	private BSPCollisionNode left;
+	private BSPCollisionNode _left;
 
-	private BSPCollisionNode right;
+	private BSPCollisionNode _right;
 
-	private boolean areaRipple;
+	private boolean _areaRipple;
 
-	public BSPCollisionNode(RectBox area, int splitAxis, int splitPos) {
-		this.area = area;
-		this.splitAxis = splitAxis;
-		this.splitPos = splitPos;
-		this.actors = new ObjectMap<CollisionObject, CollisionNode>();
+	public BSPCollisionNode(RectBox _area, int _splitAxis, int _splitPos) {
+		this._area = _area;
+		this._splitAxis = _splitAxis;
+		this._splitPos = _splitPos;
+		this._actors = new ObjectMap<CollisionObject, CollisionNode>();
 	}
 
 	public void setChild(int side, BSPCollisionNode child) {
 		if (side == 0) {
-			this.left = child;
+			this._left = child;
 			if (child != null) {
-				child.parent = this;
+				child._parent = this;
 			}
 		} else {
-			this.right = child;
+			this._right = child;
 			if (child != null) {
-				child.parent = this;
+				child._parent = this;
 			}
 		}
 	}
 
 	public void clear() {
-		for (CollisionNode node : actors.values()) {
+		for (CollisionNode node : _actors.values()) {
 			if (node != null) {
 				node.dispose();
 				node = null;
 			}
 		}
-		actors.clear();
+		_actors.clear();
 	}
 
-	public void setArea(RectBox area) {
-		this.area = area;
-		this.areaRipple = true;
+	public void setArea(RectBox _area) {
+		this._area = _area;
+		this._areaRipple = true;
 	}
 
 	public void setSplitAxis(float axis) {
-		if (axis != this.splitAxis) {
-			this.splitAxis = axis;
-			this.areaRipple = true;
+		if (axis != this._splitAxis) {
+			this._splitAxis = axis;
+			this._areaRipple = true;
 		}
 	}
 
 	public void setSplitPos(float pos) {
-		if (pos != this.splitPos) {
-			this.splitPos = pos;
-			this.areaRipple = true;
+		if (pos != this._splitPos) {
+			this._splitPos = pos;
+			this._areaRipple = true;
 		}
 
 	}
 
 	public float getSplitAxis() {
-		return this.splitAxis;
+		return this._splitAxis;
 	}
 
 	public float getSplitPos() {
-		return this.splitPos;
+		return this._splitPos;
 	}
 
 	public RectBox getLeftArea() {
-		return this.splitAxis == 0 ? new RectBox(this.area.getX(),
-				this.area.getY(), this.splitPos - this.area.getX(),
-				this.area.getHeight()) : new RectBox(this.area.getX(),
-				this.area.getY(), this.area.getWidth(), this.splitPos
-						- this.area.getY());
+		return this._splitAxis == 0 ? new RectBox(this._area.getX(),
+				this._area.getY(), this._splitPos - this._area.getX(),
+				this._area.getHeight()) : new RectBox(this._area.getX(),
+				this._area.getY(), this._area.getWidth(), this._splitPos
+						- this._area.getY());
 	}
 
 	public RectBox getRightArea() {
-		return this.splitAxis == 0 ? new RectBox(this.splitPos,
-				this.area.getY(), this.area.getRight() - this.splitPos,
-				this.area.getHeight()) : new RectBox(this.area.getX(),
-				this.splitPos, this.area.getWidth(), this.area.getBottom()
-						- this.splitPos);
+		return this._splitAxis == 0 ? new RectBox(this._splitPos,
+				this._area.getY(), this._area.getRight() - this._splitPos,
+				this._area.getHeight()) : new RectBox(this._area.getX(),
+				this._splitPos, this._area.getWidth(), this._area.getBottom()
+						- this._splitPos);
 	}
 
 	public RectBox getArea() {
-		return this.area;
+		return this._area;
 	}
 
 	private void resizeChildren() {
-		if (this.left != null) {
-			this.left.setArea(this.getLeftArea());
+		if (this._left != null) {
+			this._left.setArea(this.getLeftArea());
 		}
 
-		if (this.right != null) {
-			this.right.setArea(this.getRightArea());
+		if (this._right != null) {
+			this._right.setArea(this.getRightArea());
 		}
 
 	}
 
 	public BSPCollisionNode getLeft() {
-		if (this.areaRipple) {
+		if (this._areaRipple) {
 			this.resizeChildren();
-			this.areaRipple = false;
+			this._areaRipple = false;
 		}
-		return this.left;
+		return this._left;
 	}
 
 	public BSPCollisionNode getRight() {
-		if (this.areaRipple) {
+		if (this._areaRipple) {
 			this.resizeChildren();
-			this.areaRipple = false;
+			this._areaRipple = false;
 		}
-		return this.right;
+		return this._right;
 	}
 
 	public BSPCollisionNode getParent() {
-		return this.parent;
+		return this._parent;
 	}
 
-	public void setParent(BSPCollisionNode parent) {
-		this.parent = parent;
+	public void setParent(BSPCollisionNode p) {
+		this._parent = p;
 	}
 
 	public int getChildSide(BSPCollisionNode child) {
-		return this.left == child ? 0 : 1;
+		return this._left == child ? 0 : 1;
 	}
 
 	public void addActor(CollisionObject actor) {
-		this.actors.put(actor, new CollisionNode(actor, this));
+		this._actors.put(actor, new CollisionNode(actor, this));
 	}
 
 	public boolean containsActor(CollisionObject actor) {
-		CollisionNode anode = this.actors.get(actor);
+		CollisionNode anode = this._actors.get(actor);
 		if (anode != null) {
 			anode.mark();
 			return true;
@@ -178,28 +178,28 @@ public final class BSPCollisionNode {
 	}
 
 	public void actorRemoved(CollisionObject actor) {
-		this.actors.remove(actor);
+		this._actors.remove(actor);
 	}
 
 	public int numberActors() {
-		return this.actors.size;
+		return this._actors.size;
 	}
 
 	public boolean isEmpty() {
-		return this.actors.size == 0;
+		return this._actors.size == 0;
 	}
 
 	public Entries<CollisionObject, CollisionNode> getEntriesIterator() {
-		return this.actors.entries();
+		return this._actors.entries();
 	}
 
 	public Keys<CollisionObject> getActorsIterator() {
-		return this.actors.keys();
+		return this._actors.keys();
 	}
 
 	public TArray<CollisionObject> getActorsList() {
 		TArray<CollisionObject> result = new TArray<CollisionObject>();
-		for (Keys<CollisionObject> key = this.actors.keys(); key.hasNext();) {
+		for (Keys<CollisionObject> key = this._actors.keys(); key.hasNext();) {
 			result.add(key.next());
 		}
 		return result;

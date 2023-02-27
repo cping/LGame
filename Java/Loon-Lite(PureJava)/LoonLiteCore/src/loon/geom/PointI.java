@@ -20,11 +20,18 @@
  */
 package loon.geom;
 
+import loon.LSystem;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 
 /*最简化的整型坐标处理类,以减少对象大小*/
 public class PointI implements XY {
+
+	public static boolean pointEquals(int x1, int y1, int x2, int y2, int tolerance) {
+		int dx = x2 - x1;
+		int dy = y2 - y1;
+		return dx * dx + dy * dy < tolerance * tolerance;
+	}
 
 	public int x = 0;
 	public int y = 0;
@@ -33,6 +40,10 @@ public class PointI implements XY {
 		this(0, 0);
 	}
 
+	public PointI(int size) {
+		set(size, size);
+	}
+	
 	public PointI(int x1, int y1) {
 		set(x1, y1);
 	}
@@ -42,9 +53,42 @@ public class PointI implements XY {
 		this.y = p.y;
 	}
 
-	public void set(int x1, int y1) {
+	public PointI set(int v) {
+		return set(v, v);
+	}
+
+	public PointI set(int x1, int y1) {
 		this.x = x1;
 		this.y = y1;
+		return this;
+	}
+
+	public PointF getF() {
+		return new PointF(this.x, this.y);
+	}
+
+	public PointI toRoundPoint() {
+		return new PointI(MathUtils.floor(this.x), MathUtils.floor(this.y));
+	}
+
+	public PointI empty() {
+		return this.set(0, 0);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		PointI other = (PointI) obj;
+		return equals(other);
+	}
+
+	public final boolean equals(PointI point) {
+		return equals(point.x, point.y);
 	}
 
 	public final boolean equals(int x, int y) {
@@ -52,7 +96,7 @@ public class PointI implements XY {
 	}
 
 	public final int length() {
-		return MathUtils.sqrt(MathUtils.mul(x, x) + MathUtils.mul(y, y));
+		return (int) MathUtils.sqrt(MathUtils.mul(x, x) + MathUtils.mul(y, y));
 	}
 
 	public final PointI negate() {
@@ -76,13 +120,13 @@ public class PointI implements XY {
 	public final int distanceTo(PointI p) {
 		final int tx = this.x - p.x;
 		final int ty = this.y - p.y;
-		return MathUtils.sqrt(MathUtils.mul(tx, tx) + MathUtils.mul(ty, ty));
+		return (int) MathUtils.sqrt(MathUtils.mul(tx, tx) + MathUtils.mul(ty, ty));
 	}
 
 	public final int distanceTo(int x, int y) {
 		final int tx = this.x - x;
 		final int ty = this.y - y;
-		return MathUtils.sqrt(MathUtils.mul(tx, tx) + MathUtils.mul(ty, ty));
+		return (int) MathUtils.sqrt(MathUtils.mul(tx, tx) + MathUtils.mul(ty, ty));
 	}
 
 	public final int distanceTo(PointI p1, PointI p2) {
@@ -94,7 +138,7 @@ public class PointI implements XY {
 		final int iy = p1.y + MathUtils.mul(u, ty);
 		final int dx = ix - x;
 		final int dy = iy - y;
-		return MathUtils.sqrt(MathUtils.mul(dx, dx) + MathUtils.mul(dy, dy));
+		return (int) MathUtils.sqrt(MathUtils.mul(dx, dx) + MathUtils.mul(dy, dy));
 	}
 
 	public PointI cpy(PointI p) {
@@ -115,6 +159,20 @@ public class PointI implements XY {
 		return y;
 	}
 
+	public String toCSS() {
+		return this.x + "px " + this.y + "px";
+	}
+
+	public PointI random() {
+		this.x = MathUtils.random(0, LSystem.viewSize.getWidth());
+		this.y = MathUtils.random(0, LSystem.viewSize.getHeight());
+		return this;
+	}
+
+	public float[] toArray() {
+		return new float[] { x, y };
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;

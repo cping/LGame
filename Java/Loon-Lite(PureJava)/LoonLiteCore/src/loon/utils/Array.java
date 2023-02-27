@@ -484,7 +484,7 @@ public class Array<T> implements IArray, LRelease {
 			return "[]";
 		}
 		ArrayNode<T> o = this._items.next;
-		StringBuilder buffer = new StringBuilder(CollectionUtils.INITIAL_CAPACITY);
+		StrBuilder buffer = new StrBuilder(32);
 		buffer.append('[');
 		int count = 0;
 		for (; o != this._items;) {

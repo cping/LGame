@@ -22,8 +22,6 @@ package loon.utils.reply;
 
 public abstract class Connection implements Closeable {
 
-	public abstract void close();
-
 	public abstract Connection once();
 
 	public abstract Connection setPriority(int priority);

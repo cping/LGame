@@ -47,63 +47,51 @@ public interface SysInput {
 		public void cancel();
 
 	}
-
-	public final static int NO_BUTTON = -1;
-
-	public final static int NO_KEY = -1;
-
-	public final static int UPPER_LEFT = 0;
-
-	public final static int UPPER_RIGHT = 1;
-
-	public final static int LOWER_LEFT = 2;
-
-	public final static int LOWER_RIGHT = 3;
 	
-	public abstract void setKeyDown(int code);
+	void setKeyDown(int code);
 
-	public abstract void setKeyUp(int code);
+	void setKeyUp(int code);
 
-	public abstract boolean isMoving();
+	boolean isMoving();
 
-	public abstract int getRepaintMode();
+	int getRepaintMode();
 
-	public abstract void setRepaintMode(int mode);
+	void setRepaintMode(int mode);
 
-	public abstract PointI getTouch();
+	PointI getTouch();
 
-	public abstract int getWidth();
+	int getWidth();
 
-	public abstract int getHeight();
+	int getHeight();
 
-	public abstract void refresh();
+	void refresh();
 
-	public abstract int getTouchX();
+	int getTouchX();
 
-	public abstract int getTouchY();
+	int getTouchY();
 
-	public abstract int getTouchDX();
+	int getTouchDX();
 
-	public abstract int getTouchDY();
+	int getTouchDY();
 
-	public abstract int getTouchReleased();
+	int getTouchReleased();
 
-	public abstract boolean isTouchReleased(int i);
+	boolean isTouchReleased(int i);
 
-	public abstract int getTouchPressed();
+	int getTouchPressed();
 
-	public abstract boolean isTouchPressed(int i);
+	boolean isTouchPressed(int i);
 
-	public abstract boolean isTouchType(int i);
+	boolean isTouchType(int i);
 
-	public abstract int getKeyReleased();
+	int getKeyReleased();
 
-	public abstract boolean isKeyReleased(int i);
+	boolean isKeyReleased(int i);
 
-	public abstract int getKeyPressed();
+	int getKeyPressed();
 
-	public abstract boolean isKeyPressed(int i);
+	boolean isKeyPressed(int i);
 
-	public abstract boolean isKeyType(int i);
+	boolean isKeyType(int i);
 
 }

@@ -21,6 +21,7 @@
  */
 package loon.geom;
 
+import loon.LSystem;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 import loon.utils.StringKeyValue;
@@ -57,6 +58,17 @@ public class RectF implements XY {
 			top = r.top;
 			right = r.right;
 			bottom = r.bottom;
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + NumberUtils.floatToIntBits(left);
+			result = prime * result + NumberUtils.floatToIntBits(top);
+			result = prime * result + NumberUtils.floatToIntBits(right);
+			result = prime * result + NumberUtils.floatToIntBits(bottom);
+			return result;
 		}
 
 		@Override
@@ -148,11 +160,11 @@ public class RectF implements XY {
 		}
 
 		public boolean contains(Circle circle) {
-			float xmin = circle.x - circle.radius;
-			float xmax = xmin + 2f * circle.radius;
+			float xmin = circle.x - circle.boundingCircleRadius;
+			float xmax = xmin + 2f * circle.boundingCircleRadius;
 
-			float ymin = circle.y - circle.radius;
-			float ymax = ymin + 2f * circle.radius;
+			float ymin = circle.y - circle.boundingCircleRadius;
+			float ymax = ymin + 2f * circle.boundingCircleRadius;
 
 			return ((xmin > getX() && xmin < getX() + width()) && (xmax > getX() && xmax < getX() + width()))
 					&& ((ymin > getY() && ymin < getY() + height()) && (ymax > getY() && ymax < getY() + height()));
@@ -438,6 +450,10 @@ public class RectF implements XY {
 		return height;
 	}
 
+	public boolean isEmpty() {
+		return width <= 0 && height <= 0;
+	}
+
 	public static void getNearestCorner(float x, float y, float w, float h, float px, float py, PointF result) {
 		result.set(MathUtils.nearest(px, x, x + w), MathUtils.nearest(y, y, y + h));
 	}
@@ -529,6 +545,14 @@ public class RectF implements XY {
 		float dx = x1 - x2 + (w1 - w2) / 2;
 		float dy = y1 - y2 + (h1 - h2) / 2;
 		return dx * dx + dy * dy;
+	}
+
+	public RectF random() {
+		this.x = MathUtils.random(0f, LSystem.viewSize.getWidth());
+		this.y = MathUtils.random(0f, LSystem.viewSize.getHeight());
+		this.width = MathUtils.random(0f, LSystem.viewSize.getWidth());
+		this.height = MathUtils.random(0f, LSystem.viewSize.getHeight());
+		return this;
 	}
 
 	@Override

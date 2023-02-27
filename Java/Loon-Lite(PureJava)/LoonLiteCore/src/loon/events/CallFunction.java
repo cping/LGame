@@ -22,7 +22,7 @@ package loon.events;
 
 import loon.component.LComponent;
 
-public abstract class CallFunction implements Updateable {
+public abstract class CallFunction  implements Updateable {
 
 	@Override
 	public void action(Object a) {

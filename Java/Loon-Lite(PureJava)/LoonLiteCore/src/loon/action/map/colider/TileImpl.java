@@ -20,28 +20,31 @@
  */
 package loon.action.map.colider;
 
-import loon.action.map.Attribute;
+import loon.LSystem;
+import loon.action.ActionBind;
+import loon.action.map.items.Attribute;
 import loon.action.sprite.Animation;
 import loon.geom.RectI;
 import loon.geom.RectI.Range;
 import loon.geom.Vector2f;
+import loon.utils.MathUtils;
 import loon.utils.TArray;
 
 public class TileImpl implements Tile {
 
 	private RectI rect;
 
-	public int idx = -1;
+	protected int idx = -1;
 
-	public int solidType = -1;
+	protected int solidType = -1;
 
-	public int imgId = -1;
+	protected int imgId = -1;
 
-	public Attribute attribute;
+	protected Attribute attribute;
 
-	public boolean isAnimation;
+	protected boolean isAnimation;
 
-	public Animation animation;
+	protected Animation animation;
 
 	protected TArray<TileEvent> events = new TArray<TileEvent>();
 
@@ -53,10 +56,20 @@ public class TileImpl implements Tile {
 
 	protected TileImpl parent = null;
 
+	protected ActionBind bind = null;
+
+	protected Object userData = null;
+
 	private TArray<Vector2f> neighbours;
+
+	private TileState state;
 
 	public TileImpl(int idx) {
 		this(idx, 0, 0);
+	}
+
+	public TileImpl(int idx, ActionBind bind) {
+		this(idx, bind, bind.x(), bind.y(), (int) bind.getWidth(), (int) bind.getHeight());
 	}
 
 	public TileImpl(int idx, int x, int y) {
@@ -64,14 +77,16 @@ public class TileImpl implements Tile {
 	}
 
 	public TileImpl(int idx, int x, int y, int w, int h) {
+		this(idx, null, x, y, w, h);
+	}
+
+	public TileImpl(int idx, ActionBind bind, int x, int y, int w, int h) {
 		this.idx = idx;
 		this.imgId = idx;
 		this.solidType = idx;
+		this.state = new TileState(0);
 		this.rect = new RectI(x, y, w, h);
-	}
-
-	public float getWeight() {
-		return this.G + this.H;
+		this.bind = bind;
 	}
 
 	public TileImpl cpy() {
@@ -83,6 +98,8 @@ public class TileImpl implements Tile {
 		this.idx = other.idx;
 		this.solidType = other.solidType;
 		this.imgId = other.imgId;
+		this.userData = other.userData;
+		this.state.setResult(other.state.getResult());
 		if (attribute != null) {
 			attribute.setAttribute(other.attribute);
 		} else {
@@ -100,6 +117,7 @@ public class TileImpl implements Tile {
 		G = other.G;
 		H = other.H;
 		parent = other.parent;
+		bind = other.bind;
 		if (neighbours != null) {
 			neighbours.addAll(other.neighbours);
 		} else {
@@ -108,11 +126,16 @@ public class TileImpl implements Tile {
 		return this;
 	}
 
+	public void calcNeighbours() {
+		this.calcNeighbours(LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
+	}
+
 	public void calcNeighbours(int maxX, int maxY) {
-		if (this.neighbours != null) {
-			return;
+		if (this.neighbours == null) {
+			this.neighbours = new TArray<Vector2f>();
+		} else {
+			this.neighbours.clear();
 		}
-		this.neighbours = new TArray<Vector2f>();
 		if (this.rect.y > 0) {
 			if (this.rect.x > 0) {
 				this.neighbours.add(new Vector2f(this.rect.x - 1, this.rect.y - 1)); // 上
@@ -138,8 +161,12 @@ public class TileImpl implements Tile {
 			}
 		}
 	}
-	
-	protected void setId(int id){
+
+	public int getId() {
+		return this.idx;
+	}
+
+	protected void setId(int id) {
 		this.idx = id;
 		this.imgId = id;
 		this.solidType = id;
@@ -148,12 +175,16 @@ public class TileImpl implements Tile {
 	@Override
 	public TileImpl at(int id, int x, int y, int w, int h) {
 		TileImpl impl = cpy();
-		impl.setId(id); 
+		impl.setId(id);
 		impl.setX(x);
 		impl.setY(y);
 		impl.setWidth(w);
 		impl.setHeight(h);
 		return impl;
+	}
+
+	public Vector2f getPos() {
+		return Vector2f.at(getX(), getY());
 	}
 
 	@Override
@@ -217,28 +248,114 @@ public class TileImpl implements Tile {
 		return attribute;
 	}
 
-	public void setAttribute(Attribute attribute) {
+	public TileImpl setAttribute(Attribute attribute) {
 		this.attribute = attribute;
+		return this;
 	}
 
 	public Animation getAnimation() {
 		return animation;
 	}
 
-	public void setAnimation(Animation animation) {
+	public TileImpl setAnimation(Animation animation) {
+		this.isAnimation = !(animation == null);
 		this.animation = animation;
+		return this;
 	}
 
 	public TArray<TileEvent> getEvents() {
 		return events;
 	}
 
+	public ActionBind getBind() {
+		return bind;
+	}
+
+	public int getImgId() {
+		return imgId;
+	}
+
+	public TileImpl setImgId(int imgId) {
+		this.imgId = imgId;
+		return this;
+	}
+
+	public TileImpl setUserData(Object data) {
+		this.userData = data;
+		return this;
+	}
+
+	public Object getUserData() {
+		return userData;
+	}
+
+	public boolean isAnimation() {
+		return isAnimation;
+	}
+
+	public void setAnimation(boolean ani) {
+		this.isAnimation = ani;
+	}
+
 	public boolean isClosed() {
 		return closed;
+	}
+
+	public TileState getState() {
+		return state;
+	}
+
+	public TileImpl setState(TileState state) {
+		this.state = state;
+		return this;
+	}
+
+	public TileImpl getParent() {
+		return parent;
+	}
+
+	public TileImpl setParent(TileImpl parent) {
+		this.parent = parent;
+		return this;
+	}
+
+	public TileImpl setHCost(float hCost) {
+		this.H = hCost;
+		return this;
+	}
+
+	public float getHCost() {
+		return this.H;
+	}
+
+	public TileImpl setGCost(float gCost) {
+		this.G = gCost;
+		return this;
+	}
+
+	public float getGCost() {
+		return this.G;
+	}
+
+	public float getWeight() {
+		return this.G + this.H;
+	}
+
+	public float getFCost() {
+		return this.getWeight();
+	}
+
+	public int distance(Tile other) {
+		return MathUtils.abs(getX() - other.getX()) + MathUtils.abs(getY() - other.getY());
 	}
 
 	@Override
 	public Tile getTileImpl() {
 		return this;
 	}
+
+	public String toString() {
+		return "{" + getX() + "," + getY() + "}";
+	}
+
 }

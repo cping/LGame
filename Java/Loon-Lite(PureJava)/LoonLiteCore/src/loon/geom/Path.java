@@ -20,9 +20,8 @@
  */
 package loon.geom;
 
-import java.util.Iterator;
-
-import loon.utils.TArray;
+import loon.canvas.Path2D;
+import loon.utils.FloatArray;
 
 public class Path extends Shape {
 	/**
@@ -30,162 +29,161 @@ public class Path extends Shape {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private TArray<float[]> localPoints;
-
-	private float cx;
-
-	private float cy;
-
-	private boolean closed;
-
-	private TArray<TArray<float[]>> holes;
-
-	private TArray<float[]> hole;
+	private Path2D _path2d;
 
 	public Path() {
-		this(0,0);
+		this(-1f, -1f);
 	}
-	
+
 	public Path(float sx, float sy) {
-		moveTo(sx, sy);
-	}
-	
-	public void reset(){
-		this.clear();
-	}
-
-	public void set(float sx, float sy) {
-		localPoints.add(new float[] { sx, sy });
-		cx = sx;
-		cy = sy;
-		pointsDirty = true;
-	}
-
-	public void addPath(Path p, float px, float py) {
-		for (Iterator<float[]> it = p.localPoints.iterator(); it.hasNext();) {
-			float[] pos = it.next();
-			if (hole != null) {
-				hole.add(new float[] { px + pos[0], py + pos[1] });
-			} else {
-				localPoints.add(new float[] { px + pos[0], py + pos[1] });
-			}
+		if (_path2d == null) {
+			_path2d = new Path2D();
+		}
+		if (sx != -1f && sy != -1f) {
+			_path2d.moveTo(sx, sy);
 		}
 		pointsDirty = true;
 	}
 
-	public void moveTo(float sx, float sy) {
-		if (holes == null) {
-			holes = new TArray<TArray<float[]>>(10);
-		}
-		if (localPoints == null) {
-			localPoints = new TArray<float[]>(10);
-		}
+	public Path reset() {
+		_path2d.reset();
+		pointsDirty = true;
+		return this;
+	}
+
+	public Path set(float sx, float sy) {
+		_path2d.moveTo(sx, sy);
+		pointsDirty = true;
+		return this;
+	}
+
+	public Path addPath(Path p, float px, float py) {
+		_path2d.addPath(p._path2d, px, py);
+		pointsDirty = true;
+		return this;
+	}
+
+	public Path moveTo(float sx, float sy) {
 		this.set(sx, sy);
+		return this;
 	}
 
-	public void quadTo(float x1, float y1, float x2, float y2) {
-		if (hole != null) {
-			hole.add(new float[] { x1, y1, x2, y2 });
-		} else {
-			localPoints.add(new float[] { x1, y1, x2, y2 });
-		}
-		cx = x2;
-		cy = y2;
+	public Path quadTo(float x1, float y1, float x2, float y2) {
+		_path2d.quadraticCurveTo(x2, y2, x1, y1);
 		pointsDirty = true;
+		return this;
 	}
 
+	public Path push(PointF point) {
+		_path2d.lineTo(point.x, point.y);
+		pointsDirty = true;
+		return this;
+	}
+
+	@Override
 	public void clear() {
-		if (hole != null) {
-			hole.clear();
-		}
-		if (localPoints != null) {
-			localPoints.clear();
-		}
+		_path2d.reset();
 		pointsDirty = true;
 	}
 
-	public void lineTo(float x, float y) {
-		if (hole != null) {
-			hole.add(new float[] { x, y });
-		} else {
-			localPoints.add(new float[] { x, y });
-		}
-		cx = x;
-		cy = y;
+	public Path setDirty() {
+		return setDirty(true);
+	}
+
+	public Path setDirty(boolean d) {
+		this.pointsDirty = d;
+		return this;
+	}
+
+	public Path2D getPath2D() {
+		return _path2d;
+	}
+
+	public Path lineTo(float x, float y) {
+		_path2d.lineTo(x, y);
 		pointsDirty = true;
+		return this;
 	}
 
-	public void close() {
-		closed = true;
+	public Path lineTo(float x1, float y1, float x2, float y2) {
+		_path2d.line(x1, y1, x2, y2);
+		pointsDirty = true;
+		return this;
 	}
 
-	public void curveTo(float x, float y, float cx1, float cy1, float cx2,
-			float cy2) {
-		curveTo(x, y, cx1, cy1, cx2, cy2, 10);
+	public Path curveTo(float x, float y, float cx1, float cy2) {
+		_path2d.curveTo(cx1, cy2, x, y);
+		return this;
 	}
 
-	public void curveTo(float x, float y, float cx1, float cy1, float cx2,
-			float cy2, int segments) {
-		if ((cx == x) && (cy == y)) {
-			return;
+	public Path curveTo(float x, float y, float cx1, float cy1, float cx2, float cy2) {
+		_path2d.cubicCurveTo(cx1, cy1, cx2, cy2, x, y);
+		return this;
+	}
+
+	public Path curveTo(float x, float y, float cx1, float cy1, float cx2, float cy2, int segments) {
+		if ((_path2d.getLastX() == x) && (_path2d.getLastY() == y)) {
+			return this;
 		}
-		Curve curve = new Curve(new Vector2f(cx, cy), new Vector2f(cx1, cy1),
+		Curve curve = new Curve(new Vector2f(_path2d.getLastX(), _path2d.getLastY()), new Vector2f(cx1, cy1),
 				new Vector2f(cx2, cy2), new Vector2f(x, y));
 		float step = 1.0f / segments;
 
 		for (int i = 1; i < segments + 1; i++) {
 			float t = i * step;
 			Vector2f p = curve.pointAt(t);
-			if (hole != null) {
-				hole.add(new float[] { p.x, p.y });
-			} else {
-				localPoints.add(new float[] { p.x, p.y });
-			}
-			cx = p.x;
-			cy = p.y;
+			_path2d.lineTo(p.x, p.y);
 		}
 		pointsDirty = true;
+		return this;
 	}
 
 	@Override
 	protected void createPoints() {
-		points = new float[localPoints.size * 2];
-		for (int i = 0; i < localPoints.size; i++) {
-			float[] p = localPoints.get(i);
-			points[(i * 2)] = p[0];
-			points[(i * 2) + 1] = p[1];
-		}
+		this.points = _path2d.getResult();
 	}
 
 	@Override
 	public Shape transform(Matrix3 transform) {
-		Path p = new Path(cx, cy);
-		p.localPoints = transform(localPoints, transform);
-		for (int i = 0; i < holes.size; i++) {
-			p.holes.add(transform(holes.get(i), transform));
-		}
-		p.closed = this.closed;
-		return p;
+		Path newPath = new Path();
+		newPath._path2d.update(transform(_path2d, transform));
+		return newPath;
 	}
 
-	private TArray<float[]> transform(TArray<float[]> pts, Matrix3 t) {
-		float[] in = new float[pts.size * 2];
-		float[] out = new float[pts.size * 2];
-
-		for (int i = 0; i < pts.size; i++) {
-			in[i * 2] = (pts.get(i))[0];
-			in[(i * 2) + 1] = (pts.get(i))[1];
-		}
-		t.transform(in, 0, out, 0, pts.size);
-		TArray<float[]> outList = new TArray<float[]>();
-		for (int i = 0; i < pts.size; i++) {
-			outList.add(new float[] { out[(i * 2)], out[(i * 2) + 1] });
+	private FloatArray transform(Path2D path, Matrix3 t) {
+		float[] in = path.getResult();
+		float[] out = new float[path.size()];
+		t.transform(in, 0, out, 0, path.size());
+		FloatArray outList = new FloatArray();
+		for (int i = 0; i < path.size(); i++) {
+			outList.add(out[(i * 2)]);
+			outList.add(out[(i * 2) + 1]);
 		}
 		return outList;
 	}
 
 	@Override
+	public int hashCode() {
+		return _path2d.hashCode();
+	}
+
+	@Override
+	public String toString() {
+		return _path2d.toString();
+	}
+
+	public Path close() {
+		_path2d.close();
+		return this;
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return _path2d.isEmpty();
+	}
+
+	@Override
 	public boolean closed() {
-		return closed;
+		return _path2d.isClosed();
 	}
 }

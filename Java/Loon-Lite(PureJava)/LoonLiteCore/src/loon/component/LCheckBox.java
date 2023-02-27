@@ -246,16 +246,18 @@ public class LCheckBox extends LComponent implements FontSet<LCheckBox> {
 		return _function;
 	}
 
-	public void setFunction(CallFunction function) {
-		this._function = function;
+	public LCheckBox setFunction(CallFunction f) {
+		this._function = f;
+		return this;
 	}
 
 	public boolean isTicked() {
 		return ticked;
 	}
 
-	public void setTicked(boolean ticked) {
+	public LCheckBox setTicked(boolean ticked) {
 		this.ticked = ticked;
+		return this;
 	}
 
 	public boolean isShowText() {
@@ -286,24 +288,27 @@ public class LCheckBox extends LComponent implements FontSet<LCheckBox> {
 		return fontSpace;
 	}
 
-	public void setFontSpace(int fontSpace) {
+	public LCheckBox setFontSpace(int fontSpace) {
 		this.fontSpace = fontSpace;
+		return this;
 	}
 
 	public boolean isBoxtoleftofText() {
 		return boxtoleftoftext;
 	}
 
-	public void setBoxtoleftofText(boolean b) {
+	public LCheckBox setBoxtoleftofText(boolean b) {
 		this.boxtoleftoftext = b;
+		return this;
 	}
 
-	public Vector2f getOffset() {
+	public Vector2f getBoxOffset() {
 		return offset;
 	}
 
-	public void setOffset(Vector2f offset) {
+	public LCheckBox setBoxOffset(Vector2f offset) {
 		this.offset = offset;
+		return this;
 	}
 
 	@Override

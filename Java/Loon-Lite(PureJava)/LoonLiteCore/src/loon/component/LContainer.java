@@ -36,7 +36,9 @@ import loon.utils.CollectionUtils;
 import loon.utils.IArray;
 import loon.utils.LayerSorter;
 import loon.utils.MathUtils;
+import loon.utils.StrBuilder;
 import loon.utils.TArray;
+import loon.utils.reply.Callback;
 
 /**
  * UI组件的上级类,作为容器可以把多个LComponent注入一个LContainer
@@ -53,6 +55,8 @@ public abstract class LContainer extends LComponent implements IArray {
 	// 滚动y轴
 	protected float _component_scrollY;
 
+	private boolean _sortableChildren;
+
 	private final static LayerSorter<LComponent> compSorter = new LayerSorter<LComponent>(false);
 
 	private int childCount = 0;
@@ -62,11 +66,16 @@ public abstract class LContainer extends LComponent implements IArray {
 	public LContainer(int x, int y, int w, int h) {
 		super(x, y, w, h);
 		this.setFocusable(false);
+		this.setSortableChildren(true);
 	}
 
 	@Override
 	public boolean isContainer() {
 		return true;
+	}
+
+	public boolean hasChilds() {
+		return childCount > 0;
 	}
 
 	public LComponent addPadding(LComponent comp, float offX, float offY) {
@@ -219,7 +228,9 @@ public abstract class LContainer extends LComponent implements IArray {
 				comp.input = _desktop.input;
 			}
 		}
-		this.sortComponents();
+		if (_sortableChildren) {
+			this.sortComponents();
+		}
 		this.latestInserted = comp;
 		this.setDesktops(this._desktop);
 		return this;
@@ -249,7 +260,9 @@ public abstract class LContainer extends LComponent implements IArray {
 		this._childs = newChilds;
 		this._childs[index] = comp;
 		this._desktop.setDesktop(comp);
-		this.sortComponents();
+		if (_sortableChildren) {
+			this.sortComponents();
+		}
 		this.latestInserted = comp;
 		return this;
 	}
@@ -359,6 +372,26 @@ public abstract class LContainer extends LComponent implements IArray {
 			for (int i = size - 1; i > -1; i--) {
 				if (name.equals(this._childs[i].getName())) {
 					list.add(this._childs[i]);
+				}
+			}
+		}
+		return list;
+	}
+
+	public TArray<LComponent> findNameContains(String... names) {
+		if (_component_isClose) {
+			return null;
+		}
+		TArray<LComponent> list = new TArray<LComponent>();
+		final int size = this.childCount;
+		for (String name : names) {
+			for (int i = size - 1; i > -1; i--) {
+				LComponent comp = this._childs[i];
+				if (comp != null) {
+					String childName = comp.getName();
+					if (childName != null && childName.contains(name)) {
+						list.add(comp);
+					}
 				}
 			}
 		}
@@ -618,17 +651,6 @@ public abstract class LContainer extends LComponent implements IArray {
 	}
 
 	@Override
-	protected void validateSize() {
-		super.validateSize();
-		for (int i = 0; i < this.childCount; i++) {
-			LComponent comp = this._childs[i];
-			if (comp != null && comp != this) {
-				comp.validateSize();
-			}
-		}
-	}
-
-	@Override
 	public void createUI(GLEx g) {
 		if (_component_isClose) {
 			return;
@@ -693,7 +715,9 @@ public abstract class LContainer extends LComponent implements IArray {
 				this._childs = CollectionUtils.cut(this._childs, i);
 				this._childs = CollectionUtils.expand(this._childs, 1, false);
 				this._childs[0] = comp;
-				this.sortComponents();
+				if (_sortableChildren) {
+					this.sortComponents();
+				}
 				break;
 			}
 		}
@@ -714,14 +738,19 @@ public abstract class LContainer extends LComponent implements IArray {
 				this._childs = CollectionUtils.cut(this._childs, i);
 				this._childs = CollectionUtils.expand(this._childs, 1, true);
 				this._childs[this.childCount - 1] = comp;
-				this.sortComponents();
+				if (_sortableChildren) {
+					this.sortComponents();
+				}
 				break;
 			}
 		}
 	}
 
 	public void sortComponents() {
-		if (_component_isClose) {
+		if (this._component_isClose) {
+			return;
+		}
+		if (this.childCount <= 1) {
 			return;
 		}
 		compSorter.sort(this._childs);
@@ -848,7 +877,7 @@ public abstract class LContainer extends LComponent implements IArray {
 		if (_component_isClose) {
 			return null;
 		}
-		return CollectionUtils.copyOf(this._childs);
+		return CollectionUtils.copyOf(this._childs, this.childCount);
 	}
 
 	public LComponent get() {
@@ -856,12 +885,12 @@ public abstract class LContainer extends LComponent implements IArray {
 	}
 
 	private RectBox getBox() {
-		return setRect(MathUtils.getBounds(0, 0, getWidth() * _scaleX, getHeight() * _scaleY, _rotation, _rect));
+		return setRect(MathUtils.getBounds(0, 0, getWidth() * _scaleX, getHeight() * _scaleY, _objectRotation, _objectRect));
 	}
 
 	@Override
 	public LayoutPort getLayoutPort() {
-		if (_super == null) {
+		if (_objectSuper == null) {
 			return new LayoutPort(getBox(), getRootConstraints());
 		} else {
 			return new LayoutPort(this, getRootConstraints());
@@ -1047,6 +1076,10 @@ public abstract class LContainer extends LComponent implements IArray {
 		return this;
 	}
 
+	public int getChildCount() {
+		return size();
+	}
+
 	@Override
 	public int size() {
 		return childCount;
@@ -1087,7 +1120,7 @@ public abstract class LContainer extends LComponent implements IArray {
 		}
 	}
 
-	void toString(StringBuilder buffer, int indent) {
+	void toString(StrBuilder buffer, int indent) {
 		buffer.append(super.toString());
 		LComponent[] comps = _childs;
 		int size = comps.length;
@@ -1121,6 +1154,23 @@ public abstract class LContainer extends LComponent implements IArray {
 				}
 			}
 		}
+	}
+
+	@Override
+	protected LContainer validateResize() {
+		if (_component_isClose) {
+			return this;
+		}
+		super.validateResize();
+		if (_childs != null && childCount > 0) {
+			for (int i = this.childCount - 1; i >= 0; i--) {
+				LComponent comp = _childs[i];
+				if (comp != null && comp != this && comp.getParent() == this) {
+					comp.validateResize();
+				}
+			}
+		}
+		return this;
 	}
 
 	public LContainer scrollBy(float x, float y) {
@@ -1163,10 +1213,23 @@ public abstract class LContainer extends LComponent implements IArray {
 		return controls;
 	}
 
+	@Override
+	public void setRotation(float rotate) {
+		super.setRotation(rotate);
+		if (_childs != null) {
+			for (int i = _childs.length - 1; i > -1; i--) {
+				LComponent comp = _childs[i];
+				if (comp != null) {
+					comp.setRotation(rotate);
+				}
+			}
+		}
+	}
+
 	public UIControls controls() {
 		return createUIControls();
 	}
-	
+
 	public Margin margin(boolean vertical, float left, float top, float right, float bottom) {
 		float size = vertical ? getHeight() : getWidth();
 		if (_component_isClose) {
@@ -1189,9 +1252,43 @@ public abstract class LContainer extends LComponent implements IArray {
 		return _margin;
 	}
 
+	/**
+	 * 遍历LContainer中所有组件对象并反馈给Callback
+	 * 
+	 * @param callback
+	 */
+	public LContainer forChildren(Callback<LComponent> callback) {
+		if (callback == null) {
+			return this;
+		}
+		for (LComponent child : this._childs) {
+			if (child != null) {
+				callback.onSuccess(child);
+			}
+		}
+		return this;
+	}
+
+	public float getStageX() {
+		return (getX() - getScreenX()) / getScaleX();
+	}
+
+	public float getStageY() {
+		return (getX() - getScreenX()) / getScaleY();
+	}
+
+	public LContainer setSortableChildren(boolean v) {
+		this._sortableChildren = v;
+		return this;
+	}
+
+	public boolean isSortableChildren() {
+		return this._sortableChildren;
+	}
+
 	@Override
 	public String toString() {
-		StringBuilder buffer = new StringBuilder(128);
+		StrBuilder buffer = new StrBuilder(128);
 		toString(buffer, 1);
 		buffer.setLength(buffer.length() - 1);
 		return buffer.toString();

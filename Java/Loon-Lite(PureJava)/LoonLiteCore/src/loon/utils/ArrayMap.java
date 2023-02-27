@@ -21,11 +21,10 @@
  */
 package loon.utils;
 
+import loon.LRelease;
 import loon.LSysException;
-import loon.utils.CollectionUtils;
-import loon.utils.MathUtils;
 
-public class ArrayMap implements IArray {
+public class ArrayMap implements IArray, LRelease {
 
 	public static class Entry {
 
@@ -529,7 +528,7 @@ public class ArrayMap implements IArray {
 			return "[]";
 		}
 		Entry[] values = this.valuesTable;
-		StringBuilder buffer = new StringBuilder(CollectionUtils.INITIAL_CAPACITY);
+		StrBuilder buffer = new StrBuilder(32);
 		buffer.append('[');
 		for (int i = 0; i < size; i++) {
 			Object key = values[i].key;
@@ -543,6 +542,13 @@ public class ArrayMap implements IArray {
 		}
 		buffer.append(']');
 		return buffer.toString();
+	}
+
+	@Override
+	public void close() {
+		this.keysTable = null;
+		this.valuesTable = null;
+		this.size = 0;
 	}
 
 }

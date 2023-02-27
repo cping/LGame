@@ -27,6 +27,7 @@ import loon.LTexture;
 import loon.canvas.Paint.Style;
 import loon.font.LFont;
 import loon.font.TextLayout;
+import loon.geom.Affine2f;
 
 /**
  * Canvas渲染用类,作为Image的渲染器封装而存在,随着平台不同,在后台渲染上可能存在一定差异.<br>
@@ -76,8 +77,7 @@ public abstract class Canvas implements LRelease {
 
 		void draw(Object gc, float x, float y, float width, float height);
 
-		void draw(Object gc, float dx, float dy, float dw, float dh, float sx,
-				float sy, float sw, float sh);
+		void draw(Object gc, float dx, float dy, float dw, float dh, float sx, float sy, float sw, float sh);
 	}
 
 	protected final Image image;
@@ -86,10 +86,10 @@ public abstract class Canvas implements LRelease {
 
 	public final float height;
 
-	public Image getImage(){
+	public Image getImage() {
 		return snapshot();
 	}
-	
+
 	public abstract Image snapshot();
 
 	@Override
@@ -99,7 +99,7 @@ public abstract class Canvas implements LRelease {
 	public abstract Canvas clear();
 
 	public abstract Canvas clear(LColor color);
-	
+
 	public abstract Canvas clearRect(float x, float y, float width, float height);
 
 	public abstract Canvas clip(Path clipPath);
@@ -109,6 +109,8 @@ public abstract class Canvas implements LRelease {
 	public abstract Path createPath();
 
 	public abstract Gradient createGradient(Gradient.Config config);
+
+	public abstract Canvas drawRect(float x, float y, float width, float height, LColor color);
 
 	public Canvas rect(float x, float y, float w, float h, Paint paint) {
 		if (paint == null) {
@@ -156,8 +158,7 @@ public abstract class Canvas implements LRelease {
 		return this;
 	}
 
-	public Canvas draw(Drawable image, float dx, float dy, float dw, float dh,
-			float sx, float sy, float sw, float sh) {
+	public Canvas draw(Drawable image, float dx, float dy, float dw, float dh, float sx, float sy, float sw, float sh) {
 		image.draw(gc(), dx, dy, dw, dh, sx, sy, sw, sh);
 		isDirty = true;
 		return this;
@@ -167,10 +168,14 @@ public abstract class Canvas implements LRelease {
 
 	public abstract Canvas drawPoint(float x, float y);
 
+	public abstract Canvas drawArc(float x, float y, float w, float h, float startAngle, float endAngle, LColor color);
+
+	public abstract Canvas drawOval(float x, float y, float w, float h, LColor color);
+
 	public abstract Canvas drawText(String text, float x, float y);
 
-	public abstract Canvas drawText(String text, float x, float y,LColor color);
-	
+	public abstract Canvas drawText(String text, float x, float y, LColor color);
+
 	public Canvas drawText(String message, float x, float y, int c1, int c2) {
 		int tmp = getFillColor();
 		setFillColor(c1);
@@ -184,8 +189,7 @@ public abstract class Canvas implements LRelease {
 		return this;
 	}
 
-	public Canvas drawText(String message, float x, float y, LColor c1,
-			LColor c2) {
+	public Canvas drawText(String message, float x, float y, LColor c1, LColor c2) {
 		int tmp = getFillColor();
 		setColor(c1);
 		drawText(message, x + 1, y);
@@ -200,14 +204,17 @@ public abstract class Canvas implements LRelease {
 
 	public abstract Canvas fillCircle(float x, float y, float radius);
 
+	public abstract Canvas fillOval(float x, float y, float width, float height);
+
+	public abstract Canvas fillArc(float x1, float y1, float width, float height, float start, float end);
+
 	public abstract Canvas fillPath(Path path);
 
 	public abstract Canvas fillRect(float x, float y, float width, float height);
 
 	public abstract Canvas fillRect(float x, float y, float width, float height, LColor c);
-	
-	public abstract Canvas fillRoundRect(float x, float y, float width,
-			float height, float radius);
+
+	public abstract Canvas fillRoundRect(float x, float y, float width, float height, float radius);
 
 	public abstract Canvas fillText(TextLayout text, float x, float y);
 
@@ -224,17 +231,17 @@ public abstract class Canvas implements LRelease {
 	public abstract Canvas setCompositeOperation(Composite composite);
 
 	public abstract Canvas setFillColor(LColor color);
-	
+
 	public abstract Canvas setFillColor(int color);
 
 	public abstract Canvas setColor(LColor color);
 
 	public abstract LColor getStroketoLColor();
-	
+
 	public abstract int getStrokeColor();
 
 	public abstract LColor getFilltoLColor();
-	
+
 	public abstract int getFillColor();
 
 	public abstract Canvas setColor(int r, int g, int b);
@@ -252,18 +259,16 @@ public abstract class Canvas implements LRelease {
 	public abstract Canvas setStrokeColor(int color);
 
 	public abstract Canvas setStrokeColor(LColor color);
-	
+
 	public abstract Canvas setStrokeWidth(float strokeWidth);
 
 	public abstract Canvas strokeCircle(float x, float y, float radius);
 
 	public abstract Canvas strokePath(Path path);
 
-	public abstract Canvas strokeRect(float x, float y, float width,
-			float height);
+	public abstract Canvas strokeRect(float x, float y, float width, float height);
 
-	public abstract Canvas strokeRoundRect(float x, float y, float width,
-			float height, float radius);
+	public abstract Canvas strokeRoundRect(float x, float y, float width, float height, float radius);
 
 	public abstract Canvas strokeText(TextLayout text, float x, float y);
 
@@ -273,8 +278,7 @@ public abstract class Canvas implements LRelease {
 
 	public LTexture toTexture(LTexture.Format config) {
 		try {
-	
-			if(this.isDirty){
+			if (this.isDirty) {
 				snapshot();
 			}
 			return image.createTexture(config);
@@ -283,8 +287,11 @@ public abstract class Canvas implements LRelease {
 		}
 	}
 
-	public abstract Canvas transform(float m11, float m12, float m21,
-			float m22, float dx, float dy);
+	public abstract Canvas setLineWidth(float lineWidth);
+
+	public abstract Canvas transform(float m11, float m12, float m21, float m22, float dx, float dy);
+
+	public abstract Canvas setTransform(Affine2f aff);
 
 	public abstract Canvas translate(float x, float y);
 
@@ -301,9 +308,7 @@ public abstract class Canvas implements LRelease {
 		this.width = image.width();
 		this.height = image.height();
 		if (width <= 0 || height <= 0) {
-			throw new LSysException(
-					"Canvas must be > 0 in width and height: " + width + "x"
-							+ height);
+			throw new LSysException("Canvas must be > 0 in width and height: " + width + "x" + height);
 		}
 	}
 

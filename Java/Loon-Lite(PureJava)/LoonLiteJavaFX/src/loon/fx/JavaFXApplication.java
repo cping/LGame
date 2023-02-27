@@ -30,7 +30,7 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.CacheHint;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
+import javafx.scene.SceneAntialiasing;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -38,9 +38,11 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.transform.Scale;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import loon.LGame;
 import loon.LSetting;
@@ -81,10 +83,35 @@ public class JavaFXApplication extends Application implements Platform {
 
 	protected LazyLoading.Data lazyData;
 
+	protected JavaFXResizeCanvas fxCanvas;
+
 	public JavaFXApplication() {
 		this.lazyData = slazyData;
 		this.appSetting = sAppSetting;
 		this.appSetting.mainClass = sMainClass;
+		if (appSetting.fullscreen) {
+			Rectangle2D viewRect = null;
+			if (appSetting.fullscreen && JavaFXGame.isJavaFXDesktop()) {
+				viewRect = Screen.getPrimary().getBounds();
+			} else {
+				viewRect = Screen.getPrimary().getVisualBounds();
+			}
+			float width = (float) viewRect.getWidth();
+			float height = (float) viewRect.getHeight();
+			if ((width > viewRect.getWidth()) || (height > viewRect.getHeight())) {
+				float extraMargin = 25f;
+				float ratio = width / height;
+				for (int i = 0; i < viewRect.getWidth(); i++) {
+					if (width / ratio <= viewRect.getHeight()) {
+						width = i - extraMargin;
+						height = i / ratio;
+						break;
+					}
+				}
+			}
+			appSetting.width_zoom = (int) width;
+			appSetting.height_zoom = (int) height;
+		}
 		this.game = new JavaFXGame(this, sAppSetting);
 	}
 
@@ -95,20 +122,21 @@ public class JavaFXApplication extends Application implements Platform {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-
-		Rectangle2D rect = null;
-
-		if (appSetting.fullscreen && JavaFXGame.isJavaFXDesktop()) {
-			rect = Screen.getPrimary().getBounds();
-		} else {
-			rect = Screen.getPrimary().getVisualBounds();
-		}
+		final boolean desktop = (JavaFXGame.isJavaFXDesktop() || game.isDesktop());
 
 		// 如果javafx在android或ios上跑强制全屏
-		String property = JavaFXGame.getJavaFXProperty();
-		if (property.indexOf("android") != -1 || property.indexOf("ios") != -1 || appSetting.fullscreen) {
-			appSetting.width_zoom = (int) rect.getWidth();
-			appSetting.height_zoom = (int) rect.getHeight();
+		if (game.isMobile() || appSetting.fullscreen) {
+			primaryStage.initStyle(StageStyle.TRANSPARENT);
+			primaryStage.initStyle(StageStyle.UNDECORATED);
+			primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
+		}
+
+		primaryStage.setTitle(game.setting.appName);
+
+		if (game.setting.fullscreen && desktop) {
+			primaryStage.setFullScreen(true);
+			primaryStage.setMaximized(true);
+			primaryStage.setFullScreenExitHint("");
 		}
 
 		game.register(lazyData.onScreen());
@@ -118,23 +146,23 @@ public class JavaFXApplication extends Application implements Platform {
 
 		Group group = new Group();
 
-		Canvas canvas = game.getFxCanvas();
+		fxCanvas = game.getFxCanvas();
 
-		if (canvas == null) {
-			canvas = new Canvas(newWidth, newHeight);
+		if (fxCanvas == null) {
+			fxCanvas = new JavaFXResizeCanvas(game.graphics(), newWidth, newHeight);
 		}
-		canvas.setCache(true);
-		canvas.setCacheHint(CacheHint.SPEED);
-		GraphicsContext ctx = canvas.getGraphicsContext2D();
+		fxCanvas.setCache(true);
+		fxCanvas.setCacheHint(CacheHint.SPEED);
+		GraphicsContext ctx = fxCanvas.getGraphicsContext2D();
 
 		Paint paint = ctx.getFill();
 		ctx.setFill(Color.BLACK);
 		ctx.fillRect(0, 0, newWidth, newHeight);
 		ctx.setFill(paint);
 
-		group.getChildren().add(canvas);
+		group.getChildren().add(fxCanvas);
 
-		primaryStage.setScene(createScene(group, newWidth, newHeight));
+		primaryStage.setScene(createScene(group, newWidth, newHeight, desktop));
 		primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 
 			@Override
@@ -142,7 +170,7 @@ public class JavaFXApplication extends Application implements Platform {
 				game.shutdown();
 			}
 		});
-		primaryStage.setTitle(game.setting.appName);
+
 		if (game.setting instanceof JavaFXSetting) {
 			JavaFXSetting fxsetting = ((JavaFXSetting) game.setting);
 			primaryStage.setResizable(fxsetting.resizable);
@@ -162,10 +190,7 @@ public class JavaFXApplication extends Application implements Platform {
 				}
 			}
 		}
-		if (game.setting.fullscreen && game.isDesktop()) {
-			primaryStage.setFullScreen(true);
-			primaryStage.setFullScreenExitHint("");
-		}
+
 		primaryStage.show();
 
 		windowBorderWidth = primaryStage.getWidth() - scaledWidth.getValue();
@@ -190,31 +215,15 @@ public class JavaFXApplication extends Application implements Platform {
 
 	}
 
-	protected Scene createScene(Group group, float width, float height) {
+	protected Scene createScene(Group group, float width, float height, boolean desktop) {
 		LSetting setting = game.setting;
-		Rectangle2D rect = null;
-		if (setting.fullscreen && game.isDesktop()) {
-			rect = Screen.getPrimary().getBounds();
-		} else {
-			rect = Screen.getPrimary().getVisualBounds();
-		}
-		if ((width > rect.getWidth()) || (height > rect.getHeight())) {
-			float extraMargin = 25f;
-			float ratio = width / height;
-			for (int i = 0; i < rect.getWidth(); i++) {
-				if (width / ratio <= rect.getHeight()) {
-					width = i - extraMargin;
-					height = i / ratio;
-					break;
-				}
-			}
-		}
-		this.fxScene = new Scene(group, width, height);
+
 		scaledWidth.set(width);
 		scaledHeight.set(height);
 		scaleRatioX.set(scaledWidth.getValue() / setting.getShowWidth());
 		scaleRatioY.set(scaledHeight.getValue() / setting.getShowHeight());
-		return fxScene;
+
+		return (this.fxScene = new Scene(group, width, height, false, SceneAntialiasing.BALANCED));
 	}
 
 	public static void systemLog(String message) {
@@ -302,6 +311,10 @@ public class JavaFXApplication extends Application implements Platform {
 			}
 		});
 
+	}
+
+	public JavaFXResizeCanvas getCanvas() {
+		return fxCanvas;
 	}
 
 	@Override

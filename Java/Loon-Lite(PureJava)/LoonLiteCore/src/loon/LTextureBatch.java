@@ -23,9 +23,7 @@ package loon;
 import loon.canvas.LColor;
 import loon.geom.Matrix4;
 import loon.geom.Vector2f;
-import loon.opengl.BlendState;
-import loon.opengl.ExpandVertices;
-import loon.opengl.TrilateralBatch;
+import loon.opengl.MeshBatch;
 import loon.utils.GLUtils;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
@@ -65,7 +63,7 @@ public class LTextureBatch implements LRelease {
 		public Cache(LTextureBatch batch) {
 			count = batch.count;
 			vertexIdx = batch.vertexIdx;
-			float[] verts = batch.expandVertices.getVertices();
+			float[] verts = null;// batch.expandVertices.getVertices();
 			vertices = new float[verts.length];
 			System.arraycopy(verts, 0, vertices, 0, verts.length);
 		}
@@ -85,7 +83,6 @@ public class LTextureBatch implements LRelease {
 
 	protected int count = 0;
 
-	private final ExpandVertices expandVertices;
 
 	protected float invTexWidth = 0, invTexHeight = 0;
 
@@ -148,8 +145,8 @@ public class LTextureBatch implements LRelease {
 			invTexWidth = (1f / texture.width());
 			invTexHeight = (1f / texture.height());
 		} else {
-			invTexWidth = (1f / texture.width()) * texture.widthRatio;
-			invTexHeight = (1f / texture.height()) * texture.heightRatio;
+			//invTexWidth = (1f / texture.width()) * texture.widthRatio;
+			//invTexHeight = (1f / texture.height()) * texture.heightRatio;
 		}
 	}
 
@@ -167,7 +164,6 @@ public class LTextureBatch implements LRelease {
 
 	//private MeshDefault mesh;
 
-	private BlendState lastBlendState = BlendState.NonPremultiplied;
 
 	public LTextureBatch(LTexture tex) {
 		this(tex, 256);
@@ -180,43 +176,35 @@ public class LTextureBatch implements LRelease {
 		this.setTexture(tex);
 		//this.source = src;
 		//this.shader = defaultShader;
-		this.expandVertices = new ExpandVertices(size);
+		//this.expandVertices = new ExpandVertices(size);
 		//this.mesh = new MeshDefault();
 	}
 
 	public void glColor4f() {
-		expandVertices.setVertice(vertexIdx++, color);
+	//	expandVertices.setVertice(vertexIdx++, color);
 	}
 
 	public void glColor4f(LColor color) {
-		expandVertices.setVertice(vertexIdx++, color.toFloatBits());
+	//	expandVertices.setVertice(vertexIdx++, color.toFloatBits());
 	}
 
 	public void glColor4f(float r, float g, float b, float a) {
-		expandVertices.setVertice(vertexIdx++, LColor.toFloatBits(r, g, b, a));
+	//	expandVertices.setVertice(vertexIdx++, LColor.toFloatBits(r, g, b, a));
 	}
 
 	public void glTexCoord2f(float u, float v) {
-		expandVertices.setVertice(vertexIdx++, u);
-		expandVertices.setVertice(vertexIdx++, v);
+	//	expandVertices.setVertice(vertexIdx++, u);
+	//	expandVertices.setVertice(vertexIdx++, v);
 	}
 
 	public void glVertex2f(Vector2f v) {
-		expandVertices.setVertice(vertexIdx++, v.x);
-		expandVertices.setVertice(vertexIdx++, v.y);
+	//	expandVertices.setVertice(vertexIdx++, v.x);
+	//	expandVertices.setVertice(vertexIdx++, v.y);
 	}
 
 	public void glVertex2f(float x, float y) {
-		expandVertices.setVertice(vertexIdx++, x);
-		expandVertices.setVertice(vertexIdx++, y);
-	}
-
-	public BlendState getBlendState() {
-		return lastBlendState;
-	}
-
-	public void setBlendState(BlendState state) {
-		this.lastBlendState = state;
+	//	expandVertices.setVertice(vertexIdx++, x);
+	//	expandVertices.setVertice(vertexIdx++, y);
 	}
 
 	private static boolean runningCache = false;
@@ -311,74 +299,15 @@ public class LTextureBatch implements LRelease {
 			texture.loadTexture();
 		}
 		LTexture tex2d = LTexture.firstFather(texture);
-		if (tex2d != null) {
-			if (tex2d != lastTexture) {
-				submit();
-				lastTexture = tex2d;
-			} else if (vertexIdx == expandVertices.length()) {
-				submit();
-			}
-			invTexWidth = (1f / texWidth) * texture.widthRatio;
-			invTexHeight = (1f / texHeight) * texture.heightRatio;
-		} else if (texture != lastTexture) {
-			submit();
-			lastTexture = texture;
-			invTexWidth = (1f / texWidth) * texture.widthRatio;
-			invTexHeight = (1f / texHeight) * texture.heightRatio;
-		} else if (vertexIdx == expandVertices.length()) {
-			submit();
-		}
+
 
 		return true;
 	}
 
 	public void submit() {
-		submit(lastBlendState);
+	//	submit(lastBlendState);
 	}
 
-	public void submit(BlendState state) {
-	/*	if (vertexIdx == 0) {
-			return;
-		}
-		if (!isCacheLocked) {
-			int spritesInBatch = vertexIdx / 20;
-			if (spritesInBatch > maxSpritesInBatch) {
-				maxSpritesInBatch = spritesInBatch;
-			}
-			this.count = spritesInBatch * 6;
-		}
-		GL20 gl = LSystem.base().graphics().gl;
-		GLUtils.bindTexture(gl, texture.getID());
-		int old = GLUtils.getBlendMode();
-		try {
-			switch (lastBlendState) {
-			case Additive:
-				GLUtils.setBlendMode(gl, LSystem.MODE_ALPHA_ONE);
-				break;
-			case AlphaBlend:
-				GLUtils.setBlendMode(gl, LSystem.MODE_NORMAL);
-				break;
-			case Opaque:
-				GLUtils.setBlendMode(gl, LSystem.MODE_NONE);
-				break;
-			case NonPremultiplied:
-				GLUtils.setBlendMode(gl, LSystem.MODE_SPEED);
-				break;
-			case Null:
-				break;
-			}
-			mesh.post(name, expandVertices.getSize(), customShader != null ? customShader : shader,
-					expandVertices.getVertices(), vertexIdx, count);
-		} catch (Throwable e) {
-			LSystem.error("TextureBatch submit() exception", e);
-		} finally {
-			if (expandVertices.expand(this.vertexIdx)) {
-				mesh.reset(name, expandVertices.length());
-			}
-			GLUtils.setBlendMode(gl, old);
-		}
-*/
-	}
 
 	public void setTextureBatchName(String n) {
 		this.name = n;
@@ -415,49 +344,6 @@ public class LTextureBatch implements LRelease {
 		this.isCacheLocked = false;
 	}
 
-	private void commit(Matrix4 view, Cache cache, LColor color, BlendState state) {
-		if (!isLoaded) {
-			return;
-		}
-		if (drawing) {
-			end();
-		}
-		LSystem.mainEndDraw();
-		if (batchMatrix != null) {
-			combinedMatrix.set(batchMatrix);
-		} else {
-			combinedMatrix.set(view);
-		}
-		/*if (cache.vertexIdx > 0) {
-			GL20 gl = LSystem.base().graphics().gl;
-			GLUtils.bindTexture(gl, texture.getID());
-			int old = GLUtils.getBlendMode();
-			switch (lastBlendState) {
-			case Additive:
-				GLUtils.setBlendMode(gl, LSystem.MODE_ALPHA_ONE);
-				break;
-			case AlphaBlend:
-				GLUtils.setBlendMode(gl, LSystem.MODE_NORMAL);
-				break;
-			case Opaque:
-				GLUtils.setBlendMode(gl, LSystem.MODE_NONE);
-				break;
-			case NonPremultiplied:
-				GLUtils.setBlendMode(gl, LSystem.MODE_SPEED);
-				break;
-			case Null:
-				break;
-			}
-			mesh.post(name, expandVertices.getSize(), globalShader, cache.vertices, cache.vertexIdx, cache.count);
-			GLUtils.setBlendMode(gl, old);
-		} else if (color != null) {
-			globalShader.setUniformf("v_color", oldColor);
-		}
-		globalShader.end();*/
-		LSystem.mainBeginDraw();
-		runningCache = true;
-	}
-
 	public void setIndices(short[] indices) {
 	//	mesh.getMesh(name, expandVertices.getSize()).setIndices(indices);
 	}
@@ -471,10 +357,7 @@ public class LTextureBatch implements LRelease {
 	}
 
 	public boolean postLastCache() {
-		if (lastCache != null) {
-			commit(LSystem.base().graphics().getViewMatrix(), lastCache, null, lastBlendState);
-			return true;
-		}
+
 		return false;
 	}
 
@@ -550,8 +433,8 @@ public class LTextureBatch implements LRelease {
 			return;
 		}
 
-		xOff = srcX * invTexWidth + texture.xOff;
-		yOff = srcY * invTexHeight + texture.yOff;
+		//xOff = srcX * invTexWidth + texture.xOff;
+		//yOff = srcY * invTexHeight + texture.yOff;
 		widthRatio = srcWidth * invTexWidth;
 		heightRatio = srcHeight * invTexHeight;
 
@@ -604,12 +487,12 @@ public class LTextureBatch implements LRelease {
 
 		drawWidth = drawX2 - drawX;
 		drawHeight = drawY2 - drawY;
-		textureSrcX = ((srcX / texWidth) * texture.widthRatio) + texture.xOff;
-		textureSrcY = ((srcY / texHeight) * texture.heightRatio) + texture.yOff;
+		//textureSrcX = ((srcX / texWidth) * texture.widthRatio) + texture.xOff;
+		//textureSrcY = ((srcY / texHeight) * texture.heightRatio) + texture.yOff;
 		srcWidth = srcX2 - srcX;
 		srcHeight = srcY2 - srcY;
-		renderWidth = ((srcWidth / texWidth) * texture.widthRatio);
-		renderHeight = ((srcHeight / texHeight) * texture.heightRatio);
+		//renderWidth = ((srcWidth / texWidth) * texture.widthRatio);
+		//renderHeight = ((srcHeight / texHeight) * texture.heightRatio);
 
 		glVertex2f(drawX, drawY);
 		glColor4f();
@@ -735,8 +618,8 @@ public class LTextureBatch implements LRelease {
 		x4 += worldOriginX;
 		y4 += worldOriginY;
 
-		xOff = srcX * invTexWidth + texture.xOff;
-		yOff = srcY * invTexHeight + texture.yOff;
+	//	xOff = srcX * invTexWidth + texture.xOff;
+	//	yOff = srcY * invTexHeight + texture.yOff;
 		widthRatio = srcWidth * invTexWidth;
 		heightRatio = srcHeight * invTexHeight;
 
@@ -794,8 +677,8 @@ public class LTextureBatch implements LRelease {
 		if (!checkTexture(texture)) {
 			return;
 		}
-		xOff = srcX * invTexWidth + texture.xOff;
-		yOff = srcY * invTexHeight + texture.yOff;
+	//	xOff = srcX * invTexWidth + texture.xOff;
+	////	yOff = srcY * invTexHeight + texture.yOff;
 		widthRatio = srcWidth * invTexWidth;
 		heightRatio = srcHeight * invTexHeight;
 
@@ -1022,65 +905,16 @@ public class LTextureBatch implements LRelease {
 	}
 
 	public void postCache(Cache cache, LColor color, float x, float y) {
-		if (isClosed) {
-			return;
-		}
-		x += cache.x;
-		y += cache.y;
-		Matrix4 project = LSystem.base().graphics().getViewMatrix();
-		if (x != 0 || y != 0) {
-			project = project.cpy();
-			project.translate(x, y, 0);
-		}
-		commit(project, cache, color, lastBlendState);
+		
 	}
 
 	public void postCache(Cache cache, LColor color, float x, float y, float sx, float sy, float ax, float ay,
 			float rotaion) {
-		if (isClosed) {
-			return;
-		}
-		x += cache.x;
-		y += cache.y;
-		Matrix4 project = LSystem.base().graphics().getViewMatrix();
-		boolean update = (x != 0 || y != 0 || rotaion != 0 || sx != 1f || sy != 1f);
-		if (update) {
-			project = project.cpy();
-		}
-		if (x != 0 || y != 0) {
-			project.translate(x, y, 0);
-		}
-		if (sx != 1f || sy != 1f) {
-			project.scale(sx, sy, 0);
-		}
-		if (rotaion != 0) {
-			if (ax != 0 || ay != 0) {
-				project.translate(ax, ay, 0.0f);
-				project.rotate(0f, 0f, 1f, rotaion);
-				project.translate(-ax, -ay, 0.0f);
-			} else {
-				project.translate(texture.width() / 2, texture.height() / 2, 0.0f);
-				project.rotate(0f, 0f, 0f, rotaion);
-				project.translate(-texture.width() / 2, -texture.height() / 2, 0.0f);
-			}
-		}
-		commit(project, cache, color, lastBlendState);
+		
 	}
 
 	public void postCache(Cache cache, LColor color, float rotaion) {
-		if (isClosed) {
-			return;
-		}
-		float x = cache.x;
-		float y = cache.y;
-		Matrix4 project = LSystem.base().graphics().getViewMatrix();
-		if (rotaion != 0) {
-			project = project.cpy();
-			project.translate((texture.width() / 2) + x, (y + texture.height() / 2) + y, 0.0f);
-			project.rotate(0f, 0f, 1f, rotaion);
-			project.translate((-texture.width() / 2) + y, (-texture.height() / 2) + y, 0.0f);
-		}
-		commit(project, cache, color, lastBlendState);
+		
 	}
 
 	public void postCache(LColor color, float rotaion) {

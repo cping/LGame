@@ -22,17 +22,67 @@ package loon.utils;
 
 import java.util.Arrays;
 
+import loon.LRelease;
 import loon.LSysException;
 import loon.events.QueryEvent;
 
-public class IntArray implements IArray {
+public class IntArray implements IArray,LRelease {
 
+	/**
+	 * 产生一组指定范围的数据
+	 * 
+	 * @param start
+	 * @param end
+	 * @return
+	 */
 	public static IntArray range(int start, int end) {
 		IntArray array = new IntArray(end - start);
 		for (int i = start; i < end; i++) {
 			array.add(i);
 		}
 		return array;
+	}
+
+	/**
+	 * 产生一组指定范围的随机数据
+	 * 
+	 * @param begin
+	 * @param end
+	 * @return
+	 */
+	public static IntArray rangeRandom(int begin, int end) {
+		return rangeRandom(begin, end, (end - begin));
+	}
+
+	/**
+	 * 产生一组指定范围的随机数据
+	 * 
+	 * @param begin
+	 * @param end
+	 * @param size
+	 * @return
+	 */
+	public static IntArray rangeRandom(int begin, int end, int size) {
+		if (begin > end) {
+			int temp = begin;
+			begin = end;
+			end = temp;
+		}
+		if ((end - begin) < size) {
+			throw new LSysException("Size out Range between begin and end !");
+		}
+		int[] randSeed = new int[end - begin];
+		for (int i = begin; i < end; i++) {
+			randSeed[i - begin] = i;
+		}
+		int[] intArrays = new int[size];
+		for (int i = 0; i < size; i++) {
+			final int len = randSeed.length - i - 1;
+			int j = MathUtils.random(len);
+			intArrays[i] = randSeed[j];
+			randSeed[j] = randSeed[len];
+		}
+		return new IntArray(intArrays);
 	}
 
 	public int[] items;
@@ -57,6 +107,10 @@ public class IntArray implements IArray {
 		length = array.length;
 		items = new int[length];
 		System.arraycopy(array.items, 0, items, 0, length);
+	}
+
+	public IntArray(int[] array, int size) {
+		this(true, array, 0, size);
 	}
 
 	public IntArray(int[] array) {
@@ -109,14 +163,14 @@ public class IntArray implements IArray {
 		addAll(array, 0, array.length);
 	}
 
-	public void addAll(int[] array, int offset, int length) {
+	public void addAll(int[] array, int offset, int len) {
 		int[] items = this.items;
-		int lengthNeeded = length + length;
+		int lengthNeeded = this.length + len;
 		if (lengthNeeded > items.length) {
 			items = relength(MathUtils.max(8, (int) (lengthNeeded * 1.75f)));
 		}
-		System.arraycopy(array, offset, items, length, length);
-		length += length;
+		System.arraycopy(array, offset, items, this.length, len);
+		this.length += len;
 	}
 
 	public int get(int index) {
@@ -397,12 +451,12 @@ public class IntArray implements IArray {
 	}
 
 	@Override
-	public boolean equals(Object object) {
-		if (object == this)
+	public boolean equals(Object o) {
+		if (o == this)
 			return true;
-		if (!(object instanceof IntArray))
+		if (!(o instanceof IntArray))
 			return false;
-		IntArray array = (IntArray) object;
+		IntArray array = (IntArray) o;
 		int n = length;
 		if (n != array.length)
 			return false;
@@ -410,19 +464,6 @@ public class IntArray implements IArray {
 			if (items[i] != array.items[i])
 				return false;
 		return true;
-	}
-
-	public String toString(String separator) {
-		if (length == 0)
-			return "";
-		int[] items = this.items;
-		StringBuilder buffer = new StringBuilder(32);
-		buffer.append(items[0]);
-		for (int i = 1; i < length; i++) {
-			buffer.append(separator);
-			buffer.append(items[i]);
-		}
-		return buffer.toString();
 	}
 
 	static public IntArray with(int... array) {
@@ -557,12 +598,40 @@ public class IntArray implements IArray {
 		return this.sum() / length;
 	}
 
+	public int min() {
+		int v = this.items[0];
+		final int size = this.length;
+		for (int i = size - 1; i > -1; i--) {
+			int n = this.items[i];
+			if (n < v) {
+				v = n;
+			}
+		}
+		return v;
+	}
+
+	public int max() {
+		int v = this.items[0];
+		final int size = this.length;
+		for (int i = size - 1; i > -1; i--) {
+			int n = this.items[i];
+			if (n > v) {
+				v = n;
+			}
+		}
+		return v;
+	}
+
+	public IntArray cpy() {
+		return new IntArray(this);
+	}
+
 	public String toString(char split) {
 		if (length == 0) {
 			return "[]";
 		}
 		int[] items = this.items;
-		StringBuilder buffer = new StringBuilder(CollectionUtils.INITIAL_CAPACITY);
+		StrBuilder buffer = new StrBuilder();
 		buffer.append('[');
 		buffer.append(items[0]);
 		for (int i = 1; i < length; i++) {
@@ -585,5 +654,11 @@ public class IntArray implements IArray {
 			hashCode = 31 * hashCode + items[i];
 		}
 		return hashCode;
+	}
+
+	@Override
+	public void close() {
+		this.items = null;
+		this.length = 0;
 	}
 }

@@ -1,6 +1,7 @@
 package application;
 
 import loon.LTexture;
+import loon.LTransition;
 import loon.Screen;
 import loon.canvas.LColor;
 import loon.events.GameTouch;
@@ -13,18 +14,22 @@ public class Main extends Loon {
 
 	public static class ScreenTest extends Screen {
 
-		LTexture texture = loadTexture("ccc.png");
+		LTexture texture = loadTexture("player.png");
 
+		public LTransition onTransition() {
+			return LTransition.newArc(LColor.red);
+		}
+		
 		@Override
 		public void draw(GLEx g) {
-			// g.fillRect(66, 66, 388, 388,LColor.red);
-			g.draw(texture, 77, 77, LColor.red);
+		//	 g.fillRect(66, 66, 388, 388,LColor.red);
+			g.draw(texture, 77, 77,128,128);
 			g.drawString("数据测试avddf", 77, 77);
 		}
 
 		@Override
 		public void onLoad() {
-
+			texture = texture.cpy(0,32,32,32);
 		}
 
 		@Override
@@ -78,15 +83,15 @@ public class Main extends Loon {
 
 		JavaFXSetting setting = new JavaFXSetting();
 		// 原始大小
-		setting.width = 800;
-		setting.height = 600;
+		setting.width = 480;
+		setting.height = 320;
 		setting.isDebug = true;
 		setting.isLogo = false;
 		setting.isDisplayLog = false;
 
 		// 要求显示的大小
-		setting.width_zoom = 800;
-		setting.height_zoom = 600;
+		setting.width_zoom = 640;
+		setting.height_zoom = 480;
 		setting.logoPath = "loon_logo.png";
 		setting.isFPS = false;
 		setting.isMemory = false;
@@ -94,6 +99,7 @@ public class Main extends Loon {
 		setting.fullscreen = false;
 		// 默认字体
 		setting.fontName = "黑体";
+		//setting.fullscreen = true;
 
 		register(Main.class, setting, () -> {
 			return new ScreenTest();

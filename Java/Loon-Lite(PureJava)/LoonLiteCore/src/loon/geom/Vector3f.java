@@ -22,11 +22,12 @@ package loon.geom;
 
 import java.io.Serializable;
 
+import loon.LSystem;
 import loon.utils.Array;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 
-public class Vector3f implements Serializable, XY {
+public class Vector3f implements Serializable, XYZ {
 
 	/**
 	 * 
@@ -39,18 +40,337 @@ public class Vector3f implements Serializable, XY {
 
 	public float z;
 
-	private static final Array<Vector3f> _vec3_cache = new Array<Vector3f>();
+	private static final Array<Vector3f> _VEC3_CACHE = new Array<Vector3f>();
+
+	public static Vector3f set(Vector3f v1, Vector3f v2) {
+		return set(v1, v2.x, v2.y, v2.z);
+	}
+
+	public static Vector3f set(Vector3f v1, float[] values) {
+		return set(v1, values[0], values[1], values[2]);
+	}
+
+	public static Vector3f set(Vector3f v1, float x, float y, float z) {
+		v1.x = x;
+		v1.y = y;
+		v1.z = z;
+		return v1;
+	}
+
+	public static Vector3f cpy(Vector3f v1) {
+		Vector3f newSVector = new Vector3f();
+
+		newSVector.x = v1.x;
+		newSVector.y = v1.y;
+		newSVector.z = v1.z;
+
+		return newSVector;
+	}
+
+	public static Vector3f add(Vector3f v1, Vector3f v2) {
+		v1.x += v2.x;
+		v1.y += v2.y;
+		v1.z += v2.z;
+
+		return v1;
+	}
+
+	public static Vector3f add(Vector3f v1, float x, float y, float z) {
+		v1.x += x;
+		v1.y += y;
+		v1.z += z;
+
+		return v1;
+	}
+
+	public static Vector3f add(Vector3f v1, float v) {
+		v1.x += v;
+		v1.y += v;
+		v1.z += v;
+
+		return v1;
+	}
+
+	public static Vector3f sub(Vector3f v1, Vector3f v2) {
+		v1.x -= v2.x;
+		v1.y -= v2.y;
+		v1.z -= v2.z;
+
+		return v1;
+	}
+
+	public static Vector3f sub(Vector3f v1, float x, float y, float z) {
+		v1.x -= x;
+		v1.y -= y;
+		v1.z -= z;
+
+		return v1;
+	}
+
+	public static Vector3f sub(Vector3f v1, float v) {
+		v1.x -= v;
+		v1.y -= v;
+		v1.z -= v;
+
+		return v1;
+	}
+
+	public static Vector3f mul(Vector3f v1, Vector3f v2) {
+		v1.x = v2.x * v1.x;
+		v1.y = v2.y * v1.y;
+		v1.z = v2.z * v1.z;
+
+		return v1;
+	}
+
+	public static Vector3f mul(Vector3f v1, float v) {
+		v1.x = v * v1.x;
+		v1.y = v * v1.y;
+		v1.z = v * v1.z;
+
+		return v1;
+	}
+
+	public static Vector3f div(Vector3f v1, float v) {
+		float d = 1 /v;
+		v1.x = d * v1.x;
+		v1.y = d * v1.y;
+		v1.z = d * v1.z;
+
+		return v1;
+	}
+
+	public static float len(Vector3f v1) {
+		return MathUtils.sqrt(v1.x * v1.x + v1.y * v1.y + v1.z * v1.z);
+	}
+
+	public static float len2(Vector3f v1) {
+		return v1.x * v1.x + v1.y * v1.y + v1.z * v1.z;
+	}
+
+	public static boolean idt(Vector3f v1, Vector3f v2) {
+		return v1.x == v2.x && v1.y == v2.y && v1.z == v2.z;
+	}
+
+	public static float dst(Vector3f v1, Vector3f v2) {
+		float a = v2.x - v1.x;
+		float b = v2.y - v1.y;
+		float c = v2.z - v1.z;
+
+		a *= a;
+		b *= b;
+		c *= c;
+
+		return MathUtils.sqrt(a + b + c);
+	}
+
+	public static float dst(Vector3f v1, float x, float y, float z) {
+		float a = x - v1.x;
+		float b = y - v1.y;
+		float c = z - v1.z;
+
+		a *= a;
+		b *= b;
+		c *= c;
+
+		return MathUtils.sqrt(a + b + c);
+	}
+
+	public static Vector3f crs(Vector3f v1, Vector3f v2) {
+		v1.x = v1.y * v2.z - v1.z * v2.y;
+		v1.y = v1.z * v2.x - v1.x * v2.z;
+		v1.z = v1.x * v2.y - v1.y * v2.x;
+
+		return v1;
+	}
+
+	public static Vector3f crs(Vector3f v1, float x, float y, float z) {
+		v1.x = v1.y * z - v1.z * y;
+		v1.y = v1.z * x - v1.x * z;
+		v1.z = v1.x * y - v1.y * x;
+
+		return v1;
+	}
+
+	public static boolean isZero(Vector3f v1) {
+		return v1.x == 0 && v1.y == 0 && v1.z == 0;
+	}
+
+	public static Vector3f lerp(Vector3f v1, Vector3f target, float alpha) {
+		Vector3f r = mul(v1, 1.0f - alpha);
+		add(r, mul(cpy(v1), alpha));
+		return r;
+	}
+
+	public static float dot(Vector3f v1, float x, float y, float z) {
+		return v1.x * x + v1.y * y + v1.z * z;
+	}
+
+	public static float dst2(Vector3f v1, Vector3f v2) {
+		float a = v2.x - v1.x;
+		float b = v2.y - v1.y;
+		float c = v2.z - v1.z;
+
+		a *= a;
+		b *= b;
+		c *= c;
+
+		return a + b + c;
+	}
+
+	public static float dst2(Vector3f v1, float x, float y, float z) {
+		float a = x - v1.x;
+		float b = y - v1.y;
+		float c = z - v1.z;
+
+		a *= a;
+		b *= b;
+		c *= c;
+
+		return a + b + c;
+	}
+
+	public static Vector3f scaleTo(Vector3f v1, float scalarX, float scalarY, float scalarZ) {
+		v1.x *= scalarX;
+		v1.y *= scalarY;
+		v1.z *= scalarZ;
+		return v1;
+	}
+
+	public static float angleBetween(Vector3f v1, Vector3f other) {
+		float angle;
+
+		float dot = dot(v1, other);
+
+		float len1 = len(v1);
+		float len2 = len(other);
+
+		if (len1 == 0 && len2 == 0) {
+			return 0;
+		}
+
+		angle = MathUtils.acos(dot / (len1 * len2));
+
+		return angle;
+	}
+
+	public static float angleBetween(Vector3f v1, float x, float y, float z) {
+		float angle;
+
+		float dot = dot(v1, x, y, z);
+
+		float len1 = len(v1);
+		float len2 = MathUtils.sqrt(x * x + y * y + z * z);
+
+		if (len1 == 0 || len2 == 0) {
+			return 0;
+		}
+
+		angle = MathUtils.acos(dot / (len1 * len2));
+
+		return angle;
+	}
+
+	public static float angleBetweenXY(Vector3f v1, float x, float y) {
+		float angle;
+
+		float dot = v1.x * x + v1.y * y;
+
+		float len1 = MathUtils.sqrt(v1.x * v1.x + v1.y * v1.y);
+		float len2 = MathUtils.sqrt(x * x + y * y);
+
+		if (len1 == 0 || len2 == 0) {
+			return 0;
+		}
+
+		angle = MathUtils.acos(dot / (len1 * len2));
+
+		return angle;
+	}
+
+	public static float angleBetweenXZ(Vector3f v1, float x, float z) {
+		float angle;
+
+		float dot = v1.x * x + v1.z * z;
+
+		float len1 = MathUtils.sqrt(v1.x * v1.x + v1.z * v1.z);
+		float len2 = MathUtils.sqrt(x * x + z * z);
+
+		if (len1 == 0 || len2 == 0) {
+			return 0;
+		}
+
+		angle = MathUtils.acos(dot / (len1 * len2));
+
+		return angle;
+	}
+
+	public static float angleBetweenYZ(Vector3f v1, float y, float z) {
+		float angle;
+
+		float dot = v1.y * y + v1.z * z;
+
+		float len1 = MathUtils.sqrt(v1.y * v1.y + v1.z * v1.z);
+		float len2 = MathUtils.sqrt(y * y + z * z);
+
+		if (len1 == 0 || len2 == 0) {
+			return 0;
+		}
+
+		angle = MathUtils.acos(dot / (len1 * len2));
+
+		return angle;
+	}
+
+	public static float[] toArray(Vector3f v1) {
+		return new float[] { v1.x, v1.y, v1.z };
+	}
+
+	public final static Vector3f cross(Vector3f a, Vector3f b) {
+		return new Vector3f(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
+	}
+
+	public final static Vector3f vectorSquareEquation(Vector3f a, Vector3f b, Vector3f c) {
+		float baz = -1 * a.z / b.z;
+		b.scaleSelf(baz).addSelf(a);
+		float caz = -1 * a.z / c.z;
+		c.scaleSelf(caz).addSelf(a);
+		float cby = -1 * b.y / c.y;
+		c.scaleSelf(cby).addSelf(b);
+		float X = c.x;
+		float Y = -1 * X * b.x / b.y;
+		float Z = -1 * (X * a.x + Y * a.y) / a.z;
+		return new Vector3f(X, Y, Z);
+	}
+
+	public final static Vector3f calcNormal(Vector3f zero, Vector3f one, Vector3f two) {
+		tmpNormal1.set(one.x - zero.x, one.y - zero.y, one.z - zero.z);
+		tmpNormal2.set(two.x - zero.x, two.y - zero.y, two.z - zero.z);
+		Vector3f res = new Vector3f();
+		return calcVectorNormal(tmpNormal1, tmpNormal2, res);
+	}
+
+	public final static Vector3f calcVectorNormal(Vector3f one, Vector3f two, Vector3f result) {
+		result.x = two.y * one.z - two.z * one.y;
+		result.y = two.z * one.x - two.x * one.z;
+		result.z = two.x * one.y - two.y * one.x;
+		return result.norSelf();
+	}
 
 	public final static Vector3f TMP() {
-		Vector3f temp = _vec3_cache.pop();
+		Vector3f temp = _VEC3_CACHE.pop();
 		if (temp == null) {
-			_vec3_cache.add(temp = new Vector3f(0, 0, 0));
+			_VEC3_CACHE.add(temp = new Vector3f(0, 0, 0));
 		}
 		return temp;
 	}
 
 	public final static Vector3f ZERO() {
-		return new Vector3f(0, 0, 0);
+		return new Vector3f(0);
+	}
+
+	public final static Vector3f ONE() {
+		return new Vector3f(1);
 	}
 
 	public final static Vector3f AXIS_X() {
@@ -65,15 +385,20 @@ public class Vector3f implements Serializable, XY {
 		return new Vector3f(0, 0, 1);
 	}
 
+	public final static Vector3f at(float x, float y, float z) {
+		return new Vector3f(x, y, z);
+	}
+
+	public final static Vector3f smoothStep(Vector3f a, Vector3f b, float amount) {
+		return new Vector3f(MathUtils.smoothStep(a.x, b.x, amount), MathUtils.smoothStep(a.y, b.y, amount),
+				MathUtils.smoothStep(a.z, b.z, amount));
+	}
+
 	private final static Matrix4 tmpMat = new Matrix4();
 
 	private final static Vector3f tmpNormal1 = new Vector3f();
 
 	private final static Vector3f tmpNormal2 = new Vector3f();
-
-	public final static Vector3f at(float x, float y, float z) {
-		return new Vector3f(x, y, z);
-	}
 
 	public Vector3f() {
 		this(0, 0, 0);
@@ -83,16 +408,16 @@ public class Vector3f implements Serializable, XY {
 		this.set(x, y, z);
 	}
 
-	public Vector3f(final Vector3f vector) {
-		this.set(vector);
+	public Vector3f(final Vector3f v) {
+		this.set(v);
 	}
 
 	public Vector3f(final float[] values) {
 		this.set(values[0], values[1], values[2]);
 	}
 
-	public Vector3f(final Vector2f vector, float z) {
-		this.set(vector.x, vector.y, z);
+	public Vector3f(final Vector2f v, float z) {
+		this.set(v.x, v.y, z);
 	}
 
 	public Vector3f(float v) {
@@ -110,32 +435,32 @@ public class Vector3f implements Serializable, XY {
 		return this;
 	}
 
-	public Vector3f set(final Vector3f vector) {
-		return this.set(vector.x, vector.y, vector.z);
+	public Vector3f set(final Vector3f v) {
+		return this.set(v.x, v.y, v.z);
 	}
 
 	public Vector3f set(final float[] values) {
 		return this.set(values[0], values[1], values[2]);
 	}
 
-	public Vector3f set(final Vector2f vector, float z) {
-		return this.set(vector.x, vector.y, z);
+	public Vector3f set(final Vector2f v, float z) {
+		return this.set(v.x, v.y, z);
 	}
 
 	public Vector3f cpy() {
 		return new Vector3f(this);
 	}
 
-	public Vector3f addSelf(final Vector3f vector) {
-		return this.addSelf(vector.x, vector.y, vector.z);
+	public Vector3f addSelf(final Vector3f v) {
+		return this.addSelf(v.x, v.y, v.z);
 	}
 
 	public Vector3f addSelf(float x, float y, float z) {
 		return this.set(this.x + x, this.y + y, this.z + z);
 	}
 
-	public Vector3f addSelf(float values) {
-		return this.set(this.x + values, this.y + values, this.z + values);
+	public Vector3f addSelf(float v) {
+		return this.set(this.x + v, this.y + v, this.z + v);
 	}
 
 	public Vector3f mulAddSelf(Vector3f vec, float scalar) {
@@ -168,8 +493,8 @@ public class Vector3f implements Serializable, XY {
 		return x * x + y * y + z * z;
 	}
 
-	public boolean idt(final Vector3f vector) {
-		return x == vector.x && y == vector.y && z == vector.z;
+	public boolean idt(final Vector3f v) {
+		return x == v.x && y == v.y && z == v.z;
 	}
 
 	public static float dst(final float x1, final float y1, final float z1, final float x2, final float y2,
@@ -180,10 +505,10 @@ public class Vector3f implements Serializable, XY {
 		return MathUtils.sqrt(a * a + b * b + c * c);
 	}
 
-	public float dst(final Vector3f vector) {
-		final float a = vector.x - x;
-		final float b = vector.y - y;
-		final float c = vector.z - z;
+	public float dst(final Vector3f v) {
+		final float a = v.x - x;
+		final float b = v.y - y;
+		final float c = v.z - z;
 		return MathUtils.sqrt(a * a + b * b + c * c);
 	}
 
@@ -228,8 +553,8 @@ public class Vector3f implements Serializable, XY {
 		return x1 * x2 + y1 * y2 + z1 * z2;
 	}
 
-	public float dot(final Vector3f vector) {
-		return x * vector.x + y * vector.y + z * vector.z;
+	public float dot(final Vector3f v) {
+		return x * v.x + y * v.y + z * v.z;
 	}
 
 	public float dot(float x, float y, float z) {
@@ -240,8 +565,8 @@ public class Vector3f implements Serializable, XY {
 		return a.x * b.x + a.y * b.y + a.z * b.z;
 	}
 
-	public Vector3f crsSelf(final Vector3f vector) {
-		return this.set(y * vector.z - z * vector.y, z * vector.x - x * vector.z, x * vector.y - y * vector.x);
+	public Vector3f crsSelf(final Vector3f v) {
+		return this.set(y * v.z - z * v.y, z * v.x - x * v.z, x * v.y - y * v.x);
 	}
 
 	public Vector3f crsSelf(float x, float y, float z) {
@@ -379,20 +704,31 @@ public class Vector3f implements Serializable, XY {
 		return isOnLine(other) && hasOppositeDirection(other);
 	}
 
-	public boolean isPerpendicular(Vector3f vector) {
-		return MathUtils.isZero(dot(vector));
+	public boolean isPerpendicular(Vector3f v) {
+		return MathUtils.isZero(dot(v));
 	}
 
-	public boolean isPerpendicular(Vector3f vector, float epsilon) {
-		return MathUtils.isZero(dot(vector), epsilon);
+	public boolean isPerpendicular(Vector3f v, float epsilon) {
+		return MathUtils.isZero(dot(v), epsilon);
 	}
 
-	public boolean hasSameDirection(Vector3f vector) {
-		return dot(vector) > 0;
+	public boolean hasSameDirection(Vector3f v) {
+		return dot(v) > 0;
 	}
 
-	public boolean hasOppositeDirection(Vector3f vector) {
-		return dot(vector) < 0;
+	public boolean hasOppositeDirection(Vector3f v) {
+		return dot(v) < 0;
+	}
+
+	public Vector3f lerpSelf(float x, float y, float z, float alpha) {
+		this.x += alpha * (x - this.x);
+		this.y += alpha * (y - this.y);
+		this.z += alpha * (z - this.z);
+		return this;
+	}
+
+	public Vector3f lerp(float x, float y, float z, float alpha) {
+		return cpy().lerpSelf(x, y, z, alpha);
 	}
 
 	public Vector3f lerp(final Vector3f target, float alpha) {
@@ -462,6 +798,7 @@ public class Vector3f implements Serializable, XY {
 		return this;
 	}
 
+	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
@@ -471,6 +808,7 @@ public class Vector3f implements Serializable, XY {
 		return result;
 	}
 
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
@@ -581,6 +919,19 @@ public class Vector3f implements Serializable, XY {
 		return cpy().scaleSelf(sx, sy, sz);
 	}
 
+	public Vector3f scale(Vector3f origin, float dx, float dy, float dz) {
+		return cpy().set((this.x - origin.x) * dx + origin.x, (this.y - origin.y) * dy + origin.y,
+				(this.z - origin.z) * dz + origin.z);
+	}
+
+	public Vector3f scale(Vector3f origin, float dx) {
+		return scale(origin, dx, dx, dx);
+	}
+
+	public Vector3f scale(Vector3f origin, float dx, float dy) {
+		return scale(origin, dx, dy, 1f);
+	}
+
 	public Vector3f cross(Vector3f v) {
 		return cross(v.x, v.y, v.z);
 	}
@@ -662,12 +1013,56 @@ public class Vector3f implements Serializable, XY {
 		return cpy().rotateSelf(axis, angle);
 	}
 
+	public Vector3f rotateX(Vector3f origin, float angle) {
+		float pY = this.y - origin.y;
+		float pZ = this.z - origin.z;
+		float cos = MathUtils.cos(angle);
+		float sin = MathUtils.sin(angle);
+		float z = pZ * cos - pY * sin;
+		float y = pZ * sin + pY * cos;
+		pZ = z;
+		pY = y;
+		return cpy().set(this.x, pY + origin.y, pZ + origin.z);
+	}
+
+	public Vector3f rotateY(Vector3f origin, float angle) {
+		float pX = this.x - origin.x;
+		float pZ = this.z - origin.z;
+		float cos = MathUtils.cos(angle);
+		float sin = MathUtils.sin(angle);
+		float x = pX * cos - pZ * sin;
+		float z = pX * sin + pZ * cos;
+		pX = x;
+		pZ = z;
+		return cpy().set(pX + origin.x, this.y, pZ + origin.z);
+	}
+
+	public Vector3f rotateZ(Point origin, float angle) {
+		float pX = this.x - origin.x;
+		float pY = this.y - origin.y;
+		float cos = MathUtils.cos(angle);
+		float sin = MathUtils.sin(angle);
+		float x = pX * cos - pY * sin;
+		float y = pX * sin + pY * cos;
+		pX = x;
+		pY = y;
+		return cpy().set(pX + origin.x, pY + origin.y, this.z);
+	}
+
 	public Vector3f scaleSelf(float s) {
 		return scaleSelf(s, s, s);
 	}
 
 	public Vector3f scaleSelf(float sx, float sy, float sz) {
 		return set(x * sx, y * sy, z * sz);
+	}
+
+	public Vector3f translate(float dx, float dy, float dz) {
+		return cpy().translateSelf(dx, dy, dz);
+	}
+
+	public Vector3f translateSelf(float dx, float dy, float dz) {
+		return set(this.x + dx, this.y + dy, this.z + dz);
 	}
 
 	public Vector3f multiply(Matrix3 m) {
@@ -771,6 +1166,7 @@ public class Vector3f implements Serializable, XY {
 		return this.y;
 	}
 
+	@Override
 	public float getZ() {
 		return this.z;
 	}
@@ -784,13 +1180,13 @@ public class Vector3f implements Serializable, XY {
 		}
 	}
 
-	public Vector3f div(float value) {
-		float d = 1 / value;
+	public Vector3f div(float v) {
+		float d = 1 / v;
 		return this.set(this.x * d, this.y * d, this.z * d);
 	}
 
-	public Vector3f crs(Vector3f vector) {
-		return this.set(y * vector.z - z * vector.y, z * vector.x - x * vector.z, x * vector.y - y * vector.x);
+	public Vector3f crs(Vector3f v) {
+		return this.set(y * v.z - z * v.y, z * v.x - x * v.z, x * v.y - y * v.x);
 	}
 
 	public Vector3f crs(float x, float y, float z) {
@@ -801,39 +1197,16 @@ public class Vector3f implements Serializable, XY {
 		return this.set(this.x - x, this.y - y, this.z - z);
 	}
 
-	public Vector3f sub(float value) {
-		return this.set(this.x - value, this.y - value, this.z - value);
+	public Vector3f sub(float v) {
+		return this.set(this.x - v, this.y - v, this.z - v);
 	}
 
 	public Vector3f sub(Vector3f argVec) {
 		return new Vector3f(x - argVec.x, y - argVec.y, z - argVec.z);
 	}
 
-	public final static Vector3f vectorSquareEquation(Vector3f a, Vector3f b, Vector3f c) {
-		float baz = -1 * a.z / b.z;
-		b.scaleSelf(baz).addSelf(a);
-		float caz = -1 * a.z / c.z;
-		c.scaleSelf(caz).addSelf(a);
-		float cby = -1 * b.y / c.y;
-		c.scaleSelf(cby).addSelf(b);
-		float X = c.x;
-		float Y = -1 * X * b.x / b.y;
-		float Z = -1 * (X * a.x + Y * a.y) / a.z;
-		return new Vector3f(X, Y, Z);
-	}
-
-	public final static Vector3f calcNormal(Vector3f zero, Vector3f one, Vector3f two) {
-		tmpNormal1.set(one.x - zero.x, one.y - zero.y, one.z - zero.z);
-		tmpNormal2.set(two.x - zero.x, two.y - zero.y, two.z - zero.z);
-		Vector3f res = new Vector3f();
-		return calcVectorNormal(tmpNormal1, tmpNormal2, res);
-	}
-
-	public final static Vector3f calcVectorNormal(Vector3f one, Vector3f two, Vector3f result) {
-		result.x = two.y * one.z - two.z * one.y;
-		result.y = two.z * one.x - two.x * one.z;
-		result.z = two.x * one.y - two.y * one.x;
-		return result.norSelf();
+	public Vector3f smoothStep(Vector3f v, float amount) {
+		return smoothStep(this, v, amount);
 	}
 
 	public Vector3f mul(float argScalar) {
@@ -844,293 +1217,11 @@ public class Vector3f implements Serializable, XY {
 		return new Vector3f(x * v.x, y * v.y, z * v.z);
 	}
 
-	public static Vector3f set(Vector3f vectorA, Vector3f vectorB) {
-		return set(vectorA, vectorB.x, vectorB.y, vectorB.z);
-	}
-
-	public static Vector3f set(Vector3f vectorA, float[] values) {
-		return set(vectorA, values[0], values[1], values[2]);
-	}
-
-	public static Vector3f set(Vector3f vectorA, float x, float y, float z) {
-		vectorA.x = x;
-		vectorA.y = y;
-		vectorA.z = z;
-		return vectorA;
-	}
-
-	public static Vector3f cpy(Vector3f vectorA) {
-		Vector3f newSVector = new Vector3f();
-
-		newSVector.x = vectorA.x;
-		newSVector.y = vectorA.y;
-		newSVector.z = vectorA.z;
-
-		return newSVector;
-	}
-
-	public static Vector3f add(Vector3f vectorA, Vector3f vectorB) {
-		vectorA.x += vectorB.x;
-		vectorA.y += vectorB.y;
-		vectorA.z += vectorB.z;
-
-		return vectorA;
-	}
-
-	public static Vector3f add(Vector3f vectorA, float x, float y, float z) {
-		vectorA.x += x;
-		vectorA.y += y;
-		vectorA.z += z;
-
-		return vectorA;
-	}
-
-	public static Vector3f add(Vector3f vectorA, float value) {
-		vectorA.x += value;
-		vectorA.y += value;
-		vectorA.z += value;
-
-		return vectorA;
-	}
-
-	public static Vector3f sub(Vector3f vectorA, Vector3f vectorB) {
-		vectorA.x -= vectorB.x;
-		vectorA.y -= vectorB.y;
-		vectorA.z -= vectorB.z;
-
-		return vectorA;
-	}
-
-	public static Vector3f sub(Vector3f vectorA, float x, float y, float z) {
-		vectorA.x -= x;
-		vectorA.y -= y;
-		vectorA.z -= z;
-
-		return vectorA;
-	}
-
-	public static Vector3f sub(Vector3f vectorA, float value) {
-		vectorA.x -= value;
-		vectorA.y -= value;
-		vectorA.z -= value;
-
-		return vectorA;
-	}
-
-	public static Vector3f mul(Vector3f vectorA, Vector3f vectorB) {
-		vectorA.x = vectorB.x * vectorA.x;
-		vectorA.y = vectorB.y * vectorA.y;
-		vectorA.z = vectorB.z * vectorA.z;
-
-		return vectorA;
-	}
-
-	public static Vector3f mul(Vector3f vectorA, float value) {
-		vectorA.x = value * vectorA.x;
-		vectorA.y = value * vectorA.y;
-		vectorA.z = value * vectorA.z;
-
-		return vectorA;
-	}
-
-	public static Vector3f div(Vector3f vectorA, float value) {
-		float d = 1 / value;
-		vectorA.x = d * vectorA.x;
-		vectorA.y = d * vectorA.y;
-		vectorA.z = d * vectorA.z;
-
-		return vectorA;
-	}
-
-	public static float len(Vector3f vectorA) {
-		return MathUtils.sqrt(vectorA.x * vectorA.x + vectorA.y * vectorA.y + vectorA.z * vectorA.z);
-	}
-
-	public static float len2(Vector3f vectorA) {
-		return vectorA.x * vectorA.x + vectorA.y * vectorA.y + vectorA.z * vectorA.z;
-	}
-
-	public static boolean idt(Vector3f vectorA, Vector3f vectorB) {
-		return vectorA.x == vectorB.x && vectorA.y == vectorB.y && vectorA.z == vectorB.z;
-	}
-
-	public static float dst(Vector3f vectorA, Vector3f vectorB) {
-		float a = vectorB.x - vectorA.x;
-		float b = vectorB.y - vectorA.y;
-		float c = vectorB.z - vectorA.z;
-
-		a *= a;
-		b *= b;
-		c *= c;
-
-		return MathUtils.sqrt(a + b + c);
-	}
-
-	public static float dst(Vector3f vectorA, float x, float y, float z) {
-		float a = x - vectorA.x;
-		float b = y - vectorA.y;
-		float c = z - vectorA.z;
-
-		a *= a;
-		b *= b;
-		c *= c;
-
-		return MathUtils.sqrt(a + b + c);
-	}
-
-	public static Vector3f crs(Vector3f vectorA, Vector3f vectorB) {
-		vectorA.x = vectorA.y * vectorB.z - vectorA.z * vectorB.y;
-		vectorA.y = vectorA.z * vectorB.x - vectorA.x * vectorB.z;
-		vectorA.z = vectorA.x * vectorB.y - vectorA.y * vectorB.x;
-
-		return vectorA;
-	}
-
-	public static Vector3f crs(Vector3f vectorA, float x, float y, float z) {
-		vectorA.x = vectorA.y * z - vectorA.z * y;
-		vectorA.y = vectorA.z * x - vectorA.x * z;
-		vectorA.z = vectorA.x * y - vectorA.y * x;
-
-		return vectorA;
-	}
-
-	public static boolean isZero(Vector3f vectorA) {
-		return vectorA.x == 0 && vectorA.y == 0 && vectorA.z == 0;
-	}
-
-	public static Vector3f lerp(Vector3f vectorA, Vector3f target, float alpha) {
-		Vector3f r = mul(vectorA, 1.0f - alpha);
-		add(r, mul(cpy(vectorA), alpha));
-
-		return r;
-	}
-
-	public static float dot(Vector3f vectorA, float x, float y, float z) {
-		return vectorA.x * x + vectorA.y * y + vectorA.z * z;
-	}
-
-	public static float dst2(Vector3f vectorA, Vector3f vectorB) {
-		float a = vectorB.x - vectorA.x;
-		float b = vectorB.y - vectorA.y;
-		float c = vectorB.z - vectorA.z;
-
-		a *= a;
-		b *= b;
-		c *= c;
-
-		return a + b + c;
-	}
-
-	public static float dst2(Vector3f vectorA, float x, float y, float z) {
-		float a = x - vectorA.x;
-		float b = y - vectorA.y;
-		float c = z - vectorA.z;
-
-		a *= a;
-		b *= b;
-		c *= c;
-
-		return a + b + c;
-	}
-
-	public static Vector3f scale(Vector3f vectorA, float scalarX, float scalarY, float scalarZ) {
-		vectorA.x *= scalarX;
-		vectorA.y *= scalarY;
-		vectorA.z *= scalarZ;
-		return vectorA;
-	}
-
-	public static float angleBetween(Vector3f vectorA, Vector3f other) {
-		float angle;
-
-		float dot = dot(vectorA, other);
-
-		float len1 = len(vectorA);
-		float len2 = len(other);
-
-		if (len1 == 0 && len2 == 0) {
-			return 0;
-		}
-
-		angle = MathUtils.acos(dot / (len1 * len2));
-
-		return angle;
-	}
-
-	public static float angleBetween(Vector3f vectorA, float x, float y, float z) {
-		float angle;
-
-		float dot = dot(vectorA, x, y, z);
-
-		float len1 = len(vectorA);
-		float len2 = MathUtils.sqrt(x * x + y * y + z * z);
-
-		if (len1 == 0 || len2 == 0) {
-			return 0;
-		}
-
-		angle = MathUtils.acos(dot / (len1 * len2));
-
-		return angle;
-	}
-
-	public static float angleBetweenXY(Vector3f vectorA, float x, float y) {
-		float angle;
-
-		float dot = vectorA.x * x + vectorA.y * y;
-
-		float len1 = MathUtils.sqrt(vectorA.x * vectorA.x + vectorA.y * vectorA.y);
-		float len2 = MathUtils.sqrt(x * x + y * y);
-
-		if (len1 == 0 || len2 == 0) {
-			return 0;
-		}
-
-		angle = MathUtils.acos(dot / (len1 * len2));
-
-		return angle;
-	}
-
-	public static float angleBetweenXZ(Vector3f vectorA, float x, float z) {
-		float angle;
-
-		float dot = vectorA.x * x + vectorA.z * z;
-
-		float len1 = MathUtils.sqrt(vectorA.x * vectorA.x + vectorA.z * vectorA.z);
-		float len2 = MathUtils.sqrt(x * x + z * z);
-
-		if (len1 == 0 || len2 == 0) {
-			return 0;
-		}
-
-		angle = MathUtils.acos(dot / (len1 * len2));
-
-		return angle;
-	}
-
-	public static float angleBetweenYZ(Vector3f vectorA, float y, float z) {
-		float angle;
-
-		float dot = vectorA.y * y + vectorA.z * z;
-
-		float len1 = MathUtils.sqrt(vectorA.y * vectorA.y + vectorA.z * vectorA.z);
-		float len2 = MathUtils.sqrt(y * y + z * z);
-
-		if (len1 == 0 || len2 == 0) {
-			return 0;
-		}
-
-		angle = MathUtils.acos(dot / (len1 * len2));
-
-		return angle;
-	}
-
-	public static float[] toArray(Vector3f vectorA) {
-		return new float[] { vectorA.x, vectorA.y, vectorA.z };
-	}
-
-	public final static Vector3f cross(Vector3f a, Vector3f b) {
-		return new Vector3f(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
+	public Vector3f random() {
+		this.x = MathUtils.random(0f, LSystem.viewSize.getWidth());
+		this.y = MathUtils.random(0f, LSystem.viewSize.getHeight());
+		this.z = MathUtils.random();
+		return this;
 	}
 
 	@Override

@@ -7,7 +7,7 @@
  * 
  * http://www.apache.org/licenses/LICENSE-2.0
  * 
- * Unless required by applicable law or agreed to in writing, software
+ * Unless required by applicable law or agreed _to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
@@ -29,20 +29,31 @@ import loon.utils.TimeUtils;
  */
 public class StopwatchTimer {
 
-	private long from;
+	private String _currentName;
 
-	private long to;
+	private long _from;
 
-	private long lastStop;
+	private long _to;
 
-	private long target;
+	private long _lastStop;
+
+	private long _target;
 
 	public StopwatchTimer() {
-		this(0);
+		this("");
+	}
+
+	public StopwatchTimer(String name) {
+		this(name, 0);
 	}
 
 	public StopwatchTimer(long target) {
-		this.target = target;
+		this("", target);
+	}
+
+	public StopwatchTimer(String name, long target) {
+		this._currentName = name;
+		this._target = target;
 		this.reset();
 	}
 
@@ -72,7 +83,11 @@ public class StopwatchTimer {
 	}
 
 	public boolean isDone() {
-		return (currentTime() - from) >= target;
+		return (currentTime() - _from) >= _target;
+	}
+
+	public boolean isPassedTime(long interval) {
+		return currentTime() - _from >= interval;
 	}
 
 	public StopwatchTimer reset() {
@@ -81,10 +96,10 @@ public class StopwatchTimer {
 	}
 
 	public long start() {
-		from = currentTime();
-		to = from;
-		lastStop = to;
-		return from;
+		this._from = currentTime();
+		this._to = this._from;
+		this._lastStop = this._to;
+		return this._from;
 	}
 
 	private long currentTime() {
@@ -94,39 +109,43 @@ public class StopwatchTimer {
 	public StopwatchTimer end() {
 		return stop();
 	}
-	
+
 	public StopwatchTimer stop() {
-		lastStop = to;
-		to = currentTime();
+		this._lastStop = this._to;
+		this._to = currentTime();
 		return this;
 	}
 
 	public long getDuration() {
-		return to - from;
+		return this._to - this._from;
 	}
 
 	public long getLastDuration() {
-		return to - lastStop;
+		return this._to - this._lastStop;
 	}
 
 	public long getStartTime() {
-		return from;
+		return this._from;
 	}
 
 	public long getEndTime() {
-		return to;
+		return this._to;
 	}
-	
+
+	public StopwatchTimer setName(String n) {
+		this._currentName = n;
+		return this;
+	}
+
+	public String getName() {
+		return this._currentName;
+	}
+
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("StopwatchTimer");
-		builder.kv("from", from)
-		.comma()
-		.kv("to", to)
-		.comma()
-		.kv("lastStop", lastStop)
-		.comma()
-		.kv("target", target);
+		builder.kv("name", _currentName).comma().kv("from", _from).comma().kv("to", _to).comma()
+				.kv("lastStop", _lastStop).comma().kv("target", _target);
 		return builder.toString();
 	}
 }

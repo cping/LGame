@@ -19,16 +19,64 @@
  * @version 0.5
  */
 package loon.utils;
+
+import loon.LRelease;
+import loon.LSystem;
+import loon.utils.reply.Callback;
+
 /**
  * 模拟C#中ref以返回注入对象的修改结果，也就是引用传递
  * 
  * @param <T>
  */
-public final class RefObject<T>
-{
+public class RefObject<T> implements LRelease {
+
+	public static final <T> RefObject<T> getValue(T v) {
+		return new RefObject<T>(v);
+	}
+
+	private Callback<T> closed;
+
 	public T argvalue;
-	public RefObject(T refarg)
-	{
+
+	public RefObject(T refarg) {
 		argvalue = refarg;
 	}
+
+	public void set(T value) {
+		this.argvalue = value;
+	}
+
+	public boolean hasValue() {
+		return argvalue != null;
+	}
+
+	public T get() {
+		return argvalue;
+	}
+
+	public T result() {
+		return argvalue;
+	}
+
+	public Callback<T> getClosed() {
+		return closed;
+	}
+
+	public void setClosed(Callback<T> closed) {
+		this.closed = closed;
+	}
+	
+	@Override
+	public String toString() {
+		return StringUtils.toString(argvalue, LSystem.NULL);
+	}
+
+	@Override
+	public void close() {
+		if (argvalue != null && closed != null) {
+			closed.onSuccess(argvalue);
+		}
+	}
+
 }

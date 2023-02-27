@@ -15,7 +15,7 @@ import loon.geom.RectBox;
  */
 public class GifDecoder implements LRelease {
 
-	private String gifVersion = LSystem.UNKOWN;
+	private String gifVersion = LSystem.UNKNOWN;
 
 	public static final int STATUS_OK = 0;
 
@@ -473,7 +473,7 @@ public class GifDecoder implements LRelease {
 	}
 
 	protected void readHeader() {
-		StringBuilder flags = new StringBuilder(6);
+		StrBuilder flags = new StrBuilder(6);
 		for (int i = 0; i < 6; i++) {
 			flags.append((char) read());
 		}

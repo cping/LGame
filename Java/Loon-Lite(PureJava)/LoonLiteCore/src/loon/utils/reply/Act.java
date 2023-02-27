@@ -26,8 +26,8 @@ public class Act<T> extends AbstractAct<T> {
 		return new Act<T>();
 	}
 
-	public void emit(T event) {
-		notifyEmit(event);
+	public void emit(T e) {
+		notifyEmit(e);
 	}
 
 	public Port<T> port() {

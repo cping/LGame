@@ -23,12 +23,11 @@ package loon;
 import loon.LTexture.Format;
 import loon.action.sprite.Sprites;
 import loon.canvas.Canvas;
-import loon.canvas.Image;
-import loon.canvas.NinePatchAbstract.Repeat;
 import loon.component.Desktop;
 import loon.events.InputMake;
 import loon.font.IFont;
 import loon.font.LFont;
+import loon.opengl.LSTRDictionary;
 import loon.opengl.LSTRFont;
 import loon.opengl.Mesh;
 import loon.utils.IntMap;
@@ -36,20 +35,28 @@ import loon.utils.ObjectMap;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 import loon.utils.json.JsonImpl;
+import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.reply.Act;
+import loon.utils.reply.Port;
 
 /**
  * 此类为最主要的游戏功能类集合对象，所有Loon初始化由此开始，其中涵盖了Loon的基础对象实例。
  */
-public abstract class LGame {
+public abstract class LGame implements LRelease {
 
 	/**
-	 * 支持的运行库(此为纯Java版,只支持能跑Java语法的平台(环境)，多语言多平台请使用完整版Loon)
+	 * 当前依赖的Java运行库
 	 */
-	public static enum Type {
-		JAVAFX, ANDROID, GWT, STUB
+	public static enum Environment {
+		JAVAFX, JAVASE
 	}
-
+	
+	/**
+	 * 当前运行的平台
+	 */
+	public static enum Sys {
+	    WINDOWS, MAC, LINUX, ANDROID, IOS, BROWSER, EMBEDDED
+	}
 	/**
 	 * 基本游戏状态
 	 */
@@ -79,6 +86,9 @@ public abstract class LGame {
 	protected static LGame _base = null;
 
 	protected static Platform _platform = null;
+
+	// 全部mesh
+	private final TArray<Mesh> _mesh_all_pools;
 
 	// 单独纹理批处理缓存
 	private final IntMap<LTextureBatch> _texture_batch_pools;
@@ -118,6 +128,7 @@ public abstract class LGame {
 
 	public LGame(LSetting config, Platform plat) {
 		LGame._platform = plat;
+		this._mesh_all_pools = new TArray<Mesh>(128);
 		this._texture_batch_pools = new IntMap<LTextureBatch>(12);
 		this._texture_lazys = new ObjectMap<String, LTexture>(128);
 		this._texture_all_list = new TArray<LTexture>(128);
@@ -128,6 +139,7 @@ public abstract class LGame {
 			config = new LSetting();
 		}
 		this.setting = config;
+		this.jsonImpl = new JsonImpl();
 		String appName = config.appName;
 		if (StringUtils.isEmpty(appName)) {
 			setting.appName = APP_NAME;
@@ -136,7 +148,85 @@ public abstract class LGame {
 		if (StringUtils.isEmpty(fontName)) {
 			setting.fontName = FONT_NAME;
 		}
-		setting.mainClass = config.mainClass;
+	}
+
+	public LGame addStatus(Port<LGame> game) {
+		frame.connect(game);
+		status.connect(new Port<LGame.Status>() {
+
+			@Override
+			public void onEmit(Status event) {
+				switch (event) {
+				case EXIT:
+					stop();
+					break;
+				case RESUME:
+					LSystem.PAUSED = false;
+					resume();
+					break;
+				case PAUSE:
+					LSystem.PAUSED = true;
+					pause();
+					break;
+				default:
+					break;
+				}
+			}
+		});
+		return this;
+	}
+
+	public LGame removeStatus() {
+		if (!errors.isClosed()) {
+			errors.clearConnections();
+		}
+		if (!status.isClosed()) {
+			status.clearConnections();
+		}
+		if (!frame.isClosed()) {
+			frame.clearConnections();
+		}
+		return this;
+	}
+
+	public LGame pause() {
+		try {
+			synchronized (LGame.class) {
+				if (displayImpl != null) {
+					displayImpl.pause();
+				}
+			}
+		} catch (Throwable cause) {
+			LSystem.error("Pause Exception:", cause);
+		}
+		return this;
+	}
+
+	public LGame resume() {
+		try {
+			synchronized (LGame.class) {
+				if (displayImpl != null) {
+					displayImpl.resume();
+				}
+			}
+		} catch (Throwable cause) {
+			LSystem.error("Resume Exception:", cause);
+		}
+		return this;
+	}
+
+	public void stop() {
+		try {
+			synchronized (LGame.class) {
+				LSystem.debug("The Loon Game Engine is End");
+				LSystem.PAUSED = true;
+				RealtimeProcessManager.get().dispose();
+				LSTRDictionary.get().dispose();
+				LSystem.disposeTextureAll();
+				close();
+			}
+		} catch (Throwable cause) {
+		}
 	}
 
 	/**
@@ -167,16 +257,21 @@ public abstract class LGame {
 	 */
 	public LGame initProcess() {
 		initProcess(this);
+		return this;
+	}
+
+	public IFont setDefaultGameFont() {
 		if (setting.defaultGameFont == null) {
 			setting.defaultGameFont = LFont.getFont(setting.fontName, 20);
 		}
+		return setting.defaultGameFont;
+	}
+
+	public IFont setDefaultLogFont() {
 		if (setting.defaultLogFont == null) {
 			setting.defaultLogFont = LSTRFont.getFont(LSystem.isDesktop() ? 16 : 20);
 		}
-		if (jsonImpl == null) {
-			jsonImpl = new JsonImpl();
-		}
-		return this;
+		return setting.defaultLogFont;
 	}
 
 	/**
@@ -187,8 +282,21 @@ public abstract class LGame {
 	public void setPlatform(Platform plat) {
 		if (plat != null) {
 			LGame._platform = plat;
-			LGame._base = plat.getGame();
+			LGame game = plat.getGame();
+			if (game != null) {
+				LGame._base = game;
+				LGame._base.resetShader();
+			}
 		}
+	}
+
+	/**
+	 * 刷新Shader数据
+	 * 
+	 * @param game
+	 */
+	public void resetShader() {
+		
 	}
 
 	/**
@@ -196,7 +304,7 @@ public abstract class LGame {
 	 * 
 	 * @param game
 	 */
-	protected final void checkBaseGame(LGame game) {
+	protected final LGame checkBaseGame(LGame game) {
 		LGame oldGame = _base;
 		if (game != oldGame && game != null) {
 			oldGame = game;
@@ -210,6 +318,7 @@ public abstract class LGame {
 		if (_base != game || _base != oldGame) {
 			_base = oldGame;
 		}
+		return LSystem.base();
 	}
 
 	/**
@@ -261,7 +370,9 @@ public abstract class LGame {
 			frame.emit(this);
 		} catch (Throwable cause) {
 			log().error("Frame tick exception :", cause);
-			LSystem.stopRepaint();
+			if (displayImpl != null) {
+				displayImpl.stopRepaint();
+			}
 		}
 	}
 
@@ -398,7 +509,7 @@ public abstract class LGame {
 			return pBatch;
 		}
 	}
-
+	
 	/**
 	 * 查看纹理池中是否存在指定id对象
 	 * 
@@ -413,23 +524,6 @@ public abstract class LGame {
 				}
 			}
 			return false;
-		}
-	}
-
-	/**
-	 * 以纹理id获得具体纹理
-	 * 
-	 * @param id
-	 * @return
-	 */
-	public LTexture getTexture(int id) {
-		synchronized (_texture_all_list) {
-			for (LTexture tex : _texture_all_list) {
-				if (tex != null && !tex.isClosed() && tex.getID() == id) {
-					return tex;
-				}
-			}
-			return null;
 		}
 	}
 
@@ -639,84 +733,6 @@ public abstract class LGame {
 	}
 
 	/**
-	 * 加载9.png图片
-	 * 
-	 * @param fileName
-	 * @param w
-	 * @param h
-	 * @return
-	 */
-	public LTexture loadNinePatchTexture(String fileName, int w, int h) {
-		return loadNinePatchTexture(fileName, null, 0, 0, w, h, Format.LINEAR);
-	}
-
-	/**
-	 * 加载9.png图片
-	 * 
-	 * @param fileName
-	 *            图片位置
-	 * @param x
-	 *            贴图初始x位置
-	 * @param y
-	 *            贴图初始y位置
-	 * @param w
-	 *            预计把9.png扩展的width大小
-	 * @param h
-	 *            预计把9.png扩展的height大小
-	 * @return
-	 */
-	public LTexture loadNinePatchTexture(String fileName, int x, int y, int w, int h) {
-		return loadNinePatchTexture(fileName, null, x, y, w, h, Format.LINEAR);
-	}
-
-	/**
-	 * 加载9.png图片
-	 * 
-	 * @param fileName
-	 *            文件名
-	 * @param repeat
-	 *            9.png图片延展模式
-	 * @param x
-	 *            贴图初始x位置
-	 * @param y
-	 *            贴图初始y位置
-	 * @param w
-	 *            预计把9.png扩展的width大小
-	 * @param h
-	 *            预计把9.png扩展的height大小
-	 * @param config
-	 *            纹理格式
-	 * @return
-	 */
-	public LTexture loadNinePatchTexture(String fileName, Repeat repeat, int x, int y, int w, int h, Format config) {
-		if (StringUtils.isEmpty(fileName)) {
-			return null;
-		}
-		synchronized (_texture_lazys) {
-			String key = fileName.trim().toLowerCase() + (repeat == null ? "" : repeat);
-			ObjectMap<String, LTexture> texs = new ObjectMap<String, LTexture>(_texture_lazys);
-			LTexture texture = texs.get(key);
-			if (texture == null) {
-				for (LTexture tex : texs.values()) {
-					if (tex.tmpLazy != null && tex.tmpLazy.toLowerCase().equals(key.toLowerCase())) {
-						texture = tex;
-						break;
-					}
-				}
-			}
-			if (texture != null && !texture.disposed()) {
-				texture.refCount++;
-				return texture;
-			}
-			texture = Image.createImageNicePatch(fileName, x, y, w, h).createTexture(config);
-			texture.tmpLazy = fileName;
-			_texture_lazys.put(key, texture);
-			log().debug("Texture : " + fileName + " Loaded");
-			return texture;
-		}
-	}
-
-	/**
 	 * 从缓存加载一个指定文件名纹理为指定格式(存在缓存时会得到缓存图片)
 	 * 
 	 * @param fileName
@@ -731,7 +747,7 @@ public abstract class LGame {
 			String key = fileName.trim().toLowerCase();
 			ObjectMap<String, LTexture> texs = new ObjectMap<String, LTexture>(_texture_lazys);
 			LTexture texture = texs.get(key);
-			if (texture == null) {
+			if (texture == null) {  
 				for (LTexture tex : texs.values()) {
 					if (tex.tmpLazy != null && tex.tmpLazy.toLowerCase().equals(key.toLowerCase())) {
 						texture = tex;
@@ -778,6 +794,25 @@ public abstract class LGame {
 		}
 		return tex2d;
 	}
+	
+
+	/**
+	 * 以纹理id获得具体纹理
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public LTexture getTexture(int id) {
+		synchronized (_texture_all_list) {
+			for (LTexture tex : _texture_all_list) {
+				if (tex != null && !tex.isClosed() && tex.getID() == id) {
+					return tex;
+				}
+			}
+			return null;
+		}
+	}
+
 
 	/**
 	 * 删除所有从路径加载的纹理图片并强制销毁纹理(但是手动生成的纹理此处不销毁,仅删除)
@@ -822,6 +857,22 @@ public abstract class LGame {
 	public void disposeTextureAll() {
 		destroyAllCache();
 		closeAllTexture();
+	}
+
+	public void addMesh(Mesh mesh) {
+		_mesh_all_pools.add(mesh);
+	}
+
+	public void removeMesh(Mesh mesh) {
+		_mesh_all_pools.remove(mesh);
+	}
+
+	public TArray<Mesh> getMeshAll() {
+		return _mesh_all_pools;
+	}
+
+	public void clearMesh() {
+		_mesh_all_pools.clear();
 	}
 
 	public int getSpritesSize() {
@@ -929,9 +980,14 @@ public abstract class LGame {
 		_font_pools.clear();
 	}
 
-	public abstract LGame.Type type();
+	public static void freeStatic() {
+		LGame._platform = null;
+		LGame._base = null;
+	}
 
 	public abstract Mesh makeMesh(Canvas canvas);
+	
+	public abstract Environment env();
 
 	public abstract double time();
 
@@ -944,6 +1000,8 @@ public abstract class LGame {
 	public abstract Graphics graphics();
 
 	public abstract InputMake input();
+
+	public abstract Clipboard clipboard();
 
 	public abstract Log log();
 
@@ -965,51 +1023,37 @@ public abstract class LGame {
 		return displayImpl;
 	}
 
-	public boolean isHTML5() {
-		return this.type() == Type.GWT;
+	public LGame startRepaint() {
+		if (displayImpl != null) {
+			displayImpl.startRepaint();
+		}
+		return this;
 	}
+
+	public LGame stopRepaint() {
+		if (displayImpl != null) {
+			displayImpl.stopRepaint();
+		}
+		return this;
+	}
+
+	public abstract Sys getPlatform();
 
 	public abstract boolean isMobile();
 
 	public abstract boolean isDesktop();
+	
+	public abstract boolean isBrowser();
 
+	@Override
 	public void close() {
-		if (!errors.isClosed()) {
-			errors.clearConnections();
+		removeStatus();
+		if (assets() != null) {
+			assets().close();
 		}
-		if (!status.isClosed()) {
-			status.clearConnections();
-		}
-		if (!frame.isClosed()) {
-			frame.clearConnections();
+		if (displayImpl != null) {
+			displayImpl.close();
 		}
 	}
-
-	/**
-	 * 由于GWT不支持真实的反射，而完全模拟反射需要耗费大量资源，精确反射又难以控制用户具体使用的类，所以统一放弃外部反射方法，
-	 * 不让用户有机会使用自定义的类操作。
-	 */
-	/*
-	 * private Class<?> getType(Object o) { if (o instanceof Integer) { return
-	 * Integer.TYPE; } else if (o instanceof Float) { return Float.TYPE; } else
-	 * if (o instanceof Double) { return Double.TYPE; } else if (o instanceof
-	 * Long) { return Long.TYPE; } else if (o instanceof Short) { return
-	 * Short.TYPE; } else if (o instanceof Short) { return Short.TYPE; } else if
-	 * (o instanceof Boolean) { return Boolean.TYPE; } else { return
-	 * o.getClass(); } }
-	 * 
-	 * public Display register(Class<? extends Screen> clazz, Object... args) {
-	 * LSystem.viewSize.setSize(setting.width, setting.height); this.display =
-	 * new Display(this, setting.fps); if (args == null) { args = new Object[0];
-	 * } if (clazz != null) { if (args != null) { try { int funs = args.length;
-	 * if (funs == 0) { display.setScreen(ClassReflection.newInstance(clazz)); }
-	 * else { Class<?>[] functions = new Class<?>[funs]; for (int i = 0; i <
-	 * funs; i++) { functions[i] = getType(args[i]); } Constructor constructor =
-	 * ClassReflection .getConstructor(clazz, functions); Object o =
-	 * constructor.newInstance(args);
-	 * 
-	 * if (o != null && (o instanceof Screen)) { display.setScreen((Screen) o);
-	 * } } } catch (Exception e) { e.printStackTrace(); } } } return display; }
-	 */
 
 }

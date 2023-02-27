@@ -30,7 +30,7 @@ import loon.geom.RectBox;
  */
 public class Gravity implements LRelease {
 
-	private static final RectBox HIT_SELF = new RectBox();
+	private static final RectBox _hitRect = new RectBox();
 
 	public Object tag;
 
@@ -63,7 +63,7 @@ public class Gravity implements LRelease {
 	public RectBox bounds = new RectBox();
 
 	public Gravity(ActionBind o) {
-		this(LSystem.UNKOWN, o);
+		this(LSystem.UNKNOWN, o);
 	}
 
 	public Gravity(String name, ActionBind o) {
@@ -227,14 +227,14 @@ public class Gravity implements LRelease {
 	}
 
 	public boolean hitInPath(float scale, Gravity other) {
-		HIT_SELF.setBounds(other.getAreaOfTravel(scale));
-		return bounds.overlaps(HIT_SELF) || HIT_SELF.overlaps(bounds);
+		_hitRect.setBounds(other.getAreaOfTravel(scale));
+		return bounds.overlaps(_hitRect) || _hitRect.overlaps(bounds);
 	}
 
 	public RectBox getAreaOfTravel(float scale) {
-		HIT_SELF.setBounds(bounds.x, bounds.y, velocityX * scale + bounds.width, velocityY * scale + bounds.height);
-		bounds.normalize(HIT_SELF);
-		return HIT_SELF;
+		_hitRect.setBounds(bounds.x, bounds.y, velocityX * scale + bounds.width, velocityY * scale + bounds.height);
+		bounds.normalize(_hitRect);
+		return _hitRect;
 	}
 
 	public void reset() {
@@ -249,9 +249,10 @@ public class Gravity implements LRelease {
 		this.limitX = this.limitY = false;
 	}
 
-	public void dispose() {
+	public Gravity dispose() {
 		this.enabled = false;
 		this.bind = null;
+		return this;
 	}
 
 	public boolean isClosed() {

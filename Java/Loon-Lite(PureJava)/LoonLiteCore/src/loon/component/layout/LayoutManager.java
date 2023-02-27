@@ -225,8 +225,8 @@ public abstract class LayoutManager {
 		float angle = startAngle;
 		float angleStep = (endAngle - startAngle) / size;
 		for (int i = 0; i < size; i++) {
-			float newX = circle.x + ((circle.radius * MathUtils.cos(angle)) + circle.radius);
-			float newY = circle.y + ((circle.radius * MathUtils.sin(angle)) + circle.radius);
+			float newX = circle.x + ((circle.getRadius() * MathUtils.cos(angle)) + circle.getRadius());
+			float newY = circle.y + ((circle.getRadius() * MathUtils.sin(angle)) + circle.getRadius());
 			ActionBind obj = objs.get(i);
 			obj.setLocation(newX + offsetX, newY + offsetY);
 			if (!root.contains(obj)) {

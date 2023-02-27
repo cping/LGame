@@ -20,17 +20,22 @@
  */
 package loon.utils.timer;
 
+import loon.utils.MathUtils;
 import loon.utils.StringKeyValue;
 
 public class GameTime {
 
-	protected static GameTime _instance = null;
+	private static GameTime _instance = null;
+
+	public static void freeStatic() {
+		_instance = null;
+	}
 
 	public static GameTime get() {
-		return getInstance();
+		return shared();
 	}
-	
-	public static GameTime getInstance() {
+
+	public static GameTime shared() {
 		if (_instance == null) {
 			synchronized (GameTime.class) {
 				if (_instance == null) {
@@ -51,31 +56,31 @@ public class GameTime {
 	}
 
 	public GameTime() {
-		_elapsedTime = _totalTime = 0f;
+		this(0f, 0f);
 	}
 
 	public GameTime(float totalGameTime, float elapsedGameTime) {
-		_totalTime = totalGameTime;
-		_elapsedTime = elapsedGameTime;
+		this(totalGameTime, elapsedGameTime, false);
 	}
 
 	public GameTime(float totalRealTime, float elapsedRealTime, boolean isRunningSlowly) {
-		_totalTime = totalRealTime;
-		_elapsedTime = elapsedRealTime;
+		this._totalTime = totalRealTime;
+		this._elapsedTime = elapsedRealTime;
 		_running = isRunningSlowly;
 	}
 
 	public void update(float elapsed) {
-		_elapsedTime = elapsed;
-		_totalTime += elapsed;
+		this._elapsedTime = elapsed;
+		this._totalTime += elapsed;
 	}
 
 	public void update(LTimerContext context) {
 		update(context.getMilliseconds());
 	}
 
-	public void resetElapsedTime() {
+	public GameTime resetElapsedTime() {
 		_elapsedTime = 0f;
+		return this;
 	}
 
 	public boolean isRunningSlowly() {
@@ -83,7 +88,7 @@ public class GameTime {
 	}
 
 	public float getMilliseconds() {
-		return _elapsedTime * 1000;
+		return MathUtils.max(_elapsedTime * 1000, 10);
 	}
 
 	public float getElapsedGameTime() {

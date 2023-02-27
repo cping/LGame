@@ -30,6 +30,7 @@ import loon.font.Font.Style;
 import loon.font.Text;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
+import loon.utils.StrBuilder;
 import loon.utils.timer.LTimer;
 
 /**
@@ -54,19 +55,19 @@ import loon.utils.timer.LTimer;
  */
 public class ScrollText extends Entity {
 
-	public static enum Direction {
+	public enum Direction {
 		UP, DOWN, LEFT, RIGHT
 	}
 
-	private Direction direction = Direction.UP;
-	private boolean stop = false;
+	private Direction _direction = Direction.UP;
+	private boolean _stop = false;
 	private int speed = 1;
 	private final Text _text;
-	private Vector2f textMove = new Vector2f();
-	private float textX = 0, textY = 0;
-	private float space = 5f;
-	private String[] messages;
-	private LTimer timer = new LTimer(50);
+	private Vector2f _textMove = new Vector2f();
+	private float _textX = 0, _textY = 0;
+	private float _space = 5f;
+	private String[] _messages;
+	private LTimer _timer = new LTimer(50);
 
 	public ScrollText(String text) {
 		this(text, 0, 0, 0, 0);
@@ -116,14 +117,14 @@ public class ScrollText extends Entity {
 		if (text.length == 1) {
 			this._text = new Text(font, text[0], opt);
 		} else {
-			StringBuffer sbr = new StringBuffer();
+			StrBuilder sbr = new StrBuilder();
 			for (int i = 0, size = text.length; i < size; i++) {
 				sbr.append(text[i]);
 				sbr.append(LSystem.LS);
 			}
 			this._text = new Text(font, sbr.toString(), opt);
 		}
-		this.messages = text;
+		this._messages = text;
 		this.setRepaint(true);
 		this.setColor(LColor.white);
 		this.setLocation(x, y);
@@ -135,51 +136,51 @@ public class ScrollText extends Entity {
 		if (height > 0) {
 			this.setHeight(height);
 		} else {
-			this.setHeight(_text.getHeight() / messages.length);
+			this.setHeight(_text.getHeight() / _messages.length);
 		}
 	}
 
 	@Override
 	public void onUpdate(long elapsedTime) {
-		if (!stop) {
-			if (timer.action(elapsedTime)) {
-				switch (direction) {
+		if (!_stop) {
+			if (_timer.action(elapsedTime)) {
+				switch (_direction) {
 				default:
 					break;
 				case UP:
-					textMove.move_up(speed);
+					_textMove.move_up(speed);
 					break;
 				case DOWN:
-					textMove.move_down(speed);
+					_textMove.move_down(speed);
 					break;
 				case LEFT:
-					textMove.move_left(speed);
+					_textMove.move_left(speed);
 					break;
 				case RIGHT:
-					textMove.move_right(speed);
+					_textMove.move_right(speed);
 					break;
 				}
 			}
 			boolean intersects = LSystem.getProcess() != null && LSystem.getProcess().getScreen() != null
-					&& LSystem.getProcess().getScreen().intersects(textX, textY, getWidth(), getHeight());
+					&& LSystem.getProcess().getScreen().intersects(_textX, _textY, getWidth(), getHeight());
 			if (_text.getAutoWrap() == AutoWrap.VERTICAL) {
 				intersects = LSystem.getProcess() != null && LSystem.getProcess().getScreen() != null
-						&& LSystem.getProcess().getScreen().intersects(textX, textY, getHeight(), getWidth());
+						&& LSystem.getProcess().getScreen().intersects(_textX, _textY, getHeight(), getWidth());
 			}
 			if (!intersects) {
-				stop = true;
+				_stop = true;
 			}
 		}
 	}
 
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
-		if (stop) {
+		if (_stop) {
 			return;
 		}
-		textX = textMove.x + getX() + _offset.x + offsetX;
-		textY = textMove.y + getY() + _offset.y + offsetY;
-		_text.paintString(g, textX, textY, _baseColor);
+		_textX = _textMove.x + getX() + _offset.x + offsetX;
+		_textY = _textMove.y + getY() + _offset.y + offsetY;
+		_text.paintString(g, _textX, _textY, _baseColor);
 	}
 
 	public Text getOptions() {
@@ -196,11 +197,11 @@ public class ScrollText extends Entity {
 	}
 
 	public boolean isStop() {
-		return stop;
+		return _stop;
 	}
 
-	public ScrollText setStop(boolean stop) {
-		this.stop = stop;
+	public ScrollText setStop(boolean _stop) {
+		this._stop = _stop;
 		return this;
 	}
 
@@ -223,53 +224,53 @@ public class ScrollText extends Entity {
 	}
 
 	public LTimer getTimer() {
-		return timer;
+		return _timer;
 	}
 
 	public ScrollText setDelay(long d) {
-		this.timer.setDelay(d);
+		this._timer.setDelay(d);
 		return this;
 	}
 
 	public long getDelay() {
-		return timer.getDelay();
+		return _timer.getDelay();
 	}
 
 	public float getTextX() {
-		return textX;
+		return _textX;
 	}
 
 	public float getTextY() {
-		return textY;
+		return _textY;
 	}
 
 	public Direction getDirection() {
-		return direction;
+		return _direction;
 	}
 
-	public ScrollText setDirection(Direction direction) {
-		this.direction = direction;
+	public ScrollText setDirection(Direction d) {
+		this._direction = d;
 		return this;
 	}
 
 	public float getSpace() {
-		return space;
+		return _space;
 	}
 
-	public ScrollText setSpace(float space) {
-		this.space = space;
+	public ScrollText setSpace(float s) {
+		this._space = s;
 		return this;
 	}
 
 	public String[] getMessages() {
-		return messages;
+		return _messages;
 	}
 
 	@Override
 	public void close() {
 		super.close();
 		_text.close();
-		stop = true;
+		_stop = true;
 	}
 
 }

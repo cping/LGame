@@ -25,6 +25,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import javafx.scene.shape.ArcType;
 import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.shape.StrokeLineJoin;
 import loon.Graphics;
@@ -36,10 +37,11 @@ import loon.canvas.LColor;
 import loon.canvas.Path;
 import loon.font.LFont;
 import loon.font.TextLayout;
+import loon.geom.Affine2f;
 
 public class JavaFXCanvas extends Canvas {
 
-	final javafx.scene.canvas.Canvas fxCanvas;
+	final JavaFXResizeCanvas fxCanvas;
 	private JavaFXImage javaImage;
 	private SnapshotParameters snapshotParameters;
 	private LColor tmpColor = LColor.white.cpy();
@@ -54,7 +56,7 @@ public class JavaFXCanvas extends Canvas {
 		this.javaImage = image;
 		this.width = image.getWidth();
 		this.height = image.getHeight();
-		this.fxCanvas = new javafx.scene.canvas.Canvas(width, height);
+		this.fxCanvas = new JavaFXResizeCanvas(gfx, width, height);
 		this.context = fxCanvas.getGraphicsContext2D();
 		this.snapshotParameters = new SnapshotParameters();
 		if (image.hasAlpha()) {
@@ -210,12 +212,35 @@ public class JavaFXCanvas extends Canvas {
 	}
 
 	@Override
+	public Canvas drawRect(float x, float y, float width, float height, LColor color) {
+		Paint tmp = context.getFill();
+		context.setFill(getLColorToFX(color));
+		context.rect(x, y, width, height);
+		context.setFill(tmp);
+		return this;
+	}
+
+	@Override
 	public Canvas fillCircle(float x, float y, float radius) {
 		context.beginPath();
 		context.arcTo(x, y, radius, 0f, 2f * Math.PI);
 		context.fill();
 		isDirty = true;
 		return this;
+	}
+
+	@Override
+	public Canvas fillArc(float x1, float y1, float width, float height, float start, float end) {
+		context.fillArc(x1, y1, width, height, start, end, ArcType.ROUND);
+		isDirty = true;
+		return null;
+	}
+
+	@Override
+	public Canvas fillOval(float x, float y, float width, float height) {
+		context.fillOval(x, y, width, height);
+		isDirty = true;
+		return null;
 	}
 
 	@Override
@@ -229,7 +254,7 @@ public class JavaFXCanvas extends Canvas {
 
 	@Override
 	public Canvas fillRect(float x, float y, float width, float height) {
-		context.fillRect(0, 0, width, height);
+		context.fillRect(x, y, width, height);
 		isDirty = true;
 		return this;
 	}
@@ -237,7 +262,7 @@ public class JavaFXCanvas extends Canvas {
 	public Canvas fillRect(float x, float y, float width, float height, LColor color) {
 		Paint tmp = context.getFill();
 		context.setFill(getLColorToFX(color));
-		context.fillRect(0, 0, width, height);
+		context.fillRect(x, y, width, height);
 		context.setFill(tmp);
 		isDirty = true;
 		return this;
@@ -282,6 +307,13 @@ public class JavaFXCanvas extends Canvas {
 	@Override
 	public Canvas setAlpha(float alpha) {
 		context.setGlobalAlpha(alpha);
+		this.isDirty = true;
+		return this;
+	}
+
+	@Override
+	public Canvas setLineWidth(float lineWidth) {
+		context.setLineWidth(lineWidth);
 		this.isDirty = true;
 		return this;
 	}
@@ -461,6 +493,26 @@ public class JavaFXCanvas extends Canvas {
 	}
 
 	@Override
+	public Canvas drawArc(float x, float y, float w, float h, float startAngle, float endAngle, LColor color) {
+		Paint tmp = context.getFill();
+		context.setFill(getLColorToFX(color));
+		context.strokeArc(x, y, w, h, startAngle, endAngle, ArcType.ROUND);
+		context.setFill(tmp);
+		isDirty = true;
+		return this;
+	}
+
+	@Override
+	public Canvas drawOval(float x, float y, float w, float h, LColor color) {
+		Paint tmp = context.getFill();
+		context.setFill(getLColorToFX(color));
+		context.strokeOval(x, y, w, h);
+		context.setFill(tmp);
+		isDirty = true;
+		return this;
+	}
+
+	@Override
 	public Canvas strokeRect(float x, float y, float width, float height) {
 		context.strokeRect(x, y, width, height);
 		isDirty = true;
@@ -489,6 +541,12 @@ public class JavaFXCanvas extends Canvas {
 	}
 
 	@Override
+	public Canvas setTransform(Affine2f aff) {
+		context.setTransform(aff.m00, aff.m01, aff.m10, aff.m11, aff.tx, aff.ty);
+		return this;
+	}
+
+	@Override
 	public Canvas translate(float x, float y) {
 		context.translate(x, y);
 		return this;
@@ -509,4 +567,5 @@ public class JavaFXCanvas extends Canvas {
 		context.arcTo(x, maxy, x, midy, radius);
 		context.closePath();
 	}
+
 }

@@ -22,13 +22,13 @@ package loon.action.sprite;
 
 import java.util.Comparator;
 
-import loon.ZIndex;
 import loon.action.sprite.IEntity;
 import loon.canvas.LColor;
 import loon.opengl.GLEx;
 import loon.utils.Flip;
+import loon.utils.StrBuilder;
 
-public interface IEntity extends ISprite, ZIndex, Flip<IEntity> {
+public interface IEntity extends ISprite, Flip<IEntity> {
 
 	public static final int TAG_INVALID = Integer.MIN_VALUE;
 
@@ -42,15 +42,15 @@ public interface IEntity extends ISprite, ZIndex, Flip<IEntity> {
 
 	public boolean isChildrenVisible();
 
-	public void setChildrenVisible(final boolean v);
+	public IEntity setChildrenVisible(final boolean v);
 
 	public boolean isChildrenIgnoreUpdate();
 
-	public void setChildrenIgnoreUpdate(boolean u);
+	public IEntity setChildrenIgnoreUpdate(boolean u);
 
 	public int getIndexTag();
 
-	public void setIndexTag(final int t);
+	public IEntity setIndexTag(final int t);
 
 	public int getLayer();
 
@@ -173,9 +173,9 @@ public interface IEntity extends ISprite, ZIndex, Flip<IEntity> {
 
 	public void onDetached();
 
-	public void addChild(final IEntity e);
+	public IEntity addChild(final IEntity e);
 
-	public void addChildAt(final IEntity e, float x, float y);
+	public IEntity addChildAt(final IEntity e, float x, float y);
 
 	public IEntity getChildByTag(final int t);
 
@@ -185,11 +185,11 @@ public interface IEntity extends ISprite, ZIndex, Flip<IEntity> {
 
 	public IEntity getLastChild();
 
-	public void sortChildren();
+	public IEntity sortChildren();
 
-	public void sortChildren(final boolean i);
+	public IEntity sortChildren(final boolean i);
 
-	public void sortChildren(final Comparator<IEntity> c);
+	public IEntity sortChildren(final Comparator<IEntity> c);
 
 	public boolean removeSelf();
 
@@ -197,19 +197,32 @@ public interface IEntity extends ISprite, ZIndex, Flip<IEntity> {
 
 	public IEntity removeChild(final int t);
 
-	public void removeChildren();
+	public IEntity removeChildren();
 
-	public void setUserData(final Object u);
+	public IEntity setUserData(final Object u);
 
 	public Object getUserData();
 
-	public void toString(final StringBuilder s);
+	public void toString(final StrBuilder s);
 
 	public void update(long elapsedTime);
 
-	public void reset();
+	public IEntity reset();
 
 	public void createUI(final GLEx gl);
 
 	public void createUI(final GLEx gl, final float offsetX, final float offsetY);
+	
+	public IEntity setFollowRotation(boolean r);
+
+	public IEntity setFollowScale(boolean s);
+
+	public IEntity setFollowColor(boolean c);
+	
+	public boolean isFollowRotation();
+
+	public boolean isFollowScale();
+
+	public boolean isFollowColor();
+	
 }

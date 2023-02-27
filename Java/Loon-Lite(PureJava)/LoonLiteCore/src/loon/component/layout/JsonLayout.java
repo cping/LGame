@@ -21,7 +21,6 @@
 package loon.component.layout;
 
 import loon.BaseIO;
-import loon.HorizontalAlign;
 import loon.Json;
 import loon.LRelease;
 import loon.LSysException;
@@ -51,10 +50,8 @@ import loon.component.LMessage;
 import loon.component.LMessageBox;
 import loon.component.LPanel;
 import loon.component.LPaper;
-import loon.component.LProgress;
 import loon.component.LTextArea;
 import loon.component.LTextField;
-import loon.component.LProgress.ProgressType;
 import loon.component.LSelect;
 import loon.component.skin.CheckBoxSkin;
 import loon.component.skin.MenuSkin;
@@ -364,22 +361,22 @@ public class JsonLayout implements LRelease {
 
 	private String layoutType;
 
-	private String path;
+	private String jsonPath;
 
 	private Screen currentScreen;
 
-	private boolean closed;
+	private boolean _closed;
 
-	private boolean createGameWindowImage;
+	private boolean _createGameWindowImage;
 
 	public JsonLayout(String path) {
 		if (StringUtils.isEmpty(path)) {
 			throw new LSysException("Path is null");
 		}
-		this.path = path;
+		this.jsonPath = path;
 		this.container = new TArray<LContainer>();
 		this.sprites = new ObjectMap<String, ISprite>();
-		createGameWindowImage = false;
+		_createGameWindowImage = _closed = false;
 	}
 
 	public void pack(Screen screen) {
@@ -398,11 +395,10 @@ public class JsonLayout implements LRelease {
 
 	public void parse() {
 		try {
-			String text = BaseIO.loadText(path);
+			String text = BaseIO.loadText(jsonPath);
 			if (StringUtils.isEmpty(text)) {
 				throw new LSysException("File Context is null");
 			}
-
 			parseText(text);
 		} catch (Throwable cause) {
 			LSystem.error("JsonLayout parse exception", cause);
@@ -415,8 +411,9 @@ public class JsonLayout implements LRelease {
 				throw new LSysException("Context is null");
 			}
 
+			this._closed = false;
 			Json.Object jsonObj = LSystem.base().json().parse(context.trim());
-			layoutType = jsonObj.getString(JsonTemplate.LAYOUY_TYPE, LSystem.UNKOWN).trim().toLowerCase();
+			layoutType = jsonObj.getString(JsonTemplate.LAYOUY_TYPE, LSystem.UNKNOWN).trim().toLowerCase();
 
 			if ("view".equals(layoutType) || "panel".equals(layoutType)) {
 
@@ -486,10 +483,10 @@ public class JsonLayout implements LRelease {
 
 		ISprite sprite = null;
 
-		String varName = props.getString(JsonTemplate.LAYOUY_VAR, LSystem.UNKOWN);
+		String varName = props.getString(JsonTemplate.LAYOUY_VAR, LSystem.UNKNOWN);
 
 		if (StringUtils.isEmpty(varName)) {
-			varName = props.getString("name", LSystem.UNKOWN);
+			varName = props.getString("name", LSystem.UNKNOWN);
 		}
 
 		SpriteParameter par = new SpriteParameter(this, props);
@@ -691,10 +688,10 @@ public class JsonLayout implements LRelease {
 		final LMessageBox box = new LMessageBox(messages, flagStr, par.font, facePath, background, par.x, par.y,
 				par.width, par.height);
 
-		if (background == null && createGameWindowImage) {
+		if (background == null && _createGameWindowImage) {
 			box.setBackground(DefUI.getGameWinFrame(box.width(), box.height()));
-			box.setOffsetX(10);
-			box.setOffsetY(10);
+			box.setBoxOffsetX(10);
+			box.setBoxOffsetY(10);
 		}
 
 		box.up(new Touched() {
@@ -859,10 +856,10 @@ public class JsonLayout implements LRelease {
 			String[] texts = splitData(par.text);
 			menu = new LMenuSelect(par.font, texts, background, par.x, par.y);
 		} else {
-			menu = new LMenuSelect(par.font, new String[] { LSystem.UNKOWN }, background, par.x, par.y);
+			menu = new LMenuSelect(par.font, new String[] { LSystem.UNKNOWN }, background, par.x, par.y);
 		}
 
-		if (background == null && createGameWindowImage) {
+		if (background == null && _createGameWindowImage) {
 			menu.setBackground(DefUI.getGameWinFrame(menu.width(), menu.height()));
 		}
 
@@ -1015,7 +1012,7 @@ public class JsonLayout implements LRelease {
 			}
 		}
 
-		if (background == null && createGameWindowImage) {
+		if (background == null && _createGameWindowImage) {
 			textarea.setBackground(DefUI.getGameWinFrame(textarea.width(), textarea.height()));
 			textarea.setLeftOffset(offsetX);
 			textarea.setTopOffset(offsetY);
@@ -1047,7 +1044,7 @@ public class JsonLayout implements LRelease {
 			background = LSystem.loadTexture(par.path);
 		}
 
-		if (background == null && createGameWindowImage) {
+		if (background == null && _createGameWindowImage) {
 			background = DefUI.getGameWinFrame(par.width, par.height);
 		}
 
@@ -1085,7 +1082,7 @@ public class JsonLayout implements LRelease {
 			background = LSystem.loadTexture(par.path);
 		}
 
-		if (background == null && createGameWindowImage) {
+		if (background == null && _createGameWindowImage) {
 			background = DefUI.getGameWinFrame(par.width, par.height);
 		}
 
@@ -1151,50 +1148,6 @@ public class JsonLayout implements LRelease {
 		putComponents(varName, check);
 
 		return check;
-	}
-
-	protected LProgress createProgress(Json.Object props, String varName, LContainer view) {
-
-		LProgress progress = null;
-
-		BaseParameter par = new BaseParameter(this, props);
-
-		LTexture background = null;
-		LTexture bgProgress = null;
-
-		ProgressType pType = ProgressType.GAME;
-
-		if (!StringUtils.isEmpty(par.path)) {
-			String[] files = splitData(par.path);
-			if (files.length == 2) {
-				background = LSystem.loadTexture(files[0]);
-				bgProgress = LSystem.loadTexture(files[1]);
-				pType = ProgressType.UI;
-			}
-		}
-
-		progress = new LProgress(pType, par.color, par.x, par.y, par.width, par.height, background, bgProgress);
-
-		progress.setVertical(props.getBoolean("vertical", false));
-		float value = props.getNumber("value", 0f);
-
-		if (value > 1f) {
-			value = value / 100f;
-		}
-		progress.setPercentage(value);
-
-		if (par.z != -1) {
-			progress.setLayer(par.z);
-		}
-		progress.setVisible(par.visible);
-
-		move(par.layoutAlgin, view, progress);
-
-		view.add(progress);
-
-		putComponents(varName, progress);
-
-		return progress;
 	}
 
 	protected LTextField createTextField(Json.Object props, String varName, LContainer view) {
@@ -1275,10 +1228,10 @@ public class JsonLayout implements LRelease {
 
 		LComponent comp = null;
 
-		String varName = props.getString(JsonTemplate.LAYOUY_VAR, LSystem.UNKOWN);
+		String varName = props.getString(JsonTemplate.LAYOUY_VAR, LSystem.UNKNOWN);
 
 		if (StringUtils.isEmpty(varName)) {
-			varName = props.getString("name", LSystem.UNKOWN);
+			varName = props.getString("name", LSystem.UNKNOWN);
 		}
 		switch (code) {
 		case 0:
@@ -1307,7 +1260,7 @@ public class JsonLayout implements LRelease {
 			comp = createSelect(props, varName, view);
 			break;
 		case 8:
-			comp = createProgress(props, varName, view);
+			//comp = createProgress(props, varName, view);
 			break;
 		case 9:
 			comp = createCheckBox(props, varName, view);
@@ -1334,11 +1287,11 @@ public class JsonLayout implements LRelease {
 	}
 
 	public boolean isCreateGameWindowImage() {
-		return createGameWindowImage;
+		return _createGameWindowImage;
 	}
 
 	public void setCreateGameWindowImage(boolean gameWindowImage) {
-		this.createGameWindowImage = gameWindowImage;
+		this._createGameWindowImage = gameWindowImage;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -1396,7 +1349,7 @@ public class JsonLayout implements LRelease {
 	}
 
 	public String getPath() {
-		return this.path;
+		return this.jsonPath;
 	}
 
 	public void setListener(JsonLayoutListener listener) {
@@ -1425,11 +1378,14 @@ public class JsonLayout implements LRelease {
 	}
 
 	public boolean isClosed() {
-		return closed;
+		return _closed;
 	}
 
 	@Override
 	public void close() {
+		if (_closed) {
+			return;
+		}
 		Screen screen = this.currentScreen;
 		if (screen == null && LSystem.getProcess() != null) {
 			screen = LSystem.getProcess().getScreen();
@@ -1457,7 +1413,7 @@ public class JsonLayout implements LRelease {
 			}
 			sprites.clear();
 		}
-		closed = true;
+		_closed = true;
 	}
 
 }

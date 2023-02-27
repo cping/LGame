@@ -24,7 +24,7 @@ import loon.LSysException;
 import loon.utils.StringKeyValue;
 import loon.utils.reply.Bypass.GoListener;
 
-class Cons extends Connection {
+public class Cons extends Connection {
 
 	private Bypass _owner;
 	private ListenerRef _ref;
@@ -80,14 +80,16 @@ class Cons extends Connection {
 	}
 
 	private static abstract class ListenerRef {
-		abstract boolean isWeak();
+		
+		public abstract boolean isWeak();
 
-		abstract void defang(GoListener def);
+		public abstract void defang(GoListener def);
 
-		abstract GoListener get(Cons cons);
+		public abstract GoListener get(Cons cons);
 	}
 
 	private static class StrongRef extends ListenerRef {
+		
 		private GoListener _lner;
 
 		public StrongRef(GoListener lner) {

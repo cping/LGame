@@ -120,7 +120,7 @@ public class TriangleNeat implements Triangle {
 		edge.suspect = true;
 	}
 
-	void markSuspect(int i, int j, boolean flag) throws Exception {
+	void markSuspect(int i, int j, boolean flag) throws LSysException {
 		int k;
 		if (0 > (k = findEdge(i, j))) {
 			throw new LSysException("Attempt to mark unknown edge");
@@ -181,7 +181,7 @@ public class TriangleNeat implements Triangle {
 		return f * 0.5F;
 	}
 
-	public void basicTriangulation() throws Exception {
+	public void basicTriangulation() throws LSysException {
 		int i = numPoints;
 		if (i < 3)
 			return;

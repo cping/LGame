@@ -30,15 +30,17 @@ import loon.LTexture.Format;
 import loon.action.ActionBind;
 import loon.action.ActionTween;
 import loon.action.map.colider.TileImpl;
+import loon.action.map.items.Attribute;
 import loon.action.sprite.Animation;
 import loon.action.sprite.ISprite;
 import loon.action.sprite.MoveControl;
-import loon.action.sprite.SpriteBatch;
 import loon.action.sprite.Sprites;
 import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.events.DrawListener;
+import loon.events.ResizeListener;
 import loon.geom.Affine2f;
+import loon.geom.PointF;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
@@ -48,17 +50,19 @@ import loon.utils.MathUtils;
 import loon.utils.TArray;
 
 /**
- * 一个简单的二维数组地图构造以及显示类.复杂地图请使用tmx包
+ * 一个简单(易于操作)的二维数组地图构造以及显示类.复杂地图请使用tmx包
  */
 public class TileMap extends LObject<ISprite> implements ISprite {
 
 	private LTexture _background;
 
-	// 地图的Sprites
+	// 地图自身存储子精灵的的Sprites
 	private Sprites _mapSprites;
 
-	// Screen的Sprites
-	private Sprites _sprites;
+	// 显示Map的上级Sprites
+	private Sprites _screenSprites;
+
+	private ResizeListener<TileMap> _resizeListener;
 
 	private int firstTileX;
 
@@ -80,6 +84,8 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	private final Field2D field2d;
 
+	private final PointF _scrollDrag = new PointF();
+
 	private float _fixedWidthOffset = 0f;
 	private float _fixedHeightOffset = 0f;
 
@@ -87,7 +93,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	private ActionBind follow;
 
-	private Vector2f offset;
+	private Vector2f offset = new Vector2f(0f, 0f);
 
 	private Format format;
 
@@ -101,31 +107,29 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	private float scaleX = 1f, scaleY = 1f;
 
-	public TileMap(String fileName, int tileWidth, int tileHeight)  {
+	public TileMap(String fileName, int tileWidth, int tileHeight) {
 		this(fileName, tileWidth, tileHeight, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), Format.LINEAR);
 	}
 
-	public TileMap(String fileName, Screen screen, int tileWidth, int tileHeight)  {
+	public TileMap(String fileName, Screen screen, int tileWidth, int tileHeight) {
 		this(fileName, screen, tileWidth, tileHeight, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(),
 				Format.LINEAR);
 	}
 
-	public TileMap(String fileName, int tileWidth, int tileHeight, int mWidth, int mHeight)  {
+	public TileMap(String fileName, int tileWidth, int tileHeight, int mWidth, int mHeight) {
 		this(fileName, tileWidth, tileHeight, mWidth, mHeight, Format.LINEAR);
 	}
 
-	public TileMap(String fileName, Screen screen, int tileWidth, int tileHeight, int mWidth, int mHeight)
-			 {
+	public TileMap(String fileName, Screen screen, int tileWidth, int tileHeight, int mWidth, int mHeight) {
 		this(fileName, screen, tileWidth, tileHeight, mWidth, mHeight, Format.LINEAR);
 	}
 
-	public TileMap(String fileName, int tileWidth, int tileHeight, int mWidth, int mHeight, Format format)
-			 {
+	public TileMap(String fileName, int tileWidth, int tileHeight, int mWidth, int mHeight, Format format) {
 		this(TileMapConfig.loadAthwartArray(fileName), tileWidth, tileHeight, mWidth, mHeight, format);
 	}
 
 	public TileMap(String fileName, Screen screen, int tileWidth, int tileHeight, int mWidth, int mHeight,
-			Format format)  {
+			Format format) {
 		this(TileMapConfig.loadAthwartArray(fileName), screen, tileWidth, tileHeight, mWidth, mHeight, format);
 	}
 
@@ -243,9 +247,9 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	public TileMap removeTile(int id) {
 		for (TileImpl tile : arrays) {
-			if (tile.idx == id) {
-				if (tile.isAnimation) {
-					animations.remove(tile.animation);
+			if (tile.getId() == id) {
+				if (tile.isAnimation()) {
+					animations.remove(tile.getAnimation());
 				}
 				arrays.remove(tile);
 			}
@@ -260,17 +264,16 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	public int putAnimationTile(int id, Animation animation, Attribute attribute) {
 		if (active) {
 			TileImpl tile = new TileImpl(id);
-			tile.imgId = -1;
-			tile.attribute = attribute;
+			tile.setImgId(-1);
+			tile.setAttribute(attribute);
 			if (animation != null && animation.getTotalFrames() > 0) {
-				tile.isAnimation = true;
-				tile.animation = animation;
+				tile.setAnimation(animation);
 				playAnimation = true;
 			}
 			animations.add(animation);
 			arrays.add(tile);
 			dirty = true;
-			return tile.imgId;
+			return tile.getImgId();
 		} else {
 			throw new LSysException("Map is no longer active, you can not add new tiles !");
 		}
@@ -287,11 +290,11 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	public int putTile(int id, Image img, Attribute attribute) {
 		if (active) {
 			TileImpl tile = new TileImpl(id);
-			tile.imgId = texturePack.putImage(img);
-			tile.attribute = attribute;
+			tile.setImgId(texturePack.putImage(img));
+			tile.setAttribute(attribute);
 			arrays.add(tile);
 			dirty = true;
-			return tile.imgId;
+			return tile.getImgId();
 		} else {
 			throw new LSysException("Map is no longer active, you can not add new tiles !");
 		}
@@ -304,11 +307,11 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	public int putTile(int id, LTexture img, Attribute attribute) {
 		if (active) {
 			TileImpl tile = new TileImpl(id);
-			tile.imgId = texturePack.putImage(img);
-			tile.attribute = attribute;
+			tile.setImgId(texturePack.putImage(img));
+			tile.setAttribute(attribute);
 			arrays.add(tile);
 			dirty = true;
-			return tile.imgId;
+			return tile.getImgId();
 		} else {
 			throw new LSysException("Map is no longer active, you can not add new tiles !");
 		}
@@ -321,11 +324,11 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	public int putTile(int id, String res, Attribute attribute) {
 		if (active) {
 			TileImpl tile = new TileImpl(id);
-			tile.imgId = texturePack.putImage(res);
-			tile.attribute = attribute;
+			tile.setImgId(texturePack.putImage(res));
+			tile.setAttribute(attribute);
 			arrays.add(tile);
 			dirty = true;
-			return tile.imgId;
+			return tile.getImgId();
 		} else {
 			throw new LSysException("Map is no longer active, you can not add new tiles !");
 		}
@@ -338,8 +341,8 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	public TileMap putTile(int id, int imgId, Attribute attribute) {
 		if (active) {
 			TileImpl tile = new TileImpl(id);
-			tile.imgId = imgId;
-			tile.attribute = attribute;
+			tile.setImgId(imgId);
+			tile.setAttribute(attribute);
 			arrays.add(tile);
 			dirty = true;
 		} else {
@@ -354,7 +357,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	public TileImpl getTile(int id) {
 		for (TileImpl tile : arrays) {
-			if (tile.idx == id) {
+			if (tile.getId() == id) {
 				return tile;
 			}
 		}
@@ -367,6 +370,10 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	public boolean isActive() {
 		return active;
+	}
+
+	public boolean isValid(int x, int y) {
+		return this.field2d.inside(x, y);
 	}
 
 	public TileMap pack() {
@@ -392,6 +399,11 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	public Format getFormat() {
 		return format;
+	}
+
+	public TileMap replaceType(int oldid, int newid) {
+		field2d.replaceType(oldid, newid);
+		return this;
 	}
 
 	public int getTileID(int x, int y) {
@@ -438,48 +450,40 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		if (this.roll) {
 			this.offset = this.toRollPosition(this.offset);
 		}
-		draw(g, null, x() + offset.x(), y() + offset.y());
+		draw(g, x() + offset.x(), y() + offset.y());
 	}
 
-	public void draw(GLEx g, SpriteBatch batch, int offsetX, int offsetY) {
-		final boolean useBatch = (batch != null);
-		if (useBatch) {
-			if (_background != null) {
-				batch.draw(_background, offsetX, offsetY);
-			}
-		} else {
-			if (_background != null) {
-				g.draw(_background, offsetX, offsetY);
-			}
+	public void draw(GLEx g, int offsetX, int offsetY) {
+
+		if (_background != null) {
+			g.draw(_background, offsetX, offsetY);
 		}
+
 		if (!active || texturePack == null) {
 			completed();
 			return;
 		}
-		dirty = dirty || !texturePack.existCache();
+
+		this.dirty = this.dirty || !texturePack.existCache();
+
 		if (!dirty && lastOffsetX == offsetX && lastOffsetY == offsetY) {
+
 			texturePack.postCache();
+
 			if (playAnimation) {
+				final int tileWidth = field2d.getTileWidth();
+				final int tileHeight = field2d.getTileHeight();
 				int[][] maps = field2d.getMap();
 				for (int i = firstTileX; i < lastTileX; i++) {
 					for (int j = firstTileY; j < lastTileY; j++) {
 						if (i > -1 && j > -1 && i < field2d.getWidth() && j < field2d.getHeight()) {
 							int id = maps[j][i];
+							final float posX = field2d.tilesToWidthPixels(i) + offsetX;
+							final float posY = field2d.tilesToHeightPixels(j) + offsetY;
 							for (TileImpl tile : arrays) {
-								if (tile.isAnimation && tile.idx == id) {
-									if (useBatch) {
-										LColor tmp = batch.getColor();
-										batch.setColor(baseColor);
-										batch.draw(tile.animation.getSpriteImage(),
-												field2d.tilesToWidthPixels(i) + offsetX,
-												field2d.tilesToHeightPixels(j) + offsetY, field2d.getTileWidth(),
-												field2d.getTileHeight());
-										batch.setColor(tmp);
-									} else {
-										g.draw(tile.animation.getSpriteImage(), field2d.tilesToWidthPixels(i) + offsetX,
-												field2d.tilesToHeightPixels(j) + offsetY, field2d.getTileWidth(),
-												field2d.getTileHeight(), baseColor);
-									}
+								if (tile.isAnimation() && tile.getId() == id) {
+									g.draw(tile.getAnimation().getSpriteImage(), posX, posY, tileWidth, tileHeight,
+											baseColor);
 								}
 							}
 						}
@@ -500,47 +504,39 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 			lastTileX = MathUtils.min(lastTileX, field2d.getWidth());
 			lastTileY = firstTileY + field2d.pixelsToTilesHeight(maxHeight) + 1;
 			lastTileY = MathUtils.min(lastTileY, field2d.getHeight());
+
+			final int width = field2d.getWidth();
+			final int height = field2d.getHeight();
+			final int tileWidth = field2d.getTileWidth();
+			final int tileHeight = field2d.getTileHeight();
 			int[][] maps = field2d.getMap();
 			for (int i = firstTileX; i < lastTileX; i++) {
 				for (int j = firstTileY; j < lastTileY; j++) {
-					if (i > -1 && j > -1 && i < field2d.getWidth() && j < field2d.getHeight()) {
+					if (i > -1 && j > -1 && i < width && j < height) {
 						int id = maps[j][i];
+						final float posX = field2d.tilesToWidthPixels(i) + offsetX;
+						final float posY = field2d.tilesToHeightPixels(j) + offsetY;
 						for (TileImpl tile : arrays) {
 							if (playAnimation) {
-								if (tile.idx == id) {
-									if (tile.isAnimation) {
-										if (useBatch) {
-											LColor tmp = batch.getColor();
-											batch.setColor(baseColor);
-											batch.draw(tile.animation.getSpriteImage(),
-													field2d.tilesToWidthPixels(i) + offsetX,
-													field2d.tilesToHeightPixels(j) + offsetY, field2d.getTileWidth(),
-													field2d.getTileHeight());
-											batch.setColor(tmp);
-										} else {
-											g.draw(tile.animation.getSpriteImage(),
-													field2d.tilesToWidthPixels(i) + offsetX,
-													field2d.tilesToHeightPixels(j) + offsetY, field2d.getTileWidth(),
-													field2d.getTileHeight(), baseColor);
-										}
+								if (tile.getId() == id) {
+									if (tile.isAnimation()) {
+										g.draw(tile.getAnimation().getSpriteImage(), posX, posY, tileWidth, tileHeight,
+												baseColor);
 									} else {
-										texturePack.draw(tile.imgId, field2d.tilesToWidthPixels(i) + offsetX,
-												field2d.tilesToHeightPixels(j) + offsetY, field2d.getTileWidth(),
-												field2d.getTileHeight(), baseColor);
+										texturePack.draw(tile.getImgId(), posX, posY, tileWidth, tileHeight, baseColor);
 									}
 								}
-							} else if (tile.idx == id) {
-								texturePack.draw(tile.imgId, field2d.tilesToWidthPixels(i) + offsetX,
-										field2d.tilesToHeightPixels(j) + offsetY, field2d.getTileWidth(),
-										field2d.getTileHeight(), baseColor);
+							} else if (tile.getId() == id) {
+								texturePack.draw(tile.getImgId(), posX, posY, tileWidth, tileHeight);
 							}
-
 						}
 					}
 				}
 			}
+
 			texturePack.glEnd();
 			texturePack.saveCache();
+
 			lastOffsetX = offsetX;
 			lastOffsetY = offsetY;
 			dirty = false;
@@ -551,36 +547,113 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		}
 	}
 
-	public void scrollDown(float distance) {
-		this.offset.y = limitOffsetY(MathUtils.min((this.offset.y + distance),
-				(MathUtils.max(0, this.field2d.getViewHeight() - getContainerHeight()))));
+	public float centerX() {
+		return (getContainerWidth() - getWidth()) / 2f;
 	}
 
-	public void scrollLeft(float distance) {
-		this.offset.x = limitOffsetX(MathUtils.max(this.offset.x - distance, 0));
+	public float centerY() {
+		return (getContainerHeight() - getHeight()) / 2f;
 	}
 
-	public void scrollLeftUp(float distance) {
+	public TileMap scrollDown(float distance) {
+		if (distance == 0) {
+			return this;
+		}
+		this.offset.y = MathUtils.min((this.offset.y + distance),
+				(MathUtils.max(0, this.getContainerHeight() - this.getHeight())));
+		if (this.offset.y >= 0) {
+			this.offset.y = 0;
+		}
+		return this;
+	}
+
+	public TileMap scrollLeft(float distance) {
+		if (distance == 0) {
+			return this;
+		}
+		this.offset.x = MathUtils.min(this.offset.x - distance, this.getX());
+		float limitX = (getContainerWidth() - getWidth());
+		if (this.offset.x <= limitX) {
+			this.offset.x = limitX;
+		}
+		return this;
+	}
+
+	public TileMap scrollRight(float distance) {
+		if (distance == 0) {
+			return this;
+		}
+		this.offset.x = MathUtils.min((this.offset.x + distance),
+				(MathUtils.max(0, this.getWidth() - getContainerWidth())));
+		if (this.offset.x >= 0) {
+			this.offset.x = 0;
+		}
+		return this;
+	}
+
+	public TileMap scrollUp(float distance) {
+		if (distance == 0) {
+			return this;
+		}
+		this.offset.y = MathUtils.min(this.offset.y - distance, 0);
+		float limitY = (getContainerHeight() - getHeight());
+		if (this.offset.y <= limitY) {
+			this.offset.y = limitY;
+		}
+		return this;
+	}
+
+	public TileMap scrollLeftUp(float distance) {
 		this.scrollUp(distance);
 		this.scrollLeft(distance);
+		return this;
 	}
 
-	public void scrollRight(float distance) {
-		this.offset.x = limitOffsetX(MathUtils.min((this.offset.x + distance),
-				(MathUtils.max(0, this.field2d.getViewWidth() - getContainerWidth()))));
-	}
-
-	public void scrollUp(float distance) {
-		this.offset.y = limitOffsetY(MathUtils.max(this.offset.y - distance, 0));
-	}
-
-	public void scrollRightDown(float distance) {
+	public TileMap scrollRightDown(float distance) {
 		this.scrollDown(distance);
 		this.scrollRight(distance);
+		return this;
 	}
 
-	public void scrollClear() {
-		this.offset.set(0, 0);
+	public TileMap scrollClear() {
+		if (!this.offset.equals(0f, 0f)) {
+			this.offset.set(0, 0);
+		}
+		return this;
+	}
+
+	public TileMap scroll(float x, float y) {
+		return scroll(x, y, 4f);
+	}
+
+	public TileMap scroll(float x, float y, float distance) {
+		if (_scrollDrag.x == 0f && _scrollDrag.y == 0f) {
+			_scrollDrag.set(x, y);
+			return this;
+		}
+		return scroll(_scrollDrag.x, _scrollDrag.y, x, y, distance);
+	}
+
+	public TileMap scroll(float x1, float y1, float x2, float y2) {
+		return scroll(x1, y1, x2, y2, 4f);
+	}
+
+	public TileMap scroll(float x1, float y1, float x2, float y2, float distance) {
+		if (this.follow != null) {
+			return this;
+		}
+		if (x1 < x2 && x1 > centerX()) {
+			scrollRight(distance);
+		} else if (x1 > x2) {
+			scrollLeft(distance);
+		}
+		if (y1 < y2 && y1 > centerY()) {
+			scrollDown(distance);
+		} else if (y1 > y2) {
+			scrollUp(distance);
+		}
+		_scrollDrag.set(x2, y2);
+		return this;
 	}
 
 	public int[] getLimit() {
@@ -589,6 +662,11 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	public TileMap setLimit(int[] limit) {
 		field2d.setLimit(limit);
+		return this;
+	}
+
+	public TileMap setAllowMove(int[] args) {
+		field2d.setAllowMove(args);
 		return this;
 	}
 
@@ -646,10 +724,6 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		return new Vector2f(xprime, yprime);
 	}
 
-	public Field2D getField() {
-		return field2d;
-	}
-
 	public int tilesToPixelsX(float x) {
 		return field2d.tilesToWidthPixels(x);
 	}
@@ -680,6 +754,16 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	}
 
 	/**
+	 * 地图居中偏移
+	 * 
+	 * @return
+	 */
+	public TileMap centerOffset() {
+		this.offset.set(centerX(), centerY());
+		return this;
+	}
+
+	/**
 	 * 设定偏移量
 	 * 
 	 * @param x
@@ -707,14 +791,6 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	 */
 	public Vector2f getOffset() {
 		return offset;
-	}
-
-	public float getOffsetX() {
-		return offset.x;
-	}
-
-	public float getOffsetY() {
-		return offset.y;
 	}
 
 	public int getTileWidth() {
@@ -781,27 +857,33 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	}
 
 	@Override
+	public void createUI(GLEx g) {
+		createUI(g, 0f, 0f);
+	}
+
+	@Override
 	public void createUI(GLEx g, float offsetX, float offsetY) {
 		if (!visible) {
 			return;
 		}
-		boolean update = (_rotation != 0) || !(scaleX == 1f && scaleY == 1f);
+		boolean update = (_objectRotation != 0) || !(scaleX == 1f && scaleY == 1f);
+		int blend = g.getBlendMode();
 		int tmp = g.color();
 		try {
-			g.setAlpha(_alpha);
+			g.setAlpha(_objectAlpha);
 			if (this.roll) {
 				this.offset = toRollPosition(this.offset);
 			}
-			float newX = this._location.x + offsetX + offset.getX();
-			float newY = this._location.y + offsetY + offset.getY();
+			float newX = this._objectLocation.x + offsetX + offset.getX();
+			float newY = this._objectLocation.y + offsetY + offset.getY();
 			if (update) {
 				g.saveTx();
 				Affine2f tx = g.tx();
-				if (_rotation != 0) {
+				if (_objectRotation != 0) {
 					final float rotationCenterX = newX + getWidth() / 2f;
 					final float rotationCenterY = newY + getHeight() / 2f;
 					tx.translate(rotationCenterX, rotationCenterY);
-					tx.preRotate(_rotation);
+					tx.preRotate(_objectRotation);
 					tx.translate(-rotationCenterX, -rotationCenterY);
 				}
 				if ((scaleX != 1) || (scaleY != 1)) {
@@ -815,7 +897,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 			followActionObject();
 			int moveX = (int) newX;
 			int moveY = (int) newY;
-			draw(g, null, moveX, moveY);
+			draw(g, moveX, moveY);
 			if (_mapSprites != null) {
 				_mapSprites.paintPos(g, moveX, moveY);
 			}
@@ -825,13 +907,9 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 			if (update) {
 				g.restoreTx();
 			}
+			g.setBlendMode(blend);
 			g.setColor(tmp);
 		}
-	}
-
-	@Override
-	public void createUI(GLEx g) {
-		createUI(g, 0, 0);
 	}
 
 	@Override
@@ -888,8 +966,10 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		if (follow != null) {
 			float offsetX = limitOffsetX(follow.getX());
 			float offsetY = limitOffsetY(follow.getY());
-			setOffset(offsetX, offsetY);
-			field2d.setOffset(offset);
+			if (offsetX != 0 || offsetY != 0) {
+				setOffset(offsetX, offsetY);
+				field2d.setOffset(offset);
+			}
 		}
 		return this;
 	}
@@ -967,16 +1047,56 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		return this;
 	}
 
+	public TileMap followDonot() {
+		return setFollow(null);
+	}
+
 	public TileMap followAction(ActionBind follow) {
 		return setFollow(follow);
 	}
 
-	public float offsetXPixel(float x) {
-		return MathUtils.iceil((x - offset.x - _location.x) / scaleX);
+	public Vector2f toTilesScrollPixels(float x, float y) {
+		return new Vector2f(toTileScrollPixelX(x), toTileScrollPixelY(y));
 	}
 
-	public float offsetYPixel(float y) {
-		return MathUtils.iceil((y - offset.y - _location.y) / scaleY);
+	public int toTileScrollPixelX(float x) {
+		return offsetXPixel(tilesToPixelsX(x));
+	}
+
+	public int toTileScrollPixelY(float y) {
+		return offsetYPixel(tilesToPixelsY(y));
+	}
+
+	public Vector2f toPixelsScrollTiles(float x, float y) {
+		return new Vector2f(toPixelScrollTileX(x), toPixelScrollTileY(y));
+	}
+
+	public int toPixelScrollTileX(float x) {
+		return pixelsToTilesWidth(offsetXPixel(x));
+	}
+
+	public int toPixelScrollTileY(float y) {
+		return pixelsToTilesHeight(offsetYPixel(y));
+	}
+
+	public Vector2f offsetPixels(float x, float y) {
+		return new Vector2f(offsetXPixel(x), offsetYPixel(y));
+	}
+
+	public int getPixelX(float x) {
+		return MathUtils.iceil((x - _objectLocation.x) / scaleX);
+	}
+
+	public int getPixelY(float y) {
+		return MathUtils.iceil((y - _objectLocation.y) / scaleY);
+	}
+
+	public int offsetXPixel(float x) {
+		return MathUtils.iceil((x - offset.x - _objectLocation.x) / scaleX);
+	}
+
+	public int offsetYPixel(float y) {
+		return MathUtils.iceil((y - offset.y - _objectLocation.y) / scaleY);
 	}
 
 	public boolean inMap(int x, int y) {
@@ -1095,29 +1215,31 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	}
 
 	@Override
-	public void setSprites(Sprites ss) {
-		if (this._sprites == ss) {
-			return;
+	public ISprite setSprites(Sprites ss) {
+		if (this._screenSprites == ss) {
+			return this;
 		}
-		this._sprites = ss;
+		this._screenSprites = ss;
+		return this;
 	}
 
 	@Override
 	public Sprites getSprites() {
-		return this._sprites;
+		return this._screenSprites;
 	}
 
 	@Override
 	public Screen getScreen() {
-		if (this._sprites == null) {
+		if (this._screenSprites == null) {
 			return LSystem.getProcess().getScreen();
 		}
-		return this._sprites.getScreen() == null ? LSystem.getProcess().getScreen() : this._sprites.getScreen();
+		return this._screenSprites.getScreen() == null ? LSystem.getProcess().getScreen()
+				: this._screenSprites.getScreen();
 	}
 
 	public float getScreenX() {
 		float x = 0;
-		ISprite parent = _super;
+		ISprite parent = _objectSuper;
 		if (parent != null) {
 			x += parent.getX();
 			for (; (parent = parent.getParent()) != null;) {
@@ -1129,7 +1251,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	public float getScreenY() {
 		float y = 0;
-		ISprite parent = _super;
+		ISprite parent = _objectSuper;
 		if (parent != null) {
 			y += parent.getY();
 			for (; (parent = parent.getParent()) != null;) {
@@ -1141,28 +1263,28 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	@Override
 	public float getContainerX() {
-		if (_super != null) {
+		if (_objectSuper != null) {
 			return getScreenX() - getX();
 		}
-		return this._sprites == null ? super.getContainerX() : this._sprites.getX();
+		return this._screenSprites == null ? super.getContainerX() : this._screenSprites.getX();
 	}
 
 	@Override
 	public float getContainerY() {
-		if (_super != null) {
+		if (_objectSuper != null) {
 			return getScreenY() - getY();
 		}
-		return this._sprites == null ? super.getContainerY() : this._sprites.getY();
+		return this._screenSprites == null ? super.getContainerY() : this._screenSprites.getY();
 	}
 
 	@Override
 	public float getContainerWidth() {
-		return this._sprites == null ? super.getContainerWidth() : this._sprites.getWidth();
+		return this._screenSprites == null ? super.getContainerWidth() : this._screenSprites.getWidth();
 	}
 
 	@Override
 	public float getContainerHeight() {
-		return this._sprites == null ? super.getContainerHeight() : this._sprites.getHeight();
+		return this._screenSprites == null ? super.getContainerHeight() : this._screenSprites.getHeight();
 	}
 
 	@Override
@@ -1171,8 +1293,9 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	}
 
 	@Override
-	public void setFixedWidthOffset(float fixedWidthOffset) {
+	public ISprite setFixedWidthOffset(float fixedWidthOffset) {
 		this._fixedWidthOffset = fixedWidthOffset;
+		return this;
 	}
 
 	@Override
@@ -1181,8 +1304,9 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	}
 
 	@Override
-	public void setFixedHeightOffset(float fixedHeightOffset) {
+	public ISprite setFixedHeightOffset(float fixedHeightOffset) {
 		this._fixedHeightOffset = fixedHeightOffset;
+		return this;
 	}
 
 	@Override
@@ -1216,7 +1340,46 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		RectBox b = new RectBox(0, rectDst.getY(), rectDst.getWidth(), rectDst.getHeight());
 		return a.intersects(b);
 	}
-	
+
+	@Override
+	public void onResize() {
+		if (_resizeListener != null) {
+			_resizeListener.onResize(this);
+		}
+		if (_mapSprites != null) {
+			_mapSprites.resize(getWidth(), getHeight(), false);
+		}
+	}
+
+	public ResizeListener<TileMap> getResizeListener() {
+		return _resizeListener;
+	}
+
+	public TileMap setResizeListener(ResizeListener<TileMap> listener) {
+		this._resizeListener = listener;
+		return this;
+	}
+
+	public TileMap setOffsetX(float sx) {
+		this.offset.setX(sx);
+		return this;
+	}
+
+	public TileMap setOffsetY(float sy) {
+		this.offset.setY(sy);
+		return this;
+	}
+
+	@Override
+	public float getOffsetX() {
+		return offset.x;
+	}
+
+	@Override
+	public float getOffsetY() {
+		return offset.y;
+	}
+
 	public boolean isClosed() {
 		return isDisposed();
 	}
@@ -1244,6 +1407,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 			_background.close();
 			_background = null;
 		}
+		_resizeListener = null;
 		removeActionEvents(this);
 		setState(State.DISPOSED);
 	}

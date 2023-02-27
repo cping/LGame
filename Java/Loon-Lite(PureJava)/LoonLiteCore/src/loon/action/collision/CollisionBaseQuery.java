@@ -26,62 +26,62 @@ import loon.geom.Vector2f;
 
 public class CollisionBaseQuery implements CollisionQuery {
 
-	private String flag;
+	private String _flag;
 
-	private CollisionObject compareObject;
+	private CollisionObject _compareObject;
 
-	private Vector2f offsetLocation;
+	private Vector2f _offsetLocation;
 
-	private RectBox tempRect = new RectBox(0, 0, 0, 0);
+	private RectBox _collisionRect = new RectBox(0, 0, 0, 0);
 
-	public void init(String flag, CollisionObject actor, Vector2f offset) {
-		this.flag = flag;
-		this.compareObject = actor;
-		this.offsetLocation = offset;
+	public void init(String _flag, CollisionObject actor, Vector2f offset) {
+		this._flag = _flag;
+		this._compareObject = actor;
+		this._offsetLocation = offset;
 	}
 
 	private float offsetX(float x) {
-		if (offsetLocation == null) {
+		if (_offsetLocation == null) {
 			return x;
 		}
-		return x + offsetLocation.x;
+		return x + _offsetLocation.x;
 	}
 
 	private float offsetY(float y) {
-		if (offsetLocation == null) {
+		if (_offsetLocation == null) {
 			return y;
 		}
-		return y + offsetLocation.y;
+		return y + _offsetLocation.y;
 	}
 
 	public boolean checkOnlyCollision(CollisionObject other) {
-		if (!offsetLocation.isZero()) {
-			tempRect.setBounds(offsetX(this.compareObject.getX()), offsetY(this.compareObject.getY()),
-					this.compareObject.getWidth(), this.compareObject.getHeight());
-			return (this.compareObject == null ? true : other.intersects(tempRect));
+		if (!_offsetLocation.isZero()) {
+			_collisionRect.setBounds(offsetX(this._compareObject.getX()), offsetY(this._compareObject.getY()),
+					this._compareObject.getWidth(), this._compareObject.getHeight());
+			return (this._compareObject == null ? true : other.intersects(_collisionRect));
 		}
-		return (this.compareObject == null ? true : other.intersects(this.compareObject));
+		return (this._compareObject == null ? true : other.intersects(this._compareObject));
 	}
 
 	@Override
 	public boolean checkCollision(CollisionObject other) {
-		if (!offsetLocation.isZero()) {
-			tempRect.setBounds(offsetX(this.compareObject.getX()), offsetY(this.compareObject.getY()),
-					this.compareObject.getWidth(), this.compareObject.getHeight());
-			return this.flag != null && !flag.equals(other.getObjectFlag()) ? false
-					: (this.compareObject == null ? true : other.intersects(tempRect));
+		if (!_offsetLocation.isZero()) {
+			_collisionRect.setBounds(offsetX(this._compareObject.getX()), offsetY(this._compareObject.getY()),
+					this._compareObject.getWidth(), this._compareObject.getHeight());
+			return this._flag != null && !_flag.equals(other.getObjectFlag()) ? false
+					: (this._compareObject == null ? true : other.intersects(_collisionRect));
 		}
-		return this.flag != null && !flag.equals(other.getObjectFlag()) ? false
-				: (this.compareObject == null ? true : other.intersects(this.compareObject));
+		return this._flag != null && !_flag.equals(other.getObjectFlag()) ? false
+				: (this._compareObject == null ? true : other.intersects(this._compareObject));
 	}
 
 	@Override
 	public void setOffsetPos(Vector2f offset) {
-		offsetLocation = offset;
+		_offsetLocation = offset;
 	}
 
 	@Override
 	public Vector2f getOffsetPos() {
-		return offsetLocation;
+		return _offsetLocation;
 	}
 }

@@ -2,18 +2,67 @@ package loon.utils;
 
 import java.util.Arrays;
 
+import loon.LRelease;
 import loon.LSysException;
-import loon.LSystem;
 import loon.events.QueryEvent;
 
-public class CharArray implements IArray {
+public class CharArray implements IArray,LRelease {
 
+	/**
+	 * 产生一组指定范围的数据
+	 * 
+	 * @param start
+	 * @param end
+	 * @return
+	 */
 	public static CharArray range(int start, int end) {
 		CharArray array = new CharArray(end - start);
 		for (int i = start; i < end; i++) {
 			array.add((char) i);
 		}
 		return array;
+	}
+
+	/**
+	 * 产生一组指定范围的随机数据
+	 * 
+	 * @param begin
+	 * @param end
+	 * @return
+	 */
+	public static CharArray rangeRandomArrays(int begin, int end) {
+		return rangeRandom(begin, end, (end - begin));
+	}
+
+	/**
+	 * 产生一组指定范围的随机数据
+	 * 
+	 * @param begin
+	 * @param end
+	 * @param size
+	 * @return
+	 */
+	public static CharArray rangeRandom(int begin, int end, int size) {
+		if (begin > end) {
+			int temp = begin;
+			begin = end;
+			end = temp;
+		}
+		if ((end - begin) < size) {
+			throw new LSysException("Size out Range between begin and end !");
+		}
+		char[] randSeed = new char[end - begin];
+		for (int i = begin; i < end; i++) {
+			randSeed[i - begin] = (char) i;
+		}
+		char[] charArrays = new char[size];
+		for (int i = 0; i < size; i++) {
+			final int len = randSeed.length - i - 1;
+			int j = MathUtils.random(len);
+			charArrays[i] = (char) randSeed[j];
+			randSeed[j] = (char) randSeed[len];
+		}
+		return new CharArray(charArrays);
 	}
 
 	public char[] items;
@@ -44,6 +93,10 @@ public class CharArray implements IArray {
 		this(true, array, 0, array.length);
 	}
 
+	public CharArray(char[] array,int size) {
+		this(true, array, 0, size);
+	}
+	
 	public CharArray(boolean ordered, char[] array, int startIndex, int count) {
 		this(ordered, count);
 		length = count;
@@ -90,14 +143,14 @@ public class CharArray implements IArray {
 		addAll(array, 0, array.length);
 	}
 
-	public void addAll(char[] array, int offset, int length) {
+	public void addAll(char[] array, int offset, int len) {
 		char[] items = this.items;
-		int lengthNeeded = length + length;
+		int lengthNeeded = this.length + len;
 		if (lengthNeeded > items.length) {
 			items = relength(MathUtils.max(8, (int) (lengthNeeded * 1.75f)));
 		}
-		System.arraycopy(array, offset, items, length, length);
-		length += length;
+		System.arraycopy(array, offset, items, this.length, len);
+		this.length += len;
 	}
 
 	public char get(int index) {
@@ -356,12 +409,12 @@ public class CharArray implements IArray {
 		return array;
 	}
 
-	public boolean equals(Object object) {
-		if (object == this)
+	public boolean equals(Object o) {
+		if (o == this)
 			return true;
-		if (!(object instanceof CharArray))
+		if (!(o instanceof CharArray))
 			return false;
-		CharArray array = (CharArray) object;
+		CharArray array = (CharArray) o;
 		int n = length;
 		if (n != array.length)
 			return false;
@@ -369,19 +422,6 @@ public class CharArray implements IArray {
 			if (items[i] != array.items[i])
 				return false;
 		return true;
-	}
-
-	public String toString(String separator) {
-		if (length == 0)
-			return LSystem.EMPTY;
-		char[] items = this.items;
-		StringBuilder buffer = new StringBuilder(32);
-		buffer.append(items[0]);
-		for (int i = 1; i < length; i++) {
-			buffer.append(separator);
-			buffer.append(items[i]);
-		}
-		return buffer.toString();
 	}
 
 	static public CharArray with(char... array) {
@@ -452,6 +492,10 @@ public class CharArray implements IArray {
 	public boolean isEmpty() {
 		return length == 0 || items == null;
 	}
+	
+	public CharArray cpy() {
+		return new CharArray(this);
+	}
 
 	public byte[] getBytes() {
 		return getBytes(0);
@@ -504,7 +548,7 @@ public class CharArray implements IArray {
 			return "[]";
 		}
 		char[] items = this.items;
-		StringBuilder buffer = new StringBuilder(CollectionUtils.INITIAL_CAPACITY);
+		StrBuilder buffer = new StrBuilder(32);
 		buffer.append('[');
 		buffer.append(items[0]);
 		for (int i = 1; i < length; i++) {
@@ -531,5 +575,11 @@ public class CharArray implements IArray {
 	@Override
 	public String toString() {
 		return toString(',');
+	}
+
+	@Override
+	public void close() {
+		this.items = null;
+		this.length = 0;
 	}
 }

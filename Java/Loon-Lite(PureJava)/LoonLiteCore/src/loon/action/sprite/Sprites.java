@@ -29,6 +29,7 @@ import loon.action.ActionBind;
 import loon.action.ActionControl;
 import loon.component.layout.Margin;
 import loon.events.QueryEvent;
+import loon.events.ResizeListener;
 import loon.geom.PointI;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
@@ -38,6 +39,7 @@ import loon.utils.LayerSorter;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
+import loon.utils.reply.Callback;
 
 /**
  * 精灵精灵总父类，用来注册，控制，以及渲染所有精灵精灵（所有默认【不支持】触屏的精灵，被置于此。不过，
@@ -52,13 +54,17 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	}
 
-	private Margin _margin;
-
 	protected ISprite[] _sprites;
+
+	private Margin _margin;
 
 	private float _scrollX;
 
 	private float _scrollY;
+
+	private boolean _sortableChildren;
+
+	private ResizeListener<Sprites> _resizeListener;
 
 	private int viewX;
 
@@ -68,7 +74,7 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	private int viewHeight;
 
-	private boolean _isViewWindowSet = false, _visible = true, _closed = false;
+	private boolean _isViewWindowSet = false, _limitViewWindows = false, _visible = true, _closed = false;
 
 	private SpriteListener sprListerner;
 
@@ -102,7 +108,7 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	public Sprites(String name, Screen screen, int w, int h) {
 		this._screen = screen;
-		this._visible = true;
+		this._sortableChildren = this._visible = true;
 		this._sprites = new ISprite[CollectionUtils.INITIAL_CAPACITY];
 		this._sprites_name = StringUtils.isEmpty(name) ? "Sprites" + LSystem.getSpritesSize() : name;
 		this.setSize(w, h);
@@ -132,6 +138,7 @@ public class Sprites implements IArray, Visible, LRelease {
 			if (viewHeight < this._height) {
 				viewHeight = this._height;
 			}
+			this.resize(w, h, true);
 		}
 		return this;
 	}
@@ -156,7 +163,9 @@ public class Sprites implements IArray, Visible, LRelease {
 				this._sprites = CollectionUtils.cut(this._sprites, i);
 				this._sprites = CollectionUtils.expand(this._sprites, 1, false);
 				this._sprites[0] = sprite;
-				this.sortSprites();
+				if (_sortableChildren) {
+					this.sortSprites();
+				}
 				break;
 			}
 		}
@@ -182,7 +191,9 @@ public class Sprites implements IArray, Visible, LRelease {
 				this._sprites = CollectionUtils.cut(this._sprites, i);
 				this._sprites = CollectionUtils.expand(this._sprites, 1, true);
 				this._sprites[this._size - 1] = sprite;
-				this.sortSprites();
+				if (_sortableChildren) {
+					this.sortSprites();
+				}
 				break;
 			}
 		}
@@ -193,10 +204,28 @@ public class Sprites implements IArray, Visible, LRelease {
 	 * 
 	 */
 	public void sortSprites() {
-		if (_closed) {
+		if (this._closed) {
 			return;
 		}
-		spriteSorter.sort(this._sprites);
+		if (this._size <= 1) {
+			return;
+		}
+		if (this._sprites.length != this._size) {
+			ISprite[] sprs = CollectionUtils.copyOf(this._sprites, this._size);
+			spriteSorter.sort(sprs);
+			this._sprites = sprs;
+		} else {
+			spriteSorter.sort(this._sprites);
+		}
+	}
+
+	public Sprites setSortableChildren(boolean v) {
+		this._sortableChildren = v;
+		return this;
+	}
+
+	public boolean isSortableChildren() {
+		return this._sortableChildren;
 	}
 
 	/**
@@ -239,9 +268,11 @@ public class Sprites implements IArray, Visible, LRelease {
 		ISprite[] snapshot = _sprites;
 		for (int i = snapshot.length - 1; i >= 0; i--) {
 			ISprite child = snapshot[i];
-			RectBox rect = child.getCollisionBox();
-			if (rect != null && rect.contains(x, y)) {
-				return child;
+			if (child != null) {
+				RectBox rect = child.getCollisionBox();
+				if (rect != null && rect.contains(x, y)) {
+					return child;
+				}
 			}
 		}
 		return null;
@@ -260,9 +291,11 @@ public class Sprites implements IArray, Visible, LRelease {
 		ISprite[] snapshot = _sprites;
 		for (int i = snapshot.length - 1; i >= 0; i--) {
 			ISprite child = snapshot[i];
-			String childName = child.getName();
-			if (name.equals(childName)) {
-				return child;
+			if (child != null) {
+				String childName = child.getName();
+				if (name.equals(childName)) {
+					return child;
+				}
 			}
 		}
 		return null;
@@ -436,7 +469,9 @@ public class Sprites implements IArray, Visible, LRelease {
 			if (++this._size >= this._sprites.length) {
 				expandCapacity((_size + 1) * 2);
 			}
-			sortSprites();
+			if (_sortableChildren) {
+				sortSprites();
+			}
 			sprite.setState(State.ADDED);
 			sprite.setSprites(this);
 		}
@@ -521,7 +556,9 @@ public class Sprites implements IArray, Visible, LRelease {
 			expandCapacity((_size + 1) * 2);
 		}
 		boolean result = (_sprites[_size++] = sprite) != null;
-		sortSprites();
+		if (_sortableChildren) {
+			sortSprites();
+		}
 		sprite.setState(State.ADDED);
 		return result;
 	}
@@ -576,9 +613,11 @@ public class Sprites implements IArray, Visible, LRelease {
 		for (Object tag : tags) {
 			for (int i = size - 1; i > -1; i--) {
 				if (this._sprites[i] instanceof ISprite) {
-					ISprite sp = (ISprite) this._sprites[i];
-					if (!tag.equals(sp.getTag())) {
-						list.add(sp);
+					ISprite sp = this._sprites[i];
+					if (sp != null) {
+						if (!tag.equals(sp.getTag())) {
+							list.add(sp);
+						}
 					}
 				}
 			}
@@ -601,9 +640,33 @@ public class Sprites implements IArray, Visible, LRelease {
 		for (String name : names) {
 			for (int i = size - 1; i > -1; i--) {
 				if (this._sprites[i] instanceof ISprite) {
-					ISprite sp = (ISprite) this._sprites[i];
-					if (name.equals(sp.getName())) {
-						list.add(sp);
+					ISprite sp = this._sprites[i];
+					if (sp != null) {
+						if (name.equals(sp.getName())) {
+							list.add(sp);
+						}
+					}
+				}
+			}
+		}
+		return list;
+	}
+
+	public TArray<ISprite> findNameContains(String... names) {
+		if (_closed) {
+			return null;
+		}
+		TArray<ISprite> list = new TArray<ISprite>();
+		final int size = this._size;
+		for (String name : names) {
+			for (int i = size - 1; i > -1; i--) {
+				if (this._sprites[i] instanceof ISprite) {
+					ISprite sp = this._sprites[i];
+					if (sp != null) {
+						String childName = sp.getName();
+						if (childName.contains(name)) {
+							list.add(sp);
+						}
 					}
 				}
 			}
@@ -625,10 +688,13 @@ public class Sprites implements IArray, Visible, LRelease {
 		final int size = this._size;
 		for (String name : names) {
 			for (int i = size - 1; i > -1; i--) {
-				if (this._sprites[i] instanceof ISprite) {
-					ISprite sp = (ISprite) this._sprites[i];
-					if (!name.equals(sp.getName())) {
-						list.add(sp);
+				ISprite child = this._sprites[i];
+				if (child != null) {
+					if (child instanceof ISprite) {
+						ISprite sp = (ISprite) child;
+						if (!name.equals(sp.getName())) {
+							list.add(sp);
+						}
 					}
 				}
 			}
@@ -997,7 +1063,7 @@ public class Sprites implements IArray, Visible, LRelease {
 		boolean listerner = (sprListerner != null);
 		for (int i = _size - 1; i > -1; i--) {
 			ISprite child = _sprites[i];
-			if (child.isVisible()) {
+			if (child != null && child.isVisible()) {
 				try {
 					child.update(elapsedTime);
 					if (listerner) {
@@ -1023,16 +1089,18 @@ public class Sprites implements IArray, Visible, LRelease {
 		float spriteY;
 		float spriteWidth;
 		float spriteHeight;
-
 		for (int i = 0; i < this._size; i++) {
 			ISprite spr = this._sprites[i];
 			if (spr != null && spr.isVisible()) {
-				spriteX = minX + spr.getX();
-				spriteY = minY + spr.getY();
-				spriteWidth = spr.getWidth();
-				spriteHeight = spr.getHeight();
-				if (spriteX + spriteWidth < minX || spriteX > maxX || spriteY + spriteHeight < minY || spriteY > maxY) {
-					continue;
+				if (_limitViewWindows) {
+					spriteX = minX + spr.getX();
+					spriteY = minY + spr.getY();
+					spriteWidth = spr.getWidth();
+					spriteHeight = spr.getHeight();
+					if (spriteX + spriteWidth < minX || spriteX > maxX || spriteY + spriteHeight < minY
+							|| spriteY > maxY) {
+						continue;
+					}
 				}
 				spr.createUI(g);
 			}
@@ -1109,12 +1177,14 @@ public class Sprites implements IArray, Visible, LRelease {
 		for (int i = 0; i < this._size; i++) {
 			ISprite spr = this._sprites[i];
 			if (spr != null && spr.isVisible()) {
-				int layerX = spr.x();
-				int layerY = spr.y();
-				float layerWidth = spr.getWidth() + 1;
-				float layerHeight = spr.getHeight() + 1;
-				if (layerX + layerWidth < minX || layerX > maxX || layerY + layerHeight < minY || layerY > maxY) {
-					continue;
+				if (_limitViewWindows) {
+					int layerX = spr.x();
+					int layerY = spr.y();
+					float layerWidth = spr.getWidth() + 1;
+					float layerHeight = spr.getHeight() + 1;
+					if (layerX + layerWidth < minX || layerX > maxX || layerY + layerHeight < minY || layerY > maxY) {
+						continue;
+					}
 				}
 				spr.createUI(g);
 			}
@@ -1133,6 +1203,14 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	public float getY() {
 		return viewY;
+	}
+
+	public float getStageX() {
+		return (getX() - getScreenX());
+	}
+
+	public float getStageY() {
+		return (getX() - getScreenX());
 	}
 
 	/**
@@ -1179,7 +1257,7 @@ public class Sprites implements IArray, Visible, LRelease {
 	public SpriteControls controls() {
 		return createSpriteControls();
 	}
-	
+
 	public SpriteControls findNamesToSpriteControls(String... names) {
 		if (_closed) {
 			return new SpriteControls();
@@ -1187,6 +1265,20 @@ public class Sprites implements IArray, Visible, LRelease {
 		SpriteControls controls = null;
 		if (_sprites != null) {
 			TArray<ISprite> sps = findNames(names);
+			controls = new SpriteControls(sps);
+		} else {
+			controls = new SpriteControls();
+		}
+		return controls;
+	}
+
+	public SpriteControls findNameContainsToSpriteControls(String... names) {
+		if (_closed) {
+			return new SpriteControls();
+		}
+		SpriteControls controls = null;
+		if (_sprites != null) {
+			TArray<ISprite> sps = findNameContains(names);
 			controls = new SpriteControls(sps);
 		} else {
 			controls = new SpriteControls();
@@ -1330,6 +1422,10 @@ public class Sprites implements IArray, Visible, LRelease {
 		return this._size;
 	}
 
+	public RectBox getBoundingBox() {
+		return new RectBox(this.viewX, this.viewY, this.viewWidth, this.viewHeight);
+	}
+
 	public int getHeight() {
 		return _height;
 	}
@@ -1344,8 +1440,8 @@ public class Sprites implements IArray, Visible, LRelease {
 	}
 
 	@Override
-	public void setVisible(boolean visible) {
-		this._visible = visible;
+	public void setVisible(boolean v) {
+		this._visible = v;
 	}
 
 	public SpriteListener getSprListerner() {
@@ -1358,6 +1454,14 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	public Screen getScreen() {
 		return _screen;
+	}
+
+	public float getScreenX() {
+		return _screen == null ? 0 : _screen.getX();
+	}
+
+	public float getScreenY() {
+		return _screen == null ? 0 : _screen.getY();
 	}
 
 	public Sprites scrollBy(float x, float y) {
@@ -1412,8 +1516,59 @@ public class Sprites implements IArray, Visible, LRelease {
 		return _margin;
 	}
 
+	/**
+	 * 遍历Sprites中所有精灵对象并反馈给Callback
+	 * 
+	 * @param callback
+	 */
+	public Sprites forChildren(Callback<ISprite> callback) {
+		if (callback == null) {
+			return this;
+		}
+		for (ISprite child : this._sprites) {
+			if (child != null) {
+				callback.onSuccess(child);
+			}
+		}
+		return this;
+	}
+
+	public Sprites resize(float width, float height, boolean forceResize) {
+		if (_resizeListener != null) {
+			_resizeListener.onResize(this);
+		}
+		if (forceResize || (this._width != (int) width && this._height != (int) height)) {
+			this._width = (int) width;
+			this._height = (int) height;
+			for (ISprite child : this._sprites) {
+				if (child != null) {
+					child.onResize();
+				}
+			}
+		}
+		return this;
+	}
+
+	public ResizeListener<Sprites> getResizeListener() {
+		return _resizeListener;
+	}
+
+	public Sprites setResizeListener(ResizeListener<Sprites> listener) {
+		this._resizeListener = listener;
+		return this;
+	}
+
+	public boolean isLimitViewWindows() {
+		return _limitViewWindows;
+	}
+
+	public Sprites setLimitViewWindows(boolean limit) {
+		this._limitViewWindows = limit;
+		return this;
+	}
+
 	public String getName() {
-		return _sprites_name;
+		return this._sprites_name;
 	}
 
 	@Override
@@ -1443,8 +1598,10 @@ public class Sprites implements IArray, Visible, LRelease {
 			}
 		}
 		clear();
-		this._sprites = null;
 		this._closed = true;
+		this._sprites = null;
+		this._resizeListener = null;
 		LSystem.popSpritesPool(this);
 	}
+
 }

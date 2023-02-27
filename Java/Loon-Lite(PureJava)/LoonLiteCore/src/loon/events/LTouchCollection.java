@@ -28,7 +28,7 @@ import loon.utils.SortedList;
 
 public class LTouchCollection extends SortedList<LTouchLocation> {
 
-	private boolean isConnected;
+	private boolean _connected;
 
 	public boolean AnyTouch() {
 		for (LIterator<LTouchLocation> it = listIterator(); it.hasNext();) {
@@ -41,11 +41,16 @@ public class LTouchCollection extends SortedList<LTouchLocation> {
 		return false;
 	}
 
-	public final boolean getIsConnected() {
-		return this.isConnected;
+	public LTouchCollection setConnected(boolean c) {
+		this._connected = c;
+		return this;
+	}
+	
+	public boolean isConnected() {
+		return this._connected;
 	}
 
-	public final boolean getIsReadOnly() {
+	public boolean isReadOnly() {
 		return true;
 	}
 
@@ -145,4 +150,5 @@ public class LTouchCollection extends SortedList<LTouchLocation> {
 		}
 		clear();
 	}
+
 }

@@ -27,10 +27,14 @@ import loon.canvas.LColor;
 import loon.font.LFont;
 import loon.utils.ArrayMap;
 import loon.utils.CharArray;
+import loon.utils.StrBuilder;
 import loon.utils.ArrayMap.Entry;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
+/**
+ * 纹理字体缓存用字典类,用于派生与管理默认的LFont本地系统字体
+ */
 public final class LSTRDictionary implements LRelease {
 
 	private final CharArray templateChars = new CharArray(256);
@@ -38,6 +42,10 @@ public final class LSTRDictionary implements LRelease {
 	private final int CACHE_SIZE = LSystem.DEFAULT_MAX_CACHE_SIZE * 2;
 
 	private static LSTRDictionary instance;
+
+	public static void freeStatic() {
+		instance = null;
+	}
 
 	public final static LSTRDictionary make() {
 		return new LSTRDictionary();
@@ -54,8 +62,9 @@ public final class LSTRDictionary implements LRelease {
 		return instance;
 	}
 
-	public void setAsyn(boolean asyn) {
+	public LSTRDictionary setAsyn(boolean asyn) {
 		this.tmp_asyn = asyn;
+		return this;
 	}
 
 	public boolean isAsyn() {
@@ -74,22 +83,24 @@ public final class LSTRDictionary implements LRelease {
 
 	private final ArrayMap englishFontList = new ArrayMap(32);
 
-	// 每次渲染图像到纹理时，同时追加一些常用非中文标记上去，以避免LSTRFont反复重构纹理
+	// 每次渲染图像到纹理时，同时追加一些常用非中文标记上去，以避免LSTRFont反复重构纹理(有字符重复检测,用户使用中已有下列字符时则不会重复添加)
 	private final static String ADDED = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ:.,!?@#$&%^*(){}[]│─<>\"'\\/+-~～▼▲◆【】：，。…？！";
 
 	private final static char[] checkMessage = ADDED.toCharArray();
 
 	public final static char split = '$';
 
+	private StrBuilder tmpBuffer = null;
+
 	private Dict _lastDict;
 
 	private String _lastMessage;
 
-	private static StringBuffer _lazyKey;
+	private static StrBuilder _lazyKey;
 
 	public static class Dict implements LRelease {
 
-		protected TArray<Character> dicts;
+		protected CharArray dicts;
 
 		protected LSTRFont font;
 
@@ -98,7 +109,7 @@ public final class LSTRDictionary implements LRelease {
 		}
 
 		public Dict() {
-			dicts = new TArray<Character>(512);
+			dicts = new CharArray(128);
 		}
 
 		public LTexture getTexture() {
@@ -116,7 +127,7 @@ public final class LSTRDictionary implements LRelease {
 			int size = mes.length();
 			for (int i = 0; i < size; i++) {
 				char flag = mes.charAt(i);
-				if (!dicts.contains(flag)) {
+				if (dicts != null && !dicts.contains(flag)) {
 					return false;
 				}
 			}
@@ -124,7 +135,7 @@ public final class LSTRDictionary implements LRelease {
 		}
 
 		public boolean isClosed() {
-			return font.isClosed();
+			return font == null ? true : font.isClosed();
 		}
 
 		@Override
@@ -137,6 +148,11 @@ public final class LSTRDictionary implements LRelease {
 				dicts.clear();
 				dicts = null;
 			}
+		}
+
+		@Override
+		public String toString() {
+			return dicts.toString();
 		}
 
 	}
@@ -249,9 +265,7 @@ public final class LSTRDictionary implements LRelease {
 		return count == len;
 	}
 
-	private StringBuffer tmpBuffer = null;
-
-	public final Dict bind(final LFont font, final TArray<CharSequence> chars) {
+	public final Dict bind(final LFont font, final TArray<? extends CharSequence> chars) {
 		CharSequence[] buffers = new CharSequence[chars.size];
 		for (int i = 0, size = buffers.length; i < size; i++) {
 			buffers[i] = chars.get(i);
@@ -269,7 +283,7 @@ public final class LSTRDictionary implements LRelease {
 
 	public final Dict bind(final LFont font, final String mes, final boolean autoStringFilter) {
 		if (StringUtils.isEmpty(mes)) {
-			return new Dict();
+			return null;
 		}
 		if (mes.equals(_lastMessage) && _lastDict != null && !_lastDict.isClosed()) {
 			return _lastDict;
@@ -296,9 +310,11 @@ public final class LSTRDictionary implements LRelease {
 		}
 		// 查询字典缓存
 		Dict cacheDict = searchCacheDict(font, message);
+
 		if (cacheDict != null && !cacheDict.isClosed()) {
 			return _lastDict = cacheDict;
 		}
+
 		if (cacheList.size() > CACHE_SIZE) {
 			clearStringLazy();
 		}
@@ -318,8 +334,8 @@ public final class LSTRDictionary implements LRelease {
 			}
 			synchronized (pDict) {
 				cacheList.put(message, font);
-				TArray<Character> charas = pDict.dicts;
-				int oldSize = charas.size;
+				CharArray charas = pDict.dicts;
+				int oldSize = charas.length;
 				int size = message.length();
 				for (int i = 0; i < size; i++) {
 					char flag = message.charAt(i);
@@ -327,7 +343,7 @@ public final class LSTRDictionary implements LRelease {
 						charas.add(flag);
 					}
 				}
-				int newSize = charas.size;
+				int newSize = charas.length;
 				// 如果旧有大小，不等于新的纹理字符大小，重新扩展LSTRFont纹理字符
 				if (oldSize != newSize) {
 					if (pDict.font != null) {
@@ -335,9 +351,9 @@ public final class LSTRDictionary implements LRelease {
 						pDict.font = null;
 					}
 					if (tmpBuffer == null) {
-						tmpBuffer = new StringBuffer(newSize);
+						tmpBuffer = new StrBuilder(newSize);
 					} else {
-						tmpBuffer.delete(0, tmpBuffer.length());
+						tmpBuffer.setLength(0);
 					}
 					for (int i = 0; i < newSize; i++) {
 						tmpBuffer.append(charas.get(i));
@@ -347,12 +363,33 @@ public final class LSTRDictionary implements LRelease {
 				}
 			}
 		}
+		if (pDict == null || pDict.isClosed()) {
+			return (_lastDict = null);
+		}
 		return (_lastDict = pDict);
+	}
+
+	public final LSTRDictionary unbind(final LFont font) {
+		String fontFlag = toFontString(font);
+		Dict cDict = (Dict) fontList.remove(fontFlag);
+		if (cDict != null) {
+			cDict.close();
+			cDict = null;
+		}
+		Dict eDict = (Dict) englishFontList.remove(font);
+		if (eDict != null) {
+			eDict.close();
+			eDict = null;
+		}
+		return this;
 	}
 
 	public final void drawString(LFont font, String message, float x, float y, float angle, LColor c) {
 		Dict pDict = bind(font, message);
-		if (pDict.font != null) {
+		if (pDict == null) {
+			return;
+		}
+		if (pDict.font != null && !pDict.font.isClosed()) {
 			synchronized (pDict.font) {
 				pDict.font.drawString(message, x, y, angle, c);
 			}
@@ -362,7 +399,10 @@ public final class LSTRDictionary implements LRelease {
 	public final void drawString(LFont font, String message, float x, float y, float sx, float sy, float ax, float ay,
 			float angle, LColor c) {
 		Dict pDict = bind(font, message);
-		if (pDict.font != null) {
+		if (pDict == null) {
+			return;
+		}
+		if (pDict.font != null && !pDict.font.isClosed()) {
 			synchronized (pDict.font) {
 				pDict.font.drawString(message, x, y, sx, sy, ax, ay, angle, c);
 			}
@@ -371,7 +411,10 @@ public final class LSTRDictionary implements LRelease {
 
 	public final void drawString(GLEx gl, LFont font, String message, float x, float y, float angle, LColor c) {
 		Dict pDict = bind(font, message);
-		if (pDict.font != null) {
+		if (pDict == null) {
+			return;
+		}
+		if (pDict.font != null && !pDict.font.isClosed()) {
 			synchronized (pDict.font) {
 				pDict.font.drawString(gl, message, x, y, angle, c);
 			}
@@ -381,7 +424,10 @@ public final class LSTRDictionary implements LRelease {
 	public final void drawString(GLEx gl, LFont font, String message, float x, float y, float sx, float sy, float angle,
 			LColor c) {
 		Dict pDict = bind(font, message);
-		if (pDict.font != null) {
+		if (pDict == null) {
+			return;
+		}
+		if (pDict.font != null && !pDict.font.isClosed()) {
 			synchronized (pDict.font) {
 				pDict.font.drawString(gl, message, x, y, sx, sy, angle, c);
 			}
@@ -391,7 +437,10 @@ public final class LSTRDictionary implements LRelease {
 	public final void drawString(GLEx gl, LFont font, String message, float x, float y, float sx, float sy, float ax,
 			float ay, float angle, LColor c) {
 		Dict pDict = bind(font, message);
-		if (pDict.font != null) {
+		if (pDict == null) {
+			return;
+		}
+		if (pDict.font != null && !pDict.font.isClosed()) {
 			synchronized (pDict.font) {
 				pDict.font.drawString(gl, x, y, sx, sy, ax, ay, angle, message, c);
 			}
@@ -414,13 +463,13 @@ public final class LSTRDictionary implements LRelease {
 		hashCode = LSystem.unite(hashCode, font.getDescent());
 
 		if (_lazyKey == null) {
-			_lazyKey = new StringBuffer();
+			_lazyKey = new StrBuilder();
 			_lazyKey.append(font.getFontName().toLowerCase());
 			_lazyKey.append(hashCode);
 			_lazyKey.append(split);
 			_lazyKey.append(text);
 		} else {
-			_lazyKey.delete(0, _lazyKey.length());
+			_lazyKey.setLength(0);
 			_lazyKey.append(font.getFontName().toLowerCase());
 			_lazyKey.append(hashCode);
 			_lazyKey.append(split);

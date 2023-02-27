@@ -822,7 +822,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	}
 
 	@Override
-	public Screen addTouchLimit(LObject<?> c) {
+	public Screen addTouchLimit(ActionBind c) {
 		if (messageDesktop == null) {
 			initDesktop();
 		}
@@ -1133,7 +1133,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 							} else if (cmdFlag.equalsIgnoreCase(CommandType.L_PETAL)) {
 								effectSprites.add(NaturalEffect.getPetalEffect());
 							} else if (cmdFlag.equalsIgnoreCase(CommandType.L_THUNDER)) {
-								effectSprites.add(NaturalEffect.getThunderEffect());
+								//effectSprites.add(NaturalEffect.getThunderEffect());
 							}
 						}
 
@@ -1161,9 +1161,9 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 										effectSprites.remove(s);
 									}
 								} else if (cmdFlag.equalsIgnoreCase(CommandType.L_THUNDER)) {
-									if (naturalType == NaturalType.Thunder) {
-										effectSprites.remove(s);
-									}
+									//if (naturalType == NaturalType.Thunder) {
+									//	effectSprites.remove(s);
+									//}
 								}
 							}
 						}
@@ -1194,9 +1194,9 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 					if (effectSprites != null) {
 						effectSprites.removeAll();
 						if (cmdFlag.equalsIgnoreCase(CommandType.L_FADEIN)) {
-							effectSprites.add(FadeEffect.getInstance(ISprite.TYPE_FADE_IN, 30, gameColor));
+							effectSprites.add(FadeEffect.create(ISprite.TYPE_FADE_IN, 30, gameColor));
 						} else {
-							effectSprites.add(FadeEffect.getInstance(ISprite.TYPE_FADE_OUT, 30, gameColor));
+							effectSprites.add(FadeEffect.create(ISprite.TYPE_FADE_OUT, 30, gameColor));
 						}
 					}
 					continue;

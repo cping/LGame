@@ -30,15 +30,29 @@ import loon.opengl.GLEx;
  */
 public interface IFont extends LRelease {
 
+	/**
+	 * 返回当前翻译器
+	 * 
+	 * @return
+	 */
+	public ITranslator getTranslator();
+
+	/**
+	 * 翻译器注入
+	 * 
+	 * @param translator
+	 * @return
+	 */
+	public IFont setTranslator(ITranslator translator);
+
 	void drawString(GLEx g, String string, float x, float y);
 
 	void drawString(GLEx g, String string, float x, float y, LColor c);
 
-	void drawString(GLEx g, String string, float x, float y, float rotation,
-			LColor c);
+	void drawString(GLEx g, String string, float x, float y, float rotation, LColor c);
 
-	void drawString(GLEx g, String string, float x, float y, float sx,
-			float sy, float ax, float ay, float rotation, LColor c);
+	void drawString(GLEx g, String string, float x, float y, float sx, float sy, float ax, float ay, float rotation,
+			LColor c);
 
 	int charWidth(char c);
 
@@ -51,7 +65,7 @@ public interface IFont extends LRelease {
 	void setAssent(float assent);
 
 	String getFontName();
-	
+
 	float getAscent();
 
 	void setSize(int size);

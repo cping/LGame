@@ -22,10 +22,68 @@ package loon.utils;
 
 import java.util.Arrays;
 
+import loon.LRelease;
 import loon.LSysException;
 
-public class LongArray implements IArray {
-	
+public class LongArray implements IArray, LRelease {
+
+	/**
+	 * 产生一组指定范围的数据
+	 * 
+	 * @param start
+	 * @param end
+	 * @return
+	 */
+	public static LongArray range(int start, int end) {
+		LongArray array = new LongArray(end - start);
+		for (int i = start; i < end; i++) {
+			array.add(i);
+		}
+		return array;
+	}
+
+	/**
+	 * 产生一组指定范围的随机数据
+	 * 
+	 * @param begin
+	 * @param end
+	 * @return
+	 */
+	public static LongArray rangeRandom(int begin, int end) {
+		return rangeRandom(begin, end, (end - begin));
+	}
+
+	/**
+	 * 产生一组指定范围的随机数据
+	 * 
+	 * @param begin
+	 * @param end
+	 * @param size
+	 * @return
+	 */
+	public static LongArray rangeRandom(int begin, int end, int size) {
+		if (begin > end) {
+			int temp = begin;
+			begin = end;
+			end = temp;
+		}
+		if ((end - begin) < size) {
+			throw new LSysException("Size out Range between begin and end !");
+		}
+		long[] randSeed = new long[end - begin];
+		for (int i = begin; i < end; i++) {
+			randSeed[i - begin] = i;
+		}
+		long[] longArrays = new long[size];
+		for (int i = 0; i < size; i++) {
+			final int len = randSeed.length - i - 1;
+			int j = MathUtils.random(len);
+			longArrays[i] = randSeed[j];
+			randSeed[j] = randSeed[len];
+		}
+		return new LongArray(longArrays);
+	}
+
 	public long[] items;
 	public int length;
 	public boolean ordered;
@@ -52,6 +110,10 @@ public class LongArray implements IArray {
 
 	public LongArray(long[] array) {
 		this(true, array, 0, array.length);
+	}
+
+	public LongArray(long[] array, int size) {
+		this(true, array, 0, size);
 	}
 
 	public LongArray(boolean ordered, long[] array, int startIndex, int count) {
@@ -92,8 +154,7 @@ public class LongArray implements IArray {
 	public void addAll(LongArray array, int offset, int length) {
 		if (offset + length > array.length)
 			throw new LSysException(
-					"offset + length must be <= length: " + offset + " + "
-							+ length + " <= " + array.length);
+					"offset + length must be <= length: " + offset + " + " + length + " <= " + array.length);
 		addAll(array.items, offset, length);
 	}
 
@@ -132,22 +193,19 @@ public class LongArray implements IArray {
 
 	public void incr(int index, int value) {
 		if (index >= length)
-			throw new LSysException("index can't be >= length: "
-					+ index + " >= " + length);
+			throw new LSysException("index can't be >= length: " + index + " >= " + length);
 		items[index] += value;
 	}
 
 	public void mul(int index, int value) {
 		if (index >= length)
-			throw new LSysException("index can't be >= length: "
-					+ index + " >= " + length);
+			throw new LSysException("index can't be >= length: " + index + " >= " + length);
 		items[index] *= value;
 	}
 
 	public void insert(int index, long value) {
 		if (index > length) {
-			throw new LSysException("index can't be > length: "
-					+ index + " > " + length);
+			throw new LSysException("index can't be > length: " + index + " > " + length);
 		}
 		long[] items = this.items;
 		if (length == items.length)
@@ -162,11 +220,9 @@ public class LongArray implements IArray {
 
 	public void swap(int first, int second) {
 		if (first >= length)
-			throw new LSysException("first can't be >= length: "
-					+ first + " >= " + length);
+			throw new LSysException("first can't be >= length: " + first + " >= " + length);
 		if (second >= length)
-			throw new LSysException("second can't be >= length: "
-					+ second + " >= " + length);
+			throw new LSysException("second can't be >= length: " + second + " >= " + length);
 		long[] items = this.items;
 		long firstValue = items[first];
 		items[first] = items[second];
@@ -234,8 +290,7 @@ public class LongArray implements IArray {
 
 	public long removeIndex(int index) {
 		if (index >= length) {
-			throw new LSysException("index can't be >= length: "
-					+ index + " >= " + length);
+			throw new LSysException("index can't be >= length: " + index + " >= " + length);
 		}
 		long[] items = this.items;
 		long value = items[index];
@@ -250,18 +305,15 @@ public class LongArray implements IArray {
 
 	public void removeRange(int start, int end) {
 		if (end >= length) {
-			throw new LSysException("end can't be >= length: "
-					+ end + " >= " + length);
+			throw new LSysException("end can't be >= length: " + end + " >= " + length);
 		}
 		if (start > end) {
-			throw new LSysException("start can't be > end: "
-					+ start + " > " + end);
+			throw new LSysException("start can't be > end: " + start + " > " + end);
 		}
 		long[] items = this.items;
 		int count = end - start + 1;
 		if (ordered) {
-			System.arraycopy(items, start + count, items, start, length
-					- (start + count));
+			System.arraycopy(items, start + count, items, start, length - (start + count));
 		} else {
 			int lastIndex = this.length - 1;
 			for (int i = 0; i < count; i++)
@@ -326,8 +378,7 @@ public class LongArray implements IArray {
 	protected long[] relength(int newlength) {
 		long[] newItems = new long[newlength];
 		long[] items = this.items;
-		System.arraycopy(items, 0, newItems, 0,
-				MathUtils.min(length, newItems.length));
+		System.arraycopy(items, 0, newItems, 0, MathUtils.min(length, newItems.length));
 		this.items = newItems;
 		return newItems;
 	}
@@ -374,12 +425,13 @@ public class LongArray implements IArray {
 		return array;
 	}
 
-	public boolean equals(Object object) {
-		if (object == this)
+	@Override
+	public boolean equals(Object o) {
+		if (o == this)
 			return true;
-		if (!(object instanceof LongArray))
+		if (!(o instanceof LongArray))
 			return false;
-		LongArray array = (LongArray) object;
+		LongArray array = (LongArray) o;
 		int n = length;
 		if (n != array.length)
 			return false;
@@ -387,19 +439,6 @@ public class LongArray implements IArray {
 			if (items[i] != array.items[i])
 				return false;
 		return true;
-	}
-
-	public String toString(String separator) {
-		if (length == 0)
-			return "";
-		long[] items = this.items;
-		StringBuilder buffer = new StringBuilder(32);
-		buffer.append(items[0]);
-		for (int i = 1; i < length; i++) {
-			buffer.append(separator);
-			buffer.append(items[i]);
-		}
-		return buffer.toString();
 	}
 
 	static public LongArray with(long... array) {
@@ -478,7 +517,31 @@ public class LongArray implements IArray {
 		}
 		return this.sum() / length;
 	}
-	
+
+	public long min() {
+		long v = this.items[0];
+		final int size = this.length;
+		for (int i = size - 1; i > -1; i--) {
+			long n = this.items[i];
+			if (n < v) {
+				v = n;
+			}
+		}
+		return v;
+	}
+
+	public long max() {
+		long v = this.items[0];
+		final int size = this.length;
+		for (int i = size - 1; i > -1; i--) {
+			long n = this.items[i];
+			if (n > v) {
+				v = n;
+			}
+		}
+		return v;
+	}
+
 	@Override
 	public int size() {
 		return length;
@@ -487,6 +550,15 @@ public class LongArray implements IArray {
 	@Override
 	public boolean isEmpty() {
 		return length == 0 || items == null;
+	}
+
+	@Override
+	public int hashCode() {
+		long hashCode = 1;
+		for (int i = length - 1; i > -1; i--) {
+			hashCode = 31 * hashCode + items[i];
+		}
+		return (int) hashCode;
 	}
 
 	public byte[] getBytes() {
@@ -498,13 +570,16 @@ public class LongArray implements IArray {
 		return bytes.getBytes();
 	}
 
+	public LongArray cpy() {
+		return new LongArray(this);
+	}
+
 	public String toString(char split) {
 		if (length == 0) {
 			return "[]";
 		}
 		long[] items = this.items;
-		StringBuilder buffer = new StringBuilder(
-				CollectionUtils.INITIAL_CAPACITY);
+		StrBuilder buffer = new StrBuilder(32);
 		buffer.append('[');
 		buffer.append(items[0]);
 		for (int i = 1; i < length; i++) {
@@ -518,5 +593,11 @@ public class LongArray implements IArray {
 	@Override
 	public String toString() {
 		return toString(',');
+	}
+
+	@Override
+	public void close() {
+		this.length = 0;
+		this.items = null;
 	}
 }

@@ -20,6 +20,9 @@
  */
 package loon.utils;
 
+/**
+ * 工具类,用以缓动计算
+ */
 public class Easing {
 
 	public static enum EasingMode {

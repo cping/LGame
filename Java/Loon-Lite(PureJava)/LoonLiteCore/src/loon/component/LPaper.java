@@ -28,9 +28,10 @@ import loon.opengl.GLEx;
 public class LPaper extends LContainer {
 
 	private Animation animation = new Animation();
-
+	
 	public LPaper(LTexture background, int x, int y) {
-		this(background, x, y, background.getWidth(), background.getHeight());
+		this(background, x, y, background == null ? 0 : background.getWidth(),
+				background == null ? 0 : background.getHeight());
 	}
 
 	public LPaper(LTexture background, int x, int y, int w, int h) {

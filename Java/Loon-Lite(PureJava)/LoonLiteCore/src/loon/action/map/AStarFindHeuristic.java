@@ -38,6 +38,12 @@ public interface AStarFindHeuristic {
 
 	public final static int CLOSEST_SQUARED = 7;
 
+	public final static int BESTFIRST = 8;
+	
+	public final static int OCTILE = 9;
+
+	public final static int DIAGONAL_MIN = 10;
+	
 	public float getScore(float sx, float sy, float tx, float ty);
 
 	public int getType();

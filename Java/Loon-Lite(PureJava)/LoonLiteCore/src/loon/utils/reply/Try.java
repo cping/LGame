@@ -24,6 +24,14 @@ import loon.LSysException;
 
 public abstract class Try<T> {
 
+	public static <T> Try<T> createSuccess(T value) {
+		return new Success<T>(value);
+	}
+
+	public static <T> Try<T> createFailure(Throwable cause) {
+		return new Failure<T>(cause);
+	}
+
 	public static final class Success<T> extends Try<T> {
 		public final T value;
 
@@ -49,9 +57,9 @@ public abstract class Try<T> {
 		@Override
 		public <R> Try<R> map(Function<? super T, R> func) {
 			try {
-				return success(func.apply(value));
+				return createSuccess(func.apply(value));
 			} catch (Throwable t) {
-				return failure(t);
+				return createFailure(t);
 			}
 		}
 
@@ -62,6 +70,7 @@ public abstract class Try<T> {
 	}
 
 	public static final class Failure<T> extends Try<T> {
+
 		public final Throwable cause;
 
 		public Failure(Throwable cause) {
@@ -103,14 +112,6 @@ public abstract class Try<T> {
 		private <R> Try<R> casted() {
 			return (Try<R>) this;
 		}
-	}
-
-	public static <T> Try<T> success(T value) {
-		return new Success<T>(value);
-	}
-
-	public static <T> Try<T> failure(Throwable cause) {
-		return new Failure<T>(cause);
 	}
 
 	public abstract T get();

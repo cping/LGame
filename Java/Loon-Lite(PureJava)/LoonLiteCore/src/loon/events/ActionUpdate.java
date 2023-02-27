@@ -20,6 +20,10 @@
  */
 package loon.events;
 
+/**
+ *  数据异步传递用类,会返回完成状态
+ *
+ */
 public interface ActionUpdate extends Updateable {
 
 	public boolean completed();

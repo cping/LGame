@@ -82,7 +82,7 @@ public class MoveObject extends ActionObject {
 				if (findPath != null) {
 					findPath.clear();
 				}
-				findPath = AStarFinder.find(heuristic, tiles.getField(), tiles.pixelsToTilesWidth(x()),
+				findPath = AStarFinder.find(heuristic, tiles.getField2D(), tiles.pixelsToTilesWidth(x()),
 						tiles.pixelsToTilesHeight(y()), tiles.pixelsToTilesWidth(touchX - tiles.getOffset().x),
 						tiles.pixelsToTilesHeight(touchY - tiles.getOffset().y), allDirection);
 			} else if (findPath != null) {
@@ -323,7 +323,9 @@ public class MoveObject extends ActionObject {
 
 	private boolean isMoving;
 
+	@Override
 	public void update(long elapsedTime) {
+		super.update(elapsedTime);
 		if (timer.action(elapsedTime)) {
 
 			isMoving = moveState();
@@ -476,7 +478,7 @@ public class MoveObject extends ActionObject {
 
 	public float getRotationTo(float x, float y) {
 		float r = MathUtils.atan2(x - x(), y - y());
-		return ShapeUtils.getAngleDiff(_rotation, r);
+		return ShapeUtils.getAngleDiff(_objectRotation, r);
 	}
 
 	public AStarFindHeuristic getHeuristic() {

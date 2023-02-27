@@ -20,6 +20,9 @@
  */
 package loon.geom;
 
+/**
+ * 二维坐标通用接口
+ */
 public interface XY
 {
     float getX ();

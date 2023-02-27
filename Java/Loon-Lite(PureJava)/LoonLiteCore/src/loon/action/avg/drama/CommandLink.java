@@ -11,7 +11,7 @@ public class CommandLink {
 	private int _lineCount = 0;
 
 	public CommandLink(String path) {
-		this(path, LSystem.UNKOWN);
+		this(path, LSystem.UNKNOWN);
 	}
 
 	public CommandLink(String path, String name) {
@@ -22,7 +22,7 @@ public class CommandLink {
 	}
 
 	public CommandLink() {
-		_commands = new StringKeyValue(1024, LSystem.UNKOWN);
+		_commands = new StringKeyValue(1024, LSystem.UNKNOWN);
 	}
 
 	public CommandLink line(CharSequence c) {

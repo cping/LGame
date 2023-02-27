@@ -33,11 +33,18 @@ public class TMXImageLayer extends TMXMapLayer {
 
 	public TMXImageLayer parse(XMLElement element) {
 
+		id = element.getIntAttribute("id", 0);
 		name = element.getAttribute("name", LSystem.EMPTY);
 
-		x = element.getIntAttribute("x", 0);
-		y = element.getIntAttribute("y", 0);
+		offsetX = element.getFloatAttribute("x", 0);
+		offsetY = element.getFloatAttribute("y", 0);
 
+		offsetX = element.getFloatAttribute("offsetx", offsetX);
+		offsetY = element.getFloatAttribute("offsety", offsetY);
+
+		parallaxX = element.getFloatAttribute("parallaxx", 0f);
+		parallaxY = element.getFloatAttribute("parallaxy", 0f);
+		
 		opacity = element.getFloatAttribute("opacity", 1f);
 		visible = element.getBoolAttribute("visible", true);
 

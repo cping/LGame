@@ -20,106 +20,110 @@
  */
 package loon.utils.timer;
 
+import loon.LSystem;
 import loon.utils.MathUtils;
 import loon.utils.StringKeyValue;
 
+/**
+ * 一个浮点计时器的抽象,实现后可用于处理及触发浮点类型的时间经过事件
+ * 
+ */
 public abstract class FloatTimerEvent {
 
-	private float delay;
-	private boolean repeat;
-	private float acc;
-	private boolean done;
-	private boolean stopped;
+	private float _delay;
+	private float _acc;
+	
+	private boolean _repeat;
+	private boolean _done;
+	private boolean _stopped;
 
 	public FloatTimerEvent(float delay) {
 		this(delay, false);
 	}
 
 	public FloatTimerEvent(float delay, boolean repeat) {
-		this.delay = delay;
-		this.repeat = repeat;
-		this.acc = 0.0F;
+		this._delay = delay;
+		this._repeat = repeat;
+		this._acc = 0f;
+	}
+
+	public void update(LTimerContext context) {
+		update(context.timeSinceLastUpdate);
 	}
 
 	public void update(long elapsedTime) {
-		this.update(MathUtils.min(elapsedTime / 1000f, 0.1f));
+		this.update(MathUtils.max(elapsedTime / 1000f, LSystem.MIN_SECONE_SPEED_FIXED));
 	}
 
 	public void update(float delta) {
-		if ((!this.done) && (!this.stopped)) {
-			this.acc += delta;
-
-			if (this.acc >= this.delay) {
-				this.acc -= this.delay;
-
-				if (this.repeat)
+		if ((!this._done) && (!this._stopped)) {
+			this._acc += delta;
+			if (this._acc >= this._delay) {
+				this._acc -= this._delay;
+				if (this._repeat){
 					reset();
-				else {
-					this.done = true;
 				}
-
+				else {
+					this._done = true;
+				}
 				execute();
 			}
 		}
 	}
 
-	public void reset() {
-		this.stopped = false;
-		this.done = false;
-		this.acc = 0.0F;
+	public FloatTimerEvent reset() {
+		this._stopped = false;
+		this._done = false;
+		this._acc = 0f;
+		return this;
 	}
 
 	public boolean isCompleted() {
-		return this.done;
+		return this._done;
 	}
 
 	public boolean isRunning() {
-		return (!this.done) && (this.acc < this.delay) && (!this.stopped);
+		return (!this._done) && (this._acc < this._delay) && (!this._stopped);
 	}
 
-	public void stop() {
-		this.stopped = true;
+	public FloatTimerEvent stop() {
+		this._stopped = true;
+		return this;
 	}
 
-	public void setDelay(int delay) {
-		this.delay = delay;
+	public FloatTimerEvent setDelay(int delay) {
+		this._delay = delay;
+		return this;
 	}
 
 	public abstract void execute();
 
 	public float getPercentage() {
-		return this.acc / this.delay;
+		return this._acc / this._delay;
 	}
 
 	public float getRemaining() {
-		return this.delay - this.acc;
+		return this._delay - this._acc;
 	}
 
 	public float getPercentageRemaining() {
-		if (this.done)
-			return 100.0F;
-		if (this.stopped) {
-			return 0.0F;
+		if (this._done)
+			return 100f;
+		if (this._stopped) {
+			return 0f;
 		}
-		return 1f - (this.delay - this.acc) / this.delay;
+		return 1f - (this._delay - this._acc) / this._delay;
 	}
 
 	public float getDelay() {
-		return this.delay;
+		return this._delay;
 	}
-	
+
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("FloatTimerEvent");
-		builder.kv("delay", delay)
-		.comma()
-		.kv("repeat", repeat)
-		.comma()
-		.kv("acc", acc)
-		.comma()
-		.kv("done", done)
-		.comma()
-		.kv("stopped", stopped);
+		builder.kv("delay", _delay).comma().kv("repeat", _repeat).comma().kv("acc", _acc).comma().kv("done", _done).comma()
+				.kv("stopped", _stopped);
 		return builder.toString();
 	}
 }

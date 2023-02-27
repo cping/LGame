@@ -22,8 +22,10 @@
 package loon.component;
 
 import loon.Director.Origin;
+
 import loon.LObject;
 import loon.LRelease;
+import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
 import loon.PlayerUtils;
@@ -41,6 +43,7 @@ import loon.component.layout.LayoutManager;
 import loon.component.layout.LayoutPort;
 import loon.events.ClickListener;
 import loon.events.GameKey;
+import loon.events.ResizeListener;
 import loon.events.SysInput;
 import loon.events.SysKey;
 import loon.events.SysTouch;
@@ -59,6 +62,7 @@ import loon.opengl.LTextureFree;
 import loon.opengl.TextureUtils;
 import loon.utils.Flip;
 import loon.utils.MathUtils;
+import loon.utils.StringUtils;
 
 /**
  * Loon桌面组件的核心,所有UI类组件基于此类产生
@@ -87,6 +91,14 @@ public abstract class LComponent extends LObject<LContainer>
 
 	public LComponent setDragLocked(boolean locked) {
 		return setLocked(locked);
+	}
+
+	public LComponent dragLocked() {
+		return setDragLocked(true);
+	}
+
+	public LComponent dragUnlocked() {
+		return setDragLocked(false);
 	}
 
 	// 组件内部变量, 用于锁定当前组件的触屏（鼠标）与键盘事件
@@ -211,9 +223,24 @@ public abstract class LComponent extends LObject<LContainer>
 		return Call;
 	}
 
+	public LComponent clearListener() {
+		this.Call = null;
+		this.Click = null;
+		this._touchListener = null;
+		return this;
+	}
+
 	private Origin _origin = Origin.CENTER;
 
 	private LTexture[] _imageUI = null;
+
+	private Vector2f _offset = new Vector2f();
+
+	private ResizeListener<LComponent> _resizeListener;
+
+	protected float _fixedWidthOffset = 0f;
+
+	protected float _fixedHeightOffset = 0f;
 
 	protected boolean _component_elastic = false;
 
@@ -239,6 +266,8 @@ public abstract class LComponent extends LObject<LContainer>
 	protected int _screenX, _screenY;
 
 	private LTextureFree _freeTextures;
+
+	private final Vector2f _touchPoint = new Vector2f();
 
 	private boolean _downClick = false;
 	// 中心点
@@ -272,6 +301,10 @@ public abstract class LComponent extends LObject<LContainer>
 
 	protected SysInput input;
 
+	public LComponent(Vector2f position, Vector2f size) {
+		this(position.x(), position.y(), size.x(), size.y());
+	}
+
 	/**
 	 * 构造可用组件
 	 * 
@@ -282,15 +315,8 @@ public abstract class LComponent extends LObject<LContainer>
 	 */
 	public LComponent(int x, int y, int width, int height) {
 		this.setLocation(x, y);
-		this._width = width;
-		this._height = height;
-		if (this._width == 0) {
-			this._width = 10;
-		}
-		if (this._height == 0) {
-			this._height = 10;
-		}
-
+		this._width = MathUtils.max(1f, width);
+		this._height = MathUtils.max(1f, height);
 	}
 
 	public int getScreenWidth() {
@@ -395,7 +421,7 @@ public abstract class LComponent extends LObject<LContainer>
 		if (_component_isClose) {
 			return;
 		}
-		if (_super != null) {
+		if (_objectSuper != null) {
 			validatePosition();
 		}
 		if (Call != null) {
@@ -417,69 +443,76 @@ public abstract class LComponent extends LObject<LContainer>
 		if (!this._component_visible) {
 			return;
 		}
-		if (_alpha < 0.01f) {
+		if (_objectAlpha < 0.01f) {
 			return;
 		}
-		synchronized (this) {
-			boolean update = _rotation != 0 || !(_scaleX == 1f && _scaleY == 1f) || _flipX || _flipY;
-			try {
-				g.saveBrush();
-				float screenAlpha = 1f;
-				if (getScreen() != null) {
-					screenAlpha = getScreen().getAlpha();
-				}
-				g.setAlpha(_alpha * screenAlpha);
-				final int width = (int) this.getWidth();
-				final int height = (int) this.getHeight();
-				if (this._component_elastic) {
-					g.setClip(this._screenX, this._screenY, width, height);
-				}
-				if (update) {
-					g.saveTx();
-					Affine2f tx = g.tx();
-					final float centerX = _pivotX == -1 ? this._screenX + _origin.ox(width) : this._screenX + _pivotX;
-					final float centerY = _pivotY == -1 ? this._screenY + _origin.oy(height) : this._screenY + _pivotY;
-					if (_rotation != 0) {
-						tx.translate(centerX, centerY);
-						tx.preRotate(_rotation);
-						tx.translate(-centerX, -centerY);
-					}
-					if (_flipX || _flipY) {
-						if (_flipX && _flipY) {
-							Affine2f.transform(tx, centerX, centerY, Affine2f.TRANS_ROT180);
-						} else if (_flipX) {
-							Affine2f.transform(tx, centerX, centerY, Affine2f.TRANS_MIRROR);
-						} else if (_flipY) {
-							Affine2f.transform(tx, centerX, centerY, Affine2f.TRANS_MIRROR_ROT180);
-						}
-					}
-					if (!(_scaleX == 1f && _scaleY == 1f)) {
-						tx.translate(centerX, centerY);
-						tx.preScale(_scaleX, _scaleY);
-						tx.translate(-centerX, -centerY);
-					}
-				}
-				if (_drawBackground && _background != null) {
-					g.draw(_background, this._screenX, this._screenY, width, height, _component_baseColor);
-				}
-				if (this.customRendering) {
-					this.createCustomUI(g, this._screenX, this._screenY, width, height);
-				} else {
-					this.createUI(g, this._screenX, this._screenY, this, this._imageUI);
-				}
-				if (isDrawSelect()) {
-					g.drawRect(this._screenX, this._screenY, width - 1f, height - 1f, _component_baseColor);
-				}
-			} finally {
-				if (update) {
-					g.restoreTx();
-				}
-				if (this._component_elastic) {
-					g.clearClip();
-				}
-				g.restoreBrush();
+		int blend = g.getBlendMode();
+		float offsetX = _offset.x;
+		float offsetY = _offset.y;
+		boolean update = _objectRotation != 0 || !(_scaleX == 1f && _scaleY == 1f) || _flipX || _flipY;
+		try {
+			g.saveBrush();
+			float screenAlpha = 1f;
+			if (getScreen() != null) {
+				screenAlpha = getScreen().getAlpha();
 			}
+			g.setAlpha(_objectAlpha * screenAlpha);
+			final int width = (int) this.getWidth();
+			final int height = (int) this.getHeight();
+			if (this._component_elastic) {
+				g.setClip(this._screenX + offsetX, this._screenY + offsetY, width, height);
+			}
+			if (update) {
+				g.saveTx();
+				Affine2f tx = g.tx();
+				final float centerX = (_pivotX == -1 ? this._screenX + _origin.ox(width) : this._screenX + _pivotX)
+						+ offsetX;
+				final float centerY = (_pivotY == -1 ? this._screenY + _origin.oy(height) : this._screenY + _pivotY)
+						+ offsetY;
+				if (_objectRotation != 0) {
+					tx.translate(centerX, centerY);
+					tx.preRotate(_objectRotation);
+					tx.translate(-centerX, -centerY);
+				}
+				if (_flipX || _flipY) {
+					if (_flipX && _flipY) {
+						Affine2f.transform(tx, centerX, centerY, Affine2f.TRANS_ROT180);
+					} else if (_flipX) {
+						Affine2f.transform(tx, centerX, centerY, Affine2f.TRANS_MIRROR);
+					} else if (_flipY) {
+						Affine2f.transform(tx, centerX, centerY, Affine2f.TRANS_MIRROR_ROT180);
+					}
+				}
+				if (!(_scaleX == 1f && _scaleY == 1f)) {
+					tx.translate(centerX, centerY);
+					tx.preScale(_scaleX, _scaleY);
+					tx.translate(-centerX, -centerY);
+				}
+			}
+			if (_drawBackground && _background != null) {
+				g.draw(_background, this._screenX + offsetX, this._screenY + offsetY, width, height,
+						_component_baseColor);
+			}
+			if (this.customRendering) {
+				this.createCustomUI(g, (int) (this._screenX + offsetX), (int) (this._screenY + offsetY), width, height);
+			} else {
+				this.createUI(g, (int) (this._screenX + offsetX), (int) (this._screenY + offsetY), this, this._imageUI);
+			}
+			if (isDrawSelect()) {
+				g.drawRect(this._screenX + offsetX, this._screenY + offsetY, width - 1f, height - 1f,
+						_component_baseColor);
+			}
+		} finally {
+			if (update) {
+				g.restoreTx();
+			}
+			if (this._component_elastic) {
+				g.clearClip();
+			}
+			g.setBlendMode(blend);
+			g.restoreBrush();
 		}
+
 	}
 
 	/**
@@ -511,15 +544,15 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	protected float getDrawScrollX() {
-		if (_super != null) {
-			return this._screenX - _super._component_scrollX;
+		if (_objectSuper != null) {
+			return this._screenX - _objectSuper._component_scrollX;
 		}
 		return this._screenX;
 	}
 
 	protected float getDrawScrollY() {
-		if (_super != null) {
-			return this._screenY - _super._component_scrollY;
+		if (_objectSuper != null) {
+			return this._screenY - _objectSuper._component_scrollY;
 		}
 		return this._screenY;
 	}
@@ -559,7 +592,8 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public boolean isEnabled() {
-		return (this._super == null) ? this._component_enabled : (this._component_enabled && this._super.isEnabled());
+		return (this._objectSuper == null) ? this._component_enabled
+				: (this._component_enabled && this._objectSuper.isEnabled());
 	}
 
 	public LComponent setEnabled(boolean b) {
@@ -590,15 +624,15 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public LComponent transferFocus() {
-		if (this.isSelected() && this._super != null) {
-			this._super.transferFocus(this);
+		if (this.isSelected() && this._objectSuper != null) {
+			this._objectSuper.transferFocus(this);
 		}
 		return this;
 	}
 
 	public LComponent transferFocusBackward() {
-		if (this.isSelected() && this._super != null) {
-			this._super.transferFocusBackward(this);
+		if (this.isSelected() && this._objectSuper != null) {
+			this._objectSuper.transferFocusBackward(this);
 		}
 		return this;
 	}
@@ -617,24 +651,19 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	protected final void setContainer(LContainer container) {
-		this.setSuper(container);
+		this.changeContainer(container);
 		this.validatePosition();
 	}
 
-	public LComponent setBounds(float dx, float dy, int width, int height) {
-		setLocation(dx, dy);
-		if (this._width != width || this._height != height) {
-			this._width = width;
-			this._height = height;
-			if (_width == 0) {
-				_width = 1;
-			}
-			if (_height == 0) {
-				_height = 1;
-			}
-			this.validateSize();
+	protected final void changeContainer(LContainer container) {
+		LContainer comp = getSuper();
+		if (comp == this) {
+			return;
 		}
-		return this;
+		if (comp != null) {
+			comp.remove(container);
+		}
+		this.setSuper(container);
 	}
 
 	@Override
@@ -685,46 +714,36 @@ public abstract class LComponent extends LObject<LContainer>
 	@Override
 	public void move(float dx, float dy) {
 		if (dx != 0 || dy != 0) {
-			if (dx > -100 && dx < 100 && dy > -100 && dy < 100) {
+			final float moved = 128f;
+			if (dx > -moved && dx < moved && dy > -moved && dy < moved) {
 				super.move(dx, dy);
 				this.validatePosition();
 			}
 		}
 	}
 
-	public void setBounds(int x, int y, int w, int h) {
-		setLocation(x, y);
-		setSize(w, h);
+	public LComponent setBounds(float dx, float dy, int width, int height) {
+		this.setLocation(dx, dy);
+		this.setSize(width, height);
+		return this;
 	}
 
-	public void setSize(float w, float h) {
-		setSize((int) w, (int) h);
-	}
-
-	public void setSize(int w, int h) {
+	public LComponent setSize(float w, float h) {
 		if (this._width != w || this._height != h) {
-			this._width = w;
-			this._height = h;
-			if (this._width == 0) {
-				this._width = 1;
-			}
-			if (this._height == 0) {
-				this._height = 1;
-			}
-			this.validateSize();
+			this._width = MathUtils.max(1f, w);
+			this._height = MathUtils.max(1f, h);
+			this.validateResize();
 		}
-	}
-
-	protected void validateSize() {
+		return this;
 	}
 
 	public void validatePosition() {
-		if (_super != null) {
-			this._screenX = _location.x() + this._super.getScreenX();
-			this._screenY = _location.y() + this._super.getScreenY();
+		if (_objectSuper != null) {
+			this._screenX = _objectLocation.x() + this._objectSuper.getScreenX();
+			this._screenY = _objectLocation.y() + this._objectSuper.getScreenY();
 		} else {
-			this._screenX = _location.x();
-			this._screenY = _location.y();
+			this._screenX = _objectLocation.x();
+			this._screenY = _objectLocation.y();
 		}
 	}
 
@@ -738,22 +757,28 @@ public abstract class LComponent extends LObject<LContainer>
 
 	@Override
 	public void setHeight(float height) {
-		this._height = height;
+		if (height != this._height) {
+			this.validateResize();
+		}
+		this._height = MathUtils.max(1f, height);
 	}
 
 	@Override
 	public void setWidth(float width) {
-		this._width = width;
+		if (width != this._width) {
+			this.validateResize();
+		}
+		this._width = MathUtils.max(1f, width);
 	}
 
 	@Override
 	public float getWidth() {
-		return (this._width * _scaleX);
+		return (this._width * _scaleX) - _fixedWidthOffset;
 	}
 
 	@Override
 	public float getHeight() {
-		return (this._height * _scaleY);
+		return (this._height * _scaleY) - _fixedHeightOffset;
 	}
 
 	public int width() {
@@ -764,10 +789,28 @@ public abstract class LComponent extends LObject<LContainer>
 		return (int) getHeight();
 	}
 
+	public float getFixedWidthOffset() {
+		return _fixedWidthOffset;
+	}
+
+	public LComponent setFixedWidthOffset(float fixedWidthOffset) {
+		this._fixedWidthOffset = fixedWidthOffset;
+		return this;
+	}
+
+	public float getFixedHeightOffset() {
+		return _fixedHeightOffset;
+	}
+
+	public LComponent setFixedHeightOffset(float fixedHeightOffset) {
+		this._fixedHeightOffset = fixedHeightOffset;
+		return this;
+	}
+
 	public RectBox getCollisionBox() {
 		validatePosition();
 		return setRect(MathUtils.getBounds(getDrawScrollX(), getDrawScrollY(), getWidth() * _scaleX,
-				getHeight() * _scaleY, _rotation, _rect));
+				getHeight() * _scaleY, _objectRotation, _objectRect));
 	}
 
 	public LComponent getToolTipParent() {
@@ -782,8 +825,12 @@ public abstract class LComponent extends LObject<LContainer>
 		return this.tooltip;
 	}
 
-	public void setToolTipText(String text) {
+	public LComponent setToolTipText(String text) {
+		if (StringUtils.isEmpty(text)) {
+			return this;
+		}
 		this.tooltip = text;
+		return this;
 	}
 
 	public void doClick() {
@@ -908,9 +955,7 @@ public abstract class LComponent extends LObject<LContainer>
 	 */
 	protected void checkFocusKey() {
 		if (this.input.getKeyPressed() == SysKey.ENTER) {
-
 			this.transferFocus();
-
 		} else {
 			this.transferFocusBackward();
 		}
@@ -943,7 +988,7 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public LComponent clearBackground() {
-		return this.setBackground(LSystem.base().graphics().finalColorTex());
+		return this.setBackground(LSystem.base().graphics().finalColorTex(), false);
 	}
 
 	public LComponent setBackground(String fileName) {
@@ -951,7 +996,7 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public LComponent setBackground(LColor color) {
-		return setBackground(TextureUtils.createTexture(1, 1, color));
+		return setBackground(TextureUtils.createTexture(1, 1, color), false);
 	}
 
 	public LComponent setBackgroundString(String color) {
@@ -965,6 +1010,10 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public LComponent setBackground(LTexture b) {
+		return setBackground(b, true);
+	}
+
+	public LComponent setBackground(LTexture b, boolean updateSize) {
 		if (b == null) {
 			return this;
 		}
@@ -972,13 +1021,17 @@ public abstract class LComponent extends LObject<LContainer>
 			return this;
 		}
 		if (!_drawBackground) {
-			return setBackground(b, this._width, this._height);
+			return setBackground(b, this._width, this._height, updateSize);
 		} else {
-			return setBackground(b, b.getWidth(), b.getHeight());
+			return setBackground(b, b.getWidth(), b.getHeight(), updateSize);
 		}
 	}
 
 	public LComponent setBackground(LTexture b, float w, float h) {
+		return setBackground(b, w, h, true);
+	}
+
+	public LComponent setBackground(LTexture b, float w, float h, boolean updateSize) {
 		if (b == null) {
 			return this;
 		}
@@ -986,7 +1039,9 @@ public abstract class LComponent extends LObject<LContainer>
 			return this;
 		}
 		this._background = b;
-		this.setSize(w, h);
+		if (updateSize) {
+			this.setSize(w, h);
+		}
 		freeRes().add(_background);
 		return this;
 	}
@@ -1019,12 +1074,18 @@ public abstract class LComponent extends LObject<LContainer>
 		return this.isSelectDraw;
 	}
 
-	public void setDrawSelect(boolean select) {
+	public LComponent setDrawSelect(boolean select) {
 		this.isSelectDraw = select;
+		return this;
 	}
 
-	public void setScale(final float s) {
+	public LComponent debug(boolean select) {
+		return setDrawSelect(select);
+	}
+
+	public LComponent setScale(final float s) {
 		this.setScale(s, s);
+		return this;
 	}
 
 	@Override
@@ -1053,8 +1114,8 @@ public abstract class LComponent extends LObject<LContainer>
 
 	@Override
 	public boolean inContains(float x, float y, float w, float h) {
-		if (_super != null) {
-			return _super.contains(x, y, w, h);
+		if (_objectSuper != null) {
+			return _objectSuper.contains(x, y, w, h);
 		}
 		return getRectBox().contains(x, y, w, h);
 	}
@@ -1083,30 +1144,116 @@ public abstract class LComponent extends LObject<LContainer>
 		return toPixelScaleY(input == null ? SysTouch.getY() : input.getTouchY());
 	}
 
-	public float getUITouchX() {
-		if (_super == null) {
-			return toPixelScaleX(SysTouch.getX() - getX());
-		} else {
-			if (_super.isContainer() && (_super instanceof LScrollContainer)) {
-				return toPixelScaleX(
-						SysTouch.getX() + ((LScrollContainer) _super).getScrollX() - _super.getX() - getX());
+	public Vector2f getUITouch(float x, float y) {
+		return getUITouch(x, y, null);
+	}
+
+	public Vector2f getUITouch(float x, float y, Vector2f pointResult) {
+		if (!(x == -1 && y == -1 && pointResult != null)) {
+			if (pointResult == null) {
+				pointResult = new Vector2f(x, y);
 			} else {
-				return toPixelScaleX(SysTouch.getX() - _super.getX() - getX());
+				pointResult.set(x, y);
 			}
 		}
+		float newX = 0f;
+		float newY = 0f;
+		LComponent parent = getParent();
+		if (parent != null) {
+			newX = pointResult.x - parent.getX() - getX();
+			newY = pointResult.y - parent.getX() - getY();
+		} else {
+			newX = pointResult.x - getX();
+			newY = pointResult.y - getY();
+		}
+		final float angle = getRotation();
+		if (angle == 0 || angle == 360) {
+			pointResult.x = toPixelScaleX(newX);
+			pointResult.y = toPixelScaleY(newY);
+			return pointResult;
+		}
+		float oldWidth = _width;
+		float oldHeight = _height;
+		float newWidth = getWidth();
+		float newHeight = getHeight();
+		float offX = oldWidth / 2f - newWidth / 2f;
+		float offY = oldHeight / 2f - newHeight / 2f;
+		float posX = (newX - offX);
+		float posY = (newY - offY);
+		if (angle == 90) {
+			offX = oldHeight / 2f - newWidth / 2f;
+			offY = oldWidth / 2f - newHeight / 2f;
+			posX = (newX - offY);
+			posY = (newY - offX);
+			pointResult.set(posX / getScaleX(), posY / getScaleY()).rotateSelf(90);
+			pointResult.set(-pointResult.x, MathUtils.abs(pointResult.y - this._height));
+		} else if (angle == -90) {
+			offX = oldHeight / 2f - newWidth / 2f;
+			offY = oldWidth / 2f - newHeight / 2f;
+			posX = (newX - offY);
+			posY = (newY - offX);
+			pointResult.set(posX / getScaleX(), posY / getScaleY()).rotateSelf(-90);
+			pointResult.set(-(pointResult.x - this._width), MathUtils.abs(pointResult.y));
+		} else if (angle == -180 || angle == 180) {
+			pointResult.set(posX / getScaleX(), posY / getScaleY()).rotateSelf(getRotation()).addSelf(_width, _height);
+		} else {
+			float rad = MathUtils.toRadians(angle);
+			float sin = MathUtils.sin(rad);
+			float cos = MathUtils.cos(rad);
+			float dx = offX / getScaleX();
+			float dy = offY / getScaleY();
+			float dx2 = cos * dx - sin * dy;
+			float dy2 = sin * dx + cos * dy;
+			pointResult.x = _width - (newX - dx2);
+			pointResult.y = _height - (newY - dy2);
+		}
+		return pointResult;
+	}
+
+	public Vector2f getUITouchXY() {
+		if (getRotation() == 0) {
+			float newX = 0f;
+			float newY = 0f;
+			if (_objectSuper == null) {
+				newX = toPixelScaleX(SysTouch.getX() - getX());
+				newY = toPixelScaleY(SysTouch.getY() - getY());
+			} else {
+				if (_objectSuper.isContainer() && (_objectSuper instanceof LScrollContainer)) {
+					LScrollContainer scroll = (LScrollContainer) _objectSuper;
+					newX = toPixelScaleX(SysTouch.getX() + scroll.getScrollX() - _objectSuper.getX() - getX());
+					newY = toPixelScaleY(SysTouch.getY() + scroll.getScrollY() - _objectSuper.getY() - getY());
+				} else {
+					newX = toPixelScaleX(SysTouch.getX() - _objectSuper.getX() - getX());
+					newY = toPixelScaleY(SysTouch.getY() - _objectSuper.getY() - getY());
+				}
+			}
+			_touchPoint.set(newX, newY);
+		} else {
+			if (_objectSuper.isContainer() && (_objectSuper instanceof LScrollContainer)) {
+				LScrollContainer scroll = (LScrollContainer) _objectSuper;
+				return getUITouch(SysTouch.getX() + scroll.getScrollX(), SysTouch.getY() + scroll.getScrollY(),
+						_touchPoint);
+			} else {
+				return getUITouch(SysTouch.getX(), SysTouch.getY(), _touchPoint);
+			}
+		}
+		return _touchPoint;
+	}
+
+	public float getUITouchX() {
+		return getUITouchXY().x;
 	}
 
 	public float getUITouchY() {
-		if (_super == null) {
-			return toPixelScaleY(SysTouch.getY() - getY());
-		} else {
-			if (_super.isContainer() && (_super instanceof LScrollContainer)) {
-				return toPixelScaleY(
-						SysTouch.getY() + ((LScrollContainer) _super).getScrollY() - _super.getY() - getY());
-			} else {
-				return toPixelScaleY(SysTouch.getY() - _super.getY() - getY());
-			}
+		return getUITouchXY().y;
+	}
+
+	protected LComponent validateResize() {
+		if (this._resizeListener != null) {
+			this._resizeListener.onResize(this);
 		}
+		this.processResize();
+		return this;
 	}
 
 	@Override
@@ -1116,28 +1263,28 @@ public abstract class LComponent extends LObject<LContainer>
 
 	@Override
 	public float getContainerX() {
-		return this._super == null ? super.getContainerX() : this._super.getScreenX();
+		return this._objectSuper == null ? super.getContainerX() : this._objectSuper.getScreenX();
 	}
 
 	@Override
 	public float getContainerY() {
-		return this._super == null ? super.getContainerY() : this._super.getScreenY();
+		return this._objectSuper == null ? super.getContainerY() : this._objectSuper.getScreenY();
 	}
 
 	@Override
 	public float getContainerWidth() {
-		if (_super == null) {
+		if (_objectSuper == null) {
 			return getScreenWidth();
 		}
-		return _super.getWidth();
+		return _objectSuper.getWidth();
 	}
 
 	@Override
 	public float getContainerHeight() {
-		if (_super == null) {
+		if (_objectSuper == null) {
 			return getScreenHeight();
 		}
-		return _super.getHeight();
+		return _objectSuper.getHeight();
 	}
 
 	public LComponent setPivotX(float pX) {
@@ -1161,6 +1308,15 @@ public abstract class LComponent extends LObject<LContainer>
 	public LComponent setPivot(float pX, float pY) {
 		setPivotX(pX);
 		setPivotY(pY);
+		return this;
+	}
+
+	public LComponent setAnchor(final float scale) {
+		return setAnchor(scale, scale);
+	}
+
+	public LComponent setAnchor(final float sx, final float sy) {
+		setPivot(_width * sx, _height * sy);
 		return this;
 	}
 
@@ -1293,6 +1449,50 @@ public abstract class LComponent extends LObject<LContainer>
 		}
 	}
 
+	public float clampX(float x) {
+		if (_objectSuper == null) {
+			return x;
+		}
+		RectBox bounds = _objectSuper.getRectBox();
+		float dw = _objectSuper.getWidth();
+		float bx = bounds.x + ((dw - this.getWidth()) / 2);
+		float bw = MathUtils.max(bx, bx + bounds.width - dw);
+		if (x < bx) {
+			x = bx;
+		} else if (x > bw) {
+			x = bw;
+		}
+		return x;
+	}
+
+	public float clampY(float y) {
+		if (_objectSuper == null) {
+			return y;
+		}
+		RectBox bounds = _objectSuper.getRectBox();
+		float dh = _objectSuper.getHeight();
+		float by = bounds.y + ((dh - this.getHeight()) / 2);
+		float bh = MathUtils.max(by, by + bounds.height - dh);
+		if (y < by) {
+			y = by;
+		} else if (y > bh) {
+			y = bh;
+		}
+		return y;
+	}
+
+	public Vector2f getAbsolutePosition() {
+		Vector2f screenPos = new Vector2f(getPosition());
+		for (LComponent p = this.getParent(); p != null; p = p.getParent()) {
+			screenPos.add(p.getPosition());
+		}
+		return screenPos;
+	}
+
+	public Vector2f getSize() {
+		return new Vector2f(getWidth(), getHeight());
+	}
+
 	@Override
 	public void setColor(LColor c) {
 		this._component_baseColor = new LColor(c);
@@ -1307,8 +1507,9 @@ public abstract class LComponent extends LObject<LContainer>
 		return _origin;
 	}
 
-	public void setOrigin(Origin o) {
+	public LComponent setOrigin(Origin o) {
 		this._origin = o;
+		return this;
 	}
 
 	@Override
@@ -1372,6 +1573,14 @@ public abstract class LComponent extends LObject<LContainer>
 		return input.getTouchPressed() == SysTouch.TOUCH_DRAG || SysTouch.isDrag();
 	}
 
+	public boolean isTouchResponseEvent(float x, float y) {
+		return isVisible() && isEnabled() && !isLocked() && contains(x, y);
+	}
+
+	public boolean isTouchNotResponseEvent(float x, float y) {
+		return !isVisible() || !isEnabled() || isLocked() || !contains(x, y);
+	}
+
 	public Dimension getDimension() {
 		return new Dimension(this._width * this._scaleX, this._height * this._scaleY);
 	}
@@ -1386,12 +1595,13 @@ public abstract class LComponent extends LObject<LContainer>
 		return PlayerUtils.isActionCompleted(this);
 	}
 
-	public void setDesktop(Desktop d) {
+	public LComponent setDesktop(Desktop d) {
 		if (this._desktop == d) {
-			return;
+			return this;
 		}
 		this._desktop = d;
 		this.input = d.input;
+		return this;
 	}
 
 	public Desktop getDesktop() {
@@ -1400,6 +1610,16 @@ public abstract class LComponent extends LObject<LContainer>
 
 	public Screen getScreen() {
 		return (_desktop == null || _desktop.input == null) ? LSystem.getProcess().getScreen() : _desktop.input;
+	}
+
+	@Override
+	public float getCenterX() {
+		return getX() + getWidth() / 2f;
+	}
+
+	@Override
+	public float getCenterY() {
+		return getY() + getHeight() / 2f;
 	}
 
 	public boolean isDesktopContainer() {
@@ -1431,6 +1651,116 @@ public abstract class LComponent extends LObject<LContainer>
 		return getCollisionBox().contains(x, y, 1, 1);
 	}
 
+	public boolean isDescendantOf(LComponent o) {
+		if (o == null) {
+			throw new LSysException("Component cannot be null");
+		}
+		LComponent parent = this;
+		for (;;) {
+			if (parent == null) {
+				return false;
+			}
+			if (parent == o) {
+				return true;
+			}
+			parent = parent.getParent();
+		}
+	}
+
+	public boolean isAscendantOf(LComponent o) {
+		if (o == null) {
+			throw new LSysException("Component cannot be null");
+		}
+		for (;;) {
+			if (o == null) {
+				return false;
+			}
+			if (o == this) {
+				return true;
+			}
+			o = o.getParent();
+		}
+	}
+
+	public Vector2f getOffset() {
+		return _offset;
+	}
+
+	public LComponent setOffset(float x, float y) {
+		this._offset.set(x, y);
+		return this;
+	}
+
+	public LComponent setOffset(Vector2f offset) {
+		this._offset = offset;
+		return this;
+	}
+
+	public float getOffsetX() {
+		return _offset.x;
+	}
+
+	public LComponent setOffsetX(float offsetX) {
+		this._offset.setX(offsetX);
+		return this;
+	}
+
+	public float getOffsetY() {
+		return _offset.y;
+	}
+
+	public LComponent setOffsetY(float offsetY) {
+		this._offset.setY(offsetY);
+		return this;
+	}
+
+	public ResizeListener<LComponent> getResizeListener() {
+		return _resizeListener;
+	}
+
+	public LComponent setResizeListener(ResizeListener<LComponent> listener) {
+		this._resizeListener = listener;
+		return this;
+	}
+
+	public LComponent softCenterOn(float x, float y) {
+		final RectBox rect = getDesktop() == null ? LSystem.viewSize.getRect() : getDesktop().getBoundingBox();
+		final LComponent comp = this.getSuper();
+		if (x != 0) {
+			float dx = (x - rect.getWidth() / 2 / this.getScaleX() - this.getX()) / 3;
+			if (comp != null) {
+				RectBox boundingBox = comp.getRectBox();
+				if (this.getX() + dx < boundingBox.getMinX()) {
+					setX(boundingBox.getMinX() / this.getScaleX());
+				} else if (this.getX() + dx > (boundingBox.getMaxX() - rect.getWidth()) / this.getScaleX()) {
+					setX(MathUtils.max(boundingBox.getMaxX() - rect.getWidth(), boundingBox.getMinX())
+							/ this.getScaleX());
+				} else {
+					this.setX(this.getX() + dx);
+				}
+			} else {
+				this.setX(this.getX() + dx);
+			}
+		}
+		if (y != 0) {
+			float dy = (y - rect.getHeight() / 2 / this.getScaleY() - this.getY()) / 3;
+			if (comp != null) {
+				RectBox boundingBox = comp.getRectBox();
+				if (this.getY() + dy < boundingBox.getMinY()) {
+					this.setY(boundingBox.getMinY() / this.getScaleY());
+				} else if (this.getY() + dy > (boundingBox.getMaxY() - rect.getHeight()) / this.getScaleY()) {
+					this.setY(MathUtils.max(boundingBox.getMaxY() - rect.getHeight(), boundingBox.getMinY())
+							/ this.getScaleY());
+				} else {
+					this.setY(this.getY() + dy);
+				}
+			} else {
+				this.setY(this.getY() + dy);
+			}
+		}
+		return this;
+	}
+
 	@Override
 	public void close() {
 		if (!_component_autoDestroy) {
@@ -1444,10 +1774,10 @@ public abstract class LComponent extends LObject<LContainer>
 		if (_desktop != null) {
 			this._desktop.setComponentStat(this, false);
 		}
-		if (this._super != null) {
-			this._super.remove(this);
+		if (this._objectSuper != null) {
+			this._objectSuper.remove(this);
 		}
-		this._super = null;
+		this._objectSuper = null;
 		if (_imageUI != null) {
 			final int size = _imageUI.length;
 			for (int i = 0; i < size; i++) {
@@ -1467,6 +1797,7 @@ public abstract class LComponent extends LObject<LContainer>
 		this._component_selected = false;
 		this._component_visible = false;
 		this._touchListener = null;
+		this._resizeListener = null;
 		this.input = null;
 		this.Click = null;
 		setState(State.DISPOSED);

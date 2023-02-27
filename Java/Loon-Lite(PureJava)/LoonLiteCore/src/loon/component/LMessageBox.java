@@ -26,13 +26,15 @@ import loon.canvas.LColor;
 import loon.component.skin.MessageSkin;
 import loon.component.skin.SkinManager;
 import loon.font.FontSet;
+import loon.font.FontUtils;
 import loon.font.IFont;
 import loon.font.LFont;
-import loon.font.ShadowFont;
+
 import loon.opengl.GLEx;
 import loon.opengl.LSTRDictionary;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
+import loon.utils.StrBuilder;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
@@ -159,8 +161,6 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 				drawFace(g, this._boxX + offsetX, this._boxY + offsetY);
 			}
 
-			boolean supportPack = false;
-
 			drawMessage(g, message, this._boxX + this.messageX + offsetX, this._boxY + this.messageY + offsetY);
 			if (isPage && _flagType != null) {
 				int size = StringUtils.charCount(message, '\n');
@@ -170,8 +170,8 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 									+ (this.font.getSize() * 0.10f) + (size * _leading),
 							this.flagColor);
 				} else {
-					this.font.drawString(g, _flagType,
-							this._boxX + this.pageX + this.offsetX, this._boxY + this.pageY
+					this.font.drawString(
+							g, _flagType, this._boxX + this.pageX + this.offsetX, this._boxY + this.pageY
 									+ this.font.stringHeight(message) + this.offsetY + (this.font.getSize() * 0.10f),
 							this.flagColor);
 				}
@@ -198,16 +198,18 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 			return this._leading;
 		}
 
-		public void setLeading(final float leading) {
+		public DrawMessageBox setLeading(final float leading) {
 			this._leading = leading;
+			return this;
 		}
 
 		public LColor getFlagColor() {
 			return flagColor.cpy();
 		}
 
-		public void setFlagColor(LColor c) {
-			this.flagColor = c;
+		public DrawMessageBox setFlagColor(LColor c) {
+			this.flagColor = new LColor(c);
+			return this;
 		}
 
 		@Override
@@ -223,17 +225,20 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 			return MathUtils.round(this.messageHeight);
 		}
 
-		public void setOffset(float x, float y) {
+		public DrawMessageBox setOffset(float x, float y) {
 			this.offsetX = x;
 			this.offsetY = y;
+			return this;
 		}
 
-		public void setOffsetX(float x) {
+		public DrawMessageBox setOffsetX(float x) {
 			this.offsetX = x;
+			return this;
 		}
 
-		public void setOffsetY(float y) {
+		public DrawMessageBox setOffsetY(float y) {
 			this.offsetY = y;
+			return this;
 		}
 
 		public float getOffsetX() {
@@ -298,7 +303,7 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 	}
 
 	public static class Message {
-		
+
 		private String message;
 		private String comment;
 		private String face;
@@ -341,7 +346,7 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 		}
 	}
 
-	private final StringBuilder _message = new StringBuilder();
+	private final StrBuilder _message = new StrBuilder();
 
 	private boolean _initNativeDraw = false;
 
@@ -357,13 +362,14 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 	protected boolean stopMessage;
 	protected boolean noPaged;
 	protected boolean isPaged;
+
 	protected int pageBlinkTime;
 
 	protected int delay = 50;
 
 	protected int pageTime = 300;
 
-	protected final DrawMessageBox _box;
+	protected DrawMessageBox _box;
 
 	private IFont _font;
 
@@ -410,34 +416,6 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 		this(messages, typeFlag, font, box, x, y, width, height, color, false);
 	}
 
-	public LMessageBox(TArray<Message> messages, String typeFlag, IFont font, LTexture box, int x, int y, int width,
-			int height, LColor color, boolean shadow) {
-		super(x, y, width, height);
-		this._component_baseColor = color;
-		this._showShadow = shadow;
-		if (box != null && width == 0 && height == 0) {
-			this.setSize(box.getWidth(), box.getHeight());
-		}
-		this._messageList = messages;
-		StringBuilder sbr = new StringBuilder();
-		if (messages != null) {
-			for (Message text : messages) {
-				sbr.append(text.message);
-			}
-		}
-		this._tmpString = sbr.toString();
-		if (font instanceof LFont) {
-			this._box = new DrawMessageBox(new ShadowFont((LFont) font, _tmpString,
-					typeFlag == null ? LSystem.FLAG_TAG : typeFlag, _showShadow), null, box, typeFlag, width(),
-					height());
-		} else {
-			this._box = new DrawMessageBox(font, null, box, typeFlag, width(), height());
-		}
-		this._box.setLocation(x, y);
-		this._font = font;
-		freeRes().add(box);
-	}
-
 	public LMessageBox(String[] messages, String typeFlag, IFont font, LTexture box, int x, int y) {
 		this(messages, typeFlag, font, null, box, x, y, 0, 0);
 	}
@@ -448,6 +426,18 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 
 	public LMessageBox(String[] messages, LTexture box, int x, int y) {
 		this(messages, null, SkinManager.get().getMessageSkin().getFont(), null, box, x, y, 0, 0);
+	}
+
+	public LMessageBox(TArray<Message> messages, String typeFlag, IFont font, LTexture box, int x, int y, int width,
+			int height, LColor color, boolean shadow) {
+		super(x, y, width, height);
+		initMessages(messages, typeFlag, font, box, x, y, width, height, color, shadow);
+	}
+
+	public LMessageBox(String[] messages, String typeFlag, IFont font, String face, LTexture box, int x, int y,
+			int width, int height) {
+		this(messages, typeFlag, font, face, box, x, y, width, height,
+				SkinManager.get().getMessageSkin().getFontColor(), false);
 	}
 
 	/**
@@ -464,34 +454,49 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 	 * @param height
 	 */
 	public LMessageBox(String[] messages, String typeFlag, IFont font, String face, LTexture box, int x, int y,
-			int width, int height) {
+			int width, int height, LColor color, boolean shadow) {
 		super(x, y, width, height);
+		initStrings(messages, typeFlag, font, face, box, x, y, width, height, color, shadow);
+	}
 
-		if (box != null && width <= 1 && height <= 1) {
+	private void initStrings(String[] messages, String typeFlag, IFont font, String face, LTexture box, int x, int y,
+			int width, int height, LColor color, boolean shadow) {
+		TArray<LMessageBox.Message> tempMessages = new TArray<LMessageBox.Message>();
+		if (messages != null) {
+			for (String text : messages) {
+				tempMessages.add(new Message(text, null, face, FontUtils.splitLines(text, font, width())));
+			}
+		} else {
+			tempMessages.add(new Message("", null, face, FontUtils.splitLines("", font, width())));
+		}
+		initMessages(tempMessages, typeFlag, font, box, x, y, width, height, color, shadow);
+	}
+
+	private void initMessages(TArray<Message> messages, String typeFlag, IFont font, LTexture box, int x, int y,
+			int width, int height, LColor color, boolean shadow) {
+		this._component_baseColor = color;
+		this._showShadow = shadow;
+		if (box != null && width == 0 && height == 0) {
 			this.setSize(box.getWidth(), box.getHeight());
 		}
-
+		this._messageList = messages;
+		StrBuilder sbr = new StrBuilder();
 		if (messages != null) {
-			_messageList = new TArray<LMessageBox.Message>();
-			for (String text : messages) {
-
-				_messageList.add(new Message(text, null, face, Print.formatMessage(text, font, width())));
-
-				_tmpString += text;
+			for (Message text : messages) {
+				sbr.append(text.message);
 			}
 		}
+		this._tmpString = sbr.toString();
 		if (font instanceof LFont) {
-			this._box = new DrawMessageBox(
-					new ShadowFont((LFont) font, messages, typeFlag == null ? LSystem.FLAG_TAG : typeFlag, _showShadow),
-					null, box, typeFlag, width(), height());
+		/*	this._box = new DrawMessageBox(new ShadowFont((LFont) font, _tmpString,
+					typeFlag == null ? LSystem.FLAG_TAG : typeFlag, _showShadow), null, box, typeFlag, width(),
+					height());*/
 		} else {
 			this._box = new DrawMessageBox(font, null, box, typeFlag, width(), height());
 		}
-		this._box.setLocation(getX(), getY());
-		if (!StringUtils.isEmpty(face)) {
-			toFaceImage(face);
-		}
+		this._box.setLocation(x, y);
 		this._font = font;
+		freeRes().add(box);
 	}
 
 	@Override
@@ -553,17 +558,17 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 		return this._box;
 	}
 
-	public LMessageBox setOffset(float x, float y) {
+	public LMessageBox setBoxOffset(float x, float y) {
 		this._box.setOffset(x, y);
 		return this;
 	}
 
-	public LMessageBox setOffsetX(float x) {
+	public LMessageBox setBoxOffsetX(float x) {
 		this._box.setOffsetX(x);
 		return this;
 	}
 
-	public LMessageBox setOffsetY(float y) {
+	public LMessageBox setBoxOffsetY(float y) {
 		this._box.setOffsetY(y);
 		return this;
 	}
@@ -648,7 +653,7 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 			_initNativeDraw = true;
 		}
 		Message message = _messageList.get(messageIndex);
-		_message.delete(0, _message.length());
+		_message.setLength(0);
 
 		if (!message.lines.isEmpty()) {
 			for (int i = 0; i < this.renderRow + 1; i++) {
@@ -755,7 +760,7 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 	@Override
 	public void update(long elapsedTime) {
 		super.update(elapsedTime);
-		this._box.setLocation(this._location);
+		this._box.setLocation(this._objectLocation);
 		if (!this.noMessage) {
 			Message message = _messageList.get(messageIndex);
 			if (!StringUtils.isEmpty(message.face)) {
@@ -784,8 +789,9 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 		return _box.getFlagColor();
 	}
 
-	public void setFlagColor(LColor c) {
+	public LMessageBox setFlagColor(LColor c) {
 		this._box.setFlagColor(c);
+		return this;
 	}
 
 	public int getDelay() {
@@ -801,8 +807,9 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 		return _showShadow;
 	}
 
-	public void setShowShadowFont(boolean s) {
+	public LMessageBox setShowShadowFont(boolean s) {
 		this._showShadow = s;
+		return this;
 	}
 
 	@Override
@@ -814,5 +821,6 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 	public String getUIName() {
 		return "MessageBox";
 	}
+
 
 }

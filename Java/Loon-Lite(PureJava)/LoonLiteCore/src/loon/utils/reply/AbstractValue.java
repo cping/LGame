@@ -20,9 +20,11 @@
  */
 package loon.utils.reply;
 
+import loon.utils.reply.ActView.ActViewListener;
+
 public abstract class AbstractValue<T> extends Bypass implements VarView<T> {
 	@Override
-	public <M> VarView<M> map(final Function<? super T, M> func) {
+	public <M> VarView<M> map(final Function<T, M> func) {
 		final AbstractValue<T> outer = this;
 		return new MappedValue<M>() {
 			@Override
@@ -32,12 +34,13 @@ public abstract class AbstractValue<T> extends Bypass implements VarView<T> {
 
 			@Override
 			public String toString() {
+				
 				return outer + ".map(" + func + ")";
 			}
 
 			@Override
 			protected Connection connect() {
-				return outer.connect(new Listener<T>() {
+				return outer.connect(new VarViewListener<T>() {
 					@Override
 					public void onChange(T value, T ovalue) {
 						notifyChange(func.apply(value), func.apply(ovalue));
@@ -48,17 +51,17 @@ public abstract class AbstractValue<T> extends Bypass implements VarView<T> {
 	}
 
 	@Override
-	public Connection connect(Listener<? super T> listener) {
+	public Connection connect(VarViewListener<? super T> listener) {
 		return addConnection(listener);
 	}
 
 	@Override
-	public Connection connect(ActView.Listener<? super T> listener) {
+	public Connection connect(ActViewListener<? super T> listener) {
 		return connect(wrap(listener));
 	}
 
-	private static <T> Listener<T> wrap(final ActView.Listener<? super T> listener) {
-		return new Listener<T>() {
+	private static <T> VarViewListener<T> wrap(final ActViewListener<? super T> listener) {
+		return new VarViewListener<T>() {
 			public void onChange(T newValue, T oldValue) {
 				listener.onEmit(newValue);
 			}
@@ -67,11 +70,11 @@ public abstract class AbstractValue<T> extends Bypass implements VarView<T> {
 
 	@Override
 	public Connection connect(Port<? super T> port) {
-		return connect((Listener<? super T>) port);
+		return connect((VarViewListener<? super T>) port);
 	}
 
 	@Override
-	public void disconnect(Listener<? super T> listener) {
+	public void disconnect(VarViewListener<? super T> listener) {
 		removeConnection(listener);
 	}
 
@@ -100,9 +103,9 @@ public abstract class AbstractValue<T> extends Bypass implements VarView<T> {
 	}
 
 	@Override
-	Listener<T> defaultListener() {
+	public GoListener defaultListener() {
 		@SuppressWarnings("unchecked")
-		Listener<T> p = (Listener<T>) AbstractAct.DEF;
+		VarViewListener<T> p = (VarViewListener<T>) AbstractAct.DEF;
 		return p;
 	}
 
@@ -135,10 +138,11 @@ public abstract class AbstractValue<T> extends Bypass implements VarView<T> {
 		throw new UnsupportedOperationException();
 	}
 
-	@SuppressWarnings("unchecked")
-	protected static final Notifier CHANGE = new Notifier() {
-		public void notify(Object lner, Object value, Object oldValue, Object ignored) {
-			((Listener<Object>) lner).onChange(value, oldValue);
+	protected final Notifier<T> CHANGE = new Notifier<T>() {
+		@SuppressWarnings("unchecked")
+		@Override
+		public void notify(Bypass.GoListener lner, T value, T oldValue, T ignored) {
+			((VarViewListener<T>) lner).onChange(value, oldValue);
 		}
 	};
 }

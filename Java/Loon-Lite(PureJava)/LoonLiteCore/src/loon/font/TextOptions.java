@@ -20,7 +20,7 @@
  */
 package loon.font;
 
-import loon.HorizontalAlign;
+import loon.component.layout.HorizontalAlign;
 
 /**
  * Text配置用类

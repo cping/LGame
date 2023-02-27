@@ -68,7 +68,6 @@ public abstract class Loon {
 
 	protected static <T> T newInstance(Class<T> type) {
 		try {
-			System.out.println(type);
 			return type.getDeclaredConstructor().newInstance();
 		} catch (Exception e) {
 			e.printStackTrace();

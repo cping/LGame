@@ -28,17 +28,19 @@ import loon.component.skin.SkinManager;
 import loon.component.skin.TextBarSkin;
 import loon.font.FontUtils;
 import loon.font.IFont;
-import loon.font.LFont;
 import loon.geom.PointF;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
+import loon.utils.timer.LTimer;
 
 /**
  * 一个单纯的文字框组件UI,长度可动态改变
  */
 public class LTextBar extends LComponent {
+
+	private LTimer _waitTimer = new LTimer();
 
 	private boolean _drawUI = false;
 
@@ -58,11 +60,21 @@ public class LTextBar extends LComponent {
 
 	private TArray<String> _messages = null;
 
+	private boolean _displayFlag;
+
+	private boolean masked = false;
+
 	private boolean over, pressed;
 
-	private int pressedTime;
-
 	protected boolean hideBackground = false;
+
+	protected boolean flashCursor = false;
+
+	protected char maskCharacter = '*';
+
+	protected char cursor = '_';
+
+	private int pressedTime;
 
 	public LTextBar(String txt, int x, int y, LColor c) {
 		this(txt, SkinManager.get().getTextBarSkin().getLeftTexture(),
@@ -164,12 +176,12 @@ public class LTextBar extends LComponent {
 			if (_messages != null) {
 				for (int i = 0, size = _messages.size; i < size; i++) {
 					String text = _messages.get(i);
-					drawString(g, _font, text, x + _offsetX + 5, y + _offsetY + i * (_font.stringHeight(text)),
+					drawMessage(g, _font, text, x + _offsetX + 5, y + _offsetY + i * (_font.stringHeight(text)),
 							_fontColor);
 
 				}
 			} else {
-				drawString(g, _font, _text, x + 5, y, _fontColor);
+				drawMessage(g, _font, _text, x + 5, y, _fontColor);
 			}
 			g.drawRect(x, y, width, height, LColor.black);
 			return;
@@ -178,12 +190,12 @@ public class LTextBar extends LComponent {
 				if (_messages != null) {
 					for (int i = 0, size = _messages.size; i < size; i++) {
 						String text = _messages.get(i);
-						drawString(g, _font, text, x + _offsetX + 5, y + _offsetY + i * (_font.stringHeight(text)),
+						drawMessage(g, _font, text, x + _offsetX + 5, y + _offsetY + i * (_font.stringHeight(text)),
 								_fontColor);
 
 					}
 				} else {
-					drawString(g, _font, _text, x + 5, y, _fontColor);
+					drawMessage(g, _font, _text, x + 5, y, _fontColor);
 				}
 			} else {
 				if (left != null) {
@@ -211,30 +223,69 @@ public class LTextBar extends LComponent {
 					if (_messages != null) {
 						for (int i = 0, size = _messages.size; i < size; i++) {
 							String text = _messages.get(i);
-							drawString(g, _font, text, x + _offsetX + left.getWidth() + 5,
+							drawMessage(g, _font, text, x + _offsetX + left.getWidth() + 5,
 									y + _offsetY + i * (_font.stringHeight(text)), _fontColor);
 						}
 					} else {
-						drawString(g, _font, _text, x + left.getWidth() + 5, y, _fontColor);
+						drawMessage(g, _font, _text, x + left.getWidth() + 5, y, _fontColor);
 					}
 				} else {
 					if (_messages != null) {
 						for (int i = 0, size = _messages.size; i < size; i++) {
 							String text = _messages.get(i);
-							drawString(g, _font, text, x + _offsetX + 5, y + _offsetY + i * (_font.stringHeight(text)),
+							drawMessage(g, _font, text, x + _offsetX + 5, y + _offsetY + i * (_font.stringHeight(text)),
 									_fontColor);
 
 						}
 					} else {
-						drawString(g, _font, _text, x + 5, y, _fontColor);
+						drawMessage(g, _font, _text, x + 5, y, _fontColor);
 					}
 				}
 			}
 		}
 	}
 
-	private final void drawString(GLEx g, IFont font, String mes, float x, float y, LColor fontColor) {
-		font.drawString(g, mes, x, y, fontColor);
+	private final void drawMessage(GLEx g, IFont font, String mes, float x, float y, LColor fontColor) {
+		if (flashCursor) {
+			int len = mes.length() - 1;
+			char end = mes.charAt(len);
+			if (_displayFlag) {
+				if (masked) {
+					if (end == cursor) {
+						font.drawString(g, StringUtils.cpy(maskCharacter, len) + cursor, x, y, fontColor);
+					} else {
+						font.drawString(g, StringUtils.cpy(maskCharacter, mes.length()), x, y, fontColor);
+					}
+				} else {
+					font.drawString(g, mes, x, y, fontColor);
+				}
+			} else {
+				if (end == cursor) {
+					if (masked) {
+						font.drawString(g, StringUtils.cpy(maskCharacter, len), x, y, fontColor);
+					} else {
+						font.drawString(g, mes.substring(0, len), x, y, fontColor);
+					}
+				} else {
+					if (masked) {
+						font.drawString(g, StringUtils.cpy(maskCharacter, mes.length()), x, y, fontColor);
+					} else {
+						font.drawString(g, mes, x, y, fontColor);
+					}
+				}
+			}
+		} else {
+			font.drawString(g, mes, x, y, fontColor);
+		}
+	}
+
+	public LTextBar setCursor(char c) {
+		this.cursor = c;
+		return this;
+	}
+
+	public char getCursor() {
+		return this.cursor;
 	}
 
 	public float textWidth() {
@@ -286,7 +337,7 @@ public class LTextBar extends LComponent {
 	}
 
 	public LTextBar setText(String mes) {
-		if(StringUtils.isEmpty(mes)){
+		if (StringUtils.isEmpty(mes)) {
 			this._text = LSystem.EMPTY;
 			this._messages = Print.formatMessage(_text, _font, _maxWidth);
 			return this;
@@ -343,10 +394,22 @@ public class LTextBar extends LComponent {
 	}
 
 	@Override
-	public void update(long timer) {
+	public void update(long elapsedTime) {
 		if (this.pressedTime > 0 && --this.pressedTime <= 0) {
 			this.pressed = false;
 		}
+		if (flashCursor && _waitTimer.action(elapsedTime)) {
+			_displayFlag = !_displayFlag;
+		}
+	}
+
+	public LTextBar setCursorWaitDelay(long time) {
+		_waitTimer.setDelay(time);
+		return this;
+	}
+
+	public long getCursorWaitDelay() {
+		return _waitTimer.getDelay();
 	}
 
 	public boolean isTouchOver() {
@@ -361,29 +424,59 @@ public class LTextBar extends LComponent {
 		return hideBackground;
 	}
 
-	public void setHideBackground(boolean hideBackground) {
+	public LTextBar setHideBackground(boolean hideBackground) {
 		this.hideBackground = hideBackground;
+		return this;
+	}
+
+	public char getMaskCharacter() {
+		return maskCharacter;
+	}
+
+	public LTextBar setMaskCharacter(char m) {
+		this.maskCharacter = m;
+		return this;
+	}
+
+	public boolean isMasked() {
+		return masked;
+	}
+
+	public LTextBar setMasked(boolean m) {
+		this.masked = m;
+		return this;
+	}
+
+	public float getBoxOffsetX() {
+		return _offsetX;
+	}
+
+	public LTextBar setBoxOffsetX(float offsetX) {
+		this._offsetX = offsetX;
+		return this;
+	}
+
+	public float getBoxOffsetY() {
+		return _offsetY;
+	}
+
+	public LTextBar setBoxOffsetY(float offsetY) {
+		this._offsetY = offsetY;
+		return this;
+	}
+
+	public boolean isFlashCursor() {
+		return flashCursor;
+	}
+
+	public LTextBar setFlashCursor(boolean c) {
+		this.flashCursor = c;
+		return this;
 	}
 
 	@Override
 	public String getUIName() {
 		return "TextBar";
-	}
-
-	public float getOffsetX() {
-		return _offsetX;
-	}
-
-	public void setOffsetX(float offsetX) {
-		this._offsetX = offsetX;
-	}
-
-	public float getOffsetY() {
-		return _offsetY;
-	}
-
-	public void setOffsetY(float offsetY) {
-		this._offsetY = offsetY;
 	}
 
 }
