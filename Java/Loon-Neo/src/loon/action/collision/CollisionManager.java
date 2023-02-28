@@ -266,7 +266,6 @@ public class CollisionManager implements CollisionChecker {
 		return _collisionChecker.getInTheLayer();
 	}
 
-
 	@Override
 	public void dispose() {
 		if (_freeObjects != null) {

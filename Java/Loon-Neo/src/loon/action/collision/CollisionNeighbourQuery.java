@@ -61,7 +61,7 @@ public class CollisionNeighbourQuery implements CollisionQuery {
 		}
 		return y + _offsetLocation.y;
 	}
-	
+
 	@Override
 	public boolean checkCollision(CollisionObject actor) {
 		if (this._flag != null && !_flag.equals(actor.getObjectFlag())) {

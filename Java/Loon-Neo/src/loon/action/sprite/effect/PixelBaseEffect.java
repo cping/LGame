@@ -40,7 +40,7 @@ public abstract class PixelBaseEffect extends Entity {
 	protected boolean completed;
 
 	protected boolean autoRemoved;
-	
+
 	protected float[] startLocation;
 
 	protected float[] targetLocation;
@@ -125,7 +125,7 @@ public abstract class PixelBaseEffect extends Entity {
 
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
-		if(!isVisible()){
+		if (!isVisible()) {
 			return;
 		}
 		int tmp = g.getPixSkip();
@@ -172,7 +172,7 @@ public abstract class PixelBaseEffect extends Entity {
 		this.autoRemoved = autoRemoved;
 		return this;
 	}
-	
+
 	@Override
 	public void close() {
 		super.close();
@@ -181,6 +181,5 @@ public abstract class PixelBaseEffect extends Entity {
 		startLocation = null;
 		targetLocation = null;
 	}
-
 
 }

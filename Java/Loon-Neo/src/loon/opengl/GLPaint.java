@@ -38,8 +38,7 @@ public class GLPaint {
 		setColor(paint);
 	}
 
-	public GLPaint(LColor topLeft, LColor topRight, LColor bottomLeft,
-			LColor bottomRight) {
+	public GLPaint(LColor topLeft, LColor topRight, LColor bottomLeft, LColor bottomRight) {
 		this.topLeft = topLeft.cpy();
 		this.topRight = topRight.cpy();
 		this.bottomLeft = bottomLeft.cpy();

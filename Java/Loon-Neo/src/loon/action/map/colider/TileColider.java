@@ -26,7 +26,6 @@ public abstract class TileColider extends TileHelper {
 		super(tileWidth, tileHeight);
 	}
 
-	public abstract boolean colideTile(Tile tile, int mx, int my, int offsetX,
-			int offsetY);
+	public abstract boolean colideTile(Tile tile, int mx, int my, int offsetX, int offsetY);
 
 }

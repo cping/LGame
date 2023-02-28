@@ -78,7 +78,7 @@ public class RocFunctions {
 					return split[0].indexOf(split[1]) != -1;
 				}
 			}
-		}else if ("jump".equals(key)) {
+		} else if ("jump".equals(key)) {
 			script._sleep = JUMP_TYPE;
 		}
 		IRocFunction roc = (IRocFunction) _rocFunctions.get(key);

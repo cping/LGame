@@ -41,10 +41,10 @@ public interface CommandType {
 	// 写法:opt clear 跳转一下
 	// 写法:opt clear 11(删除第11行出现的选择按钮添加)
 	String L_OPTION = "opt";
-	
+
 	// 清空屏幕
 	String L_CLEAR = "clear";
-	
+
 	// 锁定AVGScreen的点击出发脚本功能，让点击无法触发脚本继续
 	String L_LOCK = "lock";
 
@@ -144,7 +144,7 @@ public interface CommandType {
 
 	// 雷
 	String L_THUNDER = "thunder";
-	
+
 	// 停雪
 	String L_SNOWSTOP = "snowstop";
 
@@ -156,17 +156,17 @@ public interface CommandType {
 
 	// 宁雷
 	String L_THUNDERSTOP = "thunderstop";
-	
+
 	// 移动到XXX
 	String L_TO = "to";
 
-	//播放一个an动画文件
+	// 播放一个an动画文件
 	String L_APLAY = "aplay";
 
-	//停止an文件播放
+	// 停止an文件播放
 	String L_ASTOP = "astop";
 
-	//延迟an文件
+	// 延迟an文件
 	String L_ADELAY = "adelay";
 
 	// 触发退出标记（无实际操作，只调用AVGScreen中同名函数）

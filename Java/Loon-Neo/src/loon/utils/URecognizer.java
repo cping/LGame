@@ -35,7 +35,7 @@ public class URecognizer {
 	public final static int GESTURES_CIRCLES = 1;
 
 	public final static int GESTURES_NONE = 2;
-	
+
 	public final static int MXA_POINTS = 64;
 
 	public final static float MAX_SQUARE_COUNT = 200f;

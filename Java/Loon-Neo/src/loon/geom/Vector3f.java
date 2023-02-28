@@ -132,7 +132,7 @@ public class Vector3f implements Serializable, XYZ {
 	}
 
 	public static Vector3f div(Vector3f v1, float v) {
-		float d = 1 /v;
+		float d = 1 / v;
 		v1.x = d * v1.x;
 		v1.y = d * v1.y;
 		v1.z = d * v1.z;

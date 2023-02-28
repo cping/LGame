@@ -24,8 +24,7 @@ import loon.Json;
 import loon.utils.TArray;
 import loon.utils.ObjectMap.Keys;
 
-class JsonStringTypedArray extends TArray<String> implements
-		Json.TypedArray<String> {
+class JsonStringTypedArray extends TArray<String> implements Json.TypedArray<String> {
 
 	public JsonStringTypedArray(String... contents) {
 		super(contents);

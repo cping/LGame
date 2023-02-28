@@ -23,7 +23,7 @@ package loon.action.behaviors;
 import loon.utils.MathUtils;
 
 public class RandomConditional<T> extends Behavior<T> implements IConditional<T> {
-	
+
 	protected int _successProbability;
 
 	public RandomConditional(int successProbability) {

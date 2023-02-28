@@ -23,8 +23,7 @@ package loon.component.table;
 import loon.geom.Dimension;
 import loon.opengl.GLEx;
 
-public interface ICellRenderer
-{
+public interface ICellRenderer {
 
 	public void paint(GLEx g, Object value, int x, int y, int width, int height);
 

@@ -37,7 +37,7 @@ public class AVGChara implements Visible, XY, LRelease {
 	private float _cgWidth;
 
 	private float _cgHeight;
-	
+
 	private float _cgMovePos;
 
 	private int _cgDirection;
@@ -47,7 +47,7 @@ public class AVGChara implements Visible, XY, LRelease {
 	private boolean _cgMoving, _closed;
 
 	protected AVGAnm anm;
-	
+
 	protected float x;
 
 	protected float y;
@@ -63,7 +63,6 @@ public class AVGChara implements Visible, XY, LRelease {
 	protected boolean moved, showAnimation, visible;
 
 	protected int maxWidth, maxHeight;
-
 
 	/**
 	 * 构造函数，初始化角色图
@@ -298,7 +297,7 @@ public class AVGChara implements Visible, XY, LRelease {
 	public boolean isClosed() {
 		return _closed;
 	}
-	
+
 	@Override
 	public void close() {
 		this.visible = false;

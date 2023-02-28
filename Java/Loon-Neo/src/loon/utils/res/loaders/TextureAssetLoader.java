@@ -36,7 +36,7 @@ public class TextureAssetLoader extends AssetAbstractLoader<LTexture> {
 		_texture = BaseIO.loadTexture(_path);
 		return _texture != null;
 	}
-	
+
 	@Override
 	public LTexture get() {
 		return _texture;

@@ -20,7 +20,6 @@
  */
 package loon.utils.reply;
 
-public interface Function<F, T>
-{
-    T apply (F input);
+public interface Function<F, T> {
+	T apply(F input);
 }

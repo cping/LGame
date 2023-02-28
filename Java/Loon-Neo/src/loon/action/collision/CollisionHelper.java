@@ -74,7 +74,7 @@ public final class CollisionHelper extends ShapeUtils {
 	 * @return
 	 */
 	public static Vector3f getDistantPoint(XYZ target, XYZ source, float distance) {
-		
+
 		float deltaX = target.getX() - source.getX();
 		float deltaY = target.getY() - source.getY();
 		float deltaZ = target.getZ() - source.getZ();
@@ -529,36 +529,36 @@ public final class CollisionHelper extends ShapeUtils {
 		return (dx >= sx && dy >= sy && ((dx + dw) <= (sx + sw)) && ((dy + dh) <= (sy + sh)));
 	}
 
-    public static final boolean containsIsometric(int x, int y, int w, int h, int px, int py) {
-        float mx = w / 2;
-        float my = h / 2;
-        float ix = px - x;
-        float iy = py - y;
-        if (iy > my) {
-            iy = my - (iy - my);
-        }
-        if ((ix > mx + 1 + (2 * iy)) || (ix < mx - 1 - (2 * iy))) {
-            return false;
-        }
-        return true;
-    }
+	public static final boolean containsIsometric(int x, int y, int w, int h, int px, int py) {
+		float mx = w / 2;
+		float my = h / 2;
+		float ix = px - x;
+		float iy = py - y;
+		if (iy > my) {
+			iy = my - (iy - my);
+		}
+		if ((ix > mx + 1 + (2 * iy)) || (ix < mx - 1 - (2 * iy))) {
+			return false;
+		}
+		return true;
+	}
 
-    public static final boolean containsHexagon(int x, int y, int w, int h, int px, int py) {
-        float mx = w / 4;
-        float my = h / 2;
-        float hx = px - x;
-        float hy = py - y;
-        if (hx > mx * 3) {
-            hx = mx - (hx - mx * 3);
-        } else if (hx > mx) {
-            return py >= y && py <= y + h;
-        }
-        if ((hy > my + 1 + (2 * hx)) || (hy < my - 1 - (2 * hx))) {
-            return false;
-        }
-        return true;
-    }
-    
+	public static final boolean containsHexagon(int x, int y, int w, int h, int px, int py) {
+		float mx = w / 4;
+		float my = h / 2;
+		float hx = px - x;
+		float hy = py - y;
+		if (hx > mx * 3) {
+			hx = mx - (hx - mx * 3);
+		} else if (hx > mx) {
+			return py >= y && py <= y + h;
+		}
+		if ((hy > my + 1 + (2 * hx)) || (hy < my - 1 - (2 * hx))) {
+			return false;
+		}
+		return true;
+	}
+
 	public static final void confine(RectBox rect, RectBox field) {
 		int x = rect.Right() > field.Right() ? field.Right() - (int) rect.getWidth() : rect.Left();
 		if (x < field.Left()) {

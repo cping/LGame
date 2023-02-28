@@ -21,7 +21,5 @@
 package loon.component.layout;
 
 public enum HorizontalAlign {
-	LEFT,
-	CENTER,
-	RIGHT;
+	LEFT, CENTER, RIGHT;
 }

@@ -43,7 +43,7 @@ public class PointI implements XY {
 	public PointI(int size) {
 		set(size, size);
 	}
-	
+
 	public PointI(int x1, int y1) {
 		set(x1, y1);
 	}
@@ -172,7 +172,7 @@ public class PointI implements XY {
 	public float[] toArray() {
 		return new float[] { x, y };
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

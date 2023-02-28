@@ -94,7 +94,7 @@ public class UNByte {
 	public void setValue(short value) {
 		unByte = value;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		int hashCode = 17;

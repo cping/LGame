@@ -31,7 +31,7 @@ import loon.utils.ObjectMap;
  * 一个专门解析RMXP素材对话框的专用类
  */
 final public class AVGDialog {
-	
+
 	private static AVGDialog _instance = null;
 
 	public static AVGDialog shared() {
@@ -44,13 +44,13 @@ final public class AVGDialog {
 		}
 		return _instance;
 	}
-	
-	public static void freeStatic(){
+
+	public static void freeStatic() {
 		_instance = null;
 	}
 
 	private ObjectMap<String, LTexture> _dialogCache;
-	
+
 	public final LTexture getRMXPDialog(String fileName, int width, int height) {
 		if (_dialogCache == null) {
 			_dialogCache = new ObjectMap<String, LTexture>(10);

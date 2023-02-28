@@ -22,51 +22,55 @@ package loon.action.sprite;
 
 public abstract class Action {
 
-    protected Entity entity;
+	protected Entity entity;
 
-    private boolean isCompleted = false;
+	private boolean isCompleted = false;
 
-    private boolean isCancelled = false;
+	private boolean isCancelled = false;
 
-    public final Entity getEntity() {
-        return entity;
-    }
+	public final Entity getEntity() {
+		return entity;
+	}
 
-    public final Action setEntity(Entity entity) {
-        if (this.entity != null && this.entity != entity) {
-           return this;
-        }
-        this.entity = entity;
-        return this;
-    }
+	public final Action setEntity(Entity entity) {
+		if (this.entity != null && this.entity != entity) {
+			return this;
+		}
+		this.entity = entity;
+		return this;
+	}
 
-    public final boolean isComplete() {
-        return isCompleted;
-    }
+	public final boolean isComplete() {
+		return isCompleted;
+	}
 
-    public final void setComplete() {
-        isCompleted = true;
-    }
+	public final void setComplete() {
+		isCompleted = true;
+	}
 
-    public final boolean isCancelled() {
-        return isCancelled;
-    }
+	public final boolean isCancelled() {
+		return isCancelled;
+	}
 
-    public final void cancel() {
-        if (isCancelled) {
-            return;
-        }
-        isCancelled = true;
-        onCancelled();
-    }
+	public final void cancel() {
+		if (isCancelled) {
+			return;
+		}
+		isCancelled = true;
+		onCancelled();
+	}
 
-    protected void onQueued() { }
+	protected void onQueued() {
+	}
 
-    protected void onStarted() { }
+	protected void onStarted() {
+	}
 
-    protected abstract void onUpdate(double tpf);
+	protected abstract void onUpdate(double tpf);
 
-    protected void onCompleted() { }
+	protected void onCompleted() {
+	}
 
-    protected void onCancelled() { }
+	protected void onCancelled() {
+	}
 }

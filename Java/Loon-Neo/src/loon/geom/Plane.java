@@ -54,8 +54,7 @@ public class Plane implements XY {
 		this(plane.normal, plane.d);
 	}
 
-	public static Vector3f intersection(Plane p1, Plane p2, Plane p3,
-			Vector3f dest) {
+	public static Vector3f intersection(Plane p1, Plane p2, Plane p3, Vector3f dest) {
 		if (dest == null) {
 			dest = new Vector3f();
 		}
@@ -142,8 +141,7 @@ public class Plane implements XY {
 		}
 
 		Plane plane = (Plane) o;
-		return NumberUtils.compare(plane.d, d) == 0
-				&& normal.equals(plane.normal);
+		return NumberUtils.compare(plane.d, d) == 0 && normal.equals(plane.normal);
 	}
 
 	@Override
@@ -159,9 +157,7 @@ public class Plane implements XY {
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("Plane");
-		builder.kv("normal", normal)
-		.comma()
-		.kv("dot", d);
+		builder.kv("normal", normal).comma().kv("dot", d);
 		return builder.toString();
 	}
 

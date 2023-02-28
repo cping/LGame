@@ -93,12 +93,9 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	/**
 	 * 从当前ActionBind数值到指定目标(大多数时候，调用此状态已经足够)
 	 * 
-	 * @param target
-	 *            具体的操作对象
-	 * @param tweenType
-	 *            需要转变的接口
-	 * @param duration
-	 *            持续时间
+	 * @param target    具体的操作对象
+	 * @param tweenType 需要转变的接口
+	 * @param duration  持续时间
 	 * @return
 	 */
 	public static ActionTween to(ActionBind target, int tweenType, float duration) {

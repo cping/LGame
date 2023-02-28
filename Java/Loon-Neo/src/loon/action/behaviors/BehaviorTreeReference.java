@@ -21,7 +21,7 @@
 package loon.action.behaviors;
 
 public class BehaviorTreeReference<T> extends Behavior<T> {
-	
+
 	protected BehaviorTree<T> _childTree;
 
 	public BehaviorTreeReference(BehaviorTree<T> tree) {
@@ -41,6 +41,6 @@ public class BehaviorTreeReference<T> extends Behavior<T> {
 
 	@Override
 	public void onEnd() {
-	
+
 	}
 }

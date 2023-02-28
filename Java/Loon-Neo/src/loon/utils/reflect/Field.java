@@ -93,35 +93,29 @@ public final class Field {
 	public Class<? extends Object> getElementType(int index) {
 		Type genericType = field.getGenericType();
 		if (genericType instanceof ParameterizedType) {
-			Type[] actualTypes = ((ParameterizedType) genericType)
-					.getActualTypeArguments();
+			Type[] actualTypes = ((ParameterizedType) genericType).getActualTypeArguments();
 			if (actualTypes.length - 1 >= index) {
 				Type actualType = actualTypes[index];
 				if (actualType instanceof Class)
 					return (Class<?>) actualType;
 				else if (actualType instanceof ParameterizedType)
-					return (Class<?>) ((ParameterizedType) actualType)
-							.getRawType();
+					return (Class<?>) ((ParameterizedType) actualType).getRawType();
 				else if (actualType instanceof GenericArrayType) {
-					Type componentType = ((GenericArrayType) actualType)
-							.getGenericComponentType();
+					Type componentType = ((GenericArrayType) actualType).getGenericComponentType();
 					if (componentType instanceof Class)
-						return ArrayReflection.newInstance(
-								(Class<?>) componentType, 0).getClass();
+						return ArrayReflection.newInstance((Class<?>) componentType, 0).getClass();
 				}
 			}
 		}
 		return null;
 	}
 
-	public boolean isAnnotationPresent(
-			Class<? extends java.lang.annotation.Annotation> annotationType) {
+	public boolean isAnnotationPresent(Class<? extends java.lang.annotation.Annotation> annotationType) {
 		return field.isAnnotationPresent(annotationType);
 	}
 
 	public Annotation[] getDeclaredAnnotations() {
-		java.lang.annotation.Annotation[] annotations = field
-				.getDeclaredAnnotations();
+		java.lang.annotation.Annotation[] annotations = field.getDeclaredAnnotations();
 		Annotation[] result = new Annotation[annotations.length];
 		for (int i = 0; i < annotations.length; i++) {
 			result[i] = new Annotation(annotations[i]);
@@ -129,10 +123,8 @@ public final class Field {
 		return result;
 	}
 
-	public Annotation getDeclaredAnnotation(
-			Class<? extends java.lang.annotation.Annotation> annotationType) {
-		java.lang.annotation.Annotation[] annotations = field
-				.getDeclaredAnnotations();
+	public Annotation getDeclaredAnnotation(Class<? extends java.lang.annotation.Annotation> annotationType) {
+		java.lang.annotation.Annotation[] annotations = field.getDeclaredAnnotations();
 		if (annotations == null) {
 			return null;
 		}
@@ -148,11 +140,9 @@ public final class Field {
 		try {
 			return field.get(obj);
 		} catch (IllegalArgumentException e) {
-			throw new ReflectionException("Object is not an instance of "
-					+ getDeclaringClass(), e);
+			throw new ReflectionException("Object is not an instance of " + getDeclaringClass(), e);
 		} catch (IllegalAccessException e) {
-			throw new ReflectionException("Illegal access to field: "
-					+ getName(), e);
+			throw new ReflectionException("Illegal access to field: " + getName(), e);
 		}
 	}
 
@@ -160,11 +150,9 @@ public final class Field {
 		try {
 			field.set(obj, value);
 		} catch (IllegalArgumentException e) {
-			throw new ReflectionException("Argument not valid for field: "
-					+ getName(), e);
+			throw new ReflectionException("Argument not valid for field: " + getName(), e);
 		} catch (IllegalAccessException e) {
-			throw new ReflectionException("Illegal access to field: "
-					+ getName(), e);
+			throw new ReflectionException("Illegal access to field: " + getName(), e);
 		}
 	}
 

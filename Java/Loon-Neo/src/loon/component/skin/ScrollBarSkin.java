@@ -28,8 +28,8 @@ public class ScrollBarSkin {
 	private LTexture scrollBarTexture;
 
 	private LTexture sliderTexture;
-	
-	public static ScrollBarSkin def(){
+
+	public static ScrollBarSkin def() {
 		return new ScrollBarSkin();
 	}
 

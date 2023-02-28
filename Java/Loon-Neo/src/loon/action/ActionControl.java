@@ -42,10 +42,10 @@ public class ActionControl implements LRelease {
 
 	private boolean pause;
 
-	public static void freeStatic(){
+	public static void freeStatic() {
 		instanceAction = null;
 	}
-	
+
 	/**
 	 * 构建一个单独的缓动动画控制器
 	 * 
@@ -118,8 +118,7 @@ public class ActionControl implements LRelease {
 	 * 读取指定缓动动画对象已保存的历史动作
 	 * 
 	 * @param bind
-	 * @param resetData
-	 *            true时还原数据,false时仅读取出历史记录数据
+	 * @param resetData true时还原数据,false时仅读取出历史记录数据
 	 * @return
 	 */
 	public TArray<ActionBindData> loadActionData(ActionBind bind, boolean resetData) {

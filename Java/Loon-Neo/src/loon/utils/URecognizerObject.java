@@ -23,18 +23,17 @@ package loon.utils;
 import loon.geom.PointF;
 
 public class URecognizerObject {
-	
+
 	private String name;
-	
+
 	private TArray<PointF> points;
 
-	public URecognizerObject(String n, TArray<PointF> points) 
-	{
+	public URecognizerObject(String n, TArray<PointF> points) {
 		this.name = n;
 		this.points = URecognizer.loadResample(points, URecognizer.MXA_POINTS);
 		this.points = URecognizer.loadRotateToZero(this.points);
 		this.points = URecognizer.loadScaleToSquare(this.points, URecognizer.MAX_SQUARE_COUNT);
-		this.points = URecognizer.loadTranslateToOrigin(this.points);		
+		this.points = URecognizer.loadTranslateToOrigin(this.points);
 	}
 
 	public String getName() {

@@ -213,7 +213,7 @@ public class FadeDotEffect extends Entity implements BaseEffect {
 			}
 		}
 	}
-	
+
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
 		if (finished) {
@@ -254,7 +254,7 @@ public class FadeDotEffect extends Entity implements BaseEffect {
 		this.autoRemoved = autoRemoved;
 		return this;
 	}
-	
+
 	@Override
 	public void close() {
 		super.close();

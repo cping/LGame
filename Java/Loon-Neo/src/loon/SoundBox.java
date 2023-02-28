@@ -25,8 +25,7 @@ import loon.utils.ObjectMap;
 
 public abstract class SoundBox extends BaseIO {
 
-	private ObjectMap<String, Sound> _soundCache = new ObjectMap<String, Sound>(
-			CollectionUtils.INITIAL_CAPACITY);
+	private ObjectMap<String, Sound> _soundCache = new ObjectMap<String, Sound>(CollectionUtils.INITIAL_CAPACITY);
 
 	public void playSound(String path) {
 		playSound(path, false);
@@ -74,7 +73,7 @@ public abstract class SoundBox extends BaseIO {
 		}
 		_soundCache.clear();
 	}
-	
+
 	@Override
 	protected void finalize() {
 		release();

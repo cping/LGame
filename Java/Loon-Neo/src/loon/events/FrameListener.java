@@ -25,7 +25,7 @@ public interface FrameListener {
 	public void onFrameStarted(int currentFrameIndex);
 
 	public void onFrameStopped(int currentFrameIndex);
-	
+
 	public void onFrameChanged(int currentFrameIndex);
-	
+
 }

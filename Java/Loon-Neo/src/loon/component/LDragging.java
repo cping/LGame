@@ -91,28 +91,17 @@ public class LDragging extends LComponent {
 	/**
 	 * 构造拖拽用组件,用于渲染出特定的拖拽区域
 	 * 
-	 * @param x
-	 *            组件初始x
-	 * @param y
-	 *            组件初始y
-	 * @param width
-	 *            组件初始width
-	 * @param height
-	 *            组件初始height
-	 * @param fillColor
-	 *            填充选中区域用的颜色(需要fill项为true)
-	 * @param rectColor
-	 *            填充选中区域边框的颜色(若fill项为false则直接使用fillColor颜色)
-	 * @param circle
-	 *            使用圆形选择区域而非矩形
-	 * @param fill
-	 *            是否填充整个选框
-	 * @param dash
-	 *            是否使用虚线填充
-	 * @param lineWidth
-	 *            边框的宽度
-	 * @param dashDivisions
-	 *            若dash项为true时,每行显示多少个虚线
+	 * @param x             组件初始x
+	 * @param y             组件初始y
+	 * @param width         组件初始width
+	 * @param height        组件初始height
+	 * @param fillColor     填充选中区域用的颜色(需要fill项为true)
+	 * @param rectColor     填充选中区域边框的颜色(若fill项为false则直接使用fillColor颜色)
+	 * @param circle        使用圆形选择区域而非矩形
+	 * @param fill          是否填充整个选框
+	 * @param dash          是否使用虚线填充
+	 * @param lineWidth     边框的宽度
+	 * @param dashDivisions 若dash项为true时,每行显示多少个虚线
 	 */
 	public LDragging(int x, int y, int width, int height, LColor fillColor, LColor rectColor, boolean circle,
 			boolean fill, boolean dash, float lineWidth, int dashDivisions) {

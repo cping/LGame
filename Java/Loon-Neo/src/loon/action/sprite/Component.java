@@ -24,44 +24,44 @@ import loon.geom.BooleanValue;
 
 public abstract class Component {
 
-    protected Entity entity;
+	protected Entity entity;
 
-    private BooleanValue paused = new BooleanValue(false);
+	private BooleanValue paused = new BooleanValue(false);
 
-    public final Entity getEntity() {
-        return entity;
-    }
+	public final Entity getEntity() {
+		return entity;
+	}
 
-    final void setEntity(Entity entity) {
-        this.entity = entity;
-    }
+	final void setEntity(Entity entity) {
+		this.entity = entity;
+	}
 
-    public final boolean isPaused() {
-        return paused.get();
-    }
+	public final boolean isPaused() {
+		return paused.get();
+	}
 
-    public final void pause() {
-        paused.set(true);
-    }
+	public final void pause() {
+		paused.set(true);
+	}
 
-    public final void resume() {
-        paused.set(false);
-    }
+	public final void resume() {
+		paused.set(false);
+	}
 
-    public BooleanValue pausedValue() {
-        return paused;
-    }
-    
-    public void onAdded() {
+	public BooleanValue pausedValue() {
+		return paused;
+	}
 
-    }
+	public void onAdded() {
 
-    public void onUpdate(float dt) {
+	}
 
-    }
+	public void onUpdate(float dt) {
 
-    public void onRemoved() {
+	}
 
-    }
+	public void onRemoved() {
+
+	}
 
 }

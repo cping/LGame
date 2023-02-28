@@ -47,12 +47,12 @@ public class CssStyleBuilder {
 
 		for (CssRule rule : stylesheet.rules) {
 			for (CssSelectorObject selector : rule.selectors) {
-				
+
 				if (selector != null && selector.selector != null && selector.selector.classNames != null
 						&& selector.selector.classNames.contains("*")) {
-					
+
 					for (CssDeclaration declaration : rule.declarations) {
-					
+
 						values.put(declaration.name, declaration.value);
 					}
 				}
@@ -69,7 +69,7 @@ public class CssStyleBuilder {
 
 		for (CssRule rule : rules) {
 			CssMatchedRule matchedRule = matchRule(elementData, rule);
-			if (null != matchedRule){
+			if (null != matchedRule) {
 				matchedRules.add(matchedRule);
 			}
 		}
@@ -141,7 +141,7 @@ public class CssStyleBuilder {
 		styledNode.node = root;
 
 		if (root.isOnlyText()) {
-		
+
 			styledNode.values = generalSelectorValues(styleSheet);
 
 		} else {

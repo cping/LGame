@@ -22,17 +22,7 @@ package loon.utils;
 
 public enum DPI {
 	/**
-	 * LDPI - 0.75x
-       MDPI - 1.0x 
-       HDPI - 1.5x
-       XHDPI - 2.0x
-       XXHDPI - 3x
-       XXXHDPI - 4.0x
+	 * LDPI - 0.75x MDPI - 1.0x HDPI - 1.5x XHDPI - 2.0x XXHDPI - 3x XXXHDPI - 4.0x
 	 */
-    LDPI,
-    MDPI,
-    HDPI,
-    XHDPI,
-    XXHDPI,
-    XXXHDPI;
+	LDPI, MDPI, HDPI, XHDPI, XXHDPI, XXXHDPI;
 }

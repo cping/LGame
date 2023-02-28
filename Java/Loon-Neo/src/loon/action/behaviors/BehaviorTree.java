@@ -42,7 +42,7 @@ public class BehaviorTree<T> {
 		this.updatePeriod = _elapsedTime = update;
 		this._deltaTime = 1 / 60f;
 	}
-	
+
 	public void setElapsedTime(float time) {
 		this._elapsedTime = time;
 	}

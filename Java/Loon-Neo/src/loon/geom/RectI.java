@@ -69,7 +69,7 @@ public class RectI implements XY {
 			result = prime * result + NumberUtils.floatToIntBits(bottom);
 			return result;
 		}
-		
+
 		@Override
 		public boolean equals(Object obj) {
 			Range r = (Range) obj;
@@ -453,7 +453,7 @@ public class RectI implements XY {
 	public boolean isEmpty() {
 		return width <= 0 && height <= 0;
 	}
-	
+
 	public static void getNearestCorner(int x, int y, int w, int h, int px, int py, PointI result) {
 		result.set((int) MathUtils.nearest(px, x, x + w), (int) MathUtils.nearest(y, y, y + h));
 	}
@@ -545,13 +545,13 @@ public class RectI implements XY {
 	}
 
 	public RectI random() {
-		this.x = MathUtils.random(0,LSystem.viewSize.getWidth());
-		this.y = MathUtils.random(0,LSystem.viewSize.getHeight());
-		this.width = MathUtils.random(0,LSystem.viewSize.getWidth());
-		this.height = MathUtils.random(0,LSystem.viewSize.getHeight());
+		this.x = MathUtils.random(0, LSystem.viewSize.getWidth());
+		this.y = MathUtils.random(0, LSystem.viewSize.getHeight());
+		this.width = MathUtils.random(0, LSystem.viewSize.getWidth());
+		this.height = MathUtils.random(0, LSystem.viewSize.getHeight());
 		return this;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

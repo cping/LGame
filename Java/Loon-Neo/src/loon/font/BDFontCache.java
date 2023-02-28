@@ -29,11 +29,11 @@ public class BDFontCache extends CacheMap<BDFont> {
 	private final static String DEF_PIXFONT = "pixfont";
 
 	private static BDFontCache _fontCache = null;
-	
-	public static void freeStatic(){
+
+	public static void freeStatic() {
 		_fontCache = null;
 	}
-	
+
 	public static BDFontCache shared() {
 		if (_fontCache == null) {
 			synchronized (BDFontCache.class) {

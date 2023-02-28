@@ -23,7 +23,7 @@ package loon.utils;
 import java.util.Comparator;
 
 public class SortUtils<T> {
-	
+
 	private Comparator<T> _comparator;
 	private T[] _heap;
 	private int _num;

@@ -130,8 +130,8 @@ public class TriangleNeat implements Triangle {
 		}
 	}
 
-	private static boolean insideTriangle(float f, float f1, float f2,
-			float f3, float f4, float f5, float f6, float f7) {
+	private static boolean insideTriangle(float f, float f1, float f2, float f3, float f4, float f5, float f6,
+			float f7) {
 		float f8 = f4 - f2;
 		float f9 = f5 - f3;
 		float f10 = f - f4;
@@ -205,15 +205,15 @@ public class TriangleNeat implements Triangle {
 				throw new LSysException("Bad polygon");
 			}
 			int j = i1;
-			if (i <= j){
+			if (i <= j) {
 				j = 0;
 			}
 			i1 = j + 1;
-			if (i <= i1){
+			if (i <= i1) {
 				i1 = 0;
 			}
 			int j1 = i1 + 1;
-			if (i <= j1){
+			if (i <= j1) {
 				j1 = 0;
 			}
 			if (snip(j, i1, j1, i)) {

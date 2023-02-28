@@ -34,7 +34,7 @@ public class Pools<T> {
 	public Pools() {
 		_inPoolDic = new ObjectMap<String, Pool<T>>();
 	}
-	
+
 	public Pools<T> recover(String sign, Pool<T> item) {
 		_inPoolDic.put(sign, item);
 		return this;

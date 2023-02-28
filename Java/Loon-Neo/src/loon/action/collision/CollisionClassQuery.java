@@ -28,10 +28,10 @@ public class CollisionClassQuery implements CollisionQuery {
 	private String _flag;
 
 	private CollisionQuery _subQuery;
-	
+
 	private Vector2f _offsetLocation;
 
-	public CollisionClassQuery(String _flag, CollisionQuery _subQuery,Vector2f offset) {
+	public CollisionClassQuery(String _flag, CollisionQuery _subQuery, Vector2f offset) {
 		this._flag = _flag;
 		this._subQuery = _subQuery;
 		this._offsetLocation = offset;
@@ -39,8 +39,7 @@ public class CollisionClassQuery implements CollisionQuery {
 
 	@Override
 	public boolean checkCollision(CollisionObject actor) {
-		return _flag.equals(actor.getObjectFlag()) ? this._subQuery.checkCollision(actor)
-				: false;
+		return _flag.equals(actor.getObjectFlag()) ? this._subQuery.checkCollision(actor) : false;
 	}
 
 	@Override

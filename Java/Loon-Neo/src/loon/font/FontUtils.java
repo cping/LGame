@@ -45,7 +45,7 @@ public class FontUtils {
 	}
 
 	private final static int FLAGS = 35;
-	
+
 	private static final int UNSPECIFIED = -1;
 
 	public static void drawLeft(GLEx g, String s, int x, int y) {
@@ -173,7 +173,7 @@ public class FontUtils {
 	 * @return
 	 */
 	public static TArray<String> splitLines(String text, IFont font, float width) {
-		
+
 		TArray<String> list = new TArray<String>();
 		if (text == null) {
 			return list;
@@ -227,7 +227,7 @@ public class FontUtils {
 
 		return list;
 	}
-	
+
 	public static <T extends TArray<CharSequence>> T splitLines(final CharSequence chars, final T result) {
 		return StringUtils.splitArray(chars, '\n', result);
 	}

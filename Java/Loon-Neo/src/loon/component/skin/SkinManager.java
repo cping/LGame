@@ -26,10 +26,10 @@ public class SkinManager {
 
 	private static SkinManager instance;
 
-	public static void freeStatic(){
+	public static void freeStatic() {
 		instance = null;
 	}
-	
+
 	public final static SkinManager make() {
 		return new SkinManager();
 	}
@@ -185,8 +185,7 @@ public class SkinManager {
 		this.scrollBarSkin = scrollBarSkin;
 	}
 
-	public SliderSkin getSliderSkin(LColor sliderColor, LColor barColor,
-			boolean v) {
+	public SliderSkin getSliderSkin(LColor sliderColor, LColor barColor, boolean v) {
 		if (sliderSkin == null) {
 			if (useDefUpdate) {
 				return SliderSkin.def(sliderColor, barColor, v);

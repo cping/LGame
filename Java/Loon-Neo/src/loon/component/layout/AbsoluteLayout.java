@@ -26,10 +26,10 @@ import loon.utils.TArray;
 
 public class AbsoluteLayout extends LayoutManager {
 
-	public final static AbsoluteLayout at(){
+	public final static AbsoluteLayout at() {
 		return new AbsoluteLayout();
 	}
-	
+
 	private LayoutProcess post;
 
 	public AbsoluteLayout() {
@@ -41,8 +41,7 @@ public class AbsoluteLayout extends LayoutManager {
 	}
 
 	@Override
-	public LayoutManager layoutElements(final LayoutPort rootElement,
-			final LayoutPort... elements) {
+	public LayoutManager layoutElements(final LayoutPort rootElement, final LayoutPort... elements) {
 
 		if (rootElement == null || elements == null || elements.length == 0) {
 			return this;
@@ -64,111 +63,92 @@ public class AbsoluteLayout extends LayoutManager {
 				}
 
 				if (cons.getY() != null) {
-					box.setY(rootBoxY
-							+ cons.getY().getValueAsInt(rootBoxHeight));
+					box.setY(rootBoxY + cons.getY().getValueAsInt(rootBoxHeight));
 				}
 
-				if (cons.getWidth() != null
-						&& cons.getWidth().hasHeightSuffix()) {
+				if (cons.getWidth() != null && cons.getWidth().hasHeightSuffix()) {
 					if (cons.getHeight() != null) {
 						if (_allow) {
-							box.setHeight(cons.getHeight().getValueAsInt(
-									rootBoxHeight));
+							box.setHeight(cons.getHeight().getValueAsInt(rootBoxHeight));
 						}
 					}
 					if (_allow) {
-						box.setWidth(cons.getWidth().getValueAsInt(
-								box.getHeight()));
+						box.setWidth(cons.getWidth().getValueAsInt(box.getHeight()));
 					}
-				} else if (cons.getHeight() != null
-						&& cons.getHeight().hasWidthSuffix()) {
+				} else if (cons.getHeight() != null && cons.getHeight().hasWidthSuffix()) {
 					if (cons.getWidth() != null) {
 						if (_allow) {
-							box.setWidth(cons.getWidth().getValueAsInt(
-									rootBoxWidth));
+							box.setWidth(cons.getWidth().getValueAsInt(rootBoxWidth));
 						}
 					}
 					if (_allow) {
-						box.setHeight(cons.getHeight().getValueAsInt(
-								box.getWidth()));
+						box.setHeight(cons.getHeight().getValueAsInt(box.getWidth()));
 					}
 				} else {
 					if (cons.getWidth() != null) {
 						if (_allow) {
-							box.setWidth(cons.getWidth().getValueAsInt(
-									rootBoxWidth));
+							box.setWidth(cons.getWidth().getValueAsInt(rootBoxWidth));
 						}
 					}
 					if (cons.getHeight() != null) {
 						if (_allow) {
-							box.setHeight(cons.getHeight().getValueAsInt(
-									rootBoxHeight));
+							box.setHeight(cons.getHeight().getValueAsInt(rootBoxHeight));
 						}
 					}
 				}
 
-				post.process(rootBoxX, rootBoxY, rootBoxWidth, rootBoxHeight,
-						box);
+				post.process(rootBoxX, rootBoxY, rootBoxWidth, rootBoxHeight, box);
 			}
 		}
 		return this;
 	}
 
 	@Override
-	final SizeValue calculateConstraintWidth(final LayoutPort root,
-			final TArray<LayoutPort> children) {
+	final SizeValue calculateConstraintWidth(final LayoutPort root, final TArray<LayoutPort> children) {
 		return null;
 	}
-	
+
 	@Override
-	final SizeValue calculateConstraintHeight(final LayoutPort root,
-			final TArray<LayoutPort> children) {
+	final SizeValue calculateConstraintHeight(final LayoutPort root, final TArray<LayoutPort> children) {
 		return null;
 	}
 
 	private int getRootBoxX(final LayoutPort root) {
-		return (int) (root.getBox().getX() + root.getBoxConstraints()
-				.getPaddingLeft().getValueAsInt(root.getBox().getWidth()));
+		return (int) (root.getBox().getX()
+				+ root.getBoxConstraints().getPaddingLeft().getValueAsInt(root.getBox().getWidth()));
 	}
 
 	private int getRootBoxY(final LayoutPort root) {
-		return (int) (root.getBox().getY() + root.getBoxConstraints()
-				.getPaddingTop().getValueAsInt(root.getBox().getHeight()));
+		return (int) (root.getBox().getY()
+				+ root.getBoxConstraints().getPaddingTop().getValueAsInt(root.getBox().getHeight()));
 	}
 
 	private int getRootBoxWidth(final LayoutPort root) {
 		return (int) (root.getBox().getWidth()
-				- root.getBoxConstraints().getPaddingLeft()
-						.getValueAsInt(root.getBox().getWidth()) - root
-				.getBoxConstraints().getPaddingRight()
-				.getValueAsInt(root.getBox().getWidth()));
+				- root.getBoxConstraints().getPaddingLeft().getValueAsInt(root.getBox().getWidth())
+				- root.getBoxConstraints().getPaddingRight().getValueAsInt(root.getBox().getWidth()));
 	}
 
 	private int getRootBoxHeight(final LayoutPort root) {
 		return (int) (root.getBox().getHeight()
-				- root.getBoxConstraints().getPaddingTop()
-						.getValueAsInt(root.getBox().getHeight()) - root
-				.getBoxConstraints().getPaddingBottom()
-				.getValueAsInt(root.getBox().getHeight()));
+				- root.getBoxConstraints().getPaddingTop().getValueAsInt(root.getBox().getHeight())
+				- root.getBoxConstraints().getPaddingBottom().getValueAsInt(root.getBox().getHeight()));
 	}
 
 	public interface LayoutProcess {
-		void process(int rootBoxX, int rootBoxY, int rootBoxWidth,
-				int rootBoxHeight, BoxSize box);
+		void process(int rootBoxX, int rootBoxY, int rootBoxWidth, int rootBoxHeight, BoxSize box);
 	}
 
 	public static class DefaultPostProcess implements LayoutProcess {
 		@Override
-		public void process(final int rootBoxX, final int rootBoxY,
-				final int rootBoxWidth, final int rootBoxHeight,
+		public void process(final int rootBoxX, final int rootBoxY, final int rootBoxWidth, final int rootBoxHeight,
 				final BoxSize box) {
 		}
 	}
-	
+
 	public static class KeepInsidePostProcess implements LayoutProcess {
 		@Override
-		public void process(final int rootBoxX, final int rootBoxY,
-				final int rootBoxWidth, final int rootBoxHeight,
+		public void process(final int rootBoxX, final int rootBoxY, final int rootBoxWidth, final int rootBoxHeight,
 				final BoxSize box) {
 			int getWidth = (int) (rootBoxWidth - box.getWidth());
 			int getHeight = (int) (rootBoxHeight - box.getHeight());

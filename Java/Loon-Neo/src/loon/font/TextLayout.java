@@ -47,13 +47,11 @@ public abstract class TextLayout {
 
 	public abstract int charWidth(char ch);
 
-	protected TextLayout(String text, TextFormat format, RectBox bounds,
-			float height) {
+	protected TextLayout(String text, TextFormat format, RectBox bounds, float height) {
 		this.text = text;
 		this.format = format;
 		this.bounds = bounds;
-		this.size = new Dimension(
-				MathUtils.max(bounds.x(), 0) + bounds.width(), height);
+		this.size = new Dimension(MathUtils.max(bounds.x(), 0) + bounds.width(), height);
 	}
 
 	public static String normalizeEOL(String text) {

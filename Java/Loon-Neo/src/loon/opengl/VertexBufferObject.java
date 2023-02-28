@@ -38,24 +38,20 @@ public class VertexBufferObject implements VertexData {
 	boolean isDirty = false;
 	boolean isBound = false;
 
-	public VertexBufferObject(boolean isStatic, int numVertices,
-			VertexAttribute... attributes) {
+	public VertexBufferObject(boolean isStatic, int numVertices, VertexAttribute... attributes) {
 		this(isStatic, numVertices, new VertexAttributes(attributes));
 	}
 
-	public VertexBufferObject(boolean isStatic, int numVertices,
-			VertexAttributes attributes) {
+	public VertexBufferObject(boolean isStatic, int numVertices, VertexAttributes attributes) {
 		bufferHandle = LSystem.base().graphics().gl.glGenBuffer();
 
-		ByteBuffer data = LSystem.base().support()
-				.newUnsafeByteBuffer(attributes.vertexSize * numVertices);
+		ByteBuffer data = LSystem.base().support().newUnsafeByteBuffer(attributes.vertexSize * numVertices);
 		data.limit(0);
 		setBuffer(data, true, attributes);
 		setUsage(isStatic ? GL20.GL_STATIC_DRAW : GL20.GL_DYNAMIC_DRAW);
 	}
 
-	protected VertexBufferObject(int usage, ByteBuffer data,
-			boolean ownsBuffer, VertexAttributes attributes) {
+	protected VertexBufferObject(int usage, ByteBuffer data, boolean ownsBuffer, VertexAttributes attributes) {
 		bufferHandle = LSystem.base().graphics().gl.glGenBuffer();
 
 		setBuffer(data, ownsBuffer, attributes);
@@ -83,11 +79,9 @@ public class VertexBufferObject implements VertexData {
 		return buffer;
 	}
 
-	protected void setBuffer(Buffer data, boolean ownsBuffer,
-			VertexAttributes value) {
+	protected void setBuffer(Buffer data, boolean ownsBuffer, VertexAttributes value) {
 		if (isBound) {
-			throw new LSysException(
-					"Cannot change attributes while VBO is bound");
+			throw new LSysException("Cannot change attributes while VBO is bound");
 		}
 		if (this.ownsBuffer && byteBuffer != null) {
 			LSystem.base().support().disposeUnsafeByteBuffer(byteBuffer);
@@ -108,8 +102,7 @@ public class VertexBufferObject implements VertexData {
 
 	private void bufferChanged() {
 		if (isBound) {
-			LSystem.base().graphics().gl.glBufferData(GL20.GL_ARRAY_BUFFER,
-					byteBuffer.limit(), byteBuffer, usage);
+			LSystem.base().graphics().gl.glBufferData(GL20.GL_ARRAY_BUFFER, byteBuffer.limit(), byteBuffer, usage);
 			isDirty = false;
 		}
 	}
@@ -129,13 +122,11 @@ public class VertexBufferObject implements VertexData {
 	}
 
 	@Override
-	public void updateVertices(int targetOffset, float[] vertices,
-			int sourceOffset, int count) {
+	public void updateVertices(int targetOffset, float[] vertices, int sourceOffset, int count) {
 		isDirty = true;
 		final int pos = byteBuffer.position();
 		byteBuffer.position(targetOffset * 4);
-		LSystem.base().support()
-				.copy(vertices, byteBuffer, sourceOffset, count);
+		LSystem.base().support().copy(vertices, byteBuffer, sourceOffset, count);
 		byteBuffer.position(pos);
 		buffer.position(0);
 		bufferChanged();
@@ -146,7 +137,7 @@ public class VertexBufferObject implements VertexData {
 	}
 
 	protected void setUsage(int value) {
-		if (isBound){
+		if (isBound) {
 			throw new LSysException("Cannot change usage while VBO is bound");
 		}
 		usage = value;
@@ -164,8 +155,7 @@ public class VertexBufferObject implements VertexData {
 		gl.glBindBuffer(GL20.GL_ARRAY_BUFFER, bufferHandle);
 		if (isDirty) {
 			byteBuffer.limit(buffer.limit() * 4);
-			gl.glBufferData(GL20.GL_ARRAY_BUFFER, byteBuffer.limit(),
-					byteBuffer, usage);
+			gl.glBufferData(GL20.GL_ARRAY_BUFFER, byteBuffer.limit(), byteBuffer, usage);
 			isDirty = false;
 		}
 
@@ -173,14 +163,12 @@ public class VertexBufferObject implements VertexData {
 		if (locations == null) {
 			for (int i = 0; i < numAttributes; i++) {
 				final VertexAttribute attribute = attributes.get(i);
-				final int location = shader
-						.getAttributeLocation(attribute.alias);
-				if (location < 0){
+				final int location = shader.getAttributeLocation(attribute.alias);
+				if (location < 0) {
 					continue;
 				}
 				shader.enableVertexAttribute(location);
-				shader.setVertexAttribute(location, attribute.numComponents,
-						attribute.type, attribute.normalized,
+				shader.setVertexAttribute(location, attribute.numComponents, attribute.type, attribute.normalized,
 						attributes.vertexSize, attribute.offset);
 			}
 
@@ -188,12 +176,11 @@ public class VertexBufferObject implements VertexData {
 			for (int i = 0; i < numAttributes; i++) {
 				final VertexAttribute attribute = attributes.get(i);
 				final int location = locations[i];
-				if (location < 0){
+				if (location < 0) {
 					continue;
 				}
 				shader.enableVertexAttribute(location);
-				shader.setVertexAttribute(location, attribute.numComponents,
-						attribute.type, attribute.normalized,
+				shader.setVertexAttribute(location, attribute.numComponents, attribute.type, attribute.normalized,
 						attributes.vertexSize, attribute.offset);
 			}
 		}

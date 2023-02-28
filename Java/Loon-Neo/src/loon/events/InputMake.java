@@ -62,30 +62,22 @@ public abstract class InputMake {
 	public void setMouseLocked(boolean locked) {
 	}
 
-
-	protected int modifierFlags(boolean altP, boolean ctrlP, boolean metaP,
-			boolean shiftP) {
+	protected int modifierFlags(boolean altP, boolean ctrlP, boolean metaP, boolean shiftP) {
 		return Event.InputEvent.modifierFlags(altP, ctrlP, metaP, shiftP);
 	}
 
-	protected void emitKeyPress(double time, int keyCode, char keyChar,
-			boolean down, int flags) {
-		KeyMake.KeyEvent event = new KeyMake.KeyEvent(0, time, keyChar,
-				keyCode, down);
+	protected void emitKeyPress(double time, int keyCode, char keyChar, boolean down, int flags) {
+		KeyMake.KeyEvent event = new KeyMake.KeyEvent(0, time, keyChar, keyCode, down);
 		event.setFlag(flags);
 		keyboardEvents.emit(event);
 	}
 
-	protected void emitMouseButton(double time, float x, float y, int btnid,
-			boolean down, int flags) {
-		MouseMake.ButtonEvent event = new MouseMake.ButtonEvent(0, time, x, y,
-				btnid, down);
+	protected void emitMouseButton(double time, float x, float y, int btnid, boolean down, int flags) {
+		MouseMake.ButtonEvent event = new MouseMake.ButtonEvent(0, time, x, y, btnid, down);
 		event.setFlag(flags);
 		mouseEvents.emit(event);
 	}
 
-	
 	public abstract void callback(LObject<?> o);
-
 
 }

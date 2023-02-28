@@ -31,7 +31,7 @@ public class FontSheet implements LRelease {
 	private TextureAtlas _texAtlas = null;
 
 	private boolean _closed = false;
-	
+
 	public LTexture sheet() {
 		return _texAtlas.img();
 	}

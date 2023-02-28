@@ -22,7 +22,7 @@ package loon.geom;
 
 import loon.LRelease;
 
-public class BooleanValue implements LRelease{
+public class BooleanValue implements LRelease {
 
 	private boolean value = false;
 
@@ -42,7 +42,7 @@ public class BooleanValue implements LRelease{
 	public boolean get() {
 		return result();
 	}
-	
+
 	public boolean result() {
 		return value;
 	}

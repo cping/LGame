@@ -21,7 +21,7 @@
 package loon.events;
 
 public interface IEventListener {
-	
-	void onReciveEvent(int type, EventDispatcher dispatcher, Object data);	
-	
+
+	void onReciveEvent(int type, EventDispatcher dispatcher, Object data);
+
 }

@@ -30,7 +30,7 @@ import loon.utils.MathUtils;
 public abstract class CharacterValue {
 
 	private String _roleName;
-	
+
 	protected int maxHealth;
 	protected int maxMana;
 	protected int health;

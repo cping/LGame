@@ -23,21 +23,21 @@ package loon.action.map;
 public class TileVisit<T> {
 
 	protected T tile;
-	
+
 	protected int[] position = new int[2];
-	
+
 	public T getTile() {
 		return tile;
 	}
-	
+
 	public void setTile(T tile) {
 		this.tile = tile;
 	}
-	
+
 	public int[] getPosition() {
 		return position;
 	}
-	
+
 	public void setPosition(int[] position) {
 		this.position = position;
 	}

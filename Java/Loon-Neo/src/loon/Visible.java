@@ -20,8 +20,7 @@
  */
 package loon;
 
-public interface Visible
-{
+public interface Visible {
 	public boolean isVisible();
 
 	public void setVisible(boolean v);

@@ -24,10 +24,10 @@ package loon.utils.processes;
 import loon.utils.timer.LTimerContext;
 
 public interface RealtimeProcessEvent {
-	
+
 	public void addProcess(GameProcess process);
-	
+
 	public boolean containsProcess(GameProcess process);
-	
+
 	public void tick(LTimerContext clock);
 }

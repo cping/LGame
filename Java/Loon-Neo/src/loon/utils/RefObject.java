@@ -66,7 +66,7 @@ public class RefObject<T> implements LRelease {
 	public void setClosed(Callback<T> closed) {
 		this.closed = closed;
 	}
-	
+
 	@Override
 	public String toString() {
 		return StringUtils.toString(argvalue, LSystem.NULL);

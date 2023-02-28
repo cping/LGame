@@ -39,8 +39,8 @@ public class CssColor extends CssValue {
 		this.a = a;
 		sync();
 	}
-	
-	public void sync(){
+
+	public void sync() {
 		this.valueString = getLColor().toCSS();
 	}
 

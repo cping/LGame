@@ -26,13 +26,12 @@ import loon.utils.TArray;
 
 public class OverlayLayout extends LayoutManager {
 
-	public final static OverlayLayout at(){
+	public final static OverlayLayout at() {
 		return new OverlayLayout();
 	}
-	
+
 	@Override
-	public final LayoutManager layoutElements(final LayoutPort rootElement,
-			final LayoutPort... elements) {
+	public final LayoutManager layoutElements(final LayoutPort rootElement, final LayoutPort... elements) {
 
 		if (rootElement == null || elements == null || elements.length == 0) {
 			return this;
@@ -53,13 +52,11 @@ public class OverlayLayout extends LayoutManager {
 		return this;
 	}
 
-	final SizeValue calculateConstraintWidth(final LayoutPort root,
-			final TArray<LayoutPort> children) {
+	final SizeValue calculateConstraintWidth(final LayoutPort root, final TArray<LayoutPort> children) {
 		return null;
 	}
 
-	final SizeValue calculateConstraintHeight(final LayoutPort root,
-			final TArray<LayoutPort> children) {
+	final SizeValue calculateConstraintHeight(final LayoutPort root, final TArray<LayoutPort> children) {
 		return null;
 	}
 }

@@ -103,7 +103,7 @@ public class SpriteBatch extends PixmapFImpl {
 		private Vector2f pdirection;
 
 		private Vector2f pcentre;
-		
+
 		private float plength;
 
 		private boolean pchanged;
@@ -148,8 +148,8 @@ public class SpriteBatch extends PixmapFImpl {
 				update();
 			}
 			if (pstrokeWidth > 0) {
-				batch.draw(whitePixel, pcentre.x, pcentre.y, plength / 2f, pstrokeWidth / 2, plength, pstrokeWidth,
-						1f, 1f, MathUtils.fixRotation(pangle), 0, 0, 1f, 1f, false, false, true);
+				batch.draw(whitePixel, pcentre.x, pcentre.y, plength / 2f, pstrokeWidth / 2, plength, pstrokeWidth, 1f,
+						1f, MathUtils.fixRotation(pangle), 0, 0, 1f, 1f, false, false, true);
 			}
 		}
 	}
@@ -161,8 +161,7 @@ public class SpriteBatch extends PixmapFImpl {
 		drawLineImpl(x1, y1, x2, y2, 1f);
 	}
 
-	protected void drawLineImpl(float x1, float y1, float x2, float y2, 
-			float lineWidth) {
+	protected void drawLineImpl(float x1, float y1, float x2, float y2, float lineWidth) {
 
 		int hashCode = 1;
 		hashCode = LSystem.unite(hashCode, x1);
@@ -1836,10 +1835,10 @@ public class SpriteBatch extends PixmapFImpl {
 		if (game != null && game.display() != null) {
 			lineWidth = game.display().GL().getLineWidth();
 		}
-		drawLineImpl(tempX, tempY, tempWidth, tempY,  lineWidth);
+		drawLineImpl(tempX, tempY, tempWidth, tempY, lineWidth);
 		drawLineImpl(tempX, tempY + 1, tempX, tempHeight, lineWidth);
 		drawLineImpl(tempWidth, tempHeight, tempX + 1, tempHeight, lineWidth);
-		drawLineImpl(tempWidth, tempHeight - 1, tempWidth, tempY + 1,  lineWidth);
+		drawLineImpl(tempWidth, tempHeight - 1, tempWidth, tempY + 1, lineWidth);
 	}
 
 	public void drawRect(float x, float y, float width, float height) {

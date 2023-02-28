@@ -44,19 +44,15 @@ public final class VertexAttribute {
 	}
 
 	public VertexAttribute(int usage, int numComponents, String alias, int index) {
-		this(usage, numComponents,
-				usage == Usage.ColorPacked ? GL20.GL_UNSIGNED_BYTE
-						: GL20.GL_FLOAT, usage == Usage.ColorPacked, alias,
-				index);
+		this(usage, numComponents, usage == Usage.ColorPacked ? GL20.GL_UNSIGNED_BYTE : GL20.GL_FLOAT,
+				usage == Usage.ColorPacked, alias, index);
 	}
 
-	private VertexAttribute(int usage, int numComponents, int type,
-			boolean normalized, String alias) {
+	private VertexAttribute(int usage, int numComponents, int type, boolean normalized, String alias) {
 		this(usage, numComponents, type, normalized, alias, 0);
 	}
 
-	private VertexAttribute(int usage, int numComponents, int type,
-			boolean normalized, String alias, int index) {
+	private VertexAttribute(int usage, int numComponents, int type, boolean normalized, String alias, int index) {
 		this.usage = usage;
 		this.numComponents = numComponents;
 		this.type = type;
@@ -67,18 +63,15 @@ public final class VertexAttribute {
 	}
 
 	public static VertexAttribute Position() {
-		return new VertexAttribute(Usage.Position, 3,
-				ShaderProgram.POSITION_ATTRIBUTE);
+		return new VertexAttribute(Usage.Position, 3, ShaderProgram.POSITION_ATTRIBUTE);
 	}
 
 	public static VertexAttribute TexCoords(int unit) {
-		return new VertexAttribute(Usage.TextureCoordinates, 2,
-				ShaderProgram.TEXCOORD_ATTRIBUTE + unit, unit);
+		return new VertexAttribute(Usage.TextureCoordinates, 2, ShaderProgram.TEXCOORD_ATTRIBUTE + unit, unit);
 	}
 
 	public static VertexAttribute Normal() {
-		return new VertexAttribute(Usage.Normal, 3,
-				ShaderProgram.NORMAL_ATTRIBUTE);
+		return new VertexAttribute(Usage.Normal, 3, ShaderProgram.NORMAL_ATTRIBUTE);
 	}
 
 	public static VertexAttribute Color() {
@@ -86,28 +79,23 @@ public final class VertexAttribute {
 	}
 
 	public static VertexAttribute ColorPacked() {
-		return new VertexAttribute(Usage.ColorPacked, 4, GL20.GL_UNSIGNED_BYTE,
-				true, ShaderProgram.COLOR_ATTRIBUTE);
+		return new VertexAttribute(Usage.ColorPacked, 4, GL20.GL_UNSIGNED_BYTE, true, ShaderProgram.COLOR_ATTRIBUTE);
 	}
 
 	public static VertexAttribute ColorUnpacked() {
-		return new VertexAttribute(Usage.Color, 4, GL20.GL_FLOAT, false,
-				ShaderProgram.COLOR_ATTRIBUTE);
+		return new VertexAttribute(Usage.Color, 4, GL20.GL_FLOAT, false, ShaderProgram.COLOR_ATTRIBUTE);
 	}
 
 	public static VertexAttribute Tangent() {
-		return new VertexAttribute(Usage.Tangent, 3,
-				ShaderProgram.TANGENT_ATTRIBUTE);
+		return new VertexAttribute(Usage.Tangent, 3, ShaderProgram.TANGENT_ATTRIBUTE);
 	}
 
 	public static VertexAttribute Binormal() {
-		return new VertexAttribute(Usage.BiNormal, 3,
-				ShaderProgram.BINORMAL_ATTRIBUTE);
+		return new VertexAttribute(Usage.BiNormal, 3, ShaderProgram.BINORMAL_ATTRIBUTE);
 	}
 
 	public static VertexAttribute BoneWeight(int unit) {
-		return new VertexAttribute(Usage.BoneWeight, 2, "a_boneWeight" + unit,
-				unit);
+		return new VertexAttribute(Usage.BoneWeight, 2, "a_boneWeight" + unit, unit);
 	}
 
 	@Override
@@ -119,8 +107,7 @@ public final class VertexAttribute {
 	}
 
 	public boolean equals(final VertexAttribute other) {
-		return other != null && usage == other.usage
-				&& numComponents == other.numComponents
+		return other != null && usage == other.usage && numComponents == other.numComponents
 				&& alias.equals(other.alias) && unit == other.unit;
 	}
 

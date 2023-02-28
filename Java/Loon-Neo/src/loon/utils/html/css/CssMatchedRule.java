@@ -23,7 +23,7 @@ package loon.utils.html.css;
 public class CssMatchedRule {
 
 	protected CssSelectorTemp selectorTemp;
-	
+
 	protected CssRule rule;
 
 	public CssMatchedRule(CssSelectorTemp temp, CssRule rule) {

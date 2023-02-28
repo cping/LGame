@@ -34,7 +34,7 @@ public abstract class AbstractValue<T> extends Bypass implements VarView<T> {
 
 			@Override
 			public String toString() {
-				
+
 				return outer + ".map(" + func + ")";
 			}
 

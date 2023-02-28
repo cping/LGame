@@ -27,7 +27,7 @@ import loon.component.DefUI;
 import loon.font.FontSet;
 import loon.font.IFont;
 
-public class CheckBoxSkin implements FontSet<CheckBoxSkin>{
+public class CheckBoxSkin implements FontSet<CheckBoxSkin> {
 
 	private IFont font;
 	private LColor fontColor;
@@ -44,8 +44,7 @@ public class CheckBoxSkin implements FontSet<CheckBoxSkin>{
 				DefUI.self().getDefaultTextures(6));
 	}
 
-	public CheckBoxSkin(IFont font, LColor fontColor, LTexture unchecked,
-			LTexture checked) {
+	public CheckBoxSkin(IFont font, LColor fontColor, LTexture unchecked, LTexture checked) {
 		this.font = font;
 		this.fontColor = fontColor;
 		this.uncheckedTexture = unchecked;

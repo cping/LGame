@@ -49,8 +49,7 @@ public class UUID {
 			case 18:
 			case 23:
 				if (id.charAt(i) != '-') {
-					throw new LSysException(
-							"UUID has to be represented by the standard 36-char representation");
+					throw new LSysException("UUID has to be represented by the standard 36-char representation");
 				}
 				++i;
 			}
@@ -154,7 +153,8 @@ public class UUID {
 			long millis = TimeUtils.millis();
 			mostSigBits = mostSigBits + ((millis / 2) + MathUtils.nextInt((int) leastSigBits));
 			leastSigBits = leastSigBits + ((millis / 3) + MathUtils.nextInt((int) mostSigBits));
-			mostSigBits += MathUtils.max(LSystem.getTextureMemSize(), MathUtils.random(10)) * MathUtils.random(986429531);
+			mostSigBits += MathUtils.max(LSystem.getTextureMemSize(), MathUtils.random(10))
+					* MathUtils.random(986429531);
 			leastSigBits += MathUtils.max(LSystem.countTexture(), MathUtils.random(10)) * MathUtils.random(895318642);
 			mostSigBits += LSystem.allSpritesCount() * MathUtils.random(135799876);
 			leastSigBits += LSystem.allDesktopCount() * MathUtils.random(246805432);

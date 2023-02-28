@@ -76,8 +76,7 @@ public abstract class Canvas implements LRelease {
 
 		void draw(Object gc, float x, float y, float width, float height);
 
-		void draw(Object gc, float dx, float dy, float dw, float dh, float sx,
-				float sy, float sw, float sh);
+		void draw(Object gc, float dx, float dy, float dw, float dh, float sx, float sy, float sw, float sh);
 	}
 
 	public final Image image;
@@ -150,8 +149,7 @@ public abstract class Canvas implements LRelease {
 		return this;
 	}
 
-	public Canvas draw(Drawable image, float dx, float dy, float dw, float dh,
-			float sx, float sy, float sw, float sh) {
+	public Canvas draw(Drawable image, float dx, float dy, float dw, float dh, float sx, float sy, float sw, float sh) {
 		image.draw(gc(), dx, dy, dw, dh, sx, sy, sw, sh);
 		isDirty = true;
 		return this;
@@ -176,8 +174,7 @@ public abstract class Canvas implements LRelease {
 		return this;
 	}
 
-	public Canvas drawText(String message, float x, float y, LColor c1,
-			LColor c2) {
+	public Canvas drawText(String message, float x, float y, LColor c1, LColor c2) {
 		int tmp = getFillColor();
 		setColor(c1);
 		drawText(message, x + 1, y);
@@ -196,8 +193,7 @@ public abstract class Canvas implements LRelease {
 
 	public abstract Canvas fillRect(float x, float y, float width, float height);
 
-	public abstract Canvas fillRoundRect(float x, float y, float width,
-			float height, float radius);
+	public abstract Canvas fillRoundRect(float x, float y, float width, float height, float radius);
 
 	public abstract Canvas fillText(TextLayout text, float x, float y);
 
@@ -243,11 +239,9 @@ public abstract class Canvas implements LRelease {
 
 	public abstract Canvas strokePath(Path path);
 
-	public abstract Canvas strokeRect(float x, float y, float width,
-			float height);
+	public abstract Canvas strokeRect(float x, float y, float width, float height);
 
-	public abstract Canvas strokeRoundRect(float x, float y, float width,
-			float height, float radius);
+	public abstract Canvas strokeRoundRect(float x, float y, float width, float height, float radius);
 
 	public abstract Canvas strokeText(TextLayout text, float x, float y);
 
@@ -263,8 +257,7 @@ public abstract class Canvas implements LRelease {
 		}
 	}
 
-	public abstract Canvas transform(float m11, float m12, float m21,
-			float m22, float dx, float dy);
+	public abstract Canvas transform(float m11, float m12, float m21, float m22, float dx, float dy);
 
 	public abstract Canvas translate(float x, float y);
 
@@ -281,9 +274,7 @@ public abstract class Canvas implements LRelease {
 		this.width = image.width();
 		this.height = image.height();
 		if (width <= 0 || height <= 0) {
-			throw new LSysException(
-					"Canvas must be > 0 in width and height: " + width + "x"
-							+ height);
+			throw new LSysException("Canvas must be > 0 in width and height: " + width + "x" + height);
 		}
 	}
 

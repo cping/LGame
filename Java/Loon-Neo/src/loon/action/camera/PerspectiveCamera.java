@@ -62,8 +62,7 @@ public class PerspectiveCamera extends EmptyCamera {
 		return rotation.multiply(up.set(Vector3f.AXIS_Y()), up).normalizeSelf();
 	}
 
-	public PerspectiveCamera lookAt(Vector3f position, Vector3f point,
-			Vector3f up) {
+	public PerspectiveCamera lookAt(Vector3f position, Vector3f point, Vector3f up) {
 		return setPosition(position).lookAt(point, up);
 	}
 
@@ -77,8 +76,7 @@ public class PerspectiveCamera extends EmptyCamera {
 	}
 
 	public Vector3f getForward() {
-		return rotation.multiply(forward.set(Vector3f.AXIS_Z()).negateSelf(),
-				forward).normalizeSelf();
+		return rotation.multiply(forward.set(Vector3f.AXIS_Z()).negateSelf(), forward).normalizeSelf();
 	}
 
 	public PerspectiveCamera moveBackward(float amount) {
@@ -145,12 +143,8 @@ public class PerspectiveCamera extends EmptyCamera {
 
 		Quaternion tempQuat = Quaternion.TMP();
 
-		_viewMatrix4
-				.idt()
-				.mul(Transforms.createRotation(tempQuat.set(rotation)
-						.invertSelf(), tempMat4))
-				.mul(Transforms.createTranslation(tempVec3.set(position)
-						.negateSelf(), tempMat4));
+		_viewMatrix4.idt().mul(Transforms.createRotation(tempQuat.set(rotation).invertSelf(), tempMat4))
+				.mul(Transforms.createTranslation(tempVec3.set(position).negateSelf(), tempMat4));
 
 	}
 
@@ -172,21 +166,18 @@ public class PerspectiveCamera extends EmptyCamera {
 		return this;
 	}
 
-    public PerspectiveCamera initProjection(float fovy, float aspect, float zNear, float zFar)
-    {
-        Transforms.createPerspective(fovy, aspect, zNear, zFar, _projMatrix4);
-        return this;
-    }
+	public PerspectiveCamera initProjection(float fovy, float aspect, float zNear, float zFar) {
+		Transforms.createPerspective(fovy, aspect, zNear, zFar, _projMatrix4);
+		return this;
+	}
 
-    public PerspectiveCamera initProjection(float width, float height)
-    {
-        return initProjection(0, width, height, 0, 0.01f, 100f);
-    }
+	public PerspectiveCamera initProjection(float width, float height) {
+		return initProjection(0, width, height, 0, 0.01f, 100f);
+	}
 
-    public PerspectiveCamera initProjection(float left, float right, float bottom, float top, float zNear, float zFar)
-    {
-        Transforms.createFrustum(left, right, bottom, top, zNear, zFar, _projMatrix4);
-        return this;
-    }
+	public PerspectiveCamera initProjection(float left, float right, float bottom, float top, float zNear, float zFar) {
+		Transforms.createFrustum(left, right, bottom, top, zNear, zFar, _projMatrix4);
+		return this;
+	}
 
 }

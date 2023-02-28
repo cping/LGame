@@ -24,7 +24,7 @@ public class GlobalSource extends ShaderSource {
 
 	@Override
 	public void setupShader(ShaderProgram program) {
-		
+
 	}
 
 }

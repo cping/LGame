@@ -82,7 +82,7 @@ public class FireTo extends ActionEvent {
 	public float getSpeed() {
 		return speed;
 	}
-	
+
 	@Override
 	public void update(long elapsedTime) {
 		this.startX += this.vx;
@@ -92,8 +92,7 @@ public class FireTo extends ActionEvent {
 			return;
 		}
 		if (original.isContainer() && original.isBounded()) {
-			if (original.inContains(startX, startY, original.getWidth(),
-					original.getHeight())) {
+			if (original.inContains(startX, startY, original.getWidth(), original.getHeight())) {
 				synchronized (original) {
 					movePos(startX + offsetX, startY + offsetY);
 				}
@@ -123,7 +122,7 @@ public class FireTo extends ActionEvent {
 
 	@Override
 	public ActionEvent cpy() {
-		FireTo fire =new FireTo(endX, endY, speed);
+		FireTo fire = new FireTo(endX, endY, speed);
 		fire.set(this);
 		return fire;
 	}
@@ -137,19 +136,12 @@ public class FireTo extends ActionEvent {
 	public String getName() {
 		return "fire";
 	}
-	
+
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue(getName());
-		builder.kv("startX", startX)
-		.comma()
-		.kv("startY", startY)
-		.comma()
-		.kv("endX",endX)
-		.comma()
-		.kv("endY",endY)
-		.comma()
-		.kv("speed", speed);
+		builder.kv("startX", startX).comma().kv("startY", startY).comma().kv("endX", endX).comma().kv("endY", endY)
+				.comma().kv("speed", speed);
 		return builder.toString();
 	}
 

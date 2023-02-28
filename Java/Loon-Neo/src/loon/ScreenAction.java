@@ -100,10 +100,10 @@ public class ScreenAction implements Flip<Screen>, ActionBind {
 	}
 
 	public ScreenAction setScale(float scale) {
-		setScale(scale,scale);
+		setScale(scale, scale);
 		return this;
 	}
-	
+
 	@Override
 	public void setScale(float sx, float sy) {
 		if (_tempScreen != null) {
@@ -188,14 +188,12 @@ public class ScreenAction implements Flip<Screen>, ActionBind {
 
 	@Override
 	public float getContainerWidth() {
-		return _tempScreen == null ? LSystem.getProcess().getWidth() : _tempScreen
-				.getScreenWidth();
+		return _tempScreen == null ? LSystem.getProcess().getWidth() : _tempScreen.getScreenWidth();
 	}
 
 	@Override
 	public float getContainerHeight() {
-		return _tempScreen == null ? LSystem.getProcess().getWidth() : _tempScreen
-				.getScreenHeight();
+		return _tempScreen == null ? LSystem.getProcess().getWidth() : _tempScreen.getScreenHeight();
 	}
 
 	@Override

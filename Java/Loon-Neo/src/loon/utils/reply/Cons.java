@@ -80,7 +80,7 @@ public class Cons extends Connection {
 	}
 
 	private static abstract class ListenerRef {
-		
+
 		public abstract boolean isWeak();
 
 		public abstract void defang(GoListener def);
@@ -89,7 +89,7 @@ public class Cons extends Connection {
 	}
 
 	private static class StrongRef extends ListenerRef {
-		
+
 		private GoListener _lner;
 
 		public StrongRef(GoListener lner) {
@@ -149,15 +149,8 @@ public class Cons extends Connection {
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("Cons");
-		builder.kv("owner", _owner)
-		.comma()
-		.kv("priority", _priority)
-		.comma()
-		.kv("listener", listener())
-		.comma()
-		.kv("hasNext", (next != null))
-		.comma()
-		.kv("oneShot", oneShot());
+		builder.kv("owner", _owner).comma().kv("priority", _priority).comma().kv("listener", listener()).comma()
+				.kv("hasNext", (next != null)).comma().kv("oneShot", oneShot());
 		return builder.toString();
 	}
 

@@ -20,39 +20,38 @@
  */
 package loon.utils.reply;
 
-public abstract class MappedValue<T> extends AbstractValue<T>
-{
+public abstract class MappedValue<T> extends AbstractValue<T> {
 
-    protected Connection _connection;
-    
-    protected abstract Connection connect ();
+	protected Connection _connection;
 
-    protected void disconnect () {
-        if (_connection != null) {
-            _connection.close();
-            _connection = null;
-        }
-    }
+	protected abstract Connection connect();
 
-    protected void reconnect () {
-        disconnect();
-        _connection = connect();
-    }
+	protected void disconnect() {
+		if (_connection != null) {
+			_connection.close();
+			_connection = null;
+		}
+	}
 
-    @Override
-    protected void connectionAdded () {
-        super.connectionAdded();
-        if (_connection == null) {
-        	_connection = connect();
-        }
-    }
+	protected void reconnect() {
+		disconnect();
+		_connection = connect();
+	}
 
-    @Override
-    protected void connectionRemoved () {
-        super.connectionRemoved();
-        if (!hasConnections()) {
-        	disconnect();
-        }
-    }
+	@Override
+	protected void connectionAdded() {
+		super.connectionAdded();
+		if (_connection == null) {
+			_connection = connect();
+		}
+	}
+
+	@Override
+	protected void connectionRemoved() {
+		super.connectionRemoved();
+		if (!hasConnections()) {
+			disconnect();
+		}
+	}
 
 }

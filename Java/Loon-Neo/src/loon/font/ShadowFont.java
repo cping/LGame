@@ -29,7 +29,7 @@ import loon.opengl.LSTRFont;
  * 一个IFont的阴影字体实现,内部是LFont
  */
 public class ShadowFont implements IFont {
-	
+
 	private boolean withShadow = false, closed = false;
 	private LColor shadowColor = new LColor(0f, 0f, 0f, 1f);
 	private float shadowAlpha = 1f;
@@ -141,12 +141,12 @@ public class ShadowFont implements IFont {
 
 	@Override
 	public int stringWidth(String width) {
-		return strfont.getWidth(width,true);
+		return strfont.getWidth(width, true);
 	}
 
 	@Override
 	public int stringHeight(String height) {
-		return strfont.getHeight(height,true);
+		return strfont.getHeight(height, true);
 	}
 
 	@Override
@@ -217,7 +217,7 @@ public class ShadowFont implements IFont {
 	public String getFontName() {
 		return strfont.getFontName();
 	}
-	
+
 	@Override
 	public String toString() {
 		return getFont().toString();

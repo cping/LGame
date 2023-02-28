@@ -44,15 +44,15 @@ public interface Support {
 	public final int M31 = 7;
 	public final int M32 = 11;
 	public final int M33 = 15;
-	
+
 	public boolean isNative();
 
 	public void openNative();
 
 	public void closeNative();
-	
+
 	public void makeBuffer(byte[] data, int size, int tag);
-	
+
 	public void copy(float[] src, Buffer dst, int numFloats);
 
 	public void copy(float[] src, Buffer dst, int offset, int numFloats);
@@ -95,28 +95,24 @@ public interface Support {
 
 	public void clear(Buffer buffer);
 
-	public void filterColor(int maxPixel, int pixelStart, int pixelEnd,
-			int[] src, int[] dst, int[] colors, int c1, int c2);
+	public void filterColor(int maxPixel, int pixelStart, int pixelEnd, int[] src, int[] dst, int[] colors, int c1,
+			int c2);
 
-	public void filterFractions(int size, float[] fractions, int width,
-			int height, int[] pixels, int numElements);
+	public void filterFractions(int size, float[] fractions, int width, int height, int[] pixels, int numElements);
 
 	public void mul(float[] mata, float[] matb);
 
 	public void mulVec(float[] mat, float[] vec);
 
-	public void mulVec(float[] mat, float[] vecs, int offset, int numVecs,
-			int stride);
+	public void mulVec(float[] mat, float[] vecs, int offset, int numVecs, int stride);
 
 	public void prj(float[] mat, float[] vec);
 
-	public void prj(float[] mat, float[] vecs, int offset, int numVecs,
-			int stride);
+	public void prj(float[] mat, float[] vecs, int offset, int numVecs, int stride);
 
 	public void rot(float[] mat, float[] vec);
 
-	public void rot(float[] mat, float[] vecs, int offset, int numVecs,
-			int stride);
+	public void rot(float[] mat, float[] vecs, int offset, int numVecs, int stride);
 
 	public boolean inv(float[] values);
 

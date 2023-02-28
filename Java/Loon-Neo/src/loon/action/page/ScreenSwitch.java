@@ -42,8 +42,7 @@ public class ScreenSwitch {
 		this(mode, dst, src, 1f);
 	}
 
-	public ScreenSwitch(Screen dst, Screen src, BasePage page1, BasePage page2,
-			float duration) {
+	public ScreenSwitch(Screen dst, Screen src, BasePage page1, BasePage page2, float duration) {
 		this._mode = PageMethod.Unknown;
 		this._target = dst;
 		this._source = src;

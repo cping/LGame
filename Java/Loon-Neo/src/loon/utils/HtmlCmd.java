@@ -590,7 +590,7 @@ public class HtmlCmd extends StringKeyValue {
 		addValue("<span class=\"" + clazz + "\">").addValue(text).addValue("</span>");
 		return this;
 	}
-	
+
 	public HtmlCmd span() {
 		return begin("span");
 	}

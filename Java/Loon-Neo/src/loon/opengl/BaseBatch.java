@@ -94,7 +94,7 @@ public abstract class BaseBatch extends LTextureBind {
 		if (LColor.getAlpha(tint) <= 0) {
 			return;
 		}
-		
+
 		setTexture(tex);
 		if (tex.getParent() == null) {
 			float displayWidth = tex.width();

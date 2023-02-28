@@ -45,7 +45,7 @@ public interface CollisionObject {
 	public float getWidth();
 
 	public float getHeight();
-	
+
 	public RectBox getRectBox();
 
 	public int getLayer();

@@ -35,7 +35,7 @@ public class CssSelectorObject {
 			temp.clazz = selector.classNames.size();
 			temp.tag = (StringUtils.isEmpty(selector.tagName) ? 0 : 1);
 		}
-		
+
 		return temp.get();
 	}
 

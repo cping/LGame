@@ -181,12 +181,11 @@ public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 				texBatch.setColor(baseColor);
 
 				if (staggerAxisX) {
-					final float tileWidthLowerCorner = (layerTileWidth - layerHexLength) / 2 ;
+					final float tileWidthLowerCorner = (layerTileWidth - layerHexLength) / 2;
 					final float tileWidthUpperCorner = (layerTileWidth + layerHexLength) / 2;
 					final float layerTileHeight50 = layerTileHeight * 0.5f;
 
-					final int ya = MathUtils.max(0,
-							(int) ((0f - layerTileHeight50 - layerOffsetX) / layerTileHeight));
+					final int ya = MathUtils.max(0, (int) ((0f - layerTileHeight50 - layerOffsetX) / layerTileHeight));
 					final int yb = MathUtils.min(layerHeight,
 							(int) ((0f + screenHeight + layerTileHeight - layerOffsetX) / layerTileHeight));
 
@@ -195,8 +194,8 @@ public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 					final int xb = MathUtils.min(layerWidth,
 							(int) ((0f + screenWidth + tileWidthUpperCorner - layerOffsetY) / tileWidthUpperCorner));
 
-					final int maxXa = (staggerIndexEven == ( xa % 2 == 0)) ?  xa + 1 :  xa;
-					final int maxXb = (staggerIndexEven == ( xa % 2 == 0)) ?  xa :  xa + 1;
+					final int maxXa = (staggerIndexEven == (xa % 2 == 0)) ? xa + 1 : xa;
+					final int maxXb = (staggerIndexEven == (xa % 2 == 0)) ? xa : xa + 1;
 
 					for (int row = yb - 1; row >= ya; row--) {
 						for (int col = maxXa; col < xb; col += 2) {

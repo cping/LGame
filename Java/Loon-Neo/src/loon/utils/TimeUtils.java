@@ -300,20 +300,20 @@ public final class TimeUtils {
 			return String.valueOf(ms);
 		}
 	}
-	
+
 	public static final String formatSeconds(final int secondsTotal) {
 		return formatSeconds(secondsTotal, new StrBuilder());
 	}
-	
+
 	public static final String formatSeconds(final int secondsTotal, final StrBuilder output) {
 		final int second = 60;
 		final int minutes = secondsTotal / second;
 		final int seconds = secondsTotal % second;
-	
+
 		output.append(minutes);
 		output.append(':');
-		
-		if(seconds < 10) {
+
+		if (seconds < 10) {
 			output.append('0');
 		}
 		output.append(seconds);

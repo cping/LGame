@@ -21,7 +21,7 @@
 package loon.action.behaviors;
 
 public abstract class Decorator<T> extends Behavior<T> {
-	
+
 	public Behavior<T> child;
 
 	@Override

@@ -22,14 +22,14 @@ package loon.utils.res.loaders;
 
 import loon.LRelease;
 
-public interface AssetLoader extends LRelease{
-	
+public interface AssetLoader extends LRelease {
+
 	public boolean completed();
-	
+
 	public String getPath();
-	
+
 	public String getNickName();
-	
+
 	public PreloadItem item();
-	
+
 }

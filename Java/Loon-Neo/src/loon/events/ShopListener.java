@@ -24,8 +24,8 @@ import loon.action.map.items.TradeItem;
 
 public interface ShopListener<T> {
 
-    public void onBuys(TradeItem<T> items);
-  
-    public void onSell(TradeItem<T> items);
+	public void onBuys(TradeItem<T> items);
+
+	public void onSell(TradeItem<T> items);
 
 }

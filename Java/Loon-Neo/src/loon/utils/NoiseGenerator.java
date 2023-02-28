@@ -43,10 +43,10 @@ public class NoiseGenerator {
 	}
 
 	public float noise1D(float seed) {
-		
+
 		seed = MathUtils.clamp(seed, 0f, 1f);
 		setSeed();
-		
+
 		int qx0 = MathUtils.floor(seed);
 		int qx1 = (qx0 + 1);
 

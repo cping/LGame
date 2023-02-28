@@ -885,7 +885,8 @@ public abstract class LContainer extends LComponent implements IArray {
 	}
 
 	private RectBox getBox() {
-		return setRect(MathUtils.getBounds(0, 0, getWidth() * _scaleX, getHeight() * _scaleY, _objectRotation, _objectRect));
+		return setRect(
+				MathUtils.getBounds(0, 0, getWidth() * _scaleX, getHeight() * _scaleY, _objectRotation, _objectRect));
 	}
 
 	@Override

@@ -20,27 +20,49 @@
  */
 package loon.component.table;
 
+import loon.LSystem;
+import loon.utils.StrBuilder;
 import loon.utils.TArray;
 
 public class ListItem {
 
-	public String name;
-	
-	public TArray<Object> list = new TArray<Object>();
+	protected String _name;
+
+	protected TArray<Object> _list;
+
+	public ListItem() {
+		this(new TArray<Object>());
+	}
+
+	public ListItem(TArray<Object> list) {
+		this._list = list;
+	}
 
 	public String getName() {
-		return name;
+		return _name;
 	}
 
 	public void setName(String name) {
-		this.name = name;
+		this._name = name;
+	}
+
+	public String message() {
+		if (_list == null) {
+			return LSystem.EMPTY;
+		}
+		StrBuilder sbr = new StrBuilder(_name);
+		for (Object o : _list) {
+			sbr.append(o);
+		}
+		return sbr.toString();
 	}
 
 	public TArray<Object> getList() {
-		return list;
+		return _list;
 	}
 
-	public void setList(TArray<Object> list) {
-		this.list = list;
+	public ListItem setList(TArray<Object> list) {
+		this._list = list;
+		return this;
 	}
 }

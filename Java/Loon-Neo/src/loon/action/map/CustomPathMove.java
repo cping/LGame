@@ -132,12 +132,7 @@ public class CustomPathMove {
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("CustomPathMove");
-		builder
-		.kv("currentIndex", currentIndex)
-		.comma()
-		.kv("currentPosition", currentPos)
-		.comma()
-		.kv("steps",
+		builder.kv("currentIndex", currentIndex).comma().kv("currentPosition", currentPos).comma().kv("steps",
 				movePoints.toString());
 		return builder.toString();
 	}

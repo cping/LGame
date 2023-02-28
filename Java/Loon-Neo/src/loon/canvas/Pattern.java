@@ -22,12 +22,12 @@ package loon.canvas;
 
 public abstract class Pattern {
 
-  public final boolean repeatX;
+	public final boolean repeatX;
 
-  public final boolean repeatY;
+	public final boolean repeatY;
 
-  protected Pattern (boolean repeatX, boolean repeatY) {
-    this.repeatX = repeatX;
-    this.repeatY = repeatY;
-  }
+	protected Pattern(boolean repeatX, boolean repeatY) {
+		this.repeatX = repeatX;
+		this.repeatY = repeatY;
+	}
 }

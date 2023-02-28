@@ -131,7 +131,7 @@ public class PathUtils {
 			}
 			return list[list.length - 1];
 
-		}else if (dir.indexOf(LSystem.FS) != -1) {
+		} else if (dir.indexOf(LSystem.FS) != -1) {
 			String[] list = StringUtils.split(dir, LSystem.FS);
 			if (list.length > 1) {
 				return list[list.length - 2];

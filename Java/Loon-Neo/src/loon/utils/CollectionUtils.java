@@ -387,14 +387,14 @@ final public class CollectionUtils {
 	 * size, true); }
 	 * 
 	 * public static Object expand(Object data, int size, boolean flag, Class<?>
-	 * class1) { if (data == null) { return ArrayReflection.newInstance(class1,
-	 * 1); } else { return expand(data, size, flag); } }
+	 * class1) { if (data == null) { return ArrayReflection.newInstance(class1, 1);
+	 * } else { return expand(data, size, flag); } }
 	 * 
 	 * public static Object cut(Object data, int size) { int j; if ((j =
 	 * ArrayReflection.getLength(data)) == 1) { return
-	 * ArrayReflection.newInstance(data.getClass().getComponentType(), 0); } int
-	 * k; if ((k = j - size - 1) > 0) { System.arraycopy(data, size + 1, data,
-	 * size, k); } j--; Object obj1 =
+	 * ArrayReflection.newInstance(data.getClass().getComponentType(), 0); } int k;
+	 * if ((k = j - size - 1) > 0) { System.arraycopy(data, size + 1, data, size,
+	 * k); } j--; Object obj1 =
 	 * ArrayReflection.newInstance(data.getClass().getComponentType(), j);
 	 * System.arraycopy(data, 0, obj1, 0, j); return obj1; }
 	 * 
@@ -1212,12 +1212,9 @@ final public class CollectionUtils {
 	/**
 	 * 以off为初始索引,查看指定数组中是否包含v值
 	 * 
-	 * @param arr
-	 *            数组
-	 * @param v
-	 *            值
-	 * @param off
-	 *            从那个下标开始搜索(包含)
+	 * @param arr 数组
+	 * @param v   值
+	 * @param off 从那个下标开始搜索(包含)
 	 * @return 第一个匹配元素的下标
 	 */
 	public static int indexOf(int[] arr, int v, int off) {
@@ -1262,12 +1259,9 @@ final public class CollectionUtils {
 	/**
 	 * 查看指定数组中是否包含v值
 	 * 
-	 * @param arr
-	 *            数组
-	 * @param v
-	 *            值
-	 * @param off
-	 *            从那个下标开始搜索(包含)
+	 * @param arr 数组
+	 * @param v   值
+	 * @param off 从那个下标开始搜索(包含)
 	 * @return 第一个匹配元素的下标
 	 */
 	public static int indexOf(char[] arr, char v, int off) {
@@ -1307,12 +1301,9 @@ final public class CollectionUtils {
 	/**
 	 * 查看指定数组中是否包含v值
 	 * 
-	 * @param arr
-	 *            数组
-	 * @param v
-	 *            值
-	 * @param off
-	 *            从那个下标开始搜索(包含)
+	 * @param arr 数组
+	 * @param v   值
+	 * @param off 从那个下标开始搜索(包含)
 	 * @return 第一个匹配元素的下标
 	 */
 	public static int indexOf(long[] arr, long v, int off) {

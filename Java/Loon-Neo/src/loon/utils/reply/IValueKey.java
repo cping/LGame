@@ -22,6 +22,6 @@ package loon.utils.reply;
 
 public interface IValueKey<K> {
 
-    public K getKey();
-    
+	public K getKey();
+
 }

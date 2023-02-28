@@ -312,7 +312,7 @@ public class Array<T> implements IArray, LRelease {
 		remove(_length < 1 ? 0 : _length - 1);
 		return result;
 	}
-	
+
 	public boolean remove(int idx) {
 		if (_close) {
 			return false;
@@ -394,7 +394,7 @@ public class Array<T> implements IArray, LRelease {
 		}
 		T v = null;
 		Array<T> newArrays = new Array<T>();
-		for(;hashNext();){
+		for (; hashNext();) {
 			newArrays.add(next());
 		}
 		stopNext();

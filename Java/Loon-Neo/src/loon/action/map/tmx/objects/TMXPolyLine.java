@@ -26,7 +26,7 @@ import loon.utils.TArray;
 import loon.utils.xml.XMLElement;
 
 public class TMXPolyLine {
-	
+
 	private TArray<TMXPoint> points;
 
 	public TMXPolyLine() {

@@ -37,6 +37,7 @@ public class CssRule {
 	public TArray<CssSelectorObject> getSelectors() {
 		return selectors;
 	}
+
 	public TArray<CssDeclaration> getDeclarations() {
 		return declarations;
 	}

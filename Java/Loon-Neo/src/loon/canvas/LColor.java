@@ -1332,7 +1332,7 @@ public class LColor implements Serializable {
 	public static final int getABGR(int r, int g, int b, int alpha) {
 		return abgr(alpha, r, g, b);
 	}
-	
+
 	/**
 	 * 以指定颜色指定百分比获得渐变色彩
 	 * 
@@ -1343,16 +1343,16 @@ public class LColor implements Serializable {
 	public static final int getGradient(int startColor, int endColor) {
 		return getGradient(startColor, endColor, 1f);
 	}
-	
+
 	/**
 	 * 以指定颜色指定百分比获得渐变色彩
-	 *  
+	 * 
 	 * @param startColor
 	 * @param endColor
 	 * @param percentage
 	 * @return
 	 */
-	public static final int getGradient(int startColor, int endColor,float percentage) {
+	public static final int getGradient(int startColor, int endColor, float percentage) {
 		if (percentage > 1f) {
 			percentage = 1f;
 		}

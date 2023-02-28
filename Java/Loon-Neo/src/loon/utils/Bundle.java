@@ -6,14 +6,14 @@ package loon.utils;
  * @param <T>
  */
 public interface Bundle<T> extends IArray {
-	
-    void put(String key, T value);
-    
-    T get(String key);
-    
-    T get(String key, T defaultValue);
-    
-    T remove(String key);
-    
-    T remove(String key, T defaultValue);
+
+	void put(String key, T value);
+
+	T get(String key);
+
+	T get(String key, T defaultValue);
+
+	T remove(String key);
+
+	T remove(String key, T defaultValue);
 }

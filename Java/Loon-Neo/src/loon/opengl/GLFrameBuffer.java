@@ -71,7 +71,7 @@ public abstract class GLFrameBuffer implements LRelease {
 	protected final static int GL_DEPTH24_STENCIL8_OES = 0x88F0;
 
 	protected boolean bufferLocked = false;
-	
+
 	protected GLFrameBuffer lastBoundFramebuffer = null;
 
 	protected GLFrameBuffer currentBoundFramebuffer = null;
@@ -105,7 +105,7 @@ public abstract class GLFrameBuffer implements LRelease {
 	public LTexture texture() {
 		return textureAttachments.first();
 	}
-	
+
 	public LTexture getColorBufferTexture() {
 		return textureAttachments.first();
 	}
@@ -323,23 +323,23 @@ public abstract class GLFrameBuffer implements LRelease {
 	public void unbind() {
 		unbind(LSystem.base().graphics().gl);
 	}
- 	
-	public GLFrameBuffer lock(){
+
+	public GLFrameBuffer lock() {
 		this.bufferLocked = true;
 		return this;
 	}
-	
-	public boolean isLocked(){
+
+	public boolean isLocked() {
 		return this.bufferLocked;
 	}
-	
-	public GLFrameBuffer unlock(){
+
+	public GLFrameBuffer unlock() {
 		this.bufferLocked = false;
 		return this;
 	}
-	
+
 	public void begin() {
-		if(bufferLocked){
+		if (bufferLocked) {
 			return;
 		}
 		if (currentBoundFramebuffer == this) {
@@ -353,7 +353,7 @@ public abstract class GLFrameBuffer implements LRelease {
 	}
 
 	public void end() {
-		if(bufferLocked){
+		if (bufferLocked) {
 			return;
 		}
 		LSystem.mainFlushDraw();

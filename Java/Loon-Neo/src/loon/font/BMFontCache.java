@@ -30,10 +30,10 @@ public class BMFontCache extends CacheMap<BMFont> {
 
 	private static BMFontCache _fontCache = null;
 
-	public static void freeStatic(){
+	public static void freeStatic() {
 		_fontCache = null;
 	}
-	
+
 	public static BMFontCache shared() {
 		if (_fontCache == null) {
 			synchronized (BMFontCache.class) {
@@ -62,7 +62,7 @@ public class BMFontCache extends CacheMap<BMFont> {
 		BMFont bitmapFont;
 		String suffix = LSystem.getExtension(fntName);
 		if (fntName.equals(DEF_BMFONT)) {
-			fntName = LSystem.getSystemImagePath() +  DEF_BMFONT;
+			fntName = LSystem.getSystemImagePath() + DEF_BMFONT;
 			bitmapFont = new BMFont(fntName + (StringUtils.isEmpty(suffix) ? ".txt" : LSystem.EMPTY), fntName + ".png");
 		} else {
 			bitmapFont = new BMFont(fntName + (StringUtils.isEmpty(suffix) ? ".fnt" : LSystem.EMPTY),

@@ -77,23 +77,20 @@ public class GifEncoder {
 	protected int sample = 10; // default sample interval for quantizer
 
 	/**
-	 * Sets the delay time between each frame, or changes it for subsequent
-	 * frames (applies to last frame added).
+	 * Sets the delay time between each frame, or changes it for subsequent frames
+	 * (applies to last frame added).
 	 *
-	 * @param ms
-	 *            int delay time in milliseconds
+	 * @param ms int delay time in milliseconds
 	 */
 	public void setDelay(int ms) {
 		delay = MathUtils.round(ms / 10.0f);
 	}
 
 	/**
-	 * Sets the GIF frame disposal code for the last added frame and any
-	 * subsequent frames. Default is 0 if no transparent color has been set,
-	 * otherwise 2.
+	 * Sets the GIF frame disposal code for the last added frame and any subsequent
+	 * frames. Default is 0 if no transparent color has been set, otherwise 2.
 	 *
-	 * @param code
-	 *            int disposal code.
+	 * @param code int disposal code.
 	 */
 	public void setDispose(int code) {
 		if (code >= 0) {
@@ -102,12 +99,11 @@ public class GifEncoder {
 	}
 
 	/**
-	 * Sets the number of times the set of GIF frames should be played. Default
-	 * is 1; 0 means play indefinitely. Must be invoked before the first image
-	 * is added.
+	 * Sets the number of times the set of GIF frames should be played. Default is
+	 * 1; 0 means play indefinitely. Must be invoked before the first image is
+	 * added.
 	 *
-	 * @param iter
-	 *            int number of iterations.
+	 * @param iter int number of iterations.
 	 * @return
 	 */
 	public void setRepeat(int iter) {
@@ -119,26 +115,24 @@ public class GifEncoder {
 	/**
 	 * Sets the transparent color for the last added frame and any subsequent
 	 * frames. Since all colors are subject to modification in the quantization
-	 * process, the color in the final palette for each frame closest to the
-	 * given color becomes the transparent color for that frame. May be set to
-	 * null to indicate no transparent color.
+	 * process, the color in the final palette for each frame closest to the given
+	 * color becomes the transparent color for that frame. May be set to null to
+	 * indicate no transparent color.
 	 *
-	 * @param c
-	 *            LColor to be treated as transparent on display.
+	 * @param c LColor to be treated as transparent on display.
 	 */
 	public void setTransparent(LColor c) {
 		transparent = c;
 	}
 
 	/**
-	 * Adds next GIF frame. The frame is not written immediately, but is
-	 * actually deferred until the next frame is received so that timing data
-	 * can be inserted. Invoking <code>finish()</code> flushes all frames. If
-	 * <code>setSize</code> was not invoked, the size of the first image is used
-	 * for all subsequent frames.
+	 * Adds next GIF frame. The frame is not written immediately, but is actually
+	 * deferred until the next frame is received so that timing data can be
+	 * inserted. Invoking <code>finish()</code> flushes all frames. If
+	 * <code>setSize</code> was not invoked, the size of the first image is used for
+	 * all subsequent frames.
 	 *
-	 * @param im
-	 *            Image containing frame to write.
+	 * @param im Image containing frame to write.
 	 * @return true if successful.
 	 */
 	public boolean addFrame(Image im) {
@@ -212,8 +206,7 @@ public class GifEncoder {
 	 * Sets frame rate in frames per second. Equivalent to
 	 * <code>setDelay(1000/fps)</code>.
 	 *
-	 * @param fps
-	 *            float frame rate (frames per second)
+	 * @param fps float frame rate (frames per second)
 	 */
 	public void setFrameRate(float fps) {
 		if (fps != 0f) {
@@ -222,14 +215,13 @@ public class GifEncoder {
 	}
 
 	/**
-	 * Sets quality of color quantization (conversion of images to the maximum
-	 * 256 colors allowed by the GIF specification). Lower values (minimum = 1)
-	 * produce better colors, but slow processing significantly. 10 is the
-	 * default, and produces good color mapping at reasonable speeds. Values
-	 * greater than 20 do not yield significant improvements in speed.
+	 * Sets quality of color quantization (conversion of images to the maximum 256
+	 * colors allowed by the GIF specification). Lower values (minimum = 1) produce
+	 * better colors, but slow processing significantly. 10 is the default, and
+	 * produces good color mapping at reasonable speeds. Values greater than 20 do
+	 * not yield significant improvements in speed.
 	 *
-	 * @param quality
-	 *            int greater than 0.
+	 * @param quality int greater than 0.
 	 * @return
 	 */
 	public void setQuality(int quality) {
@@ -242,10 +234,8 @@ public class GifEncoder {
 	 * Sets the GIF frame size. The default size is the size of the first frame
 	 * added if this method is not invoked.
 	 *
-	 * @param w
-	 *            int frame width.
-	 * @param h
-	 *            int frame width.
+	 * @param w int frame width.
+	 * @param h int frame width.
 	 */
 	public void setSize(int w, int h) {
 		if (started && !firstFrame)
@@ -263,8 +253,7 @@ public class GifEncoder {
 	 * Initiates GIF file creation on the given stream. The stream is not closed
 	 * automatically.
 	 *
-	 * @param os
-	 *            OutputStream on which GIF images are written.
+	 * @param os OutputStream on which GIF images are written.
 	 * @return false if initial write failed.
 	 */
 	public boolean start(OutputStream os) {
@@ -553,8 +542,7 @@ class NeuQuant {
 
 	/* defs for decreasing radius factor */
 	protected static final int initrad = (netsize >> 3); /*
-															 * for 256 cols,
-															 * radius starts
+															 * for 256 cols, radius starts
 															 */
 
 	protected static final int radiusbiasshift = 6; /*
@@ -563,10 +551,9 @@ class NeuQuant {
 
 	protected static final int radiusbias = (((int) 1) << radiusbiasshift);
 
-	protected static final int initradius = (initrad
-			* radiusbias); /*
-							 * and decreases by a
-							 */
+	protected static final int initradius = (initrad * radiusbias); /*
+																	 * and decreases by a
+																	 */
 
 	protected static final int radiusdec = 30; /* factor of 1/30 each cycle */
 
@@ -784,10 +771,8 @@ class NeuQuant {
 	}
 
 	/*
-	 * Search for BGR values 0..255 (after net is unbiased) and return colour
-	 * index
-	 * -------------------------------------------------------------------------
-	 * ---
+	 * Search for BGR values 0..255 (after net is unbiased) and return colour index
+	 * ------------------------------------------------------------------------- ---
 	 */
 	public int map(int b, int g, int r) {
 
@@ -863,8 +848,8 @@ class NeuQuant {
 	}
 
 	/*
-	 * Unbias network to give byte values 0..255 and record position i to
-	 * prepare for sort
+	 * Unbias network to give byte values 0..255 and record position i to prepare
+	 * for sort
 	 * -------------------------------------------------------------------------
 	 * ----------
 	 */
@@ -945,8 +930,7 @@ class NeuQuant {
 		/* finds closest neuron (min dist) and updates freq */
 		/* finds best neuron (min dist-bias) and returns position */
 		/*
-		 * for frequently chosen neurons, freq[i] is high and bias[i] is
-		 * negative
+		 * for frequently chosen neurons, freq[i] is high and bias[i] is negative
 		 */
 		/* bias[i] = gamma*((1/netsize)-freq[i]) */
 

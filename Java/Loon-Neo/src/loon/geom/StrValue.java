@@ -23,7 +23,7 @@ package loon.geom;
 import loon.LRelease;
 import loon.LSystem;
 
-public class StrValue implements LRelease{
+public class StrValue implements LRelease {
 
 	private String value;
 
@@ -43,7 +43,7 @@ public class StrValue implements LRelease{
 	public String get() {
 		return result();
 	}
-	
+
 	public String result() {
 		return value;
 	}

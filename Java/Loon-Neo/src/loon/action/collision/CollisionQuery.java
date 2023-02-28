@@ -26,7 +26,7 @@ import loon.geom.Vector2f;
 public interface CollisionQuery {
 
 	void setOffsetPos(Vector2f offset);
-	
+
 	Vector2f getOffsetPos();
 
 	boolean checkCollision(CollisionObject actor);

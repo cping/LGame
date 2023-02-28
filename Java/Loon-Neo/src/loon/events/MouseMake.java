@@ -25,40 +25,44 @@ import loon.utils.reply.Port;
 
 public class MouseMake {
 
-  public static class Event extends loon.events.Event.XYEvent {
+	public static class Event extends loon.events.Event.XYEvent {
 
-    protected Event (int flags, double time, float x, float y) {
-      super(flags, time, x, y);
-    }
-  }
+		protected Event(int flags, double time, float x, float y) {
+			super(flags, time, x, y);
+		}
+	}
 
-  public static class ButtonEvent extends Event {
+	public static class ButtonEvent extends Event {
 
-    public final int button;
+		public final int button;
 
-    public boolean down;
+		public boolean down;
 
-    public ButtonEvent (int flags, double time, float x, float y, int button, boolean down) {
-      super(flags, time, x, y);
-      this.button = button;
-      this.down = down;
-    }
+		public ButtonEvent(int flags, double time, float x, float y, int button, boolean down) {
+			super(flags, time, x, y);
+			this.button = button;
+			this.down = down;
+		}
 
-    @Override protected String name () {
-      return "Button";
-    }
+		@Override
+		protected String name() {
+			return "Button";
+		}
 
-    @Override protected void addFields (StrBuilder builder) {
-      super.addFields(builder);
-      builder.append(", id=").append(button).append(", down=").append(down);
-    }
-  }
+		@Override
+		protected void addFields(StrBuilder builder) {
+			super.addFields(builder);
+			builder.append(", id=").append(button).append(", down=").append(down);
+		}
+	}
 
-  public static abstract class ButtonSlot extends Port<Event> {
-    public void onEmit (Event event) {
-      if (event instanceof ButtonEvent) onEmit((ButtonEvent)event);
-    }
-    public abstract void onEmit (ButtonEvent event);
-  }
+	public static abstract class ButtonSlot extends Port<Event> {
+		public void onEmit(Event event) {
+			if (event instanceof ButtonEvent)
+				onEmit((ButtonEvent) event);
+		}
+
+		public abstract void onEmit(ButtonEvent event);
+	}
 
 }

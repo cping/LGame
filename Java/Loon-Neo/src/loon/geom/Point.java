@@ -142,7 +142,7 @@ public class Point extends Shape {
 		this.x -= p.x;
 		this.y -= p.y;
 	}
-	
+
 	public final int distanceTo(Point p) {
 		final float tx = (this.x - p.x);
 		final float ty = (this.y - p.y);

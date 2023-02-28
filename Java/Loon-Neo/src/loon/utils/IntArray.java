@@ -26,7 +26,7 @@ import loon.LRelease;
 import loon.LSysException;
 import loon.events.QueryEvent;
 
-public class IntArray implements IArray,LRelease {
+public class IntArray implements IArray, LRelease {
 
 	/**
 	 * 产生一组指定范围的数据

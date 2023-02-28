@@ -29,7 +29,7 @@ public class SelectSkin {
 	private IFont font;
 
 	private LTexture backgroundTexture;
-	
+
 	private LColor fontColor;
 
 	public IFont getFont() {
@@ -55,6 +55,5 @@ public class SelectSkin {
 	public void setFontColor(LColor fontColor) {
 		this.fontColor = fontColor;
 	}
-
 
 }

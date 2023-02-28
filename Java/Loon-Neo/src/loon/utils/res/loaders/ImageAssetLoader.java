@@ -36,7 +36,7 @@ public class ImageAssetLoader extends AssetAbstractLoader<Image> {
 		_image = BaseIO.loadImage(_path);
 		return _image != null;
 	}
-	
+
 	@Override
 	public Image get() {
 		return _image;

@@ -141,7 +141,7 @@ public class XMLElement {
 	public Iterator<Object> elements() {
 		return this.contents.iterator();
 	}
-	
+
 	public TArray<XMLElement> list() {
 		TArray<XMLElement> lists = new TArray<XMLElement>(contents.size);
 		for (Iterator<?> e = elements(); e.hasNext();) {

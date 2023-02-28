@@ -60,7 +60,8 @@ public class Language {
 	}
 
 	private static boolean checkLocale(Language localeSrc, Locale localeDst) {
-		return localeSrc.getLanguage().equals(localeDst.toString()) || localeSrc.getCountry().equals(localeDst.toString());
+		return localeSrc.getLanguage().equals(localeDst.toString())
+				|| localeSrc.getCountry().equals(localeDst.toString());
 	}
 
 	public static boolean isEastLanguage() {

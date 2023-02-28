@@ -21,7 +21,7 @@
 package loon.action.behaviors;
 
 public class AlwaysFail<T> extends Decorator<T> {
-	
+
 	@Override
 	public TaskStatus update(T context) {
 		TaskStatus status = child.update(context);
@@ -33,12 +33,12 @@ public class AlwaysFail<T> extends Decorator<T> {
 
 	@Override
 	public void onStart() {
-		
+
 	}
 
 	@Override
 	public void onEnd() {
 
 	}
-	
+
 }

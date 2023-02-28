@@ -49,10 +49,10 @@ public final class VertexAttributes implements Iterable<VertexAttribute> {
 	private ReadonlyIterable<VertexAttribute> iterable;
 
 	public VertexAttributes(VertexAttribute... attributes) {
-		if (attributes.length == 0){
+		if (attributes.length == 0) {
 			throw new LSysException("attributes must be >= 1 !");
 		}
-		
+
 		VertexAttribute[] list = new VertexAttribute[attributes.length];
 		for (int i = 0; i < attributes.length; i++)
 			list[i] = attributes[i];
@@ -149,8 +149,7 @@ public final class VertexAttributes implements Iterable<VertexAttribute> {
 		return iterable.iterator();
 	}
 
-	static private class ReadonlyIterator<T> implements Iterator<T>,
-			Iterable<T> {
+	static private class ReadonlyIterator<T> implements Iterator<T>, Iterable<T> {
 		private final T[] array;
 		int index;
 		boolean valid = true;
@@ -161,7 +160,7 @@ public final class VertexAttributes implements Iterable<VertexAttribute> {
 
 		@Override
 		public boolean hasNext() {
-			if (!valid){
+			if (!valid) {
 				throw new LSysException("iterator() cannot be used nested.");
 			}
 			return index < array.length;
@@ -169,10 +168,10 @@ public final class VertexAttributes implements Iterable<VertexAttribute> {
 
 		@Override
 		public T next() {
-			if (index >= array.length){
+			if (index >= array.length) {
 				throw new LSysException("index >= array.length.");
 			}
-			if (!valid){
+			if (!valid) {
 				throw new LSysException("iterator() cannot be used nested.");
 			}
 			return array[index++];

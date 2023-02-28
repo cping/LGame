@@ -27,7 +27,7 @@ import loon.component.DefUI;
 import loon.font.FontSet;
 import loon.font.IFont;
 
-public class WindowSkin implements FontSet<WindowSkin>{
+public class WindowSkin implements FontSet<WindowSkin> {
 
 	private IFont font;
 	private LTexture barTexture;
@@ -43,8 +43,7 @@ public class WindowSkin implements FontSet<WindowSkin>{
 				DefUI.self().getDefaultTextures(7));
 	}
 
-	public WindowSkin(IFont font, LColor fontColor, LTexture bar,
-			LTexture background) {
+	public WindowSkin(IFont font, LColor fontColor, LTexture bar, LTexture background) {
 		this.font = font;
 		this.fontColor = fontColor;
 		this.barTexture = bar;

@@ -41,8 +41,7 @@ public class ProgressSkin {
 				DefUI.self().getDefaultTextures(2));
 	}
 
-	public ProgressSkin(IFont font, LColor c, LTexture progress,
-			LTexture background) {
+	public ProgressSkin(IFont font, LColor c, LTexture progress, LTexture background) {
 		this.color = c;
 		this.progressTexture = progress;
 		this.backgroundTexture = background;

@@ -33,7 +33,7 @@ public class Repeater<T> extends Decorator<T> {
 	public Repeater(int count) {
 		this(count, false);
 	}
-	
+
 	public Repeater(int count, boolean endOnFailure) {
 		this.count = count;
 		this.endOnFailure = endOnFailure;
@@ -71,6 +71,6 @@ public class Repeater<T> extends Decorator<T> {
 
 	@Override
 	public void onEnd() {
-		
+
 	}
 }

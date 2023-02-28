@@ -71,7 +71,7 @@ public interface ISprite extends ActionBind, Visible, LRelease, ZIndex, XY {
 	void createUI(GLEx g, float offsetX, float offsetY);
 
 	void update(long elapsedTime);
-	
+
 	void onResize();
 
 	@Override
@@ -102,11 +102,11 @@ public interface ISprite extends ActionBind, Visible, LRelease, ZIndex, XY {
 	Sprites getSprites();
 
 	Screen getScreen();
-	
+
 	ISprite setOffset(Vector2f v);
-	
+
 	float getOffsetX();
-	
+
 	float getOffsetY();
 
 	float getFixedWidthOffset();

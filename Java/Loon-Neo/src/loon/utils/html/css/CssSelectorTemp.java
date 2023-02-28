@@ -21,11 +21,11 @@
 package loon.utils.html.css;
 
 public class CssSelectorTemp {
-	
-	public int id; 
-	public int clazz; 
-	public int tag; 
-	
+
+	public int id;
+	public int clazz;
+	public int tag;
+
 	public int getInt() {
 		return Integer.parseInt(String.valueOf(id) + String.valueOf(clazz) + String.valueOf(tag));
 	}

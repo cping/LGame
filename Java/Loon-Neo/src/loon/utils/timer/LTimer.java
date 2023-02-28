@@ -345,12 +345,11 @@ public class LTimer implements LRelease {
 			return this.getPercentage();
 		}
 	}
-	
-	public float getElapsedSeconds ()
-    {
-        return this._currentTick * 0.001f;
-    }
-    
+
+	public float getElapsedSeconds() {
+		return this._currentTick * 0.001f;
+	}
+
 	public float getRemaining() {
 		return (float) (this._delay - this._currentTick);
 	}

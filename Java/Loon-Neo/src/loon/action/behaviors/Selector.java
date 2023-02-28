@@ -29,7 +29,7 @@ public class Selector<T> extends Composite<T> {
 	public Selector(AbortTypes abortType) {
 		this.abortType = abortType;
 	}
-	
+
 	@Override
 	public TaskStatus update(T context) {
 

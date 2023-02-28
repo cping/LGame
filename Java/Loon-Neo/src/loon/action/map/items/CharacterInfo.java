@@ -101,7 +101,7 @@ public class CharacterInfo {
 	public int updateAgility(float agilityModifier) {
 		return (int) (agilityModifier * (float) (this._baseAgility + this._equipAgility));
 	}
-	
+
 	public int getBaseMaxHealth() {
 		return this._baseMaxHealth;
 	}
@@ -295,7 +295,7 @@ public class CharacterInfo {
 		this._ageValue = a;
 		return this;
 	}
-	
+
 	public int getAgeValue() {
 		return _ageValue;
 	}

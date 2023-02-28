@@ -27,7 +27,7 @@ import loon.LSystem;
 public class TreeNode<T> implements Iterable<TreeNode<T>> {
 
 	private final String name;
-	
+
 	private TArray<TreeNode<T>> elementsIndex;
 
 	private TArray<TreeNode<T>> children;
@@ -284,7 +284,7 @@ public class TreeNode<T> implements Iterable<TreeNode<T>> {
 		}
 		return hashCode;
 	}
-	
+
 	@Override
 	public String toString() {
 		StrBuilder sbr = new StrBuilder();

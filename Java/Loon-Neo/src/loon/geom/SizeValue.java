@@ -86,8 +86,7 @@ public class SizeValue {
 
 	private float getPercentValue() {
 		if (isPercent()) {
-			String percent = value.substring(0,
-					value.length() - PERCENT.length());
+			String percent = value.substring(0, value.length() - PERCENT.length());
 			return Float.parseFloat(percent);
 		} else {
 			return 0;
@@ -118,8 +117,7 @@ public class SizeValue {
 		if (value == null) {
 			return false;
 		} else {
-			return !value.equals(WILDCARD)
-					&& (value.endsWith(PIXEL) || hasNoSuffix());
+			return !value.equals(WILDCARD) && (value.endsWith(PIXEL) || hasNoSuffix());
 		}
 	}
 
@@ -128,8 +126,7 @@ public class SizeValue {
 			return false;
 		}
 
-		if (value.endsWith(PIXEL) || value.endsWith(PERCENT)
-				|| value.endsWith(WIDTH_SUFFIX)
+		if (value.endsWith(PIXEL) || value.endsWith(PERCENT) || value.endsWith(WIDTH_SUFFIX)
 				|| value.endsWith(HEIGHT_SUFFIX)) {
 			return false;
 		}

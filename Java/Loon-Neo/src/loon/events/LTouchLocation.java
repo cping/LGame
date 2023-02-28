@@ -45,8 +45,8 @@ public class LTouchLocation {
 	}
 
 	public boolean isDown() {
-		return SysTouch.isDown()
-				&& (previousState == LTouchLocationState.Pressed && (state == LTouchLocationState.Pressed || state == LTouchLocationState.Dragged));
+		return SysTouch.isDown() && (previousState == LTouchLocationState.Pressed
+				&& (state == LTouchLocationState.Pressed || state == LTouchLocationState.Dragged));
 	}
 
 	public boolean isUp() {
@@ -80,7 +80,7 @@ public class LTouchLocation {
 	public int getY() {
 		return position.y();
 	}
-	
+
 	public float x() {
 		return position.x;
 	}
@@ -123,12 +123,10 @@ public class LTouchLocation {
 	}
 
 	public LTouchLocation() {
-		this(0, LTouchLocationState.Invalid, new Vector2f(0, 0),
-				LTouchLocationState.Invalid, new Vector2f(0, 0));
+		this(0, LTouchLocationState.Invalid, new Vector2f(0, 0), LTouchLocationState.Invalid, new Vector2f(0, 0));
 	}
 
-	public LTouchLocation(int aId, LTouchLocationState aState,
-			Vector2f aPosition, LTouchLocationState aPreviousState,
+	public LTouchLocation(int aId, LTouchLocationState aState, Vector2f aPosition, LTouchLocationState aPreviousState,
 			Vector2f aPreviousPosition) {
 		id = aId;
 		position = aPosition;
@@ -139,8 +137,7 @@ public class LTouchLocation {
 		previousPressure = 0.0f;
 	}
 
-	public LTouchLocation(int aId, LTouchLocationState aState,
-			Vector2f aPosition) {
+	public LTouchLocation(int aId, LTouchLocationState aState, Vector2f aPosition) {
 		id = aId;
 		position = aPosition;
 		previousPosition = Vector2f.ZERO();
@@ -160,10 +157,8 @@ public class LTouchLocation {
 		previousPressure = 0.0f;
 	}
 
-	public LTouchLocation(int aId, LTouchLocationState aState,
-			Vector2f aPosition, float aPressure,
-			LTouchLocationState aPreviousState, Vector2f aPreviousPosition,
-			float aPreviousPressure) {
+	public LTouchLocation(int aId, LTouchLocationState aState, Vector2f aPosition, float aPressure,
+			LTouchLocationState aPreviousState, Vector2f aPreviousPosition, float aPreviousPressure) {
 		id = aId;
 		position = aPosition;
 		previousPosition = aPreviousPosition;
@@ -173,8 +168,7 @@ public class LTouchLocation {
 		previousPressure = aPreviousPressure;
 	}
 
-	public LTouchLocation(int aId, LTouchLocationState aState,
-			Vector2f aPosition, float aPressure) {
+	public LTouchLocation(int aId, LTouchLocationState aState, Vector2f aPosition, float aPressure) {
 		id = aId;
 		position = aPosition;
 		previousPosition = Vector2f.ZERO();
@@ -184,8 +178,7 @@ public class LTouchLocation {
 		previousPressure = 0.0f;
 	}
 
-	public boolean tryGetPreviousLocation(
-			RefObject<LTouchLocation> aPreviousLocation) {
+	public boolean tryGetPreviousLocation(RefObject<LTouchLocation> aPreviousLocation) {
 		if (aPreviousLocation.argvalue == null) {
 			aPreviousLocation.argvalue = new LTouchLocation();
 		}
@@ -220,8 +213,7 @@ public class LTouchLocation {
 	}
 
 	public boolean equals(LTouchLocation other) {
-		return (id == other.id)
-				&& (this.getPosition().equals(other.getPosition()))
+		return (id == other.id) && (this.getPosition().equals(other.getPosition()))
 				&& (this.previousPosition.equals(other.previousPosition));
 	}
 
@@ -232,10 +224,8 @@ public class LTouchLocation {
 
 	@Override
 	public String toString() {
-		return "Touch id:" + id + " state:" + state + " position:" + position
-				+ " pressure:" + pressure + " prevState:" + previousState
-				+ " prevPosition:" + previousPosition + " previousPressure:"
-				+ previousPressure;
+		return "Touch id:" + id + " state:" + state + " position:" + position + " pressure:" + pressure + " prevState:"
+				+ previousState + " prevPosition:" + previousPosition + " previousPressure:" + previousPressure;
 	}
 
 	public LTouchLocation cpy() {

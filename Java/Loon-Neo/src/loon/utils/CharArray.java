@@ -6,7 +6,7 @@ import loon.LRelease;
 import loon.LSysException;
 import loon.events.QueryEvent;
 
-public class CharArray implements IArray,LRelease {
+public class CharArray implements IArray, LRelease {
 
 	/**
 	 * 产生一组指定范围的数据
@@ -93,10 +93,10 @@ public class CharArray implements IArray,LRelease {
 		this(true, array, 0, array.length);
 	}
 
-	public CharArray(char[] array,int size) {
+	public CharArray(char[] array, int size) {
 		this(true, array, 0, size);
 	}
-	
+
 	public CharArray(boolean ordered, char[] array, int startIndex, int count) {
 		this(ordered, count);
 		length = count;
@@ -492,7 +492,7 @@ public class CharArray implements IArray,LRelease {
 	public boolean isEmpty() {
 		return length == 0 || items == null;
 	}
-	
+
 	public CharArray cpy() {
 		return new CharArray(this);
 	}

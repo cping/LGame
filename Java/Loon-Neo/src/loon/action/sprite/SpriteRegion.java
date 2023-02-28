@@ -32,7 +32,7 @@ import loon.utils.NumberUtils;
 import loon.utils.TArray;
 
 public class SpriteRegion extends LTextureRegion {
-	
+
 	public static final int VERTEX_SIZE = 2 + 1 + 2;
 	public static final int SPRITE_SIZE = 4 * VERTEX_SIZE;
 
@@ -98,20 +98,18 @@ public class SpriteRegion extends LTextureRegion {
 	}
 
 	public SpriteRegion(LTexture texture) {
-		this(texture, 0, 0, (int)texture.width(), (int)texture.height());
+		this(texture, 0, 0, (int) texture.width(), (int) texture.height());
 	}
 
 	public SpriteRegion(LTexture texture, int srcWidth, int srcHeight) {
 		this(texture, 0, 0, srcWidth, srcHeight);
 	}
 
-	public SpriteRegion(String file, int srcX, int srcY, int srcWidth,
-			int srcHeight) {
+	public SpriteRegion(String file, int srcX, int srcY, int srcWidth, int srcHeight) {
 		this(LSystem.loadTexture(file), srcX, srcY, srcWidth, srcHeight);
 	}
 
-	public SpriteRegion(LTexture texture, int srcX, int srcY, int srcWidth,
-			int srcHeight) {
+	public SpriteRegion(LTexture texture, int srcX, int srcY, int srcWidth, int srcHeight) {
 		if (texture == null) {
 			throw new LSysException("texture cannot be null.");
 		}
@@ -125,13 +123,11 @@ public class SpriteRegion extends LTextureRegion {
 	public SpriteRegion(LTextureRegion region) {
 		setRegion(region);
 		setColor(1f, 1f, 1f, 1f);
-		setSize(MathUtils.abs(region.getRegionWidth()),
-				MathUtils.abs(region.getRegionHeight()));
+		setSize(MathUtils.abs(region.getRegionWidth()), MathUtils.abs(region.getRegionHeight()));
 		setOrigin(width / 2, height / 2);
 	}
 
-	public SpriteRegion(LTextureRegion region, int srcX, int srcY,
-			int srcWidth, int srcHeight) {
+	public SpriteRegion(LTextureRegion region, int srcX, int srcY, int srcWidth, int srcHeight) {
 		setRegion(region, srcX, srcY, srcWidth, srcHeight);
 		setColor(1f, 1f, 1f, 1f);
 		setSize(MathUtils.abs(srcWidth), MathUtils.abs(srcHeight));
@@ -146,8 +142,7 @@ public class SpriteRegion extends LTextureRegion {
 		if (sprite == null) {
 			throw new LSysException("sprite cannot be null.");
 		}
-		System.arraycopy(sprite.vertices, 0, vertices, 0,
-				SpriteRegion.SPRITE_SIZE);
+		System.arraycopy(sprite.vertices, 0, vertices, 0, SpriteRegion.SPRITE_SIZE);
 		texture = sprite.texture;
 		xOff = sprite.xOff;
 		yOff = sprite.yOff;
@@ -294,8 +289,7 @@ public class SpriteRegion extends LTextureRegion {
 	}
 
 	public void setColor(float r, float g, float b, float a) {
-		int intBits = ((int) (255 * a) << 24) | ((int) (255 * b) << 16)
-				| ((int) (255 * g) << 8) | ((int) (255 * r));
+		int intBits = ((int) (255 * a) << 24) | ((int) (255 * b) << 16) | ((int) (255 * g) << 8) | ((int) (255 * r));
 		float color = NumberUtils.intBitsToFloat(intBits & 0xfeffffff);
 		float[] vertices = this.vertices;
 		vertices[2] = color;

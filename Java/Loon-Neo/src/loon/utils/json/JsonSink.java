@@ -26,49 +26,49 @@ import loon.utils.TArray;
 
 public interface JsonSink<I extends JsonSink<I>> {
 
-  I array(TArray<Object> c);
+	I array(TArray<Object> c);
 
-  I array(Json.Array c);
+	I array(Json.Array c);
 
-  I array(String key, TArray<Object> c);
+	I array(String key, TArray<Object> c);
 
-  I array(String key, Json.Array c);
+	I array(String key, Json.Array c);
 
-  I object(ArrayMap map);
+	I object(ArrayMap map);
 
-  I object(Json.Object map);
+	I object(Json.Object map);
 
-  I object(String key, ArrayMap map);
+	I object(String key, ArrayMap map);
 
-  I object(String key, Json.Object map);
+	I object(String key, Json.Object map);
 
-  I nul();
+	I nul();
 
-  I nul(String key);
+	I nul(String key);
 
-  I value(Object o);
+	I value(Object o);
 
-  I value(String key, Object o);
+	I value(String key, Object o);
 
-  I value(String s);
+	I value(String s);
 
-  I value(boolean b);
+	I value(boolean b);
 
-  I value(Number n);
+	I value(Number n);
 
-  I value(String key, String s);
+	I value(String key, String s);
 
-  I value(String key, boolean b);
+	I value(String key, boolean b);
 
-  I value(String key, Number n);
+	I value(String key, Number n);
 
-  I array();
+	I array();
 
-  I object();
+	I object();
 
-  I array(String key);
+	I array(String key);
 
-  I object(String key);
+	I object(String key);
 
-  I end();
+	I end();
 }

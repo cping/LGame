@@ -34,18 +34,18 @@ public abstract class AbstractBox implements XY {
 	protected int _height;
 	protected int _boxWidth;
 	protected int _boxHeight;
-	
+
 	protected float _boxX;
 	protected float _boxY;
 	protected float _borderW;
 
 	protected float _alpha = 1f;
-	
+
 	protected LColor borderColor = LColor.white.cpy();
 	protected LColor fontColor = LColor.white.cpy();
-	
+
 	protected IFont font;
-	
+
 	protected LTexture _textureBox;
 	protected int _radius;
 

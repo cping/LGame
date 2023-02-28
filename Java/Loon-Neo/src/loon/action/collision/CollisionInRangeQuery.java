@@ -64,7 +64,7 @@ public class CollisionInRangeQuery implements CollisionQuery {
 		}
 		return y + _offsetLocation.y;
 	}
-	
+
 	@Override
 	public boolean checkCollision(CollisionObject actor) {
 

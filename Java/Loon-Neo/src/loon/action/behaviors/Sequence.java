@@ -29,7 +29,7 @@ public class Sequence<T> extends Composite<T> {
 	public Sequence(AbortTypes abortType) {
 		this.abortType = abortType;
 	}
-	
+
 	@Override
 	public TaskStatus update(T context) {
 		if (_currentChildIndex != 0) {

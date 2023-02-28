@@ -223,7 +223,7 @@ public class CssElement {
 		if (borderSize == null) {
 			borderSize = new Border();
 		}
-		
+
 		borderSize.top = cssNode.find(zeroLength, "border-top").getValueString();
 		borderSize.right = cssNode.find(zeroLength, "border-right").getValueString();
 		borderSize.bottom = cssNode.find(zeroLength, "border-bottom").getValueString();

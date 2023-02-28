@@ -27,9 +27,9 @@ public abstract class Drawer extends Stage {
 	public abstract void paint(GLEx g);
 
 	public abstract void paintFrist(GLEx g);
-	
+
 	public abstract void paintLast(GLEx g);
-	
+
 	@Override
 	public void draw(GLEx g) {
 		this.paint(g);
@@ -39,7 +39,7 @@ public abstract class Drawer extends Stage {
 	public void drawFrist(GLEx g) {
 		this.paintFrist(g);
 	}
-	
+
 	@Override
 	public void drawLast(GLEx g) {
 		this.paintLast(g);

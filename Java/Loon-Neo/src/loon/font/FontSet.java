@@ -27,8 +27,8 @@ public interface FontSet<T> {
 	public T setFont(IFont font);
 
 	public IFont getFont();
-	
+
 	public T setFontColor(LColor color);
-	
+
 	public LColor getFontColor();
 }

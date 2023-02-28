@@ -182,12 +182,11 @@ public class SplitEffect extends Entity implements BaseEffect {
 		this.autoRemoved = autoRemoved;
 		return this;
 	}
-	
+
 	@Override
 	public void close() {
 		super.close();
 		completed = true;
 	}
-
 
 }

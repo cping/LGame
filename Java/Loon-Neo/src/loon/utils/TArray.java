@@ -30,7 +30,7 @@ import loon.utils.ObjectMap.Keys;
 import loon.utils.ObjectMap.Values;
 
 @SuppressWarnings({ "unchecked" })
-public class TArray<T> implements Iterable<T>, IArray,LRelease{
+public class TArray<T> implements Iterable<T>, IArray, LRelease {
 
 	public final static class ArrayIterable<T> implements Iterable<T> {
 
@@ -139,7 +139,7 @@ public class TArray<T> implements Iterable<T>, IArray,LRelease{
 	public T[] items;
 
 	public int size;
-	
+
 	public boolean ordered;
 
 	public TArray() {

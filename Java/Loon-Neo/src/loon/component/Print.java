@@ -103,7 +103,7 @@ public class Print implements FontSet<Print>, LRelease {
 	private int _messageLength = 10;
 
 	private int _lazyFlag = 1;
-	
+
 	private String _messages;
 
 	private boolean _onComplete, _newLine, _visible, _closed;
@@ -111,7 +111,7 @@ public class Print implements FontSet<Print>, LRelease {
 	private StrBuilder _messageBuffer = new StrBuilder(_messageLength);
 
 	private float _alpha;
-	
+
 	private int _width, _height, _leftoffset, _topoffset, _nextflag, _messageCount;
 
 	private int _textsize, _waitdelay, _textoffsetSize, _leftsize, _fontSize, _fontHeight;
@@ -136,7 +136,7 @@ public class Print implements FontSet<Print>, LRelease {
 	private Mode dirmode = Mode.NONE;
 
 	public Print(Vector2f _printLocation, IFont font, int width, int height) {
-		this(LSystem.EMPTY,  font, _printLocation, width, height);
+		this(LSystem.EMPTY, font, _printLocation, width, height);
 	}
 
 	public Print(String context, IFont size, Vector2f pos, int width, int height) {
@@ -401,7 +401,8 @@ public class Print implements FontSet<Print>, LRelease {
 							(_offsettext * _fontHeight) + _printLocation.y + _fontSize + _topoffset, _fontColor);
 				} else if (!_newLine && !_onComplete) {
 					_iconX = _printLocation.x + _leftsize + _leftoffset;
-					_iconY = (_offsettext * _fontHeight) + _printLocation.y + _fontSize + _topoffset + _defaultFont.getAscent();
+					_iconY = (_offsettext * _fontHeight) + _printLocation.y + _fontSize + _topoffset
+							+ _defaultFont.getAscent();
 					if (_isIconFlag && _iconX != 0 && _iconY != 0) {
 						fixIconPos();
 						g.draw(_creeseIcon, _iconLocation.x, _iconLocation.y);
@@ -532,7 +533,8 @@ public class Print implements FontSet<Print>, LRelease {
 							(_offsettext * _fontHeight) + _printLocation.y + _fontSize + _topoffset, _fontColor);
 				} else if (!_newLine && !_onComplete) {
 					_iconX = _printLocation.x + _leftsize + _leftoffset;
-					_iconY = (_offsettext * _fontHeight) + _printLocation.y + _fontSize + _topoffset + _curFont.getAscent();
+					_iconY = (_offsettext * _fontHeight) + _printLocation.y + _fontSize + _topoffset
+							+ _curFont.getAscent();
 					if (_isIconFlag && _iconX != 0 && _iconY != 0) {
 						fixIconPos();
 						g.draw(_creeseIcon, _iconLocation.x, _iconLocation.y);

@@ -36,8 +36,7 @@ public class LayoutPort {
 		this.boxConstraints = new LayoutConstraints();
 	}
 
-	public LayoutPort(final BoxSize newBox,
-			final LayoutConstraints newBoxConstraints) {
+	public LayoutPort(final BoxSize newBox, final LayoutConstraints newBoxConstraints) {
 		this.box = newBox;
 		this.boxConstraints = newBoxConstraints;
 	}
@@ -47,8 +46,7 @@ public class LayoutPort {
 		this.boxConstraints = new LayoutConstraints(src.getBoxConstraints());
 	}
 
-	public static void updateLayoutPart(final LayoutPort layoutPart,
-			final int width, final int height) {
+	public static void updateLayoutPart(final LayoutPort layoutPart, final int width, final int height) {
 		BoxSize box = layoutPart.getBox();
 		box.setWidth(width);
 		box.setHeight(height);
@@ -68,11 +66,9 @@ public class LayoutPort {
 	@Override
 	public String toString() {
 		StrBuilder result = new StrBuilder();
-		result.append("box [" + box.getX() + ", " + box.getY() + ", "
-				+ box.getWidth() + ", " + box.getHeight()
-				+ "] with constraints [" + boxConstraints.getX() + ", "
-				+ boxConstraints.getY() + ", " + boxConstraints.getWidth()
-				+ ", " + boxConstraints.getHeight() + "]");
+		result.append("box [" + box.getX() + ", " + box.getY() + ", " + box.getWidth() + ", " + box.getHeight()
+				+ "] with constraints [" + boxConstraints.getX() + ", " + boxConstraints.getY() + ", "
+				+ boxConstraints.getWidth() + ", " + boxConstraints.getHeight() + "]");
 		return result.toString();
 	}
 }

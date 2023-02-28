@@ -832,8 +832,7 @@ public class Actor extends LObject<Actor>
 
 	private void failIfNotInLayer() {
 		if (this.gameLayer == null) {
-			throw new LSysException(
-					"The actor has not been inserted into a Layer so it has no _objectLocation yet !");
+			throw new LSysException("The actor has not been inserted into a Layer so it has no _objectLocation yet !");
 		}
 	}
 
@@ -1152,7 +1151,7 @@ public class Actor extends LObject<Actor>
 	public float getCenterY() {
 		return getY() + getHeight() / 2f;
 	}
-	
+
 	@Override
 	public ActionTween selfAction() {
 		return PlayerUtils.set(this);

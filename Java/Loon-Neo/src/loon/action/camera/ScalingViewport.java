@@ -26,7 +26,7 @@ import loon.utils.Scale;
 import loon.utils.Scale.Mode;
 
 public class ScalingViewport extends Viewport {
-	
+
 	private final Scale scaling;
 	private final float worldWidth, worldHeight;
 	private final Vector2f size = new Vector2f();

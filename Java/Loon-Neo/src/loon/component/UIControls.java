@@ -105,10 +105,10 @@ public class UIControls {
 		this._comps = new TArray<LComponent>();
 	}
 
-	public TArray<LComponent> list(){
+	public TArray<LComponent> list() {
 		return this._comps;
 	}
-	
+
 	public TArray<LComponent> intersects(RectBox rect) {
 		TArray<LComponent> comps = new TArray<LComponent>();
 		for (LComponent child : this._comps) {
@@ -158,7 +158,7 @@ public class UIControls {
 		}
 		return comps;
 	}
-	
+
 	public UIControls add(LComponent comp) {
 		if (comp == null) {
 			throw new LSysException("LComponent cannot be null.");

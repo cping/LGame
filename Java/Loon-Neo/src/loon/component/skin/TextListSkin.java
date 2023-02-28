@@ -27,7 +27,7 @@ import loon.component.DefUI;
 import loon.font.FontSet;
 import loon.font.IFont;
 
-public class TextListSkin implements FontSet<TextListSkin>{
+public class TextListSkin implements FontSet<TextListSkin> {
 
 	private LTexture backgoundTexture;
 	private LTexture choiceTexture;
@@ -43,13 +43,11 @@ public class TextListSkin implements FontSet<TextListSkin>{
 
 	public TextListSkin() {
 		this(LSystem.getSystemGameFont(), LColor.white.cpy(), DefUI.self().getDefaultTextures(2),
-				DefUI.self().getDefaultTextures(4), DefUI.self().getDefaultTextures(3),
-				null, null);
+				DefUI.self().getDefaultTextures(4), DefUI.self().getDefaultTextures(3), null, null);
 	}
 
-	public TextListSkin(IFont font, LColor fontColor, LTexture bg,
-			LTexture choice, LTexture scroll, LTexture scrollFlagA,
-			LTexture scrollFlagB) {
+	public TextListSkin(IFont font, LColor fontColor, LTexture bg, LTexture choice, LTexture scroll,
+			LTexture scrollFlagA, LTexture scrollFlagB) {
 		this.font = font;
 		this.fontColor = fontColor;
 		this.backgoundTexture = bg;

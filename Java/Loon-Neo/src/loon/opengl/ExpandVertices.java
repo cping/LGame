@@ -48,7 +48,7 @@ public class ExpandVertices {
 	public int length() {
 		return vertices.length;
 	}
-	
+
 	public int getSize() {
 		return vertices.length / START_VERTS;
 	}

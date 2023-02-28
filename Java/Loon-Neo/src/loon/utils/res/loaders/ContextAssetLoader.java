@@ -37,7 +37,7 @@ public class ContextAssetLoader extends AssetAbstractLoader<String> {
 	public String get() {
 		return _context;
 	}
-	
+
 	@Override
 	public boolean completed() {
 		return true;

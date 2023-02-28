@@ -39,10 +39,10 @@ public class FadeOvalEffect extends Entity implements BaseEffect {
 	private float elapsed;
 	private boolean finished = false;
 	private boolean autoRemoved = false;
-	
+
 	private int type = TYPE_FADE_IN;
 	private int maxColorSize;
-	
+
 	public FadeOvalEffect(int type, LColor color) {
 		this(type, color, LSystem.viewSize.width, LSystem.viewSize.height);
 	}
@@ -162,12 +162,11 @@ public class FadeOvalEffect extends Entity implements BaseEffect {
 		this.autoRemoved = autoRemoved;
 		return this;
 	}
-	
+
 	@Override
 	public void close() {
 		super.close();
 		this.finished = true;
 	}
-
 
 }

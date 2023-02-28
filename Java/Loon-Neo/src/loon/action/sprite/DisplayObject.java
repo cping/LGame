@@ -206,9 +206,9 @@ public abstract class DisplayObject extends EventDispatcher implements Collision
 	}
 
 	public void setScale(float scale) {
-		setScale(scale,scale);
+		setScale(scale, scale);
 	}
-	
+
 	@Override
 	public void setScale(float sx, float sy) {
 		this._scaleX = sx;

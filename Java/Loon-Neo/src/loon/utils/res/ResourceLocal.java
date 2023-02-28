@@ -244,7 +244,7 @@ public class ResourceLocal extends ResourceGetter implements IEventListener {
 	public LTexture getTextureData(String name) {
 		return getTexture(name).img();
 	}
-	
+
 	@Override
 	public Texture getTexture(String name) {
 		init();
@@ -447,6 +447,5 @@ public class ResourceLocal extends ResourceGetter implements IEventListener {
 	public void onReciveEvent(int type, EventDispatcher dispatcher, Object data) {
 		this.dispatchEvent(type, data);
 	}
-
 
 }

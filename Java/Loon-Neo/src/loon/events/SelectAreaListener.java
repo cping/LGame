@@ -24,7 +24,7 @@ package loon.events;
  * 选择指定区域
  */
 public interface SelectAreaListener {
-	
+
 	public void onArea(float x, float y, float w, float h);
 
 }

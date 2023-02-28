@@ -501,7 +501,7 @@ public class EmulatorButtons implements LRelease {
 	public void setOffsetRightPad(int offsetRightPad) {
 		this.offsetRightPad = offsetRightPad;
 	}
-	
+
 	public boolean isClosed() {
 		return closed;
 	}
@@ -522,6 +522,5 @@ public class EmulatorButtons implements LRelease {
 		}
 		closed = true;
 	}
-
 
 }

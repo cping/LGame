@@ -47,7 +47,7 @@ public interface SysInput {
 		public void cancel();
 
 	}
-	
+
 	void setKeyDown(int code);
 
 	void setKeyUp(int code);

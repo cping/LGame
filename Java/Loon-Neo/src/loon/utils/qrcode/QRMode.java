@@ -58,7 +58,7 @@ public class QRMode {
 		modeBits = mode;
 		numBitsCharCount = ccbits;
 	}
-	
+
 	public int getModeBits() {
 		return modeBits;
 	}
@@ -66,7 +66,7 @@ public class QRMode {
 	public int getBits(int index) {
 		return numBitsCharCount[index];
 	}
-	
+
 	public int numCharCountBits(int ver) {
 		if (!(QRCode.MIN_VERSION <= ver && ver <= QRCode.MAX_VERSION)) {
 			return 0;

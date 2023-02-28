@@ -224,7 +224,7 @@ public class Mesh implements LRelease {
 		if (indices.getNumIndices() > 0)
 			indices.unbind();
 	}
-	
+
 	public void render(ShaderProgram shader, int primitiveType) {
 		render(shader, primitiveType, 0, indices.getNumMaxIndices() > 0 ? getNumIndices() : getNumVertices(), autoBind);
 	}
@@ -385,8 +385,8 @@ public class Mesh implements LRelease {
 		updateVertices(start * stride, vertices);
 	}
 
-	public static void transform(final Matrix4 matrix, final float[] vertices, int vertexSize, int offset, int dimensions,
-			int start, int count) {
+	public static void transform(final Matrix4 matrix, final float[] vertices, int vertexSize, int offset,
+			int dimensions, int start, int count) {
 		if (offset < 0 || dimensions < 1 || (offset + dimensions) > vertexSize)
 			throw new LSysException("offset > vertexSize !");
 		if (start < 0 || count < 1 || ((start + count) * vertexSize) > vertices.length)
@@ -432,22 +432,22 @@ public class Mesh implements LRelease {
 		final int offset = posAttr.offset / 4;
 		final int vertexSize = getVertexSize() / 4;
 		final int numVertices = getNumVertices();
-        final int size = numVertices * vertexSize; 
+		final int size = numVertices * vertexSize;
 		final float[] vertices = new float[size];
 		getVertices(0, size, vertices);
 		transformUV(matrix, vertices, vertexSize, offset, start, count);
 		setVertices(vertices, 0, vertices.length);
 	}
-	
+
 	final static Vector2f aff2 = new Vector2f();
-	
+
 	public static void transformUV(final Affine2f matrix, final float[] vertices, int vertexSize, int offset, int start,
 			int count) {
 		if (start < 0 || count < 1 || ((start + count) * vertexSize) > vertices.length) {
 			throw new LSysException("start = " + start + ", count = " + count + ", vertexSize = " + vertexSize
 					+ ", length = " + vertices.length);
 		}
-	
+
 		int idx = offset + (start * vertexSize);
 		for (int i = 0; i < count; i++) {
 			aff2.set(vertices[idx], vertices[idx + 1]).mulSelf(matrix);
@@ -466,15 +466,15 @@ public class Mesh implements LRelease {
 		final int offset = posAttr.offset / 4;
 		final int vertexSize = getVertexSize() / 4;
 		final int numVertices = getNumVertices();
-        final int size = numVertices * vertexSize; 
+		final int size = numVertices * vertexSize;
 		final float[] vertices = new float[size];
 		getVertices(0, size, vertices);
 		transformUV(matrix, vertices, vertexSize, offset, start, count);
 		setVertices(vertices, 0, vertices.length);
 	}
-	
+
 	final static Vector2f tmp2 = new Vector2f();
-	
+
 	public static void transformUV(final Matrix3 matrix, final float[] vertices, int vertexSize, int offset, int start,
 			int count) {
 		if (start < 0 || count < 1 || ((start + count) * vertexSize) > vertices.length) {

@@ -26,8 +26,8 @@ import loon.utils.MathUtils;
 
 public class FlyLeftFragment extends Fragment {
 
-	public FlyLeftFragment(int color, float x, float y, RectI bound,LTexture tex) {
-		super(color, x, y, bound,tex);
+	public FlyLeftFragment(int color, float x, float y, RectI bound, LTexture tex) {
+		super(color, x, y, bound, tex);
 	}
 
 	@Override

@@ -73,7 +73,7 @@ public class EmptyObject extends LObject<Object> implements ActionBind, LRelease
 	}
 
 	public EmptyObject setScale(float scale) {
-		this.setScale(scale,scale);
+		this.setScale(scale, scale);
 		return this;
 	}
 

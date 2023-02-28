@@ -43,8 +43,7 @@ public class IndexArray implements IndexData {
 		if (empty) {
 			maxIndices = 1;
 		}
-		byteBuffer = LSystem.base().support()
-				.newUnsafeByteBuffer(maxIndices * 2);
+		byteBuffer = LSystem.base().support().newUnsafeByteBuffer(maxIndices * 2);
 		buffer = byteBuffer.asShortBuffer();
 		buffer.flip();
 		byteBuffer.flip();

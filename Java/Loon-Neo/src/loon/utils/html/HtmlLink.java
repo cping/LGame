@@ -21,14 +21,14 @@
 package loon.utils.html;
 
 public class HtmlLink {
-	
+
 	protected String real;
-	
+
 	protected String typeData;
-	
+
 	protected String href;
-	
-	protected HtmlLink(HtmlElement ele){
+
+	protected HtmlLink(HtmlElement ele) {
 		this.real = ele.getAttribute("real", null);
 		this.typeData = ele.getAttribute("type", null);
 		this.href = ele.getAttribute("href", null);

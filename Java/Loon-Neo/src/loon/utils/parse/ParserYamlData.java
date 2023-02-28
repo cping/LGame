@@ -898,7 +898,7 @@ public class ParserYamlData {
 			;
 		}
 		String blockString = sbr.toString();
-		if (blockString.length() > 0 && YamlCharacter.isLineBreakChar(blockString.charAt(blockString.length() - 1))){
+		if (blockString.length() > 0 && YamlCharacter.isLineBreakChar(blockString.charAt(blockString.length() - 1))) {
 			blockString = blockString.substring(0, blockString.length() - 1);
 		}
 		_event.content("string", blockString);

@@ -31,15 +31,14 @@ public class MovieSpriteSheet implements LRelease {
 	protected TextureData[] _datas = null;
 
 	private TextureAtlas _ta = null;
-	
+
 	private boolean _close = false;
 
 	protected MovieSpriteSheet(TextureAtlas ta, String[] frameNames) {
 		init(ta, frameNames);
 	}
 
-	protected MovieSpriteSheet(Json.Object jsonObj, String[] frameNames,
-			LTexture sheet) {
+	protected MovieSpriteSheet(Json.Object jsonObj, String[] frameNames, LTexture sheet) {
 		TextureAtlas ta = new TextureAtlas(sheet, jsonObj);
 		init(ta, frameNames);
 	}
@@ -104,8 +103,7 @@ public class MovieSpriteSheet implements LRelease {
 				list.add(td);
 			}
 		}
-		ListMap<String, TextureData> frames = new ListMap<String, TextureData>(
-				list.size);
+		ListMap<String, TextureData> frames = new ListMap<String, TextureData>(list.size);
 		String[] frameNames = new String[list.size];
 		for (int i = 0; i < frameNames.length; i++) {
 			TextureData td = list.get(i);

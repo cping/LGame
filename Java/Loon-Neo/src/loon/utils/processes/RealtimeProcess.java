@@ -44,10 +44,10 @@ public abstract class RealtimeProcess implements GameProcess, LRelease {
 
 	private SortedList<GameProcess> processesToFireWhenFinished;
 
-	private final static String getProcessName(){
+	private final static String getProcessName() {
 		return "Process" + (GLOBAL_ID++);
 	}
-	
+
 	public RealtimeProcess() {
 		this(getProcessName());
 	}

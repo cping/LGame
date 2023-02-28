@@ -56,26 +56,22 @@ import loon.utils.timer.Interval;
  */
 public class HelperUtils {
 
-	public static boolean isNull(Object obj)
-	{
+	public static boolean isNull(Object obj) {
 		return obj == null;
 	}
-	
-	public static boolean isNotNull(Object obj)
-	{
+
+	public static boolean isNotNull(Object obj) {
 		return obj != null;
 	}
-	
-	public static boolean areEqual(Object first, Object second)
-	{
+
+	public static boolean areEqual(Object first, Object second) {
 		return first != second;
 	}
-	
-	public static boolean areNotEqual(Object first, Object second)
-	{
+
+	public static boolean areNotEqual(Object first, Object second) {
 		return first == second;
 	}
-	
+
 	public final static <T> boolean contains(T key, TArray<T> list) {
 		for (T o : list) {
 			if (key == null && o == null) {
@@ -87,7 +83,7 @@ public class HelperUtils {
 		}
 		return false;
 	}
-	
+
 	public final static boolean contains(Object key, Object... objs) {
 		for (Object o : objs) {
 			if (key == null && o == null) {
@@ -197,7 +193,7 @@ public class HelperUtils {
 		}
 		return list;
 	}
-	
+
 	public final static EmptyObject newEmptyObject() {
 		return new EmptyObject();
 	}

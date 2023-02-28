@@ -24,17 +24,17 @@ import loon.LTexture;
 import loon.utils.MathUtils;
 
 public class ParticleFireEmitter implements ParticleEmitter {
-	
+
 	private int _x;
 
 	private int _y;
-	
+
 	private int _interval = 50;
 
 	private long _timer;
 
 	private float _size = 40;
-	
+
 	public ParticleFireEmitter() {
 	}
 
@@ -48,7 +48,7 @@ public class ParticleFireEmitter implements ParticleEmitter {
 		this._y = y;
 		this._size = size;
 	}
-	
+
 	@Override
 	public void update(ParticleSystem system, long delta) {
 		_timer -= delta;
@@ -58,9 +58,9 @@ public class ParticleFireEmitter implements ParticleEmitter {
 			p.setColor(1, 1, 1, 0.5f);
 			p.setPosition(_x, _y);
 			p.setSize(_size);
-			float vx =  (-0.02f + (MathUtils.random() * 0.04f));
-			float vy =  (-(MathUtils.random() * 0.15f));
-			p.setVelocity(vx,vy,1.1f);
+			float vx = (-0.02f + (MathUtils.random() * 0.04f));
+			float vy = (-(MathUtils.random() * 0.15f));
+			p.setVelocity(vx, vy, 1.1f);
 		}
 	}
 
@@ -72,7 +72,7 @@ public class ParticleFireEmitter implements ParticleEmitter {
 			particle.adjustSize(-0.04f * delta * (_size / 40.0f));
 		}
 		float c = 0.002f * delta;
-		particle.adjustColor(0,-c/2,-c*2,-c/4);
+		particle.adjustColor(0, -c / 2, -c * 2, -c / 4);
 	}
 
 	@Override

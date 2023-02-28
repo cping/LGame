@@ -21,6 +21,7 @@
 package loon.component.table;
 
 import loon.LSystem;
+import loon.utils.StrBuilder;
 import loon.utils.TArray;
 
 public class SimpleTableModel implements ITableModel {
@@ -31,12 +32,23 @@ public class SimpleTableModel implements ITableModel {
 		_list = list;
 	}
 
+	public String message() {
+		if (_list == null) {
+			return null;
+		}
+		StrBuilder sbr = new StrBuilder();
+		for (ListItem item : _list) {
+			sbr.append(item.message());
+		}
+		return sbr.toString();
+	}
+
 	@Override
 	public String getColumnName(int columnIndex) {
 		if (_list.size == 0) {
 			return "...";
 		}
-		return _list.get(columnIndex).name;
+		return _list.get(columnIndex)._name;
 	}
 
 	@Override
@@ -46,15 +58,15 @@ public class SimpleTableModel implements ITableModel {
 
 	@Override
 	public Object getValue(int row, int column) {
-		if (column > _list.size || row > _list.get(column).list.size) {
+		if (column > _list.size || row > _list.get(column)._list.size) {
 			return "...";
 		}
 		ListItem items = null;
 		if (_list.size > column) {
 			items = _list.get(column);
 		}
-		if (items != null && items.list.size > row) {
-			return items.list.get(row);
+		if (items != null && items._list.size > row) {
+			return items._list.get(row);
 		}
 		return LSystem.EMPTY;
 	}
@@ -64,7 +76,7 @@ public class SimpleTableModel implements ITableModel {
 		if (_list.size == 0) {
 			return 0;
 		}
-		return _list.get(0).list.size;
+		return _list.get(0)._list.size;
 	}
 
 	public void clear() {
@@ -75,6 +87,6 @@ public class SimpleTableModel implements ITableModel {
 		if (_list.size == 0) {
 			return "...";
 		}
-		return _list.get(0).list.get(row);
+		return _list.get(0)._list.get(row);
 	}
 }

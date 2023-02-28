@@ -27,8 +27,8 @@ public class TouchMake {
 	public static class Event extends loon.events.Event.XYEvent {
 
 		public static enum Kind {
-			START(true, false), MOVE(false, false), END(false, true), CANCEL(
-					false, true);
+			START(true, false), MOVE(false, false), END(false, true), CANCEL(false, true);
+
 			public final boolean isStart, isEnd;
 
 			Kind(boolean isStart, boolean isEnd) {
@@ -49,8 +49,7 @@ public class TouchMake {
 			this(flags, time, x, y, kind, id, -1, -1);
 		}
 
-		public Event(int flags, double time, float x, float y, Kind kind,
-				int id, float pressure, float size) {
+		public Event(int flags, double time, float x, float y, Kind kind, int id, float pressure, float size) {
 			super(flags, time, x, y);
 			this.kind = kind;
 			this.id = id;
@@ -66,9 +65,8 @@ public class TouchMake {
 		@Override
 		protected void addFields(StrBuilder builder) {
 			super.addFields(builder);
-			builder.append(", kind=").append(kind).append(", id=").append(id)
-					.append(", pressure=").append(pressure).append(", size=")
-					.append(size);
+			builder.append(", kind=").append(kind).append(", id=").append(id).append(", pressure=").append(pressure)
+					.append(", size=").append(size);
 		}
 	}
 }

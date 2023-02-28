@@ -34,8 +34,7 @@ public interface VertexData extends LRelease {
 
 	public void setVertices(float[] vertices, int offset, int count);
 
-	public void updateVertices(int targetOffset, float[] vertices,
-			int sourceOffset, int count);
+	public void updateVertices(int targetOffset, float[] vertices, int sourceOffset, int count);
 
 	public FloatBuffer getBuffer();
 

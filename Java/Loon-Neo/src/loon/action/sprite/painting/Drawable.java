@@ -102,8 +102,7 @@ public abstract class Drawable implements LRelease {
 
 	public abstract void update(GameTime elapsedTime);
 
-	public void update(GameTime gameTime, boolean otherScreenHasFocus,
-			boolean coveredByOtherScreen) {
+	public void update(GameTime gameTime, boolean otherScreenHasFocus, boolean coveredByOtherScreen) {
 		this.otherScreenHasFocus = otherScreenHasFocus;
 		if (this._isExiting) {
 			this._drawableState = DrawableState.TransitionOff;
@@ -125,8 +124,7 @@ public abstract class Drawable implements LRelease {
 		update(gameTime);
 	}
 
-	private boolean updateTransition(GameTime gameTime, float time,
-			int direction) {
+	private boolean updateTransition(GameTime gameTime, float time, int direction) {
 		float num;
 		if (time == 0f) {
 			num = 1f;
@@ -137,8 +135,7 @@ public abstract class Drawable implements LRelease {
 		this._transitionPosition += num * direction;
 		if (((direction < 0) && (this._transitionPosition <= 0f))
 				|| ((direction > 0) && (this._transitionPosition >= 1f))) {
-			this._transitionPosition = MathUtils.clamp(
-					this._transitionPosition, 0f, 1f);
+			this._transitionPosition = MathUtils.clamp(this._transitionPosition, 0f, 1f);
 			return false;
 		}
 		return true;

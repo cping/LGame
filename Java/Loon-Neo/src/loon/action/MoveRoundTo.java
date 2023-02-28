@@ -36,40 +36,36 @@ public class MoveRoundTo extends ActionEvent {
 	private final float startAngle;
 	private final float radius;
 	private final float startRadius;
-	private Vector2f startPoint,oldStartPoint;
-	private Vector2f centerPoint,oldCenterPoint;
+	private Vector2f startPoint, oldStartPoint;
+	private Vector2f centerPoint, oldCenterPoint;
 	private EaseTimer timer;
-	
-	public MoveRoundTo(float angle, float radius, Vector2f centerPoint,
-			float duration, EasingMode easing) {
+
+	public MoveRoundTo(float angle, float radius, Vector2f centerPoint, float duration, EasingMode easing) {
 		this(0f, angle, 0f, radius, centerPoint, null, duration, LSystem.DEFAULT_EASE_DELAY, easing);
 	}
 
-	public MoveRoundTo(float angle, float radius, Vector2f centerPoint,
-			EasingMode easing) {
+	public MoveRoundTo(float angle, float radius, Vector2f centerPoint, EasingMode easing) {
 		this(0f, angle, 0f, radius, centerPoint, null, 1f, LSystem.DEFAULT_EASE_DELAY, easing);
 	}
 
-	public MoveRoundTo(float angle, float radius, Vector2f centerPoint,
-			float duration, float delay, EasingMode easing) {
+	public MoveRoundTo(float angle, float radius, Vector2f centerPoint, float duration, float delay,
+			EasingMode easing) {
 		this(0f, angle, 0f, radius, centerPoint, null, duration, delay, easing);
 	}
 
-	public MoveRoundTo(float startAngle, float angle, float startRadius,
-			float radius, Vector2f centerPoint) {
-		this(startAngle, angle, startRadius, radius, centerPoint, null, 1f,
-				LSystem.DEFAULT_EASE_DELAY, EasingMode.Linear);
+	public MoveRoundTo(float startAngle, float angle, float startRadius, float radius, Vector2f centerPoint) {
+		this(startAngle, angle, startRadius, radius, centerPoint, null, 1f, LSystem.DEFAULT_EASE_DELAY,
+				EasingMode.Linear);
 	}
 
-	public MoveRoundTo(float startAngle, float angle, float startRadius,
-			float radius, float duration, Vector2f centerPoint) {
-		this(startAngle, angle, startRadius, radius, centerPoint, null, duration,
-				LSystem.DEFAULT_EASE_DELAY, EasingMode.Linear);
+	public MoveRoundTo(float startAngle, float angle, float startRadius, float radius, float duration,
+			Vector2f centerPoint) {
+		this(startAngle, angle, startRadius, radius, centerPoint, null, duration, LSystem.DEFAULT_EASE_DELAY,
+				EasingMode.Linear);
 	}
 
-	public MoveRoundTo(float startAngle, float angle, float startRadius,
-			float radius, Vector2f centerPoint, Vector2f startPoint,
-			float duration, float delay, EasingMode easing) {
+	public MoveRoundTo(float startAngle, float angle, float startRadius, float radius, Vector2f centerPoint,
+			Vector2f startPoint, float duration, float delay, EasingMode easing) {
 		if (angle > 360) {
 			angle = 360;
 		}
@@ -93,23 +89,17 @@ public class MoveRoundTo extends ActionEvent {
 		if (timer.isCompleted()) {
 			_isCompleted = true;
 			float radian = MathUtils.toRadians(this.startAngle + this.angle);
-			float x = this.centerPoint.x + MathUtils.cos(radian)
-					* (this.startRadius + this.radius);
-			float y = this.centerPoint.y + MathUtils.sin(radian)
-					* (this.startRadius + this.radius);
-			movePos(x +original.getWidth()/2+ offsetX, y +original.getHeight()/2+ offsetY);
+			float x = this.centerPoint.x + MathUtils.cos(radian) * (this.startRadius + this.radius);
+			float y = this.centerPoint.y + MathUtils.sin(radian) * (this.startRadius + this.radius);
+			movePos(x + original.getWidth() / 2 + offsetX, y + original.getHeight() / 2 + offsetY);
 			return;
 		}
-		float currentRadius = this.startRadius + this.radius
-				* timer.getProgress();
+		float currentRadius = this.startRadius + this.radius * timer.getProgress();
 		float currentAngle = this.startAngle + this.angle * timer.getProgress();
 		float radian = MathUtils.toRadians(currentAngle);
-		this.startPoint.x = (this.centerPoint.x + MathUtils.cos(radian)
-				* currentRadius);
-		this.startPoint.y = (this.centerPoint.y + MathUtils.sin(radian)
-				* currentRadius);
-		movePos(this.startPoint.x + offsetX, this.startPoint.y
-				+ offsetY);
+		this.startPoint.x = (this.centerPoint.x + MathUtils.cos(radian) * currentRadius);
+		this.startPoint.y = (this.centerPoint.y + MathUtils.sin(radian) * currentRadius);
+		movePos(this.startPoint.x + offsetX, this.startPoint.y + offsetY);
 	}
 
 	public float getAngle() {
@@ -127,7 +117,7 @@ public class MoveRoundTo extends ActionEvent {
 	public float getStartRadius() {
 		return startRadius;
 	}
-	
+
 	@Override
 	public void onLoad() {
 		if (startPoint == null || startPoint.getX() == -1 || startPoint.getY() == -1) {
@@ -144,9 +134,8 @@ public class MoveRoundTo extends ActionEvent {
 
 	@Override
 	public ActionEvent cpy() {
-		MoveRoundTo mover = new MoveRoundTo(startAngle, angle, startRadius, radius,
-				oldCenterPoint, oldStartPoint, timer.getDuration(), timer.getDelay(),
-				timer.getEasingMode());
+		MoveRoundTo mover = new MoveRoundTo(startAngle, angle, startRadius, radius, oldCenterPoint, oldStartPoint,
+				timer.getDuration(), timer.getDelay(), timer.getEasingMode());
 		mover.set(this);
 		return mover;
 	}
@@ -160,23 +149,13 @@ public class MoveRoundTo extends ActionEvent {
 	public String getName() {
 		return "moveround";
 	}
-	
+
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue(getName());
-		builder.kv("startAngle", startAngle)
-		.comma()
-		.kv("angle", angle)
-		.comma()
-		.kv("startRadius",startRadius)
-		.comma()
-		.kv("radius",radius)
-		.comma()
-		.kv("startPoint",startPoint)
-		.comma()
-		.kv("centerPoint", centerPoint)
-		.comma()
-		.kv("EaseTimer",timer);
+		builder.kv("startAngle", startAngle).comma().kv("angle", angle).comma().kv("startRadius", startRadius).comma()
+				.kv("radius", radius).comma().kv("startPoint", startPoint).comma().kv("centerPoint", centerPoint)
+				.comma().kv("EaseTimer", timer);
 		return builder.toString();
 	}
 

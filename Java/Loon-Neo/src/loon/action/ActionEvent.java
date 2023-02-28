@@ -181,7 +181,7 @@ public abstract class ActionEvent {
 		original = e.original;
 		return this;
 	}
-	
+
 	public ActionEvent forceCompleted() {
 		if (!this._isCompleted && this.original != null) {
 			this._isCompleted = true;

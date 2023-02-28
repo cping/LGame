@@ -35,7 +35,7 @@ public class ParserReader {
 	private int _level = 0;
 	private int _eofIndex = 0;
 	private final ObjectMap<Integer, Integer> _markMap;
-	
+
 	public ParserReader(String context) {
 		if (context != null) {
 			this._context = context.toCharArray();

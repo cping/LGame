@@ -104,14 +104,14 @@ public abstract class CacheObjectBase {
 
 	public abstract void shutdown();
 
-	public abstract boolean canSpawn() ;
-	
+	public abstract boolean canSpawn();
+
 	public abstract boolean canSpawn(String name);
 
 	public abstract void unspawn(Object target);
 
 	public abstract void setLocked(Object target, boolean locked);
-	
+
 	public abstract void setPriority(Object target, int priority);
 
 	public String getName() {

@@ -30,14 +30,12 @@ public class OrthogonalTileColider extends TileColider {
 	}
 
 	@Override
-	public boolean colideTile(Tile tile, int mx, int my, int offsetX,
-			int offsetY) {
+	public boolean colideTile(Tile tile, int mx, int my, int offsetX, int offsetY) {
 
 		return colideRectangular(tile, mx, my, offsetX, offsetY);
 	}
 
-	private boolean colideRectangular(Tile tile, int px, int py, int offsetX,
-			int offsetY) {
+	private boolean colideRectangular(Tile tile, int px, int py, int offsetX, int offsetY) {
 		int x = px - tile.getX() - offsetX;
 		int y = py - tile.getY() - offsetY;
 		if ((x < tile.getX()) || (x > tile.getX() + tile.getWidth())) {

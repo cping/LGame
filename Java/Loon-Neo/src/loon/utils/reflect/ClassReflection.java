@@ -61,13 +61,9 @@ public final class ClassReflection {
 		try {
 			return c.newInstance();
 		} catch (InstantiationException e) {
-			throw new ReflectionException(
-					"Could not instantiate instance of class: " + c.getName(),
-					e);
+			throw new ReflectionException("Could not instantiate instance of class: " + c.getName(), e);
 		} catch (IllegalAccessException e) {
-			throw new ReflectionException(
-					"Could not instantiate instance of class: " + c.getName(),
-					e);
+			throw new ReflectionException("Could not instantiate instance of class: " + c.getName(), e);
 		}
 	}
 
@@ -80,31 +76,25 @@ public final class ClassReflection {
 		return result;
 	}
 
-	static public Constructor getConstructor(Class<?> c,
-			Class<?>... parameterTypes) throws ReflectionException {
+	static public Constructor getConstructor(Class<?> c, Class<?>... parameterTypes) throws ReflectionException {
 		try {
 			return new Constructor(c.getConstructor(parameterTypes));
 		} catch (SecurityException e) {
 			throw new ReflectionException(
-					"Security violation occurred while getting constructor for class: '"
-							+ c.getName() + "'.", e);
+					"Security violation occurred while getting constructor for class: '" + c.getName() + "'.", e);
 		} catch (NoSuchMethodException e) {
-			throw new ReflectionException("Constructor not found for class: "
-					+ c.getName(), e);
+			throw new ReflectionException("Constructor not found for class: " + c.getName(), e);
 		}
 	}
 
-	static public Constructor getDeclaredConstructor(Class<?> c,
-			Class<?>... parameterTypes) throws ReflectionException {
+	static public Constructor getDeclaredConstructor(Class<?> c, Class<?>... parameterTypes)
+			throws ReflectionException {
 		try {
 			return new Constructor(c.getDeclaredConstructor(parameterTypes));
 		} catch (SecurityException e) {
-			throw new ReflectionException(
-					"Security violation while getting constructor for class: "
-							+ c.getName(), e);
+			throw new ReflectionException("Security violation while getting constructor for class: " + c.getName(), e);
 		} catch (NoSuchMethodException e) {
-			throw new ReflectionException("Constructor not found for class: "
-					+ c.getName(), e);
+			throw new ReflectionException("Constructor not found for class: " + c.getName(), e);
 		}
 	}
 
@@ -117,17 +107,14 @@ public final class ClassReflection {
 		return result;
 	}
 
-	static public Method getMethod(Class<?> c, String name,
-			Class<?>... parameterTypes) throws ReflectionException {
+	static public Method getMethod(Class<?> c, String name, Class<?>... parameterTypes) throws ReflectionException {
 		try {
 			return new Method(c.getMethod(name, parameterTypes));
 		} catch (SecurityException e) {
 			throw new ReflectionException(
-					"Security violation while getting method: " + name
-							+ ", for class: " + c.getName(), e);
+					"Security violation while getting method: " + name + ", for class: " + c.getName(), e);
 		} catch (NoSuchMethodException e) {
-			throw new ReflectionException("Method not found: " + name
-					+ ", for class: " + c.getName(), e);
+			throw new ReflectionException("Method not found: " + name + ", for class: " + c.getName(), e);
 		}
 	}
 
@@ -140,17 +127,15 @@ public final class ClassReflection {
 		return result;
 	}
 
-	static public Method getDeclaredMethod(Class<?> c, String name,
-			Class<?>... parameterTypes) throws ReflectionException {
+	static public Method getDeclaredMethod(Class<?> c, String name, Class<?>... parameterTypes)
+			throws ReflectionException {
 		try {
 			return new Method(c.getDeclaredMethod(name, parameterTypes));
 		} catch (SecurityException e) {
 			throw new ReflectionException(
-					"Security violation while getting method: " + name
-							+ ", for class: " + c.getName(), e);
+					"Security violation while getting method: " + name + ", for class: " + c.getName(), e);
 		} catch (NoSuchMethodException e) {
-			throw new ReflectionException("Method not found: " + name
-					+ ", for class: " + c.getName(), e);
+			throw new ReflectionException("Method not found: " + name + ", for class: " + c.getName(), e);
 		}
 	}
 
@@ -163,17 +148,14 @@ public final class ClassReflection {
 		return result;
 	}
 
-	static public Field getField(Class<?> c, String name)
-			throws ReflectionException {
+	static public Field getField(Class<?> c, String name) throws ReflectionException {
 		try {
 			return new Field(c.getField(name));
 		} catch (SecurityException e) {
 			throw new ReflectionException(
-					"Security violation while getting field: " + name
-							+ ", for class: " + c.getName(), e);
+					"Security violation while getting field: " + name + ", for class: " + c.getName(), e);
 		} catch (NoSuchFieldException e) {
-			throw new ReflectionException("Field not found: " + name
-					+ ", for class: " + c.getName(), e);
+			throw new ReflectionException("Field not found: " + name + ", for class: " + c.getName(), e);
 		}
 	}
 
@@ -186,17 +168,14 @@ public final class ClassReflection {
 		return result;
 	}
 
-	static public Field getDeclaredField(Class<?> c, String name)
-			throws ReflectionException {
+	static public Field getDeclaredField(Class<?> c, String name) throws ReflectionException {
 		try {
 			return new Field(c.getDeclaredField(name));
 		} catch (SecurityException e) {
 			throw new ReflectionException(
-					"Security violation while getting field: " + name
-							+ ", for class: " + c.getName(), e);
+					"Security violation while getting field: " + name + ", for class: " + c.getName(), e);
 		} catch (NoSuchFieldException e) {
-			throw new ReflectionException("Field not found: " + name
-					+ ", for class: " + c.getName(), e);
+			throw new ReflectionException("Field not found: " + name + ", for class: " + c.getName(), e);
 		}
 	}
 
@@ -206,8 +185,7 @@ public final class ClassReflection {
 	}
 
 	static public Annotation[] getDeclaredAnnotations(Class<?> c) {
-		java.lang.annotation.Annotation[] annotations = c
-				.getDeclaredAnnotations();
+		java.lang.annotation.Annotation[] annotations = c.getDeclaredAnnotations();
 		Annotation[] result = new Annotation[annotations.length];
 		for (int i = 0; i < annotations.length; i++) {
 			result[i] = new Annotation(annotations[i]);
@@ -217,8 +195,7 @@ public final class ClassReflection {
 
 	static public Annotation getDeclaredAnnotation(Class<?> c,
 			Class<? extends java.lang.annotation.Annotation> annotationType) {
-		java.lang.annotation.Annotation[] annotations = c
-				.getDeclaredAnnotations();
+		java.lang.annotation.Annotation[] annotations = c.getDeclaredAnnotations();
 		for (java.lang.annotation.Annotation annotation : annotations) {
 			if (annotation.annotationType().equals(annotationType)) {
 				return new Annotation(annotation);

@@ -45,7 +45,7 @@ public class LTouchCollection extends SortedList<LTouchLocation> {
 		this._connected = c;
 		return this;
 	}
-	
+
 	public boolean isConnected() {
 		return this._connected;
 	}
@@ -82,8 +82,7 @@ public class LTouchCollection extends SortedList<LTouchLocation> {
 		}
 	}
 
-	public final int findIndexById(int id,
-			RefObject<LTouchLocation> touchLocation) {
+	public final int findIndexById(int id, RefObject<LTouchLocation> touchLocation) {
 		for (int i = 0; i < this.size(); i++) {
 			LTouchLocation location = this.get(i);
 			if (location.getId() == id) {
@@ -113,11 +112,9 @@ public class LTouchCollection extends SortedList<LTouchLocation> {
 		add(new LTouchLocation(id, LTouchLocationState.Pressed, x, y));
 	}
 
-	public final void update(int id, LTouchLocationState state, float posX,
-			float posY) {
+	public final void update(int id, LTouchLocationState state, float posX, float posY) {
 		if (state == LTouchLocationState.Pressed) {
-			throw new LSysException(
-					"Argument 'state' cannot be TouchLocationState.Pressed.");
+			throw new LSysException("Argument 'state' cannot be TouchLocationState.Pressed.");
 		}
 
 		for (int i = 0; i < size(); i++) {
@@ -132,11 +129,9 @@ public class LTouchCollection extends SortedList<LTouchLocation> {
 		clear();
 	}
 
-	public final void update(int id, LTouchLocationState state,
-			Vector2f position) {
+	public final void update(int id, LTouchLocationState state, Vector2f position) {
 		if (state == LTouchLocationState.Pressed) {
-			throw new LSysException(
-					"Argument 'state' cannot be TouchLocationState.Pressed.");
+			throw new LSysException("Argument 'state' cannot be TouchLocationState.Pressed.");
 		}
 
 		for (int i = 0; i < size(); i++) {

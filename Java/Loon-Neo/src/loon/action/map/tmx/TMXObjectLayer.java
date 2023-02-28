@@ -33,8 +33,7 @@ public class TMXObjectLayer extends TMXMapLayer {
 	private TArray<TMXObject> objects;
 
 	public TMXObjectLayer(TMXMap map) {
-		super(map, LSystem.EMPTY, 0, 0, map.getWidth(), map.getHeight(), 1.0f, true,
-				TmxLayerType.OBJECT);
+		super(map, LSystem.EMPTY, 0, 0, map.getWidth(), map.getHeight(), 1.0f, true, TmxLayerType.OBJECT);
 
 		objects = new TArray<>();
 		color = new LColor(LColor.TRANSPARENT);
@@ -60,16 +59,15 @@ public class TMXObjectLayer extends TMXMapLayer {
 
 		id = element.getIntAttribute("id", 0);
 		name = element.getAttribute("name", LSystem.EMPTY);
-		
+
 		if (element.hasAttribute("color")) {
-			String colorString = element.getAttribute("color",
-					LColor.white.toString()).trim();
+			String colorString = element.getAttribute("color", LColor.white.toString()).trim();
 			if (colorString.startsWith("#")) {
 				colorString = colorString.substring(1);
 			}
 			color = new LColor(Integer.decode(colorString));
 		}
-		
+
 		opacity = element.getFloatAttribute("opacity", 1f);
 		visible = element.getBoolAttribute("visible", true);
 

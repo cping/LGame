@@ -27,7 +27,7 @@ import loon.component.DefUI;
 import loon.font.FontSet;
 import loon.font.IFont;
 
-public class ClickButtonSkin implements FontSet<ClickButtonSkin>{
+public class ClickButtonSkin implements FontSet<ClickButtonSkin> {
 
 	private LTexture idleClickTexture;
 	private LTexture hoverClickTexture;
@@ -44,8 +44,7 @@ public class ClickButtonSkin implements FontSet<ClickButtonSkin>{
 				DefUI.self().getDefaultTextures(8), DefUI.self().getDefaultTextures(9));
 	}
 
-	public ClickButtonSkin(IFont font, LColor fontColor, LTexture idle,
-			LTexture hover, LTexture disable) {
+	public ClickButtonSkin(IFont font, LColor fontColor, LTexture idle, LTexture hover, LTexture disable) {
 		this.font = font;
 		this.fontColor = fontColor;
 		this.idleClickTexture = idle;

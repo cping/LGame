@@ -133,7 +133,8 @@ public class TileRoom {
 	}
 
 	public boolean contains(int xp, int yp) {
-		return (xp >= this._roomx) && (yp >= this._roomy) && (xp < this._roomx + this._roomwidth) && (yp < this._roomy + this._roomheight);
+		return (xp >= this._roomx) && (yp >= this._roomy) && (xp < this._roomx + this._roomwidth)
+				&& (yp < this._roomy + this._roomheight);
 	}
 
 	public ObjectMap<TileRoom, RoomLink> _connected() {

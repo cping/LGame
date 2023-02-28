@@ -20,28 +20,27 @@
  */
 package loon.utils.reply;
 
-public abstract class MappedAct<T> extends AbstractAct<T>
-{
+public abstract class MappedAct<T> extends AbstractAct<T> {
 
-    protected Connection _conn;
-    
-    protected abstract Connection connect ();
+	protected Connection _conn;
 
-    @Override
-    protected void connectionAdded () {
-        super.connectionAdded();
-        if (_conn == null){
-        	_conn = connect();
-        }
-    }
+	protected abstract Connection connect();
 
-    @Override
-    protected void connectionRemoved () {
-        super.connectionRemoved();
-        if (!hasConnections() && _conn != null) {
-            _conn.close();
-            _conn = null;
-        }
-    }
+	@Override
+	protected void connectionAdded() {
+		super.connectionAdded();
+		if (_conn == null) {
+			_conn = connect();
+		}
+	}
+
+	@Override
+	protected void connectionRemoved() {
+		super.connectionRemoved();
+		if (!hasConnections() && _conn != null) {
+			_conn.close();
+			_conn = null;
+		}
+	}
 
 }

@@ -32,7 +32,7 @@ public abstract class ShaderSource {
 	public ShaderSource() {
 		this(LSystem.getGLExVertexShader(), LSystem.getGLExFragmentShader());
 	}
-	
+
 	public ShaderSource(String vertex, String frament) {
 		this._vertexShader = vertex;
 		this._framentShader = frament;

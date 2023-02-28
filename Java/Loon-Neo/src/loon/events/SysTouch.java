@@ -46,7 +46,7 @@ public class SysTouch {
 	}
 
 	public static final int TOUCH_UNKNOWN = -1;
-	
+
 	public static final int TOUCH_DOWN = 0;
 
 	public static final int TOUCH_UP = 1;

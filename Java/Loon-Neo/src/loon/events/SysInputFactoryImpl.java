@@ -30,11 +30,11 @@ import loon.utils.TimeUtils;
 public class SysInputFactoryImpl extends SysInputFactory {
 
 	private int _buttons, _halfWidth, _halfHeight;
-	
+
 	private float _offsetTouchX, _offsetMoveX, _offsetTouchY, _offsetMoveY;
 
 	private boolean _useTouchCollection = false;
-	
+
 	private EmulatorButtons _ebuttons;
 
 	private LTouchCollection _touchCollection = new LTouchCollection();

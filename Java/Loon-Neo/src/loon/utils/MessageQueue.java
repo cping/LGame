@@ -7,9 +7,9 @@ package loon.utils;
 public class MessageQueue {
 
 	public static class Message {
-		
+
 		public String text;
-		
+
 		public int ticksRemaining;
 
 		public Message(String text) {

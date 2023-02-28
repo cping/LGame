@@ -70,9 +70,9 @@ public class LWindow extends LContainer implements FontSet<LWindow> {
 	public static LWindow alert(String barPath, String backgroundPath, String btnPath, String title, String firstButton,
 			String secondButton, String closeButton, float x, float y, float width, float height, float barheight,
 			CallFunction first, CallFunction second, CallFunction close, LColor fontColor, boolean vertical) {
-		return alert(LSystem.loadTexture(barPath), LSystem.loadTexture(backgroundPath),
-				LSystem.loadTexture(btnPath), title, firstButton, secondButton, closeButton, x, y, width, height,
-				barheight, first, second, close, fontColor, vertical);
+		return alert(LSystem.loadTexture(barPath), LSystem.loadTexture(backgroundPath), LSystem.loadTexture(btnPath),
+				title, firstButton, secondButton, closeButton, x, y, width, height, barheight, first, second, close,
+				fontColor, vertical);
 	}
 
 	public static LWindow alert(IFont font, String barPath, String backgroundPath, String btnPath, String title,

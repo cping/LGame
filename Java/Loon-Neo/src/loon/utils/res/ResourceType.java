@@ -25,7 +25,7 @@ import loon.events.EventDispatcher;
 public class ResourceType extends EventDispatcher {
 
 	public final static String TYPE_PIXMAP = "pixmap";
-	
+
 	public final static String TYPE_IMAGE = "image";
 
 	public final static String TYPE_JSON = "json";
@@ -33,7 +33,7 @@ public class ResourceType extends EventDispatcher {
 	public final static String TYPE_XML = "xml";
 
 	public final static String TYPE_TXT = "txt";
-	
+
 	public final static String TYPE_SHEET = "sheet";
 
 	public final static String TYPE_SOUND = "sound";
@@ -41,7 +41,7 @@ public class ResourceType extends EventDispatcher {
 	public final static String TYPE_FONT = "font";
 
 	public final static String TYPE_BMFNT = "bmfnt";
-	
+
 	public final static String TYPE_TEXTURE = "texture";
 
 }

@@ -168,7 +168,8 @@ public class GravityHandler implements LRelease {
 
 		easeTimer.action(elapsedTime);
 
-		final float delta = MathUtils.max(elapsedTime / 1000f, LSystem.MIN_SECONE_SPEED_FIXED) * easeTimer.getProgress();
+		final float delta = MathUtils.max(elapsedTime / 1000f, LSystem.MIN_SECONE_SPEED_FIXED)
+				* easeTimer.getProgress();
 
 		for (Gravity g : objects) {
 

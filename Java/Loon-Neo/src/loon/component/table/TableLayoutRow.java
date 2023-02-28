@@ -133,8 +133,7 @@ public class TableLayoutRow {
 	private void initColumns() {
 		int xStep = getWidth() / columns.length;
 		for (int i = 0; i < columns.length; i++) {
-			columns[i] = new TableColumnLayout(null, getX() + (i * xStep), y,
-					xStep, height);
+			columns[i] = new TableColumnLayout(null, getX() + (i * xStep), y, xStep, height);
 		}
 	}
 
@@ -150,37 +149,30 @@ public class TableLayoutRow {
 	}
 
 	public void setComponent(LComponent component, int column) {
-		columns[column < columns.length - 1 ? column : columns.length - 1]
-				.setComponent(component);
+		columns[column < columns.length - 1 ? column : columns.length - 1].setComponent(component);
 	}
 
 	public LComponent getComponent(int column) {
-		return columns[column < columns.length - 1 ? column
-				: columns.length - 1].getComponent();
+		return columns[column < columns.length - 1 ? column : columns.length - 1].getComponent();
 	}
 
 	public TableColumnLayout getColumn(int column) {
-		return columns[column < columns.length - 1 ? column
-				: columns.length - 1];
+		return columns[column < columns.length - 1 ? column : columns.length - 1];
 	}
 
 	public boolean setColumnWidth(int width, int column) {
 		if (width > columns[column].getWidth()) {
 			int difX = width - columns[column].getWidth();
-			int maxDif = getMaxDifferenceX()
-					- (columns[column].getWidth() - columns[column]
-							.getMinWidth());
+			int maxDif = getMaxDifferenceX() - (columns[column].getWidth() - columns[column].getMinWidth());
 			if (maxDif >= difX) {
 				for (int i = 0; i < columns.length; i++) {
 					if (i != column) {
-						int maxColumnDif = columns[i].getWidth()
-								- columns[i].getMinWidth();
+						int maxColumnDif = columns[i].getWidth() - columns[i].getMinWidth();
 						if (maxColumnDif >= difX) {
 							columns[i].setWidth(columns[i].getWidth() - difX);
 							break;
 						} else {
-							columns[i].setWidth(columns[i].getWidth()
-									- maxColumnDif);
+							columns[i].setWidth(columns[i].getWidth() - maxColumnDif);
 							difX -= maxColumnDif;
 						}
 					}
@@ -194,8 +186,7 @@ public class TableLayoutRow {
 		if (width < columns[column].getMinWidth()) {
 			width = columns[column].getMinWidth();
 		}
-		int difXColumns = (columns[column].getWidth() - width)
-				/ (columns.length - 1);
+		int difXColumns = (columns[column].getWidth() - width) / (columns.length - 1);
 		for (int i = 0; i < columns.length; i++) {
 			if (i != column) {
 				columns[i].setWidth(columns[i].getWidth() + difXColumns);
@@ -215,7 +206,7 @@ public class TableLayoutRow {
 				newColmns.add(columns[i]);
 			}
 		}
-		columns = (TableColumnLayout[])newColmns.toArray();
+		columns = (TableColumnLayout[]) newColmns.toArray();
 		adjustColumns();
 	}
 

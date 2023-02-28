@@ -38,7 +38,7 @@ public class XYValue implements LRelease {
 	public XY get() {
 		return result();
 	}
-	
+
 	public XY result() {
 		return value;
 	}

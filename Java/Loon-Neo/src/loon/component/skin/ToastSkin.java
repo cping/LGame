@@ -29,7 +29,7 @@ public class ToastSkin {
 	private IFont font;
 
 	private LTexture backgroundTexture;
-	
+
 	private LColor fontColor;
 
 	public IFont getFont() {

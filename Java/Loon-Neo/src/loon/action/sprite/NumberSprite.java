@@ -30,14 +30,15 @@ import loon.utils.StringUtils;
 import loon.utils.timer.CountdownTimer;
 
 /**
- * 显示大写数字<p>
+ * 显示大写数字
+ * <p>
  * 
  * example:
  * 
  * <pre>
- *  NumberSprite number = new NumberSprite("1334");
- *	number.setLocation(125, 125);
- *	add(number);
+ * NumberSprite number = new NumberSprite("1334");
+ * number.setLocation(125, 125);
+ * add(number);
  * </pre>
  * 
  */
@@ -47,44 +48,41 @@ public class NumberSprite extends Entity {
 
 	private String label;
 	// 0
-	public static final int[][] ZERO = { { 1, 1, 1 }, { 1, 0, 1 }, { 1, 0, 1 },
-			{ 1, 0, 1 }, { 1, 0, 1 }, { 1, 1, 1 }, };
+	public static final int[][] ZERO = { { 1, 1, 1 }, { 1, 0, 1 }, { 1, 0, 1 }, { 1, 0, 1 }, { 1, 0, 1 },
+			{ 1, 1, 1 }, };
 
 	// 1
-	public static final int[][] ONE = { { 0, 0, 1 }, { 0, 0, 1 }, { 0, 0, 1 },
-			{ 0, 0, 1 }, { 0, 0, 1 }, { 0, 0, 1 }, };
+	public static final int[][] ONE = { { 0, 0, 1 }, { 0, 0, 1 }, { 0, 0, 1 }, { 0, 0, 1 }, { 0, 0, 1 }, { 0, 0, 1 }, };
 
 	// 2
-	public static final int[][] TWO = { { 1, 1, 1 }, { 0, 0, 1 }, { 1, 1, 1 },
-			{ 1, 0, 0 }, { 1, 0, 0 }, { 1, 1, 1 }, };
+	public static final int[][] TWO = { { 1, 1, 1 }, { 0, 0, 1 }, { 1, 1, 1 }, { 1, 0, 0 }, { 1, 0, 0 }, { 1, 1, 1 }, };
 
 	// 3
-	public static final int[][] THREE = { { 1, 1, 1 }, { 0, 0, 1 },
-			{ 1, 1, 1 }, { 0, 0, 1 }, { 0, 0, 1 }, { 1, 1, 1 }, };
+	public static final int[][] THREE = { { 1, 1, 1 }, { 0, 0, 1 }, { 1, 1, 1 }, { 0, 0, 1 }, { 0, 0, 1 },
+			{ 1, 1, 1 }, };
 
 	// 4
-	public static final int[][] FOUR = { { 1, 0, 1 }, { 1, 0, 1 }, { 1, 1, 1 },
-			{ 0, 0, 1 }, { 0, 0, 1 }, { 0, 0, 1 }, };
+	public static final int[][] FOUR = { { 1, 0, 1 }, { 1, 0, 1 }, { 1, 1, 1 }, { 0, 0, 1 }, { 0, 0, 1 },
+			{ 0, 0, 1 }, };
 
 	// 5
-	public static final int[][] FIVE = { { 1, 1, 1 }, { 1, 0, 0 }, { 1, 1, 1 },
-			{ 0, 0, 1 }, { 0, 0, 1 }, { 1, 1, 1 }, };
+	public static final int[][] FIVE = { { 1, 1, 1 }, { 1, 0, 0 }, { 1, 1, 1 }, { 0, 0, 1 }, { 0, 0, 1 },
+			{ 1, 1, 1 }, };
 
 	// 6
-	public static final int[][] SIX = { { 1, 1, 1 }, { 1, 0, 0 }, { 1, 1, 1 },
-			{ 1, 0, 1 }, { 1, 0, 1 }, { 1, 1, 1 }, };
+	public static final int[][] SIX = { { 1, 1, 1 }, { 1, 0, 0 }, { 1, 1, 1 }, { 1, 0, 1 }, { 1, 0, 1 }, { 1, 1, 1 }, };
 
 	// 7
-	public static final int[][] SEVEN = { { 1, 1, 1 }, { 0, 0, 1 },
-			{ 0, 0, 1 }, { 0, 0, 1 }, { 0, 0, 1 }, { 0, 0, 1 }, };
+	public static final int[][] SEVEN = { { 1, 1, 1 }, { 0, 0, 1 }, { 0, 0, 1 }, { 0, 0, 1 }, { 0, 0, 1 },
+			{ 0, 0, 1 }, };
 
 	// 8
-	public static final int[][] EIGHT = { { 1, 1, 1 }, { 1, 0, 1 },
-			{ 1, 1, 1 }, { 1, 0, 1 }, { 1, 0, 1 }, { 1, 1, 1 }, };
+	public static final int[][] EIGHT = { { 1, 1, 1 }, { 1, 0, 1 }, { 1, 1, 1 }, { 1, 0, 1 }, { 1, 0, 1 },
+			{ 1, 1, 1 }, };
 
 	// 9
-	public static final int[][] NINE = { { 1, 1, 1 }, { 1, 0, 1 }, { 1, 1, 1 },
-			{ 0, 0, 1 }, { 0, 0, 1 }, { 0, 0, 1 }, };
+	public static final int[][] NINE = { { 1, 1, 1 }, { 1, 0, 1 }, { 1, 1, 1 }, { 0, 0, 1 }, { 0, 0, 1 },
+			{ 0, 0, 1 }, };
 
 	private int unit;
 
@@ -186,15 +184,13 @@ public class NumberSprite extends Entity {
 					offset = unit * 2;
 					IFont oldFont = g.getFont();
 					g.setFont(LFont.getFont(size));
-					g.drawText(number, x + (unit * (4 * i)) - 4, y + size / 2
-							+ offset + 4);
+					g.drawText(number, x + (unit * (4 * i)) - 4, y + size / 2 + offset + 4);
 					g.setFont(oldFont);
 
 				} else {
 					IFont oldFont = g.getFont();
 					g.setFont(LFont.getFont(size));
-					g.drawText(number, x + (unit * (4 * i)) - 4, y + size / 2
-							+ offset);
+					g.drawText(number, x + (unit * (4 * i)) - 4, y + size / 2 + offset);
 					g.setFont(oldFont);
 				}
 			}
@@ -237,14 +233,12 @@ public class NumberSprite extends Entity {
 					offset = unit * 2;
 					LFont oldFont = g.getFont();
 					g.setFont(LFont.getFont(size));
-					g.drawText(number, x + (unit * (4 * i)) - 4, y + size / 2
-							+ offset + 4 - g.getFont().getAscent());
+					g.drawText(number, x + (unit * (4 * i)) - 4, y + size / 2 + offset + 4 - g.getFont().getAscent());
 					g.setFont(oldFont);
 				} else {
 					LFont oldFont = g.getFont();
 					g.setFont(LFont.getFont(size));
-					g.drawText(number, x + (unit * (4 * i)) - 4, y + size / 2
-							+ offset - g.getFont().getAscent() + 4);
+					g.drawText(number, x + (unit * (4 * i)) - 4, y + size / 2 + offset - g.getFont().getAscent() + 4);
 					g.setFont(oldFont);
 				}
 				g.setFillColor(tmp1);
@@ -284,7 +278,7 @@ public class NumberSprite extends Entity {
 
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
-		drawNumber(g, (int)drawX(offsetX), (int)drawY(offsetY), label);
+		drawNumber(g, (int) drawX(offsetX), (int) drawY(offsetY), label);
 	}
 
 }

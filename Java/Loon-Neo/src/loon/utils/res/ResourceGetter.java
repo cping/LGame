@@ -31,32 +31,32 @@ import loon.utils.ObjectMap.Keys;
 import loon.utils.xml.XMLDocument;
 
 public abstract class ResourceGetter extends EventDispatcher {
-	
+
 	abstract public Json.Object getJson(String name);
 
 	abstract public XMLDocument getXml(String name);
 
 	abstract public String getText(String name);
-	
+
 	abstract public Texture getTexture(String name);
 
 	abstract public LTexture getTextureData(String name);
-	
+
 	abstract public Image getImage(String name);
 
 	abstract public Pixmap getPixmap(String name);
-	
+
 	abstract public MovieSpriteSheet getSheet(String name);
 
 	abstract public FontSheet getFontSheet(String name);
 
 	abstract public BMFont getBMFont(String name);
-	
+
 	abstract public String getURL(String name);
 
 	abstract public TArray<String> getGroupKeys(String name);
-	
+
 	abstract public Keys<String> getGroupNames(String name);
-	
+
 	abstract public void release(String name);
 }

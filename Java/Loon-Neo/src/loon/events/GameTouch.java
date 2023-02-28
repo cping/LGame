@@ -366,14 +366,9 @@ public class GameTouch {
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("GameTouch");
-		builder.kv("id", id).comma()
-		.kv("point", pointer).comma()
-		.kv("button", button).comma()
-		.kv("timeDown", timeDown).comma()
-		.kv("timeUp", timeUp).comma()
-		.kv("duration", duration).comma()
-		.kv("active", _active).comma()
-		.kv("orientation", _orientation);
+		builder.kv("id", id).comma().kv("point", pointer).comma().kv("button", button).comma().kv("timeDown", timeDown)
+				.comma().kv("timeUp", timeUp).comma().kv("duration", duration).comma().kv("active", _active).comma()
+				.kv("orientation", _orientation);
 		return builder.toString();
 	}
 

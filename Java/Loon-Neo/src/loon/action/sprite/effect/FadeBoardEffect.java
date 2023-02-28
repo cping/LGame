@@ -52,7 +52,7 @@ public class FadeBoardEffect extends Entity implements BaseEffect {
 	private int fadeType;
 
 	private boolean _completed;
-	
+
 	private boolean _autoRemoved;
 
 	private boolean _dirty;
@@ -283,7 +283,7 @@ public class FadeBoardEffect extends Entity implements BaseEffect {
 		this._autoRemoved = autoRemoved;
 		return this;
 	}
-	
+
 	@Override
 	public FadeBoardEffect reset() {
 		super.reset();

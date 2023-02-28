@@ -61,7 +61,9 @@ public class LTransition {
 	 * 常用特效枚举列表
 	 */
 	public static enum TransType {
-		FadeIn, FadeOut, FadeBoardIn, FadeBoardOut, FadeOvalIn, FadeOvalOut, FadeDotIn, FadeDotOut, FadeTileIn, FadeTileOut, FadeSpiralIn, FadeSpiralOut, FadeSwipeIn, FadeSwipeOut, PixelDarkIn, PixelDarkOut, CrossRandom, SplitRandom, PixelWind, PixelThunder
+		FadeIn, FadeOut, FadeBoardIn, FadeBoardOut, FadeOvalIn, FadeOvalOut, FadeDotIn, FadeDotOut, FadeTileIn,
+		FadeTileOut, FadeSpiralIn, FadeSpiralOut, FadeSwipeIn, FadeSwipeOut, PixelDarkIn, PixelDarkOut, CrossRandom,
+		SplitRandom, PixelWind, PixelThunder
 	}
 
 	/**
@@ -134,10 +136,8 @@ public class LTransition {
 	/**
 	 * 返回一定指定色彩过滤后的特效
 	 * 
-	 * @param key
-	 *            过渡类型字符串
-	 * @param cs
-	 *            描述颜色的字符串
+	 * @param key 过渡类型字符串
+	 * @param cs  描述颜色的字符串
 	 * 
 	 * @return
 	 */

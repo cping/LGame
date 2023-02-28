@@ -83,7 +83,7 @@ public abstract class CacheMap<T extends LRelease> implements LRelease {
 		}
 		return this;
 	}
-	
+
 	@Override
 	public void close() {
 		clear();

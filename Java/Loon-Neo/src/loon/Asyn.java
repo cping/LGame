@@ -28,11 +28,11 @@ import loon.utils.reply.Port;
 public abstract class Asyn {
 
 	/** 为了语法转换到C#和C++，只能忍痛放弃匿名构造类了…… **/
-	private static class CallDefaultPort<T> extends Port<T>{
-		
+	private static class CallDefaultPort<T> extends Port<T> {
+
 		private Default _def;
-		
-		CallDefaultPort(Default d){
+
+		CallDefaultPort(Default d) {
 			this._def = d;
 		}
 
@@ -40,9 +40,9 @@ public abstract class Asyn {
 		public void onEmit(T e) {
 			_def.dispatch();
 		}
-		
+
 	}
-	
+
 	public static class Default extends Asyn {
 
 		private final TArray<Runnable> pending = new TArray<Runnable>();
@@ -130,14 +130,12 @@ public abstract class Asyn {
 
 		@Override
 		public void succeed(final T value) {
-			_asyn.invokeLater(new DeferredPromiseRunnable<T>(0, this, value,
-					null));
+			_asyn.invokeLater(new DeferredPromiseRunnable<T>(0, this, value, null));
 		}
 
 		@Override
 		public void fail(final Throwable cause) {
-			_asyn.invokeLater(new DeferredPromiseRunnable<T>(1, this, null,
-					cause));
+			_asyn.invokeLater(new DeferredPromiseRunnable<T>(1, this, null, cause));
 		}
 	}
 

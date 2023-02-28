@@ -30,21 +30,21 @@ import loon.utils.ArrayByte;
 public class ImageFormat {
 
 	public final static int Jpg = 0;
-	
+
 	public final static int Png = 1;
-	
+
 	public final static int Bmp = 2;
-	
+
 	public final static int Gif = 3;
-	
+
 	public final static int Tga = 4;
-	
+
 	public final static int Tiff = 5;
-	
+
 	public final static int Webp = 6;
-	
+
 	public final static int RawData = 7;
-	
+
 	public final static int Unknown = 8;
 
 	private ArrayByte buffer;

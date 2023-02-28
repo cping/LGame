@@ -114,7 +114,7 @@ public class UNShort {
 	public void setValue(char value) {
 		unShort = value;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		int hashCode = 17;

@@ -60,7 +60,7 @@ public class LColorList {
 	}
 
 	public boolean putColor(String name, LColor color) {
-		if(StringUtils.isEmpty(name)){
+		if (StringUtils.isEmpty(name)) {
 			return false;
 		}
 		if (color == null) {

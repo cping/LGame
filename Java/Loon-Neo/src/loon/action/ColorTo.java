@@ -66,8 +66,7 @@ public class ColorTo extends ActionEvent {
 		this(startColor, endColor, duration, LSystem.DEFAULT_EASE_DELAY);
 	}
 
-	public ColorTo(LColor startColor, LColor endColor, float duration,
-			float delay) {
+	public ColorTo(LColor startColor, LColor endColor, float duration, float delay) {
 		this.easeTimer = new EaseTimer(duration, delay);
 		this.start = startColor;
 		this.end = endColor;
@@ -81,8 +80,7 @@ public class ColorTo extends ActionEvent {
 
 	@Override
 	public void onLoad() {
-		if (startRed == -1 || startGreen == -1 || startBlue == -1
-				|| startAlpha == -1) {
+		if (startRed == -1 || startGreen == -1 || startBlue == -1 || startAlpha == -1) {
 			LColor color = original.getColor();
 			if (color != null) {
 				startRed = color.r;
@@ -151,11 +149,9 @@ public class ColorTo extends ActionEvent {
 
 	public LColor getCurrentColor() {
 		if (tmpColor == null) {
-			tmpColor = new LColor(currentRed, currentGreen, currentBlue,
-					currentAlpha);
+			tmpColor = new LColor(currentRed, currentGreen, currentBlue, currentAlpha);
 		} else {
-			tmpColor.setColor(currentRed, currentGreen, currentBlue,
-					currentAlpha);
+			tmpColor.setColor(currentRed, currentGreen, currentBlue, currentAlpha);
 		}
 		return tmpColor;
 	}
@@ -178,18 +174,16 @@ public class ColorTo extends ActionEvent {
 
 	@Override
 	public ActionEvent cpy() {
-		ColorTo color = new ColorTo(new LColor(startRed, startGreen, startBlue,
-				startAlpha), new LColor(endRed, endGreen, endBlue, endAlpha),
-				easeTimer.getDuration());
+		ColorTo color = new ColorTo(new LColor(startRed, startGreen, startBlue, startAlpha),
+				new LColor(endRed, endGreen, endBlue, endAlpha), easeTimer.getDuration());
 		color.set(this);
 		return color;
 	}
 
 	@Override
 	public ActionEvent reverse() {
-		ColorTo color = new ColorTo(new LColor(endRed, endGreen, endBlue,
-				endAlpha), new LColor(startRed, startGreen, startBlue,
-				startAlpha), easeTimer.getDuration());
+		ColorTo color = new ColorTo(new LColor(endRed, endGreen, endBlue, endAlpha),
+				new LColor(startRed, startGreen, startBlue, startAlpha), easeTimer.getDuration());
 		color.set(this);
 		return color;
 	}
@@ -249,7 +243,7 @@ public class ColorTo extends ActionEvent {
 	public LColor getEnd() {
 		return end.cpy();
 	}
-	
+
 	@Override
 	public String getName() {
 		return "color";
@@ -258,11 +252,7 @@ public class ColorTo extends ActionEvent {
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue(getName());
-		builder.kv("startColor",start)
-		.comma()
-		.kv("endColor", end)
-		.comma()
-		.kv("EaseTimer", easeTimer);
+		builder.kv("startColor", start).comma().kv("endColor", end).comma().kv("EaseTimer", easeTimer);
 		return builder.toString();
 	}
 

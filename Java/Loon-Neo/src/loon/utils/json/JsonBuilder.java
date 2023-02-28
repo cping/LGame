@@ -27,7 +27,7 @@ import loon.utils.ArrayMap;
 import loon.utils.TArray;
 
 final class JsonBuilder<T> implements JsonSink<JsonBuilder<T>> {
-	
+
 	private Array<Object> _json_arrays = new Array<Object>();
 	private T _root;
 
@@ -177,8 +177,7 @@ final class JsonBuilder<T> implements JsonSink<JsonBuilder<T>> {
 		try {
 			return (JsonObject) _json_arrays.peek();
 		} catch (ClassCastException e) {
-			throw new LSysException(
-					"Attempted to write a keyed value to a JsonArray");
+			throw new LSysException("Attempted to write a keyed value to a JsonArray");
 		}
 	}
 
@@ -186,8 +185,7 @@ final class JsonBuilder<T> implements JsonSink<JsonBuilder<T>> {
 		try {
 			return (JsonArray) _json_arrays.peek();
 		} catch (ClassCastException e) {
-			throw new LSysException(
-					"Attempted to write a non-keyed value to a JsonObject");
+			throw new LSysException("Attempted to write a non-keyed value to a JsonObject");
 		}
 	}
 }

@@ -57,7 +57,8 @@ public class CollisionPointQuery implements CollisionQuery {
 
 	@Override
 	public boolean checkCollision(CollisionObject actor) {
-		return this._flag != null && !_flag.equals(actor.getObjectFlag()) ? false : actor.containsPoint(this._x, this._y);
+		return this._flag != null && !_flag.equals(actor.getObjectFlag()) ? false
+				: actor.containsPoint(this._x, this._y);
 	}
 
 	@Override

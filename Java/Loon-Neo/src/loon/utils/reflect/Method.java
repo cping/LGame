@@ -97,14 +97,11 @@ public final class Method {
 		try {
 			return method.invoke(obj, args);
 		} catch (IllegalArgumentException e) {
-			throw new ReflectionException(
-					"Illegal argument(s) supplied to method: " + getName(), e);
+			throw new ReflectionException("Illegal argument(s) supplied to method: " + getName(), e);
 		} catch (IllegalAccessException e) {
-			throw new ReflectionException("Illegal access to method: "
-					+ getName(), e);
+			throw new ReflectionException("Illegal access to method: " + getName(), e);
 		} catch (InvocationTargetException e) {
-			throw new ReflectionException("Exception occurred in method: "
-					+ getName(), e);
+			throw new ReflectionException("Exception occurred in method: " + getName(), e);
 		}
 	}
 

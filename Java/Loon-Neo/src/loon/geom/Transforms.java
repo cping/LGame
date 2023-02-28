@@ -37,8 +37,7 @@ public final class Transforms {
 		}
 		Matrix4 result = dest.idt();
 
-		result.set(3, 0, translation.getX()).set(3, 1, translation.getY())
-				.set(3, 2, translation.getZ());
+		result.set(3, 0, translation.getX()).set(3, 1, translation.getY()).set(3, 2, translation.getZ());
 
 		return result;
 	}
@@ -54,8 +53,7 @@ public final class Transforms {
 
 		Matrix4 result = dest.idt();
 
-		result.set(0, 0, scale.getX()).set(1, 1, scale.getY())
-				.set(2, 2, scale.getZ());
+		result.set(0, 0, scale.getX()).set(1, 1, scale.getY()).set(2, 2, scale.getZ());
 
 		return result;
 	}
@@ -64,8 +62,7 @@ public final class Transforms {
 		return createRotation(axis, angle, null);
 	}
 
-	public static Matrix4 createRotation(Vector3f axis, float angle,
-			Matrix4 dest) {
+	public static Matrix4 createRotation(Vector3f axis, float angle, Matrix4 dest) {
 		if (dest == null) {
 			dest = new Matrix4();
 		}
@@ -78,47 +75,40 @@ public final class Transforms {
 		Vector3f nAxis = Vector3f.TMP().set(axis).normalizeSelf();
 		Vector3f tempV = Vector3f.TMP().set(nAxis).scaleSelf(1f - c);
 
-		result.set(0, 0, c + tempV.x * nAxis.x)
-				.set(0, 1, tempV.x * nAxis.y + s * nAxis.z)
-				.set(0, 2, tempV.x * nAxis.z - s * nAxis.y);
+		result.set(0, 0, c + tempV.x * nAxis.x).set(0, 1, tempV.x * nAxis.y + s * nAxis.z).set(0, 2,
+				tempV.x * nAxis.z - s * nAxis.y);
 
-		result.set(1, 0, tempV.y * nAxis.x - s * nAxis.z)
-				.set(1, 1, c + tempV.y * nAxis.y)
-				.set(1, 2, tempV.y * nAxis.z + s * nAxis.x);
+		result.set(1, 0, tempV.y * nAxis.x - s * nAxis.z).set(1, 1, c + tempV.y * nAxis.y).set(1, 2,
+				tempV.y * nAxis.z + s * nAxis.x);
 
-		result.set(2, 0, tempV.z * nAxis.x + s * nAxis.y)
-				.set(2, 1, tempV.z * nAxis.y - s * nAxis.x)
-				.set(2, 2, c + tempV.z * nAxis.z);
+		result.set(2, 0, tempV.z * nAxis.x + s * nAxis.y).set(2, 1, tempV.z * nAxis.y - s * nAxis.x).set(2, 2,
+				c + tempV.z * nAxis.z);
 
 		return result;
 	}
 
-	public static Matrix4 createOrtho2d(float left, float right, float bottom,
-			float top, float zNear, float zFar) {
+	public static Matrix4 createOrtho2d(float left, float right, float bottom, float top, float zNear, float zFar) {
 		return createOrtho2d(left, right, bottom, top, zNear, zFar, null);
 	}
 
-	public static Matrix4 createOrtho2d(float left, float right, float bottom,
-			float top, float zNear, float zFar, Matrix4 dest) {
+	public static Matrix4 createOrtho2d(float left, float right, float bottom, float top, float zNear, float zFar,
+			Matrix4 dest) {
 		if (dest == null) {
 			dest = new Matrix4();
 		}
 		Matrix4 result = dest.izero();
-		result.set(0, 0, 2 / (right - left)).set(1, 1, 2 / (top - bottom))
-				.set(2, 2, -2 / (zFar - zNear))
-				.set(3, 0, -(right + left) / (right - left))
-				.set(3, 1, -(top + bottom) / (top - bottom))
+		result.set(0, 0, 2 / (right - left)).set(1, 1, 2 / (top - bottom)).set(2, 2, -2 / (zFar - zNear))
+				.set(3, 0, -(right + left) / (right - left)).set(3, 1, -(top + bottom) / (top - bottom))
 				.set(3, 2, -(zFar + zNear) / (zFar - zNear)).set(3, 3, 1);
 		return result;
 	}
 
-	public static Matrix4 createFrustum(float left, float right, float bottom,
-			float top, float zNear, float zFar) {
+	public static Matrix4 createFrustum(float left, float right, float bottom, float top, float zNear, float zFar) {
 		return createFrustum(left, right, bottom, top, zNear, zFar, null);
 	}
 
-	public static Matrix4 createFrustum(float left, float right, float bottom,
-			float top, float zNear, float zFar, Matrix4 dest) {
+	public static Matrix4 createFrustum(float left, float right, float bottom, float top, float zNear, float zFar,
+			Matrix4 dest) {
 		assert zFar > zNear;
 
 		if (dest == null) {
@@ -127,23 +117,19 @@ public final class Transforms {
 
 		Matrix4 result = dest.izero();
 
-		result.set(0, 0, (2 * zNear) / (right - left))
-				.set(1, 1, (2 * zNear) / (top - bottom))
-				.set(2, 0, (right + left) / (right - left))
-				.set(2, 1, (top + bottom) / (top - bottom))
+		result.set(0, 0, (2 * zNear) / (right - left)).set(1, 1, (2 * zNear) / (top - bottom))
+				.set(2, 0, (right + left) / (right - left)).set(2, 1, (top + bottom) / (top - bottom))
 				.set(2, 2, (zFar + zNear) / (zNear - zFar)).set(2, 3, -1)
 				.set(3, 2, (-2 * zFar * zNear) / (zFar - zNear));
 
 		return result;
 	}
 
-	public static Matrix4 createPerspective(float fovy, float aspect,
-			float zNear, float zFar) {
+	public static Matrix4 createPerspective(float fovy, float aspect, float zNear, float zFar) {
 		return createPerspective(fovy, aspect, zNear, zFar, null);
 	}
 
-	public static Matrix4 createPerspective(float fovy, float aspect,
-			float zNear, float zFar, Matrix4 dest) {
+	public static Matrix4 createPerspective(float fovy, float aspect, float zNear, float zFar, Matrix4 dest) {
 		if (dest == null) {
 			dest = new Matrix4();
 		}
@@ -159,13 +145,11 @@ public final class Transforms {
 		return result;
 	}
 
-	public static Matrix4 createLookAtMatrix(Vector3f eye, Vector3f center,
-			Vector3f up) {
+	public static Matrix4 createLookAtMatrix(Vector3f eye, Vector3f center, Vector3f up) {
 		return createLookAtMatrix(eye, center, up, null);
 	}
 
-	public static Matrix4 createLookAtMatrix(Vector3f eye, Vector3f center,
-			Vector3f up, Matrix4 dest) {
+	public static Matrix4 createLookAtMatrix(Vector3f eye, Vector3f center, Vector3f up, Matrix4 dest) {
 		if (dest == null) {
 			dest = new Matrix4();
 		}
@@ -186,19 +170,16 @@ public final class Transforms {
 
 		result.set(0, 2, -f.x).set(1, 2, -f.y).set(2, 2, -f.z);
 
-		result.set(3, 0, -s.dot(eye)).set(3, 1, -u.dot(eye))
-				.set(3, 2, f.dot(eye));
+		result.set(3, 0, -s.dot(eye)).set(3, 1, -u.dot(eye)).set(3, 2, f.dot(eye));
 
 		return result;
 	}
 
-	public static Quaternion createLookAtQuaternion(Vector3f eye,
-			Vector3f center, Vector3f up) {
+	public static Quaternion createLookAtQuaternion(Vector3f eye, Vector3f center, Vector3f up) {
 		return createLookAtQuaternion(eye, center, up, null);
 	}
 
-	public static Quaternion createLookAtQuaternion(Vector3f eye,
-			Vector3f center, Vector3f up, Quaternion dest) {
+	public static Quaternion createLookAtQuaternion(Vector3f eye, Vector3f center, Vector3f up, Quaternion dest) {
 		if (dest == null) {
 			dest = new Quaternion();
 		}
@@ -251,14 +232,11 @@ public final class Transforms {
 		float wy = q.w * q.y;
 		float wz = q.w * q.z;
 
-		result.set(0, 0, 1.0f - 2.0f * (y2 + z2)).set(0, 1, 2.0f * (xy + wz))
-				.set(0, 2, 2.0f * (xz - wy));
+		result.set(0, 0, 1.0f - 2.0f * (y2 + z2)).set(0, 1, 2.0f * (xy + wz)).set(0, 2, 2.0f * (xz - wy));
 
-		result.set(1, 0, 2.0f * (xy - wz)).set(1, 1, 1.0f - 2.0f * (x2 + z2))
-				.set(1, 2, 2.0f * (yz + wx));
+		result.set(1, 0, 2.0f * (xy - wz)).set(1, 1, 1.0f - 2.0f * (x2 + z2)).set(1, 2, 2.0f * (yz + wx));
 
-		result.set(2, 0, 2.0f * (xz + wy)).set(2, 1, 2.0f * (yz - wx))
-				.set(2, 2, 1.0f - 2.0f * (x2 + y2));
+		result.set(2, 0, 2.0f * (xz + wy)).set(2, 1, 2.0f * (yz - wx)).set(2, 2, 1.0f - 2.0f * (x2 + y2));
 
 		return result;
 	}

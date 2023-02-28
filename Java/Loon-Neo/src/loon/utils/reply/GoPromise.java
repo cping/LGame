@@ -35,7 +35,7 @@ public class GoPromise<T> extends GoFuture<T> {
 	}
 
 	public void fail(Throwable cause) {
-		_result.update(Try.<T> createFailure(cause));
+		_result.update(Try.<T>createFailure(cause));
 	}
 
 	public Port<Try<T>> completer() {
@@ -65,9 +65,8 @@ public class GoPromise<T> extends GoFuture<T> {
 	protected GoPromise() {
 		this(new Var<Try<T>>(null) {
 			@Override
-			protected synchronized Try<T> updateAndNotify(Try<T> value,
-					boolean force) {
-				if (_value != null){
+			protected synchronized Try<T> updateAndNotify(Try<T> value, boolean force) {
+				if (_value != null) {
 					throw new LSysException("already completed");
 				}
 				try {

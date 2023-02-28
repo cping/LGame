@@ -30,13 +30,13 @@ public abstract class AssetAbstractLoader<T> implements AssetLoader {
 	protected String _nickname;
 
 	protected void set(String path, String nickname) {
-		if(StringUtils.isEmpty(path)) {
-			throw new LSysException("The path name cannot be empty !"); 
+		if (StringUtils.isEmpty(path)) {
+			throw new LSysException("The path name cannot be empty !");
 		}
 		this._path = path;
 		this._nickname = nickname;
 	}
-	
+
 	public abstract T get();
 
 	@Override

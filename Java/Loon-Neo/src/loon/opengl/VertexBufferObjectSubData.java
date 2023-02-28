@@ -27,29 +27,27 @@ import loon.LSysException;
 import loon.LSystem;
 
 public class VertexBufferObjectSubData implements VertexData {
-	
+
 	protected final VertexAttributes attributes;
-	
+
 	protected final FloatBuffer buffer;
-	
+
 	protected final ByteBuffer byteBuffer;
-	
+
 	protected int bufferHandle;
-	
+
 	protected final boolean isDirect;
 	protected final boolean isStatic;
-	
+
 	protected final int usage;
-	
+
 	protected boolean isDirty = false;
 	protected boolean isBound = false;
 
-	public VertexBufferObjectSubData(boolean isStatic, int numVertices,
-			VertexAttribute... attributes) {
+	public VertexBufferObjectSubData(boolean isStatic, int numVertices, VertexAttribute... attributes) {
 		this.isStatic = isStatic;
 		this.attributes = new VertexAttributes(attributes);
-		byteBuffer = LSystem.base().support().newByteBuffer(this.attributes.vertexSize
-				* numVertices);
+		byteBuffer = LSystem.base().support().newByteBuffer(this.attributes.vertexSize * numVertices);
 		isDirect = true;
 		usage = isStatic ? GL20.GL_STATIC_DRAW : GL20.GL_DYNAMIC_DRAW;
 		buffer = byteBuffer.asFloatBuffer();
@@ -62,8 +60,7 @@ public class VertexBufferObjectSubData implements VertexData {
 		GL20 gl = LSystem.base().graphics().gl;
 		int result = gl.glGenBuffer();
 		gl.glBindBuffer(GL20.GL_ARRAY_BUFFER, result);
-		gl.glBufferData(GL20.GL_ARRAY_BUFFER, byteBuffer.capacity(), null,
-				usage);
+		gl.glBufferData(GL20.GL_ARRAY_BUFFER, byteBuffer.capacity(), null, usage);
 		gl.glBindBuffer(GL20.GL_ARRAY_BUFFER, 0);
 		return result;
 	}
@@ -91,8 +88,7 @@ public class VertexBufferObjectSubData implements VertexData {
 
 	private void bufferChanged() {
 		if (isBound) {
-			LSystem.base().graphics().gl.glBufferSubData(GL20.GL_ARRAY_BUFFER, 0,
-					byteBuffer.limit(), byteBuffer);
+			LSystem.base().graphics().gl.glBufferSubData(GL20.GL_ARRAY_BUFFER, 0, byteBuffer.limit(), byteBuffer);
 			isDirty = false;
 		}
 	}
@@ -116,8 +112,7 @@ public class VertexBufferObjectSubData implements VertexData {
 	}
 
 	@Override
-	public void updateVertices(int targetOffset, float[] vertices,
-			int sourceOffset, int count) {
+	public void updateVertices(int targetOffset, float[] vertices, int sourceOffset, int count) {
 		isDirty = true;
 		if (isDirect) {
 			final int pos = byteBuffer.position();
@@ -142,8 +137,7 @@ public class VertexBufferObjectSubData implements VertexData {
 		gl.glBindBuffer(GL20.GL_ARRAY_BUFFER, bufferHandle);
 		if (isDirty) {
 			byteBuffer.limit(buffer.limit() * 4);
-			gl.glBufferData(GL20.GL_ARRAY_BUFFER, byteBuffer.limit(),
-					byteBuffer, usage);
+			gl.glBufferData(GL20.GL_ARRAY_BUFFER, byteBuffer.limit(), byteBuffer, usage);
 			isDirty = false;
 		}
 
@@ -151,14 +145,12 @@ public class VertexBufferObjectSubData implements VertexData {
 		if (locations == null) {
 			for (int i = 0; i < numAttributes; i++) {
 				final VertexAttribute attribute = attributes.get(i);
-				final int location = shader
-						.getAttributeLocation(attribute.alias);
-				if (location < 0){
+				final int location = shader.getAttributeLocation(attribute.alias);
+				if (location < 0) {
 					continue;
 				}
 				shader.enableVertexAttribute(location);
-				shader.setVertexAttribute(location, attribute.numComponents,
-						attribute.type, attribute.normalized,
+				shader.setVertexAttribute(location, attribute.numComponents, attribute.type, attribute.normalized,
 						attributes.vertexSize, attribute.offset);
 			}
 		} else {
@@ -169,8 +161,7 @@ public class VertexBufferObjectSubData implements VertexData {
 					continue;
 				shader.enableVertexAttribute(location);
 
-				shader.setVertexAttribute(location, attribute.numComponents,
-						attribute.type, attribute.normalized,
+				shader.setVertexAttribute(location, attribute.numComponents, attribute.type, attribute.normalized,
 						attributes.vertexSize, attribute.offset);
 			}
 		}
@@ -205,7 +196,6 @@ public class VertexBufferObjectSubData implements VertexData {
 		bufferHandle = createBufferObject();
 		isDirty = true;
 	}
-
 
 	public int getBufferHandle() {
 		return bufferHandle;

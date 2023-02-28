@@ -27,14 +27,14 @@ import loon.opengl.GLEx;
  */
 public interface BaseEffect {
 
-	public void createUI(GLEx g) ;
+	public void createUI(GLEx g);
 
-	public void update(long elapsedTime) ;
+	public void update(long elapsedTime);
 
-	public boolean isCompleted() ;
+	public boolean isCompleted();
 
 	public boolean isVisible();
 
-	public void setVisible(boolean v) ;
+	public void setVisible(boolean v);
 
 }

@@ -477,7 +477,7 @@ public class AnimatedEntity extends Entity {
 		_animation.setDelay(d);
 		return this;
 	}
-	
+
 	public AnimatedEntity setCurrentFrameIndex(int idx) {
 		_animation.setCurrentFrameIndex(idx);
 		return this;

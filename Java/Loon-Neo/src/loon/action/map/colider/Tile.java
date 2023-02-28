@@ -41,7 +41,7 @@ public interface Tile {
 	public int getWidth();
 
 	public int getHeight();
-	
+
 	public Tile getTileImpl();
 
 }

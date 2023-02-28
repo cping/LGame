@@ -52,14 +52,14 @@ public class CssDimensions {
 			this.bottom = v;
 		}
 	}
-	
-	public static class Border{
-		
+
+	public static class Border {
+
 		public String left = null;
 		public String right = null;
 		public String top = null;
 		public String bottom = null;
-		
+
 	}
 
 	public static class Rect {
@@ -120,7 +120,7 @@ public class CssDimensions {
 			}
 			return bodyRect;
 		}
-		
+
 		public static EdgeSize analyze(EdgeSize bodyRect, float fontSize, float width, float height, String... items) {
 			if (bodyRect == null) {
 				bodyRect = new EdgeSize();
@@ -142,6 +142,7 @@ public class CssDimensions {
 			}
 			return bodyRect;
 		}
+
 		public static Rect em(float value, String top, String right, String bottom, String left) {
 			return em(value, getFloat(top), getFloat(right), getFloat(bottom), getFloat(left));
 		}

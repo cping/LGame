@@ -199,12 +199,12 @@ public class ParserCSVData {
 		this._rows = null;
 		this._finished = false;
 		this._csvFlag = LSystem.COMMA;
-		
+
 		this.maxFieldCount = 0;
 		this.fieldCount = 0;
 		this.startingLineNo = 0;
 		this.lineNo = 0;
-		
+
 		return this;
 	}
 

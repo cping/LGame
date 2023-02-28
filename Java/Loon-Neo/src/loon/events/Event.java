@@ -66,10 +66,9 @@ public abstract class Event {
 		}
 
 		public void updateFlag(int flag, boolean on) {
-			if (on){
+			if (on) {
 				setFlag(flag);
-			}
-			else{
+			} else {
 				clearFlag(flag);
 			}
 		}
@@ -81,8 +80,7 @@ public abstract class Event {
 			return builder.append(']').toString();
 		}
 
-		public static int modifierFlags(boolean altP, boolean ctrlP,
-				boolean metaP, boolean shiftP) {
+		public static int modifierFlags(boolean altP, boolean ctrlP, boolean metaP, boolean shiftP) {
 			int flags = 0;
 			if (altP)
 				flags |= F_ALT_DOWN;
@@ -105,8 +103,7 @@ public abstract class Event {
 		}
 
 		protected void addFields(StrBuilder builder) {
-			builder.append("time=").append(time).append(", flags=")
-					.append(flags);
+			builder.append("time=").append(time).append(", flags=").append(flags);
 		}
 	}
 
@@ -115,16 +112,14 @@ public abstract class Event {
 		public final float x;
 
 		public final float y;
-		
-		public int x()
-        {
-            return (int)x;
-        }
 
-        public int y()
-        {
-            return (int)y;
-        }
+		public int x() {
+			return (int) x;
+		}
+
+		public int y() {
+			return (int) y;
+		}
 
 		@Override
 		public float getX() {

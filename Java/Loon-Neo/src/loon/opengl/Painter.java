@@ -28,7 +28,7 @@ import loon.utils.reply.GoFuture;
 public abstract class Painter extends TextureSource {
 
 	public Object Tag;
-	
+
 	public static final int TOP_LEFT = 0;
 
 	public static final int TOP_RIGHT = 1;
@@ -36,7 +36,7 @@ public abstract class Painter extends TextureSource {
 	public static final int BOTTOM_RIGHT = 2;
 
 	public static final int BOTTOM_LEFT = 3;
-	
+
 	public static LTexture firstFather(LTexture texture) {
 		if (texture.getParent() == null) {
 			return texture;
@@ -44,7 +44,7 @@ public abstract class Painter extends TextureSource {
 			return firstFather(texture.getParent());
 		}
 	}
-	
+
 	public abstract LTexture texture();
 
 	public abstract float width();
@@ -54,7 +54,7 @@ public abstract class Painter extends TextureSource {
 	public abstract float getDisplayWidth();
 
 	public abstract float getDisplayHeight();
-	
+
 	public abstract float sx();
 
 	public abstract float sy();
@@ -63,11 +63,10 @@ public abstract class Painter extends TextureSource {
 
 	public abstract float ty();
 
-	public abstract void addToBatch(BaseBatch batch, int tint,
-			Affine2f tx, float x, float y, float width, float height);
+	public abstract void addToBatch(BaseBatch batch, int tint, Affine2f tx, float x, float y, float width,
+			float height);
 
-	public abstract void addToBatch(BaseBatch batch, int tint,
-			Affine2f tx, float dx, float dy, float dw, float dh,
+	public abstract void addToBatch(BaseBatch batch, int tint, Affine2f tx, float dx, float dy, float dw, float dh,
 			float sx, float sy, float sw, float sh);
 
 	@Override
@@ -88,15 +87,8 @@ public abstract class Painter extends TextureSource {
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("Painter");
-		builder.kv("size", width() + "x" + height())
-		.comma()
-		.kv("xOff", sx())
-		.comma()
-		.kv("yOff", sy())
-		.comma()
-		.kv("widthRatio", tx())
-		.comma()
-		.kv("heightRatio", ty());
+		builder.kv("size", width() + "x" + height()).comma().kv("xOff", sx()).comma().kv("yOff", sy()).comma()
+				.kv("widthRatio", tx()).comma().kv("heightRatio", ty());
 		return builder.toString() + " <- " + texture();
 	}
 }

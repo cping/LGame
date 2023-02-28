@@ -183,9 +183,9 @@ public class PixelBubbleEffect extends Entity implements BaseEffect {
 	public boolean isCompleted() {
 		return _completed;
 	}
-	
+
 	@Override
-	public void close(){
+	public void close() {
 		super.close();
 		_completed = true;
 		_bubbleBlocks.clear();

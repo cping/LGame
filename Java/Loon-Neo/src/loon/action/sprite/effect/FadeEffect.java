@@ -37,17 +37,15 @@ public class FadeEffect extends Entity implements BaseEffect {
 	private int type;
 
 	private boolean finished;
-	
+
 	private boolean autoRemoved;
 
 	public static FadeEffect create(int type, LColor c) {
-		return create(type, c, LSystem.viewSize.getWidth(),
-				LSystem.viewSize.getHeight());
+		return create(type, c, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 	}
 
 	public static FadeEffect create(int type, int timer, LColor c) {
-		return new FadeEffect(c, timer, type, LSystem.viewSize.getWidth(),
-				LSystem.viewSize.getHeight());
+		return new FadeEffect(c, timer, type, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 	}
 
 	public static FadeEffect create(int type, LColor c, int w, int h) {
@@ -55,8 +53,7 @@ public class FadeEffect extends Entity implements BaseEffect {
 	}
 
 	public FadeEffect(int type, LColor c) {
-		this(c, 120, type, LSystem.viewSize.getWidth(), LSystem.viewSize
-				.getHeight());
+		this(c, 120, type, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 	}
 
 	public FadeEffect(LColor c, int delay, int type, int w, int h) {
@@ -113,8 +110,7 @@ public class FadeEffect extends Entity implements BaseEffect {
 		float op = (currentFrame / time);
 		int old = g.color();
 		g.setTint(_baseColor.r, _baseColor.g, _baseColor.b, op);
-		g.fillRect(drawX(sx), drawY(sy), _width,
-				_height);
+		g.fillRect(drawX(sx), drawY(sy), _width, _height);
 		g.setTint(old);
 		return;
 	}
@@ -153,12 +149,11 @@ public class FadeEffect extends Entity implements BaseEffect {
 		this.autoRemoved = autoRemoved;
 		return this;
 	}
-	
+
 	@Override
 	public void close() {
 		super.close();
 		finished = true;
 	}
-
 
 }

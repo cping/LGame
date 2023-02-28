@@ -112,7 +112,7 @@ public class Scale {
 		if (mode == null) {
 			mode = Mode.NONE;
 		}
-		
+
 		float targetRatio = this.factor;
 		float sourceRatio = this.factor;
 		float scaleValue = this.factor;

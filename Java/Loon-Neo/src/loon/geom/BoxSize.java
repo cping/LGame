@@ -21,15 +21,15 @@
 package loon.geom;
 
 public interface BoxSize {
-	  
+
 	public float getX();
 
 	public float getY();
-	
+
 	public float getCenterX();
 
 	public float getCenterY();
-	
+
 	public float getWidth();
 
 	public float getHeight();

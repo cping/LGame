@@ -27,8 +27,7 @@ import loon.utils.timer.GameTime;
 /**
  * 仿XNA的GameComponent实现
  */
-public class GameComponent implements IGameComponent, IUpdateable,
-		Comparable<GameComponent>, LRelease {
+public class GameComponent implements IGameComponent, IUpdateable, Comparable<GameComponent>, LRelease {
 
 	private DrawableScreen _game;
 

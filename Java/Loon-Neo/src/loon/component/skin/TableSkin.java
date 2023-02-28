@@ -27,7 +27,7 @@ import loon.component.DefUI;
 import loon.font.FontSet;
 import loon.font.IFont;
 
-public class TableSkin implements FontSet<TableSkin>{
+public class TableSkin implements FontSet<TableSkin> {
 
 	private IFont font;
 
@@ -46,8 +46,7 @@ public class TableSkin implements FontSet<TableSkin>{
 				DefUI.self().getDefaultTextures(4));
 	}
 
-	public TableSkin(IFont font, LColor fontColor, LTexture header,
-			LTexture background) {
+	public TableSkin(IFont font, LColor fontColor, LTexture header, LTexture background) {
 		this.font = font;
 		this.fontColor = fontColor;
 		this.headerTexture = header;

@@ -40,8 +40,7 @@ public class Curve extends Shape {
 		this(p1, c1, c2, p2, 20);
 	}
 
-	public Curve(Vector2f p1, Vector2f c1, Vector2f c2, Vector2f p2,
-			int segments) {
+	public Curve(Vector2f p1, Vector2f c1, Vector2f c2, Vector2f p2, int segments) {
 		this.p1 = new Vector2f(p1);
 		this.c1 = new Vector2f(c1);
 		this.c2 = new Vector2f(c2);
@@ -91,9 +90,8 @@ public class Curve extends Shape {
 		pts[7] = p2.y;
 		transform.transform(pts, 0, dest, 0, 4);
 
-		return new Curve(new Vector2f(dest[0], dest[1]), new Vector2f(dest[2],
-				dest[3]), new Vector2f(dest[4], dest[5]), new Vector2f(dest[6],
-				dest[7]));
+		return new Curve(new Vector2f(dest[0], dest[1]), new Vector2f(dest[2], dest[3]), new Vector2f(dest[4], dest[5]),
+				new Vector2f(dest[6], dest[7]));
 	}
 
 	@Override

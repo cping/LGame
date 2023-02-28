@@ -657,7 +657,7 @@ public class Sprite extends LObject<ISprite>
 	public void createUI(GLEx g) {
 		createUI(g, 0f, 0f);
 	}
-	
+
 	@Override
 	public void createUI(GLEx g, float offsetX, float offsetY) {
 		if (!_visible) {

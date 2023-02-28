@@ -48,7 +48,7 @@ public class AVGAnm implements Expression, LRelease {
 	protected IntArray posyTmps = new IntArray();
 
 	protected IntArray time = new IntArray();
-	
+
 	protected int[] posx = null;
 
 	protected int[] posy = null;

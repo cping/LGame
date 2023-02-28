@@ -220,8 +220,7 @@ public class ConfigurableEmitter implements ParticleEmitter {
 
 		}
 
-		if ((wrapUp) || ((length.isEnabled()) && (timeout < 0))
-				|| ((emitCount.isEnabled() && (leftToEmit <= 0)))) {
+		if ((wrapUp) || ((length.isEnabled()) && (timeout < 0)) || ((emitCount.isEnabled() && (leftToEmit <= 0)))) {
 			if (particleCount == 0) {
 				completed = true;
 			}
@@ -250,8 +249,7 @@ public class ConfigurableEmitter implements ParticleEmitter {
 			int count = (int) spawnCount.random();
 
 			for (int i = 0; i < count; i++) {
-				ParticleParticle p = system.getNewParticle(this,
-						initialLife.random());
+				ParticleParticle p = system.getNewParticle(this, initialLife.random());
 				p.setSize(initialSize.random());
 				p.setPosition(x + xOffset.random(), y + yOffset.random());
 				p.setVelocity(0, 0, 0);
@@ -260,15 +258,14 @@ public class ConfigurableEmitter implements ParticleEmitter {
 				float power = speed.random();
 				if ((dist != 0) || (power != 0)) {
 					float s = spread.getValue(0);
-					float ang = (s + angularOffset.getValue(0) - (spread
-							.getValue() / 2)) - 90;
-			
+					float ang = (s + angularOffset.getValue(0) - (spread.getValue() / 2)) - 90;
+
 					float xa = (MathUtils.cos(MathUtils.toDegrees(ang)) * dist);
 					float ya = (MathUtils.sin(MathUtils.toDegrees(ang)) * dist);
 					p.adjustPosition(xa, ya);
 
-					float xv =  MathUtils.cos(MathUtils.toDegrees(ang));
-					float yv =  MathUtils.sin(MathUtils.toDegrees(ang));
+					float xv = MathUtils.cos(MathUtils.toDegrees(ang));
+					float yv = MathUtils.sin(MathUtils.toDegrees(ang));
 					p.setVelocity(xv, yv, power * 0.001f);
 				}
 
@@ -277,8 +274,7 @@ public class ConfigurableEmitter implements ParticleEmitter {
 				}
 
 				ColorRecord start = (ColorRecord) colors.get(0);
-				p.setColor(start.col.r, start.col.g, start.col.b,
-						startAlpha.getValue(0) / 255.0f);
+				p.setColor(start.col.r, start.col.g, start.col.b, startAlpha.getValue(0) / 255.0f);
 				p.setUsePoint(usePoints);
 				p.setOriented(useOriented);
 
@@ -334,8 +330,7 @@ public class ConfigurableEmitter implements ParticleEmitter {
 			if (alpha.isActive()) {
 				a = alpha.getValue(inv) / 255.0f;
 			} else {
-				a = ((startAlpha.getValue(0) / 255.0f) * offset)
-						+ ((endAlpha.getValue(0) / 255.0f) * inv);
+				a = ((startAlpha.getValue(0) / 255.0f) * offset) + ((endAlpha.getValue(0) / 255.0f) * inv);
 			}
 			particle.setColor(r, g, b, a);
 		}
@@ -598,8 +593,7 @@ public class ConfigurableEmitter implements ParticleEmitter {
 
 	@Override
 	public boolean usePoints(ParticleSystem system) {
-		return (this.usePoints == ParticleParticle.INHERIT_POINTS)
-				&& (system.usePoints())
+		return (this.usePoints == ParticleParticle.INHERIT_POINTS) && (system.usePoints())
 				|| (this.usePoints == ParticleParticle.USE_POINTS);
 	}
 

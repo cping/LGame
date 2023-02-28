@@ -33,8 +33,7 @@ public class ActorSet {
 		if (minCapacity < 0) {
 			throw new LSysException("Required array size too large");
 		}
-		return (minCapacity > MAX_ARRAY_SIZE) ? Integer.MAX_VALUE
-				: MAX_ARRAY_SIZE;
+		return (minCapacity > MAX_ARRAY_SIZE) ? Integer.MAX_VALUE : MAX_ARRAY_SIZE;
 	}
 
 	public void clear() {
@@ -91,8 +90,7 @@ public class ActorSet {
 			return false;
 		} else {
 			++this.numActors;
-			ActorSet.ListNode newNode = new ActorSet.ListNode(actor,
-					this.listHeadTail.prev);
+			ActorSet.ListNode newNode = new ActorSet.ListNode(actor, this.listHeadTail.prev);
 			int seq = actor.getSequenceNumber();
 			if (this.numActors >= 2 * this.hashMap.length) {
 				this.resize();
@@ -113,8 +111,7 @@ public class ActorSet {
 		this.resize();
 		for (int i = 0; i < size; i++) {
 			Actor actor = (Actor) o[i];
-			ActorSet.ListNode newNode = new ActorSet.ListNode(actor,
-					this.listHeadTail.prev);
+			ActorSet.ListNode newNode = new ActorSet.ListNode(actor, this.listHeadTail.prev);
 			int seq = actor.getSequenceNumber();
 			int hash = seq % this.hashMap.length;
 			ActorSet.ListNode hashHead = this.hashMap[hash];

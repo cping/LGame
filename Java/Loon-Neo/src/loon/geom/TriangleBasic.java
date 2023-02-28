@@ -39,7 +39,7 @@ public class TriangleBasic implements Triangle {
 
 	public TriangleBasic() {
 	}
-	
+
 	@Override
 	public void addPolyPoint(float x, float y) {
 		PointF p = new PointF(x, y);
@@ -63,7 +63,7 @@ public class TriangleBasic implements Triangle {
 		boolean worked = process(poly, tris);
 		return worked;
 	}
-	
+
 	@Override
 	public int getTriangleCount() {
 		if (!tried) {
@@ -71,7 +71,7 @@ public class TriangleBasic implements Triangle {
 		}
 		return tris.size() / 3;
 	}
-	
+
 	@Override
 	public float[] getTrianglePoint(int t, int i) {
 		if (!tried) {
@@ -90,14 +90,12 @@ public class TriangleBasic implements Triangle {
 			PointF contourP = contour.get(p);
 			PointF contourQ = contour.get(q);
 
-			sA += contourP.getX() * contourQ.getY() - contourQ.getX()
-					* contourP.getY();
+			sA += contourP.getX() * contourQ.getY() - contourQ.getX() * contourP.getY();
 		}
 		return sA * 0.5f;
 	}
 
-	private boolean insideTriangle(float Ax, float Ay, float Bx, float By,
-			float Cx, float Cy, float Px, float Py) {
+	private boolean insideTriangle(float Ax, float Ay, float Bx, float By, float Cx, float Cy, float Px, float Py) {
 		float ax, ay, bx, by, cx, cy, apx, apy, bpx, bpy, cpx, cpy;
 		float cCROSSap, bCROSScp, aCROSSbp;
 
@@ -217,7 +215,6 @@ public class TriangleBasic implements Triangle {
 
 		return true;
 	}
-
 
 	@Override
 	public void startHole() {

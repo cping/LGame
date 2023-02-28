@@ -37,28 +37,21 @@ public class BezierTo extends BezierBy {
 		this(sx, sy, duration, EasingMode.Linear, b);
 	}
 
-	public BezierTo(float sx, float sy, float duration, EasingMode mode,
-			Bezier b) {
+	public BezierTo(float sx, float sy, float duration, EasingMode mode, Bezier b) {
 		super(sx, sy, duration, mode, b);
 		originalconfig = new Bezier();
-		originalconfig.controlPoint1 = Vector2f.at(b.controlPoint1.x,
-				b.controlPoint1.y);
-		originalconfig.controlPoint2 = Vector2f.at(b.controlPoint2.x,
-				b.controlPoint2.y);
-		originalconfig.endPosition = Vector2f.at(b.endPosition.x,
-				b.endPosition.y);
+		originalconfig.controlPoint1 = Vector2f.at(b.controlPoint1.x, b.controlPoint1.y);
+		originalconfig.controlPoint2 = Vector2f.at(b.controlPoint2.x, b.controlPoint2.y);
+		originalconfig.endPosition = Vector2f.at(b.endPosition.x, b.endPosition.y);
 	}
 
 	@Override
 	public void onLoad() {
 		super.onLoad();
 		Vector2f startPosition = new Vector2f(startX, startY);
-		bezier.controlPoint1.set(Vector2f.subNew(originalconfig.controlPoint1,
-				startPosition));
-		bezier.controlPoint2.set(Vector2f.subNew(originalconfig.controlPoint2,
-				startPosition));
-		bezier.endPosition.set(Vector2f.subNew(originalconfig.endPosition,
-				startPosition));
+		bezier.controlPoint1.set(Vector2f.subNew(originalconfig.controlPoint1, startPosition));
+		bezier.controlPoint2.set(Vector2f.subNew(originalconfig.controlPoint2, startPosition));
+		bezier.endPosition.set(Vector2f.subNew(originalconfig.endPosition, startPosition));
 	}
 
 	@Override
@@ -68,8 +61,7 @@ public class BezierTo extends BezierBy {
 
 	@Override
 	public ActionEvent cpy() {
-		BezierTo bto = new BezierTo(startX, startY, easeTimer.getDuration(),
-				easeTimer.getEasingMode(), bezier.cpy());
+		BezierTo bto = new BezierTo(startX, startY, easeTimer.getDuration(), easeTimer.getEasingMode(), bezier.cpy());
 		bto.set(this);
 		return bto;
 	}
@@ -78,12 +70,9 @@ public class BezierTo extends BezierBy {
 	public ActionEvent reverse() {
 		Bezier b = new Bezier();
 		b.endPosition = bezier.endPosition.negate();
-		b.controlPoint1 = Vector2f.addNew(bezier.controlPoint2,
-				bezier.endPosition.negate());
-		b.controlPoint2 = Vector2f.addNew(bezier.controlPoint1,
-				bezier.endPosition.negate());
-		BezierTo bto = new BezierTo(startX, startY, easeTimer.getDuration(),
-				easeTimer.getEasingMode(), b);
+		b.controlPoint1 = Vector2f.addNew(bezier.controlPoint2, bezier.endPosition.negate());
+		b.controlPoint2 = Vector2f.addNew(bezier.controlPoint1, bezier.endPosition.negate());
+		BezierTo bto = new BezierTo(startX, startY, easeTimer.getDuration(), easeTimer.getEasingMode(), b);
 		bto.set(this);
 		return bto;
 	}
@@ -94,17 +83,10 @@ public class BezierTo extends BezierBy {
 	}
 
 	@Override
-	public String toString(){
+	public String toString() {
 		StringKeyValue builder = new StringKeyValue(getName());
-		builder.kv("bezierOriginal", originalconfig)
-		.comma()
-		.kv("bezier", bezier)
-		.comma()
-		.kv("startX", startX)
-		.comma()
-		.kv("startY", startY)
-		.comma()
-		.kv("EaseTimer", easeTimer);
+		builder.kv("bezierOriginal", originalconfig).comma().kv("bezier", bezier).comma().kv("startX", startX).comma()
+				.kv("startY", startY).comma().kv("EaseTimer", easeTimer);
 		return builder.toString();
 	}
 }

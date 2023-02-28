@@ -28,7 +28,7 @@ import loon.utils.MathUtils;
 import loon.utils.StrBuilder;
 import loon.utils.TArray;
 
-public class XMLOutput implements LRelease  {
+public class XMLOutput implements LRelease {
 
 	private final TArray<String> _stack = new TArray<String>();
 
@@ -48,14 +48,14 @@ public class XMLOutput implements LRelease  {
 		this._writer = s;
 	}
 
-	public void start_ele(XMLElement ele)  {
+	public void start_ele(XMLElement ele) {
 		for (Iterator<?> it = ele.elements(); it.hasNext();) {
 			XMLElement e = (XMLElement) it.next();
 			start_ele(e.getName());
 		}
 	}
 
-	public XMLOutput start_ele(String name)  {
+	public XMLOutput start_ele(String name) {
 		if (content()) {
 			_writer.append('\n');
 		}
@@ -66,11 +66,11 @@ public class XMLOutput implements LRelease  {
 		return this;
 	}
 
-	public XMLOutput start_ele(String name, Object text)  {
+	public XMLOutput start_ele(String name, Object text) {
 		return start_ele(name).put_txt(text).end();
 	}
 
-	private boolean content()  {
+	private boolean content() {
 		if (_currentElement == null) {
 			return false;
 		}
@@ -81,11 +81,11 @@ public class XMLOutput implements LRelease  {
 		return true;
 	}
 
-	public void start_attr(XMLAttribute attr)  {
+	public void start_attr(XMLAttribute attr) {
 		start_attr(attr.getName(), attr.getValue());
 	}
 
-	public XMLOutput start_attr(String name, Object value)  {
+	public XMLOutput start_attr(String name, Object value) {
 		if (_currentElement == null) {
 			throw new LSysException("current element is null");
 		}
@@ -97,7 +97,7 @@ public class XMLOutput implements LRelease  {
 		return this;
 	}
 
-	public XMLOutput put_txt(Object text)  {
+	public XMLOutput put_txt(Object text) {
 		content();
 		String string = text == null ? "null" : text.toString();
 		_flag = string.length() > 64;
@@ -112,7 +112,7 @@ public class XMLOutput implements LRelease  {
 		return this;
 	}
 
-	public XMLOutput end()  {
+	public XMLOutput end() {
 		if (_stack.size <= 0) {
 			return this;
 		}
@@ -132,7 +132,7 @@ public class XMLOutput implements LRelease  {
 		return this;
 	}
 
-	private void newline()  {
+	private void newline() {
 		int count = _count;
 		if (_currentElement != null) {
 			count++;
@@ -143,13 +143,13 @@ public class XMLOutput implements LRelease  {
 	}
 
 	@Override
-	public void close(){
+	public void close() {
 		while (_stack.size() != 0) {
 			end();
 		}
 	}
 
-	public void append(char[] cbuf, int off, int len)  {
+	public void append(char[] cbuf, int off, int len) {
 		content();
 		_writer.append(cbuf, off, len);
 	}

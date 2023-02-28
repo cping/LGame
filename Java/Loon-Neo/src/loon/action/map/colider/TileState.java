@@ -22,34 +22,34 @@ package loon.action.map.colider;
 
 public class TileState {
 
-    public static final int NOT_WALL = 0;
-    
-    public static final int WALL = 1;
-    
-    private int state = 0;
+	public static final int NOT_WALL = 0;
 
-    public TileState() {
-    	this(NOT_WALL);
-    }
-    
-    public TileState(int v) {
-    	this.state = v;
-    }
-    
-    public TileState setResult(int v) {
-    	this.state = v;
-    	return this;
-    }
-    
-    public int getResult() {
-    	return this.state;
-    }
+	public static final int WALL = 1;
 
-    public boolean isWalkable() {
-        return this.state == NOT_WALL;
-    }
+	private int state = 0;
 
-    public boolean isNotWalkable() {
-        return this.state == WALL;
-    }
+	public TileState() {
+		this(NOT_WALL);
+	}
+
+	public TileState(int v) {
+		this.state = v;
+	}
+
+	public TileState setResult(int v) {
+		this.state = v;
+		return this;
+	}
+
+	public int getResult() {
+		return this.state;
+	}
+
+	public boolean isWalkable() {
+		return this.state == NOT_WALL;
+	}
+
+	public boolean isNotWalkable() {
+		return this.state == WALL;
+	}
 }

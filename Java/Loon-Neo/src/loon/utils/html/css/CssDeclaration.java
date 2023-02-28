@@ -23,7 +23,7 @@ package loon.utils.html.css;
 public class CssDeclaration {
 
 	protected String name;
-	
+
 	protected CssValue value;
 
 	public CssDeclaration(String name, CssValue value) {

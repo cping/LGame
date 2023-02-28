@@ -137,7 +137,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	public final static int LOWER_LEFT = 2;
 
 	public final static int LOWER_RIGHT = 3;
-	
+
 	/**
 	 * Screen切换方式(单纯移动)
 	 *

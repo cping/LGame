@@ -685,7 +685,7 @@ public class LLayer extends ActorLayer {
 	public String getUIName() {
 		return "Layer";
 	}
-	
+
 	@Override
 	public void close() {
 		super.close();

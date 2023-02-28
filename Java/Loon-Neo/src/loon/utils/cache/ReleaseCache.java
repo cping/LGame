@@ -54,8 +54,8 @@ public class ReleaseCache extends CacheObject {
 	public int getSpawnCount() {
 		return _gc_spawnCount;
 	}
-	
-	public LRelease peek(){
+
+	public LRelease peek() {
 		return this._obj;
 	}
 

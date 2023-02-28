@@ -27,15 +27,15 @@ public class TextAssetLoader extends AssetAbstractLoader<String> {
 
 	private String _context;
 
-	public TextAssetLoader(String path,String nickname) {
+	public TextAssetLoader(String path, String nickname) {
 		this.set(path, nickname);
 	}
-	
+
 	@Override
 	public String get() {
 		return this._context;
 	}
-	
+
 	@Override
 	public boolean completed() {
 		if (!StringUtils.isEmpty(_path)) {

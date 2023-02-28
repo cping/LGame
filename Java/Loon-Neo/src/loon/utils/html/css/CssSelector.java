@@ -25,9 +25,9 @@ import loon.utils.TArray;
 public class CssSelector {
 
 	public String id;
-	
+
 	public String tagName;
-	
+
 	public TArray<String> classNames;
 
 	public CssSelector(String tagName, String id, TArray<String> classNames) {
@@ -35,5 +35,5 @@ public class CssSelector {
 		this.tagName = tagName;
 		this.classNames = classNames;
 	}
-	
+
 }

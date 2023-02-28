@@ -32,7 +32,7 @@ public abstract class FloatTimerEvent {
 
 	private float _delay;
 	private float _acc;
-	
+
 	private boolean _repeat;
 	private boolean _done;
 	private boolean _stopped;
@@ -60,10 +60,9 @@ public abstract class FloatTimerEvent {
 			this._acc += delta;
 			if (this._acc >= this._delay) {
 				this._acc -= this._delay;
-				if (this._repeat){
+				if (this._repeat) {
 					reset();
-				}
-				else {
+				} else {
 					this._done = true;
 				}
 				execute();
@@ -122,8 +121,8 @@ public abstract class FloatTimerEvent {
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("FloatTimerEvent");
-		builder.kv("delay", _delay).comma().kv("repeat", _repeat).comma().kv("acc", _acc).comma().kv("done", _done).comma()
-				.kv("stopped", _stopped);
+		builder.kv("delay", _delay).comma().kv("repeat", _repeat).comma().kv("acc", _acc).comma().kv("done", _done)
+				.comma().kv("stopped", _stopped);
 		return builder.toString();
 	}
 }

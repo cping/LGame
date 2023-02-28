@@ -44,7 +44,7 @@ public abstract class State implements LRelease {
 	protected boolean _isLoaded;
 
 	protected boolean _isScalePos;
-	
+
 	protected boolean _syncCamera;
 
 	public State() {

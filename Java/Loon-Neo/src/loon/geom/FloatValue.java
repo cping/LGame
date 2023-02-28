@@ -42,7 +42,7 @@ public class FloatValue implements LRelease {
 	public float get() {
 		return result();
 	}
-	
+
 	public float result() {
 		return value;
 	}

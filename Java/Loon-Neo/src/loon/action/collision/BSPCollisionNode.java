@@ -105,19 +105,19 @@ public final class BSPCollisionNode {
 	}
 
 	public RectBox getLeftArea() {
-		return this._splitAxis == 0 ? new RectBox(this._area.getX(),
-				this._area.getY(), this._splitPos - this._area.getX(),
-				this._area.getHeight()) : new RectBox(this._area.getX(),
-				this._area.getY(), this._area.getWidth(), this._splitPos
-						- this._area.getY());
+		return this._splitAxis == 0
+				? new RectBox(this._area.getX(), this._area.getY(), this._splitPos - this._area.getX(),
+						this._area.getHeight())
+				: new RectBox(this._area.getX(), this._area.getY(), this._area.getWidth(),
+						this._splitPos - this._area.getY());
 	}
 
 	public RectBox getRightArea() {
-		return this._splitAxis == 0 ? new RectBox(this._splitPos,
-				this._area.getY(), this._area.getRight() - this._splitPos,
-				this._area.getHeight()) : new RectBox(this._area.getX(),
-				this._splitPos, this._area.getWidth(), this._area.getBottom()
-						- this._splitPos);
+		return this._splitAxis == 0
+				? new RectBox(this._splitPos, this._area.getY(), this._area.getRight() - this._splitPos,
+						this._area.getHeight())
+				: new RectBox(this._area.getX(), this._splitPos, this._area.getWidth(),
+						this._area.getBottom() - this._splitPos);
 	}
 
 	public RectBox getArea() {

@@ -34,7 +34,6 @@ public class LightningLine {
 
 	private final static float imageThickness = 8;
 
-
 	private Vector2f capOrigin = new Vector2f();
 	private Vector2f middleOrigin = new Vector2f();
 	private Vector2f middleScale = new Vector2f();
@@ -53,24 +52,24 @@ public class LightningLine {
 		this.thickness = t;
 	}
 
-	public void draw(SpriteBatch batch, float offsetX,float offsetY, LColor tint) {
+	public void draw(SpriteBatch batch, float offsetX, float offsetY, LColor tint) {
 
 		Vector2f tangent = lineB.sub(lineA);
 		float theta = MathUtils.atan2(tangent.y, tangent.x);
 		float thicknessScale = thickness / imageThickness;
-		
+
 		LTexture HalfCircle = LightningEffect.get().getHalfCircle();
 		LTexture LightningSegment = LightningEffect.get().getLightningSegment();
-		
+
 		capOrigin.set(HalfCircle.getWidth(), HalfCircle.getHeight() / 2f);
 		middleOrigin.set(0, LightningSegment.getHeight() / 2f);
 		middleScale.set(tangent.length(), thicknessScale);
 
-		batch.draw(LightningSegment, lineA.add(offsetX, offsetY), tint, theta * MathUtils.RAD_TO_DEG, middleOrigin, middleScale,
-				SpriteEffects.None);
-		batch.draw(HalfCircle, lineA.add(offsetX, offsetY), tint, theta * MathUtils.RAD_TO_DEG, capOrigin, thicknessScale,
-				SpriteEffects.None);
-		batch.draw(HalfCircle, lineB.add(offsetX, offsetY), tint, (theta + MathUtils.PI) * MathUtils.RAD_TO_DEG, capOrigin,
+		batch.draw(LightningSegment, lineA.add(offsetX, offsetY), tint, theta * MathUtils.RAD_TO_DEG, middleOrigin,
+				middleScale, SpriteEffects.None);
+		batch.draw(HalfCircle, lineA.add(offsetX, offsetY), tint, theta * MathUtils.RAD_TO_DEG, capOrigin,
 				thicknessScale, SpriteEffects.None);
+		batch.draw(HalfCircle, lineB.add(offsetX, offsetY), tint, (theta + MathUtils.PI) * MathUtils.RAD_TO_DEG,
+				capOrigin, thicknessScale, SpriteEffects.None);
 	}
 }

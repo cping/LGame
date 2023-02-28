@@ -26,17 +26,17 @@ import loon.events.Updateable;
 public abstract class Bypass {
 
 	protected static abstract class Runs implements Updateable {
-		
+
 		public Runs next;
-		
+
 		@Override
 		public abstract void action(Object a);
 	}
 
 	protected static abstract class Notifier<T> {
-		
+
 		public abstract void notify(Bypass.GoListener listener, T a1, T a2, T a3);
-		
+
 	}
 
 	public interface GoListener {
@@ -59,7 +59,7 @@ public abstract class Bypass {
 		head.next = append(head.next, action);
 		return head;
 	}
-	
+
 	protected void checkMutate() {
 	}
 
@@ -68,7 +68,7 @@ public abstract class Bypass {
 
 	protected void connectionRemoved() {
 	}
-	
+
 	public boolean hasConnections() {
 		return _listeners != null;
 	}
@@ -132,8 +132,7 @@ public abstract class Bypass {
 		}
 	}
 
-
-	protected <T> void  notify(final Notifier<T> notifier, final T a1, final T a2, final T a3) {
+	protected <T> void notify(final Notifier<T> notifier, final T a1, final T a2, final T a3) {
 		Cons lners;
 		synchronized (this) {
 			if (_listeners == DISPATCHING) {

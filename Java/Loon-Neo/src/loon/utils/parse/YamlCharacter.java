@@ -24,7 +24,7 @@ import loon.LSystem;
 import loon.utils.CharUtils;
 
 public final class YamlCharacter {
-	
+
 	public final static int PRINTABLE = 1;
 	public final static int WORD = 2;
 	public final static int LINE = 3;

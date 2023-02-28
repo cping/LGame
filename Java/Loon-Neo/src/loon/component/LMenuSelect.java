@@ -251,7 +251,7 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 				lastHeight = maxHeight;
 				for (CharSequence ch : chars) {
 					maxWidth = MathUtils.max(maxWidth,
-							FontUtils.measureText(_font, ch) + _font.getHeight() + _flagWidth + _flag_text_space) ;
+							FontUtils.measureText(_font, ch) + _font.getHeight() + _flagWidth + _flag_text_space);
 					height += MathUtils.max(_font.stringHeight(new StrBuilder(ch).toString()), _flagHeight);
 				}
 				if (maxWidth > lastWidth) {

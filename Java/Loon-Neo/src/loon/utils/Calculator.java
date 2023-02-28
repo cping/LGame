@@ -26,7 +26,7 @@ import loon.LRelease;
 /**
  * 简单的四则运算类,脚本用,也可用于跨域传参(单纯跨域传参推荐使用 @see Counter 类,因为该类可以限制最大和最小值,更适合简单增减用).
  */
-public class Calculator implements LRelease{
+public class Calculator implements LRelease {
 
 	public static final int ADD = 1;
 
@@ -143,7 +143,7 @@ public class Calculator implements LRelease{
 		currentTotal += num % 1f == 0 ? (int) num : num;
 		return this;
 	}
-	
+
 	public Calculator sub(float num) {
 		currentTotal -= num % 1f == 0 ? (int) num : num;
 		return this;

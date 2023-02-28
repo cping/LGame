@@ -22,7 +22,7 @@
 package loon.utils.processes;
 
 public interface RealtimeProcessHost {
-	
+
 	public void processFinished(String id, GameProcess process);
-	
+
 }

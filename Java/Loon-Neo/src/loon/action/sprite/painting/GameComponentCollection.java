@@ -38,10 +38,8 @@ public final class GameComponentCollection {
 	private final static Comparator<IGameComponent> igameDrawComparator = new Comparator<IGameComponent>() {
 		@Override
 		public int compare(IGameComponent one, IGameComponent two) {
-			if (one instanceof DrawableGameComponent
-					&& two instanceof DrawableGameComponent) {
-				return ((DrawableGameComponent) one).getDrawOrder()
-						- ((DrawableGameComponent) two).getDrawOrder();
+			if (one instanceof DrawableGameComponent && two instanceof DrawableGameComponent) {
+				return ((DrawableGameComponent) one).getDrawOrder() - ((DrawableGameComponent) two).getDrawOrder();
 			}
 			return 0;
 		}
@@ -51,15 +49,14 @@ public final class GameComponentCollection {
 		@Override
 		public int compare(IGameComponent one, IGameComponent two) {
 			if (one instanceof GameComponent && two instanceof GameComponent) {
-				return ((GameComponent) one).getUpdateOrder()
-						- ((GameComponent) two).getUpdateOrder();
+				return ((GameComponent) one).getUpdateOrder() - ((GameComponent) two).getUpdateOrder();
 			}
 			return 0;
 		}
 	};
-	
+
 	private final static InsertionSorter<IGameComponent> _gameComponentSort = new InsertionSorter<IGameComponent>();
-	
+
 	public GameComponentCollection() {
 		this.collections = new TArray<IGameComponent>();
 		this.collectionsToUpdate = new TArray<IGameComponent>();
@@ -178,11 +175,9 @@ public final class GameComponentCollection {
 		for (int i = 0; i < collections.size; i++) {
 			if (collections.get(i) instanceof DrawableGameComponent) {
 				if (i == index) {
-					((DrawableGameComponent) collections.get(i))
-							.setEnabled(true);
+					((DrawableGameComponent) collections.get(i)).setEnabled(true);
 				} else {
-					((DrawableGameComponent) collections.get(i))
-							.setEnabled(false);
+					((DrawableGameComponent) collections.get(i)).setEnabled(false);
 				}
 			}
 		}

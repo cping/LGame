@@ -41,7 +41,7 @@ import loon.utils.timer.LTimerContext;
 public abstract class DrawableScreen extends Screen {
 
 	@Override
-	public LTransition onTransition(){
+	public LTransition onTransition() {
 		return LTransition.newEmpty();
 	}
 
@@ -58,7 +58,7 @@ public abstract class DrawableScreen extends Screen {
 	private SpriteBatch batch;
 
 	private final GameTime gameTime = new GameTime();
-	
+
 	public DrawableScreen() {
 		this.drawables = new TArray<Drawable>();
 		this.drawablesToUpdate = new TArray<Drawable>();
@@ -127,7 +127,7 @@ public abstract class DrawableScreen extends Screen {
 	public void fadeBackBufferToBlack(SpriteBatch bth) {
 		drawRectangle(bth, LSystem.viewSize.getRect(), 0f, 0f, 0f, 1f);
 	}
-	
+
 	public void fadeBackBufferToBlack(SpriteBatch bth, float a) {
 		drawRectangle(bth, LSystem.viewSize.getRect(), 0f, 0f, 0f, a);
 	}
@@ -136,8 +136,7 @@ public abstract class DrawableScreen extends Screen {
 		drawRectangle(bth, rect, c.r, c.g, c.b, c.a);
 	}
 
-	public void drawRectangle(SpriteBatch bth, RectBox rect, float r, float g,
-			float b, float a) {
+	public void drawRectangle(SpriteBatch bth, RectBox rect, float r, float g, float b, float a) {
 		if (bth != null) {
 			float color = bth.color();
 			bth.setColor(r, g, b, a);
@@ -222,8 +221,7 @@ public abstract class DrawableScreen extends Screen {
 			drawablesToUpdate.removeIndex(screenIndex);
 
 			if (drawable._enabled) {
-				drawable.update(gameTime, otherScreenHasFocus,
-						coveredByOtherScreen);
+				drawable.update(gameTime, otherScreenHasFocus, coveredByOtherScreen);
 
 				if (drawable.getDrawableState() == DrawableState.TransitionOn
 						|| drawable.getDrawableState() == DrawableState.Active) {

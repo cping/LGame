@@ -109,11 +109,14 @@ public class GLBatch implements LRelease {
 			expandVertices = new ExpandVertices(maxSize * (mesh.getVertexAttributes().vertexSize / 4));
 			vertexSize = mesh.getVertexAttributes().vertexSize / 4;
 			normalOffset = mesh.getVertexAttribute(Usage.Normal) != null
-					? mesh.getVertexAttribute(Usage.Normal).offset / 4 : 0;
+					? mesh.getVertexAttribute(Usage.Normal).offset / 4
+					: 0;
 			colorOffset = mesh.getVertexAttribute(Usage.ColorPacked) != null
-					? mesh.getVertexAttribute(Usage.ColorPacked).offset / 4 : 0;
+					? mesh.getVertexAttribute(Usage.ColorPacked).offset / 4
+					: 0;
 			texCoordOffset = mesh.getVertexAttribute(Usage.TextureCoordinates) != null
-					? mesh.getVertexAttribute(Usage.TextureCoordinates).offset / 4 : 0;
+					? mesh.getVertexAttribute(Usage.TextureCoordinates).offset / 4
+					: 0;
 
 			shaderUniformNames = new String[numTexCoords];
 			for (int i = 0; i < numTexCoords; i++) {
@@ -143,9 +146,11 @@ public class GLBatch implements LRelease {
 		normalOffset = mesh.getVertexAttribute(Usage.Normal) != null ? mesh.getVertexAttribute(Usage.Normal).offset / 4
 				: 0;
 		colorOffset = mesh.getVertexAttribute(Usage.ColorPacked) != null
-				? mesh.getVertexAttribute(Usage.ColorPacked).offset / 4 : 0;
+				? mesh.getVertexAttribute(Usage.ColorPacked).offset / 4
+				: 0;
 		texCoordOffset = mesh.getVertexAttribute(Usage.TextureCoordinates) != null
-				? mesh.getVertexAttribute(Usage.TextureCoordinates).offset / 4 : 0;
+				? mesh.getVertexAttribute(Usage.TextureCoordinates).offset / 4
+				: 0;
 		shaderUniformNames = new String[numTexCoords];
 		for (int i = 0; i < numTexCoords; i++) {
 			shaderUniformNames[i] = "u_sampler" + i;

@@ -20,7 +20,6 @@
  */
 package loon.action;
 
-
 public interface ActionListener {
 
 	public void start(ActionBind o);

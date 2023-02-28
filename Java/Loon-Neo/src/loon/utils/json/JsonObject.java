@@ -36,7 +36,7 @@ class JsonObject implements Json.Object {
 	public final static JsonBuilder<JsonObject> at() {
 		return builder();
 	}
-	
+
 	public final static JsonBuilder<JsonObject> builder() {
 		return new JsonBuilder<JsonObject>(new JsonObject());
 	}

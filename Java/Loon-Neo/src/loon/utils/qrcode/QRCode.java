@@ -259,7 +259,7 @@ public class QRCode {
 			for (int col = 0; col < count; col++) {
 				boolean b = isDark(row, col);
 				if (b) {
-		
+
 					pixmap.fillRect(col * newWidth, row * newHeight, newWidth, newHeight);
 				}
 			}
@@ -674,7 +674,8 @@ public class QRCode {
 		}
 
 		if (buffer.getLengthInBits() > totalDataCount * 8) {
-			throw new LSysException("code length overflow. (" + buffer.getLengthInBits() + ">" + totalDataCount * 8 + ")");
+			throw new LSysException(
+					"code length overflow. (" + buffer.getLengthInBits() + ">" + totalDataCount * 8 + ")");
 		}
 
 		if (buffer.getLengthInBits() + 4 <= totalDataCount * 8) {

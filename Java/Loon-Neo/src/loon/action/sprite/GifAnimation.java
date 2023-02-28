@@ -50,8 +50,7 @@ public class GifAnimation extends Entity {
 		this._height = d.getHeight();
 		for (int i = 0; i < _gifDecoder.getFrameCount(); i++) {
 			int delay = _gifDecoder.getDelay(i);
-			_animation.addFrame(_gifDecoder.getFrame(i).texture(),
-					delay == 0 ? 100 : delay);
+			_animation.addFrame(_gifDecoder.getFrame(i).texture(), delay == 0 ? 100 : delay);
 		}
 		setRepaint(true);
 		return _animation;

@@ -22,7 +22,7 @@ package loon.geom;
 
 import loon.LRelease;
 
-public class IntTuple implements LRelease{
+public class IntTuple implements LRelease {
 
 	public int val1;
 

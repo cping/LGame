@@ -150,7 +150,7 @@ public class Triangulation {
 
 		int index = 1;
 
-		for (;points.size() > 3;) {
+		for (; points.size() > 3;) {
 			if (isEar(points.get(getIndex(index, -1)), points.get(index), points.get(getIndex(index, 1)))) {
 				triangles.add(new Triangle2f(points.get(getIndex(index, -1)), points.get(index),
 						points.get(getIndex(index, 1))));

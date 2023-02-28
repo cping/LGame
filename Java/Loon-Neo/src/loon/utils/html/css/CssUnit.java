@@ -21,15 +21,15 @@
 package loon.utils.html.css;
 
 public class CssUnit {
-	
-	public final static CssUnit PX(){
+
+	public final static CssUnit PX() {
 		return new CssUnit(0);
 	}
 
-	public final static CssUnit PT(){
+	public final static CssUnit PT() {
 		return new CssUnit(1);
 	}
-	
+
 	int code;
 
 	public CssUnit(int c) {

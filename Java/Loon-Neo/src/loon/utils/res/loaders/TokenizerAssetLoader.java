@@ -33,7 +33,7 @@ public class TokenizerAssetLoader extends AssetAbstractLoader<StrTokenizer> {
 		this.set(path, delimiters);
 		this._delimiters = delimiters;
 	}
-	
+
 	@Override
 	public StrTokenizer get() {
 		return _tokenizer;
@@ -42,10 +42,10 @@ public class TokenizerAssetLoader extends AssetAbstractLoader<StrTokenizer> {
 	public String getDelimiters() {
 		return _delimiters;
 	}
-	
+
 	@Override
 	public boolean completed() {
-		return 	(_tokenizer = BaseIO.loadStrTokenizer(_path)) != null;
+		return (_tokenizer = BaseIO.loadStrTokenizer(_path)) != null;
 	}
 
 	@Override
@@ -56,6 +56,5 @@ public class TokenizerAssetLoader extends AssetAbstractLoader<StrTokenizer> {
 	@Override
 	public void close() {
 	}
-
 
 }

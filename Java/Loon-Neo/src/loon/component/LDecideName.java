@@ -158,7 +158,7 @@ public class LDecideName extends LComponent implements FontSet<LDecideName> {
 		if (_background != null) {
 			g.draw(_background, x, y, getWidth(), getHeight());
 		}
-		
+
 		g.setFont(_font);
 		float posX = x + leftOffset;
 		if (labelName != null) {
@@ -185,7 +185,7 @@ public class LDecideName extends LComponent implements FontSet<LDecideName> {
 		g.fillRect(posX + MathUtils.round((this.cursorX * dx) * getWidth()) - 1,
 				posY + MathUtils.round((this.cursorY * dy) * getHeight()) - 1, MathUtils.round(dx * getWidth()) + 2,
 				MathUtils.round(dy * getHeight()) + 2);
-		
+
 		g.setFont(oldFont);
 		g.setColor(oldColor);
 	}

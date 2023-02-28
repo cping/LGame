@@ -164,8 +164,7 @@ public interface IEntity extends ISprite, Flip<IEntity> {
 
 	public void setColor(final float r, final float g, final float b);
 
-	public void setColor(final float r, final float g, final float b,
-			final float a);
+	public void setColor(final float r, final float g, final float b, final float a);
 
 	public int getChildCount();
 
@@ -212,17 +211,17 @@ public interface IEntity extends ISprite, Flip<IEntity> {
 	public void createUI(final GLEx gl);
 
 	public void createUI(final GLEx gl, final float offsetX, final float offsetY);
-	
+
 	public IEntity setFollowRotation(boolean r);
 
 	public IEntity setFollowScale(boolean s);
 
 	public IEntity setFollowColor(boolean c);
-	
+
 	public boolean isFollowRotation();
 
 	public boolean isFollowScale();
 
 	public boolean isFollowColor();
-	
+
 }

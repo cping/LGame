@@ -50,12 +50,10 @@ public class PixelSnowEffect extends PixelBaseEffect {
 		return onlySnow;
 	}
 
-	private final float[][] fdelta = { { 0.0f, 3f },
-			{ 2.3999999999999999f, -1.5f }, { -2.3999999999999999f, -1.5f } };
+	private final float[][] fdelta = { { 0.0f, 3f }, { 2.3999999999999999f, -1.5f }, { -2.3999999999999999f, -1.5f } };
 
 	public PixelSnowEffect(LColor color) {
-		this(color, 0, 0, LSystem.viewSize.getWidth() / 2, LSystem.viewSize
-				.getHeight() / 2);
+		this(color, 0, 0, LSystem.viewSize.getWidth() / 2, LSystem.viewSize.getHeight() / 2);
 	}
 
 	public PixelSnowEffect(LColor color, float x, float y, float w, float h) {
@@ -92,11 +90,9 @@ public class PixelSnowEffect extends PixelBaseEffect {
 			}
 			nx /= 25f;
 			ny /= 25f;
-			dif[j] = new TriangleEffect(w, h, res, nx, ny,
-					MathUtils.random(30) + 3);
+			dif[j] = new TriangleEffect(w, h, res, nx, ny, MathUtils.random(30) + 3);
 			int r = MathUtils.random(64) + 192;
-			colors[j] = new LColor((int) (color.r * r), (int) (color.g * r),
-					(int) (color.b * r), color.getAlpha());
+			colors[j] = new LColor((int) (color.r * r), (int) (color.g * r), (int) (color.b * r), color.getAlpha());
 		}
 		this.limit = 160;
 		triangleEffects.add(force);

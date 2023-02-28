@@ -83,7 +83,7 @@ public class PixelFireEffect extends Entity implements BaseEffect {
 			if (_id % 2 == 0) {
 				_x += MathUtils.sin(_vx, _effect._angle, 1f, true);
 			} else {
-				_x += MathUtils.cos(_vx, _effect._angle, 0.5f, true) ;
+				_x += MathUtils.cos(_vx, _effect._angle, 0.5f, true);
 			}
 			_x = MathUtils.max(_x, _effect.getWidth());
 			_effect._angle += delta;
@@ -224,9 +224,9 @@ public class PixelFireEffect extends Entity implements BaseEffect {
 	public boolean isCompleted() {
 		return _completed;
 	}
-	
+
 	@Override
-	public void close(){
+	public void close() {
 		super.close();
 		_completed = true;
 		_fireBlocks.clear();

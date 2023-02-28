@@ -49,8 +49,8 @@ public abstract class Fragment {
 		this.parBound = bound;
 		ovalTexture = tex;
 	}
-	
-	public void reset(){
+
+	public void reset() {
 		this.cx = this.cy = 0;
 		this.alpha = 0f;
 	}

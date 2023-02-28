@@ -291,7 +291,7 @@ public class LPad extends LComponent {
 		this.lockedKey.reset();
 		return this;
 	}
-	
+
 	@Override
 	public String getUIName() {
 		return "Pad";

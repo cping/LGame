@@ -20,11 +20,10 @@
  */
 package loon.utils.html.css;
 
-
 public class CssLength extends CssKeyword {
 
 	protected float value = 0.0f;
-	
+
 	protected CssUnit unit;
 
 	public CssLength() {
@@ -54,7 +53,6 @@ public class CssLength extends CssKeyword {
 
 	@Override
 	public void setColor(CssColor color) {
-
 
 	}
 

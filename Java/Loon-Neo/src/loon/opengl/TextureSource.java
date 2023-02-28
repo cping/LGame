@@ -27,12 +27,11 @@ public abstract class TextureSource {
 	protected boolean _isLoaded = true;
 
 	protected boolean _isReload = false;
-	
+
 	public abstract boolean isLoaded();
 
 	public abstract Painter draw();
 
 	public abstract GoFuture<Painter> tileAsync();
-	
 
 }

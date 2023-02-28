@@ -98,7 +98,7 @@ public abstract class Graphics {
 
 	}
 
-	protected final RenderTarget defaultRenderTarget ;
+	protected final RenderTarget defaultRenderTarget;
 
 	/**
 	 * 返回一个缩放比例，用以让当前设备加载的资源按照此比例进行资源缩放
@@ -205,8 +205,7 @@ public abstract class Graphics {
 
 	protected void viewportChanged(Scale scale, int viewWidth, int viewHeight) {
 		Display d = game.display();
-		LSystem.setSize((int) (viewWidth / LSystem.getScaleWidth()),
-				(int) (viewHeight / LSystem.getScaleHeight()));
+		LSystem.setSize((int) (viewWidth / LSystem.getScaleWidth()), (int) (viewHeight / LSystem.getScaleHeight()));
 		if (viewMatrix != null) {
 			LSystem.viewSize.getMatrix().mul(viewMatrix);
 		}

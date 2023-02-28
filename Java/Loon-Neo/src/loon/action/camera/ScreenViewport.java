@@ -24,6 +24,6 @@ public class ScreenViewport extends Viewport {
 
 	@Override
 	public void onResize(int width, int height) {
-		 setBounds(0, 0, width, height, 1f, 1f);
+		setBounds(0, 0, width, height, 1f, 1f);
 	}
 }

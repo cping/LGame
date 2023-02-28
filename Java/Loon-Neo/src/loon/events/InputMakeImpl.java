@@ -26,7 +26,7 @@ public class InputMakeImpl extends InputMake {
 
 	@Override
 	public void callback(LObject<?> o) {
-	
+
 	}
 
 }

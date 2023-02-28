@@ -26,13 +26,12 @@ import loon.utils.TArray;
 
 public class CenterLayout extends LayoutManager {
 
-	public final static CenterLayout at(){
+	public final static CenterLayout at() {
 		return new CenterLayout();
 	}
-	
+
 	@Override
-	public LayoutManager layoutElements(final LayoutPort rootElement,
-			final LayoutPort... elements) {
+	public LayoutManager layoutElements(final LayoutPort rootElement, final LayoutPort... elements) {
 
 		if (rootElement == null || elements == null || elements.length == 0) {
 			return this;
@@ -44,74 +43,52 @@ public class CenterLayout extends LayoutManager {
 		BoxSize box = elements[0].getBox();
 		LayoutConstraints constraint = elements[0].getBoxConstraints();
 
-		if (constraint.getWidth() != null
-				&& constraint.getWidth().hasHeightSuffix()) {
-			handleVerticalAlignment(rootBox, rootBoxConstraints, box,
-					constraint);
-			handleHorizontalAlignment(rootBox, rootBoxConstraints, box,
-					constraint);
-		} else if (constraint.getHeight() != null
-				&& constraint.getHeight().hasWidthSuffix()) {
-			handleHorizontalAlignment(rootBox, rootBoxConstraints, box,
-					constraint);
-			handleVerticalAlignment(rootBox, rootBoxConstraints, box,
-					constraint);
+		if (constraint.getWidth() != null && constraint.getWidth().hasHeightSuffix()) {
+			handleVerticalAlignment(rootBox, rootBoxConstraints, box, constraint);
+			handleHorizontalAlignment(rootBox, rootBoxConstraints, box, constraint);
+		} else if (constraint.getHeight() != null && constraint.getHeight().hasWidthSuffix()) {
+			handleHorizontalAlignment(rootBox, rootBoxConstraints, box, constraint);
+			handleVerticalAlignment(rootBox, rootBoxConstraints, box, constraint);
 		} else {
-			handleVerticalAlignment(rootBox, rootBoxConstraints, box,
-					constraint);
-			handleHorizontalAlignment(rootBox, rootBoxConstraints, box,
-					constraint);
+			handleVerticalAlignment(rootBox, rootBoxConstraints, box, constraint);
+			handleHorizontalAlignment(rootBox, rootBoxConstraints, box, constraint);
 		}
 		return this;
 	}
 
-	void handleHorizontalAlignment(final BoxSize rootBox,
-			final LayoutConstraints rootBoxConstraints, final BoxSize box,
+	void handleHorizontalAlignment(final BoxSize rootBox, final LayoutConstraints rootBoxConstraints, final BoxSize box,
 			final LayoutConstraints constraint) {
 		if (constraint.getWidth() != null) {
 			handleWidthConstraint(rootBox, rootBoxConstraints, box, constraint);
 		} else {
-			box.setX(rootBox.getX()
-					+ rootBoxConstraints.getPaddingLeft().getValueAsInt(
-							rootBox.getWidth()));
+			box.setX(rootBox.getX() + rootBoxConstraints.getPaddingLeft().getValueAsInt(rootBox.getWidth()));
 			if (_allow) {
-				box.setWidth(rootBox.getWidth()
-						- rootBoxConstraints.getPaddingLeft().getValueAsInt(
-								rootBox.getWidth())
-						- rootBoxConstraints.getPaddingRight().getValueAsInt(
-								rootBox.getWidth()));
+				box.setWidth(rootBox.getWidth() - rootBoxConstraints.getPaddingLeft().getValueAsInt(rootBox.getWidth())
+						- rootBoxConstraints.getPaddingRight().getValueAsInt(rootBox.getWidth()));
 			}
 		}
 	}
 
-	void handleVerticalAlignment(final BoxSize rootBox,
-			final LayoutConstraints rootBoxConstraints, final BoxSize box,
+	void handleVerticalAlignment(final BoxSize rootBox, final LayoutConstraints rootBoxConstraints, final BoxSize box,
 			final LayoutConstraints constraint) {
 		if (constraint.getHeight() != null) {
 			handleHeightConstraint(rootBox, rootBoxConstraints, box, constraint);
 		} else {
-			box.setY(rootBox.getY()
-					+ rootBoxConstraints.getPaddingTop().getValueAsInt(
-							rootBox.getHeight()));
+			box.setY(rootBox.getY() + rootBoxConstraints.getPaddingTop().getValueAsInt(rootBox.getHeight()));
 			if (_allow) {
-				box.setHeight(rootBox.getHeight()
-						- rootBoxConstraints.getPaddingTop().getValueAsInt(
-								rootBox.getHeight())
-						- rootBoxConstraints.getPaddingBottom().getValueAsInt(
-								rootBox.getHeight()));
+				box.setHeight(
+						rootBox.getHeight() - rootBoxConstraints.getPaddingTop().getValueAsInt(rootBox.getHeight())
+								- rootBoxConstraints.getPaddingBottom().getValueAsInt(rootBox.getHeight()));
 			}
 		}
 	}
 
-	private void handleWidthConstraint(final BoxSize rootBox,
-			final LayoutConstraints rootBoxConstraints, final BoxSize box,
-			final LayoutConstraints constraint) {
-		int rootBoxX = (int) (rootBox.getX() + rootBoxConstraints
-				.getPaddingLeft().getValueAsInt(rootBox.getWidth()));
+	private void handleWidthConstraint(final BoxSize rootBox, final LayoutConstraints rootBoxConstraints,
+			final BoxSize box, final LayoutConstraints constraint) {
+		int rootBoxX = (int) (rootBox.getX() + rootBoxConstraints.getPaddingLeft().getValueAsInt(rootBox.getWidth()));
 		int rootBoxWidth = (int) (rootBox.getWidth()
-				- rootBoxConstraints.getPaddingLeft().getValueAsInt(
-						rootBox.getWidth()) - rootBoxConstraints
-				.getPaddingRight().getValueAsInt(rootBox.getWidth()));
+				- rootBoxConstraints.getPaddingLeft().getValueAsInt(rootBox.getWidth())
+				- rootBoxConstraints.getPaddingRight().getValueAsInt(rootBox.getWidth()));
 
 		int boxWidth = (int) constraint.getWidth().getValue(rootBoxWidth);
 		if (constraint.getWidth().hasHeightSuffix()) {
@@ -124,24 +101,19 @@ public class CenterLayout extends LayoutManager {
 		if (constraint.getHorizontalAlign() == HorizontalAlign.LEFT) {
 			box.setX(rootBoxX);
 		} else if (constraint.getHorizontalAlign() == HorizontalAlign.RIGHT) {
-			box.setX(rootBoxX
-					+ rootBox.getWidth()
-					- rootBoxConstraints.getPaddingRight().getValueAsInt(
-							rootBox.getWidth()) - boxWidth);
+			box.setX(rootBoxX + rootBox.getWidth()
+					- rootBoxConstraints.getPaddingRight().getValueAsInt(rootBox.getWidth()) - boxWidth);
 		} else {
 			box.setX(rootBoxX + (rootBoxWidth - boxWidth) / 2);
 		}
 	}
 
-	private void handleHeightConstraint(final BoxSize rootBox,
-			final LayoutConstraints rootBoxConstraints, final BoxSize box,
-			final LayoutConstraints constraint) {
-		int rootBoxY = (int) (rootBox.getY() + rootBoxConstraints
-				.getPaddingTop().getValueAsInt(rootBox.getHeight()));
+	private void handleHeightConstraint(final BoxSize rootBox, final LayoutConstraints rootBoxConstraints,
+			final BoxSize box, final LayoutConstraints constraint) {
+		int rootBoxY = (int) (rootBox.getY() + rootBoxConstraints.getPaddingTop().getValueAsInt(rootBox.getHeight()));
 		int rootBoxHeight = (int) (rootBox.getHeight()
-				- rootBoxConstraints.getPaddingTop().getValueAsInt(
-						rootBox.getHeight()) - rootBoxConstraints
-				.getPaddingBottom().getValueAsInt(rootBox.getHeight()));
+				- rootBoxConstraints.getPaddingTop().getValueAsInt(rootBox.getHeight())
+				- rootBoxConstraints.getPaddingBottom().getValueAsInt(rootBox.getHeight()));
 
 		int boxHeight = (int) constraint.getHeight().getValue(rootBoxHeight);
 		if (constraint.getHeight().hasWidthSuffix()) {
@@ -153,17 +125,15 @@ public class CenterLayout extends LayoutManager {
 		if (constraint.getVerticalAlign() == VerticalAlign.TOP) {
 			box.setY(rootBoxY);
 		} else if (constraint.getVerticalAlign() == VerticalAlign.BOTTOM) {
-			box.setY(rootBox.getHeight()
-					- rootBoxConstraints.getPaddingTop().getValueAsInt(
-							rootBox.getHeight()) - boxHeight);
+			box.setY(rootBox.getHeight() - rootBoxConstraints.getPaddingTop().getValueAsInt(rootBox.getHeight())
+					- boxHeight);
 		} else {
 			box.setY(rootBoxY + (rootBoxHeight - boxHeight) / 2);
 		}
 	}
-	
+
 	@Override
-	public SizeValue calculateConstraintWidth(final LayoutPort root,
-			final TArray<LayoutPort> children) {
+	public SizeValue calculateConstraintWidth(final LayoutPort root, final TArray<LayoutPort> children) {
 		if (children.isEmpty()) {
 			return null;
 		}
@@ -176,15 +146,12 @@ public class CenterLayout extends LayoutManager {
 			return null;
 		}
 		return new SizeValue(constraint.getWidth().getValueAsInt(0)
-				+ root.getBoxConstraints().getPaddingLeft()
-						.getValueAsInt(root.getBox().getWidth())
-				+ root.getBoxConstraints().getPaddingRight()
-						.getValueAsInt(root.getBox().getWidth()) + "px");
+				+ root.getBoxConstraints().getPaddingLeft().getValueAsInt(root.getBox().getWidth())
+				+ root.getBoxConstraints().getPaddingRight().getValueAsInt(root.getBox().getWidth()) + "px");
 	}
-	
+
 	@Override
-	public SizeValue calculateConstraintHeight(final LayoutPort root,
-			final TArray<LayoutPort> children) {
+	public SizeValue calculateConstraintHeight(final LayoutPort root, final TArray<LayoutPort> children) {
 		if (children.isEmpty()) {
 			return null;
 		}
@@ -197,10 +164,8 @@ public class CenterLayout extends LayoutManager {
 			return null;
 		}
 		return new SizeValue(constraint.getHeight().getValueAsInt(0)
-				+ root.getBoxConstraints().getPaddingTop()
-						.getValueAsInt(root.getBox().getHeight())
-				+ root.getBoxConstraints().getPaddingBottom()
-						.getValueAsInt(root.getBox().getHeight()) + "px");
+				+ root.getBoxConstraints().getPaddingTop().getValueAsInt(root.getBox().getHeight())
+				+ root.getBoxConstraints().getPaddingBottom().getValueAsInt(root.getBox().getHeight()) + "px");
 
 	}
 }

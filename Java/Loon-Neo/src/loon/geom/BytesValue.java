@@ -23,7 +23,7 @@ package loon.geom;
 import loon.LRelease;
 import loon.utils.ArrayByte;
 
-public class BytesValue implements LRelease{
+public class BytesValue implements LRelease {
 
 	private ArrayByte value;
 

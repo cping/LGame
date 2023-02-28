@@ -21,7 +21,7 @@
 package loon.action.behaviors;
 
 public class UntilSuccess<T> extends Decorator<T> {
-	
+
 	@Override
 	public TaskStatus update(T context) {
 		TaskStatus status = child.tick(context);

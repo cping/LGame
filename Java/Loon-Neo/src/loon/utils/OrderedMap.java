@@ -26,7 +26,7 @@ package loon.utils;
  * @param <K>
  * @param <V>
  */
-public class OrderedMap<K,V> extends ObjectMap<K, V> {
+public class OrderedMap<K, V> extends ObjectMap<K, V> {
 
 	protected final boolean ordered;
 

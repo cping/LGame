@@ -28,7 +28,7 @@ public abstract class KeyMake {
 	public static enum TextType {
 		DEFAULT, NUMBER, EMAIL, URL;
 	}
-	
+
 	public static class Event extends loon.events.Event.InputEvent {
 		public char keyChar;
 
@@ -44,8 +44,7 @@ public abstract class KeyMake {
 
 		public final boolean down;
 
-		public KeyEvent(int flags, double time, char keyChar, int keyCode,
-				boolean down) {
+		public KeyEvent(int flags, double time, char keyChar, int keyCode, boolean down) {
 			super(flags, keyChar, time);
 			this.keyCode = keyCode;
 			this.down = down;
@@ -59,8 +58,7 @@ public abstract class KeyMake {
 		@Override
 		protected void addFields(StrBuilder builder) {
 			super.addFields(builder);
-			builder.append(", keyCode=").append(keyCode).append(", down=")
-					.append(down);
+			builder.append(", keyCode=").append(keyCode).append(", down=").append(down);
 		}
 	}
 

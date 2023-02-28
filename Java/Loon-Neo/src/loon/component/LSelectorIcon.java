@@ -73,47 +73,33 @@ public class LSelectorIcon extends LComponent {
 	public void draw(Canvas g, int mainX, int mainY) {
 		int fill = g.getFillColor();
 		int stroke = g.getStrokeColor();
-		g.setColor(_component_baseColor.getRed(), _component_baseColor.getGreen(),
-				_component_baseColor.getBlue(), 125);
-		g.fillRect(mainX + (x * pSize) - 1, mainY + (y * pSize) - 1, pSize,
-				pSize);
-		g.strokeRect(mainX + (x * pSize), mainY + (y * pSize), pSize - 2,
-				pSize - 2);
-		g.setColor(borderColor.getRed(), borderColor.getGreen(),
-				borderColor.getBlue(), (int) alpha);
-		g.strokeRect(mainX + (x * pSize) - 1, mainY + (y * pSize) - 1,
-				pSize + 1, pSize + 1);
+		g.setColor(_component_baseColor.getRed(), _component_baseColor.getGreen(), _component_baseColor.getBlue(), 125);
+		g.fillRect(mainX + (x * pSize) - 1, mainY + (y * pSize) - 1, pSize, pSize);
+		g.strokeRect(mainX + (x * pSize), mainY + (y * pSize), pSize - 2, pSize - 2);
+		g.setColor(borderColor.getRed(), borderColor.getGreen(), borderColor.getBlue(), (int) alpha);
+		g.strokeRect(mainX + (x * pSize) - 1, mainY + (y * pSize) - 1, pSize + 1, pSize + 1);
 		g.setFillColor(fill);
 		g.setStrokeColor(stroke);
 	}
 
 	public void draw(GLEx g, int mainX, int mainY) {
 		int color = g.color();
-		g.setColor(_component_baseColor.getRed(), _component_baseColor.getGreen(),
-				_component_baseColor.getBlue(), 125);
-		g.fillRect(mainX + (x * pSize) - 1, mainY + (y * pSize) - 1, pSize,
-				pSize);
-		g.drawRect(mainX + (x * pSize), mainY + (y * pSize), pSize - 2,
-				pSize - 2);
-		g.setColor(borderColor.getRed(), borderColor.getGreen(),
-				borderColor.getBlue(), (int) alpha);
-		g.drawRect(mainX + (x * pSize) - 1, mainY + (y * pSize) - 1, pSize + 1,
-				pSize + 1);
+		g.setColor(_component_baseColor.getRed(), _component_baseColor.getGreen(), _component_baseColor.getBlue(), 125);
+		g.fillRect(mainX + (x * pSize) - 1, mainY + (y * pSize) - 1, pSize, pSize);
+		g.drawRect(mainX + (x * pSize), mainY + (y * pSize), pSize - 2, pSize - 2);
+		g.setColor(borderColor.getRed(), borderColor.getGreen(), borderColor.getBlue(), (int) alpha);
+		g.drawRect(mainX + (x * pSize) - 1, mainY + (y * pSize) - 1, pSize + 1, pSize + 1);
 		g.setColor(color);
 	}
 
 	public void draw(SpriteBatch batch, int mainX, int mainY) {
 		float color = batch.getFloatColor();
-		batch.setColor(_component_baseColor.getRed(), _component_baseColor.getGreen(),
-				_component_baseColor.getBlue(), 125);
-		batch.fillRect(mainX + (x * pSize) - 1, mainY + (y * pSize) - 1, pSize,
-				pSize);
-		batch.drawRect(mainX + (x * pSize), mainY + (y * pSize), pSize - 2,
-				pSize - 2);
-		batch.setColor(borderColor.getRed(), borderColor.getGreen(),
-				borderColor.getBlue(), (int) alpha);
-		batch.drawRect(mainX + (x * pSize) - 1, mainY + (y * pSize) - 1,
-				pSize + 1, pSize + 1);
+		batch.setColor(_component_baseColor.getRed(), _component_baseColor.getGreen(), _component_baseColor.getBlue(),
+				125);
+		batch.fillRect(mainX + (x * pSize) - 1, mainY + (y * pSize) - 1, pSize, pSize);
+		batch.drawRect(mainX + (x * pSize), mainY + (y * pSize), pSize - 2, pSize - 2);
+		batch.setColor(borderColor.getRed(), borderColor.getGreen(), borderColor.getBlue(), (int) alpha);
+		batch.drawRect(mainX + (x * pSize) - 1, mainY + (y * pSize) - 1, pSize + 1, pSize + 1);
 		batch.setColor(color);
 	}
 
@@ -310,8 +296,7 @@ public class LSelectorIcon extends LComponent {
 	}
 
 	@Override
-	public void createUI(GLEx g, int x, int y, LComponent component,
-			LTexture[] buttonImage) {
+	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
 		draw(g, x, y);
 	}
 

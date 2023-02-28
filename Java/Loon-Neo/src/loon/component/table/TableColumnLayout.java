@@ -56,8 +56,7 @@ public class TableColumnLayout {
 
 	private LComponent component;
 
-	public TableColumnLayout(LComponent component, int x, int y, int width,
-			int height) {
+	public TableColumnLayout(LComponent component, int x, int y, int width, int height) {
 		this.component = component;
 		this.x = x;
 		this.y = y;
@@ -159,8 +158,7 @@ public class TableColumnLayout {
 		adjustComponent();
 	}
 
-	public void setMargin(int marginLeft, int marginRight, int marginTop,
-			int marginBottom) {
+	public void setMargin(int marginLeft, int marginRight, int marginTop, int marginBottom) {
 		setLeftMargin(marginLeft);
 		setRightMargin(marginRight);
 		setTopMargin(marginTop);
@@ -205,12 +203,10 @@ public class TableColumnLayout {
 				component.setX(getX() + leftMargin);
 				break;
 			case HORIZONTAL_ALIGN_CENTER:
-				component.setX(getX()
-						+ (getWidth() / 2 - component.getWidth() / 2));
+				component.setX(getX() + (getWidth() / 2 - component.getWidth() / 2));
 				break;
 			case HORIZONTAL_ALIGN_RIGHT:
-				component.setX((getX() + getWidth())
-						- (component.getWidth() + rightMargin));
+				component.setX((getX() + getWidth()) - (component.getWidth() + rightMargin));
 				break;
 			}
 			switch (verticalAlignment) {
@@ -218,26 +214,21 @@ public class TableColumnLayout {
 				component.setY(getY() + topMargin);
 				break;
 			case VERTICAL_ALIGN_CENTER:
-				component.setY(getY()
-						+ (getHeight() / 2 - component.getHeight() / 2));
+				component.setY(getY() + (getHeight() / 2 - component.getHeight() / 2));
 				break;
 			case VERTICAL_ALIGN_BOTTOM:
-				component.setY((getY() + getHeight())
-						- (component.getHeight() + bottomMargin));
+				component.setY((getY() + getHeight()) - (component.getHeight() + bottomMargin));
 			}
 		}
 	}
 
 	public void paint(GLEx g) {
 		g.drawRect(getX(), getY(), getWidth(), getHeight(), LColor.white);
-		if (component != null && component.getContainer() != null
-				&& component.getContainer() instanceof TableLayout) {
+		if (component != null && component.getContainer() != null && component.getContainer() instanceof TableLayout) {
 			if (((TableLayout) component.getContainer()).isGrid()) {
-				g.drawRect(component.getContainer().getX() + component.getX()
-						- leftMargin, component.getContainer().getY()
-						+ component.getY() - topMargin, component.getWidth()
-						+ rightMargin, component.getHeight() + bottomMargin,
-						LColor.red);
+				g.drawRect(component.getContainer().getX() + component.getX() - leftMargin,
+						component.getContainer().getY() + component.getY() - topMargin,
+						component.getWidth() + rightMargin, component.getHeight() + bottomMargin, LColor.red);
 			}
 		}
 	}

@@ -22,12 +22,12 @@ package loon.utils;
 
 import java.util.Iterator;
 
-public interface LIterator<E> extends Iterator<E>{
+public interface LIterator<E> extends Iterator<E> {
 
-    boolean hasNext();
+	boolean hasNext();
 
-    E next();
+	E next();
 
-    @Override
-    void remove();
+	@Override
+	void remove();
 }

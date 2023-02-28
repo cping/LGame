@@ -48,17 +48,14 @@ public class TriangleEffect extends Entity implements BaseEffect {
 	private boolean completed;
 
 	public TriangleEffect(float[][] res, float x, float y, float speed) {
-		this(LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), res,
-				null, x, y, speed);
+		this(LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), res, null, x, y, speed);
 	}
 
-	public TriangleEffect(float w, float h, float[][] res, float x, float y,
-			float speed) {
+	public TriangleEffect(float w, float h, float[][] res, float x, float y, float speed) {
 		this(w, h, res, null, x, y, speed);
 	}
 
-	public TriangleEffect(float w, float h, float[][] res, float[] ads,
-			float x, float y, float speed) {
+	public TriangleEffect(float w, float h, float[][] res, float[] ads, float x, float y, float speed) {
 		this.setDelta(res);
 		this.viewSpeed = speed;
 		this.currentPos = new float[2];
@@ -158,10 +155,8 @@ public class TriangleEffect extends Entity implements BaseEffect {
 		for (int i = 0; i < delta.length; i++) {
 			float d = getLine(delta[i][0] - avg[0], delta[i][1] - avg[1]);
 			float d1 = getDegrees(delta[i][0] - avg[0], delta[i][1] - avg[1]);
-			float d2 = MathUtils.cos(MathUtils.toRadians(vector + d1)) * d
-					+ avg[0] + currentPos[0] + x;
-			float d3 = MathUtils.sin(MathUtils.toRadians(vector + d1)) * d
-					+ avg[1] + currentPos[1] + y;
+			float d2 = MathUtils.cos(MathUtils.toRadians(vector + d1)) * d + avg[0] + currentPos[0] + x;
+			float d3 = MathUtils.sin(MathUtils.toRadians(vector + d1)) * d + avg[1] + currentPos[1] + y;
 			location[i][0] = (d2 + 0.5f);
 			location[i][1] = (d3 + 0.5f);
 		}
@@ -176,8 +171,7 @@ public class TriangleEffect extends Entity implements BaseEffect {
 		float[][] res = drawing(x, y);
 		for (int i = 0; i < res.length; i++) {
 			int index = (i + 1) % 3;
-			g.drawLine(_width - res[i][0], _height - res[i][1], _width
-					- res[index][0], _height - res[index][1], 2);
+			g.drawLine(_width - res[i][0], _height - res[i][1], _width - res[index][0], _height - res[index][1], 2);
 		}
 	}
 
@@ -195,16 +189,14 @@ public class TriangleEffect extends Entity implements BaseEffect {
 	}
 
 	private float getLine(float x, float y) {
-		return MathUtils.sqrt(MathUtils.pow(MathUtils.abs(x), 2f)
-				+ MathUtils.pow(MathUtils.abs(y), 2f));
+		return MathUtils.sqrt(MathUtils.pow(MathUtils.abs(x), 2f) + MathUtils.pow(MathUtils.abs(y), 2f));
 	}
 
 	public static float getDegrees(float r1, float r2) {
 		if (r1 == 0.0f && r2 == 0.0f) {
 			return 0.0f;
 		}
-		float d2 = MathUtils
-				.sqrt(MathUtils.pow(r1, 2f) + MathUtils.pow(r2, 2f));
+		float d2 = MathUtils.sqrt(MathUtils.pow(r1, 2f) + MathUtils.pow(r2, 2f));
 		float d3 = MathUtils.toDegrees(MathUtils.acos(r1 / d2));
 		if (MathUtils.asin(r2 / d2) < 0f) {
 			return 360f - d3;

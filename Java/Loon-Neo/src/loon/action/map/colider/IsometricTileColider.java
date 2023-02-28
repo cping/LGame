@@ -30,13 +30,11 @@ public class IsometricTileColider extends TileColider {
 	}
 
 	@Override
-	public boolean colideTile(Tile tile, int mx, int my, int offsetX,
-			int offsetY) {
+	public boolean colideTile(Tile tile, int mx, int my, int offsetX, int offsetY) {
 		return colideIsometric(tile, mx, my, offsetX, offsetY);
 	}
 
-	private boolean colideIsometric(Tile tile, int px, int py, int offsetX,
-			int offsetY) {
+	private boolean colideIsometric(Tile tile, int px, int py, int offsetX, int offsetY) {
 
 		int x = px - tile.getX() - offsetX;
 		int y = py - tile.getY() - offsetY;

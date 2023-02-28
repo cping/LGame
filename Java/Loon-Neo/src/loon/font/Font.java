@@ -88,11 +88,7 @@ public class Font {
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("Font");
-		builder.kv("name", name)
-		.comma()
-		.kv("style", style)
-		.comma()
-		.kv("size", size + "pt");
+		builder.kv("name", name).comma().kv("style", style).comma().kv("size", size + "pt");
 		return builder.toString();
 	}
 }

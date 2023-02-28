@@ -58,18 +58,16 @@ public class TableLayout extends LContainer {
 	}
 
 	@Override
-	public void createUI(GLEx g, int x, int y, LComponent component,
-			LTexture[] buttonImage) {
+	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
 
 	}
 
 	private void prepareTable(int cols, int rows) {
 		tableRows = new TableLayoutRow[rows];
 		if (rows > 0 && cols > 0) {
-			int rowHeight = (int)(getHeight() / rows);
+			int rowHeight = (int) (getHeight() / rows);
 			for (int i = 0; i < rows; i++) {
-				tableRows[i] = new TableLayoutRow(x(), y() + (i * rowHeight),
-						(int)getWidth(), rowHeight, cols);
+				tableRows[i] = new TableLayoutRow(x(), y() + (i * rowHeight), (int) getWidth(), rowHeight, cols);
 			}
 		}
 	}
@@ -90,23 +88,19 @@ public class TableLayout extends LContainer {
 		int newRowHeight = (int) (getHeight() / (tableRows.length + 1));
 		if (canAddRow(newRowHeight)) {
 			if (position == 0) {
-				newRows.add(new TableLayoutRow(x(), y(), (int)getWidth(),
-						newRowHeight, column));
+				newRows.add(new TableLayoutRow(x(), y(), (int) getWidth(), newRowHeight, column));
 			}
 			for (int i = 0; i < tableRows.length; i++) {
 				if (i == position && position != 0) {
-					newRows.add(new TableLayoutRow(x(), y(), (int)getWidth(),
-							newRowHeight, column));
+					newRows.add(new TableLayoutRow(x(), y(), (int) getWidth(), newRowHeight, column));
 				}
 				newRows.add(tableRows[i]);
 			}
 			if (position == tableRows.length && position != 0) {
-				newRows.add(new TableLayoutRow(x(), y(), (int)getWidth(),
-						newRowHeight, column));
+				newRows.add(new TableLayoutRow(x(), y(), (int) getWidth(), newRowHeight, column));
 			}
 			for (int i = 0; i < newRows.size; i++) {
-				((TableLayoutRow) newRows.get(i))
-						.setY(y() + (i * newRowHeight));
+				((TableLayoutRow) newRows.get(i)).setY(y() + (i * newRowHeight));
 				((TableLayoutRow) newRows.get(i)).setHeight(newRowHeight);
 			}
 			tableRows = (TableLayoutRow[]) newRows.toArray();
@@ -136,16 +130,12 @@ public class TableLayout extends LContainer {
 		return true;
 	}
 
-	public void setMargin(int leftMargin, int rightMargin, int topMargin,
-			int bottomMargin, int col, int row) {
-		tableRows[row].getColumn(col).setMargin(leftMargin, rightMargin,
-				topMargin, bottomMargin);
+	public void setMargin(int leftMargin, int rightMargin, int topMargin, int bottomMargin, int col, int row) {
+		tableRows[row].getColumn(col).setMargin(leftMargin, rightMargin, topMargin, bottomMargin);
 	}
 
-	public void setAlignment(int horizontalAlignment, int verticalAlignment,
-			int col, int row) {
-		tableRows[row].getColumn(col).setHorizontalAlignment(
-				horizontalAlignment);
+	public void setAlignment(int horizontalAlignment, int verticalAlignment, int col, int row) {
+		tableRows[row].getColumn(col).setHorizontalAlignment(horizontalAlignment);
 		tableRows[row].getColumn(col).setVerticalAlignment(verticalAlignment);
 	}
 
@@ -161,7 +151,7 @@ public class TableLayout extends LContainer {
 	public void setWidth(float width) {
 		boolean couldShrink = true;
 		for (int i = 0; i < tableRows.length; i++) {
-			if (!tableRows[i].setWidth((int)width)) {
+			if (!tableRows[i].setWidth((int) width)) {
 				couldShrink = false;
 			}
 		}
@@ -174,7 +164,7 @@ public class TableLayout extends LContainer {
 	public void setHeight(float height) {
 		super.setHeight(height);
 		for (int i = 0; i < tableRows.length; i++) {
-			tableRows[i].setHeight((int)height);
+			tableRows[i].setHeight((int) height);
 		}
 	}
 

@@ -59,14 +59,10 @@ public class LShadow {
 	/**
 	 * 引入指定图像，并以此生成阴影.
 	 * 
-	 * @param image
-	 *            图像
-	 * @param shadowSize
-	 *            模糊程度(越高则图像越模糊)
-	 * @param a
-	 *            透明度
-	 * @param c
-	 *            希望阴影化区域显示的颜色
+	 * @param image      图像
+	 * @param shadowSize 模糊程度(越高则图像越模糊)
+	 * @param a          透明度
+	 * @param c          希望阴影化区域显示的颜色
 	 */
 	public LShadow(Image image, int shadowSize, float a, LColor c) {
 		this.shadowSize = shadowSize;
@@ -102,8 +98,7 @@ public class LShadow {
 		int lastPixelOffset = right * dstWidth;
 		float sumDivider = shadowAlpha / shadowSize;
 
-		for (int y = 0, bufferOffset = 0; y < dstHeight; y++, bufferOffset = y
-				* dstWidth) {
+		for (int y = 0, bufferOffset = 0; y < dstHeight; y++, bufferOffset = y * dstWidth) {
 			aSum = 0;
 			historyIdx = 0;
 			for (int x = 0; x < shadowSize; x++, bufferOffset++) {

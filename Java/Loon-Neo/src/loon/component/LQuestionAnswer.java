@@ -697,7 +697,7 @@ public class LQuestionAnswer extends LContainer {
 			}
 			_dirty = false;
 		}
-		
+
 		final int idx = this._questionIndex;
 		if (idx != -1 && _objects.size > 0) {
 			QAData o = _objects.get(idx);
@@ -749,11 +749,11 @@ public class LQuestionAnswer extends LContainer {
 			}
 		}
 	}
-	
+
 	public boolean isDirty() {
 		return this._dirty;
 	}
-	
+
 	public LQuestionAnswer setDirty(boolean d) {
 		this._dirty = d;
 		return this;

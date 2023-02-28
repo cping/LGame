@@ -22,7 +22,7 @@ package loon.geom;
 
 import loon.LRelease;
 
-public class LongValue implements LRelease{
+public class LongValue implements LRelease {
 
 	private long value;
 
@@ -42,7 +42,7 @@ public class LongValue implements LRelease{
 	public long get() {
 		return result();
 	}
-	
+
 	public long result() {
 		return value;
 	}

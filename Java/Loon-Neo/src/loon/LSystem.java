@@ -129,7 +129,7 @@ public class LSystem {
 
 	// 默认最大预加载数量
 	public static final float DEFAULT_MAX_PRE_SIZE = 10000f;
-	
+
 	// 默认缓动函数延迟
 	public static final float DEFAULT_EASE_DELAY = 1f / 60f;
 

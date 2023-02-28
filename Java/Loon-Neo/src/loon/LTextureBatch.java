@@ -704,8 +704,8 @@ public class LTextureBatch implements LRelease {
 		return this;
 	}
 
-	public LTextureBatch drawQuad(float drawX, float drawY,float c1, float drawX2, float drawY2,float c2, float srcX, float srcY,
-			float c3,float srcX2, float srcY2,float c4) {
+	public LTextureBatch drawQuad(float drawX, float drawY, float c1, float drawX2, float drawY2, float c2, float srcX,
+			float srcY, float c3, float srcX2, float srcY2, float c4) {
 
 		if (!checkTexture(texture)) {
 			return this;

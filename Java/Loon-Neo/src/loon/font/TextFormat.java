@@ -82,9 +82,7 @@ public class TextFormat {
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("TextFormat");
-		builder.kv("font", font)
-		.comma()
-		.kv("antialias", antialias);
+		builder.kv("font", font).comma().kv("antialias", antialias);
 		return builder.toString();
 	}
 }

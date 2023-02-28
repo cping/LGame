@@ -22,7 +22,7 @@ package loon.geom;
 
 import loon.LRelease;
 
-public class IntValue implements LRelease{
+public class IntValue implements LRelease {
 
 	private int value;
 
@@ -42,7 +42,7 @@ public class IntValue implements LRelease{
 	public int get() {
 		return result();
 	}
-	
+
 	public int result() {
 		return value;
 	}

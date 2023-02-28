@@ -23,7 +23,7 @@ package loon.action.behaviors;
 import loon.utils.reply.Function;
 
 public class ExecuteActionConditional<T> extends ExecuteAction<T> implements IConditional<T> {
-	
+
 	public ExecuteActionConditional(Function<T, TaskStatus> action) {
 		super(action);
 	}

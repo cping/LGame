@@ -72,8 +72,8 @@ public class HtmlDisplay {
 	public HtmlDisplay(float w, float h) {
 		this(w, h, LColor.black, LColor.white);
 	}
-	
-	public HtmlDisplay(float w, float h, LColor fontColor,LColor background) {
+
+	public HtmlDisplay(float w, float h, LColor fontColor, LColor background) {
 		this.cssBlock = CssDimensions.createDimension(w, h);
 		this.cssSheets = new TArray<CssStyleSheet>();
 		this.displays = new TArray<DisplayCommand>();

@@ -27,9 +27,8 @@ import loon.utils.IntMap;
 
 public class Paint {
 
-	private static IntMap<LFont> PAINT_SIZES = new IntMap<LFont>(
-			10);
-	
+	private static IntMap<LFont> PAINT_SIZES = new IntMap<LFont>(10);
+
 	public enum Style {
 		FILL, STROKE, FILL_AND_STROKE
 	}
@@ -53,7 +52,7 @@ public class Paint {
 	public void setRGB(int r, int g, int b) {
 		this.color = LColor.getRGB(r, g, b);
 	}
-	
+
 	public void setARGB(int r, int g, int b, int a) {
 		this.color = LColor.getARGB(r, g, b, a);
 	}

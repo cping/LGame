@@ -31,10 +31,10 @@ public class LColorPool implements LRelease {
 
 	private static LColorPool colorPool;
 
-	public static void freeStatic(){
+	public static void freeStatic() {
 		colorPool = null;
 	}
-	
+
 	public static LColorPool get() {
 		synchronized (LColorPool.class) {
 			if (colorPool == null) {
@@ -47,7 +47,7 @@ public class LColorPool implements LRelease {
 	private final LColor alphaColor = new LColor(0f, 0f, 0f, 0f);
 
 	private IntMap<LColor> colorMap = new IntMap<LColor>();
-	
+
 	private boolean closed;
 
 	public LColor getColor(float r, float g, float b, float a) {

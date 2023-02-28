@@ -113,7 +113,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	private float _fixedWidthOffset = 0f;
 
 	private float _fixedHeightOffset = 0f;
-	
+
 	private ResizeListener<HexagonMap> _resizeListener;
 
 	private int[] position = new int[2];

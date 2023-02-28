@@ -58,7 +58,7 @@ public class TextureCache extends CacheObject {
 	public LTexture peek() {
 		return _obj;
 	}
-	
+
 	@Override
 	public void onSpawn() {
 		_gc_spawnCount++;

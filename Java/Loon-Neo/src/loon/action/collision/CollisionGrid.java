@@ -36,7 +36,7 @@ public class CollisionGrid {
 	private final PointF traverse_initStepX = new PointF();
 	private final PointF traverse_initStepY = new PointF();
 	private final PointF cellRect_cxy = new PointF();
-	
+
 	public static void toWorld(float cellSizeX, float cellSizeY, float cx, float cy, PointF point) {
 		point.set((cx - 1) * cellSizeX, (cy - 1) * cellSizeY);
 	}
@@ -58,8 +58,8 @@ public class CollisionGrid {
 			return 0;
 		}
 	}
-	public void traverse(float cellSizeX, float cellSizeY, float x1, float y1, float x2, float y2,
-			TraverseCallback f) {
+
+	public void traverse(float cellSizeX, float cellSizeY, float x1, float y1, float x2, float y2, TraverseCallback f) {
 		toCell(cellSizeX, cellSizeY, x1, y1, traverse_c1);
 		float cx1 = traverse_c1.x;
 		float cy1 = traverse_c1.y;

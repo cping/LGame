@@ -822,5 +822,4 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 		return "MessageBox";
 	}
 
-
 }

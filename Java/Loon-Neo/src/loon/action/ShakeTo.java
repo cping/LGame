@@ -46,8 +46,7 @@ public class ShakeTo extends ActionEvent {
 		this(shakeX, shakeY, duration, delay, EasingMode.Linear);
 	}
 
-	public ShakeTo(float shakeX, float shakeY, float duration, float delay,
-			EasingMode easing) {
+	public ShakeTo(float shakeX, float shakeY, float duration, float delay, EasingMode easing) {
 		this.easeTimer = new EaseTimer(duration, delay, easing);
 		this.shakeX = oldShakeX = shakeX;
 		this.shakeY = oldShakeY = shakeY;
@@ -76,8 +75,7 @@ public class ShakeTo extends ActionEvent {
 		}
 
 		synchronized (original) {
-			original.setLocation(this.startOffsetX + this.offsetX,
-					this.startOffsetY + this.offsetY);
+			original.setLocation(this.startOffsetX + this.offsetX, this.startOffsetY + this.offsetY);
 		}
 	}
 
@@ -104,7 +102,7 @@ public class ShakeTo extends ActionEvent {
 	public float getStartOffsetY() {
 		return startOffsetY;
 	}
-	
+
 	@Override
 	public void onLoad() {
 		if (original != null) {
@@ -120,8 +118,7 @@ public class ShakeTo extends ActionEvent {
 
 	@Override
 	public ActionEvent cpy() {
-		ShakeTo shake = new ShakeTo(easeTimer.getDuration(), shakeTimer,
-				oldShakeX, oldShakeY);
+		ShakeTo shake = new ShakeTo(easeTimer.getDuration(), shakeTimer, oldShakeX, oldShakeY);
 		shake.set(this);
 		return shake;
 	}
@@ -139,17 +136,9 @@ public class ShakeTo extends ActionEvent {
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue(getName());
-		builder.kv("shakeTimer", shakeTimer)
-		.comma()
-		.kv("shakeX", shakeX)
-		.comma()
-		.kv("shakeY",shakeY)
-		.comma()
-		.kv("startOffsetX",startOffsetX)
-		.comma()
-		.kv("startOffsetY",startOffsetY)
-		.comma()
-		.kv("EaseTimer", easeTimer);
+		builder.kv("shakeTimer", shakeTimer).comma().kv("shakeX", shakeX).comma().kv("shakeY", shakeY).comma()
+				.kv("startOffsetX", startOffsetX).comma().kv("startOffsetY", startOffsetY).comma()
+				.kv("EaseTimer", easeTimer);
 		return builder.toString();
 	}
 

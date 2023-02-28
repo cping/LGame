@@ -24,7 +24,7 @@ import loon.utils.timer.LTimer;
 public class RocSSprite extends LObject<ISprite> implements ISprite {
 
 	private ResizeListener<RocSSprite> _resizeListener;
-	
+
 	private boolean _visible, _loopScript;
 
 	private RocScript _script;
@@ -210,7 +210,7 @@ public class RocSSprite extends LObject<ISprite> implements ISprite {
 	}
 
 	public RocSSprite setScale(float scale) {
-		setScale(scale,scale);
+		setScale(scale, scale);
 		return this;
 	}
 
@@ -318,7 +318,7 @@ public class RocSSprite extends LObject<ISprite> implements ISprite {
 	public float getOffsetY() {
 		return 0;
 	}
-	
+
 	public ResizeListener<RocSSprite> getResizeListener() {
 		return _resizeListener;
 	}
@@ -339,7 +339,7 @@ public class RocSSprite extends LObject<ISprite> implements ISprite {
 	public RocSSprite setOffset(Vector2f v) {
 		return this;
 	}
-	
+
 	@Override
 	public void close() {
 		setState(State.DISPOSED);

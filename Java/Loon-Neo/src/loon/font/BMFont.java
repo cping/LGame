@@ -835,7 +835,7 @@ public class BMFont extends FontTrans implements IFont {
 		this._translator = translator;
 		return this;
 	}
-	
+
 	public boolean isClosed() {
 		return _isClose;
 	}
@@ -869,6 +869,5 @@ public class BMFont extends FontTrans implements IFont {
 		builder.kv("info", info).comma().kv("common", common).comma().kv("page", page);
 		return builder.toString();
 	}
-
 
 }

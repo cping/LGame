@@ -177,7 +177,7 @@ public class TransformTo extends ActionEvent {
 	public LColor getOldColor() {
 		return oldColor.cpy();
 	}
-	
+
 	@Override
 	public boolean isComplete() {
 		return _isCompleted;
@@ -201,23 +201,13 @@ public class TransformTo extends ActionEvent {
 	public String getName() {
 		return "transform";
 	}
-	
+
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue(getName());
-		builder.kv("newX", newX)
-		.comma()
-		.kv("newY", newY)
-		.comma()
-		.kv("newScaleX",newScaleX)
-		.comma()
-		.kv("newScaleY",newScaleY)
-		.comma()
-		.kv("newRotation",newRotation)
-		.comma()
-		.kv("newAlpha", newAlpha)
-		.comma()
-		.kv("newColor", newColor);
+		builder.kv("newX", newX).comma().kv("newY", newY).comma().kv("newScaleX", newScaleX).comma()
+				.kv("newScaleY", newScaleY).comma().kv("newRotation", newRotation).comma().kv("newAlpha", newAlpha)
+				.comma().kv("newColor", newColor);
 		return builder.toString();
 	}
 }

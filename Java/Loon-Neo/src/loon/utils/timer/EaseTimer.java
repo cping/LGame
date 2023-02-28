@@ -204,7 +204,7 @@ public class EaseTimer {
 		this._timeInAfter = 0;
 		return this;
 	}
-	
+
 	public EaseTimer reset() {
 		return reset(LSystem.DEFAULT_EASE_DELAY);
 	}

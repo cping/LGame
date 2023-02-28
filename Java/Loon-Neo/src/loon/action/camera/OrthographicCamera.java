@@ -39,8 +39,7 @@ public class OrthographicCamera extends EmptyCamera {
 	public OrthographicCamera(float left, float right, float bottom, float top) {
 		width = right - left;
 		height = bottom - top;
-		_viewMatrix4 = Transforms.createOrtho2d(left, right, bottom, top, 0,
-				100);
+		_viewMatrix4 = Transforms.createOrtho2d(left, right, bottom, top, 0, 100);
 	}
 
 	public OrthographicCamera translate(Vector2f v) {
@@ -49,14 +48,12 @@ public class OrthographicCamera extends EmptyCamera {
 	}
 
 	public OrthographicCamera translateTo(float x, float y) {
-		_viewMatrix4.idt().mul(
-				Transforms.createTranslation(new Vector3f(x, y, 0)));
+		_viewMatrix4.idt().mul(Transforms.createTranslation(new Vector3f(x, y, 0)));
 		return this;
 	}
 
 	public OrthographicCamera translateTo(Vector2f v) {
-		_viewMatrix4.idt()
-				.mul(Transforms.createTranslation(new Vector3f(v, 0)));
+		_viewMatrix4.idt().mul(Transforms.createTranslation(new Vector3f(v, 0)));
 		return this;
 	}
 
@@ -86,12 +83,10 @@ public class OrthographicCamera extends EmptyCamera {
 		return initProjection(0, width, height, 0);
 	}
 
-	public OrthographicCamera initProjection(float left, float right,
-			float bottom, float top) {
+	public OrthographicCamera initProjection(float left, float right, float bottom, float top) {
 		width = right - left;
 		height = bottom - top;
-		Transforms
-				.createOrtho2d(left, right, bottom, top, 0, 100, _projMatrix4);
+		Transforms.createOrtho2d(left, right, bottom, top, 0, 100, _projMatrix4);
 		return this;
 	}
 

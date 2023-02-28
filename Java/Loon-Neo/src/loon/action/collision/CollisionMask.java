@@ -179,7 +179,7 @@ public class CollisionMask {
 		}
 		return vectores;
 	}
-	
+
 	/**
 	 * 转换矩形对象为顶点数据
 	 * 
@@ -188,9 +188,8 @@ public class CollisionMask {
 	 */
 	public static float[] getRectVertices(RectBox rect) {
 		FloatArray vertices = new FloatArray();
-		float x1 = rect.x, y1 = rect.y, x2 = rect.x + rect.width, y2 = rect.y,
-				x3 = rect.x + rect.width, y3 = rect.y + rect.height, x4 = rect.x,
-				y4 = rect.y + rect.height;
+		float x1 = rect.x, y1 = rect.y, x2 = rect.x + rect.width, y2 = rect.y, x3 = rect.x + rect.width,
+				y3 = rect.y + rect.height, x4 = rect.x, y4 = rect.y + rect.height;
 		vertices.add(x1);
 		vertices.add(y1);
 		vertices.add(x2);
@@ -201,5 +200,5 @@ public class CollisionMask {
 		vertices.add(y4);
 		return vertices.toArray();
 	}
-	
+
 }

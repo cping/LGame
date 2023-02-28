@@ -264,20 +264,13 @@ public abstract class LayoutManager {
 	/**
 	 * 把指定动作对象进行布局在指定的RectBox范围内部署,并注入Screen
 	 * 
-	 * @param root
-	 *            Screen对象
-	 * @param objs
-	 *            要布局的对象集合
-	 * @param rectView
-	 *            显示范围
-	 * @param cellWidth
-	 *            单独对象的默认width(如果对象有width,并且比cellWidth大,则以对象自己的为主)
-	 * @param cellHeight
-	 *            单独对象的默认height(如果对象有width,并且比cellWidth大,则以对象自己的为主)
-	 * @param offsetX
-	 *            显示坐标偏移x轴
-	 * @param offsetY
-	 *            显示坐标偏移y轴
+	 * @param root       Screen对象
+	 * @param objs       要布局的对象集合
+	 * @param rectView   显示范围
+	 * @param cellWidth  单独对象的默认width(如果对象有width,并且比cellWidth大,则以对象自己的为主)
+	 * @param cellHeight 单独对象的默认height(如果对象有width,并且比cellWidth大,则以对象自己的为主)
+	 * @param offsetX    显示坐标偏移x轴
+	 * @param offsetY    显示坐标偏移y轴
 	 */
 	public final static void elements(final Screen root, final TArray<ActionBind> objs, BoxSize rectView,
 			float cellWidth, float cellHeight, float offsetX, float offsetY) {

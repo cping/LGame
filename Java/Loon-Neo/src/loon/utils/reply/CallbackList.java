@@ -25,29 +25,26 @@ import loon.utils.TArray;
 
 public class CallbackList<T> implements Callback<T> {
 
-	public static <T> TArray<Callback<T>> createAdd(TArray<Callback<T>> list,
-			Callback<T> callback) {
-		if (list == null){
+	public static <T> TArray<Callback<T>> createAdd(TArray<Callback<T>> list, Callback<T> callback) {
+		if (list == null) {
 			list = new TArray<Callback<T>>();
 		}
 		list.add(callback);
 		return list;
 	}
 
-	public static <T> TArray<Callback<T>> dispatchSuccessClear(
-			TArray<Callback<T>> list, T result) {
+	public static <T> TArray<Callback<T>> dispatchSuccessClear(TArray<Callback<T>> list, T result) {
 		if (list != null) {
-			for (int ii = 0, ll = list.size; ii < ll; ii++){
+			for (int ii = 0, ll = list.size; ii < ll; ii++) {
 				list.get(ii).onSuccess(result);
 			}
 		}
 		return null;
 	}
 
-	public static <T> TArray<Callback<T>> dispatchFailureClear(
-			TArray<Callback<T>> list, Throwable cause) {
+	public static <T> TArray<Callback<T>> dispatchFailureClear(TArray<Callback<T>> list, Throwable cause) {
 		if (list != null) {
-			for (int ii = 0, ll = list.size; ii < ll; ii++){
+			for (int ii = 0, ll = list.size; ii < ll; ii++) {
 				list.get(ii).onFailure(cause);
 			}
 		}

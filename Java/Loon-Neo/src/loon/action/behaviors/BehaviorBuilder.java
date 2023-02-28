@@ -177,7 +177,7 @@ public class BehaviorBuilder<T> implements LRelease {
 	public BehaviorBuilder<T> selector() {
 		return selector(AbortTypes.None);
 	}
-	
+
 	public BehaviorBuilder<T> selector(AbortTypes abortType) {
 		return pushParentNode(new Selector<T>(abortType));
 	}
@@ -189,7 +189,7 @@ public class BehaviorBuilder<T> implements LRelease {
 	public BehaviorBuilder<T> sequence() {
 		return sequence(AbortTypes.None);
 	}
-	
+
 	public BehaviorBuilder<T> sequence(AbortTypes abortType) {
 		return pushParentNode(new Sequence<T>(abortType));
 	}

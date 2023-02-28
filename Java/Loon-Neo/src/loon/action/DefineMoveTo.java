@@ -674,7 +674,7 @@ public class DefineMoveTo extends ActionEvent {
 	public boolean isMoveByMode() {
 		return moveByMode;
 	}
-	
+
 	public float getEndX() {
 		return endX;
 	}

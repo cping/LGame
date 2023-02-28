@@ -24,16 +24,16 @@ import loon.LTexture;
 import loon.geom.RectI;
 import loon.utils.MathUtils;
 
-public class FlyLeftDownFragment extends Fragment{
+public class FlyLeftDownFragment extends Fragment {
 
-	public FlyLeftDownFragment(int color, float x, float y, RectI bound,LTexture tex) {
-		super(color, x, y, bound,tex);
+	public FlyLeftDownFragment(int color, float x, float y, RectI bound, LTexture tex) {
+		super(color, x, y, bound, tex);
 	}
 
-    @Override
-    protected void caculate(float factor){
-        cx = cx + factor * MathUtils.nextInt(parBound.width) * (MathUtils.random() - 0.5f);
-        cy = cy + factor * MathUtils.nextInt(parBound.height / 2);
-        update(factor);
-    }
+	@Override
+	protected void caculate(float factor) {
+		cx = cx + factor * MathUtils.nextInt(parBound.width) * (MathUtils.random() - 0.5f);
+		cy = cy + factor * MathUtils.nextInt(parBound.height / 2);
+		update(factor);
+	}
 }

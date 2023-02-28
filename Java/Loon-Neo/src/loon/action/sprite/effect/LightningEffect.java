@@ -39,12 +39,12 @@ public class LightningEffect extends Entity {
 	private int _countCompleted;
 
 	private boolean _completed;
-	
+
 	private boolean _autoRemoved;
 
 	private static LightningEffect instance;
-	
-	public final static void freeStatic(){
+
+	public final static void freeStatic() {
 		instance = null;
 	}
 

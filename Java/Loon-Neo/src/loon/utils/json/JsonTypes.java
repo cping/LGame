@@ -23,13 +23,13 @@ package loon.utils.json;
 import loon.Json;
 
 class JsonTypes {
-	
-  public static boolean isArray(Object o) {
-    return o instanceof Json.Array;
-  }
 
-  public static boolean isObject(Object o) {
-    return o instanceof Json.Object;
-  }
+	public static boolean isArray(Object o) {
+		return o instanceof Json.Array;
+	}
+
+	public static boolean isObject(Object o) {
+		return o instanceof Json.Object;
+	}
 
 }

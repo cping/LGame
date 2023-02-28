@@ -70,7 +70,8 @@ public class CssStyleNode {
 		for (int i = 0; i < args.length; i++) {
 			String name = args[i];
 			CssValue v = values.get(name);
-			if (v != null) return v;
+			if (v != null)
+				return v;
 		}
 		return defualtValue;
 	}

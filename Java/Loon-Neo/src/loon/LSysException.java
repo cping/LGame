@@ -30,7 +30,7 @@ public class LSysException extends RuntimeException {
 	public LSysException() {
 		this("Loon System Exception !");
 	}
-	
+
 	public LSysException(String message) {
 		super(message);
 		LSystem.error(message);

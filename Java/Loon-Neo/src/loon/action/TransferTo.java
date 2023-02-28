@@ -37,18 +37,17 @@ public class TransferTo extends ActionEvent {
 
 	private EaseTimer easeTimer;
 
-	public TransferTo(float startPos, float endPos, float duration,
-			EasingMode mode, boolean controlX, boolean controlY) {
+	public TransferTo(float startPos, float endPos, float duration, EasingMode mode, boolean controlX,
+			boolean controlY) {
 		this(startPos, endPos, duration, LSystem.DEFAULT_EASE_DELAY, mode, controlX, controlY);
 	}
 
-	public TransferTo(float startPos, float endPos, float duration,
-			EasingMode mode) {
+	public TransferTo(float startPos, float endPos, float duration, EasingMode mode) {
 		this(startPos, endPos, duration, LSystem.DEFAULT_EASE_DELAY, mode, true, false);
 	}
 
-	public TransferTo(float startPos, float endPos, float duration,
-			float delay, EasingMode mode, boolean controlX, boolean controlY) {
+	public TransferTo(float startPos, float endPos, float duration, float delay, EasingMode mode, boolean controlX,
+			boolean controlY) {
 		this.easeTimer = new EaseTimer(duration, delay, mode);
 		this.startPos = startPos;
 		this.endPos = endPos;
@@ -145,7 +144,7 @@ public class TransferTo extends ActionEvent {
 	public float getTravelDistance() {
 		return travelDistance;
 	}
-	
+
 	@Override
 	public void onLoad() {
 		if (original != null) {
@@ -165,8 +164,7 @@ public class TransferTo extends ActionEvent {
 
 	@Override
 	public ActionEvent cpy() {
-		TransferTo t = new TransferTo(this.startPos, this.endPos,
-				easeTimer.getDuration(), easeTimer.getDelay(),
+		TransferTo t = new TransferTo(this.startPos, this.endPos, easeTimer.getDuration(), easeTimer.getDelay(),
 				easeTimer.getEasingMode(), this.controllingX, this.controllingY);
 		t.set(this);
 		return t;
@@ -174,8 +172,7 @@ public class TransferTo extends ActionEvent {
 
 	@Override
 	public ActionEvent reverse() {
-		TransferTo t = new TransferTo(this.endPos, this.startPos,
-				easeTimer.getDuration(), easeTimer.getDelay(),
+		TransferTo t = new TransferTo(this.endPos, this.startPos, easeTimer.getDuration(), easeTimer.getDelay(),
 				easeTimer.getEasingMode(), this.controllingX, this.controllingY);
 		t.set(this);
 		return t;
@@ -185,23 +182,13 @@ public class TransferTo extends ActionEvent {
 	public String getName() {
 		return "transfer";
 	}
-	
+
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue(getName());
-		builder.kv("startPos", startPos)
-		.comma()
-		.kv("endPos", endPos)
-		.comma()
-		.kv("travelDistance",travelDistance)
-		.comma()
-		.kv("currentPosition",currentPosition)
-		.comma()
-		.kv("controllingX",controllingX)
-		.comma()
-		.kv("controllingY", controllingY)
-		.comma()
-		.kv("EaseTimer", easeTimer);
+		builder.kv("startPos", startPos).comma().kv("endPos", endPos).comma().kv("travelDistance", travelDistance)
+				.comma().kv("currentPosition", currentPosition).comma().kv("controllingX", controllingX).comma()
+				.kv("controllingY", controllingY).comma().kv("EaseTimer", easeTimer);
 		return builder.toString();
 	}
 

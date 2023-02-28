@@ -45,8 +45,7 @@ public class LCheckGroup extends LComponent {
 	}
 
 	@Override
-	public void createUI(GLEx g, int x, int y, LComponent component,
-			LTexture[] buttonImage) {
+	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
 		for (LCheckBox check : checks) {
 			check.createUI(g);
 		}

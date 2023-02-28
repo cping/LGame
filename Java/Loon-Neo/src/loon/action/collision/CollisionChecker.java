@@ -26,23 +26,23 @@ import loon.utils.LIterator;
 import loon.utils.TArray;
 
 public interface CollisionChecker {
-	
+
 	void initialize(int cellSize);
 
 	void initialize(int cellSizeX, int cellSizeY);
 
 	void setInTheLayer(boolean yes);
-	
+
 	boolean getInTheLayer();
-	
-	void setOffsetPos(float x,float y);
+
+	void setOffsetPos(float x, float y);
 
 	void setOffsetX(float x);
 
 	void setOffsetY(float y);
-	
+
 	Vector2f getOffsetPos();
-	
+
 	void addObject(CollisionObject actor);
 
 	void removeObject(CollisionObject actor);
@@ -54,7 +54,7 @@ public interface CollisionChecker {
 	void updateObjectSize(CollisionObject actor);
 
 	int numberActors();
-	
+
 	TArray<CollisionObject> getObjectsAt(float x, float y, String flag);
 
 	TArray<CollisionObject> getIntersectingObjects(CollisionObject actor, String flag);

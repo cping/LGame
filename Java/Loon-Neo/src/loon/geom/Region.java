@@ -57,13 +57,11 @@ public class Region {
 	public int random() {
 		return (int) (start + (MathUtils.random() * (end - start)));
 	}
-	
+
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("Region");
-		builder.kv("start", start)
-		.comma()
-		.kv("end", end);
+		builder.kv("start", start).comma().kv("end", end);
 		return builder.toString();
 	}
 

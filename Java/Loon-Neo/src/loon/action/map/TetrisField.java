@@ -41,7 +41,7 @@ public class TetrisField {
 		private int[][] startPosition;
 
 		private int rotatePosition = 0;
-		private TetrisField field2d ;
+		private TetrisField field2d;
 
 		public TetrisBlock(TetrisField f, int blockID) {
 			this.field2d = f;
@@ -393,10 +393,10 @@ public class TetrisField {
 	private TetrisBlock stoneNext;
 
 	private TetrisListener listener;
-	
+
 	private final int maxBlockSize;
 	private final int maxBlockLen;
-	
+
 	private int[][] stonePosition;
 	private int[][] gameFieldStones;
 	private int startStoneValue = 0;

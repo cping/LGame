@@ -91,7 +91,7 @@ public class I18N implements LRelease {
 	private ConfigReader _langConfig;
 
 	private final String _filePath;
-	
+
 	private boolean _initConfig;
 
 	public I18N(String path) {
@@ -120,7 +120,7 @@ public class I18N implements LRelease {
 		}
 		return cfr;
 	}
-	
+
 	public String getText(String res) {
 		return getText(res, "");
 	}

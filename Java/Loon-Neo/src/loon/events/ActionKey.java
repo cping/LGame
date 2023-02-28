@@ -36,8 +36,8 @@ public class ActionKey {
 
 	private final int mode;
 
-    public long elapsedTime;
-    
+	public long elapsedTime;
+
 	private int amount;
 
 	private int state;

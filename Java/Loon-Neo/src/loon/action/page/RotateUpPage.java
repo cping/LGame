@@ -22,10 +22,10 @@ package loon.action.page;
 
 import loon.Screen;
 
-public class RotateUpPage extends BasePage{
+public class RotateUpPage extends BasePage {
 
 	private static final float ROT_MOD = -15f;
-	
+
 	@Override
 	public void onTransform(Screen screen, float position) {
 		final float width = screen.getWidth();
@@ -35,7 +35,7 @@ public class RotateUpPage extends BasePage{
 		screen.setX(0f);
 		screen.setRotation(rotation);
 	}
-	
+
 	public boolean isPagingEnabled() {
 		return true;
 	}

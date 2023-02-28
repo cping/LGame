@@ -321,8 +321,8 @@ public abstract class PixmapFImpl {
 		final float centerY = y + _translateY + height / 2;
 		final float xPoints[] = new float[7];
 		final float yPoints[] = new float[7];
-		final int nPoints = Limit.getBoundingShape(xPoints, yPoints, startAngle, MathUtils.abs(arcAngle), centerX, centerY,
-				x + _translateX - 1, y + _translateY - 1, width + 2, height + 2);
+		final int nPoints = Limit.getBoundingShape(xPoints, yPoints, startAngle, MathUtils.abs(arcAngle), centerX,
+				centerY, x + _translateX - 1, y + _translateY - 1, width + 2, height + 2);
 		final RectF bounds = RectF.getIntersection(Limit.setBoundingBox(temp_rect, xPoints, yPoints, nPoints), _clip,
 				temp_rect);
 		this.drawCircleImpl(x, y, width, height, false, new CircleUpdate() {
@@ -367,7 +367,8 @@ public abstract class PixmapFImpl {
 	 * @param reverse
 	 * @return
 	 */
-	protected void fillArcImpl(float x, float y, float width, float height, float start, float arcAngle, boolean reverse) {
+	protected void fillArcImpl(float x, float y, float width, float height, float start, float arcAngle,
+			boolean reverse) {
 		if (reverse) {
 			if (arcAngle < 0) {
 				start = 360 - arcAngle;
@@ -391,8 +392,8 @@ public abstract class PixmapFImpl {
 		final float centerY = y + _translateY + height / 2;
 		final float xPoints[] = new float[7];
 		final float yPoints[] = new float[7];
-		final int nPoints = Limit.getBoundingShape(xPoints, yPoints, startAngle, MathUtils.abs(arcAngle), centerX, centerY,
-				x + _translateX - 1, y + _translateY - 1, width + 2, height + 2);
+		final int nPoints = Limit.getBoundingShape(xPoints, yPoints, startAngle, MathUtils.abs(arcAngle), centerX,
+				centerY, x + _translateX - 1, y + _translateY - 1, width + 2, height + 2);
 		final RectF bounds = Limit.setBoundingBox(temp_rect, xPoints, yPoints, nPoints);
 
 		this.drawCircleImpl(x, y, width, height, true, new CircleUpdate() {

@@ -31,7 +31,7 @@ public class LogAction<T> extends Behavior<T> {
 	public LogAction() {
 		this(LSystem.UNKNOWN);
 	}
-	
+
 	public LogAction(String text) {
 		this.text = text;
 	}

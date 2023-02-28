@@ -30,7 +30,7 @@ import loon.LSysException;
  * @param <K>
  * @param <V>
  */
-public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray,LRelease {
+public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray, LRelease {
 
 	private Values<V> values1, values2;
 

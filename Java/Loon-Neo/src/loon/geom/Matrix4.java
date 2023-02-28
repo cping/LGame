@@ -810,17 +810,20 @@ public class Matrix4 implements Serializable, XY {
 
 	public float getScaleX() {
 		return (MathUtils.isZero(val[Matrix4.M01]) && MathUtils.isZero(val[Matrix4.M02]))
-				? MathUtils.abs(val[Matrix4.M00]) : MathUtils.sqrt(getScaleXSquared());
+				? MathUtils.abs(val[Matrix4.M00])
+				: MathUtils.sqrt(getScaleXSquared());
 	}
 
 	public float getScaleY() {
 		return (MathUtils.isZero(val[Matrix4.M10]) && MathUtils.isZero(val[Matrix4.M12]))
-				? MathUtils.abs(val[Matrix4.M11]) : MathUtils.sqrt(getScaleYSquared());
+				? MathUtils.abs(val[Matrix4.M11])
+				: MathUtils.sqrt(getScaleYSquared());
 	}
 
 	public float getScaleZ() {
 		return (MathUtils.isZero(val[Matrix4.M20]) && MathUtils.isZero(val[Matrix4.M21]))
-				? MathUtils.abs(val[Matrix4.M22]) : MathUtils.sqrt(getScaleZSquared());
+				? MathUtils.abs(val[Matrix4.M22])
+				: MathUtils.sqrt(getScaleZSquared());
 	}
 
 	public Vector3f getScale(Vector3f scale) {

@@ -122,28 +122,17 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 	/**
 	 * @param font
 	 * 
-	 * @param max
-	 *            允许插入的最大行数
-	 * @param x
-	 *            显示用坐标x
-	 * @param y
-	 *            显示用坐标y
-	 * @param width
-	 *            文本列表宽
-	 * @param height
-	 *            文本列表高
-	 * @param scrollButtonWidth
-	 *            滚轴按钮触发范围
-	 * @param bg
-	 *            背景图
-	 * @param choice
-	 *            选中单独栏用图
-	 * @param scroll
-	 *            滚轴用图
-	 * @param scrollFlagA
-	 *            滚轴上下标识用图(A)
-	 * @param scrollFlagB
-	 *            滚轴上下标识用图(B)
+	 * @param max               允许插入的最大行数
+	 * @param x                 显示用坐标x
+	 * @param y                 显示用坐标y
+	 * @param width             文本列表宽
+	 * @param height            文本列表高
+	 * @param scrollButtonWidth 滚轴按钮触发范围
+	 * @param bg                背景图
+	 * @param choice            选中单独栏用图
+	 * @param scroll            滚轴用图
+	 * @param scrollFlagA       滚轴上下标识用图(A)
+	 * @param scrollFlagB       滚轴上下标识用图(B)
 	 */
 	public LTextList(IFont font, int max, int x, int y, int width, int height, int scrollButtonWidth, LTexture bg,
 			LTexture choice, LTexture scroll, LTexture scrollFlagA, LTexture scrollFlagB) {
@@ -176,8 +165,8 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 		this.nextStringColor = this.defaultStringColor;
 		return this;
 	}
-	
-	public LTextList clear(){
+
+	public LTextList clear() {
 		return delete();
 	}
 

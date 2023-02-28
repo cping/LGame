@@ -74,8 +74,8 @@ public class ArrowTo extends ActionEvent {
 		this(-1f, -1f, tx, ty, speed, g, 1f, LSystem.DEFAULT_EASE_DELAY, mode);
 	}
 
-	public ArrowTo(float st, float sy, float tx, float ty, float speed,
-			float g, float duration, float delay, EasingMode mode) {
+	public ArrowTo(float st, float sy, float tx, float ty, float speed, float g, float duration, float delay,
+			EasingMode mode) {
 		this.startX = st;
 		this.startY = sy;
 		this.endX = tx;
@@ -103,8 +103,7 @@ public class ArrowTo extends ActionEvent {
 		float dy = endY - startY;
 		this.vx = dx / speed;
 		this.vy = 1f / speed * (dy - 1.0f / 2.0f * gravity * speed * speed);
-		this.dir = Field2D.getDirection(MathUtils.atan2(endX - startX, endY
-				- startY));
+		this.dir = Field2D.getDirection(MathUtils.atan2(endX - startX, endY - startY));
 		this.currentX = startX;
 		this.currentY = startY;
 	}
@@ -119,19 +118,15 @@ public class ArrowTo extends ActionEvent {
 		currentX += vx * easeTimer.getProgress();
 		currentY += vy * easeTimer.getProgress();
 		if (original.isContainer() && original.isBounded()) {
-			if (currentX < -original.getWidth()
-					|| startY < -original.getHeight()
-					|| currentX > original.getContainerWidth()
-					|| currentY > original.getContainerHeight()) {
+			if (currentX < -original.getWidth() || startY < -original.getHeight()
+					|| currentX > original.getContainerWidth() || currentY > original.getContainerHeight()) {
 				this._isCompleted = true;
 			}
-		} else if (currentX < -original.getWidth() * 2
-				|| currentY < -original.getHeight() * 2
+		} else if (currentX < -original.getWidth() * 2 || currentY < -original.getHeight() * 2
 				|| currentX > LSystem.viewSize.width + original.getWidth() * 2
-				|| currentY > LSystem.viewSize.height + original.getHeight()
-						* 2) {
+				|| currentY > LSystem.viewSize.height + original.getHeight() * 2) {
 			this._isCompleted = true;
-		} 
+		}
 		if (this._isCompleted) {
 			return;
 		}
@@ -186,21 +181,19 @@ public class ArrowTo extends ActionEvent {
 	public float getSpeed() {
 		return speed;
 	}
-	
+
 	@Override
 	public ActionEvent cpy() {
-		ArrowTo arrow = new ArrowTo(startX, startY, endX, endY, speed, gravity,
-				easeTimer.getDuration(), easeTimer.getDelay(),
-				easeTimer.getEasingMode());
+		ArrowTo arrow = new ArrowTo(startX, startY, endX, endY, speed, gravity, easeTimer.getDuration(),
+				easeTimer.getDelay(), easeTimer.getEasingMode());
 		arrow.set(this);
 		return arrow;
 	}
 
 	@Override
 	public ActionEvent reverse() {
-		ArrowTo arrow = new ArrowTo(endX, endY, startX, startY, speed, gravity,
-				easeTimer.getDuration(), easeTimer.getDelay(),
-				easeTimer.getEasingMode());
+		ArrowTo arrow = new ArrowTo(endX, endY, startX, startY, speed, gravity, easeTimer.getDuration(),
+				easeTimer.getDelay(), easeTimer.getEasingMode());
 		arrow.set(this);
 		return arrow;
 	}
@@ -209,23 +202,13 @@ public class ArrowTo extends ActionEvent {
 	public String getName() {
 		return "arrow";
 	}
-	
+
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue(getName());
-		builder.kv("gravity",gravity)
-		.comma()
-		.kv("startX",startX)
-		.comma()
-		.kv("startY",startY)
-		.comma()
-		.kv("currentX",currentX)
-		.comma()
-		.kv("currentY",currentY)
-		.comma()
-		.kv("direction",dir)
-		.comma()
-		.kv("EaseTimer",easeTimer);
+		builder.kv("gravity", gravity).comma().kv("startX", startX).comma().kv("startY", startY).comma()
+				.kv("currentX", currentX).comma().kv("currentY", currentY).comma().kv("direction", dir).comma()
+				.kv("EaseTimer", easeTimer);
 		return builder.toString();
 	}
 

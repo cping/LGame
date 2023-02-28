@@ -39,9 +39,7 @@ public interface Platform {
 
 	LGame getGame();
 
-	void sysText(SysInput.TextEvent event, KeyMake.TextType textType,
-			String label, String initialValue);
+	void sysText(SysInput.TextEvent event, KeyMake.TextType textType, String label, String initialValue);
 
-	void sysDialog(SysInput.ClickEvent event, String title, String text,
-			String ok, String cancel);
+	void sysDialog(SysInput.ClickEvent event, String title, String text, String ok, String cancel);
 }

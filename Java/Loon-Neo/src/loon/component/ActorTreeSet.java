@@ -104,8 +104,7 @@ public class ActorTreeSet {
 
 	public int size() {
 		int size = 0;
-		for (LIterator<ActorSet> i = this.subSets.listIterator(); i.hasNext(); size += (i
-				.next()).size()) {
+		for (LIterator<ActorSet> i = this.subSets.listIterator(); i.hasNext(); size += (i.next()).size()) {
 		}
 		return size;
 	}
@@ -192,13 +191,11 @@ public class ActorTreeSet {
 
 		TasIterator(SortedList<ActorSet> soered) {
 			this.setIterator = soered.listIterator();
-			for (this.currentSet = this.setIterator.next(); this.currentSet
-					.size() == 0 && this.setIterator.hasNext(); this.currentSet = this.setIterator
-					.next()) {
+			for (this.currentSet = this.setIterator.next(); this.currentSet.size() == 0
+					&& this.setIterator.hasNext(); this.currentSet = this.setIterator.next()) {
 			}
 			this.actorIterator = this.currentSet.iterator();
 		}
-
 
 		@Override
 		public void remove() {

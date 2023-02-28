@@ -45,7 +45,7 @@ public class CommandLink {
 	public StringKeyValue kvcmd() {
 		return _commands;
 	}
-	
+
 	public String getValue() {
 		return _commands.getValue();
 	}

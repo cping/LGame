@@ -48,7 +48,7 @@ public class Attribute {
 		return this;
 	}
 
-	public Attribute cpy(Attribute other){
+	public Attribute cpy(Attribute other) {
 		this._name = other._name;
 		this._attribute = other._attribute;
 		return this;

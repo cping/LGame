@@ -298,7 +298,7 @@ public class MovieClip extends DisplayObject {
 	public LTexture getBitmap() {
 		return _sheet.sheet();
 	}
-	
+
 	@Override
 	public ActionTween selfAction() {
 		return PlayerUtils.set(this);

@@ -20,8 +20,7 @@ public class OrderedSet<E> extends ObjectSet<E> {
 	}
 
 	public OrderedSet(OrderedSet<? extends E> c) {
-		super(MathUtils.max((int) (c.size() / 0.85f) + 1, CollectionUtils.INITIAL_CAPACITY),
-				0.85f, true);
+		super(MathUtils.max((int) (c.size() / 0.85f) + 1, CollectionUtils.INITIAL_CAPACITY), 0.85f, true);
 		addAll(c);
 	}
 }

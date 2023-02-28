@@ -87,7 +87,8 @@ public abstract class Conversion implements Expression {
 	}
 
 	public static final String updateOperator(String context) {
-		if (context != null && (StringUtils.startsWith(context, LSystem.DOUBLE_QUOTES) || StringUtils.startsWith(context, LSystem.SINGLE_QUOTE))) {
+		if (context != null && (StringUtils.startsWith(context, LSystem.DOUBLE_QUOTES)
+				|| StringUtils.startsWith(context, LSystem.SINGLE_QUOTE))) {
 			return context;
 		}
 		int size = context.length();

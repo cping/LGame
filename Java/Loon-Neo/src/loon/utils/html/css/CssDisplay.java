@@ -23,8 +23,8 @@ package loon.utils.html.css;
 public enum CssDisplay {
 
 	Inline,
-	
-	Block, 
-	
+
+	Block,
+
 	None;
 }

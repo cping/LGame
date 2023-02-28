@@ -28,15 +28,14 @@ public class ControlSkin {
 	private LTexture controlBaseTexture;
 
 	private LTexture controlDotTexture;
-	
-	public static ControlSkin def(){
+
+	public static ControlSkin def() {
 		return new ControlSkin();
 	}
 
 	public ControlSkin() {
-		this(LSystem.loadTexture(LSystem.getSystemImagePath()
-				+ "control_base.png"), LSystem
-				.loadTexture(LSystem.getSystemImagePath() + "control_dot.png"));
+		this(LSystem.loadTexture(LSystem.getSystemImagePath() + "control_base.png"),
+				LSystem.loadTexture(LSystem.getSystemImagePath() + "control_dot.png"));
 	}
 
 	public ControlSkin(LTexture basetex, LTexture dottex) {

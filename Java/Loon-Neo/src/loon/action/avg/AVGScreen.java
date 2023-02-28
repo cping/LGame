@@ -216,8 +216,8 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 			}
 			if (_items != null && _screen.command != null && _screen.selectUI != null) {
 				if (((LSystem.base() != null && (LSystem.base().isMobile() || LSystem.base().setting.emulateTouch))
-						? _screen._clickcount++ >= _screen._mobile_select_valid_limit : _screen._clickcount > -1)
-						&& _screen.selectUI.isClick()) {
+						? _screen._clickcount++ >= _screen._mobile_select_valid_limit
+						: _screen._clickcount > -1) && _screen.selectUI.isClick()) {
 					int idx = _screen.selectUI.getResultIndex();
 					if (idx != -1) {
 						String gotoFlag = _items.get(idx);
@@ -1473,7 +1473,8 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 			onSelect(_selectMessage, selectUI.getResultIndex());
 			isNext = selectUI.intersects(getTouchX(), getTouchY());
 			if ((LSystem.base() != null && LSystem.base().isMobile() || LSystem.base().setting.emulateTouch)
-					? _clickcount++ >= _mobile_select_valid_limit : _clickcount > -1) {
+					? _clickcount++ >= _mobile_select_valid_limit
+					: _clickcount > -1) {
 				messageUI.setVisible(false);
 				clearSelectMessage();
 			}

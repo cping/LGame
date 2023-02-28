@@ -25,7 +25,6 @@ import loon.utils.GLUtils;
 
 public class LTextureBind extends GLBase {
 
-
 	public final GL20 gl;
 	protected int curTexId = -1;
 	protected int lastTexId = -1;

@@ -52,18 +52,18 @@ public abstract class ImageImpl extends Image {
 		pixelWidth = data.pixelWidth;
 		pixelHeight = data.pixelHeight;
 		setBitmap(data.bitmap);
-		((GoPromise<Image>) state).succeed(this); 
+		((GoPromise<Image>) state).succeed(this);
 	}
 
 	public synchronized void fail(Throwable error) {
-		if (pixelWidth == 0){
+		if (pixelWidth == 0) {
 			pixelWidth = 50;
 		}
-		if (pixelHeight == 0){
+		if (pixelHeight == 0) {
 			pixelHeight = 50;
 		}
 		setBitmap(createErrorBitmap(pixelWidth, pixelHeight));
-		((GoPromise<Image>) state).fail(error); 
+		((GoPromise<Image>) state).fail(error);
 	}
 
 	@Override
@@ -81,12 +81,11 @@ public abstract class ImageImpl extends Image {
 		return pixelHeight;
 	}
 
-	protected ImageImpl(Graphics gfx, Scale scale, int pixelWidth,
-			int pixelHeight, String source, Object bitmap) {
+	protected ImageImpl(Graphics gfx, Scale scale, int pixelWidth, int pixelHeight, String source, Object bitmap) {
 		super(gfx);
-		if (pixelWidth == 0 || pixelHeight == 0){
-			throw new LSysException("Invalid size for ready image: "
-					+ pixelWidth + "x" + pixelHeight + " bitmap: " + bitmap);
+		if (pixelWidth == 0 || pixelHeight == 0) {
+			throw new LSysException(
+					"Invalid size for ready image: " + pixelWidth + "x" + pixelHeight + " bitmap: " + bitmap);
 		}
 		this.source = source;
 		this.scale = scale;
@@ -95,8 +94,8 @@ public abstract class ImageImpl extends Image {
 		setBitmap(bitmap);
 	}
 
-	protected ImageImpl(Graphics gfx, GoFuture<Image> state, Scale preScale,
-			int preWidth, int preHeight, String source) {
+	protected ImageImpl(Graphics gfx, GoFuture<Image> state, Scale preScale, int preWidth, int preHeight,
+			String source) {
 		super(gfx, state);
 		this.source = source;
 		this.scale = preScale;
@@ -104,11 +103,9 @@ public abstract class ImageImpl extends Image {
 		this.pixelHeight = preHeight;
 	}
 
-	protected ImageImpl(LGame game, boolean async, Scale preScale,
-			int preWidth, int preHeight, String source) {
-		this(game.graphics(), async ? game.asyn().<Image> deferredPromise()
-				: GoPromise.<Image> create(), preScale, preWidth, preHeight,
-				source);
+	protected ImageImpl(LGame game, boolean async, Scale preScale, int preWidth, int preHeight, String source) {
+		this(game.graphics(), async ? game.asyn().<Image>deferredPromise() : GoPromise.<Image>create(), preScale,
+				preWidth, preHeight, source);
 	}
 
 	protected abstract void setBitmap(Object bitmap);
@@ -120,8 +117,7 @@ public abstract class ImageImpl extends Image {
 	}
 
 	public Image getLightImage(Image buffer, int v) {
-		Canvas canvas = LSystem.base().graphics()
-				.createCanvas(buffer.width(), buffer.height());
+		Canvas canvas = LSystem.base().graphics().createCanvas(buffer.width(), buffer.height());
 		canvas.draw(buffer, 0, 0);
 		getLight(canvas.image, v);
 		canvas.close();

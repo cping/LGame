@@ -144,26 +144,16 @@ public class TextEffect extends Entity implements BaseEffect {
 	/**
 	 * 注入一组文本信息
 	 * 
-	 * @param font
-	 *            使用的字体(为null则使用默认的字体LFont)
-	 * @param message
-	 *            文字信息
-	 * @param color
-	 *            文字颜色
-	 * @param x
-	 *            初始x位置
-	 * @param y
-	 *            初始y位置
-	 * @param lifeTime
-	 *            这组文字的生命周期(秒)
-	 * @param rotation
-	 *            文字旋转角度
-	 * @param scale
-	 *            文字缩放比例
-	 * @param vx
-	 *            x轴加速度
-	 * @param vy
-	 *            y轴加速度
+	 * @param font     使用的字体(为null则使用默认的字体LFont)
+	 * @param message  文字信息
+	 * @param color    文字颜色
+	 * @param x        初始x位置
+	 * @param y        初始y位置
+	 * @param lifeTime 这组文字的生命周期(秒)
+	 * @param rotation 文字旋转角度
+	 * @param scale    文字缩放比例
+	 * @param vx       x轴加速度
+	 * @param vy       y轴加速度
 	 * @return
 	 */
 	public TextEffect addText(IFont font, String message, LColor color, float x, float y, float lifeTime,
@@ -275,8 +265,8 @@ public class TextEffect extends Entity implements BaseEffect {
 				if (text.scale == 1f && text.rotation == 0f) {
 					g.drawString(text.message, drawX(offsetX + text.x), drawY(offsetY + text.y), text.color);
 				} else {
-					g.drawString(text.message, drawX(offsetX + text.x), drawY(offsetY + text.y), text.scale, text.scale, 0f, 0f,
-							text.rotation, text.color);
+					g.drawString(text.message, drawX(offsetX + text.x), drawY(offsetY + text.y), text.scale, text.scale,
+							0f, 0f, text.rotation, text.color);
 				}
 				g.setFont(tmp);
 			}

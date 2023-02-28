@@ -27,7 +27,7 @@ import loon.utils.MathUtils;
 
 public class TableColumn {
 
-	private ICellRenderer cellRenderer = new TextCellRenderer();
+	private ICellRenderer cellRenderer;
 
 	private String name = "---";
 
@@ -41,16 +41,19 @@ public class TableColumn {
 
 	protected TableColumn(String name, IFont font) {
 		this.name = name;
+		this.cellRenderer = new TextCellRenderer(font);
 		setWidth(font.stringWidth(name));
 	}
 
-	protected TableColumn(String name, int width) {
+	protected TableColumn(String name, int width, IFont font) {
 		this.name = name;
+		this.cellRenderer = new TextCellRenderer(font);
 		setWidth(width);
 	}
 
-	protected TableColumn(String name, float relativeWidth) {
+	protected TableColumn(String name, float relativeWidth, IFont font) {
 		this.name = name;
+		this.cellRenderer = new TextCellRenderer(font);
 		setRelativeWidth(relativeWidth);
 	}
 
@@ -96,22 +99,24 @@ public class TableColumn {
 		return entryAlignment;
 	}
 
-	public void setEntryAlignment(Alignment valueAlignment) {
+	public TableColumn setEntryAlignment(Alignment valueAlignment) {
 		if (valueAlignment == null) {
-			return;
+			return this;
 		}
 		this.entryAlignment = valueAlignment;
+		return this;
 	}
 
 	public ICellRenderer getCellRenderer() {
 		return cellRenderer;
 	}
 
-	public void setCellRenderer(ICellRenderer cellRenderer) {
+	public TableColumn setCellRenderer(ICellRenderer cellRenderer) {
 		if (cellRenderer == null) {
 			throw new LSysException("cellRenderer == null");
 		}
 		this.cellRenderer = cellRenderer;
+		return this;
 	}
 
 }

@@ -21,7 +21,7 @@
 package loon;
 
 public interface Accelerometer {
-	
+
 	/**
 	 * 重力感应方向
 	 */
@@ -31,29 +31,28 @@ public interface Accelerometer {
 
 	public static interface Event {
 
-		public void onDirection(SensorDirection direction, float x, float y,
-				float z);
+		public void onDirection(SensorDirection direction, float x, float y, float z);
 
 		public void onShakeChanged(float force);
 	}
 
-	public void start() ;
+	public void start();
 
-	public void stop() ;
+	public void stop();
 
-	public float getLastX() ;
+	public float getLastX();
 
-	public float getLastY() ;
+	public float getLastY();
 
 	public float getLastZ();
 
 	public float getX();
 
-	public float getY() ;
+	public float getY();
 
-	public float getZ() ;
+	public float getZ();
 
-	public AccelerometerState getState() ;
+	public AccelerometerState getState();
 
 	public int getSleep();
 
@@ -61,9 +60,9 @@ public interface Accelerometer {
 
 	public int getAllDirection();
 
-	public Event getEvent() ;
+	public Event getEvent();
 
-	public void setEvent(Event event) ;
+	public void setEvent(Event event);
 
 	public float getOrientation();
 

@@ -23,7 +23,7 @@ package loon.action.behaviors;
 import loon.utils.reply.Function;
 
 public class ExecuteAction<T> extends Behavior<T> {
-	
+
 	protected Function<T, TaskStatus> _action;
 
 	public ExecuteAction(Function<T, TaskStatus> action) {

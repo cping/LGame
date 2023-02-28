@@ -463,7 +463,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	public LColor getColor() {
 		return this._baseColor.cpy();
 	}
-	
+
 	private void updateAlpha(final float alpha) {
 		if (_childrens != null) {
 			for (int i = _childrens.size - 1; i > -1; i--) {
@@ -474,7 +474,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 			}
 		}
 	}
-	
+
 	private void updateColor(final LColor color) {
 		if (_childrens != null) {
 			for (int i = _childrens.size - 1; i > -1; i--) {
@@ -522,7 +522,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		this.updateAlpha(a);
 		this.onUpdateColor();
 	}
-	
+
 	@Override
 	public int getChildCount() {
 		if (this._childrens == null) {

@@ -20,7 +20,6 @@
  */
 package loon.component.table;
 
-import loon.LSystem;
 import loon.canvas.LColor;
 import loon.component.table.LTable.BindIcon;
 import loon.font.FontSet;
@@ -37,10 +36,6 @@ public class TextCellRenderer implements ICellRenderer, FontSet<TextCellRenderer
 
 	public TextCellRenderer(IFont font) {
 		this.font = font;
-	}
-
-	public TextCellRenderer() {
-		this(LSystem.getSystemGameFont());
 	}
 
 	@Override

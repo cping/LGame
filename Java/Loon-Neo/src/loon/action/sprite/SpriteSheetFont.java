@@ -55,13 +55,13 @@ public class SpriteSheetFont extends FontTrans implements IFont {
 	private int verticalCount;
 
 	private int numChars;
-	
+
 	private float fontSpace = 0f;
 
 	private float fontScaleX = 1f, fontScaleY = 1f;
 
 	private PointI _offset = new PointI();
-	
+
 	private boolean _closed;
 
 	public SpriteSheetFont(String fileName, int tileWidth, int tileHeight) {
@@ -92,7 +92,7 @@ public class SpriteSheetFont extends FontTrans implements IFont {
 	}
 
 	public void drawString(String msg, float x, float y, LColor col, int startIndex, int endIndex) {
-		if(_closed){
+		if (_closed) {
 			return;
 		}
 		if (StringUtils.isEmpty(msg)) {
@@ -145,7 +145,7 @@ public class SpriteSheetFont extends FontTrans implements IFont {
 
 	public void drawString(GLEx gl, String msg, final float x, final float y, LColor col, int startIndex,
 			int endIndex) {
-		if(_closed){
+		if (_closed) {
 			return;
 		}
 		if (StringUtils.isEmpty(msg)) {
@@ -188,7 +188,7 @@ public class SpriteSheetFont extends FontTrans implements IFont {
 
 	@Override
 	public void drawString(GLEx g, String text, float x, float y, float rotation, LColor c) {
-		if(_closed){
+		if (_closed) {
 			return;
 		}
 		if (StringUtils.isEmpty(text)) {
@@ -212,7 +212,7 @@ public class SpriteSheetFont extends FontTrans implements IFont {
 	@Override
 	public void drawString(GLEx gl, String msg, float x, float y, float sx, float sy, float ax, float ay,
 			float rotation, LColor c) {
-		if(_closed){
+		if (_closed) {
 			return;
 		}
 		if (StringUtils.isEmpty(msg)) {
@@ -328,7 +328,7 @@ public class SpriteSheetFont extends FontTrans implements IFont {
 		this.fontSpace = f;
 		return this;
 	}
-	
+
 	public int getHorizontalCount() {
 		return horizontalCount;
 	}
@@ -402,26 +402,17 @@ public class SpriteSheetFont extends FontTrans implements IFont {
 		LSystem.popFontPool(this);
 	}
 
-
 	@Override
 	public String getFontName() {
 		return "SpriteSheetFont";
 	}
-	
+
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("SpriteSheetFont");
-		builder.kv("startingCharacter", startingCharacter)
-		.comma()
-		.kv("horizontalCount", horizontalCount)
-		.comma()
-		.kv("verticalCount", verticalCount)
-		.comma()
-		.kv("charWidth", charWidth)
-		.comma()
-		.kv("charHeight", charHeight)
-		.comma()
-		.kv("numChars", numChars);
+		builder.kv("startingCharacter", startingCharacter).comma().kv("horizontalCount", horizontalCount).comma()
+				.kv("verticalCount", verticalCount).comma().kv("charWidth", charWidth).comma()
+				.kv("charHeight", charHeight).comma().kv("numChars", numChars);
 		return builder.toString();
 	}
 

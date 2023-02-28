@@ -25,7 +25,7 @@ import loon.LRelease;
 public class FloatTuple implements LRelease {
 
 	public float val1;
-	
+
 	public float val2;
 
 	public FloatTuple() {
@@ -53,7 +53,7 @@ public class FloatTuple implements LRelease {
 		val2 = swap;
 		return this;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "(" + val1 + ',' + val2 + ")";
