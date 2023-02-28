@@ -35,7 +35,11 @@ public class EmulatorButtons implements LRelease {
 
 	private int offsetX, offsetY, width, height;
 
-	private final static int offset = 15;
+	private int offsetLeftPad = 0;
+
+	private int offsetRightPad = 0;
+	
+	private final static int offset = 10;
 
 	private boolean visible, closed;
 
@@ -214,81 +218,92 @@ public class EmulatorButtons implements LRelease {
 		this.setLocation(0, 0);
 	}
 
+
 	/**
 	 * 移动模拟按钮集合位置(此为相对坐标，默认居于屏幕下方)
 	 * 
 	 * @param x
 	 * @param y
 	 */
-	public void setLocation(int x, int y) {
+	public EmulatorButtons setLocation(int x, int y) {
 		if (!visible) {
-			return;
+			return this;
 		}
 		this.offsetX = x;
 		this.offsetY = y;
-		up.setLocation((offsetX + up.getWidth()) + offset, offsetY + (height - up.getHeight() * 3) - offset);
-		left.setLocation((offsetX + 0) + offset, offsetY + (height - left.getHeight() * 2) - offset);
-		right.setLocation((offsetX + right.getWidth() * 2) + offset,
-				offsetY + (height - right.getHeight() * 2) - offset);
-		down.setLocation((offsetX + down.getWidth()) + offset, offsetY + (height - down.getHeight()) - offset);
+		up.setLocation(offsetLeftPad + (offsetX + up.getWidth()) + offset,
+				offsetLeftPad + offsetY + (height - up.getHeight() * 3) - offset);
+		left.setLocation(offsetLeftPad + (offsetX + 0) + offset,
+				offsetLeftPad + offsetY + (height - left.getHeight() * 2) - offset);
+		right.setLocation(offsetLeftPad + (offsetX + right.getWidth() * 2) + offset,
+				offsetLeftPad + offsetY + (height - right.getHeight() * 2) - offset);
+		down.setLocation(offsetLeftPad + (offsetX + down.getWidth()) + offset,
+				offsetLeftPad + offsetY + (height - down.getHeight()) - offset);
 
 		if (LSystem.viewSize.height >= LSystem.viewSize.width) {
-			triangle.setLocation(offsetX + (width - triangle.getWidth() * 2) - offset * 2,
-					height - (triangle.getHeight() * 4) - (offset * 2));
-			square.setLocation(offsetX + (width - square.getWidth()) - offset * 2,
-					height - (square.getHeight() * 3) - (offset * 2));
-			circle.setLocation(offsetX + (width - circle.getWidth() * 3) - offset * 2,
-					height - (circle.getHeight() * 3) - (offset * 2));
-			cancel.setLocation(offsetX + (width - cancel.getWidth() * 2) - offset * 2,
-					offsetY + height - (circle.getHeight() * 2) - (offset * 2));
+			triangle.setLocation(offsetRightPad + offsetX + (width - triangle.getWidth() * 2) - offset,
+					offsetRightPad + height - (triangle.getHeight() * 4) - (offset * 2));
+			square.setLocation(offsetRightPad + offsetX + (width - square.getWidth()) - offset,
+					offsetRightPad + height - (square.getHeight() * 3) - (offset * 2));
+			circle.setLocation(offsetRightPad + offsetX + (width - circle.getWidth() * 3) - offset,
+					offsetRightPad + height - (circle.getHeight() * 3) - (offset * 2));
+			cancel.setLocation(offsetRightPad + offsetX + (width - cancel.getWidth() * 2) - offset,
+					offsetRightPad + offsetY + height - (circle.getHeight() * 2) - (offset * 2));
 		} else {
-			triangle.setLocation(offsetX + (width - triangle.getWidth() * 2) - offset * 2,
-					height - (triangle.getHeight() * 3) - offset);
-			square.setLocation(offsetX + (width - square.getWidth()) - offset * 2,
-					height - (square.getHeight() * 2) - offset);
-			circle.setLocation(offsetX + (width - circle.getWidth() * 3) - offset * 2,
-					height - (circle.getHeight() * 2) - offset);
-			cancel.setLocation(offsetX + (width - cancel.getWidth() * 2) - offset * 2,
-					offsetY + height - (circle.getHeight()) - offset);
+			triangle.setLocation(offsetRightPad + offsetX + (width - triangle.getWidth() * 2) - offset,
+					offsetRightPad + height - (triangle.getHeight() * 3) - offset);
+			square.setLocation(offsetRightPad + offsetX + (width - square.getWidth()) - offset,
+					offsetRightPad + height - (square.getHeight() * 2) - offset);
+			circle.setLocation(offsetX + (width - circle.getWidth() * 3) - offset,
+					offsetRightPad + height - (offsetRightPad + circle.getHeight() * 2) - offset);
+			cancel.setLocation(offsetRightPad + offsetX + (width - cancel.getWidth() * 2) - offset,
+					offsetRightPad + offsetY + height - (circle.getHeight()) - offset);
 		}
+		return this;
 	}
 
-	public void hide() {
+	public EmulatorButtons hide() {
 		hideLeft();
 		hideRight();
+		return this;
 	}
 
-	public void show() {
+	public EmulatorButtons show() {
 		showLeft();
 		showRight();
+		return this;
 	}
 
-	public void hideLeft() {
+	public EmulatorButtons hideLeft() {
 		up.disable(true);
 		left.disable(true);
 		right.disable(true);
 		down.disable(true);
+		return this;
 	}
 
-	public void showLeft() {
+	public EmulatorButtons showLeft() {
 		up.disable(false);
 		left.disable(false);
 		right.disable(false);
 		down.disable(false);
+		return this;
 	}
 
-	public void hideRight() {
+	public EmulatorButtons hideRight() {
 		triangle.disable(true);
 		square.disable(true);
 		circle.disable(true);
 		cancel.disable(true);
+		return this;
 	}
 
-	public void showRight() {
+	public EmulatorButtons showRight() {
 		triangle.disable(false);
 		square.disable(false);
 		circle.disable(false);
 		cancel.disable(false);
+		return this;
 	}
 
 	public int getX() {
@@ -325,18 +340,19 @@ public class EmulatorButtons implements LRelease {
 		g.setAlpha(tmp);
 	}
 
-	public void setAlpha(float a) {
+	public EmulatorButtons setAlpha(float a) {
 		this.ealpha = a;
+		return this;
 	}
 
 	public float getAlpha() {
 		return this.ealpha;
 	}
 
-	public void hit(int id, float x, float y, boolean flag) {
+	public EmulatorButtons hit(int id, float x, float y, boolean flag) {
 
 		if (!visible) {
-			return;
+			return this;
 		}
 
 		up.hit(id, x, y, flag);
@@ -348,13 +364,13 @@ public class EmulatorButtons implements LRelease {
 		square.hit(id, x, y, flag);
 		circle.hit(id, x, y, flag);
 		cancel.hit(id, x, y, flag);
-
+		return this;
 	}
 
-	public void unhit(int id, float x, float y) {
+	public EmulatorButtons unhit(int id, float x, float y) {
 
 		if (!visible) {
-			return;
+			return this;
 		}
 
 		up.unhit(id, x, y);
@@ -366,25 +382,28 @@ public class EmulatorButtons implements LRelease {
 		square.unhit(id, x, y);
 		circle.unhit(id, x, y);
 		cancel.unhit(id, x, y);
+		return this;
 	}
 
 	public boolean isVisible() {
 		return visible;
 	}
 
-	public void setVisible(boolean visible) {
-		if (!visible) {
+	public EmulatorButtons setVisible(boolean v) {
+		if (!v) {
 			release();
 		}
-		this.visible = visible;
+		this.visible = v;
+		return this;
 	}
 
 	public EmulatorListener getEmulatorListener() {
 		return emulatorListener;
 	}
 
-	public void setEmulatorListener(EmulatorListener emulator) {
+	public EmulatorButtons setEmulatorListener(EmulatorListener emulator) {
 		this.emulatorListener = emulator;
+		return this;
 	}
 
 	public EmulatorButtons disableDirection() {
@@ -435,7 +454,7 @@ public class EmulatorButtons implements LRelease {
 		return up;
 	}
 
-	public void release() {
+	public EmulatorButtons release() {
 
 		up.unhit();
 		left.unhit();
@@ -457,6 +476,25 @@ public class EmulatorButtons implements LRelease {
 			emulatorListener.unCircleClick();
 			emulatorListener.unCancelClick();
 		}
+		return this;
+	}
+
+	public int getOffsetLeftPad() {
+		return offsetLeftPad;
+	}
+
+	public EmulatorButtons setOffsetLeftPad(int offsetLeftPad) {
+		this.offsetLeftPad = offsetLeftPad;
+		return this;
+	}
+
+	public int getOffsetRightPad() {
+		return offsetRightPad;
+	}
+
+	public EmulatorButtons setOffsetRightPad(int offsetRightPad) {
+		this.offsetRightPad = offsetRightPad;
+		return this;
 	}
 
 	public boolean isClosed() {
@@ -468,6 +506,14 @@ public class EmulatorButtons implements LRelease {
 		if (pack != null) {
 			pack.close();
 			pack = null;
+		}
+		if (dpad != null) {
+			dpad.close();
+			dpad = null;
+		}
+		if (buttons != null) {
+			buttons.close();
+			buttons = null;
 		}
 		closed = true;
 	}

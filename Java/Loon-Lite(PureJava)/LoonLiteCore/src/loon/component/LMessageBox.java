@@ -31,7 +31,6 @@ import loon.font.IFont;
 import loon.font.LFont;
 
 import loon.opengl.GLEx;
-import loon.opengl.LSTRDictionary;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
 import loon.utils.StrBuilder;
@@ -348,8 +347,6 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 
 	private final StrBuilder _message = new StrBuilder();
 
-	private boolean _initNativeDraw = false;
-
 	protected int messageIndex = 0;
 	protected TArray<Message> _messageList;
 
@@ -646,12 +643,6 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 	}
 
 	public void drawMessage(GLEx g) {
-		if (!_initNativeDraw) {
-			if (_font instanceof LFont) {
-				LSTRDictionary.get().bind((LFont) _font, _tmpString);
-			}
-			_initNativeDraw = true;
-		}
 		Message message = _messageList.get(messageIndex);
 		_message.setLength(0);
 

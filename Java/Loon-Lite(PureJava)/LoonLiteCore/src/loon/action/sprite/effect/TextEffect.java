@@ -28,7 +28,6 @@ import loon.font.IFont;
 import loon.font.LFont;
 import loon.geom.PointF;
 import loon.opengl.GLEx;
-import loon.opengl.LSTRDictionary;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
@@ -225,15 +224,11 @@ public class TextEffect extends Entity implements BaseEffect {
 						if (tmp == font || font == null) {
 							messages.add(text.message);
 						} else {
-							LSTRDictionary.get().bind(tmp, messages);
 							messages.clear();
 						}
 						font = tmp;
 					}
 				}
-			}
-			if (font != null && messages.size > 0) {
-				LSTRDictionary.get().bind(font, messages);
 			}
 			packed = true;
 		}

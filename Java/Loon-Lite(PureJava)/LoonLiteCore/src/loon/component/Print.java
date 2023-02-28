@@ -32,7 +32,6 @@ import loon.font.LFont;
 import loon.geom.PointF;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
-import loon.opengl.LSTRDictionary;
 import loon.opengl.LSTRFont;
 import loon.utils.MathUtils;
 import loon.utils.StrBuilder;
@@ -186,17 +185,17 @@ public class Print implements FontSet<Print>, LRelease {
 			if (_context == null) {
 				return;
 			}
-			if (_print._defaultFont != null && !_print._defaultFont.isClosed() && !_drawDrawingFont) {
-				_print._defaultFont.close();
-			}
+			//if (_print._defaultFont != null && !_print._defaultFont.isClosed() && !_drawDrawingFont) {
+			//	_print._defaultFont.close();
+		//	}
 			// 如果是默认的loon系统字体
 			if (_font instanceof LFont) {
 				if (_drawDrawingFont) {
-					LSTRDictionary.Dict dict = LSTRDictionary.get().bind((LFont) _font, _context);
-					_print._defaultFont = dict.getSTR();
+				//	LSTRDictionary.Dict dict = LSTRDictionary.get().bind((LFont) _font, _context);
+				//	_print._defaultFont = dict.getSTR();
 					_print._curFont = _font;
 				} else {
-					_print._defaultFont = new LSTRFont((LFont) _font, _context, LSystem.isBrowser());
+			//		_print._defaultFont = new LSTRFont((LFont) _font, _context, LSystem.isBrowser());
 				}
 				// 其他字体(一般是Bitmap Font)
 			} else {
@@ -322,7 +321,7 @@ public class Print implements FontSet<Print>, LRelease {
 			}
 
 			if (hashCode == _lazyFlag) {
-				_defaultFont.postCharCache();
+			//	_defaultFont.postCharCache();
 				if (_isIconFlag && _iconX != 0 && _iconY != 0) {
 					fixIconPos();
 					g.draw(_creeseIcon, _iconLocation.x, _iconLocation.y);
@@ -330,7 +329,7 @@ public class Print implements FontSet<Print>, LRelease {
 				return;
 			}
 
-			_defaultFont.startChar();
+			//_defaultFont.startChar();
 			_fontColor = old;
 
 			for (int i = 0; i < _textsize; i++) {
@@ -397,8 +396,8 @@ public class Print implements FontSet<Print>, LRelease {
 					_leftsize += 12;
 				}
 				if (i != _textsize - 1) {
-					_defaultFont.addChar(_textChar, _printLocation.x + _leftsize + _leftoffset,
-							(_offsettext * _fontHeight) + _printLocation.y + _fontSize + _topoffset, _fontColor);
+				/*	_defaultFont.addChar(_textChar, _printLocation.x + _leftsize + _leftoffset,
+							(_offsettext * _fontHeight) + _printLocation.y + _fontSize + _topoffset, _fontColor);*/
 				} else if (!_newLine && !_onComplete) {
 					_iconX = _printLocation.x + _leftsize + _leftoffset;
 					_iconY = (_offsettext * _fontHeight) + _printLocation.y + _fontSize + _topoffset + _defaultFont.getAscent();
@@ -410,8 +409,8 @@ public class Print implements FontSet<Print>, LRelease {
 				_index++;
 			}
 
-			_defaultFont.stopChar();
-			_defaultFont.saveCharCache();
+			//_defaultFont.stopChar();
+			//_defaultFont.saveCharCache();
 
 			_lazyFlag = hashCode;
 

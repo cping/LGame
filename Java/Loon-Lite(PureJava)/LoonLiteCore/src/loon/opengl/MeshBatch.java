@@ -27,7 +27,7 @@ import loon.LSystem;
 
 public class MeshBatch extends BaseBatch {
 
-	private final MeshData meshData = new MeshData();
+	private final MeshData meshData;
 
 	private Mesh meshObject;
 
@@ -53,6 +53,7 @@ public class MeshBatch extends BaseBatch {
 
 	public MeshBatch(Canvas gl, int maxSize) {
 		super(gl);
+		this.meshData = new MeshData();
 		this.init();
 	}
 

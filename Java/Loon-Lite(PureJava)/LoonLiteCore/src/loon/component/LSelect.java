@@ -32,7 +32,6 @@ import loon.font.FontSet;
 import loon.font.IFont;
 import loon.font.LFont;
 import loon.opengl.GLEx;
-import loon.opengl.LSTRDictionary;
 import loon.utils.TArray;
 import loon.utils.timer.LTimer;
 
@@ -183,9 +182,6 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 		this.selectSize = selects.length;
 		if (doubleSizeFont == 0) {
 			doubleSizeFont = 20;
-		}
-		if (_messageFont instanceof LFont) {
-			LSTRDictionary.get().bind((LFont) _messageFont, selects);
 		}
 	}
 

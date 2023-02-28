@@ -68,7 +68,12 @@ public class LSetting {
 	/**
 	 * 如果此项为true,则Loon会检查resize缩放行为,原本宽高比例是横屏，改成竖屏，或者竖屏改成横屏的resize将不被允许
 	 */
-	public boolean isCheckReisze = false;
+	public boolean isCheckResize = false;
+
+	/**
+	 * 如果此项为true,则游戏窗体可以缩放大小
+	 */
+	public boolean isAllowScreenResizabled = true;
 
 	/**
 	 * 如果此项为true,则Loon中的缓动动画会和图像渲染同步(为false时缓动刷新次数会比画面渲染次数少),true时缓动动画会更加流畅,
@@ -116,7 +121,7 @@ public class LSetting {
 	 * 生成系统默认的LFont时,是否使用剪切生成
 	 */
 	public boolean useTrueFontClip = true;
-	
+
 	public Class<?> mainClass = null;
 
 	/**
@@ -210,7 +215,7 @@ public class LSetting {
 		this.isSyncTween = setting.isSyncTween;
 		this.isFPS = setting.isFPS;
 		this.isLogo = setting.isLogo;
-		this.isCheckReisze = setting.isCheckReisze;
+		this.isCheckResize = setting.isCheckResize;
 		this.isConsoleLog = setting.isConsoleLog;
 		this.disposeTexture = setting.disposeTexture;
 		this.fps = setting.fps;

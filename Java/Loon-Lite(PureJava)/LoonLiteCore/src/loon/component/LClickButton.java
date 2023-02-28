@@ -36,7 +36,6 @@ import loon.font.IFont;
 import loon.font.LFont;
 import loon.geom.PointF;
 import loon.opengl.GLEx;
-import loon.opengl.LSTRDictionary;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 
@@ -367,9 +366,6 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 			return this;
 		}
 		this.text = t;
-		if (font instanceof LFont) {
-			LSTRDictionary.get().bind((LFont) font, text);
-		}
 		return this;
 	}
 

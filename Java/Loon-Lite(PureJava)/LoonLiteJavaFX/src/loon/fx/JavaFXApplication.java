@@ -27,7 +27,6 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.CacheHint;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
@@ -46,6 +45,7 @@ import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import loon.LGame;
 import loon.LSetting;
+import loon.LSysException;
 import loon.LazyLoading;
 import loon.Platform;
 import loon.events.KeyMake;
@@ -64,7 +64,9 @@ public class JavaFXApplication extends Application implements Platform {
 		slazyData = lazy;
 		sAppSetting = setting;
 		sMainClass = app.getClass();
+
 		Application.launch(JavaFXApplication.class, args);
+
 	}
 
 	private DoubleProperty scaledWidth = new SimpleDoubleProperty();
@@ -112,6 +114,7 @@ public class JavaFXApplication extends Application implements Platform {
 			appSetting.width_zoom = (int) width;
 			appSetting.height_zoom = (int) height;
 		}
+
 		this.game = new JavaFXGame(this, sAppSetting);
 	}
 
@@ -138,8 +141,12 @@ public class JavaFXApplication extends Application implements Platform {
 			primaryStage.setMaximized(true);
 			primaryStage.setFullScreenExitHint("");
 		}
-
-		game.register(lazyData.onScreen());
+		try {
+			game.register(lazyData.onScreen());
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LSysException(e.getMessage());
+		}
 		game.reset();
 		float newWidth = game.setting.getShowWidth();
 		float newHeight = game.setting.getShowHeight();
@@ -151,8 +158,8 @@ public class JavaFXApplication extends Application implements Platform {
 		if (fxCanvas == null) {
 			fxCanvas = new JavaFXResizeCanvas(game.graphics(), newWidth, newHeight);
 		}
-		fxCanvas.setCache(true);
-		fxCanvas.setCacheHint(CacheHint.SPEED);
+		fxCanvas.setCache(false);
+		// fxCanvas.setCacheHint(CacheHint.SPEED);
 		GraphicsContext ctx = fxCanvas.getGraphicsContext2D();
 
 		Paint paint = ctx.getFill();
@@ -190,18 +197,20 @@ public class JavaFXApplication extends Application implements Platform {
 				}
 			}
 		}
-
+		if (!game.setting.isAllowScreenResizabled && desktop) {
+			primaryStage.setResizable(false);
+		}
 		primaryStage.show();
 
 		windowBorderWidth = primaryStage.getWidth() - scaledWidth.getValue();
 		windowBorderHeight = primaryStage.getHeight() - scaledHeight.getValue();
 
-		if (windowBorderHeight < 0.5 && System.getProperty("os.name").contains("nux")) {
-			windowBorderHeight = 35.0d;
+		if (windowBorderHeight < 0.5 && JavaFXGame.isLinux()) {
+			windowBorderHeight = 35d;
 		}
 
-		scaledWidth.bind(primaryStage.widthProperty().add(windowBorderWidth));
-		scaledHeight.bind(primaryStage.heightProperty().add(windowBorderHeight));
+		scaledWidth.bind(primaryStage.widthProperty().subtract(windowBorderWidth));
+		scaledHeight.bind(primaryStage.heightProperty().subtract(windowBorderHeight));
 
 		scaleRatioX.bind(scaledWidth.divide(newWidth));
 		scaleRatioY.bind(scaledHeight.divide(newHeight));
@@ -211,18 +220,16 @@ public class JavaFXApplication extends Application implements Platform {
 		Scale scale = new Scale();
 		scale.xProperty().bind(scaleRatioX);
 		scale.yProperty().bind(scaleRatioY);
+
 		fxScene.getRoot().getTransforms().setAll(scale);
 
 	}
 
 	protected Scene createScene(Group group, float width, float height, boolean desktop) {
-		LSetting setting = game.setting;
-
 		scaledWidth.set(width);
 		scaledHeight.set(height);
-		scaleRatioX.set(scaledWidth.getValue() / setting.getShowWidth());
-		scaleRatioY.set(scaledHeight.getValue() / setting.getShowHeight());
-
+		scaleRatioX.set(scaledWidth.getValue() / width);
+		scaleRatioY.set(scaledHeight.getValue() / height);
 		return (this.fxScene = new Scene(group, width, height, false, SceneAntialiasing.BALANCED));
 	}
 

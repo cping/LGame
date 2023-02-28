@@ -39,7 +39,6 @@ import loon.font.FontSet;
 import loon.font.IFont;
 import loon.font.LFont;
 import loon.opengl.GLEx;
-import loon.opengl.LSTRDictionary;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 
@@ -95,8 +94,6 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 	private boolean flashFont;
 	private boolean over;
 	private boolean slideMessage;
-
-	private boolean _dirty;
 
 	private int[] slideX;
 
@@ -384,7 +381,7 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 			setColor(this.crs[this.numBak], this.cgs[this.numBak], this.cbs[this.numBak]);
 			put(this.strTemp);
 		}
-		_dirty = true;
+
 	}
 
 	private void setGetMessageLength(int d_length) {
@@ -440,16 +437,6 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 	}
 
 	public LTextArea draw(GLEx g, int dx, int dy, int d_type, int lines) {
-		if (_dirty) {
-			if (displayFont instanceof LFont) {
-				String[] list = new String[this.amount];
-				for (int i = 0; i < amount && i < message.length; i++) {
-					list[i] = message[i];
-				}
-				LSTRDictionary.get().bind((LFont) displayFont, list);
-			}
-			_dirty = false;
-		}
 		if (_background != null) {
 			g.draw(_background, dx, dy, getWidth(), getHeight(), _component_baseColor);
 		}
@@ -580,15 +567,6 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 
 	public LTextArea setWaitFlag(boolean w) {
 		this.waitFlag = w;
-		return this;
-	}
-
-	public boolean isDirty() {
-		return this._dirty;
-	}
-
-	public LTextArea setDirty(boolean d) {
-		this._dirty = d;
 		return this;
 	}
 

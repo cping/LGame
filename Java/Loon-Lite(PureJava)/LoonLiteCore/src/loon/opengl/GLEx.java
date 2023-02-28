@@ -280,12 +280,12 @@ public class GLEx implements LRelease {
 			return this;
 		}
 		lastBrush.blend = mode;
-		// GLUtils.setBlendMode(batch.gl, mode);
+		GLUtils.setBlendMode(batch.gl, mode);
 		return this;
 	}
 
 	public int getBlendMode() {
-		return 0;// GLUtils.getBlendMode();
+		return GLUtils.getBlendMode();
 	}
 
 	public GLEx saveBrush() {
@@ -420,10 +420,8 @@ public class GLEx implements LRelease {
 		}
 		batch.flush();
 		RectBox r = popScissorState();
-		if (r == null) {
-			// GLUtils.disablecissorTest(batch.gl);
-		} else {
-			// batch.gl.glScissor(r.x(), r.y(), r.width(), r.height());
+		if (r != null) {
+			getCanvas().clipRect(r.x(), r.y(), r.width(), r.height());
 		}
 		return this;
 	}
@@ -461,14 +459,6 @@ public class GLEx implements LRelease {
 			aff.translate(-rx, -ry);
 
 		}
-		return this;
-	}
-
-	public GLEx viewport(int x, int y, int width, int height) {
-		if (isClosed) {
-			return this;
-		}
-		// batch.gl.glViewport(x, y, width, height);
 		return this;
 	}
 
@@ -1832,12 +1822,15 @@ public class GLEx implements LRelease {
 	 */
 	public GLEx drawTriangle(final float x1, final float y1, final float x2, final float y2, final float x3,
 			final float y3) {
-		/*
-		 * beginRenderer(GLType.Line); int argb =
-		 * LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor);
-		 * glRenderer.setColor(argb); glRenderer.triangle(x1, y1, x2, y2, x3, y3);
-		 * endRenderer();
-		 */
+		float[] xpos = new float[3];
+		float[] ypos = new float[3];
+		xpos[0] = x1;
+		xpos[1] = x2;
+		xpos[2] = x3;
+		ypos[0] = y1;
+		ypos[1] = y2;
+		ypos[2] = y3;
+		drawPolygon(xpos, ypos, 3);
 		return this;
 	}
 
@@ -1853,12 +1846,15 @@ public class GLEx implements LRelease {
 	 */
 	public GLEx fillTriangle(final float x1, final float y1, final float x2, final float y2, final float x3,
 			final float y3) {
-		/*
-		 * beginRenderer(GLType.Filled); int argb =
-		 * LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor);
-		 * glRenderer.setColor(argb); glRenderer.triangle(x1, y1, x2, y2, x3, y3);
-		 * endRenderer();
-		 */
+		float[] xpos = new float[3];
+		float[] ypos = new float[3];
+		xpos[0] = x1;
+		xpos[1] = x2;
+		xpos[2] = x3;
+		ypos[0] = y1;
+		ypos[1] = y2;
+		ypos[2] = y3;
+		fillPolygon(xpos, ypos, 3);
 		return this;
 	}
 
@@ -2463,7 +2459,7 @@ public class GLEx implements LRelease {
 		canvas.setColor(color);
 		return this;
 	}
-	
+
 	/**
 	 * 绘制圆形边框
 	 * 

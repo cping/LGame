@@ -22,24 +22,18 @@ package loon.opengl;
 
 import loon.LRelease;
 import loon.LSystem;
-import loon.LTexture;
-import loon.LTextureBatch;
-import loon.LTextureBatch.Cache;
 import loon.canvas.Canvas;
-import loon.canvas.Image;
 import loon.canvas.LColor;
-import loon.events.Updateable;
+import loon.font.FontTrans;
 import loon.font.IFont;
 import loon.font.ITranslator;
 import loon.font.LFont;
-import loon.font.TextLayout;
 import loon.geom.Affine2f;
 import loon.geom.PointI;
-import loon.utils.IntMap;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 
-public class LSTRFont implements IFont, LRelease {
+public class LSTRFont extends FontTrans implements IFont, LRelease {
 
 	/*
 	 * 获得一个默认的LSTRFont.
@@ -56,410 +50,44 @@ public class LSTRFont implements IFont, LRelease {
 	}
 
 	public final static LSTRFont getFont(int size) {
-		return new LSTRFont(LFont.getFont(size), LSTRDictionary.getAddedString(), true);
+		return new LSTRFont(LFont.getFont(size));
 	}
 
-	private static class IntObject {
+	private final char newLineFlag = LSystem.LF;
 
-		public int width;
+	private final PointI _offset = new PointI();
 
-		public int height;
+	private boolean _outBounds = false;
 
-		public int storedX;
+	private int _drawLimit = 0;
 
-		public int storedY;
+	private int advanceSpace = 8;
 
-	}
-
-	private static class UpdateStringFont implements Updateable {
-
-		private LSTRFont strfont;
-
-		public UpdateStringFont(LSTRFont strf) {
-			this.strfont = strf;
-		}
-
-		@Override
-		public void action(Object a) {
-			if (strfont._isClose) {
-				return;
-			}
-			strfont.fontSize = strfont.font.getSize();
-			strfont.ascent = strfont.font.getAscent();
-			if (strfont.additionalChars != null && strfont.additionalChars.length > strfont.totalCharSet) {
-				strfont.textureWidth *= 2;
-			}
-			Canvas canvas = LSystem.base().graphics().createCanvas(strfont.textureWidth, strfont.textureHeight);
-			canvas.setColor(LColor.white);
-			canvas.setFont(strfont.font);
-
-			int rowHeight = 0;
-			int positionX = 0;
-			int positionY = 0;
-			int customCharsLength = (strfont.additionalChars != null) ? strfont.additionalChars.length : 0;
-			strfont.totalCharSet = customCharsLength == 0 ? strfont.totalCharSet : 0;
-			StringBuilder sbr = new StringBuilder(strfont.totalCharSet);
-
-			final boolean clipFont = LSystem.isTrueFontClip();
-			// 本地字体怎么都不如ttf或者fnt字体清晰准确,差异太大，只能尽量保证显示效果……
-			for (int i = 0, size = strfont.totalCharSet + customCharsLength; i < size; i++) {
-				char ch = (i < strfont.totalCharSet) ? (char) i : strfont.additionalChars[i - strfont.totalCharSet];
-
-				TextLayout layout = strfont.font.getLayoutText(String.valueOf(ch));
-
-				int charwidth = layout.charWidth(ch);
-
-				if (charwidth <= 0) {
-					charwidth = 1;
-				}
-
-				int charheight = (int) layout.getHeight();
-				if (charheight <= 0) {
-					charheight = strfont.fontSize;
-				}
-				IntObject newIntObject = new IntObject();
-
-				newIntObject.width = charwidth;
-				newIntObject.height = charheight;
-
-				if (clipFont) {
-					// 发现部分环境字体如果整体渲染到canvas的话，会导致纹理切的不整齐(实际上就是间距和从系统获取的不符合),
-					// 保险起见一个个字体粘贴……
-					Image image = strfont.getFontImage(layout, ch, charwidth, charheight);
-					canvas.draw(image, positionX, positionY);
-					image.close();
-					image = null;
-					if (positionX + newIntObject.width >= strfont.textureWidth) {
-						positionX = 0;
-						positionY += rowHeight;
-						rowHeight = 0;
-					}
-				} else {
-					// 一次渲染一整行本地字体到纹理，这样对系统开销最小，不过某些平台切的不整齐(实际上就是间距和从系统获取的不符合)
-					if (positionX + newIntObject.width >= strfont.textureWidth) {
-						layout = strfont.font.getLayoutText(sbr.toString());
-						canvas.fillText(layout, 0, positionY);
-						sbr.delete(0, sbr.length());
-						positionX = 0;
-						positionY += rowHeight;
-						rowHeight = 0;
-					}
-					sbr.append(ch);
-				}
-
-				newIntObject.storedX = positionX;
-				newIntObject.storedY = positionY;
-
-				if (newIntObject.height > strfont.fontHeight) {
-					strfont.fontHeight = newIntObject.height;
-				}
-
-				if (newIntObject.height > rowHeight) {
-					rowHeight = newIntObject.height;
-				}
-				positionX += newIntObject.width;
-				if (i < strfont.totalCharSet) {
-					strfont.charArray[i] = newIntObject;
-				} else {
-					strfont.customChars.put(ch, newIntObject);
-				}
-			}
-			if (sbr.length() > 0) {
-				TextLayout layout = strfont.font.getLayoutText(sbr.toString());
-				canvas.fillText(layout, 0, positionY);
-				sbr = null;
-			}
-			LTextureBatch tmpbatch = strfont.fontBatch;
-			strfont.fontBatch = new LTextureBatch(strfont.texture = canvas.toTexture());
-			if (tmpbatch != null) {
-				tmpbatch.close();
-			}
-			strfont._initChars = true;
-			strfont.isDrawing = false;
-		}
-
-	}
-
-	private final Image getFontImage(TextLayout layout, char ch, int w, int h) {
-		Canvas canvas = Image.createCanvas(w, h);
-		canvas.setColor(LColor.white);
-		canvas.fillText(layout, 0, 0);
-		canvas.close();
-		return canvas.snapshot();
-
-	}
-
-	private PointI _offset = new PointI();
-
-	private boolean _isClose = false;
-
-	private int _initDraw = -1;
-
-	private int _drawLimit = 1;
-
-	private float updateX = 0, updateY = 0;
-
-	private char newLineFlag = '\n';
-
-	private LTexture texture;
-
-	private boolean useCache, isDrawing, isasyn;
+	private boolean isasyn;
 
 	private float offsetX = 1, offsetY = 1;
-
-	private IntMap<Cache> displays;
-
-	private int totalCharSet = 256;
-
-	private IntMap<IntObject> customChars = new IntMap<IntObject>();
-
-	private IntObject[] charArray = new IntObject[totalCharSet];
-
-	private LColor[] colors = null;
 
 	private String text;
 
 	private LFont font;
 
-	private IntObject intObject;
-
-	private Cache display;
-
 	private float ascent;
 
-	private int charCurrent;
+	private int pixelColor = LColor.DEF_COLOR;
 
-	private int totalWidth = 0, totalHeight = 0;
-
-	private int textureWidth = 512;
-
-	private int textureHeight = 512;
-
-	private int fontSize = 0;
+	private int pixelFontSize = 0, fontSize = 0;
 
 	private int fontHeight = 0;
 
-	private LTextureBatch fontBatch;
-
-	private boolean _initChars = false;
-
-	private char[] additionalChars = null;
+	private float fontScale = 1f;
 
 	public LSTRFont(LFont font) {
-		this(font, (char[]) null, true);
-	}
-
-	public LSTRFont(LFont font, String strings) {
-		this(font, strings.toCharArray(), true);
-	}
-
-	public LSTRFont(LFont font, String[] strings) {
-		this(font, StringUtils.merge(strings).toCharArray(), true);
-	}
-
-	public LSTRFont(LFont font, boolean asyn) {
-		this(font, (char[]) null, asyn);
-	}
-
-	public LSTRFont(LFont font, String strings, boolean asyn) {
-		this(font, strings.toCharArray(), asyn);
-	}
-
-	public LSTRFont(LFont font, String[] strings, boolean asyn) {
-		this(font, StringUtils.merge(strings).toCharArray(), asyn);
-	}
-
-	public LSTRFont(LFont font, char[] charMessage, boolean asyn) {
-		CharSequence chs = " " + StringUtils.unificationChars(charMessage);
-		this.displays = new IntMap<Cache>(totalCharSet);
-		this.useCache = true;
 		this.font = font;
-		this.isasyn = asyn;
-		this.fontSize = font.getSize();
+		this.pixelFontSize = font.getSize();
 		this.fontHeight = font.getHeight();
 		this.ascent = font.getAscent();
-		int customCharsLength = (additionalChars != null) ? additionalChars.length : 0;
-		this.totalCharSet = customCharsLength == 0 ? totalCharSet : 0;
-		if (chs != null && chs.length() > 0) {
-			StringBuilder tmp = new StringBuilder(chs);
-			this.text = tmp.toString();
-			this.additionalChars = text.toCharArray();
-			if (additionalChars != null && additionalChars.length > totalCharSet) {
-				textureWidth *= 2;
-			}
-			this.make(asyn);
-		}
-		if (StringUtils.isEmpty(text.trim())) {
-			_isClose = true;
-		}
-		this._drawLimit = 1;
-	}
-
-	private void make() {
-		make(isasyn);
-	}
-
-	private synchronized void make(boolean asyn) {
-		if (_isClose) {
-			return;
-		}
-		if (_initChars) {
-			return;
-		}
-		if (isDrawing) {
-			return;
-		}
-		isDrawing = true;
-		updateX = 0;
-		updateY = LSystem.isBrowser() ? 1f : 0;
-		if (LSystem.isEmulateFullVer()) {
-			Updateable update = new UpdateStringFont(this);
-			if (asyn) {
-				LSystem.load(update);
-			} else {
-				update.action(null);
-			}
-		}
-	}
-
-	public LTexture getTexture() {
-		return texture;
-	}
-
-	@Override
-	public void drawString(GLEx g, String chars, float x, float y, float sx, float sy, float ax, float ay,
-			float rotation, LColor c) {
-		drawString(chars, x, y, sx, sy, ax, ay, rotation, c);
-	}
-
-	public void drawString(String chars, float x, float y) {
-		drawString(x, y, 1f, 1f, 0, 0, 0, chars, LColor.white, 0, chars.length());
-	}
-
-	public void drawString(String chars, float x, float y, LColor color) {
-		drawString(x, y, 1f, 1f, 0, 0, 0, chars, color, 0, chars.length());
-	}
-
-	public void drawString(String chars, float x, float y, float rotation, LColor color) {
-		drawString(x, y, 1f, 1f, 0, 0, rotation, chars, color, 0, chars.length());
-	}
-
-	public void drawString(String chars, float x, float y, float rotation) {
-		drawString(x, y, 1f, 1f, 0, 0, rotation, chars, LColor.white, 0, chars.length());
-	}
-
-	public void drawString(String chars, float x, float y, float sx, float sy, float ax, float ay, float rotation,
-			LColor c) {
-		drawString(x, y, sx, sy, ax, ay, rotation, chars, c, 0, chars.length());
-	}
-
-	private void drawString(float mx, float my, float sx, float sy, float ax, float ay, float rotation, String chars,
-			LColor c, int startIndex, int endIndex) {
-		if (_isClose) {
-			return;
-		}
-		if (StringUtils.isEmpty(chars)) {
-			return;
-		}
-		make();
-		if (processing()) {
-			return;
-		}
-		if (_initDraw < _drawLimit) {
-			_initDraw++;
-			return;
-		}
-		if (checkTexture()) {
-			return;
-		}
-		if (displays.size > LSystem.DEFAULT_MAX_CACHE_SIZE) {
-			synchronized (displays) {
-				for (Cache cache : displays.values()) {
-					if (cache != null) {
-						cache.close();
-						cache = null;
-					}
-				}
-			}
-			displays.clear();
-		}
-
-		final float x = mx + _offset.x;
-		final float y = my + _offset.y;
-		this.intObject = null;
-		this.charCurrent = 0;
-		this.totalWidth = 0;
-		this.totalHeight = 0;
-		if (rotation != 0 && (ax == 0 && ay == 0)) {
-			TextLayout layout = font.getLayoutText(chars);
-			ax = layout.bounds.width / 2;
-			ay = layout.bounds.height;
-		}
-		if (useCache) {
-			display = displays.get(chars);
-			if (display == null) {
-				fontBatch.begin();
-				float old = fontBatch.getFloatColor();
-				fontBatch.setColor(c);
-
-				for (int i = startIndex; i < endIndex; i++) {
-
-					charCurrent = chars.charAt(i);
-					if (charCurrent < totalCharSet) {
-						intObject = charArray[charCurrent];
-					} else {
-						intObject = customChars.get(charCurrent);
-					}
-					if (charCurrent == newLineFlag) {
-						totalHeight += fontSize;
-						totalWidth = 0;
-					}
-					if (intObject != null) {
-
-						fontBatch.drawQuad(totalWidth, totalHeight, (totalWidth + intObject.width) - offsetX,
-								(totalHeight + intObject.height) - offsetY, intObject.storedX, intObject.storedY,
-								intObject.storedX + intObject.width - offsetX,
-								intObject.storedY + intObject.height - offsetY);
-
-						totalWidth += intObject.width;
-					}
-				}
-				fontBatch.commit(x, y, sx, sy, ax, ay, rotation);
-				fontBatch.setColor(old);
-				displays.put(chars, display = fontBatch.newCache());
-			} else if (display != null && fontBatch != null && fontBatch.toTexture() != null) {
-				fontBatch.postCache(display, c, x, y, sx, sy, ax, ay, rotation);
-			}
-		} else {
-			fontBatch.begin();
-			float old = fontBatch.getFloatColor();
-			fontBatch.setColor(c);
-
-			for (int i = startIndex; i < endIndex; i++) {
-
-				charCurrent = chars.charAt(i);
-				if (charCurrent < totalCharSet) {
-					intObject = charArray[charCurrent];
-				} else {
-					intObject = customChars.get(charCurrent);
-				}
-				if (charCurrent == newLineFlag) {
-					totalHeight += fontSize;
-					totalWidth = 0;
-				}
-				if (intObject != null) {
-
-					fontBatch.drawQuad(totalWidth, totalHeight, (totalWidth + intObject.width) - offsetX,
-							(totalHeight + intObject.height) - offsetY, intObject.storedX, intObject.storedY,
-							intObject.storedX + intObject.width - offsetX,
-							intObject.storedY + intObject.height - offsetY);
-
-					totalWidth += intObject.width;
-				}
-			}
-			fontBatch.setColor(old);
-			fontBatch.commit(x, y, sx, sy, ax, ay, rotation);
-		}
+		this.advanceSpace = MathUtils.max(1, pixelFontSize / 2);
+		this._drawLimit = 0;
 	}
 
 	@Override
@@ -494,345 +122,128 @@ public class LSTRFont implements IFont, LRelease {
 		drawString(gl, x, y, sx, sy, ax, ay, rotation, chars, c, 0, chars.length());
 	}
 
+	@Override
+	public void drawString(GLEx gl, String chars, float x, float y, float sx, float sy, float ax, float ay,
+			float rotation, LColor c) {
+		drawString(gl, chars, x, y, sx, sy, ax, ay, rotation, c);
+	}
+
 	private void drawString(GLEx gl, float mx, float my, float sx, float sy, float ax, float ay, float rotation,
-			String chars, LColor c, int startIndex, int endIndex) {
-		if (_isClose) {
+			String msg, LColor c, int startIndex, int endIndex) {
+		if (StringUtils.isEmpty(msg)) {
 			return;
 		}
-		if (StringUtils.isEmpty(chars)) {
-			return;
+		String newMessage = toMessage(msg);
+		if (checkEndIndexUpdate(endIndex, msg, newMessage)) {
+			endIndex = newMessage.length();
 		}
-
-		make();
-
-		if (processing()) {
-			return;
-		}
-
-		if (_initDraw < _drawLimit) {
-			_initDraw++;
-			return;
-		}
-		if (checkTexture()) {
-			return;
-		}
+		final float nsx = sx * fontScale;
+		final float nsy = sy * fontScale;
 		final float x = mx + _offset.x;
 		final float y = my + _offset.y;
-		this.intObject = null;
-		this.charCurrent = 0;
-		this.totalWidth = 0;
-		this.totalHeight = 0;
+		int old = gl.color();
 		final boolean anchor = ax != 0 || ay != 0;
-		final boolean scale = sx != 1f || sy != 1f;
+		final boolean scale = (nsx != 1f || nsy != 1f);
 		final boolean angle = rotation != 0;
-		final boolean update = scale || angle || anchor;
+		final boolean update = angle || anchor;
+		final int blend = gl.getBlendMode();
 		try {
+			gl.setTint(c);
 			if (update) {
 				gl.saveTx();
 				Affine2f xf = gl.tx();
 				if (angle) {
-					float centerX = x + this.getWidth(chars) / 2;
-					float centerY = y + this.getHeight(chars) / 2;
+					float centerX = x + this.getWidth(newMessage, false) / 2;
+					float centerY = y + this.getHeight(newMessage, false) / 2;
 					xf.translate(centerX, centerY);
 					xf.preRotate(rotation);
 					xf.translate(-centerX, -centerY);
 				}
 				if (scale) {
-					float centerX = x + this.getWidth(chars) / 2;
-					float centerY = y + this.getHeight(chars) / 2;
+					float centerX = x + this.getWidth(newMessage, false) / 2;
+					float centerY = y + this.getHeight(newMessage, false) / 2;
 					xf.translate(centerX, centerY);
-					xf.preScale(sx, sy);
+					xf.preScale(nsx, nsy);
 					xf.translate(-centerX, -centerY);
 				}
 				if (anchor) {
 					xf.translate(ax, ay);
 				}
-
 			}
-			if (LSystem.isEmulateFullVer()) {
-				for (int i = startIndex; i < endIndex; i++) {
-					charCurrent = chars.charAt(i);
-					if (charCurrent < totalCharSet) {
-						intObject = charArray[charCurrent];
-					} else {
-						intObject = customChars.get(charCurrent);
-					}
-					if (charCurrent == newLineFlag) {
-						totalHeight += fontSize;
-						totalWidth = 0;
-					}
-					if (intObject != null) {
-						gl.draw(texture, x + totalWidth, y + totalHeight, intObject.width * sx, intObject.height * sy,
-								StringUtils.isChinese((char) charCurrent) ? intObject.storedX - updateX
-										: intObject.storedX,
-								intObject.storedY, intObject.width, intObject.height - updateY, c);
-						totalWidth += intObject.width;
-					}
-				}
-			} else {
-				gl.synchTransform();
-				gl.getCanvas().setFont(font);
-				gl.getCanvas().drawText(chars, x, y, c);
-			}
-
+			gl.synchTransform();
+			Canvas canvas = gl.getCanvas();
+			canvas.setFont(font);
+			canvas.drawText(newMessage, x, y, c);
 		} finally {
+			gl.setBlendMode(blend);
+			gl.setTint(old);
 			if (update) {
 				gl.restoreTx();
 			}
 		}
 	}
 
-	public void setUpdateX(float x) {
-		this.updateX = x;
+	public int getPixelColor() {
+		return this.pixelColor;
 	}
 
-	public void setUpdateY(float y) {
-		this.updateY = y;
-	}
-	
-	private boolean checkTexture(){
-		return LSystem.isEmulateFullVer() && texture.isClosed();
+	public void setPixelColor(int pixel) {
+		this.pixelColor = pixel;
 	}
 
-	public void addChar(char c, float x, float y, LColor color) {
-		if (_isClose) {
-			return;
-		}
-		make();
-		if (processing()) {
-			return;
-		}
-		if (_initDraw < _drawLimit) {
-			_initDraw++;
-			return;
-		}
-		if (checkTexture()) {
-			return;
-		}
-		this.charCurrent = c;
-		if (charCurrent < totalCharSet) {
-			intObject = charArray[charCurrent];
-		} else {
-			intObject = customChars.get(charCurrent);
-		}
-		if (intObject != null) {
-			if (color != null) {
-				setImageColor(color);
-			}
-			if (c == newLineFlag) {
-				fontBatch.draw(colors, x, y + fontSize, intObject.width - offsetX, intObject.height - offsetY,
-						intObject.storedX, intObject.storedY, intObject.storedX + intObject.width - offsetX,
-						intObject.storedY + intObject.height - offsetY);
-			} else {
-				fontBatch.draw(colors, x, y, intObject.width - offsetX, intObject.height - offsetY, intObject.storedX,
-						intObject.storedY, intObject.storedX + intObject.width - offsetX,
-						intObject.storedY + intObject.height - offsetY);
-			}
-			if (colors != null) {
-				colors = null;
-			}
-		}
+	public void setPixelColor(LColor color) {
+		this.pixelColor = (color == null ? LColor.DEF_COLOR : color.getARGB());
 	}
 
-	public void startChar() {
-		if (_isClose) {
-			return;
-		}
-		make();
-		if (processing()) {
-			return;
-		}
-		if (_initDraw < _drawLimit) {
-			_initDraw++;
-			return;
-		}
-		if (checkTexture()) {
-			return;
-		}
-		fontBatch.begin();
+	public int getPixelFontSize() {
+		return this.pixelFontSize == 0 ? this.font.getSize() : this.pixelFontSize;
 	}
 
-	public void stopChar() {
-		if (_isClose) {
-			return;
-		}
-		make();
-		if (_initDraw < _drawLimit) {
-			_initDraw++;
-			return;
-		}
-		if (processing()) {
-			return;
-		}
-		if (checkTexture()) {
-			return;
-		}
-		/*
-		 * GL20 g = LSystem.base().graphics().gl; if (g != null) { int old =
-		 * GLUtils.getBlendMode(); GLUtils.setBlendMode(g, LSystem.MODE_NORMAL);
-		 * fontBatch.end(); GLUtils.setBlendMode(g, old); }
-		 */
+	public void setPixelFontSize(int size) {
+		this.pixelFontSize = size;
 	}
 
-	private boolean processing() {
-		return (fontBatch == null || isDrawing) && LSystem.isEmulateFullVer();
-	}
-
-	public void postCharCache() {
-		if (_isClose) {
-			return;
-		}
-		make();
-		if (processing()) {
-			return;
-		}
-		if (checkTexture()) {
-			return;
-		}
-		/*
-		 * GL20 g = LSystem.base().graphics().gl; if (g != null) { int old =
-		 * GLUtils.getBlendMode(); GLUtils.setBlendMode(g, LSystem.MODE_NORMAL);
-		 * fontBatch.postLastCache(); GLUtils.setBlendMode(g, old); }
-		 */
-	}
-
-	public Cache saveCharCache() {
-		if (_isClose) {
-			return null;
-		}
-		make();
-		if (processing()) {
-			return null;
-		}
-		if (checkTexture()) {
-			return null;
-		}
-		fontBatch.disposeLastCache();
-		return fontBatch.newCache();
-	}
-
-	public LTextureBatch getFontBatch() {
-		return fontBatch;
-	}
-
-	private void setImageColor(float r, float g, float b, float a) {
-		setColor(Painter.TOP_LEFT, r, g, b, a);
-		setColor(Painter.TOP_RIGHT, r, g, b, a);
-		setColor(Painter.BOTTOM_LEFT, r, g, b, a);
-		setColor(Painter.BOTTOM_RIGHT, r, g, b, a);
-	}
-
-	private void setImageColor(LColor c) {
-		if (c == null) {
-			return;
-		}
-		setImageColor(c.r, c.g, c.b, c.a);
-	}
-
-	private void setColor(int corner, float r, float g, float b, float a) {
-		if (colors == null) {
-			colors = new LColor[] { new LColor(1, 1, 1, 1f), new LColor(1, 1, 1, 1f), new LColor(1, 1, 1, 1f),
-					new LColor(1, 1, 1, 1f) };
-		}
-		colors[corner].r = r;
-		colors[corner].g = g;
-		colors[corner].b = b;
-		colors[corner].a = a;
+	public void setFontSize(int size) {
+		this.setSize(size);
 	}
 
 	@Override
+	public void setSize(int size) {
+		this.fontSize = size;
+		this.fontScale = (float) size / (float) this.pixelFontSize;
+	}
+
+
+	@Override
 	public int charWidth(char c) {
-		if (_isClose) {
+		if (c == newLineFlag) {
 			return 0;
-		}
-		make();
-		if (c == '\n') {
-			return 0;
-		}
-		if (processing()) {
-			return font.charWidth(c);
-		}
-		if (checkTexture()) {
-			return 0;
-		}
-		if (c < totalCharSet) {
-			intObject = charArray[c];
-		} else {
-			intObject = customChars.get((int) c);
-		}
-		if (intObject != null) {
-			return intObject.width;
 		}
 		return font.charWidth(c);
 	}
 
-	public int getWidth(String s) {
-		if (_isClose) {
-			return 0;
-		}
-		make();
-		if (processing() || !LSystem.isEmulateFullVer()) {
-			return font.stringWidth(s);
-		}
-		if (checkTexture()) {
-			return 0;
-		}
-		int totalWidth = 0;
-		IntObject intObject = null;
-		int currentChar = 0;
-		char[] charList = s.toCharArray();
-		int maxWidth = 0;
-		for (int i = 0; i < charList.length; i++) {
-			currentChar = charList[i];
-			if (currentChar < totalCharSet) {
-				intObject = charArray[currentChar];
-			} else {
-				intObject = customChars.get(currentChar);
-			}
-			if (intObject != null) {
-				if (currentChar == newLineFlag) {
-					maxWidth = MathUtils.max(maxWidth, totalWidth);
-					totalWidth = 0;
-				}
-				totalWidth += intObject.width;
-			}
-		}
-		return MathUtils.max(maxWidth, totalWidth);
+	public int getWidth(String msg) {
+		return getWidth(msg, true);
 	}
 
-	public int getHeight(String s) {
-		if (_isClose) {
-			return 0;
+	public int getWidth(String msg, boolean filter) {
+		String newMessage = msg;
+		if (filter) {
+			newMessage = toMessage(msg);
 		}
-		make();
-		if (processing()) {
-			return font.stringHeight(s);
+		return font.stringWidth(newMessage);
+	}
+
+	public int getHeight(String msg) {
+		return getHeight(msg, true);
+	}
+
+	public int getHeight(String msg, boolean filter) {
+		String newMessage = msg;
+		if (filter) {
+			newMessage = toMessage(msg);
 		}
-		if (checkTexture()) {
-			return 0;
-		}
-		int currentChar = 0;
-		char[] charList = s.toCharArray();
-		int lines = 0;
-		int height = 0;
-		int maxHeight = 0;
-		for (int i = 0; i < charList.length; i++) {
-			currentChar = charList[i];
-			if (currentChar < totalCharSet) {
-				intObject = charArray[currentChar];
-			} else {
-				intObject = customChars.get(currentChar);
-			}
-			if (intObject != null) {
-				maxHeight = MathUtils.max(maxHeight, intObject.height);
-				height = maxHeight;
-			}
-			if (currentChar == newLineFlag) {
-				lines++;
-				height = 0;
-			}
-		}
-		return lines * getLineHeight() + height;
+		return font.stringWidth(newMessage);
 	}
 
 	@Override
@@ -842,7 +253,7 @@ public class LSTRFont implements IFont, LRelease {
 
 	@Override
 	public int getSize() {
-		return fontSize;
+		return fontSize == 0 ? pixelFontSize : fontSize;
 	}
 
 	public int getLineHeight() {
@@ -856,26 +267,6 @@ public class LSTRFont implements IFont, LRelease {
 
 	public LFont getFont() {
 		return font;
-	}
-
-	public int getTotalCharSet() {
-		return totalCharSet;
-	}
-
-	public boolean isUseCache() {
-		return useCache;
-	}
-
-	public void setUseCache(boolean useCache) {
-		this.useCache = useCache;
-	}
-
-	public char getNewLineFlag() {
-		return newLineFlag;
-	}
-
-	public void setNewLineFlag(char newLineFlag) {
-		this.newLineFlag = newLineFlag;
 	}
 
 	public float getOffsetX() {
@@ -898,27 +289,23 @@ public class LSTRFont implements IFont, LRelease {
 		return isasyn;
 	}
 
-	public void setAsyn(boolean a) {
+	public LSTRFont setAsyn(boolean a) {
 		this.isasyn = a;
+		return this;
 	}
 
 	@Override
 	public int stringWidth(String width) {
-		return getWidth(width);
+		return getWidth(width, true);
 	}
 
 	@Override
 	public int stringHeight(String height) {
-		return getHeight(height);
+		return getHeight(height, true);
 	}
 
 	@Override
 	public void setAssent(float assent) {
-
-	}
-
-	@Override
-	public void setSize(int size) {
 
 	}
 
@@ -943,21 +330,22 @@ public class LSTRFont implements IFont, LRelease {
 	}
 
 	@Override
-	public String confineLength(String s, int width) {
+	public String confineLength(String msg, int width) {
+		String newMessage = toMessage(msg);
 		int length = 0;
-		for (int i = 0; i < s.length(); i++) {
-			length += stringWidth(String.valueOf(s.charAt(i)));
+		for (int i = 0; i < newMessage.length(); i++) {
+			length += stringWidth(String.valueOf(newMessage.charAt(i)));
 			if (length >= width) {
 				int pLength = stringWidth("...");
 				while (length + pLength >= width && i >= 0) {
-					length -= stringWidth(String.valueOf(s.charAt(i)));
+					length -= stringWidth(String.valueOf(newMessage.charAt(i)));
 					i--;
 				}
-				s = s.substring(0, ++i) + "...";
+				msg = msg.substring(0, ++i) + "...";
 				break;
 			}
 		}
-		return s;
+		return msg;
 	}
 
 	public String getText() {
@@ -973,8 +361,13 @@ public class LSTRFont implements IFont, LRelease {
 		return font.getFontName();
 	}
 
-	public boolean isClosed() {
-		return _isClose;
+	public int getAdvanceSpace() {
+		return advanceSpace;
+	}
+
+	public LSTRFont setAdvanceSpace(int s) {
+		this.advanceSpace = s;
+		return this;
 	}
 
 	public int getDrawLimit() {
@@ -985,47 +378,25 @@ public class LSTRFont implements IFont, LRelease {
 		this._drawLimit = d;
 	}
 
-	@Override
-	public synchronized void close() {
-		if (_isClose) {
-			return;
-		}
-		for (Cache c : displays.values()) {
-			if (c != null) {
-				c.close();
-			}
-		}
-		displays.clear();
-		displays = null;
-		if (fontBatch != null) {
-			fontBatch.close();
-			fontBatch = null;
-		}
-		if (texture != null) {
-			texture.close(true);
-			texture = null;
-		}
-		if (customChars != null) {
-			customChars.clear();
-			customChars = null;
-		}
-		charArray = null;
-		isDrawing = false;
-		_initChars = false;
-		_initDraw = -1;
-		_isClose = true;
+	public boolean isOutBounds() {
+		return _outBounds;
 	}
+
 
 	@Override
 	public ITranslator getTranslator() {
-		// TODO Auto-generated method stub
-		return null;
+		return _translator;
 	}
 
 	@Override
 	public IFont setTranslator(ITranslator translator) {
-		// TODO Auto-generated method stub
-		return null;
+		this._translator = translator;
+		return this;
+	}
+
+	@Override
+	public synchronized void close() {
+		
 	}
 
 }

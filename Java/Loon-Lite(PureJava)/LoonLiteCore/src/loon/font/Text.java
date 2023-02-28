@@ -26,8 +26,6 @@ import loon.LSystem;
 import loon.canvas.LColor;
 import loon.component.layout.HorizontalAlign;
 import loon.opengl.GLEx;
-import loon.opengl.LSTRDictionary;
-import loon.opengl.LSTRFont;
 import loon.utils.FloatArray;
 import loon.utils.MathUtils;
 import loon.utils.StrBuilder;
@@ -39,7 +37,8 @@ import loon.utils.TArray;
  */
 public class Text implements LRelease {
 
-	private boolean _initNativeDraw = false, _closed = false;
+	private boolean _closed = false;
+	
 	protected IFont _font;
 	protected float _space = 0;
 	protected float _lineWidthMaximum;
@@ -150,7 +149,6 @@ public class Text implements LRelease {
 		if (_height <= 0) {
 			_height = _font.getHeight();
 		}
-		this._initNativeDraw = false;
 	}
 
 	private String toString(CharSequence ch) {
@@ -169,36 +167,10 @@ public class Text implements LRelease {
 		return mes;
 	}
 
-	private void initLFont() {
-		if (_closed) {
-			return;
-		}
-		if (!_initNativeDraw) {
-			if (_font instanceof LFont) {
-				LSTRDictionary.get().bind((LFont) _font, _lines);
-			}
-			if (LSystem.isDesktop()) {
-				if (_font instanceof LFont) {
-					LSTRFont strfont = LSTRDictionary.get().STRFont((LFont) _font);
-					if (strfont != null) {
-						if (_textOptions._autoWrap != AutoWrap.VERTICAL) {
-							strfont.setUpdateX(0);
-						} else {
-							strfont.setUpdateX(1);
-						}
-					}
-				}
-			}
-			_initNativeDraw = true;
-		}
-
-	}
-
 	public void paintNonStyleString(GLEx g, String mes, float offsetX, float offsetY, LColor color) {
 		if (_closed) {
 			return;
 		}
-		initLFont();
 		_font.drawString(g, mes, offsetX, offsetY, color);
 	}
 
@@ -206,7 +178,6 @@ public class Text implements LRelease {
 		if (_closed) {
 			return;
 		}
-		initLFont();
 
 		if (_textOptions._autoWrap != AutoWrap.VERTICAL) {
 			switch (_textOptions._horizontalAlign) {
@@ -291,7 +262,6 @@ public class Text implements LRelease {
 		if (_closed) {
 			return;
 		}
-		initLFont();
 		if (_lines.size == 1) {
 			paintString(g, toString(_lines.get(0)), offsetX, offsetY, color);
 		} else if (_textOptions._autoWrap == AutoWrap.VERTICAL) {
@@ -453,19 +423,10 @@ public class Text implements LRelease {
 
 	@Override
 	public void close() {
-		if (LSystem.isDesktop()) {
-			if (_font instanceof LFont) {
-				LSTRFont font = LSTRDictionary.get().STRFont((LFont) _font);
-				if (font != null) {
-					font.setUpdateX(0);
-				}
-			}
-		}
 		_chars = null;
 		_lines = null;
 		_lineWidths = null;
 		_closed = true;
-		_initNativeDraw = false;
 	}
 
 	public boolean isClosed() {

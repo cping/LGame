@@ -22,6 +22,7 @@ package loon.utils;
 
 import loon.LSystem;
 import loon.LTexture;
+import loon.canvas.Canvas;
 import loon.canvas.Image;
 
 public class GLUtils {
@@ -33,6 +34,14 @@ public class GLUtils {
 
 	public static int getCurrentHardwareTextureID() {
 		return currentHardwareTextureID;
+	}
+
+	public static void setBlendMode(Canvas g, int blend) {
+
+	}
+
+	public static int getBlendMode() {
+		return 0;
 	}
 
 	public static void reset() {

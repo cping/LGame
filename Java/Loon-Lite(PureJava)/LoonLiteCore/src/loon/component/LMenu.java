@@ -37,7 +37,6 @@ import loon.font.LFont;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
-import loon.opengl.LSTRDictionary;
 import loon.utils.TArray;
 
 /**
@@ -570,9 +569,6 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 		item.yslot = this.yslot;
 		this.items.add(item);
 		this.xslot += 1;
-		if (item._font != null && item._font instanceof LFont) {
-			LSTRDictionary.get().bind((LFont) item._font, item._label);
-		}
 		return item;
 	}
 

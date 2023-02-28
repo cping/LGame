@@ -33,7 +33,6 @@ import loon.font.IFont;
 import loon.font.LFont;
 import loon.geom.RectF;
 import loon.opengl.GLEx;
-import loon.opengl.LSTRDictionary;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 import loon.utils.StrBuilder;
@@ -328,9 +327,6 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 			maxHeight += height;
 		}
 		setSize(maxWidth + _space * 2 - _font.getSize(), maxHeight + _space * 2);
-		if (_font instanceof LFont) {
-			LSTRDictionary.get().bind((LFont) _font, StringUtils.getListToStrings(_lines));
-		}
 		_dirty = false;
 		return this;
 	}

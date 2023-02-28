@@ -34,7 +34,6 @@ import loon.font.LFont;
 import loon.geom.PointF;
 import loon.geom.RectF;
 import loon.opengl.GLEx;
-import loon.opengl.LSTRDictionary;
 import loon.utils.MathUtils;
 import loon.utils.StrBuilder;
 import loon.utils.StringUtils;
@@ -273,9 +272,6 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 				maxHeight += height;
 			}
 			setSize(maxWidth + _flag_text_space * 2, maxHeight + _flag_text_space * 2);
-			if (_font instanceof LFont) {
-				LSTRDictionary.get().bind((LFont) _font, _labels);
-			}
 		}
 		return this;
 	}

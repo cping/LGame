@@ -192,6 +192,7 @@ public class AndroidAccelerometer implements Accelerometer {
 			this.setDelay(_sleep);
 		}
 
+		@Override
 		public void run(LTimerContext context) {
 			if (_state.isConnected()) {
 				accelerometerValues[2] = -1f;
@@ -245,6 +246,7 @@ public class AndroidAccelerometer implements Accelerometer {
 		}
 	}
 
+	@Override
 	public void stop() {
 		if (manager != null) {
 			if (accelerometerListener != null) {

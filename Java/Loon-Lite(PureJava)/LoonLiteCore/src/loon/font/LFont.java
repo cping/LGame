@@ -27,7 +27,7 @@ import loon.font.Font.Style;
 import loon.geom.PointI;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
-import loon.opengl.LSTRDictionary;
+import loon.opengl.LSTRFont;
 import loon.utils.IntMap;
 import loon.utils.MathUtils;
 import loon.utils.StrBuilder;
@@ -59,7 +59,7 @@ public class LFont extends FontTrans implements IFont {
 
 	private String lastText = tmp;
 
-	private TextFormat textFormat = null;
+	private final TextFormat _textFormat ;
 
 	private TextLayout textLayout = null;
 
@@ -67,15 +67,9 @@ public class LFont extends FontTrans implements IFont {
 
 	private float _ascent = -1;
 
-	private boolean useCache, closed;
+	private boolean _closed;
 
-	public boolean isUseCache() {
-		return useCache;
-	}
-
-	public void setUseCache(boolean u) {
-		this.useCache = u;
-	}
+	private final LSTRFont _font;
 
 	LFont() {
 		this(LSystem.getSystemGameFontName(), Style.PLAIN, 20, true);
@@ -85,7 +79,8 @@ public class LFont extends FontTrans implements IFont {
 		if (StringUtils.isEmpty(name)) {
 			throw new LSysException("Font name is null !");
 		}
-		this.textFormat = new TextFormat(new Font(name, style, MathUtils.max(1, size)), antialias);
+		this._textFormat = new TextFormat(new Font(name, style, MathUtils.max(1, size)), antialias);
+		this._font = new LSTRFont(this);
 		LSystem.pushFontPool(this);
 	}
 
@@ -126,7 +121,7 @@ public class LFont extends FontTrans implements IFont {
 	}
 
 	public TextFormat getFormat() {
-		return textFormat;
+		return _textFormat;
 	}
 
 	public TextLayout getTextLayout() {
@@ -152,11 +147,7 @@ public class LFont extends FontTrans implements IFont {
 			return;
 		}
 		String newMessage = toMessage(msg);
-		if (useCache) {
-			LSTRDictionary.get().drawString(this, newMessage, _offset.x + tx, _offset.y + ty, angle, c);
-		} else {
-			LSTRDictionary.get().drawString(g, this, newMessage, _offset.x + tx, _offset.y + ty, angle, c);
-		}
+		_font.drawString(g, newMessage, _offset.x + tx, _offset.y + ty, angle, c);
 	}
 
 	@Override
@@ -169,12 +160,7 @@ public class LFont extends FontTrans implements IFont {
 			return;
 		}
 		String newMessage = toMessage(msg);
-		if (useCache) {
-			LSTRDictionary.get().drawString(this, newMessage, _offset.x + tx, _offset.y + ty, sx, sy, ax, ay, angle, c);
-		} else {
-			LSTRDictionary.get().drawString(g, this, newMessage, _offset.x + tx, _offset.y + ty, sx, sy, ax, ay, angle,
-					c);
-		}
+		_font.drawString(g, newMessage, _offset.x + tx, _offset.y + ty, sx, sy, ax, ay, angle, c);
 	}
 
 	private void initLayout(String msg) {
@@ -182,7 +168,7 @@ public class LFont extends FontTrans implements IFont {
 			return;
 		}
 		if (msg == null || textLayout == null || !msg.equals(lastText)) {
-			textLayout = LSystem.base().graphics().layoutText(tmp, this.textFormat);
+			textLayout = LSystem.base().graphics().layoutText(tmp, this._textFormat);
 		}
 	}
 
@@ -245,28 +231,28 @@ public class LFont extends FontTrans implements IFont {
 	}
 
 	public boolean isBold() {
-		return textFormat.font.style == Style.BOLD;
+		return _textFormat.font.style == Style.BOLD;
 	}
 
 	public boolean isItalic() {
-		return textFormat.font.style == Style.ITALIC;
+		return _textFormat.font.style == Style.ITALIC;
 	}
 
 	public boolean isPlain() {
-		return textFormat.font.style == Style.PLAIN;
+		return _textFormat.font.style == Style.PLAIN;
 	}
 
 	@Override
 	public int getSize() {
-		return this._size == -1 ? (int) textFormat.font.size : this._size;
+		return this._size == -1 ? (int) _textFormat.font.size : this._size;
 	}
 
 	public int getStyle() {
-		return textFormat.font.style.ordinal();
+		return _textFormat.font.style.ordinal();
 	}
 
 	public String getFontName() {
-		return textFormat.font.name;
+		return _textFormat.font.name;
 	}
 
 	@Override
@@ -296,11 +282,11 @@ public class LFont extends FontTrans implements IFont {
 	@Override
 	public int hashCode() {
 		if (fontHash == 1) {
-			fontHash = LSystem.unite(textFormat.font.name.charAt(0), fontHash);
-			fontHash = LSystem.unite(textFormat.font.name.length(), fontHash);
-			fontHash = LSystem.unite(textFormat.font.name.hashCode(), fontHash);
-			fontHash = LSystem.unite(textFormat.font.style.ordinal(), fontHash);
-			fontHash = LSystem.unite((int) textFormat.font.size, fontHash);
+			fontHash = LSystem.unite(_textFormat.font.name.charAt(0), fontHash);
+			fontHash = LSystem.unite(_textFormat.font.name.length(), fontHash);
+			fontHash = LSystem.unite(_textFormat.font.name.hashCode(), fontHash);
+			fontHash = LSystem.unite(_textFormat.font.style.ordinal(), fontHash);
+			fontHash = LSystem.unite((int) _textFormat.font.size, fontHash);
 		}
 		return fontHash;
 	}
@@ -320,11 +306,12 @@ public class LFont extends FontTrans implements IFont {
 		if (hashCode() == font.hashCode()) {
 			return true;
 		}
-		if (font.textFormat == textFormat) {
+		if (font._textFormat == _textFormat) {
 			return true;
 		}
-		if (font.textFormat.font.name.equals(textFormat.font.name) && font.textFormat.font.size == textFormat.font.size
-				&& font.textFormat.font.style.equals(textFormat.font.style)) {
+		if (font._textFormat.font.name.equals(_textFormat.font.name)
+				&& font._textFormat.font.size == _textFormat.font.size
+				&& font._textFormat.font.style.equals(_textFormat.font.style)) {
 			return true;
 		}
 		return false;
@@ -356,7 +343,7 @@ public class LFont extends FontTrans implements IFont {
 		if (filter) {
 			newMessage = toMessage(msg);
 		}
-		return LSystem.base().graphics().layoutText(newMessage, this.textFormat);
+		return LSystem.base().graphics().layoutText(newMessage, this._textFormat);
 	}
 
 	@Override
@@ -411,7 +398,7 @@ public class LFont extends FontTrans implements IFont {
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("LFont");
-		builder.addValue(textFormat.toString());
+		builder.addValue(_textFormat.toString());
 		return builder.toString();
 	}
 
@@ -427,12 +414,12 @@ public class LFont extends FontTrans implements IFont {
 	}
 
 	public boolean isClosed() {
-		return closed;
+		return _closed;
 	}
 
 	@Override
 	public void close() {
-		closed = true;
+		_closed = true;
 		LSystem.popFontPool(this);
 	}
 }

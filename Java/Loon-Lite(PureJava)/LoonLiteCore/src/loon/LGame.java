@@ -26,7 +26,6 @@ import loon.component.Desktop;
 import loon.events.InputMake;
 import loon.font.IFont;
 import loon.font.LFont;
-import loon.opengl.LSTRDictionary;
 import loon.opengl.LSTRFont;
 import loon.opengl.Mesh;
 import loon.utils.IntMap;
@@ -220,7 +219,6 @@ public abstract class LGame implements LRelease {
 				LSystem.debug("The Loon Game Engine is End");
 				LSystem.PAUSED = true;
 				RealtimeProcessManager.get().dispose();
-				LSTRDictionary.get().dispose();
 				LSystem.disposeTextureAll();
 				close();
 			}

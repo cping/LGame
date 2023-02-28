@@ -222,7 +222,7 @@ public abstract class Graphics {
 	}
 
 	protected boolean isAllowResize(int viewWidth, int viewHeight) {
-		if (game.setting.isCheckReisze) {
+		if (game.setting.isCheckResize) {
 			Dimension size = this.screenSize();
 			if (size == null || size.width <= 0 || size.height <= 0) {
 				return true;
