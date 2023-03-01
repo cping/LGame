@@ -29,7 +29,7 @@ import loon.opengl.Mesh;
 import loon.opengl.MeshData;
 
 /**
- * 这是一个针对单独纹理的批量渲染类,默认绑定在特定Texture上运行（_texture.geTexturetBatch即可获得）,<br>
+ * 这是一个针对单独纹理的批量渲染类,默认绑定在特定Texture上运行（_meshdata.texture.geTexturetBatch即可获得）,<br>
  * 方便针对特定纹理的缓存以及渲染.
  */
 public class LTextureBatch implements LRelease {
@@ -49,12 +49,17 @@ public class LTextureBatch implements LRelease {
 
 		public float y = 0;
 
-		protected Image _image;
+		protected final Image _image;
 
 		public Cache(LTextureBatch batch) {
-			Image img = batch._buffer.snapshot();
-			_image = Image.createImage(img.getWidth(), img.getHeight());
-			_image.draw(img, 0, 0, img.getWidth(), img.getHeight());
+			_image = batch._buffer.newSnapshot();
+		}
+
+		public Cache(Image image) {
+			Image img = image;
+			Canvas canvas = LSystem.base().graphics().createCanvas(img.getWidth(), img.getHeight());
+			canvas.draw(image, 0, 0);
+			_image = canvas.snapshot();
 		}
 
 		public Image get() {
@@ -73,6 +78,8 @@ public class LTextureBatch implements LRelease {
 		}
 	}
 
+	private Affine2f _display = new Affine2f();
+
 	private Mesh _mesh;
 
 	private boolean isInitMesh;
@@ -89,8 +96,6 @@ public class LTextureBatch implements LRelease {
 
 	protected boolean isLoaded;
 
-	protected LTexture _texture;
-
 	private int vertexIdx;
 
 	private int texWidth, texHeight;
@@ -98,11 +103,12 @@ public class LTextureBatch implements LRelease {
 	private float tx, ty;
 
 	private MeshData _meshdata;
-	
+
 	private String _source;
 
-	public LTextureBatch(LTexture tex,String src) {
+	public LTextureBatch(LTexture tex, String src) {
 		this._source = src;
+		this._meshdata = new MeshData();
 		this.setTexture(tex);
 	}
 
@@ -110,8 +116,8 @@ public class LTextureBatch implements LRelease {
 		if (!isLoaded) {
 			isLoaded = true;
 		}
-		if (!_texture.isLoaded()) {
-			_texture.loadTexture();
+		if (!_meshdata.texture.isLoaded()) {
+			_meshdata.texture.loadTexture();
 		}
 		if (drawing) {
 			throw new LSysException("TextureBatch.end must be called before begin.");
@@ -121,17 +127,12 @@ public class LTextureBatch implements LRelease {
 				_buffer = LSystem.base().graphics().createCanvas(LSystem.viewSize.getWidth(),
 						LSystem.viewSize.getHeight());
 			}
-			if (_meshdata == null) {
-				_meshdata = new MeshData();
-			}
 			if (_mesh == null) {
 				_mesh = LSystem.base().makeMesh(_buffer);
 			}
 			this._mesh.setMesh(_meshdata);
 			this.isInitMesh = true;
 		}
-		_meshdata.texture = _texture;
-		LSystem.mainEndDraw();
 		if (!isCacheLocked) {
 			vertexIdx = 0;
 		}
@@ -150,8 +151,12 @@ public class LTextureBatch implements LRelease {
 			submit(tx, ty);
 		}
 		drawing = false;
-		LSystem.mainBeginDraw();
+		// LSystem.mainBeginDraw();
 		return this;
+	}
+
+	public String src() {
+		return _source;
 	}
 
 	public LTextureBatch setLocation(float tx, float ty) {
@@ -161,9 +166,9 @@ public class LTextureBatch implements LRelease {
 	}
 
 	public LTextureBatch setTexture(LTexture tex2d) {
-		this._texture = tex2d;
-		this.texWidth = (int) _texture.width();
-		this.texHeight = (int) _texture.height();
+		this._meshdata.texture = tex2d;
+		this.texWidth = (int) _meshdata.texture.width();
+		this.texHeight = (int) _meshdata.texture.height();
 		return this;
 	}
 
@@ -176,7 +181,7 @@ public class LTextureBatch implements LRelease {
 	}
 
 	public LTexture toTexture() {
-		return _texture;
+		return _meshdata.texture;
 	}
 
 	public LTextureBatch setColor(LColor tint) {
@@ -200,19 +205,19 @@ public class LTextureBatch implements LRelease {
 		return this;
 	}
 
-	public boolean checkTexture(final LTexture _texture) {
+	public boolean checkTexture(final LTexture texture) {
 		if (!isLoaded || isCacheLocked) {
 			return false;
 		}
 		if (isClosed) {
 			return false;
 		}
-		if (_texture == null) {
+		if (texture == null) {
 			return false;
 		}
 		checkDrawing();
-		if (!_texture.isLoaded()) {
-			_texture.loadTexture();
+		if (!texture.isLoaded()) {
+			texture.loadTexture();
 		}
 		return true;
 	}
@@ -233,6 +238,7 @@ public class LTextureBatch implements LRelease {
 		GLEx gl = LSystem.base().display().GL();
 		if (gl != null) {
 			Canvas canvas = gl.getCanvas();
+			canvas.setTransform(gl.tx());
 			canvas.draw(_buffer.snapshot(), x, y);
 		}
 		return this;
@@ -258,7 +264,7 @@ public class LTextureBatch implements LRelease {
 		GLEx gl = LSystem.base().display().GL();
 
 		Affine2f display = gl.tx();
-		
+
 		if (gl != null) {
 
 			final Image image = _buffer.snapshot();
@@ -268,7 +274,7 @@ public class LTextureBatch implements LRelease {
 			final boolean oriDirty = (ax != 0 || ay != 0);
 			final boolean rotDirty = (rotation != 0);
 			final boolean scaleDirty = !(sx == 1 && sy == 1);
-			
+
 			display = new Affine2f();
 
 			if (rotDirty || oriDirty || scaleDirty) {
@@ -306,10 +312,10 @@ public class LTextureBatch implements LRelease {
 				}
 
 				Affine2f.multiply(gl.tx(), display, display);
-			} 
-			gl.getCanvas().setTransform(display);
-			gl.getCanvas().draw(_buffer.snapshot(), x, y);
-			gl.synchTransform();
+			}
+			Canvas canvas = gl.getCanvas();
+			canvas.setTransform(display);
+			canvas.draw(_buffer.snapshot(), x, y);
 		}
 		return this;
 	}
@@ -376,14 +382,14 @@ public class LTextureBatch implements LRelease {
 
 	public LTextureBatch draw(float x, float y, LColor color) {
 		final boolean update = checkUpdateColor(color);
-		return draw(x, y, -1f, -1f, _texture.width() / 2, _texture.height() / 2, _texture.width(), _texture.height(),
-				1f, 1f, 0f, 0, 0, _texture.width(), _texture.height(), false, false, update ? color : null);
+		return draw(x, y, -1f, -1f, 0f, 0f, _meshdata.texture.width(), _meshdata.texture.height(), 1f, 1f, 0f, 0, 0,
+				_meshdata.texture.width(), _meshdata.texture.height(), false, false, update ? color : null);
 	}
 
 	public LTextureBatch draw(float x, float y, float width, float height, LColor color) {
 		final boolean update = checkUpdateColor(color);
-		return draw(x, y, -1f, -1f, width / 2, height / 2, width, height, 1f, 1f, 0f, 0, 0, _texture.width(),
-				_texture.height(), false, false, update ? color : null);
+		return draw(x, y, -1f, -1f, width / 2, height / 2, width, height, 1f, 1f, 0f, 0, 0, _meshdata.texture.width(),
+				_meshdata.texture.height(), false, false, update ? color : null);
 	}
 
 	public LTextureBatch draw(float x, float y, float width, float height, float x1, float y1, float x2, float y2,
@@ -395,21 +401,21 @@ public class LTextureBatch implements LRelease {
 
 	public LTextureBatch draw(float x, float y, float rotation, LColor color) {
 		final boolean update = checkUpdateColor(color);
-		return draw(x, y, -1f, -1f, _texture.width() / 2, _texture.height() / 2, _texture.width(), _texture.height(),
-				1f, 1f, rotation, 0, 0, _texture.width(), _texture.height(), false, false, update ? color : null);
+		return draw(x, y, -1f, -1f, 0f, 0f, _meshdata.texture.width(), _meshdata.texture.height(), 1f, 1f, rotation, 0,
+				0, _meshdata.texture.width(), _meshdata.texture.height(), false, false, update ? color : null);
 	}
 
 	public LTextureBatch draw(float x, float y, float width, float height, float rotation, LColor color) {
 		final boolean update = checkUpdateColor(color);
-		return draw(x, y, -1f, -1f, width / 2, height / 2, width, height, 1f, 1f, rotation, 0, 0, _texture.width(),
-				_texture.height(), false, false, update ? color : null);
+		return draw(x, y, -1f, -1f, width / 2, height / 2, width, height, 1f, 1f, rotation, 0, 0,
+				_meshdata.texture.width(), _meshdata.texture.height(), false, false, update ? color : null);
 	}
 
 	public LTextureBatch draw(float x, float y, float srcX, float srcY, float srcWidth, float srcHeight, float rotation,
 			LColor color) {
 		final boolean update = checkUpdateColor(color);
-		return draw(x, y, -1f, -1f, _texture.width() / 2, _texture.height() / 2, _texture.width(), _texture.height(),
-				1f, 1f, rotation, srcX, srcY, srcWidth, srcHeight, false, false, update ? color : null);
+		return draw(x, y, -1f, -1f, 0f, 0f, _meshdata.texture.width(), _meshdata.texture.height(), 1f, 1f, rotation,
+				srcX, srcY, srcWidth, srcHeight, false, false, update ? color : null);
 	}
 
 	public LTextureBatch draw(float x, float y, float width, float height, float srcX, float srcY, float srcWidth,
@@ -441,7 +447,7 @@ public class LTextureBatch implements LRelease {
 			float height, float scaleX, float scaleY, float rotation, float srcX, float srcY, float srcWidth,
 			float srcHeight, boolean flipX, boolean flipY, LColor color) {
 
-		if (!checkTexture(_texture)) {
+		if (!checkTexture(_meshdata.texture)) {
 			return this;
 		}
 
@@ -450,19 +456,15 @@ public class LTextureBatch implements LRelease {
 		boolean oriDirty = (originX != 0 || originY != 0);
 
 		boolean scaleDirty = !(scaleX == 1 && scaleY == 1);
-		
-		GLEx gl = LSystem.base().display().GL();
 
-		Affine2f display = gl.tx();
-		
+		_display.idt();
+
 		if (flipX || flipY || rotDirty || oriDirty || scaleDirty) {
-			
-			display = new Affine2f();
-			
+
 			if (oriDirty) {
-				display.translate(originX, originY);
+				_display.translate(originX, originY);
 			}
-			
+
 			if (rotDirty) {
 				float centerX = x + width / 2;
 				float centerY = y + height / 2;
@@ -470,9 +472,9 @@ public class LTextureBatch implements LRelease {
 					centerX = x + pivotX;
 					centerX = y + pivotY;
 				}
-				display.translate(centerX, centerY);
-				display.preRotate(rotation);
-				display.translate(-centerX, -centerY);
+				_display.translate(centerX, centerY);
+				_display.preRotate(rotation);
+				_display.translate(-centerX, -centerY);
 			}
 			if (scaleDirty) {
 				float centerX = x + width / 2;
@@ -481,58 +483,64 @@ public class LTextureBatch implements LRelease {
 					centerX = x + pivotX;
 					centerX = y + pivotY;
 				}
-				display.translate(centerX, centerY);
-				display.preScale(scaleX, scaleY);
-				display.translate(-centerX, -centerY);
+				_display.translate(centerX, centerY);
+				_display.preScale(scaleX, scaleY);
+				_display.translate(-centerX, -centerY);
 			}
 
 			if (flipX || flipY) {
 				if (flipX && flipY) {
-					Affine2f.transform(display, x, y, Affine2f.TRANS_ROT180, width, height);
+					Affine2f.transform(_display, x, y, Affine2f.TRANS_ROT180, width, height);
 				} else if (flipX) {
-					Affine2f.transform(display, x, y, Affine2f.TRANS_MIRROR, width, height);
+					Affine2f.transform(_display, x, y, Affine2f.TRANS_MIRROR, width, height);
 				} else if (flipY) {
-					Affine2f.transform(display, x, y, Affine2f.TRANS_MIRROR_ROT180, width, height);
+					Affine2f.transform(_display, x, y, Affine2f.TRANS_MIRROR_ROT180, width, height);
 				}
 			}
 
-			Affine2f.multiply(gl.tx(), display, display);
 		}
-		
+
 		int argb = this._color.getABGR();
 		if (color != null) {
 			argb = LColor.combine(argb, color.getARGB());
 		}
 
 		if (srcX == 0 && srcY == 0 && srcWidth == width && srcHeight == height) {
-			float u2 = _texture.widthRatio();
-			float uv = _texture.heightRatio();
-			_mesh.paint(argb, display, x, y, x + width, y + height, _texture.xOff(), _texture.yOff(), u2, uv);
+			float u2 = _meshdata.texture.widthRatio();
+			float uv = _meshdata.texture.heightRatio();
+			_mesh.paint(argb, _display, x, y, x + width, y + height, _meshdata.texture.xOff(), _meshdata.texture.yOff(),
+					u2, uv);
+
 		} else {
-			float displayWidth = _texture.getDisplayWidth();
-			float displayHeight = _texture.getDisplayHeight();
+			float displayWidth = _meshdata.texture.getDisplayWidth();
+			float displayHeight = _meshdata.texture.getDisplayHeight();
 
 			float xOff = 0f;
 			float yOff = 0f;
 			float widthRatio = 1f;
 			float heightRatio = 1f;
 
-			if (_texture.getParent() == null) {
-				xOff = ((srcX / displayWidth) * _texture.widthRatio()) + _texture.xOff();
-				yOff = ((srcY / displayHeight) * _texture.heightRatio()) + _texture.yOff();
-				widthRatio = ((srcWidth / displayWidth) * _texture.widthRatio()) + xOff;
-				heightRatio = ((srcHeight / displayHeight) * _texture.heightRatio()) + yOff;
+			if (_meshdata.texture.getParent() == null) {
+				xOff = ((srcX / displayWidth) * _meshdata.texture.widthRatio()) + _meshdata.texture.xOff();
+				yOff = ((srcY / displayHeight) * _meshdata.texture.heightRatio()) + _meshdata.texture.yOff();
+				widthRatio = ((srcWidth / displayWidth) * _meshdata.texture.widthRatio()) + xOff;
+				heightRatio = ((srcHeight / displayHeight) * _meshdata.texture.heightRatio()) + yOff;
 			} else {
-				LTexture forefather = LTexture.firstFather(_texture);
+				LTexture forefather = LTexture.firstFather(_meshdata.texture);
 				displayWidth = forefather.getDisplayWidth();
 				displayHeight = forefather.getDisplayHeight();
-				xOff = ((srcX / displayWidth) * forefather.widthRatio()) + forefather.xOff() + _texture.xOff();
-				yOff = ((srcY / displayHeight) * forefather.heightRatio()) + forefather.yOff() + _texture.yOff();
+				xOff = ((srcX / displayWidth) * forefather.widthRatio()) + forefather.xOff() + _meshdata.texture.xOff();
+				yOff = ((srcY / displayHeight) * forefather.heightRatio()) + forefather.yOff()
+						+ _meshdata.texture.yOff();
 				widthRatio = ((srcWidth / displayWidth) * forefather.widthRatio()) + xOff;
 				heightRatio = ((srcHeight / displayHeight) * forefather.heightRatio()) + yOff;
 			}
-			_mesh.paint(argb, display, x, y, x + width, y + height, xOff, yOff, widthRatio, heightRatio);
+			_mesh.paint(argb, _display, x, y, x + width, y + height, xOff, yOff, widthRatio, heightRatio);
+
 		}
+
+		vertexIdx += 9;
+
 		return this;
 	}
 
@@ -574,7 +582,7 @@ public class LTextureBatch implements LRelease {
 		GLEx gl = LSystem.base().display().GL();
 
 		Affine2f display = gl.tx();
-		
+
 		if (gl != null) {
 
 			final int width = cache._image.getWidth();
@@ -585,9 +593,9 @@ public class LTextureBatch implements LRelease {
 			final boolean scaleDirty = !(sx == 1 && sy == 1);
 
 			if (rotDirty || oriDirty || scaleDirty) {
-				
+
 				display = new Affine2f();
-				
+
 				if (oriDirty) {
 					display.translate(ax, ay);
 				}
@@ -625,22 +633,21 @@ public class LTextureBatch implements LRelease {
 
 			Canvas canvas = gl.getCanvas();
 			canvas.setTransform(display);
-			canvas.draw(cache._image, x, y, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
-			gl.synchTransform();
+			canvas.draw(cache._image, x, y);
 		}
 		return this;
 	}
 
 	public int getTextureID() {
-		if (_texture != null) {
-			return _texture.getID();
+		if (_meshdata.texture != null) {
+			return _meshdata.texture.getID();
 		}
 		return -1;
 	}
 
 	public int getTextureHashCode() {
-		if (_texture != null) {
-			return _texture.hashCode();
+		if (_meshdata.texture != null) {
+			return _meshdata.texture.hashCode();
 		}
 		return -1;
 	}
@@ -666,8 +673,8 @@ public class LTextureBatch implements LRelease {
 	}
 
 	public LTextureBatch destroy() {
-		if (_texture != null) {
-			_texture.close(true);
+		if (_meshdata.texture != null) {
+			_meshdata.texture.close(true);
 		}
 		if (_buffer != null) {
 			_buffer.close();

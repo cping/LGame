@@ -63,6 +63,7 @@ public class JavaFXImage extends ImageImpl {
 		JavaFXCanvas gfx = (JavaFXCanvas) ctx;
 		gfx.context.drawImage(buffer, MathUtils.ifloor(x), MathUtils.ifloor(y), MathUtils.ifloor(w),
 				MathUtils.ifloor(h));
+		isDirty = true;
 	}
 
 	@Override
@@ -76,6 +77,7 @@ public class JavaFXImage extends ImageImpl {
 		gfx.context.drawImage(buffer, MathUtils.ifloor(sx), MathUtils.ifloor(sy), MathUtils.ifloor(sw - sx),
 				MathUtils.ifloor(sh - sy), MathUtils.ifloor(dx), MathUtils.ifloor(dy), MathUtils.ifloor(dw - dx),
 				MathUtils.ifloor(dh - dy));
+		isDirty = true;
 	}
 
 	@Override
@@ -206,12 +208,14 @@ public class JavaFXImage extends ImageImpl {
 	public void setPixel(LColor c, int x, int y) {
 		PixelWriter out = buffer.getPixelWriter();
 		out.setArgb(x, y, c.getRGB());
+		isDirty = true;
 	}
 
 	@Override
 	public void setPixel(int rgb, int x, int y) {
 		PixelWriter out = buffer.getPixelWriter();
 		out.setArgb(x, y, rgb);
+		isDirty = true;
 	}
 
 	@Override
@@ -249,6 +253,7 @@ public class JavaFXImage extends ImageImpl {
 			format = PixelFormat.getIntArgbInstance();
 		}
 		writer.setPixels(startX, startY, width, height, format, rgbArray, offset, scansize);
+		isDirty = true;
 	}
 
 	@Override

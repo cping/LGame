@@ -23,7 +23,6 @@ package loon.fx;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.input.KeyEvent;
 import loon.Graphics;
 
 public class JavaFXResizeCanvas extends Canvas {

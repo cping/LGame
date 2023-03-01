@@ -92,6 +92,8 @@ public abstract class Canvas implements LRelease {
 
 	public abstract Image snapshot();
 
+	public abstract Image newSnapshot();
+	
 	@Override
 	public void close() {
 	}
@@ -244,6 +246,8 @@ public abstract class Canvas implements LRelease {
 
 	public abstract int getFillColor();
 
+	public abstract Canvas updateDirty();
+
 	public abstract Canvas setColor(int r, int g, int b);
 
 	public abstract Canvas setColor(int r, int g, int b, int a);
@@ -306,6 +310,11 @@ public abstract class Canvas implements LRelease {
 		if (width <= 0 || height <= 0) {
 			throw new LSysException("Canvas must be > 0 in width and height: " + width + "x" + height);
 		}
+	}
+
+	public Canvas setDirty(boolean d) {
+		this.isDirty = d;
+		return this;
 	}
 
 	protected abstract Object gc();

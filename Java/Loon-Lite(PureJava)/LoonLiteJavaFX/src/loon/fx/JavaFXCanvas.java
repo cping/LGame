@@ -97,6 +97,11 @@ public class JavaFXCanvas extends Canvas {
 		return this;
 	}
 
+	public Canvas updateDirty() {
+		isDirty = true;
+		return this;
+	}
+
 	@Override
 	public Canvas clear() {
 		Paint tmp = context.getFill();
@@ -125,10 +130,18 @@ public class JavaFXCanvas extends Canvas {
 	}
 
 	@Override
+	public Image newSnapshot() {
+		JavaFXImage newImage = new JavaFXImage(gfx, image.scale(),
+				fxCanvas.snapshot(snapshotParameters, javaImage.buffer), "<canvas>");
+		return newImage;
+	}
+
+	@Override
 	public Image snapshot() {
-		if (javaImage == null) {
+		if (javaImage == null || javaImage.isDirty()) {
 			javaImage = new JavaFXImage(gfx, image.scale(), fxCanvas.snapshot(snapshotParameters, javaImage.buffer),
 					"<canvas>");
+			javaImage.setDirty(false);
 			isDirty = false;
 		}
 		if (isDirty) {
@@ -217,6 +230,7 @@ public class JavaFXCanvas extends Canvas {
 		context.setFill(getLColorToFX(color));
 		context.rect(x, y, width, height);
 		context.setFill(tmp);
+		isDirty = true;
 		return this;
 	}
 
@@ -566,6 +580,7 @@ public class JavaFXCanvas extends Canvas {
 		context.arcTo(maxx, maxy, midx, maxy, radius);
 		context.arcTo(x, maxy, x, midy, radius);
 		context.closePath();
+		isDirty = true;
 	}
 
 }

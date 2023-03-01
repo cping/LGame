@@ -20,38 +20,70 @@
  */
 package loon.fx;
 
+import java.net.URL;
+
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import loon.SoundImpl;
 
 public class JavaFXMusic extends SoundImpl<Object> {
 
+	private MediaPlayer mediaPlayer;
+	
+	public JavaFXMusic(URL url) {
+		this.mediaPlayer = new MediaPlayer(new Media(url.toExternalForm()));
+	}
+
+	public JavaFXMusic(String path) {
+		this.mediaPlayer = new MediaPlayer(new Media(path));
+	}
+	
 	@Override
 	protected boolean playImpl() {
-		// TODO Auto-generated method stub
-		return false;
+		if (mediaPlayer != null) {
+			mediaPlayer.play();
+		}
+		return true;
 	}
 
 	@Override
 	protected void stopImpl() {
-		// TODO Auto-generated method stub
+		if (mediaPlayer != null) {
+			mediaPlayer.stop();
+		}
+	}
 
+	@Override
+	public boolean pause() {
+		if (mediaPlayer != null) {
+			mediaPlayer.pause();
+		}
+		return true;
 	}
 
 	@Override
 	protected void setLoopingImpl(boolean looping) {
-		// TODO Auto-generated method stub
-
+		if (mediaPlayer != null) {
+			if (looping) {
+				mediaPlayer.setCycleCount(Integer.MAX_VALUE);
+			} else {
+				mediaPlayer.setCycleCount(1);
+			}
+		}
 	}
 
 	@Override
 	protected void setVolumeImpl(float volume) {
-		// TODO Auto-generated method stub
-
+		if (mediaPlayer != null) {
+			mediaPlayer.setVolume(volume);
+		}
 	}
 
 	@Override
 	protected void releaseImpl() {
-		// TODO Auto-generated method stub
-
+		if (mediaPlayer != null) {
+			mediaPlayer.dispose();
+		}
 	}
 
 }

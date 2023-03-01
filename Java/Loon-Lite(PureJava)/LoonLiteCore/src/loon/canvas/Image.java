@@ -43,6 +43,8 @@ import loon.utils.reply.GoFuture;
  */
 public abstract class Image extends TextureSource implements Canvas.Drawable, LRelease {
 
+	protected boolean isDirty = false;
+
 	private boolean isTexture = false;
 
 	public static Canvas createCanvas(float w, float h) {
@@ -168,8 +170,7 @@ public abstract class Image extends TextureSource implements Canvas.Drawable, LR
 			throw new LSysException("Invalid texture size: " + texWidth + "x" + texHeight + " from: " + this);
 		}
 		this.isTexture = true;
-		LTexture tex = new LTexture(gfx, gfx.createTexture(), texWidth, texHeight, scale(), width(),
-				height());
+		LTexture tex = new LTexture(gfx, gfx.createTexture(), texWidth, texHeight, scale(), width(), height());
 
 		tex.update(this);
 		return tex;
@@ -405,6 +406,16 @@ public abstract class Image extends TextureSource implements Canvas.Drawable, LR
 		setPixels(pixmap.getData(), pixmap.getWidth(), pixmap.getHeight());
 	}
 
+	public boolean isDirty() {
+		return this.isDirty;
+	}
+
+	public Image setDirty(boolean d) {
+		this.isDirty = d;
+		return this;
+	}
+	
+	@Override
 	public final void close() {
 		if (!this.isTexture) {
 			this.closeImpl();

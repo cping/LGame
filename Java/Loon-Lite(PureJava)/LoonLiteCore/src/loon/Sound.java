@@ -31,6 +31,11 @@ public interface Sound {
 		}
 
 		@Override
+		public boolean pause() {
+			return false;
+		}
+
+		@Override
 		public boolean play() {
 			return false;
 		}
@@ -65,6 +70,7 @@ public interface Sound {
 		public void addCallback(Callback<Sound> callback) {
 			callback.onSuccess(this);
 		}
+
 	}
 
 	public static class Error extends Silence {
@@ -79,6 +85,8 @@ public interface Sound {
 			callback.onFailure(error);
 		}
 	}
+
+	boolean pause();
 
 	boolean prepare();
 

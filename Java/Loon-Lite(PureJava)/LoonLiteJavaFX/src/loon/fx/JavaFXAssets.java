@@ -20,7 +20,6 @@
  */
 package loon.fx;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -473,31 +472,40 @@ public class JavaFXAssets extends Assets {
 		return requireResource(path).readBytes();
 	}
 
-	private static JavaFXAudio _audio;
+	private static JavaFXSound _audio;
 
 	protected Sound getSound(String path, boolean music) {
 		if (_audio == null) {
-			_audio = new JavaFXAudio();
+			_audio = new JavaFXSound();
 		}
 		Exception err = null;
-		String ext = LSystem.getExtension(path);
-		if (ext == null || ext.length() == 0) {
-			for (String suff : SUFFIXES) {
-				final String soundPath = path + suff;
+		try {
+			String ext = LSystem.getExtension(path);
+			String serachPath = getPath(path);
+			URL url = requireUrl(path, serachPath);
+			if (ext == null || ext.length() == 0) {
+				for (String suff : SUFFIXES) {
+					final String soundPath = path + suff;
+					serachPath = getPath(soundPath);
+					url = requireUrl(soundPath, serachPath);
+					try {
+						return _audio.createSound(url, music);
+					} catch (Exception e) {
+						e.printStackTrace();
+						err = e;
+					}
+				}
+			} else {
 				try {
-					return _audio.createSound(path, new ByteArrayInputStream(getBytesSync(soundPath)), music);
+					return _audio.createSound(url, music);
 				} catch (Exception e) {
 					e.printStackTrace();
 					err = e;
 				}
 			}
-		} else {
-			try {
-				return _audio.createSound(path, new ByteArrayInputStream(getBytesSync(path)), music);
-			} catch (Exception e) {
-				e.printStackTrace();
-				err = e;
-			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			err = e;
 		}
 		return new Sound.Error(err);
 	}
@@ -506,8 +514,7 @@ public class JavaFXAssets extends Assets {
 		return LSystem.base() == null ? JavaFXApplication.class : LSystem.base().setting.mainClass;
 	}
 
-	protected Resource requireResource(final String path) throws IOException {
-		String serachPath = getPath(path);
+	protected URL requireUrl(final String path, String serachPath) throws IOException {
 		URL url = getMainClass().getResource(serachPath);
 		if (url == null && !path.startsWith("/")) {
 			serachPath = "/" + getPath(path);
@@ -524,9 +531,15 @@ public class JavaFXAssets extends Assets {
 			serachPath = serachPath.substring(idx + len, serachPath.length());
 			url = getMainClass().getResource("/" + serachPath);
 			if (url == null) {
-				getMainClass().getResource("\\" + serachPath);
+				url = getMainClass().getResource("\\" + serachPath);
 			}
 		}
+		return url;
+	}
+
+	protected Resource requireResource(final String path) throws IOException {
+		String serachPath = getPath(path);
+		URL url = requireUrl(path, serachPath);
 		if (url != null) {
 			boolean isFile = url.getProtocol().equals("file");
 			if (isFile) {

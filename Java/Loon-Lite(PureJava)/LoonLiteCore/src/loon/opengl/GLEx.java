@@ -1499,9 +1499,12 @@ public class GLEx implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-		Canvas canvas = gfx.getCanvas();
-		canvas.setTransform(tx());
-		canvas.fillRect(x, y, width, height, tmpColor.setColor(lastBrush.baseColor));
+		if (this.lastBrush.patternTex != null) {
+			batch.addQuad(this.lastBrush.patternTex, this.lastBrush.baseColor, tx(), x, y, width, height);
+		} else {
+			batch.addQuad(colorTex, LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor), tx(), x, y,
+					width, height);
+		}
 		return this;
 	}
 

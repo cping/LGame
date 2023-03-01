@@ -28,7 +28,6 @@ import loon.component.skin.SkinManager;
 import loon.font.FontSet;
 import loon.font.FontUtils;
 import loon.font.IFont;
-import loon.font.LFont;
 
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
@@ -484,13 +483,7 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 			}
 		}
 		this._tmpString = sbr.toString();
-		if (font instanceof LFont) {
-		/*	this._box = new DrawMessageBox(new ShadowFont((LFont) font, _tmpString,
-					typeFlag == null ? LSystem.FLAG_TAG : typeFlag, _showShadow), null, box, typeFlag, width(),
-					height());*/
-		} else {
-			this._box = new DrawMessageBox(font, null, box, typeFlag, width(), height());
-		}
+		this._box = new DrawMessageBox(font, null, box, typeFlag, width(), height());
 		this._box.setLocation(x, y);
 		this._font = font;
 		freeRes().add(box);
@@ -812,6 +805,5 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 	public String getUIName() {
 		return "MessageBox";
 	}
-
 
 }

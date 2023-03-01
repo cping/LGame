@@ -21,7 +21,6 @@
 package loon.fx;
 
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.effect.BlendMode;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.effect.Light;
 import javafx.scene.effect.Lighting;
@@ -30,7 +29,6 @@ import loon.LSysException;
 import loon.LTexture;
 import loon.canvas.Canvas;
 import loon.canvas.Image;
-import loon.canvas.LColor;
 import loon.geom.Affine2f;
 import loon.opengl.Mesh;
 import loon.opengl.MeshData;
@@ -229,12 +227,11 @@ public class JavaFXMesh implements Mesh {
 
 		context.transform(deltaA * dDelta, deltaD * dDelta, deltaB * dDelta, deltaE * dDelta, deltaC * dDelta,
 				deltaF * dDelta);
-		/*
-		 * context.drawImage(((JavaFXImage) source).buffer, texture.widthRatio *
-		 * sourceWidth, texture.heightRatio * sourceHeight, textureWidth, textureHeight,
-		 * texture.widthRatio * sourceWidth, texture.heightRatio * sourceHeight,
-		 * textureWidth, textureHeight);
-		 */
+
+		context.drawImage(((JavaFXImage) source).buffer, texture.widthRatio() * sourceWidth,
+				texture.heightRatio() * sourceHeight, textureWidth, textureHeight, texture.widthRatio() * sourceWidth,
+				texture.heightRatio() * sourceHeight, textureWidth, textureHeight);
+
 		context.restore();
 
 	}
@@ -317,16 +314,27 @@ public class JavaFXMesh implements Mesh {
 			if (a == 0) {
 				a = 255;
 			}
-
 			final Color paint = Color.rgb(r, g, b);
-			final double tmp = context.getGlobalAlpha();
-			final float alpha = (float) a / 255f;
+			final float canvasAlpha = (float) context.getGlobalAlpha();
+			final float alpha = ((float) a / 255f) * canvasAlpha;
 			if (alpha != 1f) {
 				context.setGlobalAlpha(alpha);
 			}
 			context.setTransform(m00, m01, m10, m11, tx, ty);
 			if (!texture.isChild() && sl == 0f && st == 0f && sr == 1f && sb == 1f) {
-				context.drawImage(((JavaFXImage) img).buffer, left, top, (right - left), (bottom - top));
+				if (tint == -1 && alpha == 1f) {
+					context.drawImage(((JavaFXImage) img).buffer, left, top, (right - left), (bottom - top));
+				} else {
+					context.save();
+					if (tint != lastTint || light == null) {
+						light = new Light.Distant(65, 65, paint);
+						lastTint = tint;
+					}
+					lighting.setLight(light);
+					context.setEffect(lighting);
+					context.drawImage(((JavaFXImage) img).buffer, left, top, (right - left), (bottom - top));
+					context.restore();
+				}
 			} else {
 				float textureWidth = texture.getDisplayWidth();
 				float textureHeight = texture.getDisplayHeight();
@@ -334,23 +342,24 @@ public class JavaFXMesh implements Mesh {
 				float dstY = textureHeight * (st);
 				float dstWidth = textureWidth * (sr);
 				float dstHeight = textureHeight * (sb);
-				if (tint != -1) {
-					if (textureWidth == 1 && textureHeight == 1) {
-						context.setEffect(getAdjust(paint));
-					} else {
-						if (tint != lastTint || light == null) {
-							light = new Light.Distant(65, 65, paint);
-							lastTint = tint;
-						}
-						lighting.setLight(light);
-						context.setEffect(lighting);
+				if (tint == -1 && alpha == 1f) {
+					context.drawImage(((JavaFXImage) img).buffer, dstX, dstY, dstWidth - dstX, dstHeight - dstY, left,
+							top, (right - left), (bottom - top));
+				} else {
+					context.save();
+					if (tint != lastTint || light == null) {
+						light = new Light.Distant(65, 65, paint);
+						lastTint = tint;
 					}
+					lighting.setLight(light);
+					context.setEffect(lighting);
+					context.drawImage(((JavaFXImage) img).buffer, dstX, dstY, dstWidth - dstX, dstHeight - dstY, left,
+							top, (right - left), (bottom - top));
+					context.restore();
 				}
-				context.drawImage(((JavaFXImage) img).buffer, dstX, dstY, dstWidth - dstX, dstHeight - dstY, left, top,
-						(right - left), (bottom - top));
 			}
 			if (alpha != 1f) {
-				context.setGlobalAlpha(tmp);
+				context.setGlobalAlpha(canvasAlpha);
 			}
 		}
 	}

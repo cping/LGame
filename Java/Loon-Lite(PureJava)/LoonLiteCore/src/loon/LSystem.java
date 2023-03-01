@@ -29,7 +29,6 @@ import loon.events.Updateable;
 import loon.font.IFont;
 import loon.font.LFont;
 import loon.geom.Dimension;
-import loon.opengl.GLEx;
 import loon.opengl.LSTRFont;
 import loon.opengl.Mesh;
 import loon.utils.NumberUtils;
@@ -453,45 +452,7 @@ public class LSystem {
 			return name.substring(index + 1);
 		}
 	}
-
-	public static boolean mainDrawRunning() {
-		if (base() == null) {
-			return false;
-		}
-		Display game = base().display();
-		if (game != null) {
-			GLEx gl = game.GL();
-			return gl.running();
-		}
-		return false;
-	}
-
-	public static void mainBeginDraw() {
-	/*	if (base() == null) {
-			return;
-		}
-		Display game = base().display();
-		if (game != null) {
-			GLEx gl = game.GL();
-			if (!gl.running()) {
-				gl.begin();
-			}
-		}*/
-	}
-
-	public static void mainEndDraw() {
-		if (base() == null) {
-			return;
-		}
-		Display game = base().display();
-		if (game != null) {
-			GLEx gl = game.GL();
-			if (gl.running()) {
-				gl.end();
-			}
-		}
-	}
-
+	
 	public static final void close(LRelease rel) {
 		if (rel != null) {
 			try {

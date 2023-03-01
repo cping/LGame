@@ -20,7 +20,13 @@
  */
 package loon.fx;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.prefs.AbstractPreferences;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 
 import loon.Log;
 import loon.Save;
@@ -30,7 +36,7 @@ public class JavaFXSave implements Save {
 
 	private final Log log;
 	private final String storageFileName;
-
+	private Preferences preferences;
 	private boolean isPersisted;
 
 	JavaFXSave(Log log, String storage) {
@@ -39,26 +45,39 @@ public class JavaFXSave implements Save {
 	}
 
 	private void init() {
+		if (preferences == null) {
+			Preferences prefs = null;
+			try {
+				Preferences tmp = Preferences.userRoot();
+				isPersisted = tmp.nodeExists(storageFileName);
+				prefs = tmp.node(storageFileName);
+			} catch (Exception e) {
+				log.warn("Couldn't open Preferences: " + e.getMessage());
+				isPersisted = false;
+				prefs = new MemoryPreferences();
+			}
+			preferences = prefs;
+		}
 	}
 
 	@Override
 	public void setItem(String key, String value) {
 		init();
-		// preferences.put(key, value);
+		preferences.put(key, value);
 		maybePersistPreferences();
 	}
 
 	@Override
 	public void removeItem(String key) {
 		init();
-		// preferences.remove(key);
+		preferences.remove(key);
 		maybePersistPreferences();
 	}
 
 	@Override
 	public String getItem(String key) {
 		init();
-		return null;// preferences.get(key, null);
+		return preferences.get(key, null);
 	}
 
 	@Override
@@ -67,13 +86,13 @@ public class JavaFXSave implements Save {
 			@Override
 			protected void setImpl(String key, String data) {
 				init();
-				// preferences.put(key, data);
+				preferences.put(key, data);
 			}
 
 			@Override
 			protected void removeImpl(String key) {
 				init();
-				// preferences.remove(key);
+				preferences.remove(key);
 			}
 
 			@Override
@@ -88,7 +107,7 @@ public class JavaFXSave implements Save {
 	public Iterable<String> keys() {
 		init();
 		try {
-			return null;// Arrays.asList(preferences.keys());
+			return Arrays.asList(preferences.keys());
 		} catch (Exception e) {
 			log.warn("Error reading preferences: " + e.getMessage());
 			return Collections.emptyList();
@@ -102,7 +121,68 @@ public class JavaFXSave implements Save {
 
 	private void maybePersistPreferences() {
 		init();
-
+		if (preferences instanceof MemoryPreferences) {
+			return;
+		}
+		try {
+			preferences.flush();
+			isPersisted = true;
+		} catch (Exception e) {
+			log.info("Error persisting properties: " + e.getMessage());
+			isPersisted = false;
+		}
 	}
 
+	private class MemoryPreferences extends AbstractPreferences {
+		MemoryPreferences() {
+			super(null, "");
+		}
+
+		@Override
+		protected void putSpi(String key, String value) {
+			_values.put(key, value);
+		}
+
+		@Override
+		protected String getSpi(String key) {
+			return _values.get(key);
+		}
+
+		@Override
+		protected void removeSpi(String key) {
+			_values.remove(key);
+		}
+
+		@Override
+		protected void removeNodeSpi() throws BackingStoreException {
+			throw new BackingStoreException("Not implemented");
+		}
+
+		@Override
+		protected String[] keysSpi() throws BackingStoreException {
+			return _values.keySet().toArray(new String[_values.size()]);
+		}
+
+		@Override
+		protected String[] childrenNamesSpi() throws BackingStoreException {
+			throw new BackingStoreException("Not implemented");
+		}
+
+		@Override
+		protected AbstractPreferences childSpi(String name) {
+			throw new RuntimeException("Not implemented");
+		}
+
+		@Override
+		protected void syncSpi() throws BackingStoreException {
+			throw new BackingStoreException("Not implemented");
+		}
+
+		@Override
+		protected void flushSpi() throws BackingStoreException {
+			throw new BackingStoreException("Not implemented");
+		}
+
+		protected Map<String, String> _values = new HashMap<String, String>();
+	}
 }

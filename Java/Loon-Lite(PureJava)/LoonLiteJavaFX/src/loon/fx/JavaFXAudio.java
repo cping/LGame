@@ -20,48 +20,69 @@
  */
 package loon.fx;
 
-import java.io.InputStream;
+import java.net.URL;
 
-import loon.LSystem;
+import javafx.scene.media.AudioClip;
 import loon.SoundImpl;
-import loon.events.Updateable;
 
-public class JavaFXAudio {
+public class JavaFXAudio extends SoundImpl<Object> {
 
-	protected static <I> void dispatchLoaded(final SoundImpl<I> sound, final I impl) {
-		Updateable update = new Updateable() {
-			@Override
-			public void action(Object a) {
-				sound.onLoaded(impl);
+	private AudioClip audioclip;
+
+	public JavaFXAudio(URL url) {
+		audioclip = new AudioClip(url.toExternalForm());
+	}
+
+	public JavaFXAudio(String path) {
+		audioclip = new AudioClip(path);
+	}
+
+	@Override
+	public boolean pause() {
+		if (audioclip != null) {
+			audioclip.stop();
+		}
+		return true;
+	}
+
+	@Override
+	protected boolean playImpl() {
+		if (audioclip != null) {
+			audioclip.play();
+		}
+		return true;
+	}
+
+	@Override
+	protected void stopImpl() {
+		if (audioclip != null) {
+			audioclip.stop();
+		}
+	}
+
+	@Override
+	protected void setLoopingImpl(boolean looping) {
+		if (audioclip != null) {
+			if (looping) {
+				audioclip.setCycleCount(Integer.MAX_VALUE);
+			} else {
+				audioclip.setCycleCount(1);
 			}
-		};
-		LSystem.unload(update);
+		}
 	}
 
-	protected static <I> void dispatchLoadError(final SoundImpl<I> sound, final Throwable error) {
-		Updateable update = new Updateable() {
-			@Override
-			public void action(Object a) {
-				sound.onLoadError(error);
-			}
-		};
-		LSystem.unload(update);
+	@Override
+	protected void setVolumeImpl(float volume) {
+		if (audioclip != null) {
+			audioclip.setVolume(volume);
+		}
 	}
 
-	public JavaFXMusic createSound(final String path, final InputStream in, final boolean music) {
-		return null;
-	}
-
-	public void onPause() {
-
-	}
-
-	public void onResume() {
-
-	}
-
-	public void onDestroy() {
-
+	@Override
+	protected void releaseImpl() {
+		if (audioclip != null) {
+			audioclip.stop();
+		}
 	}
 
 }
