@@ -568,6 +568,22 @@ public class LTexture extends Painter implements LRelease {
 		return this;
 	}
 
+	public LTextureBatch getTextureBatch() {
+		makeBatch();
+		return batch;
+	}
+
+	protected void makeBatch() {
+		if (!checkExistBatch()) {
+			batch = gfx.game.getBatchCache(this);
+			if (batch == null || batch.closed()) {
+				batch = new LTextureBatch(this, source);
+				gfx.game.bindBatchCache(batch);
+				_isBatch = true;
+			}
+		}
+	}
+
 	public boolean checkExistBatch() {
 		return _isBatch && batch != null && !batch.closed();
 	}

@@ -79,10 +79,6 @@ public class LTextureBatch implements LRelease {
 
 	private Canvas _buffer;
 
-	private Affine2f _glexAffine;
-
-	private Affine2f _displayAffine;
-
 	private LColor _color = new LColor();
 
 	protected int count = 0;
@@ -102,8 +98,11 @@ public class LTextureBatch implements LRelease {
 	private float tx, ty;
 
 	private MeshData _meshdata;
+	
+	private String _source;
 
-	public LTextureBatch(LTexture tex) {
+	public LTextureBatch(LTexture tex,String src) {
+		this._source = src;
 		this.setTexture(tex);
 	}
 
@@ -132,7 +131,6 @@ public class LTextureBatch implements LRelease {
 			this.isInitMesh = true;
 		}
 		_meshdata.texture = _texture;
-		_glexAffine.set(LSystem.base().graphics().getViewAffine());
 		LSystem.mainEndDraw();
 		if (!isCacheLocked) {
 			vertexIdx = 0;
@@ -149,7 +147,7 @@ public class LTextureBatch implements LRelease {
 			throw new LSysException("TextureBatch.begin must be called before end.");
 		}
 		if (vertexIdx > 0) {
-			submit();
+			submit(tx, ty);
 		}
 		drawing = false;
 		LSystem.mainBeginDraw();
@@ -225,15 +223,17 @@ public class LTextureBatch implements LRelease {
 	}
 
 	public LTextureBatch submit() {
+		return submit(0f, 0f);
+	}
+
+	public LTextureBatch submit(float x, float y) {
 		if (isClosed) {
 			return this;
 		}
 		GLEx gl = LSystem.base().display().GL();
 		if (gl != null) {
 			Canvas canvas = gl.getCanvas();
-			canvas.setTransform(_displayAffine);
-			canvas.draw(_buffer.snapshot(), 0f, 0f);
-			gl.synchTransform();
+			canvas.draw(_buffer.snapshot(), x, y);
 		}
 		return this;
 	}
@@ -256,6 +256,9 @@ public class LTextureBatch implements LRelease {
 			return this;
 		}
 		GLEx gl = LSystem.base().display().GL();
+
+		Affine2f display = gl.tx();
+		
 		if (gl != null) {
 
 			final Image image = _buffer.snapshot();
@@ -265,25 +268,27 @@ public class LTextureBatch implements LRelease {
 			final boolean oriDirty = (ax != 0 || ay != 0);
 			final boolean rotDirty = (rotation != 0);
 			final boolean scaleDirty = !(sx == 1 && sy == 1);
+			
+			display = new Affine2f();
 
 			if (rotDirty || oriDirty || scaleDirty) {
-				_displayAffine.idt();
+
 				if (oriDirty) {
-					_displayAffine.translate(ax, ay);
+					display.translate(ax, ay);
 				}
 				if (rotDirty) {
 					float centerX = x + width / 2;
 					float centerY = y + height / 2;
-					_displayAffine.translate(centerX, centerY);
-					_displayAffine.preRotate(rotation);
-					_displayAffine.translate(-centerX, -centerY);
+					display.translate(centerX, centerY);
+					display.preRotate(rotation);
+					display.translate(-centerX, -centerY);
 				}
 				if (scaleDirty) {
 					float centerX = x + width / 2;
 					float centerY = y + height / 2;
-					_displayAffine.translate(centerX, centerY);
-					_displayAffine.preScale(sx, sy);
-					_displayAffine.translate(-centerX, -centerY);
+					display.translate(centerX, centerY);
+					display.preScale(sx, sy);
+					display.translate(-centerX, -centerY);
 				}
 
 				if (flipZ) {
@@ -292,19 +297,17 @@ public class LTextureBatch implements LRelease {
 				}
 				if (flipX || flipY) {
 					if (flipX && flipY) {
-						Affine2f.transform(_displayAffine, x, y, Affine2f.TRANS_ROT180, width, height);
+						Affine2f.transform(display, x, y, Affine2f.TRANS_ROT180, width, height);
 					} else if (flipX) {
-						Affine2f.transform(_displayAffine, x, y, Affine2f.TRANS_MIRROR, width, height);
+						Affine2f.transform(display, x, y, Affine2f.TRANS_MIRROR, width, height);
 					} else if (flipY) {
-						Affine2f.transform(_displayAffine, x, y, Affine2f.TRANS_MIRROR_ROT180, width, height);
+						Affine2f.transform(display, x, y, Affine2f.TRANS_MIRROR_ROT180, width, height);
 					}
 				}
 
-				Affine2f.multiply(_glexAffine, _displayAffine, _displayAffine);
-			} else {
-				_displayAffine.set(_glexAffine);
-			}
-			gl.getCanvas().setTransform(_displayAffine);
+				Affine2f.multiply(gl.tx(), display, display);
+			} 
+			gl.getCanvas().setTransform(display);
 			gl.getCanvas().draw(_buffer.snapshot(), x, y);
 			gl.synchTransform();
 		}
@@ -447,12 +450,19 @@ public class LTextureBatch implements LRelease {
 		boolean oriDirty = (originX != 0 || originY != 0);
 
 		boolean scaleDirty = !(scaleX == 1 && scaleY == 1);
+		
+		GLEx gl = LSystem.base().display().GL();
 
+		Affine2f display = gl.tx();
+		
 		if (flipX || flipY || rotDirty || oriDirty || scaleDirty) {
-			_displayAffine.idt();
+			
+			display = new Affine2f();
+			
 			if (oriDirty) {
-				_displayAffine.translate(originX, originY);
+				display.translate(originX, originY);
 			}
+			
 			if (rotDirty) {
 				float centerX = x + width / 2;
 				float centerY = y + height / 2;
@@ -460,9 +470,9 @@ public class LTextureBatch implements LRelease {
 					centerX = x + pivotX;
 					centerX = y + pivotY;
 				}
-				_displayAffine.translate(centerX, centerY);
-				_displayAffine.preRotate(rotation);
-				_displayAffine.translate(-centerX, -centerY);
+				display.translate(centerX, centerY);
+				display.preRotate(rotation);
+				display.translate(-centerX, -centerY);
 			}
 			if (scaleDirty) {
 				float centerX = x + width / 2;
@@ -471,26 +481,24 @@ public class LTextureBatch implements LRelease {
 					centerX = x + pivotX;
 					centerX = y + pivotY;
 				}
-				_displayAffine.translate(centerX, centerY);
-				_displayAffine.preScale(scaleX, scaleY);
-				_displayAffine.translate(-centerX, -centerY);
+				display.translate(centerX, centerY);
+				display.preScale(scaleX, scaleY);
+				display.translate(-centerX, -centerY);
 			}
 
 			if (flipX || flipY) {
 				if (flipX && flipY) {
-					Affine2f.transform(_displayAffine, x, y, Affine2f.TRANS_ROT180, width, height);
+					Affine2f.transform(display, x, y, Affine2f.TRANS_ROT180, width, height);
 				} else if (flipX) {
-					Affine2f.transform(_displayAffine, x, y, Affine2f.TRANS_MIRROR, width, height);
+					Affine2f.transform(display, x, y, Affine2f.TRANS_MIRROR, width, height);
 				} else if (flipY) {
-					Affine2f.transform(_displayAffine, x, y, Affine2f.TRANS_MIRROR_ROT180, width, height);
+					Affine2f.transform(display, x, y, Affine2f.TRANS_MIRROR_ROT180, width, height);
 				}
 			}
 
-			Affine2f.multiply(_glexAffine, _displayAffine, _displayAffine);
-		} else {
-			_displayAffine.set(_glexAffine);
+			Affine2f.multiply(gl.tx(), display, display);
 		}
-
+		
 		int argb = this._color.getABGR();
 		if (color != null) {
 			argb = LColor.combine(argb, color.getARGB());
@@ -499,7 +507,7 @@ public class LTextureBatch implements LRelease {
 		if (srcX == 0 && srcY == 0 && srcWidth == width && srcHeight == height) {
 			float u2 = _texture.widthRatio();
 			float uv = _texture.heightRatio();
-			_mesh.paint(argb, _displayAffine, x, y, x + width, y + height, _texture.xOff(), _texture.yOff(), u2, uv);
+			_mesh.paint(argb, display, x, y, x + width, y + height, _texture.xOff(), _texture.yOff(), u2, uv);
 		} else {
 			float displayWidth = _texture.getDisplayWidth();
 			float displayHeight = _texture.getDisplayHeight();
@@ -523,7 +531,7 @@ public class LTextureBatch implements LRelease {
 				widthRatio = ((srcWidth / displayWidth) * forefather.widthRatio()) + xOff;
 				heightRatio = ((srcHeight / displayHeight) * forefather.heightRatio()) + yOff;
 			}
-			_mesh.paint(argb, _displayAffine, x, y, x + width, y + height, xOff, yOff, widthRatio, heightRatio);
+			_mesh.paint(argb, display, x, y, x + width, y + height, xOff, yOff, widthRatio, heightRatio);
 		}
 		return this;
 	}
@@ -562,8 +570,11 @@ public class LTextureBatch implements LRelease {
 
 	public LTextureBatch postCache(Cache cache, LColor color, float x, float y, float sx, float sy, float ax, float ay,
 			float rotation, boolean flipX, boolean flipY, boolean flipZ) {
+
 		GLEx gl = LSystem.base().display().GL();
 
+		Affine2f display = gl.tx();
+		
 		if (gl != null) {
 
 			final int width = cache._image.getWidth();
@@ -574,23 +585,25 @@ public class LTextureBatch implements LRelease {
 			final boolean scaleDirty = !(sx == 1 && sy == 1);
 
 			if (rotDirty || oriDirty || scaleDirty) {
-				_displayAffine.idt();
+				
+				display = new Affine2f();
+				
 				if (oriDirty) {
-					_displayAffine.translate(ax, ay);
+					display.translate(ax, ay);
 				}
 				if (rotDirty) {
 					float centerX = x + width / 2;
 					float centerY = y + height / 2;
-					_displayAffine.translate(centerX, centerY);
-					_displayAffine.preRotate(rotation);
-					_displayAffine.translate(-centerX, -centerY);
+					display.translate(centerX, centerY);
+					display.preRotate(rotation);
+					display.translate(-centerX, -centerY);
 				}
 				if (scaleDirty) {
 					float centerX = x + width / 2;
 					float centerY = y + height / 2;
-					_displayAffine.translate(centerX, centerY);
-					_displayAffine.preScale(sx, sy);
-					_displayAffine.translate(-centerX, -centerY);
+					display.translate(centerX, centerY);
+					display.preScale(sx, sy);
+					display.translate(-centerX, -centerY);
 				}
 
 				if (flipZ) {
@@ -599,21 +612,19 @@ public class LTextureBatch implements LRelease {
 				}
 				if (flipX || flipY) {
 					if (flipX && flipY) {
-						Affine2f.transform(_displayAffine, x, y, Affine2f.TRANS_ROT180, width, height);
+						Affine2f.transform(display, x, y, Affine2f.TRANS_ROT180, width, height);
 					} else if (flipX) {
-						Affine2f.transform(_displayAffine, x, y, Affine2f.TRANS_MIRROR, width, height);
+						Affine2f.transform(display, x, y, Affine2f.TRANS_MIRROR, width, height);
 					} else if (flipY) {
-						Affine2f.transform(_displayAffine, x, y, Affine2f.TRANS_MIRROR_ROT180, width, height);
+						Affine2f.transform(display, x, y, Affine2f.TRANS_MIRROR_ROT180, width, height);
 					}
 				}
 
-				Affine2f.multiply(_glexAffine, _displayAffine, _displayAffine);
-			} else {
-				_displayAffine.set(_glexAffine);
+				Affine2f.multiply(gl.tx(), display, display);
 			}
 
 			Canvas canvas = gl.getCanvas();
-			canvas.setTransform(_displayAffine);
+			canvas.setTransform(display);
 			canvas.draw(cache._image, x, y, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 			gl.synchTransform();
 		}
