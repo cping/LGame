@@ -121,23 +121,6 @@ public class Path extends Shape {
 		return this;
 	}
 
-	public Path curveTo(float x, float y, float cx1, float cy1, float cx2, float cy2, int segments) {
-		if ((_path2d.getLastX() == x) && (_path2d.getLastY() == y)) {
-			return this;
-		}
-		Curve curve = new Curve(new Vector2f(_path2d.getLastX(), _path2d.getLastY()), new Vector2f(cx1, cy1),
-				new Vector2f(cx2, cy2), new Vector2f(x, y));
-		float step = 1.0f / segments;
-
-		for (int i = 1; i < segments + 1; i++) {
-			float t = i * step;
-			Vector2f p = curve.pointAt(t);
-			_path2d.lineTo(p.x, p.y);
-		}
-		pointsDirty = true;
-		return this;
-	}
-
 	@Override
 	protected void createPoints() {
 		this.points = _path2d.getResult();

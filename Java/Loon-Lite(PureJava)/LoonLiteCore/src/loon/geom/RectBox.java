@@ -126,8 +126,6 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 
 	public int height;
 
-	private Matrix4 _rectMatrix;
-
 	public RectBox() {
 		setBounds(0, 0, 0, 0);
 	}
@@ -315,13 +313,6 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 	public boolean overlaps(RectBox rectangle) {
 		return !(x > rectangle.x + rectangle.width || x + width < rectangle.x || y > rectangle.y + rectangle.height
 				|| y + height < rectangle.y);
-	}
-
-	public Matrix4 getMatrix() {
-		if (_rectMatrix == null) {
-			_rectMatrix = new Matrix4();
-		}
-		return _rectMatrix.setToOrtho2D(this.x, this.y, this.width, this.height);
 	}
 
 	public int x() {

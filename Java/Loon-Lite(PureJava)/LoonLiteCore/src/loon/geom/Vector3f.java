@@ -394,8 +394,6 @@ public class Vector3f implements Serializable, XYZ {
 				MathUtils.smoothStep(a.z, b.z, amount));
 	}
 
-	private final static Matrix4 tmpMat = new Matrix4();
-
 	private final static Vector3f tmpNormal1 = new Vector3f();
 
 	private final static Vector3f tmpNormal2 = new Vector3f();
@@ -579,20 +577,6 @@ public class Vector3f implements Serializable, XYZ {
 				x * matrix[2] + y * matrix[5] + z * matrix[8] + matrix[11]);
 	}
 
-	public Vector3f mulSelf(final Matrix4 matrix) {
-		final float l_mat[] = matrix.val;
-		return this.set(x * l_mat[Matrix4.M00] + y * l_mat[Matrix4.M01] + z * l_mat[Matrix4.M02] + l_mat[Matrix4.M03],
-				x * l_mat[Matrix4.M10] + y * l_mat[Matrix4.M11] + z * l_mat[Matrix4.M12] + l_mat[Matrix4.M13],
-				x * l_mat[Matrix4.M20] + y * l_mat[Matrix4.M21] + z * l_mat[Matrix4.M22] + l_mat[Matrix4.M23]);
-	}
-
-	public Vector3f traMul(final Matrix4 matrix) {
-		final float l_mat[] = matrix.val;
-		return this.set(x * l_mat[Matrix4.M00] + y * l_mat[Matrix4.M10] + z * l_mat[Matrix4.M20] + l_mat[Matrix4.M30],
-				x * l_mat[Matrix4.M01] + y * l_mat[Matrix4.M11] + z * l_mat[Matrix4.M21] + l_mat[Matrix4.M31],
-				x * l_mat[Matrix4.M02] + y * l_mat[Matrix4.M12] + z * l_mat[Matrix4.M22] + l_mat[Matrix4.M32]);
-	}
-
 	public Vector3f mulSelf(Matrix3 matrix) {
 		final float l_mat[] = matrix.val;
 		return set(x * l_mat[Matrix3.M00] + y * l_mat[Matrix3.M01] + z * l_mat[Matrix3.M02],
@@ -605,62 +589,6 @@ public class Vector3f implements Serializable, XYZ {
 		return set(x * l_mat[Matrix3.M00] + y * l_mat[Matrix3.M10] + z * l_mat[Matrix3.M20],
 				x * l_mat[Matrix3.M01] + y * l_mat[Matrix3.M11] + z * l_mat[Matrix3.M21],
 				x * l_mat[Matrix3.M02] + y * l_mat[Matrix3.M12] + z * l_mat[Matrix3.M22]);
-	}
-
-	public Vector3f mulSelf(final Quaternion quat) {
-		return quat.transformSelf(this);
-	}
-
-	public Vector3f prjSelf(final Matrix4 matrix) {
-		final float l_mat[] = matrix.val;
-		final float l_w = 1f
-				/ (x * l_mat[Matrix4.M30] + y * l_mat[Matrix4.M31] + z * l_mat[Matrix4.M32] + l_mat[Matrix4.M33]);
-		return this.set(
-				(x * l_mat[Matrix4.M00] + y * l_mat[Matrix4.M01] + z * l_mat[Matrix4.M02] + l_mat[Matrix4.M03]) * l_w,
-				(x * l_mat[Matrix4.M10] + y * l_mat[Matrix4.M11] + z * l_mat[Matrix4.M12] + l_mat[Matrix4.M13]) * l_w,
-				(x * l_mat[Matrix4.M20] + y * l_mat[Matrix4.M21] + z * l_mat[Matrix4.M22] + l_mat[Matrix4.M23]) * l_w);
-	}
-
-	public Vector3f rotSelf(final Matrix4 matrix) {
-		final float l_mat[] = matrix.val;
-		return this.set(x * l_mat[Matrix4.M00] + y * l_mat[Matrix4.M01] + z * l_mat[Matrix4.M02],
-				x * l_mat[Matrix4.M10] + y * l_mat[Matrix4.M11] + z * l_mat[Matrix4.M12],
-				x * l_mat[Matrix4.M20] + y * l_mat[Matrix4.M21] + z * l_mat[Matrix4.M22]);
-	}
-
-	public Vector3f unrotateSelf(final Matrix4 matrix) {
-		final float l_mat[] = matrix.val;
-		return this.set(x * l_mat[Matrix4.M00] + y * l_mat[Matrix4.M10] + z * l_mat[Matrix4.M20],
-				x * l_mat[Matrix4.M01] + y * l_mat[Matrix4.M11] + z * l_mat[Matrix4.M21],
-				x * l_mat[Matrix4.M02] + y * l_mat[Matrix4.M12] + z * l_mat[Matrix4.M22]);
-	}
-
-	public Vector3f untransformSelf(final Matrix4 matrix) {
-		final float l_mat[] = matrix.val;
-		x -= l_mat[Matrix4.M03];
-		y -= l_mat[Matrix4.M03];
-		z -= l_mat[Matrix4.M03];
-		return this.set(x * l_mat[Matrix4.M00] + y * l_mat[Matrix4.M10] + z * l_mat[Matrix4.M20],
-				x * l_mat[Matrix4.M01] + y * l_mat[Matrix4.M11] + z * l_mat[Matrix4.M21],
-				x * l_mat[Matrix4.M02] + y * l_mat[Matrix4.M12] + z * l_mat[Matrix4.M22]);
-	}
-
-	public Vector3f rotateSelf(float degrees, float axisX, float axisY, float axisZ) {
-		return this.mulSelf(tmpMat.setToRotation(axisX, axisY, axisZ, degrees));
-	}
-
-	public Vector3f rotateRadSelf(float radians, float axisX, float axisY, float axisZ) {
-		return this.mulSelf(tmpMat.setToRotationRad(axisX, axisY, axisZ, radians));
-	}
-
-	public Vector3f rotateSelf(final Vector3f axis, float degrees) {
-		tmpMat.setToRotation(axis, degrees);
-		return this.mulSelf(tmpMat);
-	}
-
-	public Vector3f rotateRadSelf(final Vector3f axis, float radians) {
-		tmpMat.setToRotationRad(axis, radians);
-		return this.mulSelf(tmpMat);
 	}
 
 	public boolean isUnit() {
@@ -1009,10 +937,6 @@ public class Vector3f implements Serializable, XYZ {
 		return distanceSquared(v.x, v.y, 0);
 	}
 
-	public Vector3f rotate(Vector3f axis, float angle) {
-		return cpy().rotateSelf(axis, angle);
-	}
-
 	public Vector3f rotateX(Vector3f origin, float angle) {
 		float pY = this.y - origin.y;
 		float pZ = this.z - origin.z;
@@ -1073,18 +997,6 @@ public class Vector3f implements Serializable, XYZ {
 		float rx = x * m.get(0, 0) + y * m.get(0, 1) + z * m.get(0, 2);
 		float ry = x * m.get(1, 0) + y * m.get(1, 1) + z * m.get(1, 2);
 		float rz = x * m.get(2, 0) + y * m.get(2, 1) + z * m.get(2, 2);
-
-		return set(rx, ry, rz);
-	}
-
-	public Vector3f multiply(Matrix4 m) {
-		return cpy().multiplySelf(m);
-	}
-
-	public Vector3f multiplySelf(Matrix4 m) {
-		float rx = x * m.get(0, 0) + y * m.get(1, 0) + z * m.get(2, 0) + 1 * m.get(3, 0);
-		float ry = x * m.get(0, 1) + y * m.get(1, 1) + z * m.get(2, 1) + 1 * m.get(3, 1);
-		float rz = x * m.get(0, 2) + y * m.get(1, 2) + z * m.get(2, 2) + 1 * m.get(3, 2);
 
 		return set(rx, ry, rz);
 	}

@@ -27,6 +27,7 @@ import loon.action.sprite.Entity;
 import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.canvas.Pixmap;
+import loon.utils.BufferUtils;
 import loon.utils.timer.LTimer;
 
 /**
@@ -119,14 +120,14 @@ public class PShadowEffect extends Entity {
 				for (int i = 0; i < block; i++) {
 					colors[i] = widdershinTrans[indexW++];
 				}
-				LSystem.base().support().toColorKeys(pixels, colors);
+				BufferUtils.toColorKeys(pixels, colors);
 			} else {
 				int[] colors = new int[block];
 				for (int i = 0; i < block; i++) {
 					colors[i] = deasilTrans[indexD--];
 				}
 				for (int i = 0; i < block; i++) {
-					LSystem.base().support().toColorKeys(pixels, colors);
+					BufferUtils.toColorKeys(pixels, colors);
 				}
 			}
 			LTexture tex = super.getBitmap();

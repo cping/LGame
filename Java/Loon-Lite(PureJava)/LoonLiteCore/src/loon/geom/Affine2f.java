@@ -21,7 +21,6 @@
 package loon.geom;
 
 import loon.LSysException;
-import loon.LSystem;
 import loon.LTrans;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
@@ -270,8 +269,6 @@ public class Affine2f implements LTrans, XY {
 	public float ty = 0.0f;
 	/* convert Affine to Matrix3 */
 	private float[] matrix3f = new float[9];
-	/* one 4x4 matrix temp object */
-	private Matrix4 projectionMatrix = null;
 
 	protected Affine2f(Affine2f other) {
 		this(other.scaleX(), other.scaleY(), other.rotation(), other.tx(), other.ty());
@@ -317,43 +314,6 @@ public class Affine2f implements LTrans, XY {
 		this.tx = tx;
 		this.m10 = c;
 		this.m11 = d;
-		return this;
-	}
-
-	public Affine2f combined(Matrix4 mat) {
-		float[] m = mat.val;
-
-		float m00 = m[Matrix4.M00] * this.m00 + m[Matrix4.M01] * this.m10;
-		float m01 = m[Matrix4.M00] * this.m11 + m[Matrix4.M11] * this.m10;
-		float tx = m[Matrix4.M00] * this.m01 + m[Matrix4.M01] * this.m11;
-		float m10 = m[Matrix4.M00] * this.tx + m[Matrix4.M01] * this.ty + m[Matrix4.M02];
-		float m11 = m[Matrix4.M10] * this.tx + m[Matrix4.M11] * this.ty + m[Matrix4.M12];
-
-		m[Matrix4.M00] = m00;
-		m[Matrix4.M01] = m01;
-		m[Matrix4.M03] = tx;
-		m[Matrix4.M10] = m10;
-		m[Matrix4.M11] = m11;
-		m[Matrix4.M13] = ty;
-
-		return this;
-	}
-
-	public Affine2f combined4x4(float[] vals) {
-		float[] m = vals;
-
-		float m00 = m[Matrix4.M00] * this.m00 + m[Matrix4.M01] * this.m10;
-		float m01 = m[Matrix4.M00] * this.m11 + m[Matrix4.M11] * this.m10;
-		float tx = m[Matrix4.M00] * this.m01 + m[Matrix4.M01] * this.m11;
-		float m10 = m[Matrix4.M00] * this.tx + m[Matrix4.M01] * this.ty + m[Matrix4.M02];
-		float m11 = m[Matrix4.M10] * this.tx + m[Matrix4.M11] * this.ty + m[Matrix4.M12];
-
-		m[Matrix4.M00] = m00;
-		m[Matrix4.M01] = m01;
-		m[Matrix4.M03] = tx;
-		m[Matrix4.M10] = m10;
-		m[Matrix4.M11] = m11;
-		m[Matrix4.M13] = ty;
 		return this;
 	}
 
@@ -453,39 +413,6 @@ public class Affine2f implements LTrans, XY {
 		m10 = vals[Matrix3.M10];
 		m11 = vals[Matrix3.M11];
 		ty = vals[Matrix3.M12];
-		return this;
-	}
-
-	/**
-	 * 设定当前矩阵参数为4x4(16元素)矩阵数值
-	 * 
-	 * @param matrix
-	 * @return
-	 */
-	public Affine2f set(Matrix4 matrix) {
-		float[] other = matrix.val;
-		m00 = other[Matrix4.M00];
-		m01 = other[Matrix4.M01];
-		tx = other[Matrix4.M03];
-		m10 = other[Matrix4.M10];
-		m11 = other[Matrix4.M11];
-		ty = other[Matrix4.M13];
-		return this;
-	}
-
-	/**
-	 * 设定当前矩阵参数为4x4(16元素)矩阵数值
-	 * 
-	 * @param vals
-	 * @return
-	 */
-	public Affine2f setValue4x4(float[] vals) {
-		m00 = vals[Matrix4.M00];
-		m01 = vals[Matrix4.M01];
-		tx = vals[Matrix4.M03];
-		m10 = vals[Matrix4.M10];
-		m11 = vals[Matrix4.M11];
-		ty = vals[Matrix4.M13];
 		return this;
 	}
 
@@ -1397,16 +1324,6 @@ public class Affine2f implements LTrans, XY {
 		this.ty = m13;
 
 		return this;
-	}
-
-	public Matrix4 toViewMatrix4() {
-		Dimension dim = LSystem.viewSize;
-		if (projectionMatrix == null) {
-			projectionMatrix = new Matrix4();
-		}
-		projectionMatrix.setToOrtho2D(0, 0, dim.width * LSystem.getScaleWidth(), dim.height * LSystem.getScaleHeight());
-		projectionMatrix.thisCombine(this);
-		return projectionMatrix;
 	}
 
 	public Affine2f cpy(Affine2f other) {

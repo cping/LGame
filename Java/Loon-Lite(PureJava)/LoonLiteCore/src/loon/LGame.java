@@ -982,9 +982,7 @@ public abstract class LGame implements LRelease {
 	public abstract Save save();
 
 	public abstract Accelerometer accel();
-
-	public abstract Support support();
-
+	
 	public LProcess process() {
 		return processImpl;
 	}

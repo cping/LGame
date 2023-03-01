@@ -110,11 +110,6 @@ public class EmptyGame extends LGame {
 
 	private Asyn exec = new AsynEmpty(log, frame);
 
-	@Override
-	public Support support() {
-		throw new UnsupportedOperationException();
-	}
-
 	private final long start = TimeUtils.millis();
 
 	@Override

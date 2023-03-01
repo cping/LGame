@@ -62,7 +62,7 @@ public class JavaFXMesh implements Mesh {
 
 	public JavaFXMesh(Canvas canvas) {
 		if (canvas == null) {
-			throw new LSysException("");
+			throw new LSysException("Canvas is null !");
 		}
 		if (canvas instanceof JavaFXCanvas) {
 			this.context = ((JavaFXCanvas) canvas).context;
@@ -277,16 +277,25 @@ public class JavaFXMesh implements Mesh {
 		context.save();
 	}
 
+	@Override
 	public void restore() {
 		context.restore();
 	}
 
+	@Override
 	public void transform(float m00, float m01, float m10, float m11, float tx, float ty) {
 		context.transform(m00, m01, m10, m11, tx, ty);
 	}
 
+	@Override
 	public void transform(Affine2f aff) {
 		context.transform(aff.m00, aff.m01, aff.m10, aff.m11, aff.tx, aff.ty);
+	}
+
+	@Override
+	public void paint(int tint, Affine2f aff, float left, float top, float right, float bottom, float sl, float st,
+			float sr, float sb) {
+		paint(tint, aff.m00, aff.m01, aff.m10, aff.m11, aff.tx, aff.ty, left, top, right, bottom, sl, st, sr, sb);
 	}
 
 	@Override

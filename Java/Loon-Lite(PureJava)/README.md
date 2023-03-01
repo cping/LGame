@@ -1,1 +1,1 @@
-这是一套简化版(非opengl)的Loon实现,它的渲染完全基于特定Java平台提供的渲染API封装，它会比完整版缺少一些功能,但与之相对的,会更加注重直接利用Java平台提供的现成API,也更容易和原生Java代码结合,扩展到其它非游戏场合中去使用,目前只会支持JavaFX,Android以及GWT.
+这是一套简化版(非opengl)的Loon实现,它的渲染完全基于特定Java平台提供的渲染API封装，它会比完整版缺少一些功能,但与之相对的,会更加注重直接利用Java平台提供的现成API,也更容易和原生Java代码结合,扩展到其它非游戏场合中去使用,目前只会支持JavaFX,JavaSE和Android以及GWT(IOS环境可以跑Gluon提供的JavaFX移动版,基于Graalvm的SubstrateVM,不过那玩意去弹窗版收钱……).

@@ -3,7 +3,6 @@ module loon.core {
 	exports loon.action;
 	exports loon.action.avg;
 	exports loon.action.avg.drama;
-	exports loon.action.camera;
 	exports loon.action.collision;
 	exports loon.action.map;
 	exports loon.action.map.colider;
@@ -26,10 +25,8 @@ module loon.core {
 	exports loon.opengl;
 	exports loon.particle;
 	exports loon.utils;
-	exports loon.utils.cache;
 	exports loon.utils.json;
 	exports loon.utils.processes;
-	exports loon.utils.qrcode;
 	exports loon.utils.reply;
 	exports loon.utils.res;
 	exports loon.utils.res.loaders;

@@ -100,10 +100,6 @@ public class ShapeUtils {
 		return result;
 	}
 
-	public static final Triangle triangulate(Vector2f[] vertices) {
-		return triangulate(new TriangleBasic(), vertices);
-	}
-
 	public static final Triangle triangulate(Triangle triangulator, Vector2f[] vertices) {
 		int size = vertices.length;
 		for (int i = 0; i < size; i++) {

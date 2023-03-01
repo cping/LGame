@@ -24,7 +24,7 @@ import java.io.Serializable;
 import java.nio.FloatBuffer;
 
 import loon.LSysException;
-import loon.LSystem;
+import loon.utils.BufferUtils;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 import loon.utils.StringKeyValue;
@@ -344,19 +344,6 @@ public class Matrix3 implements Serializable, XY {
 		return this;
 	}
 
-	public Matrix3 set(Matrix4 mat) {
-		val[M00] = mat.val[Matrix4.M00];
-		val[M10] = mat.val[Matrix4.M10];
-		val[M20] = mat.val[Matrix4.M20];
-		val[M01] = mat.val[Matrix4.M01];
-		val[M11] = mat.val[Matrix4.M11];
-		val[M21] = mat.val[Matrix4.M21];
-		val[M02] = mat.val[Matrix4.M02];
-		val[M12] = mat.val[Matrix4.M12];
-		val[M22] = mat.val[Matrix4.M22];
-		return this;
-	}
-
 	public Matrix3 set(float[] values) {
 		System.arraycopy(values, 0, val, 0, val.length);
 		return this;
@@ -571,7 +558,7 @@ public class Matrix3 implements Serializable, XY {
 	}
 
 	public FloatBuffer getAsFloatBuffer() {
-		return LSystem.base().support().newFloatBuffer(val, 0, val.length);
+		return BufferUtils.newFloatBuffer(val, 0, val.length);
 	}
 
 	public void set(float x1, float y1, float x2, float y2) {

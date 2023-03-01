@@ -25,15 +25,9 @@ import java.util.Iterator;
 import loon.action.ActionBind;
 import loon.action.ActionControl;
 import loon.action.ActionTween;
-import loon.action.camera.BaseCamera;
-import loon.action.camera.EmptyCamera;
-import loon.action.camera.Viewport;
 import loon.action.collision.CollisionHelper;
 import loon.action.collision.CollisionManager;
 import loon.action.collision.CollisionObject;
-import loon.action.collision.Gravity;
-import loon.action.collision.GravityHandler;
-import loon.action.collision.GravityResult;
 import loon.action.map.Config;
 import loon.action.map.Field2D;
 import loon.action.page.ScreenSwitch;
@@ -93,7 +87,6 @@ import loon.utils.ArrayByte;
 import loon.utils.Calculator;
 import loon.utils.ConfigReader;
 import loon.utils.Disposes;
-import loon.utils.Easing.EasingMode;
 import loon.utils.IntMap;
 import loon.utils.MathUtils;
 import loon.utils.ObjectBundle;
@@ -200,8 +193,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	private String _screenName;
 
-	private BaseCamera _baseCamera;
-
 	private ScreenAction _screenAction = null;
 
 	private final TArray<LTouchArea> _touchAreas = new TArray<LTouchArea>();
@@ -219,11 +210,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	private boolean secondPaintFlag;
 
 	private boolean lastPaintFlag;
-
-	// 0.3.2版新增的简易重力控制接口
-	private GravityHandler gravityHandler;
-
-	private Viewport _baseViewport;
 
 	private LColor _backgroundColor;
 
@@ -251,10 +237,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	private boolean _initLoopEvents = false;
 
-	private boolean _isExistCamera = false;
-
-	private boolean _isExistViewport = false;
-
 	private Accelerometer.SensorDirection direction = Accelerometer.SensorDirection.EMPTY;
 
 	private int mode, frame;
@@ -280,7 +262,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	private boolean _desktopPenetrate = false;
 
-	private boolean isLoad, isLock, isClose, isTranslate, isGravity;
+	private boolean isLoad, isLock, isClose, isTranslate;
 
 	private float tx, ty;
 
@@ -808,22 +790,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		if (desktop != null) {
 			desktop.packLayout(manager, spacex, spacey, spaceHeight, spaceHeight);
 		}
-	}
-
-	public Screen setCamera(BaseCamera came) {
-		_isExistCamera = (came != null);
-		if (_isExistCamera) {
-			_baseCamera = came;
-			_baseCamera.setup();
-		}
-		return this;
-	}
-
-	public BaseCamera getCamera() {
-		if (_baseCamera == null) {
-			_baseCamera = new EmptyCamera();
-		}
-		return _baseCamera;
 	}
 
 	public void stopRepaint() {
@@ -1397,9 +1363,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		if (desktopRun && desktop != null) {
 			desktop.setSize(width, height);
 		}
-		if (isGravity && gravityHandler != null) {
-			gravityHandler.setLimit(width, height);
-		}
 		this.resize(width, height);
 	}
 
@@ -1445,7 +1408,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		this.halfWidth = width / 2;
 		this.halfHeight = height / 2;
 		this.lastTouchX = lastTouchY = touchDX = touchDY = 0;
-		this.isLoad = isLock = isClose = isTranslate = isGravity = false;
+		this.isLoad = isLock = isClose = isTranslate = false;
 		if (sprites != null) {
 			sprites.close();
 			sprites.removeAll();
@@ -1468,7 +1431,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		this._rotation = 0;
 		this._scaleX = _scaleY = _alpha = 1f;
 		this._baseColor = null;
-		this._isExistCamera = false;
 		this._initLoopEvents = false;
 		this._desktopPenetrate = false;
 		this._rectLimits.clear();
@@ -1646,97 +1608,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 */
 	public LTransition getTransition() {
 		return this._transition;
-	}
-
-	/**
-	 * 设定重力系统是否启动,并返回控制器
-	 * 
-	 * @param g
-	 * @return
-	 */
-	public GravityHandler setGravity(boolean g) {
-		return setGravity(EasingMode.Linear, g);
-	}
-
-	/**
-	 * 设定重力系统是否启动,并返回控制器
-	 * 
-	 * @param ease
-	 * @param g
-	 * @return
-	 */
-	public GravityHandler setGravity(EasingMode ease, boolean g) {
-		return setGravity(getWidth(), getHeight(), ease, 1f, g);
-	}
-
-	/**
-	 * 设定重力系统是否启动,并返回控制器
-	 * 
-	 * @param ease
-	 * @param d
-	 * @param g
-	 * @return
-	 */
-	public GravityHandler setGravity(EasingMode ease, float d, boolean g) {
-		return setGravity(getWidth(), getHeight(), ease, d, g);
-	}
-
-	/**
-	 * 设定重力系统是否启动,并返回控制器
-	 * 
-	 * @param w
-	 * @param h
-	 * @param ease
-	 * @param g
-	 * @return
-	 */
-	public GravityHandler setGravity(int w, int h, EasingMode ease, float d, boolean g) {
-		if (g && (gravityHandler == null || gravityHandler.isClosed())) {
-			gravityHandler = new GravityHandler(w, h, ease, d);
-		}
-		this.isGravity = g;
-		return gravityHandler;
-	}
-
-	/**
-	 * 返回重力系统是否启动
-	 * 
-	 * @param g
-	 * @return
-	 */
-	public GravityHandler getGravity() {
-		return gravityHandler;
-	}
-
-	/**
-	 * 返回一个对象和当前其它重力对象的碰撞关系
-	 * 
-	 * @param g
-	 * @return
-	 */
-	public GravityResult getCollisionBetweenObjects(Gravity g) {
-		if (isGravity) {
-			return gravityHandler.getCollisionBetweenObjects(g);
-		}
-		return null;
-	}
-
-	/**
-	 * 判断重力系统是否启动
-	 * 
-	 * @return
-	 */
-	public boolean isGravity() {
-		return this.isGravity;
-	}
-
-	/**
-	 * 获得当前重力器句柄
-	 * 
-	 * @return
-	 */
-	public GravityHandler getGravityHandler() {
-		return setGravity(true);
 	}
 
 	/**
@@ -3264,12 +3135,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 				if (isTranslate) {
 					g.translate(tx, ty);
 				}
-				if (_isExistCamera) {
-					g.setCamera(_baseCamera);
-				}
-				if (_isExistViewport) {
-					_baseViewport.apply(g);
-				}
 				int repaintMode = getRepaintMode();
 				switch (repaintMode) {
 				case Screen.SCREEN_NOT_REPAINT:
@@ -3314,13 +3179,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 				// 最前一层渲染，可重载
 				beforeUI(g);
 			} finally {
-				if (_isExistViewport) {
-					_baseViewport.unapply(g);
-				}
-				// 若存在摄影机,则还原camera坐标
-				if (_isExistCamera) {
-					g.restoreTx();
-				}
 				// 还原屏幕矩阵以及画笔
 				g.restore();
 			}
@@ -3469,9 +3327,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		}
 		if (delayTimer.action(elapsedTime)) {
 			if (processing && !isClose) {
-				if (isGravity) {
-					gravityHandler.update(elapsedTime);
-				}
 				if (fristPaintFlag) {
 					fristOrder.update(timer);
 				}
@@ -5564,17 +5419,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		this._resizeListener = listener;
 	}
 
-	public Viewport getViewport() {
-		return _baseViewport;
-	}
-
-	public void setViewport(Viewport v) {
-		this._isExistViewport = (v != null);
-		if (this._isExistViewport) {
-			this._baseViewport = v;
-		}
-	}
-
 	/**
 	 * 释放函数内资源
 	 * 
@@ -5616,10 +5460,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 				isClose = true;
 				isTranslate = false;
 				isNext = false;
-				isGravity = false;
 				isLock = true;
-				_isExistCamera = false;
-				_isExistViewport = false;
 				_desktopPenetrate = false;
 				if (sprites != null) {
 					spriteRun = false;
@@ -5632,10 +5473,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 					desktop.close();
 					desktop.clear();
 					desktop = null;
-				}
-				if (gravityHandler != null) {
-					gravityHandler.close();
-					gravityHandler = null;
 				}
 				clearTouched();
 				clearFrameLoop();

@@ -87,6 +87,20 @@ public class LTextureBatch implements LRelease {
 
 	}
 
+	private float xOff, yOff, widthRatio, heightRatio;
+
+	private float drawWidth, drawHeight;
+
+	private float textureSrcX, textureSrcY;
+
+	private float srcWidth, srcHeight;
+
+	private float renderWidth, renderHeight;
+	
+	private Submit mesh;
+
+	private BlendState lastBlendState = BlendState.NonPremultiplied;
+	
 	protected int count = 0;
 
 	private final ExpandVertices expandVertices;
@@ -104,7 +118,9 @@ public class LTextureBatch implements LRelease {
 	private ShaderProgram globalShader = null;
 
 	private final float whiteColor = LColor.white.toFloatBits();
+	
 	protected float color = whiteColor;
+	
 	private LColor tempColor = new LColor(1, 1, 1, 1);
 
 	public int maxSpritesInBatch = 0;
@@ -125,6 +141,29 @@ public class LTextureBatch implements LRelease {
 		this.tx = tx;
 		this.ty = ty;
 		return this;
+	}
+
+	public LTextureBatch(LTexture tex) {
+		this(tex, 256, LSystem.getShaderSource(), null);
+	}
+
+	public LTextureBatch(LTexture tex, final ShaderSource src) {
+		this(tex, src, 256);
+	}
+
+	public LTextureBatch(LTexture tex, final ShaderSource src, int size) {
+		this(tex, size, src, null);
+	}
+
+	public LTextureBatch(LTexture tex, final int size, final ShaderSource src, final ShaderProgram defaultShader) {
+		if (size > 5460) {
+			throw new LSysException("Can't have more than 5460 sprites per batch: " + size);
+		}
+		this.setTexture(tex);
+		this.source = src;
+		this.shader = defaultShader;
+		this.expandVertices = new ExpandVertices(size);
+		this.mesh = new Submit();
 	}
 
 	/**
@@ -175,33 +214,6 @@ public class LTextureBatch implements LRelease {
 
 	public LTexture toTexture() {
 		return texture;
-	}
-
-	private Submit mesh;
-
-	private BlendState lastBlendState = BlendState.NonPremultiplied;
-
-	public LTextureBatch(LTexture tex) {
-		this(tex, 256, LSystem.getShaderSource(), null);
-	}
-
-	public LTextureBatch(LTexture tex, final ShaderSource src) {
-		this(tex, src, 256);
-	}
-
-	public LTextureBatch(LTexture tex, final ShaderSource src, int size) {
-		this(tex, size, src, null);
-	}
-
-	public LTextureBatch(LTexture tex, final int size, final ShaderSource src, final ShaderProgram defaultShader) {
-		if (size > 5460) {
-			throw new LSysException("Can't have more than 5460 sprites per batch: " + size);
-		}
-		this.setTexture(tex);
-		this.source = src;
-		this.shader = defaultShader;
-		this.expandVertices = new ExpandVertices(size);
-		this.mesh = new Submit();
 	}
 
 	public LTextureBatch glColor4f() {
@@ -265,7 +277,7 @@ public class LTextureBatch implements LRelease {
 			isLoaded = true;
 		}
 		if (drawing) {
-			throw new LSysException("SpriteBatch.end must be called before begin.");
+			throw new LSysException("TextureBatch.end must be called before begin.");
 		}
 		LSystem.mainEndDraw();
 		if (!isCacheLocked) {
@@ -289,7 +301,7 @@ public class LTextureBatch implements LRelease {
 			return this;
 		}
 		if (!drawing) {
-			throw new LSysException("SpriteBatch.begin must be called before end.");
+			throw new LSysException("TextureBatch.begin must be called before end.");
 		}
 		if (vertexIdx > 0) {
 			if (tx != 0 || ty != 0) {
@@ -459,14 +471,6 @@ public class LTextureBatch implements LRelease {
 		return this;
 	}
 
-	protected LTextureBatch switchTexture(LTexture texture) {
-		submit();
-		lastTexture = texture;
-		invTexWidth = 1.0f / texWidth;
-		invTexHeight = 1.0f / texHeight;
-		return this;
-	}
-
 	protected LTextureBatch setShader(Matrix4 view, ShaderProgram shader) {
 		if (drawing) {
 			submit();
@@ -611,15 +615,6 @@ public class LTextureBatch implements LRelease {
 		return false;
 	}
 
-	private float xOff, yOff, widthRatio, heightRatio;
-
-	private float drawWidth, drawHeight;
-
-	private float textureSrcX, textureSrcY;
-
-	private float srcWidth, srcHeight;
-
-	private float renderWidth, renderHeight;
 
 	public LTextureBatch draw(float x, float y) {
 		return draw(colors, x, y, texture.width(), texture.height(), 0, 0, texture.width(), texture.height());

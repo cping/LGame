@@ -33,7 +33,6 @@ import loon.LSetting;
 import loon.Log;
 import loon.Platform;
 import loon.Save;
-import loon.Support;
 import loon.canvas.Canvas;
 import loon.events.InputMake;
 import loon.opengl.Mesh;
@@ -161,8 +160,6 @@ public class JavaFXGame extends LGame {
 	private final JavaFXSave save;
 	private final JavaFXGraphics graphics;
 	private final JavaFXAssets assets;
-	private final Support support;
-
 	private final JavaFXLog log;
 	private final Asyn asyn;
 
@@ -178,7 +175,6 @@ public class JavaFXGame extends LGame {
 		this.input = new JavaFXInputMake(this);
 		this.assets = new JavaFXAssets(this);
 		this.log = new JavaFXLog();
-		this.support = new NativeSupport();
 		this.save = new JavaFXSave(log, config.appName);
 		this.accelerometer = new JavaFXAccelerometer();
 		this.asyn = new JavaFXAsyn(log, frame);
@@ -340,12 +336,6 @@ public class JavaFXGame extends LGame {
 	public Accelerometer accel() {
 		return this.accelerometer;
 	}
-
-	@Override
-	public Support support() {
-		return support;
-	}
-
 
 	@Override
 	public boolean isMobile() {

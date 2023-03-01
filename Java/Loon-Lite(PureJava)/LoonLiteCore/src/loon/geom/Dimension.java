@@ -26,8 +26,6 @@ public class Dimension {
 
 	public float width = -1, height = -1;
 
-	private Matrix4 matrix4;
-
 	private RectBox rect;
 
 	private boolean dirty = false;
@@ -55,17 +53,6 @@ public class Dimension {
 			rect.setBounds(0, 0, width, height);
 		}
 		return rect;
-	}
-
-	public Matrix4 getMatrix() {
-		if (dirty) {
-			if (matrix4 == null) {
-				matrix4 = new Matrix4();
-			}
-			matrix4.setToOrtho2D(0, 0, width, height);
-			dirty = false;
-		}
-		return matrix4;
 	}
 
 	public boolean isDirty() {

@@ -145,7 +145,7 @@ public class SpriteSheet implements LRelease {
 		draw(g, x, y, sx, sy, null);
 	}
 
-	public void draw(GLEx g, int x, int y, int sx, int sy, LColor[] color) {
+	public void draw(GLEx g, int x, int y, int sx, int sy, LColor color) {
 		if (target.isBatch()) {
 			final float nx = sx * tw;
 			final float ny = sy * th;

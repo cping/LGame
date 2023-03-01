@@ -216,6 +216,7 @@ public class LSetting {
 		this.isFPS = setting.isFPS;
 		this.isLogo = setting.isLogo;
 		this.isCheckResize = setting.isCheckResize;
+		this.isAllowScreenResizabled = setting.isAllowScreenResizabled;
 		this.isConsoleLog = setting.isConsoleLog;
 		this.disposeTexture = setting.disposeTexture;
 		this.fps = setting.fps;

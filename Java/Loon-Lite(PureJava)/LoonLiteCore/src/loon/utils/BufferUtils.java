@@ -1,5 +1,5 @@
 /**
- * Copyright 2008 - 2015 The Loon Game Engine Authors
+ * Copyright 2008 - 2019 The Loon Game Engine Authors
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -18,7 +18,7 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.fx;
+package loon.utils;
 
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
@@ -27,30 +27,25 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
-import loon.Support;
 import loon.canvas.LColor;
 
-public final class NativeSupport implements Support {
+public class BufferUtils {
 
-	@Override
-	public void makeBuffer(byte[] data, int size, int tag) {
+	public static void makeBuffer(byte[] data, int size, int tag) {
 		for (int i = 0; i < size; i++) {
 			data[i] ^= tag;
 		}
 	}
 
-	@Override
-	public void copy(float[] src, Buffer dst, int numFloats) {
+	public static void copy(float[] src, Buffer dst, int numFloats) {
 		copy(src, dst, 0, numFloats);
 	}
 
-	@Override
-	public void copy(float[] src, Buffer dst, int offset, int numFloats) {
+	public static void copy(float[] src, Buffer dst, int offset, int numFloats) {
 		putBuffer(dst, src, offset, numFloats);
 	}
 
-	@Override
-	public IntBuffer newIntBuffer(final int[] src) {
+	public static IntBuffer newIntBuffer(final int[] src) {
 		if (src == null) {
 			return null;
 		}
@@ -60,46 +55,41 @@ public final class NativeSupport implements Support {
 		return buffer;
 	}
 
-	@Override
-	public FloatBuffer newFloatBuffer(float[] src, int offset, int numFloats) {
+	public static FloatBuffer newFloatBuffer(float[] src, int offset, int numFloats) {
 		FloatBuffer buffer = newFloatBuffer(numFloats);
 		copy(src, buffer, offset, numFloats);
 		return buffer;
 	}
 
-	@Override
-	public void copy(byte[] src, int srcOffset, Buffer dst, int numElements) {
+	public static void copy(byte[] src, int srcOffset, Buffer dst, int numElements) {
 		putBuffer(dst, src, srcOffset, numElements);
 	}
 
-	@Override
-	public void copy(short[] src, int srcOffset, Buffer dst, int numElements) {
+	public static void copy(short[] src, int srcOffset, Buffer dst, int numElements) {
 		putBuffer(dst, src, srcOffset, numElements);
 	}
 
-	public void copy(char[] src, int srcOffset, Buffer dst, int numElements) {
+	public static void copy(char[] src, int srcOffset, Buffer dst, int numElements) {
 		putBuffer(dst, src, srcOffset, numElements);
 	}
 
-	@Override
-	public void copy(int[] src, int srcOffset, Buffer dst, int numElements) {
+	public static void copy(int[] src, int srcOffset, Buffer dst, int numElements) {
 		putBuffer(dst, src, srcOffset, numElements);
 	}
 
-	public void copy(long[] src, int srcOffset, Buffer dst, int numElements) {
+	public static void copy(long[] src, int srcOffset, Buffer dst, int numElements) {
 		putBuffer(dst, src, srcOffset, numElements);
 	}
 
-	@Override
-	public void copy(float[] src, int srcOffset, Buffer dst, int numElements) {
+	public static void copy(float[] src, int srcOffset, Buffer dst, int numElements) {
 		putBuffer(dst, src, srcOffset, numElements);
 	}
 
-	public void copy(double[] src, int srcOffset, Buffer dst, int numElements) {
+	public static void copy(double[] src, int srcOffset, Buffer dst, int numElements) {
 		putBuffer(dst, src, srcOffset, numElements);
 	}
 
-	private void putBuffer(Buffer dst, Object src, int offset, int numFloats) {
+	private static void putBuffer(Buffer dst, Object src, int offset, int numFloats) {
 		if (dst instanceof ByteBuffer) {
 			if (src instanceof byte[]) {
 				ByteBuffer byteBuffer = (ByteBuffer) dst;
@@ -152,8 +142,7 @@ public final class NativeSupport implements Support {
 		return buffer;
 	}
 
-	@Override
-	public ByteBuffer replaceBytes(ByteBuffer dst, float[] src) {
+	public static ByteBuffer replaceBytes(ByteBuffer dst, float[] src) {
 		int size = src.length;
 		dst.clear();
 		copy(src, 0, dst, size);
@@ -161,8 +150,7 @@ public final class NativeSupport implements Support {
 		return dst;
 	}
 
-	@Override
-	public FloatBuffer replaceFloats(FloatBuffer dst, float[] src) {
+	public static FloatBuffer replaceFloats(FloatBuffer dst, float[] src) {
 		int size = src.length;
 		dst.clear();
 		copy(src, 0, dst, size);
@@ -170,86 +158,75 @@ public final class NativeSupport implements Support {
 		return dst;
 	}
 
-	@Override
-	public ByteBuffer getByteBuffer(byte[] bytes) {
+	public static ByteBuffer getByteBuffer(byte[] bytes) {
 		ByteBuffer buffer = newByteBuffer(bytes.length).put(bytes);
 		buffer.position(0);
 		return buffer;
 
 	}
 
-	@Override
-	public FloatBuffer getFloatBuffer(float[] floats) {
+	public static FloatBuffer getFloatBuffer(float[] floats) {
 		FloatBuffer buffer = newFloatBuffer(floats.length).put(floats);
 		buffer.position(0);
 		return buffer;
 	}
 
-	@Override
-	public ByteBuffer newByteBuffer(int numBytes) {
+	public static ByteBuffer newByteBuffer(int numBytes) {
 		ByteBuffer buffer = ByteBuffer.allocateDirect(numBytes);
 		buffer.order(ByteOrder.nativeOrder());
 		return buffer;
 	}
 
-	@Override
-	public FloatBuffer newFloatBuffer(int numFloats) {
+	public static FloatBuffer newFloatBuffer(int numFloats) {
 		ByteBuffer buffer = ByteBuffer.allocateDirect(numFloats * 4);
 		buffer.order(ByteOrder.nativeOrder());
 		return buffer.asFloatBuffer();
 	}
 
-	@Override
-	public ShortBuffer newShortBuffer(int numShorts) {
+	public static ShortBuffer newShortBuffer(int numShorts) {
 		ByteBuffer buffer = ByteBuffer.allocateDirect(numShorts * 2);
 		buffer.order(ByteOrder.nativeOrder());
 		return buffer.asShortBuffer();
 	}
 
-	@Override
-	public IntBuffer newIntBuffer(int numInts) {
+	public static IntBuffer newIntBuffer(int numInts) {
 		ByteBuffer buffer = ByteBuffer.allocateDirect(numInts * 4);
 		buffer.order(ByteOrder.nativeOrder());
 		return buffer.asIntBuffer();
 	}
 
-	public void put(final Buffer buffer, final float[] source, final int offset, final int length) {
+	public static void put(final Buffer buffer, final float[] source, final int offset, final int length) {
 		putBuffer(buffer, source, offset, length);
 	}
 
-	private int allocatedUnsafe = 0;
+	private static int allocatedUnsafe = 0;
 
-	@Override
-	public int getAllocatedBytesUnsafe() {
+	public static int getAllocatedBytesUnsafe() {
 		return allocatedUnsafe;
 	}
 
-	@Override
-	public void disposeUnsafeByteBuffer(ByteBuffer buffer) {
+	public static void disposeUnsafeByteBuffer(ByteBuffer buffer) {
 		freeMemory(buffer);
 	}
 
-	public ByteBuffer newUnsafeByteBuffer(int numBytes) {
+	public static ByteBuffer newUnsafeByteBuffer(int numBytes) {
 		return newByteBuffer(numBytes);
 	}
 
-	@Override
-	public ByteBuffer allocateDirect(final int capacity) {
+	public static ByteBuffer allocateDirect(final int capacity) {
 		return ByteBuffer.allocateDirect(capacity);
 	}
 
-	private void freeMemory(Buffer buffer) {
+	private static void freeMemory(Buffer buffer) {
 		buffer.clear();
 		buffer = null;
 	}
 
-	@Override
-	public void clear(Buffer buffer) {
+	public static void clear(Buffer buffer) {
 		buffer.clear();
 	}
 
-	@Override
-	public final void filterColor(int maxPixel, int pixelStart, int pixelEnd, int[] src, int[] dst, int[] colors,
+	public static final void filterColor(int maxPixel, int pixelStart, int pixelEnd, int[] src, int[] dst, int[] colors,
 			int c1, int c2) {
 
 		final int length = src.length;
@@ -291,8 +268,8 @@ public final class NativeSupport implements Support {
 
 	}
 
-	@Override
-	public void filterFractions(int size, float[] fractions, int width, int height, int[] pixels, int numElements) {
+	public static void filterFractions(int size, float[] fractions, int width, int height, int[] pixels,
+			int numElements) {
 
 		int x, y;
 		int idx = 0;
@@ -316,25 +293,24 @@ public final class NativeSupport implements Support {
 
 	}
 
-	public final int M00 = 0;
-	public final int M01 = 4;
-	public final int M02 = 8;
-	public final int M03 = 12;
-	public final int M10 = 1;
-	public final int M11 = 5;
-	public final int M12 = 9;
-	public final int M13 = 13;
-	public final int M20 = 2;
-	public final int M21 = 6;
-	public final int M22 = 10;
-	public final int M23 = 14;
-	public final int M30 = 3;
-	public final int M31 = 7;
-	public final int M32 = 11;
-	public final int M33 = 15;
+	public static final int M00 = 0;
+	public static final int M01 = 4;
+	public static final int M02 = 8;
+	public static final int M03 = 12;
+	public static final int M10 = 1;
+	public static final int M11 = 5;
+	public static final int M12 = 9;
+	public static final int M13 = 13;
+	public static final int M20 = 2;
+	public static final int M21 = 6;
+	public static final int M22 = 10;
+	public static final int M23 = 14;
+	public static final int M30 = 3;
+	public static final int M31 = 7;
+	public static final int M32 = 11;
+	public static final int M33 = 15;
 
-	@Override
-	public void mul(float[] mata, float[] matb) {
+	public static void mul(float[] mata, float[] matb) {
 
 		float[] tmp = new float[16];
 		tmp[M00] = mata[M00] * matb[M00] + mata[M01] * matb[M10] + mata[M02] * matb[M20] + mata[M03] * matb[M30];
@@ -357,8 +333,7 @@ public final class NativeSupport implements Support {
 
 	}
 
-	@Override
-	public void mulVec(float[] mat, float[] vec) {
+	public static void mulVec(float[] mat, float[] vec) {
 
 		float x = vec[0] * mat[M00] + vec[1] * mat[M01] + vec[2] * mat[M02] + mat[M03];
 		float y = vec[0] * mat[M10] + vec[1] * mat[M11] + vec[2] * mat[M12] + mat[M13];
@@ -369,8 +344,7 @@ public final class NativeSupport implements Support {
 
 	}
 
-	@Override
-	public void mulVec(float[] mat, float[] vecs, int offset, int numVecs, int stride) {
+	public static void mulVec(float[] mat, float[] vecs, int offset, int numVecs, int stride) {
 
 		for (int i = 0; i < numVecs; i++) {
 			float[] vecPtr = new float[stride];
@@ -380,8 +354,7 @@ public final class NativeSupport implements Support {
 
 	}
 
-	@Override
-	public void prj(float[] mat, float[] vec) {
+	public static void prj(float[] mat, float[] vec) {
 
 		float inv_w = 1.0f / (vec[0] * mat[M30] + vec[1] * mat[M31] + vec[2] * mat[M32] + mat[M33]);
 		float x = (vec[0] * mat[M00] + vec[1] * mat[M01] + vec[2] * mat[M02] + mat[M03]) * inv_w;
@@ -393,8 +366,7 @@ public final class NativeSupport implements Support {
 
 	}
 
-	@Override
-	public void prj(float[] mat, float[] vecs, int offset, int numVecs, int stride) {
+	public static void prj(float[] mat, float[] vecs, int offset, int numVecs, int stride) {
 
 		for (int i = 0; i < numVecs; i++) {
 			float[] vecPtr = new float[stride];
@@ -404,8 +376,7 @@ public final class NativeSupport implements Support {
 
 	}
 
-	@Override
-	public void rot(float[] mat, float[] vec) {
+	public static void rot(float[] mat, float[] vec) {
 
 		float x = vec[0] * mat[M00] + vec[1] * mat[M01] + vec[2] * mat[M02];
 		float y = vec[0] * mat[M10] + vec[1] * mat[M11] + vec[2] * mat[M12];
@@ -416,8 +387,7 @@ public final class NativeSupport implements Support {
 
 	}
 
-	@Override
-	public void rot(float[] mat, float[] vecs, int offset, int numVecs, int stride) {
+	public static void rot(float[] mat, float[] vecs, int offset, int numVecs, int stride) {
 
 		for (int i = 0; i < numVecs; i++) {
 			float[] vecPtr = new float[stride];
@@ -427,8 +397,7 @@ public final class NativeSupport implements Support {
 
 	}
 
-	@Override
-	public boolean inv(float[] values) {
+	public static boolean inv(float[] values) {
 
 		float[] tmp = new float[16];
 		float l_det = det(values);
@@ -504,8 +473,7 @@ public final class NativeSupport implements Support {
 
 	}
 
-	@Override
-	public float det(float[] values) {
+	public static float det(float[] values) {
 
 		return values[M30] * values[M21] * values[M12] * values[M03]
 				- values[M20] * values[M31] * values[M12] * values[M03]
@@ -534,8 +502,7 @@ public final class NativeSupport implements Support {
 
 	}
 
-	@Override
-	public int[] toColorKey(int[] buffer, int colorKey) {
+	public static int[] toColorKey(int[] buffer, int colorKey) {
 
 		int size = buffer.length;
 		for (int i = 0; i < size; i++) {
@@ -548,8 +515,7 @@ public final class NativeSupport implements Support {
 		return buffer;
 	}
 
-	@Override
-	public int[] toColorKeys(int[] buffer, int[] colors) {
+	public static int[] toColorKeys(int[] buffer, int[] colors) {
 
 		int length = colors.length;
 		int size = buffer.length;
@@ -565,8 +531,7 @@ public final class NativeSupport implements Support {
 		return buffer;
 	}
 
-	@Override
-	public int[] toColorKeyLimit(int[] buffer, int start, int end) {
+	public static int[] toColorKeyLimit(int[] buffer, int start, int end) {
 
 		int sred = LColor.getRed(start);
 		int sgreen = LColor.getGreen(start);
@@ -588,8 +553,7 @@ public final class NativeSupport implements Support {
 		return buffer;
 	}
 
-	@Override
-	public int[] toGray(int[] buffer, int w, int h) {
+	public static int[] toGray(int[] buffer, int w, int h) {
 
 		int size = w * h;
 		int[] newResult = new int[size];
@@ -613,18 +577,4 @@ public final class NativeSupport implements Support {
 
 	}
 
-	@Override
-	public boolean isNative() {
-		return false;
-	}
-
-	@Override
-	public void openNative() {
-		// noop
-	}
-
-	@Override
-	public void closeNative() {
-		// noop
-	}
 }

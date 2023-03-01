@@ -26,8 +26,7 @@ import loon.font.TextLayout;
 import loon.font.TextWrap;
 import loon.geom.Affine2f;
 import loon.geom.Dimension;
-import loon.geom.Matrix4;
-import loon.utils.Array;
+
 import loon.utils.GLUtils;
 import loon.utils.Scale;
 import loon.utils.reply.UnitPort;
@@ -46,9 +45,7 @@ public abstract class Graphics {
 	protected int viewPixelWidth, viewPixelHeight;
 
 	private Display display = null;
-	private Affine2f affine = null, lastAffine = null;
-	private Matrix4 viewMatrix = null;
-	private static Array<Matrix4> matrixsStack = new Array<Matrix4>();
+
 	// 创建一个半永久的纹理，用以批量进行颜色渲染
 	private static LTexture colorTex;
 
@@ -64,29 +61,6 @@ public abstract class Graphics {
 	public Affine2f getViewAffine() {
 		display = game.display();
 		return display.GL().tx();
-	}
-
-	public Matrix4 getViewMatrix() {
-		display = game.display();
-		Dimension view = LSystem.viewSize;
-		if (viewMatrix == null) {
-			viewMatrix = new Matrix4();
-			viewMatrix.setToOrtho2D(0, 0, view.getWidth(), view.getHeight());
-		} else if (display != null && display.GL() != null && !(affine = display.GL().tx()).equals(lastAffine)) {
-			viewMatrix = affine.toViewMatrix4();
-			lastAffine = affine;
-		}
-		return viewMatrix;
-	}
-
-	public void save() {
-		if (viewMatrix != null) {
-			matrixsStack.add(viewMatrix = viewMatrix.cpy());
-		}
-	}
-
-	public void restore() {
-		viewMatrix = matrixsStack.pop();
 	}
 
 	public int width() {
@@ -178,9 +152,7 @@ public abstract class Graphics {
 		Display d = game.display();
 		LSystem.viewSize.setSize((int) (viewWidth / LSystem.getScaleWidth()),
 				(int) (viewHeight / LSystem.getScaleHeight()));
-		if (viewMatrix != null) {
-			LSystem.viewSize.getMatrix().mul(viewMatrix);
-		}
+
 		this.scale = scale;
 		this.viewPixelWidth = viewWidth;
 		this.viewPixelHeight = viewHeight;

@@ -37,7 +37,6 @@ import loon.component.skin.MessageSkin;
 import loon.component.skin.SkinManager;
 import loon.font.FontSet;
 import loon.font.IFont;
-import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;

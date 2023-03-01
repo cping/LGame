@@ -38,6 +38,9 @@ public interface Mesh {
 
 	public void paint();
 
+	public void paint(int tint, Affine2f tx, float left, float top,
+			float right, float bottom, float sl, float st, float sr, float sb);
+	
 	public void paint(int tint, float m00, float m01, float m10, float m11, float tx, float ty, float left, float top,
 			float right, float bottom, float sl, float st, float sr, float sb);
 

@@ -181,10 +181,6 @@ public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
 						float srcWidth = srcX + tileWidth;
 						float srcHeight = srcY + tileHeight;
 
-						float xOff = srcX * texBatch.getInvTexWidth();// + texture.xOff();
-						float widthRatio = srcWidth * texBatch.getInvTexWidth();
-						float yOff = srcY * texBatch.getInvTexHeight();// + texture.yOff();
-						float heightRatio = srcHeight * texBatch.getInvTexHeight();
 
 						boolean flipX = mapTile.isFlippedHorizontally();
 						boolean flipY = mapTile.isFlippedVertically();
@@ -195,17 +191,6 @@ public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
 							flipY = !flipY;
 						}
 
-						if (flipX) {
-							float temp = xOff;
-							xOff = widthRatio;
-							widthRatio = temp;
-						}
-
-						if (flipY) {
-							float temp = yOff;
-							yOff = heightRatio;
-							heightRatio = temp;
-						}
 
 						float uvCorrectionX = (0.2f / tileSet.getImage().getWidth());
 						float uvCorrectionY = (0.2f / tileSet.getImage().getHeight());
@@ -291,38 +276,7 @@ public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
 								y4 += tileHeight;
 							}
 
-							texBatch.glVertex2f(x1, y1);
-							texBatch.glColor4f();
-							texBatch.glTexCoord2f(xOff + uvCorrectionX, yOff + uvCorrectionY);
-
-							texBatch.glVertex2f(x2, y2);
-							texBatch.glColor4f();
-							texBatch.glTexCoord2f(xOff + uvCorrectionX, heightRatio - uvCorrectionY);
-
-							texBatch.glVertex2f(x3, y3);
-							texBatch.glColor4f();
-							texBatch.glTexCoord2f(widthRatio - uvCorrectionX, heightRatio - uvCorrectionY);
-
-							texBatch.glVertex2f(x4, y4);
-							texBatch.glColor4f();
-							texBatch.glTexCoord2f(widthRatio - uvCorrectionX, yOff + uvCorrectionY);
-						} else {
-							texBatch.glVertex2f(posX, posY);
-							texBatch.glColor4f();
-							texBatch.glTexCoord2f(xOff + uvCorrectionX, yOff + uvCorrectionY);
-
-							texBatch.glVertex2f(flipZ ? posX + tileWidth : posX, flipZ ? posY : posY + tileHeight);
-							texBatch.glColor4f();
-							texBatch.glTexCoord2f(xOff + uvCorrectionX, heightRatio - uvCorrectionY);
-
-							texBatch.glVertex2f(posX + tileWidth, posY + tileHeight);
-							texBatch.glColor4f();
-							texBatch.glTexCoord2f(widthRatio - uvCorrectionX, heightRatio - uvCorrectionY);
-
-							texBatch.glVertex2f(flipZ ? posX : posX + tileWidth, flipZ ? posY + tileHeight : posY);
-							texBatch.glColor4f();
-							texBatch.glTexCoord2f(widthRatio - uvCorrectionX, yOff + uvCorrectionY);
-						}
+						} else {}
 
 					}
 				}

@@ -35,7 +35,6 @@ import loon.action.ActionBind;
 import loon.action.ActionListener;
 import loon.action.ActionTween;
 import loon.action.collision.CollisionObject;
-import loon.action.collision.Gravity;
 import loon.action.map.Field2D;
 import loon.canvas.LColor;
 import loon.component.layout.LayoutConstraints;
@@ -1635,10 +1634,6 @@ public abstract class LComponent extends LObject<LContainer>
 			_freeTextures = new LTextureFree();
 		}
 		return _freeTextures;
-	}
-
-	public Gravity getGravity() {
-		return new Gravity(getUIName(), this);
 	}
 
 	@Override

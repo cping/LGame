@@ -33,7 +33,6 @@ import loon.font.BMFont;
 import loon.font.FontSet;
 import loon.font.FontUtils;
 import loon.font.IFont;
-import loon.font.LFont;
 import loon.geom.PointF;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;

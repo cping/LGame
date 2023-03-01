@@ -33,7 +33,6 @@ import loon.action.ActionBind;
 import loon.action.ActionListener;
 import loon.action.ActionTween;
 import loon.action.collision.CollisionObject;
-import loon.action.collision.Gravity;
 import loon.action.map.Field2D;
 import loon.canvas.LColor;
 import loon.events.ResizeListener;
@@ -1535,10 +1534,6 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	@Override
 	public boolean intersects(RectBox rect) {
 		return getCollisionBox().intersects(rect);
-	}
-
-	public Gravity getGravity() {
-		return new Gravity("IEntity", this);
 	}
 
 	public IEntity softCenterOn(float x, float y) {

@@ -28,7 +28,6 @@ import loon.LRelease;
 import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
-import loon.Support;
 import loon.geom.Limit;
 import loon.geom.Polygon;
 import loon.geom.RectI;
@@ -36,6 +35,7 @@ import loon.geom.Shape;
 import loon.geom.Triangle2f;
 import loon.geom.Vector2f;
 import loon.utils.ArrayByte;
+import loon.utils.BufferUtils;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 import loon.utils.Scale;
@@ -2643,7 +2643,7 @@ public class Pixmap extends Limit implements LRelease {
 	}
 
 	public IntBuffer getPixelsData() {
-		return LSystem.base().support().newIntBuffer(_drawPixels);
+		return BufferUtils.newIntBuffer(_drawPixels);
 	}
 
 	public boolean isClosed() {
@@ -2768,8 +2768,7 @@ public class Pixmap extends Limit implements LRelease {
 	}
 
 	public ByteBuffer convertPixmapToByteBuffer(boolean filterTran) {
-		Support support = LSystem.base().support();
-		ByteBuffer buffer = support.newByteBuffer(_width * _height * 4);
+		ByteBuffer buffer = BufferUtils.newByteBuffer(_width * _height * 4);
 		for (int y = 0; y < getHeight(); y++) {
 			for (int x = 0; x < getWidth(); x++) {
 				int pixel = this._drawPixels[y * _width + x];
@@ -2787,8 +2786,7 @@ public class Pixmap extends Limit implements LRelease {
 	}
 
 	public ByteBuffer convertPixmapToRGBByteBuffer() {
-		Support support = LSystem.base().support();
-		ByteBuffer buffer = support.newByteBuffer(_width * _height * 3);
+		ByteBuffer buffer = BufferUtils.newByteBuffer(_width * _height * 3);
 		for (int y = 0; y < getHeight(); y++) {
 			for (int x = 0; x < getWidth(); x++) {
 				int pixel = this._drawPixels[y * _width + x];

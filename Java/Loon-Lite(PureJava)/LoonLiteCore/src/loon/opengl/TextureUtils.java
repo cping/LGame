@@ -27,13 +27,13 @@ import loon.LTexture;
 import loon.canvas.Canvas;
 import loon.canvas.Image;
 import loon.canvas.LColor;
+import loon.utils.BufferUtils;
 
 public class TextureUtils {
 
 	public static LTexture filterGray(String res) {
 		Image tmp = BaseIO.loadImage(res).cpy(true);
-		int[] pixels = LSystem.base().support()
-				.toGray(tmp.getPixels(), (int) tmp.width(), (int) tmp.height());
+		int[] pixels = BufferUtils.toGray(tmp.getPixels(), (int) tmp.width(), (int) tmp.height());
 		tmp.setPixels(pixels, (int) tmp.width(), (int) tmp.height());
 		LTexture texture = tmp.texture();
 		pixels = null;
@@ -42,7 +42,7 @@ public class TextureUtils {
 
 	public static LTexture filterColor(String res, LColor col) {
 		Image tmp = BaseIO.loadImage(res).cpy(true);
-		int[] pixels = LSystem.base().support()
+		int[] pixels = BufferUtils
 				.toColorKey(tmp.getPixels(), col.getRGB());
 		tmp.setPixels(pixels, (int) tmp.width(), (int) tmp.height());
 		LTexture texture = tmp.texture();
@@ -52,7 +52,7 @@ public class TextureUtils {
 
 	public static LTexture filterColor(String res, int[] colors) {
 		Image tmp = BaseIO.loadImage(res).cpy(true);
-		int[] pixels = LSystem.base().support()
+		int[] pixels = BufferUtils
 				.toColorKeys(tmp.getPixels(), colors);
 		tmp.setPixels(pixels, (int) tmp.width(), (int) tmp.height());
 		LTexture texture = tmp.texture();
@@ -63,7 +63,7 @@ public class TextureUtils {
 	public static LTexture filterLimitColor(String res, LColor start,
 			LColor end) {
 		Image tmp = BaseIO.loadImage(res).cpy(true);
-		int[] pixels = LSystem.base().support()
+		int[] pixels = BufferUtils
 				.toColorKeyLimit(tmp.getPixels(), start.getRGB(), end.getRGB());
 		tmp.setPixels(pixels, (int) tmp.width(), (int) tmp.height());
 		LTexture texture = tmp.texture();

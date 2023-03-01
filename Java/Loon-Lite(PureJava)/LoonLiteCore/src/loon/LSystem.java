@@ -467,7 +467,7 @@ public class LSystem {
 	}
 
 	public static void mainBeginDraw() {
-		if (base() == null) {
+	/*	if (base() == null) {
 			return;
 		}
 		Display game = base().display();
@@ -476,7 +476,7 @@ public class LSystem {
 			if (!gl.running()) {
 				gl.begin();
 			}
-		}
+		}*/
 	}
 
 	public static void mainEndDraw() {

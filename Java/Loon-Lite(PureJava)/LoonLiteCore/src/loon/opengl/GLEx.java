@@ -26,7 +26,6 @@ import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
 import loon.LTrans;
-import loon.action.camera.BaseCamera;
 import loon.canvas.Canvas;
 import loon.canvas.Canvas.Composite;
 import loon.canvas.LColor;
@@ -36,7 +35,6 @@ import loon.canvas.Path;
 import loon.font.IFont;
 import loon.geom.Affine2f;
 import loon.geom.Matrix3;
-import loon.geom.Matrix4;
 import loon.geom.PointF;
 import loon.geom.Polygon;
 import loon.geom.RectBox;
@@ -550,25 +548,6 @@ public class GLEx implements LRelease {
 		saveTx();
 		Affine2f txf = tx();
 		txf.set(mat3);
-		return this;
-	}
-
-	public GLEx set(Matrix4 mat4) {
-		if (isClosed) {
-			return this;
-		}
-		saveTx();
-		Affine2f txf = tx();
-		txf.set(mat4);
-		return this;
-	}
-
-	public GLEx setCamera(BaseCamera came) {
-		Affine2f txf = tx();
-		if (txf != null) {
-			came.setup();
-			this.set(came.getView().cpy().thisCombine(tx()));
-		}
 		return this;
 	}
 

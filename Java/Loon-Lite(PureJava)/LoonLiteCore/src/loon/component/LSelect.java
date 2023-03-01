@@ -30,7 +30,6 @@ import loon.events.SysKey;
 import loon.events.SysTouch;
 import loon.font.FontSet;
 import loon.font.IFont;
-import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.utils.TArray;
 import loon.utils.timer.LTimer;

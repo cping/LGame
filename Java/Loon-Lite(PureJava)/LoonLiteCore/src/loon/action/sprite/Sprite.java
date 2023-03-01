@@ -33,7 +33,6 @@ import loon.action.ActionBind;
 import loon.action.ActionTween;
 import loon.action.collision.CollisionHelper;
 import loon.action.collision.CollisionObject;
-import loon.action.collision.Gravity;
 import loon.action.map.Field2D;
 import loon.canvas.LColor;
 import loon.events.ResizeListener;
@@ -1209,10 +1208,6 @@ public class Sprite extends LObject<ISprite>
 	@Override
 	public boolean intersects(RectBox rect) {
 		return getCollisionBox().intersects(rect);
-	}
-
-	public Gravity getGravity() {
-		return new Gravity("Sprite", this);
 	}
 
 	private float toPixelScaleX(float x) {

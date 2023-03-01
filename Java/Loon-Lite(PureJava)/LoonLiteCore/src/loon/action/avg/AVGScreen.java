@@ -20,7 +20,6 @@
  */
 package loon.action.avg;
 
-import loon.LObject;
 import loon.LSystem;
 import loon.LTexture;
 import loon.LTransition;

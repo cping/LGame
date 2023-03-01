@@ -279,8 +279,6 @@ public class SpriteControls {
 					((Entity) spr).setScale(s);
 				} else if (spr instanceof ActionObject) {
 					((ActionObject) spr).setScale(s);
-				} else if (spr instanceof MovieClip) {
-					((MovieClip) spr).setScale(s, s);
 				} else {
 					spr.setScale(s, s);
 				}
@@ -299,8 +297,6 @@ public class SpriteControls {
 					((Entity) spr).setScale(sx, sy);
 				} else if (spr instanceof ActionObject) {
 					((ActionObject) spr).setScale(sx, sy);
-				} else if (spr instanceof MovieClip) {
-					((MovieClip) spr).setScale(sx, sy);
 				} else {
 					spr.setScale(sx, sy);
 				}
@@ -409,8 +405,6 @@ public class SpriteControls {
 					((Entity) spr).setWidth(w);
 				} else if (spr instanceof ActionObject) {
 					((ActionObject) spr).setWidth(w);
-				} else if (spr instanceof MovieClip) {
-					((MovieClip) spr).setWidth(w);
 				}
 			}
 		}
@@ -427,8 +421,6 @@ public class SpriteControls {
 					((Entity) spr).setHeight(h);
 				} else if (spr instanceof ActionObject) {
 					((ActionObject) spr).setHeight(h);
-				} else if (spr instanceof MovieClip) {
-					((MovieClip) spr).setHeight(h);
 				}
 			}
 		}
