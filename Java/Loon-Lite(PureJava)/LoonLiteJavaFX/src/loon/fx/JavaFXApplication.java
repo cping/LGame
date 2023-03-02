@@ -159,7 +159,7 @@ public class JavaFXApplication extends Application implements Platform {
 			fxCanvas = new JavaFXResizeCanvas(game.graphics(), newWidth, newHeight);
 		}
 		fxCanvas.setCache(false);
-		// fxCanvas.setCacheHint(CacheHint.SPEED);
+
 		GraphicsContext ctx = fxCanvas.getGraphicsContext2D();
 
 		Paint paint = ctx.getFill();

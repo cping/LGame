@@ -23,6 +23,7 @@ package loon.fx;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.effect.BlendMode;
+import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.ArcType;
@@ -38,14 +39,17 @@ import loon.canvas.Path;
 import loon.font.LFont;
 import loon.font.TextLayout;
 import loon.geom.Affine2f;
+import loon.utils.MathUtils;
 
 public class JavaFXCanvas extends Canvas {
 
 	final JavaFXResizeCanvas fxCanvas;
-	private JavaFXImage javaImage;
+
 	private SnapshotParameters snapshotParameters;
 	private LColor tmpColor = LColor.white.cpy();
+
 	final GraphicsContext context;
+
 	double width;
 	double height;
 
@@ -53,10 +57,10 @@ public class JavaFXCanvas extends Canvas {
 
 	protected JavaFXCanvas(Graphics gfx, JavaFXImage image) {
 		super(gfx, image);
-		this.javaImage = image;
+		this.image = image;
 		this.width = image.getWidth();
 		this.height = image.getHeight();
-		this.fxCanvas = new JavaFXResizeCanvas(gfx, width, height);
+		this.fxCanvas = new JavaFXResizeCanvas(width, height);
 		this.context = fxCanvas.getGraphicsContext2D();
 		this.snapshotParameters = new SnapshotParameters();
 		if (image.hasAlpha()) {
@@ -129,26 +133,39 @@ public class JavaFXCanvas extends Canvas {
 		return this;
 	}
 
+	protected JavaFXImage toFXImage() {
+		return (JavaFXImage) image;
+	}
+
+	protected void setFXImage(Image img, WritableImage write) {
+		WritableImage oldImg = ((JavaFXImage) img).buffer;
+		if (oldImg != write) {
+			((JavaFXImage) img).buffer = write;
+		}
+		img.setDirty(false);
+	}
+
 	@Override
 	public Image newSnapshot() {
-		JavaFXImage newImage = new JavaFXImage(gfx, image.scale(),
-				fxCanvas.snapshot(snapshotParameters, javaImage.buffer), "<canvas>");
-		return newImage;
+		WritableImage newImage = new WritableImage((int) width, (int) height);
+		return new JavaFXImage(gfx, image.scale(), fxCanvas.snapshot(snapshotParameters, newImage), "<canvas>");
 	}
 
 	@Override
 	public Image snapshot() {
-		if (javaImage == null || javaImage.isDirty()) {
-			javaImage = new JavaFXImage(gfx, image.scale(), fxCanvas.snapshot(snapshotParameters, javaImage.buffer),
-					"<canvas>");
-			javaImage.setDirty(false);
+		if (image == null) {
+			WritableImage writeImage = toFXImage().buffer;
+			image = new JavaFXImage(gfx, image.scale(), fxCanvas.snapshot(snapshotParameters, writeImage), "<canvas>");
+			setFXImage(image, writeImage);
+			return image;
+		}
+		if (image.isDirty() || isDirty) {
+			WritableImage writeImage = toFXImage().buffer;
+			fxCanvas.snapshot(snapshotParameters, writeImage);
+			setFXImage(image, writeImage);
 			isDirty = false;
 		}
-		if (isDirty) {
-			fxCanvas.snapshot(snapshotParameters, javaImage.buffer);
-			isDirty = false;
-		}
-		return javaImage;
+		return image;
 	}
 
 	@Override
@@ -226,10 +243,10 @@ public class JavaFXCanvas extends Canvas {
 
 	@Override
 	public Canvas drawRect(float x, float y, float width, float height, LColor color) {
-		Paint tmp = context.getFill();
-		context.setFill(getLColorToFX(color));
-		context.rect(x, y, width, height);
-		context.setFill(tmp);
+		Paint tmp = context.getStroke();
+		context.setStroke(getLColorToFX(color));
+		context.strokeRect(x, y, width, height);
+		context.setStroke(tmp);
 		isDirty = true;
 		return this;
 	}
@@ -237,7 +254,7 @@ public class JavaFXCanvas extends Canvas {
 	@Override
 	public Canvas fillCircle(float x, float y, float radius) {
 		context.beginPath();
-		context.arcTo(x, y, radius, 0f, 2f * Math.PI);
+		context.arcTo(x, y, radius, 0f, 2f * MathUtils.PI);
 		context.fill();
 		isDirty = true;
 		return this;
@@ -254,7 +271,7 @@ public class JavaFXCanvas extends Canvas {
 	public Canvas fillOval(float x, float y, float width, float height) {
 		context.fillOval(x, y, width, height);
 		isDirty = true;
-		return null;
+		return this;
 	}
 
 	@Override
@@ -491,7 +508,7 @@ public class JavaFXCanvas extends Canvas {
 	@Override
 	public Canvas strokeCircle(float x, float y, float radius) {
 		context.beginPath();
-		context.arcTo(x, y, radius, 0, 2 * Math.PI);
+		context.arcTo(x, y, radius, 0, 2 * MathUtils.PI);
 		context.stroke();
 		isDirty = true;
 		return this;
@@ -508,20 +525,20 @@ public class JavaFXCanvas extends Canvas {
 
 	@Override
 	public Canvas drawArc(float x, float y, float w, float h, float startAngle, float endAngle, LColor color) {
-		Paint tmp = context.getFill();
-		context.setFill(getLColorToFX(color));
+		Paint tmp = context.getStroke();
+		context.setStroke(getLColorToFX(color));
 		context.strokeArc(x, y, w, h, startAngle, endAngle, ArcType.ROUND);
-		context.setFill(tmp);
+		context.setStroke(tmp);
 		isDirty = true;
 		return this;
 	}
 
 	@Override
 	public Canvas drawOval(float x, float y, float w, float h, LColor color) {
-		Paint tmp = context.getFill();
-		context.setFill(getLColorToFX(color));
+		Paint tmp = context.getStroke();
+		context.setStroke(getLColorToFX(color));
 		context.strokeOval(x, y, w, h);
-		context.setFill(tmp);
+		context.setStroke(tmp);
 		isDirty = true;
 		return this;
 	}

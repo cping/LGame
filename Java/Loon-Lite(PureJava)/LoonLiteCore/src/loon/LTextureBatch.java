@@ -61,6 +61,11 @@ public class LTextureBatch implements LRelease {
 			canvas.draw(image, 0, 0);
 			_image = canvas.snapshot();
 		}
+		
+		@Override
+		public int hashCode() {
+			return _image.hashCode();
+		}
 
 		public Image get() {
 			return _image;
@@ -561,6 +566,22 @@ public class LTextureBatch implements LRelease {
 			postCache(lastCache, color, rotation);
 		}
 		return this;
+	}
+
+	public LTextureBatch postCache(float x, float y) {
+		if (lastCache != null) {
+			return postCache(lastCache, _color, x, y, 1f, 1f, 0f, 0f, 0f, false, false, false);
+		}
+		return this;
+
+	}
+
+	public LTextureBatch postCache(LColor color, float x, float y, float rotation) {
+		if (lastCache != null) {
+			return postCache(lastCache, color, x, y, 1f, 1f, 0f, 0f, rotation, false, false, false);
+		}
+		return this;
+
 	}
 
 	public LTextureBatch postCache(Cache cache, LColor color, float x, float y) {

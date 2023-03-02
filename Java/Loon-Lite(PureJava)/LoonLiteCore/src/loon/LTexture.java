@@ -258,6 +258,9 @@ public class LTexture extends Painter implements LRelease {
 			}
 		}
 		if (_image != null && !_isLoaded) {
+			if (_image.isUpdate()) {
+				_image = _image.syncCanvasImage();
+			}
 			update(_image, true);
 		} else if (!_isLoaded) {
 			if (!isImageCanvas()) {
@@ -653,16 +656,16 @@ public class LTexture extends Painter implements LRelease {
 
 	public LTexture draw(float x, float y, float width, float height) {
 		if (checkExistBatch()) {
-			batch.draw(x, y, width, height,_batchColor);
+			batch.draw(x, y, width, height, _batchColor);
 		} else {
-			gfx.game.displayImpl.GL().draw(this, x, y, width, height, _batchColor );
+			gfx.game.displayImpl.GL().draw(this, x, y, width, height, _batchColor);
 		}
 		return this;
 	}
 
 	public LTexture draw(float x, float y, LColor c) {
 		if (checkExistBatch()) {
-			batch.draw( x, y,c);
+			batch.draw(x, y, c);
 		} else {
 			gfx.game.displayImpl.GL().draw(this, x, y, c);
 		}
@@ -671,7 +674,7 @@ public class LTexture extends Painter implements LRelease {
 
 	public LTexture draw(float x, float y) {
 		if (checkExistBatch()) {
-			batch.draw(x, y, width(), height(),_batchColor);
+			batch.draw(x, y, width(), height(), _batchColor);
 		} else {
 			gfx.game.displayImpl.GL().draw(this, x, y, width(), height(), _batchColor);
 		}
@@ -680,7 +683,7 @@ public class LTexture extends Painter implements LRelease {
 
 	public LTexture draw(float x, float y, float width, float height, LColor c) {
 		if (checkExistBatch()) {
-			batch.draw( x, y, width, height,c);
+			batch.draw(x, y, width, height, c);
 		} else {
 			gfx.game.displayImpl.GL().draw(this, x, y, width, height, c);
 		}
@@ -689,7 +692,7 @@ public class LTexture extends Painter implements LRelease {
 
 	public LTexture drawFlipX(float x, float y, LColor c) {
 		if (checkExistBatch()) {
-			batch.draw(x, y,c);
+			batch.draw(x, y, c);
 		} else {
 			gfx.game.displayImpl.GL().drawFlip(this, x, y, c);
 		}
@@ -698,7 +701,7 @@ public class LTexture extends Painter implements LRelease {
 
 	public LTexture drawFlipY(float x, float y, LColor c) {
 		if (checkExistBatch()) {
-			batch.draw(x, y,c);
+			batch.draw(x, y, c);
 		} else {
 			gfx.game.displayImpl.GL().drawMirror(this, x, y, c);
 		}
@@ -713,7 +716,7 @@ public class LTexture extends Painter implements LRelease {
 	public LTexture draw(float x, float y, float width, float height, float x1, float y1, float x2, float y2,
 			LColor c) {
 		if (checkExistBatch()) {
-			batch.draw(x, y, width, height, x1, y1, x2, y2,c);
+			batch.draw(x, y, width, height, x1, y1, x2, y2, c);
 		} else {
 			gfx.game.displayImpl.GL().draw(this, x, y, width, height, x1, y1, x2, y2, c);
 		}
@@ -722,10 +725,10 @@ public class LTexture extends Painter implements LRelease {
 
 	public LTexture draw(float x, float y, float srcX, float srcY, float srcWidth, float srcHeight) {
 		if (checkExistBatch()) {
-			batch.draw(x, y, srcWidth - srcX, srcHeight - srcY, srcX, srcY, srcWidth, srcHeight,_batchColor);
+			batch.draw(x, y, srcWidth - srcX, srcHeight - srcY, srcX, srcY, srcWidth, srcHeight, _batchColor);
 		} else {
 			gfx.game.displayImpl.GL().draw(this, x, y, srcWidth - srcX, srcHeight - srcY, srcX, srcY, srcWidth,
-					srcHeight,_batchColor);
+					srcHeight, _batchColor);
 		}
 		return this;
 	}
@@ -736,16 +739,15 @@ public class LTexture extends Painter implements LRelease {
 
 	public LTexture draw(float x, float y, float width, float height, float x1, float y1, float x2, float y2) {
 		if (checkExistBatch()) {
-			batch.draw(x, y, width, height, x1, y1, x2, y2,_batchColor);
+			batch.draw(x, y, width, height, x1, y1, x2, y2, _batchColor);
 		} else {
-			gfx.game.displayImpl.GL().draw(this, x, y, width, height, x1, y1, x2, y2,
-					_batchColor);
+			gfx.game.displayImpl.GL().draw(this, x, y, width, height, x1, y1, x2, y2, _batchColor);
 		}
 		return this;
 	}
 
 	public LTexture draw(float x, float y, float rotation) {
-		return draw(x, y, this.width(), this.height(), 0, 0, this.width(), this.height(), rotation,_batchColor);
+		return draw(x, y, this.width(), this.height(), 0, 0, this.width(), this.height(), rotation, _batchColor);
 	}
 
 	public LTexture draw(float x, float y, float w, float h, float rotation, LColor c) {
@@ -755,7 +757,7 @@ public class LTexture extends Painter implements LRelease {
 	public LTexture draw(float x, float y, float width, float height, float x1, float y1, float x2, float y2,
 			float rotation, LColor c) {
 		if (checkExistBatch()) {
-			draw(x, y, width, height, x1, y1, x2, y2,rotation, c);
+			draw(x, y, width, height, x1, y1, x2, y2, rotation, c);
 		} else {
 			gfx.game.displayImpl.GL().draw(this, x, y, width, height, x1, y1, x2, y2, c, rotation);
 		}

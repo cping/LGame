@@ -30,17 +30,16 @@ public class Main extends Loon {
 			return LTransition.newEmpty();
 		}
 
+		//纹理批处理
 		LTextureBatch batch = null;
 
 		@Override
 		public void draw(GLEx g) {
 			g.fillRect(66, 66, 388, 388, LColor.red);
-	
 
 			if (batch != null) {
 				if (batch.existCache()) {
-					batch.postLastCache();
-					System.out.println("FD");
+					batch.postCache(29, 29);
 				} else {
 					batch.begin();
 					batch.draw(0, 0);
@@ -233,7 +232,7 @@ public class Main extends Loon {
 		// setting.fullscreen = true;
 
 		register(Main.class, setting, () -> {
-			return new ScreenTest();
+			return new TDTest();
 		});
 	}
 

@@ -83,10 +83,13 @@ import loon.geom.Triangle2f;
 import loon.geom.Vector2f;
 import loon.geom.XY;
 import loon.opengl.GLEx;
+import loon.opengl.LTextureImage;
 import loon.utils.ArrayByte;
 import loon.utils.Calculator;
 import loon.utils.ConfigReader;
 import loon.utils.Disposes;
+import loon.utils.Easing.EasingMode;
+import loon.utils.GLUtils;
 import loon.utils.IntMap;
 import loon.utils.MathUtils;
 import loon.utils.ObjectBundle;
@@ -127,7 +130,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	public final static int LOWER_LEFT = 2;
 
 	public final static int LOWER_RIGHT = 3;
-	
+
 	/**
 	 * Screen切换方式(单纯移动)
 	 *
@@ -237,6 +240,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	private boolean _initLoopEvents = false;
 
+	private boolean _isExistCamera = false;
+
+	private boolean _isExistViewport = false;
+
 	private Accelerometer.SensorDirection direction = Accelerometer.SensorDirection.EMPTY;
 
 	private int mode, frame;
@@ -262,7 +269,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	private boolean _desktopPenetrate = false;
 
-	private boolean isLoad, isLock, isClose, isTranslate;
+	private boolean isLoad, isLock, isClose, isTranslate, isGravity;
 
 	private float tx, ty;
 
@@ -791,6 +798,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			desktop.packLayout(manager, spacex, spacey, spaceHeight, spaceHeight);
 		}
 	}
+
 
 	public void stopRepaint() {
 		LSystem.stopRepaint();
@@ -1408,7 +1416,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		this.halfWidth = width / 2;
 		this.halfHeight = height / 2;
 		this.lastTouchX = lastTouchY = touchDX = touchDY = 0;
-		this.isLoad = isLock = isClose = isTranslate = false;
+		this.isLoad = isLock = isClose = isTranslate = isGravity = false;
 		if (sprites != null) {
 			sprites.close();
 			sprites.removeAll();
@@ -1431,6 +1439,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		this._rotation = 0;
 		this._scaleX = _scaleY = _alpha = 1f;
 		this._baseColor = null;
+		this._isExistCamera = false;
 		this._initLoopEvents = false;
 		this._desktopPenetrate = false;
 		this._rectLimits.clear();
@@ -1608,6 +1617,15 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 */
 	public LTransition getTransition() {
 		return this._transition;
+	}
+
+	/**
+	 * 判断重力系统是否启动
+	 * 
+	 * @return
+	 */
+	public boolean isGravity() {
+		return this.isGravity;
 	}
 
 	/**
@@ -3069,7 +3087,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	public float getY() {
 		return this.ty;
 	}
-	
+
 	/**
 	 * 重载此函数,可以自定义渲染Screen的最下层图像
 	 * 
@@ -3179,6 +3197,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 				// 最前一层渲染，可重载
 				beforeUI(g);
 			} finally {
+				// 若存在摄影机,则还原camera坐标
+				if (_isExistCamera) {
+					g.restoreTx();
+				}
 				// 还原屏幕矩阵以及画笔
 				g.restore();
 			}
@@ -4569,16 +4591,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public Image screenshotToImage() {
-		return null;
-	}
-
-	/**
-	 * 截屏screen并保存在pixmap(pixmap本质上是一个无系统依赖的，仅存在于内存中的像素数组)
-	 * 
-	 * @return
-	 */
-	public Pixmap screenshotToPixmap() {
-		return null;
+		Image tmp = GLUtils.getScreenshot();
+		Image image = Image.getResize(tmp, getWidth(), getHeight());
+		tmp.close();
+		tmp = null;
+		return image;
 	}
 
 	/**
@@ -5460,7 +5477,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 				isClose = true;
 				isTranslate = false;
 				isNext = false;
+				isGravity = false;
 				isLock = true;
+				_isExistCamera = false;
+				_isExistViewport = false;
 				_desktopPenetrate = false;
 				if (sprites != null) {
 					spriteRun = false;
@@ -5501,7 +5521,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 				_resizeListener = null;
 				this.screenSwitch = null;
 				this.stageRun = false;
-			//	LSystem.closeTemp();
 			} catch (Throwable cause) {
 				LSystem.error("Screen destroy() dispatch exception", cause);
 			} finally {

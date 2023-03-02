@@ -80,7 +80,7 @@ public abstract class Canvas implements LRelease {
 		void draw(Object gc, float dx, float dy, float dw, float dh, float sx, float sy, float sw, float sh);
 	}
 
-	protected final Image image;
+	protected Image image;
 
 	public final float width;
 
@@ -93,6 +93,10 @@ public abstract class Canvas implements LRelease {
 	public abstract Image snapshot();
 
 	public abstract Image newSnapshot();
+	
+	public boolean isDirty() {
+		return this.isDirty;
+	}
 	
 	@Override
 	public void close() {

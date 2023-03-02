@@ -100,6 +100,7 @@ public class JavaFXInputMake extends InputMake {
 	public JavaFXInputMake(JavaFXGame game) {
 		this.game = game;
 		JavaFXResizeCanvas canvas = this.game.getFxCanvas();
+
 		canvas.setOnKeyPressed(new EventHandler<KeyEvent>() {
 
 			@Override
@@ -130,6 +131,22 @@ public class JavaFXInputMake extends InputMake {
 
 			}
 		});
+
+	
+		canvas.setOnMouseDragged(new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent e) {
+				if (isRequestingMouseLock) {
+					return;
+				}
+				int btn = getMouseButton(e);
+				if (btn != -1) {
+					emitMouseButton(game.time(), (float) e.getX(), (float) e.getY(), -1, true, 0);
+				}
+			}
+		});
+	
 		canvas.setOnMousePressed(new EventHandler<MouseEvent>() {
 
 			@Override
@@ -165,21 +182,27 @@ public class JavaFXInputMake extends InputMake {
 
 			}
 		});
-		canvas.setOnMouseMoved(new MoveEventHandler() {
+		canvas.setOnMouseMoved(new EventHandler<MouseEvent>() {
 
 			@Override
-			protected boolean wantDragSequence() {
-				return true;
+			public void handle(MouseEvent e) {
+				if (isRequestingMouseLock) {
+					return;
+				}
+				int btn = getMouseButton(e);
+				if (btn != -1) {
+					dispatch(new MouseMake.ButtonEvent(0, game.time(), (float) e.getX(), (float) e.getY(), btn,
+							true), e);
+				}
 			}
-		});
 
+		});
 		canvas.setOnTouchPressed(new EventHandler<TouchEvent>() {
 
 			@Override
 			public void handle(TouchEvent e) {
 				inTouchSequence = true;
 				dispatch(toTouchEvents(TouchMake.Event.Kind.START, e), e);
-
 			}
 
 		});
@@ -209,15 +232,7 @@ public class JavaFXInputMake extends InputMake {
 			}
 
 		});
-		canvas.setOnTouchMoved(new EventHandler<TouchEvent>() {
-
-			@Override
-			public void handle(TouchEvent e) {
-				if (inTouchSequence) {
-					dispatch(toTouchEvents(TouchMake.Event.Kind.MOVE, e), e);
-				}
-			}
-		});
+	
 	}
 
 	private TouchMake.Event[] toTouchEvents(TouchMake.Event.Kind kind, TouchEvent nevent) {

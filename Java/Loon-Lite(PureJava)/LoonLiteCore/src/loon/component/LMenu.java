@@ -33,6 +33,7 @@ import loon.events.SysTouch;
 import loon.events.Updateable;
 import loon.font.FontSet;
 import loon.font.IFont;
+import loon.font.LFont;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;

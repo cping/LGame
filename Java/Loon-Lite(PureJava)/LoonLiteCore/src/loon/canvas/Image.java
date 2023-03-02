@@ -171,62 +171,12 @@ public abstract class Image extends TextureSource implements Canvas.Drawable, LR
 		}
 		this.isTexture = true;
 		LTexture tex = new LTexture(gfx, gfx.createTexture(), texWidth, texHeight, scale(), width(), height());
-
-		tex.update(this);
+		if (canvas == null) {
+			tex.update(this);
+		} else {
+			tex.update(canvas.snapshot());
+		}
 		return tex;
-	}
-
-	public static abstract class Region extends TextureSource implements Canvas.Drawable {
-	}
-
-	public Region region(final float rx, final float ry, final float rwidth, final float rheight) {
-
-		return new Region() {
-			private LTexture tile;
-
-			@Override
-			public boolean isLoaded() {
-				return Image.this.isLoaded();
-			}
-
-			@Override
-			public LTexture draw() {
-				if (tile == null) {
-					tile = Image.this.texture().copy(rx, ry, rwidth, rheight);
-				}
-				return tile;
-			}
-
-			@Override
-			public GoFuture<Painter> tileAsync() {
-				return Image.this.state.map(new Function<Image, Painter>() {
-					public Painter apply(Image image) {
-						return draw();
-					}
-				});
-			}
-
-			@Override
-			public float width() {
-				return rwidth;
-			}
-
-			@Override
-			public float height() {
-				return rheight;
-			}
-
-			@Override
-			public void draw(Object ctx, float x, float y, float width, float height) {
-				Image.this.draw(ctx, x, y, width, height, rx, ry, rwidth, rheight);
-			}
-
-			@Override
-			public void draw(Object ctx, float dx, float dy, float dw, float dh, float sx, float sy, float sw,
-					float sh) {
-				Image.this.draw(ctx, dx, dy, dw, dh, rx + sx, ry + sy, sw, sh);
-			}
-		};
 	}
 
 	@Override
@@ -406,6 +356,17 @@ public abstract class Image extends TextureSource implements Canvas.Drawable, LR
 		setPixels(pixmap.getData(), pixmap.getWidth(), pixmap.getHeight());
 	}
 
+	public Image syncCanvasImage() {
+		if (canvas != null) {
+			return canvas.getImage();
+		}
+		return this;
+	}
+
+	public boolean isUpdate() {
+		return this.isDirty || (canvas != null && canvas.isDirty);
+	}
+
 	public boolean isDirty() {
 		return this.isDirty;
 	}
@@ -414,13 +375,13 @@ public abstract class Image extends TextureSource implements Canvas.Drawable, LR
 		this.isDirty = d;
 		return this;
 	}
-	
+
 	@Override
 	public final void close() {
 		if (!this.isTexture) {
 			this.closeImpl();
+			this.closed = true;
 		}
-		this.closed = true;
 	}
 
 	public final void destroy() {
