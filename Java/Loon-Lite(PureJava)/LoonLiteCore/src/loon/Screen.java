@@ -39,7 +39,6 @@ import loon.action.sprite.Sprites;
 import loon.action.sprite.Sprites.SpriteListener;
 import loon.canvas.Image;
 import loon.canvas.LColor;
-import loon.canvas.Pixmap;
 import loon.component.Desktop;
 import loon.component.LClickButton;
 import loon.component.LComponent;
@@ -83,12 +82,10 @@ import loon.geom.Triangle2f;
 import loon.geom.Vector2f;
 import loon.geom.XY;
 import loon.opengl.GLEx;
-import loon.opengl.LTextureImage;
 import loon.utils.ArrayByte;
 import loon.utils.Calculator;
 import loon.utils.ConfigReader;
 import loon.utils.Disposes;
-import loon.utils.Easing.EasingMode;
 import loon.utils.GLUtils;
 import loon.utils.IntMap;
 import loon.utils.MathUtils;
@@ -239,10 +236,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	private TArray<FrameLoopEvent> _loopEvents;
 
 	private boolean _initLoopEvents = false;
-
-	private boolean _isExistCamera = false;
-
-	private boolean _isExistViewport = false;
 
 	private Accelerometer.SensorDirection direction = Accelerometer.SensorDirection.EMPTY;
 
@@ -1439,7 +1432,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		this._rotation = 0;
 		this._scaleX = _scaleY = _alpha = 1f;
 		this._baseColor = null;
-		this._isExistCamera = false;
 		this._initLoopEvents = false;
 		this._desktopPenetrate = false;
 		this._rectLimits.clear();
@@ -3197,10 +3189,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 				// 最前一层渲染，可重载
 				beforeUI(g);
 			} finally {
-				// 若存在摄影机,则还原camera坐标
-				if (_isExistCamera) {
-					g.restoreTx();
-				}
 				// 还原屏幕矩阵以及画笔
 				g.restore();
 			}
@@ -5479,8 +5467,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 				isNext = false;
 				isGravity = false;
 				isLock = true;
-				_isExistCamera = false;
-				_isExistViewport = false;
 				_desktopPenetrate = false;
 				if (sprites != null) {
 					spriteRun = false;

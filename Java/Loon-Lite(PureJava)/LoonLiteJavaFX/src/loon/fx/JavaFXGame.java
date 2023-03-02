@@ -393,8 +393,7 @@ public class JavaFXGame extends LGame {
 
 	@Override
 	public Clipboard clipboard() {
-		// TODO Auto-generated method stub
-		return null;
+		return new JavaFXClipboard();
 	}
 
 	@Override

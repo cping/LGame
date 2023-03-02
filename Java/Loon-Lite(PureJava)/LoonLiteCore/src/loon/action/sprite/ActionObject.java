@@ -24,14 +24,11 @@ import loon.LTexture;
 import loon.action.map.Config;
 import loon.action.map.Field2D;
 import loon.action.map.TileMap;
-import loon.action.map.items.Attribute;
 
 /**
  * 和瓦片地图绑定的动作对象,用来抽象一些简单的地图中精灵动作
  */
 public abstract class ActionObject extends Entity implements Config {
-
-	protected Attribute attribute;
 
 	protected Animation animation;
 
@@ -75,15 +72,6 @@ public abstract class ActionObject extends Entity implements Config {
 	@Override
 	public Field2D getField2D() {
 		return tiles.getField2D();
-	}
-
-	public Attribute getAttribute() {
-		return attribute;
-	}
-
-	public ActionObject setAttribute(Attribute attribute) {
-		this.attribute = attribute;
-		return this;
 	}
 
 	public Animation getAnimation() {
