@@ -37,7 +37,8 @@ import loon.utils.StringUtils;
 import loon.utils.TArray;
 
 /**
- * 此组件功能近似LMessage，并且允许连续播放文字序列 ，设置角色头像和显示位置，差异在于，此组件不支持彩色文字设置，也就是只允许'\n'符号生效
+ * 此组件功能近似LMessage，并且允许连续播放文字序列
+ * ，设置角色头像和显示位置，差异在于，此组件不支持彩色文字设置，也就是只允许LSystem.LF符号生效
  * 而在效率上无文字缓存，所以总体帧率耗费比LMessage更大，适合动态频率高的场合使用，但是此组件多个同时存在会影响帧率
  * 
  * 以下为简单用例:
@@ -161,7 +162,7 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 
 			drawMessage(g, message, this._boxX + this.messageX + offsetX, this._boxY + this.messageY + offsetY);
 			if (isPage && _flagType != null) {
-				int size = StringUtils.charCount(message, '\n');
+				int size = StringUtils.charCount(message, LSystem.LF);
 				if (_leading > 0) {
 					this.font.drawString(g, _flagType, this._boxX + this.pageX + this.offsetX,
 							this._boxY + this.pageY + this.font.stringHeight(message) + this.offsetY
@@ -179,7 +180,7 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 
 		private void drawMessage(GLEx g, String message, float x, float y) {
 			if (_leading > 0) {
-				String[] texts = StringUtils.split(message, '\n');
+				String[] texts = StringUtils.split(message, LSystem.LF);
 				for (int i = 0, size = texts.length; i < size; i++) {
 					this.font.drawString(g, texts[i], x, y + (i * (font.getHeight() + _leading)), this.fontColor);
 				}
@@ -463,7 +464,8 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 				tempMessages.add(new Message(text, null, face, FontUtils.splitLines(text, font, width())));
 			}
 		} else {
-			tempMessages.add(new Message("", null, face, FontUtils.splitLines("", font, width())));
+			tempMessages
+					.add(new Message(LSystem.EMPTY, null, face, FontUtils.splitLines(LSystem.EMPTY, font, width())));
 		}
 		initMessages(tempMessages, typeFlag, font, box, x, y, width, height, color, shadow);
 	}
@@ -626,7 +628,7 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 			return;
 		}
 		String str = this._messageList.get(this.messageIndex).getFace();
-		if ((str == null || "null".equals(str))) {
+		if ((str == null || LSystem.NULL.equals(str))) {
 			setFaceImage(null);
 		} else {
 			toFaceImage(str);
@@ -654,7 +656,7 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 				String t = line.substring(0, len);
 				if (t.length() != 0) {
 					if (len == line.length())
-						_message.append(t + "\n");
+						_message.append(t).append(LSystem.LF);
 					else {
 						_message.append(t);
 					}
@@ -728,7 +730,7 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 		if (face == null) {
 			return;
 		}
-		String[] result = StringUtils.split(face, ',');
+		String[] result = StringUtils.split(face, LSystem.COMMA);
 		int size = result.length;
 		if (size > 0) {
 			if (3 == size) {

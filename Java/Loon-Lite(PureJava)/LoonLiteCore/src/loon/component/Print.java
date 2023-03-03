@@ -28,7 +28,6 @@ import loon.events.Updateable;
 import loon.font.FontSet;
 import loon.font.FontUtils;
 import loon.font.IFont;
-import loon.font.LFont;
 import loon.geom.PointF;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
@@ -101,8 +100,6 @@ public class Print implements FontSet<Print>, LRelease {
 
 	private int _messageLength = 10;
 
-	private int _lazyFlag = 1;
-	
 	private String _messages;
 
 	private boolean _onComplete, _newLine, _visible, _closed;
@@ -110,7 +107,7 @@ public class Print implements FontSet<Print>, LRelease {
 	private StrBuilder _messageBuffer = new StrBuilder(_messageLength);
 
 	private float _alpha;
-	
+
 	private int _width, _height, _leftoffset, _topoffset, _nextflag, _messageCount;
 
 	private int _textsize, _waitdelay, _textoffsetSize, _leftsize, _fontSize, _fontHeight;
@@ -134,8 +131,8 @@ public class Print implements FontSet<Print>, LRelease {
 	// 默认0，左1,右2
 	private Mode dirmode = Mode.NONE;
 
-	public Print(Vector2f _printLocation, IFont font, int width, int height) {
-		this(LSystem.EMPTY,  font, _printLocation, width, height);
+	public Print(Vector2f printLocation, IFont font, int width, int height) {
+		this(LSystem.EMPTY, font, printLocation, width, height);
 	}
 
 	public Print(String context, IFont size, Vector2f pos, int width, int height) {
@@ -144,7 +141,6 @@ public class Print implements FontSet<Print>, LRelease {
 		this._width = width;
 		this._height = height;
 		this._waitdelay = 0;
-		this._lazyFlag = 1;
 		this._messageLength = 10;
 		this._isWait = false;
 		this._isIconFlag = true;
@@ -159,7 +155,7 @@ public class Print implements FontSet<Print>, LRelease {
 
 		Print _print;
 
-		boolean _isComplete = false, _drawDrawingFont = false;
+		boolean _isComplete = false;
 
 		private IFont _font = null;
 
@@ -177,7 +173,6 @@ public class Print implements FontSet<Print>, LRelease {
 			_context = context;
 			_font = font;
 			_isComplete = complete;
-			_drawDrawingFont = drawFont;
 		}
 
 		@Override
@@ -185,23 +180,8 @@ public class Print implements FontSet<Print>, LRelease {
 			if (_context == null) {
 				return;
 			}
-			//if (_print._defaultFont != null && !_print._defaultFont.isClosed() && !_drawDrawingFont) {
-			//	_print._defaultFont.close();
-		//	}
 			// 如果是默认的loon系统字体
-			if (_font instanceof LFont) {
-				if (_drawDrawingFont) {
-				//	LSTRDictionary.Dict dict = LSTRDictionary.get().bind((LFont) _font, _context);
-				//	_print._defaultFont = dict.getSTR();
-					_print._curFont = _font;
-				} else {
-			//		_print._defaultFont = new LSTRFont((LFont) _font, _context, LSystem.isBrowser());
-				}
-				// 其他字体(一般是Bitmap Font)
-			} else {
-				_print._curFont = _font;
-			}
-			_print._lazyFlag = 1;
+			_print._curFont = _font;
 			_print._waitdelay = 0;
 			_print._visible = false;
 			_print._showMessages = new char[] { '\0' };
@@ -227,12 +207,12 @@ public class Print implements FontSet<Print>, LRelease {
 		}
 	}
 
-	public void setMessage(String context, IFont _curfontSize, boolean isComplete) {
-		setMessage(context, _curfontSize, isComplete, false);
+	public void setMessage(String context, IFont curfontSize, boolean isComplete) {
+		setMessage(context, curfontSize, isComplete, false);
 	}
 
-	public void setMessage(String context, IFont _curfontSize, boolean isComplete, boolean drawFont) {
-		LSystem.load(new PrintUpdate(this, context, _curfontSize, isComplete, this._nativeFont = drawFont));
+	public void setMessage(String context, IFont curfontSize, boolean isComplete, boolean drawFont) {
+		LSystem.load(new PrintUpdate(this, context, curfontSize, isComplete, this._nativeFont = drawFont));
 	}
 
 	public String getMessage() {
@@ -279,12 +259,12 @@ public class Print implements FontSet<Print>, LRelease {
 		}
 	}
 
-	protected int maxFontHeignt(IFont _curfontSize, char[] _showMessages, int _textsize) {
-		int _height = 0;
-		for (int i = 0; i < _textsize; i++) {
-			_height = MathUtils.max(_height, _curfontSize.stringHeight(String.valueOf(_showMessages[i])));
+	protected int maxFontHeignt(final IFont curfontSize, final char[] showMessages, final int textsize) {
+		int height = 0;
+		for (int i = 0; i < textsize; i++) {
+			height = MathUtils.max(height, curfontSize.stringHeight(String.valueOf(showMessages[i])));
 		}
-		return MathUtils.max(_curfontSize.getHeight(), _height);
+		return MathUtils.max(curfontSize.getHeight(), height);
 	}
 
 	public void drawDefFont(GLEx g, LColor old) {
@@ -310,26 +290,10 @@ public class Print implements FontSet<Print>, LRelease {
 			this._leftsize = _textoffsetSize;
 			this._index = _offsettext = _curfontSize = _perfontSize = 0;
 
-			int hashCode = 1;
-			hashCode = LSystem.unite(hashCode, _textsize);
-			hashCode = LSystem.unite(hashCode, _leftsize);
-			hashCode = LSystem.unite(hashCode, _fontSize);
-			hashCode = LSystem.unite(hashCode, _fontHeight);
-
 			if (_defaultFont == null) {
 				return;
 			}
 
-			if (hashCode == _lazyFlag) {
-			//	_defaultFont.postCharCache();
-				if (_isIconFlag && _iconX != 0 && _iconY != 0) {
-					fixIconPos();
-					g.draw(_creeseIcon, _iconLocation.x, _iconLocation.y);
-				}
-				return;
-			}
-
-			//_defaultFont.startChar();
 			_fontColor = old;
 
 			for (int i = 0; i < _textsize; i++) {
@@ -396,11 +360,12 @@ public class Print implements FontSet<Print>, LRelease {
 					_leftsize += 12;
 				}
 				if (i != _textsize - 1) {
-				/*	_defaultFont.addChar(_textChar, _printLocation.x + _leftsize + _leftoffset,
-							(_offsettext * _fontHeight) + _printLocation.y + _fontSize + _topoffset, _fontColor);*/
+					g.drawString(String.valueOf(_textChar), _printLocation.x + _leftsize + _leftoffset,
+							(_offsettext * _fontHeight) + _printLocation.y + _fontSize + _topoffset, _fontColor);
 				} else if (!_newLine && !_onComplete) {
 					_iconX = _printLocation.x + _leftsize + _leftoffset;
-					_iconY = (_offsettext * _fontHeight) + _printLocation.y + _fontSize + _topoffset + _defaultFont.getAscent();
+					_iconY = (_offsettext * _fontHeight) + _printLocation.y + _fontSize + _topoffset
+							+ _defaultFont.getAscent();
 					if (_isIconFlag && _iconX != 0 && _iconY != 0) {
 						fixIconPos();
 						g.draw(_creeseIcon, _iconLocation.x, _iconLocation.y);
@@ -408,11 +373,6 @@ public class Print implements FontSet<Print>, LRelease {
 				}
 				_index++;
 			}
-
-			//_defaultFont.stopChar();
-			//_defaultFont.saveCharCache();
-
-			_lazyFlag = hashCode;
 
 			if (_messageCount == _nextflag) {
 				_onComplete = true;
@@ -531,7 +491,8 @@ public class Print implements FontSet<Print>, LRelease {
 							(_offsettext * _fontHeight) + _printLocation.y + _fontSize + _topoffset, _fontColor);
 				} else if (!_newLine && !_onComplete) {
 					_iconX = _printLocation.x + _leftsize + _leftoffset;
-					_iconY = (_offsettext * _fontHeight) + _printLocation.y + _fontSize + _topoffset + _curFont.getAscent();
+					_iconY = (_offsettext * _fontHeight) + _printLocation.y + _fontSize + _topoffset
+							+ _curFont.getAscent();
 					if (_isIconFlag && _iconX != 0 && _iconY != 0) {
 						fixIconPos();
 						g.draw(_creeseIcon, _iconLocation.x, _iconLocation.y);

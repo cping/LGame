@@ -49,7 +49,7 @@ public interface Expression {
 
 	// 缓存刷新标记
 	String RESET_CACHE_TAG = "reset";
-	
+
 	// 累计输入数据标记
 	String IN_TAG = "in";
 
@@ -61,7 +61,7 @@ public interface Expression {
 
 	// 跳转标记
 	String GOTO_TAG = "goto";
-	
+
 	// 打印标记
 	String PRINT_TAG = "print";
 
@@ -97,9 +97,9 @@ public interface Expression {
 	String FLAG = "@";
 
 	String FLAG_SAVE_TAG = "save";
-	
+
 	String FLAG_LOAD_TAG = "load";
-	
+
 	char FLAG_CHAR = FLAG.toCharArray()[0];
 
 }

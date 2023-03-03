@@ -8,6 +8,8 @@ import loon.LTransition;
 import loon.Screen;
 import loon.action.sprite.Bullet;
 import loon.canvas.LColor;
+import loon.component.LToast;
+import loon.component.LToast.Style;
 import loon.events.GameTouch;
 import loon.font.BDFont;
 import loon.font.BMFont;
@@ -78,7 +80,7 @@ public class Main extends Loon {
 
 		@Override
 		public void touchDown(GameTouch e) {
-
+			add(LToast.makeText("不在攻击范围中", Style.ERROR));
 		}
 
 		@Override
@@ -232,7 +234,7 @@ public class Main extends Loon {
 		// setting.fullscreen = true;
 
 		register(Main.class, setting, () -> {
-			return new TDTest();
+			return new TitleScreen();
 		});
 	}
 

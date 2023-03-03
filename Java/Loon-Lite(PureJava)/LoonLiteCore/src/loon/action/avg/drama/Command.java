@@ -20,8 +20,6 @@
  */
 package loon.action.avg.drama;
 
-import java.util.StringTokenizer;
-
 import loon.BaseIO;
 import loon.LRelease;
 import loon.LSysException;
@@ -31,13 +29,14 @@ import loon.utils.ArrayMap;
 import loon.utils.ArrayMap.Entry;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
+import loon.utils.StrBuilder;
 import loon.utils.StringKeyValue;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
+import loon.utils.parse.StrTokenizer;
 
 /**
- * 一个非常简单的脚本解释器,用来跨平台实现avg游戏脚本解析,以统一Loon内部的简单脚本格式,
- * 同时避免一些第三方框架的跨平台问题,更复杂的脚本需求请使用 @see RocScript
+ * 一个非常简单的脚本解释器,用来跨平台实现avg游戏脚本解析,以统一Loon内部的简单脚本格式.
  */
 public class Command extends Conversion implements LRelease {
 
@@ -57,7 +56,7 @@ public class Command extends Conversion implements LRelease {
 	private static ArrayMap conditionEnvironmentList;
 
 	// 读入连续数据
-	private StringBuffer readBuffer;
+	private StrBuilder readBuffer;
 
 	// 缓存脚本名
 	private String cacheCommandName;
@@ -200,9 +199,9 @@ public class Command extends Conversion implements LRelease {
 			setEnvironmentList.put(V_SELECT_KEY, "-1");
 		}
 		if (readBuffer == null) {
-			readBuffer = new StringBuffer(256);
+			readBuffer = new StrBuilder(256);
 		} else {
-			readBuffer.delete(0, readBuffer.length());
+			readBuffer.setLength(0);
 		}
 		this.scriptName = name;
 		this.scriptList = res;
@@ -244,7 +243,7 @@ public class Command extends Conversion implements LRelease {
 				condition = temps.get(2);
 			} else {
 				int count = 0;
-				StringBuilder sbr = new StringBuilder();
+				StrBuilder sbr = new StrBuilder();
 				for (int i = 0; i < temps.size; i++) {
 					String res = temps.get(i);
 					if (count > 0) {
@@ -253,7 +252,7 @@ public class Command extends Conversion implements LRelease {
 						} else {
 							valueA = sbr.toString();
 							valueA = String.valueOf(exp.parse(valueA));
-							sbr.delete(0, sbr.length());
+							sbr.setLength(0);
 							condition = res;
 						}
 					}
@@ -304,6 +303,14 @@ public class Command extends Conversion implements LRelease {
 				float numberA = Float.parseFloat(valueA.toString());
 				float numberB = Float.parseFloat(valueB.toString());
 				conditionEnvironmentList.put(nowPosFlagName, Boolean.valueOf(result = numberA <= numberB));
+			} else if ("&&".equals(condition)) {
+				float numberA = Float.parseFloat(valueA.toString());
+				float numberB = Float.parseFloat(valueB.toString());
+				conditionEnvironmentList.put(nowPosFlagName, Boolean.valueOf(result = (numberA > 0 && numberB > 0)));
+			} else if ("||".equals(condition)) {
+				float numberA = Float.parseFloat(valueA.toString());
+				float numberB = Float.parseFloat(valueB.toString());
+				conditionEnvironmentList.put(nowPosFlagName, Boolean.valueOf(result = (numberA > 0 || numberB > 0)));
 			}
 		} catch (Throwable ex) {
 			LSystem.error("Command parse exception", ex);
@@ -422,7 +429,7 @@ public class Command extends Conversion implements LRelease {
 		int lookupStartIndex = 0;
 		int lookupEndIndex = 0;
 		int length;
-		StringBuilder sbr = new StringBuilder(100);
+		StrBuilder sbr = new StrBuilder(100);
 		for (int i = 0; i < dlength; i++) {
 			char tag = messages[i];
 			if (tag == startString[lookupStartIndex]) {
@@ -444,7 +451,7 @@ public class Command extends Conversion implements LRelease {
 				length = sbr.length();
 				if (length > 0) {
 					tagList.add(sbr.substring(1, sbr.length() - elength));
-					sbr.delete(0, length);
+					sbr.setLength(0);
 				}
 			}
 		}
@@ -585,7 +592,7 @@ public class Command extends Conversion implements LRelease {
 	 * @return
 	 */
 	public String batchToString() {
-		StringBuilder resString = new StringBuilder(scriptSize * 10);
+		StrBuilder resString = new StrBuilder(scriptSize * 10);
 		for (; next();) {
 			String execute = doExecute();
 			if (execute != null) {
@@ -604,7 +611,7 @@ public class Command extends Conversion implements LRelease {
 			if (len == 4) {
 				result = temps.get(3).toString();
 			} else if (len > 4) {
-				StringBuilder sbr = new StringBuilder(len);
+				StrBuilder sbr = new StrBuilder(len);
 				for (int i = 3; i < temps.size; i++) {
 					sbr.append(temps.get(i));
 				}
@@ -616,12 +623,14 @@ public class Command extends Conversion implements LRelease {
 				for (int i = 0; i < setEnvironmentList.size(); i++) {
 
 					Entry entry = setEnvironmentList.getEntry(i);
-					if (!(StringUtils.startsWith(result, '"') && StringUtils.endsWith(result, '"'))) {
+					if (!(StringUtils.startsWith(result, LSystem.DOUBLE_QUOTES)
+							&& StringUtils.endsWith(result, LSystem.DOUBLE_QUOTES))) {
 						result = StringUtils.replaceMatch(result, (String) entry.getKey(), (String) entry.getValue());
 					}
 				}
 				// 当为普通字符串时
-				if (StringUtils.startsWith(result, '"') && StringUtils.endsWith(result, '"')) {
+				if (StringUtils.startsWith(result, LSystem.DOUBLE_QUOTES)
+						&& StringUtils.endsWith(result, LSystem.DOUBLE_QUOTES)) {
 					setEnvironmentList.put(temps.get(1), result.substring(1, result.length() - 1));
 				} else if (StringUtils.isChinaLanguage(result) || StringUtils.isEnglishAndNumeric(result)) {
 					setEnvironmentList.put(temps.get(1), result);
@@ -830,12 +839,12 @@ public class Command extends Conversion implements LRelease {
 				ifing = true;
 				// 条件判断b
 			} else if (elseif_bool) {
-				String[] value = StringUtils.split(cmd, ' ');
+				String[] value = StringUtils.split(cmd, LSystem.SPACE);
 				if (!backIfBool && !esleflag) {
 					// 存在if判断
 					if (value.length > 1 && IF_TAG.equals(value[1])) {
-						esleover = esleflag = setupIF(StringUtils.replace(cmd, ELSE_TAG, LSystem.EMPTY).trim(), nowPosFlagName,
-								setEnvironmentList, conditionEnvironmentList);
+						esleover = esleflag = setupIF(StringUtils.replace(cmd, ELSE_TAG, LSystem.EMPTY).trim(),
+								nowPosFlagName, setEnvironmentList, conditionEnvironmentList);
 						addCommand = false;
 						// 单纯的else
 					} else if (value.length == 1 && ELSE_TAG.equals(value[0])) {
@@ -890,7 +899,7 @@ public class Command extends Conversion implements LRelease {
 			}
 			// 选择项列表
 			if (cmd.startsWith(IN_TAG)) {
-				readBuffer.delete(0, readBuffer.length());
+				readBuffer.setLength(0);
 				isRead = true;
 				return executeCommand;
 			}
@@ -1101,7 +1110,7 @@ public class Command extends Conversion implements LRelease {
 	 */
 	private final boolean includeCommand(String cmd) {
 		temps = commandSplit(cmd);
-		StringBuilder sbr = new StringBuilder();
+		StrBuilder sbr = new StrBuilder();
 		for (int i = 1; i < temps.size; i++) {
 			sbr.append(temps.get(i));
 		}
@@ -1121,7 +1130,11 @@ public class Command extends Conversion implements LRelease {
 	 * @return
 	 */
 	public final static String[] includeFile(String fileName) {
-		return includeString(fileName.trim().toLowerCase(), BaseIO.loadText(fileName));
+		String context = BaseIO.loadText(fileName);
+		if (StringUtils.isEmpty(context)) {
+			throw new LSysException("The script file [" + fileName + "] not found !");
+		}
+		return includeString(fileName.trim().toLowerCase(), context);
 	}
 
 	/**
@@ -1131,6 +1144,9 @@ public class Command extends Conversion implements LRelease {
 	 * @return
 	 */
 	public final static String[] includeString(String key, String context) {
+		if (StringUtils.isEmpty(context)) {
+			throw new LSysException("The key [" + key + "] of data is empty !");
+		}
 		if (scriptLazy == null) {
 			scriptLazy = new ArrayMap(100);
 		} else if (scriptLazy.size() > 10000) {
@@ -1143,7 +1159,7 @@ public class Command extends Conversion implements LRelease {
 			int length = capacity;
 			int index = 0;
 			try {
-				StringTokenizer reader = new StringTokenizer(context, LSystem.NL);
+				StrTokenizer reader = new StrTokenizer(context, LSystem.NL);
 				String record = null;
 				for (; reader.hasMoreTokens();) {
 					record = reader.nextToken().trim();
@@ -1207,6 +1223,14 @@ public class Command extends Conversion implements LRelease {
 			scriptLazy = null;
 		}
 
+	}
+
+	public static void freeStatic() {
+		scriptLazy = null;
+		scriptContext = null;
+		functions = null;
+		setEnvironmentList = null;
+		conditionEnvironmentList = null;
 	}
 
 	public boolean isClosed() {

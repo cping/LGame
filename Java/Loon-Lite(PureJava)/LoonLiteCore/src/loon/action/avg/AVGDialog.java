@@ -32,11 +32,28 @@ import loon.utils.ObjectMap;
  */
 final public class AVGDialog {
 
-	private static ObjectMap<String, LTexture> lazyImages;
+	private static AVGDialog _instance = null;
 
-	public final static LTexture getRMXPDialog(String fileName, int width, int height) {
-		if (lazyImages == null) {
-			lazyImages = new ObjectMap<String, LTexture>(10);
+	public static AVGDialog shared() {
+		if (_instance == null) {
+			synchronized (AVGDialog.class) {
+				if (_instance == null) {
+					_instance = new AVGDialog();
+				}
+			}
+		}
+		return _instance;
+	}
+
+	public static void freeStatic() {
+		_instance = null;
+	}
+
+	private ObjectMap<String, LTexture> _dialogCache;
+
+	public final LTexture getRMXPDialog(String fileName, int width, int height) {
+		if (_dialogCache == null) {
+			_dialogCache = new ObjectMap<String, LTexture>(10);
 		}
 		Image dialog = BaseIO.loadImage(fileName);
 		int w = dialog.getWidth();
@@ -64,16 +81,16 @@ final public class AVGDialog {
 		}
 	}
 
-	public final static LTexture getRMXPloadBuoyage(String fileName, int width, int height) {
+	public final LTexture getRMXPloadBuoyage(String fileName, int width, int height) {
 		return getRMXPloadBuoyage(BaseIO.loadImage(fileName), width, height);
 	}
 
-	public final static LTexture getRMXPloadBuoyage(Image rmxpImage, int width, int height) {
-		if (lazyImages == null) {
-			lazyImages = new ObjectMap<String, LTexture>(10);
+	public final LTexture getRMXPloadBuoyage(Image rmxpImage, int width, int height) {
+		if (_dialogCache == null) {
+			_dialogCache = new ObjectMap<String, LTexture>(10);
 		}
 		String keyName = "buoyage" + width + "|" + height + "|" + rmxpImage.getSource();
-		LTexture lazy = lazyImages.get(keyName);
+		LTexture lazy = _dialogCache.get(keyName);
 		if (lazy == null || lazy.isClosed()) {
 			Image lazyImage;
 			Image image, left, right, center, up, down = null;
@@ -107,7 +124,7 @@ final public class AVGDialog {
 					lazyImage = null;
 				}
 				lazy.setDisabledTexture(true);
-				lazyImages.put(keyName, lazy);
+				_dialogCache.put(keyName, lazy);
 			} catch (Throwable e) {
 				return null;
 			} finally {
@@ -125,12 +142,12 @@ final public class AVGDialog {
 
 	}
 
-	private final static LTexture getRMXPDialog(Image rmxpImage, int width, int height, int size, int offset) {
-		if (lazyImages == null) {
-			lazyImages = new ObjectMap<String, LTexture>(10);
+	private final LTexture getRMXPDialog(Image rmxpImage, int width, int height, int size, int offset) {
+		if (_dialogCache == null) {
+			_dialogCache = new ObjectMap<String, LTexture>(10);
 		}
 		String keyName = "dialog" + width + "|" + height + "|" + rmxpImage.getSource();
-		LTexture lazy = lazyImages.get(keyName);
+		LTexture lazy = _dialogCache.get(keyName);
 		if (lazy == null || lazy.isClosed()) {
 			try {
 				final int objWidth = 64;
@@ -215,7 +232,7 @@ final public class AVGDialog {
 					lazyImage = null;
 				}
 				lazy.setDisabledTexture(true);
-				lazyImages.put(keyName, lazy);
+				_dialogCache.put(keyName, lazy);
 
 				image.close();
 				messageImage.close();
@@ -247,17 +264,17 @@ final public class AVGDialog {
 		return lazy;
 	}
 
-	public static void clear() {
-		if (lazyImages != null) {
-			for (LTexture tex2d : lazyImages.values()) {
+	public void clear() {
+		if (_dialogCache != null) {
+			for (LTexture tex2d : _dialogCache.values()) {
 				if (tex2d != null) {
 					tex2d.setDisabledTexture(false);
 					tex2d.close();
 					tex2d = null;
 				}
 			}
-			lazyImages.clear();
-			lazyImages = null;
+			_dialogCache.clear();
+			_dialogCache = null;
 		}
 	}
 }

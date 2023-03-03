@@ -59,6 +59,7 @@ import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 import loon.utils.processes.GameProcess;
+import loon.utils.processes.GameProcessType;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.timer.LTimer;
@@ -101,19 +102,19 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	private boolean isSelectMessage, isScriptRunning, isGameRunning, scrFlag;
 
 	// 若需要任意处点击皆可继续脚本，此标记应为true
-	private boolean screenClickd = false;
+	private boolean _screenClickd = false;
 
 	// 若需要点击触发脚本继续的功能暂时失效，此处应为true
-	private boolean limitClickd = false;
+	private boolean _limitClickd = false;
 
 	// 自动播放的延迟时间
-	private LTimer autoTimer = new LTimer(LSystem.SECOND);
+	private LTimer _autoTimer = new LTimer(LSystem.SECOND);
 
-	private int clickButtonLayer = 200;
+	private int _clickButtonLayer = 200;
 
-	private LColor fontColor = LColor.white.cpy();
+	private LColor _fontColor = LColor.white.cpy();
 
-	private LColor gameColor;
+	private LColor _gameColor;
 
 	protected Command command;
 
@@ -129,7 +130,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 
 	private RealtimeProcess avgProcess;
 
-	private boolean autoPlay;
+	private boolean _autoPlay;
 
 	/**
 	 * 此为AVG中特定任务接口，此接口需要实现使用，共有三个API，一个用来从脚本注入参数,
@@ -170,6 +171,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 
 		public AVGProcess(AVGScreen screen) {
 			this._screen = screen;
+			this.setProcessType(GameProcessType.Screen);
 		}
 
 		public AVGScreen getScreen() {
@@ -214,8 +216,8 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 			}
 			if (_items != null && _screen.command != null && _screen.selectUI != null) {
 				if (((LSystem.base() != null && (LSystem.base().isMobile() || LSystem.base().setting.emulateTouch))
-						? _screen._clickcount++ >= _screen._mobile_select_valid_limit : _screen._clickcount > -1)
-						&& _screen.selectUI.isClick()) {
+						? _screen._clickcount++ >= _screen._mobile_select_valid_limit
+						: _screen._clickcount > -1) && _screen.selectUI.isClick()) {
 					int idx = _screen.selectUI.getResultIndex();
 					if (idx != -1) {
 						String gotoFlag = _items.get(idx);
@@ -564,7 +566,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		if (!selecting) {
 			selectUI.SetClick(null);
 			selectUI.setVisible(false);
-			limitClickd = false;
+			_limitClickd = false;
 			scrFlag = false;
 			isSelectMessage = false;
 			_clickcount = 0;
@@ -582,13 +584,14 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 
 				@Override
 				public void run(LTimerContext time) {
-					click.setFontColor(fontColor);
+					click.setFontColor(_fontColor);
 					click.Tag = CommandType.L_OPTION + (click.getText() == null ? command.getIndex() : click.getText());
-					click.setLayer(clickButtonLayer);
+					click.setLayer(_clickButtonLayer);
 					getDesktop().add(click);
 					kill();
 				}
 			};
+			process.setProcessType(GameProcessType.View);
 			addProcess(process);
 		}
 	}
@@ -600,7 +603,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	 * @param order
 	 */
 	private final void setOpt(LClickButton click, String order) {
-		click.setFontColor(fontColor);
+		click.setFontColor(_fontColor);
 		int startFlag = order.indexOf('{');
 		int endFlag = order.lastIndexOf('}');
 		if (startFlag != -1 && endFlag != -1 && endFlag > startFlag) {
@@ -710,7 +713,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 					if (effectSprites != null) {
 						effectSprites.update(time.timeSinceLastUpdate);
 					}
-					if (autoPlay) {
+					if (_autoPlay) {
 						playAutoNext();
 					}
 				}
@@ -718,6 +721,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		};
 		setSpeedMode(_speedMode);
 		avgProcess.setDelay(_plapDelay);
+		avgProcess.setProcessType(GameProcessType.View);
 		RealtimeProcessManager.get().addProcess(avgProcess);
 
 	}
@@ -741,7 +745,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 			}
 		}
 		this.messageUI = new LMessage(_font, _dialogTexture, 0, 0);
-		this.messageUI.setFontColor(fontColor);
+		this.messageUI.setFontColor(_fontColor);
 		int size = (int) (messageUI.getWidth() / (messageUI.getMessageFont().getSize()));
 		if (size % 2 != 0) {
 			size = size - 3;
@@ -753,7 +757,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		this.messageUI.setTopOffset(-5);
 		this.messageUI.setVisible(false);
 		this.selectUI = new LSelect(_font, _dialogTexture, messageUI.x(), messageUI.y());
-		this.selectUI.setFontColor(fontColor);
+		this.selectUI.setFontColor(_fontColor);
 		this.selectUI.setTopOffset(5);
 		this.scrCG = new AVGCG(this);
 		this.messageDesktop.add(messageUI);
@@ -814,19 +818,19 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 			initDesktop();
 		}
 		if ((c instanceof LClickButton) || (c instanceof LButton)) {
-			c.setLayer(clickButtonLayer);
+			c.setLayer(_clickButtonLayer);
 		}
 		messageDesktop.add(c);
 		return this;
 	}
 
 	@Override
-	public Screen addTouchLimit(ActionBind c) {
+	public Screen addTouchLimit(ActionBind act) {
 		if (messageDesktop == null) {
 			initDesktop();
 		}
-		if (!(c instanceof LClickButton)) {
-			super.addTouchLimit(c);
+		if (!(act instanceof LClickButton)) {
+			super.addTouchLimit(act);
 		}
 		return this;
 	}
@@ -879,29 +883,30 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 				effectSprites.createUI(g);
 			}
 		} else {
+			float oalpha = g.alpha();
 			scrCG.sleep--;
-			if (gameColor != null) {
+			if (_gameColor != null) {
 				float alpha = (float) (scrCG.sleepMax - scrCG.sleep) / scrCG.sleepMax;
 				if (alpha > 0.1f && alpha < 1.0f) {
 					if (scrCG.getBackgroundCG() != null) {
 						g.draw(scrCG.getBackgroundCG(), 0, 0);
 					}
 					LColor c = g.getColor();
-					g.setColor(gameColor.r, gameColor.g, gameColor.b, alpha);
+					g.setColor(_gameColor.r, _gameColor.g, _gameColor.b, alpha);
 					g.fillRect(0, 0, getWidth(), getHeight());
 					g.setColor(c);
 				} else {
 					LColor c = g.getColor();
-					g.setColor(gameColor);
+					g.setColor(_gameColor);
 					g.fillRect(0, 0, getWidth(), getHeight());
 					g.setColor(c);
 				}
 			}
 			if (scrCG.sleep <= 0) {
 				scrCG.sleep = 0;
-				gameColor = null;
+				_gameColor = null;
 			}
-			g.setAlpha(1.0f);
+			g.setAlpha(oalpha);
 		}
 	}
 
@@ -924,7 +929,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 					break;
 				}
 
-				TArray<String> commands = Conversion.splitToList(result, ' ');
+				TArray<String> commands = Conversion.splitToList(result, LSystem.SPACE);
 				int size = commands.size;
 				String cmdFlag = (String) commands.get(0);
 
@@ -1093,17 +1098,17 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 					continue;
 				}
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_APLAY)) {
-					autoPlay = true;
+					_autoPlay = true;
 					continue;
 				}
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_ASTOP)) {
-					autoPlay = false;
+					_autoPlay = false;
 					continue;
 				}
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_ADELAY)) {
 					if (mesFlag != null) {
 						if (MathUtils.isNan(mesFlag)) {
-							autoTimer.setDelay(Integer.parseInt(mesFlag));
+							_autoTimer.setDelay(Integer.parseInt(mesFlag));
 						}
 					}
 					continue;
@@ -1131,8 +1136,6 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 								effectSprites.add(NaturalEffect.getRainEffect());
 							} else if (cmdFlag.equalsIgnoreCase(CommandType.L_PETAL)) {
 								effectSprites.add(NaturalEffect.getPetalEffect());
-							} else if (cmdFlag.equalsIgnoreCase(CommandType.L_THUNDER)) {
-								//effectSprites.add(NaturalEffect.getThunderEffect());
 							}
 						}
 
@@ -1159,10 +1162,6 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 									if (naturalType == NaturalType.Petal) {
 										effectSprites.remove(s);
 									}
-								} else if (cmdFlag.equalsIgnoreCase(CommandType.L_THUNDER)) {
-									//if (naturalType == NaturalType.Thunder) {
-									//	effectSprites.remove(s);
-									//}
 								}
 							}
 						}
@@ -1189,13 +1188,13 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_FADEOUT) || cmdFlag.equalsIgnoreCase(CommandType.L_FADEIN)) {
 					this.scrFlag = true;
-					this.gameColor = new LColor(mesFlag);
+					this._gameColor = new LColor(mesFlag);
 					if (effectSprites != null) {
 						effectSprites.removeAll();
 						if (cmdFlag.equalsIgnoreCase(CommandType.L_FADEIN)) {
-							effectSprites.add(FadeEffect.create(ISprite.TYPE_FADE_IN, 30, gameColor));
+							effectSprites.add(FadeEffect.create(ISprite.TYPE_FADE_IN, 30, _gameColor));
 						} else {
-							effectSprites.add(FadeEffect.create(ISprite.TYPE_FADE_OUT, 30, gameColor));
+							effectSprites.add(FadeEffect.create(ISprite.TYPE_FADE_OUT, 30, _gameColor));
 						}
 					}
 					continue;
@@ -1283,7 +1282,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 							selectUI.setVisible(true);
 							scrFlag = true;
 							isSelectMessage = true;
-							limitClickd = true;
+							_limitClickd = true;
 							String[] list = StringUtils.split(selectList, ',');
 							final int selectLength = list.length;
 							final int len = selectLength / 2;
@@ -1349,14 +1348,14 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 					} else {
 						colors = new String[] { "0", "0", "0" };
 					}
-					if (gameColor == null && colors != null && colors.length == 3) {
-						gameColor = new LColor(Integer.valueOf(colors[0]).intValue(),
+					if (_gameColor == null && colors != null && colors.length == 3) {
+						_gameColor = new LColor(Integer.valueOf(colors[0]).intValue(),
 								Integer.valueOf(colors[1]).intValue(), Integer.valueOf(colors[2]).intValue());
 						scrCG.sleep = 20;
 						scrCG.sleepMax = scrCG.sleep;
 						scrFlag = false;
 					} else {
-						gameColor = null;
+						_gameColor = null;
 					}
 					continue;
 				}
@@ -1421,7 +1420,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		if (tasking()) {
 			return;
 		}
-		if (!autoTimer.action(elapsedTime)) {
+		if (!_autoTimer.action(elapsedTime)) {
 			return;
 		}
 		if (scrCG.sleep != 0) {
@@ -1445,7 +1444,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		if (tasking()) {
 			return this;
 		}
-		if (limitClickd) {
+		if (_limitClickd) {
 			return this;
 		}
 		if (!isGameRunning) {
@@ -1459,7 +1458,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 			if (!scrFlag) {
 				scrFlag = true;
 			}
-			if (!screenClickd && messageUI.isVisible()) {
+			if (!_screenClickd && messageUI.isVisible()) {
 				isNext = messageUI.intersects(getTouchX(), getTouchY());
 			} else {
 				isNext = true;
@@ -1468,7 +1467,8 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 			onSelect(_selectMessage, selectUI.getResultIndex());
 			isNext = selectUI.intersects(getTouchX(), getTouchY());
 			if ((LSystem.base() != null && LSystem.base().isMobile() || LSystem.base().setting.emulateTouch)
-					? _clickcount++ >= _mobile_select_valid_limit : _clickcount > -1) {
+					? _clickcount++ >= _mobile_select_valid_limit
+					: _clickcount > -1) {
 				messageUI.setVisible(false);
 				clearSelectMessage();
 			}
@@ -1650,11 +1650,11 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	}
 
 	public boolean isScriptLocked() {
-		return limitClickd;
+		return _limitClickd;
 	}
 
 	public AVGScreen setScriptLocked(boolean locked) {
-		this.limitClickd = locked;
+		this._limitClickd = locked;
 		return this;
 	}
 
@@ -1714,34 +1714,34 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	}
 
 	public boolean isAutoPlay() {
-		return autoPlay;
+		return _autoPlay;
 	}
 
 	public AVGScreen setAutoPlay(boolean autoPlay) {
-		this.autoPlay = autoPlay;
+		this._autoPlay = autoPlay;
 		return this;
 	}
 
 	public AVGScreen setAutoDelay(long d) {
-		autoTimer.setDelay(d);
+		_autoTimer.setDelay(d);
 		return this;
 	}
 
 	public long getAutoDelay() {
-		return autoTimer.getDelay();
+		return _autoTimer.getDelay();
 	}
 
 	public LTimer getAutoTimer() {
-		return autoTimer;
+		return _autoTimer;
 	}
 
 	public AVGScreen setAutoTimer(LTimer autoTimer) {
-		this.autoTimer = autoTimer;
+		this._autoTimer = autoTimer;
 		return this;
 	}
 
 	public boolean isLimitClick() {
-		return limitClickd;
+		return _limitClickd;
 	}
 
 	/**
@@ -1750,12 +1750,12 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	 * @param limitClick
 	 */
 	public AVGScreen setLimitClick(boolean lc) {
-		this.limitClickd = lc;
+		this._limitClickd = lc;
 		return this;
 	}
 
 	public boolean isScreenClick() {
-		return screenClickd;
+		return _screenClickd;
 	}
 
 	/**
@@ -1764,7 +1764,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	 * @param screenClick
 	 */
 	public AVGScreen setScreenClick(boolean screenClick) {
-		this.screenClickd = screenClick;
+		this._screenClickd = screenClick;
 		return this;
 	}
 
@@ -1830,11 +1830,11 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	}
 
 	public int getClickButtonLayer() {
-		return clickButtonLayer;
+		return _clickButtonLayer;
 	}
 
 	public AVGScreen setClickButtonLayer(int clickButtonLayer) {
-		this.clickButtonLayer = clickButtonLayer;
+		this._clickButtonLayer = clickButtonLayer;
 		return this;
 	}
 
@@ -1843,13 +1843,13 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		if (color == null) {
 			return this;
 		}
-		this.fontColor = color;
+		this._fontColor = color;
 		return this;
 	}
 
 	@Override
 	public LColor getFontColor() {
-		return fontColor.cpy();
+		return _fontColor.cpy();
 	}
 
 	@Override
