@@ -114,7 +114,7 @@ public class TMXIsometricMapRenderer extends TMXMapRenderer {
 			final boolean saveCache = textureMap.size == 1 && allowCache;
 
 			texCurrent = textureMap.get(map.getTileset(0).getImage().getSource());
-			texBatch = null;//texCurrent.getTextureBatch();
+			texBatch = texCurrent.getTextureBatch();
 
 			final float tmpAlpha = baseColor.a;
 			boolean isCached = false;
@@ -146,8 +146,6 @@ public class TMXIsometricMapRenderer extends TMXMapRenderer {
 				} else {
 					texBatch.begin();
 				}
-
-				texBatch.setColor(baseColor);
 
 				for (int x = 0; x < tileLayer.getWidth(); x++) {
 					for (int y = 0; y < tileLayer.getHeight(); y++) {
@@ -192,7 +190,7 @@ public class TMXIsometricMapRenderer extends TMXMapRenderer {
 		if (texture.getID() != texCurrent.getID()) {
 			texBatch.end();
 			texCurrent = texture;
-			texBatch = null;//texCurrent.getTextureBatch();
+			texBatch = texCurrent.getTextureBatch();
 			texBatch.begin();
 			texBatch.checkTexture(texCurrent);
 		}
@@ -215,7 +213,6 @@ public class TMXIsometricMapRenderer extends TMXMapRenderer {
 		float srcWidth = srcX + tileWidth;
 		float srcHeight = srcY + tileHeight;
 
-
 		boolean flipX = mapTile.isFlippedHorizontally();
 		boolean flipY = mapTile.isFlippedVertically();
 		boolean flipZ = mapTile.isFlippedDiagonally();
@@ -224,14 +221,10 @@ public class TMXIsometricMapRenderer extends TMXMapRenderer {
 			flipX = !flipX;
 			flipY = !flipY;
 		}
+		Vector2f pos = orthoToIso(x, y);
+		texBatch.draw(pos.x, pos.y, -1f, -1f, 0f, 0f, tileWidth, tileHeight, 1f, 1f, this._objectRotation, srcX,
+				srcY, srcWidth, srcHeight, flipX, flipY, baseColor);
 
-		float uvCorrectionX = (0.5f / tileSet.getImage().getWidth());
-		float uvCorrectionY = (0.5f / tileSet.getImage().getHeight());
-
-		if (_objectRotation != 0f || scaleX != 1f || scaleY != 1f) {
-
-			if (_objectRotation != 0f) {} else if (scaleX != 1f || srcY != 1f) {} else {}
-		} else {}
 	}
 
 }

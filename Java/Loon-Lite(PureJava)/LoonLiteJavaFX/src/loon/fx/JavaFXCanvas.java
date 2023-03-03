@@ -39,6 +39,7 @@ import loon.canvas.Path;
 import loon.font.LFont;
 import loon.font.TextLayout;
 import loon.geom.Affine2f;
+import loon.opengl.BlendMethod;
 import loon.utils.MathUtils;
 
 public class JavaFXCanvas extends Canvas {
@@ -150,8 +151,7 @@ public class JavaFXCanvas extends Canvas {
 
 	@Override
 	public Image newSnapshot() {
-		
-		WritableImage newImage = new WritableImage(toFXImage().buffer.getPixelReader(),(int) width, (int) height);
+		WritableImage newImage = new WritableImage(toFXImage().buffer.getPixelReader(), (int) width, (int) height);
 		return new JavaFXImage(gfx, image.scale(), fxCanvas.snapshot(snapshotParameters, newImage), "<canvas>");
 	}
 
@@ -380,6 +380,31 @@ public class JavaFXCanvas extends Canvas {
 		case SRC_OVER:
 		case XOR:
 		default:
+			mode = BlendMode.SRC_OVER;
+			break;
+		}
+		context.setGlobalBlendMode(mode);
+		this.isDirty = true;
+		return this;
+	}
+
+	@Override
+	public Canvas setBlendMethod(final int blend) {
+		BlendMode mode = null;
+		switch (blend) {
+		case BlendMethod.MODE_ADD:
+			mode = BlendMode.ADD;
+			break;
+		case BlendMethod.MODE_ALPHA:
+			mode = BlendMode.SRC_OVER;
+			break;
+		case BlendMethod.MODE_MULTIPLY:
+			mode = BlendMode.MULTIPLY;
+			break;
+		case BlendMethod.MODE_COLOR_MULTIPLY:
+			mode = BlendMode.SCREEN;
+			break;
+		case BlendMethod.MODE_NORMAL:
 			mode = BlendMode.SRC_OVER;
 			break;
 		}

@@ -1131,7 +1131,11 @@ public class Command extends Conversion implements LRelease {
 	 * @return
 	 */
 	public final static String[] includeFile(String fileName) {
-		return includeString(fileName.trim().toLowerCase(), BaseIO.loadText(fileName));
+		String context = BaseIO.loadText(fileName);
+		if (StringUtils.isEmpty(context)) {
+			throw new LSysException("The script file [" + fileName + "] not found !");
+		}
+		return includeString(fileName.trim().toLowerCase(), context);
 	}
 
 	/**
@@ -1141,6 +1145,9 @@ public class Command extends Conversion implements LRelease {
 	 * @return
 	 */
 	public final static String[] includeString(String key, String context) {
+		if (StringUtils.isEmpty(context)) {
+			throw new LSysException("The key [" + key + "] of data is empty !");
+		}
 		if (scriptLazy == null) {
 			scriptLazy = new ArrayMap(100);
 		} else if (scriptLazy.size() > 10000) {

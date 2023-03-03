@@ -107,16 +107,14 @@ public class ParticleParticle {
 	}
 
 	public ParticleParticle paint(GLEx g) {
-		if ((engine.usePoints() && (usePoints == INHERIT_POINTS))
-				|| (usePoints == USE_POINTS)) {
+		if ((engine.usePoints() && (usePoints == INHERIT_POINTS)) || (usePoints == USE_POINTS)) {
 			g.drawPoint(velx, scaleY, color.getARGB());
 		} else {
 			float angle = 0;
 			if (oriented) {
 				angle = MathUtils.atan2(y, x) * 180 / MathUtils.PI;
 			}
-			image.draw((x - (size / 2)), (y - (size / 2)), size, size, angle,
-					color);
+			image.draw((x - (size / 2)), (y - (size / 2)), size, size, angle, color);
 		}
 		return this;
 	}

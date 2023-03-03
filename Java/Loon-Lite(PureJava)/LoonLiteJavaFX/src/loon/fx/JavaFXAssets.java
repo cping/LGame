@@ -537,7 +537,10 @@ public class JavaFXAssets extends Assets {
 		return url;
 	}
 
-	protected Resource requireResource(final String path) throws IOException {
+	protected Resource requireResource(String path) throws IOException {
+		if (path.startsWith("/")) {
+			path = path.substring(1, path.length());
+		}
 		String serachPath = getPath(path);
 		URL url = requireUrl(path, serachPath);
 		if (url != null) {

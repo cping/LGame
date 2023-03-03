@@ -218,11 +218,6 @@ public class TMXIsometricMapRenderer extends TMXMapRenderer {
 		float srcWidth = srcX + tileWidth;
 		float srcHeight = srcY + tileHeight;
 
-		float xOff = srcX * texBatch.getInvTexWidth() + texture.xOff();
-		float widthRatio = srcWidth * texBatch.getInvTexWidth();
-		float yOff = srcY * texBatch.getInvTexHeight() + texture.yOff();
-		float heightRatio = srcHeight * texBatch.getInvTexHeight();
-
 		boolean flipX = mapTile.isFlippedHorizontally();
 		boolean flipY = mapTile.isFlippedVertically();
 		boolean flipZ = mapTile.isFlippedDiagonally();
@@ -232,108 +227,10 @@ public class TMXIsometricMapRenderer extends TMXMapRenderer {
 			flipY = !flipY;
 		}
 
-		if (flipX) {
-			float temp = xOff;
-			xOff = widthRatio;
-			widthRatio = temp;
-		}
+		Vector2f pos = orthoToIso(x, y);
 
-		if (flipY) {
-			float temp = yOff;
-			yOff = heightRatio;
-			heightRatio = temp;
-		}
-
-		float uvCorrectionX = (0.5f / tileSet.getImage().getWidth());
-		float uvCorrectionY = (0.5f / tileSet.getImage().getHeight());
-
-		if (_objectRotation != 0f || scaleX != 1f || scaleY != 1f) {
-
-			if (_objectRotation != 0f) {
-
-				texBatch.glVertex2f(orthoToIso(x, y).addSelf(-tileWidth / 2, 0).rotate(_objectRotation));
-				texBatch.glColor4f();
-				texBatch.glTexCoord2f(xOff + uvCorrectionX, yOff + uvCorrectionY);
-
-				texBatch.glVertex2f(orthoToIso(x, y).addSelf(-tileWidth / 2, 0)
-						.addSelf(flipZ ? tileWidth : 0, flipZ ? 0 : tileHeight).rotate(_objectRotation));
-				texBatch.glColor4f();
-				texBatch.glTexCoord2f(xOff + uvCorrectionX, heightRatio - uvCorrectionY);
-
-				texBatch.glVertex2f(orthoToIso(x, y).addSelf(-tileWidth / 2, 0).addSelf(tileWidth, tileHeight)
-						.rotate(_objectRotation));
-				texBatch.glColor4f();
-				texBatch.glTexCoord2f(widthRatio - uvCorrectionX, heightRatio - uvCorrectionY);
-
-				texBatch.glVertex2f(orthoToIso(x, y).addSelf(-tileWidth / 2, 0)
-						.addSelf(flipZ ? 0 : tileWidth, flipZ ? tileHeight : 0).rotate(_objectRotation));
-				texBatch.glColor4f();
-				texBatch.glTexCoord2f(widthRatio - uvCorrectionX, yOff + uvCorrectionY);
-
-			} else if (scaleX != 1f || srcY != 1f) {
-
-				texBatch.glVertex2f(orthoToIso(x, y).addSelf(-tileWidth / 2, 0).mul(scaleX, scaleY));
-				texBatch.glColor4f();
-				texBatch.glTexCoord2f(xOff + uvCorrectionX, yOff + uvCorrectionY);
-
-				texBatch.glVertex2f(orthoToIso(x, y).addSelf(-tileWidth / 2, 0)
-						.addSelf(flipZ ? tileWidth : 0, flipZ ? 0 : tileHeight).mul(scaleX, scaleY));
-				texBatch.glColor4f();
-				texBatch.glTexCoord2f(xOff + uvCorrectionX, heightRatio - uvCorrectionY);
-
-				texBatch.glVertex2f(
-						orthoToIso(x, y).addSelf(-tileWidth / 2, 0).addSelf(tileWidth, tileHeight).mul(scaleX, scaleY));
-				texBatch.glColor4f();
-				texBatch.glTexCoord2f(widthRatio - uvCorrectionX, heightRatio - uvCorrectionY);
-
-				texBatch.glVertex2f(orthoToIso(x, y).addSelf(-tileWidth / 2, 0)
-						.addSelf(flipZ ? 0 : tileWidth, flipZ ? tileHeight : 0).mul(scaleX, scaleY));
-				texBatch.glColor4f();
-				texBatch.glTexCoord2f(widthRatio - uvCorrectionX, yOff + uvCorrectionY);
-
-			} else {
-				texBatch.glVertex2f(
-						orthoToIso(x, y).addSelf(-tileWidth / 2, 0).mul(scaleX, scaleY).rotate(_objectRotation));
-				texBatch.glColor4f();
-				texBatch.glTexCoord2f(xOff + uvCorrectionX, yOff + uvCorrectionY);
-
-				texBatch.glVertex2f(orthoToIso(x, y).addSelf(-tileWidth / 2, 0)
-						.addSelf(flipZ ? tileWidth : 0, flipZ ? 0 : tileHeight).mul(scaleX, scaleY)
-						.rotate(_objectRotation));
-				texBatch.glColor4f();
-				texBatch.glTexCoord2f(xOff + uvCorrectionX, heightRatio - uvCorrectionY);
-
-				texBatch.glVertex2f(orthoToIso(x, y).addSelf(-tileWidth / 2, 0).addSelf(tileWidth, tileHeight)
-						.mul(scaleX, scaleY).rotate(_objectRotation));
-				texBatch.glColor4f();
-				texBatch.glTexCoord2f(widthRatio - uvCorrectionX, heightRatio - uvCorrectionY);
-
-				texBatch.glVertex2f(orthoToIso(x, y).addSelf(-tileWidth / 2, 0)
-						.addSelf(flipZ ? 0 : tileWidth, flipZ ? tileHeight : 0).mul(scaleX, scaleY)
-						.rotate(_objectRotation));
-				texBatch.glColor4f();
-				texBatch.glTexCoord2f(widthRatio - uvCorrectionX, yOff + uvCorrectionY);
-
-			}
-		} else {
-			texBatch.glVertex2f(orthoToIso(x, y).addSelf(-tileWidth / 2, 0));
-			texBatch.glColor4f();
-			texBatch.glTexCoord2f(xOff + uvCorrectionX, yOff + uvCorrectionY);
-
-			texBatch.glVertex2f(
-					orthoToIso(x, y).addSelf(-tileWidth / 2, 0).addSelf(flipZ ? tileWidth : 0, flipZ ? 0 : tileHeight));
-			texBatch.glColor4f();
-			texBatch.glTexCoord2f(xOff + uvCorrectionX, heightRatio - uvCorrectionY);
-
-			texBatch.glVertex2f(orthoToIso(x, y).addSelf(-tileWidth / 2, 0).addSelf(tileWidth, tileHeight));
-			texBatch.glColor4f();
-			texBatch.glTexCoord2f(widthRatio - uvCorrectionX, heightRatio - uvCorrectionY);
-
-			texBatch.glVertex2f(
-					orthoToIso(x, y).addSelf(-tileWidth / 2, 0).addSelf(flipZ ? 0 : tileWidth, flipZ ? tileHeight : 0));
-			texBatch.glColor4f();
-			texBatch.glTexCoord2f(widthRatio - uvCorrectionX, yOff + uvCorrectionY);
-		}
+		texBatch.draw(pos.x, pos.y, tileWidth, tileHeight, scaleX, scaleY, this._objectRotation, srcX, srcY, srcWidth,
+				srcHeight, flipX, flipY);
 	}
 
 }

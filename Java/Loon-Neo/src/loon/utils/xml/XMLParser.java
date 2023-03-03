@@ -377,6 +377,10 @@ public class XMLParser {
 	}
 
 	public static XMLDocument parse(String file, XMLListener l) {
+		String context = BaseIO.loadText(file);
+		if (StringUtils.isEmpty(context)) {
+			throw new LSysException("The file [" + file + "] is null !");
+		}
 		return new XMLParser().parseText(BaseIO.loadText(file), l);
 	}
 
@@ -385,6 +389,9 @@ public class XMLParser {
 	}
 
 	public static XMLDocument loadText(String context, XMLListener l) {
+		if (StringUtils.isEmpty(context)) {
+			throw new LSysException("The context is null !");
+		}
 		return new XMLParser().parseText(context, l);
 	}
 

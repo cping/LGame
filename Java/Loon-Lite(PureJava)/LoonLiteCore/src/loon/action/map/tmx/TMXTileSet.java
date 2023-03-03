@@ -30,7 +30,7 @@ import loon.utils.xml.XMLElement;
 import loon.utils.xml.XMLParser;
 
 public class TMXTileSet {
-	
+
 	private int firstGID;
 
 	private String name;
@@ -104,8 +104,7 @@ public class TMXTileSet {
 			image.parse(nodes, tilesLocation);
 		}
 
-		int tileCount = (image.getWidth() / tileWidth)
-				* (image.getHeight() / tileHeight);
+		int tileCount = (image.getWidth() / tileWidth) * (image.getHeight() / tileHeight);
 
 		for (int tID = 0; tID < tileCount; tID++) {
 			TMXTile tile = new TMXTile(tID + firstGID);

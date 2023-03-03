@@ -44,7 +44,7 @@ public class TMXImageLayer extends TMXMapLayer {
 
 		parallaxX = element.getFloatAttribute("parallaxx", 0f);
 		parallaxY = element.getFloatAttribute("parallaxy", 0f);
-		
+
 		opacity = element.getFloatAttribute("opacity", 1f);
 		visible = element.getBoolAttribute("visible", true);
 

@@ -66,8 +66,7 @@ public class TMXTile {
 				int tileID = frame.getIntAttribute("tileid", 0);
 				int duration = frame.getIntAttribute("duration", 0);
 
-				TMXAnimationFrame animation = new TMXAnimationFrame(tileID,
-						duration);
+				TMXAnimationFrame animation = new TMXAnimationFrame(tileID, duration);
 				frames.add(animation);
 				totalDuration += duration;
 			}

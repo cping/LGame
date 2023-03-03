@@ -32,16 +32,19 @@ public class GLUtils {
 
 	private static int currentHardwareTextureID = -1;
 
+	private static int currentBlendMode = -1;
+
 	public static int getCurrentHardwareTextureID() {
 		return currentHardwareTextureID;
 	}
 
 	public static void setBlendMode(Canvas g, int blend) {
-
+		GLUtils.currentBlendMode = blend;
+		g.setBlendMethod(blend);
 	}
 
 	public static int getBlendMode() {
-		return 0;
+		return currentBlendMode;
 	}
 
 	public static void reset() {
@@ -84,6 +87,9 @@ public class GLUtils {
 	}
 
 	public static void bindTexture(LTexture tex2d) {
+		if (tex2d == null) {
+			return;
+		}
 		if (!tex2d.isLoaded()) {
 			tex2d.loadTexture();
 		}

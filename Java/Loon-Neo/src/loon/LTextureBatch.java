@@ -96,11 +96,11 @@ public class LTextureBatch implements LRelease {
 	private float srcWidth, srcHeight;
 
 	private float renderWidth, renderHeight;
-	
+
 	private Submit mesh;
 
 	private BlendState lastBlendState = BlendState.NonPremultiplied;
-	
+
 	protected int count = 0;
 
 	private final ExpandVertices expandVertices;
@@ -118,9 +118,9 @@ public class LTextureBatch implements LRelease {
 	private ShaderProgram globalShader = null;
 
 	private final float whiteColor = LColor.white.toFloatBits();
-	
+
 	protected float color = whiteColor;
-	
+
 	private LColor tempColor = new LColor(1, 1, 1, 1);
 
 	public int maxSpritesInBatch = 0;
@@ -615,7 +615,6 @@ public class LTextureBatch implements LRelease {
 		return false;
 	}
 
-
 	public LTextureBatch draw(float x, float y) {
 		return draw(colors, x, y, texture.width(), texture.height(), 0, 0, texture.width(), texture.height());
 	}
@@ -738,6 +737,66 @@ public class LTextureBatch implements LRelease {
 		return drawQuad(x1, y1, color, x2, y2, color, x3, y3, color, x4, y4, color);
 	}
 
+	public LTextureBatch draw(float x, float y, LColor[] c) {
+		draw(c, x, y, texture.width(), texture.height());
+		return this;
+	}
+
+	public LTextureBatch draw(float x, float y, LColor c) {
+		final boolean update = checkUpdateColor(c);
+		if (update) {
+			setImageColor(c);
+		}
+		draw(colors, x, y, texture.width(), texture.height());
+		if (update) {
+			setImageColor(LColor.white);
+		}
+		return this;
+	}
+
+	public LTextureBatch draw(float x, float y, float width, float height, LColor c) {
+		final boolean update = checkUpdateColor(c);
+		if (update) {
+			setImageColor(c);
+		}
+		draw(colors, x, y, width, height);
+		if (update) {
+			setImageColor(LColor.white);
+		}
+		return this;
+	}
+
+	public LTextureBatch draw(float x, float y, float width, float height, float x1, float y1, float x2, float y2,
+			LColor[] c) {
+		draw(c, x, y, width, height, x1, y1, x2, y2);
+		return this;
+	}
+
+	public LTextureBatch draw(float x, float y, float width, float height, float x1, float y1, float x2, float y2,
+			LColor c) {
+		final boolean update = checkUpdateColor(c);
+		if (update) {
+			setImageColor(c);
+		}
+		draw(colors, x, y, width, height, x1, y1, x2, y2);
+		if (update) {
+			setImageColor(LColor.white);
+		}
+		return this;
+	}
+
+	public LTextureBatch draw(float x, float y, float w, float h, float rotation, LColor c) {
+		final boolean update = checkUpdateColor(c);
+		if (update) {
+			setImageColor(c);
+		}
+		draw(colors, x, y, w, h, rotation);
+		if (update) {
+			setImageColor(LColor.white);
+		}
+		return this;
+	}
+
 	public LTextureBatch draw(LColor[] colors, float x, float y, float rotation) {
 		return draw(colors, x, y, texture.width() / 2, texture.height() / 2, texture.width(), texture.height(), 1f, 1f,
 				rotation, 0, 0, texture.width(), texture.height(), false, false);
@@ -758,6 +817,24 @@ public class LTextureBatch implements LRelease {
 			float srcWidth, float srcHeight, float rotation) {
 		return draw(colors, x, y, width / 2, height / 2, width, height, 1f, 1f, rotation, srcX, srcY, srcWidth,
 				srcHeight, false, false);
+	}
+
+	public LTextureBatch draw(float x, float y, float width, float height, float srcX, float srcY, float srcWidth,
+			float srcHeight, float rotation, boolean flipX, boolean flipY) {
+		return draw(colors, x, y, width / 2, height / 2, width, height, 1f, 1f, rotation, srcX, srcY, srcWidth,
+				srcHeight, flipX, flipY);
+	}
+
+	public LTextureBatch draw(LColor[] colors, float x, float y, float width, float height, float srcX, float srcY,
+			float srcWidth, float srcHeight, float rotation, boolean flipX, boolean flipY) {
+		return draw(colors, x, y, width / 2, height / 2, width, height, 1f, 1f, rotation, srcX, srcY, srcWidth,
+				srcHeight, flipX, flipY);
+	}
+
+	public LTextureBatch draw(float x, float y, float width, float height, float scaleX, float scaleY, float rotation,
+			float srcX, float srcY, float srcWidth, float srcHeight, boolean flipX, boolean flipY) {
+		return draw(colors, x, y, width / 2, height / 2, width, height, scaleX, scaleY, rotation, srcX, srcY, srcWidth,
+				srcHeight, flipX, flipY);
 	}
 
 	public LTextureBatch draw(float x, float y, float originX, float originY, float width, float height, float scaleX,
@@ -1045,66 +1122,6 @@ public class LTextureBatch implements LRelease {
 		colors[corner].r = r;
 		colors[corner].g = g;
 		colors[corner].b = b;
-		return this;
-	}
-
-	public LTextureBatch draw(float x, float y, LColor[] c) {
-		draw(c, x, y, texture.width(), texture.height());
-		return this;
-	}
-
-	public LTextureBatch draw(float x, float y, LColor c) {
-		final boolean update = checkUpdateColor(c);
-		if (update) {
-			setImageColor(c);
-		}
-		draw(colors, x, y, texture.width(), texture.height());
-		if (update) {
-			setImageColor(LColor.white);
-		}
-		return this;
-	}
-
-	public LTextureBatch draw(float x, float y, float width, float height, LColor c) {
-		final boolean update = checkUpdateColor(c);
-		if (update) {
-			setImageColor(c);
-		}
-		draw(colors, x, y, width, height);
-		if (update) {
-			setImageColor(LColor.white);
-		}
-		return this;
-	}
-
-	public LTextureBatch draw(float x, float y, float width, float height, float x1, float y1, float x2, float y2,
-			LColor[] c) {
-		draw(c, x, y, width, height, x1, y1, x2, y2);
-		return this;
-	}
-
-	public LTextureBatch draw(float x, float y, float width, float height, float x1, float y1, float x2, float y2,
-			LColor c) {
-		final boolean update = checkUpdateColor(c);
-		if (update) {
-			setImageColor(c);
-		}
-		draw(colors, x, y, width, height, x1, y1, x2, y2);
-		if (update) {
-			setImageColor(LColor.white);
-		}
-		return this;
-	}
-
-	public LTextureBatch draw(float x, float y, float w, float h, float rotation, LColor c) {
-		final boolean update = checkUpdateColor(c);
-		if (update) {
-			setImageColor(c);
-		}
-		draw(colors, x, y, w, h, rotation);
-		if (update) {
-			setImageColor(LColor.white);
-		}
 		return this;
 	}
 

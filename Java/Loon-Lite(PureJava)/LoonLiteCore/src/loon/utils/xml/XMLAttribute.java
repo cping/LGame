@@ -53,9 +53,8 @@ public class XMLAttribute {
 		try {
 			return (int) Float.parseFloat(this.value);
 		} catch (Throwable ex) {
-			throw new LSysException("Attribute '" + this.name
-					+ "' has value '" + this.value
-					+ "' which is not an integer !");
+			throw new LSysException(
+					"Attribute '" + this.name + "' has value '" + this.value + "' which is not an integer !");
 		}
 	}
 
@@ -66,9 +65,8 @@ public class XMLAttribute {
 		try {
 			return Float.parseFloat(this.value);
 		} catch (Throwable ex) {
-			throw new LSysException("Attribute '" + this.name
-					+ "' has value '" + this.value
-					+ "' which is not an float !");
+			throw new LSysException(
+					"Attribute '" + this.name + "' has value '" + this.value + "' which is not an float !");
 		}
 	}
 
@@ -82,9 +80,8 @@ public class XMLAttribute {
 			}
 			return Double.parseDouble(this.value);
 		} catch (Throwable ex) {
-			throw new LSysException("Attribute '" + this.name
-					+ "' has value '" + this.value
-					+ "' which is not an double !");
+			throw new LSysException(
+					"Attribute '" + this.name + "' has value '" + this.value + "' which is not an double !");
 		}
 	}
 

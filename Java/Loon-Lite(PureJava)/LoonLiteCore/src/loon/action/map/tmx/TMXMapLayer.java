@@ -84,7 +84,7 @@ public class TMXMapLayer {
 	public void updateRenderOffset() {
 		renderOffsetDirty = true;
 	}
-	
+
 	public boolean isDirty() {
 		return renderOffsetDirty;
 	}

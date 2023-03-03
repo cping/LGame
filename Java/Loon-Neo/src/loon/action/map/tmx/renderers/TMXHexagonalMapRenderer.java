@@ -293,11 +293,6 @@ public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 			float srcWidth = srcX + tileWidth;
 			float srcHeight = srcY + tileHeight;
 
-			float xOff = srcX * texBatch.getInvTexWidth() + texture.xOff();
-			float widthRatio = srcWidth * texBatch.getInvTexWidth();
-			float yOff = srcY * texBatch.getInvTexHeight() + texture.yOff();
-			float heightRatio = srcHeight * texBatch.getInvTexHeight();
-
 			boolean flipX = mapTile.isFlippedHorizontally();
 			boolean flipY = mapTile.isFlippedVertically();
 			boolean flipZ = mapTile.isFlippedDiagonally();
@@ -307,141 +302,8 @@ public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 				flipY = !flipY;
 			}
 
-			if (flipX) {
-				float temp = xOff;
-				xOff = widthRatio;
-				widthRatio = temp;
-			}
-
-			if (flipY) {
-				float temp = yOff;
-				yOff = heightRatio;
-				heightRatio = temp;
-			}
-
-			float nx1 = offsetX * scaleX;
-			float ny1 = offsetY * scaleY;
-
-			float nx2 = (nx1 + tileWidth) * scaleX;
-			float ny2 = (ny1 + tileHeight) * scaleY;
-
-			float uvCorrectionX = (0.2f / tileSet.getImage().getWidth());
-			float uvCorrectionY = (0.2f / tileSet.getImage().getHeight());
-
-			if (_objectRotation != 0f || scaleX != 1f || scaleY != 1f) {
-
-				float originX = tileWidth / 2;
-				float originY = tileHeight / 2;
-				final float worldOriginX = nx1 + tileWidth / 2;
-				final float worldOriginY = ny1 + tileHeight / 2;
-				float fx = -originX;
-				float fy = -originY;
-				float fx2 = tileWidth - originX;
-				float fy2 = tileHeight - originY;
-
-				if (scaleX != 1 || scaleY != 1) {
-					fx *= scaleX;
-					fy *= scaleY;
-					fx2 *= scaleX;
-					fy2 *= scaleY;
-				}
-
-				final float p1x = fx;
-				final float p1y = fy;
-				final float p2x = fx;
-				final float p2y = fy2;
-				final float p3x = fx2;
-				final float p3y = fy2;
-				final float p4x = fx2;
-				final float p4y = fy;
-
-				float x1;
-				float y1;
-				float x2;
-				float y2;
-				float x3;
-				float y3;
-				float x4;
-				float y4;
-
-				if (_objectRotation != 0) {
-					final float cos = MathUtils.cosDeg(_objectRotation);
-					final float sin = MathUtils.sinDeg(_objectRotation);
-
-					x1 = cos * p1x - sin * p1y;
-					y1 = sin * p1x + cos * p1y;
-
-					x2 = cos * p2x - sin * p2y;
-					y2 = sin * p2x + cos * p2y;
-
-					x3 = cos * p3x - sin * p3y;
-					y3 = sin * p3x + cos * p3y;
-
-					x4 = x1 + (x3 - x2);
-					y4 = y3 - (y2 - y1);
-				} else {
-					x1 = p1x;
-					y1 = p1y;
-
-					x2 = p2x;
-					y2 = p2y;
-
-					x3 = p3x;
-					y3 = p3y;
-
-					x4 = p4x;
-					y4 = p4y;
-				}
-
-				x1 += worldOriginX;
-				y1 += worldOriginY;
-				x2 += worldOriginX;
-				y2 += worldOriginY;
-				x3 += worldOriginX;
-				y3 += worldOriginY;
-				x4 += worldOriginX;
-				y4 += worldOriginY;
-
-				if (flipZ) {
-					x2 += tileWidth;
-					y2 += tileHeight;
-					x4 += tileWidth;
-					y4 += tileHeight;
-				}
-
-				texBatch.glVertex2f(x1, y1);
-				texBatch.glColor4f();
-				texBatch.glTexCoord2f(xOff + uvCorrectionX, yOff + uvCorrectionY);
-
-				texBatch.glVertex2f(x2, y2);
-				texBatch.glColor4f();
-				texBatch.glTexCoord2f(xOff + uvCorrectionX, heightRatio - uvCorrectionY);
-
-				texBatch.glVertex2f(x3, y3);
-				texBatch.glColor4f();
-				texBatch.glTexCoord2f(widthRatio - uvCorrectionX, heightRatio - uvCorrectionY);
-
-				texBatch.glVertex2f(x4, y4);
-				texBatch.glColor4f();
-				texBatch.glTexCoord2f(widthRatio - uvCorrectionX, yOff + uvCorrectionY);
-
-			} else {
-				texBatch.glVertex2f(nx1, ny1);
-				texBatch.glColor4f();
-				texBatch.glTexCoord2f(xOff + uvCorrectionX, yOff + uvCorrectionY);
-
-				texBatch.glVertex2f(nx1, ny2);
-				texBatch.glColor4f();
-				texBatch.glTexCoord2f(xOff + uvCorrectionX, heightRatio - uvCorrectionY);
-
-				texBatch.glVertex2f(nx2, ny2);
-				texBatch.glColor4f();
-				texBatch.glTexCoord2f(widthRatio - uvCorrectionX, heightRatio - uvCorrectionY);
-
-				texBatch.glVertex2f(nx2, ny1);
-				texBatch.glColor4f();
-				texBatch.glTexCoord2f(widthRatio - uvCorrectionX, yOff + uvCorrectionY);
-			}
+			texBatch.draw(x + offsetX, y + offsetY, tileWidth, tileHeight, scaleX, scaleY, this._objectRotation, srcX,
+					srcY, srcWidth, srcHeight, flipX, flipY);
 
 		}
 	}

@@ -107,6 +107,8 @@ public class LTextureBatch implements LRelease {
 
 	private float tx, ty;
 
+	private int _blendMode;
+
 	private MeshData _meshdata;
 
 	private String _source;
@@ -162,6 +164,15 @@ public class LTextureBatch implements LRelease {
 
 	public String src() {
 		return _source;
+	}
+
+	public int getBlendMode() {
+		return this._blendMode;
+	}
+
+	public LTextureBatch setBlendMode(int blend) {
+		this._blendMode = blend;
+		return this;
 	}
 
 	public LTextureBatch setLocation(float tx, float ty) {

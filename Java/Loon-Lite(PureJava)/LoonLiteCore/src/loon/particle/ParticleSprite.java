@@ -29,8 +29,7 @@ import loon.utils.MathUtils;
 
 public class ParticleSprite extends Entity {
 
-	private float currentLife, lifespan, gravityX, gravityY, velocityX,
-			velocityY, rotationAmount, opacity;
+	private float currentLife, lifespan, gravityX, gravityY, velocityX, velocityY, rotationAmount, opacity;
 	private boolean fadeOut, remove;
 	private ColorTo colorEffects;
 
@@ -42,22 +41,18 @@ public class ParticleSprite extends Entity {
 		this(texture, texture.width(), texture.height(), lifespan);
 	}
 
-	public ParticleSprite(LTexture texture, float width, float height,
-			float lifespan) {
+	public ParticleSprite(LTexture texture, float width, float height, float lifespan) {
 		super(texture);
 		setSize(width, height);
 		setup(lifespan, 0, 0, 0, 0, 0, 1, true);
 	}
 
-	public ParticleSprite(LTexture texture, float x, float y, float width,
-			float height, float lifespan, float gravityX, float gravityY,
-			float velocityX, float velocityY, float rotationAmount,
-			float opacity, boolean fadeOut) {
+	public ParticleSprite(LTexture texture, float x, float y, float width, float height, float lifespan, float gravityX,
+			float gravityY, float velocityX, float velocityY, float rotationAmount, float opacity, boolean fadeOut) {
 		super(texture);
 		setSize(width, height);
 		setLocation(x, y);
-		setup(lifespan, gravityX, gravityY, velocityX, velocityY,
-				rotationAmount, opacity, fadeOut);
+		setup(lifespan, gravityX, gravityY, velocityX, velocityY, rotationAmount, opacity, fadeOut);
 	}
 
 	@Override
@@ -75,16 +70,13 @@ public class ParticleSprite extends Entity {
 		this.setRotation(rotationAmount * currentLife / lifespan);
 		if (fadeOut && colorEffects != null) {
 			colorEffects.update(elapsedTime);
-			this.setColor(colorEffects.getCurrentRed(),
-					colorEffects.getCurrentGreen(),
-					colorEffects.getCurrentBlue(),
+			this.setColor(colorEffects.getCurrentRed(), colorEffects.getCurrentGreen(), colorEffects.getCurrentBlue(),
 					colorEffects.getCurrentAlpha());
 		}
 	}
 
-	public ParticleSprite setup(float lifespan, float gravityX, float gravityY,
-			float velocityX, float velocityY, float rotationAmount,
-			float opacity, boolean fadeOut) {
+	public ParticleSprite setup(float lifespan, float gravityX, float gravityY, float velocityX, float velocityY,
+			float rotationAmount, float opacity, boolean fadeOut) {
 
 		this.remove = false;
 		this.currentLife = 0;
@@ -97,8 +89,7 @@ public class ParticleSprite extends Entity {
 		this.opacity = opacity;
 		this.fadeOut = fadeOut;
 		if (fadeOut) {
-			colorEffects = new ColorTo(new LColor(1f, 1f, 1f, 1f), new LColor(
-					1f, 1f, 1f, 0.0f), lifespan);
+			colorEffects = new ColorTo(new LColor(1f, 1f, 1f, 1f), new LColor(1f, 1f, 1f, 0.0f), lifespan);
 		}
 		return this;
 	}

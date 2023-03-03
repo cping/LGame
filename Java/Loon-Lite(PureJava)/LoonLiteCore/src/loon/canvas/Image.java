@@ -380,8 +380,8 @@ public abstract class Image extends TextureSource implements Canvas.Drawable, LR
 	public final void close() {
 		if (!this.isTexture) {
 			this.closeImpl();
-			this.closed = true;
 		}
+		this.closed = true;
 	}
 
 	public final void destroy() {

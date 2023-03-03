@@ -50,7 +50,7 @@ public class TMXTileLayer extends TMXMapLayer {
 
 	private Encoding encoding;
 	private Compression compression;
-	
+
 	public TMXTileLayer(TMXMap map) {
 		super(map, LSystem.EMPTY, 0, 0, map.getWidth(), map.getHeight(), 1.0f, true, TmxLayerType.TILE);
 
@@ -71,10 +71,10 @@ public class TMXTileLayer extends TMXMapLayer {
 
 		parallaxX = element.getFloatAttribute("parallaxx", 0f);
 		parallaxY = element.getFloatAttribute("parallaxy", 0f);
-		
+
 		opacity = element.getFloatAttribute("opacity", 1f);
 		visible = element.getBoolAttribute("visible", true);
-		
+
 		XMLElement nodes = element.getChildrenByName("properties");
 		if (nodes != null)
 			properties.parse(nodes);
@@ -247,7 +247,7 @@ public class TMXTileLayer extends TMXMapLayer {
 	public TMXMapTile getTile(int x, int y) {
 		return tileMap[y * width + x];
 	}
-	
+
 	public Encoding getEncoding() {
 		return encoding;
 	}

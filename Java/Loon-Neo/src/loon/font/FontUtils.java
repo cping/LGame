@@ -165,7 +165,7 @@ public class FontUtils {
 	/**
 	 * 返回指定字符串，匹配指定字体后，在指定宽度内的每行应显示字符串.
 	 * 
-	 * PS:此项不处理'\n'外的特殊操作符
+	 * PS:此项不处理LSystem.LF外的特殊操作符
 	 * 
 	 * @param text
 	 * @param font
@@ -180,10 +180,10 @@ public class FontUtils {
 		}
 
 		if (width <= 1) {
-			if (text.indexOf('\n') == -1) {
+			if (text.indexOf(LSystem.LF) == -1) {
 				width = (int) measureText(font, text);
 			} else {
-				width = (int) measureText(font, StringUtils.split(text, '\n')[0]);
+				width = (int) measureText(font, StringUtils.split(text, LSystem.LF)[0]);
 			}
 		}
 
@@ -202,7 +202,7 @@ public class FontUtils {
 
 			char c = str.charAt(i);
 
-			if ((c == '\n') || (font.stringWidth(line + c) > width)) {
+			if ((c == LSystem.LF) || (font.stringWidth(line + c) > width)) {
 				line = str.substring(0, i);
 
 				for (int j = 0; j < FLAGS; j++) {
@@ -214,7 +214,7 @@ public class FontUtils {
 						}
 					}
 				}
-				i += (c == '\n' ? 1 : 0);
+				i += (c == LSystem.LF ? 1 : 0);
 				list.add(line);
 				line = LSystem.EMPTY;
 				str = str.substring(i);
@@ -229,7 +229,7 @@ public class FontUtils {
 	}
 
 	public static <T extends TArray<CharSequence>> T splitLines(final CharSequence chars, final T result) {
-		return StringUtils.splitArray(chars, '\n', result);
+		return StringUtils.splitArray(chars, LSystem.LF, result);
 	}
 
 	public static <T extends TArray<CharSequence>> T splitLines(final IFont font, final CharSequence chars,

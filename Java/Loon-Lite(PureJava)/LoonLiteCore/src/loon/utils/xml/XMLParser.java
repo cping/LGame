@@ -20,12 +20,128 @@
  */
 package loon.utils.xml;
 
+import java.util.Iterator;
+
 import loon.BaseIO;
+import loon.Json;
 import loon.LSysException;
 import loon.LSystem;
+import loon.utils.StrBuilder;
+import loon.utils.StringUtils;
 import loon.utils.TArray;
 
+/**
+ * 自带的XML解析用类
+ */
 public class XMLParser {
+
+	public final static String jsonToXml(String data) {
+		if (StringUtils.isEmpty(data)) {
+			return LSystem.EMPTY;
+		}
+		Object jsonData = BaseIO.loadJsonObjectContext(data);
+		return jsonToXml(null, jsonData);
+	}
+
+	public final static String jsonToXml(String name, Object data) {
+		String nameValue = (name == null) ? "" : name;
+		if (data instanceof Json.Array) {
+			StrBuilder builder = new StrBuilder("<" + nameValue + ">");
+			builder.append(LSystem.LS);
+			Json.Array arrays = (Json.Array) data;
+			for (int i = 0; i < arrays.length(); i++) {
+				builder.append(jsonToXml(null, arrays.getObject(i)));
+			}
+			builder.append("</" + nameValue + ">");
+			builder.append(LSystem.LS);
+			return builder.toString();
+		} else if (data instanceof Json.Object) {
+			StrBuilder builder = new StrBuilder(StringUtils.isEmpty(nameValue) ? "<objects>\n" : "<" + nameValue + ">");
+			Json.Object objects = ((Json.Object) data);
+			Json.TypedArray<String> keys = objects.keys();
+			if (keys.length() > 0) {
+				for (Iterator<String> it = keys.iterator(); it.hasNext();) {
+					String key = it.next();
+					if (objects.isArray(key)) {
+						builder.append(jsonToXml(key, (Json.Array) objects.getArray(key)));
+					} else if (objects.isString(key)) {
+						builder.append(jsonToXml(key, objects.getString(key)));
+					} else if (objects.isBoolean(key)) {
+						builder.append(jsonToXml(key, objects.getBoolean(key)));
+					} else if (objects.isNumber(key)) {
+						builder.append(jsonToXml(key, objects.getNumber(key)));
+					} else {
+						builder.append(jsonToXml(key, objects.getObject(key)));
+					}
+				}
+				builder.append(StringUtils.isEmpty(nameValue) ? "</objects>" : "</" + nameValue + ">");
+
+			}
+			return builder.toString();
+		} else if (data instanceof Object) {
+			return "<" + nameValue + ">" + data + "</" + nameValue + ">" + LSystem.LS;
+		} else if (data == null) {
+			return "<" + nameValue.trim() + "/>" + LSystem.LS;
+		} else {
+			throw new LSysException("Data type " + data.getClass() + " not yet supported");
+		}
+	}
+
+	public final static String jsonToTypeXml(String data) {
+		if (StringUtils.isEmpty(data)) {
+			return "<null/>";
+		}
+		Object jsonData = BaseIO.loadJsonObjectContext(data);
+		return jsonToTypeXml(null, jsonData);
+	}
+
+	public final static String jsonToTypeXml(String name, Object data) {
+		String nameValue = ((name == null) ? "" : " name=\"" + name + "\"");
+		if (data instanceof Number) {
+			return "<number" + nameValue + ">" + data + "</number>";
+		} else if (data instanceof String) {
+			return "<string" + nameValue + ">" + data + "</string>";
+		} else if (data instanceof Boolean) {
+			return "<boolean" + nameValue + ">" + data + "</boolean>";
+		} else if (data instanceof Json.Array) {
+			StrBuilder builder = new StrBuilder("<array" + nameValue + ">");
+			builder.append(LSystem.LS);
+			Json.Array arrays = (Json.Array) data;
+			for (int i = 0; i < arrays.length(); i++) {
+				builder.append(jsonToTypeXml(null, arrays.getObject(i)));
+			}
+			builder.append(LSystem.LS);
+			builder.append("</array>");
+			return builder.toString();
+		} else if (data instanceof Json.Object) {
+			StrBuilder builder = new StrBuilder("<objects" + nameValue + ">");
+			builder.append(LSystem.LS);
+			Json.Object objects = ((Json.Object) data);
+			Json.TypedArray<String> keys = objects.keys();
+			for (Iterator<String> it = keys.iterator(); it.hasNext();) {
+				String key = it.next();
+				if (objects.isArray(key)) {
+					builder.append(jsonToTypeXml(key, (Json.Array) objects.getArray(key)));
+				} else if (objects.isString(key)) {
+					builder.append(jsonToTypeXml(key, objects.getString(key)));
+				} else if (objects.isBoolean(key)) {
+					builder.append(jsonToTypeXml(key, objects.getBoolean(key)));
+				} else if (objects.isNumber(key)) {
+					builder.append(jsonToTypeXml(key, objects.getNumber(key)));
+				} else {
+					builder.append(jsonToTypeXml(key, objects.getObject(key)));
+				}
+			}
+			builder.append("</objects>");
+			return builder.toString();
+		} else if (data instanceof Object) {
+			return "<object" + nameValue + ">" + data + "</object>";
+		} else if (data == null) {
+			return "<" + nameValue.trim() + "/>";
+		} else {
+			throw new LSysException("Data type " + data.getClass() + " not yet supported");
+		}
+	}
 
 	public static final int OPEN_TAG = 0;
 
@@ -39,7 +155,7 @@ public class XMLParser {
 
 	private XMLElement rootElement;
 
-	private StringBuffer header = new StringBuffer(1024);
+	private StrBuilder header = new StrBuilder(1024);
 
 	private void pushElement(XMLElement root, int idx, XMLListener l) {
 		if (this.topElement == null) {
@@ -120,13 +236,11 @@ public class XMLParser {
 				int start = 0;
 				int end = 0;
 
-				StringBuffer sbr1 = new StringBuffer(128);
-				StringBuffer sbr2 = new StringBuffer(32);
+				StrBuilder sbr1 = new StrBuilder(128);
+				StrBuilder sbr2 = new StrBuilder(32);
 				for (int m = 0; m < str2.length(); m++) {
-
 					switch (str2.charAt(m)) {
 					case '"':
-
 						start = start != 0 ? 0 : 1;
 						break;
 					case ' ':
@@ -143,12 +257,11 @@ public class XMLParser {
 								}
 							}
 							end = 0;
-							sbr1.delete(0, sbr1.length());
-							sbr2.delete(0, sbr2.length());
+							sbr1.setLength(0);
+							sbr2.setLength(0);
 						}
 						break;
 					case '=':
-
 						if (start == 0) {
 							end = 1;
 						}
@@ -264,6 +377,10 @@ public class XMLParser {
 	}
 
 	public static XMLDocument parse(String file, XMLListener l) {
+		String context = BaseIO.loadText(file);
+		if (StringUtils.isEmpty(context)) {
+			throw new LSysException("The file [" + file + "] is null !");
+		}
 		return new XMLParser().parseText(BaseIO.loadText(file), l);
 	}
 
@@ -272,6 +389,9 @@ public class XMLParser {
 	}
 
 	public static XMLDocument loadText(String context, XMLListener l) {
+		if (StringUtils.isEmpty(context)) {
+			throw new LSysException("The context is null !");
+		}
 		return new XMLParser().parseText(context, l);
 	}
 

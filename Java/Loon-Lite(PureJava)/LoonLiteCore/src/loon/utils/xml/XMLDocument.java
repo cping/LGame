@@ -27,7 +27,7 @@ public class XMLDocument implements LRelease {
 	private String header;
 
 	private XMLElement root;
-	
+
 	private boolean closed;
 
 	public XMLDocument(XMLElement e) {

@@ -74,9 +74,9 @@ public class TMXMap {
 
 	private double version;
 	private double tiledversion;
-	
+
 	private boolean renderOffsetDirty;
-	
+
 	private Orientation orientation;
 	private RenderOrder renderOrder;
 	private StaggerAxis staggerAxis;
@@ -95,7 +95,7 @@ public class TMXMap {
 	private float offsetY;
 	private float renderOffsetX;
 	private float renderOffsetY;
-	
+
 	private TArray<TMXMapLayer> layers;
 	private TArray<TMXTileLayer> tileLayers;
 	private TArray<TMXImageLayer> imageLayers;
@@ -130,8 +130,7 @@ public class TMXMap {
 		XMLElement docElement = doc.getRoot();
 
 		if (!docElement.getName().equals("map")) {
-			throw new LSysException(
-					"Invalid TMX map file. The first child must be a <map> element.");
+			throw new LSysException("Invalid TMX map file. The first child must be a <map> element.");
 		}
 
 		parse(docElement, tilesLocation);
@@ -203,16 +202,16 @@ public class TMXMap {
 		return offsetY;
 	}
 
-	public void setOffsetX (float offsetX) {
+	public void setOffsetX(float offsetX) {
 		this.offsetX = offsetX;
 		updateRenderOffset();
 	}
-	
-	public void setOffsetY (float offsetY) {
+
+	public void setOffsetY(float offsetY) {
 		this.offsetY = offsetY;
 		updateRenderOffset();
 	}
-	
+
 	public int getWidth() {
 		return width;
 	}
@@ -236,7 +235,7 @@ public class TMXMap {
 	public int getNextlayerid() {
 		return nextlayerid;
 	}
-	
+
 	public int getInfinite() {
 		return infinite;
 	}
@@ -265,26 +264,26 @@ public class TMXMap {
 		return tileLayers.size;
 	}
 
-	public float getRenderOffsetX () {
+	public float getRenderOffsetX() {
 		if (renderOffsetDirty) {
 			calcRenderOffsets();
 		}
 		return renderOffsetX;
 	}
 
-	public float getRenderOffsetY () {
+	public float getRenderOffsetY() {
 		if (renderOffsetDirty) {
 			calcRenderOffsets();
 		}
 		return renderOffsetY;
 	}
-	
-	protected void calcRenderOffsets () {
+
+	protected void calcRenderOffsets() {
 		renderOffsetX = offsetX;
 		renderOffsetY = offsetY;
 		renderOffsetDirty = false;
 	}
-	
+
 	public TArray<TMXTileLayer> getTileLayers() {
 		return tileLayers;
 	}
@@ -313,10 +312,10 @@ public class TMXMap {
 		return imageLayers;
 	}
 
-	public void updateRenderOffset () {
+	public void updateRenderOffset() {
 		renderOffsetDirty = true;
 	}
-	
+
 	public int findTileSetIndex(int gid) {
 		gid &= ~(FLIPPED_HORIZONTALLY_FLAG | FLIPPED_VERTICALLY_FLAG | FLIPPED_DIAGONALLY_FLAG);
 
@@ -363,32 +362,28 @@ public class TMXMap {
 		offsetY = element.getFloatAttribute("y", 0);
 		offsetX = element.getFloatAttribute("offsetx", offsetX);
 		offsetY = element.getFloatAttribute("offsety", offsetY);
-		
+
 		width = element.getIntAttribute("width", 0);
 		height = element.getIntAttribute("height", 0);
 		tileWidth = element.getIntAttribute("tilewidth", 0);
 		tileHeight = element.getIntAttribute("tileheight", 0);
 		infinite = element.getIntAttribute("infinite", 0);
-		
+
 		nextlayerid = element.getIntAttribute("nextlayerid", 0);
 		nextObjectID = element.getIntAttribute("nextobjectid", 0);
-		
+
 		if (element.hasAttribute("background")) {
-			String hexColor = element.getAttribute("background",
-					LColor.white.toString()).trim();
+			String hexColor = element.getAttribute("background", LColor.white.toString()).trim();
 			if (hexColor.startsWith("#")) {
 				hexColor = hexColor.substring(1);
 			}
 			backgroundColor = new LColor(Integer.parseInt(hexColor, 16));
 		}
 
-		orientation = Orientation
-				.valueOf(element.getAttribute("orientation", "ORTHOGONAL")
-						.trim().toUpperCase());
+		orientation = Orientation.valueOf(element.getAttribute("orientation", "ORTHOGONAL").trim().toUpperCase());
 
 		if (element.hasAttribute("renderorder")) {
-			switch (element.getAttribute("renderorder", LSystem.EMPTY).trim()
-					.toLowerCase()) {
+			switch (element.getAttribute("renderorder", LSystem.EMPTY).trim().toLowerCase()) {
 			case "right-down":
 				renderOrder = RenderOrder.RIGHT_DOWN;
 				break;
@@ -405,8 +400,7 @@ public class TMXMap {
 		}
 
 		if (element.hasAttribute("staggeraxis")) {
-			switch (element.getAttribute("staggeraxis", LSystem.EMPTY).trim()
-					.toLowerCase()) {
+			switch (element.getAttribute("staggeraxis", LSystem.EMPTY).trim().toLowerCase()) {
 			case "x":
 				staggerAxis = StaggerAxis.AXIS_X;
 				break;
@@ -417,8 +411,7 @@ public class TMXMap {
 		}
 
 		if (element.hasAttribute("staggerindex")) {
-			switch (element.getAttribute("staggerindex", LSystem.EMPTY).trim()
-					.toLowerCase()) {
+			switch (element.getAttribute("staggerindex", LSystem.EMPTY).trim().toLowerCase()) {
 			case "even":
 				staggerIndex = StaggerIndex.EVEN;
 				break;

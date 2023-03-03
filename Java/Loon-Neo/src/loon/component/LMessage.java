@@ -27,8 +27,11 @@ import loon.canvas.LColor;
 import loon.component.skin.MessageSkin;
 import loon.component.skin.SkinManager;
 import loon.font.FontSet;
+import loon.font.FontUtils;
 import loon.font.IFont;
+import loon.geom.PointF;
 import loon.opengl.GLEx;
+import loon.utils.MathUtils;
 
 /**
  * 信息显示用UI,支持一些简单的字符命令用于构建显示文字
@@ -221,17 +224,31 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 		return print.isComplete();
 	}
 
-	public void setPauseIconAnimationLocation(float dx, float dy) {
+	public LMessage setPauseIconAnimationLocation(float dx, float dy) {
 		this.dx = dx;
 		this.dy = dy;
+		return this;
 	}
 
-	public void setMessage(String context, boolean isComplete) {
+	public LMessage setMessage(String context) {
+		return this.setMessage(context, false);
+	}
+
+	public LMessage setMessage(String context, boolean isComplete) {
+		return setMessage(context, isComplete, false);
+	}
+	
+	public LMessage setMessage(String context, boolean isComplete, boolean autoLength) {
+		PointF size = FontUtils.getTextWidthAndHeight(messageFont, context);
+		if (autoLength) {
+			if (getWidth() == 0) {
+				print.setMessageLength((int) ((MathUtils.min(getWidth(), size.x) / messageFont.getSize()) + 1));
+			} else {
+				print.setMessageLength((int) (size.x / messageFont.getSize()) + 1);
+			}
+		}
 		print.setMessage(context, messageFont, isComplete);
-	}
-
-	public void setMessage(String context) {
-		print.setMessage(context, messageFont);
+		return this;
 	}
 
 	public String getMessage() {

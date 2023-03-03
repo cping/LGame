@@ -118,6 +118,8 @@ public abstract class Canvas implements LRelease {
 
 	public abstract Canvas drawRect(float x, float y, float width, float height, LColor color);
 
+	public abstract Canvas setBlendMethod(final int blend) ;
+	
 	public Canvas rect(float x, float y, float w, float h, Paint paint) {
 		if (paint == null) {
 			fillRect(x, y, w, h);

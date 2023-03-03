@@ -24,6 +24,7 @@ import loon.LSysException;
 import loon.LSystem;
 import loon.canvas.LColor;
 import loon.geom.Vector2f;
+import loon.opengl.BlendMethod;
 import loon.particle.ConfigurableEmitter.LinearInterpolator;
 import loon.particle.ConfigurableEmitter.RandomValue;
 import loon.particle.ConfigurableEmitter.SimpleValue;
@@ -75,9 +76,9 @@ public class ParticleConfig {
 			}
 			boolean additive = docElement.getBoolAttribute("additive", false);
 			if (additive) {
-				//system.setBlendingState(BlendMethod.MODE_ADD);
+				system.setBlendingState(BlendMethod.MODE_ADD);
 			} else {
-			//	system.setBlendingState(BlendMethod.MODE_ALPHA_ONE);
+				system.setBlendingState(BlendMethod.MODE_ALPHA_ONE);
 			}
 			boolean points = docElement.getBoolAttribute("points", false);
 			system.setUsePoints(points);

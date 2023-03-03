@@ -135,8 +135,8 @@ public class Print implements FontSet<Print>, LRelease {
 	// 默认0，左1,右2
 	private Mode dirmode = Mode.NONE;
 
-	public Print(Vector2f _printLocation, IFont font, int width, int height) {
-		this(LSystem.EMPTY, font, _printLocation, width, height);
+	public Print(Vector2f printLocation, IFont font, int width, int height) {
+		this(LSystem.EMPTY, font, printLocation, width, height);
 	}
 
 	public Print(String context, IFont size, Vector2f pos, int width, int height) {
@@ -228,12 +228,12 @@ public class Print implements FontSet<Print>, LRelease {
 		}
 	}
 
-	public void setMessage(String context, IFont _curfontSize, boolean isComplete) {
-		setMessage(context, _curfontSize, isComplete, false);
+	public void setMessage(String context, IFont curfontSize, boolean isComplete) {
+		setMessage(context, curfontSize, isComplete, false);
 	}
 
-	public void setMessage(String context, IFont _curfontSize, boolean isComplete, boolean drawFont) {
-		LSystem.load(new PrintUpdate(this, context, _curfontSize, isComplete, this._nativeFont = drawFont));
+	public void setMessage(String context, IFont curfontSize, boolean isComplete, boolean drawFont) {
+		LSystem.load(new PrintUpdate(this, context, curfontSize, isComplete, this._nativeFont = drawFont));
 	}
 
 	public String getMessage() {
@@ -280,12 +280,12 @@ public class Print implements FontSet<Print>, LRelease {
 		}
 	}
 
-	protected int maxFontHeignt(IFont _curfontSize, char[] _showMessages, int _textsize) {
-		int _height = 0;
-		for (int i = 0; i < _textsize; i++) {
-			_height = MathUtils.max(_height, _curfontSize.stringHeight(String.valueOf(_showMessages[i])));
+	protected int maxFontHeignt(final IFont curfontSize,final char[] showMessages,final int textsize) {
+		int height = 0;
+		for (int i = 0; i < textsize; i++) {
+			height = MathUtils.max(height, curfontSize.stringHeight(String.valueOf(showMessages[i])));
 		}
-		return MathUtils.max(_curfontSize.getHeight(), _height);
+		return MathUtils.max(curfontSize.getHeight(), height);
 	}
 
 	public void drawDefFont(GLEx g, LColor old) {

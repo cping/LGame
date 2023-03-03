@@ -65,10 +65,10 @@ public class TMXStaggeredMapRenderer extends TMXMapRenderer {
 		LTexture current = textureMap.get(imageLayer.getImage().getSource());
 		float tileWidth = map.getTileWidth();
 		float tileHeight = map.getTileHeight();
-		float posX = (imageLayer.getRenderOffsetY() * tileWidth / 2)
-				+ (imageLayer.getRenderOffsetX() * tileWidth / 2) + getRenderX();
-		float posY = (imageLayer.getRenderOffsetX() * tileHeight / 2)
-				- (imageLayer.getRenderOffsetY() * tileHeight / 2) + getRenderY();
+		float posX = (imageLayer.getRenderOffsetY() * tileWidth / 2) + (imageLayer.getRenderOffsetX() * tileWidth / 2)
+				+ getRenderX();
+		float posY = (imageLayer.getRenderOffsetX() * tileHeight / 2) - (imageLayer.getRenderOffsetY() * tileHeight / 2)
+				+ getRenderY();
 		g.draw(current, posX, posY, imageLayer.getWidth() * map.getTileWidth(),
 				imageLayer.getHeight() * map.getTileHeight(), baseColor);
 		baseColor.a = tmpAlpha;
@@ -92,8 +92,7 @@ public class TMXStaggeredMapRenderer extends TMXMapRenderer {
 			int tx = (int) (getRenderX() / map.getTileWidth());
 			int ty = (int) (getRenderY() / map.getTileHeight());
 			int windowWidth = screenWidth / map.getTileWidth();
-			int windowHeight = screenHeight
-					/ map.getTileHeight();
+			int windowHeight = screenHeight / map.getTileHeight();
 			float doubleWidth = tileLayer.getWidth() * 2f;
 			float doubleHeight = tileLayer.getHeight() * 2f;
 
@@ -108,9 +107,8 @@ public class TMXStaggeredMapRenderer extends TMXMapRenderer {
 
 			final boolean saveCache = textureMap.size == 1 && allowCache;
 
-			LTexture current = textureMap.get(map.getTileset(0).getImage()
-					.getSource());
-			LTextureBatch texBatch = null;//current.getTextureBatch();
+			LTexture current = textureMap.get(map.getTileset(0).getImage().getSource());
+			LTextureBatch texBatch = current.getTextureBatch();
 
 			float tmpAlpha = baseColor.a;
 			boolean isCached = false;
@@ -142,8 +140,6 @@ public class TMXStaggeredMapRenderer extends TMXMapRenderer {
 				} else {
 					texBatch.begin();
 				}
-
-				texBatch.setColor(baseColor);
 				for (int x = 0; x < tileLayer.getWidth(); x++) {
 					for (int y = 0; y < tileLayer.getHeight(); y++) {
 
@@ -163,31 +159,25 @@ public class TMXStaggeredMapRenderer extends TMXMapRenderer {
 							continue;
 						}
 
-						TMXTileSet tileSet = map.getTileset(mapTile
-								.getTileSetID());
-						TMXTile tile = tileSet.getTile(mapTile.getGID()
-								- tileSet.getFirstGID());
+						TMXTileSet tileSet = map.getTileset(mapTile.getTileSetID());
+						TMXTile tile = tileSet.getTile(mapTile.getGID() - tileSet.getFirstGID());
 
-						LTexture texture = textureMap.get(tileSet.getImage()
-								.getSource());
+						LTexture texture = textureMap.get(tileSet.getImage().getSource());
 
 						if (texture.getID() != current.getID()) {
 							texBatch.end();
 							current = texture;
-							//texBatch = current.getTextureBatch();
+							texBatch = current.getTextureBatch();
 							texBatch.begin();
-	
 							texBatch.checkTexture(current);
 						}
 
 						int tileID = mapTile.getGID() - tileSet.getFirstGID();
 						if (tile != null && tile.isAnimated()) {
-							tileID = tileAnimators.get(tile).getCurrentFrame()
-									.getTileID();
+							tileID = tileAnimators.get(tile).getCurrentFrame().getTileID();
 						}
 
-						int numColsPerRow = tileSet.getImage().getWidth()
-								/ tileSet.getTileWidth();
+						int numColsPerRow = tileSet.getImage().getWidth() / tileSet.getTileWidth();
 
 						int tileSetCol = tileID % numColsPerRow;
 						int tileSetRow = tileID / numColsPerRow;
@@ -195,15 +185,12 @@ public class TMXStaggeredMapRenderer extends TMXMapRenderer {
 						float tileWidth = tileSet.getTileWidth();
 						float tileHeight = tileSet.getTileHeight();
 
-						float srcX = (tileSet.getMargin() + (tileSet
-								.getTileWidth() + tileSet.getSpacing())
-								* tileSetCol);
-						float srcY = (tileSet.getMargin() + (tileSet
-								.getTileHeight() + tileSet.getSpacing())
-								* tileSetRow);
+						float srcX = (tileSet.getMargin()
+								+ (tileSet.getTileWidth() + tileSet.getSpacing()) * tileSetCol);
+						float srcY = (tileSet.getMargin()
+								+ (tileSet.getTileHeight() + tileSet.getSpacing()) * tileSetRow);
 						float srcWidth = srcX + tileWidth;
 						float srcHeight = srcY + tileHeight;
-
 
 						boolean flipX = mapTile.isFlippedHorizontally();
 						boolean flipY = mapTile.isFlippedVertically();
@@ -213,24 +200,9 @@ public class TMXStaggeredMapRenderer extends TMXMapRenderer {
 							flipX = !flipX;
 							flipY = !flipY;
 						}
-
-						if (flipX) {
-							
-						}
-
-						if (flipY) {
-						
-						}
-
-						float uvCorrectionX = (0.5f / tileSet.getImage()
-								.getWidth());
-						float uvCorrectionY = (0.5f / tileSet.getImage()
-								.getHeight());
-
-						if (_objectRotation != 0f || scaleX != 1f || scaleY != 1f) {
-
-							if (_objectRotation != 0f) {} else if (scaleX != 1f || srcY != 1f) {} else {}
-						} else {}
+						Vector2f pos = orthoToIso(x, y);
+						texBatch.draw(pos.x, pos.y, -1f, -1f, 0f, 0f, tileWidth, tileHeight, scaleX, scaleY,
+								this._objectRotation, srcX, srcY, srcWidth, srcHeight, flipX, flipY, baseColor);
 
 					}
 				}

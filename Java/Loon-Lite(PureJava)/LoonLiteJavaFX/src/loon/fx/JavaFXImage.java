@@ -302,6 +302,7 @@ public class JavaFXImage extends ImageImpl {
 	@Override
 	protected void closeImpl() {
 		if (buffer != null) {
+			buffer.cancel();
 			buffer = null;
 		}
 	}
