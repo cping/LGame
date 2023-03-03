@@ -132,7 +132,6 @@ public class JavaFXInputMake extends InputMake {
 			}
 		});
 
-	
 		canvas.setOnMouseDragged(new EventHandler<MouseEvent>() {
 
 			@Override
@@ -146,7 +145,7 @@ public class JavaFXInputMake extends InputMake {
 				}
 			}
 		});
-	
+
 		canvas.setOnMousePressed(new EventHandler<MouseEvent>() {
 
 			@Override
@@ -182,6 +181,7 @@ public class JavaFXInputMake extends InputMake {
 
 			}
 		});
+
 		canvas.setOnMouseMoved(new EventHandler<MouseEvent>() {
 
 			@Override
@@ -189,10 +189,8 @@ public class JavaFXInputMake extends InputMake {
 				if (isRequestingMouseLock) {
 					return;
 				}
-				int btn = getMouseButton(e);
-				if (btn != -1) {
-					dispatch(new MouseMake.ButtonEvent(0, game.time(), (float) e.getX(), (float) e.getY(), btn,
-							true), e);
+				if (!inDragSequence) {
+					emitMouseButton(game.time(), (float) e.getX(), (float) e.getY(), -1, false, 0);
 				}
 			}
 
@@ -232,7 +230,7 @@ public class JavaFXInputMake extends InputMake {
 			}
 
 		});
-	
+
 	}
 
 	private TouchMake.Event[] toTouchEvents(TouchMake.Event.Kind kind, TouchEvent nevent) {

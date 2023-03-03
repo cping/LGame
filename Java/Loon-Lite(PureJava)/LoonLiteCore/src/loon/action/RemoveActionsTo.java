@@ -48,6 +48,10 @@ public class RemoveActionsTo extends ActionEvent {
 		this._isCompleted = true;
 	}
 
+	public ActionBind getRemoveBind() {
+		return _removeBind;
+	}
+
 	@Override
 	public void onLoad() {
 		if (_removeBind == null) {
@@ -76,7 +80,7 @@ public class RemoveActionsTo extends ActionEvent {
 	public String getName() {
 		return "remove";
 	}
-	
+
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue(getName());

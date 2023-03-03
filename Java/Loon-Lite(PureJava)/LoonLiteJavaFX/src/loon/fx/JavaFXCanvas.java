@@ -85,6 +85,9 @@ public class JavaFXCanvas extends Canvas {
 	}
 
 	private Color getLColorToFX(LColor c) {
+		if (c == null) {
+			return Color.WHITE;
+		}
 		return javafx.scene.paint.Color.rgb(c.getRed(), c.getGreen(), c.getBlue(), c.a);
 	}
 
@@ -147,7 +150,8 @@ public class JavaFXCanvas extends Canvas {
 
 	@Override
 	public Image newSnapshot() {
-		WritableImage newImage = new WritableImage((int) width, (int) height);
+		
+		WritableImage newImage = new WritableImage(toFXImage().buffer.getPixelReader(),(int) width, (int) height);
 		return new JavaFXImage(gfx, image.scale(), fxCanvas.snapshot(snapshotParameters, newImage), "<canvas>");
 	}
 
@@ -262,7 +266,11 @@ public class JavaFXCanvas extends Canvas {
 
 	@Override
 	public Canvas fillArc(float x1, float y1, float width, float height, float start, float end) {
-		context.fillArc(x1, y1, width, height, start, end, ArcType.ROUND);
+		if (end - start == 360) {
+			context.fillOval(x1, y1, width, height);
+		} else {
+			context.fillArc(x1, y1, width, height, start, end, ArcType.ROUND);
+		}
 		isDirty = true;
 		return null;
 	}
@@ -301,8 +309,11 @@ public class JavaFXCanvas extends Canvas {
 
 	@Override
 	public Canvas fillRoundRect(float x, float y, float width, float height, float radius) {
+		Paint tmp = context.getFill();
+		context.setFill(getLColorToFX(color));
 		addRoundRectPath(x, y, width, height, radius);
 		context.fill();
+		context.setFill(tmp);
 		isDirty = true;
 		return this;
 	}

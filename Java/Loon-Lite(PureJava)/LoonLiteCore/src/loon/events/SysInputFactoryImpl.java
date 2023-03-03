@@ -125,6 +125,7 @@ public class SysInputFactoryImpl extends SysInputFactory {
 	 */
 	@Override
 	public void callMouse(MouseMake.ButtonEvent event) {
+	
 		if (LSystem.isLockAllTouchEvent()) {
 			return;
 		}
@@ -146,6 +147,7 @@ public class SysInputFactoryImpl extends SysInputFactory {
 		finalTouch.pointer = 0;
 		finalTouch.id = 0;
 		_ebuttons = process.getEmulatorButtons();
+	
 		if (button == -1) {
 			if (_buttons > 0) {
 				finalTouch.type = SysTouch.TOUCH_DRAG;

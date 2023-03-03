@@ -945,11 +945,11 @@ public final class MathUtils {
 	public static float toRadians(final float degrees) {
 		return degrees * DEG_TO_RAD;
 	}
-	
-    public static int dip2px(float scale, float dpValue) {
-        return (int) (dpValue * scale + 0.5f);
-    }
-    
+
+	public static int dip2px(float scale, float dpValue) {
+		return (int) (dpValue * scale + 0.5f);
+	}
+
 	public static float degToRad(float deg) {
 		return deg * 360 / TWO_PI;
 	}
@@ -1044,7 +1044,7 @@ public final class MathUtils {
 	public static long randomLong(long start, long end) {
 		return (long) (start + random.nextFloat() * (end - start));
 	}
-	
+
 	public static int random(int range) {
 		return random.nextInt(range + 1);
 	}
@@ -1805,8 +1805,33 @@ public final class MathUtils {
 	 * @param p
 	 * @return
 	 */
-	public static boolean isSuccessful(float k, float p) {
+	public static boolean isSuccessful(final float k, final float p) {
 		return MathUtils.random(k) < p;
+	}
+
+	/**
+	 * 判定数值是否在指定模糊查询值区间内
+	 * 
+	 * @param src
+	 * @param dst
+	 * @param vague
+	 * @param found
+	 * @param invalid
+	 * @return
+	 */
+	public static float interval(final float src, final float dst, final float vague, final float found,
+			final float invalid) {
+		if ((src + vague == dst) || (src - vague) == dst) {
+			return found;
+		}
+		final float result = (dst - src);
+		if (result > 0) {
+			return result <= vague ? found : invalid;
+		} else if (result < 0) {
+			return (-result) <= vague ? found : invalid;
+		} else {
+			return found;
+		}
 	}
 
 	/**
@@ -1815,7 +1840,7 @@ public final class MathUtils {
 	 * @param chance >0 && < 100
 	 * @return
 	 */
-	public static boolean chanceRoll(float chance) {
+	public static boolean chanceRoll(final float chance) {
 		if (chance <= 0f) {
 			return false;
 		} else if (chance >= 100f) {

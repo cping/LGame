@@ -400,6 +400,6 @@ public abstract class Image extends TextureSource implements Canvas.Drawable, LR
 		if (closed) {
 			this.close();
 		}
-		return canvas.getImage();
+		return canvas.newSnapshot();
 	}
 }

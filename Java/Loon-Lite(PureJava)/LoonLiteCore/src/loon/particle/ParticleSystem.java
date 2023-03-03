@@ -36,7 +36,7 @@ public class ParticleSystem extends Entity {
 
 	private static final int DEFAULT_PARTICLES = 100;
 
-	private int state = 0;//BlendMethod.MODE_ADD;
+	private int state = 0;// BlendMethod.MODE_ADD;
 
 	private TArray<ParticleEmitter> removeMe = new TArray<ParticleEmitter>();
 
@@ -145,7 +145,7 @@ public class ParticleSystem extends Entity {
 	}
 
 	public int getBlendingMode() {
-		return 0;//GLUtils.getBlendMode();
+		return 0;// GLUtils.getBlendMode();
 	}
 
 	protected ParticleParticle createParticle(ParticleSystem system) {
@@ -213,7 +213,7 @@ public class ParticleSystem extends Entity {
 			int mode = g.getBlendMode();
 
 			if (emitter.useAdditive()) {
-				//g.setBlendMode(BlendMethod.MODE_ADD);
+				// g.setBlendMode(BlendMethod.MODE_ADD);
 			} else {
 				g.setBlendMode(state);
 			}
@@ -227,8 +227,8 @@ public class ParticleSystem extends Entity {
 			if (!emitter.isOriented() && !emitter.usePoints(this)) {
 				image.glBegin();
 			}
-		//	image.getTextureBatch().setLocation(x, y);
-		//	image.getTextureBatch().setBlendState(BlendState.Null);
+			// image.getTextureBatch().setLocation(x, y);
+			// image.getTextureBatch().setBlendState(BlendState.Null);
 
 			for (int i = 0; i < pool.particles.length; i++) {
 				if (pool.particles[i].inUse()) {

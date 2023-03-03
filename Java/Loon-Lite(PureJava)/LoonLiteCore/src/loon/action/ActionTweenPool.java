@@ -22,14 +22,14 @@ package loon.action;
 
 import loon.utils.TArray;
 
-
 abstract class ActionTweenPool<T> {
 
 	public interface Callback<T> extends loon.utils.reply.Callback<T> {
 		public void onPool(T obj);
+
 		public void onUnPool(T obj);
 	}
-	
+
 	private final TArray<T> _objects;
 	private final Callback<T> _callback;
 
@@ -39,25 +39,27 @@ abstract class ActionTweenPool<T> {
 	}
 
 	protected abstract T create();
-	
+
 	public T get() {
 		T obj = null;
 		try {
 			obj = _objects.isEmpty() ? create() : _objects.removeIndex(0);
-		} catch (Throwable e) {}
+		} catch (Throwable e) {
+		}
 		if (obj == null) {
 			obj = create();
 		}
-		if (_callback != null){
+		if (_callback != null) {
 			_callback.onUnPool(obj);
 		}
 		return obj;
 	}
 
 	public void free(T obj) {
-		if (obj == null) return;
+		if (obj == null)
+			return;
 		if (!_objects.contains(obj)) {
-			if (_callback != null){
+			if (_callback != null) {
 				_callback.onPool(obj);
 			}
 			_objects.add(obj);

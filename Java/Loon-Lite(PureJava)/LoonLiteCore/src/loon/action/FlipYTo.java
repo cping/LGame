@@ -40,6 +40,10 @@ public class FlipYTo extends ActionEvent {
 		}
 	}
 
+	public boolean isFlipY() {
+		return flipY;
+	}
+
 	@Override
 	public void onLoad() {
 
@@ -68,7 +72,7 @@ public class FlipYTo extends ActionEvent {
 	public String getName() {
 		return "flipy";
 	}
-	
+
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue(getName());

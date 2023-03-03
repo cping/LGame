@@ -130,6 +130,54 @@ public class TransformTo extends ActionEvent {
 		}
 	}
 
+	public float getNewX() {
+		return newX;
+	}
+
+	public float getNewY() {
+		return newY;
+	}
+
+	public float getNewScaleX() {
+		return newScaleX;
+	}
+
+	public float getNewScaleY() {
+		return newScaleY;
+	}
+
+	public float getNewRotation() {
+		return newRotation;
+	}
+
+	public float getNewAlpha() {
+		return newAlpha;
+	}
+
+	public LColor getNewColor() {
+		return newColor.cpy();
+	}
+
+	public float getOldScaleX() {
+		return oldScaleX;
+	}
+
+	public float getOldScaleY() {
+		return oldScaleY;
+	}
+
+	public float getOldRotation() {
+		return oldRotation;
+	}
+
+	public float getOldAlpha() {
+		return oldAlpha;
+	}
+
+	public LColor getOldColor() {
+		return oldColor.cpy();
+	}
+
 	@Override
 	public boolean isComplete() {
 		return _isCompleted;
@@ -153,23 +201,13 @@ public class TransformTo extends ActionEvent {
 	public String getName() {
 		return "transform";
 	}
-	
+
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue(getName());
-		builder.kv("newX", newX)
-		.comma()
-		.kv("newY", newY)
-		.comma()
-		.kv("newScaleX",newScaleX)
-		.comma()
-		.kv("newScaleY",newScaleY)
-		.comma()
-		.kv("newRotation",newRotation)
-		.comma()
-		.kv("newAlpha", newAlpha)
-		.comma()
-		.kv("newColor", newColor);
+		builder.kv("newX", newX).comma().kv("newY", newY).comma().kv("newScaleX", newScaleX).comma()
+				.kv("newScaleY", newScaleY).comma().kv("newRotation", newRotation).comma().kv("newAlpha", newAlpha)
+				.comma().kv("newColor", newColor);
 		return builder.toString();
 	}
 }

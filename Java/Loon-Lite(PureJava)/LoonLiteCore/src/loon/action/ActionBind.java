@@ -25,15 +25,14 @@ import loon.canvas.LColor;
 import loon.geom.RectBox;
 
 /**
- * Loon核心接口之一，实现此接口者，才可以通过action包统一操作(接口不要求全部实现
- * ，但只有实现了的部分，才能进行相应的动作)
+ * Loon核心接口之一，实现此接口者，才可以通过action包统一操作(接口不要求全部实现 ，但只有实现了的部分，才能进行相应的动作)
  */
 public interface ActionBind {
 
 	public Field2D getField2D();
-	
+
 	public void setVisible(boolean v);
-	
+
 	public boolean isVisible();
 
 	public int x();
@@ -51,7 +50,7 @@ public interface ActionBind {
 	public void setColor(LColor color);
 
 	public LColor getColor();
-	
+
 	public void setScale(float sx, float sy);
 
 	public float getRotation();
@@ -71,7 +70,7 @@ public interface ActionBind {
 	public void setX(float x);
 
 	public void setY(float y);
-	
+
 	public boolean isBounded();
 
 	public boolean isContainer();

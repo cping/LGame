@@ -40,10 +40,14 @@ public abstract class BaseBatch extends LTextureBind {
 
 		setTexture(tex);
 
-		float u2 = tex.widthRatio();
-		float uv = tex.heightRatio();
-		addQuad(tint, xf, x, y, x + w, y + h, tex.xOff(), tex.yOff(), u2, uv);
-
+		final boolean childTexture = (tex.isScale() || tex.isCopy());
+		if (childTexture) {
+			float u2 = tex.widthRatio();
+			float uv = tex.heightRatio();
+			addQuad(tint, xf, x, y, x + w, y + h, tex.xOff(), tex.yOff(), u2, uv);
+		} else {
+			addQuad(tint, xf, x, y, x + w, y + h, 0f, 0f, 1f, 1f);
+		}
 	}
 
 	public void addQuad(LTexture tex, int tint, Affine2f xf, float dx, float dy, float dw, float dh, float sx, float sy,
@@ -59,7 +63,9 @@ public abstract class BaseBatch extends LTextureBind {
 		}
 
 		setTexture(tex);
-		if (tex.getParent() == null) {
+
+		final boolean childTexture = (tex.isScale() || tex.isCopy());
+		if (!childTexture) {
 			float displayWidth = tex.getDisplayWidth();
 			float displayHeight = tex.getDisplayHeight();
 			float xOff = ((sx / displayWidth) * tex.widthRatio()) + tex.xOff();

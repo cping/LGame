@@ -81,7 +81,7 @@ public class ActionScript {
 						} else {
 							name = cmd.trim().toLowerCase();
 						}
-						
+
 						if ("resume".equals(name) || "resumeto".equals(name)) {
 							_tween.resume();
 						} else if ("delay".equals(name) || "delayto".equals(name)) {
@@ -93,32 +93,26 @@ public class ActionScript {
 						} else if ("move".equals(name) || "moveto".equals(name)) {
 							if (parameters != null) {
 								if (parameters.length == 2) {
-									_tween.moveTo(convertToFloat(parameters[0]),
-											convertToFloat(parameters[1]));
+									_tween.moveTo(convertToFloat(parameters[0]), convertToFloat(parameters[1]));
 								} else if (parameters.length == 3) {
 									if (StringUtils.isBoolean(parameters[2])) {
-										_tween.moveTo(convertToFloat(parameters[0]),
-												convertToFloat(parameters[1]),
+										_tween.moveTo(convertToFloat(parameters[0]), convertToFloat(parameters[1]),
 												StringUtils.toBoolean(parameters[2]));
 									} else {
-										_tween.moveTo(convertToFloat(parameters[0]),
-												convertToFloat(parameters[1]),
+										_tween.moveTo(convertToFloat(parameters[0]), convertToFloat(parameters[1]),
 												(int) convertToFloat(parameters[2]));
 									}
 								} else if (parameters.length == 4) {
-									_tween.moveTo(convertToFloat(parameters[0]),
-											convertToFloat(parameters[1]), StringUtils.toBoolean(parameters[2]),
-											(int) convertToFloat(parameters[3]));
+									_tween.moveTo(convertToFloat(parameters[0]), convertToFloat(parameters[1]),
+											StringUtils.toBoolean(parameters[2]), (int) convertToFloat(parameters[3]));
 								}
 							}
 						} else if ("moveby".equals(name)) {
 							if (parameters != null) {
 								if (parameters.length == 2) {
-									_tween.moveBy(convertToFloat(parameters[0]),
-											convertToFloat(parameters[1]));
+									_tween.moveBy(convertToFloat(parameters[0]), convertToFloat(parameters[1]));
 								} else if (parameters.length == 3) {
-									_tween.moveBy(convertToFloat(parameters[0]),
-											convertToFloat(parameters[1]),
+									_tween.moveBy(convertToFloat(parameters[0]), convertToFloat(parameters[1]),
 											(int) convertToFloat(parameters[2]));
 								}
 							}
@@ -127,8 +121,7 @@ public class ActionScript {
 								if (parameters.length == 1) {
 									_tween.rotateTo(convertToFloat(parameters[0]));
 								} else if (parameters.length == 2) {
-									_tween.rotateTo(convertToFloat(parameters[0]),
-											convertToFloat(parameters[1]));
+									_tween.rotateTo(convertToFloat(parameters[0]), convertToFloat(parameters[1]));
 								}
 							}
 						} else if ("rotate".equals(name) || "rotateto".equals(name)) {
@@ -136,8 +129,7 @@ public class ActionScript {
 								if (parameters.length == 1) {
 									_tween.rotateTo(convertToFloat(parameters[0]));
 								} else if (parameters.length == 2) {
-									_tween.rotateTo(convertToFloat(parameters[0]),
-											convertToFloat(parameters[1]));
+									_tween.rotateTo(convertToFloat(parameters[0]), convertToFloat(parameters[1]));
 								}
 							}
 						} else if ("fadein".equals(name)) {
@@ -175,15 +167,13 @@ public class ActionScript {
 						} else if ("transformpos".equals(name) || "transpos".equals(name)) {
 							if (parameters != null) {
 								if (parameters.length == 2) {
-									_tween.transformPos(convertToFloat(parameters[0]),
-											convertToFloat(parameters[1]));
+									_tween.transformPos(convertToFloat(parameters[0]), convertToFloat(parameters[1]));
 								}
 							}
 						} else if ("transformscale".equals(name) || "transscale".equals(name)) {
 							if (parameters != null) {
 								if (parameters.length == 2) {
-									_tween.transformScale(convertToFloat(parameters[0]),
-											convertToFloat(parameters[1]));
+									_tween.transformScale(convertToFloat(parameters[0]), convertToFloat(parameters[1]));
 								}
 							}
 						} else if ("transformalpha".equals(name) || "transalpha".equals(name)) {
@@ -213,33 +203,29 @@ public class ActionScript {
 						} else if ("shake".equals(name) || "shaketo".equals(name)) {
 							if (parameters != null) {
 								if (parameters.length == 2) {
-									_tween.shakeTo(convertToFloat(parameters[0]),
-											convertToFloat(parameters[1]));
+									_tween.shakeTo(convertToFloat(parameters[0]), convertToFloat(parameters[1]));
 								} else if (parameters.length == 3) {
-									_tween.shakeTo(convertToFloat(parameters[0]),
-											convertToFloat(parameters[1]), convertToFloat(parameters[2]));
+									_tween.shakeTo(convertToFloat(parameters[0]), convertToFloat(parameters[1]),
+											convertToFloat(parameters[2]));
 								} else if (parameters.length == 4) {
-									_tween.shakeTo(convertToFloat(parameters[0]),
-											convertToFloat(parameters[1]), convertToFloat(parameters[2]),
-											convertToFloat(parameters[3]));
+									_tween.shakeTo(convertToFloat(parameters[0]), convertToFloat(parameters[1]),
+											convertToFloat(parameters[2]), convertToFloat(parameters[3]));
 								}
 							}
 						} else if ("transfer".equals(name) || "transferto".equals(name)) {
 							if (parameters != null) {
 								if (parameters.length == 4) {
-									_tween.transferTo(convertToFloat(parameters[0]),
-											convertToFloat(parameters[1]), convertToFloat(parameters[2]),
-											Easing.toEasingMode(parameters[3]));
+									_tween.transferTo(convertToFloat(parameters[0]), convertToFloat(parameters[1]),
+											convertToFloat(parameters[2]), Easing.toEasingMode(parameters[3]));
 								} else if (parameters.length == 6) {
-									_tween.transferTo(convertToFloat(parameters[0]),
-											convertToFloat(parameters[1]), convertToFloat(parameters[2]),
-											Easing.toEasingMode(parameters[3]), StringUtils.toBoolean(parameters[4]),
-											StringUtils.toBoolean(parameters[5]));
+									_tween.transferTo(convertToFloat(parameters[0]), convertToFloat(parameters[1]),
+											convertToFloat(parameters[2]), Easing.toEasingMode(parameters[3]),
+											StringUtils.toBoolean(parameters[4]), StringUtils.toBoolean(parameters[5]));
 								} else if (parameters.length == 7) {
-									_tween.transferTo(convertToFloat(parameters[0]),
-											convertToFloat(parameters[1]), convertToFloat(parameters[2]),
-											convertToFloat(parameters[3]), Easing.toEasingMode(parameters[4]),
-											StringUtils.toBoolean(parameters[5]), StringUtils.toBoolean(parameters[6]));
+									_tween.transferTo(convertToFloat(parameters[0]), convertToFloat(parameters[1]),
+											convertToFloat(parameters[2]), convertToFloat(parameters[3]),
+											Easing.toEasingMode(parameters[4]), StringUtils.toBoolean(parameters[5]),
+											StringUtils.toBoolean(parameters[6]));
 								}
 							}
 						} else if ("scale".equals(name) || "scaleto".equals(name)) {
@@ -248,11 +234,10 @@ public class ActionScript {
 									float scale = convertToFloat(parameters[0]);
 									_tween.scaleTo(scale, scale);
 								} else if (parameters.length == 2) {
-									_tween.scaleTo(convertToFloat(parameters[0]),
-											convertToFloat(parameters[1]));
+									_tween.scaleTo(convertToFloat(parameters[0]), convertToFloat(parameters[1]));
 								} else if (parameters.length == 3) {
-									_tween.scaleTo(convertToFloat(parameters[0]),
-											convertToFloat(parameters[1]), convertToFloat(parameters[2]));
+									_tween.scaleTo(convertToFloat(parameters[0]), convertToFloat(parameters[1]),
+											convertToFloat(parameters[2]));
 								}
 							}
 						} else if ("show".equals(name) || "showto".equals(name)) {
@@ -266,8 +251,7 @@ public class ActionScript {
 								if (parameters.length == 1) {
 									_tween.repeat(convertToFloat(parameters[0]));
 								} else if (parameters.length == 2) {
-									_tween.repeat((int) convertToFloat(parameters[0]),
-											convertToFloat(parameters[1]));
+									_tween.repeat((int) convertToFloat(parameters[0]), convertToFloat(parameters[1]));
 								}
 							} else {
 								_tween.repeat(1f);

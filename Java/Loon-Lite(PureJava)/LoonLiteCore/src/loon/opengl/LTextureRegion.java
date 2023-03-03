@@ -67,8 +67,7 @@ public class LTextureRegion implements LRelease {
 		setRegion(region);
 	}
 
-	public LTextureRegion(LTextureRegion region, int x, int y, int width,
-			int height) {
+	public LTextureRegion(LTextureRegion region, int x, int y, int width, int height) {
 		setRegion(region, x, y, width, height);
 	}
 
@@ -76,12 +75,12 @@ public class LTextureRegion implements LRelease {
 		this.texture = texture;
 		setRegion(0, 0, texture.width(), texture.height());
 	}
-	
-	public float getWidth(){
+
+	public float getWidth() {
 		return getRegionWidth();
 	}
-	
-	public float getHeight(){
+
+	public float getHeight() {
 		return getRegionHeight();
 	}
 
@@ -95,13 +94,11 @@ public class LTextureRegion implements LRelease {
 			invTexWidth = (1f / texture.width()) * texture.widthRatio();
 			invTexHeight = (1f / texture.height()) * texture.heightRatio();
 		}
-		setRegion(x * invTexWidth + texture.xOff(), y * invTexHeight
-				+ texture.yOff(), (x + width) * invTexWidth, (y + height)
-				* invTexHeight);
+		setRegion(x * invTexWidth + texture.xOff(), y * invTexHeight + texture.yOff(), (x + width) * invTexWidth,
+				(y + height) * invTexHeight);
 	}
 
-	public void setRegion(float xOff, float yOff, float widthRatio,
-			float heightRatio) {
+	public void setRegion(float xOff, float yOff, float widthRatio, float heightRatio) {
 		this.xOff = xOff;
 		this.yOff = yOff;
 		this.widthRatio = widthRatio;
@@ -110,15 +107,12 @@ public class LTextureRegion implements LRelease {
 
 	public void setRegion(LTextureRegion region) {
 		texture = region.texture;
-		setRegion(region.xOff, region.yOff, region.widthRatio,
-				region.heightRatio);
+		setRegion(region.xOff, region.yOff, region.widthRatio, region.heightRatio);
 	}
 
-	public void setRegion(LTextureRegion region, int x, int y, int width,
-			int height) {
+	public void setRegion(LTextureRegion region, int x, int y, int width, int height) {
 		texture = region.texture;
-		setRegion(region.getRegionX() + x, region.getRegionY() + y, width,
-				height);
+		setRegion(region.getRegionX() + x, region.getRegionY() + y, width, height);
 	}
 
 	public LTexture getTexture() {
@@ -197,16 +191,14 @@ public class LTextureRegion implements LRelease {
 		for (int row = 0; row < rows; row++, y += tileHeight) {
 			x = startX;
 			for (int col = 0; col < cols; col++, x += tileWidth) {
-				tiles[row][col] = new LTextureRegion(texture, x, y, tileWidth,
-						tileHeight);
+				tiles[row][col] = new LTextureRegion(texture, x, y, tileWidth, tileHeight);
 			}
 		}
 
 		return tiles;
 	}
 
-	public static LTextureRegion[][] split(LTexture texture, int tileWidth,
-			int tileHeight) {
+	public static LTextureRegion[][] split(LTexture texture, int tileWidth, int tileHeight) {
 		return new LTextureRegion(texture).split(tileWidth, tileHeight);
 	}
 

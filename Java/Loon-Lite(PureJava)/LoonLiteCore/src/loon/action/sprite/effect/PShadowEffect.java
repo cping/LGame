@@ -41,7 +41,7 @@ public class PShadowEffect extends Entity {
 
 	private int indexD, indexW, block;
 
-	private boolean flag = true, completed = false , autoRemoved = false;
+	private boolean flag = true, completed = false, autoRemoved = false;
 
 	private static int[] deasilTrans, widdershinTrans;
 
@@ -75,8 +75,8 @@ public class PShadowEffect extends Entity {
 		this.setSize(w, h);
 		this.setEffect(img);
 	}
-	
-	public PShadowEffect setEffect(String path){
+
+	public PShadowEffect setEffect(String path) {
 		return setEffect(BaseIO.loadImage(path));
 	}
 
@@ -120,14 +120,14 @@ public class PShadowEffect extends Entity {
 				for (int i = 0; i < block; i++) {
 					colors[i] = widdershinTrans[indexW++];
 				}
-				BufferUtils.toColorKeys(pixels, colors);
+				BufferUtils.toColorKeys(pixels, colors, 0);
 			} else {
 				int[] colors = new int[block];
 				for (int i = 0; i < block; i++) {
 					colors[i] = deasilTrans[indexD--];
 				}
 				for (int i = 0; i < block; i++) {
-					BufferUtils.toColorKeys(pixels, colors);
+					BufferUtils.toColorKeys(pixels, colors, 0);
 				}
 			}
 			LTexture tex = super.getBitmap();

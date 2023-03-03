@@ -64,7 +64,6 @@ public class FadeTo extends ActionEvent {
 
 	@Override
 	public void onLoad() {
-
 	}
 
 	@Override
@@ -92,6 +91,18 @@ public class FadeTo extends ActionEvent {
 				original.setAlpha(1f);
 			}
 		}
+	}
+
+	public float getTime() {
+		return time;
+	}
+
+	public float getCurrentFrame() {
+		return currentFrame;
+	}
+
+	public int getType() {
+		return type;
 	}
 
 	@Override
@@ -127,4 +138,5 @@ public class FadeTo extends ActionEvent {
 		builder.kv("speed", time).comma().kv("currentFrame", currentFrame);
 		return builder.toString();
 	}
+
 }

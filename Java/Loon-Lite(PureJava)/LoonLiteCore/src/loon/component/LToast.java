@@ -100,7 +100,8 @@ public class LToast extends LComponent implements FontSet<LToast> {
 						(int) owner.getHeight());
 			}
 		} else {
-			toast = new LToast(_toastFont, text, _duration, 0, 0, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
+			toast = new LToast(_toastFont, text, _duration, 0, 0, LSystem.viewSize.getWidth(),
+					LSystem.viewSize.getHeight());
 		}
 		if (style == Style.SUCCESS) {
 			toast._backgroundColor = SUCCESS_GRAY;
@@ -119,19 +120,19 @@ public class LToast extends LComponent implements FontSet<LToast> {
 	public static final LColor ERROR_RED = LColor.maroon;
 	public static final LColor SUCCESS_GRAY = LColor.gray;
 	public static final LColor NORMAL_ORANGE = LColor.orange.cpy();
-	
+
 	private final float MAX_OPACITY = 1f;
 	private final float OPACITY_INCREMENT = 0.05f;
 
 	private boolean _toastStop = false;
-	
+
 	private String _displayText;
 
 	private LTimer _timer = new LTimer();
 	private LTimer _locked = new LTimer(LSystem.SECOND * 2);
 	private LColor _backgroundColor;
 	private IFont _toastFont;
-	
+
 	private float _displayX = 0f;
 	private float _displayY = 0f;
 	private float _displayTextX = 0f;
@@ -143,7 +144,7 @@ public class LToast extends LComponent implements FontSet<LToast> {
 	private int _cellHeight = 30;
 	private int _cellWidth = 30;
 	private int _displayType;
-	
+
 	private boolean _autoClose = true;
 
 	public LToast(IFont font, String text, int d, int x, int y, int width, int height) {
@@ -158,8 +159,7 @@ public class LToast extends LComponent implements FontSet<LToast> {
 		this(skin.getFont(), skin.getBackgroundTexture(), skin.getFontColor(), text, d, x, y, width, height);
 	}
 
-	public LToast(IFont font, LTexture bg, LColor fontColor, String text, int d, int x, int y, int width,
-			int height) {
+	public LToast(IFont font, LTexture bg, LColor fontColor, String text, int d, int x, int y, int width, int height) {
 		super(x, y, width, height);
 		this.onlyBackground(bg);
 		this._component_baseColor = fontColor;
@@ -167,7 +167,7 @@ public class LToast extends LComponent implements FontSet<LToast> {
 		this._objectAlpha = 0f;
 		this._duration = d;
 		this._toastFont = font;
-        this._displayText = text;
+		this._displayText = text;
 		this._cellWidth = _toastFont.stringWidth(_displayText) + (_frame_length_multiplier * 10);
 		this._cellHeight = _toastFont.getHeight() + 10;
 		if (this._cellHeight < 30) {
@@ -210,13 +210,13 @@ public class LToast extends LComponent implements FontSet<LToast> {
 			}
 			g.setColor(_component_baseColor);
 			g.setAlpha(_objectAlpha);
-			_toastFont.drawString(g, _displayText, _displayX + _displayTextX, _displayY + _displayTextY);
+			_toastFont.drawString(g, _displayText, _displayX + _displayTextX, _displayY + _displayTextY + 2);
 		} finally {
 			g.setColor(oc);
 			g.setAlpha(alpha);
 		}
 	}
-	
+
 	public float getDisplayTextX() {
 		return this._displayTextX;
 	}
@@ -224,7 +224,7 @@ public class LToast extends LComponent implements FontSet<LToast> {
 	public float getDisplayTextY() {
 		return this._displayTextY;
 	}
-	
+
 	public LToast setDisplayTextX(float x) {
 		this._displayTextX = x;
 		return this;
@@ -234,7 +234,7 @@ public class LToast extends LComponent implements FontSet<LToast> {
 		this._displayTextY = y;
 		return this;
 	}
-	
+
 	@Override
 	public LComponent setBackground(LTexture texture) {
 		this._background = texture;
@@ -281,7 +281,8 @@ public class LToast extends LComponent implements FontSet<LToast> {
 	public LComponent setText(String text) {
 		_displayText = text;
 		_displayTextX = MathUtils.min(_cellWidth / 2 - 1, (_cellWidth - _toastFont.stringWidth(_displayText)) / 2);
-		_displayTextY = MathUtils.min(_cellHeight / 2 - 1, (_cellHeight - _toastFont.stringHeight(_displayText)) / 2) - 1;
+		_displayTextY = MathUtils.min(_cellHeight / 2 - 1, (_cellHeight - _toastFont.stringHeight(_displayText)) / 2)
+				- 1;
 		return this;
 	}
 

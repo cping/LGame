@@ -108,10 +108,6 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		this(fileName, tileWidth, tileHeight, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 	}
 
-	public TileMap(String fileName, Screen screen, int tileWidth, int tileHeight) {
-		this(fileName, screen, tileWidth, tileHeight, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
-	}
-
 	public TileMap(String fileName, int tileWidth, int tileHeight, int mWidth, int mHeight) {
 		this(TileMapConfig.loadAthwartArray(fileName), tileWidth, tileHeight, mWidth, mHeight);
 	}
@@ -119,7 +115,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	public TileMap(String fileName, Screen screen, int tileWidth, int tileHeight, int mWidth, int mHeight) {
 		this(TileMapConfig.loadAthwartArray(fileName), screen, tileWidth, tileHeight, mWidth, mHeight);
 	}
-
+	
 	public TileMap(int[][] maps, int tileWidth, int tileHeight, int mWidth, int mHeight) {
 		this(new Field2D(maps, tileWidth, tileHeight), mWidth, mHeight);
 	}

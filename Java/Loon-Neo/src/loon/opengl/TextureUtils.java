@@ -28,6 +28,7 @@ import loon.LTexture.Format;
 import loon.canvas.Canvas;
 import loon.canvas.Image;
 import loon.canvas.LColor;
+import loon.utils.BufferUtils;
 
 public class TextureUtils {
 
@@ -38,7 +39,7 @@ public class TextureUtils {
 	public static LTexture filterGray(String res, Format cofing) {
 		Image tmp = BaseIO.loadImage(res).cpy(true);
 		tmp.setFormat(cofing);
-		int[] pixels = LSystem.base().support().toGray(tmp.getPixels(), (int) tmp.width(), (int) tmp.height());
+		int[] pixels = BufferUtils.toGray(tmp.getPixels(), (int) tmp.width(), (int) tmp.height());
 		tmp.setPixels(pixels, (int) tmp.width(), (int) tmp.height());
 		LTexture texture = tmp.texture();
 		if (tmp != null) {
@@ -50,12 +51,22 @@ public class TextureUtils {
 	}
 
 	public static LTexture filterColor(String res, LColor col) {
-		return TextureUtils.filterColor(res, col, Format.DEFAULT);
+		return TextureUtils.filterColor(res, col, -1, 0f, false, Format.DEFAULT);
 	}
 
-	public static LTexture filterColor(String res, LColor col, Format format) {
+	public static LTexture filterColor(String res, LColor col, int newColor, float vague) {
+		return TextureUtils.filterColor(res, col, newColor, vague, false, Format.DEFAULT);
+	}
+
+	public static LTexture filterColor(String res, LColor col, int newColor, float vague, boolean alpha,
+			Format format) {
 		Image tmp = BaseIO.loadImage(res).cpy(true);
-		int[] pixels = LSystem.base().support().toColorKey(tmp.getPixels(), col.getRGB());
+		int[] pixels = null;
+		if (newColor == -1 && vague == 0f) {
+			pixels = BufferUtils.toColorKey(tmp.getPixels(), col.getRGB());
+		} else {
+			pixels = BufferUtils.toColorKey(tmp.getPixels(), col.getRGB(), newColor, vague, alpha);
+		}
 		tmp.setFormat(format);
 		tmp.setPixels(pixels, (int) tmp.width(), (int) tmp.height());
 		LTexture texture = tmp.texture();
@@ -64,12 +75,22 @@ public class TextureUtils {
 	}
 
 	public static LTexture filterColor(String res, int[] colors) {
-		return TextureUtils.filterColor(res, colors, Format.DEFAULT);
+		return TextureUtils.filterColor(res, colors, -1, 0f, false, Format.DEFAULT);
 	}
 
-	public static LTexture filterColor(String res, int[] colors, Format format) {
+	public static LTexture filterColor(String res, int[] colors, int newColor, float vague) {
+		return TextureUtils.filterColor(res, colors, newColor, vague, false, Format.DEFAULT);
+	}
+
+	public static LTexture filterColor(String res, int[] colors, int newColor, float vague, boolean alpha,
+			Format format) {
 		Image tmp = BaseIO.loadImage(res).cpy(true);
-		int[] pixels = LSystem.base().support().toColorKeys(tmp.getPixels(), colors);
+		int[] pixels = null;
+		if (newColor == -1 && vague == 0f) {
+			pixels = BufferUtils.toColorKeys(tmp.getPixels(), colors);
+		} else {
+			pixels = BufferUtils.toColorKeys(tmp.getPixels(), colors, newColor, vague, alpha);
+		}
 		tmp.setFormat(format);
 		tmp.setPixels(pixels, (int) tmp.width(), (int) tmp.height());
 		LTexture texture = tmp.texture();
@@ -83,8 +104,7 @@ public class TextureUtils {
 
 	public static LTexture filterLimitColor(String res, LColor start, LColor end, Format format) {
 		Image tmp = BaseIO.loadImage(res).cpy(true);
-		int[] pixels = LSystem.base().support().toColorKeyLimit(tmp.getPixels(), start.getRGB(), end.getRGB());
-
+		int[] pixels = BufferUtils.toColorKeyLimit(tmp.getPixels(), start.getRGB(), end.getRGB());
 		tmp.setFormat(format);
 		tmp.setPixels(pixels, (int) tmp.width(), (int) tmp.height());
 		LTexture texture = tmp.texture();

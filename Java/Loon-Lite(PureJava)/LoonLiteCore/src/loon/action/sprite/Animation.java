@@ -168,8 +168,8 @@ public class Animation implements IArray, LRelease {
 	 */
 	public static Animation getDefaultAnimation(String fileName, int width, int height, int timer, LColor filterColor) {
 		return Animation.getDefaultAnimation(
-				TextureUtils.getSplitTextures(TextureUtils.filterColor(fileName, filterColor), width, height), -1,
-				timer);
+				TextureUtils.getSplitTextures(TextureUtils.filterColor(fileName, filterColor), width, height),
+				-1, timer);
 	}
 
 	/**

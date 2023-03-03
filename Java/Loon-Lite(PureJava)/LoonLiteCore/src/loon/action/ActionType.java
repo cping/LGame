@@ -36,8 +36,7 @@ public class ActionType {
 	 * @param returnValues
 	 * @return
 	 */
-	public final static int getValues(ActionBind target, int tweenType,
-			float[] returnValues) {
+	public final static int getValues(ActionBind target, int tweenType, float[] returnValues) {
 		switch (tweenType) {
 		case POSITION:
 			returnValues[0] = target.getX();
@@ -68,8 +67,7 @@ public class ActionType {
 	 * @param tweenType
 	 * @param newValues
 	 */
-	public final static void setValues(ActionBind target, int tweenType,
-			float[] newValues) {
+	public final static void setValues(ActionBind target, int tweenType, float[] newValues) {
 		switch (tweenType) {
 		case POSITION:
 			target.setLocation(newValues[0], newValues[1]);

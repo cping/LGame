@@ -29,7 +29,7 @@ public abstract class ActionTweenBase<T> {
 	private int step;
 	private boolean isIterationStep;
 	private boolean isBackward;
-	
+
 	protected int repeatSize;
 	protected float delay;
 	protected float duration;
@@ -184,8 +184,7 @@ public abstract class ActionTweenBase<T> {
 	protected void initializeOverride() {
 	}
 
-	protected void update(int step, int lastStep, boolean isIterationStep,
-			float delta) {
+	protected void update(int step, int lastStep, boolean isIterationStep, float delta) {
 	}
 
 	protected void forceToStart() {
@@ -242,7 +241,7 @@ public abstract class ActionTweenBase<T> {
 	protected boolean actionEventOver() {
 		return true;
 	}
-	
+
 	public void update(float delta) {
 		if (!isStarted || isPaused || isKilled) {
 			return;
@@ -278,8 +277,7 @@ public abstract class ActionTweenBase<T> {
 	}
 
 	private void checkRelaunch() {
-		if (!isIterationStep && repeatSize >= 0 && step < 0
-				&& currentTime + deltaTime >= 0) {
+		if (!isIterationStep && repeatSize >= 0 && step < 0 && currentTime + deltaTime >= 0) {
 			isIterationStep = true;
 			step = 0;
 			float delta = 0 - currentTime;
@@ -289,8 +287,7 @@ public abstract class ActionTweenBase<T> {
 			callCallback(ActionMode.START);
 			update(step, step - 1, isIterationStep, delta);
 
-		} else if (!isIterationStep && repeatSize >= 0 && step > repeatSize * 2
-				&& currentTime + deltaTime < 0) {
+		} else if (!isIterationStep && repeatSize >= 0 && step > repeatSize * 2 && currentTime + deltaTime < 0) {
 			isIterationStep = true;
 			step = repeatSize * 2;
 			float delta = 0 - currentTime;
@@ -318,8 +315,7 @@ public abstract class ActionTweenBase<T> {
 				callCallback(ActionMode.BACK_START);
 				update(step, step + 1, isIterationStep, delta);
 
-			} else if (!isIterationStep
-					&& currentTime + deltaTime >= repeatDelay) {
+			} else if (!isIterationStep && currentTime + deltaTime >= repeatDelay) {
 				isIterationStep = true;
 				step += 1;
 

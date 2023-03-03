@@ -40,8 +40,7 @@ public class EventTo extends ActionEvent {
 	@Override
 	public void update(long elapsedTime) {
 		Screen screen = null;
-		if (LSystem.getProcess() != null
-				&& LSystem.getProcess().getScreen() != null) {
+		if (LSystem.getProcess() != null && LSystem.getProcess().getScreen() != null) {
 			screen = LSystem.getProcess().getScreen();
 		}
 		_event.call(elapsedTime, screen);

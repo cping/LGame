@@ -41,6 +41,10 @@ public class DelayTo extends ActionEvent {
 		}
 	}
 
+	public float getTimeDelay() {
+		return delay;
+	}
+
 	@Override
 	public void onLoad() {
 
@@ -67,11 +71,12 @@ public class DelayTo extends ActionEvent {
 	public String getName() {
 		return "delay";
 	}
-	
+
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue(getName());
 		builder.kv("delay", timer);
 		return builder.toString();
 	}
+
 }

@@ -43,7 +43,7 @@ public class LColor implements Serializable {
 	public static final int DEF_COLOR = 0xFFFFFFFF;
 
 	// 默认黑色透明区域
-	public static final int TRANSPARENT = 0xFF000000;
+	public static final int TRANSPARENT = 0;
 
 	public static final int[] convertToABGR(int pixelHeight, int pixelWidth, int[] srcPixels) {
 		return convertToABGR(pixelHeight, pixelWidth, srcPixels, srcPixels);
@@ -1332,7 +1332,7 @@ public class LColor implements Serializable {
 	public static final int getABGR(int r, int g, int b, int alpha) {
 		return abgr(alpha, r, g, b);
 	}
-	
+
 	/**
 	 * 以指定颜色指定百分比获得渐变色彩
 	 * 
@@ -1343,16 +1343,16 @@ public class LColor implements Serializable {
 	public static final int getGradient(int startColor, int endColor) {
 		return getGradient(startColor, endColor, 1f);
 	}
-	
+
 	/**
 	 * 以指定颜色指定百分比获得渐变色彩
-	 *  
+	 * 
 	 * @param startColor
 	 * @param endColor
 	 * @param percentage
 	 * @return
 	 */
-	public static final int getGradient(int startColor, int endColor,float percentage) {
+	public static final int getGradient(int startColor, int endColor, float percentage) {
 		if (percentage > 1f) {
 			percentage = 1f;
 		}
@@ -1797,6 +1797,10 @@ public class LColor implements Serializable {
 			value = "0" + value;
 		}
 		return value;
+	}
+
+	public String toRGBAString() {
+		return r + "," + g + "," + b + "," + a;
 	}
 
 	/**

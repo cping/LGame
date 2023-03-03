@@ -86,6 +86,12 @@ public abstract class ActionEvent {
 		return original;
 	}
 
+	protected void initAction() {
+		if (actionListener != null) {
+			actionListener.start(this.original);
+		}
+	}
+
 	public ActionEvent start(ActionBind o) {
 		if (o == null) {
 			return this;
@@ -96,12 +102,12 @@ public abstract class ActionEvent {
 			oldY = original.getY();
 		}
 		this.timer.refresh();
+		if (!this.isInit) {
+			this.initAction();
+		}
 		this.firstTick = true;
 		this._isCompleted = false;
 		this.isInit = false;
-		if (actionListener != null) {
-			actionListener.start(o);
-		}
 		return this;
 	}
 
@@ -119,11 +125,11 @@ public abstract class ActionEvent {
 
 	public abstract boolean isComplete();
 
-	public Object getTag() {
+	public final Object getTag() {
 		return tag;
 	}
 
-	public ActionEvent setTag(Object tag) {
+	public final ActionEvent setTag(Object tag) {
 		this.tag = tag;
 		return this;
 	}
@@ -176,6 +182,18 @@ public abstract class ActionEvent {
 		return this;
 	}
 
+	public ActionEvent forceCompleted() {
+		if (!this._isCompleted && this.original != null) {
+			this._isCompleted = true;
+			String name = this.getName();
+			if ("flash".equals(name) || "fade".equals(name) || "show".equals(name)) {
+				original.setAlpha(1f);
+				original.setVisible(true);
+			}
+		}
+		return this;
+	}
+
 	public ActionEvent kill() {
 		this._isCompleted = true;
 		return this;
@@ -224,6 +242,22 @@ public abstract class ActionEvent {
 		this.collisionWorld = world;
 	}
 
+	public boolean isFirstTick() {
+		return firstTick;
+	}
+
+	public boolean isInit() {
+		return isInit;
+	}
+
+	public float getOldX() {
+		return oldX;
+	}
+
+	public float getOldY() {
+		return oldY;
+	}
+
 	public abstract ActionEvent cpy();
 
 	public abstract ActionEvent reverse();
@@ -237,4 +271,5 @@ public abstract class ActionEvent {
 				.comma().kv("tag", tag);
 		return builder.toString();
 	}
+
 }

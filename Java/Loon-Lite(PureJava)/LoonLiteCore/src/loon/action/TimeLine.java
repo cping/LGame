@@ -53,7 +53,6 @@ public final class TimeLine extends ActionTweenBase<TimeLine> {
 
 		@Override
 		public void onFailure(Throwable cause) {
-			
 
 		}
 	};

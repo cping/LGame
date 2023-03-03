@@ -27,7 +27,7 @@ public class FireTo extends ActionEvent {
 
 	private float direction;
 
-	private float x, y;
+	private float startX, startY;
 
 	private float vx, vy;
 
@@ -48,43 +48,70 @@ public class FireTo extends ActionEvent {
 
 	@Override
 	public void onLoad() {
-		this.x = original.getX();
-		this.y = original.getY();
-		this.direction = MathUtils.atan2(endY - y, endX - x);
+		this.startX = original.getX();
+		this.startY = original.getY();
+		this.direction = MathUtils.atan2(endY - startY, endX - startX);
 		this.vx = (MathUtils.cos(direction) * this.speed);
 		this.vy = (MathUtils.sin(direction) * this.speed);
 	}
 
+	public float getX() {
+		return startX;
+	}
+
+	public float getY() {
+		return startY;
+	}
+
+	public float getVelocityX() {
+		return vx;
+	}
+
+	public float getVelocityY() {
+		return vy;
+	}
+
+	public float getEndX() {
+		return endX;
+	}
+
+	public float getEndY() {
+		return endY;
+	}
+
+	public float getSpeed() {
+		return speed;
+	}
+
 	@Override
 	public void update(long elapsedTime) {
-		this.x += this.vx;
-		this.y += this.vy;
-		if (x == 0 && y == 0) {
+		this.startX += this.vx;
+		this.startY += this.vy;
+		if (startX == 0 && startY == 0) {
 			_isCompleted = true;
 			return;
 		}
 		if (original.isContainer() && original.isBounded()) {
-			if (original.inContains(x, y, original.getWidth(),
-					original.getHeight())) {
+			if (original.inContains(startX, startY, original.getWidth(), original.getHeight())) {
 				synchronized (original) {
-					movePos(x + offsetX, y + offsetY);
+					movePos(startX + offsetX, startY + offsetY);
 				}
 			} else {
 				_isCompleted = true;
 			}
 		} else {
-			if (x + original.getWidth() < 0) {
+			if (startX + original.getWidth() < 0) {
 				_isCompleted = true;
-			} else if (x > original.getContainerWidth() + original.getWidth()) {
+			} else if (startX > original.getContainerWidth() + original.getWidth()) {
 				_isCompleted = true;
 			}
-			if (y + original.getHeight() < 0) {
+			if (startY + original.getHeight() < 0) {
 				_isCompleted = true;
-			} else if (y > original.getContainerHeight() + original.getHeight()) {
+			} else if (startY > original.getContainerHeight() + original.getHeight()) {
 				_isCompleted = true;
 			}
 			synchronized (original) {
-				movePos(x + offsetX, y + offsetY);
+				movePos(startX + offsetX, startY + offsetY);
 			}
 		}
 	}
@@ -95,7 +122,7 @@ public class FireTo extends ActionEvent {
 
 	@Override
 	public ActionEvent cpy() {
-		FireTo fire =new FireTo(endX, endY, speed);
+		FireTo fire = new FireTo(endX, endY, speed);
 		fire.set(this);
 		return fire;
 	}
@@ -109,19 +136,13 @@ public class FireTo extends ActionEvent {
 	public String getName() {
 		return "fire";
 	}
-	
+
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue(getName());
-		builder.kv("currentX", x)
-		.comma()
-		.kv("currentY", y)
-		.comma()
-		.kv("endX",endX)
-		.comma()
-		.kv("endY",endY)
-		.comma()
-		.kv("speed", speed);
+		builder.kv("startX", startX).comma().kv("startY", startY).comma().kv("endX", endX).comma().kv("endY", endY)
+				.comma().kv("speed", speed);
 		return builder.toString();
 	}
+
 }

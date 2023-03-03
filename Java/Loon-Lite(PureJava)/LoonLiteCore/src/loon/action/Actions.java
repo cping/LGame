@@ -48,6 +48,9 @@ public class Actions {
 	}
 
 	public boolean stopNames(ActionBind k, String name) {
+		if (k == null) {
+			return true;
+		}
 		ActionElement eles = (ActionElement) actions.getValue(k);
 		if (eles == null || name == null) {
 			return true;
@@ -68,6 +71,9 @@ public class Actions {
 	}
 
 	public boolean stopTags(ActionBind k, Object tag) {
+		if (k == null) {
+			return true;
+		}
 		ActionElement eles = (ActionElement) actions.getValue(k);
 		if (eles == null || tag == null) {
 			return true;
@@ -88,6 +94,9 @@ public class Actions {
 	}
 
 	public boolean isCompleted(ActionBind k) {
+		if (k == null) {
+			return true;
+		}
 		ActionElement eles = (ActionElement) actions.getValue(k);
 		if (eles == null) {
 			return true;
@@ -107,10 +116,16 @@ public class Actions {
 	}
 
 	public boolean containsKey(ActionBind k) {
+		if (k == null) {
+			return false;
+		}
 		return actions.containsKey(k);
 	}
 
 	public boolean containsValue(ActionEvent v) {
+		if (v == null) {
+			return false;
+		}
 		return actions.containsValue(v);
 	}
 
@@ -125,8 +140,15 @@ public class Actions {
 	}
 
 	private void deleteElement(ActionElement element) {
-		element.actions.clear();
-		actions.remove(element.key);
+		if (element != null) {
+			for (ActionEvent eve : element.actions) {
+				if (eve != null) {
+					eve.forceCompleted();
+				}
+			}
+			element.actions.clear();
+			actions.remove(element.key);
+		}
 	}
 
 	public void removeAllActions(ActionBind actObject) {
@@ -137,6 +159,11 @@ public class Actions {
 		if (o != null) {
 			ActionElement element = (ActionElement) o;
 			if (element != null) {
+				for (ActionEvent eve : element.actions) {
+					if (eve != null) {
+						eve.forceCompleted();
+					}
+				}
 				element.actions.clear();
 				deleteElement(element);
 			}
@@ -144,7 +171,10 @@ public class Actions {
 	}
 
 	private void removeAction(int index, ActionElement element) {
-		element.actions.removeIndex(index);
+		ActionEvent eve = element.actions.removeIndex(index);
+		if (eve != null) {
+			eve.forceCompleted();
+		}
 		if (element.actionIndex >= index) {
 			element.actionIndex--;
 		}
@@ -216,6 +246,7 @@ public class Actions {
 						}
 						if (!currentTarget.currentAction.isInit) {
 							currentTarget.currentAction.isInit = true;
+							currentTarget.currentAction.initAction();
 							currentTarget.currentAction.onLoad();
 						}
 						currentTarget.currentAction.step(elapsedTime);

@@ -22,6 +22,7 @@ package loon.action;
 
 import loon.LSysException;
 import loon.LSystem;
+import loon.action.map.CustomPath;
 import loon.action.map.Field2D;
 import loon.action.sprite.ISprite;
 import loon.action.sprite.effect.BaseEffect;
@@ -40,18 +41,21 @@ import loon.utils.StringKeyValue;
 
 public class ActionTween extends ActionTweenBase<ActionTween> {
 
-	private static int combinedAttrsLimit = 3;
-	private static int funPointsLimit = 0;
+	private float initMoveSpeed = MoveTo._INIT_MOVE_SPEED;
 
-	public static void setCombinedAttributesLimit(int limit) {
-		ActionTween.combinedAttrsLimit = limit;
+	private int combinedAttrsLimit = 3;
+
+	private int funPointsLimit = 0;
+
+	public void setCombinedAttributesLimit(int limit) {
+		this.combinedAttrsLimit = limit;
 	}
 
-	public static void setfunPointsLimit(int limit) {
-		ActionTween.funPointsLimit = limit;
+	public void setfunPointsLimit(int limit) {
+		this.funPointsLimit = limit;
 	}
 
-	private static final ActionTweenPool.Callback<ActionTween> poolCallback = new ActionTweenPool.Callback<ActionTween>() {
+	private static final ActionTweenPool.Callback<ActionTween> _POOL_CALLBACK = new ActionTweenPool.Callback<ActionTween>() {
 		@Override
 		public void onPool(ActionTween obj) {
 			obj.reset();
@@ -79,7 +83,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		}
 	};
 
-	private static final ActionTweenPool<ActionTween> pool = new ActionTweenPool<ActionTween>(20, poolCallback) {
+	private static final ActionTweenPool<ActionTween> _POOLS = new ActionTweenPool<ActionTween>(20, _POOL_CALLBACK) {
 		@Override
 		protected ActionTween create() {
 			return new ActionTween();
@@ -89,16 +93,13 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	/**
 	 * 从当前ActionBind数值到指定目标(大多数时候，调用此状态已经足够)
 	 * 
-	 * @param target
-	 *            具体的操作对象
-	 * @param tweenType
-	 *            需要转变的接口
-	 * @param duration
-	 *            持续时间
+	 * @param target    具体的操作对象
+	 * @param tweenType 需要转变的接口
+	 * @param duration  持续时间
 	 * @return
 	 */
 	public static ActionTween to(ActionBind target, int tweenType, float duration) {
-		ActionTween tween = pool.get();
+		ActionTween tween = _POOLS.get();
 		tween.setup(target, tweenType, duration);
 		tween.ease(Easing.QUAD_INOUT);
 		tween.path(ActionControl.SMOOTH);
@@ -114,7 +115,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	 * @return
 	 */
 	public static ActionTween from(ActionBind target, int tweenType, float duration) {
-		ActionTween tween = pool.get();
+		ActionTween tween = _POOLS.get();
 		tween.setup(target, tweenType, duration);
 		tween.ease(Easing.QUAD_INOUT);
 		tween.path(ActionControl.SMOOTH);
@@ -130,7 +131,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	 * @return
 	 */
 	public static ActionTween set(ActionBind target, int tweenType) {
-		ActionTween tween = pool.get();
+		ActionTween tween = _POOLS.get();
 		tween.setup(target, tweenType, 0);
 		tween.ease(Easing.QUAD_INOUT);
 		return tween;
@@ -143,7 +144,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	 * @return
 	 */
 	public static ActionTween call(ActionCallback callback) {
-		ActionTween tween = pool.get();
+		ActionTween tween = _POOLS.get();
 		tween.setup(null, -1, 0);
 		tween.setCallback(callback);
 		tween.setCallbackTriggers(ActionMode.START);
@@ -156,17 +157,17 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	 * @return
 	 */
 	public static ActionTween mark() {
-		ActionTween tween = pool.get();
+		ActionTween tween = _POOLS.get();
 		tween.setup(null, -1, 0);
 		return tween;
 	}
 
 	public static int getPoolSize() {
-		return pool.size();
+		return _POOLS.size();
 	}
 
 	public static void resize(int minCapacity) {
-		pool.resize(minCapacity);
+		_POOLS.resize(minCapacity);
 	}
 
 	private int type;
@@ -213,67 +214,315 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		return event(new FlashTo(duration, delay, easing));
 	}
 
+	/**
+	 * 按照指定路径移动
+	 * 
+	 * @param path
+	 * @return
+	 */
+	public ActionTween defineMoveTo(CustomPath path) {
+		return defineMoveTo(null, path, true, initMoveSpeed);
+	}
+
+	/**
+	 * 按照指定路径移动,并选择是八方向走法或四方向走法
+	 * 
+	 * @param path
+	 * @param flag
+	 * @return
+	 */
+	public ActionTween defineMoveTo(CustomPath path, boolean all) {
+		return defineMoveTo(null, path, all, initMoveSpeed);
+	}
+
+	/**
+	 * 按照指定路径移动,并选择是八方向走法或四方向走法,以及移动速度
+	 * 
+	 * @param path
+	 * @param all
+	 * @param speed
+	 * @return
+	 */
+	public ActionTween defineMoveTo(CustomPath path, boolean all, float speed) {
+		return defineMoveTo(null, path, all, speed);
+	}
+
+	/**
+	 * 在地址的二维数组地图上,按照指定路径移动,并选择是八方向走法或四方向走法
+	 * 
+	 * @param map
+	 * @param path
+	 * @param all
+	 * @param speed
+	 * @return
+	 */
+	public ActionTween defineMoveTo(Field2D map, CustomPath path, boolean all, float speed) {
+		return defineMoveTo(map, path, all, speed, null);
+	}
+
+	/**
+	 * 按照指定路径移动,并选择监听器
+	 * 
+	 * @param path
+	 * @param l
+	 * @return
+	 */
+	public ActionTween defineMoveTo(CustomPath path, ActionListener l) {
+		return defineMoveTo(null, path, true, initMoveSpeed, l);
+	}
+
+	/**
+	 * 按照指定路径移动,并选择是八方向走法或四方向走法以及监听器
+	 * 
+	 * @param path
+	 * @param all
+	 * @param l
+	 * @return
+	 */
+	public ActionTween defineMoveTo(CustomPath path, boolean all, ActionListener l) {
+		return defineMoveTo(null, path, all, initMoveSpeed, l);
+	}
+
+	/**
+	 * 按照指定路径移动,并选择是八方向走法或四方向走法以及速度和监听器
+	 * 
+	 * @param path
+	 * @param all
+	 * @param speed
+	 * @param l
+	 * @return
+	 */
+	public ActionTween defineMoveTo(CustomPath path, boolean all, float speed, ActionListener l) {
+		return defineMoveTo(null, path, all, speed, l);
+	}
+
+	/**
+	 * 在指定的二维数组地图上,按照指定路径移动,并选择是八方向走法或四方向走法以及速度和监听器
+	 * 
+	 * @param map
+	 * @param path
+	 * @param all
+	 * @param speed
+	 * @param l
+	 * @return
+	 */
+	public ActionTween defineMoveTo(Field2D map, CustomPath path, boolean all, float speed, ActionListener l) {
+		return defineMoveTo(map, path, all, speed, 0f, 0f, l);
+	}
+
+	public ActionTween defineMoveTo(Field2D map, CustomPath path, boolean all, float speed, float offsetX,
+			float offsetY, ActionListener l) {
+		DefineMoveTo move = new DefineMoveTo(map, path, all, speed);
+		move.setDelay(0);
+		move.setOffset(offsetX, offsetY);
+		return event(move, l);
+	}
+
+	/**
+	 * 移动角色到指定目标
+	 * 
+	 * @param endX
+	 * @param endY
+	 * @return
+	 */
 	public ActionTween moveTo(float endX, float endY) {
-		return moveTo(endX, endY, false, 8);
+		return moveTo(endX, endY, false, initMoveSpeed);
 	}
 
+	/**
+	 * 移动角色到指定目标并监听
+	 * 
+	 * @param endX
+	 * @param endY
+	 * @param l
+	 * @return
+	 */
 	public ActionTween moveTo(float endX, float endY, ActionListener l) {
-		return moveTo(endX, endY, false, 8, l);
+		return moveTo(endX, endY, false, initMoveSpeed, l);
 	}
 
-	public ActionTween moveTo(float endX, float endY, int speed) {
+	/**
+	 * 移动角色到指定目标并指定速度
+	 * 
+	 * @param endX
+	 * @param endY
+	 * @param speed
+	 * @return
+	 */
+	public ActionTween moveTo(float endX, float endY, float speed) {
 		return moveTo(endX, endY, false, speed);
 	}
 
-	public ActionTween moveTo(float endX, float endY, int speed, ActionListener l) {
+	/**
+	 * 移动角色到指定目标并指定速度以及监听
+	 * 
+	 * @param endX
+	 * @param endY
+	 * @param speed
+	 * @param l
+	 * @return
+	 */
+	public ActionTween moveTo(float endX, float endY, float speed, ActionListener l) {
 		return moveTo(endX, endY, false, speed, l);
 	}
 
+	/**
+	 * 移动角色到指定目标并设置8方向行走或4方向行走
+	 * 
+	 * @param endX
+	 * @param endY
+	 * @param flag
+	 * @return
+	 */
 	public ActionTween moveTo(float endX, float endY, boolean flag) {
-		return moveTo(LSystem.viewSize.newField2D(), endX, endY, flag, 8, 0, 0, null);
+		return moveTo(null, endX, endY, flag, initMoveSpeed, 0, 0, null);
 	}
 
+	/**
+	 * 移动角色到指定目标并设置8方向行走或4方向行走以及监听
+	 * 
+	 * @param endX
+	 * @param endY
+	 * @param flag
+	 * @param l
+	 * @return
+	 */
 	public ActionTween moveTo(float endX, float endY, boolean flag, ActionListener l) {
-		return moveTo(LSystem.viewSize.newField2D(), endX, endY, flag, 8, 0, 0, l);
+		return moveTo(null, endX, endY, flag, initMoveSpeed, 0, 0, l);
 	}
 
-	public ActionTween moveTo(float endX, float endY, boolean flag, int speed) {
-		return moveTo(LSystem.viewSize.newField2D(), endX, endY, flag, speed, 0, 0, null);
+	/**
+	 * 移动角色到指定目标并设置8方向行走或4方向行走以及移动速度
+	 * 
+	 * @param endX
+	 * @param endY
+	 * @param flag
+	 * @param speed
+	 * @return
+	 */
+	public ActionTween moveTo(float endX, float endY, boolean flag, float speed) {
+		return moveTo(null, endX, endY, flag, speed, 0, 0, null);
 	}
 
-	public ActionTween moveTo(float endX, float endY, boolean flag, int speed, ActionListener l) {
-		return moveTo(LSystem.viewSize.newField2D(), endX, endY, flag, speed, 0, 0, l);
+	/**
+	 * 移动角色到指定目标并设置8方向行走或4方向行走以及移动速度并且监听
+	 * 
+	 * @param endX
+	 * @param endY
+	 * @param flag
+	 * @param speed
+	 * @param l
+	 * @return
+	 */
+	public ActionTween moveTo(float endX, float endY, boolean flag, float speed, ActionListener l) {
+		return moveTo(null, endX, endY, flag, speed, 0, 0, l);
 	}
 
+	/**
+	 * 移动角色到指定目标并设置8方向行走或4方向行走以及移动速度并进行位置偏移
+	 * 
+	 * @param endX
+	 * @param endY
+	 * @param flag
+	 * @param offsetX
+	 * @param offsetY
+	 * @return
+	 */
 	public ActionTween moveTo(float endX, float endY, boolean flag, float offsetX, float offsetY) {
-		return moveTo(LSystem.viewSize.newField2D(), endX, endY, flag, 8, offsetX, offsetY, null);
+		return moveTo(null, endX, endY, flag, initMoveSpeed, offsetX, offsetY, null);
 	}
 
+	/**
+	 * 移动角色到指定目标并设置8方向行走或4方向行走并进行位置偏移并且监听
+	 * 
+	 * @param endX
+	 * @param endY
+	 * @param flag
+	 * @param offsetX
+	 * @param offsetY
+	 * @param l
+	 * @return
+	 */
 	public ActionTween moveTo(float endX, float endY, boolean flag, float offsetX, float offsetY, ActionListener l) {
-		return moveTo(LSystem.viewSize.newField2D(), endX, endY, flag, 8, offsetX, offsetY, l);
+		return moveTo(null, endX, endY, flag, initMoveSpeed, offsetX, offsetY, l);
 	}
 
-	public ActionTween moveTo(float endX, float endY, boolean flag, int speed, float offsetX, float offsetY) {
-		return moveTo(LSystem.viewSize.newField2D(), endX, endY, flag, speed, offsetX, offsetY, null);
+	/**
+	 * 移动角色到指定目标并设置8方向行走或4方向行走以及移动速度并进行位置偏移并且监听
+	 * 
+	 * @param endX
+	 * @param endY
+	 * @param flag
+	 * @param speed
+	 * @param offsetX
+	 * @param offsetY
+	 * @return
+	 */
+	public ActionTween moveTo(float endX, float endY, boolean flag, float speed, float offsetX, float offsetY) {
+		return moveTo(null, endX, endY, flag, speed, offsetX, offsetY, null);
 	}
 
-	public ActionTween moveTo(float endX, float endY, boolean flag, int speed, float offsetX, float offsetY,
+	public ActionTween moveTo(float endX, float endY, boolean flag, float speed, float offsetX, float offsetY,
 			ActionListener l) {
-		return moveTo(LSystem.viewSize.newField2D(), endX, endY, flag, speed, offsetX, offsetY, l);
+		return moveTo(null, endX, endY, flag, speed, offsetX, offsetY, l);
 	}
 
-	public ActionTween moveTo(Field2D map, float endX, float endY, boolean flag, int speed) {
+	public ActionTween moveTo(Field2D map, float endX, float endY, boolean flag) {
+		return moveTo(map, endX, endY, flag, initMoveSpeed, 0, 0, null);
+	}
+
+	public ActionTween moveTo(Field2D map, float endX, float endY, int delayTime, boolean flag) {
+		return moveTo(map, endX, endY, flag, initMoveSpeed, 0, 0, delayTime, null);
+	}
+
+	public ActionTween moveTo(Field2D map, float endX, float endY, boolean flag, float speed) {
 		return moveTo(map, endX, endY, flag, speed, 0, 0, null);
 	}
 
-	public ActionTween moveTo(Field2D map, float endX, float endY, boolean flag, int speed, ActionListener l) {
+	public ActionTween moveTo(Field2D map, float endX, float endY, boolean flag, float speed, ActionListener l) {
 		return moveTo(map, endX, endY, flag, speed, 0, 0, l);
 	}
 
-	public ActionTween moveTo(Field2D map, float endX, float endY, boolean flag, int speed, float offsetX,
+	public ActionTween moveTo(Field2D map, float endX, float endY, boolean flag, float speed, float offsetX,
 			float offsetY, ActionListener l) {
+		return moveTo(map, endX, endY, flag, speed, offsetX, offsetY, 0, l);
+	}
+
+	public ActionTween moveTo(Field2D map, float endX, float endY, boolean flag, float speed, float offsetX,
+			float offsetY, int delayTime, ActionListener l) {
 		if (map != null && map.inside(endX, endY)) {
-			MoveTo move = new MoveTo(map, endX, endY, flag, speed);
+			MoveTo move = new MoveTo(map, endX, endY, flag, speed, delayTime);
+			move.setDelay(0);
+			move.setOffset(offsetX, offsetY);
+			return event(move, l);
+		} else {
+			return moveBy(endX, endY, speed, EasingMode.Linear, offsetX, offsetY, l);
+		}
+	}
+
+	public ActionTween moveTo(Field2D map, float startX, float startY, float endX, float endY, boolean flag) {
+		return moveTo(map, startX, startY, endX, endY, 0, flag);
+	}
+
+	public ActionTween moveTo(Field2D map, float startX, float startY, float endX, float endY, int delayTime,
+			boolean flag) {
+		return moveTo(map, startX, startY, endX, endY, delayTime, flag, initMoveSpeed);
+	}
+
+	public ActionTween moveTo(Field2D map, float startX, float startY, float endX, float endY, int delayTime,
+			boolean flag, float speed) {
+		return moveTo(map, startX, startY, endX, endY, delayTime, flag, speed, 0, 0);
+	}
+
+	public ActionTween moveTo(Field2D map, float startX, float startY, float endX, float endY, int delayTime,
+			boolean flag, float speed, float offsetX, float offsetY) {
+		return moveTo(map, startX, startY, endX, endY, delayTime, flag, speed, offsetX, offsetY, null);
+	}
+
+	public ActionTween moveTo(Field2D map, float startX, float startY, float endX, float endY, int delayTime,
+			boolean flag, float speed, float offsetX, float offsetY, ActionListener l) {
+		if (map != null && map.inside(endX, endY)) {
+			MoveTo move = new MoveTo(map, startX, startY, endX, endY, flag, speed, true, false, delayTime);
 			move.setDelay(0);
 			move.setOffset(offsetX, offsetY);
 			return event(move, l);
@@ -316,18 +565,18 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	}
 
 	public ActionTween moveBy(float endX, float endY) {
-		return moveBy(endX, endY, 8);
+		return moveBy(endX, endY, initMoveSpeed);
 	}
 
 	public ActionTween moveBy(float endX, float endY, ActionListener l) {
-		return moveBy(endX, endY, 8, l);
+		return moveBy(endX, endY, initMoveSpeed, l);
 	}
 
-	public ActionTween moveBy(float endX, float endY, int speed) {
+	public ActionTween moveBy(float endX, float endY, float speed) {
 		return event(new MoveBy(endX, endY, speed), null);
 	}
 
-	public ActionTween moveBy(float endX, float endY, int speed, ActionListener l) {
+	public ActionTween moveBy(float endX, float endY, float speed, ActionListener l) {
 		return event(new MoveBy(endX, endY, speed), l);
 	}
 
@@ -341,11 +590,11 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		return event(new MoveBy(-1f, -1f, endX, endY, 0, duration, delay, easing, offsetX, offsetY), l);
 	}
 
-	public ActionTween moveBy(float endX, float endY, int speed, EasingMode easing, float offsetX, float offsetY) {
+	public ActionTween moveBy(float endX, float endY, float speed, EasingMode easing, float offsetX, float offsetY) {
 		return moveBy(endX, endY, speed, easing, offsetX, offsetY, null);
 	}
 
-	public ActionTween moveBy(float endX, float endY, int speed, EasingMode easing, float offsetX, float offsetY,
+	public ActionTween moveBy(float endX, float endY, float speed, EasingMode easing, float offsetX, float offsetY,
 			ActionListener l) {
 		return event(new MoveBy(endX, endY, speed, easing, offsetX, offsetY), l);
 	}
@@ -394,7 +643,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	}
 
 	public ActionTween fadeTo(int fadeMode, float speed) {
-		return event(new FadeTo(fadeMode, (int) speed));
+		return event(new FadeTo(fadeMode, speed));
 	}
 
 	public ActionTween rotateTo(float angle) {
@@ -923,6 +1172,18 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		return this;
 	}
 
+	public boolean notEvent() {
+		return actionEvents == null || actionEvents.size() == 0;
+	}
+
+	public int countEvent() {
+		return actionEvents == null ? 0 : actionEvents.size();
+	}
+
+	public boolean isRunning() {
+		return (!notEvent() || (this.currentActionEvent != null && !this.currentActionEvent.isComplete()));
+	}
+
 	public ActionEvent getCurrentActionEvent() {
 		return this.currentActionEvent;
 	}
@@ -1090,7 +1351,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 
 	@Override
 	public void free() {
-		pool.free(this);
+		_POOLS.free(this);
 		ActionControl.get().removeAllActions(_target);
 	}
 
@@ -1245,6 +1506,15 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	@Override
 	protected boolean containsTarget(ActionBind target, int tweenType) {
 		return this._target == target && this.type == tweenType;
+	}
+
+	public float getInitMoveSpeed() {
+		return initMoveSpeed;
+	}
+
+	public ActionTween setInitMoveSpeed(float initMoveSpeed) {
+		this.initMoveSpeed = initMoveSpeed;
+		return this;
 	}
 
 	@Override

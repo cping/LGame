@@ -53,6 +53,10 @@ public class WaitTo extends ActionEvent {
 		}
 	}
 
+	public BooleanValue waiting() {
+		return boolValue;
+	}
+
 	@Override
 	public void onLoad() {
 
@@ -96,4 +100,5 @@ public class WaitTo extends ActionEvent {
 		}
 		return builder.toString();
 	}
+
 }

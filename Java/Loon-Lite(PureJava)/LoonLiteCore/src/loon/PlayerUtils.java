@@ -26,10 +26,12 @@ import loon.action.ActionControl;
 import loon.action.ActionEvent;
 import loon.action.ActionScript;
 import loon.action.ActionTween;
+import loon.action.map.PathMove;
 import loon.events.ActionUpdate;
 import loon.events.Updateable;
 import loon.geom.BooleanValue;
 import loon.geom.RectBox;
+import loon.geom.Vector2f;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
 import loon.utils.processes.GameProcess;
@@ -111,6 +113,9 @@ public class PlayerUtils extends Director {
 	 * @param process
 	 */
 	public final static TArray<GameProcess> removeProcess(GameProcess process) {
+		if (process == null) {
+			return new TArray<GameProcess>();
+		}
 		return removeProcess(process.getId());
 	}
 
@@ -233,6 +238,14 @@ public class PlayerUtils extends Director {
 		return ActionTween.from(target, tweenType, duration);
 	}
 
+	public final static ActionTween get(ActionBind target) {
+		return set(target, -1, false);
+	}
+
+	public final static ActionTween get(ActionBind target, int tweenType) {
+		return set(target, tweenType, false);
+	}
+
 	public final static ActionTween set(ActionBind target, int tweenType, boolean removeActions) {
 		if (removeActions) {
 			removeAllActions(target);
@@ -286,6 +299,22 @@ public class PlayerUtils extends Director {
 		return ActionControl.get().stopTags(k, tag);
 	}
 
+	public final static PathMove createPathMove(Vector2f origin, Vector2f target, float speed, boolean limit) {
+		return new PathMove(origin, target, speed, limit);
+	}
+
+	public final static PathMove createPathMove(Vector2f origin, Vector2f target, float speed) {
+		return new PathMove(origin, target, speed);
+	}
+
+	public final static PathMove createPathMove(float srcX, float srcY, float destX, float destY, float speed,
+			boolean limit) {
+		return new PathMove(srcX, srcY, destX, destY, speed, limit);
+	}
+
+	public final static PathMove createPathMove(float srcX, float srcY, float destX, float destY, float speed) {
+		return new PathMove(srcX, srcY, destX, destY, speed);
+	}
 
 	/**
 	 * 求两个动作对象在X轴两点间距离

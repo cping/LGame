@@ -33,26 +33,36 @@ import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 import loon.utils.StringKeyValue;
 
+/**
+ * 缓动对象移动用效果类,内置寻径和碰撞接口,可以自动实现寻径和障碍物回避效果(当然,也可以不寻径不检查碰撞而单纯移动)
+ */
 public class MoveTo extends ActionEvent {
 
 	// 寻径缓存，如果useCache为true时,moveTo将不理会实际寻径结果，全部按照缓存中的路线行走
-	private final static IntMap<TArray<Vector2f>> pathCache = new IntMap<TArray<Vector2f>>(
+	private final static IntMap<TArray<Vector2f>> _PATH_CACHE = new IntMap<TArray<Vector2f>>(
 			LSystem.DEFAULT_MAX_CACHE_SIZE);
 
 	// 默认每帧的移动数值(象素)
-	private final static int INIT_MOVE_SPEED = 4;
+	protected final static float _INIT_MOVE_SPEED = 8f;
+
+	private int _process_delay = 0;
+
+	private boolean _processed = false;
+
+	// 默认延迟1帧后触发move事件完成
+	private int process_delay_time = 0;
 
 	private Vector2f startLocation, endLocation;
 
 	private Field2D layerMap;
 
-	private boolean allDir, useCache, synchroLayerField;
+	private boolean allDir, isMoved, useCache, synchroLayerField;
 
 	private TArray<Vector2f> pActorPath;
 
-	private float startX, startY, endX, endY, moveX, moveY;
+	private float startX, startY, endX, endY, moveX, moveY, speed;
 
-	private int direction, speed;
+	private int direction;
 
 	private AStarFindHeuristic heuristic;
 
@@ -63,52 +73,67 @@ public class MoveTo extends ActionEvent {
 	private boolean isDirUpdate = false;
 
 	public MoveTo(float x, float y, boolean all) {
-		this(LSystem.viewSize.newField2D(), x, y, all, INIT_MOVE_SPEED);
+		this(null, x, y, all, _INIT_MOVE_SPEED);
 	}
 
 	public MoveTo(final Field2D map, float x, float y, boolean all) {
-		this(map, x, y, all, INIT_MOVE_SPEED);
+		this(map, x, y, all, _INIT_MOVE_SPEED);
 	}
 
-	public MoveTo(float x, float y, boolean all, int speed) {
-		this(LSystem.viewSize.newField2D(), x, y, all, speed);
+	public MoveTo(float x, float y, boolean all, float speed) {
+		this(null, x, y, all, speed);
 	}
 
-	public MoveTo(final Field2D map, float x, float y, boolean all, int speed) {
+	public MoveTo(final Field2D map, float x, float y, boolean all, float speed) {
 		this(map, -1f, -1f, x, y, all, speed, true, false);
 	}
 
-	public MoveTo(float sx, float sy, float x, float y, boolean all, int speed) {
-		this(LSystem.viewSize.newField2D(), sx, sy, x, y, all, speed, true, false);
+	public MoveTo(final Field2D map, float x, float y, boolean all, float speed, int delay) {
+		this(map, -1f, -1f, x, y, all, speed, true, false, delay);
 	}
 
-	public MoveTo(final Field2D map, float sx, float sy, float x, float y, boolean all, int speed) {
+	public MoveTo(float sx, float sy, float x, float y, boolean all, float speed) {
+		this(null, sx, sy, x, y, all, speed, true, false);
+	}
+
+	public MoveTo(final Field2D map, float sx, float sy, float x, float y, boolean all, float speed) {
 		this(map, sx, sy, x, y, all, speed, true, false);
 	}
 
-	public MoveTo(float sx, float sy, float x, float y, boolean all, int speed, boolean cache, boolean synField) {
-		this(LSystem.viewSize.newField2D(), sx, sy, x, y, all, speed, cache, synField);
+	public MoveTo(float sx, float sy, float x, float y, boolean all, float speed, boolean cache, boolean synField) {
+		this(null, sx, sy, x, y, all, speed, cache, synField);
 	}
 
-	public MoveTo(final Field2D map, float sx, float sy, float x, float y, boolean all, int speed, boolean cache,
+	public MoveTo(final Field2D map, float sx, float sy, float x, float y, boolean all, float speed, boolean cache,
 			boolean synField) {
+		this(map, sx, sy, x, y, all, speed, cache, synField, 0);
+	}
+
+	public MoveTo(final Field2D map, float sx, float sy, float x, float y, boolean all, float speed, int delay) {
+		this(map, sx, sy, x, y, all, speed, true, false, delay);
+	}
+
+	public MoveTo(final Field2D map, float sx, float sy, float ex, float ey, boolean all, float speed, boolean cache,
+			boolean synField, int delayTime) {
 		this.startLocation = new Vector2f(sx, sy);
-		this.endLocation = new Vector2f(x, y);
+		this.endLocation = new Vector2f(ex, ey);
 		this.layerMap = map;
 		this.allDir = all;
 		this.speed = speed;
 		this.useCache = cache;
 		this.synchroLayerField = synField;
+		this.process_delay_time = delayTime;
+		this.direction = Field2D.EMPTY;
 		if (map == null) {
 			moveByMode = true;
 		}
 	}
 
 	public MoveTo(final Field2D map, Vector2f pos, boolean allDir) {
-		this(map, pos, allDir, INIT_MOVE_SPEED);
+		this(map, pos, allDir, _INIT_MOVE_SPEED);
 	}
 
-	public MoveTo(final Field2D map, Vector2f pos, boolean allDir, int speed) {
+	public MoveTo(final Field2D map, Vector2f pos, boolean allDir, float speed) {
 		this(map, pos.x(), pos.y(), allDir, speed);
 	}
 
@@ -170,6 +195,8 @@ public class MoveTo extends ActionEvent {
 	}
 
 	public void updatePath() {
+		_process_delay = 0;
+		_processed = false;
 		if (!moveByMode && original != null && LSystem.getProcess() != null && LSystem.getProcess().getScreen() != null
 				&& !LSystem.getProcess().getScreen().getRectBox().contains(original.x(), original.y())
 				&& layerMap != null && !layerMap.inside(original.x(), original.y())) { // 处理越界出Field2D二维数组的移动
@@ -184,19 +211,19 @@ public class MoveTo extends ActionEvent {
 		}
 		if (!(original.x() == endLocation.x() && original.y() == endLocation.y())) {
 			if (useCache) {
-				synchronized (pathCache) {
-					if (pathCache.size > LSystem.DEFAULT_MAX_CACHE_SIZE * 10) {
-						pathCache.clear();
+				synchronized (_PATH_CACHE) {
+					if (_PATH_CACHE.size > LSystem.DEFAULT_MAX_CACHE_SIZE * 10) {
+						_PATH_CACHE.clear();
 					}
 					int key = hashCode();
-					TArray<Vector2f> final_path = pathCache.get(key);
+					TArray<Vector2f> final_path = _PATH_CACHE.get(key);
 					if (final_path == null) {
 						final_path = AStarFinder.find(heuristic, layerMap,
 								layerMap.pixelsToTilesWidth(startLocation.x()),
 								layerMap.pixelsToTilesHeight(startLocation.y()),
 								layerMap.pixelsToTilesWidth(endLocation.x()),
 								layerMap.pixelsToTilesHeight(endLocation.y()), allDir);
-						pathCache.put(key, final_path);
+						_PATH_CACHE.put(key, final_path);
 					}
 					pActorPath = new TArray<Vector2f>();
 					pActorPath.addAll(final_path);
@@ -213,19 +240,20 @@ public class MoveTo extends ActionEvent {
 	public void clearPath() {
 		if (pActorPath != null) {
 			synchronized (pActorPath) {
-				pActorPath.clear();
-				pActorPath = null;
+				if (pActorPath != null) {
+					pActorPath.clear();
+				}
 			}
-			if (pathCache != null) {
-				pathCache.clear();
-			}
+			clearPathCache();
 		}
 	}
 
 	public static void clearPathCache() {
-		if (pathCache != null) {
-			synchronized (pathCache) {
-				pathCache.clear();
+		if (_PATH_CACHE != null) {
+			synchronized (_PATH_CACHE) {
+				if (_PATH_CACHE != null) {
+					_PATH_CACHE.clear();
+				}
 			}
 		}
 	}
@@ -256,6 +284,14 @@ public class MoveTo extends ActionEvent {
 		return this;
 	}
 
+	public float getStartX() {
+		return startX == 0 ? startLocation.x : startX;
+	}
+
+	public float getStartY() {
+		return startY == 0 ? startLocation.y : startY;
+	}
+
 	public TArray<Vector2f> getPath() {
 		return pActorPath;
 	}
@@ -274,10 +310,26 @@ public class MoveTo extends ActionEvent {
 		return layerMap;
 	}
 
-	private boolean isMoved;
-
 	@Override
 	public void update(long elapsedTime) {
+		if (process_delay_time > 0) {
+			if (!this.moveByMode) {
+				if (!_processed && (this.pActorPath == null || this.original == null || this.pActorPath.size == 0)) {
+					_processed = true;
+				}
+			}
+			if (_processed) {
+				_process_delay++;
+				// 延迟指定帧数后触发stop事件(主要是防止移动距离短时同步触发，太快肉眼跟不上，产生视觉错误)
+				if (_process_delay > process_delay_time) {
+					this._isCompleted = true;
+					this._process_delay = 0;
+					this._processed = false;
+					this.isMoved = !_isCompleted;
+				}
+				return;
+			}
+		}
 		isMoved = true;
 		float newX = 0f;
 		float newY = 0f;
@@ -330,7 +382,7 @@ public class MoveTo extends ActionEvent {
 					updateDirection((int) (newX - lastX), (int) (newY - lastY));
 					movePos(newX, newY);
 				}
-				_isCompleted = (count == 2);
+				_processed = (count == 2);
 			} else {
 				startX = original.getX() - offsetX;
 				startY = original.getY() - offsetY;
@@ -379,11 +431,11 @@ public class MoveTo extends ActionEvent {
 					movePos(newX, newY);
 				}
 				if (endX - startX == 0 && endY - startY == 0) {
-					_isCompleted = true;
+					_processed = true;
 				}
 			}
 		} else {
-			if (layerMap == null || original == null || pActorPath == null || pActorPath.size == 0) {
+			if (original == null || pActorPath == null || pActorPath.size == 0) {
 				return;
 			}
 			synchronized (pActorPath) {
@@ -395,20 +447,46 @@ public class MoveTo extends ActionEvent {
 						}
 					}
 				}
-				
+
 				if (endX == startX && endY == startY) {
 					if (pActorPath.size > 1) {
 						Vector2f moveStart = pActorPath.get(0);
 						Vector2f moveEnd = pActorPath.get(1);
-						startX = layerMap.tilesToWidthPixels(moveStart.x());
-						startY = layerMap.tilesToHeightPixels(moveStart.y());
-						endX = moveEnd.x() * layerMap.getTileWidth();
-						endY = moveEnd.y() * layerMap.getTileHeight();
+						if (layerMap != null) {
+							startX = layerMap.tilesToWidthPixels(moveStart.x());
+							startY = layerMap.tilesToHeightPixels(moveStart.y());
+							endX = layerMap.tilesToWidthPixels(moveEnd.x());
+							endY = layerMap.tilesToHeightPixels(moveEnd.y());
+						} else {
+							startX = moveStart.getX() * original.getWidth();
+							startY = moveStart.getY() * original.getHeight();
+							endX = moveEnd.getX() * original.getWidth();
+							endY = moveEnd.getY() * original.getHeight();
+						}
 						moveX = moveEnd.x() - moveStart.x();
 						moveY = moveEnd.y() - moveStart.y();
 						updateDirection(moveX, moveY);
+					} else if (pActorPath.size == 1) {
+						Vector2f moveEnd = pActorPath.pop();
+						float newEndX = endX;
+						float newEndY = endY;
+						if (layerMap != null) {
+							newEndX = layerMap.tilesToWidthPixels(moveEnd.x());
+							newEndY = layerMap.tilesToHeightPixels(moveEnd.y());
+						} else {
+							newEndX = moveEnd.getX() * original.getWidth();
+							newEndY = moveEnd.getY() * original.getHeight();
+						}
+						moveX = newEndX - endX;
+						moveY = newEndY - endY;
 					}
-					pActorPath.removeIndex(0);
+					if (pActorPath.size > 0) {
+						pActorPath.removeIndex(0);
+					}
+				} else {
+					moveX = endX - startX;
+					moveY = endY - startY;
+					updateDirection(moveX, moveY);
 				}
 
 				newX = original.getX() - offsetX;
@@ -548,6 +626,9 @@ public class MoveTo extends ActionEvent {
 				}
 			}
 		}
+		if (process_delay_time <= 0) {
+			this._isCompleted = this._processed;
+		}
 		isMoved = !_isCompleted;
 	}
 
@@ -600,17 +681,38 @@ public class MoveTo extends ActionEvent {
 		}
 	}
 
-	public int getSpeed() {
+	public float getMoveX() {
+		return moveX;
+	}
+
+	public float getMoveY() {
+		return moveY;
+	}
+
+	public boolean isMoved() {
+		return isMoved;
+	}
+
+	public boolean isMoveByMode() {
+		return moveByMode;
+	}
+
+	public float getSpeed() {
 		return speed;
 	}
 
-	public void setSpeed(int speed) {
+	public MoveTo setSpeed(float speed) {
 		this.speed = speed;
+		return this;
 	}
 
+	@Override
 	public boolean isComplete() {
-		return moveByMode ? _isCompleted
-				: (pActorPath == null || pActorPath.size == 0 || _isCompleted || original == null);
+		if (this.process_delay_time <= 0) {
+			return moveByMode ? _isCompleted
+					: (pActorPath == null || pActorPath.size == 0 || _isCompleted || original == null);
+		}
+		return _isCompleted;
 	}
 
 	public boolean isDirectionUpdate() {
@@ -648,17 +750,46 @@ public class MoveTo extends ActionEvent {
 	}
 
 	public float getEndX() {
-		return endX;
+		return endX == 0 ? endLocation.x : endX;
 	}
 
 	public float getEndY() {
-		return endY;
+		return endY == 0 ? endLocation.y : endY;
+	}
+
+	public boolean isAllDirection() {
+		return allDir;
+	}
+
+	public int getProcessDelay() {
+		return _process_delay;
+	}
+
+	public void setProcessDelay(int delay) {
+		this._process_delay = delay;
+	}
+
+	public void setProcessed(boolean processed) {
+		this._processed = processed;
+	}
+
+	public int getProcessDelayTime() {
+		return process_delay_time;
+	}
+
+	/**
+	 * 设定move完成后延迟触发stop事件的延迟时间(触发太快了影响肉眼效果,后续操作可能像并发执行,而不是顺序)
+	 * 
+	 * @param delayTime
+	 */
+	public void setProcessDelayTime(int delayTime) {
+		this.process_delay_time = delayTime;
 	}
 
 	@Override
 	public ActionEvent cpy() {
 		MoveTo move = new MoveTo(layerMap, -1, -1, endLocation.x, endLocation.y, allDir, speed, useCache,
-				synchroLayerField);
+				synchroLayerField, process_delay_time);
 		move.set(this);
 		move.heuristic = this.heuristic;
 		return move;
@@ -666,7 +797,8 @@ public class MoveTo extends ActionEvent {
 
 	@Override
 	public ActionEvent reverse() {
-		MoveTo move = new MoveTo(layerMap, -1, -1, oldX, oldY, allDir, speed, useCache, synchroLayerField);
+		MoveTo move = new MoveTo(layerMap, -1, -1, oldX, oldY, allDir, speed, useCache, synchroLayerField,
+				process_delay_time);
 		move.set(this);
 		move.heuristic = this.heuristic;
 		return move;

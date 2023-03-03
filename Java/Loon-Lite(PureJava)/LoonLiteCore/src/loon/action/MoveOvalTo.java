@@ -46,27 +46,23 @@ public class MoveOvalTo extends ActionEvent {
 	private int directionY = -1;
 	private EaseTimer easeTimer;
 
-	public MoveOvalTo(float startAngle, float angle, float width, float height,
-			Vector2f centerPoint, float duration) {
-		this(startAngle, angle, width, height, centerPoint, null, duration,
-				LSystem.DEFAULT_EASE_DELAY, EasingMode.Linear);
+	public MoveOvalTo(float startAngle, float angle, float width, float height, Vector2f centerPoint, float duration) {
+		this(startAngle, angle, width, height, centerPoint, null, duration, LSystem.DEFAULT_EASE_DELAY,
+				EasingMode.Linear);
 	}
 
-	public MoveOvalTo(float startAngle, float angle, float width, float height,
-			Vector2f centerPoint, float duration, EasingMode easing) {
-		this(startAngle, angle, width, height, centerPoint, null, duration,
-				LSystem.DEFAULT_EASE_DELAY, easing);
+	public MoveOvalTo(float startAngle, float angle, float width, float height, Vector2f centerPoint, float duration,
+			EasingMode easing) {
+		this(startAngle, angle, width, height, centerPoint, null, duration, LSystem.DEFAULT_EASE_DELAY, easing);
 	}
 
-	public MoveOvalTo(float startAngle, float angle, float width, float height,
-			Vector2f centerPoint, float duration, float delay, EasingMode easing) {
-		this(startAngle, angle, width, height, centerPoint, null, duration,
-				delay, easing);
-	}
-
-	public MoveOvalTo(float startAngle, float angle, float width, float height,
-			Vector2f centerPoint, Vector2f startPoint, float duration,
+	public MoveOvalTo(float startAngle, float angle, float width, float height, Vector2f centerPoint, float duration,
 			float delay, EasingMode easing) {
+		this(startAngle, angle, width, height, centerPoint, null, duration, delay, easing);
+	}
+
+	public MoveOvalTo(float startAngle, float angle, float width, float height, Vector2f centerPoint,
+			Vector2f startPoint, float duration, float delay, EasingMode easing) {
 		if (angle > 360) {
 			angle = 360;
 		}
@@ -84,8 +80,7 @@ public class MoveOvalTo extends ActionEvent {
 		float oneDivrr = MathUtils.pow(MathUtils.cos(radian) / width, 2f)
 				+ MathUtils.pow(MathUtils.sin(radian) / height, 2f);
 		float radius = MathUtils.sqrt(1f / oneDivrr);
-		float startY = this.startAngle == 0.0F ? height
-				: (float) (radius * MathUtils.sin(radian));
+		float startY = this.startAngle == 0.0F ? height : (float) (radius * MathUtils.sin(radian));
 		this.centerPoint = centerPoint;
 		this.centerPoint.y += (this.directionY == 1 ? -startY : startY);
 		this.startPoint = startPoint;
@@ -124,11 +119,9 @@ public class MoveOvalTo extends ActionEvent {
 		if (easeTimer.isCompleted()) {
 			_isCompleted = true;
 
-			float radian = MathUtils
-					.toRadians((this.startAngle + this.angle - 90f) % 360f);
+			float radian = MathUtils.toRadians((this.startAngle + this.angle - 90f) % 360f);
 
-			float oneDivrr = MathUtils.pow(MathUtils.cos(radian) / this.width,
-					2f)
+			float oneDivrr = MathUtils.pow(MathUtils.cos(radian) / this.width, 2f)
 					+ MathUtils.pow(MathUtils.sin(radian) / this.height, 2f);
 
 			float radius = MathUtils.sqrt(1f / oneDivrr);
@@ -165,21 +158,54 @@ public class MoveOvalTo extends ActionEvent {
 
 		}
 
-		float addX = (this.angle > 0f ? this.currentPosX : -this.currentPosX)
-				* this.width;
+		float addX = (this.angle > 0f ? this.currentPosX : -this.currentPosX) * this.width;
 		this.startPoint.x = (this.centerPoint.x + addX * this.directionX);
-		float addY = MathUtils.sqrt(this.height * this.height - this.height
-				* this.height * addX * addX / (this.width * this.width));
+		float addY = MathUtils
+				.sqrt(this.height * this.height - this.height * this.height * addX * addX / (this.width * this.width));
 		this.startPoint.y = (this.centerPoint.y + addY * this.directionY);
 
-		movePos(this.startPoint.x + offsetX,
-				this.startPoint.y + offsetY);
+		movePos(this.startPoint.x + offsetX, this.startPoint.y + offsetY);
+	}
+
+	public float getAngle() {
+		return angle;
+	}
+
+	public float getStartAngle() {
+		return startAngle;
+	}
+
+	public float getWidth() {
+		return width;
+	}
+
+	public float getHeight() {
+		return height;
+	}
+
+	public float getRotateScale() {
+		return rotateScale;
+	}
+
+	public float getCurrentPosX() {
+		return currentPosX;
+	}
+
+	public float getPer() {
+		return per;
+	}
+
+	public int getDirectionX() {
+		return directionX;
+	}
+
+	public int getDirectionY() {
+		return directionY;
 	}
 
 	@Override
 	public void onLoad() {
-		if (startPoint == null || startPoint.getX() == -1
-				|| startPoint.getY() == -1) {
+		if (startPoint == null || startPoint.getX() == -1 || startPoint.getY() == -1) {
 			this.startPoint = new Vector2f(original.getX(), original.getY());
 		}
 		this.oldStartPoint.set(startPoint);
@@ -193,9 +219,8 @@ public class MoveOvalTo extends ActionEvent {
 
 	@Override
 	public ActionEvent cpy() {
-		MoveOvalTo moveoval = new MoveOvalTo(startAngle, angle, width, height,
-				oldCenterPoint, oldStartPoint, easeTimer.getDuration(),
-				easeTimer.getDelay(), easeTimer.getEasingMode());
+		MoveOvalTo moveoval = new MoveOvalTo(startAngle, angle, width, height, oldCenterPoint, oldStartPoint,
+				easeTimer.getDuration(), easeTimer.getDelay(), easeTimer.getEasingMode());
 		moveoval.set(this);
 		return moveoval;
 	}
@@ -209,29 +234,14 @@ public class MoveOvalTo extends ActionEvent {
 	public String getName() {
 		return "moveoval";
 	}
-	
+
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue(getName());
-		builder.kv("startAngle", startAngle)
-		.comma()
-		.kv("angle", angle)
-		.comma()
-		.kv("rotateScale",rotateScale)
-		.comma()
-		.kv("size",(width+" x "+height))
-		.comma()
-		.kv("per",per)
-		.comma()
-		.kv("startPoint",startPoint)
-		.comma()
-		.kv("currentPosX", currentPosX)
-		.comma()
-		.kv("directionX",directionX)
-		.comma()
-		.kv("directionY", directionY)
-		.comma()
-		.kv("EaseTimer",easeTimer);
+		builder.kv("startAngle", startAngle).comma().kv("angle", angle).comma().kv("rotateScale", rotateScale).comma()
+				.kv("size", (width + " x " + height)).comma().kv("per", per).comma().kv("startPoint", startPoint)
+				.comma().kv("currentPosX", currentPosX).comma().kv("directionX", directionX).comma()
+				.kv("directionY", directionY).comma().kv("EaseTimer", easeTimer);
 		return builder.toString();
 	}
 }

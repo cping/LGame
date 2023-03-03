@@ -502,36 +502,85 @@ public class BufferUtils {
 
 	}
 
-	public static int[] toColorKey(int[] buffer, int colorKey) {
+	public static int[] toColorKey(int[] buffer, int colors) {
+		return toColorKey(buffer, colors, LColor.TRANSPARENT, false);
+	}
 
+	public static int[] toColorKey(int[] buffer, int colors, int newColor) {
+		return toColorKey(buffer, colors, newColor, false);
+	}
+
+	public static int[] toColorKey(int[] buffer, int colors, int newColor, boolean alpha) {
+		return toColorKey(buffer, colors, newColor, 0.15f, alpha);
+	}
+
+	public static int[] toColorKey(int[] buffer, int colorKey, int newColor, float vague, boolean alpha) {
+		final LColor srcPixel = new LColor();
+		final LColor dstPixel = new LColor(colorKey);
 		int size = buffer.length;
 		for (int i = 0; i < size; i++) {
 			int pixel = buffer[i];
-			if (pixel == colorKey) {
-				buffer[i] = 0x00FFFFFF;
+			srcPixel.setColor(pixel);
+			float r = MathUtils.interval(srcPixel.r, dstPixel.r, vague, dstPixel.r, srcPixel.r);
+			float g = MathUtils.interval(srcPixel.g, dstPixel.g, vague, dstPixel.g, srcPixel.g);
+			float b = MathUtils.interval(srcPixel.b, dstPixel.b, vague, dstPixel.b, srcPixel.b);
+			if (r == dstPixel.r && g == dstPixel.g && b == dstPixel.b) {
+				buffer[i] = newColor;
+			} else {
+				if (alpha) {
+					buffer[i] = srcPixel.setAlpha(0.5f).getARGB();
+				} else {
+					buffer[i] = pixel;
+				}
 			}
 		}
-
 		return buffer;
 	}
 
 	public static int[] toColorKeys(int[] buffer, int[] colors) {
+		return toColorKeys(buffer, colors, LColor.TRANSPARENT, false);
+	}
 
+	public static int[] toColorKeys(int[] buffer, int[] colors, int newColor) {
+		return toColorKeys(buffer, colors, newColor, false);
+	}
+
+	public static int[] toColorKeys(int[] buffer, int[] colors, int newColor, boolean alpha) {
+		return toColorKeys(buffer, colors, newColor, 0.15f, alpha);
+	}
+
+	public static int[] toColorKeys(int[] buffer, int[] colors, int newColor, float vague, boolean alpha) {
+		final LColor srcPixel = new LColor();
+		final LColor dstPixel = new LColor();
 		int length = colors.length;
 		int size = buffer.length;
 		for (int n = 0; n < length; n++) {
+			dstPixel.setColor(colors[n]);
 			for (int i = 0; i < size; i++) {
 				int pixel = buffer[i];
-				if (pixel == colors[n]) {
-					buffer[i] = 0x00FFFFFF;
+				srcPixel.setColor(pixel);
+				float r = MathUtils.interval(srcPixel.r, dstPixel.r, vague, dstPixel.r, srcPixel.r);
+				float g = MathUtils.interval(srcPixel.g, dstPixel.g, vague, dstPixel.g, srcPixel.g);
+				float b = MathUtils.interval(srcPixel.b, dstPixel.b, vague, dstPixel.b, srcPixel.b);
+				if (r == dstPixel.r && g == dstPixel.g && b == dstPixel.b) {
+					buffer[i] = newColor;
+				} else {
+					if (alpha) {
+						buffer[i] = srcPixel.setAlpha(0.5f).getARGB();
+					} else {
+						buffer[i] = pixel;
+					}
 				}
 			}
 		}
-
 		return buffer;
 	}
 
 	public static int[] toColorKeyLimit(int[] buffer, int start, int end) {
+		return toColorKeyLimit(buffer, start, end, LColor.TRANSPARENT);
+	}
+
+	public static int[] toColorKeyLimit(int[] buffer, int start, int end, int newColor) {
 
 		int sred = LColor.getRed(start);
 		int sgreen = LColor.getGreen(start);
@@ -546,7 +595,7 @@ public class BufferUtils {
 			int g = LColor.getGreen(pixel);
 			int b = LColor.getBlue(pixel);
 			if ((r >= sred && g >= sgreen && b >= sblue) && (r <= ered && g <= egreen && b <= eblue)) {
-				buffer[i] = 0x00FFFFFF;
+				buffer[i] = newColor;
 			}
 		}
 

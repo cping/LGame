@@ -609,15 +609,23 @@ public class GLEx implements LRelease {
 		tmpColor.setColor(this.lastBrush.baseColor);
 		resetClear();
 	}
-	
+
+	protected int syncBrushColorInt() {
+		return LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor);
+	}
+
+	protected int syncBrushColorInt(int color) {
+		return LColor.combine(color, this.lastBrush.baseColor);
+	}
+
 	protected LColor syncBrushColor() {
-		return tmpColor.setColor(LColor.combine(this.lastBrush.fillColor,this.lastBrush.baseColor));
+		return tmpColor.setColor(LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor));
 	}
 
 	protected LColor syncBrushColor(int color) {
-		return tmpColor.setColor(LColor.combine(this.lastBrush.fillColor,color));
+		return tmpColor.setColor(LColor.combine(this.lastBrush.fillColor, color));
 	}
-	
+
 	public int color() {
 		return this.lastBrush.baseColor;
 	}
@@ -859,11 +867,10 @@ public class GLEx implements LRelease {
 		if (paint != null && paint.getFont() != null) {
 			IFont tmpFont = paint.getFont();
 			tmpFont.drawString(this, message, x + offsetStringX, y + offsetStringY - tmpFont.getAscent() - 1, rotation,
-					tmpColor.setColor(paint.color));
+					syncBrushColor(paint.color));
 		} else if (this.lastBrush.font != null) {
 			this.lastBrush.font.drawString(this, message, x + offsetStringX,
-					y + offsetStringY - this.lastBrush.font.getAscent() - 1, rotation,
-					syncBrushColor());
+					y + offsetStringY - this.lastBrush.font.getAscent() - 1, rotation, syncBrushColor());
 		}
 		return this;
 	}
@@ -880,8 +887,7 @@ public class GLEx implements LRelease {
 		int tmp = this.lastBrush.baseColor;
 		setColor(color);
 		this.lastBrush.font.drawString(this, message, x + offsetStringX,
-				y + offsetStringY - this.lastBrush.font.getAscent() - 1, rotation,
-				syncBrushColor());
+				y + offsetStringY - this.lastBrush.font.getAscent() - 1, rotation, syncBrushColor());
 		setColor(tmp);
 		return this;
 	}
@@ -1500,8 +1506,7 @@ public class GLEx implements LRelease {
 		if (this.lastBrush.patternTex != null) {
 			batch.addQuad(this.lastBrush.patternTex, this.lastBrush.baseColor, xf, 0, 0, length, width);
 		} else {
-			batch.addQuad(colorTex, LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor), xf, 0, 0,
-					length, width);
+			batch.addQuad(colorTex, syncBrushColorInt(), xf, 0, 0, length, width);
 		}
 		return this;
 	}
@@ -1513,8 +1518,7 @@ public class GLEx implements LRelease {
 		if (this.lastBrush.patternTex != null) {
 			batch.addQuad(this.lastBrush.patternTex, this.lastBrush.baseColor, tx(), x, y, width, height);
 		} else {
-			batch.addQuad(colorTex, LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor), tx(), x, y,
-					width, height);
+			batch.addQuad(colorTex, syncBrushColorInt(), tx(), x, y, width, height);
 		}
 		return this;
 	}
@@ -1977,8 +1981,7 @@ public class GLEx implements LRelease {
 	public GLEx drawOval(float x1, float y1, float width, float height) {
 		Canvas canvas = getCanvas();
 		canvas.setTransform(tx());
-		canvas.drawOval(x1, y1, width, height,
-				syncBrushColor());
+		canvas.drawOval(x1, y1, width, height, syncBrushColor());
 		return this;
 	}
 
@@ -2078,8 +2081,7 @@ public class GLEx implements LRelease {
 	 * @return
 	 */
 	public GLEx drawRhombus(int amount, float x, float y, float radius) {
-		return drawRhombus(amount, x, y, radius,
-				syncBrushColor());
+		return drawRhombus(amount, x, y, radius, syncBrushColor());
 	}
 
 	/**
@@ -2093,8 +2095,7 @@ public class GLEx implements LRelease {
 	 * @return
 	 */
 	public GLEx drawDashRhombus(int amount, float x, float y, float radius, int divisions) {
-		return drawDashRhombus(amount, x, y, radius, divisions,
-				syncBrushColor());
+		return drawDashRhombus(amount, x, y, radius, divisions, syncBrushColor());
 	}
 
 	/**
@@ -2222,7 +2223,7 @@ public class GLEx implements LRelease {
 	public GLEx drawPoint(float x, float y, int color) {
 		Canvas canvas = gfx.getCanvas();
 		LColor tmp = canvas.getFilltoLColor();
-		canvas.setColor(tmpColor.setColor(LColor.combine(this.lastBrush.fillColor, color)));
+		canvas.setColor(syncBrushColor(color));
 		canvas.setTransform(tx());
 		canvas.drawPoint(x, y);
 		canvas.setColor(tmp);
@@ -2319,7 +2320,7 @@ public class GLEx implements LRelease {
 		Canvas canvas = gfx.getCanvas();
 		LColor tmp = canvas.getFilltoLColor();
 		canvas.setTransform(tx());
-		canvas.drawRect(x1, y1,x2,y2,syncBrushColor(color));
+		canvas.drawRect(x1, y1, x2, y2, syncBrushColor(color));
 		canvas.setColor(tmp);
 		return this;
 	}
@@ -2422,8 +2423,7 @@ public class GLEx implements LRelease {
 		}
 		Canvas canvas = getCanvas();
 		canvas.setTransform(tx());
-		canvas.drawArc(x1, y1, width, height, start, end,
-				syncBrushColor());
+		canvas.drawArc(x1, y1, width, height, start, end, syncBrushColor());
 		return this;
 	}
 
@@ -2512,20 +2512,12 @@ public class GLEx implements LRelease {
 			fillRect(x, y, width, height);
 			return this;
 		}
-		int mr = (int) MathUtils.min(width, height) / 2;
-		if (radius > mr) {
-			radius = mr;
-		}
-		float d = radius * 2;
-		fillRect(x + radius, y, width - d, radius);
-		fillRect(x, y + radius, radius, height - d);
-		fillRect(x + width - radius, y + radius, radius, height - d);
-		fillRect(x + radius, y + height - radius, width - d, radius);
-		fillRect(x + radius, y + radius, width - d, height - d);
-		fillArc(x + width - d, y + height - d, d, d, 0, 90);
-		fillArc(x, y + height - d, d, d, 90, 180);
-		fillArc(x + width - d, y, d, d, 270, 360);
-		fillArc(x, y, d, d, 180, 270);
+		Canvas canvas = getCanvas();
+		canvas.setTransform(tx());
+		LColor color = canvas.getFilltoLColor();
+		canvas.setColor(syncBrushColor());
+		canvas.fillRoundRect(x, y, width, height, radius);
+		canvas.setColor(color);
 		return this;
 	}
 
@@ -2556,8 +2548,7 @@ public class GLEx implements LRelease {
 	}
 
 	public GLEx drawDashLine(float x1, float y1, float x2, float y2, int divisions) {
-		return drawDashLine(x1, y1, x2, y2, divisions, this.lastBrush.lineWidth,
-				syncBrushColor());
+		return drawDashLine(x1, y1, x2, y2, divisions, this.lastBrush.lineWidth, syncBrushColor());
 	}
 
 	public GLEx drawAngleLine(float x, float y, float angle, float length) {
@@ -2997,8 +2988,7 @@ public class GLEx implements LRelease {
 	 * @param position
 	 */
 	public GLEx drawString(String text, Vector2f position) {
-		return drawString(text, position.x, position.y,
-				syncBrushColor());
+		return drawString(text, position.x, position.y, syncBrushColor());
 	}
 
 	/**
@@ -3020,8 +3010,7 @@ public class GLEx implements LRelease {
 	 * @param y
 	 */
 	public GLEx drawString(String text, float x, float y) {
-		return drawString(text, x, y,
-				syncBrushColor());
+		return drawString(text, x, y, syncBrushColor());
 	}
 
 	/**
@@ -3045,8 +3034,7 @@ public class GLEx implements LRelease {
 	 * @param rotation
 	 */
 	public GLEx drawString(String text, float x, float y, float rotation) {
-		return drawString(text, x, y, rotation,
-				syncBrushColor());
+		return drawString(text, x, y, rotation, syncBrushColor());
 	}
 
 	/**
@@ -3171,8 +3159,7 @@ public class GLEx implements LRelease {
 	 * @param rotation
 	 */
 	public GLEx drawChar(char chars, float x, float y, float rotation) {
-		return drawChar(chars, x, y, rotation,
-				syncBrushColor());
+		return drawChar(chars, x, y, rotation, syncBrushColor());
 	}
 
 	/**

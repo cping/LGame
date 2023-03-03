@@ -617,6 +617,7 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	public LTexture glBegin() {
+		getTextureBatch();
 		batch.begin();
 		return this;
 	}
@@ -757,7 +758,7 @@ public class LTexture extends Painter implements LRelease {
 	public LTexture draw(float x, float y, float width, float height, float x1, float y1, float x2, float y2,
 			float rotation, LColor c) {
 		if (checkExistBatch()) {
-			draw(x, y, width, height, x1, y1, x2, y2, rotation, c);
+			batch.draw(x, y, width, height, x1, y1, x2, y2, rotation, c);
 		} else {
 			gfx.game.displayImpl.GL().draw(this, x, y, width, height, x1, y1, x2, y2, c, rotation);
 		}

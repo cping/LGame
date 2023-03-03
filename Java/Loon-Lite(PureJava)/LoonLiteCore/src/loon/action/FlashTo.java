@@ -58,9 +58,8 @@ public class FlashTo extends ActionEvent {
 	@Override
 	public void update(long elapsedTime) {
 		easeTimer.update(elapsedTime);
-		if (easeTimer.isCompleted()) {
+		if (_isCompleted = easeTimer.isCompleted()) {
 			original.setVisible(true);
-			_isCompleted = true;
 			return;
 		}
 		interval -= easeTimer.getProgress();
@@ -70,6 +69,10 @@ public class FlashTo extends ActionEvent {
 		}
 	}
 
+	public float getInterval() {
+		return interval;
+	}
+
 	@Override
 	public void onLoad() {
 
@@ -77,13 +80,15 @@ public class FlashTo extends ActionEvent {
 
 	@Override
 	public boolean isComplete() {
+		if (_isCompleted) {
+			this.original.setVisible(true);
+		}
 		return _isCompleted;
 	}
 
 	@Override
 	public ActionEvent cpy() {
-		FlashTo flash = new FlashTo(easeTimer.getDuration(),
-				easeTimer.getDelay(), easeTimer.getEasingMode());
+		FlashTo flash = new FlashTo(easeTimer.getDuration(), easeTimer.getDelay(), easeTimer.getEasingMode());
 		flash.set(this);
 		return flash;
 	}
@@ -101,12 +106,10 @@ public class FlashTo extends ActionEvent {
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue(getName());
-		if(original != null){
+		if (original != null) {
 			builder.kv("visible", original.isVisible()).comma();
 		}
-		builder.kv("interval", interval)
-		.comma()
-		.kv("EaseTimer", easeTimer);
+		builder.kv("interval", interval).comma().kv("EaseTimer", easeTimer);
 		return builder.toString();
 	}
 }

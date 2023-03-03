@@ -34,6 +34,7 @@ import loon.geom.RectBox;
 import loon.geom.RectI;
 import loon.utils.ArrayMap;
 import loon.utils.IntArray;
+import loon.utils.StrBuilder;
 import loon.utils.ArrayMap.Entry;
 import loon.utils.TArray;
 import loon.utils.TimeUtils;
@@ -401,6 +402,10 @@ public class LTexturePack implements LRelease {
 				image.setPixels(pixels, (int) image.width(), (int) image.height());
 			}
 			texture = image.texture();
+			if (image != null) {
+				image.close();
+				image = null;
+			}
 		}
 		return texture;
 	}
@@ -464,7 +469,7 @@ public class LTexturePack implements LRelease {
 	}
 
 	public LTextureBatch getTextureBatch() {
-		return null;// texture.getTextureBatch();
+		return texture.getTextureBatch();
 	}
 
 	public LTexturePack glEnd() {
@@ -533,7 +538,6 @@ public class LTexturePack implements LRelease {
 					entry.bounds.bottom - entry.bounds.top, color, rotation);
 		}
 		blittedSize.set(entry.bounds.width(), entry.bounds.height());
-
 		return blittedSize;
 	}
 
@@ -886,7 +890,7 @@ public class LTexturePack implements LRelease {
 
 	@Override
 	public String toString() {
-		StringBuffer sbr = new StringBuffer(1000);
+		StrBuilder sbr = new StrBuilder(1024);
 		sbr.append("<?xml version=\"1.0\" standalone=\"yes\" ?>\n");
 		if (colorMask != null) {
 			sbr.append("<pack file=\"" + fileName + "\" mask=\"" + colorMask.getRed() + "," + colorMask.getGreen() + ","

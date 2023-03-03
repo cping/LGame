@@ -170,24 +170,51 @@ public class FollowTo extends ActionEvent {
 		return _field2d;
 	}
 
-	public void setField2d(Field2D f) {
+	public FollowTo setField2d(Field2D f) {
 		this._field2d = f;
+		return this;
 	}
 
 	public float getVelocityX() {
 		return _velocityX;
 	}
 
-	public void setVelocityX(float vx) {
+	public FollowTo setVelocityX(float vx) {
 		this._velocityX = vx;
+		return this;
 	}
 
 	public float getVelocityY() {
 		return _velocityY;
 	}
 
-	public void setVelocityY(float vy) {
+	public FollowTo setVelocityY(float vy) {
 		this._velocityY = vy;
+		return this;
+	}
+
+	public ActionBind getFollow() {
+		return _actorToFollow;
+	}
+
+	public boolean isStarted() {
+		return _started;
+	}
+
+	public float getNewX() {
+		return _newX;
+	}
+
+	public float getNewY() {
+		return _newY;
+	}
+
+	public float getFollowDistance() {
+		return _followDistance;
+	}
+
+	public float getSpeed() {
+		return _speed;
 	}
 
 	@Override
