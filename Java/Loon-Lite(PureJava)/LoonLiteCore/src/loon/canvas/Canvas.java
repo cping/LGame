@@ -90,6 +90,10 @@ public abstract class Canvas implements LRelease {
 		return snapshot();
 	}
 
+	public Image getNewImage() {
+		return newSnapshot();
+	}
+	
 	public abstract Image snapshot();
 
 	public abstract Image newSnapshot();

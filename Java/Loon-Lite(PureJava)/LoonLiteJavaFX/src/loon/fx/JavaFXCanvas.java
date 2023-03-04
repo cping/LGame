@@ -58,16 +58,23 @@ public class JavaFXCanvas extends Canvas {
 
 	protected JavaFXCanvas(Graphics gfx, JavaFXImage image) {
 		super(gfx, image);
-		this.image = image;
-		this.width = image.getWidth();
-		this.height = image.getHeight();
+		if (this.image != null) {
+			this.image = image;
+			this.width = image.getWidth();
+			this.height = image.getHeight();
+		}
 		this.fxCanvas = new JavaFXResizeCanvas(width, height);
 		this.context = fxCanvas.getGraphicsContext2D();
+		if (image != null) {
+			this.isDirty = true;
+		} else {
+			this.isDirty = false;
+		}
 		this.snapshotParameters = new SnapshotParameters();
 		if (image.hasAlpha()) {
 			snapshotParameters.setFill(Color.TRANSPARENT);
 		}
-		this.isDirty = false;
+
 	}
 
 	@Override

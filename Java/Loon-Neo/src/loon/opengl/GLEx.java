@@ -1354,6 +1354,15 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	public GLEx draw(Painter texture, float x, float y, float w, float h, float rotation) {
+		return draw(texture, x, y, w, h, w / 2, h / 2, rotation);
+	}
+
+	public GLEx draw(Painter texture, float x, float y, float w, float h, Vector2f origin, float rotation) {
+		return draw(texture, x, y, w, h, origin.x, origin.y, rotation);
+	}
+
+	public GLEx draw(Painter texture, float x, float y, float w, float h, float originX, float originY,
+			float rotation) {
 		if (isClosed) {
 			return this;
 		}
@@ -1363,8 +1372,8 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		Affine2f xf = tx();
 		if (rotation != 0) {
 			xf = new Affine2f();
-			float w1 = x + w / 2;
-			float h1 = y + h / 2;
+			float w1 = x + originX;
+			float h1 = y + originY;
 			xf.translate(w1, h1);
 			xf.preRotate(rotation);
 			xf.translate(-w1, -h1);
