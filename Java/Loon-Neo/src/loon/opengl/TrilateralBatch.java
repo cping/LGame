@@ -37,6 +37,8 @@ public class TrilateralBatch extends BaseBatch {
 
 	private final ExpandVertices _expandVertices;
 
+	private int _blendMode = -1;
+
 	private float _ubufWidth = 0;
 
 	private float _ubufHeight = 0;
@@ -221,17 +223,21 @@ public class TrilateralBatch extends BaseBatch {
 			int count = spritesInBatch * 6;
 			bindTexture();
 			GL20 gl = LSystem.base().graphics().gl;
-			int tmp = GLUtils.getBlendMode();
-			if (_batchColor.a >= 0.98f) {
-				GLUtils.setBlendMode(gl, BlendMethod.MODE_NORMAL);
+			int blend = GLUtils.getBlendMode();
+			if (_blendMode == -1) {
+				if (_batchColor.a >= 0.98f) {
+					GLUtils.setBlendMode(gl, BlendMethod.MODE_NORMAL);
+				} else {
+					GLUtils.setBlendMode(gl, BlendMethod.MODE_SPEED);
+				}
 			} else {
-				GLUtils.setBlendMode(gl, BlendMethod.MODE_SPEED);
+				GLUtils.setBlendMode(gl, _blendMode);
 			}
 			_submit.post(BATCHNAME, _expandVertices.getSize(), _batchShader, _expandVertices.getVertices(), _indexCount,
 					count);
-			GLUtils.setBlendMode(gl, tmp);
+			GLUtils.setBlendMode(gl, blend);
 		} catch (Throwable ex) {
-			LSystem.error("Batch _submit() error", ex);
+			LSystem.error("Batch submit() error", ex);
 		} finally {
 			if (_expandVertices.expand(this._indexCount)) {
 				_submit.reset(BATCHNAME, _expandVertices.length());
@@ -250,6 +256,17 @@ public class TrilateralBatch extends BaseBatch {
 		}
 	}
 
+	@Override
+	public BaseBatch setMethodMode(int b) {
+		this._blendMode = b;
+		return this;
+	}
+
+	@Override
+	public int getMethodMode() {
+		return _blendMode;
+	}
+	
 	@Override
 	public void close() {
 		super.close();

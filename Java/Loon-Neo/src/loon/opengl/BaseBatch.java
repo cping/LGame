@@ -29,7 +29,11 @@ public abstract class BaseBatch extends LTextureBind {
 	protected ShaderSource _shader_source;
 
 	private boolean _shader_ditry = true;
+	
+	public abstract BaseBatch setMethodMode(int b);
 
+	public abstract int getMethodMode();
+	
 	public void setShaderSource(ShaderSource source) {
 		if (source == null) {
 			return;

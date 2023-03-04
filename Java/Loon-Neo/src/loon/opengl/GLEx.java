@@ -426,7 +426,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	public int getBlendMode() {
-		return GLUtils.getBlendMode();
+		return lastBrush.blend;
 	}
 
 	public Affine2f tx() {
@@ -1680,6 +1680,30 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			float srcWidth, float srcHeight, LColor color, float rotation, Vector2f origin, Direction dir) {
 		return draw(texture, x, y, width, height, srcX, srcY, srcWidth, srcHeight, color, rotation, 1f, 1f, origin,
 				dir);
+	}
+
+	public GLEx draw(Painter texture, float x, float y, LColor color, float rotation, Vector2f origin, float scale,
+			Direction dir) {
+		return draw(texture, x, y, color, rotation, origin, Vector2f.at(scale, scale), dir);
+	}
+
+	public GLEx draw(Painter texture, float x, float y, LColor color, float rotation, Vector2f origin, Vector2f scale,
+			Direction dir) {
+		if (isClosed) {
+			return this;
+		}
+		if (texture == null) {
+			return this;
+		}
+		return draw(texture, x, y, texture.width(), texture.height(), 0, 0, texture.width(), texture.height(), color,
+				rotation, origin, scale, dir);
+	}
+
+	public GLEx draw(Painter texture, float x, float y, float width, float height, float srcX, float srcY,
+			float srcWidth, float srcHeight, LColor color, float rotation, Vector2f origin, Vector2f scale,
+			Direction dir) {
+		return draw(texture, x, y, width, height, srcX, srcY, srcWidth, srcHeight, color, rotation, scale.x, scale.y,
+				origin, dir);
 	}
 
 	public GLEx draw(Painter texture, float x, float y, Vector2f origin, float width, float height, float scaleX,
