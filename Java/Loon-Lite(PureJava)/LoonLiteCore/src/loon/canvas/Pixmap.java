@@ -2277,103 +2277,65 @@ public class Pixmap extends PixmapComposite implements LRelease {
 			src = pixel;
 		}
 		if (_composite == -1) {
-			if (_baseAlpha == 1f) {
-				newColor = getXorNewColor(pixel, dst);
-			} else {
-				dst = SET_LIGHTEN(srcColor.setColor(src), dstColor.setColor(dst), _transparent);
-				dst = getAlphaNewColor(_baseAlpha, dst);
-				newColor = getXorNewColor(pixel, dst);
+			if (_baseAlpha != 1f) {
+				dst = SET_DEFAULT(srcColor.setColor(src), dstColor.setColor(dst), _transparent, _baseAlpha);
 			}
 		} else {
 			switch (_composite) {
 			default:
 			case SRC_IN:
 				if (pixel != _transparent) {
-					if (_baseAlpha == 1f) {
-						newColor = getXorNewColor(pixel, dst);
-					} else {
+					if (_baseAlpha != 1f) {
 						dst = getAlphaNewColor(_baseAlpha, dst);
-						newColor = getXorNewColor(pixel, dst);
 					}
 				}
 				break;
 			case SRC_OUT:
 				if (pixel == _transparent) {
-					if (_baseAlpha == 1f) {
-						newColor = getXorNewColor(pixel, dst);
-					} else {
+					if (_baseAlpha != 1f) {
 						dst = getAlphaNewColor(_baseAlpha, dst);
-						newColor = getXorNewColor(pixel, dst);
 					}
 				}
 				break;
 			case SRC_OVER:
-				if (_baseAlpha == 1f) {
-					newColor = getXorNewColor(pixel, dst);
-				} else {
-					dst = SET_MULTIPLY(srcColor.setColor(src), dstColor.setColor(dst), _transparent);
-					dst = getAlphaNewColor(_baseAlpha, dst);
-					newColor = getXorNewColor(pixel, dst);
-				}
+				dst = SET_SRC_OVER(srcColor.setColor(src), dstColor.setColor(dst), _transparent, _baseAlpha);
 				break;
 			case SRC_ATOP:
-				dst = SET_SRC_ATOP(srcColor.setColor(src), dstColor.setColor(dst), _transparent);
-				dst = getAlphaNewColor(_baseAlpha, dst);
-				newColor = getXorNewColor(pixel, dst);
+				dst = SET_SRC_ATOP(srcColor.setColor(src), dstColor.setColor(dst), _transparent, _baseAlpha);
 				break;
 			case ADD:
-				dst = SET_ADD(srcColor.setColor(src), dstColor.setColor(dst), _transparent);
-				dst = getAlphaNewColor(_baseAlpha, dst);
-				newColor = getXorNewColor(pixel, dst);
+				dst = SET_ADD(srcColor.setColor(src), dstColor.setColor(dst), _transparent, _baseAlpha);
 				break;
 			case RED:
-				dst = SET_RED(srcColor.setColor(src), dstColor.setColor(dst), _transparent);
-				dst = getAlphaNewColor(_baseAlpha, dst);
-				newColor = getXorNewColor(pixel, dst);
+				dst = SET_RED(srcColor.setColor(src), dstColor.setColor(dst), _transparent, _baseAlpha);
 				break;
 			case GREEN:
-				dst = SET_GREEN(srcColor.setColor(src), dstColor.setColor(dst), _transparent);
-				dst = getAlphaNewColor(_baseAlpha, dst);
-				newColor = getXorNewColor(pixel, dst);
+				dst = SET_GREEN(srcColor.setColor(src), dstColor.setColor(dst), _transparent, _baseAlpha);
 				break;
 			case BLUE:
-				dst = SET_BLUE(srcColor.setColor(src), dstColor.setColor(dst), _transparent);
-				dst = getAlphaNewColor(_baseAlpha, dst);
-				newColor = getXorNewColor(pixel, dst);
+				dst = SET_BLUE(srcColor.setColor(src), dstColor.setColor(dst), _transparent, _baseAlpha);
 				break;
 			case COLOR_BURN:
-				dst = SET_COLOR_BURN(srcColor.setColor(src), dstColor.setColor(dst), _transparent);
-				dst = getAlphaNewColor(_baseAlpha, dst);
-				newColor = getXorNewColor(pixel, dst);
+				dst = SET_COLOR_BURN(srcColor.setColor(src), dstColor.setColor(dst), _transparent, _baseAlpha);
 				break;
 			case SOFT_LIGHT:
-				dst = SET_SOFT_LIGHT(srcColor.setColor(src), dstColor.setColor(dst), _transparent);
-				dst = getAlphaNewColor(_baseAlpha, dst);
-				newColor = getXorNewColor(pixel, dst);
+				dst = SET_SOFT_LIGHT(srcColor.setColor(src), dstColor.setColor(dst), _transparent, _baseAlpha);
 				break;
 			case DIFFERENCE:
-				dst = SET_DIFFERENCE(srcColor.setColor(src), dstColor.setColor(dst), _transparent);
-				dst = getAlphaNewColor(_baseAlpha, dst);
-				newColor = getXorNewColor(pixel, dst);
+				dst = SET_DIFFERENCE(srcColor.setColor(src), dstColor.setColor(dst), _transparent, _baseAlpha);
 				break;
 			case EXCLUSION:
-				dst = SET_EXCLUSION(srcColor.setColor(src), dstColor.setColor(dst), _transparent);
-				dst = getAlphaNewColor(_baseAlpha, dst);
-				newColor = getXorNewColor(pixel, dst);
+				dst = SET_EXCLUSION(srcColor.setColor(src), dstColor.setColor(dst), _transparent, _baseAlpha);
 				break;
 			case LIGHTEN:
-				dst = SET_LIGHTEN(srcColor.setColor(src), dstColor.setColor(dst), _transparent);
-				dst = getAlphaNewColor(_baseAlpha, dst);
-				newColor = getXorNewColor(pixel, dst);
+				dst = SET_LIGHTEN(srcColor.setColor(src), dstColor.setColor(dst), _transparent, _baseAlpha);
 				break;
 			case MULTIPLY:
-				dst = SET_MULTIPLY(srcColor.setColor(src), dstColor.setColor(dst), _transparent);
-				dst = getAlphaNewColor(_baseAlpha, dst);
-				newColor = getXorNewColor(pixel, dst);
+				dst = SET_MULTIPLY(srcColor.setColor(src), dstColor.setColor(dst), _transparent, _baseAlpha);
 				break;
 			}
 		}
-
+		newColor = getXorNewColor(pixel, dst);
 		pixels[pixelIndex] = (newColor == _transparent) ? src : newColor;
 		_dirty = true;
 	}
