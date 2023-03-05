@@ -1698,14 +1698,24 @@ public class GLEx extends PixmapFImpl implements LRelease {
 
 	public GLEx draw(Painter texture, float x, float y, LColor color, float rotation, Vector2f origin, Vector2f scale,
 			Direction dir) {
+		return draw(texture, x, y, color, rotation, origin, scale, dir, false);
+	}
+
+	public GLEx draw(Painter texture, float x, float y, LColor color, float rotation, Vector2f origin, float scale,
+			Direction dir, boolean offset) {
+		return draw(texture, x, y, color, rotation, origin, Vector2f.at(scale, scale), dir, offset);
+	}
+
+	public GLEx draw(Painter texture, float x, float y, LColor color, float rotation, Vector2f origin, Vector2f scale,
+			Direction dir, boolean offset) {
 		if (isClosed) {
 			return this;
 		}
 		if (texture == null) {
 			return this;
 		}
-		return draw(texture, x, y, texture.width(), texture.height(), 0, 0, texture.width(), texture.height(), color,
-				rotation, origin, scale, dir);
+		return draw(texture, x, y, texture.width(), texture.height(), 0f, 0f, texture.width(), texture.height(), color,
+				rotation, scale.x, scale.y, origin, null, dir, offset);
 	}
 
 	public GLEx draw(Painter texture, float x, float y, float width, float height, float srcX, float srcY,
@@ -1737,12 +1747,19 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			float srcWidth, float srcHeight, LColor color, float rotation, float scaleX, float scaleY, Vector2f origin,
 			Direction dir) {
 		return draw(texture, x, y, width, height, srcX, srcY, srcWidth, srcHeight, color, rotation, scaleX, scaleY,
-				origin, null, dir);
+				origin, null, dir, false);
 	}
 
 	public GLEx draw(Painter texture, float x, float y, float width, float height, float srcX, float srcY,
 			float srcWidth, float srcHeight, LColor color, float rotation, float scaleX, float scaleY, Vector2f origin,
 			Vector2f pivot, Direction dir) {
+		return draw(texture, x, y, width, height, srcX, srcY, srcWidth, srcHeight, color, rotation, scaleX, scaleY,
+				origin, pivot, dir, false);
+	}
+
+	public GLEx draw(Painter texture, float x, float y, float width, float height, float srcX, float srcY,
+			float srcWidth, float srcHeight, LColor color, float rotation, float scaleX, float scaleY, Vector2f origin,
+			Vector2f pivot, Direction dir, boolean offset) {
 		if (isClosed) {
 			return this;
 		}
@@ -1752,22 +1769,25 @@ public class GLEx extends PixmapFImpl implements LRelease {
 
 		Affine2f xf = tx();
 
-		boolean dirDirty = (dir != null && dir != Direction.TRANS_NONE);
+		final boolean dirDirty = (dir != null && dir != Direction.TRANS_NONE);
+		final boolean rotDirty = (rotation != 0 || pivot != null);
+		final boolean scaleDirty = !(scaleX == 1 && scaleY == 1);
 
-		boolean rotDirty = (rotation != 0 || pivot != null);
-
-		boolean oriDirty = (origin != null && (origin.x != 0 || origin.y != 0));
-
-		boolean scaleDirty = !(scaleX == 1 && scaleY == 1);
-
-		if (dirDirty || rotDirty || oriDirty || scaleDirty) {
+		if (dirDirty || rotDirty || scaleDirty) {
 			xf = new Affine2f();
-			if (oriDirty) {
-				xf.translate(origin.x, origin.y);
+
+			if (origin.x == 0 && origin.y == 0) {
+				origin.x = origin.x == 0 ? width / 2 : origin.x;
+				origin.y = origin.y == 0 ? height / 2 : origin.y;
 			}
+			
+			if (offset) {
+				xf.translate(-origin.x, -origin.y);
+			}
+
+			float centerX = x + origin.x;
+			float centerY = y + origin.y;
 			if (rotDirty) {
-				float centerX = x + width / 2;
-				float centerY = y + height / 2;
 				if (pivot != null && (pivot.x != -1 && pivot.y != -1)) {
 					centerX = x + pivot.x;
 					centerX = y + pivot.y;
@@ -1777,8 +1797,6 @@ public class GLEx extends PixmapFImpl implements LRelease {
 				xf.translate(-centerX, -centerY);
 			}
 			if (scaleDirty) {
-				float centerX = x + width / 2;
-				float centerY = y + height / 2;
 				if (pivot != null && (pivot.x != -1 && pivot.y != -1)) {
 					centerX = x + pivot.x;
 					centerX = y + pivot.y;
@@ -1790,13 +1808,13 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			if (dirDirty) {
 				switch (dir) {
 				case TRANS_MIRROR:
-					Affine2f.transform(xf, x, y, Affine2f.TRANS_MIRROR, width, height);
+					Affine2f.transformOrigin(xf, x, y, Affine2f.TRANS_MIRROR, origin.x, origin.y);
 					break;
 				case TRANS_FLIP:
-					Affine2f.transform(xf, x, y, Affine2f.TRANS_MIRROR_ROT180, width, height);
+					Affine2f.transformOrigin(xf, x, y, Affine2f.TRANS_MIRROR_ROT180, origin.x, origin.y);
 					break;
 				case TRANS_MF:
-					Affine2f.transform(xf, x, y, Affine2f.TRANS_ROT180, width, height);
+					Affine2f.transformOrigin(xf, x, y, Affine2f.TRANS_ROT180, origin.x, origin.y);
 					break;
 				default:
 					break;

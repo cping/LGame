@@ -132,7 +132,7 @@ public class Vector3f implements Serializable, XYZ {
 	}
 
 	public static Vector3f div(Vector3f v1, float v) {
-		float d = 1 /v;
+		float d = 1 / v;
 		v1.x = d * v1.x;
 		v1.y = d * v1.y;
 		v1.z = d * v1.z;
@@ -589,6 +589,10 @@ public class Vector3f implements Serializable, XYZ {
 		return set(x * l_mat[Matrix3.M00] + y * l_mat[Matrix3.M10] + z * l_mat[Matrix3.M20],
 				x * l_mat[Matrix3.M01] + y * l_mat[Matrix3.M11] + z * l_mat[Matrix3.M21],
 				x * l_mat[Matrix3.M02] + y * l_mat[Matrix3.M12] + z * l_mat[Matrix3.M22]);
+	}
+
+	public Vector3f mulSelf(final Quaternion quat) {
+		return quat.transformSelf(this);
 	}
 
 	public boolean isUnit() {

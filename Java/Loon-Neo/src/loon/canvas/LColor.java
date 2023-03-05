@@ -1799,6 +1799,10 @@ public class LColor implements Serializable {
 		return value;
 	}
 
+	public String toRGBAString() {
+		return r + "," + g + "," + b + "," + a;
+	}
+
 	/**
 	 * 以指定像素格式返回当前色彩的字符串格式
 	 * 

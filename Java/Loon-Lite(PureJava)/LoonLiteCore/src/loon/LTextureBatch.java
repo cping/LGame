@@ -158,7 +158,6 @@ public class LTextureBatch implements LRelease {
 			submit(tx, ty);
 		}
 		drawing = false;
-		// LSystem.mainBeginDraw();
 		return this;
 	}
 
@@ -279,7 +278,6 @@ public class LTextureBatch implements LRelease {
 		}
 		GLEx gl = LSystem.base().display().GL();
 
-		Affine2f display = gl.tx();
 
 		if (gl != null) {
 
@@ -287,48 +285,17 @@ public class LTextureBatch implements LRelease {
 			final int width = image.getWidth();
 			final int height = image.getHeight();
 
-			final boolean oriDirty = (ax != 0 || ay != 0);
 			final boolean rotDirty = (rotation != 0);
 			final boolean scaleDirty = !(sx == 1 && sy == 1);
 
-			display = new Affine2f();
+			Affine2f display = gl.tx();
 
-			if (rotDirty || oriDirty || scaleDirty) {
-
-				if (oriDirty) {
-					display.translate(ax, ay);
-				}
-				if (rotDirty) {
-					float centerX = x + width / 2;
-					float centerY = y + height / 2;
-					display.translate(centerX, centerY);
-					display.preRotate(rotation);
-					display.translate(-centerX, -centerY);
-				}
-				if (scaleDirty) {
-					float centerX = x + width / 2;
-					float centerY = y + height / 2;
-					display.translate(centerX, centerY);
-					display.preScale(sx, sy);
-					display.translate(-centerX, -centerY);
-				}
-
-				if (flipZ) {
-					flipX = !flipX;
-					flipY = !flipY;
-				}
-				if (flipX || flipY) {
-					if (flipX && flipY) {
-						Affine2f.transform(display, x, y, Affine2f.TRANS_ROT180, width, height);
-					} else if (flipX) {
-						Affine2f.transform(display, x, y, Affine2f.TRANS_MIRROR, width, height);
-					} else if (flipY) {
-						Affine2f.transform(display, x, y, Affine2f.TRANS_MIRROR_ROT180, width, height);
-					}
-				}
-
+			if (rotDirty || scaleDirty) {
+				updateTransform(display, x, y, width, height, rotation, sx, sy, ax, ay, -1f, -1f, rotDirty, scaleDirty,
+						flipX, flipY);
 				Affine2f.multiply(gl.tx(), display, display);
 			}
+			
 			Canvas canvas = gl.getCanvas();
 			canvas.setTransform(display);
 			canvas.draw(_buffer.snapshot(), x, y);
@@ -398,53 +365,58 @@ public class LTextureBatch implements LRelease {
 
 	public LTextureBatch draw(float x, float y, LColor color) {
 		final boolean update = checkUpdateColor(color);
-		return draw(x, y, -1f, -1f, 0f, 0f, _meshdata.texture.width(), _meshdata.texture.height(), 1f, 1f, 0f, 0, 0,
-				_meshdata.texture.width(), _meshdata.texture.height(), false, false, update ? color : null);
+		return draw(x, y, -1f, -1f, _meshdata.texture.width() / 2, _meshdata.texture.height() / 2,
+				_meshdata.texture.width(), _meshdata.texture.height(), 1f, 1f, 0f, 0, 0, _meshdata.texture.width(),
+				_meshdata.texture.height(), false, false, update ? color : null);
 	}
 
 	public LTextureBatch draw(float x, float y, float width, float height, LColor color) {
 		final boolean update = checkUpdateColor(color);
-		return draw(x, y, -1f, -1f, 0f, 0f, width, height, 1f, 1f, 0f, 0, 0, _meshdata.texture.width(),
-				_meshdata.texture.height(), false, false, update ? color : null);
+		return draw(x, y, -1f, -1f, _meshdata.texture.width() / 2, _meshdata.texture.height() / 2, width, height, 1f,
+				1f, 0f, 0, 0, _meshdata.texture.width(), _meshdata.texture.height(), false, false,
+				update ? color : null);
 	}
 
 	public LTextureBatch draw(float x, float y, float width, float height, float x1, float y1, float x2, float y2,
 			float rotation, LColor color) {
 		final boolean update = checkUpdateColor(color);
-		return draw(x, y, -1f, -1f, 0f, 0f, width, height, 1f, 1f, rotation, x1, y1, x2, y2, false, false,
-				update ? color : null);
+		return draw(x, y, -1f, -1f, _meshdata.texture.width() / 2, _meshdata.texture.height() / 2, width, height, 1f,
+				1f, rotation, x1, y1, x2, y2, false, false, update ? color : null);
 	}
 
 	public LTextureBatch draw(float x, float y, float width, float height, float x1, float y1, float x2, float y2,
 			LColor color) {
 		final boolean update = checkUpdateColor(color);
-		return draw(x, y, -1f, -1f, 0f, 0f, width, height, 1f, 1f, 0f, x1, y1, x2, y2, false, false,
-				update ? color : null);
+		return draw(x, y, -1f, -1f, _meshdata.texture.width() / 2, _meshdata.texture.height() / 2, width, height, 1f,
+				1f, 0f, x1, y1, x2, y2, false, false, update ? color : null);
 	}
 
 	public LTextureBatch draw(float x, float y, float rotation, LColor color) {
 		final boolean update = checkUpdateColor(color);
-		return draw(x, y, -1f, -1f, 0f, 0f, _meshdata.texture.width(), _meshdata.texture.height(), 1f, 1f, rotation, 0,
-				0, _meshdata.texture.width(), _meshdata.texture.height(), false, false, update ? color : null);
+		return draw(x, y, -1f, -1f, _meshdata.texture.width() / 2, _meshdata.texture.height() / 2,
+				_meshdata.texture.width(), _meshdata.texture.height(), 1f, 1f, rotation, 0, 0,
+				_meshdata.texture.width(), _meshdata.texture.height(), false, false, update ? color : null);
 	}
 
 	public LTextureBatch draw(float x, float y, float width, float height, float rotation, LColor color) {
 		final boolean update = checkUpdateColor(color);
-		return draw(x, y, -1f, -1f, 0f, 0f, width, height, 1f, 1f, rotation, 0, 0, _meshdata.texture.width(),
-				_meshdata.texture.height(), false, false, update ? color : null);
+		return draw(x, y, -1f, -1f, _meshdata.texture.width() / 2, _meshdata.texture.height() / 2, width, height, 1f,
+				1f, rotation, 0, 0, _meshdata.texture.width(), _meshdata.texture.height(), false, false,
+				update ? color : null);
 	}
 
 	public LTextureBatch draw(float x, float y, float srcX, float srcY, float srcWidth, float srcHeight, float rotation,
 			LColor color) {
 		final boolean update = checkUpdateColor(color);
-		return draw(x, y, -1f, -1f, 0f, 0f, _meshdata.texture.width(), _meshdata.texture.height(), 1f, 1f, rotation,
-				srcX, srcY, srcWidth, srcHeight, false, false, update ? color : null);
+		return draw(x, y, -1f, -1f, _meshdata.texture.width() / 2, _meshdata.texture.height() / 2,
+				_meshdata.texture.width(), _meshdata.texture.height(), 1f, 1f, rotation, srcX, srcY, srcWidth,
+				srcHeight, false, false, update ? color : null);
 	}
 
 	public LTextureBatch draw(float x, float y, float width, float height, float srcX, float srcY, float srcWidth,
 			float srcHeight, float rotation) {
-		return draw(x, y, -1f, -1f, 0f, 0f, width, height, 1f, 1f, rotation, srcX, srcY, srcWidth, srcHeight, false,
-				false, _color);
+		return draw(x, y, -1f, -1f, _meshdata.texture.width() / 2, _meshdata.texture.height() / 2, width, height, 1f,
+				1f, rotation, srcX, srcY, srcWidth, srcHeight, false, false, _color);
 	}
 
 	public LTextureBatch draw(float x, float y, float originX, float originY, float width, float height, float scaleX,
@@ -456,14 +428,14 @@ public class LTextureBatch implements LRelease {
 
 	public LTextureBatch draw(float x, float y, float width, float height, float srcX, float srcY, float srcWidth,
 			float srcHeight, boolean flipX, boolean flipY) {
-		return draw(x, y, -1f, -1f, 0f, 0f, width, height, 1f, 1f, 0f, srcX, srcY, srcWidth, srcHeight, flipX, flipY,
-				_color);
+		return draw(x, y, -1f, -1f, _meshdata.texture.width() / 2, _meshdata.texture.height() / 2, width, height, 1f,
+				1f, 0f, srcX, srcY, srcWidth, srcHeight, flipX, flipY, _color);
 	}
 
 	public LTextureBatch draw(float x, float y, float width, float height, float srcX, float srcY, float srcWidth,
 			float srcHeight, boolean flipX, boolean flipY, LColor color) {
-		return draw(x, y, -1f, -1f, 0f, 0f, width, height, 1f, 1f, 0f, srcX, srcY, srcWidth, srcHeight, flipX, flipY,
-				color);
+		return draw(x, y, -1f, -1f, _meshdata.texture.width() / 2, _meshdata.texture.height() / 2, width, height, 1f,
+				1f, 0f, srcX, srcY, srcWidth, srcHeight, flipX, flipY, color);
 	}
 
 	public LTextureBatch draw(float x, float y, float pivotX, float pivotY, float originX, float originY, float width,
@@ -476,51 +448,13 @@ public class LTextureBatch implements LRelease {
 
 		boolean rotDirty = (rotation != 0 || (pivotX != -1 && pivotY != -1));
 
-		boolean oriDirty = (originX != 0 || originY != 0);
-
 		boolean scaleDirty = !(scaleX == 1 && scaleY == 1);
 
 		_display.idt();
 
-		if (flipX || flipY || rotDirty || oriDirty || scaleDirty) {
-
-			if (oriDirty) {
-				_display.translate(originX, originY);
-			}
-
-			if (rotDirty) {
-				float centerX = x + width / 2;
-				float centerY = y + height / 2;
-				if (pivotX != -1 && pivotY != -1) {
-					centerX = x + pivotX;
-					centerX = y + pivotY;
-				}
-				_display.translate(centerX, centerY);
-				_display.preRotate(rotation);
-				_display.translate(-centerX, -centerY);
-			}
-			if (scaleDirty) {
-				float centerX = x + width / 2;
-				float centerY = y + height / 2;
-				if (pivotX != -1 && pivotY != -1) {
-					centerX = x + pivotX;
-					centerX = y + pivotY;
-				}
-				_display.translate(centerX, centerY);
-				_display.preScale(scaleX, scaleY);
-				_display.translate(-centerX, -centerY);
-			}
-
-			if (flipX || flipY) {
-				if (flipX && flipY) {
-					Affine2f.transform(_display, x, y, Affine2f.TRANS_ROT180, width, height);
-				} else if (flipX) {
-					Affine2f.transform(_display, x, y, Affine2f.TRANS_MIRROR, width, height);
-				} else if (flipY) {
-					Affine2f.transform(_display, x, y, Affine2f.TRANS_MIRROR_ROT180, width, height);
-				}
-			}
-
+		if (flipX || flipY || rotDirty || scaleDirty) {
+			updateTransform(_display, x, y, width, height, rotation, scaleX, scaleY, originX, originY, pivotX, pivotY,
+					rotDirty, scaleDirty, flipX, flipY);
 		}
 
 		int argb = this._color.getABGR();
@@ -622,61 +556,71 @@ public class LTextureBatch implements LRelease {
 
 		GLEx gl = LSystem.base().display().GL();
 
-		Affine2f display = gl.tx();
-
 		if (gl != null) {
 
 			final int width = cache._image.getWidth();
 			final int height = cache._image.getHeight();
 
-			final boolean oriDirty = (ax != 0 || ay != 0);
 			final boolean rotDirty = (rotation != 0);
 			final boolean scaleDirty = !(sx == 1 && sy == 1);
 
-			if (rotDirty || oriDirty || scaleDirty) {
+			Affine2f display = gl.tx();
 
-				display = new Affine2f();
-
-				if (oriDirty) {
-					display.translate(ax, ay);
-				}
-				if (rotDirty) {
-					float centerX = x + width / 2;
-					float centerY = y + height / 2;
-					display.translate(centerX, centerY);
-					display.preRotate(rotation);
-					display.translate(-centerX, -centerY);
-				}
-				if (scaleDirty) {
-					float centerX = x + width / 2;
-					float centerY = y + height / 2;
-					display.translate(centerX, centerY);
-					display.preScale(sx, sy);
-					display.translate(-centerX, -centerY);
-				}
-
-				if (flipZ) {
-					flipX = !flipX;
-					flipY = !flipY;
-				}
-				if (flipX || flipY) {
-					if (flipX && flipY) {
-						Affine2f.transform(display, x, y, Affine2f.TRANS_ROT180, width, height);
-					} else if (flipX) {
-						Affine2f.transform(display, x, y, Affine2f.TRANS_MIRROR, width, height);
-					} else if (flipY) {
-						Affine2f.transform(display, x, y, Affine2f.TRANS_MIRROR_ROT180, width, height);
-					}
-				}
-
+			if (rotDirty || scaleDirty) {
+				updateTransform(display, x, y, width, height, rotation, sx, sy, ax, ay, -1f, -1f, rotDirty, scaleDirty,
+						flipX, flipY);
 				Affine2f.multiply(gl.tx(), display, display);
 			}
-
+			
 			Canvas canvas = gl.getCanvas();
 			canvas.setTransform(display);
 			canvas.draw(cache._image, x, y);
 		}
 		return this;
+	}
+
+	protected void updateTransform(Affine2f display, float x, float y, float width, float height, float rotation,
+			float scaleX, float scaleY, float originX, float originY, float pivotX, float pivotY, boolean rotDirty,
+			boolean scaleDirty, boolean flipX, boolean flipY) {
+
+		if (originX == 0 && originY == 0) {
+			originX = originX == 0 ? width / 2 : originX;
+			originY = originY == 0 ? height / 2 : originY;
+		}
+
+		float centerX = x + originX;
+		float centerY = y + originY;
+
+		display.translate(-originX, -originY);
+
+		if (rotDirty) {
+			if (pivotX != -1 && pivotY != -1) {
+				centerX = x + pivotX;
+				centerX = y + pivotY;
+			}
+			display.translate(centerX, centerY);
+			display.preRotate(rotation);
+			display.translate(-centerX, -centerY);
+		}
+		if (scaleDirty) {
+			if (pivotX != -1 && pivotY != -1) {
+				centerX = x + pivotX;
+				centerX = y + pivotY;
+			}
+			display.translate(centerX, centerY);
+			display.preScale(scaleX, scaleY);
+			display.translate(-centerX, -centerY);
+		}
+
+		if (flipX || flipY) {
+			if (flipX && flipY) {
+				Affine2f.transformOrigin(display, x, y, Affine2f.TRANS_ROT180, originX, originY);
+			} else if (flipX) {
+				Affine2f.transformOrigin(display, x, y, Affine2f.TRANS_MIRROR, originX, originY);
+			} else if (flipY) {
+				Affine2f.transformOrigin(display, x, y, Affine2f.TRANS_MIRROR_ROT180, originX, originY);
+			}
+		}
 	}
 
 	public int getTextureID() {

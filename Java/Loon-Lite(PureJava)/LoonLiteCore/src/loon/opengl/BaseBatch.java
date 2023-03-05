@@ -27,6 +27,10 @@ import loon.geom.Affine2f;
 
 public abstract class BaseBatch extends LTextureBind {
 
+	public abstract BaseBatch setBlendMode(int b);
+
+	public abstract int getBlendMode();
+	
 	public void addQuad(LTexture tex, int tint, Affine2f xf, float x, float y, float w, float h) {
 		if (tex == null || tex.isClosed()) {
 			return;

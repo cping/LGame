@@ -1785,6 +1785,10 @@ public class LColor implements Serializable {
 		return LColorList.get().find(color);
 	}
 
+	public String toRGBAString() {
+		return r + "," + g + "," + b + "," + a;
+	}
+
 	/**
 	 * 返回指定像素的字符串格式
 	 * 
@@ -1797,10 +1801,6 @@ public class LColor implements Serializable {
 			value = "0" + value;
 		}
 		return value;
-	}
-
-	public String toRGBAString() {
-		return r + "," + g + "," + b + "," + a;
 	}
 
 	/**

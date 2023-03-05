@@ -30,9 +30,9 @@ public abstract class BaseBatch extends LTextureBind {
 
 	private boolean _shader_ditry = true;
 	
-	public abstract BaseBatch setMethodMode(int b);
+	public abstract BaseBatch setBlendMode(int b);
 
-	public abstract int getMethodMode();
+	public abstract int getBlendMode();
 	
 	public void setShaderSource(ShaderSource source) {
 		if (source == null) {

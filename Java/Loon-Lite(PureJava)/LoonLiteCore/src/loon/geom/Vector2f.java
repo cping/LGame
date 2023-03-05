@@ -172,6 +172,27 @@ public class Vector2f implements Serializable, XY {
 		return new Vector2f(MathUtils.smoothStep(a.x, b.x, amount), MathUtils.smoothStep(a.y, b.y, amount));
 	}
 
+	public final static Vector2f transform(Vector2f value, Quaternion rotation) {
+		return transform(value, rotation, null);
+	}
+
+	public final static Vector2f transform(Vector2f value, Quaternion rotation, Vector2f result) {
+		if (result == null) {
+			result = new Vector2f();
+		}
+		Vector3f rot1 = new Vector3f(rotation.x + rotation.x, rotation.y + rotation.y, rotation.z + rotation.z);
+		Vector3f rot2 = new Vector3f(rotation.x, rotation.x, rotation.w);
+		Vector3f rot3 = new Vector3f(1, rotation.y, rotation.z);
+		Vector3f rot4 = rot1.mul(rot2);
+		Vector3f rot5 = rot1.mul(rot3);
+		Vector2f v = new Vector2f();
+		v.x = (value.x * (1f - rot5.y - rot5.z) + value.y * (rot4.y - rot4.z));
+		v.y = (value.x * (rot4.y + rot4.z) + value.y * (1f - rot4.x - rot5.z));
+		result.x = v.x;
+		result.y = v.y;
+		return result;
+	}
+
 	public final static Vector2f abs(Vector2f a) {
 		return new Vector2f(MathUtils.abs(a.x), MathUtils.abs(a.y));
 	}

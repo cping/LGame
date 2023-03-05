@@ -22,6 +22,8 @@ package loon.action.sprite.effect;
 
 import loon.LSystem;
 import loon.action.sprite.Entity;
+import loon.canvas.LColor;
+import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.opengl.LTexturePack;
 import loon.utils.MathUtils;
@@ -33,10 +35,12 @@ import loon.utils.timer.LTimer;
 public class NaturalEffect extends Entity implements BaseEffect {
 
 	public static enum NaturalType {
-		Rain, Snow, Petal;
+		Rain, Snow, Petal, Thunder;
 	}
 
 	private NaturalType naturalType;
+
+	private LightningEffect lightningEffect;
 
 	private LTexturePack pack;
 
@@ -47,6 +51,51 @@ public class NaturalEffect extends Entity implements BaseEffect {
 	private IKernel[] kernels;
 
 	private boolean completed = false;
+
+	/**
+	 * 返回默认数量的雷电
+	 * 
+	 * @return
+	 */
+	public static NaturalEffect getThunderEffect() {
+		return NaturalEffect.getThunderEffect(30);
+	}
+
+	/**
+	 * 返回指定数量的雷电
+	 * 
+	 * @param count
+	 * @return
+	 */
+	public static NaturalEffect getThunderEffect(int count) {
+		return NaturalEffect.getThunderEffect(count, 0, 0);
+	}
+
+	/**
+	 * 返回指定数量的雷电
+	 * 
+	 * @param count
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public static NaturalEffect getThunderEffect(int count, int x, int y) {
+		return NaturalEffect.getThunderEffect(count, x, y, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
+	}
+
+	/**
+	 * 返回指定数量的雷电
+	 * 
+	 * @param count
+	 * @param x
+	 * @param y
+	 * @param w
+	 * @param h
+	 * @return
+	 */
+	public static NaturalEffect getThunderEffect(int count, int x, int y, int w, int h) {
+		return new NaturalEffect(NaturalType.Thunder, count, 4, x, y, w, h);
+	}
 
 	/**
 	 * 返回默认数量的飘雪
@@ -197,7 +246,11 @@ public class NaturalEffect extends Entity implements BaseEffect {
 		this.setSize(w, h);
 		this.setRepaint(true);
 		this.count = count;
-		this.timer = new LTimer(80);
+		if (ntype == NaturalType.Thunder) {
+			this.timer = new LTimer(10);
+		} else {
+			this.timer = new LTimer(80);
+		}
 		this.pack = new LTexturePack(LSystem.getSystemImagePath() + "natural.txt");
 		switch (ntype) {
 		case Petal:
@@ -221,6 +274,9 @@ public class NaturalEffect extends Entity implements BaseEffect {
 				kernels[i] = new RainKernel(pack, no, w, h);
 			}
 			break;
+		case Thunder:
+			LightningEffect.get().loadLightning(pack);
+			lightningEffect = LightningEffect.addRandom(count, new Vector2f(0, 0), new Vector2f(w, h), LColor.white);
 		}
 	}
 
@@ -230,17 +286,24 @@ public class NaturalEffect extends Entity implements BaseEffect {
 			return;
 		}
 		if (timer.action(elapsedTime)) {
-			for (int i = 0; i < count; i++) {
-				kernels[i].update();
+			if (naturalType == NaturalType.Thunder && lightningEffect != null) {
+				lightningEffect.onUpdate(elapsedTime);
+			} else {
+				for (int i = 0; i < count; i++) {
+					kernels[i].update();
+				}
 			}
-
 		}
 	}
 
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
-		for (int i = 0; i < count; i++) {
-			kernels[i].draw(g, drawX(offsetX), drawY(offsetY));
+		if (naturalType == NaturalType.Thunder && lightningEffect != null) {
+			lightningEffect.repaint(g, drawX(offsetX), drawY(offsetY));
+		} else {
+			for (int i = 0; i < count; i++) {
+				kernels[i].draw(g, drawX(offsetX), drawY(offsetY));
+			}
 		}
 	}
 
@@ -286,6 +349,10 @@ public class NaturalEffect extends Entity implements BaseEffect {
 		if (pack != null) {
 			pack.close();
 			pack = null;
+		}
+		if (lightningEffect != null) {
+			lightningEffect.close();
+			lightningEffect = null;
 		}
 	}
 

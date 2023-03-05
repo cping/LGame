@@ -31,6 +31,8 @@ public class MeshBatch extends BaseBatch {
 
 	private Mesh meshObject;
 
+	private int _blend = 1;
+
 	private int _count = 0;
 
 	private int _idx = 0;
@@ -60,6 +62,7 @@ public class MeshBatch extends BaseBatch {
 	@Override
 	public void init() {
 		meshObject = LSystem.base().makeMesh(gl);
+		_blend = 1;
 	}
 
 	private float ubufWidth = 0;
@@ -99,11 +102,24 @@ public class MeshBatch extends BaseBatch {
 	@Override
 	public void end() {
 		super.end();
+		this._blend = -1;
 	}
 
 	@Override
 	public void close() {
 		super.close();
+		this._blend = -1;
+	}
+
+	@Override
+	public BaseBatch setBlendMode(int b) {
+		this._blend = b;
+		return this;
+	}
+
+	@Override
+	public int getBlendMode() {
+		return _blend;
 	}
 
 	@Override
@@ -114,6 +130,9 @@ public class MeshBatch extends BaseBatch {
 	@Override
 	public void addQuad(int tint, float m00, float m01, float m10, float m11, float tx, float ty, float left, float top,
 			float right, float bottom, float sl, float st, float sr, float sb) {
+		if (_blend != -1) {
+			gl.setBlendMethod(_blend);
+		}
 		meshData.texture = getCurrentTexture();
 		meshObject.setMesh(meshData);
 		meshObject.paint(tint, m00, m01, m10, m11, tx, ty, left, top, right, bottom, sl, st, sr, sb);

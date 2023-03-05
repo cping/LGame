@@ -74,6 +74,7 @@ public class TrilateralBatch extends BaseBatch {
 	@Override
 	public void init() {
 		this._submit = new Submit();
+		this._blendMode = -1;
 	}
 
 	protected float addX(float m00, float m01, float m10, float m11, float x, float y, float sx, float sy, float tx,
@@ -182,6 +183,7 @@ public class TrilateralBatch extends BaseBatch {
 	@Override
 	public void end() {
 		super.end();
+		this._blendMode = -1;
 	}
 
 	public int getSize() {
@@ -257,13 +259,13 @@ public class TrilateralBatch extends BaseBatch {
 	}
 
 	@Override
-	public BaseBatch setMethodMode(int b) {
+	public BaseBatch setBlendMode(int b) {
 		this._blendMode = b;
 		return this;
 	}
 
 	@Override
-	public int getMethodMode() {
+	public int getBlendMode() {
 		return _blendMode;
 	}
 	
@@ -273,6 +275,7 @@ public class TrilateralBatch extends BaseBatch {
 		if (_batchShader != null) {
 			_batchShader.close();
 		}
+		this._blendMode = -1;
 	}
 
 	@Override

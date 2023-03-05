@@ -26,6 +26,7 @@ import loon.action.sprite.Entity;
 import loon.canvas.LColor;
 import loon.geom.Vector2f;
 import loon.opengl.BaseBatch;
+import loon.opengl.BlendMethod;
 import loon.opengl.GLEx;
 import loon.opengl.LTexturePack;
 import loon.utils.TArray;
@@ -152,7 +153,7 @@ public class LightningEffect extends Entity {
 			return;
 		}
 		BaseBatch batch = g.batch();
-		batch.setBlendMode(MODE_ALPHA_ONE);
+		batch.setBlendMode(BlendMethod.MODE_ADD);
 		for (ILightning bolt : lists) {
 			bolt.draw(g, drawX(offsetX), drawY(offsetY));
 		}

@@ -1136,6 +1136,8 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 								effectSprites.add(NaturalEffect.getRainEffect());
 							} else if (cmdFlag.equalsIgnoreCase(CommandType.L_PETAL)) {
 								effectSprites.add(NaturalEffect.getPetalEffect());
+							} else if (cmdFlag.equalsIgnoreCase(CommandType.L_THUNDER)) {
+								effectSprites.add(NaturalEffect.getThunderEffect());
 							}
 						}
 
@@ -1160,6 +1162,10 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 									}
 								} else if (cmdFlag.equalsIgnoreCase(CommandType.L_PETALSTOP)) {
 									if (naturalType == NaturalType.Petal) {
+										effectSprites.remove(s);
+									}
+								} else if (cmdFlag.equalsIgnoreCase(CommandType.L_THUNDER)) {
+									if (naturalType == NaturalType.Thunder) {
 										effectSprites.remove(s);
 									}
 								}

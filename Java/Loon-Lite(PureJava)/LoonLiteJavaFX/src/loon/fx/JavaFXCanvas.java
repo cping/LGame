@@ -400,6 +400,7 @@ public class JavaFXCanvas extends Canvas {
 		BlendMode mode = null;
 		switch (blend) {
 		case BlendMethod.MODE_ADD:
+		case BlendMethod.MODE_ALPHA_ONE:
 			mode = BlendMode.ADD;
 			break;
 		case BlendMethod.MODE_ALPHA:

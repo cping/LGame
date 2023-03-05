@@ -28,7 +28,6 @@ import loon.LRelease;
 import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
-import loon.geom.Limit;
 import loon.geom.Polygon;
 import loon.geom.RectI;
 import loon.geom.Shape;
@@ -46,13 +45,7 @@ import loon.utils.TArray;
  * 跨平台处理像素用类(不同平台内部渲染实现通常有细节差异，某些时候不如自己写同一方法更能保证效果一致，比如转换代码到C#或C++平台时,
  * 而且一些第三方支持库也可能没有类似于Image的本地图像渲染支持（如使用MonoGame或Unity3D为基础平台），这时就可以直接套用此类的实现)
  */
-public class Pixmap extends Limit implements LRelease {
-
-	public final static int SRC_IN = 0;
-
-	public final static int SRC_OUT = 1;
-
-	public final static int SRC_OVER = 2;
+public class Pixmap extends PixmapComposite implements LRelease {
 
 	private Canvas _paintCanvas = null;
 
@@ -177,6 +170,10 @@ public class Pixmap extends Limit implements LRelease {
 
 	private int _translateX, _translateY, _width, _height, _length;
 
+	private LColor srcColor = new LColor();
+
+	private LColor dstColor = new LColor();
+
 	private LColor xorColor;
 
 	private boolean xorMode;
@@ -218,7 +215,6 @@ public class Pixmap extends Limit implements LRelease {
 		} else {
 			this._transparent = LColor.TRANSPARENT;
 		}
-		this._transparent = 0;
 		this._dirty = true;
 		this.defClip = new RectI(0, 0, _width, _height);
 		this.clip = new RectI(0, 0, _width, _height);
@@ -311,7 +307,7 @@ public class Pixmap extends Limit implements LRelease {
 	 * @return
 	 */
 	public Pixmap filter(int dst) {
-		return filter(LColor.TRANSPARENT, dst);
+		return filter(_transparent, dst);
 	}
 
 	/**
@@ -321,7 +317,7 @@ public class Pixmap extends Limit implements LRelease {
 	 * @return
 	 */
 	public Pixmap filter(LColor dst) {
-		return filter(LColor.TRANSPARENT, dst.getARGB());
+		return filter(_transparent, dst.getARGB());
 	}
 
 	/**
@@ -334,7 +330,7 @@ public class Pixmap extends Limit implements LRelease {
 		mix = MathUtils.min(MathUtils.max(mix, 0f), 1f);
 		for (int i = 0; i < _length; i++) {
 			int color = _drawPixels[i];
-			if (color != LColor.TRANSPARENT) {
+			if (color != _transparent) {
 				int[] rgba = LColor.getRGBAs(color);
 				int r = rgba[0];
 				int g = rgba[1];
@@ -369,7 +365,7 @@ public class Pixmap extends Limit implements LRelease {
 		threshold = (threshold | 127);
 		for (int i = 0; i < _length; i++) {
 			int color = _drawPixels[i];
-			if (color != LColor.TRANSPARENT) {
+			if (color != _transparent) {
 				int[] rgba = LColor.getRGBAs(color);
 				int r = rgba[0];
 				int g = rgba[1];
@@ -394,7 +390,7 @@ public class Pixmap extends Limit implements LRelease {
 		mix = MathUtils.min(MathUtils.max(mix, 0f), 1f);
 		for (int i = 0; i < _length; i++) {
 			int color = _drawPixels[i];
-			if (color != LColor.TRANSPARENT) {
+			if (color != _transparent) {
 				int[] rgba = LColor.getRGBAs(color);
 				int r = rgba[0];
 				int g = rgba[1];
@@ -419,7 +415,7 @@ public class Pixmap extends Limit implements LRelease {
 		mix = MathUtils.min(MathUtils.max(mix, 0f), 1f);
 		for (int i = 0; i < _length; i++) {
 			int color = _drawPixels[i];
-			if (color != LColor.TRANSPARENT) {
+			if (color != _transparent) {
 				int[] rgba = LColor.getRGBAs(color);
 				float r = rgba[0] / 255f;
 				float g = rgba[1] / 255f;
@@ -449,7 +445,7 @@ public class Pixmap extends Limit implements LRelease {
 		final LColor newColor = new LColor();
 		for (int i = 0; i < _length; i++) {
 			int color = _drawPixels[i];
-			if (color != LColor.TRANSPARENT) {
+			if (color != _transparent) {
 				int[] rgba = LColor.getRGBAs(color);
 				int r = rgba[0];
 				int g = rgba[1];
@@ -1824,8 +1820,6 @@ public class Pixmap extends Limit implements LRelease {
 
 		float x_ratio = ((float) srcWidth - 1) / dstWidth;
 		float y_ratio = ((float) srcHeight - 1) / dstHeight;
-		float x_diff = 0F;
-		float y_diff = 0F;
 
 		int dx = dstX;
 		int dy = dstY;
@@ -1837,7 +1831,7 @@ public class Pixmap extends Limit implements LRelease {
 		for (; i < dstHeight; i++) {
 			sy = (int) (i * y_ratio) + srcY;
 			dy = i + dstY;
-			y_diff = (y_ratio * i + srcY) - sy;
+
 			if (sy < 0 || dy < 0) {
 				continue;
 			}
@@ -1848,7 +1842,6 @@ public class Pixmap extends Limit implements LRelease {
 			for (j = 0; j < dstWidth; j++) {
 				sx = (int) (j * x_ratio) + srcX;
 				dx = j + dstX;
-				x_diff = (x_ratio * j + srcX) - sx;
 				if (sx < 0 || dx < 0) {
 					continue;
 				}
@@ -1858,51 +1851,14 @@ public class Pixmap extends Limit implements LRelease {
 
 				int src_ptr = sx + sy * spitch;
 				int dst_ptr = dx + dy * dpitch;
-				int src_color = currentPixels[src_ptr];
-				int src_pixel = src_color;
+				int src_pixel = currentPixels[src_ptr];
 
-				if (src_pixel != _transparent) {
-					float ta = (1 - x_diff) * (1 - y_diff);
-					float tb = (x_diff) * (1 - y_diff);
-					float tc = (1 - x_diff) * (y_diff);
-					float td = (x_diff) * (y_diff);
+				drawPoint(_drawPixels, dst_ptr, src_pixel, _transparent);
 
-					int a = (int) (((src_pixel & 0xff000000) >> 24) * ta + ((src_pixel & 0xff000000) >> 24) * tb
-							+ ((src_pixel & 0xff000000) >> 24) * tc + ((src_pixel & 0xff000000) >> 24) * td) & 0xff;
-					int b = (int) (((src_pixel & 0xff0000) >> 16) * ta + ((src_pixel & 0xff0000) >> 16) * tb
-							+ ((src_pixel & 0xff0000) >> 16) * tc + ((src_pixel & 0xff0000) >> 16) * td) & 0xff;
-					int g = (int) (((src_pixel & 0xff00) >> 8) * ta + ((src_pixel & 0xff00) >> 8) * tb
-							+ ((src_pixel & 0xff00) >> 8) * tc + ((src_pixel & 0xff00) >> 8) * td) & 0xff;
-					int r = (int) ((src_pixel & 0xff) * ta + (src_pixel & 0xff) * tb + (src_pixel & 0xff) * tc
-							+ (src_pixel & 0xff) * td) & 0xff;
-
-					int dst_color = _drawPixels[dst_ptr];
-					drawPoint(_drawPixels, dst_ptr, blend(r, g, b, a, dst_color), src_color);
-				} else {
-					drawPoint(_drawPixels, dst_ptr, _transparent);
-				}
 			}
 		}
 
 		return this;
-	}
-
-	private int blend(int src_r, int src_g, int src_b, int src_a, int value) {
-		int dst_r = (value & 0x00FF0000) >> 16;
-		int dst_g = (value & 0x0000FF00) >> 8;
-		int dst_b = (value & 0x000000FF);
-		int dst_a = (value & 0xFF000000) >> 24;
-		if (src_a == _transparent && dst_a == _transparent) {
-			return _transparent;
-		}
-		if (dst_a == 0) {
-			return ((src_a << 24) | (src_b << 16) | (src_g << 8) | src_r);
-		}
-		dst_r = (int) (dst_r + src_a * (src_r - dst_r) / 255);
-		dst_g = (int) (dst_g + src_a * (src_g - dst_g) / 255);
-		dst_b = (int) (dst_b + src_a * (src_b - dst_b) / 255);
-		dst_a = (int) (((1.0f - (1.0f - src_a / 255.0f) * (1.0f - dst_a / 255.0f)) * 255));
-		return (int) ((dst_a << 24) | (dst_b << 16) | (dst_g << 8) | dst_r);
 	}
 
 	public Pixmap fillRect(int x, int y, int width, int height) {
@@ -2274,120 +2230,158 @@ public class Pixmap extends Limit implements LRelease {
 		}
 	}
 
-	private void drawPoint(int x, int y) {
-		if (!inside(x, y)) {
-			drawPoint(_drawPixels, x + y * _width);
+	public Pixmap drawPoint(int x, int y, LColor c) {
+		if (c == null) {
+			return this;
 		}
+		return drawPoint(x, y, c.getARGB());
 	}
 
-	private void drawPoint(int x, int y, int c) {
+	public Pixmap drawPoint(int x, int y) {
+		return drawPoint(x, y, _baseColor);
+	}
+
+	public Pixmap drawPoint(int x, int y, int c) {
 		if (!inside(x, y)) {
-			if (_baseAlpha == 1f) {
-				int pixelIndex = x + y * _width;
-				_drawPixels[pixelIndex] = xorMode ? 0xFF000000 | ((_drawPixels[pixelIndex] ^ c) ^ xorRGB) : c;
-			} else {
-				int ialpha = (int) (0xFF * MathUtils.clamp(_baseAlpha, 0, 1));
-				c = (ialpha << 24) | (c & 0xFFFFFF);
-				int pixelIndex = x + y * _width;
-				_drawPixels[pixelIndex] = xorMode ? 0xFF000000 | ((_drawPixels[pixelIndex] ^ c) ^ xorRGB) : c;
-			}
-			_dirty = true;
+			drawPoint(_drawPixels, x + y * _width, c, _transparent);
 		}
+		return this;
 	}
 
 	private void drawPoint(int[] pixels, int pixelIndex) {
-		int pixel = pixels[pixelIndex];
-		if (_composite == -1) {
-			pixels[pixelIndex] = xorMode ? 0xFF000000 | ((pixel ^ _baseColor) ^ xorRGB) : _baseColor;
-			return;
-		} else {
-			switch (_composite) {
-			default:
-			case SRC_IN:
-				if (pixel != _transparent) {
-					pixels[pixelIndex] = xorMode ? 0xFF000000 | ((pixel ^ _baseColor) ^ xorRGB) : _baseColor;
-				}
-				break;
-			case SRC_OUT:
-				if (pixel == _transparent) {
-					pixels[pixelIndex] = xorMode ? 0xFF000000 | ((pixel ^ _baseColor) ^ xorRGB) : _baseColor;
-				}
-				break;
-			case SRC_OVER:
-				pixels[pixelIndex] = xorMode ? 0xFF000000 | ((pixel ^ _baseColor) ^ xorRGB) : _baseColor;
-				break;
-			}
-
-		}
+		drawPoint(pixels, pixelIndex, _baseColor, _transparent);
 	}
 
 	private void drawPoint(int[] pixels, int pixelIndex, int dst) {
-		drawPoint(pixels, pixelIndex, dst, 0);
+		drawPoint(pixels, pixelIndex, dst, _transparent);
+	}
+
+	private final int getXorNewColor(int pixel, int dst) {
+		return xorMode ? 0xFF000000 | ((pixel ^ dst) ^ xorRGB) : dst;
+	}
+
+	private final int getAlphaNewColor(float alpha, int dst) {
+		if (dst == _transparent) {
+			return dst;
+		}
+		return ((int) (0xFF * MathUtils.clamp(alpha, 0f, 1f)) << 24) | (dst & 0xFFFFFF);
 	}
 
 	private void drawPoint(int[] pixels, int pixelIndex, int dst, int src) {
+		if (dst == _transparent) {
+			return;
+		}
+		int newColor = _transparent;
 		int pixel = pixels[pixelIndex];
+		if (src == _transparent) {
+			src = pixel;
+		}
 		if (_composite == -1) {
 			if (_baseAlpha == 1f) {
-				int newColor = xorMode ? 0xFF000000 | ((pixel ^ dst) ^ xorRGB) : dst;
-				pixels[pixelIndex] = (newColor == 0) ? src : newColor;
+				newColor = getXorNewColor(pixel, dst);
 			} else {
-				int ialpha = (int) (0xFF * MathUtils.clamp(_baseAlpha, 0, 1));
-				dst = (ialpha << 24) | (dst & 0xFFFFFF);
-				int newColor = xorMode ? 0xFF000000 | ((pixel ^ dst) ^ xorRGB) : dst;
-				pixels[pixelIndex] = (newColor == 0) ? src : newColor;
+				dst = SET_LIGHTEN(srcColor.setColor(src), dstColor.setColor(dst), _transparent);
+				dst = getAlphaNewColor(_baseAlpha, dst);
+				newColor = getXorNewColor(pixel, dst);
 			}
-			return;
 		} else {
 			switch (_composite) {
 			default:
 			case SRC_IN:
 				if (pixel != _transparent) {
 					if (_baseAlpha == 1f) {
-						int newColor = xorMode ? 0xFF000000 | ((pixel ^ dst) ^ xorRGB) : dst;
-						pixels[pixelIndex] = (newColor == 0) ? src : newColor;
+						newColor = getXorNewColor(pixel, dst);
 					} else {
-						int ialpha = (int) (0xFF * MathUtils.clamp(_baseAlpha, 0, 1));
-						dst = (ialpha << 24) | (dst & 0xFFFFFF);
-						int newColor = xorMode ? 0xFF000000 | ((pixel ^ dst) ^ xorRGB) : dst;
-						pixels[pixelIndex] = (newColor == 0) ? src : newColor;
+						dst = getAlphaNewColor(_baseAlpha, dst);
+						newColor = getXorNewColor(pixel, dst);
 					}
 				}
 				break;
 			case SRC_OUT:
 				if (pixel == _transparent) {
 					if (_baseAlpha == 1f) {
-						int newColor = xorMode ? 0xFF000000 | ((pixel ^ dst) ^ xorRGB) : dst;
-						pixels[pixelIndex] = (newColor == 0) ? src : newColor;
+						newColor = getXorNewColor(pixel, dst);
 					} else {
-						int ialpha = (int) (0xFF * MathUtils.clamp(_baseAlpha, 0, 1));
-						dst = (ialpha << 24) | (dst & 0xFFFFFF);
-						int newColor = xorMode ? 0xFF000000 | ((pixel ^ dst) ^ xorRGB) : dst;
-						pixels[pixelIndex] = (newColor == 0) ? src : newColor;
+						dst = getAlphaNewColor(_baseAlpha, dst);
+						newColor = getXorNewColor(pixel, dst);
 					}
 				}
 				break;
 			case SRC_OVER:
 				if (_baseAlpha == 1f) {
-					int newColor = xorMode ? 0xFF000000 | ((pixel ^ dst) ^ xorRGB) : dst;
-					pixels[pixelIndex] = (newColor == 0) ? src : newColor;
+					newColor = getXorNewColor(pixel, dst);
 				} else {
-					int ialpha = (int) (0xFF * MathUtils.clamp(_baseAlpha, 0, 1));
-					dst = (ialpha << 24) | (dst & 0xFFFFFF);
-					int newColor = xorMode ? 0xFF000000 | ((pixel ^ dst) ^ xorRGB) : dst;
-					pixels[pixelIndex] = (newColor == 0) ? src : newColor;
+					dst = SET_MULTIPLY(srcColor.setColor(src), dstColor.setColor(dst), _transparent);
+					dst = getAlphaNewColor(_baseAlpha, dst);
+					newColor = getXorNewColor(pixel, dst);
 				}
+				break;
+			case SRC_ATOP:
+				dst = SET_SRC_ATOP(srcColor.setColor(src), dstColor.setColor(dst), _transparent);
+				dst = getAlphaNewColor(_baseAlpha, dst);
+				newColor = getXorNewColor(pixel, dst);
+				break;
+			case ADD:
+				dst = SET_ADD(srcColor.setColor(src), dstColor.setColor(dst), _transparent);
+				dst = getAlphaNewColor(_baseAlpha, dst);
+				newColor = getXorNewColor(pixel, dst);
+				break;
+			case RED:
+				dst = SET_RED(srcColor.setColor(src), dstColor.setColor(dst), _transparent);
+				dst = getAlphaNewColor(_baseAlpha, dst);
+				newColor = getXorNewColor(pixel, dst);
+				break;
+			case GREEN:
+				dst = SET_GREEN(srcColor.setColor(src), dstColor.setColor(dst), _transparent);
+				dst = getAlphaNewColor(_baseAlpha, dst);
+				newColor = getXorNewColor(pixel, dst);
+				break;
+			case BLUE:
+				dst = SET_BLUE(srcColor.setColor(src), dstColor.setColor(dst), _transparent);
+				dst = getAlphaNewColor(_baseAlpha, dst);
+				newColor = getXorNewColor(pixel, dst);
+				break;
+			case COLOR_BURN:
+				dst = SET_COLOR_BURN(srcColor.setColor(src), dstColor.setColor(dst), _transparent);
+				dst = getAlphaNewColor(_baseAlpha, dst);
+				newColor = getXorNewColor(pixel, dst);
+				break;
+			case SOFT_LIGHT:
+				dst = SET_SOFT_LIGHT(srcColor.setColor(src), dstColor.setColor(dst), _transparent);
+				dst = getAlphaNewColor(_baseAlpha, dst);
+				newColor = getXorNewColor(pixel, dst);
+				break;
+			case DIFFERENCE:
+				dst = SET_DIFFERENCE(srcColor.setColor(src), dstColor.setColor(dst), _transparent);
+				dst = getAlphaNewColor(_baseAlpha, dst);
+				newColor = getXorNewColor(pixel, dst);
+				break;
+			case EXCLUSION:
+				dst = SET_EXCLUSION(srcColor.setColor(src), dstColor.setColor(dst), _transparent);
+				dst = getAlphaNewColor(_baseAlpha, dst);
+				newColor = getXorNewColor(pixel, dst);
+				break;
+			case LIGHTEN:
+				dst = SET_LIGHTEN(srcColor.setColor(src), dstColor.setColor(dst), _transparent);
+				dst = getAlphaNewColor(_baseAlpha, dst);
+				newColor = getXorNewColor(pixel, dst);
+				break;
+			case MULTIPLY:
+				dst = SET_MULTIPLY(srcColor.setColor(src), dstColor.setColor(dst), _transparent);
+				dst = getAlphaNewColor(_baseAlpha, dst);
+				newColor = getXorNewColor(pixel, dst);
 				break;
 			}
 		}
+
+		pixels[pixelIndex] = (newColor == _transparent) ? src : newColor;
+		_dirty = true;
 	}
 
 	public Pixmap blendTo(int colorTo, int alpha) {
 		for (int i = 0; i < this._length; i++) {
 			int colorFrom = this._drawPixels[i];
-			int blendRB = (colorFrom & 0xFF00FF) * alpha + (colorTo & 0xFF00FF) * (256 - alpha) & 0xFF00FF00;
-			int blendG = (colorFrom & 0xFF00) * alpha + (colorTo & 0xFF00) * (256 - alpha) & 0xFF0000;
-			this._drawPixels[i] = ((blendRB | blendG) >>> 8);
+			this._drawPixels[i] = blendToColor(colorFrom, colorTo, alpha);
 		}
 		return this;
 	}
@@ -2659,9 +2653,9 @@ public class Pixmap extends Limit implements LRelease {
 	}
 
 	public int[] getABGRData() {
-		return LColor.convertToABGR(this._width, this._height, this._drawPixels,new int[_length] );
+		return LColor.convertToABGR(this._width, this._height, this._drawPixels, new int[_length]);
 	}
-	
+
 	public void setData(int[] pixels) {
 		if (_isClosed) {
 			return;
@@ -2772,7 +2766,7 @@ public class Pixmap extends Limit implements LRelease {
 		for (int y = 0; y < getHeight(); y++) {
 			for (int x = 0; x < getWidth(); x++) {
 				int pixel = this._drawPixels[y * _width + x];
-				if (filterTran && pixel == LColor.TRANSPARENT) {
+				if (filterTran && pixel == _transparent) {
 					pixel = 0;
 				}
 				buffer.put((byte) ((pixel >> 16) & 0xFF));

@@ -98,43 +98,36 @@ public class Affine2f implements LTrans, XY {
 		return tx;
 	}
 
-	public final static Affine2f transform(Affine2f tx, float x, float y, int transform, float width, float height) {
+	public final static Affine2f transformOrigin(Affine2f tx, float x, float y, int transform, float originX,
+			float originY) {
+		final float w = x + originX;
+		final float h = y + originY;
 		switch (transform) {
 		case TRANS_ROT90: {
-			float w = x + width / 2;
-			float h = y + height / 2;
 			tx.translate(w, h);
 			tx.rotate(ANGLE_90);
 			tx.translate(-w, -h);
 			break;
 		}
 		case TRANS_ROT180: {
-			float w = x + width / 2;
-			float h = y + height / 2;
 			tx.translate(w, h);
 			tx.rotate(MathUtils.PI);
 			tx.translate(-w, -h);
 			break;
 		}
 		case TRANS_ROT270: {
-			float w = x + width / 2;
-			float h = y + height / 2;
 			tx.translate(w, h);
 			tx.rotate(ANGLE_270);
 			tx.translate(-w, -h);
 			break;
 		}
 		case TRANS_MIRROR: {
-			float w = x + width / 2;
-			float h = y + height / 2;
 			tx.translate(w, h);
 			tx.scale(-1, 1);
 			tx.translate(-w, -h);
 			break;
 		}
 		case TRANS_MIRROR_ROT90: {
-			float w = x + width / 2;
-			float h = y + height / 2;
 			tx.translate(w, h);
 			tx.rotate(ANGLE_90);
 			tx.translate(-w, -h);
@@ -142,21 +135,15 @@ public class Affine2f implements LTrans, XY {
 			break;
 		}
 		case TRANS_MIRROR_ROT180: {
-			float w = x + width / 2;
-			float h = y + height / 2;
 			tx.translate(w, h);
 			tx.scale(-1, 1);
 			tx.translate(-w, -h);
-			w = x + width / 2;
-			h = y + height / 2;
 			tx.translate(w, h);
 			tx.rotate(MathUtils.PI);
 			tx.translate(-w, -h);
 			break;
 		}
 		case TRANS_MIRROR_ROT270: {
-			float w = x + width / 2;
-			float h = y + height / 2;
 			tx.translate(w, h);
 			tx.rotate(ANGLE_270);
 			tx.translate(-w, -h);
@@ -165,6 +152,11 @@ public class Affine2f implements LTrans, XY {
 		}
 		}
 		return tx;
+
+	}
+
+	public final static Affine2f transform(Affine2f tx, float x, float y, int transform, float width, float height) {
+		return transformOrigin(tx, x, y, transform, width / 2, height / 2);
 	}
 
 	public final static Affine2f transformRegion(Affine2f tx, float x, float y, int transform, float width,
