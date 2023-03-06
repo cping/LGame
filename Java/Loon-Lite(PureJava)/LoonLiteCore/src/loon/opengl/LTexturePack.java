@@ -101,50 +101,6 @@ public class LTexturePack implements LRelease {
 		return texture.copy(entry.bounds.left, entry.bounds.top, entry.bounds.right, entry.bounds.bottom);
 	}
 
-	public LTextureRegion createTextureRegion(int id) {
-		this.pack();
-		PackEntry entry = getEntry(id);
-		if (entry == null) {
-			return null;
-		}
-		LTextureRegion region = new LTextureRegion(texture, entry.bounds.left, entry.bounds.top,
-				entry.bounds.right - entry.bounds.left, entry.bounds.bottom - entry.bounds.top);
-		return region;
-	}
-
-	public LTextureRegion createTextureRegionAll(int id) {
-		this.pack();
-		PackEntry entry = getEntry(id);
-		if (entry == null) {
-			return null;
-		}
-		LTextureRegion region = new LTextureRegion(texture, entry.bounds.left, entry.bounds.top, entry.bounds.right,
-				entry.bounds.bottom);
-		return region;
-	}
-
-	public LTextureRegion createTextureRegion(String name) {
-		this.pack();
-		PackEntry entry = getEntry(name);
-		if (entry == null) {
-			return null;
-		}
-		LTextureRegion region = new LTextureRegion(texture, entry.bounds.left, entry.bounds.top,
-				entry.bounds.right - entry.bounds.left, entry.bounds.bottom - entry.bounds.top);
-		return region;
-	}
-
-	public LTextureRegion createTextureRegionAll(String name) {
-		this.pack();
-		PackEntry entry = getEntry(name);
-		if (entry == null) {
-			return null;
-		}
-		LTextureRegion region = new LTextureRegion(texture, entry.bounds.left, entry.bounds.top, entry.bounds.right,
-				entry.bounds.bottom);
-		return region;
-	}
-
 	public LTexturePack() {
 		this(true);
 	}

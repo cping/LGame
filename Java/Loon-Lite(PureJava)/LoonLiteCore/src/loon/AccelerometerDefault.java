@@ -25,6 +25,7 @@ import loon.action.map.Config;
 import loon.events.SysKey;
 import loon.utils.MathUtils;
 import loon.utils.TimeUtils;
+import loon.utils.processes.GameProcessType;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.timer.LTimerContext;
@@ -66,8 +67,7 @@ public class AccelerometerDefault implements Accelerometer {
 			}
 		}
 		// 将手机翻转角度转为手机朝向
-		if (CollisionHelper.checkAngle(0, orientation)
-				|| CollisionHelper.checkAngle(360, orientation)) {
+		if (CollisionHelper.checkAngle(0, orientation) || CollisionHelper.checkAngle(360, orientation)) {
 			_all_direction = Config.TUP;
 			_direction = SensorDirection.UP;
 		} else if (CollisionHelper.checkAngle(45, orientation)) {
@@ -111,9 +111,7 @@ public class AccelerometerDefault implements Accelerometer {
 			if ((curTime - lastUpdate) > 30) {
 				long diffTime = (curTime - lastUpdate);
 				lastUpdate = curTime;
-				currenForce = MathUtils.abs(currentX + currentY + currentZ
-						- lastX - lastY - lastZ)
-						/ diffTime * 10000;
+				currenForce = MathUtils.abs(currentX + currentY + currentZ - lastX - lastY - lastZ) / diffTime * 10000;
 
 				if (currenForce > 500 && event != null) {
 					event.onShakeChanged(currenForce);
@@ -137,6 +135,7 @@ public class AccelerometerDefault implements Accelerometer {
 		public SensorProcess(float[] values) {
 			this.accelerometerValues = values;
 			this.setDelay(_sleep);
+			this.setProcessType(GameProcessType.Orientation);
 		}
 
 		@Override
@@ -275,6 +274,5 @@ public class AccelerometerDefault implements Accelerometer {
 	public SensorDirection getDirection() {
 		return _direction;
 	}
-
 
 }

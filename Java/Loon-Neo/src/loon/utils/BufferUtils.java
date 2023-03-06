@@ -146,132 +146,133 @@ public class BufferUtils {
 		LSystem.base().support().makeBuffer(data, size, tag);
 	}
 
-	public void copy(float[] src, Buffer dst, int numFloats) {
+	public static void copy(float[] src, Buffer dst, int numFloats) {
 		LSystem.base().support().copy(src, dst, numFloats);
 	}
 
-	public void copy(float[] src, Buffer dst, int offset, int numFloats) {
+	public static void copy(float[] src, Buffer dst, int offset, int numFloats) {
 		LSystem.base().support().copy(src, dst, offset, numFloats);
 	}
 
-	public void copy(byte[] src, int srcOffset, Buffer dst, int numElements) {
+	public static void copy(byte[] src, int srcOffset, Buffer dst, int numElements) {
 		LSystem.base().support().copy(src, srcOffset, dst, numElements);
 	}
 
-	public void copy(short[] src, int srcOffset, Buffer dst, int numElements) {
+	public static void copy(short[] src, int srcOffset, Buffer dst, int numElements) {
 		LSystem.base().support().copy(src, srcOffset, dst, numElements);
 	}
 
-	public void copy(int[] src, int srcOffset, Buffer dst, int numElements) {
+	public static void copy(int[] src, int srcOffset, Buffer dst, int numElements) {
 		LSystem.base().support().copy(src, srcOffset, dst, numElements);
 	}
 
-	public void copy(float[] src, int srcOffset, Buffer dst, int numElements) {
+	public static void copy(float[] src, int srcOffset, Buffer dst, int numElements) {
 		LSystem.base().support().copy(src, srcOffset, dst, numElements);
 	}
 
-	public IntBuffer newIntBuffer(int[] src) {
+	public static IntBuffer newIntBuffer(int[] src) {
 		return LSystem.base().support().newIntBuffer(src);
 	}
 
-	public FloatBuffer newFloatBuffer(float[] src, int offset, int numFloats) {
+	public static FloatBuffer newFloatBuffer(float[] src, int offset, int numFloats) {
 		return LSystem.base().support().newFloatBuffer(src, offset, numFloats);
 	}
 
-	public ByteBuffer replaceBytes(ByteBuffer dst, float[] src) {
+	public static ByteBuffer replaceBytes(ByteBuffer dst, float[] src) {
 		return LSystem.base().support().replaceBytes(dst, src);
 	}
 
-	public FloatBuffer replaceFloats(FloatBuffer dst, float[] src) {
+	public static FloatBuffer replaceFloats(FloatBuffer dst, float[] src) {
 		return LSystem.base().support().replaceFloats(dst, src);
 	}
 
-	public ByteBuffer getByteBuffer(byte[] bytes) {
+	public static ByteBuffer getByteBuffer(byte[] bytes) {
 		return LSystem.base().support().getByteBuffer(bytes);
 	}
 
-	public FloatBuffer getFloatBuffer(float[] floats) {
+	public static FloatBuffer getFloatBuffer(float[] floats) {
 		return LSystem.base().support().getFloatBuffer(floats);
 	}
 
-	public ByteBuffer newByteBuffer(int numBytes) {
+	public static ByteBuffer newByteBuffer(int numBytes) {
 		return LSystem.base().support().newByteBuffer(numBytes);
 	}
 
-	public FloatBuffer newFloatBuffer(int numFloats) {
+	public static FloatBuffer newFloatBuffer(int numFloats) {
 		return LSystem.base().support().newFloatBuffer(numFloats);
 	}
 
-	public ShortBuffer newShortBuffer(int numShorts) {
+	public static ShortBuffer newShortBuffer(int numShorts) {
 		return LSystem.base().support().newShortBuffer(numShorts);
 	}
 
-	public IntBuffer newIntBuffer(int numInts) {
+	public static IntBuffer newIntBuffer(int numInts) {
 		return LSystem.base().support().newIntBuffer(numInts);
 	}
 
-	public int getAllocatedBytesUnsafe() {
+	public static int getAllocatedBytesUnsafe() {
 		return LSystem.base().support().getAllocatedBytesUnsafe();
 	}
 
-	public void disposeUnsafeByteBuffer(ByteBuffer buffer) {
+	public static void disposeUnsafeByteBuffer(ByteBuffer buffer) {
 		LSystem.base().support().disposeUnsafeByteBuffer(buffer);
 	}
 
-	public ByteBuffer newUnsafeByteBuffer(int numBytes) {
+	public static ByteBuffer newUnsafeByteBuffer(int numBytes) {
 		return LSystem.base().support().newUnsafeByteBuffer(numBytes);
 	}
 
-	public ByteBuffer allocateDirect(int capacity) {
+	public static ByteBuffer allocateDirect(int capacity) {
 		return LSystem.base().support().allocateDirect(capacity);
 	}
 
-	public void clear(Buffer buffer) {
+	public static void clear(Buffer buffer) {
 		LSystem.base().support().clear(buffer);
 	}
 
-	public void filterColor(int maxPixel, int pixelStart, int pixelEnd, int[] src, int[] dst, int[] colors, int c1,
-			int c2) {
+	public static void filterColor(int maxPixel, int pixelStart, int pixelEnd, int[] src, int[] dst, int[] colors,
+			int c1, int c2) {
 		LSystem.base().support().filterColor(maxPixel, pixelStart, pixelEnd, src, dst, colors, c1, c2);
 	}
 
-	public void filterFractions(int size, float[] fractions, int width, int height, int[] pixels, int numElements) {
+	public static void filterFractions(int size, float[] fractions, int width, int height, int[] pixels,
+			int numElements) {
 		LSystem.base().support().filterFractions(size, fractions, width, height, pixels, numElements);
 	}
 
-	public void mul(float[] mata, float[] matb) {
+	public static void mul(float[] mata, float[] matb) {
 		LSystem.base().support().mul(mata, matb);
 	}
 
-	public void mulVec(float[] mat, float[] vec) {
+	public static void mulVec(float[] mat, float[] vec) {
 		LSystem.base().support().mulVec(mat, vec);
 	}
 
-	public void mulVec(float[] mat, float[] vecs, int offset, int numVecs, int stride) {
+	public static void mulVec(float[] mat, float[] vecs, int offset, int numVecs, int stride) {
 		LSystem.base().support().mulVec(mat, vecs, offset, numVecs, stride);
 	}
 
-	public void prj(float[] mat, float[] vec) {
+	public static void prj(float[] mat, float[] vec) {
 		LSystem.base().support().prj(mat, vec);
 	}
 
-	public void prj(float[] mat, float[] vecs, int offset, int numVecs, int stride) {
+	public static void prj(float[] mat, float[] vecs, int offset, int numVecs, int stride) {
 		LSystem.base().support().prj(mat, vecs, offset, numVecs, stride);
 	}
 
-	public void rot(float[] mat, float[] vec) {
+	public static void rot(float[] mat, float[] vec) {
 		LSystem.base().support().rot(mat, vec);
 	}
 
-	public void rot(float[] mat, float[] vecs, int offset, int numVecs, int stride) {
+	public static void rot(float[] mat, float[] vecs, int offset, int numVecs, int stride) {
 		LSystem.base().support().rot(mat, vecs, offset, numVecs, stride);
 	}
 
-	public boolean inv(float[] values) {
+	public static boolean inv(float[] values) {
 		return LSystem.base().support().inv(values);
 	}
 
-	public float det(float[] values) {
+	public static float det(float[] values) {
 		return LSystem.base().support().det(values);
 	}
 

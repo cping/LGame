@@ -27,31 +27,33 @@ package loon.utils.processes;
 public enum GameProcessType {
 
 	Screen,
-	
+
 	View,
-	
+
 	Net,
-	
+
 	Initialize,
-	
+
 	Progress,
-	
+
+	Preload,
+
 	Tween,
-	
+
 	Sprite,
-	
+
 	Component,
-	
+
 	Texture,
-	
+
 	Touch,
-	
+
 	Orientation,
-	
+
 	Motion,
-	
+
 	Time,
-	
+
 	Other;
-	
+
 }

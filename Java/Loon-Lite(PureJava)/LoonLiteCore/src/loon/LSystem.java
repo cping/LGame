@@ -94,7 +94,10 @@ public class LSystem {
 	public static final char SPACE = ' ';
 
 	public static final char TAB = '	';
-
+	
+	// 默认最大预加载数量
+	public static final float DEFAULT_MAX_PRE_SIZE = 10000f;
+	
 	// 默认缓存数量
 	public static final int DEFAULT_MAX_CACHE_SIZE = 32;
 

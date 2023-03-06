@@ -33,25 +33,35 @@ public class PixmapComposite extends Limit {
 
 	public final static int SRC_ATOP = 3;
 
-	public final static int ADD = 4;
+	public final static int DST = 4;
+	
+	public final static int CLEAR = 5;
 
-	public final static int RED = 5;
+	public final static int ADD = 6;
 
-	public final static int GREEN = 6;
+	public final static int RED = 7;
 
-	public final static int BLUE = 7;
+	public final static int GREEN = 8;
 
-	public final static int COLOR_BURN = 8;
+	public final static int BLUE = 9;
 
-	public final static int SOFT_LIGHT = 9;
+	public final static int COLOR_BURN = 10;
 
-	public final static int DIFFERENCE = 10;
+	public final static int SOFT_LIGHT = 11;
 
-	public final static int EXCLUSION = 11;
+	public final static int DIFFERENCE = 12;
 
-	public final static int LIGHTEN = 12;
+	public final static int EXCLUSION = 13;
 
-	public final static int MULTIPLY = 13;
+	public final static int LIGHTEN = 14;
+
+	public final static int MULTIPLY = 15;
+
+	public final static int OVERLAY = 16;
+
+	public final static int DODGE = 17;
+
+	public final static int SCREEN = 18;
 
 	private LColor _blendColor = new LColor();
 
@@ -63,22 +73,29 @@ public class PixmapComposite extends Limit {
 		}
 	}
 
-	public final int SET_LIGHTEN(LColor src, LColor dst, int transparent, float alpha) {
+	public final int SET_DST(LColor src, LColor dst, int transparent, float alpha) {
+		return dst.getARGB();
+	}
+	
+	public final int SET_CLEAR(int transparent) {
+		return transparent;
+	}
+
+	public final int SET_SRC_IN(LColor src, LColor dst, int transparent, float alpha) {
 		if (dst.getARGB() == transparent) {
 			return transparent;
 		} else {
-			LColor color = _blendColor.setColor(MathUtils.max(dst.r, src.r), MathUtils.max(dst.g, src.g),
-					MathUtils.max(dst.b, src.b), dst.a + src.a * (1f - dst.a));
+			LColor color = _blendColor.setColor(src.r * dst.r, src.g * dst.g, src.b * dst.b, src.a * dst.a);
 			return blend(color, dst, alpha);
 		}
 	}
 
-	public final int SET_COLOR_BURN(LColor src, LColor dst, int transparent, float alpha) {
+	public final int SET_SRC_OUT(LColor src, LColor dst, int transparent, float alpha) {
 		if (dst.getARGB() == transparent) {
 			return transparent;
 		} else {
-			LColor color = _blendColor.setColor(dst.r * src.r, dst.g * src.g, dst.b * src.b,
-					dst.a + src.a * (1f - dst.a));
+			LColor color = _blendColor.setColor((1f - src.r) * dst.r, (1f - src.g) * dst.g, (1f - src.b) * dst.b,
+					(1f - src.a) * dst.a);
 			return blend(color, dst, alpha);
 		}
 	}
@@ -99,6 +116,58 @@ public class PixmapComposite extends Limit {
 		} else {
 			LColor color = _blendColor.setColor(dst.r * src.a + src.r * (1f - dst.r),
 					dst.g * src.a + src.g * (1f - dst.g), dst.b * src.a + src.b * (1f - dst.b), src.a);
+			return blend(color, dst, alpha);
+		}
+	}
+
+	public final int SET_SCREEN(LColor src, LColor dst, int transparent, float alpha) {
+		if (dst.getARGB() == transparent) {
+			return transparent;
+		} else {
+			LColor color = _blendColor.setColor(1f - (1f - dst.r) * (1f - src.r), 1f - (1f - dst.g) * (1f - src.g),
+					1f - (1f - dst.b) * (1f - src.b), dst.a + src.a * (1f - dst.a));
+			return blend(color, dst, alpha);
+		}
+	}
+
+	public final int SET_OVERLAY(LColor src, LColor dst, int transparent, float alpha) {
+		if (dst.getARGB() == transparent) {
+			return transparent;
+		} else {
+			float r = (src.r < 0.5f) ? 2 * src.r * dst.r : 1f - 2f * (1 - src.r) * (1f - dst.r);
+			float g = (src.g < 0.5f) ? 2 * src.g * dst.g : 1f - 2f * (1 - src.g) * (1f - dst.g);
+			float b = (src.b < 0.5f) ? 2 * src.b * dst.b : 1f - 2f * (1 - src.b) * (1f - dst.b);
+			LColor color = _blendColor.setColor(r, g, b, dst.a + src.a * (1 - dst.a));
+			return blend(color, dst, alpha);
+		}
+	}
+
+	public final int SET_DODGE(LColor src, LColor dst, int transparent, float alpha) {
+		if (dst.getARGB() == transparent) {
+			return transparent;
+		} else {
+			LColor color = _blendColor.setColor(src.r / (1f - dst.r), src.g / (1f - dst.g), src.b / (1f - dst.b),
+					dst.a + src.a * (1f - dst.a));
+			return blend(color, dst, alpha);
+		}
+	}
+
+	public final int SET_LIGHTEN(LColor src, LColor dst, int transparent, float alpha) {
+		if (dst.getARGB() == transparent) {
+			return transparent;
+		} else {
+			LColor color = _blendColor.setColor(MathUtils.max(dst.r, src.r), MathUtils.max(dst.g, src.g),
+					MathUtils.max(dst.b, src.b), dst.a + src.a * (1f - dst.a));
+			return blend(color, dst, alpha);
+		}
+	}
+
+	public final int SET_COLOR_BURN(LColor src, LColor dst, int transparent, float alpha) {
+		if (dst.getARGB() == transparent) {
+			return transparent;
+		} else {
+			LColor color = _blendColor.setColor(dst.r * src.r, dst.g * src.g, dst.b * src.b,
+					dst.a + src.a * (1f - dst.a));
 			return blend(color, dst, alpha);
 		}
 	}

@@ -2260,17 +2260,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 		return xorMode ? 0xFF000000 | ((pixel ^ dst) ^ xorRGB) : dst;
 	}
 
-	private final int getAlphaNewColor(float alpha, int dst) {
-		if (dst == _transparent) {
-			return dst;
-		}
-		return ((int) (0xFF * MathUtils.clamp(alpha, 0f, 1f)) << 24) | (dst & 0xFFFFFF);
-	}
-
 	private void drawPoint(int[] pixels, int pixelIndex, int dst, int src) {
-		if (dst == _transparent) {
-			return;
-		}
 		int newColor = _transparent;
 		int pixel = pixels[pixelIndex];
 		if (src == _transparent) {
@@ -2284,18 +2274,16 @@ public class Pixmap extends PixmapComposite implements LRelease {
 			switch (_composite) {
 			default:
 			case SRC_IN:
-				if (pixel != _transparent) {
-					if (_baseAlpha != 1f) {
-						dst = getAlphaNewColor(_baseAlpha, dst);
-					}
-				}
+				dst = SET_SRC_IN(srcColor.setColor(src), dstColor.setColor(dst), _transparent, _baseAlpha);
 				break;
 			case SRC_OUT:
-				if (pixel == _transparent) {
-					if (_baseAlpha != 1f) {
-						dst = getAlphaNewColor(_baseAlpha, dst);
-					}
-				}
+				dst = SET_SRC_OUT(srcColor.setColor(src), dstColor.setColor(dst), _transparent, _baseAlpha);
+				break;
+			case CLEAR:
+				dst = SET_CLEAR(_transparent);
+				break;
+			case DST:
+				dst = SET_DST(srcColor.setColor(src), dstColor.setColor(dst), _transparent, _baseAlpha);
 				break;
 			case SRC_OVER:
 				dst = SET_SRC_OVER(srcColor.setColor(src), dstColor.setColor(dst), _transparent, _baseAlpha);
@@ -2332,6 +2320,15 @@ public class Pixmap extends PixmapComposite implements LRelease {
 				break;
 			case MULTIPLY:
 				dst = SET_MULTIPLY(srcColor.setColor(src), dstColor.setColor(dst), _transparent, _baseAlpha);
+				break;
+			case OVERLAY:
+				dst = SET_OVERLAY(srcColor.setColor(src), dstColor.setColor(dst), _transparent, _baseAlpha);
+				break;
+			case DODGE:
+				dst = SET_DODGE(srcColor.setColor(src), dstColor.setColor(dst), _transparent, _baseAlpha);
+				break;
+			case SCREEN:
+				dst = SET_SCREEN(srcColor.setColor(src), dstColor.setColor(dst), _transparent, _baseAlpha);
 				break;
 			}
 		}
@@ -2847,16 +2844,16 @@ public class Pixmap extends PixmapComposite implements LRelease {
 	public String toString() {
 		StrBuilder sbr = new StrBuilder();
 		for (int y = 0; y < _height; y++) {
-			sbr.append('[');
+			sbr.append(LSystem.BRACKET_START);
 			for (int x = 0; x < _width; x++) {
 				int p = getData(x, y);
 				sbr.append(p);
 				if (x < _width - 1) {
-					sbr.append(',');
+					sbr.append(LSystem.COMMA);
 				}
 			}
-			sbr.append(']');
-			sbr.append(",\n");
+			sbr.append(LSystem.BRACKET_END);
+			sbr.append(LSystem.COMMA).append(LSystem.LF);
 		}
 		return sbr.toString();
 	}

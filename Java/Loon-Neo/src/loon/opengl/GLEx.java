@@ -1358,7 +1358,11 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	public GLEx draw(Painter texture, float x, float y, float w, float h, Vector2f origin, float rotation) {
-		return draw(texture, x, y, w, h, origin.x, origin.y, rotation);
+		if (origin == null) {
+			return draw(texture, x, y, w, h, w / 2, h / 2, rotation);
+		} else {
+			return draw(texture, x, y, w, h, origin.x, origin.y, rotation);
+		}
 	}
 
 	public GLEx draw(Painter texture, float x, float y, float w, float h, float originX, float originY,
@@ -1776,17 +1780,25 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		if (dirDirty || rotDirty || scaleDirty) {
 			xf = new Affine2f();
 
-			if (origin.x == 0 && origin.y == 0) {
-				origin.x = origin.x == 0 ? width / 2 : origin.x;
-				origin.y = origin.y == 0 ? height / 2 : origin.y;
-			}
-			
-			if (offset) {
-				xf.translate(-origin.x, -origin.y);
+			float originX = width / 2;
+			float originY = height / 2;
+
+			if (origin != null) {
+				if (origin.x == 0 && origin.y == 0) {
+					originX = origin.x == 0 ? width / 2 : origin.x;
+					originY = origin.y == 0 ? height / 2 : origin.y;
+				} else {
+					originX = origin.x;
+					originY = origin.y;
+				}
 			}
 
-			float centerX = x + origin.x;
-			float centerY = y + origin.y;
+			if (offset) {
+				xf.translate(-originX, -originY);
+			}
+
+			float centerX = x + originX;
+			float centerY = y + originY;
 			if (rotDirty) {
 				if (pivot != null && (pivot.x != -1 && pivot.y != -1)) {
 					centerX = x + pivot.x;
@@ -1808,13 +1820,13 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			if (dirDirty) {
 				switch (dir) {
 				case TRANS_MIRROR:
-					Affine2f.transformOrigin(xf, x, y, Affine2f.TRANS_MIRROR, origin.x, origin.y);
+					Affine2f.transformOrigin(xf, x, y, Affine2f.TRANS_MIRROR, originX, originY);
 					break;
 				case TRANS_FLIP:
-					Affine2f.transformOrigin(xf, x, y, Affine2f.TRANS_MIRROR_ROT180, origin.x, origin.y);
+					Affine2f.transformOrigin(xf, x, y, Affine2f.TRANS_MIRROR_ROT180, originX, originY);
 					break;
 				case TRANS_MF:
-					Affine2f.transformOrigin(xf, x, y, Affine2f.TRANS_ROT180, origin.x, origin.y);
+					Affine2f.transformOrigin(xf, x, y, Affine2f.TRANS_ROT180, originX, originY);
 					break;
 				default:
 					break;

@@ -23,13 +23,15 @@ package loon;
 import loon.utils.MathUtils;
 
 /**
- * 一个简单的计数器，允许设定递增或递减值，也可以限制最大和最小取值范围
+ * 一个简单的计数器(主要用于用户跨类跨函数传参)，允许设定递增或递减值，也可以限制最大和最小取值范围.
+ * 
+ * 如果参数需要更多科学计算,则可以使用 @see Calculator 类.
  */
 public class Counter {
 
-	private int _min;
+	private final int _min;
 
-	private int _max;
+	private final int _max;
 
 	private int _value;
 

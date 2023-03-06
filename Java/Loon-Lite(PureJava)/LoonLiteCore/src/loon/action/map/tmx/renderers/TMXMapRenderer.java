@@ -511,6 +511,11 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 			tileAnimators.clear();
 		}
 		if (textureCaches != null) {
+			for (Cache cache : textureCaches) {
+				if (cache != null) {
+					cache.close();
+				}
+			}
 			textureCaches.clear();
 		}
 		for (LTexture texture : textureMap.values()) {

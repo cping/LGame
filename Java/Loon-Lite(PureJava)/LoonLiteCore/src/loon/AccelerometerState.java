@@ -35,8 +35,8 @@ public class AccelerometerState {
 	public boolean isConnected() {
 		return _isConnected;
 	}
-	
-	public void setConnected(boolean connected){
+
+	public void setConnected(boolean connected) {
 		this._isConnected = connected;
 	}
 

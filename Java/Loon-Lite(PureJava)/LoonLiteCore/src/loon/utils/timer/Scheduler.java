@@ -144,14 +144,10 @@ public class Scheduler implements LRelease {
 	/**
 	 * Scheduler事务管理器
 	 * 
-	 * @param name
-	 *            事务调度管理器名称
-	 * @param delay
-	 *            延迟时间(默认0)
-	 * @param removeTask
-	 *            是否删除已运行的任务
-	 * @param sequence
-	 *            是否循环播放管理器中事务(此项为true,当前事务不完成不会进行下一个,若想同步进行可改为false)
+	 * @param name       事务调度管理器名称
+	 * @param delay      延迟时间(默认0)
+	 * @param removeTask 是否删除已运行的任务
+	 * @param sequence   是否循环播放管理器中事务(此项为true,当前事务不完成不会进行下一个,若想同步进行可改为false)
 	 */
 	public Scheduler(String name, long delay, boolean removeTask, boolean sequence) {
 		this._loop_timer = new LTimer(name, delay);
