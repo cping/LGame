@@ -23,7 +23,6 @@ package loon.fx;
 import loon.LSysException;
 import loon.LazyLoading;
 
-
 public abstract class Loon {
 
 	private static Loon register() {

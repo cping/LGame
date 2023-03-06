@@ -2342,6 +2342,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 			int colorFrom = this._drawPixels[i];
 			this._drawPixels[i] = blendToColor(colorFrom, colorTo, alpha);
 		}
+		_dirty = true;
 		return this;
 	}
 

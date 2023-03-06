@@ -31,8 +31,10 @@ import loon.opengl.Submit;
 import loon.opengl.ShaderProgram;
 import loon.opengl.ShaderSource;
 import loon.utils.GLUtils;
+import loon.utils.IntMap;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
+import loon.utils.TimeUtils;
 
 /**
  * 这是一个针对单独纹理的批量渲染类,默认绑定在特定Texture上运行（普通纹理texture.geTexturetBatch即可获得）,<br>
@@ -42,9 +44,11 @@ public class LTextureBatch implements LRelease {
 
 	private final static String _batch_name = "texbatch";
 
+	private final ShaderSource source;
+
 	private String name = _batch_name;
 
-	private final ShaderSource source;
+	private IntMap<LTextureBatch.Cache> _caches;
 
 	private boolean isClosed;
 
@@ -1235,6 +1239,38 @@ public class LTextureBatch implements LRelease {
 		return this;
 	}
 
+	public int saveCache() {
+		return saveCache((int) (TimeUtils.millis() + (_caches == null ? 1 : _caches.size)));
+	}
+
+	public int saveCache(int hashCodeValue) {
+		if (_caches == null) {
+			_caches = new IntMap<LTextureBatch.Cache>();
+		}
+		LTextureBatch.Cache cache = newCache();
+		_caches.put(hashCodeValue, cache);
+		return hashCodeValue;
+	}
+
+	public LTextureBatch.Cache restoreCachePost(int hashCodeValue) {
+		return restoreCachePost(hashCodeValue, colors == null ? LColor.white : colors[0], 0f, 0f);
+	}
+
+	public LTextureBatch.Cache restoreCachePost(int hashCodeValue, LColor color, float x, float y) {
+		LTextureBatch.Cache cache = restoreCache(hashCodeValue);
+		if (cache != null) {
+			postCache(cache, color, x, y);
+		}
+		return cache;
+	}
+
+	public LTextureBatch.Cache restoreCache(int hashCodeValue) {
+		if (_caches != null) {
+			return _caches.get(hashCodeValue);
+		}
+		return null;
+	}
+
 	public int getTextureID() {
 		if (texture != null) {
 			return texture.getID();
@@ -1270,6 +1306,14 @@ public class LTextureBatch implements LRelease {
 		}
 		if (customShader != null) {
 			customShader.close();
+		}
+		if (_caches != null) {
+			for (LTextureBatch.Cache cache : _caches) {
+				if (cache != null) {
+					cache.close();
+				}
+			}
+			_caches.clear();
 		}
 		if (lastCache != null) {
 			lastCache.close();

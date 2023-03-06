@@ -27,12 +27,16 @@ import loon.geom.Affine2f;
 import loon.opengl.GLEx;
 import loon.opengl.Mesh;
 import loon.opengl.MeshData;
+import loon.utils.IntMap;
+import loon.utils.TimeUtils;
 
 /**
  * 这是一个针对单独纹理的批量渲染类,默认绑定在特定Texture上运行（_meshdata.texture.geTexturetBatch即可获得）,<br>
  * 方便针对特定纹理的缓存以及渲染.
  */
 public class LTextureBatch implements LRelease {
+
+	private IntMap<LTextureBatch.Cache> _caches;
 
 	private boolean isClosed;
 
@@ -278,7 +282,6 @@ public class LTextureBatch implements LRelease {
 		}
 		GLEx gl = LSystem.base().display().GL();
 
-
 		if (gl != null) {
 
 			final Image image = _buffer.snapshot();
@@ -295,7 +298,7 @@ public class LTextureBatch implements LRelease {
 						flipX, flipY);
 				Affine2f.multiply(gl.tx(), display, display);
 			}
-			
+
 			Canvas canvas = gl.getCanvas();
 			canvas.setTransform(display);
 			canvas.draw(_buffer.snapshot(), x, y);
@@ -527,7 +530,6 @@ public class LTextureBatch implements LRelease {
 			return postCache(lastCache, _color, x, y, 1f, 1f, 0f, 0f, 0f, false, false, false);
 		}
 		return this;
-
 	}
 
 	public LTextureBatch postCache(LColor color, float x, float y, float rotation) {
@@ -535,7 +537,6 @@ public class LTextureBatch implements LRelease {
 			return postCache(lastCache, color, x, y, 1f, 1f, 0f, 0f, rotation, false, false, false);
 		}
 		return this;
-
 	}
 
 	public LTextureBatch postCache(Cache cache, LColor color, float x, float y) {
@@ -571,12 +572,44 @@ public class LTextureBatch implements LRelease {
 						flipX, flipY);
 				Affine2f.multiply(gl.tx(), display, display);
 			}
-			
+
 			Canvas canvas = gl.getCanvas();
 			canvas.setTransform(display);
 			canvas.draw(cache._image, x, y);
 		}
 		return this;
+	}
+
+	public int saveCache() {
+		return saveCache((int) (TimeUtils.millis() + (_caches == null ? 1 : _caches.size)));
+	}
+
+	public int saveCache(int hashCodeValue) {
+		if (_caches == null) {
+			_caches = new IntMap<LTextureBatch.Cache>();
+		}
+		LTextureBatch.Cache cache = newCache();
+		_caches.put(hashCodeValue, cache);
+		return hashCodeValue;
+	}
+
+	public LTextureBatch.Cache restoreCachePost(int hashCodeValue) {
+		return restoreCachePost(hashCodeValue, _color == null ? LColor.white : _color, 0f, 0f);
+	}
+
+	public LTextureBatch.Cache restoreCachePost(int hashCodeValue, LColor color, float x, float y) {
+		LTextureBatch.Cache cache = restoreCache(hashCodeValue);
+		if (cache != null) {
+			postCache(cache, color, x, y);
+		}
+		return cache;
+	}
+
+	public LTextureBatch.Cache restoreCache(int hashCodeValue) {
+		if (_caches != null) {
+			return _caches.get(hashCodeValue);
+		}
+		return null;
 	}
 
 	protected void updateTransform(Affine2f display, float x, float y, float width, float height, float rotation,
@@ -653,6 +686,14 @@ public class LTextureBatch implements LRelease {
 		isInitMesh = false;
 		if (lastCache != null) {
 			lastCache.close();
+		}
+		if (_caches != null) {
+			for (LTextureBatch.Cache cache : _caches) {
+				if (cache != null) {
+					cache.close();
+				}
+			}
+			_caches.clear();
 		}
 		LSystem.disposeBatchCache(this, false);
 	}
