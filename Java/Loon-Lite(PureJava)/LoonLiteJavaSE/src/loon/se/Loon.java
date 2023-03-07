@@ -20,12 +20,92 @@
  */
 package loon.se;
 
-import java.awt.AWTException;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.GraphicsConfiguration;
-import java.awt.Toolkit;
+import javax.swing.SwingUtilities;
 
-public class Loon {
-    
+import loon.LSysException;
+import loon.LazyLoading;
+
+public abstract class Loon {
+
+	private static Loon register() {
+		Class<? extends Loon> appClass = newClass(Loon.class, "register");
+		return newInstance(appClass);
+	}
+
+	public static void register(Loon app, JavaSESetting setting, LazyLoading.Data lazy) {
+		register(app, setting, lazy, new String[0]);
+	}
+
+	private static void register(final Loon app, final JavaSESetting setting, final LazyLoading.Data lazy,
+			final String[] args) {
+		SwingUtilities.invokeLater(() -> {
+			JavaSEApplication.launch(app, setting, lazy, args);
+		});
+	}
+
+	public static void register(Class<? extends Loon> appClass, JavaSESetting setting, LazyLoading.Data lazy) {
+		register(appClass, setting, lazy, new String[0]);
+	}
+
+	public static void register(Class<? extends Loon> appClass, JavaSESetting setting, LazyLoading.Data lazy,
+			String[] args) {
+		try {
+			Loon app = newInstance(appClass);
+			register(app, setting, lazy, args);
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void register(JavaSESetting setting, LazyLoading.Data lazy) {
+		register(setting, lazy, new String[0]);
+	}
+
+	public static void register(JavaSESetting setting, LazyLoading.Data lazy, String[] args) {
+		try {
+			Loon app = register();
+			register(app, setting, lazy, args);
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
+	}
+
+	protected static <T> T newInstance(Class<T> type) {
+		try {
+			return type.getDeclaredConstructor().newInstance();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	protected static <T> Class<? extends T> newClass(Class<T> superType, String callMethodName) {
+		try {
+			StackTraceElement[] cause = Thread.currentThread().getStackTrace();
+			boolean foundMethod = false;
+			String callClassName = null;
+			for (StackTraceElement se : cause) {
+				String className = se.getClassName();
+				String methodName = se.getMethodName();
+				if (foundMethod) {
+					callClassName = className;
+					break;
+				} else if (superType.getName().equals(className) && callMethodName.equals(methodName)) {
+					foundMethod = true;
+				}
+			}
+			if (callClassName == null) {
+				throw new LSysException("Unable to determine calling class name");
+			}
+			Class<?> theClass = Class.forName(callClassName, false, Thread.currentThread().getContextClassLoader());
+			if (!superType.isAssignableFrom(theClass)) {
+				throw new LSysException(theClass + " is not a subclass of " + superType);
+			}
+			return (Class<? extends T>) theClass;
+		} catch (Exception e) {
+			throw new LSysException(e.getMessage());
+		}
+	}
+
 }

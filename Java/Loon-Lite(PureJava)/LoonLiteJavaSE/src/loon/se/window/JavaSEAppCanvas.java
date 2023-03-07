@@ -25,19 +25,24 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
-import java.awt.Toolkit;
 import java.awt.image.BufferStrategy;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.swing.SwingUtilities;
+
+import loon.LRelease;
 import loon.se.JavaSEApplication;
+import loon.se.JavaSEGame;
 import loon.se.JavaSESetting;
 
-public class JavaSEAppCanvas extends Canvas implements JavaSELoop {
+public class JavaSEAppCanvas extends Canvas implements JavaSELoop, LRelease {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+
+	private JavaSEGame _game;
 
 	private AtomicBoolean _running = new AtomicBoolean(false);
 
@@ -52,11 +57,16 @@ public class JavaSEAppCanvas extends Canvas implements JavaSELoop {
 	private int _frameCount;
 
 	public JavaSEAppCanvas(JavaSESetting setting) {
-		this(JavaSEApplication.getGraphicsConfiguration(), setting);
+		this(null, setting);
 	}
 
-	public JavaSEAppCanvas(GraphicsConfiguration config, JavaSESetting setting) {
+	public JavaSEAppCanvas(JavaSEGame game, JavaSESetting setting) {
+		this(JavaSEApplication.getGraphicsConfiguration(), game, setting);
+	}
+
+	public JavaSEAppCanvas(GraphicsConfiguration config, JavaSEGame game, JavaSESetting setting) {
 		super(config);
+		this._game = game;
 		this._loop = new JavaSEAppLoop(this, setting.fps);
 		this._config = config;
 		this._setting = setting;
@@ -69,15 +79,17 @@ public class JavaSEAppCanvas extends Canvas implements JavaSELoop {
 		if (_running.get()) {
 			return this;
 		}
-		JavaSEApplication.createBuffer(this, _config);
-		_bufferStrategy = getBufferStrategy();
-		if (_bufferStrategy == null) {
-			createBufferStrategy(3);
+		SwingUtilities.invokeLater(() -> {
+			JavaSEApplication.createBuffer(this, _config);
 			_bufferStrategy = getBufferStrategy();
-		}
-		setVisible(true);
-		_running.set(true);
-		_loop.start();
+			if (_bufferStrategy == null) {
+				createBufferStrategy(3);
+				_bufferStrategy = getBufferStrategy();
+			}
+			setVisible(true);
+			_running.set(true);
+			_loop.start();
+		});
 		return this;
 	}
 
@@ -104,8 +116,6 @@ public class JavaSEAppCanvas extends Canvas implements JavaSELoop {
 					g = (Graphics2D) this._bufferStrategy.getDrawGraphics();
 					if (g != null) {
 						JavaSEApplication.setGraphicsSpeed(g);
-						g.setColor(Color.yellow);
-						g.drawString("FDFDFD", 0, 25);
 
 					}
 				} finally {
@@ -114,18 +124,30 @@ public class JavaSEAppCanvas extends Canvas implements JavaSELoop {
 					}
 				}
 			} while (_bufferStrategy.contentsRestored());
-			this._bufferStrategy.show();
 		} while (this._bufferStrategy.contentsLost());
-		Toolkit.getDefaultToolkit().sync();
+		this._bufferStrategy.show();
 		this._frameCount++;
+	}
+
+	public JavaSEGame getGame() {
+		return _game;
 	}
 
 	public int getFrameCount() {
 		return this._frameCount;
 	}
 
+	public void packCanvas() {
+		addNotify();
+		validate();
+		updateSize();
+		setVisible(true);
+	}
+
 	public void updateSize() {
-		setPreferredSize(new Dimension(_setting.getShowWidth(), _setting.getShowHeight()));
+		Dimension dimension = new Dimension(_setting.getShowWidth(), _setting.getShowHeight());
+		setPreferredSize(dimension);
+		setSize(dimension);
 	}
 
 	@Override
@@ -137,6 +159,14 @@ public class JavaSEAppCanvas extends Canvas implements JavaSELoop {
 	@Override
 	public boolean get() {
 		return _running.get();
+	}
+
+	@Override
+	public void close() {
+		if (_game != null) {
+			_game.close();
+		}
+		stop();
 	}
 
 }

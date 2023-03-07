@@ -23,23 +23,24 @@ package loon.se.window;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.DisplayMode;
-import java.awt.EventQueue;
-import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.Window;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
+import loon.LRelease;
 import loon.se.JavaSEApplication;
+import loon.se.JavaSEGame;
 import loon.se.JavaSESetting;
 
-public class JavaSEAppFrame extends JFrame {
+public class JavaSEAppFrame extends JFrame implements LRelease {
 
 	/**
 	 * 
@@ -54,27 +55,57 @@ public class JavaSEAppFrame extends JFrame {
 
 	protected final GraphicsConfiguration _config;
 
+	private JavaSEGame _game;
+
 	protected final JavaSESetting _setting;
 
 	protected JavaSEAppCanvas _canvas;
 
 	public JavaSEAppFrame(JavaSESetting setting) {
-		this(JavaSEApplication.getGraphicsConfiguration(), setting);
+		this(null, setting);
 	}
 
-	public JavaSEAppFrame(GraphicsConfiguration config, JavaSESetting setting) {
+	public JavaSEAppFrame(JavaSEGame game, JavaSESetting setting) {
+		this(JavaSEApplication.getGraphicsConfiguration(), game, setting);
+	}
+
+	public JavaSEAppFrame(GraphicsConfiguration config, JavaSEGame game, JavaSESetting setting) {
 		super(setting.appName, config);
+		_game = game;
 		_config = config;
 		_setting = setting;
 		_device = config.getDevice();
 		setBackground(Color.BLACK);
+		addKeyListener(new KeyListener() {
+
+			@Override
+			public void keyTyped(KeyEvent e) {
+
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+					restoreScreen();
+				}
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+
+			}
+		});
 		setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent event) {
+				if (_game != null) {
+					_game.close();
+				}
 				System.exit(-1);
 			}
 		});
+
 		setResizable(_setting.isAllowScreenResizabled);
 		setUndecorated(false);
 		setIgnoreRepaint(true);
@@ -88,24 +119,40 @@ public class JavaSEAppFrame extends JFrame {
 		playCanvas(null);
 	}
 
-	public void playCanvas(JavaSEAppCanvas canvas) {
-		this._canvas = canvas;
-		if (this._canvas == null) {
-			this._canvas = new JavaSEAppCanvas(_config, _setting);
-		}
-		add(this._canvas);
+	public void packFrame() {
 		addNotify();
 		validate();
 		pack();
+		if (_canvas != null) {
+			_canvas.packCanvas();
+		}
 		updateSize();
 		pack();
 		setLocationRelativeTo(null);
 		setVisible(true);
+	}
+
+	public void playCanvas(JavaSEAppCanvas canvas) {
+		this._canvas = canvas;
+		if (this._canvas == null) {
+			this._canvas = new JavaSEAppCanvas(_config, _game, _setting);
+		}
+		add(this._canvas);
+		packFrame();
 		canvas.start();
+	}
+
+	public JavaSEAppCanvas getCanvas() {
+		return _canvas;
+	}
+
+	public JavaSEGame getGame() {
+		return _game;
 	}
 
 	public JavaSEAppFrame updateSize() {
 		JavaSEApplication.setResolution(this, new Dimension(_setting.getShowWidth(), _setting.getShowHeight()), 0, 0);
+		setSize(_setting.getShowWidth(), _setting.getShowHeight());
 		return this;
 	}
 
@@ -135,39 +182,16 @@ public class JavaSEAppFrame extends JFrame {
 		return (JFrame) _config.getDevice().getFullScreenWindow();
 	}
 
-	@Override
-	public int getWidth() {
-		Window window = _config.getDevice().getFullScreenWindow();
-		if (window != null) {
-			return window.getWidth();
-		} else {
-			return 0;
-		}
-	}
-
-	@Override
-	public int getHeight() {
-		Window window = _config.getDevice().getFullScreenWindow();
-		if (window != null) {
-			return window.getHeight();
-		} else {
-			return 0;
-		}
-	}
-
 	public void restoreScreen() {
-		Window window = _config.getDevice().getFullScreenWindow();
-		if (window != null) {
-			window.dispose();
-		}
 		_config.getDevice().setFullScreenWindow(null);
+		packFrame();
 	}
 
 	public DisplayMode[] getCompatibleDisplayModes() {
 		return _device.getDisplayModes();
 	}
 
-	public DisplayMode findFirstMode(DisplayMode modes[]) {
+	public DisplayMode findFirstMode(DisplayMode[] modes) {
 		DisplayMode goodModes[] = _device.getDisplayModes();
 		for (int i = 0; i < modes.length; i++) {
 			for (int j = 0; j < goodModes.length; j++) {
@@ -176,16 +200,15 @@ public class JavaSEAppFrame extends JFrame {
 				}
 			}
 		}
-		return null;
+		return JavaSEApplication.searchFullScreenModeDisplay(_device, _setting.getShowWidth(),
+				_setting.getShowHeight());
 	}
 
 	public DisplayMode getCurrentDisplayMode() {
 		return _device.getDisplayMode();
 	}
 
-	public boolean displayModesMatch(DisplayMode mode1, DisplayMode mode2)
-
-	{
+	public boolean displayModesMatch(DisplayMode mode1, DisplayMode mode2) {
 		if (mode1.getWidth() != mode2.getWidth() || mode1.getHeight() != mode2.getHeight()) {
 			return false;
 		}
@@ -204,8 +227,8 @@ public class JavaSEAppFrame extends JFrame {
 		return true;
 	}
 
-	public void setFullScreen(DisplayMode displayMode) {
-		_device.setFullScreenWindow(this);
+	protected void setFullScreen(final JavaSEAppFrame frame, final DisplayMode displayMode) {
+		_device.setFullScreenWindow(frame);
 		if (_device.isDisplayChangeSupported()) {
 			_device.setDisplayMode(getBestDisplayMode(_device));
 		}
@@ -216,29 +239,17 @@ public class JavaSEAppFrame extends JFrame {
 			}
 			setSize(displayMode.getWidth(), displayMode.getHeight());
 		}
-		try {
-			EventQueue.invokeAndWait(new Runnable() {
-				public void run() {
-					createBufferStrategy(2);
-				}
-			});
-		} catch (Exception ex) {
-		}
-	}
-
-	@Override
-	public Graphics2D getGraphics() {
-		Window window = _device.getFullScreenWindow();
-		if (window != null) {
-			BufferStrategy strategy = window.getBufferStrategy();
-			return (Graphics2D) strategy.getDrawGraphics();
-		} else {
-			return null;
-		}
 	}
 
 	public void full() {
-		setFullScreen(findFirstMode(methods));
+		setFullScreen(this, findFirstMode(methods));
+	}
+
+	@Override
+	public void close() {
+		if (_game != null) {
+			_game.close();
+		}
 	}
 
 }

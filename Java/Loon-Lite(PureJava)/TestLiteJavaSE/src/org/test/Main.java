@@ -20,23 +20,17 @@
  */
 package org.test;
 
-import java.awt.GraphicsConfiguration;
-
-import loon.se.JavaSEApplication;
 import loon.se.JavaSESetting;
-import loon.se.window.JavaSEAppCanvas;
-import loon.se.window.JavaSEAppFrame;
+import loon.se.Loon;
 
-public class Main {
+public class Main extends Loon {
 
 	public static void main(String[] args) {
 		JavaSESetting setting = new JavaSESetting();
 		setting.width = 800;
 		setting.height = 600;
-		GraphicsConfiguration config = JavaSEApplication.getGraphicsConfiguration();
-		JavaSEAppFrame frame = new JavaSEAppFrame(config, setting);
-		JavaSEAppCanvas canvas = new JavaSEAppCanvas(config, setting);
-		frame.playCanvas(canvas);
+		setting.fullscreen = false;
+		register(Main.class, setting, null);
 	}
 
 }

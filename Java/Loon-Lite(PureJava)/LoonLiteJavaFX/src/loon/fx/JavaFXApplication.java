@@ -62,11 +62,12 @@ public class JavaFXApplication extends Application implements Platform {
 
 	public static void launchFX(Loon app, JavaFXSetting setting, LazyLoading.Data lazy, String[] args) {
 		slazyData = lazy;
-		sAppSetting = setting;
 		sMainClass = app.getClass();
-
+		sAppSetting = setting;
+		if (sAppSetting.args == null) {
+			sAppSetting.args = args;
+		}
 		Application.launch(JavaFXApplication.class, args);
-
 	}
 
 	private DoubleProperty scaledWidth = new SimpleDoubleProperty();
