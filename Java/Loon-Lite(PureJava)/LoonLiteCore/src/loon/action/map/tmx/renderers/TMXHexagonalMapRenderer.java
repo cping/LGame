@@ -22,7 +22,6 @@ package loon.action.map.tmx.renderers;
 
 import loon.LSystem;
 import loon.LTexture;
-import loon.LTextureBatch;
 import loon.action.map.tmx.TMXImageLayer;
 import loon.action.map.tmx.TMXMap;
 import loon.action.map.tmx.TMXMap.StaggerAxis;
@@ -38,10 +37,6 @@ import loon.utils.MathUtils;
  * 六角形(六边形)地图纹理渲染器
  */
 public class TMXHexagonalMapRenderer extends TMXMapRenderer {
-
-	private LTexture texCurrent;
-
-	private LTextureBatch texBatch;
 
 	private boolean staggerAxisX;
 
@@ -141,8 +136,8 @@ public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 
 			final boolean saveCache = textureMap.size == 1 && allowCache;
 
-			texCurrent = textureMap.get(map.getTileset(0).getImage().getSource());
-			texBatch = texCurrent.getTextureBatch();
+			_texCurrent = textureMap.get(map.getTileset(0).getImage().getSource());
+			_texBatch = _texCurrent.getTextureBatch();
 
 			final float tmpAlpha = baseColor.a;
 			boolean isCached = false;
@@ -169,15 +164,15 @@ public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 					hashCode = LSystem.unite(hashCode, tileLayer.isDirty());
 					hashCode = LSystem.unite(hashCode, _objectRotation);
 
-					if (isCached = postCache(texBatch, hashCode)) {
+					if (isCached = postCache(_texBatch, hashCode)) {
 						return;
 					}
 
 				} else {
-					texBatch.begin();
+					_texBatch.begin();
 				}
 
-				texBatch.setColor(baseColor);
+				_texBatch.setColor(baseColor);
 
 				if (staggerAxisX) {
 					final float tileWidthLowerCorner = (layerTileWidth - layerHexLength) / 2;
@@ -241,9 +236,9 @@ public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 
 			} finally {
 				if (!isCached) {
-					texBatch.end();
+					_texBatch.end();
 					if (saveCache) {
-						saveCache(texBatch);
+						saveCache(_texBatch);
 					}
 				}
 				baseColor.a = tmpAlpha;
@@ -265,12 +260,12 @@ public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 
 			LTexture texture = textureMap.get(tileSet.getImage().getSource());
 
-			if (texture.getID() != texCurrent.getID()) {
-				texBatch.end();
-				texCurrent = texture;
-				texBatch = texCurrent.getTextureBatch();
-				texBatch.begin();
-				texBatch.checkTexture(texCurrent);
+			if (texture.getID() != _texCurrent.getID()) {
+				_texBatch.end();
+				_texCurrent = texture;
+				_texBatch = _texCurrent.getTextureBatch();
+				_texBatch.begin();
+				_texBatch.checkTexture(_texCurrent);
 			}
 
 			int tileID = mapTile.getGID() - tileSet.getFirstGID();
@@ -300,7 +295,7 @@ public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 				flipY = !flipY;
 			}
 
-			texBatch.draw(x + offsetX, y + offsetY, -1f, -1f, 0f, 0f, tileWidth, tileHeight, scaleX, scaleY,
+			_texBatch.draw(x + offsetX, y + offsetY, -1f, -1f, 0f, 0f, tileWidth, tileHeight, scaleX, scaleY,
 					this._objectRotation, srcX, srcY, srcWidth, srcHeight, flipX, flipY, baseColor);
 		}
 

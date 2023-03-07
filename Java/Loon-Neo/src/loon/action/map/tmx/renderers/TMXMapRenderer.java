@@ -54,6 +54,10 @@ import loon.utils.TimeUtils;
  */
 public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite {
 
+	protected LTextureBatch _texBatch;
+
+	protected LTexture _texCurrent;
+
 	private ResizeListener<TMXMapRenderer> _resizeListener;
 
 	protected Vector2f _mapLocation = new Vector2f();

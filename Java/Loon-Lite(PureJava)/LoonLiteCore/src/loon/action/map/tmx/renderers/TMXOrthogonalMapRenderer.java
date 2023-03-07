@@ -40,6 +40,7 @@ public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
 		super(map);
 	}
 
+	@Override
 	protected void renderImageLayer(GLEx g, TMXImageLayer imageLayer) {
 		if (!imageLayer.isVisible()) {
 			return;

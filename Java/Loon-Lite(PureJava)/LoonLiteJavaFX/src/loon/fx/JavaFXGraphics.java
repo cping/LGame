@@ -56,6 +56,7 @@ public class JavaFXGraphics extends Graphics {
 		return canvas;
 	}
 
+	@Override
 	public Canvas getCanvas() {
 		return canvas;
 	}
@@ -68,10 +69,6 @@ public class JavaFXGraphics extends Graphics {
 		screenSize.height = viewHeight / scale.factor;
 		game.log().info("Updating size " + viewWidth + "x" + viewHeight + " / " + scale.factor + " -> " + screenSize);
 		viewportChanged(scale, viewWidth, viewHeight);
-	}
-
-	void onFocused(boolean o, boolean n) {
-
 	}
 
 	@Override

@@ -21,7 +21,6 @@
 package loon.fx;
 
 import javafx.animation.AnimationTimer;
-import javafx.scene.canvas.GraphicsContext;
 
 import loon.Accelerometer;
 import loon.Assets;
@@ -259,8 +258,6 @@ public class JavaFXGame extends LGame {
 
 			@Override
 			public void handle(long time) {
-				GraphicsContext gc = graphics.canvas.fxCanvas.getGraphicsContext2D();
-				gc.save();
 				if (wasActive != active) {
 					status.emit(wasActive ? Status.PAUSE : Status.RESUME);
 					wasActive = active;
@@ -268,7 +265,6 @@ public class JavaFXGame extends LGame {
 				if (active) {
 					emitFrame();
 				}
-				gc.restore();
 			}
 		};
 		loopRunner.start();
