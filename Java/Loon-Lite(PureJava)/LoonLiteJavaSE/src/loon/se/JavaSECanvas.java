@@ -56,35 +56,23 @@ class JavaSECanvas extends Canvas {
 	private RoundRectangle2D.Float roundRect = new RoundRectangle2D.Float();
 
 	public JavaSECanvas(Graphics gfx, JavaSEImage image) {
+		this(gfx, image, null);
+	}
+
+	public JavaSECanvas(Graphics gfx, JavaSEImage image, Graphics2D graphics2d) {
 		super(gfx, image);
-		g2d = image.seImage().createGraphics();
-		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		float scale = image.scale().factor;
-		g2d.scale(scale, scale);
-		stateStack.push(new JavaSECanvasState());
-		g2d.setBackground(new Color(0, true));
-	}
-
-	public final static void setQuality(Graphics2D g) {
-		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		g.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
-		g.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
-		g.setRenderingHint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
-		g.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
-		g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
-		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-	}
-
-	public final static void setSpeed(Graphics2D g) {
-		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-		g.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED);
-		g.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_SPEED);
-		g.setRenderingHint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_DISABLE);
-		g.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_OFF);
-		g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
-		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
-		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+		if (image != null && image.seImage() != null) {
+			g2d = image.seImage().createGraphics();
+		} else {
+			g2d = graphics2d;
+		}
+		if (g2d != null) {
+			g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			float scale = image.scale().factor;
+			g2d.scale(scale, scale);
+			stateStack.push(new JavaSECanvasState());
+			g2d.setBackground(new Color(0, true));
+		}
 	}
 
 	public float alpha() {
@@ -125,7 +113,7 @@ class JavaSECanvas extends Canvas {
 		this.setFillColor(rgb);
 		return this;
 	}
-	
+
 	private BufferedImage createImage() {
 		BufferedImage bmp = ((JavaSEImage) image).seImage();
 		ColorModel cm = bmp.getColorModel();
@@ -135,7 +123,7 @@ class JavaSECanvas extends Canvas {
 	}
 
 	protected JavaSEImage toSEImage() {
-		return (JavaSEImage)image;
+		return (JavaSEImage) image;
 	}
 
 	protected void setSEImage(Image img, BufferedImage write) {
@@ -336,7 +324,6 @@ class JavaSECanvas extends Canvas {
 		return this;
 	}
 
-
 	@Override
 	public Canvas setLineCap(LineCap cap) {
 		currentState().lineCap = cap;
@@ -432,7 +419,6 @@ class JavaSECanvas extends Canvas {
 	private JavaSECanvasState currentState() {
 		return stateStack.getFirst();
 	}
-
 
 	@Override
 	public Canvas clear(LColor color) {

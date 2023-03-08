@@ -20,6 +20,8 @@
  */
 package loon.se;
 
+import java.util.concurrent.Executors;
+
 import loon.Accelerometer;
 import loon.Assets;
 import loon.Asyn;
@@ -30,111 +32,344 @@ import loon.LSetting;
 import loon.Log;
 import loon.Platform;
 import loon.Save;
+import loon.LGame.Environment;
+import loon.LGame.Status;
+import loon.LGame.Sys;
 import loon.canvas.Canvas;
 import loon.events.InputMake;
 import loon.opengl.Mesh;
+import loon.se.window.JavaSEAppCanvas;
+import loon.utils.Scale;
+import loon.utils.StringUtils;
 
-public class JavaSEGame extends LGame{
+public class JavaSEGame extends LGame {
 
-	public JavaSEGame(LSetting config, Platform plat) {
+	static private boolean osIsAndroid;
+
+	final static private boolean osIsLinux;
+
+	final static private boolean osIsUnix;
+
+	final static private boolean osIsMacOs;
+
+	final static private boolean osIsWindows;
+
+	final static private boolean osBit64;
+
+	final static private String OS_ARCH;
+
+	final static private String OS_NAME;
+
+	final static private String JAVA_SPEC;
+
+	final static private String JAVA_VERSION;
+
+
+	static {
+		OS_NAME = getProperty("os.name").toLowerCase();
+		JAVA_SPEC = getProperty("java.specification.version").toLowerCase();
+		JAVA_VERSION = getProperty("java.version").toLowerCase();
+		osIsLinux = OS_NAME.indexOf("linux") != -1;
+		osIsUnix = OS_NAME.indexOf("nix") != -1 || OS_NAME.indexOf("nux") != 1;
+		osIsMacOs = OS_NAME.indexOf("mac") != -1;
+		osIsWindows = OS_NAME.indexOf("windows") != -1;
+		OS_ARCH = getProperty("os.arch");
+		osBit64 = OS_ARCH.indexOf("amd64") != -1 || OS_ARCH.indexOf("x86_64") != -1;
+		checkAndroid();
+	}
+
+	public static boolean isJavaVersion(String versionPrefix) {
+		return JAVA_SPEC.indexOf(versionPrefix) != -1;
+	}
+
+	public static String getJavaVersion() {
+		return JAVA_VERSION;
+	}
+
+	public static boolean checkAndroid() {
+		if (osIsAndroid) {
+			return osIsAndroid;
+		}
+		String jvm = getProperty("java.runtime.name").toLowerCase();
+		if (jvm.indexOf("android runtime") != -1) {
+			return (osIsAndroid = true);
+		}
+		try {
+			Class.forName("android.Manifest");
+			return (osIsAndroid = true);
+		} catch (Throwable cause) {
+			osIsAndroid = false;
+		}
+		return osIsAndroid;
+	}
+
+	public static boolean isSun() {
+		return getProperty("java.vm.vendor").indexOf("Sun") != -1
+				|| getProperty("java.vm.vendor").indexOf("Oracle") != -1;
+	}
+
+	public static boolean isApple() {
+		return getProperty("java.vm.vendor").indexOf("Apple") != -1;
+	}
+
+	public static boolean isHPUX() {
+		return getProperty("java.vm.vendor").indexOf("Hewlett-Packard Company") != -1;
+	}
+
+	public static boolean isIBM() {
+		return getProperty("java.vm.vendor").indexOf("IBM") != -1;
+	}
+
+	public static boolean isBlackdown() {
+		return getProperty("java.vm.vendor").indexOf("Blackdown") != -1;
+	}
+
+	public static boolean isAndroid() {
+		return osIsAndroid;
+	}
+
+	public static boolean isLinux() {
+		return osIsLinux;
+	}
+
+	public static boolean isMacOS() {
+		return osIsMacOs;
+	}
+
+	public static boolean isUnix() {
+		return osIsUnix;
+	}
+
+	public static boolean isWindows() {
+		return osIsWindows;
+	}
+
+	public static boolean isBit64() {
+		return osBit64;
+	}
+
+	private final JavaSEAccelerometer accelerometer;
+
+	private final JavaSESave save;
+	private final JavaSEGraphics graphics;
+	private final JavaSEAssets assets;
+	private final JavaSELog log;
+	private final Asyn asyn;
+
+	private JavaSEAppCanvas canvas;
+
+	private final long start = System.nanoTime();
+
+	private JavaSEInputMake input;
+
+	private boolean active = true;
+
+	public JavaSEGame(Platform plat, LSetting config) {
 		super(config, plat);
-		// TODO Auto-generated constructor stub
+		this.graphics = new JavaSEGraphics(this);
+		this.input = new JavaSEInputMake(this);
+		this.assets = new JavaSEAssets(this);
+		this.log = new JavaSELog();
+		this.save = new JavaSESave(log, config.appName);
+		this.accelerometer = new JavaSEAccelerometer();
+		this.asyn = new JavaSEAsyn(Executors.newFixedThreadPool(4),log, frame);
+		this.initProcess();
+	}
+
+	protected static String getProperty(String value) {
+		return getProperty(value, "");
+	}
+
+	protected static String getProperty(String value, String def) {
+		String result = null;
+		try {
+			result = System.getProperty(value, def).trim();
+		} catch (Throwable cause) {
+			result = "";
+		}
+		return result;
+	}
+
+	public static boolean isJavaFXDesktop() {
+		String result = getJavaFXProperty();
+		return (result.indexOf("desktop") != -1 || result.indexOf("mac") != -1 || result.indexOf("win") != -1
+				|| result.indexOf("linux") != -1) && !isAndroid();
+	}
+
+	public static String getJavaFXProperty() {
+		String glass = getProperty("glass.platform", null);
+		if (!StringUtils.isEmpty(glass)) {
+			return glass.trim().toLowerCase();
+		}
+		String monocle = getProperty("monocle.platform", null);
+		if (!StringUtils.isEmpty(monocle)) {
+			return monocle.trim().toLowerCase();
+		}
+		return getProperty("javafx.platform", "desktop").trim().toLowerCase();
+	}
+
+	protected void toggleActivation() {
+		active = !active;
+	}
+
+	protected void start() {
+		if (canvas != null) {
+			canvas.start();
+		}
 	}
 
 	@Override
-	public Mesh makeMesh(Canvas canvas) {
-		// TODO Auto-generated method stub
-		return null;
+	public LGame resume() {
+		if (canvas != null) {
+			canvas.stop();
+			canvas.start();
+		}
+		return this;
+	}
+
+	@Override
+	public LGame pause() {
+		stop();
+		return this;
+	}
+
+	@Override
+	public void stop() {
+		if (canvas != null) {
+			canvas.stop();
+		}
+	}
+
+	public void process(long time, boolean wasActive) {
+		if (wasActive != active) {
+			status.emit(wasActive ? Status.PAUSE : Status.RESUME);
+		}
+		if (active) {
+			emitFrame();
+		}
+	}
+
+	protected void shutdown() {
+		if (status.isClosed()) {
+			return;
+		}
+		status.emit(Status.EXIT);
+		stop();
+		System.exit(0);
 	}
 
 	@Override
 	public Environment env() {
-		// TODO Auto-generated method stub
-		return null;
+		return Environment.JAVAFX;
 	}
 
 	@Override
 	public double time() {
-		// TODO Auto-generated method stub
-		return 0;
+		return System.currentTimeMillis();
 	}
 
 	@Override
 	public int tick() {
-		// TODO Auto-generated method stub
-		return 0;
+		return (int) ((System.nanoTime() - start) / 1000000L);
+	}
+
+	public JavaSEAppCanvas getFxCanvas() {
+		return canvas;
 	}
 
 	@Override
 	public JavaSEAssets assets() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.assets;
 	}
 
 	@Override
 	public Asyn asyn() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.asyn;
 	}
 
 	@Override
 	public Graphics graphics() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.graphics;
 	}
 
 	@Override
 	public InputMake input() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Clipboard clipboard() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.input;
 	}
 
 	@Override
 	public Log log() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.log;
 	}
 
 	@Override
 	public Save save() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.save;
 	}
 
 	@Override
 	public Accelerometer accel() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Sys getPlatform() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.accelerometer;
 	}
 
 	@Override
 	public boolean isMobile() {
-		// TODO Auto-generated method stub
-		return false;
+		Sys sys = getPlatform();
+		return (!isDesktop()) || sys == Sys.IOS || sys == Sys.ANDROID;
 	}
 
 	@Override
 	public boolean isDesktop() {
-		// TODO Auto-generated method stub
-		return false;
+		Sys sys = getPlatform();
+		return isJavaFXDesktop() || sys == Sys.WINDOWS || sys == Sys.LINUX || sys == Sys.MAC;
 	}
 
 	@Override
 	public boolean isBrowser() {
-		// TODO Auto-generated method stub
-		return false;
+		return !isDesktop() && !isMobile();
 	}
 
+	public String getProperty() {
+		return getJavaFXProperty();
+	}
+
+	public String getDevice() {
+		return getProperty(OS_ARCH).toLowerCase();
+	}
+
+	public boolean isARMDevice() {
+		return getDevice().indexOf("arm") != -1;
+	}
+
+	@Override
+	public Sys getPlatform() {
+		if (isAndroid()) {
+			return Sys.ANDROID;
+		}
+		String monoclePlatformName = getProperty("monocle.platform", "");
+		String glassPlatformName = getProperty("glass.platform", "");
+		if (monoclePlatformName == "EGL" && glassPlatformName == "Monocle") {
+			return Sys.EMBEDDED;
+		}
+		if (isMacOS()) {
+			return Sys.MAC;
+		}
+		if (isLinux()) {
+			return Sys.LINUX;
+		}
+		if (isWindows()) {
+			return Sys.WINDOWS;
+		}
+		return Sys.BROWSER;
+	}
+
+	@Override
+	public Clipboard clipboard() {
+		return new JavaSEClipboard();
+	}
+
+	@Override
+	public Mesh makeMesh(Canvas canvas) {
+		return new JavaSEMesh(canvas);
+	}
 }

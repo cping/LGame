@@ -62,6 +62,58 @@ public class LColor implements Serializable {
 		return dstPixels;
 	}
 
+	public static final float[] convertHSBtoRGB(float hue, float saturation, float brightness) {
+		float normalizedHue = ((hue % 360f) + 360f) % 360f;
+		hue = normalizedHue / 360f;
+		float r = 0, g = 0, b = 0;
+		if (saturation == 0) {
+			r = g = b = brightness;
+		} else {
+			float h = (hue - MathUtils.floor(hue)) * 6f;
+			float f = h - MathUtils.floor(h);
+			float p = brightness * (1f - saturation);
+			float q = brightness * (1f - saturation * f);
+			float t = brightness * (1f - (saturation * (1f - f)));
+			switch ((int) h) {
+			case 0:
+				r = brightness;
+				g = t;
+				b = p;
+				break;
+			case 1:
+				r = q;
+				g = brightness;
+				b = p;
+				break;
+			case 2:
+				r = p;
+				g = brightness;
+				b = t;
+				break;
+			case 3:
+				r = p;
+				g = q;
+				b = brightness;
+				break;
+			case 4:
+				r = t;
+				g = p;
+				b = brightness;
+				break;
+			case 5:
+				r = brightness;
+				g = p;
+				b = q;
+				break;
+			}
+		}
+		float[] result = new float[3];
+		result[0] = r;
+		result[1] = g;
+		result[2] = b;
+		return result;
+	}
+
 	/**
 	 * 转换颜色为RGB格式的Color
 	 * 
@@ -309,6 +361,11 @@ public class LColor implements Serializable {
 		return new float[] { r, g, b, a };
 	}
 
+	public static final LColor hsb(float hue, float saturation, float brightness, float alpha) {
+		float[] rgb = convertHSBtoRGB(hue, saturation, brightness);
+		return new LColor(rgb[0], rgb[1], rgb[2], alpha);
+	}
+
 	public static final byte[] argbToRGBA(int pixel) {
 		byte[] bytes = new byte[4];
 		int r = (pixel >> 16) & 0xFF;
@@ -505,7 +562,7 @@ public class LColor implements Serializable {
 		}
 		c = c.trim().toLowerCase();
 		// 识别字符串格式颜色
-		if (c.startsWith("#")) {
+		if (c.startsWith("#") || c.startsWith("0x")) {
 			setColor(hexToColor(c));
 		} else if (c.startsWith("rgb")) {
 			int start = c.indexOf('(');
@@ -1513,12 +1570,26 @@ public class LColor implements Serializable {
 		try {
 			if (c.startsWith("#")) {
 				return hexToColor(c.substring(1));
+			} else if (c.startsWith("0x")) {
+				return hexToColor(c.substring(2));
 			} else {
 				return new LColor((int) CharUtils.fromHexToLong(c));
 			}
 		} catch (Throwable e) {
 			return new LColor();
 		}
+	}
+
+	public static final LColor web(final String stringColor) {
+		return web(stringColor, 1f);
+	}
+
+	public static final LColor web(final String stringColor, final float alpha) {
+		if (alpha == 1f) {
+			return new LColor(stringColor);
+		}
+		LColor c = new LColor(stringColor);
+		return new LColor(c.r, c.g, c.b, c.a * alpha);
 	}
 
 	public static final LColor stringToColor(String c) {

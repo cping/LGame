@@ -170,7 +170,7 @@ public class JavaFXGame extends LGame {
 
 	public JavaFXGame(Platform plat, LSetting config) {
 		super(config, plat);
-		this.graphics = new JavaFXGraphics(this);
+		this.graphics = new JavaFXGraphics(this, true);
 		this.input = new JavaFXInputMake(this);
 		this.assets = new JavaFXAssets(this);
 		this.log = new JavaFXLog();

@@ -31,8 +31,10 @@ import java.awt.Rectangle;
 import java.awt.RenderingHints;
 
 import loon.LGame;
+import loon.LSysException;
 import loon.LazyLoading;
 import loon.Platform;
+import loon.Platform.Orientation;
 import loon.events.KeyMake.TextType;
 import loon.events.SysInput.ClickEvent;
 import loon.events.SysInput.TextEvent;
@@ -69,9 +71,20 @@ public class JavaSEApplication implements Platform {
 			this.appSetting.height_zoom = (int) rect.getHeight();
 		}
 		this.mainClass = app.getClass();
+		this.game = new JavaSEGame(this, this.appSetting);
+	}
+	
+	protected void loadScreen() {
+		try {
+			game.register(lazyData.onScreen());
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LSysException(e.getMessage());
+		}
 	}
 
 	public JavaSEAppCanvas runCanvas() {
+		loadScreen();
 		JavaSEAppCanvas canvas = new JavaSEAppCanvas(config, game, appSetting);
 		canvas.updateSize();
 		canvas.start();
@@ -79,6 +92,7 @@ public class JavaSEApplication implements Platform {
 	}
 
 	public JavaSEAppFrame runFrame() {
+		loadScreen();
 		JavaSEAppFrame frame = new JavaSEAppFrame(config, game, appSetting);
 		JavaSEAppCanvas canvas = new JavaSEAppCanvas(config, game, appSetting);
 		frame.playCanvas(canvas);
@@ -179,29 +193,35 @@ public class JavaSEApplication implements Platform {
 		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
 	}
 
+	public static void systemLog(String message) {
+		System.out.println(message);
+	}
+
+	@Override
+	public int getContainerWidth() {
+		return game.setting.getShowWidth();
+	}
+
+	@Override
+	public int getContainerHeight() {
+		return  game.setting.getShowHeight();
+	}
+
 	@Override
 	public void close() {
 		if (game != null) {
 			game.close();
 		}
-	}
-
-	@Override
-	public int getContainerWidth() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int getContainerHeight() {
-		// TODO Auto-generated method stub
-		return 0;
+		System.exit(-1);
 	}
 
 	@Override
 	public Orientation getOrientation() {
-		// TODO Auto-generated method stub
-		return null;
+		if (getContainerHeight() > getContainerWidth()) {
+			return Orientation.Portrait;
+		} else {
+			return Orientation.Landscape;
+		}
 	}
 
 	@Override

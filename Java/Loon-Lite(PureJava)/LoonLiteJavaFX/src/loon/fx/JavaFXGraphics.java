@@ -39,19 +39,29 @@ public class JavaFXGraphics extends Graphics {
 	protected JavaFXCanvas canvas;
 
 	protected JavaFXGraphics(JavaFXGame game) {
-		this(game, Scale.ONE);
+		this(game, true);
+	}
+	
+	protected JavaFXGraphics(JavaFXGame game, boolean resized) {
+		this(game, Scale.ONE, resized);
 	}
 
-	protected JavaFXGraphics(JavaFXGame game, Scale scale) {
+	protected JavaFXGraphics(JavaFXGame game, Scale scale, boolean resized) {
 		super(game, scale);
 		this.game = game;
-		this.createCanvas(game.setting);
+		this.createCanvas(game.setting, scale, resized);
 	}
 
-	protected Canvas createCanvas(LSetting setting) {
+	protected Canvas createCanvas(LSetting setting, Scale scale, boolean resized) {
 		if (canvas == null) {
-			canvas = new JavaFXCanvas(this,
-					new JavaFXImage(this.game, setting.getShowWidth(), setting.getShowHeight()));
+			JavaFXImage image = null;
+			if (resized) {
+				image = new JavaFXImage(this.game, scale.scaledFloor(setting.getShowWidth()),
+						scale.scaledFloor(setting.getShowHeight()));
+			} else {
+				image = new JavaFXImage(this.game, scale.scaledFloor(setting.width), scale.scaledFloor(setting.height));
+			}
+			canvas = new JavaFXCanvas(this, image);
 		}
 		return canvas;
 	}

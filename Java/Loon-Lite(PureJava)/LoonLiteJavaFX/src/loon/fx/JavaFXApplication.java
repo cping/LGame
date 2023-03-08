@@ -250,6 +250,9 @@ public class JavaFXApplication extends Application implements Platform {
 
 	@Override
 	public void close() {
+		if (game != null) {
+			game.close();
+		}
 		System.exit(-1);
 	}
 

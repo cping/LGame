@@ -38,7 +38,7 @@ import loon.font.TextLayout;
 import loon.font.TextWrap;
 import loon.utils.Scale;
 
-public abstract class JavaSEImplGraphics  extends Graphics {
+public abstract class JavaSEImplGraphics extends Graphics {
 
 	protected static final int[] STYLE_TO_JAVA = { java.awt.Font.PLAIN, java.awt.Font.BOLD, java.awt.Font.ITALIC,
 			java.awt.Font.BOLD | java.awt.Font.ITALIC };
@@ -50,7 +50,7 @@ public abstract class JavaSEImplGraphics  extends Graphics {
 
 	final FontRenderContext aaFontContext, aFontContext;
 
-	protected JavaSEImplGraphics(JavaSEGame game,Scale scale) {
+	protected JavaSEImplGraphics(JavaSEGame game, Scale scale) {
 		super(game, scale);
 		this.game = game;
 
@@ -70,8 +70,6 @@ public abstract class JavaSEImplGraphics  extends Graphics {
 		}
 	}
 
-	public abstract void setSize(int width, int height, boolean fullscreen);
-
 	@Override
 	public TextLayout layoutText(String text, TextFormat format) {
 		return JavaSETextLayout.layoutText(this, text, format);
@@ -87,10 +85,6 @@ public abstract class JavaSEImplGraphics  extends Graphics {
 		BufferedImage bitmap = new BufferedImage(pixelWidth, pixelHeight, BufferedImage.TYPE_INT_ARGB_PRE);
 		return new JavaSECanvas(this, new JavaSEImage(this, scale, bitmap, "<canvas>"));
 	}
-
-	protected abstract void init();
-
-	protected abstract void upload(BufferedImage img, LTexture tex);
 
 	protected void updateViewport(Scale scale, float displayWidth, float displayHeight) {
 		int viewWidth = scale.scaledCeil(displayWidth);
@@ -117,7 +111,7 @@ public abstract class JavaSEImplGraphics  extends Graphics {
 			image.coerceData(true);
 			return image;
 		}
-		BufferedImage convertedImage = new BufferedImage(image.getWidth(), image.getHeight(),
+		BufferedImage convertedImage = createBufferedImage(image.getWidth(), image.getHeight(),
 				BufferedImage.TYPE_INT_ARGB_PRE);
 		Graphics2D g = convertedImage.createGraphics();
 		g.setColor(new java.awt.Color(0f, 0f, 0f, 0f));
@@ -126,6 +120,10 @@ public abstract class JavaSEImplGraphics  extends Graphics {
 		g.dispose();
 
 		return convertedImage;
+	}
+
+	static BufferedImage createBufferedImage(int width, int height, int imageType) {
+		return new BufferedImage(width, height, imageType);
 	}
 
 	ByteBuffer checkGetImageBuffer(int byteSize) {

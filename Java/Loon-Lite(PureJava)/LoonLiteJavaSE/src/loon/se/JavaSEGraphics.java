@@ -20,130 +20,68 @@
  */
 package loon.se;
 
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.font.FontRenderContext;
 import java.awt.image.BufferedImage;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.util.HashMap;
-import java.util.Map;
 
 import loon.*;
 import loon.canvas.Canvas;
-import loon.font.Font;
-import loon.font.TextFormat;
-import loon.font.TextLayout;
-import loon.font.TextWrap;
+import loon.geom.Dimension;
 import loon.utils.Scale;
 
-public abstract class JavaSEGraphics extends JavaSEImplGraphics {
+public class JavaSEGraphics extends JavaSEImplGraphics {
 
-	protected static final int[] STYLE_TO_JAVA = { java.awt.Font.PLAIN, java.awt.Font.BOLD, java.awt.Font.ITALIC,
-			java.awt.Font.BOLD | java.awt.Font.ITALIC };
+	private final JavaSEGame game;
 
-	private ByteBuffer imgBuffer = createImageBuffer(1024);
-	private Map<String, java.awt.Font> fonts = new HashMap<String, java.awt.Font>();
+	private Dimension screenSize = new Dimension();
 
-	protected final JavaSEGame game;
+	protected Canvas canvas;
 
-	final FontRenderContext aaFontContext, aFontContext;
+	protected JavaSEGraphics(JavaSEGame game) {
+		this(game, false);
+	}
 
-	protected JavaSEGraphics(JavaSEGame game, Scale scale) {
+	protected JavaSEGraphics(JavaSEGame game, boolean resized) {
+		this(game, Scale.ONE, resized);
+	}
+
+	protected JavaSEGraphics(JavaSEGame game, Scale scale, boolean resized) {
 		super(game, scale);
 		this.game = game;
-
-		Graphics2D aaGfx = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB).createGraphics();
-		aaGfx.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		aaFontContext = aaGfx.getFontRenderContext();
-		Graphics2D aGfx = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB).createGraphics();
-		aGfx.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-		aFontContext = aGfx.getFontRenderContext();
+		this.createCanvas(game.setting, scale, resized);
 	}
 
-	@Override
-	public void registerFont(String name, String path) {
-		try {
-			fonts.put(name, game.assets().requireResource(path).createFont());
-		} catch (Exception e) {
-			game.reportError("Failed to load font [name=" + name + ", path=" + path + "]", e);
+	protected Canvas createCanvas(LSetting setting, Scale scale, boolean resized) {
+		if (canvas == null) {
+			BufferedImage image = null;
+			if (resized) {
+				image = JavaSEImplGraphics.createBufferedImage(scale.scaledFloor(setting.getShowWidth()),
+						scale.scaledFloor(setting.getShowHeight()), BufferedImage.TYPE_INT_ARGB_PRE);
+			} else {
+				image = JavaSEImplGraphics.createBufferedImage(scale.scaledFloor(setting.width),
+						scale.scaledFloor(setting.height), BufferedImage.TYPE_INT_ARGB_PRE);
+			}
+			canvas = new JavaSECanvas(this, new JavaSEImage(this, image));
 		}
+		return canvas;
 	}
 
 	@Override
-	public abstract void setSize(int width, int height, boolean fullscreen);
-
-	@Override
-	public TextLayout layoutText(String text, TextFormat format) {
-		return JavaSETextLayout.layoutText(this, text, format);
+	public Canvas getCanvas() {
+		return canvas;
 	}
 
-	@Override
-	public TextLayout[] layoutText(String text, TextFormat format, TextWrap wrap) {
-		return JavaSETextLayout.layoutText(this, text, format, wrap);
-	}
-
-	@Override
-	protected Canvas createCanvasImpl(Scale scale, int pixelWidth, int pixelHeight) {
-		BufferedImage bitmap = new BufferedImage(pixelWidth, pixelHeight, BufferedImage.TYPE_INT_ARGB_PRE);
-		return new JavaSECanvas(this, new JavaSEImage(this, scale, bitmap, "<canvas>"));
-	}
-
-	@Override
-	protected abstract void init();
-
-	@Override
-	protected abstract void upload(BufferedImage img, LTexture tex);
-
-	@Override
-	protected void updateViewport(Scale scale, float displayWidth, float displayHeight) {
-		int viewWidth = scale.scaledCeil(displayWidth);
-		int viewHeight = scale.scaledCeil(displayHeight);
+	void onSizeChanged(int viewWidth, int viewHeight) {
 		if (!isAllowResize(viewWidth, viewHeight)) {
 			return;
 		}
+		screenSize.width = viewWidth / scale.factor;
+		screenSize.height = viewHeight / scale.factor;
+		game.log().info("Updating size " + viewWidth + "x" + viewHeight + " / " + scale.factor + " -> " + screenSize);
 		viewportChanged(scale, viewWidth, viewHeight);
 	}
 
 	@Override
-	java.awt.Font resolveFont(Font font) {
-		java.awt.Font jfont = fonts.get(font.name);
-		if (jfont == null) {
-			fonts.put(font.name, jfont = new java.awt.Font(font.name, java.awt.Font.PLAIN, 12));
-		}
-		return jfont.deriveFont(STYLE_TO_JAVA[font.style.ordinal()], font.size);
-	}
-
-	static BufferedImage convertImage(BufferedImage image) {
-		switch (image.getType()) {
-		case BufferedImage.TYPE_INT_ARGB_PRE:
-			return image;
-		case BufferedImage.TYPE_4BYTE_ABGR:
-			image.coerceData(true);
-			return image;
-		}
-		BufferedImage convertedImage = new BufferedImage(image.getWidth(), image.getHeight(),
-				BufferedImage.TYPE_INT_ARGB_PRE);
-		Graphics2D g = convertedImage.createGraphics();
-		g.setColor(new java.awt.Color(0f, 0f, 0f, 0f));
-		g.fillRect(0, 0, image.getWidth(), image.getHeight());
-		g.drawImage(image, 0, 0, null);
-		g.dispose();
-		return convertedImage;
-	}
-
-	@Override
-	ByteBuffer checkGetImageBuffer(int byteSize) {
-		if (imgBuffer.capacity() >= byteSize) {
-			imgBuffer.clear();
-		} else {
-			imgBuffer = createImageBuffer(byteSize);
-		}
-		return imgBuffer;
-	}
-
-	private static ByteBuffer createImageBuffer(int byteSize) {
-		return ByteBuffer.allocateDirect(byteSize).order(ByteOrder.nativeOrder());
+	public Dimension screenSize() {
+		return this.screenSize;
 	}
 
 }
