@@ -59,7 +59,7 @@ public class JavaSEMesh implements Mesh {
 			throw new LSysException("Canvas is null !");
 		}
 		if (canvas instanceof JavaSECanvas) {
-			this.context = ((JavaSECanvas) canvas).g2d;
+			this.context = ((JavaSECanvas) canvas).context;
 		}
 
 	}

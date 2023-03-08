@@ -49,12 +49,11 @@ public class JavaFXCanvas extends Canvas {
 	private SnapshotParameters snapshotParameters;
 	private LColor tmpColor = LColor.white.cpy();
 
-	final GraphicsContext context;
+	protected LColor color;
+	protected GraphicsContext context;
 
 	double width;
 	double height;
-
-	LColor color;
 
 	protected JavaFXCanvas(Graphics gfx, JavaFXImage image) {
 		super(gfx, image);
@@ -64,7 +63,7 @@ public class JavaFXCanvas extends Canvas {
 			this.height = image.getHeight();
 		}
 		this.fxCanvas = new JavaFXResizeCanvas(width, height);
-		this.context = fxCanvas.getGraphicsContext2D();
+		this.setContextInit(fxCanvas.getGraphicsContext2D());
 		if (image != null) {
 			this.isDirty = true;
 		} else {
@@ -74,7 +73,20 @@ public class JavaFXCanvas extends Canvas {
 		if (image.hasAlpha()) {
 			snapshotParameters.setFill(Color.TRANSPARENT);
 		}
+	}
 
+	public void updateContext(GraphicsContext g) {
+		this.context = g;
+	}
+	
+	public void setContextInit(GraphicsContext g) {
+		this.updateContext(g);
+		if (this.context != null) {
+			float scale = image.scale().factor;
+			context.scale(scale, scale);
+			context.setFill(Color.BLACK);
+			context.clearRect(0, 0, width, height);
+		}
 	}
 
 	@Override
@@ -612,12 +624,14 @@ public class JavaFXCanvas extends Canvas {
 	@Override
 	public Canvas transform(float m11, float m12, float m21, float m22, float dx, float dy) {
 		context.transform(m11, m12, m21, m22, dx, dy);
+		isDirty = true;
 		return this;
 	}
 
 	@Override
 	public Canvas setTransform(Affine2f aff) {
 		context.setTransform(aff.m00, aff.m01, aff.m10, aff.m11, aff.tx, aff.ty);
+		isDirty = true;
 		return this;
 	}
 

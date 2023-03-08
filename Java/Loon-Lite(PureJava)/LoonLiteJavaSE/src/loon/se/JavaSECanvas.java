@@ -45,10 +45,12 @@ import loon.font.TextLayout;
 import loon.geom.Affine2f;
 import loon.utils.MathUtils;
 
-class JavaSECanvas extends Canvas {
+public class JavaSECanvas extends Canvas {
 
-	final Graphics2D g2d;
+	protected Graphics2D context;
 	private Deque<JavaSECanvasState> stateStack = new LinkedList<JavaSECanvasState>();
+
+	private AffineTransform transform = new AffineTransform();
 
 	private Ellipse2D.Float ellipse = new Ellipse2D.Float();
 	private Line2D.Float line = new Line2D.Float();
@@ -62,16 +64,27 @@ class JavaSECanvas extends Canvas {
 	public JavaSECanvas(Graphics gfx, JavaSEImage image, Graphics2D graphics2d) {
 		super(gfx, image);
 		if (image != null && image.seImage() != null) {
-			g2d = image.seImage().createGraphics();
+			context = image.seImage().createGraphics();
+			this.isDirty = true;
 		} else {
-			g2d = graphics2d;
+			context = graphics2d;
+			this.isDirty = false;
 		}
-		if (g2d != null) {
-			g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		setContextInit(context);
+	}
+
+	public void updateContext(Graphics2D g2d) {
+		this.context = g2d;
+	}
+
+	public void setContextInit(Graphics2D g2d) {
+		this.updateContext(g2d);
+		if (this.context != null) {
+			this.context.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			float scale = image.scale().factor;
-			g2d.scale(scale, scale);
-			stateStack.push(new JavaSECanvasState());
-			g2d.setBackground(new Color(0, true));
+			this.context.scale(scale, scale);
+			this.stateStack.push(new JavaSECanvasState());
+			this.context.setBackground(new Color(0, true));
 		}
 	}
 
@@ -89,6 +102,7 @@ class JavaSECanvas extends Canvas {
 		return currentState().fillColor;
 	}
 
+	@Override
 	public Canvas setColor(LColor color) {
 		int argb = color.getARGB();
 		this.setStrokeColor(argb);
@@ -112,6 +126,13 @@ class JavaSECanvas extends Canvas {
 		this.setStrokeColor(rgb);
 		this.setFillColor(rgb);
 		return this;
+	}
+
+	protected Color getLColorToSE(LColor c) {
+		if (c == null) {
+			return Color.white;
+		}
+		return new Color(c.r, c.g, c.b, c.a);
 	}
 
 	private BufferedImage createImage() {
@@ -152,16 +173,16 @@ class JavaSECanvas extends Canvas {
 
 	@Override
 	public Canvas clear() {
-		currentState().prepareClear(g2d);
-		g2d.clearRect(0, 0, MathUtils.iceil(width), MathUtils.iceil(height));
+		currentState().prepareClear(context);
+		context.clearRect(0, 0, MathUtils.iceil(width), MathUtils.iceil(height));
 		isDirty = true;
 		return this;
 	}
 
 	@Override
 	public Canvas clearRect(float x, float y, float width, float height) {
-		currentState().prepareClear(g2d);
-		g2d.clearRect(MathUtils.ifloor(x), MathUtils.ifloor(y), MathUtils.iceil(width), MathUtils.iceil(height));
+		currentState().prepareClear(context);
+		context.clearRect(MathUtils.ifloor(x), MathUtils.ifloor(y), MathUtils.iceil(width), MathUtils.iceil(height));
 		isDirty = true;
 		return this;
 	}
@@ -169,6 +190,7 @@ class JavaSECanvas extends Canvas {
 	@Override
 	public Canvas clip(Path path) {
 		currentState().clipper = (JavaSEPath) path;
+		isDirty = true;
 		return this;
 	}
 
@@ -177,10 +199,11 @@ class JavaSECanvas extends Canvas {
 		final int cx = MathUtils.ifloor(x), cy = MathUtils.ifloor(y);
 		final int cwidth = MathUtils.iceil(width), cheight = MathUtils.iceil(height);
 		currentState().clipper = new JavaSECanvasState.Clipper() {
-			public void setClip(Graphics2D g2d) {
-				g2d.setClip(cx, cy, cwidth, cheight);
+			public void setClip(Graphics2D context) {
+				context.setClip(cx, cy, cwidth, cheight);
 			}
 		};
+		isDirty = true;
 		return this;
 	}
 
@@ -202,17 +225,17 @@ class JavaSECanvas extends Canvas {
 
 	@Override
 	public Canvas drawLine(float x0, float y0, float x1, float y1) {
-		currentState().prepareStroke(g2d);
+		currentState().prepareStroke(context);
 		line.setLine(x0, y0, x1, y1);
-		g2d.draw(line);
+		context.draw(line);
 		isDirty = true;
 		return this;
 	}
 
 	@Override
 	public Canvas drawPoint(float x, float y) {
-		currentState().prepareStroke(g2d);
-		g2d.drawLine((int) x, (int) y, (int) x, (int) y);
+		currentState().prepareStroke(context);
+		context.drawLine((int) x, (int) y, (int) x, (int) y);
 		isDirty = true;
 		return this;
 	}
@@ -226,44 +249,54 @@ class JavaSECanvas extends Canvas {
 	}
 
 	@Override
+	public Canvas drawText(String text, float x, float y, LColor color) {
+		if (_font == null) {
+			_font = LFont.getDefaultFont();
+		}
+		setColor(color);
+		fillText(_font.getLayoutText(text), x, y);
+		return this;
+	}
+
+	@Override
 	public Canvas fillCircle(float x, float y, float radius) {
-		currentState().prepareFill(g2d);
+		currentState().prepareFill(context);
 		ellipse.setFrame(x - radius, y - radius, 2 * radius, 2 * radius);
-		g2d.fill(ellipse);
+		context.fill(ellipse);
 		isDirty = true;
 		return this;
 	}
 
 	@Override
 	public Canvas fillPath(Path path) {
-		currentState().prepareFill(g2d);
-		g2d.fill(((JavaSEPath) path).path);
+		currentState().prepareFill(context);
+		context.fill(((JavaSEPath) path).path);
 		isDirty = true;
 		return this;
 	}
 
 	@Override
 	public Canvas fillRect(float x, float y, float width, float height) {
-		currentState().prepareFill(g2d);
+		currentState().prepareFill(context);
 		rect.setRect(x, y, width, height);
-		g2d.fill(rect);
+		context.fill(rect);
 		isDirty = true;
 		return this;
 	}
 
 	@Override
 	public Canvas fillRoundRect(float x, float y, float width, float height, float radius) {
-		currentState().prepareFill(g2d);
+		currentState().prepareFill(context);
 		roundRect.setRoundRect(x, y, width, height, radius * 2, radius * 2);
-		g2d.fill(roundRect);
+		context.fill(roundRect);
 		isDirty = true;
 		return this;
 	}
 
 	@Override
 	public Canvas fillText(TextLayout layout, float x, float y) {
-		currentState().prepareFill(g2d);
-		((JavaSETextLayout) layout).fill(g2d, x, y);
+		currentState().prepareFill(context);
+		((JavaSETextLayout) layout).fill(context, x, y);
 		isDirty = true;
 		return this;
 	}
@@ -271,29 +304,30 @@ class JavaSECanvas extends Canvas {
 	@Override
 	public Canvas restore() {
 		stateStack.pop();
-		g2d.setTransform(currentState().transform);
+		context.setTransform(currentState().transform);
 		return this;
 	}
 
 	@Override
 	public Canvas rotate(float angle) {
-		g2d.rotate(angle);
+		context.rotate(angle);
 		return this;
 	}
 
 	@Override
 	public Canvas save() {
-		currentState().transform = g2d.getTransform();
+		currentState().transform = context.getTransform();
 		stateStack.push(new JavaSECanvasState(currentState()));
 		return this;
 	}
 
 	@Override
 	public Canvas scale(float x, float y) {
-		g2d.scale(x, y);
+		context.scale(x, y);
 		return this;
 	}
 
+	@Override
 	public Canvas setAlpha(float alpha) {
 		if (alpha > 1f) {
 			alpha = 1f;
@@ -356,64 +390,75 @@ class JavaSECanvas extends Canvas {
 
 	@Override
 	public Canvas strokeCircle(float x, float y, float radius) {
-		currentState().prepareStroke(g2d);
+		currentState().prepareStroke(context);
 		ellipse.setFrame(x - radius, y - radius, 2 * radius, 2 * radius);
-		g2d.draw(ellipse);
+		context.draw(ellipse);
 		isDirty = true;
 		return this;
 	}
 
 	@Override
 	public Canvas strokePath(Path path) {
-		currentState().prepareStroke(g2d);
-		g2d.setColor(new Color(currentState().strokeColor, false));
-		g2d.draw(((JavaSEPath) path).path);
+		currentState().prepareStroke(context);
+		context.setColor(new Color(currentState().strokeColor, false));
+		context.draw(((JavaSEPath) path).path);
 		isDirty = true;
 		return this;
 	}
 
 	@Override
 	public Canvas strokeRect(float x, float y, float width, float height) {
-		currentState().prepareStroke(g2d);
+		currentState().prepareStroke(context);
 		rect.setRect(x, y, width, height);
-		g2d.draw(rect);
+		context.draw(rect);
 		isDirty = true;
 		return this;
 	}
 
 	@Override
 	public Canvas strokeRoundRect(float x, float y, float width, float height, float radius) {
-		currentState().prepareStroke(g2d);
+		currentState().prepareStroke(context);
 		roundRect.setRoundRect(x, y, width, height, radius * 2, radius * 2);
-		g2d.draw(roundRect);
+		context.draw(roundRect);
 		isDirty = true;
 		return this;
 	}
 
 	@Override
 	public Canvas strokeText(TextLayout layout, float x, float y) {
-		currentState().prepareStroke(g2d);
-		((JavaSETextLayout) layout).stroke(g2d, x, y);
+		currentState().prepareStroke(context);
+		((JavaSETextLayout) layout).stroke(context, x, y);
+		isDirty = true;
+		return this;
+	}
+
+	@Override
+	public Canvas setTransform(Affine2f aff) {
+		transform.setTransform(aff.m00, aff.m01, aff.m10, aff.m11, aff.tx, aff.ty);
+		context.transform(transform);
 		isDirty = true;
 		return this;
 	}
 
 	@Override
 	public Canvas transform(float m11, float m12, float m21, float m22, float dx, float dy) {
-		g2d.transform(new AffineTransform(m11, m12, m21, m22, dx, dy));
+		transform.setTransform(m11, m12, m21, m22, dx, dy);
+		context.transform(transform);
+		isDirty = true;
 		return this;
 	}
 
 	@Override
 	public Canvas translate(float x, float y) {
-		g2d.translate(x, y);
+		context.translate(x, y);
+		isDirty = true;
 		return this;
 	}
 
 	@Override
 	protected Graphics2D gc() {
-		currentState().prepareFill(g2d);
-		return g2d;
+		currentState().prepareFill(context);
+		return context;
 	}
 
 	private JavaSECanvasState currentState() {
@@ -421,99 +466,107 @@ class JavaSECanvas extends Canvas {
 	}
 
 	@Override
-	public Canvas clear(LColor color) {
-		// TODO Auto-generated method stub
-		return null;
+	public Canvas clear(LColor c) {
+		setColor(c);
+		currentState().prepareFill(context);
+		context.fillRect(0, 0, MathUtils.floor(width), MathUtils.floor(height));
+		isDirty = true;
+		return this;
 	}
 
 	@Override
-	public Canvas drawRect(float x, float y, float width, float height, LColor color) {
-		// TODO Auto-generated method stub
-		return null;
+	public Canvas drawRect(float x, float y, float width, float height, LColor c) {
+		setColor(c);
+		currentState().prepareStroke(context);
+		context.drawRect(0, 0, MathUtils.floor(width), MathUtils.floor(height));
+		isDirty = true;
+		return this;
 	}
 
 	@Override
 	public Canvas setBlendMethod(int blend) {
-		// TODO Auto-generated method stub
+		return this;
+	}
+
+	@Override
+	public Canvas drawArc(float x, float y, float w, float h, float startAngle, float endAngle, LColor c) {
+		setColor(c);
+		currentState().prepareStroke(context);
+		context.drawArc(MathUtils.floor(x), MathUtils.floor(y), MathUtils.floor(w), MathUtils.floor(h),
+				MathUtils.floor(startAngle), MathUtils.floor(endAngle));
+		isDirty = true;
 		return null;
 	}
 
 	@Override
-	public Canvas drawArc(float x, float y, float w, float h, float startAngle, float endAngle, LColor color) {
-		// TODO Auto-generated method stub
-		return null;
+	public Canvas drawOval(float x, float y, float w, float h, LColor c) {
+		setColor(c);
+		currentState().prepareStroke(context);
+		context.drawOval(MathUtils.floor(x), MathUtils.floor(y), MathUtils.floor(w), MathUtils.floor(h));
+		isDirty = true;
+		return this;
 	}
 
 	@Override
-	public Canvas drawOval(float x, float y, float w, float h, LColor color) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Canvas drawText(String text, float x, float y, LColor color) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Canvas fillOval(float x, float y, float width, float height) {
-		// TODO Auto-generated method stub
-		return null;
+	public Canvas fillOval(float x, float y, float w, float h) {
+		currentState().prepareFill(context);
+		context.fillOval(MathUtils.floor(x), MathUtils.floor(y), MathUtils.floor(w), MathUtils.floor(h));
+		isDirty = true;
+		return this;
 	}
 
 	@Override
 	public Canvas fillArc(float x1, float y1, float width, float height, float start, float end) {
-		// TODO Auto-generated method stub
-		return null;
+		currentState().prepareFill(context);
+		context.fillArc(MathUtils.floor(x1), MathUtils.floor(y1), MathUtils.floor(width), MathUtils.floor(height),
+				MathUtils.floor(start), MathUtils.floor(end));
+		isDirty = true;
+		return this;
 	}
 
 	@Override
 	public Canvas fillRect(float x, float y, float width, float height, LColor c) {
-		// TODO Auto-generated method stub
-		return null;
+		setColor(c);
+		currentState().prepareFill(context);
+		context.fillRect(MathUtils.floor(x), MathUtils.floor(y), MathUtils.floor(width), MathUtils.floor(height));
+		isDirty = true;
+		return this;
 	}
 
 	@Override
 	public Canvas setFillColor(LColor color) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public LColor getStroketoLColor() {
-		// TODO Auto-generated method stub
-		return null;
+		currentState().fillColor = (color == null ? 0 : color.getARGB());
+		return this;
 	}
 
 	@Override
 	public LColor getFilltoLColor() {
-		// TODO Auto-generated method stub
-		return null;
+		return new LColor(currentState().fillColor);
+	}
+
+	@Override
+	public LColor getStroketoLColor() {
+		return new LColor(currentState().strokeColor);
 	}
 
 	@Override
 	public Canvas updateDirty() {
-		// TODO Auto-generated method stub
-		return null;
+		isDirty = true;
+		return this;
 	}
 
 	@Override
 	public Canvas setStrokeColor(LColor color) {
-		// TODO Auto-generated method stub
-		return null;
+		currentState().strokeColor = (color == null ? LColor.white.getARGB() : color.getARGB());
+		this.isDirty = true;
+		return this;
 	}
 
 	@Override
 	public Canvas setLineWidth(float lineWidth) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Canvas setTransform(Affine2f aff) {
-		// TODO Auto-generated method stub
-		return null;
+		currentState().strokeWidth = lineWidth;
+		this.isDirty = true;
+		return this;
 	}
 
 }

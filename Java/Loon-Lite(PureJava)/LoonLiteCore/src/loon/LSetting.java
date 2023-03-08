@@ -21,7 +21,9 @@
 package loon;
 
 import loon.font.IFont;
+import loon.utils.DPI;
 import loon.utils.NumberUtils;
+import loon.utils.Resolution;
 
 /**
  * LGame的基础配置类,游戏初始化属性由此产生
@@ -267,23 +269,27 @@ public class LSetting {
 	/**
 	 * 锁死paint刷新为1/60帧
 	 */
-	public void fixedPaintTime() {
+	public LSetting fixedPaintTime() {
 		fixedPaintTime(1f / 60f);
+		return this;
 	}
 
-	public void fixedPaintTime(float time) {
+	public LSetting fixedPaintTime(float time) {
 		this.fixedPaintLoopTime = (long) (time * 1000f);
+		return this;
 	}
 
 	/**
 	 * 锁死update刷新为3.5/60帧
 	 */
-	public void fixedUpdateTime() {
+	public LSetting fixedUpdateTime() {
 		fixedPaintTime(3.5f / 60f);
+		return this;
 	}
 
-	public void fixedUpdateTime(float time) {
+	public LSetting fixedUpdateTime(float time) {
 		this.fixedUpdateLoopTime = (long) (time * 1000f);
+		return this;
 	}
 
 	public boolean landscape() {
@@ -294,15 +300,27 @@ public class LSetting {
 		return this.height >= this.width;
 	}
 
-	public void updateScale() {
+	public LSetting updateScale() {
 		if (scaling()) {
 			LSystem.setScaleWidth((float) width_zoom / (float) width);
 			LSystem.setScaleHeight((float) height_zoom / (float) height);
-			LSystem.viewSize.setSize(width, height);
+			LSystem.setSize(width, height);
+			if (LSystem.getProcess() != null) {
+				LSystem.getProcess().resize(width, height);
+			}
+		} else {
+			LSystem.setScaleWidth(1f);
+			LSystem.setScaleHeight(1f);
+			LSystem.setSize(width, height);
 			if (LSystem.getProcess() != null) {
 				LSystem.getProcess().resize(width, height);
 			}
 		}
+		return this;
+	}
+
+	public DPI getDpi() {
+		return new Resolution(width, height).compareDPI(new Resolution(width_zoom, height_zoom));
 	}
 
 	public boolean scaling() {

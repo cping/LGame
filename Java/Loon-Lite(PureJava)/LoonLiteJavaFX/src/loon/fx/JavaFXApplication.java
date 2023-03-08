@@ -240,12 +240,24 @@ public class JavaFXApplication extends Application implements Platform {
 
 	@Override
 	public int getContainerWidth() {
-		return fxScene == null ? game.setting.getShowWidth() : (int) fxScene.getWidth();
+		if (fxScene != null) {
+			return (int) fxScene.getWidth();
+		}
+		if (fxCanvas != null) {
+			return (int) fxCanvas.getWidth();
+		}
+		return game.setting != null ? game.setting.getShowWidth() : 0;
 	}
 
 	@Override
 	public int getContainerHeight() {
-		return fxScene == null ? game.setting.getShowHeight() : (int) fxScene.getHeight();
+		if (fxScene != null) {
+			return (int) fxScene.getHeight();
+		}
+		if (fxCanvas != null) {
+			return (int) fxCanvas.getHeight();
+		}
+		return game.setting != null ? game.setting.getShowHeight() : 0;
 	}
 
 	@Override

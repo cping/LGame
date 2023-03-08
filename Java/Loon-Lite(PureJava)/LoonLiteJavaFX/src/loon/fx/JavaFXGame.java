@@ -212,6 +212,10 @@ public class JavaFXGame extends LGame {
 		return getProperty("javafx.platform", "desktop").trim().toLowerCase();
 	}
 
+	public Canvas getCanvas() {
+		return graphics.getCanvas();
+	}
+	
 	protected void toggleActivation() {
 		active = !active;
 	}
@@ -243,6 +247,10 @@ public class JavaFXGame extends LGame {
 		loopRunner.stop();
 	}
 
+	public boolean isActive() {
+		return active;
+	}
+	
 	protected void init() {
 		if (loopRunner != null) {
 			loopRunner.stop();

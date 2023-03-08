@@ -31,7 +31,7 @@ import loon.canvas.Canvas.Composite;
 import loon.canvas.Canvas.LineCap;
 import loon.canvas.Canvas.LineJoin;
 
-class JavaSECanvasState {
+public class JavaSECanvasState {
 
 	public interface Clipper {
 		void setClip(Graphics2D gfx);
@@ -58,8 +58,8 @@ class JavaSECanvasState {
 	float alpha;
 
 	JavaSECanvasState() {
-		this(0xff000000, 0xffffffff, null, null, new AffineTransform(), 1.0f,
-				LineCap.SQUARE, LineJoin.MITER, 10.0f, NOCLIP,
+		this(0xff000000, 0xffffffff, null, null, new AffineTransform(), 1f,
+				LineCap.SQUARE, LineJoin.MITER, 10f, NOCLIP,
 				Composite.SRC_OVER, 1);
 	}
 
@@ -110,6 +110,7 @@ class JavaSECanvasState {
 			gfx.setPaint(convertColor(fillColor));
 		}
 		clipper.setClip(gfx);
+		gfx.setColor(convertColor(fillColor));
 		gfx.setComposite(convertComposite(composite, alpha));
 	}
 

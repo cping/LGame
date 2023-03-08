@@ -4,7 +4,6 @@ import java.util.concurrent.ExecutorService;
 
 import loon.Asyn;
 import loon.Log;
-import loon.Platform;
 import loon.utils.reply.Act;
 
 public class JavaSEAsyn extends Asyn.Default {

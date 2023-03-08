@@ -23,6 +23,7 @@ package loon.se.window;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import loon.se.JavaSEGame;
 import loon.utils.MathUtils;
 import loon.utils.TimeUtils;
 
@@ -39,23 +40,28 @@ public class JavaSEAppLoop extends Thread {
 	private float _delayException;
 
 	private JavaSELoop _loop;
+	private JavaSEGame _game;
 
-	public JavaSEAppLoop(final JavaSELoop loop, final int fps) {
+	public JavaSEAppLoop(final JavaSEGame game, final JavaSELoop loop, final int fps) {
+		this._game = game;
 		this._loop = loop;
 		this._tickRate = fps;
 	}
 
 	@Override
 	public void run() {
+		final boolean wasActive = _game.isActive();
 		for (; _loop.get();) {
 			++this._totalTicks;
+			final long start = System.nanoTime();
 			Lock threadLock = this.getLock();
 			threadLock.lock();
 			try {
-				_loop.process();
+				_loop.process(wasActive);
 			} finally {
 				threadLock.unlock();
 			}
+			this._processTime = TimeUtils.nanosToMillis(System.nanoTime() - start);
 			float sleep;
 			try {
 				sleep = this.sleep();
@@ -125,7 +131,7 @@ public class JavaSEAppLoop extends Thread {
 			sleepDelay += exceptionAdjustment;
 			this._delayException -= exceptionAdjustment;
 		}
-		if (delay > 0) {
+		if (sleepDelay > 0) {
 			sleep(sleepDelay);
 		}
 		return delay;

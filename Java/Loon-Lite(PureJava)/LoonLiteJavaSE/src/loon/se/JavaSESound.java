@@ -31,7 +31,7 @@ import com.jcraft.jogg.OggClip;
 import loon.SoundImpl;
 import loon.utils.MathUtils;
 
-class JavaSESound extends SoundImpl<Object> {
+public class JavaSESound extends SoundImpl<Object> {
 
 	private int mode = 0;
 

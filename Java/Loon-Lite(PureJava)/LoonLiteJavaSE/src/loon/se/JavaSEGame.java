@@ -23,7 +23,6 @@ package loon.se;
 import java.util.concurrent.Executors;
 
 import loon.Accelerometer;
-import loon.Assets;
 import loon.Asyn;
 import loon.Clipboard;
 import loon.Graphics;
@@ -32,14 +31,10 @@ import loon.LSetting;
 import loon.Log;
 import loon.Platform;
 import loon.Save;
-import loon.LGame.Environment;
-import loon.LGame.Status;
-import loon.LGame.Sys;
 import loon.canvas.Canvas;
 import loon.events.InputMake;
 import loon.opengl.Mesh;
 import loon.se.window.JavaSEAppCanvas;
-import loon.utils.Scale;
 import loon.utils.StringUtils;
 
 public class JavaSEGame extends LGame {
@@ -166,7 +161,7 @@ public class JavaSEGame extends LGame {
 
 	public JavaSEGame(Platform plat, LSetting config) {
 		super(config, plat);
-		this.graphics = new JavaSEGraphics(this);
+		this.graphics = new JavaSEGraphics(this,true);
 		this.input = new JavaSEInputMake(this);
 		this.assets = new JavaSEAssets(this);
 		this.log = new JavaSELog();
@@ -207,6 +202,10 @@ public class JavaSEGame extends LGame {
 		}
 		return getProperty("javafx.platform", "desktop").trim().toLowerCase();
 	}
+	
+	public Canvas getCanvas() {
+		return graphics.getCanvas();
+	}
 
 	protected void toggleActivation() {
 		active = !active;
@@ -239,8 +238,12 @@ public class JavaSEGame extends LGame {
 			canvas.stop();
 		}
 	}
+	
+	public boolean isActive() {
+		return active;
+	}
 
-	public void process(long time, boolean wasActive) {
+	public void process(boolean wasActive) {
 		if (wasActive != active) {
 			status.emit(wasActive ? Status.PAUSE : Status.RESUME);
 		}

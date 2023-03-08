@@ -24,7 +24,7 @@ import loon.LSystem;
 import loon.Log;
 import loon.log.LogFactory;
 
-class JavaSELog extends Log {
+public class JavaSELog extends Log {
 
 	private boolean isInit = false;
 

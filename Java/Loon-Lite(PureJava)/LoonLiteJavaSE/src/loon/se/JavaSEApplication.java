@@ -34,10 +34,8 @@ import loon.LGame;
 import loon.LSysException;
 import loon.LazyLoading;
 import loon.Platform;
-import loon.Platform.Orientation;
-import loon.events.KeyMake.TextType;
-import loon.events.SysInput.ClickEvent;
-import loon.events.SysInput.TextEvent;
+import loon.events.KeyMake;
+import loon.events.SysInput;
 import loon.geom.Vector2f;
 import loon.se.window.JavaSEAppCanvas;
 import loon.se.window.JavaSEAppFrame;
@@ -53,6 +51,10 @@ public class JavaSEApplication implements Platform {
 	protected Class<?> mainClass;
 
 	protected GraphicsConfiguration config;
+
+	private JavaSEAppFrame _appFrame;
+
+	private JavaSEAppCanvas _appCanvas;
 
 	public static JavaSEAppFrame launch(Loon app, JavaSESetting setting, LazyLoading.Data lazy, String[] args) {
 		return new JavaSEApplication(app, setting, lazy, args).runFrame();
@@ -73,7 +75,7 @@ public class JavaSEApplication implements Platform {
 		this.mainClass = app.getClass();
 		this.game = new JavaSEGame(this, this.appSetting);
 	}
-	
+
 	protected void loadScreen() {
 		try {
 			game.register(lazyData.onScreen());
@@ -85,21 +87,29 @@ public class JavaSEApplication implements Platform {
 
 	public JavaSEAppCanvas runCanvas() {
 		loadScreen();
-		JavaSEAppCanvas canvas = new JavaSEAppCanvas(config, game, appSetting);
-		canvas.updateSize();
-		canvas.start();
-		return canvas;
+		_appCanvas = new JavaSEAppCanvas(config, game, appSetting);
+		_appCanvas.updateSize();
+		_appCanvas.start();
+		return _appCanvas;
 	}
 
 	public JavaSEAppFrame runFrame() {
 		loadScreen();
-		JavaSEAppFrame frame = new JavaSEAppFrame(config, game, appSetting);
-		JavaSEAppCanvas canvas = new JavaSEAppCanvas(config, game, appSetting);
-		frame.playCanvas(canvas);
+		_appFrame = new JavaSEAppFrame(config, game, appSetting);
+		_appCanvas = new JavaSEAppCanvas(config, game, appSetting);
+		_appFrame.playCanvas(_appCanvas);
 		if (appSetting.fullscreen) {
-			frame.full();
+			_appFrame.full();
 		}
-		return frame;
+		return _appFrame;
+	}
+
+	public JavaSEAppFrame getAppFrame() {
+		return _appFrame;
+	}
+
+	public JavaSEAppCanvas getAppCanvas() {
+		return _appCanvas;
 	}
 
 	public static Vector2f getScale(Dimension dim, float width, float height) {
@@ -199,12 +209,24 @@ public class JavaSEApplication implements Platform {
 
 	@Override
 	public int getContainerWidth() {
-		return game.setting.getShowWidth();
+		if (_appFrame != null) {
+			return _appFrame.getWidth();
+		}
+		if (_appCanvas != null) {
+			return _appCanvas.getWidth();
+		}
+		return game != null ? game.setting.getShowWidth() : 0;
 	}
 
 	@Override
 	public int getContainerHeight() {
-		return  game.setting.getShowHeight();
+		if (_appFrame != null) {
+			return _appFrame.getHeight();
+		}
+		if (_appCanvas != null) {
+			return _appCanvas.getHeight();
+		}
+		return game != null ? game.setting.getShowHeight() : 0;
 	}
 
 	@Override
@@ -226,19 +248,58 @@ public class JavaSEApplication implements Platform {
 
 	@Override
 	public LGame getGame() {
-		// TODO Auto-generated method stub
-		return null;
+		return game;
 	}
 
 	@Override
-	public void sysText(TextEvent event, TextType textType, String label, String initialValue) {
-		// TODO Auto-generated method stub
+	public void sysText(final SysInput.TextEvent event, final KeyMake.TextType textType, final String label,
+			final String initVal) {
+		if (game == null) {
+			event.cancel();
+			return;
+		}
+		game.invokeAsync(new Runnable() {
 
+			@Override
+			public void run() {
+
+				final String output = (String) javax.swing.JOptionPane.showInputDialog(null, label, "",
+						javax.swing.JOptionPane.QUESTION_MESSAGE, null, null, initVal);
+				if (output != null) {
+					event.input(output);
+				} else {
+					event.cancel();
+				}
+
+			}
+		});
 	}
 
 	@Override
-	public void sysDialog(ClickEvent event, String title, String text, String ok, String cancel) {
-		// TODO Auto-generated method stub
+	public void sysDialog(final SysInput.ClickEvent event, final String title, final String text, final String ok,
+			final String cancel) {
+		if (game == null) {
+			event.cancel();
+			return;
+		}
+		game.invokeAsync(new Runnable() {
+
+			@Override
+			public void run() {
+				int optType = javax.swing.JOptionPane.OK_CANCEL_OPTION;
+				int msgType = cancel == null ? javax.swing.JOptionPane.INFORMATION_MESSAGE
+						: javax.swing.JOptionPane.QUESTION_MESSAGE;
+				Object[] options = (cancel == null) ? new Object[] { ok } : new Object[] { ok, cancel };
+				Object defOption = (cancel == null) ? ok : cancel;
+				int result = javax.swing.JOptionPane.showOptionDialog(null, text, title, optType, msgType, null,
+						options, defOption);
+				if (result == 0) {
+					event.clicked();
+				} else {
+					event.cancel();
+				}
+			}
+		});
 
 	}
 

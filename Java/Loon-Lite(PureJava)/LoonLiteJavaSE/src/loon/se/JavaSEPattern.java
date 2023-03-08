@@ -24,7 +24,7 @@ import java.awt.TexturePaint;
 
 import loon.canvas.Pattern;
 
-class JavaSEPattern extends Pattern {
+public class JavaSEPattern extends Pattern {
 
 	final TexturePaint paint;
 

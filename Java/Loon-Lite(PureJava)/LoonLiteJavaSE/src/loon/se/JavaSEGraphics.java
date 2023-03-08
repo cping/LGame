@@ -36,7 +36,7 @@ public class JavaSEGraphics extends JavaSEImplGraphics {
 	protected Canvas canvas;
 
 	protected JavaSEGraphics(JavaSEGame game) {
-		this(game, false);
+		this(game, true);
 	}
 
 	protected JavaSEGraphics(JavaSEGame game, boolean resized) {

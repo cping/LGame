@@ -34,8 +34,7 @@ import loon.events.Updateable;
 
 public class JavaSEAudio {
 
-	protected static <I> void dispatchLoaded(final SoundImpl<I> sound,
-			final I impl) {
+	protected static <I> void dispatchLoaded(final SoundImpl<I> sound, final I impl) {
 		Updateable update = new Updateable() {
 			@Override
 			public void action(Object a) {
@@ -45,8 +44,7 @@ public class JavaSEAudio {
 		LSystem.unload(update);
 	}
 
-	protected static <I> void dispatchLoadError(final SoundImpl<I> sound,
-			final Throwable error) {
+	protected static <I> void dispatchLoadError(final SoundImpl<I> sound, final Throwable error) {
 		Updateable update = new Updateable() {
 			@Override
 			public void action(Object a) {
@@ -56,8 +54,7 @@ public class JavaSEAudio {
 		LSystem.unload(update);
 	}
 
-	public JavaSESound createSound(final String path, final InputStream in,
-			final boolean music) {
+	protected JavaSESound createSound(final String path, final InputStream in, final boolean music) {
 		final JavaSESound sound = new JavaSESound();
 		String ext = LSystem.getExtension(path);
 		if ("ogg".equalsIgnoreCase(ext)) {
@@ -75,22 +72,17 @@ public class JavaSEAudio {
 			LSystem.load(new Updateable() {
 				public void action(Object o) {
 					try {
-						AudioInputStream ais = AudioSystem
-								.getAudioInputStream(in);
+						AudioInputStream ais = AudioSystem.getAudioInputStream(in);
 						Clip clip = AudioSystem.getClip();
 						if (music) {
 							clip = new JavaSEBigClip(clip);
 						}
 						AudioFormat baseFormat = ais.getFormat();
 						if (baseFormat.getEncoding() != AudioFormat.Encoding.PCM_SIGNED) {
-							AudioFormat decodedFormat = new AudioFormat(
-									AudioFormat.Encoding.PCM_SIGNED, baseFormat
-											.getSampleRate(), 16, baseFormat
-											.getChannels(), baseFormat
-											.getChannels() * 2, baseFormat
-											.getSampleRate(), false);
-							ais = AudioSystem.getAudioInputStream(
-									decodedFormat, ais);
+							AudioFormat decodedFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
+									baseFormat.getSampleRate(), 16, baseFormat.getChannels(),
+									baseFormat.getChannels() * 2, baseFormat.getSampleRate(), false);
+							ais = AudioSystem.getAudioInputStream(decodedFormat, ais);
 						}
 						clip.open(ais);
 						dispatchLoaded(sound, clip);

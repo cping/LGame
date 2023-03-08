@@ -32,7 +32,9 @@ import javax.swing.SwingUtilities;
 
 import loon.LRelease;
 import loon.se.JavaSEApplication;
+import loon.se.JavaSECanvas;
 import loon.se.JavaSEGame;
+import loon.se.JavaSEImage;
 import loon.se.JavaSESetting;
 
 public class JavaSEAppCanvas extends Canvas implements JavaSELoop, LRelease {
@@ -67,7 +69,7 @@ public class JavaSEAppCanvas extends Canvas implements JavaSELoop, LRelease {
 	public JavaSEAppCanvas(GraphicsConfiguration config, JavaSEGame game, JavaSESetting setting) {
 		super(config);
 		this._game = game;
-		this._loop = new JavaSEAppLoop(this, setting.fps);
+		this._loop = new JavaSEAppLoop(game, this, setting.fps);
 		this._config = config;
 		this._setting = setting;
 		setBackground(Color.BLACK);
@@ -103,7 +105,7 @@ public class JavaSEAppCanvas extends Canvas implements JavaSELoop, LRelease {
 	}
 
 	@Override
-	public void process() {
+	public void process(final boolean active) {
 		_bufferStrategy = getBufferStrategy();
 		if (_bufferStrategy == null) {
 			createBufferStrategy(3);
@@ -115,8 +117,8 @@ public class JavaSEAppCanvas extends Canvas implements JavaSELoop, LRelease {
 				try {
 					g = (Graphics2D) this._bufferStrategy.getDrawGraphics();
 					if (g != null) {
-						JavaSEApplication.setGraphicsSpeed(g);
-
+						 ((JavaSECanvas)_game.getCanvas()).updateContext(g);
+						_game.process(active);
 					}
 				} finally {
 					if (g != null) {

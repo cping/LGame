@@ -28,29 +28,38 @@ import loon.canvas.Path;
 
 class Lwjgl3Path implements Path, Lwjgl3CanvasState.Clipper {
 
-	Path2D path = new GeneralPath();
+	private boolean setMoved = false;
+
+	protected Path2D path = new GeneralPath();
 
 	@Override
 	public Path reset() {
 		path.reset();
+		setMoved = false;
 		return this;
 	}
 
 	@Override
 	public Path close() {
 		path.closePath();
+		setMoved = false;
 		return this;
 	}
 
 	@Override
 	public Path moveTo(float x, float y) {
 		path.moveTo(x, y);
+		setMoved = true;
 		return this;
 	}
 
 	@Override
 	public Path lineTo(float x, float y) {
-		path.lineTo(x, y);
+		if (setMoved) {
+			path.lineTo(x, y);
+		} else {
+			moveTo(x, y);
+		}
 		return this;
 	}
 
@@ -61,8 +70,7 @@ class Lwjgl3Path implements Path, Lwjgl3CanvasState.Clipper {
 	}
 
 	@Override
-	public Path bezierTo(float c1x, float c1y, float c2x, float c2y, float x,
-			float y) {
+	public Path bezierTo(float c1x, float c1y, float c2x, float c2y, float x, float y) {
 		path.curveTo(c1x, c1y, c2x, c2y, x, y);
 		return this;
 	}

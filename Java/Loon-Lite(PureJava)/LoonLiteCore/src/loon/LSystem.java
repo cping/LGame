@@ -359,6 +359,13 @@ public class LSystem {
 		}
 	}
 
+	public static final void setSize(int w, int h) {
+		if (w < 0 || h < 0) {
+			return;
+		}
+		viewSize.setSize(w, h);
+	}
+	
 	public static Json json() {
 		if (base() != null) {
 			return base().json();

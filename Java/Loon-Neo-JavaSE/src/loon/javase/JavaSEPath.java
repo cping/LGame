@@ -28,46 +28,55 @@ import loon.canvas.Path;
 
 class JavaSEPath implements Path, JavaSECanvasState.Clipper {
 
-  Path2D path = new GeneralPath();
+	private boolean setMoved = false;
 
-  @Override
-  public Path reset() {
-    path.reset();
-    return this;
-  }
+	protected Path2D path = new GeneralPath();
 
-  @Override
-  public Path close() {
-    path.closePath();
-    return this;
-  }
+	@Override
+	public Path reset() {
+		path.reset();
+		setMoved = false;
+		return this;
+	}
 
-  @Override
-  public Path moveTo(float x, float y) {
-    path.moveTo(x, y);
-    return this;
-  }
+	@Override
+	public Path close() {
+		path.closePath();
+		setMoved = false;
+		return this;
+	}
 
-  @Override
-  public Path lineTo(float x, float y) {
-    path.lineTo(x, y);
-    return this;
-  }
+	@Override
+	public Path moveTo(float x, float y) {
+		path.moveTo(x, y);
+		setMoved = true;
+		return this;
+	}
 
-  @Override
-  public Path quadraticCurveTo(float cpx, float cpy, float x, float y) {
-    path.quadTo(cpx, cpy, x, y);
-    return this;
-  }
+	@Override
+	public Path lineTo(float x, float y) {
+		if (setMoved) {
+			path.lineTo(x, y);
+		} else {
+			moveTo(x, y);
+		}
+		return this;
+	}
 
-  @Override
-  public Path bezierTo(float c1x, float c1y, float c2x, float c2y, float x, float y) {
-    path.curveTo(c1x, c1y, c2x, c2y, x, y);
-    return this;
-  }
+	@Override
+	public Path quadraticCurveTo(float cpx, float cpy, float x, float y) {
+		path.quadTo(cpx, cpy, x, y);
+		return this;
+	}
 
-  @Override
-  public void setClip(Graphics2D gfx) {
-    gfx.setClip(path);
-  }
+	@Override
+	public Path bezierTo(float c1x, float c1y, float c2x, float c2y, float x, float y) {
+		path.curveTo(c1x, c1y, c2x, c2y, x, y);
+		return this;
+	}
+
+	@Override
+	public void setClip(Graphics2D gfx) {
+		gfx.setClip(path);
+	}
 }

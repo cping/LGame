@@ -21,11 +21,10 @@
 package loon.se.window;
 
 public interface JavaSELoop {
-	
-	public JavaSELoop set(boolean r);
 
 	public boolean get();
-	
-	public void process();
-	
+
+	public void process(final boolean active);
+
+	public JavaSELoop set(final boolean r);
 }

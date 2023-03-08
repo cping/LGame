@@ -28,7 +28,7 @@ import java.awt.geom.Point2D;
 
 import loon.canvas.Gradient;
 
-class JavaSEGradient extends Gradient {
+public class JavaSEGradient extends Gradient {
 
   static JavaSEGradient create(Linear cfg) {
     Point2D.Float start = new Point2D.Float(cfg.x0, cfg.y0);

@@ -30,7 +30,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import loon.Graphics;
-import loon.LTexture;
 import loon.canvas.Canvas;
 import loon.font.Font;
 import loon.font.TextFormat;

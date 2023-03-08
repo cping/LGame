@@ -556,17 +556,19 @@ public class Display extends BaseIO implements LRelease {
 				displaySprites = displayMessage.toString();
 
 			}
-			// 显示fps速度
-			if (debug || setting.isFPS) {
-				displayFont.drawString(gl, FPS_STR + frameRate, 5, 5, 0, LColor.white);
-			}
-			// 显示内存占用
-			if (debug || setting.isMemory) {
-				displayFont.drawString(gl, displayMemony, 5, 25, 0, LColor.white);
-			}
-			// 显示精灵与组件数量
-			if (debug || setting.isSprites) {
-				displayFont.drawString(gl, displaySprites, 5, 45, 0, LColor.white);
+			if (displayFont != null) {
+				// 显示fps速度
+				if (debug || setting.isFPS) {
+					displayFont.drawString(gl, FPS_STR + frameRate, 5, 5, 0, LColor.white);
+				}
+				// 显示内存占用
+				if (debug || setting.isMemory) {
+					displayFont.drawString(gl, displayMemony, 5, 25, 0, LColor.white);
+				}
+				// 显示精灵与组件数量
+				if (debug || setting.isSprites) {
+					displayFont.drawString(gl, displaySprites, 5, 45, 0, LColor.white);
+				}
 			}
 			// 若打印日志到界面,很可能挡住游戏界面内容,所以isDisplayLog为true并且debug才显示
 			if (debug && setting.isDisplayLog) {

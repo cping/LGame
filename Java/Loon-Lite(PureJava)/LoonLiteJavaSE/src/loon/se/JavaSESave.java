@@ -32,7 +32,7 @@ import loon.Log;
 import loon.Save;
 import loon.SaveBatchImpl;
 
-class JavaSESave implements Save {
+public class JavaSESave implements Save {
 
 	private final Log log;
 	private final String storageFileName;
