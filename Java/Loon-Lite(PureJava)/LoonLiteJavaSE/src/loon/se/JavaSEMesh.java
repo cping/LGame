@@ -22,13 +22,16 @@ package loon.se;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
+import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
 
 import loon.LSysException;
 import loon.LTexture;
 import loon.canvas.Canvas;
 import loon.canvas.Image;
+import loon.canvas.LColor;
 import loon.geom.Affine2f;
 import loon.opengl.Mesh;
 import loon.opengl.MeshData;
@@ -37,7 +40,7 @@ import loon.utils.MathUtils;
 public class JavaSEMesh implements Mesh {
 
 	private AlphaComposite alphaComposite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER);
-	
+
 	private MeshData mesh;
 
 	/**
@@ -48,7 +51,7 @@ public class JavaSEMesh implements Mesh {
 	/**
 	 * 绘图环境
 	 */
-	private Graphics2D context;
+	private JavaSECanvas _canvas;
 
 	private int lastTint = -1;
 
@@ -58,10 +61,7 @@ public class JavaSEMesh implements Mesh {
 		if (canvas == null) {
 			throw new LSysException("Canvas is null !");
 		}
-		if (canvas instanceof JavaSECanvas) {
-			this.context = ((JavaSECanvas) canvas).context;
-		}
-
+		_canvas = (JavaSECanvas) canvas;
 	}
 
 	/**
@@ -255,21 +255,20 @@ public class JavaSEMesh implements Mesh {
 	public void restore() {
 		// context.restore();
 	}
-	
-	private AffineTransform affineTransform = new AffineTransform();
+
+	private AffineTransform newTransform = new AffineTransform();
 
 	@Override
 	public void transform(float m00, float m01, float m10, float m11, float tx, float ty) {
-		affineTransform.setTransform(m00, m01, m10, m11, tx, ty);
-		context.transform(affineTransform);
+		newTransform.setTransform(m00, m01, m10, m11, tx, ty);
+		_canvas.context.transform(newTransform);
 	}
 
 	@Override
 	public void transform(Affine2f aff) {
-		affineTransform.setTransform(aff.m00, aff.m01, aff.m10, aff.m11, aff.tx, aff.ty);
-		context.transform(affineTransform);
+		newTransform.setTransform(aff.m00, aff.m01, aff.m10, aff.m11, aff.tx, aff.ty);
+		_canvas.context.transform(newTransform);
 	}
-
 
 	@Override
 	public void paint(int tint, Affine2f aff, float left, float top, float right, float bottom, float sl, float st,
@@ -280,38 +279,60 @@ public class JavaSEMesh implements Mesh {
 	@Override
 	public void paint(int tint, float m00, float m01, float m10, float m11, float tx, float ty, float left, float top,
 			float right, float bottom, float sl, float st, float sr, float sb) {
+
+		int r = (tint & 0x00FF0000) >> 16;
+		int g = (tint & 0x0000FF00) >> 8;
+		int b = (tint & 0x000000FF);
+		int a = (tint & 0xFF000000) >> 24;
+
+		if (a < 0) {
+			a += 256;
+		}
+		if (a == 0) {
+			a = 255;
+		}
+
+		final boolean isWhiteColor = (tint == -1 || (r == 255 && g == 255 && b == 255));
+
 		LTexture texture = mesh.texture;
 		Image img = texture.getSourceImage();
 
 		if (img != null) {
 
-			int r = (tint & 0x00FF0000) >> 16;
-			int g = (tint & 0x0000FF00) >> 8;
-			int b = (tint & 0x000000FF);
-			int a = (tint & 0xFF000000) >> 24;
+			BufferedImage display = ((JavaSEImage) img).buffer;
 
-			if (a < 0) {
-				a += 256;
-			}
-			if (a == 0) {
-				a = 255;
-			}
+			Graphics2D context = _canvas.context;
 			final float canvasAlpha = (float) ((AlphaComposite) context.getComposite()).getAlpha();
 			final float alpha = ((float) a / 255f) * canvasAlpha;
+
+			AffineTransform oldTransform = context.getTransform();
+			Composite oldComposite = context.getComposite();
+
+			newTransform.setTransform(m00, m01, m10, m11, tx, ty);
+			context.transform(newTransform);
+
 			if (alpha != 1f) {
 				context.setComposite(alphaComposite.derive(alpha));
 			}
-			context.setColor(new Color(r, g, b));
-			affineTransform.setTransform(m00, m01, m10, m11, tx, ty);
-			context.setTransform(affineTransform);
+
+			if (!isWhiteColor) {
+				// 如果图像颜色需要混色,产生一个指定色彩的缓存图
+				display = ((JavaSEImage) img).getImageColor().get(r, g, b);
+			}
+
+			/*
+			 * 无硬件加速,无缓存渲染混色太慢(AWT环境下是像素渲染),替换自定义Composite算法上合理,但是没有操作性 if (alpha != 1f && isWhiteColor) {
+			 * context.setComposite(alphaComposite.derive(alpha)); } else if (alpha == 1f &&
+			 * !isWhiteColor) {
+			 * context.setComposite(JavaSEBlendComposite.getMultiply().setColor(r, g, b)); }
+			 * else if (alpha != 1f && !isWhiteColor) {
+			 * context.setComposite(JavaSEBlendComposite.getMultiply().derive(alpha).
+			 * setColor(r, g, b)); }
+			 */
+
 			if (!texture.isChild() && sl == 0f && st == 0f && sr == 1f && sb == 1f) {
-				if (tint == -1 && alpha == 1f) {
-					context.drawImage(((JavaSEImage) img).buffer, MathUtils.ifloor(left), MathUtils.ifloor(top),
-							MathUtils.ifloor(right), MathUtils.ifloor(bottom), null);
-				} else {
-					context.drawImage(((JavaSEImage) img).buffer, MathUtils.ifloor(left), MathUtils.ifloor(top),
-							MathUtils.ifloor(right), MathUtils.ifloor(bottom), null);
-				}
+				context.drawImage(display, MathUtils.ifloor(left), MathUtils.ifloor(top),
+						MathUtils.ifloor(right - left), MathUtils.ifloor(bottom - top), null);
 			} else {
 				float textureWidth = texture.getDisplayWidth();
 				float textureHeight = texture.getDisplayHeight();
@@ -319,20 +340,12 @@ public class JavaSEMesh implements Mesh {
 				float dstY = textureHeight * (st);
 				float dstWidth = textureWidth * (sr);
 				float dstHeight = textureHeight * (sb);
-				context.getComposite();
-				if (tint == -1 && alpha == 1f) {
-					context.drawImage(((JavaSEImage) img).buffer, MathUtils.ifloor(dstX), MathUtils.ifloor(dstY),
-							MathUtils.ifloor(dstWidth), MathUtils.ifloor(dstHeight), MathUtils.ifloor(left),
-							MathUtils.ifloor(top), MathUtils.ifloor(right), MathUtils.ifloor(bottom), null);
-				} else {
-					context.drawImage(((JavaSEImage) img).buffer, MathUtils.ifloor(dstX), MathUtils.ifloor(dstY),
-							MathUtils.ifloor(dstWidth), MathUtils.ifloor(dstHeight), MathUtils.ifloor(left),
-							MathUtils.ifloor(top), MathUtils.ifloor(right), MathUtils.ifloor(bottom), null);
-				}
+				context.drawImage(display, MathUtils.ifloor(left), MathUtils.ifloor(top), MathUtils.ifloor(right),
+						MathUtils.ifloor(bottom), MathUtils.ifloor(dstX), MathUtils.ifloor(dstY),
+						MathUtils.ifloor(dstWidth), MathUtils.ifloor(dstHeight), null);
 			}
-			if (alpha != 1f) {
-				context.setComposite(alphaComposite.derive(canvasAlpha));
-			}
+			context.setTransform(oldTransform);
+			context.setComposite(oldComposite);
 		}
 	}
 }

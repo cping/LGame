@@ -147,7 +147,7 @@ public class JavaSECanvasState {
 		case XOR:
 			return AlphaComposite.Xor.derive(alpha);
 		case MULTIPLY:
-			return JavaSEBlendComposite.Multiply.derive(alpha);
+			return JavaSEBlendComposite.getMultiply().derive(alpha);
 		default:
 			return AlphaComposite.Src.derive(alpha);
 		}

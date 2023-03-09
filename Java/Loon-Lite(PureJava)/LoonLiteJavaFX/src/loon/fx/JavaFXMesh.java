@@ -46,7 +46,7 @@ public class JavaFXMesh implements Mesh {
 	/**
 	 * 绘图环境
 	 */
-	private GraphicsContext context;
+	private JavaFXCanvas _canvas;
 
 	private ColorAdjust adjust;
 
@@ -62,9 +62,7 @@ public class JavaFXMesh implements Mesh {
 		if (canvas == null) {
 			throw new LSysException("Canvas is null !");
 		}
-		if (canvas instanceof JavaFXCanvas) {
-			this.context = ((JavaFXCanvas) canvas).context;
-		}
+		this._canvas = (JavaFXCanvas) canvas;
 		this.adjust = new ColorAdjust();
 		this.lighting = new Lighting();
 		this.lighting.setDiffuseConstant(1);
@@ -197,6 +195,8 @@ public class JavaFXMesh implements Mesh {
 			y2 = centerY + ((normY / dist) * (dist + paddingY));
 		}
 
+		final GraphicsContext context = _canvas.context;
+
 		context.save();
 		if (transform != null) {
 			context.transform(transform.m00, transform.m01, transform.m10, transform.m11, transform.tx, transform.ty);
@@ -271,22 +271,22 @@ public class JavaFXMesh implements Mesh {
 	}
 
 	public void save() {
-		context.save();
+		_canvas.context.save();
 	}
 
 	@Override
 	public void restore() {
-		context.restore();
+		_canvas.context.restore();
 	}
 
 	@Override
 	public void transform(float m00, float m01, float m10, float m11, float tx, float ty) {
-		context.transform(m00, m01, m10, m11, tx, ty);
+		_canvas.context.transform(m00, m01, m10, m11, tx, ty);
 	}
 
 	@Override
 	public void transform(Affine2f aff) {
-		context.transform(aff.m00, aff.m01, aff.m10, aff.m11, aff.tx, aff.ty);
+		_canvas.context.transform(aff.m00, aff.m01, aff.m10, aff.m11, aff.tx, aff.ty);
 	}
 
 	@Override
@@ -314,6 +314,8 @@ public class JavaFXMesh implements Mesh {
 			if (a == 0) {
 				a = 255;
 			}
+
+			final GraphicsContext context = _canvas.context;
 			final Color paint = Color.rgb(r, g, b);
 			final float canvasAlpha = (float) context.getGlobalAlpha();
 			final float alpha = ((float) a / 255f) * canvasAlpha;

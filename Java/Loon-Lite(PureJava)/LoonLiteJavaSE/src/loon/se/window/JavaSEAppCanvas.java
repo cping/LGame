@@ -34,7 +34,6 @@ import loon.LRelease;
 import loon.se.JavaSEApplication;
 import loon.se.JavaSECanvas;
 import loon.se.JavaSEGame;
-import loon.se.JavaSEImage;
 import loon.se.JavaSESetting;
 
 public class JavaSEAppCanvas extends Canvas implements JavaSELoop, LRelease {
@@ -117,13 +116,11 @@ public class JavaSEAppCanvas extends Canvas implements JavaSELoop, LRelease {
 				try {
 					g = (Graphics2D) this._bufferStrategy.getDrawGraphics();
 					if (g != null) {
-						 ((JavaSECanvas)_game.getCanvas()).updateContext(g);
+						((JavaSECanvas) _game.getCanvas()).updateContext(g);
 						_game.process(active);
 					}
 				} finally {
-					if (g != null) {
-						g.dispose();
-					}
+					g.dispose();
 				}
 			} while (_bufferStrategy.contentsRestored());
 		} while (this._bufferStrategy.contentsLost());

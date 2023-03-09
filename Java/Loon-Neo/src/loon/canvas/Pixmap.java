@@ -436,9 +436,10 @@ public class Pixmap extends PixmapComposite implements LRelease {
 	 * 让当前pixmap中color乘以指定color
 	 * 
 	 * @param pixel
+	 * @param trans
 	 * @return
 	 */
-	public Pixmap multiply(LColor pixel) {
+	public Pixmap multiply(LColor pixel, int trans) {
 		if (pixel == null) {
 			return this;
 		}
@@ -453,10 +454,14 @@ public class Pixmap extends PixmapComposite implements LRelease {
 				int a = rgba[3];
 				_drawPixels[i] = newColor.setColor(r, g, b, a).mulSelf(pixel).getARGB();
 			} else {
-				_drawPixels[i] = _transparent;
+				_drawPixels[i] = trans;
 			}
 		}
 		return this;
+	}
+
+	public Pixmap multiply(LColor pixel) {
+		return multiply(pixel, _transparent);
 	}
 
 	/**
@@ -894,6 +899,11 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	public LColor getColor() {
 		return new LColor(_baseColor);
+	}
+
+	public Pixmap resetColor() {
+		setColor(LColor.DEF_COLOR);
+		return this;
 	}
 
 	public Pixmap setColor(LColor color) {
@@ -2333,7 +2343,17 @@ public class Pixmap extends PixmapComposite implements LRelease {
 			}
 		}
 		newColor = getXorNewColor(pixel, dst);
-		pixels[pixelIndex] = (newColor == _transparent) ? src : newColor;
+		if (_baseColor == LColor.DEF_COLOR) {
+			pixels[pixelIndex] = (newColor == _transparent) ? src : newColor;
+		} else {
+			if (newColor == _transparent) {
+				pixels[pixelIndex] = src;
+			} else {
+				dstColor.setColor(newColor);
+				srcColor.setColor(_baseColor);
+				pixels[pixelIndex] = dstColor.multiply(srcColor).getARGB();
+			}
+		}
 		_dirty = true;
 	}
 

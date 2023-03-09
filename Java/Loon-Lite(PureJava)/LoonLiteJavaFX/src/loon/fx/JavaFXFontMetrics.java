@@ -69,7 +69,7 @@ public class JavaFXFontMetrics {
 		this.fxfont = javafx.scene.text.Font.font(font.name, weight, posture, font.size);
 		this.fxtext = new Text();
 		this.fxtext.setFont(fxfont);
-		this.fxtext.setText("");
+		this.fxtext.setText(" ");
 		this.fxbound = fxtext.getBoundsInLocal();
 		this.fheight = MathUtils.max(height, (float) fxbound.getHeight());
 		this.emwidth = MathUtils.max(ewidth, (float) fxbound.getWidth());

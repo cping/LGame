@@ -32,6 +32,8 @@ import loon.utils.Scale;
 
 public class JavaSEImage extends ImageImpl {
 
+	protected JavaSECacheImageColor imageColors;
+
 	protected BufferedImage buffer;
 
 	public JavaSEImage(Graphics gfx, BufferedImage buffer) {
@@ -241,10 +243,20 @@ public class JavaSEImage extends ImageImpl {
 		return new JavaSEImage(gfx, scale, buffer.getSubimage(x, y, width, height), "<canvas>");
 	}
 
+	public JavaSECacheImageColor getImageColor() {
+		if (imageColors == null) {
+			imageColors = new JavaSECacheImageColor(this);
+		}
+		return imageColors;
+	}
+
 	@Override
 	protected void closeImpl() {
 		if (buffer != null) {
 			buffer = null;
+		}
+		if (imageColors != null) {
+			imageColors.close();
 		}
 	}
 

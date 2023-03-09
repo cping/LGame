@@ -22,7 +22,6 @@ package loon.se;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
@@ -74,13 +73,14 @@ public class JavaSECanvas extends Canvas {
 	}
 
 	public void updateContext(Graphics2D g2d) {
-		this.context = g2d;
+		if (this.context != g2d) {
+			this.context = g2d;
+		}
 	}
 
 	public void setContextInit(Graphics2D g2d) {
 		this.updateContext(g2d);
 		if (this.context != null) {
-			this.context.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			float scale = image.scale().factor;
 			this.context.scale(scale, scale);
 			this.stateStack.push(new JavaSECanvasState());
@@ -316,7 +316,7 @@ public class JavaSECanvas extends Canvas {
 
 	@Override
 	public Canvas save() {
-		currentState().transform = context.getTransform();
+		currentState().transform.setTransform(context.getTransform());
 		stateStack.push(new JavaSECanvasState(currentState()));
 		return this;
 	}
@@ -435,6 +435,7 @@ public class JavaSECanvas extends Canvas {
 	@Override
 	public Canvas setTransform(Affine2f aff) {
 		transform.setTransform(aff.m00, aff.m01, aff.m10, aff.m11, aff.tx, aff.ty);
+		context.getTransform().setToIdentity();
 		context.transform(transform);
 		isDirty = true;
 		return this;
@@ -569,4 +570,10 @@ public class JavaSECanvas extends Canvas {
 		return this;
 	}
 
+	@Override
+	public void close() {
+		if (context != null) {
+			context.dispose();
+		}
+	}
 }

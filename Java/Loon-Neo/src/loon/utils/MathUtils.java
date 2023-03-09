@@ -1805,7 +1805,7 @@ public final class MathUtils {
 	 * @param p
 	 * @return
 	 */
-	public static boolean isSuccessful(final float k,final float p) {
+	public static boolean isSuccessful(final float k, final float p) {
 		return MathUtils.random(k) < p;
 	}
 
@@ -1833,7 +1833,31 @@ public final class MathUtils {
 			return found;
 		}
 	}
-	
+
+	/**
+	 * 判定数值是否在指定模糊查询值区间内
+	 * 
+	 * @param src
+	 * @param dst
+	 * @param vague
+	 * @param found
+	 * @param invalid
+	 * @return
+	 */
+	public static int intervalInt(final int src, final int dst, final int vague, final int found, final int invalid) {
+		if ((src + vague == dst) || (src - vague) == dst) {
+			return found;
+		}
+		final int result = (dst - src);
+		if (result > 0) {
+			return result <= vague ? found : invalid;
+		} else if (result < 0) {
+			return (-result) <= vague ? found : invalid;
+		} else {
+			return found;
+		}
+	}
+
 	/**
 	 * 返回一个概率事件是否被触发的布尔值
 	 * 
