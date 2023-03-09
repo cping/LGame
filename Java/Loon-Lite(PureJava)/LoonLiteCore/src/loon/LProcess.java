@@ -429,6 +429,9 @@ public class LProcess implements LRelease {
 
 	public void resize(int w, int h) {
 		if (_isInstance) {
+			if (_emulatorButtons != null) {
+				_emulatorButtons.updateSize(w, h);
+			}
 			_currentInput.reset();
 			_currentScreen.resetSize(w, h);
 		}

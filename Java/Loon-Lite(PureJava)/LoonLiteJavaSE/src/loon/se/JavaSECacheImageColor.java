@@ -56,8 +56,14 @@ public class JavaSECacheImageColor implements LRelease {
 		return buffer;
 	}
 
-	@Override
-	public void close() {
+	public int count() {
+		if (_colorImageCaches == null) {
+			return 0;
+		}
+		return _colorImageCaches.size;
+	}
+
+	public JavaSECacheImageColor free() {
 		for (BufferedImage buffer : _colorImageCaches) {
 			if (buffer != null) {
 				buffer.flush();
@@ -65,7 +71,12 @@ public class JavaSECacheImageColor implements LRelease {
 			}
 		}
 		_colorImageCaches.clear();
+		return this;
+	}
 
+	@Override
+	public void close() {
+		free();
 	}
 
 }

@@ -21,23 +21,26 @@
 package loon.se;
 
 import java.awt.AlphaComposite;
-import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.GeneralPath;
+import java.awt.geom.Path2D;
 import java.awt.image.BufferedImage;
 
 import loon.LSysException;
+import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.Canvas;
 import loon.canvas.Image;
-import loon.canvas.LColor;
 import loon.geom.Affine2f;
 import loon.opengl.Mesh;
 import loon.opengl.MeshData;
 import loon.utils.MathUtils;
 
 public class JavaSEMesh implements Mesh {
+
+	private AffineTransform newTransform = new AffineTransform();
 
 	private AlphaComposite alphaComposite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER);
 
@@ -53,7 +56,7 @@ public class JavaSEMesh implements Mesh {
 	 */
 	private JavaSECanvas _canvas;
 
-	private int lastTint = -1;
+	private Composite _tempComposite;
 
 	private int mode = 0;
 
@@ -187,40 +190,51 @@ public class JavaSEMesh implements Mesh {
 			x2 = centerX + ((normX / dist) * (dist + paddingX));
 			y2 = centerY + ((normY / dist) * (dist + paddingY));
 		}
-		/*
-		 * context.save(); if (transform != null) { context.transform(transform.m00,
-		 * transform.m01, transform.m10, transform.m11, transform.tx, transform.ty); }
-		 * 
-		 * // 创建三角形裁剪区域 context.beginPath();
-		 * 
-		 * context.moveTo(x0, y0); context.lineTo(x1, y1); context.lineTo(x2, y2);
-		 * 
-		 * context.closePath();
-		 * 
-		 * context.clip();
-		 * 
-		 * // 计算矩阵，将图片变形到合适的位置 float delta = (u0 * v1) + (v0 * u2) + (u1 * v2) - (v1 *
-		 * u2) - (v0 * u1) - (u0 * v2); float dDelta = 1 / delta; float deltaA = (x0 *
-		 * v1) + (v0 * x2) + (x1 * v2) - (v1 * x2) - (v0 * x1) - (x0 * v2); float deltaB
-		 * = (u0 * x1) + (x0 * u2) + (u1 * x2) - (x1 * u2) - (x0 * u1) - (u0 * x2);
-		 * float deltaC = (u0 * v1 * x2) + (v0 * x1 * u2) + (x0 * u1 * v2) - (x0 * v1 *
-		 * u2) - (v0 * u1 * x2) - (u0 * x1 * v2); float deltaD = (y0 * v1) + (v0 * y2) +
-		 * (y1 * v2) - (v1 * y2) - (v0 * y1) - (y0 * v2); float deltaE = (u0 * y1) + (y0
-		 * * u2) + (u1 * y2) - (y1 * u2) - (y0 * u1) - (u0 * y2); float deltaF = (u0 *
-		 * v1 * y2) + (v0 * y1 * u2) + (y0 * u1 * v2) - (y0 * v1 * u2) - (v0 * u1 * y2)
-		 * - (u0 * y1 * v2);
-		 * 
-		 * context.transform(deltaA * dDelta, deltaD * dDelta, deltaB * dDelta, deltaE *
-		 * dDelta, deltaC * dDelta, deltaF * dDelta);
-		 * 
-		 * context.drawImage(((JavaFXImage) source).buffer, texture.widthRatio() *
-		 * sourceWidth, texture.heightRatio() * sourceHeight, textureWidth,
-		 * textureHeight, texture.widthRatio() * sourceWidth, texture.heightRatio() *
-		 * sourceHeight, textureWidth, textureHeight);
-		 * 
-		 * context.restore();
-		 */
 
+		final Graphics2D context = _canvas.context;
+
+		Composite oldComposite = context.getComposite();
+
+		if (transform != null) {
+			newTransform.setTransform(transform.m00, transform.m01, transform.m10, transform.m11, transform.tx,
+					transform.ty);
+			context.transform(newTransform);
+		}
+
+		// 创建三角形裁剪区域 context.beginPath();
+
+		Path2D path = new GeneralPath();
+
+		path.moveTo(x0, y0);
+		path.lineTo(x1, y1);
+		path.lineTo(x2, y2);
+		path.closePath();
+
+		context.setClip(path);
+
+		// 计算矩阵，将图片变形到合适的位置
+		float delta = (u0 * v1) + (v0 * u2) + (u1 * v2) - (v1 * u2) - (v0 * u1) - (u0 * v2);
+		float dDelta = 1 / delta;
+		float deltaA = (x0 * v1) + (v0 * x2) + (x1 * v2) - (v1 * x2) - (v0 * x1) - (x0 * v2);
+		float deltaB = (u0 * x1) + (x0 * u2) + (u1 * x2) - (x1 * u2) - (x0 * u1) - (u0 * x2);
+		float deltaC = (u0 * v1 * x2) + (v0 * x1 * u2) + (x0 * u1 * v2) - (x0 * v1 * u2) - (v0 * u1 * x2)
+				- (u0 * x1 * v2);
+		float deltaD = (y0 * v1) + (v0 * y2) + (y1 * v2) - (v1 * y2) - (v0 * y1) - (y0 * v2);
+		float deltaE = (u0 * y1) + (y0 * u2) + (u1 * y2) - (y1 * u2) - (y0 * u1) - (u0 * y2);
+		float deltaF = (u0 * v1 * y2) + (v0 * y1 * u2) + (y0 * u1 * v2) - (y0 * v1 * u2) - (v0 * u1 * y2)
+				- (u0 * y1 * v2);
+
+		newTransform.setTransform(deltaA * dDelta, deltaD * dDelta, deltaB * dDelta, deltaE * dDelta, deltaC * dDelta,
+				deltaF * dDelta);
+		context.transform(newTransform);
+
+		context.drawImage(((JavaSEImage) source).buffer, MathUtils.ifloor(texture.widthRatio() * sourceWidth),
+				MathUtils.ifloor(texture.heightRatio() * sourceHeight), MathUtils.ifloor(textureWidth),
+				MathUtils.ifloor(textureHeight), MathUtils.ifloor(texture.widthRatio() * sourceWidth),
+				MathUtils.ifloor(texture.heightRatio() * sourceHeight), MathUtils.ifloor(textureWidth),
+				MathUtils.ifloor(textureHeight), null);
+
+		context.setComposite(oldComposite);
 	}
 
 	@Override
@@ -248,15 +262,13 @@ public class JavaSEMesh implements Mesh {
 	}
 
 	public void save() {
-		// context.save();
+		_tempComposite = _canvas.context.getComposite();
 	}
 
 	@Override
 	public void restore() {
-		// context.restore();
+		_canvas.context.setComposite(_tempComposite);
 	}
-
-	private AffineTransform newTransform = new AffineTransform();
 
 	@Override
 	public void transform(float m00, float m01, float m10, float m11, float tx, float ty) {
@@ -314,21 +326,22 @@ public class JavaSEMesh implements Mesh {
 			if (alpha != 1f) {
 				context.setComposite(alphaComposite.derive(alpha));
 			}
-
 			if (!isWhiteColor) {
-				// 如果图像颜色需要混色,产生一个指定色彩的缓存图
-				display = ((JavaSEImage) img).getImageColor().get(r, g, b);
+				JavaSECacheImageColor imageColor = ((JavaSEImage) img).getImageColor();
+				// 如果默认缓存数许可
+				if (imageColor.count() < LSystem.DEFAULT_MAX_CACHE_SIZE) {
+					// 如果图像颜色需要混色,产生一个指定色彩的缓存图
+					display = imageColor.get(r, g, b);
+				} else {
+					// 无硬件加速,无缓存渲染混色太慢(AWT环境下是像素渲染),替换自定义Composite算法上合理,但是没有操作性
+					// 所以缓存优先.
+					if (alpha == 1f) {
+						context.setComposite(JavaSEBlendComposite.getMultiply().setColor(r, g, b));
+					} else if (alpha != 1f) {
+						context.setComposite(JavaSEBlendComposite.getMultiply().derive(alpha).setColor(r, g, b));
+					}
+				}
 			}
-
-			/*
-			 * 无硬件加速,无缓存渲染混色太慢(AWT环境下是像素渲染),替换自定义Composite算法上合理,但是没有操作性 if (alpha != 1f && isWhiteColor) {
-			 * context.setComposite(alphaComposite.derive(alpha)); } else if (alpha == 1f &&
-			 * !isWhiteColor) {
-			 * context.setComposite(JavaSEBlendComposite.getMultiply().setColor(r, g, b)); }
-			 * else if (alpha != 1f && !isWhiteColor) {
-			 * context.setComposite(JavaSEBlendComposite.getMultiply().derive(alpha).
-			 * setColor(r, g, b)); }
-			 */
 
 			if (!texture.isChild() && sl == 0f && st == 0f && sr == 1f && sb == 1f) {
 				context.drawImage(display, MathUtils.ifloor(left), MathUtils.ifloor(top),

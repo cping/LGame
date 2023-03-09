@@ -69,7 +69,7 @@ public class JavaSEGraphics extends JavaSEImplGraphics {
 		return canvas;
 	}
 
-	void onSizeChanged(int viewWidth, int viewHeight) {
+	public void onSizeChanged(int viewWidth, int viewHeight) {
 		if (!isAllowResize(viewWidth, viewHeight)) {
 			return;
 		}

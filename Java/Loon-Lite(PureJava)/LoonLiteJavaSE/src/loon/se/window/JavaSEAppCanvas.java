@@ -22,9 +22,12 @@ package loon.se.window;
 
 import java.awt.Canvas;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.image.BufferStrategy;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -34,6 +37,7 @@ import loon.LRelease;
 import loon.se.JavaSEApplication;
 import loon.se.JavaSECanvas;
 import loon.se.JavaSEGame;
+import loon.se.JavaSEInputMake;
 import loon.se.JavaSESetting;
 
 public class JavaSEAppCanvas extends Canvas implements JavaSELoop, LRelease {
@@ -71,9 +75,43 @@ public class JavaSEAppCanvas extends Canvas implements JavaSELoop, LRelease {
 		this._loop = new JavaSEAppLoop(game, this, setting.fps);
 		this._config = config;
 		this._setting = setting;
+		if (game != null) {
+			addInputListener(game.input());
+		}
+		addComponentListener(new ComponentListener() {
+
+			@Override
+			public void componentShown(ComponentEvent e) {
+				start();
+			}
+
+			@Override
+			public void componentResized(ComponentEvent e) {
+				Component comp = e.getComponent();
+				game.graphics().onSizeChanged(comp.getWidth(), comp.getHeight());
+			}
+
+			@Override
+			public void componentMoved(ComponentEvent e) {
+
+			}
+
+			@Override
+			public void componentHidden(ComponentEvent e) {
+				stop();
+			}
+		});
 		setBackground(Color.BLACK);
 		setEnabled(true);
 		setIgnoreRepaint(true);
+	}
+
+	public JavaSEAppCanvas addInputListener(JavaSEInputMake input) {
+		this.addFocusListener(input);
+		this.addKeyListener(input);
+		this.addMouseListener(input);
+		this.addMouseMotionListener(input);
+		return this;
 	}
 
 	public JavaSEAppCanvas start() {

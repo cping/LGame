@@ -25,12 +25,15 @@ import java.awt.Dimension;
 import java.awt.DisplayMode;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
+import java.awt.Image;
 import java.awt.Window;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
@@ -38,6 +41,7 @@ import javax.swing.WindowConstants;
 import loon.LRelease;
 import loon.se.JavaSEApplication;
 import loon.se.JavaSEGame;
+import loon.se.JavaSEImage;
 import loon.se.JavaSESetting;
 
 public class JavaSEAppFrame extends JFrame implements LRelease {
@@ -105,13 +109,20 @@ public class JavaSEAppFrame extends JFrame implements LRelease {
 				System.exit(-1);
 			}
 		});
-
 		setResizable(_setting.isAllowScreenResizabled);
 		setUndecorated(false);
 		setIgnoreRepaint(true);
 		final java.awt.DisplayMode desktop = _device.getDisplayMode();
 		if (desktop.getWidth() == setting.getShowWidth() && desktop.getHeight() == setting.getShowHeight()) {
 			setUndecorated(true);
+		}
+		final String[] paths = _setting.iconPaths;
+		if (paths != null) {
+			if (paths.length == 1) {
+				setIcon(paths[0]);
+			} else {
+				setIcons(paths);
+			}
 		}
 	}
 
@@ -140,6 +151,27 @@ public class JavaSEAppFrame extends JFrame implements LRelease {
 		add(this._canvas);
 		packFrame();
 		canvas.start();
+	}
+
+	public JavaSEAppFrame setIcons(String[] paths) {
+		List<Image> images = new ArrayList<Image>();
+		for (String path : paths) {
+			if (path != null) {
+				images.add(((JavaSEImage) _game.assets().getImageSync(path)).seImage());
+			}
+		}
+		setIconImages(images);
+		return this;
+	}
+
+	public JavaSEAppFrame setIcon(String path) {
+		setIconImage(((JavaSEImage) _game.assets().getImageSync(path)).seImage());
+		return this;
+	}
+
+	public JavaSEAppFrame setIcon(Image icon) {
+		setIconImage(icon);
+		return this;
 	}
 
 	public JavaSEAppCanvas getCanvas() {

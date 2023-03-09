@@ -12,6 +12,7 @@ public class JavaSEAsyn extends Asyn.Default {
 	
 	public JavaSEAsyn(ExecutorService p,Log log, Act<? extends Object> frame) {
 		super(log, frame);
+		this.pool = p;
 		
 	}
 

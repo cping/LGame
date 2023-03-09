@@ -22,17 +22,11 @@ package loon.se;
 
 import java.util.concurrent.Executors;
 
-import loon.Accelerometer;
-import loon.Asyn;
 import loon.Clipboard;
-import loon.Graphics;
 import loon.LGame;
 import loon.LSetting;
-import loon.Log;
 import loon.Platform;
-import loon.Save;
 import loon.canvas.Canvas;
-import loon.events.InputMake;
 import loon.opengl.Mesh;
 import loon.se.window.JavaSEAppCanvas;
 import loon.utils.StringUtils;
@@ -149,25 +143,25 @@ public class JavaSEGame extends LGame {
 	private final JavaSEGraphics graphics;
 	private final JavaSEAssets assets;
 	private final JavaSELog log;
-	private final Asyn asyn;
-
+	private final JavaSEAsyn asyn;
+	private final JavaSEInputMake input;
+	
 	private JavaSEAppCanvas canvas;
 
 	private final long start = System.nanoTime();
 
-	private JavaSEInputMake input;
 
 	private boolean active = true;
 
 	public JavaSEGame(Platform plat, LSetting config) {
 		super(config, plat);
+		this.log = new JavaSELog();
+		this.asyn = new JavaSEAsyn(Executors.newFixedThreadPool(4),log, frame);
 		this.graphics = new JavaSEGraphics(this,true);
 		this.input = new JavaSEInputMake(this);
 		this.assets = new JavaSEAssets(this);
-		this.log = new JavaSELog();
 		this.save = new JavaSESave(log, config.appName);
 		this.accelerometer = new JavaSEAccelerometer();
-		this.asyn = new JavaSEAsyn(Executors.newFixedThreadPool(4),log, frame);
 		this.initProcess();
 	}
 
@@ -248,6 +242,7 @@ public class JavaSEGame extends LGame {
 			status.emit(wasActive ? Status.PAUSE : Status.RESUME);
 		}
 		if (active) {
+			input.update();
 			emitFrame();
 		}
 	}
@@ -263,7 +258,7 @@ public class JavaSEGame extends LGame {
 
 	@Override
 	public Environment env() {
-		return Environment.JAVAFX;
+		return Environment.JAVASE;
 	}
 
 	@Override
@@ -286,32 +281,32 @@ public class JavaSEGame extends LGame {
 	}
 
 	@Override
-	public Asyn asyn() {
+	public JavaSEAsyn asyn() {
 		return this.asyn;
 	}
 
 	@Override
-	public Graphics graphics() {
+	public JavaSEGraphics graphics() {
 		return this.graphics;
 	}
 
 	@Override
-	public InputMake input() {
+	public JavaSEInputMake input() {
 		return this.input;
 	}
 
 	@Override
-	public Log log() {
+	public JavaSELog log() {
 		return this.log;
 	}
 
 	@Override
-	public Save save() {
+	public JavaSESave save() {
 		return this.save;
 	}
 
 	@Override
-	public Accelerometer accel() {
+	public JavaSEAccelerometer accel() {
 		return this.accelerometer;
 	}
 

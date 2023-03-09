@@ -22,18 +22,11 @@ package loon.fx;
 
 import javafx.animation.AnimationTimer;
 
-import loon.Accelerometer;
-import loon.Assets;
-import loon.Asyn;
 import loon.Clipboard;
-import loon.Graphics;
 import loon.LGame;
 import loon.LSetting;
-import loon.Log;
 import loon.Platform;
-import loon.Save;
 import loon.canvas.Canvas;
-import loon.events.InputMake;
 import loon.opengl.Mesh;
 import loon.utils.StringUtils;
 
@@ -152,7 +145,7 @@ public class JavaFXGame extends LGame {
 		return osBit64;
 	}
 
-	protected AnimationTimer loopRunner;
+	protected AnimationTimer _animationLoopRunner;
 
 	private final JavaFXAccelerometer accelerometer;
 
@@ -160,23 +153,22 @@ public class JavaFXGame extends LGame {
 	private final JavaFXGraphics graphics;
 	private final JavaFXAssets assets;
 	private final JavaFXLog log;
-	private final Asyn asyn;
+	private final JavaFXAsyn asyn;
+	private final JavaFXInputMake input;
 
 	private final long start = System.nanoTime();
-
-	private JavaFXInputMake input;
 
 	private boolean active = true;
 
 	public JavaFXGame(Platform plat, LSetting config) {
 		super(config, plat);
-		this.graphics = new JavaFXGraphics(this, true);
-		this.input = new JavaFXInputMake(this);
-		this.assets = new JavaFXAssets(this);
 		this.log = new JavaFXLog();
+		this.asyn = new JavaFXAsyn(log, frame);
+		this.graphics = new JavaFXGraphics(this, true);
+		this.assets = new JavaFXAssets(this);
 		this.save = new JavaFXSave(log, config.appName);
 		this.accelerometer = new JavaFXAccelerometer();
-		this.asyn = new JavaFXAsyn(log, frame);
+		this.input = new JavaFXInputMake(this);
 		this.initProcess();
 	}
 
@@ -215,52 +207,56 @@ public class JavaFXGame extends LGame {
 	public Canvas getCanvas() {
 		return graphics.getCanvas();
 	}
-	
+
 	protected void toggleActivation() {
 		active = !active;
 	}
 
-	protected void start() {
-		if (loopRunner == null) {
+	public void start() {
+		if (_animationLoopRunner == null) {
 			init();
 		}
-		loopRunner.start();
+		_animationLoopRunner.start();
+		reset();
 	}
 
+	@Override
 	public LGame resume() {
-		if (loopRunner == null) {
+		if (_animationLoopRunner == null) {
 			return this;
 		}
 		start();
 		return this;
 	}
 
+	@Override
 	public LGame pause() {
 		stop();
 		return this;
 	}
 
+	@Override
 	public void stop() {
-		if (loopRunner == null) {
+		if (_animationLoopRunner == null) {
 			return;
 		}
-		loopRunner.stop();
+		_animationLoopRunner.stop();
 	}
 
 	public boolean isActive() {
 		return active;
 	}
-	
+
 	protected void init() {
-		if (loopRunner != null) {
-			loopRunner.stop();
-			loopRunner = null;
+		if (_animationLoopRunner != null) {
+			_animationLoopRunner.stop();
+			_animationLoopRunner = null;
 		}
 	}
-
+	
 	public void reset() {
 		init();
-		loopRunner = new AnimationTimer() {
+		_animationLoopRunner = new AnimationTimer() {
 
 			boolean wasActive = active;
 
@@ -271,11 +267,12 @@ public class JavaFXGame extends LGame {
 					wasActive = active;
 				}
 				if (active) {
+					input.update();
 					emitFrame();
 				}
 			}
 		};
-		loopRunner.start();
+		_animationLoopRunner.start();
 	}
 
 	protected void shutdown() {
@@ -307,37 +304,37 @@ public class JavaFXGame extends LGame {
 	}
 
 	@Override
-	public Assets assets() {
+	public JavaFXAssets assets() {
 		return this.assets;
 	}
 
 	@Override
-	public Asyn asyn() {
+	public JavaFXAsyn asyn() {
 		return this.asyn;
 	}
 
 	@Override
-	public Graphics graphics() {
+	public JavaFXGraphics graphics() {
 		return this.graphics;
 	}
 
 	@Override
-	public InputMake input() {
+	public JavaFXInputMake input() {
 		return this.input;
 	}
 
 	@Override
-	public Log log() {
+	public JavaFXLog log() {
 		return this.log;
 	}
 
 	@Override
-	public Save save() {
+	public JavaFXSave save() {
 		return this.save;
 	}
 
 	@Override
-	public Accelerometer accel() {
+	public JavaFXAccelerometer accel() {
 		return this.accelerometer;
 	}
 

@@ -23,7 +23,6 @@ package loon.se;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.DisplayMode;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;

@@ -29,76 +29,23 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TouchEvent;
 import javafx.scene.input.TouchPoint;
+
 import loon.LObject;
-import loon.events.InputMake;
 import loon.events.KeyMake;
 import loon.events.MouseMake;
 import loon.events.SysKey;
 import loon.events.SysTouch;
 import loon.events.TouchMake;
-import loon.geom.Vector2f;
 
-public class JavaFXInputMake extends InputMake {
-
-	private final JavaFXGame game;
-
-	private final Vector2f lastMousePt = new Vector2f();
+public class JavaFXInputMake extends JavaFXInput {
 
 	private boolean inDragSequence = false;
 	private boolean isRequestingMouseLock;
 
 	private boolean inTouchSequence = false;
 
-	private float touchDX = -1, touchDY = -1;
-
-	public float getTouchDX() {
-		return touchDX;
-	}
-
-	public float getTouchDY() {
-		return touchDY;
-	}
-
-	abstract class MoveEventHandler implements EventHandler<MouseEvent> {
-
-		private float lastX = -1, lastY = -1;
-
-		@Override
-		public void handle(MouseEvent ev) {
-			if (isRequestingMouseLock) {
-				return;
-			}
-			float x = (float) ev.getX();
-			float y = (float) ev.getY();
-
-			if (lastX == -1) {
-				lastX = x;
-				lastY = y;
-			}
-
-			if (inDragSequence == wantDragSequence()) {
-				if (isMouseLocked()) {
-					touchDX = x;
-					touchDY = y;
-				} else {
-					touchDX = x - lastX;
-					touchDY = y - lastY;
-				}
-			}
-
-			dispatch(new MouseMake.ButtonEvent(0, game.time(), x, y, -1, false), ev);
-
-			lastX = x;
-			lastY = y;
-			lastMousePt.set(x, y);
-		}
-
-		protected abstract boolean wantDragSequence();
-
-	}
-
 	public JavaFXInputMake(JavaFXGame game) {
-		this.game = game;
+		super(game);
 		JavaFXResizeCanvas canvas = this.game.getFxCanvas();
 
 		canvas.setOnKeyPressed(new EventHandler<KeyEvent>() {
@@ -230,7 +177,6 @@ public class JavaFXInputMake extends InputMake {
 			}
 
 		});
-
 	}
 
 	private TouchMake.Event[] toTouchEvents(TouchMake.Event.Kind kind, TouchEvent nevent) {
