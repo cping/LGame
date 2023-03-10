@@ -145,6 +145,9 @@ public class LFont extends FontTrans implements IFont {
 
 	@Override
 	public void drawString(GLEx g, String msg, float tx, float ty, float angle, LColor c) {
+		if(closed) {
+			return;
+		}
 		if (c == null || c.a <= 0.01) {
 			return;
 		}
@@ -162,6 +165,9 @@ public class LFont extends FontTrans implements IFont {
 	@Override
 	public void drawString(GLEx g, String msg, float tx, float ty, float sx, float sy, float ax, float ay, float angle,
 			LColor c) {
+		if(closed) {
+			return;
+		}
 		if (c == null || c.a <= 0.01) {
 			return;
 		}

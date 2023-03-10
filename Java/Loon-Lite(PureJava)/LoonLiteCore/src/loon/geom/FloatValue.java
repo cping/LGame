@@ -21,6 +21,7 @@
 package loon.geom;
 
 import loon.LRelease;
+import loon.utils.MathUtils;
 
 public class FloatValue implements LRelease {
 
@@ -39,6 +40,18 @@ public class FloatValue implements LRelease {
 		return this;
 	}
 
+	public float scaled(float length) {
+		return value * length;
+	}
+
+	public int scaledCeil(float length) {
+		return MathUtils.iceil(scaled(length));
+	}
+
+	public int scaledFloor(float length) {
+		return MathUtils.ifloor(scaled(length));
+	}
+	
 	public float get() {
 		return result();
 	}

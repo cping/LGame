@@ -321,7 +321,7 @@ public class JavaSEMesh implements Mesh {
 			Composite oldComposite = context.getComposite();
 
 			newTransform.setTransform(m00, m01, m10, m11, tx, ty);
-			context.transform(newTransform);
+			context.setTransform(newTransform);
 
 			if (alpha != 1f) {
 				context.setComposite(alphaComposite.derive(alpha));
@@ -342,7 +342,6 @@ public class JavaSEMesh implements Mesh {
 					}
 				}
 			}
-
 			if (!texture.isChild() && sl == 0f && st == 0f && sr == 1f && sb == 1f) {
 				context.drawImage(display, MathUtils.ifloor(left), MathUtils.ifloor(top),
 						MathUtils.ifloor(right - left), MathUtils.ifloor(bottom - top), null);

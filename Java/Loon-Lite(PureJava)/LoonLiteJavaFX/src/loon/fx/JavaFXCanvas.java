@@ -51,17 +51,23 @@ public class JavaFXCanvas extends Canvas {
 
 	protected LColor color;
 	protected GraphicsContext context;
+	private boolean graphicsMain;
 
 	double width;
 	double height;
 
 	protected JavaFXCanvas(Graphics gfx, JavaFXImage image) {
+		this(gfx, image, false);
+	}
+
+	protected JavaFXCanvas(Graphics gfx, JavaFXImage image, boolean gm) {
 		super(gfx, image);
 		if (this.image != null) {
 			this.image = image;
 			this.width = image.getWidth();
 			this.height = image.getHeight();
 		}
+		this.graphicsMain = gm;
 		this.fxCanvas = new JavaFXResizeCanvas(width, height);
 		this.setContextInit(fxCanvas.getGraphicsContext2D());
 		if (image != null) {
@@ -78,7 +84,7 @@ public class JavaFXCanvas extends Canvas {
 	public void updateContext(GraphicsContext g) {
 		this.context = g;
 	}
-	
+
 	public void setContextInit(GraphicsContext g) {
 		this.updateContext(g);
 		if (this.context != null) {
@@ -628,6 +634,18 @@ public class JavaFXCanvas extends Canvas {
 		return this;
 	}
 
+	private void addRoundRectPath(float x, float y, float width, float height, float radius) {
+		float midx = x + width / 2, midy = y + height / 2, maxx = x + width, maxy = y + height;
+		context.beginPath();
+		context.moveTo(x, midy);
+		context.arcTo(x, y, midx, y, radius);
+		context.arcTo(maxx, y, maxx, midy, radius);
+		context.arcTo(maxx, maxy, midx, maxy, radius);
+		context.arcTo(x, maxy, x, midy, radius);
+		context.closePath();
+		isDirty = true;
+	}
+
 	@Override
 	public Canvas setTransform(Affine2f aff) {
 		context.setTransform(aff.m00, aff.m01, aff.m10, aff.m11, aff.tx, aff.ty);
@@ -646,16 +664,8 @@ public class JavaFXCanvas extends Canvas {
 		return this;
 	}
 
-	private void addRoundRectPath(float x, float y, float width, float height, float radius) {
-		float midx = x + width / 2, midy = y + height / 2, maxx = x + width, maxy = y + height;
-		context.beginPath();
-		context.moveTo(x, midy);
-		context.arcTo(x, y, midx, y, radius);
-		context.arcTo(maxx, y, maxx, midy, radius);
-		context.arcTo(maxx, maxy, midx, maxy, radius);
-		context.arcTo(x, maxy, x, midy, radius);
-		context.closePath();
-		isDirty = true;
+	@Override
+	public boolean isMainCanvas() {
+		return graphicsMain;
 	}
-
 }

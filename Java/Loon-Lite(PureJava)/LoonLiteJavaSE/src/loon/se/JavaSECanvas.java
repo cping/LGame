@@ -34,6 +34,7 @@ import java.util.Deque;
 import java.util.LinkedList;
 
 import loon.Graphics;
+import loon.LSystem;
 import loon.canvas.Canvas;
 import loon.canvas.Gradient;
 import loon.canvas.Image;
@@ -46,6 +47,9 @@ import loon.utils.MathUtils;
 
 public class JavaSECanvas extends Canvas {
 
+	private boolean graphicsInited = false;
+	private boolean graphicsMain = false;
+
 	protected Graphics2D context;
 	private Deque<JavaSECanvasState> stateStack = new LinkedList<JavaSECanvasState>();
 
@@ -56,12 +60,19 @@ public class JavaSECanvas extends Canvas {
 	private Rectangle2D.Float rect = new Rectangle2D.Float();
 	private RoundRectangle2D.Float roundRect = new RoundRectangle2D.Float();
 
+	private JavaSESetting setting;
+
 	public JavaSECanvas(Graphics gfx, JavaSEImage image) {
-		this(gfx, image, null);
+		this(gfx, image, false);
 	}
 
-	public JavaSECanvas(Graphics gfx, JavaSEImage image, Graphics2D graphics2d) {
+	public JavaSECanvas(Graphics gfx, JavaSEImage image, boolean gm) {
+		this(gfx, image, null, gm);
+	}
+
+	public JavaSECanvas(Graphics gfx, JavaSEImage image, Graphics2D graphics2d, boolean gm) {
 		super(gfx, image);
+		this.graphicsMain = gm;
 		if (image != null && image.seImage() != null) {
 			context = image.seImage().createGraphics();
 			this.isDirty = true;
@@ -69,22 +80,43 @@ public class JavaSECanvas extends Canvas {
 			context = graphics2d;
 			this.isDirty = false;
 		}
+		if (gfx.setting() instanceof JavaSESetting) {
+			setting = (JavaSESetting) gfx.setting();
+		}
 		setContextInit(context);
 	}
 
 	public void updateContext(Graphics2D g2d) {
 		if (this.context != g2d) {
 			this.context = g2d;
+			if (setting != null) {
+				switch (setting.graphicsMode) {
+				case 0:
+					JavaSEApplication.setGraphicsExcellent(g2d);
+					break;
+				case 1:
+					JavaSEApplication.setGraphicsQuality(g2d);
+					break;
+				case 2:
+					JavaSEApplication.setGraphicsSpeed(g2d);
+					break;
+				default:
+					throw new IllegalArgumentException("Unexpected Graphics Mode value: " + setting.graphicsMode);
+				}
+			}
 		}
 	}
 
 	public void setContextInit(Graphics2D g2d) {
-		this.updateContext(g2d);
-		if (this.context != null) {
-			float scale = image.scale().factor;
-			this.context.scale(scale, scale);
-			this.stateStack.push(new JavaSECanvasState());
-			this.context.setBackground(new Color(0, true));
+		if (!graphicsInited) {
+			this.updateContext(g2d);
+			if (this.context != null) {
+				float scale = image.scale().factor;
+				this.context.scale(scale, scale);
+				this.stateStack.push(new JavaSECanvasState());
+				this.context.setBackground(new Color(0, true));
+			}
+			graphicsInited = true;
 		}
 	}
 
@@ -157,11 +189,21 @@ public class JavaSECanvas extends Canvas {
 
 	@Override
 	public Image newSnapshot() {
+		if (isMainCanvas()) {
+			if (LSystem.base() != null && !((JavaSESetting) LSystem.base().setting).doubleBuffer) {
+				return LSystem.base().snapshot();
+			}
+		}
 		return new JavaSEImage(gfx, image.scale(), createImage(), "<canvas>");
 	}
 
 	@Override
 	public Image snapshot() {
+		if (isMainCanvas()) {
+			if (LSystem.base() != null && !((JavaSESetting) LSystem.base().setting).doubleBuffer) {
+				return LSystem.base().snapshot();
+			}
+		}
 		if (image == null) {
 			return (image = newSnapshot());
 		}
@@ -435,8 +477,7 @@ public class JavaSECanvas extends Canvas {
 	@Override
 	public Canvas setTransform(Affine2f aff) {
 		transform.setTransform(aff.m00, aff.m01, aff.m10, aff.m11, aff.tx, aff.ty);
-		context.getTransform().setToIdentity();
-		context.transform(transform);
+		context.setTransform(transform);
 		isDirty = true;
 		return this;
 	}
@@ -568,6 +609,11 @@ public class JavaSECanvas extends Canvas {
 		currentState().strokeWidth = lineWidth;
 		this.isDirty = true;
 		return this;
+	}
+
+	@Override
+	public boolean isMainCanvas() {
+		return graphicsMain;
 	}
 
 	@Override

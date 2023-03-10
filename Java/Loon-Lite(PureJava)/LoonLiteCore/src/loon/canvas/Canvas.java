@@ -213,7 +213,9 @@ public abstract class Canvas implements LRelease {
 		setFillColor(tmp);
 		return this;
 	}
-
+	
+	public abstract boolean isMainCanvas();
+	
 	public abstract Canvas fillCircle(float x, float y, float radius);
 
 	public abstract Canvas fillOval(float x, float y, float width, float height);

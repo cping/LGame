@@ -46,6 +46,12 @@ public class JavaSEGraphics extends JavaSEImplGraphics {
 	protected JavaSEGraphics(JavaSEGame game, Scale scale, boolean resized) {
 		super(game, scale);
 		this.game = game;
+		if (game.setting instanceof JavaSESetting) {
+			JavaSESetting setting = (JavaSESetting) game.setting;
+			if (!setting.doubleBuffer) {
+				setDPIScale(JavaSEApplication.dpiScale());
+			}
+		}
 		this.createCanvas(game.setting, scale, resized);
 	}
 
@@ -59,7 +65,7 @@ public class JavaSEGraphics extends JavaSEImplGraphics {
 				image = JavaSEImplGraphics.createBufferedImage(scale.scaledFloor(setting.width),
 						scale.scaledFloor(setting.height), BufferedImage.TYPE_INT_ARGB_PRE);
 			}
-			canvas = new JavaSECanvas(this, new JavaSEImage(this, image));
+			canvas = new JavaSECanvas(this, new JavaSEImage(this, image), true);
 		}
 		return canvas;
 	}

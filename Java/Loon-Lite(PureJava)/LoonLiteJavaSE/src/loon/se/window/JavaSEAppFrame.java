@@ -23,6 +23,7 @@ package loon.se.window;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.DisplayMode;
+import java.awt.Graphics;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.Image;
@@ -44,7 +45,7 @@ import loon.se.JavaSEGame;
 import loon.se.JavaSEImage;
 import loon.se.JavaSESetting;
 
-public class JavaSEAppFrame extends JFrame implements LRelease {
+public class JavaSEAppFrame extends JFrame implements JavaSEApp<JavaSEAppFrame>, LRelease {
 
 	/**
 	 * 
@@ -124,6 +125,7 @@ public class JavaSEAppFrame extends JFrame implements LRelease {
 				setIcons(paths);
 			}
 		}
+		requestFocus();
 	}
 
 	public void play() {
@@ -151,6 +153,14 @@ public class JavaSEAppFrame extends JFrame implements LRelease {
 		add(this._canvas);
 		packFrame();
 		canvas.start();
+	}
+
+	public BufferedImage snapshot() {
+		BufferedImage img = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_BGR);
+		Graphics g = img.getGraphics();
+		paint(g);
+		g.dispose();
+		return img;
 	}
 
 	public JavaSEAppFrame setIcons(String[] paths) {
@@ -182,6 +192,7 @@ public class JavaSEAppFrame extends JFrame implements LRelease {
 		return _game;
 	}
 
+	@Override
 	public JavaSEAppFrame updateSize() {
 		JavaSEApplication.setResolution(this, new Dimension(_setting.getShowWidth(), _setting.getShowHeight()), 0, 0);
 		setSize(_setting.getShowWidth(), _setting.getShowHeight());
@@ -279,8 +290,8 @@ public class JavaSEAppFrame extends JFrame implements LRelease {
 
 	@Override
 	public void close() {
-		if (_game != null) {
-			_game.close();
+		if (_canvas != null) {
+			_canvas.close();
 		}
 	}
 

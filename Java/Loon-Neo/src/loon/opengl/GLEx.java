@@ -154,9 +154,9 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		this.affineStack.add(lastTrans = new Affine2f());
 		this.colorTex = gfx.finalColorTex();
 		if (target != null) {
-			this.scale(scaleX = target.xscale(), scaleY = target.yscale());
+			this.scale(scaleX = gfx.onDPI(target.xscale()), scaleY = gfx.onDPI(target.yscale()));
 		} else {
-			this.scale(scaleX = LSystem.getScaleWidth(), scaleY = LSystem.getScaleHeight());
+			this.scale(scaleX = gfx.onDPI(LSystem.getScaleWidth()), scaleY = gfx.onDPI(LSystem.getScaleHeight()));
 		}
 		this.lastBrush = new BrushSave();
 		this.lastBrush.font = LSystem.getSystemGameFont();

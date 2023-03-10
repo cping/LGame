@@ -41,7 +41,7 @@ public class JavaFXGraphics extends Graphics {
 	protected JavaFXGraphics(JavaFXGame game) {
 		this(game, true);
 	}
-	
+
 	protected JavaFXGraphics(JavaFXGame game, boolean resized) {
 		this(game, Scale.ONE, resized);
 	}
@@ -61,7 +61,7 @@ public class JavaFXGraphics extends Graphics {
 			} else {
 				image = new JavaFXImage(this.game, scale.scaledFloor(setting.width), scale.scaledFloor(setting.height));
 			}
-			canvas = new JavaFXCanvas(this, image);
+			canvas = new JavaFXCanvas(this, image, true);
 		}
 		return canvas;
 	}

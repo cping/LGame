@@ -20,6 +20,7 @@
  */
 package loon.fx;
 
+import java.awt.Toolkit;
 import java.util.Optional;
 
 import javafx.application.Application;
@@ -50,6 +51,7 @@ import loon.LazyLoading;
 import loon.Platform;
 import loon.events.KeyMake;
 import loon.events.SysInput;
+import loon.utils.Resolution;
 import loon.utils.StringUtils;
 
 public class JavaFXApplication extends Application implements Platform {
@@ -277,6 +279,26 @@ public class JavaFXApplication extends Application implements Platform {
 		}
 	}
 
+	public static float dpiScale() {
+		return Resolution.convertDPIScale(dpi());
+	}
+
+	public static int dpi() {
+		return (int) Screen.getPrimary().getDpi();
+	}
+
+	public static float ppiY() {
+		return dpi();
+	}
+
+	public static float ppcX() {
+		return dpi() / 2.54f;
+	}
+
+	public static boolean isLowResolution() {
+		return dpi() < 120;
+	}
+	
 	@Override
 	public void sysText(final SysInput.TextEvent event, final KeyMake.TextType textType, final String label,
 			final String initVal) {

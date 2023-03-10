@@ -134,7 +134,9 @@ public class GLEx implements LRelease {
 		this.batch = def;
 		this.affineStack.add(lastTrans = new Affine2f());
 		this.colorTex = gfx.finalColorTex();
-		this.scale(scaleX = LSystem.getScaleWidth(), scaleY = LSystem.getScaleHeight());
+		this.scaleX = gfx.onDPI(LSystem.getScaleWidth());
+		this.scaleY = gfx.onDPI(LSystem.getScaleHeight());
+		this.scale(scaleX, scaleY);
 		this.lastBrush = new BrushSave();
 		this.lastBrush.font = LSystem.getSystemGameFont();
 		this.lastBrush.blend = LSystem.MODE_NORMAL;

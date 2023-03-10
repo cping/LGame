@@ -22,6 +22,7 @@ package loon;
 
 import loon.action.sprite.Sprites;
 import loon.canvas.Canvas;
+import loon.canvas.Image;
 import loon.component.Desktop;
 import loon.events.InputMake;
 import loon.font.IFont;
@@ -48,13 +49,14 @@ public abstract class LGame implements LRelease {
 	public static enum Environment {
 		JAVAFX, JAVASE
 	}
-	
+
 	/**
 	 * 当前运行的平台
 	 */
 	public static enum Sys {
-	    WINDOWS, MAC, LINUX, ANDROID, IOS, BROWSER, EMBEDDED
+		WINDOWS, MAC, LINUX, ANDROID, IOS, BROWSER, EMBEDDED
 	}
+
 	/**
 	 * 基本游戏状态
 	 */
@@ -293,7 +295,7 @@ public abstract class LGame implements LRelease {
 	 * @param game
 	 */
 	public void resetShader() {
-		
+
 	}
 
 	/**
@@ -506,7 +508,7 @@ public abstract class LGame implements LRelease {
 			return pBatch;
 		}
 	}
-	
+
 	/**
 	 * 查看纹理池中是否存在指定id对象
 	 * 
@@ -731,7 +733,7 @@ public abstract class LGame implements LRelease {
 			String key = fileName.trim().toLowerCase();
 			ObjectMap<String, LTexture> texs = new ObjectMap<String, LTexture>(_texture_lazys);
 			LTexture texture = texs.get(key);
-			if (texture == null) {  
+			if (texture == null) {
 				for (LTexture tex : texs.values()) {
 					if (tex.tmpLazy != null && tex.tmpLazy.toLowerCase().equals(key.toLowerCase())) {
 						texture = tex;
@@ -768,7 +770,6 @@ public abstract class LGame implements LRelease {
 		}
 		return tex2d;
 	}
-	
 
 	/**
 	 * 以纹理id获得具体纹理
@@ -786,7 +787,6 @@ public abstract class LGame implements LRelease {
 			return null;
 		}
 	}
-
 
 	/**
 	 * 删除所有从路径加载的纹理图片并强制销毁纹理(但是手动生成的纹理此处不销毁,仅删除)
@@ -959,8 +959,10 @@ public abstract class LGame implements LRelease {
 		LGame._base = null;
 	}
 
+	public abstract Image snapshot();
+
 	public abstract Mesh makeMesh(Canvas canvas);
-	
+
 	public abstract Environment env();
 
 	public abstract double time();
@@ -982,7 +984,7 @@ public abstract class LGame implements LRelease {
 	public abstract Save save();
 
 	public abstract Accelerometer accel();
-	
+
 	public LProcess process() {
 		return processImpl;
 	}
@@ -1014,7 +1016,7 @@ public abstract class LGame implements LRelease {
 	public abstract boolean isMobile();
 
 	public abstract boolean isDesktop();
-	
+
 	public abstract boolean isBrowser();
 
 	@Override

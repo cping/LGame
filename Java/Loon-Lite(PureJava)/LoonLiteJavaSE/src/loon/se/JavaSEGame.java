@@ -20,6 +20,7 @@
  */
 package loon.se;
 
+import java.awt.image.BufferedImage;
 import java.util.concurrent.Executors;
 
 import loon.Clipboard;
@@ -52,7 +53,6 @@ public class JavaSEGame extends LGame {
 	final static private String JAVA_SPEC;
 
 	final static private String JAVA_VERSION;
-
 
 	static {
 		OS_NAME = getProperty("os.name").toLowerCase();
@@ -145,19 +145,18 @@ public class JavaSEGame extends LGame {
 	private final JavaSELog log;
 	private final JavaSEAsyn asyn;
 	private final JavaSEInputMake input;
-	
+
 	private JavaSEAppCanvas canvas;
 
 	private final long start = System.nanoTime();
-
 
 	private boolean active = true;
 
 	public JavaSEGame(Platform plat, LSetting config) {
 		super(config, plat);
 		this.log = new JavaSELog();
-		this.asyn = new JavaSEAsyn(Executors.newFixedThreadPool(4),log, frame);
-		this.graphics = new JavaSEGraphics(this,true);
+		this.asyn = new JavaSEAsyn(Executors.newFixedThreadPool(4), log, frame);
+		this.graphics = new JavaSEGraphics(this, true);
 		this.input = new JavaSEInputMake(this);
 		this.assets = new JavaSEAssets(this);
 		this.save = new JavaSESave(log, config.appName);
@@ -196,7 +195,7 @@ public class JavaSEGame extends LGame {
 		}
 		return getProperty("javafx.platform", "desktop").trim().toLowerCase();
 	}
-	
+
 	public Canvas getCanvas() {
 		return graphics.getCanvas();
 	}
@@ -232,7 +231,7 @@ public class JavaSEGame extends LGame {
 			canvas.stop();
 		}
 	}
-	
+
 	public boolean isActive() {
 		return active;
 	}
@@ -254,6 +253,15 @@ public class JavaSEGame extends LGame {
 		status.emit(Status.EXIT);
 		stop();
 		System.exit(0);
+	}
+
+	@Override
+	public JavaSEImage snapshot() {
+		BufferedImage image = null;
+		if (canvas != null) {
+			image = canvas.snapshot();
+		}
+		return new JavaSEImage(graphics, image);
 	}
 
 	@Override

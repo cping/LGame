@@ -26,7 +26,7 @@ import loon.font.TextLayout;
 import loon.font.TextWrap;
 import loon.geom.Affine2f;
 import loon.geom.Dimension;
-
+import loon.geom.FloatValue;
 import loon.utils.GLUtils;
 import loon.utils.Scale;
 import loon.utils.reply.UnitPort;
@@ -40,8 +40,13 @@ public abstract class Graphics {
 	protected boolean flipScreen;
 
 	protected final LGame game;
+
 	protected final Dimension viewSizeM = new Dimension();
+
+	protected final FloatValue viewDPISacle = new FloatValue(1f);
+
 	protected Scale scale = null;
+
 	protected int viewPixelWidth, viewPixelHeight;
 
 	private Display display = null;
@@ -61,6 +66,15 @@ public abstract class Graphics {
 	public Affine2f getViewAffine() {
 		display = game.display();
 		return display.GL().tx();
+	}
+
+	public Graphics setDPIScale(float v) {
+		viewDPISacle.set(v);
+		return this;
+	}
+
+	public float onDPI(float v) {
+		return viewDPISacle.scaled(v);
 	}
 
 	public int width() {
@@ -142,10 +156,6 @@ public abstract class Graphics {
 		this.amount = new Counter();
 	}
 
-	protected int defaultFramebuffer() {
-		return 0;
-	}
-
 	protected abstract Canvas createCanvasImpl(Scale scale, int pixelWidth, int pixelHeight);
 
 	protected void viewportChanged(Scale scale, int viewWidth, int viewHeight) {
@@ -196,6 +206,14 @@ public abstract class Graphics {
 		}
 		GLUtils.bindTexture(id);
 		return id;
+	}
+
+	public LGame game() {
+		return game;
+	}
+
+	public LSetting setting() {
+		return game.setting;
 	}
 
 	public abstract Canvas getCanvas();

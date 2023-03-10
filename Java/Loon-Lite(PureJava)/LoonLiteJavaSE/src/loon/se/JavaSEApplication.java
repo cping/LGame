@@ -29,6 +29,7 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.Toolkit;
 
 import loon.LGame;
 import loon.LSysException;
@@ -39,6 +40,7 @@ import loon.events.SysInput;
 import loon.geom.Vector2f;
 import loon.se.window.JavaSEAppCanvas;
 import loon.se.window.JavaSEAppFrame;
+import loon.utils.Resolution;
 
 public class JavaSEApplication implements Platform {
 
@@ -55,15 +57,16 @@ public class JavaSEApplication implements Platform {
 	final static RenderingHints _Speed;
 
 	static {
-		_Excellent = new RenderingHints(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+		_Excellent = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		_Excellent.put(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
 		_Excellent.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 		_Excellent.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		_Excellent.put(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
 		_Excellent.put(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
-		_Excellent.put(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+		_Excellent.put(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 		_Excellent.put(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 		_Excellent.put(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+		_Excellent.put(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
 		_Quality = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		_Quality.put(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
@@ -74,14 +77,14 @@ public class JavaSEApplication implements Platform {
 		_Quality.put(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
 		_Quality.put(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-		_Speed = new RenderingHints(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+		_Speed = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+		_Speed.put(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
 		_Speed.put(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
 		_Speed.put(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
 		_Speed.put(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_SPEED);
 		_Speed.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
 		_Speed.put(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_DISABLE);
 		_Speed.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
-		_Speed.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
 		_Speed.put(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_OFF);
 		_Speed.put(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_SPEED);
 		_Speed.put(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
@@ -126,6 +129,9 @@ public class JavaSEApplication implements Platform {
 	private JavaSEAppCanvas _appCanvas;
 
 	public static JavaSEAppFrame launch(Loon app, JavaSESetting setting, LazyLoading.Data lazy, String[] args) {
+		System.setProperty("sun.java2d.opengl", "true");
+		System.setProperty("sun.java2d.translaccel", "true");
+		System.setProperty("sun.java2d.ddforcevram", "true");
 		return new JavaSEApplication(app, setting, lazy, args).runFrame();
 	}
 
@@ -179,6 +185,26 @@ public class JavaSEApplication implements Platform {
 
 	public JavaSEAppCanvas getAppCanvas() {
 		return _appCanvas;
+	}
+
+	public static float dpiScale() {
+		return Resolution.convertDPIScale(dpi());
+	}
+
+	public static int dpi() {
+		return Toolkit.getDefaultToolkit().getScreenResolution();
+	}
+
+	public static float ppiY() {
+		return dpi();
+	}
+
+	public static float ppcX() {
+		return dpi() / 2.54f;
+	}
+
+	public static boolean isLowResolution() {
+		return dpi() < 120;
 	}
 
 	public static Vector2f getScale(Dimension dim, float width, float height) {
@@ -290,8 +316,8 @@ public class JavaSEApplication implements Platform {
 
 	@Override
 	public void close() {
-		if (game != null) {
-			game.close();
+		if (_appCanvas != null) {
+			_appCanvas.close();
 		}
 		System.exit(-1);
 	}

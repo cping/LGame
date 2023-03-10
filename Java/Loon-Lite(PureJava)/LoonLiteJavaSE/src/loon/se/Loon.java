@@ -27,6 +27,12 @@ import loon.LazyLoading;
 
 public abstract class Loon {
 
+	public final static int EXCELLENT = 0;
+
+	public final static int QUALITY = 1;
+
+	public final static int SPEED = 2;
+
 	private static Loon register() {
 		Class<? extends Loon> appClass = newClass(Loon.class, "register");
 		return newInstance(appClass);

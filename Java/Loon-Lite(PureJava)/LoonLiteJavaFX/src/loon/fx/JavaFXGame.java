@@ -299,6 +299,12 @@ public class JavaFXGame extends LGame {
 		return (int) ((System.nanoTime() - start) / 1000000L);
 	}
 
+	@Override
+	public JavaFXImage snapshot() {
+		return (JavaFXImage) graphics.canvas.newSnapshot();
+	}
+
+	
 	public JavaFXResizeCanvas getFxCanvas() {
 		return graphics.canvas.fxCanvas;
 	}

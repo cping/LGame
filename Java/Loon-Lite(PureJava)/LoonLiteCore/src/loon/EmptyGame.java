@@ -21,6 +21,7 @@
 package loon;
 
 import loon.canvas.Canvas;
+import loon.canvas.Image;
 import loon.events.InputMake;
 import loon.events.InputMakeImpl;
 import loon.opengl.Mesh;
@@ -209,7 +210,11 @@ public class EmptyGame extends LGame {
 
 	@Override
 	public Mesh makeMesh(Canvas canvas) {
-		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Image snapshot() {
 		return null;
 	}
 

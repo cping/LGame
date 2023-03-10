@@ -144,7 +144,6 @@ public class JavaSETextLayout  extends loon.font.TextLayout {
 			} else {
 				layout.draw(gfx, x, yoff);
 			}
-
 		} finally {
 			gfx.setRenderingHint(RenderingHints.KEY_ANTIALIASING, ohint);
 		}

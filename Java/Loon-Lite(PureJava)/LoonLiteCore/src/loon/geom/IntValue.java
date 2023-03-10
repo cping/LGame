@@ -21,6 +21,7 @@
 package loon.geom;
 
 import loon.LRelease;
+import loon.utils.MathUtils;
 
 public class IntValue implements LRelease{
 
@@ -39,6 +40,18 @@ public class IntValue implements LRelease{
 		return this;
 	}
 
+	public int scaled(int length) {
+		return value * length;
+	}
+
+	public int scaledCeil(int length) {
+		return MathUtils.iceil(scaled(length));
+	}
+
+	public int scaledFloor(int length) {
+		return MathUtils.ifloor(scaled(length));
+	}
+	
 	public int get() {
 		return result();
 	}

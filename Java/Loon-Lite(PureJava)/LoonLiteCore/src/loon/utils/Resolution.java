@@ -25,6 +25,63 @@ import loon.geom.XYZW;
 
 public class Resolution implements Comparable<Resolution> {
 
+	/**
+	 * 转换dpi为缩放比,一些已知缩放比例按照windows规则做了修正
+	 */
+	public final static float convertDPIScale(int dpiv) {
+		switch (dpiv) {
+		case 96:
+			return 1f;
+		case 108:
+			return 1.13f;
+		case 120:
+			return 1.25f;
+		case 132:
+			return 1.38f;
+		case 144:
+			return 1.5f;
+		case 156:
+			return 1.63f;
+		case 180:
+			return 1.88f;
+		case 192:
+			return 2f;
+		case 204:
+			return 2.13f;
+		case 228:
+			return 2.38f;
+		case 240:
+			return 2.5f;
+		case 252:
+			return 2.63f;
+		case 276:
+			return 2.88f;
+		case 288:
+			return 3f;
+		case 300:
+			return 3.13f;
+		case 324:
+			return 3.38f;
+		case 348:
+			return 3.63f;
+		case 372:
+			return 3.88f;
+		case 384:
+			return 4f;
+		case 396:
+			return 4.13f;
+		case 420:
+			return 4.38f;
+		case 444:
+			return 4.63f;
+		case 468:
+			return 4.88f;
+		case 480:
+			return 5f;
+		}
+		return (float) dpiv / 96f;
+	}
+
 	private final static DPI compareDPI(Resolution source, Resolution target) {
 		if (source == null || target == null) {
 			return DPI.MDPI;
@@ -47,6 +104,24 @@ public class Resolution implements Comparable<Resolution> {
 			dpiv = DPI.XXXHDPI;
 		}
 		return dpiv;
+	}
+
+	public final float getDPIFactor(DPI v) {
+		switch (v) {
+		case LDPI:
+			return 0.75f;
+		case MDPI:
+			return 1f;
+		case HDPI:
+			return 1.5f;
+		case XHDPI:
+			return 2f;
+		case XXHDPI:
+			return 3f;
+		case XXXHDPI:
+			return 4f;
+		}
+		return 1f;
 	}
 
 	private static final Resolution[] resolutions4x3 = new Resolution[] { new Resolution(480, 320),

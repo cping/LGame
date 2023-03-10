@@ -24,23 +24,28 @@ import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
+import java.awt.Toolkit;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.image.BufferStrategy;
+import java.awt.image.BufferedImage;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.SwingUtilities;
 
 import loon.LRelease;
+import loon.canvas.Image;
 import loon.se.JavaSEApplication;
 import loon.se.JavaSECanvas;
 import loon.se.JavaSEGame;
+import loon.se.JavaSEImage;
 import loon.se.JavaSEInputMake;
 import loon.se.JavaSESetting;
 
-public class JavaSEAppCanvas extends Canvas implements JavaSELoop, LRelease {
+public class JavaSEAppCanvas extends Canvas implements JavaSEApp<JavaSEAppCanvas>, JavaSELoop, LRelease {
 
 	/**
 	 * 
@@ -61,6 +66,8 @@ public class JavaSEAppCanvas extends Canvas implements JavaSELoop, LRelease {
 
 	private int _frameCount;
 
+	private boolean _doubleDraw;
+
 	public JavaSEAppCanvas(JavaSESetting setting) {
 		this(null, setting);
 	}
@@ -75,6 +82,7 @@ public class JavaSEAppCanvas extends Canvas implements JavaSELoop, LRelease {
 		this._loop = new JavaSEAppLoop(game, this, setting.fps);
 		this._config = config;
 		this._setting = setting;
+		this._doubleDraw = this._setting.doubleBuffer;
 		if (game != null) {
 			addInputListener(game.input());
 		}
@@ -87,8 +95,10 @@ public class JavaSEAppCanvas extends Canvas implements JavaSELoop, LRelease {
 
 			@Override
 			public void componentResized(ComponentEvent e) {
-				Component comp = e.getComponent();
-				game.graphics().onSizeChanged(comp.getWidth(), comp.getHeight());
+				if (!setting.fullscreen) {
+					Component comp = e.getComponent();
+					game.graphics().onSizeChanged(comp.getWidth(), comp.getHeight());
+				}
 			}
 
 			@Override
@@ -154,16 +164,33 @@ public class JavaSEAppCanvas extends Canvas implements JavaSELoop, LRelease {
 				try {
 					g = (Graphics2D) this._bufferStrategy.getDrawGraphics();
 					if (g != null) {
-						((JavaSECanvas) _game.getCanvas()).updateContext(g);
-						_game.process(active);
+						if (_doubleDraw) {
+							_game.process(active);
+							Image img = ((JavaSECanvas) _game.getCanvas()).getImage();
+							if (img != null) {
+								g.drawImage(((JavaSEImage) img).seImage(), 0, 0, getWidth(), getHeight(), this);
+							}
+						} else {
+							((JavaSECanvas) _game.getCanvas()).updateContext(g);
+							_game.process(active);
+						}
 					}
 				} finally {
 					g.dispose();
 				}
 			} while (_bufferStrategy.contentsRestored());
+			this._bufferStrategy.show();
+			Toolkit.getDefaultToolkit().sync();
 		} while (this._bufferStrategy.contentsLost());
-		this._bufferStrategy.show();
 		this._frameCount++;
+	}
+
+	public BufferedImage snapshot() {
+		BufferedImage img = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_BGR);
+		Graphics g = img.getGraphics();
+		paint(g);
+		g.dispose();
+		return img;
 	}
 
 	public JavaSEGame getGame() {
@@ -181,10 +208,11 @@ public class JavaSEAppCanvas extends Canvas implements JavaSELoop, LRelease {
 		setVisible(true);
 	}
 
-	public void updateSize() {
+	public JavaSEAppCanvas updateSize() {
 		Dimension dimension = new Dimension(_setting.getShowWidth(), _setting.getShowHeight());
 		setPreferredSize(dimension);
 		setSize(dimension);
+		return this;
 	}
 
 	@Override
@@ -200,10 +228,10 @@ public class JavaSEAppCanvas extends Canvas implements JavaSELoop, LRelease {
 
 	@Override
 	public void close() {
+		stop();
 		if (_game != null) {
 			_game.close();
 		}
-		stop();
 	}
 
 }

@@ -26,6 +26,7 @@ import loon.font.TextLayout;
 import loon.font.TextWrap;
 import loon.geom.Affine2f;
 import loon.geom.Dimension;
+import loon.geom.FloatValue;
 import loon.geom.Matrix4;
 import loon.opengl.GL20;
 import loon.opengl.RenderTarget;
@@ -38,8 +39,13 @@ import static loon.opengl.GL20.*;
 public abstract class Graphics {
 
 	protected final LGame game;
+	
 	protected final Dimension viewSizeM = new Dimension();
+
+	protected final FloatValue viewDPISacle = new FloatValue(1f);
+	
 	protected Scale scale = null;
+	
 	protected int viewPixelWidth, viewPixelHeight;
 
 	private Display display = null;
@@ -109,6 +115,23 @@ public abstract class Graphics {
 		return scale;
 	}
 
+	public Graphics setDPIScale(float v) {
+		viewDPISacle.set(v);
+		return this;
+	}
+
+	public float onDPI(float v) {
+		return viewDPISacle.scaled(v);
+	}
+
+	public int width() {
+		return screenSize().getWidth();
+	}
+
+	public int height() {
+		return screenSize().getHeight();
+	}
+	
 	public Matrix4 getViewMatrix() {
 		display = game.display();
 		Dimension view = LSystem.viewSize;
@@ -122,14 +145,16 @@ public abstract class Graphics {
 		return viewMatrix;
 	}
 
-	public void save() {
+	public Graphics save() {
 		if (viewMatrix != null) {
 			matrixsStack.add(viewMatrix = viewMatrix.cpy());
 		}
+		return this;
 	}
 
-	public void restore() {
+	public  Graphics restore() {
 		viewMatrix = matrixsStack.pop();
+		return this;
 	}
 
 	public abstract Dimension screenSize();
@@ -272,4 +297,13 @@ public abstract class Graphics {
 			return filter;
 		}
 	}
+	
+	public LGame game() {
+		return game;
+	}
+
+	public LSetting setting() {
+		return game.setting;
+	}
+
 }

@@ -18,16 +18,17 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.se;
+package loon.se.window;
 
-import loon.LSetting;
+import java.awt.image.BufferedImage;
 
-public class JavaSESetting extends LSetting{
+import loon.se.JavaSEGame;
 
-	public String[] iconPaths = null;
-	
-	public int graphicsMode = 0;
-	
-	public boolean doubleBuffer = false;
-	
+public interface JavaSEApp<T> {
+
+	public JavaSEGame getGame() ;
+
+	public BufferedImage snapshot() ;
+
+	public T updateSize() ;
 }
