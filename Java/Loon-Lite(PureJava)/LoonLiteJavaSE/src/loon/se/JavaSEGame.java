@@ -246,15 +246,6 @@ public class JavaSEGame extends LGame {
 		}
 	}
 
-	protected void shutdown() {
-		if (status.isClosed()) {
-			return;
-		}
-		status.emit(Status.EXIT);
-		stop();
-		System.exit(0);
-	}
-
 	@Override
 	public JavaSEImage snapshot() {
 		BufferedImage image = null;
@@ -377,5 +368,14 @@ public class JavaSEGame extends LGame {
 	@Override
 	public Mesh makeMesh(Canvas canvas) {
 		return new JavaSEMesh(canvas);
+	}
+
+	public void shutdown() {
+		if (status.isClosed()) {
+			return;
+		}
+		status.emit(Status.EXIT);
+		stop();
+		System.exit(0);
 	}
 }

@@ -509,18 +509,22 @@ public class JavaSECanvas extends Canvas {
 
 	@Override
 	public Canvas clear(LColor c) {
-		setColor(c);
+		int tmp = getFillColor();
+		setFillColor(c);
 		currentState().prepareFill(context);
 		context.fillRect(0, 0, MathUtils.floor(width), MathUtils.floor(height));
+		setFillColor(tmp);
 		isDirty = true;
 		return this;
 	}
 
 	@Override
 	public Canvas drawRect(float x, float y, float width, float height, LColor c) {
-		setColor(c);
+		int tmp = getStrokeColor();
+		setStrokeColor(c);
 		currentState().prepareStroke(context);
-		context.drawRect(0, 0, MathUtils.floor(width), MathUtils.floor(height));
+		context.drawRect(MathUtils.floor(x), MathUtils.floor(y), MathUtils.floor(width), MathUtils.floor(height));
+		setStrokeColor(tmp);
 		isDirty = true;
 		return this;
 	}
@@ -532,23 +536,38 @@ public class JavaSECanvas extends Canvas {
 
 	@Override
 	public Canvas drawArc(float x, float y, float w, float h, float startAngle, float endAngle, LColor c) {
-		setColor(c);
+		int tmp = getStrokeColor();
+		setStrokeColor(c);
 		currentState().prepareStroke(context);
 		context.drawArc(MathUtils.floor(x), MathUtils.floor(y), MathUtils.floor(w), MathUtils.floor(h),
 				MathUtils.floor(startAngle), MathUtils.floor(endAngle));
+		setStrokeColor(tmp);
 		isDirty = true;
 		return null;
 	}
 
 	@Override
 	public Canvas drawOval(float x, float y, float w, float h, LColor c) {
-		setColor(c);
+		int tmp = getStrokeColor();
+		setStrokeColor(c);
 		currentState().prepareStroke(context);
 		context.drawOval(MathUtils.floor(x), MathUtils.floor(y), MathUtils.floor(w), MathUtils.floor(h));
+		setStrokeColor(tmp);
 		isDirty = true;
 		return this;
 	}
 
+	@Override
+	public Canvas fillRect(float x, float y, float width, float height, LColor c) {
+		int tmp = getStrokeColor();
+		setFillColor(c);
+		currentState().prepareFill(context);
+		context.fillRect(MathUtils.floor(x), MathUtils.floor(y), MathUtils.floor(width), MathUtils.floor(height));
+		setFillColor(tmp);
+		isDirty = true;
+		return this;
+	}
+	
 	@Override
 	public Canvas fillOval(float x, float y, float w, float h) {
 		currentState().prepareFill(context);
@@ -566,18 +585,10 @@ public class JavaSECanvas extends Canvas {
 		return this;
 	}
 
-	@Override
-	public Canvas fillRect(float x, float y, float width, float height, LColor c) {
-		setColor(c);
-		currentState().prepareFill(context);
-		context.fillRect(MathUtils.floor(x), MathUtils.floor(y), MathUtils.floor(width), MathUtils.floor(height));
-		isDirty = true;
-		return this;
-	}
 
 	@Override
 	public Canvas setFillColor(LColor color) {
-		currentState().fillColor = (color == null ? 0 : color.getARGB());
+		currentState().fillColor = (color == null ? LColor.DEF_COLOR : color.getARGB());
 		return this;
 	}
 
@@ -599,7 +610,7 @@ public class JavaSECanvas extends Canvas {
 
 	@Override
 	public Canvas setStrokeColor(LColor color) {
-		currentState().strokeColor = (color == null ? LColor.white.getARGB() : color.getARGB());
+		currentState().strokeColor = (color == null ? LColor.DEF_COLOR : color.getARGB());
 		this.isDirty = true;
 		return this;
 	}

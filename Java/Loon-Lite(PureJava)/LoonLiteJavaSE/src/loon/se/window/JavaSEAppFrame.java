@@ -104,10 +104,9 @@ public class JavaSEAppFrame extends JFrame implements JavaSEApp<JavaSEAppFrame>,
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent event) {
-				if (_game != null) {
-					_game.close();
+				if (_canvas != null) {
+					_canvas.close();
 				}
-				System.exit(-1);
 			}
 		});
 		setResizable(_setting.isAllowScreenResizabled);

@@ -1298,6 +1298,8 @@ public abstract class LContainer extends LComponent implements IArray {
 	@Override
 	public void close() {
 		super.close();
+		this._newLineHeight = 0;
+		this._component_isClose = true;
 		if (_component_autoDestroy) {
 			if (_childs != null) {
 				for (LComponent c : _childs) {
@@ -1309,8 +1311,6 @@ public abstract class LContainer extends LComponent implements IArray {
 			}
 			_childs = null;
 		}
-		this._component_isClose = true;
-		this._newLineHeight = 0;
 	}
 
 }

@@ -30,10 +30,9 @@ import loon.component.skin.SkinManager;
 import loon.component.skin.TableSkin;
 import loon.font.FontSet;
 import loon.font.IFont;
-import loon.font.LFont;
+
 import loon.geom.Dimension;
 import loon.opengl.GLEx;
-import loon.opengl.LSTRDictionary;
 import loon.utils.TArray;
 import loon.utils.ArrayMap;
 import loon.utils.HelperUtils;
@@ -169,8 +168,6 @@ public class LTable extends LContainer implements FontSet<LTable> {
 		}
 
 	}
-
-	private boolean _initNativeDraw;
 
 	private ITableModel model = null;
 
@@ -495,12 +492,6 @@ public class LTable extends LContainer implements FontSet<LTable> {
 		if (model == null) {
 			return;
 		}
-		if (!_initNativeDraw) {
-			if (font instanceof LFont) {
-				LSTRDictionary.get().bind((LFont) font, model.message());
-			}
-			_initNativeDraw = true;
-		}
 		try {
 			g.saveBrush();
 			int x = displayX;
@@ -524,6 +515,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 			if (backgroundTexture != null) {
 				g.draw(backgroundTexture, x, y, wid, hei);
 			}
+
 			for (int row = 0; row < size && row < model.getRowCount(); row++) {
 				x = displayX;
 				if (isSelected(row)) {
@@ -618,7 +610,6 @@ public class LTable extends LContainer implements FontSet<LTable> {
 		}
 		this.font = fn;
 		this.cellHeight = font.getHeight();
-		this._initNativeDraw = false;
 		return this;
 	}
 

@@ -275,7 +275,7 @@ public class JavaFXGame extends LGame {
 		_animationLoopRunner.start();
 	}
 
-	protected void shutdown() {
+	public void shutdown() {
 		if (status.isClosed()) {
 			return;
 		}

@@ -230,7 +230,7 @@ public class JavaSEAppCanvas extends Canvas implements JavaSEApp<JavaSEAppCanvas
 	public void close() {
 		stop();
 		if (_game != null) {
-			_game.close();
+			_game.shutdown();
 		}
 	}
 

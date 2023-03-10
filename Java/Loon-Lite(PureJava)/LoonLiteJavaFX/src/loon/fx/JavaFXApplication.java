@@ -20,7 +20,6 @@
  */
 package loon.fx;
 
-import java.awt.Toolkit;
 import java.util.Optional;
 
 import javafx.application.Application;

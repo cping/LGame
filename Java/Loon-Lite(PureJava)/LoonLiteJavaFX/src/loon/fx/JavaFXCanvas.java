@@ -490,7 +490,6 @@ public class JavaFXCanvas extends Canvas {
 		int argb = LColor.getARGB(r, g, b, a);
 		this.setStrokeColor(argb);
 		this.setFillColor(argb);
-		this.setAlpha(a);
 		this.isDirty = true;
 		return this;
 	}
