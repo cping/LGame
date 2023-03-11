@@ -33,6 +33,8 @@ public class JavaSECacheImageColor implements LRelease {
 	protected final IntMap<BufferedImage> _colorImageCaches;
 
 	protected final JavaSEImage _superImage;
+	
+	private boolean closed;
 
 	public JavaSECacheImageColor(JavaSEImage image) {
 		_colorImageCaches = new IntMap<BufferedImage>();
@@ -62,6 +64,10 @@ public class JavaSECacheImageColor implements LRelease {
 		}
 		return _colorImageCaches.size;
 	}
+	
+	public boolean isClosed() {
+		return closed;
+	}
 
 	public JavaSECacheImageColor free() {
 		for (BufferedImage buffer : _colorImageCaches) {
@@ -71,6 +77,7 @@ public class JavaSECacheImageColor implements LRelease {
 			}
 		}
 		_colorImageCaches.clear();
+		closed = true;
 		return this;
 	}
 

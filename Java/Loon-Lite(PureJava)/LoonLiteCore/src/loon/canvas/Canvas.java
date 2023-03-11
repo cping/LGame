@@ -84,9 +84,9 @@ public abstract class Canvas implements LRelease {
 
 	protected Image image;
 
-	public final float width;
+	protected float width;
 
-	public final float height;
+	protected float height;
 
 	public Image getImage() {
 		return snapshot();
@@ -94,6 +94,14 @@ public abstract class Canvas implements LRelease {
 
 	public Image getNewImage() {
 		return newSnapshot();
+	}
+
+	public float getWidth() {
+		return width;
+	}
+
+	public float getHeight() {
+		return height;
 	}
 
 	public boolean isClosed() {
@@ -107,7 +115,7 @@ public abstract class Canvas implements LRelease {
 	public boolean isDirty() {
 		return this.isDirty;
 	}
-	
+
 	@Override
 	public void close() {
 		if (closed) {
@@ -119,6 +127,8 @@ public abstract class Canvas implements LRelease {
 	}
 
 	protected abstract void closeImpl();
+
+	public abstract Canvas resetClip();
 
 	public abstract Canvas clear();
 

@@ -212,6 +212,10 @@ public class JavaSECanvas extends Canvas {
 		return image;
 	}
 
+	public Canvas resetClip() {
+		return clipRect(0, 0, width, height);
+	}
+
 	@Override
 	public Canvas clear() {
 		currentState().prepareClear(context);
@@ -240,7 +244,7 @@ public class JavaSECanvas extends Canvas {
 		currentState().prepareClear(context);
 		final int cx = MathUtils.ifloor(x), cy = MathUtils.ifloor(y);
 		final int cwidth = MathUtils.iceil(width), cheight = MathUtils.iceil(height);
-		context.setClip(cx, cy, cwidth, cheight);
+		context.clipRect(cx, cy, cwidth, cheight);
 		isDirty = true;
 		return this;
 	}
@@ -291,8 +295,10 @@ public class JavaSECanvas extends Canvas {
 		if (_font == null) {
 			_font = LFont.getDefaultFont();
 		}
-		setColor(color);
+		int tmp = getFillColor();
+		setFillColor(color);
 		fillText(_font.getLayoutText(text), x, y);
+		setFillColor(tmp);
 		return this;
 	}
 
@@ -438,7 +444,6 @@ public class JavaSECanvas extends Canvas {
 	@Override
 	public Canvas strokePath(Path path) {
 		currentState().prepareStroke(context);
-		context.setColor(new Color(currentState().strokeColor, false));
 		context.draw(((JavaSEPath) path).path);
 		isDirty = true;
 		return this;

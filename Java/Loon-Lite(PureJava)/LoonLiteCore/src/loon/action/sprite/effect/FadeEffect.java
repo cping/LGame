@@ -107,8 +107,7 @@ public class FadeEffect extends Entity implements BaseEffect {
 		if (finished) {
 			return;
 		}
-		float op = (currentFrame / time);
-		g.fillRect(drawX(sx), drawY(sy), _width, _height, _baseColor.setAlpha(op));
+		g.fillRect(drawX(sx), drawY(sy), _width, _height, _baseColor.setAlpha(currentFrame / time));
 		return;
 	}
 

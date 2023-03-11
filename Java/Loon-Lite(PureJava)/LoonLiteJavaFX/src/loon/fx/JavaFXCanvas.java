@@ -54,9 +54,6 @@ public class JavaFXCanvas extends Canvas {
 	protected GraphicsContext context;
 	private boolean graphicsMain;
 
-	double width;
-	double height;
-
 	protected JavaFXCanvas(Graphics gfx, JavaFXImage image) {
 		this(gfx, image, false);
 	}
@@ -178,14 +175,16 @@ public class JavaFXCanvas extends Canvas {
 	@Override
 	public Image newSnapshot() {
 		WritableImage newImage = new WritableImage(toFXImage().buffer.getPixelReader(), (int) width, (int) height);
-		return new JavaFXImage(gfx, image.scale(), fxCanvas.snapshot(snapshotParameters, newImage), TextureSource.RenderCanvas);
+		return new JavaFXImage(gfx, image.scale(), fxCanvas.snapshot(snapshotParameters, newImage),
+				TextureSource.RenderCanvas);
 	}
 
 	@Override
 	public Image snapshot() {
 		if (image == null) {
 			WritableImage writeImage = toFXImage().buffer;
-			image = new JavaFXImage(gfx, image.scale(), fxCanvas.snapshot(snapshotParameters, writeImage), TextureSource.RenderCanvas);
+			image = new JavaFXImage(gfx, image.scale(), fxCanvas.snapshot(snapshotParameters, writeImage),
+					TextureSource.RenderCanvas);
 			setFXImage(image, writeImage);
 			return image;
 		}
@@ -215,6 +214,11 @@ public class JavaFXCanvas extends Canvas {
 		return null;
 	}
 
+	@Override
+	public Canvas resetClip() {
+		return clipRect(0f, 0f, width, height);
+	}
+	
 	@Override
 	public Path createPath() {
 		return new JavaFXPath();
@@ -676,4 +680,5 @@ public class JavaFXCanvas extends Canvas {
 			closed = true;
 		}
 	}
+
 }

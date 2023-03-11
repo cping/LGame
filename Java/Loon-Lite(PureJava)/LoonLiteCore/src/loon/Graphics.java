@@ -143,7 +143,7 @@ public abstract class Graphics {
 	public LTexture finalColorTex() {
 		if (colorTex == null) {
 			Canvas canvas = createCanvas(1, 1);
-			canvas.setFillColor(0xFFFFFFFF).fillRect(0, 0, canvas.width, canvas.height);
+			canvas.setFillColor(0xFFFFFFFF).fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
 			colorTex = canvas.toTexture();
 			colorTex.setDisabledTexture(true);
 		}

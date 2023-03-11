@@ -436,6 +436,8 @@ public class GLEx implements LRelease {
 		synchTransform();
 		if (r != null) {
 			getCanvas().clipRect(r.x(), r.y(), r.width(), r.height());
+		} else {
+			getCanvas().resetClip();
 		}
 		return this;
 	}

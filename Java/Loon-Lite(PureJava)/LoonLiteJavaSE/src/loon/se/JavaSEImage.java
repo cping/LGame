@@ -246,7 +246,7 @@ public class JavaSEImage extends ImageImpl {
 	}
 
 	public JavaSECacheImageColor getImageColor() {
-		if (imageColors == null) {
+		if (imageColors == null || imageColors.isClosed()) {
 			imageColors = new JavaSECacheImageColor(this);
 		}
 		return imageColors;
