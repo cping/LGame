@@ -36,6 +36,7 @@ import loon.font.TextFormat;
 import loon.font.TextLayout;
 import loon.font.TextWrap;
 import loon.opengl.GL20;
+import loon.opengl.TextureSource;
 import loon.utils.Scale;
 
 public abstract class Lwjgl3ImplGraphics extends Graphics {
@@ -85,7 +86,7 @@ public abstract class Lwjgl3ImplGraphics extends Graphics {
 	@Override
 	protected Canvas createCanvasImpl(Scale scale, int pixelWidth, int pixelHeight) {
 		BufferedImage bitmap = new BufferedImage(pixelWidth, pixelHeight, BufferedImage.TYPE_INT_ARGB_PRE);
-		return new Lwjgl3Canvas(this, new Lwjgl3Image(this, scale, bitmap, "<canvas>"));
+		return new Lwjgl3Canvas(this, new Lwjgl3Image(this, scale, bitmap, TextureSource.RenderCanvas));
 	}
 
 	protected abstract void init();

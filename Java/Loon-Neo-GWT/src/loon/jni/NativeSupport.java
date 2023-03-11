@@ -136,8 +136,7 @@ public final class NativeSupport implements Support {
 			dst.position(0);
 			dst.limit(numFloats);
 		} else {
-			throw new RuntimeException("Can't copy to a "
-					+ dst.getClass().getName() + " instance");
+			throw new RuntimeException("Can't copy to a " + dst.getClass().getName() + " instance");
 		}
 		dst.position(0);
 	}
@@ -149,8 +148,7 @@ public final class NativeSupport implements Support {
 		else if (data instanceof FloatBuffer)
 			buffer = (FloatBuffer) data;
 		if (buffer == null)
-			throw new RuntimeException(
-					"data must be a ByteBuffer or FloatBuffer");
+			throw new RuntimeException("data must be a ByteBuffer or FloatBuffer");
 		return buffer;
 	}
 
@@ -215,8 +213,7 @@ public final class NativeSupport implements Support {
 		return buffer.asIntBuffer();
 	}
 
-	public void put(final Buffer buffer, final float[] source,
-			final int offset, final int length) {
+	public void put(final Buffer buffer, final float[] source, final int offset, final int length) {
 		putBuffer(buffer, source, offset, length);
 	}
 
@@ -252,8 +249,8 @@ public final class NativeSupport implements Support {
 	}
 
 	@Override
-	public final void filterColor(int maxPixel, int pixelStart, int pixelEnd,
-			int[] src, int[] dst, int[] colors, int c1, int c2) {
+	public final void filterColor(int maxPixel, int pixelStart, int pixelEnd, int[] src, int[] dst, int[] colors,
+			int c1, int c2) {
 
 		final int length = src.length;
 		if (pixelStart < pixelEnd) {
@@ -295,8 +292,7 @@ public final class NativeSupport implements Support {
 	}
 
 	@Override
-	public void filterFractions(int size, float[] fractions, int width,
-			int height, int[] pixels, int numElements) {
+	public void filterFractions(int size, float[] fractions, int width, int height, int[] pixels, int numElements) {
 
 		int x, y;
 		int idx = 0;
@@ -341,38 +337,22 @@ public final class NativeSupport implements Support {
 	public void mul(float[] mata, float[] matb) {
 
 		float[] tmp = new float[16];
-		tmp[M00] = mata[M00] * matb[M00] + mata[M01] * matb[M10] + mata[M02]
-				* matb[M20] + mata[M03] * matb[M30];
-		tmp[M01] = mata[M00] * matb[M01] + mata[M01] * matb[M11] + mata[M02]
-				* matb[M21] + mata[M03] * matb[M31];
-		tmp[M02] = mata[M00] * matb[M02] + mata[M01] * matb[M12] + mata[M02]
-				* matb[M22] + mata[M03] * matb[M32];
-		tmp[M03] = mata[M00] * matb[M03] + mata[M01] * matb[M13] + mata[M02]
-				* matb[M23] + mata[M03] * matb[M33];
-		tmp[M10] = mata[M10] * matb[M00] + mata[M11] * matb[M10] + mata[M12]
-				* matb[M20] + mata[M13] * matb[M30];
-		tmp[M11] = mata[M10] * matb[M01] + mata[M11] * matb[M11] + mata[M12]
-				* matb[M21] + mata[M13] * matb[M31];
-		tmp[M12] = mata[M10] * matb[M02] + mata[M11] * matb[M12] + mata[M12]
-				* matb[M22] + mata[M13] * matb[M32];
-		tmp[M13] = mata[M10] * matb[M03] + mata[M11] * matb[M13] + mata[M12]
-				* matb[M23] + mata[M13] * matb[M33];
-		tmp[M20] = mata[M20] * matb[M00] + mata[M21] * matb[M10] + mata[M22]
-				* matb[M20] + mata[M23] * matb[M30];
-		tmp[M21] = mata[M20] * matb[M01] + mata[M21] * matb[M11] + mata[M22]
-				* matb[M21] + mata[M23] * matb[M31];
-		tmp[M22] = mata[M20] * matb[M02] + mata[M21] * matb[M12] + mata[M22]
-				* matb[M22] + mata[M23] * matb[M32];
-		tmp[M23] = mata[M20] * matb[M03] + mata[M21] * matb[M13] + mata[M22]
-				* matb[M23] + mata[M23] * matb[M33];
-		tmp[M30] = mata[M30] * matb[M00] + mata[M31] * matb[M10] + mata[M32]
-				* matb[M20] + mata[M33] * matb[M30];
-		tmp[M31] = mata[M30] * matb[M01] + mata[M31] * matb[M11] + mata[M32]
-				* matb[M21] + mata[M33] * matb[M31];
-		tmp[M32] = mata[M30] * matb[M02] + mata[M31] * matb[M12] + mata[M32]
-				* matb[M22] + mata[M33] * matb[M32];
-		tmp[M33] = mata[M30] * matb[M03] + mata[M31] * matb[M13] + mata[M32]
-				* matb[M23] + mata[M33] * matb[M33];
+		tmp[M00] = mata[M00] * matb[M00] + mata[M01] * matb[M10] + mata[M02] * matb[M20] + mata[M03] * matb[M30];
+		tmp[M01] = mata[M00] * matb[M01] + mata[M01] * matb[M11] + mata[M02] * matb[M21] + mata[M03] * matb[M31];
+		tmp[M02] = mata[M00] * matb[M02] + mata[M01] * matb[M12] + mata[M02] * matb[M22] + mata[M03] * matb[M32];
+		tmp[M03] = mata[M00] * matb[M03] + mata[M01] * matb[M13] + mata[M02] * matb[M23] + mata[M03] * matb[M33];
+		tmp[M10] = mata[M10] * matb[M00] + mata[M11] * matb[M10] + mata[M12] * matb[M20] + mata[M13] * matb[M30];
+		tmp[M11] = mata[M10] * matb[M01] + mata[M11] * matb[M11] + mata[M12] * matb[M21] + mata[M13] * matb[M31];
+		tmp[M12] = mata[M10] * matb[M02] + mata[M11] * matb[M12] + mata[M12] * matb[M22] + mata[M13] * matb[M32];
+		tmp[M13] = mata[M10] * matb[M03] + mata[M11] * matb[M13] + mata[M12] * matb[M23] + mata[M13] * matb[M33];
+		tmp[M20] = mata[M20] * matb[M00] + mata[M21] * matb[M10] + mata[M22] * matb[M20] + mata[M23] * matb[M30];
+		tmp[M21] = mata[M20] * matb[M01] + mata[M21] * matb[M11] + mata[M22] * matb[M21] + mata[M23] * matb[M31];
+		tmp[M22] = mata[M20] * matb[M02] + mata[M21] * matb[M12] + mata[M22] * matb[M22] + mata[M23] * matb[M32];
+		tmp[M23] = mata[M20] * matb[M03] + mata[M21] * matb[M13] + mata[M22] * matb[M23] + mata[M23] * matb[M33];
+		tmp[M30] = mata[M30] * matb[M00] + mata[M31] * matb[M10] + mata[M32] * matb[M20] + mata[M33] * matb[M30];
+		tmp[M31] = mata[M30] * matb[M01] + mata[M31] * matb[M11] + mata[M32] * matb[M21] + mata[M33] * matb[M31];
+		tmp[M32] = mata[M30] * matb[M02] + mata[M31] * matb[M12] + mata[M32] * matb[M22] + mata[M33] * matb[M32];
+		tmp[M33] = mata[M30] * matb[M03] + mata[M31] * matb[M13] + mata[M32] * matb[M23] + mata[M33] * matb[M33];
 		System.arraycopy(tmp, 0, mata, 0, 16);
 
 	}
@@ -380,12 +360,9 @@ public final class NativeSupport implements Support {
 	@Override
 	public void mulVec(float[] mat, float[] vec) {
 
-		float x = vec[0] * mat[M00] + vec[1] * mat[M01] + vec[2] * mat[M02]
-				+ mat[M03];
-		float y = vec[0] * mat[M10] + vec[1] * mat[M11] + vec[2] * mat[M12]
-				+ mat[M13];
-		float z = vec[0] * mat[M20] + vec[1] * mat[M21] + vec[2] * mat[M22]
-				+ mat[M23];
+		float x = vec[0] * mat[M00] + vec[1] * mat[M01] + vec[2] * mat[M02] + mat[M03];
+		float y = vec[0] * mat[M10] + vec[1] * mat[M11] + vec[2] * mat[M12] + mat[M13];
+		float z = vec[0] * mat[M20] + vec[1] * mat[M21] + vec[2] * mat[M22] + mat[M23];
 		vec[0] = x;
 		vec[1] = y;
 		vec[2] = z;
@@ -393,8 +370,7 @@ public final class NativeSupport implements Support {
 	}
 
 	@Override
-	public void mulVec(float[] mat, float[] vecs, int offset, int numVecs,
-			int stride) {
+	public void mulVec(float[] mat, float[] vecs, int offset, int numVecs, int stride) {
 
 		for (int i = 0; i < numVecs; i++) {
 			float[] vecPtr = new float[stride];
@@ -407,14 +383,10 @@ public final class NativeSupport implements Support {
 	@Override
 	public void prj(float[] mat, float[] vec) {
 
-		float inv_w = 1.0f / (vec[0] * mat[M30] + vec[1] * mat[M31] + vec[2]
-				* mat[M32] + mat[M33]);
-		float x = (vec[0] * mat[M00] + vec[1] * mat[M01] + vec[2] * mat[M02] + mat[M03])
-				* inv_w;
-		float y = (vec[0] * mat[M10] + vec[1] * mat[M11] + vec[2] * mat[M12] + mat[M13])
-				* inv_w;
-		float z = (vec[0] * mat[M20] + vec[1] * mat[M21] + vec[2] * mat[M22] + mat[M23])
-				* inv_w;
+		float inv_w = 1.0f / (vec[0] * mat[M30] + vec[1] * mat[M31] + vec[2] * mat[M32] + mat[M33]);
+		float x = (vec[0] * mat[M00] + vec[1] * mat[M01] + vec[2] * mat[M02] + mat[M03]) * inv_w;
+		float y = (vec[0] * mat[M10] + vec[1] * mat[M11] + vec[2] * mat[M12] + mat[M13]) * inv_w;
+		float z = (vec[0] * mat[M20] + vec[1] * mat[M21] + vec[2] * mat[M22] + mat[M23]) * inv_w;
 		vec[0] = x;
 		vec[1] = y;
 		vec[2] = z;
@@ -422,8 +394,7 @@ public final class NativeSupport implements Support {
 	}
 
 	@Override
-	public void prj(float[] mat, float[] vecs, int offset, int numVecs,
-			int stride) {
+	public void prj(float[] mat, float[] vecs, int offset, int numVecs, int stride) {
 
 		for (int i = 0; i < numVecs; i++) {
 			float[] vecPtr = new float[stride];
@@ -446,8 +417,7 @@ public final class NativeSupport implements Support {
 	}
 
 	@Override
-	public void rot(float[] mat, float[] vecs, int offset, int numVecs,
-			int stride) {
+	public void rot(float[] mat, float[] vecs, int offset, int numVecs, int stride) {
 
 		for (int i = 0; i < numVecs; i++) {
 			float[] vecPtr = new float[stride];
@@ -464,86 +434,54 @@ public final class NativeSupport implements Support {
 		float l_det = det(values);
 		if (l_det == 0)
 			return false;
-		tmp[M00] = values[M12] * values[M23] * values[M31] - values[M13]
-				* values[M22] * values[M31] + values[M13] * values[M21]
-				* values[M32] - values[M11] * values[M23] * values[M32]
-				- values[M12] * values[M21] * values[M33] + values[M11]
-				* values[M22] * values[M33];
-		tmp[M01] = values[M03] * values[M22] * values[M31] - values[M02]
-				* values[M23] * values[M31] - values[M03] * values[M21]
-				* values[M32] + values[M01] * values[M23] * values[M32]
-				+ values[M02] * values[M21] * values[M33] - values[M01]
-				* values[M22] * values[M33];
-		tmp[M02] = values[M02] * values[M13] * values[M31] - values[M03]
-				* values[M12] * values[M31] + values[M03] * values[M11]
-				* values[M32] - values[M01] * values[M13] * values[M32]
-				- values[M02] * values[M11] * values[M33] + values[M01]
-				* values[M12] * values[M33];
-		tmp[M03] = values[M03] * values[M12] * values[M21] - values[M02]
-				* values[M13] * values[M21] - values[M03] * values[M11]
-				* values[M22] + values[M01] * values[M13] * values[M22]
-				+ values[M02] * values[M11] * values[M23] - values[M01]
-				* values[M12] * values[M23];
-		tmp[M10] = values[M13] * values[M22] * values[M30] - values[M12]
-				* values[M23] * values[M30] - values[M13] * values[M20]
-				* values[M32] + values[M10] * values[M23] * values[M32]
-				+ values[M12] * values[M20] * values[M33] - values[M10]
-				* values[M22] * values[M33];
-		tmp[M11] = values[M02] * values[M23] * values[M30] - values[M03]
-				* values[M22] * values[M30] + values[M03] * values[M20]
-				* values[M32] - values[M00] * values[M23] * values[M32]
-				- values[M02] * values[M20] * values[M33] + values[M00]
-				* values[M22] * values[M33];
-		tmp[M12] = values[M03] * values[M12] * values[M30] - values[M02]
-				* values[M13] * values[M30] - values[M03] * values[M10]
-				* values[M32] + values[M00] * values[M13] * values[M32]
-				+ values[M02] * values[M10] * values[M33] - values[M00]
-				* values[M12] * values[M33];
-		tmp[M13] = values[M02] * values[M13] * values[M20] - values[M03]
-				* values[M12] * values[M20] + values[M03] * values[M10]
-				* values[M22] - values[M00] * values[M13] * values[M22]
-				- values[M02] * values[M10] * values[M23] + values[M00]
-				* values[M12] * values[M23];
-		tmp[M20] = values[M11] * values[M23] * values[M30] - values[M13]
-				* values[M21] * values[M30] + values[M13] * values[M20]
-				* values[M31] - values[M10] * values[M23] * values[M31]
-				- values[M11] * values[M20] * values[M33] + values[M10]
-				* values[M21] * values[M33];
-		tmp[M21] = values[M03] * values[M21] * values[M30] - values[M01]
-				* values[M23] * values[M30] - values[M03] * values[M20]
-				* values[M31] + values[M00] * values[M23] * values[M31]
-				+ values[M01] * values[M20] * values[M33] - values[M00]
-				* values[M21] * values[M33];
-		tmp[M22] = values[M01] * values[M13] * values[M30] - values[M03]
-				* values[M11] * values[M30] + values[M03] * values[M10]
-				* values[M31] - values[M00] * values[M13] * values[M31]
-				- values[M01] * values[M10] * values[M33] + values[M00]
-				* values[M11] * values[M33];
-		tmp[M23] = values[M03] * values[M11] * values[M20] - values[M01]
-				* values[M13] * values[M20] - values[M03] * values[M10]
-				* values[M21] + values[M00] * values[M13] * values[M21]
-				+ values[M01] * values[M10] * values[M23] - values[M00]
-				* values[M11] * values[M23];
-		tmp[M30] = values[M12] * values[M21] * values[M30] - values[M11]
-				* values[M22] * values[M30] - values[M12] * values[M20]
-				* values[M31] + values[M10] * values[M22] * values[M31]
-				+ values[M11] * values[M20] * values[M32] - values[M10]
-				* values[M21] * values[M32];
-		tmp[M31] = values[M01] * values[M22] * values[M30] - values[M02]
-				* values[M21] * values[M30] + values[M02] * values[M20]
-				* values[M31] - values[M00] * values[M22] * values[M31]
-				- values[M01] * values[M20] * values[M32] + values[M00]
-				* values[M21] * values[M32];
-		tmp[M32] = values[M02] * values[M11] * values[M30] - values[M01]
-				* values[M12] * values[M30] - values[M02] * values[M10]
-				* values[M31] + values[M00] * values[M12] * values[M31]
-				+ values[M01] * values[M10] * values[M32] - values[M00]
-				* values[M11] * values[M32];
-		tmp[M33] = values[M01] * values[M12] * values[M20] - values[M02]
-				* values[M11] * values[M20] + values[M02] * values[M10]
-				* values[M21] - values[M00] * values[M12] * values[M21]
-				- values[M01] * values[M10] * values[M22] + values[M00]
-				* values[M11] * values[M22];
+		tmp[M00] = values[M12] * values[M23] * values[M31] - values[M13] * values[M22] * values[M31]
+				+ values[M13] * values[M21] * values[M32] - values[M11] * values[M23] * values[M32]
+				- values[M12] * values[M21] * values[M33] + values[M11] * values[M22] * values[M33];
+		tmp[M01] = values[M03] * values[M22] * values[M31] - values[M02] * values[M23] * values[M31]
+				- values[M03] * values[M21] * values[M32] + values[M01] * values[M23] * values[M32]
+				+ values[M02] * values[M21] * values[M33] - values[M01] * values[M22] * values[M33];
+		tmp[M02] = values[M02] * values[M13] * values[M31] - values[M03] * values[M12] * values[M31]
+				+ values[M03] * values[M11] * values[M32] - values[M01] * values[M13] * values[M32]
+				- values[M02] * values[M11] * values[M33] + values[M01] * values[M12] * values[M33];
+		tmp[M03] = values[M03] * values[M12] * values[M21] - values[M02] * values[M13] * values[M21]
+				- values[M03] * values[M11] * values[M22] + values[M01] * values[M13] * values[M22]
+				+ values[M02] * values[M11] * values[M23] - values[M01] * values[M12] * values[M23];
+		tmp[M10] = values[M13] * values[M22] * values[M30] - values[M12] * values[M23] * values[M30]
+				- values[M13] * values[M20] * values[M32] + values[M10] * values[M23] * values[M32]
+				+ values[M12] * values[M20] * values[M33] - values[M10] * values[M22] * values[M33];
+		tmp[M11] = values[M02] * values[M23] * values[M30] - values[M03] * values[M22] * values[M30]
+				+ values[M03] * values[M20] * values[M32] - values[M00] * values[M23] * values[M32]
+				- values[M02] * values[M20] * values[M33] + values[M00] * values[M22] * values[M33];
+		tmp[M12] = values[M03] * values[M12] * values[M30] - values[M02] * values[M13] * values[M30]
+				- values[M03] * values[M10] * values[M32] + values[M00] * values[M13] * values[M32]
+				+ values[M02] * values[M10] * values[M33] - values[M00] * values[M12] * values[M33];
+		tmp[M13] = values[M02] * values[M13] * values[M20] - values[M03] * values[M12] * values[M20]
+				+ values[M03] * values[M10] * values[M22] - values[M00] * values[M13] * values[M22]
+				- values[M02] * values[M10] * values[M23] + values[M00] * values[M12] * values[M23];
+		tmp[M20] = values[M11] * values[M23] * values[M30] - values[M13] * values[M21] * values[M30]
+				+ values[M13] * values[M20] * values[M31] - values[M10] * values[M23] * values[M31]
+				- values[M11] * values[M20] * values[M33] + values[M10] * values[M21] * values[M33];
+		tmp[M21] = values[M03] * values[M21] * values[M30] - values[M01] * values[M23] * values[M30]
+				- values[M03] * values[M20] * values[M31] + values[M00] * values[M23] * values[M31]
+				+ values[M01] * values[M20] * values[M33] - values[M00] * values[M21] * values[M33];
+		tmp[M22] = values[M01] * values[M13] * values[M30] - values[M03] * values[M11] * values[M30]
+				+ values[M03] * values[M10] * values[M31] - values[M00] * values[M13] * values[M31]
+				- values[M01] * values[M10] * values[M33] + values[M00] * values[M11] * values[M33];
+		tmp[M23] = values[M03] * values[M11] * values[M20] - values[M01] * values[M13] * values[M20]
+				- values[M03] * values[M10] * values[M21] + values[M00] * values[M13] * values[M21]
+				+ values[M01] * values[M10] * values[M23] - values[M00] * values[M11] * values[M23];
+		tmp[M30] = values[M12] * values[M21] * values[M30] - values[M11] * values[M22] * values[M30]
+				- values[M12] * values[M20] * values[M31] + values[M10] * values[M22] * values[M31]
+				+ values[M11] * values[M20] * values[M32] - values[M10] * values[M21] * values[M32];
+		tmp[M31] = values[M01] * values[M22] * values[M30] - values[M02] * values[M21] * values[M30]
+				+ values[M02] * values[M20] * values[M31] - values[M00] * values[M22] * values[M31]
+				- values[M01] * values[M20] * values[M32] + values[M00] * values[M21] * values[M32];
+		tmp[M32] = values[M02] * values[M11] * values[M30] - values[M01] * values[M12] * values[M30]
+				- values[M02] * values[M10] * values[M31] + values[M00] * values[M12] * values[M31]
+				+ values[M01] * values[M10] * values[M32] - values[M00] * values[M11] * values[M32];
+		tmp[M33] = values[M01] * values[M12] * values[M20] - values[M02] * values[M11] * values[M20]
+				+ values[M02] * values[M10] * values[M21] - values[M00] * values[M12] * values[M21]
+				- values[M01] * values[M10] * values[M22] + values[M00] * values[M11] * values[M22];
 
 		float inv_det = 1.0f / l_det;
 		values[M00] = tmp[M00] * inv_det;
@@ -642,8 +580,7 @@ public final class NativeSupport implements Support {
 			int r = LColor.getRed(pixel);
 			int g = LColor.getGreen(pixel);
 			int b = LColor.getBlue(pixel);
-			if ((r >= sred && g >= sgreen && b >= sblue)
-					&& (r <= ered && g <= egreen && b <= eblue)) {
+			if ((r >= sred && g >= sgreen && b >= sblue) && (r <= ered && g <= egreen && b <= eblue)) {
 				buffer[i] = 0x00FFFFFF;
 			}
 		}

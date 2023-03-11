@@ -28,8 +28,7 @@ public class AndroidBigClip extends AndroidSound<MediaPlayer> {
 	private final AndroidAudio.Resolver<MediaPlayer> resolver;
 	private int position;
 
-	public AndroidBigClip(AndroidAudio audio,
-			AndroidAudio.Resolver<MediaPlayer> resolver) {
+	public AndroidBigClip(AndroidAudio audio, AndroidAudio.Resolver<MediaPlayer> resolver) {
 		this.audio = audio;
 		this.resolver = resolver;
 		resolve();

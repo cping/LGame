@@ -23,9 +23,9 @@ package loon.html5.gwt.preloader;
 import com.google.gwt.resources.client.ResourcePrototype;
 
 public interface PreloaderBundle {
-	
-	  ResourcePrototype getResource(String name);
 
-	  ResourcePrototype[] getResources();
+	ResourcePrototype getResource(String name);
+
+	ResourcePrototype[] getResources();
 
 }

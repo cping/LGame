@@ -13,16 +13,18 @@ package avian;
 import java.io.ByteArrayOutputStream;
 
 public class Utf8 {
-	public static boolean test (Object data) {
-		if (!(data instanceof byte[])) return false;
-		byte[] b = (byte[])data;
+	public static boolean test(Object data) {
+		if (!(data instanceof byte[]))
+			return false;
+		byte[] b = (byte[]) data;
 		for (int i = 0; i < b.length; ++i) {
-			if (((int)b[i] & 0x080) != 0) return true;
+			if (((int) b[i] & 0x080) != 0)
+				return true;
 		}
 		return false;
 	}
 
-	public static byte[] encode (char[] s16, int offset, int length) {
+	public static byte[] encode(char[] s16, int offset, int length) {
 		ByteArrayOutputStream buf = new ByteArrayOutputStream();
 		for (int i = offset; i < offset + length; ++i) {
 			char c = s16[i];
@@ -43,14 +45,15 @@ public class Utf8 {
 		return buf.toByteArray();
 	}
 
-	public static Object decode (byte[] s8, int offset, int length) {
+	public static Object decode(byte[] s8, int offset, int length) {
 		Object buf = new byte[length];
 		boolean isMultiByte = false;
 		int i = offset, j = 0;
 		while (i < offset + length) {
 			int x = s8[i++];
 			if ((x & 0x080) == 0x0) { // 1 byte char
-				if (x == 0) ++i; // 2 byte null char
+				if (x == 0)
+					++i; // 2 byte null char
 				cram(buf, j++, x);
 			} else if ((x & 0x0e0) == 0x0c0) { // 2 byte char
 				if (!isMultiByte) {
@@ -73,30 +76,33 @@ public class Utf8 {
 		return trim(buf, j);
 	}
 
-	public static char[] decode16 (byte[] s8, int offset, int length) {
+	public static char[] decode16(byte[] s8, int offset, int length) {
 		Object decoded = decode(s8, offset, length);
-		if (decoded instanceof char[]) return (char[])decoded;
-		return (char[])widen(decoded, length, length);
+		if (decoded instanceof char[])
+			return (char[]) decoded;
+		return (char[]) widen(decoded, length, length);
 	}
 
-	private static void cram (Object data, int index, int val) {
+	private static void cram(Object data, int index, int val) {
 		if (data instanceof byte[])
-			((byte[])data)[index] = (byte)val;
+			((byte[]) data)[index] = (byte) val;
 		else
-			((char[])data)[index] = (char)val;
+			((char[]) data)[index] = (char) val;
 	}
 
-	private static Object widen (Object data, int length, int capacity) {
-		byte[] src = (byte[])data;
+	private static Object widen(Object data, int length, int capacity) {
+		byte[] src = (byte[]) data;
 		char[] result = new char[capacity];
 		for (int i = 0; i < length; ++i)
-			result[i] = (char)((int)src[i] & 0x0ff);
+			result[i] = (char) ((int) src[i] & 0x0ff);
 		return result;
 	}
 
-	private static Object trim (Object data, int length) {
-		if (data instanceof byte[]) return data;
-		if (((char[])data).length == length) return data;
+	private static Object trim(Object data, int length) {
+		if (data instanceof byte[])
+			return data;
+		if (((char[]) data).length == length)
+			return data;
 		char[] result = new char[length];
 		System.arraycopy(data, 0, result, 0, length);
 		return result;

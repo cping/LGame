@@ -106,6 +106,7 @@ public class JavaSEAppFrame extends JFrame implements JavaSEApp<JavaSEAppFrame>,
 			public void windowClosing(WindowEvent event) {
 				if (_canvas != null) {
 					_canvas.close();
+					System.exit(-1);
 				}
 			}
 		});

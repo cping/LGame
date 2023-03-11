@@ -28,6 +28,7 @@ import loon.font.TextFormat;
 import loon.font.TextLayout;
 import loon.font.TextWrap;
 import loon.geom.Dimension;
+import loon.opengl.TextureSource;
 import loon.utils.Scale;
 
 public class JavaFXGraphics extends Graphics {
@@ -99,7 +100,7 @@ public class JavaFXGraphics extends Graphics {
 	@Override
 	protected Canvas createCanvasImpl(Scale scale, int pixelWidth, int pixelHeight) {
 		WritableImage bitmap = new WritableImage(pixelWidth, pixelHeight);
-		JavaFXImage image = new JavaFXImage(this, scale, bitmap, "<canvas>");
+		JavaFXImage image = new JavaFXImage(this, scale, bitmap, TextureSource.RenderCanvas);
 		return new JavaFXCanvas(this, image);
 	}
 

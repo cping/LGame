@@ -17,23 +17,23 @@ package java.io;
 
 public abstract class OutputStream {
 	// not abstract because of some gwt strangeness
-	public void write (int b) throws IOException {
+	public void write(int b) throws IOException {
 	}
 
-	public void write (byte[] ba) throws IOException {
+	public void write(byte[] ba) throws IOException {
 		write(ba, 0, ba.length);
 	}
 
-	public void write (byte[] ba, int start, int len) throws IOException {
+	public void write(byte[] ba, int start, int len) throws IOException {
 		int end = start + len;
 		for (int i = start; i < end; i++) {
 			write(ba[i]);
 		}
 	}
 
-	public void flush () {
+	public void flush() {
 	}
 
-	public void close () throws IOException {
+	public void close() throws IOException {
 	}
 }

@@ -41,8 +41,7 @@ import loon.utils.StringUtils;
 
 public class AndroidAudio {
 
-	protected static <I> void dispatchLoaded(final SoundImpl<I> sound,
-			final I impl) {
+	protected static <I> void dispatchLoaded(final SoundImpl<I> sound, final I impl) {
 		Updateable update = new Updateable() {
 			@Override
 			public void action(Object a) {
@@ -52,8 +51,7 @@ public class AndroidAudio {
 		LSystem.unload(update);
 	}
 
-	protected static <I> void dispatchLoadError(final SoundImpl<I> sound,
-			final Throwable error) {
+	protected static <I> void dispatchLoadError(final SoundImpl<I> sound, final Throwable error) {
 		Updateable update = new Updateable() {
 			@Override
 			public void action(Object a) {
@@ -194,8 +192,7 @@ public class AndroidAudio {
 			if (notSupport()) {
 				return false;
 			}
-			streamId = pool.play(soundId, volume, volume, 1, looping ? -1 : 0,
-					1);
+			streamId = pool.play(soundId, volume, volume, 1, looping ? -1 : 0, 1);
 			return (streamId != 0);
 		}
 
@@ -246,37 +243,29 @@ public class AndroidAudio {
 
 	@SuppressWarnings("deprecation")
 	public AndroidAudio() {
-		 if (AndroidGame.isAndroidVersionHigher(21)) {
-			 android.media.AudioAttributes audioAttributes = null;
-             audioAttributes = new android.media.AudioAttributes.Builder()
-                     .setUsage(android.media.AudioAttributes.USAGE_MEDIA)
-                     .setContentType(android.media.AudioAttributes.CONTENT_TYPE_MUSIC)
-                     .build();
-             this.pool = new android.media.SoundPool.Builder()
-                     .setMaxStreams(16)
-                     .setAudioAttributes(audioAttributes)
-                     .build();
-         } else { 
-        	 this.pool = new android.media.SoundPool(16, AudioManager.STREAM_MUSIC, 0);
-         }
+		if (AndroidGame.isAndroidVersionHigher(21)) {
+			android.media.AudioAttributes audioAttributes = null;
+			audioAttributes = new android.media.AudioAttributes.Builder()
+					.setUsage(android.media.AudioAttributes.USAGE_MEDIA)
+					.setContentType(android.media.AudioAttributes.CONTENT_TYPE_MUSIC).build();
+			this.pool = new android.media.SoundPool.Builder().setMaxStreams(16).setAudioAttributes(audioAttributes)
+					.build();
+		} else {
+			this.pool = new android.media.SoundPool(16, AudioManager.STREAM_MUSIC, 0);
+		}
 		// 以标准pool监听器监听数据
-		this.pool
-				.setOnLoadCompleteListener(new android.media.SoundPool.OnLoadCompleteListener() {
-					public void onLoadComplete(android.media.SoundPool soundPool,
-							int soundId, int status) {
-						PooledSound sound = loadingSounds.remove(soundId);
-						if (sound == null) {
-							Log.e("AndroidAudio","load _complete for unknown sound [id="
-									+ soundId + "]");
-						} else if (status == 0) {
-							dispatchLoaded(sound, soundId);
-						} else {
-							dispatchLoadError(sound, new Exception(
-									"Sound load failed [errcode=" + status
-											+ "]"));
-						}
-					}
-				});
+		this.pool.setOnLoadCompleteListener(new android.media.SoundPool.OnLoadCompleteListener() {
+			public void onLoadComplete(android.media.SoundPool soundPool, int soundId, int status) {
+				PooledSound sound = loadingSounds.remove(soundId);
+				if (sound == null) {
+					Log.e("AndroidAudio", "load _complete for unknown sound [id=" + soundId + "]");
+				} else if (status == 0) {
+					dispatchLoaded(sound, soundId);
+				} else {
+					dispatchLoadError(sound, new Exception("Sound load failed [errcode=" + status + "]"));
+				}
+			}
+		});
 	}
 
 	public SoundImpl<?> createSound(AssetFileDescriptor fd) {
@@ -291,12 +280,10 @@ public class AndroidAudio {
 		return sound;
 	}
 
-	private static AssetFileDescriptor openFd(String fileName)
-			throws IOException {
+	private static AssetFileDescriptor openFd(String fileName) throws IOException {
 		if (LSystem.base().type() == LGame.Type.ANDROID) {
 			if (fileName.toLowerCase().startsWith("assets/")) {
-				fileName = StringUtils.replaceIgnoreCase(fileName, "assets/",
-						"");
+				fileName = StringUtils.replaceIgnoreCase(fileName, "assets/", "");
 			}
 			if (fileName.startsWith("/") || fileName.startsWith("\\")) {
 				fileName = fileName.substring(1, fileName.length());
@@ -306,8 +293,7 @@ public class AndroidAudio {
 	}
 
 	public SoundImpl<?> createSound(final String path) {
-		if ("wav".equalsIgnoreCase(LSystem.getExtension(path))
-				&& SoundOpenAlEnv.isSupportNative()) {
+		if ("wav".equalsIgnoreCase(LSystem.getExtension(path)) && SoundOpenAlEnv.isSupportNative()) {
 			OpenALSound sound = new OpenALSound(path);
 			loadingOpenAlSounds.put(sound.path, sound);
 			return sound;
@@ -331,8 +317,7 @@ public class AndroidAudio {
 					public void action(Object o) {
 						try {
 							AssetFileDescriptor fd = openFd(path);
-							mp.setDataSource(fd.getFileDescriptor(),
-									fd.getStartOffset(), fd.getLength());
+							mp.setDataSource(fd.getFileDescriptor(), fd.getStartOffset(), fd.getLength());
 							fd.close();
 							mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
 								@Override
@@ -343,12 +328,9 @@ public class AndroidAudio {
 							mp.setOnErrorListener(new OnErrorListener() {
 
 								@Override
-								public boolean onError(MediaPlayer mp,
-										int what, int extra) {
-									String errmsg = "MediaPlayer prepare failure [what="
-											+ what + ", x=" + extra + "]";
-									dispatchLoadError(sound, new Exception(
-											errmsg));
+								public boolean onError(MediaPlayer mp, int what, int extra) {
+									String errmsg = "MediaPlayer prepare failure [what=" + what + ", x=" + extra + "]";
+									dispatchLoadError(sound, new Exception(errmsg));
 									return false;
 								}
 							});
@@ -376,11 +358,10 @@ public class AndroidAudio {
 
 	public void onResume() {
 		pool.autoResume();
-		HashSet<AndroidSound<?>> wasPlaying = new HashSet<AndroidSound<?>>(
-				playing);
+		HashSet<AndroidSound<?>> wasPlaying = new HashSet<AndroidSound<?>>(playing);
 		playing.clear();
 		if (!wasPlaying.isEmpty()) {
-			Log.e("AndroidAudio","Resuming " + wasPlaying.size() + " playing sounds.");
+			Log.e("AndroidAudio", "Resuming " + wasPlaying.size() + " playing sounds.");
 		}
 		for (AndroidSound<?> sound : wasPlaying) {
 			sound.onResume();

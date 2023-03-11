@@ -115,7 +115,6 @@ public class AndroidGame extends LGame {
 		USE_BITMAP_MEMORY_HACK = BULIDM_SDK < ICE_CREAM_SANDWICH;
 	}
 
-
 	private enum State {
 		RUNNING, PAUSED, EXITED
 	};
@@ -129,12 +128,12 @@ public class AndroidGame extends LGame {
 	protected final AndroidLog log;
 	protected final AndroidSave save;
 	protected final AndroidAccelerometer accelerometer;
-    protected final AndroidClipboard clipboard;
+	protected final AndroidClipboard clipboard;
 	protected final Json json;
 	protected final long start = System.nanoTime();
 
 	protected Loon activity;
-	
+
 	public AndroidGame(Loon game, LSetting config) {
 		super(config, game);
 		this.activity = game;
@@ -228,12 +227,12 @@ public class AndroidGame extends LGame {
 	public AndroidClipboard clipboard() {
 		return clipboard;
 	}
-	
+
 	@Override
 	public Support support() {
 		return support;
 	}
-	
+
 	void onPause() {
 		state = State.PAUSED;
 		status.emit(Status.PAUSE);

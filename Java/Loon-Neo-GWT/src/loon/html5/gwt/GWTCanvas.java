@@ -145,9 +145,7 @@ public class GWTCanvas extends Canvas {
 		if (_font == null) {
 			ctx.fillText(text, x, y);
 		} else if (LSystem.base() != null) {
-			fillText(
-					LSystem.base().graphics()
-							.layoutText(text, _font.getFormat()), x, y);
+			fillText(LSystem.base().graphics().layoutText(text, _font.getFormat()), x, y);
 		}
 		isDirty = true;
 		return this;
@@ -311,8 +309,7 @@ public class GWTCanvas extends Canvas {
 	}
 
 	@Override
-	public Canvas strokeRoundRect(float x, float y, float w, float h,
-			float radius) {
+	public Canvas strokeRoundRect(float x, float y, float w, float h, float radius) {
 		addRoundRectPath(x, y, w, h, radius);
 		ctx.stroke();
 		isDirty = true;
@@ -327,8 +324,7 @@ public class GWTCanvas extends Canvas {
 	}
 
 	@Override
-	public Canvas transform(float m11, float m12, float m21, float m22,
-			float dx, float dy) {
+	public Canvas transform(float m11, float m12, float m21, float m22, float dx, float dy) {
 		ctx.transform(m11, m12, m21, m22, dx, dy);
 		return this;
 	}
@@ -344,10 +340,8 @@ public class GWTCanvas extends Canvas {
 		return ctx;
 	}
 
-	private void addRoundRectPath(float x, float y, float width, float height,
-			float radius) {
-		float midx = x + width / 2, midy = y + height / 2, maxx = x + width, maxy = y
-				+ height;
+	private void addRoundRectPath(float x, float y, float width, float height, float radius) {
+		float midx = x + width / 2, midy = y + height / 2, maxx = x + width, maxy = y + height;
 		ctx.beginPath();
 		ctx.moveTo(x, midy);
 		ctx.arcTo(x, y, midx, y, radius);

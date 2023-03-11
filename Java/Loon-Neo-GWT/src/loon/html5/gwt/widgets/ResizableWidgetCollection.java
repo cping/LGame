@@ -30,8 +30,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 
-public class ResizableWidgetCollection implements ResizeHandler,
-		Iterable<ResizableWidget> {
+public class ResizableWidgetCollection implements ResizeHandler, Iterable<ResizableWidget> {
 
 	static class ResizableWidgetInfo {
 
@@ -67,9 +66,7 @@ public class ResizableWidgetCollection implements ResizeHandler,
 			int offsetHeight = widget.getElement().getOffsetHeight();
 			int clientWidth = widget.getElement().getClientWidth();
 			int clientHeight = widget.getElement().getClientHeight();
-			if (offsetWidth != curOffsetWidth
-					|| offsetHeight != curOffsetHeight
-					|| clientWidth != curClientWidth
+			if (offsetWidth != curOffsetWidth || offsetHeight != curOffsetHeight || clientWidth != curClientWidth
 					|| clientHeight != curClientHeight) {
 				this.curOffsetWidth = offsetWidth;
 				this.curOffsetHeight = offsetHeight;
@@ -96,8 +93,7 @@ public class ResizableWidgetCollection implements ResizeHandler,
 	private Timer resizeCheckTimer = new Timer() {
 		@Override
 		public void run() {
-			if (windowHeight != Window.getClientHeight()
-					|| windowWidth != Window.getClientWidth()) {
+			if (windowHeight != Window.getClientHeight() || windowWidth != Window.getClientWidth()) {
 				windowHeight = Window.getClientHeight();
 				windowWidth = Window.getClientWidth();
 				schedule(resizeCheckDelay);
@@ -136,8 +132,7 @@ public class ResizableWidgetCollection implements ResizeHandler,
 		this(resizeCheckDelay, true);
 	}
 
-	protected ResizableWidgetCollection(int resizeCheckDelay,
-			boolean resizeCheckingEnabled) {
+	protected ResizableWidgetCollection(int resizeCheckDelay, boolean resizeCheckingEnabled) {
 		setResizeCheckDelay(resizeCheckDelay);
 		setResizeCheckingEnabled(resizeCheckingEnabled);
 	}
@@ -147,15 +142,12 @@ public class ResizableWidgetCollection implements ResizeHandler,
 	}
 
 	public void checkWidgetSize() {
-		for (Map.Entry<ResizableWidget, ResizableWidgetInfo> entry : widgets
-				.entrySet()) {
+		for (Map.Entry<ResizableWidget, ResizableWidgetInfo> entry : widgets.entrySet()) {
 			ResizableWidget widget = entry.getKey();
 			ResizableWidgetInfo info = entry.getValue();
 			if (info.updateSizes()) {
-				if (info.getOffsetWidth() > 0 && info.getOffsetHeight() > 0
-						&& widget.isAttached()) {
-					widget.onResize(info.getOffsetWidth(),
-							info.getOffsetHeight());
+				if (info.getOffsetWidth() > 0 && info.getOffsetHeight() > 0 && widget.isAttached()) {
+					widget.onResize(info.getOffsetWidth(), info.getOffsetHeight());
 				}
 			}
 		}

@@ -34,28 +34,27 @@ package java.lang.ref;
  */
 public class PhantomReference<T> extends Reference<T> {
 
-    /**
-     * Constructs a new phantom reference and registers it with the given
-     * reference queue. The reference queue may be {@code null}, but this case
-     * does not make any sense, since the reference will never be enqueued, and
-     * the {@link #get()} method always returns {@code null}.
-     *
-     * @param r the referent to track
-     * @param q the queue to register the phantom reference object with
-     */
-    public PhantomReference(T r, ReferenceQueue<? super T> q) {
-        super();
-        initReference(r, q);
-    }
+	/**
+	 * Constructs a new phantom reference and registers it with the given reference
+	 * queue. The reference queue may be {@code null}, but this case does not make
+	 * any sense, since the reference will never be enqueued, and the {@link #get()}
+	 * method always returns {@code null}.
+	 *
+	 * @param r the referent to track
+	 * @param q the queue to register the phantom reference object with
+	 */
+	public PhantomReference(T r, ReferenceQueue<? super T> q) {
+		super();
+		initReference(r, q);
+	}
 
-    /**
-     * Returns {@code null}.  The referent of a phantom reference is not
-     * accessible.
-     *
-     * @return {@code null} (always)
-     */
-    @Override
-    public T get() {
-        return super.get();
-    }
+	/**
+	 * Returns {@code null}. The referent of a phantom reference is not accessible.
+	 *
+	 * @return {@code null} (always)
+	 */
+	@Override
+	public T get() {
+		return super.get();
+	}
 }

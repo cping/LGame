@@ -44,7 +44,7 @@ public class AndroidAsyn extends Asyn.Default {
 	public void invokeLater(Runnable action) {
 		if (isPaused()) {
 			activity.runOnUiThread(action);
-		} else{
+		} else {
 			super.invokeLater(action);
 		}
 	}
@@ -64,9 +64,7 @@ public class AndroidAsyn extends Asyn.Default {
 						try {
 							action.run();
 						} catch (Exception e) {
-							log.warn(
-									"Async task failure [task=" + action + "]",
-									e);
+							log.warn("Async task failure [task=" + action + "]", e);
 						}
 						return null;
 					}

@@ -38,15 +38,13 @@ public class AssetDownloader extends IDownloader {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void load(String url, AssetType type, String mimeType,
-			AssetLoaderListener<?> listener) {
+	public void load(String url, AssetType type, String mimeType, AssetLoaderListener<?> listener) {
 		switch (type) {
 		case Text:
 			loadText(url, (AssetLoaderListener<String>) listener);
 			break;
 		case Image:
-			loadImage(url, mimeType,
-					(AssetLoaderListener<ImageElement>) listener);
+			loadImage(url, mimeType, (AssetLoaderListener<ImageElement>) listener);
 			break;
 		case Binary:
 			loadBinary(url, (AssetLoaderListener<Blob>) listener);
@@ -82,8 +80,7 @@ public class AssetDownloader extends IDownloader {
 		request.send();
 	}
 
-	public void loadBinary(final String url,
-			final AssetLoaderListener<Blob> listener) {
+	public void loadBinary(final String url, final AssetLoaderListener<Blob> listener) {
 		XMLHttpRequest request = XMLHttpRequest.create();
 		request.setOnReadyStateChange(new ReadyStateChangeHandler() {
 			@Override
@@ -92,8 +89,7 @@ public class AssetDownloader extends IDownloader {
 					if (xhr.getStatus() != 200) {
 						listener.onFailure();
 					} else {
-						Int8Array data = TypedArrays.createInt8Array(xhr
-								.getResponseArrayBuffer());
+						Int8Array data = TypedArrays.createInt8Array(xhr.getResponseArrayBuffer());
 						listener.onSuccess(new Blob(data));
 					}
 				}
@@ -129,13 +125,11 @@ public class AssetDownloader extends IDownloader {
 		}
 	}
 
-	public void loadImage(final String url, final String mimeType,
-			final AssetLoaderListener<ImageElement> listener) {
+	public void loadImage(final String url, final String mimeType, final AssetLoaderListener<ImageElement> listener) {
 		loadImage(url, mimeType, null, listener);
 	}
 
-	public void loadImage(final String url, final String mimeType,
-			final String crossOrigin,
+	public void loadImage(final String url, final String mimeType, final String crossOrigin,
 			final AssetLoaderListener<ImageElement> listener) {
 		if (useBrowserCache || useInlineBase64) {
 			loadBinary(url, new AssetLoaderListener<Blob>() {
@@ -166,8 +160,7 @@ public class AssetDownloader extends IDownloader {
 						}
 					});
 					if (isUseInlineBase64()) {
-						image.setSrc("data:" + mimeType + ";base64,"
-								+ result.toBase64());
+						image.setSrc("data:" + mimeType + ";base64," + result.toBase64());
 					} else {
 						image.setSrc(url);
 					}

@@ -41,11 +41,9 @@ public class Field {
 	final CachedTypeLookup[] elementTypes;
 	final Annotation[] annotations;
 
-	Field(String name, Class enclosingType, Class type, boolean isFinal,
-			boolean isDefaultAccess, boolean isPrivate, boolean isProtected,
-			boolean isPublic, boolean isStatic, boolean isTransient,
-			boolean isVolatile, int getter, int setter, Class[] elementTypes,
-			Annotation[] annotations) {
+	Field(String name, Class enclosingType, Class type, boolean isFinal, boolean isDefaultAccess, boolean isPrivate,
+			boolean isProtected, boolean isPublic, boolean isStatic, boolean isTransient, boolean isVolatile,
+			int getter, int setter, Class[] elementTypes, Annotation[] annotations) {
 		this.name = name;
 		this.enclosingType = new CachedTypeLookup(enclosingType);
 		this.type = new CachedTypeLookup(type);
@@ -69,8 +67,7 @@ public class Field {
 		}
 		this.elementTypes = tmp;
 
-		this.annotations = annotations != null ? annotations
-				: new Annotation[] {};
+		this.annotations = annotations != null ? annotations : new Annotation[] {};
 	}
 
 	public Object get(Object obj) throws IllegalAccessException {
@@ -141,14 +138,10 @@ public class Field {
 
 	@Override
 	public String toString() {
-		return "Field [name=" + name + ", enclosingType=" + enclosingType
-				+ ", type=" + type + ", isFinal=" + isFinal
-				+ ", isDefaultAccess=" + isDefaultAccess + ", isPrivate="
-				+ isPrivate + ", isProtected=" + isProtected + ", isPublic="
-				+ isPublic + ", isStatic=" + isStatic + ", isTransient="
-				+ isTransient + ", isVolatile=" + isVolatile + ", getter="
-				+ getter + ", setter=" + setter + ", elementTypes="
-				+ Arrays.toString(elementTypes) + ", annotations="
-				+ Arrays.toString(annotations) + "]";
+		return "Field [name=" + name + ", enclosingType=" + enclosingType + ", type=" + type + ", isFinal=" + isFinal
+				+ ", isDefaultAccess=" + isDefaultAccess + ", isPrivate=" + isPrivate + ", isProtected=" + isProtected
+				+ ", isPublic=" + isPublic + ", isStatic=" + isStatic + ", isTransient=" + isTransient + ", isVolatile="
+				+ isVolatile + ", getter=" + getter + ", setter=" + setter + ", elementTypes="
+				+ Arrays.toString(elementTypes) + ", annotations=" + Arrays.toString(annotations) + "]";
 	}
 }

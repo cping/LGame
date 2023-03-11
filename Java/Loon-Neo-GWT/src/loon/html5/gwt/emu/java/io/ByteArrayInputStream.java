@@ -22,24 +22,24 @@ public class ByteArrayInputStream extends InputStream {
 	int count;
 	int mark = 0;
 
-	public ByteArrayInputStream (byte buf[]) {
+	public ByteArrayInputStream(byte buf[]) {
 		this.buf = buf;
 		this.pos = 0;
 		this.count = buf.length;
 	}
 
-	public ByteArrayInputStream (byte buf[], int offset, int length) {
+	public ByteArrayInputStream(byte buf[], int offset, int length) {
 		this.buf = buf;
 		this.pos = offset;
 		this.count = Math.min(offset + length, buf.length);
 		this.mark = offset;
 	}
 
-	public synchronized int read () {
+	public synchronized int read() {
 		return (pos < count) ? (buf[pos++] & 0xff) : -1;
 	}
 
-	public synchronized int read (byte b[], int off, int len) {
+	public synchronized int read(byte b[], int off, int len) {
 		if (b == null) {
 			throw new NullPointerException();
 		} else if (off < 0 || len < 0 || len > b.length - off) {
@@ -62,7 +62,7 @@ public class ByteArrayInputStream extends InputStream {
 		return len;
 	}
 
-	public synchronized long skip (long n) {
+	public synchronized long skip(long n) {
 		long k = count - pos;
 		if (n < k) {
 			k = n < 0 ? 0 : n;
@@ -72,22 +72,22 @@ public class ByteArrayInputStream extends InputStream {
 		return k;
 	}
 
-	public synchronized int available () {
+	public synchronized int available() {
 		return count - pos;
 	}
 
-	public boolean markSupported () {
+	public boolean markSupported() {
 		return true;
 	}
 
-	public void mark (int readAheadLimit) {
+	public void mark(int readAheadLimit) {
 		mark = pos;
 	}
 
-	public synchronized void reset () {
+	public synchronized void reset() {
 		pos = mark;
 	}
 
-	public void close () throws IOException {
+	public void close() throws IOException {
 	}
 }

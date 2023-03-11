@@ -16,19 +16,19 @@ public class InterruptedException extends Exception {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public InterruptedException (String message, Throwable cause) {
+	public InterruptedException(String message, Throwable cause) {
 		super(message, cause);
 	}
 
-	public InterruptedException (String message) {
+	public InterruptedException(String message) {
 		this(message, null);
 	}
 
-	public InterruptedException (Throwable cause) {
+	public InterruptedException(Throwable cause) {
 		this(null, cause);
 	}
 
-	public InterruptedException () {
+	public InterruptedException() {
 		this(null, null);
 	}
 }

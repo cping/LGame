@@ -275,15 +275,6 @@ public class JavaFXGame extends LGame {
 		_animationLoopRunner.start();
 	}
 
-	public void shutdown() {
-		if (status.isClosed()) {
-			return;
-		}
-		status.emit(Status.EXIT);
-		stop();
-		System.exit(0);
-	}
-
 	@Override
 	public Environment env() {
 		return Environment.JAVAFX;

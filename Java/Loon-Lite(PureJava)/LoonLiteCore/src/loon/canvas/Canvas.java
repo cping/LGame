@@ -107,7 +107,7 @@ public abstract class Canvas implements LRelease {
 	public boolean isDirty() {
 		return this.isDirty;
 	}
-
+	
 	@Override
 	public void close() {
 		if (closed) {

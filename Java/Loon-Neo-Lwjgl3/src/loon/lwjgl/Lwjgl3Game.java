@@ -455,8 +455,8 @@ public class Lwjgl3Game extends LGame {
 		return new Lwjgl3InputMake(this, windowId);
 	}
 
-	protected void shutdown() {
-		status.emit(Status.EXIT);
+	public void shutdown() {
+		super.shutdown();
 		try {
 			pool.shutdown();
 			pool.awaitTermination(1, TimeUnit.SECONDS);

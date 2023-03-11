@@ -44,11 +44,9 @@ public class Method {
 	final int methodId;
 	final Annotation[] annotations;
 
-	public Method(String name, Class enclosingType, Class returnType,
-			Parameter[] parameters, boolean isAbstract, boolean isFinal,
-			boolean isStatic, boolean isDefaultAccess, boolean isPrivate,
-			boolean isProtected, boolean isPublic, boolean isNative,
-			boolean isVarArgs, boolean isMethod, boolean isConstructor,
+	public Method(String name, Class enclosingType, Class returnType, Parameter[] parameters, boolean isAbstract,
+			boolean isFinal, boolean isStatic, boolean isDefaultAccess, boolean isPrivate, boolean isProtected,
+			boolean isPublic, boolean isNative, boolean isVarArgs, boolean isMethod, boolean isConstructor,
 			int methodId, Annotation[] annotations) {
 		this.name = name;
 		this.enclosingType = new CachedTypeLookup(enclosingType);
@@ -139,13 +137,11 @@ public class Method {
 
 	/**
 	 * Invokes the method on the given object. Ignores the object if this is a
-	 * static method. Throws an IllegalArgumentException if the parameters do
-	 * not match.
+	 * static method. Throws an IllegalArgumentException if the parameters do not
+	 * match.
 	 * 
-	 * @param obj
-	 *            the object to invoke the method on or null.
-	 * @param params
-	 *            the parameters to pass to the method or null.
+	 * @param obj    the object to invoke the method on or null.
+	 * @param params the parameters to pass to the method or null.
 	 * @return the return value or null if the method does not return anything.
 	 */
 	public Object invoke(Object obj, Object... params) {
@@ -175,14 +171,10 @@ public class Method {
 
 	@Override
 	public String toString() {
-		return "Method [name=" + name + ", enclosingType=" + enclosingType
-				+ ", returnType=" + returnType + ", isAbstract=" + isAbstract
-				+ ", isFinal=" + isFinal + ", isStatic=" + isStatic
-				+ ", isNative=" + isNative + ", isDefaultAccess="
-				+ isDefaultAccess + ", isPrivate=" + isPrivate
-				+ ", isProtected=" + isProtected + ", isPublic=" + isPublic
-				+ ", isVarArgs=" + isVarArgs + ", isMethod=" + isMethod
-				+ ", isConstructor=" + isConstructor + ", parameters="
-				+ Arrays.toString(parameters) + "]";
+		return "Method [name=" + name + ", enclosingType=" + enclosingType + ", returnType=" + returnType
+				+ ", isAbstract=" + isAbstract + ", isFinal=" + isFinal + ", isStatic=" + isStatic + ", isNative="
+				+ isNative + ", isDefaultAccess=" + isDefaultAccess + ", isPrivate=" + isPrivate + ", isProtected="
+				+ isProtected + ", isPublic=" + isPublic + ", isVarArgs=" + isVarArgs + ", isMethod=" + isMethod
+				+ ", isConstructor=" + isConstructor + ", parameters=" + Arrays.toString(parameters) + "]";
 	}
 }

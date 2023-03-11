@@ -41,8 +41,7 @@ public class GWTProgressDef {
 			this.maxStep = step;
 		}
 
-		private void progress(final Canvas g, final int tick,
-				final float currentStep) {
+		private void progress(final Canvas g, final int tick, final float currentStep) {
 			render(g, tick, currentStep, maxStep);
 		}
 
@@ -52,8 +51,7 @@ public class GWTProgressDef {
 			return currentStep >= maxStep;
 		}
 
-		public abstract void render(final Canvas g, final int tick,
-				final float curStep, final float maxStep);
+		public abstract void render(final Canvas g, final int tick, final float curStep, final float maxStep);
 
 		public PreloaderCallback getPreloaderCallback(Loon loon, Panel root) {
 			init();
@@ -71,8 +69,7 @@ public class GWTProgressDef {
 
 				@Override
 				public void update(PreloaderState state) {
-					progress(canvas, (int) (nowTime() - start),
-							(currentStep = maxStep * state.getProgress()));
+					progress(canvas, (int) (nowTime() - start), (currentStep = maxStep * state.getProgress()));
 				}
 
 			};
@@ -118,8 +115,7 @@ public class GWTProgressDef {
 		}
 
 		@Override
-		public void render(Canvas g, int tick, final float currentStep,
-				float maxStep) {
+		public void render(Canvas g, int tick, final float currentStep, float maxStep) {
 			if (centerX == -1 || centerY == -1) {
 				this.pWidth = config.getShowWidth() - 80;
 				this.centerX = config.getShowWidth() / 2 - pWidth / 2;
@@ -130,16 +126,14 @@ public class GWTProgressDef {
 			if (isImageComplete(logoImage)) {
 				this.logoX = (config.getShowWidth() - logoImage.getWidth()) / 2;
 				this.logoY = (config.getShowHeight() - logoImage.getHeight()) / 2;
-				context.drawImage(logoImage, logoX,
-						logoY - logoImage.getHeight() - 40);
+				context.drawImage(logoImage, logoX, logoY - logoImage.getHeight() - 40);
 				context.setFillStyle(barBgColor);
 				context.fillRect(centerX, centerY, pWidth, pHeight);
 				if (currentStep >= maxStep) {
 					context.fillRect(centerX, centerY, pWidth, pHeight);
 				} else {
 					context.setFillStyle(barColor);
-					context.fillRect(centerX, centerY,
-							(int) (pWidth / maxStep * currentStep), pHeight);
+					context.fillRect(centerX, centerY, (int) (pWidth / maxStep * currentStep), pHeight);
 				}
 			}
 		}

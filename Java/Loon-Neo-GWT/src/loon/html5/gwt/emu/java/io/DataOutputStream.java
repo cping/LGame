@@ -22,65 +22,65 @@ public class DataOutputStream extends OutputStream implements DataOutput {
 
 	OutputStream os;
 
-	public DataOutputStream (OutputStream os) {
+	public DataOutputStream(OutputStream os) {
 		this.os = os;
 	}
 
 	@Override
-	public void write (int b) throws IOException {
+	public void write(int b) throws IOException {
 		os.write(b);
 	}
 
-	public void writeBoolean (boolean v) throws IOException {
+	public void writeBoolean(boolean v) throws IOException {
 		os.write(v ? 1 : 0);
 	}
 
-	public void writeByte (int v) throws IOException {
+	public void writeByte(int v) throws IOException {
 		os.write(v);
 	}
 
-	public void writeBytes (String s) throws IOException {
+	public void writeBytes(String s) throws IOException {
 		int len = s.length();
 		for (int i = 0; i < len; i++) {
 			os.write(s.charAt(i) & 0xff);
 		}
 	}
 
-	public void writeChar (int v) throws IOException {
+	public void writeChar(int v) throws IOException {
 		os.write(v >> 8);
 		os.write(v);
 	}
 
-	public void writeChars (String s) throws IOException {
+	public void writeChars(String s) throws IOException {
 		throw new RuntimeException("writeChars NYI");
 	}
 
-	public void writeDouble (double v) throws IOException {
+	public void writeDouble(double v) throws IOException {
 		writeLong(Double.doubleToLongBits(v));
 	}
 
-	public void writeFloat (float v) throws IOException {
+	public void writeFloat(float v) throws IOException {
 		writeInt(Numbers.floatToIntBits(v));
 	}
 
-	public void writeInt (int v) throws IOException {
+	public void writeInt(int v) throws IOException {
 		os.write(v >> 24);
 		os.write(v >> 16);
 		os.write(v >> 8);
 		os.write(v);
 	}
 
-	public void writeLong (long v) throws IOException {
-		writeInt((int)(v >> 32L));
-		writeInt((int)v);
+	public void writeLong(long v) throws IOException {
+		writeInt((int) (v >> 32L));
+		writeInt((int) v);
 	}
 
-	public void writeShort (int v) throws IOException {
+	public void writeShort(int v) throws IOException {
 		os.write(v >> 8);
 		os.write(v);
 	}
 
-	public void writeUTF (String s) throws IOException {
+	public void writeUTF(String s) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		for (int i = 0; i < s.length(); i++) {
 			char c = s.charAt(i);

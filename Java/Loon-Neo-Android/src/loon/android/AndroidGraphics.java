@@ -32,6 +32,7 @@ import loon.font.TextFormat;
 import loon.font.TextLayout;
 import loon.font.TextWrap;
 import loon.geom.Dimension;
+import loon.opengl.TextureSource;
 import loon.utils.Scale;
 import android.graphics.Bitmap;
 import android.graphics.Paint;
@@ -138,7 +139,7 @@ public class AndroidGraphics extends Graphics {
 	@Override
 	protected Canvas createCanvasImpl(Scale scale, int pixelWidth, int pixelHeight) {
 		Bitmap bitmap = Bitmap.createBitmap(pixelWidth, pixelHeight, preferredBitmapConfig);
-		return new AndroidCanvas(this, new AndroidImage(this, scale, bitmap, "<canvas>"));
+		return new AndroidCanvas(this, new AndroidImage(this, scale, bitmap, TextureSource.RenderCanvas));
 	}
 
 	AndroidFont resolveFont(Font font) {

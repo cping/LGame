@@ -41,17 +41,13 @@ public abstract class IDownloader {
 
 	}
 
-	public abstract void load(String url, AssetType type, String mimeType,
-			AssetLoaderListener<?> listener);
+	public abstract void load(String url, AssetType type, String mimeType, AssetLoaderListener<?> listener);
 
-	public abstract void loadText(String url,
-			final AssetLoaderListener<String> listener);
+	public abstract void loadText(String url, final AssetLoaderListener<String> listener);
 
-	public abstract void loadBinary(final String url,
-			final AssetLoaderListener<Blob> listener);
+	public abstract void loadBinary(final String url, final AssetLoaderListener<Blob> listener);
 
-	public abstract void loadAudio(String url,
-			final AssetLoaderListener<Void> listener);
+	public abstract void loadAudio(String url, final AssetLoaderListener<Void> listener);
 
 	public abstract void loadImage(final String url, final String mimeType,
 			final AssetLoaderListener<ImageElement> listener);
@@ -80,8 +76,7 @@ public abstract class IDownloader {
 												}-*/;
 
 	@SuppressWarnings("rawtypes")
-	static native void setOnProgress(XMLHttpRequest req,
-			AssetLoaderListener listener) /*-{
+	static native void setOnProgress(XMLHttpRequest req, AssetLoaderListener listener) /*-{
 											var _this = this;
 											this.onprogress = $entry(function(evt) {
 											listener.@loon.html5.gwt.preloader.IDownloader.AssetLoaderListener::onProgress(D)(evt.loaded);

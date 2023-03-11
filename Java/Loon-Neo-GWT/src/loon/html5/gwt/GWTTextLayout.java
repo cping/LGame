@@ -39,16 +39,15 @@ class GWTTextLayout extends TextLayout {
 
 	private final Context2d _ctx;
 
-	public static TextLayout layoutText(GWTGraphics gfx, Context2d ctx,
-			String text, TextFormat format) {
+	public static TextLayout layoutText(GWTGraphics gfx, Context2d ctx, String text, TextFormat format) {
 		GWTFontMetrics metrics = gfx.getFontMetrics(getFont(format));
 		configContext(ctx, format);
 		float width = (float) ctx.measureText(text).getWidth();
 		return new GWTTextLayout(ctx, text, format, metrics, width);
 	}
 
-	public static TextLayout[] layoutText(GWTGraphics gfx, Context2d ctx,
-			String text, TextFormat format, TextWrap wrap) {
+	public static TextLayout[] layoutText(GWTGraphics gfx, Context2d ctx, String text, TextFormat format,
+			TextWrap wrap) {
 		GWTFontMetrics metrics = gfx.getFontMetrics(getFont(format));
 		configContext(ctx, format);
 		List<TextLayout> layouts = new ArrayList<TextLayout>();
@@ -56,17 +55,15 @@ class GWTTextLayout extends TextLayout {
 		for (String line : text.split("\\n")) {
 			String[] words = line.split("\\s");
 			for (int idx = 0; idx < words.length;) {
-				idx = measureLine(ctx, format, wrap, metrics, words, idx,
-						layouts);
+				idx = measureLine(ctx, format, wrap, metrics, words, idx, layouts);
 			}
 		}
 		return layouts.toArray(new TextLayout[layouts.size()]);
 	}
 
-	GWTTextLayout(Context2d ctx, String text, TextFormat format,
-			GWTFontMetrics metrics, float width) {
-		super(text, format, new RectBox(0, 0, metrics.adjustWidth(width),
-				metrics.height), metrics.ascent() + metrics.descent());
+	GWTTextLayout(Context2d ctx, String text, TextFormat format, GWTFontMetrics metrics, float width) {
+		super(text, format, new RectBox(0, 0, metrics.adjustWidth(width), metrics.height),
+				metrics.ascent() + metrics.descent());
 		this._ctx = ctx;
 		this._metrics = metrics;
 	}
@@ -106,9 +103,8 @@ class GWTTextLayout extends TextLayout {
 		return (format.font == null) ? GWTFont.DEFAULT : format.font;
 	}
 
-	static int measureLine(Context2d ctx, TextFormat format, TextWrap wrap,
-			GWTFontMetrics metrics, String[] words, int idx,
-			List<TextLayout> layouts) {
+	static int measureLine(Context2d ctx, TextFormat format, TextWrap wrap, GWTFontMetrics metrics, String[] words,
+			int idx, List<TextLayout> layouts) {
 		String line = words[idx++];
 		int startIdx = idx;
 		for (; idx < words.length; idx++) {
@@ -147,8 +143,7 @@ class GWTTextLayout extends TextLayout {
 			words[--idx] = remainder.toString();
 		}
 
-		layouts.add(new GWTTextLayout(ctx, line, format, metrics,
-				(float) lineWidth));
+		layouts.add(new GWTTextLayout(ctx, line, format, metrics, (float) lineWidth));
 		return idx;
 	}
 
@@ -164,8 +159,7 @@ class GWTTextLayout extends TextLayout {
 		if (_ctx != null) {
 			return (int) _ctx.measureText(message).getWidth();
 		}
-		return getProperty(message, GWTFont.toCSS(format.font))
-				.getOffsetWidth();
+		return getProperty(message, GWTFont.toCSS(format.font)).getOffsetWidth();
 	}
 
 	@Override
@@ -181,7 +175,6 @@ class GWTTextLayout extends TextLayout {
 		if (_ctx != null) {
 			return (int) _ctx.measureText(String.valueOf(ch)).getWidth();
 		}
-		return getProperty(String.valueOf(ch), GWTFont.toCSS(format.font))
-				.getOffsetWidth();
+		return getProperty(String.valueOf(ch), GWTFont.toCSS(format.font)).getOffsetWidth();
 	}
 }

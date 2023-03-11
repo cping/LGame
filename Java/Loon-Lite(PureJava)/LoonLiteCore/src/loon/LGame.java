@@ -29,6 +29,7 @@ import loon.font.IFont;
 import loon.font.LFont;
 import loon.opengl.LSTRFont;
 import loon.opengl.Mesh;
+import loon.opengl.TextureSource;
 import loon.utils.IntMap;
 import loon.utils.ObjectMap;
 import loon.utils.StringUtils;
@@ -640,7 +641,7 @@ public abstract class LGame implements LRelease {
 		for (int i = 0, size = _texture_all_list.size; i < size; i++) {
 			LTexture tex2d = _texture_all_list.get(i);
 			String source = tex2d.getSource();
-			if (tex2d != null && source.indexOf("<canvas>") == -1) {
+			if (tex2d != null && source.indexOf(TextureSource.RenderCanvas) == -1) {
 				if (key.equalsIgnoreCase(source) || key.equalsIgnoreCase(tex2d.tmpLazy)) {
 					return tex2d.refCount;
 				}
@@ -797,7 +798,7 @@ public abstract class LGame implements LRelease {
 			for (int i = 0; i < textures.size; i++) {
 				LTexture tex2d = textures.get(i);
 				if (tex2d != null && !tex2d.isClosed() && tex2d.getSource() != null
-						&& tex2d.getSource().indexOf("<canvas>") == -1) {
+						&& tex2d.getSource().indexOf(TextureSource.RenderCanvas) == -1) {
 					tex2d.refCount = 0;
 					tex2d.close(true);
 					tex2d = null;
@@ -1030,4 +1031,11 @@ public abstract class LGame implements LRelease {
 		}
 	}
 
+	public void shutdown() {
+		if (status.isClosed()) {
+			return;
+		}
+		status.emit(Status.EXIT);
+		stop();
+	}
 }

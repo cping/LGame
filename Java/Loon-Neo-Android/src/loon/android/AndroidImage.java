@@ -40,8 +40,7 @@ public class AndroidImage extends ImageImpl {
 		super(gfx, scale, bitmap.getWidth(), bitmap.getHeight(), source, bitmap);
 	}
 
-	public AndroidImage(AndroidGame game, boolean async, int preWidth,
-			int preHeight, String source) {
+	public AndroidImage(AndroidGame game, boolean async, int preWidth, int preHeight, String source) {
 		super(game, async, Scale.ONE, preWidth, preHeight, source);
 		if (this.bitmap != null) {
 			AndroidRuntime.get().trackFree(bitSize(this.bitmap));
@@ -58,23 +57,19 @@ public class AndroidImage extends ImageImpl {
 	}
 
 	@Override
-	public void getRGB(int startX, int startY, int width, int height,
-			int[] rgbArray, int offset, int scanSize) {
-		if (width <= 0 || height <= 0){
+	public void getRGB(int startX, int startY, int width, int height, int[] rgbArray, int offset, int scanSize) {
+		if (width <= 0 || height <= 0) {
 			return;
 		}
-		bitmap.getPixels(rgbArray, offset, scanSize, startX, startY, width,
-				height);
+		bitmap.getPixels(rgbArray, offset, scanSize, startX, startY, width, height);
 	}
 
 	@Override
-	public void setRGB(int startX, int startY, int width, int height,
-			int[] rgbArray, int offset, int scanSize) {
-		if (width <= 0 || height <= 0){
+	public void setRGB(int startX, int startY, int width, int height, int[] rgbArray, int offset, int scanSize) {
+		if (width <= 0 || height <= 0) {
 			return;
 		}
-		bitmap.setPixels(rgbArray, offset, scanSize, startX, startY, width,
-				height);
+		bitmap.setPixels(rgbArray, offset, scanSize, startX, startY, width, height);
 	}
 
 	@Override
@@ -89,15 +84,14 @@ public class AndroidImage extends ImageImpl {
 	}
 
 	@Override
-	public void draw(Object ctx, float dx, float dy, float dw, float dh,
-			float sx, float sy, float sw, float sh) {
+	public void draw(Object ctx, float dx, float dy, float dw, float dh, float sx, float sy, float sw, float sh) {
 		sx *= scale.factor;
 		sy *= scale.factor;
 		sw *= scale.factor;
 		sh *= scale.factor;
 
 		AndroidCanvas canvas = ((AndroidCanvas) ctx);
-		
+
 		canvas.draw(bitmap, dx, dy, dw, dh, sx, sy, sw, sh);
 	}
 
@@ -123,8 +117,7 @@ public class AndroidImage extends ImageImpl {
 
 	@Override
 	protected Object createErrorBitmap(int pixelWidth, int pixelHeight) {
-		Bitmap bitmap = Bitmap.createBitmap(pixelWidth, pixelHeight,
-				Bitmap.Config.ARGB_4444);
+		Bitmap bitmap = Bitmap.createBitmap(pixelWidth, pixelHeight, Bitmap.Config.ARGB_4444);
 		android.graphics.Canvas c = new android.graphics.Canvas(bitmap);
 		android.graphics.Paint p = new android.graphics.Paint();
 		p.setColor(android.graphics.Color.RED);
@@ -200,22 +193,20 @@ public class AndroidImage extends ImageImpl {
 		bitmap.getPixels(pixels, offset, stride, x, y, w, h);
 		return pixels;
 	}
-	
+
 	@Override
-	public int[] getPixels(int pixels[], int offset, int stride, int x, int y,
-			int width, int height) {
+	public int[] getPixels(int pixels[], int offset, int stride, int x, int y, int width, int height) {
 		bitmap.getPixels(pixels, offset, stride, x, y, width, height);
 		return pixels;
 	}
-	
+
 	@Override
 	public void setPixels(int[] pixels, int w, int h) {
 		bitmap.setPixels(pixels, 0, w, 0, 0, w, h);
 	}
 
 	@Override
-	public void setPixels(int[] pixels, int offset, int stride, int x, int y,
-			int width, int height) {
+	public void setPixels(int[] pixels, int offset, int stride, int x, int y, int width, int height) {
 		bitmap.setPixels(pixels, offset, stride, x, y, width, height);
 	}
 
@@ -229,7 +220,6 @@ public class AndroidImage extends ImageImpl {
 	public void setPixel(LColor c, int x, int y) {
 		bitmap.setPixel(x, y, c.getRGB());
 	}
-
 
 	@Override
 	public void setPixel(int rgb, int x, int y) {
@@ -253,10 +243,9 @@ public class AndroidImage extends ImageImpl {
 
 	@Override
 	public Image getSubImage(int x, int y, int w, int h) {
-		return AndroidGraphicsUtils.drawClipImage(this, w, h, x, y,
-				bitmap.getConfig());
+		return AndroidGraphicsUtils.drawClipImage(this, w, h, x, y, bitmap.getConfig());
 	}
-	
+
 	@Override
 	public boolean hasAlpha() {
 		if (bitmap == null) {

@@ -43,6 +43,7 @@ import loon.canvas.Path;
 import loon.canvas.Pattern;
 import loon.font.LFont;
 import loon.font.TextLayout;
+import loon.opengl.TextureSource;
 import loon.utils.MathUtils;
 
 class JavaSECanvas extends Canvas {
@@ -113,7 +114,7 @@ class JavaSECanvas extends Canvas {
 		WritableRaster raster = bmp.copyData(null);
 		BufferedImage snap = new BufferedImage(cm, raster,
 				isAlphaPremultiplied, null);
-		return new JavaSEImage(gfx, image.scale(), snap, "<canvas>");
+		return new JavaSEImage(gfx, image.scale(), snap, TextureSource.RenderCanvas);
 	}
 
 	@Override

@@ -38,6 +38,7 @@ import loon.LRelease;
 import loon.Sound;
 import loon.canvas.Image;
 import loon.canvas.ImageImpl;
+import loon.opengl.TextureSource;
 import loon.utils.Scale;
 import loon.utils.StringUtils;
 
@@ -565,7 +566,7 @@ public class AndroidAssets extends Assets {
 
 	@Override
 	protected ImageImpl.Data load(String path) throws Exception {
-		if (path == null || "<canvas>".equals(path)) {
+		if (path == null || TextureSource.RenderCanvas.equals(path)) {
 			return null;
 		}
 		Exception error = null;
@@ -656,15 +657,14 @@ public class AndroidAssets extends Assets {
 		}
 	}
 
-
 	protected BitmapOptions createOptions(String path, boolean purgeable, Scale scale) {
 		BitmapOptions options = new BitmapOptions();
 		options.inScaled = false;
 		options.inMutable = true;
 		options.inPreferredConfig = game.graphics().preferredBitmapConfig;
-		//options.inDither = true;
-		//options.inPurgeable = purgeable;
-		//options.inInputShareable = true;
+		// options.inDither = true;
+		// options.inPurgeable = purgeable;
+		// options.inInputShareable = true;
 		options.scale = scale;
 		optionsAdjuster.adjustOptions(path, options);
 		return options;

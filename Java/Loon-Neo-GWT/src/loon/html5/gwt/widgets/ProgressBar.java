@@ -30,10 +30,8 @@ public class ProgressBar extends Widget implements ResizableWidget {
 	private static final String DEFAULT_TEXT_CLASS_NAME = "gwt-ProgressBar-text";
 
 	private String textClassName = DEFAULT_TEXT_CLASS_NAME;
-	private String textFirstHalfClassName = DEFAULT_TEXT_CLASS_NAME
-			+ "-firstHalf";
-	private String textSecondHalfClassName = DEFAULT_TEXT_CLASS_NAME
-			+ "-secondHalf";
+	private String textFirstHalfClassName = DEFAULT_TEXT_CLASS_NAME + "-firstHalf";
+	private String textSecondHalfClassName = DEFAULT_TEXT_CLASS_NAME + "-secondHalf";
 
 	public abstract static class TextFormatter {
 
@@ -66,13 +64,11 @@ public class ProgressBar extends Widget implements ResizableWidget {
 		this(minProgress, maxProgress, 0.0);
 	}
 
-	public ProgressBar(double minProgress, double maxProgress,
-			double curProgress) {
+	public ProgressBar(double minProgress, double maxProgress, double curProgress) {
 		this(minProgress, maxProgress, curProgress, null);
 	}
 
-	public ProgressBar(double minProgress, double maxProgress,
-			double curProgress, TextFormatter textFormatter) {
+	public ProgressBar(double minProgress, double maxProgress, double curProgress, TextFormatter textFormatter) {
 		this.minProgress = minProgress;
 		this.maxProgress = maxProgress;
 		this.curProgress = curProgress;
@@ -107,8 +103,7 @@ public class ProgressBar extends Widget implements ResizableWidget {
 		if (maxProgress <= minProgress) {
 			return 0.0;
 		}
-		double percent = (curProgress - minProgress)
-				/ (maxProgress - minProgress);
+		double percent = (curProgress - minProgress) / (maxProgress - minProgress);
 		return Math.max(0.0, Math.min(1.0, percent));
 	}
 
@@ -126,8 +121,7 @@ public class ProgressBar extends Widget implements ResizableWidget {
 
 	public void onResize(int width, int height) {
 		if (textVisible) {
-			int textWidth = DOM.getElementPropertyInt(textElement,
-					"offsetWidth");
+			int textWidth = DOM.getElementPropertyInt(textElement, "offsetWidth");
 			int left = (width / 2) - (textWidth / 2);
 			DOM.setStyleAttribute(textElement, "left", left + "px");
 		}
@@ -136,8 +130,7 @@ public class ProgressBar extends Widget implements ResizableWidget {
 	public void redraw() {
 		if (isAttached()) {
 			int width = DOM.getElementPropertyInt(getElement(), "clientWidth");
-			int height = DOM
-					.getElementPropertyInt(getElement(), "clientHeight");
+			int height = DOM.getElementPropertyInt(getElement(), "clientHeight");
 			onResize(width, height);
 		}
 	}
@@ -159,12 +152,10 @@ public class ProgressBar extends Widget implements ResizableWidget {
 	}
 
 	public void setProgress(double curProgress) {
-		this.curProgress = Math.max(minProgress,
-				Math.min(maxProgress, curProgress));
+		this.curProgress = Math.max(minProgress, Math.min(maxProgress, curProgress));
 		int percent = (int) (100 * getPercent());
 		DOM.setStyleAttribute(barElement, "width", percent + "%");
-		DOM.setElementProperty(textElement, "innerHTML",
-				generateText(curProgress));
+		DOM.setElementProperty(textElement, "innerHTML", generateText(curProgress));
 		updateTextStyle(percent);
 		redraw();
 	}
@@ -237,11 +228,9 @@ public class ProgressBar extends Widget implements ResizableWidget {
 
 	private void updateTextStyle(int percent) {
 		if (percent < 50) {
-			DOM.setElementProperty(textElement, "className", textClassName
-					+ " " + textFirstHalfClassName);
+			DOM.setElementProperty(textElement, "className", textClassName + " " + textFirstHalfClassName);
 		} else {
-			DOM.setElementProperty(textElement, "className", textClassName
-					+ " " + textSecondHalfClassName);
+			DOM.setElementProperty(textElement, "className", textClassName + " " + textSecondHalfClassName);
 		}
 	}
 }

@@ -18,18 +18,22 @@ package java.util.regex;
 
 import com.google.gwt.regexp.shared.RegExp;
 
-/** Emulation of the {@link Matcher} class, uses {@link RegExp} as internal implementation.
- * @author hneuer */
+/**
+ * Emulation of the {@link Matcher} class, uses {@link RegExp} as internal
+ * implementation.
+ * 
+ * @author hneuer
+ */
 public class Matcher {
 	private final RegExp regExp;
 	private final String input;
 
-	Matcher (Pattern pattern, CharSequence input) {
+	Matcher(Pattern pattern, CharSequence input) {
 		this.regExp = pattern.regExp;
 		this.input = String.valueOf(input);
 	}
 
-	public boolean matches () {
+	public boolean matches() {
 		return regExp.test(input);
 	}
 }

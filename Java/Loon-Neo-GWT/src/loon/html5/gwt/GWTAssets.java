@@ -33,6 +33,7 @@ import loon.html5.gwt.preloader.PreloaderBundle;
 import loon.jni.TypedArrayHelper;
 import loon.jni.XDomainRequest;
 import loon.jni.XDomainRequest.Handler;
+import loon.opengl.TextureSource;
 import loon.utils.ObjectMap;
 import loon.utils.Scale;
 import loon.utils.TArray;
@@ -102,8 +103,7 @@ public class GWTAssets extends Assets {
 		for (Scale.ScaledResource rsrc : assetScale().getScaledResources(path)) {
 			return localImage(pathPrefix + path, rsrc.scale);
 		}
-		return new GWTImage(game.graphics(), new Throwable(
-				"Image missing from manifest: " + path));
+		return new GWTImage(game.graphics(), new Throwable("Image missing from manifest: " + path));
 	}
 
 	@Override
@@ -111,10 +111,8 @@ public class GWTAssets extends Assets {
 		if (game.gwtconfig != null && game.gwtconfig.asynResource) {
 			return getBundleImage(path);
 		}
-		Scale assetScale = (this.assetScale == null) ? Scale.ONE
-				: this.assetScale;
-		TArray<Scale.ScaledResource> rsrcs = assetScale
-				.getScaledResources(path);
+		Scale assetScale = (this.assetScale == null) ? Scale.ONE : this.assetScale;
+		TArray<Scale.ScaledResource> rsrcs = assetScale.getScaledResources(path);
 		return localImage(rsrcs.get(0).path, rsrcs.get(0).scale);
 	}
 
@@ -141,8 +139,7 @@ public class GWTAssets extends Assets {
 			PreloaderBundle clientBundle = getBundle(path);
 			if (clientBundle != null) {
 				String key = toKey(path);
-				DataResource resource = (DataResource) getResource(key,
-						clientBundle);
+				DataResource resource = (DataResource) getResource(key, clientBundle);
 				if (resource != null) {
 					url = resource.getSafeUri().asString();
 				}
@@ -171,12 +168,10 @@ public class GWTAssets extends Assets {
 		}
 		ObjectMap<String, String> res = gwtFile.preloader.texts;
 		String tmp = res.get(path = gwtFile.path());
-		if (tmp == null
-				&& (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
+		if (tmp == null && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
 			tmp = res.get(path.substring(path.indexOf('/') + 1, path.length()));
 		}
-		if (tmp == null
-				&& (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
+		if (tmp == null && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
 			tmp = res.get(LSystem.getFileName(path = gwtFile.path()));
 		}
 		if (tmp == null) {
@@ -196,12 +191,11 @@ public class GWTAssets extends Assets {
 			path = GWT_DEF_RES + path;
 		}
 		try {
-			return doXhr(path, XMLHttpRequest.ResponseType.Default).map(
-					new Function<XMLHttpRequest, String>() {
-						public String apply(XMLHttpRequest xhr) {
-							return xhr.getResponseText();
-						}
-					});
+			return doXhr(path, XMLHttpRequest.ResponseType.Default).map(new Function<XMLHttpRequest, String>() {
+				public String apply(XMLHttpRequest xhr) {
+					return xhr.getResponseText();
+				}
+			});
 		} catch (JavaScriptException e) {
 			if (Window.Navigator.getUserAgent().indexOf("MSIE") != -1) {
 				return doXdr(path).map(new Function<XDomainRequest, String>() {
@@ -220,19 +214,14 @@ public class GWTAssets extends Assets {
 				} else {
 					ObjectMap<String, String> res = gwtFile.preloader.texts;
 					String tmp = res.get(path = gwtFile.path());
-					if (tmp == null
-							&& (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
-						tmp = res.get(path.substring(path.indexOf('/') + 1,
-								path.length()));
+					if (tmp == null && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
+						tmp = res.get(path.substring(path.indexOf('/') + 1, path.length()));
 					}
-					if (tmp == null
-							&& (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
-						tmp = res
-								.get(LSystem.getFileName(path = gwtFile.path()));
+					if (tmp == null && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
+						tmp = res.get(LSystem.getFileName(path = gwtFile.path()));
 					}
 					if (tmp == null) {
-						tmp = res.get(LSystem
-								.getFileName(path = (GWT_DEF_RES + path)));
+						tmp = res.get(LSystem.getFileName(path = (GWT_DEF_RES + path)));
 					}
 					if (tmp == null) {
 						game.log().warn("file " + path + " not found");
@@ -259,23 +248,20 @@ public class GWTAssets extends Assets {
 			try {
 				result.succeed(getBytesSync(path));
 			} catch (Exception ex) {
-				result.fail(new UnsupportedOperationException(
-						"TypedArrays not supported by this browser."));
+				result.fail(new UnsupportedOperationException("TypedArrays not supported by this browser."));
 			}
 			return result;
 		}
 		try {
-			return doXhr(fullpath, XMLHttpRequest.ResponseType.ArrayBuffer)
-					.map(new Function<XMLHttpRequest, byte[]>() {
-						public byte[] apply(XMLHttpRequest xhr) {
-							ByteBuffer buffer = TypedArrayHelper.wrap(xhr
-									.getResponseArrayBuffer());
-							byte[] arr = new byte[buffer.remaining()];
-							buffer.get(arr);
-							buffer.position(0);
-							return arr;
-						}
-					});
+			return doXhr(fullpath, XMLHttpRequest.ResponseType.ArrayBuffer).map(new Function<XMLHttpRequest, byte[]>() {
+				public byte[] apply(XMLHttpRequest xhr) {
+					ByteBuffer buffer = TypedArrayHelper.wrap(xhr.getResponseArrayBuffer());
+					byte[] arr = new byte[buffer.remaining()];
+					buffer.get(arr);
+					buffer.position(0);
+					return arr;
+				}
+			});
 		} catch (Exception ex) {
 			final GoPromise<byte[]> result = GoPromise.create();
 			try {
@@ -299,12 +285,10 @@ public class GWTAssets extends Assets {
 		}
 		ObjectMap<String, Blob> res = gwtFile.preloader.binaries;
 		Blob tmp = res.get(path = gwtFile.path());
-		if (tmp == null
-				&& (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
+		if (tmp == null && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
 			tmp = res.get(path.substring(path.indexOf('/') + 1, path.length()));
 		}
-		if (tmp == null
-				&& (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
+		if (tmp == null && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
 			tmp = res.get(LSystem.getFileName(path = gwtFile.path()));
 		}
 		if (tmp == null) {
@@ -318,7 +302,7 @@ public class GWTAssets extends Assets {
 
 	@Override
 	protected ImageImpl.Data load(String path) throws Exception {
-		if (path == null || "<canvas>".equals(path)) {
+		if (path == null || TextureSource.RenderCanvas.equals(path)) {
 			return null;
 		}
 		path = getPath(path);
@@ -339,32 +323,27 @@ public class GWTAssets extends Assets {
 					image = img;
 					imageScale = viewScale;
 				}
-				return new ImageImpl.Data(imageScale, image, image.getWidth(),
-						image.getHeight());
+				return new ImageImpl.Data(imageScale, image, image.getWidth(), image.getHeight());
 			} catch (Exception fnfe) {
 				error = fnfe;
 			}
 		}
-		game.log().warn(
-				"Could not load image: " + path + " [error=" + error + "]");
+		game.log().warn("Could not load image: " + path + " [error=" + error + "]");
 		throw error != null ? error : new Exception(path);
 	}
 
 	@Override
-	protected ImageImpl createImage(boolean async, int rwid, int rhei,
-			String source) {
+	protected ImageImpl createImage(boolean async, int rwid, int rhei, String source) {
 		ImageElement img = Document.get().createImageElement();
 		img.setSrc(source);
-		return new GWTImage(game.graphics(), game.graphics().scale(), img,
-				source);
+		return new GWTImage(game.graphics(), game.graphics().scale(), img, source);
 	}
 
 	GWTAssets(GWTGame game) {
 		super(game.asyn());
 		this.game = game;
 		if (game.gwtconfig != null && game.gwtconfig.asynResource) {
-			GWTAssets.pathPrefix = GWT.getModuleBaseForStaticFiles()
-					+ "assets/";
+			GWTAssets.pathPrefix = GWT.getModuleBaseForStaticFiles() + "assets/";
 		} else {
 			GWTAssets.pathPrefix = "";
 		}
@@ -381,8 +360,7 @@ public class GWTAssets extends Assets {
 			@Override
 			public void onTimeout(XDomainRequest xdr) {
 				game.log().error("xdr::onTimeout[" + path + "]()");
-				result.fail(new Exception("Error getting " + path + " : "
-						+ xdr.getStatus()));
+				result.fail(new Exception("Error getting " + path + " : " + xdr.getStatus()));
 			}
 
 			@Override
@@ -403,8 +381,7 @@ public class GWTAssets extends Assets {
 			@Override
 			public void onError(XDomainRequest xdr) {
 				game.log().error("xdr::onError[" + path + "]()");
-				result.fail(new Exception("Error getting " + path + " : "
-						+ xdr.getStatus()));
+				result.fail(new Exception("Error getting " + path + " : " + xdr.getStatus()));
 			}
 		});
 		if (LOG_XHR_SUCCESS) {
@@ -418,8 +395,7 @@ public class GWTAssets extends Assets {
 		return result;
 	}
 
-	private GoFuture<XMLHttpRequest> doXhr(final String path,
-			final XMLHttpRequest.ResponseType responseType) {
+	private GoFuture<XMLHttpRequest> doXhr(final String path, final XMLHttpRequest.ResponseType responseType) {
 		final GoPromise<XMLHttpRequest> result = GoPromise.create();
 		XMLHttpRequest xhr = XMLHttpRequest.create();
 		if (LOG_XHR_SUCCESS) {
@@ -434,18 +410,13 @@ public class GWTAssets extends Assets {
 				if (readyState == XMLHttpRequest.DONE) {
 					int status = xhr.getStatus();
 					if (status != 0 && (status < 200 || status >= 400)) {
-						game.log().error(
-								"xhr::onReadyStateChange[" + path + "]"
-										+ "(readyState = " + readyState
-										+ "; status = " + status + ")");
-						result.fail(new Exception("Error getting " + path
-								+ " : " + xhr.getStatusText()));
+						game.log().error("xhr::onReadyStateChange[" + path + "]" + "(readyState = " + readyState
+								+ "; status = " + status + ")");
+						result.fail(new Exception("Error getting " + path + " : " + xhr.getStatusText()));
 					} else {
 						if (LOG_XHR_SUCCESS)
-							game.log().debug(
-									"xhr::onReadyStateChange[" + path + "]"
-											+ "(readyState = " + readyState
-											+ "; status = " + status + ")");
+							game.log().debug("xhr::onReadyStateChange[" + path + "]" + "(readyState = " + readyState
+									+ "; status = " + status + ")");
 						result.succeed(xhr);
 					}
 				}
@@ -465,25 +436,21 @@ public class GWTAssets extends Assets {
 		}
 		GWTResourcesLoader files = Loon.self.resources.internal(path);
 		if (files.preloader.isImage(path)) {
-			return new GWTImage(game.graphics(), scale,
-					files.preloader.images.get(path), path);
+			return new GWTImage(game.graphics(), scale, files.preloader.images.get(path), path);
 		}
 		ObjectMap<String, ImageElement> res = files.preloader.images;
 		ImageElement tmp = res.get(path = files.path());
-		if (tmp == null
-				&& (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
+		if (tmp == null && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
 			tmp = res.get(path.substring(path.indexOf('/') + 1, path.length()));
 		}
-		if (tmp == null
-				&& (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
+		if (tmp == null && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
 			tmp = res.get(LSystem.getFileName(path = files.path()));
 		}
 		if (tmp == null) {
 			tmp = res.get(LSystem.getFileName(path = (GWT_DEF_RES + path)));
 		}
 		if (tmp == null) {
-			return getBundleImage(GWT.getModuleBaseForStaticFiles() + path,
-					scale);
+			return getBundleImage(GWT.getModuleBaseForStaticFiles() + path, scale);
 		}
 		return new GWTImage(game.graphics(), scale, tmp, path);
 	}
@@ -499,12 +466,10 @@ public class GWTAssets extends Assets {
 		}
 		ObjectMap<String, ImageElement> res = files.preloader.images;
 		ImageElement tmp = res.get(path = files.path());
-		if (tmp == null
-				&& (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
+		if (tmp == null && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
 			tmp = res.get(path.substring(path.indexOf('/') + 1, path.length()));
 		}
-		if (tmp == null
-				&& (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
+		if (tmp == null && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
 			tmp = res.get(LSystem.getFileName(path = files.path()));
 		}
 		if (tmp == null) {
@@ -537,16 +502,14 @@ public class GWTAssets extends Assets {
 		return dotCharIdx != -1 ? key.substring(0, dotCharIdx) : key;
 	}
 
-	private ResourcePrototype getResource(String key,
-			PreloaderBundle clientBundle) {
+	private ResourcePrototype getResource(String key, PreloaderBundle clientBundle) {
 		ResourcePrototype resource = clientBundle.getResource(key);
 		return resource;
 	}
 
 	private PreloaderBundle getBundle(String collection) {
 		PreloaderBundle clientBundle = null;
-		for (HashMap.Entry<String, PreloaderBundle> entry : clientBundles
-				.entrySet()) {
+		for (HashMap.Entry<String, PreloaderBundle> entry : clientBundles.entrySet()) {
 			String regExp = entry.getKey();
 			if (RegExp.compile(regExp).exec(collection) != null) {
 				clientBundle = entry.getValue();
@@ -560,8 +523,7 @@ public class GWTAssets extends Assets {
 		PreloaderBundle clientBundle = getBundle(path);
 		if (clientBundle != null) {
 			String key = toKey(path);
-			ImageResource resource = (ImageResource) getResource(key,
-					clientBundle);
+			ImageResource resource = (ImageResource) getResource(key, clientBundle);
 			if (resource != null) {
 				url = resource.getSafeUri().asString();
 			}
@@ -577,28 +539,22 @@ public class GWTAssets extends Assets {
 	}
 
 	public Image getBundleImage(String path) {
-		Scale assetScale = (this.assetScale == null) ? Scale.ONE
-				: this.assetScale;
-		TArray<Scale.ScaledResource> rsrcs = assetScale
-				.getScaledResources(path);
+		Scale assetScale = (this.assetScale == null) ? Scale.ONE : this.assetScale;
+		TArray<Scale.ScaledResource> rsrcs = assetScale.getScaledResources(path);
 		return getBundleImage(rsrcs.get(0).path, rsrcs.get(0).scale);
 	}
 
 	public Image getBundleImageSync(String path) {
 		if (imageManifest == null) {
-			throw new UnsupportedOperationException("getImageSync(" + path
-					+ ")");
+			throw new UnsupportedOperationException("getImageSync(" + path + ")");
 		} else {
-			for (Scale.ScaledResource rsrc : assetScale().getScaledResources(
-					path)) {
+			for (Scale.ScaledResource rsrc : assetScale().getScaledResources(path)) {
 				int[] size = imageManifest.imageSize(rsrc.path);
 				if (size == null)
 					continue;
-				return getBundleImage(rsrc.path, rsrc.scale).preload(size[0],
-						size[1]);
+				return getBundleImage(rsrc.path, rsrc.scale).preload(size[0], size[1]);
 			}
-			return new GWTImage(game.graphics(), new Throwable(
-					"Image missing from manifest: " + path));
+			return new GWTImage(game.graphics(), new Throwable("Image missing from manifest: " + path));
 		}
 	}
 

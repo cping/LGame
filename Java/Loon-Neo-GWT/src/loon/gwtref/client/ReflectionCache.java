@@ -24,14 +24,12 @@ import com.google.gwt.core.client.GWT;
 
 @SuppressWarnings("rawtypes")
 public class ReflectionCache {
-	private static IReflectionCache instance = GWT
-			.create(IReflectionCache.class);
+	private static IReflectionCache instance = GWT.create(IReflectionCache.class);
 
 	public static Type forName(String name) throws ClassNotFoundException {
 		Type type = instance.forName(convert(name));
 		if (type == null) {
-			throw new RuntimeException("Couldn't find Type for class '" + name
-					+ "'");
+			throw new RuntimeException("Couldn't find Type for class '" + name + "'");
 		}
 		return type;
 	}
@@ -41,8 +39,7 @@ public class ReflectionCache {
 			return null;
 		Type type = instance.forName(convert(clazz.getName()));
 		if (type == null) {
-			throw new RuntimeException("Couldn't find Type for class '"
-					+ clazz.getName() + "'");
+			throw new RuntimeException("Couldn't find Type for class '" + clazz.getName() + "'");
 		}
 		return type;
 	}
@@ -66,9 +63,7 @@ public class ReflectionCache {
 			case 'C':
 				return "char" + suffix;
 			case 'L':
-				return className.substring(dimensions + 1,
-						className.length() - 1).replace('$', '.')
-						+ suffix;
+				return className.substring(dimensions + 1, className.length() - 1).replace('$', '.') + suffix;
 			case 'D':
 				return "double" + suffix;
 			case 'F':
@@ -80,8 +75,7 @@ public class ReflectionCache {
 			case 'S':
 				return "short" + suffix;
 			default:
-				throw new IllegalArgumentException("Couldn't transform '"
-						+ className + "' to qualified source name");
+				throw new IllegalArgumentException("Couldn't transform '" + className + "' to qualified source name");
 			}
 		} else {
 			return className.replace('$', '.');
@@ -92,13 +86,11 @@ public class ReflectionCache {
 		return instance.newArray(getType(componentType), size);
 	}
 
-	public static Object getFieldValue(Field field, Object obj)
-			throws IllegalAccessException {
+	public static Object getFieldValue(Field field, Object obj) throws IllegalAccessException {
 		return instance.get(field, obj);
 	}
 
-	public static void setFieldValue(Field field, Object obj, Object value)
-			throws IllegalAccessException {
+	public static void setFieldValue(Field field, Object obj, Object value) throws IllegalAccessException {
 		instance.set(field, obj, value);
 	}
 
@@ -114,8 +106,7 @@ public class ReflectionCache {
 		return instance.getArrayElement(type, obj, i);
 	}
 
-	public static void setArrayElement(Type type, Object obj, int i,
-			Object value) {
+	public static void setArrayElement(Type type, Object obj, int i, Object value) {
 		instance.setArrayElement(type, obj, i, value);
 	}
 }

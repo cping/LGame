@@ -370,12 +370,4 @@ public class JavaSEGame extends LGame {
 		return new JavaSEMesh(canvas);
 	}
 
-	public void shutdown() {
-		if (status.isClosed()) {
-			return;
-		}
-		status.emit(Status.EXIT);
-		stop();
-		System.exit(0);
-	}
 }

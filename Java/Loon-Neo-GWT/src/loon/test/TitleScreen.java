@@ -20,13 +20,12 @@ public class TitleScreen extends Screen {
 	}
 
 	public void onLoad() {
-new AnimationData(new long[]{0,0});
+		new AnimationData(new long[] { 0, 0 });
 		setBackground("assets/back1.png");
 
 		start = new LButton("assets/title_start.png", 191, 57) {
 
-			ActionKey action = new ActionKey(
-					ActionKey.DETECT_INITIAL_PRESS_ONLY);
+			ActionKey action = new ActionKey(ActionKey.DETECT_INITIAL_PRESS_ONLY);
 
 			public void doClick() {
 				if (!action.isPressed()) {

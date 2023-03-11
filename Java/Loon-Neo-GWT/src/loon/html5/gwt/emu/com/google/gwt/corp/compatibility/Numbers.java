@@ -27,7 +27,7 @@ public class Numbers {
 
 	static final double LN2 = Math.log(2);
 
-	public static final int floatToIntBits (float f) {
+	public static final int floatToIntBits(float f) {
 		wfa.set(0, f);
 		return wia.get(0);
 
@@ -73,7 +73,7 @@ public class Numbers {
 	static Int32Array wia = Int32ArrayNative.create(wba.buffer(), 0, 1);
 	static Float32Array wfa = Float32ArrayNative.create(wba.buffer(), 0, 1);
 
-	public static final float intBitsToFloat (int i) {
+	public static final float intBitsToFloat(int i) {
 // wba.set(0, (byte) (i >> 24));
 // wba.set(1, (byte) (i >> 16));
 // wba.set(2, (byte) (i >> 8));
@@ -96,15 +96,15 @@ public class Numbers {
 // return (i & 0x80000000) == 0 ? result : -result;
 	}
 
-	public static final long doubleToLongBits (Double d) {
+	public static final long doubleToLongBits(Double d) {
 		throw new RuntimeException("NYI");
 	}
 
-	public static final double longBitsToDouble (long l) {
+	public static final double longBitsToDouble(long l) {
 		throw new RuntimeException("NYI");
 	}
 
-	public static long doubleToRawLongBits (double value) {
+	public static long doubleToRawLongBits(double value) {
 		throw new RuntimeException("NYI: Numbers.doubleToRawLongBits");
 	}
 }

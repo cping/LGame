@@ -45,6 +45,7 @@ import loon.LSystem;
 import loon.Sound;
 import loon.canvas.Image;
 import loon.canvas.ImageImpl;
+import loon.opengl.TextureSource;
 import loon.utils.MathUtils;
 import loon.utils.Scale;
 import loon.utils.StringUtils;
@@ -705,7 +706,7 @@ public class JavaSEAssets extends Assets {
 
 	@Override
 	protected ImageImpl.Data load(String path) throws Exception {
-		if (path == null || "<canvas>".equals(path)) {
+		if (path == null || TextureSource.RenderCanvas.equals(path)) {
 			return null;
 		}
 		Exception error = null;

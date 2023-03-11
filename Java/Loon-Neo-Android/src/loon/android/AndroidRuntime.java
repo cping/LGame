@@ -49,15 +49,12 @@ public class AndroidRuntime {
 		}
 		try {
 			Class<?> VMRuntimeClass = Class.forName("dalvik.system.VMRuntime");
-			Method getRuntimeMethod = VMRuntimeClass.getMethod("getRuntime",
-					new Class[0]);
+			Method getRuntimeMethod = VMRuntimeClass.getMethod("getRuntime", new Class[0]);
 			Class<?>[] arrayOfClass = new Class[1];
 			arrayOfClass[0] = Long.TYPE;
-			Method getTargetHeapUtilization = VMRuntimeClass.getMethod(
-					"getTargetHeapUtilization", new Class[0]);
+			Method getTargetHeapUtilization = VMRuntimeClass.getMethod("getTargetHeapUtilization", new Class[0]);
 			Object runtimeObject = getRuntimeMethod.invoke(null, new Object[0]);
-			Float ret = (Float) getTargetHeapUtilization.invoke(runtimeObject,
-					new Object[0]);
+			Float ret = (Float) getTargetHeapUtilization.invoke(runtimeObject, new Object[0]);
 			return ret.floatValue();
 		} catch (Throwable e) {
 			e.printStackTrace();
@@ -71,12 +68,10 @@ public class AndroidRuntime {
 		}
 		try {
 			Class<?> VMRuntimeClass = Class.forName("dalvik.system.VMRuntime");
-			Method getRuntimeMethod = VMRuntimeClass.getMethod("getRuntime",
-					new Class[0]);
+			Method getRuntimeMethod = VMRuntimeClass.getMethod("getRuntime", new Class[0]);
 			Class<?>[] arrayOfClass = new Class[1];
 			arrayOfClass[0] = Float.TYPE;
-			Method setTargetHeapUtilizationMethod = VMRuntimeClass.getMethod(
-					"setTargetHeapUtilization", arrayOfClass);
+			Method setTargetHeapUtilizationMethod = VMRuntimeClass.getMethod("setTargetHeapUtilization", arrayOfClass);
 			Object runtimeObject = getRuntimeMethod.invoke(null, new Object[0]);
 			Object[] arrayOfObject = new Object[1];
 			arrayOfObject[0] = Float.valueOf(value);
@@ -140,10 +135,8 @@ public class AndroidRuntime {
 			Class<?> cl = Class.forName("dalvik.system.VMRuntime");
 			Method getRt = cl.getMethod("getRuntime", new Class[0]);
 			runtime = getRt.invoke(null, new Object[0]);
-			trackAllocation = cl.getMethod("trackExternalAllocation",
-					new Class[] { long.class });
-			trackFree = cl.getMethod("trackExternalFree",
-					new Class[] { long.class });
+			trackAllocation = cl.getMethod("trackExternalAllocation", new Class[] { long.class });
+			trackFree = cl.getMethod("trackExternalFree", new Class[] { long.class });
 			success = true;
 		} catch (ClassNotFoundException e) {
 		} catch (SecurityException e) {

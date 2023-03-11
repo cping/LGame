@@ -33,8 +33,7 @@ public class StringTokenizer implements Enumeration<Object> {
 		this(string, delimiters, false);
 	}
 
-	public StringTokenizer(String string, String delimiters,
-			boolean returnDelimiters) {
+	public StringTokenizer(String string, String delimiters, boolean returnDelimiters) {
 		if (string == null) {
 			throw new NullPointerException("string == null");
 		}

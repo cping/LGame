@@ -137,17 +137,14 @@ public class AndroidSupport implements Support {
 	}
 
 	@Override
-	public void filterColor(int maxPixel, int pixelStart, int pixelEnd,
-			int[] src, int[] dst, int[] colors, int c1, int c2) {
-		NativeSupport.filterColor(maxPixel, pixelStart, pixelEnd, src, dst,
-				colors, c1, c2);
+	public void filterColor(int maxPixel, int pixelStart, int pixelEnd, int[] src, int[] dst, int[] colors, int c1,
+			int c2) {
+		NativeSupport.filterColor(maxPixel, pixelStart, pixelEnd, src, dst, colors, c1, c2);
 	}
 
 	@Override
-	public void filterFractions(int size, float[] fractions, int width,
-			int height, int[] pixels, int numElements) {
-		NativeSupport.filterFractions(size, fractions, width, height, pixels,
-				numElements);
+	public void filterFractions(int size, float[] fractions, int width, int height, int[] pixels, int numElements) {
+		NativeSupport.filterFractions(size, fractions, width, height, pixels, numElements);
 	}
 
 	@Override
@@ -161,8 +158,7 @@ public class AndroidSupport implements Support {
 	}
 
 	@Override
-	public void mulVec(float[] mat, float[] vecs, int offset, int numVecs,
-			int stride) {
+	public void mulVec(float[] mat, float[] vecs, int offset, int numVecs, int stride) {
 		NativeSupport.mulVec(mat, vecs, offset, numVecs, stride);
 	}
 
@@ -172,8 +168,7 @@ public class AndroidSupport implements Support {
 	}
 
 	@Override
-	public void prj(float[] mat, float[] vecs, int offset, int numVecs,
-			int stride) {
+	public void prj(float[] mat, float[] vecs, int offset, int numVecs, int stride) {
 		NativeSupport.prj(mat, vecs, offset, numVecs, stride);
 	}
 
@@ -183,8 +178,7 @@ public class AndroidSupport implements Support {
 	}
 
 	@Override
-	public void rot(float[] mat, float[] vecs, int offset, int numVecs,
-			int stride) {
+	public void rot(float[] mat, float[] vecs, int offset, int numVecs, int stride) {
 		NativeSupport.rot(mat, vecs, offset, numVecs, stride);
 	}
 
@@ -222,7 +216,7 @@ public class AndroidSupport implements Support {
 	public void makeBuffer(byte[] data, int size, int tag) {
 		NativeSupport.makeBuffer(data, size, tag);
 	}
-	
+
 	@Override
 	public boolean isNative() {
 		return NativeSupport.UseLoonNative();

@@ -22,6 +22,7 @@ package loon.robovm;
 
 import loon.Graphics;
 import loon.LTexture;
+import loon.opengl.TextureSource;
 import loon.utils.Scale;
 
 import org.robovm.apple.coregraphics.CGBitmapContext;
@@ -34,7 +35,7 @@ public class RoboVMCanvasImage extends RoboVMImage {
 
 	public RoboVMCanvasImage(Graphics gfx, Scale scale, int pixelWidth,
 			int pixelHeight, boolean interpolate) {
-		super(gfx, scale, pixelWidth, pixelHeight, "<canvas>");
+		super(gfx, scale, pixelWidth, pixelHeight, TextureSource.RenderCanvas);
 		bctx = RoboVMGraphics.createCGBitmap(pixelWidth, pixelHeight);
 		if (!interpolate) {
 			bctx.setInterpolationQuality(CGInterpolationQuality.None);

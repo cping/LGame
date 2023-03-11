@@ -34,6 +34,7 @@ import loon.opengl.GLEx;
 import loon.opengl.GLPaint;
 import loon.opengl.Painter;
 import loon.opengl.ShaderSource;
+import loon.opengl.TextureSource;
 import loon.utils.CollectionUtils;
 import loon.utils.GLUtils;
 import loon.utils.IntMap;
@@ -244,6 +245,10 @@ public class LTexture extends Painter implements LRelease {
 		return StringUtils.isEmpty(source) ? "" : source;
 	}
 
+	public boolean isDrawCanvas() {
+		return source != null && source.indexOf(RenderCanvas) != -1;
+	}
+	
 	public boolean isImageCanvas() {
 		return StringUtils.isEmpty(source) || (source.indexOf('<') != -1 && source.indexOf('>') != -1);
 	}
@@ -1242,9 +1247,6 @@ public class LTexture extends Painter implements LRelease {
 		return MathUtils.ifloor(height());
 	}
 
-	public boolean isDrawCanvas() {
-		return source != null && source.indexOf("<canvas>") != -1;
-	}
 
 	@Override
 	public int hashCode() {

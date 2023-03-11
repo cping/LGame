@@ -36,6 +36,7 @@ import loon.geom.Dimension;
 import loon.html5.gwt.GWTGame.GWTSetting;
 import loon.html5.gwt.Loon.OrientationChangedHandler;
 import loon.opengl.GL20;
+import loon.opengl.TextureSource;
 import loon.utils.GLUtils;
 import loon.utils.Scale;
 
@@ -73,8 +74,7 @@ public class GWTGraphics extends Graphics {
 	static float experimentalScale = 1;
 
 	public GWTGraphics(final Panel panel, final LGame game, final GWTSetting cfg) {
-		super(game, new GWTGL20(), game.setting.scaling() ? Scale.ONE
-				: new Scale(Loon.devicePixelRatio()));
+		super(game, new GWTGL20(), game.setting.scaling() ? Scale.ONE : new Scale(Loon.devicePixelRatio()));
 
 		this.config = cfg;
 		Document doc = Document.get();
@@ -96,10 +96,8 @@ public class GWTGraphics extends Graphics {
 		canvas = Document.get().createCanvasElement();
 		root.appendChild(canvas);
 		if (config.scaling()) {
-			setSize(config.width_zoom > 0 ? config.width_zoom
-					: root.getOffsetWidth(),
-					config.height_zoom > 0 ? config.height_zoom : root
-							.getOffsetHeight());
+			setSize(config.width_zoom > 0 ? config.width_zoom : root.getOffsetWidth(),
+					config.height_zoom > 0 ? config.height_zoom : root.getOffsetHeight());
 		} else {
 			setSize(config.width > 0 ? config.width : root.getOffsetWidth(),
 					config.height > 0 ? config.height : root.getOffsetHeight());
@@ -111,8 +109,7 @@ public class GWTGraphics extends Graphics {
 		attrs.setPremultipliedAlpha(config.premultipliedAlpha);
 		attrs.setPreserveDrawingBuffer(config.preserveDrawingBuffer);
 
-		WebGLRenderingContext glc = WebGLRenderingContext.getContext(canvas,
-				attrs);
+		WebGLRenderingContext glc = WebGLRenderingContext.getContext(canvas, attrs);
 
 		if (glc == null) {
 			throw new RuntimeException("Unable to create GL context");
@@ -130,22 +127,15 @@ public class GWTGraphics extends Graphics {
 			Window.addResizeHandler(new ResizeHandler() {
 				@Override
 				public void onResize(ResizeEvent event) {
-					if (getScreenWidthJSNI() == event.getWidth()
-							&& getScreenHeightJSNI() == event.getHeight()) {
-						float width = LSystem.viewSize.width(), height = LSystem.viewSize
-								.height();
-						experimentalScale = Math.min(getScreenWidthJSNI()
-								/ width, getScreenHeightJSNI() / height);
+					if (getScreenWidthJSNI() == event.getWidth() && getScreenHeightJSNI() == event.getHeight()) {
+						float width = LSystem.viewSize.width(), height = LSystem.viewSize.height();
+						experimentalScale = Math.min(getScreenWidthJSNI() / width, getScreenHeightJSNI() / height);
 
-						int yOfs = (int) ((getScreenHeightJSNI() - height
-								* experimentalScale) / 3.f);
-						int xOfs = (int) ((getScreenWidthJSNI() - width
-								* experimentalScale) / 2.f);
-						rootElement.setAttribute("style", "width:"
-								+ experimentalScale * width + "px; "
-								+ "height:" + experimentalScale * height
-								+ "px; " + "position:absolute; left:" + xOfs
-								+ "px; top:" + yOfs);
+						int yOfs = (int) ((getScreenHeightJSNI() - height * experimentalScale) / 3.f);
+						int xOfs = (int) ((getScreenWidthJSNI() - width * experimentalScale) / 2.f);
+						rootElement.setAttribute("style",
+								"width:" + experimentalScale * width + "px; " + "height:" + experimentalScale * height
+										+ "px; " + "position:absolute; left:" + xOfs + "px; top:" + yOfs);
 						Document.get().getBody().addClassName("fullscreen");
 					} else {
 						experimentalScale = 1;
@@ -161,9 +151,7 @@ public class GWTGraphics extends Graphics {
 			public void onChanged(Orientation newOrientation) {
 				int width = Loon.self.getContainerWidth();
 				int height = Loon.self.getContainerHeight();
-				game.log().info(
-						"update screen size width :" + width + " height :"
-								+ height);
+				game.log().info("update screen size width :" + width + " height :" + height);
 				setSize(width, height);
 			}
 		});
@@ -208,15 +196,13 @@ public class GWTGraphics extends Graphics {
 
 	public void registerFontMetrics(String name, Font font, float lineHeight) {
 		GWTFontMetrics metrics = getFontMetrics(font);
-		fontMetrics.put(font, new GWTFontMetrics(font, lineHeight,
-				metrics.emwidth));
+		fontMetrics.put(font, new GWTFontMetrics(font, lineHeight, metrics.emwidth));
 	}
 
 	@Override
 	public Dimension screenSize() {
-		screenSize.setSize(
-				Document.get().getDocumentElement().getClientWidth(), Document
-						.get().getDocumentElement().getClientHeight());
+		screenSize.setSize(Document.get().getDocumentElement().getClientWidth(),
+				Document.get().getDocumentElement().getClientHeight());
 		return screenSize;
 	}
 
@@ -231,18 +217,16 @@ public class GWTGraphics extends Graphics {
 	}
 
 	@Override
-	protected Canvas createCanvasImpl(Scale scale, int pixelWidth,
-			int pixelHeight) {
+	protected Canvas createCanvasImpl(Scale scale, int pixelWidth, int pixelHeight) {
 		CanvasElement elem = Document.get().createCanvasElement();
 		elem.setWidth(pixelWidth);
 		elem.setHeight(pixelHeight);
-		return new GWTCanvas(this, new GWTImage(this, scale, elem, "<canvas>"));
+		return new GWTCanvas(this, new GWTImage(this, scale, elem, TextureSource.RenderCanvas));
 	}
 
 	void updateTexture(int tex, ImageElement img) {
 		GLUtils.bindTexture(gl, tex);
-		((GWTGL20) gl).glTexImage2D(GL20.GL_TEXTURE_2D, 0, GL20.GL_RGBA,
-				GL20.GL_RGBA, GL20.GL_UNSIGNED_BYTE, img);
+		((GWTGL20) gl).glTexImage2D(GL20.GL_TEXTURE_2D, 0, GL20.GL_RGBA, GL20.GL_RGBA, GL20.GL_UNSIGNED_BYTE, img);
 	}
 
 	GWTFontMetrics getFontMetrics(Font font) {

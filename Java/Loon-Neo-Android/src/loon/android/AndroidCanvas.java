@@ -30,6 +30,7 @@ import loon.canvas.LColor;
 import loon.canvas.Path;
 import loon.canvas.Pattern;
 import loon.font.TextLayout;
+import loon.opengl.TextureSource;
 import loon.utils.MathUtils;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
@@ -54,8 +55,7 @@ public class AndroidCanvas extends Canvas {
 		scale(factor, factor);
 	}
 
-	void draw(Bitmap bitmap, float x, float y, float w, float h, float x1,
-			float y1, float w1, float h1) {
+	void draw(Bitmap bitmap, float x, float y, float w, float h, float x1, float y1, float w1, float h1) {
 		srcR.set((int) x1, (int) y1, (int) w1, (int) h1);
 		dstR.set(x, y, x + w, y + h);
 		canvas.drawBitmap(bitmap, srcR, dstR, currentState().prepareImage());
@@ -110,8 +110,8 @@ public class AndroidCanvas extends Canvas {
 
 	@Override
 	public Canvas clearRect(float x, float y, float width, float height) {
-		//api28开始不支持CLIP_SAVE_FLAG在Android Canvas外部使用
-		//canvas.save(android.graphics.Canvas.CLIP_SAVE_FLAG);
+		// api28开始不支持CLIP_SAVE_FLAG在Android Canvas外部使用
+		// canvas.save(android.graphics.Canvas.CLIP_SAVE_FLAG);
 		canvas.save();
 		canvas.clipRect(x, y, x + width, y + height);
 		canvas.drawColor(0, PorterDuff.Mode.SRC);
@@ -187,8 +187,7 @@ public class AndroidCanvas extends Canvas {
 	}
 
 	@Override
-	public Canvas fillRoundRect(float x, float y, float width, float height,
-			float radius) {
+	public Canvas fillRoundRect(float x, float y, float width, float height, float radius) {
 		canvas.translate(x, y);
 		dstR.set(0, 0, width, height);
 		canvas.drawRoundRect(dstR, radius, radius, currentState().prepareFill());
@@ -199,8 +198,7 @@ public class AndroidCanvas extends Canvas {
 
 	@Override
 	public Canvas fillText(TextLayout layout, float x, float y) {
-		((AndroidTextLayout) layout).draw(canvas, x, y, currentState()
-				.prepareFill());
+		((AndroidTextLayout) layout).draw(canvas, x, y, currentState().prepareFill());
 		isDirty = true;
 		return this;
 	}
@@ -294,8 +292,7 @@ public class AndroidCanvas extends Canvas {
 	@Override
 	public Image snapshot() {
 		Bitmap bitmap = ((AndroidImage) this.image).bitmap();
-		return new AndroidImage(gfx, image.scale(), bitmap.copy(
-				bitmap.getConfig(), false), "<canvas>");
+		return new AndroidImage(gfx, image.scale(), bitmap.copy(bitmap.getConfig(), false), TextureSource.RenderCanvas);
 	}
 
 	@Override
@@ -307,8 +304,7 @@ public class AndroidCanvas extends Canvas {
 
 	@Override
 	public Canvas strokePath(Path path) {
-		canvas.drawPath(((AndroidPath) path).path, currentState()
-				.prepareStroke());
+		canvas.drawPath(((AndroidPath) path).path, currentState().prepareStroke());
 		isDirty = true;
 		return this;
 	}
@@ -319,19 +315,16 @@ public class AndroidCanvas extends Canvas {
 		float top = y;
 		float right = left + width;
 		float bottom = top + height;
-		canvas.drawRect(left, top, right, bottom, currentState()
-				.prepareStroke());
+		canvas.drawRect(left, top, right, bottom, currentState().prepareStroke());
 		isDirty = true;
 		return this;
 	}
 
 	@Override
-	public Canvas strokeRoundRect(float x, float y, float width, float height,
-			float radius) {
+	public Canvas strokeRoundRect(float x, float y, float width, float height, float radius) {
 		canvas.translate(x, y);
 		dstR.set(0, 0, width, height);
-		canvas.drawRoundRect(dstR, radius, radius, currentState()
-				.prepareStroke());
+		canvas.drawRoundRect(dstR, radius, radius, currentState().prepareStroke());
 		canvas.translate(-x, -y);
 		isDirty = true;
 		return this;
@@ -339,15 +332,13 @@ public class AndroidCanvas extends Canvas {
 
 	@Override
 	public Canvas strokeText(TextLayout layout, float x, float y) {
-		((AndroidTextLayout) layout).draw(canvas, x, y, currentState()
-				.prepareStroke());
+		((AndroidTextLayout) layout).draw(canvas, x, y, currentState().prepareStroke());
 		isDirty = true;
 		return this;
 	}
 
 	@Override
-	public Canvas transform(float m11, float m12, float m21, float m22,
-			float dx, float dy) {
+	public Canvas transform(float m11, float m12, float m21, float m22, float dx, float dy) {
 		m.setValues(new float[] { m11, m21, dx, m12, m22, dy, 0, 0, 1 });
 		canvas.concat(m);
 		return this;

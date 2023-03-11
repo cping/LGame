@@ -40,6 +40,7 @@ import loon.font.LFont;
 import loon.font.TextLayout;
 import loon.geom.Affine2f;
 import loon.opengl.BlendMethod;
+import loon.opengl.TextureSource;
 import loon.utils.MathUtils;
 
 public class JavaFXCanvas extends Canvas {
@@ -177,14 +178,14 @@ public class JavaFXCanvas extends Canvas {
 	@Override
 	public Image newSnapshot() {
 		WritableImage newImage = new WritableImage(toFXImage().buffer.getPixelReader(), (int) width, (int) height);
-		return new JavaFXImage(gfx, image.scale(), fxCanvas.snapshot(snapshotParameters, newImage), "<canvas>");
+		return new JavaFXImage(gfx, image.scale(), fxCanvas.snapshot(snapshotParameters, newImage), TextureSource.RenderCanvas);
 	}
 
 	@Override
 	public Image snapshot() {
 		if (image == null) {
 			WritableImage writeImage = toFXImage().buffer;
-			image = new JavaFXImage(gfx, image.scale(), fxCanvas.snapshot(snapshotParameters, writeImage), "<canvas>");
+			image = new JavaFXImage(gfx, image.scale(), fxCanvas.snapshot(snapshotParameters, writeImage), TextureSource.RenderCanvas);
 			setFXImage(image, writeImage);
 			return image;
 		}

@@ -14,20 +14,20 @@ public abstract class Permission {
 
 	protected String name;
 
-	public Permission (String name) {
+	public Permission(String name) {
 		this.name = name;
 	}
 
-	public String getName () {
+	public String getName() {
 		return name;
 	}
 
 	@Override
-	public String toString () {
+	public String toString() {
 		return this.getClass().getName() + '[' + name + ']';
 	}
 
-	public PermissionCollection newPermissionCollection () {
+	public PermissionCollection newPermissionCollection() {
 		return null;
 	}
 }

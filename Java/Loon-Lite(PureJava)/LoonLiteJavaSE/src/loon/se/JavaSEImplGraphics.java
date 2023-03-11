@@ -35,6 +35,7 @@ import loon.font.Font;
 import loon.font.TextFormat;
 import loon.font.TextLayout;
 import loon.font.TextWrap;
+import loon.opengl.TextureSource;
 import loon.utils.Scale;
 
 public abstract class JavaSEImplGraphics extends Graphics {
@@ -82,7 +83,7 @@ public abstract class JavaSEImplGraphics extends Graphics {
 	@Override
 	protected Canvas createCanvasImpl(Scale scale, int pixelWidth, int pixelHeight) {
 		BufferedImage bitmap = new BufferedImage(pixelWidth, pixelHeight, BufferedImage.TYPE_INT_ARGB_PRE);
-		return new JavaSECanvas(this, new JavaSEImage(this, scale, bitmap, "<canvas>"));
+		return new JavaSECanvas(this, new JavaSEImage(this, scale, bitmap, TextureSource.RenderCanvas));
 	}
 
 	protected void updateViewport(Scale scale, float displayWidth, float displayHeight) {

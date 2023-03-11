@@ -204,6 +204,18 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		this.target.unbind();
 	}
 
+	public GLEx resize() {
+		Affine2f tx = affineStack.first();
+		if (tx != null) {
+			if (target != null) {
+				tx.setScale(scaleX = gfx.onDPI(target.xscale()), scaleY = gfx.onDPI(target.yscale()));
+			} else {
+				tx.setScale(scaleX = gfx.onDPI(LSystem.getScaleWidth()), scaleY = gfx.onDPI(LSystem.getScaleHeight()));
+			}
+		}
+		return this;
+	}
+
 	public int getWidth() {
 		if (target != null) {
 			return (int) (target.width() / target.xscale());

@@ -39,11 +39,9 @@ public class GWTResourcesLoader {
 	private final String file;
 	private final FileType type;
 
-	public GWTResourcesLoader(Preloader preloader, String fileName,
-			FileType type) {
+	public GWTResourcesLoader(Preloader preloader, String fileName, FileType type) {
 		if (type != FileType.Internal && type != FileType.Classpath) {
-			throw new RuntimeException("FileType '" + type
-					+ "' Not supported in GWT backend");
+			throw new RuntimeException("FileType '" + type + "' Not supported in GWT backend");
 		}
 		this.preloader = preloader;
 		this.file = fixSlashes(fileName);
@@ -119,8 +117,7 @@ public class GWTResourcesLoader {
 		try {
 			return new InputStreamReader(read(), charset);
 		} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException("Encoding '" + charset
-					+ "' not supported", e);
+			throw new RuntimeException("Encoding '" + charset + "' not supported", e);
 		}
 	}
 
@@ -156,8 +153,7 @@ public class GWTResourcesLoader {
 		InputStream input = read();
 		try {
 			while (true) {
-				int count = input.read(buffer, position, buffer.length
-						- position);
+				int count = input.read(buffer, position, buffer.length - position);
 				if (count == -1)
 					break;
 				position += count;
@@ -189,8 +185,7 @@ public class GWTResourcesLoader {
 		int position = 0;
 		try {
 			while (true) {
-				int count = input.read(bytes, offset + position, size
-						- position);
+				int count = input.read(bytes, offset + position, size - position);
 				if (count <= 0)
 					break;
 				position += count;
@@ -228,9 +223,8 @@ public class GWTResourcesLoader {
 	}
 
 	public GWTResourcesLoader child(String name) {
-		return new GWTResourcesLoader(preloader, (file.isEmpty() ? ""
-				: (file + (file.endsWith("/") ? "" : "/"))) + name,
-				FileType.Internal);
+		return new GWTResourcesLoader(preloader,
+				(file.isEmpty() ? "" : (file + (file.endsWith("/") ? "" : "/"))) + name, FileType.Internal);
 	}
 
 	public GWTResourcesLoader parent() {

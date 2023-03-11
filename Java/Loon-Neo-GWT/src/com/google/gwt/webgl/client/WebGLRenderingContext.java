@@ -86,9 +86,8 @@ public class WebGLRenderingContext extends JavaScriptObject {
 	public static final int FUNC_ADD = 0x8006;
 	public static final int BLEND_EQUATION = 0x8009;
 	public static final int BLEND_EQUATION_RGB = 0x8009; /*
-														 * same as
-														 * BLEND_EQUATION
-														 */
+															 * same as BLEND_EQUATION
+															 */
 	public static final int BLEND_EQUATION_ALPHA = 0x883D;
 
 	/* BlendSubtract */
@@ -463,19 +462,18 @@ public class WebGLRenderingContext extends JavaScriptObject {
 	public static final int CONTEXT_LOST_WEBGL = 0x9242;
 
 	/**
-	 * Returns a WebGL context for the given canvas element. Returns null if no
-	 * 3d context is available.
+	 * Returns a WebGL context for the given canvas element. Returns null if no 3d
+	 * context is available.
 	 */
 	public static WebGLRenderingContext getContext(CanvasElement canvas) {
 		return getContext(canvas, WebGLContextAttributes.create());
 	}
 
 	/**
-	 * Returns a WebGL context for the given canvas element. Returns null if no
-	 * 3d context is available.
+	 * Returns a WebGL context for the given canvas element. Returns null if no 3d
+	 * context is available.
 	 */
-	public static native WebGLRenderingContext getContext(CanvasElement canvas,
-			WebGLContextAttributes attributes) /*-{
+	public static native WebGLRenderingContext getContext(CanvasElement canvas, WebGLContextAttributes attributes) /*-{
 												var names = [ "webgl", "experimental-webgl", "moz-webgl",
 												"webkit-webgl", "webkit-3d", "3d", "opera-3d", "ms-webgl",
 												"ms-3d", "experimental-webgl2" ];
@@ -524,13 +522,11 @@ public class WebGLRenderingContext extends JavaScriptObject {
 														this.activeTexture(texture);
 														}-*/;
 
-	public final native void attachShader(WebGLProgram program,
-			WebGLShader shader) /*-{
+	public final native void attachShader(WebGLProgram program, WebGLShader shader) /*-{
 								this.attachShader(program, shader);
 								}-*/;
 
-	public final native void bindAttribLocation(WebGLProgram program,
-			int index, String name) /*-{
+	public final native void bindAttribLocation(WebGLProgram program, int index, String name) /*-{
 									this.bindAttribLocation(program, index, name);
 									}-*/;
 
@@ -538,13 +534,11 @@ public class WebGLRenderingContext extends JavaScriptObject {
 																		this.bindBuffer(target, buffer);
 																		}-*/;
 
-	public final native void bindFramebuffer(int target,
-			WebGLFramebuffer framebuffer) /*-{
+	public final native void bindFramebuffer(int target, WebGLFramebuffer framebuffer) /*-{
 											this.bindFramebuffer(target, framebuffer);
 											}-*/;
 
-	public final native void bindRenderbuffer(int target,
-			WebGLRenderbuffer renderbuffer) /*-{
+	public final native void bindRenderbuffer(int target, WebGLRenderbuffer renderbuffer) /*-{
 											this.bindRenderbuffer(target, renderbuffer);
 											}-*/;
 
@@ -552,8 +546,7 @@ public class WebGLRenderingContext extends JavaScriptObject {
 																			this.bindTexture(target, texture);
 																			}-*/;
 
-	public final native void blendColor(float red, float green, float blue,
-			float alpha) /*-{
+	public final native void blendColor(float red, float green, float blue, float alpha) /*-{
 							this.blendColor(red, green, blue, alpha);
 							}-*/;
 
@@ -569,8 +562,7 @@ public class WebGLRenderingContext extends JavaScriptObject {
 																	this.blendFunc(sfactor, dfactor);
 																	}-*/;
 
-	public final native void blendFuncSeparate(int srcRGB, int dstRGB,
-			int srcAlpha, int dstAlpha) /*-{
+	public final native void blendFuncSeparate(int srcRGB, int dstRGB, int srcAlpha, int dstAlpha) /*-{
 										this.blendFuncSeparate(srcRGB, dstRGB, srcAlpha, dstAlpha);
 										}-*/;
 
@@ -578,8 +570,7 @@ public class WebGLRenderingContext extends JavaScriptObject {
 																			this.bufferData(target, size, usage);
 																			}-*/;
 
-	public final native void bufferData(int target, ArrayBufferView data,
-			int usage) /*-{
+	public final native void bufferData(int target, ArrayBufferView data, int usage) /*-{
 						this.bufferData(target, data, usage);
 						}-*/;
 
@@ -587,13 +578,11 @@ public class WebGLRenderingContext extends JavaScriptObject {
 																					this.bufferData(target, data, usage);
 																					}-*/;
 
-	public final native void bufferSubData(int target, int offset,
-			ArrayBufferView data) /*-{
+	public final native void bufferSubData(int target, int offset, ArrayBufferView data) /*-{
 									this.bufferSubData(target, offset, data);
 									}-*/;
 
-	public final native void bufferSubData(int target, int offset,
-			ArrayBuffer data) /*-{
+	public final native void bufferSubData(int target, int offset, ArrayBuffer data) /*-{
 								this.bufferSubData(target, offset, data);
 								}-*/;
 
@@ -605,8 +594,7 @@ public class WebGLRenderingContext extends JavaScriptObject {
 												this.clear(mask);
 												}-*/;
 
-	public final native void clearColor(float red, float green, float blue,
-			float alpha) /*-{
+	public final native void clearColor(float red, float green, float blue, float alpha) /*-{
 							this.clearColor(red, green, blue, alpha);
 							}-*/;
 
@@ -618,8 +606,7 @@ public class WebGLRenderingContext extends JavaScriptObject {
 													this.clearStencil(s);
 													}-*/;
 
-	public final native void colorMask(boolean red, boolean green,
-			boolean blue, boolean alpha) /*-{
+	public final native void colorMask(boolean red, boolean green, boolean blue, boolean alpha) /*-{
 											this.colorMask(red, green, blue, alpha);
 											}-*/;
 
@@ -627,14 +614,14 @@ public class WebGLRenderingContext extends JavaScriptObject {
 																this.compileShader(shader);
 																}-*/;
 
-	public final native void copyTexImage2D(int target, int level,
-			int internalformat, int x, int y, int width, int height, int border) /*-{
+	public final native void copyTexImage2D(int target, int level, int internalformat, int x, int y, int width,
+			int height, int border) /*-{
 																					this.copyTexImage2D(target, level, internalformat, x, y, width, height,
 																					border);
 																					}-*/;
 
-	public final native void copyTexSubImage2D(int target, int level,
-			int xoffset, int yoffset, int x, int y, int width, int height) /*-{
+	public final native void copyTexSubImage2D(int target, int level, int xoffset, int yoffset, int x, int y, int width,
+			int height) /*-{
 																			this.copyTexSubImage2D(target, level, xoffset, yoffset, x, y, width,
 																			height);
 																			}-*/;
@@ -703,8 +690,7 @@ public class WebGLRenderingContext extends JavaScriptObject {
 																	this.depthRange(zNear, zFar);
 																	}-*/;
 
-	public final native void detachShader(WebGLProgram program,
-			WebGLShader shader) /*-{
+	public final native void detachShader(WebGLProgram program, WebGLShader shader) /*-{
 								this.detachShader(program, shader);
 								}-*/;
 
@@ -720,8 +706,7 @@ public class WebGLRenderingContext extends JavaScriptObject {
 																		this.drawArrays(mode, first, count);
 																		}-*/;
 
-	public final native void drawElements(int mode, int count, int type,
-			int offset) /*-{
+	public final native void drawElements(int mode, int count, int type, int offset) /*-{
 						this.drawElements(mode, count, type, offset);
 						}-*/;
 
@@ -741,15 +726,14 @@ public class WebGLRenderingContext extends JavaScriptObject {
 										this.flush();
 										}-*/;
 
-	public final native void framebufferRenderbuffer(int target,
-			int attachment, int renderbuffertarget,
+	public final native void framebufferRenderbuffer(int target, int attachment, int renderbuffertarget,
 			WebGLRenderbuffer renderbuffer) /*-{
 											this.framebufferRenderbuffer(target, attachment, renderbuffertarget,
 											renderbuffer);
 											}-*/;
 
-	public final native void framebufferTexture2D(int target, int attachment,
-			int textarget, WebGLTexture texture, int level) /*-{
+	public final native void framebufferTexture2D(int target, int attachment, int textarget, WebGLTexture texture,
+			int level) /*-{
 															this
 															.framebufferTexture2D(target, attachment, textarget, texture,
 															level);
@@ -763,18 +747,15 @@ public class WebGLRenderingContext extends JavaScriptObject {
 														this.generateMipmap(target);
 														}-*/;
 
-	public final native WebGLActiveInfo getActiveAttrib(WebGLProgram program,
-			int index) /*-{
+	public final native WebGLActiveInfo getActiveAttrib(WebGLProgram program, int index) /*-{
 						return this.getActiveAttrib(program, index);
 						}-*/;
 
-	public final native WebGLActiveInfo getActiveUniform(WebGLProgram program,
-			int index) /*-{
+	public final native WebGLActiveInfo getActiveUniform(WebGLProgram program, int index) /*-{
 						return this.getActiveUniform(program, index);
 						}-*/;
 
-	public final native JsArray<WebGLShader> getAttachedShaders(
-			WebGLProgram program) /*-{
+	public final native JsArray<WebGLShader> getAttachedShaders(WebGLProgram program) /*-{
 									return this.getAttachedShaders(program);
 									}-*/;
 
@@ -798,8 +779,7 @@ public class WebGLRenderingContext extends JavaScriptObject {
 																	return this.getShaderSource(shader);
 																	}-*/;
 
-	public final native WebGLUniformLocation getUniformLocation(
-			WebGLProgram program, String name) /*-{
+	public final native WebGLUniformLocation getUniformLocation(WebGLProgram program, String name) /*-{
 												return this.getUniformLocation(program, name);
 												}-*/;
 
@@ -855,13 +835,12 @@ public class WebGLRenderingContext extends JavaScriptObject {
 																		this.polygonOffset(factor, units);
 																		}-*/;
 
-	public final native void readPixels(int x, int y, int width, int height,
-			int format, int type, ArrayBufferView pixels) /*-{
+	public final native void readPixels(int x, int y, int width, int height, int format, int type,
+			ArrayBufferView pixels) /*-{
 															this.readPixels(x, y, width, height, format, type, pixels);
 															}-*/;
 
-	public final native void renderbufferStorage(int target,
-			int internalformat, int width, int height) /*-{
+	public final native void renderbufferStorage(int target, int internalformat, int width, int height) /*-{
 														this.renderbufferStorage(target, internalformat, width, height);
 														}-*/;
 
@@ -881,8 +860,7 @@ public class WebGLRenderingContext extends JavaScriptObject {
 																		this.stencilFunc(func, ref, mask);
 																		}-*/;
 
-	public final native void stencilFuncSeparate(int face, int func, int ref,
-			int mask) /*-{
+	public final native void stencilFuncSeparate(int face, int func, int ref, int mask) /*-{
 						this.stencilFuncSeparate(face, func, ref, mask);
 						}-*/;
 
@@ -898,35 +876,33 @@ public class WebGLRenderingContext extends JavaScriptObject {
 																		this.stencilOp(fail, zfail, zpass);
 																		}-*/;
 
-	public final native void stencilOpSeparate(int face, int fail, int zfail,
-			int zpass) /*-{
+	public final native void stencilOpSeparate(int face, int fail, int zfail, int zpass) /*-{
 						this.stencilOpSeparate(face, fail, zfail, zpass);
 						}-*/;
 
-	public final native void texImage2D(int target, int level,
-			int internalformat, int width, int height, int border, int format,
-			int type, ArrayBufferView pixels) /*-{
+	public final native void texImage2D(int target, int level, int internalformat, int width, int height, int border,
+			int format, int type, ArrayBufferView pixels) /*-{
 												this.texImage2D(target, level, internalformat, width, height, border,
 												format, type, pixels);
 												}-*/;
 
-	public final native void texImage2D(int target, int level,
-			int internalformat, int format, int type, ImageData pixels) /*-{
+	public final native void texImage2D(int target, int level, int internalformat, int format, int type,
+			ImageData pixels) /*-{
 																		this.texImage2D(target, level, internalformat, format, type, pixels);
 																		}-*/;
 
-	public final native void texImage2D(int target, int level,
-			int internalformat, int format, int type, ImageElement image) /*-{
+	public final native void texImage2D(int target, int level, int internalformat, int format, int type,
+			ImageElement image) /*-{
 																			this.texImage2D(target, level, internalformat, format, type, image);
 																			}-*/;
 
-	public final native void texImage2D(int target, int level,
-			int internalformat, int format, int type, CanvasElement canvas) /*-{
+	public final native void texImage2D(int target, int level, int internalformat, int format, int type,
+			CanvasElement canvas) /*-{
 																			this.texImage2D(target, level, internalformat, format, type, canvas);
 																			}-*/;
 
-	public final native void texImage2D(int target, int level,
-			int internalformat, int format, int type, VideoElement video) /*-{
+	public final native void texImage2D(int target, int level, int internalformat, int format, int type,
+			VideoElement video) /*-{
 																			this.texImage2D(target, level, internalformat, format, type, video);
 																			}-*/;
 
@@ -938,34 +914,33 @@ public class WebGLRenderingContext extends JavaScriptObject {
 																				this.texParameteri(target, pname, param);
 																				}-*/;
 
-	public final native void texSubImage2D(int target, int level, int xoffset,
-			int yoffset, int width, int height, int format, int type,
-			ArrayBufferView pixels) /*-{
+	public final native void texSubImage2D(int target, int level, int xoffset, int yoffset, int width, int height,
+			int format, int type, ArrayBufferView pixels) /*-{
 									this.texSubImage2D(target, level, xoffset, yoffset, width, height,
 									format, type, pixels);
 									}-*/;
 
-	public final native void texSubImage2D(int target, int level, int xoffset,
-			int yoffset, int format, int type, ImageData pixels) /*-{
+	public final native void texSubImage2D(int target, int level, int xoffset, int yoffset, int format, int type,
+			ImageData pixels) /*-{
 																	this.texSubImage2D(target, level, xoffset, yoffset, format, type,
 																	pixels);
 																	}-*/;
 
-	public final native void texSubImage2D(int target, int level, int xoffset,
-			int yoffset, int format, int type, ImageElement image) /*-{
+	public final native void texSubImage2D(int target, int level, int xoffset, int yoffset, int format, int type,
+			ImageElement image) /*-{
 																	this
 																	.texSubImage2D(target, level, xoffset, yoffset, format, type,
 																	image);
 																	}-*/;
 
-	public final native void texSubImage2D(int target, int level, int xoffset,
-			int yoffset, int format, int type, CanvasElement canvas) /*-{
+	public final native void texSubImage2D(int target, int level, int xoffset, int yoffset, int format, int type,
+			CanvasElement canvas) /*-{
 																		this.texSubImage2D(target, level, xoffset, yoffset, format, type,
 																		canvas);
 																		}-*/;
 
-	public final native void texSubImage2D(int target, int level, int xoffset,
-			int yoffset, int format, int type, VideoElement video) /*-{
+	public final native void texSubImage2D(int target, int level, int xoffset, int yoffset, int format, int type,
+			VideoElement video) /*-{
 																	this
 																	.texSubImage2D(target, level, xoffset, yoffset, format, type,
 																	video);
@@ -983,8 +958,7 @@ public class WebGLRenderingContext extends JavaScriptObject {
 		this.uniform1fv(location, ArrayUtils.toJsArray(v));
 	}
 
-	private final native void uniform1fv(WebGLUniformLocation location,
-			JavaScriptObject v) /*-{
+	private final native void uniform1fv(WebGLUniformLocation location, JavaScriptObject v) /*-{
 								this.uniform1fv(location, v);
 								}-*/;
 
@@ -1000,13 +974,11 @@ public class WebGLRenderingContext extends JavaScriptObject {
 		this.uniform1iv(location, ArrayUtils.toJsArray(v));
 	}
 
-	private final native void uniform1iv(WebGLUniformLocation location,
-			JavaScriptObject v) /*-{
+	private final native void uniform1iv(WebGLUniformLocation location, JavaScriptObject v) /*-{
 								this.uniform1iv(location, v);
 								}-*/;
 
-	public final native void uniform2f(WebGLUniformLocation location, float x,
-			float y) /*-{
+	public final native void uniform2f(WebGLUniformLocation location, float x, float y) /*-{
 						this.uniform2f(location, x, y);
 						}-*/;
 
@@ -1018,13 +990,11 @@ public class WebGLRenderingContext extends JavaScriptObject {
 		this.uniform2fv(location, ArrayUtils.toJsArray(v));
 	}
 
-	private final native void uniform2fv(WebGLUniformLocation location,
-			JavaScriptObject v) /*-{
+	private final native void uniform2fv(WebGLUniformLocation location, JavaScriptObject v) /*-{
 								this.uniform2fv(location, v);
 								}-*/;
 
-	public final native void uniform2i(WebGLUniformLocation location, int x,
-			int y) /*-{
+	public final native void uniform2i(WebGLUniformLocation location, int x, int y) /*-{
 					this.uniform2i(location, x, y);
 					}-*/;
 
@@ -1036,13 +1006,11 @@ public class WebGLRenderingContext extends JavaScriptObject {
 		this.uniform2iv(location, ArrayUtils.toJsArray(v));
 	}
 
-	private final native void uniform2iv(WebGLUniformLocation location,
-			JavaScriptObject v) /*-{
+	private final native void uniform2iv(WebGLUniformLocation location, JavaScriptObject v) /*-{
 								this.uniform2iv(location, v);
 								}-*/;
 
-	public final native void uniform3f(WebGLUniformLocation location, float x,
-			float y, float z) /*-{
+	public final native void uniform3f(WebGLUniformLocation location, float x, float y, float z) /*-{
 								this.uniform3f(location, x, y, z);
 								}-*/;
 
@@ -1054,13 +1022,11 @@ public class WebGLRenderingContext extends JavaScriptObject {
 		this.uniform3fv(location, ArrayUtils.toJsArray(v));
 	}
 
-	private final native void uniform3fv(WebGLUniformLocation location,
-			JavaScriptObject v) /*-{
+	private final native void uniform3fv(WebGLUniformLocation location, JavaScriptObject v) /*-{
 								this.uniform3fv(location, v);
 								}-*/;
 
-	public final native void uniform3i(WebGLUniformLocation location, int x,
-			int y, int z) /*-{
+	public final native void uniform3i(WebGLUniformLocation location, int x, int y, int z) /*-{
 							this.uniform3i(location, x, y, z);
 							}-*/;
 
@@ -1072,13 +1038,11 @@ public class WebGLRenderingContext extends JavaScriptObject {
 		this.uniform3iv(location, ArrayUtils.toJsArray(v));
 	}
 
-	private final native void uniform3iv(WebGLUniformLocation location,
-			JavaScriptObject v) /*-{
+	private final native void uniform3iv(WebGLUniformLocation location, JavaScriptObject v) /*-{
 								this.uniform3iv(location, v);
 								}-*/;
 
-	public final native void uniform4f(WebGLUniformLocation location, float x,
-			float y, float z, float w) /*-{
+	public final native void uniform4f(WebGLUniformLocation location, float x, float y, float z, float w) /*-{
 										this.uniform4f(location, x, y, z, w);
 										}-*/;
 
@@ -1090,13 +1054,11 @@ public class WebGLRenderingContext extends JavaScriptObject {
 		this.uniform4fv(location, ArrayUtils.toJsArray(v));
 	}
 
-	private final native void uniform4fv(WebGLUniformLocation location,
-			JavaScriptObject v) /*-{
+	private final native void uniform4fv(WebGLUniformLocation location, JavaScriptObject v) /*-{
 								this.uniform4fv(location, v);
 								}-*/;
 
-	public final native void uniform4i(WebGLUniformLocation location, int x,
-			int y, int z, int w) /*-{
+	public final native void uniform4i(WebGLUniformLocation location, int x, int y, int z, int w) /*-{
 									this.uniform4i(location, x, y, z, w);
 									}-*/;
 
@@ -1108,53 +1070,43 @@ public class WebGLRenderingContext extends JavaScriptObject {
 		this.uniform4iv(location, ArrayUtils.toJsArray(v));
 	}
 
-	private final native void uniform4iv(WebGLUniformLocation location,
-			JavaScriptObject v) /*-{
+	private final native void uniform4iv(WebGLUniformLocation location, JavaScriptObject v) /*-{
 								this.uniform4iv(location, v);
 								}-*/;
 
-	public final void uniformMatrix2fv(WebGLUniformLocation location,
-			boolean transpose, Float32Array value) {
+	public final void uniformMatrix2fv(WebGLUniformLocation location, boolean transpose, Float32Array value) {
 		this.uniformMatrix2fv(location, transpose, (JavaScriptObject) value);
 	}
 
-	public final void uniformMatrix2fv(WebGLUniformLocation location,
-			boolean transpose, float[] value) {
+	public final void uniformMatrix2fv(WebGLUniformLocation location, boolean transpose, float[] value) {
 		this.uniformMatrix2fv(location, transpose, ArrayUtils.toJsArray(value));
 	}
 
-	private final native void uniformMatrix2fv(WebGLUniformLocation location,
-			boolean transpose, JavaScriptObject value) /*-{
+	private final native void uniformMatrix2fv(WebGLUniformLocation location, boolean transpose, JavaScriptObject value) /*-{
 														this.uniformMatrix2fv(location, transpose, value);
 														}-*/;
 
-	public final void uniformMatrix3fv(WebGLUniformLocation location,
-			boolean transpose, Float32Array value) {
+	public final void uniformMatrix3fv(WebGLUniformLocation location, boolean transpose, Float32Array value) {
 		this.uniformMatrix3fv(location, transpose, (JavaScriptObject) value);
 	}
 
-	public final void uniformMatrix3fv(WebGLUniformLocation location,
-			boolean transpose, float[] value) {
+	public final void uniformMatrix3fv(WebGLUniformLocation location, boolean transpose, float[] value) {
 		this.uniformMatrix3fv(location, transpose, ArrayUtils.toJsArray(value));
 	}
 
-	private final native void uniformMatrix3fv(WebGLUniformLocation location,
-			boolean transpose, JavaScriptObject value) /*-{
+	private final native void uniformMatrix3fv(WebGLUniformLocation location, boolean transpose, JavaScriptObject value) /*-{
 														this.uniformMatrix3fv(location, transpose, value);
 														}-*/;
 
-	public final void uniformMatrix4fv(WebGLUniformLocation location,
-			boolean transpose, Float32Array value) {
+	public final void uniformMatrix4fv(WebGLUniformLocation location, boolean transpose, Float32Array value) {
 		this.uniformMatrix4fv(location, transpose, (JavaScriptObject) value);
 	}
 
-	public final void uniformMatrix4fv(WebGLUniformLocation location,
-			boolean transpose, float[] value) {
+	public final void uniformMatrix4fv(WebGLUniformLocation location, boolean transpose, float[] value) {
 		uniformMatrix4fv(location, transpose, ArrayUtils.toJsArray(value));
 	}
 
-	private final native void uniformMatrix4fv(WebGLUniformLocation location,
-			boolean transpose, JavaScriptObject value) /*-{
+	private final native void uniformMatrix4fv(WebGLUniformLocation location, boolean transpose, JavaScriptObject value) /*-{
 														this.uniformMatrix4fv(location, transpose, value);
 														}-*/;
 
@@ -1214,8 +1166,7 @@ public class WebGLRenderingContext extends JavaScriptObject {
 																					this.vertexAttrib3fv(indx, values);
 																					}-*/;
 
-	public final native void vertexAttrib4f(int indx, float x, float y,
-			float z, float w) /*-{
+	public final native void vertexAttrib4f(int indx, float x, float y, float z, float w) /*-{
 								this.vertexAttrib4f(indx, x, y, z, w);
 								}-*/;
 
@@ -1231,8 +1182,8 @@ public class WebGLRenderingContext extends JavaScriptObject {
 																					this.vertexAttrib4fv(indx, values);
 																					}-*/;
 
-	public final native void vertexAttribPointer(int indx, int size, int type,
-			boolean normalized, int stride, int offset) /*-{
+	public final native void vertexAttribPointer(int indx, int size, int type, boolean normalized, int stride,
+			int offset) /*-{
 														this.vertexAttribPointer(indx, size, type, normalized, stride, offset);
 														}-*/;
 
@@ -1243,8 +1194,7 @@ public class WebGLRenderingContext extends JavaScriptObject {
 	/**
 	 * Return the value for the passed pname.
 	 *
-	 * @param pname
-	 *            one of RENDERER, SHADING_LANGUAGE_VERSION, VENDOR, VERSION
+	 * @param pname one of RENDERER, SHADING_LANGUAGE_VERSION, VENDOR, VERSION
 	 */
 	public final native String getParameterString(int pname) /*-{
 																return this.getParameter(pname);
@@ -1253,26 +1203,25 @@ public class WebGLRenderingContext extends JavaScriptObject {
 	/**
 	 * Return the value for the passed pname.
 	 *
-	 * @param pname
-	 *            one of ACTIVE_TEXTURE, ALPHA_BITS, BLEND_DST_ALPHA,
-	 *            BLEND_DST_RGB, BLEND_EQUATION_ALPHA, BLEND_EQUATION_RGB,
-	 *            BLEND_SRC_ALPHA, BLEND_SRC_RGB, BLUE_BITS, CULL_FACE_MODE,
-	 *            DEPTH_BITS, DEPTH_FUNC, FRONT_FACE, GENERATE_MIPMAP_HINT,
-	 *            GREEN_BITS, IMPLEMENTATION_COLOR_READ_FORMAT,
-	 *            IMPLEMENTATION_COLOR_READ_TYPE,
-	 *            MAX_COMBINED_TEXTURE_IMAGE_UNITS, MAX_CUBE_MAP_TEXTURE_SIZE,
-	 *            MAX_FRAGMENT_UNIFORM_VECTORS, MAX_RENDERBUFFER_SIZE,
-	 *            MAX_TEXTURE_IMAGE_UNITS, MAX_TEXTURE_SIZE,
-	 *            MAX_VARYING_VECTORS, MAX_VERTEX_ATTRIBS,
-	 *            MAX_VERTEX_TEXTURE_IMAGE_UNITS, MAX_VERTEX_UNIFORM_VECTORS,
-	 *            NUM_COMPRESSED_TEXTURE_FORMATS, PACK_ALIGNMENT, RED_BITS,
-	 *            SAMPLE_BUFFERS, SAMPLES, STENCIL_BACK_FAIL, STENCIL_BACK_FUNC,
-	 *            STENCIL_BACK_PASS_DEPTH_FAIL, STENCIL_BACK_PASS_DEPTH_PASS,
-	 *            STENCIL_BACK_REF, STENCIL_BACK_VALUE_MASK,
-	 *            STENCIL_BACK_WRITEMASK, STENCIL_BITS, STENCIL_CLEAR_VALUE,
-	 *            STENCIL_FAIL, STENCIL_FUNC, STENCIL_PASS_DEPTH_FAIL,
-	 *            STENCIL_PASS_DEPTH_PASS, STENCIL_REF, STENCIL_VALUE_MASK,
-	 *            STENCIL_WRITEMASK, SUBPIXEL_BITS, UNPACK_ALIGNMENT
+	 * @param pname one of ACTIVE_TEXTURE, ALPHA_BITS, BLEND_DST_ALPHA,
+	 *              BLEND_DST_RGB, BLEND_EQUATION_ALPHA, BLEND_EQUATION_RGB,
+	 *              BLEND_SRC_ALPHA, BLEND_SRC_RGB, BLUE_BITS, CULL_FACE_MODE,
+	 *              DEPTH_BITS, DEPTH_FUNC, FRONT_FACE, GENERATE_MIPMAP_HINT,
+	 *              GREEN_BITS, IMPLEMENTATION_COLOR_READ_FORMAT,
+	 *              IMPLEMENTATION_COLOR_READ_TYPE,
+	 *              MAX_COMBINED_TEXTURE_IMAGE_UNITS, MAX_CUBE_MAP_TEXTURE_SIZE,
+	 *              MAX_FRAGMENT_UNIFORM_VECTORS, MAX_RENDERBUFFER_SIZE,
+	 *              MAX_TEXTURE_IMAGE_UNITS, MAX_TEXTURE_SIZE, MAX_VARYING_VECTORS,
+	 *              MAX_VERTEX_ATTRIBS, MAX_VERTEX_TEXTURE_IMAGE_UNITS,
+	 *              MAX_VERTEX_UNIFORM_VECTORS, NUM_COMPRESSED_TEXTURE_FORMATS,
+	 *              PACK_ALIGNMENT, RED_BITS, SAMPLE_BUFFERS, SAMPLES,
+	 *              STENCIL_BACK_FAIL, STENCIL_BACK_FUNC,
+	 *              STENCIL_BACK_PASS_DEPTH_FAIL, STENCIL_BACK_PASS_DEPTH_PASS,
+	 *              STENCIL_BACK_REF, STENCIL_BACK_VALUE_MASK,
+	 *              STENCIL_BACK_WRITEMASK, STENCIL_BITS, STENCIL_CLEAR_VALUE,
+	 *              STENCIL_FAIL, STENCIL_FUNC, STENCIL_PASS_DEPTH_FAIL,
+	 *              STENCIL_PASS_DEPTH_PASS, STENCIL_REF, STENCIL_VALUE_MASK,
+	 *              STENCIL_WRITEMASK, SUBPIXEL_BITS, UNPACK_ALIGNMENT
 	 */
 	public final native int getParameteri(int pname) /*-{
 														return this.getParameter(pname);
@@ -1281,11 +1230,10 @@ public class WebGLRenderingContext extends JavaScriptObject {
 	/**
 	 * Return the value for the passed pname.
 	 *
-	 * @param pname
-	 *            one of BLEND, CULL_FACE, DEPTH_TEST, DEPTH_WRITEMASK, DITHER,
-	 *            POLYGON_OFFSET_FILL, SAMPLE_COVERAGE_INVERT, SCISSOR_TEST,
-	 *            STENCIL_TEST, UNPACK_FLIP_Y_WEBGL,
-	 *            UNPACK_PREMULTIPLY_ALPHA_WEBGL
+	 * @param pname one of BLEND, CULL_FACE, DEPTH_TEST, DEPTH_WRITEMASK, DITHER,
+	 *              POLYGON_OFFSET_FILL, SAMPLE_COVERAGE_INVERT, SCISSOR_TEST,
+	 *              STENCIL_TEST, UNPACK_FLIP_Y_WEBGL,
+	 *              UNPACK_PREMULTIPLY_ALPHA_WEBGL
 	 */
 	public final native boolean getParameterb(int pname) /*-{
 															return this.getParameter(pname);
@@ -1294,9 +1242,8 @@ public class WebGLRenderingContext extends JavaScriptObject {
 	/**
 	 * Return the value for the passed pname.
 	 *
-	 * @param pname
-	 *            one of DEPTH_CLEAR_VALUE, LINE_WIDTH, POLYGON_OFFSET_FACTOR,
-	 *            POLYGON_OFFSET_UNITS, SAMPLE_COVERAGE_VALUE
+	 * @param pname one of DEPTH_CLEAR_VALUE, LINE_WIDTH, POLYGON_OFFSET_FACTOR,
+	 *              POLYGON_OFFSET_UNITS, SAMPLE_COVERAGE_VALUE
 	 */
 	public final native float getParameterf(int pname) /*-{
 														return this.getParameter(pname);
@@ -1305,11 +1252,10 @@ public class WebGLRenderingContext extends JavaScriptObject {
 	/**
 	 * Return the value for the passed pname.
 	 *
-	 * @param pname
-	 *            one of ARRAY_BUFFER_BINDING, COMPRESSED_TEXTURE_FORMATS,
-	 *            CURRENT_PROGRAM, ELEMENT_ARRAY_BUFFER_BINDING,
-	 *            FRAMEBUFFER_BINDING, RENDERBUFFER_BINDING, TEXTURE_BINDING_2D,
-	 *            TEXTURE_BINDING_CUBE_MAP
+	 * @param pname one of ARRAY_BUFFER_BINDING, COMPRESSED_TEXTURE_FORMATS,
+	 *              CURRENT_PROGRAM, ELEMENT_ARRAY_BUFFER_BINDING,
+	 *              FRAMEBUFFER_BINDING, RENDERBUFFER_BINDING, TEXTURE_BINDING_2D,
+	 *              TEXTURE_BINDING_CUBE_MAP
 	 */
 	public final native <T extends WebGLObject> T getParametero(int pname) /*-{
 																			return this.getParameter(pname);
@@ -1318,10 +1264,9 @@ public class WebGLRenderingContext extends JavaScriptObject {
 	/**
 	 * Return the value for the passed pname.
 	 *
-	 * @param pname
-	 *            one of ALIASED_LINE_WIDTH_RANGE, ALIASED_POINT_SIZE_RANGE,
-	 *            BLEND_COLOR, COLOR_CLEAR_VALUE, COLOR_WRITEMASK, DEPTH_RANGE,
-	 *            MAX_VIEWPORT_DIMS, SCISSOR_BOX, VIEWPORT
+	 * @param pname one of ALIASED_LINE_WIDTH_RANGE, ALIASED_POINT_SIZE_RANGE,
+	 *              BLEND_COLOR, COLOR_CLEAR_VALUE, COLOR_WRITEMASK, DEPTH_RANGE,
+	 *              MAX_VIEWPORT_DIMS, SCISSOR_BOX, VIEWPORT
 	 */
 	public final native <T extends ArrayBufferView> T getParameterv(int pname) /*-{
 																				return this.getParameter(pname);
@@ -1330,78 +1275,69 @@ public class WebGLRenderingContext extends JavaScriptObject {
 	/**
 	 * Return the uniform value at the passed location in the passed program.
 	 */
-	public final native boolean getUniformb(WebGLProgram program,
-			WebGLUniformLocation location) /*-{
+	public final native boolean getUniformb(WebGLProgram program, WebGLUniformLocation location) /*-{
 											return this.getUniform(program, location);
 											}-*/;
 
 	/**
 	 * Return the uniform value at the passed location in the passed program.
 	 */
-	public final native int getUniformi(WebGLProgram program,
-			WebGLUniformLocation location) /*-{
+	public final native int getUniformi(WebGLProgram program, WebGLUniformLocation location) /*-{
 											return this.getUniform(program, location);
 											}-*/;
 
 	/**
 	 * Return the uniform value at the passed location in the passed program.
 	 */
-	public final native float getUniformf(WebGLProgram program,
-			WebGLUniformLocation location) /*-{
+	public final native float getUniformf(WebGLProgram program, WebGLUniformLocation location) /*-{
 											return this.getUniform(program, location);
 											}-*/;
 
 	/**
 	 * Return the uniform value at the passed location in the passed program.
 	 */
-	public final native <T extends ArrayBufferView> T getUniformv(
-			WebGLProgram program, WebGLUniformLocation location) /*-{
+	public final native <T extends ArrayBufferView> T getUniformv(WebGLProgram program, WebGLUniformLocation location) /*-{
 																	return this.getUniform(program, location);
 																	}-*/;
 
 	/**
-	 * Return the information requested in pname about the vertex attribute at
-	 * the passed index.
+	 * Return the information requested in pname about the vertex attribute at the
+	 * passed index.
 	 *
-	 * @param pname
-	 *            one of VERTEX_ATTRIB_ARRAY_SIZE, VERTEX_ATTRIB_ARRAY_STRIDE,
-	 *            VERTEX_ATTRIB_ARRAY_TYPE
+	 * @param pname one of VERTEX_ATTRIB_ARRAY_SIZE, VERTEX_ATTRIB_ARRAY_STRIDE,
+	 *              VERTEX_ATTRIB_ARRAY_TYPE
 	 */
 	public final native int getVertexAttribi(int index, int pname) /*-{
 																	return this.getVertexAttrib(index, pname);
 																	}-*/;
 
 	/**
-	 * Return the information requested in pname about the vertex attribute at
-	 * the passed index.
+	 * Return the information requested in pname about the vertex attribute at the
+	 * passed index.
 	 *
-	 * @param pname
-	 *            one of VERTEX_ATTRIB_ARRAY_ENABLED,
-	 *            VERTEX_ATTRIB_ARRAY_NORMALIZED
+	 * @param pname one of VERTEX_ATTRIB_ARRAY_ENABLED,
+	 *              VERTEX_ATTRIB_ARRAY_NORMALIZED
 	 */
 	public final native boolean getVertexAttribb(int index, int pname) /*-{
 																		return this.getVertexAttrib(index, pname);
 																		}-*/;
 
 	/**
-	 * Return the information requested in pname about the vertex attribute at
-	 * the passed index.
+	 * Return the information requested in pname about the vertex attribute at the
+	 * passed index.
 	 *
-	 * @param pname
-	 *            VERTEX_ATTRIB_ARRAY_BUFFER_BINDING
+	 * @param pname VERTEX_ATTRIB_ARRAY_BUFFER_BINDING
 	 * @return {@link WebGLBuffer}
 	 */
-	public final native <T extends WebGLObject> T getVertexAttribo(int index,
-			int pname) /*-{
+	public final native <T extends WebGLObject> T getVertexAttribo(int index, int pname) /*-{
 						return this.getVertexAttrib(index, pname);
 						}-*/;
 
 	/**
-	 * Return the information requested in pname about the vertex attribute at
-	 * the passed index.
+	 * Return the information requested in pname about the vertex attribute at the
+	 * passed index.
 	 *
-	 * @param pname
-	 *            CURRENT_VERTEX_ATTRIB
+	 * @param pname CURRENT_VERTEX_ATTRIB
 	 * @return a {@link Float32Array} with 4 elements
 	 */
 	public final native Float32Array getVertexAttribv(int index, int pname) /*-{
@@ -1414,9 +1350,8 @@ public class WebGLRenderingContext extends JavaScriptObject {
 	 * following table: If an attempt is made to call this function with no
 	 * WebGLTexture bound (see above), an INVALID_OPERATION error is generated.
 	 *
-	 * @param pname
-	 *            one of TEXTURE_MAG_FILTER, TEXTURE_MIN_FILTER, TEXTURE_WRAP_S,
-	 *            TEXTURE_WRAP_T
+	 * @param pname one of TEXTURE_MAG_FILTER, TEXTURE_MIN_FILTER, TEXTURE_WRAP_S,
+	 *              TEXTURE_WRAP_T
 	 */
 	public final native int getTexParameter(int target, int pname) /*-{
 																	return this.getTexParameter(target, pname);
@@ -1425,19 +1360,16 @@ public class WebGLRenderingContext extends JavaScriptObject {
 	/**
 	 * Return the value for the passed pname given the passed shader.
 	 *
-	 * @param pname
-	 *            one of DELETE_STATUS, COMPILE_STATUS
+	 * @param pname one of DELETE_STATUS, COMPILE_STATUS
 	 */
-	public final native boolean getShaderParameterb(WebGLShader shader,
-			int pname) /*-{
+	public final native boolean getShaderParameterb(WebGLShader shader, int pname) /*-{
 						return this.getShaderParameter(shader, pname);
 						}-*/;
 
 	/**
 	 * Return the value for the passed pname given the passed shader.
 	 *
-	 * @param pname
-	 *            one of SHADER_TYPE, INFO_LOG_LENGTH, SHADER_SOURCE_LENGTH
+	 * @param pname one of SHADER_TYPE, INFO_LOG_LENGTH, SHADER_SOURCE_LENGTH
 	 */
 	public final native int getShaderParameteri(WebGLShader shader, int pname) /*-{
 																				return this.getShaderParameter(shader, pname);
@@ -1446,12 +1378,11 @@ public class WebGLRenderingContext extends JavaScriptObject {
 	/**
 	 * Return the value for the passed pname given the passed target.
 	 *
-	 * @param pname
-	 *            one of RENDERBUFFER_WIDTH, RENDERBUFFER_HEIGHT,
-	 *            RENDERBUFFER_INTERNAL_FORMAT, RENDERBUFFER_RED_SIZE,
-	 *            RENDERBUFFER_GREEN_SIZE, RENDERBUFFER_BLUE_SIZE,
-	 *            RENDERBUFFER_ALPHA_SIZE, RENDERBUFFER_DEPTH_SIZE,
-	 *            RENDERBUFFER_STENCIL_SIZE
+	 * @param pname one of RENDERBUFFER_WIDTH, RENDERBUFFER_HEIGHT,
+	 *              RENDERBUFFER_INTERNAL_FORMAT, RENDERBUFFER_RED_SIZE,
+	 *              RENDERBUFFER_GREEN_SIZE, RENDERBUFFER_BLUE_SIZE,
+	 *              RENDERBUFFER_ALPHA_SIZE, RENDERBUFFER_DEPTH_SIZE,
+	 *              RENDERBUFFER_STENCIL_SIZE
 	 */
 	public final native int getRenderbufferParameter(int target, int pname) /*-{
 																			return this.getRenderbufferParameter(target, pname);
@@ -1460,21 +1391,18 @@ public class WebGLRenderingContext extends JavaScriptObject {
 	/**
 	 * Return the value for the passed pname given the passed program.
 	 *
-	 * @param pname
-	 *            one of DELETE_STATUS, LINK_STATUS, VALIDATE_STATUS
+	 * @param pname one of DELETE_STATUS, LINK_STATUS, VALIDATE_STATUS
 	 */
-	public final native boolean getProgramParameterb(WebGLProgram program,
-			int pname) /*-{
+	public final native boolean getProgramParameterb(WebGLProgram program, int pname) /*-{
 						return this.getProgramParameter(program, pname);
 						}-*/;
 
 	/**
 	 * Return the value for the passed pname given the passed program.
 	 *
-	 * @param pname
-	 *            one of INFO_LOG_LENGTH, ATTACHED_SHADERS, ACTIVE_ATTRIBUTES,
-	 *            ACTIVE_ATTRIBUTE_MAX_LENGTH, ACTIVE_UNIFORMS,
-	 *            ACTIVE_UNIFORM_MAX_LENGTH
+	 * @param pname one of INFO_LOG_LENGTH, ATTACHED_SHADERS, ACTIVE_ATTRIBUTES,
+	 *              ACTIVE_ATTRIBUTE_MAX_LENGTH, ACTIVE_UNIFORMS,
+	 *              ACTIVE_UNIFORM_MAX_LENGTH
 	 */
 	public final native int getProgramParameteri(WebGLProgram program, int pname) /*-{
 																					return this.getProgramParameter(program, pname);
@@ -1483,38 +1411,32 @@ public class WebGLRenderingContext extends JavaScriptObject {
 	/**
 	 * Return the value for the passed pname.
 	 *
-	 * @param pname
-	 *            one of BUFFER_SIZE, BUFFER_USAGE
+	 * @param pname one of BUFFER_SIZE, BUFFER_USAGE
 	 */
 	public final native int getBufferParameter(int target, int pname) /*-{
 																		return this.getBufferParameter(target, pname);
 																		}-*/;
 
 	/**
-	 * Return the value for the passed pname given the passed target and
-	 * attachment.
+	 * Return the value for the passed pname given the passed target and attachment.
 	 *
-	 * @param pname
-	 *            one of FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE,
-	 *            FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL,
-	 *            FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE
+	 * @param pname one of FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE,
+	 *              FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL,
+	 *              FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE
 	 */
-	public final native int getFramebufferAttachmentParameteri(int target,
-			int attachment, int pname) /*-{
+	public final native int getFramebufferAttachmentParameteri(int target, int attachment, int pname) /*-{
 										return this
 										.getFramebufferAttachmentParameter(target, attachment, pname);
 										}-*/;
 
 	/**
-	 * Return the value for the passed pname given the passed target and
-	 * attachment.
+	 * Return the value for the passed pname given the passed target and attachment.
 	 *
-	 * @param pname
-	 *            FRAMEBUFFER_ATTACHMENT_OBJECT_NAME
+	 * @param pname FRAMEBUFFER_ATTACHMENT_OBJECT_NAME
 	 * @return {@link WebGLRenderbuffer} or {@link WebGLTexture}
 	 */
-	public final native <T extends WebGLObject> T getFramebufferAttachmentParametero(
-			int target, int attachment, int pname) /*-{
+	public final native <T extends WebGLObject> T getFramebufferAttachmentParametero(int target, int attachment,
+			int pname) /*-{
 													return this
 													.getFramebufferAttachmentParameter(target, attachment, pname);
 													}-*/;

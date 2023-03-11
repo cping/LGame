@@ -101,25 +101,19 @@ public class ResourcesWrapper {
 	}
 
 	public InputStream read() {
-		if (type == FileType.Classpath
-				|| (type == FileType.Internal && !file.exists())
+		if (type == FileType.Classpath || (type == FileType.Internal && !file.exists())
 				|| (type == FileType.Local && !file.exists())) {
-			InputStream input = ResourcesWrapper.class.getResourceAsStream("/"
-					+ file.getPath().replace('\\', '/'));
+			InputStream input = ResourcesWrapper.class.getResourceAsStream("/" + file.getPath().replace('\\', '/'));
 			if (input == null)
-				throw new RuntimeException("File not found: " + file + " ("
-						+ type + ")");
+				throw new RuntimeException("File not found: " + file + " (" + type + ")");
 			return input;
 		}
 		try {
 			return new FileInputStream(file());
 		} catch (Exception ex) {
 			if (file().isDirectory())
-				throw new RuntimeException(
-						"Cannot open a stream to a directory: " + file + " ("
-								+ type + ")", ex);
-			throw new RuntimeException("Error reading file: " + file + " ("
-					+ type + ")", ex);
+				throw new RuntimeException("Cannot open a stream to a directory: " + file + " (" + type + ")", ex);
+			throw new RuntimeException("Error reading file: " + file + " (" + type + ")", ex);
 		}
 	}
 
@@ -145,8 +139,7 @@ public class ResourcesWrapper {
 
 	public BufferedReader reader(int bufferSize, String charset) {
 		try {
-			return new BufferedReader(new InputStreamReader(read(), charset),
-					bufferSize);
+			return new BufferedReader(new InputStreamReader(read(), charset), bufferSize);
 		} catch (UnsupportedEncodingException ex) {
 			throw new RuntimeException("Error reading file: " + this, ex);
 		}
@@ -189,20 +182,17 @@ public class ResourcesWrapper {
 	}
 
 	public byte[] readBytes() throws IOException {
-		InputStream is = new DataInputStream(new BufferedInputStream(
-				new FileInputStream(file)));
+		InputStream is = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
 		try {
 			long length = file.length();
 			byte[] bytes = new byte[(int) length];
 			int offset = 0;
 			int numRead = 0;
-			while (offset < bytes.length
-					&& (numRead = is.read(bytes, offset, bytes.length - offset)) >= 0) {
+			while (offset < bytes.length && (numRead = is.read(bytes, offset, bytes.length - offset)) >= 0) {
 				offset += numRead;
 			}
 			if (offset < bytes.length) {
-				throw new IOException("Could not completely read file "
-						+ file.getName());
+				throw new IOException("Could not completely read file " + file.getName());
 			}
 			return bytes;
 		} finally {
@@ -215,8 +205,7 @@ public class ResourcesWrapper {
 		int position = 0;
 		try {
 			while (true) {
-				int count = input.read(bytes, offset + position, size
-						- position);
+				int count = input.read(bytes, offset + position, size - position);
 				if (count <= 0)
 					break;
 				position += count;
@@ -235,21 +224,16 @@ public class ResourcesWrapper {
 
 	public OutputStream write(boolean append) {
 		if (type == FileType.Classpath)
-			throw new RuntimeException("Cannot write to a classpath file: "
-					+ file);
+			throw new RuntimeException("Cannot write to a classpath file: " + file);
 		if (type == FileType.Internal)
-			throw new RuntimeException("Cannot write to an internal file: "
-					+ file);
+			throw new RuntimeException("Cannot write to an internal file: " + file);
 		parent().mkdirs();
 		try {
 			return new FileOutputStream(file(), append);
 		} catch (Exception ex) {
 			if (file().isDirectory())
-				throw new RuntimeException(
-						"Cannot open a stream to a directory: " + file + " ("
-								+ type + ")", ex);
-			throw new RuntimeException("Error writing file: " + file + " ("
-					+ type + ")", ex);
+				throw new RuntimeException("Cannot open a stream to a directory: " + file + " (" + type + ")", ex);
+			throw new RuntimeException("Error writing file: " + file + " (" + type + ")", ex);
 		}
 	}
 
@@ -265,8 +249,7 @@ public class ResourcesWrapper {
 				output.write(buffer, 0, length);
 			}
 		} catch (Exception ex) {
-			throw new RuntimeException("Error stream writing to file: " + file
-					+ " (" + type + ")", ex);
+			throw new RuntimeException("Error stream writing to file: " + file + " (" + type + ")", ex);
 		} finally {
 			try {
 				if (input != null)
@@ -288,11 +271,9 @@ public class ResourcesWrapper {
 
 	public Writer writer(boolean append, String charset) {
 		if (type == FileType.Classpath)
-			throw new RuntimeException("Cannot write to a classpath file: "
-					+ file);
+			throw new RuntimeException("Cannot write to a classpath file: " + file);
 		if (type == FileType.Internal)
-			throw new RuntimeException("Cannot write to an internal file: "
-					+ file);
+			throw new RuntimeException("Cannot write to an internal file: " + file);
 		parent().mkdirs();
 		try {
 			FileOutputStream output = new FileOutputStream(file(), append);
@@ -302,11 +283,8 @@ public class ResourcesWrapper {
 				return new OutputStreamWriter(output, charset);
 		} catch (IOException ex) {
 			if (file().isDirectory())
-				throw new RuntimeException(
-						"Cannot open a stream to a directory: " + file + " ("
-								+ type + ")", ex);
-			throw new RuntimeException("Error writing file: " + file + " ("
-					+ type + ")", ex);
+				throw new RuntimeException("Cannot open a stream to a directory: " + file + " (" + type + ")", ex);
+			throw new RuntimeException("Error writing file: " + file + " (" + type + ")", ex);
 		}
 	}
 
@@ -320,8 +298,7 @@ public class ResourcesWrapper {
 			writer = writer(append, charset);
 			writer.write(string);
 		} catch (Exception ex) {
-			throw new RuntimeException("Error writing file: " + file + " ("
-					+ type + ")", ex);
+			throw new RuntimeException("Error writing file: " + file + " (" + type + ")", ex);
 		} finally {
 			if (writer != null) {
 				try {
@@ -338,8 +315,7 @@ public class ResourcesWrapper {
 		try {
 			output.write(bytes);
 		} catch (IOException ex) {
-			throw new RuntimeException("Error writing file: " + file + " ("
-					+ type + ")", ex);
+			throw new RuntimeException("Error writing file: " + file + " (" + type + ")", ex);
 		} finally {
 			try {
 				output.close();
@@ -353,8 +329,7 @@ public class ResourcesWrapper {
 		try {
 			output.write(bytes, offset, length);
 		} catch (IOException ex) {
-			throw new RuntimeException("Error writing file: " + file + " ("
-					+ type + ")", ex);
+			throw new RuntimeException("Error writing file: " + file + " (" + type + ")", ex);
 		} finally {
 			try {
 				output.close();
@@ -365,8 +340,7 @@ public class ResourcesWrapper {
 
 	public ResourcesWrapper[] list() {
 		if (type == FileType.Classpath)
-			throw new RuntimeException("Cannot list a classpath directory: "
-					+ file);
+			throw new RuntimeException("Cannot list a classpath directory: " + file);
 		String[] relativePaths = file().list();
 		if (relativePaths == null)
 			return new ResourcesWrapper[0];
@@ -378,8 +352,7 @@ public class ResourcesWrapper {
 
 	public ResourcesWrapper[] list(String suffix) {
 		if (type == FileType.Classpath)
-			throw new RuntimeException("Cannot list a classpath directory: "
-					+ file);
+			throw new RuntimeException("Cannot list a classpath directory: " + file);
 		String[] relativePaths = file().list();
 		if (relativePaths == null)
 			return new ResourcesWrapper[0];
@@ -428,12 +401,10 @@ public class ResourcesWrapper {
 
 	public boolean mkdirs() {
 		if (type == FileType.Classpath) {
-			throw new RuntimeException("Cannot mkdirs with a classpath file: "
-					+ file);
+			throw new RuntimeException("Cannot mkdirs with a classpath file: " + file);
 		}
 		if (type == FileType.Internal) {
-			throw new RuntimeException("Cannot mkdirs with an internal file: "
-					+ file);
+			throw new RuntimeException("Cannot mkdirs with an internal file: " + file);
 		}
 		return file().mkdirs();
 	}
@@ -445,8 +416,7 @@ public class ResourcesWrapper {
 				return true;
 			}
 		case Classpath:
-			return ResourcesWrapper.class.getResource("/"
-					+ file.getPath().replace('\\', '/')) != null;
+			return ResourcesWrapper.class.getResource("/" + file.getPath().replace('\\', '/')) != null;
 		default:
 			break;
 		}
@@ -455,21 +425,17 @@ public class ResourcesWrapper {
 
 	public boolean delete() {
 		if (type == FileType.Classpath)
-			throw new RuntimeException("Cannot delete a classpath file: "
-					+ file);
+			throw new RuntimeException("Cannot delete a classpath file: " + file);
 		if (type == FileType.Internal)
-			throw new RuntimeException("Cannot delete an internal file: "
-					+ file);
+			throw new RuntimeException("Cannot delete an internal file: " + file);
 		return file().delete();
 	}
 
 	public boolean deleteDirectory() {
 		if (type == FileType.Classpath)
-			throw new RuntimeException("Cannot delete a classpath file: "
-					+ file);
+			throw new RuntimeException("Cannot delete a classpath file: " + file);
 		if (type == FileType.Internal)
-			throw new RuntimeException("Cannot delete an internal file: "
-					+ file);
+			throw new RuntimeException("Cannot delete an internal file: " + file);
 		return deleteDirectory(file());
 	}
 
@@ -483,13 +449,11 @@ public class ResourcesWrapper {
 		}
 		if (dest.exists()) {
 			if (!dest.isDirectory())
-				throw new RuntimeException(
-						"Destination exists but is not a directory: " + dest);
+				throw new RuntimeException("Destination exists but is not a directory: " + dest);
 		} else {
 			dest.mkdirs();
 			if (!dest.isDirectory())
-				throw new RuntimeException(
-						"Destination directory cannot be created: " + dest);
+				throw new RuntimeException("Destination directory cannot be created: " + dest);
 		}
 		if (!sourceDir)
 			dest = dest.child(name());
@@ -531,8 +495,7 @@ public class ResourcesWrapper {
 			if (!file.delete())
 				throw new IOException("Unable to delete temp file: " + file);
 			if (!file.mkdir())
-				throw new IOException("Unable to create temp directory: "
-						+ file);
+				throw new IOException("Unable to create temp directory: " + file);
 			return new ResourcesWrapper(file);
 		} catch (IOException ex) {
 			throw new RuntimeException("Unable to create temp file.", ex);
@@ -558,15 +521,12 @@ public class ResourcesWrapper {
 		try {
 			dest.write(source.read(), false);
 		} catch (Exception ex) {
-			throw new RuntimeException("Error copying source file: "
-					+ source.file + " (" + source.type + ")\n" //
-					+ "To destination: " + dest.file + " (" + dest.type + ")",
-					ex);
+			throw new RuntimeException("Error copying source file: " + source.file + " (" + source.type + ")\n" //
+					+ "To destination: " + dest.file + " (" + dest.type + ")", ex);
 		}
 	}
 
-	static private void copyDirectory(ResourcesWrapper sourceDir,
-			ResourcesWrapper destDir) {
+	static private void copyDirectory(ResourcesWrapper sourceDir, ResourcesWrapper destDir) {
 		destDir.mkdirs();
 		ResourcesWrapper[] files = sourceDir.list();
 		for (int i = 0, n = files.length; i < n; i++) {

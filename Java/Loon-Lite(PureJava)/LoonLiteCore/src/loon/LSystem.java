@@ -22,6 +22,7 @@ package loon;
 
 import loon.Log.Level;
 import loon.action.sprite.Sprites;
+import loon.component.DefUI;
 import loon.component.Desktop;
 import loon.events.KeyMake;
 import loon.events.SysInput;
@@ -94,16 +95,16 @@ public class LSystem {
 	public static final char SPACE = ' ';
 
 	public static final char TAB = '	';
-	
+
 	// 默认最大预加载数量
 	public static final float DEFAULT_MAX_PRE_SIZE = 10000f;
-	
+
 	// 默认缓存数量
 	public static final int DEFAULT_MAX_CACHE_SIZE = 32;
 
 	// 默认缓动函数延迟
 	public static final float DEFAULT_EASE_DELAY = 1f / 60f;
-	
+
 	public static final float MIN_SECONE_SPEED_FIXED = 0.008f;
 	// 行分隔符
 	public static final String LS = System.getProperty("line.separator", "\n");
@@ -365,7 +366,7 @@ public class LSystem {
 		}
 		viewSize.setSize(w, h);
 	}
-	
+
 	public static Json json() {
 		if (base() != null) {
 			return base().json();
@@ -409,7 +410,7 @@ public class LSystem {
 	public static void setScaleHeight(float sy) {
 		LSystem._scaleHeight = sy;
 	}
-	
+
 	public static Scale getScale() {
 		Graphics graphics = null;
 		if (LSystem.base() != null) {
@@ -462,7 +463,7 @@ public class LSystem {
 			return name.substring(index + 1);
 		}
 	}
-	
+
 	public static final void close(LRelease rel) {
 		if (rel != null) {
 			try {
@@ -472,7 +473,7 @@ public class LSystem {
 			}
 		}
 	}
-	
+
 	public static final LProcess getProcess() {
 		if (base() != null) {
 			return base().processImpl;
@@ -592,7 +593,7 @@ public class LSystem {
 			return name.substring(0, index);
 		}
 	}
-	
+
 	public static final void stopRepaint() {
 		LSystem._auto_repaint = false;
 	}
@@ -602,7 +603,7 @@ public class LSystem {
 	}
 
 	public static final boolean isEmulateFullVer() {
-		return base() != null ? base().setting.emulateFullVer: false ;
+		return base() != null ? base().setting.emulateFullVer : false;
 	}
 
 	public static final <E> void dispatchEvent(Act<E> signal, E event) {
@@ -690,7 +691,7 @@ public class LSystem {
 		}
 		return null;
 	}
-	
+
 	public static final boolean containsTexture(int id) {
 		if (base() != null) {
 			return base().containsTexture(id);
@@ -1032,5 +1033,9 @@ public class LSystem {
 
 	public static final boolean equals(final Object o1, final Object o2) {
 		return (o1 == null) ? (o2 == null) : o1.equals(o2);
+	}
+
+	public static final void closeTemp() {
+		DefUI.selfClear();
 	}
 }

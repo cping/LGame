@@ -17,28 +17,28 @@ package java.net;
 
 public class InetSocketAddress {
 
-  private final InetAddress address;
-  private final int port;
+	private final InetAddress address;
+	private final int port;
 
-  public InetSocketAddress(int port) {
-    this(new InetAddress(new byte[]{0,0,0,0}), port);
-  }
+	public InetSocketAddress(int port) {
+		this(new InetAddress(new byte[] { 0, 0, 0, 0 }), port);
+	}
 
-  public InetSocketAddress(InetAddress address, int port) {
-    this.address = address;
-    this.port = port;
-  } 
-  
-  public InetAddress getAddress() {
-    return address;
-  }
-  
-  public int getPort() {
-    return port;
-  }
+	public InetSocketAddress(InetAddress address, int port) {
+		this.address = address;
+		this.port = port;
+	}
 
-  public String toString() {
-	return address.toString() + ":" + port;
-  }
-  
+	public InetAddress getAddress() {
+		return address;
+	}
+
+	public int getPort() {
+		return port;
+	}
+
+	public String toString() {
+		return address.toString() + ":" + port;
+	}
+
 }

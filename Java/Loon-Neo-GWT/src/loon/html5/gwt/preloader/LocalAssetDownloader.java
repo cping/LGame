@@ -12,7 +12,9 @@ import com.google.gwt.xhr.client.ReadyStateChangeHandler;
 import com.google.gwt.xhr.client.XMLHttpRequest;
 import com.google.gwt.xhr.client.XMLHttpRequest.ResponseType;
 
-/** 流氓写法，做一个内部接口，将除了图片和音效外的资源，一律写在class里加载，这样就没有跨域问题了，就可以不必经过服务器，而在任意浏览器运行了…… **/
+/**
+ * 流氓写法，做一个内部接口，将除了图片和音效外的资源，一律写在class里加载，这样就没有跨域问题了，就可以不必经过服务器，而在任意浏览器运行了……
+ **/
 public class LocalAssetDownloader extends IDownloader {
 
 	private final LocalAssetResources localRes;
@@ -25,15 +27,13 @@ public class LocalAssetDownloader extends IDownloader {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void load(String url, AssetType type, String mimeType,
-			AssetLoaderListener<?> listener) {
+	public void load(String url, AssetType type, String mimeType, AssetLoaderListener<?> listener) {
 		switch (type) {
 		case Text:
 			loadText(url, (AssetLoaderListener<String>) listener);
 			break;
 		case Image:
-			loadImage(url, mimeType,
-					(AssetLoaderListener<ImageElement>) listener);
+			loadImage(url, mimeType, (AssetLoaderListener<ImageElement>) listener);
 			break;
 		case Binary:
 			loadBinary(url, (AssetLoaderListener<Blob>) listener);
@@ -66,8 +66,7 @@ public class LocalAssetDownloader extends IDownloader {
 			});
 			setOnProgress(request, listener);
 			request.open("GET", url);
-			request.setRequestHeader("Content-Type",
-					"text/plain; charset=utf-8");
+			request.setRequestHeader("Content-Type", "text/plain; charset=utf-8");
 			request.send();
 			return;
 		}
@@ -81,13 +80,10 @@ public class LocalAssetDownloader extends IDownloader {
 		ObjectMap<String, String> res = localRes.texts;
 
 		String text = res.get(path);
-		if (text == null
-				&& (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
-			text = res
-					.get(path.substring(path.indexOf('/') + 1, path.length()));
+		if (text == null && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
+			text = res.get(path.substring(path.indexOf('/') + 1, path.length()));
 		}
-		if (text == null
-				&& (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
+		if (text == null && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
 			text = res.get(LSystem.getFileName(path));
 		}
 		if (text == null) {
@@ -110,8 +106,7 @@ public class LocalAssetDownloader extends IDownloader {
 				});
 				setOnProgress(request, listener);
 				request.open("GET", url);
-				request.setRequestHeader("Content-Type",
-						"text/plain; charset=utf-8");
+				request.setRequestHeader("Content-Type", "text/plain; charset=utf-8");
 				request.send();
 				return;
 			} else {
@@ -123,8 +118,7 @@ public class LocalAssetDownloader extends IDownloader {
 		setOnProgress(listener);
 	}
 
-	public void loadBinary(final String url,
-			final AssetLoaderListener<Blob> listener) {
+	public void loadBinary(final String url, final AssetLoaderListener<Blob> listener) {
 		if (localRes == null) {
 			XMLHttpRequest request = XMLHttpRequest.create();
 			request.setOnReadyStateChange(new ReadyStateChangeHandler() {
@@ -134,8 +128,7 @@ public class LocalAssetDownloader extends IDownloader {
 						if (xhr.getStatus() != 200) {
 							listener.onFailure();
 						} else {
-							Int8Array data = TypedArrays.createInt8Array(xhr
-									.getResponseArrayBuffer());
+							Int8Array data = TypedArrays.createInt8Array(xhr.getResponseArrayBuffer());
 							listener.onSuccess(new Blob(data));
 						}
 					}
@@ -156,13 +149,10 @@ public class LocalAssetDownloader extends IDownloader {
 		path = path.replace("\\", "/");
 		ObjectMap<String, Blob> res = localRes.binaries;
 		Blob blob = res.get(path);
-		if (blob == null
-				&& (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
-			blob = res
-					.get(path.substring(path.indexOf('/') + 1, path.length()));
+		if (blob == null && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
+			blob = res.get(path.substring(path.indexOf('/') + 1, path.length()));
 		}
-		if (blob == null
-				&& (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
+		if (blob == null && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
 			blob = res.get(LSystem.getFileName(path));
 		}
 		if (blob == null) {
@@ -178,9 +168,7 @@ public class LocalAssetDownloader extends IDownloader {
 							if (xhr.getStatus() != 200) {
 								listener.onFailure();
 							} else {
-								Int8Array data = TypedArrays
-										.createInt8Array(xhr
-												.getResponseArrayBuffer());
+								Int8Array data = TypedArrays.createInt8Array(xhr.getResponseArrayBuffer());
 								listener.onSuccess(new Blob(data));
 							}
 						}
@@ -224,8 +212,7 @@ public class LocalAssetDownloader extends IDownloader {
 		}
 	}
 
-	public void loadImage(final String url, final String mimeType,
-			final AssetLoaderListener<ImageElement> listener) {
+	public void loadImage(final String url, final String mimeType, final AssetLoaderListener<ImageElement> listener) {
 		String path = url;
 		int pathLen;
 		do {
@@ -249,18 +236,14 @@ public class LocalAssetDownloader extends IDownloader {
 		} else {
 			ObjectMap<String, String> res = localRes.images;
 			String base64 = res.get(path);
-			if (base64 == null
-					&& (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
-				base64 = res.get(path.substring(path.indexOf('/') + 1,
-						path.length()));
+			if (base64 == null && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
+				base64 = res.get(path.substring(path.indexOf('/') + 1, path.length()));
 			}
-			if (base64 == null
-					&& (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
+			if (base64 == null && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
 				base64 = res.get(LSystem.getFileName(path));
 			}
 			if (base64 == null) {
-				base64 = res
-						.get(LSystem.getFileName(path = ("assets/" + path)));
+				base64 = res.get(LSystem.getFileName(path = ("assets/" + path)));
 			}
 			if (base64 == null) {
 				final ImageElement image = createImage();

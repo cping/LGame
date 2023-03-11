@@ -82,10 +82,10 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	private int _mobile_select_valid_limit = 0;
 
 	// 当前任务集合
-	private Array<Task> _currentTasks = new Array<AVGScreen.Task>();
+	private final Array<Task> _currentTasks = new Array<AVGScreen.Task>();
 
 	// 任务集合
-	private ListMap<String, AVGScreen.Task> _tasks = new ListMap<String, AVGScreen.Task>(20);
+	private final ListMap<String, AVGScreen.Task> _tasks = new ListMap<String, AVGScreen.Task>(20);
 
 	private IFont _font;
 
@@ -646,7 +646,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	public final void onLoad() {
 		this.setRepaintMode(Screen.SCREEN_NOT_REPAINT);
 		this._plapDelay = 60;
-		if (_dialogTexture == null && _dialogFileName != null) {
+		if ((_dialogTexture == null || _dialogTexture.isClosed()) && _dialogFileName != null) {
 			this._dialogTexture = LSystem.loadTexture(_dialogFileName);
 		}
 		this.isGameRunning = true;
@@ -1884,16 +1884,12 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 			scrCG.close();
 			scrCG = null;
 		}
-		if (_dialogTexture != null) {
-			if (_dialogTexture.getSource() != null) {
-				_dialogTexture.close();
-				_dialogTexture = null;
-			}
+		if (_dialogTexture != null && !_dialogTexture.isImageCanvas()) {
+			_dialogTexture.close();
+			_dialogTexture = null;
 		}
 		_currentTasks.clear();
-		_currentTasks = null;
 		_tasks.clear();
-		_tasks = null;
 	}
 
 }

@@ -14,12 +14,10 @@ public final class ArrayReflection {
 	}
 
 	static public Object get(Object array, int index) {
-		return ReflectionCache.getType(array.getClass()).getArrayElement(array,
-				index);
+		return ReflectionCache.getType(array.getClass()).getArrayElement(array, index);
 	}
 
 	static public void set(Object array, int index, Object value) {
-		ReflectionCache.getType(array.getClass()).setArrayElement(array, index,
-				value);
+		ReflectionCache.getType(array.getClass()).setArrayElement(array, index, value);
 	}
 }

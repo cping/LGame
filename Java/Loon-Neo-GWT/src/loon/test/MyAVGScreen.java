@@ -23,8 +23,7 @@ public class MyAVGScreen extends AVGScreen {
 	int type;
 
 	public MyAVGScreen() {
-		super("assets/script/s1.txt", AVGDialog.shared().getRMXPDialog("assets/w6.png",
-				460, 150));
+		super("assets/script/s1.txt", AVGDialog.shared().getRMXPDialog("assets/w6.png", 460, 150));
 	}
 
 	public void onLoading() {

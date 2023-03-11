@@ -14,11 +14,9 @@ import com.google.gwt.core.linker.CrossSiteIframeLinker;
 
 public class AssetCacheLinker extends CrossSiteIframeLinker {
 
-	private static final HashSet<String> DEFAULT_EXTENSION_WHITELIST = new HashSet<String>(
-			Arrays.asList(new String[] { "js", "an", "cfg", "pack", "fnt",
-					"txt", "text", "atlas", "html", "bmp", "jpg", "jpeg",
-					"png", "gif", "mp3", "ogg", "mov", "avi", "wmv", "wav",
-					"webm", "css", "xml", "json", "flv", "swf" }));
+	private static final HashSet<String> DEFAULT_EXTENSION_WHITELIST = new HashSet<String>(Arrays.asList(new String[] {
+			"js", "an", "cfg", "pack", "fnt", "txt", "text", "atlas", "html", "bmp", "jpg", "jpeg", "png", "gif", "mp3",
+			"ogg", "mov", "avi", "wmv", "wav", "webm", "css", "xml", "json", "flv", "swf" }));
 
 	private static final String MANIFEST = "assetcache.nocache.manifest";
 
@@ -28,12 +26,11 @@ public class AssetCacheLinker extends CrossSiteIframeLinker {
 	}
 
 	@Override
-	public ArtifactSet link(TreeLogger logger, LinkerContext context,
-			ArtifactSet artifacts) throws UnableToCompleteException {
+	public ArtifactSet link(TreeLogger logger, LinkerContext context, ArtifactSet artifacts)
+			throws UnableToCompleteException {
 		ArtifactSet toReturn = super.link(logger, context, artifacts);
 
-		toReturn.add(emitLandingPageCacheManifest(context, logger, toReturn,
-				staticCachedFiles()));
+		toReturn.add(emitLandingPageCacheManifest(context, logger, toReturn, staticCachedFiles()));
 
 		return toReturn;
 	}
@@ -57,9 +54,8 @@ public class AssetCacheLinker extends CrossSiteIframeLinker {
 		return false;
 	}
 
-	private Artifact<?> emitLandingPageCacheManifest(LinkerContext context,
-			TreeLogger logger, ArtifactSet artifacts, String[] staticFiles)
-			throws UnableToCompleteException {
+	private Artifact<?> emitLandingPageCacheManifest(LinkerContext context, TreeLogger logger, ArtifactSet artifacts,
+			String[] staticFiles) throws UnableToCompleteException {
 
 		StringBuilder publicSourcesSb = new StringBuilder();
 		StringBuilder publicStaticSourcesSb = new StringBuilder();
@@ -68,8 +64,7 @@ public class AssetCacheLinker extends CrossSiteIframeLinker {
 		Artifact artifact : artifacts) {
 			if (artifact instanceof EmittedArtifact) {
 				EmittedArtifact ea = (EmittedArtifact) artifact;
-				String path = "/" + context.getModuleFunctionName() + "/"
-						+ ea.getPartialPath();
+				String path = "/" + context.getModuleFunctionName() + "/" + ea.getPartialPath();
 
 				if (accept(path)) {
 					publicSourcesSb.append(path + "\n");
@@ -87,8 +82,7 @@ public class AssetCacheLinker extends CrossSiteIframeLinker {
 
 		StringBuilder sb = new StringBuilder();
 		sb.append("CACHE MANIFEST\n");
-		sb.append("# Unique id #" + (new Date()).getTime() + "."
-				+ Math.random() + "\n");
+		sb.append("# Unique id #" + (new Date()).getTime() + "." + Math.random() + "\n");
 		sb.append("# Note: must change this every time for cache to invalidate\n");
 		sb.append("\n");
 		sb.append("CACHE:\n");
@@ -100,12 +94,10 @@ public class AssetCacheLinker extends CrossSiteIframeLinker {
 		sb.append("NETWORK:\n");
 		sb.append("*\n");
 
-		logger.log(
-				TreeLogger.DEBUG,
+		logger.log(TreeLogger.DEBUG,
 				"Make sure you have the following"
 						+ " attribute added to your landing page's <html> tag: <html manifest=\""
-						+ context.getModuleFunctionName() + "/" + MANIFEST
-						+ "\">");
+						+ context.getModuleFunctionName() + "/" + MANIFEST + "\">");
 
 		return emitString(logger, sb.toString(), MANIFEST);
 	}

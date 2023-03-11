@@ -50,7 +50,6 @@ public class Parameter {
 
 	@Override
 	public String toString() {
-		return "Parameter [name=" + name + ", type=" + type + ", jnsi=" + jnsi
-				+ "]";
+		return "Parameter [name=" + name + ", type=" + type + ", jnsi=" + jnsi + "]";
 	}
 }

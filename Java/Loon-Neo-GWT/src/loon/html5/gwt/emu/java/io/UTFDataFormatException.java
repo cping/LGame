@@ -23,11 +23,11 @@ public class UTFDataFormatException extends IOException {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public UTFDataFormatException (String msg) {
+	public UTFDataFormatException(String msg) {
 		super(msg);
 	}
 
-	public UTFDataFormatException () {
+	public UTFDataFormatException() {
 		super();
 	}
 }

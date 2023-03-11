@@ -39,6 +39,7 @@ import loon.action.sprite.Sprites;
 import loon.action.sprite.Sprites.SpriteListener;
 import loon.canvas.Image;
 import loon.canvas.LColor;
+import loon.canvas.Pixmap;
 import loon.component.Desktop;
 import loon.component.LClickButton;
 import loon.component.LComponent;
@@ -82,10 +83,12 @@ import loon.geom.Triangle2f;
 import loon.geom.Vector2f;
 import loon.geom.XY;
 import loon.opengl.GLEx;
+import loon.opengl.LTextureImage;
 import loon.utils.ArrayByte;
 import loon.utils.Calculator;
 import loon.utils.ConfigReader;
 import loon.utils.Disposes;
+import loon.utils.Easing.EasingMode;
 import loon.utils.GLUtils;
 import loon.utils.IntMap;
 import loon.utils.MathUtils;
@@ -236,6 +239,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	private TArray<FrameLoopEvent> _loopEvents;
 
 	private boolean _initLoopEvents = false;
+
+	private boolean _isExistCamera = false;
 
 	private Accelerometer.SensorDirection direction = Accelerometer.SensorDirection.EMPTY;
 
@@ -791,7 +796,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			desktop.packLayout(manager, spacex, spacey, spaceHeight, spaceHeight);
 		}
 	}
-
 
 	public void stopRepaint() {
 		LSystem.stopRepaint();
@@ -1349,6 +1353,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	final public void resetSize(int w, int h) {
+		this.handler = LSystem.getProcess();
 		this.width = (w <= 0 ? LSystem.viewSize.getWidth() : w);
 		this.height = (h <= 0 ? LSystem.viewSize.getHeight() : h);
 		this.halfWidth = width / 2;
@@ -1431,6 +1436,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		this._rotation = 0;
 		this._scaleX = _scaleY = _alpha = 1f;
 		this._baseColor = null;
+		this._isExistCamera = false;
 		this._initLoopEvents = false;
 		this._desktopPenetrate = false;
 		this._rectLimits.clear();
@@ -3188,6 +3194,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 				// 最前一层渲染，可重载
 				beforeUI(g);
 			} finally {
+				// 若存在摄影机,则还原camera坐标
+				if (_isExistCamera) {
+					g.restoreTx();
+				}
 				// 还原屏幕矩阵以及画笔
 				g.restore();
 			}
@@ -4586,6 +4596,19 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	/**
+	 * 截屏screen并保存在pixmap(pixmap本质上是一个无系统依赖的，仅存在于内存中的像素数组)
+	 * 
+	 * @return
+	 */
+	public Pixmap screenshotToPixmap() {
+		Pixmap pixmap = GLUtils.getScreenshot().getPixmap();
+		Pixmap image = Pixmap.getResize(pixmap, getWidth(), getHeight());
+		pixmap.close();
+		pixmap = null;
+		return image;
+	}
+
+	/**
 	 * 退出游戏
 	 * 
 	 * @return
@@ -5466,6 +5489,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 				isNext = false;
 				isGravity = false;
 				isLock = true;
+				_isExistCamera = false;
 				_desktopPenetrate = false;
 				if (sprites != null) {
 					spriteRun = false;
@@ -5506,6 +5530,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 				_resizeListener = null;
 				this.screenSwitch = null;
 				this.stageRun = false;
+				LSystem.closeTemp();
 			} catch (Throwable cause) {
 				LSystem.error("Screen destroy() dispatch exception", cause);
 			} finally {

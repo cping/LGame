@@ -73,8 +73,8 @@ public class SoundManager {
 										return $wnd.soundManager.ok();
 										}-*/;
 
-	public static native void init(String moduleBaseURL, int flashVersion,
-			boolean preferFlash, SoundManagerCallback callback) /*-{
+	public static native void init(String moduleBaseURL, int flashVersion, boolean preferFlash,
+			SoundManagerCallback callback) /*-{
 																try{
 																$wnd.soundManager = new $wnd.SoundManager();
 																$wnd.soundManager.setup({

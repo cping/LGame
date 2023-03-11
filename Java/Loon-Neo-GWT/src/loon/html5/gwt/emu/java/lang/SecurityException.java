@@ -16,19 +16,19 @@ public class SecurityException extends RuntimeException {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public SecurityException (String message, Throwable cause) {
+	public SecurityException(String message, Throwable cause) {
 		super(message, cause);
 	}
 
-	public SecurityException (String message) {
+	public SecurityException(String message) {
 		this(message, null);
 	}
 
-	public SecurityException (Throwable cause) {
+	public SecurityException(Throwable cause) {
 		this(null, cause);
 	}
 
-	public SecurityException () {
+	public SecurityException() {
 		this(null, null);
 	}
 }

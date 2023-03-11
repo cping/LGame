@@ -59,8 +59,7 @@ class GWTSave implements Save {
 		try {
 			storageMap.remove(key);
 		} catch (RuntimeException e) {
-			platform.reportError("Failed to remove() Storage item [key=" + key
-					+ "]", e);
+			platform.reportError("Failed to remove() Storage item [key=" + key + "]", e);
 		}
 	}
 
@@ -69,8 +68,7 @@ class GWTSave implements Save {
 		try {
 			return storageMap.get(key);
 		} catch (RuntimeException e) {
-			platform.reportError("Failed to get() Storage item [key=" + key
-					+ "]", e);
+			platform.reportError("Failed to get() Storage item [key=" + key + "]", e);
 		}
 		return null;
 	}

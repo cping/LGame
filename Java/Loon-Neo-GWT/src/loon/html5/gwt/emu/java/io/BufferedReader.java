@@ -9,27 +9,28 @@
    details. */
 
 package java.io;
+
 public class BufferedReader extends Reader {
 	private final Reader in;
 	private final char[] buffer;
 	private int position;
 	private int limit;
 
-	public BufferedReader (Reader in, int bufferSize) {
+	public BufferedReader(Reader in, int bufferSize) {
 		this.in = in;
 		this.buffer = new char[bufferSize];
 	}
 
-	public BufferedReader (Reader in) {
+	public BufferedReader(Reader in) {
 		this(in, 8192);
 	}
 
-	private void fill () throws IOException {
+	private void fill() throws IOException {
 		position = 0;
 		limit = in.read(buffer);
 	}
 
-	public String readLine () throws IOException {
+	public String readLine() throws IOException {
 		StringBuilder sb = new StringBuilder();
 		while (true) {
 			if (position >= limit) {
@@ -66,7 +67,7 @@ public class BufferedReader extends Reader {
 		}
 	}
 
-	public int read (char[] b, int offset, int length) throws IOException {
+	public int read(char[] b, int offset, int length) throws IOException {
 		int count = 0;
 
 		if (position >= limit && length < buffer.length) {
@@ -101,7 +102,7 @@ public class BufferedReader extends Reader {
 		return count;
 	}
 
-	public void close () throws IOException {
+	public void close() throws IOException {
 		in.close();
 	}
 }

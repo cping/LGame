@@ -380,8 +380,8 @@ public class JavaSEGame extends LGame {
 		return new JavaSELwjglInputMake(this);
 	}
 
-	protected void shutdown() {
-		status.emit(Status.EXIT);
+	public void shutdown() {
+	    super.shutdown();
 		try {
 			pool.shutdown();
 			pool.awaitTermination(1, TimeUnit.SECONDS);

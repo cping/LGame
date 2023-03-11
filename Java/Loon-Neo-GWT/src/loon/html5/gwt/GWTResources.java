@@ -39,8 +39,7 @@ public class GWTResources {
 		Local;
 	}
 
-	public static final Storage LocalStorage = Storage
-			.getLocalStorageIfSupported();
+	public static final Storage LocalStorage = Storage.getLocalStorageIfSupported();
 
 	final Preloader preloader;
 

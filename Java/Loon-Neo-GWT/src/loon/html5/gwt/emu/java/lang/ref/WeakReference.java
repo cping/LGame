@@ -24,30 +24,19 @@ package java.lang.ref;
  * happens:
  *
  * <ul>
- *   <li>
- *     A set {@code ref} of references is determined. {@code ref} contains the
- *     following elements:
- *     <ul>
- *       <li>
- *         All weak references pointing to {@code obj}.
- *       </li>
- *       <li>
- *         All weak references pointing to objects from which {@code obj} is
- *         either strongly or softly reachable.
- *       </li>
- *     </ul>
- *   </li>
- *   <li>
- *     All references in {@code ref} are atomically cleared.
- *   </li>
- *   <li>
- *     All objects formerly being referenced by {@code ref} become eligible for
- *     finalization.
- *   </li>
- *   <li>
- *     At some future point, all references in {@code ref} will be enqueued
- *     with their corresponding reference queues, if any.
- *   </li>
+ * <li>A set {@code ref} of references is determined. {@code ref} contains the
+ * following elements:
+ * <ul>
+ * <li>All weak references pointing to {@code obj}.</li>
+ * <li>All weak references pointing to objects from which {@code obj} is either
+ * strongly or softly reachable.</li>
+ * </ul>
+ * </li>
+ * <li>All references in {@code ref} are atomically cleared.</li>
+ * <li>All objects formerly being referenced by {@code ref} become eligible for
+ * finalization.</li>
+ * <li>At some future point, all references in {@code ref} will be enqueued with
+ * their corresponding reference queues, if any.</li>
  * </ul>
  *
  * Weak references are useful for mappings that should have their entries
@@ -57,50 +46,46 @@ package java.lang.ref;
  * reference:
  *
  * <ul>
- *   <li>
- *     A {@code SoftReference} should be cleared and enqueued <em>as late as
- *     possible</em>, that is, in case the VM is in danger of running out of
- *     memory.
- *   </li>
- *   <li>
- *     A {@code WeakReference} may be cleared and enqueued as soon as is
- *     known to be weakly-referenced.
- *   </li>
+ * <li>A {@code SoftReference} should be cleared and enqueued <em>as late as
+ * possible</em>, that is, in case the VM is in danger of running out of memory.
+ * </li>
+ * <li>A {@code WeakReference} may be cleared and enqueued as soon as is known
+ * to be weakly-referenced.</li>
  * </ul>
  *
  * @since 1.2
  */
 public class WeakReference<T> extends Reference<T> {
 
-    public T get () {
-        return _value;
-    }
+	public T get() {
+		return _value;
+	}
 
-    protected final T _value;
-    /**
-     * Constructs a new weak reference to the given referent. The newly created
-     * reference is not registered with any reference queue.
-     *
-     * @param r the referent to track
-     */
-    public WeakReference(T r) {
-        super();
-        _value = r;
-        initReference(r);
-    }
+	protected final T _value;
 
-    /**
-     * Constructs a new weak reference to the given referent. The newly created
-     * reference is registered with the given reference queue.
-     *
-     * @param r the referent to track
-     * @param q the queue to register to the reference object with. A null value
-     *          results in a weak reference that is not associated with any
-     *          queue.
-     */
-    public WeakReference(T r, ReferenceQueue<? super T> q) {
-        super();
-        _value = r;
-        initReference(r, q);
-    }
+	/**
+	 * Constructs a new weak reference to the given referent. The newly created
+	 * reference is not registered with any reference queue.
+	 *
+	 * @param r the referent to track
+	 */
+	public WeakReference(T r) {
+		super();
+		_value = r;
+		initReference(r);
+	}
+
+	/**
+	 * Constructs a new weak reference to the given referent. The newly created
+	 * reference is registered with the given reference queue.
+	 *
+	 * @param r the referent to track
+	 * @param q the queue to register to the reference object with. A null value
+	 *          results in a weak reference that is not associated with any queue.
+	 */
+	public WeakReference(T r, ReferenceQueue<? super T> q) {
+		super();
+		_value = r;
+		initReference(r, q);
+	}
 }

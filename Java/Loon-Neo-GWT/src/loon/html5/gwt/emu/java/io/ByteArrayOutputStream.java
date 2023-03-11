@@ -21,40 +21,40 @@ public class ByteArrayOutputStream extends OutputStream {
 	protected int count;
 	protected byte[] buf;
 
-	public ByteArrayOutputStream () {
+	public ByteArrayOutputStream() {
 		this(16);
 	}
 
-	public ByteArrayOutputStream (int initialSize) {
+	public ByteArrayOutputStream(int initialSize) {
 		buf = new byte[initialSize];
 	}
 
 	@Override
-	public void write (int b) {
+	public void write(int b) {
 		if (buf.length == count) {
 			byte[] newBuf = new byte[buf.length * 3 / 2];
 			System.arraycopy(buf, 0, newBuf, 0, count);
 			buf = newBuf;
 		}
 
-		buf[count++] = (byte)b;
+		buf[count++] = (byte) b;
 	}
 
-	public byte[] toByteArray () {
+	public byte[] toByteArray() {
 		byte[] result = new byte[count];
 		System.arraycopy(buf, 0, result, 0, count);
 		return result;
 	}
 
-	public int size () {
+	public int size() {
 		return count;
 	}
 
-	public String toString () {
+	public String toString() {
 		return new String(buf, 0, count);
 	}
 
-	public String toString (String enc) throws UnsupportedEncodingException {
+	public String toString(String enc) throws UnsupportedEncodingException {
 		return new String(buf, 0, count, enc);
 	}
 }

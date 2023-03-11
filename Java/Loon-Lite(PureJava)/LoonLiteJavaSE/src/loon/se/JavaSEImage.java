@@ -24,11 +24,11 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 import loon.Graphics;
-import loon.LSystem;
 import loon.canvas.Canvas;
 import loon.canvas.Image;
 import loon.canvas.ImageImpl;
 import loon.canvas.LColor;
+import loon.opengl.TextureSource;
 import loon.utils.MathUtils;
 import loon.utils.Scale;
 
@@ -39,7 +39,7 @@ public class JavaSEImage extends ImageImpl {
 	protected BufferedImage buffer;
 
 	public JavaSEImage(Graphics gfx, BufferedImage buffer) {
-		this(gfx, Scale.ONE, buffer, "<canvas>");
+		this(gfx, Scale.ONE, buffer, TextureSource.RenderCanvas);
 	}
 
 	public JavaSEImage(Graphics gfx, Scale scale, BufferedImage buffer, String source) {
@@ -47,7 +47,7 @@ public class JavaSEImage extends ImageImpl {
 	}
 
 	public JavaSEImage(JavaSEGame game, int preWidth, int preHeight) {
-		this(game, false, preWidth, preHeight, "<canvas>");
+		this(game, false, preWidth, preHeight, TextureSource.RenderCanvas);
 	}
 
 	public JavaSEImage(JavaSEGame game, boolean async, int preWidth, int preHeight, String source) {
@@ -242,7 +242,7 @@ public class JavaSEImage extends ImageImpl {
 
 	@Override
 	public Image getSubImage(int x, int y, int width, int height) {
-		return new JavaSEImage(gfx, scale, buffer.getSubimage(x, y, width, height), "<canvas>");
+		return new JavaSEImage(gfx, scale, buffer.getSubimage(x, y, width, height), TextureSource.RenderCanvas);
 	}
 
 	public JavaSECacheImageColor getImageColor() {

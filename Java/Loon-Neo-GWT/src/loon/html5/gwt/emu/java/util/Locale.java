@@ -73,9 +73,12 @@ public final class Locale implements Cloneable, Serializable {
 	/** Locale constant for zh_CN. */
 	public static final Locale PRC = new Locale(true, "zh", "CN");
 
-	/** Locale constant for the root locale. The root locale has an empty language, country, and variant.
+	/**
+	 * Locale constant for the root locale. The root locale has an empty language,
+	 * country, and variant.
 	 *
-	 * @since 1.6 */
+	 * @since 1.6
+	 */
 	public static final Locale ROOT = new Locale(true, "", "");
 
 	/** Locale constant for zh_CN. */
@@ -111,28 +114,37 @@ public final class Locale implements Cloneable, Serializable {
 	private transient String variantCode;
 	private transient String cachedToStringResult;
 
-	/** There's a circular dependency between toLowerCase/toUpperCase and Locale.US. Work around this by avoiding these methods when
-	 * constructing the built-in locales.
+	/**
+	 * There's a circular dependency between toLowerCase/toUpperCase and Locale.US.
+	 * Work around this by avoiding these methods when constructing the built-in
+	 * locales.
 	 *
-	 * @param unused required for this constructor to have a unique signature */
-	private Locale (boolean unused, String lowerCaseLanguageCode, String upperCaseCountryCode) {
+	 * @param unused required for this constructor to have a unique signature
+	 */
+	private Locale(boolean unused, String lowerCaseLanguageCode, String upperCaseCountryCode) {
 		this.languageCode = lowerCaseLanguageCode;
 		this.countryCode = upperCaseCountryCode;
 		this.variantCode = "";
 	}
 
 	/** Constructs a new {@code Locale} using the specified language. */
-	public Locale (String language) {
+	public Locale(String language) {
 		this(language, "", "");
 	}
 
-	/** Constructs a new {@code Locale} using the specified language and country codes. */
-	public Locale (String language, String country) {
+	/**
+	 * Constructs a new {@code Locale} using the specified language and country
+	 * codes.
+	 */
+	public Locale(String language, String country) {
 		this(language, country, "");
 	}
 
-	/** Constructs a new {@code Locale} using the specified language, country, and variant codes. */
-	public Locale (String language, String country, String variant) {
+	/**
+	 * Constructs a new {@code Locale} using the specified language, country, and
+	 * variant codes.
+	 */
+	public Locale(String language, String country, String variant) {
 		if (language == null || country == null || variant == null) {
 			throw new NullPointerException("language=" + language + ",country=" + country + ",variant=" + variant);
 		}
@@ -170,15 +182,19 @@ public final class Locale implements Cloneable, Serializable {
 // }
 // }
 
-	/** Returns true if {@code object} is a locale with the same language, country and variant. */
+	/**
+	 * Returns true if {@code object} is a locale with the same language, country
+	 * and variant.
+	 */
 	@Override
-	public boolean equals (Object object) {
+	public boolean equals(Object object) {
 		if (object == this) {
 			return true;
 		}
 		if (object instanceof Locale) {
-			Locale o = (Locale)object;
-			return languageCode.equals(o.languageCode) && countryCode.equals(o.countryCode) && variantCode.equals(o.variantCode);
+			Locale o = (Locale) object;
+			return languageCode.equals(o.languageCode) && countryCode.equals(o.countryCode)
+					&& variantCode.equals(o.variantCode);
 		}
 		return false;
 	}
@@ -201,16 +217,23 @@ public final class Locale implements Cloneable, Serializable {
 // return ICU.getAvailableLocales();
 // }
 
-	/** Returns the country code for this locale, or {@code ""} if this locale doesn't correspond to a specific country. */
-	public String getCountry () {
+	/**
+	 * Returns the country code for this locale, or {@code ""} if this locale
+	 * doesn't correspond to a specific country.
+	 */
+	public String getCountry() {
 		return countryCode;
 	}
 
-	/** Returns the user's preferred locale. This may have been overridden for this process with {@link #setDefault}.
+	/**
+	 * Returns the user's preferred locale. This may have been overridden for this
+	 * process with {@link #setDefault}.
 	 *
 	 * <p>
-	 * Since the user's locale changes dynamically, avoid caching this value. Instead, use this method to look it up for each use. */
-	public static Locale getDefault () {
+	 * Since the user's locale changes dynamically, avoid caching this value.
+	 * Instead, use this method to look it up for each use.
+	 */
+	public static Locale getDefault() {
 		return defaultLocale;
 	}
 
@@ -389,40 +412,54 @@ public final class Locale implements Cloneable, Serializable {
 // return ICU.getISOLanguages();
 // }
 
-	/** Returns the language code for this {@code Locale} or the empty string if no language was set. */
-	public String getLanguage () {
+	/**
+	 * Returns the language code for this {@code Locale} or the empty string if no
+	 * language was set.
+	 */
+	public String getLanguage() {
 		return languageCode;
 	}
 
-	/** Returns the variant code for this {@code Locale} or an empty {@code String} if no variant was set. */
-	public String getVariant () {
+	/**
+	 * Returns the variant code for this {@code Locale} or an empty {@code String}
+	 * if no variant was set.
+	 */
+	public String getVariant() {
 		return variantCode;
 	}
 
 	@Override
-	public synchronized int hashCode () {
+	public synchronized int hashCode() {
 		return countryCode.hashCode() + languageCode.hashCode() + variantCode.hashCode();
 	}
 
-	/** Overrides the default locale. This does not affect system configuration, and attempts to override the system-provided
-	 * default locale may themselves be overridden by actual changes to the system configuration. Code that calls this method is
-	 * usually incorrect, and should be fixed by passing the appropriate locale to each locale-sensitive method that's called. */
-	public synchronized static void setDefault (Locale locale) {
+	/**
+	 * Overrides the default locale. This does not affect system configuration, and
+	 * attempts to override the system-provided default locale may themselves be
+	 * overridden by actual changes to the system configuration. Code that calls
+	 * this method is usually incorrect, and should be fixed by passing the
+	 * appropriate locale to each locale-sensitive method that's called.
+	 */
+	public synchronized static void setDefault(Locale locale) {
 		if (locale == null) {
 			throw new NullPointerException("locale == null");
 		}
 		defaultLocale = locale;
 	}
 
-	/** Returns the string representation of this {@code Locale}. It consists of the language code, country code and variant
-	 * separated by underscores. If the language is missing the string begins with an underscore. If the country is missing there
-	 * are 2 underscores between the language and the variant. The variant cannot stand alone without a language and/or country
-	 * code: in this case this method would return the empty string.
+	/**
+	 * Returns the string representation of this {@code Locale}. It consists of the
+	 * language code, country code and variant separated by underscores. If the
+	 * language is missing the string begins with an underscore. If the country is
+	 * missing there are 2 underscores between the language and the variant. The
+	 * variant cannot stand alone without a language and/or country code: in this
+	 * case this method would return the empty string.
 	 *
 	 * <p>
-	 * Examples: "en", "en_US", "_US", "en__POSIX", "en_US_POSIX" */
+	 * Examples: "en", "en_US", "_US", "en__POSIX", "en_US_POSIX"
+	 */
 	@Override
-	public final String toString () {
+	public final String toString() {
 		String result = cachedToStringResult;
 		if (result == null) {
 			result = cachedToStringResult = toNewString(languageCode, countryCode, variantCode);
@@ -430,14 +467,17 @@ public final class Locale implements Cloneable, Serializable {
 		return result;
 	}
 
-	private static String toNewString (String languageCode, String countryCode, String variantCode) {
+	private static String toNewString(String languageCode, String countryCode, String variantCode) {
 		// The string form of a locale that only has a variant is the empty string.
 		if (languageCode.length() == 0 && countryCode.length() == 0) {
 			return "";
 		}
-		// Otherwise, the output format is "ll_cc_variant", where language and country are always
-		// two letters, but the variant is an arbitrary length. A size of 11 characters has room
-		// for "en_US_POSIX", the largest "common" value. (In practice, the string form is almost
+		// Otherwise, the output format is "ll_cc_variant", where language and country
+		// are always
+		// two letters, but the variant is an arbitrary length. A size of 11 characters
+		// has room
+		// for "en_US_POSIX", the largest "common" value. (In practice, the string form
+		// is almost
 		// always 5 characters: "ll_cc".)
 		StringBuilder result = new StringBuilder(11);
 		result.append(languageCode);

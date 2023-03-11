@@ -12,11 +12,11 @@ package java.lang;
 
 @SuppressWarnings("serial")
 public class IllegalAccessException extends Exception {
-	public IllegalAccessException (String message) {
+	public IllegalAccessException(String message) {
 		super(message);
 	}
 
-	public IllegalAccessException () {
+	public IllegalAccessException() {
 		super();
 	}
 }

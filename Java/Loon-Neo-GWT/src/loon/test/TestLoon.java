@@ -1,5 +1,6 @@
 package loon.test;
 
+import loon.LSystem;
 import loon.Screen;
 import loon.html5.gwt.GWTGame.GWTSetting;
 import loon.html5.gwt.GWTGame.Repaint;

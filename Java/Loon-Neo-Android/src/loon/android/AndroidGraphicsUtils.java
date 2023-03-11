@@ -26,6 +26,7 @@ import java.nio.ByteOrder;
 import loon.LSystem;
 import loon.canvas.Image;
 import loon.geom.RectBox;
+import loon.opengl.TextureSource;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
@@ -50,8 +51,8 @@ public class AndroidGraphicsUtils {
 	 * @param y2
 	 * @return
 	 */
-	public static Image drawClipImage(final Image image, int objectWidth,
-			int objectHeight, int x1, int y1, int x2, int y2, Config config) {
+	public static Image drawClipImage(final Image image, int objectWidth, int objectHeight, int x1, int y1, int x2,
+			int y2, Config config) {
 		if (image == null) {
 			return null;
 		}
@@ -64,10 +65,10 @@ public class AndroidGraphicsUtils {
 
 		Bitmap bitmap = Bitmap.createBitmap(objectWidth, objectHeight, config);
 		canvas.setBitmap(bitmap);
-		canvas.drawBitmap(((AndroidImage) image).bitmap, new Rect(x1, y1, x2,
-				y2), new Rect(0, 0, objectWidth, objectHeight), null);
-		return new AndroidImage(LSystem.base().graphics(), LSystem.base()
-				.graphics().scale(), bitmap, "<canvas>");
+		canvas.drawBitmap(((AndroidImage) image).bitmap, new Rect(x1, y1, x2, y2),
+				new Rect(0, 0, objectWidth, objectHeight), null);
+		return new AndroidImage(LSystem.base().graphics(), LSystem.base().graphics().scale(), bitmap,
+				TextureSource.RenderCanvas);
 	}
 
 	/**
@@ -82,10 +83,10 @@ public class AndroidGraphicsUtils {
 	 * @param y2
 	 * @return
 	 */
-	public static Image drawClipImage(final Image image, int objectWidth,
-			int objectHeight, int x1, int y1, int x2, int y2) {
+	public static Image drawClipImage(final Image image, int objectWidth, int objectHeight, int x1, int y1, int x2,
+			int y2) {
 		return drawClipImage(image, objectWidth, objectHeight, x1, y1, x2, y2,
-				 ((AndroidImage)image).bitmap.getConfig());
+				((AndroidImage) image).bitmap.getConfig());
 	}
 
 	/**
@@ -101,10 +102,10 @@ public class AndroidGraphicsUtils {
 	 * @param flag
 	 * @return
 	 */
-	public static Image drawClipImage(final Image image, int objectWidth,
-			int objectHeight, int x1, int y1, int x2, int y2, boolean flag) {
+	public static Image drawClipImage(final Image image, int objectWidth, int objectHeight, int x1, int y1, int x2,
+			int y2, boolean flag) {
 		return drawClipImage(image, objectWidth, objectHeight, x1, y1, x2, y2,
-				flag ?  ((AndroidImage)image).bitmap.getConfig() : Config.RGB_565);
+				flag ? ((AndroidImage) image).bitmap.getConfig() : Config.RGB_565);
 	}
 
 	/**
@@ -118,10 +119,10 @@ public class AndroidGraphicsUtils {
 	 * @param flag
 	 * @return
 	 */
-	public static Image drawClipImage(final Image image, int objectWidth,
-			int objectHeight, int x, int y, boolean flag) {
+	public static Image drawClipImage(final Image image, int objectWidth, int objectHeight, int x, int y,
+			boolean flag) {
 		return drawClipImage(image, objectWidth, objectHeight, x, y,
-				flag ? ((AndroidImage)image).bitmap.getConfig(): Config.RGB_565);
+				flag ? ((AndroidImage) image).bitmap.getConfig() : Config.RGB_565);
 	}
 
 	/**
@@ -135,19 +136,17 @@ public class AndroidGraphicsUtils {
 	 * @param config
 	 * @return
 	 */
-	public static Image drawClipImage(final Image image, int objectWidth,
-			int objectHeight, int x, int y, Config config) {
-		if (image.getWidth() == objectWidth
-				&& image.getHeight() == objectHeight) {
+	public static Image drawClipImage(final Image image, int objectWidth, int objectHeight, int x, int y,
+			Config config) {
+		if (image.getWidth() == objectWidth && image.getHeight() == objectHeight) {
 			return image;
 		}
 		Bitmap bitmap = Bitmap.createBitmap(objectWidth, objectHeight, config);
 		canvas.setBitmap(bitmap);
-		canvas.drawBitmap(((AndroidImage) image).bitmap, new Rect(x, y, x + objectWidth,
-				objectHeight + y), new Rect(0, 0, objectWidth, objectHeight),
-				null);
-		return new AndroidImage(LSystem.base().graphics(), LSystem.base()
-				.graphics().scale(), bitmap, "<canvas>");
+		canvas.drawBitmap(((AndroidImage) image).bitmap, new Rect(x, y, x + objectWidth, objectHeight + y),
+				new Rect(0, 0, objectWidth, objectHeight), null);
+		return new AndroidImage(LSystem.base().graphics(), LSystem.base().graphics().scale(), bitmap,
+				TextureSource.RenderCanvas);
 	}
 
 	/**
@@ -160,10 +159,9 @@ public class AndroidGraphicsUtils {
 	 * @param y
 	 * @return
 	 */
-	public static Image drawCropImage(final Image image, int x, int y,
-			int objectWidth, int objectHeight) {
-		return AndroidGraphicsUtils.drawClipImage(image, objectWidth,
-				objectHeight, x, y, ((AndroidImage)image).bitmap.getConfig());
+	public static Image drawCropImage(final Image image, int x, int y, int objectWidth, int objectHeight) {
+		return AndroidGraphicsUtils.drawClipImage(image, objectWidth, objectHeight, x, y,
+				((AndroidImage) image).bitmap.getConfig());
 	}
 
 	/**
@@ -176,10 +174,9 @@ public class AndroidGraphicsUtils {
 	 * @param y
 	 * @return
 	 */
-	public static Image drawClipImage(final Image image, int objectWidth,
-			int objectHeight, int x, int y) {
-		return AndroidGraphicsUtils.drawClipImage(image, objectWidth,
-				objectHeight, x, y,  ((AndroidImage)image).bitmap.getConfig());
+	public static Image drawClipImage(final Image image, int objectWidth, int objectHeight, int x, int y) {
+		return AndroidGraphicsUtils.drawClipImage(image, objectWidth, objectHeight, x, y,
+				((AndroidImage) image).bitmap.getConfig());
 	}
 
 	/**
@@ -191,10 +188,9 @@ public class AndroidGraphicsUtils {
 	 * @return
 	 */
 	public static Image getResize(Image image, int w, int h) {
-		Bitmap bitmap = 
-				AndroidGraphicsUtils.getResize( ((AndroidImage)image).bitmap, w, h);
-		return new AndroidImage(LSystem.base().graphics(), LSystem.base()
-				.graphics().scale(), bitmap, "<canvas>");
+		Bitmap bitmap = AndroidGraphicsUtils.getResize(((AndroidImage) image).bitmap, w, h);
+		return new AndroidImage(LSystem.base().graphics(), LSystem.base().graphics().scale(), bitmap,
+				TextureSource.RenderCanvas);
 	}
 
 	/**
@@ -217,8 +213,7 @@ public class AndroidGraphicsUtils {
 		float scaleHeight = ((float) newHeight) / height;
 		matrix.reset();
 		matrix.postScale(scaleWidth, scaleHeight);
-		Bitmap resizedBitmap = Bitmap.createBitmap(image, 0, 0, width, height,
-				matrix, flag);
+		Bitmap resizedBitmap = Bitmap.createBitmap(image, 0, 0, width, height, matrix, flag);
 		return resizedBitmap;
 	}
 
@@ -243,8 +238,7 @@ public class AndroidGraphicsUtils {
 	 * @param dstHeight
 	 * @return
 	 */
-	final static public RectBox fitLimitSize(int srcWidth, int srcHeight,
-			int dstWidth, int dstHeight) {
+	final static public RectBox fitLimitSize(int srcWidth, int srcHeight, int dstWidth, int dstHeight) {
 		int dw = dstWidth;
 		int dh = dstHeight;
 		if (dw != 0 && dh != 0) {
@@ -279,8 +273,7 @@ public class AndroidGraphicsUtils {
 		return hash_result;
 	}
 
-	public static void drawBitmap(final Bitmap src, final Bitmap dst, int x,
-			int y) {
+	public static void drawBitmap(final Bitmap src, final Bitmap dst, int x, int y) {
 		if (src == null || dst == null) {
 			return;
 		}
@@ -288,8 +281,7 @@ public class AndroidGraphicsUtils {
 		canvas.drawBitmap(dst, x, y, null);
 	}
 
-	public static void setPixels(final Bitmap bit, final int[] pixels, int w,
-			int h) {
+	public static void setPixels(final Bitmap bit, final int[] pixels, int w, int h) {
 		bit.setPixels(pixels, 0, w, 0, 0, w, h);
 	}
 

@@ -14,11 +14,11 @@ public class NoSuchFieldException extends Exception {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public NoSuchFieldException (String message) {
+	public NoSuchFieldException(String message) {
 		super(message);
 	}
 
-	public NoSuchFieldException () {
+	public NoSuchFieldException() {
 		super();
 	}
 }

@@ -36,6 +36,7 @@ import loon.font.TextFormat;
 import loon.font.TextLayout;
 import loon.font.TextWrap;
 import loon.opengl.GL20;
+import loon.opengl.TextureSource;
 import loon.utils.Scale;
 
 public abstract class JavaSEGraphics extends Graphics {
@@ -94,7 +95,7 @@ public abstract class JavaSEGraphics extends Graphics {
 		BufferedImage bitmap = new BufferedImage(pixelWidth, pixelHeight,
 				BufferedImage.TYPE_INT_ARGB_PRE);
 		return new JavaSECanvas(this, new JavaSEImage(this, scale, bitmap,
-				"<canvas>"));
+				TextureSource.RenderCanvas));
 	}
 
 	protected abstract void init();

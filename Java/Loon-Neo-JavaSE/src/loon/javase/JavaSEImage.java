@@ -31,6 +31,7 @@ import loon.canvas.Image;
 import loon.canvas.ImageImpl;
 import loon.canvas.LColor;
 import loon.canvas.Pattern;
+import loon.opengl.TextureSource;
 import loon.utils.MathUtils;
 import loon.utils.Scale;
 
@@ -244,7 +245,7 @@ public class JavaSEImage extends ImageImpl {
 	@Override
 	public Image getSubImage(int x, int y, int width, int height) {
 		return new JavaSEImage(gfx, scale, buffer.getSubimage(x, y, width,
-				height), "<canvas>");
+				height), TextureSource.RenderCanvas);
 	}
 
 	@Override

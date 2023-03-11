@@ -71,8 +71,7 @@ public class GWTInputMake extends InputMake {
 			public void handleEvent(NativeEvent nevent) {
 				int key = keyForCode(nevent.getKeyCode());
 				char ch = (char) nevent.getCharCode();
-				dispatch(new KeyMake.KeyEvent(0, game.time(), ch, key, true),
-						nevent);
+				dispatch(new KeyMake.KeyEvent(0, game.time(), ch, key, true), nevent);
 			}
 		});
 		capturePageEvent("keypress", new EventHandler() {
@@ -80,8 +79,7 @@ public class GWTInputMake extends InputMake {
 			public void handleEvent(NativeEvent nevent) {
 				int key = keyForCode(nevent.getKeyCode());
 				char ch = (char) nevent.getCharCode();
-				dispatch(new KeyMake.KeyEvent(0, game.time(), ch, key, true),
-						nevent);
+				dispatch(new KeyMake.KeyEvent(0, game.time(), ch, key, true), nevent);
 			}
 		});
 		capturePageEvent("keyup", new EventHandler() {
@@ -89,15 +87,13 @@ public class GWTInputMake extends InputMake {
 			public void handleEvent(NativeEvent nevent) {
 				int key = keyForCode(nevent.getKeyCode());
 				char ch = (char) nevent.getCharCode();
-				dispatch(new KeyMake.KeyEvent(0, game.time(), ch, key, false),
-						nevent);
+				dispatch(new KeyMake.KeyEvent(0, game.time(), ch, key, false), nevent);
 			}
 		});
 
 		abstract class XYEventHandler implements EventHandler {
 			public void handleEvent(NativeEvent ev) {
-				handleEvent(ev, getRelativeX(ev, rootElement),
-						getRelativeY(ev, rootElement));
+				handleEvent(ev, getRelativeX(ev, rootElement), getRelativeY(ev, rootElement));
 			}
 
 			public abstract void handleEvent(NativeEvent ev, float x, float y);
@@ -124,8 +120,7 @@ public class GWTInputMake extends InputMake {
 					}
 				}
 
-				dispatch(new MouseMake.ButtonEvent(0, game.time(), x, y, -1,
-						false), ev);
+				dispatch(new MouseMake.ButtonEvent(0, game.time(), x, y, -1, false), ev);
 
 				lastX = x;
 				lastY = y;
@@ -150,8 +145,7 @@ public class GWTInputMake extends InputMake {
 				inDragSequence = true;
 				int btn = getMouseButton(ev);
 				if (btn != -1) {
-					dispatch(new MouseMake.ButtonEvent(0, game.time(), x, y,
-							btn, true), ev);
+					dispatch(new MouseMake.ButtonEvent(0, game.time(), x, y, btn, true), ev);
 				}
 			}
 		});
@@ -163,8 +157,7 @@ public class GWTInputMake extends InputMake {
 					inDragSequence = false;
 					int btn = getMouseButton(ev);
 					if (btn != -1) {
-						dispatch(new MouseMake.ButtonEvent(0, game.time(), x,
-								y, btn, false), ev);
+						dispatch(new MouseMake.ButtonEvent(0, game.time(), x, y, btn, false), ev);
 					}
 				}
 				handleRequestsInUserEventContext();
@@ -188,8 +181,8 @@ public class GWTInputMake extends InputMake {
 		captureEvent(rootElement, getMouseWheelEvent(), new EventHandler() {
 			@Override
 			public void handleEvent(NativeEvent ev) {
-				dispatch(new MouseMake.ButtonEvent(0, game.time(),
-						lastMousePt.x, lastMousePt.y, ev.getButton(), true), ev);
+				dispatch(new MouseMake.ButtonEvent(0, game.time(), lastMousePt.x, lastMousePt.y, ev.getButton(), true),
+						ev);
 			}
 		});
 
@@ -197,8 +190,7 @@ public class GWTInputMake extends InputMake {
 			@Override
 			public void handleEvent(NativeEvent nevent) {
 				inTouchSequence = true;
-				dispatch(toTouchEvents(TouchMake.Event.Kind.START, nevent),
-						nevent);
+				dispatch(toTouchEvents(TouchMake.Event.Kind.START, nevent), nevent);
 			}
 		});
 
@@ -206,8 +198,7 @@ public class GWTInputMake extends InputMake {
 			@Override
 			public void handleEvent(NativeEvent nevent) {
 				if (inTouchSequence)
-					dispatch(toTouchEvents(TouchMake.Event.Kind.MOVE, nevent),
-							nevent);
+					dispatch(toTouchEvents(TouchMake.Event.Kind.MOVE, nevent), nevent);
 			}
 		});
 
@@ -215,8 +206,7 @@ public class GWTInputMake extends InputMake {
 			@Override
 			public void handleEvent(NativeEvent nevent) {
 				if (inTouchSequence) {
-					dispatch(toTouchEvents(TouchMake.Event.Kind.END, nevent),
-							nevent);
+					dispatch(toTouchEvents(TouchMake.Event.Kind.END, nevent), nevent);
 					if (nevent.getTouches().length() == 0) {
 						inTouchSequence = false;
 					}
@@ -249,8 +239,7 @@ public class GWTInputMake extends InputMake {
 											}-*/;
 
 	void emitFakeMouseUp() {
-		mouseEvents.emit(new MouseMake.ButtonEvent(0, game.time(), 0, 0,
-				SysTouch.LEFT, false));
+		mouseEvents.emit(new MouseMake.ButtonEvent(0, game.time(), 0, 0, SysTouch.LEFT, false));
 	}
 
 	@Override
@@ -282,8 +271,7 @@ public class GWTInputMake extends InputMake {
 		private final boolean capture;
 		private JavaScriptObject listener;
 
-		EventCloseHandler(JavaScriptObject target, String name,
-				EventHandler eventHandler, boolean capture) {
+		EventCloseHandler(JavaScriptObject target, String name, EventHandler eventHandler, boolean capture) {
 			this.target = target;
 			this.name = name;
 			this.capture = capture;
@@ -299,9 +287,8 @@ public class GWTInputMake extends InputMake {
 			removeEventListener(target, name, listener, capture);
 		}
 
-		private native void addEventListener(EventCloseHandler closeHandler,
-				JavaScriptObject target, String name, EventHandler handler,
-				boolean capture) /*-{
+		private native void addEventListener(EventCloseHandler closeHandler, JavaScriptObject target, String name,
+				EventHandler handler, boolean capture) /*-{
 									var listener = function(e) {
 									handler.@loon.jni.EventHandler::handleEvent(Lcom/google/gwt/dom/client/NativeEvent;)(e);
 									};
@@ -309,37 +296,33 @@ public class GWTInputMake extends InputMake {
 									closeHandler.@loon.html5.gwt.GWTInputMake.EventCloseHandler::setListener(Lcom/google/gwt/core/client/JavaScriptObject;)(listener);
 									}-*/;
 
-		private native void removeEventListener(JavaScriptObject target,
-				String name, JavaScriptObject listener, boolean capture)/*-{
+		private native void removeEventListener(JavaScriptObject target, String name, JavaScriptObject listener,
+				boolean capture)/*-{
 																		target.removeEventListener(name, listener, capture);
 																		}-*/;
 	}
 
-	static HandlerRegistration addEventListener(JavaScriptObject target,
-			String name, EventHandler handler, boolean capture) {
+	static HandlerRegistration addEventListener(JavaScriptObject target, String name, EventHandler handler,
+			boolean capture) {
 		return new EventCloseHandler(target, name, handler, capture);
 	};
 
-	static HandlerRegistration capturePageEvent(String name,
-			EventHandler handler) {
+	static HandlerRegistration capturePageEvent(String name, EventHandler handler) {
 		return addEventListener(Document.get(), name, handler, true);
 	}
 
-	static HandlerRegistration captureEvent(Element target, String name,
-			EventHandler handler) {
+	static HandlerRegistration captureEvent(Element target, String name, EventHandler handler) {
 		return addEventListener(target, name, handler, true);
 	}
 
 	static float getRelativeX(NativeEvent e, Element target) {
-		return (e.getClientX() - target.getAbsoluteLeft()
-				+ target.getScrollLeft() + target.getOwnerDocument()
-				.getScrollLeft()) / GWTGraphics.experimentalScale;
+		return (e.getClientX() - target.getAbsoluteLeft() + target.getScrollLeft()
+				+ target.getOwnerDocument().getScrollLeft()) / GWTGraphics.experimentalScale;
 	}
 
 	static float getRelativeY(NativeEvent e, Element target) {
-		return (e.getClientY() - target.getAbsoluteTop()
-				+ target.getScrollTop() + target.getOwnerDocument()
-				.getScrollTop()) / GWTGraphics.experimentalScale;
+		return (e.getClientY() - target.getAbsoluteTop() + target.getScrollTop()
+				+ target.getOwnerDocument().getScrollTop()) / GWTGraphics.experimentalScale;
 	}
 
 	void handleRequestsInUserEventContext() {
@@ -349,8 +332,7 @@ public class GWTInputMake extends InputMake {
 	}
 
 	private int mods(NativeEvent event) {
-		return modifierFlags(event.getAltKey(), event.getCtrlKey(),
-				event.getMetaKey(), event.getShiftKey());
+		return modifierFlags(event.getAltKey(), event.getCtrlKey(), event.getMetaKey(), event.getShiftKey());
 	}
 
 	private void dispatch(KeyMake.Event event, NativeEvent nevent) {
@@ -459,10 +441,8 @@ public class GWTInputMake extends InputMake {
 										$doc.exitPointerLock && $doc.exitPointerLock();
 										}-*/;
 
-	private TouchMake.Event[] toTouchEvents(TouchMake.Event.Kind kind,
-			NativeEvent nevent) {
-		JsArray<com.google.gwt.dom.client.Touch> nativeTouches = nevent
-				.getChangedTouches();
+	private TouchMake.Event[] toTouchEvents(TouchMake.Event.Kind kind, NativeEvent nevent) {
+		JsArray<com.google.gwt.dom.client.Touch> nativeTouches = nevent.getChangedTouches();
 		int nativeTouchesLen = nativeTouches.length();
 		TouchMake.Event[] touches = new TouchMake.Event[nativeTouchesLen];
 		double time = game.time();

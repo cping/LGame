@@ -931,7 +931,7 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	public boolean isDrawCanvas() {
-		return source != null && source.indexOf("<canvas>") != -1;
+		return source != null && source.indexOf(RenderCanvas) != -1;
 	}
 
 	@Override

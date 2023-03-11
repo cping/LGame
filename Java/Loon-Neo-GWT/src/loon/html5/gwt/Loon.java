@@ -198,23 +198,22 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 			this.root = panel;
 		}
 
-		SoundManager.init(GWT.getModuleBaseURL(), 9, config.preferFlash,
-				new SoundManager.SoundManagerCallback() {
+		SoundManager.init(GWT.getModuleBaseURL(), 9, config.preferFlash, new SoundManager.SoundManagerCallback() {
 
-					@Override
-					public void onready() {
-						loadResources();
-					}
+			@Override
+			public void onready() {
+				loadResources();
+			}
 
-					@Override
-					public void ontimeout(String status, String errorType) {
-						consoleLog("SoundManager:" + status + " " + errorType);
-						// 音频环境目前浏览器支持有限，并非所有浏览器都完美支持音频播放，但是——
-						// 无论音频载入成败与否，都尝试加载其它资源。
-						loadResources();
-					}
+			@Override
+			public void ontimeout(String status, String errorType) {
+				consoleLog("SoundManager:" + status + " " + errorType);
+				// 音频环境目前浏览器支持有限，并非所有浏览器都完美支持音频播放，但是——
+				// 无论音频载入成败与否，都尝试加载其它资源。
+				loadResources();
+			}
 
-				});
+		});
 
 	}
 
@@ -222,56 +221,50 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 		boolean internalExist = config.internalRes != null;
 		boolean jsres = config.jsloadRes || internalExist;
 		if (jsres) {
-			final LocalAssetResources localRes = internalExist ? config.internalRes
-					: new LocalAssetResources();
-			ScriptInjector.fromUrl("assets/resources.js")
-					.setCallback(new Callback<Void, Exception>() {
-						public void onFailure(Exception reason) {
-							consoleLog("resources script load failed.");
+			final LocalAssetResources localRes = internalExist ? config.internalRes : new LocalAssetResources();
+			ScriptInjector.fromUrl("assets/resources.js").setCallback(new Callback<Void, Exception>() {
+				public void onFailure(Exception reason) {
+					consoleLog("resources script load failed.");
+				}
+
+				public void onSuccess(Void result) {
+					JsArray<JsMap> list = loadJavaScriptResources(localRes).cast();
+
+					int size = list.length();
+
+					for (int i = 0; i < size; i++) {
+						JsMap res = list.get(i);
+						String key = res.getKey();
+						String value = res.getValue();
+						String ext = LSystem.getExtension(key);
+
+						if (LSystem.isText(ext)) {
+							localRes.putText(key, value);
+						} else if (LSystem.isImage(ext)) {
+
+							localRes.putImage(key, value);
+						} else if (LSystem.isAudio(ext)) {
+							// noop
+						} else {
+							localRes.putBlobString(key, value);
 						}
+					}
 
-						public void onSuccess(Void result) {
-							JsArray<JsMap> list = loadJavaScriptResources(
-									localRes).cast();
+					localRes.commit();
+					loadResources(progress.getPreloaderCallback(Loon.self, root), localRes);
 
-							int size = list.length();
-
-							for (int i = 0; i < size; i++) {
-								JsMap res = list.get(i);
-								String key = res.getKey();
-								String value = res.getValue();
-								String ext = LSystem.getExtension(key);
-
-								if (LSystem.isText(ext)) {
-									localRes.putText(key, value);
-								} else if (LSystem.isImage(ext)) {
-
-									localRes.putImage(key, value);
-								} else if (LSystem.isAudio(ext)) {
-									// noop
-								} else {
-									localRes.putBlobString(key, value);
-								}
-							}
-
-							localRes.commit();
-							loadResources(progress.getPreloaderCallback(
-									Loon.self, root), localRes);
-
-						}
-					}).setWindow(ScriptInjector.TOP_WINDOW).inject();
+				}
+			}).setWindow(ScriptInjector.TOP_WINDOW).inject();
 		} else {
 			loadResources(progress.getPreloaderCallback(Loon.self, root), null);
 		}
 	}
 
-	private native JsArray<JavaScriptObject> loadJavaScriptResources(
-			LocalAssetResources res) /*-{
+	private native JsArray<JavaScriptObject> loadJavaScriptResources(LocalAssetResources res) /*-{
 										return new $wnd.LocalResources().running(res);
 										}-*/;
 
-	Preloader loadResources(final PreloaderCallback callback,
-			final LocalAssetResources localRes) {
+	Preloader loadResources(final PreloaderCallback callback, final LocalAssetResources localRes) {
 		this.preloader = createPreloader(localRes);
 		this.preloader.preload("assets.txt", new PreloaderCallback() {
 			@Override
@@ -351,8 +344,7 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 	}
 
 	public int getContainerWidth() {
-		int width = getJSNIAvailWidth() <= 0 ? getJSNIScreenWidth()
-				: getJSNIAvailWidth();
+		int width = getJSNIAvailWidth() <= 0 ? getJSNIScreenWidth() : getJSNIAvailWidth();
 		if (isIOS() && isLandscape()) {
 			return getContainerHeight();
 		}
@@ -363,8 +355,7 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 	}
 
 	public int getContainerHeight() {
-		int height = getJSNIAvailHeight() <= 0 ? getJSNIScreenHeight()
-				: getJSNIAvailHeight();
+		int height = getJSNIAvailHeight() <= 0 ? getJSNIScreenHeight() : getJSNIAvailHeight();
 		if (isIOS() && isLandscape()) {
 			return getContainerWidth();
 		}
@@ -399,8 +390,7 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 															}-*/;
 
 	@Override
-	public void sysText(final SysInput.TextEvent event,
-			final KeyMake.TextType textType, final String label,
+	public void sysText(final SysInput.TextEvent event, final KeyMake.TextType textType, final String label,
 			final String initVal) {
 		if (game == null) {
 			event.cancel();
@@ -426,8 +416,8 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 	}
 
 	@Override
-	public void sysDialog(final SysInput.ClickEvent event, final String title,
-			final String text, final String ok, final String cancel) {
+	public void sysDialog(final SysInput.ClickEvent event, final String title, final String text, final String ok,
+			final String cancel) {
 		if (game == null) {
 			event.cancel();
 			return;
@@ -455,8 +445,7 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 		});
 	}
 
-	private native void registerOrientationChangedHandler(
-			OrientationChangedEvent handler) /*-{
+	private native void registerOrientationChangedHandler(OrientationChangedEvent handler) /*-{
 												var callback = function() {
 												handler.@loon.html5.gwt.Loon.OrientationChangedEvent::onOrientationChanged()();
 												}
@@ -464,8 +453,7 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 												}-*/;
 
 	public boolean isMobile() {
-		return isAndroid() || isIOS() || isBlackBerry()
-				|| getUserAgent().contains("mobile");
+		return isAndroid() || isIOS() || isBlackBerry() || getUserAgent().contains("mobile");
 	}
 
 	/**
@@ -660,8 +648,7 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 	}
 
 	public boolean isDesktop() {
-		return !isIOS() && !isAndroid() && !isBlackBerry()
-				&& !getUserAgent().contains("mobile");
+		return !isIOS() && !isAndroid() && !isBlackBerry() && !getUserAgent().contains("mobile");
 	}
 
 	public boolean isTablet() {
@@ -766,7 +753,7 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 						$wnd.setTimeout(callback, 16);
 					};
 		})();
-
+	
 		$wnd.cancelAnimationFrame = (function() {
 			return $wnd.cancelAnimationFrame = $wnd.cancelAnimationFrame
 					|| $wnd.cancelRequestAnimationFrame

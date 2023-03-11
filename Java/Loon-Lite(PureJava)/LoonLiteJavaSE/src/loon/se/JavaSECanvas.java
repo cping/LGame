@@ -43,6 +43,7 @@ import loon.canvas.Path;
 import loon.font.LFont;
 import loon.font.TextLayout;
 import loon.geom.Affine2f;
+import loon.opengl.TextureSource;
 import loon.utils.MathUtils;
 
 public class JavaSECanvas extends Canvas {
@@ -139,7 +140,6 @@ public class JavaSECanvas extends Canvas {
 		int argb = color.getARGB();
 		this.setStrokeColor(argb);
 		this.setFillColor(argb);
-		this.setAlpha(color.a);
 		return this;
 	}
 
@@ -148,7 +148,6 @@ public class JavaSECanvas extends Canvas {
 		int argb = LColor.getARGB(r, g, b, a);
 		this.setStrokeColor(argb);
 		this.setFillColor(argb);
-		this.setAlpha(a);
 		return this;
 	}
 
@@ -194,7 +193,7 @@ public class JavaSECanvas extends Canvas {
 				return LSystem.base().snapshot();
 			}
 		}
-		return new JavaSEImage(gfx, image.scale(), createImage(), "<canvas>");
+		return new JavaSEImage(gfx, image.scale(), createImage(), TextureSource.RenderCanvas);
 	}
 
 	@Override
@@ -238,6 +237,7 @@ public class JavaSECanvas extends Canvas {
 
 	@Override
 	public Canvas clipRect(float x, float y, float width, final float height) {
+		currentState().prepareClear(context);
 		final int cx = MathUtils.ifloor(x), cy = MathUtils.ifloor(y);
 		final int cwidth = MathUtils.iceil(width), cheight = MathUtils.iceil(height);
 		context.setClip(cx, cy, cwidth, cheight);

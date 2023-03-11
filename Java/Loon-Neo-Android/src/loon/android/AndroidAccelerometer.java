@@ -71,8 +71,7 @@ public class AndroidAccelerometer implements Accelerometer {
 			}
 		}
 		// 将手机翻转角度转为手机朝向
-		if (CollisionHelper.checkAngle(0, orientation)
-				|| CollisionHelper.checkAngle(360, orientation)) {
+		if (CollisionHelper.checkAngle(0, orientation) || CollisionHelper.checkAngle(360, orientation)) {
 			_all_direction = Config.TUP;
 			_direction = SensorDirection.UP;
 		} else if (CollisionHelper.checkAngle(45, orientation)) {
@@ -122,9 +121,7 @@ public class AndroidAccelerometer implements Accelerometer {
 			if ((curTime - lastUpdate) > 30) {
 				long diffTime = (curTime - lastUpdate);
 				lastUpdate = curTime;
-				currenForce = MathUtils.abs(currentX + currentY + currentZ
-						- lastX - lastY - lastZ)
-						/ diffTime * 10000;
+				currenForce = MathUtils.abs(currentX + currentY + currentZ - lastX - lastY - lastZ) / diffTime * 10000;
 
 				if (currenForce > 500 && event != null) {
 					event.onShakeChanged(currenForce);
@@ -160,10 +157,8 @@ public class AndroidAccelerometer implements Accelerometer {
 		@Override
 		public void onSensorChanged(SensorEvent event) {
 			if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-				if (!(LSystem.base() != null && LSystem.base().setting
-						.landscape())) {
-					System.arraycopy(event.values, 0, accelerometerValues, 0,
-							accelerometerValues.length);
+				if (!(LSystem.base() != null && LSystem.base().setting.landscape())) {
+					System.arraycopy(event.values, 0, accelerometerValues, 0, accelerometerValues.length);
 				} else {
 					accelerometerValues[0] = event.values[1];
 					accelerometerValues[1] = -event.values[0];
@@ -171,8 +166,7 @@ public class AndroidAccelerometer implements Accelerometer {
 				}
 			}
 			if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
-				System.arraycopy(event.values, 0, magneticFieldValues, 0,
-						magneticFieldValues.length);
+				System.arraycopy(event.values, 0, magneticFieldValues, 0, magneticFieldValues.length);
 			}
 			onSensor(accelerometerValues);
 			_state.getAcceleration().set(currentX, currentY, currentZ);
@@ -224,17 +218,13 @@ public class AndroidAccelerometer implements Accelerometer {
 			return;
 		}
 		if (!_state.isConnected() && manager == null) {
-			manager = (SensorManager) _game
-					.getSystemService(Context.SENSOR_SERVICE);
+			manager = (SensorManager) _game.getSystemService(Context.SENSOR_SERVICE);
 			if (manager.getSensorList(Sensor.TYPE_ACCELEROMETER).size() == 0) {
 				_state.setConnected(false);
 			} else {
-				Sensor accelerometer = manager.getSensorList(
-						Sensor.TYPE_ACCELEROMETER).get(0);
-				accelerometerListener = new SensorListener(
-						this.accelerometerValues, this.magneticFieldValues);
-				_state.setConnected(manager.registerListener(
-						accelerometerListener, accelerometer,
+				Sensor accelerometer = manager.getSensorList(Sensor.TYPE_ACCELEROMETER).get(0);
+				accelerometerListener = new SensorListener(this.accelerometerValues, this.magneticFieldValues);
+				_state.setConnected(manager.registerListener(accelerometerListener, accelerometer,
 						SensorManager.SENSOR_DELAY_GAME));
 			}
 			// 如果无法正常启动，则开启伪重力感应

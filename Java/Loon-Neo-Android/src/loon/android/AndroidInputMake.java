@@ -47,8 +47,7 @@ public class AndroidInputMake extends InputMake {
 		if (nativeEvent.getKeyCode() == 67) {
 			charCode = '\b';
 		}
-		KeyMake.KeyEvent event = new KeyMake.KeyEvent(0, time, charCode,
-				keyForCode(keyCode), true);
+		KeyMake.KeyEvent event = new KeyMake.KeyEvent(0, time, charCode, keyForCode(keyCode), true);
 		event.setFlag(mods(nativeEvent));
 		dispatch(event);
 	}
@@ -59,16 +58,14 @@ public class AndroidInputMake extends InputMake {
 		if (nativeEvent.getKeyCode() == 67) {
 			charCode = '\b';
 		}
-		KeyMake.KeyEvent event = new KeyMake.KeyEvent(0, time, charCode,
-				keyForCode(keyCode), false);
+		KeyMake.KeyEvent event = new KeyMake.KeyEvent(0, time, charCode, keyForCode(keyCode), false);
 		event.setFlag(mods(nativeEvent));
 		dispatch(event);
 	}
 
 	boolean onTouch(MotionEvent event) {
 		int actionType = event.getActionMasked();
-		TouchMake.Event.Kind kind = (actionType < TO_KIND.length) ? TO_KIND[actionType]
-				: null;
+		TouchMake.Event.Kind kind = (actionType < TO_KIND.length) ? TO_KIND[actionType] : null;
 		if (kind != null) {
 			final TouchMake.Event[] touches = parseMotionEvent(event, kind);
 			game.asyn().invokeLater(new Runnable() {
@@ -83,8 +80,8 @@ public class AndroidInputMake extends InputMake {
 	}
 
 	private int mods(KeyEvent event) {
-		return modifierFlags(event.isAltPressed(), event.isCtrlPressed(),
-				event.isMetaPressed(), event.isShiftPressed());
+		return modifierFlags(event.isAltPressed(), event.isCtrlPressed(), event.isMetaPressed(),
+				event.isShiftPressed());
 	}
 
 	private void dispatch(final KeyMake.Event event) {
@@ -283,10 +280,10 @@ public class AndroidInputMake extends InputMake {
 		}
 	}
 
-	private TouchMake.Event[] parseMotionEvent(MotionEvent event,
-			TouchMake.Event.Kind kind) {
+	private TouchMake.Event[] parseMotionEvent(MotionEvent event, TouchMake.Event.Kind kind) {
 		int actionType = event.getActionMasked();
-		boolean isChanged = (actionType == MotionEvent.ACTION_POINTER_UP || actionType == MotionEvent.ACTION_POINTER_DOWN);
+		boolean isChanged = (actionType == MotionEvent.ACTION_POINTER_UP
+				|| actionType == MotionEvent.ACTION_POINTER_DOWN);
 		int changedIdx = isChanged ? event.getActionIndex() : 0;
 		int count = event.getPointerCount();
 		TouchMake.Event[] touches = new TouchMake.Event[isChanged ? 1 : count];
@@ -299,9 +296,7 @@ public class AndroidInputMake extends InputMake {
 			float pressure = event.getPressure(tt);
 			float size = event.getSize(tt);
 			int id = event.getPointerId(tt);
-			touches[tidx++] = new TouchMake.Event(0, time, event.getX(tt),
-					event.getY(tt),
-					kind, id, pressure, size);
+			touches[tidx++] = new TouchMake.Event(0, time, event.getX(tt), event.getY(tt), kind, id, pressure, size);
 		}
 		return touches;
 	}

@@ -9,9 +9,9 @@ public interface AdnroidListener {
 	void onResume();
 
 	void onExit();
-	
-    boolean onKeyDown(int keyCode, KeyEvent event) ;
 
-	boolean onKeyUp(int keyCode, KeyEvent event) ;
+	boolean onKeyDown(int keyCode, KeyEvent event);
+
+	boolean onKeyUp(int keyCode, KeyEvent event);
 
 }

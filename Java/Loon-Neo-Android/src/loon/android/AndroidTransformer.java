@@ -23,7 +23,6 @@ package loon.android;
 import loon.canvas.Image.BitmapTransformer;
 import android.graphics.Bitmap;
 
-public interface AndroidTransformer extends BitmapTransformer
-{
-  Bitmap transform(Bitmap bitmap);
+public interface AndroidTransformer extends BitmapTransformer {
+	Bitmap transform(Bitmap bitmap);
 }

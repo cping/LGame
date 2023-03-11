@@ -27,10 +27,10 @@ import android.graphics.Shader;
 
 class AndroidPattern extends Pattern {
 
-  final BitmapShader shader;
+	final BitmapShader shader;
 
-  AndroidPattern(boolean repeatX, boolean repeatY, Bitmap bitmap) {
-    super(repeatX, repeatY);
-    this.shader = new BitmapShader(bitmap, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
-  }
+	AndroidPattern(boolean repeatX, boolean repeatY, Bitmap bitmap) {
+		super(repeatX, repeatY);
+		this.shader = new BitmapShader(bitmap, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
+	}
 }

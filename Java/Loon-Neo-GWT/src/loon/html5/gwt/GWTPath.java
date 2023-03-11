@@ -36,8 +36,7 @@ class GWTPath implements Path {
 	private JsArrayNumber list = JsArrayNumber.createArray().cast();
 
 	@Override
-	public Path bezierTo(float c1x, float c1y, float c2x, float c2y, float x,
-			float y) {
+	public Path bezierTo(float c1x, float c1y, float c2x, float c2y, float x, float y) {
 		list.push(CMD_BEZIER);
 		list.push(c1x);
 		list.push(c1y);

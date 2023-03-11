@@ -60,7 +60,7 @@ public class JavaSECanvasState {
 	JavaSECanvasState() {
 		this(0xff000000, 0xffffffff, null, null, new AffineTransform(), 1f,
 				LineCap.SQUARE, LineJoin.MITER, 10f, NOCLIP,
-				Composite.SRC_OVER, 1);
+				Composite.SRC_OVER, 1f);
 	}
 
 	JavaSECanvasState(JavaSECanvasState toCopy) {

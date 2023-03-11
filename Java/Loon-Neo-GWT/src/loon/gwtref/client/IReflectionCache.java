@@ -34,8 +34,7 @@ public interface IReflectionCache {
 
 	public Object get(Field field, Object obj) throws IllegalAccessException;
 
-	public void set(Field field, Object obj, Object value)
-			throws IllegalAccessException;
+	public void set(Field field, Object obj, Object value) throws IllegalAccessException;
 
 	public Object invoke(Method m, Object obj, Object[] params);
 }

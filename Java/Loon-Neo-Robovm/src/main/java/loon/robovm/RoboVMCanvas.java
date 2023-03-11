@@ -32,6 +32,7 @@ import loon.canvas.LColor;
 import loon.canvas.Path;
 import loon.canvas.Pattern;
 import loon.font.TextLayout;
+import loon.opengl.TextureSource;
 import loon.utils.Scale;
 
 import org.robovm.apple.coregraphics.CGAffineTransform;
@@ -371,7 +372,7 @@ public class RoboVMCanvas extends Canvas {
 	@Override
 	public Image snapshot() {
 		return new RoboVMImage(gfx, image.scale(),
-				((RoboVMImage) image).cgImage(), "<canvas>");
+				((RoboVMImage) image).cgImage(), TextureSource.RenderCanvas);
 	}
 
 	@Override

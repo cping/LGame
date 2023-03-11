@@ -54,8 +54,7 @@ public class GWTScriptLoader {
 																			elem.setAttribute('crossOrigin', state);
 																			}-*/;
 
-	public static void loadBinaryFile(String url,
-			final LoadBinaryListener listener) {
+	public static void loadBinaryFile(String url, final LoadBinaryListener listener) {
 
 		XMLHttpRequest request = XMLHttpRequest.create();
 		request.setResponseType(ResponseType.ArrayBuffer);
@@ -81,20 +80,18 @@ public class GWTScriptLoader {
 
 	public static void loadTextFile(String url, final LoadTextListener listener) {
 		try {
-			new RequestBuilder(RequestBuilder.GET, url).sendRequest(null,
-					new RequestCallback() {
+			new RequestBuilder(RequestBuilder.GET, url).sendRequest(null, new RequestCallback() {
 
-						@Override
-						public void onResponseReceived(Request request,
-								Response response) {
-							listener.onLoadTextFile(response.getText());
-						}
+				@Override
+				public void onResponseReceived(Request request, Response response) {
+					listener.onLoadTextFile(response.getText());
+				}
 
-						@Override
-						public void onError(Request request, Throwable exception) {
-							listener.onFaild(0, exception.getMessage());
-						}
-					});
+				@Override
+				public void onError(Request request, Throwable exception) {
+					listener.onFaild(0, exception.getMessage());
+				}
+			});
 		} catch (RequestException e) {
 			listener.onFaild(0, e.getMessage());
 		}
@@ -116,26 +113,22 @@ public class GWTScriptLoader {
 																	return o[s];
 																	}-*/;
 
-	public static native JavaScriptObject put(JavaScriptObject o, Object pname,
-			Object val)/*-{
+	public static native JavaScriptObject put(JavaScriptObject o, Object pname, Object val)/*-{
 						o[pname] = val;
 						return o;
 						}-*/;
 
-	public static native JavaScriptObject put(JavaScriptObject o, Object pname,
-			int val)/*-{
+	public static native JavaScriptObject put(JavaScriptObject o, Object pname, int val)/*-{
 					o[pname] = val;
 					return o;
 					}-*/;
 
-	public static native JavaScriptObject put(JavaScriptObject o, Object pname,
-			double val)/*-{
+	public static native JavaScriptObject put(JavaScriptObject o, Object pname, double val)/*-{
 						o[pname] = val;
 						return o;
 						}-*/;
 
-	public static native JavaScriptObject putObject(JavaScriptObject o,
-			String pname, JavaScriptObject val)/*-{
+	public static native JavaScriptObject putObject(JavaScriptObject o, String pname, JavaScriptObject val)/*-{
 												o[pname] = val;
 												return o;
 												}-*/;
@@ -177,8 +170,7 @@ public class GWTScriptLoader {
 														return [];
 														}-*/;
 
-	public static native JavaScriptObject arrayPush(JavaScriptObject arr,
-			JavaScriptObject o)/*-{
+	public static native JavaScriptObject arrayPush(JavaScriptObject arr, JavaScriptObject o)/*-{
 								arr.push(o);
 								return arr;
 								}-*/;
@@ -215,8 +207,7 @@ public class GWTScriptLoader {
 		return array;
 	}
 
-	public static boolean arrayContains(JsArray<JavaScriptObject> a,
-			JavaScriptObject val) {
+	public static boolean arrayContains(JsArray<JavaScriptObject> a, JavaScriptObject val) {
 		for (int i = 0; i < a.length(); i++) {
 			JavaScriptObject o = a.get(i);
 			if (o != null && o.equals(val))
@@ -305,7 +296,7 @@ public class GWTScriptLoader {
 		if (a == null) {
 			return null;
 		}
-		JsArrayString jsa = JsArrayNumber.createArray().<JsArrayString> cast();
+		JsArrayString jsa = JsArrayNumber.createArray().<JsArrayString>cast();
 		for (int i = 0; i < a.length; i++) {
 			jsa.push(a[i]);
 		}
@@ -355,8 +346,7 @@ public class GWTScriptLoader {
 		return jsa;
 	}
 
-	public final native static void putBoolean(JavaScriptObject o, String prop,
-			boolean b)/*-{
+	public final native static void putBoolean(JavaScriptObject o, String prop, boolean b)/*-{
 						if (b) {
 						o[prop] = true;
 						} else {
@@ -365,8 +355,7 @@ public class GWTScriptLoader {
 
 						}-*/;
 
-	public final native static void putNumber(JavaScriptObject o, String prop,
-			double v) /*-{
+	public final native static void putNumber(JavaScriptObject o, String prop, double v) /*-{
 						o[prop] = v;
 						}-*/;
 
@@ -410,8 +399,7 @@ public class GWTScriptLoader {
 																		return o[p];
 																		}-*/;
 
-	public static native final String dump(JavaScriptObject obj,
-			boolean printValues)/*-{
+	public static native final String dump(JavaScriptObject obj, boolean printValues)/*-{
 								var s = "{";
 								for ( var i in obj) {
 								s += i + (printValues ? ": " + obj[i] : "") + ", ";
@@ -423,16 +411,14 @@ public class GWTScriptLoader {
 													return $wnd;
 													}-*/;
 
-	public static final native JavaScriptObject toJsFunction(
-			JsArrayMixedCallback c)/*-{
+	public static final native JavaScriptObject toJsFunction(JsArrayMixedCallback c)/*-{
 									return $entry(function() {
 									return c.@loon.html5.gwt.GWTScriptLoader.JsArrayMixedCallback::call(Lcom/google/gwt/core/client/JsArrayMixed;)(arguments);
 									});
 									}-*/;
 
 	public static void loadFont(String fontJsUrl, Callback<Void, Exception> c) {
-		ScriptInjector.fromUrl(fontJsUrl).setWindow(window()).setCallback(c)
-				.inject();
+		ScriptInjector.fromUrl(fontJsUrl).setWindow(window()).setCallback(c).inject();
 	}
 
 	public static void loadFont(TextResource fontJs) {
@@ -440,8 +426,7 @@ public class GWTScriptLoader {
 		ScriptInjector.fromString(text).setWindow(window()).inject();
 	}
 
-	public static void loadFont(ExternalTextResource fontJs,
-			final ResourceCallback<TextResource> callback)
+	public static void loadFont(ExternalTextResource fontJs, final ResourceCallback<TextResource> callback)
 			throws ResourceException {
 		fontJs.getText(new ResourceCallback<TextResource>() {
 
@@ -463,40 +448,32 @@ public class GWTScriptLoader {
 	public static void injectScript(com.google.gwt.safehtml.shared.SafeUri js,
 			final com.google.gwt.user.client.rpc.AsyncCallback<Void> callback) {
 		final com.google.gwt.dom.client.ScriptElement[] script = new com.google.gwt.dom.client.ScriptElement[1];
-		script[0] = com.google.gwt.core.client.ScriptInjector
-				.fromUrl(js.asString())
+		script[0] = com.google.gwt.core.client.ScriptInjector.fromUrl(js.asString())
 				.setWindow(com.google.gwt.core.client.ScriptInjector.TOP_WINDOW)
-				.setCallback(
-						new com.google.gwt.core.client.Callback<Void, Exception>() {
-							@Override
-							public void onSuccess(Void result) {
-								script[0].removeFromParent();
-								callback.onSuccess(result);
-							}
+				.setCallback(new com.google.gwt.core.client.Callback<Void, Exception>() {
+					@Override
+					public void onSuccess(Void result) {
+						script[0].removeFromParent();
+						callback.onSuccess(result);
+					}
 
-							@Override
-							public void onFailure(Exception reason) {
-								callback.onFailure(reason);
-							}
-						}).inject().cast();
+					@Override
+					public void onFailure(Exception reason) {
+						callback.onFailure(reason);
+					}
+				}).inject().cast();
 	}
 
-	public static void injectJavascript(
-			com.google.gwt.resources.client.TextResource... textResources) {
+	public static void injectJavascript(com.google.gwt.resources.client.TextResource... textResources) {
 		for (com.google.gwt.resources.client.TextResource textResource : textResources) {
-			com.google.gwt.core.client.ScriptInjector
-					.fromString(textResource.getText())
-					.setWindow(
-							com.google.gwt.core.client.ScriptInjector.TOP_WINDOW)
-					.inject();
+			com.google.gwt.core.client.ScriptInjector.fromString(textResource.getText())
+					.setWindow(com.google.gwt.core.client.ScriptInjector.TOP_WINDOW).inject();
 		}
 	}
 
-	public static void injectCss(
-			com.google.gwt.resources.client.TextResource... textResources) {
+	public static void injectCss(com.google.gwt.resources.client.TextResource... textResources) {
 		for (com.google.gwt.resources.client.TextResource textResource : textResources) {
-			com.google.gwt.dom.client.StyleInjector.inject(textResource
-					.getText());
+			com.google.gwt.dom.client.StyleInjector.inject(textResource.getText());
 		}
 	}
 

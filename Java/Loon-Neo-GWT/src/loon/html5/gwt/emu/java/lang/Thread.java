@@ -117,8 +117,7 @@ public class Thread implements Runnable {
 		// noop
 	}
 
-	public static void setDefaultUncaughtExceptionHandler(
-			final Thread.UncaughtExceptionHandler javaHandler) {
+	public static void setDefaultUncaughtExceptionHandler(final Thread.UncaughtExceptionHandler javaHandler) {
 		GWT.setUncaughtExceptionHandler(new GWT.UncaughtExceptionHandler() {
 			@Override
 			public void onUncaughtException(Throwable e) {

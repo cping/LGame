@@ -35,6 +35,7 @@ import javafx.scene.paint.Color;
 import loon.Graphics;
 import loon.canvas.ImageImpl;
 import loon.canvas.LColor;
+import loon.opengl.TextureSource;
 import loon.utils.MathUtils;
 import loon.utils.Scale;
 
@@ -47,7 +48,7 @@ public class JavaFXImage extends ImageImpl {
 	}
 
 	public JavaFXImage(JavaFXGame game, int preWidth, int preHeight) {
-		super(game, false, Scale.ONE, preWidth, preHeight, "<canvas>");
+		super(game, false, Scale.ONE, preWidth, preHeight, TextureSource.RenderCanvas);
 	}
 
 	public JavaFXImage(JavaFXGame game, boolean async, int preWidth, int preHeight, String source) {

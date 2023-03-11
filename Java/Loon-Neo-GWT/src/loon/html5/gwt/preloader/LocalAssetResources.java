@@ -536,7 +536,7 @@ public class LocalAssetResources {
 				+ "<block name=\"loon_pixel\" left=\"224\" top=\"0\" right=\"225\" bottom=\"1\" />φ"
 				+ "<block name=\"loon_halfcircle\" left=\"70\" top=\"0\" right=\"134\" bottom=\"128\" />φ"
 				+ "<block name=\"loon_lightning\" left=\"134\" top=\"0\" right=\"135\" bottom=\"128\" />φ" + "</pack>φ")
-						.replace('φ', '\n');
+				.replace('φ', '\n');
 		putText("assets/loon_natural.txt", txt_assets_loon_natural_txt);
 		putImage("assets/loon_pad_ui.png",
 				"iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAMAAABrrFhUAAABIFBMVEUAAAAAAAAAAAAAAACA//8AAAAAAAAAAAAAAAAAAAAAAABt//9q//9x//9m//9r//9m//9l//9p"
@@ -586,7 +586,7 @@ public class LocalAssetResources {
 				+ "<block id=\"0\" name=\"back\" left=\"0\" top=\"0\" right=\"116\" bottom=\"116\" />φ"
 				+ "<block id=\"1\" name=\"fore\" left=\"116\" top=\"0\" right=\"222\" bottom=\"106\" />φ"
 				+ "<block id=\"2\" name=\"dot\" left=\"0\" top=\"116\" right=\"48\" bottom=\"164\" />φ" + "</pack>φ")
-						.replace('φ', '\n');
+				.replace('φ', '\n');
 		putText("assets/loon_pad_ui.txt", txt_assets_loon_pad_ui_txt);
 		putImage("assets/loon_par.png",
 				"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAFgElEQVR42tXXefTlcx3HcT8Z25RU1mizVMdykKWyJJUlRBtKckpFEVFkpCRLK1nCjzqdUNFKiRyh055k"

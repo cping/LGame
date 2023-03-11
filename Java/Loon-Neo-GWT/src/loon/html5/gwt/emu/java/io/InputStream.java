@@ -17,9 +17,9 @@
 package java.io;
 
 public abstract class InputStream implements Closeable {
-	public abstract int read () throws IOException;
+	public abstract int read() throws IOException;
 
-	public int read (byte[] buf, int start, int len) throws IOException {
+	public int read(byte[] buf, int start, int len) throws IOException {
 
 		int end = start + len;
 		for (int i = start; i < end; i++) {
@@ -27,20 +27,20 @@ public abstract class InputStream implements Closeable {
 			if (r == -1) {
 				return i == start ? -1 : i - start;
 			}
-			buf[i] = (byte)r;
+			buf[i] = (byte) r;
 		}
 		return len;
 	}
 
-	public int read (byte[] buf) throws IOException {
+	public int read(byte[] buf) throws IOException {
 		return read(buf, 0, buf.length);
 	}
 
-	public void close () throws IOException {
+	public void close() throws IOException {
 
 	}
 
-	public int available () {
+	public int available() {
 		return 0;
 	}
 }

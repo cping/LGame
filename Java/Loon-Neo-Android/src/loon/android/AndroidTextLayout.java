@@ -36,8 +36,7 @@ class AndroidTextLayout extends TextLayout {
 	public final AndroidFont font;
 	private final Paint.FontMetrics metrics;
 
-	public static TextLayout layoutText(AndroidGraphics gfx, String text,
-			TextFormat format) {
+	public static TextLayout layoutText(AndroidGraphics gfx, String text, TextFormat format) {
 		AndroidFont font = gfx.resolveFont(format.font);
 		Paint paint = new Paint(format.antialias ? Paint.ANTI_ALIAS_FLAG : 0);
 		paint.setTypeface(font.typeface);
@@ -45,12 +44,10 @@ class AndroidTextLayout extends TextLayout {
 		paint.setSubpixelText(true);
 		Paint.FontMetrics metrics = paint.getFontMetrics();
 		font.paint = paint;
-		return new AndroidTextLayout(text, format, font, metrics,
-				paint.measureText(text));
+		return new AndroidTextLayout(text, format, font, metrics, paint.measureText(text));
 	}
 
-	public static TextLayout[] layoutText(AndroidGraphics gfx, String text,
-			TextFormat format, TextWrap wrap) {
+	public static TextLayout[] layoutText(AndroidGraphics gfx, String text, TextFormat format, TextWrap wrap) {
 		AndroidFont font = gfx.resolveFont(format.font);
 		Paint paint = new Paint(format.antialias ? Paint.ANTI_ALIAS_FLAG : 0);
 		paint.setTypeface(font.typeface);
@@ -58,64 +55,53 @@ class AndroidTextLayout extends TextLayout {
 		paint.setSubpixelText(true);
 		Paint.FontMetrics metrics = paint.getFontMetrics();
 		font.paint = paint;
-		
+
 		List<TextLayout> layouts = new ArrayList<TextLayout>();
 		float[] measuredWidth = new float[1];
 		for (String ltext : normalizeEOL(text).split("\\n")) {
 			if (wrap.width <= 0 || wrap.width == Float.MAX_VALUE) {
-				layouts.add(new AndroidTextLayout(ltext, format, font, metrics,
-						paint.measureText(ltext)));
+				layouts.add(new AndroidTextLayout(ltext, format, font, metrics, paint.measureText(ltext)));
 
 			} else {
 				int start = 0, end = ltext.length();
 				while (start < end) {
-					int count = paint.breakText(ltext, start, end, true,
-							wrap.width, measuredWidth);
+					int count = paint.breakText(ltext, start, end, true, wrap.width, measuredWidth);
 					int lineEnd = start + count;
 					if (lineEnd < end && font.resources.length > 0) {
-						int adjust = accountForLigatures(ltext, start, count,
-								font.resources);
+						int adjust = accountForLigatures(ltext, start, count, font.resources);
 						count += adjust;
 						lineEnd += adjust;
 					}
 
 					if (lineEnd == end) {
-						layouts.add(new AndroidTextLayout(ltext.substring(
-								start, lineEnd), format, font, metrics,
+						layouts.add(new AndroidTextLayout(ltext.substring(start, lineEnd), format, font, metrics,
 								measuredWidth[0]));
 						start += count;
 
 					} else {
-			
+
 						if (!Character.isWhitespace(ltext.charAt(lineEnd - 1))
-								&& !Character.isWhitespace(ltext
-										.charAt(lineEnd))) {
+								&& !Character.isWhitespace(ltext.charAt(lineEnd))) {
 							do {
 								--lineEnd;
-							} while (lineEnd > start
-									&& !Character.isWhitespace(ltext
-											.charAt(lineEnd)));
+							} while (lineEnd > start && !Character.isWhitespace(ltext.charAt(lineEnd)));
 						}
 
 						if (lineEnd == start) {
-							layouts.add(new AndroidTextLayout(ltext.substring(
-									start, start + count), format, font,
+							layouts.add(new AndroidTextLayout(ltext.substring(start, start + count), format, font,
 									metrics, measuredWidth[0]));
 							start += count;
 
 						} else {
-							while (Character.isWhitespace(ltext
-									.charAt(lineEnd - 1))) {
+							while (Character.isWhitespace(ltext.charAt(lineEnd - 1))) {
 								--lineEnd;
 							}
 							String line = ltext.substring(start, lineEnd);
 							float size = paint.measureText(line);
-							layouts.add(new AndroidTextLayout(line, format,
-									font, metrics, size));
+							layouts.add(new AndroidTextLayout(line, format, font, metrics, size));
 							start = lineEnd;
 						}
-						while (start < end
-								&& Character.isWhitespace(ltext.charAt(start))) {
+						while (start < end && Character.isWhitespace(ltext.charAt(start))) {
 							start++;
 						}
 					}
@@ -140,14 +126,12 @@ class AndroidTextLayout extends TextLayout {
 		return metrics.leading;
 	}
 
-	AndroidTextLayout(String text, TextFormat format, AndroidFont font,
-			Paint.FontMetrics metrics, float width) {
-		this(text, format, font, metrics, width, -metrics.ascent
-				+ metrics.descent);
+	AndroidTextLayout(String text, TextFormat format, AndroidFont font, Paint.FontMetrics metrics, float width) {
+		this(text, format, font, metrics, width, -metrics.ascent + metrics.descent);
 	}
 
-	AndroidTextLayout(String text, TextFormat format, AndroidFont font,
-			Paint.FontMetrics metrics, float width, float height) {
+	AndroidTextLayout(String text, TextFormat format, AndroidFont font, Paint.FontMetrics metrics, float width,
+			float height) {
 		super(text, format, new RectBox(0, 0, width, height), height);
 		this.font = font;
 		this.metrics = metrics;
@@ -163,8 +147,7 @@ class AndroidTextLayout extends TextLayout {
 
 			if (font.size > 250) {
 				Path path = new Path();
-				paint.getTextPath(text, 0, text.length(), x,
-						y - metrics.ascent, path);
+				paint.getTextPath(text, 0, text.length(), x, y - metrics.ascent, path);
 				canvas.drawPath(path, paint);
 			} else {
 				canvas.drawText(text, x, y - metrics.ascent, paint);
@@ -175,13 +158,12 @@ class AndroidTextLayout extends TextLayout {
 		}
 	}
 
-	static int accountForLigatures(String text, int start, int count,
-			String[] ligatures) {
+	static int accountForLigatures(String text, int start, int count, String[] ligatures) {
 		int adjust = 0;
 		for (String lig : ligatures) {
 			int llen = lig.length(), idx = start;
 			while ((idx = text.indexOf(lig, idx)) != -1) {
-				if (idx + 1 > start + count){
+				if (idx + 1 > start + count) {
 					break;
 				}
 				int extra = llen - 1;
@@ -193,7 +175,6 @@ class AndroidTextLayout extends TextLayout {
 		return adjust;
 	}
 
-	
 	@Override
 	public int stringWidth(String message) {
 		return (int) this.font.paint.measureText(message);
@@ -201,8 +182,7 @@ class AndroidTextLayout extends TextLayout {
 
 	@Override
 	public int getHeight() {
-		return this.font.paint.getFontMetricsInt(this.font.paint
-				.getFontMetricsInt());
+		return this.font.paint.getFontMetricsInt(this.font.paint.getFontMetricsInt());
 	}
 
 	@Override

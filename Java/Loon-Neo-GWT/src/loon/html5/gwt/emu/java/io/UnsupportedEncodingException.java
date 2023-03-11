@@ -22,11 +22,11 @@ public class UnsupportedEncodingException extends IOException {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public UnsupportedEncodingException () {
+	public UnsupportedEncodingException() {
 		super();
 	}
 
-	public UnsupportedEncodingException (String s) {
+	public UnsupportedEncodingException(String s) {
 		super(s);
 	}
 }

@@ -364,7 +364,7 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 	private int maxWidth, maxHeight;
 
 	private int zoomWidth, zoomHeight;
-	
+
 	public static String getResourcePath(String name) throws IOException {
 		if (self == null) {
 			return name;
@@ -850,7 +850,6 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 		layoutParams.gravity = Gravity.CENTER;
 		return layoutParams;
 	}
-
 
 	protected void updateViewSize(final boolean landscape, int width, int height, LMode mode) {
 

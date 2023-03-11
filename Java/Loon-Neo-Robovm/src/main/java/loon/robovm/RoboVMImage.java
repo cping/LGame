@@ -29,6 +29,7 @@ import loon.canvas.LColor;
 import loon.canvas.Pattern;
 import loon.jni.OpenGLES;
 import loon.opengl.GL20;
+import loon.opengl.TextureSource;
 import loon.utils.Scale;
 
 import org.robovm.apple.coregraphics.CGBitmapContext;
@@ -450,7 +451,7 @@ public class RoboVMImage extends ImageImpl {
 	public Image getSubImage(int x, int y, int width, int height) {
 		return new RoboVMImage(LSystem.base().graphics(), LSystem.base()
 				.graphics().scale(), CGImage.createWithImageInRect(image,
-				new CGRect(x, y, width, height)), "<canvas>");
+				new CGRect(x, y, width, height)), TextureSource.RenderCanvas);
 	}
 
 	@Override

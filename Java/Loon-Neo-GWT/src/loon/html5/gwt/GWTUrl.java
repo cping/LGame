@@ -60,9 +60,7 @@ public interface GWTUrl {
 		static final String PARAM_NAME = "gwt-voices";
 	}
 
-	public static boolean checkGLErrors = "check".equals(Window.Location
-			.getParameter("glerrors"));
+	public static boolean checkGLErrors = "check".equals(Window.Location.getParameter("glerrors"));
 
-	public static boolean quadShader = "quad".equals(Window.Location
-			.getParameter("glshader"));
+	public static boolean quadShader = "quad".equals(Window.Location.getParameter("glshader"));
 }
