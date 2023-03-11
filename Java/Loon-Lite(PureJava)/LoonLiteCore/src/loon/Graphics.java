@@ -162,7 +162,6 @@ public abstract class Graphics {
 		Display d = game.display();
 		LSystem.viewSize.setSize((int) (viewWidth / LSystem.getScaleWidth()),
 				(int) (viewHeight / LSystem.getScaleHeight()));
-
 		this.scale = scale;
 		this.viewPixelWidth = viewWidth;
 		this.viewPixelHeight = viewHeight;

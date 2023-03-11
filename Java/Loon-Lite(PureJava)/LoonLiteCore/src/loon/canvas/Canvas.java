@@ -80,6 +80,8 @@ public abstract class Canvas implements LRelease {
 		void draw(Object gc, float dx, float dy, float dw, float dh, float sx, float sy, float sw, float sh);
 	}
 
+	protected boolean closed;
+
 	protected Image image;
 
 	public final float width;
@@ -93,18 +95,30 @@ public abstract class Canvas implements LRelease {
 	public Image getNewImage() {
 		return newSnapshot();
 	}
-	
+
+	public boolean isClosed() {
+		return closed;
+	}
+
 	public abstract Image snapshot();
 
 	public abstract Image newSnapshot();
-	
+
 	public boolean isDirty() {
 		return this.isDirty;
 	}
-	
+
 	@Override
 	public void close() {
+		if (closed) {
+			return;
+		}
+		if ((image == null || image.isClosed())) {
+			closeImpl();
+		}
 	}
+
+	protected abstract void closeImpl();
 
 	public abstract Canvas clear();
 
@@ -122,8 +136,8 @@ public abstract class Canvas implements LRelease {
 
 	public abstract Canvas drawRect(float x, float y, float width, float height, LColor color);
 
-	public abstract Canvas setBlendMethod(final int blend) ;
-	
+	public abstract Canvas setBlendMethod(final int blend);
+
 	public Canvas rect(float x, float y, float w, float h, Paint paint) {
 		if (paint == null) {
 			fillRect(x, y, w, h);
@@ -213,9 +227,9 @@ public abstract class Canvas implements LRelease {
 		setFillColor(tmp);
 		return this;
 	}
-	
+
 	public abstract boolean isMainCanvas();
-	
+
 	public abstract Canvas fillCircle(float x, float y, float radius);
 
 	public abstract Canvas fillOval(float x, float y, float width, float height);

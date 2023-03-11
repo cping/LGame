@@ -103,16 +103,15 @@ public abstract class Image extends TextureSource implements Canvas.Drawable, LR
 		return canvas.getImage();
 	}
 
-	Canvas canvas;
+	protected Canvas canvas;
 
 	public final GoFuture<Image> state;
 
 	public Canvas getCanvas() {
-		if (canvas == null) {
-			return canvas = LSystem.base().graphics().createCanvas(width(), height());
-		}
-		return canvas;
+		return getCanvasImpl();
 	}
+	
+	protected abstract Canvas getCanvasImpl();
 
 	@Override
 	public boolean isLoaded() {

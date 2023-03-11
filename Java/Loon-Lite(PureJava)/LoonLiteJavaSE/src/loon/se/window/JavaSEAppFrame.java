@@ -110,11 +110,13 @@ public class JavaSEAppFrame extends JFrame implements JavaSEApp<JavaSEAppFrame>,
 			}
 		});
 		setResizable(_setting.isAllowScreenResizabled);
-		setUndecorated(false);
 		setIgnoreRepaint(true);
 		final java.awt.DisplayMode desktop = _device.getDisplayMode();
-		if (desktop.getWidth() == setting.getShowWidth() && desktop.getHeight() == setting.getShowHeight()) {
+		if (_setting.fullscreen && desktop.getWidth() == setting.getShowWidth()
+				&& desktop.getHeight() == setting.getShowHeight()) {
 			setUndecorated(true);
+		} else {
+			setUndecorated(_setting.fullscreen);
 		}
 		final String[] paths = _setting.iconPaths;
 		if (paths != null) {
@@ -269,7 +271,7 @@ public class JavaSEAppFrame extends JFrame implements JavaSEApp<JavaSEAppFrame>,
 		return true;
 	}
 
-	protected void setFullScreen(final JavaSEAppFrame frame, final DisplayMode displayMode) {
+	private void setFullScreen(final JavaSEAppFrame frame, final DisplayMode displayMode) {
 		_device.setFullScreenWindow(frame);
 		if (_device.isDisplayChangeSupported()) {
 			_device.setDisplayMode(getBestDisplayMode(_device));

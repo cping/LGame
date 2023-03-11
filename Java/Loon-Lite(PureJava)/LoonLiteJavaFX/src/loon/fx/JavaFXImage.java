@@ -300,10 +300,21 @@ public class JavaFXImage extends ImageImpl {
 	}
 
 	@Override
+	protected loon.canvas.Canvas getCanvasImpl() {
+		if (canvas == null || canvas.isClosed()) {
+			return canvas = new JavaFXCanvas(gfx, this);
+		}
+		return canvas;
+	}
+	
+	@Override
 	protected void closeImpl() {
 		if (buffer != null) {
 			buffer.cancel();
 			buffer = null;
+		}
+		if (canvas != null && canvas instanceof JavaFXCanvas) {
+			((JavaFXCanvas) canvas).closeImpl();
 		}
 	}
 

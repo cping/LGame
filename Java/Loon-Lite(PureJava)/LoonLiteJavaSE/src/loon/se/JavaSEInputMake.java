@@ -93,7 +93,7 @@ public class JavaSEInputMake extends JavaSEInput
 			return;
 		}
 		int btn = getMouseButton(e);
-		if (btn != -1) {
+		if (btn == -1) {
 			emitMouseButton(game.time(), (float) e.getX(), (float) e.getY(), -1, true, 0);
 		}
 	}

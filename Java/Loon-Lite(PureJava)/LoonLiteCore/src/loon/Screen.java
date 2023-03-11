@@ -1349,7 +1349,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	final public void resetSize(int w, int h) {
-		this.handler = LSystem.getProcess();
 		this.width = (w <= 0 ? LSystem.viewSize.getWidth() : w);
 		this.height = (h <= 0 ? LSystem.viewSize.getHeight() : h);
 		this.halfWidth = width / 2;

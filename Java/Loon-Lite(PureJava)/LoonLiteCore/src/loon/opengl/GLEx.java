@@ -148,6 +148,16 @@ public class GLEx implements LRelease {
 		this(gfx, createDefaultBatch(gfx.getCanvas()));
 	}
 
+	public GLEx resize() {
+		this.scaleX = gfx.onDPI(LSystem.getScaleWidth());
+		this.scaleY = gfx.onDPI(LSystem.getScaleHeight());
+		Affine2f tx = affineStack.first();
+		if (tx != null) {
+			tx.setScale(scaleX, scaleY);
+		}
+		return this;
+	}
+
 	public int getWidth() {
 		return LSystem.viewSize.getWidth();
 	}

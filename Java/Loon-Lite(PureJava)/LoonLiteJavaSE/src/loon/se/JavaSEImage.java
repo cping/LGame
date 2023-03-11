@@ -24,6 +24,8 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 import loon.Graphics;
+import loon.LSystem;
+import loon.canvas.Canvas;
 import loon.canvas.Image;
 import loon.canvas.ImageImpl;
 import loon.canvas.LColor;
@@ -251,12 +253,23 @@ public class JavaSEImage extends ImageImpl {
 	}
 
 	@Override
+	protected Canvas getCanvasImpl() {
+		if (canvas == null || canvas.isClosed()) {
+			return canvas = new JavaSECanvas(gfx, this);
+		}
+		return canvas;
+	}
+	
+	@Override
 	protected void closeImpl() {
 		if (buffer != null) {
 			buffer = null;
 		}
 		if (imageColors != null) {
 			imageColors.close();
+		}
+		if (canvas != null && canvas instanceof JavaSECanvas) {
+			((JavaSECanvas) canvas).closeImpl();
 		}
 	}
 

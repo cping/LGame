@@ -240,11 +240,7 @@ public class JavaSECanvas extends Canvas {
 	public Canvas clipRect(float x, float y, float width, final float height) {
 		final int cx = MathUtils.ifloor(x), cy = MathUtils.ifloor(y);
 		final int cwidth = MathUtils.iceil(width), cheight = MathUtils.iceil(height);
-		currentState().clipper = new JavaSECanvasState.Clipper() {
-			public void setClip(Graphics2D context) {
-				context.setClip(cx, cy, cwidth, cheight);
-			}
-		};
+		context.setClip(cx, cy, cwidth, cheight);
 		isDirty = true;
 		return this;
 	}
@@ -567,7 +563,7 @@ public class JavaSECanvas extends Canvas {
 		isDirty = true;
 		return this;
 	}
-	
+
 	@Override
 	public Canvas fillOval(float x, float y, float w, float h) {
 		currentState().prepareFill(context);
@@ -584,7 +580,6 @@ public class JavaSECanvas extends Canvas {
 		isDirty = true;
 		return this;
 	}
-
 
 	@Override
 	public Canvas setFillColor(LColor color) {
@@ -628,9 +623,11 @@ public class JavaSECanvas extends Canvas {
 	}
 
 	@Override
-	public void close() {
+	public void closeImpl() {
 		if (context != null) {
 			context.dispose();
+			context = null;
+			closed = true;
 		}
 	}
 }

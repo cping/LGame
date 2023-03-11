@@ -149,7 +149,7 @@ public class JavaFXCanvas extends Canvas {
 	public Canvas clear(LColor color) {
 		Paint tmp = context.getFill();
 		context.setFill(getLColorToFX(color));
-		context.fillRect(0, 0, width, height);
+		context.clearRect(0, 0, width, height);
 		context.setFill(tmp);
 		isDirty = true;
 		return this;
@@ -666,5 +666,13 @@ public class JavaFXCanvas extends Canvas {
 	@Override
 	public boolean isMainCanvas() {
 		return graphicsMain;
+	}
+
+	@Override
+	public void closeImpl() {
+		if (context != null) {
+			context = null;
+			closed = true;
+		}
 	}
 }
