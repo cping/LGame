@@ -222,6 +222,7 @@ public class JavaFXGame extends LGame {
 
 	@Override
 	public LGame resume() {
+		super.resume();
 		if (_animationLoopRunner == null) {
 			return this;
 		}
@@ -231,12 +232,17 @@ public class JavaFXGame extends LGame {
 
 	@Override
 	public LGame pause() {
-		stop();
+		super.pause();
+		if (_animationLoopRunner == null) {
+			return this;
+		}
+		_animationLoopRunner.stop();
 		return this;
 	}
 
 	@Override
 	public void stop() {
+		super.stop();
 		if (_animationLoopRunner == null) {
 			return;
 		}

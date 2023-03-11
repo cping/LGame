@@ -118,11 +118,11 @@ _________
 
 #### 关于LGame
 
-总之就是一个非常懒人化的2D全功能游戏库，基于OpenGL（OpenGLES）开发，有多平台适配，基本上可以一个jar满足绝大多数的2D游戏需求（暂时不含网络部分，准备有时间单开项目）。
+总之就是一个非常懒人化的2D全功能游戏库(标准版会增加3D支持)，基于OpenGL（OpenGLES）开发，有多平台适配，基本上可以一个jar满足绝大多数的2D游戏需求（暂时不含网络部分，准备有时间单开项目）。
 
 主版本3個，Java版(0.5版)基本构建完毕，C#版构建中，C++版构建中，理论上Java版是核心，以后会提供工具转化语法为其它版本。
 
-Java精简版构建中（仅使用Java环境提供的图形接口，理论上只能跑在支持JavaFX(JavaSE)以及Android的环境，主要是当作2D图形特效库以及UI库使用，以后还可能有一个基于精简版的TypeScript版本）
+此外还有一个和标准版同API(略有精简)的纯Java环境lite版(Loon-Lite)，仅使用Java运行环境提供的图形接口（也就是Graphics和Canvas的API封装），目前只能跑在JavaFX、JavaSE以及Android、GWT这些环境，主要是当作2D图形特效库以及UI库使用，万一以后有人把GraalVM扩展出多平台的渲染库，也可能在更多平台运行。以后还可能有一个基于精简版的TypeScript版本。
 _________
 
 License : http://www.apache.org/licenses/LICENSE-2.0

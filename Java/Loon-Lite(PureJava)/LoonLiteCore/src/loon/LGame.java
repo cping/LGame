@@ -88,6 +88,8 @@ public abstract class LGame implements LRelease {
 
 	protected static Platform _platform = null;
 
+	private boolean _stopGame = false;;
+	
 	// 全部mesh
 	private final TArray<Mesh> _mesh_all_pools;
 
@@ -216,16 +218,20 @@ public abstract class LGame implements LRelease {
 		return this;
 	}
 
+
 	public void stop() {
-		try {
-			synchronized (LGame.class) {
-				LSystem.debug("The Loon Game Engine is End");
-				LSystem.PAUSED = true;
-				RealtimeProcessManager.get().dispose();
-				LSystem.disposeTextureAll();
-				close();
+		if (!_stopGame) {
+			try {
+				synchronized (LGame.class) {
+					LSystem.debug("The Loon Game Engine is End");
+					LSystem.PAUSED = true;
+					RealtimeProcessManager.get().dispose();
+					LSystem.disposeTextureAll();
+					close();
+					_stopGame = true;
+				}
+			} catch (Throwable cause) {
 			}
-		} catch (Throwable cause) {
 		}
 	}
 
@@ -246,7 +252,8 @@ public abstract class LGame implements LRelease {
 		if (LGame._base == null && LGame._platform != null) {
 			LGame._base = LGame._platform.getGame();
 		}
-		processImpl = new LProcess(game);
+		this._stopGame = false;
+		this.processImpl = new LProcess(game);
 		log().debug("The Loon Game Engine is Begin");
 	}
 
@@ -285,18 +292,8 @@ public abstract class LGame implements LRelease {
 			LGame game = plat.getGame();
 			if (game != null) {
 				LGame._base = game;
-				LGame._base.resetShader();
 			}
 		}
-	}
-
-	/**
-	 * 刷新Shader数据
-	 * 
-	 * @param game
-	 */
-	public void resetShader() {
-
 	}
 
 	/**
@@ -1036,6 +1033,5 @@ public abstract class LGame implements LRelease {
 			return;
 		}
 		status.emit(Status.EXIT);
-		stop();
 	}
 }

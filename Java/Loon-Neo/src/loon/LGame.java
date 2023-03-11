@@ -87,6 +87,8 @@ public abstract class LGame implements LRelease {
 
 	protected static Platform _platform = null;
 
+	private boolean _stopGame = false;
+
 	// 全部mesh
 	private final TArray<Mesh> _mesh_all_pools;
 
@@ -228,17 +230,20 @@ public abstract class LGame implements LRelease {
 	}
 
 	public void stop() {
-		try {
-			synchronized (LGame.class) {
-				LSystem.debug("The Loon Game Engine is End");
-				LSystem.PAUSED = true;
-				RealtimeProcessManager.get().dispose();
-				LSTRDictionary.get().dispose();
-				LSystem.disposeTextureAll();
-				LSystem.freeStaticObject();
-				close();
+		if (!_stopGame) {
+			try {
+				synchronized (LGame.class) {
+					LSystem.debug("The Loon Game Engine is End");
+					LSystem.PAUSED = true;
+					RealtimeProcessManager.get().dispose();
+					LSTRDictionary.get().dispose();
+					LSystem.disposeTextureAll();
+					LSystem.freeStaticObject();
+					close();
+				}
+			} catch (Throwable cause) {
 			}
-		} catch (Throwable cause) {
+			_stopGame = true;
 		}
 	}
 
@@ -259,7 +264,8 @@ public abstract class LGame implements LRelease {
 		if (LGame._base == null && LGame._platform != null) {
 			LGame._base = LGame._platform.getGame();
 		}
-		processImpl = new LProcess(game);
+		this._stopGame = false;
+		this.processImpl = new LProcess(game);
 		log().debug("The Loon Game Engine is Begin");
 	}
 
@@ -1252,6 +1258,5 @@ public abstract class LGame implements LRelease {
 			return;
 		}
 		status.emit(Status.EXIT);
-		stop();
 	}
 }

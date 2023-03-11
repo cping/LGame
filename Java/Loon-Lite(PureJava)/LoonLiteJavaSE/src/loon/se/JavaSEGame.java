@@ -212,6 +212,7 @@ public class JavaSEGame extends LGame {
 
 	@Override
 	public LGame resume() {
+		super.resume();
 		if (canvas != null) {
 			canvas.stop();
 			canvas.start();
@@ -221,12 +222,16 @@ public class JavaSEGame extends LGame {
 
 	@Override
 	public LGame pause() {
-		stop();
+		super.pause();
+		if (canvas != null) {
+			canvas.stop();
+		}
 		return this;
 	}
 
 	@Override
 	public void stop() {
+		super.stop();
 		if (canvas != null) {
 			canvas.stop();
 		}
