@@ -34,7 +34,6 @@ import loon.opengl.GLEx;
 import loon.opengl.GLPaint;
 import loon.opengl.Painter;
 import loon.opengl.ShaderSource;
-import loon.opengl.TextureSource;
 import loon.utils.CollectionUtils;
 import loon.utils.GLUtils;
 import loon.utils.IntMap;

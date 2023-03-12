@@ -296,6 +296,11 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		return this;
 	}
 
+	public IEntity coord(float x, float y) {
+		setLocation(x, y);
+		return this;
+	}
+	
 	@Override
 	public boolean isScaled() {
 		return (this._scaleX != 1) || (this._scaleY != 1);

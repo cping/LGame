@@ -825,6 +825,12 @@ public class LSystem {
 		return false;
 	}
 
+	public static final void clearSpritesPool() {
+		if (base() != null) {
+			base().clearSpritesPool();
+		}
+	}
+	
 	public static final void closeSpritesPool() {
 		if (base() != null) {
 			base().closeSpritesPool();
@@ -859,6 +865,12 @@ public class LSystem {
 		return 0;
 	}
 
+	public static final void clearDesktopPool() {
+		if (base() != null) {
+			base().clearDesktopPool();
+		}
+	}
+	
 	public static final void closeDesktopPool() {
 		if (base() != null) {
 			base().closeDesktopPool();
@@ -1036,6 +1048,8 @@ public class LSystem {
 	}
 
 	public static final void closeTemp() {
+		clearSpritesPool();
+		clearDesktopPool();
 		DefUI.selfClear();
 	}
 }

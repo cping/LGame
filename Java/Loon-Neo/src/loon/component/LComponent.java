@@ -1321,6 +1321,11 @@ public abstract class LComponent extends LObject<LContainer>
 		return this;
 	}
 
+	public LComponent coord(float x, float y) {
+		setLocation(x, y);
+		return this;
+	}
+	
 	public LComponent show() {
 		_component_visible = true;
 		if (!getScreen().contains(this)) {

@@ -286,6 +286,11 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		setPivotY(ry);
 	}
 
+	public IEntity coord(float x, float y) {
+		setLocation(x, y);
+		return this;
+	}
+	
 	public IEntity setAnchor(final float scale) {
 		return setAnchor(scale, scale);
 	}

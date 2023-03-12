@@ -1006,6 +1006,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public Screen replaceScreen(final Screen screen) {
+		if(replaceLoading) {
+			return this;
+		}
 		Screen tmp = null;
 		int rnd = MathUtils.random(0, 11);
 		switch (rnd) {
@@ -1093,7 +1096,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public Screen replaceScreen(final Screen screen, ScreenSwitch screenSwitch) {
+		if (replaceLoading) {
+			return this;
+		}
 		if (screen != null && screen != this) {
+			replaceLoading = true;
 			screen.setOnLoadState(false);
 			setLock(true);
 			screen.setLock(true);
@@ -1120,7 +1127,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 				}
 			});
 
-			replaceLoading = true;
 		}
 		return this;
 	}
@@ -1137,7 +1143,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public Screen replaceScreen(final Screen screen, MoveMethod m) {
+		if (replaceLoading) {
+			return this;
+		}
 		if (screen != null && screen != this) {
+			replaceLoading = true;
 			screen.setOnLoadState(false);
 			setLock(true);
 			screen.setLock(true);
@@ -1201,8 +1211,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 					}
 				}
 			});
-
-			replaceLoading = true;
 		}
 
 		return this;

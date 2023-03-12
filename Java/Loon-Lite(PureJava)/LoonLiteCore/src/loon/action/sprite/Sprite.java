@@ -863,6 +863,11 @@ public class Sprite extends LObject<ISprite>
 		_pivot.set(pX, pY);
 		return this;
 	}
+	
+	public Sprite coord(float x, float y) {
+		setLocation(x, y);
+		return this;
+	}
 
 	@Override
 	public Field2D getField2D() {

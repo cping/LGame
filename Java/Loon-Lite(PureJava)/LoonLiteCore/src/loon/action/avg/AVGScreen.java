@@ -661,7 +661,6 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		setSecondOrder(DRAW_SPRITE_PAINT());
 		// 最后绘制桌面
 		setLastOrder(DRAW_DESKTOP_PAINT());
-
 		LSystem.load(new Updateable() {
 
 			@Override

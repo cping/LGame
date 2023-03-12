@@ -48,7 +48,7 @@ public abstract class LGame implements LRelease {
 	 * 当前依赖的Java运行库
 	 */
 	public static enum Environment {
-		JAVAFX, JAVASE
+		JAVAFX, JAVASE, ANDROID, GWT
 	}
 
 	/**
@@ -89,7 +89,7 @@ public abstract class LGame implements LRelease {
 	protected static Platform _platform = null;
 
 	private boolean _stopGame = false;;
-	
+
 	// 全部mesh
 	private final TArray<Mesh> _mesh_all_pools;
 
@@ -217,7 +217,6 @@ public abstract class LGame implements LRelease {
 		}
 		return this;
 	}
-
 
 	public void stop() {
 		if (!_stopGame) {
@@ -870,6 +869,10 @@ public abstract class LGame implements LRelease {
 		return _sprites_pools.remove(sprites);
 	}
 
+	public void clearSpritesPool() {
+		_sprites_pools.clear();
+	}
+	
 	public void closeSpritesPool() {
 		for (int i = _sprites_pools.size - 1; i > -1; i--) {
 			Sprites sprites = _sprites_pools.get(i);
@@ -901,6 +904,10 @@ public abstract class LGame implements LRelease {
 
 	public boolean popDesktopPool(Desktop desktop) {
 		return _desktop_pools.remove(desktop);
+	}
+
+	public void clearDesktopPool() {
+		_desktop_pools.clear();
 	}
 
 	public void closeDesktopPool() {

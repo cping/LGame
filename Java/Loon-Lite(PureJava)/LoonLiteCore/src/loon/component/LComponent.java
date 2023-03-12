@@ -721,6 +721,11 @@ public abstract class LComponent extends LObject<LContainer>
 		}
 	}
 
+	public LComponent coord(float x, float y) {
+		setLocation(x, y);
+		return this;
+	}
+
 	public LComponent setBounds(float dx, float dy, int width, int height) {
 		this.setLocation(dx, dy);
 		this.setSize(width, height);
