@@ -25,7 +25,6 @@ import java.util.Optional;
 import javafx.application.Application;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -42,7 +41,7 @@ import javafx.scene.transform.Scale;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.stage.WindowEvent;
+
 import loon.LGame;
 import loon.LSetting;
 import loon.LSysException;
@@ -122,7 +121,10 @@ public class JavaFXApplication extends Application implements Platform {
 
 	@Override
 	public void stop() throws Exception {
-		this.game.shutdown();
+		if (game.setting.isCloseOnAppExit) {
+			super.stop();
+			this.game.shutdown();
+		}
 	}
 
 	@Override
@@ -172,11 +174,11 @@ public class JavaFXApplication extends Application implements Platform {
 		group.getChildren().add(fxCanvas);
 
 		primaryStage.setScene(createScene(group, newWidth, newHeight, desktop));
-		primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-
-			@Override
-			public void handle(WindowEvent e) {
+		primaryStage.setOnCloseRequest(e -> {
+			if (game.setting.isCloseOnAppExit) {
 				game.shutdown();
+			} else {
+				e.consume();
 			}
 		});
 
@@ -297,7 +299,7 @@ public class JavaFXApplication extends Application implements Platform {
 	public static boolean isLowResolution() {
 		return dpi() < 120;
 	}
-	
+
 	@Override
 	public void sysText(final SysInput.TextEvent event, final KeyMake.TextType textType, final String label,
 			final String initVal) {

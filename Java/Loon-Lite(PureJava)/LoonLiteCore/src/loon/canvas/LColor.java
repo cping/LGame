@@ -114,6 +114,54 @@ public class LColor implements Serializable {
 		return result;
 	}
 
+	public static final boolean isSimilarRGB(float srcR, float srcG, float srcB, float dstR, float dstG, float dstB,
+			float similarOffset) {
+		final float newR = (srcR - dstR);
+		final float newG = (srcG - dstG);
+		final float newB = (srcB - dstB);
+		final float v = newR * newR + newG * newG + newB * newB;
+		return (MathUtils.sqrt(v) < similarOffset);
+	}
+
+	public static final boolean isSimilarRGB(int srcR, int srcG, int srcB, int dstR, int dstG, int dstB,
+			int similarOffset) {
+		final int newR = (srcR - dstR);
+		final int newG = (srcG - dstG);
+		final int newB = (srcB - dstB);
+		final int v = newR * newR + newG * newG + newB * newB;
+		return (MathUtils.sqrtInt(v) < similarOffset);
+	}
+
+	public static final boolean isSimilarRGB(int srcColor, int dstColor, int similarOffset) {
+		if (srcColor == dstColor) {
+			return true;
+		}
+		final int[] srcColors = getRGBs(srcColor);
+		final int[] dstColors = getRGBs(dstColor);
+		return isSimilarRGB(srcColors[0], srcColors[1], srcColors[2], dstColors[0], dstColors[1], dstColors[2],
+				similarOffset);
+	}
+
+	public static final boolean isSimilarRGB(LColor srcColor, LColor dstColor, float similarOffset) {
+		if (srcColor == dstColor) {
+			return true;
+		}
+		if (srcColor == null || dstColor == null) {
+			return false;
+		}
+		return isSimilarRGB(srcColor.r, srcColor.g, srcColor.b, dstColor.r, dstColor.g, dstColor.b, similarOffset);
+	}
+
+	public static final boolean isSimilarRGB(String srcColor, String dstColor, float similarOffset) {
+		if (srcColor == dstColor) {
+			return true;
+		}
+		if (srcColor == null || dstColor == null) {
+			return false;
+		}
+		return isSimilarRGB(new LColor(srcColor), new LColor(dstColor), similarOffset);
+	}
+
 	/**
 	 * 转换颜色为RGB格式的Color
 	 * 
@@ -1854,6 +1902,57 @@ public class LColor implements Serializable {
 	 */
 	public final static String getColorName(LColor color) {
 		return LColorList.get().find(color);
+	}
+
+	/**
+	 * 判断当前Color与指定Color是否近似
+	 * 
+	 * @param c
+	 * @param offset
+	 * @return
+	 */
+	public boolean isSimilarRGB(LColor dstColor, float offset) {
+		if (dstColor == null) {
+			return false;
+		}
+		return isSimilarRGB(this.r, this.g, this.b, dstColor.r, dstColor.g, dstColor.b, offset);
+	}
+
+	/**
+	 * 判断当前Color与指定Color是否近似
+	 * 
+	 * @param dstColor
+	 * @param offset
+	 * @return
+	 */
+	public boolean isSimilarRGB(int dstColor, int offset) {
+		final int[] colors = getRGBs(dstColor);
+		return isSimilarRGB(getRed(), getGreen(), getBlue(), colors[0], colors[1], colors[2], offset);
+	}
+
+	/**
+	 * 判断当前Color与指定Color是否近似
+	 * 
+	 * @param dstColor
+	 * @param offset
+	 * @return
+	 */
+	public boolean isSimilarRGB(int dstColor, float offset) {
+		return isSimilarRGB(this, new LColor(dstColor), offset);
+	}
+
+	/**
+	 * 判断当前Color与指定Color是否近似
+	 * 
+	 * @param dstColor
+	 * @param offset
+	 * @return
+	 */
+	public boolean isSimilarRGB(String dstColor, float offset) {
+		if (dstColor == null) {
+			return false;
+		}
+		return isSimilarRGB(this, new LColor(dstColor), offset);
 	}
 
 	/**

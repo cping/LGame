@@ -76,6 +76,11 @@ public class LSetting {
 	 * 如果此项为true,则游戏窗体可以缩放大小
 	 */
 	public boolean isAllowScreenResizabled = true;
+	
+	/**
+	 * 此项为true,选择窗体关闭时直接退出
+	 */
+	public boolean isCloseOnAppExit = true;
 
 	/**
 	 * 如果此项为true,则Loon中的缓动动画会和图像渲染同步(为false时缓动刷新次数会比画面渲染次数少),true时缓动动画会更加流畅,

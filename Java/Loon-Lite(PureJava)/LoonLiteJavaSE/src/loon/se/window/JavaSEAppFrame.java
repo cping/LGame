@@ -66,15 +66,15 @@ public class JavaSEAppFrame extends JFrame implements JavaSEApp<JavaSEAppFrame>,
 
 	protected JavaSEAppCanvas _canvas;
 
-	public JavaSEAppFrame(JavaSESetting setting) {
+	public JavaSEAppFrame(final JavaSESetting setting) {
 		this(null, setting);
 	}
 
-	public JavaSEAppFrame(JavaSEGame game, JavaSESetting setting) {
+	public JavaSEAppFrame(final JavaSEGame game, final JavaSESetting setting) {
 		this(JavaSEApplication.getGraphicsConfiguration(), game, setting);
 	}
 
-	public JavaSEAppFrame(GraphicsConfiguration config, JavaSEGame game, JavaSESetting setting) {
+	public JavaSEAppFrame(final GraphicsConfiguration config, final JavaSEGame game, final JavaSESetting setting) {
 		super(setting.appName, config);
 		_game = game;
 		_config = config;
@@ -104,7 +104,7 @@ public class JavaSEAppFrame extends JFrame implements JavaSEApp<JavaSEAppFrame>,
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent event) {
-				if (_canvas != null) {
+				if (_canvas != null && setting.isCloseOnAppExit) {
 					_canvas.close();
 					System.exit(-1);
 				}

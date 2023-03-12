@@ -2061,25 +2061,45 @@ public class GLEx implements LRelease {
 	/**
 	 * 绘制椭圆
 	 * 
-	 * @param centerX
-	 * @param centerY
-	 * @param r
-	 * @param Aa
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
+	 * @return
 	 */
-	public GLEx drawOval(float x1, float y1, float width, float height) {
+	public GLEx drawOval(float x, float y, float width, float height) {
 		Canvas canvas = getCanvas();
 		canvas.setTransform(tx());
-		canvas.drawOval(x1, y1, width, height, syncBrushColor());
+		canvas.drawOval(x, y, width, height, syncBrushColor());
+		return this;
+	}
+
+	/**
+	 * 绘制椭圆
+	 * 
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
+	 * @param color
+	 * @return
+	 */
+	public GLEx drawOval(float x, float y, float width, float height, LColor c) {
+		int tint = color();
+		setTint(c);
+		drawOval(x, y, width, height);
+		setTint(tint);
 		return this;
 	}
 
 	/**
 	 * 填充椭圆
 	 * 
-	 * @param centerX
-	 * @param centerY
-	 * @param r
-	 * @param Aa
+	 * @param x1
+	 * @param y1
+	 * @param width
+	 * @param height
+	 * @return
 	 */
 	public GLEx fillOval(float x1, float y1, float width, float height) {
 		Canvas canvas = getCanvas();
