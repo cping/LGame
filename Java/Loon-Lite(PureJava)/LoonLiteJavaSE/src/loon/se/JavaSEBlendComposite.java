@@ -27,13 +27,17 @@ import java.awt.image.ColorModel;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 
+import loon.utils.MathUtils;
+
 public class JavaSEBlendComposite implements Composite {
 
 	private final Blender blender;
 
 	private float alpha;
 
-	public static JavaSEBlendComposite instanceMultiply;
+	protected static JavaSEBlendComposite instanceMultiply;
+
+	protected static JavaSEBlendComposite instanceAdd;
 
 	public static final JavaSEBlendComposite getMultiply() {
 		if (instanceMultiply == null) {
@@ -51,6 +55,31 @@ public class JavaSEBlendComposite implements Composite {
 			});
 		}
 		return instanceMultiply;
+	}
+
+	public static final JavaSEBlendComposite getAdd() {
+		if (instanceAdd == null) {
+			instanceAdd = new JavaSEBlendComposite(new Blender() {
+
+				@Override
+				protected int blend(int srcA, int srcR, int srcG, int srcB, int dstA, int dstR, int dstG, int dstB,
+						float alpha, int blendA, int blendR, int blendG, int blendB) {
+
+					srcA = MathUtils.min(255, srcA + dstA);
+					srcR = MathUtils.min(255, srcR + dstR);
+					srcG = MathUtils.min(255, srcG + dstG);
+					srcB = MathUtils.min(255, srcB + dstB);
+
+					srcA = (srcA * blendA) / 255;
+					srcR = (srcR * blendR) / 255;
+					srcG = (srcG * blendG) / 255;
+					srcB = (srcB * blendB) / 255;
+					
+					return compose(srcA, srcR, srcG, srcB, dstA, dstR, dstG, dstB, alpha);
+				}
+			});
+		}
+		return instanceAdd;
 	}
 
 	private final CompositeContext context = new CompositeContext() {

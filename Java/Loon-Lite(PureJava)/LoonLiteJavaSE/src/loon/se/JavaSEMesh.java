@@ -34,6 +34,7 @@ import loon.LTexture;
 import loon.canvas.Canvas;
 import loon.canvas.Image;
 import loon.geom.Affine2f;
+import loon.opengl.BlendMethod;
 import loon.opengl.Mesh;
 import loon.opengl.MeshData;
 import loon.utils.MathUtils;
@@ -322,23 +323,31 @@ public class JavaSEMesh implements Mesh {
 
 			newTransform.setTransform(m00, m01, m10, m11, tx, ty);
 			context.setTransform(newTransform);
-
-			if (alpha != 1f) {
-				context.setComposite(alphaComposite.derive(alpha));
-			}
-			if (!isWhiteColor) {
-				JavaSECacheImageColor imageColor = ((JavaSEImage) img).getImageColor();
-				// 如果默认缓存数许可
-				if (imageColor.count() < LSystem.DEFAULT_MAX_CACHE_SIZE) {
-					// 如果图像颜色需要混色,产生一个指定色彩的缓存图
-					display = imageColor.get(r, g, b);
-				} else {
-					// 无硬件加速,无缓存渲染混色太慢(AWT环境下是像素渲染),替换自定义Composite算法上合理,但是没有操作性
-					// 所以缓存优先.
-					if (alpha == 1f) {
-						context.setComposite(JavaSEBlendComposite.getMultiply().setColor(r, g, b));
-					} else if (alpha != 1f) {
-						context.setComposite(JavaSEBlendComposite.getMultiply().derive(alpha).setColor(r, g, b));
+			if (mesh.blend == BlendMethod.MODE_ADD) {
+				if (alpha == 1f) {
+					context.setComposite(JavaSEBlendComposite.getMultiply().setColor(r, g, b));
+				} else if (alpha != 1f) {
+					context.setComposite(JavaSEBlendComposite.getMultiply().derive(alpha).setColor(r, g, b));
+				}
+			} else {
+				if (alpha != 1f) {
+					context.setComposite(alphaComposite.derive(alpha));
+				}
+				if (!isWhiteColor) {
+					JavaSECacheImageColor imageColor = ((JavaSEImage) img).getImageColor();
+					// 如果默认缓存数许可
+					if (imageColor.count() < LSystem.DEFAULT_MAX_CACHE_SIZE
+							&& (img.getWidth() <= 512 && img.getHeight() <= 512)) {
+						// 如果图像颜色需要混色,产生一个指定色彩的缓存图
+						display = imageColor.get(r, g, b);
+					} else {
+						// 无硬件加速,无缓存渲染混色太慢(AWT环境下是像素渲染),替换自定义Composite算法上合理,但是没有操作性
+						// 所以缓存优先.
+						if (alpha == 1f) {
+							context.setComposite(JavaSEBlendComposite.getMultiply().setColor(r, g, b));
+						} else if (alpha != 1f) {
+							context.setComposite(JavaSEBlendComposite.getMultiply().derive(alpha).setColor(r, g, b));
+						}
 					}
 				}
 			}

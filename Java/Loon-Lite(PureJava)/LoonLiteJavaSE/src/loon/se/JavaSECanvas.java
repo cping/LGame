@@ -43,6 +43,7 @@ import loon.canvas.Path;
 import loon.font.LFont;
 import loon.font.TextLayout;
 import loon.geom.Affine2f;
+import loon.opengl.BlendMethod;
 import loon.opengl.TextureSource;
 import loon.utils.MathUtils;
 
@@ -532,6 +533,28 @@ public class JavaSECanvas extends Canvas {
 
 	@Override
 	public Canvas setBlendMethod(int blend) {
+		Composite mode = null;
+		switch (blend) {
+		case BlendMethod.MODE_ADD:
+		case BlendMethod.MODE_ALPHA_ONE:
+			mode = Composite.ADD;
+			break;
+		case BlendMethod.MODE_ALPHA:
+			mode = Composite.SRC_OVER;
+			break;
+		case BlendMethod.MODE_MULTIPLY:
+			mode = Composite.MULTIPLY;
+			break;
+		case BlendMethod.MODE_COLOR_MULTIPLY:
+			mode = Composite.MULTIPLY;
+			break;
+		case BlendMethod.MODE_NORMAL:
+		default:
+			mode = Composite.SRC_OVER;
+			break;
+		}
+		setCompositeOperation(mode);
+		this.isDirty = true;
 		return this;
 	}
 

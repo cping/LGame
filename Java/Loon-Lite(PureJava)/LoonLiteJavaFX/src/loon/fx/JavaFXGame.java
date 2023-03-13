@@ -159,7 +159,7 @@ public class JavaFXGame extends LGame {
 	private final long start = System.nanoTime();
 
 	private boolean active = true;
-
+	
 	public JavaFXGame(Platform plat, LSetting config) {
 		super(config, plat);
 		this.log = new JavaFXLog();
@@ -216,33 +216,29 @@ public class JavaFXGame extends LGame {
 		if (_animationLoopRunner == null) {
 			init();
 		}
-		_animationLoopRunner.start();
+		this._animationLoopRunner.start();
+		this.active = true;
 		reset();
 	}
 
 	@Override
 	public LGame resume() {
 		super.resume();
-		if (_animationLoopRunner == null) {
-			return this;
-		}
-		start();
+		this.active = true;
 		return this;
 	}
 
 	@Override
 	public LGame pause() {
 		super.pause();
-		if (_animationLoopRunner == null) {
-			return this;
-		}
-		_animationLoopRunner.stop();
+		this.active = false;
 		return this;
 	}
 
 	@Override
 	public void stop() {
 		super.stop();
+		this.active = false;
 		if (_animationLoopRunner == null) {
 			return;
 		}

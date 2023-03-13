@@ -26,6 +26,8 @@ import loon.geom.Affine2f;
 public class MeshData {
 
 	public LTexture texture;
+
+	public int blend = -1;
 	
 	public int amount = -1;
 	

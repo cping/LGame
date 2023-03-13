@@ -208,14 +208,15 @@ public class JavaSEGame extends LGame {
 		if (canvas != null) {
 			canvas.start();
 		}
+		active = true;
 	}
 
 	@Override
 	public LGame resume() {
 		super.resume();
+		active = true;
 		if (canvas != null) {
-			canvas.stop();
-			canvas.start();
+			canvas.resume();
 		}
 		return this;
 	}
@@ -223,8 +224,9 @@ public class JavaSEGame extends LGame {
 	@Override
 	public LGame pause() {
 		super.pause();
+		active = false;
 		if (canvas != null) {
-			canvas.stop();
+			canvas.pause();
 		}
 		return this;
 	}
@@ -232,6 +234,7 @@ public class JavaSEGame extends LGame {
 	@Override
 	public void stop() {
 		super.stop();
+		active = false;
 		if (canvas != null) {
 			canvas.stop();
 		}

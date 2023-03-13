@@ -60,11 +60,15 @@ public class JavaSEAppFrame extends JFrame implements JavaSEApp<JavaSEAppFrame>,
 
 	protected final GraphicsConfiguration _config;
 
-	private JavaSEGame _game;
+	protected final DisplayMode _oldDisplayMode;
 
 	protected final JavaSESetting _setting;
 
-	protected JavaSEAppCanvas _canvas;
+	private JavaSEGame _game;
+
+	private JavaSEAppCanvas _canvas;
+
+	private boolean _fullFrame;
 
 	public JavaSEAppFrame(final JavaSESetting setting) {
 		this(null, setting);
@@ -80,6 +84,7 @@ public class JavaSEAppFrame extends JFrame implements JavaSEApp<JavaSEAppFrame>,
 		_config = config;
 		_setting = setting;
 		_device = config.getDevice();
+		_oldDisplayMode = _device.getDisplayMode();
 		setBackground(Color.BLACK);
 		addKeyListener(new KeyListener() {
 
@@ -130,33 +135,37 @@ public class JavaSEAppFrame extends JFrame implements JavaSEApp<JavaSEAppFrame>,
 		requestFocus();
 	}
 
-	public void play() {
-		playCanvas(null);
-	}
-
-	public void packFrame() {
+	public JavaSEAppFrame packFrame() {
 		addNotify();
 		validate();
 		pack();
 		if (_canvas != null) {
 			_canvas.packCanvas();
+			_canvas.setFrame(this);
 		}
 		updateSize();
 		pack();
 		setLocationRelativeTo(null);
-		setVisible(true);
+		return this;
 	}
 
-	public void playCanvas(JavaSEAppCanvas canvas) {
+	public JavaSEAppFrame play() {
+		return playCanvas(null);
+	}
+
+	public JavaSEAppFrame playCanvas(final JavaSEAppCanvas canvas) {
 		this._canvas = canvas;
 		if (this._canvas == null) {
 			this._canvas = new JavaSEAppCanvas(_config, _game, _setting);
 		}
 		add(this._canvas);
 		packFrame();
-		canvas.start();
+		setVisible(true);
+		this._canvas.start();
+		return this;
 	}
 
+	@Override
 	public BufferedImage snapshot() {
 		BufferedImage img = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_BGR);
 		Graphics g = img.getGraphics();
@@ -190,6 +199,7 @@ public class JavaSEAppFrame extends JFrame implements JavaSEApp<JavaSEAppFrame>,
 		return _canvas;
 	}
 
+	@Override
 	public JavaSEGame getGame() {
 		return _game;
 	}
@@ -199,6 +209,10 @@ public class JavaSEAppFrame extends JFrame implements JavaSEApp<JavaSEAppFrame>,
 		JavaSEApplication.setResolution(this, new Dimension(_setting.getShowWidth(), _setting.getShowHeight()), 0, 0);
 		setSize(_setting.getShowWidth(), _setting.getShowHeight());
 		return this;
+	}
+
+	public DisplayMode getDisplayMode() {
+		return getBestDisplayMode(_device);
 	}
 
 	private static DisplayMode getBestDisplayMode(GraphicsDevice device) {
@@ -227,9 +241,11 @@ public class JavaSEAppFrame extends JFrame implements JavaSEApp<JavaSEAppFrame>,
 		return (JFrame) _config.getDevice().getFullScreenWindow();
 	}
 
-	public void restoreScreen() {
-		_config.getDevice().setFullScreenWindow(null);
-		packFrame();
+	public JavaSEAppFrame restoreScreen() {
+		if (_fullFrame) {
+			setFullScreen(this, _oldDisplayMode, false);
+		}
+		return this;
 	}
 
 	public DisplayMode[] getCompatibleDisplayModes() {
@@ -272,22 +288,57 @@ public class JavaSEAppFrame extends JFrame implements JavaSEApp<JavaSEAppFrame>,
 		return true;
 	}
 
-	private void setFullScreen(final JavaSEAppFrame frame, final DisplayMode displayMode) {
-		_device.setFullScreenWindow(frame);
-		if (_device.isDisplayChangeSupported()) {
-			_device.setDisplayMode(getBestDisplayMode(_device));
+	private void setFullScreen(final JavaSEAppFrame frame, final DisplayMode displayMode, final boolean full) {
+		if (_canvas != null) {
+			_canvas.setPause(true);
 		}
-		if (displayMode != null && _device.isDisplayChangeSupported()) {
-			try {
+		if (this._fullFrame != full) {
+			this._fullFrame = full;
+			if (!_fullFrame) {
 				_device.setDisplayMode(displayMode);
-			} catch (IllegalArgumentException ex) {
+				setVisible(false);
+				dispose();
+				setUndecorated(false);
+				_device.setFullScreenWindow(null);
+				if (displayMode != null && _device.isDisplayChangeSupported()) {
+					try {
+						_device.setDisplayMode(displayMode);
+					} catch (IllegalArgumentException ex) {
+					}
+					setSize(displayMode.getWidth(), displayMode.getHeight());
+				}
+				setResizable(_game.setting.isAllowScreenResizabled);
+				packFrame();
+				setVisible(true);
+			} else {
+				setVisible(false);
+				dispose();
+				setUndecorated(true);
+				_device.setFullScreenWindow(frame);
+				if (displayMode != null && _device.isDisplayChangeSupported()) {
+					try {
+						_device.setDisplayMode(displayMode);
+					} catch (IllegalArgumentException ex) {
+					}
+					setSize(displayMode.getWidth(), displayMode.getHeight());
+				}
+				setResizable(false);
+				setAlwaysOnTop(false);
+				setVisible(true);
 			}
-			setSize(displayMode.getWidth(), displayMode.getHeight());
+			repaint();
+		}
+		this.requestFocus();
+		if (_canvas != null) {
+			_canvas.setPause(false);
 		}
 	}
 
-	public void full() {
-		setFullScreen(this, findFirstMode(methods));
+	public JavaSEAppFrame full() {
+		if (!_fullFrame) {
+			setFullScreen(this, _device.getDisplayMode(), true);
+		}
+		return this;
 	}
 
 	@Override

@@ -148,8 +148,10 @@ public class JavaSECanvasState {
 			return AlphaComposite.Xor.derive(alpha);
 		case MULTIPLY:
 			return JavaSEBlendComposite.getMultiply().derive(alpha);
+		case ADD:
+			return JavaSEBlendComposite.getAdd().derive(alpha);
 		default:
-			return AlphaComposite.Src.derive(alpha);
+			return AlphaComposite.SrcOver.derive(alpha);
 		}
 	}
 

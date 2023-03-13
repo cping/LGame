@@ -30,6 +30,8 @@ import java.awt.GraphicsConfiguration;
 import java.awt.Toolkit;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -37,6 +39,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.SwingUtilities;
 
 import loon.LRelease;
+import loon.LSystem;
 import loon.canvas.Image;
 import loon.se.JavaSEApplication;
 import loon.se.JavaSECanvas;
@@ -64,19 +67,23 @@ public class JavaSEAppCanvas extends Canvas implements JavaSEApp<JavaSEAppCanvas
 
 	private JavaSESetting _setting;
 
+	private JavaSEAppFrame _frame;
+
 	private int _frameCount;
 
 	private boolean _doubleDraw;
 
-	public JavaSEAppCanvas(JavaSESetting setting) {
+	private boolean _pause;
+
+	public JavaSEAppCanvas(final JavaSESetting setting) {
 		this(null, setting);
 	}
 
-	public JavaSEAppCanvas(JavaSEGame game, JavaSESetting setting) {
+	public JavaSEAppCanvas(final JavaSEGame game, final JavaSESetting setting) {
 		this(JavaSEApplication.getGraphicsConfiguration(), game, setting);
 	}
 
-	public JavaSEAppCanvas(GraphicsConfiguration config, JavaSEGame game, JavaSESetting setting) {
+	public JavaSEAppCanvas(final GraphicsConfiguration config, final JavaSEGame game, final JavaSESetting setting) {
 		super(config);
 		this._game = game;
 		this._loop = new JavaSEAppLoop(game, this, setting.fps);
@@ -90,7 +97,7 @@ public class JavaSEAppCanvas extends Canvas implements JavaSEApp<JavaSEAppCanvas
 
 			@Override
 			public void componentShown(ComponentEvent e) {
-				start();
+				setPause(false);
 			}
 
 			@Override
@@ -108,12 +115,42 @@ public class JavaSEAppCanvas extends Canvas implements JavaSEApp<JavaSEAppCanvas
 
 			@Override
 			public void componentHidden(ComponentEvent e) {
-				stop();
+				setPause(true);
+			}
+		});
+		addKeyListener(new KeyListener() {
+
+			@Override
+			public void keyTyped(KeyEvent e) {
+
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+					if (_frame != null) {
+						_frame.restoreScreen();
+					}
+				}
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+
 			}
 		});
 		setBackground(Color.BLACK);
 		setEnabled(true);
 		setIgnoreRepaint(true);
+	}
+
+	public JavaSEAppCanvas setFrame(JavaSEAppFrame frame) {
+		_frame = frame;
+		return this;
+	}
+	
+	public JavaSEAppFrame getFrame() {
+		return _frame;
 	}
 
 	public JavaSEAppCanvas addInputListener(JavaSEInputMake input) {
@@ -153,38 +190,64 @@ public class JavaSEAppCanvas extends Canvas implements JavaSEApp<JavaSEAppCanvas
 
 	@Override
 	public void process(final boolean active) {
-		_bufferStrategy = getBufferStrategy();
-		if (_bufferStrategy == null) {
-			createBufferStrategy(3);
-			_bufferStrategy = getBufferStrategy();
+		if (_pause) {
+			return;
 		}
-		Graphics2D g = null;
-		do {
+		try {
+			_bufferStrategy = getBufferStrategy();
+			if (_bufferStrategy == null) {
+				createBufferStrategy(3);
+				_bufferStrategy = getBufferStrategy();
+			}
+			Graphics2D g = null;
 			do {
-				try {
+				do {
 					g = (Graphics2D) this._bufferStrategy.getDrawGraphics();
 					if (g != null) {
-						if (_doubleDraw) {
-							_game.process(active);
-							Image img = ((JavaSECanvas) _game.getCanvas()).getImage();
-							if (img != null) {
-								g.drawImage(((JavaSEImage) img).seImage(), 0, 0, getWidth(), getHeight(), this);
+						try {
+							if (_doubleDraw) {
+								_game.process(active);
+								Image img = ((JavaSECanvas) _game.getCanvas()).getImage();
+								if (img != null) {
+									g.drawImage(((JavaSEImage) img).seImage(), 0, 0, getWidth(), getHeight(), this);
+								}
+							} else {
+								((JavaSECanvas) _game.getCanvas()).updateContext(g);
+								_game.process(active);
 							}
-						} else {
-							((JavaSECanvas) _game.getCanvas()).updateContext(g);
-							_game.process(active);
+
+						} finally {
+							g.dispose();
 						}
 					}
-				} finally {
-					g.dispose();
-				}
-			} while (_bufferStrategy.contentsRestored());
-			this._bufferStrategy.show();
-			Toolkit.getDefaultToolkit().sync();
-		} while (this._bufferStrategy.contentsLost());
-		this._frameCount++;
+				} while (_bufferStrategy.contentsRestored());
+				this._bufferStrategy.show();
+				Toolkit.getDefaultToolkit().sync();
+			} while (this._bufferStrategy.contentsLost());
+			this._frameCount++;
+		} catch (IllegalStateException e) {
+			LSystem.debug(e.getMessage());
+		}
 	}
 
+	public boolean isPause() {
+		return _pause;
+	}
+
+	public JavaSEAppCanvas pause() {
+		return setPause(true);
+	}
+
+	public JavaSEAppCanvas resume() {
+		return setPause(false);
+	}
+
+	public JavaSEAppCanvas setPause(boolean p) {
+		this._pause = p;
+		return this;
+	}
+
+	@Override
 	public BufferedImage snapshot() {
 		BufferedImage img = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_BGR);
 		Graphics g = img.getGraphics();

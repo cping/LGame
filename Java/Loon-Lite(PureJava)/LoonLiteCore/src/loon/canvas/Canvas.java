@@ -59,7 +59,9 @@ public abstract class Canvas implements LRelease {
 
 		XOR,
 
-		MULTIPLY
+		MULTIPLY,
+		
+		ADD
 	}
 
 	public static enum LineCap {

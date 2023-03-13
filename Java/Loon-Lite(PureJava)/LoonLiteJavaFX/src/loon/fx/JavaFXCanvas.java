@@ -436,6 +436,7 @@ public class JavaFXCanvas extends Canvas {
 			mode = BlendMode.SCREEN;
 			break;
 		case BlendMethod.MODE_NORMAL:
+		default:
 			mode = BlendMode.SRC_OVER;
 			break;
 		}
