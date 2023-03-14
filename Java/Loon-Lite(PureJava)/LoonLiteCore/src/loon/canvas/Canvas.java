@@ -342,9 +342,9 @@ public abstract class Canvas implements LRelease {
 		this.image = image;
 		if (this.image != null) {
 			this.image.canvas = this;
+			this.width = image.width();
+			this.height = image.height();
 		}
-		this.width = image.width();
-		this.height = image.height();
 		if (width <= 0 || height <= 0) {
 			throw new LSysException("Canvas must be > 0 in width and height: " + width + "x" + height);
 		}

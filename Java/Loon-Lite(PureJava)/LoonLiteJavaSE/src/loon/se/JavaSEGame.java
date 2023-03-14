@@ -196,7 +196,7 @@ public class JavaSEGame extends LGame {
 		return getProperty("javafx.platform", "desktop").trim().toLowerCase();
 	}
 
-	public Canvas getCanvas() {
+	public JavaSECanvas getCanvas() {
 		return graphics.getCanvas();
 	}
 

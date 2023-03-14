@@ -42,7 +42,6 @@ import loon.LRelease;
 import loon.LSystem;
 import loon.canvas.Image;
 import loon.se.JavaSEApplication;
-import loon.se.JavaSECanvas;
 import loon.se.JavaSEGame;
 import loon.se.JavaSEImage;
 import loon.se.JavaSEInputMake;
@@ -207,12 +206,12 @@ public class JavaSEAppCanvas extends Canvas implements JavaSEApp<JavaSEAppCanvas
 						try {
 							if (_doubleDraw) {
 								_game.process(active);
-								Image img = ((JavaSECanvas) _game.getCanvas()).getImage();
+								Image img = _game.getCanvas().getImage();
 								if (img != null) {
 									g.drawImage(((JavaSEImage) img).seImage(), 0, 0, getWidth(), getHeight(), this);
 								}
 							} else {
-								((JavaSECanvas) _game.getCanvas()).updateContext(g);
+								_game.getCanvas().updateContext(g);
 								_game.process(active);
 							}
 
@@ -256,6 +255,7 @@ public class JavaSEAppCanvas extends Canvas implements JavaSEApp<JavaSEAppCanvas
 		return img;
 	}
 
+	@Override
 	public JavaSEGame getGame() {
 		return _game;
 	}

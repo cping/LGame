@@ -33,7 +33,7 @@ public class JavaSEGraphics extends JavaSEImplGraphics {
 
 	private Dimension screenSize = new Dimension();
 
-	protected Canvas canvas;
+	protected JavaSECanvas canvas;
 
 	protected JavaSEGraphics(JavaSEGame game) {
 		this(game, true);
@@ -71,7 +71,7 @@ public class JavaSEGraphics extends JavaSEImplGraphics {
 	}
 
 	@Override
-	public Canvas getCanvas() {
+	public JavaSECanvas getCanvas() {
 		return canvas;
 	}
 

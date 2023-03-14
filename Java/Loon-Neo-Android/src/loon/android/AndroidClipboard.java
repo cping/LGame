@@ -21,6 +21,7 @@
 package loon.android;
 
 import loon.Clipboard;
+import loon.LSystem;
 
 public class AndroidClipboard extends Clipboard {
 
@@ -37,11 +38,14 @@ public class AndroidClipboard extends Clipboard {
 		if (clip == null) {
 			return null;
 		}
-		CharSequence text = clip.getItemAt(0).getText();
-		if (text == null) {
-			return null;
+		StringBuilder buffer = new StringBuilder(128);
+		for (int i = 0; i < clip.getItemCount(); i++) {
+			if (buffer.length() > 0) {
+				buffer.append(LSystem.LF);
+			}
+			buffer.append(clip.getItemAt(i).getText());
 		}
-		return text.toString();
+		return buffer.toString();
 	}
 
 	@Override

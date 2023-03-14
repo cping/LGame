@@ -29,6 +29,7 @@ import java.io.File;
 import java.util.List;
 
 import loon.Clipboard;
+import loon.LSystem;
 
 public class JavaSEClipboard extends Clipboard implements ClipboardOwner {
 
@@ -56,7 +57,7 @@ public class JavaSEClipboard extends Clipboard implements ClipboardOwner {
 						StringBuilder buffer = new StringBuilder(128);
 						for (int i = 0, n = files.size(); i < n; i++) {
 							if (buffer.length() > 0)
-								buffer.append('\n');
+								buffer.append(LSystem.LF);
 							buffer.append(files.get(i).toString());
 						}
 						return buffer.toString();
