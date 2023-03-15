@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.view.MotionEvent;
@@ -41,10 +42,12 @@ public class JavaANAppSurfaceView extends SurfaceView implements JavaANHolderCal
     public JavaANAppSurfaceView(final Context context, final JavaANGame game) {
         super(context);
         getHolder().addCallback(this);
-        _game = game;
+        this._game = game;
         this._setting = (JavaANSetting) _game.setting;
         this._doubleDraw = this._setting.doubleBuffer;
-        _loop = new JavaANAppLoop(_game, this, _setting.fps);
+        this._loop = new JavaANAppLoop(_game, this, _setting.fps);
+        setOnKeyListener(_game.input());
+        setOnTouchListener(_game.input());
         setBackgroundColor(Color.BLACK);
         setFocusable(true);
         setFocusableInTouchMode(true);
@@ -126,26 +129,23 @@ public class JavaANAppSurfaceView extends SurfaceView implements JavaANHolderCal
             return;
         }
         SurfaceHolder holder = getHolder();
-        Canvas canvas = holder.lockCanvas();
-        if (canvas != null) {
-            if (_doubleDraw) {
-                _game.process(active);
-                Image img = _game.getCanvas().getImage();
-                if (img != null) {
-                    canvas.drawBitmap(((JavaANImage) img).anImage(), 0, 0, null);
+        synchronized (holder) {
+            Canvas canvas = holder.lockCanvas();
+            if (canvas != null) {
+                if (_doubleDraw) {
+                    _game.process(active);
+                    Image img = _game.getCanvas().getImage();
+                    if (img != null) {
+                        canvas.drawBitmap(((JavaANImage) img).anImage(), 0, 0, null);
+                    }
+                } else {
+                    _game.getCanvas().updateContext(canvas);
+                    _game.process(active);
                 }
-            } else {
-                _game.getCanvas().updateContext(canvas);
-                _game.process(active);
             }
+            holder.unlockCanvasAndPost(canvas);
         }
-        holder.unlockCanvasAndPost(canvas);
         this._frameCount++;
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        return _game.input().onTouch(event);
     }
 
     public void onPause() {

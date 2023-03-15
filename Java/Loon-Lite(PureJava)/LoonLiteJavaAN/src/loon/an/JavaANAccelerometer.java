@@ -219,7 +219,6 @@ public class JavaANAccelerometer implements Accelerometer {
         }
         if (!_state.isConnected() && manager == null) {
             manager = (SensorManager) _game.mainPlatform.getSystemService(Context.SENSOR_SERVICE);
-            manager.getSensorList(7);
             if (manager.getSensorList(Sensor.TYPE_ACCELEROMETER).size() == 0) {
                 _state.setConnected(false);
             } else {

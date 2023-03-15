@@ -205,9 +205,6 @@ public abstract class JavaANApplication extends Activity implements JavaANPlatfo
         if (setting != null && setting.lockBackDestroy && keyCode == KeyEvent.KEYCODE_BACK) {
             return true;
         }
-        if (game != null && game.input != null) {
-            game.input.onKeyDown(keyCode, event);
-        }
         boolean result = super.onKeyDown(keyCode, event);
         if (setting != null && setting.listener != null) {
             return setting.listener.onKeyDown(keyCode, event);
@@ -219,9 +216,6 @@ public abstract class JavaANApplication extends Activity implements JavaANPlatfo
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         if (setting != null && setting.lockBackDestroy && keyCode == KeyEvent.KEYCODE_BACK) {
             return true;
-        }
-        if (game != null && game.input != null) {
-            game.input.onKeyUp(keyCode, event);
         }
         boolean result = super.onKeyUp(keyCode, event);
         if (setting != null && setting.listener != null) {
@@ -462,6 +456,7 @@ public abstract class JavaANApplication extends Activity implements JavaANPlatfo
             int flagHardwareAccelerated = 0x1000000;
             win.setFlags(flagHardwareAccelerated, flagHardwareAccelerated);
         }
+
         if (fullScreen) {
             try {
                 requestWindowFeature(Window.FEATURE_NO_TITLE);

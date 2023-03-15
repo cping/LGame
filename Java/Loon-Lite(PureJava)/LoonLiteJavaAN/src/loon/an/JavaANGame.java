@@ -185,11 +185,6 @@ public class JavaANGame extends LGame {
     }
 
     @Override
-    public Mesh makeMesh(Canvas canvas) {
-        return null;
-    }
-
-    @Override
     public Environment env() {
         return Environment.ANDROID;
     }
@@ -203,7 +198,10 @@ public class JavaANGame extends LGame {
     public int tick() {
         return (int) ((System.nanoTime() - start) / 1000000L);
     }
-
+    @Override
+    public JavaANMesh makeMesh(Canvas canvas) {
+        return new JavaANMesh(canvas);
+    }
     @Override
     public JavaANAssets assets() {
         return this.assets;

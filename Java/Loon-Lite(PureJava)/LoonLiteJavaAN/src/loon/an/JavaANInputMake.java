@@ -2,6 +2,7 @@ package loon.an;
 
 import android.view.KeyEvent;
 import android.view.MotionEvent;
+import android.view.View;
 
 import loon.LObject;
 import loon.events.InputMake;
@@ -9,7 +10,8 @@ import loon.events.KeyMake;
 import loon.events.SysKey;
 import loon.events.TouchMake;
 
-public class JavaANInputMake  extends InputMake {
+public class JavaANInputMake extends InputMake implements View.OnKeyListener, View.OnTouchListener {
+    protected boolean requestFocus = true;
 
     private final JavaANGame game;
 
@@ -283,6 +285,7 @@ public class JavaANInputMake  extends InputMake {
     }
 
     private static TouchMake.Event.Kind[] TO_KIND = new TouchMake.Event.Kind[16];
+
     static {
         TO_KIND[MotionEvent.ACTION_DOWN] = TouchMake.Event.Kind.START;
         TO_KIND[MotionEvent.ACTION_UP] = TouchMake.Event.Kind.END;
@@ -301,4 +304,35 @@ public class JavaANInputMake  extends InputMake {
     public void callback(LObject<?> o) {
 
     }
+
+    @Override
+    public boolean onKey(View view, int keyCode, KeyEvent keyEvent) {
+        if(keyCode == android.view.KeyEvent.KEYCODE_BACK && keyEvent.isAltPressed()){
+            keyCode = 255;
+        }
+        if(keyEvent.getKeyCode() < 0){
+            return false;
+        }
+        switch (keyEvent.getAction()) {
+            case android.view.KeyEvent.ACTION_DOWN:
+                this.onKeyDown(keyCode, keyEvent);
+                break;
+            case android.view.KeyEvent.ACTION_UP:
+                this.onKeyUp(keyCode, keyEvent);
+                break;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onTouch(View view, MotionEvent motionEvent) {
+        if (requestFocus && view != null) {
+            view.setFocusableInTouchMode(true);
+            view.requestFocus();
+            requestFocus = false;
+        }
+        onTouch(motionEvent);
+        return true;
+    }
+
 }

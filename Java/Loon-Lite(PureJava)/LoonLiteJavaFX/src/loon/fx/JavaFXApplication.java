@@ -54,18 +54,23 @@ import loon.utils.StringUtils;
 
 public class JavaFXApplication extends Application implements Platform {
 
-	protected static LazyLoading.Data slazyData;
+	static class InitDataCached {
 
-	protected static JavaFXSetting sAppSetting;
+		protected LazyLoading.Data lazyData;
 
-	protected static Class<?> sMainClass;
+		protected JavaFXSetting appSetting;
+
+		protected Class<?> mainClass;
+	}
+	
+	private final static InitDataCached initData = new InitDataCached();
 
 	public static void launchFX(Loon app, JavaFXSetting setting, LazyLoading.Data lazy, String[] args) {
-		slazyData = lazy;
-		sMainClass = app.getClass();
-		sAppSetting = setting;
-		if (sAppSetting.args == null) {
-			sAppSetting.args = args;
+		initData.lazyData = lazy;
+		initData.mainClass = app.getClass();
+		initData.appSetting = setting;
+		if (initData.appSetting.args == null) {
+			initData.appSetting.args = args;
 		}
 		Application.launch(JavaFXApplication.class, args);
 	}
@@ -89,9 +94,9 @@ public class JavaFXApplication extends Application implements Platform {
 	protected JavaFXResizeCanvas fxCanvas;
 
 	public JavaFXApplication() {
-		this.lazyData = slazyData;
-		this.appSetting = sAppSetting;
-		this.appSetting.mainClass = sMainClass;
+		this.lazyData = initData.lazyData;
+		this.appSetting = initData.appSetting;
+		this.appSetting.mainClass = initData.mainClass;
 		if (appSetting.fullscreen) {
 			Rectangle2D viewRect = null;
 			if (appSetting.fullscreen && JavaFXGame.isJavaFXDesktop()) {
@@ -115,8 +120,7 @@ public class JavaFXApplication extends Application implements Platform {
 			appSetting.width_zoom = (int) width;
 			appSetting.height_zoom = (int) height;
 		}
-
-		this.game = new JavaFXGame(this, sAppSetting);
+		this.game = new JavaFXGame(this, appSetting);
 	}
 
 	@Override
@@ -234,6 +238,7 @@ public class JavaFXApplication extends Application implements Platform {
 		scaledHeight.set(height);
 		scaleRatioX.set(scaledWidth.getValue() / width);
 		scaleRatioY.set(scaledHeight.getValue() / height);
+	
 		return (this.fxScene = new Scene(group, width, height, false, SceneAntialiasing.BALANCED));
 	}
 

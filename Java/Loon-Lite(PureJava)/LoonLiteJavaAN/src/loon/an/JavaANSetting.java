@@ -26,7 +26,7 @@ public class JavaANSetting extends LSetting {
     public boolean useImmersiveMode = false;
 
     // 是否使用等比屏幕缩放（使用此项，可以保证游戏画面不是失真，而不使用此项，则默认全屏拉伸满屏幕，不管画面是否变形）
-    public boolean useRatioScaleFactor = false;
+    public boolean useRatioScaleFactor = true;
 
     // android事件专用监听器
     public JavaANListener listener = null;
