@@ -142,10 +142,12 @@ public class JavaSEAppFrame extends JFrame implements JavaSEApp<JavaSEAppFrame>,
 		if (_canvas != null) {
 			_canvas.packCanvas();
 			_canvas.setFrame(this);
+			_canvas.requestFocus();
 		}
 		updateSize();
 		pack();
 		setLocationRelativeTo(null);
+
 		return this;
 	}
 

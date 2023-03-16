@@ -48,37 +48,6 @@ public class JavaFXInputMake extends JavaFXInput {
 		super(game);
 		JavaFXResizeCanvas canvas = this.game.getFxCanvas();
 
-		canvas.setOnKeyPressed(new EventHandler<KeyEvent>() {
-
-			@Override
-			public void handle(KeyEvent e) {
-				int key = keyForCode(e.getCode());
-				char ch = (char) e.getCharacter().charAt(0);
-				dispatch(new KeyMake.KeyEvent(0, game.time(), ch, key, true), e);
-
-			}
-		});
-		canvas.setOnKeyReleased(new EventHandler<KeyEvent>() {
-
-			@Override
-			public void handle(KeyEvent e) {
-				int key = keyForCode(e.getCode());
-				char ch = (char) e.getCharacter().charAt(0);
-				dispatch(new KeyMake.KeyEvent(0, game.time(), ch, key, false), e);
-
-			}
-		});
-		canvas.setOnKeyTyped(new EventHandler<KeyEvent>() {
-
-			@Override
-			public void handle(KeyEvent e) {
-				int key = keyForCode(e.getCode());
-				char ch = (char) e.getCharacter().charAt(0);
-				dispatch(new KeyMake.KeyEvent(0, game.time(), ch, key, false), e);
-
-			}
-		});
-
 		canvas.setOnMouseDragged(new EventHandler<MouseEvent>() {
 
 			@Override
@@ -177,6 +146,7 @@ public class JavaFXInputMake extends JavaFXInput {
 			}
 
 		});
+		canvas.requestFocus();
 	}
 
 	private TouchMake.Event[] toTouchEvents(TouchMake.Event.Kind kind, TouchEvent nevent) {
@@ -204,6 +174,24 @@ public class JavaFXInputMake extends JavaFXInput {
 		} else {
 			return -1;
 		}
+	}
+
+	protected void onKeyDown(KeyEvent e) {
+		int key = keyForCode(e.getCode());
+		char ch = (char) e.getCharacter().charAt(0);
+		dispatch(new KeyMake.KeyEvent(0, game.time(), ch, key, true), e);
+	}
+
+	protected void onKeyUp(KeyEvent e) {
+		int key = keyForCode(e.getCode());
+		char ch = (char) e.getCharacter().charAt(0);
+		dispatch(new KeyMake.KeyEvent(0, game.time(), ch, key, false), e);
+	}
+
+	protected void onKeyTyped(KeyEvent e) {
+		int key = keyForCode(e.getCode());
+		char ch = (char) e.getCharacter().charAt(0);
+		dispatch(new KeyMake.KeyEvent(0, game.time(), ch, key, false), e);
 	}
 
 	private static int keyForCode(KeyCode keyCode) {

@@ -321,7 +321,15 @@ public class JavaANInputMake extends InputMake implements View.OnKeyListener, Vi
                 this.onKeyUp(keyCode, keyEvent);
                 break;
         }
-        return true;
+
+        if ((keyEvent.getKeyCode() == KeyEvent.KEYCODE_VOLUME_UP) ||
+                (keyEvent.getKeyCode() == KeyEvent.KEYCODE_VOLUME_DOWN) ||
+                (keyEvent.getKeyCode() == KeyEvent.KEYCODE_MENU)) {
+            return false;
+        } else {
+            return true;
+        }
+
     }
 
     @Override

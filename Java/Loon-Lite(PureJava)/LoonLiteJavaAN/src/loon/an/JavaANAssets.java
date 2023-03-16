@@ -459,7 +459,7 @@ public class JavaANAssets extends Assets {
         asyn.invokeAsync(new Runnable() {
             public void run() {
                 try {
-                    BitmapOptions options = createOptions(url, false, Scale.ONE);
+                    BitmapOptions options = createOptions(url, Scale.ONE);
                     Bitmap bmp = downloadBitmap(url, options);
                     image.succeed(new ImageImpl.Data(options.scale, bmp, bmp.getWidth(), bmp.getHeight()));
                 } catch (Exception error) {
@@ -541,7 +541,7 @@ public class JavaANAssets extends Assets {
             try {
                 InputStream is = openAsset(rsrc.path);
                 try {
-                    BitmapOptions options = createOptions(path, true, rsrc.scale);
+                    BitmapOptions options = createOptions(path, rsrc.scale);
                     Bitmap bitmap = BitmapFactory.decodeStream(is, null, options);
                     return new ImageImpl.Data(options.scale, bitmap, bitmap.getWidth(), bitmap.getHeight());
                 } finally {
@@ -628,14 +628,16 @@ public class JavaANAssets extends Assets {
         return LSystem.base() == null ? JavaANApplication.class : LSystem.base().setting.mainClass;
     }
 
-    protected BitmapOptions createOptions(String path, boolean purgeable, Scale scale) {
+    private final byte[] bufferData = new byte[16 * 1024];
+
+    protected BitmapOptions createOptions(String path, Scale scale) {
         BitmapOptions options = new BitmapOptions();
         options.inScaled = false;
         options.inMutable = true;
         options.inPreferredConfig = ((JavaANGraphics)game.graphics()).preferredBitmapConfig;
-        // options.inDither = true;
-        // options.inPurgeable = purgeable;
-        // options.inInputShareable = true;
+        options.inTempStorage = bufferData;
+        options.inSampleSize = 1;
+        options.inPremultiplied = false;
         options.scale = scale;
         optionsAdjuster.adjustOptions(path, options);
         return options;

@@ -3487,7 +3487,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			ActionKey act = it.next();
 			if (act != null && act.isPressed()) {
 				act.act(elapsedTime);
-				if (act.isReturn) {
+				if (act.isInterrupt()) {
 					return;
 				}
 			}

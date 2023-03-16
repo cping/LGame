@@ -25,10 +25,12 @@ import java.util.Optional;
 import javafx.application.Application;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -37,6 +39,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.transform.Scale;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -62,7 +65,7 @@ public class JavaFXApplication extends Application implements Platform {
 
 		protected Class<?> mainClass;
 	}
-	
+
 	private final static InitDataCached initData = new InitDataCached();
 
 	public static void launchFX(Loon app, JavaFXSetting setting, LazyLoading.Data lazy, String[] args) {
@@ -210,6 +213,8 @@ public class JavaFXApplication extends Application implements Platform {
 		}
 		primaryStage.show();
 
+		setEventHandler(fxScene, fxCanvas, game.input());
+
 		windowBorderWidth = primaryStage.getWidth() - scaledWidth.getValue();
 		windowBorderHeight = primaryStage.getHeight() - scaledHeight.getValue();
 
@@ -233,12 +238,39 @@ public class JavaFXApplication extends Application implements Platform {
 
 	}
 
+	protected void setEventHandler(final Scene scene, final Canvas canvas, final JavaFXInputMake input) {
+		scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
+
+			@Override
+			public void handle(KeyEvent e) {
+				input.onKeyDown(e);
+			}
+		});
+		scene.setOnKeyReleased(new EventHandler<KeyEvent>() {
+
+			@Override
+			public void handle(KeyEvent e) {
+				input.onKeyUp(e);
+			}
+		});
+		scene.setOnKeyTyped(new EventHandler<KeyEvent>() {
+
+			@Override
+			public void handle(KeyEvent e) {
+				input.onKeyTyped(e);
+			}
+		});
+		canvas.onKeyPressedProperty().bind(scene.onKeyPressedProperty());
+		canvas.onKeyReleasedProperty().bind(scene.onKeyReleasedProperty());
+		canvas.onKeyTypedProperty().bind(scene.onKeyTypedProperty());
+	}
+
 	protected Scene createScene(Group group, float width, float height, boolean desktop) {
 		scaledWidth.set(width);
 		scaledHeight.set(height);
 		scaleRatioX.set(scaledWidth.getValue() / width);
 		scaleRatioY.set(scaledHeight.getValue() / height);
-	
+
 		return (this.fxScene = new Scene(group, width, height, false, SceneAntialiasing.BALANCED));
 	}
 

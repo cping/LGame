@@ -141,6 +141,7 @@ public class JavaSEAppCanvas extends Canvas implements JavaSEApp<JavaSEAppCanvas
 		setBackground(Color.BLACK);
 		setEnabled(true);
 		setIgnoreRepaint(true);
+		requestFocus();
 	}
 
 	public JavaSEAppCanvas setFrame(JavaSEAppFrame frame) {

@@ -1,5 +1,5 @@
 /**
- * Copyright 2008 - 2012
+ * Copyright 2008 - 2023
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -16,7 +16,7 @@
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
- * @version 0.3.3
+ * @version 0.5
  */
 package loon.events;
 
@@ -34,22 +34,22 @@ public class ActionKey {
 
 	private static final int STATE_WAITING_FOR_RELEASE = 2;
 
-	private final int mode;
+	private final int _mode;
 
-    public long elapsedTime;
-    
-	private int amount;
+	private long _elapsedTime;
 
-	private int state;
+	private int _amount;
 
-	public boolean isReturn;
+	private int _state;
+
+	private boolean _interrupt;
 
 	public ActionKey() {
 		this(NORMAL);
 	}
 
 	public ActionKey(int mode) {
-		this.mode = mode;
+		this._mode = mode;
 		reset();
 	}
 
@@ -58,35 +58,67 @@ public class ActionKey {
 	}
 
 	public void act(long elapsed) {
-		this.elapsedTime = elapsed;
+		this._elapsedTime = elapsed;
 		if (_function != null) {
 			_function.action(this);
 		}
 	}
 
-	public void reset() {
-		state = STATE_RELEASED;
-		amount = 0;
+	// user overload
+	public void onPress() {
+
 	}
 
-	public void press() {
-		if (state != STATE_WAITING_FOR_RELEASE) {
-			amount++;
-			state = STATE_PRESSED;
+	// user overload
+	public void onRelease() {
+
+	}
+
+	public ActionKey setInterrupt(boolean stop) {
+		this._interrupt = stop;
+		return this;
+	}
+
+	public long getElapsedTime() {
+		return _elapsedTime;
+	}
+
+	public boolean isInterrupt() {
+		return _interrupt;
+	}
+
+	public ActionKey reset() {
+		_state = STATE_RELEASED;
+		_amount = 0;
+		return this;
+	}
+
+	public ActionKey press() {
+		this.onPress();
+		if (_state != STATE_WAITING_FOR_RELEASE) {
+			_amount++;
+			_state = STATE_PRESSED;
 		}
+		return this;
 	}
 
-	public void release() {
-		state = STATE_RELEASED;
+	public ActionKey release() {
+		this.onRelease();
+		_state = STATE_RELEASED;
+		return this;
+	}
+
+	public boolean isReleased() {
+		return _state == STATE_RELEASED;
 	}
 
 	public boolean isPressed() {
-		if (amount != 0) {
-			if (state == STATE_RELEASED) {
-				amount = 0;
-			} else if (mode == DETECT_INITIAL_PRESS_ONLY) {
-				state = STATE_WAITING_FOR_RELEASE;
-				amount = 0;
+		if (_amount != 0) {
+			if (_state == STATE_RELEASED) {
+				_amount = 0;
+			} else if (_mode == DETECT_INITIAL_PRESS_ONLY) {
+				_state = STATE_WAITING_FOR_RELEASE;
+				_amount = 0;
 			}
 			return true;
 		}
@@ -97,7 +129,8 @@ public class ActionKey {
 		return _function;
 	}
 
-	public void setFunction(Updateable function) {
+	public ActionKey setFunction(Updateable function) {
 		this._function = function;
+		return this;
 	}
 }
