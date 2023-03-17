@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2019 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -164,9 +164,9 @@ public class GestureData {
 
 	/**
 	 * 读取自定义手势配置文件
-	 * 
+	 *
 	 * 配置格式如下:
-	 * 
+	 *
 	 * <pre>
 	 * $keyname($后是采样名称，下面是数据，两个一组，换行符开始下一组，再次出现$就算一组新数据)
 	 * 135,123
@@ -174,12 +174,12 @@ public class GestureData {
 	 * 115,167
 	 * ……
 	 * </pre>
-	 * 
+	 *
 	 * @param path
 	 * @param resampledFirst
 	 */
 	public void readUserPoints(String path, boolean resampledFirst) {
-		TArray<GestureLoader> loaders = new TArray<GestureLoader>();
+		TArray<GestureLoader> loaders = new TArray<>();
 		ArrayByteReader reader = BaseIO.loadArrayByteReader(path);
 		String curTemplate = "";
 		TArray<PointF> curPoints = null;
@@ -198,7 +198,7 @@ public class GestureData {
 						loaders.add(new GestureLoader(curTemplate, curPoints, resampledFirst));
 					}
 					curTemplate = result.substring(1).trim();
-					curPoints = new TArray<PointF>();
+					curPoints = new TArray<>();
 				} else {
 					if (curPoints != null) {
 						if (result.indexOf(' ') != -1) {
@@ -219,7 +219,7 @@ public class GestureData {
 		} catch (Throwable ex) {
 			throw new LSysException(ex.getMessage(), ex);
 		}
-		ObjectMap<String, TArray<PointF>> points = new ObjectMap<String, TArray<PointF>>();
+		ObjectMap<String, TArray<PointF>> points = new ObjectMap<>();
 		for (GestureLoader glr : loaders) {
 			points.put(glr.name, glr.points);
 		}

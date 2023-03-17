@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -23,7 +23,6 @@ package loon.action.sprite.effect;
 import loon.LSystem;
 import loon.LTexture;
 import loon.action.map.Config;
-import loon.action.map.Field2D;
 import loon.action.sprite.Entity;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
@@ -102,15 +101,15 @@ public class SplitEffect extends Entity implements BaseEffect {
 				case Config.RIGHT:
 				case Config.TLEFT:
 				case Config.TRIGHT:
-					movePosOne.move_multiples(Field2D.TLEFT, multiples);
-					movePosTwo.move_multiples(Field2D.TRIGHT, multiples);
+					movePosOne.move_multiples(Config.TLEFT, multiples);
+					movePosTwo.move_multiples(Config.TRIGHT, multiples);
 					break;
 				case Config.UP:
 				case Config.DOWN:
 				case Config.TUP:
 				case Config.TDOWN:
-					movePosOne.move_multiples(Field2D.TUP, multiples);
-					movePosTwo.move_multiples(Field2D.TDOWN, multiples);
+					movePosOne.move_multiples(Config.TUP, multiples);
+					movePosTwo.move_multiples(Config.TDOWN, multiples);
 					break;
 				}
 
@@ -182,7 +181,7 @@ public class SplitEffect extends Entity implements BaseEffect {
 		this.autoRemoved = autoRemoved;
 		return this;
 	}
-	
+
 	@Override
 	public void close() {
 		super.close();

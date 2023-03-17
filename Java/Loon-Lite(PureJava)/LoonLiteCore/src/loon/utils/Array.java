@@ -1,18 +1,18 @@
 /**
  * Copyright 2014
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -26,11 +26,11 @@ import loon.events.QueryEvent;
 public class Array<T> implements IArray, LRelease {
 
 	public static final <T> Array<T> at() {
-		return new Array<T>();
+		return new Array<>();
 	}
 
 	public static final <T> Array<T> at(Array<T> data) {
-		return new Array<T>(data);
+		return new Array<>(data);
 	}
 
 	public static class ArrayNode<T> {
@@ -87,7 +87,7 @@ public class Array<T> implements IArray, LRelease {
 	}
 
 	public Array<T> reverse() {
-		Array<T> tmp = new Array<T>();
+		Array<T> tmp = new Array<>();
 		for (int i = size() - 1; i > -1; --i) {
 			tmp.add(get(i));
 		}
@@ -102,7 +102,7 @@ public class Array<T> implements IArray, LRelease {
 	}
 
 	public Array<T> concat(Array<T> data) {
-		Array<T> list = new Array<T>();
+		Array<T> list = new Array<>();
 		list.addAll(this);
 		list.addAll(data);
 		return list;
@@ -113,7 +113,7 @@ public class Array<T> implements IArray, LRelease {
 	}
 
 	public Array<T> slice(int start, int end) {
-		Array<T> list = new Array<T>();
+		Array<T> list = new Array<>();
 		for (int i = start; i < end; i++) {
 			list.add(get(i));
 		}
@@ -125,7 +125,7 @@ public class Array<T> implements IArray, LRelease {
 	}
 
 	public Array<T> add(T data) {
-		ArrayNode<T> newNode = new ArrayNode<T>();
+		ArrayNode<T> newNode = new ArrayNode<>();
 		ArrayNode<T> o = this._items.next;
 		newNode.data = data;
 		if (o == this._items) {
@@ -145,7 +145,7 @@ public class Array<T> implements IArray, LRelease {
 		if (_close) {
 			return this;
 		}
-		ArrayNode<T> newNode = new ArrayNode<T>();
+		ArrayNode<T> newNode = new ArrayNode<>();
 		newNode.data = data;
 		newNode.next = this._items.next;
 		this._items.next.previous = newNode;
@@ -159,7 +159,7 @@ public class Array<T> implements IArray, LRelease {
 		if (_close) {
 			return this;
 		}
-		ArrayNode<T> newNode = new ArrayNode<T>();
+		ArrayNode<T> newNode = new ArrayNode<>();
 		newNode.data = data;
 		newNode.previous = this._items.previous;
 		this._items.previous.next = newNode;
@@ -312,7 +312,7 @@ public class Array<T> implements IArray, LRelease {
 		remove(_length < 1 ? 0 : _length - 1);
 		return result;
 	}
-	
+
 	public boolean remove(int idx) {
 		if (_close) {
 			return false;
@@ -390,10 +390,10 @@ public class Array<T> implements IArray, LRelease {
 
 	public Array<T> randomArrays() {
 		if (_length == 0) {
-			return new Array<T>();
+			return new Array<>();
 		}
 		T v = null;
-		Array<T> newArrays = new Array<T>();
+		Array<T> newArrays = new Array<>();
 		for(;hashNext();){
 			newArrays.add(next());
 		}
@@ -552,7 +552,7 @@ public class Array<T> implements IArray, LRelease {
 		this.stopNext();
 		this.stopPrevious();
 		this._items = null;
-		this._items = new ArrayNode<T>();
+		this._items = new ArrayNode<>();
 		this._items.next = this._items;
 		this._items.previous = this._items;
 	}
@@ -572,7 +572,7 @@ public class Array<T> implements IArray, LRelease {
 	}
 
 	public Array<T> cpy() {
-		Array<T> newlist = new Array<T>();
+		Array<T> newlist = new Array<>();
 		newlist.addAll(this);
 		return newlist;
 	}
@@ -581,7 +581,7 @@ public class Array<T> implements IArray, LRelease {
 
 	public LIterator<T> listIterator() {
 		if (iterator == null) {
-			iterator = new ListItr<T>(this);
+			iterator = new ListItr<>(this);
 		}
 		this.stopNext();
 		return iterator;
@@ -613,7 +613,7 @@ public class Array<T> implements IArray, LRelease {
 	}
 
 	public Array<T> where(QueryEvent<T> test) {
-		Array<T> list = new Array<T>();
+		Array<T> list = new Array<>();
 		for (; hashNext();) {
 			T t = next();
 			if (test.hit(t)) {

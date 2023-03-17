@@ -460,6 +460,7 @@ public abstract class DisplayObject extends EventDispatcher implements Collision
 		return this;
 	}
 
+	@Override
 	public DisplayObject setOffset(Vector2f v) {
 		if (v != null) {
 			this._offset = v;

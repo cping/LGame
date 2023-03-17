@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -38,7 +38,7 @@ import loon.utils.TArray;
 public class Text implements LRelease {
 
 	private boolean _closed = false;
-	
+
 	protected IFont _font;
 	protected float _space = 0;
 	protected float _lineWidthMaximum;
@@ -50,7 +50,7 @@ public class Text implements LRelease {
 	protected int _vertexCountToDraw;
 
 	protected CharSequence _chars;
-	protected TArray<CharSequence> _lines = new TArray<CharSequence>(1);
+	protected TArray<CharSequence> _lines = new TArray<>(1);
 	protected FloatArray _lineWidths = new FloatArray(1);
 	protected float _width = 0, _height = 0;
 
@@ -100,10 +100,7 @@ public class Text implements LRelease {
 	}
 
 	public void setText(final CharSequence chars) {
-		if (LSystem.base() == null || chars == null) {
-			return;
-		}
-		if (_closed) {
+		if (LSystem.base() == null || chars == null || _closed) {
 			return;
 		}
 		this._chars = chars != null ? chars : LSystem.EMPTY;
@@ -118,7 +115,7 @@ public class Text implements LRelease {
 			}
 		}
 		if (this._lines == null) {
-			this._lines = new TArray<CharSequence>();
+			this._lines = new TArray<>();
 		}
 		this._lines.clear();
 		this._lineWidths.clear();

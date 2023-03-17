@@ -1,19 +1,19 @@
 
 /**
  * Copyright 2008 - 2010
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -66,7 +66,7 @@ public class AVGChara implements Visible, XY, LRelease {
 
 	/**
 	 * 构造函数，初始化角色图
-	 * 
+	 *
 	 * @param image
 	 * @param x
 	 * @param y
@@ -214,6 +214,7 @@ public class AVGChara implements Visible, XY, LRelease {
 		g.draw(_cgTexture, _cgMovePos, y);
 	}
 
+	@Override
 	public float getX() {
 		return x;
 	}
@@ -236,6 +237,7 @@ public class AVGChara implements Visible, XY, LRelease {
 
 	}
 
+	@Override
 	public float getY() {
 		return y;
 	}

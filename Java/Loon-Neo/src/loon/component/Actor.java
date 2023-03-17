@@ -746,6 +746,7 @@ public class Actor extends LObject<Actor>
 	 * 
 	 * @return
 	 */
+	@Override
 	public RectBox getBoundingRect() {
 		if (this.boundingRect == null) {
 			this.calcBounds();
@@ -956,6 +957,7 @@ public class Actor extends LObject<Actor>
 		return this.gameLayer.getOnlyCollisionObjectsAt(x, y, tag);
 	}
 
+	@Override
 	public boolean containsPoint(float px, float py) {
 		this.failIfNotInLayer();
 		if (this.image == null) {

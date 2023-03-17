@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a cpy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -36,13 +36,13 @@ public class Quaternion implements XY, Serializable {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	private static Quaternion tmp1 = new Quaternion(0, 0, 0, 0);
 	private static Quaternion tmp2 = new Quaternion(0, 0, 0, 0);
 
-	private static final Array<Quaternion> _quan_cache = new Array<Quaternion>();
+	private static final Array<Quaternion> _quan_cache = new Array<>();
 
 	public final static Quaternion TMP() {
 		Quaternion temp = _quan_cache.pop();
@@ -144,7 +144,7 @@ public class Quaternion implements XY, Serializable {
 	public float getRollRad() {
 		final int pole = getGimbalPole();
 		return pole == 0 ? MathUtils.atan2(2f * (w * z + y * x), 1f - 2f * (x * x + z * z))
-				: (float) pole * 2f * MathUtils.atan2(y, w);
+				: pole * 2f * MathUtils.atan2(y, w);
 	}
 
 	public float getRoll() {
@@ -154,7 +154,7 @@ public class Quaternion implements XY, Serializable {
 	public float getPitchRad() {
 		final int pole = getGimbalPole();
 		return pole == 0 ? MathUtils.asin(MathUtils.clamp(2f * (w * x - z * y), -1f, 1f))
-				: (float) pole * MathUtils.PI * 0.5f;
+				: pole * MathUtils.PI * 0.5f;
 	}
 
 	public float getPitch() {
@@ -444,10 +444,10 @@ public class Quaternion implements XY, Serializable {
 		if (MathUtils.abs(theta) < 0.001) {
 			coeff = normExp * alpha / norm;
 		} else {
-			coeff = (float) (normExp * MathUtils.sin(alpha * theta) / (norm * MathUtils.sin(theta)));
+			coeff = normExp * MathUtils.sin(alpha * theta) / (norm * MathUtils.sin(theta));
 		}
 
-		w = (float) (normExp * MathUtils.cos(alpha * theta));
+		w = normExp * MathUtils.cos(alpha * theta);
 		x *= coeff;
 		y *= coeff;
 		z *= coeff;
@@ -473,10 +473,7 @@ public class Quaternion implements XY, Serializable {
 		if (this == obj) {
 			return true;
 		}
-		if (obj == null) {
-			return false;
-		}
-		if (!(obj instanceof Quaternion)) {
+		if ((obj == null) || !(obj instanceof Quaternion)) {
 			return false;
 		}
 		Quaternion other = (Quaternion) obj;
@@ -553,7 +550,7 @@ public class Quaternion implements XY, Serializable {
 		final float d = Vector3f.dot(this.x, this.y, this.z, axisX, axisY, axisZ);
 		final float l2 = Quaternion.len2(axisX * d, axisY * d, axisZ * d, this.w);
 		return MathUtils.isZero(l2) ? 0f
-				: (float) (2.0 * MathUtils.acos(MathUtils.clamp((float) (this.w / MathUtils.sqrt(l2)), -1f, 1f)));
+				: (float) (2.0 * MathUtils.acos(MathUtils.clamp(this.w / MathUtils.sqrt(l2), -1f, 1f)));
 	}
 
 	public float getAngleAroundRad(final Vector3f axis) {
@@ -721,6 +718,7 @@ public class Quaternion implements XY, Serializable {
 		return this;
 	}
 
+	@Override
 	public float getX() {
 		return x;
 	}
@@ -729,6 +727,7 @@ public class Quaternion implements XY, Serializable {
 		this.x = x;
 	}
 
+	@Override
 	public float getY() {
 		return y;
 	}

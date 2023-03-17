@@ -25,8 +25,8 @@ public class ListMap<K, V> implements Iterable<V>, IArray, LRelease {
 		@Override
 		public Iterator<T> iterator() {
 			if (iterator1 == null) {
-				iterator1 = new ListMapIterator<T>(array, allowRemove);
-				iterator2 = new ListMapIterator<T>(array, allowRemove);
+				iterator1 = new ListMapIterator<>(array, allowRemove);
+				iterator2 = new ListMapIterator<>(array, allowRemove);
 			}
 			if (!iterator1.valid) {
 				iterator1.index = 0;
@@ -307,13 +307,13 @@ public class ListMap<K, V> implements Iterable<V>, IArray, LRelease {
 	}
 
 	public ListMap<K, V> cpy() {
-		return new ListMap<K, V>(this);
+		return new ListMap<>(this);
 	}
 
 	public TArray<K> keysToArray() {
 		final K[] keys = this.keys;
 		final int len = size;
-		TArray<K> list = new TArray<K>(len);
+		TArray<K> list = new TArray<>(len);
 		for (int i = 0, n = len; i < n; i++) {
 			list.add(keys[i]);
 		}
@@ -323,7 +323,7 @@ public class ListMap<K, V> implements Iterable<V>, IArray, LRelease {
 	public TArray<V> valuesToArray() {
 		final V[] values = this.values;
 		final int len = size;
-		TArray<V> list = new TArray<V>(len);
+		TArray<V> list = new TArray<>(len);
 		for (int i = 0, n = len; i < n; i++) {
 			list.add(values[i]);
 		}
@@ -493,9 +493,10 @@ public class ListMap<K, V> implements Iterable<V>, IArray, LRelease {
 
 	private ListMapIterable<V> _iterable;
 
+	@Override
 	public Iterator<V> iterator() {
 		if (_iterable == null) {
-			_iterable = new ListMapIterable<V>(this);
+			_iterable = new ListMapIterable<>(this);
 		}
 		return _iterable.iterator();
 	}

@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2019 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -44,7 +44,6 @@ import loon.geom.Shape;
 import loon.geom.Triangle2f;
 import loon.geom.Vector2f;
 import loon.geom.XY;
-
 import loon.utils.Array;
 import loon.utils.GLUtils;
 import loon.utils.IntMap;
@@ -90,13 +89,13 @@ public class GLEx implements LRelease {
 
 	private Vector2f tempLocation = new Vector2f();
 
-	private final IntMap<PointF> rhombusArray = new IntMap<PointF>();
+	private final IntMap<PointF> rhombusArray = new IntMap<>();
 
-	private final Array<Affine2f> affineStack = new Array<Affine2f>();
+	private final Array<Affine2f> affineStack = new Array<>();
 
-	private final Array<BrushSave> brushStack = new Array<BrushSave>();
+	private final Array<BrushSave> brushStack = new Array<>();
 
-	private final TArray<RectBox> scissors = new TArray<RectBox>();
+	private final TArray<RectBox> scissors = new TArray<>();
 
 	private final LTexture colorTex;
 
@@ -121,9 +120,9 @@ public class GLEx implements LRelease {
 	/**
 	 * 创建一个默认的GL渲染封装，将其作为默认的渲染器来使用。与0.5以前版本不同的是,此GLEX将不再唯一，允许复数构建.
 	 * 如果使用HTML5，则禁止非纹理的渲染方式（因为部分浏览器不支持，会自动用纹理方式替代，但是glBegin到glEnd的 直接像素渲染方式则会禁用）.
-	 * 
+	 *
 	 * PS:只有在LGame中注入的，可以影响全局渲染.
-	 * 
+	 *
 	 * @param gfx
 	 * @param target
 	 * @param def
@@ -172,14 +171,11 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 启动一系列渲染命令
-	 * 
+	 *
 	 * @return
 	 */
 	public GLEx begin() {
-		if (isClosed) {
-			return this;
-		}
-		if (batch == null) {
+		if (isClosed || (batch == null)) {
 			return this;
 		}
 		beginBatch(batch);
@@ -189,14 +185,11 @@ public class GLEx implements LRelease {
 	/**
 	 * 结束当前的渲染，并且一次性提交渲染结果到系统。与0.5以前旧版不同的是，此命令提交的LTexture渲染，如果LTexture对象不改变的话，
 	 * 将是连续的. 也就是同一纹理中素材使用的越频繁，渲染效率也就越高，反之，大量使用不同纹理，则会导致渲染速度下降.
-	 * 
+	 *
 	 * @return
 	 */
 	public GLEx end() {
-		if (isClosed) {
-			return this;
-		}
-		if (batch == null) {
+		if (isClosed || (batch == null)) {
 			return this;
 		}
 		batch.end();
@@ -209,14 +202,11 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 判断当前GLEx的Batch是否正在运行
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean running() {
-		if (isClosed) {
-			return false;
-		}
-		if (batch == null) {
+		if (isClosed || (batch == null)) {
 			return false;
 		}
 		return batch.running();
@@ -241,10 +231,7 @@ public class GLEx implements LRelease {
 	}
 
 	public BaseBatch pushBatch(BaseBatch b) {
-		if (isClosed) {
-			return null;
-		}
-		if (b == null) {
+		if (isClosed || (b == null)) {
 			return null;
 		}
 		BaseBatch oldBatch = batch;
@@ -268,7 +255,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 变更画布基础设置
-	 * 
+	 *
 	 */
 	public final GLEx update() {
 		if (isClosed) {
@@ -491,11 +478,11 @@ public class GLEx implements LRelease {
 			return this;
 		}
 		if (flipX && flipY) {
-			Affine2f.transform(tx(), x, y, Affine2f.TRANS_ROT180, width, height);
+			Affine2f.transform(tx(), x, y, LTrans.TRANS_ROT180, width, height);
 		} else if (flipX) {
-			Affine2f.transform(tx(), x, y, Affine2f.TRANS_MIRROR, width, height);
+			Affine2f.transform(tx(), x, y, LTrans.TRANS_MIRROR, width, height);
 		} else if (flipY) {
-			Affine2f.transform(tx(), x, y, Affine2f.TRANS_MIRROR_ROT180, width, height);
+			Affine2f.transform(tx(), x, y, LTrans.TRANS_MIRROR_ROT180, width, height);
 		}
 		return this;
 	}
@@ -855,7 +842,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 渲染指定字符串到屏幕（此函数显示，与旧版drawString渲染位置相同）
-	 * 
+	 *
 	 * @param message
 	 * @param x
 	 * @param y
@@ -867,7 +854,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 渲染指定字符串到屏幕（此函数显示，与旧版drawString渲染位置相同）
-	 * 
+	 *
 	 * @param message
 	 * @param x
 	 * @param y
@@ -880,7 +867,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 渲染指定字符串到屏幕（此函数显示，与旧版drawString渲染位置相同）
-	 * 
+	 *
 	 * @param message
 	 * @param x
 	 * @param y
@@ -919,10 +906,7 @@ public class GLEx implements LRelease {
 
 	public GLEx drawScale(Painter texture, float x, float y, float w, float h, LColor color, float scaleX, float scaleY,
 			float rotation) {
-		if (isClosed) {
-			return this;
-		}
-		if (texture == null) {
+		if (isClosed || (texture == null)) {
 			return this;
 		}
 		return draw(texture, x, y, texture.width(), texture.height(), 0, 0, texture.width(), texture.height(), color,
@@ -931,10 +915,7 @@ public class GLEx implements LRelease {
 
 	public GLEx drawScale(Painter texture, float x, float y, float w, float h, LColor color, float scaleX,
 			float scaleY) {
-		if (isClosed) {
-			return this;
-		}
-		if (texture == null) {
+		if (isClosed || (texture == null)) {
 			return this;
 		}
 		return draw(texture, x, y, texture.width(), texture.height(), 0, 0, texture.width(), texture.height(), color, 0,
@@ -943,10 +924,7 @@ public class GLEx implements LRelease {
 
 	public GLEx drawMirrorScale(Painter texture, float x, float y, float w, float h, LColor color, float scaleX,
 			float scaleY, float rotation) {
-		if (isClosed) {
-			return this;
-		}
-		if (texture == null) {
+		if (isClosed || (texture == null)) {
 			return this;
 		}
 		return draw(texture, x, y, w, h, 0, 0, texture.width(), texture.height(), color, rotation, scaleX, scaleY, null,
@@ -955,10 +933,7 @@ public class GLEx implements LRelease {
 
 	public GLEx drawMirrorScale(Painter texture, float x, float y, float w, float h, LColor color, float scaleX,
 			float scaleY) {
-		if (isClosed) {
-			return this;
-		}
-		if (texture == null) {
+		if (isClosed || (texture == null)) {
 			return this;
 		}
 		return draw(texture, x, y, w, h, 0, 0, texture.width(), texture.height(), color, 0, scaleX, scaleY, null,
@@ -967,10 +942,7 @@ public class GLEx implements LRelease {
 
 	public GLEx drawFlipScale(Painter texture, float x, float y, float w, float h, LColor color, float scaleX,
 			float scaleY, float rotation) {
-		if (isClosed) {
-			return this;
-		}
-		if (texture == null) {
+		if (isClosed || (texture == null)) {
 			return this;
 		}
 		return draw(texture, x, y, w, h, 0, 0, texture.width(), texture.height(), color, rotation, scaleX, scaleY, null,
@@ -979,10 +951,7 @@ public class GLEx implements LRelease {
 
 	public GLEx drawFlipScale(Painter texture, float x, float y, float w, float h, LColor color, float scaleX,
 			float scaleY) {
-		if (isClosed) {
-			return this;
-		}
-		if (texture == null) {
+		if (isClosed || (texture == null)) {
 			return this;
 		}
 		return draw(texture, x, y, w, h, 0, 0, texture.width(), texture.height(), color, 0, scaleX, scaleY, null,
@@ -990,10 +959,7 @@ public class GLEx implements LRelease {
 	}
 
 	public final GLEx draw(Painter texture, float x, float y, Direction dir) {
-		if (isClosed) {
-			return this;
-		}
-		if (texture == null) {
+		if (isClosed || (texture == null)) {
 			return this;
 		}
 		return draw(texture, x, y, texture.width(), texture.height(), 0, 0, texture.width(), texture.height(), null, 0,
@@ -1001,10 +967,7 @@ public class GLEx implements LRelease {
 	}
 
 	public final GLEx draw(Painter texture, float x, float y, LColor color, float rotation) {
-		if (isClosed) {
-			return this;
-		}
-		if (texture == null) {
+		if (isClosed || (texture == null)) {
 			return this;
 		}
 		return draw(texture, x, y, texture.width(), texture.height(), 0, 0, texture.width(), texture.height(), color,
@@ -1012,30 +975,21 @@ public class GLEx implements LRelease {
 	}
 
 	public GLEx draw(Painter texture, float x, float y) {
-		if (isClosed) {
-			return this;
-		}
-		if (texture == null) {
+		if (isClosed || (texture == null)) {
 			return this;
 		}
 		return draw(texture, x, y, texture.width(), texture.height());
 	}
 
 	public GLEx draw(Painter texture, float x, float y, LColor color) {
-		if (isClosed) {
-			return this;
-		}
-		if (texture == null) {
+		if (isClosed || (texture == null)) {
 			return this;
 		}
 		return draw(texture, x, y, texture.width(), texture.height(), color);
 	}
 
 	public GLEx draw(Painter texture, float x, float y, float w, float h, LColor color) {
-		if (isClosed) {
-			return this;
-		}
-		if (texture == null) {
+		if (isClosed || (texture == null)) {
 			return this;
 		}
 		int argb = this.lastBrush.baseColor;
@@ -1047,20 +1001,14 @@ public class GLEx implements LRelease {
 	}
 
 	public GLEx draw(Painter texture, float x, float y, float rotation) {
-		if (isClosed) {
-			return this;
-		}
-		if (texture == null) {
+		if (isClosed || (texture == null)) {
 			return this;
 		}
 		return draw(texture, x, y, texture.width(), texture.height(), rotation);
 	}
 
 	public GLEx draw(Painter texture, float x, float y, LColor color, float rotation, Vector2f pivot) {
-		if (isClosed) {
-			return this;
-		}
-		if (texture == null) {
+		if (isClosed || (texture == null)) {
 			return this;
 		}
 		return draw(texture, x, y, texture.width(), texture.height(), color, rotation, pivot);
@@ -1080,10 +1028,7 @@ public class GLEx implements LRelease {
 
 	public GLEx draw(Painter texture, float x, float y, float w, float h, float originX, float originY,
 			float rotation) {
-		if (isClosed) {
-			return this;
-		}
-		if (texture == null) {
+		if (isClosed || (texture == null)) {
 			return this;
 		}
 		Affine2f xf = tx();
@@ -1117,10 +1062,7 @@ public class GLEx implements LRelease {
 
 	public GLEx draw(Painter texture, float x, float y, float w, float h, LColor color, float rotation, Vector2f pivot,
 			float sx, float sy, boolean flipX, boolean flipY) {
-		if (isClosed) {
-			return this;
-		}
-		if (texture == null) {
+		if (isClosed || (texture == null)) {
 			return this;
 		}
 		int argb = this.lastBrush.baseColor;
@@ -1143,11 +1085,11 @@ public class GLEx implements LRelease {
 			}
 			if (flipX || flipY) {
 				if (flipX && flipY) {
-					Affine2f.transform(xf, x, y, Affine2f.TRANS_ROT180, w, h);
+					Affine2f.transform(xf, x, y, LTrans.TRANS_ROT180, w, h);
 				} else if (flipX) {
-					Affine2f.transform(xf, x, y, Affine2f.TRANS_MIRROR, w, h);
+					Affine2f.transform(xf, x, y, LTrans.TRANS_MIRROR, w, h);
 				} else if (flipY) {
-					Affine2f.transform(xf, x, y, Affine2f.TRANS_MIRROR_ROT180, w, h);
+					Affine2f.transform(xf, x, y, LTrans.TRANS_MIRROR_ROT180, w, h);
 				}
 			}
 			if (sx != 1f || sy != 1f) {
@@ -1162,10 +1104,7 @@ public class GLEx implements LRelease {
 	}
 
 	public GLEx draw(Painter texture, float x, float y, float w, float h, LColor color, float rotation) {
-		if (isClosed) {
-			return this;
-		}
-		if (texture == null) {
+		if (isClosed || (texture == null)) {
 			return this;
 		}
 		int argb = this.lastBrush.baseColor;
@@ -1187,10 +1126,7 @@ public class GLEx implements LRelease {
 	}
 
 	public GLEx draw(Painter texture, float x, float y, float w, float h) {
-		if (isClosed) {
-			return this;
-		}
-		if (texture == null) {
+		if (isClosed || (texture == null)) {
 			return this;
 		}
 		texture.addToBatch(batch, this.lastBrush.baseColor, tx(), x, y, w, h);
@@ -1198,10 +1134,7 @@ public class GLEx implements LRelease {
 	}
 
 	public GLEx draw(Painter texture, float dx, float dy, float sx, float sy, float sw, float sh) {
-		if (isClosed) {
-			return this;
-		}
-		if (texture == null) {
+		if (isClosed || (texture == null)) {
 			return this;
 		}
 		texture.addToBatch(batch, this.lastBrush.baseColor, tx(), dx, dy, sw, sh, sx, sy, sw, sh);
@@ -1209,10 +1142,7 @@ public class GLEx implements LRelease {
 	}
 
 	public GLEx draw(Painter texture, float dx, float dy, float dw, float dh, float sx, float sy, float sw, float sh) {
-		if (isClosed) {
-			return this;
-		}
-		if (texture == null) {
+		if (isClosed || (texture == null)) {
 			return this;
 		}
 		texture.addToBatch(batch, this.lastBrush.baseColor, tx(), dx, dy, dw, dh, sx, sy, sw, sh);
@@ -1221,10 +1151,7 @@ public class GLEx implements LRelease {
 
 	public GLEx draw(Painter texture, float dx, float dy, float dw, float dh, float sx, float sy, float sw, float sh,
 			LColor color) {
-		if (isClosed) {
-			return this;
-		}
-		if (texture == null) {
+		if (isClosed || (texture == null)) {
 			return this;
 		}
 		if (LColor.white.equals(color)) {
@@ -1241,10 +1168,7 @@ public class GLEx implements LRelease {
 
 	public GLEx draw(Painter texture, float dx, float dy, float dw, float dh, float sx, float sy, float sw, float sh,
 			float rotation) {
-		if (isClosed) {
-			return this;
-		}
-		if (texture == null) {
+		if (isClosed || (texture == null)) {
 			return this;
 		}
 		if (rotation == 0) {
@@ -1266,10 +1190,7 @@ public class GLEx implements LRelease {
 	}
 
 	public GLEx drawFlip(Painter texture, float x, float y, LColor color) {
-		if (isClosed) {
-			return this;
-		}
-		if (texture == null) {
+		if (isClosed || (texture == null)) {
 			return this;
 		}
 		return draw(texture, x, y, texture.width(), texture.height(), 0, 0, texture.width(), texture.height(), color, 0,
@@ -1277,10 +1198,7 @@ public class GLEx implements LRelease {
 	}
 
 	public GLEx drawFlip(Painter texture, float x, float y, float w, float h, LColor color, float rotation) {
-		if (isClosed) {
-			return this;
-		}
-		if (texture == null) {
+		if (isClosed || (texture == null)) {
 			return this;
 		}
 		return draw(texture, x, y, w, h, 0, 0, texture.width(), texture.height(), color, rotation, null,
@@ -1288,10 +1206,7 @@ public class GLEx implements LRelease {
 	}
 
 	public GLEx drawFlip(Painter texture, float x, float y, LColor color, float rotation) {
-		if (isClosed) {
-			return this;
-		}
-		if (texture == null) {
+		if (isClosed || (texture == null)) {
 			return this;
 		}
 		return draw(texture, x, y, texture.width(), texture.height(), 0, 0, texture.width(), texture.height(), color,
@@ -1299,10 +1214,7 @@ public class GLEx implements LRelease {
 	}
 
 	public GLEx drawMirror(Painter texture, float x, float y, LColor color) {
-		if (isClosed) {
-			return this;
-		}
-		if (texture == null) {
+		if (isClosed || (texture == null)) {
 			return this;
 		}
 		return draw(texture, x, y, texture.width(), texture.height(), 0, 0, texture.width(), texture.height(), color, 0,
@@ -1310,10 +1222,7 @@ public class GLEx implements LRelease {
 	}
 
 	public GLEx drawMirror(Painter texture, float x, float y, LColor color, float rotation) {
-		if (isClosed) {
-			return this;
-		}
-		if (texture == null) {
+		if (isClosed || (texture == null)) {
 			return this;
 		}
 		return draw(texture, x, y, texture.width(), texture.height(), 0, 0, texture.width(), texture.height(), color,
@@ -1321,10 +1230,7 @@ public class GLEx implements LRelease {
 	}
 
 	public GLEx drawMirror(Painter texture, float x, float y, float w, float h, float rotation) {
-		if (isClosed) {
-			return this;
-		}
-		if (texture == null) {
+		if (isClosed || (texture == null)) {
 			return this;
 		}
 		return draw(texture, x, y, w, h, 0, 0, texture.width(), texture.height(), null, rotation, null,
@@ -1332,10 +1238,7 @@ public class GLEx implements LRelease {
 	}
 
 	public GLEx drawMirror(Painter texture, float x, float y, float w, float h, LColor color, float rotation) {
-		if (isClosed) {
-			return this;
-		}
-		if (texture == null) {
+		if (isClosed || (texture == null)) {
 			return this;
 		}
 		return draw(texture, x, y, w, h, 0, 0, texture.width(), texture.height(), color, rotation, null,
@@ -1343,10 +1246,7 @@ public class GLEx implements LRelease {
 	}
 
 	public GLEx draw(Painter texture, float x, float y, LColor color, Direction dir) {
-		if (isClosed) {
-			return this;
-		}
-		if (texture == null) {
+		if (isClosed || (texture == null)) {
 			return this;
 		}
 		return draw(texture, x, y, texture.width(), texture.height(), 0, 0, texture.width(), texture.height(), color, 0,
@@ -1354,10 +1254,7 @@ public class GLEx implements LRelease {
 	}
 
 	public GLEx draw(Painter texture, float x, float y, LColor color, float rotation, Vector2f origin, Direction dir) {
-		if (isClosed) {
-			return this;
-		}
-		if (texture == null) {
+		if (isClosed || (texture == null)) {
 			return this;
 		}
 		return draw(texture, x, y, texture.width(), texture.height(), 0, 0, texture.width(), texture.height(), color,
@@ -1404,10 +1301,7 @@ public class GLEx implements LRelease {
 
 	public GLEx draw(Painter texture, float x, float y, LColor color, float rotation, Vector2f origin, Vector2f scale,
 			Direction dir, boolean offset) {
-		if (isClosed) {
-			return this;
-		}
-		if (texture == null) {
+		if (isClosed || (texture == null)) {
 			return this;
 		}
 		return draw(texture, x, y, texture.width(), texture.height(), 0f, 0f, texture.width(), texture.height(), color,
@@ -1456,10 +1350,7 @@ public class GLEx implements LRelease {
 	public GLEx draw(Painter texture, float x, float y, float width, float height, float srcX, float srcY,
 			float srcWidth, float srcHeight, LColor color, float rotation, float scaleX, float scaleY, Vector2f origin,
 			Vector2f pivot, Direction dir, boolean offset) {
-		if (isClosed) {
-			return this;
-		}
-		if (texture == null) {
+		if (isClosed || (texture == null)) {
 			return this;
 		}
 
@@ -1512,13 +1403,13 @@ public class GLEx implements LRelease {
 			if (dirDirty) {
 				switch (dir) {
 				case TRANS_MIRROR:
-					Affine2f.transformOrigin(xf, x, y, Affine2f.TRANS_MIRROR, originX, originY);
+					Affine2f.transformOrigin(xf, x, y, LTrans.TRANS_MIRROR, originX, originY);
 					break;
 				case TRANS_FLIP:
-					Affine2f.transformOrigin(xf, x, y, Affine2f.TRANS_MIRROR_ROT180, originX, originY);
+					Affine2f.transformOrigin(xf, x, y, LTrans.TRANS_MIRROR_ROT180, originX, originY);
 					break;
 				case TRANS_MF:
-					Affine2f.transformOrigin(xf, x, y, Affine2f.TRANS_ROT180, originX, originY);
+					Affine2f.transformOrigin(xf, x, y, LTrans.TRANS_ROT180, originX, originY);
 					break;
 				default:
 					break;
@@ -1536,10 +1427,7 @@ public class GLEx implements LRelease {
 	}
 
 	public GLEx drawCentered(Painter texture, float x, float y) {
-		if (isClosed) {
-			return this;
-		}
-		if (texture == null) {
+		if (isClosed || (texture == null)) {
 			return this;
 		}
 		return draw(texture, x - texture.width() / 2, y - texture.height() / 2);
@@ -1692,7 +1580,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 绘制不特定Shape
-	 * 
+	 *
 	 * @param shape
 	 * @return
 	 */
@@ -1702,7 +1590,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 绘制不特定Shape
-	 * 
+	 *
 	 * @param shape
 	 * @param x
 	 * @param y
@@ -1729,7 +1617,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 绘制不连线的Shape
-	 * 
+	 *
 	 * @param shape
 	 * @return
 	 */
@@ -1739,7 +1627,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 绘制不连线的Shape
-	 * 
+	 *
 	 * @param shape
 	 * @param x
 	 * @param y
@@ -1751,7 +1639,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 绘制不连线的Shape
-	 * 
+	 *
 	 * @param points
 	 * @param x
 	 * @param y
@@ -1786,7 +1674,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 绘制不特定Shape
-	 * 
+	 *
 	 * @param shape
 	 * @return
 	 */
@@ -1796,7 +1684,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 绘制不特定Shape
-	 * 
+	 *
 	 * @param shape
 	 * @param x
 	 * @param y
@@ -1823,7 +1711,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 绘制五角星
-	 * 
+	 *
 	 * @param color
 	 * @param x
 	 * @param y
@@ -1838,7 +1726,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 绘制正三角
-	 * 
+	 *
 	 * @param color
 	 * @param x
 	 * @param y
@@ -1866,7 +1754,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 绘制倒三角
-	 * 
+	 *
 	 * @param color
 	 * @param x
 	 * @param y
@@ -1894,7 +1782,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 绘制三角形
-	 * 
+	 *
 	 * @param x1
 	 * @param y1
 	 * @param x2
@@ -1918,7 +1806,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 填充三角形
-	 * 
+	 *
 	 * @param x1
 	 * @param y1
 	 * @param x2
@@ -1942,7 +1830,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 绘制并填充一组三角
-	 * 
+	 *
 	 * @param ts
 	 */
 	public GLEx fillTriangle(Triangle2f[] ts) {
@@ -1951,7 +1839,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 绘制并填充一组三角
-	 * 
+	 *
 	 * @param ts
 	 * @param x
 	 * @param y
@@ -1969,7 +1857,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 绘制并填充一组三角
-	 * 
+	 *
 	 * @param t
 	 */
 	public GLEx fillTriangle(Triangle2f t) {
@@ -1978,7 +1866,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 绘制并填充一组三角
-	 * 
+	 *
 	 * @param t
 	 * @param x
 	 * @param y
@@ -2001,7 +1889,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 绘制一组三角
-	 * 
+	 *
 	 * @param ts
 	 */
 	public GLEx drawTriangle(Triangle2f[] ts) {
@@ -2010,7 +1898,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 绘制一组三角
-	 * 
+	 *
 	 * @param ts
 	 * @param x
 	 * @param y
@@ -2028,7 +1916,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 绘制三角
-	 * 
+	 *
 	 * @param t
 	 */
 	public GLEx drawTriangle(Triangle2f t) {
@@ -2037,7 +1925,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 绘制三角
-	 * 
+	 *
 	 * @param t
 	 * @param x
 	 * @param y
@@ -2060,7 +1948,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 绘制椭圆
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param width
@@ -2076,7 +1964,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 绘制椭圆
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param width
@@ -2094,7 +1982,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 填充椭圆
-	 * 
+	 *
 	 * @param x1
 	 * @param y1
 	 * @param width
@@ -2137,7 +2025,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 绘制菱形区域
-	 * 
+	 *
 	 * @param g
 	 * @param amount
 	 * @param x
@@ -2152,7 +2040,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 以虚线绘制菱形区域
-	 * 
+	 *
 	 * @param amount
 	 * @param x
 	 * @param y
@@ -2167,7 +2055,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 以虚线绘制菱形区域
-	 * 
+	 *
 	 * @param amount
 	 * @param x
 	 * @param y
@@ -2181,7 +2069,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 绘制菱形区域
-	 * 
+	 *
 	 * @param amount
 	 * @param x
 	 * @param y
@@ -2194,7 +2082,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 以虚线绘制菱形区域
-	 * 
+	 *
 	 * @param amount
 	 * @param x
 	 * @param y
@@ -2208,7 +2096,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 绘制菱形区域
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param pointAmount
@@ -2225,7 +2113,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 以虚线绘制菱形区域
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param pointAmount
@@ -2243,7 +2131,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 绘制菱形区域
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param pointAmount
@@ -2314,7 +2202,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 绘制色彩点
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 */
@@ -2324,7 +2212,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 绘制色彩点
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 */
@@ -2340,7 +2228,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 绘制一组色彩点
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param size
@@ -2362,7 +2250,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 填充多边形
-	 * 
+	 *
 	 * @param xPoints
 	 * @param yPoints
 	 * @param nPoints
@@ -2377,7 +2265,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 绘制多边形轮廓
-	 * 
+	 *
 	 * @param xPoints
 	 * @param yPoints
 	 * @param nPoints
@@ -2392,7 +2280,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 绘制一个矩形
-	 * 
+	 *
 	 * @param x1
 	 * @param y1
 	 * @param x2
@@ -2404,7 +2292,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 绘制一个矩形
-	 * 
+	 *
 	 * @param x1
 	 * @param y1
 	 * @param x2
@@ -2417,7 +2305,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 绘制一个矩形
-	 * 
+	 *
 	 * @param x1
 	 * @param y1
 	 * @param x2
@@ -2435,7 +2323,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 绘制一个由虚线组成的矩形
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param width
@@ -2474,7 +2362,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 填充一个矩形
-	 * 
+	 *
 	 * @param x1
 	 * @param y1
 	 * @param x2
@@ -2486,7 +2374,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 填充一个矩形
-	 * 
+	 *
 	 * @param x1
 	 * @param y1
 	 * @param x2
@@ -2501,7 +2389,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 绘制指定大小的弧度
-	 * 
+	 *
 	 * @param rect
 	 * @param segments
 	 * @param start
@@ -2513,7 +2401,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 绘制指定大小的弧度
-	 * 
+	 *
 	 * @param x1
 	 * @param y1
 	 * @param width
@@ -2537,7 +2425,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 填充指定大小的弧度
-	 * 
+	 *
 	 * @param x1
 	 * @param y1
 	 * @param width
@@ -2564,7 +2452,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 绘制圆形边框
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param width
@@ -2601,7 +2489,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 填充圆形边框
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param width
@@ -2631,7 +2519,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 虚线绘制
-	 * 
+	 *
 	 * @param x1
 	 * @param y1
 	 * @param x2
@@ -2713,7 +2601,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 从指定开始角度到终止角度绘制不合口圆形
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param startAngle
@@ -2728,7 +2616,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 从指定开始角度到终止角度绘制不合口圆形
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param startAngle
@@ -2746,7 +2634,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 从指定开始角度到终止角度绘制不合口圆形
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param startAngle
@@ -2768,7 +2656,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 从指定开始角度到终止角度绘制不合口圆形
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param startAngle
@@ -2790,7 +2678,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 从指定开始角度到终止角度绘制不合口圆形
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param startAngle
@@ -2908,7 +2796,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 从指定开始角度到终止角度绘制不合口圆形并进行渐变
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param startAngle
@@ -2997,7 +2885,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 绘制弧线
-	 * 
+	 *
 	 * @param x1
 	 * @param y1
 	 * @param cx1
@@ -3057,7 +2945,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 统一偏移drawString的X轴
-	 * 
+	 *
 	 * @return
 	 */
 	public float getOffsetStringX() {
@@ -3070,7 +2958,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 统一偏移drawString的Y轴
-	 * 
+	 *
 	 * @return
 	 */
 	public float getOffsetStringY() {
@@ -3091,7 +2979,7 @@ public class GLEx implements LRelease {
 	 */
 	/**
 	 * 输出字符串
-	 * 
+	 *
 	 * @param text
 	 * @param position
 	 */
@@ -3101,7 +2989,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 输出字符串
-	 * 
+	 *
 	 * @param text
 	 * @param position
 	 * @param color
@@ -3112,7 +3000,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 输出字符串
-	 * 
+	 *
 	 * @param text
 	 * @param x
 	 * @param y
@@ -3123,7 +3011,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 输出字符串
-	 * 
+	 *
 	 * @param text
 	 * @param x
 	 * @param y
@@ -3135,7 +3023,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 输出字符串
-	 * 
+	 *
 	 * @param text
 	 * @param x
 	 * @param y
@@ -3147,7 +3035,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 输出字符串
-	 * 
+	 *
 	 * @param text
 	 * @param x
 	 * @param y
@@ -3167,7 +3055,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 输出字符串
-	 * 
+	 *
 	 * @param mes
 	 * @param x
 	 * @param y
@@ -3181,13 +3069,7 @@ public class GLEx implements LRelease {
 	 */
 	public GLEx drawString(String mes, float x, float y, float scaleX, float scaleY, float ax, float ay, float rotation,
 			LColor c) {
-		if (isClosed) {
-			return this;
-		}
-		if (c == null) {
-			return this;
-		}
-		if (mes == null || mes.length() == 0) {
+		if (isClosed || (c == null) || mes == null || mes.length() == 0) {
 			return this;
 		}
 		this.lastBrush.font.drawString(this, mes, x + offsetStringX, y + offsetStringY, scaleX, scaleY, ax, ay,
@@ -3197,7 +3079,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 输出字符串
-	 * 
+	 *
 	 * @param message
 	 * @param x
 	 * @param y
@@ -3223,7 +3105,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 输出字符串
-	 * 
+	 *
 	 * @param message
 	 * @param x
 	 * @param y
@@ -3249,7 +3131,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 输出字符
-	 * 
+	 *
 	 * @param chars
 	 * @param x
 	 * @param y
@@ -3260,7 +3142,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 输出字符
-	 * 
+	 *
 	 * @param chars
 	 * @param x
 	 * @param y
@@ -3272,7 +3154,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 输出字符
-	 * 
+	 *
 	 * @param chars
 	 * @param x
 	 * @param y
@@ -3285,7 +3167,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 渲染纹理为指定状态
-	 * 
+	 *
 	 * @param texture
 	 * @param x_src
 	 * @param y_src
@@ -3303,7 +3185,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 渲染纹理为指定状态
-	 * 
+	 *
 	 * @param texture
 	 * @param x_src
 	 * @param y_src
@@ -3323,7 +3205,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 渲染纹理为指定状态
-	 * 
+	 *
 	 * @param texture
 	 * @param x_src
 	 * @param y_src
@@ -3348,7 +3230,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 渲染纹理为指定状态
-	 * 
+	 *
 	 * @param texture
 	 * @param x_src
 	 * @param y_src
@@ -3507,7 +3389,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 获得当前画布旋转角度
-	 * 
+	 *
 	 * @return
 	 */
 	public float getAngle() {
@@ -3516,7 +3398,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 获得当前画布偏移的X坐标
-	 * 
+	 *
 	 * @return
 	 */
 	public float getTranslationX() {
@@ -3525,7 +3407,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 获得当前画布偏移的Y坐标
-	 * 
+	 *
 	 * @return
 	 */
 	public float getTranslationY() {
@@ -3534,7 +3416,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * width的缩放比例
-	 * 
+	 *
 	 * @return
 	 */
 	public float getScaleX() {
@@ -3543,7 +3425,7 @@ public class GLEx implements LRelease {
 
 	/**
 	 * height的缩放比率
-	 * 
+	 *
 	 * @return
 	 */
 	public float getScaleY() {

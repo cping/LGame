@@ -148,6 +148,7 @@ public abstract class PixmapFImpl {
 
 	protected void drawOvalImpl(float x, float y, float width, float height) {
 		drawCircleImpl(x, y, width, height, false, new CircleUpdate() {
+			@Override
 			public void newPoint(float xLeft, float yTop, float xRight, float yBottom) {
 				drawPointImpl(xLeft, yTop);
 				drawPointImpl(xRight, yTop);
@@ -171,6 +172,7 @@ public abstract class PixmapFImpl {
 
 	protected void fillOvalImpl(float x, float y, float width, float height) {
 		drawCircleImpl(x, y, width, height, true, new CircleUpdate() {
+			@Override
 			public void newPoint(float xLeft, float yTop, float xRight, float yBottom) {
 				drawLineImpl(xLeft, xRight, yTop);
 				if (yTop != yBottom) {
@@ -326,6 +328,7 @@ public abstract class PixmapFImpl {
 		final RectF bounds = RectF.getIntersection(Limit.setBoundingBox(temp_rect, xPoints, yPoints, nPoints), _clip,
 				temp_rect);
 		this.drawCircleImpl(x, y, width, height, false, new CircleUpdate() {
+			@Override
 			public void newPoint(float xLeft, float yTop, float xRight, float yBottom) {
 				drawArcPointImpl(xPoints, yPoints, nPoints, bounds, xLeft, yTop);
 				drawArcPointImpl(xPoints, yPoints, nPoints, bounds, xRight, yTop);
@@ -397,6 +400,7 @@ public abstract class PixmapFImpl {
 		final RectF bounds = Limit.setBoundingBox(temp_rect, xPoints, yPoints, nPoints);
 
 		this.drawCircleImpl(x, y, width, height, true, new CircleUpdate() {
+			@Override
 			public void newPoint(float xLeft, float yTop, float xRight, float yBottom) {
 				drawArcImpl(xPoints, yPoints, nPoints, bounds, xLeft, xRight, yTop);
 				if (yTop != yBottom) {

@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -37,15 +37,15 @@ import loon.utils.MathUtils;
 /**
  * 该类用以创建单独的标签组件(LLables为成批渲染文字，此类为单独渲染，效率上较慢)
  * PS:具体位置可用setOffsetLeft和setOffsetTop进一步微调
- * 
+ *
  * Example1:
- * 
+ *
  * <pre>
  * LLabel label = LLabel.make(HorizontalAlign.LEFT, "ABC", 0, 0, 200, 100, LColor.red);
  * </pre>
- * 
+ *
  * Example2:
- * 
+ *
  * <pre>
  * LLabel label = LLabel.make("ABC", 99, 99, LColor.red);
  * </pre>
@@ -201,6 +201,7 @@ public class LLabel extends LComponent implements FontSet<LLabel> {
 		_text.paintString(g, x + _offsetX, y + _offsetY, _fontColor);
 	}
 
+	@Override
 	public IFont getFont() {
 		return _text.getFont();
 	}
@@ -216,7 +217,7 @@ public class LLabel extends LComponent implements FontSet<LLabel> {
 	public LLabel setText(float v) {
 		return setText(String.valueOf(v));
 	}
-	
+
 	public LLabel setText(CharSequence ch) {
 		if (_text == null || ch == null) {
 			return this;

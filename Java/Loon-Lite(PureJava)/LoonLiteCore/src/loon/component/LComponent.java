@@ -1,19 +1,19 @@
 /**
- * 
+ *
  * Copyright 2008 - 2011
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -22,12 +22,12 @@
 package loon.component;
 
 import loon.Director.Origin;
-
 import loon.LObject;
 import loon.LRelease;
 import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
+import loon.LTrans;
 import loon.PlayerUtils;
 import loon.Screen;
 import loon.Visible;
@@ -306,7 +306,7 @@ public abstract class LComponent extends LObject<LContainer>
 
 	/**
 	 * 构造可用组件
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param width
@@ -328,7 +328,7 @@ public abstract class LComponent extends LObject<LContainer>
 
 	/**
 	 * 让当前组件向指定的中心点位置居中
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 */
@@ -403,7 +403,7 @@ public abstract class LComponent extends LObject<LContainer>
 
 	/**
 	 * 返回当前组件对象是否为容器
-	 * 
+	 *
 	 * @return
 	 */
 	@Override
@@ -413,7 +413,7 @@ public abstract class LComponent extends LObject<LContainer>
 
 	/**
 	 * 更新组件状态
-	 * 
+	 *
 	 */
 	@Override
 	public void update(long elapsedTime) {
@@ -432,17 +432,11 @@ public abstract class LComponent extends LObject<LContainer>
 
 	/**
 	 * 渲染当前组件画面于指定绘图器之上
-	 * 
+	 *
 	 * @param g
 	 */
 	public void createUI(GLEx g) {
-		if (_component_isClose) {
-			return;
-		}
-		if (!this._component_visible) {
-			return;
-		}
-		if (_objectAlpha < 0.01f) {
+		if (_component_isClose || !this._component_visible || (_objectAlpha < 0.01f)) {
 			return;
 		}
 		int blend = g.getBlendMode();
@@ -475,11 +469,11 @@ public abstract class LComponent extends LObject<LContainer>
 				}
 				if (_flipX || _flipY) {
 					if (_flipX && _flipY) {
-						Affine2f.transform(tx, centerX, centerY, Affine2f.TRANS_ROT180);
+						Affine2f.transform(tx, centerX, centerY, LTrans.TRANS_ROT180);
 					} else if (_flipX) {
-						Affine2f.transform(tx, centerX, centerY, Affine2f.TRANS_MIRROR);
+						Affine2f.transform(tx, centerX, centerY, LTrans.TRANS_MIRROR);
 					} else if (_flipY) {
-						Affine2f.transform(tx, centerX, centerY, Affine2f.TRANS_MIRROR_ROT180);
+						Affine2f.transform(tx, centerX, centerY, LTrans.TRANS_MIRROR_ROT180);
 					}
 				}
 				if (!(_scaleX == 1f && _scaleY == 1f)) {
@@ -516,7 +510,7 @@ public abstract class LComponent extends LObject<LContainer>
 
 	/**
 	 * 自定义UI
-	 * 
+	 *
 	 * @param g
 	 * @param x
 	 * @param y
@@ -958,7 +952,7 @@ public abstract class LComponent extends LObject<LContainer>
 
 	/**
 	 * 检测键盘事件焦点
-	 * 
+	 *
 	 */
 	protected void checkFocusKey() {
 		if (this.input.getKeyPressed() == SysKey.ENTER) {
@@ -1021,10 +1015,7 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public LComponent setBackground(LTexture b, boolean updateSize) {
-		if (b == null) {
-			return this;
-		}
-		if (b == this._background) {
+		if ((b == null) || (b == this._background)) {
 			return this;
 		}
 		if (!_drawBackground) {
@@ -1039,10 +1030,7 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public LComponent setBackground(LTexture b, float w, float h, boolean updateSize) {
-		if (b == null) {
-			return this;
-		}
-		if (b == this._background) {
+		if ((b == null) || (b == this._background)) {
 			return this;
 		}
 		this._background = b;
@@ -1377,7 +1365,7 @@ public abstract class LComponent extends LObject<LContainer>
 
 	/**
 	 * 淡入当前组件
-	 * 
+	 *
 	 * @return
 	 */
 	public LComponent in() {
@@ -1386,7 +1374,7 @@ public abstract class LComponent extends LObject<LContainer>
 
 	/**
 	 * 淡入当前组件
-	 * 
+	 *
 	 * @param speed
 	 * @return
 	 */
@@ -1398,7 +1386,7 @@ public abstract class LComponent extends LObject<LContainer>
 
 	/**
 	 * 淡出当前组件(并且淡出后自动注销)
-	 * 
+	 *
 	 * @return
 	 */
 	public LComponent out() {
@@ -1407,7 +1395,7 @@ public abstract class LComponent extends LObject<LContainer>
 
 	/**
 	 * 淡出当前组件(并且淡出后自动注销)
-	 * 
+	 *
 	 * @param speed
 	 * @return
 	 */
@@ -1776,10 +1764,7 @@ public abstract class LComponent extends LObject<LContainer>
 
 	@Override
 	public void close() {
-		if (!_component_autoDestroy) {
-			return;
-		}
-		if (_component_isClose) {
+		if (!_component_autoDestroy || _component_isClose) {
 			return;
 		}
 		this._component_visible = false;
@@ -1817,7 +1802,7 @@ public abstract class LComponent extends LObject<LContainer>
 		removeActionEvents(this);
 		destory();
 	}
-	
+
 	public abstract void destory();
 
 }

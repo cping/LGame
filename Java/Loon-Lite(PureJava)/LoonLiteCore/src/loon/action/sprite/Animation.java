@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2011
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -21,8 +21,8 @@
 package loon.action.sprite;
 
 import loon.LRelease;
-import loon.LTexture;
 import loon.LSystem;
+import loon.LTexture;
 import loon.canvas.LColor;
 import loon.events.FrameListener;
 import loon.opengl.TextureUtils;
@@ -105,7 +105,7 @@ public class Animation implements IArray, LRelease {
 		this.animationName = a.animationName;
 		this.isRunning = a.isRunning;
 		this.isReversed = a.isReversed;
-		this.frames = new TArray<Animation.AnimationFrame>(a.frames);
+		this.frames = new TArray<>(a.frames);
 		this.loopCount = a.loopCount;
 		this.loopPlay = a.loopPlay;
 		this.currentFrameIndex = a.currentFrameIndex;
@@ -145,7 +145,7 @@ public class Animation implements IArray, LRelease {
 
 	/**
 	 * 转化指定文件为动画图像
-	 * 
+	 *
 	 * @param fileName
 	 * @param width
 	 * @param height
@@ -158,7 +158,7 @@ public class Animation implements IArray, LRelease {
 
 	/**
 	 * 转化指定文件为动画图像
-	 * 
+	 *
 	 * @param fileName
 	 * @param width
 	 * @param height
@@ -174,7 +174,7 @@ public class Animation implements IArray, LRelease {
 
 	/**
 	 * 转化指定文件为动画图像
-	 * 
+	 *
 	 * @param fileName
 	 * @param maxFrame
 	 * @param width
@@ -188,7 +188,7 @@ public class Animation implements IArray, LRelease {
 
 	/**
 	 * 转化一组Image为动画图像
-	 * 
+	 *
 	 * @param images
 	 * @param maxFrame
 	 * @param width
@@ -217,7 +217,7 @@ public class Animation implements IArray, LRelease {
 
 	/**
 	 * 转化一组地址字符串为动画图像
-	 * 
+	 *
 	 * @param paths
 	 * @param maxFrame
 	 * @param timer
@@ -233,7 +233,7 @@ public class Animation implements IArray, LRelease {
 
 	/**
 	 * 转化一组地址字符串为动画图像
-	 * 
+	 *
 	 * @param paths
 	 * @param timer
 	 * @return
@@ -244,7 +244,7 @@ public class Animation implements IArray, LRelease {
 
 	/**
 	 * 转化MovieSpriteSheet为动画资源
-	 * 
+	 *
 	 * @param sheet
 	 * @param maxFrame
 	 * @param timer
@@ -263,7 +263,7 @@ public class Animation implements IArray, LRelease {
 
 	/**
 	 * 添加一个动画图像
-	 * 
+	 *
 	 * @param image
 	 * @param timer
 	 */
@@ -276,7 +276,7 @@ public class Animation implements IArray, LRelease {
 
 	/**
 	 * 添加一组动画图像
-	 * 
+	 *
 	 * @param images
 	 * @param max
 	 * @param timer
@@ -289,8 +289,8 @@ public class Animation implements IArray, LRelease {
 				addFrame(images[i], timer);
 			}
 		} else {
-			for (int i = 0; i < images.length; i++) {
-				addFrame(images[i], timer);
+			for (LTexture image : images) {
+				addFrame(image, timer);
 			}
 		}
 		if (maxFrame <= 0) {
@@ -301,7 +301,7 @@ public class Animation implements IArray, LRelease {
 
 	/**
 	 * 添加一个动画图像
-	 * 
+	 *
 	 * @param fileName
 	 * @param timer
 	 */
@@ -311,7 +311,7 @@ public class Animation implements IArray, LRelease {
 
 	/**
 	 * 开始执行动画
-	 * 
+	 *
 	 */
 	public Animation start() {
 		if (maxFrame <= 0) {
@@ -326,7 +326,7 @@ public class Animation implements IArray, LRelease {
 
 	/**
 	 * 开始执行动画
-	 * 
+	 *
 	 */
 	public Animation play(int idx) {
 		if (maxFrame <= 0) {
@@ -350,7 +350,7 @@ public class Animation implements IArray, LRelease {
 
 	/**
 	 * 停止动画播放
-	 * 
+	 *
 	 * @return
 	 */
 	public Animation stop() {
@@ -389,7 +389,7 @@ public class Animation implements IArray, LRelease {
 
 	/**
 	 * 更新当前动画
-	 * 
+	 *
 	 * @param delta
 	 */
 	public void update(float delta) {
@@ -398,17 +398,11 @@ public class Animation implements IArray, LRelease {
 
 	/**
 	 * 更新当前动画
-	 * 
+	 *
 	 * @param timer
 	 */
 	public void update(long timer) {
-		if (aniClosed) {
-			return;
-		}
-		if (length == 0) {
-			return;
-		}
-		if (loopCount != -1 && loopPlay > loopCount) {
+		if (aniClosed || (length == 0) || (loopCount != -1 && loopPlay > loopCount)) {
 			return;
 		}
 		if (totalDuration == 0) {
@@ -459,7 +453,7 @@ public class Animation implements IArray, LRelease {
 
 	/**
 	 * 检查当前动画是否越出最大显示帧(超过则重置)
-	 * 
+	 *
 	 * @return
 	 */
 	public Animation checkMaxFrame() {
@@ -486,7 +480,7 @@ public class Animation implements IArray, LRelease {
 
 	/**
 	 * 返回当前动画图象
-	 * 
+	 *
 	 * @return
 	 */
 	public LTexture getSpriteImage() {
@@ -503,7 +497,7 @@ public class Animation implements IArray, LRelease {
 
 	/**
 	 * 返回当前动画图象
-	 * 
+	 *
 	 * @param index
 	 * @return
 	 */
@@ -521,7 +515,7 @@ public class Animation implements IArray, LRelease {
 
 	/**
 	 * 返回当前动画当前帧宽度
-	 * 
+	 *
 	 * @return
 	 */
 	public int getWidth() {
@@ -534,7 +528,7 @@ public class Animation implements IArray, LRelease {
 
 	/**
 	 * 返回当前动画当前帧高度
-	 * 
+	 *
 	 * @return
 	 */
 	public int getHeight() {
@@ -547,15 +541,12 @@ public class Animation implements IArray, LRelease {
 
 	/**
 	 * 返回当前动画面板
-	 * 
+	 *
 	 * @param i
 	 * @return
 	 */
 	private AnimationFrame getFrame(int index) {
-		if (length == 0) {
-			return null;
-		}
-		if (frames.size == 0) {
+		if ((length == 0) || (frames.size == 0)) {
 			return null;
 		}
 		if (index < 0) {
@@ -568,7 +559,7 @@ public class Animation implements IArray, LRelease {
 
 	/**
 	 * 设定停止状态
-	 * 
+	 *
 	 * @param isStop
 	 */
 	public void setRunning(boolean runing) {
@@ -577,7 +568,7 @@ public class Animation implements IArray, LRelease {
 
 	/**
 	 * 返回动画是否正在播放状态
-	 * 
+	 *
 	 */
 	public boolean isRunning() {
 		return this.isRunning;
@@ -585,7 +576,7 @@ public class Animation implements IArray, LRelease {
 
 	/**
 	 * 返回动画是否正在播放状态
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean isPlaying() {
@@ -594,7 +585,7 @@ public class Animation implements IArray, LRelease {
 
 	/**
 	 * 返回当前动画帧(索引)
-	 * 
+	 *
 	 * @return
 	 */
 	public int getCurrentFrameIndex() {
@@ -603,7 +594,7 @@ public class Animation implements IArray, LRelease {
 
 	/**
 	 * 设定当前动画帧(索引)
-	 * 
+	 *
 	 * @param index
 	 * @return
 	 */
@@ -614,7 +605,7 @@ public class Animation implements IArray, LRelease {
 
 	/**
 	 * 在当前帧基础上，向前(+)或向后(-)移动指定帧
-	 * 
+	 *
 	 * @param n
 	 * @return
 	 */
@@ -653,10 +644,7 @@ public class Animation implements IArray, LRelease {
 	}
 
 	public boolean isFinished() {
-		if (isRunning) {
-			return false;
-		}
-		if (currentFrameIndex != frames.size - 1) {
+		if (isRunning || (currentFrameIndex != frames.size - 1)) {
 			return false;
 		}
 		return true;

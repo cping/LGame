@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -21,8 +21,8 @@
 package loon.utils.res;
 
 import loon.Json;
-import loon.LRelease;
 import loon.Json.TypedArray;
+import loon.LRelease;
 import loon.LTexture;
 import loon.utils.ListMap;
 import loon.utils.TArray;
@@ -33,7 +33,7 @@ public class TextureAtlas implements LRelease {
 
 	protected ListMap<String, TextureData> _frames = null;
 
-	protected TArray<String> names = new TArray<String>();
+	protected TArray<String> names = new TArray<>();
 
 	public LTexture img() {
 		return _img;
@@ -66,7 +66,7 @@ public class TextureAtlas implements LRelease {
 	}
 
 	public TextureAtlas getTextureAtlas(String prefix) {
-		ListMap<String, TextureData> frames = new ListMap<String, TextureData>();
+		ListMap<String, TextureData> frames = new ListMap<>();
 		for (int i = 0; i < _frames.size; i++) {
 			TextureData td = _frames.getValueAt(i);
 			if (null != td && td.name.startsWith(prefix)) {
@@ -85,7 +85,7 @@ public class TextureAtlas implements LRelease {
 		if (jsonFrames != null) {
 			TypedArray<String> keys = jsonFrames.keys();
 			int charAmount = keys.length();
-			ListMap<String, TextureData> frames = new ListMap<String, TextureData>(charAmount);
+			ListMap<String, TextureData> frames = new ListMap<>(charAmount);
 			for (int i = 0; i < charAmount; i++) {
 				String key = keys.get(i);
 				Json.Object jsonChar = jsonFrames.getObject(key);
@@ -127,7 +127,7 @@ public class TextureAtlas implements LRelease {
 					Json.Object jsonObject = jsonObj.getObject(key);
 					TypedArray<String> resKeys = jsonObject.keys();
 					int charAmount = resKeys.length();
-					ListMap<String, TextureData> frames = new ListMap<String, TextureData>(charAmount);
+					ListMap<String, TextureData> frames = new ListMap<>(charAmount);
 					for (int j = 0; j < charAmount; j++) {
 						String name = resKeys.get(j);
 						names.add(name);

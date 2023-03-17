@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2011
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -21,7 +21,6 @@
 package loon.action.sprite;
 
 import loon.Director.Origin;
-
 import loon.LObject;
 import loon.LSysException;
 import loon.LSystem;
@@ -58,7 +57,7 @@ import loon.utils.res.MovieSpriteSheet;
 public class Sprite extends LObject<ISprite>
 		implements Flip<Sprite>, CollisionObject, ISprite, IArray, LTrans, BoxSize {
 
-	private final static LayerSorter<ISprite> childSorter = new LayerSorter<ISprite>(false);
+	private final static LayerSorter<ISprite> childSorter = new LayerSorter<>(false);
 
 	private Origin _origin = Origin.CENTER;
 
@@ -102,7 +101,7 @@ public class Sprite extends LObject<ISprite>
 
 	/**
 	 * 默认构造函数
-	 * 
+	 *
 	 */
 	public Sprite() {
 		this(0, 0);
@@ -110,7 +109,7 @@ public class Sprite extends LObject<ISprite>
 
 	/**
 	 * 以下参数分别为 坐标x,坐标y
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 */
@@ -120,7 +119,7 @@ public class Sprite extends LObject<ISprite>
 
 	/**
 	 * 以下参数分别为 精灵名,坐标x,坐标y
-	 * 
+	 *
 	 * @param spriteName
 	 * @param x
 	 * @param y
@@ -134,7 +133,7 @@ public class Sprite extends LObject<ISprite>
 
 	/**
 	 * 以下参数分别为 取材文件,每行取材宽度,每列取材长度
-	 * 
+	 *
 	 * @param fileName
 	 * @param row
 	 * @param col
@@ -145,7 +144,7 @@ public class Sprite extends LObject<ISprite>
 
 	/**
 	 * 以下参数分别为 取材文件,每行取材宽度,每列取材长度,平均每桢显示时间
-	 * 
+	 *
 	 * @param fileName
 	 * @param row
 	 * @param col
@@ -157,7 +156,7 @@ public class Sprite extends LObject<ISprite>
 
 	/**
 	 * 以下参数分别为 取材文件,坐标x,坐标y,每行取材宽度,每列取材长度
-	 * 
+	 *
 	 * @param fileName
 	 * @param x
 	 * @param y
@@ -170,7 +169,7 @@ public class Sprite extends LObject<ISprite>
 
 	/**
 	 * 以下参数分别为 取材文件,坐标x,坐标y,每行取材宽度,每列取材长度,平均每桢显示时间
-	 * 
+	 *
 	 * @param fileName
 	 * @param x
 	 * @param y
@@ -184,7 +183,7 @@ public class Sprite extends LObject<ISprite>
 
 	/**
 	 * 以下参数分别为 取材文件,最大分解桢数,坐标x,坐标y,每行取材宽度,每列取材长度
-	 * 
+	 *
 	 * @param fileName
 	 * @param maxFrame
 	 * @param x
@@ -198,7 +197,7 @@ public class Sprite extends LObject<ISprite>
 
 	/**
 	 * 以下参数分别为 取材文件,最大分解桢数,坐标x,坐标y,每行取材宽度,每列取材长度,平均每桢显示时间
-	 * 
+	 *
 	 * @param fileName
 	 * @param maxFrame
 	 * @param x
@@ -213,7 +212,7 @@ public class Sprite extends LObject<ISprite>
 
 	/**
 	 * 以下参数分别为 精灵名，取材文件，最大分解桢数,坐标x,坐标y,每行取材宽度,每列取材长度,平均每桢显示时间
-	 * 
+	 *
 	 * @param spriteName
 	 * @param fileName
 	 * @param maxFrame
@@ -229,7 +228,7 @@ public class Sprite extends LObject<ISprite>
 
 	/**
 	 * 注入指定图片
-	 * 
+	 *
 	 * @param fileName
 	 */
 	public Sprite(String fileName) {
@@ -238,7 +237,7 @@ public class Sprite extends LObject<ISprite>
 
 	/**
 	 * 注入指定图片
-	 * 
+	 *
 	 * @param images
 	 */
 	public Sprite(final LTexture img) {
@@ -247,7 +246,7 @@ public class Sprite extends LObject<ISprite>
 
 	/**
 	 * 以下参数分别为 图像数组
-	 * 
+	 *
 	 * @param images
 	 */
 	public Sprite(LTexture[] images) {
@@ -256,7 +255,7 @@ public class Sprite extends LObject<ISprite>
 
 	/**
 	 * 以下参数分别为 图像数组,坐标x,坐标y
-	 * 
+	 *
 	 * @param images
 	 * @param x
 	 * @param y
@@ -267,7 +266,7 @@ public class Sprite extends LObject<ISprite>
 
 	/**
 	 * 以下参数分别为 图像数组,平均每桢显示时间
-	 * 
+	 *
 	 * @param images
 	 * @param timer
 	 */
@@ -277,7 +276,7 @@ public class Sprite extends LObject<ISprite>
 
 	/**
 	 * 以下参数分别为 图像数组,坐标x,坐标y,平均每桢显示时间
-	 * 
+	 *
 	 * @param images
 	 * @param x
 	 * @param y
@@ -289,7 +288,7 @@ public class Sprite extends LObject<ISprite>
 
 	/**
 	 * 以下参数分别为 图像数组,最大分解桢数,坐标x,坐标y,平均每桢显示时间
-	 * 
+	 *
 	 * @param spriteName
 	 * @param images
 	 * @param maxFrame
@@ -303,7 +302,7 @@ public class Sprite extends LObject<ISprite>
 
 	/**
 	 * 以下参数分别为 精灵图，坐标x,坐标y
-	 * 
+	 *
 	 * @param _image
 	 * @param x
 	 * @param y
@@ -315,7 +314,7 @@ public class Sprite extends LObject<ISprite>
 
 	/**
 	 * 以下参数分别为 精灵名，图像数组，最大分解桢数,坐标x,坐标y,平均每桢显示时间
-	 * 
+	 *
 	 * @param spriteName
 	 * @param images
 	 * @param maxFrame
@@ -333,7 +332,7 @@ public class Sprite extends LObject<ISprite>
 
 	/**
 	 * 以资源SpriteSheet构建精灵
-	 * 
+	 *
 	 * @param sheet
 	 * @param x
 	 * @param y
@@ -345,7 +344,7 @@ public class Sprite extends LObject<ISprite>
 
 	/**
 	 * 以资源SpriteSheet构建精灵
-	 * 
+	 *
 	 * @param spriteName
 	 * @param sheet
 	 * @param x
@@ -363,7 +362,7 @@ public class Sprite extends LObject<ISprite>
 
 	/**
 	 * 是否在播放动画
-	 * 
+	 *
 	 * @param running
 	 */
 	public Sprite setRunning(boolean running) {
@@ -373,7 +372,7 @@ public class Sprite extends LObject<ISprite>
 
 	/**
 	 * 返回当前总桢数
-	 * 
+	 *
 	 * @return
 	 */
 	public int getTotalFrames() {
@@ -382,7 +381,7 @@ public class Sprite extends LObject<ISprite>
 
 	/**
 	 * 设定当前帧
-	 * 
+	 *
 	 * @param index
 	 */
 	public Sprite setCurrentFrameIndex(int index) {
@@ -392,7 +391,7 @@ public class Sprite extends LObject<ISprite>
 
 	/**
 	 * 返回当前桢索引
-	 * 
+	 *
 	 * @return
 	 */
 	public int getCurrentFrameIndex() {
@@ -401,7 +400,7 @@ public class Sprite extends LObject<ISprite>
 
 	/**
 	 * 获得当前精灵的窗体居中横坐标
-	 * 
+	 *
 	 * @param x
 	 * @return
 	 */
@@ -411,7 +410,7 @@ public class Sprite extends LObject<ISprite>
 
 	/**
 	 * 获得指定精灵的窗体居中横坐标
-	 * 
+	 *
 	 * @param sprite
 	 * @param x
 	 * @return
@@ -430,7 +429,7 @@ public class Sprite extends LObject<ISprite>
 
 	/**
 	 * 获得当前精灵的窗体居中纵坐标
-	 * 
+	 *
 	 * @param y
 	 * @return
 	 */
@@ -440,7 +439,7 @@ public class Sprite extends LObject<ISprite>
 
 	/**
 	 * 获得指定精灵的窗体居中纵坐标
-	 * 
+	 *
 	 * @param sprite
 	 * @param y
 	 * @return
@@ -459,7 +458,7 @@ public class Sprite extends LObject<ISprite>
 
 	/**
 	 * 插入指定动画
-	 * 
+	 *
 	 * @param myAnimation
 	 * @param images
 	 * @param maxFrame
@@ -471,7 +470,7 @@ public class Sprite extends LObject<ISprite>
 
 	/**
 	 * 插入指定动画
-	 * 
+	 *
 	 * @param fileName
 	 * @param maxFrame
 	 * @param row
@@ -485,7 +484,7 @@ public class Sprite extends LObject<ISprite>
 
 	/**
 	 * 插入指定动画
-	 * 
+	 *
 	 * @param fileName
 	 * @param row
 	 * @param col
@@ -498,7 +497,7 @@ public class Sprite extends LObject<ISprite>
 
 	/**
 	 * 插入指定动画
-	 * 
+	 *
 	 * @param images
 	 * @param maxFrame
 	 * @param timer
@@ -510,7 +509,7 @@ public class Sprite extends LObject<ISprite>
 
 	/**
 	 * 插入指定动画
-	 * 
+	 *
 	 * @param images
 	 * @param timer
 	 */
@@ -521,7 +520,7 @@ public class Sprite extends LObject<ISprite>
 
 	/**
 	 * 插入指定动画
-	 * 
+	 *
 	 * @param _animation
 	 */
 	public Sprite setAnimation(Animation _animation) {
@@ -539,6 +538,7 @@ public class Sprite extends LObject<ISprite>
 	/**
 	 * 变更动画
 	 */
+	@Override
 	public void update(long elapsedTime) {
 		if (_visible) {
 			_animation.update(elapsedTime);
@@ -555,7 +555,7 @@ public class Sprite extends LObject<ISprite>
 
 	/**
 	 * 变更定位器坐标
-	 * 
+	 *
 	 * @param vector
 	 */
 	public Sprite updateLocation(Vector2f vector) {
@@ -596,7 +596,7 @@ public class Sprite extends LObject<ISprite>
 
 	/**
 	 * 获得精灵的中间位置
-	 * 
+	 *
 	 * @return
 	 */
 	public Point getMiddlePoint() {
@@ -605,26 +605,27 @@ public class Sprite extends LObject<ISprite>
 
 	/**
 	 * 获得两个精灵的中间距离
-	 * 
+	 *
 	 * @param second
 	 * @return
 	 */
 	public float getDistance(Sprite second) {
-		return (float) this.getMiddlePoint().distanceTo(second.getMiddlePoint());
+		return this.getMiddlePoint().distanceTo(second.getMiddlePoint());
 	}
 
 	/**
 	 * 返回碰撞盒
-	 * 
+	 *
 	 * @return
 	 */
+	@Override
 	public RectBox getCollisionBox() {
 		return getRect(x(), y(), getWidth(), getHeight());
 	}
 
 	/**
 	 * 检查是否与指定精灵位置发生了矩形碰撞
-	 * 
+	 *
 	 * @param sprite
 	 * @return
 	 */
@@ -634,7 +635,7 @@ public class Sprite extends LObject<ISprite>
 
 	/**
 	 * 检查是否与指定精灵位置发生了圆形碰撞
-	 * 
+	 *
 	 * @param sprite
 	 * @return
 	 */
@@ -644,7 +645,7 @@ public class Sprite extends LObject<ISprite>
 
 	/**
 	 * 检查是否与指定精灵位置发生了方形与圆形碰撞
-	 * 
+	 *
 	 * @param sprite
 	 * @return
 	 */
@@ -656,13 +657,10 @@ public class Sprite extends LObject<ISprite>
 	public void createUI(GLEx g) {
 		createUI(g, 0f, 0f);
 	}
-	
+
 	@Override
 	public void createUI(GLEx g, float offsetX, float offsetY) {
-		if (!_visible) {
-			return;
-		}
-		if (_objectAlpha < 0.01) {
+		if (!_visible || (_objectAlpha < 0.01)) {
 			return;
 		}
 
@@ -695,11 +693,11 @@ public class Sprite extends LObject<ISprite>
 				}
 				if (_flipX || _flipY) {
 					if (_flipX && _flipY) {
-						Affine2f.transform(tx, centerX, centerY, Affine2f.TRANS_ROT180);
+						Affine2f.transform(tx, centerX, centerY, LTrans.TRANS_ROT180);
 					} else if (_flipX) {
-						Affine2f.transform(tx, centerX, centerY, Affine2f.TRANS_MIRROR);
+						Affine2f.transform(tx, centerX, centerY, LTrans.TRANS_MIRROR);
 					} else if (_flipY) {
-						Affine2f.transform(tx, centerX, centerY, Affine2f.TRANS_MIRROR_ROT180);
+						Affine2f.transform(tx, centerX, centerY, LTrans.TRANS_MIRROR_ROT180);
 					}
 				}
 				if (((_scaleX != 1) || (_scaleY != 1)) && notImg) {
@@ -832,6 +830,7 @@ public class Sprite extends LObject<ISprite>
 		return this;
 	}
 
+	@Override
 	public float getScaleY() {
 		return _scaleY;
 	}
@@ -863,7 +862,7 @@ public class Sprite extends LObject<ISprite>
 		_pivot.set(pX, pY);
 		return this;
 	}
-	
+
 	public Sprite coord(float x, float y) {
 		setLocation(x, y);
 		return this;
@@ -970,14 +969,11 @@ public class Sprite extends LObject<ISprite>
 	}
 
 	public Sprite addChild(ISprite spr) {
-		if (spr == null) {
-			return this;
-		}
-		if (spr == this) {
+		if ((spr == null) || (spr == this)) {
 			return this;
 		}
 		if (_childrens == null) {
-			_childrens = new TArray<ISprite>();
+			_childrens = new TArray<>();
 		}
 		spr.setParent(this);
 		spr.setSprites(this._sprites);
@@ -992,7 +988,7 @@ public class Sprite extends LObject<ISprite>
 			return true;
 		}
 		if (_childrens == null) {
-			_childrens = new TArray<ISprite>();
+			_childrens = new TArray<>();
 		}
 		boolean removed = _childrens.remove(spr);
 		if (removed) {
@@ -1000,7 +996,7 @@ public class Sprite extends LObject<ISprite>
 		}
 		// 删除精灵同时，删除缓动动画
 		if (removed && spr instanceof ActionBind) {
-			removeActionEvents((ActionBind) spr);
+			removeActionEvents(spr);
 		}
 		return removed;
 	}
@@ -1010,7 +1006,7 @@ public class Sprite extends LObject<ISprite>
 			return true;
 		}
 		if (_childrens == null) {
-			_childrens = new TArray<ISprite>();
+			_childrens = new TArray<>();
 		}
 		for (int i = this._childrens.size - 1; i >= 0; i--) {
 			if (i == idx) {
@@ -1021,7 +1017,7 @@ public class Sprite extends LObject<ISprite>
 				}
 				// 删除精灵同时，删除缓动动画
 				if (exist && (removed instanceof ActionBind)) {
-					removeActionEvents((ActionBind) removed);
+					removeActionEvents(removed);
 				}
 				return exist;
 			}
@@ -1041,7 +1037,7 @@ public class Sprite extends LObject<ISprite>
 			}
 			// 删除精灵同时，删除缓动动画
 			if (exist && removed instanceof ActionBind) {
-				removeActionEvents((ActionBind) removed);
+				removeActionEvents(removed);
 			}
 		}
 		this._childrens.clear();

@@ -1,19 +1,19 @@
 /**
- * 
+ *
  * Copyright 2014
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -21,8 +21,8 @@
  */
 package loon.component;
 
-import loon.LTexture;
 import loon.LSystem;
+import loon.LTexture;
 import loon.canvas.LColor;
 import loon.component.skin.CheckBoxSkin;
 import loon.component.skin.SkinManager;
@@ -127,7 +127,7 @@ public class LCheckBox extends LComponent implements FontSet<LCheckBox> {
 
 	public LCheckBox(String txt, int x, int y, LTexture unchecked, LTexture checked, int boxsize,
 			boolean boxtoleftoftext, LColor textcolor, IFont font) {
-		super(x, y, font.stringWidth(txt) + boxsize, (int) MathUtils.max(font.getHeight(), boxsize));
+		super(x, y, font.stringWidth(txt) + boxsize, MathUtils.max(font.getHeight(), boxsize));
 		this.text = txt;
 		this.unchecked = unchecked;
 		this.checked = checked;

@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -75,7 +75,7 @@ public class CollisionMask {
 			int limitY, int interval) {
 		Polygon split = null;
 		Polygon result = null;
-		TArray<PointF[]> points = new TArray<PointF[]>();
+		TArray<PointF[]> points = new TArray<>();
 		PointF[] tmpPoint;
 		int x1, y1, x2, y2;
 		boolean secondPoint;
@@ -109,7 +109,7 @@ public class CollisionMask {
 		}
 		split = makePolygon(points);
 		if (split != null) {
-			points = new TArray<PointF[]>();
+			points = new TArray<>();
 
 			for (int x = startX; x < limitX - interval; x += interval) {
 				secondPoint = false;
@@ -145,7 +145,7 @@ public class CollisionMask {
 
 	/**
 	 * 将指定的Point集合注入Polygon当中
-	 * 
+	 *
 	 * @param points
 	 * @return
 	 */
@@ -168,12 +168,12 @@ public class CollisionMask {
 
 	/**
 	 * 转换顶点数据为Vector2f对象
-	 * 
+	 *
 	 * @param vertices
 	 * @return
 	 */
 	public TArray<Vector2f> convertPoints(float[] vertices) {
-		TArray<Vector2f> vectores = new TArray<Vector2f>();
+		TArray<Vector2f> vectores = new TArray<>();
 		for (int i = 0; i < vertices.length; i = i + 2) {
 			vectores.add(new Vector2f(vertices[i], vertices[i + 1]));
 		}
@@ -182,7 +182,7 @@ public class CollisionMask {
 
 	/**
 	 * 转换矩形对象为顶点数据
-	 * 
+	 *
 	 * @param rect
 	 * @return
 	 */

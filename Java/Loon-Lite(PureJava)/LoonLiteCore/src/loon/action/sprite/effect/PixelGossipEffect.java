@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2019 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -65,7 +65,7 @@ public class PixelGossipEffect extends Draw implements BaseEffect {
 
 	/**
 	 * 绘制太极图
-	 * 
+	 *
 	 * @param g
 	 * @param x
 	 * @param y
@@ -77,7 +77,7 @@ public class PixelGossipEffect extends Draw implements BaseEffect {
 
 	/**
 	 * 非有非无,是为混一,非黑非白,是为同流,非阴非阳,几乎道也
-	 * 
+	 *
 	 * @param g
 	 * @param centerX
 	 * @param centerY
@@ -111,7 +111,7 @@ public class PixelGossipEffect extends Draw implements BaseEffect {
 
 	/**
 	 * 乾卦指天,纯阳纯刚,极阳
-	 * 
+	 *
 	 * @param g
 	 * @param x
 	 * @param y
@@ -131,7 +131,7 @@ public class PixelGossipEffect extends Draw implements BaseEffect {
 
 	/**
 	 * 坤卦指地,纯阴纯柔,极阴
-	 * 
+	 *
 	 * @param g
 	 * @param x
 	 * @param y
@@ -151,7 +151,7 @@ public class PixelGossipEffect extends Draw implements BaseEffect {
 
 	/**
 	 * 巽卦指风
-	 * 
+	 *
 	 * @param g
 	 * @param x
 	 * @param y
@@ -171,7 +171,7 @@ public class PixelGossipEffect extends Draw implements BaseEffect {
 
 	/**
 	 * 震卦指雷
-	 * 
+	 *
 	 * @param g
 	 * @param x
 	 * @param y
@@ -192,7 +192,7 @@ public class PixelGossipEffect extends Draw implements BaseEffect {
 
 	/**
 	 * 艮卦指山
-	 * 
+	 *
 	 * @param g
 	 * @param x
 	 * @param y
@@ -212,7 +212,7 @@ public class PixelGossipEffect extends Draw implements BaseEffect {
 
 	/**
 	 * 兑卦指泽
-	 * 
+	 *
 	 * @param g
 	 * @param x
 	 * @param y
@@ -232,7 +232,7 @@ public class PixelGossipEffect extends Draw implements BaseEffect {
 
 	/**
 	 * 离卦指火
-	 * 
+	 *
 	 * @param g
 	 * @param x
 	 * @param y
@@ -252,7 +252,7 @@ public class PixelGossipEffect extends Draw implements BaseEffect {
 
 	/**
 	 * 坎卦指水
-	 * 
+	 *
 	 * @param g
 	 * @param x
 	 * @param y
@@ -277,7 +277,7 @@ public class PixelGossipEffect extends Draw implements BaseEffect {
 
 	/**
 	 * 八卦符号绘制
-	 * 
+	 *
 	 * @param g
 	 * @param idx
 	 * @param x
@@ -433,6 +433,7 @@ public class PixelGossipEffect extends Draw implements BaseEffect {
 		this.completed = completed;
 	}
 
+	@Override
 	public void close() {
 		super.close();
 		if (tjtexture != null) {

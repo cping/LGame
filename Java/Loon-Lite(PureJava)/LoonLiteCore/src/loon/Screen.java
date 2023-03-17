@@ -1,26 +1,24 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
 package loon;
-
-import java.util.Iterator;
 
 import loon.action.ActionBind;
 import loon.action.ActionControl;
@@ -62,6 +60,7 @@ import loon.events.FrameLoopEvent;
 import loon.events.GameKey;
 import loon.events.GameTouch;
 import loon.events.LTouchArea;
+import loon.events.LTouchArea.Event;
 import loon.events.LTouchLocation;
 import loon.events.QueryEvent;
 import loon.events.ResizeListener;
@@ -70,7 +69,6 @@ import loon.events.SysTouch;
 import loon.events.Touched;
 import loon.events.TouchedClick;
 import loon.events.Updateable;
-import loon.events.LTouchArea.Event;
 import loon.font.Font.Style;
 import loon.font.IFont;
 import loon.geom.BoxSize;
@@ -106,14 +104,14 @@ import loon.utils.timer.LTimerContext;
 
 /**
  * LGame游戏的运行与显示主体，用来显示与操作游戏基础画布，精灵，UI以及其他组件.
- * 
+ *
  * 此类默认以DrawOrder.SPRITE, DrawOrder.DESKTOP, DrawOrder.USER
- * 
+ *
  * 顺序渲染,即精灵最下,桌面组件中间,用户的GLEx接口渲染最上为绘制顺序
- * 
+ *
  * 可以使用@see setDrawOrder() 类调整渲染顺序,也可以使用@see defaultDraw(),@see lastSpriteDraw()
  * 之类函数改变默认组件显示顺序.精灵和组件的setZ函数只在同类排序时生效,不能改变整个Screen的默认显示顺序.
- * 
+ *
  */
 public abstract class Screen extends PlayerUtils implements SysInput, LRelease, XY {
 
@@ -186,7 +184,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	private boolean _collisionClosed;
 
-	private final IntMap<ActionKey> _keyActions = new IntMap<ActionKey>();
+	private final IntMap<ActionKey> _keyActions = new IntMap<>();
 
 	private Updateable _closeUpdate;
 
@@ -196,7 +194,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	private ScreenAction _screenAction = null;
 
-	private final TArray<LTouchArea> _touchAreas = new TArray<LTouchArea>();
+	private final TArray<LTouchArea> _touchAreas = new TArray<>();
 
 	private final Closeable.Set _conns = new Closeable.Set();
 
@@ -230,9 +228,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	private boolean _visible = true;
 
-	private final TArray<RectBox> _rectLimits = new TArray<RectBox>(10);
+	private final TArray<RectBox> _rectLimits = new TArray<>(10);
 
-	private final TArray<ActionBind> _actionLimits = new TArray<ActionBind>(10);
+	private final TArray<ActionBind> _actionLimits = new TArray<>(10);
 
 	private TArray<FrameLoopEvent> _loopEvents;
 
@@ -273,9 +271,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	public long elapsedTime;
 
-	private final IntMap<Boolean> keyType = new IntMap<Boolean>();
+	private final IntMap<Boolean> keyType = new IntMap<>();
 
-	private final IntMap<Boolean> touchType = new IntMap<Boolean>();
+	private final IntMap<Boolean> touchType = new IntMap<>();
 
 	private int touchButtonPressed = NO_BUTTON, touchButtonReleased = NO_BUTTON;
 
@@ -423,7 +421,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 转化DrawOrder为PaintOrder
-	 * 
+	 *
 	 * @param tree
 	 * @return
 	 */
@@ -467,7 +465,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 设置Screen中组件渲染顺序
-	 * 
+	 *
 	 * @param one
 	 * @param two
 	 * @param three
@@ -608,8 +606,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	public void releaseActionKeys() {
 		int keySize = _keyActions.size();
 		if (keySize > 0) {
-			for (Iterator<ActionKey> it = _keyActions.iterator(); it.hasNext();) {
-				ActionKey act = it.next();
+			for (ActionKey act : _keyActions) {
 				if (act != null) {
 					act.release();
 				}
@@ -667,7 +664,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 监听所有触屏事件(可以添加多个)
-	 * 
+	 *
 	 * @param t
 	 * @return
 	 */
@@ -678,7 +675,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 添加所有点击事件(可以添加多个)
-	 * 
+	 *
 	 * @param t
 	 * @return
 	 */
@@ -689,7 +686,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 监听所有触屏离开事件(可以添加多个)
-	 * 
+	 *
 	 * @param t
 	 * @return
 	 */
@@ -700,7 +697,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 监听所有触屏拖拽事件(可以添加多个)
-	 * 
+	 *
 	 * @param t
 	 * @return
 	 */
@@ -716,26 +713,26 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 **/
 	/*
 	 * private boolean isDrawing;
-	 * 
+	 *
 	 * @Deprecated public void yieldDraw() { notifyDraw(); waitUpdate(); }
-	 * 
+	 *
 	 * @Deprecated public void yieldUpdate() { notifyUpdate(); waitDraw(); }
-	 * 
+	 *
 	 * @Deprecated public synchronized void notifyDraw() { this.isDrawing = true;
 	 * this.notifyAll(); }
-	 * 
+	 *
 	 * @Deprecated public synchronized void notifyUpdate() { this.isDrawing = false;
 	 * this.notifyAll(); }
-	 * 
+	 *
 	 * @Deprecated public synchronized void waitDraw() { for (; !isDrawing;) { try {
 	 * this.wait(); } catch (InterruptedException ex) { } } }
-	 * 
+	 *
 	 * @Deprecated public synchronized void waitUpdate() { for (; isDrawing;) { try
 	 * { this.wait(); } catch (InterruptedException ex) { } } }
-	 * 
+	 *
 	 * @Deprecated public synchronized void waitFrame(int i) { for (int wait = frame
 	 * + i; frame < wait;) { try { super.wait(); } catch (Throwable ex) { } } }
-	 * 
+	 *
 	 * @Deprecated public synchronized void waitTime(long i) { for (long time =
 	 * System.currentTimeMillis() + i; System .currentTimeMillis() < time;) try {
 	 * super.wait(time - System.currentTimeMillis()); } catch (Throwable ex) { } }
@@ -829,7 +826,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 私有函数,如果设置(@see registerTouchArea)的LTouchArea区域被点击,则会调用相关函数
-	 * 
+	 *
 	 * @param e
 	 * @param touchX
 	 * @param touchY
@@ -852,7 +849,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 作用近似于js的同名函数,以指定的延迟执行Updateable
-	 * 
+	 *
 	 * @param update
 	 * @param delay
 	 * @return
@@ -873,7 +870,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 添加一个监听LTimerContext的Port
-	 * 
+	 *
 	 * @param timer
 	 * @return
 	 */
@@ -883,7 +880,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 添加一个监听LTimerContext的Port(若paint为true,则监听同步画布刷新,否则异步监听,默认为false)
-	 * 
+	 *
 	 * @param timer
 	 * @param paint
 	 * @return
@@ -902,7 +899,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 删除一个Port的LTimerContext监听
-	 * 
+	 *
 	 * @param timer
 	 * @return
 	 */
@@ -912,7 +909,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 删除一个Port的LTimerContext监听(为true时,删除绑定到画布刷新中的,为false删除绑定到异步的update监听上的,默认为false)
-	 * 
+	 *
 	 * @param timer
 	 * @param paint
 	 * @return
@@ -931,7 +928,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 要求缓动动画计算与游戏画布刷新同步或异步(默认异步)
-	 * 
+	 *
 	 * @param sync
 	 * @return
 	 */
@@ -945,7 +942,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 设定缓动动画延迟时间
-	 * 
+	 *
 	 * @param delay
 	 * @return
 	 */
@@ -1001,7 +998,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 替换当前Screen为其它Screen(替换效果随机)
-	 * 
+	 *
 	 * @param screen
 	 * @return
 	 */
@@ -1090,7 +1087,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 替换当前Screen为其它Screen,替换效果指定
-	 * 
+	 *
 	 * @param screen
 	 * @param screenSwitch
 	 * @return
@@ -1137,7 +1134,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 替换当前Screen为其它Screen,并指定页面交替的移动效果
-	 * 
+	 *
 	 * @param screen
 	 * @param m
 	 * @return
@@ -1250,7 +1247,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 删除所有添加的TouchLimit
-	 * 
+	 *
 	 * @return
 	 */
 	public Screen removeTouchLimit() {
@@ -1261,7 +1258,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 删除ActionBind的TouchLimit
-	 * 
+	 *
 	 * @return
 	 */
 	public Screen removeTouchLimit(ActionBind act) {
@@ -1273,7 +1270,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 删除RectBox的TouchLimit
-	 * 
+	 *
 	 * @param rect
 	 * @return
 	 */
@@ -1286,7 +1283,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 添加一个针对ActionBind区域的触屏限制
-	 * 
+	 *
 	 * @param act
 	 * @return
 	 */
@@ -1299,7 +1296,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 添加一个针对RectBox区域的触屏限制
-	 * 
+	 *
 	 * @param rect
 	 * @return
 	 */
@@ -1312,7 +1309,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 检查指定点击区域是否有被限制(@see addTouchLimit() 函数添加限制区域)
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean isClickLimit() {
@@ -1321,7 +1318,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 检查指定点击区域是否有被限制(@see addTouchLimit() 函数添加限制区域)
-	 * 
+	 *
 	 * @param e
 	 * @return
 	 */
@@ -1331,7 +1328,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 检查指定点击区域是否有被限制(@see addTouchLimit() 函数添加限制区域)
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @return
@@ -1407,7 +1404,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 当Screen被创建(或再次加载)时将调用此函数
-	 * 
+	 *
 	 * @param width
 	 * @param height
 	 */
@@ -1536,7 +1533,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 设置游戏中使用的默认IFont
-	 * 
+	 *
 	 * @param font
 	 * @return
 	 */
@@ -1547,7 +1544,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 获得游戏中使用的IFont
-	 * 
+	 *
 	 * @return
 	 */
 	public IFont getSystemGameFont() {
@@ -1556,7 +1553,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 设置系统log使用的默认IFont
-	 * 
+	 *
 	 * @param font
 	 * @return
 	 */
@@ -1567,7 +1564,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 设置系统log使用的IFont
-	 * 
+	 *
 	 * @return
 	 */
 	public IFont getSystemLogFont() {
@@ -1576,7 +1573,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 当执行Screen转换时将调用此函数(如果返回的LTransition不为null，则渐变效果会被执行)
-	 * 
+	 *
 	 * @return
 	 */
 	public LTransition onTransition() {
@@ -1592,7 +1589,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 注入一个渐变特效，在引入Screen时将使用此特效进行渐变.
-	 * 
+	 *
 	 * @param t
 	 * @return
 	 */
@@ -1603,7 +1600,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 注入一个渐变特效的名称，以及渐变使用的颜色，在引入Screen时将使用此特效进行渐变.
-	 * 
+	 *
 	 * @param transName
 	 * @param c
 	 * @return
@@ -1615,7 +1612,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * @see onTransition
-	 * 
+	 *
 	 * @return
 	 */
 	public LTransition getTransition() {
@@ -1624,7 +1621,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 判断重力系统是否启动
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean isGravity() {
@@ -1633,7 +1630,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 获得当前游戏事务运算时间是否被锁定
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean isLock() {
@@ -1642,7 +1639,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 锁定游戏事务运算时间
-	 * 
+	 *
 	 * @param lock
 	 */
 	public Screen setLock(boolean lock) {
@@ -1652,7 +1649,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 关闭游戏
-	 * 
+	 *
 	 * @param close
 	 */
 	public Screen setClose(boolean close) {
@@ -1662,7 +1659,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 判断游戏是否被关闭
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean isClosed() {
@@ -1671,7 +1668,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 设定当前帧
-	 * 
+	 *
 	 * @param frame
 	 */
 	public Screen setFrame(int frame) {
@@ -1681,7 +1678,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 返回当前帧
-	 * 
+	 *
 	 * @return
 	 */
 	public int getFrame() {
@@ -1690,7 +1687,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 移动当前帧
-	 * 
+	 *
 	 * @return
 	 */
 	public synchronized boolean next() {
@@ -1705,7 +1702,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 初始化加载完毕
-	 * 
+	 *
 	 */
 	public void onLoaded() {
 
@@ -1721,7 +1718,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 是否处于过渡中
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean isTransitioning() {
@@ -1754,7 +1751,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 设置一个Screen替换事件的默认布局
-	 * 
+	 *
 	 * @param re
 	 */
 	public void setReplaceEvent(ReplaceEvent re) {
@@ -1763,7 +1760,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 返回Screen替换事件
-	 * 
+	 *
 	 * @return
 	 */
 	public ReplaceEvent getReplaceEvent() {
@@ -1772,7 +1769,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 返回指定Screen替换事件中的对应索引的Screen
-	 * 
+	 *
 	 * @param idx
 	 * @return
 	 */
@@ -1785,7 +1782,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 判断指定名称的Screen是否存在
-	 * 
+	 *
 	 * @param name
 	 * @return
 	 */
@@ -1795,7 +1792,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 顺序运行并删除一个Screen
-	 * 
+	 *
 	 * @return
 	 */
 	public Screen runPopScreen() {
@@ -1807,7 +1804,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 运行最后一个Screen
-	 * 
+	 *
 	 * @return
 	 */
 	public Screen runPeekScreen() {
@@ -1819,7 +1816,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 取出第一个Screen并执行
-	 * 
+	 *
 	 */
 	public Screen runFirstScreen() {
 		if (handler != null) {
@@ -1840,7 +1837,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 运行指定位置的Screen
-	 * 
+	 *
 	 * @param index
 	 */
 	public Screen runIndexScreen(int index) {
@@ -1872,7 +1869,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 添加指定名称的Screen到当前Screen，但不立刻执行
-	 * 
+	 *
 	 * @param name
 	 * @param screen
 	 * @return
@@ -1886,7 +1883,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 获得指定名称的Screen
-	 * 
+	 *
 	 * @param name
 	 * @return
 	 */
@@ -1899,7 +1896,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 执行指定替换事件索引的Screen
-	 * 
+	 *
 	 * @param idx
 	 * @return
 	 */
@@ -1913,7 +1910,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 执行指定名称的Screen
-	 * 
+	 *
 	 * @param name
 	 * @return
 	 */
@@ -1933,7 +1930,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 向缓存中添加Screen数据，但是不立即执行
-	 * 
+	 *
 	 * @param screen
 	 */
 	public Screen addScreen(Screen screen) {
@@ -1945,7 +1942,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 获得保存的Screen列表
-	 * 
+	 *
 	 * @return
 	 */
 	public TArray<Screen> getScreens() {
@@ -1967,7 +1964,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 判断当前Screen是否能后退一页
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean canScreenBack() {
@@ -1976,7 +1973,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 判断当前Screen是否能前进一页
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean canScreenNext() {
@@ -1985,7 +1982,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 返回精灵监听
-	 * 
+	 *
 	 * @return
 	 */
 
@@ -1998,7 +1995,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 监听Screen中精灵
-	 * 
+	 *
 	 * @param sprListerner
 	 */
 
@@ -2030,7 +2027,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 返回模拟按钮集合
-	 * 
+	 *
 	 * @return
 	 */
 
@@ -2043,7 +2040,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 设定模拟按钮组是否显示
-	 * 
+	 *
 	 * @param visible
 	 */
 
@@ -2060,7 +2057,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 设定背景图像
-	 * 
+	 *
 	 * @param screen
 	 */
 	public Screen setBackground(final LTexture background) {
@@ -2082,7 +2079,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 设定背景颜色
-	 * 
+	 *
 	 * @param c
 	 */
 	public Screen setBackground(LColor c) {
@@ -2097,7 +2094,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 设定背景颜色
-	 * 
+	 *
 	 * @param colorString
 	 * @return
 	 */
@@ -2107,7 +2104,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 设定背景颜色
-	 * 
+	 *
 	 * @param c
 	 * @return
 	 */
@@ -2121,7 +2118,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 返回背景图像
-	 * 
+	 *
 	 * @return
 	 */
 	public LTexture getBackground() {
@@ -2137,7 +2134,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * @see getDesktop
-	 * 
+	 *
 	 * @return
 	 */
 	public Desktop UI() {
@@ -2146,7 +2143,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 获得精灵组件管理器
-	 * 
+	 *
 	 * @return
 	 */
 	public Sprites getSprites() {
@@ -2155,7 +2152,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * @see getSprites
-	 * 
+	 *
 	 * @return
 	 */
 	public Sprites SPRITE() {
@@ -2164,7 +2161,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 返回位于屏幕顶部的组件
-	 * 
+	 *
 	 * @return
 	 */
 
@@ -2177,7 +2174,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 返回位于屏幕底部的组件
-	 * 
+	 *
 	 * @return
 	 */
 
@@ -2204,7 +2201,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 返回位于数据顶部的精灵
-	 * 
+	 *
 	 */
 
 	public ISprite getTopSprite() {
@@ -2216,7 +2213,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 返回位于数据底部的精灵
-	 * 
+	 *
 	 */
 
 	public ISprite getBottomSprite() {
@@ -2227,15 +2224,15 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	public Screen add(Object... obj) {
-		for (int i = 0; i < obj.length; i++) {
-			add(obj[i]);
+		for (Object element : obj) {
+			add(element);
 		}
 		return this;
 	}
 
 	/**
 	 * 添加游戏对象
-	 * 
+	 *
 	 * @param obj
 	 * @return
 	 */
@@ -2258,7 +2255,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 按照上一个精灵的x,y位置,另起一行添加精灵,并偏移指定位置
-	 * 
+	 *
 	 * @param spr
 	 * @param offX
 	 * @param offY
@@ -2273,7 +2270,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 按照上一个精灵的y轴,另起一行添加精灵
-	 * 
+	 *
 	 * @param spr
 	 * @return
 	 */
@@ -2286,7 +2283,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 按照上一个精灵的y轴,另起一行添加精灵,并让y轴偏移指定位置
-	 * 
+	 *
 	 * @param spr
 	 * @param offY
 	 * @return
@@ -2300,7 +2297,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 按照上一个精灵的x轴,另起一行添加精灵
-	 * 
+	 *
 	 * @param spr
 	 * @return
 	 */
@@ -2314,7 +2311,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 按照上一个精灵的x轴,另起一行添加精灵,并将x轴偏移指定位置
-	 * 
+	 *
 	 * @param spr
 	 * @param offX
 	 * @return
@@ -2329,7 +2326,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 按照上一个组件的x,y位置,另起一行添加组件,并偏移指定位置
-	 * 
+	 *
 	 * @param comp
 	 * @param offX
 	 * @param offY
@@ -2351,7 +2348,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 按照上一个组件的y轴,另起一行添加组件
-	 * 
+	 *
 	 * @param comp
 	 * @return
 	 */
@@ -2371,7 +2368,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 按照上一个组件的y轴,另起一行添加组件,并偏移指定y轴坐标
-	 * 
+	 *
 	 * @param comp
 	 * @param offY
 	 * @return
@@ -2392,7 +2389,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 按照上一个组件的x轴,在同一行添加组件
-	 * 
+	 *
 	 * @param comp
 	 * @return
 	 */
@@ -2412,7 +2409,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 按照上一个组件的x轴,在同一行添加组件,并偏移指定x轴
-	 * 
+	 *
 	 * @param comp
 	 * @param offX
 	 * @return
@@ -2433,7 +2430,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 删除指定对象
-	 * 
+	 *
 	 * @param obj
 	 * @return
 	 */
@@ -2455,15 +2452,15 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	public Screen remove(Object... obj) {
-		for (int i = 0; i < obj.length; i++) {
-			remove(obj[i]);
+		for (Object element : obj) {
+			remove(element);
 		}
 		return this;
 	}
 
 	/**
 	 * 添加游戏精灵
-	 * 
+	 *
 	 * @param sprite
 	 */
 
@@ -2479,7 +2476,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 添加游戏精灵
-	 * 
+	 *
 	 * @param sprite
 	 * @param x
 	 * @param y
@@ -2502,7 +2499,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	/**
 	 * 是否允许桌面组件触碰事件传导到Screen(若此项为true,则当组件占据屏幕位置时,触发的Touch相关事件Screen的也
 	 * Touch监听默认也会收到,反之则无法接收)
-	 * 
+	 *
 	 * @param dp
 	 * @return
 	 */
@@ -2543,7 +2540,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 添加游戏组件
-	 * 
+	 *
 	 * @param s
 	 */
 
@@ -2562,7 +2559,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 添加游戏组件
-	 * 
+	 *
 	 * @param s
 	 * @param x
 	 * @param y
@@ -2583,7 +2580,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 添加游戏组件
-	 * 
+	 *
 	 * @param comp
 	 */
 	public Screen add(LComponent comp) {
@@ -2601,7 +2598,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 添加游戏组件
-	 * 
+	 *
 	 * @param comp
 	 * @param x
 	 * @param y
@@ -2857,8 +2854,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		if (desktop != null) {
 			LComponent textureObject = null;
 			LComponent[] components = desktop.getComponents();
-			for (int i = 0; i < components.length; i++) {
-				LComponent comp = components[i];
+			for (LComponent comp : components) {
 				if (comp != null && comp.getBackground() != null && tex.equals(comp.getBackground())) {
 					textureObject = comp;
 					break;
@@ -2925,7 +2921,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 判断是否点中指定精灵
-	 * 
+	 *
 	 * @param sprite
 	 * @return
 	 */
@@ -2944,7 +2940,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 判断是否点中指定精灵
-	 * 
+	 *
 	 * @param sprite
 	 * @return
 	 */
@@ -2954,7 +2950,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 判断是否点中指定组件
-	 * 
+	 *
 	 * @param component
 	 * @return
 	 */
@@ -2973,7 +2969,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 判断是否点中指定组件
-	 * 
+	 *
 	 * @param component
 	 * @return
 	 */
@@ -3039,15 +3035,17 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	/**
 	 * 获得背景显示模式
 	 */
+	@Override
 	public int getRepaintMode() {
 		return mode;
 	}
 
 	/**
 	 * 设定背景刷新模式
-	 * 
+	 *
 	 * @param mode
 	 */
+	@Override
 	public void setRepaintMode(int mode) {
 		this.mode = mode;
 	}
@@ -3093,7 +3091,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 重载此函数,可以自定义渲染Screen的最下层图像
-	 * 
+	 *
 	 * @param g
 	 */
 	protected void afterUI(GLEx g) {
@@ -3101,7 +3099,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 添加一组事件到循环开始前
-	 * 
+	 *
 	 * @param update
 	 * @return
 	 */
@@ -3111,7 +3109,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 重载此函数,可以自定义渲染Screen的最上层图像
-	 * 
+	 *
 	 * @param g
 	 */
 	protected void beforeUI(GLEx g) {
@@ -3119,7 +3117,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 添加一组事件到循环开始后
-	 * 
+	 *
 	 * @param update
 	 * @return
 	 */
@@ -3268,7 +3266,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 暂停进程处理指定时间
-	 * 
+	 *
 	 * @param delay
 	 */
 	public void processSleep(long delay) {
@@ -3278,7 +3276,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	private void allocateLoopEvents() {
 		if (_loopEvents == null) {
-			_loopEvents = new TArray<FrameLoopEvent>();
+			_loopEvents = new TArray<>();
 		}
 	}
 
@@ -3328,8 +3326,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	private final void process(final LTimerContext timer) {
 		this.elapsedTime = timer.timeSinceLastUpdate;
-		for (Iterator<ActionKey> it = _keyActions.iterator(); it.hasNext();) {
-			ActionKey act = it.next();
+		for (ActionKey act : _keyActions) {
 			if (act != null && act.isPressed()) {
 				act.act(elapsedTime);
 				if (act.isInterrupt()) {
@@ -3368,9 +3365,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			if (_loopEvents != null && _loopEvents.size > 0) {
 				final TArray<FrameLoopEvent> toUpdated;
 				synchronized (this._loopEvents) {
-					toUpdated = new TArray<FrameLoopEvent>(this._loopEvents);
+					toUpdated = new TArray<>(this._loopEvents);
 				}
-				final TArray<FrameLoopEvent> deadEvents = new TArray<FrameLoopEvent>();
+				final TArray<FrameLoopEvent> deadEvents = new TArray<>();
 				try {
 					for (FrameLoopEvent eve : toUpdated) {
 						eve.call(elapsedTime, this);
@@ -3741,9 +3738,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 设置键盘按下事件
-	 * 
+	 *
 	 * @param code
 	 */
+	@Override
 	public void setKeyDown(int button) {
 		keyButtonPressed = button;
 		keyButtonReleased = NO_KEY;
@@ -3908,7 +3906,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 判定是否点击了指定位置
-	 * 
+	 *
 	 * @param event
 	 * @param x
 	 * @param y
@@ -3922,7 +3920,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 判定是否点击了指定位置
-	 * 
+	 *
 	 * @param event
 	 * @param x
 	 * @param y
@@ -3936,7 +3934,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 判定是否点击了指定位置
-	 * 
+	 *
 	 * @param event
 	 * @param o
 	 * @return
@@ -3952,7 +3950,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 判定是否点击了指定位置
-	 * 
+	 *
 	 * @param event
 	 * @param o
 	 * @return
@@ -3963,7 +3961,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 判定是否点击了指定位置
-	 * 
+	 *
 	 * @param event
 	 * @param o
 	 * @return
@@ -3974,7 +3972,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 判定是否点击了指定位置
-	 * 
+	 *
 	 * @param event
 	 * @param rect
 	 * @return
@@ -4061,7 +4059,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 设定是否允许自行释放桌面组件(UI)资源
-	 * 
+	 *
 	 * @param a
 	 * @return
 	 */
@@ -4081,7 +4079,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 检查指定组件是否显示于desktop当中
-	 * 
+	 *
 	 * @param comp
 	 * @return
 	 */
@@ -4101,7 +4099,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 获得指定名称的资源管理器
-	 * 
+	 *
 	 * @param path
 	 * @return
 	 */
@@ -4114,7 +4112,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 当前Screen是否旋转
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean isRotated() {
@@ -4123,7 +4121,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 设定Screen旋转角度
-	 * 
+	 *
 	 * @param r
 	 */
 	public void setRotation(float r) {
@@ -4298,7 +4296,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 返回Screen的动作事件
-	 * 
+	 *
 	 * @return
 	 */
 	public ActionTween selfAction() {
@@ -4307,7 +4305,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 创建一个针对此Screen的组件控制器
-	 * 
+	 *
 	 * @return
 	 */
 	public UIControls createUIControls() {
@@ -4333,7 +4331,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 插找桌面组件名等于此序列中的组件控制器
-	 * 
+	 *
 	 * @param name
 	 * @return
 	 */
@@ -4346,7 +4344,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 插找桌面组件名包含在此序列中的组件控制器
-	 * 
+	 *
 	 * @param name
 	 * @return
 	 */
@@ -4359,7 +4357,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 插找桌面组件名不包含在此序列中的组件控制器
-	 * 
+	 *
 	 * @param name
 	 * @return
 	 */
@@ -4372,7 +4370,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 插找桌面组件Tag包含在此序列中的组件控制器
-	 * 
+	 *
 	 * @param o
 	 * @return
 	 */
@@ -4385,7 +4383,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 插找桌面组件Tag不包含在此序列中的组件控制器
-	 * 
+	 *
 	 * @param o
 	 * @return
 	 */
@@ -4398,7 +4396,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 创建一个针对当前Screen的精灵控制器
-	 * 
+	 *
 	 * @return
 	 */
 	public SpriteControls createSpriteControls() {
@@ -4410,7 +4408,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 查找等于指定名的精灵控制器
-	 * 
+	 *
 	 * @param names
 	 * @return
 	 */
@@ -4423,7 +4421,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 查找包含在指定名中的精灵控制器
-	 * 
+	 *
 	 * @param names
 	 * @return
 	 */
@@ -4436,7 +4434,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 查找不在此序列中的精灵控制器
-	 * 
+	 *
 	 * @param names
 	 * @return
 	 */
@@ -4449,7 +4447,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 查找所有【包含】指定tag的精灵控制器
-	 * 
+	 *
 	 * @param o
 	 * @return
 	 */
@@ -4462,7 +4460,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 查找所有【不包含】指定tag的精灵控制器
-	 * 
+	 *
 	 * @param o
 	 * @return
 	 */
@@ -4475,7 +4473,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 截屏并保存在texture
-	 * 
+	 *
 	 * @return
 	 */
 	public LTexture screenshotToTexture() {
@@ -4484,7 +4482,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 返回全局通用的Bundle对象(作用类似Android中同名类,内部为key-value键值对形式的值,用来跨screen传递数据)
-	 * 
+	 *
 	 * @return
 	 */
 	public ObjectBundle getBundle() {
@@ -4496,7 +4494,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 添加全局通用的Bundle对象
-	 * 
+	 *
 	 * @param key
 	 * @param value
 	 * @return
@@ -4510,7 +4508,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 删除全局通用的Bundle对象
-	 * 
+	 *
 	 * @param key
 	 * @return
 	 */
@@ -4523,7 +4521,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 全局通用的Bundle中指定数据做加法
-	 * 
+	 *
 	 * @param key
 	 * @param value
 	 * @return
@@ -4534,7 +4532,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 全局通用的Bundle中指定数据做减法
-	 * 
+	 *
 	 * @param key
 	 * @param value
 	 * @return
@@ -4545,7 +4543,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 全局通用的Bundle中指定数据做乘法
-	 * 
+	 *
 	 * @param key
 	 * @param value
 	 * @return
@@ -4556,7 +4554,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 全局通用的Bundle中指定数据做除法
-	 * 
+	 *
 	 * @param key
 	 * @param value
 	 * @return
@@ -4567,7 +4565,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 获得一个针对全局通用的Bundle中指定数据的四则运算器
-	 * 
+	 *
 	 * @param key
 	 * @return
 	 */
@@ -4577,7 +4575,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 截屏screen并转化为base64字符串
-	 * 
+	 *
 	 * @return
 	 */
 	public String screenshotToBase64() {
@@ -4590,7 +4588,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 截屏screen并保存在image(image存在系统依赖,为系统本地image类组件的封装,所以效果可能存在差异)
-	 * 
+	 *
 	 * @return
 	 */
 	public Image screenshotToImage() {
@@ -4603,7 +4601,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 截屏screen并保存在pixmap(pixmap本质上是一个无系统依赖的，仅存在于内存中的像素数组)
-	 * 
+	 *
 	 * @return
 	 */
 	public Pixmap screenshotToPixmap() {
@@ -4616,7 +4614,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 退出游戏
-	 * 
+	 *
 	 * @return
 	 */
 	public Screen exitGame() {
@@ -4626,7 +4624,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 返回video的缓存结果(不设置out对象时才会有效)
-	 * 
+	 *
 	 * @return
 	 */
 	public ArrayByte getVideoCache() {
@@ -4638,7 +4636,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 开始录像(默认使用ArrayByte缓存录像结果到内存中)
-	 * 
+	 *
 	 * @return
 	 */
 	public Screen startVideo() {
@@ -4650,7 +4648,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 开始录像(指定一个OutputStream对象,比如FileOutputStream 输出录像结果到指定硬盘位置)
-	 * 
+	 *
 	 * @param output
 	 * @return
 	 */
@@ -4663,7 +4661,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 开始录像(指定一个OutputStream对象,比如FileOutputStream 输出录像结果到指定硬盘位置)
-	 * 
+	 *
 	 * @param output
 	 * @param delay
 	 * @return
@@ -4677,7 +4675,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 结束录像
-	 * 
+	 *
 	 * @return
 	 */
 	public Screen stopVideo() {
@@ -4689,7 +4687,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 当前Screen名称
-	 * 
+	 *
 	 * @return
 	 */
 	public String getScreenName() {
@@ -4698,7 +4696,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 全局延迟缓动动画指定时间
-	 * 
+	 *
 	 * @param delay
 	 */
 	public void setTweenDelay(long delay) {
@@ -4729,7 +4727,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 判断当前Touch行为与上次是否在屏幕中指定间距内存在移动
-	 * 
+	 *
 	 * @param distance
 	 * @return
 	 */
@@ -4739,7 +4737,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 判断当前Touch行为与上次是否存在一定程度的移动(默认间距2个像素判定移动)
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean isTouchMoved() {
@@ -4748,7 +4746,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 返回当前Touch行为的移动方向(返回int为map组件包中 @see Config 中设置的整型方向参数)
-	 * 
+	 *
 	 * @param distance
 	 * @return
 	 */
@@ -4762,7 +4760,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 返回当前Touch行为的移动方向(返回map组件包中的Config整型方向)
-	 * 
+	 *
 	 * @return
 	 */
 	public int getTouchDirection() {
@@ -4771,7 +4769,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 获得碰撞器实例对象(默认不启用,需要用户手动调用)
-	 * 
+	 *
 	 * @return
 	 */
 	public CollisionManager getCollisionManager() {
@@ -4784,7 +4782,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 初始碰撞器检测的地图瓦片范围(也就是实际像素/瓦片大小后缩放进行碰撞),瓦片数值越小,精确度越高,但是计算时间也越长
-	 * 
+	 *
 	 * @param tileSize
 	 */
 	public void initializeCollision(int tileSize) {
@@ -4793,7 +4791,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 初始碰撞器检测的地图瓦片范围(也就是实际像素/瓦片大小后缩放进行碰撞),瓦片数值越小,精确度越高,但是计算时间也越长
-	 * 
+	 *
 	 * @param tileSizeX
 	 * @param tileSizeY
 	 */
@@ -4803,7 +4801,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 若此项为true(默认为false),则碰撞查询涉及具体碰撞对象的碰撞关系时,只会返回与查询对象同一层(layer值,z值)的对象
-	 * 
+	 *
 	 * @param itlayer
 	 */
 	public void setCollisionInTheLayer(boolean itlayer) {
@@ -4815,7 +4813,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 是否设定了同层(layer值,z值)限制(默认为false)
-	 * 
+	 *
 	 * @param itlayer
 	 */
 	public boolean getCollisionInTheLayer() {
@@ -4827,7 +4825,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 让碰撞器偏移指定坐标后产生碰撞
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 */
@@ -4840,7 +4838,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 让碰撞器偏移指定坐标后产生碰撞
-	 * 
+	 *
 	 * @param x
 	 */
 	public void setCollisionOffsetX(float x) {
@@ -4852,7 +4850,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 让碰撞器偏移指定坐标后产生碰撞
-	 * 
+	 *
 	 * @param y
 	 */
 	public void setCollisionOffsetY(float y) {
@@ -4864,7 +4862,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 获得碰撞器当前的偏移坐标
-	 * 
+	 *
 	 * @return
 	 */
 	public Vector2f getCollisionOffsetPos() {
@@ -4876,7 +4874,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 注入一个碰撞对象
-	 * 
+	 *
 	 * @param obj
 	 */
 	public void putCollision(CollisionObject obj) {
@@ -4888,7 +4886,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 删除一个碰撞对象
-	 * 
+	 *
 	 * @param obj
 	 */
 	public void removeCollision(CollisionObject obj) {
@@ -4900,7 +4898,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 删除一个指定对象标记的碰撞对象
-	 * 
+	 *
 	 * @param objFlag
 	 */
 	public void removeCollision(String objFlag) {
@@ -4912,7 +4910,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 获得当前存在的碰撞对象总数
-	 * 
+	 *
 	 * @return
 	 */
 	public int getCollisionSize() {
@@ -4924,7 +4922,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 返回当前碰撞管理器中存在的碰撞对象集合
-	 * 
+	 *
 	 * @return
 	 */
 	public TArray<CollisionObject> getCollisionObjects() {
@@ -4936,7 +4934,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 获得所有指定对象标记的碰撞对象
-	 * 
+	 *
 	 * @param objFlag
 	 * @return
 	 */
@@ -4949,7 +4947,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 获得与指定坐标碰撞并且有指定对象标记的对象
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param objFlag
@@ -4964,7 +4962,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 获得有指定标记并与指定对象相交的集合
-	 * 
+	 *
 	 * @param obj
 	 * @param objFlag
 	 * @return
@@ -4978,7 +4976,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 获得一个有指定标记并与指定对象相交的单独对象
-	 * 
+	 *
 	 * @param obj
 	 * @param objFlag
 	 * @return
@@ -4992,7 +4990,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 获得在指定位置指定大小圆轴内有指定标记的对象集合
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param r
@@ -5008,7 +5006,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 获得与指定对象相邻的全部对象
-	 * 
+	 *
 	 * @param obj
 	 * @param distance
 	 * @param d
@@ -5028,7 +5026,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 注销碰撞器
-	 * 
+	 *
 	 */
 	public void disposeCollision() {
 		_collisionClosed = true;
@@ -5040,7 +5038,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 构建一个三角区域,让集合中的动作元素尽可能填充这一三角区域
-	 * 
+	 *
 	 * @param objs
 	 * @param x
 	 * @param y
@@ -5055,7 +5053,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 构建一个三角区域,让集合中的动作元素尽可能填充这一三角区域
-	 * 
+	 *
 	 * @param objs
 	 * @param triangle
 	 * @param stepRate
@@ -5068,7 +5066,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 构建一个三角区域,让集合中的动作元素尽可能填充这一三角区域
-	 * 
+	 *
 	 * @param objs
 	 * @param triangle
 	 * @param stepRate
@@ -5083,7 +5081,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 构建一个线性区域,让集合中的动作元素延续这一线性对象按照指定的初始坐标到完结坐标线性排序
-	 * 
+	 *
 	 * @param objs
 	 * @param x1
 	 * @param y1
@@ -5098,7 +5096,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 构建一个线性区域,让集合中的动作元素延续这一线性对象按照指定的初始坐标到完结坐标线性排序
-	 * 
+	 *
 	 * @param objs
 	 * @param x1
 	 * @param y1
@@ -5116,7 +5114,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 构建一个线性区域,让集合中的动作元素延续这一线性对象按照指定的初始坐标到完结坐标线性排序
-	 * 
+	 *
 	 * @param objs
 	 * @param line
 	 * @param offsetX
@@ -5129,7 +5127,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 以圆形环绕部署动作对象，构建一个圆形区域,让集合中的动作元素延续这一圆形对象按照指定的startAngle到endAngle范围环绕
-	 * 
+	 *
 	 * @param objs
 	 * @param x
 	 * @param y
@@ -5143,7 +5141,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 以圆形环绕部署动作对象，构建一个圆形区域,让集合中的动作元素围绕这一圆形对象按照指定的startAngle到endAngle范围环绕
-	 * 
+	 *
 	 * @param root
 	 * @param objs
 	 * @param circle
@@ -5158,7 +5156,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 以圆形环绕部署动作对象，构建一个圆形区域,让集合中的动作元素围绕这一圆形对象按照指定的startAngle到endAngle范围环绕
-	 * 
+	 *
 	 * @param root
 	 * @param objs
 	 * @param circle
@@ -5175,7 +5173,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 把指定对象布局,在指定的RectBox范围内部署,并注入Screen
-	 * 
+	 *
 	 * @param objs
 	 * @param rectView
 	 * @return
@@ -5187,7 +5185,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 把指定动作对象进行布局在指定的RectBox范围内部署,并注入Screen
-	 * 
+	 *
 	 * @param objs
 	 * @param rectView
 	 * @param cellWidth
@@ -5201,7 +5199,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 把指定对象布局,在指定的RectBox范围内部署,并注入Screen
-	 * 
+	 *
 	 * @param objs       要布局的对象集合
 	 * @param rectView   显示范围
 	 * @param cellWidth  单独对象的默认width(如果对象有width,并且比cellWidth大,则以对象自己的为主)
@@ -5217,7 +5215,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 以指定名称指定坐标指定大小开始,在Screen中生成一组LClickButton,并返回Click对象集合
-	 * 
+	 *
 	 * @param names
 	 * @param sx
 	 * @param sy
@@ -5236,7 +5234,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 删除符合指定条件的精灵并返回操作的集合
-	 * 
+	 *
 	 * @param query
 	 * @return
 	 */
@@ -5244,12 +5242,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		if (sprites != null) {
 			return sprites.remove(query);
 		}
-		return new TArray<ISprite>();
+		return new TArray<>();
 	}
 
 	/**
 	 * 查找符合指定条件的精灵并返回操作的集合
-	 * 
+	 *
 	 * @param query
 	 * @return
 	 */
@@ -5257,12 +5255,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		if (sprites != null) {
 			return sprites.find(query);
 		}
-		return new TArray<ISprite>();
+		return new TArray<>();
 	}
 
 	/**
 	 * 删除指定条件的精灵并返回操作的集合
-	 * 
+	 *
 	 * @param query
 	 * @return
 	 */
@@ -5270,12 +5268,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		if (sprites != null) {
 			return sprites.delete(query);
 		}
-		return new TArray<T>();
+		return new TArray<>();
 	}
 
 	/**
 	 * 查找符合指定条件的精灵并返回操作的集合
-	 * 
+	 *
 	 * @param query
 	 * @return
 	 */
@@ -5283,64 +5281,64 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		if (sprites != null) {
 			return sprites.select(query);
 		}
-		return new TArray<T>();
+		return new TArray<>();
 	}
 
 	/**
 	 * 删除符合指定条件的组件并返回操作的集合
-	 * 
+	 *
 	 * @param query
 	 * @return
 	 */
 	public TArray<LComponent> removeComponent(QueryEvent<LComponent> query) {
 		if (desktop == null) {
-			return new TArray<LComponent>();
+			return new TArray<>();
 		}
 		return desktop.remove(query);
 	}
 
 	/**
 	 * 查找符合指定条件的组件并返回操作的集合
-	 * 
+	 *
 	 * @param query
 	 * @return
 	 */
 	public TArray<LComponent> findComponent(QueryEvent<LComponent> query) {
 		if (desktop == null) {
-			return new TArray<LComponent>();
+			return new TArray<>();
 		}
 		return desktop.find(query);
 	}
 
 	/**
 	 * 删除指定条件的组件并返回操作的集合
-	 * 
+	 *
 	 * @param query
 	 * @return
 	 */
 	public <T extends LComponent> TArray<T> deleteComponent(QueryEvent<T> query) {
 		if (desktop == null) {
-			return new TArray<T>();
+			return new TArray<>();
 		}
 		return desktop.delete(query);
 	}
 
 	/**
 	 * 查找符合指定条件的组件并返回操作的集合
-	 * 
+	 *
 	 * @param query
 	 * @return
 	 */
 	public <T extends LComponent> TArray<T> selectComponent(QueryEvent<T> query) {
 		if (desktop == null) {
-			return new TArray<T>();
+			return new TArray<>();
 		}
 		return desktop.select(query);
 	}
 
 	/**
 	 * 返回当前Screen的渲染监听器
-	 * 
+	 *
 	 * @return
 	 */
 	public DrawListener<Screen> getDrawListener() {
@@ -5349,7 +5347,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 设定当前Screen的渲染监听器
-	 * 
+	 *
 	 * @param drawListener
 	 */
 	public void setDrawListener(DrawListener<Screen> drawListener) {
@@ -5358,7 +5356,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 遍历所有注入Screen的精灵
-	 * 
+	 *
 	 * @param callback
 	 * @return
 	 */
@@ -5371,7 +5369,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 遍历所有注入Screen的组件
-	 * 
+	 *
 	 * @param callback
 	 * @return
 	 */
@@ -5384,7 +5382,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 排序桌面和精灵组件
-	 * 
+	 *
 	 * @return
 	 */
 	public Screen sort() {
@@ -5399,7 +5397,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 是否允许自动排序桌面和精灵组件
-	 * 
+	 *
 	 * @param v
 	 * @return
 	 */
@@ -5454,7 +5452,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	/**
 	 * 释放函数内资源
-	 * 
+	 *
 	 */
 	@Override
 	public abstract void close();

@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2019 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -41,26 +41,26 @@ import loon.utils.timer.LTimer;
 
 /**
  * 游戏中常见的分行选择型菜单栏,注入几行文字(字符串数组),就会自行产生几行可选菜单UI
- * 
+ *
  * <pre>
- * LMenuSelect ms = new LMenuSelect("第一选项,第二个,第三个,第四个,我是第五个", 66, 66); 
- * // 选中行的选择外框渲染颜色,不设置不显示 
- * // ms.setSelectRectColor(LColor.red); 
- * // 选中行所用的图像标记(箭头图之类),不设置使用默认样式 
- * // ms.setImageFlag(LSystem.FRAMEWORK_IMG_NAME+"creese.png"); 
+ * LMenuSelect ms = new LMenuSelect("第一选项,第二个,第三个,第四个,我是第五个", 66, 66);
+ * // 选中行的选择外框渲染颜色,不设置不显示
+ * // ms.setSelectRectColor(LColor.red);
+ * // 选中行所用的图像标记(箭头图之类),不设置使用默认样式
+ * // ms.setImageFlag(LSystem.FRAMEWORK_IMG_NAME+"creese.png");
  * // 选择框菜单所用的背景图,不设置使用默认样式,也可以noneBackground不显示
  * ms.setBackground(DefUI.getGameWinFrame(ms.width(),
- * ms.height(),LColor.black,LColor.blue, false)); 
+ * ms.height(),LColor.black,LColor.blue, false));
  * // 设置监听 ms.setMenuListener(new LMenuSelect.ClickEvent() {
- * 
+ *
  * // 监听当前点击的索引与内容
- * 
- * public void onSelected(int index, String context) { 
+ *
+ * public void onSelected(int index, String context) {
  *           // 添加气泡提示
  *           add(LToast.makeText(context, Style.SUCCESS));
- * 
- *           }}); 
- *           // 添加到screen 
+ *
+ *           }});
+ *           // 添加到screen
  *           add(ms);
  * </pre>
  */
@@ -229,7 +229,7 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 		if (_labels != null) {
 			_selectCountMax = labels.length;
 			_selectRects = new RectF[_selectCountMax];
-			TArray<CharSequence> chars = new TArray<CharSequence>(_selectCountMax);
+			TArray<CharSequence> chars = new TArray<>(_selectCountMax);
 			float maxWidth = 0;
 			float maxHeight = 0;
 			if (_flag_image == null) {
@@ -633,7 +633,7 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 
 	@Override
 	public void destory() {
-		
+
 	}
 
 }

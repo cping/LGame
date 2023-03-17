@@ -25,6 +25,7 @@ import loon.action.collision.CollisionFilter;
 import loon.action.collision.CollisionResult;
 import loon.action.map.AStarFindHeuristic;
 import loon.action.map.AStarFinder;
+import loon.action.map.Config;
 import loon.action.map.Field2D;
 import loon.geom.Vector2f;
 import loon.utils.IntMap;
@@ -123,7 +124,7 @@ public class MoveTo extends ActionEvent {
 		this.useCache = cache;
 		this.synchroLayerField = synField;
 		this.process_delay_time = delayTime;
-		this.direction = Field2D.EMPTY;
+		this.direction = Config.EMPTY;
 		if (map == null) {
 			moveByMode = true;
 		}
@@ -387,32 +388,32 @@ public class MoveTo extends ActionEvent {
 				startX = original.getX() - offsetX;
 				startY = original.getY() - offsetY;
 				switch (dir) {
-				case Field2D.TUP:
-				case Field2D.UP:
+				case Config.TUP:
+				case Config.UP:
 					startY -= speed;
 					if (startY < endY) {
 						startY = endY;
 						isMoved = false;
 					}
 					break;
-				case Field2D.TDOWN:
-				case Field2D.DOWN:
+				case Config.TDOWN:
+				case Config.DOWN:
 					startY += speed;
 					if (startY > endY) {
 						startY = endY;
 						isMoved = false;
 					}
 					break;
-				case Field2D.TLEFT:
-				case Field2D.LEFT:
+				case Config.TLEFT:
+				case Config.LEFT:
 					startX -= speed;
 					if (startX < endX) {
 						startX = endX;
 						isMoved = false;
 					}
 					break;
-				case Field2D.TRIGHT:
-				case Field2D.RIGHT:
+				case Config.TRIGHT:
+				case Config.RIGHT:
 					startX += speed;
 					if (startX > endX) {
 						startX = endX;
@@ -492,7 +493,7 @@ public class MoveTo extends ActionEvent {
 				newX = original.getX() - offsetX;
 				newY = original.getY() - offsetY;
 				switch (direction) {
-				case Field2D.TUP:
+				case Config.TUP:
 					startY -= speed;
 					newY -= speed;
 					if (startY < endY) {
@@ -503,7 +504,7 @@ public class MoveTo extends ActionEvent {
 						isMoved = false;
 					}
 					break;
-				case Field2D.TDOWN:
+				case Config.TDOWN:
 					startY += speed;
 					newY += speed;
 					if (startY > endY) {
@@ -514,7 +515,7 @@ public class MoveTo extends ActionEvent {
 						isMoved = false;
 					}
 					break;
-				case Field2D.TLEFT:
+				case Config.TLEFT:
 					startX -= speed;
 					newX -= speed;
 					if (startX < endX) {
@@ -525,7 +526,7 @@ public class MoveTo extends ActionEvent {
 						isMoved = false;
 					}
 					break;
-				case Field2D.TRIGHT:
+				case Config.TRIGHT:
 					startX += speed;
 					newX += speed;
 					if (startX > endX) {
@@ -536,7 +537,7 @@ public class MoveTo extends ActionEvent {
 						isMoved = false;
 					}
 					break;
-				case Field2D.UP:
+				case Config.UP:
 					startX += speed;
 					startY -= speed;
 					newX += speed;
@@ -556,7 +557,7 @@ public class MoveTo extends ActionEvent {
 						isMoved = false;
 					}
 					break;
-				case Field2D.DOWN:
+				case Config.DOWN:
 					startX -= speed;
 					startY += speed;
 					newX -= speed;
@@ -576,7 +577,7 @@ public class MoveTo extends ActionEvent {
 						isMoved = false;
 					}
 					break;
-				case Field2D.LEFT:
+				case Config.LEFT:
 					startX -= speed;
 					startY -= speed;
 					newX -= speed;
@@ -596,7 +597,7 @@ public class MoveTo extends ActionEvent {
 						isMoved = false;
 					}
 					break;
-				case Field2D.RIGHT:
+				case Config.RIGHT:
 					startX += speed;
 					startY += speed;
 					newX += speed;

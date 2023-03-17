@@ -1,19 +1,19 @@
 /**
- * 
+ *
  * Copyright 2014
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -117,7 +117,7 @@ public class LTextBar extends LComponent {
 			int maxWidth) {
 		super(x, y, 0, 0);
 		int w = f.stringWidth(txt) + (left != null ? left.getWidth() : 0) + (right != null ? right.getWidth() : 0) * 3;
-		int h = (int) (body != null ? body.getHeight() : f.getHeight());
+		int h = body != null ? body.getHeight() : f.getHeight();
 		this._fontColor = c;
 		if (maxWidth == -1 && body != null) {
 			this._maxWidth = w;

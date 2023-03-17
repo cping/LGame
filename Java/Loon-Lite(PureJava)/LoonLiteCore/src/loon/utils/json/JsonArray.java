@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -30,11 +30,11 @@ class JsonArray implements Json.Array, IArray {
 	private final TArray<Object> _json_array_context;
 
 	public JsonArray() {
-		_json_array_context = new TArray<Object>(LSystem.DEFAULT_MAX_CACHE_SIZE);
+		_json_array_context = new TArray<>(LSystem.DEFAULT_MAX_CACHE_SIZE);
 	}
 
 	JsonArray(Object... collection) {
-		_json_array_context = new TArray<Object>(collection);
+		_json_array_context = new TArray<>(collection);
 	}
 
 	public final static JsonBuilder<JsonArray> at() {
@@ -42,7 +42,7 @@ class JsonArray implements Json.Array, IArray {
 	}
 
 	public final static JsonBuilder<JsonArray> builder() {
-		return new JsonBuilder<JsonArray>(new JsonArray());
+		return new JsonBuilder<>(new JsonArray());
 	}
 
 	@Override

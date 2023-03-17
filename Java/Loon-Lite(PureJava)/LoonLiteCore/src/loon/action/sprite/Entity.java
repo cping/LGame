@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -27,6 +27,7 @@ import loon.LObject;
 import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
+import loon.LTrans;
 import loon.PlayerUtils;
 import loon.Screen;
 import loon.action.ActionBind;
@@ -103,7 +104,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	protected boolean _flipX = false, _flipY = false;
 
-	private final static LayerSorter<IEntity> entitySorter = new LayerSorter<IEntity>(false);
+	private final static LayerSorter<IEntity> entitySorter = new LayerSorter<>(false);
 
 	private ResizeListener<IEntity> _resizeListener;
 
@@ -290,7 +291,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		setLocation(x, y);
 		return this;
 	}
-	
+
 	public IEntity setAnchor(final float scale) {
 		return setAnchor(scale, scale);
 	}
@@ -467,7 +468,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	public LColor getColor() {
 		return this._baseColor.cpy();
 	}
-	
+
 	private void updateAlpha(final float alpha) {
 		if (_childrens != null) {
 			for (int i = _childrens.size - 1; i > -1; i--) {
@@ -478,7 +479,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 			}
 		}
 	}
-	
+
 	private void updateColor(final LColor color) {
 		if (_childrens != null) {
 			for (int i = _childrens.size - 1; i > -1; i--) {
@@ -526,7 +527,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		this.updateAlpha(a);
 		this.onUpdateColor();
 	}
-	
+
 	@Override
 	public int getChildCount() {
 		if (this._childrens == null) {
@@ -575,10 +576,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	@Override
 	public IEntity addChild(final IEntity e) {
-		if (e == null) {
-			return this;
-		}
-		if (e == this) {
+		if ((e == null) || (e == this)) {
 			return this;
 		}
 		if (this._childrens == null) {
@@ -651,7 +649,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 			}
 			// 删除精灵同时，删除缓动动画
 			if (removed != null && removed instanceof ActionBind) {
-				removeActionEvents((ActionBind) removed);
+				removeActionEvents(removed);
 			}
 		}
 		this._childrens.clear();
@@ -673,7 +671,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		}
 		// 删除精灵同时，删除缓动动画
 		if (removed && e instanceof ActionBind) {
-			removeActionEvents((ActionBind) e);
+			removeActionEvents(e);
 		}
 		return removed;
 	}
@@ -692,7 +690,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 				}
 				// 删除精灵同时，删除缓动动画
 				if (removed != null && (removed instanceof ActionBind)) {
-					removeActionEvents((ActionBind) removed);
+					removeActionEvents(removed);
 				}
 				return removed;
 			}
@@ -813,7 +811,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	}
 
 	public void paint(final GLEx g, float offsetX, float offsetY) {
-		if (_objectAlpha < 0.01) {
+		if (_objectAlpha < 0.01f) {
 			return;
 		}
 		boolean exist = _image != null || (_width > 0 && _height > 0) || _repaintDraw;
@@ -847,11 +845,11 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 					final float rotationCenterY = this._rotationCenterY == -1 ? (ny + _origin.oy(this._height))
 							: ny + this._rotationCenterY;
 					if (flipX && flipY) {
-						Affine2f.transform(tx, rotationCenterX, rotationCenterY, Affine2f.TRANS_ROT180);
+						Affine2f.transform(tx, rotationCenterX, rotationCenterY, LTrans.TRANS_ROT180);
 					} else if (flipX) {
-						Affine2f.transform(tx, rotationCenterX, rotationCenterY, Affine2f.TRANS_MIRROR);
+						Affine2f.transform(tx, rotationCenterX, rotationCenterY, LTrans.TRANS_MIRROR);
 					} else if (flipY) {
-						Affine2f.transform(tx, rotationCenterX, rotationCenterY, Affine2f.TRANS_MIRROR_ROT180);
+						Affine2f.transform(tx, rotationCenterX, rotationCenterY, LTrans.TRANS_MIRROR_ROT180);
 					}
 				}
 				if ((scaleX != 1) || (scaleY != 1)) {
@@ -932,7 +930,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	}
 
 	private void allocateChildren() {
-		this._childrens = new TArray<IEntity>(Entity.CHILDREN_CAPACITY_DEFAULT);
+		this._childrens = new TArray<>(Entity.CHILDREN_CAPACITY_DEFAULT);
 	}
 
 	protected void onManagedPaint(final GLEx g, float offsetX, float offsetY) {

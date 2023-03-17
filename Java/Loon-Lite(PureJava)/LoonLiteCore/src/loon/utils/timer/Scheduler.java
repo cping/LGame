@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2019 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -30,18 +30,18 @@ import loon.utils.processes.RealtimeProcessManager;
 
 /**
  * 一个简单的Interval游戏事务延迟管理器,可以在其中存储多个Interval并统一提交到游戏循环中,进行统一管理.
- * 
+ *
  * 例如:
- * 
+ *
  * <pre>
- * 
+ *
  * // 构建一个延迟事务管理器(默认循环执行其中事务)
  * final Scheduler s = new Scheduler();
  * // 若removeTask项为true,则会删除已经执行过的事务,则只所有调度仅进行一次,不会循环执行
  * // final Scheduler s = new Scheduler(true);
  * // 添加事务1
  * s.add(new Interval() {
- * 
+ *
  * 	&#64;Override
  * 	public void loop() {
  * 		System.out.println("a");
@@ -51,7 +51,7 @@ import loon.utils.processes.RealtimeProcessManager;
  * });
  * // 添加事务2
  * s.add(new Interval() {
- * 
+ *
  * 	&#64;Override
  * 	public void loop() {
  * 		System.out.println("b");
@@ -59,7 +59,7 @@ import loon.utils.processes.RealtimeProcessManager;
  * });
  * // 添加事务3
  * s.add(new Interval() {
- * 
+ *
  * 	&#64;Override
  * 	public void loop() {
  * 		System.out.println("c");
@@ -69,7 +69,7 @@ import loon.utils.processes.RealtimeProcessManager;
  * s.setDelay(LSystem.SECOND);
  * s.start();
  * </pre>
- * 
+ *
  *
  */
 public class Scheduler implements LRelease {
@@ -99,7 +99,7 @@ public class Scheduler implements LRelease {
 
 	private SchedulerProcess _processScheduler;
 
-	private TArray<Interval> _scheduled = new TArray<Interval>(32);
+	private TArray<Interval> _scheduled = new TArray<>(32);
 
 	private int _childIndex = 0;
 
@@ -143,7 +143,7 @@ public class Scheduler implements LRelease {
 
 	/**
 	 * Scheduler事务管理器
-	 * 
+	 *
 	 * @param name       事务调度管理器名称
 	 * @param delay      延迟时间(默认0)
 	 * @param removeTask 是否删除已运行的任务
@@ -220,7 +220,7 @@ public class Scheduler implements LRelease {
 	}
 
 	public TArray<Interval> findName(String name) {
-		TArray<Interval> result = new TArray<Interval>();
+		TArray<Interval> result = new TArray<>();
 		for (int i = _scheduled.size - 1; i > -1; i--) {
 			Interval u = _scheduled.get(i);
 			if (u != null && name.equals(u.getName())) {

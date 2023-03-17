@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2020 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -37,6 +37,7 @@ import loon.geom.RectF;
 import loon.opengl.GLEx;
 import loon.utils.CharArray;
 import loon.utils.CharIterator;
+import loon.utils.CharUtils;
 import loon.utils.IntMap;
 import loon.utils.LIterator;
 import loon.utils.MathUtils;
@@ -255,7 +256,7 @@ public class BDFont extends FontTrans implements IFont, LRelease {
 
 	private void putChildChars(Character ch, float x, float y, float w, float h, LColor c) {
 		if (_childChars == null) {
-			_childChars = new TArray<CharRect>();
+			_childChars = new TArray<>();
 		}
 		CharRect obj = new CharRect();
 		obj.name = ch;
@@ -293,7 +294,7 @@ public class BDFont extends FontTrans implements IFont, LRelease {
 			int customCharsLength = (strfont.additionalChars != null) ? strfont.additionalChars.length : 0;
 			StrBuilder sbr = new StrBuilder(customCharsLength);
 
-			final OrderedSet<Character> outchached = new OrderedSet<Character>();
+			final OrderedSet<Character> outchached = new OrderedSet<>();
 			for (int i = 0, size = customCharsLength; i < size; i++) {
 
 				boolean outchar = false;
@@ -307,7 +308,7 @@ public class BDFont extends FontTrans implements IFont, LRelease {
 				}
 				int ocharwidth = charwidth;
 
-				if (charwidth <= 15 && !StringUtils.isAlphaOrDigit(ch)) {
+				if (charwidth <= 15 && !CharUtils.isAlphaOrDigit(ch)) {
 					if (charwidth < strfont.getPixelFontSize()) {
 						charwidth = (int) strfont.getPixelFontSize();
 					}
@@ -317,7 +318,7 @@ public class BDFont extends FontTrans implements IFont, LRelease {
 
 				if (charwidth >= 22) {
 					charwidth -= 1;
-				} else if (charwidth >= 20 && StringUtils.isAlphaOrDigit(ch)) {
+				} else if (charwidth >= 20 && CharUtils.isAlphaOrDigit(ch)) {
 					charwidth += 1;
 				}
 
@@ -434,9 +435,9 @@ public class BDFont extends FontTrans implements IFont, LRelease {
 
 	private PointI offset;
 
-	private IntMap<String> names = new IntMap<String>();
+	private IntMap<String> names = new IntMap<>();
 
-	private IntMap<BDFGlyph> characters = new IntMap<BDFGlyph>();
+	private IntMap<BDFGlyph> characters = new IntMap<>();
 
 	private String fontVersionName;
 
@@ -498,7 +499,7 @@ public class BDFont extends FontTrans implements IFont, LRelease {
 
 	private int totalCharSet = 256;
 
-	private IntMap<IntObject> customChars = new IntMap<IntObject>();
+	private IntMap<IntObject> customChars = new IntMap<>();
 
 	private String text;
 
@@ -557,7 +558,7 @@ public class BDFont extends FontTrans implements IFont, LRelease {
 		this.textureWidth = tw;
 		this.textureHeight = th;
 		this.totalCharSet = getMaxTextCount();
-		this.displays = new IntMap<Cache>(totalCharSet);
+		this.displays = new IntMap<>(totalCharSet);
 		this.isasyn = asyn;
 		if (chs != null && chs.length() > 0) {
 			this.text = StringUtils.getString(chs);
@@ -682,13 +683,7 @@ public class BDFont extends FontTrans implements IFont, LRelease {
 	}
 
 	private synchronized void make(boolean asyn) {
-		if (_isClose) {
-			return;
-		}
-		if (_initChars) {
-			return;
-		}
-		if (isDrawing) {
+		if (_isClose || _initChars || isDrawing) {
 			return;
 		}
 		cancelSubmit();
@@ -1055,8 +1050,8 @@ public class BDFont extends FontTrans implements IFont, LRelease {
 	}
 
 	public BDFont setXHeight() {
-		if (characters.containsKey((int) 'x')) {
-			BDFGlyph g = characters.get((int) 'x');
+		if (characters.containsKey('x')) {
+			BDFGlyph g = characters.get('x');
 			xheight = g.getGlyphAscent();
 		}
 		return this;
@@ -1092,10 +1087,7 @@ public class BDFont extends FontTrans implements IFont, LRelease {
 	}
 
 	public PointF draw(Canvas g, String s, float bx, float by, float w, float h) {
-		if (!loadFont()) {
-			return null;
-		}
-		if (characters.size == 0) {
+		if (!loadFont() || (characters.size == 0)) {
 			return null;
 		}
 		float cx = bx, cy = by;
@@ -1122,7 +1114,7 @@ public class BDFont extends FontTrans implements IFont, LRelease {
 					}
 					float pos = offsetPos((char) ch, bm);
 					float hl = (bm.getCharacterWidth() * scalePixelFont);
-					if (halfflags.indexOf(ch) != -1 || StringUtils.isAlphaOrDigit(ch)) {
+					if (halfflags.indexOf(ch) != -1 || CharUtils.isAlphaOrDigit(ch)) {
 						hl *= 2;
 					}
 					cx += bm.paint(g, cx + pos, cy + hl, scalePixelFont, pixelColor);
@@ -1134,7 +1126,7 @@ public class BDFont extends FontTrans implements IFont, LRelease {
 					}
 					float pos = offsetPos((char) ch, bm);
 					float hl = (bm.getCharacterWidth() * scalePixelFont);
-					if (halfflags.indexOf(ch) != -1 || StringUtils.isAlphaOrDigit(ch)) {
+					if (halfflags.indexOf(ch) != -1 || CharUtils.isAlphaOrDigit(ch)) {
 						hl *= 2;
 					}
 					cx += bm.paint(g, cx + pos, cy + hl, scalePixelFont, pixelColor);
@@ -1166,10 +1158,7 @@ public class BDFont extends FontTrans implements IFont, LRelease {
 	}
 
 	public PointF drawAlphabet(Canvas g, char ch, float bx, float by, float w, float h) {
-		if (!loadFont()) {
-			return null;
-		}
-		if (characters.size == 0) {
+		if (!loadFont() || (characters.size == 0)) {
 			return null;
 		}
 		float cx = bx, cy = by;
@@ -1179,9 +1168,9 @@ public class BDFont extends FontTrans implements IFont, LRelease {
 				cx = bx;
 				cy += h;
 			}
-			float pos = offsetPos((char) ch, bm);
+			float pos = offsetPos(ch, bm);
 			float hl = (bm.getCharacterWidth() * scalePixelFont);
-			if (halfflags.indexOf(ch) != -1 || StringUtils.isAlphaOrDigit(ch)) {
+			if (halfflags.indexOf(ch) != -1 || CharUtils.isAlphaOrDigit(ch)) {
 				hl *= 2;
 			}
 			cx += bm.paint(g, cx + pos, cy + hl, scalePixelFont, pixelColor);
@@ -1370,18 +1359,14 @@ public class BDFont extends FontTrans implements IFont, LRelease {
 
 	private final boolean checkRunning(String chars) {
 
-		if (_isClose) {
+		if (_isClose || StringUtils.isEmpty(chars)) {
 			return false;
 		}
 
-		if (StringUtils.isEmpty(chars)) {
-			return false;
-		}
-		
 		if (!isLoaded) {
 			return loadFont();
 		}
-	
+
 
 		make();
 		if (processing()) {
@@ -1442,9 +1427,9 @@ public class BDFont extends FontTrans implements IFont, LRelease {
 		if (StringUtils.isEmpty(msg)) {
 			return;
 		}
-		
+
 		String newMessage = toMessage(msg);
-	
+
 		if (checkEndIndexUpdate(endIndex, msg, newMessage)) {
 			endIndex = newMessage.length();
 		}
@@ -1452,7 +1437,7 @@ public class BDFont extends FontTrans implements IFont, LRelease {
 		if (!checkRunning(newMessage)) {
 			return;
 		}
-		
+
 		final float nsx = sx * fontScale;
 		final float nsy = sy * fontScale;
 		final float x = mx + offset.x;
@@ -1505,7 +1490,7 @@ public class BDFont extends FontTrans implements IFont, LRelease {
 					totalWidth += (ascent * 3);
 					continue;
 				}
-				
+
 				if (intObject != null) {
 					if (!checkOutBounds() || containsChar(ch)) {
 						gl.draw(displayList, x + (totalWidth * nsx), y + (totalHeight * nsy), intObject.width * nsx,
@@ -1815,8 +1800,8 @@ public class BDFont extends FontTrans implements IFont, LRelease {
 		int currentChar = 0;
 		char[] charList = newMessage.toCharArray();
 		int maxWidth = 0;
-		for (int i = 0; i < charList.length; i++) {
-			currentChar = charList[i];
+		for (char element : charList) {
+			currentChar = element;
 			intObject = customChars.get(currentChar);
 
 			if (intObject != null) {
@@ -1847,8 +1832,8 @@ public class BDFont extends FontTrans implements IFont, LRelease {
 		int lines = 0;
 		int height = 0;
 		int maxHeight = 0;
-		for (int i = 0; i < charList.length; i++) {
-			currentChar = charList[i];
+		for (char element : charList) {
+			currentChar = element;
 			intObject = customChars.get(currentChar);
 
 			if (intObject != null) {

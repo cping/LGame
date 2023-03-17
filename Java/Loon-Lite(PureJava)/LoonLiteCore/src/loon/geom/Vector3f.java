@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2012
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a cpy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -30,7 +30,7 @@ import loon.utils.NumberUtils;
 public class Vector3f implements Serializable, XYZ {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1114108169708351982L;
 
@@ -40,7 +40,7 @@ public class Vector3f implements Serializable, XYZ {
 
 	public float z;
 
-	private static final Array<Vector3f> _VEC3_CACHE = new Array<Vector3f>();
+	private static final Array<Vector3f> _VEC3_CACHE = new Array<>();
 
 	public static Vector3f set(Vector3f v1, Vector3f v2) {
 		return set(v1, v2.x, v2.y, v2.z);
@@ -744,9 +744,7 @@ public class Vector3f implements Serializable, XYZ {
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
+		if ((obj == null) || (getClass() != obj.getClass()))
 			return false;
 		Vector3f other = (Vector3f) obj;
 		if (NumberUtils.floatToIntBits(x) != NumberUtils.floatToIntBits(other.x))
@@ -759,23 +757,13 @@ public class Vector3f implements Serializable, XYZ {
 	}
 
 	public boolean epsilonEquals(final Vector3f other, float epsilon) {
-		if (other == null)
-			return false;
-		if (MathUtils.abs(other.x - x) > epsilon)
-			return false;
-		if (MathUtils.abs(other.y - y) > epsilon)
-			return false;
-		if (MathUtils.abs(other.z - z) > epsilon)
+		if ((other == null) || (MathUtils.abs(other.x - x) > epsilon) || (MathUtils.abs(other.y - y) > epsilon) || (MathUtils.abs(other.z - z) > epsilon))
 			return false;
 		return true;
 	}
 
 	public boolean epsilonEquals(float x, float y, float z, float epsilon) {
-		if (MathUtils.abs(x - this.x) > epsilon)
-			return false;
-		if (MathUtils.abs(y - this.y) > epsilon)
-			return false;
-		if (MathUtils.abs(z - this.z) > epsilon)
+		if ((MathUtils.abs(x - this.x) > epsilon) || (MathUtils.abs(y - this.y) > epsilon) || (MathUtils.abs(z - this.z) > epsilon))
 			return false;
 		return true;
 	}

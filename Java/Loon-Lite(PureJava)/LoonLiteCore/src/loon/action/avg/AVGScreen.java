@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2011
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -67,7 +67,7 @@ import loon.utils.timer.LTimerContext;
 
 /**
  * Loon默认提供的AVG模板，在此Screen中可以直接实现一些简单的AVG游戏操作，并且更容易扩展出自己的AVG游戏系统。
- * 
+ *
  * @see CommandType
  */
 public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
@@ -82,10 +82,10 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	private int _mobile_select_valid_limit = 0;
 
 	// 当前任务集合
-	private final Array<Task> _currentTasks = new Array<AVGScreen.Task>();
+	private final Array<Task> _currentTasks = new Array<>();
 
 	// 任务集合
-	private final ListMap<String, AVGScreen.Task> _tasks = new ListMap<String, AVGScreen.Task>(20);
+	private final ListMap<String, AVGScreen.Task> _tasks = new ListMap<>(20);
 
 	private IFont _font;
 
@@ -135,7 +135,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	/**
 	 * 此为AVG中特定任务接口，此接口需要实现使用，共有三个API，一个用来从脚本注入参数,
 	 * 一个调用具体任务，一个返回是否完成的状态，只有任务完成后才能继续脚本。
-	 * 
+	 *
 	 * PS : 再次强调，Task不执行完，是不能继续触发脚本的
 	 *
 	 */
@@ -246,9 +246,9 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	private void defTask() {
 		/**
 		 * 展示一个简易消息框
-		 * 
+		 *
 		 * 使用方式，脚本中调用: task toast 字符串
-		 * 
+		 *
 		 * @example task toast 你获得了500万
 		 */
 		putTask("toast", new Task() {
@@ -279,9 +279,9 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		});
 		/**
 		 * 添加一个指定的过渡效果.
-		 * 
+		 *
 		 * 使用方式，脚本中调用: task trans 渐变效果名 颜色
-		 * 
+		 *
 		 * @example task trans fadein black
 		 * @see LTransition
 		 */
@@ -329,9 +329,9 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		});
 		/**
 		 * 添加一个精灵 (精灵可以用[clear 精灵名]或者[del 精灵名]方式删除)
-		 * 
+		 *
 		 * 使用方式，脚本中调用(不必全部填写): task sprite {图像来源,精灵名称,x坐标,y坐标} {loon的action脚本命令}
-		 * 
+		 *
 		 * @example task sprite {assets/c.png,55,55}
 		 *          {move(155,155,true,16)->delay(3f)->move(25,125,true)}
 		 */
@@ -430,7 +430,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 
 	/**
 	 * 以键值对方式添加任务（主要是方便脚本调用）
-	 * 
+	 *
 	 * @param key
 	 * @param value
 	 */
@@ -440,7 +440,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 
 	/**
 	 * 返回指定键值对应的具体任务
-	 * 
+	 *
 	 * @param key
 	 * @return
 	 */
@@ -450,7 +450,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 
 	/**
 	 * 删除指定任务
-	 * 
+	 *
 	 * @param key
 	 * @return
 	 */
@@ -467,7 +467,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 
 	/**
 	 * 返回当前字符串的文字显示速度模式
-	 * 
+	 *
 	 * @param name
 	 * @return
 	 */
@@ -575,7 +575,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 
 	/**
 	 * 添加选项按钮到游戏中
-	 * 
+	 *
 	 * @param click
 	 */
 	private void addOpt(final LClickButton click) {
@@ -598,7 +598,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 
 	/**
 	 * 设置选项按钮为脚本中参数
-	 * 
+	 *
 	 * @param click
 	 * @param order
 	 */
@@ -766,9 +766,10 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 
 	/**
 	 * 设置一个实现了IFont的字体到AVG系统中(一般使用LFont或BMFont)
-	 * 
+	 *
 	 * @param font
 	 */
+	@Override
 	public AVGScreen setFont(final IFont font) {
 		this._font = font;
 		if (messageUI != null) {
@@ -780,6 +781,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		return this;
 	}
 
+	@Override
 	public IFont getFont() {
 		if (messageUI != null) {
 			return messageUI.getMessageFont();
@@ -866,10 +868,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 
 	@Override
 	final public void draw(GLEx g) {
-		if (!isGameRunning || !isOnLoadComplete() || isClosed()) {
-			return;
-		}
-		if (scrCG == null) {
+		if (!isGameRunning || !isOnLoadComplete() || isClosed() || (scrCG == null)) {
 			return;
 		}
 		if (scrCG.sleep == 0) {
@@ -930,18 +929,18 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 
 				TArray<String> commands = Conversion.splitToList(result, LSystem.SPACE);
 				int size = commands.size;
-				String cmdFlag = (String) commands.get(0);
+				String cmdFlag = commands.get(0);
 
 				String mesFlag = null, orderFlag = null, lastFlag = null;
 				if (size == 2) {
-					mesFlag = (String) commands.get(1);
+					mesFlag = commands.get(1);
 				} else if (size == 3) {
-					mesFlag = (String) commands.get(1);
-					orderFlag = (String) commands.get(2);
+					mesFlag = commands.get(1);
+					orderFlag = commands.get(2);
 				} else if (size == 4) {
-					mesFlag = (String) commands.get(1);
-					orderFlag = (String) commands.get(2);
-					lastFlag = (String) commands.get(3);
+					mesFlag = commands.get(1);
+					orderFlag = commands.get(2);
+					lastFlag = commands.get(3);
 				}
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_CLEAR) || cmdFlag.equalsIgnoreCase(CommandType.L_DEL)) {
 					if (orderFlag == null) {
@@ -1121,8 +1120,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 					if (effectSprites != null) {
 						boolean flag = false;
 						ISprite[] ss = effectSprites.getSprites();
-						for (int i = 0; i < ss.length; i++) {
-							ISprite s = ss[i];
+						for (ISprite s : ss) {
 							if (s instanceof NaturalEffect) {
 								flag = true;
 								break;
@@ -1147,8 +1145,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 						|| cmdFlag.equalsIgnoreCase(CommandType.L_PETALSTOP)) {
 					if (effectSprites != null) {
 						ISprite[] ss = effectSprites.getSprites();
-						for (int i = 0; i < ss.length; i++) {
-							ISprite s = ss[i];
+						for (ISprite s : ss) {
 							if (s instanceof NaturalEffect) {
 								NaturalType naturalType = ((NaturalEffect) s).getNaturalType();
 								if (cmdFlag.equalsIgnoreCase(CommandType.L_SNOWSTOP)) {
@@ -1291,8 +1288,8 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 							String[] list = StringUtils.split(selectList, ',');
 							final int selectLength = list.length;
 							final int len = selectLength / 2;
-							final TArray<String> selects = new TArray<String>(len);
-							final TArray<String> items = new TArray<String>(len);
+							final TArray<String> selects = new TArray<>(len);
+							final TArray<String> items = new TArray<>(len);
 							for (int i = 0; i < selectLength; i++) {
 								if (i % 2 == 0) {
 									selects.add(list[i]);
@@ -1397,7 +1394,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 							x = Integer.parseInt(orderFlag);
 						}
 						if (size >= 4) {
-							y = Integer.parseInt((String) commands.get(3));
+							y = Integer.parseInt(commands.get(3));
 						}
 						final int tx = x;
 						final int ty = y;
@@ -1422,16 +1419,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	public abstract void onExit();
 
 	private void playAutoNext() {
-		if (tasking()) {
-			return;
-		}
-		if (!_autoTimer.action(elapsedTime)) {
-			return;
-		}
-		if (scrCG.sleep != 0) {
-			return;
-		}
-		if (isSelectMessage) {
+		if (tasking() || !_autoTimer.action(elapsedTime) || (scrCG.sleep != 0) || isSelectMessage) {
 			return;
 		}
 		if (messageUI.isVisible() && !messageUI.isComplete()) {
@@ -1446,13 +1434,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 
 	public AVGScreen click() {
 		// 如果存在未完成任务，则不允许继续脚本
-		if (tasking()) {
-			return this;
-		}
-		if (_limitClickd) {
-			return this;
-		}
-		if (!isGameRunning) {
+		if (tasking() || _limitClickd || !isGameRunning) {
 			return this;
 		}
 		if (messageUI.isVisible() && !messageUI.isComplete()) {
@@ -1751,7 +1733,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 
 	/**
 	 * 档次参数为true时，将无法点击消息框或画面触发脚本继续
-	 * 
+	 *
 	 * @param limitClick
 	 */
 	public AVGScreen setLimitClick(boolean lc) {
@@ -1765,7 +1747,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 
 	/**
 	 * 此标记用于判断是否next仅在点击message时继续（true不是，false是）
-	 * 
+	 *
 	 * @param screenClick
 	 */
 	public AVGScreen setScreenClick(boolean screenClick) {
@@ -1779,7 +1761,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 
 	/**
 	 * 设置当前AVG的文字显示速度默认
-	 * 
+	 *
 	 * @param m
 	 */
 	public AVGScreen setSpeedMode(SpeedMode m) {
@@ -1792,7 +1774,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 
 	/**
 	 * 设置当前AVG的文字显示速度默认
-	 * 
+	 *
 	 * @param speedName
 	 */
 	public AVGScreen setSpeedMode(String speedName) {
@@ -1810,7 +1792,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 
 	/**
 	 * 此处限制移动环境时，遇到选择时需要点击的次数
-	 * 
+	 *
 	 * @param v
 	 */
 	public AVGScreen setMobileSelectValidLimit(int v) {

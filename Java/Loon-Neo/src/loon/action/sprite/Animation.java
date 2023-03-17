@@ -289,8 +289,8 @@ public class Animation implements IArray, LRelease {
 				addFrame(images[i], timer);
 			}
 		} else {
-			for (int i = 0; i < images.length; i++) {
-				addFrame(images[i], timer);
+			for (LTexture image : images) {
+				addFrame(image, timer);
 			}
 		}
 		if (maxFrame <= 0) {

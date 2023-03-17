@@ -1,19 +1,19 @@
 /**
- * 
+ *
  * Copyright 2008 - 2010
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -150,7 +150,7 @@ public class Actor extends LObject<Actor>
 
 	/**
 	 * 移动当前角色到指定位置并返回MoveTo控制器(flag为true时八方向行走，否则为四方向)
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 */
@@ -161,7 +161,7 @@ public class Actor extends LObject<Actor>
 
 	/**
 	 * 移动当前角色到指定位置并返回MoveTo控制器(flag为true时八方向行走，否则为四方向)
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param flag
@@ -174,7 +174,7 @@ public class Actor extends LObject<Actor>
 
 	/**
 	 * 命令当前角色执行淡出操作
-	 * 
+	 *
 	 * @return
 	 */
 	public FadeTo fadeOut() {
@@ -184,7 +184,7 @@ public class Actor extends LObject<Actor>
 
 	/**
 	 * 命令当前角色执行淡入操作
-	 * 
+	 *
 	 * @return
 	 */
 	public FadeTo fadeIn() {
@@ -194,7 +194,7 @@ public class Actor extends LObject<Actor>
 
 	/**
 	 * 命令当前角色变化为指定颜色
-	 * 
+	 *
 	 * @param end
 	 * @return
 	 */
@@ -205,7 +205,7 @@ public class Actor extends LObject<Actor>
 
 	/**
 	 * 命令当前角色变化为指定颜色
-	 * 
+	 *
 	 * @param start
 	 * @param end
 	 * @return
@@ -217,7 +217,7 @@ public class Actor extends LObject<Actor>
 
 	/**
 	 * 命令当前角色变化为指定颜色
-	 * 
+	 *
 	 * @param start
 	 * @param end
 	 * @param duration
@@ -231,7 +231,7 @@ public class Actor extends LObject<Actor>
 
 	/**
 	 * 以指定速度渐进式旋转当前角色到指定角度
-	 * 
+	 *
 	 * @param rotate
 	 * @param speed
 	 * @return
@@ -243,7 +243,7 @@ public class Actor extends LObject<Actor>
 
 	/**
 	 * 渐进式旋转当前角色到指定角度
-	 * 
+	 *
 	 * @param rotate
 	 * @return
 	 */
@@ -253,7 +253,7 @@ public class Actor extends LObject<Actor>
 
 	/**
 	 * 以指定加速度指定重力跳跃当前角色
-	 * 
+	 *
 	 * @param jump
 	 * @param g
 	 * @return
@@ -265,7 +265,7 @@ public class Actor extends LObject<Actor>
 
 	/**
 	 * 以指定加速度跳跃当前角色
-	 * 
+	 *
 	 * @param jump
 	 * @return
 	 */
@@ -275,7 +275,7 @@ public class Actor extends LObject<Actor>
 
 	/**
 	 * 让指定角色根据指定半径以指定速度循环转动
-	 * 
+	 *
 	 * @param radius
 	 * @param velocity
 	 * @return
@@ -287,7 +287,7 @@ public class Actor extends LObject<Actor>
 
 	/**
 	 * 将当前角色作为子弹以指定速度向指定坐标发射
-	 * 
+	 *
 	 * @param endX
 	 * @param endY
 	 * @param speed
@@ -300,7 +300,7 @@ public class Actor extends LObject<Actor>
 
 	/**
 	 * 将当前角色向指定坐标发射
-	 * 
+	 *
 	 * @param endX
 	 * @param endY
 	 * @return
@@ -311,7 +311,7 @@ public class Actor extends LObject<Actor>
 
 	/**
 	 * 让当前角色缩放指定大小
-	 * 
+	 *
 	 * @param sx
 	 * @param sy
 	 * @return
@@ -323,7 +323,7 @@ public class Actor extends LObject<Actor>
 
 	/**
 	 * 让当前角色缩放指定大小
-	 * 
+	 *
 	 * @param sx
 	 * @param sy
 	 * @return
@@ -335,7 +335,7 @@ public class Actor extends LObject<Actor>
 
 	/**
 	 * 让指定角色做箭状发射(抛物线)
-	 * 
+	 *
 	 * @param tx
 	 * @param ty
 	 * @return
@@ -347,7 +347,7 @@ public class Actor extends LObject<Actor>
 
 	/**
 	 * 振动指定对象
-	 * 
+	 *
 	 * @param shakeX
 	 * @param shakeY
 	 * @return
@@ -359,7 +359,7 @@ public class Actor extends LObject<Actor>
 
 	/**
 	 * 振动指定对象
-	 * 
+	 *
 	 * @param shakeX
 	 * @param shakeY
 	 * @param duration
@@ -373,7 +373,7 @@ public class Actor extends LObject<Actor>
 
 	/**
 	 * 删除所有以当前Actor注册的动作事件
-	 * 
+	 *
 	 */
 	public void removeActionEvents() {
 		failIfNotInLayer();
@@ -382,7 +382,7 @@ public class Actor extends LObject<Actor>
 
 	/**
 	 * 缩放当前角色
-	 * 
+	 *
 	 * @param scale
 	 */
 	public void setScale(final float s) {
@@ -410,7 +410,7 @@ public class Actor extends LObject<Actor>
 
 	/**
 	 * 按下
-	 * 
+	 *
 	 */
 	public void downClick(int x, int y) {
 
@@ -418,7 +418,7 @@ public class Actor extends LObject<Actor>
 
 	/**
 	 * 放开
-	 * 
+	 *
 	 */
 	public void upClick(int x, int y) {
 
@@ -426,7 +426,7 @@ public class Actor extends LObject<Actor>
 
 	/**
 	 * 键盘按下
-	 * 
+	 *
 	 */
 	public void downKey() {
 
@@ -434,7 +434,7 @@ public class Actor extends LObject<Actor>
 
 	/**
 	 * 键盘放开
-	 * 
+	 *
 	 */
 	public void upKey() {
 
@@ -442,7 +442,7 @@ public class Actor extends LObject<Actor>
 
 	/**
 	 * 拖拽
-	 * 
+	 *
 	 */
 	public void drag(int x, int y) {
 
@@ -450,7 +450,7 @@ public class Actor extends LObject<Actor>
 
 	/**
 	 * 动作处理(内部传参)
-	 * 
+	 *
 	 */
 	@Override
 	public void update(long elapsedTime) {
@@ -469,7 +469,7 @@ public class Actor extends LObject<Actor>
 
 	/**
 	 * 设定动作触发延迟时间
-	 * 
+	 *
 	 * @param delay
 	 */
 	public void setDelay(long delay) {
@@ -478,7 +478,7 @@ public class Actor extends LObject<Actor>
 
 	/**
 	 * 返回动作触发延迟时间
-	 * 
+	 *
 	 * @return
 	 */
 	public long getDelay() {
@@ -487,7 +487,7 @@ public class Actor extends LObject<Actor>
 
 	/**
 	 * 动作处理
-	 * 
+	 *
 	 * @param elapsedTime
 	 */
 	public void action(long elapsedTime) {
@@ -521,7 +521,7 @@ public class Actor extends LObject<Actor>
 
 	/**
 	 * 决定当前对象旋转方向
-	 * 
+	 *
 	 * @param _objectRotation
 	 */
 	@Override
@@ -572,7 +572,7 @@ public class Actor extends LObject<Actor>
 
 	/**
 	 * 根据旋转方向移动坐标
-	 * 
+	 *
 	 * @param distance
 	 */
 	public void move(float distance) {
@@ -729,7 +729,7 @@ public class Actor extends LObject<Actor>
 
 	/**
 	 * 获得当前Actor碰撞盒
-	 * 
+	 *
 	 * @return
 	 */
 	@Override
@@ -743,9 +743,10 @@ public class Actor extends LObject<Actor>
 
 	/**
 	 * 获得当前Actor碰撞盒
-	 * 
+	 *
 	 * @return
 	 */
+	@Override
 	public RectBox getBoundingRect() {
 		if (this.boundingRect == null) {
 			this.calcBounds();
@@ -755,7 +756,7 @@ public class Actor extends LObject<Actor>
 
 	/**
 	 * 绘图接口，用以绘制额外的图形到Actor
-	 * 
+	 *
 	 * @param g
 	 */
 	public void draw(GLEx g) {
@@ -766,7 +767,7 @@ public class Actor extends LObject<Actor>
 
 	/**
 	 * 矫正当前图像大小
-	 * 
+	 *
 	 */
 	private void calcBounds() {
 		ActorLayer layer = this.getLLayer();
@@ -957,6 +958,7 @@ public class Actor extends LObject<Actor>
 		return this.gameLayer.getOnlyCollisionObjectsAt(x, y, tag);
 	}
 
+	@Override
 	public boolean containsPoint(float px, float py) {
 		this.failIfNotInLayer();
 		if (this.image == null) {
@@ -1152,7 +1154,7 @@ public class Actor extends LObject<Actor>
 	public float getCenterY() {
 		return getY() + getHeight() / 2f;
 	}
-	
+
 	@Override
 	public ActionTween selfAction() {
 		return PlayerUtils.set(this);

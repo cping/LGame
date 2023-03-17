@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -25,21 +25,21 @@ import loon.utils.TArray;
 
 public class TriangleBasic implements Triangle {
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
 	private static final float EPSILON = 0.0000000001f;
 
-	private final TArray<PointF> poly = new TArray<PointF>();
+	private final TArray<PointF> poly = new TArray<>();
 
-	private final TArray<PointF> tris = new TArray<PointF>();
+	private final TArray<PointF> tris = new TArray<>();
 
 	private boolean tried;
 
 	public TriangleBasic() {
 	}
-	
+
 	@Override
 	public void addPolyPoint(float x, float y) {
 		PointF p = new PointF(x, y);
@@ -63,7 +63,7 @@ public class TriangleBasic implements Triangle {
 		boolean worked = process(poly, tris);
 		return worked;
 	}
-	
+
 	@Override
 	public int getTriangleCount() {
 		if (!tried) {
@@ -71,7 +71,7 @@ public class TriangleBasic implements Triangle {
 		}
 		return tris.size() / 3;
 	}
-	
+
 	@Override
 	public float[] getTrianglePoint(int t, int i) {
 		if (!tried) {

@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2019 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -123,31 +123,31 @@ public class Side implements Config {
 	}
 
 	public static int getOppositeSide(int side) {
-		if (side == Side.TUP) {
-			return Side.TDOWN;
+		if (side == Config.TUP) {
+			return Config.TDOWN;
 		}
-		if (side == Side.UP) {
-			return Side.DOWN;
+		if (side == Config.UP) {
+			return Config.DOWN;
 		}
-		if (side == Side.TDOWN) {
-			return Side.TUP;
+		if (side == Config.TDOWN) {
+			return Config.TUP;
 		}
-		if (side == Side.DOWN) {
-			return Side.UP;
+		if (side == Config.DOWN) {
+			return Config.UP;
 		}
-		if (side == Side.TLEFT) {
-			return Side.TRIGHT;
+		if (side == Config.TLEFT) {
+			return Config.TRIGHT;
 		}
-		if (side == Side.LEFT) {
-			return Side.RIGHT;
+		if (side == Config.LEFT) {
+			return Config.RIGHT;
 		}
-		if (side == Side.TRIGHT) {
-			return Side.TLEFT;
+		if (side == Config.TRIGHT) {
+			return Config.TLEFT;
 		}
-		if (side == Side.RIGHT) {
-			return Side.LEFT;
+		if (side == Config.RIGHT) {
+			return Config.LEFT;
 		}
-		return Side.EMPTY;
+		return Config.EMPTY;
 	}
 
 	public static int getSideFromDirection(Vector2f direction) {
@@ -161,7 +161,7 @@ public class Side implements Config {
 	public static int getSideFromDirection(final Vector2f initVector, final Vector2f direction, final int val) {
 		Vector2f[] directions = { initVector.move_left(val), initVector.move_right(val), initVector.move_up(val),
 				initVector.move_down(val) };
-		int[] directionEnum = { Side.TLEFT, Side.TRIGHT, Side.TUP, Side.TDOWN };
+		int[] directionEnum = { Config.TLEFT, Config.TRIGHT, Config.TUP, Config.TDOWN };
 		float max = -Float.MAX_VALUE;
 		int maxIndex = -1;
 		for (int i = 0; i < directions.length; i++) {

@@ -154,7 +154,7 @@ public class RocSSprite extends LObject<ISprite> implements ISprite {
 
 	/**
 	 * 返回脚本解释器
-	 * 
+	 *
 	 * @return
 	 */
 	public RocScript getScript() {
@@ -163,7 +163,7 @@ public class RocSSprite extends LObject<ISprite> implements ISprite {
 
 	/**
 	 * 如果此函数为true，则循环解析脚本
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean isLoopScript() {
@@ -172,7 +172,7 @@ public class RocSSprite extends LObject<ISprite> implements ISprite {
 
 	/**
 	 * 如果此函数为true，则循环解析脚本
-	 * 
+	 *
 	 * @param l
 	 */
 	public void setLoopScript(boolean l) {

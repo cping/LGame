@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -28,18 +28,18 @@ import loon.utils.timer.LTimer;
 
 /**
  * PixelBaseEffect效果包含一系列不需要图片的,也不必依赖Shader的,可以直接使用在任意游戏中的效果.
- * 
+ *
  * PS:此像素非真像素,而是指'像素风格',实际还是三角形纹理贴图效果……
  *
  */
 public abstract class PixelBaseEffect extends Entity {
 
-	protected TArray<TriangleEffect[]> triangleEffects = new TArray<TriangleEffect[]>();
+	protected TArray<TriangleEffect[]> triangleEffects = new TArray<>();
 
 	protected boolean completed;
 
 	protected boolean autoRemoved;
-	
+
 	protected float[] startLocation;
 
 	protected float[] targetLocation;
@@ -163,7 +163,7 @@ public abstract class PixelBaseEffect extends Entity {
 		this.autoRemoved = autoRemoved;
 		return this;
 	}
-	
+
 	@Override
 	public void close() {
 		super.close();

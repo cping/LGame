@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -25,7 +25,7 @@ import loon.utils.StringUtils;
 
 public class Circle extends Ellipse {
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
@@ -65,7 +65,7 @@ public class Circle extends Ellipse {
 
 	/**
 	 * 构建一个圆形
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param boundingCircleRadius
@@ -76,7 +76,7 @@ public class Circle extends Ellipse {
 
 	/**
 	 * 构建一个圆形
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param boundingCircleRadius
@@ -93,7 +93,7 @@ public class Circle extends Ellipse {
 
 	/**
 	 * 返回当前圆形的中心X点
-	 * 
+	 *
 	 */
 	@Override
 	public float getCenterX() {
@@ -110,7 +110,7 @@ public class Circle extends Ellipse {
 
 	/**
 	 * 设定当前圆形半径
-	 * 
+	 *
 	 * @param boundingCircleRadius
 	 */
 	public void setRadius(float boundingCircleRadius) {
@@ -123,7 +123,7 @@ public class Circle extends Ellipse {
 
 	/**
 	 * 返回当前圆形半径
-	 * 
+	 *
 	 * @return
 	 */
 	public float getRadius() {
@@ -154,10 +154,11 @@ public class Circle extends Ellipse {
 
 	/**
 	 * 检查当前圆形是否包含指定点
-	 * 
+	 *
 	 * @param xy
 	 * @return
 	 */
+	@Override
 	public boolean contains(XY xy) {
 		if (xy == null) {
 			return false;
@@ -167,7 +168,7 @@ public class Circle extends Ellipse {
 
 	/**
 	 * 检查当前圆形是否包含指定直线
-	 * 
+	 *
 	 * @param line
 	 * @return
 	 */
@@ -207,16 +208,7 @@ public class Circle extends Ellipse {
 
 	public boolean collideBounds(RectBox size) {
 		float radiusDouble = boundingCircleRadius * boundingCircleRadius;
-		if (x < size.getX() - boundingCircleRadius) {
-			return false;
-		}
-		if (x > size.getBottom() + boundingCircleRadius) {
-			return false;
-		}
-		if (y < size.getY() - boundingCircleRadius) {
-			return false;
-		}
-		if (y > size.getBottom() + boundingCircleRadius) {
+		if ((x < size.getX() - boundingCircleRadius) || (x > size.getBottom() + boundingCircleRadius) || (y < size.getY() - boundingCircleRadius) || (y > size.getBottom() + boundingCircleRadius)) {
 			return false;
 		}
 		if (x < size.getX() && y < size.getY() && MathUtils.distance(x - size.getX(), y - size.getY()) > radiusDouble) {
@@ -340,10 +332,7 @@ public class Circle extends Ellipse {
 		if (other == null) {
 			return false;
 		}
-		if (other == this) {
-			return true;
-		}
-		if (this.x == other.x && this.y == other.y && this.boundingCircleRadius == other.boundingCircleRadius) {
+		if ((other == this) || (this.x == other.x && this.y == other.y && this.boundingCircleRadius == other.boundingCircleRadius)) {
 			return true;
 		}
 		return false;

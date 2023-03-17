@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2019 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -22,7 +22,7 @@ package loon.utils;
 
 /**
  * 存储单独value的线性数据集合,内部数据无序排列,不允许重复
- * 
+ *
  * @param <E>
  */
 public class ObjectSet<E> implements Iterable<E>, IArray {
@@ -30,24 +30,24 @@ public class ObjectSet<E> implements Iterable<E>, IArray {
 	private ObjectMap<E, Object> _map;
 
 	public ObjectSet() {
-		_map = new ObjectMap<E, Object>(false);
+		_map = new ObjectMap<>(false);
 	}
 
 	public ObjectSet(ObjectSet<? extends E> c) {
-		_map = new ObjectMap<E, Object>(false);
+		_map = new ObjectMap<>(false);
 		addAll(c);
 	}
 
 	public ObjectSet(int initialCapacity, float loadFactor) {
-		_map = new ObjectMap<E, Object>(initialCapacity, loadFactor, false);
+		_map = new ObjectMap<>(initialCapacity, loadFactor, false);
 	}
 
 	public ObjectSet(int initialCapacity) {
-		_map = new ObjectMap<E, Object>(initialCapacity, false);
+		_map = new ObjectMap<>(initialCapacity, false);
 	}
 
 	ObjectSet(int initialCapacity, float loadFactor, boolean dummy) {
-		_map = new OrderedMap<E, Object>(initialCapacity, loadFactor, false, false);
+		_map = new OrderedMap<>(initialCapacity, loadFactor, false, false);
 	}
 
 	public void addAll(ObjectSet<? extends E> c){
@@ -55,7 +55,7 @@ public class ObjectSet<E> implements Iterable<E>, IArray {
 			add(key);
 		}
 	}
-	
+
 	@Override
 	public LIterator<E> iterator() {
 		return _map.keys();
@@ -100,7 +100,7 @@ public class ObjectSet<E> implements Iterable<E>, IArray {
 	public void clear() {
 		_map.clear();
 	}
-	
+
 	@Override
     public String toString() {
 		LIterator<E> it = iterator();

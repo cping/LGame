@@ -31,10 +31,7 @@ public class LayerSorter<T> extends InsertionSorter<T> {
 
 		@Override
 		public int compare(final T ea, final T eb) {
-			if (ea == eb) {
-				return 0;
-			}
-			if (ea == null || eb == null) {
+			if ((ea == eb) || ea == null || eb == null) {
 				return 0;
 			}
 			if (ea instanceof ZIndex && eb instanceof ZIndex) {

@@ -33,6 +33,7 @@ import loon.action.map.Field2D;
 import loon.canvas.LColor;
 import loon.component.layout.Margin;
 import loon.events.ClickListener;
+import loon.events.QueryEvent;
 import loon.events.Touched;
 import loon.font.FontSet;
 import loon.font.IFont;
@@ -51,8 +52,8 @@ public class UIControls {
 	public static float getChildrenHeight(LContainer c) {
 		float totalHeight = 0;
 		LComponent[] list = c._childs;
-		for (int i = 0; i < list.length; i++) {
-			totalHeight += list[i].getHeight();
+		for (LComponent element : list) {
+			totalHeight += element.getHeight();
 		}
 		return totalHeight;
 	}
@@ -60,8 +61,8 @@ public class UIControls {
 	public static float getChildrenWidth(LContainer c) {
 		float totalWidth = 0;
 		LComponent[] list = c._childs;
-		for (int i = 0; i < list.length; i++) {
-			totalWidth += list[i].getWidth();
+		for (LComponent element : list) {
+			totalWidth += element.getWidth();
 		}
 		return totalWidth;
 	}
@@ -69,8 +70,8 @@ public class UIControls {
 	public static float getMaxChildHeight(LContainer c) {
 		int maxHeight = 0;
 		LComponent[] list = c._childs;
-		for (int i = 0; i < list.length; i++) {
-			maxHeight = MathUtils.max(maxHeight, (int) list[i].getHeight());
+		for (LComponent element : list) {
+			maxHeight = MathUtils.max(maxHeight, (int) element.getHeight());
 		}
 		return maxHeight;
 	}
@@ -78,8 +79,8 @@ public class UIControls {
 	public static int getMaxChildWidth(LContainer c) {
 		int maxWidth = 0;
 		LComponent[] list = c._childs;
-		for (int i = 0; i < list.length; i++) {
-			maxWidth = MathUtils.max(maxWidth, (int) list[i].getWidth());
+		for (LComponent element : list) {
+			maxWidth = MathUtils.max(maxWidth, (int) element.getWidth());
 		}
 		return maxWidth;
 	}
@@ -103,6 +104,42 @@ public class UIControls {
 
 	public UIControls() {
 		this._comps = new TArray<LComponent>();
+	}
+
+	public LComponent random() {
+		if (_comps.size == 0) {
+			return null;
+		}
+		return _comps.get(MathUtils.random(_comps.size - 1));
+	}
+
+	public int indexOf(QueryEvent<LComponent> q) {
+		int i = 0;
+		for (LComponent s : _comps) {
+			if (q.hit(s)) {
+				return i;
+			}
+			i++;
+		}
+		return -1;
+	}
+
+	public int indexOf(LComponent value) {
+		for (int i = 0; i < _comps.size; i++) {
+			if (_comps.get(i) == value) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	public LComponent find(QueryEvent<LComponent> q) {
+		for (LComponent s : _comps) {
+			if (q.hit(s)) {
+				return s;
+			}
+		}
+		return null;
 	}
 
 	public TArray<LComponent> list() {
@@ -191,8 +228,8 @@ public class UIControls {
 		if (comps == null) {
 			throw new LSysException("LComponents cannot be null.");
 		}
-		for (int i = 0, n = comps.length; i < n; i++) {
-			remove(comps[i]);
+		for (LComponent comp : comps) {
+			remove(comp);
 		}
 		return this;
 	}
@@ -999,7 +1036,7 @@ public class UIControls {
 			if (comp != null && (comp instanceof ActionBind)) {
 				ActionTween tween = tweens.get(comp);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind) comp).followTo(bind, follow, speed);
+					tween = PlayerUtils.set(comp).followTo(bind, follow, speed);
 				} else {
 					tween.followTo(bind, follow, speed);
 				}
@@ -1078,5 +1115,4 @@ public class UIControls {
 		}
 		return _margin;
 	}
-
 }

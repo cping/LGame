@@ -333,6 +333,7 @@ public class Vector4f implements Serializable, XYZW {
 		return set(v.x, v.y, v.z, v.w);
 	}
 
+	@Override
 	public float getX() {
 		return x;
 	}
@@ -342,6 +343,7 @@ public class Vector4f implements Serializable, XYZW {
 		return this;
 	}
 
+	@Override
 	public float getY() {
 		return y;
 	}

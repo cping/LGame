@@ -2,7 +2,7 @@ package loon.utils;
 
 /**
  * 存储单独value的线性数据集合,有序排列,不允许重复
- * 
+ *
  * @param <E>
  */
 public class OrderedSet<E> extends ObjectSet<E> {

@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2019 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -46,7 +46,7 @@ public class TileImpl implements Tile {
 
 	protected Animation animation;
 
-	protected TArray<TileEvent> events = new TArray<TileEvent>();
+	protected TArray<TileEvent> events = new TArray<>();
 
 	protected boolean solid = false, closed = false, open = false;
 
@@ -132,7 +132,7 @@ public class TileImpl implements Tile {
 
 	public void calcNeighbours(int maxX, int maxY) {
 		if (this.neighbours == null) {
-			this.neighbours = new TArray<Vector2f>();
+			this.neighbours = new TArray<>();
 		} else {
 			this.neighbours.clear();
 		}
@@ -354,6 +354,7 @@ public class TileImpl implements Tile {
 		return this;
 	}
 
+	@Override
 	public String toString() {
 		return "{" + getX() + "," + getY() + "}";
 	}

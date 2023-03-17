@@ -1,18 +1,18 @@
 /**
  * Copyright 2014
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -30,29 +30,28 @@ import loon.component.skin.SkinManager;
 import loon.component.skin.TableSkin;
 import loon.font.FontSet;
 import loon.font.IFont;
-
 import loon.geom.Dimension;
 import loon.opengl.GLEx;
-import loon.utils.TArray;
 import loon.utils.ArrayMap;
 import loon.utils.HelperUtils;
 import loon.utils.MathUtils;
+import loon.utils.TArray;
 
 /**
  * Loon的表格显示用UI组件,用以显示以及操作表格数据
- * 
+ *
  * Example:
- * 
+ *
  * TArray<ListItem> list=new TArray<ListItem>();
- * 
+ *
  * ListItem item=new ListItem(); item.name="test1"; item.list.add("ffffff");
  * item.list.add("gggggggg"); item.list.add("hhhhhhhhh"); list.add(item);
- * 
+ *
  * ListItem item2=new ListItem(); item2.name="test2"; item2.list.add("ffffff");
  * item2.list.add("gggggggg"); item2.list.add("hhhhhhhhh"); list.add(item2);
  * LTable table=new LTable(IFont.getDefaultFont(), 60,60, 300, 300);
  * table.setData(list, 100); add(table);
- * 
+ *
  */
 public class LTable extends LContainer implements FontSet<LTable> {
 
@@ -61,7 +60,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 		private TArray<ListItem> list;
 
 		public TableView() {
-			this.list = new TArray<ListItem>();
+			this.list = new TArray<>();
 		}
 
 		public TableView clear() {
@@ -159,9 +158,9 @@ public class LTable extends LContainer implements FontSet<LTable> {
 		}
 
 		public TableView columnNames(String... names) {
-			for (int i = 0; i < names.length; i++) {
+			for (String name : names) {
 				ListItem item = new ListItem();
-				item._name = names[i];
+				item._name = name;
 				list.add(item);
 			}
 			return this;
@@ -744,8 +743,8 @@ public class LTable extends LContainer implements FontSet<LTable> {
 		if (model == null) {
 			throw new LSysException("The table has no model!");
 		}
-		for (int i = 0; i < columns.length; i++) {
-			columns[i].setWidth((int) (getWidth() / columns.length));
+		for (TableColumn column : columns) {
+			column.setWidth((int) (getWidth() / columns.length));
 		}
 		return this;
 	}
@@ -787,7 +786,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 		assertModel();
 
 		for (int i = 0; i < selected.length; i++) {
-			if (selected[i] == true)
+			if (selected[i])
 				return i;
 		}
 		return -1;

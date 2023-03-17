@@ -117,7 +117,7 @@ public class LTextBar extends LComponent {
 			int maxWidth) {
 		super(x, y, 0, 0);
 		int w = f.stringWidth(txt) + (left != null ? left.getWidth() : 0) + (right != null ? right.getWidth() : 0) * 3;
-		int h = (int) (body != null ? body.getHeight() : f.getHeight());
+		int h = body != null ? body.getHeight() : f.getHeight();
 		this._fontColor = c;
 		if (maxWidth == -1 && body != null) {
 			this._maxWidth = w;

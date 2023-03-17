@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2019 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -41,7 +41,7 @@ import loon.utils.timer.LTimerContext;
 
 /**
  * 一个Screen的衍生抽象类,除了create函数,什么都不必实现.
- * 
+ *
  * 希望纯组件构建游戏时(也就是一个create接口满足一切时)可以使用此类派生画面
  */
 public abstract class Stage extends Screen {
@@ -263,7 +263,7 @@ public abstract class Stage extends Screen {
 
 	/**
 	 * 资源预加载用函数,异步加载指定资源
-	 * 
+	 *
 	 * @param assets
 	 */
 	protected void preload(PreloadAssets assets) {
@@ -271,7 +271,7 @@ public abstract class Stage extends Screen {
 
 	/**
 	 * 预载资源已完成进度
-	 * 
+	 *
 	 * @param percent
 	 */
 	protected void preloadProgress(float percent) {
@@ -285,11 +285,11 @@ public abstract class Stage extends Screen {
 	@Override
 	public void onLoad() {
 		try {
-			this._objects = new TArray<ActionObject>();
+			this._objects = new TArray<>();
 			this._preAssets = new PreloadAssets();
-			this._pendingAdd = new TArray<ActionObject>();
-			this._pendingRemove = new TArray<ActionObject>();
-			this._childTiles = new TArray<TileMap>();
+			this._pendingAdd = new TArray<>();
+			this._pendingRemove = new TArray<>();
+			this._childTiles = new TArray<>();
 			this._currentOffset = Vector2f.ZERO();
 
 			this.preload(_preAssets);

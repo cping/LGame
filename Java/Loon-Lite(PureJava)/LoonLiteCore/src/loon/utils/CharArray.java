@@ -10,7 +10,7 @@ public class CharArray implements IArray,LRelease {
 
 	/**
 	 * 产生一组指定范围的数据
-	 * 
+	 *
 	 * @param start
 	 * @param end
 	 * @return
@@ -25,7 +25,7 @@ public class CharArray implements IArray,LRelease {
 
 	/**
 	 * 产生一组指定范围的随机数据
-	 * 
+	 *
 	 * @param begin
 	 * @param end
 	 * @return
@@ -36,7 +36,7 @@ public class CharArray implements IArray,LRelease {
 
 	/**
 	 * 产生一组指定范围的随机数据
-	 * 
+	 *
 	 * @param begin
 	 * @param end
 	 * @param size
@@ -59,8 +59,8 @@ public class CharArray implements IArray,LRelease {
 		for (int i = 0; i < size; i++) {
 			final int len = randSeed.length - i - 1;
 			int j = MathUtils.random(len);
-			charArrays[i] = (char) randSeed[j];
-			randSeed[j] = (char) randSeed[len];
+			charArrays[i] = randSeed[j];
+			randSeed[j] = randSeed[len];
 		}
 		return new CharArray(charArrays);
 	}
@@ -96,7 +96,7 @@ public class CharArray implements IArray,LRelease {
 	public CharArray(char[] array,int size) {
 		this(true, array, 0, size);
 	}
-	
+
 	public CharArray(boolean ordered, char[] array, int startIndex, int count) {
 		this(ordered, count);
 		length = count;
@@ -409,6 +409,7 @@ public class CharArray implements IArray,LRelease {
 		return array;
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		if (o == this)
 			return true;
@@ -492,7 +493,7 @@ public class CharArray implements IArray,LRelease {
 	public boolean isEmpty() {
 		return length == 0 || items == null;
 	}
-	
+
 	public CharArray cpy() {
 		return new CharArray(this);
 	}

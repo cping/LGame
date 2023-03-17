@@ -1,19 +1,19 @@
 /**
- * 
+ *
  * Copyright 2014
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -38,7 +38,7 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, IArray, LRe
 	public static void freeStatic(){
 		instance = null;
 	}
-	
+
 	public static final RealtimeProcessManager get() {
 		if (instance == null) {
 			synchronized (RealtimeProcessManager.class) {
@@ -51,7 +51,7 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, IArray, LRe
 	}
 
 	private RealtimeProcessManager() {
-		this.processes = new SortedList<GameProcess>();
+		this.processes = new SortedList<>();
 	}
 
 	public static RealtimeProcessManager newProcess() {
@@ -77,9 +77,9 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, IArray, LRe
 		if (processes.size > 0) {
 			final SortedList<GameProcess> toBeUpdated;
 			synchronized (this.processes) {
-				toBeUpdated = new SortedList<GameProcess>(this.processes);
+				toBeUpdated = new SortedList<>(this.processes);
 			}
-			final SortedList<GameProcess> deadProcesses = new SortedList<GameProcess>();
+			final SortedList<GameProcess> deadProcesses = new SortedList<>();
 			try {
 				for (LIterator<GameProcess> it = toBeUpdated.listIterator(); it.hasNext();) {
 					GameProcess realtimeProcess = it.next();
@@ -112,7 +112,7 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, IArray, LRe
 	}
 
 	public TArray<GameProcess> find(String id) {
-		TArray<GameProcess> list = new TArray<GameProcess>();
+		TArray<GameProcess> list = new TArray<>();
 		if (processes != null && processes.size > 0) {
 			synchronized (this.processes) {
 				for (LIterator<GameProcess> it = processes.listIterator(); it.hasNext();) {
@@ -127,7 +127,7 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, IArray, LRe
 	}
 
 	public TArray<GameProcess> find(GameProcessType pt) {
-		TArray<GameProcess> list = new TArray<GameProcess>();
+		TArray<GameProcess> list = new TArray<>();
 		if (processes != null && processes.size > 0) {
 			synchronized (this.processes) {
 				for (LIterator<GameProcess> it = processes.listIterator(); it.hasNext();) {
@@ -142,13 +142,13 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, IArray, LRe
 	}
 
 	public TArray<GameProcess> delete(GameProcessType pt) {
-		TArray<GameProcess> list = new TArray<GameProcess>();
+		TArray<GameProcess> list = new TArray<>();
 		if (pt == null) {
 			return list;
 		}
 		if (processes != null && processes.size > 0) {
 			synchronized (this.processes) {
-				final TArray<GameProcess> ps = new TArray<GameProcess>(processes);
+				final TArray<GameProcess> ps = new TArray<>(processes);
 				for (int i = 0; i < ps.size; i++) {
 					GameProcess p = ps.get(i);
 					if (p != null) {
@@ -165,13 +165,13 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, IArray, LRe
 	}
 
 	public TArray<GameProcess> delete(GameProcess process) {
-		TArray<GameProcess> list = new TArray<GameProcess>();
+		TArray<GameProcess> list = new TArray<>();
 		if (process == null) {
 			return list;
 		}
 		if (processes != null && processes.size > 0) {
 			synchronized (this.processes) {
-				final TArray<GameProcess> ps = new TArray<GameProcess>(processes);
+				final TArray<GameProcess> ps = new TArray<>(processes);
 				for (int i = 0; i < ps.size; i++) {
 					GameProcess p = ps.get(i);
 					if (p != null) {
@@ -186,12 +186,12 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, IArray, LRe
 		}
 		return list;
 	}
-	
+
 	public TArray<GameProcess> delete(String id) {
-		TArray<GameProcess> list = new TArray<GameProcess>();
+		TArray<GameProcess> list = new TArray<>();
 		if (processes != null && processes.size > 0) {
 			synchronized (this.processes) {
-				final TArray<GameProcess> ps = new TArray<GameProcess>(processes);
+				final TArray<GameProcess> ps = new TArray<>(processes);
 				for (int i = 0; i < ps.size; i++) {
 					GameProcess p = ps.get(i);
 					if (p != null) {
@@ -208,10 +208,10 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, IArray, LRe
 	}
 
 	public TArray<GameProcess> deleteIndex(String id) {
-		TArray<GameProcess> list = new TArray<GameProcess>();
+		TArray<GameProcess> list = new TArray<>();
 		if (processes != null && processes.size > 0) {
 			synchronized (this.processes) {
-				final TArray<GameProcess> ps = new TArray<GameProcess>(processes);
+				final TArray<GameProcess> ps = new TArray<>(processes);
 				for (int i = 0; i < ps.size; i++) {
 					GameProcess p = ps.get(i);
 					if (p != null) {
@@ -250,7 +250,7 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, IArray, LRe
 	public void close() {
 		if (processes != null && processes.size > 0) {
 			synchronized (this.processes) {
-				final TArray<GameProcess> ps = new TArray<GameProcess>(processes);
+				final TArray<GameProcess> ps = new TArray<>(processes);
 				for (int i = 0; i < ps.size; i++) {
 					GameProcess p = ps.get(i);
 					if (p != null) {

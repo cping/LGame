@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2011
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -33,9 +33,9 @@ import loon.geom.PointI;
 import loon.geom.RectBox;
 import loon.geom.RectI;
 import loon.utils.ArrayMap;
+import loon.utils.ArrayMap.Entry;
 import loon.utils.IntArray;
 import loon.utils.StrBuilder;
-import loon.utils.ArrayMap.Entry;
 import loon.utils.TArray;
 import loon.utils.TimeUtils;
 import loon.utils.xml.XMLDocument;
@@ -384,7 +384,7 @@ public class LTexturePack implements LRelease {
 		}
 		IntArray ints = new IntArray();
 		for (int i = 0; i < temps.size(); i++) {
-			Entry entry = (Entry) temps.getEntry(i);
+			Entry entry = temps.getEntry(i);
 			if (entry != null) {
 				PackEntry e = (PackEntry) entry.getValue();
 				ints.add(e.id);

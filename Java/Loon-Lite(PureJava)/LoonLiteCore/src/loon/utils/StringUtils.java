@@ -1268,7 +1268,7 @@ final public class StringUtils extends CharUtils {
 	public static String toTimeEN(long ms) {
 		return toTime(ms, false);
 	}
-	
+
 	public static String toTime(long ms, boolean cn) {
 
 		final long ss = LSystem.SECOND;

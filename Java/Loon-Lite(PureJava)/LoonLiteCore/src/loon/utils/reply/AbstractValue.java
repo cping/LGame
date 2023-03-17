@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -26,7 +26,7 @@ public abstract class AbstractValue<T> extends Bypass implements VarView<T> {
 	@Override
 	public <M> VarView<M> map(final Function<T, M> func) {
 		final AbstractValue<T> outer = this;
-		return new MappedValue<M>() {
+		return new MappedValue<>() {
 			@Override
 			public M get() {
 				return func.apply(outer.get());
@@ -34,7 +34,7 @@ public abstract class AbstractValue<T> extends Bypass implements VarView<T> {
 
 			@Override
 			public String toString() {
-				
+
 				return outer + ".map(" + func + ")";
 			}
 
@@ -61,7 +61,8 @@ public abstract class AbstractValue<T> extends Bypass implements VarView<T> {
 	}
 
 	private static <T> VarViewListener<T> wrap(final ActViewListener<? super T> listener) {
-		return new VarViewListener<T>() {
+		return new VarViewListener<>() {
+			@Override
 			public void onChange(T newValue, T oldValue) {
 				listener.onEmit(newValue);
 			}
@@ -86,9 +87,7 @@ public abstract class AbstractValue<T> extends Bypass implements VarView<T> {
 
 	@Override
 	public boolean equals(Object other) {
-		if (other == null)
-			return false;
-		if (other.getClass() != getClass())
+		if ((other == null) || (other.getClass() != getClass()))
 			return false;
 		T value = get();
 		@SuppressWarnings("unchecked")
@@ -138,7 +137,7 @@ public abstract class AbstractValue<T> extends Bypass implements VarView<T> {
 		throw new UnsupportedOperationException();
 	}
 
-	protected final Notifier<T> CHANGE = new Notifier<T>() {
+	protected final Notifier<T> CHANGE = new Notifier<>() {
 		@SuppressWarnings("unchecked")
 		@Override
 		public void notify(Bypass.GoListener lner, T value, T oldValue, T ignored) {

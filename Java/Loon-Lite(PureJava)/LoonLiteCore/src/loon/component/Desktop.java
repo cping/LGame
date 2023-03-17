@@ -1,19 +1,19 @@
 /**
- * 
+ *
  * Copyright 2008 - 2009
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -44,7 +44,7 @@ import loon.utils.reply.Callback;
 
 /**
  * 桌面组件总父类，用来注册，控制，以及渲染所有桌面组件（所有默认支持触屏的组件，被置于此）
- * 
+ *
  */
 public class Desktop implements Visible, LRelease {
 
@@ -80,7 +80,7 @@ public class Desktop implements Visible, LRelease {
 
 	/**
 	 * 构造一个可用桌面
-	 * 
+	 *
 	 * @param screen
 	 */
 	public Desktop(Screen screen) {
@@ -89,7 +89,7 @@ public class Desktop implements Visible, LRelease {
 
 	/**
 	 * 构造一个可用桌面
-	 * 
+	 *
 	 * @param screen
 	 * @param width
 	 * @param height
@@ -100,7 +100,7 @@ public class Desktop implements Visible, LRelease {
 
 	/**
 	 * 构造一个可用桌面
-	 * 
+	 *
 	 * @param screen
 	 * @param width
 	 * @param height
@@ -111,7 +111,7 @@ public class Desktop implements Visible, LRelease {
 
 	/**
 	 * 构造一个可用桌面
-	 * 
+	 *
 	 * @param input
 	 * @param width
 	 * @param height
@@ -120,7 +120,7 @@ public class Desktop implements Visible, LRelease {
 		this.clickComponent = new LComponent[1];
 		this.desktop_name = StringUtils.isEmpty(name) ? "Desktop" + LSystem.getDesktopSize() : name;
 		this.dvisible = true;
-		this.contentPane = new LPanel(0, 0, (int) width, (int) height);
+		this.contentPane = new LPanel(0, 0, width, height);
 		this.contentPane.desktopContainer = true;
 		this.input = screen;
 		this.tooltip = new LToolTip();
@@ -190,10 +190,7 @@ public class Desktop implements Visible, LRelease {
 	}
 
 	public LComponent add(LComponent comp) {
-		if (dclosed) {
-			return comp;
-		}
-		if (comp == null) {
+		if (dclosed || (comp == null)) {
 			return comp;
 		}
 		comp.setDesktop(this);
@@ -306,13 +303,10 @@ public class Desktop implements Visible, LRelease {
 
 	/**
 	 * 刷新当前桌面
-	 * 
+	 *
 	 */
 	public void update(long elapsedTime) {
-		if (!this.dvisible) {
-			return;
-		}
-		if (!this.contentPane.isVisible()) {
+		if (!this.dvisible || !this.contentPane.isVisible()) {
 			return;
 		}
 		this.processEvents();
@@ -395,8 +389,7 @@ public class Desktop implements Visible, LRelease {
 			return;
 		}
 		LComponent[] components = contentPane._childs;
-		for (int i = 0; i < components.length; i++) {
-			LComponent component = components[i];
+		for (LComponent component : components) {
 			if (component != null && component.intersects(x, y)) {
 				component.update(0);
 				component.processTouchPressed();
@@ -410,8 +403,7 @@ public class Desktop implements Visible, LRelease {
 			return;
 		}
 		LComponent[] components = contentPane._childs;
-		for (int i = 0; i < components.length; i++) {
-			LComponent component = components[i];
+		for (LComponent component : components) {
 			if (component != null && component.intersects(x, y)) {
 				component.update(0);
 				component.processTouchReleased();
@@ -451,7 +443,7 @@ public class Desktop implements Visible, LRelease {
 
 	/**
 	 * 事件监听
-	 * 
+	 *
 	 */
 	public void processEvents() {
 		processTouchs();
@@ -483,7 +475,7 @@ public class Desktop implements Visible, LRelease {
 
 	/**
 	 * 鼠标运动事件
-	 * 
+	 *
 	 */
 	private void processTouchMotionEvent() {
 		if (this.hoverComponent != null && !this.hoverComponent._touchLocked && this.hoverComponent.isEnabled()
@@ -556,7 +548,7 @@ public class Desktop implements Visible, LRelease {
 
 	/**
 	 * 设置全局通用的提示组件
-	 * 
+	 *
 	 * @param tip
 	 */
 	public void setToolTip(LToolTip tip) {
@@ -566,7 +558,7 @@ public class Desktop implements Visible, LRelease {
 
 	/**
 	 * 鼠标按下事件
-	 * 
+	 *
 	 */
 	private void processTouchEvent() {
 		int pressed = this.input.getTouchPressed(), released = this.input.getTouchReleased();
@@ -606,7 +598,7 @@ public class Desktop implements Visible, LRelease {
 
 	/**
 	 * 触发键盘事件
-	 * 
+	 *
 	 */
 	private void processKeyEvent() {
 		if (this.selectedComponent != null && !this.selectedComponent._keyLocked
@@ -621,7 +613,7 @@ public class Desktop implements Visible, LRelease {
 
 	/**
 	 * 查找指定坐标点成员
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @return
@@ -653,15 +645,12 @@ public class Desktop implements Visible, LRelease {
 
 	/**
 	 * 查找指定容器
-	 * 
+	 *
 	 * @param comp
 	 * @return
 	 */
 	boolean selectComponent(LComponent comp) {
-		if (comp == null) {
-			return false;
-		}
-		if (!comp.isVisible() || !comp.isEnabled() || !comp.isFocusable()) {
+		if ((comp == null) || !comp.isVisible() || !comp.isEnabled() || !comp.isFocusable()) {
 			return false;
 		}
 
@@ -681,8 +670,8 @@ public class Desktop implements Visible, LRelease {
 		}
 		if (comp.isContainer()) {
 			LComponent[] child = ((LContainer) comp)._childs;
-			for (int i = 0; i < child.length; i++) {
-				this.setDesktop(child[i]);
+			for (LComponent element : child) {
+				this.setDesktop(element);
 			}
 		}
 		comp.setDesktop(this);
@@ -727,8 +716,7 @@ public class Desktop implements Visible, LRelease {
 		}
 
 		boolean checkTouchMotion = false;
-		for (int i = 0; i < components.length; i++) {
-			LComponent comp = components[i];
+		for (LComponent comp : components) {
 			if (this.hoverComponent == comp) {
 				checkTouchMotion = true;
 			}
@@ -1040,7 +1028,7 @@ public class Desktop implements Visible, LRelease {
 
 	/**
 	 * 删除符合指定条件的组件并返回操作的集合
-	 * 
+	 *
 	 * @param query
 	 * @return
 	 */
@@ -1050,7 +1038,7 @@ public class Desktop implements Visible, LRelease {
 
 	/**
 	 * 查找符合指定条件的组件并返回操作的集合
-	 * 
+	 *
 	 * @param query
 	 * @return
 	 */
@@ -1060,7 +1048,7 @@ public class Desktop implements Visible, LRelease {
 
 	/**
 	 * 删除指定条件的组件并返回操作的集合
-	 * 
+	 *
 	 * @param query
 	 * @return
 	 */
@@ -1070,7 +1058,7 @@ public class Desktop implements Visible, LRelease {
 
 	/**
 	 * 查找符合指定条件的组件并返回操作的集合
-	 * 
+	 *
 	 * @param query
 	 * @return
 	 */
@@ -1094,7 +1082,7 @@ public class Desktop implements Visible, LRelease {
 		if (comp == null) {
 			return false;
 		}
-		TArray<LComponent> parentList = new TArray<LComponent>();
+		TArray<LComponent> parentList = new TArray<>();
 		for (LComponent parent = comp.getParent(); parent != null; parent = parent.getParent()) {
 			parentList.add(parent);
 		}

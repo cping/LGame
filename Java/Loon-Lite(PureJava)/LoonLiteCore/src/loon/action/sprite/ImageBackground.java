@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -20,12 +20,12 @@
  */
 package loon.action.sprite;
 
+import loon.LSystem;
 import loon.LTexture;
 import loon.action.map.Config;
 import loon.action.map.Field2D;
 import loon.geom.PointF;
 import loon.utils.MathUtils;
-import loon.LSystem;
 
 /**
  * 背景精灵具体实现,可拖拽
@@ -174,7 +174,7 @@ public class ImageBackground extends Background {
 	public float scrollY() {
 		return _offset.y;
 	}
-	
+
 	@Override
 	public void onResize(){
 		super.onResize();

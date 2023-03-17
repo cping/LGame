@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -35,7 +35,7 @@ public class URecognizer {
 	public final static int GESTURES_CIRCLES = 1;
 
 	public final static int GESTURES_NONE = 2;
-	
+
 	public final static int MXA_POINTS = 64;
 
 	public final static float MAX_SQUARE_COUNT = 200f;
@@ -52,7 +52,7 @@ public class URecognizer {
 
 	protected int bounds[] = { 0, 0, 0, 0 };
 
-	protected TArray<URecognizerObject> objects = new TArray<URecognizerObject>(MXA_POINTS);
+	protected TArray<URecognizerObject> objects = new TArray<>(MXA_POINTS);
 
 	private GestureData gestureData;
 
@@ -124,7 +124,7 @@ public class URecognizer {
 	}
 
 	public static TArray<PointF> loadArray(int[] array) {
-		TArray<PointF> v = new TArray<PointF>(array.length / 2);
+		TArray<PointF> v = new TArray<>(array.length / 2);
 		for (int i = 0; i < array.length; i += 2) {
 			PointF p = new PointF(array[i], array[i + 1]);
 			v.add(p);
@@ -147,7 +147,7 @@ public class URecognizer {
 
 		float b = Float.MAX_VALUE;
 		for (int i = 0; i < objects.size(); i++) {
-			float d = getDistanceAtBestAngle(points, (URecognizerObject) objects.get(i), -angleRange, angleRange,
+			float d = getDistanceAtBestAngle(points, objects.get(i), -angleRange, angleRange,
 					anglePre);
 			if (d < b) {
 				b = d;
@@ -168,12 +168,12 @@ public class URecognizer {
 		float I = getPathLength(points) / (n - 1);
 		float fv = 0f;
 
-		TArray<PointF> srcPts = new TArray<PointF>(points.size());
+		TArray<PointF> srcPts = new TArray<>(points.size());
 		for (int i = 0; i < points.size(); i++) {
 			srcPts.add(points.get(i));
 		}
 
-		TArray<PointF> dstPts = new TArray<PointF>(n);
+		TArray<PointF> dstPts = new TArray<>(n);
 		dstPts.add(srcPts.get(0));
 
 		for (int i = 1; i < srcPts.size(); i++) {
@@ -223,7 +223,7 @@ public class URecognizer {
 	}
 
 	public static TArray<PointF> getRotateByRadians(TArray<PointF> points, float radians) {
-		TArray<PointF> newPoints = new TArray<PointF>(points.size());
+		TArray<PointF> newPoints = new TArray<>(points.size());
 		PointF c = getCentroid(points);
 
 		float cos = MathUtils.cos(radians);
@@ -249,7 +249,7 @@ public class URecognizer {
 
 	public static TArray<PointF> getScaleToSquare(TArray<PointF> points, float size, RectF boundingBox) {
 		RectF B = getBoundingBox(points);
-		TArray<PointF> newpoints = new TArray<PointF>(points.size());
+		TArray<PointF> newpoints = new TArray<>(points.size());
 		for (int i = 0; i < points.size(); i++) {
 			PointF p = points.get(i);
 			float qx = p.x * (size / B.width);
@@ -265,7 +265,7 @@ public class URecognizer {
 
 	public static TArray<PointF> loadTranslateToOrigin(TArray<PointF> points) {
 		PointF c = getCentroid(points);
-		TArray<PointF> newpoints = new TArray<PointF>(points.size());
+		TArray<PointF> newpoints = new TArray<>(points.size());
 		for (int i = 0; i < points.size(); i++) {
 			PointF p = points.get(i);
 			float qx = p.x - c.x;

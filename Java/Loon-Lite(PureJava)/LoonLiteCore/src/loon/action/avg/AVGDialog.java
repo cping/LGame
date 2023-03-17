@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2010
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email javachenpeng@yahoo.com
@@ -53,7 +53,7 @@ final public class AVGDialog {
 
 	public final LTexture getRMXPDialog(String fileName, int width, int height) {
 		if (_dialogCache == null) {
-			_dialogCache = new ObjectMap<String, LTexture>(10);
+			_dialogCache = new ObjectMap<>(10);
 		}
 		Image dialog = BaseIO.loadImage(fileName);
 		int w = dialog.getWidth();
@@ -87,7 +87,7 @@ final public class AVGDialog {
 
 	public final LTexture getRMXPloadBuoyage(Image rmxpImage, int width, int height) {
 		if (_dialogCache == null) {
-			_dialogCache = new ObjectMap<String, LTexture>(10);
+			_dialogCache = new ObjectMap<>(10);
 		}
 		String keyName = "buoyage" + width + "|" + height + "|" + rmxpImage.getSource();
 		LTexture lazy = _dialogCache.get(keyName);
@@ -144,7 +144,7 @@ final public class AVGDialog {
 
 	private final LTexture getRMXPDialog(Image rmxpImage, int width, int height, int size, int offset) {
 		if (_dialogCache == null) {
-			_dialogCache = new ObjectMap<String, LTexture>(10);
+			_dialogCache = new ObjectMap<>(10);
 		}
 		String keyName = "dialog" + width + "|" + height + "|" + rmxpImage.getSource();
 		LTexture lazy = _dialogCache.get(keyName);

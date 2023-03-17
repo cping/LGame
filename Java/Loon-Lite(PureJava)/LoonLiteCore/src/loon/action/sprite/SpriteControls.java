@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -30,14 +30,15 @@ import loon.action.map.Field2D;
 import loon.canvas.LColor;
 import loon.component.layout.Margin;
 import loon.events.EventDispatcher;
+import loon.events.QueryEvent;
 import loon.font.FontSet;
 import loon.font.IFont;
 import loon.geom.RectBox;
 import loon.utils.CollectionUtils;
+import loon.utils.Easing.EasingMode;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
 import loon.utils.TArray;
-import loon.utils.Easing.EasingMode;
 
 /**
  * Sprite组件的群组化操作控制器，可以同时改变一组精灵的参数或动画事件
@@ -47,8 +48,8 @@ public class SpriteControls {
 	public static float getChildrenHeight(Sprites s) {
 		float totalHeight = 0;
 		ISprite[] list = s._sprites;
-		for (int i = 0; i < list.length; i++) {
-			totalHeight += list[i].getHeight();
+		for (ISprite element : list) {
+			totalHeight += element.getHeight();
 		}
 		return totalHeight;
 	}
@@ -56,8 +57,8 @@ public class SpriteControls {
 	public static float getChildrenWidth(Sprites s) {
 		float totalWidth = 0;
 		ISprite[] list = s._sprites;
-		for (int i = 0; i < list.length; i++) {
-			totalWidth += list[i].getWidth();
+		for (ISprite element : list) {
+			totalWidth += element.getWidth();
 		}
 		return totalWidth;
 	}
@@ -65,8 +66,8 @@ public class SpriteControls {
 	public static float getMaxChildHeight(Sprites s) {
 		int maxHeight = 0;
 		ISprite[] list = s._sprites;
-		for (int i = 0; i < list.length; i++) {
-			maxHeight = MathUtils.max(maxHeight, (int) list[i].getHeight());
+		for (ISprite element : list) {
+			maxHeight = MathUtils.max(maxHeight, (int) element.getHeight());
 		}
 		return maxHeight;
 	}
@@ -74,13 +75,13 @@ public class SpriteControls {
 	public static int getMaxChildWidth(Sprites s) {
 		int maxWidth = 0;
 		ISprite[] list = s._sprites;
-		for (int i = 0; i < list.length; i++) {
-			maxWidth = MathUtils.max(maxWidth, (int) list[i].getWidth());
+		for (ISprite element : list) {
+			maxWidth = MathUtils.max(maxWidth, (int) element.getWidth());
 		}
 		return maxWidth;
 	}
 
-	private ObjectMap<ISprite, ActionTween> tweens = new ObjectMap<ISprite, ActionTween>(
+	private ObjectMap<ISprite, ActionTween> tweens = new ObjectMap<>(
 			CollectionUtils.INITIAL_CAPACITY);
 
 	private Margin _margin;
@@ -98,15 +99,51 @@ public class SpriteControls {
 	}
 
 	public SpriteControls() {
-		this._sprs = new TArray<ISprite>();
+		this._sprs = new TArray<>();
 	}
 
-	public TArray<ISprite> list(){
+	public ISprite random() {
+		if (_sprs.size == 0) {
+			return null;
+		}
+		return _sprs.get(MathUtils.random(_sprs.size - 1));
+	}
+
+	public int indexOf(QueryEvent<ISprite> q) {
+		int i = 0;
+		for (ISprite s : _sprs) {
+			if (q.hit(s)) {
+				return i;
+			}
+			i++;
+		}
+		return -1;
+	}
+
+	public int indexOf(ISprite value) {
+		for (int i = 0; i < _sprs.size; i++) {
+			if (_sprs.get(i) == value) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	public ISprite find(QueryEvent<ISprite> q) {
+		for (ISprite s : _sprs) {
+			if (q.hit(s)) {
+				return s;
+			}
+		}
+		return null;
+	}
+
+	public TArray<ISprite> list() {
 		return this._sprs;
 	}
-	
+
 	public TArray<ISprite> intersects(RectBox rect) {
-		TArray<ISprite> sprites = new TArray<ISprite>();
+		TArray<ISprite> sprites = new TArray<>();
 		for (ISprite child : this._sprs) {
 			if (child != null) {
 				if (rect.intersects(child.getX(), child.getY(), child.getWidth(), child.getHeight())) {
@@ -118,7 +155,7 @@ public class SpriteControls {
 	}
 
 	public TArray<ISprite> intersects(float x, float y, float width, float height) {
-		TArray<ISprite> sprites = new TArray<ISprite>();
+		TArray<ISprite> sprites = new TArray<>();
 		for (ISprite child : this._sprs) {
 			if (child != null) {
 				if (CollisionHelper.intersects(x, y, width, height, child.getX(), child.getY(), child.getWidth(),
@@ -131,7 +168,7 @@ public class SpriteControls {
 	}
 
 	public TArray<ISprite> contains(RectBox rect) {
-		TArray<ISprite> sprites = new TArray<ISprite>();
+		TArray<ISprite> sprites = new TArray<>();
 		for (ISprite child : this._sprs) {
 			if (child != null) {
 				if (rect.contains(child.getX(), child.getY(), child.getWidth(), child.getHeight())) {
@@ -143,7 +180,7 @@ public class SpriteControls {
 	}
 
 	public TArray<ISprite> contains(float x, float y, float width, float height) {
-		TArray<ISprite> sprites = new TArray<ISprite>();
+		TArray<ISprite> sprites = new TArray<>();
 		for (ISprite child : this._sprs) {
 			if (child != null) {
 				if (CollisionHelper.contains(x, y, width, height, child.getX(), child.getY(), child.getWidth(),
@@ -154,7 +191,7 @@ public class SpriteControls {
 		}
 		return sprites;
 	}
-	
+
 	public SpriteControls add(ISprite spr) {
 		if (spr == null) {
 			throw new LSysException("ISprite cannot be null.");
@@ -183,8 +220,8 @@ public class SpriteControls {
 		if (comps == null) {
 			throw new LSysException("Sprites cannot be null.");
 		}
-		for (int i = 0, n = comps.length; i < n; i++) {
-			add(comps[i]);
+		for (ISprite comp : comps) {
+			add(comp);
 		}
 		return this;
 	}
@@ -193,8 +230,8 @@ public class SpriteControls {
 		if (comps == null) {
 			throw new LSysException("Sprites cannot be null.");
 		}
-		for (int i = 0, n = comps.length; i < n; i++) {
-			remove(comps[i]);
+		for (ISprite comp : comps) {
+			remove(comp);
 		}
 		return this;
 	}
@@ -558,13 +595,13 @@ public class SpriteControls {
 				ActionTween tween = tweens.get(spr);
 				if (spr.getAlpha() >= 255) {
 					if (tween == null) {
-						tween = PlayerUtils.set((ActionBind) spr).fadeIn(speed);
+						tween = PlayerUtils.set(spr).fadeIn(speed);
 					} else {
 						tween.fadeIn(speed);
 					}
 				} else {
 					if (tween == null) {
-						tween = PlayerUtils.set((ActionBind) spr).fadeOut(speed);
+						tween = PlayerUtils.set(spr).fadeOut(speed);
 					} else {
 						tween.fadeOut(speed);
 					}
@@ -584,13 +621,13 @@ public class SpriteControls {
 				ActionTween tween = tweens.get(spr);
 				if (spr.getAlpha() <= 0) {
 					if (tween == null) {
-						tween = PlayerUtils.set((ActionBind) spr).fadeOut(speed);
+						tween = PlayerUtils.set(spr).fadeOut(speed);
 					} else {
 						tween.fadeOut(speed);
 					}
 				} else {
 					if (tween == null) {
-						tween = PlayerUtils.set((ActionBind) spr).fadeIn(speed);
+						tween = PlayerUtils.set(spr).fadeIn(speed);
 					} else {
 						tween.fadeIn(speed);
 					}
@@ -609,7 +646,7 @@ public class SpriteControls {
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind) spr).moveBy(endX, endY, speed);
+					tween = PlayerUtils.set(spr).moveBy(endX, endY, speed);
 				} else {
 					tween.moveBy(endX, endY, speed);
 				}
@@ -627,7 +664,7 @@ public class SpriteControls {
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind) spr).moveBy(endX, endY);
+					tween = PlayerUtils.set(spr).moveBy(endX, endY);
 				} else {
 					tween.moveBy(endX, endY);
 				}
@@ -645,7 +682,7 @@ public class SpriteControls {
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind) spr).moveTo(endX, endY, speed);
+					tween = PlayerUtils.set(spr).moveTo(endX, endY, speed);
 				} else {
 					tween.moveTo(endX, endY, speed);
 				}
@@ -664,7 +701,7 @@ public class SpriteControls {
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind) spr).moveTo(endX, endY, flag, speed);
+					tween = PlayerUtils.set(spr).moveTo(endX, endY, flag, speed);
 				} else {
 					tween.moveTo(endX, endY, flag, speed);
 				}
@@ -683,7 +720,7 @@ public class SpriteControls {
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind) spr).moveTo(map, endX, endY, flag, speed);
+					tween = PlayerUtils.set(spr).moveTo(map, endX, endY, flag, speed);
 				} else {
 					tween.moveTo(map, endX, endY, flag, speed);
 				}
@@ -702,7 +739,7 @@ public class SpriteControls {
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind) spr).delay(d);
+					tween = PlayerUtils.set(spr).delay(d);
 				} else {
 					tween.delay(d);
 				}
@@ -721,7 +758,7 @@ public class SpriteControls {
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind) spr).rotateTo(angle);
+					tween = PlayerUtils.set(spr).rotateTo(angle);
 				} else {
 					tween.rotateTo(angle);
 				}
@@ -740,7 +777,7 @@ public class SpriteControls {
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind) spr).rotateTo(angle, speed);
+					tween = PlayerUtils.set(spr).rotateTo(angle, speed);
 				} else {
 					tween.rotateTo(angle, speed);
 				}
@@ -759,7 +796,7 @@ public class SpriteControls {
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind) spr).scaleTo(sx, sy);
+					tween = PlayerUtils.set(spr).scaleTo(sx, sy);
 				} else {
 					tween.scaleTo(sx, sy);
 				}
@@ -778,7 +815,7 @@ public class SpriteControls {
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind) spr).scaleTo(sx, sy, speed);
+					tween = PlayerUtils.set(spr).scaleTo(sx, sy, speed);
 				} else {
 					tween.scaleTo(sx, sy, speed);
 				}
@@ -797,7 +834,7 @@ public class SpriteControls {
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind) spr).showTo(v);
+					tween = PlayerUtils.set(spr).showTo(v);
 				} else {
 					tween.showTo(v);
 				}
@@ -816,7 +853,7 @@ public class SpriteControls {
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind) spr).colorTo(end);
+					tween = PlayerUtils.set(spr).colorTo(end);
 				} else {
 					tween.colorTo(end);
 				}
@@ -835,7 +872,7 @@ public class SpriteControls {
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind) spr).shakeTo(shakeX, shakeY);
+					tween = PlayerUtils.set(spr).shakeTo(shakeX, shakeY);
 				} else {
 					tween.shakeTo(shakeX, shakeY);
 				}
@@ -854,7 +891,7 @@ public class SpriteControls {
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind) spr).followTo(bind, follow, speed);
+					tween = PlayerUtils.set(spr).followTo(bind, follow, speed);
 				} else {
 					tween.followTo(bind, follow, speed);
 				}
@@ -873,7 +910,7 @@ public class SpriteControls {
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind) spr).flashTo(duration);
+					tween = PlayerUtils.set(spr).flashTo(duration);
 				} else {
 					tween.flashTo(duration);
 				}
@@ -893,7 +930,7 @@ public class SpriteControls {
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind) spr).transferTo(startPos, endPos, duration, mode, controlX,
+					tween = PlayerUtils.set(spr).transferTo(startPos, endPos, duration, mode, controlX,
 							controlY);
 				} else {
 					tween.transferTo(startPos, endPos, duration, mode, controlX, controlY);

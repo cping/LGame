@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2019 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -24,10 +24,10 @@ import loon.BaseIO;
 import loon.LSystem;
 import loon.utils.LIterator;
 import loon.utils.ObjectMap;
-import loon.utils.StringUtils;
-import loon.utils.TArray;
 import loon.utils.ObjectMap.Entry;
 import loon.utils.StrBuilder;
+import loon.utils.StringUtils;
+import loon.utils.TArray;
 
 /**
  * 工具类，用于解析csv的配置数据
@@ -71,7 +71,7 @@ public class ParserCSVData {
 			if (headerMap == null) {
 				return null;
 			}
-			final ObjectMap<String, String> fieldMap = new ObjectMap<String, String>(headerMap.size());
+			final ObjectMap<String, String> fieldMap = new ObjectMap<>(headerMap.size());
 			for (final Entry<String, Integer> header : headerMap.entries()) {
 				String key = header.getKey();
 				Integer col = headerMap.get(key);
@@ -199,18 +199,18 @@ public class ParserCSVData {
 		this._rows = null;
 		this._finished = false;
 		this._csvFlag = LSystem.COMMA;
-		
+
 		this.maxFieldCount = 0;
 		this.fieldCount = 0;
 		this.startingLineNo = 0;
 		this.lineNo = 0;
-		
+
 		return this;
 	}
 
 	public TArray<CSVRow> readCSVList() {
 		if (this._rows == null) {
-			this._rows = new TArray<CSVRow>();
+			this._rows = new TArray<>();
 		} else {
 			this._rows.clear();
 		}
@@ -256,7 +256,7 @@ public class ParserCSVData {
 	private void initHeader(final int id, final String str) {
 		final String[] split = StringUtils.split(str, _csvFlag);
 		final int len = split.length;
-		final ObjectMap<String, Integer> localHeaderMap = new ObjectMap<String, Integer>(len);
+		final ObjectMap<String, Integer> localHeaderMap = new ObjectMap<>(len);
 		for (int i = 0; i < len; i++) {
 			final String field = split[i];
 			if (StringUtils.isNotEmpty(field)) {

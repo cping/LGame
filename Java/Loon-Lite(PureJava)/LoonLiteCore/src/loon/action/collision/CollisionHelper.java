@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -49,7 +49,7 @@ public final class CollisionHelper extends ShapeUtils {
 
 	/**
 	 * 检查两个坐标值是否在指定的碰撞半径内
-	 * 
+	 *
 	 * @param x1
 	 * @param y1
 	 * @param r1
@@ -67,14 +67,14 @@ public final class CollisionHelper extends ShapeUtils {
 
 	/**
 	 * 获得两个三维体间初始XYZ位置的距离
-	 * 
+	 *
 	 * @param target
 	 * @param beforePlace
 	 * @param distance
 	 * @return
 	 */
 	public static Vector3f getDistantPoint(XYZ target, XYZ source, float distance) {
-		
+
 		float deltaX = target.getX() - source.getX();
 		float deltaY = target.getY() - source.getY();
 		float deltaZ = target.getZ() - source.getZ();
@@ -91,7 +91,7 @@ public final class CollisionHelper extends ShapeUtils {
 
 	/**
 	 * 获得两个三维体间初始XYZ位置的距离
-	 * 
+	 *
 	 * @param target
 	 * @param source
 	 * @param distance
@@ -112,7 +112,7 @@ public final class CollisionHelper extends ShapeUtils {
 
 	/**
 	 * 获得两个矩形间初始XY位置的距离
-	 * 
+	 *
 	 * @param target
 	 * @param beforePlace
 	 * @return
@@ -128,7 +128,7 @@ public final class CollisionHelper extends ShapeUtils {
 
 	/**
 	 * 获得多个点间距离
-	 * 
+	 *
 	 * @param target
 	 * @param beforePlace
 	 * @param afterPlace
@@ -141,7 +141,7 @@ public final class CollisionHelper extends ShapeUtils {
 
 	/**
 	 * 获得多个点间距离
-	 * 
+	 *
 	 * @param target
 	 * @param beforePlace
 	 * @param afterPlace
@@ -162,7 +162,7 @@ public final class CollisionHelper extends ShapeUtils {
 
 	/**
 	 * 检查两个矩形是否发生了碰撞
-	 * 
+	 *
 	 * @param rect1
 	 * @param rect2
 	 * @return
@@ -177,7 +177,7 @@ public final class CollisionHelper extends ShapeUtils {
 
 	/**
 	 * 判断两个圆形是否发生了碰撞
-	 * 
+	 *
 	 * @param rect1
 	 * @param rect2
 	 * @return
@@ -193,7 +193,7 @@ public final class CollisionHelper extends ShapeUtils {
 
 	/**
 	 * 检查矩形与圆形是否发生了碰撞
-	 * 
+	 *
 	 * @param rect1
 	 * @param rect2
 	 * @return
@@ -224,7 +224,7 @@ public final class CollisionHelper extends ShapeUtils {
 
 	/**
 	 * 换算点线距离
-	 * 
+	 *
 	 * @param point1
 	 * @param point2
 	 * @param middle
@@ -239,7 +239,7 @@ public final class CollisionHelper extends ShapeUtils {
 
 	/**
 	 * 返回中间距离的Point2D形式
-	 * 
+	 *
 	 * @param rectangle
 	 * @return
 	 */
@@ -249,7 +249,7 @@ public final class CollisionHelper extends ShapeUtils {
 
 	/**
 	 * 判定指定的两张图片之间是否产生了碰撞
-	 * 
+	 *
 	 * @param src
 	 * @param x1
 	 * @param y1
@@ -319,7 +319,7 @@ public final class CollisionHelper extends ShapeUtils {
 
 	/**
 	 * 判断指定大小的两组像素是否相交
-	 * 
+	 *
 	 * @param rectA
 	 * @param dataA
 	 * @param rectB
@@ -348,7 +348,7 @@ public final class CollisionHelper extends ShapeUtils {
 
 	/**
 	 * 判断两个Shape是否相交
-	 * 
+	 *
 	 * @param s1
 	 * @param s2
 	 * @return
@@ -381,16 +381,7 @@ public final class CollisionHelper extends ShapeUtils {
 		rectTemp1.setBounds(x, y, width, height).normalize();
 		rectTemp2.setBounds(dx, dy, dw, dh).normalize();
 		if (touchingIsIn) {
-			if (rectTemp1.x + rectTemp1.width == rectTemp2.x) {
-				return true;
-			}
-			if (rectTemp1.x == rectTemp2.x + rectTemp2.width) {
-				return true;
-			}
-			if (rectTemp1.y + rectTemp1.height == rectTemp2.y) {
-				return true;
-			}
-			if (rectTemp1.y == rectTemp2.y + rectTemp2.height) {
+			if ((rectTemp1.x + rectTemp1.width == rectTemp2.x) || (rectTemp1.x == rectTemp2.x + rectTemp2.width) || (rectTemp1.y + rectTemp1.height == rectTemp2.y) || (rectTemp1.y == rectTemp2.y + rectTemp2.height)) {
 				return true;
 			}
 		}
@@ -399,7 +390,7 @@ public final class CollisionHelper extends ShapeUtils {
 
 	/**
 	 * 计算并返回两个正方形之间的碰撞间距值
-	 * 
+	 *
 	 * @param rect1
 	 * @param rect2
 	 * @return
@@ -414,7 +405,7 @@ public final class CollisionHelper extends ShapeUtils {
 
 	/**
 	 * 计算并返回两个正方形之间的碰撞间距值
-	 * 
+	 *
 	 * @param x1
 	 * @param y1
 	 * @param w1
@@ -455,7 +446,7 @@ public final class CollisionHelper extends ShapeUtils {
 
 	/**
 	 * 计算并返回指定位置与指定正方形之间的碰撞间距值
-	 * 
+	 *
 	 * @param xy
 	 * @param box
 	 * @return
@@ -469,7 +460,7 @@ public final class CollisionHelper extends ShapeUtils {
 
 	/**
 	 * 计算并返回指定位置与指定正方形之间的碰撞间距值
-	 * 
+	 *
 	 * @param px
 	 * @param py
 	 * @param rx
@@ -508,7 +499,7 @@ public final class CollisionHelper extends ShapeUtils {
 
 	/**
 	 * 判断两个Shape是否存在包含关系
-	 * 
+	 *
 	 * @param s1
 	 * @param s2
 	 * @return
@@ -558,7 +549,7 @@ public final class CollisionHelper extends ShapeUtils {
         }
         return true;
     }
-    
+
 	public static final void confine(RectBox rect, RectBox field) {
 		int x = rect.Right() > field.Right() ? field.Right() - (int) rect.getWidth() : rect.Left();
 		if (x < field.Left()) {
@@ -648,7 +639,7 @@ public final class CollisionHelper extends ShapeUtils {
 
 	/**
 	 * 判断两点坐标是否存在移动
-	 * 
+	 *
 	 * @param distance
 	 * @param startPoints
 	 * @param endPoint
@@ -660,7 +651,7 @@ public final class CollisionHelper extends ShapeUtils {
 
 	/**
 	 * 判断两点坐标是否存在移动
-	 * 
+	 *
 	 * @param distance
 	 * @param sx
 	 * @param sy
@@ -760,7 +751,7 @@ public final class CollisionHelper extends ShapeUtils {
 
 	/**
 	 * 将目标矩形添加到原始矩形的边界。
-	 * 
+	 *
 	 * @param source
 	 * @param target
 	 * @return
@@ -778,7 +769,7 @@ public final class CollisionHelper extends ShapeUtils {
 
 	/**
 	 * 填充指定瓦片的边界。瓦片从左到右，从上到下。
-	 * 
+	 *
 	 * @param width
 	 * @param height
 	 * @param tileWidth
@@ -792,7 +783,7 @@ public final class CollisionHelper extends ShapeUtils {
 
 	/**
 	 * 填充指定瓦片的边界。瓦片从左到右，从上到下。
-	 * 
+	 *
 	 * @param width
 	 * @param height
 	 * @param tileWidth
@@ -818,7 +809,7 @@ public final class CollisionHelper extends ShapeUtils {
 
 	/**
 	 * 获得指定线经过的点
-	 * 
+	 *
 	 * @param line
 	 * @param stepRate
 	 * @return
@@ -827,7 +818,7 @@ public final class CollisionHelper extends ShapeUtils {
 		if (stepRate < 1f) {
 			stepRate = 1f;
 		}
-		TArray<Vector2f> results = new TArray<Vector2f>();
+		TArray<Vector2f> results = new TArray<>();
 
 		float x1 = MathUtils.round(line.getX1());
 		float y1 = MathUtils.round(line.getY1());

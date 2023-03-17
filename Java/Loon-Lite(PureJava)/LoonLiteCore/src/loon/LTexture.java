@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -451,7 +451,7 @@ public class LTexture extends Painter implements LRelease {
 		hashCode = LSystem.unite(hashCode, height);
 
 		if (childs == null) {
-			childs = new IntMap<LTexture>(10);
+			childs = new IntMap<>(10);
 		}
 
 		synchronized (childs) {
@@ -506,7 +506,7 @@ public class LTexture extends Painter implements LRelease {
 		hashCode = LSystem.unite(hashCode, height);
 
 		if (childs == null) {
-			childs = new IntMap<LTexture>(10);
+			childs = new IntMap<>(10);
 		}
 
 		synchronized (childs) {
@@ -803,10 +803,7 @@ public class LTexture extends Painter implements LRelease {
 			if (this == tmp) {
 				return true;
 			}
-			if (source != null && !source.equals(tmp.source)) {
-				return false;
-			}
-			if ((tmp.width() != width()) || (tmp.height() != height())) {
+			if ((source != null && !source.equals(tmp.source)) || (tmp.width() != width()) || (tmp.height() != height())) {
 				return false;
 			}
 			if (this._id == tmp._id && this._textureClip.getRegionX() == tmp._textureClip.getRegionX()
@@ -836,13 +833,7 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	protected void freeTexture() {
-		if (disposed()) {
-			return;
-		}
-		if (_disabledTexture) {
-			return;
-		}
-		if (isCloseSubmitting()) {
+		if (disposed() || _disabledTexture || isCloseSubmitting()) {
 			return;
 		}
 		final int textureId = _id;
@@ -978,7 +969,7 @@ public class LTexture extends Painter implements LRelease {
 
 	/**
 	 * 此值为true时,当前纹理以及其子纹理将无法释放
-	 * 
+	 *
 	 * @param d
 	 * @return
 	 */
@@ -993,7 +984,7 @@ public class LTexture extends Painter implements LRelease {
 
 	/**
 	 * 是否无视子纹理使用情况强制注销当前纹理
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean isForcedDelete() {
@@ -1041,14 +1032,11 @@ public class LTexture extends Painter implements LRelease {
 
 	/**
 	 * 布尔值为真时，将强制关闭当前纹理，无论状态
-	 * 
+	 *
 	 * @param forcedDelete
 	 */
 	public void close(boolean forcedDelete) {
-		if (_disabledTexture) {
-			return;
-		}
-		if (disposed()) {
+		if (_disabledTexture || disposed()) {
 			return;
 		}
 		if (forcedDelete) {

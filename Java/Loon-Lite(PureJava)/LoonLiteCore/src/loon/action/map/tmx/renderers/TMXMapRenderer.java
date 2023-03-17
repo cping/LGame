@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -25,9 +25,9 @@ import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
 import loon.LTextureBatch;
+import loon.LTextureBatch.Cache;
 import loon.PlayerUtils;
 import loon.Screen;
-import loon.LTextureBatch.Cache;
 import loon.action.ActionTween;
 import loon.action.map.Field2D;
 import loon.action.map.tmx.TMXImageLayer;
@@ -115,9 +115,9 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 	protected boolean allowCache;
 
 	public TMXMapRenderer(TMXMap map) {
-		this.textureCaches = new IntMap<LTextureBatch.Cache>();
-		this.textureMap = new ObjectMap<String, LTexture>();
-		this.tileAnimators = new ObjectMap<TMXTile, TileAnimator>();
+		this.textureCaches = new IntMap<>();
+		this.textureMap = new ObjectMap<>();
+		this.tileAnimators = new ObjectMap<>();
 		this.visible = allowCache = true;
 		this.map = map;
 
@@ -184,6 +184,7 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 		return false;
 	}
 
+	@Override
 	public void update(long delta) {
 		for (TileAnimator animator : tileAnimators.values()) {
 			animator.update(delta);
@@ -203,10 +204,12 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 		setY(y / map.getTileHeight());
 	}
 
+	@Override
 	public void setColor(LColor c) {
 		baseColor.setColor(c);
 	}
 
+	@Override
 	public LColor getColor() {
 		return baseColor;
 	}

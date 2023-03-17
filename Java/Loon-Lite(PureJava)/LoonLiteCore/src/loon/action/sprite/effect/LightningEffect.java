@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -64,7 +64,7 @@ public class LightningEffect extends Entity {
 		}
 	}
 
-	private TArray<ILightning> lists = new TArray<ILightning>(10);
+	private TArray<ILightning> lists = new TArray<>(10);
 
 	private LightningEffect() {
 	}
@@ -85,7 +85,7 @@ public class LightningEffect extends Entity {
 	// screen.add(LightningEffect.addBolt(Vector2f.at(33, 33),
 	// Vector2f.at(300, 300),LColor.red));
 	public static LightningEffect addBolt(Vector2f[] s, Vector2f[] e, LColor c) {
-		TArray<ILightning> lights = new TArray<ILightning>();
+		TArray<ILightning> lights = new TArray<>();
 		for (int i = 0; i < e.length; i++) {
 			LightningBolt branch = new LightningBolt(s[i], e[i], c);
 			lights.add(branch);
@@ -100,7 +100,7 @@ public class LightningEffect extends Entity {
 	// screen.add(LightningEffect.addBranch(Vector2f.at(33, 33),
 	// Vector2f.at(300, 300),LColor.red));
 	public static LightningEffect addBranch(Vector2f[] s, Vector2f[] e, LColor c) {
-		TArray<ILightning> lights = new TArray<ILightning>();
+		TArray<ILightning> lights = new TArray<>();
 		for (int i = 0; i < e.length; i++) {
 			LightningBranch branch = new LightningBranch(s[i], e[i], c);
 			lights.add(branch);
@@ -115,7 +115,7 @@ public class LightningEffect extends Entity {
 	// screen.add(LightningEffect.addRandom(30,Vector2f.at(33, 33),
 	// Vector2f.at(300, 300),LColor.red));
 	public static LightningEffect addRandom(int count, Vector2f[] s, Vector2f[] e, LColor c) {
-		TArray<ILightning> lights = new TArray<ILightning>();
+		TArray<ILightning> lights = new TArray<>();
 		for (int i = 0; i < e.length; i++) {
 			LightningRandom branch = new LightningRandom(count, s[i], e[i], c);
 			lights.add(branch);

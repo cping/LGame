@@ -1,19 +1,19 @@
 /**
- * 
+ *
  * Copyright 2008 - 2011
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -32,7 +32,7 @@ public class ActorTreeSet {
 
 	protected boolean isDirty;
 
-	private SortedList<ActorSet> subSets = new SortedList<ActorSet>();
+	private SortedList<ActorSet> subSets = new SortedList<>();
 
 	private ActorSet generalSet = new ActorSet();
 
@@ -65,7 +65,7 @@ public class ActorTreeSet {
 
 	public Actor getOnlyCollisionObjectsAt(float x, float y, Object tag) {
 		for (LIterator<Actor> it = iterator(); it.hasNext();) {
-			Actor a = (Actor) it.next();
+			Actor a = it.next();
 			if (a.getRectBox().contains(x, y) && a.getTag() == tag) {
 				return a;
 			}
@@ -135,10 +135,7 @@ public class ActorTreeSet {
 			synchronized (generalSet) {
 				Actor[] o = generalSet.toArray();
 				int size = o.length;
-				if (o == null || size <= 0) {
-					return;
-				}
-				if (o[size - 1] == actor) {
+				if (o == null || size <= 0 || (o[size - 1] == actor)) {
 					return;
 				}
 				for (int i = 0; i < size; i++) {
@@ -161,10 +158,7 @@ public class ActorTreeSet {
 			synchronized (generalSet) {
 				Actor[] o = generalSet.toArray();
 				int size = o.length;
-				if (o == null || size <= 0) {
-					return;
-				}
-				if (o[0] == actor) {
+				if (o == null || size <= 0 || (o[0] == actor)) {
 					return;
 				}
 				for (int i = 0; i < size; i++) {

@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -107,11 +107,11 @@ public class TMXMap {
 	public TMXMap(String filePath, String tilesLocation) {
 		version = 1.0f;
 
-		layers = new TArray<TMXMapLayer>();
-		tileLayers = new TArray<TMXTileLayer>();
-		imageLayers = new TArray<TMXImageLayer>();
-		objectLayers = new TArray<TMXObjectLayer>();
-		tileSets = new TArray<TMXTileSet>();
+		layers = new TArray<>();
+		tileLayers = new TArray<>();
+		imageLayers = new TArray<>();
+		objectLayers = new TArray<>();
+		tileSets = new TArray<>();
 
 		properties = new TMXProperties();
 
@@ -138,7 +138,7 @@ public class TMXMap {
 
 	/**
 	 * 返回一个tmx的具体渲染对象（此对象为Sprite,可以直接插入Screen,如普通Sprite同样操作）
-	 * 
+	 *
 	 * @return
 	 */
 	public TMXMapRenderer getMapRenderer() {
@@ -487,7 +487,7 @@ public class TMXMap {
 	}
 
 	public TArray<Field2D> newField2Ds(int mode) {
-		TArray<Field2D> list = new TArray<Field2D>(tileLayers.size);
+		TArray<Field2D> list = new TArray<>(tileLayers.size);
 		for (TMXTileLayer layer : tileLayers) {
 			switch (mode) {
 			case 0:

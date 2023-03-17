@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2019 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -26,7 +26,7 @@ import loon.LSysException;
 /**
  * key-value形式的数据集合,无序排列,作用近似于HashMap,在大数据存储上性能比HashMap更好<br>
  * (所有Key统一建立有序索引,查表时更容易定位,百万以上数据读写能明显看出差别,百万以内差别不大,还略慢一些-_-)
- * 
+ *
  * @param <K>
  * @param <V>
  */
@@ -36,8 +36,8 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray,
 
 	public Values<V> values() {
 		if (values1 == null) {
-			values1 = new Values<V>(this);
-			values2 = new Values<V>(this);
+			values1 = new Values<>(this);
+			values2 = new Values<>(this);
 		}
 		if (!values1._valid) {
 			values1.reset();
@@ -79,15 +79,10 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray,
 			return _nextIndex != NO_INDEX && _nextIndex < _map.firstUnusedIndex;
 		}
 
+		@Override
 		@SuppressWarnings("unchecked")
 		public final V next() {
-			if (!_valid) {
-				return null;
-			}
-			if (_map.modCount != _expectedModCount) {
-				return null;
-			}
-			if (_nextIndex == NO_INDEX || _nextIndex >= _map.firstUnusedIndex) {
+			if (!_valid || (_map.modCount != _expectedModCount) || _nextIndex == NO_INDEX || _nextIndex >= _map.firstUnusedIndex) {
 				return null;
 			}
 			_lastIndex = _nextIndex;
@@ -107,13 +102,7 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray,
 
 		@Override
 		public final void remove() {
-			if (!_valid) {
-				return;
-			}
-			if (_lastIndex == NO_INDEX) {
-				return;
-			}
-			if (_map.modCount != _expectedModCount) {
+			if (!_valid || (_lastIndex == NO_INDEX) || (_map.modCount != _expectedModCount)) {
 				return;
 			}
 			_map.removeKey(_lastIndex == NULL_INDEX ? null : _map.keyValueTable[(_lastIndex << _map.keyIndexShift) + 1],
@@ -132,8 +121,8 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray,
 
 	public Keys<K> keys() {
 		if (keys1 == null) {
-			keys1 = new Keys<K>(this);
-			keys2 = new Keys<K>(this);
+			keys1 = new Keys<>(this);
+			keys2 = new Keys<>(this);
 		}
 		if (!keys1._valid) {
 			keys1.reset();
@@ -175,15 +164,10 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray,
 			return _nextIndex != NO_INDEX && _nextIndex < _map.firstUnusedIndex;
 		}
 
+		@Override
 		@SuppressWarnings("unchecked")
 		public final K next() {
-			if (!_valid) {
-				return null;
-			}
-			if (_map.modCount != _expectedModCount) {
-				return null;
-			}
-			if (_nextIndex == NO_INDEX || _nextIndex >= _map.firstUnusedIndex) {
+			if (!_valid || (_map.modCount != _expectedModCount) || _nextIndex == NO_INDEX || _nextIndex >= _map.firstUnusedIndex) {
 				return null;
 			}
 			_lastIndex = _nextIndex;
@@ -202,13 +186,7 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray,
 
 		@Override
 		public final void remove() {
-			if (!_valid) {
-				return;
-			}
-			if (_lastIndex == NO_INDEX) {
-				return;
-			}
-			if (_map.modCount != _expectedModCount) {
+			if (!_valid || (_lastIndex == NO_INDEX) || (_map.modCount != _expectedModCount)) {
 				return;
 			}
 			_map.removeKey(_lastIndex == NULL_INDEX ? null : _map.keyValueTable[(_lastIndex << _map.keyIndexShift) + 1],
@@ -232,8 +210,8 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray,
 
 	public Entries<K, V> entries() {
 		if (entries1 == null) {
-			entries1 = new Entries<K, V>(this);
-			entries2 = new Entries<K, V>(this);
+			entries1 = new Entries<>(this);
+			entries2 = new Entries<>(this);
 		}
 		if (!entries1._valid) {
 			entries1.reset();
@@ -277,13 +255,7 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray,
 
 		@Override
 		public final Entry<K, V> next() {
-			if (!_valid) {
-				return null;
-			}
-			if (_map.modCount != _expectedModCount) {
-				return null;
-			}
-			if (_nextIndex == NO_INDEX || _nextIndex >= _map.firstUnusedIndex) {
+			if (!_valid || (_map.modCount != _expectedModCount) || _nextIndex == NO_INDEX || _nextIndex >= _map.firstUnusedIndex) {
 				return null;
 			}
 			_lastIndex = _nextIndex;
@@ -295,18 +267,12 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray,
 			} else {
 				_nextIndex = _map.iterateNext(_nextIndex);
 			}
-			return new Entry<K, V>(_lastIndex, _map);
+			return new Entry<>(_lastIndex, _map);
 		}
 
 		@Override
 		public final void remove() {
-			if (!_valid) {
-				return;
-			}
-			if (_lastIndex == NO_INDEX) {
-				return;
-			}
-			if (_map.modCount != _expectedModCount) {
+			if (!_valid || (_lastIndex == NO_INDEX) || (_map.modCount != _expectedModCount)) {
 				return;
 			}
 			_map.removeKey(_lastIndex == NULL_INDEX ? null : _map.keyValueTable[(_lastIndex << _map.keyIndexShift) + 1],
@@ -565,7 +531,7 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray,
 				}
 			}
 			for (int i = firstDeletedIndex; i >= 0; i = (newIndices[newCapacity + i] = indexTable[capacity + i])) {
-				;
+
 			}
 		}
 		capacity = newCapacity;

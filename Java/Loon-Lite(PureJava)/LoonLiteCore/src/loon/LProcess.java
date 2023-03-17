@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -80,7 +80,7 @@ public class LProcess implements LRelease {
 	public LProcess(LGame game) {
 		this._game = game;
 		this._bundle = new ObjectBundle();
-		this._screenMap = new ListMap<CharSequence, Screen>();
+		this._screenMap = new ListMap<>();
 		this.initSetting();
 	}
 
@@ -146,7 +146,7 @@ public class LProcess implements LRelease {
 		synchronized (LProcess.class) {
 			TArray<Updateable> loadCache;
 			synchronized (list) {
-				loadCache = new TArray<Updateable>(list);
+				loadCache = new TArray<>(list);
 				list.clear();
 			}
 			for (int i = 0, size = loadCache.size; i < size; i++) {
@@ -461,17 +461,17 @@ public class LProcess implements LRelease {
 
 	public void clearProcess() {
 		if (resumes == null) {
-			resumes = new TArray<Updateable>();
+			resumes = new TArray<>();
 		} else {
 			resumes.clear();
 		}
 		if (loads == null) {
-			loads = new TArray<Updateable>();
+			loads = new TArray<>();
 		} else {
 			loads.clear();
 		}
 		if (unloads == null) {
-			unloads = new TArray<Updateable>();
+			unloads = new TArray<>();
 		} else {
 			unloads.clear();
 		}
@@ -616,7 +616,7 @@ public class LProcess implements LRelease {
 
 	/**
 	 * 设定模拟按钮监听器
-	 * 
+	 *
 	 * @param emulatorListener
 	 */
 	public void setEmulatorListener(EmulatorListener emulator) {
@@ -635,7 +635,7 @@ public class LProcess implements LRelease {
 
 	/**
 	 * 获得模拟器监听
-	 * 
+	 *
 	 * @return
 	 */
 	public EmulatorListener getEmulatorListener() {
@@ -644,7 +644,7 @@ public class LProcess implements LRelease {
 
 	/**
 	 * 获得模拟器按钮
-	 * 
+	 *
 	 * @return
 	 */
 	public EmulatorButtons getEmulatorButtons() {

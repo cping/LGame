@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2019 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -27,10 +27,10 @@ import loon.utils.StringUtils;
 
 /**
  * State是一个简单的界面渲染器(也是简单的FSM状态机实现),用于同Stage配合实现轻量级的画面转换,既单纯替换用户自定义的渲染内容.
- * 
+ *
  * 它不同于标准Screen,它的替换本质上只是画布渲染部分的替换,不涉及组件精灵之类其它对象，转化它并不能改变Screen除GLEx渲染外的任何内容.
  * 换句话说,它可以在保持组件精灵以及其它Screen中对象设置不变的情况下,单独转换用户自定义渲染部分.
- * 
+ *
  * 一个Stage中,可以存在复数的State,使用addState添加,使用playState转换用户需要的State对象进行显示,removeState删除.
  */
 public abstract class State implements LRelease {

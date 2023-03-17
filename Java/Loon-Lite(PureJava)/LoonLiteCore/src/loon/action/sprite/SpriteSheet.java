@@ -1,19 +1,19 @@
 /**
- * 
+ *
  * Copyright 2008 - 2011
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -96,10 +96,7 @@ public class SpriteSheet implements LRelease {
 	}
 
 	public boolean contains(int x, int y) {
-		if ((x < 0) || (x >= subImages.length)) {
-			return false;
-		}
-		if ((y < 0) || (y >= subImages[0].length)) {
+		if ((x < 0) || (x >= subImages.length) || (y < 0) || (y >= subImages[0].length)) {
 			return false;
 		}
 		return true;
@@ -107,20 +104,14 @@ public class SpriteSheet implements LRelease {
 
 	private void checkImage(int x, int y) {
 		update();
-		if ((x < 0) || (x >= subImages.length)) {
-			throw new LSysException("SubImage out of sheet bounds " + x + "," + y);
-		}
-		if ((y < 0) || (y >= subImages[0].length)) {
+		if ((x < 0) || (x >= subImages.length) || (y < 0) || (y >= subImages[0].length)) {
 			throw new LSysException("SubImage out of sheet bounds " + x + "," + y);
 		}
 	}
 
 	public LTexture getImage(int x, int y) {
 		checkImage(x, y);
-		if ((x < 0) || (x >= subImages.length)) {
-			throw new LSysException("SubTexture2D out of sheet bounds: " + x + "," + y);
-		}
-		if ((y < 0) || (y >= subImages[0].length)) {
+		if ((x < 0) || (x >= subImages.length) || (y < 0) || (y >= subImages[0].length)) {
 			throw new LSysException("SubTexture2D out of sheet bounds: " + x + "," + y);
 		}
 		return target.copy(x * (tw + spacing) + margin, y * (th + spacing) + margin, tw, th);
@@ -232,12 +223,13 @@ public class SpriteSheet implements LRelease {
 		return target == null || target.isClosed();
 	}
 
+	@Override
 	public void close() {
 		if (subImages != null) {
 			synchronized (subImages) {
-				for (int i = 0; i < subImages.length; i++) {
-					for (int j = 0; j < subImages[i].length; j++) {
-						subImages[i][j].close();
+				for (LTexture[] subImage : subImages) {
+					for (int j = 0; j < subImage.length; j++) {
+						subImage[j].close();
 					}
 				}
 				this.subImages = null;

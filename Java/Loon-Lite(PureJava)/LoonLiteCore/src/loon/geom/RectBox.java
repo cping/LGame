@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2011
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -31,7 +31,7 @@ import loon.utils.StringUtils;
 public class RectBox extends Shape implements BoxSize, XYZW {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
@@ -534,7 +534,7 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 
 	/**
 	 * 检查是否包含指定坐标
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @return
@@ -546,7 +546,7 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 
 	/**
 	 * 检查是否包含指定坐标
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param width
@@ -560,7 +560,7 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 
 	/**
 	 * 检查是否包含指定坐标
-	 * 
+	 *
 	 * @param rect
 	 * @return
 	 */
@@ -608,7 +608,7 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 
 	/**
 	 * 判定矩形选框交集
-	 * 
+	 *
 	 * @param rect
 	 * @return
 	 */
@@ -618,7 +618,7 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 
 	/**
 	 * 判定矩形选框交集
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @return
@@ -629,7 +629,7 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 
 	/**
 	 * 判定矩形选框交集
-	 * 
+	 *
 	 * @param xy
 	 * @return
 	 */
@@ -642,7 +642,7 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 
 	/**
 	 * 判定矩形选框交集
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param width
@@ -655,7 +655,7 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 
 	/**
 	 * 设定矩形选框交集
-	 * 
+	 *
 	 * @param rect
 	 */
 	public RectBox intersection(RectBox rect) {
@@ -664,7 +664,7 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 
 	/**
 	 * 设定矩形选框交集
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param width
@@ -680,7 +680,7 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 
 	/**
 	 * 判定指定坐标是否位于当前RectBox内部
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @return
@@ -691,7 +691,7 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 
 	/**
 	 * 返回当前的矩形选框交集
-	 * 
+	 *
 	 * @param rect
 	 * @return
 	 */
@@ -705,7 +705,7 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 
 	/**
 	 * 合并矩形选框
-	 * 
+	 *
 	 * @param rect
 	 */
 	public RectBox union(RectBox rect) {
@@ -714,7 +714,7 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 
 	/**
 	 * 合并矩形选框
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param width
@@ -770,7 +770,7 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 
 	/**
 	 * 水平移动X坐标执行长度
-	 * 
+	 *
 	 * @param xMod
 	 */
 	public final RectBox modX(float xMod) {
@@ -782,7 +782,7 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 
 	/**
 	 * 水平移动Y坐标指定长度
-	 * 
+	 *
 	 * @param yMod
 	 */
 	public final RectBox modY(float yMod) {
@@ -794,7 +794,7 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 
 	/**
 	 * 水平移动Width指定长度
-	 * 
+	 *
 	 * @param w
 	 */
 	public RectBox modWidth(float w) {
@@ -806,7 +806,7 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 
 	/**
 	 * 水平移动Height指定长度
-	 * 
+	 *
 	 * @param h
 	 */
 	public RectBox modHeight(float h) {
@@ -818,7 +818,7 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 
 	/**
 	 * 判断指定坐标是否在一条直线上
-	 * 
+	 *
 	 * @param x1
 	 * @param y1
 	 * @param x2
@@ -831,7 +831,7 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 
 	/**
 	 * 判定指定坐标是否位于当前RectBox内部
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @return

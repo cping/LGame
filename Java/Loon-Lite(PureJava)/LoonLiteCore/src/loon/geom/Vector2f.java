@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2012
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -23,6 +23,7 @@ package loon.geom;
 import java.io.Serializable;
 
 import loon.LSystem;
+import loon.action.map.Config;
 import loon.action.map.Field2D;
 import loon.utils.Array;
 import loon.utils.MathUtils;
@@ -31,11 +32,11 @@ import loon.utils.NumberUtils;
 public class Vector2f implements Serializable, XY {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = -1844534518528011982L;
 
-	private static final Array<Vector2f> _VEC2_CACHE = new Array<Vector2f>();
+	private static final Array<Vector2f> _VEC2_CACHE = new Array<>();
 
 	public final static Vector2f STATIC_ZERO = new Vector2f();
 
@@ -547,10 +548,7 @@ public class Vector2f implements Serializable, XY {
 		int dy = v.y() - y();
 		int adx = MathUtils.abs(dx);
 		int ady = MathUtils.abs(dy);
-		if ((dy == 0) && (dx == 0)) {
-			return 0;
-		}
-		if ((dy == 0) && (dx > 0)) {
+		if (((dy == 0) && (dx == 0)) || ((dy == 0) && (dx > 0))) {
 			return 0;
 		}
 		if ((dy == 0) && (dx < 0)) {
@@ -657,7 +655,7 @@ public class Vector2f implements Serializable, XY {
 	}
 
 	public Vector2f move_45D_up(int multiples) {
-		return move_multiples(Field2D.UP, multiples);
+		return move_multiples(Config.UP, multiples);
 	}
 
 	public Vector2f move_45D_left() {
@@ -665,7 +663,7 @@ public class Vector2f implements Serializable, XY {
 	}
 
 	public Vector2f move_45D_left(int multiples) {
-		return move_multiples(Field2D.LEFT, multiples);
+		return move_multiples(Config.LEFT, multiples);
 	}
 
 	public Vector2f move_45D_right() {
@@ -673,7 +671,7 @@ public class Vector2f implements Serializable, XY {
 	}
 
 	public Vector2f move_45D_right(int multiples) {
-		return move_multiples(Field2D.RIGHT, multiples);
+		return move_multiples(Config.RIGHT, multiples);
 	}
 
 	public Vector2f move_45D_down() {
@@ -681,7 +679,7 @@ public class Vector2f implements Serializable, XY {
 	}
 
 	public Vector2f move_45D_down(int multiples) {
-		return move_multiples(Field2D.DOWN, multiples);
+		return move_multiples(Config.DOWN, multiples);
 	}
 
 	public Vector2f move_up() {
@@ -689,7 +687,7 @@ public class Vector2f implements Serializable, XY {
 	}
 
 	public Vector2f move_up(int multiples) {
-		return move_multiples(Field2D.TUP, multiples);
+		return move_multiples(Config.TUP, multiples);
 	}
 
 	public Vector2f move_left() {
@@ -697,7 +695,7 @@ public class Vector2f implements Serializable, XY {
 	}
 
 	public Vector2f move_left(int multiples) {
-		return move_multiples(Field2D.TLEFT, multiples);
+		return move_multiples(Config.TLEFT, multiples);
 	}
 
 	public Vector2f move_right() {
@@ -705,7 +703,7 @@ public class Vector2f implements Serializable, XY {
 	}
 
 	public Vector2f move_right(int multiples) {
-		return move_multiples(Field2D.TRIGHT, multiples);
+		return move_multiples(Config.TRIGHT, multiples);
 	}
 
 	public Vector2f move_down() {
@@ -713,7 +711,7 @@ public class Vector2f implements Serializable, XY {
 	}
 
 	public Vector2f move_down(int multiples) {
-		return move_multiples(Field2D.TDOWN, multiples);
+		return move_multiples(Config.TDOWN, multiples);
 	}
 
 	public Vector2f up(float v) {
@@ -996,9 +994,7 @@ public class Vector2f implements Serializable, XY {
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
+		if ((obj == null) || (getClass() != obj.getClass()))
 			return false;
 		Vector2f other = (Vector2f) obj;
 		if (NumberUtils.floatToIntBits(x) != NumberUtils.floatToIntBits(other.x))
@@ -1009,19 +1005,13 @@ public class Vector2f implements Serializable, XY {
 	}
 
 	public boolean epsilonEquals(Vector2f other, float epsilon) {
-		if (other == null)
-			return false;
-		if (MathUtils.abs(other.x - x) > epsilon)
-			return false;
-		if (MathUtils.abs(other.y - y) > epsilon)
+		if ((other == null) || (MathUtils.abs(other.x - x) > epsilon) || (MathUtils.abs(other.y - y) > epsilon))
 			return false;
 		return true;
 	}
 
 	public boolean epsilonEquals(float x, float y, float epsilon) {
-		if (MathUtils.abs(x - this.x) > epsilon)
-			return false;
-		if (MathUtils.abs(y - this.y) > epsilon)
+		if ((MathUtils.abs(x - this.x) > epsilon) || (MathUtils.abs(y - this.y) > epsilon))
 			return false;
 		return true;
 	}

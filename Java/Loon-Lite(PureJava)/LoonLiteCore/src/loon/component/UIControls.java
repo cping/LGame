@@ -1,24 +1,24 @@
 /**
- * 
+ *
  * Copyright 2014
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
  * @version 0.4.1
- * 
+ *
  *          新增类，用以同时处理多个组件对象到同一状态
  */
 package loon.component;
@@ -33,15 +33,16 @@ import loon.action.map.Field2D;
 import loon.canvas.LColor;
 import loon.component.layout.Margin;
 import loon.events.ClickListener;
+import loon.events.QueryEvent;
 import loon.events.Touched;
 import loon.font.FontSet;
 import loon.font.IFont;
 import loon.geom.RectBox;
 import loon.utils.CollectionUtils;
+import loon.utils.Easing.EasingMode;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
 import loon.utils.TArray;
-import loon.utils.Easing.EasingMode;
 
 /**
  * UI组件的群组化操作控制器，可以同时改变一组组件的参数或动画事件
@@ -51,8 +52,8 @@ public class UIControls {
 	public static float getChildrenHeight(LContainer c) {
 		float totalHeight = 0;
 		LComponent[] list = c._childs;
-		for (int i = 0; i < list.length; i++) {
-			totalHeight += list[i].getHeight();
+		for (LComponent element : list) {
+			totalHeight += element.getHeight();
 		}
 		return totalHeight;
 	}
@@ -60,8 +61,8 @@ public class UIControls {
 	public static float getChildrenWidth(LContainer c) {
 		float totalWidth = 0;
 		LComponent[] list = c._childs;
-		for (int i = 0; i < list.length; i++) {
-			totalWidth += list[i].getWidth();
+		for (LComponent element : list) {
+			totalWidth += element.getWidth();
 		}
 		return totalWidth;
 	}
@@ -69,8 +70,8 @@ public class UIControls {
 	public static float getMaxChildHeight(LContainer c) {
 		int maxHeight = 0;
 		LComponent[] list = c._childs;
-		for (int i = 0; i < list.length; i++) {
-			maxHeight = MathUtils.max(maxHeight, (int) list[i].getHeight());
+		for (LComponent element : list) {
+			maxHeight = MathUtils.max(maxHeight, (int) element.getHeight());
 		}
 		return maxHeight;
 	}
@@ -78,13 +79,13 @@ public class UIControls {
 	public static int getMaxChildWidth(LContainer c) {
 		int maxWidth = 0;
 		LComponent[] list = c._childs;
-		for (int i = 0; i < list.length; i++) {
-			maxWidth = MathUtils.max(maxWidth, (int) list[i].getWidth());
+		for (LComponent element : list) {
+			maxWidth = MathUtils.max(maxWidth, (int) element.getWidth());
 		}
 		return maxWidth;
 	}
 
-	private ObjectMap<ActionBind, ActionTween> tweens = new ObjectMap<ActionBind, ActionTween>(
+	private ObjectMap<ActionBind, ActionTween> tweens = new ObjectMap<>(
 			CollectionUtils.INITIAL_CAPACITY);
 
 	private Margin _margin;
@@ -102,15 +103,51 @@ public class UIControls {
 	}
 
 	public UIControls() {
-		this._comps = new TArray<LComponent>();
+		this._comps = new TArray<>();
 	}
 
-	public TArray<LComponent> list(){
+	public LComponent random() {
+		if (_comps.size == 0) {
+			return null;
+		}
+		return _comps.get(MathUtils.random(_comps.size - 1));
+	}
+
+	public int indexOf(QueryEvent<LComponent> q) {
+		int i = 0;
+		for (LComponent s : _comps) {
+			if (q.hit(s)) {
+				return i;
+			}
+			i++;
+		}
+		return -1;
+	}
+
+	public int indexOf(LComponent value) {
+		for (int i = 0; i < _comps.size; i++) {
+			if (_comps.get(i) == value) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	public LComponent find(QueryEvent<LComponent> q) {
+		for (LComponent s : _comps) {
+			if (q.hit(s)) {
+				return s;
+			}
+		}
+		return null;
+	}
+
+	public TArray<LComponent> list() {
 		return this._comps;
 	}
-	
+
 	public TArray<LComponent> intersects(RectBox rect) {
-		TArray<LComponent> comps = new TArray<LComponent>();
+		TArray<LComponent> comps = new TArray<>();
 		for (LComponent child : this._comps) {
 			if (child != null) {
 				if (rect.intersects(child.getX(), child.getY(), child.getWidth(), child.getHeight())) {
@@ -122,7 +159,7 @@ public class UIControls {
 	}
 
 	public TArray<LComponent> intersects(float x, float y, float width, float height) {
-		TArray<LComponent> comps = new TArray<LComponent>();
+		TArray<LComponent> comps = new TArray<>();
 		for (LComponent child : this._comps) {
 			if (child != null) {
 				if (CollisionHelper.intersects(x, y, width, height, child.getX(), child.getY(), child.getWidth(),
@@ -135,7 +172,7 @@ public class UIControls {
 	}
 
 	public TArray<LComponent> contains(RectBox rect) {
-		TArray<LComponent> comps = new TArray<LComponent>();
+		TArray<LComponent> comps = new TArray<>();
 		for (LComponent child : this._comps) {
 			if (child != null) {
 				if (rect.contains(child.getX(), child.getY(), child.getWidth(), child.getHeight())) {
@@ -147,7 +184,7 @@ public class UIControls {
 	}
 
 	public TArray<LComponent> contains(float x, float y, float width, float height) {
-		TArray<LComponent> comps = new TArray<LComponent>();
+		TArray<LComponent> comps = new TArray<>();
 		for (LComponent child : this._comps) {
 			if (child != null) {
 				if (CollisionHelper.contains(x, y, width, height, child.getX(), child.getY(), child.getWidth(),
@@ -158,7 +195,7 @@ public class UIControls {
 		}
 		return comps;
 	}
-	
+
 	public UIControls add(LComponent comp) {
 		if (comp == null) {
 			throw new LSysException("LComponent cannot be null.");
@@ -168,7 +205,7 @@ public class UIControls {
 	}
 
 	public UIControls add(LComponent... comps) {
-		return add(new TArray<LComponent>(comps));
+		return add(new TArray<>(comps));
 	}
 
 	public UIControls add(TArray<LComponent> comps) {
@@ -191,8 +228,8 @@ public class UIControls {
 		if (comps == null) {
 			throw new LSysException("LComponents cannot be null.");
 		}
-		for (int i = 0, n = comps.length; i < n; i++) {
-			remove(comps[i]);
+		for (LComponent comp : comps) {
+			remove(comp);
 		}
 		return this;
 	}
@@ -234,7 +271,7 @@ public class UIControls {
 
 	/**
 	 * 附带一提，此处Set大写是为了显示作用比较特殊，以及建议使用一个ClickListener，监听多个组件，所以"S"
-	 * 
+	 *
 	 * @param click
 	 */
 	public UIControls SetClick(ClickListener click) {
@@ -618,7 +655,10 @@ public class UIControls {
 		for (int i = 0, n = _comps.size; i < n; i++) {
 			Object o = _comps.get(i);
 			if (o != null) {
-				if (o instanceof LSlider) {
+				if (o instanceof LProgress) {
+					LProgress progress = (LProgress) o;
+					progress.setPercentage(p);
+				} else if (o instanceof LSlider) {
 					LSlider progress = (LSlider) o;
 					progress.setPercentage(p);
 				}
@@ -996,7 +1036,7 @@ public class UIControls {
 			if (comp != null && (comp instanceof ActionBind)) {
 				ActionTween tween = tweens.get(comp);
 				if (tween == null) {
-					tween = PlayerUtils.set((ActionBind) comp).followTo(bind, follow, speed);
+					tween = PlayerUtils.set(comp).followTo(bind, follow, speed);
 				} else {
 					tween.followTo(bind, follow, speed);
 				}

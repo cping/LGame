@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2019 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -32,13 +32,13 @@ import loon.utils.processes.RealtimeProcessManager;
 
 /**
  * Loon的计时器用类
- * 
+ *
  * 此类主要作用有二:
- * 
+ *
  * 1, 直接以函数调用形式调用,利用action函数作真假条件判断,每当条件满足时执行一次以action函数检查后生效的if中内容.
- * 
+ *
  * 2, 提交一个指定执行次数的事件到游戏进程中去(不指定则默认无限循环),每隔指定时间执行一次.
- * 
+ *
  * <pre>
  *  //提交timer到游戏循环中
  *	LTimer time = new LTimer();
@@ -351,7 +351,7 @@ public class LTimer implements LRelease {
 	}
 
 	public float getRemaining() {
-		return (float) (this._delay - this._currentTick);
+		return this._delay - this._currentTick;
 	}
 
 	public boolean checkInterval(long interval) {

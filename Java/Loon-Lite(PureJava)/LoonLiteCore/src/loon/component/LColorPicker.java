@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2019 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -35,7 +35,7 @@ public class LColorPicker extends LComponent {
 	private final static int[] DefaultColors = new int[] { 0x000000, 0x333333, 0x666666, 0x999999, 0xCCCCCC, 0xFFFFFF,
 			0xFF0000, 0x00FF00, 0x0000FF, 0xFFFF00, 0x00FFFF, 0xFF00FF };
 
-	private final TArray<LColor> _colors = new TArray<LColor>();
+	private final TArray<LColor> _colors = new TArray<>();
 
 	private final int _colorRow;
 

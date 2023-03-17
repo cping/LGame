@@ -1,18 +1,18 @@
 /**
  * Copyright 2014
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email javachenpeng@yahoo.com
@@ -125,17 +125,17 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 
 	private LColor fontColor = LColor.black.cpy();
 
-	private TArray<TileImpl> tileBinds = new TArray<TileImpl>(12);
+	private TArray<TileImpl> tileBinds = new TArray<>(12);
 
 	private boolean playAnimation;
 
-	private IntMap<LTexture> textureCaches = new IntMap<LTexture>();
+	private IntMap<LTexture> textureCaches = new IntMap<>();
 
 	private boolean roll;
 
 	private boolean dirty;
 
-	private TArray<Animation> animations = new TArray<Animation>();
+	private TArray<Animation> animations = new TArray<>();
 
 	private IFont displayFont;
 
@@ -246,8 +246,8 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 
 		@Override
 		public TileVisit<TileImpl> next() {
-			TileVisit<TileImpl> tileVisit = new TileVisit<TileImpl>();
-			tileVisit.tile = (TileImpl) map.tiles[i + m][j + n];
+			TileVisit<TileImpl> tileVisit = new TileVisit<>();
+			tileVisit.tile = map.tiles[i + m][j + n];
 			tileVisit.position[0] = i + m - k;
 			tileVisit.position[1] = j + n;
 			if (++i >= cols) {
@@ -285,7 +285,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 			rows = this.rows - n;
 		}
 		final CellIterator iterator = new CellIterator(this, m, n, cols, rows);
-		return new Iterable<TileVisit<TileImpl>>() {
+		return new Iterable<>() {
 
 			@Override
 			public LIterator<TileVisit<TileImpl>> iterator() {
@@ -336,10 +336,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 			closedNodes.add(node);
 			int[][] positions = map.adjacent(node.position);
 			for (int[] position : positions) {
-				if (!map.isAllowMoved(position)) {
-					continue;
-				}
-				if (closedNodes.find(position) != null) {
+				if (!map.isAllowMoved(position) || (closedNodes.find(position) != null)) {
 					continue;
 				}
 				Node openNode = openNodes.find(position);
@@ -366,7 +363,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		}
 		Path path = new Path();
 		path.cost = found.g;
-		SortedList<int[]> positions = new SortedList<int[]>();
+		SortedList<int[]> positions = new SortedList<>();
 		while (found != null) {
 			positions.addFirst(CollectionUtils.copyOf(found.position));
 			found = found.parent;
@@ -678,7 +675,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		int dx = end[0] - start[0];
 		int dy = end[1] - start[1];
 		if (dx == 0 || dy == 0 || dx == -dy) {
-			SortedList<int[]> positions = new SortedList<int[]>();
+			SortedList<int[]> positions = new SortedList<>();
 			int ax = dx < 0 ? -dx : dx;
 			int ay = dy < 0 ? -dy : dy;
 			int len = ax < ay ? ay : ax;
@@ -701,7 +698,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	}
 
 	public TArray<Vector2f> circleRegion(int[] center, int radius) {
-		TArray<Vector2f> positions = new TArray<Vector2f>();
+		TArray<Vector2f> positions = new TArray<>();
 		int i, j, k;
 		for (j = -radius; j <= radius; j++) {
 			if (j < 0) {
@@ -741,7 +738,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		hashCode = LSystem.unite(hashCode, hex.getStartWidth());
 		hashCode = LSystem.unite(hashCode, hex.getMidHeight());
 		hashCode = LSystem.unite(hashCode, hex.getEndHeight());
-		LTexture texture = (LTexture) textureCaches.get(hashCode);
+		LTexture texture = textureCaches.get(hashCode);
 		if (texture == null || texture.isClosed()) {
 			texture = createPolyTexture(hex.getPolygon(0, 0), hex.getWidth(), hex.getHeight());
 			textureCaches.put(hashCode, texture);
@@ -843,7 +840,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		Vector2f position = decoordinate(xEnd, yEnd);
 		if (position != null && allowDisplayFindPath) {
 			focuses = lineRegion(positionFlag.toInt(), position.toInt());
-			return new SortedList<int[]>(focuses);
+			return new SortedList<>(focuses);
 		}
 		return lineRegion(positionFlag.toInt(), position.toInt());
 	}
@@ -907,8 +904,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 			int[] list = texturePack.getIdList();
 			active = true;
 			dirty = true;
-			for (int i = 0, size = list.length; i < size; i++) {
-				int id = list[i];
+			for (int id : list) {
 				putTile(id, id);
 			}
 		}
@@ -1013,8 +1009,8 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	}
 
 	public Vector2f toRollPosition(Vector2f pos) {
-		pos.x = pos.x % ((float) (getViewRect().width));
-		pos.y = pos.y % ((float) (getViewRect().height));
+		pos.x = pos.x % ((getViewRect().width));
+		pos.y = pos.y % ((getViewRect().height));
 		if (pos.x < 0f) {
 			pos.x += getViewRect().width;
 		}
@@ -1298,7 +1294,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 
 	/**
 	 * 地图居中偏移
-	 * 
+	 *
 	 * @return
 	 */
 	public HexagonMap centerOffset() {

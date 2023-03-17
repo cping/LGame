@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2012
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -229,7 +229,7 @@ public final class MathUtils {
 
 	/**
 	 * 为指定数值补足位数
-	 * 
+	 *
 	 * @param number
 	 * @param numDigits
 	 * @return
@@ -240,7 +240,7 @@ public final class MathUtils {
 
 	/**
 	 * 为指定数值补足位数
-	 * 
+	 *
 	 * @param number
 	 * @param numDigit
 	 * @return
@@ -251,7 +251,7 @@ public final class MathUtils {
 
 	/**
 	 * 为指定数值补足位数
-	 * 
+	 *
 	 * @param number
 	 * @param numDigits
 	 * @return
@@ -282,7 +282,7 @@ public final class MathUtils {
 
 	/**
 	 * 返回数字的位数长度
-	 * 
+	 *
 	 * @param num
 	 * @return
 	 */
@@ -314,7 +314,7 @@ public final class MathUtils {
 
 	/**
 	 * 返回浮点数'.'后长度
-	 * 
+	 *
 	 * @param num
 	 * @return
 	 */
@@ -361,7 +361,7 @@ public final class MathUtils {
 
 	/**
 	 * 判断是否为数字
-	 * 
+	 *
 	 * @param param
 	 * @return
 	 */
@@ -404,10 +404,7 @@ public final class MathUtils {
 				}
 				hasDecPoint = true;
 			} else if (chars[i] == 'e' || chars[i] == 'E') {
-				if (hasExp) {
-					return false;
-				}
-				if (!foundDigit) {
+				if (hasExp || !foundDigit) {
 					return false;
 				}
 				hasExp = true;
@@ -459,7 +456,7 @@ public final class MathUtils {
 
 	public static float mul(float x, float y) {
 		long z = (long) x * (long) y;
-		return ((float) (z >> 16));
+		return (z >> 16);
 	}
 
 	public static int mulDiv(int f1, int f2, int f3) {
@@ -481,7 +478,7 @@ public final class MathUtils {
 
 	public static float div(float x, float y) {
 		long z = (((long) x) << 32);
-		return (float) ((z / (long) y) >> 16);
+		return (z / (long) y) >> 16;
 	}
 
 	public static int round(int n) {
@@ -821,9 +818,9 @@ public final class MathUtils {
 
 	public static int max(final int[] numbers) {
 		int max = Integer.MIN_VALUE;
-		for (int i = 0; i < numbers.length; i++) {
-			if (numbers[i] > max) {
-				max = numbers[i];
+		for (int number : numbers) {
+			if (number > max) {
+				max = number;
 			}
 		}
 		return max;
@@ -831,9 +828,9 @@ public final class MathUtils {
 
 	public static float max(final float[] numbers) {
 		float max = Integer.MIN_VALUE;
-		for (int i = 0; i < numbers.length; i++) {
-			if (numbers[i] > max) {
-				max = numbers[i];
+		for (float number : numbers) {
+			if (number > max) {
+				max = number;
 			}
 		}
 		return max;
@@ -857,9 +854,9 @@ public final class MathUtils {
 
 	public static int min(final int[] numbers) {
 		int min = Integer.MAX_VALUE;
-		for (int i = 0; i < numbers.length; i++) {
-			if (numbers[i] < min) {
-				min = numbers[i];
+		for (int number : numbers) {
+			if (number < min) {
+				min = number;
 			}
 		}
 		return min;
@@ -867,9 +864,9 @@ public final class MathUtils {
 
 	public static float min(final float[] numbers) {
 		float min = Integer.MAX_VALUE;
-		for (int i = 0; i < numbers.length; i++) {
-			if (numbers[i] < min) {
-				min = numbers[i];
+		for (float number : numbers) {
+			if (number < min) {
+				min = number;
 			}
 		}
 		return min;
@@ -1180,7 +1177,7 @@ public final class MathUtils {
 		} else {
 			result = (2 * v1 - 2 * v2 + t2 + t1) * sCubed + (3 * v2 - 3 * v1 - 2 * t1 - t2) * sSquared + t1 * s + v1;
 		}
-		return (float) result;
+		return result;
 	}
 
 	public static float lerp(float value1, float value2, float amount) {
@@ -1194,7 +1191,7 @@ public final class MathUtils {
 	}
 
 	public static float wrapAngle(float angle) {
-		angle = (float) IEEEremainder((double) angle, 6.2831854820251465d);
+		angle = (float) IEEEremainder(angle, 6.2831854820251465d);
 		if (angle <= -3.141593f) {
 			angle += 6.283185f;
 			return angle;
@@ -1692,7 +1689,7 @@ public final class MathUtils {
 
 	/**
 	 * 转换坐标为angle
-	 * 
+	 *
 	 * @param x1
 	 * @param y1
 	 * @param x2
@@ -1707,7 +1704,7 @@ public final class MathUtils {
 
 	/**
 	 * 滚动指定参数值
-	 * 
+	 *
 	 * @param scroll
 	 * @param side
 	 * @return
@@ -1725,7 +1722,7 @@ public final class MathUtils {
 
 	/**
 	 * 迭代下降指定数值
-	 * 
+	 *
 	 * @param total
 	 * @param start
 	 * @param side
@@ -1739,7 +1736,7 @@ public final class MathUtils {
 
 	/**
 	 * 计算指定数值的阶乘
-	 * 
+	 *
 	 * @param v
 	 * @return
 	 */
@@ -1756,7 +1753,7 @@ public final class MathUtils {
 
 	/**
 	 * 让两值做加法,若大于第三值则返回第三值
-	 * 
+	 *
 	 * @param v
 	 * @param amount
 	 * @param max
@@ -1772,7 +1769,7 @@ public final class MathUtils {
 
 	/**
 	 * 让两值做减法,若小于第三值则返回第三值
-	 * 
+	 *
 	 * @param v
 	 * @param amount
 	 * @param min
@@ -1788,7 +1785,7 @@ public final class MathUtils {
 
 	/**
 	 * 比较数值大小
-	 * 
+	 *
 	 * @param value
 	 * @param min
 	 * @param max
@@ -1812,7 +1809,7 @@ public final class MathUtils {
 
 	/**
 	 * 返回一个数值增加指定变量后与指定值比较的余数
-	 * 
+	 *
 	 * @param v
 	 * @param amount
 	 * @param max
@@ -1829,7 +1826,7 @@ public final class MathUtils {
 
 	/**
 	 * 返回一个值在指定概率范围内是否可能被触发
-	 * 
+	 *
 	 * @param k
 	 * @param p
 	 * @return
@@ -1840,7 +1837,7 @@ public final class MathUtils {
 
 	/**
 	 * 判定数值是否在指定模糊查询值区间内
-	 * 
+	 *
 	 * @param src
 	 * @param dst
 	 * @param vague
@@ -1865,7 +1862,7 @@ public final class MathUtils {
 
 	/**
 	 * 判定数值是否在指定模糊查询值区间内
-	 * 
+	 *
 	 * @param src
 	 * @param dst
 	 * @param vague
@@ -1889,7 +1886,7 @@ public final class MathUtils {
 
 	/**
 	 * 返回一个概率事件是否被触发的布尔值
-	 * 
+	 *
 	 * @param chance >0 && < 100
 	 * @return
 	 */

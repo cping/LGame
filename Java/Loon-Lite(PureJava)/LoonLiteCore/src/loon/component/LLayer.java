@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2010
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -119,8 +119,8 @@ public class LLayer extends ActorLayer {
 	}
 
 	public LLayer addSprite(ISprite... s) {
-		for (int i = 0; i < s.length; i++) {
-			addSprite(s[i]);
+		for (ISprite element : s) {
+			addSprite(element);
 		}
 		return this;
 	}
@@ -191,7 +191,7 @@ public class LLayer extends ActorLayer {
 
 	/**
 	 * 设定动作触发延迟时间
-	 * 
+	 *
 	 * @param delay
 	 */
 	public LLayer setDelay(long delay) {
@@ -201,7 +201,7 @@ public class LLayer extends ActorLayer {
 
 	/**
 	 * 返回动作触发延迟时间
-	 * 
+	 *
 	 * @return
 	 */
 	public long getDelay() {
@@ -210,7 +210,7 @@ public class LLayer extends ActorLayer {
 
 	/**
 	 * 动作处理
-	 * 
+	 *
 	 * @param elapsedTime
 	 */
 	@Override
@@ -227,7 +227,7 @@ public class LLayer extends ActorLayer {
 				if (!isVSync) {
 					LIterator<Actor> it = objects.iterator();
 					for (; it.hasNext();) {
-						thing = (Actor) it.next();
+						thing = it.next();
 						if (!thing.visible) {
 							continue;
 						}
@@ -699,8 +699,8 @@ public class LLayer extends ActorLayer {
 		}
 		if (objects != null) {
 			Object[] o = objects.toActors();
-			for (int i = 0; i < o.length; i++) {
-				Actor actor = (Actor) o[i];
+			for (Object element : o) {
+				Actor actor = (Actor) element;
 				if (actor != null) {
 					actor.close();
 					actor = null;

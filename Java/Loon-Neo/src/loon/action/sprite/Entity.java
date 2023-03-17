@@ -814,7 +814,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	}
 
 	public void paint(final GLEx g, float offsetX, float offsetY) {
-		if (_objectAlpha < 0.01) {
+		if (_objectAlpha < 0.01f) {
 			return;
 		}
 		boolean exist = _image != null || (_width > 0 && _height > 0) || _repaintDraw;

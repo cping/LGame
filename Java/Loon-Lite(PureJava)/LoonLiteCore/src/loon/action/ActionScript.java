@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -29,12 +29,12 @@ import loon.utils.StringUtils;
 /*
  * 一个非常简单的动作脚本字符串设置模式，以"move()->delay()->move()-..."这类方式,
  * 设置一个 具体ActionTween的行为.只支持常用命令.
- * 
+ *
  * 用例:移动到127,127位置,每次移动16个像素(true为八方走法，false为四方走法),旋转360度,延迟2秒后,淡入(60帧完成),淡出(90帧完成)
  * 写法：move(127,127,true,16)->rotate(360)->delay(2)->fadein(60)->fadeout(90)
- * 
+ *
  * 在Screen可以写作如下格式:
- * 
+ *
  * 	@Override
  public void onLoad() {
  Sprite sprite = new Sprite("assets/ball.png");

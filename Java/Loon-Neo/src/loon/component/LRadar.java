@@ -191,8 +191,7 @@ public class LRadar extends LComponent {
 		for (int i = 0; i < map.getWidth(); i++) {
 			for (int j = 0; j < map.getHeight(); j++) {
 				int flag = map.getTileType(i, j);
-				for (int f = 0; f < flags.length; f++) {
-					int v = flags[f];
+				for (int v : flags) {
 					if (v == flag) {
 						final float newX = (map.tilesToWidthPixels(i) * widthScale)
 								+ (map.getTileHalfWidth() * widthScale);

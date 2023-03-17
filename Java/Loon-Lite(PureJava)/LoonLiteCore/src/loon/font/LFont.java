@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -53,7 +53,7 @@ public class LFont extends FontTrans implements IFont {
 
 	private final static String tmp = "H";
 
-	private IntMap<Vector2f> fontSizes = new IntMap<Vector2f>(50);
+	private IntMap<Vector2f> fontSizes = new IntMap<>(50);
 
 	private PointI _offset = new PointI();
 
@@ -140,13 +140,7 @@ public class LFont extends FontTrans implements IFont {
 
 	@Override
 	public void drawString(GLEx g, String msg, float tx, float ty, float angle, LColor c) {
-		if(_closed) {
-			return;
-		}
-		if (c == null || c.a <= 0.01) {
-			return;
-		}
-		if (StringUtils.isEmpty(msg)) {
+		if (_closed || c == null || c.a <= 0.01 || StringUtils.isEmpty(msg)) {
 			return;
 		}
 		String newMessage = toMessage(msg);
@@ -156,13 +150,7 @@ public class LFont extends FontTrans implements IFont {
 	@Override
 	public void drawString(GLEx g, String msg, float tx, float ty, float sx, float sy, float ax, float ay, float angle,
 			LColor c) {
-		if(_closed) {
-			return;
-		}
-		if (c == null || c.a <= 0.01) {
-			return;
-		}
-		if (StringUtils.isEmpty(msg)) {
+		if (_closed || c == null || c.a <= 0.01 || StringUtils.isEmpty(msg)) {
 			return;
 		}
 		String newMessage = toMessage(msg);
@@ -257,6 +245,7 @@ public class LFont extends FontTrans implements IFont {
 		return _textFormat.font.style.ordinal();
 	}
 
+	@Override
 	public String getFontName() {
 		return _textFormat.font.name;
 	}
@@ -299,10 +288,7 @@ public class LFont extends FontTrans implements IFont {
 
 	@Override
 	public boolean equals(Object o) {
-		if (o == null) {
-			return false;
-		}
-		if (!(o instanceof LFont)) {
+		if ((o == null) || !(o instanceof LFont)) {
 			return false;
 		}
 		LFont font = (LFont) o;

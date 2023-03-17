@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -88,7 +88,7 @@ public abstract class LGame implements LRelease {
 
 	protected static Platform _platform = null;
 
-	private boolean _stopGame = false;;
+	private boolean _stopGame = false;
 
 	// 全部mesh
 	private final TArray<Mesh> _mesh_all_pools;
@@ -131,13 +131,13 @@ public abstract class LGame implements LRelease {
 
 	public LGame(LSetting config, Platform plat) {
 		LGame._platform = plat;
-		this._mesh_all_pools = new TArray<Mesh>(128);
-		this._texture_batch_pools = new IntMap<LTextureBatch>(12);
-		this._texture_lazys = new ObjectMap<String, LTexture>(128);
-		this._texture_all_list = new TArray<LTexture>(128);
-		this._sprites_pools = new TArray<Sprites>(12);
-		this._desktop_pools = new TArray<Desktop>(12);
-		this._font_pools = new TArray<IFont>(12);
+		this._mesh_all_pools = new TArray<>(128);
+		this._texture_batch_pools = new IntMap<>(12);
+		this._texture_lazys = new ObjectMap<>(128);
+		this._texture_all_list = new TArray<>(128);
+		this._sprites_pools = new TArray<>(12);
+		this._desktop_pools = new TArray<>(12);
+		this._font_pools = new TArray<>(12);
 		if (config == null) {
 			config = new LSetting();
 		}
@@ -236,7 +236,7 @@ public abstract class LGame implements LRelease {
 
 	/**
 	 * 注册Screen到游戏显示器中
-	 * 
+	 *
 	 * @param screen
 	 * @return
 	 */
@@ -258,7 +258,7 @@ public abstract class LGame implements LRelease {
 
 	/**
 	 * 初始化LProcess组件,以处理游戏流程
-	 * 
+	 *
 	 * @return
 	 */
 	public LGame initProcess() {
@@ -282,7 +282,7 @@ public abstract class LGame implements LRelease {
 
 	/**
 	 * 设定LGame绑定的运行平台(主要就是换Activity)
-	 * 
+	 *
 	 * @param plat
 	 */
 	public void setPlatform(Platform plat) {
@@ -297,7 +297,7 @@ public abstract class LGame implements LRelease {
 
 	/**
 	 * 检查LGame对象的静态地址和实际地址的变化,防止被虚拟机乱分配导致错误
-	 * 
+	 *
 	 * @param game
 	 */
 	protected final LGame checkBaseGame(LGame game) {
@@ -319,7 +319,7 @@ public abstract class LGame implements LRelease {
 
 	/**
 	 * 上报异常到异常池中
-	 * 
+	 *
 	 * @param message
 	 * @param cause
 	 * @return
@@ -330,7 +330,7 @@ public abstract class LGame implements LRelease {
 
 	/**
 	 * 上报异常到异常池中
-	 * 
+	 *
 	 * @param message
 	 * @param cause
 	 * @param logError
@@ -346,7 +346,7 @@ public abstract class LGame implements LRelease {
 
 	/**
 	 * 绑定事件和Act状态
-	 * 
+	 *
 	 * @param signal
 	 * @param event
 	 */
@@ -374,7 +374,7 @@ public abstract class LGame implements LRelease {
 
 	/**
 	 * 提交一个Runnable到Loon本身进程中
-	 * 
+	 *
 	 * @param runnable
 	 * @return
 	 */
@@ -388,7 +388,7 @@ public abstract class LGame implements LRelease {
 
 	/**
 	 * 当前环境是否支持异步提交Runnable
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean isAsyncSupported() {
@@ -397,7 +397,7 @@ public abstract class LGame implements LRelease {
 
 	/**
 	 * 如果本地支持异步提交Runnable,则使用本地的,如果不支持,则转换为invokeLater
-	 * 
+	 *
 	 * @param action
 	 * @return
 	 */
@@ -415,7 +415,7 @@ public abstract class LGame implements LRelease {
 
 	/**
 	 * 单独纹理批处理渲染器的数量
-	 * 
+	 *
 	 * @return
 	 */
 	public int batchCacheSize() {
@@ -428,7 +428,7 @@ public abstract class LGame implements LRelease {
 	public void clearBatchCaches() {
 		IntMap<LTextureBatch> batchCaches;
 		synchronized (_texture_batch_pools) {
-			batchCaches = new IntMap<LTextureBatch>(_texture_batch_pools);
+			batchCaches = new IntMap<>(_texture_batch_pools);
 		}
 		for (LTextureBatch bt : batchCaches.values()) {
 			if (bt != null) {
@@ -444,7 +444,7 @@ public abstract class LGame implements LRelease {
 
 	/**
 	 * 获得指定纹理的单独纹理批处理渲染器
-	 * 
+	 *
 	 * @param texture
 	 * @return
 	 */
@@ -457,7 +457,7 @@ public abstract class LGame implements LRelease {
 
 	/**
 	 * 绑定单独纹理批处理和生成它的纹理到缓存池中
-	 * 
+	 *
 	 * @param batch
 	 * @return
 	 */
@@ -478,7 +478,7 @@ public abstract class LGame implements LRelease {
 
 	/**
 	 * 从池中注销一个单独纹理批处理渲染器
-	 * 
+	 *
 	 * @param batch
 	 * @return
 	 */
@@ -488,7 +488,7 @@ public abstract class LGame implements LRelease {
 
 	/**
 	 * 从池中注销一个单独纹理批处理渲染器,如果closed为true则纹理处理器也被注销
-	 * 
+	 *
 	 * @param batch
 	 * @param closed
 	 * @return
@@ -508,7 +508,7 @@ public abstract class LGame implements LRelease {
 
 	/**
 	 * 查看纹理池中是否存在指定id对象
-	 * 
+	 *
 	 * @param id
 	 * @return
 	 */
@@ -525,7 +525,7 @@ public abstract class LGame implements LRelease {
 
 	/**
 	 * 单纯从池中删除指定的纹理对象
-	 * 
+	 *
 	 * @param id
 	 * @return
 	 */
@@ -542,7 +542,7 @@ public abstract class LGame implements LRelease {
 
 	/**
 	 * 提交一个纹理到纹理池
-	 * 
+	 *
 	 * @param tex2d
 	 */
 	protected void putTexture(LTexture tex2d) {
@@ -559,7 +559,7 @@ public abstract class LGame implements LRelease {
 	public void reloadTexture() {
 		TArray<LTexture> texs = null;
 		synchronized (_texture_all_list) {
-			texs = new TArray<LTexture>(_texture_all_list);
+			texs = new TArray<>(_texture_all_list);
 			_texture_all_list.clear();
 		}
 		for (LTexture tex : texs) {
@@ -572,7 +572,7 @@ public abstract class LGame implements LRelease {
 
 	/**
 	 * 获得当前所有纹理池中对象累加占用资源大小
-	 * 
+	 *
 	 * @return
 	 */
 	public int getTextureMemSize() {
@@ -590,7 +590,7 @@ public abstract class LGame implements LRelease {
 	 */
 	public void closeAllTexture() {
 		if (_texture_all_list.size > 0) {
-			TArray<LTexture> tex2d = new TArray<LTexture>(_texture_all_list);
+			TArray<LTexture> tex2d = new TArray<>(_texture_all_list);
 			for (LTexture tex : tex2d) {
 				if (tex != null && !tex.isChild() && !tex.isClosed()) {
 					tex.close();
@@ -602,7 +602,7 @@ public abstract class LGame implements LRelease {
 
 	/**
 	 * 纹理池中纹理数量
-	 * 
+	 *
 	 * @return
 	 */
 	public int countTexture() {
@@ -611,7 +611,7 @@ public abstract class LGame implements LRelease {
 
 	/**
 	 * 查看纹理池中是否包含指定纹理
-	 * 
+	 *
 	 * @param texture
 	 * @return
 	 */
@@ -621,7 +621,7 @@ public abstract class LGame implements LRelease {
 
 	/**
 	 * 查看纹理池中对象被引用次数
-	 * 
+	 *
 	 * @param fileName
 	 * @return
 	 */
@@ -648,7 +648,7 @@ public abstract class LGame implements LRelease {
 
 	/**
 	 * 删除指定缓存名称的纹理对象并返回引用次数,若remove为true,则会强制删除查找到的池中纹理
-	 * 
+	 *
 	 * @param name
 	 * @param remove
 	 * @return
@@ -679,7 +679,7 @@ public abstract class LGame implements LRelease {
 
 	/**
 	 * 删除指定纹理对象并返回引用次数,如果remove为true,同时强制删除指定纹理
-	 * 
+	 *
 	 * @param texture
 	 * @param remove
 	 * @return
@@ -693,7 +693,7 @@ public abstract class LGame implements LRelease {
 
 	/**
 	 * 创建一个指定大小格式的空白新纹理
-	 * 
+	 *
 	 * @param width
 	 * @param height
 	 * @return
@@ -704,7 +704,7 @@ public abstract class LGame implements LRelease {
 
 	/**
 	 * 以指定位置图片和格式创建一个新纹理
-	 * 
+	 *
 	 * @param path
 	 * @return
 	 */
@@ -718,7 +718,7 @@ public abstract class LGame implements LRelease {
 
 	/**
 	 * 从缓存加载一个指定文件名纹理为指定格式(存在缓存时会得到缓存图片)
-	 * 
+	 *
 	 * @param fileName
 	 * @return
 	 */
@@ -728,7 +728,7 @@ public abstract class LGame implements LRelease {
 		}
 		synchronized (_texture_lazys) {
 			String key = fileName.trim().toLowerCase();
-			ObjectMap<String, LTexture> texs = new ObjectMap<String, LTexture>(_texture_lazys);
+			ObjectMap<String, LTexture> texs = new ObjectMap<>(_texture_lazys);
 			LTexture texture = texs.get(key);
 			if (texture == null) {
 				for (LTexture tex : texs.values()) {
@@ -752,7 +752,7 @@ public abstract class LGame implements LRelease {
 
 	/**
 	 * 从纹理缓存池删除一个缓存的纹理图片
-	 * 
+	 *
 	 * @param tex
 	 * @return
 	 */
@@ -770,7 +770,7 @@ public abstract class LGame implements LRelease {
 
 	/**
 	 * 以纹理id获得具体纹理
-	 * 
+	 *
 	 * @param id
 	 * @return
 	 */
@@ -790,7 +790,7 @@ public abstract class LGame implements LRelease {
 	 */
 	public void destroySourceAllCache() {
 		if (_texture_lazys.size > 0) {
-			TArray<LTexture> textures = new TArray<LTexture>(_texture_lazys.values());
+			TArray<LTexture> textures = new TArray<>(_texture_lazys.values());
 			for (int i = 0; i < textures.size; i++) {
 				LTexture tex2d = textures.get(i);
 				if (tex2d != null && !tex2d.isClosed() && tex2d.getSource() != null
@@ -809,7 +809,7 @@ public abstract class LGame implements LRelease {
 	 */
 	public void destroyAllCache() {
 		if (_texture_lazys.size > 0) {
-			TArray<LTexture> textures = new TArray<LTexture>(_texture_lazys.values());
+			TArray<LTexture> textures = new TArray<>(_texture_lazys.values());
 			for (int i = 0; i < textures.size; i++) {
 				LTexture tex2d = textures.get(i);
 				if (tex2d != null && !tex2d.isClosed()) {
@@ -872,7 +872,7 @@ public abstract class LGame implements LRelease {
 	public void clearSpritesPool() {
 		_sprites_pools.clear();
 	}
-	
+
 	public void closeSpritesPool() {
 		for (int i = _sprites_pools.size - 1; i > -1; i--) {
 			Sprites sprites = _sprites_pools.get(i);

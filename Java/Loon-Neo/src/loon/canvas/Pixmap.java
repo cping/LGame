@@ -1935,6 +1935,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 			return this;
 		}
 		drawCircle(x, y, width, height, false, new CircleUpdate() {
+			@Override
 			public void newPoint(int xLeft, int yTop, int xRight, int yBottom) {
 				drawPoint(xLeft, yTop);
 				drawPoint(xRight, yTop);
@@ -1958,6 +1959,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 			return this;
 		}
 		drawCircle(x, y, width, height, true, new CircleUpdate() {
+			@Override
 			public void newPoint(int xLeft, int yTop, int xRight, int yBottom) {
 				drawLineImpl(xLeft, xRight, yTop);
 				if (yTop != yBottom) {
@@ -2012,6 +2014,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 		final RectI bounds = RectI.getIntersection(setBoundingBox(temp_rect, xPoints, yPoints, nPoints), clip,
 				temp_rect);
 		this.drawCircle(x, y, width, height, false, new CircleUpdate() {
+			@Override
 			public void newPoint(int xLeft, int yTop, int xRight, int yBottom) {
 				drawArcPoint(xPoints, yPoints, nPoints, bounds, xLeft, yTop);
 				drawArcPoint(xPoints, yPoints, nPoints, bounds, xRight, yTop);
@@ -2080,6 +2083,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 				x + _translateX - 1, y + _translateY - 1, width + 2, height + 2);
 		final RectI bounds = setBoundingBox(temp_rect, xPoints, yPoints, nPoints);
 		this.drawCircle(x, y, width, height, true, new CircleUpdate() {
+			@Override
 			public void newPoint(int xLeft, int yTop, int xRight, int yBottom) {
 				drawArcImpl(xPoints, yPoints, nPoints, bounds, xLeft, xRight, yTop);
 				if (yTop != yBottom) {

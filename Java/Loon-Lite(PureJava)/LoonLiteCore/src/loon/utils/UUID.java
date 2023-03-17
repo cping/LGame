@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2019 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -27,16 +27,13 @@ import loon.LSystem;
 
 /**
  * 一个UUID生成器,作用是在没有UUID支持的环境获得UUID(为了算法通用,方便移植)
- * 
+ *
  * ps:因为加入了游戏动态纹理内存占用量和纹理数量还有精灵桌面组件数量为因素,[在游戏运行时]是真随机值,不运行就是伪随机……
  */
 public class UUID {
 
 	public static UUID convertUUID(String id) {
-		if (id == null) {
-			return null;
-		}
-		if (id.length() != 36) {
+		if ((id == null) || (id.length() != 36)) {
 			return null;
 		}
 		long lo, hi;

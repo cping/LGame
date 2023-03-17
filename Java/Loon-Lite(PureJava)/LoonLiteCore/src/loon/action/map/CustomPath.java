@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2019 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -32,7 +32,7 @@ import loon.utils.TArray;
  */
 public class CustomPath implements LRelease {
 
-	protected TArray<Vector2f> steps = new TArray<Vector2f>();
+	protected TArray<Vector2f> steps = new TArray<>();
 
 	private CustomPathMove pathMove;
 
@@ -173,7 +173,7 @@ public class CustomPath implements LRelease {
 	}
 
 	public CustomPath loop(int count) {
-		TArray<Vector2f> tmp = new TArray<Vector2f>();
+		TArray<Vector2f> tmp = new TArray<>();
 		for (int i = 0; i < count; i++) {
 			for (int j = 0; j < steps.size; j++) {
 				Vector2f loc = steps.get(j);
@@ -191,8 +191,7 @@ public class CustomPath implements LRelease {
 		if (pos == null) {
 			return this;
 		}
-		for (int i = 0; i < pos.length; i++) {
-			Vector2f loc = pos[i];
+		for (Vector2f loc : pos) {
 			if (loc != null) {
 				steps.add(loc);
 			}

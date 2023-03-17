@@ -477,6 +477,28 @@ public class LColor implements Serializable {
 		return bytes;
 	}
 
+	public static final float linearToGamma(float v) {
+		if (v <= 0.0) {
+			return 0f;
+		} else if (v <= 0.0031308f) {
+			return 12.92f * v;
+		} else if (v <= 1f) {
+			return 1.055f * MathUtils.pow(v, 0.41666f) - 0.055f;
+		} else {
+			return MathUtils.pow(v, 0.41666f);
+		}
+	}
+
+	public static final float gammaToLinear(float v) {
+		if (v <= 0.04045f)
+			return v / 12.92f;
+		else if (v < 1f) {
+			return MathUtils.pow((v + 0.055f) / 1.055f, 2.4f);
+		} else {
+			return MathUtils.pow(v, 2.4f);
+		}
+	}
+
 	public static final LColor toBlackWhite(LColor color) {
 		if (color == null) {
 			return gray.cpy();
@@ -1953,6 +1975,73 @@ public class LColor implements Serializable {
 			return false;
 		}
 		return isSimilarRGB(this, new LColor(dstColor), offset);
+	}
+
+	/**
+	 * 从数组拷贝色彩数值
+	 * 
+	 * @param arrays
+	 * @param offset
+	 * @return
+	 */
+	public float[] fromArray(float[] arrays, int offset) {
+		this.r = arrays[offset + 0];
+		this.g = arrays[offset + 1];
+		this.b = arrays[offset + 2];
+		this.a = arrays[offset + 3];
+		return arrays;
+	}
+
+	/**
+	 * 从色彩拷贝数值到数组
+	 * 
+	 * @param arrays
+	 * @param offset
+	 * @return
+	 */
+	public LColor toArray(float[] arrays, int offset) {
+		arrays[offset + 0] = this.r;
+		arrays[offset + 1] = this.g;
+		arrays[offset + 2] = this.b;
+		arrays[offset + 3] = this.a;
+		return this;
+	}
+
+	/**
+	 * 从色彩拷贝数值到数组
+	 * 
+	 * @return
+	 */
+	public float[] toArray() {
+		return new float[] { this.r, this.g, this.b, this.a };
+	}
+
+	/**
+	 * Gamma空间转换到线性空间
+	 * 
+	 * @param o
+	 * @return
+	 */
+	public LColor toLinear(LColor o) {
+		o.r = gammaToLinear(this.r);
+		o.g = gammaToLinear(this.g);
+		o.b = gammaToLinear(this.b);
+		o.a = this.a;
+		return o;
+	}
+
+	/**
+	 * 线性空间转换到Gamma空间
+	 * 
+	 * @param o
+	 * @return
+	 */
+	public LColor toGamma(LColor o) {
+		o.r = linearToGamma(this.r);
+		o.g = linearToGamma(this.g);
+		o.b = linearToGamma(this.b);
+		o.a = this.a;
+		return o;
 	}
 
 	/**

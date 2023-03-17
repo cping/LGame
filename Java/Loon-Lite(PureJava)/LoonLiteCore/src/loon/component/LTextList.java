@@ -1,24 +1,24 @@
 /**
- * 
+ *
  * Copyright 2014
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
  * @version 0.4.1
- * 
+ *
  */
 package loon.component;
 
@@ -34,9 +34,9 @@ import loon.opengl.GLEx;
 
 /**
  * 文字列表显示用UI,用以列表方式显示指定数据,LGame本身附带有默认UI,用户也可以自行注入图片进行替换.
- * 
+ *
  * Example1:
- * 
+ *
  * LTextList list = new LTextList(0,0,150,100); list.add("图灵测试");
  * list.add("人月神话"); list.add("费雪效应"); list.add("ABC"); list.add("EFG");
  */
@@ -121,7 +121,7 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 
 	/**
 	 * @param font
-	 * 
+	 *
 	 * @param max
 	 *            允许插入的最大行数
 	 * @param x
@@ -176,7 +176,7 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 		this.nextStringColor = this.defaultStringColor;
 		return this;
 	}
-	
+
 	public LTextList clear(){
 		return delete();
 	}
@@ -334,7 +334,7 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 
 	/**
 	 * 获得选中数据所在列的数据标识
-	 * 
+	 *
 	 * @return
 	 */
 	public int getIndex() {

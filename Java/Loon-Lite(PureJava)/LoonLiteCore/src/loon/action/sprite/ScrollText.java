@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -23,11 +23,11 @@ package loon.action.sprite;
 import loon.LSystem;
 import loon.canvas.LColor;
 import loon.font.AutoWrap;
+import loon.font.Font.Style;
 import loon.font.IFont;
 import loon.font.LFont;
-import loon.font.TextOptions;
-import loon.font.Font.Style;
 import loon.font.Text;
+import loon.font.TextOptions;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.utils.StrBuilder;
@@ -35,16 +35,16 @@ import loon.utils.timer.LTimer;
 
 /**
  * 显示滚动文字的精灵(主要就是用来做前情提要滚动，比如:从前有个魔王，魔王认识个勇者，勇者不懂经济，魔王是个学霸，于是XXX这类的……)
- * 
+ *
  * <pre>
  * ScrollText s = new ScrollText("ABCDEFG\nMNBVCXZ");
  * s.setDirection(Direction.LEFT);
  * add(s);
  * centerOn(s);
  * </pre>
- * 
+ *
  * or:
- * 
+ *
  * <pre>
  * String[] texts = { "九阳神功惊俗世", "君临天下易筋经", "葵花宝典兴国邦", "欢喜禅功祸苍生", "紫雷刀出乾坤破", "如来掌起山河动", "浑天玄宇称宝鉴", "天晶不出谁争锋", "我没疯" };
  * ScrollText s = new ScrollText(texts, TextOptions.VERTICAL_LEFT());
@@ -118,8 +118,8 @@ public class ScrollText extends Entity {
 			this._text = new Text(font, text[0], opt);
 		} else {
 			StrBuilder sbr = new StrBuilder();
-			for (int i = 0, size = text.length; i < size; i++) {
-				sbr.append(text[i]);
+			for (String element : text) {
+				sbr.append(element);
 				sbr.append(LSystem.LS);
 			}
 			this._text = new Text(font, sbr.toString(), opt);

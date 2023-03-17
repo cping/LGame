@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2019 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -50,9 +50,9 @@ import loon.component.LMessage;
 import loon.component.LMessageBox;
 import loon.component.LPanel;
 import loon.component.LPaper;
+import loon.component.LSelect;
 import loon.component.LTextArea;
 import loon.component.LTextField;
-import loon.component.LSelect;
 import loon.component.skin.CheckBoxSkin;
 import loon.component.skin.MenuSkin;
 import loon.component.skin.SkinManager;
@@ -374,8 +374,8 @@ public class JsonLayout implements LRelease {
 			throw new LSysException("Path is null");
 		}
 		this.jsonPath = path;
-		this.container = new TArray<LContainer>();
-		this.sprites = new ObjectMap<String, ISprite>();
+		this.container = new TArray<>();
+		this.sprites = new ObjectMap<>();
 		_createGameWindowImage = _closed = false;
 	}
 
@@ -586,7 +586,7 @@ public class JsonLayout implements LRelease {
 
 	protected ObjectMap<String, LComponent> putComponents(String name, LComponent comp) {
 		if (components == null) {
-			components = new ObjectMap<String, LComponent>();
+			components = new ObjectMap<>();
 		}
 		components.put(name, comp);
 		return components;
@@ -594,7 +594,7 @@ public class JsonLayout implements LRelease {
 
 	protected IFont getFont(String fontName, int fontSize) {
 		if (fonts == null) {
-			fonts = new ObjectMap<String, IFont>();
+			fonts = new ObjectMap<>();
 		}
 		String key = (StringUtils.isEmpty(fontName) ? "def" : fontName) + "." + fontSize;
 		IFont font = fonts.get(key);
@@ -1007,8 +1007,8 @@ public class JsonLayout implements LRelease {
 
 		if (!StringUtils.isEmpty(par.text)) {
 			String[] mes = splitData(par.text);
-			for (int i = 0; i < mes.length; i++) {
-				textarea.put(mes[i], par.color);
+			for (String me : mes) {
+				textarea.put(me, par.color);
 			}
 		}
 
@@ -1333,7 +1333,7 @@ public class JsonLayout implements LRelease {
 	}
 
 	public TArray<ISprite> getSprites() {
-		TArray<ISprite> list = new TArray<ISprite>(sprites.size());
+		TArray<ISprite> list = new TArray<>(sprites.size());
 		for (ISprite s : sprites.values()) {
 			list.add(s);
 		}

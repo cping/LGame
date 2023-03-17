@@ -1,19 +1,19 @@
 /**
- * 
+ *
  * Copyright 2008 - 2011
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -30,7 +30,7 @@ import loon.utils.TArray;
 public class Polygon extends Shape implements BoxSize {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 7491444927273846690L;
 
@@ -130,7 +130,7 @@ public class Polygon extends Shape implements BoxSize {
 			return;
 		}
 		int size = points.length;
-		TArray<Float> tempPoints = new TArray<Float>();
+		TArray<Float> tempPoints = new TArray<>();
 		for (int i = 0; i < size; i++) {
 			tempPoints.add(points[i]);
 		}
@@ -159,6 +159,7 @@ public class Polygon extends Shape implements BoxSize {
 		pointsDirty = true;
 	}
 
+	@Override
 	public Shape transform(Matrix3 transform) {
 		checkPoints();
 
@@ -195,7 +196,7 @@ public class Polygon extends Shape implements BoxSize {
 
 	public TArray<Vector2f> getVertices() {
 		int size = points.length;
-		TArray<Vector2f> vertices = new TArray<Vector2f>();
+		TArray<Vector2f> vertices = new TArray<>();
 		for (int i = 0; i < size; i += 2) {
 			vertices.add(new Vector2f(points[i], points[i + 1]));
 		}

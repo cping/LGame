@@ -1,19 +1,19 @@
 /**
- * 
+ *
  * Copyright 2008 - 2011
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -34,7 +34,7 @@ import loon.utils.StringUtils;
 public abstract class Shape implements Serializable, IArray, XY {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
@@ -391,11 +391,11 @@ public abstract class Shape implements Serializable, IArray, XY {
 					jNext = 0;
 				}
 
-				unknownA = (((points[iNext] - points[i]) * (float) (thatPoints[j + 1] - points[i + 1]))
+				unknownA = (((points[iNext] - points[i]) * (thatPoints[j + 1] - points[i + 1]))
 						- ((points[iNext + 1] - points[i + 1]) * (thatPoints[j] - points[i])))
 						/ (((points[iNext + 1] - points[i + 1]) * (thatPoints[jNext] - thatPoints[j]))
 								- ((points[iNext] - points[i]) * (thatPoints[jNext + 1] - thatPoints[j + 1])));
-				unknownB = (((thatPoints[jNext] - thatPoints[j]) * (float) (thatPoints[j + 1] - points[i + 1]))
+				unknownB = (((thatPoints[jNext] - thatPoints[j]) * (thatPoints[j + 1] - points[i + 1]))
 						- ((thatPoints[jNext + 1] - thatPoints[j + 1]) * (thatPoints[j] - points[i])))
 						/ (((points[iNext + 1] - points[i + 1]) * (thatPoints[jNext] - thatPoints[j]))
 								- ((points[iNext] - points[i]) * (thatPoints[jNext + 1] - thatPoints[j + 1])));
@@ -662,8 +662,8 @@ public abstract class Shape implements Serializable, IArray, XY {
 		result = prime * result + NumberUtils.floatToIntBits(y);
 		result = prime * result + NumberUtils.floatToIntBits(scaleX);
 		result = prime * result + NumberUtils.floatToIntBits(scaleY);
-		for (int j = 0; j < points.length; j++) {
-			final long val = NumberUtils.floatToIntBits(this.points[j]);
+		for (float point : points) {
+			final long val = NumberUtils.floatToIntBits(point);
 			result += 31 * result + (int) (val ^ (val >>> 32));
 		}
 		return result;

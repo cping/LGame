@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2019 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -22,15 +22,15 @@ package loon.utils;
 
 import loon.ActionCounter;
 import loon.Counter;
+import loon.Director.Origin;
+import loon.Director.Position;
 import loon.EmptyObject;
 import loon.LObject;
 import loon.LSystem;
 import loon.LTexture;
 import loon.LimitedCounter;
-import loon.ZIndex;
-import loon.Director.Origin;
-import loon.Director.Position;
 import loon.Log.Level;
+import loon.ZIndex;
 import loon.action.sprite.Entity;
 import loon.action.sprite.Sprite;
 import loon.canvas.LColor;
@@ -58,22 +58,22 @@ public class HelperUtils {
 	{
 		return obj == null;
 	}
-	
+
 	public static boolean isNotNull(Object obj)
 	{
 		return obj != null;
 	}
-	
+
 	public static boolean areEqual(Object first, Object second)
 	{
 		return first != second;
 	}
-	
+
 	public static boolean areNotEqual(Object first, Object second)
 	{
 		return first == second;
 	}
-	
+
 	public final static <T> boolean contains(T key, TArray<T> list) {
 		for (T o : list) {
 			if (key == null && o == null) {
@@ -85,7 +85,7 @@ public class HelperUtils {
 		}
 		return false;
 	}
-	
+
 	public final static boolean contains(Object key, Object... objs) {
 		for (Object o : objs) {
 			if (key == null && o == null) {
@@ -168,10 +168,10 @@ public class HelperUtils {
 
 	public final static TArray<Sprite> createMultiSprite(String[] path, Vector2f[] pos, float scale) {
 		if (StringUtils.isEmpty(path)) {
-			return new TArray<Sprite>();
+			return new TArray<>();
 		}
 		final int size = path.length;
-		TArray<Sprite> list = new TArray<Sprite>(path.length);
+		TArray<Sprite> list = new TArray<>(path.length);
 		for (int i = 0; i < size; i++) {
 			Sprite sprite = createSprite(path[i], pos[i]);
 			sprite.setScale(scale);
@@ -185,17 +185,17 @@ public class HelperUtils {
 
 	public final static TArray<Entity> createMultiEntity(String[] path, Vector2f[] pos, float scale) {
 		if (StringUtils.isEmpty(path)) {
-			return new TArray<Entity>();
+			return new TArray<>();
 		}
 		final int size = path.length;
-		TArray<Entity> list = new TArray<Entity>(path.length);
+		TArray<Entity> list = new TArray<>(path.length);
 		for (int i = 0; i < size; i++) {
 			Entity sprite = createEntity(path[i], pos[i]);
 			sprite.setScale(scale);
 		}
 		return list;
 	}
-	
+
 	public final static EmptyObject newEmptyObject() {
 		return new EmptyObject();
 	}
@@ -205,7 +205,7 @@ public class HelperUtils {
 	}
 
 	public final static TArray<Vector2f> makeOrigins(Origin origin, LObject<?>... objs) {
-		TArray<Vector2f> result = new TArray<Vector2f>(objs.length);
+		TArray<Vector2f> result = new TArray<>(objs.length);
 		for (LObject<?> o : objs) {
 			result.add(createOrigin(o, origin));
 		}

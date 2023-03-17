@@ -1,18 +1,18 @@
 /**
  * Copyright 2014
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -30,7 +30,7 @@ public class IntArray implements IArray,LRelease {
 
 	/**
 	 * 产生一组指定范围的数据
-	 * 
+	 *
 	 * @param start
 	 * @param end
 	 * @return
@@ -45,7 +45,7 @@ public class IntArray implements IArray,LRelease {
 
 	/**
 	 * 产生一组指定范围的随机数据
-	 * 
+	 *
 	 * @param begin
 	 * @param end
 	 * @return
@@ -56,7 +56,7 @@ public class IntArray implements IArray,LRelease {
 
 	/**
 	 * 产生一组指定范围的随机数据
-	 * 
+	 *
 	 * @param begin
 	 * @param end
 	 * @param size
@@ -543,8 +543,8 @@ public class IntArray implements IArray,LRelease {
 		int[] items = this.items;
 		ArrayByte bytes = new ArrayByte(items.length * 4);
 		bytes.setOrder(order);
-		for (int i = 0; i < items.length; i++) {
-			bytes.writeInt(items[i]);
+		for (int item : items) {
+			bytes.writeInt(item);
 		}
 		return bytes.getBytes();
 	}

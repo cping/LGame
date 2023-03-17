@@ -143,7 +143,7 @@ public class MovieSprite extends DisplayObject implements IArray {
 				removed.setState(State.REMOVED);
 				// 删除精灵同时，删除缓动动画
 				if (removed instanceof ActionBind) {
-					removeActionEvents((ActionBind) removed);
+					removeActionEvents(removed);
 				}
 			}
 		}
@@ -157,6 +157,7 @@ public class MovieSprite extends DisplayObject implements IArray {
 		}
 	}
 
+	@Override
 	protected void onScaleChange(float scaleX, float scaleY) {
 		for (DisplayObject obj : _childs) {
 			obj.onScaleChange(scaleX, scaleY);

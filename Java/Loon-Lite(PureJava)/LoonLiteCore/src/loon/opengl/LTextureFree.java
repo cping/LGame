@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2019 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -90,15 +90,12 @@ public class LTextureFree implements IArray, LRelease {
 	}
 
 	public LTextureFree add(LTexture... list) {
-		if (closed) {
+		if (closed || (list == null)) {
 			return this;
 		}
-		if (list == null) {
-			return this;
-		}
-		for (int i = 0, size = list.length; i < size; i++) {
-			if (list[i] != null) {
-				add(list[i], false);
+		for (LTexture element : list) {
+			if (element != null) {
+				add(element, false);
 			}
 		}
 		return this;
@@ -118,10 +115,7 @@ public class LTextureFree implements IArray, LRelease {
 	}
 
 	public boolean remove(LTexture tex) {
-		if (textures == null) {
-			return false;
-		}
-		if (tex == null) {
+		if ((textures == null) || (tex == null)) {
 			return false;
 		}
 		boolean removed = false;
@@ -148,6 +142,7 @@ public class LTextureFree implements IArray, LRelease {
 		return onImageFile;
 	}
 
+	@Override
 	public int size() {
 		return count;
 	}
@@ -173,10 +168,7 @@ public class LTextureFree implements IArray, LRelease {
 	}
 
 	public LTextureFree free() {
-		if (closed) {
-			return this;
-		}
-		if (count == 0) {
+		if (closed || (count == 0)) {
 			return this;
 		}
 		for (int i = 0; i < count; i++) {

@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -26,7 +26,7 @@ import loon.action.ActionBind;
 import loon.action.ActionControl;
 import loon.action.ActionEvent;
 import loon.action.collision.CollisionHelper;
-import loon.action.map.Field2D;
+import loon.action.map.Config;
 import loon.canvas.Alpha;
 import loon.component.layout.LayoutAlign;
 import loon.geom.RectBox;
@@ -115,7 +115,7 @@ public abstract class LObject<T> implements Comparator<T>, XY, ZIndex {
 
 	/**
 	 * 添加一个独立事件，并选择是否暂不启动
-	 * 
+	 *
 	 * @param action
 	 * @param obj
 	 * @param paused
@@ -126,7 +126,7 @@ public abstract class LObject<T> implements Comparator<T>, XY, ZIndex {
 
 	/**
 	 * 添加一个独立事件
-	 * 
+	 *
 	 * @param action
 	 * @param obj
 	 */
@@ -136,7 +136,7 @@ public abstract class LObject<T> implements Comparator<T>, XY, ZIndex {
 
 	/**
 	 * 删除所有和指定对象有关的独立事件
-	 * 
+	 *
 	 * @param actObject
 	 */
 	public final static void removeActionEvents(ActionBind actObject) {
@@ -145,7 +145,7 @@ public abstract class LObject<T> implements Comparator<T>, XY, ZIndex {
 
 	/**
 	 * 获得当前独立事件总数
-	 * 
+	 *
 	 * @return
 	 */
 	public final static int getActionEventCount() {
@@ -154,7 +154,7 @@ public abstract class LObject<T> implements Comparator<T>, XY, ZIndex {
 
 	/**
 	 * 删除指定的独立事件
-	 * 
+	 *
 	 * @param tag
 	 * @param actObject
 	 */
@@ -164,7 +164,7 @@ public abstract class LObject<T> implements Comparator<T>, XY, ZIndex {
 
 	/**
 	 * 删除指定的独立事件
-	 * 
+	 *
 	 * @param action
 	 */
 	public final static void removeActionEvent(ActionEvent action) {
@@ -173,7 +173,7 @@ public abstract class LObject<T> implements Comparator<T>, XY, ZIndex {
 
 	/**
 	 * 获得制定的独立事件
-	 * 
+	 *
 	 * @param tag
 	 * @param actObject
 	 * @return
@@ -184,7 +184,7 @@ public abstract class LObject<T> implements Comparator<T>, XY, ZIndex {
 
 	/**
 	 * 停止对象对应的自动事件
-	 * 
+	 *
 	 * @param actObject
 	 */
 	public final static void stopActionEvent(ActionBind actObject) {
@@ -193,7 +193,7 @@ public abstract class LObject<T> implements Comparator<T>, XY, ZIndex {
 
 	/**
 	 * 设定指定角色暂停状态
-	 * 
+	 *
 	 * @param pause
 	 * @param actObject
 	 */
@@ -203,7 +203,7 @@ public abstract class LObject<T> implements Comparator<T>, XY, ZIndex {
 
 	/**
 	 * 设置是否暂停自动事件运行
-	 * 
+	 *
 	 * @param pause
 	 */
 	public final static void pauseActionEvent(boolean pause) {
@@ -212,7 +212,7 @@ public abstract class LObject<T> implements Comparator<T>, XY, ZIndex {
 
 	/**
 	 * 获得是否暂停了独立事件运行
-	 * 
+	 *
 	 * @return
 	 */
 	public final static boolean isPauseActionEvent() {
@@ -221,7 +221,7 @@ public abstract class LObject<T> implements Comparator<T>, XY, ZIndex {
 
 	/**
 	 * 启动指定对象对应的对立事件
-	 * 
+	 *
 	 * @param actObject
 	 */
 	public final static void startActionEvent(ActionBind actObject) {
@@ -230,7 +230,7 @@ public abstract class LObject<T> implements Comparator<T>, XY, ZIndex {
 
 	/**
 	 * 停止独立事件运行用线程
-	 * 
+	 *
 	 */
 	public final static void stopActionEvent() {
 		ActionControl.get().stop();
@@ -473,7 +473,7 @@ public abstract class LObject<T> implements Comparator<T>, XY, ZIndex {
 
 	/**
 	 * 上一个经过的X坐标
-	 * 
+	 *
 	 * @return
 	 */
 	public float getPreviousX() {
@@ -482,7 +482,7 @@ public abstract class LObject<T> implements Comparator<T>, XY, ZIndex {
 
 	/**
 	 * 上一个经过的Y坐标
-	 * 
+	 *
 	 * @return
 	 */
 	public float getPreviousY() {
@@ -499,7 +499,7 @@ public abstract class LObject<T> implements Comparator<T>, XY, ZIndex {
 
 	/**
 	 * 判定当前坐标是否发生了移动
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean hasMoved() {
@@ -519,7 +519,7 @@ public abstract class LObject<T> implements Comparator<T>, XY, ZIndex {
 
 	public void move_45D_up(int multiples) {
 		syncPreviousPos();
-		_objectLocation.move_multiples(Field2D.UP, multiples);
+		_objectLocation.move_multiples(Config.UP, multiples);
 	}
 
 	public void move_45D_left() {
@@ -528,7 +528,7 @@ public abstract class LObject<T> implements Comparator<T>, XY, ZIndex {
 
 	public void move_45D_left(int multiples) {
 		syncPreviousPos();
-		_objectLocation.move_multiples(Field2D.LEFT, multiples);
+		_objectLocation.move_multiples(Config.LEFT, multiples);
 	}
 
 	public void move_45D_right() {
@@ -537,7 +537,7 @@ public abstract class LObject<T> implements Comparator<T>, XY, ZIndex {
 
 	public void move_45D_right(int multiples) {
 		syncPreviousPos();
-		_objectLocation.move_multiples(Field2D.RIGHT, multiples);
+		_objectLocation.move_multiples(Config.RIGHT, multiples);
 	}
 
 	public void move_45D_down() {
@@ -546,7 +546,7 @@ public abstract class LObject<T> implements Comparator<T>, XY, ZIndex {
 
 	public void move_45D_down(int multiples) {
 		syncPreviousPos();
-		_objectLocation.move_multiples(Field2D.DOWN, multiples);
+		_objectLocation.move_multiples(Config.DOWN, multiples);
 	}
 
 	public void move_up() {
@@ -555,7 +555,7 @@ public abstract class LObject<T> implements Comparator<T>, XY, ZIndex {
 
 	public void move_up(int multiples) {
 		syncPreviousPos();
-		_objectLocation.move_multiples(Field2D.TUP, multiples);
+		_objectLocation.move_multiples(Config.TUP, multiples);
 	}
 
 	public void move_left() {
@@ -564,7 +564,7 @@ public abstract class LObject<T> implements Comparator<T>, XY, ZIndex {
 
 	public void move_left(int multiples) {
 		syncPreviousPos();
-		_objectLocation.move_multiples(Field2D.TLEFT, multiples);
+		_objectLocation.move_multiples(Config.TLEFT, multiples);
 	}
 
 	public void move_right() {
@@ -573,7 +573,7 @@ public abstract class LObject<T> implements Comparator<T>, XY, ZIndex {
 
 	public void move_right(int multiples) {
 		syncPreviousPos();
-		_objectLocation.move_multiples(Field2D.TRIGHT, multiples);
+		_objectLocation.move_multiples(Config.TRIGHT, multiples);
 	}
 
 	public void move_down() {
@@ -582,7 +582,7 @@ public abstract class LObject<T> implements Comparator<T>, XY, ZIndex {
 
 	public void move_down(int multiples) {
 		syncPreviousPos();
-		_objectLocation.move_multiples(Field2D.TDOWN, multiples);
+		_objectLocation.move_multiples(Config.TDOWN, multiples);
 	}
 
 	public void move(Vector2f v) {
@@ -797,9 +797,9 @@ public abstract class LObject<T> implements Comparator<T>, XY, ZIndex {
 
 	/**
 	 * 调用时以指定速度向指定X轴移动(到目标X后停止)
-	 * 
+	 *
 	 * 注意,此函数没有调用缓动的moveTo方法,只有调用时才会累加移动,不能自动累加
-	 * 
+	 *
 	 * @param destX
 	 * @param speed
 	 * @return
@@ -818,9 +818,9 @@ public abstract class LObject<T> implements Comparator<T>, XY, ZIndex {
 
 	/**
 	 * 调用时以指定速度向指定Y轴移动(到目标Y后停止)
-	 * 
+	 *
 	 * 注意,此函数没有调用缓动的moveTo方法,只有调用时才会累加移动,不能自动累加
-	 * 
+	 *
 	 * @param destY
 	 * @param speed
 	 * @return
@@ -839,9 +839,9 @@ public abstract class LObject<T> implements Comparator<T>, XY, ZIndex {
 
 	/**
 	 * 调用时以指定速度向指定方向移动(到目标后停止),移动结束后Callback自身
-	 * 
+	 *
 	 * 注意,此函数没有调用缓动的moveTo方法,只有调用时才会累加移动,不能自动累加
-	 * 
+	 *
 	 * @param destX
 	 * @param destY
 	 * @param speed

@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2012
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -169,7 +169,7 @@ public class LGesture extends LComponent {
 		if (goalPath != null) {
 			float[] points = goalPath.getPoints();
 			int size = points.length;
-			TArray<PointF> result = new TArray<PointF>(size);
+			TArray<PointF> result = new TArray<>(size);
 			for (int i = 0; i < size; i += 2) {
 				result.add(new PointF(points[i], points[i + 1]));
 			}
@@ -182,7 +182,7 @@ public class LGesture extends LComponent {
 		if (goalPath != null) {
 			float[] points = goalPath.getPoints();
 			int size = points.length;
-			TArray<Vector2f> result = new TArray<Vector2f>(size);
+			TArray<Vector2f> result = new TArray<>(size);
 			for (int i = 0; i < size; i += 2) {
 				result.add(new Vector2f(points[i], points[i + 1]));
 			}
@@ -260,7 +260,7 @@ public class LGesture extends LComponent {
 
 	/**
 	 * 不愿意清除绘制的内容时，可以设置此项为false
-	 * 
+	 *
 	 * @param autoClear
 	 */
 	public void setAutoClear(boolean autoClear) {
@@ -269,7 +269,7 @@ public class LGesture extends LComponent {
 
 	/**
 	 * 获得一个指定数据的手势分析器
-	 * 
+	 *
 	 * @param type
 	 * @return
 	 */
@@ -278,7 +278,7 @@ public class LGesture extends LComponent {
 		if (goalPath != null) {
 			float[] points = goalPath.getPoints();
 			int size = points.length;
-			TArray<PointF> v = new TArray<PointF>();
+			TArray<PointF> v = new TArray<>();
 			for (int i = 0; i < size; i += 2) {
 				v.add(new PointF(points[i], points[i + 1]));
 			}
@@ -289,7 +289,7 @@ public class LGesture extends LComponent {
 
 	/**
 	 * 获得一个指定数据的手势分析器
-	 * 
+	 *
 	 * @param data
 	 * @return
 	 */
@@ -299,7 +299,7 @@ public class LGesture extends LComponent {
 
 	/**
 	 * 使用指定文件中的采样数据分析手势
-	 * 
+	 *
 	 * @param path
 	 * @param resampledFirst
 	 * @return
@@ -310,7 +310,7 @@ public class LGesture extends LComponent {
 
 	/**
 	 * 获得一个手势分析器
-	 * 
+	 *
 	 * @return
 	 */
 	public URecognizerResult getRecognizer() {
@@ -324,7 +324,7 @@ public class LGesture extends LComponent {
 
 	@Override
 	public void destory() {
-		
+
 	}
 
 }

@@ -1,7 +1,7 @@
 package loon.opengl;
 
-import loon.LTexture;
 import loon.LSystem;
+import loon.LTexture;
 
 public class LSubTexture {
 

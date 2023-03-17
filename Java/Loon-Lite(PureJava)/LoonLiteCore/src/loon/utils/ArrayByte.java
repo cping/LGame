@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2009
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -22,7 +22,6 @@ package loon.utils;
 
 import java.io.IOException;
 import java.io.OutputStream;
-
 import java.util.Comparator;
 
 import loon.LRelease;
@@ -31,7 +30,7 @@ import loon.LSystem;
 
 /**
  * Loon的Byte[]操作用类
- * 
+ *
  * 它的作用在于针对二进制数据进行读取,写入以及处理,总之是字节层操作时才会用到的工具类.
  */
 public class ArrayByte implements IArray, LRelease {
@@ -71,10 +70,7 @@ public class ArrayByte implements IArray, LRelease {
 	private static final ByteArrayDataComparator BYTES_COMPARATOR = new ByteArrayDataComparator();
 
 	public static boolean checkHead(byte[] head, byte[] target) {
-		if (head == null || target == null) {
-			return false;
-		}
-		if (target.length < head.length)
+		if (head == null || target == null || (target.length < head.length))
 			return false;
 		return getDefaultByteArrayComparator().compare(head, 0, head.length, target, 0, head.length) == 0;
 	}
@@ -105,7 +101,7 @@ public class ArrayByte implements IArray, LRelease {
 
 	/**
 	 * 返回指定字符串符合UTF8编码的子符长度
-	 * 
+	 *
 	 * @param str
 	 * @return
 	 */
@@ -130,7 +126,7 @@ public class ArrayByte implements IArray, LRelease {
 
 	/**
 	 * 转化字符串为ArrayByte
-	 * 
+	 *
 	 * @param str
 	 * @return
 	 */
@@ -140,7 +136,7 @@ public class ArrayByte implements IArray, LRelease {
 
 	/**
 	 * 转化字符串为ArrayByte
-	 * 
+	 *
 	 * @param str
 	 * @param orderType
 	 * @return
@@ -354,31 +350,31 @@ public class ArrayByte implements IArray, LRelease {
 	}
 
 	public long readUInt8() throws LSysException {
-		return (0x000000FF & (int) readByte());
+		return (0x000000FF & readByte());
 	}
 
 	public long readUInt16() throws LSysException {
-		int firstByte = (0x000000FF & (int) readByte());
-		int secondByte = (0x000000FF & (int) readByte());
+		int firstByte = (0x000000FF & readByte());
+		int secondByte = (0x000000FF & readByte());
 		long result = 0;
 		if (this.byteOrder == LITTLE_ENDIAN) {
-			result = (long) ((secondByte << 8 | firstByte) & 0xFFFFFFFFL);
+			result = (secondByte << 8 | firstByte) & 0xFFFFFFFFL;
 		} else {
-			result = (long) ((firstByte << 8 | secondByte) & 0xFFFFFFFFL);
+			result = (firstByte << 8 | secondByte) & 0xFFFFFFFFL;
 		}
 		return result;
 	}
 
 	public long readUInt32() throws LSysException {
-		int firstByte = (0x000000FF & (int) readByte());
-		int secondByte = (0x000000FF & (int) readByte());
-		int thirdByte = (0x000000FF & (int) readByte());
-		int fourthByte = (0x000000FF & (int) readByte());
+		int firstByte = (0x000000FF & readByte());
+		int secondByte = (0x000000FF & readByte());
+		int thirdByte = (0x000000FF & readByte());
+		int fourthByte = (0x000000FF & readByte());
 		long result = 0;
 		if (this.byteOrder == LITTLE_ENDIAN) {
-			result = ((long) (fourthByte << 24 | thirdByte << 16 | secondByte << 8 | firstByte)) & 0xFFFFFFFFL;
+			result = (fourthByte << 24 | thirdByte << 16 | secondByte << 8 | firstByte) & 0xFFFFFFFFL;
 		} else {
-			result = ((long) (firstByte << 24 | secondByte << 16 | thirdByte << 8 | fourthByte)) & 0xFFFFFFFFL;
+			result = (firstByte << 24 | secondByte << 16 | thirdByte << 8 | fourthByte) & 0xFFFFFFFFL;
 		}
 		return result;
 	}

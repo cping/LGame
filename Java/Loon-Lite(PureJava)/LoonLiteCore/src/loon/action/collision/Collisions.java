@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2019 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -53,10 +53,10 @@ public class Collisions implements Comparator<Integer>, LRelease {
 	private final FloatArray w2s = new FloatArray(INIT_SIZE);
 	private final FloatArray h2s = new FloatArray(INIT_SIZE);
 	private final IntArray order = new IntArray(INIT_SIZE);
-	private final IntMap<Integer> swapMap = new IntMap<Integer>(INIT_SIZE);
-	public TArray<ActionBind> items = new TArray<ActionBind>(INIT_SIZE);
-	public TArray<ActionBind> others = new TArray<ActionBind>(INIT_SIZE);
-	public TArray<CollisionResult> types = new TArray<CollisionResult>(INIT_SIZE);
+	private final IntMap<Integer> swapMap = new IntMap<>(INIT_SIZE);
+	public TArray<ActionBind> items = new TArray<>(INIT_SIZE);
+	public TArray<ActionBind> others = new TArray<>(INIT_SIZE);
+	public TArray<CollisionResult> types = new TArray<>(INIT_SIZE);
 	private int size = 0;
 
 	public void add(CollisionData col) {
@@ -171,8 +171,8 @@ public class Collisions implements Comparator<Integer>, LRelease {
 			swapMap.put(i, Integer.valueOf(k));
 		}
 		Entry<Integer>[] entrys = swapMap.getEntrys();
-		for (int i = 0; i < entrys.length; i++) {
-			swap(list, (int) entrys[i].key, entrys[i].value.intValue());
+		for (Entry<Integer> entry : entrys) {
+			swap(list, (int) entry.key, entry.value.intValue());
 		}
 	}
 
@@ -186,8 +186,8 @@ public class Collisions implements Comparator<Integer>, LRelease {
 			swapMap.put(i, Integer.valueOf(k));
 		}
 		Entry<Integer>[] entrys = swapMap.getEntrys();
-		for (int i = 0; i < entrys.length; i++) {
-			swapResult(list, (int) entrys[i].key, entrys[i].value.intValue());
+		for (Entry<Integer> entry : entrys) {
+			swapResult(list, (int) entry.key, entry.value.intValue());
 		}
 	}
 
@@ -222,8 +222,7 @@ public class Collisions implements Comparator<Integer>, LRelease {
 			swapMap.put(i, Integer.valueOf(k));
 		}
 		Entry<Integer>[] entrys = swapMap.getEntrys();
-		for (int i = 0; i < entrys.length; i++) {
-			Entry<Integer> e = entrys[i];
+		for (Entry<Integer> e : entrys) {
 			int key = (int) e.key;
 			int value = e.value.intValue();
 			if (key < list.length && value < list.length) {
@@ -242,8 +241,7 @@ public class Collisions implements Comparator<Integer>, LRelease {
 			swapMap.put(i, Integer.valueOf(k));
 		}
 		Entry<Integer>[] entrys = swapMap.getEntrys();
-		for (int i = 0; i < entrys.length; i++) {
-			Entry<Integer> e = entrys[i];
+		for (Entry<Integer> e : entrys) {
 			int key = (int) e.key;
 			int value = e.value.intValue();
 			if (key < list.length && value < list.length) {

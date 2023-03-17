@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -39,10 +39,10 @@ public class FadeOvalEffect extends Entity implements BaseEffect {
 	private float elapsed;
 	private boolean finished = false;
 	private boolean autoRemoved = false;
-	
+
 	private int type = TYPE_FADE_IN;
 	private int maxColorSize;
-	
+
 	public FadeOvalEffect(int type, LColor color) {
 		this(type, color, LSystem.viewSize.width, LSystem.viewSize.height);
 	}
@@ -154,7 +154,7 @@ public class FadeOvalEffect extends Entity implements BaseEffect {
 		this.autoRemoved = autoRemoved;
 		return this;
 	}
-	
+
 	@Override
 	public void close() {
 		super.close();

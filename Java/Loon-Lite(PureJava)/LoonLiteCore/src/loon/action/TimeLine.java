@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -30,7 +30,7 @@ public final class TimeLine extends ActionTweenBase<TimeLine> {
 		SEQUENCE, PARALLEL
 	}
 
-	private static final ActionTweenPool.Callback<TimeLine> poolCallback = new ActionTweenPool.Callback<TimeLine>() {
+	private static final ActionTweenPool.Callback<TimeLine> poolCallback = new ActionTweenPool.Callback<>() {
 		@Override
 		public void onPool(TimeLine obj) {
 			obj.reset();
@@ -57,7 +57,7 @@ public final class TimeLine extends ActionTweenBase<TimeLine> {
 		}
 	};
 
-	static final ActionTweenPool<TimeLine> pool = new ActionTweenPool<TimeLine>(10, poolCallback) {
+	static final ActionTweenPool<TimeLine> pool = new ActionTweenPool<>(10, poolCallback) {
 		@Override
 		protected TimeLine create() {
 			return new TimeLine();
@@ -84,7 +84,7 @@ public final class TimeLine extends ActionTweenBase<TimeLine> {
 		return tl;
 	}
 
-	private final TArray<ActionTweenBase<?>> children = new TArray<ActionTweenBase<?>>(10);
+	private final TArray<ActionTweenBase<?>> children = new TArray<>(10);
 	private TimeLine current;
 	private TimeLine parent;
 	private Modes mode;

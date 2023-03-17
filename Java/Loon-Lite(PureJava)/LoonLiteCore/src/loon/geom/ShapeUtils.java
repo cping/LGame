@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2012
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -112,17 +112,17 @@ public class ShapeUtils {
 	public static final void calculateCenter(Vector2f[] vertices, Vector2f center) {
 		center.x = 0f;
 		center.y = 0f;
-		for (int i = 0; i < vertices.length; i++) {
-			center.x += vertices[i].x;
-			center.y += vertices[i].y;
+		for (Vector2f element : vertices) {
+			center.x += element.x;
+			center.y += element.y;
 		}
 		center.x /= vertices.length;
 		center.y /= vertices.length;
 	}
 
 	public static final void translateVertices(Vector2f[] vertices, Vector2f tx) {
-		for (int i = 0; i < vertices.length; i++) {
-			vertices[i].addSelf(tx.x, tx.y);
+		for (Vector2f element : vertices) {
+			element.addSelf(tx.x, tx.y);
 		}
 	}
 
@@ -133,9 +133,7 @@ public class ShapeUtils {
 		bounds.width = -Integer.MAX_VALUE;
 		bounds.height = -Integer.MAX_VALUE;
 
-		for (int i = 0; i < vertices.length; i++) {
-			Vector2f v = vertices[i];
-
+		for (Vector2f v : vertices) {
 			if (v.x < bounds.x)
 				bounds.x = v.x;
 
@@ -153,8 +151,8 @@ public class ShapeUtils {
 	}
 
 	public void rotate(Vector2f[] vertices, float angle) {
-		for (int i = 0; i < vertices.length; i++) {
-			vertices[i].rotateSelf(angle);
+		for (Vector2f element : vertices) {
+			element.rotateSelf(angle);
 		}
 	}
 

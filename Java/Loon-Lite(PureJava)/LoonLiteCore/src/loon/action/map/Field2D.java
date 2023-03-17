@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2011
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email javachenpeng@yahoo.com
@@ -73,7 +73,7 @@ public class Field2D implements IArray, Config {
 	private IntArray allowMove;
 
 	public TArray<PointI> getPosOfLine(int x0, int y0, int x1, int y1) {
-		TArray<PointI> list = new TArray<PointI>();
+		TArray<PointI> list = new TArray<>();
 		int dx = MathUtils.abs(x1 - x0);
 		int dy = MathUtils.abs(y1 - y0);
 		int sx = (x0 < x1) ? 1 : -1;
@@ -101,7 +101,7 @@ public class Field2D implements IArray, Config {
 		if (x0 == x1) {
 			return this.getPosOfLine(x0, y0, x1, y1);
 		}
-		TArray<PointI> list = new TArray<PointI>();
+		TArray<PointI> list = new TArray<>();
 		int top_y, start_x, start_y, dest_x, dest_y;
 		top_y = (y0 + y1) / 2 - height;
 		if (y0 > y1) {
@@ -132,7 +132,7 @@ public class Field2D implements IArray, Config {
 	}
 
 	public TArray<PointI> getPosOfParabola(int x1, int y1, int x2, int y2, int x3, int y3) {
-		TArray<PointI> list = new TArray<PointI>();
+		TArray<PointI> list = new TArray<>();
 		int a = (x1 * (y3 - y2) - x2 * y3 + y2 * x3 + y1 * (x2 - x3))
 				/ (x1 * ((x3 * x3) - (x2 * x2)) - x2 * (x3 * x3) + (x2 * x2) * x3 + (x1 * x1) * (x2 - x3));
 		int b = -((x1 * x1) * (y3 - y2) - (x2 * x2) * y3 + y2 * (x3 * x3) + y1 * ((x2 * x2) - (x3 * x3)))
@@ -941,10 +941,7 @@ public class Field2D implements IArray, Config {
 
 		for (int x = fromTileX; x <= toTileX; x++) {
 			for (int y = fromTileY; y <= toTileY; y++) {
-				if ((x < 0) || (x >= getWidth())) {
-					return new Vector2f(x, y);
-				}
-				if ((y < 0) || (y >= getHeight())) {
+				if ((x < 0) || (x >= getWidth()) || (y < 0) || (y >= getHeight())) {
 					return new Vector2f(x, y);
 				}
 				if (!this.isHit(x, y)) {
@@ -979,10 +976,7 @@ public class Field2D implements IArray, Config {
 
 		for (int x = fromTileX; x <= toTileX; x++) {
 			for (int y = fromTileY; y <= toTileY; y++) {
-				if ((x < 0) || (x >= getWidth())) {
-					return true;
-				}
-				if ((y < 0) || (y >= getHeight())) {
+				if ((x < 0) || (x >= getWidth()) || (y < 0) || (y >= getHeight())) {
 					return true;
 				}
 				if (!this.isHit(x, y)) {
@@ -1022,7 +1016,7 @@ public class Field2D implements IArray, Config {
 
 	public TArray<Vector2f> neighbors(Vector2f pos, boolean flag) {
 		if (result == null) {
-			result = new TArray<Vector2f>(flag ? 8 : 4);
+			result = new TArray<>(flag ? 8 : 4);
 		} else {
 			result.clear();
 		}

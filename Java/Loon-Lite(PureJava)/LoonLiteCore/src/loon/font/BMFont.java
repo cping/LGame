@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -34,11 +34,11 @@ import loon.opengl.GLEx;
 import loon.utils.IntMap;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
-import loon.utils.StringKeyValue;
-import loon.utils.StringUtils;
 import loon.utils.ObjectMap.Entries;
 import loon.utils.ObjectMap.Entry;
 import loon.utils.StrBuilder;
+import loon.utils.StringKeyValue;
+import loon.utils.StringUtils;
 import loon.utils.TArray;
 import loon.utils.parse.StrTokenizer;
 
@@ -66,7 +66,7 @@ public class BMFont extends FontTrans implements IFont {
 
 	private boolean _initParse = false;
 
-	private IntMap<CharDef> customChars = new IntMap<CharDef>();
+	private IntMap<CharDef> customChars = new IntMap<>();
 
 	private PointI _offset = new PointI();
 
@@ -176,7 +176,7 @@ public class BMFont extends FontTrans implements IFont {
 
 	private void parse(String text) throws LSysException {
 		if (displays == null) {
-			displays = new IntMap<Display>(DEFAULT_MAX_CHAR);
+			displays = new IntMap<>(DEFAULT_MAX_CHAR);
 		} else {
 			displays.clear();
 		}
@@ -214,8 +214,8 @@ public class BMFont extends FontTrans implements IFont {
 			}
 		}
 
-		ObjectMap<Short, TArray<Short>> kerning = new ObjectMap<Short, TArray<Short>>(64);
-		TArray<CharDef> charDefs = new TArray<CharDef>(DEFAULT_MAX_CHAR);
+		ObjectMap<Short, TArray<Short>> kerning = new ObjectMap<>(64);
+		TArray<CharDef> charDefs = new TArray<>(DEFAULT_MAX_CHAR);
 
 		int maxChar = 0;
 		boolean done = false;
@@ -244,7 +244,7 @@ public class BMFont extends FontTrans implements IFont {
 					int offset = Integer.parseInt(tokens.nextToken());
 					TArray<Short> values = kerning.get(Short.valueOf(first));
 					if (values == null) {
-						values = new TArray<Short>();
+						values = new TArray<>();
 						kerning.put(Short.valueOf(first), values);
 					}
 					values.add(Short.valueOf((short) ((offset << 8) | second)));
@@ -254,8 +254,7 @@ public class BMFont extends FontTrans implements IFont {
 
 		this.charArray = new CharDef[totalCharSet];
 
-		for (Iterator<CharDef> iter = charDefs.iterator(); iter.hasNext();) {
-			CharDef def = iter.next();
+		for (CharDef def : charDefs) {
 			if (def.id < totalCharSet) {
 				charArray[def.id] = def;
 			} else {
@@ -275,7 +274,7 @@ public class BMFont extends FontTrans implements IFont {
 			if (first < totalCharSet) {
 				charArray[first].kerning = valueArray;
 			} else {
-				customChars.get((int) first).kerning = valueArray;
+				customChars.get(first).kerning = valueArray;
 			}
 		}
 		this.advanceSpace = MathUtils.max(1,
@@ -340,10 +339,7 @@ public class BMFont extends FontTrans implements IFont {
 	}
 
 	private void drawString(GLEx g, String msg, float tx, float ty, LColor c, int startIndex, int endIndex) {
-		if (_isClose) {
-			return;
-		}
-		if (StringUtils.isEmpty(msg)) {
+		if (_isClose || StringUtils.isEmpty(msg)) {
 			return;
 		}
 		String newMessage = toMessage(msg);
@@ -399,10 +395,7 @@ public class BMFont extends FontTrans implements IFont {
 
 	@Override
 	public void drawString(GLEx g, String text, float x, float y, float rotation, LColor c) {
-		if (_isClose) {
-			return;
-		}
-		if (StringUtils.isEmpty(text)) {
+		if (_isClose || StringUtils.isEmpty(text)) {
 			return;
 		}
 		if (rotation == 0) {
@@ -423,10 +416,7 @@ public class BMFont extends FontTrans implements IFont {
 	@Override
 	public void drawString(GLEx gl, String msg, float x, float y, float sx, float sy, float ax, float ay,
 			float rotation, LColor c) {
-		if (_isClose) {
-			return;
-		}
-		if (StringUtils.isEmpty(msg)) {
+		if (_isClose || StringUtils.isEmpty(msg)) {
 			return;
 		}
 		String newMessage = toMessage(msg);
@@ -518,9 +508,9 @@ public class BMFont extends FontTrans implements IFont {
 		make();
 		CharDef charDef = null;
 		if (c < totalCharSet) {
-			charDef = charArray[(int) c];
+			charDef = charArray[c];
 		} else {
-			charDef = customChars.get((int) c);
+			charDef = customChars.get(c);
 		}
 		if (charDef == null) {
 			return getSize();
@@ -707,7 +697,7 @@ public class BMFont extends FontTrans implements IFont {
 		this._translator = translator;
 		return this;
 	}
-	
+
 	public boolean isClosed() {
 		return _isClose;
 	}

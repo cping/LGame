@@ -1,19 +1,19 @@
 /**
- * 
+ *
  * Copyright 2014
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -41,9 +41,9 @@ import loon.utils.TArray;
 /**
  * LGame菜单栏，用户可以隐藏大量按钮到其中，直到选中菜单时才动态展露，而非选中时则恢复隐藏.(此组件允许用户自行替换UI，
  * 若setSupportScroll(true)则支持滚动)
- * 
+ *
  * Example:
- * 
+ *
  * <pre>
  * LMenu panel = new LMenu(LMenu.MOVE_LEFT, "Menu");
  * panel.add("ABC");
@@ -406,7 +406,7 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 
 	private int item_top_offset = 0;
 
-	private TArray<MenuItem> items = new TArray<MenuItem>(10);
+	private TArray<MenuItem> items = new TArray<>(10);
 
 	private int tabWidth, tabHeight;
 
@@ -591,7 +591,7 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 		if (name == null) {
 			return null;
 		}
-		TArray<MenuItem> items = new TArray<MenuItem>();
+		TArray<MenuItem> items = new TArray<>();
 		for (MenuItem item : items) {
 			if (item != null && name.equals(item._varName)) {
 				items.add(item);
@@ -657,6 +657,7 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 		}
 	}
 
+	@Override
 	public void update(long elapsedTime) {
 		if (!isVisible()) {
 			return;
@@ -906,10 +907,12 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 		return this.font;
 	}
 
+	@Override
 	public LColor getFontColor() {
 		return fontColor.cpy();
 	}
 
+	@Override
 	public LMenu setFontColor(LColor f) {
 		this.fontColor = f;
 		return this;

@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2019 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -28,8 +28,8 @@ import loon.geom.PointF;
 import loon.geom.RectF;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
-import loon.utils.TArray;
 import loon.utils.ObjectMap.Keys;
+import loon.utils.TArray;
 
 /**
  * 一个碰撞物体自动管理用类,和CollisionManager不同,它会自动获得碰撞后新的物体坐标
@@ -40,7 +40,7 @@ public class CollisionWorld implements LRelease {
 		public int itemCount = 0;
 		public float x;
 		public float y;
-		public ObjectMap<ActionBind, Boolean> items = new ObjectMap<ActionBind, Boolean>();
+		public ObjectMap<ActionBind, Boolean> items = new ObjectMap<>();
 	}
 
 	private final static float DELTA = 1e-5f;
@@ -56,9 +56,9 @@ public class CollisionWorld implements LRelease {
 	private final PointF segmentIntersectionIndicesn2 = new PointF();
 	private final CollisionData segmentIntersectionIndicescol = new CollisionData();
 
-	private ObjectMap<ActionBind, RectF> rects = new ObjectMap<ActionBind, RectF>();
-	private ObjectMap<Float, ObjectMap<Float, Cell>> rows = new ObjectMap<Float, ObjectMap<Float, Cell>>();
-	private ObjectMap<Cell, Boolean> nonEmptyCells = new ObjectMap<Cell, Boolean>();
+	private ObjectMap<ActionBind, RectF> rects = new ObjectMap<>();
+	private ObjectMap<Float, ObjectMap<Float, Cell>> rows = new ObjectMap<>();
+	private ObjectMap<Cell, Boolean> nonEmptyCells = new ObjectMap<>();
 	private CollisionGrid grid = new CollisionGrid();
 
 	private boolean _tileMode = false;
@@ -69,18 +69,18 @@ public class CollisionWorld implements LRelease {
 	private final float cellSizeX;
 	private final float cellSizeY;
 
-	private final TArray<Cell> getCellsTouchedBySegment_visited = new TArray<Cell>();
+	private final TArray<Cell> getCellsTouchedBySegment_visited = new TArray<>();
 
 	private final RectF remove_c = new RectF();
-	private final TArray<ActionBind> project_visited = new TArray<ActionBind>();
+	private final TArray<ActionBind> project_visited = new TArray<>();
 	private final RectF project_c = new RectF();
-	private final ObjectMap<ActionBind, Boolean> project_dictItemsInCellRect = new ObjectMap<ActionBind, Boolean>();
+	private final ObjectMap<ActionBind, Boolean> project_dictItemsInCellRect = new ObjectMap<>();
 
 	private final RectF add_c = new RectF();
 	private final RectF update_c1 = new RectF();
 	private final RectF update_c2 = new RectF();
 
-	private final TArray<ActionBind> check_visited = new TArray<ActionBind>();
+	private final TArray<ActionBind> check_visited = new TArray<>();
 
 	private final Collisions check_cols = new Collisions();
 	private final Collisions check_projectedCols = new Collisions();
@@ -229,10 +229,7 @@ public class CollisionWorld implements LRelease {
 	}
 
 	private boolean removeItemFromCell(ActionBind bind, float cx, float cy) {
-		if (_closed) {
-			return false;
-		}
-		if (!rows.containsKey(cy)) {
+		if (_closed || !rows.containsKey(cy)) {
 			return false;
 		}
 		ObjectMap<Float, Cell> row = rows.get(cy);
@@ -478,7 +475,7 @@ public class CollisionWorld implements LRelease {
 		float x1 = rect.x, y1 = rect.y, w1 = rect.width, h1 = rect.height;
 		if (x1 != x2 || y1 != y2 || w1 != w2 || h1 != h2) {
 
-			// size limit 
+			// size limit
 			RectF c1 = grid.toCellRect(cellSizeX, cellSizeY, x1, y1, w1, h1, update_c1);
 			RectF c2 = grid.toCellRect(cellSizeX, cellSizeY, x2, y2, w2, h2, update_c2);
 

@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2019 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -22,7 +22,7 @@ package loon.utils;
 
 /**
  * key-value形式的数据集合,有序排列,作用近似于HashMap
- * 
+ *
  * @param <K>
  * @param <V>
  */
@@ -65,6 +65,7 @@ public class OrderedMap<K,V> extends ObjectMap<K, V> {
 		this.ordered = ordered;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public V get(Object key) {
 		int i = positionOf(key);
@@ -75,6 +76,7 @@ public class OrderedMap<K,V> extends ObjectMap<K, V> {
 		return (V) (keyIndexShift > 0 ? keyValueTable[(i << keyIndexShift) + 2] : FINAL_VALUE);
 	}
 
+	@Override
 	public void clear() {
 		super.clear();
 		headIndex = NO_INDEX;
@@ -108,7 +110,7 @@ public class OrderedMap<K,V> extends ObjectMap<K, V> {
 	void addBind(int i) {
 		insertIndex(i);
 		if (headEntry == null) {
-			headEntry = new Entry<K, V>(headIndex, this);
+			headEntry = new Entry<>(headIndex, this);
 		}
 		if (removeEldestEntry(headEntry)) {
 			removeKey(headEntry.key, headIndex);
@@ -120,6 +122,7 @@ public class OrderedMap<K,V> extends ObjectMap<K, V> {
 		removeIndex(i);
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	void updateBind(int i) {
 		updateIndex(i);

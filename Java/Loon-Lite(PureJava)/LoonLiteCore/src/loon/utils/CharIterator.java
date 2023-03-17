@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2020 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -24,13 +24,13 @@ import loon.LRelease;
 import loon.LSysException;
 
 public class CharIterator implements LRelease {
-	
+
     public static final char DONE = '\uFFFF';
 
     private String text;
     private int begin;
     private int end;
- 
+
     private int pos;
 
     public CharIterator(String text)
@@ -127,9 +127,7 @@ public class CharIterator implements LRelease {
             return false;
         }
         CharIterator that = (CharIterator) obj;
-        if (hashCode() != that.hashCode())
-            return false;
-        if (!text.equals(that.text))
+        if ((hashCode() != that.hashCode()) || !text.equals(that.text))
             return false;
         if (pos != that.pos || begin != that.begin || end != that.end)
             return false;
@@ -141,7 +139,7 @@ public class CharIterator implements LRelease {
     {
         return text.hashCode() ^ pos ^ begin ^ end;
     }
-    
+
     public char previous()
     {
         if (pos > begin) {

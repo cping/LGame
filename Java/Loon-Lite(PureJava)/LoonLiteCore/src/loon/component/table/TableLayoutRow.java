@@ -1,18 +1,18 @@
 /**
  * Copyright 2014
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -72,8 +72,8 @@ public class TableLayoutRow {
 	public boolean setWidth(int width) {
 		if (width > getWidth()) {
 			double newWidthDif = (width - getWidth()) / (double) columns.length;
-			for (int i = 0; i < columns.length; i++) {
-				columns[i].setWidth(columns[i].getWidthf() + newWidthDif);
+			for (TableColumnLayout column : columns) {
+				column.setWidth(column.getWidthf() + newWidthDif);
 			}
 			adjustColumns();
 			this.width = width;
@@ -102,8 +102,8 @@ public class TableLayoutRow {
 
 	private int getMaxDifferenceX() {
 		int dif = 0;
-		for (int i = 0; i < columns.length; i++) {
-			dif += columns[i].getWidth() - columns[i].getMinWidth();
+		for (TableColumnLayout column : columns) {
+			dif += column.getWidth() - column.getMinWidth();
 		}
 		return dif;
 	}
@@ -139,12 +139,12 @@ public class TableLayoutRow {
 
 	private void adjustColumns() {
 		int startX = this.x;
-		for (int i = 0; i < columns.length; i++) {
-			columns[i].setX(startX);
-			startX += columns[i].getWidth();
-			columns[i].setY(getY());
-			columns[i].setHeight(getHeight());
-			columns[i].adjustComponent();
+		for (TableColumnLayout column : columns) {
+			column.setX(startX);
+			startX += column.getWidth();
+			column.setY(getY());
+			column.setHeight(getHeight());
+			column.adjustComponent();
 		}
 	}
 
@@ -199,7 +199,7 @@ public class TableLayoutRow {
 
 	public void removeColumn(int column) {
 		int columnAdd = columns[column].getWidth() / (columns.length - 1);
-		TArray<TableColumnLayout> newColmns = new TArray<TableColumnLayout>();
+		TArray<TableColumnLayout> newColmns = new TArray<>();
 		for (int i = 0; i < columns.length; i++) {
 			if (i != column) {
 				columns[i].setWidth(columns[i].getWidth() + columnAdd);
@@ -211,8 +211,8 @@ public class TableLayoutRow {
 	}
 
 	public void paint(GLEx g) {
-		for (int i = 0; i < columns.length; i++) {
-			columns[i].paint(g);
+		for (TableColumnLayout column : columns) {
+			column.paint(g);
 		}
 	}
 

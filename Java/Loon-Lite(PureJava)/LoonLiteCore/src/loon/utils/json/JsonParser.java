@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -29,10 +29,10 @@ import loon.utils.MathUtils;
 final class JsonParser {
 
 	private static enum Token {
-		EOF(false), NULL(true), TRUE(true), 
-		FALSE(true), STRING(true), NUMBER(true), 
+		EOF(false), NULL(true), TRUE(true),
+		FALSE(true), STRING(true), NUMBER(true),
 		COMMA(false), COLON(false),
-		OBJECT_START(true), OBJECT_END(false), 
+		OBJECT_START(true), OBJECT_END(false),
 		ARRAY_START(true), ARRAY_END(false);
 		public boolean isValue;
 
@@ -54,9 +54,9 @@ final class JsonParser {
 	}
 
 	private static final char[] TRUE = { 'r', 'u', 'e' };
-	
+
 	private static final char[] FALSE = { 'a', 'l', 's', 'e' };
-	
+
 	private static final char[] NULL = { 'u', 'l', 'l' };
 
 	private StringBuilder _reusableBuffer = new StringBuilder();
@@ -72,7 +72,7 @@ final class JsonParser {
 	private int _bufferLength;
 
 	private boolean _eof;
-	
+
 	private Object value;
 
 	private Token token;
@@ -87,15 +87,15 @@ final class JsonParser {
 	}
 
 	public static JsonParserContext<JsonObject> object() {
-		return new JsonParserContext<JsonObject>(JsonObject.class);
+		return new JsonParserContext<>(JsonObject.class);
 	}
 
 	public static JsonParserContext<JsonArray> array() {
-		return new JsonParserContext<JsonArray>(JsonArray.class);
+		return new JsonParserContext<>(JsonArray.class);
 	}
 
 	public static JsonParserContext<Object> any() {
-		return new JsonParserContext<Object>(Object.class);
+		return new JsonParserContext<>(Object.class);
 	}
 
 	@SuppressWarnings("unchecked")

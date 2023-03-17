@@ -1,19 +1,19 @@
 /**
- * 
+ *
  * Copyright 2008 - 2011
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -26,23 +26,23 @@ import loon.utils.LIterator;
 import loon.utils.TArray;
 
 public interface CollisionChecker {
-	
+
 	void initialize(int cellSize);
 
 	void initialize(int cellSizeX, int cellSizeY);
 
 	void setInTheLayer(boolean yes);
-	
+
 	boolean getInTheLayer();
-	
+
 	void setOffsetPos(float x,float y);
 
 	void setOffsetX(float x);
 
 	void setOffsetY(float y);
-	
+
 	Vector2f getOffsetPos();
-	
+
 	void addObject(CollisionObject actor);
 
 	void removeObject(CollisionObject actor);
@@ -54,7 +54,7 @@ public interface CollisionChecker {
 	void updateObjectSize(CollisionObject actor);
 
 	int numberActors();
-	
+
 	TArray<CollisionObject> getObjectsAt(float x, float y, String flag);
 
 	TArray<CollisionObject> getIntersectingObjects(CollisionObject actor, String flag);

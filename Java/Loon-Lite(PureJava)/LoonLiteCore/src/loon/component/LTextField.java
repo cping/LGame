@@ -1,36 +1,36 @@
 /**
- * 
+ *
  * Copyright 2014
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
  * @version 0.4.1
- * 
+ *
  * Example1:
- * 
+ *
  *          new LTextField(LSystem.EMPTY, 0, 0,35);
- *          
+ *
  *  Example3:
- *           
+ *
  *          LTextField field = new LTextField(LSystem.EMPTY, 0,0,35);
  *  		field.setFontColor(LColor.white);
  *  		field.setHideBackground(true);
- * 
+ *
  *  文本输入类，可以用setHideBackground函数隐藏背景，从而把其放置到理想的输入背景中
- * 
+ *
  */
 package loon.component;
 
@@ -41,13 +41,12 @@ import loon.component.skin.SkinManager;
 import loon.events.ActionKey;
 import loon.events.GameKey;
 import loon.events.SysInputFactory;
-import loon.events.SysKey;
 import loon.events.SysInputFactory.OnscreenKeyboard;
+import loon.events.SysKey;
 import loon.font.IFont;
 import loon.opengl.GLEx;
 import loon.utils.CharUtils;
 import loon.utils.MathUtils;
-import loon.utils.StringUtils;
 
 /**
  * 文字输入用UI
@@ -166,17 +165,11 @@ public class LTextField extends LTextBar {
 	@Override
 	protected void keyPressed(GameKey key) {
 		super.keyPressed(key);
-		if (!isFocusable()) {
-			return;
-		}
-		if (!isPointInUI()) {
-			return;
-		}
-		if (keyLock.isPressed()) {
+		if (!isFocusable() || !isPointInUI() || keyLock.isPressed()) {
 			return;
 		}
 		char nextchar = key.getKeyChar();
-		if (nextchar == 0 && (StringUtils.isChinese(nextchar) || CharUtils.isAlphaOrDigit(nextchar))) {
+		if (nextchar == 0 && (CharUtils.isChinese(nextchar) || CharUtils.isAlphaOrDigit(nextchar))) {
 			return;
 		}
 		boolean isatstart = _text.length() == startidx;

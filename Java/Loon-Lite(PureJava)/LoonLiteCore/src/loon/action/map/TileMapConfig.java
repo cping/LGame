@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -72,7 +72,7 @@ public class TileMapConfig {
 	public static TArray<int[]> loadList(final String fileName) {
 		String result = null;
 		StrTokenizer br = BaseIO.loadStrTokenizer(fileName, LSystem.NL);
-		TArray<int[]> records = new TArray<int[]>(CollectionUtils.INITIAL_CAPACITY);
+		TArray<int[]> records = new TArray<>(CollectionUtils.INITIAL_CAPACITY);
 		for (; br.hasMoreTokens();) {
 			result = StringUtils.replace(br.nextToken().trim(), LSystem.LS, LSystem.EMPTY);
 			if (!StringUtils.isEmpty(result)) {
@@ -195,7 +195,7 @@ public class TileMapConfig {
 	}
 
 	public static String[][] stringToStringArrays(String srcStr) {
-		String[][] resArr = (String[][]) null;
+		String[][] resArr = null;
 		if ((srcStr == null) || (srcStr.length() == 0))
 			return resArr;
 		try {

@@ -71,8 +71,8 @@ public class PixelDarkOutEffect extends PixelBaseEffect {
 			de[2].setMoveY(5f);
 			de[3].setMoveY(-5f);
 		}
-		for (int j = 0; j < de.length; j++) {
-			de[j].drawPaint(g, x, y);
+		for (TriangleEffect element : de) {
+			element.drawPaint(g, x, y);
 		}
 		if (super.frame >= limit) {
 			this.completed = true;

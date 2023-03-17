@@ -49,6 +49,7 @@ public class TextureCellRenderer implements ICellRenderer {
 		this.scaleTexture = s;
 	}
 
+	@Override
 	public Dimension getCellContentSize(Object value) {
 		if (value == null) {
 			return null;

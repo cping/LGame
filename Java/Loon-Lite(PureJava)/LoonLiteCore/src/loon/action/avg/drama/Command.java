@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2010
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email javachenpeng@yahoo.com
@@ -117,7 +117,7 @@ public class Command extends Conversion implements LRelease {
 
 	/**
 	 * 构造函数，载入指定脚本文件
-	 * 
+	 *
 	 * @param fileName
 	 */
 	public Command(String fileName) {
@@ -127,7 +127,7 @@ public class Command extends Conversion implements LRelease {
 
 	/**
 	 * 构造函数，载入指定list脚本
-	 * 
+	 *
 	 * @param resource
 	 */
 	public Command(String fileName, String[] res) {
@@ -320,7 +320,7 @@ public class Command extends Conversion implements LRelease {
 
 	/**
 	 * 打开脚本缓存
-	 * 
+	 *
 	 */
 	public void openCache() {
 		isCache = true;
@@ -328,7 +328,7 @@ public class Command extends Conversion implements LRelease {
 
 	/**
 	 * 关闭脚本缓存
-	 * 
+	 *
 	 */
 	public void closeCache() {
 		isCache = false;
@@ -336,7 +336,7 @@ public class Command extends Conversion implements LRelease {
 
 	/**
 	 * 当前脚本行缓存名
-	 * 
+	 *
 	 * @return
 	 */
 	public String nowCacheOffsetName(String cmd) {
@@ -345,7 +345,7 @@ public class Command extends Conversion implements LRelease {
 
 	/**
 	 * 重启脚本缓存
-	 * 
+	 *
 	 */
 	public static void resetCache() {
 		if (scriptContext != null) {
@@ -364,7 +364,7 @@ public class Command extends Conversion implements LRelease {
 
 	/**
 	 * 返回当前的读入数据集合
-	 * 
+	 *
 	 * @return
 	 */
 	public String[] getReads() {
@@ -375,7 +375,7 @@ public class Command extends Conversion implements LRelease {
 
 	/**
 	 * 返回指定索引的读入数据
-	 * 
+	 *
 	 * @param index
 	 * @return
 	 */
@@ -389,7 +389,7 @@ public class Command extends Conversion implements LRelease {
 
 	/**
 	 * 截取第一次出现的指定标记
-	 * 
+	 *
 	 * @param messages
 	 * @param startString
 	 * @param endString
@@ -402,7 +402,7 @@ public class Command extends Conversion implements LRelease {
 
 	/**
 	 * 截取指定标记内容为list
-	 * 
+	 *
 	 * @param messages
 	 * @param startString
 	 * @param endString
@@ -414,7 +414,7 @@ public class Command extends Conversion implements LRelease {
 
 	/**
 	 * 截取指定标记内容为list
-	 * 
+	 *
 	 * @param messages
 	 * @param startString
 	 * @param endString
@@ -424,7 +424,7 @@ public class Command extends Conversion implements LRelease {
 		int dlength = messages.length;
 		int slength = startString.length;
 		int elength = endString.length;
-		TArray<String> tagList = new TArray<String>(10);
+		TArray<String> tagList = new TArray<>(10);
 		boolean lookup = false;
 		int lookupStartIndex = 0;
 		int lookupEndIndex = 0;
@@ -460,7 +460,7 @@ public class Command extends Conversion implements LRelease {
 
 	/**
 	 * 注入选择变量
-	 * 
+	 *
 	 * @param type
 	 */
 	public Command select(int type) {
@@ -476,7 +476,7 @@ public class Command extends Conversion implements LRelease {
 
 	/**
 	 * 插入变量
-	 * 
+	 *
 	 * @param key
 	 * @param value
 	 */
@@ -487,7 +487,7 @@ public class Command extends Conversion implements LRelease {
 
 	/**
 	 * 插入变量集合
-	 * 
+	 *
 	 * @param vars
 	 */
 	public Command setVariables(ArrayMap vars) {
@@ -497,7 +497,7 @@ public class Command extends Conversion implements LRelease {
 
 	/**
 	 * 返回变量集合
-	 * 
+	 *
 	 * @return
 	 */
 	public ArrayMap getVariables() {
@@ -510,7 +510,7 @@ public class Command extends Conversion implements LRelease {
 
 	/**
 	 * 删除变量
-	 * 
+	 *
 	 * @param key
 	 */
 	public void removeVariable(String key) {
@@ -519,7 +519,7 @@ public class Command extends Conversion implements LRelease {
 
 	/**
 	 * 判定脚本是否允许继续解析
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean next() {
@@ -528,7 +528,7 @@ public class Command extends Conversion implements LRelease {
 
 	/**
 	 * 跳转向指定索引位置
-	 * 
+	 *
 	 * @param offset
 	 * @return
 	 */
@@ -542,7 +542,7 @@ public class Command extends Conversion implements LRelease {
 
 	/**
 	 * 跳转向指定索引位置
-	 * 
+	 *
 	 * @param gotoFlag
 	 * @return
 	 */
@@ -554,7 +554,7 @@ public class Command extends Conversion implements LRelease {
 			if (line.equals(gotoFlag)) {
 				idx = i;
 				break;
-			} else if (varName != null && gotoFlag.equals((String) varName)) {
+			} else if (varName != null && gotoFlag.equals(varName)) {
 				idx = i;
 				break;
 			}
@@ -572,11 +572,11 @@ public class Command extends Conversion implements LRelease {
 
 	/**
 	 * 批处理执行脚本，并返回可用list结果
-	 * 
+	 *
 	 * @return
 	 */
 	public TArray<String> batchToList() {
-		TArray<String> reslist = new TArray<String>(scriptSize);
+		TArray<String> reslist = new TArray<>(scriptSize);
 		for (; next();) {
 			String execute = doExecute();
 			if (execute != null) {
@@ -588,7 +588,7 @@ public class Command extends Conversion implements LRelease {
 
 	/**
 	 * 批处理执行脚本，并返回可用string结果
-	 * 
+	 *
 	 * @return
 	 */
 	public String batchToString() {
@@ -646,7 +646,7 @@ public class Command extends Conversion implements LRelease {
 
 	/**
 	 * 随机数处理
-	 * 
+	 *
 	 */
 	private void setupRandom(String cmd) {
 		// 随机数判定
@@ -689,7 +689,7 @@ public class Command extends Conversion implements LRelease {
 
 	/**
 	 * 逐行执行脚本命令
-	 * 
+	 *
 	 * @return
 	 */
 	public String doExecute() {
@@ -981,7 +981,7 @@ public class Command extends Conversion implements LRelease {
 
 	/**
 	 * 获得脚本保存用名
-	 * 
+	 *
 	 * @param name
 	 * @return
 	 */
@@ -994,7 +994,7 @@ public class Command extends Conversion implements LRelease {
 
 	/**
 	 * 保存游戏脚本数据(请注意，此处仅仅保存了脚本数据，并不主动为具体游戏保存任何额外的参数)
-	 * 
+	 *
 	 * @param name
 	 * @param other
 	 */
@@ -1034,7 +1034,7 @@ public class Command extends Conversion implements LRelease {
 
 	/**
 	 * 加载指定名称的脚本数据
-	 * 
+	 *
 	 * @param name
 	 */
 	public final Command loadCommand(String name) {
@@ -1049,7 +1049,7 @@ public class Command extends Conversion implements LRelease {
 
 	/**
 	 * 加载指定名称的脚本数据，并跳向指定行(请注意，此处仅仅还原了脚本数据，并不主动为具体游戏恢复任何额外的参数)
-	 * 
+	 *
 	 * @param name
 	 * @param line
 	 * @param other
@@ -1104,7 +1104,7 @@ public class Command extends Conversion implements LRelease {
 
 	/**
 	 * 载入其它脚本
-	 * 
+	 *
 	 * @param cmd
 	 * @return
 	 */
@@ -1125,7 +1125,7 @@ public class Command extends Conversion implements LRelease {
 
 	/**
 	 * 包含指定脚本内容
-	 * 
+	 *
 	 * @param fileName
 	 * @return
 	 */
@@ -1139,7 +1139,7 @@ public class Command extends Conversion implements LRelease {
 
 	/**
 	 * 加载指定字符串为游戏脚本
-	 * 
+	 *
 	 * @param context
 	 * @return
 	 */
@@ -1166,7 +1166,7 @@ public class Command extends Conversion implements LRelease {
 					if (record.length() > 0 && !record.startsWith(FLAG_L_TAG) && !record.startsWith(FLAG_C_TAG)
 							&& !record.startsWith(FLAG_I_TAG)) {
 						if (index >= length) {
-							result = (String[]) CollectionUtils.expand(result, capacity);
+							result = CollectionUtils.expand(result, capacity);
 							length += capacity;
 						}
 						result[index] = record;
@@ -1187,19 +1187,19 @@ public class Command extends Conversion implements LRelease {
 
 	/**
 	 * 过滤指定脚本文件内容为list
-	 * 
+	 *
 	 * @param src
 	 * @return
 	 */
 	public static TArray<String> commandSplit(final String src) {
 		String result = updateOperator(src);
 		String[] cmds = result.split(FLAG);
-		return new TArray<String>(cmds);
+		return new TArray<>(cmds);
 	}
 
 	/**
 	 * 释放并清空全部缓存资源
-	 * 
+	 *
 	 */
 	public final static void releaseCache() {
 		if (setEnvironmentList != null) {

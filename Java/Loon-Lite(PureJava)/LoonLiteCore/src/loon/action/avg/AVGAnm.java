@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2010
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -61,7 +61,7 @@ public class AVGAnm implements Expression, LRelease {
 
 	protected long startTime = -1;
 
-	protected boolean loop = true, loaded = false, closed = false;;
+	protected boolean loop = true, loaded = false, closed = false;
 
 	protected LTexture texture;
 
@@ -84,8 +84,8 @@ public class AVGAnm implements Expression, LRelease {
 				if (script.length() > 0 && !script.startsWith(FLAG_L_TAG) && !script.startsWith(FLAG_C_TAG)
 						&& !script.startsWith(FLAG_I_TAG)) {
 					final String[] element = script.split(";");
-					for (int j = 0; j < element.length; j++) {
-						load(element[j]);
+					for (String element2 : element) {
+						load(element2);
 					}
 				}
 			}

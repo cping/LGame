@@ -1,26 +1,24 @@
 /**
  * Copyright 2008 - 2012
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
  * @version 0.3.3
  */
 package loon.particle;
-
-import java.util.Iterator;
 
 import loon.LSystem;
 import loon.LTexture;
@@ -39,7 +37,7 @@ public class ParticleSystem extends Entity {
 
 	private int state = BlendMethod.MODE_ADD;
 
-	private TArray<ParticleEmitter> removeMe = new TArray<ParticleEmitter>();
+	private TArray<ParticleEmitter> removeMe = new TArray<>();
 
 	private static class ParticlePool {
 		public ParticleParticle[] particles;
@@ -47,7 +45,7 @@ public class ParticleSystem extends Entity {
 
 		public ParticlePool(ParticleSystem system, int maxParticles) {
 			particles = new ParticleParticle[maxParticles];
-			available = new TArray<ParticleParticle>();
+			available = new TArray<>();
 
 			for (int i = 0; i < particles.length; i++) {
 				particles[i] = system.createParticle(system);
@@ -59,17 +57,17 @@ public class ParticleSystem extends Entity {
 		public void reset(ParticleSystem system) {
 			available.clear();
 
-			for (int i = 0; i < particles.length; i++) {
-				available.add(particles[i]);
+			for (ParticleParticle particle : particles) {
+				available.add(particle);
 			}
 		}
 	}
 
-	protected ObjectMap<ParticleEmitter, ParticlePool> particlesByEmitter = new ObjectMap<ParticleEmitter, ParticlePool>();
+	protected ObjectMap<ParticleEmitter, ParticlePool> particlesByEmitter = new ObjectMap<>();
 
 	protected int maxParticlesPerEmitter;
 
-	protected TArray<ParticleEmitter> emitters = new TArray<ParticleEmitter>();
+	protected TArray<ParticleEmitter> emitters = new TArray<>();
 
 	protected ParticleParticle dummy;
 
@@ -95,9 +93,7 @@ public class ParticleSystem extends Entity {
 
 	@Override
 	public ParticleSystem reset() {
-		Iterator<ParticlePool> pools = particlesByEmitter.values().iterator();
-		while (pools.hasNext()) {
-			ParticlePool pool = pools.next();
+		for (ParticlePool pool : particlesByEmitter.values()) {
 			pool.reset(this);
 		}
 
@@ -188,6 +184,7 @@ public class ParticleSystem extends Entity {
 		return _objectLocation.y;
 	}
 
+	@Override
 	public void setPosition(float x, float y) {
 		this.setLocation(x, y);
 	}
@@ -231,9 +228,9 @@ public class ParticleSystem extends Entity {
 			image.getTextureBatch().setLocation(x, y);
 			image.getTextureBatch().setBlendMode(BlendMethod.MODE_NORMAL);
 
-			for (int i = 0; i < pool.particles.length; i++) {
-				if (pool.particles[i].inUse()) {
-					pool.particles[i].paint(g);
+			for (ParticleParticle particle : pool.particles) {
+				if (particle.inUse()) {
+					particle.paint(g);
 				}
 			}
 
@@ -267,7 +264,7 @@ public class ParticleSystem extends Entity {
 		}
 
 		removeMe.clear();
-		TArray<ParticleEmitter> emitters = new TArray<ParticleEmitter>(this.emitters);
+		TArray<ParticleEmitter> emitters = new TArray<>(this.emitters);
 		for (int i = 0; i < emitters.size; i++) {
 			ParticleEmitter emitter = emitters.get(i);
 			if (emitter.isEnabled()) {
@@ -288,9 +285,9 @@ public class ParticleSystem extends Entity {
 			for (ParticleEmitter emitter : particlesByEmitter.keys()) {
 				if (emitter.isEnabled()) {
 					ParticlePool pool = particlesByEmitter.get(emitter);
-					for (int i = 0; i < pool.particles.length; i++) {
-						if (pool.particles[i].life > 0) {
-							pool.particles[i].update(delta);
+					for (ParticleParticle particle : pool.particles) {
+						if (particle.life > 0) {
+							particle.update(delta);
 							pCount++;
 						}
 					}
@@ -326,14 +323,12 @@ public class ParticleSystem extends Entity {
 
 	public ParticleSystem releaseAll(ParticleEmitter emitter) {
 		if (!particlesByEmitter.isEmpty()) {
-			Iterator<ParticlePool> it = particlesByEmitter.values().iterator();
-			while (it.hasNext()) {
-				ParticlePool pool = it.next();
-				for (int i = 0; i < pool.particles.length; i++) {
-					if (pool.particles[i].inUse()) {
-						if (pool.particles[i].getEmitter() == emitter) {
-							pool.particles[i].setLife(-1);
-							release(pool.particles[i]);
+			for (ParticlePool pool : particlesByEmitter.values()) {
+				for (ParticleParticle particle : pool.particles) {
+					if (particle.inUse()) {
+						if (particle.getEmitter() == emitter) {
+							particle.setLife(-1);
+							release(particle);
 						}
 					}
 				}
@@ -344,9 +339,9 @@ public class ParticleSystem extends Entity {
 
 	public ParticleSystem moveAll(ParticleEmitter emitter, float x, float y) {
 		ParticlePool pool = particlesByEmitter.get(emitter);
-		for (int i = 0; i < pool.particles.length; i++) {
-			if (pool.particles[i].inUse()) {
-				pool.particles[i].move(x, y);
+		for (ParticleParticle particle : pool.particles) {
+			if (particle.inUse()) {
+				particle.move(x, y);
 			}
 		}
 		return this;

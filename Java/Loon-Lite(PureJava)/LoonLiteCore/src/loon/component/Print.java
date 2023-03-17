@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2019 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -32,6 +32,7 @@ import loon.geom.PointF;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.opengl.LSTRFont;
+import loon.utils.CharUtils;
 import loon.utils.MathUtils;
 import loon.utils.StrBuilder;
 import loon.utils.StringUtils;
@@ -48,7 +49,7 @@ public class Print implements FontSet<Print>, LRelease {
 
 	/**
 	 * 解析并重构字符串,为超过指定长度的字符串加换行符
-	 * 
+	 *
 	 * @param text
 	 * @param font
 	 * @param width
@@ -74,9 +75,9 @@ public class Print implements FontSet<Print>, LRelease {
 
 	/**
 	 * 返回指定字符串，匹配指定字体后，在指定宽度内的每行应显示字符串.
-	 * 
+	 *
 	 * PS:此项不处理'\n'外的特殊操作符
-	 * 
+	 *
 	 * @param text
 	 * @param font
 	 * @param width
@@ -284,7 +285,7 @@ public class Print implements FontSet<Print>, LRelease {
 				this._textoffsetSize = (_fontSize * _messageLength) / 2;
 				break;
 			case CENTER:
-				this._textoffsetSize = _width / 2 - (_fontSize * _messageLength) / 2 + (int) (_fontSize * 4);
+				this._textoffsetSize = _width / 2 - (_fontSize * _messageLength) / 2 + _fontSize * 4;
 				break;
 			}
 			this._leftsize = _textoffsetSize;
@@ -356,7 +357,7 @@ public class Print implements FontSet<Print>, LRelease {
 					_curfontSize = _perfontSize;
 				}
 				_leftsize += _curfontSize;
-				if (_curfontSize <= 10 && StringUtils.isSingle(_textChar)) {
+				if (_curfontSize <= 10 && CharUtils.isSingle(_textChar)) {
 					_leftsize += 12;
 				}
 				if (i != _textsize - 1) {
@@ -416,7 +417,7 @@ public class Print implements FontSet<Print>, LRelease {
 				this._textoffsetSize = (_fontSize * _messageLength) / 2;
 				break;
 			case CENTER:
-				this._textoffsetSize = _width / 2 - (_fontSize * _messageLength) / 2 + (int) (_fontSize * 4);
+				this._textoffsetSize = _width / 2 - (_fontSize * _messageLength) / 2 + _fontSize * 4;
 				break;
 			}
 			this._leftsize = _textoffsetSize;
@@ -483,7 +484,7 @@ public class Print implements FontSet<Print>, LRelease {
 					_curfontSize = _perfontSize;
 				}
 				_leftsize += _curfontSize;
-				if (_curfontSize <= 10 && StringUtils.isSingle(_textChar)) {
+				if (_curfontSize <= 10 && CharUtils.isSingle(_textChar)) {
 					_leftsize += 12;
 				}
 				if (i != _textsize - 1) {

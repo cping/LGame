@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2019 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -163,7 +163,7 @@ public class IntMap<T> implements IArray, Iterable<T>, LRelease {
 	}
 
 	public Iterable<T> values() {
-		return new IntMapIterator<T>(this);
+		return new IntMapIterator<>(this);
 	}
 
 	@Override
@@ -219,7 +219,7 @@ public class IntMap<T> implements IArray, Iterable<T>, LRelease {
 		for (int i = 0; i < _capacity; i++) {
 			final long key = _keysTable[i];
 			if (key != MAP_EMPTY) {
-				entrys[found] = new Entry<T>(key, _valuesTable[i]);
+				entrys[found] = new Entry<>(key, _valuesTable[i]);
 				found++;
 			}
 		}
@@ -254,10 +254,7 @@ public class IntMap<T> implements IArray, Iterable<T>, LRelease {
 	}
 
 	public void put(final int key, final T value) {
-		if (_locked) {
-			return;
-		}
-		if (value == null) {
+		if (_locked || (value == null)) {
 			return;
 		}
 		if ((float) size / _capacity > loader_factor) {
@@ -389,8 +386,8 @@ public class IntMap<T> implements IArray, Iterable<T>, LRelease {
 	@Override
 	public Iterator<T> iterator() {
 		if (_mapIterator1 == null) {
-			_mapIterator1 = new IntMapIterator<T>(this);
-			_mapIterator2 = new IntMapIterator<T>(this);
+			_mapIterator1 = new IntMapIterator<>(this);
+			_mapIterator2 = new IntMapIterator<>(this);
 		}
 		if (!_mapIterator1._valid) {
 			_mapIterator1.reset();

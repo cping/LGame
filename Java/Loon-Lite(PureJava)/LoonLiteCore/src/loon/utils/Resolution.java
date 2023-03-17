@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2019 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -79,7 +79,7 @@ public class Resolution implements Comparable<Resolution> {
 		case 480:
 			return 5f;
 		}
-		return (float) dpiv / 96f;
+		return dpiv / 96f;
 	}
 
 	private final static DPI compareDPI(Resolution source, Resolution target) {
@@ -147,20 +147,17 @@ public class Resolution implements Comparable<Resolution> {
 	}
 
 	public String matchMode() {
-		for (int i = 0; i < resolutions4x3.length; i++) {
-			Resolution res = resolutions4x3[i];
+		for (Resolution res : resolutions4x3) {
 			if (res.rectangle.width == rectangle.width && res.rectangle.height == rectangle.height) {
 				return "Mode [4 : 3] " + toString();
 			}
 		}
-		for (int i = 0; i < resolutions16x9.length; i++) {
-			Resolution res = resolutions16x9[i];
+		for (Resolution res : resolutions16x9) {
 			if (res.rectangle.width == rectangle.width && res.rectangle.height == rectangle.height) {
 				return "Mode [16 : 9] " + toString();
 			}
 		}
-		for (int i = 0; i < resolutions16x10.length; i++) {
-			Resolution res = resolutions16x10[i];
+		for (Resolution res : resolutions16x10) {
 			if (res.rectangle.width == rectangle.width && res.rectangle.height == rectangle.height) {
 				return "Mode [16 : 10] " + toString();
 			}

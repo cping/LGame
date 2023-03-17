@@ -1,19 +1,19 @@
 /**
- * 
+ *
  * Copyright 2008 - 2015
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -274,10 +274,10 @@ public class RectF implements XY {
 
 		public void scale(float scale) {
 			if (scale != 1.0f) {
-				left = (float) (left * scale + 0.5f);
-				top = (float) (top * scale + 0.5f);
-				right = (float) (right * scale + 0.5f);
-				bottom = (float) (bottom * scale + 0.5f);
+				left = left * scale + 0.5f;
+				top = top * scale + 0.5f;
+				right = right * scale + 0.5f;
+				bottom = bottom * scale + 0.5f;
 			}
 		}
 
@@ -328,7 +328,7 @@ public class RectF implements XY {
 		final int[] rect = MathUtils.getLimit(x, y, width,height, rotate);
 		return set(rect[0], rect[1], rect[2], rect[3]);
 	}
-	
+
 	public RectF set(RectF r) {
 		this.x = r.x;
 		this.y = r.y;
@@ -344,7 +344,7 @@ public class RectF implements XY {
 		this.height = h1;
 		return this;
 	}
-	
+
 	public boolean inside(float x, float y) {
 		return (x >= this.x) && ((x - this.x) < this.width) && (y >= this.y) && ((y - this.y) < this.height);
 	}

@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2019 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -31,8 +31,8 @@ import loon.geom.RectBox;
 import loon.geom.RectI;
 import loon.opengl.GLEx;
 import loon.utils.Easing.EasingMode;
-import loon.utils.timer.EaseTimer;
 import loon.utils.MathUtils;
+import loon.utils.timer.EaseTimer;
 
 /**
  * 像素风爆炸特效,让指定Image以指定的爆炸方式离开Screen画面
@@ -129,9 +129,9 @@ public class ExplosionEffect extends Entity implements BaseEffect {
 			if (fragments == null || mode != lastMode) {
 				fragments = createFrags(new RectI(imageRect.x(), imageRect.y(), imageRect.width, imageRect.height));
 			} else {
-				for (int i = 0; i < fragments.length; i++) {
-					for (int j = 0; j < fragments[i].length; j++) {
-						fragments[i][j].reset();
+				for (Fragment[] fragment : fragments) {
+					for (int j = 0; j < fragment.length; j++) {
+						fragment[j].reset();
 					}
 				}
 			}

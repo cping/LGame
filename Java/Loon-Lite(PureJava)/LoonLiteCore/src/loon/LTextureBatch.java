@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -27,6 +27,7 @@ import loon.geom.Affine2f;
 import loon.opengl.GLEx;
 import loon.opengl.Mesh;
 import loon.opengl.MeshData;
+import loon.opengl.Painter;
 import loon.utils.IntMap;
 import loon.utils.TimeUtils;
 
@@ -225,13 +226,7 @@ public class LTextureBatch implements LRelease {
 	}
 
 	public boolean checkTexture(final LTexture texture) {
-		if (!isLoaded || isCacheLocked) {
-			return false;
-		}
-		if (isClosed) {
-			return false;
-		}
-		if (texture == null) {
+		if (!isLoaded || isCacheLocked || isClosed || (texture == null)) {
 			return false;
 		}
 		checkDrawing();
@@ -490,7 +485,7 @@ public class LTextureBatch implements LRelease {
 				widthRatio = ((srcWidth / displayWidth) * texture.widthRatio());
 				heightRatio = ((srcHeight / displayHeight) * texture.heightRatio());
 			} else {
-				LTexture forefather = LTexture.firstFather(texture);
+				LTexture forefather = Painter.firstFather(texture);
 				displayWidth = forefather.getDisplayWidth();
 				displayHeight = forefather.getDisplayHeight();
 				xOff = ((srcX / displayWidth) * forefather.widthRatio()) + forefather.xOff() + texture.xOff();
@@ -586,7 +581,7 @@ public class LTextureBatch implements LRelease {
 
 	public int saveCache(int hashCodeValue) {
 		if (_caches == null) {
-			_caches = new IntMap<LTextureBatch.Cache>();
+			_caches = new IntMap<>();
 		}
 		LTextureBatch.Cache cache = newCache();
 		_caches.put(hashCodeValue, cache);
@@ -647,11 +642,11 @@ public class LTextureBatch implements LRelease {
 
 		if (flipX || flipY) {
 			if (flipX && flipY) {
-				Affine2f.transformOrigin(display, x, y, Affine2f.TRANS_ROT180, originX, originY);
+				Affine2f.transformOrigin(display, x, y, LTrans.TRANS_ROT180, originX, originY);
 			} else if (flipX) {
-				Affine2f.transformOrigin(display, x, y, Affine2f.TRANS_MIRROR, originX, originY);
+				Affine2f.transformOrigin(display, x, y, LTrans.TRANS_MIRROR, originX, originY);
 			} else if (flipY) {
-				Affine2f.transformOrigin(display, x, y, Affine2f.TRANS_MIRROR_ROT180, originX, originY);
+				Affine2f.transformOrigin(display, x, y, LTrans.TRANS_MIRROR_ROT180, originX, originY);
 			}
 		}
 	}

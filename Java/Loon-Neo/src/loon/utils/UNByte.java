@@ -43,20 +43,20 @@ public class UNByte {
 	}
 
 	public void read(byte i) {
-		int firstByte = (0x000000FF & ((int) i));
+		int firstByte = (0x000000FF & (i));
 		unByte = (short) firstByte;
 	}
 
 	public void read(ArrayByte bb, int offset) {
 		int initial_pos = bb.position();
 		bb.setPosition(offset);
-		int firstByte = (0x000000FF & ((int) bb.get()));
+		int firstByte = (0x000000FF & (bb.get()));
 		unByte = (short) firstByte;
 		bb.setPosition(initial_pos);
 	}
 
 	public void read(byte[] bytes, int offset) {
-		int firstByte = (0x000000FF & ((int) bytes[offset]));
+		int firstByte = (0x000000FF & (bytes[offset]));
 		unByte = (short) firstByte;
 	}
 

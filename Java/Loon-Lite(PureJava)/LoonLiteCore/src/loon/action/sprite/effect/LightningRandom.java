@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -35,8 +35,8 @@ import loon.utils.timer.LTimer;
 public class LightningRandom implements ILightning {
 
 	private LTimer timer = new LTimer(0);
-	private TArray<Vector2f> particles = new TArray<Vector2f>();
-	private TArray<LightningBranch> bolts = new TArray<LightningBranch>();
+	private TArray<Vector2f> particles = new TArray<>();
+	private TArray<LightningBranch> bolts = new TArray<>();
 	private float hue = 4.5f;
 	private float[] noise = null;
 	private LColor color = null;
@@ -99,6 +99,7 @@ public class LightningRandom implements ILightning {
 		return points;
 	}
 
+	@Override
 	public void draw(GLEx g, float x, float y) {
 		for (LightningBranch bolt : bolts) {
 			bolt.draw(g, x, y);
@@ -113,6 +114,7 @@ public class LightningRandom implements ILightning {
 		return timer.getDelay();
 	}
 
+	@Override
 	public void update(long elapsedTime) {
 		if (timer.action(elapsedTime)) {
 			bolts.clear();

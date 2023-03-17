@@ -11,22 +11,22 @@ import loon.utils.parse.StrTokenizer;
 /**
  * 一个简单的多文本数据存储及读取用类,作用类似于ini文件
  * <p>
- * 
+ *
  * 用它可以进行一些简单的键值对(key-value)模式数据设置,不想使用xml或json配置时的帮手
  * <p>
- * 
+ *
  * 完整存储格式为(可部分使用):
- * 
+ *
  * <pre>
  * //($后是数据段名称，下面是数据，两个一组，换行符开始下一组，或者再次出现$也算一组新数据)
  * $bigdata1
- * begin name = "key1" 
- * value1 
- * end 
- * begin name = "key2" 
- * value2 
- * end 
- * key3 ="567" 
+ * begin name = "key1"
+ * value1
+ * end
+ * begin name = "key2"
+ * value2
+ * end
+ * key3 ="567"
  * key4 = "780"
  * $bigdata2
  * ......
@@ -34,7 +34,7 @@ import loon.utils.parse.StrTokenizer;
  */
 public class ConfigReader implements Expression, Bundle<String>, LRelease {
 
-	private final static ObjectMap<String, ConfigReader> CONFIG_CACHE = new ObjectMap<String, ConfigReader>();
+	private final static ObjectMap<String, ConfigReader> CONFIG_CACHE = new ObjectMap<>();
 
 	private String FLAG_L_TAG = "//";
 
@@ -59,7 +59,7 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 
 	private boolean _closed;
 
-	private final ObjectMap<String, String> _configItems = new ObjectMap<String, String>();
+	private final ObjectMap<String, String> _configItems = new ObjectMap<>();
 
 	private TArray<StringKeyValue> _loaders;
 
@@ -76,7 +76,7 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 	}
 
 	public ObjectMap<String, String> getContent() {
-		return new ObjectMap<String, String>(_configItems);
+		return new ObjectMap<>(_configItems);
 	}
 
 	public void parseMap(final String path) {
@@ -84,7 +84,7 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 			throw new LSysException("Resource path cannot be Empty !");
 		}
 		if (_loaders == null) {
-			_loaders = new TArray<StringKeyValue>();
+			_loaders = new TArray<>();
 		}
 		String context = BaseIO.loadText(path);
 		if (StringUtils.isEmpty(context)) {
@@ -97,10 +97,7 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 		try {
 			for (; reader.hasMoreTokens();) {
 				result = filter(reader.nextToken());
-				if (StringUtils.isEmpty(result)) {
-					continue;
-				}
-				if (result.startsWith("\\")) {
+				if (StringUtils.isEmpty(result) || result.startsWith("\\")) {
 					continue;
 				}
 				if (result.charAt(0) == '$') {
@@ -318,6 +315,7 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 		return v;
 	}
 
+	@Override
 	public String get(String name) {
 		return getValue(name, null);
 	}
@@ -375,7 +373,7 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 			char[] chars = v.toCharArray();
 			int size = chars.length;
 			StrBuilder sbr = new StrBuilder(128);
-			TArray<int[]> records = new TArray<int[]>(CollectionUtils.INITIAL_CAPACITY);
+			TArray<int[]> records = new TArray<>(CollectionUtils.INITIAL_CAPACITY);
 			for (int i = 0; i < size; i++) {
 				char pValue = chars[i];
 				switch (pValue) {

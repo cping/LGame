@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2019 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -40,13 +40,13 @@ import loon.utils.TArray;
 
 /**
  * 这是一个简单的字符串显示用类,通过输出具有上下级关系的字符串来描述一组事物,比如说角色转职表什么的
- * 
+ *
  * LTextTree _tree = new LTextTree(30, 100, 400, 400);
  * _tree.addElement("数学").addSub("微积分","几何"); add(_tree);
  */
 public class LTextTree extends LComponent implements FontSet<LTextTree> {
 
-	private TArray<TreeElement> _elements = new TArray<TreeElement>();
+	private TArray<TreeElement> _elements = new TArray<>();
 
 	private TArray<String> _lines;
 
@@ -98,7 +98,7 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 
 		public TreeElement(LTextTree t, String text) {
 			this.setTextTree(t);
-			this._childs = new TArray<TreeElement>();
+			this._childs = new TArray<>();
 			this._message = text;
 		}
 
@@ -121,15 +121,15 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 
 		public TArray<TreeElement> setSublevel(TreeElement[] array) {
 			if (array != null && array.length > 0) {
-				for (int i = 0; i < array.length; i++) {
-					TreeElement e = array[i];
+				for (TreeElement element : array) {
+					TreeElement e = element;
 					if (e != null) {
 						e._parent = this;
 						e.setTextTree(_tree);
 					}
 				}
 			}
-			_childs = new TArray<TreeElement>(array);
+			_childs = new TArray<>(array);
 			if (_tree != null) {
 				_tree._dirty = true;
 			}
@@ -137,8 +137,8 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 		}
 
 		public TArray<TreeElement> addSub(String... eleNames) {
-			for (int i = 0; i < eleNames.length; i++) {
-				TreeElement e = new TreeElement(eleNames[i]);
+			for (String eleName : eleNames) {
+				TreeElement e = new TreeElement(eleName);
 				addSub(e);
 			}
 			return getChilds();
@@ -153,7 +153,7 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 		}
 
 		public TArray<TreeElement> getChilds() {
-			return new TArray<LTextTree.TreeElement>(_childs);
+			return new TArray<>(_childs);
 		}
 
 		public TreeElement addChild(TreeElement me) {
@@ -174,8 +174,8 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 		}
 
 		public TArray<TreeElement> addSub(TreeElement[] array) {
-			for (int i = 0; i < array.length; i++) {
-				TreeElement e = array[i];
+			for (TreeElement element : array) {
+				TreeElement e = element;
 				if (e != null) {
 					_childs.add(e);
 					e.setTextTree(_tree);
@@ -287,9 +287,9 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 
 	public LTextTree pack() {
 		String result = getResult();
-		TArray<CharSequence> treeList = new TArray<CharSequence>();
+		TArray<CharSequence> treeList = new TArray<>();
 		FontUtils.splitLines(result, treeList);
-		this._lines = new TArray<String>(getAmountOfTotalElements());
+		this._lines = new TArray<>(getAmountOfTotalElements());
 		for (CharSequence ch : treeList) {
 			int size = ch.length();
 			if (size > 1) {
@@ -406,7 +406,7 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 	}
 
 	protected TArray<StrBuilder> renderDirectoryTreeLines(TreeElement _tree) {
-		TArray<StrBuilder> result = new TArray<StrBuilder>();
+		TArray<StrBuilder> result = new TArray<>();
 		result.add(new StrBuilder().append(_tree.getText()));
 		Iterator<TreeElement> iterator = _tree._childs.iterator();
 		while (iterator.hasNext()) {
@@ -562,7 +562,7 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 
 	@Override
 	public void destory() {
-		
+
 	}
 
 }

@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2009
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -237,7 +237,7 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 	public LMessage setMessage(String context, boolean isComplete) {
 		return setMessage(context, isComplete, false);
 	}
-	
+
 	public LMessage setMessage(String context, boolean isComplete, boolean autoLength) {
 		PointF size = FontUtils.getTextWidthAndHeight(messageFont, context);
 		if (autoLength) {
@@ -374,7 +374,7 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 
 	/**
 	 * 注入一个实现了IFont接口的字体
-	 * 
+	 *
 	 * @param messageFont
 	 */
 	public LMessage setMessageFont(IFont messageFont) {

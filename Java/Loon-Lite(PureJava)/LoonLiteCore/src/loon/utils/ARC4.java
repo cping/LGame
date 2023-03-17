@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -24,9 +24,9 @@ import loon.LSystem;
 
 /**
  * ARC4加密算法(伪随机算法，非RSA的正式加密算法，安全度低，但是计算量也低，比较适合游戏数据加密)，用来为Loon中数据进行一些简单的加密<br>
- * 
+ *
  * 大体用法就是这样的:<br>
- * 
+ *
  * <pre>
  * // 第一次加密是加密了
  * ArrayByte bytes = ARC4.cryptData("ABCDDDA", "我有一个秘密,那就是,打死我也不说");
@@ -39,7 +39,7 @@ public class ARC4 {
 
 	/**
 	 * 用密钥加密指定数据(ARC4这算法加密一次是加密,加密两次就变成解密了……)
-	 * 
+	 *
 	 * @param key
 	 * @param value
 	 * @return
@@ -55,7 +55,7 @@ public class ARC4 {
 
 	/**
 	 * 用密钥加密指定数据(ARC4这算法加密一次是加密,加密两次就变成解密了……)
-	 * 
+	 *
 	 * @param key
 	 * @param value
 	 * @return
@@ -84,7 +84,7 @@ public class ARC4 {
 
 	/**
 	 * 用指定的密钥生成一个ARC4对象，密钥长度至多只允许256位
-	 * 
+	 *
 	 * @param key
 	 */
 	public ARC4(byte[] key) {
@@ -114,7 +114,7 @@ public class ARC4 {
 
 	/**
 	 * ARC4这算法加密一次是加密,加密两次就变成解密了……
-	 * 
+	 *
 	 * @param data
 	 * @return
 	 */
@@ -126,7 +126,7 @@ public class ARC4 {
 
 	/**
 	 * ARC4这算法加密一次是加密,加密两次就变成解密了……
-	 * 
+	 *
 	 * @param input
 	 * @return
 	 */
@@ -138,7 +138,7 @@ public class ARC4 {
 
 	/**
 	 * ARC4这算法加密一次是加密,加密两次就变成解密了……
-	 * 
+	 *
 	 * @param data
 	 */
 	public void crypt(byte[] data) {
@@ -147,7 +147,7 @@ public class ARC4 {
 
 	/**
 	 * ARC4这算法加密一次是加密,加密两次就变成解密了……
-	 * 
+	 *
 	 * @param input
 	 * @param output
 	 */

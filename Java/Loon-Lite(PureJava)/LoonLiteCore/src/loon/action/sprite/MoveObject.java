@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2012
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -23,21 +23,22 @@ package loon.action.sprite;
 import loon.LSystem;
 import loon.action.map.AStarFindHeuristic;
 import loon.action.map.AStarFinder;
+import loon.action.map.Config;
 import loon.action.map.Field2D;
 import loon.action.map.TileMap;
 import loon.events.GameTouch;
 import loon.geom.ShapeUtils;
 import loon.geom.Vector2f;
-import loon.utils.TArray;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
+import loon.utils.TArray;
 import loon.utils.timer.LTimer;
 
 public class MoveObject extends ActionObject {
 
 	private boolean allDirection;
 
-	private TArray<Vector2f> findPath = new TArray<Vector2f>();
+	private TArray<Vector2f> findPath = new TArray<>();
 
 	private int startX, startY, endX, endY, moveX, moveY;
 
@@ -330,10 +331,7 @@ public class MoveObject extends ActionObject {
 
 			isMoving = moveState();
 
-			if (tiles == null || findPath == null) {
-				return;
-			}
-			if (isComplete()) {
+			if (tiles == null || findPath == null || isComplete()) {
 				return;
 			}
 
@@ -357,31 +355,31 @@ public class MoveObject extends ActionObject {
 					}
 				}
 				switch (direction) {
-				case Field2D.TUP:
+				case Config.TUP:
 					startY -= speed;
 					if (startY < endY) {
 						startY = endY;
 					}
 					break;
-				case Field2D.TDOWN:
+				case Config.TDOWN:
 					startY += speed;
 					if (startY > endY) {
 						startY = endY;
 					}
 					break;
-				case Field2D.TLEFT:
+				case Config.TLEFT:
 					startX -= speed;
 					if (startX < endX) {
 						startX = endX;
 					}
 					break;
-				case Field2D.TRIGHT:
+				case Config.TRIGHT:
 					startX += speed;
 					if (startX > endX) {
 						startX = endX;
 					}
 					break;
-				case Field2D.UP:
+				case Config.UP:
 					startX += speed;
 					startY -= speed;
 					if (startX > endX) {
@@ -391,7 +389,7 @@ public class MoveObject extends ActionObject {
 						startY = endY;
 					}
 					break;
-				case Field2D.DOWN:
+				case Config.DOWN:
 					startX -= speed;
 					startY += speed;
 					if (startX < endX) {
@@ -401,7 +399,7 @@ public class MoveObject extends ActionObject {
 						startY = endY;
 					}
 					break;
-				case Field2D.LEFT:
+				case Config.LEFT:
 					startX -= speed;
 					startY -= speed;
 					if (startX < endX) {
@@ -411,7 +409,7 @@ public class MoveObject extends ActionObject {
 						startY = endY;
 					}
 					break;
-				case Field2D.RIGHT:
+				case Config.RIGHT:
 					startX += speed;
 					startY += speed;
 					if (startX > endX) {

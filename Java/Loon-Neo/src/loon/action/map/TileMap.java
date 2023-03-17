@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -24,9 +24,9 @@ import loon.LObject;
 import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
+import loon.LTexture.Format;
 import loon.PlayerUtils;
 import loon.Screen;
-import loon.LTexture.Format;
 import loon.action.ActionBind;
 import loon.action.ActionTween;
 import loon.action.map.colider.TileImpl;
@@ -76,9 +76,9 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	private LTexturePack texturePack;
 
-	private TArray<TileImpl> arrays = new TArray<TileImpl>(10);
+	private TArray<TileImpl> arrays = new TArray<>(10);
 
-	private TArray<Animation> animations = new TArray<Animation>();
+	private TArray<Animation> animations = new TArray<>();
 
 	private final int maxWidth, maxHeight;
 
@@ -218,7 +218,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	}
 
 	public TileMap setImagePack(String fileName, LTexturePackClip[] clips) {
-		return setImagePack(fileName, new TArray<LTexturePackClip>(clips));
+		return setImagePack(fileName, new TArray<>(clips));
 	}
 
 	public TileMap setImagePack(String fileName, TArray<LTexturePackClip> clips) {
@@ -389,8 +389,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 			int[] list = texturePack.getIdList();
 			active = true;
 			dirty = true;
-			for (int i = 0, size = list.length; i < size; i++) {
-				int id = list[i];
+			for (int id : list) {
 				putTile(id, id);
 			}
 		}
@@ -742,7 +741,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	/**
 	 * 转换坐标为像素坐标
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @return
@@ -755,7 +754,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	/**
 	 * 地图居中偏移
-	 * 
+	 *
 	 * @return
 	 */
 	public TileMap centerOffset() {
@@ -765,7 +764,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	/**
 	 * 设定偏移量
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 */
@@ -776,9 +775,10 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	/**
 	 * 设定偏移量
-	 * 
+	 *
 	 * @param offset
 	 */
+	@Override
 	public TileMap setOffset(Vector2f offset) {
 		this.offset.set(offset);
 		return this;
@@ -786,7 +786,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	/**
 	 * 获得瓦片位置
-	 * 
+	 *
 	 * @return
 	 */
 	public Vector2f getOffset() {
@@ -1110,8 +1110,8 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	}
 
 	public Vector2f toRollPosition(Vector2f pos) {
-		pos.x = pos.x % ((float) (field2d.getViewWidth()));
-		pos.y = pos.y % ((float) (field2d.getViewHeight()));
+		pos.x = pos.x % ((field2d.getViewWidth()));
+		pos.y = pos.y % ((field2d.getViewHeight()));
 		if (pos.x < 0f) {
 			pos.x += field2d.getViewWidth();
 		}

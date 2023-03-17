@@ -30,6 +30,7 @@ import loon.action.map.Field2D;
 import loon.canvas.LColor;
 import loon.component.layout.Margin;
 import loon.events.EventDispatcher;
+import loon.events.QueryEvent;
 import loon.font.FontSet;
 import loon.font.IFont;
 import loon.geom.RectBox;
@@ -99,6 +100,42 @@ public class SpriteControls {
 
 	public SpriteControls() {
 		this._sprs = new TArray<ISprite>();
+	}
+
+	public ISprite random() {
+		if (_sprs.size == 0) {
+			return null;
+		}
+		return _sprs.get(MathUtils.random(_sprs.size - 1));
+	}
+
+	public int indexOf(QueryEvent<ISprite> q) {
+		int i = 0;
+		for (ISprite s : _sprs) {
+			if (q.hit(s)) {
+				return i;
+			}
+			i++;
+		}
+		return -1;
+	}
+
+	public int indexOf(ISprite value) {
+		for (int i = 0; i < _sprs.size; i++) {
+			if (_sprs.get(i) == value) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	public ISprite find(QueryEvent<ISprite> q) {
+		for (ISprite s : _sprs) {
+			if (q.hit(s)) {
+				return s;
+			}
+		}
+		return null;
 	}
 
 	public TArray<ISprite> list() {

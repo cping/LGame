@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2011
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -144,7 +144,7 @@ public class TextureUtils {
 
 	/**
 	 * 0.3.2版起新增的分割图片方法，与上述近似作用的Split函数不同的是，可以指定个别图块大小。
-	 * 
+	 *
 	 * @param fileName
 	 * @param division
 	 * @param width
@@ -184,7 +184,7 @@ public class TextureUtils {
 
 	/**
 	 * 0.3.2版起新增的分割图片方法，成比例切分图片为指定数量
-	 * 
+	 *
 	 * @param fileName
 	 * @param count
 	 * @return
@@ -195,7 +195,7 @@ public class TextureUtils {
 
 	/**
 	 * 创建一张指定色彩的纹理
-	 * 
+	 *
 	 * @param width
 	 * @param height
 	 * @param c

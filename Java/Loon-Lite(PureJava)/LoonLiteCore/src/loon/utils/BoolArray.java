@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2019 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -28,7 +28,7 @@ public class BoolArray implements IArray, LRelease {
 
 	/**
 	 * 产生一组指定范围的数据
-	 * 
+	 *
 	 * @param start
 	 * @param end
 	 * @param value
@@ -44,7 +44,7 @@ public class BoolArray implements IArray, LRelease {
 
 	/**
 	 * 产生一组指定范围的随机数据
-	 * 
+	 *
 	 * @param begin
 	 * @param end
 	 * @param size
@@ -514,8 +514,8 @@ public class BoolArray implements IArray, LRelease {
 		boolean[] items = this.items;
 		ArrayByte bytes = new ArrayByte(items.length);
 		bytes.setOrder(order);
-		for (int i = 0; i < items.length; i++) {
-			bytes.writeBoolean(items[i]);
+		for (boolean item : items) {
+			bytes.writeBoolean(item);
 		}
 		return bytes.getBytes();
 	}

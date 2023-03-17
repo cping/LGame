@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -222,7 +222,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 清空屏幕为指定颜色
-	 * 
+	 *
 	 * @param c
 	 */
 	public Pixmap clearDraw(int c) {
@@ -246,7 +246,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 清空屏幕
-	 * 
+	 *
 	 */
 	public Pixmap clearDraw() {
 		return clearDraw(_background);
@@ -266,7 +266,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 清空屏幕
-	 * 
+	 *
 	 */
 	public Pixmap fill() {
 		return clearDraw(_baseColor);
@@ -274,7 +274,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 过滤指定颜色为目标颜色
-	 * 
+	 *
 	 * @param src
 	 * @param dst
 	 * @return
@@ -291,7 +291,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 过滤指定颜色为目标颜色
-	 * 
+	 *
 	 * @param src
 	 * @param dst
 	 * @return
@@ -302,7 +302,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 过滤透明色为指定颜色
-	 * 
+	 *
 	 * @param dst
 	 * @return
 	 */
@@ -312,7 +312,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 过滤透明色为指定颜色
-	 * 
+	 *
 	 * @param dst
 	 * @return
 	 */
@@ -322,7 +322,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 灰化Pixmap
-	 * 
+	 *
 	 * @param mix
 	 * @return
 	 */
@@ -348,7 +348,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 灰化
-	 * 
+	 *
 	 * @return
 	 */
 	public Pixmap greyScale() {
@@ -357,7 +357,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 过滤指定像素阀值
-	 * 
+	 *
 	 * @param threshold
 	 * @return
 	 */
@@ -382,7 +382,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 反色
-	 * 
+	 *
 	 * @param mix
 	 * @return
 	 */
@@ -407,7 +407,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 墨化
-	 * 
+	 *
 	 * @param mix
 	 * @return
 	 */
@@ -434,7 +434,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 让当前pixmap中color乘以指定color
-	 * 
+	 *
 	 * @param pixel
 	 * @param trans
 	 * @return
@@ -466,7 +466,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 向指定坐标插入像素
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 */
@@ -476,7 +476,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 向指定坐标插入像素
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 */
@@ -494,7 +494,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 获得指定区域的RGB色彩
-	 * 
+	 *
 	 * @param pixels
 	 * @return
 	 */
@@ -505,7 +505,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 获得指定区域的RGB色彩
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param w
@@ -520,7 +520,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 获得指定区域的RGB色彩
-	 * 
+	 *
 	 * @param offset
 	 * @param stride
 	 * @param x
@@ -537,7 +537,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 获得指定区域的RGB色彩
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param arrays
@@ -556,7 +556,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 获得指定区域的RGB色彩
-	 * 
+	 *
 	 * @param startX
 	 * @param startY
 	 * @param w
@@ -583,7 +583,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 设定指定区域的RGB色彩
-	 * 
+	 *
 	 * @param startX
 	 * @param startY
 	 * @param w
@@ -607,7 +607,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 设定指定区域的RGB色彩
-	 * 
+	 *
 	 * @param pixels
 	 * @param width
 	 * @param height
@@ -618,7 +618,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 设定指定区域的RGB色彩
-	 * 
+	 *
 	 * @param pixels
 	 * @param offset
 	 * @param stride
@@ -633,7 +633,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 设定指定区域的RGB色彩
-	 * 
+	 *
 	 * @param pixels
 	 * @param x
 	 * @param y
@@ -648,7 +648,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 设定指定区域的RGB色彩
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param pixels
@@ -659,7 +659,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 设定指定区域的RGB色彩
-	 * 
+	 *
 	 * @param rgb
 	 * @param x
 	 * @param y
@@ -670,7 +670,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 获得指定位置像素
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @return
@@ -722,7 +722,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 镜像翻转当前Pixmap为新图
-	 * 
+	 *
 	 * @return
 	 */
 	public Pixmap mirror() {
@@ -731,7 +731,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 水平翻转当前Pixmap为新图
-	 * 
+	 *
 	 * @return
 	 */
 	public Pixmap flip() {
@@ -740,7 +740,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 翻转当前Pixmap为新图
-	 * 
+	 *
 	 * @param mirror
 	 * @param flip
 	 * @return
@@ -773,7 +773,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 将当前Pixmap克隆为新的Pixmap
-	 * 
+	 *
 	 * @return
 	 */
 	public Pixmap cpy() {
@@ -782,7 +782,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 从当前Pixmap中copy指定范围像素为新的Pixmap
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param w
@@ -823,7 +823,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 拆分当前Pixmap为指定数量的瓦片
-	 * 
+	 *
 	 * @param row
 	 * @param col
 	 * @return
@@ -848,7 +848,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 修正图像显示位置
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 */
@@ -1137,7 +1137,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 绘制并填充一组三角
-	 * 
+	 *
 	 * @param ts
 	 */
 	public Pixmap fillTriangle(Triangle2f[] ts) {
@@ -1146,16 +1146,13 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 绘制并填充一组三角
-	 * 
+	 *
 	 * @param ts
 	 * @param x
 	 * @param y
 	 */
 	public Pixmap fillTriangle(Triangle2f[] ts, int x, int y) {
-		if (_isClosed) {
-			return this;
-		}
-		if (ts == null) {
+		if (_isClosed || (ts == null)) {
 			return this;
 		}
 		int size = ts.length;
@@ -1167,7 +1164,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 绘制并填充一组三角
-	 * 
+	 *
 	 * @param t
 	 */
 	public Pixmap fillTriangle(Triangle2f t) {
@@ -1176,16 +1173,13 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 绘制并填充一组三角
-	 * 
+	 *
 	 * @param t
 	 * @param x
 	 * @param y
 	 */
 	public Pixmap fillTriangle(Triangle2f t, int x, int y) {
-		if (_isClosed) {
-			return this;
-		}
-		if (t == null) {
+		if (_isClosed || (t == null)) {
 			return this;
 		}
 		return fillTriangle(t.xpoints[0], t.ypoints[0], t.xpoints[1], t.ypoints[1], t.xpoints[2], t.ypoints[2]);
@@ -1193,7 +1187,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 绘制并填充一组三角
-	 * 
+	 *
 	 * @param x1
 	 * @param y1
 	 * @param x2
@@ -1220,7 +1214,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 绘制一组三角
-	 * 
+	 *
 	 * @param ts
 	 */
 	public Pixmap drawTriangle(Triangle2f[] ts) {
@@ -1229,16 +1223,13 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 绘制一组三角
-	 * 
+	 *
 	 * @param ts
 	 * @param x
 	 * @param y
 	 */
 	public Pixmap drawTriangle(Triangle2f[] ts, int x, int y) {
-		if (_isClosed) {
-			return this;
-		}
-		if (ts == null) {
+		if (_isClosed || (ts == null)) {
 			return this;
 		}
 		int size = ts.length;
@@ -1250,7 +1241,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 绘制三角
-	 * 
+	 *
 	 * @param t
 	 */
 	public Pixmap drawTriangle(Triangle2f t) {
@@ -1259,16 +1250,13 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 绘制三角
-	 * 
+	 *
 	 * @param t
 	 * @param x
 	 * @param y
 	 */
 	public Pixmap drawTriangle(Triangle2f t, int x, int y) {
-		if (_isClosed) {
-			return this;
-		}
-		if (t == null) {
+		if (_isClosed || (t == null)) {
 			return this;
 		}
 		int[] xpos = new int[3];
@@ -1285,7 +1273,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 从指定位置开始截取指定大小像素到指定位置
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param width
@@ -1329,7 +1317,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 绘制一条直线
-	 * 
+	 *
 	 * @param x1
 	 * @param y1
 	 * @param x2
@@ -1448,7 +1436,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 虚线绘制
-	 * 
+	 *
 	 * @param x1
 	 * @param y1
 	 * @param x2
@@ -1514,7 +1502,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 绘制弧线
-	 * 
+	 *
 	 * @param x1
 	 * @param y1
 	 * @param cx1
@@ -1574,7 +1562,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 绘制一个矩形
-	 * 
+	 *
 	 * @param x1
 	 * @param y1
 	 * @param w1
@@ -1607,7 +1595,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 绘制一个围绕指定区域旋转的矩形选框
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param width
@@ -1661,7 +1649,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 填充一个围绕指定区域旋转的矩形选框
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param width
@@ -1689,7 +1677,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 将一个指定的Pixmap绘制到当前Pixmap
-	 * 
+	 *
 	 * @param pixel
 	 * @param x
 	 * @param y
@@ -1705,7 +1693,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 将一个指定的Pixmap绘制到当前Pixmap
-	 * 
+	 *
 	 * @param pixel
 	 * @param x
 	 * @param y
@@ -1775,7 +1763,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 将一个指定的Pixmap绘制到当前Pixmap，并扩展为指定大小
-	 * 
+	 *
 	 * @param pixel
 	 * @param x
 	 * @param y
@@ -1793,7 +1781,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 将一个指定的Pixmap绘制到当前Pixmap，并截取为指定大小
-	 * 
+	 *
 	 * @param img
 	 * @param dstX
 	 * @param dstY
@@ -1924,7 +1912,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 绘制一个椭圆形
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param width
@@ -1935,6 +1923,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 			return this;
 		}
 		drawCircle(x, y, width, height, false, new CircleUpdate() {
+			@Override
 			public void newPoint(int xLeft, int yTop, int xRight, int yBottom) {
 				drawPoint(xLeft, yTop);
 				drawPoint(xRight, yTop);
@@ -1947,7 +1936,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 填充一个椭圆形
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param width
@@ -1958,6 +1947,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 			return this;
 		}
 		drawCircle(x, y, width, height, true, new CircleUpdate() {
+			@Override
 			public void newPoint(int xLeft, int yTop, int xRight, int yBottom) {
 				drawLineImpl(xLeft, xRight, yTop);
 				if (yTop != yBottom) {
@@ -1970,7 +1960,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 绘制一个弧线
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param width
@@ -1980,10 +1970,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 	 */
 
 	public Pixmap drawArc(int x, int y, int width, int height, int start, int arcAngle) {
-		if (_isClosed) {
-			return this;
-		}
-		if (arcAngle == 0) {
+		if (_isClosed || (arcAngle == 0)) {
 			return this;
 		}
 		if (arcAngle < 0) {
@@ -2012,6 +1999,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 		final RectI bounds = RectI.getIntersection(setBoundingBox(temp_rect, xPoints, yPoints, nPoints), clip,
 				temp_rect);
 		this.drawCircle(x, y, width, height, false, new CircleUpdate() {
+			@Override
 			public void newPoint(int xLeft, int yTop, int xRight, int yBottom) {
 				drawArcPoint(xPoints, yPoints, nPoints, bounds, xLeft, yTop);
 				drawArcPoint(xPoints, yPoints, nPoints, bounds, xRight, yTop);
@@ -2024,7 +2012,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 填充一个圆弧
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param width
@@ -2038,7 +2026,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 填充一个圆弧
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param width
@@ -2080,6 +2068,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 				x + _translateX - 1, y + _translateY - 1, width + 2, height + 2);
 		final RectI bounds = setBoundingBox(temp_rect, xPoints, yPoints, nPoints);
 		this.drawCircle(x, y, width, height, true, new CircleUpdate() {
+			@Override
 			public void newPoint(int xLeft, int yTop, int xRight, int yBottom) {
 				drawArcImpl(xPoints, yPoints, nPoints, bounds, xLeft, xRight, yTop);
 				if (yTop != yBottom) {
@@ -2106,7 +2095,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 绘制一个多边形
-	 * 
+	 *
 	 * @param p
 	 */
 	public Pixmap drawPolygon(Polygon p) {
@@ -2115,7 +2104,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 绘制一个多边形
-	 * 
+	 *
 	 * @param path
 	 * @return
 	 */
@@ -2125,7 +2114,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 绘制一个多边形
-	 * 
+	 *
 	 * @param xPoints
 	 * @param yPoints
 	 * @param nPoints
@@ -2138,7 +2127,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 绘制并填充一个多边形
-	 * 
+	 *
 	 * @param p
 	 */
 	public Pixmap fillPolygon(Polygon p) {
@@ -2147,7 +2136,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 绘制并填充一个多边形
-	 * 
+	 *
 	 * @param pixmap
 	 * @param poly
 	 * @return
@@ -2158,7 +2147,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 绘制并填充一个多边形
-	 * 
+	 *
 	 * @param pixmap
 	 * @param poly
 	 * @param x
@@ -2171,7 +2160,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 绘制并填充一个多边形
-	 * 
+	 *
 	 * @param path
 	 * @return
 	 */
@@ -2181,7 +2170,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 绘制并填充一个多边形
-	 * 
+	 *
 	 * @param xPoints
 	 * @param yPoints
 	 * @param nPoints
@@ -2464,7 +2453,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 混合当前pixmap和指定pixmap生成新的pixmap
-	 * 
+	 *
 	 * @param pix
 	 * @param horizontal
 	 * @return
@@ -2565,7 +2554,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 获得当前图像是否不透明
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean hasAlpha() {
@@ -2574,7 +2563,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 获得图像高
-	 * 
+	 *
 	 * @return
 	 */
 	public int getWidth() {
@@ -2583,7 +2572,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 获得图像宽
-	 * 
+	 *
 	 * @return
 	 */
 	public int getHeight() {
@@ -2592,7 +2581,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	/**
 	 * 获得指定区域是否透明
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @return
@@ -2657,7 +2646,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	public TArray<Vector2f> getPoints(final Vector2f size, final int interval, final float scale) {
 		final int[] pixels = _drawPixels;
-		final TArray<Vector2f> points = new TArray<Vector2f>();
+		final TArray<Vector2f> points = new TArray<>();
 		for (int y = 0; y < getHeight(); y += interval) {
 			for (int x = 0; x < getWidth(); x += interval) {
 				int tx = MathUtils.clamp(x + MathUtils.nextInt(-interval / 2, interval / 2), 0, getWidth() - 1);
@@ -2821,10 +2810,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 		if (src == dst) {
 			return true;
 		}
-		if (src == null) {
-			return false;
-		}
-		if (dst == null) {
+		if ((src == null) || (dst == null)) {
 			return false;
 		}
 		if (src.getWidth() != dst.getWidth() || src.getHeight() != dst.getHeight()

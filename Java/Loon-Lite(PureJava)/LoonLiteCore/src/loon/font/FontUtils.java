@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -23,7 +23,6 @@ package loon.font;
 import loon.HorizontalAlign;
 import loon.LSystem;
 import loon.canvas.LColor;
-
 import loon.geom.PointF;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
@@ -46,7 +45,7 @@ public class FontUtils {
 	}
 
 	private final static int FLAGS = 35;
-	
+
 	private static final int UNSPECIFIED = -1;
 
 	public static void drawLeft(GLEx g, String s, int x, int y) {
@@ -146,7 +145,7 @@ public class FontUtils {
 
 	public static PointF getTextWidthAndHeight(IFont font, String message, float defWidth, float defHeight) {
 		if (font != null && message != null) {
-			TArray<CharSequence> result = new TArray<CharSequence>();
+			TArray<CharSequence> result = new TArray<>();
 			result = splitLines(message, result);
 			float maxWidth = 0f;
 			float space = font.getSize() / 4f;
@@ -165,17 +164,17 @@ public class FontUtils {
 
 	/**
 	 * 返回指定字符串，匹配指定字体后，在指定宽度内的每行应显示字符串.
-	 * 
+	 *
 	 * PS:此项不处理LSystem.LF外的特殊操作符
-	 * 
+	 *
 	 * @param text
 	 * @param font
 	 * @param width
 	 * @return
 	 */
 	public static TArray<String> splitLines(String text, IFont font, float width) {
-		
-		TArray<String> list = new TArray<String>();
+
+		TArray<String> list = new TArray<>();
 		if (text == null) {
 			return list;
 		}
@@ -228,7 +227,7 @@ public class FontUtils {
 
 		return list;
 	}
-	
+
 	public static <T extends TArray<CharSequence>> T splitLines(final CharSequence chars, final T result) {
 		return StringUtils.splitArray(chars, LSystem.LF, result);
 	}

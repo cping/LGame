@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -20,8 +20,8 @@
  */
 package loon.particle;
 
-import loon.LTexture;
 import loon.LSystem;
+import loon.LTexture;
 import loon.canvas.LColor;
 import loon.geom.Vector2f;
 import loon.utils.MathUtils;
@@ -67,7 +67,7 @@ public class ConfigurableEmitter implements ParticleEmitter {
 
 	public Range length = new Range(1000, 1000);
 
-	public TArray<ColorRecord> colors = new TArray<ColorRecord>();
+	public TArray<ColorRecord> colors = new TArray<>();
 
 	public SimpleValue startAlpha = new SimpleValue(255);
 
@@ -131,22 +131,22 @@ public class ConfigurableEmitter implements ParticleEmitter {
 		colors.add(new ColorRecord(0, LColor.white));
 		colors.add(new ColorRecord(1, LColor.red));
 
-		TArray<Vector2f> curve = new TArray<Vector2f>();
+		TArray<Vector2f> curve = new TArray<>();
 		curve.add(new Vector2f(0.0f, 0.0f));
 		curve.add(new Vector2f(1.0f, 255.0f));
 		alpha = new LinearInterpolator(curve, 0, 255);
 
-		curve = new TArray<Vector2f>();
+		curve = new TArray<>();
 		curve.add(new Vector2f(0.0f, 0.0f));
 		curve.add(new Vector2f(1.0f, 255.0f));
 		size = new LinearInterpolator(curve, 0, 255);
 
-		curve = new TArray<Vector2f>();
+		curve = new TArray<>();
 		curve.add(new Vector2f(0.0f, 0.0f));
 		curve.add(new Vector2f(1.0f, 1.0f));
 		velocity = new LinearInterpolator(curve, 0, 1);
 
-		curve = new TArray<Vector2f>();
+		curve = new TArray<>();
 		curve.add(new Vector2f(0.0f, 0.0f));
 		curve.add(new Vector2f(1.0f, 1.0f));
 		scaleY = new LinearInterpolator(curve, 0, 1);
@@ -273,7 +273,7 @@ public class ConfigurableEmitter implements ParticleEmitter {
 					p.setImage(image);
 				}
 
-				ColorRecord start = (ColorRecord) colors.get(0);
+				ColorRecord start = colors.get(0);
 				p.setColor(start.col.r, start.col.g, start.col.b, startAlpha.getValue(0) / 255.0f);
 				p.setUsePoint(usePoints);
 				p.setOriented(useOriented);
@@ -306,8 +306,8 @@ public class ConfigurableEmitter implements ParticleEmitter {
 		LColor startColor = null;
 		LColor endColor = null;
 		for (int i = 0; i < colors.size - 1; i++) {
-			ColorRecord rec1 = (ColorRecord) colors.get(i);
-			ColorRecord rec2 = (ColorRecord) colors.get(i + 1);
+			ColorRecord rec1 = colors.get(i);
+			ColorRecord rec2 = colors.get(i + 1);
 
 			if ((inv >= rec1.pos) && (inv <= rec2.pos)) {
 				startColor = rec1.col;
@@ -435,6 +435,7 @@ public class ConfigurableEmitter implements ParticleEmitter {
 			this.value = value;
 		}
 
+		@Override
 		public float getValue(float time) {
 			return (MathUtils.random() * value);
 		}
@@ -477,9 +478,9 @@ public class ConfigurableEmitter implements ParticleEmitter {
 
 		@Override
 		public float getValue(float t) {
-			Vector2f p0 = (Vector2f) curve.get(0);
+			Vector2f p0 = curve.get(0);
 			for (int i = 1; i < curve.size; i++) {
-				Vector2f p1 = (Vector2f) curve.get(i);
+				Vector2f p1 = curve.get(i);
 				if (t >= p0.getX() && t <= p1.getX()) {
 					float st = (t - p0.getX()) / (p1.getX() - p0.getX());
 					float r = p0.getY() + st * (p1.getY() - p0.getY());
@@ -607,6 +608,7 @@ public class ConfigurableEmitter implements ParticleEmitter {
 		wrapUp = true;
 	}
 
+	@Override
 	public void resetState() {
 		wrapUp = false;
 		replay();

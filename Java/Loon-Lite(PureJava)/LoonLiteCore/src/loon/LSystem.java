@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -197,7 +197,7 @@ public class LSystem {
 
 	/**
 	 * 获得Loon系统自带的默认文件前缀
-	 * 
+	 *
 	 * @return
 	 */
 	public static final String getSystemImagePath() {
@@ -209,7 +209,7 @@ public class LSystem {
 
 	/**
 	 * 获得Loon系统自带的默认文件前缀
-	 * 
+	 *
 	 * @param path
 	 * @return
 	 */
@@ -219,7 +219,7 @@ public class LSystem {
 
 	/**
 	 * 获得系统画面log中显示的字体(如果未设置则默认为本地字体渲染,字体大小16)
-	 * 
+	 *
 	 * @return
 	 */
 	public static final IFont getSystemLogFont() {
@@ -234,7 +234,7 @@ public class LSystem {
 
 	/**
 	 * 设定游戏画面log中显示的字体文字
-	 * 
+	 *
 	 * @param font
 	 */
 	public static void setSystemLogFont(IFont font) {
@@ -245,7 +245,7 @@ public class LSystem {
 
 	/**
 	 * 设定游戏全局默认使用的字体文字(不含log,如果未设置则默认为本地字体渲染)
-	 * 
+	 *
 	 * @return
 	 */
 	public static final IFont getSystemGameFont() {
@@ -260,7 +260,7 @@ public class LSystem {
 
 	/**
 	 * 设定游戏全局默认使用的字体文字(不含log)
-	 * 
+	 *
 	 * @param font
 	 */
 	public static void setSystemGameFont(IFont font) {
@@ -271,7 +271,7 @@ public class LSystem {
 
 	/**
 	 * 设定游戏全局默认使用的字体文字
-	 * 
+	 *
 	 * @param font
 	 */
 	public static void setSystemGlobalFont(IFont font) {
@@ -830,7 +830,7 @@ public class LSystem {
 			base().clearSpritesPool();
 		}
 	}
-	
+
 	public static final void closeSpritesPool() {
 		if (base() != null) {
 			base().closeSpritesPool();
@@ -870,7 +870,7 @@ public class LSystem {
 			base().clearDesktopPool();
 		}
 	}
-	
+
 	public static final void closeDesktopPool() {
 		if (base() != null) {
 			base().closeDesktopPool();

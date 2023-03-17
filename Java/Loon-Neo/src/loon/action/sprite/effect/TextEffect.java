@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2019 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -98,8 +98,8 @@ public class TextEffect extends Entity implements BaseEffect {
 	}
 
 	public TextEffect(float x, float y, float width, float height) {
-		this.texts = new TArray<MessageBlock>();
-		this.tempTexts = new TArray<MessageBlock>();
+		this.texts = new TArray<>();
+		this.tempTexts = new TArray<>();
 		this.timer = new LTimer(0);
 		this.setLocation(x, y);
 		this.setSize(width, height);
@@ -143,7 +143,7 @@ public class TextEffect extends Entity implements BaseEffect {
 
 	/**
 	 * 注入一组文本信息
-	 * 
+	 *
 	 * @param font     使用的字体(为null则使用默认的字体LFont)
 	 * @param message  文字信息
 	 * @param color    文字颜色
@@ -206,7 +206,7 @@ public class TextEffect extends Entity implements BaseEffect {
 		final int length = texts.size;
 		if (!packed && length > 0) {
 			LFont font = null;
-			TArray<CharSequence> messages = new TArray<CharSequence>();
+			TArray<CharSequence> messages = new TArray<>();
 			for (int i = length - 1; i > -1; --i) {
 				MessageBlock text = texts.get(i);
 				if (text != null) {

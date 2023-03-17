@@ -1,19 +1,19 @@
 /**
- * 
+ *
  * Copyright 2014
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -31,10 +31,10 @@ import loon.canvas.LColor;
 import loon.canvas.LGradation;
 import loon.canvas.Pixmap;
 import loon.opengl.LSubTexture;
-import loon.utils.TArray;
 import loon.utils.ArrayMap;
 import loon.utils.HelperUtils;
 import loon.utils.MathUtils;
+import loon.utils.TArray;
 
 public class DefUI extends HelperUtils {
 
@@ -75,7 +75,7 @@ public class DefUI extends HelperUtils {
 
 	/**
 	 * 剪切指定图片边缘为指定半径(主要就是把正方形的头像图剪成半圆或椭圆的，或者切出椭圆按钮之类)
-	 * 
+	 *
 	 * @param path
 	 * @return
 	 */
@@ -85,7 +85,7 @@ public class DefUI extends HelperUtils {
 
 	/**
 	 * 剪切指定图片边缘为指定半径(主要就是把正方形的头像图剪成半圆或椭圆的，或者切出椭圆按钮之类)
-	 * 
+	 *
 	 * @param path
 	 * @return
 	 */
@@ -95,7 +95,7 @@ public class DefUI extends HelperUtils {
 
 	/**
 	 * 剪切指定图片边缘为指定半径(主要就是把正方形的头像图剪成半圆或椭圆的，或者切出椭圆按钮之类)
-	 * 
+	 *
 	 * @param path
 	 * @param strokeWidth
 	 * @return
@@ -106,7 +106,7 @@ public class DefUI extends HelperUtils {
 
 	/**
 	 * 剪切指定图片边缘为指定半径(主要就是把正方形的头像图剪成半圆或椭圆的，或者切出椭圆按钮之类)
-	 * 
+	 *
 	 * @param path
 	 * @param radius
 	 * @param strokeWidth
@@ -124,7 +124,7 @@ public class DefUI extends HelperUtils {
 
 	/**
 	 * 剪切指定图片边缘为指定半径(主要就是把正方形的头像图剪成半圆或椭圆的，或者切出椭圆按钮之类)
-	 * 
+	 *
 	 * @param bitmap
 	 * @return
 	 */
@@ -134,7 +134,7 @@ public class DefUI extends HelperUtils {
 
 	/**
 	 * 剪切指定图片边缘为指定半径(主要就是把正方形的头像图剪成半圆或椭圆的，或者切出椭圆按钮之类)
-	 * 
+	 *
 	 * @param bitmap
 	 * @param radius
 	 * @return
@@ -145,7 +145,7 @@ public class DefUI extends HelperUtils {
 
 	/**
 	 * 剪切指定图片边缘为指定半径(主要就是把正方形的头像图剪成半圆或椭圆的，或者切出椭圆按钮之类)
-	 * 
+	 *
 	 * @param bitmap
 	 * @param radius
 	 * @param strokeWidth
@@ -194,7 +194,7 @@ public class DefUI extends HelperUtils {
 
 	/**
 	 * 绘制指定大小的圆形游戏窗口图片
-	 * 
+	 *
 	 * @param width
 	 * @param height
 	 * @param radius
@@ -215,7 +215,7 @@ public class DefUI extends HelperUtils {
 
 	/**
 	 * 绘制指定大小的中空窗体图片
-	 * 
+	 *
 	 * @param width
 	 * @param height
 	 * @param lineWidth
@@ -234,7 +234,7 @@ public class DefUI extends HelperUtils {
 
 	/**
 	 * 绘制一个菱形的窗体图片
-	 * 
+	 *
 	 * @param width
 	 * @param height
 	 * @param color
@@ -250,7 +250,7 @@ public class DefUI extends HelperUtils {
 
 	/**
 	 * 返回一组随机纹理当做背景图
-	 * 
+	 *
 	 * @param width
 	 * @param height
 	 * @return
@@ -261,7 +261,7 @@ public class DefUI extends HelperUtils {
 
 	/**
 	 * 返回一组指定色彩元素的随机纹理当做背景图
-	 * 
+	 *
 	 * @param color
 	 * @param width
 	 * @param height
@@ -301,7 +301,7 @@ public class DefUI extends HelperUtils {
 
 	/**
 	 * 生成指定大小，指定列数的表格图
-	 * 
+	 *
 	 * @param width
 	 * @param height
 	 * @param size
@@ -313,7 +313,7 @@ public class DefUI extends HelperUtils {
 
 	/**
 	 * 生成指定大小，指定列数的表格图
-	 * 
+	 *
 	 * @param width
 	 * @param height
 	 * @param size
@@ -342,7 +342,7 @@ public class DefUI extends HelperUtils {
 
 	/**
 	 * 返回指定大小的窗口背景
-	 * 
+	 *
 	 * @param width
 	 * @param height
 	 * @return
@@ -353,7 +353,7 @@ public class DefUI extends HelperUtils {
 
 	/**
 	 * 返回指定大小的窗口背景
-	 * 
+	 *
 	 * @param width
 	 * @param height
 	 * @param start
@@ -516,7 +516,7 @@ public class DefUI extends HelperUtils {
 
 	/**
 	 * 产生一个游戏用按钮纹理
-	 * 
+	 *
 	 * @param width
 	 * @param height
 	 * @return
@@ -527,7 +527,7 @@ public class DefUI extends HelperUtils {
 
 	/**
 	 * 产生一个指定色彩的游戏用按钮纹理
-	 * 
+	 *
 	 * @param width
 	 * @param height
 	 * @param fill
@@ -621,7 +621,7 @@ public class DefUI extends HelperUtils {
 		}
 		if (defaultTextures == null || defaultTextures.size == 0) {
 			if (defaultTextures == null) {
-				defaultTextures = new TArray<LTexture>();
+				defaultTextures = new TArray<>();
 			} else {
 				defaultTextures.clear();
 			}

@@ -30,6 +30,7 @@ public class FlayRightDownFragment extends Fragment {
 		super(color, x, y, bound, tex);
 	}
 
+	@Override
 	protected void caculate(float factor) {
 		if (factor <= 0.5) {
 			if (oy < parBound.centerX()) {

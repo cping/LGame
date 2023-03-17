@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -330,7 +330,7 @@ public class Display extends BaseIO implements LRelease {
 
 	/**
 	 * 清空当前游戏窗体内容为指定色彩
-	 * 
+	 *
 	 * @param red
 	 * @param green
 	 * @param blue
@@ -345,7 +345,7 @@ public class Display extends BaseIO implements LRelease {
 
 	/**
 	 * 清空当前游戏窗体内容为指定色彩
-	 * 
+	 *
 	 * @param color
 	 */
 	public void clearColor(LColor color) {
@@ -454,10 +454,7 @@ public class Display extends BaseIO implements LRelease {
 	}
 
 	private void onFrame() {
-		if (_closed) {
-			return;
-		}
-		if (!_autoRepaint) {
+		if (_closed || !_autoRepaint) {
 			return;
 		}
 		final int updateTick = _game.tick();
@@ -497,7 +494,7 @@ public class Display extends BaseIO implements LRelease {
 
 	/**
 	 * 渲染debug信息到游戏画面
-	 * 
+	 *
 	 * @param gl
 	 * @param setting
 	 * @param delta
@@ -525,7 +522,7 @@ public class Display extends BaseIO implements LRelease {
 				if (this.memorySelf) {
 					displayMessage.setLength(0);
 					displayMessage.append(MEMORY_STR);
-					displayMessage.append(((float) ((LTextures.getMemSize() * 100) >> 20) / 10f));
+					displayMessage.append((((LTextures.getMemSize() * 100) >> 20) / 10f));
 					displayMessage.append(" of ");
 					displayMessage.append('?');
 					displayMessage.append(" MB");
@@ -537,9 +534,9 @@ public class Display extends BaseIO implements LRelease {
 					long currentMemory = totalMemory - runtime.freeMemory();
 					displayMessage.setLength(0);
 					displayMessage.append(MEMORY_STR);
-					displayMessage.append(((float) ((currentMemory * 10) >> 20) / 10f));
+					displayMessage.append((((currentMemory * 10) >> 20) / 10f));
 					displayMessage.append(" of ");
-					displayMessage.append(((float) ((runtime.maxMemory() * 10) >> 20) / 10f));
+					displayMessage.append((((runtime.maxMemory() * 10) >> 20) / 10f));
 					displayMessage.append(" MB");
 				}
 				displayMemony = displayMessage.toString();
@@ -634,7 +631,7 @@ public class Display extends BaseIO implements LRelease {
 
 	/**
 	 * 返回video的缓存结果(不设置out对象时才会有效)
-	 * 
+	 *
 	 * @return
 	 */
 	public ArrayByte getVideoCache() {
@@ -643,7 +640,7 @@ public class Display extends BaseIO implements LRelease {
 
 	/**
 	 * 开始录像(默认使用ArrayByte缓存录像结果到内存中)
-	 * 
+	 *
 	 * @return
 	 */
 	public GifEncoder startVideo() {
@@ -652,7 +649,7 @@ public class Display extends BaseIO implements LRelease {
 
 	/**
 	 * 开始录像(指定一个OutputStream对象,比如FileOutputStream 输出录像结果到指定硬盘位置)
-	 * 
+	 *
 	 * @param output
 	 * @return
 	 */
@@ -662,7 +659,7 @@ public class Display extends BaseIO implements LRelease {
 
 	/**
 	 * 开始录像(指定一个OutputStream对象,比如FileOutputStream 输出录像结果到指定硬盘位置)
-	 * 
+	 *
 	 * @param output
 	 * @param delay
 	 * @return
@@ -679,7 +676,7 @@ public class Display extends BaseIO implements LRelease {
 
 	/**
 	 * 结束录像
-	 * 
+	 *
 	 * @return
 	 */
 	public GifEncoder stopVideo() {

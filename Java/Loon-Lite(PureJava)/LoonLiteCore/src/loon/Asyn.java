@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -29,9 +29,9 @@ public abstract class Asyn {
 
 	/** 为了语法转换到C#和C++，只能忍痛放弃匿名构造类了…… **/
 	private static class CallDefaultPort<T> extends Port<T>{
-		
+
 		private Default _def;
-		
+
 		CallDefaultPort(Default d){
 			this._def = d;
 		}
@@ -40,18 +40,18 @@ public abstract class Asyn {
 		public void onEmit(Object event) {
 			_def.dispatch();
 		}
-		
+
 	}
-	
+
 	public static class Default extends Asyn {
 
-		private final TArray<Runnable> pending = new TArray<Runnable>();
-		private final TArray<Runnable> running = new TArray<Runnable>();
+		private final TArray<Runnable> pending = new TArray<>();
+		private final TArray<Runnable> running = new TArray<>();
 		protected final Log log;
 
 		public Default(Log log, Act<? extends Object> frame) {
 			this.log = log;
-			frame.connect(new CallDefaultPort<Object>(this)).setPriority(Short.MAX_VALUE);
+			frame.connect(new CallDefaultPort<>(this)).setPriority(Short.MAX_VALUE);
 		}
 
 		@Override
@@ -130,19 +130,19 @@ public abstract class Asyn {
 
 		@Override
 		public void succeed(final T value) {
-			_asyn.invokeLater(new DeferredPromiseRunnable<T>(0, this, value,
+			_asyn.invokeLater(new DeferredPromiseRunnable<>(0, this, value,
 					null));
 		}
 
 		@Override
 		public void fail(final Throwable cause) {
-			_asyn.invokeLater(new DeferredPromiseRunnable<T>(1, this, null,
+			_asyn.invokeLater(new DeferredPromiseRunnable<>(1, this, null,
 					cause));
 		}
 	}
 
 	public <T> GoPromise<T> deferredPromise() {
-		return new CallDeferredPromise<T>(this);
+		return new CallDeferredPromise<>(this);
 	}
 
 	public abstract boolean isAsyncSupported();

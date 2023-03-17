@@ -1,19 +1,19 @@
 /**
- * 
+ *
  * Copyright 2008 - 2011
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -72,7 +72,7 @@ public abstract class ActorLayer extends LContainer {
 	}
 
 	private final static TArray<Actor> collisionObjectToActors(TArray<CollisionObject> list) {
-		TArray<Actor> newActors = new TArray<Actor>(list.size);
+		TArray<Actor> newActors = new TArray<>(list.size);
 		for (CollisionObject o : list) {
 			if (o instanceof Actor) {
 				newActors.add((Actor) o);
@@ -115,7 +115,7 @@ public abstract class ActorLayer extends LContainer {
 
 	/**
 	 * 让指定对象执行MoveTo事件
-	 * 
+	 *
 	 * @param field
 	 * @param o
 	 * @param flag
@@ -134,7 +134,7 @@ public abstract class ActorLayer extends LContainer {
 
 	/**
 	 * 让指定对象执行MoveTo事件
-	 * 
+	 *
 	 * @param field
 	 * @param o
 	 * @param x
@@ -147,7 +147,7 @@ public abstract class ActorLayer extends LContainer {
 
 	/**
 	 * 让指定对象执行MoveTo事件
-	 * 
+	 *
 	 * @param o
 	 * @param flag
 	 * @param x
@@ -170,7 +170,7 @@ public abstract class ActorLayer extends LContainer {
 
 	/**
 	 * 让指定对象执行MoveTo事件
-	 * 
+	 *
 	 * @param o
 	 * @param x
 	 * @param y
@@ -184,7 +184,7 @@ public abstract class ActorLayer extends LContainer {
 
 	/**
 	 * 让指定对象执行MoveTo事件
-	 * 
+	 *
 	 * @param o
 	 * @param x
 	 * @param y
@@ -196,7 +196,7 @@ public abstract class ActorLayer extends LContainer {
 
 	/**
 	 * 让指定对象执行MoveTo事件
-	 * 
+	 *
 	 * @param o
 	 * @param x
 	 * @param y
@@ -209,7 +209,7 @@ public abstract class ActorLayer extends LContainer {
 
 	/**
 	 * 让指定对象执行FadeTo事件
-	 * 
+	 *
 	 * @param o
 	 * @param type
 	 * @param speed
@@ -226,7 +226,7 @@ public abstract class ActorLayer extends LContainer {
 
 	/**
 	 * 让指定对象执行FadeTo淡入事件
-	 * 
+	 *
 	 * @param o
 	 * @param speed
 	 * @return
@@ -237,7 +237,7 @@ public abstract class ActorLayer extends LContainer {
 
 	/**
 	 * 让指定对象执行FadeTo淡出事件
-	 * 
+	 *
 	 * @param o
 	 * @param speed
 	 * @return
@@ -248,7 +248,7 @@ public abstract class ActorLayer extends LContainer {
 
 	/**
 	 * 让指定对象执行RotateTo旋转事件
-	 * 
+	 *
 	 * @param o
 	 * @param angle
 	 * @param speed
@@ -265,7 +265,7 @@ public abstract class ActorLayer extends LContainer {
 
 	/**
 	 * 让指定对象执行JumpTo跳跃事件
-	 * 
+	 *
 	 * @param o
 	 * @param j
 	 * @param g
@@ -282,7 +282,7 @@ public abstract class ActorLayer extends LContainer {
 
 	/**
 	 * 让指定角色根据指定半径以指定速度循环转动
-	 * 
+	 *
 	 * @param o
 	 * @param radius
 	 * @param velocity
@@ -299,7 +299,7 @@ public abstract class ActorLayer extends LContainer {
 
 	/**
 	 * 向指定坐标以指定速度让指定角色做为子弹发射
-	 * 
+	 *
 	 * @param o
 	 * @param x
 	 * @param y
@@ -317,7 +317,7 @@ public abstract class ActorLayer extends LContainer {
 
 	/**
 	 * 让角色缩放指定大小
-	 * 
+	 *
 	 * @param o
 	 * @param sx
 	 * @param sy
@@ -334,7 +334,7 @@ public abstract class ActorLayer extends LContainer {
 
 	/**
 	 * 让角色缩放指定大小
-	 * 
+	 *
 	 * @param o
 	 * @param s
 	 * @return
@@ -345,7 +345,7 @@ public abstract class ActorLayer extends LContainer {
 
 	/**
 	 * 让指定角色做箭状发射(抛物线)
-	 * 
+	 *
 	 * @param o
 	 * @param tx
 	 * @param ty
@@ -362,7 +362,7 @@ public abstract class ActorLayer extends LContainer {
 
 	/**
 	 * 渐变对象到指定颜色
-	 * 
+	 *
 	 * @param o
 	 * @param start
 	 * @param end
@@ -379,7 +379,7 @@ public abstract class ActorLayer extends LContainer {
 
 	/**
 	 * 渐变对象到指定颜色
-	 * 
+	 *
 	 * @param o
 	 * @param end
 	 * @param duration
@@ -396,7 +396,7 @@ public abstract class ActorLayer extends LContainer {
 
 	/**
 	 * 渐变对象到指定颜色
-	 * 
+	 *
 	 * @param o
 	 * @param start
 	 * @param end
@@ -415,7 +415,7 @@ public abstract class ActorLayer extends LContainer {
 
 	/**
 	 * 振动指定对象
-	 * 
+	 *
 	 * @param o
 	 * @param shakeX
 	 * @param shakeY
@@ -432,7 +432,7 @@ public abstract class ActorLayer extends LContainer {
 
 	/**
 	 * 振动指定对象
-	 * 
+	 *
 	 * @param o
 	 * @param shakeX
 	 * @param shakeY
@@ -451,7 +451,7 @@ public abstract class ActorLayer extends LContainer {
 
 	/**
 	 * 以指定瓦片大小创建数组地图
-	 * 
+	 *
 	 * @param tileWidth
 	 * @param tileHeight
 	 * @return
@@ -467,14 +467,11 @@ public abstract class ActorLayer extends LContainer {
 
 	/**
 	 * 设定Layer对应的二维数组地图
-	 * 
+	 *
 	 * @param map
 	 */
 	public void setField2D(Field2D field) {
-		if (_component_isClose) {
-			return;
-		}
-		if (field == null) {
+		if (_component_isClose || (field == null)) {
 			return;
 		}
 		if (tmpField != null) {
@@ -489,7 +486,7 @@ public abstract class ActorLayer extends LContainer {
 
 	/**
 	 * 返回Layer对应的二维数据地图
-	 * 
+	 *
 	 * @param map
 	 */
 	@Override
@@ -499,17 +496,14 @@ public abstract class ActorLayer extends LContainer {
 
 	/**
 	 * 查看Layer是否包含object
-	 * 
+	 *
 	 * @param object
 	 * @param x
 	 * @param y
 	 * @return
 	 */
 	public boolean containsObject(Actor object) {
-		if (_component_isClose) {
-			return false;
-		}
-		if (object == null) {
+		if (_component_isClose || (object == null)) {
 			return false;
 		}
 		return objects.contains(object);
@@ -517,7 +511,7 @@ public abstract class ActorLayer extends LContainer {
 
 	/**
 	 * 添加角色到Layer(在Layer中添加的角色将自动赋予碰撞检查)
-	 * 
+	 *
 	 * @param object
 	 * @param x
 	 * @param y
@@ -538,7 +532,7 @@ public abstract class ActorLayer extends LContainer {
 
 	/**
 	 * 添加角色到Layer
-	 * 
+	 *
 	 * @param object
 	 */
 	public void addObject(Actor object) {
@@ -550,7 +544,7 @@ public abstract class ActorLayer extends LContainer {
 
 	/**
 	 * 将指定角色于Layer前置
-	 * 
+	 *
 	 * @param actor
 	 */
 	void sendToFront(Actor actor) {
@@ -568,7 +562,7 @@ public abstract class ActorLayer extends LContainer {
 
 	/**
 	 * 将指定角色于Layer后置
-	 * 
+	 *
 	 * @param actor
 	 */
 	void sendToBack(Actor actor) {
@@ -586,7 +580,7 @@ public abstract class ActorLayer extends LContainer {
 
 	/**
 	 * 参考指定大小根据Layer范围生成一组不重复的随机坐标
-	 * 
+	 *
 	 * @param act
 	 * @param count
 	 * @return
@@ -638,7 +632,7 @@ public abstract class ActorLayer extends LContainer {
 
 	/**
 	 * 参考指定大小根据Layer范围生成一组不重复的随机坐标
-	 * 
+	 *
 	 * @param actorWidth
 	 * @param actorHeight
 	 * @param count
@@ -653,7 +647,7 @@ public abstract class ActorLayer extends LContainer {
 
 	/**
 	 * 参考指定角色根据Layer范围生成一组不重复的随机坐标
-	 * 
+	 *
 	 * @param actor
 	 * @param count
 	 * @return
@@ -668,7 +662,7 @@ public abstract class ActorLayer extends LContainer {
 
 	/**
 	 * 参考指定Actor大小根据Layer生成一个不重复的随机坐标
-	 * 
+	 *
 	 * @param actor
 	 * @return
 	 */
@@ -685,14 +679,11 @@ public abstract class ActorLayer extends LContainer {
 
 	/**
 	 * 删除指定的角色
-	 * 
+	 *
 	 * @param object
 	 */
 	public void removeObject(Actor object) {
-		if (_component_isClose) {
-			return;
-		}
-		if (objects.size() == 0) {
+		if (_component_isClose || (objects.size() == 0)) {
 			return;
 		}
 		synchronized (objects) {
@@ -709,7 +700,7 @@ public abstract class ActorLayer extends LContainer {
 
 	/**
 	 * 删除指定集合中的所有角色
-	 * 
+	 *
 	 * @param objects
 	 */
 	public void removeObjects(TArray<Actor> objects) {
@@ -717,9 +708,7 @@ public abstract class ActorLayer extends LContainer {
 			return;
 		}
 		synchronized (objects) {
-			Iterator<Actor> iter = objects.iterator();
-			while (iter.hasNext()) {
-				Actor actor = iter.next();
+			for (Actor actor : objects) {
 				this.removeObject(actor);
 			}
 		}
@@ -727,7 +716,7 @@ public abstract class ActorLayer extends LContainer {
 
 	/**
 	 * 删除指定集合中的所有角色
-	 * 
+	 *
 	 * @param flagName
 	 */
 	public void removeObject(String flagName) {
@@ -756,7 +745,7 @@ public abstract class ActorLayer extends LContainer {
 
 	/**
 	 * 获得含有指定角色碰撞的List集合
-	 * 
+	 *
 	 * @param actor
 	 * @return
 	 */
@@ -769,7 +758,7 @@ public abstract class ActorLayer extends LContainer {
 
 	/**
 	 * 刷新缓存数据，重置世界
-	 * 
+	 *
 	 */
 	public void reset() {
 		if (_component_isClose) {
@@ -794,7 +783,7 @@ public abstract class ActorLayer extends LContainer {
 
 	/**
 	 * 获得指定类所产生角色碰撞的List集合
-	 * 
+	 *
 	 * @param flag
 	 * @return
 	 */
@@ -807,7 +796,7 @@ public abstract class ActorLayer extends LContainer {
 
 	/**
 	 * 返回指定角色类在指定位置的List集合
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param flag
@@ -822,7 +811,7 @@ public abstract class ActorLayer extends LContainer {
 
 	/**
 	 * 返回指定区域对应的单一Actor
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @return
@@ -836,7 +825,7 @@ public abstract class ActorLayer extends LContainer {
 
 	/**
 	 * 返回指定区域和标记对应的单一Actor
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @return
@@ -850,9 +839,10 @@ public abstract class ActorLayer extends LContainer {
 
 	/**
 	 * 角色对象总数
-	 * 
+	 *
 	 * @return
 	 */
+	@Override
 	public int size() {
 		if (_component_isClose) {
 			return 0;
