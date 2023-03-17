@@ -38,7 +38,7 @@ import loon.opengl.TextureUtils;
  */
 public class LButton extends LComponent implements FontSet<LButton> {
 
-	private ActionKey onTouch = new ActionKey();
+	private final ActionKey onTouch = new ActionKey();
 
 	private String text = null;
 
@@ -342,6 +342,11 @@ public class LButton extends LComponent implements FontSet<LButton> {
 	@Override
 	public String getUIName() {
 		return "Button";
+	}
+
+	@Override
+	public void destory() {
+	
 	}
 
 }

@@ -800,4 +800,9 @@ public class LQuestionAnswer extends LContainer {
 		return "QuestionAnswer";
 	}
 
+	@Override
+	public void destory() {
+
+	}
+
 }

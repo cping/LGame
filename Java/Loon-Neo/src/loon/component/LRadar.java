@@ -583,17 +583,16 @@ public class LRadar extends LComponent {
 	}
 
 	@Override
-	public void close() {
-		super.close();
+	public String getUIName() {
+		return "Radar";
+	}
+
+	@Override
+	public void destory() {
 		if (_groundTexture != null) {
 			_groundTexture.close();
 			_groundTexture = null;
 		}
-	}
-
-	@Override
-	public String getUIName() {
-		return "Radar";
 	}
 
 }

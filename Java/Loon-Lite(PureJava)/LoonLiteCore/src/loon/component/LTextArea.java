@@ -703,4 +703,9 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 		return "TextArea";
 	}
 
+	@Override
+	public void destory() {
+	
+	}
+
 }

@@ -295,4 +295,9 @@ public class LSlider extends LComponent {
 		return "Slider";
 	}
 
+	@Override
+	public void destory() {
+
+	}
+
 }

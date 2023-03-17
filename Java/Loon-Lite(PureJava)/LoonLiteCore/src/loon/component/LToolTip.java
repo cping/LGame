@@ -263,14 +263,13 @@ public class LToolTip extends LComponent {
 	}
 
 	@Override
-	public void close() {
-		super.close();
-		_text.close();
+	public String getUIName() {
+		return "ToolTip";
 	}
 
 	@Override
-	public String getUIName() {
-		return "ToolTip";
+	public void destory() {
+		_text.close();
 	}
 
 }

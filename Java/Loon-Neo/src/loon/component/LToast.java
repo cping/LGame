@@ -348,4 +348,8 @@ public class LToast extends LComponent implements FontSet<LToast> {
 		return "Toast";
 	}
 
+	@Override
+	public void destory() {
+	}
+
 }

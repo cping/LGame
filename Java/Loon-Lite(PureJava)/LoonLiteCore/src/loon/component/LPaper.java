@@ -143,8 +143,7 @@ public class LPaper extends LContainer {
 	}
 
 	@Override
-	public void close() {
-		super.close();
+	public void destory() {
 		if (animation != null) {
 			animation.close();
 			animation = null;

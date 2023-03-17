@@ -155,6 +155,11 @@ public class AABB implements XY, BoxSize, LRelease {
 		return this;
 	}
 
+	public AABB rotate(float rotate) {
+		final int[] rect = MathUtils.getLimit(minX, minY, maxX, maxY, rotate);
+		return set(rect[0], rect[1], rect[2], rect[3]);
+	}
+
 	public AABB setPosition(float x, float y) {
 		setX(x);
 		setY(y);

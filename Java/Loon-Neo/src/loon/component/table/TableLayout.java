@@ -172,12 +172,18 @@ public class TableLayout extends LContainer {
 		return grid;
 	}
 
-	public void setGrid(boolean grid) {
+	public TableLayout setGrid(boolean grid) {
 		this.grid = grid;
+		return this;
 	}
 
 	@Override
 	public String getUIName() {
 		return "TableLayout";
+	}
+
+	@Override
+	public void destory() {
+		
 	}
 }

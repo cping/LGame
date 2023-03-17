@@ -378,4 +378,9 @@ public class LScrollContainer extends LContainer {
 		return "ScrollContainer";
 	}
 
+	@Override
+	public void destory() {
+
+	}
+
 }

@@ -467,4 +467,9 @@ public class LScrollBar extends LComponent {
 		return "ScrollBar";
 	}
 
+	@Override
+	public void destory() {
+
+	}
+
 }

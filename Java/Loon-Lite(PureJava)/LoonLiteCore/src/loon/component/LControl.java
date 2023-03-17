@@ -226,10 +226,11 @@ public class LControl extends LComponent {
 		if (!isVisible()) {
 			return;
 		}
+		float alpha = g.alpha();
 		g.setAlpha(0.5f);
 		g.draw(controlBase, x, y, baseWidth, baseHeight);
 		g.draw(controlDot, x + centerX, y + centerY, dotWidth, dotHeight);
-		g.setAlpha(1f);
+		g.setAlpha(alpha);
 
 	}
 
@@ -269,17 +270,23 @@ public class LControl extends LComponent {
 		return lastDir;
 	}
 
+	public DigitalListener getDigitalListener() {
+		return control;
+	}
+
+	public LControl setControl(DigitalListener c) {
+		this.control = c;
+		return this;
+	}
+
 	@Override
 	public String getUIName() {
 		return "Control";
 	}
 
-	public DigitalListener getDigitalListener() {
-		return control;
-	}
+	@Override
+	public void destory() {
 
-	public void setControl(DigitalListener c) {
-		this.control = c;
 	}
 
 }

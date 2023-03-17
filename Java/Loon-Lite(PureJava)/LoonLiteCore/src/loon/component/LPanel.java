@@ -43,4 +43,9 @@ public class LPanel extends LContainer {
 			LTexture[] buttonImage) {
 	}
 
+	@Override
+	public void destory() {
+		
+	}
+
 }

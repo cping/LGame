@@ -226,10 +226,11 @@ public class LControl extends LComponent {
 		if (!isVisible()) {
 			return;
 		}
+		float alpha = g.alpha();
 		g.setAlpha(0.5f);
 		g.draw(controlBase, x, y, baseWidth, baseHeight);
 		g.draw(controlDot, x + centerX, y + centerY, dotWidth, dotHeight);
-		g.setAlpha(1f);
+		g.setAlpha(alpha);
 
 	}
 
@@ -278,8 +279,14 @@ public class LControl extends LComponent {
 		return control;
 	}
 
-	public void setControl(DigitalListener c) {
+	public LControl setControl(DigitalListener c) {
 		this.control = c;
+		return this;
+	}
+
+	@Override
+	public void destory() {
+
 	}
 
 }

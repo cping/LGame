@@ -45,7 +45,7 @@ import loon.utils.StringUtils;
  */
 public class LClickButton extends LComponent implements FontSet<LClickButton> {
 
-	private ActionKey onTouch = new ActionKey();
+	private final ActionKey onTouch = new ActionKey();
 
 	private LTexture idleClick, hoverClick, disableClick;
 
@@ -498,6 +498,11 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 	@Override
 	public String getUIName() {
 		return "ClickButton";
+	}
+
+	@Override
+	public void destory() {
+
 	}
 
 }

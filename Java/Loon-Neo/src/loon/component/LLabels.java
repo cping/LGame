@@ -163,8 +163,7 @@ public class LLabels extends LComponent implements FontSet<LLabels> {
 	}
 
 	@Override
-	public void close() {
-		super.close();
+	public void destory() {
 		clear();
 	}
 

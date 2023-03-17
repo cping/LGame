@@ -28,6 +28,7 @@ import loon.action.sprite.Sprites;
 import loon.canvas.Canvas;
 import loon.canvas.Image;
 import loon.geom.RectBox;
+import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.utils.ArrayMap;
 import loon.utils.LIterator;
@@ -508,8 +509,9 @@ public class LLayer extends ActorLayer {
 		}
 		super.processTouchPressed();
 		if (!input.isMoving()) {
-			int dx = this.input.getTouchX() - this.getScreenX();
-			int dy = this.input.getTouchY() - this.getScreenY();
+			final Vector2f pos = getUITouchXY();
+			int dx = MathUtils.floor(pos.x);
+			int dy = MathUtils.floor(pos.y);
 			dragActor = getSynchronizedObject(dx, dy);
 			if (dragActor != null) {
 				if (dragActor.isClick()) {
@@ -534,8 +536,9 @@ public class LLayer extends ActorLayer {
 		}
 		super.processTouchReleased();
 		if (!input.isMoving()) {
-			int dx = this.input.getTouchX() - this.getScreenX();
-			int dy = this.input.getTouchY() - this.getScreenY();
+			final Vector2f pos = getUITouchXY();
+			int dx = MathUtils.floor(pos.x);
+			int dy = MathUtils.floor(pos.y);
 			dragActor = getSynchronizedObject(dx, dy);
 			if (dragActor != null) {
 				if (dragActor.isClick()) {
@@ -562,8 +565,9 @@ public class LLayer extends ActorLayer {
 			boolean moveActor = false;
 			if (actorDrag) {
 				synchronized (objects) {
-					dropX = this.input.getTouchX() - this.getScreenX();
-					dropY = this.input.getTouchY() - this.getScreenY();
+					final Vector2f pos = getUITouchXY();
+					dropX = MathUtils.floor(pos.x);
+					dropY = MathUtils.floor(pos.y);
 					if (dragActor == null) {
 						dragActor = getSynchronizedObject(dropX, dropY);
 					}
@@ -608,8 +612,9 @@ public class LLayer extends ActorLayer {
 				return;
 			}
 			synchronized (objects) {
-				dropX = this.input.getTouchX() - this.getScreenX();
-				dropY = this.input.getTouchY() - this.getScreenY();
+				final Vector2f pos = getUITouchXY();
+				dropX = MathUtils.floor(pos.x);
+				dropY = MathUtils.floor(pos.y);
 				if (dragActor == null) {
 					dragActor = getSynchronizedObject(dropX, dropY);
 				}
@@ -669,11 +674,11 @@ public class LLayer extends ActorLayer {
 	}
 
 	public float getLayerTouchX() {
-		return (this.input.getTouchX() - this.getScreenX() / _scaleX);
+		return getUITouchX();
 	}
 
 	public float getLayerTouchY() {
-		return (this.input.getTouchY() - this.getScreenY() / _scaleY);
+		return getUITouchY();
 	}
 
 	@Override
@@ -685,10 +690,9 @@ public class LLayer extends ActorLayer {
 	public String getUIName() {
 		return "Layer";
 	}
-	
+
 	@Override
-	public void close() {
-		super.close();
+	public void destory() {
 		if (collisionChecker != null) {
 			collisionChecker.dispose();
 			collisionChecker = null;

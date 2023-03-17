@@ -275,15 +275,14 @@ public class LLabel extends LComponent implements FontSet<LLabel> {
 	}
 
 	@Override
-	public void close() {
-		super.close();
-		_text.close();
-	}
-
-	@Override
 	public LLabel setFont(IFont font) {
 		this._text.setFont(font);
 		return this;
+	}
+
+	@Override
+	public void destory() {
+		_text.close();
 	}
 
 }

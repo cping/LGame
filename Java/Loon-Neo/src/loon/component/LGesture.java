@@ -322,4 +322,9 @@ public class LGesture extends LComponent {
 		return "Gesture";
 	}
 
+	@Override
+	public void destory() {
+
+	}
+
 }

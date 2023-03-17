@@ -69,4 +69,9 @@ public class LHtmlView extends LContainer {
 		return "HtmlView";
 	}
 
+	@Override
+	public void destory() {
+		
+	}
+
 }

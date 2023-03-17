@@ -368,4 +368,9 @@ public class LDragging extends LComponent {
 		return "Dragging";
 	}
 
+	@Override
+	public void destory() {
+		
+	}
+
 }

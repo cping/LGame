@@ -212,8 +212,7 @@ public class LPapers extends LContainer {
 	}
 
 	@Override
-	public void close() {
-		super.close();
+	public void destory() {
 		_images.clear();
 	}
 }

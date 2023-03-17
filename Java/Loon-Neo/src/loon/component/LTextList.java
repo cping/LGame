@@ -599,4 +599,9 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 		return "TextList";
 	}
 
+	@Override
+	public void destory() {
+
+	}
+
 }

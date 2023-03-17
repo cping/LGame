@@ -816,18 +816,6 @@ public abstract class LContainer extends LComponent implements IArray {
 		}
 	}
 
-	public boolean isElastic() {
-		return this._component_elastic;
-	}
-
-	public void setElastic(boolean b) {
-		if (getWidth() > 32 || getHeight() > 32) {
-			this._component_elastic = b;
-		} else {
-			this._component_elastic = false;
-		}
-	}
-
 	public LComponent findComponent(int x1, int y1) {
 		if (_component_isClose) {
 			return null;

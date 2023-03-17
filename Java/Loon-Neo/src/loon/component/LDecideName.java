@@ -465,15 +465,22 @@ public class LDecideName extends LComponent implements FontSet<LDecideName> {
 		return showGrid;
 	}
 
-	public void setShowGrid(boolean showGrid) {
+	public LDecideName setShowGrid(boolean showGrid) {
 		this.showGrid = showGrid;
+		return this;
 	}
 
 	public int getTextWidthSpace() {
 		return text_width_space;
 	}
 
-	public void setTextWidthSpace(int tws) {
+	public LDecideName setTextWidthSpace(int tws) {
 		this.text_width_space = tws;
+		return this;
+	}
+
+	@Override
+	public void destory() {
+		
 	}
 }

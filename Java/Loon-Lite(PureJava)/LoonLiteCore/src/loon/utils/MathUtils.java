@@ -210,15 +210,20 @@ public final class MathUtils {
 	}
 
 	public static int[] getLimit(float x, float y, float width, float height, float rotate) {
-		float rotation = MathUtils.toRadians(rotate);
-		float angSin = MathUtils.sin(rotation);
-		float angCos = MathUtils.cos(rotation);
-		int newW = MathUtils.floor((width * MathUtils.abs(angCos)) + (height * MathUtils.abs(angSin)));
-		int newH = MathUtils.floor((height * MathUtils.abs(angCos)) + (width * MathUtils.abs(angSin)));
-		int centerX = (int) (x + (width / 2));
-		int centerY = (int) (y + (height / 2));
-		int newX = (centerX - (newW / 2));
-		int newY = (centerY - (newH / 2));
+		final float angle = wrapCompare(rotate, 0, 360f);
+		final float rotation = MathUtils.toRadians(angle);
+		final float angSin = MathUtils.sin(rotation);
+		final float angCos = MathUtils.cos(rotation);
+
+		final int newW = MathUtils.floor((width * MathUtils.abs(angCos)) + (height * MathUtils.abs(angSin)));
+		final int newH = MathUtils.floor((height * MathUtils.abs(angCos)) + (width * MathUtils.abs(angSin)));
+
+		final int centerX = MathUtils.floor(x + (width / 2));
+		final int centerY = MathUtils.floor(y + (height / 2));
+
+		final int newX = (centerX - (newW / 2));
+		final int newY = (centerY - (newH / 2));
+
 		return new int[] { newX, newY, newW, newH };
 	}
 
@@ -1779,6 +1784,30 @@ public final class MathUtils {
 			v = min;
 		}
 		return v;
+	}
+
+	/**
+	 * 比较数值大小
+	 * 
+	 * @param value
+	 * @param min
+	 * @param max
+	 * @return
+	 */
+	public static float wrapCompare(float value, float min, float max) {
+		float newValue = value;
+		final float step = max - min;
+
+		if (compare(newValue, max) >= 0) {
+			for (; compare(newValue, max) >= 0;) {
+				newValue -= step;
+			}
+		} else if (newValue < min) {
+			for (; newValue < min;) {
+				newValue += step;
+			}
+		}
+		return newValue;
 	}
 
 	/**

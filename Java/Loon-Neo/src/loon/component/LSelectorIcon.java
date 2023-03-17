@@ -305,4 +305,9 @@ public class LSelectorIcon extends LComponent {
 		return "SelectorIcon";
 	}
 
+	@Override
+	public void destory() {
+		
+	}
+
 }

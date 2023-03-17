@@ -135,8 +135,7 @@ public class LSpriteUI extends LContainer {
 	}
 
 	@Override
-	public void close() {
-		super.close();
+	public void destory() {
 		if (_sprite != null) {
 			_sprite.close();
 		}

@@ -526,6 +526,9 @@ public abstract class LComponent extends LObject<LContainer>
 	protected void createCustomUI(GLEx g, int x, int y, int w, int h) {
 	}
 
+	protected void createCustomUI(int w, int h) {
+	}
+
 	public boolean contains(float x, float y) {
 		return contains(x, y, 0, 0);
 	}
@@ -1058,7 +1061,17 @@ public abstract class LComponent extends LObject<LContainer>
 		return cam_y == 0 ? y() : cam_y;
 	}
 
-	protected void createCustomUI(int w, int h) {
+	public boolean isElastic() {
+		return this._component_elastic;
+	}
+
+	public LComponent setElastic(boolean b) {
+		if (getWidth() > 32 || getHeight() > 32) {
+			this._component_elastic = b;
+		} else {
+			this._component_elastic = false;
+		}
+		return this;
 	}
 
 	public boolean isAutoDestroy() {
@@ -1802,6 +1815,9 @@ public abstract class LComponent extends LObject<LContainer>
 		this.Click = null;
 		setState(State.DISPOSED);
 		removeActionEvents(this);
+		destory();
 	}
+	
+	public abstract void destory();
 
 }

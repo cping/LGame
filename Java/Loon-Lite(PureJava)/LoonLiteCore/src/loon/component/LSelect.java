@@ -379,4 +379,9 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 		return "Select";
 	}
 
+	@Override
+	public void destory() {
+
+	}
+
 }

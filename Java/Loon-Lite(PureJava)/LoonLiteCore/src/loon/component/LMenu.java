@@ -921,8 +921,7 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 	}
 
 	@Override
-	public void close() {
-		super.close();
+	public void destory() {
 		for (int i = 0, size = items.size; i < size; i++) {
 			MenuItem item = items.get(i);
 			if (item != null) {

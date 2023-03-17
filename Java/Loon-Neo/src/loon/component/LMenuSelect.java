@@ -636,4 +636,9 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 		return "MenuSelect";
 	}
 
+	@Override
+	public void destory() {
+		
+	}
+
 }

@@ -168,4 +168,9 @@ public class LCheckGroup extends LComponent {
 		return "CheckGroup";
 	}
 
+	@Override
+	public void destory() {
+	
+	}
+
 }

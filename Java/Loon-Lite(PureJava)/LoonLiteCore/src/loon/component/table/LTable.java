@@ -889,4 +889,9 @@ public class LTable extends LContainer implements FontSet<LTable> {
 		return "Table";
 	}
 
+	@Override
+	public void destory() {
+
+	}
+
 }

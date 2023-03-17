@@ -265,9 +265,21 @@ public class LProgress extends LComponent {
 		return this.percentage;
 	}
 
+	public ValueListener getListener() {
+		return listener;
+	}
+
+	public void setListener(ValueListener listener) {
+		this.listener = listener;
+	}
+
 	@Override
-	public void close() {
-		super.close();
+	public String getUIName() {
+		return "Progress";
+	}
+
+	@Override
+	public void destory() {
 		if (texture != null) {
 			if (bgTexture != null) {
 				bgTexture.close();
@@ -283,19 +295,6 @@ public class LProgress extends LComponent {
 			}
 			texture.close();
 		}
-	}
-
-	public ValueListener getListener() {
-		return listener;
-	}
-
-	public void setListener(ValueListener listener) {
-		this.listener = listener;
-	}
-
-	@Override
-	public String getUIName() {
-		return "Progress";
 	}
 
 }

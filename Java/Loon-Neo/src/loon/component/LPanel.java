@@ -42,4 +42,9 @@ public class LPanel extends LContainer {
 	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
 	}
 
+	@Override
+	public void destory() {
+		
+	}
+
 }

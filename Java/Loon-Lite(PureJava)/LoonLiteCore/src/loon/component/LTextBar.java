@@ -479,4 +479,9 @@ public class LTextBar extends LComponent {
 		return "TextBar";
 	}
 
+	@Override
+	public void destory() {
+
+	}
+
 }

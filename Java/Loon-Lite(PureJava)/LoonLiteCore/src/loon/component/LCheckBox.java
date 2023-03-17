@@ -328,4 +328,9 @@ public class LCheckBox extends LComponent implements FontSet<LCheckBox> {
 		return "CheckBox";
 	}
 
+	@Override
+	public void destory() {
+
+	}
+
 }

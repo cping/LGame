@@ -37,7 +37,6 @@ public class Row implements Comparable<Row> {
 	private RowType type;
 
 	public Row(RectI rect, RowType type) {
-		super();
 		this.rect = rect;
 		this.type = type;
 	}

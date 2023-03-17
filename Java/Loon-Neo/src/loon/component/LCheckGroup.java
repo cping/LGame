@@ -32,65 +32,65 @@ import loon.utils.TArray;
  */
 public class LCheckGroup extends LComponent {
 
-	private LCheckBox selectedBtn;
+	private LCheckBox _selectedBtn;
 
-	private final TArray<LCheckBox> checks;
+	private final TArray<LCheckBox> _checks;
 
-	private float minX = -1, minY = -1, maxX = -1, maxY = -1;
+	private float _minX = -1, _minY = -1, _maxX = -1, _maxY = -1;
 
 	public LCheckGroup() {
 		super(0, 0, 1, 1);
 		this.customRendering = false;
-		this.checks = new TArray<LCheckBox>(10);
+		this._checks = new TArray<LCheckBox>(10);
 	}
 
 	@Override
 	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
-		for (LCheckBox check : checks) {
+		for (LCheckBox check : _checks) {
 			check.createUI(g);
 		}
 	}
 
 	@Override
 	public void update(long elapsedTime) {
-		for (LCheckBox check : checks) {
+		for (LCheckBox check : _checks) {
 			check.update(elapsedTime);
 		}
 	}
 
 	public LCheckGroup add(LCheckBox check) {
-		if (minX == -1) {
-			minX = check.getX();
+		if (_minX == -1) {
+			_minX = check.getX();
 		}
-		if (minY == -1) {
-			minY = check.getY();
+		if (_minY == -1) {
+			_minY = check.getY();
 		}
-		minX = MathUtils.min(minX, check.getX());
-		minY = MathUtils.min(minY, check.getY());
-		maxX += MathUtils.max(maxY, check.getWidth());
-		maxY += MathUtils.max(maxY, check.getHeight());
-		setLocation(minX, minY);
-		setSize(maxX, maxY);
-		checks.add(check);
+		_minX = MathUtils.min(_minX, check.getX());
+		_minY = MathUtils.min(_minY, check.getY());
+		_maxX += MathUtils.max(_maxY, check.getWidth());
+		_maxY += MathUtils.max(_maxY, check.getHeight());
+		setLocation(_minX, _minY);
+		setSize(_maxX, _maxY);
+		_checks.add(check);
 		return this;
 	}
 
 	@Override
 	public void setColor(LColor c) {
 		super.setColor(c);
-		for (LCheckBox check : checks) {
+		for (LCheckBox check : _checks) {
 			check.setColor(c);
 		}
 	}
 
 	public TArray<LCheckBox> getCheckBoxs() {
-		return checks;
+		return _checks;
 	}
 
 	@Override
 	protected void processTouchDragged() {
 		super.processTouchDragged();
-		for (LCheckBox check : checks) {
+		for (LCheckBox check : _checks) {
 			check.processTouchDragged();
 		}
 		super.processTouchDragged();
@@ -99,7 +99,7 @@ public class LCheckGroup extends LComponent {
 	@Override
 	protected void processTouchEntered() {
 		super.processTouchEntered();
-		for (LCheckBox check : checks) {
+		for (LCheckBox check : _checks) {
 			check.processTouchEntered();
 		}
 	}
@@ -107,7 +107,7 @@ public class LCheckGroup extends LComponent {
 	@Override
 	protected void processTouchExited() {
 		super.processTouchExited();
-		for (LCheckBox check : checks) {
+		for (LCheckBox check : _checks) {
 			check.processTouchExited();
 		}
 	}
@@ -115,7 +115,7 @@ public class LCheckGroup extends LComponent {
 	@Override
 	protected void processKeyPressed() {
 		super.processKeyPressed();
-		for (LCheckBox check : checks) {
+		for (LCheckBox check : _checks) {
 			check.processKeyPressed();
 		}
 	}
@@ -123,7 +123,7 @@ public class LCheckGroup extends LComponent {
 	@Override
 	protected void processKeyReleased() {
 		super.processKeyReleased();
-		for (LCheckBox check : checks) {
+		for (LCheckBox check : _checks) {
 			check.processKeyReleased();
 		}
 	}
@@ -131,7 +131,7 @@ public class LCheckGroup extends LComponent {
 	@Override
 	protected void processTouchClicked() {
 		super.processTouchClicked();
-		for (LCheckBox check : checks) {
+		for (LCheckBox check : _checks) {
 			check.processTouchClicked();
 		}
 	}
@@ -139,10 +139,10 @@ public class LCheckGroup extends LComponent {
 	@Override
 	protected void processTouchPressed() {
 		super.processTouchPressed();
-		for (LCheckBox check : checks) {
+		for (LCheckBox check : _checks) {
 			if (check.contains(SysTouch.getX(), SysTouch.getY())) {
 				check.processTouchPressed();
-				selectedBtn = check;
+				_selectedBtn = check;
 			}
 		}
 	}
@@ -150,12 +150,12 @@ public class LCheckGroup extends LComponent {
 	@Override
 	protected void processTouchReleased() {
 		super.processTouchReleased();
-		if (selectedBtn != null) {
-			if (selectedBtn.contains(SysTouch.getX(), SysTouch.getY())) {
-				selectedBtn.processTouchReleased();
+		if (_selectedBtn != null) {
+			if (_selectedBtn.contains(SysTouch.getX(), SysTouch.getY())) {
+				_selectedBtn.processTouchReleased();
 			}
-			for (LCheckBox check : checks) {
-				if (selectedBtn != check) {
+			for (LCheckBox check : _checks) {
+				if (_selectedBtn != check) {
 					check.setTicked(false);
 				}
 			}
@@ -165,6 +165,11 @@ public class LCheckGroup extends LComponent {
 	@Override
 	public String getUIName() {
 		return "CheckGroup";
+	}
+
+	@Override
+	public void destory() {
+		
 	}
 
 }

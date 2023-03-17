@@ -324,6 +324,11 @@ public class RectI implements XY {
 		this.height = h1;
 	}
 
+	public RectI rotate(int rotate) {
+		final int[] rect = MathUtils.getLimit(x, y, width, height, rotate);
+		return set(rect[0], rect[1], rect[2], rect[3]);
+	}
+
 	public RectI set(RectI r) {
 		this.x = r.x;
 		this.y = r.y;

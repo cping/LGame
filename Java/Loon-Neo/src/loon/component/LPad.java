@@ -298,8 +298,7 @@ public class LPad extends LComponent {
 	}
 
 	@Override
-	public void close() {
-		super.close();
+	public void destory() {
 		if (pack != null) {
 			pack.close();
 		}

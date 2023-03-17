@@ -317,6 +317,18 @@ public class RectF implements XY {
 		this(range.x(), range.y(), range.width(), range.height());
 	}
 
+	public RectF(float x1, float y1, float w1, float h1) {
+		this.x = x1;
+		this.y = y1;
+		this.width = w1;
+		this.height = h1;
+	}
+
+	public RectF rotate(float rotate) {
+		final int[] rect = MathUtils.getLimit(x, y, width,height, rotate);
+		return set(rect[0], rect[1], rect[2], rect[3]);
+	}
+	
 	public RectF set(RectF r) {
 		this.x = r.x;
 		this.y = r.y;
@@ -332,14 +344,7 @@ public class RectF implements XY {
 		this.height = h1;
 		return this;
 	}
-
-	public RectF(float x1, float y1, float w1, float h1) {
-		this.x = x1;
-		this.y = y1;
-		this.width = w1;
-		this.height = h1;
-	}
-
+	
 	public boolean inside(float x, float y) {
 		return (x >= this.x) && ((x - this.x) < this.width) && (y >= this.y) && ((y - this.y) < this.height);
 	}

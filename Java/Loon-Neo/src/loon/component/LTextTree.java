@@ -565,4 +565,9 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 		return "TextTree";
 	}
 
+	@Override
+	public void destory() {
+
+	}
+
 }
