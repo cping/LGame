@@ -1,19 +1,19 @@
 /**
- *
+ * 
  * Copyright 2008 - 2011
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -22,12 +22,12 @@
 package loon.component;
 
 import loon.Director.Origin;
+
 import loon.LObject;
 import loon.LRelease;
 import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
-import loon.LTrans;
 import loon.PlayerUtils;
 import loon.Screen;
 import loon.Visible;
@@ -306,7 +306,7 @@ public abstract class LComponent extends LObject<LContainer>
 
 	/**
 	 * 构造可用组件
-	 *
+	 * 
 	 * @param x
 	 * @param y
 	 * @param width
@@ -328,7 +328,7 @@ public abstract class LComponent extends LObject<LContainer>
 
 	/**
 	 * 让当前组件向指定的中心点位置居中
-	 *
+	 * 
 	 * @param x
 	 * @param y
 	 */
@@ -403,7 +403,7 @@ public abstract class LComponent extends LObject<LContainer>
 
 	/**
 	 * 返回当前组件对象是否为容器
-	 *
+	 * 
 	 * @return
 	 */
 	@Override
@@ -413,7 +413,7 @@ public abstract class LComponent extends LObject<LContainer>
 
 	/**
 	 * 更新组件状态
-	 *
+	 * 
 	 */
 	@Override
 	public void update(long elapsedTime) {
@@ -432,17 +432,20 @@ public abstract class LComponent extends LObject<LContainer>
 
 	/**
 	 * 渲染当前组件画面于指定绘图器之上
-	 *
+	 * 
 	 * @param g
 	 */
 	public void createUI(GLEx g) {
-		if (_component_isClose || !this._component_visible || (_objectAlpha < 0.01f)) {
+		if (_component_isClose) {
 			return;
 		}
-		int blend = g.getBlendMode();
-		float offsetX = _offset.x;
-		float offsetY = _offset.y;
-		boolean update = _objectRotation != 0 || !(_scaleX == 1f && _scaleY == 1f) || _flipX || _flipY;
+		if (!this._component_visible) {
+			return;
+		}
+		if (_objectAlpha < 0.01f) {
+			return;
+		}
+		final boolean update = _objectRotation != 0 || !(_scaleX == 1f && _scaleY == 1f) || _flipX || _flipY;
 		try {
 			g.saveBrush();
 			float screenAlpha = 1f;
@@ -450,18 +453,18 @@ public abstract class LComponent extends LObject<LContainer>
 				screenAlpha = getScreen().getAlpha();
 			}
 			g.setAlpha(_objectAlpha * screenAlpha);
-			final int width = (int) this.getWidth();
-			final int height = (int) this.getHeight();
+			final int newX = MathUtils.floor(this._screenX + _offset.x);
+			final int newY = MathUtils.floor(this._screenY + _offset.y);
+			final int width = MathUtils.floor(this.getWidth());
+			final int height = MathUtils.floor(this.getHeight());
 			if (this._component_elastic) {
-				g.setClip(this._screenX + offsetX, this._screenY + offsetY, width, height);
+				g.setClip(newX, newY, width, height);
 			}
 			if (update) {
 				g.saveTx();
 				Affine2f tx = g.tx();
-				final float centerX = (_pivotX == -1 ? this._screenX + _origin.ox(width) : this._screenX + _pivotX)
-						+ offsetX;
-				final float centerY = (_pivotY == -1 ? this._screenY + _origin.oy(height) : this._screenY + _pivotY)
-						+ offsetY;
+				final float centerX = (_pivotX == -1 ? newX + _origin.ox(width) : newX + _pivotX);
+				final float centerY = (_pivotY == -1 ? newY + _origin.oy(height) : newY + _pivotY);
 				if (_objectRotation != 0) {
 					tx.translate(centerX, centerY);
 					tx.preRotate(_objectRotation);
@@ -469,11 +472,11 @@ public abstract class LComponent extends LObject<LContainer>
 				}
 				if (_flipX || _flipY) {
 					if (_flipX && _flipY) {
-						Affine2f.transform(tx, centerX, centerY, LTrans.TRANS_ROT180);
+						Affine2f.transform(tx, centerX, centerY, Affine2f.TRANS_ROT180);
 					} else if (_flipX) {
-						Affine2f.transform(tx, centerX, centerY, LTrans.TRANS_MIRROR);
+						Affine2f.transform(tx, centerX, centerY, Affine2f.TRANS_MIRROR);
 					} else if (_flipY) {
-						Affine2f.transform(tx, centerX, centerY, LTrans.TRANS_MIRROR_ROT180);
+						Affine2f.transform(tx, centerX, centerY, Affine2f.TRANS_MIRROR_ROT180);
 					}
 				}
 				if (!(_scaleX == 1f && _scaleY == 1f)) {
@@ -483,17 +486,15 @@ public abstract class LComponent extends LObject<LContainer>
 				}
 			}
 			if (_drawBackground && _background != null) {
-				g.draw(_background, this._screenX + offsetX, this._screenY + offsetY, width, height,
-						_component_baseColor);
+				g.draw(_background, newX, newY, width, height, _component_baseColor);
 			}
 			if (this.customRendering) {
-				this.createCustomUI(g, (int) (this._screenX + offsetX), (int) (this._screenY + offsetY), width, height);
+				this.createCustomUI(g, newX, newY, width, height);
 			} else {
-				this.createUI(g, (int) (this._screenX + offsetX), (int) (this._screenY + offsetY), this, this._imageUI);
+				this.createUI(g, newX, newY, this, this._imageUI);
 			}
 			if (isDrawSelect()) {
-				g.drawRect(this._screenX + offsetX, this._screenY + offsetY, width - 1f, height - 1f,
-						_component_baseColor);
+				g.drawRect(newX, newY, width - 1f, height - 1f, _component_baseColor);
 			}
 		} finally {
 			if (update) {
@@ -502,7 +503,6 @@ public abstract class LComponent extends LObject<LContainer>
 			if (this._component_elastic) {
 				g.clearClip();
 			}
-			g.setBlendMode(blend);
 			g.restoreBrush();
 		}
 
@@ -510,7 +510,7 @@ public abstract class LComponent extends LObject<LContainer>
 
 	/**
 	 * 自定义UI
-	 *
+	 * 
 	 * @param g
 	 * @param x
 	 * @param y
@@ -716,11 +716,6 @@ public abstract class LComponent extends LObject<LContainer>
 				this.validatePosition();
 			}
 		}
-	}
-
-	public LComponent coord(float x, float y) {
-		setLocation(x, y);
-		return this;
 	}
 
 	public LComponent setBounds(float dx, float dy, int width, int height) {
@@ -952,7 +947,7 @@ public abstract class LComponent extends LObject<LContainer>
 
 	/**
 	 * 检测键盘事件焦点
-	 *
+	 * 
 	 */
 	protected void checkFocusKey() {
 		if (this.input.getKeyPressed() == SysKey.ENTER) {
@@ -1015,7 +1010,10 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public LComponent setBackground(LTexture b, boolean updateSize) {
-		if ((b == null) || (b == this._background)) {
+		if (b == null) {
+			return this;
+		}
+		if (b == this._background) {
 			return this;
 		}
 		if (!_drawBackground) {
@@ -1030,7 +1028,10 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public LComponent setBackground(LTexture b, float w, float h, boolean updateSize) {
-		if ((b == null) || (b == this._background)) {
+		if (b == null) {
+			return this;
+		}
+		if (b == this._background) {
 			return this;
 		}
 		this._background = b;
@@ -1056,7 +1057,7 @@ public abstract class LComponent extends LObject<LContainer>
 	public boolean isClip() {
 		return isElastic();
 	}
-	
+
 	public boolean isElastic() {
 		return this._component_elastic;
 	}
@@ -1333,6 +1334,11 @@ public abstract class LComponent extends LObject<LContainer>
 		return this;
 	}
 
+	public LComponent coord(float x, float y) {
+		setLocation(x, y);
+		return this;
+	}
+
 	public LComponent show() {
 		_component_visible = true;
 		if (!getScreen().contains(this)) {
@@ -1373,7 +1379,7 @@ public abstract class LComponent extends LObject<LContainer>
 
 	/**
 	 * 淡入当前组件
-	 *
+	 * 
 	 * @return
 	 */
 	public LComponent in() {
@@ -1382,7 +1388,7 @@ public abstract class LComponent extends LObject<LContainer>
 
 	/**
 	 * 淡入当前组件
-	 *
+	 * 
 	 * @param speed
 	 * @return
 	 */
@@ -1394,7 +1400,7 @@ public abstract class LComponent extends LObject<LContainer>
 
 	/**
 	 * 淡出当前组件(并且淡出后自动注销)
-	 *
+	 * 
 	 * @return
 	 */
 	public LComponent out() {
@@ -1403,7 +1409,7 @@ public abstract class LComponent extends LObject<LContainer>
 
 	/**
 	 * 淡出当前组件(并且淡出后自动注销)
-	 *
+	 * 
 	 * @param speed
 	 * @return
 	 */
@@ -1772,7 +1778,10 @@ public abstract class LComponent extends LObject<LContainer>
 
 	@Override
 	public void close() {
-		if (!_component_autoDestroy || _component_isClose) {
+		if (!_component_autoDestroy) {
+			return;
+		}
+		if (_component_isClose) {
 			return;
 		}
 		this._component_visible = false;

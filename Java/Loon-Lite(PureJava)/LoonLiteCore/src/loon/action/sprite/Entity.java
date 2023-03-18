@@ -814,13 +814,12 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		if (_objectAlpha < 0.01f) {
 			return;
 		}
-		boolean exist = _image != null || (_width > 0 && _height > 0) || _repaintDraw;
+		final boolean exist = _image != null || (_width > 0 && _height > 0) || _repaintDraw;
 		if (exist) {
-			int blend = g.getBlendMode();
-			boolean update = ((_objectRotation != 0 || !(_scaleX == 1f && _scaleY == 1f)
+			final boolean update = ((_objectRotation != 0 || !(_scaleX == 1f && _scaleY == 1f)
 					|| !(_skewX == 0 && _skewY == 0)) || _flipX || _flipY) && _deform;
-			float nx = offsetX + this._objectLocation.x + _offset.x;
-			float ny = offsetY + this._objectLocation.y + _offset.y;
+			final float nx = offsetX + this._objectLocation.x + _offset.x;
+			final float ny = offsetY + this._objectLocation.y + _offset.y;
 			if (update) {
 				g.saveTx();
 				g.saveBrush();
@@ -874,11 +873,11 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 				}
 			}
 			if (_repaintDraw) {
-				boolean elastic = (_shear != null);
+				final boolean elastic = (_shear != null);
 				if (elastic) {
 					g.setClip(drawX(offsetX + _shear.x), drawY(offsetY + _shear.y), _shear.width, _shear.height);
 				}
-				float tmp = g.alpha();
+				final float tmp = g.alpha();
 				g.setAlpha(_objectAlpha);
 				if (_repaintAutoOffset) {
 					repaint(g, nx, ny);
@@ -908,7 +907,6 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 				g.restoreBrush();
 				g.restoreTx();
 			}
-			g.setBlendMode(blend);
 		}
 	}
 

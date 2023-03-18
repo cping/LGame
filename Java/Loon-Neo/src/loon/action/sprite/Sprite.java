@@ -71,6 +71,8 @@ public class Sprite extends LObject<ISprite>
 	// 是否可见
 	private boolean _visible = true;
 
+	private boolean _elastic = false;
+
 	// 精灵图片
 	private LTexture _image;
 
@@ -305,13 +307,13 @@ public class Sprite extends LObject<ISprite>
 	/**
 	 * 以下参数分别为 精灵图，坐标x,坐标y
 	 * 
-	 * @param _image
+	 * @param image
 	 * @param x
 	 * @param y
 	 * @param timer
 	 */
-	public Sprite(LTexture _image, float x, float y) {
-		this(new LTexture[] { _image }, -1, x, y, 0);
+	public Sprite(LTexture image, float x, float y) {
+		this(new LTexture[] { image }, -1, x, y, 0);
 	}
 
 	/**
@@ -685,6 +687,9 @@ public class Sprite extends LObject<ISprite>
 			g.setBlendMode(_GL_BLEND);
 			float nx = this._objectLocation.x + offsetX + _offset.x;
 			float ny = this._objectLocation.y + offsetY + _offset.y;
+			if (_elastic) {
+				g.setClip(nx, ny, width, height);
+			}
 			if (update) {
 				g.saveTx();
 				Affine2f tx = g.tx();
@@ -748,8 +753,28 @@ public class Sprite extends LObject<ISprite>
 			if (update) {
 				g.restoreTx();
 			}
+			if (_elastic) {
+				g.clearClip();
+			}
 			g.setBlendMode(blend);
 		}
+	}
+
+	public boolean isClip() {
+		return this._elastic;
+	}
+
+	public boolean isElastic() {
+		return this._elastic;
+	}
+
+	public Sprite clip(boolean e) {
+		return setElastic(true);
+	}
+
+	public Sprite setElastic(boolean e) {
+		this._elastic = e;
+		return this;
 	}
 
 	public float getScreenX() {
@@ -873,7 +898,7 @@ public class Sprite extends LObject<ISprite>
 		setLocation(x, y);
 		return this;
 	}
-	
+
 	@Override
 	public Field2D getField2D() {
 		return null;

@@ -446,10 +446,8 @@ public abstract class LComponent extends LObject<LContainer>
 		if (_objectAlpha < 0.01f) {
 			return;
 		}
-		int blend = g.getBlendMode();
-		float offsetX = _offset.x;
-		float offsetY = _offset.y;
-		boolean update = _objectRotation != 0 || !(_scaleX == 1f && _scaleY == 1f) || _flipX || _flipY;
+		final int blend = g.getBlendMode();
+		final boolean update = _objectRotation != 0 || !(_scaleX == 1f && _scaleY == 1f) || _flipX || _flipY;
 		try {
 			g.saveBrush();
 			float screenAlpha = 1f;
@@ -457,18 +455,18 @@ public abstract class LComponent extends LObject<LContainer>
 				screenAlpha = getScreen().getAlpha();
 			}
 			g.setAlpha(_objectAlpha * screenAlpha);
-			final int width = (int) this.getWidth();
-			final int height = (int) this.getHeight();
+			final int newX = MathUtils.floor(this._screenX + _offset.x);
+			final int newY = MathUtils.floor(this._screenY + _offset.y);
+			final int width = MathUtils.floor(this.getWidth());
+			final int height = MathUtils.floor(this.getHeight());
 			if (this._component_elastic) {
-				g.setClip(this._screenX + offsetX, this._screenY + offsetY, width, height);
+				g.setClip(newX, newY, width, height);
 			}
 			if (update) {
 				g.saveTx();
 				Affine2f tx = g.tx();
-				final float centerX = (_pivotX == -1 ? this._screenX + _origin.ox(width) : this._screenX + _pivotX)
-						+ offsetX;
-				final float centerY = (_pivotY == -1 ? this._screenY + _origin.oy(height) : this._screenY + _pivotY)
-						+ offsetY;
+				final float centerX = (_pivotX == -1 ? newX + _origin.ox(width) : newX + _pivotX);
+				final float centerY = (_pivotY == -1 ? newY + _origin.oy(height) : newY + _pivotY);
 				if (_objectRotation != 0) {
 					tx.translate(centerX, centerY);
 					tx.preRotate(_objectRotation);
@@ -491,17 +489,15 @@ public abstract class LComponent extends LObject<LContainer>
 			}
 			g.setBlendMode(_GL_BLEND);
 			if (_drawBackground && _background != null) {
-				g.draw(_background, this._screenX + offsetX, this._screenY + offsetY, width, height,
-						_component_baseColor);
+				g.draw(_background, newX, newY, width, height, _component_baseColor);
 			}
 			if (this.customRendering) {
-				this.createCustomUI(g, (int) (this._screenX + offsetX), (int) (this._screenY + offsetY), width, height);
+				this.createCustomUI(g, newX, newY, width, height);
 			} else {
-				this.createUI(g, (int) (this._screenX + offsetX), (int) (this._screenY + offsetY), this, this._imageUI);
+				this.createUI(g, newX, newY, this, this._imageUI);
 			}
 			if (isDrawSelect()) {
-				g.drawRect(this._screenX + offsetX, this._screenY + offsetY, width - 1f, height - 1f,
-						_component_baseColor);
+				g.drawRect(newX, newY, width - 1f, height - 1f, _component_baseColor);
 			}
 		} finally {
 			if (update) {

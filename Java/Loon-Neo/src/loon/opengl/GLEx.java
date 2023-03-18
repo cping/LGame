@@ -2369,31 +2369,38 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	}
 
 	public int getClipX() {
-		if (scissors.size == 0) {
+		if (scissorDepth == 0) {
 			return 0;
 		}
-		return scissors.get(scissorDepth).x();
+		return scissors.get(scissorDepth - 1).x();
 	}
 
 	public int getClipY() {
-		if (scissors.size == 0) {
+		if (scissorDepth == 0) {
 			return 0;
 		}
-		return scissors.get(scissorDepth).y();
+		return scissors.get(scissorDepth - 1).y();
 	}
 
 	public int getClipWidth() {
-		if (scissors.size == 0) {
-			return 0;
+		if (scissorDepth == 0) {
+			return getWidth();
 		}
-		return scissors.get(scissorDepth).width;
+		return scissors.get(scissorDepth - 1).width;
 	}
 
 	public int getClipHeight() {
-		if (scissors.size == 0) {
-			return 0;
+		if (scissorDepth == 0) {
+			return getWidth();
 		}
-		return scissors.get(scissorDepth).height;
+		return scissors.get(scissorDepth - 1).height;
+	}
+
+	public RectBox getClip() {
+		if (scissorDepth == 0) {
+			return LSystem.viewSize.getRect();
+		}
+		return scissors.get(scissorDepth - 1);
 	}
 
 	private RectBox pushScissorState(int x, int y, int width, int height) {

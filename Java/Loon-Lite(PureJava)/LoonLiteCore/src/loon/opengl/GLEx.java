@@ -405,8 +405,10 @@ public class GLEx implements LRelease {
 		int height = (int) (h1);
 		batch.flush();
 		RectBox r = pushScissorState(x, gfx.flip() ? gfx.height() - y - height : y, width, height);
-		synchTransform();
-		getCanvas().clipRect(r.x(), r.y(), r.width(), r.height());
+		if (scissorDepth > 0) {
+			synchTransform();
+			getCanvas().clipRect(r.x(), r.y(), r.width(), r.height());
+		}
 		return !r.isEmpty();
 	}
 
@@ -1519,31 +1521,38 @@ public class GLEx implements LRelease {
 	}
 
 	public int getClipX() {
-		if (scissors.size == 0) {
+		if (scissorDepth == 0) {
 			return 0;
 		}
-		return scissors.get(scissorDepth).x();
+		return scissors.get(scissorDepth - 1).x();
 	}
 
 	public int getClipY() {
-		if (scissors.size == 0) {
+		if (scissorDepth == 0) {
 			return 0;
 		}
-		return scissors.get(scissorDepth).y();
+		return scissors.get(scissorDepth - 1).y();
 	}
 
 	public int getClipWidth() {
-		if (scissors.size == 0) {
-			return 0;
+		if (scissorDepth == 0) {
+			return getWidth();
 		}
-		return scissors.get(scissorDepth).width;
+		return scissors.get(scissorDepth - 1).width;
 	}
 
 	public int getClipHeight() {
-		if (scissors.size == 0) {
-			return 0;
+		if (scissorDepth == 0) {
+			return getWidth();
 		}
-		return scissors.get(scissorDepth).height;
+		return scissors.get(scissorDepth - 1).height;
+	}
+
+	public RectBox getClip() {
+		if (scissorDepth == 0) {
+			return LSystem.viewSize.getRect();
+		}
+		return scissors.get(scissorDepth - 1);
 	}
 
 	private RectBox pushScissorState(int x, int y, int width, int height) {
