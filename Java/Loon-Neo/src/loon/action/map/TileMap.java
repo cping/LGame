@@ -76,9 +76,9 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	private LTexturePack texturePack;
 
-	private TArray<TileImpl> arrays = new TArray<>(10);
+	private TArray<TileImpl> arrays = new TArray<TileImpl>(10);
 
-	private TArray<Animation> animations = new TArray<>();
+	private TArray<Animation> animations = new TArray<Animation>();
 
 	private final int maxWidth, maxHeight;
 
@@ -218,7 +218,7 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	}
 
 	public TileMap setImagePack(String fileName, LTexturePackClip[] clips) {
-		return setImagePack(fileName, new TArray<>(clips));
+		return setImagePack(fileName, new TArray<LTexturePackClip>(clips));
 	}
 
 	public TileMap setImagePack(String fileName, TArray<LTexturePackClip> clips) {

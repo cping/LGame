@@ -25,7 +25,7 @@ public class StrMap extends ObjectMap<String, String> {
 	public StrMap(ObjectMap<? extends String, ? extends String> map) {
 		super(map);
 	}
-
+	
 	public StrMap(StringKeyValue... values) {
 		for (StringKeyValue v : values) {
 			if (v != null) {

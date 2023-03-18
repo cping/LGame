@@ -198,7 +198,7 @@ public class Cycle extends Entity {
 			data.add(path.toArray());
 			isUpdate = true;
 		} else {
-			data = new TArray<>(10);
+			data = new TArray<Object[]>(10);
 		}
 
 		this.setRepaint(true);
@@ -206,7 +206,7 @@ public class Cycle extends Entity {
 		this.setLocation(x, y);
 		this.timer = new LTimer(25);
 		this.setColor(LColor.white);
-		this.points = new TArray<>();
+		this.points = new TArray<Progress>();
 		this.displayWidth = w;
 		this.displayHeight = h;
 		this.multiplier = 1;
@@ -220,7 +220,7 @@ public class Cycle extends Entity {
 		this.blockHalfWidth = w / 2;
 		this.blockHalfHeight = h / 2;
 		if (signatures == null) {
-			signatures = new IntMap<>(3);
+			signatures = new IntMap<float[]>(3);
 			signatures.put(ARC, new float[] { 1, 1, 3, 2, 2, 0 });
 			signatures.put(BEZIER, new float[] { 1, 1, 1, 1, 1, 1, 1, 1 });
 			signatures.put(LINE, new float[] { 1, 1, 1, 1 });

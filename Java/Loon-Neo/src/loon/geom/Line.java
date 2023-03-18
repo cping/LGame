@@ -361,7 +361,19 @@ public class Line extends Shape {
 
 		return false;
 	}
+	
+	public float getLineAngle(boolean degrees) {
+		final Vector2f point1 = start;
+		final Vector2f point2 = end;
 
+		final float radians = MathUtils.atan2(point2.y - point1.y, point2.x - point1.x);
+		if (!degrees) {
+			return radians;
+		}
+
+		return MathUtils.toDegrees(radians);
+	}
+    
 	public float side(XY v) {
 		if (v == null) {
 			return 0f;

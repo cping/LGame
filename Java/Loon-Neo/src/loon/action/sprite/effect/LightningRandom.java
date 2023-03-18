@@ -35,8 +35,8 @@ import loon.utils.timer.LTimer;
 public class LightningRandom implements ILightning {
 
 	private LTimer timer = new LTimer(0);
-	private TArray<Vector2f> particles = new TArray<>();
-	private TArray<LightningBranch> bolts = new TArray<>();
+	private TArray<Vector2f> particles = new TArray<Vector2f>();
+	private TArray<LightningBranch> bolts = new TArray<LightningBranch>();
 	private float hue = 4.5f;
 	private float[] noise = null;
 	private LColor color = null;

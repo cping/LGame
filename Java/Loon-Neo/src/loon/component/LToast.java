@@ -133,8 +133,6 @@ public class LToast extends LComponent implements FontSet<LToast> {
 	private LColor _backgroundColor;
 	private IFont _toastFont;
 
-	private float _displayX = 0f;
-	private float _displayY = 0f;
 	private float _displayTextX = 0f;
 	private float _displayTextY = 0f;
 
@@ -173,9 +171,11 @@ public class LToast extends LComponent implements FontSet<LToast> {
 		if (this._cellHeight < 30) {
 			this._cellHeight = 30;
 		}
-		this._displayX = x + ((width / 2) - (_cellWidth / 2));
-		this._displayY = (y + ((height / 2) - (_cellHeight / 2))) - _toastFont.getHeight() / 2;
 		this._timer.setDelay(this._duration);
+		final float displayX = x + ((width / 2) - (_cellWidth / 2));
+		final float displayY = (y + ((height / 2) - (_cellHeight / 2))) - _toastFont.getHeight() / 2;
+		this.setLocation(displayX, displayY);
+		this.setElastic(true);
 		this.setText(text);
 		this.setSize(_cellWidth, _cellHeight);
 		this.setLayer(10000);
@@ -204,13 +204,13 @@ public class LToast extends LComponent implements FontSet<LToast> {
 			g.setColor(_backgroundColor);
 			g.setAlpha(_objectAlpha);
 			if (_background == null) {
-				g.fillRoundRect(_displayX, _displayY, w, h, _frame_radius);
+				g.fillRoundRect(x, y, w, h, _frame_radius);
 			} else {
-				g.draw(_background, _displayX, _displayY, w, h);
+				g.draw(_background, x, y, w, h);
 			}
 			g.setColor(_component_baseColor);
 			g.setAlpha(_objectAlpha);
-			_toastFont.drawString(g, _displayText, _displayX + _displayTextX, _displayY + _displayTextY);
+			_toastFont.drawString(g, _displayText, x + _displayTextX, y + _displayTextY);
 		} finally {
 			g.setColor(oc);
 			g.setAlpha(alpha);

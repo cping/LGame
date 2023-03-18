@@ -26,6 +26,11 @@ public class Item<T> {
 
 	protected T _item;
 
+	public Item(String name, T item) {
+		this._name = name;
+		this._item = item;
+	}
+
 	public String getName() {
 		return this._name;
 	}

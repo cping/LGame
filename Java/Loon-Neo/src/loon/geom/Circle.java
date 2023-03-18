@@ -336,6 +336,12 @@ public class Circle extends Ellipse {
 				: 0f;
 	}
 
+	public Vector2f getPointAround(float angle) {
+		final float nx = (MathUtils.cos(angle) * boundingCircleRadius) + this.x;
+		final float ny = (MathUtils.sin(angle) * boundingCircleRadius) + this.y;
+		return new Vector2f(nx, ny);
+	}
+
 	public boolean equals(Circle other) {
 		if (other == null) {
 			return false;

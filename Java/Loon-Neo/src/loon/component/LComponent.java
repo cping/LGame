@@ -1058,6 +1058,14 @@ public abstract class LComponent extends LObject<LContainer>
 		return cam_y == 0 ? y() : cam_y;
 	}
 
+	public LComponent clip(boolean b) {
+		return setElastic(b);
+	}
+
+	public boolean isClip() {
+		return isElastic();
+	}
+
 	public boolean isElastic() {
 		return this._component_elastic;
 	}

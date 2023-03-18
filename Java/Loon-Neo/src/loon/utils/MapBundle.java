@@ -5,7 +5,7 @@ public class MapBundle<T> implements Bundle<T> {
 	protected final ObjectMap<String, T> _mapBundle;
 
 	public MapBundle() {
-		this._mapBundle = new ObjectMap<>(20);
+		this._mapBundle = new ObjectMap<String, T>(20);
 	}
 
 	@Override

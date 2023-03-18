@@ -30,7 +30,7 @@ public final class TimeLine extends ActionTweenBase<TimeLine> {
 		SEQUENCE, PARALLEL
 	}
 
-	private static final ActionTweenPool.Callback<TimeLine> poolCallback = new ActionTweenPool.Callback<>() {
+	private static final ActionTweenPool.Callback<TimeLine> poolCallback = new ActionTweenPool.Callback<TimeLine>() {
 		@Override
 		public void onPool(TimeLine obj) {
 			obj.reset();
@@ -57,7 +57,7 @@ public final class TimeLine extends ActionTweenBase<TimeLine> {
 		}
 	};
 
-	static final ActionTweenPool<TimeLine> pool = new ActionTweenPool<>(10, poolCallback) {
+	static final ActionTweenPool<TimeLine> pool = new ActionTweenPool<TimeLine>(10, poolCallback) {
 		@Override
 		protected TimeLine create() {
 			return new TimeLine();
@@ -84,7 +84,7 @@ public final class TimeLine extends ActionTweenBase<TimeLine> {
 		return tl;
 	}
 
-	private final TArray<ActionTweenBase<?>> children = new TArray<>(10);
+	private final TArray<ActionTweenBase<?>> children = new TArray<ActionTweenBase<?>>(10);
 	private TimeLine current;
 	private TimeLine parent;
 	private Modes mode;

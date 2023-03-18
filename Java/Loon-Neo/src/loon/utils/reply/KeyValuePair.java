@@ -93,22 +93,12 @@ public final class KeyValuePair<K, V> implements IValueKey<K>, IValueValue<V> {
 		return new KeyValuePair<X, X>(element0, element1);
 	}
 
-	private K key;
-	private V value;
+	private final K key;
+	private final V value;
 
 	public KeyValuePair(final K key, final V value) {
 		this.key = key;
 		this.value = value;
-	}
-
-	public KeyValuePair<K, V> setKey(K key) {
-		this.key = key;
-		return this;
-	}
-
-	public KeyValuePair<K, V> setValue(V value) {
-		this.value = value;
-		return this;
 	}
 
 	@Override

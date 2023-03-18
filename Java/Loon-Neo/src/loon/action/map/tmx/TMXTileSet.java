@@ -49,12 +49,10 @@ public class TMXTileSet {
 	private TMXProperties properties;
 
 	public TMXTileSet() {
-		tileOffset = new Vector2f();
-
-		terrainTypes = new TArray<>();
-		tiles = new TArray<>();
-
-		properties = new TMXProperties();
+		this.tileOffset = new Vector2f();
+		this.terrainTypes = new TArray<TMXTerrain>();
+		this.tiles = new TArray<TMXTile>();
+		this.properties = new TMXProperties();
 	}
 
 	public void parse(XMLElement element, String tilesLocation) {

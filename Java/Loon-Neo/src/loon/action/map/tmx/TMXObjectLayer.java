@@ -34,9 +34,8 @@ public class TMXObjectLayer extends TMXMapLayer {
 
 	public TMXObjectLayer(TMXMap map) {
 		super(map, LSystem.EMPTY, 0, 0, map.getWidth(), map.getHeight(), 1.0f, true, TmxLayerType.OBJECT);
-
-		objects = new TArray<>();
-		color = new LColor(LColor.TRANSPARENT);
+		this.objects = new TArray<TMXObject>();
+		this.color = new LColor(LColor.TRANSPARENT);
 	}
 
 	public TMXObject getObject(int index) {

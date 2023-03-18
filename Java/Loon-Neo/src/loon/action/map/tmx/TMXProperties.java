@@ -35,7 +35,7 @@ public class TMXProperties {
 	private ObjectMap<String, Object> properties;
 
 	public TMXProperties() {
-		properties = new ObjectMap<>();
+		properties = new ObjectMap<String, Object>();
 	}
 
 	public TMXProperties put(String key, Object value) {

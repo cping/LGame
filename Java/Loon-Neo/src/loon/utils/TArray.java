@@ -642,34 +642,48 @@ public class TArray<T> implements Iterable<T>, IArray, LRelease {
 		return true;
 	}
 
+	public TArray<T> clean(final QueryEvent<T> query) {
+		final TArray<T> list = new TArray<T>();
+		for (T c : this) {
+			if (c != null && !query.hit(c)) {
+				list.add(c);
+			}
+		}
+		return list;
+	}
+
 	public TArray<T> concat(TArray<? extends T> array) {
 		TArray<T> all = new TArray<T>(this);
 		all.addAll(array);
 		return all;
 	}
 
-	public TArray<T> where(QueryEvent<T> test) {
+	public TArray<T> save(final QueryEvent<T> query) {
+		return where(query);
+	}
+
+	public TArray<T> where(QueryEvent<T> q) {
 		TArray<T> list = new TArray<T>();
 		for (T t : this) {
-			if (test.hit(t)) {
+			if (t != null && q.hit(t)) {
 				list.add(t);
 			}
 		}
 		return list;
 	}
 
-	public T find(QueryEvent<T> test) {
+	public T find(QueryEvent<T> q) {
 		for (T t : this) {
-			if (test.hit(t)) {
+			if (t != null && q.hit(t)) {
 				return t;
 			}
 		}
 		return null;
 	}
 
-	public boolean remove(QueryEvent<T> test) {
+	public boolean remove(QueryEvent<T> q) {
 		for (T t : this) {
-			if (test.hit(t)) {
+			if (t != null && q.hit(t)) {
 				return remove(t);
 			}
 		}

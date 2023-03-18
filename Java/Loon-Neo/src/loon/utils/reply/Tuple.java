@@ -22,9 +22,9 @@ package loon.utils.reply;
 
 public class Tuple<V> {
 
-	public V val1;
+	private V val1;
 
-	public V val2;
+	private V val2;
 
 	public Tuple() {
 	}

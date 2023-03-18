@@ -98,8 +98,8 @@ public class TextEffect extends Entity implements BaseEffect {
 	}
 
 	public TextEffect(float x, float y, float width, float height) {
-		this.texts = new TArray<>();
-		this.tempTexts = new TArray<>();
+		this.texts = new TArray<MessageBlock>();
+		this.tempTexts = new TArray<MessageBlock>();
 		this.timer = new LTimer(0);
 		this.setLocation(x, y);
 		this.setSize(width, height);
@@ -206,7 +206,7 @@ public class TextEffect extends Entity implements BaseEffect {
 		final int length = texts.size;
 		if (!packed && length > 0) {
 			LFont font = null;
-			TArray<CharSequence> messages = new TArray<>();
+			TArray<CharSequence> messages = new TArray<CharSequence>();
 			for (int i = length - 1; i > -1; --i) {
 				MessageBlock text = texts.get(i);
 				if (text != null) {

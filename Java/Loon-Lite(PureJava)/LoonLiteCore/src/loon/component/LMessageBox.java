@@ -210,11 +210,6 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 			return this;
 		}
 
-		@Override
-		public void setBoxAlpha(float alpha) {
-			super.setBoxAlpha(alpha);
-		}
-
 		public int getMessageWidth() {
 			return MathUtils.round(this.messageWidth);
 		}

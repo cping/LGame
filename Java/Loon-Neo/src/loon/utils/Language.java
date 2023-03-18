@@ -28,6 +28,7 @@ public class Language {
 
 	private static Language ROOT_LANG;
 
+	@SuppressWarnings("deprecation")
 	public static Locale newLocaleFromCode(String value) {
 		if (StringUtils.isEmpty(value)) {
 			throw new LSysException("'value' must be present");

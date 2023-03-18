@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -30,7 +30,7 @@ import loon.utils.ObjectMap.Keys;
 import loon.utils.ObjectMap.Values;
 
 @SuppressWarnings({ "unchecked" })
-public class TArray<T> implements Iterable<T>, IArray,LRelease{
+public class TArray<T> implements Iterable<T>, IArray, LRelease {
 
 	public final static class ArrayIterable<T> implements Iterable<T> {
 
@@ -50,8 +50,8 @@ public class TArray<T> implements Iterable<T>, IArray,LRelease{
 		@Override
 		public Iterator<T> iterator() {
 			if (iterator1 == null) {
-				iterator1 = new ArrayIterator<>(array, allowRemove);
-				iterator2 = new ArrayIterator<>(array, allowRemove);
+				iterator1 = new ArrayIterator<T>(array, allowRemove);
+				iterator2 = new ArrayIterator<T>(array, allowRemove);
 			}
 			if (!iterator1.valid) {
 				iterator1.index = 0;
@@ -121,11 +121,11 @@ public class TArray<T> implements Iterable<T>, IArray,LRelease{
 	}
 
 	public static final <T> TArray<T> at(int capacity) {
-		return new TArray<>(capacity);
+		return new TArray<T>(capacity);
 	}
 
 	public static final <T> TArray<T> at(TArray<? extends T> array) {
-		return new TArray<>(array);
+		return new TArray<T>(array);
 	}
 
 	public static final <T> TArray<T> at() {
@@ -133,7 +133,7 @@ public class TArray<T> implements Iterable<T>, IArray,LRelease{
 	}
 
 	public final static <T> TArray<T> with(T... array) {
-		return new TArray<>(array);
+		return new TArray<T>(array);
 	}
 
 	public T[] items;
@@ -361,7 +361,7 @@ public class TArray<T> implements Iterable<T>, IArray,LRelease{
 		if (index >= size)
 			throw new LSysException("index can't be >= size: " + index + " >= " + size);
 		T[] items = this.items;
-		T value = items[index];
+		T value = (T) items[index];
 		size--;
 		if (ordered)
 			System.arraycopy(items, index + 1, items, index, size - index);
@@ -565,10 +565,10 @@ public class TArray<T> implements Iterable<T>, IArray,LRelease{
 
 	public TArray<T> randomArrays() {
 		if (size == 0) {
-			return new TArray<>();
+			return new TArray<T>();
 		}
 		T v = null;
-		TArray<T> newArrays = new TArray<>(size);
+		TArray<T> newArrays = new TArray<T>(size);
 		for (int i = 0; i < size; i++) {
 			newArrays.add(get(i));
 		}
@@ -608,7 +608,7 @@ public class TArray<T> implements Iterable<T>, IArray,LRelease{
 	}
 
 	public TArray<T> cpy() {
-		return new TArray<>(this);
+		return new TArray<T>(this);
 	}
 
 	private ArrayIterable<T> _iterable;
@@ -616,7 +616,7 @@ public class TArray<T> implements Iterable<T>, IArray,LRelease{
 	@Override
 	public Iterator<T> iterator() {
 		if (_iterable == null) {
-			_iterable = new ArrayIterable<>(this);
+			_iterable = new ArrayIterable<T>(this);
 		}
 		return _iterable.iterator();
 	}
@@ -642,34 +642,48 @@ public class TArray<T> implements Iterable<T>, IArray,LRelease{
 		return true;
 	}
 
+	public TArray<T> clean(final QueryEvent<T> query) {
+		final TArray<T> list = new TArray<T>();
+		for (T c : this) {
+			if (c != null && !query.hit(c)) {
+				list.add(c);
+			}
+		}
+		return list;
+	}
+
 	public TArray<T> concat(TArray<? extends T> array) {
-		TArray<T> all = new TArray<>(this);
+		TArray<T> all = new TArray<T>(this);
 		all.addAll(array);
 		return all;
 	}
 
-	public TArray<T> where(QueryEvent<T> test) {
-		TArray<T> list = new TArray<>();
+	public TArray<T> save(final QueryEvent<T> query) {
+		return where(query);
+	}
+
+	public TArray<T> where(QueryEvent<T> q) {
+		TArray<T> list = new TArray<T>();
 		for (T t : this) {
-			if (test.hit(t)) {
+			if (t != null && q.hit(t)) {
 				list.add(t);
 			}
 		}
 		return list;
 	}
 
-	public T find(QueryEvent<T> test) {
+	public T find(QueryEvent<T> q) {
 		for (T t : this) {
-			if (test.hit(t)) {
+			if (t != null && q.hit(t)) {
 				return t;
 			}
 		}
 		return null;
 	}
 
-	public boolean remove(QueryEvent<T> test) {
+	public boolean remove(QueryEvent<T> q) {
 		for (T t : this) {
-			if (test.hit(t)) {
+			if (t != null && q.hit(t)) {
 				return remove(t);
 			}
 		}
@@ -683,9 +697,9 @@ public class TArray<T> implements Iterable<T>, IArray,LRelease{
 		T[] obj = CollectionUtils.copyOf(items, 0, size);
 		SortUtils.quickSort(obj, compar);
 		int count = 0;
-		for (T element : obj) {
-			if (element != null) {
-				items[count++] = element;
+		for (int i = 0; i < obj.length; i++) {
+			if (obj[i] != null) {
+				items[count++] = obj[i];
 			}
 		}
 	}
@@ -716,7 +730,7 @@ public class TArray<T> implements Iterable<T>, IArray,LRelease{
 	}
 
 	public SwappableArray<T> GetSwappableArray() {
-		return new SwappableArray<>(this);
+		return new SwappableArray<T>(this);
 	}
 
 	@Override

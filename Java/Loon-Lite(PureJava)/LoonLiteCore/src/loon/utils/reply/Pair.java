@@ -23,7 +23,7 @@ package loon.utils.reply;
 import loon.LSystem;
 import loon.utils.StringUtils;
 
-public class Pair<T1, T2> {
+public class Pair<T1, T2> implements IValueKey<T1>, IValueValue<T2>{
 
 	private T1 o1;
 
@@ -52,6 +52,24 @@ public class Pair<T1, T2> {
 		return this;
 	}
 
+	@Override
+	public T1 getKey() {
+		return o1;
+	}
+	
+	@Override
+	public T2 getValue() {
+		return o2;
+	}
+	
+	public final T1 get1() {
+		return o1;
+	}
+
+	public final T2 get2() {
+		return o2;
+	}
+
 	public final static <T1, T2> Pair<T1, T2> get(final T1 o1, final T2 o2) {
 		return new Pair<>(o1, o2);
 	}
@@ -77,14 +95,6 @@ public class Pair<T1, T2> {
 		}
 		final Pair<?, ?> p = (Pair<?, ?>) o;
 		return LSystem.equals(o1, p.o1) && LSystem.equals(o2, p.o2);
-	}
-
-	public final T1 get1() {
-		return o1;
-	}
-
-	public final T2 get2() {
-		return o2;
 	}
 
 	@Override

@@ -819,7 +819,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 			Path path = findPath(this, Vector2f.at(startX, startY).toInt(), position);
 			if (path != null) {
 				focuses = path.positions;
-				return new SortedList<>(focuses);
+				return new SortedList<int[]>(focuses);
 			}
 		}
 		return null;

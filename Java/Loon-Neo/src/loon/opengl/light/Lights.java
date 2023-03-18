@@ -30,9 +30,9 @@ public class Lights {
 
 	public LColor fog;
 
-	public final TArray<DirectionalLight> directionalLights = new TArray<>();
+	public final TArray<DirectionalLight> directionalLights = new TArray<DirectionalLight>();
 
-	public final TArray<PointLight> pointLights = new TArray<>();
+	public final TArray<PointLight> pointLights = new TArray<PointLight>();
 
 	public Lights() {
 	}

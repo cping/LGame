@@ -20,11 +20,18 @@
  */
 package loon.action.map.items;
 
+import loon.utils.MathUtils;
+
 public class Attribute {
 
 	private String _name;
 
 	private Object _attribute;
+
+	public Attribute(String name, Object attribute) {
+		this._name = name;
+		this._attribute = attribute;
+	}
 
 	public String getName() {
 		return this._name;
@@ -35,17 +42,29 @@ public class Attribute {
 		return this;
 	}
 
+	public Attribute setAttribute(Object attribute) {
+		this._attribute = attribute;
+		return this;
+	}
+	
 	public Object getAttribute() {
 		return this._attribute;
 	}
 
-	public int getAttributeInt() {
-		return ((Integer) this._attribute).intValue();
+	public float getAttributeFloat() {
+		String result = String.valueOf(this._attribute);
+		if (MathUtils.isNan(result)) {
+			return Float.parseFloat(result);
+		}
+		return -1f;
 	}
 
-	public Attribute setAttribute(Object attribute) {
-		this._attribute = attribute;
-		return this;
+	public int getAttributeInt() {
+		String result = String.valueOf(this._attribute);
+		if (MathUtils.isNan(result)) {
+			return Integer.parseInt(result);
+		}
+		return -1;
 	}
 
 	public Attribute cpy(Attribute other) {

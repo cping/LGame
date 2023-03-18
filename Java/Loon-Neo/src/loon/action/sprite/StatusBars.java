@@ -29,7 +29,7 @@ public final class StatusBars extends Entity {
 	private TArray<StatusBar> barCaches;
 
 	public StatusBars() {
-		this.barCaches = new TArray<>(CollectionUtils.INITIAL_CAPACITY);
+		this.barCaches = new TArray<StatusBar>(CollectionUtils.INITIAL_CAPACITY);
 		this.setRepaint(true);
 	}
 

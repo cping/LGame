@@ -41,9 +41,8 @@ public class TMXTile {
 
 	public TMXTile(int id) {
 		this.id = id;
-
-		frames = new TArray<>();
-		properties = new TMXProperties();
+		this.frames = new TArray<TMXAnimationFrame>();
+		this.properties = new TMXProperties();
 	}
 
 	public void parse(XMLElement element) {

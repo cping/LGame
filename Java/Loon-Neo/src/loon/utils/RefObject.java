@@ -31,6 +31,10 @@ import loon.utils.reply.Callback;
  */
 public class RefObject<T> implements LRelease {
 
+	public static final <T> RefObject<T> of(T v) {
+		return getValue(v);
+	}
+	
 	public static final <T> RefObject<T> getValue(T v) {
 		return new RefObject<T>(v);
 	}

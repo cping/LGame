@@ -143,7 +143,7 @@ public class Circle extends Ellipse {
 			return super.intersects(shape);
 		}
 	}
-
+    
 	public boolean intersects(RectBox other) {
 		RectBox box = other;
 		if (box.contains(x + boundingCircleRadius, y + boundingCircleRadius)) {
@@ -326,6 +326,12 @@ public class Circle extends Ellipse {
 	public float area() {
 		return (this.boundingCircleRadius > 0) ? MathUtils.PI * this.boundingCircleRadius * this.boundingCircleRadius
 				: 0f;
+	}
+
+	public Vector2f getPointAround(float angle) {
+		final float nx = (MathUtils.cos(angle) * boundingCircleRadius) + this.x;
+		final float ny = (MathUtils.sin(angle) * boundingCircleRadius) + this.y;
+		return new Vector2f(nx, ny);
 	}
 
 	public boolean equals(Circle other) {

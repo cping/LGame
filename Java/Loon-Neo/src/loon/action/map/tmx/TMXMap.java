@@ -107,11 +107,11 @@ public class TMXMap {
 	public TMXMap(String filePath, String tilesLocation) {
 		version = 1.0f;
 
-		layers = new TArray<>();
-		tileLayers = new TArray<>();
-		imageLayers = new TArray<>();
-		objectLayers = new TArray<>();
-		tileSets = new TArray<>();
+		layers = new TArray<TMXMapLayer>();
+		tileLayers = new TArray<TMXTileLayer>();
+		imageLayers = new TArray<TMXImageLayer>();
+		objectLayers = new TArray<TMXObjectLayer>();
+		tileSets = new TArray<TMXTileSet>();
 
 		properties = new TMXProperties();
 
@@ -487,7 +487,7 @@ public class TMXMap {
 	}
 
 	public TArray<Field2D> newField2Ds(int mode) {
-		TArray<Field2D> list = new TArray<>(tileLayers.size);
+		TArray<Field2D> list = new TArray<Field2D>(tileLayers.size);
 		for (TMXTileLayer layer : tileLayers) {
 			switch (mode) {
 			case 0:

@@ -30,7 +30,7 @@ public class TMXPolyLine {
 	private TArray<TMXPoint> points;
 
 	public TMXPolyLine() {
-		points = new TArray<>();
+		points = new TArray<TMXPoint>();
 	}
 
 	public TMXPoint getPoint(int index) {

@@ -51,7 +51,7 @@ public class LColorList {
 	private boolean dirty;
 
 	LColorList() {
-		this.colorList = new ListMap<>();
+		this.colorList = new ListMap<String, LColor>();
 		dirty = true;
 	}
 
