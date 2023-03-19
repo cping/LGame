@@ -330,6 +330,15 @@ public class JavaSECanvas extends Canvas {
 	}
 
 	@Override
+	public Canvas drawRoundRect(float x, float y, float width, float height, float radius) {
+		currentState().prepareStroke(context);
+		roundRect.setRoundRect(x, y, width, height, radius * 2, radius * 2);
+		context.draw(roundRect);
+		isDirty = true;
+		return this;
+	}
+	
+	@Override
 	public Canvas fillRoundRect(float x, float y, float width, float height, float radius) {
 		currentState().prepareFill(context);
 		roundRect.setRoundRect(x, y, width, height, radius * 2, radius * 2);
@@ -658,4 +667,5 @@ public class JavaSECanvas extends Canvas {
 			closed = true;
 		}
 	}
+
 }

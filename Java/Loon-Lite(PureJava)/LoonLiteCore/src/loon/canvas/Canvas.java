@@ -314,6 +314,8 @@ public abstract class Canvas implements LRelease {
 
 	public abstract Canvas strokeText(TextLayout text, float x, float y);
 
+	public abstract Canvas drawRoundRect(float x, float y, float width, float height, float radius);
+	
 	public LTexture toTexture() {
 		try {
 			if (this.isDirty) {

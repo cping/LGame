@@ -94,7 +94,7 @@ public class Story {
 		return this;
 	}
 
-	public Character findCharacter(String name) {
+	public Role findCharacter(String name) {
 		for (int i = 0; i < countScenes(); i++) {
 			Scene scene = getScene(i);
 			int index = scene.findCharacter(name);
@@ -117,7 +117,7 @@ public class Story {
 	}
 
 	public boolean moveCharacter(String Charactername, String Scenename) {
-		Character character = findCharacter(Charactername);
+		Role character = findCharacter(Charactername);
 		if (character != null) {
 			Scene srcScene = findSceneOfCharacter(Charactername);
 			Scene dstScene = getScene(Scenename);

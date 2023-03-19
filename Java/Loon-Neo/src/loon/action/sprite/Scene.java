@@ -20,7 +20,7 @@
  */
 package loon.action.sprite;
 
-import loon.action.map.items.Character;
+import loon.action.map.items.Role;
 import loon.action.map.items.Item;
 import loon.opengl.GLEx;
 import loon.utils.TArray;
@@ -41,7 +41,7 @@ public class Scene extends Entity {
 
 	private TArray<Item<Object>> _items = new TArray<Item<Object>>();
 
-	private TArray<Character> _characters = new TArray<Character>();
+	private TArray<Role> _characters = new TArray<Role>();
 
 	public Scene() {
 		this(0);
@@ -86,15 +86,15 @@ public class Scene extends Entity {
 		return this._items.size;
 	}
 
-	public void addCharacter(Character character) {
+	public void addCharacter(Role character) {
 		this._characters.add(character);
 	}
 
-	public Character getCharacter(int index) {
+	public Role getCharacter(int index) {
 		return this._characters.get(index);
 	}
 
-	public Character getCharacter(String name) {
+	public Role getCharacter(String name) {
 		int index = findCharacter(name);
 		if (index == -1) {
 			return null;
@@ -104,7 +104,7 @@ public class Scene extends Entity {
 
 	public int findCharacter(String name) {
 		for (int i = 0; i < this._characters.size; i++) {
-			Character ch = getCharacter(i);
+			Role ch = getCharacter(i);
 			if (ch != null && ch.getRoleName().equals(name)) {
 				return i;
 			}
@@ -112,7 +112,7 @@ public class Scene extends Entity {
 		return -1;
 	}
 
-	public Character removeCharacter(int index) {
+	public Role removeCharacter(int index) {
 		return this._characters.removeIndex(index);
 	}
 

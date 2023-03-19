@@ -116,11 +116,6 @@ public abstract class SoundImpl<I> implements Sound {
 		}
 	}
 
-	@Override
-	protected void finalize() {
-		release();
-	}
-
 	protected boolean prepareImpl() {
 		return false;
 	}

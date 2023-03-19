@@ -2423,9 +2423,6 @@ public class GLEx implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-		while (end < start) {
-			end += 360;
-		}
 		Canvas canvas = getCanvas();
 		canvas.setTransform(tx());
 		canvas.drawArc(x1, y1, width, height, start, end, syncBrushColor());
@@ -2446,9 +2443,6 @@ public class GLEx implements LRelease {
 	public final GLEx fillArc(float x1, float y1, float width, float height, float start, float end) {
 		if (isClosed) {
 			return this;
-		}
-		while (end < start) {
-			end += 360;
 		}
 		Canvas canvas = getCanvas();
 		canvas.setTransform(tx());
@@ -2472,7 +2466,6 @@ public class GLEx implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-
 		if (radius < 0) {
 			throw new LSysException("radius > 0");
 		}
@@ -2480,19 +2473,12 @@ public class GLEx implements LRelease {
 			drawRect(x, y, width, height);
 			return this;
 		}
-		int mr = (int) MathUtils.min(width, height) / 2;
-		if (radius > mr) {
-			radius = mr;
-		}
-		drawLine(x + radius, y, x + width - radius, y);
-		drawLine(x, y + radius, x, y + height - radius);
-		drawLine(x + width, y + radius, x + width, y + height - radius);
-		drawLine(x + radius, y + height, x + width - radius, y + height);
-		float d = radius * 2;
-		drawArc(x + width - d, y + height - d, d, d, 0, 90);
-		drawArc(x, y + height - d, d, d, 90, 180);
-		drawArc(x + width - d, y, d, d, 270, 360);
-		drawArc(x, y, d, d, 180, 270);
+		Canvas canvas = getCanvas();
+		canvas.setTransform(tx());
+		LColor color = canvas.getFilltoLColor();
+		canvas.setColor(syncBrushColor());
+		canvas.drawRoundRect(x, y, width, height, radius);
+		canvas.setColor(color);
 		return this;
 	}
 

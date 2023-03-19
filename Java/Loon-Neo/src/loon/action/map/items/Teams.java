@@ -43,30 +43,200 @@ public class Teams implements LRelease {
 
 	private final TArray<Team> _teams;
 
+	private TArray<Role> _chars;
+
+	private boolean _dirty;
+
 	public Teams() {
 		_teams = new TArray<Team>();
+		_dirty = false;
+	}
+
+	public void createPE() {
+		_teams.clear();
+		_teams.add(new Team(Team.Player));
+		_teams.add(new Team(Team.Enemy));
+		_dirty = true;
+	}
+
+	public void createPEN() {
+		_teams.clear();
+		_teams.add(new Team(Team.Player));
+		_teams.add(new Team(Team.Enemy));
+		_teams.add(new Team(Team.Npc));
+		_dirty = true;
+	}
+
+	public void createPENO() {
+		_teams.clear();
+		_teams.add(new Team(Team.Player));
+		_teams.add(new Team(Team.Enemy));
+		_teams.add(new Team(Team.Npc));
+		_teams.add(new Team(Team.Other));
+	}
+
+	public TArray<Role> all() {
+		if (!_dirty) {
+			for (Team team : _teams) {
+				if (team.dirty) {
+					this._dirty = true;
+					team.dirty = false;
+					break;
+				}
+			}
+		}
+		if (_dirty) {
+			if (_chars == null) {
+				_chars = new TArray<Role>();
+			} else {
+				_chars.clear();
+			}
+			for (Team team : _teams) {
+				for (Role ch : team.list()) {
+					_chars.add(ch);
+				}
+			}
+			_dirty = false;
+		} else {
+			if (_chars == null) {
+				_chars = new TArray<Role>();
+			}
+		}
+		return _chars;
 	}
 
 	public TArray<Team> list() {
 		return _teams;
 	}
 
+	public Teams remove(Role ch) {
+		for (Team team : _teams) {
+			team.remove(ch);
+		}
+		_dirty = false;
+		return this;
+	}
+
+	public Role getRole(int teamId, int id) {
+		for (Team team : _teams) {
+			if (team.getTeam() == teamId) {
+				for (Role ch : team.list()) {
+					if (ch.getID() == id) {
+						return ch;
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+	public Role getRole(int id) {
+		for (Team team : _teams) {
+			for (Role ch : team.list()) {
+				if (ch.getID() == id) {
+					return ch;
+				}
+			}
+		}
+		return null;
+	}
+
+	public Teams add(int teamId, Role ch) {
+		for (Team team : _teams) {
+			if (team.getTeam() == teamId) {
+				team.add(ch);
+				_dirty = false;
+				break;
+			}
+		}
+		return this;
+	}
+
 	public TArray<Team> save(int team) {
+		_dirty = true;
 		return _teams.save(new TeamQuery(team));
+	}
+
+	public boolean isAllAttack() {
+		for (Team team : _teams) {
+			if (!team.isAttack()) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	public boolean isAllMoved() {
+		for (Team team : _teams) {
+			if (!team.isMoved()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public boolean isAllSkill() {
+		for (Team team : _teams) {
+			if (!team.isSkill()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public boolean isAllDefense() {
+		for (Team team : _teams) {
+			if (!team.isDefense()) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	public boolean isAllDead() {
+		for (Team team : _teams) {
+			if (!team.isDead()) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	public Team getPlayer() {
+		return get(Team.Player);
+	}
+
+	public Team getEnemy() {
+		return get(Team.Enemy);
+	}
+
+	public Team getNpc() {
+		return get(Team.Npc);
+	}
+
+	public Team getOther() {
+		return get(Team.Other);
+	}
+
+	public Team get(int team) {
+		return _teams.find(new TeamQuery(team));
 	}
 
 	public Teams add(Team team) {
 		_teams.add(team);
+		_dirty = true;
 		return this;
 	}
 
 	public Teams remove(Team team) {
 		_teams.remove(team);
+		_dirty = true;
 		return this;
 	}
 
 	public Teams clear() {
 		_teams.clear();
+		_dirty = true;
 		return this;
 	}
 
@@ -74,6 +244,7 @@ public class Teams implements LRelease {
 		TArray<Team> temp = _teams.save(query);
 		_teams.clear();
 		_teams.addAll(temp);
+		_dirty = true;
 		return this;
 	}
 
@@ -81,6 +252,7 @@ public class Teams implements LRelease {
 		TArray<Team> temp = _teams.clean(query);
 		_teams.clear();
 		_teams.addAll(temp);
+		_dirty = true;
 		return this;
 	}
 
@@ -90,6 +262,7 @@ public class Teams implements LRelease {
 
 	public Teams remove(final QueryEvent<Team> query) {
 		_teams.remove(query);
+		_dirty = true;
 		return this;
 	}
 

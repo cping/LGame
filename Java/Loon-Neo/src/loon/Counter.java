@@ -110,6 +110,14 @@ public class Counter {
 		return increment(1);
 	}
 
+	public int incId(int i) {
+		return increment(i) - i;
+	}
+	
+	public int incId() {
+		return incId(1);
+	}
+
 	public int reduction() {
 		return reduction(1);
 	}

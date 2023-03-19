@@ -349,6 +349,17 @@ public class JavaFXCanvas extends Canvas {
 	}
 
 	@Override
+	public Canvas drawRoundRect(float x, float y, float width, float height, float radius) {
+		Paint tmp = context.getStroke();
+		context.setStroke(getLColorToFX(color));
+		addRoundRectPath(x, y, width, height, radius);
+		context.stroke();
+		context.setStroke(tmp);
+		isDirty = true;
+		return this;
+	}
+	
+	@Override
 	public Canvas fillText(TextLayout layout, float x, float y) {
 		((JavaFXTextLayout) layout).fill(context, x, y);
 		isDirty = true;

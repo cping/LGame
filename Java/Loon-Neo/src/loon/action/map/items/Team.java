@@ -38,19 +38,25 @@ public class Team implements LRelease {
 
 	private int _teamMode = -1;
 
-	private final TArray<Character> _characters;
+	protected boolean dirty;
+
+	private final TArray<Role> _characters;
 
 	public Team(int teamMode) {
-		this._characters = new TArray<Character>();
+		this._characters = new TArray<Role>();
 		this._teamMode = teamMode;
 	}
 
-	public TArray<Character> list() {
+	public TArray<Role> list() {
 		return _characters;
 	}
 
 	public int count() {
 		return _characters.size;
+	}
+
+	public Role get(int idx) {
+		return _characters.get(idx);
 	}
 
 	public boolean fellow(Team team) {
@@ -60,42 +66,59 @@ public class Team implements LRelease {
 		return _teamMode == team._teamMode;
 	}
 
-	public Team add(Character role) {
+	public boolean fellow(Role role) {
+		if (role == null) {
+			return false;
+		}
+		return _teamMode == role.getTeam();
+	}
+
+	public Team add(Role role) {
 		if (role != null && !_characters.contains(role)) {
 			role.setTeam(_teamMode);
 			_characters.add(role);
+			dirty = true;
 		}
 		return this;
 	}
 
-	public Team save(final QueryEvent<Character> query) {
-		TArray<Character> temp = _characters.save(query);
+	public Team save(final QueryEvent<Role> query) {
+		TArray<Role> temp = _characters.save(query);
 		_characters.clear();
 		_characters.addAll(temp);
+		dirty = true;
 		return this;
 	}
 
-	public Team clean(final QueryEvent<Character> query) {
-		TArray<Character> temp = _characters.clean(query);
+	public Team clean(final QueryEvent<Role> query) {
+		TArray<Role> temp = _characters.clean(query);
 		_characters.clear();
 		_characters.addAll(temp);
+		dirty = true;
 		return this;
 	}
 
-	public Character find(final QueryEvent<Character> query) {
+	public Role find(final QueryEvent<Role> query) {
 		return _characters.find(query);
 	}
 
-	public Team remove(final QueryEvent<Character> query) {
-		_characters.remove(query);
+	public Team remove(Role c) {
+		_characters.remove(c);
+		dirty = true;
 		return this;
 	}
 
-	public TArray<Character> where(final QueryEvent<Character> query) {
+	public Team remove(final QueryEvent<Role> query) {
+		_characters.remove(query);
+		dirty = true;
+		return this;
+	}
+
+	public TArray<Role> where(final QueryEvent<Role> query) {
 		return _characters.where(query);
 	}
 
-	protected class IDQuery implements QueryEvent<Character> {
+	protected class IDQuery implements QueryEvent<Role> {
 
 		private int id;
 
@@ -104,13 +127,13 @@ public class Team implements LRelease {
 		}
 
 		@Override
-		public boolean hit(Character c) {
+		public boolean hit(Role c) {
 			return c != null && (c.getID() == this.id);
 		}
 
 	}
 
-	protected class NameQuery implements QueryEvent<Character> {
+	protected class NameQuery implements QueryEvent<Role> {
 
 		private String name;
 
@@ -119,25 +142,25 @@ public class Team implements LRelease {
 		}
 
 		@Override
-		public boolean hit(Character c) {
+		public boolean hit(Role c) {
 			return c != null && (this.name.equals(c.getRoleName()));
 		}
 
 	}
 
-	protected class MoveQuery implements QueryEvent<Character> {
+	protected class MoveQuery implements QueryEvent<Role> {
 
 		@Override
-		public boolean hit(Character c) {
+		public boolean hit(Role c) {
 			return c != null && c.isMoved;
 		}
 
 	}
 
-	protected class CleanQuery implements QueryEvent<Character> {
+	protected class CleanQuery implements QueryEvent<Role> {
 
 		@Override
-		public boolean hit(Character c) {
+		public boolean hit(Role c) {
 			return c == null || c.isDead;
 		}
 
@@ -152,11 +175,11 @@ public class Team implements LRelease {
 		return save(new MoveQuery());
 	}
 
-	public Character findId(int id) {
+	public Role findId(int id) {
 		return find(new IDQuery(id));
 	}
 
-	public Character findName(String name) {
+	public Role findName(String name) {
 		return find(new NameQuery(name));
 	}
 
@@ -166,11 +189,57 @@ public class Team implements LRelease {
 
 	public Team clear() {
 		_characters.clear();
+		dirty = true;
 		return this;
 	}
 
+	public boolean isAllDoneAction() {
+		for (Role c : _characters) {
+			if (c != null && !c.isAllDoneAction()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public boolean isAllUnDoneAction() {
+		for (Role c : _characters) {
+			if (c != null && !c.isAllUnDoneAction()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public boolean isAttack() {
+		for (Role c : _characters) {
+			if (c != null && !c.isAttack) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public boolean isDefense() {
+		for (Role c : _characters) {
+			if (c != null && !c.isDefense) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public boolean isSkill() {
+		for (Role c : _characters) {
+			if (c != null && !c.isSkill) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	public boolean isMoved() {
-		for (Character c : _characters) {
+		for (Role c : _characters) {
 			if (c != null && !c.isMoved) {
 				return false;
 			}
@@ -178,13 +247,17 @@ public class Team implements LRelease {
 		return true;
 	}
 
-	public boolean isOver() {
-		for (Character c : _characters) {
+	public boolean isDead() {
+		for (Role c : _characters) {
 			if (c != null && !c.isDead) {
 				return false;
 			}
 		}
 		return true;
+	}
+
+	public boolean isOver() {
+		return isDead();
 	}
 
 	@Override

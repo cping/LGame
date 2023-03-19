@@ -1,5 +1,5 @@
 /**
- * Copyright 2008 - 2015 The Loon Game Engine Authors
+ * Copyright 2008 - 2023 The Loon Game Engine Authors
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -18,42 +18,20 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.geom;
+package loon.action.map.battle;
 
-import loon.LRelease;
+public interface BattleEvent {
 
-public class BooleanValue implements LRelease {
-
-	private boolean value = false;
-
-	public BooleanValue() {
-		this(false);
-	}
-
-	public BooleanValue(boolean v) {
-		this.set(v);
-	}
-
-	public BooleanValue set(boolean res) {
-		this.value = res;
-		return this;
-	}
-
-	public boolean get() {
-		return value;
-	}
-
-	public boolean result() {
-		return value;
-	}
-
-	@Override
-	public String toString() {
-		return String.valueOf(value);
-	}
-
-	@Override
-	public void close() {
-		this.value = false;
-	}
+	public boolean start(long elapsedTime);
+	
+	public boolean process(long elapsedTime);
+	
+	public boolean end(long elapsedTime);
+	
+	public BattleState getState();
+	
+	public boolean completed();
+	
+	public BattleEvent reset();
+	
 }
