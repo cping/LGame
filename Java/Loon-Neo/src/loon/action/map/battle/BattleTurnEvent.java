@@ -133,8 +133,11 @@ public abstract class BattleTurnEvent implements BattleEvent {
 		return _state;
 	}
 
+	public abstract void onCompleted();
+	
 	@Override
 	public boolean completed() {
+		onCompleted();
 		return isDone();
 	}
 

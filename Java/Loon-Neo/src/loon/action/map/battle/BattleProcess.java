@@ -123,6 +123,7 @@ public class BattleProcess extends RealtimeProcess {
 		this._states = new TArray<BattleState>();
 		this._events = new TArray<BattleEvent>();
 		this._result = BattleResults.Running;
+		this.setLoop(true);
 		this.setDelay(0);
 	}
 

@@ -749,7 +749,9 @@ public class SLGTest extends Stage {
 			character = new Role(id, name);
 			character.setTeam(team);
 			character.setHealth(10);
-			character.setMoved(true);
+			if (team == Team.Enemy) {
+				character.setMoved(true);
+			}
 			character.setMovePoints(move);
 			character.setRoleObject(this);
 
@@ -836,8 +838,8 @@ public class SLGTest extends Stage {
 	 * @param x
 	 * @param y
 	 */
-	private GameRole createTeamRole(String name, Counter counter, int team, String path, int imageIndex, int move, int x,
-			int y) {
+	private GameRole createTeamRole(String name, Counter counter, int team, String path, int imageIndex, int move,
+			int x, int y) {
 		GameRole role = new GameRole(name, counter.incId(), team, path, move, x, y);
 		// 添加游戏角色到分组中
 		teams.add(team, role.character);
@@ -1327,7 +1329,7 @@ public class SLGTest extends Stage {
 
 			@Override
 			public void onSelected(int index, String context) {
-				int idx = roleIndex.result();
+				int idx = roleIndex.get();
 				if (idx != -1 && getRoleIdxObject(idx).getTeam() != Team.Enemy) {
 					if (index == 0) {
 						moveState.setAttackState(idx);
@@ -1414,12 +1416,13 @@ public class SLGTest extends Stage {
 	public void playerTouch(final BooleanValue enemyRound, final BooleanValue gameRunning, final Move moveState,
 			final State menuState, final Menu menu, final IntValue roleIndex, final Counter count, final float x,
 			final float y) {
+
 		// 敌方回合不响应触屏事件
-		if (enemyRound.result()) {
+		if (enemyRound.get()) {
 			return;
 		}
 		// 如果角色在移动则不能触发事件
-		if (gameRunning.result()) {
+		if (gameRunning.get()) {
 			return;
 		}
 
@@ -1447,7 +1450,7 @@ public class SLGTest extends Stage {
 				break;
 			case Team.Enemy:
 				if (moveState.isAttacking()) {
-					GameRole attacker = getRoleIdxObject(roleIndex.result());
+					GameRole attacker = getRoleIdxObject(roleIndex.get());
 					// 检查攻击范围
 					if (checkAttackEnemy(attacker, curTileX, curTileY)) {
 						// 以索引ID获得敌人并执行攻击
@@ -1466,8 +1469,8 @@ public class SLGTest extends Stage {
 				}
 				break;
 			}
-		} else if (roleIndex.result() != -1) {
-			final GameRole runRole = getRoleIdxObject(roleIndex.result());
+		} else if (roleIndex.get() != -1) {
+			final GameRole runRole = getRoleIdxObject(roleIndex.get());
 			if (runRole.getTeam() == Team.Player && !runRole.isStop()) {
 				if (count.getValue() == 0) {
 					moveState.setMoveCourse(curTileX, curTileY);
@@ -1583,14 +1586,13 @@ public class SLGTest extends Stage {
 		if (teams.getEnemy().isMoved()) {
 			playerRound.set(true);
 			enemyRound.set(false);
-			roundCount.increment();
 		} else if (teams.getPlayer().isMoved()) {
 			playerRound.set(false);
 			enemyRound.set(true);
 		}
 
 		// 开始对象回合
-		if (playerRound.result() || enemyRound.result()) {
+		if ((playerRound.get() || enemyRound.get()) && !locked.get()) {
 			locked.set(true);
 			lockedLocation.clear();
 			roleIndex.set(-1);
@@ -1598,11 +1600,13 @@ public class SLGTest extends Stage {
 			menuState.hide();
 			menu.hide();
 		}
-		if (playerRound.result()) {
+
+		if (playerRound.get()) {
 			for (Role r : teams.getPlayer().list()) {
 				gameMap.followAction(r);
 				break;
 			}
+			roundCount.increment();
 			add(LToast.makeText("我方第" + roundCount.getValue() + "回合", Style.ERROR));
 			for (Role re : teams.all()) {
 				GameRole r = (GameRole) re.getRoleObject();
@@ -1614,7 +1618,9 @@ public class SLGTest extends Stage {
 				}
 			}
 			playerRound.set(false);
-		} else if (enemyRound.result()) {
+
+		} else if (enemyRound.get()) {
+
 			final LToast toast = LToast.makeText("敌方第" + roundCount.getValue() + "回合", Style.ERROR);
 			add(toast);
 			locked.set(true);
@@ -1625,7 +1631,7 @@ public class SLGTest extends Stage {
 					if (enemyStack.size() >= teams.getEnemy().count()) {
 						locked.set(false);
 					}
-					if (locked.result() && toast.isStop()) {
+					if (locked.get() && toast.isStop()) {
 						for (Role re : teams.all()) {
 							GameRole r = (GameRole) re.getRoleObject();
 							r.start();
@@ -1640,7 +1646,7 @@ public class SLGTest extends Stage {
 
 				@Override
 				public boolean completed() {
-					return !locked.result();
+					return !locked.get() && toast.isStop();
 				}
 			});
 			enemyRound.set(false);
@@ -1658,10 +1664,13 @@ public class SLGTest extends Stage {
 	 */
 	public void enemyRound(final IntValue roleIndex, final Array<GameRole> enemyStack, final Move moveState,
 			final BooleanValue gameRunning, final Counter roundCount) {
-		if (locked.result()) {
+		if (locked.get()) {
 			return;
 		}
-		if (!gameRunning.result()) {
+		if (teams.getEnemy().isMoved()) {
+			return;
+		}
+		if (!gameRunning.get()) {
 			if (enemyStack.size() > 0) {
 				final GameRole runRole = enemyStack.pop();
 				if (runRole == null) {

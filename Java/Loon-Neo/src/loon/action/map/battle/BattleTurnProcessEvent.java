@@ -24,10 +24,13 @@ import loon.geom.BooleanValue;
 
 public abstract class BattleTurnProcessEvent extends BattleTurnEvent {
 
-	public BattleTurnProcessEvent(BattleState state) {
+	public BattleTurnProcessEvent(BattleState state, boolean skipStartEnd) {
 		super(state);
-		// start与end默认不生效
-		set(false);
+		set(!skipStartEnd);
+	}
+
+	public BattleTurnProcessEvent(BattleState state) {
+		this(state, true);
 	}
 
 	@Override
@@ -36,5 +39,10 @@ public abstract class BattleTurnProcessEvent extends BattleTurnEvent {
 
 	@Override
 	public void onEnd(long elapsedTime, BooleanValue end) {
+	}
+
+	@Override
+	public void onCompleted() {
+
 	}
 }
