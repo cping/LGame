@@ -173,7 +173,9 @@ public class TrilateralBatch extends BaseBatch {
 		if (_indexCount > 0) {
 			submit();
 		}
-		_batchShader.end();
+		if (_batchShader != null) {
+			_batchShader.end();
+		}
 	}
 
 	protected int vertexSize() {
@@ -268,7 +270,7 @@ public class TrilateralBatch extends BaseBatch {
 	public int getBlendMode() {
 		return _blendMode;
 	}
-	
+
 	@Override
 	public void close() {
 		super.close();

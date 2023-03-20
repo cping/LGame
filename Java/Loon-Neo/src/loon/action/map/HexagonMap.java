@@ -44,6 +44,7 @@ import loon.font.FontSet;
 import loon.font.IFont;
 import loon.geom.Affine2f;
 import loon.geom.PointF;
+import loon.geom.PointI;
 import loon.geom.Polygon;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
@@ -72,6 +73,8 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	public static final int UPRIGHT = 2;
 	public static final int RIGHT = 3;
 
+	private static final float HEXWM = MathUtils.sqrt(3f) / 2f;
+	
 	private boolean allowDisplayFindPath;
 
 	private boolean allowDisplayClicked;
@@ -1557,6 +1560,85 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		return field2d.pixelsToTilesHeight(y);
 	}
 
+	public PointI pixelsToTileMap(float x, float y) {
+		int tileX = pixelsToTilesWidth(x);
+		int tileY = pixelsToTilesHeight(y);
+		return new PointI(tileX, tileY);
+	}
+
+	public PointI tilePixels(float x, float y) {
+		int newX = getPixelX(x);
+		int newY = getPixelY(y);
+		return new PointI(newX, newY);
+	}
+
+	/**
+	 * 转化地图到屏幕像素(不考虑地图滚动)
+	 * 
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public PointI tileMapToPixels(float x, float y) {
+		int tileX = tilesToPixelsX(x);
+		int tileY = tilesToPixelsY(y);
+		return new PointI(tileX, tileY);
+	}
+
+	/**
+	 * 转化地图到屏幕像素(考虑地图滚动)
+	 * 
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public PointI tileMapToScrollTilePixels(float x, float y) {
+		int newX = toTileScrollPixelX(x);
+		int newY = toTileScrollPixelX(y);
+		return new PointI(newX, newY);
+	}
+
+	/**
+	 * 转化屏幕像素到地图(考虑地图滚动)
+	 * 
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public PointI pixelsToScrollTileMap(float x, float y) {
+		int tileX = toPixelScrollTileX(x);
+		int tileY = toPixelScrollTileY(y);
+		return new PointI(tileX, tileY);
+	}
+
+	public Vector2f toTilesScrollPixels(float x, float y) {
+		return new Vector2f(toTileScrollPixelX(x), toTileScrollPixelY(y));
+	}
+
+	public int toTileScrollPixelX(float x) {
+		return MathUtils.floor(offsetXPixel(tilesToPixelsX(x)));
+	}
+
+	public int toTileScrollPixelY(float y) {
+		return MathUtils.floor(offsetYPixel(tilesToPixelsY(y)));
+	}
+
+	public Vector2f toPixelsScrollTiles(float x, float y) {
+		return new Vector2f(toPixelScrollTileX(x), toPixelScrollTileY(y));
+	}
+
+	public int toPixelScrollTileX(float x) {
+		return pixelsToTilesWidth(offsetXPixel(x));
+	}
+
+	public int toPixelScrollTileY(float y) {
+		return pixelsToTilesHeight(offsetYPixel(y));
+	}
+
+	public Vector2f offsetPixels(float x, float y) {
+		return new Vector2f(offsetXPixel(x), offsetYPixel(y));
+	}
+
 	public int[][] getMap() {
 		return field2d.getMap();
 	}
@@ -2072,6 +2154,22 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	public HexagonMap setResizeListener(ResizeListener<HexagonMap> listener) {
 		this._resizeListener = listener;
 		return this;
+	}
+
+	public float hexHeight() {
+		return getHeight() * 2;
+	}
+
+	public float hexWidth() {
+		return HEXWM * hexHeight();
+	}
+
+	public float hexVerticalSpacing() {
+		return hexHeight() * 0.75f;
+	}
+
+	public float hexHoriaontalSpacing() {
+		return hexWidth();
 	}
 
 	@Override

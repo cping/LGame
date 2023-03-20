@@ -144,6 +144,19 @@ public abstract class RoleValue {
 		return _id;
 	}
 
+	public RoleValue changeHeal(int healChange) {
+		if (healChange != 0) {
+			if (healChange + health > maxHealth) {
+				health = maxHealth;
+			} else if (healChange + health < 1) {
+				health = 0;
+			} else {
+				health += healChange;
+			}
+		}
+		return this;
+	}
+
 	public RoleValue heal(int healCost, int healAmount) {
 		if (this.getMana() >= healCost) {
 			healAmount = (int) this.variance(healAmount, 20, true);

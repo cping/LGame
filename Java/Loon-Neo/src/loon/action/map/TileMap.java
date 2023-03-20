@@ -753,6 +753,19 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	}
 
 	/**
+	 * 转化地图到屏幕像素(不考虑地图滚动)
+	 * 
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public PointI tileMapToPixels(float x, float y) {
+		int tileX = tilesToPixelsX(x);
+		int tileY = tilesToPixelsY(y);
+		return new PointI(tileX, tileY);
+	}
+
+	/**
 	 * 转化地图到屏幕像素(考虑地图滚动)
 	 * 
 	 * @param x
