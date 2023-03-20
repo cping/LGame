@@ -581,6 +581,38 @@ public class SortedList<E> implements Iterable<E>, IArray {
 	}
 
 	@Override
+	public boolean equals(Object o) {
+		if (o == this) {
+			return true;
+		}
+		if (!(o instanceof SortedList)) {
+			return false;
+		}
+		SortedList<?> list = (SortedList<?>) o;
+		if (size != list.size) {
+			return false;
+		}
+		Node<?> items1 = this.first;
+		Node<?> items2 = list.first;
+		if (items1 == items2) {
+			return true;
+		}
+		if (items1 == null || items2 == null) {
+			return false;
+		}
+		for (int i = 0; i < size; i++) {
+			Object o1 = items1.item;
+			Object o2 = items2.item;
+			items1 = items1.next;
+			items2 = items2.next;
+			if (!(o1 == null ? o2 == null : o1.equals(o2))) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	@Override
 	public int hashCode() {
 		int hashCode = 1;
 		for (Node<E> x = first; x != null; x = x.next) {

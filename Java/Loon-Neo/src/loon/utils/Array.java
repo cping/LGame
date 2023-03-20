@@ -20,6 +20,8 @@
  */
 package loon.utils;
 
+import java.util.Comparator;
+
 import loon.LRelease;
 import loon.events.QueryEvent;
 
@@ -499,7 +501,6 @@ public class Array<T> implements IArray, LRelease {
 		return buffer.toString();
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Override
 	public boolean equals(Object o) {
 		if (o == this) {
@@ -508,16 +509,23 @@ public class Array<T> implements IArray, LRelease {
 		if (!(o instanceof Array)) {
 			return false;
 		}
-		Array array = (Array) o;
-		int n = _length;
-		if (n != array._length) {
+		Array<?> array = (Array<?>) o;
+		if (_length != array._length) {
 			return false;
 		}
-		ArrayNode items1 = this._items;
-		ArrayNode items2 = array._items;
-		for (int i = 0; i < n; i++) {
-			Object o1 = items1.next;
-			Object o2 = items2.next;
+		ArrayNode<?> items1 = this._items;
+		ArrayNode<?> items2 = array._items;
+		if (items1 == items2) {
+			return true;
+		}
+		if (items1 == null || items2 == null) {
+			return false;
+		}
+		for (int i = 0; i < _length; i++) {
+			Object o1 = items1.next.data;
+			Object o2 = items2.next.data;
+			items1 = items1.next;
+			items2 = items2.next;
 			if (!(o1 == null ? o2 == null : o1.equals(o2))) {
 				return false;
 			}
@@ -543,6 +551,40 @@ public class Array<T> implements IArray, LRelease {
 
 	public T peek() {
 		return last();
+	}
+
+	public void sort(Comparator<T> compar) {
+		if (_length <= 1) {
+			return;
+		}
+		ArrayNode<T> headData = _items.next, dstData = null;
+		if (headData == null) {
+			return;
+		} else {
+			T temp;
+			for (; headData != null && headData.data != null;) {
+				dstData = headData.next;
+				for (; dstData != null && dstData.data != null;) {
+					if (compar.compare(headData.data, dstData.data) > 0) {
+						temp = headData.data;
+						headData.data = dstData.data;
+						dstData.data = temp;
+					}
+					dstData = dstData.next;
+				}
+				headData = headData.next;
+			}
+		}
+	}
+
+	public int getNodeCount() {
+		int count = 0;
+		ArrayNode<T> headData = _items.next;
+		for (; headData != null && headData.data != null;) {
+			count++;
+			headData = headData.next;
+		}
+		return count;
 	}
 
 	@Override
