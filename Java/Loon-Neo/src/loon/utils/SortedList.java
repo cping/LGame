@@ -20,6 +20,7 @@
  */
 package loon.utils;
 
+import java.util.Comparator;
 import java.util.Iterator;
 
 import loon.LSysException;
@@ -530,6 +531,40 @@ public class SortedList<E> implements Iterable<E>, IArray {
 			this.next = next;
 			this.prev = prev;
 		}
+	}
+
+	public void sort(Comparator<E> compar) {
+		if (size <= 1) {
+			return;
+		}
+		Node<E> headData = first, dstData = null;
+		if (headData == null) {
+			return;
+		} else {
+			E temp;
+			for (; headData != null;) {
+				dstData = headData.next;
+				for (; dstData != null;) {
+					if (compar.compare(headData.item, dstData.item) > 0) {
+						temp = headData.item;
+						headData.item = dstData.item;
+						dstData.item = temp;
+					}
+					dstData = dstData.next;
+				}
+				headData = headData.next;
+			}
+		}
+	}
+
+	public int getNodeCount() {
+		int count = 0;
+		Node<E> headData = first;
+		for (; headData != null;) {
+			count++;
+			headData = headData.next;
+		}
+		return count;
 	}
 
 	@Override

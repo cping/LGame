@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -20,6 +20,7 @@
  */
 package loon.utils;
 
+import java.util.Comparator;
 import java.util.Iterator;
 
 import loon.LSysException;
@@ -32,7 +33,7 @@ public class SortedList<E> implements Iterable<E>, IArray {
 
 	public LIterator<E> listIterator(int index) {
 		checkPositionIndex(index);
-		return new ListItr<>(this, index);
+		return new ListItr<E>(this, index);
 	}
 
 	@Override
@@ -112,7 +113,7 @@ public class SortedList<E> implements Iterable<E>, IArray {
 
 	private void linkFirst(E e) {
 		final Node<E> f = first;
-		final Node<E> newNode = new Node<>(null, e, f);
+		final Node<E> newNode = new Node<E>(null, e, f);
 		first = newNode;
 		if (f == null)
 			last = newNode;
@@ -124,7 +125,7 @@ public class SortedList<E> implements Iterable<E>, IArray {
 
 	void linkLast(E e) {
 		final Node<E> l = last;
-		final Node<E> newNode = new Node<>(l, e, null);
+		final Node<E> newNode = new Node<E>(l, e, null);
 		last = newNode;
 		if (l == null)
 			first = newNode;
@@ -136,7 +137,7 @@ public class SortedList<E> implements Iterable<E>, IArray {
 
 	void linkBefore(E e, Node<E> succ) {
 		final Node<E> pred = succ.prev;
-		final Node<E> newNode = new Node<>(pred, e, succ);
+		final Node<E> newNode = new Node<E>(pred, e, succ);
 		succ.prev = newNode;
 		if (pred == null)
 			first = newNode;
@@ -241,7 +242,6 @@ public class SortedList<E> implements Iterable<E>, IArray {
 		return indexOf(o) != -1;
 	}
 
-	@Override
 	public int size() {
 		return size;
 	}
@@ -306,7 +306,7 @@ public class SortedList<E> implements Iterable<E>, IArray {
 		for (Object o : a) {
 			@SuppressWarnings("unchecked")
 			E e = (E) o;
-			Node<E> newNode = new Node<>(pred, e, null);
+			Node<E> newNode = new Node<E>(pred, e, null);
 			if (pred == null)
 				first = newNode;
 			else
@@ -326,7 +326,6 @@ public class SortedList<E> implements Iterable<E>, IArray {
 		return true;
 	}
 
-	@Override
 	public void clear() {
 		for (Node<E> x = first; x != null;) {
 			Node<E> next = x.next;
@@ -532,6 +531,40 @@ public class SortedList<E> implements Iterable<E>, IArray {
 			this.next = next;
 			this.prev = prev;
 		}
+	}
+
+	public void sort(Comparator<E> compar) {
+		if (size <= 1) {
+			return;
+		}
+		Node<E> headData = first, dstData = null;
+		if (headData == null) {
+			return;
+		} else {
+			E temp;
+			for (; headData != null;) {
+				dstData = headData.next;
+				for (; dstData != null;) {
+					if (compar.compare(headData.item, dstData.item) > 0) {
+						temp = headData.item;
+						headData.item = dstData.item;
+						dstData.item = temp;
+					}
+					dstData = dstData.next;
+				}
+				headData = headData.next;
+			}
+		}
+	}
+
+	public int getNodeCount() {
+		int count = 0;
+		Node<E> headData = first;
+		for (; headData != null;) {
+			count++;
+			headData = headData.next;
+		}
+		return count;
 	}
 
 	@Override

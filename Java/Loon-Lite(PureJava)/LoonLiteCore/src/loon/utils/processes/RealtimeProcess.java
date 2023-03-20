@@ -1,19 +1,19 @@
 /**
- *
+ * 
  * Copyright 2014
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -36,15 +36,17 @@ public abstract class RealtimeProcess implements GameProcess, LRelease {
 
 	protected final String id;
 
-	private GameProcessType processType = GameProcessType.Other;
+	private int _priority;
+	
+	private final LTimer _timer = new LTimer(LSystem.SECOND);
 
-	private LTimer timer = new LTimer(LSystem.SECOND);
+	private GameProcessType _processType = GameProcessType.Other;
 
-	private RealtimeProcessHost processHost;
+	private RealtimeProcessHost _processHost;
 
-	private SortedList<GameProcess> processesToFireWhenFinished;
+	private SortedList<GameProcess> _processesToFireWhenFinished;
 
-	private final static String getProcessName(){
+	private final static String getProcessName() {
 		return "Process" + (GLOBAL_ID++);
 	}
 
@@ -67,75 +69,95 @@ public abstract class RealtimeProcess implements GameProcess, LRelease {
 	public RealtimeProcess(String id, long delay, GameProcessType pt) {
 		this.isDead = false;
 		this.id = id;
-		this.timer.setDelay(delay);
-		this.processType = pt;
+		this._timer.setDelay(delay);
+		this._processType = pt;
 	}
 
 	@Override
-	public void setProcessHost(RealtimeProcessHost processHost) {
-		this.processHost = processHost;
+	public void setProcessHost(RealtimeProcessHost _processHost) {
+		this._processHost = _processHost;
 	}
 
 	@Override
 	public void fireThisWhenFinished(GameProcess realtimeProcess) {
-		if (this.processesToFireWhenFinished == null) {
-			this.processesToFireWhenFinished = new SortedList<>();
+		if (this._processesToFireWhenFinished == null) {
+			this._processesToFireWhenFinished = new SortedList<GameProcess>();
 		}
-		this.processesToFireWhenFinished.add(realtimeProcess);
+		this._processesToFireWhenFinished.add(realtimeProcess);
 	}
 
 	@Override
 	public void tick(LTimerContext time) {
-		if (timer.action(time)) {
+		if (_timer.action(time)) {
 			run(time);
 		}
 	}
 
 	public RealtimeProcess sleep(long delay) {
-		timer.setDelay(delay);
+		_timer.setDelay(delay);
 		return this;
 	}
 
 	public RealtimeProcess setDelay(long delay) {
-		timer.setDelay(delay);
+		_timer.setDelay(delay);
 		return this;
 	}
 
 	public long getDelay() {
-		return timer.getDelay();
+		return _timer.getDelay();
 	}
 
 	public long getCurrentTick() {
-		return timer.getCurrentTick();
+		return _timer.getCurrentTick();
 	}
 
+	public RealtimeProcess pause() {
+		_timer.pause();
+		return this;
+	}
+
+	public RealtimeProcess unpause() {
+		_timer.unpause();
+		return this;
+	}
+	
 	public RealtimeProcess interrupt() {
-		timer.stop();
+		_timer.stop();
 		return this;
 	}
 
 	public RealtimeProcess stop() {
-		timer.stop();
+		_timer.stop();
 		return this;
 	}
 
 	public RealtimeProcess start() {
-		timer.start();
+		_timer.start();
 		return this;
 	}
 
+	public RealtimeProcess setPriority(int p) {
+		this._priority = p;
+		return this;
+	}
+	
+    @Override 
+	public int getPriority() {
+		return this._priority;
+	}
+	
 	public boolean isActive() {
-		return timer.isActive();
+		return _timer.isActive();
 	}
 
 	@Override
 	public GameProcessType getProcessType() {
-		return this.processType;
+		return this._processType;
 	}
 
 	@Override
 	public void setProcessType(GameProcessType pt) {
-		this.processType = pt;
+		this._processType = pt;
 	}
 
 	public abstract void run(LTimerContext time);
@@ -160,13 +182,13 @@ public abstract class RealtimeProcess implements GameProcess, LRelease {
 		if (!this.isDead) {
 			kill();
 		}
-		if (this.processesToFireWhenFinished != null) {
-			for (LIterator<GameProcess> it = this.processesToFireWhenFinished.listIterator(); it.hasNext();) {
+		if (this._processesToFireWhenFinished != null) {
+			for (LIterator<GameProcess> it = this._processesToFireWhenFinished.listIterator(); it.hasNext();) {
 				RealtimeProcessManager.get().addProcess(it.next());
 			}
 		}
-		if (this.processHost != null) {
-			this.processHost.processFinished(this.id, this);
+		if (this._processHost != null) {
+			this._processHost.processFinished(this.id, this);
 		}
 	}
 

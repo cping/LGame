@@ -1,19 +1,19 @@
 /**
- *
+ * 
  * Copyright 2014
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -25,21 +25,23 @@ import loon.utils.timer.LTimerContext;
 
 public interface GameProcess {
 
-	public GameProcessType getProcessType();
+	public int getPriority();
+	
+	GameProcessType getProcessType();
 
-	public void setProcessType(GameProcessType processType);
+	void setProcessType(GameProcessType processType);
 
-	public void setProcessHost(RealtimeProcessHost host);
+	void setProcessHost(RealtimeProcessHost host);
 
-	public void fireThisWhenFinished(GameProcess process);
+	void fireThisWhenFinished(GameProcess process);
 
-	public void tick(LTimerContext time);
+	void tick(LTimerContext time);
 
-	public void kill();
+	void kill();
 
-	public boolean isDead();
+	boolean isDead();
 
-	public String getId();
+	String getId();
 
-	public void finish();
+	void finish();
 }

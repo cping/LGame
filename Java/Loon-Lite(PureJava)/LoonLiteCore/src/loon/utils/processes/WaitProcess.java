@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -35,17 +35,19 @@ public class WaitProcess implements GameProcess, LRelease {
 
 	protected final String id;
 
-	private LTimer timer;
+	private int _priority;
 
-	private GameProcessType processType = GameProcessType.Other;
+	private LTimer _timer;
 
-	private RealtimeProcessHost processHost;
+	private GameProcessType _processType = GameProcessType.Other;
 
-	private SortedList<GameProcess> processesToFireWhenFinished;
+	private RealtimeProcessHost _processHost;
 
-	private Updateable update;
+	private SortedList<GameProcess> _processesToFireWhenFinished;
 
-	private BooleanValue value = new BooleanValue(false);
+	private Updateable _update;
+
+	private BooleanValue _value = new BooleanValue(false);
 
 	private RealtimeProcess _waitProcess;
 
@@ -53,46 +55,46 @@ public class WaitProcess implements GameProcess, LRelease {
 		return "Process" + TimeUtils.millis();
 	}
 
-	public WaitProcess(Updateable update) {
-		this(getProcessName(), 60, update);
+	public WaitProcess(Updateable _update) {
+		this(getProcessName(), 60, _update);
 	}
 
-	public WaitProcess(long delay, Updateable update) {
-		this(getProcessName(), delay, update);
+	public WaitProcess(long delay, Updateable _update) {
+		this(getProcessName(), delay, _update);
 	}
 
-	public WaitProcess(String id, long delay, Updateable update) {
-		this(id, delay, GameProcessType.Other, update);
+	public WaitProcess(String id, long delay, Updateable _update) {
+		this(id, delay, GameProcessType.Other, _update);
 	}
 
-	public WaitProcess(String id, long delay, GameProcessType pt, Updateable update) {
-		this.timer = new LTimer(delay);
+	public WaitProcess(String id, long delay, GameProcessType pt, Updateable _update) {
+		this._timer = new LTimer(delay);
 		this.isDead = false;
 		this.isAutoKill = true;
 		this.id = id;
-		this.processType = pt;
-		this.update = update;
+		this._processType = pt;
+		this._update = _update;
 	}
 
 	public boolean completed() {
-		return value.result();
+		return _value.result();
 	}
 
 	public BooleanValue get() {
-		return value;
+		return _value;
 	}
 
 	@Override
-	public void setProcessHost(RealtimeProcessHost processHost) {
-		this.processHost = processHost;
+	public void setProcessHost(RealtimeProcessHost _processHost) {
+		this._processHost = _processHost;
 	}
 
 	@Override
 	public void fireThisWhenFinished(GameProcess realtimeProcess) {
-		if (this.processesToFireWhenFinished == null) {
-			this.processesToFireWhenFinished = new SortedList<>();
+		if (this._processesToFireWhenFinished == null) {
+			this._processesToFireWhenFinished = new SortedList<GameProcess>();
 		}
-		this.processesToFireWhenFinished.add(realtimeProcess);
+		this._processesToFireWhenFinished.add(realtimeProcess);
 	}
 
 	public WaitProcess wait(RealtimeProcess process) {
@@ -102,10 +104,10 @@ public class WaitProcess implements GameProcess, LRelease {
 
 	@Override
 	public void tick(LTimerContext time) {
-		if (timer.action(time)) {
-			if (update != null) {
+		if (_timer.action(time)) {
+			if (_update != null) {
 				if (!(_waitProcess != null && !_waitProcess.isDead)) {
-					update.action(this);
+					_update.action(this);
 					if (isAutoKill) {
 						kill();
 					}
@@ -139,33 +141,42 @@ public class WaitProcess implements GameProcess, LRelease {
 
 	@Override
 	public GameProcessType getProcessType() {
-		return this.processType;
+		return this._processType;
 	}
 
 	@Override
 	public void setProcessType(GameProcessType pt) {
-		this.processType = pt;
+		this._processType = pt;
 	}
 
+	public WaitProcess setPriority(int p) {
+		this._priority = p;
+		return this;
+	}
+
+	@Override
+	public int getPriority() {
+		return _priority;
+	}
+	
 	@Override
 	public void finish() {
 		if (!this.isDead) {
 			kill();
 		}
-		if (this.processesToFireWhenFinished != null) {
-			for (LIterator<GameProcess> it = this.processesToFireWhenFinished.listIterator(); it.hasNext();) {
+		if (this._processesToFireWhenFinished != null) {
+			for (LIterator<GameProcess> it = this._processesToFireWhenFinished.listIterator(); it.hasNext();) {
 				RealtimeProcessManager.get().addProcess(it.next());
 			}
 		}
-		if (this.processHost != null) {
-			this.processHost.processFinished(this.id, this);
+		if (this._processHost != null) {
+			this._processHost.processFinished(this.id, this);
 		}
-		value.set(true);
+		_value.set(true);
 	}
 
 	@Override
 	public void close() {
 		finish();
 	}
-
 }

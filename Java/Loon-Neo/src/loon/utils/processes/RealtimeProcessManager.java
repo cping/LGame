@@ -21,6 +21,8 @@
  */
 package loon.utils.processes;
 
+import java.util.Comparator;
+
 import loon.LRelease;
 import loon.LSystem;
 import loon.utils.IArray;
@@ -30,6 +32,20 @@ import loon.utils.TArray;
 import loon.utils.timer.LTimerContext;
 
 public class RealtimeProcessManager implements RealtimeProcessEvent, IArray, LRelease {
+
+	static class ProcessComparator implements Comparator<GameProcess> {
+
+		@Override
+		public int compare(GameProcess o1, GameProcess o2) {
+			if (o1 == null || o2 == null) {
+				return 0;
+			}
+			return o2.getPriority() - o1.getPriority();
+		}
+
+	}
+
+	private static final ProcessComparator _processComparator = new ProcessComparator();
 
 	private static RealtimeProcessManager instance;
 
@@ -225,6 +241,13 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, IArray, LRe
 			}
 		}
 		return list;
+	}
+
+	public RealtimeProcessManager sort() {
+		synchronized (this.processes) {
+			processes.sort(_processComparator);
+		}
+		return this;
 	}
 
 	public boolean hasEvents() {
