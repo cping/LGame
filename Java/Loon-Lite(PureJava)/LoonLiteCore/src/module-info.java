@@ -5,6 +5,7 @@ module loon.core {
 	exports loon.action.avg.drama;
 	exports loon.action.collision;
 	exports loon.action.map;
+	exports loon.action.map.battle;
 	exports loon.action.map.colider;
 	exports loon.action.map.heuristics;
 	exports loon.action.map.items;

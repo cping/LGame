@@ -24,7 +24,7 @@ import loon.LSystem;
 import loon.utils.MathUtils;
 
 /**
- * 一个基本的游戏角色数值模板,可以套用其扩展自己的游戏属性以及属性变更算法
+ * 一个基本的游戏角色数值模板,可以套用其扩展自己的游戏属性以及属性变更算法(和RoleInfo的关系在于这个更接近角色参数)
  *
  */
 public abstract class RoleValue {
@@ -55,16 +55,16 @@ public abstract class RoleValue {
 	protected boolean isMoved;
 	protected boolean isDead;
 
-	protected RoleInfo info;
+	protected RoleEquip info;
 
-	public RoleValue(int id, RoleInfo info, int maxHealth, int maxMana, int attack, int defence, int strength,
-			int intelligence, int fitness, int dexterity, int agility) {
+	public RoleValue(int id, RoleEquip info, int maxHealth, int maxMana, int attack, int defence, int strength,
+			int intelligence, int fitness, int dexterity, int agility, int lv) {
 		this(id, LSystem.UNKNOWN, info, maxHealth, maxMana, attack, defence, strength, intelligence, fitness, dexterity,
-				agility);
+				agility, lv);
 	}
 
-	public RoleValue(int id, String name, RoleInfo info, int maxHealth, int maxMana, int attack, int defence,
-			int strength, int intelligence, int fitness, int dexterity, int agility) {
+	public RoleValue(int id, String name, RoleEquip info, int maxHealth, int maxMana, int attack, int defence,
+			int strength, int intelligence, int fitness, int dexterity, int agility, int lv) {
 		this._id = id;
 		this._roleName = name;
 		this.info = info;
@@ -79,6 +79,7 @@ public abstract class RoleValue {
 		this.intelligence = intelligence;
 		this.fitness = fitness;
 		this.dexterity = dexterity;
+		this.level = lv;
 	}
 
 	public float updateTurnPoints() {
@@ -90,8 +91,7 @@ public abstract class RoleValue {
 		return this.turnPoints;
 	}
 
-	public int calculateDamage(int enemyDefence) {
-		int damageBufferMax = 20;
+	public int calculateDamage(int enemyDefence, int damageBufferMax) {
 		float damage = this.attack + 0.5f * this.strength - 0.5f * enemyDefence;
 		if ((damage = MathUtils.ceil(this.variance(damage, damageBufferMax, true))) < 1f) {
 			damage = 1f;
@@ -99,10 +99,15 @@ public abstract class RoleValue {
 		return (int) damage;
 	}
 
+	public int calculateDamage(int enemyDefence) {
+		return calculateDamage(enemyDefence, 20);
+	}
+
 	public int hit(int enemyDex, int enemyAgi, int enemyFitness) {
-		int maxChance = 95;
-		int minChance = 15;
-		float hitChance = 55f;
+		return hit(enemyDex, enemyAgi, enemyFitness, 95, 15, 55f);
+	}
+
+	public int hit(int enemyDex, int enemyAgi, int enemyFitness, int maxChance, int minChance, float hitChance) {
 		hitChance += (this.dexterity - enemyDex) + 0.5 * (this.fitness - enemyFitness) - enemyAgi;
 		if ((hitChance = this.variance(hitChance, 10, true)) > maxChance) {
 			hitChance = maxChance;
@@ -118,10 +123,11 @@ public abstract class RoleValue {
 	}
 
 	public boolean flee(int enemyLevel, int enemyFitness) {
-		int maxChance = 95;
-		int minChance = 5;
-		int baseChance = 55;
-		int fleeChance = baseChance - 3 * (enemyFitness - this.fitness);
+		return flee(enemyLevel, enemyFitness, 95, 5, 55);
+	}
+
+	public boolean flee(int enemyLevel, int enemyFitness, int maxChance, int minChance, int hitChance) {
+		int fleeChance = hitChance - 3 * (enemyFitness - this.fitness);
 		if (fleeChance > maxChance) {
 			fleeChance = maxChance;
 		} else if (fleeChance < minChance) {
@@ -138,9 +144,7 @@ public abstract class RoleValue {
 		return _id;
 	}
 
-	public RoleValue heal() {
-		int healCost = 5;
-		int healAmount = 20;
+	public RoleValue heal(int healCost, int healAmount) {
 		if (this.getMana() >= healCost) {
 			healAmount = (int) this.variance(healAmount, 20, true);
 			this.health += healAmount;
@@ -150,12 +154,19 @@ public abstract class RoleValue {
 			this.mana -= healCost;
 		}
 		return this;
+
+	}
+
+	public RoleValue heal() {
+		return heal(5, 20);
 	}
 
 	public int regenerateMana() {
+		return regenerateMana(2, 50);
+	}
+
+	public int regenerateMana(int minRegen, int maxRegen) {
 		int regen = intelligence / 4;
-		int minRegen = 2;
-		int maxRegen = 50;
 		if (regen < minRegen) {
 			regen = minRegen;
 		}
@@ -176,7 +187,7 @@ public abstract class RoleValue {
 		if (MathUtils.nextBoolean() && negativeAllowed) {
 			buffer = -buffer;
 		}
-		float percent = (float) (100 - buffer) / 100.0f;
+		float percent = (float) (100 - buffer) / 100f;
 		float variedValue = base * percent;
 		return variedValue;
 	}
@@ -357,6 +368,10 @@ public abstract class RoleValue {
 		return this;
 	}
 
+	public boolean isFullHealth() {
+		return health == maxHealth;
+	}
+
 	public int getMaxHealth() {
 		return this.maxHealth;
 	}
@@ -462,11 +477,11 @@ public abstract class RoleValue {
 		return this;
 	}
 
-	public RoleInfo getInfo() {
+	public RoleEquip getInfo() {
 		return info;
 	}
 
-	public RoleValue setInfo(RoleInfo info) {
+	public RoleValue setInfo(RoleEquip info) {
 		this.info = info;
 		return this;
 	}

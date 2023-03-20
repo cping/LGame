@@ -32,7 +32,11 @@ public class BattleProcess extends RealtimeProcess {
 	public static abstract class TurnBeginEvent extends BattleTurnProcessEvent {
 
 		public TurnBeginEvent() {
-			super(BattleState.TurnBeginState);
+			this(true);
+		}
+
+		public TurnBeginEvent(boolean skipAndResetFlag) {
+			super(BattleState.TurnBeginState, skipAndResetFlag);
 		}
 
 	}
@@ -40,7 +44,11 @@ public class BattleProcess extends RealtimeProcess {
 	public static abstract class TurnPlayerEvent extends BattleTurnProcessEvent {
 
 		public TurnPlayerEvent() {
-			super(BattleState.TurnPlayerState);
+			this(true);
+		}
+
+		public TurnPlayerEvent(boolean skipAndResetFlag) {
+			super(BattleState.TurnPlayerState, skipAndResetFlag);
 		}
 
 	}
@@ -48,7 +56,11 @@ public class BattleProcess extends RealtimeProcess {
 	public static abstract class TurnEnemyEvent extends BattleTurnProcessEvent {
 
 		public TurnEnemyEvent() {
-			super(BattleState.TurnEnemyState);
+			this(true);
+		}
+
+		public TurnEnemyEvent(boolean skipAndResetFlag) {
+			super(BattleState.TurnEnemyState, skipAndResetFlag);
 		}
 
 	}
@@ -56,7 +68,11 @@ public class BattleProcess extends RealtimeProcess {
 	public static abstract class TurnNpcEvent extends BattleTurnProcessEvent {
 
 		public TurnNpcEvent() {
-			super(BattleState.TurnNpcState);
+			this(true);
+		}
+
+		public TurnNpcEvent(boolean skipAndResetFlag) {
+			super(BattleState.TurnNpcState, skipAndResetFlag);
 		}
 
 	}
@@ -64,7 +80,11 @@ public class BattleProcess extends RealtimeProcess {
 	public static abstract class TurnOtherEvent extends BattleTurnProcessEvent {
 
 		public TurnOtherEvent() {
-			super(BattleState.TurnOtherState);
+			this(true);
+		}
+
+		public TurnOtherEvent(boolean skipAndResetFlag) {
+			super(BattleState.TurnOtherState, skipAndResetFlag);
 		}
 
 	}
@@ -72,7 +92,11 @@ public class BattleProcess extends RealtimeProcess {
 	public static abstract class TurnEndEvent extends BattleTurnProcessEvent {
 
 		public TurnEndEvent() {
-			super(BattleState.TurnEndState);
+			this(true);
+		}
+
+		public TurnEndEvent(boolean skipAndResetFlag) {
+			super(BattleState.TurnEndState, skipAndResetFlag);
 		}
 
 	}
@@ -80,7 +104,11 @@ public class BattleProcess extends RealtimeProcess {
 	public static abstract class TurnDoneEvent extends BattleTurnProcessEvent {
 
 		public TurnDoneEvent() {
-			super(BattleState.TurnDoneState);
+			this(true);
+		}
+
+		public TurnDoneEvent(boolean skipAndResetFlag) {
+			super(BattleState.TurnDoneState, skipAndResetFlag);
 		}
 
 	}
@@ -113,6 +141,8 @@ public class BattleProcess extends RealtimeProcess {
 
 	private BattleResults _result;
 
+	private int _roundAmount;
+
 	private boolean _pause;
 
 	private boolean _enforce;
@@ -120,11 +150,15 @@ public class BattleProcess extends RealtimeProcess {
 	private boolean _loop;
 
 	public BattleProcess() {
+		this(0);
+	}
+
+	public BattleProcess(long delay) {
 		this._states = new TArray<BattleState>();
 		this._events = new TArray<BattleEvent>();
 		this._result = BattleResults.Running;
 		this.setLoop(true);
-		this.setDelay(0);
+		this.setDelay(delay);
 	}
 
 	protected boolean runBattleEvent(final BattleEvent turnEvent, final long elapsedTime) {
@@ -166,7 +200,6 @@ public class BattleProcess extends RealtimeProcess {
 					if (!turnEvent.end(elapsedTime)) {
 						return false;
 					}
-
 					if (!turnEvent.completed()) {
 						return false;
 					}
@@ -186,26 +219,14 @@ public class BattleProcess extends RealtimeProcess {
 	 * @return
 	 */
 	public BattleProcess jumpTo(String name) {
-		BattleEvent eve = null;
-		for (BattleEvent e : _events) {
-			if (e != null && name.equalsIgnoreCase(e.getState().getName())) {
-				eve = e;
-			}
-		}
-		return jumpTo(eve);
+		return jumpTo(get(name));
 	}
 
 	public BattleProcess jumpTo(BattleState state) {
-		BattleEvent eve = null;
-		for (BattleEvent e : _events) {
-			if (e != null && e.getState().equals(state)) {
-				eve = e;
-			}
-		}
-		return jumpTo(eve);
+		return jumpTo(get(state));
 	}
 
-	protected BattleProcess jumpTo(BattleEvent eve) {
+	public BattleProcess jumpTo(BattleEvent eve) {
 		if (eve != null) {
 			eve.reset();
 		}
@@ -214,6 +235,34 @@ public class BattleProcess extends RealtimeProcess {
 		_stateCompleted = null;
 		_enforce = true;
 		return this;
+	}
+
+	public BattleEvent get(String name) {
+		BattleEvent eve = null;
+		for (BattleEvent e : _events) {
+			if (e != null && name.equalsIgnoreCase(e.getState().getName())) {
+				eve = e;
+			}
+		}
+		return eve;
+	}
+
+	public BattleEvent get(BattleState state) {
+		BattleEvent eve = null;
+		for (BattleEvent e : _events) {
+			if (e != null && e.getState().equals(state)) {
+				eve = e;
+			}
+		}
+		return eve;
+	}
+
+	public int getTurnCount() {
+		return _roundAmount + 1;
+	}
+
+	public int getRoundAmount() {
+		return _roundAmount;
 	}
 
 	@Override
@@ -234,6 +283,7 @@ public class BattleProcess extends RealtimeProcess {
 			}
 			this._enforce = false;
 			this._enforceEvent = null;
+			this._roundAmount++;
 		} else {
 			if (!_loop) {
 				return;
@@ -245,6 +295,7 @@ public class BattleProcess extends RealtimeProcess {
 					}
 				}
 			}
+			_roundAmount++;
 		}
 		_states.clear();
 		_stateCurrent = null;
@@ -292,6 +343,9 @@ public class BattleProcess extends RealtimeProcess {
 		this._enforceEvent = null;
 		this._stateCurrent = null;
 		this._stateCompleted = null;
+		this._pause = false;
+		this._loop = true;
+		this._roundAmount = 0;
 		this.setDelay(0);
 		return this;
 	}
@@ -312,12 +366,19 @@ public class BattleProcess extends RealtimeProcess {
 		return isCurrentState(BattleState.TurnNpcState);
 	}
 
+	public boolean isCurrentOther() {
+		return isCurrentState(BattleState.TurnOtherState);
+	}
+
 	public boolean isCurrentEnd() {
 		return isCurrentState(BattleState.TurnEndState);
 	}
 
-	public boolean isCurrentState(BattleState state) {
+	public boolean isCurrentDone() {
+		return isCurrentState(BattleState.TurnDoneState);
+	}
 
+	public boolean isCurrentState(BattleState state) {
 		if (state == null) {
 			return false;
 		}
@@ -364,12 +425,27 @@ public class BattleProcess extends RealtimeProcess {
 		return this;
 	}
 
+	public BattleProcess set(boolean a) {
+		_actioning.set(a);
+		return this;
+	}
+
+	public boolean get() {
+		return _actioning.get();
+	}
+
 	public boolean isActioning() {
 		return _actioning.get();
 	}
 
 	public BooleanValue getActioning() {
 		return _actioning;
+	}
+
+	@Override
+	public void close() {
+		super.close();
+		cleanUp();
 	}
 
 }

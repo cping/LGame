@@ -42,19 +42,19 @@ public class Role extends RoleValue implements ActionBind {
 	private Object _tag;
 
 	public Role(int id, String name) {
-		this(id, null, name, 100, 100, 5, 5, 5, 5, 5, 5, 5);
+		this(id, null, name, 100, 100, 5, 5, 5, 5, 5, 5, 5, 1);
 	}
 
-	public Role(int id, RoleInfo info, String name) {
+	public Role(int id, RoleEquip info, String name) {
 		super(id, name, info, info.updateMaxHealth(0), info.updateManaPoints(0), info.updateAttack(0),
 				info.updateDefence(0), info.updateStrength(0), info.updateIntelligence(0), info.updateFitness(0),
-				info.updateDexterity(0), info.updateAgility(0));
+				info.updateDexterity(0), info.updateAgility(0), 1);
 	}
 
-	public Role(int id, RoleInfo info, String name, int maxHealth, int maxMana, int attack, int defence,
-			int strength, int intelligence, int fitness, int dexterity, int agility) {
-		super(id, name, info, maxHealth, maxMana, attack, defence, strength, intelligence, fitness, dexterity, agility);
-
+	public Role(int id, RoleEquip info, String name, int maxHealth, int maxMana, int attack, int defence, int strength,
+			int intelligence, int fitness, int dexterity, int agility, int lv) {
+		super(id, name, info, maxHealth, maxMana, attack, defence, strength, intelligence, fitness, dexterity, agility,
+				lv);
 	}
 
 	public Role addAttribute(Attribute attribute) {

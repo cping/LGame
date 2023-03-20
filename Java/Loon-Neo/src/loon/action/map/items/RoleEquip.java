@@ -21,9 +21,9 @@
 package loon.action.map.items;
 
 /**
- * 一个简单的角色基本参数类,用于简单的rpg类游戏角色属性配置
+ * 一个简单的角色基本附加参数类,用于简单的rpg类游戏角色属性配置(和RoleValue的关系在于这个更接近装备参数)
  */
-public class CharacterInfo {
+public class RoleEquip {
 	// 基本生命值
 	private int _baseMaxHealth;
 	// 基本攻击力
@@ -61,6 +61,35 @@ public class CharacterInfo {
 	private int _sexType;
 	// 角色年龄
 	private int _ageValue;
+
+	public RoleEquip(int maxHealth, int maxMana, int attack, int defence, int strength, int intelligence, int fitness,
+			int dexterity, int agility, int skill) {
+		this._baseMaxHealth = maxHealth;
+		this._baseAttack = attack;
+		this._baseDefence = defence;
+		this._baseStrength = strength;
+		this._baseIntelligence = intelligence;
+		this._baseManaPoint = maxMana;
+		this._baseSkillPoints = skill;
+		this._baseFitness = fitness;
+		this._baseDexterity = dexterity;
+		this._baseAgility = agility;
+	}
+
+	public RoleEquip setEquip(int maxHealth, int maxMana, int attack, int defence, int strength, int intelligence,
+			int fitness, int dexterity, int agility, int skill) {
+		this._equipMaxHealth = maxHealth;
+		this._equipAttack = attack;
+		this._equipDefence = defence;
+		this._equipStrength = strength;
+		this._equipIntelligence = intelligence;
+		this._equipManaPoint = maxMana;
+		this._equipSkillPoints = skill;
+		this._equipFitness = fitness;
+		this._equipDexterity = dexterity;
+		this._equipAgility = agility;
+		return this;
+	}
 
 	public int updateAttack(float attackModifier) {
 		return (int) (attackModifier * (this._baseAttack + this._equipAttack));
@@ -106,7 +135,7 @@ public class CharacterInfo {
 		return this._baseMaxHealth;
 	}
 
-	public CharacterInfo setBaseMaxHealth(int h) {
+	public RoleEquip setBaseMaxHealth(int h) {
 		this._baseMaxHealth = h;
 		return this;
 	}
@@ -115,7 +144,7 @@ public class CharacterInfo {
 		return this._baseAttack;
 	}
 
-	public CharacterInfo setBaseAttack(int a) {
+	public RoleEquip setBaseAttack(int a) {
 		this._baseAttack = a;
 		return this;
 	}
@@ -124,7 +153,7 @@ public class CharacterInfo {
 		return this._baseDefence;
 	}
 
-	public CharacterInfo setBaseDefence(int d) {
+	public RoleEquip setBaseDefence(int d) {
 		this._baseDefence = d;
 		return this;
 	}
@@ -133,7 +162,7 @@ public class CharacterInfo {
 		return this._baseStrength;
 	}
 
-	public CharacterInfo setBaseStrength(int s) {
+	public RoleEquip setBaseStrength(int s) {
 		this._baseStrength = s;
 		return this;
 	}
@@ -142,7 +171,7 @@ public class CharacterInfo {
 		return this._baseIntelligence;
 	}
 
-	public CharacterInfo setBaseIntelligence(int i) {
+	public RoleEquip setBaseIntelligence(int i) {
 		this._baseIntelligence = i;
 		return this;
 	}
@@ -151,7 +180,7 @@ public class CharacterInfo {
 		return this._baseFitness;
 	}
 
-	public CharacterInfo setBaseFitness(int f) {
+	public RoleEquip setBaseFitness(int f) {
 		this._baseFitness = f;
 		return this;
 	}
@@ -160,7 +189,7 @@ public class CharacterInfo {
 		return this._baseDexterity;
 	}
 
-	public CharacterInfo setBaseDexterity(int d) {
+	public RoleEquip setBaseDexterity(int d) {
 		this._baseDexterity = d;
 		return this;
 	}
@@ -169,7 +198,7 @@ public class CharacterInfo {
 		return this._equipMaxHealth;
 	}
 
-	public CharacterInfo setEquipMaxHealth(int m) {
+	public RoleEquip setEquipMaxHealth(int m) {
 		this._equipMaxHealth = m;
 		return this;
 	}
@@ -178,7 +207,7 @@ public class CharacterInfo {
 		return this._equipAttack;
 	}
 
-	public CharacterInfo setEquipAttack(int a) {
+	public RoleEquip setEquipAttack(int a) {
 		this._equipAttack = a;
 		return this;
 	}
@@ -187,7 +216,7 @@ public class CharacterInfo {
 		return this._equipDefence;
 	}
 
-	public CharacterInfo setEquipDefence(int d) {
+	public RoleEquip setEquipDefence(int d) {
 		this._equipDefence = d;
 		return this;
 	}
@@ -196,7 +225,7 @@ public class CharacterInfo {
 		return this._equipStrength;
 	}
 
-	public CharacterInfo setEquipStrength(int s) {
+	public RoleEquip setEquipStrength(int s) {
 		this._equipStrength = s;
 		return this;
 	}
@@ -205,7 +234,7 @@ public class CharacterInfo {
 		return this._equipIntelligence;
 	}
 
-	public CharacterInfo setEquipIntelligence(int e) {
+	public RoleEquip setEquipIntelligence(int e) {
 		this._equipIntelligence = e;
 		return this;
 	}
@@ -214,7 +243,7 @@ public class CharacterInfo {
 		return this._equipFitness;
 	}
 
-	public CharacterInfo setEquipFitness(int f) {
+	public RoleEquip setEquipFitness(int f) {
 		this._equipFitness = f;
 		return this;
 	}
@@ -223,7 +252,7 @@ public class CharacterInfo {
 		return this._equipDexterity;
 	}
 
-	public CharacterInfo setEquipDexterity(int d) {
+	public RoleEquip setEquipDexterity(int d) {
 		this._equipDexterity = d;
 		return this;
 	}
@@ -232,7 +261,7 @@ public class CharacterInfo {
 		return _baseSkillPoints;
 	}
 
-	public CharacterInfo setBaseSkillPoints(int s) {
+	public RoleEquip setBaseSkillPoints(int s) {
 		this._baseSkillPoints = s;
 		return this;
 	}
@@ -241,7 +270,7 @@ public class CharacterInfo {
 		return _baseManaPoint;
 	}
 
-	public CharacterInfo setBaseManaPoint(int m) {
+	public RoleEquip setBaseManaPoint(int m) {
 		this._baseManaPoint = m;
 		return this;
 	}
@@ -250,7 +279,7 @@ public class CharacterInfo {
 		return _baseAgility;
 	}
 
-	public CharacterInfo setBaseAgility(int a) {
+	public RoleEquip setBaseAgility(int a) {
 		this._baseAgility = a;
 		return this;
 	}
@@ -259,7 +288,7 @@ public class CharacterInfo {
 		return _equipSkillPoints;
 	}
 
-	public CharacterInfo setEquipSkillPoints(int s) {
+	public RoleEquip setEquipSkillPoints(int s) {
 		this._equipSkillPoints = s;
 		return this;
 	}
@@ -268,7 +297,7 @@ public class CharacterInfo {
 		return _equipManaPoint;
 	}
 
-	public CharacterInfo setEquipManaPoint(int m) {
+	public RoleEquip setEquipManaPoint(int m) {
 		this._equipManaPoint = m;
 		return this;
 	}
@@ -277,12 +306,12 @@ public class CharacterInfo {
 		return _equipAgility;
 	}
 
-	public CharacterInfo setEquipAgility(int a) {
+	public RoleEquip setEquipAgility(int a) {
 		this._equipAgility = a;
 		return this;
 	}
 
-	public CharacterInfo setSexType(int s) {
+	public RoleEquip setSexType(int s) {
 		this._sexType = s;
 		return this;
 	}
@@ -291,7 +320,7 @@ public class CharacterInfo {
 		return this._sexType;
 	}
 
-	public CharacterInfo setAgeValue(int a) {
+	public RoleEquip setAgeValue(int a) {
 		this._ageValue = a;
 		return this;
 	}

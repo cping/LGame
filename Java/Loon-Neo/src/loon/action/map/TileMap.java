@@ -41,6 +41,7 @@ import loon.events.DrawListener;
 import loon.events.ResizeListener;
 import loon.geom.Affine2f;
 import loon.geom.PointF;
+import loon.geom.PointI;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
@@ -737,6 +738,44 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 
 	public int pixelsToTilesHeight(float y) {
 		return field2d.pixelsToTilesHeight(y);
+	}
+
+	public PointI pixelsToTileMap(float x, float y) {
+		int tileX = pixelsToTilesWidth(x);
+		int tileY = pixelsToTilesHeight(y);
+		return new PointI(tileX, tileY);
+	}
+
+	public PointI tilePixels(float x, float y) {
+		int newX = getPixelX(x);
+		int newY = getPixelY(y);
+		return new PointI(newX, newY);
+	}
+
+	/**
+	 * 转化地图到屏幕像素(考虑地图滚动)
+	 * 
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public PointI tileMapToScrollTilePixels(float x, float y) {
+		int newX = toTileScrollPixelX(x);
+		int newY = toTileScrollPixelX(y);
+		return new PointI(newX, newY);
+	}
+
+	/**
+	 * 转化屏幕像素到地图(考虑地图滚动)
+	 * 
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public PointI pixelsToScrollTileMap(float x, float y) {
+		int tileX = toPixelScrollTileX(x);
+		int tileY = toPixelScrollTileY(y);
+		return new PointI(tileX, tileY);
 	}
 
 	/**

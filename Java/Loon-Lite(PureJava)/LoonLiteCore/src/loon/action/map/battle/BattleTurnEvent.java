@@ -32,14 +32,29 @@ public abstract class BattleTurnEvent implements BattleEvent {
 
 	private final BooleanValue _end = new BooleanValue();
 
+	private boolean _updateFlag;
+
 	public BattleTurnEvent(BattleState state) {
-		this._state = state;
+		this(state, true);
 	}
 
+	public BattleTurnEvent(BattleState state, boolean updateFlag) {
+		this._state = state;
+		this._updateFlag = updateFlag;
+	}
+
+	@Override
 	public BattleTurnEvent reset() {
-		set(false);
+		if (_updateFlag) {
+			set(false);
+		} else {
+			set(false, false, false);
+		}
+		onReset();
 		return this;
 	}
+
+	public abstract void onReset();
 
 	public BattleTurnEvent set(boolean s, boolean p, boolean e) {
 		_start.set(s);
@@ -54,6 +69,21 @@ public abstract class BattleTurnEvent implements BattleEvent {
 
 	public BattleTurnEvent set(boolean p) {
 		return set(true, p, true);
+	}
+
+	public BattleTurnEvent freeStart() {
+		_start.set(false);
+		return this;
+	}
+
+	public BattleTurnEvent freeProcess() {
+		_process.set(false);
+		return this;
+	}
+
+	public BattleTurnEvent freeEnd() {
+		_end.set(false);
+		return this;
 	}
 
 	public BooleanValue getStart() {
@@ -80,14 +110,14 @@ public abstract class BattleTurnEvent implements BattleEvent {
 		return this;
 	}
 
-	public BattleTurnEvent allUndone() {
+	public BattleTurnEvent undone() {
 		_start.set(false);
 		_process.set(false);
 		_end.set(false);
 		return this;
 	}
 
-	public BattleTurnEvent allDone() {
+	public BattleTurnEvent done() {
 		_start.set(true);
 		_process.set(true);
 		_end.set(true);
@@ -134,7 +164,7 @@ public abstract class BattleTurnEvent implements BattleEvent {
 	}
 
 	public abstract void onCompleted();
-	
+
 	@Override
 	public boolean completed() {
 		onCompleted();
