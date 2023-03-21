@@ -720,10 +720,12 @@ public class JavaSEAssets extends Assets {
 					imageScale = viewScale;
 				}
 
-				BufferedImage convertedImage = JavaSEImplGraphics.convertImage(image);
-				if (convertedImage != image) {
-					game.log().debug("Converted image: " + path + " [type=" + image.getType() + "]");
-					image = convertedImage;
+				if (game.setting.convertImagesOnLoad) {
+					BufferedImage convertedImage = convertImage(image);
+					if (convertedImage != image) {
+						game.log().debug("Converted image: " + path + " [type=" + convertType(image.getType()) + "]");
+						image = convertedImage;
+					}
 				}
 
 				return new ImageImpl.Data(imageScale, image, image.getWidth(), image.getHeight());
@@ -733,6 +735,66 @@ public class JavaSEAssets extends Assets {
 		}
 		game.log().warn("Could not load image: " + path + " [error=" + error + "]");
 		throw error != null ? error : new FileNotFoundException(path);
+	}
+
+	protected static String convertType(int type) {
+		switch (type) {
+		case BufferedImage.TYPE_3BYTE_BGR:
+			return "BYTE_BGR";
+		case BufferedImage.TYPE_4BYTE_ABGR:
+			return "BYTE_ABGR";
+		case BufferedImage.TYPE_4BYTE_ABGR_PRE:
+			return "BYTE_ABGR_PRE";
+		case BufferedImage.TYPE_BYTE_BINARY:
+			return "BYTE_BINARY";
+		case BufferedImage.TYPE_BYTE_GRAY:
+			return "BYTE_GRAY";
+		case BufferedImage.TYPE_BYTE_INDEXED:
+			return "BYTE_INDEXED";
+		case BufferedImage.TYPE_INT_ARGB:
+			return "INT_ARGB";
+		case BufferedImage.TYPE_INT_ARGB_PRE:
+			return "INT_ARGB_PRE";
+		case BufferedImage.TYPE_INT_BGR:
+			return "INT_BGR";
+		case BufferedImage.TYPE_INT_RGB:
+			return "INT_RGB";
+		case BufferedImage.TYPE_USHORT_555_RGB:
+			return "USHORT_555_RGB";
+		case BufferedImage.TYPE_USHORT_565_RGB:
+			return "USHORT_565_RGB";
+		case BufferedImage.TYPE_USHORT_GRAY:
+			return "USHORT_GRAY";
+		case BufferedImage.TYPE_CUSTOM:
+			return "CUSTOM";
+		}
+		return LSystem.UNKNOWN;
+	}
+
+	protected static BufferedImage convertImage(BufferedImage image) {
+		final int type = image.getType();
+		switch (type) {
+		case BufferedImage.TYPE_INT_ARGB:
+			return image;
+		case BufferedImage.TYPE_INT_ARGB_PRE:
+			return image;
+		case BufferedImage.TYPE_3BYTE_BGR:
+		case BufferedImage.TYPE_4BYTE_ABGR:
+		case BufferedImage.TYPE_4BYTE_ABGR_PRE:
+			image.coerceData(true);
+			return image;
+		}
+		final int width = image.getWidth();
+		final int height = image.getHeight();
+		BufferedImage convertedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB_PRE);
+			Graphics2D g = convertedImage.createGraphics();
+			g.setColor(new java.awt.Color(0f, 0f, 0f, 0f));
+			g.fillRect(0, 0, width, height);
+			g.drawImage(image, 0, 0, null);
+			g.dispose();
+			image = null;
+		
+		return convertedImage;
 	}
 
 	@Override

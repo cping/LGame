@@ -103,25 +103,6 @@ public abstract class JavaSEImplGraphics extends Graphics {
 		return jfont.deriveFont(STYLE_TO_JAVA[font.style.ordinal()], font.size);
 	}
 
-	static BufferedImage convertImage(BufferedImage image) {
-		switch (image.getType()) {
-		case BufferedImage.TYPE_INT_ARGB_PRE:
-			return image;
-		case BufferedImage.TYPE_4BYTE_ABGR:
-			image.coerceData(true);
-			return image;
-		}
-		BufferedImage convertedImage = createBufferedImage(image.getWidth(), image.getHeight(),
-				BufferedImage.TYPE_INT_ARGB_PRE);
-		Graphics2D g = convertedImage.createGraphics();
-		g.setColor(new java.awt.Color(0f, 0f, 0f, 0f));
-		g.fillRect(0, 0, image.getWidth(), image.getHeight());
-		g.drawImage(image, 0, 0, null);
-		g.dispose();
-
-		return convertedImage;
-	}
-
 	static BufferedImage createBufferedImage(int width, int height, int imageType) {
 		return new BufferedImage(width, height, imageType);
 	}

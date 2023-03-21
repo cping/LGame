@@ -34,6 +34,9 @@ import java.util.Arrays;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.PixelFormat;
+import javafx.scene.image.PixelReader;
+import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.text.Font;
 import loon.Assets;
@@ -42,6 +45,7 @@ import loon.LSystem;
 import loon.Sound;
 import loon.canvas.Image;
 import loon.canvas.ImageImpl;
+import loon.canvas.LColor;
 import loon.opengl.TextureSource;
 import loon.utils.MathUtils;
 import loon.utils.Scale;
@@ -725,6 +729,14 @@ public class JavaFXAssets extends Assets {
 					image = scaleImage(image, viewImageRatio);
 					imageScale = viewScale;
 				}
+				if (game.setting.convertImagesOnLoad) {
+					WritableImage convertedImage = convertImage(image);
+					if (convertedImage != image) {
+						game.log().debug("Converted image: " + path + " [type="
+								+ image.getPixelReader().getPixelFormat().getType() + "]");
+						image = convertedImage;
+					}
+				}
 				return new ImageImpl.Data(imageScale, image, (int) image.getWidth(), (int) image.getHeight());
 			} catch (FileNotFoundException ex) {
 				error = ex;
@@ -732,6 +744,56 @@ public class JavaFXAssets extends Assets {
 		}
 		game.log().warn("Could not load image: " + path + " [error=" + error + "]");
 		throw error != null ? error : new FileNotFoundException(path);
+	}
+
+	private final static WritableImage convertImage(WritableImage image) {
+		final PixelFormat.Type type = image.getPixelReader().getPixelFormat().getType();
+		if (type == PixelFormat.Type.INT_ARGB || type == PixelFormat.Type.INT_ARGB_PRE
+				|| type == PixelFormat.Type.BYTE_INDEXED) {
+			return image;
+		}
+		final int width = (int) image.getWidth();
+		final int height = (int) image.getHeight();
+		WritableImage convertedImage = new WritableImage(width, height);
+		PixelReader reader = image.getPixelReader();
+		final int[] dstArray = new int[width * height];
+		if (PixelFormat.Type.BYTE_RGB == type) {
+			byte[] srcArray = new byte[width * height * 3];
+			reader.getPixels(0, 0, width, height, PixelFormat.getByteBgraInstance(), srcArray, 0, width * 3);
+			for (int i = 0, j = 0; i < dstArray.length; i++) {
+				int b = srcArray[j++] & 0xff;
+				int g = srcArray[j++] & 0xff;
+				int r = srcArray[j++] & 0xff;
+				int pixel = 0;
+				if (!(b == 255 && g == 0 && r == 255)) {
+					pixel = LColor.getRGB(r, g, b);
+				}
+				dstArray[i] = pixel;
+			}
+			srcArray = null;
+		} else if (PixelFormat.Type.BYTE_BGRA_PRE == type || PixelFormat.Type.BYTE_BGRA == type) {
+			byte[] srcArray = new byte[width * height * 4];
+			reader.getPixels(0, 0, width, height, PixelFormat.getByteBgraInstance(), srcArray, 0, width * 4);
+			for (int i = 0, j = 0; i < dstArray.length; i++) {
+				int b = srcArray[j++] & 0xff;
+				int g = srcArray[j++] & 0xff;
+				int r = srcArray[j++] & 0xff;
+				int a = srcArray[j++] & 0xff;
+				int pixel = 0;
+				if (!(b == 255 && g == 0 && r == 255 && a == 255)) {
+					pixel = LColor.getARGB(r, g, b, a);
+				}
+				dstArray[i] = pixel;
+			}
+			srcArray = null;
+		}else {
+			return image;
+		}
+		image.cancel();
+		image = null;
+		PixelWriter writer = convertedImage.getPixelWriter();
+		writer.setPixels(0, 0, width, height, PixelFormat.getIntArgbInstance(), dstArray, 0, width);
+		return convertedImage;
 	}
 
 	@Override

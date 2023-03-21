@@ -55,25 +55,25 @@ public class WaitProcess implements GameProcess, LRelease {
 		return "Process" + TimeUtils.millis();
 	}
 
-	public WaitProcess(Updateable _update) {
-		this(getProcessName(), 60, _update);
+	public WaitProcess(Updateable update) {
+		this(getProcessName(), 60, update);
 	}
 
-	public WaitProcess(long delay, Updateable _update) {
-		this(getProcessName(), delay, _update);
+	public WaitProcess(long delay, Updateable update) {
+		this(getProcessName(), delay, update);
 	}
 
-	public WaitProcess(String id, long delay, Updateable _update) {
-		this(id, delay, GameProcessType.Other, _update);
+	public WaitProcess(String id, long delay, Updateable update) {
+		this(id, delay, GameProcessType.Other, update);
 	}
 
-	public WaitProcess(String id, long delay, GameProcessType pt, Updateable _update) {
+	public WaitProcess(String id, long delay, GameProcessType pt, Updateable update) {
 		this._timer = new LTimer(delay);
+		this._processType = pt;
+		this._update = update;
 		this.isDead = false;
 		this.isAutoKill = true;
 		this.id = id;
-		this._processType = pt;
-		this._update = _update;
 	}
 
 	public boolean completed() {

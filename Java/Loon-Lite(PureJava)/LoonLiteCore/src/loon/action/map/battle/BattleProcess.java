@@ -22,9 +22,13 @@ package loon.action.map.battle;
 
 import java.util.Comparator;
 
+import loon.LSystem;
+import loon.events.Updateable;
 import loon.geom.BooleanValue;
+import loon.utils.MathUtils;
 import loon.utils.TArray;
 import loon.utils.processes.RealtimeProcess;
+import loon.utils.processes.WaitProcess;
 import loon.utils.timer.LTimerContext;
 
 public class BattleProcess extends RealtimeProcess {
@@ -126,6 +130,14 @@ public class BattleProcess extends RealtimeProcess {
 	}
 
 	private final static EventComparator _sortEvents = new EventComparator();
+
+	private float _minBattleWaitSeconds = 0.1f;
+
+	private float _maxBattleWaitSeconds = 5f;
+
+	private float _battleWaitSeconds = 1f;
+
+	private float _battleSpeed;
 
 	private final BooleanValue _actioning = new BooleanValue();
 
@@ -346,6 +358,10 @@ public class BattleProcess extends RealtimeProcess {
 		this._pause = false;
 		this._loop = true;
 		this._roundAmount = 0;
+		this._minBattleWaitSeconds = 0.1f;
+		this._maxBattleWaitSeconds = 5f;
+		this._battleWaitSeconds = 1f;
+		this._battleSpeed = 0f;
 		this.setDelay(0);
 		return this;
 	}
@@ -420,6 +436,17 @@ public class BattleProcess extends RealtimeProcess {
 		return this;
 	}
 
+	public float getBattleWaitSeconds() {
+		if (_battleSpeed != 0f) {
+			_battleWaitSeconds = MathUtils.lerp(_maxBattleWaitSeconds, _minBattleWaitSeconds, _battleSpeed);
+		}
+		return _battleWaitSeconds * (1f + MathUtils.random());
+	}
+
+	public WaitProcess getWaitProcess(Updateable update) {
+		return new WaitProcess(MathUtils.floor(getBattleWaitSeconds() * LSystem.SECOND), update);
+	}
+
 	public BattleProcess setActioning(boolean a) {
 		_actioning.set(a);
 		return this;
@@ -440,6 +467,43 @@ public class BattleProcess extends RealtimeProcess {
 
 	public BooleanValue getActioning() {
 		return _actioning;
+	}
+
+	public float getMinBattleWaitSeconds() {
+		return _minBattleWaitSeconds;
+	}
+
+	public BattleProcess setMinBattleWaitSeconds(float s) {
+		this._minBattleWaitSeconds = s;
+		return this;
+	}
+
+	public float getMaxBattleWaitSeconds() {
+		return _maxBattleWaitSeconds;
+	}
+
+	public BattleProcess setMaxBattleWaitSeconds(float s) {
+		this._maxBattleWaitSeconds = s;
+		return this;
+	}
+
+	public BattleProcess setBattleWaitSeconds(float s) {
+		this._battleWaitSeconds = s;
+		return this;
+	}
+
+	public float getBattleSpeed() {
+		return _battleSpeed;
+	}
+
+	public BattleProcess setBattleSpeed(float s) {
+		this._battleSpeed = s;
+		return this;
+	}
+
+	public BattleProcess over() {
+		kill();
+		return this;
 	}
 
 	@Override

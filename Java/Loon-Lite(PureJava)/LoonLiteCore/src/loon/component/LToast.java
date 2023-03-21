@@ -210,7 +210,7 @@ public class LToast extends LComponent implements FontSet<LToast> {
 			}
 			g.setColor(_component_baseColor);
 			g.setAlpha(_objectAlpha);
-			_toastFont.drawString(g, _displayText, x + _displayTextX, y + _displayTextY + 2);
+			_toastFont.drawString(g, _displayText, x + _displayTextX, y + _displayTextY + 1);
 		} finally {
 			g.setColor(oc);
 			g.setAlpha(alpha);

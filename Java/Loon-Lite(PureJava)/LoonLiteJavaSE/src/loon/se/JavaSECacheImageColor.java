@@ -25,7 +25,6 @@ import java.awt.image.BufferedImage;
 import loon.LRelease;
 import loon.LSystem;
 import loon.canvas.LColor;
-import loon.canvas.Pixmap;
 import loon.utils.IntMap;
 
 public class JavaSECacheImageColor implements LRelease {
@@ -33,7 +32,7 @@ public class JavaSECacheImageColor implements LRelease {
 	protected final IntMap<BufferedImage> _colorImageCaches;
 
 	protected final JavaSEImage _superImage;
-	
+
 	private boolean closed;
 
 	public JavaSECacheImageColor(JavaSEImage image) {
@@ -48,11 +47,21 @@ public class JavaSECacheImageColor implements LRelease {
 		hashCodeValue = LSystem.unite(hashCodeValue, b);
 		BufferedImage buffer = _colorImageCaches.get(hashCodeValue);
 		if (buffer == null) {
-			Pixmap pixmap = _superImage.getPixmap();
-			pixmap.setTransparent(LColor.TRANSPARENT);
-			pixmap.multiply(new LColor(r, g, b), 0);
-			buffer = new BufferedImage(pixmap.getWidth(), pixmap.getHeight(), BufferedImage.TYPE_INT_ARGB_PRE);
-			buffer.setRGB(0, 0, pixmap.getWidth(), pixmap.getHeight(), pixmap.getData(), 0, pixmap.getWidth());
+			final int[] rgbArrays = _superImage.getPixels();
+			for (int i = 0; i < rgbArrays.length; i++) {
+				int curARGB = rgbArrays[i];
+				int srcA = (curARGB >> 24) & 0xFF;
+				int srcR = (curARGB >> 16) & 0xFF;
+				int srcG = (curARGB >> 8) & 0xFF;
+				int srcB = (curARGB) & 0xFF;
+				srcR = (srcR * r) / 255;
+				srcG = (srcG * g) / 255;
+				srcB = (srcB * b) / 255;
+				rgbArrays[i] = LColor.getARGB(srcR, srcG, srcB, srcA);
+			}
+			buffer = new BufferedImage(_superImage.getWidth(), _superImage.getHeight(),
+					BufferedImage.TYPE_INT_ARGB_PRE);
+			buffer.setRGB(0, 0, _superImage.getWidth(), _superImage.getHeight(), rgbArrays, 0, _superImage.getWidth());
 			_colorImageCaches.put(hashCodeValue, buffer);
 		}
 		return buffer;
@@ -64,7 +73,7 @@ public class JavaSECacheImageColor implements LRelease {
 		}
 		return _colorImageCaches.size;
 	}
-	
+
 	public boolean isClosed() {
 		return closed;
 	}

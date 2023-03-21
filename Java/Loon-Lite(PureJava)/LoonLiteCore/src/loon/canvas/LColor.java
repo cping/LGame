@@ -43,7 +43,7 @@ public class LColor implements Serializable {
 	public static final int DEF_COLOR = 0xFFFFFFFF;
 
 	// 默认黑色透明区域
-	public static final int TRANSPARENT = 0xFF000000;
+	public static final int TRANSPARENT = 0;
 
 	public static final int[] convertToABGR(int pixelHeight, int pixelWidth, int[] srcPixels) {
 		return convertToABGR(pixelHeight, pixelWidth, srcPixels, srcPixels);

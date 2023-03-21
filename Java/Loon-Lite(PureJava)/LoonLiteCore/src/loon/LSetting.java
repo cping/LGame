@@ -212,6 +212,11 @@ public class LSetting {
 	 * 初始化游戏时传参用，默认无数据
 	 */
 	public String[] args = new String[] { "" };
+	
+	/**
+	 * 强制转化图片类型
+	 */
+	public boolean convertImagesOnLoad = true;
 
 	/**
 	 * 复制setting设置到自身
@@ -246,6 +251,7 @@ public class LSetting {
 		this.notAllowDragAndMove = setting.notAllowDragAndMove;
 		this.lockAllTouchEvent = setting.lockAllTouchEvent;
 		this.emulateFullVer = setting.emulateFullVer;
+		this.convertImagesOnLoad = setting.convertImagesOnLoad;
 		this.args = setting.args;
 	}
 
