@@ -757,6 +757,8 @@ public class JavaFXAssets extends Assets {
 		WritableImage convertedImage = new WritableImage(width, height);
 		PixelReader reader = image.getPixelReader();
 		final int[] dstArray = new int[width * height];
+		boolean updated = false;
+		final int maxChecked = LSystem.DEFAULT_MAX_CACHE_SIZE;
 		if (PixelFormat.Type.BYTE_RGB == type) {
 			byte[] srcArray = new byte[width * height * 3];
 			reader.getPixels(0, 0, width, height, PixelFormat.getByteBgraInstance(), srcArray, 0, width * 3);
@@ -767,6 +769,11 @@ public class JavaFXAssets extends Assets {
 				int pixel = 0;
 				if (!(b == 255 && g == 0 && r == 255)) {
 					pixel = LColor.getRGB(r, g, b);
+					if (!updated && i >= maxChecked) {
+						return image;
+					}
+				} else if (!updated) {
+					updated = true;
 				}
 				dstArray[i] = pixel;
 			}
@@ -782,11 +789,16 @@ public class JavaFXAssets extends Assets {
 				int pixel = 0;
 				if (!(b == 255 && g == 0 && r == 255 && a == 255)) {
 					pixel = LColor.getARGB(r, g, b, a);
+					if (!updated && i >= maxChecked) {
+						return image;
+					}
+				} else if (!updated) {
+					updated = true;
 				}
 				dstArray[i] = pixel;
 			}
 			srcArray = null;
-		}else {
+		} else {
 			return image;
 		}
 		image.cancel();

@@ -32,6 +32,7 @@ import loon.events.KeyMake;
 import loon.events.MouseMake;
 import loon.events.SysKey;
 import loon.events.SysTouch;
+import loon.utils.MathUtils;
 
 public class JavaSEInputMake extends JavaSEInput
 		implements MouseListener, MouseMotionListener, KeyListener, FocusListener {
@@ -94,7 +95,7 @@ public class JavaSEInputMake extends JavaSEInput
 		}
 		int btn = getMouseButton(e);
 		if (btn == -1) {
-			emitMouseButton(game.time(), (float) e.getX(), (float) e.getY(), -1, true, 0);
+			emitMouseButton(game.time(), MathUtils.floor(e.getX()), MathUtils.floor(e.getY()), -1, false, 0);
 		}
 	}
 
@@ -104,7 +105,7 @@ public class JavaSEInputMake extends JavaSEInput
 			return;
 		}
 		if (!inDragSequence) {
-			emitMouseButton(game.time(), (float) e.getX(), (float) e.getY(), -1, false, 0);
+			emitMouseButton(game.time(), MathUtils.floor(e.getX()), MathUtils.floor(e.getY()), -1, false, 0);
 		}
 	}
 
@@ -115,7 +116,7 @@ public class JavaSEInputMake extends JavaSEInput
 		}
 		int btn = getMouseButton(e);
 		if (btn != -1) {
-			emitMouseButton(game.time(), (float) e.getX(), (float) e.getY(), btn, true, 0);
+			emitMouseButton(game.time(), MathUtils.floor(e.getX()), MathUtils.floor(e.getY()), btn, true, 0);
 		}
 	}
 
@@ -127,7 +128,7 @@ public class JavaSEInputMake extends JavaSEInput
 		inDragSequence = true;
 		int btn = getMouseButton(e);
 		if (btn != -1) {
-			dispatch(new MouseMake.ButtonEvent(0, game.time(), (float) e.getX(), (float) e.getY(), btn, true), e);
+			dispatch(new MouseMake.ButtonEvent(0, game.time(), MathUtils.floor(e.getX()), MathUtils.floor(e.getY()), btn, true), e);
 		}
 	}
 
@@ -140,7 +141,7 @@ public class JavaSEInputMake extends JavaSEInput
 			inDragSequence = false;
 			int btn = getMouseButton(e);
 			if (btn != -1) {
-				dispatch(new MouseMake.ButtonEvent(0, game.time(), (float) e.getX(), (float) e.getY(), btn, false), e);
+				dispatch(new MouseMake.ButtonEvent(0, game.time(), MathUtils.floor(e.getX()), MathUtils.floor(e.getY()), btn, false), e);
 			}
 		}
 	}
@@ -152,7 +153,7 @@ public class JavaSEInputMake extends JavaSEInput
 		}
 		int btn = getMouseButton(e);
 		if (btn != -1) {
-			emitMouseButton(game.time(), (float) e.getX(), (float) e.getY(), btn, true, 0);
+			emitMouseButton(game.time(), MathUtils.floor(e.getX()), MathUtils.floor(e.getY()), btn, true, 0);
 		}
 	}
 
@@ -163,7 +164,7 @@ public class JavaSEInputMake extends JavaSEInput
 		}
 		int btn = getMouseButton(e);
 		if (btn != -1) {
-			emitMouseButton(game.time(), (float) e.getX(), (float) e.getY(), btn, false, 0);
+			emitMouseButton(game.time(), MathUtils.floor(e.getX()), MathUtils.floor(e.getY()), btn, false, 0);
 		}
 	}
 

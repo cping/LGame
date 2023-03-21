@@ -94,6 +94,13 @@ public class StringKeyValue {
 		return this;
 	}
 
+	public StringKeyValue addValue(char ch) {
+		initBuild();
+		_buffer.append(ch);
+		_dirty = true;
+		return this;
+	}
+	
 	public StringKeyValue addValue(int ch) {
 		initBuild();
 		_buffer.append(ch);
@@ -119,47 +126,47 @@ public class StringKeyValue {
 	}
 
 	public StringKeyValue tab() {
-		return addValue("	");
+		return addValue(LSystem.TAB);
 	}
 
 	public StringKeyValue space() {
-		return addValue(" ");
+		return addValue(LSystem.SPACE);
 	}
 
 	public StringKeyValue newLine() {
-		return addValue(LSystem.LS);
+		return addValue(LSystem.LF);
 	}
 
 	public StringKeyValue pushBrace() {
-		return addValue("{");
+		return addValue(LSystem.DELIM_START);
 	}
 
 	public StringKeyValue popBrace() {
-		return addValue("}");
+		return addValue(LSystem.DELIM_END);
 	}
 
 	public StringKeyValue pushParen() {
-		return addValue("(");
+		return addValue(LSystem.PAREN_START);
 	}
 
 	public StringKeyValue popParen() {
-		return addValue(")");
+		return addValue(LSystem.PAREN_END);
 	}
 
 	public StringKeyValue pushBracket() {
-		return addValue("[");
+		return addValue(LSystem.BRACKET_START);
 	}
 
 	public StringKeyValue popBracket() {
-		return addValue("]");
+		return addValue(LSystem.BRACKET_END);
 	}
 
 	public StringKeyValue quot() {
-		return addValue("\"");
+		return addValue(LSystem.DOUBLE_QUOTES);
 	}
 
 	public StringKeyValue comma() {
-		return addValue(",");
+		return addValue(LSystem.COMMA);
 	}
 
 	public StringKeyValue scomma() {
@@ -172,14 +179,14 @@ public class StringKeyValue {
 		}
 		int size = values.length;
 		StrBuilder sbr = new StrBuilder(size + 32);
-		sbr.append('{');
+		sbr.append(LSystem.DELIM_START);
 		for (int i = 0; i < size; i++) {
 			sbr.append(values[i]);
 			if (i < size - 1) {
-				sbr.append(',');
+				sbr.append(LSystem.COMMA);
 			}
 		}
-		sbr.append('}');
+		sbr.append(LSystem.DELIM_END);
 		return kv(key, sbr.toString());
 	}
 
@@ -188,9 +195,9 @@ public class StringKeyValue {
 			return this;
 		}
 		if (key != null && value == null) {
-			return addValue(key).addValue("=").addValue(LSystem.UNKNOWN);
+			return addValue(key).addValue(LSystem.EQUAL).addValue(LSystem.UNKNOWN);
 		} else if (key != null && value != null) {
-			return addValue(key).addValue("=").addValue(value.toString());
+			return addValue(key).addValue(LSystem.EQUAL).addValue(value.toString());
 		}
 		return this;
 	}

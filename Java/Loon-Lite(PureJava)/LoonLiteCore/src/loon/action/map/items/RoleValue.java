@@ -30,6 +30,7 @@ import loon.utils.MathUtils;
 public abstract class RoleValue {
 
 	private final int _id;
+	private boolean _locked;
 	private String _roleName;
 
 	protected int maxHealth;
@@ -156,7 +157,7 @@ public abstract class RoleValue {
 		}
 		return this;
 	}
-	
+
 	public RoleValue heal(int healCost, int healAmount) {
 		if (this.getMana() >= healCost) {
 			healAmount = (int) this.variance(healAmount, 20, true);
@@ -521,4 +522,28 @@ public abstract class RoleValue {
 		this._roleName = n;
 		return this;
 	}
+
+	public RoleValue setLocked(boolean l) {
+		this._locked = l;
+		return this;
+	}
+
+	public boolean isLocked() {
+		if (isDead) {
+			return _locked;
+		} else {
+			return false;
+		}
+	}
+
+	public RoleValue reset() {
+		this.isAttack = false;
+		this.isDefense = false;
+		this.isSkill = false;
+		this.isMoved = false;
+		this.isDead = false;
+		this._locked = false;
+		return this;
+	}
+
 }

@@ -21,7 +21,9 @@
 package loon.action.map.items;
 
 import loon.LRelease;
+import loon.LSystem;
 import loon.events.QueryEvent;
+import loon.utils.StringUtils;
 import loon.utils.TArray;
 
 public class Teams implements LRelease {
@@ -47,8 +49,15 @@ public class Teams implements LRelease {
 
 	private boolean _dirty;
 
+	private String _name;
+
 	public Teams() {
-		_teams = new TArray<Team>();
+		this(LSystem.UNKNOWN);
+	}
+
+	public Teams(String name) {
+		this._teams = new TArray<Team>();
+		this._name = name;
 		_dirty = false;
 	}
 
@@ -117,6 +126,19 @@ public class Teams implements LRelease {
 		return this;
 	}
 
+	public TArray<Team> find(String name) {
+		if (StringUtils.isEmpty(name)) {
+			return null;
+		}
+		TArray<Team> list = new TArray<Team>();
+		for (Team team : _teams) {
+			if (name.equalsIgnoreCase(name)) {
+				list.add(team);
+			}
+		}
+		return list;
+	}
+
 	public Role getRole(int teamId, int id) {
 		for (Team team : _teams) {
 			if (team.getTeam() == teamId) {
@@ -165,7 +187,7 @@ public class Teams implements LRelease {
 		}
 		return true;
 	}
-	
+
 	public boolean isAllMoved() {
 		for (Team team : _teams) {
 			if (!team.isMoved()) {
@@ -192,7 +214,7 @@ public class Teams implements LRelease {
 		}
 		return true;
 	}
-	
+
 	public boolean isAllDead() {
 		for (Team team : _teams) {
 			if (!team.isDead()) {
@@ -201,7 +223,7 @@ public class Teams implements LRelease {
 		}
 		return true;
 	}
-	
+
 	public Team getPlayer() {
 		return get(Team.Player);
 	}
@@ -216,6 +238,10 @@ public class Teams implements LRelease {
 
 	public Team getOther() {
 		return get(Team.Other);
+	}
+
+	public String getName() {
+		return _name;
 	}
 
 	public Team get(int team) {

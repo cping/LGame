@@ -21,6 +21,7 @@
 package loon.action.map.items;
 
 import loon.LRelease;
+import loon.LSystem;
 import loon.events.QueryEvent;
 import loon.utils.TArray;
 
@@ -42,9 +43,16 @@ public class Team implements LRelease {
 
 	private final TArray<Role> _characters;
 
+	private String _name;
+
 	public Team(int teamMode) {
+		this(teamMode, LSystem.UNKNOWN);
+	}
+
+	public Team(int teamMode, String name) {
 		this._characters = new TArray<Role>();
 		this._teamMode = teamMode;
+		this._name = name;
 	}
 
 	public TArray<Role> list() {
@@ -191,6 +199,10 @@ public class Team implements LRelease {
 		_characters.clear();
 		dirty = true;
 		return this;
+	}
+
+	public String getName() {
+		return _name;
 	}
 
 	public boolean isAllDoneAction() {

@@ -136,6 +136,9 @@ public class Role extends RoleValue implements ActionBind {
 
 	@Override
 	public void setX(float x) {
+		if(isLocked()) {
+			return;
+		}
 		if (_roleObject != null) {
 			_roleObject.setX(x);
 		}
@@ -143,6 +146,9 @@ public class Role extends RoleValue implements ActionBind {
 
 	@Override
 	public void setY(float y) {
+		if(isLocked()) {
+			return;
+		}
 		if (_roleObject != null) {
 			_roleObject.setY(y);
 		}
@@ -183,6 +189,9 @@ public class Role extends RoleValue implements ActionBind {
 
 	@Override
 	public void setVisible(boolean v) {
+		if(isLocked()) {
+			return;
+		}
 		if (_roleObject != null) {
 			_roleObject.setVisible(v);
 		}
@@ -230,6 +239,9 @@ public class Role extends RoleValue implements ActionBind {
 
 	@Override
 	public void setColor(LColor color) {
+		if(isLocked()) {
+			return;
+		}
 		if (_roleObject != null) {
 			_roleObject.setColor(color);
 		}
@@ -245,6 +257,9 @@ public class Role extends RoleValue implements ActionBind {
 
 	@Override
 	public void setScale(float sx, float sy) {
+		if(isLocked()) {
+			return;
+		}
 		if (_roleObject != null) {
 			_roleObject.setScale(sx, sy);
 		}
@@ -260,6 +275,9 @@ public class Role extends RoleValue implements ActionBind {
 
 	@Override
 	public void setRotation(float r) {
+		if(isLocked()) {
+			return;
+		}
 		if (_roleObject != null) {
 			_roleObject.setRotation(r);
 		}
@@ -291,6 +309,9 @@ public class Role extends RoleValue implements ActionBind {
 
 	@Override
 	public void setAlpha(float alpha) {
+		if(isLocked()) {
+			return;
+		}
 		if (_roleObject != null) {
 			_roleObject.setAlpha(alpha);
 		}
@@ -298,6 +319,9 @@ public class Role extends RoleValue implements ActionBind {
 
 	@Override
 	public void setLocation(float x, float y) {
+		if(isLocked()) {
+			return;
+		}
 		if (_roleObject != null) {
 			_roleObject.setLocation(x, y);
 		}

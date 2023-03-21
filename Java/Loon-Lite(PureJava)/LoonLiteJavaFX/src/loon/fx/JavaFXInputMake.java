@@ -36,6 +36,7 @@ import loon.events.MouseMake;
 import loon.events.SysKey;
 import loon.events.SysTouch;
 import loon.events.TouchMake;
+import loon.utils.MathUtils;
 
 public class JavaFXInputMake extends JavaFXInput {
 
@@ -57,7 +58,7 @@ public class JavaFXInputMake extends JavaFXInput {
 				}
 				int btn = getMouseButton(e);
 				if (btn != -1) {
-					emitMouseButton(game.time(), (float) e.getX(), (float) e.getY(), -1, true, 0);
+					emitMouseButton(game.time(), MathUtils.floor(e.getX()), MathUtils.floor(e.getY()), -1, false, 0);
 				}
 			}
 		});
@@ -73,7 +74,7 @@ public class JavaFXInputMake extends JavaFXInput {
 				inDragSequence = true;
 				int btn = getMouseButton(e);
 				if (btn != -1) {
-					dispatch(new MouseMake.ButtonEvent(0, game.time(), (float) e.getX(), (float) e.getY(), btn, true),
+					dispatch(new MouseMake.ButtonEvent(0, game.time(), MathUtils.floor(e.getX()), MathUtils.floor(e.getY()), btn, true),
 							e);
 				}
 
@@ -90,7 +91,7 @@ public class JavaFXInputMake extends JavaFXInput {
 					inDragSequence = false;
 					int btn = getMouseButton(e);
 					if (btn != -1) {
-						dispatch(new MouseMake.ButtonEvent(0, game.time(), (float) e.getX(), (float) e.getY(), btn,
+						dispatch(new MouseMake.ButtonEvent(0, game.time(), MathUtils.floor(e.getX()), MathUtils.floor(e.getY()), btn,
 								false), e);
 					}
 				}
@@ -106,7 +107,7 @@ public class JavaFXInputMake extends JavaFXInput {
 					return;
 				}
 				if (!inDragSequence) {
-					emitMouseButton(game.time(), (float) e.getX(), (float) e.getY(), -1, false, 0);
+					emitMouseButton(game.time(), MathUtils.floor(e.getX()), MathUtils.floor(e.getY()), -1, false, 0);
 				}
 			}
 
