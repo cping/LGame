@@ -69,6 +69,9 @@ public abstract class Painter extends TextureSource {
 	public abstract void addToBatch(BaseBatch batch, int tint, Affine2f tx, float dx, float dy, float dw, float dh,
 			float sx, float sy, float sw, float sh);
 
+	public abstract void quad(BaseBatch batch, int tint,Affine2f tx, float x1, float y1, float x2, float y2, float x3, float y3,
+			float x4, float y4);
+
 	@Override
 	public boolean isLoaded() {
 		return _isLoaded;

@@ -29,11 +29,11 @@ public abstract class BaseBatch extends LTextureBind {
 	protected ShaderSource _shader_source;
 
 	private boolean _shader_ditry = true;
-	
+
 	public abstract BaseBatch setBlendMode(int b);
 
 	public abstract int getBlendMode();
-	
+
 	public void setShaderSource(ShaderSource source) {
 		if (source == null) {
 			return;
@@ -116,6 +116,36 @@ public abstract class BaseBatch extends LTextureBind {
 			addQuad(tint, xf, dx, dy, dx + dw, dy + dh, xOff, yOff, widthRatio, heightRatio);
 		}
 	}
+
+	public void quad(LTexture tex, int tint, Affine2f xf, float x1, float y1, float x2, float y2, float x3, float y3,
+			float x4, float y4) {
+		if (tex == null || tex.isClosed()) {
+			return;
+		}
+		if (LColor.getAlpha(tint) <= 0) {
+			return;
+		}
+		setTexture(tex);
+		quad(tint, xf.m00, xf.m01, xf.m10, xf.m11, xf.tx, xf.ty, x1, y1, x2, y2, x3, y3, x4, y4, tex.xOff(), tex.yOff(),
+				tex.widthRatio(), tex.heightRatio());
+	}
+
+	public void quad(LTexture tex, Affine2f xf, float x1, float y1, float c1, float x2, float y2, float c2, float x3,
+			float y3, float c3, float x4, float y4, float c4) {
+		if (tex == null || tex.isClosed()) {
+			return;
+		}
+		setTexture(tex);
+		quad(xf.m00, xf.m01, xf.m10, xf.m11, xf.tx, xf.ty, x1, y1, c1, x2, y2, c2, x3, y3, c3, x4, y4, c4, tex.xOff(),
+				tex.yOff(), tex.widthRatio(), tex.heightRatio());
+	}
+
+	public abstract void quad(int tint, float m00, float m01, float m10, float m11, float tx, float ty, float x1,
+			float y1, float x2, float y2, float x3, float y3, float x4, float y4, float u, float v, float u2, float v2);
+
+	public abstract void quad(float m00, float m01, float m10, float m11, float tx, float ty, float x1, float y1,
+			float c1, float x2, float y2, float c2, float x3, float y3, float c3, float x4, float y4, float c4, float u,
+			float v, float u2, float v2);
 
 	public void addQuad(int tint, Affine2f xf, float left, float top, float right, float bottom, float sl, float st,
 			float sr, float sb) {

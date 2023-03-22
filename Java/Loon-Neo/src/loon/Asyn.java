@@ -34,7 +34,7 @@ public abstract class Asyn {
 
 		CallDefaultPort(Default d) {
 			this._def = d;
-			
+
 		}
 
 		@Override
@@ -139,8 +139,8 @@ public abstract class Asyn {
 			_asyn.invokeLater(new DeferredPromiseRunnable<T>(1, this, null, cause));
 		}
 	}
-	
-	public <T> GoPromise<T> deferredPromise() {		
+
+	public <T> GoPromise<T> deferredPromise() {
 		return new CallDeferredPromise<T>(Asyn.this);
 	}
 
@@ -149,5 +149,5 @@ public abstract class Asyn {
 	public void invokeAsync(Runnable action) {
 		throw new UnsupportedOperationException();
 	}
-	
+
 }

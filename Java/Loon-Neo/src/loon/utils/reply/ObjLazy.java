@@ -29,8 +29,8 @@ public class ObjLazy<T> implements ObjT<T> {
 	public ObjLazy(final ObjT<T> o) {
 		this._obj = o;
 	}
-	
-	public ObjLazy<T> reset(){
+
+	public ObjLazy<T> reset() {
 		_value = null;
 		return this;
 	}

@@ -23,7 +23,7 @@ package loon.opengl;
 import loon.utils.reply.GoFuture;
 
 public abstract class TextureSource {
-	
+
 	public final static String RenderCanvas = "<canvas>";
 
 	protected boolean _isLoaded = true;

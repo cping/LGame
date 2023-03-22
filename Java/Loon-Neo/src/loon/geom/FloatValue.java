@@ -51,7 +51,7 @@ public class FloatValue implements LRelease {
 	public float scaledFloor(float length) {
 		return MathUtils.ifloor(scaled(length));
 	}
-	
+
 	public float get() {
 		return result();
 	}

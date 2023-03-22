@@ -330,7 +330,7 @@ public class LCheckBox extends LComponent implements FontSet<LCheckBox> {
 
 	@Override
 	public void destory() {
-		
+
 	}
 
 }

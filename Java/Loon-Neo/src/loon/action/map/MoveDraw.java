@@ -51,7 +51,7 @@ public abstract class MoveDraw extends Draw {
 	protected boolean moving = false;
 
 	protected boolean selecting = false;
-	
+
 	protected TileMap gameMap;
 
 	public MoveDraw(TileMap gameMap, int tileSize) {
@@ -68,7 +68,7 @@ public abstract class MoveDraw extends Draw {
 		this.attackList = new int[maxX][maxY];
 		this.clear();
 	}
-	
+
 	public abstract void updateState(int idx);
 
 	public MoveDraw setFinalState(int idx) {
@@ -123,15 +123,15 @@ public abstract class MoveDraw extends Draw {
 	public void setMoveCount(int x, int y) {
 		movingList[x][y] = moveCount;
 	}
-	
+
 	public abstract boolean allowSetMove(int x, int y);
-	
-	public abstract int getMapCost(int x,int y);
-	
+
+	public abstract int getMapCost(int x, int y);
+
 	public abstract int getMove(int idx);
 
 	public void setMoveCount(int x, int y, int count) {
-		if(!allowSetMove(x, y)) {
+		if (!allowSetMove(x, y)) {
 			return;
 		}
 		int cost = getMapCost(x, y);
@@ -184,11 +184,11 @@ public abstract class MoveDraw extends Draw {
 	public boolean isMoving() {
 		return this.moving;
 	}
-	
+
 	public abstract Vector2f getRolePos(int idx);
 
 	public void setMoveRange() {
-		Vector2f role =  getRolePos(actionIdx);
+		Vector2f role = getRolePos(actionIdx);
 		int x = gameMap.pixelsToTilesWidth(role.getX());
 		int y = gameMap.pixelsToTilesHeight(role.getY());
 		int area = getMove(actionIdx); // 有效范围
@@ -197,8 +197,7 @@ public abstract class MoveDraw extends Draw {
 
 		for (int count = 0; count <= area - 1; count++) {
 			for (int j = fixY(y - area); j < fixY(y + area); j++) {
-				for (int i = fixX(x - (area - Math.abs(y - j))); i <= fixX(
-						x + (area - Math.abs(y - j))); i++) {
+				for (int i = fixX(x - (area - Math.abs(y - j))); i <= fixX(x + (area - Math.abs(y - j))); i++) {
 					// 如果能够移动指定步数
 					if ((getMoveCount(i - 1, j) == count) || (getMoveCount(i, j - 1) == count)
 							|| (getMoveCount(i + 1, j) == count) || (getMoveCount(i, j + 1) == count)) {
@@ -246,8 +245,7 @@ public abstract class MoveDraw extends Draw {
 		}
 		moveCourse.set(moveX, moveY);
 		// 选择可行的最短路径
-		if ((movingList[fixX(moveX - 1)][moveY] != moveCount)
-				&& (movingList[moveX][fixY(moveY - 1)] != moveCount)
+		if ((movingList[fixX(moveX - 1)][moveY] != moveCount) && (movingList[moveX][fixY(moveY - 1)] != moveCount)
 				&& (movingList[fixX(moveX + 1)][moveY] != moveCount)
 				&& (movingList[moveX][fixY(moveY + 1)] != moveCount)
 				|| (moveCount + getMapCost(moveX, moveY) > getMove(actionIdx))) {
@@ -362,7 +360,6 @@ public abstract class MoveDraw extends Draw {
 		}
 		return 4;
 	}
-
 
 	public boolean isAttacking() {
 		return action == 1 && actionIdx != -1;

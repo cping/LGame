@@ -25,12 +25,12 @@ import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
-import loon.canvas.PixmapFImpl;
 import loon.font.IFont;
 import loon.geom.Matrix4;
 import loon.geom.RectBox;
 import loon.geom.Shape;
 import loon.geom.Vector2f;
+import loon.opengl.BatchEx;
 import loon.opengl.BlendMethod;
 import loon.opengl.BlendState;
 import loon.opengl.ExpandVertices;
@@ -40,7 +40,6 @@ import loon.opengl.Submit;
 import loon.opengl.ShaderProgram;
 import loon.opengl.ShaderSource;
 import loon.utils.GLUtils;
-import loon.utils.IntMap;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 
@@ -48,7 +47,7 @@ import loon.utils.NumberUtils;
  * 这是一个纹理批量渲染的实现,其中API可以基本兼容xna(monogame)以及libgdx的同名SpriteBatch类(干什么用大家都懂的)
  * 
  */
-public class SpriteBatch extends PixmapFImpl {
+public class SpriteBatch extends BatchEx<SpriteBatch> {
 
 	public static enum SpriteEffects {
 		None, FlipHorizontally, FlipVertically;
@@ -89,96 +88,6 @@ public class SpriteBatch extends PixmapFImpl {
 	private final ShaderSource source;
 
 	private LTexture colorTexture;
-
-	public static class TextureLine {
-
-		private Vector2f pstart = new Vector2f();
-
-		private Vector2f pend = new Vector2f();
-
-		private float pstrokeWidth;
-
-		private float pangle;
-
-		private Vector2f pdirection;
-
-		private Vector2f pcentre;
-
-		private float plength;
-
-		private boolean pchanged;
-
-		private LTexture whitePixel;
-
-		public TextureLine(LTexture texture) {
-			this.pchanged = true;
-			whitePixel = texture;
-		}
-
-		public void setStart(float x, float y) {
-			pstart.set(x, y);
-			pchanged = true;
-		}
-
-		public void setEnd(float x, float y) {
-			pend.set(x, y);
-			pchanged = true;
-		}
-
-		public float getStrokeWidth() {
-			return pstrokeWidth;
-		}
-
-		public void setStrokeWidth(float value) {
-			pstrokeWidth = value;
-			pchanged = true;
-		}
-
-		public void update() {
-			pdirection = pend.sub(pstart);
-			pdirection.normalizeSelf();
-			pangle = MathUtils.toDegrees(MathUtils.atan2(pend.y - pstart.y, pend.x - pstart.x));
-			plength = MathUtils.ceil(pstart.distance(pend));
-			pcentre = (pstart.add(pend).div(2));
-			pchanged = false;
-		}
-
-		public void draw(SpriteBatch batch) {
-			if (pchanged) {
-				update();
-			}
-			if (pstrokeWidth > 0) {
-				batch.draw(whitePixel, pcentre.x, pcentre.y, plength / 2f, pstrokeWidth / 2, plength, pstrokeWidth, 1f,
-						1f, MathUtils.fixRotation(pangle), 0, 0, 1f, 1f, false, false, true);
-			}
-		}
-	}
-
-	private IntMap<SpriteBatch.TextureLine> lineLazy = new IntMap<SpriteBatch.TextureLine>(1000);
-
-	@Override
-	protected void drawLineImpl(float x1, float y1, float x2, float y2) {
-		drawLineImpl(x1, y1, x2, y2, 1f);
-	}
-
-	protected void drawLineImpl(float x1, float y1, float x2, float y2, float lineWidth) {
-
-		int hashCode = 1;
-		hashCode = LSystem.unite(hashCode, x1);
-		hashCode = LSystem.unite(hashCode, y1);
-		hashCode = LSystem.unite(hashCode, x2);
-		hashCode = LSystem.unite(hashCode, y2);
-		hashCode = LSystem.unite(hashCode, lineWidth);
-		SpriteBatch.TextureLine line = lineLazy.get(hashCode);
-		if (line == null) {
-			line = new SpriteBatch.TextureLine(colorTexture);
-			line.setStart(x1, y1);
-			line.setEnd(x2, y2);
-			line.setStrokeWidth(lineWidth);
-			lineLazy.put(hashCode, line);
-		}
-		line.draw(this);
-	}
 
 	public IFont getFont() {
 		return font;
@@ -304,8 +213,9 @@ public class SpriteBatch extends PixmapFImpl {
 		return lockSubmit;
 	}
 
-	public void setLockSubmit(boolean lockSubmit) {
+	public SpriteBatch setLockSubmit(boolean lockSubmit) {
 		this.lockSubmit = lockSubmit;
+		return this;
 	}
 
 	public void drawString(IFont spriteFont, String text, float px, float py, LColor color, float rotation,
@@ -1655,6 +1565,59 @@ public class SpriteBatch extends PixmapFImpl {
 		this.idx = idx;
 	}
 
+	@Override
+	public BatchEx<SpriteBatch> quad(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
+		quad(colorTexture, x1, y1, color, x2, y2, color, x3, y3, color, x4, y4, color);
+		return this;
+	}
+
+	@Override
+	public BatchEx<SpriteBatch> quad(float x1, float y1, float c1, float x2, float y2, float c2, float x3, float y3,
+			float c3, float x4, float y4, float c4) {
+		quad(LSystem.base().graphics().finalColorTex(), x1, y1, c1, x2, y2, c2, x3, y3, c3, x4, y4, c4);
+		return this;
+	}
+
+	private void quad(LTexture texture, float x1, float y1, float c1, float x2, float y2, float c2, float x3, float y3,
+			float c3, float x4, float y4, float c4) {
+		if (!checkTexture(texture)) {
+			return;
+		}
+
+		final float u = texture.xOff();
+		final float v = texture.yOff();
+		final float u2 = texture.widthRatio();
+		final float v2 = texture.heightRatio();
+
+		int idx = this.idx;
+
+		expandVertices.setVertice(idx++, x1);
+		expandVertices.setVertice(idx++, y1);
+		expandVertices.setVertice(idx++, c1);
+		expandVertices.setVertice(idx++, u);
+		expandVertices.setVertice(idx++, v);
+
+		expandVertices.setVertice(idx++, x2);
+		expandVertices.setVertice(idx++, y2);
+		expandVertices.setVertice(idx++, c2);
+		expandVertices.setVertice(idx++, u);
+		expandVertices.setVertice(idx++, v2);
+
+		expandVertices.setVertice(idx++, x3);
+		expandVertices.setVertice(idx++, y3);
+		expandVertices.setVertice(idx++, c3);
+		expandVertices.setVertice(idx++, u2);
+		expandVertices.setVertice(idx++, v2);
+
+		expandVertices.setVertice(idx++, x4);
+		expandVertices.setVertice(idx++, y4);
+		expandVertices.setVertice(idx++, c4);
+		expandVertices.setVertice(idx++, u2);
+		expandVertices.setVertice(idx++, v);
+
+		this.idx = idx;
+	}
+
 	public void draw(LTextureRegion region, float x, float y, float originX, float originY, float width, float height,
 			float scaleX, float scaleY, float rotation, boolean clockwise) {
 
@@ -1883,6 +1846,15 @@ public class SpriteBatch extends PixmapFImpl {
 	@Override
 	protected void fillRectNative(float x, float y, float width, float height) {
 		draw(colorTexture, x, y, width, height);
+	}
+
+	@Override
+	protected void drawLineImpl(float x1, float y1, float x2, float y2) {
+		drawLineImpl(x1, y1, x2, y2, 1f);
+	}
+
+	protected void drawLineImpl(float x1, float y1, float x2, float y2, float lineWidth) {
+		line(x1, y1, x2, y2, lineWidth);
 	}
 
 	public float getFontOffsetX() {

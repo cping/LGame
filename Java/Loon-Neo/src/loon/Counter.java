@@ -113,7 +113,7 @@ public class Counter {
 	public int incId(int i) {
 		return increment(i) - i;
 	}
-	
+
 	public int incId() {
 		return incId(1);
 	}

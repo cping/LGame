@@ -39,13 +39,13 @@ import static loon.opengl.GL20.*;
 public abstract class Graphics {
 
 	protected final LGame game;
-	
+
 	protected final Dimension viewSizeM = new Dimension();
 
 	protected final FloatValue viewDPISacle = new FloatValue(1f);
-	
+
 	protected Scale scale = null;
-	
+
 	protected int viewPixelWidth, viewPixelHeight;
 
 	private Display display = null;
@@ -131,7 +131,7 @@ public abstract class Graphics {
 	public int height() {
 		return screenSize().getHeight();
 	}
-	
+
 	public Matrix4 getViewMatrix() {
 		display = game.display();
 		Dimension view = LSystem.viewSize;
@@ -152,7 +152,7 @@ public abstract class Graphics {
 		return this;
 	}
 
-	public  Graphics restore() {
+	public Graphics restore() {
 		viewMatrix = matrixsStack.pop();
 		return this;
 	}
@@ -297,7 +297,7 @@ public abstract class Graphics {
 			return filter;
 		}
 	}
-	
+
 	public LGame game() {
 		return game;
 	}

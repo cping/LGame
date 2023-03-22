@@ -237,7 +237,7 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 	public LMessage setMessage(String context, boolean isComplete) {
 		return setMessage(context, isComplete, false);
 	}
-	
+
 	public LMessage setMessage(String context, boolean isComplete, boolean autoLength) {
 		PointF size = FontUtils.getTextWidthAndHeight(messageFont, context);
 		if (autoLength) {

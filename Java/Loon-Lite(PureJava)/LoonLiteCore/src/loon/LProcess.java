@@ -298,52 +298,55 @@ public class LProcess implements LRelease {
 						// * 不想使用,或者需要自行设定的话，请重载Screen的onTransition函数。
 						// * 不使用,返回: LTransition.newEmpty()
 						// * 使用,返回: 设定或者自定义一个LTransition对象.
-						LTransition _transition = screen.onTransition();
-						if (_transition == null) {
-							int rad = MathUtils.random(0, 12);
+						LTransition randTransition = screen.onTransition();
+						if (randTransition == null) {
+							int rad = MathUtils.random(0, 13);
 							switch (rad) {
 							case 0:
-								_transition = LTransition.newFadeIn();
+								randTransition = LTransition.newFadeIn();
 								break;
 							case 1:
-								_transition = LTransition.newArc();
+								randTransition = LTransition.newArc();
 								break;
 							case 2:
-								_transition = LTransition.newSplitRandom(LColor.black);
+								randTransition = LTransition.newSplitRandom(LColor.black);
 								break;
 							case 3:
-								_transition = LTransition.newCrossRandom(LColor.black);
+								randTransition = LTransition.newCrossRandom(LColor.black);
 								break;
 							case 4:
-								_transition = LTransition.newFadeOvalIn(LColor.black);
+								randTransition = LTransition.newFadeOvalIn(LColor.black);
 								break;
 							case 5:
-								_transition = LTransition.newPixelWind(LColor.white);
+								randTransition = LTransition.newPixelWind(LColor.white);
 								break;
 							case 6:
-								_transition = LTransition.newPixelDarkOut(LColor.black);
+								randTransition = LTransition.newPixelDarkOut(LColor.black);
 								break;
 							case 7:
-								_transition = LTransition.newPixelThunder(LColor.black);
+								randTransition = LTransition.newPixelThunder(LColor.black);
 								break;
 							case 8:
-								_transition = LTransition.newFadeDotIn(LColor.black);
+								randTransition = LTransition.newFadeDotIn(LColor.black);
 								break;
 							case 9:
-								_transition = LTransition.newFadeTileIn(LColor.black);
+								randTransition = LTransition.newFadeTileIn(LColor.black);
 								break;
 							case 10:
-								_transition = LTransition.newFadeSpiralIn(LColor.black);
+								randTransition = LTransition.newFadeSpiralIn(LColor.black);
 								break;
 							case 11:
-								_transition = LTransition.newFadeSwipeIn(LColor.black);
+								randTransition = LTransition.newFadeSwipeIn(LColor.black);
 								break;
 							case 12:
-								_transition = LTransition.newFadeBoardIn(LColor.black);
+								randTransition = LTransition.newFadeBoardIn(LColor.black);
+								break;
+							case 13:
+								randTransition = LTransition.newOvalIn(LColor.black);
 								break;
 							}
 						}
-						setTransition(_transition);
+						setTransition(randTransition);
 					}
 				}
 				_game.displayImpl.clearLog();

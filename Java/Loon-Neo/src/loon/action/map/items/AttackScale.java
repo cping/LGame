@@ -20,9 +20,6 @@
  */
 package loon.action.map.items;
 
-public enum AttackScale
-{
-	Single, 
-	Line,
-	Range
+public enum AttackScale {
+	Single, Line, Range
 }

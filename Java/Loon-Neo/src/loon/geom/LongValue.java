@@ -51,7 +51,7 @@ public class LongValue implements LRelease {
 	public long scaledFloor(long length) {
 		return MathUtils.ifloor(scaled(length));
 	}
-	
+
 	public long get() {
 		return result();
 	}

@@ -158,7 +158,7 @@ public class WaitProcess implements GameProcess, LRelease {
 	public int getPriority() {
 		return _priority;
 	}
-	
+
 	@Override
 	public void finish() {
 		if (!this.isDead) {

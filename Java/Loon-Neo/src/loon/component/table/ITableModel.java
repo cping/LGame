@@ -29,7 +29,7 @@ public interface ITableModel {
 	public Object getValue(int row, int column);
 
 	public int getRowCount();
-	
+
 	public String message();
 
 }

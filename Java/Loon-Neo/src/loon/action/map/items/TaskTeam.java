@@ -57,11 +57,11 @@ public class TaskTeam {
 	public TArray<TaskState> where(final QueryEvent<TaskState> query) {
 		return _tasks.save(query);
 	}
-	
+
 	public TArray<TaskState> cleanOver() {
 		return _tasks.clean(new CleanQuery());
 	}
-	
+
 	public boolean isAllTasksCompleted() {
 		for (TaskState task : _tasks) {
 			if (!task.isCompleted()) {

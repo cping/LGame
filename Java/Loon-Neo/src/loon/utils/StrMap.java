@@ -21,11 +21,11 @@
 package loon.utils;
 
 public class StrMap extends ObjectMap<String, String> {
-	
+
 	public StrMap() {
 		super();
 	}
-	
+
 	public StrMap(ObjectMap<? extends String, ? extends String> map) {
 		super(map);
 	}

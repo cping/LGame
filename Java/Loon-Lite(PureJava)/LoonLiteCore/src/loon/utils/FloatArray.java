@@ -148,6 +148,25 @@ public class FloatArray implements IArray, LRelease {
 		items[length++] = value;
 	}
 
+	public void add(float value1, float value2) {
+		float[] items = this.items;
+		if (length + 1 >= items.length)
+			items = relength(MathUtils.max(8, (int) (length * 1.75f)));
+		items[length] = value1;
+		items[length + 1] = value2;
+		length += 2;
+	}
+
+	public void add(float value1, float value2, float value3) {
+		float[] items = this.items;
+		if (length + 2 >= items.length)
+			items = relength(MathUtils.max(8, (int) (length * 1.75f)));
+		items[length] = value1;
+		items[length + 1] = value2;
+		items[length + 2] = value3;
+		length += 3;
+	}
+
 	public void addAll(FloatArray array) {
 		addAll(array, 0, array.length);
 	}

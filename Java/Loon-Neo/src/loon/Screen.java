@@ -1040,7 +1040,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public Screen replaceScreen(final Screen screen) {
-		if(replaceLoading) {
+		if (replaceLoading) {
 			return this;
 		}
 		Screen tmp = null;

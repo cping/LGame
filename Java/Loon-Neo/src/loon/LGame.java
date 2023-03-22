@@ -1106,7 +1106,7 @@ public abstract class LGame implements LRelease {
 	public void clearSpritesPool() {
 		_sprites_pools.clear();
 	}
-	
+
 	public void closeSpritesPool() {
 		for (int i = _sprites_pools.size - 1; i > -1; i--) {
 			Sprites sprites = _sprites_pools.get(i);
@@ -1139,11 +1139,11 @@ public abstract class LGame implements LRelease {
 	public boolean popDesktopPool(Desktop desktop) {
 		return _desktop_pools.remove(desktop);
 	}
-	
+
 	public void clearDesktopPool() {
 		_desktop_pools.clear();
 	}
-	
+
 	public void closeDesktopPool() {
 		for (int i = _desktop_pools.size - 1; i > -1; i--) {
 			Desktop desktop = _desktop_pools.get(i);

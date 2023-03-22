@@ -74,7 +74,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	public static final int RIGHT = 3;
 
 	private static final float HEXWM = MathUtils.sqrt(3f) / 2f;
-	
+
 	private boolean allowDisplayFindPath;
 
 	private boolean allowDisplayClicked;

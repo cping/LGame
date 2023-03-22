@@ -463,7 +463,8 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 				tempMessages.add(new Message(text, null, face, FontUtils.splitLines(text, font, width())));
 			}
 		} else {
-			tempMessages.add(new Message(LSystem.EMPTY, null, face, FontUtils.splitLines(LSystem.EMPTY, font, width())));
+			tempMessages
+					.add(new Message(LSystem.EMPTY, null, face, FontUtils.splitLines(LSystem.EMPTY, font, width())));
 		}
 		initMessages(tempMessages, typeFlag, font, box, x, y, width, height, color, shadow);
 	}
@@ -820,7 +821,7 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 
 	@Override
 	public void destory() {
-		
+
 	}
 
 }

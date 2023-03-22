@@ -280,7 +280,7 @@ public class Print implements FontSet<Print>, LRelease {
 		}
 	}
 
-	protected int maxFontHeignt(final IFont curfontSize,final char[] showMessages,final int textsize) {
+	protected int maxFontHeignt(final IFont curfontSize, final char[] showMessages, final int textsize) {
 		int height = 0;
 		for (int i = 0; i < textsize; i++) {
 			height = MathUtils.max(height, curfontSize.stringHeight(String.valueOf(showMessages[i])));

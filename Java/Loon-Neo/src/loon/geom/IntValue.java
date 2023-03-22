@@ -51,7 +51,7 @@ public class IntValue implements LRelease {
 	public int scaledFloor(int length) {
 		return MathUtils.ifloor(scaled(length));
 	}
-	
+
 	public int get() {
 		return result();
 	}

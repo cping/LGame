@@ -295,7 +295,7 @@ public class GLRenderer implements LRelease {
 		if (_currType != GLType.Filled && _currType != GLType.Line)
 			throw new LSysException("Must call begin(GLType.Filled) or begin(GLType.Line)");
 		checkFlush(segments * 2 + 2);
-		float angle = 2 * 3.1415926f / segments;
+		float angle = MathUtils.TWO_PI / segments;
 		float cos = MathUtils.cos(angle);
 		float sin = MathUtils.sin(angle);
 		float cx = radius, cy = 0;
@@ -538,7 +538,7 @@ public class GLRenderer implements LRelease {
 			start = -start;
 			start = arcAngle < 0 ? start : (start + arcAngle < 0 ? start + arcAngle + 360 : start + arcAngle);
 		}
-		float theta = (2 * MathUtils.PI * (arcAngle / 360.0f)) / segments;
+		float theta = (MathUtils.TWO_PI * (arcAngle / 360f)) / segments;
 		float cos = MathUtils.cos(theta);
 		float sin = MathUtils.sin(theta);
 		float cx = radius * MathUtils.cos(start * MathUtils.DEG_TO_RAD);

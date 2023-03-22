@@ -24,21 +24,8 @@ package loon.action.map.items;
  * 任务类型
  */
 public enum TaskType {
-	
-	ARREST,
-	SAVE,
-	STEAL,
-    FETCH,
-    DELIVERY,
-    DISCOVER,
-    DAMAGE,
-    GUARD,
-    GAME,
-    UPGRADE,
-    ESCORT,
-    RETURN,
-    KILL,
-    KILLTEAMALL,
-    HELP;
-	
+
+	ARREST, SAVE, STEAL, FETCH, DELIVERY, DISCOVER, DAMAGE, GUARD, GAME, UPGRADE, ESCORT, RETURN, KILL, KILLTEAMALL,
+	HELP;
+
 }

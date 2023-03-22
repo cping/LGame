@@ -292,6 +292,10 @@ public class Path2D implements Path {
 		return this;
 	}
 
+	public Path oval(float x1, float y1, float width, float height) {
+		return arcToBezier(x1, y1, width, height, 0, 360);
+	}
+
 	public Path arcToBezier(float x, float y, float radiusX, float radiusY, float startAngle, float endAngle) {
 		return arcToBezier(x, y, radiusX, radiusY, startAngle, endAngle, false);
 	}
@@ -630,6 +634,34 @@ public class Path2D implements Path {
 		for (int i = 0; i < p._data.size(); i += 2) {
 			_data.add(p._data.get(i) + px);
 			_data.add(p._data.get(i + 1) + py);
+		}
+		return this;
+	}
+
+	public Path2D fill(Canvas c, float px, float py) {
+		if (c != null) {
+			Path path = c.createPath();
+			for (int i = 0; i < _data.size(); i += 2) {
+				float x = _data.get(i) + px;
+				float y = _data.get(i + 1) + py;
+				path.lineTo(x, y);
+			}
+			path.close();
+			c.fillPath(path);
+		}
+		return this;
+	}
+
+	public Path2D stroke(Canvas c, float px, float py) {
+		if (c != null) {
+			Path path = c.createPath();
+			for (int i = 0; i < _data.size(); i += 2) {
+				float x = _data.get(i) + px;
+				float y = _data.get(i + 1) + py;
+				path.lineTo(x, y);
+			}
+			path.close();
+			c.strokePath(path);
 		}
 		return this;
 	}

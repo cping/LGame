@@ -247,7 +247,7 @@ public class LTexture extends Painter implements LRelease {
 	public boolean isDrawCanvas() {
 		return source != null && source.indexOf(RenderCanvas) != -1;
 	}
-	
+
 	public boolean isImageCanvas() {
 		return StringUtils.isEmpty(source) || (source.indexOf('<') != -1 && source.indexOf('>') != -1);
 	}
@@ -558,6 +558,15 @@ public class LTexture extends Painter implements LRelease {
 			return;
 		}
 		batch.addQuad(this, tint, tx, dx, dy, dw, dh, sx, sy, sw, sh);
+	}
+
+	@Override
+	public void quad(BaseBatch batch, int tint, Affine2f tx, float x1, float y1, float x2, float y2, float x3, float y3,
+			float x4, float y4) {
+		if (isClosed()) {
+			return;
+		}
+		batch.quad(this, tint,tx, x1, y1, x2, y2, x3, y3, x4, y4);
 	}
 
 	public void closeChildAll() {
@@ -1245,7 +1254,6 @@ public class LTexture extends Painter implements LRelease {
 	public int getHeight() {
 		return MathUtils.ifloor(height());
 	}
-
 
 	@Override
 	public int hashCode() {

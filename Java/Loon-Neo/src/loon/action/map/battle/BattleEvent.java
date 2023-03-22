@@ -23,15 +23,15 @@ package loon.action.map.battle;
 public interface BattleEvent {
 
 	public boolean start(long elapsedTime);
-	
+
 	public boolean process(long elapsedTime);
-	
+
 	public boolean end(long elapsedTime);
-	
+
 	public BattleState getState();
-	
+
 	public boolean completed();
-	
+
 	public BattleEvent reset();
-	
+
 }

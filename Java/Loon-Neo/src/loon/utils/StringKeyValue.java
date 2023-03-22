@@ -100,7 +100,7 @@ public class StringKeyValue {
 		_dirty = true;
 		return this;
 	}
-	
+
 	public StringKeyValue addValue(int ch) {
 		initBuild();
 		_buffer.append(ch);

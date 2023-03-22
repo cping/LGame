@@ -136,7 +136,7 @@ public class Role extends RoleValue implements ActionBind {
 
 	@Override
 	public void setX(float x) {
-		if(isLocked()) {
+		if (isLocked()) {
 			return;
 		}
 		if (_roleObject != null) {
@@ -146,7 +146,7 @@ public class Role extends RoleValue implements ActionBind {
 
 	@Override
 	public void setY(float y) {
-		if(isLocked()) {
+		if (isLocked()) {
 			return;
 		}
 		if (_roleObject != null) {
@@ -189,7 +189,7 @@ public class Role extends RoleValue implements ActionBind {
 
 	@Override
 	public void setVisible(boolean v) {
-		if(isLocked()) {
+		if (isLocked()) {
 			return;
 		}
 		if (_roleObject != null) {
@@ -239,7 +239,7 @@ public class Role extends RoleValue implements ActionBind {
 
 	@Override
 	public void setColor(LColor color) {
-		if(isLocked()) {
+		if (isLocked()) {
 			return;
 		}
 		if (_roleObject != null) {
@@ -257,7 +257,7 @@ public class Role extends RoleValue implements ActionBind {
 
 	@Override
 	public void setScale(float sx, float sy) {
-		if(isLocked()) {
+		if (isLocked()) {
 			return;
 		}
 		if (_roleObject != null) {
@@ -275,7 +275,7 @@ public class Role extends RoleValue implements ActionBind {
 
 	@Override
 	public void setRotation(float r) {
-		if(isLocked()) {
+		if (isLocked()) {
 			return;
 		}
 		if (_roleObject != null) {
@@ -309,7 +309,7 @@ public class Role extends RoleValue implements ActionBind {
 
 	@Override
 	public void setAlpha(float alpha) {
-		if(isLocked()) {
+		if (isLocked()) {
 			return;
 		}
 		if (_roleObject != null) {
@@ -319,7 +319,7 @@ public class Role extends RoleValue implements ActionBind {
 
 	@Override
 	public void setLocation(float x, float y) {
-		if(isLocked()) {
+		if (isLocked()) {
 			return;
 		}
 		if (_roleObject != null) {

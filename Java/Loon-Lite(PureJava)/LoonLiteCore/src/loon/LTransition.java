@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2011
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -23,13 +23,14 @@ package loon;
 import loon.action.map.Config;
 import loon.action.sprite.ISprite;
 import loon.action.sprite.effect.ArcEffect;
-import loon.action.sprite.effect.CrossEffect;
 import loon.action.sprite.effect.FadeBoardEffect;
+import loon.action.sprite.effect.CrossEffect;
 import loon.action.sprite.effect.FadeDotEffect;
 import loon.action.sprite.effect.FadeEffect;
 import loon.action.sprite.effect.FadeOvalEffect;
 import loon.action.sprite.effect.FadeSpiralEffect;
 import loon.action.sprite.effect.FadeTileEffect;
+import loon.action.sprite.effect.OvalEffect;
 import loon.action.sprite.effect.PixelDarkInEffect;
 import loon.action.sprite.effect.PixelDarkOutEffect;
 import loon.action.sprite.effect.PixelThunderEffect;
@@ -44,16 +45,16 @@ import loon.utils.TArray;
 
 /**
  * 自0.3.2版起新增的Screen切换过渡效果类，内置有多种Screen过渡特效。
- *
+ * 
  * example:
- *
+ * 
  * public class Sample extends Screen{
- *
+ * 
  * ......
- *
+ * 
  * public LTransition onTransition(){ return xxx(method) } }
- *
- *
+ * 
+ * 
  */
 public class LTransition {
 
@@ -61,12 +62,14 @@ public class LTransition {
 	 * 常用特效枚举列表
 	 */
 	public static enum TransType {
-		FadeIn, FadeOut, FadeBoardIn, FadeBoardOut, FadeOvalIn, FadeOvalOut, FadeDotIn, FadeDotOut, FadeTileIn, FadeTileOut, FadeSpiralIn, FadeSpiralOut, FadeSwipeIn, FadeSwipeOut, PixelDarkIn, PixelDarkOut, CrossRandom, SplitRandom, PixelWind, PixelThunder
+		FadeIn, FadeOut, FadeBoardIn, FadeBoardOut, FadeOvalIn, FadeOvalOut, FadeDotIn, FadeDotOut, FadeTileIn,
+		FadeTileOut, FadeSpiralIn, FadeSpiralOut, FadeSwipeIn, FadeSwipeOut, PixelDarkIn, PixelDarkOut, CrossRandom,
+		SplitRandom, PixelWind, PixelThunder, OvalIn, OvalOut;
 	}
 
 	/**
 	 * 转换字符串为转换特效的枚举类型
-	 *
+	 * 
 	 * @param name
 	 * @return
 	 */
@@ -85,6 +88,10 @@ public class LTransition {
 				return TransType.FadeOvalIn;
 			} else if ("fadeovalout".equals(key)) {
 				return TransType.FadeOvalOut;
+			} else if ("ovalin".equals(key)) {
+				return TransType.OvalIn;
+			} else if ("ovalout".equals(key)) {
+				return TransType.OvalOut;
 			} else if ("fadedotin".equals(key)) {
 				return TransType.FadeDotIn;
 			} else if ("fadedotout".equals(key)) {
@@ -122,7 +129,7 @@ public class LTransition {
 
 	/**
 	 * 返回一定指定色彩过滤后的特效
-	 *
+	 * 
 	 * @param key
 	 * @param c
 	 * @return
@@ -133,12 +140,10 @@ public class LTransition {
 
 	/**
 	 * 返回一定指定色彩过滤后的特效
-	 *
-	 * @param key
-	 *            过渡类型字符串
-	 * @param cs
-	 *            描述颜色的字符串
-	 *
+	 * 
+	 * @param key 过渡类型字符串
+	 * @param cs  描述颜色的字符串
+	 * 
 	 * @return
 	 */
 	public static LTransition newTransition(String key, String cs) {
@@ -147,7 +152,7 @@ public class LTransition {
 
 	/**
 	 * 返回一定指定色彩过滤后的特效
-	 *
+	 * 
 	 * @param t
 	 * @param c
 	 * @return
@@ -173,6 +178,11 @@ public class LTransition {
 			break;
 		case FadeOvalOut:
 			transition = newFadeOvalOut(c);
+		case OvalIn:
+			transition = newOvalIn(c);
+			break;
+		case OvalOut:
+			transition = newOvalOut(c);
 			break;
 		case FadeDotIn:
 			transition = newFadeDotIn(c);
@@ -222,7 +232,7 @@ public class LTransition {
 
 	/**
 	 * 特效混合播放，把指定好的特效一起播放出去
-	 *
+	 * 
 	 * @param transitions
 	 * @return
 	 */
@@ -237,14 +247,14 @@ public class LTransition {
 				@Override
 				public void draw(GLEx g) {
 					for (int i = 0; i < transitions.size; i++) {
-						transitions.get(i).draw(g);
+						((LTransition) transitions.get(i)).draw(g);
 					}
 				}
 
 				@Override
 				public void update(long elapsedTime) {
 					for (int i = 0; i < transitions.size; i++) {
-						LTransition t = transitions.get(i);
+						LTransition t = (LTransition) transitions.get(i);
 						if (!t.completed()) {
 							t.update(elapsedTime);
 						}
@@ -254,7 +264,7 @@ public class LTransition {
 				@Override
 				public boolean completed() {
 					for (int i = 0; i < transitions.size; i++) {
-						if (!transitions.get(i).completed()) {
+						if (!((LTransition) transitions.get(i)).completed()) {
 							return false;
 						}
 					}
@@ -264,7 +274,7 @@ public class LTransition {
 				@Override
 				public void close() {
 					for (int i = 0; i < transitions.size; i++) {
-						transitions.get(i).close();
+						((LTransition) transitions.get(i)).close();
 					}
 				}
 
@@ -283,7 +293,7 @@ public class LTransition {
 
 	/**
 	 * 随机的百叶窗特效
-	 *
+	 * 
 	 * @return
 	 */
 	public static final LTransition newCrossRandom() {
@@ -292,7 +302,7 @@ public class LTransition {
 
 	/**
 	 * 百叶窗特效
-	 *
+	 * 
 	 * @param c
 	 * @return
 	 */
@@ -303,7 +313,7 @@ public class LTransition {
 
 	/**
 	 * 百叶窗特效
-	 *
+	 * 
 	 * @param c
 	 * @return
 	 */
@@ -352,7 +362,7 @@ public class LTransition {
 
 	/**
 	 * 默认使用黑色的圆弧渐变特效
-	 *
+	 * 
 	 * @return
 	 */
 	public static final LTransition newArc() {
@@ -361,7 +371,7 @@ public class LTransition {
 
 	/**
 	 * 单一色彩的圆弧渐变特效
-	 *
+	 * 
 	 * @return
 	 */
 	public static final LTransition newArc(final LColor c) {
@@ -409,7 +419,7 @@ public class LTransition {
 
 	/**
 	 * 产生一个Screen画面向双向分裂的过渡特效
-	 *
+	 * 
 	 * @param texture
 	 * @return
 	 */
@@ -419,7 +429,7 @@ public class LTransition {
 
 	/**
 	 * 产生一个Screen画面向双向分裂的过渡特效
-	 *
+	 * 
 	 * @param c
 	 * @return
 	 */
@@ -429,7 +439,7 @@ public class LTransition {
 
 	/**
 	 * 产生一个Screen画面向双向分裂的过渡特效(方向的静态值位于Config类中)
-	 *
+	 * 
 	 * @param d
 	 * @param texture
 	 * @return
@@ -479,47 +489,47 @@ public class LTransition {
 
 	/**
 	 * 产生一个黑色的淡入效果
-	 *
+	 * 
 	 * @return
 	 */
 	public static final LTransition newFadeIn() {
-		return newFade(ISprite.TYPE_FADE_IN);
+		return newFade(FadeEffect.TYPE_FADE_IN);
 	}
 
 	/**
 	 * 产生一个淡入效果
-	 *
+	 * 
 	 * @param c
 	 * @return
-	 *
+	 * 
 	 */
 	public static final LTransition newFadeIn(LColor c) {
-		return newFade(ISprite.TYPE_FADE_IN, c);
+		return newFade(FadeEffect.TYPE_FADE_IN, c);
 	}
 
 	/**
 	 * 产生一个黑色的淡出效果
-	 *
+	 * 
 	 * @return
 	 */
 	public static final LTransition newFadeOut() {
-		return newFade(ISprite.TYPE_FADE_OUT);
+		return newFade(FadeEffect.TYPE_FADE_OUT);
 	}
 
 	/**
 	 * 产生一个淡入效果
-	 *
+	 * 
 	 * @param c
 	 * @return
-	 *
+	 * 
 	 */
 	public static final LTransition newFadeOut(LColor c) {
-		return newFade(ISprite.TYPE_FADE_OUT, c);
+		return newFade(FadeEffect.TYPE_FADE_OUT, c);
 	}
 
 	/**
 	 * 产生一个黑色的淡入/淡出效果
-	 *
+	 * 
 	 * @param type
 	 * @return
 	 */
@@ -529,7 +539,7 @@ public class LTransition {
 
 	/**
 	 * 产生一个指定色彩的淡入效果
-	 *
+	 * 
 	 * @param c
 	 * @return
 	 */
@@ -575,11 +585,11 @@ public class LTransition {
 	}
 
 	public static final LTransition newFadeDotOut(final LColor c) {
-		return newFadeDot(ISprite.TYPE_FADE_OUT, c);
+		return newFadeDot(FadeEffect.TYPE_FADE_OUT, c);
 	}
 
 	public static final LTransition newFadeDotIn(final LColor c) {
-		return newFadeDot(ISprite.TYPE_FADE_IN, c);
+		return newFadeDot(FadeEffect.TYPE_FADE_IN, c);
 	}
 
 	public static final LTransition newFadeDot(final int type, final LColor c) {
@@ -624,11 +634,11 @@ public class LTransition {
 	}
 
 	public static final LTransition newFadeTileOut(final LColor c) {
-		return newFadeTile(ISprite.TYPE_FADE_OUT, c);
+		return newFadeTile(FadeEffect.TYPE_FADE_OUT, c);
 	}
 
 	public static final LTransition newFadeTileIn(final LColor c) {
-		return newFadeTile(ISprite.TYPE_FADE_IN, c);
+		return newFadeTile(FadeEffect.TYPE_FADE_IN, c);
 	}
 
 	public static final LTransition newFadeTile(final int type, final LColor c) {
@@ -672,11 +682,11 @@ public class LTransition {
 	}
 
 	public static final LTransition newFadeSpiralOut(final LColor c) {
-		return newFadeSpiral(ISprite.TYPE_FADE_OUT, c);
+		return newFadeSpiral(FadeEffect.TYPE_FADE_OUT, c);
 	}
 
 	public static final LTransition newFadeSpiralIn(final LColor c) {
-		return newFadeSpiral(ISprite.TYPE_FADE_IN, c);
+		return newFadeSpiral(FadeEffect.TYPE_FADE_IN, c);
 	}
 
 	public static final LTransition newFadeSpiral(final int type, final LColor c) {
@@ -721,27 +731,27 @@ public class LTransition {
 
 	/**
 	 * 斜滑过渡特效
-	 *
+	 * 
 	 * @param c
 	 * @return
 	 */
 	public static final LTransition newFadeSwipeOut(final LColor c) {
-		return newFadeSwipe(ISprite.TYPE_FADE_OUT, c);
+		return newFadeSwipe(FadeEffect.TYPE_FADE_OUT, c);
 	}
 
 	/**
 	 * 斜滑过渡特效
-	 *
+	 * 
 	 * @param c
 	 * @return
 	 */
 	public static final LTransition newFadeSwipeIn(final LColor c) {
-		return newFadeSwipe(ISprite.TYPE_FADE_IN, c);
+		return newFadeSwipe(FadeEffect.TYPE_FADE_IN, c);
 	}
 
 	/**
 	 * 斜滑过渡特效
-	 *
+	 * 
 	 * @param type
 	 * @param c
 	 * @return
@@ -788,27 +798,27 @@ public class LTransition {
 
 	/**
 	 * 瓦片淡入(从左到右)
-	 *
+	 * 
 	 * @param c
 	 * @return
 	 */
 	public static final LTransition newFadeBoardIn(LColor c) {
-		return newFadeBoard(ISprite.TYPE_FADE_IN, c);
+		return newFadeBoard(FadeEffect.TYPE_FADE_IN, c);
 	}
 
 	/**
 	 * 瓦片淡出(从左到右)
-	 *
+	 * 
 	 * @param c
 	 * @return
 	 */
 	public static final LTransition newFadeBoardOut(LColor c) {
-		return newFadeBoard(ISprite.TYPE_FADE_OUT, c);
+		return newFadeBoard(FadeEffect.TYPE_FADE_OUT, c);
 	}
 
 	/**
 	 * 瓦片淡出或淡入(从左到右)
-	 *
+	 * 
 	 * @param type
 	 * @param c
 	 * @return
@@ -854,21 +864,79 @@ public class LTransition {
 	}
 
 	/**
+	 * 产生一个椭圆进入效果
+	 * 
+	 * @return
+	 */
+	public static final LTransition newOvalIn(LColor c) {
+		return newOval(FadeEffect.TYPE_FADE_IN, c);
+	}
+
+	/**
+	 * 产生一个椭圆出现效果
+	 * 
+	 * @return
+	 */
+	public static final LTransition newOvalOut(LColor c) {
+		return newOval(FadeEffect.TYPE_FADE_OUT, c);
+	}
+
+	public static final LTransition newOval(final int type, final LColor c) {
+		if (LSystem.base() != null) {
+			final LTransition transition = new LTransition();
+
+			transition.setTransitionListener(new TransitionListener() {
+
+				final OvalEffect ovalEffect = new OvalEffect(type, c);
+
+				@Override
+				public void draw(GLEx g) {
+					ovalEffect.createUI(g);
+				}
+
+				@Override
+				public void update(long elapsedTime) {
+					ovalEffect.update(elapsedTime);
+				}
+
+				@Override
+				public boolean completed() {
+					return ovalEffect.isCompleted();
+				}
+
+				@Override
+				public void close() {
+					ovalEffect.close();
+				}
+
+				@Override
+				public ISprite getSprite() {
+					return ovalEffect;
+				}
+			});
+			transition.setDisplayGameUI(true);
+			transition.code = 1;
+			return transition;
+		}
+		return null;
+	}
+
+	/**
 	 * 产生一个黑色的淡入效果
-	 *
+	 * 
 	 * @return
 	 */
 	public static final LTransition newFadeOvalIn(LColor c) {
-		return newOvalFade(ISprite.TYPE_FADE_IN, c);
+		return newOvalFade(FadeEffect.TYPE_FADE_IN, c);
 	}
 
 	/**
 	 * 产生一个黑色的淡出效果
-	 *
+	 * 
 	 * @return
 	 */
 	public static final LTransition newFadeOvalOut(LColor c) {
-		return newOvalFade(ISprite.TYPE_FADE_OUT, c);
+		return newOvalFade(FadeEffect.TYPE_FADE_OUT, c);
 	}
 
 	public static final LTransition newOvalFade(final int type, final LColor c) {
@@ -1116,7 +1184,6 @@ public class LTransition {
 
 		public boolean completed();
 
-		@Override
 		public void close();
 	}
 

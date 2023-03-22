@@ -34,7 +34,7 @@ public class PixmapComposite extends Limit {
 	public final static int SRC_ATOP = 3;
 
 	public final static int DST = 4;
-	
+
 	public final static int CLEAR = 5;
 
 	public final static int ADD = 6;
@@ -76,7 +76,7 @@ public class PixmapComposite extends Limit {
 	public final int SET_DST(LColor src, LColor dst, int transparent, float alpha) {
 		return dst.getARGB();
 	}
-	
+
 	public final int SET_CLEAR(int transparent) {
 		return transparent;
 	}

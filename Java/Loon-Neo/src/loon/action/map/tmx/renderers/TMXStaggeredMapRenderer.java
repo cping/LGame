@@ -207,8 +207,8 @@ public class TMXStaggeredMapRenderer extends TMXMapRenderer {
 
 						Vector2f pos = orthoToIso(x, y);
 
-						texBatch.draw(pos.x, pos.y, tileWidth, tileHeight, scaleX, scaleY, this._objectRotation, srcX, srcY, srcWidth,
-								srcHeight, flipX, flipY);
+						texBatch.draw(pos.x, pos.y, tileWidth, tileHeight, scaleX, scaleY, this._objectRotation, srcX,
+								srcY, srcWidth, srcHeight, flipX, flipY);
 
 					}
 				}

@@ -951,20 +951,20 @@ public final class MathUtils {
 		return degrees * DEG_TO_RAD;
 	}
 
+	public static float translateX(float angle, float length) {
+		return length * MathUtils.cosDeg(angle);
+	}
+
+	public static float translateY(float angle, float length) {
+		return length * MathUtils.sinDeg(angle);
+	}
+	
 	public static int dip2px(float scale, float dpValue) {
 		return (int) (dpValue * scale + 0.5f);
 	}
 
 	public static float degToRad(float deg) {
 		return deg * 360 / TWO_PI;
-	}
-
-	public static float trnsX(float angle, float len) {
-		return len * cosDeg(angle);
-	}
-
-	public static float trnsY(float angle, float len) {
-		return len * sinDeg(angle);
 	}
 
 	public static float safeAdd(float left, float right) {

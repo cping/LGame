@@ -25,13 +25,12 @@ import loon.geom.Affine2f;
 import loon.geom.Matrix4;
 import loon.utils.GLUtils;
 import loon.utils.MathUtils;
+import loon.utils.NumberUtils;
 import loon.LSystem;
 
 public class TrilateralBatch extends BaseBatch {
 
 	private final static String BATCHNAME = "trilbatch";
-
-	private final LColor _batchColor = new LColor();
 
 	private final Matrix4 _viewMatrix;
 
@@ -75,15 +74,16 @@ public class TrilateralBatch extends BaseBatch {
 	public void init() {
 		this._submit = new Submit();
 		this._blendMode = -1;
+		this._alpha = 255;
 	}
 
-	protected float addX(float m00, float m01, float m10, float m11, float x, float y, float sx, float sy, float tx,
-			float ty) {
+	private int _alpha;
+
+	protected final static float addX(float m00, float m01, float m10, float m11, float x, float y, float tx) {
 		return m00 * x + m10 * y + tx;
 	}
 
-	protected float addY(float m00, float m01, float m10, float m11, float x, float y, float sx, float sy, float tx,
-			float ty) {
+	protected final static float addY(float m00, float m01, float m10, float m11, float x, float y, float ty) {
 		return m01 * x + m11 * y + ty;
 	}
 
@@ -95,31 +95,49 @@ public class TrilateralBatch extends BaseBatch {
 		if (_locked) {
 			return;
 		}
+		final float nx1 = addX(m00, m01, m10, m11, x1, y1, tx);
+		final float ny1 = addY(m00, m01, m10, m11, x1, y1, ty);
+		final float nx2 = addX(m00, m01, m10, m11, x2, y2, tx);
+		final float ny2 = addY(m00, m01, m10, m11, x2, y2, ty);
+		final float nx3 = addX(m00, m01, m10, m11, x3, y3, tx);
+		final float ny3 = addY(m00, m01, m10, m11, x3, y3, ty);
+		final float nx4 = addX(m00, m01, m10, m11, x4, y4, tx);
+		final float ny4 = addY(m00, m01, m10, m11, x4, y4, ty);
 
-		float colorFloat = _batchColor.setColor(tint).toFloatBits();
+		final int r = (tint & 0x00FF0000) >> 16;
+		final int g = (tint & 0x0000FF00) >> 8;
+		final int b = (tint & 0x000000FF);
+		_alpha = (tint & 0xFF000000) >> 24;
+		if (_alpha < 0) {
+			_alpha += 256;
+		}
+
+		final int color = (_alpha << 24) | (b << 16) | (g << 8) | r;
+
+		final float colorFloat = NumberUtils.intBitsToFloat(color & 0xfeffffff);
 
 		int index = this._indexCount;
 
-		_expandVertices.setVertice(index++, addX(m00, m01, m10, m11, x1, y1, sx1, sy1, tx, ty));
-		_expandVertices.setVertice(index++, addY(m00, m01, m10, m11, x1, y1, sx1, sy1, tx, ty));
+		_expandVertices.setVertice(index++, nx1);
+		_expandVertices.setVertice(index++, ny1);
 		_expandVertices.setVertice(index++, colorFloat);
 		_expandVertices.setVertice(index++, sx1);
 		_expandVertices.setVertice(index++, sy1);
 
-		_expandVertices.setVertice(index++, addX(m00, m01, m10, m11, x2, y2, sx2, sy2, tx, ty));
-		_expandVertices.setVertice(index++, addY(m00, m01, m10, m11, x2, y2, sx2, sy2, tx, ty));
+		_expandVertices.setVertice(index++, nx2);
+		_expandVertices.setVertice(index++, ny2);
 		_expandVertices.setVertice(index++, colorFloat);
 		_expandVertices.setVertice(index++, sx2);
 		_expandVertices.setVertice(index++, sy2);
 
-		_expandVertices.setVertice(index++, addX(m00, m01, m10, m11, x4, y4, sx4, sy4, tx, ty));
-		_expandVertices.setVertice(index++, addY(m00, m01, m10, m11, x4, y4, sx4, sy4, tx, ty));
+		_expandVertices.setVertice(index++, nx4);
+		_expandVertices.setVertice(index++, ny4);
 		_expandVertices.setVertice(index++, colorFloat);
 		_expandVertices.setVertice(index++, sx4);
 		_expandVertices.setVertice(index++, sy4);
 
-		_expandVertices.setVertice(index++, addX(m00, m01, m10, m11, x3, y3, sx3, sy3, tx, ty));
-		_expandVertices.setVertice(index++, addY(m00, m01, m10, m11, x3, y3, sx3, sy3, tx, ty));
+		_expandVertices.setVertice(index++, nx3);
+		_expandVertices.setVertice(index++, ny3);
 		_expandVertices.setVertice(index++, colorFloat);
 		_expandVertices.setVertice(index++, sx3);
 		_expandVertices.setVertice(index++, sy3);
@@ -129,6 +147,74 @@ public class TrilateralBatch extends BaseBatch {
 		if (lastTexId != curTexId) {
 			flush();
 		}
+	}
+
+	@Override
+	public void quad(int tint, float m00, float m01, float m10, float m11, float tx, float ty, float x1, float y1,
+			float x2, float y2, float x3, float y3, float x4, float y4, float u, float v, float u2, float v2) {
+
+		final int r = (tint & 0x00FF0000) >> 16;
+		final int g = (tint & 0x0000FF00) >> 8;
+		final int b = (tint & 0x000000FF);
+		_alpha = (tint & 0xFF000000) >> 24;
+		if (_alpha < 0) {
+			_alpha += 256;
+		}
+
+		final int color = (_alpha << 24) | (b << 16) | (g << 8) | r;
+
+		final float colorFloat = NumberUtils.intBitsToFloat(color & 0xfeffffff);
+
+		quad(m00, m01, m10, m11, tx, ty, x1, y1, colorFloat, x2, y2, colorFloat, x3, y3, colorFloat, x4, y4, colorFloat,
+				u, v, u2, v2);
+	}
+
+	@Override
+	public void quad(float m00, float m01, float m10, float m11, float tx, float ty, float x1, float y1, float c1,
+			float x2, float y2, float c2, float x3, float y3, float c3, float x4, float y4, float c4, float u, float v,
+			float u2, float v2) {
+
+		final float nx1 = addX(m00, m01, m10, m11, x1, y1, tx);
+		final float ny1 = addY(m00, m01, m10, m11, x1, y1, ty);
+		final float nx2 = addX(m00, m01, m10, m11, x2, y2, tx);
+		final float ny2 = addY(m00, m01, m10, m11, x2, y2, ty);
+		final float nx3 = addX(m00, m01, m10, m11, x3, y3, tx);
+		final float ny3 = addY(m00, m01, m10, m11, x3, y3, ty);
+		final float nx4 = addX(m00, m01, m10, m11, x4, y4, tx);
+		final float ny4 = addY(m00, m01, m10, m11, x4, y4, ty);
+
+		int index = this._indexCount;
+
+		_expandVertices.setVertice(index++, nx1);
+		_expandVertices.setVertice(index++, ny1);
+		_expandVertices.setVertice(index++, c1);
+		_expandVertices.setVertice(index++, u);
+		_expandVertices.setVertice(index++, v);
+
+		_expandVertices.setVertice(index++, nx2);
+		_expandVertices.setVertice(index++, ny2);
+		_expandVertices.setVertice(index++, c2);
+		_expandVertices.setVertice(index++, u);
+		_expandVertices.setVertice(index++, v2);
+
+		_expandVertices.setVertice(index++, nx3);
+		_expandVertices.setVertice(index++, ny3);
+		_expandVertices.setVertice(index++, c3);
+		_expandVertices.setVertice(index++, u2);
+		_expandVertices.setVertice(index++, v2);
+
+		_expandVertices.setVertice(index++, nx4);
+		_expandVertices.setVertice(index++, ny4);
+		_expandVertices.setVertice(index++, c4);
+		_expandVertices.setVertice(index++, u2);
+		_expandVertices.setVertice(index++, v);
+
+		this._indexCount = index;
+
+		if (lastTexId != curTexId) {
+			flush();
+		}
+
 	}
 
 	@Override
@@ -186,6 +272,7 @@ public class TrilateralBatch extends BaseBatch {
 	public void end() {
 		super.end();
 		this._blendMode = -1;
+		this._alpha = 255;
 	}
 
 	public int getSize() {
@@ -229,7 +316,7 @@ public class TrilateralBatch extends BaseBatch {
 			GL20 gl = LSystem.base().graphics().gl;
 			int blend = GLUtils.getBlendMode();
 			if (_blendMode == -1) {
-				if (_batchColor.a >= 0.98f) {
+				if (_alpha >= 240) {
 					GLUtils.setBlendMode(gl, BlendMethod.MODE_NORMAL);
 				} else {
 					GLUtils.setBlendMode(gl, BlendMethod.MODE_SPEED);

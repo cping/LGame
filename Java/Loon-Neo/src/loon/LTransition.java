@@ -30,6 +30,7 @@ import loon.action.sprite.effect.FadeEffect;
 import loon.action.sprite.effect.FadeOvalEffect;
 import loon.action.sprite.effect.FadeSpiralEffect;
 import loon.action.sprite.effect.FadeTileEffect;
+import loon.action.sprite.effect.OvalEffect;
 import loon.action.sprite.effect.PixelDarkInEffect;
 import loon.action.sprite.effect.PixelDarkOutEffect;
 import loon.action.sprite.effect.PixelThunderEffect;
@@ -63,7 +64,7 @@ public class LTransition {
 	public static enum TransType {
 		FadeIn, FadeOut, FadeBoardIn, FadeBoardOut, FadeOvalIn, FadeOvalOut, FadeDotIn, FadeDotOut, FadeTileIn,
 		FadeTileOut, FadeSpiralIn, FadeSpiralOut, FadeSwipeIn, FadeSwipeOut, PixelDarkIn, PixelDarkOut, CrossRandom,
-		SplitRandom, PixelWind, PixelThunder
+		SplitRandom, PixelWind, PixelThunder, OvalIn, OvalOut;
 	}
 
 	/**
@@ -87,6 +88,10 @@ public class LTransition {
 				return TransType.FadeOvalIn;
 			} else if ("fadeovalout".equals(key)) {
 				return TransType.FadeOvalOut;
+			} else if ("ovalin".equals(key)) {
+				return TransType.OvalIn;
+			} else if ("ovalout".equals(key)) {
+				return TransType.OvalOut;
 			} else if ("fadedotin".equals(key)) {
 				return TransType.FadeDotIn;
 			} else if ("fadedotout".equals(key)) {
@@ -173,6 +178,11 @@ public class LTransition {
 			break;
 		case FadeOvalOut:
 			transition = newFadeOvalOut(c);
+		case OvalIn:
+			transition = newOvalIn(c);
+			break;
+		case OvalOut:
+			transition = newOvalOut(c);
 			break;
 		case FadeDotIn:
 			transition = newFadeDotIn(c);
@@ -844,6 +854,64 @@ public class LTransition {
 				@Override
 				public ISprite getSprite() {
 					return boardEffect;
+				}
+			});
+			transition.setDisplayGameUI(true);
+			transition.code = 1;
+			return transition;
+		}
+		return null;
+	}
+
+	/**
+	 * 产生一个椭圆进入效果
+	 * 
+	 * @return
+	 */
+	public static final LTransition newOvalIn(LColor c) {
+		return newOval(FadeEffect.TYPE_FADE_IN, c);
+	}
+
+	/**
+	 * 产生一个椭圆出现效果
+	 * 
+	 * @return
+	 */
+	public static final LTransition newOvalOut(LColor c) {
+		return newOval(FadeEffect.TYPE_FADE_OUT, c);
+	}
+
+	public static final LTransition newOval(final int type, final LColor c) {
+		if (LSystem.base() != null) {
+			final LTransition transition = new LTransition();
+
+			transition.setTransitionListener(new TransitionListener() {
+
+				final OvalEffect ovalEffect = new OvalEffect(type, c);
+
+				@Override
+				public void draw(GLEx g) {
+					ovalEffect.createUI(g);
+				}
+
+				@Override
+				public void update(long elapsedTime) {
+					ovalEffect.update(elapsedTime);
+				}
+
+				@Override
+				public boolean completed() {
+					return ovalEffect.isCompleted();
+				}
+
+				@Override
+				public void close() {
+					ovalEffect.close();
+				}
+
+				@Override
+				public ISprite getSprite() {
+					return ovalEffect;
 				}
 			});
 			transition.setDisplayGameUI(true);

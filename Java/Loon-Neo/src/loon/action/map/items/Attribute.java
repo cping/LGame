@@ -46,7 +46,7 @@ public class Attribute {
 		this._attribute = attribute;
 		return this;
 	}
-	
+
 	public Object getAttribute() {
 		return this._attribute;
 	}

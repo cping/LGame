@@ -638,7 +638,7 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 
 	@Override
 	public void destory() {
-		
+
 	}
 
 }

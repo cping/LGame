@@ -325,10 +325,10 @@ public class RectF implements XY {
 	}
 
 	public RectF rotate(float rotate) {
-		final int[] rect = MathUtils.getLimit(x, y, width,height, rotate);
+		final int[] rect = MathUtils.getLimit(x, y, width, height, rotate);
 		return set(rect[0], rect[1], rect[2], rect[3]);
 	}
-	
+
 	public RectF set(RectF r) {
 		this.x = r.x;
 		this.y = r.y;
@@ -344,7 +344,7 @@ public class RectF implements XY {
 		this.height = h1;
 		return this;
 	}
-	
+
 	public boolean inside(float x, float y) {
 		return (x >= this.x) && ((x - this.x) < this.width) && (y >= this.y) && ((y - this.y) < this.height);
 	}

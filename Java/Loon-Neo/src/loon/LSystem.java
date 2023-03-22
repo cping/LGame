@@ -101,7 +101,7 @@ public class LSystem {
 	public static final char UNDERLINE = '_';
 
 	public static final char DASHED = '-';
-	
+
 	public static final char EQUAL = '=';
 
 	public static final char COMMA = ',';
@@ -109,7 +109,7 @@ public class LSystem {
 	public static final char DELIM_START = '{';
 
 	public static final char DELIM_END = '}';
-	
+
 	public static final char PAREN_START = '(';
 
 	public static final char PAREN_END = ')';
@@ -1263,7 +1263,7 @@ public class LSystem {
 			base().clearSpritesPool();
 		}
 	}
-	
+
 	public static final void closeSpritesPool() {
 		if (base() != null) {
 			base().closeSpritesPool();
@@ -1303,7 +1303,7 @@ public class LSystem {
 			base().clearDesktopPool();
 		}
 	}
-	
+
 	public static final void closeDesktopPool() {
 		if (base() != null) {
 			base().closeDesktopPool();

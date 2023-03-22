@@ -40,7 +40,7 @@ public class EmulatorButtons implements LRelease {
 	private int offsetLeftPad = 0;
 
 	private int offsetRightPad = 0;
-	
+
 	private final static int offset = 10;
 
 	private boolean visible, closed;
@@ -69,7 +69,7 @@ public class EmulatorButtons implements LRelease {
 
 		this.dpad = pack.getTextureAll(0);
 		this.buttons = pack.getTextureAll(1);
-	
+
 		if (scale <= 0f) {
 			this.up = new EmulatorButton(dpad, 40, 40, 40, 0, true, 60, 60);
 			this.left = new EmulatorButton(dpad, 40, 40, 0, 40, true, 60, 60);
@@ -229,7 +229,7 @@ public class EmulatorButtons implements LRelease {
 		this.setLocation(x, y);
 		return this;
 	}
-	
+
 	/**
 	 * 移动模拟按钮集合位置(此为相对坐标，默认居于屏幕下方)
 	 * 

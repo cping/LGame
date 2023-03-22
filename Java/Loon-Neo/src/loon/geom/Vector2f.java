@@ -756,6 +756,14 @@ public class Vector2f implements Serializable, XY {
 		return move(dx, dy);
 	}
 
+	public Vector2f translateSelfAngle(float angle, float amount) {
+		return set(amount, 0).rotateSelf(angle);
+	}
+
+	public Vector2f translateSelfAngle(float angle, float x, float y) {
+		return set(x, y).rotateSelf(angle);
+	}
+
 	public Vector2f move(float dx, float dy) {
 		this.x += dx;
 		this.y += dy;

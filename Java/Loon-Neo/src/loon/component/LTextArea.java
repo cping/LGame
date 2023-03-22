@@ -728,7 +728,7 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 
 	@Override
 	public void destory() {
-		
+
 	}
 
 }

@@ -29,7 +29,6 @@ import loon.LTrans;
 import loon.action.camera.BaseCamera;
 import loon.canvas.LColor;
 import loon.canvas.Paint;
-import loon.canvas.PixmapFImpl;
 import loon.canvas.Paint.Style;
 import loon.font.IFont;
 import loon.geom.Affine2f;
@@ -56,7 +55,7 @@ import loon.utils.TArray;
 /**
  * 一个全局使用的渲染器,内部为OpenGL封装,混合有JavaSE(JavaME)的Graphics和Android的Canvas主要API功能
  */
-public class GLEx extends PixmapFImpl implements LRelease {
+public class GLEx extends BatchEx<GLEx> implements LRelease {
 
 	/*
 	 * 内部类，用来保存与复位GLEx的基本渲染参数
@@ -112,6 +111,8 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	private final TArray<LTexture> bufferTextures = new TArray<LTexture>();
 
 	private final LTexture colorTex;
+
+	private final Affine2f tempAffine = new Affine2f();
 
 	protected RenderTarget target;
 
@@ -678,6 +679,10 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		return this;
 	}
 
+	public final LTexture getPatternTex() {
+		return lastBrush.patternTex == null ? colorTex : lastBrush.patternTex;
+	}
+
 	public boolean setClip(BoxSize rect) {
 		if (rect == null) {
 			return false;
@@ -1021,6 +1026,11 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			this.lastBrush.baseColor = c;
 		}
 		return this;
+	}
+
+	private final Affine2f getTempAffine() {
+		tempAffine.idt();
+		return tempAffine;
 	}
 
 	public int combineColor(int c) {
@@ -1387,7 +1397,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		}
 		Affine2f xf = tx();
 		if (rotation != 0) {
-			xf = new Affine2f();
+			xf = getTempAffine();
 			float w1 = x + originX;
 			float h1 = y + originY;
 			xf.translate(w1, h1);
@@ -1428,7 +1438,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		}
 		Affine2f xf = tx();
 		if (rotation != 0 || sx != 1f || sy != 1f || flipX || flipY) {
-			xf = new Affine2f();
+			xf = getTempAffine();
 			float centerX = x + w / 2;
 			float centerY = y + h / 2;
 			if (pivot != null && (pivot.x != -1 && pivot.y != -1)) {
@@ -1473,7 +1483,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		}
 		Affine2f xf = tx();
 		if (rotation != 0) {
-			xf = new Affine2f();
+			xf = getTempAffine();
 			float w1 = x + w / 2;
 			float h1 = y + h / 2;
 			xf.translate(w1, h1);
@@ -1518,6 +1528,17 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		return this;
 	}
 
+	public GLEx triangle(Painter texture, float x1, float y1, float x2, float y2, float x3, float y3) {
+		if (isClosed) {
+			return this;
+		}
+		if (texture == null) {
+			return this;
+		}
+		texture.addToBatch(batch, this.lastBrush.baseColor, tx(), x1, y1, x2, y2, x3, y3, x3, y3);
+		return this;
+	}
+
 	public GLEx draw(Painter texture, float dx, float dy, float dw, float dh, float sx, float sy, float sw, float sh,
 			LColor color) {
 		if (isClosed) {
@@ -1552,7 +1573,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		}
 		Affine2f xf = tx();
 		if (rotation != 0) {
-			xf = new Affine2f();
+			xf = getTempAffine();
 			float w1 = dx + dw / 2;
 			float h1 = dy + dh / 2;
 			xf.translate(w1, h1);
@@ -1790,7 +1811,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 		final boolean scaleDirty = !(scaleX == 1 && scaleY == 1);
 
 		if (dirDirty || rotDirty || scaleDirty) {
-			xf = new Affine2f();
+			xf = getTempAffine();
 
 			float originX = width / 2;
 			float originY = height / 2;
@@ -1897,21 +1918,7 @@ public class GLEx extends PixmapFImpl implements LRelease {
 			y0 = y1;
 			y1 = temp;
 		}
-
-		float dx = x1 - x0, dy = y1 - y0;
-		float length = MathUtils.sqrt(dx * dx + dy * dy);
-		float wx = dx * (width / 2) / length;
-		float wy = dy * (width / 2) / length;
-
-		Affine2f xf = new Affine2f();
-		xf.setRotation(MathUtils.atan2(dy, dx));
-		xf.setTranslation(x0 + wy, y0 - wx);
-		Affine2f.multiply(tx(), xf, xf);
-		if (this.lastBrush.patternTex != null) {
-			batch.addQuad(this.lastBrush.patternTex, this.lastBrush.baseColor, xf, 0, 0, length, width);
-		} else {
-			batch.addQuad(colorTex, syncBrushColorInt(), xf, 0, 0, length, width);
-		}
+		line(x0, y0, x1, y1, width);
 		return this;
 	}
 
@@ -2440,21 +2447,39 @@ public class GLEx extends PixmapFImpl implements LRelease {
 
 	private GLRenderer glRenderer;
 
+	private boolean rendererDrawLocked = false;
+
+	public boolean isRendererLocked() {
+		return rendererDrawLocked;
+	}
+
+	public GLEx rendererLock() {
+		this.rendererDrawLocked = true;
+		return this;
+	}
+
+	public GLEx freeRendererLock() {
+		this.rendererDrawLocked = false;
+		return this;
+	}
+
 	/**
 	 * 图形形状渲染开始
 	 * 
 	 * @param mode
 	 * @return
 	 */
-	protected GLRenderer beginRenderer(GLType mode) {
-		end();
-		GLUtils.disableTextures(batch.gl);
-		if (glRenderer == null) {
-			glRenderer = new GLRenderer(this);
+	public GLRenderer beginRenderer(GLType mode) {
+		if (!rendererDrawLocked) {
+			end();
+			GLUtils.disableTextures(batch.gl);
+			if (glRenderer == null) {
+				glRenderer = new GLRenderer(this);
+			}
+			saveTx();
+			this.glRenderer.begin(lastTrans, mode);
+			this.useBegin = true;
 		}
-		saveTx();
-		this.glRenderer.begin(lastTrans, mode);
-		this.useBegin = true;
 		return glRenderer;
 	}
 
@@ -2463,16 +2488,18 @@ public class GLEx extends PixmapFImpl implements LRelease {
 	 * 
 	 * @return
 	 */
-	protected GLRenderer endRenderer() {
-		if (!useBegin) {
-			useBegin = false;
-			return null;
-		}
-		try {
-			glRenderer.end();
-		} finally {
-			restoreTx();
-			useBegin = false;
+	public GLRenderer endRenderer() {
+		if (!rendererDrawLocked) {
+			if (!useBegin) {
+				useBegin = false;
+				return null;
+			}
+			try {
+				glRenderer.end();
+			} finally {
+				restoreTx();
+				useBegin = false;
+			}
 		}
 		return glRenderer;
 	}
@@ -4259,6 +4286,27 @@ public class GLEx extends PixmapFImpl implements LRelease {
 						skip + this.lastBrush.lineWidth);
 			}
 		}
+	}
+
+	@Override
+	public BatchEx<GLEx> quad(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
+		if (this.lastBrush.patternTex != null) {
+			batch.quad(this.lastBrush.patternTex, this.lastBrush.baseColor, tx(), x1, y1, x2, y2, x3, y3, x4, y4);
+		} else {
+			batch.quad(colorTex, syncBrushColorInt(), tx(), x1, y1, x2, y2, x3, y3, x4, y4);
+		}
+		return this;
+	}
+
+	@Override
+	public BatchEx<GLEx> quad(float x1, float y1, float c1, float x2, float y2, float c2, float x3, float y3, float c3,
+			float x4, float y4, float c4) {
+		if (this.lastBrush.patternTex != null) {
+			batch.quad(this.lastBrush.patternTex, tx(), x1, y1, c1, x2, y2, c2, x3, y3, c3, x4, y4, c4);
+		} else {
+			batch.quad(colorTex, tx(), x1, y1, c1, x2, y2, c2, x3, y3, c3, x4, y4, c4);
+		}
+		return this;
 	}
 
 	/**
