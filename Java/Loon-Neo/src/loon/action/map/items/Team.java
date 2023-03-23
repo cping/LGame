@@ -229,6 +229,16 @@ public class Team implements LRelease {
 		return true;
 	}
 
+	public TArray<Role> canAttackRoleList() {
+		TArray<Role> list = new TArray<Role>();
+		for (Role c : _characters) {
+			if (c != null && !c.isAttack) {
+				list.add(c);
+			}
+		}
+		return list;
+	}
+
 	public boolean isAttack() {
 		for (Role c : _characters) {
 			if (c != null && !c.isAttack) {
@@ -237,7 +247,17 @@ public class Team implements LRelease {
 		}
 		return true;
 	}
-
+	
+	public TArray<Role> canDefenseRoleList() {
+		TArray<Role> list = new TArray<Role>();
+		for (Role c : _characters) {
+			if (c != null && !c.isDefense) {
+				list.add(c);
+			}
+		}
+		return list;
+	}
+	
 	public boolean isDefense() {
 		for (Role c : _characters) {
 			if (c != null && !c.isDefense) {
@@ -247,6 +267,16 @@ public class Team implements LRelease {
 		return true;
 	}
 
+	public TArray<Role> canSkillRoleList() {
+		TArray<Role> list = new TArray<Role>();
+		for (Role c : _characters) {
+			if (c != null && !c.isSkill) {
+				list.add(c);
+			}
+		}
+		return list;
+	}
+	
 	public boolean isSkill() {
 		for (Role c : _characters) {
 			if (c != null && !c.isSkill) {
@@ -256,6 +286,16 @@ public class Team implements LRelease {
 		return true;
 	}
 
+	public TArray<Role> canMoveRoleList() {
+		TArray<Role> list = new TArray<Role>();
+		for (Role c : _characters) {
+			if (c != null && !c.isMoved) {
+				list.add(c);
+			}
+		}
+		return list;
+	}
+	
 	public boolean isMoved() {
 		for (Role c : _characters) {
 			if (c != null && !c.isMoved) {
@@ -265,6 +305,16 @@ public class Team implements LRelease {
 		return true;
 	}
 
+	public TArray<Role> canDeadRoleList() {
+		TArray<Role> list = new TArray<Role>();
+		for (Role c : _characters) {
+			if (c != null && !c.isDead) {
+				list.add(c);
+			}
+		}
+		return list;
+	}
+	
 	public boolean isDead() {
 		for (Role c : _characters) {
 			if (c != null && !c.isDead) {

@@ -31,16 +31,22 @@ import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
 
+import javax.swing.SwingUtilities;
+
 import loon.LGame;
 import loon.LSysException;
 import loon.LazyLoading;
 import loon.Platform;
+import loon.canvas.Image;
+import loon.canvas.Pixmap;
 import loon.events.KeyMake;
 import loon.events.SysInput;
 import loon.geom.Vector2f;
 import loon.se.window.JavaSEAppCanvas;
 import loon.se.window.JavaSEAppFrame;
+import loon.utils.MathUtils;
 import loon.utils.Resolution;
+import loon.utils.StringUtils;
 
 public class JavaSEApplication implements Platform {
 
@@ -179,12 +185,107 @@ public class JavaSEApplication implements Platform {
 		return _appFrame;
 	}
 
-	public JavaSEAppFrame getAppFrame() {
-		return _appFrame;
+	public boolean isActive() {
+		return game == null ? false : game.isActive();
 	}
 
-	public JavaSEAppCanvas getAppCanvas() {
-		return _appCanvas;
+	public JavaSEApplication setSize(int width, int height) {
+		if (_appFrame == null && _appCanvas == null) {
+			return this;
+		}
+		if (height <= 0) {
+			height = 1;
+		}
+		if (width <= 0) {
+			width = 1;
+		}
+		if (_appFrame != null) {
+			_appFrame.setSize(width, height);
+			_appFrame.packFrame();
+		} else if (_appCanvas != null) {
+			_appCanvas.setSize(width, height);
+			_appCanvas.packCanvas();
+		}
+		return this;
+	}
+
+	public JavaSEApplication setLocation(float x, float y) {
+		if (_appFrame != null) {
+			_appFrame.setLocation(MathUtils.floor(x), MathUtils.floor(y));
+		}
+		return this;
+	}
+
+	public JavaSEApplication setTitle(String title) {
+		if (_appFrame != null) {
+			_appFrame.setTitle(title);
+		}
+		return this;
+	}
+
+	public JavaSEApplication setResizable(boolean resizable) {
+		if (_appFrame != null) {
+			_appFrame.setResizable(resizable);
+		}
+		return this;
+	}
+
+	public JavaSEApplication setAlwaysOnTop(boolean always) {
+		if (_appFrame != null) {
+			_appFrame.setAlwaysOnTop(always);
+		}
+		return this;
+	}
+
+	public JavaSEApplication setVisible(final boolean visible) {
+		if (_appFrame == null && _appCanvas == null) {
+			return this;
+		}
+		SwingUtilities.invokeLater(() -> {
+			if (visible) {
+				if (_appFrame != null) {
+					_appFrame.setVisible(visible);
+					_appFrame.requestFocus();
+				}
+				if (_appCanvas != null) {
+					_appCanvas.setVisible(visible);
+					_appCanvas.requestFocus();
+				}
+			} else {
+				if (_appFrame != null) {
+					_appFrame.setVisible(visible);
+				}
+				if (_appCanvas != null) {
+					_appCanvas.setVisible(visible);
+				}
+			}
+
+		});
+		return this;
+	}
+
+	public JavaSEApplication setIcon(String path) {
+		if (_appFrame == null || StringUtils.isEmpty(path)) {
+			return this;
+		}
+		_appFrame.setIcon(path);
+		return this;
+	}
+	
+	public JavaSEApplication setIcon(Pixmap icon) {
+		if (_appFrame == null) {
+			return this;
+		}
+		_appFrame.setIcon(icon);
+		return this;
+	}
+
+	public JavaSEApplication setIcon(Image icon) {
+		if (_appFrame == null) {
+			return this;
+		}
+		_appFrame.setIcon(icon);
+		return this;
 	}
 
 	public static float dpiScale() {
@@ -288,10 +389,6 @@ public class JavaSEApplication implements Platform {
 		g.setRenderingHints(_Speed);
 	}
 
-	public static void systemLog(String message) {
-		System.out.println(message);
-	}
-
 	@Override
 	public int getContainerWidth() {
 		if (_appFrame != null) {
@@ -329,11 +426,6 @@ public class JavaSEApplication implements Platform {
 		} else {
 			return Orientation.Landscape;
 		}
-	}
-
-	@Override
-	public LGame getGame() {
-		return game;
 	}
 
 	@Override
@@ -388,4 +480,16 @@ public class JavaSEApplication implements Platform {
 
 	}
 
+	public JavaSEAppFrame getAppFrame() {
+		return _appFrame;
+	}
+
+	public JavaSEAppCanvas getAppCanvas() {
+		return _appCanvas;
+	}
+
+	@Override
+	public LGame getGame() {
+		return game;
+	}
 }

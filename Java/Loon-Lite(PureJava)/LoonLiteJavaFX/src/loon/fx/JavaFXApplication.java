@@ -38,6 +38,8 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.image.PixelFormat;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.transform.Scale;
@@ -50,6 +52,8 @@ import loon.LSetting;
 import loon.LSysException;
 import loon.LazyLoading;
 import loon.Platform;
+import loon.canvas.Image;
+import loon.canvas.Pixmap;
 import loon.events.KeyMake;
 import loon.events.SysInput;
 import loon.utils.Resolution;
@@ -89,6 +93,8 @@ public class JavaFXApplication extends Application implements Platform {
 	protected JavaFXGame game;
 
 	protected Scene fxScene;
+
+	protected Stage fxStage;
 
 	protected LSetting appSetting;
 
@@ -138,6 +144,7 @@ public class JavaFXApplication extends Application implements Platform {
 	public void start(Stage primaryStage) throws Exception {
 		final boolean desktop = (JavaFXGame.isJavaFXDesktop() || game.isDesktop());
 
+		this.fxStage = primaryStage;
 		// 如果javafx在android或ios上跑强制全屏
 		if (game.isMobile() || appSetting.fullscreen) {
 			primaryStage.initStyle(StageStyle.TRANSPARENT);
@@ -202,7 +209,7 @@ public class JavaFXApplication extends Application implements Platform {
 								primaryStage.getIcons().add(img.fxImage());
 							}
 						} catch (Exception e) {
-							systemLog(e.getMessage());
+							game.log().debug(e.getMessage());
 						}
 					}
 				}
@@ -236,6 +243,114 @@ public class JavaFXApplication extends Application implements Platform {
 
 		fxScene.getRoot().getTransforms().setAll(scale);
 
+		this.fxStage = primaryStage;
+
+	}
+
+	public boolean isActive() {
+		return game == null ? false : game.isActive();
+	}
+
+	public JavaFXApplication setSize(int width, int height) {
+		if (fxStage == null) {
+			return this;
+		}
+		if (height <= 0) {
+			height = 1;
+		}
+		if (width <= 0) {
+			width = 1;
+		}
+		Scene scene = fxStage.getScene();
+		double newWidth = fxStage.getWidth() - scene.getWidth();
+		double newHeight = fxStage.getHeight() - scene.getHeight();
+		fxStage.setWidth(width + newWidth);
+		fxStage.setHeight(height + newHeight);
+		return this;
+	}
+
+	public JavaFXApplication setLocation(float x, float y) {
+		if (fxStage != null) {
+			fxStage.setX(x);
+			fxStage.setY(y);
+		}
+		return this;
+	}
+
+	public JavaFXApplication setTitle(String title) {
+		if (fxStage != null) {
+			fxStage.setTitle(title);
+		}
+		return this;
+	}
+
+	public JavaFXApplication setResizable(boolean resizable) {
+		if (fxStage != null) {
+			fxStage.setResizable(resizable);
+		}
+		return this;
+	}
+
+	public JavaFXApplication setAlwaysOnTop(boolean always) {
+		if (fxStage != null) {
+			fxStage.setAlwaysOnTop(always);
+		}
+		return this;
+	}
+
+	public JavaFXApplication setVisible(final boolean visible) {
+		if (fxStage == null) {
+			return this;
+		}
+		javafx.application.Platform.runLater(new Runnable() {
+			public void run() {
+				if (visible) {
+					fxStage.show();
+					fxCanvas.requestFocus();
+				} else {
+					fxStage.hide();
+				}
+			}
+		});
+		return this;
+	}
+
+	public JavaFXApplication setIcon(String path) {
+		if (game == null || StringUtils.isEmpty(path)) {
+			return this;
+		}
+		setIcon((game.assets().getImageSync(path)));
+		return this;
+	}
+
+	public JavaFXApplication setIcon(Pixmap icon) {
+		if (fxStage == null) {
+			return this;
+		}
+		int w = icon.getWidth();
+		int h = icon.getHeight();
+		WritableImage im = new WritableImage(w, h);
+		im.getPixelWriter().setPixels(0, 0, w, h, PixelFormat.getIntArgbInstance(), icon.getData(), 0, w);
+		fxStage.getIcons().clear();
+		fxStage.getIcons().add(im);
+		return this;
+	}
+
+	public JavaFXApplication setIcon(Image icon) {
+		if (fxStage == null) {
+			return this;
+		}
+		fxStage.getIcons().clear();
+		if (icon instanceof JavaFXImage) {
+			fxStage.getIcons().add(((JavaFXImage) icon).fxImage());
+		} else {
+			int w = icon.getWidth();
+			int h = icon.getHeight();
+			WritableImage im = new WritableImage(w, h);
+			im.getPixelWriter().setPixels(0, 0, w, h, PixelFormat.getIntArgbInstance(), icon.getPixels(), 0, w);
+			fxStage.getIcons().add(im);
+		}
+		return this;
 	}
 
 	protected void setEventHandler(final Scene scene, final Canvas canvas, final JavaFXInputMake input) {
@@ -272,10 +387,6 @@ public class JavaFXApplication extends Application implements Platform {
 		scaleRatioY.set(scaledHeight.getValue() / height);
 
 		return (this.fxScene = new Scene(group, width, height, false, SceneAntialiasing.BALANCED));
-	}
-
-	public static void systemLog(String message) {
-		System.out.println(message);
 	}
 
 	@Override
@@ -394,6 +505,14 @@ public class JavaFXApplication extends Application implements Platform {
 			}
 		});
 
+	}
+
+	public Stage getStage() {
+		return fxStage;
+	}
+
+	public Scene getScene() {
+		return fxScene;
 	}
 
 	public JavaFXResizeCanvas getCanvas() {

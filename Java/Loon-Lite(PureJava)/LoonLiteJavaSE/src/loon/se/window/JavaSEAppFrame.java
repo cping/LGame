@@ -40,6 +40,7 @@ import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
 import loon.LRelease;
+import loon.canvas.Pixmap;
 import loon.se.JavaSEApplication;
 import loon.se.JavaSEGame;
 import loon.se.JavaSEImage;
@@ -194,6 +195,28 @@ public class JavaSEAppFrame extends JFrame implements JavaSEApp<JavaSEAppFrame>,
 
 	public JavaSEAppFrame setIcon(Image icon) {
 		setIconImage(icon);
+		return this;
+	}
+
+	public JavaSEAppFrame setIcon(Pixmap icon) {
+		int w = icon.getWidth();
+		int h = icon.getHeight();
+		BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB_PRE);
+		image.setRGB(0, 0, w, h, icon.getData(), 0, w);
+		setIconImage(image);
+		return this;
+	}
+
+	public JavaSEAppFrame setIcon(loon.canvas.Image icon) {
+		if (icon instanceof JavaSEImage) {
+			setIconImage(((JavaSEImage) icon).seImage());
+		} else {
+			int w = icon.getWidth();
+			int h = icon.getHeight();
+			BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB_PRE);
+			image.setRGB(0, 0, w, h, icon.getPixels(), 0, w);
+			setIconImage(image);
+		}
 		return this;
 	}
 
