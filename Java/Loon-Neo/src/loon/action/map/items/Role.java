@@ -20,6 +20,8 @@
  */
 package loon.action.map.items;
 
+import java.util.Comparator;
+
 import loon.action.ActionBind;
 import loon.action.ActionTween;
 import loon.action.map.Field2D;
@@ -32,6 +34,20 @@ import loon.utils.TArray;
  * 角色模板,提供了一些基础的人物参数
  */
 public class Role extends RoleValue implements ActionBind {
+
+	public static class ActionPriorityComparator implements Comparator<Role> {
+
+		@Override
+		public int compare(Role o1, Role o2) {
+			if (o1 == null || o2 == null) {
+				return 0;
+			}
+			return o2.getActionPriority() - o1.getActionPriority();
+		}
+
+	}
+	
+	public final  static ActionPriorityComparator ActionPrioritySort = new ActionPriorityComparator();
 
 	private final TArray<Attribute> _attributes = new TArray<Attribute>();
 

@@ -33,6 +33,7 @@ public abstract class RoleValue {
 	private boolean _locked;
 	private String _roleName;
 
+	protected int actionPriority;
 	protected int maxHealth;
 	protected int maxMana;
 	protected int health;
@@ -81,6 +82,15 @@ public abstract class RoleValue {
 		this.fitness = fitness;
 		this.dexterity = dexterity;
 		this.level = lv;
+	}
+
+	public RoleValue setActionPriority(int a) {
+		this.actionPriority = a;
+		return this;
+	}
+
+	public int getActionPriority() {
+		return actionPriority;
 	}
 
 	public float updateTurnPoints() {

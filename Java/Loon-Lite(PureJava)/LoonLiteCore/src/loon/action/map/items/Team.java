@@ -37,9 +37,9 @@ public class Team implements LRelease {
 
 	public final static int Other = 3;
 
-	private int _teamMode = -1;
-
 	protected boolean dirty;
+
+	private int _teamMode = -1;
 
 	private final TArray<Role> _characters;
 
@@ -203,6 +203,12 @@ public class Team implements LRelease {
 
 	public String getName() {
 		return _name;
+	}
+
+	public TArray<Role> getActionPrioritySort() {
+		TArray<Role> newRoles = new TArray<Role>(_characters);
+		newRoles.sort(Role.ActionPrioritySort);
+		return newRoles;
 	}
 
 	public boolean isAllDoneAction() {

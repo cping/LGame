@@ -23,6 +23,7 @@ package loon.action.map.battle;
 import java.util.Comparator;
 
 import loon.LSystem;
+import loon.action.map.items.Teams;
 import loon.events.Updateable;
 import loon.geom.BooleanValue;
 import loon.utils.MathUtils;
@@ -131,6 +132,8 @@ public class BattleProcess extends RealtimeProcess {
 
 	private final static EventComparator _sortEvents = new EventComparator();
 
+	private Teams _mainTeams;
+
 	private float _minBattleWaitSeconds = 0.1f;
 
 	private float _maxBattleWaitSeconds = 5f;
@@ -162,13 +165,18 @@ public class BattleProcess extends RealtimeProcess {
 	private boolean _loop;
 
 	public BattleProcess() {
-		this(0);
+		this("Battle", 0);
 	}
 
-	public BattleProcess(long delay) {
+	public BattleProcess(String name) {
+		this(name, 0);
+	}
+
+	public BattleProcess(String name, long delay) {
 		this._states = new TArray<BattleState>();
 		this._events = new TArray<BattleEvent>();
 		this._result = BattleResults.Running;
+		this._mainTeams = new Teams(name);
 		this.setLoop(true);
 		this.setDelay(delay);
 	}
@@ -222,6 +230,10 @@ public class BattleProcess extends RealtimeProcess {
 			}
 		}
 		return true;
+	}
+
+	public Teams getTeams() {
+		return _mainTeams;
 	}
 
 	/**

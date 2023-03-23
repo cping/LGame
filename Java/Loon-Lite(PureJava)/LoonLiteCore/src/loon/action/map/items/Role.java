@@ -20,6 +20,8 @@
  */
 package loon.action.map.items;
 
+import java.util.Comparator;
+
 import loon.action.ActionBind;
 import loon.action.ActionTween;
 import loon.action.map.Field2D;
@@ -32,6 +34,20 @@ import loon.utils.TArray;
  * 角色模板,提供了一些基础的人物参数
  */
 public class Role extends RoleValue implements ActionBind {
+
+	public static class ActionPriorityComparator implements Comparator<Role> {
+
+		@Override
+		public int compare(Role o1, Role o2) {
+			if (o1 == null || o2 == null) {
+				return 0;
+			}
+			return o2.getActionPriority() - o1.getActionPriority();
+		}
+
+	}
+	
+	public final  static ActionPriorityComparator ActionPrioritySort = new ActionPriorityComparator();
 
 	private final TArray<Attribute> _attributes = new TArray<Attribute>();
 
@@ -136,7 +152,7 @@ public class Role extends RoleValue implements ActionBind {
 
 	@Override
 	public void setX(float x) {
-		if(isLocked()) {
+		if (isLocked()) {
 			return;
 		}
 		if (_roleObject != null) {
@@ -146,7 +162,7 @@ public class Role extends RoleValue implements ActionBind {
 
 	@Override
 	public void setY(float y) {
-		if(isLocked()) {
+		if (isLocked()) {
 			return;
 		}
 		if (_roleObject != null) {
@@ -189,7 +205,7 @@ public class Role extends RoleValue implements ActionBind {
 
 	@Override
 	public void setVisible(boolean v) {
-		if(isLocked()) {
+		if (isLocked()) {
 			return;
 		}
 		if (_roleObject != null) {
@@ -239,7 +255,7 @@ public class Role extends RoleValue implements ActionBind {
 
 	@Override
 	public void setColor(LColor color) {
-		if(isLocked()) {
+		if (isLocked()) {
 			return;
 		}
 		if (_roleObject != null) {
@@ -257,7 +273,7 @@ public class Role extends RoleValue implements ActionBind {
 
 	@Override
 	public void setScale(float sx, float sy) {
-		if(isLocked()) {
+		if (isLocked()) {
 			return;
 		}
 		if (_roleObject != null) {
@@ -275,7 +291,7 @@ public class Role extends RoleValue implements ActionBind {
 
 	@Override
 	public void setRotation(float r) {
-		if(isLocked()) {
+		if (isLocked()) {
 			return;
 		}
 		if (_roleObject != null) {
@@ -309,7 +325,7 @@ public class Role extends RoleValue implements ActionBind {
 
 	@Override
 	public void setAlpha(float alpha) {
-		if(isLocked()) {
+		if (isLocked()) {
 			return;
 		}
 		if (_roleObject != null) {
@@ -319,7 +335,7 @@ public class Role extends RoleValue implements ActionBind {
 
 	@Override
 	public void setLocation(float x, float y) {
-		if(isLocked()) {
+		if (isLocked()) {
 			return;
 		}
 		if (_roleObject != null) {

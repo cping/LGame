@@ -526,79 +526,79 @@ public class LColor implements Serializable {
 		return targetColor;
 	}
 
-	public static final LColor silver = new LColor(0xffc0c0c0);
+	public static final LColor silver = new LColor(0xffc0c0c0, true);
 
-	public static final LColor lightBlue = new LColor(0xffadd8e6);
+	public static final LColor lightBlue = new LColor(0xffadd8e6, true);
 
-	public static final LColor lightCoral = new LColor(0xfff08080);
+	public static final LColor lightCoral = new LColor(0xfff08080, true);
 
-	public static final LColor lightCyan = new LColor(0xffe0ffff);
+	public static final LColor lightCyan = new LColor(0xffe0ffff, true);
 
-	public static final LColor lightGoldenrodYellow = new LColor(0xfffafad2);
+	public static final LColor lightGoldenrodYellow = new LColor(0xfffafad2, true);
 
-	public static final LColor lightGreen = new LColor(0xff90ee90);
+	public static final LColor lightGreen = new LColor(0xff90ee90, true);
 
-	public static final LColor lightPink = new LColor(0xffffb6c1);
+	public static final LColor lightPink = new LColor(0xffffb6c1, true);
 
-	public static final LColor lightSalmon = new LColor(0xffffa07a);
+	public static final LColor lightSalmon = new LColor(0xffffa07a, true);
 
-	public static final LColor lightSeaGreen = new LColor(0xff20b2aa);
+	public static final LColor lightSeaGreen = new LColor(0xff20b2aa, true);
 
-	public static final LColor lightSkyBlue = new LColor(0xff87cefa);
+	public static final LColor lightSkyBlue = new LColor(0xff87cefa, true);
 
-	public static final LColor lightSlateGray = new LColor(0xff778899);
+	public static final LColor lightSlateGray = new LColor(0xff778899, true);
 
-	public static final LColor lightSteelBlue = new LColor(0xffb0c4de);
+	public static final LColor lightSteelBlue = new LColor(0xffb0c4de, true);
 
-	public static final LColor lightYellow = new LColor(0xffffffe0);
+	public static final LColor lightYellow = new LColor(0xffffffe0, true);
 
-	public static final LColor lime = new LColor(0xff00ff00);
+	public static final LColor lime = new LColor(0xff00ff00, true);
 
-	public static final LColor limeGreen = new LColor(0xff32cd32);
+	public static final LColor limeGreen = new LColor(0xff32cd32, true);
 
-	public static final LColor linen = new LColor(0xfffaf0e6);
+	public static final LColor linen = new LColor(0xfffaf0e6, true);
 
-	public static final LColor maroon = new LColor(0xff800000);
+	public static final LColor maroon = new LColor(0xff800000, true);
 
-	public static final LColor mediumAquamarine = new LColor(0xff66cdaa);
+	public static final LColor mediumAquamarine = new LColor(0xff66cdaa, true);
 
-	public static final LColor mediumBlue = new LColor(0xff0000cd);
+	public static final LColor mediumBlue = new LColor(0xff0000cd, true);
 
-	public static final LColor purple = new LColor(0xff800080);
+	public static final LColor purple = new LColor(0xff800080, true);
 
-	public static final LColor wheat = new LColor(0xfff5deb3);
+	public static final LColor wheat = new LColor(0xfff5deb3, true);
 
-	public static final LColor gold = new LColor(0xffffd700);
+	public static final LColor gold = new LColor(0xffffd700, true);
 
-	public static final LColor white = new LColor(1.0f, 1.0f, 1.0f, 1.0f);
+	public static final LColor white = new LColor(1.0f, 1.0f, 1.0f, 1.0f, true);
 
 	public static final LColor transparent = white;
 
-	public static final LColor yellow = new LColor(1.0f, 1.0f, 0.0f, 1.0f);
+	public static final LColor yellow = new LColor(1.0f, 1.0f, 0.0f, 1.0f, true);
 
-	public static final LColor red = new LColor(1.0f, 0.0f, 0.0f, 1.0f);
+	public static final LColor red = new LColor(1.0f, 0.0f, 0.0f, 1.0f, true);
 
-	public static final LColor blue = new LColor(0.0f, 0.0f, 1.0f, 1.0f);
+	public static final LColor blue = new LColor(0.0f, 0.0f, 1.0f, 1.0f, true);
 
-	public static final LColor cornFlowerBlue = new LColor(0.4f, 0.6f, 0.9f, 1.0f);
+	public static final LColor cornFlowerBlue = new LColor(0.4f, 0.6f, 0.9f, 1.0f, true);
 
-	public static final LColor green = new LColor(0.0f, 1.0f, 0.0f, 1.0f);
+	public static final LColor green = new LColor(0.0f, 1.0f, 0.0f, 1.0f, true);
 
-	public static final LColor black = new LColor(0.0f, 0.0f, 0.0f, 1.0f);
+	public static final LColor black = new LColor(0.0f, 0.0f, 0.0f, 1.0f, true);
 
-	public static final LColor gray = new LColor(0.5f, 0.5f, 0.5f, 1.0f);
+	public static final LColor gray = new LColor(0.5f, 0.5f, 0.5f, 1.0f, true);
 
-	public static final LColor cyan = new LColor(0.0f, 1.0f, 1.0f, 1.0f);
+	public static final LColor cyan = new LColor(0.0f, 1.0f, 1.0f, 1.0f, true);
 
-	public static final LColor darkGray = new LColor(0.3f, 0.3f, 0.3f, 1.0f);
+	public static final LColor darkGray = new LColor(0.3f, 0.3f, 0.3f, 1.0f, true);
 
-	public static final LColor lightGray = new LColor(0.7f, 0.7f, 0.7f, 1.0f);
+	public static final LColor lightGray = new LColor(0.7f, 0.7f, 0.7f, 1.0f, true);
 
-	public static final LColor pink = new LColor(1.0f, 0.7f, 0.7f, 1.0f);
+	public static final LColor pink = new LColor(1.0f, 0.7f, 0.7f, 1.0f, true);
 
-	public static final LColor orange = new LColor(1.0f, 0.8f, 0.0f, 1.0f);
+	public static final LColor orange = new LColor(1.0f, 0.8f, 0.0f, 1.0f, true);
 
-	public static final LColor magenta = new LColor(1.0f, 0.0f, 1.0f, 1.0f);
+	public static final LColor magenta = new LColor(1.0f, 0.0f, 1.0f, 1.0f, true);
 
 	public float r = 0.0f;
 
@@ -608,16 +608,34 @@ public class LColor implements Serializable {
 
 	public float a = 1.0f;
 
+	private boolean _locked = false;
+
 	public static final LColor newWhite() {
-		return new LColor(1.0f, 1.0f, 1.0f, 1.0f);
+		return white.cpy();
 	}
 
 	public static final LColor newBlack() {
-		return new LColor(0.0f, 0.0f, 0.0f, 1.0f);
+		return black.cpy();
 	}
 
 	public static final LColor newRed() {
-		return new LColor(1.0f, 0.0f, 0.0f, 1.0f);
+		return red.cpy();
+	}
+
+	public static final LColor newGreen() {
+		return green.cpy();
+	}
+
+	public static final LColor newBlue() {
+		return blue.cpy();
+	}
+
+	public static final LColor newYellow() {
+		return yellow.cpy();
+	}
+
+	public LColor(String c) {
+		this(c, false);
 	}
 
 	/**
@@ -625,9 +643,10 @@ public class LColor implements Serializable {
 	 * 
 	 * @param c
 	 */
-	public LColor(String c) {
-		if (c == null) {
-			setColor(white);
+	public LColor(String c, boolean locked) {
+		if (StringUtils.isEmpty(c)) {
+			setColor(1.0f, 1.0f, 1.0f, 1.0f);
+			this._locked = locked;
 			return;
 		}
 		c = c.trim().toLowerCase();
@@ -674,49 +693,90 @@ public class LColor implements Serializable {
 				setColor(hexToColor(c));
 			}
 		}
+		this._locked = locked;
 	}
 
 	public LColor() {
-		this(white);
+		this(1.0f, 1.0f, 1.0f, 1.0f, false);
+	}
+
+	public LColor(boolean locked) {
+		this(1.0f, 1.0f, 1.0f, 1.0f, locked);
 	}
 
 	public LColor(LColor color) {
+		this(color, false);
+	}
+
+	public LColor(LColor color, boolean locked) {
 		if (color == null) {
-			setColor(white);
+			this.setColor(1.0f, 1.0f, 1.0f, 1.0f);
+			this._locked = locked;
 			return;
 		}
 		setColor(color.r, color.g, color.b, color.a);
+		this._locked = locked;
 	}
 
 	public LColor(int r, int g, int b) {
-		setColor(r, g, b);
+		this(r, g, b, false);
+	}
+
+	public LColor(int r, int g, int b, boolean locked) {
+		this.setColor(r, g, b);
+		this._locked = locked;
 	}
 
 	public LColor(int r, int g, int b, int a) {
-		setColor(r, g, b, a);
+		this(r, g, b, a, false);
+	}
+
+	public LColor(int r, int g, int b, int a, boolean locked) {
+		this.setColor(r, g, b, a);
+		this._locked = locked;
 	}
 
 	public LColor(float r, float g, float b) {
-		setColor(r, g, b);
+		this(r, g, b, false);
+
+	}
+
+	public LColor(float r, float g, float b, boolean locked) {
+		this.setColor(r, g, b);
+		this._locked = locked;
 	}
 
 	public LColor(float r, float g, float b, float a) {
-		setColor(r, g, b, a);
+		this(r, g, b, a, false);
+
 	}
 
-	public LColor(int value) {
-		int r = (value & 0x00FF0000) >> 16;
-		int g = (value & 0x0000FF00) >> 8;
-		int b = (value & 0x000000FF);
-		int a = (value & 0xFF000000) >> 24;
+	public LColor(float r, float g, float b, float a, boolean locked) {
+		this.setColor(r, g, b, a);
+		this._locked = locked;
+	}
 
+	public LColor(int pixel) {
+		this(pixel, false);
+	}
+
+	public LColor(int pixel, boolean locked) {
+		int r = (pixel & 0x00FF0000) >> 16;
+		int g = (pixel & 0x0000FF00) >> 8;
+		int b = (pixel & 0x000000FF);
+		int a = (pixel & 0xFF000000) >> 24;
 		if (a < 0) {
 			a += 256;
 		}
 		if (a == 0) {
 			a = 255;
 		}
-		setColor(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
+		this.setColor(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
+		this._locked = locked;
+	}
+
+	public boolean isColorLocked() {
+		return _locked;
 	}
 
 	public LColor reset() {
@@ -805,6 +865,9 @@ public class LColor implements Serializable {
 	}
 
 	public LColor setColorValue(int r, int g, int b, int a) {
+		if (_locked) {
+			return this;
+		}
 		this.r = r > 1 ? (float) r / 255f : r;
 		this.g = g > 1 ? (float) g / 255f : g;
 		this.b = b > 1 ? (float) b / 255f : b;
@@ -813,6 +876,9 @@ public class LColor implements Serializable {
 	}
 
 	public LColor setIntColor(int r, int g, int b, int a) {
+		if (_locked) {
+			return this;
+		}
 		this.r = r;
 		this.g = g;
 		this.b = b;
@@ -821,6 +887,9 @@ public class LColor implements Serializable {
 	}
 
 	public LColor setColor(float r, float g, float b, float a) {
+		if (_locked) {
+			return this;
+		}
 		this.r = r > 1f ? r / 255f : r;
 		this.g = g > 1f ? g / 255f : g;
 		this.b = b > 1f ? b / 255f : b;
@@ -829,6 +898,9 @@ public class LColor implements Serializable {
 	}
 
 	public LColor setFloatColor(float r, float g, float b, float a) {
+		if (_locked) {
+			return this;
+		}
 		this.r = r;
 		this.g = g;
 		this.b = b;
@@ -841,6 +913,9 @@ public class LColor implements Serializable {
 	}
 
 	public LColor setColor(int r, int g, int b, int a) {
+		if (_locked) {
+			return this;
+		}
 		this.r = (float) r / 255;
 		this.g = (float) g / 255;
 		this.b = (float) b / 255;
@@ -934,11 +1009,17 @@ public class LColor implements Serializable {
 	}
 
 	public LColor setAlpha(float alpha) {
+		if (_locked) {
+			return this;
+		}
 		this.a = alpha;
 		return this;
 	}
 
 	public boolean addRed(final float red) {
+		if (_locked) {
+			return false;
+		}
 		final float n = added(this.r, red);
 		if (n == this.r) {
 			return false;
@@ -948,6 +1029,9 @@ public class LColor implements Serializable {
 	}
 
 	public boolean addGreen(final float green) {
+		if (_locked) {
+			return false;
+		}
 		final float n = added(this.g, green);
 		if (n == this.g) {
 			return false;
@@ -957,6 +1041,9 @@ public class LColor implements Serializable {
 	}
 
 	public boolean addBlue(final float blue) {
+		if (_locked) {
+			return false;
+		}
 		final float n = added(this.b, blue);
 		if (n == this.b) {
 			return false;
@@ -966,6 +1053,9 @@ public class LColor implements Serializable {
 	}
 
 	public boolean addAlpha(final float alpha) {
+		if (_locked) {
+			return false;
+		}
 		final float n = added(this.a, alpha);
 		if (n == this.a) {
 			return false;
@@ -991,6 +1081,9 @@ public class LColor implements Serializable {
 	 * @return
 	 */
 	public LColor addSelf(float v) {
+		if (_locked) {
+			return this;
+		}
 		this.r += v;
 		this.g += v;
 		this.b += v;
@@ -1005,6 +1098,9 @@ public class LColor implements Serializable {
 	 * @return
 	 */
 	public LColor addSelf(LColor c) {
+		if (_locked) {
+			return this;
+		}
 		if (c == null) {
 			return this;
 		}
@@ -1022,6 +1118,9 @@ public class LColor implements Serializable {
 	 * @return
 	 */
 	public LColor subSelf(float v) {
+		if (_locked) {
+			return this;
+		}
 		this.r -= v;
 		this.g -= v;
 		this.b -= v;
@@ -1036,6 +1135,9 @@ public class LColor implements Serializable {
 	 * @return
 	 */
 	public LColor subSelf(LColor c) {
+		if (_locked) {
+			return this;
+		}
 		if (c == null) {
 			return this;
 		}
@@ -1053,6 +1155,9 @@ public class LColor implements Serializable {
 	 * @return
 	 */
 	public LColor mulSelf(float v) {
+		if (_locked) {
+			return this;
+		}
 		this.r *= v;
 		this.g *= v;
 		this.b *= v;
@@ -1067,6 +1172,9 @@ public class LColor implements Serializable {
 	 * @return
 	 */
 	public LColor mulSelf(LColor c) {
+		if (_locked) {
+			return this;
+		}
 		if (c == null) {
 			return this;
 		}
@@ -1078,6 +1186,9 @@ public class LColor implements Serializable {
 	}
 
 	public LColor mulSelfAlpha(float a) {
+		if (_locked) {
+			return this;
+		}
 		this.a *= a;
 		return this;
 	}
@@ -1096,6 +1207,9 @@ public class LColor implements Serializable {
 	 * @return
 	 */
 	public LColor divSelf(float v) {
+		if (_locked) {
+			return this;
+		}
 		this.r /= v;
 		this.g /= v;
 		this.b /= v;
@@ -1110,6 +1224,9 @@ public class LColor implements Serializable {
 	 * @return
 	 */
 	public LColor divSelf(LColor c) {
+		if (_locked) {
+			return this;
+		}
 		if (c == null) {
 			return this;
 		}
@@ -1121,6 +1238,9 @@ public class LColor implements Serializable {
 	}
 
 	public LColor divSelfAlpha(float a) {
+		if (_locked) {
+			return this;
+		}
 		if (a <= 0) {
 			a = 0.01f;
 		}
@@ -1580,6 +1700,22 @@ public class LColor implements Serializable {
 		rgbas[2] = (pixel) & 0xFF;
 		rgbas[3] = pixel >>> 24;
 		return rgbas;
+	}
+
+	public float[] toRgbFloatArray() {
+		return new float[] { r, g, b };
+	}
+
+	public float[] toRgbaFloatArray() {
+		return new float[] { r, g, b, a };
+	}
+
+	public int[] toRgbaIntArray() {
+		return new int[] { getRed(), getGreen(), getBlue(), getAlpha() };
+	}
+
+	public int[] toRgbIntArray() {
+		return new int[] { getRed(), getGreen(), getBlue() };
 	}
 
 	public byte[] toRgbaByteArray() {
