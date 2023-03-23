@@ -94,10 +94,12 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 	// 以此完整保存全局FrameBuffer内容(否则GLEx中每次begin时FrameBuffer绑定都会刷新，如果多次begin和end，将无法保存全部内容)
 	private boolean saveToFrameBufferTexture;
 
-	private LColor tmpColor = new LColor();
+	private final LColor tempColor = new LColor();
 
-	private Vector2f tempLocation = new Vector2f();
+	private final Vector2f tempLocation = new Vector2f();
 
+	private final Affine2f tempAffine = new Affine2f();
+	
 	private final IntMap<PointF> rhombusArray = new IntMap<PointF>();
 
 	private final Array<LTextureImage> frameBuffers = new Array<LTextureImage>();
@@ -111,8 +113,6 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 	private final TArray<LTexture> bufferTextures = new TArray<LTexture>();
 
 	private final LTexture colorTex;
-
-	private final Affine2f tempAffine = new Affine2f();
 
 	protected RenderTarget target;
 
@@ -938,8 +938,8 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-		tmpColor.setColor(this.lastBrush.baseColor);
-		return reset(tmpColor.r, tmpColor.g, tmpColor.b, tmpColor.a);
+		tempColor.setColor(this.lastBrush.baseColor);
+		return reset(tempColor.r, tempColor.g, tempColor.b, tempColor.a);
 	}
 
 	protected int syncBrushColorInt() {
@@ -951,11 +951,11 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 	}
 
 	protected LColor syncBrushColor() {
-		return tmpColor.setColor(LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor));
+		return tempColor.setColor(LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor));
 	}
 
 	protected LColor syncBrushColor(int color) {
-		return tmpColor.setColor(LColor.combine(this.lastBrush.fillColor, color));
+		return tempColor.setColor(LColor.combine(this.lastBrush.fillColor, color));
 	}
 
 	public int color() {
@@ -2463,6 +2463,17 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		return this;
 	}
 
+	public GLRenderer beginBatchRenderer(GLType mode) {
+		GLRenderer renderer = beginRenderer(mode);
+		rendererLock();
+		return renderer;
+	}
+
+	public GLRenderer endBatchRenderer() {
+		freeRendererLock();
+		return endRenderer();
+	}
+
 	/**
 	 * 图形形状渲染开始
 	 * 
@@ -3132,8 +3143,9 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 	 * @param Aa
 	 */
 	public GLEx drawOval(float x1, float y1, float width, float height) {
-		if (this.lastBrush.alltextures) {
-			drawOvalImpl(x1, y1, width, height);
+		final float lineWidth = this.lastBrush.lineWidth;
+		if (this.lastBrush.alltextures || lineWidth != 1f) {
+			oval(x1, y1, width, height, lineWidth);
 			return this;
 		} else {
 			return this.drawArc(x1, y1, width, height, 32, 0, 360);
@@ -3153,11 +3165,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 	public GLEx drawOval(float x1, float y1, float width, float height, LColor c) {
 		int tint = color();
 		setTint(c);
-		if (this.lastBrush.alltextures) {
-			drawOvalImpl(x1, y1, width, height);
-		} else {
-			this.drawArc(x1, y1, width, height, 32, 0, 360);
-		}
+		drawOval(x1, y1, width, height);
 		setTint(tint);
 		return this;
 	}
@@ -3542,18 +3550,26 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-		if (this.lastBrush.alltextures) {
-			drawArcImpl(x1, y1, width, height, start, end);
+		final float rotation = (end - start);
+		if (this.lastBrush.alltextures || (this.lastBrush.lineWidth != 1f && rotation == 360)) {
+			if (rotation != 360) {
+				int skip = getPixSkip();
+				setPixSkip(MathUtils.floor(MathUtils.max(this.lastBrush.lineWidth, skip)));
+				drawArcImpl(x1, y1, width, height, start, end);
+				setPixSkip(skip);
+			} else {
+				oval(x1, y1, width, height, this.lastBrush.lineWidth);
+			}
 		} else {
-			float radiusW = width / 2f;
-			float radiusH = height / 2f;
-			float cx = x1 + radiusW;
-			float cy = y1 + radiusH;
-			if ((int) radiusW == (int) radiusH) {
+			final float radiusW = width / 2f;
+			final float radiusH = height / 2f;
+			final float cx = x1 + radiusW;
+			final float cy = y1 + radiusH;
+			if (MathUtils.equal(radiusW, radiusH)) {
 				beginRenderer(GLType.Line);
-				int argb = syncBrushColorInt();
+				final int argb = syncBrushColorInt();
 				glRenderer.setColor(argb);
-				if (end - start == 360) {
+				if (rotation == 360) {
 					glRenderer.oval(cx, cy, MathUtils.min(radiusW, radiusH));
 				} else {
 					glRenderer.arc(cx, cy, MathUtils.min(radiusW, radiusH), start, end, segments, reverse);
@@ -3646,19 +3662,23 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		if (this.lastBrush.alltextures) {
 			fillArcImpl(x1, y1, width, height, start, end);
 		} else {
-			float radiusW = width / 2f;
-			float radiusH = height / 2f;
-			float cx = x1 + radiusW;
-			float cy = y1 + radiusH;
-			beginRenderer(GLType.Filled);
-			int argb = syncBrushColorInt();
-			glRenderer.setColor(argb);
-			if (end - start == 360) {
-				glRenderer.oval(cx, cy, MathUtils.min(radiusW, radiusH));
+			final float radiusW = width / 2f;
+			final float radiusH = height / 2f;
+			final float cx = x1 + radiusW;
+			final float cy = y1 + radiusH;
+			if (MathUtils.equal(radiusW, radiusH)) {
+				beginRenderer(GLType.Filled);
+				final int argb = syncBrushColorInt();
+				glRenderer.setColor(argb);
+				if (end - start == 360) {
+					glRenderer.oval(cx, cy, MathUtils.min(radiusW, radiusH));
+				} else {
+					glRenderer.arc(cx, cy, MathUtils.min(radiusW, radiusH), start, end, segments, reverse);
+				}
+				endRenderer();
 			} else {
-				glRenderer.arc(cx, cy, MathUtils.min(radiusW, radiusH), start, end, segments, reverse);
+				fill(new Ellipse(cx, cy, radiusW, radiusH, start, end, segments));
 			}
-			endRenderer();
 		}
 		return this;
 	}

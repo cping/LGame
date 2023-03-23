@@ -101,8 +101,9 @@ public abstract class PixmapFImpl {
 		return _skip;
 	}
 
-	public void setPixSkip(int s) {
+	public PixmapFImpl setPixSkip(int s) {
 		_skip = s;
+		return this;
 	}
 
 	protected void fillPolygonImpl(float[] xPoints, float[] yPoints, int nPoints) {
@@ -146,18 +147,7 @@ public abstract class PixmapFImpl {
 		}
 	}
 
-	protected void drawOvalImpl(float x, float y, float width, float height) {
-		drawCircleImpl(x, y, width, height, false, new CircleUpdate() {
-			@Override
-			public void newPoint(float xLeft, float yTop, float xRight, float yBottom) {
-				drawPointImpl(xLeft, yTop);
-				drawPointImpl(xRight, yTop);
-				drawPointImpl(xLeft, yBottom);
-				drawPointImpl(xRight, yBottom);
-			}
-		});
-
-	}
+	protected abstract void drawOvalImpl(float x, float y, float width, float height);
 
 	protected void drawPolygonImpl(float xPoints[], float yPoints[], int nPoints) {
 		drawPolylineImpl(xPoints, yPoints, nPoints);

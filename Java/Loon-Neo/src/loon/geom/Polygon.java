@@ -38,6 +38,8 @@ public class Polygon extends Shape implements BoxSize {
 
 	private boolean closed = true;
 
+	private TArray<Vector2f> _vertices;
+	
 	public Polygon(float[] points) {
 		int length = points.length;
 
@@ -194,12 +196,18 @@ public class Polygon extends Shape implements BoxSize {
 	}
 
 	public TArray<Vector2f> getVertices() {
-		int size = points.length;
-		TArray<Vector2f> vertices = new TArray<Vector2f>();
-		for (int i = 0; i < size; i += 2) {
-			vertices.add(new Vector2f(points[i], points[i + 1]));
+		if (_vertices == null) {
+			_vertices = new TArray<Vector2f>();
 		}
-		return vertices;
+		if (pointsDirty) {
+			_vertices.clear();
+			int size = points.length;
+			for (int i = 0; i < size; i += 2) {
+				_vertices.add(new Vector2f(points[i], points[i + 1]));
+			}
+			pointsDirty = false;
+		}
+		return _vertices;
 	}
 
 	@Override
@@ -225,11 +233,13 @@ public class Polygon extends Shape implements BoxSize {
 	@Override
 	public void setWidth(float w) {
 		this.maxX = w;
+		this.pointsDirty = true;
 	}
 
 	@Override
 	public void setHeight(float h) {
 		this.maxY = h;
+		this.pointsDirty = true;
 	}
 
 	public RectBox getBox() {

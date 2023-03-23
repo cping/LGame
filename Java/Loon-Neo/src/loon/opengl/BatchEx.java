@@ -24,34 +24,40 @@ import loon.canvas.LColor;
 import loon.canvas.PixmapFImpl;
 import loon.geom.Polygon;
 import loon.geom.RectBox;
+import loon.geom.Shape;
+import loon.geom.Vector2f;
 import loon.utils.FloatArray;
 import loon.utils.MathUtils;
+import loon.utils.TArray;
 
 public abstract class BatchEx<T> extends PixmapFImpl {
 
-	private FloatArray _shapes = new FloatArray();
+	private final Vector2f _rotationPosA = new Vector2f();
+	private final Vector2f _rotationPosB = new Vector2f();
+
+	private final FloatArray _shapes = new FloatArray();
 
 	public BatchEx(float tx, float ty, RectBox clip, float w, float h, int skip) {
 		super(tx, ty, clip, w, h, skip);
 	}
 
-	public final BatchEx<T> shape(Polygon p) {
-		shape(p.getPoints(), p.size());
-		return this;
+	public final BatchEx<T> oval(float x, float y, float width, float height, float lineWidth) {
+		return oval(x, y, width, height, 360f, 32, lineWidth);
 	}
 
-	public final BatchEx<T> shape(FloatArray vertices) {
-		shape(vertices.items, vertices.size());
-		return this;
-	}
-
-	public final BatchEx<T> shape(float[] vertices, int length) {
-		if (length < 2 * 3) {
-			return this;
-		}
-		for (int i = 2; i < length - 4; i += 4) {
-			quad(vertices[0], vertices[1], vertices[i], vertices[i + 1], vertices[i + 2], vertices[i + 3],
-					vertices[i + 4], vertices[i + 5]);
+	public final BatchEx<T> oval(float x, float y, float width, float height, float angle, float sides,
+			float lineWidth) {
+		width /= 2;
+		height /= 2;
+		x += width;
+		y += height;
+		float space = 360 / sides;
+		for (int i = 0; i < sides; i++) {
+			float a = space * i;
+			_rotationPosA.translateSelfAngle(angle, width * MathUtils.cosDeg(a), height * MathUtils.sinDeg(a));
+			_rotationPosB.translateSelfAngle(angle, width * MathUtils.cosDeg(a + space),
+					height * MathUtils.sinDeg(a + space));
+			line(x + _rotationPosA.x, y + _rotationPosA.y, x + _rotationPosB.x, y + _rotationPosB.y, lineWidth);
 		}
 		return this;
 	}
@@ -121,20 +127,54 @@ public abstract class BatchEx<T> extends PixmapFImpl {
 		return this;
 	}
 
+	public final BatchEx<T> shape(Shape p) {
+		shape(p.getPoints(), p.size());
+		return this;
+	}
+
+	public final BatchEx<T> shape(FloatArray vertices) {
+		shape(vertices.items, vertices.size());
+		return this;
+	}
+
+	public final BatchEx<T> shape(float[] vertices, int length) {
+		if (length < 2 * 3) {
+			return this;
+		}
+		for (int i = 2; i < length - 4; i += 4) {
+			quad(vertices[0], vertices[1], vertices[i], vertices[i + 1], vertices[i + 2], vertices[i + 3],
+					vertices[i + 4], vertices[i + 5]);
+		}
+		return this;
+	}
+
+	
 	public final BatchEx<T> shapeEnd() {
 		shape(_shapes.items, _shapes.size());
 		return this;
 	}
 
-	public final void shape(float x, float y, float start) {
-		shape(x, y, 32, start, 0f);
+	public void shape(TArray<Vector2f> vertices, float x, float y, float scale, float width) {
+		for (int i = 0; i < vertices.size; i++) {
+			Vector2f current = vertices.get(i);
+			Vector2f next = i == vertices.size - 1 ? vertices.get(0) : vertices.get(i + 1);
+			line(current.x * scale + x, current.y * scale + y, next.x * scale + x, next.y * scale + y, width);
+		}
 	}
 
-	public final void shape(float x, float y, int sides, float start) {
-		shape(x, y, sides, start, 0f);
+	public void shape(Polygon p, float x, float y, float scale, float width) {
+		shape(p.getVertices(), x, y, scale, width);
 	}
 
-	public final void shape(float x, float y, int sides, float start, float end) {
+	public final BatchEx<T> shape(float x, float y, float start) {
+		return shape(x, y, 32, start, 0f);
+	}
+
+	public final BatchEx<T> shape(float x, float y, int sides, float start) {
+		return shape(x, y, sides, start, 0f);
+	}
+
+	public final BatchEx<T> shape(float x, float y, int sides, float start, float end) {
 		start /= 2;
 		x += start;
 		y += start;
@@ -160,7 +200,7 @@ public abstract class BatchEx<T> extends PixmapFImpl {
 			}
 			int mod = sides % 2;
 			if (mod == 0 || sides < 4) {
-				return;
+				return this;
 			}
 			int i = sides - 1;
 			float px = MathUtils.translateX(space * i + end, start);
@@ -169,17 +209,18 @@ public abstract class BatchEx<T> extends PixmapFImpl {
 			float py2 = MathUtils.translateY(space * (i + 1) + end, start);
 			triangle(x, y, x + px, y + py, x + px2, y + py2);
 		}
+		return this;
 	}
 
-	public final void arcToFill(float x, float y, float start) {
-		arcToFill(x, y, start, 0f);
+	public final BatchEx<T> arcToFill(float x, float y, float start) {
+		return arcToFill(x, y, start, 0f);
 	}
 
-	public final void arcToFill(float x, float y, float start, float end) {
-		arcToFill(x, y, start, end, 32);
+	public final BatchEx<T> arcToFill(float x, float y, float start, float end) {
+		return arcToFill(x, y, start, end, 32);
 	}
 
-	public final void arcToFill(float x, float y, float start, float end, int sides) {
+	public final BatchEx<T> arcToFill(float x, float y, float start, float end, int sides) {
 		start /= 2;
 		x += start;
 		y += start;
@@ -193,11 +234,41 @@ public abstract class BatchEx<T> extends PixmapFImpl {
 		}
 		shapePoint(x, y);
 		shapeEnd();
+		return this;
+	}
+
+	public BatchEx<T> arcToStroke(float x, float y, float angle) {
+		return arcToStroke(x, y, angle, 32f, 1f);
+	}
+
+	public BatchEx<T> arcToStroke(float x, float y, float angle, float width) {
+		return arcToStroke(x, y, angle, 32f, width);
+	}
+
+	public BatchEx<T> arcToStroke(float x, float y, float angle, float sides, float width) {
+		angle /= 2;
+		x += angle;
+		y += angle;
+		float space = 360f / sides;
+		float hstep = width / 2f / MathUtils.cosDeg(space / 2f);
+		float r1 = angle - hstep, r2 = angle + hstep;
+		for (int i = 0; i < sides; i++) {
+			float a = space * i, cos = MathUtils.cosDeg(a), sin = MathUtils.sinDeg(a),
+					cos2 = MathUtils.cosDeg(a + space), sin2 = MathUtils.sinDeg(a + space);
+			quad(x + r1 * cos, y + r1 * sin, x + r1 * cos2, y + r1 * sin2, x + r2 * cos2, y + r2 * sin2, x + r2 * cos,
+					y + r2 * sin);
+		}
+		return this;
 	}
 
 	@Override
 	protected void drawLineImpl(float x1, float y1, float x2, float y2) {
-		line(x1, y1, x2, y2, 1f);
+		line(x1, y1, x2, y2, getPixSkip());
+	}
+
+	@Override
+	protected void drawOvalImpl(float x, float y, float width, float height) {
+		oval(x, y, width, height, getPixSkip());
 	}
 
 	public abstract BatchEx<T> quad(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4);

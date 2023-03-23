@@ -85,10 +85,12 @@ public class GLEx implements LRelease {
 		TRANS_NONE, TRANS_MIRROR, TRANS_FLIP, TRANS_MF;
 	}
 
-	private LColor tmpColor = new LColor();
+	private final LColor tempColor = new LColor();
 
-	private Vector2f tempLocation = new Vector2f();
+	private final Vector2f tempLocation = new Vector2f();
 
+	private final Affine2f tempAffine = new Affine2f();
+	
 	private final IntMap<PointF> rhombusArray = new IntMap<>();
 
 	private final Array<Affine2f> affineStack = new Array<>();
@@ -391,6 +393,11 @@ public class GLEx implements LRelease {
 		return this;
 	}
 
+	protected Affine2f getTempAffine() {
+		tempAffine.idt();
+		return tempAffine;
+	}
+	
 	public boolean setClip(float x, float y, float width, float height) {
 		return startClipped(x, y, width, height);
 	}
@@ -620,7 +627,7 @@ public class GLEx implements LRelease {
 			return;
 		}
 		getCanvas().setCompositeOperation(Composite.SRC_OVER);
-		tmpColor.setColor(this.lastBrush.baseColor);
+		tempColor.setColor(this.lastBrush.baseColor);
 		resetClear();
 	}
 
@@ -633,11 +640,11 @@ public class GLEx implements LRelease {
 	}
 
 	protected LColor syncBrushColor() {
-		return tmpColor.setColor(LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor));
+		return tempColor.setColor(LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor));
 	}
 
 	protected LColor syncBrushColor(int color) {
-		return tmpColor.setColor(LColor.combine(this.lastBrush.fillColor, color));
+		return tempColor.setColor(LColor.combine(this.lastBrush.fillColor, color));
 	}
 
 	public int color() {
@@ -737,8 +744,8 @@ public class GLEx implements LRelease {
 
 	public GLEx clear(float red, float green, float blue, float alpha) {
 		Canvas canvas = gfx.getCanvas();
-		tmpColor.setColor(red, green, blue, alpha);
-		canvas.clear(tmpColor);
+		tempColor.setColor(red, green, blue, alpha);
+		canvas.clear(tempColor);
 		return this;
 	}
 
@@ -1035,7 +1042,7 @@ public class GLEx implements LRelease {
 		}
 		Affine2f xf = tx();
 		if (rotation != 0) {
-			xf = new Affine2f();
+			xf = getTempAffine();
 			float w1 = x + originX;
 			float h1 = y + originY;
 			xf.translate(w1, h1);
@@ -1073,7 +1080,7 @@ public class GLEx implements LRelease {
 		}
 		Affine2f xf = tx();
 		if (rotation != 0 || sx != 1f || sy != 1f || flipX || flipY) {
-			xf = new Affine2f();
+			xf = getTempAffine();
 			float centerX = x + w / 2;
 			float centerY = y + h / 2;
 			if (pivot != null && (pivot.x != -1 && pivot.y != -1)) {
@@ -1115,7 +1122,7 @@ public class GLEx implements LRelease {
 		}
 		Affine2f xf = tx();
 		if (rotation != 0) {
-			xf = new Affine2f();
+			xf = getTempAffine();
 			float w1 = x + w / 2;
 			float h1 = y + h / 2;
 			xf.translate(w1, h1);
@@ -1179,7 +1186,7 @@ public class GLEx implements LRelease {
 		}
 		Affine2f xf = tx();
 		if (rotation != 0) {
-			xf = new Affine2f();
+			xf = getTempAffine();
 			float w1 = dx + dw / 2;
 			float h1 = dy + dh / 2;
 			xf.translate(w1, h1);
@@ -1363,7 +1370,7 @@ public class GLEx implements LRelease {
 		final boolean scaleDirty = !(scaleX == 1 && scaleY == 1);
 
 		if (dirDirty || rotDirty || scaleDirty) {
-			xf = new Affine2f();
+			xf = getTempAffine();
 
 			float originX = width / 2;
 			float originY = height / 2;
@@ -1443,49 +1450,35 @@ public class GLEx implements LRelease {
 		return drawLine(a.getX(), a.getY(), b.getX(), b.getY(), width);
 	}
 
-	public GLEx drawLine(float x0, float y0, float x1, float y1, LColor color) {
-		int tmp = this.lastBrush.baseColor;
-		setColor(color);
-		drawLine(x0, y0, x1, y1);
-		setColor(tmp);
-		return this;
+	public GLEx drawLine(float x0, float y0, float x1, float y1) {
+		return drawLine(x0, y0, x1, y1, syncBrushColor());
 	}
 
-	public GLEx drawLine(float x0, float y0, float x1, float y1, float width, LColor color) {
-		int tmp = this.lastBrush.baseColor;
-		setColor(color);
-		drawLine(x0, y0, x1, y1, width);
-		setColor(tmp);
-		return this;
+	public GLEx drawLine(float x0, float y0, float x1, float y1, LColor color) {
+		return drawLine(x0, y0, x1, y1, lastBrush.lineWidth, color.getARGB());
 	}
 
 	public GLEx drawLine(float x0, float y0, float x1, float y1, float width) {
+		return drawLine(x0, y0, x1, y1, lastBrush.lineWidth, syncBrushColor());
+	}
+
+	public GLEx drawLine(float x0, float y0, float x1, float y1, float width, LColor color) {
+		return drawLine(x0, y0, x1, y1, width, color.getARGB());
+	}
+
+	public GLEx drawLine(float x0, float y0, float x1, float y1, float width, int color) {
 		if (isClosed) {
 			return this;
 		}
-		if (x1 < x0) {
-			float temp = x0;
-			x0 = x1;
-			x1 = temp;
-			temp = y0;
-			y0 = y1;
-			y1 = temp;
-		}
-
-		float dx = x1 - x0, dy = y1 - y0;
-		float length = MathUtils.sqrt(dx * dx + dy * dy);
-		float wx = dx * (width / 2) / length;
-		float wy = dy * (width / 2) / length;
-
-		Affine2f xf = new Affine2f();
-		xf.setRotation(MathUtils.atan2(dy, dx));
-		xf.setTranslation(x0 + wy, y0 - wx);
-		Affine2f.multiply(tx(), xf, xf);
-		if (this.lastBrush.patternTex != null) {
-			batch.addQuad(this.lastBrush.patternTex, this.lastBrush.baseColor, xf, 0, 0, length, width);
-		} else {
-			batch.addQuad(colorTex, syncBrushColorInt(), xf, 0, 0, length, width);
-		}
+		float old = getLineWidth();
+		Canvas g = gfx.getCanvas();
+		LColor c = g.getStroketoLColor();
+		g.setStrokeColor(color);
+		g.setLineWidth(width);
+		g.setTransform(tx());
+		g.drawLine(x0, y0, x1, y1);
+		g.setLineWidth(old);
+		g.setColor(c);
 		return this;
 	}
 
@@ -1575,16 +1568,6 @@ public class GLEx implements LRelease {
 	private RectBox popScissorState() {
 		scissorDepth--;
 		return scissorDepth == 0 ? null : scissors.get(scissorDepth - 1);
-	}
-
-	public GLEx drawLine(float x1, float y1, float x2, float y2) {
-		Canvas canvas = gfx.getCanvas();
-		canvas.setTransform(tx());
-		LColor color = canvas.getFilltoLColor();
-		canvas.setColor(syncBrushColor());
-		canvas.drawLine(x1, y1, x2, y2);
-		canvas.setColor(color);
-		return this;
 	}
 
 	/**
@@ -2296,7 +2279,7 @@ public class GLEx implements LRelease {
 	 * @param y2
 	 */
 	public final GLEx drawRect(final float x1, final float y1, final float x2, final float y2) {
-		return drawRect(x1, y1, x2, y2, tmpColor);
+		return drawRect(x1, y1, x2, y2, tempColor);
 	}
 
 	/**

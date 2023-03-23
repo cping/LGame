@@ -202,7 +202,7 @@ public class TriangleNeat implements Triangle {
 		int i1 = i - 1;
 		while (i > 2) {
 			if (0 >= k1--) {
-				throw new LSysException("Bad polygon");
+				break;
 			}
 			int j = i1;
 			if (i <= j) {

@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -24,7 +24,7 @@ import loon.LSysException;
 
 public class TriangleNeat implements Triangle {
 	/**
-	 *
+	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
@@ -130,8 +130,8 @@ public class TriangleNeat implements Triangle {
 		}
 	}
 
-	private static boolean insideTriangle(float f, float f1, float f2,
-			float f3, float f4, float f5, float f6, float f7) {
+	private static boolean insideTriangle(float f, float f1, float f2, float f3, float f4, float f5, float f6,
+			float f7) {
 		float f8 = f4 - f2;
 		float f9 = f5 - f3;
 		float f10 = f - f4;
@@ -202,18 +202,18 @@ public class TriangleNeat implements Triangle {
 		int i1 = i - 1;
 		while (i > 2) {
 			if (0 >= k1--) {
-				throw new LSysException("Bad polygon");
+				break;
 			}
 			int j = i1;
-			if (i <= j){
+			if (i <= j) {
 				j = 0;
 			}
 			i1 = j + 1;
-			if (i <= i1){
+			if (i <= i1) {
 				i1 = 0;
 			}
 			int j1 = i1 + 1;
-			if (i <= j1){
+			if (i <= j1) {
 				j1 = 0;
 			}
 			if (snip(j, i1, j1, i)) {

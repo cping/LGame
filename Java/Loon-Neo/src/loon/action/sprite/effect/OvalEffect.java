@@ -43,7 +43,7 @@ public class OvalEffect extends Entity implements BaseEffect {
 	private int _typeCode;
 
 	private float _step;
-	
+
 	private float _spaceSize;
 
 	private boolean _completed;
@@ -145,8 +145,10 @@ public class OvalEffect extends Entity implements BaseEffect {
 		int old = g.color();
 		float line = g.getLineWidth();
 		g.setColor(_baseColor);
-		g.beginRenderer(GLType.Line);
-		g.rendererLock();
+		g.setLineWidth(_spaceSize);
+		if (_spaceSize == 1f) {
+			g.beginBatchRenderer(GLType.Line);
+		}
 		if (_typeCode == ISprite.TYPE_FADE_IN) {
 			for (int i = _endRadius * 2; i >= _diameter; i -= _spaceSize) {
 				final float x = drawX(offsetX + (getWidth() / 2f - i / 2f));
@@ -170,8 +172,9 @@ public class OvalEffect extends Entity implements BaseEffect {
 			}
 		}
 		g.setLineWidth(line);
-		g.freeRendererLock();
-		g.endRenderer();
+		if (_spaceSize == 1f) {
+			g.endBatchRenderer();
+		}
 		g.setColor(old);
 		this._previous = _diameter;
 	}
@@ -184,7 +187,7 @@ public class OvalEffect extends Entity implements BaseEffect {
 		this._spaceSize = s;
 		return this;
 	}
-	
+
 	public boolean isAutoRemoved() {
 		return _autoRemoved;
 	}
