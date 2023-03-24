@@ -21,8 +21,10 @@
 package loon.opengl;
 
 import loon.LSystem;
+import loon.utils.CollectionUtils;
 import loon.utils.ObjectMap;
 import loon.utils.StrBuilder;
+import loon.utils.StringKeyValue;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
@@ -42,7 +44,7 @@ public class ShaderCmd {
 	}
 
 	public enum VarType {
-		Attribute, Uniform, Varying;
+		Attribute, Uniform, Varying, Struct, Const;
 	}
 
 	private String command;
@@ -55,9 +57,15 @@ public class ShaderCmd {
 
 	private final TArray<String> varyingList;
 
+	private final TArray<String> constList;
+
+	private final TArray<StringKeyValue> structList;
+
 	private final String space = " ";
 
 	private final String end = ";\n";
+
+	protected final String INTEGER = "int";
 
 	protected final String FLOAT = "float";
 
@@ -84,15 +92,41 @@ public class ShaderCmd {
 
 	private boolean flag = false;
 
+	public ShaderCmd() {
+		this(CollectionUtils.INITIAL_CAPACITY);
+	}
+
 	public ShaderCmd(int size) {
 		this.define = IF_DEF_GLES;
+		this.structList = new TArray<StringKeyValue>(size);
+		this.constList = new TArray<String>(size);
 		this.attributeList = new TArray<String>(size);
 		this.uniformList = new TArray<String>(size);
 		this.varyingList = new TArray<String>(size);
 	}
 
+	public ShaderCmd putConstFloat(String name) {
+		return putConst(FLOAT, name);
+	}
+
+	public ShaderCmd putConstInt(String name) {
+		return putConst(INTEGER, name);
+	}
+
+	public ShaderCmd putConstFloat(String name, String context) {
+		return putConst(FLOAT, name, context);
+	}
+
+	public ShaderCmd putConstInt(String name, String context) {
+		return putConst(INTEGER, name, context);
+	}
+
 	public ShaderCmd putAttributeFloat(String name) {
 		return putAttribute(FLOAT, name);
+	}
+
+	public ShaderCmd putAttributeInt(String name) {
+		return putAttribute(INTEGER, name);
 	}
 
 	public ShaderCmd putAttributeVec2(String name) {
@@ -111,6 +145,10 @@ public class ShaderCmd {
 		return putVarying(FLOAT, name);
 	}
 
+	public ShaderCmd putVaringInt(String name) {
+		return putVarying(INTEGER, name);
+	}
+
 	public ShaderCmd putVaryingVec2(String name) {
 		return putVarying(VEC2, name);
 	}
@@ -121,6 +159,26 @@ public class ShaderCmd {
 
 	public ShaderCmd putVaryingVec4(String name) {
 		return putVarying(VEC4, name);
+	}
+
+	public ShaderCmd putVaringFloat(String name, String context) {
+		return putVarying(FLOAT, name, context);
+	}
+
+	public ShaderCmd putVaringInt(String name, String context) {
+		return putVarying(INTEGER, name, context);
+	}
+
+	public ShaderCmd putVaryingVec2(String name, String context) {
+		return putVarying(VEC2, name, context);
+	}
+
+	public ShaderCmd putVaryingVec3(String name, String context) {
+		return putVarying(VEC3, name, context);
+	}
+
+	public ShaderCmd putVaryingVec4(String name, String context) {
+		return putVarying(VEC4, name, context);
 	}
 
 	public ShaderCmd putUniformVec2(String name) {
@@ -159,26 +217,104 @@ public class ShaderCmd {
 		return putVar(VarType.Varying, varName, name);
 	}
 
+	public ShaderCmd putConst(String varName, String name) {
+		return putVar(VarType.Const, varName, name);
+	}
+
+	public ShaderCmd putAttribute(String varName, String name, String context) {
+		return putVar(VarType.Attribute, varName, name, context);
+	}
+
+	public ShaderCmd putUniform(String varName, String name, String context) {
+		return putVar(VarType.Uniform, varName, name, context);
+	}
+
+	public ShaderCmd putVarying(String varName, String name, String context) {
+		return putVar(VarType.Varying, varName, name, context);
+	}
+
+	public ShaderCmd putConst(String varName, String name, String context) {
+		return putVar(VarType.Const, varName, name, context);
+	}
+
+	public ShaderCmd putStruct(String structName, String context) {
+		return putVar(VarType.Struct, null, structName, context);
+	}
+
 	protected ShaderCmd putVar(VarType type, String varName, String name) {
+		return putVar(type, varName, name, null);
+	}
+
+	protected ShaderCmd putVar(VarType type, String varName, String name, String context) {
 		clearCache();
+		final boolean isContext = !StringUtils.isEmpty(context);
 		String typeString = null;
 		switch (type) {
 		case Attribute:
 			typeString = "attribute";
-			attributeList.add(typeString + space + varName + space + name + end);
+			if (isContext) {
+				attributeList.add(typeString + space + varName + space + name + " = " + context + end);
+			} else {
+				attributeList.add(typeString + space + varName + space + name + end);
+			}
 			break;
 		case Uniform:
 			typeString = "uniform";
-			uniformList.add(typeString + space + varName + space + name + end);
+			if (isContext) {
+				uniformList.add(typeString + space + varName + space + name + end + " = " + context);
+			} else {
+				uniformList.add(typeString + space + varName + space + name + end);
+			}
 			break;
 		case Varying:
 			typeString = "varying";
-			varyingList.add(typeString + space + varName + space + name + end);
+			if (isContext) {
+				varyingList.add(typeString + space + varName + space + name + " = " + context + end);
+			} else {
+				varyingList.add(typeString + space + varName + space + name + end);
+			}
+			break;
+		case Const:
+			typeString = "const";
+			if (isContext) {
+				constList.add(typeString + space + varName + space + name + " = " + context + end);
+			} else {
+				constList.add(typeString + space + varName + space + name + end);
+			}
+			break;
+		case Struct:
+			typeString = "struct";
+			StringKeyValue skv = new StringKeyValue(typeString);
+			skv.space().addValue(name).newLine().pushBrace().newLine();
+			if (isContext) {
+				skv.addValue(context);
+			}
+			skv.newLine().popBrace().branch();
+			structList.add(skv);
 			break;
 		default:
 			break;
 		}
 		return this;
+	}
+
+	public String getStruct() {
+		StrBuilder cmds = new StrBuilder();
+		for (int i = 0; i < structList.size; i++) {
+			cmds.append(structList.get(i).toData());
+			if (i == structList.size - 1) {
+				cmds.append(LSystem.LF);
+			}
+		}
+		return cmds.toString();
+	}
+
+	public String getConst() {
+		StrBuilder cmds = new StrBuilder();
+		for (String s : constList) {
+			cmds.append(s);
+		}
+		return cmds.toString();
 	}
 
 	public String getAttributes() {
@@ -207,6 +343,8 @@ public class ShaderCmd {
 
 	public String getVarShader() {
 		StrBuilder sbr = new StrBuilder();
+		sbr.append(getStruct());
+		sbr.append(getConst());
 		sbr.append(getAttributes());
 		sbr.append(getUniforms());
 		sbr.append(getVaryings());
@@ -268,10 +406,12 @@ public class ShaderCmd {
 	}
 
 	public ShaderCmd cpy() {
-		ShaderCmd cmd = new ShaderCmd(10);
+		ShaderCmd cmd = new ShaderCmd();
+		cmd.constList.addAll(this.constList);
 		cmd.attributeList.addAll(this.attributeList);
 		cmd.uniformList.addAll(this.uniformList);
 		cmd.varyingList.addAll(this.varyingList);
+		cmd.structList.addAll(this.structList);
 		cmd.set(cacheCommand, command, define, flag);
 		return cmd;
 	}

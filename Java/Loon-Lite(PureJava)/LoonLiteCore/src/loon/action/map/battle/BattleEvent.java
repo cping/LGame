@@ -24,15 +24,17 @@ import loon.events.Updateable;
 import loon.utils.processes.WaitProcess;
 
 public interface BattleEvent {
-	
+
 	public boolean isLocked();
-	
+
 	public BattleEvent lock(boolean lock);
 
-	public WaitProcess wait(Updateable update) ;
+	public WaitProcess wait(Updateable update);
+
+	public WaitProcess wait(Updateable update, float s);
 
 	public WaitProcess wait(WaitProcess waitProcess);
-	
+
 	public BattleProcess getMainProcess();
 
 	public BattleEvent setMainProcess(BattleProcess p);

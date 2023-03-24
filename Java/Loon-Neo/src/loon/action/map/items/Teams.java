@@ -152,6 +152,15 @@ public class Teams implements LRelease {
 		return null;
 	}
 
+	public boolean contains(Role r) {
+		for (Team team : _teams) {
+			if (team.contains(r)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public Role getRole(int id) {
 		for (Team team : _teams) {
 			for (Role ch : team.list()) {

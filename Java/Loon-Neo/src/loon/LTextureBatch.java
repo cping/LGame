@@ -1269,7 +1269,9 @@ public class LTextureBatch implements LRelease {
 			_caches = new IntMap<LTextureBatch.Cache>();
 		}
 		LTextureBatch.Cache cache = newCache();
-		_caches.put(hashCodeValue, cache);
+		if (cache != null) {
+			_caches.put(hashCodeValue, cache);
+		}
 		return hashCodeValue;
 	}
 

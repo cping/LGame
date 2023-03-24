@@ -120,6 +120,8 @@ public class LSystem {
 
 	public static final char COLON = ':';
 
+	public static final char BRANCH = ';';
+	
 	public static final char DOUBLE_QUOTES = '"';
 
 	public static final char SINGLE_QUOTE = '\'';

@@ -21,11 +21,60 @@
 package loon.action.map.items;
 
 import loon.LRelease;
+import loon.LSysException;
 import loon.LSystem;
 import loon.events.QueryEvent;
 import loon.utils.TArray;
 
 public class Team implements LRelease {
+
+	protected class IDQuery implements QueryEvent<Role> {
+
+		private int id;
+
+		IDQuery(int id) {
+			this.id = id;
+		}
+
+		@Override
+		public boolean hit(Role c) {
+			return c != null && (c.getID() == this.id);
+		}
+
+	}
+
+	protected class NameQuery implements QueryEvent<Role> {
+
+		private String name;
+
+		NameQuery(String name) {
+			this.name = name;
+		}
+
+		@Override
+		public boolean hit(Role c) {
+			return c != null && (this.name.equals(c.getRoleName()));
+		}
+
+	}
+
+	protected class MoveQuery implements QueryEvent<Role> {
+
+		@Override
+		public boolean hit(Role c) {
+			return c != null && c.isMoved;
+		}
+
+	}
+
+	protected class CleanQuery implements QueryEvent<Role> {
+
+		@Override
+		public boolean hit(Role c) {
+			return c == null || c.isDead;
+		}
+
+	}
 
 	public final static int Unknown = -1;
 
@@ -42,6 +91,8 @@ public class Team implements LRelease {
 	private int _teamMode = -1;
 
 	private final TArray<Role> _characters;
+
+	private Role _leadRole;
 
 	private String _name;
 
@@ -126,54 +177,6 @@ public class Team implements LRelease {
 		return _characters.where(query);
 	}
 
-	protected class IDQuery implements QueryEvent<Role> {
-
-		private int id;
-
-		IDQuery(int id) {
-			this.id = id;
-		}
-
-		@Override
-		public boolean hit(Role c) {
-			return c != null && (c.getID() == this.id);
-		}
-
-	}
-
-	protected class NameQuery implements QueryEvent<Role> {
-
-		private String name;
-
-		NameQuery(String name) {
-			this.name = name;
-		}
-
-		@Override
-		public boolean hit(Role c) {
-			return c != null && (this.name.equals(c.getRoleName()));
-		}
-
-	}
-
-	protected class MoveQuery implements QueryEvent<Role> {
-
-		@Override
-		public boolean hit(Role c) {
-			return c != null && c.isMoved;
-		}
-
-	}
-
-	protected class CleanQuery implements QueryEvent<Role> {
-
-		@Override
-		public boolean hit(Role c) {
-			return c == null || c.isDead;
-		}
-
-	}
-
 	// 其实可以简写成clean(c->c.isDead()),为了增加兼容性特意不那么写，方便移植,以下同……
 	public Team cleanOver() {
 		return clean(new CleanQuery());
@@ -191,14 +194,39 @@ public class Team implements LRelease {
 		return find(new NameQuery(name));
 	}
 
+	public boolean contains(Role r) {
+		return _characters.contains(r);
+	}
+
 	public int getTeam() {
 		return _teamMode;
 	}
 
-	public Team clear() {
-		_characters.clear();
-		dirty = true;
+	public Role getLeadRole() {
+		return _leadRole;
+	}
+
+	public Team setLeadRole(int id) {
+		return setLeadRole(findId(id));
+	}
+
+	public Team setLeadRole(String name) {
+		return setLeadRole(findName(name));
+	}
+
+	public Team setLeadRole(Role lr) {
+		if (lr == null) {
+			throw new LSysException("The Role is null !");
+		}
+		this._leadRole = lr;
 		return this;
+	}
+
+	public boolean isLeadRoleDead() {
+		if (_leadRole != null) {
+			return _leadRole.isDead;
+		}
+		return false;
 	}
 
 	public String getName() {
@@ -209,6 +237,11 @@ public class Team implements LRelease {
 		TArray<Role> newRoles = new TArray<Role>(_characters);
 		newRoles.sort(Role.ActionPrioritySort);
 		return newRoles;
+	}
+
+	public Team sort() {
+		_characters.sort(Role.ActionPrioritySort);
+		return this;
 	}
 
 	public boolean isAllDoneAction() {
@@ -247,7 +280,7 @@ public class Team implements LRelease {
 		}
 		return true;
 	}
-	
+
 	public TArray<Role> canDefenseRoleList() {
 		TArray<Role> list = new TArray<Role>();
 		for (Role c : _characters) {
@@ -257,7 +290,7 @@ public class Team implements LRelease {
 		}
 		return list;
 	}
-	
+
 	public boolean isDefense() {
 		for (Role c : _characters) {
 			if (c != null && !c.isDefense) {
@@ -276,7 +309,7 @@ public class Team implements LRelease {
 		}
 		return list;
 	}
-	
+
 	public boolean isSkill() {
 		for (Role c : _characters) {
 			if (c != null && !c.isSkill) {
@@ -295,7 +328,7 @@ public class Team implements LRelease {
 		}
 		return list;
 	}
-	
+
 	public boolean isMoved() {
 		for (Role c : _characters) {
 			if (c != null && !c.isMoved) {
@@ -314,7 +347,7 @@ public class Team implements LRelease {
 		}
 		return list;
 	}
-	
+
 	public boolean isDead() {
 		for (Role c : _characters) {
 			if (c != null && !c.isDead) {
@@ -324,8 +357,49 @@ public class Team implements LRelease {
 		return true;
 	}
 
+	public boolean isLeadDead() {
+		if (_leadRole == null) {
+			return false;
+		}
+		return _leadRole.isDead;
+	}
+
+	public boolean isLeadAttack() {
+		if (_leadRole == null) {
+			return false;
+		}
+		return _leadRole.isAttack;
+	}
+
+	public boolean isLeadDefense() {
+		if (_leadRole == null) {
+			return false;
+		}
+		return _leadRole.isDefense;
+	}
+
+	public boolean isLeadSkill() {
+		if (_leadRole == null) {
+			return false;
+		}
+		return _leadRole.isSkill;
+	}
+
+	public boolean isLeadMoved() {
+		if (_leadRole == null) {
+			return false;
+		}
+		return _leadRole.isMoved;
+	}
+
 	public boolean isOver() {
 		return isDead();
+	}
+
+	public Team clear() {
+		_characters.clear();
+		dirty = true;
+		return this;
 	}
 
 	@Override

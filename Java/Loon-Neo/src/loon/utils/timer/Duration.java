@@ -24,6 +24,7 @@ import loon.LSystem;
 import loon.utils.Calculator;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
+import loon.utils.TimeUtils;
 
 /**
  * 一个时间管理用类,支持简单的时间换算,用于统一Loon的时间单位关系与数值,初始单位是ms,毫秒
@@ -55,38 +56,74 @@ public class Duration implements Comparable<Duration> {
 		return _instance;
 	}
 
-	public static final Duration ZERO = new Duration(0);
+	public static final Duration ZERO = new Duration(0f);
 
 	public static final Duration HALF_ONE = new Duration(0.5f);
 
-	public static final Duration ONE = new Duration(1);
+	public static final Duration ONE = new Duration(1f);
 
-	public static final Duration ONE_SECOND = new Duration(1000);
+	public static final Duration ONE_SECOND = new Duration(LSystem.SECOND);
 
-	public static final Duration ONE_MINUTE = new Duration(60000);
+	public static final Duration ONE_MINUTE = new Duration(LSystem.MINUTE);
 
-	public static final Duration ONE_HOUR = new Duration(3600000);
+	public static final Duration ONE_HOUR = new Duration(LSystem.HOUR);
 
-	public static final Duration ONE_DAY = new Duration(86400000);
+	public static final Duration ONE_DAY = new Duration(LSystem.DAY);
+
+	public final static long now() {
+		return TimeUtils.millis();
+	}
+
+	public final static long ofS(float sec) {
+		return MathUtils.floor(sec * LSystem.SECOND);
+	}
+
+	public final static long ofM(float min) {
+		return MathUtils.floor(min * LSystem.MINUTE);
+	}
+
+	public final static long ofH(float hour) {
+		return MathUtils.floor(hour * LSystem.HOUR);
+	}
+
+	public final static long ofD(float day) {
+		return MathUtils.floor(day * LSystem.DAY);
+	}
+
+	public final static float toS(long millis) {
+		return (float) millis / (float) LSystem.SECOND;
+	}
+
+	public final static float toM(long millis) {
+		return (float) millis / (float) LSystem.MINUTE;
+	}
+
+	public final static float toH(long millis) {
+		return (float) millis / (float) LSystem.HOUR;
+	}
+
+	public final static float toD(long millis) {
+		return (float) millis / (float) LSystem.DAY;
+	}
 
 	public final static Duration at(float ms) {
 		return new Duration(ms);
 	}
 
 	public final static Duration atSecond(float sec) {
-		return new Duration(sec * LSystem.SECOND);
+		return new Duration(ofS(sec));
 	}
 
 	public final static Duration atMinute(float min) {
-		return new Duration(min * LSystem.MINUTE);
+		return new Duration(ofM(min));
 	}
 
 	public final static Duration atHour(float hour) {
-		return new Duration(hour * LSystem.HOUR);
+		return new Duration(ofH(hour));
 	}
 
 	public final static Duration atDay(float day) {
-		return new Duration(day * LSystem.DAY);
+		return new Duration(ofD(day));
 	}
 
 	private float _millisTime;

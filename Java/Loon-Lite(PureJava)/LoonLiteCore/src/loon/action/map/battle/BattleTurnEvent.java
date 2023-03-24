@@ -169,7 +169,6 @@ public abstract class BattleTurnEvent implements BattleEvent {
 
 	public abstract void onCompleted();
 
-	@Override
 	public WaitProcess wait(Updateable update) {
 		if (_battleProcess != null) {
 			return _battleProcess.wait(update);
@@ -177,7 +176,13 @@ public abstract class BattleTurnEvent implements BattleEvent {
 		return null;
 	}
 
-	@Override
+	public WaitProcess wait(Updateable update, float s) {
+		if (_battleProcess != null) {
+			return _battleProcess.wait(update, s);
+		}
+		return null;
+	}
+
 	public WaitProcess wait(WaitProcess waitProcess) {
 		if (_battleProcess != null) {
 			return _battleProcess.wait(waitProcess);
@@ -185,12 +190,10 @@ public abstract class BattleTurnEvent implements BattleEvent {
 		return null;
 	}
 
-	@Override
 	public BattleProcess getMainProcess() {
 		return _battleProcess;
 	}
 
-	@Override
 	public BattleTurnEvent setMainProcess(BattleProcess battleProcess) {
 		this._battleProcess = battleProcess;
 		return this;

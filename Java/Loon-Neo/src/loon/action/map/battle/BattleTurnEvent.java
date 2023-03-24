@@ -20,7 +20,9 @@
  */
 package loon.action.map.battle;
 
+import loon.events.Updateable;
 import loon.geom.BooleanValue;
+import loon.utils.processes.WaitProcess;
 
 public abstract class BattleTurnEvent implements BattleEvent {
 
@@ -31,6 +33,8 @@ public abstract class BattleTurnEvent implements BattleEvent {
 	private final BooleanValue _process = new BooleanValue();
 
 	private final BooleanValue _end = new BooleanValue();
+
+	private BattleProcess _battleProcess;
 
 	private boolean _updateFlag;
 
@@ -164,6 +168,53 @@ public abstract class BattleTurnEvent implements BattleEvent {
 	}
 
 	public abstract void onCompleted();
+
+	public WaitProcess wait(Updateable update) {
+		if (_battleProcess != null) {
+			return _battleProcess.wait(update);
+		}
+		return null;
+	}
+
+	public WaitProcess wait(Updateable update, float s) {
+		if (_battleProcess != null) {
+			return _battleProcess.wait(update, s);
+		}
+		return null;
+	}
+
+	public WaitProcess wait(WaitProcess waitProcess) {
+		if (_battleProcess != null) {
+			return _battleProcess.wait(waitProcess);
+		}
+		return null;
+	}
+
+	public BattleProcess getMainProcess() {
+		return _battleProcess;
+	}
+
+	public BattleTurnEvent setMainProcess(BattleProcess battleProcess) {
+		this._battleProcess = battleProcess;
+		return this;
+	}
+
+	@Override
+	public boolean isLocked() {
+		if (_battleProcess != null) {
+			return _battleProcess.get();
+		}
+		return false;
+	}
+
+	@Override
+	public BattleEvent lock(boolean lock) {
+		if (_battleProcess == null) {
+			return this;
+		}
+		_battleProcess.set(lock);
+		return this;
+	}
 
 	@Override
 	public boolean completed() {

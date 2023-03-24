@@ -28,7 +28,9 @@ import loon.events.Updateable;
 import loon.geom.BooleanValue;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
+import loon.utils.processes.GameProcess;
 import loon.utils.processes.RealtimeProcess;
+import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.processes.WaitProcess;
 import loon.utils.timer.LTimerContext;
 
@@ -156,6 +158,8 @@ public class BattleProcess extends RealtimeProcess {
 
 	private BattleResults _result;
 
+	private TArray<GameProcess> _waitProcess;
+
 	private int _roundAmount;
 
 	private boolean _pause;
@@ -163,6 +167,8 @@ public class BattleProcess extends RealtimeProcess {
 	private boolean _enforce;
 
 	private boolean _loop;
+
+	private boolean _waiting;
 
 	public BattleProcess() {
 		this("Battle", 0);
@@ -173,6 +179,7 @@ public class BattleProcess extends RealtimeProcess {
 	}
 
 	public BattleProcess(String name, long delay) {
+		this._waitProcess = new TArray<GameProcess>();
 		this._states = new TArray<BattleState>();
 		this._events = new TArray<BattleEvent>();
 		this._result = BattleResults.Running;
@@ -182,20 +189,26 @@ public class BattleProcess extends RealtimeProcess {
 	}
 
 	protected boolean runBattleEvent(final BattleEvent turnEvent, final long elapsedTime) {
+		if (checkProcessWait()) {
+			return false;
+		}
 		final BattleState state = turnEvent.getState();
 		this._stateCurrent = state;
 		if (_stateCompleted != state) {
 			if (turnEvent != null) {
-				if (!turnEvent.start(elapsedTime)) {
+				if (!turnEvent.start(elapsedTime) || _waiting) {
 					return false;
 				}
-				if (!turnEvent.process(elapsedTime)) {
+				if (!turnEvent.process(elapsedTime) || _waiting) {
 					return false;
 				}
-				if (!turnEvent.end(elapsedTime)) {
+				if (!turnEvent.end(elapsedTime) || _waiting) {
 					return false;
 				}
-				if (!turnEvent.completed()) {
+				if (!turnEvent.completed() || _waiting) {
+					return false;
+				}
+				if (_waiting) {
 					return false;
 				}
 				turnEvent.reset();
@@ -206,21 +219,27 @@ public class BattleProcess extends RealtimeProcess {
 	}
 
 	protected boolean updateBattleEvent(final BattleEvent turnEvent, final long elapsedTime) {
+		if (checkProcessWait()) {
+			return false;
+		}
 		final BattleState state = turnEvent.getState();
 		if (!_states.contains(state)) {
 			this._stateCurrent = state;
 			if (_stateCompleted != state) {
 				if (turnEvent != null) {
-					if (!turnEvent.start(elapsedTime)) {
+					if (!turnEvent.start(elapsedTime) || _waiting) {
 						return false;
 					}
-					if (!turnEvent.process(elapsedTime)) {
+					if (!turnEvent.process(elapsedTime) || _waiting) {
 						return false;
 					}
-					if (!turnEvent.end(elapsedTime)) {
+					if (!turnEvent.end(elapsedTime) || _waiting) {
 						return false;
 					}
-					if (!turnEvent.completed()) {
+					if (!turnEvent.completed() || _waiting) {
+						return false;
+					}
+					if (_waiting) {
 						return false;
 					}
 					turnEvent.reset();
@@ -294,8 +313,32 @@ public class BattleProcess extends RealtimeProcess {
 		update(time.timeSinceLastUpdate);
 	}
 
+	protected boolean checkProcessWait() {
+		if (_waiting) {
+			if (_waitProcess.size > 0) {
+				synchronized (_waitProcess) {
+					for (GameProcess process : _waitProcess) {
+						if (process != null) {
+							if (!process.isDead()) {
+								return (_waiting = true);
+							}
+						}
+					}
+					_waitProcess.clear();
+					this._waiting = false;
+				}
+			} else {
+				this._waiting = false;
+			}
+		}
+		return this._waiting;
+	}
+
 	public void update(long elapsedTime) {
 		if (_pause) {
+			return;
+		}
+		if (checkProcessWait()) {
 			return;
 		}
 		if (_result != BattleResults.Running) {
@@ -346,6 +389,7 @@ public class BattleProcess extends RealtimeProcess {
 		}
 		_events.remove(e);
 		_events.sort(_sortEvents);
+		e.setMainProcess(null);
 		return this;
 	}
 
@@ -353,13 +397,20 @@ public class BattleProcess extends RealtimeProcess {
 		if (e == null) {
 			return this;
 		}
+		e.setMainProcess(this);
 		_events.add(e);
 		_events.sort(_sortEvents);
 		return this;
 	}
 
 	public BattleProcess cleanUp() {
+		this._waitProcess.clear();
 		this._states.clear();
+		for (BattleEvent e : _events) {
+			if (e != null) {
+				e.setMainProcess(null);
+			}
+		}
 		this._events.clear();
 		this._result = BattleResults.Running;
 		this._actioning.set(false);
@@ -367,6 +418,7 @@ public class BattleProcess extends RealtimeProcess {
 		this._enforceEvent = null;
 		this._stateCurrent = null;
 		this._stateCompleted = null;
+		this._waiting = false;
 		this._pause = false;
 		this._loop = true;
 		this._roundAmount = 0;
@@ -456,7 +508,47 @@ public class BattleProcess extends RealtimeProcess {
 	}
 
 	public WaitProcess getWaitProcess(Updateable update) {
-		return new WaitProcess(MathUtils.floor(getBattleWaitSeconds() * LSystem.SECOND), update);
+		return getWaitProcess(update, getBattleWaitSeconds());
+	}
+
+	public WaitProcess getWaitProcess(Updateable update, float s) {
+		return new WaitProcess(MathUtils.floor(s * LSystem.SECOND), update);
+	}
+
+	public WaitProcess wait(Updateable update) {
+		if (update != null) {
+			return wait(getWaitProcess(update));
+		}
+		return null;
+	}
+
+	public WaitProcess wait(Updateable update, float s) {
+		if (update != null) {
+			return wait(getWaitProcess(update, s));
+		}
+		return null;
+	}
+
+	public WaitProcess wait(WaitProcess waitProcess) {
+		if (waitProcess != null) {
+			synchronized (_waitProcess) {
+				_waitProcess.add(waitProcess);
+				_waiting = true;
+				RealtimeProcessManager.get().addProcess(waitProcess);
+				return waitProcess;
+			}
+		}
+		return null;
+	}
+
+	public BattleProcess dontWait() {
+		_waitProcess.clear();
+		_waiting = false;
+		return this;
+	}
+
+	public boolean isWaiting() {
+		return _waiting;
 	}
 
 	public BattleProcess setActioning(boolean a) {

@@ -100,7 +100,7 @@ public class StringKeyValue {
 		_dirty = true;
 		return this;
 	}
-	
+
 	public StringKeyValue addValue(int ch) {
 		initBuild();
 		_buffer.append(ch);
@@ -167,6 +167,10 @@ public class StringKeyValue {
 
 	public StringKeyValue comma() {
 		return addValue(LSystem.COMMA);
+	}
+
+	public StringKeyValue branch() {
+		return addValue(LSystem.BRANCH);
 	}
 
 	public StringKeyValue scomma() {
@@ -288,8 +292,16 @@ public class StringKeyValue {
 		return (_buffer != null && _buffer.length() < i) ? _buffer.charAt(i) : (char) -1;
 	}
 
+	public String toData() {
+		return toData(LSystem.EMPTY, LSystem.EMPTY);
+	}
+
+	public String toData(String left, String right) {
+		return getKey() + left + getValue() + right;
+	}
+
 	@Override
 	public String toString() {
-		return getKey() + " [" + getValue() + "]";
+		return toData("[", "]");
 	}
 }

@@ -21,6 +21,7 @@
 package loon.utils.processes;
 
 import loon.LRelease;
+import loon.events.ActionUpdate;
 import loon.events.Updateable;
 import loon.geom.BooleanValue;
 import loon.utils.LIterator;
@@ -106,10 +107,19 @@ public class WaitProcess implements GameProcess, LRelease {
 	public void tick(LTimerContext time) {
 		if (_timer.action(time)) {
 			if (_update != null) {
-				if (!(_waitProcess != null && !_waitProcess.isDead)) {
-					_update.action(this);
-					if (isAutoKill) {
-						kill();
+				final boolean existWait = (_waitProcess != null && !_waitProcess.isDead);
+				if (!existWait) {
+					if (_update instanceof ActionUpdate) {
+						ActionUpdate update = (ActionUpdate) _update;
+						update.action(this);
+						if (update.completed()) {
+							kill();
+						}
+					} else {
+						_update.action(this);
+						if (isAutoKill) {
+							kill();
+						}
 					}
 				}
 			}

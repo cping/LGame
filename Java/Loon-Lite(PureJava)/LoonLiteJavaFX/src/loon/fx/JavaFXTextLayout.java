@@ -29,6 +29,7 @@ import javafx.scene.text.Font;
 import loon.font.TextFormat;
 import loon.font.TextWrap;
 import loon.geom.RectBox;
+import loon.utils.MathUtils;
 
 public class JavaFXTextLayout extends loon.font.TextLayout {
 
@@ -118,14 +119,14 @@ public class JavaFXTextLayout extends loon.font.TextLayout {
 	}
 
 	JavaFXTextLayout(String text, JavaFXFontMetrics metrics, TextFormat format) {
-		super(text, format, computeBounds(metrics), metrics.getHeight());
+		super(text, format, computeBounds(metrics), metrics.ascent() - metrics.descent());
 		this.metrics = metrics;
 	}
 
-	private static RectBox computeBounds(JavaFXFontMetrics metrics) {
+	private final static RectBox computeBounds(JavaFXFontMetrics metrics) {
 		Bounds bounds = metrics.getBounds();
-		return new RectBox((float) bounds.getMinX(), (float) bounds.getMinY() - metrics.ascent(),
-				(float) bounds.getWidth(), (float) bounds.getHeight());
+		return new RectBox(MathUtils.floor(bounds.getMinX()), MathUtils.floor(bounds.getMinY() - metrics.ascent()),
+				MathUtils.floor(bounds.getWidth()), MathUtils.floor(bounds.getHeight() - metrics.descent()));
 	}
 
 	@Override

@@ -345,6 +345,9 @@ public abstract class RoleValue {
 
 	public RoleValue setHealth(int health) {
 		this.health = health;
+		if (this.health <= 0) {
+			this.isDead = true;
+		}
 		return this;
 	}
 

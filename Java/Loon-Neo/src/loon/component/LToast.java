@@ -124,7 +124,9 @@ public class LToast extends LComponent implements FontSet<LToast> {
 	private final float MAX_OPACITY = 1f;
 	private final float OPACITY_INCREMENT = 0.05f;
 
-	private boolean _toastStop = false;
+	private boolean _toastInStop = false;
+
+	private boolean _toastOutStop = false;
 
 	private String _displayText;
 
@@ -255,13 +257,13 @@ public class LToast extends LComponent implements FontSet<LToast> {
 				_objectAlpha += OPACITY_INCREMENT;
 				_objectAlpha = (MathUtils.min(_objectAlpha, MAX_OPACITY));
 				if (_objectAlpha >= MAX_OPACITY) {
-					_toastStop = true;
+					_toastInStop = true;
 				}
 			} else {
 				_objectAlpha -= OPACITY_INCREMENT;
-				_objectAlpha = (MathUtils.max(_objectAlpha, 0));
-				if (_objectAlpha <= 0) {
-					_toastStop = true;
+				_objectAlpha = (MathUtils.max(_objectAlpha, OPACITY_INCREMENT));
+				if (_objectAlpha <= OPACITY_INCREMENT) {
+					_toastOutStop = true;
 					setVisible(false);
 					close();
 					if (getScreen() != null) {
@@ -273,7 +275,7 @@ public class LToast extends LComponent implements FontSet<LToast> {
 				}
 			}
 		}
-		if (_toastStop && _autoClose && _locked.action(elapsedTime)) {
+		if (_toastInStop && _autoClose && _locked.action(elapsedTime)) {
 			fadeOut();
 		}
 	}
@@ -304,8 +306,16 @@ public class LToast extends LComponent implements FontSet<LToast> {
 		return this;
 	}
 
+	public boolean isInStop() {
+		return _toastInStop;
+	}
+
+	public boolean isOutStop() {
+		return _toastOutStop;
+	}
+
 	public boolean isStop() {
-		return _toastStop;
+		return _toastInStop && _toastOutStop;
 	}
 
 	public boolean isAutoClose() {

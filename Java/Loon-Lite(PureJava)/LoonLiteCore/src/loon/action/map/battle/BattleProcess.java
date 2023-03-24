@@ -508,12 +508,23 @@ public class BattleProcess extends RealtimeProcess {
 	}
 
 	public WaitProcess getWaitProcess(Updateable update) {
-		return new WaitProcess(MathUtils.floor(getBattleWaitSeconds() * LSystem.SECOND), update);
+		return getWaitProcess(update, getBattleWaitSeconds());
+	}
+
+	public WaitProcess getWaitProcess(Updateable update, float s) {
+		return new WaitProcess(MathUtils.floor(s * LSystem.SECOND), update);
 	}
 
 	public WaitProcess wait(Updateable update) {
 		if (update != null) {
 			return wait(getWaitProcess(update));
+		}
+		return null;
+	}
+
+	public WaitProcess wait(Updateable update, float s) {
+		if (update != null) {
+			return wait(getWaitProcess(update, s));
 		}
 		return null;
 	}
