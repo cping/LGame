@@ -37,7 +37,7 @@ public abstract class RealtimeProcess implements GameProcess, LRelease {
 	protected final String id;
 
 	private int _priority;
-	
+
 	private final LTimer _timer = new LTimer(LSystem.SECOND);
 
 	private GameProcessType _processType = GameProcessType.Other;
@@ -120,7 +120,7 @@ public abstract class RealtimeProcess implements GameProcess, LRelease {
 		_timer.unpause();
 		return this;
 	}
-	
+
 	public RealtimeProcess interrupt() {
 		_timer.stop();
 		return this;
@@ -140,12 +140,12 @@ public abstract class RealtimeProcess implements GameProcess, LRelease {
 		this._priority = p;
 		return this;
 	}
-	
-    @Override 
+
+	@Override
 	public int getPriority() {
 		return this._priority;
 	}
-	
+
 	public boolean isActive() {
 		return _timer.isActive();
 	}

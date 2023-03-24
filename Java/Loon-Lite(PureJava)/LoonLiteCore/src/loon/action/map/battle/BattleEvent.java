@@ -20,18 +20,33 @@
  */
 package loon.action.map.battle;
 
+import loon.events.Updateable;
+import loon.utils.processes.WaitProcess;
+
 public interface BattleEvent {
+	
+	public boolean isLocked();
+	
+	public BattleEvent lock(boolean lock);
+
+	public WaitProcess wait(Updateable update) ;
+
+	public WaitProcess wait(WaitProcess waitProcess);
+	
+	public BattleProcess getMainProcess();
+
+	public BattleEvent setMainProcess(BattleProcess p);
 
 	public boolean start(long elapsedTime);
-	
+
 	public boolean process(long elapsedTime);
-	
+
 	public boolean end(long elapsedTime);
-	
+
 	public BattleState getState();
-	
+
 	public boolean completed();
-	
+
 	public BattleEvent reset();
-	
+
 }

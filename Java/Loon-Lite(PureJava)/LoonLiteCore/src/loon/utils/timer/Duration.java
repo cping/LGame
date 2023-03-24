@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2019 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -27,7 +27,7 @@ import loon.utils.NumberUtils;
 
 /**
  * 一个时间管理用类,支持简单的时间换算,用于统一Loon的时间单位关系与数值,初始单位是ms,毫秒
- *
+ * 
  * <pre>
  * Duration.at(1000).toSeconds();
  * </pre>
@@ -55,38 +55,54 @@ public class Duration implements Comparable<Duration> {
 		return _instance;
 	}
 
-	public static final Duration ZERO = new Duration(0);
+	public static final Duration ZERO = new Duration(0f);
 
 	public static final Duration HALF_ONE = new Duration(0.5f);
 
-	public static final Duration ONE = new Duration(1);
+	public static final Duration ONE = new Duration(1f);
 
-	public static final Duration ONE_SECOND = new Duration(1000);
+	public static final Duration ONE_SECOND = new Duration(LSystem.SECOND);
 
-	public static final Duration ONE_MINUTE = new Duration(60000);
+	public static final Duration ONE_MINUTE = new Duration(LSystem.MINUTE);
 
-	public static final Duration ONE_HOUR = new Duration(3600000);
+	public static final Duration ONE_HOUR = new Duration(LSystem.HOUR);
 
-	public static final Duration ONE_DAY = new Duration(86400000);
+	public static final Duration ONE_DAY = new Duration(LSystem.DAY);
+
+	public final static long ofS(float sec) {
+		return MathUtils.floor(sec * LSystem.SECOND);
+	}
+
+	public final static long ofM(float min) {
+		return MathUtils.floor(min * LSystem.MINUTE);
+	}
+
+	public final static long ofH(float hour) {
+		return MathUtils.floor(hour * LSystem.HOUR);
+	}
+
+	public final static long ofD(float day) {
+		return MathUtils.floor(day * LSystem.DAY);
+	}
 
 	public final static Duration at(float ms) {
 		return new Duration(ms);
 	}
 
 	public final static Duration atSecond(float sec) {
-		return new Duration(sec * LSystem.SECOND);
+		return new Duration(ofS(sec));
 	}
 
 	public final static Duration atMinute(float min) {
-		return new Duration(min * LSystem.MINUTE);
+		return new Duration(ofM(min));
 	}
 
 	public final static Duration atHour(float hour) {
-		return new Duration(hour * LSystem.HOUR);
+		return new Duration(ofH(hour));
 	}
 
 	public final static Duration atDay(float day) {
-		return new Duration(day * LSystem.DAY);
+		return new Duration(ofD(day));
 	}
 
 	private float _millisTime;
@@ -250,51 +266,51 @@ public class Duration implements Comparable<Duration> {
 	}
 
 	public Duration seconds(float s) {
-		return set(s / LSystem.SECOND);
+		return set(s / (float) LSystem.SECOND);
 	}
 
 	public float toSeconds() {
-		return _millisTime / LSystem.SECOND;
+		return _millisTime / (float) LSystem.SECOND;
 	}
 
 	public Duration minute(float m) {
-		return set(m / LSystem.MINUTE);
+		return set(m / (float) LSystem.MINUTE);
 	}
 
 	public float toMinute() {
-		return _millisTime / LSystem.MINUTE;
+		return _millisTime / (float) LSystem.MINUTE;
 	}
 
 	public Duration hours(float h) {
-		return set(h / LSystem.HOUR);
+		return set(h / (float) LSystem.HOUR);
 	}
 
 	public float toHours() {
-		return _millisTime / LSystem.HOUR;
+		return _millisTime / (float) LSystem.HOUR;
 	}
 
 	public Duration day(float d) {
-		return set(d / LSystem.DAY);
+		return set(d / (float) LSystem.DAY);
 	}
 
 	public float toDay() {
-		return _millisTime / LSystem.DAY;
+		return _millisTime / (float) LSystem.DAY;
 	}
 
 	public Duration week(float w) {
-		return set(w / LSystem.WEEK);
+		return set(w / (float) LSystem.WEEK);
 	}
 
 	public float toWeek() {
-		return _millisTime / LSystem.WEEK;
+		return _millisTime / (float) LSystem.WEEK;
 	}
 
 	public Duration year(float y) {
-		return set(y / LSystem.YEAR);
+		return set(y / (float) LSystem.YEAR);
 	}
 
 	public float toYear() {
-		return _millisTime / LSystem.YEAR;
+		return _millisTime / (float) LSystem.YEAR;
 	}
 
 	public String formatTime(String format) {
@@ -325,7 +341,10 @@ public class Duration implements Comparable<Duration> {
 
 	@Override
 	public boolean equals(Object obj) {
-		if ((obj == null) || !(obj instanceof Duration)) {
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof Duration)) {
 			return false;
 		}
 		if (obj == this) {

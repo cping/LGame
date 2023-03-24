@@ -906,16 +906,13 @@ public class SLGTest extends Stage {
 	final static int gameTile = 32;
 	// 战斗个体图
 	private LTexture[] unitImages = TextureUtils.getSplitTextures(
-			TextureUtils.filterColor("assets/slg/unit.png", new LColor(255, 0, 255), 0, 0.15f, true), gameTile,
-			gameTile);
+			TextureUtils.filterColor("assets/slg/unit.png", new LColor(255, 0, 255)), gameTile, gameTile);
 
 	private LTexture[] iconImages = TextureUtils.getSplitTextures(
-			TextureUtils.filterColor("assets/slg/icon.png", new LColor(255, 0, 255), 0, 0.15f, true), gameTile,
-			gameTile);
+			TextureUtils.filterColor("assets/slg/icon.png", new LColor(255, 0, 255)), gameTile, gameTile);
 
 	private LTexture[] listImages = TextureUtils.getSplitTextures(
-			TextureUtils.filterColor("assets/slg/list.png", new LColor(255, 0, 255), 0, 0.15f, true), gameTile,
-			gameTile);
+			TextureUtils.filterColor("assets/slg/list.png", new LColor(255, 0, 255)), gameTile, gameTile);
 
 	private TileMap gameMap = null;
 
@@ -1079,7 +1076,8 @@ public class SLGTest extends Stage {
 				final LToast toast = LToast.makeText("敌方第" + battleProcess.getTurnCount() + "回合", Style.ERROR);
 				add(toast);
 				moveLocked.set(true);
-				addProcess(new ActionUpdate() {
+				// 战斗进程等待回合显示事件结束
+				wait(new ActionUpdate() {
 					@Override
 					public void action(Object a) {
 						if (enemyStack.size() >= teams.getEnemy().count()) {

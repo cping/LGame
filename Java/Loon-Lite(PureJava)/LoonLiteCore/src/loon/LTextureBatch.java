@@ -29,6 +29,7 @@ import loon.opengl.Mesh;
 import loon.opengl.MeshData;
 import loon.opengl.Painter;
 import loon.utils.IntMap;
+import loon.utils.TArray;
 import loon.utils.TimeUtils;
 
 /**
@@ -36,6 +37,8 @@ import loon.utils.TimeUtils;
  * 方便针对特定纹理的缓存以及渲染.
  */
 public class LTextureBatch implements LRelease {
+
+	private TArray<Cache> _tempCaches = new TArray<Cache>();
 
 	private IntMap<LTextureBatch.Cache> _caches;
 
@@ -332,8 +335,16 @@ public class LTextureBatch implements LRelease {
 	}
 
 	public Cache newCache() {
+		return newCache(true);
+	}
+
+	public Cache newCache(boolean cached) {
 		if (isLoaded) {
-			return (lastCache = new Cache(this));
+			lastCache = new Cache(this);
+			if (cached) {
+				_tempCaches.add(lastCache);
+			}
+			return lastCache;
 		} else {
 			return null;
 		}
@@ -583,8 +594,10 @@ public class LTextureBatch implements LRelease {
 		if (_caches == null) {
 			_caches = new IntMap<>();
 		}
-		LTextureBatch.Cache cache = newCache();
-		_caches.put(hashCodeValue, cache);
+		LTextureBatch.Cache cache = newCache(false);
+		if (cache != null) {
+			_caches.put(hashCodeValue, cache);
+		}
 		return hashCodeValue;
 	}
 
@@ -689,6 +702,14 @@ public class LTextureBatch implements LRelease {
 				}
 			}
 			_caches.clear();
+		}
+		if (_tempCaches != null) {
+			for (LTextureBatch.Cache cache : _tempCaches) {
+				if (cache != null) {
+					cache.close();
+				}
+			}
+			_tempCaches.clear();
 		}
 		LSystem.disposeBatchCache(this, false);
 	}
