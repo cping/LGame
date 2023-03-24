@@ -36,6 +36,7 @@ import java.util.List;
 import loon.font.TextFormat;
 import loon.font.TextWrap;
 import loon.geom.RectBox;
+import loon.utils.MathUtils;
 
 class JavaSETextLayout extends loon.font.TextLayout {
 
@@ -148,11 +149,10 @@ class JavaSETextLayout extends loon.font.TextLayout {
 		}
 	}
 
-	private static RectBox computeBounds(TextLayout layout) {
+	private final static RectBox computeBounds(TextLayout layout) {
 		Rectangle2D bounds = layout.getBounds();
-		return new RectBox((float) bounds.getX(), (float) bounds.getY()
-				+ layout.getAscent(), (float) bounds.getWidth(),
-				(float) bounds.getHeight());
+		return new RectBox(MathUtils.floor(bounds.getX()), MathUtils.floor(bounds.getY()) + layout.getAscent(),
+				MathUtils.floor(bounds.getWidth()), MathUtils.floor(bounds.getHeight() + layout.getDescent()));
 	}
 	
 	public int charWidth(char ch){

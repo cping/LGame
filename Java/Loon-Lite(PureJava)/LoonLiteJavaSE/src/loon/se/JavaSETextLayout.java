@@ -38,39 +38,29 @@ import loon.font.TextWrap;
 import loon.geom.RectBox;
 import loon.utils.MathUtils;
 
+public class JavaSETextLayout extends loon.font.TextLayout {
 
-public class JavaSETextLayout  extends loon.font.TextLayout {
-
-	public static JavaSETextLayout layoutText(JavaSEImplGraphics gfx, String text,
-			TextFormat format) {
-		AttributedString astring = new AttributedString(
-				text.length() == 0 ? " " : text);
+	public static JavaSETextLayout layoutText(JavaSEImplGraphics gfx, String text, TextFormat format) {
+		AttributedString astring = new AttributedString(text.length() == 0 ? " " : text);
 		if (format.font != null) {
-			astring.addAttribute(TextAttribute.FONT,
-					gfx.resolveFont(format.font));
+			astring.addAttribute(TextAttribute.FONT, gfx.resolveFont(format.font));
 		}
-		FontRenderContext frc = format.antialias ? gfx.aaFontContext
-				: gfx.aFontContext;
-		return new JavaSETextLayout(text, format, new TextLayout(
-				astring.getIterator(), frc));
+		FontRenderContext frc = format.antialias ? gfx.aaFontContext : gfx.aFontContext;
+		return new JavaSETextLayout(text, format, new TextLayout(astring.getIterator(), frc));
 	}
 
-	public static JavaSETextLayout[] layoutText(JavaSEImplGraphics gfx,
-			String text, TextFormat format, TextWrap wrap) {
+	public static JavaSETextLayout[] layoutText(JavaSEImplGraphics gfx, String text, TextFormat format, TextWrap wrap) {
 		text = normalizeEOL(text);
 		String ltext = text.length() == 0 ? " " : text;
 
 		AttributedString astring = new AttributedString(ltext);
 		if (format.font != null) {
-			astring.addAttribute(TextAttribute.FONT,
-					gfx.resolveFont(format.font));
+			astring.addAttribute(TextAttribute.FONT, gfx.resolveFont(format.font));
 		}
 
 		List<JavaSETextLayout> layouts = new ArrayList<JavaSETextLayout>();
-		FontRenderContext frc = format.antialias ? gfx.aaFontContext
-				: gfx.aFontContext;
-		LineBreakMeasurer measurer = new LineBreakMeasurer(
-				astring.getIterator(), frc);
+		FontRenderContext frc = format.antialias ? gfx.aaFontContext : gfx.aFontContext;
+		LineBreakMeasurer measurer = new LineBreakMeasurer(astring.getIterator(), frc);
 		int lastPos = ltext.length(), curPos = 0;
 		char eol = '\n';
 		while (curPos < lastPos) {
@@ -83,8 +73,7 @@ public class JavaSETextLayout  extends loon.font.TextLayout {
 			while (curPos < endPos && ltext.charAt(curPos) == eol) {
 				curPos += 1;
 			}
-			layouts.add(new JavaSETextLayout(ltext.substring(curPos, endPos),
-					format, layout));
+			layouts.add(new JavaSETextLayout(ltext.substring(curPos, endPos), format, layout));
 			curPos = endPos;
 		}
 		return layouts.toArray(new JavaSETextLayout[layouts.size()]);
@@ -97,14 +86,10 @@ public class JavaSETextLayout  extends loon.font.TextLayout {
 	private FontMetrics fontMetrics;
 
 	JavaSETextLayout(String text, TextFormat format, TextLayout layout) {
-		super(text, format, computeBounds(layout), layout.getAscent()
-				+ layout.getDescent());
-		this.g2d = (Graphics2D) new BufferedImage(1, 1,
-				BufferedImage.TYPE_INT_ARGB).getGraphics();
-		this.fontMetrics = g2d.getFontMetrics(new java.awt.Font(
-				format.font.name,
-				JavaSEImplGraphics.STYLE_TO_JAVA[format.font.style.ordinal()],
-				(int) format.font.size));
+		super(text, format, computeBounds(layout), layout.getAscent() + layout.getDescent());
+		this.g2d = (Graphics2D) new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB).getGraphics();
+		this.fontMetrics = g2d.getFontMetrics(new java.awt.Font(format.font.name,
+				JavaSEImplGraphics.STYLE_TO_JAVA[format.font.style.ordinal()], (int) format.font.size));
 		this.layout = layout;
 	}
 
@@ -135,8 +120,7 @@ public class JavaSETextLayout  extends loon.font.TextLayout {
 		Object ohint = gfx.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
 		try {
 			gfx.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-					format.antialias ? RenderingHints.VALUE_ANTIALIAS_ON
-							: RenderingHints.VALUE_ANTIALIAS_OFF);
+					format.antialias ? RenderingHints.VALUE_ANTIALIAS_ON : RenderingHints.VALUE_ANTIALIAS_OFF);
 			float yoff = y + layout.getAscent();
 			if (stroke) {
 				gfx.translate(x, yoff);
@@ -152,9 +136,8 @@ public class JavaSETextLayout  extends loon.font.TextLayout {
 
 	private final static RectBox computeBounds(TextLayout layout) {
 		Rectangle2D bounds = layout.getBounds();
-		return new RectBox(MathUtils.floor(bounds.getX()), MathUtils.floor(bounds.getY()
-				+ layout.getAscent()), MathUtils.floor(bounds.getWidth()),
-				MathUtils.floor(bounds.getHeight()));
+		return new RectBox(MathUtils.floor(bounds.getX()), MathUtils.floor(bounds.getY() + layout.getAscent()),
+				MathUtils.floor(bounds.getWidth()), MathUtils.floor(bounds.getHeight() + layout.getDescent()));
 	}
 
 	public int charWidth(char ch) {

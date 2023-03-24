@@ -123,7 +123,6 @@ public class Loon implements Platform {
 				}
 			}
 		});
-
 	}
 
 	public LGame getGame() {
