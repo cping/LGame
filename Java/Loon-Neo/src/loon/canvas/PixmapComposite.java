@@ -82,7 +82,7 @@ public class PixmapComposite extends Limit {
 	}
 
 	public final int SET_SRC_IN(LColor src, LColor dst, int transparent, float alpha) {
-		if (dst.getARGB() == transparent) {
+		if (src.getARGB() == transparent) {
 			return transparent;
 		} else {
 			LColor color = _blendColor.setColor(src.r * dst.r, src.g * dst.g, src.b * dst.b, src.a * dst.a);
@@ -91,16 +91,19 @@ public class PixmapComposite extends Limit {
 	}
 
 	public final int SET_SRC_OUT(LColor src, LColor dst, int transparent, float alpha) {
-		if (dst.getARGB() == transparent) {
+		if (src.getARGB() == transparent) {
 			return transparent;
 		} else {
 			LColor color = _blendColor.setColor((1f - src.r) * dst.r, (1f - src.g) * dst.g, (1f - src.b) * dst.b,
 					(1f - src.a) * dst.a);
-			return blend(color, dst, alpha);
+			return blend(color, src, alpha);
 		}
 	}
 
 	public final int SET_SRC_OVER(LColor src, LColor dst, int transparent, float alpha) {
+		if(alpha == 1f) {
+			return dst.getARGB();
+		}
 		if (dst.getARGB() == transparent) {
 			return transparent;
 		} else {

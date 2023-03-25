@@ -30,13 +30,17 @@ import loon.utils.TArray;
 
 public class ShaderCmd {
 
-	private final static ObjectMap<String, ShaderCmd> _instance = new ObjectMap<String, ShaderCmd>(100);
+	private final static ObjectMap<String, ShaderCmd> _instance = new ObjectMap<String, ShaderCmd>();
 
+	public final static ShaderCmd at(String name) {
+		return getCmd(name);
+	}
+	
 	public final static ShaderCmd getCmd(String name) {
 		ShaderCmd cmd = _instance.get(name);
 		if (cmd == null) {
 			synchronized (_instance) {
-				cmd = new ShaderCmd(10);
+				cmd = new ShaderCmd();
 				_instance.put(name, cmd);
 			}
 		}
@@ -241,6 +245,10 @@ public class ShaderCmd {
 		return putVar(VarType.Struct, null, structName, context);
 	}
 
+	public ShaderCmd putStruct(String structName, StrBuilder context) {
+		return putStruct(structName, context.toString());
+	}
+
 	protected ShaderCmd putVar(VarType type, String varName, String name) {
 		return putVar(type, varName, name, null);
 	}
@@ -349,6 +357,10 @@ public class ShaderCmd {
 		sbr.append(getUniforms());
 		sbr.append(getVaryings());
 		return sbr.toString();
+	}
+
+	public ShaderCmd putMainCmd(StrBuilder cmd) {
+		return putMainCmd(cmd.toString());
 	}
 
 	public ShaderCmd putMainCmd(String cmd) {

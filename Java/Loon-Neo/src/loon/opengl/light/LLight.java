@@ -24,6 +24,9 @@ import loon.LSysException;
 import loon.canvas.LColor;
 import loon.utils.TArray;
 
+/**
+ * 像素化光源(伪光源)用类
+ */
 public abstract class LLight {
 
 	protected LColor[] colors;
@@ -71,7 +74,7 @@ public abstract class LLight {
 	}
 
 	/**
-	 * 设定地图光影颜色
+	 * 设定地图光源颜色
 	 * 
 	 * @param image
 	 * @param x
@@ -196,9 +199,10 @@ public abstract class LLight {
 			this(x, y, str, null);
 		}
 
-		public void setLocation(float x, float y) {
+		public Light setLocation(float x, float y) {
 			xpos = x;
 			ypos = y;
+			return this;
 		}
 
 		public float[] getEffectAt(float x, float y, boolean colouredLights) {

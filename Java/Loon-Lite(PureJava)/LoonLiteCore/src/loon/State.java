@@ -110,7 +110,7 @@ public abstract class State implements LRelease {
 	}
 
 	public State rotateCamera(float angle, float x, float y) {
-		_camera.rotate(angle, x, y);
+		_camera.toRotate(angle, x, y);
 		return this;
 	}
 

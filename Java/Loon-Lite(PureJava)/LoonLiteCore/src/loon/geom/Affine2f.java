@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -28,12 +28,12 @@ import loon.utils.StringKeyValue;
 
 /**
  * 2D矩阵存储用类.
- *
+ * 
  * 以对象存储，而非数组的方式实现一个3x2(标准矩阵应为3x3)的2D仿射矩阵类，
  * 也就是保留了线的“直线性”和“平行性”，但缺少了长宽高的3D矩阵延展能力。 所以，此类仅适合2D应用中使用(当然,也可以转化为3D应用,只是没有Z值).
- *
+ * 
  * 对应的3x3矩阵关系如下所示:
- *
+ * 
  * <pre>
  * {@code
  * [ m00, m10, tx ]
@@ -44,23 +44,74 @@ import loon.utils.StringKeyValue;
  */
 public class Affine2f implements LTrans, XY {
 
+	public final static Affine2f ofPos(float tx, float ty) {
+		Affine2f xf = new Affine2f();
+		xf.setToTranslate(tx, ty);
+		return xf;
+	}
+
+	public final static Affine2f ofRotate(float angle) {
+		Affine2f xf = new Affine2f();
+		xf.setToRotate(angle);
+		return xf;
+	}
+
+	public final static Affine2f ofRotate(float angle, float anchorx, float anchory) {
+		Affine2f xf = new Affine2f();
+		xf.setToRotate(angle, anchorx, anchory);
+		return xf;
+	}
+
+	public final static Affine2f ofRotate(float vecx, float vecy) {
+		Affine2f xf = new Affine2f();
+		xf.setToRotate(vecx, vecy);
+		return xf;
+	}
+
+	public final static Affine2f ofRotate(float vecx, float vecy, float anchorx, float anchory) {
+		Affine2f xf = new Affine2f();
+		xf.setToRotate(vecx, vecy, anchorx, anchory);
+		return xf;
+	}
+
+	public final static Affine2f ofScale(float sx, float sy) {
+		Affine2f xf = new Affine2f();
+		xf.setToScale(sx, sy);
+		return xf;
+	}
+
+	public final static Affine2f ofShear(float shx, float shy) {
+		Affine2f xf = new Affine2f();
+		xf.setToShear(shx, shy);
+		return xf;
+	}
+
+	public final static Affine2f ofRect(BoxSize r) {
+		final float cx = r.getCenterX();
+		final float cy = r.getCenterY();
+		final Affine2f xform = Affine2f.ofPos(cx, cy);
+		xform.scale(r.getWidth() / 2, r.getHeight() / 2);
+		xform.translate(-cx, -cy);
+		return xform;
+	}
+
 	public final static Affine2f transform(Affine2f tx, float x, float y, int transform) {
 		switch (transform) {
 		case TRANS_ROT90: {
 			tx.translate(x, y);
-			tx.rotate(ANGLE_90);
+			tx.rotateDegrees(ANGLE_90);
 			tx.translate(-x, -y);
 			break;
 		}
 		case TRANS_ROT180: {
 			tx.translate(x, y);
-			tx.rotate(MathUtils.PI);
+			tx.rotateDegrees(MathUtils.PI);
 			tx.translate(-x, -y);
 			break;
 		}
 		case TRANS_ROT270: {
 			tx.translate(x, y);
-			tx.rotate(ANGLE_270);
+			tx.rotateDegrees(ANGLE_270);
 			tx.translate(-x, -y);
 			break;
 		}
@@ -72,7 +123,7 @@ public class Affine2f implements LTrans, XY {
 		}
 		case TRANS_MIRROR_ROT90: {
 			tx.translate(x, y);
-			tx.rotate(ANGLE_90);
+			tx.rotateDegrees(ANGLE_90);
 			tx.translate(-x, -y);
 			tx.scale(-1, 1);
 			break;
@@ -82,13 +133,13 @@ public class Affine2f implements LTrans, XY {
 			tx.scale(-1, 1);
 			tx.translate(-x, -y);
 			tx.translate(x, y);
-			tx.rotate(MathUtils.PI);
+			tx.rotateDegrees(MathUtils.PI);
 			tx.translate(-x, -y);
 			break;
 		}
 		case TRANS_MIRROR_ROT270: {
 			tx.translate(x, y);
-			tx.rotate(ANGLE_270);
+			tx.rotateDegrees(ANGLE_270);
 			tx.translate(-x, -y);
 			tx.scale(-1, 1);
 			break;
@@ -104,19 +155,19 @@ public class Affine2f implements LTrans, XY {
 		switch (transform) {
 		case TRANS_ROT90: {
 			tx.translate(w, h);
-			tx.rotate(ANGLE_90);
+			tx.rotateDegrees(ANGLE_90);
 			tx.translate(-w, -h);
 			break;
 		}
 		case TRANS_ROT180: {
 			tx.translate(w, h);
-			tx.rotate(MathUtils.PI);
+			tx.rotateDegrees(MathUtils.PI);
 			tx.translate(-w, -h);
 			break;
 		}
 		case TRANS_ROT270: {
 			tx.translate(w, h);
-			tx.rotate(ANGLE_270);
+			tx.rotateDegrees(ANGLE_270);
 			tx.translate(-w, -h);
 			break;
 		}
@@ -128,7 +179,7 @@ public class Affine2f implements LTrans, XY {
 		}
 		case TRANS_MIRROR_ROT90: {
 			tx.translate(w, h);
-			tx.rotate(ANGLE_90);
+			tx.rotateDegrees(ANGLE_90);
 			tx.translate(-w, -h);
 			tx.scale(-1, 1);
 			break;
@@ -138,13 +189,13 @@ public class Affine2f implements LTrans, XY {
 			tx.scale(-1, 1);
 			tx.translate(-w, -h);
 			tx.translate(w, h);
-			tx.rotate(MathUtils.PI);
+			tx.rotateDegrees(MathUtils.PI);
 			tx.translate(-w, -h);
 			break;
 		}
 		case TRANS_MIRROR_ROT270: {
 			tx.translate(w, h);
-			tx.rotate(ANGLE_270);
+			tx.rotateDegrees(ANGLE_270);
 			tx.translate(-w, -h);
 			tx.scale(-1, 1);
 			break;
@@ -165,7 +216,7 @@ public class Affine2f implements LTrans, XY {
 			float w = height;
 			float h = y;
 			tx.translate(w, h);
-			tx.rotate(ANGLE_90);
+			tx.rotateDegrees(ANGLE_90);
 			tx.translate(-w, -h);
 			break;
 		}
@@ -173,7 +224,7 @@ public class Affine2f implements LTrans, XY {
 			float w = x + width;
 			float h = y + height;
 			tx.translate(w, h);
-			tx.rotate(MathUtils.PI);
+			tx.rotateDegrees(MathUtils.PI);
 			tx.translate(-w, -h);
 			break;
 		}
@@ -181,7 +232,7 @@ public class Affine2f implements LTrans, XY {
 			float w = x;
 			float h = y + width;
 			tx.translate(w, h);
-			tx.rotate(ANGLE_270);
+			tx.rotateDegrees(ANGLE_270);
 			tx.translate(-w, -h);
 			break;
 		}
@@ -197,7 +248,7 @@ public class Affine2f implements LTrans, XY {
 			float w = x + height;
 			float h = y;
 			tx.translate(w, h);
-			tx.rotate(ANGLE_90);
+			tx.rotateDegrees(ANGLE_90);
 			tx.translate(-w, -h);
 			tx.scale(-1, 1);
 			break;
@@ -211,12 +262,12 @@ public class Affine2f implements LTrans, XY {
 			w = x + width;
 			h = y + height;
 			tx.translate(w, h);
-			tx.rotate(MathUtils.PI);
+			tx.rotateDegrees(MathUtils.PI);
 			tx.translate(-w, -h);
 			break;
 		}
 		case TRANS_MIRROR_ROT270: {
-			tx.rotate(ANGLE_270);
+			tx.rotateDegrees(ANGLE_270);
 			tx.scale(-1, 1);
 			break;
 		}
@@ -308,10 +359,10 @@ public class Affine2f implements LTrans, XY {
 		this.m11 = d;
 		return this;
 	}
-
+	
 	/**
 	 * 还原矩阵基本数值
-	 *
+	 * 
 	 * @return
 	 */
 	public Affine2f idt() {
@@ -326,7 +377,7 @@ public class Affine2f implements LTrans, XY {
 
 	/**
 	 * 还原矩阵为默认基本数值
-	 *
+	 * 
 	 * @return
 	 */
 	public final Affine2f reset() {
@@ -335,7 +386,7 @@ public class Affine2f implements LTrans, XY {
 
 	/**
 	 * 检查当前矩阵是否为默认基本数值
-	 *
+	 * 
 	 * @return
 	 */
 	public boolean checkBaseTransform() {
@@ -361,7 +412,7 @@ public class Affine2f implements LTrans, XY {
 
 	/**
 	 * 判断指定矩阵是否与当前矩阵等值
-	 *
+	 * 
 	 * @param a2f
 	 * @return
 	 */
@@ -377,7 +428,7 @@ public class Affine2f implements LTrans, XY {
 
 	/**
 	 * 设定当前矩阵参数为3x3(9元素)矩阵数值
-	 *
+	 * 
 	 * @param matrix
 	 * @return
 	 */
@@ -394,7 +445,7 @@ public class Affine2f implements LTrans, XY {
 
 	/**
 	 * 设定当前矩阵参数为3x3(9元素)矩阵数值
-	 *
+	 * 
 	 * @param vals
 	 * @return
 	 */
@@ -429,7 +480,7 @@ public class Affine2f implements LTrans, XY {
 
 	/**
 	 * 返回当前矩阵缩放的X值
-	 *
+	 * 
 	 * @return
 	 */
 	public float scaleX() {
@@ -438,7 +489,7 @@ public class Affine2f implements LTrans, XY {
 
 	/**
 	 * 返回当前矩阵缩放的Y值
-	 *
+	 * 
 	 * @return
 	 */
 	public float scaleY() {
@@ -447,7 +498,7 @@ public class Affine2f implements LTrans, XY {
 
 	/**
 	 * 返回当前矩阵倾斜的X值
-	 *
+	 * 
 	 * @return
 	 */
 	public float skewX() {
@@ -460,7 +511,7 @@ public class Affine2f implements LTrans, XY {
 
 	/**
 	 * 返回当前矩阵倾斜的Y值
-	 *
+	 * 
 	 * @return
 	 */
 	public float skewY() {
@@ -605,7 +656,7 @@ public class Affine2f implements LTrans, XY {
 
 	/**
 	 * 获得矩阵转换后的X坐标
-	 *
+	 * 
 	 * @param x
 	 * @param y
 	 * @return
@@ -616,7 +667,7 @@ public class Affine2f implements LTrans, XY {
 
 	/**
 	 * 获得矩阵转换后的Y坐标
-	 *
+	 * 
 	 * @param x
 	 * @param y
 	 * @return
@@ -625,20 +676,26 @@ public class Affine2f implements LTrans, XY {
 		return x * this.m10 + y * this.m11 + this.ty;
 	}
 
-	public Affine2f rotate(float angle) {
-		float sina = MathUtils.sin(angle), cosa = MathUtils.cos(angle);
+	public Affine2f rotateDegrees(float degrees) {
+		float sina = MathUtils.sin(degrees), cosa = MathUtils.cos(degrees);
 		return multiply(this, cosa, sina, -sina, cosa, 0, 0, this);
 	}
 
-	public Affine2f rotate(float angle, float x, float y) {
-		float sina = MathUtils.sin(angle), cosa = MathUtils.cos(angle);
+	public Affine2f rotateDegrees(float degrees, float x, float y) {
+		float sina = MathUtils.sin(degrees), cosa = MathUtils.cos(degrees);
 		return multiply(this, cosa, sina, -sina, cosa, x, y, this);
 	}
 
+	public Affine2f toRotate(float angle, float x, float y) {
+		return rotateDegrees(MathUtils.toRadians(angle), x, y);
+	}
+
 	public final Affine2f preRotate(final float angle) {
-		final float angleRad = MathUtils.DEG_TO_RAD * angle;
-		final float sin = MathUtils.sin(angleRad);
-		final float cos = MathUtils.cos(angleRad);
+
+		final float rad = MathUtils.toRadians(angle);
+		final float cos = MathUtils.cos(rad);
+		final float sin = MathUtils.sin(rad);
+
 		final float m00 = this.m00;
 		final float m01 = this.m01;
 		final float m10 = this.m10;
@@ -651,10 +708,10 @@ public class Affine2f implements LTrans, XY {
 	}
 
 	public final Affine2f postRotate(final float angle) {
-		final float angleRad = MathUtils.DEG_TO_RAD * angle;
 
-		final float sin = MathUtils.sin(angleRad);
-		final float cos = MathUtils.cos(angleRad);
+		final float rad = MathUtils.toRadians(angle);
+		final float cos = MathUtils.cos(rad);
+		final float sin = MathUtils.sin(rad);
 
 		final float m00 = this.m00;
 		final float m01 = this.m01;
@@ -673,10 +730,10 @@ public class Affine2f implements LTrans, XY {
 	}
 
 	public final Affine2f setToRotate(final float angle) {
-		final float angleRad = MathUtils.DEG_TO_RAD * angle;
 
-		final float sin = MathUtils.sin(angleRad);
-		final float cos = MathUtils.cos(angleRad);
+		final float rad = MathUtils.toRadians(angle);
+		final float cos = MathUtils.cos(rad);
+		final float sin = MathUtils.sin(rad);
 
 		this.m00 = cos;
 		this.m01 = sin;
@@ -685,6 +742,51 @@ public class Affine2f implements LTrans, XY {
 		this.tx = 0.0f;
 		this.ty = 0.0f;
 
+		return this;
+	}
+
+	public final Affine2f setToRotate(final float vecx, final float vecy) {
+		float sin, cos;
+		if (vecy == 0f) {
+			sin = 0f;
+			if (vecx < 0f) {
+				cos = -1f;
+			} else {
+				cos = 1f;
+			}
+		} else if (vecx == 0f) {
+			cos = 0f;
+			sin = (vecy > 0f) ? 1f : -1f;
+		} else {
+			float len = MathUtils.sqrt(vecx * vecx + vecy * vecy);
+			cos = vecx / len;
+			sin = vecy / len;
+		}
+		this.m00 = cos;
+		this.m10 = sin;
+		this.m01 = -sin;
+		this.m11 = cos;
+		this.tx = 0.0f;
+		this.ty = 0.0f;
+
+		return this;
+	}
+
+	public Affine2f setToRotate(float vecx, float vecy, float anchorx, float anchory) {
+		setToRotate(vecx, vecy);
+		float sin = m10;
+		float oneMinusCos = 1f - m00;
+		this.tx = anchorx * oneMinusCos + anchory * sin;
+		this.ty = anchory * oneMinusCos - anchorx * sin;
+		return this;
+	}
+
+	public Affine2f setToRotate(float angle, float anchorx, float anchory) {
+		setToRotate(angle);
+		float sin = m10;
+		float oneMinusCos = 1f - m00;
+		this.tx = anchorx * oneMinusCos + anchory * sin;
+		this.ty = anchory * oneMinusCos - anchorx * sin;
 		return this;
 	}
 
@@ -748,7 +850,7 @@ public class Affine2f implements LTrans, XY {
 
 	/**
 	 * 对Affine中所有数值应用缩放转换(会改变tx,ty坐标)
-	 *
+	 * 
 	 * @param sx
 	 * @param sy
 	 * @return
@@ -765,7 +867,7 @@ public class Affine2f implements LTrans, XY {
 
 	/**
 	 * 对Affine中数值进行缩放转换(不改变tx,ty坐标)
-	 *
+	 * 
 	 * @param scaleX
 	 * @param scaleY
 	 * @return
@@ -798,7 +900,7 @@ public class Affine2f implements LTrans, XY {
 
 	/**
 	 * 沿x和y轴平移矩阵，平移的变化量由上一个x和 y参数决定.
-	 *
+	 * 
 	 * @param tx
 	 * @param ty
 	 * @return
@@ -811,7 +913,7 @@ public class Affine2f implements LTrans, XY {
 
 	/**
 	 * 设置矩阵x与y轴的平移距离,还原其它参数为默认值
-	 *
+	 * 
 	 * @param tx
 	 * @param ty
 	 * @return
@@ -828,7 +930,7 @@ public class Affine2f implements LTrans, XY {
 
 	/**
 	 * 单纯设置矩阵x与y轴的平移距离,不改变其它参数.
-	 *
+	 * 
 	 * @param x
 	 * @param y
 	 * @return
@@ -939,7 +1041,7 @@ public class Affine2f implements LTrans, XY {
 
 	/**
 	 * 直接设定参数给Affine2f
-	 *
+	 * 
 	 * @param x
 	 * @param y
 	 * @param rotation
@@ -961,7 +1063,7 @@ public class Affine2f implements LTrans, XY {
 
 	/**
 	 * 反转x和y坐标
-	 *
+	 * 
 	 * @param x
 	 * @param y
 	 * @return
@@ -984,7 +1086,7 @@ public class Affine2f implements LTrans, XY {
 
 	/**
 	 * 将指定矩阵与当前矩阵连接,从而将这两个矩阵中设定的几何效果结合在一起显示.
-	 *
+	 * 
 	 * @param other
 	 * @return
 	 */
@@ -1016,7 +1118,7 @@ public class Affine2f implements LTrans, XY {
 
 	/**
 	 * 将指定矩阵与当前矩阵连接,从而将这两个矩阵中设定的几何效果结合在一起显示.
-	 *
+	 * 
 	 * @param other
 	 * @return
 	 */
@@ -1025,7 +1127,7 @@ public class Affine2f implements LTrans, XY {
 			return other.preConcatenate(this);
 		}
 		if (other instanceof Affine2f) {
-			return multiply(this, other, new Affine2f());
+			return multiply(this, (Affine2f) other, new Affine2f());
 		} else {
 			Affine2f oaff = new Affine2f(other);
 			return multiply(this, oaff, oaff);
@@ -1034,7 +1136,7 @@ public class Affine2f implements LTrans, XY {
 
 	/**
 	 * 将指定矩阵与当前矩阵连接,从而将这两个矩阵中设定的几何效果结合在一起显示.
-	 *
+	 * 
 	 * @param other
 	 * @return
 	 */
@@ -1043,7 +1145,7 @@ public class Affine2f implements LTrans, XY {
 			return other.concatenate(this);
 		}
 		if (other instanceof Affine2f) {
-			return multiply(other, this, new Affine2f());
+			return multiply((Affine2f) other, this, new Affine2f());
 		} else {
 			Affine2f oaff = new Affine2f(other);
 			return multiply(oaff, this, oaff);
@@ -1052,7 +1154,7 @@ public class Affine2f implements LTrans, XY {
 
 	/**
 	 * 将指定矩阵与当前矩阵连接,从而将这两个矩阵中设定的几何效果结合在一起显示.
-	 *
+	 * 
 	 * @param t
 	 * @return
 	 */
@@ -1062,7 +1164,7 @@ public class Affine2f implements LTrans, XY {
 
 	/**
 	 * 将指定矩阵与当前矩阵连接,从而将这两个矩阵中设定的几何效果结合在一起显示.
-	 *
+	 * 
 	 * @param ma
 	 * @param mb
 	 * @param mc
@@ -1091,7 +1193,7 @@ public class Affine2f implements LTrans, XY {
 
 	/**
 	 * 让矩阵前置一组新矩阵数据
-	 *
+	 * 
 	 * @param a
 	 * @param b
 	 * @param c
@@ -1117,7 +1219,7 @@ public class Affine2f implements LTrans, XY {
 
 	/**
 	 * 让矩阵后置一组新矩阵数据
-	 *
+	 * 
 	 * @param other
 	 * @return
 	 */
@@ -1127,7 +1229,7 @@ public class Affine2f implements LTrans, XY {
 
 	/**
 	 * 让矩阵后置一组新矩阵数据
-	 *
+	 * 
 	 * @param a
 	 * @param b
 	 * @param c
@@ -1154,7 +1256,7 @@ public class Affine2f implements LTrans, XY {
 
 	/**
 	 * 让矩阵后置一组新矩阵数据
-	 *
+	 * 
 	 * @param other
 	 * @return
 	 */
@@ -1164,7 +1266,7 @@ public class Affine2f implements LTrans, XY {
 
 	/**
 	 * 以线性插值方式构建一个新的矩阵
-	 *
+	 * 
 	 * @param other
 	 * @param t
 	 * @return
@@ -1344,7 +1446,7 @@ public class Affine2f implements LTrans, XY {
 
 	/**
 	 * 如果Affine2f中此函数返回值不为默认值,则所有会从另一个Affine2f对象产生Affine2f实体的方法都不会产生新的Affine2f,而是改变自身参数
-	 *
+	 * 
 	 * @return
 	 */
 	public int generality() {

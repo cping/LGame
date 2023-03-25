@@ -66,7 +66,7 @@ import loon.LSystem;
  * 
  */
 public class StrBuilder implements CharSequence, Appendable {
-
+	
 	private String _tempResult = null;
 
 	private boolean _dirty = false;
@@ -188,6 +188,10 @@ public class StrBuilder implements CharSequence, Appendable {
 	@Override
 	public StrBuilder append(CharSequence cs, int start, int end) {
 		return insert(this._currentIndex, cs, start, end);
+	}
+
+	public StrBuilder line(CharSequence cs) {
+		return append(cs).append(LSystem.CR).append(LSystem.LF);
 	}
 
 	public StrBuilder insert(int index, Object o) {
@@ -406,6 +410,7 @@ public class StrBuilder implements CharSequence, Appendable {
 		return this.substring(start, end);
 	}
 
+	@Override
 	public boolean isEmpty() {
 		return _currentIndex == 0 || _values == null || _values.length == 0;
 	}

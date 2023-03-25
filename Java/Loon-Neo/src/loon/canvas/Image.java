@@ -417,9 +417,10 @@ public abstract class Image extends TextureSource implements Canvas.Drawable, LR
 	}
 
 	public Pixmap getPixmap() {
-		int[] pixels = CollectionUtils.copyOf(getPixels());
+		final int[] pixels = CollectionUtils.copyOf(getPixels());
+		final LColor color = new LColor();
 		for (int i = 0; i < pixels.length; i++) {
-			pixels[i] = new LColor(pixels[i]).getARGB();
+			pixels[i] = color.setColor(pixels[i]).getARGB();
 		}
 		return new Pixmap(pixels, getWidth(), getHeight(), hasAlpha());
 	}

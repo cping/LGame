@@ -193,7 +193,7 @@ public class ReflectionCacheSourceCreator {
 		Collections.sort(setterGetterStubs, new Comparator<SetterGetterStub>() {
 			@Override
 			public int compare(SetterGetterStub o1, SetterGetterStub o2) {
-				return new Integer(o1.setter).compareTo(o2.setter);
+				return Integer.valueOf(o1.setter).compareTo(o2.setter);
 			}
 		});
 
@@ -207,7 +207,7 @@ public class ReflectionCacheSourceCreator {
 		Collections.sort(methodStubs, new Comparator<MethodStub>() {
 			@Override
 			public int compare(MethodStub o1, MethodStub o2) {
-				return new Integer(o1.methodId).compareTo(o2.methodId);
+				return Integer.valueOf(o1.methodId).compareTo(o2.methodId);
 			}
 		});
 

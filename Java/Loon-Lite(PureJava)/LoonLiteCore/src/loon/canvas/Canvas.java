@@ -202,13 +202,19 @@ public abstract class Canvas implements LRelease {
 		return this;
 	}
 
+	public abstract Canvas drawOval(float x, float y, float w, float h);
+
+	public abstract Canvas fillOval(float x, float y, float w, float h);
+
+	public abstract Canvas drawOval(float x, float y, float w, float h, LColor c);
+
+	public abstract Canvas fillOval(float x, float y, float w, float h, LColor c);
+
 	public abstract Canvas drawLine(float x0, float y0, float x1, float y1);
 
 	public abstract Canvas drawPoint(float x, float y);
 
 	public abstract Canvas drawArc(float x, float y, float w, float h, float startAngle, float endAngle, LColor color);
-
-	public abstract Canvas drawOval(float x, float y, float w, float h, LColor color);
 
 	public abstract Canvas drawText(String text, float x, float y);
 
@@ -243,9 +249,7 @@ public abstract class Canvas implements LRelease {
 	public abstract boolean isMainCanvas();
 
 	public abstract Canvas fillCircle(float x, float y, float radius);
-
-	public abstract Canvas fillOval(float x, float y, float width, float height);
-
+	
 	public abstract Canvas fillArc(float x1, float y1, float width, float height, float start, float end);
 
 	public abstract Canvas fillPath(Path path);

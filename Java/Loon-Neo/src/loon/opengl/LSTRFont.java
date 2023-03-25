@@ -131,7 +131,7 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 				if (charwidth <= 0) {
 					charwidth = 1;
 				}
-				int charheight = (int) layout.getHeight();
+				int charheight = layout.getHeight();
 				if (charheight <= 0) {
 					charheight = strfont.pixelFontSize;
 				}

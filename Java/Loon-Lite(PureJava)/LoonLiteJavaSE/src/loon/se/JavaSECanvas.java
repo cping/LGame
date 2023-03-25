@@ -591,8 +591,16 @@ public class JavaSECanvas extends Canvas {
 	}
 
 	@Override
+	public Canvas drawOval(float x, float y, float w, float h) {
+		currentState().prepareStroke(context);
+		context.drawOval(MathUtils.floor(x), MathUtils.floor(y), MathUtils.floor(w), MathUtils.floor(h));
+		isDirty = true;
+		return this;
+	}
+	
+	@Override
 	public Canvas fillRect(float x, float y, float width, float height, LColor c) {
-		int tmp = getStrokeColor();
+		int tmp = getFillColor();
 		setFillColor(c);
 		currentState().prepareFill(context);
 		context.fillRect(MathUtils.floor(x), MathUtils.floor(y), MathUtils.floor(width), MathUtils.floor(height));
@@ -609,6 +617,17 @@ public class JavaSECanvas extends Canvas {
 		return this;
 	}
 
+	@Override
+	public Canvas fillOval(float x, float y, float w, float h, LColor c) {
+		int tmp = getFillColor();
+		setFillColor(c);
+		currentState().prepareFill(context);
+		context.fillOval(MathUtils.floor(x), MathUtils.floor(y), MathUtils.floor(w), MathUtils.floor(h));
+		setFillColor(tmp);
+		isDirty = true;
+		return this;
+	}
+	
 	@Override
 	public Canvas fillArc(float x1, float y1, float width, float height, float start, float end) {
 		currentState().prepareFill(context);

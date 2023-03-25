@@ -32,6 +32,10 @@ import loon.LSystem;
  */
 public class StringKeyValue {
 
+	public final static StringKeyValue at(String name) {
+		return new StringKeyValue(name);
+	}
+	
 	private final int capacity;
 
 	private String key;
@@ -134,7 +138,7 @@ public class StringKeyValue {
 	}
 
 	public StringKeyValue newLine() {
-		return addValue(LSystem.LF);
+		return addValue(LSystem.CR).addValue(LSystem.LF);
 	}
 
 	public StringKeyValue pushBrace() {
@@ -208,6 +212,10 @@ public class StringKeyValue {
 
 	public StringKeyValue text(CharSequence mes) {
 		return addValue(mes);
+	}
+
+	public StringKeyValue line(CharSequence mes) {
+		return addValue(mes).newLine();
 	}
 
 	public TArray<CharSequence> getTags() {

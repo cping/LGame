@@ -189,7 +189,13 @@ public class JavaFXCanvas extends Canvas {
 			return image;
 		}
 		if (image.isDirty() || isDirty) {
-			WritableImage writeImage = toFXImage().buffer;
+			JavaFXImage fx = toFXImage();
+			WritableImage writeImage = fx.buffer;
+			if (fx.updatePixel) {
+				GraphicsContext g = fxCanvas.getGraphicsContext2D();
+				g.drawImage(writeImage, 0, 0);
+				fx.updatePixel = false;
+			}
 			fxCanvas.snapshot(snapshotParameters, writeImage);
 			setFXImage(image, writeImage);
 			isDirty = false;
@@ -218,7 +224,7 @@ public class JavaFXCanvas extends Canvas {
 	public Canvas resetClip() {
 		return clipRect(0f, 0f, width, height);
 	}
-	
+
 	@Override
 	public Path createPath() {
 		return new JavaFXPath();
@@ -313,6 +319,16 @@ public class JavaFXCanvas extends Canvas {
 	}
 
 	@Override
+	public Canvas fillOval(float x, float y, float width, float height, LColor color) {
+		Paint tmp = context.getFill();
+		context.setFill(getLColorToFX(color));
+		context.fillOval(x, y, width, height);
+		context.setFill(tmp);
+		isDirty = true;
+		return this;
+	}
+
+	@Override
 	public Canvas fillPath(Path path) {
 		assert path instanceof JavaFXPath;
 		((JavaFXPath) path).replay(context);
@@ -358,7 +374,7 @@ public class JavaFXCanvas extends Canvas {
 		isDirty = true;
 		return this;
 	}
-	
+
 	@Override
 	public Canvas fillText(TextLayout layout, float x, float y) {
 		((JavaFXTextLayout) layout).fill(context, x, y);
@@ -607,6 +623,13 @@ public class JavaFXCanvas extends Canvas {
 		context.setStroke(getLColorToFX(color));
 		context.strokeArc(x, y, w, h, startAngle, endAngle, ArcType.ROUND);
 		context.setStroke(tmp);
+		isDirty = true;
+		return this;
+	}
+
+	@Override
+	public Canvas drawOval(float x, float y, float w, float h) {
+		context.strokeOval(x, y, w, h);
 		isDirty = true;
 		return this;
 	}

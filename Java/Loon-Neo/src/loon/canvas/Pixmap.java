@@ -205,6 +205,9 @@ public class Pixmap extends PixmapComposite implements LRelease {
 	}
 
 	private void set(int[] pixelsData, int w, int h, boolean hasAlpha) {
+		if (pixelsData == null) {
+			pixelsData = new int[w * h];
+		}
 		this._width = w;
 		this._height = h;
 		this._drawPixels = pixelsData;
@@ -258,7 +261,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 	 */
 	public Pixmap clear() {
 		for (int i = 0; i < _length; i++) {
-			_drawPixels[i] = 0;
+			_drawPixels[i] = _transparent;
 		}
 		_dirty = true;
 		return this;
@@ -1879,7 +1882,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 		if (_isClosed) {
 			return this;
 		}
-		if (x == 0 && y == 0 && width == _width && height == _height) {
+		if (x == 0 && y == 0 && width == _width && height == _height && _composite == -1) {
 			clearDraw(color);
 			return this;
 		}
@@ -2229,18 +2232,17 @@ public class Pixmap extends PixmapComposite implements LRelease {
 		if (y >= clip.y && y < clip.y + clip.height) {
 			y *= _width;
 			int maxX = MathUtils.min(x2, clip.x + clip.width - 1);
-			if (_drawPixels != null)
-				for (int x = MathUtils.max(x1, clip.x); x <= maxX; x++)
-					drawPoint(_drawPixels, x + y);
+			for (int x = MathUtils.max(x1, clip.x); x <= maxX; x++) {
+				drawPoint(_drawPixels, x + y);
+			}
 		}
 	}
 
 	private void drawVerticalLine(int x, int y1, int y2) {
 		if (x >= clip.x && x < clip.x + clip.width) {
 			int maxY = MathUtils.min(y2, clip.y + clip.height - 1) * _width;
-			if (_drawPixels != null)
-				for (int y = MathUtils.max(y1, clip.y) * _width; y <= maxY; y += _width)
-					drawPoint(_drawPixels, x + y);
+			for (int y = MathUtils.max(y1, clip.y) * _width; y <= maxY; y += _width)
+				drawPoint(_drawPixels, x + y);
 		}
 	}
 
@@ -2404,7 +2406,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 		int b = height / 2;
 		long squareA = width * width / 4;
 		long squareB = height * height / 4;
-		long squareAB = MathUtils.round((long) width * width * height * height, 16L);
+		long squareAB = MathUtils.round(width * width * height * height, 16L);
 
 		x += _translateX;
 		y += _translateY;
@@ -2673,6 +2675,34 @@ public class Pixmap extends PixmapComposite implements LRelease {
 			}
 		}
 		return points;
+	}
+
+	public Pixmap setLinear(LColor start, LColor end) {
+		return setLinear(0f, 0f, _width, _height, start, end);
+	}
+
+	public Pixmap setLinear(float x, float y, float w, float h, LColor start, LColor end) {
+		return setGradient(LGradation.createLinear(x, y, w, h, start, end));
+	}
+
+	public Pixmap setRadial(LColor start, LColor end) {
+		return setRadial(_width / 2, _height / 2, MathUtils.min(_width, _height) / 2, start, end);
+	}
+
+	public Pixmap setRadial(float centerX, float centerY, float radius, LColor start, LColor end) {
+		return setGradient(LGradation.createRadial(centerX, centerY, radius, start, end));
+	}
+
+	public Pixmap setGradient(PixmapGradient g) {
+		return setGradient(g, 0);
+	}
+
+	public Pixmap setGradient(PixmapGradient g, int adjust) {
+		if (g != null) {
+			g.fill(_drawPixels, 0, adjust, 0, 0, _width, _height);
+			this._dirty = true;
+		}
+		return this;
 	}
 
 	public String getBase64() {

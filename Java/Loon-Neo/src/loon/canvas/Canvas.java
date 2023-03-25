@@ -187,6 +187,14 @@ public abstract class Canvas implements LRelease {
 		return this;
 	}
 
+	public abstract Canvas drawOval(float x, float y, float w, float h);
+
+	public abstract Canvas fillOval(float x, float y, float w, float h);
+
+	public abstract Canvas drawOval(float x, float y, float w, float h, LColor c);
+
+	public abstract Canvas fillOval(float x, float y, float w, float h, LColor c);
+
 	public abstract Canvas fillCircle(float x, float y, float radius);
 
 	public abstract Canvas fillPath(Path path);

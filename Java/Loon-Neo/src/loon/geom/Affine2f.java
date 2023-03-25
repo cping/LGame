@@ -45,23 +45,74 @@ import loon.utils.StringKeyValue;
  */
 public class Affine2f implements LTrans, XY {
 
+	public final static Affine2f ofPos(float tx, float ty) {
+		Affine2f xf = new Affine2f();
+		xf.setToTranslate(tx, ty);
+		return xf;
+	}
+
+	public final static Affine2f ofRotate(float angle) {
+		Affine2f xf = new Affine2f();
+		xf.setToRotate(angle);
+		return xf;
+	}
+
+	public final static Affine2f ofRotate(float angle, float anchorx, float anchory) {
+		Affine2f xf = new Affine2f();
+		xf.setToRotate(angle, anchorx, anchory);
+		return xf;
+	}
+
+	public final static Affine2f ofRotate(float vecx, float vecy) {
+		Affine2f xf = new Affine2f();
+		xf.setToRotate(vecx, vecy);
+		return xf;
+	}
+
+	public final static Affine2f ofRotate(float vecx, float vecy, float anchorx, float anchory) {
+		Affine2f xf = new Affine2f();
+		xf.setToRotate(vecx, vecy, anchorx, anchory);
+		return xf;
+	}
+
+	public final static Affine2f ofScale(float sx, float sy) {
+		Affine2f xf = new Affine2f();
+		xf.setToScale(sx, sy);
+		return xf;
+	}
+
+	public final static Affine2f ofShear(float shx, float shy) {
+		Affine2f xf = new Affine2f();
+		xf.setToShear(shx, shy);
+		return xf;
+	}
+
+	public final static Affine2f ofRect(BoxSize r) {
+		final float cx = r.getCenterX();
+		final float cy = r.getCenterY();
+		final Affine2f xform = Affine2f.ofPos(cx, cy);
+		xform.scale(r.getWidth() / 2, r.getHeight() / 2);
+		xform.translate(-cx, -cy);
+		return xform;
+	}
+
 	public final static Affine2f transform(Affine2f tx, float x, float y, int transform) {
 		switch (transform) {
 		case TRANS_ROT90: {
 			tx.translate(x, y);
-			tx.rotate(ANGLE_90);
+			tx.rotateDegrees(ANGLE_90);
 			tx.translate(-x, -y);
 			break;
 		}
 		case TRANS_ROT180: {
 			tx.translate(x, y);
-			tx.rotate(MathUtils.PI);
+			tx.rotateDegrees(MathUtils.PI);
 			tx.translate(-x, -y);
 			break;
 		}
 		case TRANS_ROT270: {
 			tx.translate(x, y);
-			tx.rotate(ANGLE_270);
+			tx.rotateDegrees(ANGLE_270);
 			tx.translate(-x, -y);
 			break;
 		}
@@ -73,7 +124,7 @@ public class Affine2f implements LTrans, XY {
 		}
 		case TRANS_MIRROR_ROT90: {
 			tx.translate(x, y);
-			tx.rotate(ANGLE_90);
+			tx.rotateDegrees(ANGLE_90);
 			tx.translate(-x, -y);
 			tx.scale(-1, 1);
 			break;
@@ -83,13 +134,13 @@ public class Affine2f implements LTrans, XY {
 			tx.scale(-1, 1);
 			tx.translate(-x, -y);
 			tx.translate(x, y);
-			tx.rotate(MathUtils.PI);
+			tx.rotateDegrees(MathUtils.PI);
 			tx.translate(-x, -y);
 			break;
 		}
 		case TRANS_MIRROR_ROT270: {
 			tx.translate(x, y);
-			tx.rotate(ANGLE_270);
+			tx.rotateDegrees(ANGLE_270);
 			tx.translate(-x, -y);
 			tx.scale(-1, 1);
 			break;
@@ -105,19 +156,19 @@ public class Affine2f implements LTrans, XY {
 		switch (transform) {
 		case TRANS_ROT90: {
 			tx.translate(w, h);
-			tx.rotate(ANGLE_90);
+			tx.rotateDegrees(ANGLE_90);
 			tx.translate(-w, -h);
 			break;
 		}
 		case TRANS_ROT180: {
 			tx.translate(w, h);
-			tx.rotate(MathUtils.PI);
+			tx.rotateDegrees(MathUtils.PI);
 			tx.translate(-w, -h);
 			break;
 		}
 		case TRANS_ROT270: {
 			tx.translate(w, h);
-			tx.rotate(ANGLE_270);
+			tx.rotateDegrees(ANGLE_270);
 			tx.translate(-w, -h);
 			break;
 		}
@@ -129,7 +180,7 @@ public class Affine2f implements LTrans, XY {
 		}
 		case TRANS_MIRROR_ROT90: {
 			tx.translate(w, h);
-			tx.rotate(ANGLE_90);
+			tx.rotateDegrees(ANGLE_90);
 			tx.translate(-w, -h);
 			tx.scale(-1, 1);
 			break;
@@ -139,13 +190,13 @@ public class Affine2f implements LTrans, XY {
 			tx.scale(-1, 1);
 			tx.translate(-w, -h);
 			tx.translate(w, h);
-			tx.rotate(MathUtils.PI);
+			tx.rotateDegrees(MathUtils.PI);
 			tx.translate(-w, -h);
 			break;
 		}
 		case TRANS_MIRROR_ROT270: {
 			tx.translate(w, h);
-			tx.rotate(ANGLE_270);
+			tx.rotateDegrees(ANGLE_270);
 			tx.translate(-w, -h);
 			tx.scale(-1, 1);
 			break;
@@ -166,7 +217,7 @@ public class Affine2f implements LTrans, XY {
 			float w = height;
 			float h = y;
 			tx.translate(w, h);
-			tx.rotate(ANGLE_90);
+			tx.rotateDegrees(ANGLE_90);
 			tx.translate(-w, -h);
 			break;
 		}
@@ -174,7 +225,7 @@ public class Affine2f implements LTrans, XY {
 			float w = x + width;
 			float h = y + height;
 			tx.translate(w, h);
-			tx.rotate(MathUtils.PI);
+			tx.rotateDegrees(MathUtils.PI);
 			tx.translate(-w, -h);
 			break;
 		}
@@ -182,7 +233,7 @@ public class Affine2f implements LTrans, XY {
 			float w = x;
 			float h = y + width;
 			tx.translate(w, h);
-			tx.rotate(ANGLE_270);
+			tx.rotateDegrees(ANGLE_270);
 			tx.translate(-w, -h);
 			break;
 		}
@@ -198,7 +249,7 @@ public class Affine2f implements LTrans, XY {
 			float w = x + height;
 			float h = y;
 			tx.translate(w, h);
-			tx.rotate(ANGLE_90);
+			tx.rotateDegrees(ANGLE_90);
 			tx.translate(-w, -h);
 			tx.scale(-1, 1);
 			break;
@@ -212,12 +263,12 @@ public class Affine2f implements LTrans, XY {
 			w = x + width;
 			h = y + height;
 			tx.translate(w, h);
-			tx.rotate(MathUtils.PI);
+			tx.rotateDegrees(MathUtils.PI);
 			tx.translate(-w, -h);
 			break;
 		}
 		case TRANS_MIRROR_ROT270: {
-			tx.rotate(ANGLE_270);
+			tx.rotateDegrees(ANGLE_270);
 			tx.scale(-1, 1);
 			break;
 		}
@@ -698,20 +749,26 @@ public class Affine2f implements LTrans, XY {
 		return x * this.m10 + y * this.m11 + this.ty;
 	}
 
-	public Affine2f rotate(float angle) {
-		float sina = MathUtils.sin(angle), cosa = MathUtils.cos(angle);
+	public Affine2f rotateDegrees(float degrees) {
+		float sina = MathUtils.sin(degrees), cosa = MathUtils.cos(degrees);
 		return multiply(this, cosa, sina, -sina, cosa, 0, 0, this);
 	}
 
-	public Affine2f rotate(float angle, float x, float y) {
-		float sina = MathUtils.sin(angle), cosa = MathUtils.cos(angle);
+	public Affine2f rotateDegrees(float degrees, float x, float y) {
+		float sina = MathUtils.sin(degrees), cosa = MathUtils.cos(degrees);
 		return multiply(this, cosa, sina, -sina, cosa, x, y, this);
 	}
 
+	public Affine2f toRotate(float angle, float x, float y) {
+		return rotateDegrees(MathUtils.toRadians(angle), x, y);
+	}
+
 	public final Affine2f preRotate(final float angle) {
-		final float angleRad = MathUtils.DEG_TO_RAD * angle;
-		final float sin = MathUtils.sin(angleRad);
-		final float cos = MathUtils.cos(angleRad);
+
+		final float rad = MathUtils.toRadians(angle);
+		final float cos = MathUtils.cos(rad);
+		final float sin = MathUtils.sin(rad);
+
 		final float m00 = this.m00;
 		final float m01 = this.m01;
 		final float m10 = this.m10;
@@ -724,10 +781,10 @@ public class Affine2f implements LTrans, XY {
 	}
 
 	public final Affine2f postRotate(final float angle) {
-		final float angleRad = MathUtils.DEG_TO_RAD * angle;
 
-		final float sin = MathUtils.sin(angleRad);
-		final float cos = MathUtils.cos(angleRad);
+		final float rad = MathUtils.toRadians(angle);
+		final float cos = MathUtils.cos(rad);
+		final float sin = MathUtils.sin(rad);
 
 		final float m00 = this.m00;
 		final float m01 = this.m01;
@@ -746,10 +803,10 @@ public class Affine2f implements LTrans, XY {
 	}
 
 	public final Affine2f setToRotate(final float angle) {
-		final float angleRad = MathUtils.DEG_TO_RAD * angle;
 
-		final float sin = MathUtils.sin(angleRad);
-		final float cos = MathUtils.cos(angleRad);
+		final float rad = MathUtils.toRadians(angle);
+		final float cos = MathUtils.cos(rad);
+		final float sin = MathUtils.sin(rad);
 
 		this.m00 = cos;
 		this.m01 = sin;
@@ -758,6 +815,51 @@ public class Affine2f implements LTrans, XY {
 		this.tx = 0.0f;
 		this.ty = 0.0f;
 
+		return this;
+	}
+
+	public final Affine2f setToRotate(final float vecx, final float vecy) {
+		float sin, cos;
+		if (vecy == 0f) {
+			sin = 0f;
+			if (vecx < 0f) {
+				cos = -1f;
+			} else {
+				cos = 1f;
+			}
+		} else if (vecx == 0f) {
+			cos = 0f;
+			sin = (vecy > 0f) ? 1f : -1f;
+		} else {
+			float len = MathUtils.sqrt(vecx * vecx + vecy * vecy);
+			cos = vecx / len;
+			sin = vecy / len;
+		}
+		this.m00 = cos;
+		this.m10 = sin;
+		this.m01 = -sin;
+		this.m11 = cos;
+		this.tx = 0.0f;
+		this.ty = 0.0f;
+
+		return this;
+	}
+
+	public Affine2f setToRotate(float vecx, float vecy, float anchorx, float anchory) {
+		setToRotate(vecx, vecy);
+		float sin = m10;
+		float oneMinusCos = 1f - m00;
+		this.tx = anchorx * oneMinusCos + anchory * sin;
+		this.ty = anchory * oneMinusCos - anchorx * sin;
+		return this;
+	}
+
+	public Affine2f setToRotate(float angle, float anchorx, float anchory) {
+		setToRotate(angle);
+		float sin = m10;
+		float oneMinusCos = 1f - m00;
+		this.tx = anchorx * oneMinusCos + anchory * sin;
+		this.ty = anchory * oneMinusCos - anchorx * sin;
 		return this;
 	}
 

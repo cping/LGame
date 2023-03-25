@@ -452,13 +452,13 @@ public class PreloaderBundleGenerator extends Generator {
 		if (assetFilterClass == null)
 			return new DefaultAssetFilter();
 		try {
-			return (AssetFilter) Class.forName(assetFilterClass).newInstance();
+			return (AssetFilter) Class.forName(assetFilterClass).getDeclaredConstructor().newInstance();
 		} catch (Exception e) {
 			throw new RuntimeException("Couldn't instantiate custom AssetFilter '" + assetFilterClass
 					+ "', make sure the class is public and has a public default constructor", e);
 		}
 	}
-
+	
 	private String getAssetPath(GeneratorContext context) {
 		ConfigurationProperty assetPathProperty = null;
 		try {

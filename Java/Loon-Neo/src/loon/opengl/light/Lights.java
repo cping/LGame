@@ -20,21 +20,29 @@
  */
 package loon.opengl.light;
 
-import loon.LSysException;
+import loon.LRelease;
+import loon.LSystem;
 import loon.canvas.LColor;
+import loon.geom.Shape;
 import loon.utils.TArray;
 
-public class Lights {
+/**
+ * Shader光源(真实光源)用类
+ */
+public class Lights implements LRelease {
 
-	public final LColor ambientLight = new LColor(0f, 0f, 0f, 1f);
+	public final LColor ambientLight = new LColor(0f, 0f, 0f);
 
-	public LColor fog;
+	private boolean _active;
 
-	public final TArray<DirectionalLight> directionalLights = new TArray<DirectionalLight>();
+	private boolean _visibleLights;
 
-	public final TArray<PointLight> pointLights = new TArray<PointLight>();
+	public final LColor fog = new LColor(0f, 0f, 0f);
+
+	protected final TArray<BaseLight> lights = new TArray<BaseLight>();
 
 	public Lights() {
+		this(LColor.white);
 	}
 
 	public Lights(final LColor ambient) {
@@ -50,10 +58,23 @@ public class Lights {
 		add(lights);
 	}
 
+	public Lights setAmbientColor(float r, float g, float b) {
+		this.ambientLight.setColor(r, g, b);
+		return this;
+	}
+
+	public Lights setAmbientColor(LColor color) {
+		this.ambientLight.setColor(color);
+		return this;
+	}
+
+	public int getLightCount() {
+		return this.lights.size;
+	}
+
 	public Lights clear() {
-		ambientLight.setColor(0f, 0f, 0f, 1f);
-		directionalLights.clear();
-		pointLights.clear();
+		ambientLight.setColor(0f, 0f, 0f);
+		lights.clear();
 		return this;
 	}
 
@@ -72,13 +93,110 @@ public class Lights {
 	}
 
 	public Lights add(BaseLight light) {
-		if (light instanceof DirectionalLight) {
-			directionalLights.add((DirectionalLight) light);
-		} else if (light instanceof PointLight) {
-			pointLights.add((PointLight) light);
-		} else {
-			throw new LSysException("Unknown light type");
-		}
+		lights.add(light);
 		return this;
 	}
+
+	public Lights addLight(LColor color, float x, float y, float radius) {
+		return addLight(color, x, y, 0f, radius, 1f, 1f);
+	}
+
+	public Lights addLight(LColor color, float x, float y, float radius, float intensity) {
+		return addLight(color, x, y, 0f, radius, 1f, 1f);
+	}
+
+	public Lights addLight(LColor color, float x, float y, float radius, float intensity, float attenuation) {
+		return addLight(color, x, y, 0f, radius, intensity, attenuation);
+	}
+
+	public Lights addLight(LColor color, float x, float y, float z, float radius, float intensity, float attenuation) {
+		lights.add(new PointLight(color, x, y, z, radius, intensity, attenuation));
+		return this;
+	}
+
+	public Lights removeLight(BaseLight light) {
+		lights.remove(light);
+		return this;
+	}
+	
+	public TArray<PointLight> getPointLights(){
+		TArray<PointLight> lightList = new TArray<PointLight>();
+		for (BaseLight light : lights) {
+			if (light instanceof PointLight) {
+				lightList.add((PointLight)light);
+			}
+		}
+		return lightList;
+	}
+
+	public TArray<DirectionalLight> getDirectionalLights(){
+		TArray<DirectionalLight> lightList = new TArray<DirectionalLight>();
+		for (BaseLight light : lights) {
+			if (light instanceof DirectionalLight) {
+				lightList.add((DirectionalLight)light);
+			}
+		}
+		return lightList;
+	}
+	
+	public TArray<BaseLight> getLights() {
+		return getLights(LSystem.viewSize.getRect());
+	}
+
+	public TArray<BaseLight> getLights(Shape shape) {
+		if (shape == null) {
+			return lights.cpy();
+		}
+		TArray<BaseLight> lightList = new TArray<BaseLight>();
+		for (BaseLight light : lights) {
+			if (shape.contains(light.position)) {
+				lightList.add(light);
+			}
+		}
+		return lightList;
+	}
+
+	public Lights enable() {
+		this._active = true;
+		return this;
+	}
+
+	public Lights disable() {
+		this._active = false;
+		return this;
+	}
+
+	public boolean isActive() {
+		return _active;
+	}
+
+	public Lights setActive(boolean a) {
+		this._active = a;
+		return this;
+	}
+
+	public boolean isVisibleLights() {
+		return _visibleLights;
+	}
+
+	public Lights setVisibleLights(boolean v) {
+		this._visibleLights = v;
+		return this;
+	}
+
+	public LColor getFog() {
+		return fog;
+	}
+
+	public Lights setFog(LColor fog) {
+		this.fog.setColor(fog);
+		return this;
+	}
+
+	@Override
+	public void close() {
+		clear();
+		setActive(false);
+	}
+
 }

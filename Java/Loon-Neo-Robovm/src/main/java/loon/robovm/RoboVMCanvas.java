@@ -59,7 +59,7 @@ public class RoboVMCanvas extends Canvas {
 		if (width <= 0 || height <= 0) {
 			throw new IllegalArgumentException(
 
-			"Invalid size " + width + "x" + height);
+					"Invalid size " + width + "x" + height);
 		}
 		states.addFirst(new RoboVMCanvasState());
 
@@ -192,11 +192,62 @@ public class RoboVMCanvas extends Canvas {
 	}
 
 	@Override
+	public Canvas drawOval(float x, float y, float w, float h) {
+		bctx.strokeEllipseInRect(new CGRect(x, y, w, h));
+		isDirty = true;
+		return this;
+	}
+
+	@Override
+	public Canvas fillOval(float x, float y, float w, float h) {
+		RoboVMGradient gradient = currentState().gradient;
+		if (gradient == null) {
+			bctx.fillEllipseInRect(new CGRect(x, y, w, h));
+		} else {
+			CGMutablePath cgPath = CGMutablePath.createMutable();
+			cgPath.addEllipseInRect(null, new CGRect(x, y, w, h));
+			bctx.addPath(cgPath);
+			bctx.clip();
+			gradient.fill(bctx);
+		}
+		isDirty = true;
+		return this;
+	}
+
+	@Override
+	public Canvas drawOval(float x, float y, float w, float h, LColor c) {
+		int tmp = getFillColor();
+		setStrokeColor(c.getARGB());
+		bctx.strokeEllipseInRect(new CGRect(x, y, w, h));
+		setStrokeColor(tmp);
+		isDirty = true;
+		return this;
+	}
+
+	@Override
+	public Canvas fillOval(float x, float y, float w, float h, LColor c) {
+		int tmp = getFillColor();
+		setFillColor(c.getARGB());
+		RoboVMGradient gradient = currentState().gradient;
+		if (gradient == null) {
+			bctx.fillEllipseInRect(new CGRect(x, y, w, h));
+		} else {
+			CGMutablePath cgPath = CGMutablePath.createMutable();
+			cgPath.addEllipseInRect(null, new CGRect(x, y, w, h));
+			bctx.addPath(cgPath);
+			bctx.clip();
+			gradient.fill(bctx);
+		}
+		setFillColor(tmp);
+		isDirty = true;
+		return this;
+	}
+
+	@Override
 	public Canvas fillCircle(float x, float y, float radius) {
 		RoboVMGradient gradient = currentState().gradient;
 		if (gradient == null) {
-			bctx.fillEllipseInRect(new CGRect(x - radius, y - radius,
-					2 * radius, 2 * radius));
+			bctx.fillEllipseInRect(new CGRect(x - radius, y - radius, 2 * radius, 2 * radius));
 		} else {
 			CGMutablePath cgPath = CGMutablePath.createMutable();
 			cgPath.addArc(null, x, y, radius, 0, 2 * Math.PI, false);
@@ -238,8 +289,7 @@ public class RoboVMCanvas extends Canvas {
 	}
 
 	@Override
-	public Canvas fillRoundRect(float x, float y, float width, float height,
-			float radius) {
+	public Canvas fillRoundRect(float x, float y, float width, float height, float radius) {
 		addRoundRectPath(x, y, width, height, radius);
 		RoboVMGradient gradient = currentState().gradient;
 		if (gradient == null) {
@@ -259,16 +309,14 @@ public class RoboVMCanvas extends Canvas {
 		if (gradient == null) {
 			ilayout.fill(bctx, x, y, fillColor);
 		} else {
-			CGBitmapContext maskContext = RoboVMGraphics.createCGBitmap(
-					texWidth(), texHeight());
+			CGBitmapContext maskContext = RoboVMGraphics.createCGBitmap(texWidth(), texHeight());
 			maskContext.clearRect(new CGRect(0, 0, texWidth(), texHeight()));
 			float scale = image.scale().factor;
 			maskContext.scaleCTM(scale, scale);
 			setFillColor(maskContext, 0xFFFFFFFF);
 			ilayout.fill(maskContext, 0, 0, fillColor);
 			bctx.saveGState();
-			bctx.clipToMask(new CGRect(x, y, width, height),
-					maskContext.toImage());
+			bctx.clipToMask(new CGRect(x, y, width, height), maskContext.toImage());
 			gradient.fill(bctx);
 			bctx.restoreGState();
 			maskContext.dispose();
@@ -371,14 +419,12 @@ public class RoboVMCanvas extends Canvas {
 
 	@Override
 	public Image snapshot() {
-		return new RoboVMImage(gfx, image.scale(),
-				((RoboVMImage) image).cgImage(), TextureSource.RenderCanvas);
+		return new RoboVMImage(gfx, image.scale(), ((RoboVMImage) image).cgImage(), TextureSource.RenderCanvas);
 	}
 
 	@Override
 	public Canvas strokeCircle(float x, float y, float radius) {
-		bctx.strokeEllipseInRect(new CGRect(x - radius, y - radius, 2 * radius,
-				2 * radius));
+		bctx.strokeEllipseInRect(new CGRect(x - radius, y - radius, 2 * radius, 2 * radius));
 		isDirty = true;
 		return this;
 	}
@@ -399,8 +445,7 @@ public class RoboVMCanvas extends Canvas {
 	}
 
 	@Override
-	public Canvas strokeRoundRect(float x, float y, float width, float height,
-			float radius) {
+	public Canvas strokeRoundRect(float x, float y, float width, float height, float radius) {
 		addRoundRectPath(x, y, width, height, radius);
 		bctx.strokePath();
 		isDirty = true;
@@ -409,15 +454,13 @@ public class RoboVMCanvas extends Canvas {
 
 	@Override
 	public Canvas strokeText(TextLayout layout, float x, float y) {
-		((RoboVMTextLayout) layout)
-				.stroke(bctx, x, y, strokeWidth, strokeColor);
+		((RoboVMTextLayout) layout).stroke(bctx, x, y, strokeWidth, strokeColor);
 		isDirty = true;
 		return this;
 	}
 
 	@Override
-	public Canvas transform(float m11, float m12, float m21, float m22,
-			float dx, float dy) {
+	public Canvas transform(float m11, float m12, float m21, float m22, float dx, float dy) {
 		bctx.concatCTM(new CGAffineTransform(m11, m12, m21, m22, dx, dy));
 		return this;
 	}
@@ -433,10 +476,8 @@ public class RoboVMCanvas extends Canvas {
 		return bctx;
 	}
 
-	private void addRoundRectPath(float x, float y, float width, float height,
-			float radius) {
-		float midx = x + width / 2, midy = y + height / 2, maxx = x + width, maxy = y
-				+ height;
+	private void addRoundRectPath(float x, float y, float width, float height, float radius) {
+		float midx = x + width / 2, midy = y + height / 2, maxx = x + width, maxy = y + height;
 		bctx.beginPath();
 		bctx.moveToPoint(x, midy);
 		bctx.addArcToPoint(x, y, midx, y, radius);

@@ -24,6 +24,7 @@ package loon.utils;
 import loon.LSysException;
 import loon.LTexture;
 import loon.action.sprite.ISprite;
+import loon.canvas.LColor;
 import loon.component.Actor;
 import loon.component.LComponent;
 
@@ -202,6 +203,19 @@ final public class CollectionUtils {
 	}
 
 	/**
+	 * copy颜色数据
+	 * 
+	 * @param data
+	 * @param newSize
+	 * @return
+	 */
+	public static LColor[] copyOf(LColor[] data, int newSize) {
+		LColor tempArr[] = new LColor[newSize];
+		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
+		return tempArr;
+	}
+	
+	/**
 	 * copy指定长度的数组数据
 	 * 
 	 * @param data
@@ -213,7 +227,8 @@ final public class CollectionUtils {
 		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
 	}
-
+	
+	
 	/**
 	 * copy指定长度的数组数据
 	 * 

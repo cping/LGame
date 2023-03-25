@@ -43,6 +43,8 @@ public class JavaFXImage extends ImageImpl {
 
 	protected WritableImage buffer;
 
+	protected boolean updatePixel;
+
 	public JavaFXImage(Graphics gfx, Scale scale, WritableImage buffer, String source) {
 		super(gfx, scale, (int) buffer.getWidth(), (int) buffer.getHeight(), source, buffer);
 	}
@@ -209,14 +211,14 @@ public class JavaFXImage extends ImageImpl {
 	public void setPixel(LColor c, int x, int y) {
 		PixelWriter out = buffer.getPixelWriter();
 		out.setArgb(x, y, c.getRGB());
-		isDirty = true;
+		updatePixel = true;
 	}
 
 	@Override
 	public void setPixel(int rgb, int x, int y) {
 		PixelWriter out = buffer.getPixelWriter();
 		out.setArgb(x, y, rgb);
-		isDirty = true;
+		updatePixel = true;
 	}
 
 	@Override
@@ -254,7 +256,7 @@ public class JavaFXImage extends ImageImpl {
 			format = PixelFormat.getIntArgbInstance();
 		}
 		writer.setPixels(startX, startY, width, height, format, rgbArray, offset, scansize);
-		isDirty = true;
+		updatePixel = true;
 	}
 
 	@Override
@@ -265,6 +267,7 @@ public class JavaFXImage extends ImageImpl {
 	@Override
 	protected void setBitmap(Object bitmap) {
 		buffer = (WritableImage) bitmap;
+		isDirty = true;
 	}
 
 	@Override
@@ -307,7 +310,7 @@ public class JavaFXImage extends ImageImpl {
 		}
 		return canvas;
 	}
-	
+
 	@Override
 	protected void closeImpl() {
 		if (buffer != null) {

@@ -152,6 +152,36 @@ public class GWTCanvas extends Canvas {
 	}
 
 	@Override
+	public Canvas drawOval(float x, float y, float w, float h) {
+		oval(x, y, w, h, false);
+		return this;
+	}
+
+	@Override
+	public Canvas fillOval(float x, float y, float w, float h) {
+		oval(x, y, w, h, true);
+		return this;
+	}
+
+	@Override
+	public Canvas drawOval(float x, float y, float w, float h, LColor c) {
+		int tmp = getStrokeColor();
+		setStrokeColor(c.getARGB());
+		oval(x, y, w, h, false);
+		setStrokeColor(tmp);
+		return this;
+	}
+
+	@Override
+	public Canvas fillOval(float x, float y, float w, float h, LColor c) {
+		int tmp = getFillColor();
+		setFillColor(c.getARGB());
+		oval(x, y, w, h, true);
+		setFillColor(tmp);
+		return this;
+	}
+
+	@Override
 	public Canvas fillCircle(float x, float y, float radius) {
 		ctx.beginPath();
 		ctx.arc(x, y, radius, 0, 2 * Math.PI);
@@ -400,6 +430,27 @@ public class GWTCanvas extends Canvas {
 			return Context2d.LineJoin.ROUND;
 		}
 		return Context2d.LineJoin.ROUND;
+	}
+
+	private void oval(float x, float y, float w, float h, boolean fill) {
+		final float angle = 0.5522848f;
+		final float ox = (w / 2) * angle;
+		final float oy = (h / 2) * angle;
+		final float xe = x + w;
+		final float ye = y + h;
+		final float xm = x + w / 2;
+		final float ym = y + h / 2;
+		ctx.beginPath();
+		ctx.moveTo(x, ym);
+		ctx.bezierCurveTo(x, ym - oy, xm - ox, y, xm, y);
+		ctx.bezierCurveTo(xm + ox, y, xe, ym - oy, xe, ym);
+		ctx.bezierCurveTo(xe, ym + oy, xm + ox, ye, xm, ye);
+		ctx.bezierCurveTo(xm - ox, ye, x, ym + oy, x, ym);
+		if (fill) {
+			ctx.fill();
+		} else {
+			ctx.stroke();
+		}
 	}
 
 }

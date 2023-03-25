@@ -59,8 +59,7 @@ class JavaSECanvas extends Canvas {
 	public JavaSECanvas(Graphics gfx, JavaSEImage image) {
 		super(gfx, image);
 		g2d = image.bufferedImage().createGraphics();
-		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-				RenderingHints.VALUE_ANTIALIAS_ON);
+		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		float scale = image.scale().factor;
 		g2d.scale(scale, scale);
 		stateStack.push(new JavaSECanvasState());
@@ -112,8 +111,7 @@ class JavaSECanvas extends Canvas {
 		ColorModel cm = bmp.getColorModel();
 		boolean isAlphaPremultiplied = bmp.isAlphaPremultiplied();
 		WritableRaster raster = bmp.copyData(null);
-		BufferedImage snap = new BufferedImage(cm, raster,
-				isAlphaPremultiplied, null);
+		BufferedImage snap = new BufferedImage(cm, raster, isAlphaPremultiplied, null);
 		return new JavaSEImage(gfx, image.scale(), snap, TextureSource.RenderCanvas);
 	}
 
@@ -128,8 +126,7 @@ class JavaSECanvas extends Canvas {
 	@Override
 	public Canvas clearRect(float x, float y, float width, float height) {
 		currentState().prepareClear(g2d);
-		g2d.clearRect(MathUtils.ifloor(x), MathUtils.ifloor(y),
-				MathUtils.iceil(width), MathUtils.iceil(height));
+		g2d.clearRect(MathUtils.ifloor(x), MathUtils.ifloor(y), MathUtils.iceil(width), MathUtils.iceil(height));
 		isDirty = true;
 		return this;
 	}
@@ -143,8 +140,7 @@ class JavaSECanvas extends Canvas {
 	@Override
 	public Canvas clipRect(float x, float y, float width, final float height) {
 		final int cx = MathUtils.ifloor(x), cy = MathUtils.ifloor(y);
-		final int cwidth = MathUtils.iceil(width), cheight = MathUtils
-				.iceil(height);
+		final int cwidth = MathUtils.iceil(width), cheight = MathUtils.iceil(height);
 		currentState().clipper = new JavaSECanvasState.Clipper() {
 			public void setClip(Graphics2D g2d) {
 				g2d.setClip(cx, cy, cwidth, cheight);
@@ -169,6 +165,40 @@ class JavaSECanvas extends Canvas {
 		}
 	}
 
+	public Canvas drawOval(float x, float y, float w, float h) {
+		currentState().prepareFill(g2d);
+		g2d.drawOval(MathUtils.floor(x), MathUtils.floor(y), MathUtils.floor(w), MathUtils.floor(h));
+		isDirty = true;
+		return this;
+	}
+	
+	public Canvas fillOval(float x, float y, float w, float h) {
+		currentState().prepareFill(g2d);
+		g2d.fillOval(MathUtils.floor(x), MathUtils.floor(y), MathUtils.floor(w), MathUtils.floor(h));
+		isDirty = true;
+		return this;
+	}
+
+	public Canvas drawOval(float x, float y, float w, float h, LColor c) {
+		int tmp = getStrokeColor();
+		setStrokeColor(c.getARGB());
+		currentState().prepareStroke(g2d);
+		g2d.drawOval(MathUtils.floor(x), MathUtils.floor(y), MathUtils.floor(w), MathUtils.floor(h));
+		setStrokeColor(tmp);
+		isDirty = true;
+		return this;
+	}
+
+	public Canvas fillOval(float x, float y, float w, float h, LColor c) {
+		int tmp = getFillColor();
+		setFillColor(c.getARGB());
+		currentState().prepareFill(g2d);
+		g2d.fillOval(MathUtils.floor(x), MathUtils.floor(y), MathUtils.floor(w), MathUtils.floor(h));
+		setFillColor(tmp);
+		isDirty = true;
+		return this;
+	}
+	
 	@Override
 	public Canvas drawLine(float x0, float y0, float x1, float y1) {
 		currentState().prepareStroke(g2d);
@@ -221,8 +251,7 @@ class JavaSECanvas extends Canvas {
 	}
 
 	@Override
-	public Canvas fillRoundRect(float x, float y, float width, float height,
-			float radius) {
+	public Canvas fillRoundRect(float x, float y, float width, float height, float radius) {
 		currentState().prepareFill(g2d);
 		roundRect.setRoundRect(x, y, width, height, radius * 2, radius * 2);
 		g2d.fill(roundRect);
@@ -360,8 +389,7 @@ class JavaSECanvas extends Canvas {
 	}
 
 	@Override
-	public Canvas strokeRoundRect(float x, float y, float width, float height,
-			float radius) {
+	public Canvas strokeRoundRect(float x, float y, float width, float height, float radius) {
 		currentState().prepareStroke(g2d);
 		roundRect.setRoundRect(x, y, width, height, radius * 2, radius * 2);
 		g2d.draw(roundRect);
@@ -378,8 +406,7 @@ class JavaSECanvas extends Canvas {
 	}
 
 	@Override
-	public Canvas transform(float m11, float m12, float m21, float m22,
-			float dx, float dy) {
+	public Canvas transform(float m11, float m12, float m21, float m22, float dx, float dy) {
 		g2d.transform(new AffineTransform(m11, m12, m21, m22, dx, dy));
 		return this;
 	}

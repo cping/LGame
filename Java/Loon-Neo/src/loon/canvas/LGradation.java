@@ -31,6 +31,24 @@ import loon.utils.IntMap;
  */
 public class LGradation implements LRelease {
 
+	public final static PixmapGradient createLinear(float startX, float startY, float endX, float endY, LColor start,
+			LColor end) {
+		return new PixmapLinear(startX, startY, endX, endY, start, end);
+	}
+
+	public final static PixmapGradient createRadial(float centerX, float centerY, float radius, LColor start, LColor end) {
+		return new PixmapRadial(centerX, centerY, radius, start, end);
+	}
+
+	public final static PixmapGradient create(Gradient.Linear linear) {
+		return new PixmapLinear(linear.x0, linear.y0, linear.x1, linear.y1, linear.positions,
+				LColor.toRgbaColor(linear.colors));
+	}
+
+	public final static PixmapGradient create(Gradient.Radial radial) {
+		return new PixmapRadial(radial.x, radial.y, radial.r, radial.positions, LColor.toRgbaColor(radial.colors));
+	}
+
 	private static IntMap<LGradation> COLOR_GRADATIONS;
 
 	private LColor startColor;

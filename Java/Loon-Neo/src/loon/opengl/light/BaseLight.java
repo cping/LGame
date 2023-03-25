@@ -21,13 +21,49 @@
 package loon.opengl.light;
 
 import loon.canvas.LColor;
+import loon.geom.Vector3f;
 
 public abstract class BaseLight {
 
+	public final Vector3f position = new Vector3f();
+
 	public final LColor color = new LColor(0f, 0f, 0f, 1f);
+	
+	public float radius;
+	
+	public float intensity;
+	
+	public float attenuation;
 
 	public LColor getColor() {
 		return color;
+	}
+
+	public float getRadius() {
+		return radius;
+	}
+
+	public BaseLight setRadius(float radius) {
+		this.radius = radius;
+		return this;
+	}
+
+	public float getIntensity() {
+		return intensity;
+	}
+
+	public BaseLight setIntensity(float intensity) {
+		this.intensity = intensity;
+		return this;
+	}
+
+	public float getAttenuation() {
+		return attenuation;
+	}
+
+	public BaseLight setAttenuation(float attenuation) {
+		this.attenuation = attenuation;
+		return this;
 	}
 
 }

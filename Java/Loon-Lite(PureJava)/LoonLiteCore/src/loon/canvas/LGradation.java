@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2011
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -30,6 +30,24 @@ import loon.utils.IntMap;
  * Color渲染Image的简单渐变实现
  */
 public class LGradation implements LRelease {
+
+	public final static PixmapGradient createLinear(float startX, float startY, float endX, float endY, LColor start,
+			LColor end) {
+		return new PixmapLinear(startX, startY, endX, endY, start, end);
+	}
+
+	public final static PixmapGradient createRadial(float centerX, float centerY, float radius, LColor start, LColor end) {
+		return new PixmapRadial(centerX, centerY, radius, start, end);
+	}
+
+	public final static PixmapGradient create(Gradient.Linear linear) {
+		return new PixmapLinear(linear.x0, linear.y0, linear.x1, linear.y1, linear.positions,
+				LColor.toRgbaColor(linear.colors));
+	}
+
+	public final static PixmapGradient create(Gradient.Radial radial) {
+		return new PixmapRadial(radial.x, radial.y, radial.r, radial.positions, LColor.toRgbaColor(radial.colors));
+	}
 
 	private static IntMap<LGradation> COLOR_GRADATIONS;
 
@@ -54,7 +72,7 @@ public class LGradation implements LRelease {
 	public static LGradation create(LColor s, LColor e, int w, int h, int alpha) {
 		synchronized (LGradation.class) {
 			if (COLOR_GRADATIONS == null) {
-				COLOR_GRADATIONS = new IntMap<>(10);
+				COLOR_GRADATIONS = new IntMap<LGradation>(10);
 			}
 			int hashCode = 1;
 			hashCode = LSystem.unite(hashCode, s.getRGB());

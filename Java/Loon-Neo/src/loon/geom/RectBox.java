@@ -594,6 +594,14 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 		return contains(v.x, v.y);
 	}
 
+	public boolean contains(Vector3f v) {
+		return contains(v.x, v.y);
+	}
+
+	public boolean contains(Vector4f v) {
+		return contains(v.x, v.y);
+	}
+	
 	public boolean contains(Point point) {
 		if (this.x < point.x && this.x + this.width > point.x && this.y < point.y && this.y + this.height > point.y) {
 			return true;

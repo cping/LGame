@@ -1,19 +1,19 @@
 /**
- *
+ * 
  * Copyright 2008 - 2011
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -24,6 +24,7 @@ package loon.utils;
 import loon.LSysException;
 import loon.LTexture;
 import loon.action.sprite.ISprite;
+import loon.canvas.LColor;
 import loon.component.Actor;
 import loon.component.LComponent;
 
@@ -36,7 +37,7 @@ final public class CollectionUtils {
 
 	/**
 	 * 判定指定对象是否存在于指定对象数组中
-	 *
+	 * 
 	 * @param arrays
 	 * @param data
 	 * @return
@@ -56,7 +57,7 @@ final public class CollectionUtils {
 
 	/**
 	 * 获得指定2维数组的HashCode
-	 *
+	 * 
 	 * @param arrays
 	 * @return
 	 */
@@ -80,7 +81,7 @@ final public class CollectionUtils {
 
 	/**
 	 * copy指定长度的数组数据
-	 *
+	 * 
 	 * @param data
 	 * @return
 	 */
@@ -98,7 +99,7 @@ final public class CollectionUtils {
 
 	/**
 	 * copy指定长度的数组数据
-	 *
+	 * 
 	 * @param data
 	 * @return
 	 */
@@ -108,7 +109,7 @@ final public class CollectionUtils {
 
 	/**
 	 * copy指定长度的数组数据
-	 *
+	 * 
 	 * @param data
 	 * @param newSize
 	 * @return
@@ -121,7 +122,7 @@ final public class CollectionUtils {
 
 	/**
 	 * copy指定长度的数组数据
-	 *
+	 * 
 	 * @param data
 	 * @return
 	 */
@@ -131,7 +132,7 @@ final public class CollectionUtils {
 
 	/**
 	 * copy指定长度的数组数据
-	 *
+	 * 
 	 * @param data
 	 * @param newSize
 	 * @return
@@ -144,7 +145,7 @@ final public class CollectionUtils {
 
 	/**
 	 * copy指定长度的数组数据
-	 *
+	 * 
 	 * @param data
 	 * @param start
 	 * @param end
@@ -160,7 +161,7 @@ final public class CollectionUtils {
 
 	/**
 	 * copy指定长度的数组数据
-	 *
+	 * 
 	 * @param data
 	 * @param start
 	 * @param end
@@ -177,7 +178,7 @@ final public class CollectionUtils {
 
 	/**
 	 * copy指定长度的数组数据
-	 *
+	 * 
 	 * @param data
 	 * @param newSize
 	 * @return
@@ -190,7 +191,7 @@ final public class CollectionUtils {
 
 	/**
 	 * copy指定长度的数组数据
-	 *
+	 * 
 	 * @param data
 	 * @param newSize
 	 * @return
@@ -202,8 +203,21 @@ final public class CollectionUtils {
 	}
 
 	/**
+	 * copy颜色数据
+	 * 
+	 * @param data
+	 * @param newSize
+	 * @return
+	 */
+	public static LColor[] copyOf(LColor[] data, int newSize) {
+		LColor tempArr[] = new LColor[newSize];
+		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
+		return tempArr;
+	}
+	
+	/**
 	 * copy指定长度的数组数据
-	 *
+	 * 
 	 * @param data
 	 * @param newSize
 	 * @return
@@ -213,10 +227,11 @@ final public class CollectionUtils {
 		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
 	}
-
+	
+	
 	/**
 	 * copy指定长度的数组数据
-	 *
+	 * 
 	 * @param data
 	 * @return
 	 */
@@ -226,7 +241,7 @@ final public class CollectionUtils {
 
 	/**
 	 * copy指定长度的数组数据
-	 *
+	 * 
 	 * @param data
 	 * @param newSize
 	 * @return
@@ -239,7 +254,7 @@ final public class CollectionUtils {
 
 	/**
 	 * copy指定长度的数组数据
-	 *
+	 * 
 	 * @param data
 	 * @return
 	 */
@@ -249,7 +264,7 @@ final public class CollectionUtils {
 
 	/**
 	 * copy指定长度的数组数据
-	 *
+	 * 
 	 * @param data
 	 * @param newSize
 	 * @return
@@ -262,7 +277,7 @@ final public class CollectionUtils {
 
 	/**
 	 * copy指定长度的数组数据
-	 *
+	 * 
 	 * @param data
 	 * @return
 	 */
@@ -272,7 +287,7 @@ final public class CollectionUtils {
 
 	/**
 	 * copy指定长度的数组数据
-	 *
+	 * 
 	 * @param data
 	 * @param newSize
 	 * @return
@@ -285,7 +300,7 @@ final public class CollectionUtils {
 
 	/**
 	 * copy指定长度的数组数据
-	 *
+	 * 
 	 * @param data
 	 * @return
 	 */
@@ -295,7 +310,7 @@ final public class CollectionUtils {
 
 	/**
 	 * copy指定长度的数组数据
-	 *
+	 * 
 	 * @param data
 	 * @param newSize
 	 * @return
@@ -308,7 +323,7 @@ final public class CollectionUtils {
 
 	/**
 	 * copy指定长度的数组数据
-	 *
+	 * 
 	 * @param data
 	 * @return
 	 */
@@ -318,7 +333,7 @@ final public class CollectionUtils {
 
 	/**
 	 * copy指定长度的数组数据
-	 *
+	 * 
 	 * @param data
 	 * @param newSize
 	 * @return
@@ -331,7 +346,7 @@ final public class CollectionUtils {
 
 	/**
 	 * copy指定长度的数组数据
-	 *
+	 * 
 	 * @param data
 	 * @return
 	 */
@@ -341,7 +356,7 @@ final public class CollectionUtils {
 
 	/**
 	 * copy指定长度的数组数据
-	 *
+	 * 
 	 * @param data
 	 * @param newSize
 	 * @return
@@ -354,7 +369,7 @@ final public class CollectionUtils {
 
 	/**
 	 * copy指定长度的数组数据
-	 *
+	 * 
 	 * @param data
 	 * @return
 	 */
@@ -364,7 +379,7 @@ final public class CollectionUtils {
 
 	/**
 	 * copy指定长度的数组数据
-	 *
+	 * 
 	 * @param data
 	 * @param newSize
 	 * @return
@@ -377,27 +392,27 @@ final public class CollectionUtils {
 
 	// --为了兼容GWT，尽量减少反射的使用，所以只好针对不同类分别处理了……--//
 	/**
-	 *
+	 * 
 	 * public static Object expand(Object data, int i, boolean flag) { int j =
 	 * ArrayReflection.getLength(data); Object obj1 =
 	 * ArrayReflection.newInstance(data.getClass().getComponentType(), j + i);
 	 * System.arraycopy(data, 0, obj1, flag ? 0 : i, j); return obj1; }
-	 *
+	 * 
 	 * public static Object expand(Object data, int size) { return expand(data,
 	 * size, true); }
-	 *
+	 * 
 	 * public static Object expand(Object data, int size, boolean flag, Class<?>
-	 * class1) { if (data == null) { return ArrayReflection.newInstance(class1,
-	 * 1); } else { return expand(data, size, flag); } }
-	 *
+	 * class1) { if (data == null) { return ArrayReflection.newInstance(class1, 1);
+	 * } else { return expand(data, size, flag); } }
+	 * 
 	 * public static Object cut(Object data, int size) { int j; if ((j =
 	 * ArrayReflection.getLength(data)) == 1) { return
-	 * ArrayReflection.newInstance(data.getClass().getComponentType(), 0); } int
-	 * k; if ((k = j - size - 1) > 0) { System.arraycopy(data, size + 1, data,
-	 * size, k); } j--; Object obj1 =
+	 * ArrayReflection.newInstance(data.getClass().getComponentType(), 0); } int k;
+	 * if ((k = j - size - 1) > 0) { System.arraycopy(data, size + 1, data, size,
+	 * k); } j--; Object obj1 =
 	 * ArrayReflection.newInstance(data.getClass().getComponentType(), j);
 	 * System.arraycopy(data, 0, obj1, 0, j); return obj1; }
-	 *
+	 * 
 	 * public static Object copyOf(Object src) { int srcLength =
 	 * ArrayReflection.getLength(src); Class<?> srcComponentType =
 	 * src.getClass().getComponentType(); Object dest =
@@ -406,11 +421,11 @@ final public class CollectionUtils {
 	 * ArrayReflection.getLength(src); i++) { ArrayReflection.set(dest, i,
 	 * copyOf(ArrayReflection.get(src, i))); } } else { System.arraycopy(src, 0,
 	 * dest, 0, srcLength); } return dest; }
-	 *
-	 *
+	 * 
+	 * 
 	 * public static Object[] copyOf(Object[] original, int newLength) { return
 	 * copyOf(original, newLength, original.getClass()); }
-	 *
+	 * 
 	 * public static Object[] copyOf(Object[] original, int newLength, Class<?>
 	 * newType) { Object[] copy = (newType == Object[].class) ? new
 	 * Object[newLength] : (Object[])
@@ -606,7 +621,7 @@ final public class CollectionUtils {
 
 	/**
 	 * 反转数组自身
-	 *
+	 * 
 	 * @param arrays
 	 */
 	public static <T> void reverse(T[] arrays) {
@@ -625,7 +640,7 @@ final public class CollectionUtils {
 
 	/**
 	 * 移除一个指定索引的对象数组中数据
-	 *
+	 * 
 	 * @param arrays
 	 * @param index
 	 * @return
@@ -645,7 +660,7 @@ final public class CollectionUtils {
 
 	/**
 	 * 交换对象数组中两个对象的位置
-	 *
+	 * 
 	 * @param arrays
 	 * @param data1
 	 * @param data2
@@ -666,7 +681,7 @@ final public class CollectionUtils {
 
 	/**
 	 * 替换对象数组中的指定对象
-	 *
+	 * 
 	 * @param arrays
 	 * @param oldChild
 	 * @param newChild
@@ -685,7 +700,7 @@ final public class CollectionUtils {
 
 	/**
 	 * 把对象数组中的元素随机重新排序
-	 *
+	 * 
 	 * @param arrays
 	 * @return
 	 */
@@ -701,7 +716,7 @@ final public class CollectionUtils {
 
 	/**
 	 * 检查针对指定对象数组的取值范围是否安全
-	 *
+	 * 
 	 * @param arrays
 	 * @param startIndex
 	 * @param endIndex
@@ -741,7 +756,7 @@ final public class CollectionUtils {
 
 	/**
 	 * 检查针对指定对象数组的取值范围是否安全
-	 *
+	 * 
 	 * @param arrays
 	 * @param startIndex
 	 * @param endIndex
@@ -754,7 +769,7 @@ final public class CollectionUtils {
 
 	/**
 	 * 检查针对指定对象数组的取值范围是否安全
-	 *
+	 * 
 	 * @param arrays
 	 * @param index
 	 * @return
@@ -765,7 +780,7 @@ final public class CollectionUtils {
 
 	/**
 	 * 检查针对指定对象数组的取值范围是否安全
-	 *
+	 * 
 	 * @param arrays
 	 * @param startIndex
 	 * @param endIndex
@@ -777,7 +792,7 @@ final public class CollectionUtils {
 
 	/**
 	 * 判定指定对象数组是否为空
-	 *
+	 * 
 	 * @param array
 	 * @return
 	 */
@@ -787,7 +802,7 @@ final public class CollectionUtils {
 
 	/**
 	 * 判定指定对象数组是否不为空
-	 *
+	 * 
 	 * @param array
 	 * @return
 	 */
@@ -797,7 +812,7 @@ final public class CollectionUtils {
 
 	/**
 	 * 判定数组是否为空
-	 *
+	 * 
 	 * @param array
 	 * @return
 	 */
@@ -807,7 +822,7 @@ final public class CollectionUtils {
 
 	/**
 	 * 判定数组是否为空
-	 *
+	 * 
 	 * @param array
 	 * @return
 	 */
@@ -817,7 +832,7 @@ final public class CollectionUtils {
 
 	/**
 	 * 判定数组是否为空
-	 *
+	 * 
 	 * @param array
 	 * @return
 	 */
@@ -827,7 +842,7 @@ final public class CollectionUtils {
 
 	/**
 	 * 判定数组是否为空
-	 *
+	 * 
 	 * @param array
 	 * @return
 	 */
@@ -837,7 +852,7 @@ final public class CollectionUtils {
 
 	/**
 	 * 判定数组是否为空
-	 *
+	 * 
 	 * @param array
 	 * @return
 	 */
@@ -847,7 +862,7 @@ final public class CollectionUtils {
 
 	/**
 	 * 判定数组是否为空
-	 *
+	 * 
 	 * @param array
 	 * @return
 	 */
@@ -857,7 +872,7 @@ final public class CollectionUtils {
 
 	/**
 	 * 判定数组是否为空
-	 *
+	 * 
 	 * @param array
 	 * @return
 	 */
@@ -867,7 +882,7 @@ final public class CollectionUtils {
 
 	/**
 	 * 判定数组是否为空
-	 *
+	 * 
 	 * @param array
 	 * @return
 	 */
@@ -877,7 +892,7 @@ final public class CollectionUtils {
 
 	/**
 	 * 判定数组是否为空
-	 *
+	 * 
 	 * @param array
 	 * @return
 	 */
@@ -887,7 +902,7 @@ final public class CollectionUtils {
 
 	/**
 	 * 设定对象数组中指定范围内数值为统一的data
-	 *
+	 * 
 	 * @param arrays
 	 * @param data
 	 * @param startIndex
@@ -911,7 +926,7 @@ final public class CollectionUtils {
 
 	/**
 	 * 向指定对象数组的开头添加一个或者多个数据
-	 *
+	 * 
 	 * @param arrays
 	 * @param values
 	 * @return
@@ -930,7 +945,7 @@ final public class CollectionUtils {
 
 	/**
 	 * 删除对象数组中指定索引位置的数据,并返回一个剪切好的新对象数组
-	 *
+	 * 
 	 * @param arrays
 	 * @param index
 	 * @return
@@ -947,7 +962,7 @@ final public class CollectionUtils {
 
 	/**
 	 * 删除对象数组中指定索引的数据
-	 *
+	 * 
 	 * @param arrays
 	 * @param index
 	 * @return
@@ -966,7 +981,7 @@ final public class CollectionUtils {
 
 	/**
 	 * 删除对象数组中的一个数据
-	 *
+	 * 
 	 * @param arrays
 	 * @return
 	 */
@@ -976,7 +991,7 @@ final public class CollectionUtils {
 
 	/**
 	 * 删除对象数组初始索引后指定长度范围内的数据并返回一个新剪切后数组
-	 *
+	 * 
 	 * @param arrays
 	 * @param startIndex
 	 * @param size
@@ -1007,7 +1022,7 @@ final public class CollectionUtils {
 
 	/**
 	 * 删除对象数组指定范围内的数据并返回一个新剪切后数组
-	 *
+	 * 
 	 * @param arrays
 	 * @param startIndex
 	 * @param size
@@ -1019,7 +1034,7 @@ final public class CollectionUtils {
 
 	/**
 	 * 删除指定索引后指定长度的数据
-	 *
+	 * 
 	 * @param arrays
 	 * @param index
 	 * @param size
@@ -1031,7 +1046,7 @@ final public class CollectionUtils {
 
 	/**
 	 * 删除指定索引的数据
-	 *
+	 * 
 	 * @param arrays
 	 * @param index
 	 * @return
@@ -1042,7 +1057,7 @@ final public class CollectionUtils {
 
 	/**
 	 * 将对象数组中已有的指定数据插入对象数组最前方
-	 *
+	 * 
 	 * @param arrays
 	 * @param data
 	 * @return
@@ -1058,7 +1073,7 @@ final public class CollectionUtils {
 
 	/**
 	 * 返回对象数组中一个随机数据
-	 *
+	 * 
 	 * @param arrays
 	 * @param startIndex
 	 * @param length
@@ -1074,7 +1089,7 @@ final public class CollectionUtils {
 
 	/**
 	 * 返回一个有界限的hashCode,避免重复
-	 *
+	 * 
 	 * @param hashCode
 	 * @return
 	 */
@@ -1085,7 +1100,7 @@ final public class CollectionUtils {
 
 	/**
 	 * 获得hashCode
-	 *
+	 * 
 	 * @param key
 	 * @return
 	 */
@@ -1099,7 +1114,7 @@ final public class CollectionUtils {
 
 	/**
 	 * 检查数组长度是否越界
-	 *
+	 * 
 	 * @param arrayLength
 	 * @param fromIndex
 	 * @param toIndex
@@ -1118,7 +1133,7 @@ final public class CollectionUtils {
 
 	/**
 	 * 填充指定整型数组
-	 *
+	 * 
 	 * @param arrays
 	 * @param fromIndex
 	 * @param toIndex
@@ -1133,7 +1148,7 @@ final public class CollectionUtils {
 
 	/**
 	 * 填充指定整型数组
-	 *
+	 * 
 	 * @param arrays
 	 * @param fromIndex
 	 * @param toIndex
@@ -1148,7 +1163,7 @@ final public class CollectionUtils {
 
 	/**
 	 * 填充指定整型数组
-	 *
+	 * 
 	 * @param arrays
 	 * @param fromIndex
 	 * @param toIndex
@@ -1163,7 +1178,7 @@ final public class CollectionUtils {
 
 	/**
 	 * 填充指定整型数组
-	 *
+	 * 
 	 * @param arrays
 	 * @param val
 	 */
@@ -1175,7 +1190,7 @@ final public class CollectionUtils {
 
 	/**
 	 * 填充指定整型数组
-	 *
+	 * 
 	 * @param arrays
 	 * @param val
 	 */
@@ -1187,7 +1202,7 @@ final public class CollectionUtils {
 
 	/**
 	 * 填充指定对象数组
-	 *
+	 * 
 	 * @param arrays
 	 * @param fromIndex
 	 * @param toIndex
@@ -1202,7 +1217,7 @@ final public class CollectionUtils {
 
 	/**
 	 * 查看指定数组中是否包含v值
-	 *
+	 * 
 	 * @see indexOf(int[], int, int)
 	 */
 	public static int indexOf(int[] arr, int v) {
@@ -1211,13 +1226,10 @@ final public class CollectionUtils {
 
 	/**
 	 * 以off为初始索引,查看指定数组中是否包含v值
-	 *
-	 * @param arr
-	 *            数组
-	 * @param v
-	 *            值
-	 * @param off
-	 *            从那个下标开始搜索(包含)
+	 * 
+	 * @param arr 数组
+	 * @param v   值
+	 * @param off 从那个下标开始搜索(包含)
 	 * @return 第一个匹配元素的下标
 	 */
 	public static int indexOf(int[] arr, int v, int off) {
@@ -1231,7 +1243,7 @@ final public class CollectionUtils {
 
 	/**
 	 * 查看指定数组中是否包含v值
-	 *
+	 * 
 	 * @param arr
 	 * @param v
 	 * @return 最后一个匹配元素的下标
@@ -1247,7 +1259,7 @@ final public class CollectionUtils {
 
 	/**
 	 * 查看指定数组中是否包含v值
-	 *
+	 * 
 	 * @see indexOf(char[], char, int)
 	 */
 	public static int indexOf(char[] arr, char v) {
@@ -1261,13 +1273,10 @@ final public class CollectionUtils {
 
 	/**
 	 * 查看指定数组中是否包含v值
-	 *
-	 * @param arr
-	 *            数组
-	 * @param v
-	 *            值
-	 * @param off
-	 *            从那个下标开始搜索(包含)
+	 * 
+	 * @param arr 数组
+	 * @param v   值
+	 * @param off 从那个下标开始搜索(包含)
 	 * @return 第一个匹配元素的下标
 	 */
 	public static int indexOf(char[] arr, char v, int off) {
@@ -1281,7 +1290,7 @@ final public class CollectionUtils {
 
 	/**
 	 * 查看指定数组中是否包含v值
-	 *
+	 * 
 	 * @param arr
 	 * @param v
 	 * @return 第一个匹配元素的下标
@@ -1297,7 +1306,7 @@ final public class CollectionUtils {
 
 	/**
 	 * 查看指定数组中是否包含v值
-	 *
+	 * 
 	 * @see indexOf(long[], long, int)
 	 */
 	public static int indexOf(long[] arr, long v) {
@@ -1306,13 +1315,10 @@ final public class CollectionUtils {
 
 	/**
 	 * 查看指定数组中是否包含v值
-	 *
-	 * @param arr
-	 *            数组
-	 * @param v
-	 *            值
-	 * @param off
-	 *            从那个下标开始搜索(包含)
+	 * 
+	 * @param arr 数组
+	 * @param v   值
+	 * @param off 从那个下标开始搜索(包含)
 	 * @return 第一个匹配元素的下标
 	 */
 	public static int indexOf(long[] arr, long v, int off) {
@@ -1326,7 +1332,7 @@ final public class CollectionUtils {
 
 	/**
 	 * 查看指定数组中是否包含v值
-	 *
+	 * 
 	 * @param arr
 	 * @param v
 	 * @return 第一个匹配元素的下标

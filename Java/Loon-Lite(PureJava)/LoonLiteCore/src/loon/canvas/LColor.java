@@ -49,6 +49,22 @@ public class LColor implements Serializable {
 		return convertToABGR(pixelHeight, pixelWidth, srcPixels, srcPixels);
 	}
 
+	public static final int[] toRgbInt(LColor[] color) {
+		int[] ints = new int[color.length];
+		for (int i = 0; i < color.length; i++) {
+			ints[i] = color[i].getRGB();
+		}
+		return ints;
+	}
+	
+	public static final LColor[] toRgbaColor(int[] color) {
+		LColor[] colors = new LColor[color.length];
+		for (int i = 0; i < color.length; i++) {
+			colors[i] = new LColor(color[i]);
+		}
+		return colors;
+	}
+	
 	public static final int[] convertToABGR(int pixelHeight, int pixelWidth, int[] srcPixels, int[] dstPixels) {
 		int pixelCount = pixelWidth * pixelHeight;
 		for (int i = 0; i < pixelCount; ++i) {
