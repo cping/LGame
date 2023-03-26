@@ -37,6 +37,7 @@ import loon.events.Updateable;
 import loon.geom.Vector2f;
 import loon.utils.IntMap;
 import loon.utils.ObjectSet;
+import loon.utils.SortedList;
 import loon.utils.TArray;
 
 /**
@@ -83,7 +84,7 @@ public class AStarFinder implements Updateable, LRelease {
 
 	public final static AStarFindHeuristic ASTAR_DIAGONAL_MIN = new DiagonalMin();
 
-	private final static IntMap<TArray<Vector2f>> FINDER_LAZY = new IntMap<TArray<Vector2f>>(100);
+	private final static IntMap<TArray<Vector2f>> FINDER_LAZY = new IntMap<TArray<Vector2f>>(128);
 
 	private final static int makeLazyKey(AStarFindHeuristic heuristic, int[][] map, int[] limits, int sx, int sy,
 			int ex, int ey, boolean flag) {
@@ -180,7 +181,7 @@ public class AStarFinder implements Updateable, LRelease {
 
 	private Vector2f goal;
 
-	private TArray<ScoredPath> nextList;
+	private SortedList<ScoredPath> nextList;
 
 	private TArray<Vector2f> pathList;
 
@@ -269,7 +270,7 @@ public class AStarFinder implements Updateable, LRelease {
 			closedList.clear();
 		}
 		if (nextList == null) {
-			nextList = new TArray<ScoredPath>();
+			nextList = new SortedList<ScoredPath>();
 		} else {
 			nextList.clear();
 		}
@@ -314,7 +315,7 @@ public class AStarFinder implements Updateable, LRelease {
 		return calc(findMap, start, over, alldirMove);
 	}
 
-	public TArray<Vector2f> findPath(Field2D map, boolean flag, int algorithm) {
+	public TArray<Vector2f> findPath(Field2D map, boolean diagonal, int algorithm) {
 		running = true;
 		for (int j = 0; nextList.size > 0; j++) {
 			if (j > overflow) {
@@ -324,7 +325,7 @@ public class AStarFinder implements Updateable, LRelease {
 			if (!running) {
 				break;
 			}
-			ScoredPath spath = nextList.removeIndex(0);
+			ScoredPath spath = nextList.pop();
 			Vector2f current = spath.pathList.get(spath.pathList.size - 1);
 			if (algorithm == ASTAR) {
 				closedList.add(current);
@@ -332,7 +333,7 @@ public class AStarFinder implements Updateable, LRelease {
 			if (current.equals(goal)) {
 				return new TArray<Vector2f>(spath.pathList);
 			}
-			TArray<Vector2f> step = map.neighbors(current, flag);
+			TArray<Vector2f> step = map.neighbors(current, diagonal);
 			final int size = step.size;
 			for (int i = 0; i < size; i++) {
 				Vector2f next = step.get(i);

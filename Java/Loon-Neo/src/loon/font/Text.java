@@ -39,6 +39,7 @@ import loon.utils.TArray;
  */
 public class Text implements LRelease {
 
+	private CharSequence _lastCharSequence;
 	private boolean _initNativeDraw = false, _closed = false;
 	protected IFont _font;
 	protected float _space = 0;
@@ -107,6 +108,12 @@ public class Text implements LRelease {
 		if (_closed) {
 			return;
 		}
+		if (_lastCharSequence == chars) {
+			return;
+		}
+		if (chars.equals(_lastCharSequence)) {
+			return;
+		}
 		this._chars = chars != null ? chars : LSystem.EMPTY;
 		final IFont font = this._font;
 		if (font != null) {
@@ -151,6 +158,7 @@ public class Text implements LRelease {
 			_height = _font.getHeight();
 		}
 		this._initNativeDraw = false;
+		this._lastCharSequence = chars;
 	}
 
 	private String toString(CharSequence ch) {
@@ -303,7 +311,7 @@ public class Text implements LRelease {
 				if (_textOptions._autoWrap == AutoWrap.VERTICAL) {
 					char ch = mes.charAt(0);
 					float viewY = 0;
-					if (ch != '\n') {
+					if (ch != LSystem.LF) {
 						viewY = offsetY + idx * (_font.stringHeight(mes) + _textOptions.getLeading());
 						idx++;
 					} else {

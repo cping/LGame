@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2010
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email javachenpeng@yahoo.com
@@ -37,6 +37,7 @@ import loon.events.Updateable;
 import loon.geom.Vector2f;
 import loon.utils.IntMap;
 import loon.utils.ObjectSet;
+import loon.utils.SortedList;
 import loon.utils.TArray;
 
 /**
@@ -83,7 +84,7 @@ public class AStarFinder implements Updateable, LRelease {
 
 	public final static AStarFindHeuristic ASTAR_DIAGONAL_MIN = new DiagonalMin();
 
-	private final static IntMap<TArray<Vector2f>> FINDER_LAZY = new IntMap<>(100);
+	private final static IntMap<TArray<Vector2f>> FINDER_LAZY = new IntMap<TArray<Vector2f>>(128);
 
 	private final static int makeLazyKey(AStarFindHeuristic heuristic, int[][] map, int[] limits, int sx, int sy,
 			int ex, int ey, boolean flag) {
@@ -96,8 +97,8 @@ public class AStarFinder implements Updateable, LRelease {
 			}
 		}
 		if (limits != null) {
-			for (int limit : limits) {
-				hashCode = LSystem.unite(hashCode, limit);
+			for (int i = 0; i < limits.length; i++) {
+				hashCode = LSystem.unite(hashCode, limits[i]);
 			}
 		}
 		hashCode = LSystem.unite(hashCode, heuristic.getType());
@@ -131,14 +132,14 @@ public class AStarFinder implements Updateable, LRelease {
 				astar.close();
 			}
 			if (result != null) {
-				TArray<Vector2f> newResult = new TArray<>();
+				TArray<Vector2f> newResult = new TArray<Vector2f>();
 				newResult.addAll(result);
 				result = newResult;
 			}
 			if (result == null) {
-				return new TArray<>();
+				return new TArray<Vector2f>();
 			}
-			return new TArray<>(result);
+			return new TArray<Vector2f>(result);
 		}
 	}
 
@@ -180,7 +181,7 @@ public class AStarFinder implements Updateable, LRelease {
 
 	private Vector2f goal;
 
-	private TArray<ScoredPath> nextList;
+	private SortedList<ScoredPath> nextList;
 
 	private TArray<Vector2f> pathList;
 
@@ -253,29 +254,29 @@ public class AStarFinder implements Updateable, LRelease {
 
 	private TArray<Vector2f> calc(Field2D m, Vector2f start, Vector2f goal, boolean flag) {
 		if (start.equals(goal)) {
-			TArray<Vector2f> v = new TArray<>();
+			TArray<Vector2f> v = new TArray<Vector2f>();
 			v.add(start);
 			return v;
 		}
 		this.goal = goal;
 		if (openList == null) {
-			openList = new ObjectSet<>();
+			openList = new ObjectSet<Vector2f>();
 		} else {
 			openList.clear();
 		}
 		if (closedList == null) {
-			closedList = new ObjectSet<>();
+			closedList = new ObjectSet<Vector2f>();
 		} else {
 			closedList.clear();
 		}
 		if (nextList == null) {
-			nextList = new TArray<>();
+			nextList = new SortedList<ScoredPath>();
 		} else {
 			nextList.clear();
 		}
 		openList.add(start);
 		if (pathList == null) {
-			pathList = new TArray<>();
+			pathList = new TArray<Vector2f>();
 		} else {
 			pathList.clear();
 		}
@@ -314,7 +315,7 @@ public class AStarFinder implements Updateable, LRelease {
 		return calc(findMap, start, over, alldirMove);
 	}
 
-	public TArray<Vector2f> findPath(Field2D map, boolean flag, int algorithm) {
+	public TArray<Vector2f> findPath(Field2D map, boolean diagonal, int algorithm) {
 		running = true;
 		for (int j = 0; nextList.size > 0; j++) {
 			if (j > overflow) {
@@ -324,15 +325,15 @@ public class AStarFinder implements Updateable, LRelease {
 			if (!running) {
 				break;
 			}
-			ScoredPath spath = nextList.removeIndex(0);
+			ScoredPath spath = nextList.pop();
 			Vector2f current = spath.pathList.get(spath.pathList.size - 1);
 			if (algorithm == ASTAR) {
 				closedList.add(current);
 			}
 			if (current.equals(goal)) {
-				return new TArray<>(spath.pathList);
+				return new TArray<Vector2f>(spath.pathList);
 			}
-			TArray<Vector2f> step = map.neighbors(current, flag);
+			TArray<Vector2f> step = map.neighbors(current, diagonal);
 			final int size = step.size;
 			for (int i = 0; i < size; i++) {
 				Vector2f next = step.get(i);
@@ -340,14 +341,17 @@ public class AStarFinder implements Updateable, LRelease {
 					continue;
 				}
 				if (algorithm == ASTAR) {
-					if (closedList.contains(next) || !openList.add(next)) {
+					if (closedList.contains(next)) {
+						continue;
+					}
+					if (!openList.add(next)) {
 						continue;
 					}
 				} else {
 					openList.add(next);
 				}
 
-				TArray<Vector2f> pathList = new TArray<>(spath.pathList);
+				TArray<Vector2f> pathList = new TArray<Vector2f>(spath.pathList);
 				pathList.add(next);
 				float score = spath.score + findHeuristic.getScore(goal.x, goal.y, next.x, next.y);
 				insert(score, pathList);

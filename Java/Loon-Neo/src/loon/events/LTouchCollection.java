@@ -23,8 +23,8 @@ package loon.events;
 import loon.LSysException;
 import loon.geom.Vector2f;
 import loon.utils.LIterator;
-import loon.utils.RefObject;
 import loon.utils.SortedList;
+import loon.utils.reply.ObjRef;
 
 public class LTouchCollection extends SortedList<LTouchLocation> {
 
@@ -82,7 +82,7 @@ public class LTouchCollection extends SortedList<LTouchLocation> {
 		}
 	}
 
-	public final int findIndexById(int id, RefObject<LTouchLocation> touchLocation) {
+	public final int findIndexById(int id, ObjRef<LTouchLocation> touchLocation) {
 		for (int i = 0; i < this.size(); i++) {
 			LTouchLocation location = this.get(i);
 			if (location.getId() == id) {

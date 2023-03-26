@@ -103,9 +103,13 @@ import loon.utils.ObjectBundle;
 import loon.utils.Resolution;
 import loon.utils.StringKeyValue;
 import loon.utils.TArray;
+import loon.utils.processes.Coroutine;
+import loon.utils.processes.CoroutineProcess;
 import loon.utils.processes.GameProcess;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
+import loon.utils.processes.YieldExecute;
+import loon.utils.processes.Yielderable;
 import loon.utils.reply.Callback;
 import loon.utils.reply.Closeable;
 import loon.utils.reply.Port;
@@ -206,6 +210,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	private BaseCamera _baseCamera;
 
 	private ScreenAction _screenAction = null;
+
+	private final CoroutineProcess _coroutineProcess = new CoroutineProcess();
 
 	private final TArray<LTouchArea> _touchAreas = new TArray<LTouchArea>();
 
@@ -3572,6 +3578,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		if (isClose) {
 			return;
 		}
+		_coroutineProcess.run(timer);
 		if (replaceLoading) {
 			// 无替换对象
 			if (replaceDstScreen == null || !replaceDstScreen.isOnLoadComplete()) {
@@ -4897,6 +4904,25 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	/**
+	 * 调用Loon虚拟的Yield实现
+	 * 
+	 * @param es
+	 * @return
+	 */
+	public Coroutine call(YieldExecute... es) {
+		return _coroutineProcess.call(es);
+	}
+
+	public Coroutine startCoroutine(Yielderable y) {
+		return _coroutineProcess.startCoroutine(y);
+	}
+
+	public Screen clearCoroutine() {
+		_coroutineProcess.clearCoroutine();
+		return this;
+	}
+
+	/**
 	 * 判断当前Touch行为与上次是否在屏幕中指定间距内存在移动
 	 * 
 	 * @param distance
@@ -5699,6 +5725,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 				if (_screenAction != null) {
 					removeAllActions(_screenAction);
 				}
+				_coroutineProcess.close();
 				_disposes.close();
 				_conns.close();
 				release();

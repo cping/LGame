@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2019 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -27,7 +27,7 @@ import loon.LSysException;
 public final class KeyValuePair<K, V> implements IValueKey<K>, IValueValue<V> {
 
 	public static <K, V> KeyValuePair<K, V> with(final K key, final V value) {
-		return new KeyValuePair<>(key, value);
+		return new KeyValuePair<K, V>(key, value);
 	}
 
 	public static <X> KeyValuePair<X, X> fromArray(final X[] array) {
@@ -38,7 +38,7 @@ public final class KeyValuePair<K, V> implements IValueKey<K>, IValueValue<V> {
 			throw new LSysException(
 					"Array must have exactly 2 elements in order to create a KeyValuePair. Size is " + array.length);
 		}
-		return new KeyValuePair<>(array[0], array[1]);
+		return new KeyValuePair<X, X>(array[0], array[1]);
 	}
 
 	public static <X> KeyValuePair<X, X> fromIterable(final Iterable<X> iterable) {
@@ -90,7 +90,7 @@ public final class KeyValuePair<K, V> implements IValueKey<K>, IValueValue<V> {
 					"Iterable must have exactly 2 available elements in order to create a KeyValuePair.");
 		}
 
-		return new KeyValuePair<>(element0, element1);
+		return new KeyValuePair<X, X>(element0, element1);
 	}
 
 	private final K key;
@@ -112,11 +112,11 @@ public final class KeyValuePair<K, V> implements IValueKey<K>, IValueValue<V> {
 	}
 
 	public <X> KeyValuePair<X, V> makeKey(final X key) {
-		return new KeyValuePair<>(key, this.value);
+		return new KeyValuePair<X, V>(key, this.value);
 	}
 
 	public <Y> KeyValuePair<K, Y> makeValue(final Y value) {
-		return new KeyValuePair<>(this.key, value);
+		return new KeyValuePair<K, Y>(this.key, value);
 	}
 
 }

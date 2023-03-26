@@ -23,7 +23,7 @@ package loon.utils.reply;
 import loon.LSystem;
 import loon.utils.StringUtils;
 
-public class Pair<T1, T2> implements IValueKey<T1>, IValueValue<T2>{
+public class Pair<T1, T2> implements IValueKey<T1>, IValueValue<T2> {
 
 	private T1 o1;
 
@@ -56,12 +56,12 @@ public class Pair<T1, T2> implements IValueKey<T1>, IValueValue<T2>{
 	public T1 getKey() {
 		return o1;
 	}
-	
+
 	@Override
 	public T2 getValue() {
 		return o2;
 	}
-	
+
 	public final T1 get1() {
 		return o1;
 	}

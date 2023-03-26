@@ -106,9 +106,17 @@ public class SortedList<E> implements Iterable<E>, IArray {
 	public SortedList() {
 	}
 
-	public SortedList(SortedList<E> c) {
+	public SortedList(final SortedList<? extends E> c) {
 		this();
 		addAll(c);
+	}
+
+	public SortedList(final E[] array) {
+		this();
+		for (int i = 0; i < array.length; i++) {
+			E e = array[i];
+			if (e != null) add(e);
+		}
 	}
 
 	private void linkFirst(E e) {
@@ -282,11 +290,11 @@ public class SortedList<E> implements Iterable<E>, IArray {
 		return false;
 	}
 
-	public boolean addAll(SortedList<E> c) {
+	public boolean addAll(SortedList<? extends E> c) {
 		return addAll(size, c);
 	}
 
-	public boolean addAll(int index, SortedList<E> c) {
+	public boolean addAll(int index, SortedList<? extends E> c) {
 		checkPositionIndex(index);
 
 		Object[] a = c.toArray();
@@ -326,6 +334,21 @@ public class SortedList<E> implements Iterable<E>, IArray {
 		return true;
 	}
 
+	public SortedList<E> concat(SortedList<E> array) {
+		SortedList<E> all = new SortedList<E>(array);
+		all.addAll(all);
+		return all;
+	}
+
+	public boolean enqueue(E node) {
+		return remove(node);
+	}
+
+	public E dequeue() {
+		return pop();
+	}
+
+	@Override
 	public void clear() {
 		for (Node<E> x = first; x != null;) {
 			Node<E> next = x.next;

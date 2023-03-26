@@ -24,8 +24,10 @@ import java.util.Iterator;
 
 public interface LIterator<E> extends Iterator<E> {
 
+	@Override
 	boolean hasNext();
 
+	@Override
 	E next();
 
 	@Override

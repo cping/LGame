@@ -40,6 +40,6 @@ public class DiagonalMin implements AStarFindHeuristic {
 
 	@Override
 	public String toString() {
-		return "Diagonal";
+		return "DiagonalMin";
 	}
 }

@@ -21,7 +21,7 @@
 package loon.events;
 
 import loon.geom.Vector2f;
-import loon.utils.RefObject;
+import loon.utils.reply.ObjRef;
 
 public class LTouchLocation {
 
@@ -185,7 +185,7 @@ public class LTouchLocation {
 	}
 
 	public boolean tryGetPreviousLocation(
-			RefObject<LTouchLocation> aPreviousLocation) {
+			ObjRef<LTouchLocation> aPreviousLocation) {
 		if (aPreviousLocation.argvalue == null) {
 			aPreviousLocation.argvalue = new LTouchLocation();
 		}

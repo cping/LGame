@@ -1020,9 +1020,9 @@ public class Field2D implements IArray, Config {
 		return pos;
 	}
 
-	public TArray<Vector2f> neighbors(Vector2f pos, boolean flag) {
+	public TArray<Vector2f> neighbors(Vector2f pos, boolean diagonal) {
 		if (result == null) {
-			result = new TArray<Vector2f>(flag ? 8 : 4);
+			result = new TArray<Vector2f>(diagonal ? 8 : 4);
 		} else {
 			result.clear();
 		}
@@ -1032,7 +1032,7 @@ public class Field2D implements IArray, Config {
 		result.add(new Vector2f(x + 1, y));
 		result.add(new Vector2f(x, y + 1));
 		result.add(new Vector2f(x - 1, y));
-		if (flag) {
+		if (diagonal) {
 			result.add(new Vector2f(x - 1, y - 1));
 			result.add(new Vector2f(x + 1, y - 1));
 			result.add(new Vector2f(x + 1, y + 1));

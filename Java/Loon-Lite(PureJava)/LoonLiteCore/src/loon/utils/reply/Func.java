@@ -20,7 +20,7 @@
  */
 package loon.utils.reply;
 
-public abstract class Func<F,T> implements Function<F, T>{
+public abstract class Func<F, T> implements Function<F, T> {
 
 	public static <T, Y> boolean itThrows(Function<T, Y> func, T value) {
 		try {

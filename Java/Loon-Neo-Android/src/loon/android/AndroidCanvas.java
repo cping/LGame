@@ -143,6 +143,52 @@ public class AndroidCanvas extends Canvas {
 	}
 
 	@Override
+	public Canvas drawOval(float x, float y, float w, float h) {
+		float left = x;
+		float top = y;
+		float right = left + w;
+		float bottom = top + h;
+		canvas.drawOval(left, top, right, bottom, currentState().prepareStroke());
+		return this;
+	}
+
+	@Override
+	public Canvas fillOval(float x, float y, float w, float h) {
+		float left = x;
+		float top = y;
+		float right = left + w;
+		float bottom = top + h;
+		canvas.drawOval(left, top, right, bottom, currentState().prepareFill());
+		return this;
+	}
+
+	@Override
+	public Canvas drawOval(float x, float y, float w, float h, LColor c) {
+		int tmp = getStrokeColor();
+		setStrokeColor(c.getARGB());
+		float left = x;
+		float top = y;
+		float right = left + w;
+		float bottom = top + h;
+		canvas.drawOval(left, top, right, bottom, currentState().prepareStroke());
+		setStrokeColor(tmp);
+		return this;
+	}
+
+	@Override
+	public Canvas fillOval(float x, float y, float w, float h, LColor c) {
+		int tmp = getFillColor();
+		setFillColor(c.getARGB());
+		float left = x;
+		float top = y;
+		float right = left + w;
+		float bottom = top + h;
+		canvas.drawOval(left, top, right, bottom, currentState().prepareFill());
+		setFillColor(tmp);
+		return this;
+	}
+	
+	@Override
 	public Canvas drawLine(float x0, float y0, float x1, float y1) {
 		canvas.drawLine(x0, y0, x1, y1, currentState().prepareStroke());
 		isDirty = true;
@@ -358,5 +404,6 @@ public class AndroidCanvas extends Canvas {
 	private AndroidCanvasState currentState() {
 		return paintStack.peek();
 	}
+
 
 }

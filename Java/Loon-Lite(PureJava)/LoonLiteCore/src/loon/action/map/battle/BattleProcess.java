@@ -28,13 +28,13 @@ import loon.events.Updateable;
 import loon.geom.BooleanValue;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
+import loon.utils.processes.CoroutineProcess;
 import loon.utils.processes.GameProcess;
-import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.processes.WaitProcess;
 import loon.utils.timer.LTimerContext;
 
-public class BattleProcess extends RealtimeProcess {
+public class BattleProcess extends CoroutineProcess {
 
 	public static abstract class TurnBeginEvent extends BattleTurnProcessEvent {
 
@@ -310,6 +310,7 @@ public class BattleProcess extends RealtimeProcess {
 
 	@Override
 	public void run(LTimerContext time) {
+		super.run(time);
 		update(time.timeSinceLastUpdate);
 	}
 
@@ -403,7 +404,7 @@ public class BattleProcess extends RealtimeProcess {
 		return this;
 	}
 
-	public BattleProcess cleanUp() {
+	public BattleProcess clean() {
 		this._waitProcess.clear();
 		this._states.clear();
 		for (BattleEvent e : _events) {
@@ -613,7 +614,7 @@ public class BattleProcess extends RealtimeProcess {
 	@Override
 	public void close() {
 		super.close();
-		cleanUp();
+		clean();
 	}
 
 }

@@ -25,12 +25,13 @@ import loon.utils.MathUtils;
 
 public class Diagonal implements AStarFindHeuristic {
 
+	private final static float sqrtTwo = 1.41421f;
+
 	@Override
 	public float getScore(float sx, float sy, float tx, float ty) {
 		float dx = MathUtils.abs(tx - sx);
 		float dy = MathUtils.abs(ty - sy);
-		float dz = MathUtils.max(dx, dy);
-		return dz;
+		return (1f * (dx + dy)) + ((sqrtTwo - (2f * 1f)) * MathUtils.min(dx, dy));
 	}
 
 	@Override

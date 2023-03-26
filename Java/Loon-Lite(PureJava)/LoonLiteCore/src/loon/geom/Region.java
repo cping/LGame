@@ -54,16 +54,22 @@ public class Region {
 		return end;
 	}
 
+	public int getSize() {
+		return this.end - this.start;
+	}
+
+	public int getCenter() {
+		return MathUtils.floor(getSize());
+	}
+
 	public int random() {
-		return (int) (start + (MathUtils.random() * (end - start)));
+		return MathUtils.floor(start + (MathUtils.random() * (end - start)));
 	}
 
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("Region");
-		builder.kv("start", start)
-		.comma()
-		.kv("end", end);
+		builder.kv("start", start).comma().kv("end", end);
 		return builder.toString();
 	}
 

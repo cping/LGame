@@ -23,5 +23,7 @@ package loon.utils.reply;
 public interface ObjT<T> {
 
 	T get();
+	
+	boolean isPresent();
 
 }
