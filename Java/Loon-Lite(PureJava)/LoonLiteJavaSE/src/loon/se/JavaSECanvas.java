@@ -44,6 +44,7 @@ import loon.geom.Affine2f;
 import loon.opengl.BlendMethod;
 import loon.opengl.TextureSource;
 import loon.utils.MathUtils;
+import loon.utils.Scale;
 
 public class JavaSECanvas extends Canvas {
 
@@ -197,7 +198,8 @@ public class JavaSECanvas extends Canvas {
 				return LSystem.base().snapshot();
 			}
 		}
-		return new JavaSEImage(gfx, image.scale(), createImage(), TextureSource.RenderCanvas);
+		return new JavaSEImage(gfx, image == null ? Scale.ONE : image.scale(), createImage(),
+				TextureSource.RenderCanvas);
 	}
 
 	@Override

@@ -42,6 +42,7 @@ import loon.geom.Affine2f;
 import loon.opengl.BlendMethod;
 import loon.opengl.TextureSource;
 import loon.utils.MathUtils;
+import loon.utils.Scale;
 
 public class JavaFXCanvas extends Canvas {
 
@@ -174,26 +175,25 @@ public class JavaFXCanvas extends Canvas {
 
 	@Override
 	public Image newSnapshot() {
-		WritableImage img = ((JavaFXImage) image).fxImage();
+		Scale scale = null;
 		WritableImage newImage = null;
-		if (img != null) {
+		if (image != null) {
+			WritableImage img = ((JavaFXImage) image).fxImage();
+			scale = image.scale();
 			newImage = JavaFXImageCachePool.get().find(img.getPixelReader(), MathUtils.floorInt(img.getWidth()),
 					MathUtils.floorInt(img.getHeight()));
 		} else {
+			scale = Scale.ONE;
 			newImage = JavaFXImageCachePool.get().find(null, MathUtils.floorInt(width), MathUtils.floorInt(height));
 		}
-		return new JavaFXImage(gfx, image.scale(), fxCanvas.snapshot(snapshotParameters, newImage),
-				TextureSource.RenderCanvas);
+		return new JavaFXImage(gfx, scale, fxCanvas.snapshot(snapshotParameters, newImage), TextureSource.RenderCanvas);
 	}
 
 	@Override
 	public Image snapshot() {
 		if (image == null) {
-			WritableImage writeImage = toFXImage().buffer;
-			if (writeImage == null) {
-				writeImage = JavaFXImageCachePool.get().find(null, MathUtils.floorInt(width),
-						MathUtils.floorInt(height));
-			}
+			WritableImage writeImage = JavaFXImageCachePool.get().find(null, MathUtils.floorInt(width),
+					MathUtils.floorInt(height));
 			image = new JavaFXImage(gfx, image.scale(), fxCanvas.snapshot(snapshotParameters, writeImage),
 					TextureSource.RenderCanvas);
 			setFXImage(image, writeImage);
