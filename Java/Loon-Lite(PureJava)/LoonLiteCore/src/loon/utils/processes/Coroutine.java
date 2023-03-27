@@ -24,10 +24,12 @@ import loon.LSystem;
 import loon.utils.reply.ClosableIterator;
 
 public class Coroutine {
-
-	private ClosableIterator<WaitCoroutine> _enumerator = null;
-	private WaitCoroutine _currentCondition;
+	
 	protected CoroutineStatus _status;
+	
+	private Yielderable _mainEnumerator = null;
+	private ClosableIterator<WaitCoroutine> _childEnumerator = null;
+	private WaitCoroutine _currentCondition;
 	private Exception _lastException;
 
 	public void update(long elapsedTime) {
@@ -36,12 +38,12 @@ public class Coroutine {
 		}
 		try {
 			if (_currentCondition == null) {
-				this._currentCondition = this._enumerator.next();
+				this._currentCondition = this._childEnumerator.next();
 			}
 			this._currentCondition.update(elapsedTime);
 			if (this._currentCondition.isCompleted()) {
-				if (this._enumerator.hasNext()) {
-					this._currentCondition = this._enumerator.next();
+				if (this._childEnumerator.hasNext()) {
+					this._currentCondition = this._childEnumerator.next();
 				} else {
 					this._status = CoroutineStatus.Completed;
 				}
@@ -53,15 +55,20 @@ public class Coroutine {
 		}
 	}
 
+	public Yielderable getYielderable() {
+		return _mainEnumerator;
+	}
+
 	public Coroutine setup(Yielderable y) {
-		if (y != null) {
-			y.setCoroutine(this);
+		this._mainEnumerator = y;
+		if (this._mainEnumerator != null) {
+			this._mainEnumerator.setCoroutine(this);
 			this._status = CoroutineStatus.Running;
 			this._lastException = null;
-			if (this._enumerator != null) {
-				this._enumerator.close();
+			if (this._childEnumerator != null) {
+				this._childEnumerator.close();
 			}
-			this._enumerator = y.iterator();
+			this._childEnumerator = y.iterator();
 		}
 		return this;
 	}
@@ -97,8 +104,8 @@ public class Coroutine {
 	}
 
 	public Coroutine cancel() {
-		if (this._enumerator != null) {
-			this._enumerator.close();
+		if (this._childEnumerator != null) {
+			this._childEnumerator.close();
 		}
 		this._status = CoroutineStatus.Cancel;
 		return this;

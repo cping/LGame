@@ -22,6 +22,7 @@
 package loon.utils.processes;
 
 import java.util.Comparator;
+import java.util.Iterator;
 
 import loon.LRelease;
 import loon.LSystem;
@@ -47,6 +48,10 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, IArray, LRe
 
 	private static final ProcessComparator _processComparator = new ProcessComparator();
 
+	private final TArray<GameProcess> deadProcesses = new TArray<GameProcess>();
+
+	private final TArray<GameProcess> toBeUpdated = new TArray<GameProcess>();
+	
 	private static RealtimeProcessManager instance;
 
 	private SortedList<GameProcess> processes;
@@ -91,13 +96,13 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, IArray, LRe
 	@Override
 	public void tick(LTimerContext time) {
 		if (processes.size > 0) {
-			final SortedList<GameProcess> toBeUpdated;
 			synchronized (this.processes) {
-				toBeUpdated = new SortedList<GameProcess>(this.processes);
+				toBeUpdated.clear();
+				toBeUpdated.addAll(this.processes);
 			}
-			final SortedList<GameProcess> deadProcesses = new SortedList<GameProcess>();
+			deadProcesses.clear();
 			try {
-				for (LIterator<GameProcess> it = toBeUpdated.listIterator(); it.hasNext();) {
+				for (Iterator<GameProcess> it = toBeUpdated.iterator(); it.hasNext();) {
 					GameProcess realtimeProcess = it.next();
 					if (realtimeProcess != null) {
 						synchronized (realtimeProcess) {
@@ -109,7 +114,7 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, IArray, LRe
 					}
 				}
 				if (deadProcesses.size > 0) {
-					for (LIterator<GameProcess> it = deadProcesses.listIterator(); it.hasNext();) {
+					for (Iterator<GameProcess> it = deadProcesses.iterator(); it.hasNext();) {
 						GameProcess realtimeProcess = it.next();
 						if (realtimeProcess != null) {
 							synchronized (realtimeProcess) {

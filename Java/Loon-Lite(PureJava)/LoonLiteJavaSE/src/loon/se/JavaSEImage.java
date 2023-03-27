@@ -259,17 +259,22 @@ public class JavaSEImage extends ImageImpl {
 		}
 		return canvas;
 	}
-	
+
 	@Override
 	protected void closeImpl() {
 		if (buffer != null) {
-			buffer = null;
+			if (source.indexOf(TextureSource.RenderCanvas) != -1) {
+				JavaSEImageCachePool.get().free(buffer);
+			} else {
+				buffer = null;
+			}
 		}
 		if (imageColors != null) {
 			imageColors.close();
 		}
 		if (canvas != null && canvas instanceof JavaSECanvas) {
 			((JavaSECanvas) canvas).closeImpl();
+			canvas = null;
 		}
 	}
 

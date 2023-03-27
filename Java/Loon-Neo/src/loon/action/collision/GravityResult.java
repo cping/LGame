@@ -73,4 +73,31 @@ public class GravityResult implements Poolable {
 		this.steps = stepsTaken;
 	}
 
+	@Override
+	public boolean equals(Object g) {
+		if (g == null) {
+			return false;
+		}
+		if (g == this) {
+			return true;
+		}
+		if (g instanceof GravityResult) {
+			return equals((GravityResult) g);
+		}
+		return false;
+	}
+
+	public boolean equals(GravityResult g) {
+		if (g == null) {
+			return false;
+		}
+		if (g == this) {
+			return true;
+		}
+		if (g.normal.equals(this.normal) && g.position.equals(this.position) && g.isCollided == this.isCollided
+				&& g.steps == this.steps) {
+			return true;
+		}
+		return true;
+	}
 }

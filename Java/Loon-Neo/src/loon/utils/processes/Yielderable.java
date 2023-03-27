@@ -31,6 +31,8 @@ public class Yielderable implements LIterable<WaitCoroutine>, ClosableIterator<W
 
 	private final Disposes _disposes = new Disposes();
 
+	private final SortedList<YieldLoop> _loops;
+
 	private final SortedList<YieldExecute> _executes;
 
 	private Coroutine _coroutine;
@@ -41,6 +43,7 @@ public class Yielderable implements LIterable<WaitCoroutine>, ClosableIterator<W
 
 	public Yielderable(YieldExecute... es) {
 		_executes = new SortedList<YieldExecute>(es);
+		_loops = new SortedList<YieldLoop>();
 	}
 
 	protected void setCoroutine(Coroutine c) {
@@ -90,14 +93,42 @@ public class Yielderable implements LIterable<WaitCoroutine>, ClosableIterator<W
 		return ObjRef.empty();
 	}
 
+	public Yielderable loop(boolean condition, YieldLoop yl) {
+		if (condition && yl != null) {
+			this._loops.add(yl);
+		}
+		return this;
+	}
+
+	public boolean isLoop() {
+		return _loops.size > 0;
+	}
+
+	protected boolean loop() {
+		if (_loops.size > 0) {
+			YieldLoop l = _loops.pop();
+			if (l != null) {
+				l.loop();
+			}
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	protected void call() {
 		if (_executes.size > 0) {
+			_loops.clear();
 			this._waitCoroutine = _executes.element().execute(this);
 		} else {
 			this._waitCoroutine = null;
 		}
+		if (loop()) {
+			return;
+		}
 		if (!_returning) {
 			_executes.remove();
+			_loops.clear();
 		}
 	}
 
@@ -129,7 +160,7 @@ public class Yielderable implements LIterable<WaitCoroutine>, ClosableIterator<W
 		this._returning = true;
 		return WaitCoroutine.frames(f);
 	}
-	
+
 	public WaitCoroutine returningf(int f, ObjRef<?> t) {
 		this._returning = true;
 		return WaitCoroutine.frames(f, t);
@@ -170,12 +201,14 @@ public class Yielderable implements LIterable<WaitCoroutine>, ClosableIterator<W
 	@Override
 	public void remove() {
 		_executes.remove();
+		_loops.clear();
 		_returning = false;
 	}
 
 	@Override
 	public void close() {
 		_disposes.close();
+		_loops.clear();
 		_executes.clear();
 		_returning = false;
 	}

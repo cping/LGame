@@ -27,36 +27,75 @@ import loon.LSysException;
 
 public class SortedList<E> implements Iterable<E>, IArray {
 
-	public LIterator<E> listIterator() {
-		return listIterator(0);
-	}
+	public final static class SortedIterable<T> implements Iterable<T> {
 
-	public LIterator<E> listIterator(int index) {
-		checkPositionIndex(index);
-		return new ListItr<E>(this, index);
-	}
+		private final SortedList<T> array;
+		private final boolean allowRemove;
+		private ListItr<T> iterator1, iterator2;
 
-	@Override
-	public Iterator<E> iterator() {
-		return listIterator();
+		private int index;
+
+		public SortedIterable(SortedList<T> array, int idx) {
+			this(array, idx, true);
+		}
+
+		public SortedIterable(SortedList<T> array, int idx, boolean allowRemove) {
+			this.array = array;
+			this.index = idx;
+			this.allowRemove = allowRemove;
+		}
+
+		@Override
+		public LIterator<T> iterator() {
+			if (iterator1 == null) {
+				iterator1 = new ListItr<T>(array, index, allowRemove);
+				iterator2 = new ListItr<T>(array, index, allowRemove);
+			}
+			if (!iterator1.valid) {
+				iterator1.reset();
+				iterator1.valid = true;
+				iterator2.valid = false;
+				return iterator1;
+			}
+			iterator2.reset();
+			iterator2.valid = true;
+			iterator1.valid = false;
+			return iterator2;
+		}
 	}
 
 	private static class ListItr<E> implements LIterator<E> {
+
+		final boolean allowRemove;
+
+		private SortedList<E> _list;
 		private Node<E> lastReturned;
 		private Node<E> next;
-		private int nextIndex;
-		private int expectedModCount;
-		private SortedList<E> _list;
 
-		ListItr(SortedList<E> l, int idx) {
+		private int expectedModCount;
+
+		int nextIndex;
+		boolean valid = true;
+
+		ListItr(SortedList<E> l, int idx, boolean removed) {
 			this._list = l;
 			this.next = (idx == _list.size) ? null : _list.node(idx);
 			this.nextIndex = idx;
+			this.allowRemove = removed;
 			expectedModCount = _list.modCount;
+		}
+
+		void reset() {
+			this.nextIndex = 0;
+			this.next = (nextIndex == _list.size) ? null : _list.node(nextIndex);
+			this.expectedModCount = _list.modCount;
 		}
 
 		@Override
 		public boolean hasNext() {
+			if (!valid) {
+				throw new LSysException("iterator() cannot be used nested.");
+			}
 			return nextIndex < _list.size;
 		}
 
@@ -74,11 +113,13 @@ public class SortedList<E> implements Iterable<E>, IArray {
 
 		@Override
 		public void remove() {
+			if (!allowRemove) {
+				throw new LSysException("Remove not allowed.");
+			}
 			checkForComodification();
 			if (lastReturned == null) {
 				return;
 			}
-
 			Node<E> lastNext = lastReturned.next;
 			_list.unlink(lastReturned);
 			if (next == lastReturned)
@@ -93,6 +134,29 @@ public class SortedList<E> implements Iterable<E>, IArray {
 			if (_list.modCount != expectedModCount)
 				throw new LSysException("SortedList error!");
 		}
+	}
+
+	private SortedIterable<E> _iterable;
+
+	@Override
+	public Iterator<E> iterator() {
+		return listIterator(0);
+	}
+
+	public LIterator<E> newListIterator() {
+		return new ListItr<E>(this, 0, true);
+	}
+
+	public LIterator<E> listIterator() {
+		return listIterator(0);
+	}
+
+	public LIterator<E> listIterator(int index) {
+		checkPositionIndex(index);
+		if (_iterable == null) {
+			_iterable = new SortedIterable<E>(this, index);
+		}
+		return _iterable.iterator();
 	}
 
 	public int modCount = 0;
@@ -115,7 +179,8 @@ public class SortedList<E> implements Iterable<E>, IArray {
 		this();
 		for (int i = 0; i < array.length; i++) {
 			E e = array[i];
-			if (e != null) add(e);
+			if (e != null)
+				add(e);
 		}
 	}
 
@@ -257,6 +322,18 @@ public class SortedList<E> implements Iterable<E>, IArray {
 	public boolean add(E e) {
 		linkLast(e);
 		return true;
+	}
+
+	public boolean removeAll(TArray<E> c) {
+		boolean modified = false;
+		LIterator<E> it = listIterator();
+		while (it.hasNext()) {
+			if (c.contains(it.next())) {
+				it.remove();
+				modified = true;
+			}
+		}
+		return modified;
 	}
 
 	public boolean removeAll(SortedList<E> c) {

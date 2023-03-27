@@ -27,6 +27,7 @@ module loon.core {
 	exports loon.opengl;
 	exports loon.particle;
 	exports loon.utils;
+	exports loon.utils.cache;
 	exports loon.utils.json;
 	exports loon.utils.processes;
 	exports loon.utils.reply;

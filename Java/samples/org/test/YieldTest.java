@@ -37,23 +37,32 @@ public class YieldTest extends Stage {
 		final Counter c = new Counter();
 		// 调用loon内置的虚拟yield函数(真实线程移植html环境有问题,所以不用......)
 		call(yield -> {
-			// 如果计数等于0
-			if (c.getValue() == 0) {
-				label.setText("yield 1");
-				// 累加计数器
-				c.increment();
-				// 重复这个yield函数,间隔两秒
-				return yield.returnings(2f);
-			}
-			// 显示
-			label.setText("return " + yield.getReturn());
-			if (c.getValue() < 200) {
-				//累加计数并返回结果
-				return yield.returning(c.increment());
+			// 如果计数器小于100循环
+			if (yield.loop(c.increment() < 100, () -> {
+				label.setText(c.getValue());
+				// 如果循环成立
+			}).isLoop()) {
+				// 间隔0.1秒循环本函数1次
+				return yield.returnings(0.1f);
 			} else {
-				label.setText("next");
-				//结束此yield循环
-				return yield.returning(false);
+				// 如果计数等于0
+				if (c.getValue() == 0) {
+					label.setText("yield 1");
+					// 累加计数器
+					c.increment();
+					// 重复这个yield函数,间隔两秒
+					return yield.returnings(2f);
+				}
+				// 显示
+				label.setText("return " + yield.getReturn());
+				if (c.getValue() < 200) {
+					// 累加计数并返回结果
+					return yield.returning(c.increment());
+				} else {
+					label.setText("next");
+					// 结束此yield循环
+					return yield.returning(false);
+				}
 			}
 		}, yield -> {
 			label.setText("yield 2 wait 10s");
@@ -63,6 +72,7 @@ public class YieldTest extends Stage {
 			label.setText("10s yield 3");
 			return yield.seconds(1f);
 		});
+
 	}
 
 }

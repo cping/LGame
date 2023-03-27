@@ -82,7 +82,7 @@ public abstract class JavaSEImplGraphics extends Graphics {
 
 	@Override
 	protected Canvas createCanvasImpl(Scale scale, int pixelWidth, int pixelHeight) {
-		BufferedImage bitmap = new BufferedImage(pixelWidth, pixelHeight, BufferedImage.TYPE_INT_ARGB_PRE);
+		BufferedImage bitmap = JavaSEImageCachePool.get().find(BufferedImage.TYPE_INT_ARGB_PRE, pixelWidth, pixelHeight);
 		return new JavaSECanvas(this, new JavaSEImage(this, scale, bitmap, TextureSource.RenderCanvas));
 	}
 
@@ -104,7 +104,7 @@ public abstract class JavaSEImplGraphics extends Graphics {
 	}
 
 	static BufferedImage createBufferedImage(int width, int height, int imageType) {
-		return new BufferedImage(width, height, imageType);
+		return JavaSEImageCachePool.get().find(imageType, width, height);
 	}
 
 	ByteBuffer checkGetImageBuffer(int byteSize) {

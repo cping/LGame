@@ -21,7 +21,9 @@
 package loon.utils.processes;
 
 import loon.LRelease;
+import loon.LSystem;
 import loon.utils.SortedList;
+import loon.utils.timer.Duration;
 import loon.utils.timer.LTimerContext;
 
 public class CoroutineProcess extends RealtimeProcess implements LRelease {
@@ -46,6 +48,7 @@ public class CoroutineProcess extends RealtimeProcess implements LRelease {
 	public Coroutine startCoroutine(Yielderable y) {
 		final Coroutine coroutine = new Coroutine();
 		coroutine.setup(y);
+		coroutine.update(Duration.ofS(LSystem.MIN_SECONE_SPEED_FIXED));
 		this._cycles.add(coroutine);
 		return coroutine;
 	}

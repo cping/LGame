@@ -314,11 +314,16 @@ public class JavaFXImage extends ImageImpl {
 	@Override
 	protected void closeImpl() {
 		if (buffer != null) {
-			buffer.cancel();
-			buffer = null;
+			if (source.indexOf(TextureSource.RenderCanvas) != -1) {
+				JavaFXImageCachePool.get().free(buffer);
+			} else {
+				buffer.cancel();
+				buffer = null;
+			}
 		}
 		if (canvas != null && canvas instanceof JavaFXCanvas) {
 			((JavaFXCanvas) canvas).closeImpl();
+			canvas = null;
 		}
 	}
 

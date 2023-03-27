@@ -185,7 +185,7 @@ public class ActorTreeSet {
 		private LIterator<Actor> actorIterator;
 
 		TasIterator(SortedList<ActorSet> soered) {
-			this.setIterator = soered.listIterator();
+			this.setIterator = soered.newListIterator();
 			for (this.currentSet = this.setIterator.next(); this.currentSet
 					.size() == 0 && this.setIterator.hasNext(); this.currentSet = this.setIterator
 					.next()) {

@@ -175,33 +175,24 @@ public class TArray<T> implements Iterable<T>, IArray, LRelease {
 		System.arraycopy(array, start, items, 0, size);
 	}
 
-	public TArray(SortedList<T> vals) {
+	public TArray(SortedList<? extends T> vals) {
 		this();
-		for (LIterator<T> it = vals.listIterator(); it.hasNext();) {
-			add(it.next());
-		}
+		addAll(vals);
 	}
 
-	public TArray(Array<T> vals) {
+	public TArray(Array<? extends T> vals) {
 		this();
-		for (; vals.hashNext();) {
-			add(vals.next());
-		}
-		vals.stopNext();
+		addAll(vals);
 	}
-
-	public TArray(Keys<T> vals) {
+	
+	public TArray(Keys<? extends T> vals) {
 		this();
-		for (T t : vals) {
-			add(t);
-		}
+		addAll(vals);
 	}
-
-	public TArray(Values<T> vals) {
+	
+	public TArray(Values<? extends T> vals) {
 		this();
-		for (T t : vals) {
-			add(t);
-		}
+		addAll(vals);
 	}
 
 	public boolean add(T value) {
@@ -213,6 +204,35 @@ public class TArray<T> implements Iterable<T>, IArray, LRelease {
 		return true;
 	}
 
+	public TArray<T> addAll(Keys<? extends T> vals){
+		for (T t : vals) {
+			add(t);
+		}
+		return this;
+	}
+
+	public TArray<T> addAll(Values<? extends T> vals){
+		for (T t : vals) {
+			add(t);
+		}
+		return this;
+	}
+	
+	public TArray<T> addAll(SortedList<? extends T> vals) {
+		for (LIterator<? extends T> it = vals.listIterator(); it.hasNext();) {
+			add(it.next());
+		}
+		return this;
+	}
+
+	public TArray<T> addAll(Array<? extends T> vals){
+		for (; vals.hashNext();) {
+			add(vals.next());
+		}
+		vals.stopNext();
+		return this;
+	}
+	
 	public void addAll(TArray<? extends T> array) {
 		addAll(array, 0, array.size);
 	}

@@ -99,7 +99,7 @@ public class JavaFXGraphics extends Graphics {
 
 	@Override
 	protected Canvas createCanvasImpl(Scale scale, int pixelWidth, int pixelHeight) {
-		WritableImage bitmap = new WritableImage(pixelWidth, pixelHeight);
+		WritableImage bitmap = JavaFXImageCachePool.get().find(null, pixelWidth, pixelHeight);
 		JavaFXImage image = new JavaFXImage(this, scale, bitmap, TextureSource.RenderCanvas);
 		return new JavaFXCanvas(this, image);
 	}
