@@ -28,8 +28,6 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.WritableRaster;
 import java.util.Deque;
 import java.util.LinkedList;
 
@@ -168,11 +166,16 @@ public class JavaSECanvas extends Canvas {
 	}
 
 	private BufferedImage createImage() {
-		BufferedImage bmp = ((JavaSEImage) image).seImage();
-		ColorModel cm = bmp.getColorModel();
-		boolean isAlphaPremultiplied = bmp.isAlphaPremultiplied();
-		WritableRaster raster = bmp.copyData(null);
-		return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
+		BufferedImage img = ((JavaSEImage) image).seImage();
+		BufferedImage newImage = null;
+		if (img != null) {
+			newImage = JavaSEImageCachePool.get().find(img.getType(), img.getWidth(), img.getHeight());
+			img.copyData(newImage.getRaster());
+		} else {
+			newImage = JavaSEImageCachePool.get().find(BufferedImage.TYPE_INT_ARGB_PRE, MathUtils.floor(width),
+					MathUtils.floor(height));
+		}
+		return newImage;
 	}
 
 	protected JavaSEImage toSEImage() {
@@ -337,7 +340,7 @@ public class JavaSECanvas extends Canvas {
 		isDirty = true;
 		return this;
 	}
-	
+
 	@Override
 	public Canvas fillRoundRect(float x, float y, float width, float height, float radius) {
 		currentState().prepareFill(context);
@@ -597,7 +600,7 @@ public class JavaSECanvas extends Canvas {
 		isDirty = true;
 		return this;
 	}
-	
+
 	@Override
 	public Canvas fillRect(float x, float y, float width, float height, LColor c) {
 		int tmp = getFillColor();
@@ -627,7 +630,7 @@ public class JavaSECanvas extends Canvas {
 		isDirty = true;
 		return this;
 	}
-	
+
 	@Override
 	public Canvas fillArc(float x1, float y1, float width, float height, float start, float end) {
 		currentState().prepareFill(context);

@@ -174,8 +174,14 @@ public class JavaFXCanvas extends Canvas {
 
 	@Override
 	public Image newSnapshot() {
-		WritableImage newImage = JavaFXImageCachePool.get().find(toFXImage().buffer.getPixelReader(), (int) width,
-				(int) height);
+		WritableImage img = ((JavaFXImage) image).fxImage();
+		WritableImage newImage = null;
+		if (img != null) {
+			newImage = JavaFXImageCachePool.get().find(img.getPixelReader(), MathUtils.floorInt(img.getWidth()),
+					MathUtils.floorInt(img.getHeight()));
+		} else {
+			newImage = JavaFXImageCachePool.get().find(null, MathUtils.floorInt(width), MathUtils.floorInt(height));
+		}
 		return new JavaFXImage(gfx, image.scale(), fxCanvas.snapshot(snapshotParameters, newImage),
 				TextureSource.RenderCanvas);
 	}
@@ -185,8 +191,8 @@ public class JavaFXCanvas extends Canvas {
 		if (image == null) {
 			WritableImage writeImage = toFXImage().buffer;
 			if (writeImage == null) {
-				writeImage = JavaFXImageCachePool.get().find(toFXImage().buffer.getPixelReader(), (int) width,
-						(int) height);
+				writeImage = JavaFXImageCachePool.get().find(null, MathUtils.floorInt(width),
+						MathUtils.floorInt(height));
 			}
 			image = new JavaFXImage(gfx, image.scale(), fxCanvas.snapshot(snapshotParameters, writeImage),
 					TextureSource.RenderCanvas);

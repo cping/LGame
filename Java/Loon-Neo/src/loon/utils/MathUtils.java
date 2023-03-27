@@ -1082,6 +1082,10 @@ public final class MathUtils {
 		return (int) (x + BIG_ENOUGH_FLOOR) - BIG_ENOUGH_INT;
 	}
 
+	public static int floorInt(double x) {
+		return (int) (x + BIG_ENOUGH_FLOOR) - BIG_ENOUGH_INT;
+	}
+
 	public static long floor(double x) {
 		return (long) (x + BIG_ENOUGH_FLOOR) - BIG_ENOUGH_INT;
 	}
