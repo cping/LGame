@@ -43,11 +43,6 @@ public class LSetting {
 	public long fixedUpdateLoopTime = -1;
 
 	/**
-	 * 如果此项为true,一些功能实现上会尽可能模拟Loon完整版的实现逻辑,显示效果会更接近,但是速度会变慢<br>
-	 * (因为完整版是gl的,而lite版是java环境提供的渲染接口直接绘制),默认为false
-	 */
-	public boolean emulateFullVer = false;
-	/**
 	 * 默认游戏字体设置
 	 */
 	public IFont defaultGameFont;
@@ -128,7 +123,11 @@ public class LSetting {
 	 * 生成系统默认的LFont时,是否使用剪切生成
 	 */
 	public boolean useTrueFontClip = true;
-
+	/**
+	 * 此项为true时采用全屏刷新,为false则屏幕不会自动刷新
+	 */
+	public boolean allScreenRefresh = true;
+	
 	public Class<?> mainClass = null;
 
 	/**
@@ -250,8 +249,8 @@ public class LSetting {
 		this.emulatorScale = setting.emulatorScale;
 		this.notAllowDragAndMove = setting.notAllowDragAndMove;
 		this.lockAllTouchEvent = setting.lockAllTouchEvent;
-		this.emulateFullVer = setting.emulateFullVer;
 		this.convertImagesOnLoad = setting.convertImagesOnLoad;
+		this.allScreenRefresh = setting.allScreenRefresh;
 		this.args = setting.args;
 	}
 

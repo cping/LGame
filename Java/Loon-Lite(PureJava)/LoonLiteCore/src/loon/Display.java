@@ -408,8 +408,10 @@ public class Display extends BaseIO implements LRelease {
 		}
 		try {
 			_glEx.saveTx();
+			if (_setting.allScreenRefresh) {
+				_glEx.reset();
+			}
 			_glEx.begin();
-			_glEx.reset();
 
 			_process.load();
 			_process.runTimer(clock);

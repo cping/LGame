@@ -90,7 +90,7 @@ public class GLEx implements LRelease {
 	private final Vector2f tempLocation = new Vector2f();
 
 	private final Affine2f tempAffine = new Affine2f();
-	
+
 	private final IntMap<PointF> rhombusArray = new IntMap<>();
 
 	private final Array<Affine2f> affineStack = new Array<>();
@@ -397,7 +397,7 @@ public class GLEx implements LRelease {
 		tempAffine.idt();
 		return tempAffine;
 	}
-	
+
 	public boolean setClip(float x, float y, float width, float height) {
 		return startClipped(x, y, width, height);
 	}
@@ -406,10 +406,10 @@ public class GLEx implements LRelease {
 		if (isClosed) {
 			return false;
 		}
-		int x = (int) (x1);
-		int y = (int) (y1);
-		int width = (int) (w1);
-		int height = (int) (h1);
+		int x = MathUtils.floor(x1);
+		int y = MathUtils.floor(y1);
+		int width = MathUtils.floor(w1);
+		int height = MathUtils.floor(h1);
 		batch.flush();
 		RectBox r = pushScissorState(x, gfx.flip() ? gfx.height() - y - height : y, width, height);
 		if (scissorDepth > 0) {
@@ -435,6 +435,24 @@ public class GLEx implements LRelease {
 		} else {
 			getCanvas().resetClip();
 		}
+		return this;
+	}
+
+	public GLEx clearRect(int x, int y, int width, int height) {
+		synchTransform();
+		Canvas g = getCanvas();
+		g.clearRect(x, y, width, height);
+		return this;
+	}
+
+	public GLEx clearRect(int x1, int y1, int w1, int h1, LColor rgba) {
+		LColor clear = LColor.black;
+		if (rgba != null) {
+			clear = rgba;
+		}
+		synchTransform();
+		Canvas g = getCanvas();
+		g.clearRect(x1, y1, w1, h1, clear);
 		return this;
 	}
 

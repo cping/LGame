@@ -999,6 +999,10 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 		setBounds(tx1, ty1, tx2, ty2);
 		return this;
 	}
+	
+	public DirtyRect getDirtyRect() {
+		return new DirtyRect(this);
+	}
 
 	public float getAspectRatio() {
 		return (height == 0) ? MathUtils.NaN : (float) width / (float) height;

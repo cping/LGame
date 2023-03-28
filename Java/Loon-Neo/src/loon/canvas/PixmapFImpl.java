@@ -65,8 +65,6 @@ public abstract class PixmapFImpl {
 	}
 
 	protected void setClipImpl(float tx, float ty, RectBox clip, float w, float h, int skip) {
-		this._translateX = tx;
-		this._translateY = ty;
 		this._clip.x = clip.x;
 		this._clip.y = clip.y;
 		this._clip.width = clip.width;
@@ -95,6 +93,11 @@ public abstract class PixmapFImpl {
 		} else if (_skip < 1) {
 			_skip = 1;
 		}
+	}
+
+	protected void translatePixmapXY(float x, float y) {
+		this._translateX = x;
+		this._translateY = y;
 	}
 
 	public int getPixSkip() {
@@ -181,8 +184,8 @@ public abstract class PixmapFImpl {
 		}
 	}
 
-	protected abstract void drawLineImpl(float x1, float y1, float x2, float y2) ;
-	
+	protected abstract void drawLineImpl(float x1, float y1, float x2, float y2);
+
 	protected void drawArcImpl(float x, float y, float width, float height, float start, float arcAngle) {
 		if (arcAngle == 0) {
 			return;

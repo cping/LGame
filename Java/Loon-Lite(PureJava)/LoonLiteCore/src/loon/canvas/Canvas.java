@@ -138,6 +138,8 @@ public abstract class Canvas implements LRelease {
 
 	public abstract Canvas clearRect(float x, float y, float width, float height);
 
+	public abstract Canvas clearRect(float x, float y, float width, float height, LColor color);
+
 	public abstract Canvas clip(Path clipPath);
 
 	public abstract Canvas clipRect(float x, float y, float width, float height);
@@ -249,7 +251,7 @@ public abstract class Canvas implements LRelease {
 	public abstract boolean isMainCanvas();
 
 	public abstract Canvas fillCircle(float x, float y, float radius);
-	
+
 	public abstract Canvas fillArc(float x1, float y1, float width, float height, float start, float end);
 
 	public abstract Canvas fillPath(Path path);
@@ -319,7 +321,7 @@ public abstract class Canvas implements LRelease {
 	public abstract Canvas strokeText(TextLayout text, float x, float y);
 
 	public abstract Canvas drawRoundRect(float x, float y, float width, float height, float radius);
-	
+
 	public LTexture toTexture() {
 		try {
 			if (this.isDirty) {

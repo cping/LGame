@@ -231,6 +231,17 @@ public class JavaSECanvas extends Canvas {
 	}
 
 	@Override
+	public Canvas clearRect(float x, float y, float width, float height, LColor color) {
+		currentState().prepareClear(context);
+		int tmp = getFillColor();
+		setFillColor(color);
+		context.clearRect(MathUtils.ifloor(x), MathUtils.ifloor(y), MathUtils.iceil(width), MathUtils.iceil(height));
+		setFillColor(tmp);
+		isDirty = true;
+		return this;
+	}
+
+	@Override
 	public Canvas clearRect(float x, float y, float width, float height) {
 		currentState().prepareClear(context);
 		context.clearRect(MathUtils.ifloor(x), MathUtils.ifloor(y), MathUtils.iceil(width), MathUtils.iceil(height));

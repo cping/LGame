@@ -53,6 +53,11 @@ public class GravityHandler implements LRelease {
 			return false;
 		}
 
+		@Override
+		protected GravityResult filterObtain(GravityResult o) {
+			return o;
+		}
+
 	};
 
 	private EaseTimer easeTimer;

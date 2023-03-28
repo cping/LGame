@@ -58,15 +58,24 @@ public abstract class Pool<T> {
 	abstract protected T newObject();
 
 	public T obtain() {
-		return freeObjects.size() == 0 ? newObject() : freeObjects.pop();
+		return freeObjects.size == 0 ? newObject() : pop();
 	}
 
-	public void push(T o) {
+	public Pool<T> push(T o) {
 		free(o);
+		return this;
 	}
+
+	protected abstract T filterObtain(T o);
 
 	public T pop() {
-		return freeObjects.pop();
+		if (freeObjects.size > 0) {
+			T obj = freeObjects.pop();
+			if (obj != null) {
+				return filterObtain(obj);
+			}
+		}
+		return null;
 	}
 
 	public TArray<T> select(QueryEvent<T> event) {
@@ -80,25 +89,34 @@ public abstract class Pool<T> {
 		return result;
 	}
 
-	public void delete(QueryEvent<T> event) {
+	public Pool<T> delete(QueryEvent<T> event) {
 		for (int i = freeObjects.size - 1; i > -1; i--) {
 			T v = freeObjects.get(i);
 			if (event.hit(v)) {
 				freeObjects.remove(v);
 			}
 		}
+		return this;
+	}
+	
+	public int size() {
+		return freeObjects.size;
+	}
+
+	public boolean remove(T o) {
+		return freeObjects.remove(o);
 	}
 
 	public abstract boolean isLimit(T src, T dst);
 
-	public void free(T o) {
+	public Pool<T> free(T o) {
 		if (o == null)
 			throw new LSysException("Object cannot be null.");
 		if (freeObjects.size() < max) {
 			for (int i = 0; i < freeObjects.size; i++) {
 				T obj = freeObjects.get(i);
 				if (isLimit(o, obj)) {
-					return;
+					return this;
 				}
 			}
 			if (!freeObjects.contains(o)) {
@@ -115,9 +133,10 @@ public abstract class Pool<T> {
 		}
 		if (o instanceof Poolable)
 			((Poolable) o).reset();
+		return this;
 	}
 
-	public void freeAll(TArray<T> objects) {
+	public Pool<T> freeAll(TArray<T> objects) {
 		if (objects == null) {
 			throw new LSysException("Object cannot be null.");
 		}
@@ -134,9 +153,10 @@ public abstract class Pool<T> {
 			}
 		}
 		peak = MathUtils.max(peak, freeObjects.size());
+		return this;
 	}
 
-	public void freeAll(Array<T> objects) {
+	public Pool<T> freeAll(Array<T> objects) {
 		if (objects == null) {
 			throw new LSysException("Object cannot be null.");
 		}
@@ -154,11 +174,13 @@ public abstract class Pool<T> {
 		}
 		objects.stopNext();
 		peak = MathUtils.max(peak, freeObjects.size());
+		return this;
 	}
 
-	public void clear() {
+	public Pool<T> clear() {
 		freeObjects.clear();
 		peak = 0;
+		return this;
 	}
 
 	public int getPeak() {

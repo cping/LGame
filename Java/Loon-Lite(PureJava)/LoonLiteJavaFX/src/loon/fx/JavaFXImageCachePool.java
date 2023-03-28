@@ -20,8 +20,13 @@
  */
 package loon.fx;
 
+import java.nio.IntBuffer;
+
+import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelReader;
+import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
+import javafx.scene.image.WritablePixelFormat;
 import loon.utils.MathUtils;
 import loon.utils.cache.Pool;
 
@@ -51,7 +56,7 @@ public class JavaFXImageCachePool extends Pool<WritableImage> {
 	private PixelReader _pixelreader;
 
 	public JavaFXImageCachePool() {
-		super(16);
+		super();
 	}
 
 	public JavaFXImageCachePool findImage(PixelReader reader, int w, int h) {
@@ -68,7 +73,7 @@ public class JavaFXImageCachePool extends Pool<WritableImage> {
 
 	@Override
 	public WritableImage obtain() {
-		if (freeObjects.size() == 0) {
+		if (freeObjects.size == 0) {
 			return newObject();
 		}
 		WritableImage image = freeObjects.find((img) -> {
@@ -77,7 +82,19 @@ public class JavaFXImageCachePool extends Pool<WritableImage> {
 		});
 		if (image == null) {
 			return newObject();
-		} 
+		} else {
+			int[] rgba = new int[_imageWidth * _imageHeight];
+			PixelWriter writer = image.getPixelWriter();
+			PixelFormat.Type type = writer.getPixelFormat().getType();
+			WritablePixelFormat<IntBuffer> format = null;
+			if (type == PixelFormat.Type.INT_ARGB_PRE) {
+				format = PixelFormat.getIntArgbPreInstance();
+			} else {
+				format = PixelFormat.getIntArgbInstance();
+			}
+			writer.setPixels(0, 0, _imageWidth, _imageHeight, format, rgba, 0, _imageWidth);
+			freeObjects.remove(image);
+		}
 		return image;
 	}
 
@@ -91,8 +108,14 @@ public class JavaFXImageCachePool extends Pool<WritableImage> {
 
 	@Override
 	public boolean isLimit(WritableImage src, WritableImage old) {
-		return MathUtils.equal(MathUtils.floorInt(src.getWidth()), MathUtils.floorInt(old.getWidth()))
-				&& MathUtils.equal(MathUtils.floorInt(src.getHeight()), MathUtils.floorInt(old.getHeight()))
-				&& src.getPixelReader().getPixelFormat().equals(old.getPixelReader().getPixelFormat());
+		if (src == null) {
+			return true;
+		}
+		return src.getWidth() > 1024 && src.getHeight() > 1024;
+	}
+
+	@Override
+	protected WritableImage filterObtain(WritableImage o) {
+		return o;
 	}
 }

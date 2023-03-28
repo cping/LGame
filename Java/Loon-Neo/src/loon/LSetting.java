@@ -115,6 +115,11 @@ public class LSetting {
 	public boolean useTrueFontClip = false;
 
 	/**
+	 * 此项为true时采用全屏刷新,为false则屏幕不会自动刷新
+	 */
+	public boolean allScreenRefresh = true;
+
+	/**
 	 * 帧率
 	 */
 	public int fps = 60;
@@ -233,6 +238,7 @@ public class LSetting {
 		this.emulatorScale = setting.emulatorScale;
 		this.notAllowDragAndMove = setting.notAllowDragAndMove;
 		this.lockAllTouchEvent = setting.lockAllTouchEvent;
+		this.allScreenRefresh = setting.allScreenRefresh;
 		this.args = setting.args;
 		return this;
 	}

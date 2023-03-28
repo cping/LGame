@@ -436,7 +436,9 @@ public class Display extends BaseIO implements LRelease {
 		}
 		try {
 			_glEx.saveTx();
-			_glEx.reset(cred, cgreen, cblue, calpha);
+			if (_setting.allScreenRefresh) {
+				_glEx.reset(cred, cgreen, cblue, calpha);
+			}
 			_glEx.begin();
 
 			_process.drawFrist(_glEx);

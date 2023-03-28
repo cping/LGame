@@ -99,7 +99,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 	private final Vector2f tempLocation = new Vector2f();
 
 	private final Affine2f tempAffine = new Affine2f();
-	
+
 	private final IntMap<PointF> rhombusArray = new IntMap<PointF>();
 
 	private final Array<LTextureImage> frameBuffers = new Array<LTextureImage>();
@@ -698,10 +698,10 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		if (isClosed) {
 			return false;
 		}
-		int x = (int) (x1 * LSystem.getScaleWidth());
-		int y = (int) (y1 * LSystem.getScaleHeight());
-		int width = (int) (w1 * LSystem.getScaleWidth());
-		int height = (int) (h1 * LSystem.getScaleHeight());
+		int x = MathUtils.floor(x1 * LSystem.getScaleWidth());
+		int y = MathUtils.floor(y1 * LSystem.getScaleHeight());
+		int width = MathUtils.floor(w1 * LSystem.getScaleWidth());
+		int height = MathUtils.floor(h1 * LSystem.getScaleHeight());
 		batch.flush();
 		RectBox r = pushScissorState(x, target.flip() ? target.height() - y - height : y, width, height);
 		batch.gl.glScissor(r.x(), r.y(), r.width(), r.height());
@@ -2424,7 +2424,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 					MathUtils.max(MathUtils.min(pr.maxY(), y + height - 1) - r.y, 0));
 		}
 		if (this.lastBrush.alltextures) {
-			setClipImpl(0, 0, r, getWidth(), getHeight());
+			setClipImpl(r.x, r.y, r, r.width, r.height);
 		}
 		scissorDepth++;
 		return r;
@@ -2441,6 +2441,34 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 			}
 		}
 		return r;
+	}
+
+	public GLEx clearRect(int x, int y, int width, int height) {
+		return clearRect(x, y, width, height, null);
+	}
+
+	public GLEx clearRect(int x1, int y1, int w1, int h1, LColor rgba) {
+		LColor clear = LColor.black;
+		if (rgba != null) {
+			clear = rgba;
+		}
+		if (scissorDepth < 1) {
+			final GL20 gl = batch.gl;
+			int x = MathUtils.floor(x1 * LSystem.getScaleWidth());
+			int y = MathUtils.floor(y1 * LSystem.getScaleHeight());
+			int w = MathUtils.floor(w1 * LSystem.getScaleWidth());
+			int h = MathUtils.floor(h1 * LSystem.getScaleHeight());
+			batch.flush();
+			GLUtils.enablecissorTest(gl);
+			gl.glScissor(x, target.flip() ? target.height() - y - h : y, w, h);
+			GLUtils.setClearColor(gl, clear.r, clear.g, clear.b, clear.a);
+			GLUtils.disablecissorTest(gl);
+		} else {
+			startClipped(x1, y1, w1, h1);
+			GLUtils.setClearColor(batch.gl, clear.r, clear.g, clear.b, clear.a);
+			endClipped();
+		}
+		return this;
 	}
 
 	private boolean useBegin;

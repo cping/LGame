@@ -51,7 +51,7 @@ public class JavaSEImageCachePool extends Pool<BufferedImage> {
 	private int _bufferedType;
 
 	public JavaSEImageCachePool() {
-		super(16);
+		super();
 	}
 
 	public JavaSEImageCachePool findImage(int bufferedType, int w, int h) {
@@ -68,7 +68,7 @@ public class JavaSEImageCachePool extends Pool<BufferedImage> {
 
 	@Override
 	public BufferedImage obtain() {
-		if (freeObjects.size() == 0) {
+		if (freeObjects.size == 0) {
 			return newObject();
 		}
 		BufferedImage image = freeObjects.find((img) -> {
@@ -77,6 +77,10 @@ public class JavaSEImageCachePool extends Pool<BufferedImage> {
 		});
 		if (image == null) {
 			return newObject();
+		} else {
+			int[] rgba = new int[_imageWidth * _imageHeight];
+			image.setRGB(0, 0, _imageWidth, _imageHeight, rgba, 0, _imageWidth);
+			freeObjects.remove(image);
 		}
 		return image;
 	}
@@ -91,8 +95,15 @@ public class JavaSEImageCachePool extends Pool<BufferedImage> {
 
 	@Override
 	public boolean isLimit(BufferedImage src, BufferedImage old) {
-		return MathUtils.equal(MathUtils.floor(src.getWidth()), old.getWidth())
-				&& MathUtils.equal(MathUtils.floor(src.getHeight()), old.getHeight()) && src.getType() == old.getType();
+		if (src == null) {
+			return true;
+		}
+		return src.getWidth() > 1024 && src.getHeight() > 1024;
+	}
+
+	@Override
+	protected BufferedImage filterObtain(BufferedImage o) {
+		return o;
 	}
 
 }

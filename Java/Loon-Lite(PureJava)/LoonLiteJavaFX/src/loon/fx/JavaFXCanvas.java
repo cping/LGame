@@ -156,7 +156,16 @@ public class JavaFXCanvas extends Canvas {
 
 	@Override
 	public Canvas clearRect(float x, float y, float width, float height) {
+		return clearRect(x, y, width, height, color);
+	}
+
+	@Override
+	public Canvas clearRect(float x, float y, float width, float height, LColor color) {
+		Paint tmp = context.getFill();
+		context.setFill(getLColorToFX(color));
 		context.clearRect(x, y, width, height);
+		context.fillRect(x - 1, y - 1, width + 2, height + 2);
+		context.setFill(tmp);
 		isDirty = true;
 		return this;
 	}
