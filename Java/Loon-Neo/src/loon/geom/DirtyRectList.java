@@ -22,6 +22,7 @@ package loon.geom;
 
 import loon.utils.MathUtils;
 import loon.utils.SortedList;
+import loon.utils.StringKeyValue;
 
 /**
  * 脏矩计算用类,产生一个脏矩集合用类,用来展示所有可合并脏矩区域,不连续的将分别保存在集合中
@@ -53,6 +54,13 @@ public class DirtyRectList {
 	public DirtyRectList(int size, boolean saveOld) {
 		this._maxSizeLimit = size;
 		this._saveInitList = saveOld;
+	}
+
+	public boolean add(RectBox rect) {
+		if (rect == null) {
+			return false;
+		}
+		return add(rect.x, rect.y, rect.width, rect.height);
 	}
 
 	public boolean add(float x, float y, float w, float h) {
@@ -176,5 +184,29 @@ public class DirtyRectList {
 
 	public SortedList<RectBox> initList() {
 		return _originalList;
+	}
+
+	@Override
+	public String toString() {
+		StringKeyValue kv = new StringKeyValue("DirtyRectList");
+		kv.newLine();
+		int idx = 0;
+		for (RectBox rect : _dirtyList) {
+			kv.pushBracket()
+			.addValue(rect.x)
+			.comma()
+			.addValue(rect.y)
+			.comma()
+			.addValue(rect.width)
+			.comma()
+			.addValue(rect.height)
+			.popBracket();
+			if (idx < _dirtyList.size - 1) {
+				kv.comma();
+			}
+			kv.newLine();
+			idx++;
+		}
+		return kv.toString();
 	}
 }

@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2010
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -30,6 +30,7 @@ import loon.action.ActionControl;
 import loon.component.layout.Margin;
 import loon.events.QueryEvent;
 import loon.events.ResizeListener;
+import loon.geom.DirtyRectList;
 import loon.geom.PointI;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
@@ -44,7 +45,7 @@ import loon.utils.reply.Callback;
 /**
  * 精灵精灵总父类，用来注册，控制，以及渲染所有精灵精灵（所有默认【不支持】触屏的精灵，被置于此。不过，
  * 当LNode系列精灵和SpriteBatchScreen合用时，也支持触屏.）
- *
+ * 
  */
 public class Sprites implements IArray, Visible, LRelease {
 
@@ -53,6 +54,8 @@ public class Sprites implements IArray, Visible, LRelease {
 		public void update(ISprite spr);
 
 	}
+
+	private final DirtyRectList _dirtyList = new DirtyRectList();
 
 	protected ISprite[] _sprites;
 
@@ -78,7 +81,7 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	private SpriteListener sprListerner;
 
-	private final static LayerSorter<ISprite> spriteSorter = new LayerSorter<>(false);
+	private final static LayerSorter<ISprite> spriteSorter = new LayerSorter<ISprite>(false);
 
 	private int _size;
 
@@ -117,7 +120,7 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	/**
 	 * 设定Sprites大小
-	 *
+	 * 
 	 * @param w
 	 * @param h
 	 * @return
@@ -145,11 +148,17 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	/**
 	 * 设定指定对象到图层最前
-	 *
+	 * 
 	 * @param sprite
 	 */
 	public void sendToFront(ISprite sprite) {
-		if (_closed || this._size <= 1 || this._sprites[0] == sprite || (_sprites[0] == sprite)) {
+		if (_closed) {
+			return;
+		}
+		if (this._size <= 1 || this._sprites[0] == sprite) {
+			return;
+		}
+		if (_sprites[0] == sprite) {
 			return;
 		}
 		for (int i = 0; i < this._size; i++) {
@@ -167,11 +176,17 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	/**
 	 * 设定指定对象到图层最后
-	 *
+	 * 
 	 * @param sprite
 	 */
 	public void sendToBack(ISprite sprite) {
-		if (_closed || this._size <= 1 || this._sprites[this._size - 1] == sprite || (_sprites[this._size - 1] == sprite)) {
+		if (_closed) {
+			return;
+		}
+		if (this._size <= 1 || this._sprites[this._size - 1] == sprite) {
+			return;
+		}
+		if (_sprites[this._size - 1] == sprite) {
 			return;
 		}
 		for (int i = 0; i < this._size; i++) {
@@ -189,10 +204,13 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	/**
 	 * 按所在层级排序
-	 *
+	 * 
 	 */
 	public void sortSprites() {
-		if (this._closed || (this._size <= 1)) {
+		if (this._closed) {
+			return;
+		}
+		if (this._size <= 1) {
 			return;
 		}
 		if (this._sprites.length != this._size) {
@@ -215,7 +233,7 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	/**
 	 * 扩充当前集合容量
-	 *
+	 * 
 	 * @param capacity
 	 */
 	private void expandCapacity(int capacity) {
@@ -228,7 +246,7 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	/**
 	 * 压缩当前集合容量
-	 *
+	 * 
 	 * @param capacity
 	 */
 	private void compressCapacity(int capacity) {
@@ -241,7 +259,7 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	/**
 	 * 查找指定位置的精灵对象
-	 *
+	 * 
 	 * @param x
 	 * @param y
 	 * @return
@@ -265,7 +283,7 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	/**
 	 * 查找指定名称的精灵对象
-	 *
+	 * 
 	 * @param name
 	 * @return
 	 */
@@ -288,7 +306,7 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	/**
 	 * 按照上一个精灵的x,y位置,另起一行添加精灵,并偏移指定位置
-	 *
+	 * 
 	 * @param spr
 	 * @param offX
 	 * @param offY
@@ -300,7 +318,7 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	/**
 	 * 按照上一个精灵的y轴,另起一行添加精灵
-	 *
+	 * 
 	 * @param spr
 	 * @return
 	 */
@@ -310,7 +328,7 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	/**
 	 * 按照上一个精灵的y轴,另起一行添加精灵,并让y轴偏移指定位置
-	 *
+	 * 
 	 * @param spr
 	 * @param offY
 	 * @return
@@ -321,7 +339,7 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	/**
 	 * 按照上一个精灵的x轴,另起一行添加精灵
-	 *
+	 * 
 	 * @param spr
 	 * @return
 	 */
@@ -331,7 +349,7 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	/**
 	 * 按照上一个精灵的x轴,另起一行添加精灵,并将x轴偏移指定位置
-	 *
+	 * 
 	 * @param spr
 	 * @param offX
 	 * @return
@@ -342,7 +360,7 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	/**
 	 * 按照上一个精灵的x,y位置,另起一行添加精灵,并偏移指定位置
-	 *
+	 * 
 	 * @param spr
 	 * @param offX
 	 * @param offY
@@ -425,13 +443,16 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	/**
 	 * 在指定索引处插入一个精灵
-	 *
+	 * 
 	 * @param index
 	 * @param sprite
 	 * @return
 	 */
 	public boolean add(int index, ISprite sprite) {
-		if (_closed || (sprite == null)) {
+		if (_closed) {
+			return false;
+		}
+		if (sprite == null) {
 			return false;
 		}
 		if (index > this._size) {
@@ -472,7 +493,10 @@ public class Sprites implements IArray, Visible, LRelease {
 	}
 
 	public ISprite getSprite(int index) {
-		if (_closed || index < 0 || index > _size || index >= _sprites.length) {
+		if (_closed) {
+			return null;
+		}
+		if (index < 0 || index > _size || index >= _sprites.length) {
 			return null;
 		}
 		return _sprites[index];
@@ -480,7 +504,7 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	/**
 	 * 返回位于顶部的精灵
-	 *
+	 * 
 	 * @return
 	 */
 	public ISprite getTopSprite() {
@@ -495,7 +519,7 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	/**
 	 * 返回位于底部的精灵
-	 *
+	 * 
 	 * @return
 	 */
 	public ISprite getBottomSprite() {
@@ -510,12 +534,18 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	/**
 	 * 顺序添加精灵
-	 *
+	 * 
 	 * @param sprite
 	 * @return
 	 */
 	public boolean add(ISprite sprite) {
-		if (_closed || (sprite == null) || contains(sprite)) {
+		if (_closed) {
+			return false;
+		}
+		if (sprite == null) {
+			return false;
+		}
+		if (contains(sprite)) {
 			return false;
 		}
 		sprite.setSprites(this);
@@ -538,7 +568,7 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	/**
 	 * 顺序添加精灵
-	 *
+	 * 
 	 * @param sprite
 	 * @return
 	 */
@@ -548,7 +578,7 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	/**
 	 * 返回一组拥有指定标签的精灵
-	 *
+	 * 
 	 * @param tags
 	 * @return
 	 */
@@ -556,12 +586,12 @@ public class Sprites implements IArray, Visible, LRelease {
 		if (_closed) {
 			return null;
 		}
-		TArray<ISprite> list = new TArray<>();
+		TArray<ISprite> list = new TArray<ISprite>();
 		final int size = this._size;
 		for (Object tag : tags) {
 			for (int i = size - 1; i > -1; i--) {
 				if (this._sprites[i] instanceof ISprite) {
-					ISprite sp = this._sprites[i];
+					ISprite sp = (ISprite) this._sprites[i];
 					if (sp.getTag() == tag || tag.equals(sp.getTag())) {
 						list.add(sp);
 					}
@@ -573,7 +603,7 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	/**
 	 * 返回一组没有指定标签的精灵
-	 *
+	 * 
 	 * @param tags
 	 * @return
 	 */
@@ -581,7 +611,7 @@ public class Sprites implements IArray, Visible, LRelease {
 		if (_closed) {
 			return null;
 		}
-		TArray<ISprite> list = new TArray<>();
+		TArray<ISprite> list = new TArray<ISprite>();
 		final int size = this._size;
 		for (Object tag : tags) {
 			for (int i = size - 1; i > -1; i--) {
@@ -600,7 +630,7 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	/**
 	 * 返回一组指定名的精灵
-	 *
+	 * 
 	 * @param names
 	 * @return
 	 */
@@ -608,7 +638,7 @@ public class Sprites implements IArray, Visible, LRelease {
 		if (_closed) {
 			return null;
 		}
-		TArray<ISprite> list = new TArray<>();
+		TArray<ISprite> list = new TArray<ISprite>();
 		final int size = this._size;
 		for (String name : names) {
 			for (int i = size - 1; i > -1; i--) {
@@ -629,7 +659,7 @@ public class Sprites implements IArray, Visible, LRelease {
 		if (_closed) {
 			return null;
 		}
-		TArray<ISprite> list = new TArray<>();
+		TArray<ISprite> list = new TArray<ISprite>();
 		final int size = this._size;
 		for (String name : names) {
 			for (int i = size - 1; i > -1; i--) {
@@ -649,7 +679,7 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	/**
 	 * 返回一组没有指定名的精灵
-	 *
+	 * 
 	 * @param names
 	 * @return
 	 */
@@ -657,14 +687,14 @@ public class Sprites implements IArray, Visible, LRelease {
 		if (_closed) {
 			return null;
 		}
-		TArray<ISprite> list = new TArray<>();
+		TArray<ISprite> list = new TArray<ISprite>();
 		final int size = this._size;
 		for (String name : names) {
 			for (int i = size - 1; i > -1; i--) {
 				ISprite child = this._sprites[i];
 				if (child != null) {
 					if (child instanceof ISprite) {
-						ISprite sp = child;
+						ISprite sp = (ISprite) child;
 						if (!name.equals(sp.getName())) {
 							list.add(sp);
 						}
@@ -677,12 +707,18 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	/**
 	 * 检查指定精灵是否存在
-	 *
+	 * 
 	 * @param sprite
 	 * @return
 	 */
 	public boolean contains(ISprite sprite) {
-		if (_closed || (sprite == null) || (_sprites == null)) {
+		if (_closed) {
+			return false;
+		}
+		if (sprite == null) {
+			return false;
+		}
+		if (_sprites == null) {
 			return false;
 		}
 		for (int i = 0; i < _size; i++) {
@@ -714,7 +750,7 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	/**
 	 * 返回指定位置内的所有精灵
-	 *
+	 * 
 	 * @param x
 	 * @param y
 	 * @param w
@@ -722,8 +758,11 @@ public class Sprites implements IArray, Visible, LRelease {
 	 * @return
 	 */
 	public TArray<ISprite> contains(float x, float y, float w, float h) {
-		TArray<ISprite> sprites = new TArray<>();
-		if (_closed || (_sprites == null)) {
+		TArray<ISprite> sprites = new TArray<ISprite>();
+		if (_closed) {
+			return sprites;
+		}
+		if (_sprites == null) {
 			return sprites;
 		}
 		for (int i = 0; i < _size; i++) {
@@ -739,7 +778,7 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	/**
 	 * 返回包含指定位置的所有精灵
-	 *
+	 * 
 	 * @param x
 	 * @param y
 	 * @return
@@ -750,20 +789,20 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	/**
 	 * 返回包含指定精灵位置的所有精灵
-	 *
+	 * 
 	 * @param sprite
 	 * @return
 	 */
 	public TArray<ISprite> containsSprite(ISprite sprite) {
 		if (sprite == null) {
-			return new TArray<>(0);
+			return new TArray<ISprite>(0);
 		}
 		return contains(sprite.getX(), sprite.getY(), sprite.getWidth(), sprite.getHeight());
 	}
 
 	/**
 	 * 返回指定位置内的所有精灵
-	 *
+	 * 
 	 * @param x
 	 * @param y
 	 * @param w
@@ -771,8 +810,11 @@ public class Sprites implements IArray, Visible, LRelease {
 	 * @return
 	 */
 	public TArray<ISprite> intersects(float x, float y, float w, float h) {
-		TArray<ISprite> sprites = new TArray<>();
-		if (_closed || (_sprites == null)) {
+		TArray<ISprite> sprites = new TArray<ISprite>();
+		if (_closed) {
+			return sprites;
+		}
+		if (_sprites == null) {
 			return sprites;
 		}
 		for (int i = 0; i < _size; i++) {
@@ -788,7 +830,7 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	/**
 	 * 返回与指定位置相交的所有精灵
-	 *
+	 * 
 	 * @param x
 	 * @param y
 	 * @return
@@ -799,20 +841,20 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	/**
 	 * 返回与指定精灵位置相交的所有精灵
-	 *
+	 * 
 	 * @param sprite
 	 * @return
 	 */
 	public TArray<ISprite> intersectsSprite(ISprite sprite) {
 		if (sprite == null) {
-			return new TArray<>(0);
+			return new TArray<ISprite>(0);
 		}
 		return intersects(sprite.getX(), sprite.getY(), sprite.getWidth(), sprite.getHeight());
 	}
 
 	/**
 	 * 删除指定索引处精灵
-	 *
+	 * 
 	 * @param index
 	 * @return
 	 */
@@ -825,7 +867,7 @@ public class Sprites implements IArray, Visible, LRelease {
 			removed.setState(State.REMOVED);
 			// 删除精灵同时，删除缓动动画
 			if (removed instanceof ActionBind) {
-				ActionControl.get().removeAllActions(removed);
+				ActionControl.get().removeAllActions((ActionBind) removed);
 			}
 		}
 		int size = this._size - index - 1;
@@ -841,7 +883,7 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	/**
 	 * 清空所有精灵
-	 *
+	 * 
 	 */
 	public void removeAll() {
 		if (_closed) {
@@ -853,12 +895,18 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	/**
 	 * 删除指定精灵
-	 *
+	 * 
 	 * @param sprite
 	 * @return
 	 */
 	public boolean remove(ISprite sprite) {
-		if (_closed || (sprite == null) || (_sprites == null)) {
+		if (_closed) {
+			return false;
+		}
+		if (sprite == null) {
+			return false;
+		}
+		if (_sprites == null) {
 			return false;
 		}
 		boolean removed = false;
@@ -868,7 +916,7 @@ public class Sprites implements IArray, Visible, LRelease {
 				spr.setState(State.REMOVED);
 				// 删除精灵同时，删除缓动动画
 				if (spr instanceof ActionBind) {
-					ActionControl.get().removeAllActions(spr);
+					ActionControl.get().removeAllActions((ActionBind) spr);
 				}
 				removed = true;
 				_size--;
@@ -887,12 +935,18 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	/**
 	 * 删除指定名称的精灵
-	 *
+	 * 
 	 * @param name
 	 * @return
 	 */
 	public boolean removeName(String name) {
-		if (_closed || (name == null) || (_sprites == null)) {
+		if (_closed) {
+			return false;
+		}
+		if (name == null) {
+			return false;
+		}
+		if (_sprites == null) {
 			return false;
 		}
 		boolean removed = false;
@@ -902,7 +956,7 @@ public class Sprites implements IArray, Visible, LRelease {
 				spr.setState(State.REMOVED);
 				// 删除精灵同时，删除缓动动画
 				if (spr instanceof ActionBind) {
-					ActionControl.get().removeAllActions(spr);
+					ActionControl.get().removeAllActions((ActionBind) spr);
 				}
 				removed = true;
 				_size--;
@@ -921,7 +975,7 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	/**
 	 * 删除指定范围内精灵
-	 *
+	 * 
 	 * @param startIndex
 	 * @param endIndex
 	 */
@@ -936,7 +990,7 @@ public class Sprites implements IArray, Visible, LRelease {
 					spr.setState(State.REMOVED);
 					// 删除精灵同时，删除缓动动画
 					if (spr instanceof ActionBind) {
-						ActionControl.get().removeAllActions(spr);
+						ActionControl.get().removeAllActions((ActionBind) spr);
 					}
 				}
 			}
@@ -980,9 +1034,8 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	/**
 	 * 清空当前精灵集合
-	 *
+	 * 
 	 */
-	@Override
 	public void clear() {
 		if (_closed) {
 			return;
@@ -993,7 +1046,7 @@ public class Sprites implements IArray, Visible, LRelease {
 				removed.setState(State.REMOVED);
 				// 删除精灵同时，删除缓动动画
 				if (removed instanceof ActionBind) {
-					ActionControl.get().removeAllActions(removed);
+					ActionControl.get().removeAllActions((ActionBind) removed);
 				}
 			}
 			_sprites[i] = null;
@@ -1003,7 +1056,7 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	/**
 	 * 刷新事务
-	 *
+	 * 
 	 * @param elapsedTime
 	 */
 	public void update(long elapsedTime) {
@@ -1028,7 +1081,7 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	/**
 	 * 单纯渲染精灵
-	 *
+	 * 
 	 * @param g
 	 */
 	public void paint(final GLEx g, final float minX, final float minY, final float maxX, final float maxY) {
@@ -1058,7 +1111,10 @@ public class Sprites implements IArray, Visible, LRelease {
 	}
 
 	public void paintPos(final GLEx g, final float offsetX, final float offsetY) {
-		if (_closed || !_visible) {
+		if (_closed) {
+			return;
+		}
+		if (!_visible) {
 			return;
 		}
 		for (int i = 0; i < this._size; i++) {
@@ -1071,7 +1127,7 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	/**
 	 * 创建UI图像
-	 *
+	 * 
 	 * @param g
 	 */
 	public void createUI(final GLEx g) {
@@ -1080,11 +1136,14 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	/**
 	 * 创建UI图像
-	 *
+	 * 
 	 * @param g
 	 */
 	public void createUI(final GLEx g, final int x, final int y) {
-		if (_closed || !_visible) {
+		if (_closed) {
+			return;
+		}
+		if (!_visible) {
 			return;
 		}
 
@@ -1159,7 +1218,7 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	/**
 	 * 设定精灵集合在屏幕中的位置与大小
-	 *
+	 * 
 	 * @param x
 	 * @param y
 	 * @param width
@@ -1175,7 +1234,7 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	/**
 	 * 设定精灵集合在屏幕中的位置
-	 *
+	 * 
 	 * @param x
 	 * @param y
 	 */
@@ -1281,12 +1340,12 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	/**
 	 * 删除符合指定条件的精灵并返回操作的集合
-	 *
+	 * 
 	 * @param query
 	 * @return
 	 */
 	public TArray<ISprite> remove(QueryEvent<ISprite> query) {
-		TArray<ISprite> result = new TArray<>();
+		TArray<ISprite> result = new TArray<ISprite>();
 		for (int i = _sprites.length - 1; i > -1; i--) {
 			ISprite sprite = _sprites[i];
 			if (sprite != null) {
@@ -1301,12 +1360,12 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	/**
 	 * 查找符合指定条件的精灵并返回操作的集合
-	 *
+	 * 
 	 * @param query
 	 * @return
 	 */
 	public TArray<ISprite> find(QueryEvent<ISprite> query) {
-		TArray<ISprite> result = new TArray<>();
+		TArray<ISprite> result = new TArray<ISprite>();
 		for (int i = _sprites.length - 1; i > -1; i--) {
 			ISprite sprite = _sprites[i];
 			if (sprite != null) {
@@ -1320,12 +1379,12 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	/**
 	 * 删除指定条件的精灵并返回操作的集合
-	 *
+	 * 
 	 * @param query
 	 * @return
 	 */
 	public <T extends ISprite> TArray<T> delete(QueryEvent<T> query) {
-		TArray<T> result = new TArray<>();
+		TArray<T> result = new TArray<T>();
 		for (int i = _sprites.length - 1; i > -1; i--) {
 			ISprite sprite = _sprites[i];
 			if (sprite != null) {
@@ -1342,12 +1401,12 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	/**
 	 * 查找符合指定条件的精灵并返回操作的集合
-	 *
+	 * 
 	 * @param query
 	 * @return
 	 */
 	public <T extends ISprite> TArray<T> select(QueryEvent<T> query) {
-		TArray<T> result = new TArray<>();
+		TArray<T> result = new TArray<T>();
 		for (int i = _sprites.length - 1; i > -1; i--) {
 			ISprite sprite = _sprites[i];
 			if (sprite != null) {
@@ -1359,6 +1418,66 @@ public class Sprites implements IArray, Visible, LRelease {
 			}
 		}
 		return result;
+	}
+
+	private void addRect(TArray<RectBox> rects, RectBox child) {
+		if (child.width > 1 && child.height > 1) {
+			if (!rects.contains(child)) {
+				rects.add(child);
+			}
+		}
+	}
+
+	private void addAllRect(TArray<RectBox> rects, ISprite spr) {
+		if (spr instanceof Entity) {
+			if (spr.isContainer()) {
+				Entity ns = (Entity) spr;
+				TArray<IEntity> childs = ns._childrens;
+				for (int i = childs.size - 1; i > -1; i--) {
+					IEntity cc = childs.get(i);
+					if (cc != null) {
+						addRect(rects, ns.getCollisionBox().cpy().add(cc.getCollisionBox()));
+					}
+				}
+			} else {
+				addRect(rects, spr.getCollisionBox());
+			}
+		} else if (spr instanceof Sprite) {
+			if (spr.isContainer()) {
+				Sprite ns = (Sprite) spr;
+				TArray<ISprite> childs = ns._childrens;
+				for (int i = childs.size - 1; i > -1; i--) {
+					ISprite cc = childs.get(i);
+					if (cc != null) {
+						addRect(rects, ns.getCollisionBox().cpy().add(cc.getCollisionBox()));
+					}
+				}
+			} else {
+				addRect(rects, spr.getCollisionBox());
+			}
+		} else {
+			addRect(rects, spr.getCollisionBox());
+		}
+	}
+
+	public DirtyRectList getDirtyList() {
+		final TArray<RectBox> rects = new TArray<RectBox>();
+		ISprite[] childs = _sprites;
+		if (childs != null) {
+			for (int i = childs.length - 1; i > -1; i--) {
+				ISprite spr = childs[i];
+				if (spr != null) {
+					addAllRect(rects, spr);
+				}
+			}
+		}
+		_dirtyList.clear();
+		for (RectBox rect : rects) {
+			if (rect.width > 1 && rect.height > 1) {
+				_dirtyList.add(rect);
+			}
+		}
+		return _dirtyList;
 	}
 
 	@Override
@@ -1462,7 +1581,7 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	/**
 	 * 遍历Sprites中所有精灵对象并反馈给Callback
-	 *
+	 * 
 	 * @param callback
 	 */
 	public Sprites forChildren(Callback<ISprite> callback) {

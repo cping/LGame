@@ -29,6 +29,8 @@ import loon.utils.TArray;
 
 public class TableLayout extends LContainer {
 
+	private final TArray<TableLayoutRow> newRows = new TArray<TableLayoutRow>();
+
 	private TableLayoutRow[] tableRows;
 
 	private boolean grid = true;
@@ -84,7 +86,7 @@ public class TableLayout extends LContainer {
 	}
 
 	public void addRow(int column, int position) {
-		TArray<TableLayoutRow> newRows = new TArray<TableLayoutRow>();
+		newRows.clear();
 		int newRowHeight = (int) (getHeight() / (tableRows.length + 1));
 		if (canAddRow(newRowHeight)) {
 			if (position == 0) {

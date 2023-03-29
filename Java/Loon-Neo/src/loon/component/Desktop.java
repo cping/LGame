@@ -35,6 +35,7 @@ import loon.events.GameKey;
 import loon.events.QueryEvent;
 import loon.events.ResizeListener;
 import loon.events.SysTouch;
+import loon.geom.DirtyRectList;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
@@ -47,6 +48,8 @@ import loon.utils.reply.Callback;
  * 
  */
 public class Desktop implements Visible, LRelease {
+
+	private final DirtyRectList _dirtyList = new DirtyRectList();
 
 	// 输入设备监听
 	protected final Screen input;
@@ -1155,6 +1158,51 @@ public class Desktop implements Visible, LRelease {
 
 	public float getStageY() {
 		return (getX() - getScreenX()) / contentPane.getScaleY();
+	}
+
+	private void addRect(TArray<RectBox> rects, RectBox rect) {
+		if (rect.width > 1 && rect.height > 1) {
+			if (!rects.contains(rect)) {
+				rects.add(rect);
+			}
+		}
+	}
+
+	private void addAllRect(TArray<RectBox> rects, LComponent comp) {
+		if (comp.isContainer()) {
+			LContainer c = (LContainer) comp;
+			LComponent[] childs = c._childs;
+			if (childs != null) {
+				for (int i = childs.length - 1; i > -1; i--) {
+					LComponent cc = childs[i];
+					if (cc != null) {
+						addRect(rects, cc.getCollisionBox().cpy().add(cc.getCollisionBox()));
+					}
+				}
+			}
+		} else {
+			addRect(rects, comp.getCollisionBox());
+		}
+	}
+
+	public DirtyRectList getDirtyList() {
+		final TArray<RectBox> rects = new TArray<RectBox>();
+		LComponent[] childs = contentPane._childs;
+		if (childs != null) {
+			for (int i = childs.length - 1; i > -1; i--) {
+				LComponent comp = childs[i];
+				if (comp != null) {
+					addAllRect(rects, comp);
+				}
+			}
+		}
+		_dirtyList.clear();
+		for (RectBox rect : rects) {
+			if (rect.width > 1 && rect.height > 1) {
+				_dirtyList.add(rect);
+			}
+		}
+		return _dirtyList;
 	}
 
 	public Screen getInput() {

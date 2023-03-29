@@ -1,18 +1,18 @@
 /**
  * Copyright 2014
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -23,6 +23,7 @@ package loon.component.table;
 import loon.canvas.LColor;
 import loon.component.LComponent;
 import loon.opengl.GLEx;
+import loon.utils.MathUtils;
 
 public class TableColumnLayout {
 
@@ -68,106 +69,118 @@ public class TableColumnLayout {
 		return height;
 	}
 
-	public void setHeight(int height) {
+	public TableColumnLayout setHeight(int height) {
 		this.height = height;
 		adjustComponent();
+		return this;
 	}
 
 	public int getWidth() {
-		return (int) width;
+		return MathUtils.floorInt(width);
 	}
 
 	public double getWidthf() {
 		return width;
 	}
 
-	public void setWidth(double width) {
+	public TableColumnLayout setWidth(double width) {
 		this.width = width;
 		adjustComponent();
+		return this;
 	}
 
 	public int getX() {
 		return x;
 	}
 
-	public void setX(int x) {
+	public TableColumnLayout setX(int x) {
 		this.x = x;
 		adjustComponent();
+		return this;
 	}
 
 	public int getY() {
 		return y;
 	}
 
-	public void setY(int y) {
+	public TableColumnLayout setY(int y) {
 		this.y = y;
 		adjustComponent();
+		return this;
 	}
 
 	public int getVerticalAlignment() {
 		return verticalAlignment;
 	}
 
-	public void setVerticalAlignment(int verticalAlignment) {
+	public TableColumnLayout setVerticalAlignment(int verticalAlignment) {
 		this.verticalAlignment = verticalAlignment;
 		adjustComponent();
+		return this;
 	}
 
 	public int getHorizontalAlignment() {
 		return horizontalAlignment;
 	}
 
-	public void setHorizontalAlignment(int horizontalAlignment) {
+	public TableColumnLayout setHorizontalAlignment(int horizontalAlignment) {
 		this.horizontalAlignment = horizontalAlignment;
 		adjustComponent();
+		return this;
 	}
 
 	public int getLeftMargin() {
 		return leftMargin;
 	}
 
-	public void setLeftMargin(int leftMargin) {
+	public TableColumnLayout setLeftMargin(int leftMargin) {
 		this.leftMargin = leftMargin;
 		adjustComponent();
+		return this;
 	}
 
 	public int getRightMargin() {
 		return rightMargin;
 	}
 
-	public void setRightMargin(int rightMargin) {
+	public TableColumnLayout setRightMargin(int rightMargin) {
 		this.rightMargin = rightMargin;
 		adjustComponent();
+		return this;
 	}
 
 	public int getTopMargin() {
 		return topMargin;
 	}
 
-	public void setTopMargin(int topMargin) {
+	public TableColumnLayout setTopMargin(int topMargin) {
 		this.topMargin = topMargin;
 		adjustComponent();
+		return this;
 	}
 
 	public int getBottomMargin() {
 		return bottomMargin;
 	}
 
-	public void setBottomMargin(int bottomMargin) {
+	public TableColumnLayout setBottomMargin(int bottomMargin) {
 		this.bottomMargin = bottomMargin;
 		adjustComponent();
+		return this;
 	}
 
-	public void setMargin(int marginLeft, int marginRight, int marginTop, int marginBottom) {
+	public TableColumnLayout setMargin(int marginLeft, int marginRight, int marginTop, int marginBottom) {
 		setLeftMargin(marginLeft);
 		setRightMargin(marginRight);
 		setTopMargin(marginTop);
 		setBottomMargin(marginBottom);
+		return this;
 	}
 
-	public void setComponent(LComponent component) {
+	public TableColumnLayout setComponent(LComponent component) {
 		this.component = component;
 		adjustComponent();
+		return this;
 	}
 
 	public LComponent getComponent() {
@@ -196,7 +209,7 @@ public class TableColumnLayout {
 		return 1;
 	}
 
-	public void adjustComponent() {
+	public TableColumnLayout adjustComponent() {
 		if (component != null) {
 			switch (horizontalAlignment) {
 			case HORIZONTAL_ALIGN_LEFT:
@@ -220,6 +233,7 @@ public class TableColumnLayout {
 				component.setY((getY() + getHeight()) - (component.getHeight() + bottomMargin));
 			}
 		}
+		return this;
 	}
 
 	public void paint(GLEx g) {

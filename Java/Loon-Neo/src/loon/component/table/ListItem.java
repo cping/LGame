@@ -26,6 +26,8 @@ import loon.utils.TArray;
 
 public class ListItem {
 
+	protected boolean _dirty;
+
 	protected String _name;
 
 	protected TArray<Object> _list;
@@ -36,6 +38,26 @@ public class ListItem {
 
 	public ListItem(TArray<Object> list) {
 		this._list = list;
+		this._dirty = true;
+	}
+
+	public ListItem clear() {
+		_list.clear();
+		_dirty = true;
+		return this;
+	}
+
+	public boolean isDirty() {
+		return _dirty;
+	}
+
+	public ListItem updateDirty() {
+		this._dirty = !_dirty;
+		return this;
+	}
+
+	public int size() {
+		return _list.size;
 	}
 
 	public String getName() {
@@ -44,6 +66,7 @@ public class ListItem {
 
 	public void setName(String name) {
 		this._name = name;
+		this._dirty = true;
 	}
 
 	public String message() {
@@ -63,6 +86,7 @@ public class ListItem {
 
 	public ListItem setList(TArray<Object> list) {
 		this._list = list;
+		this._dirty = true;
 		return this;
 	}
 }

@@ -21,6 +21,10 @@
 package loon.component.table;
 
 public interface ITableModel {
+	
+	public boolean isDirty();
+	
+	public ITableModel updateDirty();
 
 	public String getColumnName(int columnIndex);
 

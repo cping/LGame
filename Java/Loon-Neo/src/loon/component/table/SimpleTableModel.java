@@ -32,6 +32,29 @@ public class SimpleTableModel implements ITableModel {
 		_list = list;
 	}
 
+	@Override
+	public SimpleTableModel updateDirty() {
+		if (_list != null) {
+			for (ListItem item : _list) {
+				item.updateDirty();
+			}
+		}
+		return this;
+	}
+
+	@Override
+	public boolean isDirty() {
+		if (_list != null) {
+			for (ListItem item : _list) {
+				if (item.isDirty()) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	@Override
 	public String message() {
 		if (_list == null) {
 			return null;
@@ -79,8 +102,14 @@ public class SimpleTableModel implements ITableModel {
 		return _list.get(0)._list.size;
 	}
 
-	public void clear() {
+	public SimpleTableModel clear() {
+		if (_list != null) {
+			for (ListItem item : _list) {
+				item._dirty = true;
+			}
+		}
 		_list.clear();
+		return this;
 	}
 
 	public Object getValue(int row) {

@@ -62,7 +62,7 @@ public class Sprite extends LObject<ISprite>
 
 	private Origin _origin = Origin.CENTER;
 
-	private TArray<ISprite> _childrens = null;
+	protected TArray<ISprite> _childrens = null;
 
 	// 默认每帧刷新时间
 	private static final long defaultDelay = 150;

@@ -310,9 +310,8 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 		return setBounds(this.x, this.y, width, height);
 	}
 
-	public boolean overlaps(RectBox rectangle) {
-		return !(x > rectangle.x + rectangle.width || x + width < rectangle.x || y > rectangle.y + rectangle.height
-				|| y + height < rectangle.y);
+	public boolean overlaps(RectBox rect) {
+		return !(x > rect.x + rect.width || x + width < rect.x || y > rect.y + rect.height || y + height < rect.y);
 	}
 
 	public int x() {
@@ -532,6 +531,15 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 		return width * height;
 	}
 
+	public Line[] getLines() {
+		final Line[] lines = new Line[4];
+		lines[0] = new Line(getMinX(), getMinY(), getMinX(), getMaxY());
+		lines[1] = new Line(getMinX(), getMaxY(), getMaxX(), getMaxY());
+		lines[2] = new Line(getMaxX(), getMaxY(), getMaxX(), getMinY());
+		lines[3] = new Line(getMaxX(), getMinY(), getMinX(), getMinY());
+		return lines;
+	}
+
 	/**
 	 * 检查是否包含指定坐标
 	 * 
@@ -592,7 +600,7 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 	public boolean contains(Vector4f v) {
 		return contains(v.x, v.y);
 	}
-	
+
 	public boolean contains(Point point) {
 		if (this.x < point.x && this.x + this.width > point.x && this.y < point.y && this.y + this.height > point.y) {
 			return true;
@@ -999,7 +1007,7 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 		setBounds(tx1, ty1, tx2, ty2);
 		return this;
 	}
-	
+
 	public DirtyRect getDirtyRect() {
 		return new DirtyRect(this);
 	}

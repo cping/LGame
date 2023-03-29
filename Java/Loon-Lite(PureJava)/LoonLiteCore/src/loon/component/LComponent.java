@@ -426,8 +426,13 @@ public abstract class LComponent extends LObject<LContainer>
 		if (Call != null) {
 			Call.act(elapsedTime);
 		}
+		process(elapsedTime);
 	}
-
+	
+	public void process(long elapsedTime) {
+		
+	}
+	
 	public abstract void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage);
 
 	/**

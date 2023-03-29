@@ -1,18 +1,18 @@
 /**
  * Copyright 2014
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -28,6 +28,8 @@ import loon.opengl.GLEx;
 import loon.utils.TArray;
 
 public class TableLayout extends LContainer {
+
+	private final TArray<TableLayoutRow> newRows = new TArray<TableLayoutRow>();
 
 	private TableLayoutRow[] tableRows;
 
@@ -49,8 +51,8 @@ public class TableLayout extends LContainer {
 		}
 		if (grid) {
 			int tmp = g.color();
-			for (TableLayoutRow tableRow : tableRows) {
-				tableRow.paint(g);
+			for (int i = 0; i < tableRows.length; i++) {
+				tableRows[i].paint(g);
 			}
 			g.drawRect(getX(), getY(), getWidth(), getHeight(), LColor.gray);
 			g.setColor(tmp);
@@ -84,7 +86,7 @@ public class TableLayout extends LContainer {
 	}
 
 	public void addRow(int column, int position) {
-		TArray<TableLayoutRow> newRows = new TArray<>();
+		newRows.clear();
 		int newRowHeight = (int) (getHeight() / (tableRows.length + 1));
 		if (canAddRow(newRowHeight)) {
 			if (position == 0) {
@@ -100,8 +102,8 @@ public class TableLayout extends LContainer {
 				newRows.add(new TableLayoutRow(x(), y(), (int) getWidth(), newRowHeight, column));
 			}
 			for (int i = 0; i < newRows.size; i++) {
-				newRows.get(i).setY(y() + (i * newRowHeight));
-				newRows.get(i).setHeight(newRowHeight);
+				((TableLayoutRow) newRows.get(i)).setY(y() + (i * newRowHeight));
+				((TableLayoutRow) newRows.get(i)).setHeight(newRowHeight);
 			}
 			tableRows = (TableLayoutRow[]) newRows.toArray();
 		}
@@ -150,8 +152,8 @@ public class TableLayout extends LContainer {
 	@Override
 	public void setWidth(float width) {
 		boolean couldShrink = true;
-		for (TableLayoutRow tableRow : tableRows) {
-			if (!tableRow.setWidth((int) width)) {
+		for (int i = 0; i < tableRows.length; i++) {
+			if (!tableRows[i].setWidth((int) width)) {
 				couldShrink = false;
 			}
 		}
@@ -163,8 +165,8 @@ public class TableLayout extends LContainer {
 	@Override
 	public void setHeight(float height) {
 		super.setHeight(height);
-		for (TableLayoutRow tableRow : tableRows) {
-			tableRow.setHeight((int) height);
+		for (int i = 0; i < tableRows.length; i++) {
+			tableRows[i].setHeight((int) height);
 		}
 	}
 
@@ -184,5 +186,6 @@ public class TableLayout extends LContainer {
 
 	@Override
 	public void destory() {
+
 	}
 }

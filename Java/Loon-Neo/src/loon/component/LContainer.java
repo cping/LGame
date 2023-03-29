@@ -601,7 +601,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	}
 
 	@Override
-	public void update(long timer) {
+	public void update(long elapsedTime) {
 		if (this._component_isClose) {
 			return;
 		}
@@ -610,12 +610,12 @@ public abstract class LContainer extends LComponent implements IArray {
 		}
 		synchronized (_childs) {
 			try {
-				super.update(timer);
+				super.update(elapsedTime);
 				LComponent component;
 				for (int i = 0; i < this.childCount; i++) {
 					component = _childs[i];
 					if (component != null && component != this) {
-						component.update(timer);
+						component.update(elapsedTime);
 					}
 				}
 			} catch (Throwable cause) {
@@ -623,7 +623,7 @@ public abstract class LContainer extends LComponent implements IArray {
 			}
 		}
 	}
-
+	
 	@Override
 	public void validatePosition() {
 		if (_component_isClose) {

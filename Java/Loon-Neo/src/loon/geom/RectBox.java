@@ -541,6 +541,15 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 		return width * height;
 	}
 
+	public Line[] getLines() {
+		final Line[] lines = new Line[4];
+		lines[0] = new Line(getMinX(), getMinY(), getMinX(), getMaxY());
+		lines[1] = new Line(getMinX(), getMaxY(), getMaxX(), getMaxY());
+		lines[2] = new Line(getMaxX(), getMaxY(), getMaxX(), getMinY());
+		lines[3] = new Line(getMaxX(), getMinY(), getMinX(), getMinY());
+		return lines;
+	}
+
 	/**
 	 * 检查是否包含指定坐标
 	 * 

@@ -21,6 +21,7 @@
 package loon.component.table;
 
 import loon.LTexture;
+import loon.canvas.Canvas;
 import loon.canvas.LColor;
 import loon.geom.Dimension;
 import loon.opengl.GLEx;
@@ -31,18 +32,30 @@ public class TextureCellRenderer implements ICellRenderer {
 
 	@Override
 	public void paint(GLEx g, Object value, int x, int y, int width, int height) {
-
 		if (!(value instanceof LTexture)) {
 			return;
 		}
-
 		LTexture textire = (LTexture) value;
 		if (scaleTexture) {
 			g.draw(textire, x, y, width, height, LColor.white);
 		} else {
 			g.draw(textire, x, y, LColor.white);
 		}
+	}
 
+	@Override
+	public void paint(Canvas g, Object value, int x, int y, int width, int height) {
+		if (!(value instanceof LTexture)) {
+			return;
+		}
+		LTexture textire = (LTexture) value;
+		int old = g.getFillColor();
+		if (scaleTexture) {
+			g.draw(textire.getImage(), x, y, width, height);
+		} else {
+			g.draw(textire.getImage(), x, y);
+		}
+		g.setFillColor(old);
 	}
 
 	public void setScaleTexture(boolean s) {

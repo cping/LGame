@@ -30,6 +30,7 @@ import loon.action.ActionControl;
 import loon.component.layout.Margin;
 import loon.events.QueryEvent;
 import loon.events.ResizeListener;
+import loon.geom.DirtyRectList;
 import loon.geom.PointI;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
@@ -53,6 +54,8 @@ public class Sprites implements IArray, Visible, LRelease {
 		public void update(ISprite spr);
 
 	}
+
+	private final DirtyRectList _dirtyList = new DirtyRectList();
 
 	protected ISprite[] _sprites;
 
@@ -1415,6 +1418,66 @@ public class Sprites implements IArray, Visible, LRelease {
 			}
 		}
 		return result;
+	}
+
+	private void addRect(TArray<RectBox> rects, RectBox child) {
+		if (child.width > 1 && child.height > 1) {
+			if (!rects.contains(child)) {
+				rects.add(child);
+			}
+		}
+	}
+
+	private void addAllRect(TArray<RectBox> rects, ISprite spr) {
+		if (spr instanceof Entity) {
+			if (spr.isContainer()) {
+				Entity ns = (Entity) spr;
+				TArray<IEntity> childs = ns._childrens;
+				for (int i = childs.size - 1; i > -1; i--) {
+					IEntity cc = childs.get(i);
+					if (cc != null) {
+						addRect(rects, ns.getCollisionBox().cpy().add(cc.getCollisionBox()));
+					}
+				}
+			} else {
+				addRect(rects, spr.getCollisionBox());
+			}
+		} else if (spr instanceof Sprite) {
+			if (spr.isContainer()) {
+				Sprite ns = (Sprite) spr;
+				TArray<ISprite> childs = ns._childrens;
+				for (int i = childs.size - 1; i > -1; i--) {
+					ISprite cc = childs.get(i);
+					if (cc != null) {
+						addRect(rects, ns.getCollisionBox().cpy().add(cc.getCollisionBox()));
+					}
+				}
+			} else {
+				addRect(rects, spr.getCollisionBox());
+			}
+		} else {
+			addRect(rects, spr.getCollisionBox());
+		}
+	}
+
+	public DirtyRectList getDirtyList() {
+		final TArray<RectBox> rects = new TArray<RectBox>();
+		ISprite[] childs = _sprites;
+		if (childs != null) {
+			for (int i = childs.length - 1; i > -1; i--) {
+				ISprite spr = childs[i];
+				if (spr != null) {
+					addAllRect(rects, spr);
+				}
+			}
+		}
+		_dirtyList.clear();
+		for (RectBox rect : rects) {
+			if (rect.width > 1 && rect.height > 1) {
+				_dirtyList.add(rect);
+			}
+		}
+		return _dirtyList;
 	}
 
 	@Override

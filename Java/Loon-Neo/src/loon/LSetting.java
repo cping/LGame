@@ -22,6 +22,7 @@ package loon;
 
 import loon.font.IFont;
 import loon.utils.DPI;
+import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 import loon.utils.Resolution;
 
@@ -300,6 +301,37 @@ public class LSetting {
 
 	public boolean portrait() {
 		return this.height >= this.width;
+	}
+
+	public LSetting updateScale(float max) {
+		return updateScale(width, height, max);
+	}
+
+	public LSetting updateScale(float w, float h, float max) {
+		if (w == 0 || h == 0) {
+			return this;
+		}
+		float nWidth;
+		float nHeight;
+		final float ratio = w / h;
+		final float newHeight = w / ratio;
+		final float newWidth = h * ratio;
+		if (newWidth == newHeight) {
+			nWidth = max;
+			nHeight = max;
+		} else if (newWidth > newHeight) {
+			nWidth = max;
+			nHeight = h / w * max;
+		} else {
+			nHeight = max;
+			nWidth = w / h * max;
+		}
+		this.width = MathUtils.floor(w);
+		this.height = MathUtils.floor(h);
+		this.width_zoom = MathUtils.floor(nWidth);
+		this.height_zoom = MathUtils.floor(nHeight);
+		updateScale();
+		return this;
 	}
 
 	public LSetting updateScale() {
