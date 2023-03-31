@@ -30,6 +30,7 @@ import loon.action.map.Config;
 import loon.canvas.Alpha;
 import loon.component.layout.LayoutAlign;
 import loon.geom.RectBox;
+import loon.geom.SetXY;
 import loon.geom.Vector2f;
 import loon.geom.XY;
 import loon.utils.MathUtils;
@@ -42,7 +43,7 @@ import loon.utils.reply.VarView;
 /**
  * 一个通用的Loon对象,除Screen外,Loon中所有可移动并展示的对象都继承于此类
  */
-public abstract class LObject<T> implements Comparator<T>, XY, ZIndex {
+public abstract class LObject<T> implements Comparator<T>, XY, SetXY, ZIndex {
 
 	private static int _SYS_GLOBAL_SEQNO = 0;
 
@@ -649,6 +650,7 @@ public abstract class LObject<T> implements Comparator<T>, XY, ZIndex {
 		setX(x.intValue());
 	}
 
+	@Override
 	public void setX(float x) {
 		syncPreviousPos();
 		_objectLocation.setX(x);
@@ -658,6 +660,7 @@ public abstract class LObject<T> implements Comparator<T>, XY, ZIndex {
 		setY(y.intValue());
 	}
 
+	@Override
 	public void setY(float y) {
 		syncPreviousPos();
 		_objectLocation.setY(y);

@@ -27,7 +27,7 @@ import loon.utils.Array;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 
-public class Vector4f implements Serializable, XYZW {
+public class Vector4f implements Serializable, XYZW, SetXYZW {
 
 	/**
 	 * 
@@ -338,19 +338,9 @@ public class Vector4f implements Serializable, XYZW {
 		return x;
 	}
 
-	public Vector4f setX(float x) {
-		this.x = x;
-		return this;
-	}
-
 	@Override
 	public float getY() {
 		return y;
-	}
-
-	public Vector4f setY(float y) {
-		this.y = y;
-		return this;
 	}
 
 	@Override
@@ -358,19 +348,29 @@ public class Vector4f implements Serializable, XYZW {
 		return z;
 	}
 
-	public Vector4f setZ(float z) {
-		this.z = z;
-		return this;
-	}
-
 	@Override
 	public float getW() {
 		return w;
 	}
 
-	public Vector4f setW(float w) {
+	@Override
+	public void setX(float x) {
+		this.x = x;
+	}
+
+	@Override
+	public void setY(float y) {
+		this.y = y;
+	}
+
+	@Override
+	public void setZ(float z) {
+		this.z = z;
+	}
+
+	@Override
+	public void setW(float w) {
 		this.w = w;
-		return this;
 	}
 
 	public float getR() {

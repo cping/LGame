@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -25,7 +25,7 @@ import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 
 /*最简化的整型坐标处理类,以减少对象大小*/
-public class PointI implements XY {
+public class PointI implements XY, SetXY {
 
 	public static boolean pointEquals(int x1, int y1, int x2, int y2, int tolerance) {
 		int dx = x2 - x1;
@@ -79,7 +79,9 @@ public class PointI implements XY {
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if ((obj == null) || (getClass() != obj.getClass()))
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
 			return false;
 		PointI other = (PointI) obj;
 		return equals(other);
@@ -157,6 +159,16 @@ public class PointI implements XY {
 		return y;
 	}
 
+	@Override
+	public void setX(float x) {
+		this.x = MathUtils.floor(x);
+	}
+
+	@Override
+	public void setY(float y) {
+		this.y = MathUtils.floor(y);
+	}
+
 	public String toCSS() {
 		return this.x + "px " + this.y + "px";
 	}
@@ -184,4 +196,5 @@ public class PointI implements XY {
 	public String toString() {
 		return "(" + x + "," + y + ")";
 	}
+
 }

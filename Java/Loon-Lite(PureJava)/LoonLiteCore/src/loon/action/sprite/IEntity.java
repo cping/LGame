@@ -26,10 +26,13 @@ import loon.canvas.LColor;
 import loon.opengl.GLEx;
 import loon.utils.Flip;
 import loon.utils.StrBuilder;
+import loon.utils.TArray;
 
 public interface IEntity extends ISprite, Flip<IEntity> {
 
 	public static final int TAG_INVALID = Integer.MIN_VALUE;
+
+	public TArray<IEntity> getChildren();
 
 	@Override
 	public boolean isVisible();

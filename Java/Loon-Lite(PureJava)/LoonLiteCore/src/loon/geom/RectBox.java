@@ -27,6 +27,7 @@ import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 import loon.utils.StringKeyValue;
 import loon.utils.StringUtils;
+import loon.utils.TArray;
 
 public class RectBox extends Shape implements BoxSize, XYZW {
 
@@ -34,6 +35,15 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+
+	public final static SetXY getRandom(RectBox rect, SetXY out) {
+		if (out == null) {
+			out = new PointF();
+		}
+		out.setX(rect.x + (MathUtils.random() * rect.width));
+		out.setY(rect.y + (MathUtils.random() * rect.height));
+		return out;
+	}
 
 	public final static RectBox at(String v) {
 		if (StringUtils.isEmpty(v)) {
@@ -310,8 +320,9 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 		return setBounds(this.x, this.y, width, height);
 	}
 
-	public boolean overlaps(RectBox rect) {
-		return !(x > rect.x + rect.width || x + width < rect.x || y > rect.y + rect.height || y + height < rect.y);
+	public boolean overlaps(RectBox rectangle) {
+		return !(x > rectangle.x + rectangle.width || x + width < rectangle.x || y > rectangle.y + rectangle.height
+				|| y + height < rectangle.y);
 	}
 
 	public int x() {
@@ -875,6 +886,23 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 		return y() + height();
 	}
 
+	public RectBox mergeXY(RectBox rect, XY pos) {
+		
+		float minX = MathUtils.min(rect.x, x);
+		float maxX = MathUtils.max(rect.getRight(), x);
+
+		rect.x = minX;
+		rect.width = MathUtils.floor(maxX - minX);
+
+		float minY = MathUtils.min(rect.y, y);
+		float maxY = MathUtils.max(rect.getBottom(), y);
+
+		rect.y = minY;
+		rect.height = MathUtils.floor(maxY - minY);
+
+		return rect;
+	}
+
 	@Override
 	public boolean isEmpty() {
 		return getWidth() <= 0 || height() <= 0;
@@ -1020,8 +1048,59 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 		return this.width * this.height;
 	}
 
+	@Override
 	public float perimeter() {
 		return 2f * (this.width + this.height);
+	}
+
+	public TArray<PointF> getMarchingAnts(float step, float quantity) {
+		if (step == -1f) {
+			step = perimeter() / quantity;
+		} else {
+			quantity = MathUtils.round(perimeter() / step);
+		}
+		final TArray<PointF> result = new TArray<PointF>();
+		float x = getX();
+		float y = getY();
+		int face = 0;
+		for (int i = 0; i < quantity; i++) {
+			result.add(new PointF(x, y));
+			switch (face) {
+			case 0:
+				x += step;
+				if (x >= getRight()) {
+					face = 1;
+					y += (x - getRight());
+					x = getRight();
+				}
+				break;
+			case 1:
+				y += step;
+				if (y >= getBottom()) {
+					face = 2;
+					x -= (y - getBottom());
+					y = getBottom();
+				}
+				break;
+			case 2:
+				x -= step;
+				if (x <= getLeft()) {
+					face = 3;
+					y -= (getLeft() - x);
+					x = getLeft();
+				}
+				break;
+
+			case 3:
+				y -= step;
+				if (y <= getTop()) {
+					face = 0;
+					y = getTop();
+				}
+				break;
+			}
+		}
+		return result;
 	}
 
 	public RectBox random() {

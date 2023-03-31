@@ -20,6 +20,8 @@
  */
 package loon.utils;
 
+import loon.geom.Vector2f;
+
 /**
  * 工具类,用以缓动计算
  */
@@ -562,7 +564,19 @@ public class Easing {
 		return outBounce(t * 2.0f - totaltime, totaltime, max - min, 0.0f) * 0.5f + min + (max - min) * 0.5f;
 	}
 
+	public static float linear(float t, float max, float min) {
+		return (max - min) * t + min;
+	}
+
 	public static float linear(float t, float totaltime, float max, float min) {
 		return (max - min) * t / totaltime + min;
+	}
+
+	public static Vector2f linearXY(float t, Vector2f vector1, Vector2f vector2) {
+		return vector1.cpy().lerp(vector2, t);
+	}
+
+	public static float between(float max, float min) {
+		return MathUtils.floor(MathUtils.random() * (max - min + 1.0f) + min);
 	}
 }

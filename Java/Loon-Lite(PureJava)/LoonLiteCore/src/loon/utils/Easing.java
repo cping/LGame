@@ -20,13 +20,17 @@
  */
 package loon.utils;
 
+import loon.geom.Vector2f;
+
 /**
  * 工具类,用以缓动计算
  */
 public class Easing {
 
 	public static enum EasingMode {
-		InQuad, OutQuad, InOutQuad, InCubic, OutCubic, InOutCubic, InQuart, OutQuart, InOutQuart, InQuint, OutQuint, InOutQuint, InSine, OutSine, InOutSine, InExp, OutExp, InOutExp, InCirc, OutCirc, InOutCirc, InBack, OutBack, InOutBack, OutBounce, InBounce, InOutBounce, Linear;
+		InQuad, OutQuad, InOutQuad, InCubic, OutCubic, InOutCubic, InQuart, OutQuart, InOutQuart, InQuint, OutQuint,
+		InOutQuint, InSine, OutSine, InOutSine, InExp, OutExp, InOutExp, InCirc, OutCirc, InOutCirc, InBack, OutBack,
+		InOutBack, OutBounce, InBounce, InOutBounce, Linear;
 	}
 
 	public static EasingMode toEasingMode(String name) {
@@ -126,92 +130,64 @@ public class Easing {
 
 	private static final int FUNCTION_OUT_ELASTIC = 13;
 
-	public static final Easing NONE = new Easing("NONE", TYPE_IN,
-			FUNCTION_LINEAR);
+	public static final Easing NONE = new Easing("NONE", TYPE_IN, FUNCTION_LINEAR);
 
-	public static final Easing ELASTIC_INOUT = new Easing("ELASTIC_INOUT",
-			TYPE_IN_OUT, FUNCTION_ELASTIC);
+	public static final Easing ELASTIC_INOUT = new Easing("ELASTIC_INOUT", TYPE_IN_OUT, FUNCTION_ELASTIC);
 
-	public static final Easing QUAD_INOUT = new Easing("QUAD_INOUT",
-			TYPE_IN_OUT, FUNCTION_LINEAR);
+	public static final Easing QUAD_INOUT = new Easing("QUAD_INOUT", TYPE_IN_OUT, FUNCTION_LINEAR);
 
-	public static final Easing REGULAR_IN = new Easing("REGULAR_IN", TYPE_IN,
-			FUNCTION_QUADRADIC);
+	public static final Easing REGULAR_IN = new Easing("REGULAR_IN", TYPE_IN, FUNCTION_QUADRADIC);
 
-	public static final Easing REGULAR_OUT = new Easing("REGULAR_OUT",
-			TYPE_OUT, FUNCTION_QUADRADIC);
+	public static final Easing REGULAR_OUT = new Easing("REGULAR_OUT", TYPE_OUT, FUNCTION_QUADRADIC);
 
-	public static final Easing REGULAR_IN_OUT = new Easing("REGULAR_IN_OUT",
-			TYPE_IN_OUT, FUNCTION_QUADRADIC);
+	public static final Easing REGULAR_IN_OUT = new Easing("REGULAR_IN_OUT", TYPE_IN_OUT, FUNCTION_QUADRADIC);
 
-	public static final Easing STRONG_IN = new Easing("STRONG_IN", TYPE_IN,
-			FUNCTION_QUINTIC);
+	public static final Easing STRONG_IN = new Easing("STRONG_IN", TYPE_IN, FUNCTION_QUINTIC);
 
-	public static final Easing STRONG_OUT = new Easing("STRONG_OUT", TYPE_OUT,
-			FUNCTION_QUINTIC);
+	public static final Easing STRONG_OUT = new Easing("STRONG_OUT", TYPE_OUT, FUNCTION_QUINTIC);
 
-	public static final Easing STRONG_IN_OUT = new Easing("STRONG_IN_OUT",
-			TYPE_IN_OUT, FUNCTION_QUINTIC);
+	public static final Easing STRONG_IN_OUT = new Easing("STRONG_IN_OUT", TYPE_IN_OUT, FUNCTION_QUINTIC);
 
-	public static final Easing BACK_IN = new Easing("BACK_IN", TYPE_IN,
-			FUNCTION_BACK);
+	public static final Easing BACK_IN = new Easing("BACK_IN", TYPE_IN, FUNCTION_BACK);
 
-	public static final Easing BACK_OUT = new Easing("BACK_OUT", TYPE_OUT,
-			FUNCTION_BACK);
+	public static final Easing BACK_OUT = new Easing("BACK_OUT", TYPE_OUT, FUNCTION_BACK);
 
-	public static final Easing CUBIC_IN = new Easing("CUBIC_IN", TYPE_IN,
-			FUNCTION_IN);
+	public static final Easing CUBIC_IN = new Easing("CUBIC_IN", TYPE_IN, FUNCTION_IN);
 
-	public static final Easing CUBIC_OUT = new Easing("CUBIC_OUT", TYPE_OUT,
-			FUNCTION_OUT);
+	public static final Easing CUBIC_OUT = new Easing("CUBIC_OUT", TYPE_OUT, FUNCTION_OUT);
 
-	public static final Easing CUBIC_INOUT = new Easing("CUBIC_INOUT",
-			TYPE_OUT, FUNCTION_INOUT);
+	public static final Easing CUBIC_INOUT = new Easing("CUBIC_INOUT", TYPE_OUT, FUNCTION_INOUT);
 
-	public static final Easing BOUNCE_IN = new Easing("BOUNCE_IN", TYPE_OUT,
-			FUNCTION_BOUNCE_OUT);
+	public static final Easing BOUNCE_IN = new Easing("BOUNCE_IN", TYPE_OUT, FUNCTION_BOUNCE_OUT);
 
-	public static final Easing BOUNCE_INOUT = new Easing("BOUNCE_INOUT",
-			TYPE_IN_OUT, FUNCTION_BOUNCE_OUT);
+	public static final Easing BOUNCE_INOUT = new Easing("BOUNCE_INOUT", TYPE_IN_OUT, FUNCTION_BOUNCE_OUT);
 
-	public static final Easing BACK_IN_OUT = new Easing("BACK_IN_OUT",
-			TYPE_IN_OUT, FUNCTION_BACK);
+	public static final Easing BACK_IN_OUT = new Easing("BACK_IN_OUT", TYPE_IN_OUT, FUNCTION_BACK);
 
-	public static final Easing ELASTIC_IN = new Easing("ELASTIC_IN", TYPE_IN,
-			FUNCTION_ELASTIC);
+	public static final Easing ELASTIC_IN = new Easing("ELASTIC_IN", TYPE_IN, FUNCTION_ELASTIC);
 
-	public static final Easing ELASTIC_OUT = new Easing("ELASTIC_OUT",
-			TYPE_OUT, FUNCTION_ELASTIC);
+	public static final Easing ELASTIC_OUT = new Easing("ELASTIC_OUT", TYPE_OUT, FUNCTION_ELASTIC);
 
-	public static final Easing ELASTIC_IN_OUT = new Easing("ELASTIC_IN_OUT",
-			TYPE_IN_OUT, FUNCTION_ELASTIC);
+	public static final Easing ELASTIC_IN_OUT = new Easing("ELASTIC_IN_OUT", TYPE_IN_OUT, FUNCTION_ELASTIC);
 
-	public static final Easing TIME_NONE = new Easing("TIME_NONE", TYPE_TIME,
-			FUNCTION_NONE);
+	public static final Easing TIME_NONE = new Easing("TIME_NONE", TYPE_TIME, FUNCTION_NONE);
 
-	public static final Easing TIME_LINEAR = new Easing("TIME_LINEAR",
-			TYPE_TIME, FUNCTION_LINEAR);
+	public static final Easing TIME_LINEAR = new Easing("TIME_LINEAR", TYPE_TIME, FUNCTION_LINEAR);
 
-	public static final Easing TIME_EASE_IN = new Easing("TIME_EASE_IN",
-			TYPE_TIME, FUNCTION_IN);
+	public static final Easing TIME_EASE_IN = new Easing("TIME_EASE_IN", TYPE_TIME, FUNCTION_IN);
 
-	public static final Easing TIME_EASE_OUT = new Easing("TIME_EASE_OUT",
-			TYPE_TIME, FUNCTION_OUT);
+	public static final Easing TIME_EASE_OUT = new Easing("TIME_EASE_OUT", TYPE_TIME, FUNCTION_OUT);
 
-	public static final Easing TIME_EASE_INOUT = new Easing("TIME_EASE_INOUT",
-			TYPE_TIME, FUNCTION_INOUT);
+	public static final Easing TIME_EASE_INOUT = new Easing("TIME_EASE_INOUT", TYPE_TIME, FUNCTION_INOUT);
 
-	public static final Easing TIME_EASE_IN_BACK = new Easing(
-			"TIME_EASE_IN_BACK", TYPE_TIME, FUNCTION_IN_BACK);
+	public static final Easing TIME_EASE_IN_BACK = new Easing("TIME_EASE_IN_BACK", TYPE_TIME, FUNCTION_IN_BACK);
 
-	public static final Easing TIME_EASE_OUT_BACK = new Easing(
-			"TIME_EASE_OUT_BACK", TYPE_TIME, FUNCTION_OUT_BACK);
+	public static final Easing TIME_EASE_OUT_BACK = new Easing("TIME_EASE_OUT_BACK", TYPE_TIME, FUNCTION_OUT_BACK);
 
-	public static final Easing TIME_BOUNCE_OUT = new Easing("TIME_BOUNCE_OUT",
-			TYPE_TIME, FUNCTION_BOUNCE_OUT);
+	public static final Easing TIME_BOUNCE_OUT = new Easing("TIME_BOUNCE_OUT", TYPE_TIME, FUNCTION_BOUNCE_OUT);
 
-	public static final Easing TIME_EASE_OUT_ELASTIC = new Easing(
-			"TIME_EASE_OUT_ELASTIC", TYPE_TIME, FUNCTION_OUT_ELASTIC);
+	public static final Easing TIME_EASE_OUT_ELASTIC = new Easing("TIME_EASE_OUT_ELASTIC", TYPE_TIME,
+			FUNCTION_OUT_ELASTIC);
 
 	private final int type;
 
@@ -420,8 +396,7 @@ public class Easing {
 		return max * (t * t * t + 1.0f) + min;
 	}
 
-	public static float inOutCubic(float t, float totaltime, float max,
-			float min) {
+	public static float inOutCubic(float t, float totaltime, float max, float min) {
 		max -= min;
 		t /= totaltime;
 		if (t / 2.0f < 1.0f) {
@@ -443,8 +418,7 @@ public class Easing {
 		return -max * (t * t * t * t - 1.0f) + min;
 	}
 
-	public static float inOutQuart(float t, float totaltime, float max,
-			float min) {
+	public static float inOutQuart(float t, float totaltime, float max, float min) {
 		max -= min;
 		t /= totaltime;
 		if (t / 2.0f < 1.0f) {
@@ -466,8 +440,7 @@ public class Easing {
 		return max * (t * t * t * t * t + 1.0f) + min;
 	}
 
-	public static float inOutQuint(float t, float totaltime, float max,
-			float min) {
+	public static float inOutQuint(float t, float totaltime, float max, float min) {
 		max -= min;
 		t /= totaltime;
 		if (t / 2.0f < 1.0f) {
@@ -479,8 +452,7 @@ public class Easing {
 
 	public static float inSine(float t, float totaltime, float max, float min) {
 		max -= min;
-		return -max * MathUtils.cos(t * 1.570796326794897f / totaltime) + max
-				+ min;
+		return -max * MathUtils.cos(t * 1.570796326794897f / totaltime) + max + min;
 	}
 
 	public static float outSine(float t, float totaltime, float max, float min) {
@@ -490,21 +462,17 @@ public class Easing {
 
 	public static float inOutSine(float t, float totaltime, float max, float min) {
 		max -= min;
-		return -max / 2.0f
-				* (MathUtils.cos(t * 3.141592653589793f / totaltime) - 1.0f)
-				+ min;
+		return -max / 2.0f * (MathUtils.cos(t * 3.141592653589793f / totaltime) - 1.0f) + min;
 	}
 
 	public static float inExp(float t, float totaltime, float max, float min) {
 		max -= min;
-		return t == 0.0f ? min : max
-				* MathUtils.pow(2.0f, 10.0f * (t / totaltime - 1.0f)) + min;
+		return t == 0.0f ? min : max * MathUtils.pow(2.0f, 10.0f * (t / totaltime - 1.0f)) + min;
 	}
 
 	public static float outExp(float t, float totaltime, float max, float min) {
 		max -= min;
-		return t == totaltime ? max + min : max
-				* (-MathUtils.pow(2.0f, -10.0f * t / totaltime) + 1.0f) + min;
+		return t == totaltime ? max + min : max * (-MathUtils.pow(2.0f, -10.0f * t / totaltime) + 1.0f) + min;
 	}
 
 	public static float inOutExp(float t, float totaltime, float max, float min) {
@@ -545,22 +513,19 @@ public class Easing {
 		return max / 2.0f * (MathUtils.sqrt(1.0f - t * t) + 1.0f) + min;
 	}
 
-	public static float inBack(float t, float totaltime, float max, float min,
-			float s) {
+	public static float inBack(float t, float totaltime, float max, float min, float s) {
 		max -= min;
 		t /= totaltime;
 		return max * t * t * ((s + 1.0f) * t - s) + min;
 	}
 
-	public static float outBack(float t, float totaltime, float max, float min,
-			float s) {
+	public static float outBack(float t, float totaltime, float max, float min, float s) {
 		max -= min;
 		t = t / totaltime - 1.0f;
 		return max * (t * t * ((s + 1.0f) * t * s) + 1.0f) + min;
 	}
 
-	public static float inOutBack(float t, float totaltime, float max,
-			float min, float s) {
+	public static float inOutBack(float t, float totaltime, float max, float min, float s) {
 		max -= min;
 		s *= 1.525f;
 		if (t / 2.0f < 1.0f) {
@@ -592,16 +557,27 @@ public class Easing {
 		return max - outBounce(totaltime - t, totaltime, max - min, 0.0f) + min;
 	}
 
-	public static float inOutBounce(float t, float totaltime, float max,
-			float min) {
+	public static float inOutBounce(float t, float totaltime, float max, float min) {
 		if (t < totaltime / 2.0f) {
 			return inBounce(t * 2.0f, totaltime, max - min, max) * 0.5f + min;
 		}
-		return outBounce(t * 2.0f - totaltime, totaltime, max - min, 0.0f)
-				* 0.5f + min + (max - min) * 0.5f;
+		return outBounce(t * 2.0f - totaltime, totaltime, max - min, 0.0f) * 0.5f + min + (max - min) * 0.5f;
+	}
+
+	public static float linear(float t, float max, float min) {
+		return (max - min) * t + min;
 	}
 
 	public static float linear(float t, float totaltime, float max, float min) {
 		return (max - min) * t / totaltime + min;
 	}
+
+	public static Vector2f linearXY(float t, Vector2f vector1, Vector2f vector2) {
+		return vector1.cpy().lerp(vector2, t);
+	}
+
+	public static float between(float max, float min) {
+		return MathUtils.floor(MathUtils.random() * (max - min + 1.0f) + min);
+	}
+	
 }

@@ -30,8 +30,9 @@ import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 import loon.utils.StringKeyValue;
 import loon.utils.StringUtils;
+import loon.utils.TArray;
 
-public abstract class Shape implements Serializable, IArray, XY {
+public abstract class Shape implements Serializable, IArray, XY, SetXY {
 
 	/**
 	 * 
@@ -105,6 +106,7 @@ public abstract class Shape implements Serializable, IArray, XY {
 		return x;
 	}
 
+	@Override
 	public void setX(float x) {
 		if (x != this.x || x == 0) {
 			float dx = x - this.x;
@@ -122,6 +124,7 @@ public abstract class Shape implements Serializable, IArray, XY {
 		}
 	}
 
+	@Override
 	public void setY(float y) {
 		if (y != this.y || y == 0) {
 			float dy = y - this.y;
@@ -210,6 +213,23 @@ public abstract class Shape implements Serializable, IArray, XY {
 	public float getBoundingCircleRadius() {
 		checkPoints();
 		return boundingCircleRadius;
+	}
+
+	public float perimeter() {
+		final TArray<PointF> result = new TArray<PointF>();
+		final float[] points = getPoints();
+		final int size = points.length;
+		float perimeter = 0;
+		for (int i = 0; i < size; i += 2) {
+			result.add(new PointF(points[i], points[i + 1]));
+		}
+		for (int i = 0; i < result.size; i++) {
+			PointF pointA = result.get(i);
+			PointF pointB = result.get((i + 1) % result.size);
+			Line line = new Line(pointA.x, pointA.y, pointB.x, pointB.y);
+			perimeter += line.length();
+		}
+		return perimeter;
 	}
 
 	public float[] getCenter() {

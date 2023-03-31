@@ -23,16 +23,23 @@ package loon.action.sprite;
 import loon.LObject.State;
 import loon.LRelease;
 import loon.LSystem;
+import loon.LTexture;
 import loon.Screen;
 import loon.Visible;
 import loon.action.ActionBind;
 import loon.action.ActionControl;
+import loon.action.PlaceActions;
 import loon.component.layout.Margin;
 import loon.events.QueryEvent;
 import loon.events.ResizeListener;
+import loon.geom.Circle;
 import loon.geom.DirtyRectList;
+import loon.geom.Ellipse;
+import loon.geom.Line;
 import loon.geom.PointI;
 import loon.geom.RectBox;
+import loon.geom.Triangle2f;
+import loon.geom.XY;
 import loon.opengl.GLEx;
 import loon.utils.CollectionUtils;
 import loon.utils.IArray;
@@ -47,11 +54,15 @@ import loon.utils.reply.Callback;
  * 当LNode系列精灵和SpriteBatchScreen合用时，也支持触屏.）
  * 
  */
-public class Sprites implements IArray, Visible, LRelease {
+public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
+
+	public static interface Created<T> {
+		T make();
+	}
 
 	public static interface SpriteListener {
 
-		public void update(ISprite spr);
+		public Sprites update(ISprite spr);
 
 	}
 
@@ -151,15 +162,15 @@ public class Sprites implements IArray, Visible, LRelease {
 	 * 
 	 * @param sprite
 	 */
-	public void sendToFront(ISprite sprite) {
+	public Sprites sendToFront(ISprite sprite) {
 		if (_closed) {
-			return;
+			return this;
 		}
 		if (this._size <= 1 || this._sprites[0] == sprite) {
-			return;
+			return this;
 		}
 		if (_sprites[0] == sprite) {
-			return;
+			return this;
 		}
 		for (int i = 0; i < this._size; i++) {
 			if (this._sprites[i] == sprite) {
@@ -172,6 +183,7 @@ public class Sprites implements IArray, Visible, LRelease {
 				break;
 			}
 		}
+		return this;
 	}
 
 	/**
@@ -179,15 +191,15 @@ public class Sprites implements IArray, Visible, LRelease {
 	 * 
 	 * @param sprite
 	 */
-	public void sendToBack(ISprite sprite) {
+	public Sprites sendToBack(ISprite sprite) {
 		if (_closed) {
-			return;
+			return this;
 		}
 		if (this._size <= 1 || this._sprites[this._size - 1] == sprite) {
-			return;
+			return this;
 		}
 		if (_sprites[this._size - 1] == sprite) {
-			return;
+			return this;
 		}
 		for (int i = 0; i < this._size; i++) {
 			if (this._sprites[i] == sprite) {
@@ -200,18 +212,19 @@ public class Sprites implements IArray, Visible, LRelease {
 				break;
 			}
 		}
+		return this;
 	}
 
 	/**
 	 * 按所在层级排序
 	 * 
 	 */
-	public void sortSprites() {
+	public Sprites sortSprites() {
 		if (this._closed) {
-			return;
+			return this;
 		}
 		if (this._size <= 1) {
-			return;
+			return this;
 		}
 		if (this._sprites.length != this._size) {
 			ISprite[] sprs = CollectionUtils.copyOf(this._sprites, this._size);
@@ -220,6 +233,7 @@ public class Sprites implements IArray, Visible, LRelease {
 		} else {
 			spriteSorter.sort(this._sprites);
 		}
+		return this;
 	}
 
 	public Sprites setSortableChildren(boolean v) {
@@ -482,14 +496,15 @@ public class Sprites implements IArray, Visible, LRelease {
 		return result;
 	}
 
-	public void addAt(ISprite child, float x, float y) {
+	public Sprites addAt(ISprite child, float x, float y) {
 		if (_closed) {
-			return;
+			return this;
 		}
 		if (child != null) {
 			child.setLocation(x, y);
 			add(child);
 		}
+		return this;
 	}
 
 	public ISprite getSprite(int index) {
@@ -572,8 +587,9 @@ public class Sprites implements IArray, Visible, LRelease {
 	 * @param sprite
 	 * @return
 	 */
-	public void append(ISprite sprite) {
+	public Sprites append(ISprite sprite) {
 		add(sprite);
+		return this;
 	}
 
 	/**
@@ -885,12 +901,13 @@ public class Sprites implements IArray, Visible, LRelease {
 	 * 清空所有精灵
 	 * 
 	 */
-	public void removeAll() {
+	public Sprites removeAll() {
 		if (_closed) {
-			return;
+			return this;
 		}
 		clear();
 		this._sprites = new ISprite[0];
+		return this;
 	}
 
 	/**
@@ -979,9 +996,9 @@ public class Sprites implements IArray, Visible, LRelease {
 	 * @param startIndex
 	 * @param endIndex
 	 */
-	public void remove(int startIndex, int endIndex) {
+	public Sprites remove(int startIndex, int endIndex) {
 		if (_closed) {
-			return;
+			return this;
 		}
 		if (endIndex - startIndex > 0) {
 			for (int i = startIndex; i < endIndex && i < _sprites.length; i++) {
@@ -1004,6 +1021,7 @@ public class Sprites implements IArray, Visible, LRelease {
 		if (_size == 0) {
 			_sprites = new ISprite[0];
 		}
+		return this;
 	}
 
 	public PointI getMinPos() {
@@ -1036,6 +1054,7 @@ public class Sprites implements IArray, Visible, LRelease {
 	 * 清空当前精灵集合
 	 * 
 	 */
+	@Override
 	public void clear() {
 		if (_closed) {
 			return;
@@ -1052,6 +1071,7 @@ public class Sprites implements IArray, Visible, LRelease {
 			_sprites[i] = null;
 		}
 		_size = 0;
+		return;
 	}
 
 	/**
@@ -1200,6 +1220,54 @@ public class Sprites implements IArray, Visible, LRelease {
 		}
 	}
 
+	public Sprites addSpriteGroup(LTexture tex, int count) {
+		for (int i = 0; i < count; i++) {
+			add(new Sprite(tex));
+		}
+		return this;
+	}
+
+	public Sprites addEntityGroup(LTexture tex, int count) {
+		for (int i = 0; i < count; i++) {
+			add(new Entity(tex));
+		}
+		return this;
+	}
+
+	public Sprites addSpriteGroup(String path, int count) {
+		for (int i = 0; i < count; i++) {
+			add(new Sprite(path));
+		}
+		return this;
+	}
+
+	public Sprites addEntityGroup(String path, int count) {
+		for (int i = 0; i < count; i++) {
+			add(new Entity(path));
+		}
+		return this;
+	}
+
+	public Sprites addEntityGroup(Created<? extends IEntity> s, int count) {
+		if (s == null) {
+			return this;
+		}
+		for (int i = 0; i < count; i++) {
+			add(s.make());
+		}
+		return this;
+	}
+	
+	public Sprites addSpriteGroup(Created<? extends ISprite> s, int count) {
+		if (s == null) {
+			return this;
+		}
+		for (int i = 0; i < count; i++) {
+			add(s.make());
+		}
+		return this;
+	}
+	
 	public float getX() {
 		return viewX;
 	}
@@ -1224,12 +1292,13 @@ public class Sprites implements IArray, Visible, LRelease {
 	 * @param width
 	 * @param height
 	 */
-	public void setViewWindow(int x, int y, int width, int height) {
+	public Sprites setViewWindow(int x, int y, int width, int height) {
 		this._isViewWindowSet = true;
 		this.viewX = x;
 		this.viewY = y;
 		this.viewWidth = width;
 		this.viewHeight = height;
+		return this;
 	}
 
 	/**
@@ -1238,10 +1307,11 @@ public class Sprites implements IArray, Visible, LRelease {
 	 * @param x
 	 * @param y
 	 */
-	public void setLocation(int x, int y) {
+	public Sprites setLocation(int x, int y) {
 		this._isViewWindowSet = true;
 		this.viewX = x;
 		this.viewY = y;
+		return this;
 	}
 
 	public SpriteControls createSpriteControls() {
@@ -1511,8 +1581,9 @@ public class Sprites implements IArray, Visible, LRelease {
 		return sprListerner;
 	}
 
-	public void setSprListerner(SpriteListener sprListerner) {
+	public Sprites setSprListerner(SpriteListener sprListerner) {
 		this.sprListerner = sprListerner;
+		return this;
 	}
 
 	public Screen getScreen() {
@@ -1627,6 +1698,57 @@ public class Sprites implements IArray, Visible, LRelease {
 
 	public Sprites setLimitViewWindows(boolean limit) {
 		this._limitViewWindows = limit;
+		return this;
+	}
+
+	public Sprites rect(RectBox rect) {
+		return rect(rect, 0);
+	}
+
+	public Sprites rect(RectBox rect, int shift) {
+		rect(this, rect, shift);
+		return this;
+	}
+
+	public Sprites triangle(Triangle2f t) {
+		return triangle(t, 1);
+	}
+
+	public Sprites triangle(Triangle2f t, int stepRate) {
+		triangle(this, t, stepRate);
+		return this;
+	}
+
+	public Sprites circle(Circle circle) {
+		return circle(circle, -1f, -1f);
+	}
+
+	public Sprites circle(Circle circle, float startAngle, float endAngle) {
+		circle(this, circle, startAngle, endAngle);
+		return this;
+	}
+
+	public Sprites ellipse(Ellipse e) {
+		return ellipse(e, -1f, -1f);
+	}
+
+	public Sprites ellipse(Ellipse e, float startAngle, float endAngle) {
+		ellipse(this, e, startAngle, endAngle);
+		return this;
+	}
+
+	public Sprites line(Line e) {
+		line(this, e);
+		return this;
+	}
+
+	public Sprites rotateAround(XY point, float angle) {
+		rotateAround(this, point, angle);
+		return this;
+	}
+
+	public Sprites rotateAroundDistance(XY point, float angle, float distance) {
+		rotateAroundDistance(this, point, angle, distance);
 		return this;
 	}
 

@@ -1,19 +1,19 @@
 /**
- *
+ * 
  * Copyright 2008 - 2015
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -27,9 +27,9 @@ import loon.utils.NumberUtils;
 import loon.utils.StringKeyValue;
 
 /*最简化的浮点体积处理类,以减少对象大小*/
-public class RectF implements XY {
+public class RectF implements XY, SetXY {
 
-	public static class Range implements XY {
+	public static class Range implements XY, SetXY {
 
 		public float left;
 
@@ -274,10 +274,10 @@ public class RectF implements XY {
 
 		public void scale(float scale) {
 			if (scale != 1.0f) {
-				left = left * scale + 0.5f;
-				top = top * scale + 0.5f;
-				right = right * scale + 0.5f;
-				bottom = bottom * scale + 0.5f;
+				left = (float) (left * scale + 0.5f);
+				top = (float) (top * scale + 0.5f);
+				right = (float) (right * scale + 0.5f);
+				bottom = (float) (bottom * scale + 0.5f);
 			}
 		}
 
@@ -293,6 +293,16 @@ public class RectF implements XY {
 		@Override
 		public float getY() {
 			return y();
+		}
+
+		@Override
+		public void setX(float x) {
+			this.left = x;
+		}
+
+		@Override
+		public void setY(float y) {
+			this.right = y;
 		}
 	}
 
@@ -325,7 +335,7 @@ public class RectF implements XY {
 	}
 
 	public RectF rotate(float rotate) {
-		final int[] rect = MathUtils.getLimit(x, y, width,height, rotate);
+		final int[] rect = MathUtils.getLimit(x, y, width, height, rotate);
 		return set(rect[0], rect[1], rect[2], rect[3]);
 	}
 
@@ -445,6 +455,16 @@ public class RectF implements XY {
 	@Override
 	public float getY() {
 		return y;
+	}
+
+	@Override
+	public void setX(float x) {
+		this.x = x;
+	}
+
+	@Override
+	public void setY(float y) {
+		this.y = y;
 	}
 
 	public float getWidth() {
@@ -577,4 +597,5 @@ public class RectF implements XY {
 		builder.kv("x", x).comma().kv("y", y).comma().kv("width", width).comma().kv("height", height);
 		return builder.toString();
 	}
+
 }

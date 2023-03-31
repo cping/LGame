@@ -27,7 +27,7 @@ import loon.utils.Array;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 
-public class Vector3f implements Serializable, XYZ {
+public class Vector3f implements Serializable, XYZ, SetXYZ {
 
 	/**
 	 * 
@@ -1169,6 +1169,22 @@ public class Vector3f implements Serializable, XYZ {
 	@Override
 	public float getZ() {
 		return this.z;
+	}
+
+	@Override
+	public void setX(float x) {
+		this.x = x;
+
+	}
+
+	@Override
+	public void setY(float y) {
+		this.y = y;
+	}
+
+	@Override
+	public void setZ(float z) {
+		this.z = z;
 	}
 
 	public Vector3f nor() {

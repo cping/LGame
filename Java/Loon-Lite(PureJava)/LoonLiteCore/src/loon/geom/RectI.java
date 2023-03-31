@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -26,9 +26,9 @@ import loon.utils.NumberUtils;
 import loon.utils.StringKeyValue;
 
 /*最简化的整型体积处理类,以减少对象大小*/
-public class RectI implements XY {
+public class RectI implements XY, SetXY {
 
-	public static class Range implements XY {
+	public static class Range implements XY, SetXY {
 
 		public int left;
 
@@ -294,6 +294,16 @@ public class RectI implements XY {
 			return y();
 		}
 
+		@Override
+		public void setX(float x) {
+			this.left = MathUtils.floor(x);
+		}
+
+		@Override
+		public void setY(float y) {
+			this.right = MathUtils.floor(y);
+		}
+
 	}
 
 	public int width = 0;
@@ -447,6 +457,16 @@ public class RectI implements XY {
 		return y;
 	}
 
+	@Override
+	public void setX(float x) {
+		this.x = MathUtils.floor(x);
+	}
+
+	@Override
+	public void setY(float y) {
+		this.y = MathUtils.floor(y);
+	}
+
 	public int getWidth() {
 		return width;
 	}
@@ -574,4 +594,5 @@ public class RectI implements XY {
 		builder.kv("x", x).comma().kv("y", y).comma().kv("width", width).comma().kv("height", height);
 		return builder.toString();
 	}
+
 }

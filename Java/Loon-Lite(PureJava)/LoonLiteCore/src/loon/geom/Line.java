@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -29,9 +29,22 @@ import loon.utils.TArray;
 
 public class Line extends Shape {
 	/**
-	 *
+	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+
+	public static SetXY getRandom(Line line, SetXY out) {
+		if (out == null) {
+			out = new PointF();
+		}
+
+		float r = MathUtils.random();
+
+		out.setX(line.getX1() + r * (line.getX2() - line.getX1()));
+		out.setY(line.getY1() + r * (line.getY2() - line.getY1()));
+
+		return out;
+	}
 
 	public static Line at(String v) {
 		if (StringUtils.isEmpty(v)) {
@@ -122,12 +135,34 @@ public class Line extends Shape {
 
 	@Override
 	public float length() {
-		return (int) MathUtils
-				.sqrt((getX2() - getX1()) * (getX2() - getX2()) + (getY2() - getY1()) * (getY2() - getY1()));
+		return MathUtils.sqrt((getX2() - getX1()) * (getX2() - getX1()) + (getY2() - getY1()) * (getY2() - getY1()));
 	}
 
 	public float lengthSquared() {
 		return vec.lengthSquared();
+	}
+
+	public TArray<PointF> getPoints(float quantity, float stepRate) {
+		return getPoints(new TArray<PointF>(), quantity, stepRate);
+	}
+
+	public TArray<PointF> getPoints(TArray<PointF> points, float quantity, float stepRate) {
+		if (stepRate > 0) {
+			quantity = length() / stepRate;
+		}
+		float x1 = getX1();
+		float y1 = getY1();
+
+		float x2 = getX2();
+		float y2 = getY2();
+
+		for (int i = 0; i < quantity; i++) {
+			float position = i / quantity;
+			float x = x1 + (x2 - x1) * position;
+			float y = y1 + (y2 - y1) * position;
+			points.add(new PointF(x, y));
+		}
+		return points;
 	}
 
 	public void set(Vector2f start, Vector2f end) {
@@ -199,7 +234,7 @@ public class Line extends Shape {
 
 		stepRate = MathUtils.max(1, stepRate);
 		if (points == null) {
-			points = new TArray<>();
+			points = new TArray<Point>();
 		}
 
 		int x1 = MathUtils.round(getX1());
@@ -373,7 +408,7 @@ public class Line extends Shape {
 
 		return MathUtils.toDegrees(radians);
 	}
-    
+
 	public float side(XY v) {
 		if (v == null) {
 			return 0f;

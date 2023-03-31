@@ -1475,6 +1475,10 @@ public class Sprite extends LObject<ISprite>
 		return _offset.y;
 	}
 
+	public TArray<ISprite> getChildren() {
+		return _childrens;
+	}
+	
 	public ResizeListener<Sprite> getResizeListener() {
 		return _resizeListener;
 	}

@@ -24,7 +24,9 @@ import java.util.Random;
 
 import loon.LSysException;
 import loon.geom.RectBox;
+import loon.geom.SetXY;
 import loon.geom.Vector2f;
+import loon.geom.Vector3f;
 import loon.geom.XY;
 
 public final class MathUtils {
@@ -943,6 +945,24 @@ public final class MathUtils {
 		return (v > min && v < max);
 	}
 
+	public static float distanceBetween(float x1, float y1, float x2, float y2) {
+		final float dx = x1 - x2;
+		final float dy = y1 - y2;
+		return MathUtils.sqrt(dx * dx + dy * dy);
+	}
+
+	public static float distanceBetweenPoints(XY a, XY b) {
+		final float dx = a.getX() - b.getX();
+		final float dy = a.getY() - b.getY();
+		return MathUtils.sqrt(dx * dx + dy * dy);
+	}
+
+	public static float distanceBetweenPointsSquared(XY a, XY b) {
+		final float dx = a.getX() - b.getX();
+		final float dy = a.getY() - b.getY();
+		return dx * dx + dy * dy;
+	}
+
 	public static float toDegrees(final float radians) {
 		return radians * RAD_TO_DEG;
 	}
@@ -958,7 +978,7 @@ public final class MathUtils {
 	public static float translateY(float angle, float length) {
 		return length * MathUtils.sinDeg(angle);
 	}
-	
+
 	public static int dip2px(float scale, float dpValue) {
 		return (int) (dpValue * scale + 0.5f);
 	}
@@ -1082,12 +1102,12 @@ public final class MathUtils {
 		return (int) (x + BIG_ENOUGH_FLOOR) - BIG_ENOUGH_INT;
 	}
 
-	public static long floor(double x) {
-		return (long) (x + BIG_ENOUGH_FLOOR) - BIG_ENOUGH_INT;
-	}
-
 	public static int floorInt(double x) {
 		return (int) (x + BIG_ENOUGH_FLOOR) - BIG_ENOUGH_INT;
+	}
+
+	public static long floor(double x) {
+		return (long) (x + BIG_ENOUGH_FLOOR) - BIG_ENOUGH_INT;
 	}
 
 	public static int floorPositive(float x) {
@@ -1301,6 +1321,61 @@ public final class MathUtils {
 
 	public static boolean isInBounds(final float minValue, final float maxValue, final float val) {
 		return val >= minValue && val <= maxValue;
+	}
+
+	public static Vector2f randomXY(Vector2f v, float scale) {
+		float r = MathUtils.random() * MathUtils.TWO_PI;
+		v.x = MathUtils.cos(r) * scale;
+		v.y = MathUtils.sin(r) * scale;
+		return v;
+	}
+
+	public static Vector3f randomXYZ(Vector3f v, float radius) {
+		float r = MathUtils.random() * MathUtils.TWO_PI;
+		float z = (MathUtils.random() * 2) - 1;
+		float zScale = MathUtils.sqrt(1 - z * z) * radius;
+		v.x = MathUtils.cos(r) * zScale;
+		v.y = MathUtils.sin(r) * zScale;
+		v.z = z * radius;
+		return v;
+	}
+
+	public static SetXY rotate(XY src, SetXY dst, float angle) {
+		final float x = src.getX();
+		final float y = src.getY();
+
+		dst.setX((x * MathUtils.cos(angle)) - (y * MathUtils.sin(angle)));
+		dst.setY((x * MathUtils.sin(angle)) + (y * MathUtils.cos(angle)));
+
+		return dst;
+	}
+
+	public static SetXY rotateTo(SetXY dst, float x, float y, float angle, float distance) {
+		dst.setX(x + (distance * MathUtils.cos(angle)));
+		dst.setY(y + (distance * MathUtils.sin(angle)));
+		return dst;
+	}
+
+	public static SetXY rotateAround(XY src, SetXY dst, float x, float y, float angle) {
+		final float cos = MathUtils.cos(angle);
+		final float sin = MathUtils.sin(angle);
+
+		final float tx = src.getX() - x;
+		final float ty = src.getY() - y;
+
+		dst.setX(tx * cos - ty * sin + x);
+		dst.setY(tx * sin + ty * cos + y);
+
+		return dst;
+	}
+
+	public static SetXY rotateAroundDistance(XY src, SetXY dst, float x, float y, float angle, float distance) {
+		final float t = angle + MathUtils.atan2(src.getY() - y, src.getX() - x);
+
+		dst.setX(x + (distance * MathUtils.cos(t)));
+		dst.setY(y + (distance * MathUtils.sin(t)));
+
+		return dst;
 	}
 
 	public static String toString(float value) {

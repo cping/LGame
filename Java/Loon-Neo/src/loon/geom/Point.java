@@ -26,7 +26,7 @@ import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 import loon.utils.StringUtils;
 
-public class Point extends Shape {
+public class Point extends Shape  {
 	/**
 	 * 
 	 */

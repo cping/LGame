@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -27,21 +27,27 @@ import loon.LObject;
 import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
-import loon.LTrans;
 import loon.PlayerUtils;
 import loon.Screen;
 import loon.action.ActionBind;
 import loon.action.ActionListener;
 import loon.action.ActionTween;
+import loon.action.PlaceActions;
 import loon.action.collision.CollisionObject;
 import loon.action.map.Field2D;
+import loon.action.sprite.Sprites.Created;
 import loon.canvas.LColor;
 import loon.events.ResizeListener;
 import loon.geom.Affine2f;
 import loon.geom.BoxSize;
+import loon.geom.Circle;
 import loon.geom.Dimension;
+import loon.geom.Ellipse;
+import loon.geom.Line;
 import loon.geom.RectBox;
+import loon.geom.Triangle2f;
 import loon.geom.Vector2f;
+import loon.geom.XY;
 import loon.opengl.GLEx;
 import loon.utils.IArray;
 import loon.utils.LayerSorter;
@@ -104,7 +110,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	protected boolean _flipX = false, _flipY = false;
 
-	private final static LayerSorter<IEntity> entitySorter = new LayerSorter<>(false);
+	private final static LayerSorter<IEntity> entitySorter = new LayerSorter<IEntity>(false);
 
 	private ResizeListener<IEntity> _resizeListener;
 
@@ -287,17 +293,17 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		setPivotY(ry);
 	}
 
-	public IEntity coord(float x, float y) {
-		setLocation(x, y);
-		return this;
-	}
-
 	public IEntity setAnchor(final float scale) {
 		return setAnchor(scale, scale);
 	}
 
 	public IEntity setAnchor(final float sx, final float sy) {
 		setPivot(_width * sx, _height * sy);
+		return this;
+	}
+
+	public IEntity coord(float x, float y) {
+		setLocation(x, y);
 		return this;
 	}
 
@@ -576,7 +582,10 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	@Override
 	public IEntity addChild(final IEntity e) {
-		if ((e == null) || (e == this)) {
+		if (e == null) {
+			return this;
+		}
+		if (e == this) {
 			return this;
 		}
 		if (this._childrens == null) {
@@ -649,7 +658,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 			}
 			// 删除精灵同时，删除缓动动画
 			if (removed != null && removed instanceof ActionBind) {
-				removeActionEvents(removed);
+				removeActionEvents((ActionBind) removed);
 			}
 		}
 		this._childrens.clear();
@@ -671,7 +680,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		}
 		// 删除精灵同时，删除缓动动画
 		if (removed && e instanceof ActionBind) {
-			removeActionEvents(e);
+			removeActionEvents((ActionBind) e);
 		}
 		return removed;
 	}
@@ -690,7 +699,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 				}
 				// 删除精灵同时，删除缓动动画
 				if (removed != null && (removed instanceof ActionBind)) {
-					removeActionEvents(removed);
+					removeActionEvents((ActionBind) removed);
 				}
 				return removed;
 			}
@@ -844,11 +853,11 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 					final float rotationCenterY = this._rotationCenterY == -1 ? (ny + _origin.oy(this._height))
 							: ny + this._rotationCenterY;
 					if (flipX && flipY) {
-						Affine2f.transform(tx, rotationCenterX, rotationCenterY, LTrans.TRANS_ROT180);
+						Affine2f.transform(tx, rotationCenterX, rotationCenterY, Affine2f.TRANS_ROT180);
 					} else if (flipX) {
-						Affine2f.transform(tx, rotationCenterX, rotationCenterY, LTrans.TRANS_MIRROR);
+						Affine2f.transform(tx, rotationCenterX, rotationCenterY, Affine2f.TRANS_MIRROR);
 					} else if (flipY) {
-						Affine2f.transform(tx, rotationCenterX, rotationCenterY, LTrans.TRANS_MIRROR_ROT180);
+						Affine2f.transform(tx, rotationCenterX, rotationCenterY, Affine2f.TRANS_MIRROR_ROT180);
 					}
 				}
 				if ((scaleX != 1) || (scaleY != 1)) {
@@ -928,7 +937,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	}
 
 	private void allocateChildren() {
-		this._childrens = new TArray<>(Entity.CHILDREN_CAPACITY_DEFAULT);
+		this._childrens = new TArray<IEntity>(Entity.CHILDREN_CAPACITY_DEFAULT);
 	}
 
 	protected void onManagedPaint(final GLEx g, float offsetX, float offsetY) {
@@ -1469,6 +1478,81 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	protected void onRotation() {
 	}
 
+	public IEntity addGroup(Created<? extends IEntity> s, int count) {
+		if (s == null) {
+			return this;
+		}
+		for (int i = 0; i < count; i++) {
+			addChild(s.make());
+		}
+		return this;
+	}
+	
+	public IEntity addGroup(LTexture tex, int count) {
+		for (int i = 0; i < count; i++) {
+			addChild(new Entity(tex));
+		}
+		return this;
+	}
+
+	public IEntity addGroup(String path, int count) {
+		for (int i = 0; i < count; i++) {
+			addChild(new Entity(path));
+		}
+		return this;
+	}
+
+	public IEntity rect(RectBox rect) {
+		return rect(rect, 0);
+	}
+
+	public IEntity rect(RectBox rect, int shift) {
+		PlaceActions.rect(this, rect, shift);
+		return this;
+	}
+
+	public IEntity triangle(Triangle2f t) {
+		return triangle(t, 1);
+	}
+
+	public IEntity triangle(Triangle2f t, int stepRate) {
+		PlaceActions.triangle(this, t, stepRate);
+		return this;
+	}
+
+	public IEntity circle(Circle circle) {
+		return circle(circle, -1f, -1f);
+	}
+
+	public IEntity circle(Circle circle, float startAngle, float endAngle) {
+		PlaceActions.circle(this, circle, startAngle, endAngle);
+		return this;
+	}
+
+	public IEntity ellipse(Ellipse e) {
+		return ellipse(e, -1f, -1f);
+	}
+
+	public Entity ellipse(Ellipse e, float startAngle, float endAngle) {
+		PlaceActions.ellipse(this, e, startAngle, endAngle);
+		return this;
+	}
+
+	public IEntity line(Line e) {
+		PlaceActions.line(this, e);
+		return this;
+	}
+
+	public IEntity rotateAround(XY point, float angle) {
+		PlaceActions.rotateAround(this, point, angle);
+		return this;
+	}
+
+	public IEntity rotateAroundDistance(XY point, float angle, float distance) {
+		PlaceActions.rotateAroundDistance(this, point, angle, distance);
+		return this;
+	}
+
 	@Override
 	public void setRotation(float rotate) {
 		super.setRotation(rotate);
@@ -1719,6 +1803,11 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 			}
 			actor = actor.getParent();
 		}
+	}
+
+	@Override
+	public TArray<IEntity> getChildren() {
+		return _childrens;
 	}
 
 	public boolean isClosed() {

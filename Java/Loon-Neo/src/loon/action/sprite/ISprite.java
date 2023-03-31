@@ -29,11 +29,12 @@ import loon.ZIndex;
 import loon.action.ActionBind;
 import loon.canvas.LColor;
 import loon.geom.RectBox;
+import loon.geom.SetXY;
 import loon.geom.Vector2f;
 import loon.geom.XY;
 import loon.opengl.GLEx;
 
-public interface ISprite extends ActionBind, Visible, LRelease, ZIndex, XY {
+public interface ISprite extends ActionBind, Visible, LRelease, ZIndex, XY, SetXY {
 
 	public static final int TYPE_FADE_IN = 0;
 
@@ -60,6 +61,12 @@ public interface ISprite extends ActionBind, Visible, LRelease, ZIndex, XY {
 	@Override
 	float getY();
 
+	@Override
+	void setX(float x);
+
+	@Override
+	void setY(float y);
+	
 	@Override
 	void setColor(LColor c);
 

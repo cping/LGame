@@ -2157,6 +2157,38 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return getSprites();
 	}
 
+	public Screen addSpriteGroup(LTexture tex, int count) {
+		if (sprites == null) {
+			return this;
+		}
+		sprites.addSpriteGroup(tex, count);
+		return this;
+	}
+
+	public Screen addEntityGroup(LTexture tex, int count) {
+		if (sprites == null) {
+			return this;
+		}
+		sprites.addEntityGroup(tex, count);
+		return this;
+	}
+
+	public Screen addSpriteGroup(String path, int count) {
+		if (sprites == null) {
+			return this;
+		}
+		sprites.addSpriteGroup(path, count);
+		return this;
+	}
+
+	public Screen addEntityGroup(String path, int count) {
+		if (sprites == null) {
+			return this;
+		}
+		sprites.addEntityGroup(path, count);
+		return this;
+	}
+
 	/**
 	 * 返回位于屏幕顶部的组件
 	 * 

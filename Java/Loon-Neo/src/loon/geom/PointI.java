@@ -25,7 +25,7 @@ import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 
 /*最简化的整型坐标处理类,以减少对象大小*/
-public class PointI implements XY {
+public class PointI implements XY, SetXY {
 
 	public static boolean pointEquals(int x1, int y1, int x2, int y2, int tolerance) {
 		int dx = x2 - x1;
@@ -159,6 +159,16 @@ public class PointI implements XY {
 		return y;
 	}
 
+	@Override
+	public void setX(float x) {
+		this.x = MathUtils.floor(x);
+	}
+
+	@Override
+	public void setY(float y) {
+		this.y = MathUtils.floor(y);
+	}
+
 	public String toCSS() {
 		return this.x + "px " + this.y + "px";
 	}
@@ -186,4 +196,5 @@ public class PointI implements XY {
 	public String toString() {
 		return "(" + x + "," + y + ")";
 	}
+
 }

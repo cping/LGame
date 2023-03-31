@@ -31,6 +31,20 @@ public class Ellipse extends Shape {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	public static SetXY getRandom(Ellipse e, SetXY out) {
+		if (out == null) {
+			out = new PointF();
+		}
+
+		float p = MathUtils.random() * MathUtils.TWO_PI;
+		float s = MathUtils.sqrt(MathUtils.random());
+
+		out.setX(e.getRealX() + ((s * MathUtils.cos(p)) * e.getRadius1() / 2));
+		out.setY(e.getRealY() + ((s * MathUtils.sin(p)) * e.getRadius2() / 2));
+
+		return out;
+	}
+
 	protected static final int DEFAULT_SEGMENT_MAX_COUNT = 50;
 
 	private int segmentCount;
@@ -69,6 +83,14 @@ public class Ellipse extends Shape {
 		this.radius2 = radius2;
 		this.segmentCount = segmentCount;
 		checkPoints();
+	}
+
+	public float getRealX() {
+		return this.x + radius1;
+	}
+
+	public float getRealY() {
+		return this.y + radius2;
 	}
 
 	/**

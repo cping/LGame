@@ -29,6 +29,23 @@ public class Circle extends Ellipse {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	public static SetXY getRandom(Circle c, SetXY out) {
+		if (out == null) {
+			out = new PointF();
+		}
+
+		float t = MathUtils.random() * MathUtils.TWO_PI;
+		float u = MathUtils.random() + MathUtils.random();
+		float r = (u > 1) ? 2 - u : u;
+		float x = r * MathUtils.cos(t);
+		float y = r * MathUtils.sin(t);
+
+		out.setX(c.getX() + (x * c.getRadius()));
+		out.setY(c.getY() + (y * c.getRadius()));
+
+		return out;
+	}
+	
 	public static Circle at(String v) {
 		if (StringUtils.isEmpty(v)) {
 			return new Circle();

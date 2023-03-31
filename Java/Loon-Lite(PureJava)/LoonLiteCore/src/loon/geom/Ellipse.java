@@ -1,19 +1,19 @@
 /**
- *
+ * 
  * Copyright 2008 - 2011
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -27,10 +27,24 @@ import loon.utils.TArray;
 
 public class Ellipse extends Shape {
 	/**
-	 *
+	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
+	public static SetXY getRandom(Ellipse e, SetXY out) {
+		if (out == null) {
+			out = new PointF();
+		}
+
+		float p = MathUtils.random() * MathUtils.TWO_PI;
+		float s = MathUtils.sqrt(MathUtils.random());
+
+		out.setX(e.getRealX() + ((s * MathUtils.cos(p)) * e.getRadius1() / 2));
+		out.setY(e.getRealY() + ((s * MathUtils.sin(p)) * e.getRadius2() / 2));
+
+		return out;
+	}
+	
 	protected static final int DEFAULT_SEGMENT_MAX_COUNT = 50;
 
 	private int segmentCount;
@@ -71,9 +85,17 @@ public class Ellipse extends Shape {
 		checkPoints();
 	}
 
+	public float getRealX() {
+		return this.x + radius1;
+	}
+
+	public float getRealY() {
+		return this.y + radius2;
+	}
+
 	/**
 	 * 设定当前椭圆形半径
-	 *
+	 * 
 	 * @param radius1
 	 * @param radius2
 	 */
@@ -106,7 +128,7 @@ public class Ellipse extends Shape {
 
 	@Override
 	protected void createPoints() {
-		TArray<Float> tempPoints = new TArray<>();
+		TArray<Float> tempPoints = new TArray<Float>();
 
 		maxX = -Float.MIN_VALUE;
 		maxY = -Float.MIN_VALUE;

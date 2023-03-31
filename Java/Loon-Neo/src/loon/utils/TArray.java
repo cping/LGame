@@ -184,12 +184,12 @@ public class TArray<T> implements Iterable<T>, IArray, LRelease {
 		this();
 		addAll(vals);
 	}
-	
+
 	public TArray(Keys<? extends T> vals) {
 		this();
 		addAll(vals);
 	}
-	
+
 	public TArray(Values<? extends T> vals) {
 		this();
 		addAll(vals);
@@ -204,20 +204,20 @@ public class TArray<T> implements Iterable<T>, IArray, LRelease {
 		return true;
 	}
 
-	public TArray<T> addAll(Keys<? extends T> vals){
+	public TArray<T> addAll(Keys<? extends T> vals) {
 		for (T t : vals) {
 			add(t);
 		}
 		return this;
 	}
 
-	public TArray<T> addAll(Values<? extends T> vals){
+	public TArray<T> addAll(Values<? extends T> vals) {
 		for (T t : vals) {
 			add(t);
 		}
 		return this;
 	}
-	
+
 	public TArray<T> addAll(SortedList<? extends T> vals) {
 		for (LIterator<? extends T> it = vals.listIterator(); it.hasNext();) {
 			add(it.next());
@@ -225,14 +225,14 @@ public class TArray<T> implements Iterable<T>, IArray, LRelease {
 		return this;
 	}
 
-	public TArray<T> addAll(Array<? extends T> vals){
+	public TArray<T> addAll(Array<? extends T> vals) {
 		for (; vals.hashNext();) {
 			add(vals.next());
 		}
 		vals.stopNext();
 		return this;
 	}
-	
+
 	public void addAll(TArray<? extends T> array) {
 		addAll(array, 0, array.size);
 	}
@@ -503,6 +503,10 @@ public class TArray<T> implements Iterable<T>, IArray, LRelease {
 		return this.size == 0;
 	}
 
+	public T shift() {
+		return removeIndex(0);
+	}
+
 	public T[] shrink() {
 		if (items.length != size)
 			resize(size);
@@ -522,6 +526,76 @@ public class TArray<T> implements Iterable<T>, IArray, LRelease {
 		System.arraycopy(items, 0, newItems, 0, MathUtils.min(size, newItems.length));
 		this.items = newItems;
 		return newItems;
+	}
+
+	public TArray<T> moveUp(T item) {
+		int currentIndex = indexOf(item);
+		if (currentIndex != -1 && currentIndex < size - 1) {
+			T item2 = items[currentIndex + 1];
+			int index2 = indexOf(item2);
+
+			items[currentIndex] = item2;
+			items[index2] = item;
+		}
+		return this;
+	}
+
+	public TArray<T> moveDown(T item) {
+		int currentIndex = indexOf(item);
+		if (currentIndex > 0) {
+			T item2 = items[currentIndex - 1];
+			int index2 = indexOf(item2);
+
+			items[currentIndex] = item2;
+			items[index2] = item;
+		}
+
+		return this;
+	}
+
+	public boolean replace(T src, T dst) {
+		int index1 = indexOf(src);
+		int index2 = indexOf(dst);
+		if (index1 != -1 && index2 == -1) {
+			items[index1] = dst;
+			return true;
+		}
+		return false;
+	}
+
+	public int getCount(T value) {
+		return getCount(value, 0, size);
+	}
+
+	public int getCount(T value, int startIndex, int endIndex) {
+		int total = 0;
+		if (!(startIndex < 0 || startIndex > size || startIndex >= endIndex || endIndex > size)) {
+			for (int i = startIndex; i < endIndex; i++) {
+				T child = items[i];
+				if (child == value) {
+					total++;
+				}
+			}
+		}
+		return total;
+	}
+
+	public T rotateLeft(int shift) {
+		T element = null;
+		for (int i = 0; i < shift; i++) {
+			element = shift();
+			add(element);
+		}
+		return element;
+	}
+
+	public T rotateRight(int shift) {
+		T element = null;
+		for (int i = 0; i < shift; i++) {
+			element = pop();
+			unshift(element);
+		}
+		return element;
 	}
 
 	public TArray<T> reverse() {
@@ -672,6 +746,14 @@ public class TArray<T> implements Iterable<T>, IArray, LRelease {
 		return list;
 	}
 
+	public TArray<T> concat(TArray<? extends T>[] array) {
+		TArray<T> all = new TArray<T>(this);
+		for (int i = 0; i < array.length; i++) {
+			all.addAll(array[i]);
+		}
+		return all;
+	}
+
 	public TArray<T> concat(TArray<? extends T> array) {
 		TArray<T> all = new TArray<T>(this);
 		all.addAll(array);
@@ -749,7 +831,7 @@ public class TArray<T> implements Iterable<T>, IArray, LRelease {
 		return modified;
 	}
 
-	public SwappableArray<T> GetSwappableArray() {
+	public SwappableArray<T> getSwappableArray() {
 		return new SwappableArray<T>(this);
 	}
 

@@ -25,7 +25,7 @@ import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 
 /*最简化的浮点坐标处理类,以减少对象大小*/
-public class PointF implements XY {
+public class PointF implements XY,SetXY {
 
 	public static boolean pointEquals(float x1, float y1, float x2, float y2, float tolerance) {
 		float dx = x2 - x1;
@@ -159,6 +159,16 @@ public class PointF implements XY {
 		return y;
 	}
 
+	@Override
+	public void setX(float x) {
+		this.x = x;
+	}
+
+	@Override
+	public void setY(float y) {
+		this.y = y;
+	}
+	
 	public PointF random() {
 		this.x = MathUtils.random(0f, LSystem.viewSize.getWidth());
 		this.y = MathUtils.random(0f, LSystem.viewSize.getHeight());
@@ -186,4 +196,5 @@ public class PointF implements XY {
 	public String toString() {
 		return "(" + x + "," + y + ")";
 	}
+
 }

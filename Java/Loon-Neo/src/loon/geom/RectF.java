@@ -27,9 +27,9 @@ import loon.utils.NumberUtils;
 import loon.utils.StringKeyValue;
 
 /*最简化的浮点体积处理类,以减少对象大小*/
-public class RectF implements XY {
+public class RectF implements XY, SetXY {
 
-	public static class Range implements XY {
+	public static class Range implements XY, SetXY {
 
 		public float left;
 
@@ -294,6 +294,16 @@ public class RectF implements XY {
 		public float getY() {
 			return y();
 		}
+
+		@Override
+		public void setX(float x) {
+			this.left = x;
+		}
+
+		@Override
+		public void setY(float y) {
+			this.right = y;
+		}
 	}
 
 	public float width = 0f;
@@ -447,6 +457,16 @@ public class RectF implements XY {
 		return y;
 	}
 
+	@Override
+	public void setX(float x) {
+		this.x = x;
+	}
+
+	@Override
+	public void setY(float y) {
+		this.y = y;
+	}
+
 	public float getWidth() {
 		return width;
 	}
@@ -577,4 +597,5 @@ public class RectF implements XY {
 		builder.kv("x", x).comma().kv("y", y).comma().kv("width", width).comma().kv("height", height);
 		return builder.toString();
 	}
+
 }

@@ -682,8 +682,8 @@ public class Sprite extends LObject<ISprite>
 		boolean update = (_objectRotation != 0) || !(_scaleX == 1f && _scaleY == 1f) || _flipX || _flipY;
 		int tmp = g.color();
 		try {
-			final float nx = this._objectLocation.x + offsetX + _offset.x;
-			final float ny = this._objectLocation.y + offsetY + _offset.y;
+			float nx = this._objectLocation.x + offsetX + _offset.x;
+			float ny = this._objectLocation.y + offsetY + _offset.y;
 			if (_elastic) {
 				g.setClip(nx, ny, width, height);
 			}
@@ -1464,6 +1464,10 @@ public class Sprite extends LObject<ISprite>
 		return _offset.y;
 	}
 
+	public TArray<ISprite> getChildren() {
+		return _childrens;
+	}
+	
 	public ResizeListener<Sprite> getResizeListener() {
 		return _resizeListener;
 	}

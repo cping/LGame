@@ -37,11 +37,13 @@ import loon.action.collision.GravityResult;
 import loon.action.map.Config;
 import loon.action.map.Field2D;
 import loon.action.page.ScreenSwitch;
+import loon.action.sprite.IEntity;
 import loon.action.sprite.ISprite;
 import loon.action.sprite.Sprite;
 import loon.action.sprite.SpriteControls;
 import loon.action.sprite.SpriteLabel;
 import loon.action.sprite.Sprites;
+import loon.action.sprite.Sprites.Created;
 import loon.action.sprite.Sprites.SpriteListener;
 import loon.canvas.Image;
 import loon.canvas.LColor;
@@ -2288,6 +2290,46 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return getSprites();
 	}
 
+	public Screen addSpriteGroup(LTexture tex, int count) {
+		if (sprites == null) {
+			return this;
+		}
+		sprites.addSpriteGroup(tex, count);
+		return this;
+	}
+
+	public Screen addEntityGroup(LTexture tex, int count) {
+		if (sprites == null) {
+			return this;
+		}
+		sprites.addEntityGroup(tex, count);
+		return this;
+	}
+
+	public Screen addSpriteGroup(String path, int count) {
+		if (sprites == null) {
+			return this;
+		}
+		sprites.addSpriteGroup(path, count);
+		return this;
+	}
+
+	public Screen addEntityGroup(String path, int count) {
+		if (sprites == null) {
+			return this;
+		}
+		sprites.addEntityGroup(path, count);
+		return this;
+	}
+
+	public Screen addEntityGroup(Created<? extends IEntity > e, int count) {
+		if (sprites == null) {
+			return this;
+		}
+		sprites.addEntityGroup(e, count);
+		return this;
+	}
+	
 	/**
 	 * 返回位于屏幕顶部的组件
 	 * 

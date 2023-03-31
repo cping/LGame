@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -20,17 +20,63 @@
  */
 package loon.geom;
 
+import loon.utils.MathUtils;
 import loon.utils.StringKeyValue;
 import loon.utils.StringUtils;
 
 public class Triangle2f extends Shape implements Triangle {
 	/**
-	 *
+	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
+	public static SetXY getRandom(Triangle2f triangle, SetXY out) {
+		if (out == null) {
+			out = new PointF();
+		}
+
+		float ux = triangle.getX2() - triangle.getX1();
+		float uy = triangle.getY2() - triangle.getY1();
+
+		float vx = triangle.getX3() - triangle.getX1();
+		float vy = triangle.getY3() - triangle.getY1();
+
+		float r = MathUtils.random();
+		float s = MathUtils.random();
+
+		if (r + s >= 1) {
+			r = 1 - r;
+			s = 1 - s;
+		}
+
+		out.setX(triangle.getX1() + ((ux * r) + (vx * s)));
+		out.setY(triangle.getY1() + ((uy * r) + (vy * s)));
+
+		return out;
+	}
+	
 	public final static Triangle2f at(float x, float y, float w, float h) {
 		return new Triangle2f(x + w / 2, y + h / 2, w, h);
+	}
+
+	public final static Triangle2f left(float x, float y, float w, float h) {
+		final float x1 = x + w;
+		final float y1 = y - h;
+		final float x2 = x + w;
+		final float y2 = y;
+		final float x3 = x;
+		final float y3 = y;
+		return new Triangle2f(x1, y1, x2, y2, x3, y3);
+	}
+
+	public final static Triangle2f right(float x, float y, float w, float h) {
+		final float x1 = x;
+		final float y1 = y;
+		final float x2 = x;
+		final float y2 = y - h;
+		final float x3 = x + w;
+		final float y3 = y;
+		return new Triangle2f(x1, y1, x2, y2, x3, y3);
 	}
 
 	public float[] xpoints;
