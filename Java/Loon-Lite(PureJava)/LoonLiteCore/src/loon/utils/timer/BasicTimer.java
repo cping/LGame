@@ -85,8 +85,12 @@ public class BasicTimer {
 	}
 
 	public boolean action(long elapsedTime) {
-		update(MathUtils.max(Duration.toS(elapsedTime), LSystem.MIN_SECONE_SPEED_FIXED));
+		update(elapsedTime);
 		return isCompleted();
+	}
+
+	public void update(long elapsedTime) {
+		update(MathUtils.max(Duration.toS(elapsedTime), LSystem.MIN_SECONE_SPEED_FIXED));
 	}
 
 	public void update(float dt) {
