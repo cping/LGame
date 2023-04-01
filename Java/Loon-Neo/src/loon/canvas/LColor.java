@@ -1806,12 +1806,11 @@ public class LColor implements Serializable {
 		return web(stringColor, 1f);
 	}
 
-	public static final LColor web(final String stringColor, final float alpha) {
+	public static final LColor web(final String hexColor, final float alpha) {
 		if (alpha == 1f) {
-			return new LColor(stringColor);
+			return new LColor(hexColor);
 		}
-		LColor c = new LColor(stringColor);
-		return new LColor(c.r, c.g, c.b, c.a * alpha);
+		return new LColor(hexColor).mulSelfAlpha(alpha);
 	}
 
 	public static final LColor stringToColor(String c) {

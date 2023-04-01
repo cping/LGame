@@ -2286,7 +2286,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * 
 	 * @return
 	 */
-	public Sprites SPRITE() {
+	public Sprites ELF() {
 		return getSprites();
 	}
 

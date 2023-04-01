@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2016
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -22,32 +22,25 @@ package loon.utils.timer;
 
 import loon.LSystem;
 import loon.utils.Easing;
-import loon.utils.Easing.EasingMode;
-import loon.utils.MathUtils;
 import loon.utils.StringKeyValue;
+import loon.utils.Easing.EasingMode;
 
 /**
- * 缓动动画使用的计时器
+ * 缓动动画使用的计时器(绑定缓动方法的具体实现)
  */
-public class EaseTimer {
-
-	private final float _duration;
-
-	private float _timer = 0f;
-	private float _delta = 0f;
-	private float _progress = 0f;
-	private float _delay = 0f;
-	private float _timeInAfter = 0f;
+public class EaseTimer extends BasicTimer {
 
 	private float _ease_value_max = 1f;
 	private float _ease_value_min = 0f;
-
-	private boolean _finished = false;
 
 	private EasingMode _mode;
 
 	public EaseTimer(float duration) {
 		this(duration, LSystem.DEFAULT_EASE_DELAY, EasingMode.Linear);
+	}
+
+	public EaseTimer(EasingMode mode) {
+		this(1f, mode);
 	}
 
 	public EaseTimer(float duration, EasingMode mode) {
@@ -59,50 +52,26 @@ public class EaseTimer {
 	}
 
 	public EaseTimer(float duration, float delay, EasingMode mode) {
-		this._duration = duration;
-		this._delay = delay;
+		this(duration, LSystem.DEFAULT_EASE_DELAY, mode, 0);
+	}
+
+	public EaseTimer(float duration, float delay, EasingMode mode, int loop) {
+		super(0, duration, loop);
 		this._mode = mode;
+		this._delay = delay;
 		this._ease_value_max = 1f;
 		this._ease_value_min = 0f;
 	}
 
 	public EaseTimer(EaseTimer timer) {
-		this._duration = timer._duration;
-		this._timer = timer._timer;
+		super(timer);
 		this._mode = timer._mode;
-		this._finished = timer._finished;
-		this._progress = timer._progress;
-		this._delay = timer._delay;
-		this._delta = timer._delta;
-		this._timeInAfter = timer._timeInAfter;
+		this._ease_value_max = timer._ease_value_max;
+		this._ease_value_min = timer._ease_value_min;
 	}
 
-	public boolean action(LTimerContext context) {
-		return action(context.timeSinceLastUpdate);
-	}
-
-	public boolean action(long elapsedTime) {
-		update(elapsedTime);
-		return isCompleted();
-	}
-
-	public void update(LTimerContext context) {
-		update(context.timeSinceLastUpdate);
-	}
-
-	public void update(long elapsedTime) {
-		if (this._finished) {
-			return;
-		}
-		this._delta = MathUtils.max(elapsedTime / 1000f, LSystem.MIN_SECONE_SPEED_FIXED);
-		this._timer += _delta;
-		if (this._timer >= _delay) {
-			_timeInAfter += _delta / _duration;
-		}
-		if (this._timer >= this._duration) {
-			this._timer = this._duration;
-			this._finished = true;
-		}
+	@Override
+	public float process() {
 		switch (this._mode) {
 		case InQuad:
 			this._progress = Easing.inQuad(this._timer, this._duration, this._ease_value_max, this._ease_value_min);
@@ -185,28 +154,30 @@ public class EaseTimer {
 		case InOutBounce:
 			this._progress = Easing.inOutBounce(this._timer, this._duration, this._ease_value_max,
 					this._ease_value_min);
+		case InElastic:
+			this._progress = Easing.inElastic(this._timer, this._duration, this._ease_value_max, this._ease_value_min);
+			break;
+		case OutElastic:
+			this._progress = Easing.outElastic(this._timer, this._duration, this._ease_value_max, this._ease_value_min);
+			break;
+		case InOutElastic:
+			this._progress = Easing.inOutElastic(this._timer, this._duration, this._ease_value_max,
+					this._ease_value_min);
 			break;
 		case Linear:
 		default:
 			this._progress = Easing.linear(this._timer, this._duration, this._ease_value_max, this._ease_value_min);
 			break;
 		}
+		return this._progress;
 	}
 
+	@Override
 	public EaseTimer reset(float delay) {
+		super.reset(delay);
 		this._ease_value_max = 1f;
 		this._ease_value_min = 0f;
-		this._timer = 0;
-		this._progress = 0.0f;
-		this._finished = false;
-		this._delta = 0;
-		this._delay = delay;
-		this._timeInAfter = 0;
 		return this;
-	}
-
-	public EaseTimer reset() {
-		return reset(LSystem.DEFAULT_EASE_DELAY);
 	}
 
 	public EaseTimer setEasingMode(EasingMode ease) {
@@ -218,52 +189,26 @@ public class EaseTimer {
 		return this._mode;
 	}
 
-	public float getValue() {
-		return this._progress + this._timeInAfter;
-	}
-
-	public float getTimeInAfter() {
-		return this._timeInAfter;
-	}
-
-	public float getDelta() {
-		return this._delta;
-	}
-
-	public float getDelay() {
-		return this._delay;
-	}
-
-	public float getDuration() {
-		return this._duration;
-	}
-
-	public float getTimer() {
-		return this._timer;
-	}
-
-	public boolean isCompleted() {
-		return this._finished;
-	}
-
-	public float getProgress() {
-		return this._progress;
+	public float getTweenValue() {
+		return Easing.getTween(this._mode, this._timer);
 	}
 
 	public float getEaseValueMax() {
 		return _ease_value_max;
 	}
 
-	public void setEaseValueMax(float max) {
+	public EaseTimer setEaseValueMax(float max) {
 		this._ease_value_max = max;
+		return this;
 	}
 
 	public float getEaseValueMin() {
 		return _ease_value_min;
 	}
 
-	public void setEaseValueMin(float min) {
+	public EaseTimer setEaseValueMin(float min) {
 		this._ease_value_min = min;
+		return this;
 	}
 
 	@Override

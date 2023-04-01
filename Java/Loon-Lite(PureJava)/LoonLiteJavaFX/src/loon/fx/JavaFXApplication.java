@@ -103,6 +103,11 @@ public class JavaFXApplication extends Application implements Platform {
 	protected JavaFXResizeCanvas fxCanvas;
 
 	public JavaFXApplication() {
+	}
+
+	@Override
+	public void init() throws Exception {
+		super.init();
 		this.lazyData = initData.lazyData;
 		this.appSetting = initData.appSetting;
 		this.appSetting.mainClass = initData.mainClass;

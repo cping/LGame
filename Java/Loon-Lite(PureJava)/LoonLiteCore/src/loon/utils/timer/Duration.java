@@ -24,6 +24,7 @@ import loon.LSystem;
 import loon.utils.Calculator;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
+import loon.utils.TimeUtils;
 
 /**
  * 一个时间管理用类,支持简单的时间换算,用于统一Loon的时间单位关系与数值,初始单位是ms,毫秒
@@ -69,6 +70,10 @@ public class Duration implements Comparable<Duration> {
 
 	public static final Duration ONE_DAY = new Duration(LSystem.DAY);
 
+	public final static long now() {
+		return TimeUtils.millis();
+	}
+
 	public final static long ofS(float sec) {
 		return MathUtils.floor(sec * LSystem.SECOND);
 	}
@@ -83,6 +88,22 @@ public class Duration implements Comparable<Duration> {
 
 	public final static long ofD(float day) {
 		return MathUtils.floor(day * LSystem.DAY);
+	}
+
+	public final static float toS(long millis) {
+		return (float) millis / (float) LSystem.SECOND;
+	}
+
+	public final static float toM(long millis) {
+		return (float) millis / (float) LSystem.MINUTE;
+	}
+
+	public final static float toH(long millis) {
+		return (float) millis / (float) LSystem.HOUR;
+	}
+
+	public final static float toD(long millis) {
+		return (float) millis / (float) LSystem.DAY;
 	}
 
 	public final static Duration at(float ms) {

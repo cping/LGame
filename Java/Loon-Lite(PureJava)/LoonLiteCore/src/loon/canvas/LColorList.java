@@ -20,6 +20,7 @@
  */
 package loon.canvas;
 
+import loon.LRelease;
 import loon.LSystem;
 import loon.utils.ListMap;
 import loon.utils.StringUtils;
@@ -27,7 +28,7 @@ import loon.utils.StringUtils;
 /**
  * 符合html(w3c)标准的字体英文名称与颜色关系列表
  */
-public class LColorList {
+public class LColorList implements LRelease {
 
 	private static LColorList instance;
 
@@ -561,13 +562,22 @@ public class LColorList {
 		return dirty;
 	}
 
-	public void setDirty(boolean dirty) {
+	public LColorList setDirty(boolean dirty) {
 		if (dirty) {
 			if (colorList != null) {
 				colorList.clear();
 			}
 		}
 		this.dirty = dirty;
+		return this;
+	}
+
+	@Override
+	public void close() {
+		if (colorList != null) {
+			colorList.clear();
+		}
+		this.dirty = true;
 	}
 
 }

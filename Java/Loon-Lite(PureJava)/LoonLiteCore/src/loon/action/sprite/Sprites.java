@@ -1257,7 +1257,7 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		}
 		return this;
 	}
-	
+
 	public Sprites addSpriteGroup(Created<? extends ISprite> s, int count) {
 		if (s == null) {
 			return this;
@@ -1267,7 +1267,7 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		}
 		return this;
 	}
-	
+
 	public float getX() {
 		return viewX;
 	}
@@ -1565,6 +1565,16 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 
 	public int getWidth() {
 		return _width;
+	}
+
+	public Sprites hide() {
+		setVisible(false);
+		return this;
+	}
+
+	public Sprites show() {
+		setVisible(true);
+		return this;
 	}
 
 	@Override

@@ -381,7 +381,9 @@ public final class CollisionHelper extends ShapeUtils {
 		rectTemp1.setBounds(x, y, width, height).normalize();
 		rectTemp2.setBounds(dx, dy, dw, dh).normalize();
 		if (touchingIsIn) {
-			if ((rectTemp1.x + rectTemp1.width == rectTemp2.x) || (rectTemp1.x == rectTemp2.x + rectTemp2.width) || (rectTemp1.y + rectTemp1.height == rectTemp2.y) || (rectTemp1.y == rectTemp2.y + rectTemp2.height)) {
+			if ((rectTemp1.x + rectTemp1.width == rectTemp2.x) || (rectTemp1.x == rectTemp2.x + rectTemp2.width)
+					|| (rectTemp1.y + rectTemp1.height == rectTemp2.y)
+					|| (rectTemp1.y == rectTemp2.y + rectTemp2.height)) {
 				return true;
 			}
 		}
@@ -520,35 +522,35 @@ public final class CollisionHelper extends ShapeUtils {
 		return (dx >= sx && dy >= sy && ((dx + dw) <= (sx + sw)) && ((dy + dh) <= (sy + sh)));
 	}
 
-    public static final boolean containsIsometric(int x, int y, int w, int h, int px, int py) {
-        float mx = w / 2;
-        float my = h / 2;
-        float ix = px - x;
-        float iy = py - y;
-        if (iy > my) {
-            iy = my - (iy - my);
-        }
-        if ((ix > mx + 1 + (2 * iy)) || (ix < mx - 1 - (2 * iy))) {
-            return false;
-        }
-        return true;
-    }
+	public static final boolean containsIsometric(int x, int y, int w, int h, int px, int py) {
+		float mx = w / 2;
+		float my = h / 2;
+		float ix = px - x;
+		float iy = py - y;
+		if (iy > my) {
+			iy = my - (iy - my);
+		}
+		if ((ix > mx + 1 + (2 * iy)) || (ix < mx - 1 - (2 * iy))) {
+			return false;
+		}
+		return true;
+	}
 
-    public static final boolean containsHexagon(int x, int y, int w, int h, int px, int py) {
-        float mx = w / 4;
-        float my = h / 2;
-        float hx = px - x;
-        float hy = py - y;
-        if (hx > mx * 3) {
-            hx = mx - (hx - mx * 3);
-        } else if (hx > mx) {
-            return py >= y && py <= y + h;
-        }
-        if ((hy > my + 1 + (2 * hx)) || (hy < my - 1 - (2 * hx))) {
-            return false;
-        }
-        return true;
-    }
+	public static final boolean containsHexagon(int x, int y, int w, int h, int px, int py) {
+		float mx = w / 4;
+		float my = h / 2;
+		float hx = px - x;
+		float hy = py - y;
+		if (hx > mx * 3) {
+			hx = mx - (hx - mx * 3);
+		} else if (hx > mx) {
+			return py >= y && py <= y + h;
+		}
+		if ((hy > my + 1 + (2 * hx)) || (hy < my - 1 - (2 * hx))) {
+			return false;
+		}
+		return true;
+	}
 
 	public static final void confine(RectBox rect, RectBox field) {
 		int x = rect.Right() > field.Right() ? field.Right() - (int) rect.getWidth() : rect.Left();
@@ -581,7 +583,7 @@ public final class CollisionHelper extends ShapeUtils {
 
 	public static final boolean checkAABBvsAABB(float x1, float y1, float w1, float h1, float x2, float y2, float w2,
 			float h2) {
-		return !(x1 > x2 + w2 || x1 + w1 < x2) && !(y1 > y2 + h2 || y1 + h1 < y2);
+		return x1 < x2 + w2 && x2 < x1 + w1 && y1 < y2 + h2 && y2 < y1 + h1;
 	}
 
 	public static final boolean checkAABBvsAABB(XY p1Min, XY p1Max, XY p2Min, XY p2Max) {

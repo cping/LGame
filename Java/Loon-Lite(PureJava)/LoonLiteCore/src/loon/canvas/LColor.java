@@ -56,7 +56,7 @@ public class LColor implements Serializable {
 		}
 		return ints;
 	}
-	
+
 	public static final LColor[] toRgbaColor(int[] color) {
 		LColor[] colors = new LColor[color.length];
 		for (int i = 0; i < color.length; i++) {
@@ -64,7 +64,7 @@ public class LColor implements Serializable {
 		}
 		return colors;
 	}
-	
+
 	public static final int[] convertToABGR(int pixelHeight, int pixelWidth, int[] srcPixels, int[] dstPixels) {
 		int pixelCount = pixelWidth * pixelHeight;
 		for (int i = 0; i < pixelCount; ++i) {
@@ -1802,16 +1802,15 @@ public class LColor implements Serializable {
 		}
 	}
 
-	public static final LColor web(final String stringColor) {
-		return web(stringColor, 1f);
+	public static final LColor web(final String hexColor) {
+		return web(hexColor, 1f);
 	}
 
-	public static final LColor web(final String stringColor, final float alpha) {
+	public static final LColor web(final String hexColor, final float alpha) {
 		if (alpha == 1f) {
-			return new LColor(stringColor);
+			return new LColor(hexColor);
 		}
-		LColor c = new LColor(stringColor);
-		return new LColor(c.r, c.g, c.b, c.a * alpha);
+		return new LColor(hexColor).mulSelfAlpha(alpha);
 	}
 
 	public static final LColor stringToColor(String c) {

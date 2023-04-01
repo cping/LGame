@@ -30,7 +30,7 @@ public class Easing {
 	public static enum EasingMode {
 		InQuad, OutQuad, InOutQuad, InCubic, OutCubic, InOutCubic, InQuart, OutQuart, InOutQuart, InQuint, OutQuint,
 		InOutQuint, InSine, OutSine, InOutSine, InExp, OutExp, InOutExp, InCirc, OutCirc, InOutCirc, InBack, OutBack,
-		InOutBack, OutBounce, InBounce, InOutBounce, Linear;
+		InOutBack, OutBounce, InBounce, InOutBounce, InElastic, OutElastic, InOutElastic, Linear;
 	}
 
 	public static EasingMode toEasingMode(String name) {
@@ -89,9 +89,83 @@ public class Easing {
 			return EasingMode.InBounce;
 		} else if ("InOutBounce".equals(key)) {
 			return EasingMode.InOutBounce;
+		} else if ("InElastic".equals(key)) {
+			return EasingMode.InElastic;
+		} else if ("OutElastic".equals(key)) {
+			return EasingMode.OutElastic;
+		} else if ("InOutElastic".equals(key)) {
+			return EasingMode.InOutElastic;
 		} else {
 			return EasingMode.Linear;
 		}
+	}
+
+	public static float getTween(EasingMode ease, float t) {
+		switch (ease) {
+		case Linear:
+			return linear(t);
+		case InBack:
+			return backEaseIn(t);
+		case OutBack:
+			return backEaseOut(t);
+		case InOutBack:
+			return backEaseInOut(t);
+		case InQuad:
+			return quadEaseIn(t);
+		case OutQuad:
+			return quadEaseOut(t);
+		case InOutQuad:
+			return quadEaseInOut(t);
+		case InCubic:
+			return cubicEaseIn(t);
+		case OutCubic:
+			return cubicEaseOut(t);
+		case InOutCubic:
+			return cubicEaseInOut(t);
+		case InQuart:
+			return quartEaseIn(t);
+		case OutQuart:
+			return quartEaseOut(t);
+		case InOutQuart:
+			return quartEaseInOut(t);
+		case InQuint:
+			return quintEaseIn(t);
+		case OutQuint:
+			return quintEaseOut(t);
+		case InOutQuint:
+			return quintEaseInOut(t);
+		case InSine:
+			return sineEaseIn(t);
+		case OutSine:
+			return sineEaseOut(t);
+		case InOutSine:
+			return sineEaseInOut(t);
+		case InCirc:
+			return circEaseIn(t);
+		case OutCirc:
+			return circEaseOut(t);
+		case InOutCirc:
+			return circEaseInOut(t);
+		case InExp:
+			return expEaseIn(t);
+		case OutExp:
+			return expEaseOut(t);
+		case InOutExp:
+			return expEaseInOut(t);
+		case InElastic:
+			return elasticEaseIn(t);
+		case OutElastic:
+			return elasticEaseOut(t);
+		case InOutElastic:
+			return elasticEaseInOut(t);
+		case InBounce:
+			return bounceEaseIn(t);
+		case OutBounce:
+			return bounceEaseOut(t);
+		case InOutBounce:
+			return bounceEaseInOut(t);
+		}
+		return linear(t);
 	}
 
 	private static final int TYPE_IN = 0;
@@ -513,6 +587,30 @@ public class Easing {
 		return max / 2.0f * (MathUtils.sqrt(1.0f - t * t) + 1.0f) + min;
 	}
 
+	public static float inElastic(float t, float totaltime, float max, float min) {
+		max -= min;
+		t /= totaltime;
+		return -max * MathUtils.sin(20.420353f * t) * MathUtils.pow(2f, 10f * (t - 1f)) + min;
+	}
+
+	public static float outElastic(float t, float totaltime, float max, float min) {
+		max -= min;
+		t /= totaltime;
+		return max * MathUtils.sin(-20.420353f * (t + 1f)) * MathUtils.pow(2f, -10f * t) + 1f + min;
+	}
+
+	public static float inOutElastic(float t, float totaltime, float max, float min) {
+		max -= min;
+		t /= totaltime;
+		if (t / 2.0f < 1.0f) {
+			return -max / 2.0f * MathUtils.sin(20.420353f * (2f * t)) * MathUtils.pow(2f, 10f * (2f * t - 1f)) + min;
+		}
+		t -= 2.0f;
+		return max / 2.0f
+				* (MathUtils.sin(-20.420353f * (2f * t - 1f + 1f)) * MathUtils.pow(2f, -10f * (2f * t - 1f)) + 2) + min;
+
+	}
+
 	public static float inBack(float t, float totaltime, float max, float min, float s) {
 		max -= min;
 		t /= totaltime;
@@ -564,6 +662,10 @@ public class Easing {
 		return outBounce(t * 2.0f - totaltime, totaltime, max - min, 0.0f) * 0.5f + min + (max - min) * 0.5f;
 	}
 
+	public static float linear(float t) {
+		return t;
+	}
+
 	public static float linear(float t, float max, float min) {
 		return (max - min) * t + min;
 	}
@@ -578,5 +680,196 @@ public class Easing {
 
 	public static float between(float max, float min) {
 		return MathUtils.floor(MathUtils.random() * (max - min + 1.0f) + min);
+	}
+
+	public static int stepped(int v, int steps) {
+		if (v <= 0) {
+			return 0;
+		} else if (v >= 1) {
+			return 1;
+		} else {
+			return (((steps * v) | 0) + 1) * (1 / steps);
+		}
+	}
+
+	public static float quadEaseIn(float t) {
+		return t * t;
+	}
+
+	public static float quadEaseOut(float t) {
+		return -(t * (t - 2f));
+	}
+
+	public static float quadEaseInOut(float t) {
+		if (t < 0.5f) {
+			return 2f * t * t;
+		} else {
+			return -2f * t * t + 4f * t - 1f;
+		}
+	}
+
+	public static float cubicEaseIn(float t) {
+		return t * t * t;
+	}
+
+	public static float cubicEaseOut(float t) {
+		float f = t - 1f;
+		return f * f * f + 1f;
+	}
+
+	public static float cubicEaseInOut(float t) {
+		if (t < 0.5f) {
+			return 4f * t * t * t;
+		} else {
+			float f = 2f * t - 2f;
+			return 0.5f * f * f * f + 1f;
+		}
+	}
+
+	public static float quartEaseIn(float t) {
+		return t * t * t * t;
+	}
+
+	public static float quartEaseOut(float t) {
+		float f = t - 1f;
+		return f * f * f * (1 - t) + 1f;
+	}
+
+	public static float quartEaseInOut(float t) {
+		if (t < 0.5f) {
+			return 8f * t * t * t * t;
+		} else {
+			float f = t - 1f;
+			return -8 * f * f * f * f + 1f;
+		}
+	}
+
+	public static float quintEaseIn(float t) {
+		return t * t * t * t * t;
+	}
+
+	public static float quintEaseOut(float t) {
+		float f = t - 1f;
+		return f * f * f * f * f + 1f;
+	}
+
+	public static float quintEaseInOut(float t) {
+		if (t < 0.5f) {
+			return 16f * t * t * t * t * t;
+		} else {
+			float f = 2f * t - 2f;
+			return 0.5f * f * f * f * f * f + 1f;
+		}
+	}
+
+	public static float sineEaseIn(float t) {
+		return MathUtils.sin((t - 1f) * MathUtils.HALF_PI) + 1f;
+	}
+
+	public static float sineEaseOut(float t) {
+		return MathUtils.sin(t * MathUtils.HALF_PI);
+	}
+
+	public static float sineEaseInOut(float t) {
+		return 0.5f * (1f - MathUtils.cos(t * MathUtils.PI));
+	}
+
+	public static float circEaseIn(float t) {
+		return 1 - MathUtils.sqrt(1f - t * t);
+	}
+
+	public static float circEaseOut(float t) {
+		return MathUtils.sqrt((2f - t) * t);
+	}
+
+	public static float circEaseInOut(float t) {
+		if (t < 0.5f) {
+			return 0.5f * (1f - MathUtils.sqrt(1 - 4f * (t * t)));
+		} else {
+			return 0.5f * (MathUtils.sqrt(-(2f * t - 3f) * (2f * t - 1f)) + 1f);
+		}
+	}
+
+	public static float expEaseIn(float t) {
+		return t == 0.0f ? t : MathUtils.pow(2f, 10f * (t - 1f));
+	}
+
+	public static float expEaseOut(float t) {
+		return t == 1.0f ? t : 1f - MathUtils.pow(2f, -10 * t);
+	}
+
+	public static float expEaseInOut(float t) {
+		if (t == 0.0f || t == 1.0f) {
+			return t;
+		}
+		if (t < 0.5f) {
+			return 0.5f * MathUtils.pow(2f, 20f * t - 10f);
+		} else {
+			return -0.5f * MathUtils.pow(2f, -20f * t + 10f) + 1f;
+		}
+	}
+
+	public static float elasticEaseIn(float t) {
+		return MathUtils.sin(20.420353f * t) * MathUtils.pow(2f, 10f * (t - 1f));
+	}
+
+	public static float elasticEaseOut(float t) {
+		return MathUtils.sin(-20.420353f * (t + 1f)) * MathUtils.pow(2f, -10f * t) + 1f;
+	}
+
+	public static float elasticEaseInOut(float t) {
+		if (t < 0.5f) {
+			return 0.5f * MathUtils.sin(20.420353f * (2f * t)) * MathUtils.pow(2f, 10f * (2f * t - 1f));
+		} else {
+			return 0.5f
+					* (MathUtils.sin(-20.420353f * (2f * t - 1f + 1f)) * MathUtils.pow(2f, -10f * (2f * t - 1f)) + 2);
+		}
+	}
+
+	public static float backEaseIn(float t) {
+		return t * t * t - t * MathUtils.sin(t * MathUtils.PI);
+	}
+
+	public static float backEaseOut(float t) {
+		float f = 1 - t;
+		return 1 - (f * f * f - f * MathUtils.sin(f * MathUtils.PI));
+	}
+
+	public static float backEaseInOut(float t) {
+		if (t < 0.5f) {
+			float f = 2f * t;
+			return 0.5f * (f * f * f - f * MathUtils.sin(f * MathUtils.PI));
+		} else {
+			float f = 1f - (2f * t - 1f);
+			return 0.5f * (1f - (f * f * f - f * MathUtils.sin(f * MathUtils.PI))) + 0.5f;
+		}
+	}
+
+	public static float bounceEaseIn(float t) {
+		return 1f - bounceEaseOut(1f - t);
+	}
+
+	public static float bounceEaseOut(float t) {
+		if (t < 0.3636363636363637f) {
+			return 1f * (7.5625f * t * t);
+		}
+		if (t < 0.7272727272727273f) {
+			t -= 0.5454545454545454f;
+			return 1f * (7.5625f * t * t + 0.75f);
+		}
+		if (t < 0.9090909090909091f) {
+			t -= 0.8181818181818182f;
+			return 1f * (7.5625f * t * t + 0.9375f);
+		}
+		t -= 0.9545454545454546f;
+		return 1f * (7.5625f * t * t + 0.984375f);
+	}
+
+	public static float bounceEaseInOut(float t) {
+		if (t < 0.5f) {
+			return 0.5f * bounceEaseIn(t * 2f);
+		} else {
+			return 0.5f * bounceEaseOut(t * 2f - 1f) + 0.5f;
+		}
 	}
 }

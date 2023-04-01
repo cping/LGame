@@ -96,6 +96,8 @@ public final class MathUtils {
 
 	public static final float TWO_PI = 6.28319f;
 
+	public static final float HALF_PI = PI / 2f;
+
 	public static final float SQRT2 = 1.4142135f;
 
 	private static final int SIN_BITS = 13;
@@ -1099,6 +1101,10 @@ public final class MathUtils {
 	}
 
 	public static int floor(float x) {
+		return (int) (x + BIG_ENOUGH_FLOOR) - BIG_ENOUGH_INT;
+	}
+
+	public static int floorInt(long x) {
 		return (int) (x + BIG_ENOUGH_FLOOR) - BIG_ENOUGH_INT;
 	}
 

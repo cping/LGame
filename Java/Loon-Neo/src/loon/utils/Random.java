@@ -20,6 +20,13 @@
  */
 package loon.utils;
 
+import loon.LSystem;
+import loon.canvas.LColor;
+import loon.geom.PointF;
+import loon.geom.RectBox;
+import loon.geom.SetXY;
+import loon.geom.Vector2f;
+
 /**
  * 一个简单的[伪随机]数值生成用类,若运行环境没有Random,则loon的随机数生成会使用此类实现.
  * 如果想获得一个[高重复率]的[伪随机]生成器也可以直接用这个……
@@ -90,7 +97,7 @@ public class Random {
 	}
 
 	public boolean nextBoolean() {
-		return nextInt(0, 1) != 0;
+		return next(0) > 0;
 	}
 
 	public int nextInt(int min, int max) {
@@ -110,18 +117,22 @@ public class Random {
 	}
 
 	public float nextFloat() {
-		return this.nextInt() * (1f / 4294967296f);
+		return this.next(32) * 2.3283064E-10f;
 	}
 
 	public double nextDouble() {
-		return this.nextLong() * (1.0 / 4294967296.0);
+		return this.next(32) * 2.3283064E-10d;
 	}
 
 	public int nextInt() {
-		return (int) nextLong();
+		return (int) (next(16));
 	}
 
 	public long nextLong() {
+		return next(0);
+	}
+
+	public long next(int bits) {
 		if (this._index >= this._n) {
 			this.update();
 		}
@@ -133,7 +144,7 @@ public class Random {
 		y ^= (y << this._t) & this._c;
 		y ^= y >>> this._l;
 
-		return (y >>> 0);
+		return (y >>> bits);
 	}
 
 	public IntArray rangeInt(int len, int min, int max) {
@@ -166,5 +177,82 @@ public class Random {
 			result.add(this.nextBoolean());
 		}
 		return result;
+	}
+
+	public boolean chance(float value) {
+		return nextFloat() < value;
+	}
+
+	public float nextAngleRad() {
+		return nextFloat(0f, 2f * MathUtils.PI);
+	}
+
+	public float nextAngleDeg() {
+		return nextFloat(0f, 360f);
+	}
+
+	public float nextDirFloat() {
+		return nextFloat() < 0.5f ? -1.0f : 1.0f;
+	}
+
+	public int nextDirInt() {
+		return nextFloat() < 0.5f ? -1 : 1;
+	}
+
+	public Vector2f nextVec2() {
+		final float angle = nextFloat() * 2.0f * MathUtils.PI;
+		final float x = MathUtils.cos(angle);
+		final float y = MathUtils.sin(angle);
+		return new Vector2f(MathUtils.abs(x), MathUtils.abs(y));
+	}
+
+	public Vector2f nextVec2(float max) {
+		return nextVec2(0f, max);
+	}
+
+	public Vector2f nextVec2(float min, float max) {
+		float v = nextFloat(min, max);
+		return nextVec2().mul(v);
+	}
+
+	public Vector2f nextVec2(RectBox rect) {
+		return nextVec2(nextFloat(rect.x, rect.x + rect.width), nextFloat(rect.y, rect.y + rect.height));
+	}
+
+	public LColor nextColor() {
+		return nextColor(0, 255);
+	}
+
+	public LColor nextColor(float min, float max) {
+		return nextColor(min, max, 1f);
+	}
+
+	public LColor nextColor(float min, float max, float alpha) {
+		if (alpha <= 0) {
+			return new LColor(nextFloat(min, max), nextFloat(min, max), nextFloat(min, max), nextFloat(min, max));
+		}
+		return new LColor(nextFloat(min, max), nextFloat(min, max), nextFloat(min, max), alpha);
+	}
+
+	public PointF nextPoint() {
+		return nextPoint(LSystem.viewSize.getRect());
+	}
+
+	public PointF nextPoint(float min, float max) {
+		final float x = nextFloat(min, max);
+		final float y = nextFloat(min, max);
+		return new PointF(x, y);
+	}
+
+	public PointF nextPoint(RectBox rect) {
+		final float x = nextFloat(rect.x, rect.x + rect.width);
+		final float y = nextFloat(rect.y, rect.y + rect.height);
+		return new PointF(x, y);
+	}
+
+	public SetXY setPoint(SetXY point, RectBox rect) {
+		point.setX(nextFloat(rect.x, rect.x + rect.width));
+		point.setY(nextFloat(rect.y, rect.y + rect.height));
+		return point;
 	}
 }

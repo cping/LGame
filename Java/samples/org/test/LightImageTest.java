@@ -77,7 +77,7 @@ public class LightImageTest extends Screen {
 					frequency *= 0.9;
 				}
 
-				ISprite[] sprites = SPRITE().getSprites();
+				ISprite[] sprites = ELF().getSprites();
 				for (int i = 0; i < sprites.length; i++) {
 					Sprite laser = (Sprite) sprites[i];
 					laser.setStatus(laser.getStatus() + 1);
@@ -85,7 +85,7 @@ public class LightImageTest extends Screen {
 						laser.setAlpha(laser.getAlpha() * 0.9f);
 						laser.setScaleY(laser.getAlpha());
 						if (laser.getAlpha() < 0.01) {
-							sprites = SPRITE().getSprites();
+							sprites = ELF().getSprites();
 							remove(laser);
 							i--;
 						}
