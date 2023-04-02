@@ -29,6 +29,7 @@ import loon.font.IFont;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
+import loon.utils.timer.Duration;
 
 /**
  * 单纯文字显示用组件(无边框或背景图,但是加入了自动定是替换，并且可以注入多个信息)
@@ -74,7 +75,7 @@ public class LLabels extends LComponent implements FontSet<LLabels> {
 			return;
 		}
 		super.update(elapsedTime);
-		this.speed = MathUtils.max(elapsedTime / 1000f, LSystem.MIN_SECONE_SPEED_FIXED);
+		this.speed = MathUtils.max(Duration.toS(elapsedTime), LSystem.MIN_SECONE_SPEED_FIXED);
 
 	}
 

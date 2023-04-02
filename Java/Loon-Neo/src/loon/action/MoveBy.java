@@ -36,7 +36,7 @@ public class MoveBy extends ActionEvent {
 
 	private boolean isDirUpdate = false;
 
-	private EaseTimer easeTimer;
+	private final EaseTimer easeTimer;
 
 	public MoveBy(float endX, float endY, float duration, float delay, EasingMode easing) {
 		this(-1, -1, endX, endY, 0, duration, delay, easing, 0, 0);
@@ -160,6 +160,25 @@ public class MoveBy extends ActionEvent {
 				_startY = original.getY();
 			}
 		}
+	}
+
+	public MoveBy reset() {
+		easeTimer.reset();
+		return this;
+	}
+	
+	public MoveBy loop(int count) {
+		easeTimer.setLoop(count);
+		return this;
+	}
+
+	public MoveBy loop(boolean l) {
+		easeTimer.setLoop(l);
+		return this;
+	}
+
+	public boolean isLoop() {
+		return easeTimer.isLoop();
 	}
 
 	public float getSpeed() {

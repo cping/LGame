@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2011
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -20,8 +20,10 @@
  */
 package loon.action;
 
+import loon.LSystem;
 import loon.utils.MathUtils;
 import loon.utils.StringKeyValue;
+import loon.utils.timer.Duration;
 
 public class ScaleTo extends ActionEvent {
 
@@ -40,7 +42,7 @@ public class ScaleTo extends ActionEvent {
 	}
 
 	public ScaleTo(float sx, float sy) {
-		this(-1, -1, sx, sy, 0.1f);
+		this(-1, -1, sx, sy, LSystem.MIN_SECONE_SPEED_FIXED);
 	}
 
 	public ScaleTo(float sx, float sy, float sp) {
@@ -89,7 +91,7 @@ public class ScaleTo extends ActionEvent {
 		if (original != null) {
 			synchronized (original) {
 				if (original != null) {
-					dt += MathUtils.max((elapsedTime / 1000), speed);
+					dt += MathUtils.max(Duration.toS(elapsedTime), speed);
 					original.setScale(startX + (deltaX * dt), startY + (deltaY * dt));
 					_isCompleted = (deltaX > 0 ? (original.getScaleX() >= endX) : (original.getScaleX() <= endX))
 							&& (deltaY > 0 ? (original.getScaleY() >= endY) : (original.getScaleY() <= endY));

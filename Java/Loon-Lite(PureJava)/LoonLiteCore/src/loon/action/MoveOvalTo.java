@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -44,7 +44,7 @@ public class MoveOvalTo extends ActionEvent {
 	private Vector2f centerPoint, oldCenterPoint;
 	private int directionX = 1;
 	private int directionY = -1;
-	private EaseTimer easeTimer;
+	private final EaseTimer easeTimer;
 
 	public MoveOvalTo(float startAngle, float angle, float width, float height, Vector2f centerPoint, float duration) {
 		this(startAngle, angle, width, height, centerPoint, null, duration, LSystem.DEFAULT_EASE_DELAY,
@@ -132,7 +132,7 @@ public class MoveOvalTo extends ActionEvent {
 			return;
 		}
 
-		this.currentPosX = (this.per * easeTimer.getProgress());
+		this.currentPosX = ((float) (this.per * easeTimer.getProgress()));
 		if (this.currentPosX > 1f) {
 			initDirection();
 			int cnt = (int) (this.startAngle / 90f);
@@ -167,6 +167,25 @@ public class MoveOvalTo extends ActionEvent {
 		movePos(this.startPoint.x + offsetX, this.startPoint.y + offsetY);
 	}
 
+	public MoveOvalTo reset() {
+		easeTimer.reset();
+		return this;
+	}
+	
+	public MoveOvalTo loop(int count) {
+		easeTimer.setLoop(count);
+		return this;
+	}
+
+	public MoveOvalTo loop(boolean l) {
+		easeTimer.setLoop(l);
+		return this;
+	}
+
+	public boolean isLoop() {
+		return easeTimer.isLoop();
+	}
+	
 	public float getAngle() {
 		return angle;
 	}

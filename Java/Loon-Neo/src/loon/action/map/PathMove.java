@@ -27,6 +27,7 @@ import loon.utils.MathUtils;
 import loon.utils.StringKeyValue;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
+import loon.utils.timer.Duration;
 import loon.utils.timer.LTimerContext;
 
 /**
@@ -102,7 +103,7 @@ public class PathMove extends RealtimeProcess implements LRelease {
 	}
 
 	public void update(long elapsedTime) {
-		update(MathUtils.max(elapsedTime / 1000f, LSystem.MIN_SECONE_SPEED_FIXED));
+		update(MathUtils.max(Duration.toS(elapsedTime), LSystem.MIN_SECONE_SPEED_FIXED));
 	}
 
 	public void update(LTimerContext context) {

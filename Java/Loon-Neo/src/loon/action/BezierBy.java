@@ -32,7 +32,7 @@ public class BezierBy extends ActionEvent {
 
 	protected float startX = -1, startY = -1;
 
-	protected EaseTimer easeTimer;
+	protected final EaseTimer easeTimer;
 
 	public BezierBy(float duration, Bezier b) {
 		this(-1, -1, duration, EasingMode.Linear, b);
@@ -76,6 +76,25 @@ public class BezierBy extends ActionEvent {
 			startX = original.getX();
 			startY = original.getY();
 		}
+	}
+
+	public BezierBy reset() {
+		easeTimer.reset();
+		return this;
+	}
+	
+	public BezierBy loop(int count) {
+		easeTimer.setLoop(count);
+		return this;
+	}
+
+	public BezierBy loop(boolean l) {
+		easeTimer.setLoop(l);
+		return this;
+	}
+
+	public boolean isLoop() {
+		return easeTimer.isLoop();
 	}
 
 	@Override

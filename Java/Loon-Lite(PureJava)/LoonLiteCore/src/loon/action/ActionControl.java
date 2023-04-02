@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -48,7 +48,7 @@ public class ActionControl implements LRelease {
 
 	/**
 	 * 构建一个单独的缓动动画控制器
-	 *
+	 * 
 	 * @return
 	 */
 	public final static ActionControl make() {
@@ -83,7 +83,7 @@ public class ActionControl implements LRelease {
 
 	/**
 	 * 保存指定的缓动动画对象基本动作
-	 *
+	 * 
 	 * @param bind
 	 * @return
 	 */
@@ -96,7 +96,7 @@ public class ActionControl implements LRelease {
 
 	/**
 	 * 获得指定的缓动动画对象已保存的历史动作
-	 *
+	 * 
 	 * @param bind
 	 * @return
 	 */
@@ -106,7 +106,7 @@ public class ActionControl implements LRelease {
 
 	/**
 	 * 读取指定缓动动画对象已保存的历史动作
-	 *
+	 * 
 	 * @param bind
 	 * @return
 	 */
@@ -116,13 +116,13 @@ public class ActionControl implements LRelease {
 
 	/**
 	 * 读取指定缓动动画对象已保存的历史动作
-	 *
+	 * 
 	 * @param bind
 	 * @param resetData true时还原数据,false时仅读取出历史记录数据
 	 * @return
 	 */
 	public TArray<ActionBindData> loadActionData(ActionBind bind, boolean resetData) {
-		TArray<ActionBindData> list = new TArray<>();
+		TArray<ActionBindData> list = new TArray<ActionBindData>();
 		for (; bindDatas.hashNext();) {
 			ActionBindData data = bindDatas.next();
 			if (data != null && data.getObject().equals(bind)) {
@@ -138,7 +138,7 @@ public class ActionControl implements LRelease {
 
 	/**
 	 * 保存当前所有加入缓动动画事件的动作对象基本动作状态
-	 *
+	 * 
 	 * @return
 	 */
 	public ActionControl saveAllActionData() {
@@ -151,7 +151,7 @@ public class ActionControl implements LRelease {
 
 	/**
 	 * 读取(还原)当前所有加入基本动作事件的缓动动作对象动作状态
-	 *
+	 * 
 	 * @return
 	 */
 	public ActionControl loadAllActionData() {
@@ -207,7 +207,7 @@ public class ActionControl implements LRelease {
 	private ActionControl() {
 		actions = new Actions();
 		delayTimer = new LTimer(0);
-		bindDatas = new Array<>();
+		bindDatas = new Array<ActionBindData>();
 		pause = false;
 	}
 

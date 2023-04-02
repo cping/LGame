@@ -20,8 +20,6 @@
  */
 package loon.utils;
 
-import java.util.Random;
-
 import loon.LSysException;
 import loon.LSystem;
 

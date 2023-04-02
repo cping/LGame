@@ -187,7 +187,7 @@ public class LTimer implements LRelease {
 	}
 
 	public boolean action(float delta) {
-		return action((long) (MathUtils.max(delta * 1000, 8)));
+		return action((MathUtils.max(Duration.ofS(delta), 8)));
 	}
 
 	public boolean action(long elapsedTime) {

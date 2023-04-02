@@ -28,8 +28,7 @@ import loon.geom.SetXY;
 import loon.geom.Vector2f;
 
 /**
- * 一个简单的[伪随机]数值生成用类,若运行环境没有Random,则loon的随机数生成会使用此类实现.
- * 如果想获得一个[高重复率]的[伪随机]生成器也可以直接用这个……
+ * 一个[伪随机]数值生成用类(不过以游戏来说应该够了,取代java同名类,这个速度快)
  *
  */
 public class Random {
@@ -101,19 +100,68 @@ public class Random {
 	}
 
 	public int nextInt(int min, int max) {
+		if (max <= 0) {
+			return 0;
+		}
 		return MathUtils.clamp(MathUtils.abs(MathUtils.floor((max - min + 1) * this.nextFloat() + min)), min, max);
+	}
+
+	public int nextInt(int range) {
+		if (range <= 0) {
+			return 0;
+		}
+		range += 1;
+		int r = (int) next(17);
+		int m = range;
+		if ((range & m) == 0) {
+			r = (int) ((range * (long) r) >> 31);
+		} else {
+			for (int u = r; u - (r = u % range) + m < 0; u = (int) next(17))
+				;
+		}
+		return r;
+	}
+
+	public float nextLong(float range) {
+		if (range <= 0) {
+			return 0l;
+		}
+		return nextLong() * range;
 	}
 
 	public long nextLong(long min, long max) {
+		if (max <= 0) {
+			return 0l;
+		}
 		return MathUtils.clamp(MathUtils.abs(MathUtils.floor((max - min + 1) * this.nextFloat() + min)), min, max);
 	}
 
+	public double nextDouble(double range) {
+		if (range <= 0) {
+			return 0d;
+		}
+		return nextDouble() * range;
+	}
+
 	public double nextDouble(double min, double max) {
+		if (max <= 0) {
+			return 0d;
+		}
 		return MathUtils.clamp(MathUtils.floor((max - min + 1) * this.nextDouble() + min), min, max);
 	}
 
 	public float nextFloat(float min, float max) {
+		if (max <= 0) {
+			return 0f;
+		}
 		return MathUtils.clamp((max - min) * this.nextFloat() + min, min, max);
+	}
+
+	public float nextFloat(float range) {
+		if (range <= 0) {
+			return 0f;
+		}
+		return nextFloat() * range;
 	}
 
 	public float nextFloat() {
@@ -132,7 +180,7 @@ public class Random {
 		return next(0);
 	}
 
-	public long next(int bits) {
+	protected long next(int bits) {
 		if (this._index >= this._n) {
 			this.update();
 		}
@@ -191,11 +239,11 @@ public class Random {
 		return nextFloat(0f, 360f);
 	}
 
-	public float nextDirFloat() {
+	public float nextSignFloat() {
 		return nextFloat() < 0.5f ? -1.0f : 1.0f;
 	}
 
-	public int nextDirInt() {
+	public int nextSignInt() {
 		return nextFloat() < 0.5f ? -1 : 1;
 	}
 

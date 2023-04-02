@@ -37,6 +37,8 @@ import loon.utils.Array;
 import loon.utils.Easing;
 import loon.utils.TArray;
 import loon.utils.Easing.EasingMode;
+import loon.utils.MathUtils;
+import loon.utils.timer.Duration;
 import loon.utils.StringKeyValue;
 
 public class ActionTween extends ActionTweenBase<ActionTween> {
@@ -1217,7 +1219,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	}
 
 	public ActionTween delayGlobal(float delay) {
-		ActionControl.setDelay((long) (delay * 1000f));
+		ActionControl.setDelay(MathUtils.max(Duration.ofS(delay), 8));
 		return this;
 	}
 

@@ -27,7 +27,7 @@ import loon.utils.timer.EaseTimer;
 
 public class ShakeTo extends ActionEvent {
 
-	private EaseTimer easeTimer;
+	private final EaseTimer easeTimer;
 	private float shakeTimer;
 	private float shakeX, oldShakeX;
 	private float shakeY, oldShakeY;
@@ -79,6 +79,26 @@ public class ShakeTo extends ActionEvent {
 		}
 	}
 
+	public ShakeTo reset() {
+		easeTimer.reset();
+		return this;
+	}
+	
+	public ShakeTo loop(int count) {
+		easeTimer.setLoop(count);
+		return this;
+	}
+
+	public ShakeTo loop(boolean l) {
+		easeTimer.setLoop(l);
+		return this;
+	}
+
+	public boolean isLoop() {
+		return easeTimer.isLoop();
+	}
+	
+	
 	public float getShakeX() {
 		return shakeX;
 	}

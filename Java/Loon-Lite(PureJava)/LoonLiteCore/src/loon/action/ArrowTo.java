@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2012
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -22,9 +22,9 @@ package loon.action;
 
 import loon.LSystem;
 import loon.action.map.Field2D;
-import loon.utils.Easing.EasingMode;
 import loon.utils.MathUtils;
 import loon.utils.StringKeyValue;
+import loon.utils.Easing.EasingMode;
 import loon.utils.timer.EaseTimer;
 
 //0.3.3新增动作，让指定对象做弓箭射出状（抛物线）
@@ -48,7 +48,7 @@ public class ArrowTo extends ActionEvent {
 
 	private int dir;
 
-	private EaseTimer easeTimer;
+	private final EaseTimer easeTimer;
 
 	public ArrowTo(float tx, float ty) {
 		this(tx, ty, 1f, 200f);
@@ -140,6 +140,25 @@ public class ArrowTo extends ActionEvent {
 		}
 	}
 
+	public ArrowTo loop(int count) {
+		easeTimer.setLoop(count);
+		return this;
+	}
+
+	public ArrowTo loop(boolean l) {
+		easeTimer.setLoop(l);
+		return this;
+	}
+
+	public ArrowTo reset() {
+		easeTimer.reset();
+		return this;
+	}
+
+	public boolean isLoop() {
+		return easeTimer.isLoop();
+	}
+	
 	public int getDirection() {
 		return dir;
 	}

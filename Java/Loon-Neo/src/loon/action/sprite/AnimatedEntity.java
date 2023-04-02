@@ -25,6 +25,7 @@ import loon.events.FrameListener;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
+import loon.utils.timer.Duration;
 
 /**
  * Entity类的动画播放扩展类,相比单纯使用Sprite类,此类更容易进行具体帧的临时播放和设置参数变更,以及监听.
@@ -189,7 +190,7 @@ public class AnimatedEntity extends Entity {
 					this._animationListener.onAnimationFrameChanged(this, AnimatedEntity.FRAMEINDEX_INVALID, 0);
 				}
 			}
-			this._animationProgress += (elapsedTime * 1000);
+			this._animationProgress += Duration.ofS(elapsedTime);
 			if (loopCount == AnimationData.LOOP_CONTINUOUS) {
 				while (this._animationProgress > animationDuration) {
 					this._animationProgress -= animationDuration;

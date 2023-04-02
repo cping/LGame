@@ -31,6 +31,7 @@ import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
+import loon.utils.timer.Duration;
 import loon.utils.timer.LTimer;
 
 /**
@@ -233,7 +234,7 @@ public class TextEffect extends Entity implements BaseEffect {
 			packed = true;
 		}
 		if (timer.action(elapsedTime)) {
-			float delta = MathUtils.max(elapsedTime / 1000f, LSystem.MIN_SECONE_SPEED_FIXED);
+			float delta = MathUtils.max(Duration.toS(elapsedTime), LSystem.MIN_SECONE_SPEED_FIXED);
 			for (int i = length - 1; i > -1; --i) {
 				MessageBlock text = texts.get(i);
 				if (text != null) {

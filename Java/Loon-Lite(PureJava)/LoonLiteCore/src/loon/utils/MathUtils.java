@@ -20,8 +20,6 @@
  */
 package loon.utils;
 
-import java.util.Random;
-
 import loon.LSysException;
 import loon.geom.RectBox;
 import loon.geom.SetXY;
@@ -229,6 +227,13 @@ public final class MathUtils {
 		final int newY = (centerY - (newH / 2));
 
 		return new int[] { newX, newY, newW, newH };
+	}
+
+	public static int divTwoAbs(int v) {
+		if (v % 2 != 0) {
+			v += 1;
+		}
+		return abs(v);
 	}
 
 	/**
@@ -531,7 +536,7 @@ public final class MathUtils {
 	}
 
 	public static int randomSign() {
-		return (MathUtils.random() > 0.5f) ? 1 : -1;
+		return random.nextSignInt();
 	}
 
 	final static int SK1 = 498;
@@ -1053,31 +1058,31 @@ public final class MathUtils {
 	}
 
 	public static int nextInt(int range) {
-		return range <= 0 ? 0 : random.nextInt(range);
+		return random.nextInt(range);
 	}
 
 	public static int nextInt(int start, int end) {
-		return end <= 0 ? 0 : start + random.nextInt(end - start);
+		return random.nextInt(start, end);
 	}
 
-	public static int nextFloat(int range) {
-		return random(range);
+	public static float nextFloat(float range) {
+		return random.nextFloat(range);
 	}
 
-	public static int nextFloat(int start, int end) {
-		return random(start, end);
+	public static float nextFloat(float start, float end) {
+		return random.nextFloat(start, end);
 	}
 
 	public static long randomLong(long start, long end) {
-		return (long) (start + random.nextFloat() * (end - start));
+		return random.nextLong(start, end);
 	}
 
 	public static int random(int range) {
-		return random.nextInt(range + 1);
+		return random.nextInt(range);
 	}
 
 	public static int random(int start, int end) {
-		return start + random.nextInt(end - start + 1);
+		return random.nextInt(start, end);
 	}
 
 	public static boolean randomBoolean() {
@@ -1089,11 +1094,11 @@ public final class MathUtils {
 	}
 
 	public static float random(float range) {
-		return random.nextFloat() * range;
+		return random.nextFloat(range);
 	}
 
 	public static float random(float start, float end) {
-		return start + random.nextFloat() * (end - start);
+		return random.nextFloat(start, end);
 	}
 
 	public static float randomFloor(float start, float end) {

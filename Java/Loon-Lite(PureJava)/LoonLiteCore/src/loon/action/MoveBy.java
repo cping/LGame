@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -20,11 +20,10 @@
  */
 package loon.action;
 
+import loon.utils.StringKeyValue;
 import loon.LSystem;
-import loon.action.map.Config;
 import loon.action.map.Field2D;
 import loon.utils.Easing.EasingMode;
-import loon.utils.StringKeyValue;
 import loon.utils.timer.EaseTimer;
 
 public class MoveBy extends ActionEvent {
@@ -37,7 +36,7 @@ public class MoveBy extends ActionEvent {
 
 	private boolean isDirUpdate = false;
 
-	private EaseTimer easeTimer;
+	private final EaseTimer easeTimer;
 
 	public MoveBy(float endX, float endY, float duration, float delay, EasingMode easing) {
 		this(-1, -1, endX, endY, 0, duration, delay, easing, 0, 0);
@@ -66,7 +65,7 @@ public class MoveBy extends ActionEvent {
 		this._endX = endX;
 		this._endY = endY;
 		this._speed = speed;
-		this._direction = Config.EMPTY;
+		this._direction = Field2D.EMPTY;
 		this.offsetX = sx;
 		this.offsetY = sy;
 		this.easeTimer = new EaseTimer(duration, delay, easing);
@@ -161,6 +160,25 @@ public class MoveBy extends ActionEvent {
 				_startY = original.getY();
 			}
 		}
+	}
+
+	public MoveBy reset() {
+		easeTimer.reset();
+		return this;
+	}
+	
+	public MoveBy loop(int count) {
+		easeTimer.setLoop(count);
+		return this;
+	}
+
+	public MoveBy loop(boolean l) {
+		easeTimer.setLoop(l);
+		return this;
+	}
+
+	public boolean isLoop() {
+		return easeTimer.isLoop();
 	}
 
 	public float getSpeed() {

@@ -26,6 +26,7 @@ import loon.action.ColorTo;
 import loon.action.sprite.Entity;
 import loon.canvas.LColor;
 import loon.utils.MathUtils;
+import loon.utils.timer.Duration;
 
 public class ParticleSprite extends Entity {
 
@@ -57,7 +58,7 @@ public class ParticleSprite extends Entity {
 
 	@Override
 	public void onUpdate(long elapsedTime) {
-		float delta = MathUtils.max(elapsedTime / 1000f, LSystem.MIN_SECONE_SPEED_FIXED);
+		float delta = MathUtils.max(Duration.toS(elapsedTime), LSystem.MIN_SECONE_SPEED_FIXED);
 		currentLife += delta;
 		if (currentLife >= lifespan) {
 			currentLife = lifespan;

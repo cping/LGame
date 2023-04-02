@@ -88,7 +88,7 @@ public class GameTime {
 	}
 
 	public float getMilliseconds() {
-		return MathUtils.max(_elapsedTime * 1000, 10);
+		return MathUtils.max(Duration.ofS(_elapsedTime), 10);
 	}
 
 	public float getElapsedGameTime() {

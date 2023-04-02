@@ -31,6 +31,7 @@ import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 import loon.utils.res.MovieSpriteSheet;
+import loon.utils.timer.Duration;
 import loon.utils.timer.LTimer;
 
 /**
@@ -393,7 +394,7 @@ public class Animation implements IArray, LRelease {
 	 * @param delta
 	 */
 	public void update(float delta) {
-		update((long) (MathUtils.max(delta * 1000, 10)));
+		update((MathUtils.max(Duration.ofS(delta), 10)));
 	}
 
 	/**

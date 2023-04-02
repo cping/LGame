@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2011
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -28,11 +28,11 @@ import loon.action.map.AStarFinder;
 import loon.action.map.Config;
 import loon.action.map.Field2D;
 import loon.geom.Vector2f;
-import loon.utils.CollectionUtils;
 import loon.utils.IntMap;
+import loon.utils.TArray;
+import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 import loon.utils.StringKeyValue;
-import loon.utils.TArray;
 
 /**
  * 缓动对象移动用效果类,内置寻径和碰撞接口,可以自动实现寻径和障碍物回避效果(当然,也可以不寻径不检查碰撞而单纯移动)
@@ -40,7 +40,7 @@ import loon.utils.TArray;
 public class MoveTo extends ActionEvent {
 
 	// 寻径缓存，如果useCache为true时,moveTo将不理会实际寻径结果，全部按照缓存中的路线行走
-	private final static IntMap<TArray<Vector2f>> _PATH_CACHE = new IntMap<>(
+	private final static IntMap<TArray<Vector2f>> _PATH_CACHE = new IntMap<TArray<Vector2f>>(
 			LSystem.DEFAULT_MAX_CACHE_SIZE);
 
 	// 默认每帧的移动数值(象素)
@@ -226,7 +226,7 @@ public class MoveTo extends ActionEvent {
 								layerMap.pixelsToTilesHeight(endLocation.y()), allDir);
 						_PATH_CACHE.put(key, final_path);
 					}
-					pActorPath = new TArray<>();
+					pActorPath = new TArray<Vector2f>();
 					pActorPath.addAll(final_path);
 				}
 			} else {
@@ -780,7 +780,7 @@ public class MoveTo extends ActionEvent {
 
 	/**
 	 * 设定move完成后延迟触发stop事件的延迟时间(触发太快了影响肉眼效果,后续操作可能像并发执行,而不是顺序)
-	 *
+	 * 
 	 * @param delayTime
 	 */
 	public void setProcessDelayTime(int delayTime) {

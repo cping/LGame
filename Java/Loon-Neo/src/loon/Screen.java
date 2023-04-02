@@ -116,6 +116,7 @@ import loon.utils.reply.Callback;
 import loon.utils.reply.Closeable;
 import loon.utils.reply.Port;
 import loon.utils.res.ResourceLocal;
+import loon.utils.timer.Duration;
 import loon.utils.timer.LTimer;
 import loon.utils.timer.LTimerContext;
 
@@ -1016,7 +1017,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	public float getDeltaTime() {
-		return MathUtils.max(elapsedTime / 1000f, LSystem.MIN_SECONE_SPEED_FIXED);
+		return MathUtils.max(Duration.toS(elapsedTime), LSystem.MIN_SECONE_SPEED_FIXED);
 	}
 
 	public long getElapsedTime() {

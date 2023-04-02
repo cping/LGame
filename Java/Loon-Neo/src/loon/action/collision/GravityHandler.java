@@ -30,6 +30,7 @@ import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
 import loon.utils.TArray;
 import loon.utils.cache.Pool;
+import loon.utils.timer.Duration;
 import loon.utils.timer.EaseTimer;
 
 /**
@@ -178,7 +179,7 @@ public class GravityHandler implements LRelease {
 
 		easeTimer.action(elapsedTime);
 
-		final float delta = MathUtils.max(elapsedTime / 1000f, LSystem.MIN_SECONE_SPEED_FIXED)
+		final float delta = MathUtils.max(Duration.toS(elapsedTime), LSystem.MIN_SECONE_SPEED_FIXED)
 				* easeTimer.getProgress();
 
 		for (Gravity g : objects) {

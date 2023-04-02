@@ -20,8 +20,10 @@
  */
 package loon.action;
 
+import loon.LSystem;
 import loon.utils.MathUtils;
 import loon.utils.StringKeyValue;
+import loon.utils.timer.Duration;
 
 public class ScaleTo extends ActionEvent {
 
@@ -40,7 +42,7 @@ public class ScaleTo extends ActionEvent {
 	}
 
 	public ScaleTo(float sx, float sy) {
-		this(-1, -1, sx, sy, 0.1f);
+		this(-1, -1, sx, sy, LSystem.MIN_SECONE_SPEED_FIXED);
 	}
 
 	public ScaleTo(float sx, float sy, float sp) {
@@ -89,7 +91,7 @@ public class ScaleTo extends ActionEvent {
 		if (original != null) {
 			synchronized (original) {
 				if (original != null) {
-					dt += MathUtils.max((elapsedTime / 1000), speed);
+					dt += MathUtils.max(Duration.toS(elapsedTime), speed);
 					original.setScale(startX + (deltaX * dt), startY + (deltaY * dt));
 					_isCompleted = (deltaX > 0 ? (original.getScaleX() >= endX) : (original.getScaleX() <= endX))
 							&& (deltaY > 0 ? (original.getScaleY() >= endY) : (original.getScaleY() <= endY));

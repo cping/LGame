@@ -48,7 +48,7 @@ public class ArrowTo extends ActionEvent {
 
 	private int dir;
 
-	private EaseTimer easeTimer;
+	private final EaseTimer easeTimer;
 
 	public ArrowTo(float tx, float ty) {
 		this(tx, ty, 1f, 200f);
@@ -92,6 +92,7 @@ public class ArrowTo extends ActionEvent {
 		return _isCompleted;
 	}
 
+	@Override
 	public void onLoad() {
 		if (this.startX == -1) {
 			this.startX = original.getX();
@@ -108,6 +109,7 @@ public class ArrowTo extends ActionEvent {
 		this.currentY = startY;
 	}
 
+	@Override
 	public void update(long elapsedTime) {
 		easeTimer.update(elapsedTime);
 		if (easeTimer.isCompleted()) {
@@ -138,6 +140,25 @@ public class ArrowTo extends ActionEvent {
 		}
 	}
 
+	public ArrowTo loop(int count) {
+		easeTimer.setLoop(count);
+		return this;
+	}
+
+	public ArrowTo loop(boolean l) {
+		easeTimer.setLoop(l);
+		return this;
+	}
+
+	public ArrowTo reset() {
+		easeTimer.reset();
+		return this;
+	}
+
+	public boolean isLoop() {
+		return easeTimer.isLoop();
+	}
+	
 	public int getDirection() {
 		return dir;
 	}

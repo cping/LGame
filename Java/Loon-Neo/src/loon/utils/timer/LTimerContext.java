@@ -37,7 +37,7 @@ public class LTimerContext {
 	}
 
 	public float getMilliseconds() {
-		return MathUtils.max(timeSinceLastUpdate / 1000f, LSystem.MIN_SECONE_SPEED_FIXED);
+		return MathUtils.max(Duration.toS(timeSinceLastUpdate), LSystem.MIN_SECONE_SPEED_FIXED);
 	}
 
 	public long getTimeSinceLastUpdate() {

@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -20,14 +20,14 @@
  */
 package loon.action;
 
+import loon.utils.StringKeyValue;
 import loon.LSystem;
 import loon.utils.Easing.EasingMode;
-import loon.utils.StringKeyValue;
 import loon.utils.timer.EaseTimer;
 
 public class ShakeTo extends ActionEvent {
 
-	private EaseTimer easeTimer;
+	private final EaseTimer easeTimer;
 	private float shakeTimer;
 	private float shakeX, oldShakeX;
 	private float shakeY, oldShakeY;
@@ -79,6 +79,26 @@ public class ShakeTo extends ActionEvent {
 		}
 	}
 
+	public ShakeTo reset() {
+		easeTimer.reset();
+		return this;
+	}
+	
+	public ShakeTo loop(int count) {
+		easeTimer.setLoop(count);
+		return this;
+	}
+
+	public ShakeTo loop(boolean l) {
+		easeTimer.setLoop(l);
+		return this;
+	}
+
+	public boolean isLoop() {
+		return easeTimer.isLoop();
+	}
+	
+	
 	public float getShakeX() {
 		return shakeX;
 	}

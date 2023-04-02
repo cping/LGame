@@ -52,7 +52,7 @@ public abstract class FloatTimerEvent {
 	}
 
 	public void update(long elapsedTime) {
-		this.update(MathUtils.max(elapsedTime / 1000f, LSystem.MIN_SECONE_SPEED_FIXED));
+		this.update(MathUtils.max(Duration.toS(elapsedTime), LSystem.MIN_SECONE_SPEED_FIXED));
 	}
 
 	public void update(float delta) {

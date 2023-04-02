@@ -20,9 +20,8 @@
  */
 package loon.action.avg.drama;
 
-import java.util.Random;
-
 import loon.utils.MathUtils;
+import loon.utils.Random;
 
 public interface Expression {
 

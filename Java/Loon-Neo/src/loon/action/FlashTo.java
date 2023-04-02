@@ -30,7 +30,7 @@ import loon.utils.timer.EaseTimer;
  */
 public class FlashTo extends ActionEvent {
 
-	private EaseTimer easeTimer;
+	private final EaseTimer easeTimer;
 
 	private float interval = 0;
 
@@ -67,6 +67,25 @@ public class FlashTo extends ActionEvent {
 			this.original.setVisible(!this.original.isVisible());
 			this.interval = easeTimer.getDelay();
 		}
+	}
+
+	public FlashTo loop(int count) {
+		easeTimer.setLoop(count);
+		return this;
+	}
+
+	public FlashTo loop(boolean l) {
+		easeTimer.setLoop(l);
+		return this;
+	}
+
+	public FlashTo reset() {
+		easeTimer.reset();
+		return this;
+	}
+
+	public boolean isLoop() {
+		return easeTimer.isLoop();
 	}
 
 	public float getInterval() {

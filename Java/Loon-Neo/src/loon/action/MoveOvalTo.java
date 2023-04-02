@@ -44,7 +44,7 @@ public class MoveOvalTo extends ActionEvent {
 	private Vector2f centerPoint, oldCenterPoint;
 	private int directionX = 1;
 	private int directionY = -1;
-	private EaseTimer easeTimer;
+	private final EaseTimer easeTimer;
 
 	public MoveOvalTo(float startAngle, float angle, float width, float height, Vector2f centerPoint, float duration) {
 		this(startAngle, angle, width, height, centerPoint, null, duration, LSystem.DEFAULT_EASE_DELAY,
@@ -167,6 +167,25 @@ public class MoveOvalTo extends ActionEvent {
 		movePos(this.startPoint.x + offsetX, this.startPoint.y + offsetY);
 	}
 
+	public MoveOvalTo reset() {
+		easeTimer.reset();
+		return this;
+	}
+	
+	public MoveOvalTo loop(int count) {
+		easeTimer.setLoop(count);
+		return this;
+	}
+
+	public MoveOvalTo loop(boolean l) {
+		easeTimer.setLoop(l);
+		return this;
+	}
+
+	public boolean isLoop() {
+		return easeTimer.isLoop();
+	}
+	
 	public float getAngle() {
 		return angle;
 	}

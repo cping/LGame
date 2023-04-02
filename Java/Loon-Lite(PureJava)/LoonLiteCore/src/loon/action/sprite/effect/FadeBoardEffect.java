@@ -27,6 +27,7 @@ import loon.canvas.LColor;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
+import loon.utils.timer.Duration;
 
 /**
  * 瓦片(从左向右逐渐减少或增加)淡入淡出效果
@@ -114,7 +115,7 @@ public class FadeBoardEffect extends Entity implements BaseEffect {
 			}
 			_delayCount += elapsedTime;
 			if (_delayCount >= _delayTimer) {
-				_currentDelta += MathUtils.max(elapsedTime / 1000f, LSystem.MIN_SECONE_SPEED_FIXED);
+				_currentDelta += MathUtils.max(Duration.toS(elapsedTime), LSystem.MIN_SECONE_SPEED_FIXED);
 				float delta = MathUtils.sin(_currentDelta / _effect.blocDuration * 1.5707964f);
 				if (_effect.fadeType == TYPE_FADE_OUT) {
 					_angle += (delta * 100f);

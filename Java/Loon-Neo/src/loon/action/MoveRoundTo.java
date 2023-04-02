@@ -38,7 +38,7 @@ public class MoveRoundTo extends ActionEvent {
 	private final float startRadius;
 	private Vector2f startPoint, oldStartPoint;
 	private Vector2f centerPoint, oldCenterPoint;
-	private EaseTimer timer;
+	private final EaseTimer easeTimer;
 
 	public MoveRoundTo(float angle, float radius, Vector2f centerPoint, float duration, EasingMode easing) {
 		this(0f, angle, 0f, radius, centerPoint, null, duration, LSystem.DEFAULT_EASE_DELAY, easing);
@@ -78,15 +78,15 @@ public class MoveRoundTo extends ActionEvent {
 		if (startPoint == null) {
 			startPoint = new Vector2f();
 		}
-		this.timer = new EaseTimer(duration, delay, easing);
+		this.easeTimer = new EaseTimer(duration, delay, easing);
 		this.oldStartPoint = startPoint;
 		this.oldCenterPoint = centerPoint;
 	}
 
 	@Override
 	public void update(long elapsedTime) {
-		timer.update(elapsedTime);
-		if (timer.isCompleted()) {
+		easeTimer.update(elapsedTime);
+		if (easeTimer.isCompleted()) {
 			_isCompleted = true;
 			float radian = MathUtils.toRadians(this.startAngle + this.angle);
 			float x = this.centerPoint.x + MathUtils.cos(radian) * (this.startRadius + this.radius);
@@ -94,14 +94,33 @@ public class MoveRoundTo extends ActionEvent {
 			movePos(x + original.getWidth() / 2 + offsetX, y + original.getHeight() / 2 + offsetY);
 			return;
 		}
-		float currentRadius = this.startRadius + this.radius * timer.getProgress();
-		float currentAngle = this.startAngle + this.angle * timer.getProgress();
+		float currentRadius = this.startRadius + this.radius * easeTimer.getProgress();
+		float currentAngle = this.startAngle + this.angle * easeTimer.getProgress();
 		float radian = MathUtils.toRadians(currentAngle);
 		this.startPoint.x = (this.centerPoint.x + MathUtils.cos(radian) * currentRadius);
 		this.startPoint.y = (this.centerPoint.y + MathUtils.sin(radian) * currentRadius);
 		movePos(this.startPoint.x + offsetX, this.startPoint.y + offsetY);
 	}
 
+	public MoveRoundTo reset() {
+		easeTimer.reset();
+		return this;
+	}
+	
+	public MoveRoundTo loop(int count) {
+		easeTimer.setLoop(count);
+		return this;
+	}
+
+	public MoveRoundTo loop(boolean l) {
+		easeTimer.setLoop(l);
+		return this;
+	}
+
+	public boolean isLoop() {
+		return easeTimer.isLoop();
+	}
+	
 	public float getAngle() {
 		return angle;
 	}
@@ -135,7 +154,7 @@ public class MoveRoundTo extends ActionEvent {
 	@Override
 	public ActionEvent cpy() {
 		MoveRoundTo mover = new MoveRoundTo(startAngle, angle, startRadius, radius, oldCenterPoint, oldStartPoint,
-				timer.getDuration(), timer.getDelay(), timer.getEasingMode());
+				easeTimer.getDuration(), easeTimer.getDelay(), easeTimer.getEasingMode());
 		mover.set(this);
 		return mover;
 	}
@@ -155,7 +174,7 @@ public class MoveRoundTo extends ActionEvent {
 		StringKeyValue builder = new StringKeyValue(getName());
 		builder.kv("startAngle", startAngle).comma().kv("angle", angle).comma().kv("startRadius", startRadius).comma()
 				.kv("radius", radius).comma().kv("startPoint", startPoint).comma().kv("centerPoint", centerPoint)
-				.comma().kv("EaseTimer", timer);
+				.comma().kv("EaseTimer", easeTimer);
 		return builder.toString();
 	}
 

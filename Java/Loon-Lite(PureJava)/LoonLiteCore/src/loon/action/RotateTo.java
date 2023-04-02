@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2011
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -20,9 +20,9 @@
  */
 package loon.action;
 
+import loon.utils.StringKeyValue;
 import loon.LSystem;
 import loon.utils.Easing.EasingMode;
-import loon.utils.StringKeyValue;
 import loon.utils.timer.EaseTimer;
 
 /**
@@ -35,9 +35,7 @@ public class RotateTo extends ActionEvent {
 	private float startRotation = -1f;
 	private float dstAngle = 0;
 	private float currentRotation = 0;
-	private EaseTimer easeTimer;
-
-	private boolean angleLoop = false;
+	private final EaseTimer easeTimer;
 
 	public RotateTo(float dstAngle) {
 		this(dstAngle, 2f);
@@ -83,51 +81,51 @@ public class RotateTo extends ActionEvent {
 		}
 	}
 
+	public RotateTo reset() {
+		easeTimer.reset();
+		return this;
+	}
+
+	public RotateTo loop(int count) {
+		easeTimer.setLoop(count);
+		return this;
+	}
+
 	public RotateTo loop(boolean l) {
-		if (this.angleLoop == l) {
-			return this;
-		}
-		this.angleLoop = l;
-		if (easeTimer != null) {
-			easeTimer.reset(easeTimer.getDelay());
-		}
+		easeTimer.setLoop(l);
 		return this;
 	}
 
 	public boolean isLoop() {
-		return this.angleLoop;
+		return easeTimer.isLoop();
 	}
 
 	@Override
 	public void update(long elapsedTime) {
 		easeTimer.update(elapsedTime);
 		if (easeTimer.isCompleted()) {
-			if (!angleLoop) {
-				_isCompleted = true;
-			} else {
-				easeTimer.reset(easeTimer.getDelay());
-			}
+			_isCompleted = true;
 			original.setRotation(dstAngle);
 			return;
 		}
 		if (startRotation >= dstAngle) {
 			if (currentRotation <= dstAngle && currentRotation != 0f) {
 				currentRotation = dstAngle;
-				if (!angleLoop) {
-					_isCompleted = true;
-				}
+				_isCompleted = true;
 			}
 		}
-		original.setRotation(currentRotation = (startRotation
-				+ ((angleLoop ? 360f : dstAngle) - startRotation) * easeTimer.getProgress() * diffAngle) + speed);
+		original.setRotation(
+				currentRotation = (startRotation + (dstAngle - startRotation) * easeTimer.getProgress() * diffAngle)
+						+ speed);
 	}
 
 	public float getDiffAngle() {
 		return this.diffAngle;
 	}
 
-	public void setDiffAngle(float diff) {
+	public RotateTo setDiffAngle(float diff) {
 		this.diffAngle = diff;
+		return this;
 	}
 
 	public float getRotation() {
@@ -138,8 +136,9 @@ public class RotateTo extends ActionEvent {
 		return speed;
 	}
 
-	public void setSpeed(float speed) {
+	public RotateTo setSpeed(float speed) {
 		this.speed = speed;
+		return this;
 	}
 
 	@Override

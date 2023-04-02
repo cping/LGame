@@ -25,6 +25,7 @@ import loon.utils.DPI;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 import loon.utils.Resolution;
+import loon.utils.timer.Duration;
 
 /**
  * LGame的基础配置类,游戏初始化属性由此产生
@@ -286,7 +287,7 @@ public class LSetting {
 	}
 
 	public LSetting fixedPaintTime(float time) {
-		this.fixedPaintLoopTime = (long) (time * 1000f);
+		this.fixedPaintLoopTime = Duration.ofS(time);
 		return this;
 	}
 
@@ -299,7 +300,7 @@ public class LSetting {
 	}
 
 	public LSetting fixedUpdateTime(float time) {
-		this.fixedUpdateLoopTime = (long) (time * 1000f);
+		this.fixedUpdateLoopTime = Duration.ofS(time);
 		return this;
 	}
 
@@ -343,6 +344,10 @@ public class LSetting {
 	}
 
 	public LSetting updateScale() {
+		width = MathUtils.divTwoAbs(width);
+		height = MathUtils.divTwoAbs(height);
+		width_zoom = MathUtils.divTwoAbs(width_zoom);
+		height_zoom = MathUtils.divTwoAbs(height_zoom);
 		if (scaling()) {
 			LSystem.setScaleWidth((float) width_zoom / (float) width);
 			LSystem.setScaleHeight((float) height_zoom / (float) height);

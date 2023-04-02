@@ -123,6 +123,15 @@ public class BasicTimer {
 		return (_maxLoop == -1) || (_maxLoop != 0 && _loopCount != _maxLoop);
 	}
 
+	public BasicTimer setLoop(boolean loop) {
+		if (loop) {
+			setLoop(-1);
+		} else {
+			setLoop(0);
+		}
+		return this;
+	}
+
 	public BasicTimer setLoop(int loop) {
 		this._maxLoop = loop;
 		this._loopCount = 0;

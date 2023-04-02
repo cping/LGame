@@ -35,7 +35,7 @@ public class TransferTo extends ActionEvent {
 	private boolean controllingX;
 	private boolean controllingY;
 
-	private EaseTimer easeTimer;
+	private final EaseTimer easeTimer;
 
 	public TransferTo(float startPos, float endPos, float duration, EasingMode mode, boolean controlX,
 			boolean controlY) {
@@ -62,8 +62,23 @@ public class TransferTo extends ActionEvent {
 		this.controllingY = controlY;
 		return this;
 	}
+	
+	public TransferTo loop(int count) {
+		easeTimer.setLoop(count);
+		return this;
+	}
 
+	public TransferTo loop(boolean l) {
+		easeTimer.setLoop(l);
+		return this;
+	}
+
+	public boolean isLoop() {
+		return easeTimer.isLoop();
+	}
+	
 	public TransferTo reset() {
+		easeTimer.reset();
 		currentPosition = startPos;
 		return this;
 	}

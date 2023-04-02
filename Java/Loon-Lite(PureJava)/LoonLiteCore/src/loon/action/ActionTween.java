@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -35,9 +35,11 @@ import loon.geom.BooleanValue;
 import loon.geom.Vector2f;
 import loon.utils.Array;
 import loon.utils.Easing;
-import loon.utils.Easing.EasingMode;
-import loon.utils.StringKeyValue;
 import loon.utils.TArray;
+import loon.utils.Easing.EasingMode;
+import loon.utils.MathUtils;
+import loon.utils.timer.Duration;
+import loon.utils.StringKeyValue;
 
 public class ActionTween extends ActionTweenBase<ActionTween> {
 
@@ -55,7 +57,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		this.funPointsLimit = limit;
 	}
 
-	private static final ActionTweenPool.Callback<ActionTween> _POOL_CALLBACK = new ActionTweenPool.Callback<>() {
+	private static final ActionTweenPool.Callback<ActionTween> _POOL_CALLBACK = new ActionTweenPool.Callback<ActionTween>() {
 		@Override
 		public void onPool(ActionTween obj) {
 			obj.reset();
@@ -83,7 +85,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		}
 	};
 
-	private static final ActionTweenPool<ActionTween> _POOLS = new ActionTweenPool<>(20, _POOL_CALLBACK) {
+	private static final ActionTweenPool<ActionTween> _POOLS = new ActionTweenPool<ActionTween>(20, _POOL_CALLBACK) {
 		@Override
 		protected ActionTween create() {
 			return new ActionTween();
@@ -92,7 +94,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 
 	/**
 	 * 从当前ActionBind数值到指定目标(大多数时候，调用此状态已经足够)
-	 *
+	 * 
 	 * @param target    具体的操作对象
 	 * @param tweenType 需要转变的接口
 	 * @param duration  持续时间
@@ -108,7 +110,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 
 	/**
 	 * 从注入的数值演变到当前值
-	 *
+	 * 
 	 * @param target
 	 * @param tweenType
 	 * @param duration
@@ -125,7 +127,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 
 	/**
 	 * 直接注入当前对象为指定数值
-	 *
+	 * 
 	 * @param target
 	 * @param tweenType
 	 * @return
@@ -139,7 +141,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 
 	/**
 	 * 直接调用一个ActionCallback方法
-	 *
+	 * 
 	 * @param callback
 	 * @return
 	 */
@@ -153,7 +155,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 
 	/**
 	 * 制作一个无状态的空ActionTween对象
-	 *
+	 * 
 	 * @return
 	 */
 	public static ActionTween mark() {
@@ -216,7 +218,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 
 	/**
 	 * 按照指定路径移动
-	 *
+	 * 
 	 * @param path
 	 * @return
 	 */
@@ -226,7 +228,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 
 	/**
 	 * 按照指定路径移动,并选择是八方向走法或四方向走法
-	 *
+	 * 
 	 * @param path
 	 * @param flag
 	 * @return
@@ -237,7 +239,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 
 	/**
 	 * 按照指定路径移动,并选择是八方向走法或四方向走法,以及移动速度
-	 *
+	 * 
 	 * @param path
 	 * @param all
 	 * @param speed
@@ -249,7 +251,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 
 	/**
 	 * 在地址的二维数组地图上,按照指定路径移动,并选择是八方向走法或四方向走法
-	 *
+	 * 
 	 * @param map
 	 * @param path
 	 * @param all
@@ -262,7 +264,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 
 	/**
 	 * 按照指定路径移动,并选择监听器
-	 *
+	 * 
 	 * @param path
 	 * @param l
 	 * @return
@@ -273,7 +275,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 
 	/**
 	 * 按照指定路径移动,并选择是八方向走法或四方向走法以及监听器
-	 *
+	 * 
 	 * @param path
 	 * @param all
 	 * @param l
@@ -285,7 +287,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 
 	/**
 	 * 按照指定路径移动,并选择是八方向走法或四方向走法以及速度和监听器
-	 *
+	 * 
 	 * @param path
 	 * @param all
 	 * @param speed
@@ -298,7 +300,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 
 	/**
 	 * 在指定的二维数组地图上,按照指定路径移动,并选择是八方向走法或四方向走法以及速度和监听器
-	 *
+	 * 
 	 * @param map
 	 * @param path
 	 * @param all
@@ -320,7 +322,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 
 	/**
 	 * 移动角色到指定目标
-	 *
+	 * 
 	 * @param endX
 	 * @param endY
 	 * @return
@@ -331,7 +333,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 
 	/**
 	 * 移动角色到指定目标并监听
-	 *
+	 * 
 	 * @param endX
 	 * @param endY
 	 * @param l
@@ -343,7 +345,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 
 	/**
 	 * 移动角色到指定目标并指定速度
-	 *
+	 * 
 	 * @param endX
 	 * @param endY
 	 * @param speed
@@ -355,7 +357,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 
 	/**
 	 * 移动角色到指定目标并指定速度以及监听
-	 *
+	 * 
 	 * @param endX
 	 * @param endY
 	 * @param speed
@@ -368,7 +370,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 
 	/**
 	 * 移动角色到指定目标并设置8方向行走或4方向行走
-	 *
+	 * 
 	 * @param endX
 	 * @param endY
 	 * @param flag
@@ -380,7 +382,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 
 	/**
 	 * 移动角色到指定目标并设置8方向行走或4方向行走以及监听
-	 *
+	 * 
 	 * @param endX
 	 * @param endY
 	 * @param flag
@@ -393,7 +395,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 
 	/**
 	 * 移动角色到指定目标并设置8方向行走或4方向行走以及移动速度
-	 *
+	 * 
 	 * @param endX
 	 * @param endY
 	 * @param flag
@@ -406,7 +408,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 
 	/**
 	 * 移动角色到指定目标并设置8方向行走或4方向行走以及移动速度并且监听
-	 *
+	 * 
 	 * @param endX
 	 * @param endY
 	 * @param flag
@@ -420,7 +422,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 
 	/**
 	 * 移动角色到指定目标并设置8方向行走或4方向行走以及移动速度并进行位置偏移
-	 *
+	 * 
 	 * @param endX
 	 * @param endY
 	 * @param flag
@@ -434,7 +436,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 
 	/**
 	 * 移动角色到指定目标并设置8方向行走或4方向行走并进行位置偏移并且监听
-	 *
+	 * 
 	 * @param endX
 	 * @param endY
 	 * @param flag
@@ -449,7 +451,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 
 	/**
 	 * 移动角色到指定目标并设置8方向行走或4方向行走以及移动速度并进行位置偏移并且监听
-	 *
+	 * 
 	 * @param endX
 	 * @param endY
 	 * @param flag
@@ -817,9 +819,9 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	 * <p>
 	 * 需要[并行]的缓动动画事件在此注入
 	 * </p>
-	 *
+	 * 
 	 * 如果要[并行](也就是旋转,变色什么的一起来)进行缓动动画,而非分别进行,请把要演示的ActionEvent注入此类,此类用于同时运行多个ActionEvent
-	 *
+	 * 
 	 * @param eves
 	 * @return
 	 */
@@ -831,9 +833,9 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	 * <p>
 	 * 需要[并行]的缓动动画事件在此注入
 	 * </p>
-	 *
+	 * 
 	 * 如果要[并行](也就是旋转,变色什么的一起来)进行缓动动画,而非分别进行,请把要演示的ActionEvent注入此类,此类用于同时运行多个ActionEvent
-	 *
+	 * 
 	 * @param list
 	 * @return
 	 */
@@ -945,7 +947,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 
 	/**
 	 * 监听所有指定名称的已注入事件
-	 *
+	 * 
 	 * @param name
 	 * @param listener
 	 * @return
@@ -968,7 +970,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 
 	/**
 	 * 监听所有指定名称的已注入事件
-	 *
+	 * 
 	 * @param name
 	 * @param listener
 	 * @return
@@ -992,7 +994,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 
 	/**
 	 * 停止所有指定名的动画
-	 *
+	 * 
 	 * @param name
 	 * @return
 	 */
@@ -1015,7 +1017,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 
 	/**
 	 * 停止所有包含指定标记的动画
-	 *
+	 * 
 	 * @param tag
 	 * @return
 	 */
@@ -1040,14 +1042,17 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	}
 
 	public ActionTween loop(int count, boolean reverse) {
-		if ((actionEvents == null) || (count < 1)) {
+		if (actionEvents == null) {
+			return this;
+		}
+		if (count < 1) {
 			return this;
 		}
 		if (count == 1) {
 			count++;
 		}
 		ActionEvent e = null;
-		Array<ActionEvent> tmps = new Array<>();
+		Array<ActionEvent> tmps = new Array<ActionEvent>();
 		for (int i = 0; i < count - 1; i++) {
 			for (; actionEvents.hashNext();) {
 				ActionEvent tmp = actionEvents.next();
@@ -1067,13 +1072,16 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	}
 
 	public ActionTween loopLast(int count, boolean reverse) {
-		if ((actionEvents == null) || (count < 1)) {
+		if (actionEvents == null) {
+			return this;
+		}
+		if (count < 1) {
 			return this;
 		}
 		if (count == 1) {
 			count++;
 		}
-		Array<ActionEvent> tmps = new Array<>();
+		Array<ActionEvent> tmps = new Array<ActionEvent>();
 		for (int i = 0; i < count - 1; i++) {
 			tmps.add(reverse ? actionEvents.last().reverse() : actionEvents.last().cpy());
 		}
@@ -1083,9 +1091,9 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 
 	public TArray<ActionEvent> getActionEvents() {
 		if (actionEvents == null) {
-			return new TArray<>(0);
+			return new TArray<ActionEvent>(0);
 		}
-		return new TArray<>(actionEvents);
+		return new TArray<ActionEvent>(actionEvents);
 	}
 
 	@Override
@@ -1138,7 +1146,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 
 	/**
 	 * 自定义事件(连续动画)请在此处注入
-	 *
+	 * 
 	 * @param event
 	 * @return
 	 */
@@ -1148,14 +1156,14 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 
 	/**
 	 * 注入缓动动画(连续动画)事件(自定义事件也请在此处注入)
-	 *
+	 * 
 	 * @param event
 	 * @param listener
 	 * @return
 	 */
 	public ActionTween event(ActionEvent event, ActionListener listener) {
 		if (actionEvents == null) {
-			actionEvents = new Array<>();
+			actionEvents = new Array<ActionEvent>();
 		}
 		if (event != null) {
 			actionEvents.add(event);
@@ -1211,7 +1219,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	}
 
 	public ActionTween delayGlobal(float delay) {
-		ActionControl.setDelay((long) (delay * 1000f));
+		ActionControl.setDelay(MathUtils.max(Duration.ofS(delay), 8));
 		return this;
 	}
 
@@ -1386,7 +1394,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 				return false;
 			} else if (currentActionEvent != null && currentActionEvent.isComplete()) {
 				if (repeatList == null) {
-					repeatList = new Array<>();
+					repeatList = new Array<ActionEvent>();
 				}
 				if (!(currentActionEvent instanceof ReplayTo)) {
 					repeatList.add(currentActionEvent.reverse());

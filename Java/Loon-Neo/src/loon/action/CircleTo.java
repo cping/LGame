@@ -23,6 +23,7 @@ package loon.action;
 import loon.LSystem;
 import loon.utils.MathUtils;
 import loon.utils.StringKeyValue;
+import loon.utils.timer.Duration;
 
 public class CircleTo extends ActionEvent {
 
@@ -38,12 +39,12 @@ public class CircleTo extends ActionEvent {
 
 	private int velocity;
 
-	private float dt;
+	private float delta;
 
 	private float speed;
 
 	public CircleTo(int radius, int velocity) {
-		this(-1, -1, radius, velocity, 0.1f);
+		this(-1, -1, radius, velocity, LSystem.MIN_SECONE_SPEED_FIXED);
 	}
 
 	public CircleTo(float centerX, float centerY, int radius, int velocity, float speed) {
@@ -54,16 +55,18 @@ public class CircleTo extends ActionEvent {
 		this.speed = speed;
 	}
 
-	public void setVelocity(int v) {
+	public CircleTo setVelocity(int v) {
 		this.velocity = v;
+		return this;
 	}
 
 	public int getVelocity() {
 		return velocity;
 	}
 
-	public void setSpeed(float s) {
+	public CircleTo setSpeed(float s) {
 		this.speed = s;
+		return this;
 	}
 
 	public float getSpeed() {
@@ -89,9 +92,10 @@ public class CircleTo extends ActionEvent {
 
 	@Override
 	public void update(long elapsedTime) {
-		dt += MathUtils.max(elapsedTime / 1000f, MathUtils.max(speed, LSystem.MIN_SECONE_SPEED_FIXED));
-		this.x = (this.startX + this.radius * MathUtils.cos(MathUtils.toRadians(this.velocity * dt)));
-		this.y = (this.startY + this.radius * MathUtils.sin(MathUtils.toRadians(this.velocity * dt)));
+		delta += MathUtils.max(Duration.toS(elapsedTime), speed);
+		final float angle = MathUtils.toRadians(this.velocity * delta);
+		this.x = (this.startX + this.radius * MathUtils.cos(angle));
+		this.y = (this.startY + this.radius * MathUtils.sin(angle));
 		synchronized (original) {
 			movePos(x + offsetX, y + offsetY);
 		}
@@ -138,7 +142,7 @@ public class CircleTo extends ActionEvent {
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue(getName());
 		builder.kv("startX", startX).comma().kv("startY", startY).comma().kv("radius", radius).comma()
-				.kv("speed", speed).comma().kv("velocity", velocity).comma().kv("delta", dt);
+				.kv("speed", speed).comma().kv("velocity", velocity).comma().kv("delta", delta);
 		return builder.toString();
 	}
 

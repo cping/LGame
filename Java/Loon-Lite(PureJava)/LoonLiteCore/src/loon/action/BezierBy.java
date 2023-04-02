@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -22,8 +22,8 @@ package loon.action;
 
 import loon.geom.Bezier;
 import loon.geom.Vector2f;
-import loon.utils.Easing.EasingMode;
 import loon.utils.StringKeyValue;
+import loon.utils.Easing.EasingMode;
 import loon.utils.timer.EaseTimer;
 
 public class BezierBy extends ActionEvent {
@@ -32,7 +32,7 @@ public class BezierBy extends ActionEvent {
 
 	protected float startX = -1, startY = -1;
 
-	protected EaseTimer easeTimer;
+	protected final EaseTimer easeTimer;
 
 	public BezierBy(float duration, Bezier b) {
 		this(-1, -1, duration, EasingMode.Linear, b);
@@ -76,6 +76,25 @@ public class BezierBy extends ActionEvent {
 			startX = original.getX();
 			startY = original.getY();
 		}
+	}
+
+	public BezierBy reset() {
+		easeTimer.reset();
+		return this;
+	}
+	
+	public BezierBy loop(int count) {
+		easeTimer.setLoop(count);
+		return this;
+	}
+
+	public BezierBy loop(boolean l) {
+		easeTimer.setLoop(l);
+		return this;
+	}
+
+	public boolean isLoop() {
+		return easeTimer.isLoop();
 	}
 
 	@Override

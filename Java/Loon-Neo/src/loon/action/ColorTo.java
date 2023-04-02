@@ -23,6 +23,7 @@ package loon.action;
 import loon.LSystem;
 import loon.canvas.LColor;
 import loon.utils.StringKeyValue;
+import loon.utils.Easing.EasingMode;
 import loon.utils.timer.EaseTimer;
 
 /**
@@ -52,7 +53,7 @@ public class ColorTo extends ActionEvent {
 
 	private LColor tmpColor = null;
 	private LColor start, end;
-	private EaseTimer easeTimer;
+	private final EaseTimer easeTimer;
 
 	public ColorTo(LColor endColor) {
 		this(null, endColor, 1f);
@@ -67,7 +68,15 @@ public class ColorTo extends ActionEvent {
 	}
 
 	public ColorTo(LColor startColor, LColor endColor, float duration, float delay) {
-		this.easeTimer = new EaseTimer(duration, delay);
+		this(startColor, endColor, duration, delay, EasingMode.Linear);
+	}
+
+	public ColorTo(LColor startColor, LColor endColor, float duration, EasingMode mode) {
+		this(startColor, endColor, duration, 0f, mode);
+	}
+
+	public ColorTo(LColor startColor, LColor endColor, float duration, float delay, EasingMode mode) {
+		this.easeTimer = new EaseTimer(duration, delay, mode);
 		this.start = startColor;
 		this.end = endColor;
 		this.setColors(startColor, endColor);
@@ -99,6 +108,26 @@ public class ColorTo extends ActionEvent {
 		setColors(start, end);
 	}
 
+	public ColorTo loop(int count) {
+		easeTimer.setLoop(count);
+		return this;
+	}
+
+	public ColorTo loop(boolean l) {
+		easeTimer.setLoop(l);
+		return this;
+	}
+
+	public boolean isLoop() {
+		return easeTimer.isLoop();
+	}
+
+	public ColorTo reset() {
+		easeTimer.reset();
+		return this;
+	}
+
+	@Override
 	public void update(long elapsedTime) {
 		easeTimer.update(elapsedTime);
 		if (easeTimer.isCompleted()) {
