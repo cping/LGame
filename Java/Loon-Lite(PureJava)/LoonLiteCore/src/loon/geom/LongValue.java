@@ -60,6 +60,10 @@ public class LongValue implements LRelease{
 		return value;
 	}
 
+	public LongValue cpy() {
+		return new LongValue(value);
+	}
+	
 	@Override
 	public String toString() {
 		return String.valueOf(value);

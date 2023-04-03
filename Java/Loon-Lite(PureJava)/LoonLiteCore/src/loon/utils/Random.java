@@ -33,27 +33,27 @@ import loon.geom.Vector2f;
  */
 public class Random {
 
-	private long _lowerMask = 0x7fffffff;
-	private long _upperMask = 0x80000000;
-	private long _bitmask32 = 0xffffffff;
+	private final static float FLOAT_VALUE = 2.3283064E-10f;
+	private final static double DOUBLE_VALUE = 2.3283064E-10d;
 
-	private long _w = 32;
+	private final static long LowerMask = 0x7fffffff;
+	private final static long UpperMask = 0x80000000;
+	private final static long Bitmask32 = 0xffffffff;
+	
+	private final static int N = 624;
+	
+	private final static long W = 32;
+	private final static long M = 397;
+	private final static long A = 0x9908b0df;
+	private final static long U = 11;
+	private final static long S = 7;
+	private final static long B = 0x9d2c5680;
+	private final static long T = 15;
+	private final static long C = 0xefc60000;
+	private final static long L = 18;
+	private final static long F = 1812433253;
 
-	private int _n = 624;
-
-	private long _m = 397;
-
-	private long _a = 0x9908b0df;
-
-	private long _u = 11;
-	private long _s = 7;
-	private long _b = 0x9d2c5680;
-	private long _t = 15;
-	private long _c = 0xefc60000;
-	private long _l = 18;
-	private long _f = 1812433253;
-
-	private LongArray _mt;
+	private final LongArray _mt;
 
 	private int _index;
 
@@ -62,37 +62,35 @@ public class Random {
 	}
 
 	public Random(long seed) {
-		this._mt = new LongArray(this._n);
+		_mt = new LongArray(N);
 		if (seed != 0) {
-			this._mt.set(0, seed);
+			_mt.set(0, seed);
 		} else {
-			this._mt.set(0, (TimeUtils.nanoTime()) >>> 0);
+			_mt.set(0, (TimeUtils.nanoTime()) >>> 0);
 		}
-		for (int i = 1; i < this._n; i++) {
-			long s = this._mt.get(i - 1) ^ (this._mt.get(i - 1) >>> (this._w - 2));
-			this._mt.set(i, (((this._f * ((s & 0xffff0000) >>> 16)) << 16) + this._f * (s & 0xffff) + i) >>> 0);
+		for (int i = 1; i < N; i++) {
+			long s = _mt.get(i - 1) ^ (_mt.get(i - 1) >>> (W - 2));
+			_mt.set(i, (((F * ((s & 0xffff0000) >>> 16)) << 16) + F * (s & 0xffff) + i) >>> 0);
 		}
-		this._index = this._n;
+		_index = N;
 	}
 
 	private void update() {
-		long[] mag01 = { 0x0, this._a };
+		long[] mag01 = { 0x0, A };
 		long y = 0;
 		int i = 0;
-		for (; i < this._n - this._m; i++) {
-			y = (this._mt.get(i) & this._upperMask) | (this._mt.get(i + 1) & this._lowerMask);
-			this._mt.set(i, this._mt.get((int) (i + this._m)) ^ (y >>> 1) ^ (mag01[(int) (y & 0x1)] & _bitmask32));
+		for (; i < N - M; i++) {
+			y = (_mt.get(i) & UpperMask) | (_mt.get(i + 1) & LowerMask);
+			_mt.set(i, _mt.get((int) (i + M)) ^ (y >>> 1) ^ (mag01[(int) (y & 0x1)] & Bitmask32));
 		}
-		for (; i < this._n - 1; i++) {
-			y = (this._mt.get(i) & this._upperMask) | (this._mt.get(i + 1) & this._lowerMask);
-			this._mt.set(i,
-					this._mt.get((int) (i + (this._m - this._n))) ^ (y >>> 1) ^ (mag01[(int) (y & 0x1)] & _bitmask32));
+		for (; i < N - 1; i++) {
+			y = (_mt.get(i) & UpperMask) | (_mt.get(i + 1) & LowerMask);
+			_mt.set(i, _mt.get((int) (i + (M - N))) ^ (y >>> 1) ^ (mag01[(int) (y & 0x1)] & Bitmask32));
 		}
-		y = (this._mt.get(this._n - 1) & this._upperMask) | (this._mt.get(0) & this._lowerMask);
-		this._mt.set(this._n - 1,
-				this._mt.get((int) (this._m - 1)) ^ (y >>> 1) ^ (mag01[(int) (y & 0x1)] & _bitmask32));
+		y = (_mt.get(N - 1) & UpperMask) | (_mt.get(0) & LowerMask);
+		_mt.set(N - 1, _mt.get((int) (M - 1)) ^ (y >>> 1) ^ (mag01[(int) (y & 0x1)] & Bitmask32));
 
-		this._index = 0;
+		_index = 0;
 	}
 
 	public boolean nextBoolean() {
@@ -103,7 +101,7 @@ public class Random {
 		if (max <= 0) {
 			return 0;
 		}
-		return MathUtils.clamp(MathUtils.abs(MathUtils.floor((max - min + 1) * this.nextFloat() + min)), min, max);
+		return MathUtils.clamp(MathUtils.abs(MathUtils.floor((max - min + 1) * nextFloat() + min)), min, max);
 	}
 
 	public int nextInt(int range) {
@@ -133,7 +131,7 @@ public class Random {
 		if (max <= 0) {
 			return 0l;
 		}
-		return MathUtils.clamp(MathUtils.abs(MathUtils.floor((max - min + 1) * this.nextFloat() + min)), min, max);
+		return MathUtils.clamp(MathUtils.abs(MathUtils.floor((max - min + 1) * nextFloat() + min)), min, max);
 	}
 
 	public double nextDouble(double range) {
@@ -147,14 +145,14 @@ public class Random {
 		if (max <= 0) {
 			return 0d;
 		}
-		return MathUtils.clamp(MathUtils.floor((max - min + 1) * this.nextDouble() + min), min, max);
+		return MathUtils.clamp(MathUtils.floor((max - min + 1) * nextDouble() + min), min, max);
 	}
 
 	public float nextFloat(float min, float max) {
 		if (max <= 0) {
 			return 0f;
 		}
-		return MathUtils.clamp((max - min) * this.nextFloat() + min, min, max);
+		return MathUtils.clamp((max - min) * nextFloat() + min, min, max);
 	}
 
 	public float nextFloat(float range) {
@@ -165,11 +163,27 @@ public class Random {
 	}
 
 	public float nextFloat() {
-		return this.next(32) * 2.3283064E-10f;
+		return next(32) * FLOAT_VALUE;
 	}
 
 	public double nextDouble() {
-		return this.next(32) * 2.3283064E-10d;
+		return next(32) * DOUBLE_VALUE;
+	}
+
+	public byte[] nextBytes(int range) {
+		if (range <= 0) {
+			return new byte[0];
+		}
+		return nextBytes(new byte[range]);
+	}
+
+	public byte[] nextBytes(byte[] bytes) {
+		for (int i = 0, len = bytes.length; i < len;) {
+			for (int rnd = nextInt(), n = MathUtils.min(len - i, 4); n-- > 0; rnd >>= 8) {
+				bytes[i++] = (byte) rnd;
+			}
+		}
+		return bytes;
 	}
 
 	public int nextInt() {
@@ -181,16 +195,16 @@ public class Random {
 	}
 
 	protected long next(int bits) {
-		if (this._index >= this._n) {
-			this.update();
+		if (_index >= N) {
+			update();
 		}
 
-		long y = this._mt.get(this._index++);
+		long y = _mt.get(_index++);
 
-		y ^= y >>> this._u;
-		y ^= (y << this._s) & this._b;
-		y ^= (y << this._t) & this._c;
-		y ^= y >>> this._l;
+		y ^= y >>> U;
+		y ^= (y << S) & B;
+		y ^= (y << T) & C;
+		y ^= y >>> L;
 
 		return (y >>> bits);
 	}
@@ -198,7 +212,7 @@ public class Random {
 	public IntArray rangeInt(int len, int min, int max) {
 		IntArray result = new IntArray(len);
 		for (int i = 0; i < len; i++) {
-			result.add(this.nextInt(min, max));
+			result.add(nextInt(min, max));
 		}
 		return result;
 	}
@@ -206,7 +220,7 @@ public class Random {
 	public LongArray rangeLong(int len, int min, int max) {
 		LongArray result = new LongArray(len);
 		for (int i = 0; i < len; i++) {
-			result.add(this.nextLong(min, max));
+			result.add(nextLong(min, max));
 		}
 		return result;
 	}
@@ -214,7 +228,7 @@ public class Random {
 	public FloatArray rangeFloat(int len, int min, int max) {
 		FloatArray result = new FloatArray(len);
 		for (int i = 0; i < len; i++) {
-			result.add(this.nextFloat(min, max));
+			result.add(nextFloat(min, max));
 		}
 		return result;
 	}
@@ -222,7 +236,7 @@ public class Random {
 	public BoolArray rangeBool(int len) {
 		BoolArray result = new BoolArray(len);
 		for (int i = 0; i < len; i++) {
-			result.add(this.nextBoolean());
+			result.add(nextBoolean());
 		}
 		return result;
 	}
@@ -232,7 +246,7 @@ public class Random {
 	}
 
 	public float nextAngleRad() {
-		return nextFloat(0f, 2f * MathUtils.PI);
+		return nextFloat(0f,  MathUtils.TWO_PI);
 	}
 
 	public float nextAngleDeg() {
@@ -248,7 +262,7 @@ public class Random {
 	}
 
 	public Vector2f nextVec2() {
-		final float angle = nextFloat() * 2.0f * MathUtils.PI;
+		final float angle = nextFloat() * MathUtils.TWO_PI;
 		final float x = MathUtils.cos(angle);
 		final float y = MathUtils.sin(angle);
 		return new Vector2f(MathUtils.abs(x), MathUtils.abs(y));
@@ -268,7 +282,7 @@ public class Random {
 	}
 
 	public LColor nextColor() {
-		return nextColor(0, 255);
+		return nextColor(0, 1f);
 	}
 
 	public LColor nextColor(float min, float max) {

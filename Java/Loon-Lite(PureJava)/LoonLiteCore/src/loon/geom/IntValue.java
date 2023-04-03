@@ -59,6 +59,10 @@ public class IntValue implements LRelease{
 	public int result() {
 		return value;
 	}
+	
+	public IntValue cpy() {
+		return new IntValue(value);
+	}
 
 	@Override
 	public String toString() {

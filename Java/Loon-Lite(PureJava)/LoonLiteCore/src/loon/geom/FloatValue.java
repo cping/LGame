@@ -60,6 +60,10 @@ public class FloatValue implements LRelease {
 		return value;
 	}
 
+	public FloatValue cpy() {
+		return new FloatValue(value);
+	}
+	
 	@Override
 	public String toString() {
 		return String.valueOf(value);

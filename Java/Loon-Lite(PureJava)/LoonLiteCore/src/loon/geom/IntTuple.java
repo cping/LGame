@@ -53,7 +53,11 @@ public class IntTuple implements LRelease{
 		val2 = swap;
 		return this;
 	}
-
+	
+	public IntTuple cpy() {
+		return new IntTuple(val1, val2);
+	}
+	
 	@Override
 	public String toString() {
 		return "(" + val1 + ',' + val2 + ")";

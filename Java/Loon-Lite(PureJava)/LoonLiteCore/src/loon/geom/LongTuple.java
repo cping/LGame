@@ -54,6 +54,10 @@ public class LongTuple implements LRelease{
 		return this;
 	}
 
+	public LongTuple cpy() {
+		return new LongTuple(val1, val2);
+	}
+	
 	@Override
 	public String toString() {
 		return "(" + val1 + ',' + val2 + ")";
