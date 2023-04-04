@@ -1968,7 +1968,10 @@ public class GLEx implements LRelease {
 	public GLEx drawOval(float x, float y, float width, float height) {
 		Canvas canvas = getCanvas();
 		canvas.setTransform(tx());
-		canvas.drawOval(x, y, width, height, syncBrushColor());
+		int color = canvas.getStrokeColor();
+		canvas.setStrokeColor(syncBrushColorInt());
+		canvas.drawOval(x, y, width, height);
+		canvas.setStrokeColor(color);
 		return this;
 	}
 
@@ -1983,10 +1986,9 @@ public class GLEx implements LRelease {
 	 * @return
 	 */
 	public GLEx drawOval(float x, float y, float width, float height, LColor c) {
-		int tint = color();
-		setTint(c);
-		drawOval(x, y, width, height);
-		setTint(tint);
+		Canvas canvas = getCanvas();
+		canvas.setTransform(tx());
+		canvas.drawOval(x, y, width, height, c);
 		return this;
 	}
 
@@ -2002,10 +2004,17 @@ public class GLEx implements LRelease {
 	public GLEx fillOval(float x1, float y1, float width, float height) {
 		Canvas canvas = getCanvas();
 		canvas.setTransform(tx());
-		LColor color = canvas.getFilltoLColor();
-		canvas.setColor(syncBrushColor());
+		int color = canvas.getFillColor();
+		canvas.setFillColor(syncBrushColorInt());
 		canvas.fillOval(x1, y1, width, height);
-		canvas.setColor(color);
+		canvas.setFillColor(color);
+		return this;
+	}
+
+	public GLEx fillOval(float x1, float y1, float width, float height, LColor c) {
+		Canvas canvas = getCanvas();
+		canvas.setTransform(tx());
+		canvas.fillOval(x1, y1, width, height, c);
 		return this;
 	}
 

@@ -89,6 +89,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	private LColor _debugDrawColor = LColor.red;
 
 	protected Vector2f _offset = new Vector2f();
+	private boolean _createShadow;
 
 	protected float _fixedWidthOffset = 0f;
 	protected float _fixedHeightOffset = 0f;
@@ -827,8 +828,8 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		if (exist) {
 			final boolean update = ((_objectRotation != 0 || !(_scaleX == 1f && _scaleY == 1f)
 					|| !(_skewX == 0 && _skewY == 0)) || _flipX || _flipY) && _deform;
-			final float nx = offsetX + this._objectLocation.x + _offset.x;
-			final float ny = offsetY + this._objectLocation.y + _offset.y;
+			final float nx = drawX(offsetX);
+			final float ny = drawY(offsetY);
 			if (update) {
 				g.saveTx();
 				g.saveBrush();
@@ -1487,7 +1488,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		}
 		return this;
 	}
-	
+
 	public IEntity addGroup(LTexture tex, int count) {
 		for (int i = 0; i < count; i++) {
 			addChild(new Entity(tex));
@@ -1656,6 +1657,16 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 				this.setY(this.getY() + dy);
 			}
 		}
+		return this;
+	}
+
+	@Override
+	public boolean showShadow() {
+		return _createShadow;
+	}
+
+	public Entity createShadow(boolean s) {
+		this._createShadow = s;
 		return this;
 	}
 

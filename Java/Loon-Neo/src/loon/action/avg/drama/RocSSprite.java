@@ -341,6 +341,11 @@ public class RocSSprite extends LObject<ISprite> implements ISprite {
 	}
 
 	@Override
+	public boolean showShadow() {
+		return false;
+	}
+
+	@Override
 	public void close() {
 		setState(State.DISPOSED);
 		_resizeListener = null;

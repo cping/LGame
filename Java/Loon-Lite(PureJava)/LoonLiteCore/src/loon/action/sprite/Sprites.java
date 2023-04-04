@@ -70,6 +70,10 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 
 	protected ISprite[] _sprites;
 
+	private boolean _createShadow;
+
+	private ISpritesShadow _spriteShadow;
+
 	private Margin _margin;
 
 	private float _scrollX;
@@ -1125,6 +1129,9 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 						continue;
 					}
 				}
+				if (_createShadow && spr.showShadow()) {
+					_spriteShadow.drawShadow(g, spr, 0f, 0f);
+				}
 				spr.createUI(g);
 			}
 		}
@@ -1140,6 +1147,9 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		for (int i = 0; i < this._size; i++) {
 			ISprite spr = this._sprites[i];
 			if (spr != null && spr.isVisible()) {
+				if (_createShadow && spr.showShadow()) {
+					_spriteShadow.drawShadow(g, spr, offsetX, offsetY);
+				}
 				spr.createUI(g, offsetX, offsetY);
 			}
 		}
@@ -1208,6 +1218,9 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 					if (layerX + layerWidth < minX || layerX > maxX || layerY + layerHeight < minY || layerY > maxY) {
 						continue;
 					}
+				}
+				if (_createShadow && spr.showShadow()) {
+					_spriteShadow.drawShadow(g, spr, 0f, 0f);
 				}
 				spr.createUI(g);
 			}
@@ -1550,6 +1563,24 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		return _dirtyList;
 	}
 
+	public Sprites setSpritesShadow(ISpritesShadow s) {
+		this._spriteShadow = s;
+		if (_spriteShadow != null) {
+			_createShadow = true;
+		} else {
+			_createShadow = false;
+		}
+		return this;
+	}
+
+	public ISpritesShadow shadow() {
+		return _spriteShadow;
+	}
+
+	public boolean getSpritesShadow() {
+		return _createShadow;
+	}
+
 	@Override
 	public int size() {
 		return this._size;
@@ -1785,7 +1816,10 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		if (_closed) {
 			return;
 		}
-		this._visible = false;
+		this._visible = this._createShadow = false;
+		if (_spriteShadow != null) {
+			_spriteShadow.close();
+		}
 		this._newLineHeight = 0;
 		for (ISprite spr : _sprites) {
 			if (spr != null) {

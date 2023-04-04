@@ -494,6 +494,11 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 		return _offset.y;
 	}
 
+	@Override
+	public boolean showShadow() {
+		return false;
+	}
+
 	public boolean isClosed() {
 		return isDisposed();
 	}

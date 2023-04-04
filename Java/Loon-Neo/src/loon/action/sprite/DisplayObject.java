@@ -78,6 +78,8 @@ public abstract class DisplayObject extends EventDispatcher implements Collision
 	protected Vector2f _pivotValue = new Vector2f(-1, -1);
 
 	protected Sprites _sprites = null;
+	
+	private boolean _createShadow;
 
 	public DisplayObject() {
 	}
@@ -500,6 +502,16 @@ public abstract class DisplayObject extends EventDispatcher implements Collision
 
 	public DisplayObject setMorphY(float y) {
 		this._morphY = y;
+		return this;
+	}
+
+	@Override
+	public boolean showShadow() {
+		return _createShadow;
+	}
+
+	public DisplayObject createShadow(boolean s) {
+		this._createShadow = s;
 		return this;
 	}
 }

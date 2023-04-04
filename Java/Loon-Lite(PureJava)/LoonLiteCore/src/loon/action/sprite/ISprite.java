@@ -73,6 +73,8 @@ public interface ISprite extends ActionBind, Visible, LRelease, ZIndex, XY, SetX
 	@Override
 	LColor getColor();
 
+	boolean showShadow();
+
 	void createUI(GLEx g);
 
 	void createUI(GLEx g, float offsetX, float offsetY);

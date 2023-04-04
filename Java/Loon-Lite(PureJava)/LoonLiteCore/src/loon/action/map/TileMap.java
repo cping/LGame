@@ -1393,6 +1393,11 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 		return offset.y;
 	}
 
+	@Override
+	public boolean showShadow() {
+		return false;
+	}
+	
 	public boolean isClosed() {
 		return isDisposed();
 	}

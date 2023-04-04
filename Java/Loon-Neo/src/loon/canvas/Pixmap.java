@@ -1949,6 +1949,18 @@ public class Pixmap extends PixmapComposite implements LRelease {
 		return this;
 	}
 
+	public Pixmap drawOval(int x, int y, int width, int height, int c) {
+		int tmp = color();
+		setColor(c);
+		drawOval(x, y, width, height);
+		setColor(tmp);
+		return this;
+	}
+
+	public Pixmap drawOval(int x, int y, int width, int height, LColor color) {
+		return drawOval(x, y, width, height, color == null ? LColor.DEF_COLOR : color.getARGB());
+	}
+
 	/**
 	 * 填充一个椭圆形
 	 * 
@@ -1971,6 +1983,18 @@ public class Pixmap extends PixmapComposite implements LRelease {
 			}
 		});
 		return this;
+	}
+
+	public Pixmap fillOval(int x, int y, int width, int height, int c) {
+		int tmp = color();
+		setColor(c);
+		fillOval(x, y, width, height);
+		setColor(tmp);
+		return this;
+	}
+
+	public Pixmap fillOval(int x, int y, int width, int height, LColor color) {
+		return fillOval(x, y, width, height, color == null ? LColor.DEF_COLOR : color.getARGB());
 	}
 
 	/**

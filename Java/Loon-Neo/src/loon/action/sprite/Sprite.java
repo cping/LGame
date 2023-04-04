@@ -92,6 +92,8 @@ public class Sprite extends LObject<ISprite>
 	private float _fixedWidthOffset = 0f, _fixedHeightOffset = 0f;
 
 	private Vector2f _offset = new Vector2f();
+	
+	private boolean _createShadow = false;
 
 	private boolean _spritesVisible = true;
 
@@ -670,23 +672,21 @@ public class Sprite extends LObject<ISprite>
 		}
 
 		_image = _animation.getSpriteImage();
-
 		final boolean notImg = _image == null;
-
 		if (_animation != null && _animation.length > 0 && notImg) {
 			return;
 		}
 
-		float width = notImg ? getContainerWidth() : _image.getWidth();
-		float height = notImg ? getContainerHeight() : _image.getHeight();
+		final float width = notImg ? getContainerWidth() : _image.getWidth();
+		final float height = notImg ? getContainerHeight() : _image.getHeight();
 
-		boolean update = (_objectRotation != 0) || !(_scaleX == 1f && _scaleY == 1f) || _flipX || _flipY;
-		int tmp = g.color();
-		int blend = g.getBlendMode();
+		final boolean update = (_objectRotation != 0) || !(_scaleX == 1f && _scaleY == 1f) || _flipX || _flipY;
+		final int tmp = g.color();
+		final int blend = g.getBlendMode();
 		try {
 			g.setBlendMode(_GL_BLEND);
-			float nx = this._objectLocation.x + offsetX + _offset.x;
-			float ny = this._objectLocation.y + offsetY + _offset.y;
+			final float nx = drawX(offsetX);
+			final float ny = drawY(offsetY);
 			if (_elastic) {
 				g.setClip(nx, ny, width, height);
 			}
@@ -1089,6 +1089,14 @@ public class Sprite extends LObject<ISprite>
 		return null;
 	}
 
+	protected float drawX(float offsetX) {
+		return offsetX + this._objectLocation.x + _offset.x;
+	}
+
+	protected float drawY(float offsetY) {
+		return offsetY + this._objectLocation.y + _offset.y;
+	}
+
 	@Override
 	public void setRotation(float rotate) {
 		super.setRotation(rotate);
@@ -1475,10 +1483,20 @@ public class Sprite extends LObject<ISprite>
 		return _offset.y;
 	}
 
+	@Override
+	public boolean showShadow() {
+		return _createShadow;
+	}
+
+	public Sprite createShadow(boolean s) {
+		this._createShadow = s;
+		return this;
+	}
+	
 	public TArray<ISprite> getChildren() {
 		return _childrens;
 	}
-	
+
 	public ResizeListener<Sprite> getResizeListener() {
 		return _resizeListener;
 	}

@@ -1363,6 +1363,11 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	}
 
 	@Override
+	public boolean showShadow() {
+		return false;
+	}
+
+	@Override
 	public boolean collides(ISprite e) {
 		if (e == null || !e.isVisible()) {
 			return false;

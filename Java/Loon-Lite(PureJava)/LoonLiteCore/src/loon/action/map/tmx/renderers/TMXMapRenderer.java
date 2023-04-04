@@ -509,6 +509,11 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 	}
 
 	@Override
+	public boolean showShadow() {
+		return false;
+	}
+
+	@Override
 	public void close() {
 		visible = false;
 		if (textureMap != null) {
