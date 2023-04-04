@@ -21,6 +21,7 @@
 package loon.action.sprite;
 
 import loon.LObject.State;
+
 import loon.LRelease;
 import loon.LSystem;
 import loon.LTexture;
@@ -83,6 +84,10 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 	private boolean _sortableChildren;
 
 	private ResizeListener<Sprites> _resizeListener;
+	
+	private int _currentPoshash = 1;
+	
+	private int _lastPosHash = 1;
 
 	private int viewX;
 
@@ -96,7 +101,9 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 
 	private SpriteListener sprListerner;
 
-	private final static LayerSorter<ISprite> spriteSorter = new LayerSorter<ISprite>(false);
+	private final static LayerSorter<ISprite> spriteLayerSorter = new LayerSorter<ISprite>();
+
+	private final static SpriteSorter<ISprite> spriteXYSorter = new SpriteSorter<ISprite>();
 
 	private int _size;
 
@@ -107,6 +114,8 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 	private Screen _screen;
 
 	private final String _sprites_name;
+
+	private boolean _autoSortLayer;
 
 	public Sprites(Screen screen, int w, int h) {
 		this(null, screen, w, h);
@@ -232,10 +241,10 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		}
 		if (this._sprites.length != this._size) {
 			ISprite[] sprs = CollectionUtils.copyOf(this._sprites, this._size);
-			spriteSorter.sort(sprs);
+			spriteLayerSorter.sort(sprs);
 			this._sprites = sprs;
 		} else {
-			spriteSorter.sort(this._sprites);
+			spriteLayerSorter.sort(this._sprites);
 		}
 		return this;
 	}
@@ -1087,6 +1096,7 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		if (!_visible || _closed) {
 			return;
 		}
+
 		boolean listerner = (sprListerner != null);
 		for (int i = _size - 1; i > -1; i--) {
 			ISprite child = _sprites[i];
@@ -1096,9 +1106,30 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 					if (listerner) {
 						sprListerner.update(child);
 					}
+					if (_autoSortLayer) {
+						_currentPoshash = LSystem.unite(_currentPoshash, child.getX());
+						_currentPoshash = LSystem.unite(_currentPoshash, child.getY());
+						_currentPoshash = LSystem.unite(_currentPoshash, child.getOffsetX());
+						_currentPoshash = LSystem.unite(_currentPoshash, child.getOffsetY());
+					}
 				} catch (Throwable cause) {
 					LSystem.error("Sprites update() exception", cause);
 				}
+			}
+		}
+		if (_autoSortLayer) {
+			if (this._size <= 1) {
+				return;
+			}
+			if (_currentPoshash != _lastPosHash) {
+				if (this._sprites.length != this._size) {
+					ISprite[] sprs = CollectionUtils.copyOf(this._sprites, this._size);
+					spriteXYSorter.sort(sprs);
+					this._sprites = sprs;
+				} else {
+					spriteXYSorter.sort(this._sprites);
+				}
+				_lastPosHash = _currentPoshash;
 			}
 		}
 	}
@@ -1802,6 +1833,20 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		return _size == 0 || _sprites == null;
 	}
 
+	public Sprites setAutoYLayer(boolean y) {
+		spriteXYSorter.setSortY(y);
+		return this;
+	}
+
+	public boolean isAutoSortXYLayer() {
+		return _autoSortLayer;
+	}
+
+	public Sprites setAutoSortXYLayer(boolean sort) {
+		this._autoSortLayer = sort;
+		return this;
+	}
+
 	@Override
 	public String toString() {
 		return super.toString() + " " + "[name=" + _sprites_name + ", total=" + size() + "]";
@@ -1817,6 +1862,7 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 			return;
 		}
 		this._visible = this._createShadow = false;
+		this._autoSortLayer = false;
 		if (_spriteShadow != null) {
 			_spriteShadow.close();
 		}

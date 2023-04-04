@@ -36,6 +36,7 @@ import loon.action.map.items.Team;
 import loon.action.map.items.Teams;
 import loon.action.sprite.AnimatedEntity;
 import loon.action.sprite.Draw;
+import loon.action.sprite.PixelShadow;
 import loon.action.sprite.StatusBar;
 import loon.action.sprite.effect.PixelChopEffect;
 import loon.action.sprite.effect.StringEffect;
@@ -267,11 +268,11 @@ public class SLGTest extends Stage {
 			GameRole role = getRoleIdxObject(actionIdx);
 			// 当为我军时
 			if (role.getTeam() == Team.Player) {
-				if (getRoleIdx(1, x, y) > -1) {
+				if (getRoleIdx(Team.Enemy, x, y) > -1) {
 					return false;
 				}
 			} else {
-				if (getRoleIdx(0, x, y) > -1) {
+				if (getRoleIdx(Team.Player, x, y) > -1) {
 					return false;
 				}
 			}
@@ -535,6 +536,9 @@ public class SLGTest extends Stage {
 	private GameRole createTeamRole(String name, Counter counter, int team, String path, int imageIndex, int move,
 			int x, int y) {
 		GameRole role = new GameRole(name, counter.incId(), team, path, move, x, y);
+		role.setAutoXYSort(true);
+		// 为此精灵创建阴影
+		role.createShadow(true);
 		// 添加游戏角色到分组中
 		teams.add(team, role.character);
 		add(role);
@@ -966,6 +970,9 @@ public class SLGTest extends Stage {
 		createTeamRole("躲猫兵团8", idCounter, Team.Enemy, path, 2, 2, 11, 18);
 		createTeamRole("躲猫兵团9", idCounter, Team.Enemy, path, 2, 3, 12, 18);
 		createTeamRole("躲猫兵团7", idCounter, Team.Enemy, path, 2, 2, 13, 18);
+
+		getSprites().setSpritesShadow(new PixelShadow(32, 32, LColor.black));
+		getSprites().setAutoSortXYLayer(true);
 
 		// 当前操作的角色索引
 		final IntValue roleIndex = refInt(-1);

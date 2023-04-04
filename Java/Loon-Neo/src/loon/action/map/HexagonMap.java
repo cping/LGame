@@ -2205,6 +2205,11 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		return false;
 	}
 
+	@Override
+	public boolean autoXYSort() {
+		return false;
+	}
+
 	public boolean isClosed() {
 		return isDisposed();
 	}

@@ -80,6 +80,8 @@ public abstract class DisplayObject extends EventDispatcher implements Collision
 	protected Sprites _sprites = null;
 	
 	private boolean _createShadow;
+	
+	private boolean _xySort;
 
 	public DisplayObject() {
 	}
@@ -478,6 +480,16 @@ public abstract class DisplayObject extends EventDispatcher implements Collision
 	@Override
 	public float getOffsetY() {
 		return _offset.y;
+	}
+	
+	public DisplayObject setAutoXYSort(boolean a) {
+		this._xySort = a;
+		return this;
+	}
+	
+	@Override
+	public boolean autoXYSort() {
+		return _xySort;
 	}
 
 	@Override

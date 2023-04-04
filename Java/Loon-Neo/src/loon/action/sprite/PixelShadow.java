@@ -39,7 +39,7 @@ public class PixelShadow implements ISpritesShadow {
 		final float ovalWidth = ellipseX * width;
 		final float ovalHeight = ellipseY * height;
 		final float startX = (width - ovalWidth) / 2f;
-		final float startY = height - ovalHeight + ovalHeight / 4;
+		final float startY = height - ovalHeight + ovalHeight / 3f;
 		g.fillOval(startX + offsetX, startY + offsetY, ovalWidth, ovalHeight, color);
 	}
 
@@ -47,7 +47,7 @@ public class PixelShadow implements ISpritesShadow {
 		final float ovalWidth = ellipseX * width;
 		final float ovalHeight = ellipseY * height;
 		final float startX = (width - ovalWidth) / 2f;
-		final float startY = height - ovalHeight + ovalHeight / 4;
+		final float startY = height - ovalHeight + ovalHeight / 3f;
 		g.fillOval(startX + offsetX, startY + offsetY, ovalWidth, ovalHeight, color);
 	}
 
@@ -55,7 +55,7 @@ public class PixelShadow implements ISpritesShadow {
 		final float ovalWidth = ellipseX * width;
 		final float ovalHeight = ellipseY * height;
 		final float startX = (width - ovalWidth) / 2f;
-		final float startY = height - ovalHeight + ovalHeight / 4;
+		final float startY = height - ovalHeight + ovalHeight / 3f;
 		g.fillOval(MathUtils.floor(startX + offsetX), MathUtils.floor(startY + offsetY), MathUtils.floor(ovalWidth),
 				MathUtils.floor(ovalHeight), color);
 	}
@@ -108,7 +108,7 @@ public class PixelShadow implements ISpritesShadow {
 		final float ovalWidth = ellipseX * _width;
 		final float ovalHeight = ellipseY * _height;
 		this._offsetX = (_width - ovalWidth) / 2f;
-		this._offsetY = _height - ovalHeight + ovalHeight / 4;
+		this._offsetY = _height - ovalHeight + ovalHeight / 3f;
 	}
 
 	public PixelShadow drawShadow(GLEx g, ISprite e, float x, float y) {

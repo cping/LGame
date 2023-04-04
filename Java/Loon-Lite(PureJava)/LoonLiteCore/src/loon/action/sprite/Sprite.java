@@ -72,6 +72,8 @@ public class Sprite extends LObject<ISprite>
 
 	private boolean _elastic = false;
 
+	private boolean _xySort = false;
+
 	// 精灵图片
 	private LTexture _image;
 
@@ -91,7 +93,7 @@ public class Sprite extends LObject<ISprite>
 	private float _fixedWidthOffset = 0f, _fixedHeightOffset = 0f;
 
 	private Vector2f _offset = new Vector2f();
-	
+
 	private boolean _createShadow = false;
 
 	private boolean _spritesVisible = true;
@@ -1481,7 +1483,7 @@ public class Sprite extends LObject<ISprite>
 		this._createShadow = s;
 		return this;
 	}
-	
+
 	public TArray<ISprite> getChildren() {
 		return _childrens;
 	}
@@ -1500,6 +1502,16 @@ public class Sprite extends LObject<ISprite>
 		if (_resizeListener != null) {
 			_resizeListener.onResize(this);
 		}
+	}
+
+	@Override
+	public boolean autoXYSort() {
+		return _xySort;
+	}
+
+	public Sprite setAutoXYSort(boolean a) {
+		this._xySort = a;
+		return this;
 	}
 
 	public boolean isClosed() {

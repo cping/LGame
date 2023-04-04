@@ -2188,6 +2188,11 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	public boolean showShadow() {
 		return false;
 	}
+
+	@Override
+	public boolean autoXYSort() {
+		return false;
+	}
 	
 	public boolean isClosed() {
 		return isDisposed();

@@ -90,6 +90,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	protected Vector2f _offset = new Vector2f();
 	private boolean _createShadow;
+	private boolean _xySort;
 
 	protected float _fixedWidthOffset = 0f;
 	protected float _fixedHeightOffset = 0f;
@@ -1826,6 +1827,22 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	}
 
 	@Override
+	public IEntity setFollowColor(boolean c) {
+		this._followColor = c;
+		return this;
+	}
+
+	@Override
+	public boolean autoXYSort() {
+		return _xySort;
+	}
+
+	public Entity setAutoXYSort(boolean a) {
+		this._xySort = a;
+		return this;
+	}
+
+	@Override
 	public void close() {
 		if (!isDisposed()) {
 			if (_image != null) {
@@ -1838,12 +1855,6 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		setState(State.DISPOSED);
 		removeChildren();
 		removeActionEvents(this);
-	}
-
-	@Override
-	public IEntity setFollowColor(boolean c) {
-		this._followColor = c;
-		return this;
 	}
 
 }
