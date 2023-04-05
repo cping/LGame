@@ -84,9 +84,9 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 	private boolean _sortableChildren;
 
 	private ResizeListener<Sprites> _resizeListener;
-	
+
 	private int _currentPoshash = 1;
-	
+
 	private int _lastPosHash = 1;
 
 	private int viewX;
@@ -1459,7 +1459,7 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 	 * @return
 	 */
 	public TArray<ISprite> remove(QueryEvent<ISprite> query) {
-		TArray<ISprite> result = new TArray<ISprite>();
+		final TArray<ISprite> result = new TArray<ISprite>();
 		for (int i = _sprites.length - 1; i > -1; i--) {
 			ISprite sprite = _sprites[i];
 			if (sprite != null) {
@@ -1479,7 +1479,7 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 	 * @return
 	 */
 	public TArray<ISprite> find(QueryEvent<ISprite> query) {
-		TArray<ISprite> result = new TArray<ISprite>();
+		final TArray<ISprite> result = new TArray<ISprite>();
 		for (int i = _sprites.length - 1; i > -1; i--) {
 			ISprite sprite = _sprites[i];
 			if (sprite != null) {
@@ -1497,15 +1497,13 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 	 * @param query
 	 * @return
 	 */
-	public <T extends ISprite> TArray<T> delete(QueryEvent<T> query) {
-		TArray<T> result = new TArray<T>();
+	public TArray<ISprite> delete(QueryEvent<ISprite> query) {
+		final TArray<ISprite> result = new TArray<ISprite>();
 		for (int i = _sprites.length - 1; i > -1; i--) {
 			ISprite sprite = _sprites[i];
 			if (sprite != null) {
-				@SuppressWarnings("unchecked")
-				T v = (T) sprite;
-				if (query.hit(v)) {
-					result.add(v);
+				if (query.hit(sprite)) {
+					result.add(sprite);
 					remove(i);
 				}
 			}
@@ -1519,15 +1517,13 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 	 * @param query
 	 * @return
 	 */
-	public <T extends ISprite> TArray<T> select(QueryEvent<T> query) {
-		TArray<T> result = new TArray<T>();
+	public TArray<ISprite> select(QueryEvent<ISprite> query) {
+		final TArray<ISprite> result = new TArray<ISprite>();
 		for (int i = _sprites.length - 1; i > -1; i--) {
 			ISprite sprite = _sprites[i];
 			if (sprite != null) {
-				@SuppressWarnings("unchecked")
-				T v = (T) sprite;
-				if (query.hit(v)) {
-					result.add(v);
+				if (query.hit(sprite)) {
+					result.add(sprite);
 				}
 			}
 		}

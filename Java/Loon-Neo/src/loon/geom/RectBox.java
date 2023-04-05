@@ -36,6 +36,24 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	public static RectBox toPixels(final RectBox rect, final XY point) {
+		return new RectBox(rect.getX() * point.getX(), rect.getY() * point.getY(), rect.getWidth() * point.getX(),
+				rect.getHeight() * point.getY());
+	}
+
+	public static RectBox toPixels(final RectBox rect, int tileWidth, int tileHeight) {
+		return new RectBox(rect.x * tileWidth, rect.y * tileHeight, rect.width * tileWidth, rect.height * tileHeight);
+	}
+
+	public static RectBox toTitle(final RectBox rect, final XY point) {
+		return new RectBox(rect.getX() / point.getX(), rect.getY() / point.getY(), rect.getWidth() / point.getX(),
+				rect.getHeight() / point.getY());
+	}
+
+	public static RectBox toTitle(final RectBox rect, int tileWidth, int tileHeight) {
+		return new RectBox(rect.x / tileWidth, rect.y / tileHeight, rect.width / tileWidth, rect.height / tileHeight);
+	}
+
 	public final static SetXY getRandom(RectBox rect, SetXY out) {
 		if (out == null) {
 			out = new PointF();
@@ -896,7 +914,7 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 	}
 
 	public RectBox mergeXY(RectBox rect, XY pos) {
-		
+
 		float minX = MathUtils.min(rect.x, x);
 		float maxX = MathUtils.max(rect.getRight(), x);
 
@@ -1113,11 +1131,29 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 	}
 
 	public RectBox random() {
-		this.x = MathUtils.random(0f, LSystem.viewSize.getWidth());
-		this.y = MathUtils.random(0f, LSystem.viewSize.getHeight());
-		this.width = MathUtils.random(0, LSystem.viewSize.getWidth());
-		this.height = MathUtils.random(0, LSystem.viewSize.getHeight());
+		final int w = LSystem.viewSize.getWidth();
+		final int h = LSystem.viewSize.getHeight();
+		this.x = MathUtils.random(0f, w);
+		this.y = MathUtils.random(0f, h);
+		this.width = MathUtils.random(0, w);
+		this.height = MathUtils.random(0, h);
 		return this;
+	}
+
+	public RectBox toPixels(XY point) {
+		return toPixels(this, point);
+	}
+
+	public RectBox toPixels(int tileWidth, int tileHeight) {
+		return toPixels(this, tileWidth, tileHeight);
+	}
+
+	public RectBox toTitle(final XY point) {
+		return toTitle(this, point);
+	}
+
+	public RectBox toTitle(int tileWidth, int tileHeight) {
+		return toTitle(this, tileWidth, tileHeight);
 	}
 
 	@Override

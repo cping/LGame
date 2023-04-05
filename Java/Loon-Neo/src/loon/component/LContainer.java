@@ -37,6 +37,7 @@ import loon.utils.IArray;
 import loon.utils.LayerSorter;
 import loon.utils.MathUtils;
 import loon.utils.StrBuilder;
+import loon.utils.StringUtils;
 import loon.utils.TArray;
 import loon.utils.reply.Callback;
 
@@ -623,7 +624,7 @@ public abstract class LContainer extends LComponent implements IArray {
 			}
 		}
 	}
-	
+
 	@Override
 	public void validatePosition() {
 		if (_component_isClose) {
@@ -948,9 +949,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	 * @return
 	 */
 	public TArray<LComponent> remove(QueryEvent<LComponent> query) {
-
-		TArray<LComponent> result = new TArray<LComponent>();
-
+		final TArray<LComponent> result = new TArray<LComponent>();
 		for (int i = _childs.length - 1; i > -1; i--) {
 			LComponent comp = _childs[i];
 			if (comp != null) {
@@ -971,9 +970,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	 * @return
 	 */
 	public TArray<LComponent> find(QueryEvent<LComponent> query) {
-
-		TArray<LComponent> result = new TArray<LComponent>();
-
+		final TArray<LComponent> result = new TArray<LComponent>();
 		for (int i = _childs.length - 1; i > -1; i--) {
 			LComponent comp = _childs[i];
 			if (comp != null) {
@@ -982,7 +979,6 @@ public abstract class LContainer extends LComponent implements IArray {
 				}
 			}
 		}
-
 		return result;
 	}
 
@@ -992,18 +988,13 @@ public abstract class LContainer extends LComponent implements IArray {
 	 * @param query
 	 * @return
 	 */
-	public <T extends LComponent> TArray<T> delete(QueryEvent<T> query) {
-
-		TArray<T> result = new TArray<T>();
-
+	public TArray<LComponent> delete(QueryEvent<LComponent> query) {
+		final TArray<LComponent> result = new TArray<LComponent>();
 		for (int i = _childs.length - 1; i > -1; i--) {
 			LComponent comp = _childs[i];
-
 			if (comp != null) {
-				@SuppressWarnings("unchecked")
-				T v = (T) comp;
-				if (query.hit(v)) {
-					result.add(v);
+				if (query.hit(comp)) {
+					result.add(comp);
 					remove(i);
 				}
 			}
@@ -1017,18 +1008,13 @@ public abstract class LContainer extends LComponent implements IArray {
 	 * @param query
 	 * @return
 	 */
-	public <T extends LComponent> TArray<T> select(QueryEvent<T> query) {
-
-		TArray<T> result = new TArray<T>();
-
+	public TArray<LComponent> select(QueryEvent<LComponent> query) {
+		final TArray<LComponent> result = new TArray<LComponent>();
 		for (int i = _childs.length - 1; i > -1; i--) {
 			LComponent comp = _childs[i];
-
 			if (comp != null) {
-				@SuppressWarnings("unchecked")
-				T v = (T) comp;
-				if (query.hit(v)) {
-					result.add(v);
+				if (query.hit(comp)) {
+					result.add(comp);
 				}
 			}
 		}
@@ -1041,7 +1027,7 @@ public abstract class LContainer extends LComponent implements IArray {
 			return this;
 		}
 		for (int i = 0; i < _childs.length; i++) {
-			LComponent comp = (LComponent) _childs[i];
+			LComponent comp = _childs[i];
 			if (comp != null) {
 				comp.in();
 			}
@@ -1056,7 +1042,7 @@ public abstract class LContainer extends LComponent implements IArray {
 			return this;
 		}
 		for (int i = 0; i < _childs.length; i++) {
-			LComponent comp = (LComponent) _childs[i];
+			LComponent comp = _childs[i];
 			if (comp != null) {
 				comp.out();
 			}
@@ -1067,6 +1053,52 @@ public abstract class LContainer extends LComponent implements IArray {
 
 	public int getChildCount() {
 		return size();
+	}
+
+	public LComponent get(int index) {
+		if (index < 0 || index >= childCount) {
+			return null;
+		}
+		return this._childs[index];
+	}
+
+	public int get(LComponent comp) {
+		if (_component_isClose) {
+			return -1;
+		}
+		if (comp == null) {
+			return -1;
+		}
+		int idx = -1;
+		if (_childs != null) {
+			for (int i = 0; i < _childs.length; i++) {
+				LComponent c = _childs[i];
+				if (c == comp) {
+					idx = i;
+					return idx;
+				}
+			}
+		}
+		return idx;
+	}
+
+	public TArray<LComponent> get(String name) {
+		final TArray<LComponent> list = new TArray<LComponent>();
+		if (_component_isClose) {
+			return list;
+		}
+		if (StringUtils.isEmpty(name)) {
+			return list;
+		}
+		if (_childs != null) {
+			for (int i = _childs.length - 1; i > -1; i--) {
+				LComponent comp = _childs[i];
+				if (name.equals(comp.getName())) {
+					list.add(comp);
+				}
+			}
+		}
+		return list;
 	}
 
 	@Override

@@ -2323,14 +2323,14 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return this;
 	}
 
-	public Screen addEntityGroup(Created<? extends IEntity > e, int count) {
+	public Screen addEntityGroup(Created<? extends IEntity> e, int count) {
 		if (sprites == null) {
 			return this;
 		}
 		sprites.addEntityGroup(e, count);
 		return this;
 	}
-	
+
 	/**
 	 * 返回位于屏幕顶部的组件
 	 * 
@@ -5504,11 +5504,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @param query
 	 * @return
 	 */
-	public <T extends ISprite> TArray<T> deleteSprite(QueryEvent<T> query) {
+	public TArray<ISprite> deleteSprite(QueryEvent<ISprite> query) {
 		if (sprites != null) {
 			return sprites.delete(query);
 		}
-		return new TArray<T>();
+		return new TArray<ISprite>();
 	}
 
 	/**
@@ -5517,11 +5517,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @param query
 	 * @return
 	 */
-	public <T extends ISprite> TArray<T> selectSprite(QueryEvent<T> query) {
+	public TArray<ISprite> selectSprite(QueryEvent<ISprite> query) {
 		if (sprites != null) {
 			return sprites.select(query);
 		}
-		return new TArray<T>();
+		return new TArray<ISprite>();
 	}
 
 	/**
@@ -5556,9 +5556,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @param query
 	 * @return
 	 */
-	public <T extends LComponent> TArray<T> deleteComponent(QueryEvent<T> query) {
+	public TArray<LComponent> deleteComponent(QueryEvent<LComponent> query) {
 		if (desktop == null) {
-			return new TArray<T>();
+			return new TArray<LComponent>();
 		}
 		return desktop.delete(query);
 	}
@@ -5569,9 +5569,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @param query
 	 * @return
 	 */
-	public <T extends LComponent> TArray<T> selectComponent(QueryEvent<T> query) {
+	public TArray<LComponent> selectComponent(QueryEvent<LComponent> query) {
 		if (desktop == null) {
-			return new TArray<T>();
+			return new TArray<LComponent>();
 		}
 		return desktop.select(query);
 	}
@@ -5750,13 +5750,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 				if (sprites != null) {
 					spriteRun = false;
 					sprites.close();
-					sprites.clear();
 					sprites = null;
 				}
 				if (desktop != null) {
 					desktopRun = false;
 					desktop.close();
-					desktop.clear();
 					desktop = null;
 				}
 				if (gravityHandler != null) {

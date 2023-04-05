@@ -173,6 +173,9 @@ public class PixelShadow implements ISpritesShadow {
 
 	@Override
 	public void close() {
+		if (_closed) {
+			return;
+		}
 		if (_shadowImage != null) {
 			_shadowImage.close();
 			_shadowImage = null;

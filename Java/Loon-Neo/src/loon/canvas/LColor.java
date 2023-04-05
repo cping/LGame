@@ -22,11 +22,13 @@ package loon.canvas;
 
 import java.io.Serializable;
 
+import loon.LSystem;
 import loon.geom.Vector3f;
 import loon.geom.Vector4f;
 import loon.utils.CharUtils;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
+import loon.utils.StrBuilder;
 import loon.utils.StringUtils;
 
 /**
@@ -45,6 +47,441 @@ public class LColor implements Serializable {
 	// 默认黑色透明区域
 	public static final int TRANSPARENT = 0xFF000000;
 
+	/**
+	 * 获得24位色
+	 * 
+	 * @param r
+	 * @param g
+	 * @param b
+	 * @return
+	 */
+	public static final int getRGB(int r, int g, int b) {
+		return rgb(r, g, b);
+	}
+
+	public static final int getBGR(int r, int g, int b) {
+		return bgr(r, g, b);
+	}
+
+	/**
+	 * 获得RGB颜色
+	 * 
+	 * @param pixels
+	 * @return
+	 */
+	public static final int getRGB(int pixels) {
+		int r = (pixels >> 16) & 0xFF;
+		int g = (pixels >> 8) & 0xFF;
+		int b = pixels & 0xFF;
+		return rgb(r, g, b);
+	}
+
+	public static final int getBGR(int pixels) {
+		int r = (pixels >> 16) & 0xFF;
+		int g = (pixels >> 8) & 0xFF;
+		int b = pixels & 0xFF;
+		return bgr(r, g, b);
+	}
+
+	/**
+	 * 获得32位色
+	 * 
+	 * @param r
+	 * @param g
+	 * @param b
+	 * @param alpha
+	 * @return
+	 */
+	public static final int getARGB(int r, int g, int b, int alpha) {
+		return argb(alpha, r, g, b);
+	}
+
+	public static final int getABGR(int r, int g, int b, int alpha) {
+		return abgr(alpha, r, g, b);
+	}
+
+	/**
+	 * 以指定颜色指定百分比获得渐变色彩
+	 * 
+	 * @param startColor
+	 * @param endColor
+	 * @return
+	 */
+	public static final int getGradient(int startColor, int endColor) {
+		return getGradient(startColor, endColor, 1f);
+	}
+
+	/**
+	 * 以指定颜色指定百分比获得渐变色彩
+	 * 
+	 * @param startColor
+	 * @param endColor
+	 * @param percentage
+	 * @return
+	 */
+	public static final int getGradient(int startColor, int endColor, float percentage) {
+		if (percentage > 1f) {
+			percentage = 1f;
+		}
+		int alphaStart = alpha(startColor);
+		int redStart = red(startColor);
+		int blueStart = blue(startColor);
+		int greenStart = green(startColor);
+		int alphaEnd = alpha(endColor);
+		int redEnd = red(endColor);
+		int blueEnd = blue(endColor);
+		int greenEnd = green(endColor);
+		int alphaDiff = alphaEnd - alphaStart;
+		int redDiff = redEnd - redStart;
+		int blueDiff = blueEnd - blueStart;
+		int greenDiff = greenEnd - greenStart;
+		int alphaCurrent = (int) (alphaStart + percentage * alphaDiff);
+		int redCurrent = (int) (redStart + percentage * redDiff);
+		int blueCurrent = (int) (blueStart + percentage * blueDiff);
+		int greenCurrent = (int) (greenStart + percentage * greenDiff);
+		return argb(alphaCurrent, redCurrent, greenCurrent, blueCurrent);
+	}
+
+	/**
+	 * 返回一组随机的RGB色彩
+	 * 
+	 * @param startColor
+	 * @param endColor
+	 * @return
+	 */
+	public static LColor getRandomRGBColor(float startColor, float endColor) {
+		return new LColor(MathUtils.random(startColor, endColor), MathUtils.random(startColor, endColor),
+				MathUtils.random(startColor, endColor));
+	}
+
+	/**
+	 * 返回一组随机的RGBA色彩
+	 * 
+	 * @param startColor
+	 * @param endColor
+	 * @return
+	 */
+	public static LColor getRandomRGBAColor(float startColor, float endColor) {
+		return new LColor(MathUtils.random(startColor, endColor), MathUtils.random(startColor, endColor),
+				MathUtils.random(startColor, endColor), MathUtils.random(startColor, endColor));
+	}
+
+	/**
+	 * 返回一组随机的RGB色彩
+	 * 
+	 * @return
+	 */
+	public static LColor getRandomRGBColor() {
+		return getRandomRGBColor(0f, 1f);
+	}
+
+	/**
+	 * 返回一组随机的RGBA色彩
+	 * 
+	 * @return
+	 */
+	public static LColor getRandomRGBAColor() {
+		return getRandomRGBAColor(0f, 1f);
+	}
+
+	/**
+	 * 返回一个符合CIE标准的色彩Luminance(亮度)值
+	 * 
+	 * @param r
+	 * @param g
+	 * @param b
+	 * @return
+	 */
+	public static float getLuminanceRGB(float r, float g, float b) {
+		return 0.2126f * r + 0.7152f * g + 0.0722f * b;
+	}
+
+	/**
+	 * 返回一个符合CIE标准的色彩Luminance(亮度)值
+	 * 
+	 * @param r
+	 * @param g
+	 * @param b
+	 * @return
+	 */
+	public static float getLuminanceRGB(int r, int g, int b) {
+		return 0.2126f * ((float) r / 255f) + 0.7152f * ((float) g / 255f) + 0.0722f * ((float) b / 255f);
+	}
+
+	/**
+	 * 获得指定float形式RGB值的HSL值
+	 * 
+	 * @param r
+	 * @param g
+	 * @param b
+	 * @return
+	 */
+	public static LColor getRGBtoHSL(float r, float g, float b) {
+		float max = MathUtils.max(r, g, b);
+		float min = MathUtils.min(r, g, b);
+		float h = 0, s = 0, l = (max + min) / 2f;
+		if (max == min) {
+			h = s = 0;
+		} else {
+			float d = max - min;
+			s = l > 0.5f ? d / (2f - max - min) : d / (max + min);
+			final int ir = (int) r;
+			final int ig = (int) g;
+			final int ib = (int) b;
+			if (max == ir) {
+				h = (g - b) / d + (g < b ? 6 : 0);
+			} else if (max == ig) {
+				h = (b - r) / d + 2;
+			} else if (max == ib) {
+				h = (r - g) / d + 4;
+			}
+		}
+		h /= 6;
+		return new LColor(h, s, l);
+	}
+
+	protected static float hue2rgb(float p, float q, float t) {
+		if (t < 0) {
+			t += 1;
+		}
+		if (t > 1) {
+			t -= 1;
+		}
+		if (t < 1 / 6) {
+			return p + (q - p) * 6 * t;
+		}
+		if (t < 1 / 2) {
+			return q;
+		}
+		if (t < 2 / 3) {
+			return p + (q - p) * (2 / 3 - t) * 6;
+		}
+		return p;
+	}
+
+	/**
+	 * 转化HSL值为RGB值
+	 * 
+	 * @param h
+	 * @param s
+	 * @param l
+	 * @return
+	 */
+	public static LColor getHSLtoRGB(float h, float s, float l) {
+		float r, g, b;
+		if (s == 0) {
+			r = g = b = l;
+		} else {
+			float q = l < 0.5f ? l * (1 + s) : l + s - l * s;
+			float p = 2 * l - q;
+			r = hue2rgb(p, q, h + 1 / 3);
+			g = hue2rgb(p, q, h);
+			b = hue2rgb(p, q, h - 1 / 3);
+		}
+		return new LColor(r, g, b);
+	}
+
+	/**
+	 * 注入一个与指定名称绑定的Color(可以使用findName函数再次获得)
+	 * 
+	 * @param colorName
+	 * @param color
+	 * @return
+	 */
+	public final static boolean putName(String colorName, LColor color) {
+		return LColorList.get().putColor(colorName, color);
+	}
+
+	/**
+	 * 返回一个指定英文名称的Color(按照html标准)
+	 * 
+	 * @param colorName
+	 * @return
+	 */
+	public final static LColor findName(String colorName) {
+		return LColorList.get().find(colorName);
+	}
+
+	/**
+	 * 返回当前像素对应的英文名称
+	 * 
+	 * @param pixel
+	 * @return
+	 */
+	public final static String getColorName(int pixel) {
+		return LColorList.get().find(pixel);
+	}
+
+	/**
+	 * 返回当前色彩对应的英文名称
+	 * 
+	 * @param color
+	 * @return
+	 */
+	public final static String getColorName(LColor color) {
+		return LColorList.get().find(color);
+	}
+
+	public static final LColor lerp(LColor value1, LColor value2, float amount) {
+		return new LColor(lerp(value1.getRed(), value2.getRed(), amount),
+				lerp(value1.getGreen(), value2.getGreen(), amount), lerp(value1.getBlue(), value2.getBlue(), amount),
+				lerp(value1.getAlpha(), value2.getAlpha(), amount));
+	}
+
+	private static final int lerp(int color1, int color2, float amount) {
+		return color1 + (int) ((color2 - color1) * amount);
+	}
+
+	/**
+	 * 获得Aplha
+	 * 
+	 * @param color
+	 * @return
+	 */
+	public static final int getAlpha(int color) {
+		return color >>> 24;
+	}
+
+	/**
+	 * 获得Red
+	 * 
+	 * @param color
+	 * @return
+	 */
+	public static final int getRed(int color) {
+		return (color >> 16) & 0xFF;
+	}
+
+	/**
+	 * 获得Green
+	 * 
+	 * @param color
+	 * @return
+	 */
+	public static final int getGreen(int color) {
+		return (color >> 8) & 0xFF;
+	}
+
+	/**
+	 * 获得Blud
+	 * 
+	 * @param color
+	 * @return
+	 */
+	public static final int getBlue(int color) {
+		return color & 0xFF;
+	}
+
+	/**
+	 * 获得像素预乘
+	 * 
+	 * @param argbColor
+	 * @return
+	 */
+	public static final int premultiply(int argbColor) {
+		int a = argbColor >>> 24;
+		if (a == 0) {
+			return 0;
+		} else if (a == 255) {
+			return argbColor;
+		} else {
+			int r = (argbColor >> 16) & 0xFF;
+			int g = (argbColor >> 8) & 0xFF;
+			int b = argbColor & 0xFF;
+			r = (a * r + 127) / 255;
+			g = (a * g + 127) / 255;
+			b = (a * b + 127) / 255;
+			return (a << 24) | (r << 16) | (g << 8) | b;
+		}
+	}
+
+	public static final int[] getRGBs(final int pixel) {
+		int[] rgbs = new int[3];
+		rgbs[0] = (pixel >> 16) & 0xFF;
+		rgbs[1] = (pixel >> 8) & 0xFF;
+		rgbs[2] = (pixel) & 0xFF;
+		return rgbs;
+	}
+
+	public static final int[] getRGBAs(final int pixel) {
+		int[] rgbas = new int[4];
+		rgbas[0] = (pixel >> 16) & 0xFF;
+		rgbas[1] = (pixel >> 8) & 0xFF;
+		rgbas[2] = (pixel) & 0xFF;
+		rgbas[3] = pixel >>> 24;
+		return rgbas;
+	}
+
+	public static final float toFloatBits(float r, float g, float b, float a) {
+		int color = ((int) (255 * a) << 24) | ((int) (255 * b) << 16) | ((int) (255 * g) << 8) | ((int) (255 * r));
+		return NumberUtils.intBitsToFloat(color & 0xfeffffff);
+	}
+
+	public float toFloatBits() {
+		int color = ((int) (255 * a) << 24) | ((int) (255 * b) << 16) | ((int) (255 * g) << 8) | ((int) (255 * r));
+		return NumberUtils.intBitsToFloat(color & 0xfeffffff);
+	}
+
+	public static final LColor hsvToColor(float h, float s, float v) {
+		if (h == 0 && s == 0) {
+			return new LColor(v, v, v);
+		}
+		float c = s * v;
+		float x = c * (1 - MathUtils.abs(h % 2 - 1));
+		float m = v - c;
+
+		if (h < 1) {
+			return new LColor(c + m, x + m, m);
+		} else if (h < 2) {
+			return new LColor(x + m, c + m, m);
+		} else if (h < 3) {
+			return new LColor(m, c + m, x + m);
+		} else if (h < 4) {
+			return new LColor(m, x + m, c + m);
+		} else if (h < 5) {
+			return new LColor(x + m, m, c + m);
+		} else {
+			return new LColor(c + m, m, x + m);
+		}
+	}
+
+	public static final String cssColorString(int color) {
+		float a = ((color >> 24) & 0xFF) / 255f;
+		int r = (color >> 16) & 0xFF;
+		int g = (color >> 8) & 0xFF;
+		int b = (color >> 0) & 0xFF;
+		return "rgba(" + r + "," + g + "," + b + "," + a + ")";
+	}
+
+	public static final LColor hexToColor(String c) {
+		try {
+			if (c.startsWith("#")) {
+				return hexToColor(c.substring(1));
+			} else if (c.startsWith("0x")) {
+				return hexToColor(c.substring(2));
+			} else {
+				return new LColor((int) CharUtils.fromHexToLong(c));
+			}
+		} catch (Throwable e) {
+			return new LColor();
+		}
+	}
+
+	public static final LColor web(final String stringColor) {
+		return web(stringColor, 1f);
+	}
+
+	public static final LColor web(final String hexColor, final float alpha) {
+		if (alpha == 1f) {
+			return new LColor(hexColor);
+		}
+		return new LColor(hexColor).mulSelfAlpha(alpha);
+	}
+
+	public static final LColor stringToColor(String c) {
+		return hexToColor(c);
+	}
+
 	public static final int[] convertToABGR(int pixelHeight, int pixelWidth, int[] srcPixels) {
 		return convertToABGR(pixelHeight, pixelWidth, srcPixels, srcPixels);
 	}
@@ -56,7 +493,7 @@ public class LColor implements Serializable {
 		}
 		return ints;
 	}
-	
+
 	public static final LColor[] toRgbaColor(int[] color) {
 		LColor[] colors = new LColor[color.length];
 		for (int i = 0; i < color.length; i++) {
@@ -64,7 +501,7 @@ public class LColor implements Serializable {
 		}
 		return colors;
 	}
-	
+
 	public static final int[] convertToABGR(int pixelHeight, int pixelWidth, int[] srcPixels, int[] dstPixels) {
 		int pixelCount = pixelWidth * pixelHeight;
 		for (int i = 0; i < pixelCount; ++i) {
@@ -428,6 +865,16 @@ public class LColor implements Serializable {
 	public static final LColor hsb(float hue, float saturation, float brightness, float alpha) {
 		float[] rgb = convertHSBtoRGB(hue, saturation, brightness);
 		return new LColor(rgb[0], rgb[1], rgb[2], alpha);
+	}
+
+	private final static float added(float c, final float i) {
+		c += i;
+		if (c > 1f) {
+			c = 1f;
+		} else if (c < 0f) {
+			c = 0f;
+		}
+		return c;
 	}
 
 	public static final byte[] argbToRGBA(int pixel) {
@@ -1080,16 +1527,6 @@ public class LColor implements Serializable {
 		return true;
 	}
 
-	private final static float added(float c, final float i) {
-		c += i;
-		if (c > 1f) {
-			c = 1f;
-		} else if (c < 0f) {
-			c = 0f;
-		}
-		return c;
-	}
-
 	/**
 	 * 让当前色彩做加法运算(将产生数值赋予自身)
 	 * 
@@ -1489,16 +1926,6 @@ public class LColor implements Serializable {
 		return multiply(c);
 	}
 
-	public static final LColor lerp(LColor value1, LColor value2, float amount) {
-		return new LColor(lerp(value1.getRed(), value2.getRed(), amount),
-				lerp(value1.getGreen(), value2.getGreen(), amount), lerp(value1.getBlue(), value2.getBlue(), amount),
-				lerp(value1.getAlpha(), value2.getAlpha(), amount));
-	}
-
-	private static final int lerp(int color1, int color2, float amount) {
-		return color1 + (int) ((color2 - color1) * amount);
-	}
-
 	public LColor lerp(LColor target, float alpha) {
 		return lerp(this, target, alpha);
 	}
@@ -1543,181 +1970,6 @@ public class LColor implements Serializable {
 		return bgr(getRed(), getGreen(), getBlue());
 	}
 
-	/**
-	 * 获得24位色
-	 * 
-	 * @param r
-	 * @param g
-	 * @param b
-	 * @return
-	 */
-	public static final int getRGB(int r, int g, int b) {
-		return rgb(r, g, b);
-	}
-
-	public static final int getBGR(int r, int g, int b) {
-		return bgr(r, g, b);
-	}
-
-	/**
-	 * 获得RGB颜色
-	 * 
-	 * @param pixels
-	 * @return
-	 */
-	public static final int getRGB(int pixels) {
-		int r = (pixels >> 16) & 0xFF;
-		int g = (pixels >> 8) & 0xFF;
-		int b = pixels & 0xFF;
-		return rgb(r, g, b);
-	}
-
-	public static final int getBGR(int pixels) {
-		int r = (pixels >> 16) & 0xFF;
-		int g = (pixels >> 8) & 0xFF;
-		int b = pixels & 0xFF;
-		return bgr(r, g, b);
-	}
-
-	/**
-	 * 获得32位色
-	 * 
-	 * @param r
-	 * @param g
-	 * @param b
-	 * @param alpha
-	 * @return
-	 */
-	public static final int getARGB(int r, int g, int b, int alpha) {
-		return argb(alpha, r, g, b);
-	}
-
-	public static final int getABGR(int r, int g, int b, int alpha) {
-		return abgr(alpha, r, g, b);
-	}
-
-	/**
-	 * 以指定颜色指定百分比获得渐变色彩
-	 * 
-	 * @param startColor
-	 * @param endColor
-	 * @return
-	 */
-	public static final int getGradient(int startColor, int endColor) {
-		return getGradient(startColor, endColor, 1f);
-	}
-
-	/**
-	 * 以指定颜色指定百分比获得渐变色彩
-	 * 
-	 * @param startColor
-	 * @param endColor
-	 * @param percentage
-	 * @return
-	 */
-	public static final int getGradient(int startColor, int endColor, float percentage) {
-		if (percentage > 1f) {
-			percentage = 1f;
-		}
-		int alphaStart = alpha(startColor);
-		int redStart = red(startColor);
-		int blueStart = blue(startColor);
-		int greenStart = green(startColor);
-		int alphaEnd = alpha(endColor);
-		int redEnd = red(endColor);
-		int blueEnd = blue(endColor);
-		int greenEnd = green(endColor);
-		int alphaDiff = alphaEnd - alphaStart;
-		int redDiff = redEnd - redStart;
-		int blueDiff = blueEnd - blueStart;
-		int greenDiff = greenEnd - greenStart;
-		int alphaCurrent = (int) (alphaStart + percentage * alphaDiff);
-		int redCurrent = (int) (redStart + percentage * redDiff);
-		int blueCurrent = (int) (blueStart + percentage * blueDiff);
-		int greenCurrent = (int) (greenStart + percentage * greenDiff);
-		return argb(alphaCurrent, redCurrent, greenCurrent, blueCurrent);
-	}
-
-	/**
-	 * 获得Aplha
-	 * 
-	 * @param color
-	 * @return
-	 */
-	public static final int getAlpha(int color) {
-		return color >>> 24;
-	}
-
-	/**
-	 * 获得Red
-	 * 
-	 * @param color
-	 * @return
-	 */
-	public static final int getRed(int color) {
-		return (color >> 16) & 0xFF;
-	}
-
-	/**
-	 * 获得Green
-	 * 
-	 * @param color
-	 * @return
-	 */
-	public static final int getGreen(int color) {
-		return (color >> 8) & 0xFF;
-	}
-
-	/**
-	 * 获得Blud
-	 * 
-	 * @param color
-	 * @return
-	 */
-	public static final int getBlue(int color) {
-		return color & 0xFF;
-	}
-
-	/**
-	 * 获得像素预乘
-	 * 
-	 * @param argbColor
-	 * @return
-	 */
-	public static final int premultiply(int argbColor) {
-		int a = argbColor >>> 24;
-		if (a == 0) {
-			return 0;
-		} else if (a == 255) {
-			return argbColor;
-		} else {
-			int r = (argbColor >> 16) & 0xFF;
-			int g = (argbColor >> 8) & 0xFF;
-			int b = argbColor & 0xFF;
-			r = (a * r + 127) / 255;
-			g = (a * g + 127) / 255;
-			b = (a * b + 127) / 255;
-			return (a << 24) | (r << 16) | (g << 8) | b;
-		}
-	}
-
-	public static final int[] getRGBs(final int pixel) {
-		int[] rgbs = new int[3];
-		rgbs[0] = (pixel >> 16) & 0xFF;
-		rgbs[1] = (pixel >> 8) & 0xFF;
-		rgbs[2] = (pixel) & 0xFF;
-		return rgbs;
-	}
-
-	public static final int[] getRGBAs(final int pixel) {
-		int[] rgbas = new int[4];
-		rgbas[0] = (pixel >> 16) & 0xFF;
-		rgbas[1] = (pixel >> 8) & 0xFF;
-		rgbas[2] = (pixel) & 0xFF;
-		rgbas[3] = pixel >>> 24;
-		return rgbas;
-	}
-
 	public float[] toRgbFloatArray() {
 		return new float[] { r, g, b };
 	}
@@ -1747,78 +1999,9 @@ public class LColor implements Serializable {
 		return color;
 	}
 
-	public static final float toFloatBits(float r, float g, float b, float a) {
-		int color = ((int) (255 * a) << 24) | ((int) (255 * b) << 16) | ((int) (255 * g) << 8) | ((int) (255 * r));
-		return NumberUtils.intBitsToFloat(color & 0xfeffffff);
-	}
-
-	public float toFloatBits() {
-		int color = ((int) (255 * a) << 24) | ((int) (255 * b) << 16) | ((int) (255 * g) << 8) | ((int) (255 * r));
-		return NumberUtils.intBitsToFloat(color & 0xfeffffff);
-	}
-
-	public static final LColor hsvToColor(float h, float s, float v) {
-		if (h == 0 && s == 0) {
-			return new LColor(v, v, v);
-		}
-		float c = s * v;
-		float x = c * (1 - MathUtils.abs(h % 2 - 1));
-		float m = v - c;
-
-		if (h < 1) {
-			return new LColor(c + m, x + m, m);
-		} else if (h < 2) {
-			return new LColor(x + m, c + m, m);
-		} else if (h < 3) {
-			return new LColor(m, c + m, x + m);
-		} else if (h < 4) {
-			return new LColor(m, x + m, c + m);
-		} else if (h < 5) {
-			return new LColor(x + m, m, c + m);
-		} else {
-			return new LColor(c + m, m, x + m);
-		}
-	}
-
-	public static final String cssColorString(int color) {
-		double a = ((color >> 24) & 0xFF) / 255.0;
-		int r = (color >> 16) & 0xFF;
-		int g = (color >> 8) & 0xFF;
-		int b = (color >> 0) & 0xFF;
-		return "rgba(" + r + "," + g + "," + b + "," + a + ")";
-	}
-
-	public static final LColor hexToColor(String c) {
-		try {
-			if (c.startsWith("#")) {
-				return hexToColor(c.substring(1));
-			} else if (c.startsWith("0x")) {
-				return hexToColor(c.substring(2));
-			} else {
-				return new LColor((int) CharUtils.fromHexToLong(c));
-			}
-		} catch (Throwable e) {
-			return new LColor();
-		}
-	}
-
-	public static final LColor web(final String stringColor) {
-		return web(stringColor, 1f);
-	}
-
-	public static final LColor web(final String hexColor, final float alpha) {
-		if (alpha == 1f) {
-			return new LColor(hexColor);
-		}
-		return new LColor(hexColor).mulSelfAlpha(alpha);
-	}
-
-	public static final LColor stringToColor(String c) {
-		return hexToColor(c);
-	}
-
 	public String toCSS() {
-		return "rgba(" + (int) (r * 255) + "," + (int) (g * 255) + "," + (int) (b * 255) + "," + (int) (a * 255) + ")";
+		return "rgba(" + MathUtils.floor(r * 255) + "," + MathUtils.floor(g * 255) + "," + MathUtils.floor(b * 255)
+				+ "," + MathUtils.floor(a * 255) + ")";
 	}
 
 	public Vector3f getVector3() {
@@ -1862,72 +2045,6 @@ public class LColor implements Serializable {
 	}
 
 	/**
-	 * 返回一组随机的RGB色彩
-	 * 
-	 * @param startColor
-	 * @param endColor
-	 * @return
-	 */
-	public static LColor getRandomRGBColor(float startColor, float endColor) {
-		return new LColor(MathUtils.random(startColor, endColor), MathUtils.random(startColor, endColor),
-				MathUtils.random(startColor, endColor));
-	}
-
-	/**
-	 * 返回一组随机的RGBA色彩
-	 * 
-	 * @param startColor
-	 * @param endColor
-	 * @return
-	 */
-	public static LColor getRandomRGBAColor(float startColor, float endColor) {
-		return new LColor(MathUtils.random(startColor, endColor), MathUtils.random(startColor, endColor),
-				MathUtils.random(startColor, endColor), MathUtils.random(startColor, endColor));
-	}
-
-	/**
-	 * 返回一组随机的RGB色彩
-	 * 
-	 * @return
-	 */
-	public static LColor getRandomRGBColor() {
-		return getRandomRGBColor(0f, 1f);
-	}
-
-	/**
-	 * 返回一组随机的RGBA色彩
-	 * 
-	 * @return
-	 */
-	public static LColor getRandomRGBAColor() {
-		return getRandomRGBAColor(0f, 1f);
-	}
-
-	/**
-	 * 返回一个符合CIE标准的色彩Luminance(亮度)值
-	 * 
-	 * @param r
-	 * @param g
-	 * @param b
-	 * @return
-	 */
-	public static float getLuminanceRGB(float r, float g, float b) {
-		return 0.2126f * r + 0.7152f * g + 0.0722f * b;
-	}
-
-	/**
-	 * 返回一个符合CIE标准的色彩Luminance(亮度)值
-	 * 
-	 * @param r
-	 * @param g
-	 * @param b
-	 * @return
-	 */
-	public static float getLuminanceRGB(int r, int g, int b) {
-		return 0.2126f * ((float) r / 255f) + 0.7152f * ((float) g / 255f) + 0.0722f * ((float) b / 255f);
-	}
-
-	/**
 	 * 返回一个符合CIE标准的色彩Luminance(亮度)值
 	 * 
 	 * @return
@@ -1955,126 +2072,12 @@ public class LColor implements Serializable {
 	}
 
 	/**
-	 * 获得指定float形式RGB值的HSL值
-	 * 
-	 * @param r
-	 * @param g
-	 * @param b
-	 * @return
-	 */
-	public static LColor getRGBtoHSL(float r, float g, float b) {
-		int max = (int) MathUtils.max(r, g, b);
-		int min = (int) MathUtils.min(r, g, b);
-		float h = 0, s = 0, l = (max + min) / 2;
-		if (max == min) {
-			h = s = 0;
-		} else {
-			float d = max - min;
-			s = l > 0.5f ? d / (2 - max - min) : d / (max + min);
-			final int ir = (int) r;
-			final int ig = (int) g;
-			final int ib = (int) b;
-			if (max == ir) {
-				h = (g - b) / d + (g < b ? 6 : 0);
-			} else if (max == ig) {
-				h = (b - r) / d + 2;
-			} else if (max == ib) {
-				h = (r - g) / d + 4;
-			}
-		}
-		h /= 6;
-		return new LColor(h, s, l);
-	}
-
-	protected static float hue2rgb(float p, float q, float t) {
-		if (t < 0) {
-			t += 1;
-		}
-		if (t > 1) {
-			t -= 1;
-		}
-		if (t < 1 / 6) {
-			return p + (q - p) * 6 * t;
-		}
-		if (t < 1 / 2) {
-			return q;
-		}
-		if (t < 2 / 3) {
-			return p + (q - p) * (2 / 3 - t) * 6;
-		}
-		return p;
-	}
-
-	/**
-	 * 转化HSL值为RGB值
-	 * 
-	 * @param h
-	 * @param s
-	 * @param l
-	 * @return
-	 */
-	public static LColor getHSLtoRGB(float h, float s, float l) {
-		float r, g, b;
-		if (s == 0) {
-			r = g = b = l;
-		} else {
-			float q = l < 0.5f ? l * (1 + s) : l + s - l * s;
-			float p = 2 * l - q;
-			r = hue2rgb(p, q, h + 1 / 3);
-			g = hue2rgb(p, q, h);
-			b = hue2rgb(p, q, h - 1 / 3);
-		}
-		return new LColor(r, g, b);
-	}
-
-	/**
 	 * 转化当前Color的HSL值为RGB值
 	 * 
 	 * @return
 	 */
 	public LColor getHSLtoRGB() {
 		return getHSLtoRGB(r, g, b);
-	}
-
-	/**
-	 * 注入一个与指定名称绑定的Color(可以使用findName函数再次获得)
-	 * 
-	 * @param colorName
-	 * @param color
-	 * @return
-	 */
-	public final static boolean putName(String colorName, LColor color) {
-		return LColorList.get().putColor(colorName, color);
-	}
-
-	/**
-	 * 返回一个指定英文名称的Color(按照html标准)
-	 * 
-	 * @param colorName
-	 * @return
-	 */
-	public final static LColor findName(String colorName) {
-		return LColorList.get().find(colorName);
-	}
-
-	/**
-	 * 返回当前像素对应的英文名称
-	 * 
-	 * @param pixel
-	 * @return
-	 */
-	public final static String getColorName(int pixel) {
-		return LColorList.get().find(pixel);
-	}
-
-	/**
-	 * 返回当前色彩对应的英文名称
-	 * 
-	 * @param color
-	 * @return
-	 */
-	public final static String getColorName(LColor color) {
-		return LColorList.get().find(color);
 	}
 
 	/**
@@ -2209,8 +2212,61 @@ public class LColor implements Serializable {
 		return value;
 	}
 
+	public float getBrightness() {
+		int red = getRed();
+		int green = getGreen();
+		int blue = getBlue();
+		int min = MathUtils.min(MathUtils.min(red, green), blue);
+		int max = MathUtils.max(MathUtils.max(red, green), blue);
+		return (max + min) / 254f;
+	}
+
+	public float getHue() {
+		if (r == g && g == b) {
+			return 0f;
+		}
+		int red = getRed();
+		int green = getGreen();
+		int blue = getBlue();
+		int min = MathUtils.min(MathUtils.min(red, green), blue);
+		int max = MathUtils.max(MathUtils.max(red, green), blue);
+
+		float delta = max - min;
+		float hue;
+
+		if (red == max) {
+			hue = (green - blue) / delta;
+		} else if (green == max) {
+			hue = (blue - red) / delta + 2f;
+		} else {
+			hue = (red - green) / delta + 4f;
+		}
+		hue *= 60f;
+		if (hue < 0f) {
+			hue += 360f;
+		}
+		return hue;
+	}
+
+	public float getSaturation() {
+		if (r == g && g == b) {
+			return 0f;
+		}
+		int red = getRed();
+		int green = getGreen();
+		int blue = getBlue();
+		int min = MathUtils.min(MathUtils.min(red, green), blue);
+		int max = MathUtils.max(MathUtils.max(red, green), blue);
+		int div = max + min;
+		if (div > 127) {
+			div = 254 - max - min;
+		}
+		return (max - min) / (float) div;
+	}
+
 	public String toRGBAString() {
-		return r + "," + g + "," + b + "," + a;
+		return new StrBuilder().append(r).append(LSystem.COMMA).append(g).append(LSystem.COMMA).append(b)
+				.append(LSystem.COMMA).append(a).toString();
 	}
 
 	/**

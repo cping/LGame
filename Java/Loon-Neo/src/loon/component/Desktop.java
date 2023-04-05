@@ -69,7 +69,7 @@ public class Desktop implements Visible, LRelease {
 	private LToolTip tooltip;
 
 	private boolean _clicked;
-	
+
 	private boolean _visible;
 
 	private boolean _closed;
@@ -307,7 +307,6 @@ public class Desktop implements Visible, LRelease {
 		return removed;
 	}
 
-
 	/**
 	 * 刷新当前桌面
 	 * 
@@ -377,8 +376,8 @@ public class Desktop implements Visible, LRelease {
 		return this;
 	}
 
-	public Desktop packLayout(final LayoutManager manager, final float spacex, final float spacey, final float spaceWidth,
-			final float spaceHeight) {
+	public Desktop packLayout(final LayoutManager manager, final float spacex, final float spacey,
+			final float spaceWidth, final float spaceHeight) {
 		if (contentPane != null) {
 			contentPane.packLayout(manager, spacex, spacey, spaceWidth, spaceHeight);
 		}
@@ -1096,7 +1095,7 @@ public class Desktop implements Visible, LRelease {
 	 * @param query
 	 * @return
 	 */
-	public <T extends LComponent> TArray<T> delete(QueryEvent<T> query) {
+	public TArray<LComponent> delete(QueryEvent<LComponent> query) {
 		return contentPane.delete(query);
 	}
 
@@ -1106,7 +1105,7 @@ public class Desktop implements Visible, LRelease {
 	 * @param query
 	 * @return
 	 */
-	public <T extends LComponent> TArray<T> select(QueryEvent<T> query) {
+	public TArray<LComponent> select(QueryEvent<LComponent> query) {
 		return contentPane.select(query);
 	}
 
