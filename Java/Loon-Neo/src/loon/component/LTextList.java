@@ -588,8 +588,8 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 			if (getContainer() == null || !(getContainer() instanceof LScrollContainer)) {
 				draw(g, x, y, SysTouch.getX(), SysTouch.getY());
 			} else {
-				draw(g, x, y, ((LScrollContainer) getContainer()).getScrollX() + SysTouch.getX(),
-						((LScrollContainer) getContainer()).getScrollY() + SysTouch.getY());
+				draw(g, x, y, ((LScrollContainer) getContainer()).getBoxScrollX() + SysTouch.getX(),
+						((LScrollContainer) getContainer()).getBoxScrollY() + SysTouch.getY());
 			}
 		}
 	}

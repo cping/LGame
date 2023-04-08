@@ -1,18 +1,18 @@
 /**
  * Copyright 2014
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -20,18 +20,21 @@
  */
 package loon.component;
 
-import loon.LSystem;
 import loon.LTexture;
+import loon.LSystem;
 import loon.canvas.LColor;
 import loon.component.skin.ScrollBarSkin;
 import loon.component.skin.SkinManager;
 import loon.events.SysTouch;
 import loon.opengl.GLEx;
+import loon.utils.MathUtils;
 
 /**
  * 滚轴边角的UI
  */
 public class LScrollBar extends LComponent {
+
+	private final static float SCROLL_SCALE_VALUE = 0.07f;
 
 	public static final int RIGHT = 0;
 	public static final int BOTTOM = 1;
@@ -53,6 +56,8 @@ public class LScrollBar extends LComponent {
 	protected int relativeClickX;
 
 	protected int relativeClickY;
+
+	protected boolean _scrolling;
 
 	private LTexture scrollBar;
 
@@ -93,12 +98,13 @@ public class LScrollBar extends LComponent {
 		freeRes().add(a, b);
 	}
 
-	public void setScrollContainer(LScrollContainer _scrollContainer) {
-		this._scrollContainer = _scrollContainer;
+	public LScrollBar setScrollContainer(LScrollContainer sc) {
+		this._scrollContainer = sc;
 		adjustScrollbar();
+		return this;
 	}
 
-	public void adjustScrollbar() {
+	public LScrollBar adjustScrollbar() {
 		switch (getOrientation()) {
 		case LScrollBar.TOP:
 			initHorizontalTopScrollBar();
@@ -113,9 +119,10 @@ public class LScrollBar extends LComponent {
 			initVerticalLeftScrollBar();
 			break;
 		}
+		return this;
 	}
 
-	public void adjustSlider() {
+	public LScrollBar adjustSlider() {
 		switch (getOrientation()) {
 		case LScrollBar.TOP:
 			adjustHorizontalTopSlider();
@@ -130,44 +137,54 @@ public class LScrollBar extends LComponent {
 			adjustVerticalLeftSlider();
 			break;
 		}
+		return this;
 	}
 
-	private void initVerticalLeftScrollBar() {
-		setHeight(_scrollContainer.getHeight());
-
-		int width = (int) (_scrollContainer.getWidth() * 0.07);
-		setWidth(width > MAX_SLIDER_SIZE ? MAX_SLIDER_SIZE : width);
-
-		setX(_scrollContainer.getX() - getWidth());
-		setY(_scrollContainer.getY());
-
-		adjustVerticalLeftSlider();
-	}
-
-	public void adjustSlider(int sliderX, int sliderY, int sliderWidth, int sliderHeight) {
+	public LScrollBar adjustSlider(int sliderX, int sliderY, int sliderWidth, int sliderHeight) {
 		setSliderX(sliderX);
 		setSliderY(sliderY);
 		setSliderWidth(sliderWidth);
 		setSliderHeight(sliderHeight);
+		return this;
 	}
 
-	public void adjustSlider(int sliderWidth, int sliderHeight) {
+	public LScrollBar adjustSlider(int sliderWidth, int sliderHeight) {
 		adjustSlider(x() + getSliderMargin(), y() + getSliderMargin(), sliderWidth, sliderHeight);
+		return this;
+	}
+
+	private void initVerticalLeftScrollBar() {
+		if (_scrollContainer == null) {
+			return;
+		}
+		int width = MathUtils.floor(_scrollContainer.getWidth() * SCROLL_SCALE_VALUE);
+		width = width > MAX_SLIDER_SIZE ? MAX_SLIDER_SIZE : width;
+		setHeight(_scrollContainer.getHeight());
+		setWidth(width);
+		setX(_scrollContainer.getX());
+		setY(_scrollContainer.getY());
+		adjustVerticalLeftSlider();
 	}
 
 	private void adjustVerticalLeftSlider() {
-		setSliderWidth((int) (getWidth() - (getSliderMargin() * 2)) + 1);
+		if (_scrollContainer == null) {
+			return;
+		}
+		setSliderWidth(MathUtils.floor(getWidth() - (getSliderMargin() * 2)) + 1);
 		setSliderX(x() + getSliderMargin());
 		setSliderY(y() + getSliderMargin());
-
 		float ratioHeight = _scrollContainer.getHeight() / _scrollContainer.getInnerHeight();
 		ratioHeight = ratioHeight > 1 ? 1 : ratioHeight;
-		setSliderHeight((int) ((ratioHeight * getHeight()) - (getSliderMargin() * 2)) + 1);
+		setSliderHeight(MathUtils.floor((ratioHeight * getHeight()) - (getSliderMargin() * 2)) + 1);
 	}
 
 	private void initVerticalRightScrollBar() {
-		int width = (int) (_scrollContainer.getWidth() * 0.07);
-		setWidth(width > MAX_SLIDER_SIZE ? MAX_SLIDER_SIZE : width);
+		if (_scrollContainer == null) {
+			return;
+		}
+		int width = width();
+		width = width > MAX_SLIDER_SIZE ? MAX_SLIDER_SIZE : width;
+		setWidth(width);
 		setX(_scrollContainer.getX() + _scrollContainer.getWidth() - width);
 		setY(_scrollContainer.getY());
 		setHeight(_scrollContainer.getHeight());
@@ -175,52 +192,65 @@ public class LScrollBar extends LComponent {
 	}
 
 	private void adjustVerticalRightSlider() {
-		setSliderWidth((int) (getWidth() - (getSliderMargin() * 2)) + 1);
+		if (_scrollContainer == null) {
+			return;
+		}
+		setSliderWidth(MathUtils.floor(getWidth() - (getSliderMargin() * 2)) + 1);
 		setSliderX(x() + getSliderMargin());
 		setSliderY(y() + getSliderMargin());
 		float ratioHeight = getHeight() / _scrollContainer.getInnerHeight();
 		ratioHeight = ratioHeight > 1 ? 1 : ratioHeight;
-		setSliderHeight((int) ((ratioHeight * getHeight()) - (getSliderMargin() * 2)) + 1);
+		setSliderHeight(MathUtils.floor((ratioHeight * getHeight()) - (getSliderMargin() * 2)) + 1);
 	}
 
 	private void initHorizontalTopScrollBar() {
+		if (_scrollContainer == null) {
+			return;
+		}
+		int height = MathUtils.floor(_scrollContainer.getHeight() * SCROLL_SCALE_VALUE);
+		height = height > MAX_SLIDER_SIZE ? MAX_SLIDER_SIZE : height;
 		setWidth(_scrollContainer.getWidth());
-		int height = (int) (_scrollContainer.getWidth() * 0.07);
-		setHeight(height > MAX_SLIDER_SIZE ? MAX_SLIDER_SIZE : height);
+		setHeight(height);
 		setX(_scrollContainer.getX());
-		setY(_scrollContainer.getY() - getHeight());
+		setY(_scrollContainer.getY());
 		adjustHorizontalTopSlider();
 	}
 
 	private void adjustHorizontalTopSlider() {
-		setSliderHeight((int) (getHeight() - (getSliderMargin() * 2)) + 1);
+		if (_scrollContainer == null) {
+			return;
+		}
+		setSliderHeight(MathUtils.floor(getHeight() - (getSliderMargin() * 2)) + 1);
 		setSliderX(x() + getSliderMargin());
 		setSliderY(y() + getSliderMargin());
 		float ratioWidth = getWidth() / _scrollContainer.getInnerWidth();
 		ratioWidth = ratioWidth > 1 ? 1 : ratioWidth;
-		setSliderWidth((int) ((ratioWidth * getWidth()) - (getSliderMargin() * 2)) + 1);
+		setSliderWidth(MathUtils.floor((ratioWidth * getWidth()) - (getSliderMargin() * 2)) + 1);
 	}
 
 	private void initHorizontalBottomScrollBar() {
-		int height = (int) (_scrollContainer.getWidth() * 0.07);
-		setHeight(height > MAX_SLIDER_SIZE ? MAX_SLIDER_SIZE : height);
-
+		if (_scrollContainer == null) {
+			return;
+		}
+		int height = MathUtils.floor(_scrollContainer.getWidth() * SCROLL_SCALE_VALUE);
+		height = height > MAX_SLIDER_SIZE ? MAX_SLIDER_SIZE : height;
+		setHeight(height);
 		setX(_scrollContainer.getX());
-		setY(_scrollContainer.getY() + _scrollContainer.getHeight() - getHeight());
-
+		setY(_scrollContainer.getY() + _scrollContainer.getHeight() - height);
 		setWidth(_scrollContainer.getWidth());
-
 		adjustHorizontalBottomSlider();
 	}
 
 	private void adjustHorizontalBottomSlider() {
-		setSliderHeight((int) (getHeight() - (getSliderMargin() * 2)) + 1);
+		if (_scrollContainer == null) {
+			return;
+		}
+		setSliderHeight(MathUtils.floor(getHeight() - (getSliderMargin() * 2)) + 1);
 		setSliderX(x() + getSliderMargin());
 		setSliderY(y() + getSliderMargin());
-
 		float ratioWidth = getWidth() / _scrollContainer.getInnerWidth();
 		ratioWidth = ratioWidth > 1 ? 1 : ratioWidth;
-		setSliderWidth((int) ((ratioWidth * getWidth()) - (getSliderMargin() * 2)) + 1);
+		setSliderWidth(MathUtils.floor((ratioWidth * getWidth()) - (getSliderMargin() * 2)) + 1);
 	}
 
 	@Override
@@ -228,21 +258,6 @@ public class LScrollBar extends LComponent {
 		super.setSize(w, h);
 		adjustSlider();
 		return this;
-	}
-
-	@Override
-	public void update(final long elapsedTime) {
-		super.update(elapsedTime);
-		if (SysTouch.isDrag()) {
-			if (isPointInUI(getTouchX(), getTouchY())) {
-				touchDragged(getUITouchX(), getUITouchY());
-			}
-		}
-		if (SysTouch.isDown()) {
-			if (isPointInUI(getTouchX(), getTouchY())) {
-				touchDown(getUITouchX(), getUITouchY());
-			}
-		}
 	}
 
 	public int getOrientation() {
@@ -261,8 +276,9 @@ public class LScrollBar extends LComponent {
 		return sliderHeight;
 	}
 
-	public void setSliderHeight(int sliderHeight) {
+	public LScrollBar setSliderHeight(int sliderHeight) {
 		this.sliderHeight = sliderHeight;
+		return this;
 	}
 
 	public int getSliderX() {
@@ -285,24 +301,35 @@ public class LScrollBar extends LComponent {
 		return scrollBarColor.cpy();
 	}
 
-	public void setScrollBarColor(LColor scrollBarColor) {
+	public LScrollBar setScrollBarColor(LColor scrollBarColor) {
 		this.scrollBarColor = scrollBarColor;
+		return this;
 	}
 
 	public LColor getSliderColor() {
 		return sliderColor.cpy();
 	}
 
-	public void setSliderColor(LColor sliderColor) {
+	public LScrollBar setSliderColor(LColor sliderColor) {
 		this.sliderColor = sliderColor;
+		return this;
 	}
 
 	public int getSliderMargin() {
 		return sliderMargin;
 	}
 
-	public void setSliderMargin(int sliderMargin) {
+	public LScrollBar setSliderMargin(int sliderMargin) {
 		this.sliderMargin = sliderMargin;
+		return this;
+	}
+
+	public boolean isScrolling() {
+		return _scrolling;
+	}
+
+	protected void setScroll(boolean sc) {
+		this._scrolling = sc;
 	}
 
 	@Override
@@ -325,14 +352,24 @@ public class LScrollBar extends LComponent {
 	protected void processTouchReleased() {
 		super.processTouchReleased();
 		if (isPointInUI(getTouchX(), getTouchY())) {
-			touchDown(getUITouchX(), getUITouchY());
+			touchUp(getUITouchX(), getUITouchY());
 		}
 	}
 
 	public boolean touchDown(float screenX, float screenY) {
 		if (_scrollContainer != null) {
-			relativeClickX = (int) (screenX - (x() + getSliderX() + _scrollContainer.x()));
-			relativeClickY = (int) (screenY - (y() + getSliderY() + _scrollContainer.y()));
+			relativeClickX = MathUtils.floor(screenX - (getX() + getSliderX() + _scrollContainer.getX()));
+			relativeClickY = MathUtils.floor(screenY - (getY() + getSliderY() + _scrollContainer.getY()));
+			return true;
+		}
+		return false;
+	}
+
+	public boolean touchUp(float screenX, float screenY) {
+		if (_scrollContainer != null) {
+			relativeClickX = MathUtils.floor(screenX);
+			relativeClickY = MathUtils.floor(screenY);
+			setScroll(false);
 			return true;
 		}
 		return false;
@@ -340,8 +377,8 @@ public class LScrollBar extends LComponent {
 
 	public boolean touchDragged(float screenX, float screenY) {
 		if (_scrollContainer != null) {
-			int rClickX = (int) (screenX - (x() + _scrollContainer.x()));
-			int rClickY = (int) (screenY - (y() + _scrollContainer.y()));
+			int rClickX = MathUtils.floor(screenX - (getX() + _scrollContainer.getX()));
+			int rClickY = MathUtils.floor(screenY - (getY() + _scrollContainer.getY()));
 			rClickX -= relativeClickX;
 			rClickY -= relativeClickY;
 			moveSlider(rClickX, rClickY);
@@ -360,7 +397,7 @@ public class LScrollBar extends LComponent {
 
 	protected void moveVerticalSlider(int newY) {
 		int minY = y() + getSliderMargin();
-		int maxY = (int) (y() + getHeight() - (getSliderHeight() + getSliderMargin()));
+		int maxY = MathUtils.floor(y() + getHeight() - (getSliderHeight() + getSliderMargin()));
 		if (newY < minY) {
 			setSliderY(minY);
 		} else if (newY > maxY) {
@@ -372,18 +409,18 @@ public class LScrollBar extends LComponent {
 	}
 
 	protected void updateScrollContainerY() {
-		float ratio = (float) ((_scrollContainer.getInnerHeight()) - _scrollContainer.getHeight())
-				/ (getHeight() - getSliderHeight() - (getSliderMargin() * 2));
-		if (Float.isNaN(ratio) || Float.isInfinite(ratio)) {
-			ratio = 0f;
+		if (_scrollContainer == null) {
+			return;
 		}
-		int relativeSliderY = getSliderY() - (y() + getSliderMargin());
-		_scrollContainer.moveScrollY((int) (relativeSliderY * ratio));
+		float ratio = ((_scrollContainer.getInnerHeight()) - _scrollContainer.getHeight())
+				/ (getHeight() - getSliderHeight() - (getSliderMargin() * 2f));
+		float relativeSliderY = getSliderY() - (getY() + getSliderMargin());
+		_scrollContainer.moveScrollY(relativeSliderY * ratio);
 	}
 
 	protected void moveHorizontalSlider(int newX) {
 		int minX = x() + getSliderMargin();
-		int maxX = (int) (x() + getWidth() - (getSliderWidth() + getSliderMargin()));
+		int maxX = MathUtils.floor(x() + getWidth() - (getSliderWidth() + getSliderMargin()));
 		if (newX < minX) {
 			setSliderX(minX);
 		} else if (newX > maxX) {
@@ -395,13 +432,13 @@ public class LScrollBar extends LComponent {
 	}
 
 	protected void updateScrollContainerX() {
-		float ratio = ((_scrollContainer.getInnerWidth()) - getWidth())
-				/ (getWidth() - getSliderWidth() - (getSliderMargin() * 2));
-		if (Double.isNaN(ratio) || Double.isInfinite(ratio)) {
-			ratio = 0.0f;
+		if (_scrollContainer == null) {
+			return;
 		}
-		int relativeSliderX = getSliderX() - (x() + getSliderMargin());
-		_scrollContainer.moveScrollX((int) (relativeSliderX * ratio));
+		float ratio = ((_scrollContainer.getInnerWidth()) - getWidth())
+				/ (getWidth() - getSliderWidth() - (getSliderMargin() * 2f));
+		float relativeSliderX = getSliderX() - (getX() + getSliderMargin());
+		_scrollContainer.moveScrollX(relativeSliderX * ratio);
 	}
 
 	@Override
@@ -426,6 +463,24 @@ public class LScrollBar extends LComponent {
 	public void setHeight(float height) {
 		super.setHeight(height);
 		adjustSlider();
+	}
+
+	@Override
+	public void process(final long elapsedTime) {
+		if (SysTouch.isDrag()) {
+			if (isPointInUI(getTouchX(), getTouchY())) {
+				touchDragged(getUITouchX(), getUITouchY());
+			}
+		}
+		if (SysTouch.isDown()) {
+			if (isPointInUI(getTouchX(), getTouchY())) {
+				touchDown(getUITouchX(), getUITouchY());
+			}
+		} else if (SysTouch.isDown()) {
+			if (isPointInUI(getTouchX(), getTouchY())) {
+				touchUp(getUITouchX(), getUITouchY());
+			}
+		}
 	}
 
 	@Override

@@ -1243,8 +1243,8 @@ public abstract class LComponent extends LObject<LContainer>
 			} else {
 				if (_objectSuper.isContainer() && (_objectSuper instanceof LScrollContainer)) {
 					LScrollContainer scroll = (LScrollContainer) _objectSuper;
-					newX = toPixelScaleX(SysTouch.getX() + scroll.getScrollX() - _objectSuper.getX() - getX());
-					newY = toPixelScaleY(SysTouch.getY() + scroll.getScrollY() - _objectSuper.getY() - getY());
+					newX = toPixelScaleX(SysTouch.getX() + scroll.getBoxScrollX() - _objectSuper.getX() - getX());
+					newY = toPixelScaleY(SysTouch.getY() + scroll.getBoxScrollY() - _objectSuper.getY() - getY());
 				} else {
 					newX = toPixelScaleX(SysTouch.getX() - _objectSuper.getX() - getX());
 					newY = toPixelScaleY(SysTouch.getY() - _objectSuper.getY() - getY());
@@ -1254,7 +1254,7 @@ public abstract class LComponent extends LObject<LContainer>
 		} else {
 			if (_objectSuper.isContainer() && (_objectSuper instanceof LScrollContainer)) {
 				LScrollContainer scroll = (LScrollContainer) _objectSuper;
-				return getUITouch(SysTouch.getX() + scroll.getScrollX(), SysTouch.getY() + scroll.getScrollY(),
+				return getUITouch(SysTouch.getX() + scroll.getBoxScrollX(), SysTouch.getY() + scroll.getBoxScrollY(),
 						_touchPoint);
 			} else {
 				return getUITouch(SysTouch.getX(), SysTouch.getY(), _touchPoint);

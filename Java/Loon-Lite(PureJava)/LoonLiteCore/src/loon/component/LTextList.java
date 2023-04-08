@@ -1,24 +1,24 @@
 /**
- *
+ * 
  * Copyright 2014
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
  * @version 0.4.1
- *
+ * 
  */
 package loon.component;
 
@@ -34,9 +34,9 @@ import loon.opengl.GLEx;
 
 /**
  * 文字列表显示用UI,用以列表方式显示指定数据,LGame本身附带有默认UI,用户也可以自行注入图片进行替换.
- *
+ * 
  * Example1:
- *
+ * 
  * LTextList list = new LTextList(0,0,150,100); list.add("图灵测试");
  * list.add("人月神话"); list.add("费雪效应"); list.add("ABC"); list.add("EFG");
  */
@@ -121,29 +121,18 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 
 	/**
 	 * @param font
-	 *
-	 * @param max
-	 *            允许插入的最大行数
-	 * @param x
-	 *            显示用坐标x
-	 * @param y
-	 *            显示用坐标y
-	 * @param width
-	 *            文本列表宽
-	 * @param height
-	 *            文本列表高
-	 * @param scrollButtonWidth
-	 *            滚轴按钮触发范围
-	 * @param bg
-	 *            背景图
-	 * @param choice
-	 *            选中单独栏用图
-	 * @param scroll
-	 *            滚轴用图
-	 * @param scrollFlagA
-	 *            滚轴上下标识用图(A)
-	 * @param scrollFlagB
-	 *            滚轴上下标识用图(B)
+	 * 
+	 * @param max               允许插入的最大行数
+	 * @param x                 显示用坐标x
+	 * @param y                 显示用坐标y
+	 * @param width             文本列表宽
+	 * @param height            文本列表高
+	 * @param scrollButtonWidth 滚轴按钮触发范围
+	 * @param bg                背景图
+	 * @param choice            选中单独栏用图
+	 * @param scroll            滚轴用图
+	 * @param scrollFlagA       滚轴上下标识用图(A)
+	 * @param scrollFlagB       滚轴上下标识用图(B)
 	 */
 	public LTextList(IFont font, int max, int x, int y, int width, int height, int scrollButtonWidth, LTexture bg,
 			LTexture choice, LTexture scroll, LTexture scrollFlagA, LTexture scrollFlagB) {
@@ -177,7 +166,7 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 		return this;
 	}
 
-	public LTextList clear(){
+	public LTextList clear() {
 		return delete();
 	}
 
@@ -334,7 +323,7 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 
 	/**
 	 * 获得选中数据所在列的数据标识
-	 *
+	 * 
 	 * @return
 	 */
 	public int getIndex() {
@@ -599,8 +588,8 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 			if (getContainer() == null || !(getContainer() instanceof LScrollContainer)) {
 				draw(g, x, y, SysTouch.getX(), SysTouch.getY());
 			} else {
-				draw(g, x, y, ((LScrollContainer) getContainer()).getScrollX() + SysTouch.getX(),
-						((LScrollContainer) getContainer()).getScrollY() + SysTouch.getY());
+				draw(g, x, y, ((LScrollContainer) getContainer()).getBoxScrollX() + SysTouch.getX(),
+						((LScrollContainer) getContainer()).getBoxScrollY() + SysTouch.getY());
 			}
 		}
 	}

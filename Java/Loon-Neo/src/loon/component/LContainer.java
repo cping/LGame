@@ -51,6 +51,8 @@ public abstract class LContainer extends LComponent implements IArray {
 	private Margin _margin;
 
 	private float _newLineHeight = -1f;
+
+	protected boolean _scrolling;
 	// 滚动x轴
 	protected float _component_scrollX;
 	// 滚动y轴
@@ -829,8 +831,8 @@ public abstract class LContainer extends LComponent implements IArray {
 			if (child != null && child.getSuper() != null && child.getSuper().isContainer()
 					&& (child.getSuper() instanceof LScrollContainer)) {
 				LScrollContainer scr = (LScrollContainer) child.getSuper();
-				int nx = x1 + scr.getScrollX();
-				int ny = y1 + scr.getScrollY();
+				final int nx = MathUtils.floor(x1 + scr.getBoxScrollX());
+				final int ny = MathUtils.floor(y1 + scr.getBoxScrollY());
 				if (child.intersects(nx, ny)) {
 					LComponent comp = (!child.isContainer()) ? child : ((LContainer) child).findComponent(nx, ny);
 					LContainer container = comp.getContainer();
@@ -1197,12 +1199,13 @@ public abstract class LContainer extends LComponent implements IArray {
 	public LContainer scrollBy(float x, float y) {
 		this._component_scrollX += x;
 		this._component_scrollY += y;
+		this._scrolling = x != 0f && y != 0f;
 		return this;
 	}
 
 	public LContainer scrollTo(float x, float y) {
-		this._component_scrollX = x;
-		this._component_scrollY = y;
+		scrollX(x);
+		scrollY(y);
 		return this;
 	}
 
@@ -1215,13 +1218,19 @@ public abstract class LContainer extends LComponent implements IArray {
 	}
 
 	public LContainer scrollX(float x) {
+		this._scrolling = (x != this._component_scrollX);
 		this._component_scrollX = x;
 		return this;
 	}
 
 	public LContainer scrollY(float y) {
+		this._scrolling = (y != this._component_scrollY);
 		this._component_scrollY = y;
 		return this;
+	}
+
+	public boolean isScrolling() {
+		return _scrolling;
 	}
 
 	public UIControls createUIControls() {
