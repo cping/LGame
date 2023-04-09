@@ -28,11 +28,14 @@ import loon.component.skin.SkinManager;
 import loon.events.SysTouch;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
+import loon.utils.timer.Duration;
 
 /**
  * 滚轴边角的UI
  */
 public class LScrollBar extends LComponent {
+
+	protected final static int MAX_SLIDER_SIZE = 20;
 
 	private final static float SCROLL_SCALE_VALUE = 0.07f;
 
@@ -43,21 +46,21 @@ public class LScrollBar extends LComponent {
 
 	protected LScrollContainer _scrollContainer;
 
-	protected int orientation;
+	protected float _scrollTime, _scrollAmountTimer;
 
-	protected int sliderWidth;
-
-	protected int sliderHeight;
-
-	protected int sliderX;
-
-	protected int sliderY;
-
-	protected int relativeClickX;
-
-	protected int relativeClickY;
+	protected float _velocityX, _velocityY;
 
 	protected boolean _scrolling;
+
+	protected float _autoScrollX, _autoScrollY;
+
+	protected int orientation;
+
+	protected int sliderX, sliderY;
+
+	protected int sliderWidth, sliderHeight;
+
+	protected int relativeClickX, relativeClickY;
 
 	private LTexture scrollBar;
 
@@ -70,8 +73,6 @@ public class LScrollBar extends LComponent {
 	protected int sliderMargin = 3;
 
 	protected float offsetX, offsetY;
-
-	protected final int MAX_SLIDER_SIZE = 20;
 
 	public LScrollBar(int orientation) {
 		this(orientation, 0, 0, 150, 30);
@@ -92,6 +93,8 @@ public class LScrollBar extends LComponent {
 
 	public LScrollBar(LTexture a, LTexture b, int orientation, int x, int y, int width, int height) {
 		super(x, y, width, height);
+		this._scrollTime = 1f;
+		this._scrollAmountTimer = 0f;
 		this.orientation = orientation;
 		this.scrollBar = a;
 		this.slider = b;
@@ -481,6 +484,78 @@ public class LScrollBar extends LComponent {
 				touchUp(getUITouchX(), getUITouchY());
 			}
 		}
+		if (_scrollAmountTimer > 0) {
+			float delta = MathUtils.max(Duration.toS(elapsedTime), LSystem.MIN_SECONE_SPEED_FIXED);
+			float alpha = _scrollAmountTimer / _scrollTime;
+			_autoScrollX += _velocityX * alpha * delta;
+			_autoScrollY += _velocityY * alpha * delta;
+			moveSlider(MathUtils.floor(_autoScrollX), MathUtils.floor(_autoScrollY));
+			switch (orientation) {
+			case TOP:
+			case BOTTOM:
+				if (_autoScrollX <= 0f) {
+					_scrollAmountTimer = 0f;
+				}
+				if (_autoScrollX >= getWidth()) {
+					_scrollAmountTimer = 0f;
+				}
+				break;
+			case LEFT:
+			case RIGHT:
+				if (_autoScrollY <= 0f) {
+					_scrollAmountTimer = 0f;
+				}
+				if (_autoScrollY >= getHeight()) {
+					_scrollAmountTimer = 0f;
+				}
+				break;
+			}
+			_scrollAmountTimer -= delta;
+			if (_scrollAmountTimer <= 0f) {
+				_autoScrollX = 0f;
+				_autoScrollY = 0f;
+				_velocityX = 0f;
+				_velocityY = 0f;
+			}
+		}
+	}
+
+	public boolean isAutoScroll() {
+		return _scrollAmountTimer > 0f;
+	}
+
+	public LScrollBar setScrollTime(float time) {
+		this._scrollTime = time;
+		return this;
+	}
+
+	public LScrollBar autoScroll(float time) {
+		return autoScroll(time, 1f, 1f);
+	}
+
+	public LScrollBar autoScroll(float time, float x, float y) {
+		this._scrollAmountTimer = MathUtils.max(time, 0.1f);
+		this._velocityX = MathUtils.max(x, 0.1f);
+		this._velocityY = MathUtils.max(y, 0.1f);
+		return this;
+	}
+
+	public LScrollBar setVelocityX(float x) {
+		this._velocityX = x;
+		return this;
+	}
+
+	public float getVelocityX() {
+		return _velocityX;
+	}
+
+	public LScrollBar setVelocityY(float y) {
+		this._velocityY = y;
+		return this;
+	}
+
+	public float getVelocityY() {
+		return _velocityY;
 	}
 
 	@Override
@@ -524,7 +599,9 @@ public class LScrollBar extends LComponent {
 
 	@Override
 	public void destory() {
-
+		this._scrollTime = 1f;
+		this._scrollAmountTimer = 0f;
+		this._velocityX = _velocityY = 0f;
 	}
 
 }

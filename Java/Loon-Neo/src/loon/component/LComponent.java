@@ -1376,6 +1376,10 @@ public abstract class LComponent extends LObject<LContainer>
 		return _component_visible;
 	}
 
+	public LComponent cancelFocus() {
+		return setFocusable(false);
+	}
+	
 	public LComponent enabled() {
 		this.setEnabled(true);
 		return this;

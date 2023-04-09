@@ -34,6 +34,10 @@ import loon.utils.MathUtils;
  */
 public class LScrollContainer extends LContainer {
 
+	protected float _scrollTime, _scrollAmountTimer;
+
+	protected float _velocityX, _velocityY;
+
 	private int _verticalScrollType = LScrollBar.RIGHT;
 
 	private int _horizontalScrollType = LScrollBar.BOTTOM;
@@ -113,7 +117,7 @@ public class LScrollContainer extends LContainer {
 	}
 
 	public boolean isVerticalScrolling() {
-		return (_horizontalScrollbar == null) ? false : _horizontalScrollbar._scrolling;
+		return (_verticalScrollbar == null) ? false : _verticalScrollbar._scrolling;
 	}
 
 	public boolean isHorizontalScrolling() {
@@ -278,6 +282,18 @@ public class LScrollContainer extends LContainer {
 		return this;
 	}
 
+	public boolean isScrollbarVisible() {
+		return isVerticalScrollbarVisible() && isHorizontalScrollbarVisible();
+	}
+
+	public boolean isVerticalScrollbarVisible() {
+		return (_verticalScrollbar != null) ? _verticalScrollbar.isVisible() : false;
+	}
+
+	public boolean isHorizontalScrollbarVisible() {
+		return (_horizontalScrollbar != null) ? _horizontalScrollbar.isVisible() : false;
+	}
+
 	private void fitScrollBarSize() {
 		if (_verticalScrollbar != null) {
 			_verticalScrollbar.adjustScrollbar();
@@ -313,6 +329,9 @@ public class LScrollContainer extends LContainer {
 					_horizontalScrollbar = new LScrollBar(_horizontalScrollType);
 					addScrollbar(_horizontalScrollbar);
 				}
+				if (_scrollAmountTimer > 0f) {
+					_horizontalScrollbar.autoScroll(_scrollAmountTimer, _velocityX, _velocityY);
+				}
 			}
 		} else {
 			_horizontalScrollbar = null;
@@ -326,6 +345,9 @@ public class LScrollContainer extends LContainer {
 					_verticalScrollbar = new LScrollBar(_verticalScrollType);
 					addScrollbar(_verticalScrollbar);
 				}
+			}
+			if (_scrollAmountTimer > 0f) {
+				_verticalScrollbar.autoScroll(_scrollAmountTimer, _velocityX, _velocityY);
 			}
 		} else {
 			_verticalScrollbar = null;
@@ -425,6 +447,9 @@ public class LScrollContainer extends LContainer {
 	}
 
 	public LScrollBar getVerticalScrollbar() {
+		if (_verticalScrollbar == null) {
+			scrollContainerRealSizeChanged();
+		}
 		return _verticalScrollbar;
 	}
 
@@ -434,6 +459,9 @@ public class LScrollContainer extends LContainer {
 	}
 
 	public LScrollBar getHorizontalScrollbar() {
+		if (_horizontalScrollbar == null) {
+			scrollContainerRealSizeChanged();
+		}
 		return _horizontalScrollbar;
 	}
 
@@ -524,6 +552,72 @@ public class LScrollContainer extends LContainer {
 	public LScrollContainer setHorizontalScrollType(int h) {
 		this._horizontalScrollType = h;
 		return this;
+	}
+
+	public boolean isAutoScroll() {
+		return _scrollAmountTimer > 0f;
+	}
+
+	public float getScrollTime() {
+		return _scrollTime;
+	}
+
+	public LScrollContainer setScrollTime(float time) {
+		this._scrollTime = time;
+		if (_horizontalScrollbar != null) {
+			_horizontalScrollbar.setScrollTime(time);
+		}
+		if (_verticalScrollbar != null) {
+			_verticalScrollbar.setScrollTime(time);
+		}
+		return this;
+	}
+
+	public LScrollContainer autoScroll(float time) {
+		return autoScroll(time, 1f, 1f);
+	}
+
+	public LScrollContainer autoScroll(float time, float x, float y) {
+		this._scrollAmountTimer = MathUtils.max(time, 0.1f);
+		this._velocityX = MathUtils.max(x, 0.1f);
+		this._velocityY = MathUtils.max(y, 0.1f);
+		if (_horizontalScrollbar != null) {
+			_horizontalScrollbar.autoScroll(time, x, y);
+		}
+		if (_verticalScrollbar != null) {
+			_verticalScrollbar.autoScroll(time, x, y);
+		}
+		return this;
+	}
+
+	public LScrollContainer setVelocityX(float x) {
+		this._velocityX = x;
+		if (_horizontalScrollbar != null) {
+			_horizontalScrollbar.setVelocityX(x);
+		}
+		if (_verticalScrollbar != null) {
+			_verticalScrollbar.setVelocityX(x);
+		}
+		return this;
+	}
+
+	public float getVelocityX() {
+		return _velocityX;
+	}
+
+	public LScrollContainer setVelocityY(float y) {
+		this._velocityY = y;
+		if (_horizontalScrollbar != null) {
+			_horizontalScrollbar.setVelocityY(y);
+		}
+		if (_verticalScrollbar != null) {
+			_verticalScrollbar.setVelocityY(y);
+		}
+		return this;
+	}
+
+	public float getVelocityY() {
+		return _velocityY;
 	}
 
 	@Override
