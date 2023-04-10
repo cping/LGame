@@ -69,164 +69,10 @@ import loon.utils.StringUtils;
 public abstract class LComponent extends LObject<LContainer>
 		implements Flip<LComponent>, CollisionObject, Visible, ActionBind, XY, BoxSize, LRelease {
 
-	// 充当卓面容器
-	protected boolean desktopContainer;
-
-	// 默认锁定当前组件(否则可以拖动)
-	protected boolean locked = true;
-
-	public boolean isLocked() {
-		return locked;
-	}
-
-	public LComponent setLocked(boolean locked) {
-		this.locked = locked;
-		return this;
-	}
-
-	public boolean isDragLocked() {
-		return isLocked();
-	}
-
-	public LComponent setDragLocked(boolean locked) {
-		return setLocked(locked);
-	}
-
-	public LComponent dragLocked() {
-		return setDragLocked(true);
-	}
-
-	public LComponent dragUnlocked() {
-		return setDragLocked(false);
-	}
-
-	// 组件内部变量, 用于锁定当前组件的触屏（鼠标）与键盘事件
-	protected boolean _touchLocked = false, _keyLocked = false;
-
-	public void setTouchLocked(boolean locked) {
-		this._touchLocked = locked;
-	}
-
-	public boolean isTouchLocked() {
-		return this._touchLocked;
-	}
-
-	public void setKeyLocked(boolean locked) {
-		this._keyLocked = locked;
-	}
-
-	public boolean isKeyLocked() {
-		return this._keyLocked;
-	}
-
 	public static interface CallListener {
 
 		public void act(long elapsedTime);
 
-	}
-
-	// 点击事件监听
-	public ClickListener Click;
-
-	private TouchedClick _touchListener;
-
-	private final TouchedClick makeTouched() {
-		if (_touchListener == null) {
-			_touchListener = new TouchedClick();
-		}
-		if (Click != null) {
-			_touchListener.addClickListener(Click);
-		}
-		this.Click = _touchListener;
-		return _touchListener;
-	}
-
-	public LComponent touchedClear() {
-		if (_touchListener != null) {
-			_touchListener.clear();
-		}
-		_touchListener = null;
-		return this;
-	}
-
-	public boolean isTouchedEnabled() {
-		if (_touchListener != null) {
-			return _touchListener.isEnabled();
-		}
-		return false;
-	}
-
-	public void setTouchedEnabled(boolean e) {
-		if (_touchListener != null) {
-			_touchListener.setEnabled(e);
-		}
-	}
-
-	public LComponent all(Touched t) {
-		makeTouched().setAllTouch(t);
-		return this;
-	}
-
-	public LComponent down(Touched t) {
-		makeTouched().setDownTouch(t);
-		return this;
-	}
-
-	public LComponent up(Touched t) {
-		makeTouched().setUpTouch(t);
-		return this;
-	}
-
-	public LComponent drag(Touched t) {
-		makeTouched().setDragTouch(t);
-		return this;
-	}
-
-	public LComponent A(ClickListener c) {
-		return addClickListener(c);
-	}
-
-	public LComponent addClickListener(ClickListener c) {
-		this.Click = c;
-		makeTouched();
-		return this;
-	}
-
-	public LComponent S(ClickListener c) {
-		return SetClick(c);
-	}
-
-	public LComponent SetClick(ClickListener c) {
-		this.Click = c;
-		return this;
-	}
-
-	public ClickListener getClick() {
-		return Click;
-	}
-
-	// 循环事件监听
-	public CallListener Call;
-
-	public LComponent SC(CallListener u) {
-		SetCall(u);
-		return this;
-	}
-
-	public LComponent SetCall(CallListener u) {
-		this.Call = u;
-		return this;
-	}
-
-	public CallListener getCall() {
-		return Call;
-	}
-
-	public LComponent clearListener() {
-		this.Call = null;
-		this.Click = null;
-		this._touchListener = null;
-		return this;
 	}
 
 	private Origin _origin = Origin.CENTER;
@@ -299,6 +145,23 @@ public abstract class LComponent extends LObject<LContainer>
 	protected LayoutConstraints _rootConstraints = null;
 
 	protected SysInput input;
+
+	// 点击事件监听
+	protected ClickListener _click;
+
+	// 循环事件监听
+	protected CallListener _call;
+
+	private TouchedClick _touchListener;
+
+	// 充当卓面容器
+	protected boolean desktopContainer;
+
+	// 默认锁定当前组件(否则可以拖动)
+	protected boolean locked = true;
+
+	// 组件内部变量, 用于锁定当前组件的触屏（鼠标）与键盘事件
+	private boolean _touchLocked = false, _keyLocked = false;
 
 	public LComponent(Vector2f position, Vector2f size) {
 		this(position.x(), position.y(), size.x(), size.y());
@@ -423,8 +286,8 @@ public abstract class LComponent extends LObject<LContainer>
 		if (_objectSuper != null) {
 			validatePosition();
 		}
-		if (Call != null) {
-			Call.act(elapsedTime);
+		if (_call != null) {
+			_call.act(elapsedTime);
 		}
 		process(elapsedTime);
 	}
@@ -835,9 +698,9 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public void doClick() {
-		if (Click != null) {
+		if (_click != null) {
 			try {
-				Click.DoClick(this);
+				_click.DoClick(this);
 			} catch (Throwable cause) {
 				LSystem.error("Component doClick() exception", cause);
 			}
@@ -845,9 +708,9 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public void downClick() {
-		if (Click != null) {
+		if (_click != null) {
 			try {
-				Click.DownClick(this, getUITouchX(), getUITouchY());
+				_click.DownClick(this, getUITouchX(), getUITouchY());
 			} catch (Throwable cause) {
 				LSystem.error("Component downClick() exception", cause);
 			}
@@ -855,9 +718,9 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public void dragClick() {
-		if (Click != null) {
+		if (_click != null) {
 			try {
-				Click.DragClick(this, getUITouchX(), getUITouchY());
+				_click.DragClick(this, getUITouchX(), getUITouchY());
 			} catch (Throwable cause) {
 				LSystem.error("Component dragClick() exception", cause);
 			}
@@ -865,9 +728,9 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public void upClick() {
-		if (Click != null) {
+		if (_click != null) {
 			try {
-				Click.UpClick(this, getUITouchX(), getUITouchY());
+				_click.UpClick(this, getUITouchX(), getUITouchY());
 			} catch (Throwable cause) {
 				LSystem.error("Component upClick() exception", cause);
 			}
@@ -1785,6 +1648,154 @@ public abstract class LComponent extends LObject<LContainer>
 		return this;
 	}
 
+	public boolean isLocked() {
+		return locked;
+	}
+
+	public LComponent setLocked(boolean locked) {
+		this.locked = locked;
+		return this;
+	}
+
+	public boolean isDragLocked() {
+		return isLocked();
+	}
+
+	public LComponent setDragLocked(boolean locked) {
+		return setLocked(locked);
+	}
+
+	public LComponent dragLocked() {
+		return setDragLocked(true);
+	}
+
+	public LComponent dragUnlocked() {
+		return setDragLocked(false);
+	}
+
+	public LComponent setTouchLocked(boolean locked) {
+		this._touchLocked = locked;
+		return this;
+	}
+
+	public boolean isTouchLocked() {
+		return this._touchLocked;
+	}
+
+	public LComponent setKeyLocked(boolean locked) {
+		this._keyLocked = locked;
+		return this;
+	}
+
+	public boolean isKeyLocked() {
+		return this._keyLocked;
+	}
+
+	private final TouchedClick makeTouched() {
+		if (_touchListener == null) {
+			_touchListener = new TouchedClick();
+		}
+		if (_click != null) {
+			_touchListener.addClickListener(_click);
+		}
+		this._click = _touchListener;
+		return _touchListener;
+	}
+
+	public LComponent touchedClear() {
+		if (_touchListener != null) {
+			_touchListener.clear();
+		}
+		_touchListener = null;
+		return this;
+	}
+
+	public boolean isTouchedEnabled() {
+		if (_touchListener != null) {
+			return _touchListener.isEnabled();
+		}
+		return false;
+	}
+
+	public LComponent setTouchedEnabled(boolean e) {
+		if (_touchListener != null) {
+			_touchListener.setEnabled(e);
+		}
+		return this;
+	}
+
+	public LComponent all(Touched t) {
+		makeTouched().setAllTouch(t);
+		return this;
+	}
+
+	public LComponent down(Touched t) {
+		makeTouched().setDownTouch(t);
+		return this;
+	}
+
+	public LComponent up(Touched t) {
+		makeTouched().setUpTouch(t);
+		return this;
+	}
+
+	public LComponent drag(Touched t) {
+		makeTouched().setDragTouch(t);
+		return this;
+	}
+
+	public LComponent A(ClickListener c) {
+		return addClickListener(c);
+	}
+
+	public LComponent addClickListener(ClickListener c) {
+		this._click = c;
+		makeTouched();
+		return this;
+	}
+
+	public LComponent S(ClickListener c) {
+		return SetClick(c);
+	}
+
+	public LComponent SetClick(ClickListener c) {
+		this._click = c;
+		return this;
+	}
+
+	public ClickListener getClick() {
+		return _click;
+	}
+
+	public LComponent SC(CallListener u) {
+		SetCall(u);
+		return this;
+	}
+
+	public LComponent SetCall(CallListener u) {
+		this._call = u;
+		return this;
+	}
+
+	public CallListener getCall() {
+		return _call;
+	}
+
+	public LComponent clearListener() {
+		this._call = null;
+		this._click = null;
+		this._touchListener = null;
+		return this;
+	}
+
+	public boolean isAllowTouch() {
+		return !_touchLocked && _component_enabled;
+	}
+
+	public boolean isAllowKey() {
+		return !_keyLocked && _component_enabled;
+	}
+
 	@Override
 	public void close() {
 		if (!_component_autoDestroy) {
@@ -1822,8 +1833,8 @@ public abstract class LComponent extends LObject<LContainer>
 		this._component_visible = false;
 		this._touchListener = null;
 		this._resizeListener = null;
+		this._click = null;
 		this.input = null;
-		this.Click = null;
 		setState(State.DISPOSED);
 		removeActionEvents(this);
 		destory();

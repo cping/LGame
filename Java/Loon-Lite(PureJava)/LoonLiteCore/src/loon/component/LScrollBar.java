@@ -54,6 +54,10 @@ public class LScrollBar extends LComponent {
 
 	protected float _autoScrollX, _autoScrollY;
 
+	protected float _minAutoScrollX, _minAutoScrollY;
+
+	protected float _maxAutoScrollX, _maxAutoScrollY;
+
 	protected int orientation;
 
 	protected int sliderX, sliderY;
@@ -95,6 +99,8 @@ public class LScrollBar extends LComponent {
 		super(x, y, width, height);
 		this._scrollTime = 1f;
 		this._scrollAmountTimer = 0f;
+		this._minAutoScrollX = _minAutoScrollY = -1f;
+		this._maxAutoScrollX = _maxAutoScrollY = -1f;
 		this.orientation = orientation;
 		this.scrollBar = a;
 		this.slider = b;
@@ -470,21 +476,35 @@ public class LScrollBar extends LComponent {
 
 	@Override
 	public void process(final long elapsedTime) {
-		if (SysTouch.isDrag()) {
-			if (isPointInUI(getTouchX(), getTouchY())) {
-				touchDragged(getUITouchX(), getUITouchY());
+		if (isAllowTouch()) {
+			if (SysTouch.isDrag()) {
+				if (isPointInUI(getTouchX(), getTouchY())) {
+					touchDragged(getUITouchX(), getUITouchY());
+				}
 			}
-		}
-		if (SysTouch.isDown()) {
-			if (isPointInUI(getTouchX(), getTouchY())) {
-				touchDown(getUITouchX(), getUITouchY());
-			}
-		} else if (SysTouch.isDown()) {
-			if (isPointInUI(getTouchX(), getTouchY())) {
-				touchUp(getUITouchX(), getUITouchY());
+			if (SysTouch.isDown()) {
+				if (isPointInUI(getTouchX(), getTouchY())) {
+					touchDown(getUITouchX(), getUITouchY());
+				}
+			} else if (SysTouch.isUp()) {
+				if (isPointInUI(getTouchX(), getTouchY())) {
+					touchUp(getUITouchX(), getUITouchY());
+				}
 			}
 		}
 		if (_scrollAmountTimer > 0) {
+			if (_minAutoScrollX == -1f) {
+				_minAutoScrollX = 0f;
+			}
+			if (_minAutoScrollY == -1f) {
+				_minAutoScrollY = 0f;
+			}
+			if (_maxAutoScrollX == -1f) {
+				_maxAutoScrollX = getWidth();
+			}
+			if (_maxAutoScrollY == -1f) {
+				_maxAutoScrollY = getHeight();
+			}
 			float delta = MathUtils.max(Duration.toS(elapsedTime), LSystem.MIN_SECONE_SPEED_FIXED);
 			float alpha = _scrollAmountTimer / _scrollTime;
 			_autoScrollX += _velocityX * alpha * delta;
@@ -493,19 +513,19 @@ public class LScrollBar extends LComponent {
 			switch (orientation) {
 			case TOP:
 			case BOTTOM:
-				if (_autoScrollX <= 0f) {
+				if (_autoScrollX <= _minAutoScrollX) {
 					_scrollAmountTimer = 0f;
 				}
-				if (_autoScrollX >= getWidth()) {
+				if (_autoScrollX >= _maxAutoScrollX) {
 					_scrollAmountTimer = 0f;
 				}
 				break;
 			case LEFT:
 			case RIGHT:
-				if (_autoScrollY <= 0f) {
+				if (_autoScrollY <= _minAutoScrollY) {
 					_scrollAmountTimer = 0f;
 				}
-				if (_autoScrollY >= getHeight()) {
+				if (_autoScrollY >= _maxAutoScrollY) {
 					_scrollAmountTimer = 0f;
 				}
 				break;
@@ -560,6 +580,9 @@ public class LScrollBar extends LComponent {
 
 	@Override
 	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
+		if (!_component_visible) {
+			return;
+		}
 		if (scrollBar == null || slider == null) {
 			g.fillRect(x - 1 + offsetX, y - 1 + offsetY, getWidth() + 2, getHeight() + 2, scrollBarColor);
 			g.fillRect(sliderX - 1 + offsetX, sliderY - 1 + offsetY, sliderWidth, sliderHeight, sliderColor);
@@ -592,6 +615,71 @@ public class LScrollBar extends LComponent {
 		return this;
 	}
 
+	public LScrollBar setLimitAutoScroll(float x, float y, float w, float h) {
+		this.setMinAutoScrollX(x);
+		this.setMinAutoScrollY(y);
+		this.setMaxAutoScrollX(w);
+		this.setMaxAutoScrollY(h);
+		return this;
+	}
+
+	public float getMinAutoScrollX() {
+		return _minAutoScrollX;
+	}
+
+	public LScrollBar setMinAutoScrollX(float x) {
+		if (x == -1) {
+			return this;
+		}
+		this._minAutoScrollX = MathUtils.max(0f, x);
+		return this;
+	}
+
+	public float getMinAutoScrollY() {
+		return _minAutoScrollY;
+	}
+
+	public LScrollBar setMinAutoScrollY(float y) {
+		if (y == -1) {
+			return this;
+		}
+		this._minAutoScrollY = MathUtils.max(0f, y);
+		return this;
+	}
+
+	public float getMaxAutoScrollX() {
+		return _maxAutoScrollX;
+	}
+
+	public LScrollBar setMaxAutoScrollX(float x) {
+		if (x == -1) {
+			return this;
+		}
+		this._maxAutoScrollX = MathUtils.min(getWidth(), x);
+		return this;
+	}
+
+	public float getMaxAutoScrollY() {
+		return _maxAutoScrollY;
+	}
+
+	public LScrollBar setMaxAutoScrollY(float y) {
+		if (y == -1) {
+			return this;
+		}
+		this._maxAutoScrollY = MathUtils.min(getHeight(), y);
+		return this;
+	}
+
+	public LScrollBar resetAutoScroll() {
+		this._scrollTime = 1f;
+		this._scrollAmountTimer = 0f;
+		this._velocityX = _velocityY = -1f;
+		this._minAutoScrollX = _minAutoScrollY = -1f;
+		this._maxAutoScrollX = _maxAutoScrollY = -1f;
+		return this;
+	}
+
 	@Override
 	public String getUIName() {
 		return "ScrollBar";
@@ -599,9 +687,6 @@ public class LScrollBar extends LComponent {
 
 	@Override
 	public void destory() {
-		this._scrollTime = 1f;
-		this._scrollAmountTimer = 0f;
-		this._velocityX = _velocityY = 0f;
 	}
 
 }

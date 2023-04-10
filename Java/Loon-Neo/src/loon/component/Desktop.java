@@ -446,7 +446,7 @@ public class Desktop implements Visible, LRelease {
 	public Desktop keyPressed(GameKey key) {
 		if (this.contentPane != null && this.contentPane != this.selectedComponent) {
 			this.contentPane.keyPressed(key);
-		} else if (this.selectedComponent != null && !this.selectedComponent._keyLocked) {
+		} else if (this.selectedComponent != null && this.selectedComponent.isAllowKey()) {
 			this.selectedComponent.keyPressed(key);
 		}
 		return this;
@@ -455,7 +455,7 @@ public class Desktop implements Visible, LRelease {
 	public Desktop keyReleased(GameKey key) {
 		if (this.contentPane != null && this.contentPane != this.selectedComponent) {
 			this.contentPane.keyReleased(key);
-		} else if (this.selectedComponent != null && !this.selectedComponent._keyLocked) {
+		} else if (this.selectedComponent != null && this.selectedComponent.isAllowKey()) {
 			this.selectedComponent.keyReleased(key);
 		}
 		return this;
@@ -478,7 +478,7 @@ public class Desktop implements Visible, LRelease {
 		// 鼠标滑动
 		this.processTouchMotionEvent();
 		// 鼠标事件
-		if (this.hoverComponent != null && !this.hoverComponent._touchLocked && this.hoverComponent.isEnabled()) {
+		if (this.hoverComponent != null && hoverComponent.isAllowTouch()) {
 			this.processTouchEvent();
 		}
 		return this;
@@ -489,8 +489,7 @@ public class Desktop implements Visible, LRelease {
 	 */
 	public Desktop processKeys() {
 		// 键盘事件
-		if (this.selectedComponent != null && !this.selectedComponent._keyLocked
-				&& this.selectedComponent.isEnabled()) {
+		if (this.selectedComponent != null && this.selectedComponent.isAllowKey()) {
 			this.processKeyEvent();
 		}
 		return this;
@@ -501,7 +500,7 @@ public class Desktop implements Visible, LRelease {
 	 * 
 	 */
 	private void processTouchMotionEvent() {
-		if (this.hoverComponent != null && !this.hoverComponent._touchLocked && this.hoverComponent.isEnabled()
+		if (this.hoverComponent != null && hoverComponent.isAllowTouch()
 				&& this.input.isMoving()) {
 			if (this.input.getTouchDX() != 0 || this.input.getTouchDY() != 0 || SysTouch.getDX() != 0
 					|| SysTouch.getDY() != 0) {
@@ -525,7 +524,7 @@ public class Desktop implements Visible, LRelease {
 			if (SysTouch.getButton() != -1) {
 				comp = this.findComponent(touchX, touchY);
 			}
-			if (comp != null && !comp._touchLocked) {
+			if (comp != null && comp.isAllowTouch()) {
 				if (touchDx != 0 || touchDy != 0 || SysTouch.getDX() != 0 || SysTouch.getDY() != 0) {
 					comp.processTouchMoved();
 					if (tooltip != null) {
@@ -543,7 +542,7 @@ public class Desktop implements Visible, LRelease {
 					if (SysTouch.getButton() != -1) {
 						comp.processTouchEntered();
 					}
-				} else if (comp != this.hoverComponent && !this.hoverComponent._touchLocked) {
+				} else if (comp != this.hoverComponent && this.hoverComponent.isAllowTouch()) {
 					if (tooltip != null) {
 						this.tooltip.setToolTipComponent(comp);
 					}
@@ -557,7 +556,7 @@ public class Desktop implements Visible, LRelease {
 				if (tooltip != null) {
 					this.tooltip.setToolTipComponent(null);
 				}
-				if (this.hoverComponent != null && !this.hoverComponent._touchLocked) {
+				if (this.hoverComponent != null && this.hoverComponent.isAllowTouch()) {
 					this.hoverComponent.processTouchExited();
 				}
 			}
@@ -596,11 +595,11 @@ public class Desktop implements Visible, LRelease {
 				this.tooltip._reshow = 0;
 				this.tooltip._initialFlag = 0;
 			}
-			if (!_clicked && this.hoverComponent != null && !this.hoverComponent._touchLocked) {
+			if (!_clicked && this.hoverComponent != null && this.hoverComponent.isAllowTouch()) {
 				this.hoverComponent.processTouchPressed();
 			}
 			this.clickComponent[0] = this.hoverComponent;
-			if (this.hoverComponent != null && !this.hoverComponent._touchLocked && this.hoverComponent.isFocusable()) {
+			if (this.hoverComponent != null && this.hoverComponent.isAllowTouch() && this.hoverComponent.isFocusable()) {
 				if ((pressed == SysTouch.TOUCH_DOWN || pressed == SysTouch.TOUCH_UP)
 						&& this.hoverComponent != this.selectedComponent) {
 					this.selectComponent(this.hoverComponent);
@@ -608,11 +607,11 @@ public class Desktop implements Visible, LRelease {
 			}
 		}
 		if (released > Screen.NO_BUTTON) {
-			if (!_clicked && this.hoverComponent != null && !this.hoverComponent._touchLocked) {
+			if (!_clicked && this.hoverComponent != null && this.hoverComponent.isAllowTouch()) {
 				this.hoverComponent.processTouchReleased();
 				// 当释放鼠标时，点击事件生效
 				if (this.clickComponent[0] == this.hoverComponent && this.hoverComponent != null
-						&& !this.hoverComponent._touchLocked) {
+						&& this.hoverComponent.isAllowTouch()) {
 					this.hoverComponent.processTouchClicked();
 				}
 			}
@@ -625,11 +624,11 @@ public class Desktop implements Visible, LRelease {
 	 * 
 	 */
 	private void processKeyEvent() {
-		if (this.selectedComponent != null && !this.selectedComponent._keyLocked
+		if (this.selectedComponent != null && this.selectedComponent.isAllowKey()
 				&& this.input.getKeyPressed() != Screen.NO_KEY) {
 			this.selectedComponent.keyPressed();
 		}
-		if (this.selectedComponent != null && !this.selectedComponent._keyLocked
+		if (this.selectedComponent != null && this.selectedComponent.isAllowKey()
 				&& this.input.getKeyReleased() != Screen.NO_KEY && this.selectedComponent != null) {
 			this.selectedComponent.processKeyReleased();
 		}

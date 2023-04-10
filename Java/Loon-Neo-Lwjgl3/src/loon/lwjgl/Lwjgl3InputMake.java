@@ -37,20 +37,15 @@ public class Lwjgl3InputMake extends Lwjgl3Input {
 	private final long window;
 
 	private int toModifierFlags(int mods) {
-		return modifierFlags((mods & GLFW_MOD_ALT) != 0,
-				(mods & GLFW_MOD_CONTROL) != 0, (mods & GLFW_MOD_SUPER) != 0,
+		return modifierFlags((mods & GLFW_MOD_ALT) != 0, (mods & GLFW_MOD_CONTROL) != 0, (mods & GLFW_MOD_SUPER) != 0,
 				(mods & GLFW_MOD_SHIFT) != 0);
 	}
 
 	private int toModifierFlags() {
-		return modifierFlags(isKeyDown(GLFW_KEY_LEFT_ALT)
-				|| isKeyDown(GLFW_KEY_LEFT_ALT),
-				isKeyDown(GLFW_KEY_LEFT_CONTROL)
-						|| isKeyDown(GLFW_KEY_RIGHT_CONTROL),
-				isKeyDown(GLFW_KEY_LEFT_SUPER)
-						|| isKeyDown(GLFW_KEY_RIGHT_SUPER),
-				isKeyDown(GLFW_KEY_LEFT_SHIFT)
-						|| isKeyDown(GLFW_KEY_RIGHT_SHIFT));
+		return modifierFlags(isKeyDown(GLFW_KEY_LEFT_ALT) || isKeyDown(GLFW_KEY_LEFT_ALT),
+				isKeyDown(GLFW_KEY_LEFT_CONTROL) || isKeyDown(GLFW_KEY_RIGHT_CONTROL),
+				isKeyDown(GLFW_KEY_LEFT_SUPER) || isKeyDown(GLFW_KEY_RIGHT_SUPER),
+				isKeyDown(GLFW_KEY_LEFT_SHIFT) || isKeyDown(GLFW_KEY_RIGHT_SHIFT));
 	}
 
 	private boolean isKeyDown(int key) {
@@ -65,30 +60,31 @@ public class Lwjgl3InputMake extends Lwjgl3Input {
 			emitMouseButton(time, x, y, -1, false, toModifierFlags());
 		}
 	};
+	
 	private final GLFWKeyCallback keyCallback = new GLFWKeyCallback() {
 		@Override
-		public void invoke(long window, int keyCode, int scancode, int action,
-				int mods) {
+		public void invoke(long window, int keyCode, int scancode, int action, int mods) {
 			double time = System.currentTimeMillis();
 			boolean pressed = action == GLFW_PRESS || action == GLFW_REPEAT;
-			emitKeyPress(time, keyForCode(keyCode), (char) scancode, pressed,
-					toModifierFlags(mods));
+			int codepoint = keyCode;
+			if ((codepoint & 0xff00) == 0xf700) {
+				return;
+			}
+			emitKeyPress(time, keyForCode(keyCode), (char) codepoint, pressed, toModifierFlags(mods));
 		}
 	};
+	
 	private final GLFWMouseButtonCallback mouseBtnCallback = new GLFWMouseButtonCallback() {
 		@Override
 		public void invoke(long handle, int btnIdx, int action, int mods) {
 			double time = System.currentTimeMillis();
 			Vector2f m = queryCursorPosition();
 			int id = getButton(btnIdx);
-			emitMouseButton(time, m.x, m.y, id, action == GLFW_PRESS,
-					toModifierFlags(mods));
+			emitMouseButton(time, m.x, m.y, id, action == GLFW_PRESS, toModifierFlags(mods));
 		}
 	};
-	private DoubleBuffer xpos = BufferUtils.createByteBuffer(8)
-			.asDoubleBuffer();
-	private DoubleBuffer ypos = BufferUtils.createByteBuffer(8)
-			.asDoubleBuffer();
+	private DoubleBuffer xpos = BufferUtils.createByteBuffer(8).asDoubleBuffer();
+	private DoubleBuffer ypos = BufferUtils.createByteBuffer(8).asDoubleBuffer();
 	private Vector2f cpos = new Vector2f();
 
 	private Vector2f queryCursorPosition() {
@@ -119,8 +115,7 @@ public class Lwjgl3InputMake extends Lwjgl3Input {
 
 	@Override
 	public void setMouseLocked(boolean locked) {
-		glfwSetInputMode(window, GLFW_CURSOR, locked ? GLFW_CURSOR_DISABLED
-				: GLFW_CURSOR_NORMAL);
+		glfwSetInputMode(window, GLFW_CURSOR, locked ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
 	}
 
 	@Override
@@ -286,10 +281,10 @@ public class Lwjgl3InputMake extends Lwjgl3Input {
 			return SysKey.INSERT;
 		case GLFW_KEY_DELETE:
 			return SysKey.DEL;
-			// case GLFW_KEY_CLEAR:
-			// return SysKey.CLEAR;
-			// case GLFW_KEY_POWER:
-			// return SysKey.POWER;
+		// case GLFW_KEY_CLEAR:
+		// return SysKey.CLEAR;
+		// case GLFW_KEY_POWER:
+		// return SysKey.POWER;
 		}
 		return keyCode;
 	}

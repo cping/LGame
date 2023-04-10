@@ -34,9 +34,13 @@ import loon.utils.MathUtils;
  */
 public class LScrollContainer extends LContainer {
 
-	protected float _scrollTime, _scrollAmountTimer;
+	private float _scrollTime, _scrollAmountTimer;
 
-	protected float _velocityX, _velocityY;
+	private float _velocityX, _velocityY;
+
+	private float _minAutoScrollX, _minAutoScrollY;
+
+	private float _maxAutoScrollX, _maxAutoScrollY;
 
 	private int _verticalScrollType = LScrollBar.RIGHT;
 
@@ -45,6 +49,12 @@ public class LScrollContainer extends LContainer {
 	private boolean _scrollX;
 
 	private boolean _scrollY;
+
+	private boolean _visibleBackground;
+
+	private boolean _verticalVisible;
+
+	private boolean _horizontalVisible;
 
 	private float _boxScrollX;
 
@@ -78,7 +88,11 @@ public class LScrollContainer extends LContainer {
 		super(x, y, w, h);
 		this.onlyBackground(texture);
 		this.setElastic(true);
+		this._minAutoScrollX = _minAutoScrollY = -1f;
+		this._maxAutoScrollX = _maxAutoScrollY = -1f;
 		this._scrollX = this._scrollY = true;
+		this._visibleBackground = true;
+		this._verticalVisible = this._horizontalVisible = true;
 	}
 
 	@Override
@@ -93,11 +107,13 @@ public class LScrollContainer extends LContainer {
 		synchronized (childs) {
 			try {
 				g.saveTx();
-				if (_background == null) {
-					g.fillRect(getScreenX(), getScreenY(), getWidth(), getHeight(),
-							_component_baseColor == null ? LColor.gray : _component_baseColor.mul(LColor.gray));
-				} else {
-					g.draw(_background, getScreenX(), getScreenY(), getWidth(), getHeight(), _component_baseColor);
+				if (_visibleBackground) {
+					if (_background == null) {
+						g.fillRect(getScreenX(), getScreenY(), getWidth(), getHeight(),
+								_component_baseColor == null ? LColor.gray : _component_baseColor.mul(LColor.gray));
+					} else {
+						g.draw(_background, getScreenX(), getScreenY(), getWidth(), getHeight(), _component_baseColor);
+					}
 				}
 				g.translate(-_boxScrollX, -_boxScrollY);
 				super.createUI(g);
@@ -262,23 +278,25 @@ public class LScrollContainer extends LContainer {
 		fitScrollBarSize();
 	}
 
-	public LScrollContainer setScrollVerticalbar(boolean visible) {
+	public LScrollContainer setScrollVerticalbarVisible(boolean visible) {
 		if (_verticalScrollbar != null) {
 			_verticalScrollbar.setVisible(visible);
 		}
+		_verticalVisible = visible;
 		return this;
 	}
 
-	public LScrollContainer setScrollHorizontalbar(boolean visible) {
+	public LScrollContainer setScrollHorizontalbarVisible(boolean visible) {
 		if (_horizontalScrollbar != null) {
 			_horizontalScrollbar.setVisible(visible);
 		}
+		_horizontalVisible = visible;
 		return this;
 	}
 
 	public LScrollContainer setScrollbarsVisible(boolean visible) {
-		setScrollVerticalbar(visible);
-		setScrollHorizontalbar(visible);
+		setScrollVerticalbarVisible(visible);
+		setScrollHorizontalbarVisible(visible);
 		return this;
 	}
 
@@ -287,11 +305,11 @@ public class LScrollContainer extends LContainer {
 	}
 
 	public boolean isVerticalScrollbarVisible() {
-		return (_verticalScrollbar != null) ? _verticalScrollbar.isVisible() : false;
+		return (_verticalScrollbar != null) ? _verticalScrollbar.isVisible() : _verticalVisible;
 	}
 
 	public boolean isHorizontalScrollbarVisible() {
-		return (_horizontalScrollbar != null) ? _horizontalScrollbar.isVisible() : false;
+		return (_horizontalScrollbar != null) ? _horizontalScrollbar.isVisible() : _horizontalVisible;
 	}
 
 	private void fitScrollBarSize() {
@@ -332,6 +350,9 @@ public class LScrollContainer extends LContainer {
 				if (_scrollAmountTimer > 0f) {
 					_horizontalScrollbar.autoScroll(_scrollAmountTimer, _velocityX, _velocityY);
 				}
+				_horizontalScrollbar.setLimitAutoScroll(_minAutoScrollX, _minAutoScrollY, _maxAutoScrollX,
+						_maxAutoScrollY);
+				_horizontalScrollbar.setVisible(_horizontalVisible);
 			}
 		} else {
 			_horizontalScrollbar = null;
@@ -349,6 +370,8 @@ public class LScrollContainer extends LContainer {
 			if (_scrollAmountTimer > 0f) {
 				_verticalScrollbar.autoScroll(_scrollAmountTimer, _velocityX, _velocityY);
 			}
+			_verticalScrollbar.setLimitAutoScroll(_minAutoScrollX, _minAutoScrollY, _maxAutoScrollX, _maxAutoScrollY);
+			_verticalScrollbar.setVisible(_verticalVisible);
 		} else {
 			_verticalScrollbar = null;
 		}
@@ -416,10 +439,14 @@ public class LScrollContainer extends LContainer {
 	@Override
 	protected void processTouchDragged() {
 		if (_verticalScrollbar != null) {
-			_verticalScrollbar.processTouchDragged();
+			if (_verticalScrollbar.isAllowTouch()) {
+				_verticalScrollbar.processTouchDragged();
+			}
 		}
 		if (_horizontalScrollbar != null) {
-			_horizontalScrollbar.processTouchDragged();
+			if (_horizontalScrollbar.isAllowTouch()) {
+				_horizontalScrollbar.processTouchDragged();
+			}
 		}
 		super.processTouchDragged();
 	}
@@ -427,21 +454,29 @@ public class LScrollContainer extends LContainer {
 	@Override
 	protected void processTouchPressed() {
 		if (_verticalScrollbar != null) {
-			_verticalScrollbar.processTouchPressed();
+			if (_verticalScrollbar.isAllowTouch()) {
+				_verticalScrollbar.processTouchPressed();
+			}
 		}
 		if (_horizontalScrollbar != null) {
-			_horizontalScrollbar.processTouchPressed();
+			if (_horizontalScrollbar.isAllowTouch()) {
+				_horizontalScrollbar.processTouchPressed();
+			}
 		}
-		super.processKeyPressed();
+		super.processTouchPressed();
 	}
 
 	@Override
 	protected void processTouchReleased() {
 		if (_verticalScrollbar != null) {
-			_verticalScrollbar.processTouchReleased();
+			if (_verticalScrollbar.isAllowTouch()) {
+				_verticalScrollbar.processTouchReleased();
+			}
 		}
 		if (_horizontalScrollbar != null) {
-			_horizontalScrollbar.processTouchReleased();
+			if (_horizontalScrollbar.isAllowTouch()) {
+				_horizontalScrollbar.processTouchReleased();
+			}
 		}
 		super.processTouchReleased();
 	}
@@ -618,6 +653,80 @@ public class LScrollContainer extends LContainer {
 
 	public float getVelocityY() {
 		return _velocityY;
+	}
+
+	public LScrollContainer setLimitAutoScroll(float x, float y, float w, float h) {
+		this.setMinAutoScrollX(x);
+		this.setMinAutoScrollY(y);
+		this.setMaxAutoScrollX(w);
+		this.setMaxAutoScrollY(h);
+		return this;
+	}
+
+	public float getMinAutoScrollX() {
+		return _minAutoScrollX;
+	}
+
+	public LScrollContainer setMinAutoScrollX(float x) {
+		if (x == -1) {
+			return this;
+		}
+		this._minAutoScrollX = MathUtils.max(0f, x);
+		return this;
+	}
+
+	public float getMinAutoScrollY() {
+		return _minAutoScrollY;
+	}
+
+	public LScrollContainer setMinAutoScrollY(float y) {
+		if (y == -1) {
+			return this;
+		}
+		this._minAutoScrollY = MathUtils.max(0f, y);
+		return this;
+	}
+
+	public float getMaxAutoScrollX() {
+		return _maxAutoScrollX;
+	}
+
+	public LScrollContainer setMaxAutoScrollX(float x) {
+		if (x == -1) {
+			return this;
+		}
+		this._maxAutoScrollX = MathUtils.min(getWidth(), x);
+		return this;
+	}
+
+	public float getMaxAutoScrollY() {
+		return _maxAutoScrollY;
+	}
+
+	public LScrollContainer setMaxAutoScrollY(float y) {
+		if (y == -1) {
+			return this;
+		}
+		this._maxAutoScrollY = MathUtils.min(getHeight(), y);
+		return this;
+	}
+
+	public boolean isVisibleBackground() {
+		return _visibleBackground;
+	}
+
+	public LScrollContainer setVisibleBackground(boolean v) {
+		this._visibleBackground = v;
+		return this;
+	}
+
+	public LScrollContainer resetAutoScroll() {
+		this._scrollTime = 1f;
+		this._scrollAmountTimer = 0f;
+		this._velocityX = _velocityY = -1f;
+		this._minAutoScrollX = _minAutoScrollY = -1f;
+		this._maxAutoScrollX = _maxAutoScrollY = -1f;
+		return this;
 	}
 
 	@Override

@@ -165,21 +165,21 @@ public class LLayer extends ActorLayer {
 	}
 
 	public void downClick(int x, int y) {
-		if (Click != null) {
-			Click.DownClick(this, x, y);
+		if (_click != null) {
+			_click.DownClick(this, x, y);
 		}
 		super.downClick();
 	}
 
 	public void upClick(int x, int y) {
-		if (Click != null) {
-			Click.UpClick(this, x, y);
+		if (_click != null) {
+			_click.UpClick(this, x, y);
 		}
 	}
 
 	public void drag(int x, int y) {
-		if (Click != null) {
-			Click.DragClick(this, x, y);
+		if (_click != null) {
+			_click.DragClick(this, x, y);
 		}
 	}
 
