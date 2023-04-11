@@ -20,14 +20,15 @@
  */
 package loon.component.table;
 
+import loon.LRelease;
 import loon.LSysException;
 import loon.utils.HelperUtils;
 import loon.utils.PageList;
 import loon.utils.TArray;
 
-public class TableView {
+public class TableView implements LRelease {
 
-	private TArray<String> _names = new TArray<String>();
+	private TArray<String> _names;
 
 	private boolean _dirty;
 
@@ -51,6 +52,7 @@ public class TableView {
 
 	public TableView(TArray<ListItem> items, int pageNumber, int pageSize) {
 		this._pageList = new PageList<ListItem>(items, pageNumber, pageSize);
+		this._names = new TArray<String>();
 		this._dirty = true;
 	}
 
@@ -197,6 +199,16 @@ public class TableView {
 			_dirty = true;
 		}
 		return this;
+	}
+
+	@Override
+	public void close() {
+		if (_names != null) {
+			_names.clear();
+		}
+		if (_pageList != null) {
+			_pageList.clear();
+		}
 	}
 
 }

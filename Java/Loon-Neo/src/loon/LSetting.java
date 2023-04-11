@@ -65,6 +65,11 @@ public class LSetting {
 	public float emulatorScale = 1f;
 
 	/**
+	 * 如果此项为true,则游戏窗体缩放时直接缩放原始画面大小,否则仅仅传递缩放数据,需要自行编码处理具体缩放内容
+	 */
+	public boolean isSimpleScaling = true;
+	
+	/**
 	 * 如果此项为true,则Loon会检查resize缩放行为,原本宽高比例是横屏，改成竖屏，或者竖屏改成横屏的resize将不被允许
 	 */
 	public boolean isCheckResize = false;

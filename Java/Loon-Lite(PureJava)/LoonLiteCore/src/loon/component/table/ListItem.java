@@ -20,11 +20,12 @@
  */
 package loon.component.table;
 
+import loon.LRelease;
 import loon.LSystem;
 import loon.utils.StrBuilder;
 import loon.utils.TArray;
 
-public class ListItem {
+public class ListItem implements LRelease {
 
 	protected boolean _dirty;
 
@@ -53,7 +54,7 @@ public class ListItem {
 		this._dirty = !_dirty;
 		return this;
 	}
-	
+
 	public ListItem setDirty(boolean dirty) {
 		this._dirty = dirty;
 		return this;
@@ -83,8 +84,16 @@ public class ListItem {
 		this._dirty = true;
 		return this;
 	}
-	
+
+	@Override
 	public String toString() {
 		return message();
+	}
+
+	@Override
+	public void close() {
+		if (_list != null) {
+			_list.clear();
+		}
 	}
 }

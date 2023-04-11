@@ -110,6 +110,7 @@ public class JavaSEAppFrame extends JFrame implements JavaSEApp<JavaSEAppFrame>,
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent event) {
+		
 				if (_canvas != null && setting.isCloseOnAppExit) {
 					_canvas.close();
 					System.exit(-1);

@@ -20,11 +20,12 @@
  */
 package loon.component.table;
 
+import loon.LRelease;
 import loon.LSystem;
 import loon.utils.StrBuilder;
 import loon.utils.TArray;
 
-public class DefaultTableModel implements ITableModel {
+public class DefaultTableModel implements ITableModel, LRelease {
 
 	private final static String OMIT = "...";
 
@@ -135,6 +136,13 @@ public class DefaultTableModel implements ITableModel {
 	@Override
 	public String toString() {
 		return message();
+	}
+
+	@Override
+	public void close() {
+		if (_view != null) {
+			_view.close();
+		}
 	}
 
 }

@@ -201,10 +201,19 @@ public class Pixmap extends PixmapComposite implements LRelease {
 	}
 
 	public void set(Pixmap pix) {
+		if (pix == null) {
+			throw new LSysException("Pixmap is null !");
+		}
 		this.set(CollectionUtils.copyOf(pix.getData()), pix.getWidth(), pix.getHeight(), pix.hasAlpha());
 	}
 
 	private void set(int[] pixelsData, int w, int h, boolean hasAlpha) {
+		if (w < 0) {
+			throw new LSysException("Width may not be negative !");
+		}
+		if (h < 0) {
+			throw new LSysException("Height may not be negative !");
+		}
 		if (pixelsData == null) {
 			pixelsData = new int[w * h];
 		}

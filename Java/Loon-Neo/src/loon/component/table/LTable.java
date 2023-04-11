@@ -58,6 +58,8 @@ import loon.utils.MathUtils;
  */
 public class LTable extends LContainer implements FontSet<LTable> {
 
+	private float _tableLineWidth = 2f;
+	
 	private int _tableWidth, _tableHeight, _tableSize;
 
 	private LTexture _cacheFonts;
@@ -521,7 +523,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 			int y = displayY;
 			y += cellHeight;
 			if (gridVisible) {
-				g.setLineWidth(2f);
+				g.setLineWidth(_tableLineWidth);
 			}
 			if (backgroundTexture != null) {
 				g.draw(backgroundTexture, x, y, _tableWidth, _tableHeight);
@@ -900,6 +902,15 @@ public class LTable extends LContainer implements FontSet<LTable> {
 		return textColor.cpy();
 	}
 
+	public float getTableLineWidth() {
+		return _tableLineWidth;
+	}
+
+	public LTable setTableLineWidth(float w) {
+		this._tableLineWidth = w;
+		return this;
+	}
+	
 	@Override
 	public String getUIName() {
 		return "Table";

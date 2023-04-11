@@ -235,7 +235,7 @@ public class Lwjgl3Game extends LGame {
 		long monitor = glfwGetPrimaryMonitor();
 		GLFWVidMode vidMode = glfwGetVideoMode(monitor);
 
-		int width = config.width, height = config.height;
+		int width = config.getShowWidth(), height = config.getShowHeight();
 		if (config.fullscreen) {
 			width = vidMode.width();
 			height = vidMode.height();
@@ -259,10 +259,10 @@ public class Lwjgl3Game extends LGame {
 		this.graphics = createGraphics();
 		this.input = createInput();
 
-		graphics.setSize(config.width, config.height, config.fullscreen);
+		graphics.setSize(width, height, config.fullscreen);
 
 		glfwMakeContextCurrent(windowId);
-		
+
 		if (config instanceof JavaSetting) {
 			glfwSwapInterval(((JavaSetting) config).vSyncEnabled ? 1 : 0);
 		} else {
@@ -291,6 +291,7 @@ public class Lwjgl3Game extends LGame {
 		if (config instanceof JavaSetting) {
 			setIcon(windowId, ((JavaSetting) config).iconPaths);
 		}
+
 		this.graphics.init();
 		this.input.init();
 		glfwShowWindow(windowId);
@@ -305,7 +306,7 @@ public class Lwjgl3Game extends LGame {
 	public long getWindowHandle() {
 		return windowId;
 	}
-	
+
 	public void setTitle(String title) {
 		((Lwjgl3Graphics) graphics()).setTitle(title);
 	}
@@ -364,7 +365,7 @@ public class Lwjgl3Game extends LGame {
 	public Lwjgl3Clipboard clipboard() {
 		return clipboard;
 	}
-	
+
 	@Override
 	public Support support() {
 		return support;

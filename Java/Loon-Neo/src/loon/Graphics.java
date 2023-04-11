@@ -32,6 +32,7 @@ import loon.opengl.GL20;
 import loon.opengl.RenderTarget;
 import loon.utils.Array;
 import loon.utils.GLUtils;
+import loon.utils.MathUtils;
 import loon.utils.Scale;
 import loon.utils.reply.UnitPort;
 import static loon.opengl.GL20.*;
@@ -229,17 +230,53 @@ public abstract class Graphics {
 	protected abstract Canvas createCanvasImpl(Scale scale, int pixelWidth, int pixelHeight);
 
 	protected void viewportChanged(Scale scale, int viewWidth, int viewHeight) {
-		Display d = game.display();
-		LSystem.setSize((int) (viewWidth / LSystem.getScaleWidth()), (int) (viewHeight / LSystem.getScaleHeight()));
+		final Display d = game.display();
+		final LSetting setting = game.setting;
+		if (setting.isSimpleScaling) {
+			final boolean A = setting.width == viewWidth && setting.height == viewHeight;
+			final boolean B = setting.height == viewWidth && setting.width == viewHeight;
+			if (!setting.scaling() && (A || B)) {
+				LSystem.setSize(MathUtils.ceil(viewWidth / LSystem.getScaleWidth()),
+						MathUtils.ceil(viewHeight / LSystem.getScaleHeight()));
+			} else {
+				if (!(A || B)) {
+					setting.width_zoom = viewWidth;
+					setting.height_zoom = viewHeight;
+					setting.updateScale();
+				} else {
+					if (setting.scaling()) {
+						if (A) {
+							if (viewWidth != setting.width_zoom || viewHeight != setting.height_zoom) {
+								setting.width_zoom = viewWidth;
+								setting.height_zoom = viewHeight;
+								setting.updateScale();
+							} else {
+								LSystem.setSize(MathUtils.ceil(viewWidth / LSystem.getScaleWidth()),
+										MathUtils.ceil(viewHeight / LSystem.getScaleHeight()));
+							}
+						} else {
+							setting.width_zoom = viewWidth;
+							setting.height_zoom = viewHeight;
+							setting.updateScale();
+						}
+					} else {
+						LSystem.setSize(MathUtils.ceil(viewWidth / LSystem.getScaleWidth()),
+								MathUtils.ceil(viewHeight / LSystem.getScaleHeight()));
+					}
+				}
+			}
+		} else {
+			LSystem.setSize(MathUtils.ceil(viewWidth / LSystem.getScaleWidth()),
+					MathUtils.ceil(viewHeight / LSystem.getScaleHeight()));
+		}
 		if (viewMatrix != null) {
 			LSystem.viewSize.getMatrix().mul(viewMatrix);
 		}
 		this.scale = scale;
 		this.viewPixelWidth = viewWidth;
 		this.viewPixelHeight = viewHeight;
-		this.viewSizeM.width = game.setting.scaling() ? LSystem.invXScaled(viewPixelWidth)
-				: scale.invScaled(viewPixelWidth);
-		this.viewSizeM.height = game.setting.scaling() ? LSystem.invXScaled(viewPixelHeight)
+		this.viewSizeM.width = setting.scaling() ? LSystem.invXScaled(viewPixelWidth) : scale.invScaled(viewPixelWidth);
+		this.viewSizeM.height = setting.scaling() ? LSystem.invXScaled(viewPixelHeight)
 				: scale.invScaled(viewPixelHeight);
 		if (d != null) {
 			d.resize(LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());

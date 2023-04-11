@@ -57,8 +57,7 @@ public class JavaSELwjglGraphics extends JavaSEGraphics {
 	void checkScaleFactor() {
 		float scaleFactor = Display.getPixelScaleFactor();
 		if (scaleFactor != scale.factor) {
-			updateViewport(new Scale(scaleFactor), Display.getWidth(),
-					Display.getHeight());
+			updateViewport(new Scale(scaleFactor), Display.getWidth(), Display.getHeight());
 		}
 	}
 
@@ -83,15 +82,8 @@ public class JavaSELwjglGraphics extends JavaSEGraphics {
 		} else {
 			Display.setVSyncEnabled(true);
 		}
-		if (game.setting.width_zoom > 0 && game.setting.height_zoom > 0) {
-			setDisplayMode(scale.scaledCeil(game.setting.width_zoom),
-					scale.scaledCeil(game.setting.height_zoom),
-					game.setting.fullscreen);
-		} else {
-			setDisplayMode(scale.scaledCeil(game.setting.width),
-					scale.scaledCeil(game.setting.height),
-					game.setting.fullscreen);
-		}
+		setDisplayMode(scale.scaledCeil(game.setting.getShowWidth()), scale.scaledCeil(game.setting.getShowHeight()),
+				game.setting.fullscreen);
 		try {
 			System.setProperty("org.lwjgl.opengl.Display.enableHighDPI", "true");
 			Display.setInitialBackground(0, 0, 0);
@@ -149,13 +141,11 @@ public class JavaSELwjglGraphics extends JavaSEGraphics {
 				height = srcHeight;
 				texHeight = srcHeight;
 				texWidth = srcWidth;
-				ByteBuffer source = NativeSupport.getByteBuffer((byte[]) img
-						.getRaster().getDataElements(0, 0, img.getWidth(),
-								img.getHeight(), null));
+				ByteBuffer source = NativeSupport.getByteBuffer(
+						(byte[]) img.getRaster().getDataElements(0, 0, img.getWidth(), img.getHeight(), null));
 				int srcPixelFormat = hasAlpha ? GL20.GL_RGBA : GL20.GL_RGB;
 				gl.glBindTexture(GL11.GL_TEXTURE_2D, tex.getID());
-				gl.glTexImage2D(GL20.GL_TEXTURE_2D, 0, srcPixelFormat,
-						texWidth, texHeight, 0, srcPixelFormat,
+				gl.glTexImage2D(GL20.GL_TEXTURE_2D, 0, srcPixelFormat, texWidth, texHeight, 0, srcPixelFormat,
 						GL20.GL_UNSIGNED_BYTE, source);
 				gl.checkError("updateTexture");
 
@@ -163,8 +153,7 @@ public class JavaSELwjglGraphics extends JavaSEGraphics {
 			}
 
 			BufferedImage texImage = new BufferedImage(texWidth, texHeight,
-					hasAlpha ? BufferedImage.TYPE_4BYTE_ABGR
-							: BufferedImage.TYPE_3BYTE_BGR);
+					hasAlpha ? BufferedImage.TYPE_4BYTE_ABGR : BufferedImage.TYPE_3BYTE_BGR);
 
 			Graphics2D g = texImage.createGraphics();
 
@@ -179,9 +168,8 @@ public class JavaSELwjglGraphics extends JavaSEGraphics {
 				copyArea(texImage, g, width - 1, 0, 1, height, 1, 0);
 			}
 
-			ByteBuffer source = NativeSupport.getByteBuffer((byte[]) texImage
-					.getRaster().getDataElements(0, 0, texImage.getWidth(),
-							texImage.getHeight(), null));
+			ByteBuffer source = NativeSupport.getByteBuffer((byte[]) texImage.getRaster().getDataElements(0, 0,
+					texImage.getWidth(), texImage.getHeight(), null));
 
 			if (texImage != null) {
 				texImage.flush();
@@ -189,20 +177,19 @@ public class JavaSELwjglGraphics extends JavaSEGraphics {
 			}
 			int srcPixelFormat = hasAlpha ? GL20.GL_RGBA : GL20.GL_RGB;
 			gl.glBindTexture(GL11.GL_TEXTURE_2D, tex.getID());
-			gl.glTexImage2D(GL20.GL_TEXTURE_2D, 0, srcPixelFormat, texWidth,
-					texHeight, 0, srcPixelFormat, GL20.GL_UNSIGNED_BYTE, source);
+			gl.glTexImage2D(GL20.GL_TEXTURE_2D, 0, srcPixelFormat, texWidth, texHeight, 0, srcPixelFormat,
+					GL20.GL_UNSIGNED_BYTE, source);
 			gl.checkError("updateTexture");
 			return;
 		}
 
 		gl.glBindTexture(GL11.GL_TEXTURE_2D, tex.getID());
-		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA,
-				bitmap.getWidth(), bitmap.getHeight(), 0, format, type, bbuf);
+		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, bitmap.getWidth(), bitmap.getHeight(), 0, format, type,
+				bbuf);
 		gl.checkError("updateTexture");
 	}
 
-	void copyArea(BufferedImage image, Graphics2D g, int x, int y, int width,
-			int height, int dx, int dy) {
+	void copyArea(BufferedImage image, Graphics2D g, int x, int y, int width, int height, int dx, int dy) {
 		BufferedImage tmp = image.getSubimage(x, y, width, height);
 		g.drawImage(tmp, x + dx, y + dy, null);
 		tmp.flush();
@@ -212,46 +199,37 @@ public class JavaSELwjglGraphics extends JavaSEGraphics {
 	protected void setDisplayMode(int width, int height, boolean fullscreen) {
 		try {
 			DisplayMode mode = Display.getDisplayMode();
-			if (fullscreen == Display.isFullscreen()
-					&& mode.getWidth() == width && mode.getHeight() == height){
+			if (fullscreen == Display.isFullscreen() && mode.getWidth() == width && mode.getHeight() == height) {
 				return;
 			}
 			if (!fullscreen) {
 				DisplayMode deskMode = Display.getDesktopDisplayMode();
 				if (width > deskMode.getWidth()) {
-					game.log().debug(
-							"Capping window width at desktop width: " + width
-									+ " -> " + deskMode.getWidth());
+					game.log().debug("Capping window width at desktop width: " + width + " -> " + deskMode.getWidth());
 					width = deskMode.getWidth();
 				}
 				if (height > deskMode.getHeight()) {
 					game.log().debug(
-							"Capping window height at desktop height: "
-									+ height + " -> " + deskMode.getHeight());
+							"Capping window height at desktop height: " + height + " -> " + deskMode.getHeight());
 					height = deskMode.getHeight();
 				}
 				mode = new DisplayMode(width, height);
 			} else {
 				DisplayMode matching = null;
 				for (DisplayMode dm : Display.getAvailableDisplayModes()) {
-					if (dm.getWidth() == width && dm.getHeight() == height
-							&& dm.isFullscreenCapable()) {
+					if (dm.getWidth() == width && dm.getHeight() == height && dm.isFullscreenCapable()) {
 						matching = dm;
 					}
 				}
 				if (matching != null) {
 					mode = matching;
 				} else {
-					game.log().info(
-							"Could not find a matching fullscreen mode, available: "
-									+ Arrays.asList(Display
-											.getAvailableDisplayModes()));
+					game.log().info("Could not find a matching fullscreen mode, available: "
+							+ Arrays.asList(Display.getAvailableDisplayModes()));
 				}
 			}
 
-			game.log().debug(
-					"Updating display mode: " + mode + ", fullscreen: "
-							+ fullscreen);
+			game.log().debug("Updating display mode: " + mode + ", fullscreen: " + fullscreen);
 			Scale scale = Scale.ONE;
 			if (fullscreen) {
 				Display.setDisplayModeAndFullscreen(mode);

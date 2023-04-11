@@ -205,14 +205,21 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		this.target.unbind();
 	}
 
-	public GLEx resize() {
+	public GLEx updateSize(float sx, float sy) {
 		Affine2f tx = affineStack.first();
 		if (tx != null) {
-			if (target != null) {
-				tx.setScale(scaleX = gfx.onDPI(target.xscale()), scaleY = gfx.onDPI(target.yscale()));
-			} else {
-				tx.setScale(scaleX = gfx.onDPI(LSystem.getScaleWidth()), scaleY = gfx.onDPI(LSystem.getScaleHeight()));
-			}
+			this.scaleX = gfx.onDPI(sx);
+			this.scaleY = gfx.onDPI(sy);
+			tx.setScale(scaleX, scaleY);
+		}
+		return this;
+	}
+
+	public GLEx resize() {
+		if (target != null) {
+			updateSize(target.xscale(), target.yscale());
+		} else {
+			updateSize(LSystem.getScaleWidth(), LSystem.getScaleHeight());
 		}
 		return this;
 	}

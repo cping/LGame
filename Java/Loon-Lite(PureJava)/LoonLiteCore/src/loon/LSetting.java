@@ -70,6 +70,11 @@ public class LSetting {
 	public boolean isCheckResize = false;
 
 	/**
+	 * 如果此项为true,则游戏窗体缩放时直接缩放原始画面大小,否则仅仅传递缩放数据,需要自行编码处理具体缩放内容
+	 */
+	public boolean isSimpleScaling = true;
+	
+	/**
 	 * 如果此项为true,则游戏窗体可以缩放大小
 	 */
 	public boolean isAllowScreenResizabled = true;

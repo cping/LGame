@@ -94,13 +94,8 @@ public class Lwjgl3Graphics extends Lwjgl3ImplGraphics {
 
 	@Override
 	protected void init() {
-		if (game.setting.width_zoom > 0 && game.setting.height_zoom > 0) {
-			setDisplayMode(scale.scaledCeil(game.setting.width_zoom), scale.scaledCeil(game.setting.height_zoom),
-					game.setting.fullscreen);
-		} else {
-			setDisplayMode(scale.scaledCeil(game.setting.width), scale.scaledCeil(game.setting.height),
-					game.setting.fullscreen);
-		}
+		setDisplayMode(scale.scaledCeil(game.setting.getShowWidth()), scale.scaledCeil(game.setting.getShowHeight()),
+				game.setting.fullscreen);
 		setTitle(game.setting.appName);
 	}
 
@@ -231,7 +226,7 @@ public class Lwjgl3Graphics extends Lwjgl3ImplGraphics {
 
 			glfwGetWindowFrameSize(windowId, frameXPos, frameYPos, frameWidth, frameHeight);
 
-			int frameW = frameWidth.get(0) - frameXPos.get(0) ;
+			int frameW = frameWidth.get(0) - frameXPos.get(0);
 			int frameH = frameYPos.get(0) + frameHeight.get(0);
 			glfwSetWindowPos(windowId, (vidMode.width() - width + frameW) / 2,
 					(vidMode.height() - height + frameH) / 2);
