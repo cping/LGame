@@ -37,7 +37,6 @@ import loon.geom.Dimension;
 import loon.opengl.GLEx;
 import loon.utils.TArray;
 import loon.utils.ArrayMap;
-import loon.utils.HelperUtils;
 import loon.utils.MathUtils;
 
 /**
@@ -58,149 +57,11 @@ import loon.utils.MathUtils;
  */
 public class LTable extends LContainer implements FontSet<LTable> {
 
-	public static class TableView {
-
-		private boolean _dirty;
-
-		private TArray<ListItem> list;
-
-		public TableView() {
-			this.list = new TArray<ListItem>();
-		}
-
-		public TableView clear() {
-			list.clear();
-			_dirty = true;
-			return this;
-		}
-
-		public boolean isDirty() {
-			return _dirty;
-		}
-
-		public TableView updateDirty() {
-			this._dirty = !_dirty;
-			return this;
-		}
-
-		public int size() {
-			return list.size;
-		}
-
-		public TableView removeLine(int lineNo) {
-			if (lineNo > -1) {
-				for (ListItem item : list) {
-					if (item != null) {
-						if (lineNo < item._list.size) {
-							item._list.removeIndex(lineNo);
-						}
-					}
-				}
-				_dirty = true;
-			}
-			return this;
-		}
-
-		public TableView addRows(Object... rows) {
-			final int size = rows.length;
-			if (size == list.size) {
-				int count = 0;
-				for (ListItem item : list) {
-					if (item != null) {
-						Object row = rows[count++];
-						item._list.add(HelperUtils.toStr(row));
-					}
-				}
-				_dirty = true;
-			} else {
-				throw new LSysException("Object row:" + size + " out table size range !");
-			}
-			return this;
-		}
-
-		public TableView setRows(int lineNo, Object... rows) {
-			if (lineNo > -1) {
-				final int size = rows.length;
-				if (size == list.size) {
-					int count = 0;
-					for (ListItem item : list) {
-						if (item != null) {
-							Object row = rows[count++];
-							item._list.set(lineNo, HelperUtils.toStr(row));
-						}
-					}
-				} else {
-					throw new LSysException("Object row:" + size + " out table size range !");
-				}
-				_dirty = true;
-			}
-			return this;
-		}
-
-		public TableView addColumn(int idx, Object o) {
-			ListItem item = list.get(idx);
-			if (item != null) {
-				item._list.add(HelperUtils.toStr(o));
-				_dirty = true;
-			}
-			return this;
-		}
-
-		public TableView setValue(int rowLine, int colLine, Object o) {
-			ListItem item = list.get(rowLine);
-			if (item != null) {
-				if (colLine >= item._list.size) {
-					throw new LSysException("Object column:" + colLine + " out table size range !");
-				} else {
-					item._list.set(colLine, HelperUtils.toStr(o));
-				}
-				_dirty = true;
-			}
-			return this;
-		}
-
-		public ListItem getIndex(int idx) {
-			return list.get(idx);
-		}
-
-		public ListItem removeIndex(int idx) {
-			ListItem item = list.removeIndex(idx);
-			if (item != null) {
-				_dirty = true;
-			}
-			return item;
-		}
-
-		public TableView columns(String name, Object... cols) {
-			ListItem item = new ListItem();
-			item._name = name;
-			for (Object v : cols) {
-				item._list.add(HelperUtils.toStr(v));
-			}
-			list.add(item);
-			_dirty = true;
-			return this;
-		}
-
-		public TableView columnNames(String... names) {
-			for (int i = 0; i < names.length; i++) {
-				ListItem item = new ListItem();
-				item._name = names[i];
-				list.add(item);
-				_dirty = true;
-			}
-			return this;
-		}
-
-	}
-
 	private int _tableWidth, _tableHeight, _tableSize;
 
 	private LTexture _cacheFonts;
 
 	private boolean _dragged;
-
-	private boolean _dirty;
 
 	private ITableModel model = null;
 
@@ -309,7 +170,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 	}
 
 	public LTable setData(TArray<ListItem> list, int width) {
-		setModel(new SimpleTableModel(list), width);
+		setModel(new DefaultTableModel(list), width);
 		return this;
 	}
 
@@ -318,19 +179,19 @@ public class LTable extends LContainer implements FontSet<LTable> {
 	}
 
 	public LTable setData(TableView view, int width) {
-		setModel(new SimpleTableModel(view.list), width);
+		setModel(new DefaultTableModel(view), width);
 		return this;
 	}
 
 	public LTable bindIcon(String name, LTexture texture) {
 		bindIcons.put(name, new BindIcon(name, texture));
-		_dirty = true;
+		addFlagDirty();
 		return this;
 	}
 
 	public LTable bindIcon(String name, String fileName) {
 		bindIcons.put(name, new BindIcon(name, LSystem.loadTexture(fileName)));
-		_dirty = true;
+		addFlagDirty();
 		return this;
 	}
 
@@ -346,13 +207,13 @@ public class LTable extends LContainer implements FontSet<LTable> {
 
 	public LTable removeIcon(String name) {
 		bindIcons.remove(name);
-		_dirty = true;
+		addFlagDirty();
 		return this;
 	}
 
 	public LTable removeIcon(int idx) {
 		bindIcons.remove(idx);
-		_dirty = true;
+		addFlagDirty();
 		return this;
 	}
 
@@ -379,7 +240,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 				}
 				columns[header.columnResizeIndex].setWidth(newWidth);
 				columns[header.columnResizeIndex + 1].setWidth(sum - newWidth);
-				_dirty = true;
+				addFlagDirty();
 				_dragged = true;
 			}
 		}
@@ -522,7 +383,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 	}
 
 	public boolean isDirty() {
-		return _dirty;
+		return model == null ? false : model.isDirty();
 	}
 
 	@Override
@@ -539,17 +400,18 @@ public class LTable extends LContainer implements FontSet<LTable> {
 				setSize(_tableWidth, _tableHeight + (cellHeight + cellSpacing));
 			}
 			_tableSize = MathUtils.floor(getHeight() / (cellHeight + cellSpacing));
-			model.updateDirty();
 		}
 	}
 
 	protected void createOtherFont(GLEx g, int displayX, int displayY) {
+		final int rowCount = model.getRowCount();
+		final int colCount = model.getColumnCount();
 		int x = displayX;
 		int y = displayY;
 		y += cellHeight;
-		for (int row = 0; row < _tableSize && row < model.getRowCount(); row++) {
+		for (int row = 0; row < _tableSize && row < rowCount; row++) {
 			x = displayX;
-			for (int columnIndex = 0; columnIndex < model.getColumnCount(); columnIndex++) {
+			for (int columnIndex = 0; columnIndex < colCount; columnIndex++) {
 				Object value = model.getValue(row, columnIndex);
 				if (value != null) {
 					ICellRenderer cellRenderer = getColumn(columnIndex).getCellRenderer();
@@ -592,9 +454,11 @@ public class LTable extends LContainer implements FontSet<LTable> {
 		int x = displayX;
 		int y = displayY;
 		g.setColor(LColor.white);
-		for (int row = 0; row < _tableSize && row < model.getRowCount(); row++) {
+		final int rowCount = model.getRowCount();
+		final int colCount = model.getColumnCount();
+		for (int row = 0; row < _tableSize && row < rowCount; row++) {
 			x = displayX;
-			for (int columnIndex = 0; columnIndex < model.getColumnCount(); columnIndex++) {
+			for (int columnIndex = 0; columnIndex < colCount; columnIndex++) {
 				Object value = model.getValue(row, columnIndex);
 				if (value != null) {
 					ICellRenderer cellRenderer = getColumn(columnIndex).getCellRenderer();
@@ -653,12 +517,14 @@ public class LTable extends LContainer implements FontSet<LTable> {
 			if (backgroundTexture != null) {
 				g.draw(backgroundTexture, x, y, _tableWidth, _tableHeight);
 			}
-			for (int row = 0; row < _tableSize && row < model.getRowCount(); row++) {
+			final int rowCount = model.getRowCount();
+			final int colCount = model.getColumnCount();
+			for (int row = 0; row < _tableSize && row < rowCount; row++) {
 				x = displayX;
 				if (isSelected(row)) {
 					g.fillRect(x, y, _tableWidth, cellHeight, selectionColor);
 				}
-				for (int columnIndex = 0; columnIndex < model.getColumnCount(); columnIndex++) {
+				for (int columnIndex = 0; columnIndex < colCount; columnIndex++) {
 					if (gridVisible) {
 						g.drawRect(x, y, getColumnWidth(columnIndex), cellHeight, gridColor);
 					}
@@ -667,11 +533,15 @@ public class LTable extends LContainer implements FontSet<LTable> {
 				y += (cellHeight + cellSpacing);
 			}
 			if (font instanceof LFont) {
-				if (_dirty) {
+				if (model.isDirty()) {
+					if (_cacheFonts != null) {
+						_cacheFonts.close();
+						_cacheFonts = null;
+					}
 					Image image = Image.createImage(_tableWidth, _tableHeight);
 					createSystemFont(image.getCanvas(), 0, 0);
 					_cacheFonts = image.texture();
-					_dirty = false;
+					model.setDirty(false);
 				}
 				g.draw(_cacheFonts, displayX, displayY + cellHeight);
 			} else {
@@ -688,7 +558,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 					g.fillRect(displayX, displayY, _tableWidth, cellHeight, headerBackgroundColor);
 				}
 				x = displayX;
-				for (int columnIndex = 0; columnIndex < model.getColumnCount(); columnIndex++) {
+				for (int columnIndex = 0; columnIndex < colCount; columnIndex++) {
 					String s = model.getColumnName(columnIndex);
 					int columnWidth = getColumnWidth(columnIndex);
 					s = font.confineLength(s, columnWidth - OFFSET);
@@ -709,12 +579,12 @@ public class LTable extends LContainer implements FontSet<LTable> {
 
 	public void setGridColor(LColor gridColor) {
 		this.gridColor = gridColor;
-		_dirty = true;
+		addFlagDirty();
 	}
 
 	public void setTextColor(LColor textColor) {
 		this.textColor = textColor;
-		_dirty = true;
+		addFlagDirty();
 	}
 
 	@Override
@@ -724,7 +594,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 		}
 		this.font = fn;
 		this.cellHeight = font.getHeight();
-		this._dirty = true;
+		this.addFlagDirty();
 		return this;
 	}
 
@@ -739,7 +609,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 
 	public LTable setHeadTextColor(LColor headTextColor) {
 		this.headTextColor = headTextColor;
-		_dirty = true;
+		addFlagDirty();
 		return this;
 	}
 
@@ -749,7 +619,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 
 	public LTable setSelectionColor(LColor selectionColor) {
 		this.selectionColor = selectionColor;
-		_dirty = true;
+		addFlagDirty();
 		return this;
 	}
 
@@ -765,15 +635,21 @@ public class LTable extends LContainer implements FontSet<LTable> {
 		return cellHeight;
 	}
 
+	private void addFlagDirty() {
+		if (model != null) {
+			model.setDirty(true);
+		}
+	}
+
 	public LTable setCellHeight(int cellHeight) {
 		this.cellHeight = cellHeight;
-		_dirty = true;
+		addFlagDirty();
 		return this;
 	}
 
 	public LTable setGridVisible(boolean gridVisible) {
 		this.gridVisible = gridVisible;
-		_dirty = true;
+		addFlagDirty();
 		return this;
 	}
 
@@ -787,7 +663,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 
 	public void setHeaderVisible(boolean drawTableHead) {
 		this.tableHeaderVisible = drawTableHead;
-		_dirty = true;
+		addFlagDirty();
 	}
 
 	public int getCellSpacing() {
@@ -796,7 +672,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 
 	public LTable setCellSpacing(int cellSpacing) {
 		this.cellSpacing = cellSpacing;
-		_dirty = true;
+		addFlagDirty();
 		return this;
 	}
 
@@ -806,7 +682,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 
 	public LTable setHeaderBackgroundColor(LColor headerBackgroundColor) {
 		this.headerBackgroundColor = headerBackgroundColor;
-		_dirty = true;
+		addFlagDirty();
 		return this;
 	}
 
@@ -846,7 +722,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 		for (int i = 0; i < columns.length; i++) {
 			columns[i] = new TableColumn(m.getColumnName(i), width, this.font);
 		}
-		_dirty = true;
+		addFlagDirty();
 		return this;
 	}
 
@@ -875,13 +751,13 @@ public class LTable extends LContainer implements FontSet<LTable> {
 
 	public LTable setColumnWidth(int columnIndex, int widthInPixel) {
 		getColumn(columnIndex).setWidth(widthInPixel);
-		_dirty = true;
+		addFlagDirty();
 		return this;
 	}
 
 	public LTable setColumnWidth(int columnIndex, float relativeWidth) {
 		getColumn(columnIndex).setRelativeWidth(relativeWidth);
-		_dirty = true;
+		addFlagDirty();
 		return this;
 	}
 
@@ -891,7 +767,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 
 	public LTable setMultipleSelection(boolean multipleSelection) {
 		this.multipleSelection = multipleSelection;
-		_dirty = true;
+		addFlagDirty();
 		return this;
 	}
 
@@ -967,7 +843,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 
 	public LTable setColumnMinWidth(int columnMinWidth) {
 		this.columnMinWidth = columnMinWidth;
-		_dirty = true;
+		addFlagDirty();
 		return this;
 	}
 
@@ -988,7 +864,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 
 	public LTable setHeaderTexture(LTexture headerTexture) {
 		this.headerTexture = headerTexture;
-		_dirty = true;
+		addFlagDirty();
 		return this;
 	}
 
@@ -998,14 +874,14 @@ public class LTable extends LContainer implements FontSet<LTable> {
 
 	public LTable setBackgroundTexture(LTexture backgroundTexture) {
 		this.backgroundTexture = backgroundTexture;
-		_dirty = true;
+		addFlagDirty();
 		return this;
 	}
 
 	@Override
 	public LTable setFontColor(LColor color) {
 		this.textColor = color;
-		_dirty = true;
+		addFlagDirty();
 		return this;
 	}
 
@@ -1025,7 +901,6 @@ public class LTable extends LContainer implements FontSet<LTable> {
 			_cacheFonts.close(true);
 			_cacheFonts = null;
 		}
-		_dirty = true;
 	}
 
 }

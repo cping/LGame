@@ -1,5 +1,10 @@
 package application;
 
+import java.nio.IntBuffer;
+
+import javafx.scene.image.PixelFormat;
+import javafx.scene.image.PixelReader;
+import javafx.scene.image.WritablePixelFormat;
 import loon.EmulatorListener;
 import loon.LSystem;
 import loon.LTexture;
@@ -8,63 +13,65 @@ import loon.LTransition;
 import loon.Screen;
 import loon.action.sprite.Bullet;
 import loon.canvas.LColor;
+import loon.canvas.Pixmap;
+import loon.component.LColorPicker;
 import loon.component.LToast;
 import loon.component.LToast.Style;
+import loon.component.table.LTable;
+import loon.events.ActionKey;
+import loon.events.GameKey;
 import loon.events.GameTouch;
+import loon.events.SysKey;
+import loon.events.SysTouch;
+import loon.events.Updateable;
 import loon.font.BDFont;
 import loon.font.BMFont;
+import loon.fx.JavaFXImage;
 import loon.fx.JavaFXSetting;
 import loon.fx.Loon;
+import loon.geom.DirtyRectList;
+import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.opengl.LTexturePack;
 import loon.utils.timer.LTimerContext;
 
 public class Main extends Loon {
 
-	public static class ScreenTest extends Screen implements EmulatorListener {
+	public static class ScreenTest extends Screen {
 
-		LTexture texture = loadTexture("player.png");
-
-		BDFont bdFont;
-		BMFont font;
+		DirtyRectList list = new DirtyRectList(true);
+		
+		LTexture texture;
 
 		public LTransition onTransition() {
 			return LTransition.newEmpty();
 		}
 
-		//纹理批处理
-		LTextureBatch batch = null;
-
 		@Override
 		public void draw(GLEx g) {
-			g.fillRect(66, 66, 388, 388, LColor.red);
-
-			if (batch != null) {
-				if (batch.existCache()) {
-					batch.postCache(29, 29);
-				} else {
-					batch.begin();
-					batch.draw(0, 0);
-					batch.draw(199, 199);
-					batch.end();
-					batch.newCache();
+			for (RectBox rect : list.initList()) {
+				if (rect != null) {
+					g.drawRect(rect.x, rect.y, rect.width, rect.height, LColor.white);
 				}
 			}
-
-			g.drawString("数据测试avddf", 77, 77);
-			if (bdFont != null) {
-				bdFont.drawString(g, "AfdBC", 55, 55);
+			for (RectBox rect : list.list()) {
+				if (rect != null) {
+					g.drawRect(rect.x + 1, rect.y + 1, rect.width + 1, rect.height + 1, LColor.red);
+				}
 			}
+			
+
 		}
+
 
 		@Override
 		public void onLoad() {
-			texture = texture.cpy(0, 32, 32, 32);
-			batch = texture.getTextureBatch();
 
-			bdFont = new BDFont("pixfont.bdf", "MNBVCXZLKJHGFDSAPOIUYTREWQqwertyuiopasdfghjklzxcvbnm");
-			bdFont.setFontSize(20);
-			font = new BMFont("test.fnt");
+			list.add(45, 45, 40, 60);
+			list.add(145, 45, 190, 60);
+			list.add(45, 45, 95, 65);
+			list.add(195, 245, 95, 65);
+			list.add(35, 35, 95, 65);
 
 		}
 
@@ -113,102 +120,6 @@ public class Main extends Loon {
 
 		}
 
-		@Override
-		public void onUpClick() {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void onLeftClick() {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void onRightClick() {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void onDownClick() {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void onTriangleClick() {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void onSquareClick() {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void onCircleClick() {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void onCancelClick() {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void unUpClick() {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void unLeftClick() {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void unRightClick() {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void unDownClick() {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void unTriangleClick() {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void unSquareClick() {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void unCircleClick() {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void unCancelClick() {
-			// TODO Auto-generated method stub
-
-		}
-
 	}
 
 	public static void main(String[] args) {
@@ -227,15 +138,15 @@ public class Main extends Loon {
 		setting.logoPath = "loon_logo.png";
 		setting.isFPS = false;
 		setting.isMemory = false;
-		setting.iconPaths = new String[] { "l.png" };
+		// setting.iconPaths = new String[] { "l.png" };
 		setting.fullscreen = false;
 		// 默认字体
 		setting.fontName = "黑体";
+		setting.allScreenRefresh = true;
+		// setting.isCloseOnAppExit = true;
 		// setting.fullscreen = true;
 
-		register(Main.class, setting, () -> {
-			return new TitleScreen();
-		});
+		register(Main.class, setting, () -> new TableTest());
 	}
 
 }

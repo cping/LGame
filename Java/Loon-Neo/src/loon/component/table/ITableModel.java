@@ -23,6 +23,8 @@ package loon.component.table;
 public interface ITableModel {
 	
 	public boolean isDirty();
+
+	public ITableModel setDirty(boolean d);
 	
 	public ITableModel updateDirty();
 

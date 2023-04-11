@@ -28,8 +28,6 @@ public class ListItem {
 
 	protected boolean _dirty;
 
-	protected String _name;
-
 	protected TArray<Object> _list;
 
 	public ListItem() {
@@ -55,25 +53,21 @@ public class ListItem {
 		this._dirty = !_dirty;
 		return this;
 	}
+	
+	public ListItem setDirty(boolean dirty) {
+		this._dirty = dirty;
+		return this;
+	}
 
 	public int size() {
 		return _list.size;
-	}
-
-	public String getName() {
-		return _name;
-	}
-
-	public void setName(String name) {
-		this._name = name;
-		this._dirty = true;
 	}
 
 	public String message() {
 		if (_list == null) {
 			return LSystem.EMPTY;
 		}
-		StrBuilder sbr = new StrBuilder(_name);
+		StrBuilder sbr = new StrBuilder();
 		for (Object o : _list) {
 			sbr.append(o);
 		}
@@ -88,5 +82,9 @@ public class ListItem {
 		this._list = list;
 		this._dirty = true;
 		return this;
+	}
+	
+	public String toString() {
+		return message();
 	}
 }

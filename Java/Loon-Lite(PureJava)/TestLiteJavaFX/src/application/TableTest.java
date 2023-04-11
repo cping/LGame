@@ -1,4 +1,4 @@
-package org.test;
+package application;
 
 import loon.Stage;
 import loon.canvas.LColor;
@@ -51,8 +51,6 @@ public class TableTest extends Stage {
 		LClickButton next = LClickButton.make("next", 145, getHeight() - 70, 90, 20);
 		next.up((float x,float y)->view.next());
 		add(next);
-
-		add(MultiScreenTest.getBackButton(this, 0));
 
 	}
 

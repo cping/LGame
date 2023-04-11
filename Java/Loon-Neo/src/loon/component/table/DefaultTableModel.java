@@ -24,43 +24,61 @@ import loon.LSystem;
 import loon.utils.StrBuilder;
 import loon.utils.TArray;
 
-public class SimpleTableModel implements ITableModel {
+public class DefaultTableModel implements ITableModel {
 
-	private TArray<ListItem> _list;
+	private final static String OMIT = "...";
 
-	public SimpleTableModel(TArray<ListItem> list) {
-		_list = list;
+	private TableView _view;
+
+	public DefaultTableModel(TArray<ListItem> items) {
+		this(new TableView(items));
+	}
+
+	public DefaultTableModel(TableView list) {
+		_view = list;
 	}
 
 	@Override
-	public SimpleTableModel updateDirty() {
-		if (_list != null) {
-			for (ListItem item : _list) {
+	public DefaultTableModel updateDirty() {
+		if (_view != null) {
+			for (ListItem item : _view.all()) {
 				item.updateDirty();
 			}
 		}
+		_view.updateDirty();
+		return this;
+	}
+
+	@Override
+	public ITableModel setDirty(boolean d) {
+		if (_view != null) {
+			for (ListItem item : _view.all()) {
+				item.setDirty(d);
+			}
+		}
+		_view.setDirty(d);
 		return this;
 	}
 
 	@Override
 	public boolean isDirty() {
-		if (_list != null) {
-			for (ListItem item : _list) {
+		if (_view != null) {
+			for (ListItem item : _view.all()) {
 				if (item.isDirty()) {
 					return true;
 				}
 			}
 		}
-		return false;
+		return _view.isDirty();
 	}
 
 	@Override
 	public String message() {
-		if (_list == null) {
+		if (_view == null) {
 			return null;
 		}
 		StrBuilder sbr = new StrBuilder();
-		for (ListItem item : _list) {
+		for (ListItem item : _view.all()) {
 			sbr.append(item.message());
 		}
 		return sbr.toString();
@@ -68,54 +86,55 @@ public class SimpleTableModel implements ITableModel {
 
 	@Override
 	public String getColumnName(int columnIndex) {
-		if (_list.size == 0) {
-			return "...";
+		if (_view.size() == 0) {
+			return OMIT;
 		}
-		return _list.get(columnIndex)._name;
+		return _view.getColumnName(columnIndex);
 	}
 
 	@Override
 	public int getColumnCount() {
-		return _list.size;
+		return _view.getColumnCount();
 	}
 
 	@Override
 	public Object getValue(int row, int column) {
-		if (column > _list.size || row > _list.get(column)._list.size) {
-			return "...";
-		}
-		ListItem items = null;
-		if (_list.size > column) {
-			items = _list.get(column);
-		}
-		if (items != null && items._list.size > row) {
-			return items._list.get(row);
+		final TArray<ListItem> list = _view.getData();
+		if (row < list.size) {
+			final ListItem item = list.get(row);
+			final TArray<Object> objs = item._list;
+			if (column < objs.size) {
+				return objs.get(column);
+			}
 		}
 		return LSystem.EMPTY;
 	}
 
 	@Override
 	public int getRowCount() {
-		if (_list.size == 0) {
-			return 0;
-		}
-		return _list.get(0)._list.size;
+		return _view.getData().size();
 	}
 
-	public SimpleTableModel clear() {
-		if (_list != null) {
-			for (ListItem item : _list) {
+	public DefaultTableModel clear() {
+		if (_view != null) {
+			for (ListItem item : _view.all()) {
 				item._dirty = true;
 			}
 		}
-		_list.clear();
+		_view.clear();
 		return this;
 	}
 
 	public Object getValue(int row) {
-		if (_list.size == 0) {
-			return "...";
+		if (_view.size() == 0) {
+			return OMIT;
 		}
-		return _list.get(0)._list.get(row);
+		return _view.getData().get(row);
 	}
+
+	@Override
+	public String toString() {
+		return message();
+	}
+
 }
