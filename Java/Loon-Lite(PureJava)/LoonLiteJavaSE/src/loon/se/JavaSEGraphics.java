@@ -29,8 +29,6 @@ import loon.utils.Scale;
 
 public class JavaSEGraphics extends JavaSEImplGraphics {
 
-	private final JavaSEGame game;
-
 	private Dimension screenSize = new Dimension();
 
 	protected JavaSECanvas canvas;
@@ -45,7 +43,6 @@ public class JavaSEGraphics extends JavaSEImplGraphics {
 
 	protected JavaSEGraphics(JavaSEGame game, Scale scale, boolean resized) {
 		super(game, scale);
-		this.game = game;
 		if (game.setting instanceof JavaSESetting) {
 			JavaSESetting setting = (JavaSESetting) game.setting;
 			if (!setting.doubleBuffer) {
@@ -81,7 +78,6 @@ public class JavaSEGraphics extends JavaSEImplGraphics {
 		}
 		screenSize.width = viewWidth / scale.factor;
 		screenSize.height = viewHeight / scale.factor;
-		game.log().info("Updating size " + viewWidth + "x" + viewHeight + " / " + scale.factor + " -> " + screenSize);
 		viewportChanged(scale, viewWidth, viewHeight);
 	}
 

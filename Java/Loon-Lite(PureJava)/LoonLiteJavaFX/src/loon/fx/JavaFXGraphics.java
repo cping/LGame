@@ -78,7 +78,6 @@ public class JavaFXGraphics extends Graphics {
 		}
 		screenSize.width = viewWidth / scale.factor;
 		screenSize.height = viewHeight / scale.factor;
-		game.log().info("Updating size " + viewWidth + "x" + viewHeight + " / " + scale.factor + " -> " + screenSize);
 		viewportChanged(scale, viewWidth, viewHeight);
 	}
 

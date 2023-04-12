@@ -49,6 +49,8 @@ public abstract class Graphics {
 
 	protected int viewPixelWidth, viewPixelHeight;
 
+	protected int lastViewWidth, lastViewHeight;
+
 	private Display display = null;
 	private Affine2f affine = null, lastAffine = null;
 	private Matrix4 viewMatrix = null;
@@ -230,6 +232,18 @@ public abstract class Graphics {
 	protected abstract Canvas createCanvasImpl(Scale scale, int pixelWidth, int pixelHeight);
 
 	protected void viewportChanged(Scale scale, int viewWidth, int viewHeight) {
+		if (lastViewWidth == viewWidth && lastViewHeight == viewHeight) {
+			return;
+		}
+		if (lastViewWidth == 0 || lastViewHeight == 0) {
+			game.log().info("Updating size (" + game.setting.getShowWidth() + "x" + game.setting.getShowHeight() + " / "
+					+ scale.factor + ") -> " + "(" + viewWidth + "x" + viewHeight + ")");
+		} else {
+			game.log().info("Updating size (" + lastViewWidth + "x" + lastViewHeight + " / " + scale.factor + ") -> "
+					+ "(" + viewWidth + "x" + viewHeight + ")");
+		}
+		this.lastViewWidth = viewWidth;
+		this.lastViewHeight = viewHeight;
 		final Display d = game.display();
 		final LSetting setting = game.setting;
 		if (setting.isSimpleScaling) {
@@ -343,4 +357,25 @@ public abstract class Graphics {
 		return game.setting;
 	}
 
+	public int getLastViewWidth() {
+		return lastViewWidth == 0 ? game.setting.getShowWidth() : lastViewWidth;
+	}
+
+	public int getLastViewHeight() {
+		return lastViewHeight == 0 ? game.setting.getShowHeight() : lastViewHeight;
+	}
+
+	public boolean landscape() {
+		if (lastViewWidth == 0 || this.lastViewHeight == 0) {
+			return game.setting.landscape();
+		}
+		return this.lastViewHeight < this.lastViewWidth;
+	}
+
+	public boolean portrait() {
+		if (lastViewWidth == 0 || this.lastViewHeight == 0) {
+			return game.setting.portrait();
+		}
+		return this.lastViewHeight >= this.lastViewWidth;
+	}
 }

@@ -50,6 +50,8 @@ public abstract class Graphics {
 
 	protected int viewPixelWidth, viewPixelHeight;
 
+	protected int lastViewWidth, lastViewHeight;
+
 	private Display display = null;
 
 	// 创建一个半永久的纹理，用以批量进行颜色渲染
@@ -160,6 +162,18 @@ public abstract class Graphics {
 	protected abstract Canvas createCanvasImpl(Scale scale, int pixelWidth, int pixelHeight);
 
 	protected void viewportChanged(Scale scale, int viewWidth, int viewHeight) {
+		if (lastViewWidth == viewWidth && lastViewHeight == viewHeight) {
+			return;
+		}
+		if (lastViewWidth == 0 || lastViewHeight == 0) {
+			game.log().info("Updating size (" + game.setting.getShowWidth() + "x" + game.setting.getShowHeight() + " / "
+					+ scale.factor + ") -> " + "(" + viewWidth + "x" + viewHeight + ")");
+		} else {
+			game.log().info("Updating size (" + lastViewWidth + "x" + lastViewHeight + " / " + scale.factor + ") -> "
+					+ "(" + viewWidth + "x" + viewHeight + ")");
+		}
+		this.lastViewWidth = viewWidth;
+		this.lastViewHeight = viewHeight;
 		final Display d = game.display();
 		final LSetting setting = game.setting;
 		if (setting.isSimpleScaling) {
@@ -250,4 +264,25 @@ public abstract class Graphics {
 
 	public abstract Canvas getCanvas();
 
+	public int getLastViewWidth() {
+		return lastViewWidth == 0 ? game.setting.getShowWidth() : lastViewWidth;
+	}
+
+	public int getLastViewHeight() {
+		return lastViewHeight == 0 ? game.setting.getShowHeight() : lastViewHeight;
+	}
+
+	public boolean landscape() {
+		if (lastViewWidth == 0 || this.lastViewHeight == 0) {
+			return game.setting.landscape();
+		}
+		return this.lastViewHeight < this.lastViewWidth;
+	}
+
+	public boolean portrait() {
+		if (lastViewWidth == 0 || this.lastViewHeight == 0) {
+			return game.setting.portrait();
+		}
+		return this.lastViewHeight >= this.lastViewWidth;
+	}
 }
