@@ -24,6 +24,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 
 import loon.LSysException;
+import loon.utils.SortedList.Node;
 
 public class SortedList<E> implements Iterable<E>, IArray {
 
@@ -665,6 +666,24 @@ public class SortedList<E> implements Iterable<E>, IArray {
 			headData = headData.next;
 		}
 		return count;
+	}
+	
+	public SortedList<E> subList(final int fromIndex, final int toIndex) {
+		if (fromIndex < 0 || fromIndex > this.size - 1 || toIndex < 0 || toIndex > this.size - 1) {
+			throw new LSysException(
+					"Index out of bounds on call to subList with from of " + fromIndex + " and to " + toIndex);
+		}
+		SortedList<E> list = new SortedList<E>();
+		Node<E> cur = this.first;
+		int count = 0;
+		for (; cur != null;) {
+			if (count >= fromIndex && count <= toIndex) {
+				list.add(cur.item);
+			}
+			cur = cur.next;
+			count++;
+		}
+		return list;
 	}
 
 	@Override

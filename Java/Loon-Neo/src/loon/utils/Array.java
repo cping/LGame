@@ -21,11 +21,38 @@
 package loon.utils;
 
 import java.util.Comparator;
+import java.util.Iterator;
 
 import loon.LRelease;
+import loon.LSysException;
 import loon.events.QueryEvent;
 
-public class Array<T> implements IArray, LRelease {
+public class Array<T> implements Iterable<T>, IArray, LRelease {
+
+	private static class ListItr<T> implements LIterator<T> {
+
+		private Array<T> list;
+
+		ListItr(Array<T> l) {
+			this.list = l;
+		}
+
+		@Override
+		public boolean hasNext() {
+			return list.hashNext();
+		}
+
+		@Override
+		public T next() {
+			return list.next();
+		}
+
+		@Override
+		public void remove() {
+			list.remove();
+		}
+
+	}
 
 	public static final <T> Array<T> at() {
 		return new Array<T>();
@@ -47,6 +74,8 @@ public class Array<T> implements IArray, LRelease {
 			this.data = null;
 		}
 	}
+
+	private LIterator<T> _iterator;
 
 	private ArrayNode<T> _items = null;
 
@@ -619,39 +648,35 @@ public class Array<T> implements IArray, LRelease {
 		return newlist;
 	}
 
-	private LIterator<T> iterator;
-
-	public LIterator<T> listIterator() {
-		if (iterator == null) {
-			iterator = new ListItr<T>(this);
+	public Array<T> subList(final int fromIndex, final int toIndex) {
+		if (fromIndex < 0 || fromIndex > this._length - 1 || toIndex < 0 || toIndex > this._length - 1) {
+			throw new LSysException(
+					"Index out of bounds on call to subList with from of " + fromIndex + " and to " + toIndex);
 		}
-		this.stopNext();
-		return iterator;
+		Array<T> list = new Array<T>();
+		ArrayNode<T> cur = _items.next;
+		int count = 0;
+		for (; cur != null && cur.data != null;) {
+			if (count >= fromIndex && count <= toIndex) {
+				list.add(cur.data);
+			}
+			cur = cur.next;
+			count++;
+		}
+		return list;
 	}
 
-	private static class ListItr<T> implements LIterator<T> {
-
-		private Array<T> list;
-
-		ListItr(Array<T> l) {
-			this.list = l;
+	@Override
+	public Iterator<T> iterator() {
+		return listIterator();
+	}
+	
+	public LIterator<T> listIterator() {
+		if (_iterator == null) {
+			_iterator = new ListItr<T>(this);
 		}
-
-		@Override
-		public boolean hasNext() {
-			return list.hashNext();
-		}
-
-		@Override
-		public T next() {
-			return list.next();
-		}
-
-		@Override
-		public void remove() {
-			list.remove();
-		}
-
+		this.stopNext();
+		return _iterator;
 	}
 
 	public Array<T> where(QueryEvent<T> test) {
@@ -711,5 +736,6 @@ public class Array<T> implements IArray, LRelease {
 	public void close() {
 		dispose();
 	}
+
 
 }

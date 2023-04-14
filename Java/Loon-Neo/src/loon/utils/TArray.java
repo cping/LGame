@@ -680,6 +680,22 @@ public class TArray<T> implements Iterable<T>, IArray, LRelease {
 		return newArrays;
 	}
 
+	public TArray<T> subList(final int fromIndex, final int toIndex) {
+		if (fromIndex < 0 || fromIndex > this.size - 1 || toIndex < 0 || toIndex > this.size - 1) {
+			throw new LSysException(
+					"Index out of bounds on call to subList with from of " + fromIndex + " and to " + toIndex);
+		}
+		final TArray<T> list = new TArray<T>();
+		int count = 0;
+		for (int i = 0; i < size; i++) {
+			if (count >= fromIndex && count <= toIndex) {
+				list.add(get(i));
+			}
+			count++;
+		}
+		return list;
+	}
+
 	public Object[] toArray() {
 		Object[] result = new Object[size];
 		System.arraycopy(items, 0, result, 0, size);
