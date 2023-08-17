@@ -21,7 +21,6 @@
 package loon.component;
 
 import loon.LSystem;
-import loon.LTexture;
 import loon.canvas.LColor;
 import loon.events.SysTouch;
 import loon.geom.Path;
@@ -87,7 +86,7 @@ public class LGesture extends LComponent {
 	}
 
 	@Override
-	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
+	public void createUI(GLEx g, int x, int y) {
 		if (isVisible() && goalPath != null) {
 			g.saveBrush();
 			int tint = g.getTint();

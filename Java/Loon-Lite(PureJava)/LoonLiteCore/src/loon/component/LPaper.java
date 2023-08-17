@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2011
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -20,14 +20,15 @@
  */
 package loon.component;
 
-import loon.LSystem;
 import loon.LTexture;
+import loon.LSystem;
 import loon.action.sprite.Animation;
+import loon.canvas.LColor;
 import loon.opengl.GLEx;
 
 public class LPaper extends LContainer {
 
-	private Animation animation = new Animation();
+	private Animation animation;
 
 	public LPaper(LTexture background, int x, int y) {
 		this(background, x, y, background == null ? 0 : background.getWidth(),
@@ -35,10 +36,19 @@ public class LPaper extends LContainer {
 	}
 
 	public LPaper(LTexture background, int x, int y, int w, int h) {
+		this(background, null, x, y, w, h);
+	}
+
+	public LPaper(LTexture background, LColor color, int x, int y, int w, int h) {
 		super(x, y, w, h);
 		this.customRendering = true;
-		if (background != null) {
+		this.animation = new Animation();
+		if (background != null && (color == null || LColor.white.equals(color))) {
 			this.setBackground(background);
+		} else if (background == null && color != null) {
+			this.setBackground(color);
+		} else {
+			this.setBackground(LColor.black);
 		}
 		this.setElastic(true);
 		this.setLocked(true);
@@ -46,6 +56,10 @@ public class LPaper extends LContainer {
 
 	public LPaper(LTexture background) {
 		this(background, 0, 0);
+	}
+
+	public LPaper(LColor color) {
+		this((LTexture) null, color, 0, 0, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 	}
 
 	public LPaper(String fileName, int x, int y) {
@@ -60,26 +74,47 @@ public class LPaper extends LContainer {
 		this((LTexture) null, x, y, w, h);
 	}
 
+	public LPaper(LColor color, int x, int y, int w, int h) {
+		this((LTexture) null, color, x, y, w, h);
+	}
+
 	public Animation getAnimation() {
 		return this.animation;
 	}
 
-	public void setAnimation(Animation animation) {
+	public LPaper setAnimation(Animation animation) {
 		this.animation = animation;
+		return this;
 	}
 
-	public void addAnimationFrame(String fileName, long timer) {
+	public LPaper addAnimationFrame(String fileName, long timer) {
 		animation.addFrame(fileName, timer);
+		return this;
 	}
 
-	public void addAnimationFrame(LTexture image, long timer) {
+	public LPaper addAnimationFrame(LTexture image, long timer) {
 		animation.addFrame(image, timer);
+		return this;
 	}
 
 	@Override
 	protected void processTouchClicked() {
 		if (!input.isMoving()) {
 			super.processTouchClicked();
+		}
+	}
+
+	@Override
+	protected void processTouchPressed() {
+		if (!input.isMoving()) {
+			super.processTouchPressed();
+		}
+	}
+
+	@Override
+	protected void processTouchReleased() {
+		if (!input.isMoving()) {
+			super.processTouchReleased();
 		}
 	}
 
@@ -119,21 +154,7 @@ public class LPaper extends LContainer {
 	}
 
 	@Override
-	protected void processTouchPressed() {
-		if (!input.isMoving()) {
-			super.processTouchPressed();
-		}
-	}
-
-	@Override
-	protected void processTouchReleased() {
-		if (!input.isMoving()) {
-			super.processTouchReleased();
-		}
-	}
-
-	@Override
-	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
+	public void createUI(GLEx g, int x, int y) {
 
 	}
 

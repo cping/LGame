@@ -156,29 +156,28 @@ public class LButton extends LComponent implements FontSet<LButton> {
 	}
 
 	@Override
-	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
-		LButton button = (LButton) component;
-		if (buttonImage != null) {
-			if (!button.isEnabled()) {
-				g.draw(buttonImage[3], x, y, _component_baseColor);
-			} else if (button.isTouchPressed()) {
-				g.draw(buttonImage[2], x, y, _component_baseColor);
-			} else if (button.isTouchOver()) {
-				g.draw(buttonImage[1], x, y, _component_baseColor);
+	public void createUI(GLEx g, int x, int y) {
+		if (_imageUI != null) {
+			if (!isEnabled()) {
+				g.draw(_imageUI[3], x, y, _component_baseColor);
+			} else if (isTouchPressed()) {
+				g.draw(_imageUI[2], x, y, _component_baseColor);
+			} else if (isTouchOver()) {
+				g.draw(_imageUI[1], x, y, _component_baseColor);
 			} else {
 				if (type == 1) {
-					g.draw(buttonImage[0], x, y,
+					g.draw(_imageUI[0], x, y,
 							_component_baseColor == null ? LColor.gray : _component_baseColor.mul(LColor.gray));
 				} else {
-					g.draw(buttonImage[0], x, y, _component_baseColor);
+					g.draw(_imageUI[0], x, y, _component_baseColor);
 				}
 			}
 		}
 		if (text != null) {
 			int tmp = g.color();
 			g.setColor(fontColor);
-			font.drawString(g, text, x + button.getOffsetLeft() + (button.getWidth() - font.stringWidth(text)) / 2,
-					y + button.getOffsetTop() + (button.getHeight() - font.getHeight() - font.getAscent()) / 2);
+			font.drawString(g, text, x + getOffsetLeft() + (getWidth() - font.stringWidth(text)) / 2,
+					y + getOffsetTop() + (getHeight() - font.getHeight() - font.getAscent()) / 2);
 			g.setColor(tmp);
 		}
 	}

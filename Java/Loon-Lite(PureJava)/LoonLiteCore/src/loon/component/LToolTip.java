@@ -212,11 +212,10 @@ public class LToolTip extends LComponent {
 	}
 
 	@Override
-	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
-		if (component == null || _tooltip == null) {
+	public void createUI(GLEx g, int x, int y) {
+		if (_tooltip == null) {
 			return;
 		}
-		LComponent _tooltip = ((LToolTip) component).getToolTipComponent();
 		String tipText = _tooltip.getToolTipText();
 		if (!_text.getText().equals(tipText)) {
 			_text.setText(tipText);

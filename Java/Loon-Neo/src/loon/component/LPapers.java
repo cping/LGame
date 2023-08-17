@@ -179,7 +179,7 @@ public class LPapers extends LContainer {
 	}
 
 	@Override
-	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
+	public void createUI(GLEx g, int x, int y) {
 		final int size = _images.size;
 		if (size > 0) {
 			int idx = -1;

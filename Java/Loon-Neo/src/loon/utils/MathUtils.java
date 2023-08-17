@@ -1670,6 +1670,26 @@ public final class MathUtils {
 		return n;
 	}
 
+	public static int limit(int i, int min, int max) {
+		if (i < min) {
+			return min;
+		} else if (i > max) {
+			return max;
+		} else {
+			return i;
+		}
+	}
+
+	public static float limit(float i, float min, float max) {
+		if (i < min) {
+			return min;
+		} else if (i > max) {
+			return max;
+		} else {
+			return i;
+		}
+	}
+
 	public static float parseAngle(String angle, float value) {
 		if (StringUtils.isEmpty(angle)) {
 			return 0f;

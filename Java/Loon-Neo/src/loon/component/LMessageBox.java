@@ -810,7 +810,7 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 	}
 
 	@Override
-	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
+	public void createUI(GLEx g, int x, int y) {
 		drawMessage(g);
 	}
 

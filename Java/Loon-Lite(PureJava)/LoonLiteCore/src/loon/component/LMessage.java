@@ -383,7 +383,7 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 	}
 
 	@Override
-	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
+	public void createUI(GLEx g, int x, int y) {
 
 	}
 

@@ -21,7 +21,6 @@
 package loon.component;
 
 import loon.LSystem;
-import loon.LTexture;
 import loon.canvas.LColor;
 import loon.events.ActionKey;
 import loon.events.SelectAreaListener;
@@ -233,7 +232,7 @@ public class LDragging extends LComponent {
 	}
 
 	@Override
-	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
+	public void createUI(GLEx g, int x, int y) {
 		if (_component_isClose) {
 			return;
 		}

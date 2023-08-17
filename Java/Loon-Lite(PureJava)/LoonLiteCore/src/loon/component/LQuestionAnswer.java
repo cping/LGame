@@ -22,7 +22,6 @@ package loon.component;
 
 import loon.LSysException;
 import loon.LSystem;
-import loon.LTexture;
 import loon.action.collision.CollisionHelper;
 import loon.canvas.LColor;
 import loon.events.ActionKey;
@@ -676,7 +675,7 @@ public class LQuestionAnswer extends LContainer {
 	}
 
 	@Override
-	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
+	public void createUI(GLEx g, int x, int y) {
 		final int idx = this._questionIndex;
 		if (idx != -1 && _objects.size > 0) {
 			QAData o = _objects.get(idx);

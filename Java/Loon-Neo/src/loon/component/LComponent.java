@@ -78,12 +78,12 @@ public abstract class LComponent extends LObject<LContainer>
 
 	private Origin _origin = Origin.CENTER;
 
-	private LTexture[] _imageUI = null;
-
 	private Vector2f _offset = new Vector2f();
 
 	private ResizeListener<LComponent> _resizeListener;
 
+	protected LTexture[] _imageUI = null;
+	
 	protected float _fixedWidthOffset = 0f;
 
 	protected float _fixedHeightOffset = 0f;
@@ -297,7 +297,7 @@ public abstract class LComponent extends LObject<LContainer>
 
 	}
 
-	public abstract void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage);
+	public abstract void createUI(GLEx g, int x, int y);
 
 	/**
 	 * 渲染当前组件画面于指定绘图器之上
@@ -362,7 +362,7 @@ public abstract class LComponent extends LObject<LContainer>
 			if (this.customRendering) {
 				this.createCustomUI(g, newX, newY, width, height);
 			} else {
-				this.createUI(g, newX, newY, this, this._imageUI);
+				this.createUI(g, newX, newY);
 			}
 			if (isDrawSelect()) {
 				g.drawRect(newX, newY, width - 1f, height - 1f, _component_baseColor);

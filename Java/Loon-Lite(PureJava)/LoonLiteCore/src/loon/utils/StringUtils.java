@@ -2082,6 +2082,24 @@ final public class StringUtils extends CharUtils {
 	}
 
 	/**
+	 * 包含常规符号
+	 * 
+	 * @return
+	 */
+	public static boolean containsRegularSymbols(CharSequence cs) {
+		if (isEmpty(cs)) {
+			return false;
+		}
+		for (int i = 0; i < cs.length(); i++) {
+			char ch = cs.charAt(i);
+			if (!isChinese(ch) && !isAlphaOrDigit(ch) && !isNumeric(ch) && !isSingle(ch) && !isReserved(ch)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
 	 * 判定指定字符串是否仅占位而不显示
 	 * 
 	 * @param c

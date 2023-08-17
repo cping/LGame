@@ -22,7 +22,6 @@ package loon.component;
 
 import loon.LSysException;
 import loon.LSystem;
-import loon.LTexture;
 import loon.action.collision.CollisionHelper;
 import loon.canvas.LColor;
 import loon.events.ActionKey;
@@ -690,7 +689,7 @@ public class LQuestionAnswer extends LContainer {
 	}
 
 	@Override
-	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
+	public void createUI(GLEx g, int x, int y) {
 		if (_dirty) {
 			if (_qFont instanceof LFont) {
 				LSTRDictionary.get().bind((LFont) _aFont, getMessageData());

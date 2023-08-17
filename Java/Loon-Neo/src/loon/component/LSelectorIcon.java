@@ -21,7 +21,6 @@
  */
 package loon.component;
 
-import loon.LTexture;
 import loon.action.sprite.SpriteBatch;
 import loon.canvas.Canvas;
 import loon.canvas.LColor;
@@ -296,7 +295,7 @@ public class LSelectorIcon extends LComponent {
 	}
 
 	@Override
-	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
+	public void createUI(GLEx g, int x, int y) {
 		draw(g, x, y);
 	}
 

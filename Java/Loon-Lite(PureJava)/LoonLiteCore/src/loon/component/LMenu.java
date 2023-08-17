@@ -601,10 +601,9 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 	}
 
 	@Override
-	public synchronized void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
+	public synchronized void createUI(GLEx g, int x, int y) {
 		float alpha = g.alpha();
 		try {
-
 			g.setAlpha(alphaMenu);
 			switch (type) {
 			case MOVE_LEFT:

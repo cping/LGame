@@ -26,7 +26,6 @@ import loon.LTexture;
 import loon.canvas.Canvas;
 import loon.canvas.Image;
 import loon.canvas.LColor;
-import loon.component.LComponent;
 import loon.component.LContainer;
 import loon.component.skin.SkinManager;
 import loon.component.skin.TableSkin;
@@ -499,7 +498,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 	}
 
 	@Override
-	public void createUI(GLEx g, int displayX, int displayY, LComponent component, LTexture[] buttonImage) {
+	public void createUI(GLEx g, int displayX, int displayY) {
 		if (!isVisible()) {
 			return;
 		}

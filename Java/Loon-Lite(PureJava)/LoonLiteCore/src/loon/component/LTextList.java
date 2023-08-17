@@ -583,7 +583,7 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 	}
 
 	@Override
-	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
+	public void createUI(GLEx g, int x, int y) {
 		synchronized (this) {
 			if (getContainer() == null || !(getContainer() instanceof LScrollContainer)) {
 				draw(g, x, y, SysTouch.getX(), SysTouch.getY());

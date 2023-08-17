@@ -194,7 +194,7 @@ public class LToast extends LComponent implements FontSet<LToast> {
 	}
 
 	@Override
-	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
+	public void createUI(GLEx g, int x, int y) {
 		if (!isVisible()) {
 			return;
 		}

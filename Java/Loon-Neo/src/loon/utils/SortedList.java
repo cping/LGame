@@ -24,6 +24,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 
 import loon.LSysException;
+import loon.LSystem;
 
 public class SortedList<E> implements Iterable<E>, IArray {
 
@@ -315,6 +316,7 @@ public class SortedList<E> implements Iterable<E>, IArray {
 		return indexOf(o) != -1;
 	}
 
+	@Override
 	public int size() {
 		return size;
 	}
@@ -552,6 +554,28 @@ public class SortedList<E> implements Iterable<E>, IArray {
 		return (f == null) ? null : unlinkFirst(f);
 	}
 
+	public E next() {
+		Node<E> node = first;
+		if (node != null) {
+			node = node.next;
+		}
+		if (node == null) {
+			return element();
+		}
+		return node.item;
+	}
+
+	public E prev() {
+		Node<E> node = first;
+		if (node != null) {
+			node = node.prev;
+		}
+		if (node == null) {
+			return element();
+		}
+		return node.item;
+	}
+
 	public E remove() {
 		return removeFirst();
 	}
@@ -741,7 +765,7 @@ public class SortedList<E> implements Iterable<E>, IArray {
 
 	@Override
 	public String toString() {
-		return toString(',');
+		return toString(LSystem.COMMA);
 	}
 
 	public String toString(char separator) {
@@ -749,7 +773,7 @@ public class SortedList<E> implements Iterable<E>, IArray {
 			return "[]";
 		}
 		StrBuilder buffer = new StrBuilder(32);
-		buffer.append('[');
+		buffer.append(LSystem.BRACKET_START);
 		for (Node<E> x = first; x != null; x = x.next) {
 			E o = x.item;
 			if (o != null) {
@@ -759,7 +783,7 @@ public class SortedList<E> implements Iterable<E>, IArray {
 				}
 			}
 		}
-		buffer.append(']');
+		buffer.append(LSystem.BRACKET_END);
 		return buffer.toString();
 	}
 }

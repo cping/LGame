@@ -20,7 +20,6 @@
  */
 package loon.component;
 
-import loon.LTexture;
 import loon.opengl.GLEx;
 
 /**
@@ -39,8 +38,7 @@ public class LPanel extends LContainer {
 	}
 
 	@Override
-	public void createUI(GLEx g, int x, int y, LComponent component,
-			LTexture[] buttonImage) {
+	public void createUI(GLEx g, int x, int y) {
 	}
 
 	@Override

@@ -575,6 +575,7 @@ public abstract class LContainer extends LComponent implements IArray {
 		return comp;
 	}
 
+	@Override
 	public void clear() {
 		if (_component_isClose) {
 			return;
@@ -819,6 +820,10 @@ public abstract class LContainer extends LComponent implements IArray {
 		}
 	}
 
+	protected LComponent findComponentChecked(LComponent comp) {
+		return comp;
+	}
+
 	public LComponent findComponent(int x1, int y1) {
 		if (_component_isClose) {
 			return null;
@@ -835,29 +840,33 @@ public abstract class LContainer extends LComponent implements IArray {
 				final int ny = MathUtils.floor(y1 + scr.getBoxScrollY());
 				if (child.intersects(nx, ny)) {
 					LComponent comp = (!child.isContainer()) ? child : ((LContainer) child).findComponent(nx, ny);
-					LContainer container = comp.getContainer();
-					if (container != null && container.isContainer() && (container instanceof LScrollContainer)) {
-						if (container.contains(comp) && (comp.getWidth() >= container.getWidth()
-								|| comp.getHeight() >= container.getHeight())) {
-							return comp.getContainer();
+					if (comp != null) {
+						LContainer container = comp.getContainer();
+						if (container != null && container.isContainer() && (container instanceof LScrollContainer)) {
+							if (container.contains(comp) && (comp.getWidth() >= container.getWidth()
+									|| comp.getHeight() >= container.getHeight())) {
+								return findComponentChecked(comp.getContainer());
+							}
 						}
+						return findComponentChecked(comp);
 					}
-					return comp;
 				}
 			}
 			if (child != null && child.intersects(x1, y1)) {
 				LComponent comp = (!child.isContainer()) ? child : ((LContainer) child).findComponent(x1, y1);
-				LContainer container = comp.getContainer();
-				if (container != null && container.isContainer() && (container instanceof LScrollContainer)) {
-					if (container.contains(comp)
-							&& (comp.getWidth() >= container.getWidth() || comp.getHeight() >= container.getHeight())) {
-						return comp.getContainer();
+				if (comp != null) {
+					LContainer container = comp.getContainer();
+					if (container != null && container.isContainer() && (container instanceof LScrollContainer)) {
+						if (container.contains(comp) && (comp.getWidth() >= container.getWidth()
+								|| comp.getHeight() >= container.getHeight())) {
+							return findComponentChecked(comp.getContainer());
+						}
 					}
+					return findComponentChecked(comp);
 				}
-				return comp;
 			}
 		}
-		return this;
+		return findComponentChecked(this);
 	}
 
 	public int getComponentCount() {

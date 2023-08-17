@@ -116,7 +116,7 @@ public class LSlider extends LComponent {
 	}
 
 	@Override
-	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
+	public void createUI(GLEx g, int x, int y) {
 		if (_vertical) {
 			g.draw(_barImage, x + _padding, y + getHeight() / 2 - _barImageHeight / 2, getWidth() - _padding * 2,
 					_barImageHeight);

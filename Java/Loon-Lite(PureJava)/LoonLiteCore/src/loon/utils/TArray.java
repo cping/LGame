@@ -25,6 +25,7 @@ import java.util.Iterator;
 
 import loon.LRelease;
 import loon.LSysException;
+import loon.LSystem;
 import loon.events.QueryEvent;
 import loon.utils.ObjectMap.Keys;
 import loon.utils.ObjectMap.Values;
@@ -723,6 +724,10 @@ public class TArray<T> implements Iterable<T>, IArray, LRelease {
 
 	private ArrayIterable<T> _iterable;
 
+	public Iterator<T> newIterator() {
+		return new ArrayIterable<T>(this).iterator();
+	}
+
 	@Override
 	public Iterator<T> iterator() {
 		if (_iterable == null) {
@@ -870,7 +875,7 @@ public class TArray<T> implements Iterable<T>, IArray, LRelease {
 
 	@Override
 	public String toString() {
-		return toString(',');
+		return toString(LSystem.COMMA);
 	}
 
 	public String toString(char separator) {
@@ -878,13 +883,13 @@ public class TArray<T> implements Iterable<T>, IArray, LRelease {
 			return "[]";
 		T[] items = this.items;
 		StrBuilder buffer = new StrBuilder(32);
-		buffer.append('[');
+		buffer.append(LSystem.BRACKET_START);
 		buffer.append(items[0]);
 		for (int i = 1; i < size; i++) {
 			buffer.append(separator);
 			buffer.append(items[i]);
 		}
-		buffer.append(']');
+		buffer.append(LSystem.BRACKET_END);
 		return buffer.toString();
 	}
 

@@ -21,7 +21,6 @@
 package loon.component;
 
 import loon.LSystem;
-import loon.LTexture;
 import loon.canvas.LColor;
 import loon.opengl.GLEx;
 import loon.utils.html.HtmlDisplay;
@@ -56,7 +55,7 @@ public class LHtmlView extends LContainer {
 	}
 
 	@Override
-	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
+	public void createUI(GLEx g, int x, int y) {
 		display.paint(g, x, y);
 	}
 

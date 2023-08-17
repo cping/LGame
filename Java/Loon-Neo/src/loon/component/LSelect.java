@@ -375,7 +375,7 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 	}
 
 	@Override
-	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
+	public void createUI(GLEx g, int x, int y) {
 
 	}
 

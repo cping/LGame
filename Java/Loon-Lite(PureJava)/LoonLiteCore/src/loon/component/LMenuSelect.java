@@ -296,7 +296,7 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 	}
 
 	@Override
-	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
+	public void createUI(GLEx g, int x, int y) {
 		if (!isVisible()) {
 			return;
 		}

@@ -222,9 +222,9 @@ public class LTextField extends LTextBar {
 	}
 
 	@Override
-	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
+	public void createUI(GLEx g, int x, int y) {
 		addCursor();
-		super.createUI(g, x, y, component, buttonImage);
+		super.createUI(g, x, y);
 		removeCursor();
 	}
 

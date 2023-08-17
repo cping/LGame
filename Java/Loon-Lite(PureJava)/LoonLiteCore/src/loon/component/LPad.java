@@ -21,7 +21,6 @@
 package loon.component;
 
 import loon.LSystem;
-import loon.LTexture;
 import loon.action.map.Config;
 import loon.events.ActionKey;
 import loon.events.SysTouch;
@@ -194,7 +193,7 @@ public class LPad extends LComponent {
 	}
 
 	@Override
-	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
+	public void createUI(GLEx g, int x, int y) {
 		if (SysTouch.isUp()) {
 			freeClick();
 		}

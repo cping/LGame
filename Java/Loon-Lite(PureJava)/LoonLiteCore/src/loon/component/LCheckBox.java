@@ -139,7 +139,7 @@ public class LCheckBox extends LComponent implements FontSet<LCheckBox> {
 	}
 
 	@Override
-	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
+	public void createUI(GLEx g, int x, int y) {
 		IFont tmp = g.getFont();
 		g.setFont(font);
 		if (boxtoleftoftext) {

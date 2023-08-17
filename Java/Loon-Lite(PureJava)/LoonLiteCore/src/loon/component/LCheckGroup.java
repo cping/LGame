@@ -20,7 +20,6 @@
  */
 package loon.component;
 
-import loon.LTexture;
 import loon.canvas.LColor;
 import loon.events.SysTouch;
 import loon.opengl.GLEx;
@@ -45,8 +44,7 @@ public class LCheckGroup extends LComponent {
 	}
 
 	@Override
-	public void createUI(GLEx g, int x, int y, LComponent component,
-			LTexture[] buttonImage) {
+	public void createUI(GLEx g, int x, int y) {
 		for (LCheckBox check : checks) {
 			check.createUI(g);
 		}

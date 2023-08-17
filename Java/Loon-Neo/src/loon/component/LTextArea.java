@@ -699,7 +699,7 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 	}
 
 	@Override
-	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
+	public void createUI(GLEx g, int x, int y) {
 		draw(g, x, y, showType, postLine);
 	}
 

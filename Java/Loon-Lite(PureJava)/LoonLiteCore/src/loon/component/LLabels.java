@@ -22,7 +22,6 @@
 package loon.component;
 
 import loon.LSystem;
-import loon.LTexture;
 import loon.canvas.LColor;
 import loon.font.FontSet;
 import loon.font.IFont;
@@ -132,7 +131,7 @@ public class LLabels extends LComponent implements FontSet<LLabels> {
 	}
 
 	@Override
-	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
+	public void createUI(GLEx g, int x, int y) {
 		draw(g, x, y);
 	}
 

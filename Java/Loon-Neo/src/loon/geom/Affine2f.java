@@ -727,6 +727,23 @@ public class Affine2f implements LTrans, XY {
 		return this;
 	}
 
+	public Vector2f map(Vector2f dst) {
+		if (dst == null) {
+			dst = new Vector2f();
+		}
+		dst.setX(this.m00 * dst.getX() + this.m10 * dst.getY() + this.tx);
+		dst.setY(this.m01 * dst.getY() + this.m11 * dst.getY() + this.ty);
+		return dst;
+	}
+
+	public float mapX(float tx, float ty) {
+		return this.m00 * tx + this.m10 * ty + this.tx;
+	}
+
+	public float mapY(float tx, float ty) {
+		return this.m01 * tx + this.m11 * ty + this.ty;
+	}
+
 	/**
 	 * 获得矩阵转换后的X坐标
 	 * 

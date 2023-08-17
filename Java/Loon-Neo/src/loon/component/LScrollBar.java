@@ -579,7 +579,7 @@ public class LScrollBar extends LComponent {
 	}
 
 	@Override
-	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
+	public void createUI(GLEx g, int x, int y) {
 		if (!_component_visible) {
 			return;
 		}
@@ -594,7 +594,7 @@ public class LScrollBar extends LComponent {
 	}
 
 	public void paint(GLEx g) {
-		createUI(g, x(), y(), null, null);
+		createUI(g, x(), y());
 	}
 
 	public float getBoxOffsetX() {

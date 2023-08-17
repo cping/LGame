@@ -319,7 +319,7 @@ public class LRadar extends LComponent {
 	}
 
 	@Override
-	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
+	public void createUI(GLEx g, int x, int y) {
 		if (_component_isClose) {
 			return;
 		}

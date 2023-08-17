@@ -164,7 +164,7 @@ public class LTextBar extends LComponent {
 	}
 
 	@Override
-	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
+	public void createUI(GLEx g, int x, int y) {
 		float height = (_messages == null ? getHeight() : _messages.size * _font.getHeight() + 5);
 		if (_drawUI) {
 			float width = textWidth() + _font.getSize() + 5;

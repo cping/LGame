@@ -21,7 +21,6 @@
 package loon.component;
 
 import loon.LSystem;
-import loon.LTexture;
 import loon.action.sprite.ISprite;
 import loon.opengl.GLEx;
 
@@ -125,7 +124,7 @@ public class LSpriteUI extends LContainer {
 	}
 
 	@Override
-	public void createUI(GLEx g, int x, int y, LComponent component, LTexture[] buttonImage) {
+	public void createUI(GLEx g, int x, int y) {
 
 	}
 

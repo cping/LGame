@@ -29,6 +29,7 @@ import loon.font.Font.Style;
 import loon.geom.RectBox;
 import loon.utils.CharUtils;
 import loon.utils.MathUtils;
+import loon.utils.StringUtils;
 
 public class JavaFXFontMetrics {
 
@@ -93,6 +94,7 @@ public class JavaFXFontMetrics {
 	}
 
 	public RectBox getStringBounds(String str) {
+		fxtext.setFont(fxfont);
 		fxtext.setText(str);
 		Bounds b = fxtext.getBoundsInLocal();
 		return new RectBox(b.getMinX(), b.getMinY(), b.getWidth(), b.getHeight());
@@ -103,7 +105,26 @@ public class JavaFXFontMetrics {
 	}
 
 	public int stringWidth(String str) {
-		return (int) getStringBounds(str).getWidth();
+		if (str != null) {
+			fxtext.setFont(fxfont);
+			if (StringUtils.containsRegularSymbols(str)) {
+				fxtext.setText(str);
+				Bounds b = fxtext.getBoundsInLocal();
+				return (int) b.getWidth();
+			} else {
+				int width = 0;
+				for (int i = 0; i < str.length(); i++) {
+					char ch = str.charAt(i);
+					String res = String.valueOf(ch);
+					fxtext.setText(res);
+					Bounds b = fxtext.getBoundsInLocal();
+					width += b.getWidth() + (StringUtils.isAlphabet(ch) ? 0 : fdescent);
+				}
+				return width;
+
+			}
+		}
+		return 0;
 	}
 
 	public int charWidth(char ch) {
