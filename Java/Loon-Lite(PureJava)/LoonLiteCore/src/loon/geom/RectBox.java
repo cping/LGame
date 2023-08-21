@@ -150,6 +150,49 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 		return null;
 	}
 
+	public final static PointF[] getRectCorners(float x, float y, float width, float height) {
+		PointF a = new PointF(x, y);
+		PointF b = new PointF(x + height, y);
+		PointF c = new PointF(x, y + width);
+		PointF d = new PointF(x + height, y + width);
+		return new PointF[] { a, b, c, d };
+	}
+
+	public final static PointF[] getRectCorners(XYZW rect) {
+		PointF a = new PointF(rect.getX(), rect.getY());
+		PointF b = new PointF(rect.getX() + rect.getW(), rect.getY());
+		PointF c = new PointF(rect.getX(), rect.getY() + rect.getZ());
+		PointF d = new PointF(rect.getX() + rect.getW(), rect.getY() + rect.getZ());
+		return new PointF[] { a, b, c, d };
+	}
+
+	public final static TArray<PointF> getRectCornersList(XYZW rect) {
+		PointF a = new PointF(rect.getX(), rect.getY());
+		PointF b = new PointF(rect.getX() + rect.getW(), rect.getY());
+		PointF c = new PointF(rect.getX(), rect.getY() + rect.getZ());
+		PointF d = new PointF(rect.getX() + rect.getW(), rect.getY() + rect.getZ());
+		TArray<PointF> result = new TArray<PointF>();
+		result.add(a);
+		result.add(b);
+		result.add(c);
+		result.add(d);
+		return result;
+	}
+
+	public final static PointF[] getRectSegments(float x, float y, float w, float h) {
+		PointF[] c = getRectCorners(x, y, w, h);
+		return getRectSegments(c[0], c[1], c[2], c[3]);
+	}
+
+	public final static PointF[] getRectSegments(XYZW rect) {
+		PointF[] c = getRectCorners(rect);
+		return getRectSegments(c[0], c[1], c[2], c[3]);
+	}
+
+	public final static PointF[] getRectSegments(PointF left, PointF right, PointF top, PointF bottom) {
+		return new PointF[] { left, right, top, bottom, left, top, bottom, right };
+	}
+
 	public int width;
 
 	public int height;

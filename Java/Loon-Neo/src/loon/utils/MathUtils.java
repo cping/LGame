@@ -360,6 +360,16 @@ public final class MathUtils {
 		return 0;
 	}
 
+	public static int getCircleSideCount(float radius, float maxLength) {
+		float circumference = TWO_PI * radius;
+		return (int) max(circumference / maxLength, 1f);
+	}
+
+	public static int getCircleArcSideCount(float radius, float angleDeg, float maxLength) {
+		float circumference = TWO_PI * radius * (angleDeg / DEG_FULL);
+		return (int) max(circumference / maxLength, 1f);
+	}
+
 	public static boolean isNan(float v) {
 		return (v != v);
 	}

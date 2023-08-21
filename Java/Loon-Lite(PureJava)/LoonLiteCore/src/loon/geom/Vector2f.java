@@ -47,6 +47,10 @@ public class Vector2f implements Serializable, XY {
 		return temp;
 	}
 
+	public final static boolean isNan(Vector2f v) {
+		return MathUtils.isNan(v.x) || MathUtils.isNan(v.y);
+	}
+
 	public final static Vector2f ZERO() {
 		return new Vector2f(0);
 	}
@@ -60,11 +64,27 @@ public class Vector2f implements Serializable, XY {
 	}
 
 	public final static Vector2f AXIS_X() {
-		return new Vector2f(1, 0);
+		return new Vector2f(1f, 0f);
 	}
 
 	public final static Vector2f AXIS_Y() {
-		return new Vector2f(0, 1);
+		return new Vector2f(0f, 1f);
+	}
+
+	public final static Vector2f RIGHT() {
+		return AXIS_X();
+	}
+
+	public final static Vector2f LEFT() {
+		return new Vector2f(-1f, 0f);
+	}
+
+	public final static Vector2f UP() {
+		return new Vector2f(0f, -1f);
+	}
+
+	public final static Vector2f DOWN() {
+		return AXIS_Y();
 	}
 
 	public final static float angleTo(Vector2f pos) {
@@ -84,6 +104,22 @@ public class Vector2f implements Serializable, XY {
 
 	public final static Vector2f at(XY xy) {
 		return new Vector2f(xy.getX(), xy.getY());
+	}
+
+	public final static Vector2f rotationRight(Vector2f v) {
+		return new Vector2f(v.y, -v.x);
+	}
+
+	public final static Vector2f rotationLeft(Vector2f v) {
+		return new Vector2f(-v.y, v.x);
+	}
+
+	public static Vector2f rotate90CCW(Vector2f v) {
+		return rotationLeft(v);
+	}
+
+	public static Vector2f rotate90CW(Vector2f v) {
+		return rotationRight(v);
 	}
 
 	public final static Vector2f fromAngle(float angle) {
@@ -439,12 +475,24 @@ public class Vector2f implements Serializable, XY {
 		return this;
 	}
 
+	public float max() {
+		return MathUtils.max(this.x, this.y);
+	}
+
+	public float min() {
+		return MathUtils.min(this.x, this.y);
+	}
+
 	public Vector2f smoothStep(Vector2f v, float amount) {
 		return smoothStep(this, v, amount);
 	}
 
 	public Vector2f sub(float x, float y) {
 		return new Vector2f(this.x - x, this.y - y);
+	}
+
+	public Vector2f sub(float v) {
+		return new Vector2f(this.x - v, this.y - v);
 	}
 
 	public Vector2f div() {
@@ -1154,6 +1202,11 @@ public class Vector2f implements Serializable, XY {
 
 	public Vector2f projectSelf(Vector2f v) {
 		return scaleSelf(dot(v) / v.lengthSquared());
+	}
+
+	public boolean parallel(Vector2f a, Vector2f b) {
+		Vector2f rotated = rotationLeft(a);
+		return rotated.dot(b) == 0f;
 	}
 
 	public Vector2f scaleSelf(float s) {

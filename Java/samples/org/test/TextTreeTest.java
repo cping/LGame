@@ -28,6 +28,7 @@ import loon.component.LToast;
 import loon.component.LTextTree.TreeElement;
 import loon.component.LTextTree.TreeType;
 import loon.events.Touched;
+import loon.opengl.GLEx;
 import loon.utils.TArray;
 
 public class TextTreeTest extends Stage {
@@ -40,6 +41,26 @@ public class TextTreeTest extends Stage {
 
 		// 显示扩展标识
 		tree.setShowFoldFlag(true);
+		tree.setTreeListener(new LTextTree.TreeListener() {
+
+			@Override
+			public void onSelectClick(int idx) {
+				String result = tree.getSelectedResult();
+				if (result != null) {
+					// 显示选中的内容
+					LToast.makeText("你选择了:" + tree.getSelectedResult()).show();
+					// 改变当前树状态
+					tree.updateTree();
+				}
+			}
+
+			@Override
+			public void onDrawSelect(int idx, TreeElement ele, GLEx g, float x, float y) {
+				if (idx == tree.getSelected()) {
+					g.drawRect(x, y, 120, 19);
+				}
+			}
+		});
 
 		// 点击骑士
 		Touched knightTouched = new Touched() {
@@ -68,7 +89,7 @@ public class TextTreeTest extends Stage {
 				TreeElement node3 = tree.addElement("魔法骑士");
 				node3.addSub("秘银骑士");
 				node3.addSub("魔剑士");
-			//	tree.pack();
+				// tree.pack();
 			}
 		};
 
@@ -93,7 +114,7 @@ public class TextTreeTest extends Stage {
 				node2.addSub("黑巫师").addSub("大恶巫师");
 				node2.addSub("白巫师").addSub("圣光使者").addSub("泰坦", "虚空大君");
 
-			//	tree.pack();
+				// tree.pack();
 			}
 		};
 
@@ -116,7 +137,7 @@ public class TextTreeTest extends Stage {
 
 				TreeElement node2 = tree.addElement("战士").setFontColor(LColor.red);
 				node2.addSub("大战士").addSub("神圣战士", "恶魔战士").get(0).addSub("天位战士");
-			//	tree.pack();
+				// tree.pack();
 			}
 		};
 
@@ -136,21 +157,6 @@ public class TextTreeTest extends Stage {
 		add(swordBtn);
 
 		add(tree);
-
-		// 注入texttree点击事件
-		tree.up(new Touched() {
-
-			@Override
-			public void on(float x, float y) {
-				String result = tree.getSelectedResult();
-				if (result != null) {
-					// 显示选中的内容
-					LToast.makeText("你选择了:" + tree.getSelectedResult()).show();
-					// 改变当前树状态
-					tree.updateTree();
-				}
-			}
-		});
 
 		add(MultiScreenTest.getBackButton(this, 1));
 

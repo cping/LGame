@@ -48,6 +48,18 @@ import loon.utils.TArray;
  */
 public class LTextTree extends LComponent implements FontSet<LTextTree> {
 
+	public static interface TreeListener {
+
+		public void onSelectClick(int idx);
+
+		public void onDrawSelect(int idx, TreeElement ele, GLEx g, float x, float y);
+
+	}
+
+	private final static String SPACE = "   ";
+
+	private TreeListener _treeListener;
+
 	private TArray<TreeElement> _elements = new TArray<TreeElement>();
 
 	private TArray<String> _lines;
@@ -124,37 +136,53 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 
 	static class TreeNodeType {
 
+		public static TreeNodeType createLineString() {
+			return new TreeNodeType(0, "├── ", "│   ", "└── ");
+		}
+
+		public static TreeNodeType createArrowString() {
+			return new TreeNodeType(1, "↓", SPACE, "→");
+		}
+
+		public static TreeNodeType createArrowSolidString() {
+			return new TreeNodeType(2, LSystem.FLAG_TAG, SPACE, LSystem.FLAG_SELECT_TAG);
+		}
+
+		public static TreeNodeType createCricleString() {
+			return new TreeNodeType(3, "●", SPACE, "○");
+		}
+
+		public static TreeNodeType createArrowLineString() {
+			return new TreeNodeType(4, "﹀", SPACE, "〉");
+		}
+
+		public static TreeNodeType createArrowHeavyString() {
+			return new TreeNodeType(5, "▽", SPACE, "▽");
+		}
+
 		String _subTreeBranchFlag;
 
 		String _subTreeNextFlag;
 
 		String _subTreeLastFlag;
 
-		public TreeNodeType(String branch, String next, String last) {
+		int _index;
+
+		public TreeNodeType(int id, String branch, String next, String last) {
+			this._index = id;
 			this._subTreeBranchFlag = branch;
 			this._subTreeNextFlag = next;
 			this._subTreeLastFlag = last;
 		}
 
-		public static TreeNodeType createLineString() {
-			return new TreeNodeType("├── ", "│   ", "└── ");
+		public int getId() {
+			return this._index;
 		}
 
-		public static TreeNodeType createArrowString() {
-			return new TreeNodeType(LSystem.FLAG_TAG, "   ", LSystem.FLAG_TAG);
-		}
-
-		public static TreeNodeType createTriangleString() {
-			return new TreeNodeType("▽", "   ", "▽");
-		}
-
-		public static TreeNodeType createCricleString() {
-			return new TreeNodeType("○", "   ", "○");
-		}
 	}
 
 	public static enum TreeType {
-		Line, Arrow, Triangle, Cricle
+		Line, Arrow, ArrowSolid, ArrowLine, ArrowHeavy, Cricle
 	}
 
 	private TreeType _type;
@@ -236,6 +264,10 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 
 		public boolean isParentTreeHide() {
 			return _parent != null && _parent._hideChild;
+		}
+
+		public boolean hasChild() {
+			return _childs.size > 0;
 		}
 
 		public boolean isHideChild() {
@@ -435,27 +467,30 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 		if (_dirty || _lines == null) {
 			pack();
 		}
-		for (int i = 0; i < _treeNodes.size; i++) {
+		for (int i = 0; i < _treeNodes.size && i < _selectRects.length; i++) {
 			TreeNode node = _treeNodes.get(i);
 			TreeElement ele = node.getElement();
 			if (node != null && ele != null) {
 				RectF rect = _selectRects[i];
-				g.drawString(node._treeFlag, rect.x + x + offX, rect.y + y + offY, _treeColor);
+				float newX = rect.x + x + offX;
+				float newY = rect.y + y + offY;
+				g.drawString(node._treeFlag, newX, newY, _treeColor);
 				String text = _show_fold_flag
 						? ele.isHideChild() ? ele.getText() + " " + _expandFlag : ele.getText() + " " + _shrinkFlag
 						: ele.getText();
 				final float width = _font.stringWidth(node._treeFlag) + _fontSpace;
+				final float offsetX = width + newX;
 				if (ele._icon == null) {
-					g.drawString(text, width + rect.x + x + offX, rect.y + y + offY,
-							ele._fontColor == null ? _fontColor : ele._fontColor);
+					g.drawString(text, offsetX, newY, ele._fontColor == null ? _fontColor : ele._fontColor);
 				} else {
-					final float iconWidth = MathUtils.min(rect.width / 8, ele._icon.getWidth()) - 1;
+					final float iconWidth = MathUtils.min(32, ele._icon.getWidth()) - 1;
 					final float iconHeight = MathUtils.min(rect.height, ele._icon.getHeight()) - 1;
-					final float offsetX = width + rect.x + x + offX;
-					g.draw(ele._icon, offsetX, rect.y + y + offY + (rect.height - iconHeight) / 2, iconWidth,
-							iconHeight);
-					g.drawString(text, offsetX + iconWidth + 4, rect.y + y + offY,
+					g.draw(ele._icon, offsetX, newY + (rect.height - iconHeight) / 2, iconWidth, iconHeight);
+					g.drawString(text, offsetX + iconWidth + 4, newY,
 							ele._fontColor == null ? _fontColor : ele._fontColor);
+				}
+				if (_treeListener != null) {
+					_treeListener.onDrawSelect(i, ele, g, offsetX, newY);
 				}
 			}
 		}
@@ -463,7 +498,7 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 
 	private String getTreeText(String text) {
 		if (StringUtils.isEmpty(text)) {
-			return LSystem.NULL;
+			return LSystem.EMPTY;
 		}
 		return StringUtils.replace(text, "&", LSystem.EMPTY);
 	}
@@ -501,7 +536,11 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 				TreeNode node = _treeNodes.get(i);
 				if (i > 0) {
 					int idx = mes.lastIndexOf(LSystem.AMP);
-					node._treeFlag = getTreeText(mes.substring(0, idx));
+					if (idx != -1) {
+						node._treeFlag = getTreeText(mes.substring(0, idx));
+					} else {
+						node._treeFlag = LSystem.EMPTY;
+					}
 				} else {
 					node._treeFlag = LSystem.EMPTY;
 				}
@@ -555,15 +594,24 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 	@Override
 	public void processTouchPressed() {
 		super.processTouchPressed();
-		checkSelected();
+		checkSelected(false);
 	}
 
-	private void checkSelected() {
+	@Override
+	public void processTouchReleased() {
+		super.processTouchReleased();
+		checkSelected(true);
+	}
+
+	private void checkSelected(boolean clicked) {
 		if (_selectRects != null) {
 			for (int i = 0; i < _selectRects.length; i++) {
 				RectF touched = _selectRects[i];
 				if (touched != null && touched.inside(getUITouchX(), getUITouchY())) {
 					_selected = i;
+					if (_treeListener != null && clicked) {
+						_treeListener.onSelectClick(i);
+					}
 				}
 			}
 		}
@@ -641,28 +689,44 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 				TreeElement e = iterator.next();
 				TArray<StrBuilder> subtree = renderDirectoryTreeLines(e);
 				if (iterator.hasNext()) {
-					addSubtree(result, subtree);
+					addSubtree(e, result, subtree);
 				} else {
-					addLastSubtree(result, subtree);
+					addLastSubtree(e, result, subtree);
 				}
 			}
 		}
 		return result;
 	}
 
-	protected void addSubtree(TArray<StrBuilder> result, TArray<StrBuilder> subtree) {
+	protected void addSubtree(TreeElement ele, TArray<StrBuilder> result, TArray<StrBuilder> subtree) {
 		Iterator<StrBuilder> iterator = subtree.iterator();
 		StrBuilder sbr = iterator.next();
-		result.add(sbr.insert(0, _nodeType._subTreeBranchFlag.toString() + LSystem.AMP));
+		if (_nodeType._index == 0) {
+			result.add(sbr.insert(0, _nodeType._subTreeBranchFlag + LSystem.AMP));
+		} else {
+			if (ele.hasChild()) {
+				result.add(sbr.insert(0, _nodeType._subTreeBranchFlag + LSystem.AMP));
+			} else {
+				result.add(sbr.insert(0, _nodeType._subTreeLastFlag + LSystem.AMP));
+			}
+		}
 		while (iterator.hasNext()) {
-			result.add(iterator.next().insert(0, _nodeType._subTreeNextFlag.toString() + LSystem.AMP));
+			result.add(iterator.next().insert(0, _nodeType._subTreeNextFlag + LSystem.AMP));
 		}
 	}
 
-	private void addLastSubtree(TArray<StrBuilder> result, TArray<StrBuilder> subtree) {
+	private void addLastSubtree(TreeElement ele, TArray<StrBuilder> result, TArray<StrBuilder> subtree) {
 		Iterator<StrBuilder> iterator = subtree.iterator();
 		StrBuilder sbr = iterator.next();
-		result.add(sbr.insert(0, _nodeType._subTreeLastFlag.toString() + LSystem.AMP));
+		if (_nodeType._index == 0) {
+			result.add(sbr.insert(0, _nodeType._subTreeLastFlag + LSystem.AMP));
+		} else {
+			if (ele.hasChild()) {
+				result.add(sbr.insert(0, _nodeType._subTreeBranchFlag + LSystem.AMP));
+			} else {
+				result.add(sbr.insert(0, _nodeType._subTreeLastFlag + LSystem.AMP));
+			}
+		}
 		while (iterator.hasNext()) {
 			result.add(iterator.next().insert(0, LSystem.SPACE));
 		}
@@ -888,8 +952,14 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 		case Arrow:
 			_nodeType = TreeNodeType.createArrowString();
 			break;
-		case Triangle:
-			_nodeType = TreeNodeType.createTriangleString();
+		case ArrowSolid:
+			_nodeType = TreeNodeType.createArrowSolidString();
+			break;
+		case ArrowLine:
+			_nodeType = TreeNodeType.createArrowLineString();
+			break;
+		case ArrowHeavy:
+			_nodeType = TreeNodeType.createArrowHeavyString();
 			break;
 		case Cricle:
 			_nodeType = TreeNodeType.createCricleString();
@@ -905,6 +975,18 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 	public LTextTree setFontSpace(float f) {
 		this._fontSpace = f;
 		this._dirty = true;
+		return this;
+	}
+
+	public TreeListener getTreeListener() {
+		return _treeListener;
+	}
+
+	public LTextTree setTreeListener(TreeListener t) {
+		if (t == null) {
+			return this;
+		}
+		this._treeListener = t;
 		return this;
 	}
 

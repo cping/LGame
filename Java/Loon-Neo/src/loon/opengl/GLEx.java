@@ -45,6 +45,7 @@ import loon.geom.Shape;
 import loon.geom.Triangle2f;
 import loon.geom.Vector2f;
 import loon.geom.XY;
+import loon.geom.XYZW;
 import loon.opengl.GLRenderer.GLType;
 import loon.utils.Array;
 import loon.utils.GLUtils;
@@ -1901,6 +1902,10 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		return drawLine(a.getX(), a.getY(), b.getX(), b.getY(), width);
 	}
 
+	public GLEx drawLine(XY a, XY b, float width, LColor color) {
+		return drawLine(a.getX(), a.getY(), b.getX(), b.getY(), width, color);
+	}
+
 	public GLEx drawLine(float x0, float y0, float x1, float y1, LColor color) {
 		return drawLine(x0, y0, x1, y1, this.lastBrush.lineWidth, color);
 	}
@@ -1926,6 +1931,187 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 			y1 = temp;
 		}
 		line(x0, y0, x1, y1, width);
+		return this;
+	}
+
+	public GLEx drawLineGlow(float x0, float y0, float x1, float y1, LColor startColor, LColor endColor) {
+		return drawLineGlow(x0, y0, x1, y1, lastBrush.lineWidth, startColor, endColor, 10);
+	}
+
+	public GLEx drawLineGlow(float x0, float y0, float x1, float y1, float width, LColor startColor, LColor endColor,
+			int steps) {
+		return drawLineGlow(x0, y0, x1, y1, width, width * 2f, startColor, endColor, steps);
+	}
+
+	public GLEx drawLineGlow(float x0, float y0, float x1, float y1, float width, float endWidth, LColor startColor,
+			LColor endColor, int steps) {
+		if (isClosed) {
+			return this;
+		}
+		float step = (endWidth - width) / steps;
+		float r = (endColor.r - startColor.r) / steps;
+		float g = (endColor.g - startColor.g) / steps;
+		float b = (endColor.b - startColor.b) / steps;
+		float a = (endColor.a - startColor.a) / steps;
+
+		for (int i = steps; i >= 0; i--) {
+			drawLine(x0, y0, x1, y1, width + step * i, tempColor.setColor((startColor.r + r * i),
+					(startColor.g + g * i), (startColor.b + b * i), (startColor.a + a * i)));
+		}
+		return this;
+	}
+
+	public GLEx drawLines(LColor color, XY... points) {
+		return drawLines(color, this.lastBrush.lineWidth, points, false);
+	}
+
+	public GLEx drawLines(LColor color, float width, XY... points) {
+		return drawLines(color, width, points, false);
+	}
+
+	public GLEx drawLines(LColor color, float width, XY[] points, boolean smooth) {
+		if (isClosed) {
+			return this;
+		}
+		if (points.length < 2) {
+			return this;
+		}
+		if (smooth) {
+			fillCircle(points[0].getX(), points[0].getY(), width / 2, color);
+		}
+		for (int i = 0; i < points.length - 1; i++) {
+			XY cur = points[i];
+			XY next = points[i + 1];
+			if (next != null) {
+				fillCircle(next.getX(), next.getY(), width / 2, color);
+			}
+			if (cur != null && next != null) {
+				drawLine(cur, next, width, color);
+			}
+		}
+		return this;
+	}
+
+	public GLEx drawDashLine(XY start, XY end, int gaps, float width, LColor color, boolean edges) {
+		return drawDashLine(start.getX(), start.getY(), end.getX(), end.getY(), gaps, width, color, edges);
+	}
+
+	public GLEx drawDashLine(float x1, float y1, float x2, float y2, int gaps, LColor color, boolean edges) {
+		return drawDashLine(x1, y1, x2, y2, gaps, this.lastBrush.lineWidth, color, edges);
+	}
+
+	public GLEx drawDashLine(float x1, float y1, float x2, float y2, int gaps, float width, LColor color,
+			boolean edges) {
+		if (isClosed) {
+			return this;
+		}
+		if (gaps <= 0) {
+			drawLine(x1, y1, x2, y2, width, color);
+		} else {
+			Vector2f w = new Vector2f(x2 - x1, y2 - y1);
+			float l = w.length();
+			Vector2f dir = w.div(l);
+			int totalGaps = gaps * 2 + 1;
+			float size = l / totalGaps;
+			Vector2f offset = dir.mul(size);
+			Vector2f cur = new Vector2f(x1, y1);
+			for (int i = 0; i < totalGaps; i++) {
+				if (i % 2 == 0) {
+					Vector2f next = cur.add(offset);
+					if (edges) {
+						fillCircle(cur.x, cur.y, width * 0.5f, color);
+						fillCircle(next.x, next.y, width * 0.5f, color);
+					}
+					drawLine(cur, next, width, color);
+					cur = next;
+
+				} else {
+					cur = cur.add(offset);
+				}
+			}
+		}
+		return this;
+	}
+
+	public GLEx drawDashLine(XY start, XY end, int gaps, float gapSizeF, LColor color) {
+		return drawDashLine(start.getX(), start.getY(), end.getX(), end.getY(), gaps, this.lastBrush.lineWidth, color,
+				false);
+	}
+
+	public GLEx drawDashLine(XY start, XY end, int gaps, float gapSizeF, float width, LColor color, boolean edges) {
+		return drawDashLine(start.getX(), start.getY(), end.getX(), end.getY(), gaps, width, color, edges);
+	}
+
+	public GLEx drawDashLine(XY start, XY end, int gaps, float gapSizeF, float width, LColor color) {
+		return drawDashLine(start.getX(), start.getY(), end.getX(), end.getY(), gaps, gapSizeF, width, color, false);
+	}
+
+	public GLEx drawDashLine(float x1, float y1, float x2, float y2, int gaps, float gapSizeF, float width,
+			LColor color) {
+		return drawDashLine(x1, y1, x2, y2, gaps, gapSizeF, width, color, false);
+	}
+
+	public GLEx drawDashLine(float x1, float y1, float x2, float y2, int gaps, float gapSizeF, float width,
+			LColor color, boolean edges) {
+		if (isClosed) {
+			return this;
+		}
+		if (gaps <= 0) {
+			drawLine(x1, y1, x2, y2, width, color);
+		} else {
+			Vector2f cur = new Vector2f(x1, y1);
+			Vector2f w = new Vector2f(x2, y2).sub(cur);
+			float l = w.length();
+			Vector2f dir = w.div(l);
+
+			float totalGapSize = l * gapSizeF;
+			float remaining = l - totalGapSize;
+			float gapSize = totalGapSize / gaps;
+			float size = remaining / (gaps + 1);
+
+			Vector2f gapOffset = dir.mul(gapSize);
+			Vector2f offset = dir.mul(size);
+
+			int totalGaps = gaps * 2 + 1;
+
+			for (int i = 0; i < totalGaps; i++) {
+				if (i % 2 == 0) {
+					Vector2f next = cur.add(offset);
+					if (edges) {
+						fillCircle(cur.x, cur.y, width * 0.5f, color);
+						fillCircle(next.x, next.y, width * 0.5f, color);
+					}
+					drawLine(cur, next, width, color);
+					cur = next;
+				} else {
+					cur = cur.add(gapOffset);
+				}
+			}
+		}
+		return this;
+	}
+
+	public GLEx drawGrid(XYZW rect, int lines, float size, LColor color) {
+		return drawGrid(rect.getX(), rect.getY(), rect.getZ(), rect.getW(), lines, size, color);
+	}
+
+	public GLEx drawGrid(float x, float y, float w, float h, int lines, float size, LColor color) {
+		if (isClosed) {
+			return this;
+		}
+		float width = w;
+		float height = h;
+		float hGap = width / lines;
+		float vGap = height / lines;
+		Vector2f tl = new Vector2f(x, y);
+		Vector2f tr = tl.add(width - hGap, 0f);
+		Vector2f bl = tl.add(0f, height - vGap);
+		for (int l = 0; l < lines; l++) {
+			Vector2f xOffset = new Vector2f(hGap, 0f).mul(l);
+			Vector2f yOffset = new Vector2f(0f, vGap).mul(l);
+			drawLine(tl.add(xOffset), bl.add(xOffset), size, color);
+			drawLine(tl.add(yOffset), tr.add(yOffset), size, color);
+		}
 		return this;
 	}
 
@@ -1967,48 +2153,6 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 	public GLEx drawAngleLine(float x, float y, float angle, float length, float width) {
 		tempLocation.set(1f).setLength(length).setAngle(angle);
 		return drawLine(x, y, x + tempLocation.x(), y + tempLocation.y(), width);
-	}
-
-	public GLEx drawDashCircle(float x, float y, float radius) {
-		return drawDashCircle(x, y, radius, this.lastBrush.lineWidth);
-	}
-
-	public GLEx drawDashCircle(float x, float y, float radius, float width, LColor color) {
-		int argb = this.lastBrush.baseColor;
-		setColor(color);
-		drawDashCircle(x, y, radius, width);
-		setColor(argb);
-		return this;
-	}
-
-	public GLEx drawDashCircle(float x, float y, float radius, float width) {
-		return drawDashCircle(x, y, 2, radius, width);
-	}
-
-	public GLEx drawDashCircle(float x, float y, int side, float radius, float width) {
-		final float newRadius = radius / side;
-		final float newX = x + newRadius;
-		final float newY = y + newRadius;
-		float scaleFactor = 0.6f;
-		int sides = 10 + MathUtils.floor(newRadius * scaleFactor);
-		if (sides % side == 1) {
-			sides++;
-		}
-		tempLocation.set(0f);
-
-		for (int i = 0; i < sides; i++) {
-			if (i % side == 0) {
-				continue;
-			}
-			tempLocation.set(newRadius, 0).setAngle(360f / sides * i + 90);
-			float x1 = tempLocation.x;
-			float y1 = tempLocation.y;
-
-			tempLocation.set(newRadius, 0).setAngle(360f / sides * (i + 1) + 90);
-
-			drawLine(x1 + newX, y1 + newY, tempLocation.x + newX, tempLocation.y + newY, width);
-		}
-		return this;
 	}
 
 	/**
@@ -3007,6 +3151,92 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		return drawRhombus(x, y, amount, 1, radius, 0, color);
 	}
 
+	public GLEx drawDashCircle(XY pos, float radius, int sidesPerGap, LColor color) {
+		return drawDashCircle(pos.getX(), pos.getY(), radius, sidesPerGap, color);
+	}
+
+	public GLEx drawDashCircle(float centerX, float centerY, float radius, int sidesPerGap, LColor color) {
+		return drawDashCircle(centerX, centerY, radius, sidesPerGap, lastBrush.lineWidth, color, 10f, false);
+	}
+
+	public GLEx drawDashCircle(float centerX, float centerY, float radius, int sidesPerGap, float width, LColor color) {
+		return drawDashCircle(centerX, centerY, radius, sidesPerGap, width, color, 10f, false);
+	}
+
+	public GLEx drawDashCircle(float centerX, float centerY, float radius, int sidesPerGap, float width, LColor color,
+			float sideLength, boolean edges) {
+		if (isClosed) {
+			return this;
+		}
+		float anglePieceRad = MathUtils.TWO_PI;
+		int sides = MathUtils.getCircleArcSideCount(radius, MathUtils.abs(anglePieceRad * MathUtils.RAD_TO_DEG),
+				sideLength);
+		float angleStep = MathUtils.toDegrees(anglePieceRad / sides);
+		float size = sideLength * sidesPerGap;
+		float remainingSize = size;
+		boolean gap = false;
+		tempLocation.set(centerX, centerY);
+		for (int i = 0; i < sides; i++) {
+			if (!gap) {
+				Vector2f start = tempLocation.add(Vector2f.RIGHT().mul(radius).rotate(angleStep * i));
+				Vector2f end = tempLocation.add(Vector2f.RIGHT().mul(radius).rotate(angleStep * (i + 1)));
+				if (edges) {
+					fillCircle(start, width * 0.5f, color);
+					fillCircle(end, width * 0.5f, color);
+				}
+				drawLine(start, end, width, color);
+			}
+			remainingSize -= sideLength;
+			if (remainingSize <= 0f) {
+				gap = !gap;
+				remainingSize = size;
+			}
+		}
+		return this;
+	}
+	
+	public GLEx drawDashCircle(float x, float y, float radius) {
+		return drawDashCircle(x, y, radius, this.lastBrush.lineWidth);
+	}
+
+	public GLEx drawDashCircle(float x, float y, float radius, float width, LColor color) {
+		int argb = this.lastBrush.baseColor;
+		setColor(color);
+		drawDashCircle(x, y, radius, width);
+		setColor(argb);
+		return this;
+	}
+
+	public GLEx drawDashCircle(float x, float y, float radius, float width) {
+		return drawDashCircle(x, y, 2, radius, width);
+	}
+
+	public GLEx drawDashCircle(float x, float y, int side, float radius, float width) {
+		final float newRadius = radius / side;
+		final float newX = x + newRadius;
+		final float newY = y + newRadius;
+		float scaleFactor = 0.6f;
+		int sides = 10 + MathUtils.floor(newRadius * scaleFactor);
+		if (sides % side == 1) {
+			sides++;
+		}
+		tempLocation.set(0f);
+
+		for (int i = 0; i < sides; i++) {
+			if (i % side == 0) {
+				continue;
+			}
+			tempLocation.set(newRadius, 0).setAngle(360f / sides * i + 90);
+			float x1 = tempLocation.x;
+			float y1 = tempLocation.y;
+
+			tempLocation.set(newRadius, 0).setAngle(360f / sides * (i + 1) + 90);
+
+			drawLine(x1 + newX, y1 + newY, tempLocation.x + newX, tempLocation.y + newY, width);
+		}
+		return this;
+	}
+	
 	/**
 	 * 以虚线绘制菱形区域
 	 * 
@@ -3391,6 +3621,73 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		setColor(color);
 		setRect(x1, y1, x2, y2, false);
 		setColor(argb);
+		return this;
+	}
+
+	public GLEx drawDashRect(float x, float y, float w, float h, int gapsPerSide, float width, LColor color) {
+		return drawDashRect(x, y, w, h, gapsPerSide, width, color, false, false);
+	}
+
+	public GLEx drawDashRect(XYZW rect, int gapsPerSide, float width, LColor color) {
+		return drawDashRect(rect.getX(), rect.getY(), rect.getZ(), rect.getW(), gapsPerSide, width, color, false,
+				false);
+	}
+
+	public GLEx drawDashRect(float x, float y, float w, float h, int gapsPerSide, float width, LColor color,
+			boolean round, boolean edges) {
+		if (isClosed) {
+			return this;
+		}
+		if (round) {
+			PointF[] rect = RectBox.getRectCorners(x, y, w, h);
+			float r = width * 0.5f;
+			fillCircle(rect[0], r, color);
+			fillCircle(rect[1], r, color);
+			fillCircle(rect[2], r, color);
+			fillCircle(rect[3], r, color);
+		}
+
+		PointF[] segments = RectBox.getRectSegments(x, y, w, h);
+
+		for (int i = 0; i < segments.length; i += 2) {
+			PointF start = segments[i];
+			PointF end = segments[i + 1];
+			drawDashLine(start, end, gapsPerSide, width, color, edges);
+		}
+		return this;
+	}
+
+	public GLEx drawDashRect(float x, float y, float w, float h, int gapsPerSide, float gapSizeF, float width,
+			LColor color) {
+		return drawDashRect(x, y, w, h, gapsPerSide, gapSizeF, width, color, false, false);
+	}
+
+	public GLEx drawDashRect(XYZW rect, int gapsPerSide, float gapSizeF, float width, LColor color) {
+		return drawDashRect(rect.getX(), rect.getY(), rect.getZ(), rect.getW(), gapsPerSide, gapSizeF, width, color,
+				false, false);
+	}
+
+	public GLEx drawDashRect(float x, float y, float w, float h, int gapsPerSide, float gapSizeF, float width,
+			LColor color, boolean round, boolean edges) {
+		if (isClosed) {
+			return this;
+		}
+		if (round) {
+			PointF[] rect = RectBox.getRectCorners(x, y, w, h);
+			float r = width * 0.5f;
+			fillCircle(rect[0], r, color);
+			fillCircle(rect[1], r, color);
+			fillCircle(rect[2], r, color);
+			fillCircle(rect[3], r, color);
+		}
+
+		PointF[] segments = RectBox.getRectSegments(x, y, w, h);
+
+		for (int i = 0; i < segments.length; i += 2) {
+			PointF start = segments[i];
+			PointF end = segments[i + 1];
+			drawDashLine(start, end, gapsPerSide, gapSizeF, width, color, edges);
+		}
 		return this;
 	}
 
@@ -3829,6 +4126,14 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 
 	public GLEx fillCircle(float x, float y, float radius) {
 		return fillOval(x, y, radius, radius);
+	}
+
+	public GLEx fillCircle(XY pos, float radius) {
+		return fillOval(pos.getX(), pos.getY(), radius, radius);
+	}
+
+	public GLEx fillCircle(XY pos, float radius, LColor color) {
+		return fillOval(pos.getX(), pos.getY(), radius, radius, color);
 	}
 
 	public GLEx fillCircle(float x, float y, float radius, LColor color) {
