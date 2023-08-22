@@ -82,6 +82,8 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 		return _objectState.get() == State.UNKNOWN;
 	}
 
+	private final static String _SYS_DEFAULT = "default";
+
 	// 无状态
 	public static final int NOT = -1;
 	// 真
@@ -91,8 +93,24 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 
 	protected T _objectSuper = null;
 
-	public void setSuper(T s) {
+	private String _group = _SYS_DEFAULT;
+
+	public LObject<T> setGroup(String group) {
+		this._group = group;
+		return this;
+	}
+
+	public String getGroup() {
+		return _group;
+	}
+
+	public boolean isGroup(String group) {
+		return this._group.equals(group);
+	}
+
+	public LObject<T> setSuper(T s) {
 		this._objectSuper = s;
+		return this;
 	}
 
 	public T getSuper() {

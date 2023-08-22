@@ -23,6 +23,7 @@ package loon.particle;
 import loon.LSysException;
 import loon.LSystem;
 import loon.canvas.LColor;
+import loon.geom.RangeF;
 import loon.geom.Vector2f;
 import loon.opengl.BlendMethod;
 import loon.particle.ConfigurableEmitter.LinearInterpolator;
@@ -196,7 +197,7 @@ public class ParticleConfig {
 		emitter.replay();
 	}
 
-	private static void parseRangeElement(XMLElement element, ConfigurableEmitter.Range range) {
+	private static void parseRangeElement(XMLElement element, RangeF range) {
 		if (element == null) {
 			return;
 		}

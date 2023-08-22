@@ -25,6 +25,7 @@ import loon.canvas.LColor;
 import loon.geom.BoxSize;
 import loon.geom.Line;
 import loon.geom.Point;
+import loon.geom.RangeF;
 import loon.geom.RectBox;
 import loon.geom.Shape;
 import loon.geom.ShapeUtils;
@@ -571,6 +572,68 @@ public final class CollisionHelper extends ShapeUtils {
 		rect.offset(x, y);
 	}
 
+	public static final RectBox constructRect(Vector2f topLeft, Vector2f bottomRight) {
+		return new RectBox(topLeft.x, topLeft.y, bottomRight.x - topLeft.x, bottomRight.y - topLeft.y);
+	}
+
+	public static final RectBox constructRect(Vector2f pos, Vector2f size, Vector2f alignement) {
+		Vector2f offset = size.mul(alignement);
+		Vector2f topLeft = pos.sub(offset);
+		return new RectBox(topLeft.x, topLeft.y, size.x, size.y);
+	}
+
+	public static final Object[] collideField(RectBox rect, Vector2f pos, float radius) {
+		boolean collided = false;
+		Vector2f hitPoint = pos;
+		Vector2f result = new Vector2f();
+		Vector2f newPos = pos;
+		if (pos.x + radius > rect.x + rect.width) {
+			hitPoint = new Vector2f(rect.x + rect.width, pos.y);
+			newPos.x = hitPoint.x - radius;
+			result = new Vector2f(-1f, 0f);
+			collided = true;
+		} else if (pos.x - radius < rect.x) {
+			hitPoint = new Vector2f(rect.x, pos.y);
+			newPos.x = hitPoint.x + radius;
+			result = new Vector2f(1f, 0f);
+			collided = true;
+		}
+
+		if (pos.y + radius > rect.y + rect.height) {
+			hitPoint = new Vector2f(pos.x, rect.y + rect.height);
+			newPos.y = hitPoint.y - radius;
+			result = new Vector2f(0f, -1f);
+			collided = true;
+		} else if (pos.y - radius < rect.y) {
+			hitPoint = new Vector2f(pos.x, rect.y);
+			newPos.y = hitPoint.y + radius;
+			result = new Vector2f(0f, 1f);
+			collided = true;
+		}
+
+		return new Object[] { collided, hitPoint, result, newPos };
+	}
+
+	public static final Object[] collideAroundField(RectBox rect, Vector2f pos, float radius) {
+		boolean outOfBounds = false;
+		Vector2f newPos = pos;
+		if (pos.x + radius > rect.x + rect.width) {
+			newPos = new Vector2f(rect.x, pos.y);
+			outOfBounds = true;
+		} else if (pos.x - radius < rect.x) {
+			newPos = new Vector2f(rect.x + rect.width, pos.y);
+			outOfBounds = true;
+		}
+		if (pos.y + radius > rect.y + rect.height) {
+			newPos = new Vector2f(pos.x, rect.y);
+			outOfBounds = true;
+		} else if (pos.y - radius < rect.y) {
+			newPos = new Vector2f(pos.x, rect.y + rect.height);
+			outOfBounds = true;
+		}
+		return new Object[] { outOfBounds, newPos };
+	}
+
 	public static final Line getLine(Shape shape, int s, int e) {
 		float[] start = shape.getPoint(s);
 		float[] end = shape.getPoint(e);
@@ -582,6 +645,24 @@ public final class CollisionHelper extends ShapeUtils {
 		float[] end = shape.getPoint(e);
 		Line line = new Line(sx, sy, end[0], end[1]);
 		return line;
+	}
+
+	public static final boolean checkOverlappingRange(float minA, float maxA, float minB, float maxB) {
+		if (maxA < minA) {
+			float temp = minA;
+			minA = maxA;
+			maxA = temp;
+		}
+		if (maxB < minB) {
+			float temp = minB;
+			minB = maxB;
+			maxB = temp;
+		}
+		return minB <= maxA && minA <= maxB;
+	}
+
+	public static final boolean checkOverlappingRange(RangeF a, RangeF b) {
+		return checkOverlappingRange(a.getMin(), a.getMax(), b.getMin(), b.getMax());
 	}
 
 	public static final boolean checkAABBvsAABB(XY p1, float w1, float h1, XY p2, float w2, float h2) {
@@ -634,8 +715,36 @@ public final class CollisionHelper extends ShapeUtils {
 			float r2) {
 		float distance = (x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1) + (z2 - z1) * (z2 - z1);
 		float radiusSumSq = (r1 + r2) * (r1 + r2);
-
 		return distance <= radiusSumSq;
+	}
+
+	public static final boolean checkSegmentOnOneSide(Vector2f axisPos, Vector2f axisDir, Vector2f segmentPos,
+			Vector2f segmentEnd) {
+		Vector2f d1 = segmentPos.sub(axisPos);
+		Vector2f d2 = segmentEnd.sub(axisPos);
+		Vector2f n = Vector2f.rotationLeft(axisDir);
+		return n.dot(d1) * n.dot(d2) > 0f;
+	}
+
+	public static final boolean checkSeperateAxisRect(Vector2f axisStart, Vector2f axisEnd, Vector2f rectPos,
+			Vector2f rectSize, Vector2f rectAlignement) {
+		Vector2f result = axisStart.sub(axisEnd);
+		Vector2f edgeAStart = getRectCorner(rectPos, rectSize, rectAlignement, 0);
+		Vector2f edgeAEnd = getRectCorner(rectPos, rectSize, rectAlignement, 1);
+		Vector2f edgeBStart = getRectCorner(rectPos, rectSize, rectAlignement, 2);
+		Vector2f edgeBEnd = getRectCorner(rectPos, rectSize, rectAlignement, 3);
+
+		RangeF edgeARange = getProjectSegment(edgeAStart, edgeAEnd, result);
+		RangeF edgeBRange = getProjectSegment(edgeBStart, edgeBEnd, result);
+		RangeF projection = getRangeHull(edgeARange, edgeBRange);
+
+		RangeF axisRange = getProjectSegment(axisStart, axisEnd, result);
+		return !checkOverlappingRange(axisRange, projection);
+	}
+
+	public static final RangeF getProjectSegment(Vector2f pos, Vector2f end, Vector2f onto) {
+		Vector2f unitOnto = onto.nor();
+		return new RangeF(unitOnto.dot(pos), unitOnto.dot(end));
 	}
 
 	public static final float getJumpVelocity(float gravity, float distance) {
@@ -817,6 +926,61 @@ public final class CollisionHelper extends ShapeUtils {
 	}
 
 	/**
+	 * 返回指定矩形间的对应碰撞点集合
+	 * 
+	 * @param src
+	 * @param dst
+	 * @return
+	 */
+	public static TArray<RectBox> getNineTiles(final RectBox src, final RectBox dst) {
+		TArray<RectBox> tiles = new TArray<RectBox>(9);
+
+		// topLeft
+		Vector2f tl0 = new Vector2f(dst.x, dst.y);
+		Vector2f br0 = new Vector2f(src.x, src.y);
+
+		// topCenter
+		Vector2f tl1 = new Vector2f(src.x, dst.y);
+		Vector2f br1 = new Vector2f(src.x + src.width, src.y);
+
+		// topRight
+		Vector2f tl2 = new Vector2f(src.x + src.width, dst.y);
+		Vector2f br2 = new Vector2f(dst.x + dst.width, src.y);
+
+		// rightCenter
+		Vector2f tl3 = br1;
+		Vector2f br3 = new Vector2f(dst.x + dst.width, src.y + src.height);
+
+		// bottomRight
+		Vector2f tl4 = new Vector2f(src.x + src.width, src.y + src.height);
+		Vector2f br4 = new Vector2f(dst.x + dst.width, dst.y + dst.height);
+
+		// bottomCenter
+		Vector2f tl5 = new Vector2f(src.x, src.y + src.height);
+		Vector2f br5 = new Vector2f(src.x + src.width, dst.y + dst.height);
+
+		// bottomLeft
+		Vector2f tl6 = new Vector2f(dst.x, src.y + src.height);
+		Vector2f br6 = new Vector2f(src.x, dst.y + dst.height);
+
+		// leftCenter
+		Vector2f tl7 = new Vector2f(dst.x, src.y);
+		Vector2f br7 = tl5;
+
+		tiles.add(constructRect(tl0, br0));
+		tiles.add(constructRect(tl1, br1));
+		tiles.add(constructRect(tl2, br2));
+		tiles.add(constructRect(tl7, br7));
+		tiles.add(src);
+		tiles.add(constructRect(tl3, br3));
+		tiles.add(constructRect(tl6, br6));
+		tiles.add(constructRect(tl5, br5));
+		tiles.add(constructRect(tl4, br4));
+
+		return tiles;
+	}
+
+	/**
 	 * 获得指定线经过的点
 	 * 
 	 * @param line
@@ -867,4 +1031,25 @@ public final class CollisionHelper extends ShapeUtils {
 		return results;
 	}
 
+	private static final RangeF getRangeHull(RangeF a, RangeF b) {
+		return new RangeF(a.getMin() < b.getMin() ? a.getMin() : b.getMin(),
+				a.getMax() > b.getMax() ? a.getMax() : b.getMax());
+	}
+
+	public static final Vector2f getRectCorner(Vector2f rectPos, Vector2f rectSize, Vector2f rectAlignement,
+			int corner) {
+		return getRectCorner(constructRect(rectPos, rectSize, rectAlignement), corner);
+	}
+
+	public static final Vector2f getRectCorner(RectBox rect, int corner) {
+		return getRectCornersList(rect)[corner % 4];
+	}
+
+	public static Vector2f[] getRectCornersList(RectBox rect) {
+		Vector2f tl = new Vector2f(rect.x, rect.y);
+		Vector2f tr = new Vector2f(rect.x + rect.width, rect.y);
+		Vector2f bl = new Vector2f(rect.x, rect.y + rect.height);
+		Vector2f br = new Vector2f(rect.x + rect.width, rect.y + rect.height);
+		return new Vector2f[] { tl, tr, br, bl };
+	}
 }

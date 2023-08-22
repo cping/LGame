@@ -23,6 +23,7 @@ package loon.particle;
 import loon.LTexture;
 import loon.LSystem;
 import loon.canvas.LColor;
+import loon.geom.RangeF;
 import loon.geom.Vector2f;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
@@ -39,25 +40,25 @@ public class ConfigurableEmitter implements ParticleEmitter {
 		relativePath = path;
 	}
 
-	public Range spawnInterval = new Range(100, 100);
+	public RangeF spawnInterval = new RangeF(100, 100);
 
-	public Range spawnCount = new Range(5, 5);
+	public RangeF spawnCount = new RangeF(5, 5);
 
-	public Range initialLife = new Range(1000, 1000);
+	public RangeF initialLife = new RangeF(1000, 1000);
 
-	public Range initialSize = new Range(10, 10);
+	public RangeF initialSize = new RangeF(10, 10);
 
-	public Range xOffset = new Range(0, 0);
+	public RangeF xOffset = new RangeF(0, 0);
 
-	public Range yOffset = new Range(0, 0);
+	public RangeF yOffset = new RangeF(0, 0);
 
 	public RandomValue spread = new RandomValue(360);
 
 	public SimpleValue angularOffset = new SimpleValue(0);
 
-	public Range initialDistance = new Range(0, 0);
+	public RangeF initialDistance = new RangeF(0, 0);
 
-	public Range speed = new Range(50, 50);
+	public RangeF speed = new RangeF(50, 50);
 
 	public SimpleValue growthFactor = new SimpleValue(0);
 
@@ -65,7 +66,7 @@ public class ConfigurableEmitter implements ParticleEmitter {
 
 	public SimpleValue windFactor = new SimpleValue(0);
 
-	public Range length = new Range(1000, 1000);
+	public RangeF length = new RangeF(1000, 1000);
 
 	public TArray<ColorRecord> colors = new TArray<ColorRecord>();
 
@@ -81,7 +82,7 @@ public class ConfigurableEmitter implements ParticleEmitter {
 
 	public LinearInterpolator scaleY;
 
-	public Range emitCount = new Range(1000, 1000);
+	public RangeF emitCount = new RangeF(1000, 1000);
 
 	public int usePoints = ParticleParticle.INHERIT_POINTS;
 
@@ -534,51 +535,6 @@ public class ConfigurableEmitter implements ParticleEmitter {
 	public ConfigurableEmitter addColorPoint(float pos, LColor col) {
 		colors.add(new ColorRecord(pos, col));
 		return this;
-	}
-
-	public class Range {
-
-		private float max;
-
-		private float min;
-
-		private boolean enabled = false;
-
-		private Range(float min, float max) {
-			this.min = min;
-			this.max = max;
-		}
-
-		public float random() {
-			return (min + (MathUtils.random() * (max - min)));
-		}
-
-		public boolean isEnabled() {
-			return enabled;
-		}
-
-		public Range setEnabled(boolean enabled) {
-			this.enabled = enabled;
-			return this;
-		}
-
-		public float getMax() {
-			return max;
-		}
-
-		public Range setMax(float max) {
-			this.max = max;
-			return this;
-		}
-
-		public float getMin() {
-			return min;
-		}
-
-		public Range setMin(float min) {
-			this.min = min;
-			return this;
-		}
 	}
 
 	@Override

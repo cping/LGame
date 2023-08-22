@@ -2719,6 +2719,17 @@ public class GLEx implements LRelease {
 			fillRect(x, y, width, height);
 			return this;
 		}
+		if (radius < 0) {
+			throw new LSysException("radius > 0");
+		}
+		if (radius == 0) {
+			fillRect(x, y, width, height);
+			return this;
+		}
+		int mr = (int) MathUtils.min(width, height) / 2;
+		if (radius > mr) {
+			radius = mr;
+		}
 		Canvas canvas = getCanvas();
 		canvas.setTransform(tx());
 		LColor color = canvas.getFilltoLColor();

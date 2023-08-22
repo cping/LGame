@@ -484,7 +484,8 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 				if (ele._icon == null) {
 					g.drawString(text, offsetX, newY, ele._fontColor == null ? _fontColor : ele._fontColor);
 				} else {
-					final float iconWidth = MathUtils.min(32, ele._icon.getWidth()) - 1;
+					final float iconWidth = MathUtils.max(_font.getSize(),
+							MathUtils.min(MathUtils.min(rect.width, rect.height), ele._icon.getWidth()) - 1);
 					final float iconHeight = MathUtils.min(rect.height, ele._icon.getHeight()) - 1;
 					g.draw(ele._icon, offsetX, newY + (rect.height - iconHeight) / 2, iconWidth, iconHeight);
 					g.drawString(text, offsetX + iconWidth + 4, newY,
