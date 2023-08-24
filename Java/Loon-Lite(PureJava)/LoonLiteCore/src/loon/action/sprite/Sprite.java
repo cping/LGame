@@ -1486,6 +1486,13 @@ public class Sprite extends LObject<ISprite>
 
 	public TArray<ISprite> getChildren() {
 		return _childrens;
+	}	
+
+	public boolean hasChild(ISprite e) {
+		if (_childrens == null) {
+			return false;
+		}
+		return this._childrens.contains(e);
 	}
 
 	public ResizeListener<Sprite> getResizeListener() {

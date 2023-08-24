@@ -45,7 +45,7 @@ public class Circle extends Ellipse {
 
 		return out;
 	}
-	
+
 	public static Circle at(String v) {
 		if (StringUtils.isEmpty(v)) {
 			return new Circle();
@@ -169,32 +169,6 @@ public class Circle extends Ellipse {
 		return collideBounds(other);
 	}
 
-	/**
-	 * 检查当前圆形是否包含指定点
-	 * 
-	 * @param xy
-	 * @return
-	 */
-	public boolean contains(XY xy) {
-		if (xy == null) {
-			return false;
-		}
-		return contains(xy.getX(), xy.getY());
-	}
-
-	/**
-	 * 检查当前圆形是否包含指定直线
-	 * 
-	 * @param line
-	 * @return
-	 */
-	public boolean contains(Line line) {
-		if (line == null) {
-			return false;
-		}
-		return contains(line.getX1(), line.getY1()) && contains(line.getX2(), line.getY2());
-	}
-
 	@Override
 	protected void findCenter() {
 		center = new float[2];
@@ -275,14 +249,6 @@ public class Circle extends Ellipse {
 		return intersects;
 	}
 
-	@Override
-	public boolean contains(Shape other) {
-		if (other instanceof Circle) {
-			return contains((Circle) other);
-		}
-		return super.contains(other);
-	}
-
 	public float getLeft() {
 		return this.x - this.boundingCircleRadius;
 	}
@@ -299,6 +265,19 @@ public class Circle extends Ellipse {
 		return this.y + this.boundingCircleRadius;
 	}
 
+	@Override
+	public boolean contains(float x, float y) {
+		if (this.boundingCircleRadius <= 0f) {
+			return false;
+		}
+		final float r2 = this.boundingCircleRadius * this.boundingCircleRadius;
+		float dx = (this.x - x);
+		float dy = (this.y - y);
+		dx *= dx;
+		dy *= dy;
+		return (dx + dy <= r2);
+	}
+
 	public boolean contains(Circle c) {
 		final float radiusDiff = boundingCircleRadius - c.boundingCircleRadius;
 		if (radiusDiff < 0f) {
@@ -309,6 +288,40 @@ public class Circle extends Ellipse {
 		final float dst = dx * dx + dy * dy;
 		final float radiusSum = boundingCircleRadius + c.boundingCircleRadius;
 		return (!(radiusDiff * radiusDiff < dst) && (dst < radiusSum * radiusSum));
+	}
+
+	/**
+	 * 检查当前圆形是否包含指定点
+	 * 
+	 * @param xy
+	 * @return
+	 */
+	public boolean contains(XY xy) {
+		if (xy == null) {
+			return false;
+		}
+		return contains(xy.getX(), xy.getY());
+	}
+
+	/**
+	 * 检查当前圆形是否包含指定直线
+	 * 
+	 * @param line
+	 * @return
+	 */
+	public boolean contains(Line line) {
+		if (line == null) {
+			return false;
+		}
+		return contains(line.getX1(), line.getY1()) && contains(line.getX2(), line.getY2());
+	}
+
+	@Override
+	public boolean contains(Shape other) {
+		if (other instanceof Circle) {
+			return contains((Circle) other);
+		}
+		return super.contains(other);
 	}
 
 	public float distanceTo(XY target) {

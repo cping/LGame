@@ -1085,6 +1085,10 @@ public class Vector4f implements Serializable, XYZW, SetXYZW {
 		return this;
 	}
 
+	public ObservableXYZW<Vector4f> observable(XYChange<Vector4f> v) {
+		return ObservableXYZW.at(v, this, this);
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

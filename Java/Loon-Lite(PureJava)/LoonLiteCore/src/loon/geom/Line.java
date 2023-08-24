@@ -226,6 +226,26 @@ public class Line extends Shape {
 		return end.getY();
 	}
 
+	public Line setX1(float x) {
+		start.setX(x);
+		return this;
+	}
+
+	public Line setY1(float y) {
+		start.setY(y);
+		return this;
+	}
+
+	public Line setX2(float x) {
+		end.setX(x);
+		return this;
+	}
+
+	public Line setY2(float y) {
+		end.setY(y);
+		return this;
+	}
+
 	public TArray<Point> getBresenhamPoints(int stepRate) {
 		return getBresenhamPoints(stepRate, null);
 	}
@@ -286,7 +306,7 @@ public class Line extends Shape {
 		return result;
 	}
 
-	public void getClosestPoint(Vector2f point, Vector2f result) {
+	public Line getClosestPoint(Vector2f point, Vector2f result) {
 		loc.set(point);
 		loc.sub(start);
 
@@ -296,15 +316,16 @@ public class Line extends Shape {
 
 		if (projDistance < 0) {
 			result.set(start);
-			return;
+			return this;
 		}
 		if (projDistance > 1) {
 			result.set(end);
-			return;
+			return this;
 		}
 
 		result.x = start.getX() + projDistance * vec.getX();
 		result.y = start.getY() + projDistance * vec.getY();
+		return this;
 	}
 
 	public boolean intersects(Line other) {
@@ -395,6 +416,23 @@ public class Line extends Shape {
 		}
 
 		return false;
+	}
+
+	public Line increaseDistance(float offset) {
+		final float dx = this.getX2() - this.getX1();
+		final float dy = this.getY2() - this.getY1();
+		final float currentDistance = MathUtils.sqrt(dx * dx + dy * dy);
+
+		final float unitVectorX = dx / currentDistance;
+		final float unitVectorY = dy / currentDistance;
+
+		final float newDistance = currentDistance + offset;
+
+		this.setX1(this.getX1() - unitVectorX * (offset / 2f));
+		this.setY1(this.getY1() - unitVectorY * (offset / 2f));
+		this.setX2(this.getX1() + unitVectorX * newDistance);
+		this.setY2(this.getY1() + unitVectorY * newDistance);
+		return this;
 	}
 
 	public float getLineAngle(boolean degrees) {

@@ -183,6 +183,10 @@ public class PointF implements XY,SetXY {
 		return this.x + "px " + this.y + "px";
 	}
 
+	public ObservableXY<PointF> observable(XYChange<PointF> v) {
+		return ObservableXY.at(v, this, this);
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;

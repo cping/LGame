@@ -22,7 +22,7 @@ package loon.geom;
 
 import loon.utils.MathUtils;
 
-public class RangeI {
+public class RangeI implements XY, SetXY {
 
 	private int max;
 
@@ -66,4 +66,23 @@ public class RangeI {
 		return this;
 	}
 
+	@Override
+	public void setX(float x) {
+		this.min = (int) x;
+	}
+
+	@Override
+	public void setY(float y) {
+		this.max = (int) y;
+	}
+
+	@Override
+	public float getX() {
+		return min;
+	}
+
+	@Override
+	public float getY() {
+		return max;
+	}
 }

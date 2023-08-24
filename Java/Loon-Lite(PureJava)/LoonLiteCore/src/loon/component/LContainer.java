@@ -80,7 +80,18 @@ public abstract class LContainer extends LComponent implements IArray {
 	public boolean hasChilds() {
 		return childCount > 0;
 	}
-
+	
+	public boolean hasChild(LComponent comp) {
+		final LComponent[] comps = _childs;
+		for (int i = comps.length - 1; i > -1; i--) {
+			LComponent o = comps[i];
+			if (o == comp || (o != null && o.equals(comp))) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public LComponent addPadding(LComponent comp, float offX, float offY) {
 		return addPadding(comp, offX, offY, 2);
 	}

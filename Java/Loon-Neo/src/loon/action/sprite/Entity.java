@@ -1833,6 +1833,13 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		return _childrens;
 	}
 
+	public boolean hasChild(IEntity e) {
+		if (_childrens == null) {
+			return false;
+		}
+		return this._childrens.contains(e);
+	}
+
 	public boolean isClosed() {
 		return isDisposed();
 	}

@@ -24,6 +24,7 @@ import loon.action.map.AStarFindHeuristic;
 import loon.action.map.Grid2D;
 import loon.action.map.heuristics.Manhattan;
 import loon.geom.Vector2f;
+import loon.utils.MathUtils;
 import loon.utils.TArray;
 
 /**
@@ -87,7 +88,7 @@ public class TileImplFinder {
 
 		for (int y = 0; y < grid[0].length; y++) {
 			for (int x = 0; x < grid.length; x++) {
-				grid[x][y].setHCost(Math.abs(target.getX() - x) + Math.abs(target.getY() - y));
+				grid[x][y].setHCost(MathUtils.abs(target.getX() - x) + MathUtils.abs(target.getY() - y));
 				grid[x][y].setParent(null);
 				grid[x][y].setGCost(0);
 			}

@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -31,7 +31,7 @@ import loon.utils.StringUtils;
 /**
  * 一个最基础的矩形碰撞器
  */
-public class AABB implements XY, BoxSize, LRelease {
+public class AABB implements XY, XYZW, BoxSize, LRelease {
 
 	public final static AABB at(String v) {
 		if (StringUtils.isEmpty(v)) {
@@ -281,6 +281,16 @@ public class AABB implements XY, BoxSize, LRelease {
 
 	public RectBox toRectBox() {
 		return new RectBox(this.minX, this.minY, this.maxX, this.maxY);
+	}
+
+	@Override
+	public float getZ() {
+		return maxX;
+	}
+
+	@Override
+	public float getW() {
+		return maxY;
 	}
 
 	@Override

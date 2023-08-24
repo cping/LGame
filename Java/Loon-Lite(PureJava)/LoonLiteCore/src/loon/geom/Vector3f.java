@@ -1156,6 +1156,10 @@ public class Vector3f implements Serializable, XYZ, SetXYZ {
 		return this;
 	}
 
+	public ObservableXYZ<Vector3f> observable(XYChange<Vector3f> v) {
+		return ObservableXYZ.at(v, this, this);
+	}
+
 	@Override
 	public String toString() {
 		return "(" + x + ", " + y + ", " + z + ")";

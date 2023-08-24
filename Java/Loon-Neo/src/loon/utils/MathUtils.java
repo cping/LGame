@@ -838,7 +838,7 @@ public final class MathUtils {
 		return (a > b) ? ((a > c) ? a : c) : ((b > c) ? b : c);
 	}
 
-	public static int max(final int[] numbers) {
+	public static int max(final int... numbers) {
 		int max = Integer.MIN_VALUE;
 		for (int i = 0; i < numbers.length; i++) {
 			if (numbers[i] > max) {
@@ -848,7 +848,7 @@ public final class MathUtils {
 		return max;
 	}
 
-	public static float max(final float[] numbers) {
+	public static float max(final float... numbers) {
 		float max = Integer.MIN_VALUE;
 		for (int i = 0; i < numbers.length; i++) {
 			if (numbers[i] > max) {
@@ -874,7 +874,7 @@ public final class MathUtils {
 		return (a <= b) ? a : b;
 	}
 
-	public static int min(final int[] numbers) {
+	public static int min(final int... numbers) {
 		int min = Integer.MAX_VALUE;
 		for (int i = 0; i < numbers.length; i++) {
 			if (numbers[i] < min) {
@@ -884,7 +884,7 @@ public final class MathUtils {
 		return min;
 	}
 
-	public static float min(final float[] numbers) {
+	public static float min(final float... numbers) {
 		float min = Integer.MAX_VALUE;
 		for (int i = 0; i < numbers.length; i++) {
 			if (numbers[i] < min) {

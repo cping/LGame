@@ -31,7 +31,7 @@ import loon.utils.StringUtils;
 /**
  * 一个最基础的矩形碰撞器
  */
-public class AABB implements XY, BoxSize, LRelease {
+public class AABB implements XY, XYZW, BoxSize, LRelease {
 
 	public final static AABB at(String v) {
 		if (StringUtils.isEmpty(v)) {
@@ -281,6 +281,16 @@ public class AABB implements XY, BoxSize, LRelease {
 
 	public RectBox toRectBox() {
 		return new RectBox(this.minX, this.minY, this.maxX, this.maxY);
+	}
+
+	@Override
+	public float getZ() {
+		return maxX;
+	}
+
+	@Override
+	public float getW() {
+		return maxY;
 	}
 
 	@Override

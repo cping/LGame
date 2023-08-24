@@ -28,7 +28,7 @@ import loon.utils.Array;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 
-public class Vector2f implements Serializable, XY {
+public class Vector2f implements Serializable, SetXY, XY {
 
 	/**
 	 * 
@@ -875,14 +875,14 @@ public class Vector2f implements Serializable, XY {
 		return set(x, y);
 	}
 
-	public Vector2f setX(float x) {
+	@Override
+	public void setX(float x) {
 		this.x = x;
-		return this;
 	}
 
-	public Vector2f setY(float y) {
+	@Override
+	public void setY(float y) {
 		this.y = y;
-		return this;
 	}
 
 	@Override
@@ -1267,6 +1267,10 @@ public class Vector2f implements Serializable, XY {
 
 	public String toCSS() {
 		return this.x + "px " + this.y + "px";
+	}
+
+	public ObservableXY<Vector2f> observable(XYChange<Vector2f> v) {
+		return ObservableXY.at(v, this, this);
 	}
 
 	@Override

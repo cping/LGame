@@ -23,6 +23,7 @@ package loon.action.map;
 import loon.action.sprite.Draw;
 import loon.geom.PointI;
 import loon.geom.Vector2f;
+import loon.utils.MathUtils;
 
 public abstract class MoveDraw extends Draw {
 
@@ -197,8 +198,8 @@ public abstract class MoveDraw extends Draw {
 
 		for (int count = 0; count <= area - 1; count++) {
 			for (int j = fixY(y - area); j < fixY(y + area); j++) {
-				for (int i = fixX(x - (area - Math.abs(y - j))); i <= fixX(
-						x + (area - Math.abs(y - j))); i++) {
+				for (int i = fixX(x - (area - MathUtils.abs(y - j))); i <= fixX(
+						x + (area - MathUtils.abs(y - j))); i++) {
 					// 如果能够移动指定步数
 					if ((getMoveCount(i - 1, j) == count) || (getMoveCount(i, j - 1) == count)
 							|| (getMoveCount(i + 1, j) == count) || (getMoveCount(i, j + 1) == count)) {
@@ -210,7 +211,7 @@ public abstract class MoveDraw extends Draw {
 
 		area = area + 1; // 射程
 		for (int j = fixY(y - area); j <= fixY(y + area); j++) {
-			for (int i = fixX(x - (area - Math.abs(y - j))); i <= fixX(x + (area - Math.abs(y - j))); i++) {
+			for (int i = fixX(x - (area - MathUtils.abs(y - j))); i <= fixX(x + (area - MathUtils.abs(y - j))); i++) {
 				// 远程攻击
 				if ((getMoveCount(i - 1, j) > -1) || (getMoveCount(i, j - 1) > -1) || (getMoveCount(i + 1, j) > -1)
 						|| (getMoveCount(i, j + 1) > -1)) {

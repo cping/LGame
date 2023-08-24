@@ -1,6 +1,6 @@
 /**
  * 
- * Copyright 2008 - 2011
+ * Copyright 2008 - 2023
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -34,12 +34,91 @@ public class Polygon extends Shape implements BoxSize {
 	 */
 	private static final long serialVersionUID = 7491444927273846690L;
 
+	public final static TArray<Vector2f> offsetPolygon(float[] points, float offset) {
+		final TArray<Vector2f> offsetPoints = new TArray<Vector2f>();
+		final int length = points.length;
+
+		offset = isPolygonClockwise(points) ? offset : -1f * offset;
+
+		for (int j = 0; j < length; j += 2) {
+			int i = (j - 2);
+
+			if (i < 0) {
+				i += length;
+			}
+
+			final int k = (j + 2) % length;
+
+			float v1x = points[j] - points[i];
+			float v1y = points[j + 1] - points[i + 1];
+			float len = MathUtils.sqrt((v1x * v1x) + (v1y * v1y));
+
+			v1x /= len;
+			v1y /= len;
+			v1x *= offset;
+			v1y *= offset;
+
+			float norm1x = -v1y;
+			float norm1y = v1x;
+
+			final float[] pij1 = new float[] { points[i] + norm1x, points[i + 1] + norm1y };
+			final float[] pij2 = new float[] { points[j] + norm1x, points[j + 1] + norm1y };
+
+			float v2x = points[k] - points[j];
+			float v2y = points[k + 1] - points[j + 1];
+
+			len = MathUtils.sqrt((v2x * v2x) + (v2y * v2y));
+
+			v2x /= len;
+			v2y /= len;
+			v2x *= offset;
+			v2y *= offset;
+
+			final float norm2x = -v2y;
+			final float norm2y = v2x;
+
+			final float[] pjk1 = new float[] { points[j] + norm2x, points[j + 1] + norm2y };
+			final float[] pjk2 = new float[] { points[k] + norm2x, points[k + 1] + norm2y };
+
+			final Vector2f intersectPoint = findIntersection(pij1[0], pij1[1], pij2[0], pij2[1], pjk1[0], pjk1[1],
+					pjk2[0], pjk2[1]);
+
+			if (intersectPoint != null) {
+				offsetPoints.add(intersectPoint);
+			}
+		}
+		return offsetPoints;
+	}
+
+	public final static boolean isPolygonClockwise(float[] points) {
+		int sum = 0;
+		for (int i = 0, j = points.length - 2; i < points.length; j = i, i += 2) {
+			sum += (points[i] - points[j]) * (points[i + 1] + points[j + 1]);
+		}
+		return sum > 0;
+	}
+
+	public final static Vector2f findIntersection(float x1, float y1, float x2, float y2, float x3, float y3, float x4,
+			float y4) {
+		float d = ((y4 - y3) * (x2 - x1)) - ((x4 - x3) * (y2 - y1));
+		float a = ((x4 - x3) * (y1 - y3)) - ((y4 - y3) * (x1 - x3));
+		float b = ((x2 - x1) * (y1 - y3)) - ((y2 - y1) * (x1 - x3));
+		if (d == 0f) {
+			if (a == 0 && b == 0f) {
+				return new Vector2f((x1 + x2) / 2f, (y1 + y2) / 2f);
+			}
+			return null;
+		}
+		float uA = a / d;
+		return new Vector2f(x1 + (uA * (x2 - x1)), y1 + (uA * (y2 - y1)));
+	}
+
 	private boolean allowDups = false;
 
 	private boolean closed = true;
 
 	private TArray<Vector2f> _vertices;
-	
+
 	public Polygon(float[] points) {
 		int length = points.length;
 
@@ -123,13 +202,29 @@ public class Polygon extends Shape implements BoxSize {
 		}
 	}
 
-	public void setAllowDuplicatePoints(boolean allowDups) {
-		this.allowDups = allowDups;
+	public Polygon(TArray<Vector2f> vectors) {
+		if (vectors == null || vectors.size < 0) {
+			throw new LSysException("points < 0");
+		}
+		points = new float[0];
+		maxX = -Float.MIN_VALUE;
+		maxY = -Float.MIN_VALUE;
+		minX = Float.MAX_VALUE;
+		minY = Float.MAX_VALUE;
+		for (int i = 0; i < vectors.size; i++) {
+			Vector2f pos = vectors.get(i);
+			addPoint(pos.x, pos.y);
+		}
 	}
 
-	public void addPoint(float x, float y) {
+	public Polygon setAllowDuplicatePoints(boolean allowDups) {
+		this.allowDups = allowDups;
+		return this;
+	}
+
+	public Polygon addPoint(float x, float y) {
 		if (hasVertex(x, y) && (!allowDups)) {
-			return;
+			return this;
 		}
 		int size = points.length;
 		TArray<Float> tempPoints = new TArray<Float>();
@@ -159,8 +254,10 @@ public class Polygon extends Shape implements BoxSize {
 		calculateRadius();
 
 		pointsDirty = true;
+		return this;
 	}
 
+	@Override
 	public Shape transform(Matrix3 transform) {
 		checkPoints();
 
@@ -187,12 +284,12 @@ public class Polygon extends Shape implements BoxSize {
 		pointsDirty = false;
 	}
 
-	public void addVertex(float x, float y) {
-		addPoint(x, y);
+	public Polygon addVertex(float x, float y) {
+		return addPoint(x, y);
 	}
 
-	public void addVertex(Vector2f v) {
-		addVertex(v.x, v.y);
+	public Polygon addVertex(Vector2f v) {
+		return addVertex(v.x, v.y);
 	}
 
 	public TArray<Vector2f> getVertices() {
@@ -224,6 +321,33 @@ public class Polygon extends Shape implements BoxSize {
 		this.closed = closed;
 	}
 
+	@Override
+	public boolean contains(XY pos) {
+		if (pos == null) {
+			return false;
+		}
+		return contains(pos.getX(), pos.getY());
+	}
+
+	@Override
+	public boolean contains(float x, float y) {
+		boolean inside = false;
+		final float[] result = getPoints();
+		final int length = result.length / 2;
+
+		for (int i = 0, j = length - 1; i < length; j = i++) {
+			final float xi = result[i * 2];
+			final float yi = result[(i * 2) + 1];
+			final float xj = result[j * 2];
+			final float yj = result[(j * 2) + 1];
+			final boolean intersect = ((yi > y) != (yj > y)) && (x < ((xj - xi) * ((y - yi) / (yj - yi))) + xi);
+			if (intersect) {
+				inside = !inside;
+			}
+		}
+		return inside;
+	}
+
 	public Polygon cpy() {
 		float[] copyPoints = new float[points.length];
 		System.arraycopy(points, 0, copyPoints, 0, copyPoints.length);
@@ -240,6 +364,14 @@ public class Polygon extends Shape implements BoxSize {
 	public void setHeight(float h) {
 		this.maxY = h;
 		this.pointsDirty = true;
+	}
+
+	public boolean isPolygonClockwise() {
+		return isPolygonClockwise(getPoints());
+	}
+
+	public Polygon getOffsetPolygon(float offset) {
+		return new Polygon(offsetPolygon(getPoints(), offset));
 	}
 
 	public RectBox getBox() {

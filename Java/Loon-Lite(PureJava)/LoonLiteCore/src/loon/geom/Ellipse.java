@@ -44,7 +44,7 @@ public class Ellipse extends Shape {
 
 		return out;
 	}
-	
+
 	protected static final int DEFAULT_SEGMENT_MAX_COUNT = 50;
 
 	private int segmentCount;

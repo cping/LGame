@@ -29,7 +29,7 @@ import loon.utils.StringKeyValue;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
-public class RectBox extends Shape implements BoxSize, XYZW {
+public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 
 	/**
 	 * 
@@ -284,6 +284,16 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 		return setBounds(x, y, width, height);
 	}
 
+	@Override
+	public void setZ(float z) {
+		this.setWidth(z);
+	}
+
+	@Override
+	public void setW(float w) {
+		this.setHeight(w);
+	}
+
 	public Polygon getPolygon() {
 		this.checkPoints();
 		Polygon poly = new Polygon(this.points);
@@ -449,6 +459,20 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 		return this;
 	}
 
+	public RectBox ceil() {
+		return ceil(1f, MathUtils.EPSILON);
+	}
+
+	public RectBox ceil(float resolution, float eps) {
+		final float x2 = MathUtils.ceil((this.x + this.width - eps) * resolution) / resolution;
+		final float y2 = MathUtils.ceil((this.y + this.height - eps) * resolution) / resolution;
+		this.x = MathUtils.floor((this.x + eps) * resolution) / resolution;
+		this.y = MathUtils.floor((this.y + eps) * resolution) / resolution;
+		this.width = (int) (x2 - this.x);
+		this.height = (int) (y2 - this.y);
+		return this;
+	}
+
 	@Override
 	public float getMinX() {
 		return getX();
@@ -606,6 +630,20 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 
 	public boolean equals(float x, float y, float width, float height) {
 		return (this.x == x && this.y == y && this.width == width && this.height == height);
+	}
+
+	public RectBox enlarge(RectBox rect) {
+		final float x1 = MathUtils.min(this.x, rect.x);
+		final float x2 = MathUtils.max(this.x + this.width, rect.x + rect.width);
+		final float y1 = MathUtils.min(this.y, rect.y);
+		final float y2 = MathUtils.max(this.y + this.height, rect.y + rect.height);
+
+		this.x = x1;
+		this.width = (int) (x2 - x1);
+		this.y = y1;
+		this.height = (int) (y2 - y1);
+
+		return this;
 	}
 
 	public int getArea() {
@@ -786,6 +824,82 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 		return (x >= this.x) && ((x - this.x) < this.width) && (y >= this.y) && ((y - this.y) < this.height);
 	}
 
+	public boolean intersects(RectBox other, Affine2f transform) {
+		if (transform == null) {
+			final float x0 = this.x < other.x ? other.x : this.x;
+			final float x1 = this.getRight() > other.getRight() ? other.getRight() : this.getRight();
+
+			if (x1 <= x0) {
+				return false;
+			}
+
+			final float y0 = this.y < other.y ? other.y : this.y;
+			final float y1 = this.getBottom() > other.getBottom() ? other.getBottom() : this.getBottom();
+
+			return y1 > y0;
+		}
+
+		final float x0 = this.getLeft();
+		final float x1 = this.getRight();
+		final float y0 = this.getTop();
+		final float y1 = this.getBottom();
+
+		if (x1 <= x0 || y1 <= y0) {
+			return false;
+		}
+
+		final Vector2f lt = new Vector2f(other.getLeft(), other.getTop());
+		final Vector2f lb = new Vector2f(other.getLeft(), other.getBottom());
+		final Vector2f rt = new Vector2f(other.getRight(), other.getTop());
+		final Vector2f rb = new Vector2f(other.getRight(), other.getBottom());
+
+		if (rt.x <= lt.x || lb.y <= lt.y) {
+			return false;
+		}
+
+		final float s = MathUtils.sign((transform.m00 * transform.m01) - (transform.m10 * transform.m11));
+
+		if (s == 0) {
+			return false;
+		}
+
+		transform.apply(lt, lt);
+		transform.apply(lb, lb);
+		transform.apply(rt, rt);
+		transform.apply(rb, rb);
+
+		if (MathUtils.max(lt.x, lb.x, rt.x, rb.x) <= x0 || MathUtils.min(lt.x, lb.x, rt.x, rb.x) >= x1
+				|| MathUtils.max(lt.y, lb.y, rt.y, rb.y) <= y0 || MathUtils.min(lt.y, lb.y, rt.y, rb.y) >= y1) {
+			return false;
+		}
+
+		final float nx = s * (lb.y - lt.y);
+		final float ny = s * (lt.x - lb.x);
+		final float n00 = (nx * x0) + (ny * y0);
+		final float n10 = (nx * x1) + (ny * y0);
+		final float n01 = (nx * x0) + (ny * y1);
+		final float n11 = (nx * x1) + (ny * y1);
+
+		if (MathUtils.max(n00, n10, n01, n11) <= (nx * lt.x) + (ny * lt.y)
+				|| MathUtils.min(n00, n10, n01, n11) >= (nx * rb.x) + (ny * rb.y)) {
+			return false;
+		}
+
+		final float mx = s * (lt.y - rt.y);
+		final float my = s * (rt.x - lt.x);
+		final float m00 = (mx * x0) + (my * y0);
+		final float m10 = (mx * x1) + (my * y0);
+		final float m01 = (mx * x0) + (my * y1);
+		final float m11 = (mx * x1) + (my * y1);
+
+		if (MathUtils.max(m00, m10, m01, m11) <= (mx * lt.x) + (my * lt.y)
+				|| MathUtils.min(m00, m10, m01, m11) >= (mx * rb.x) + (my * rb.y)) {
+			return false;
+		}
+
+		return true;
+	}
+
 	/**
 	 * 返回当前的矩形选框交集
 	 * 
@@ -863,6 +977,18 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 		resultPolygon.findCenter();
 		resultPolygon.checkPoints();
 		return resultPolygon;
+	}
+
+	public RectBox fit(RectBox rect) {
+		final float x1 = MathUtils.max(this.x, rect.x);
+		final float x2 = MathUtils.min(this.x + this.width, rect.x + rect.width);
+		final float y1 = MathUtils.max(this.y, rect.y);
+		final float y2 = MathUtils.min(this.y + this.height, rect.y + rect.height);
+		this.x = x1;
+		this.width = (int) MathUtils.max(x2 - x1, 0f);
+		this.y = y1;
+		this.height = (int) MathUtils.max(y2 - y1, 0f);
+		return this;
 	}
 
 	/**
@@ -1199,6 +1325,22 @@ public class RectBox extends Shape implements BoxSize, XYZW {
 		return toTitle(this, tileWidth, tileHeight);
 	}
 
+	public RectBox pad(float padding) {
+		return pad(padding, padding);
+	}
+
+	public RectBox pad(float paddingX, float paddingY) {
+		this.x -= paddingX;
+		this.y -= paddingY;
+		this.width += paddingX * 2;
+		this.height += paddingY * 2;
+		return this;
+	}
+
+	public ObservableXYZW<RectBox> observable(XYChange<RectBox> v) {
+		return ObservableXYZW.at(v, this, this);
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;

@@ -2519,7 +2519,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 			rightImage = pix;
 		}
 		int width = (leftImage.getWidth() + rightImage.getWidth());
-		int height = Math.max(leftImage.getHeight(), rightImage.getHeight());
+		int height = MathUtils.max(leftImage.getHeight(), rightImage.getHeight());
 		Pixmap image = new Pixmap(width, height, true);
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {

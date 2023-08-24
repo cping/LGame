@@ -169,10 +169,6 @@ public class PointI implements XY, SetXY {
 		this.y = MathUtils.floor(y);
 	}
 
-	public String toCSS() {
-		return this.x + "px " + this.y + "px";
-	}
-
 	public PointI random() {
 		this.x = MathUtils.random(0, LSystem.viewSize.getWidth());
 		this.y = MathUtils.random(0, LSystem.viewSize.getHeight());
@@ -181,6 +177,14 @@ public class PointI implements XY, SetXY {
 
 	public float[] toArray() {
 		return new float[] { x, y };
+	}
+
+	public String toCSS() {
+		return this.x + "px " + this.y + "px";
+	}
+
+	public ObservableXY<PointI> observable(XYChange<PointI> v) {
+		return ObservableXY.at(v, this, this);
 	}
 
 	@Override

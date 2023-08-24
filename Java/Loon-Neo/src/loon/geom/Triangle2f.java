@@ -29,6 +29,20 @@ public class Triangle2f extends Shape implements Triangle {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	private static final int EDGE_VALUE = 6;
+
+	public static boolean isInside(XY x, XY y, XY z, XY p) {
+		Vector2f v1 = new Vector2f(y.getX() - x.getX(), y.getY() - x.getY());
+		Vector2f v2 = new Vector2f(z.getX() - x.getX(), z.getY() - x.getY());
+
+		float det = v1.x * v2.y - v2.x * v1.y;
+		Vector2f tmp = new Vector2f(p.getX() - x.getX(), p.getY() - x.getY());
+		float lambda = (tmp.x * v2.y - v2.x * tmp.y) / det;
+		float mue = (v1.x * tmp.y - tmp.x * v1.y) / det;
+
+		return (lambda > 0 && mue > 0 && (lambda + mue) < 1);
+	}
 
 	public static SetXY getRandom(Triangle2f triangle, SetXY out) {
 		if (out == null) {
@@ -125,6 +139,7 @@ public class Triangle2f extends Shape implements Triangle {
 			ypoints[1] = y3;
 			ypoints[2] = y2;
 		}
+		updateTriangle(EDGE_VALUE);
 	}
 
 	public float getX1() {
@@ -169,11 +184,11 @@ public class Triangle2f extends Shape implements Triangle {
 		return verts;
 	}
 
-	public void set(float w, float h) {
-		set(w / 2 - 1, h / 2 - 1, w - 1, h - 1);
+	public Triangle2f set(float w, float h) {
+		return set(w / 2 - 1, h / 2 - 1, w - 1, h - 1);
 	}
 
-	public void set(float x, float y, float w, float h) {
+	public Triangle2f set(float x, float y, float w, float h) {
 		float halfWidth = w / 2;
 		float halfHeight = h / 2;
 		float top = -halfWidth;
@@ -189,17 +204,19 @@ public class Triangle2f extends Shape implements Triangle {
 		ypoints[1] = y + bottom;
 		ypoints[2] = y + bottom;
 
-		updateTriangle(6);
+		updateTriangle(EDGE_VALUE);
+		return this;
 	}
 
-	public void set(Triangle2f t) {
+	public Triangle2f set(Triangle2f t) {
 		xpoints[0] = t.xpoints[0];
 		xpoints[1] = t.xpoints[1];
 		xpoints[2] = t.xpoints[2];
 		ypoints[0] = t.ypoints[0];
 		ypoints[1] = t.ypoints[1];
 		ypoints[2] = t.ypoints[2];
-		updateTriangle(6);
+		updateTriangle(EDGE_VALUE);
+		return this;
 	}
 
 	protected void updateTriangle(int length) {
@@ -248,18 +265,6 @@ public class Triangle2f extends Shape implements Triangle {
 				p);
 	}
 
-	public static boolean isInside(XY x, XY y, XY z, XY p) {
-		Vector2f v1 = new Vector2f(y.getX() - x.getX(), y.getY() - x.getY());
-		Vector2f v2 = new Vector2f(z.getX() - x.getX(), z.getY() - x.getY());
-
-		float det = v1.x * v2.y - v2.x * v1.y;
-		Vector2f tmp = new Vector2f(p.getX() - x.getX(), p.getY() - x.getY());
-		float lambda = (tmp.x * v2.y - v2.x * tmp.y) / det;
-		float mue = (v1.x * tmp.y - tmp.x * v1.y) / det;
-
-		return (lambda > 0 && mue > 0 && (lambda + mue) < 1);
-	}
-
 	public boolean isInside(float nx, float ny) {
 		float vx2 = nx - xpoints[0];
 		float vy2 = ny - ypoints[0];
@@ -305,6 +310,19 @@ public class Triangle2f extends Shape implements Triangle {
 		float v = (dot00 * dot12 - dot01 * dot02) * invDenom;
 
 		return ((u >= 0) && (v >= 0) && (u + v <= 1));
+	}
+
+	@Override
+	public boolean contains(float x, float y) {
+		return containsPoint(x, y);
+	}
+
+	@Override
+	public boolean contains(XY pos) {
+		if (pos == null) {
+			return false;
+		}
+		return contains(pos.getX(), pos.getY());
 	}
 
 	public PointF getPointCenter() {

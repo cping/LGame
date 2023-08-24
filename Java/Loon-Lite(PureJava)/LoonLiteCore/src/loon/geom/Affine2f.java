@@ -1056,6 +1056,17 @@ public class Affine2f implements LTrans, XY {
 		return this;
 	}
 
+	public Vector2f apply(XY pos, Vector2f newPos) {
+		if (newPos == null) {
+			newPos = new Vector2f();
+		}
+		final float x = pos.getX();
+		final float y = pos.getY();
+		newPos.x = (this.m00 * x) + (this.m10 * y) + this.tx;
+		newPos.y = (this.m01 * x) + (this.m11 * y) + this.ty;
+		return newPos;
+	}
+
 	/**
 	 * 直接设定参数给Affine2f
 	 * 
@@ -1410,6 +1421,37 @@ public class Affine2f implements LTrans, XY {
 		}
 		float rdet = 1 / det;
 		return into.set((x * m11 - y * m10) * rdet, (y * m00 - x * m01) * rdet);
+	}
+
+	public Transform decompose(Transform transform) {
+		final float a = this.m00;
+		final float b = this.m01;
+		final float c = this.m10;
+		final float d = this.m11;
+		final ObservableXY<Vector2f> pivot = transform.pivot;
+
+		final float skewX = -MathUtils.atan2(-c, d);
+		final float skewY = MathUtils.atan2(b, a);
+
+		final float delta = MathUtils.abs(skewX + skewY);
+
+		if (delta < MathUtils.EPSILON || MathUtils.abs(MathUtils.TWO_PI - delta) < MathUtils.EPSILON) {
+			transform.setRotation(skewY);
+			transform.skew.setX(0f);
+			transform.skew.setY(0f);
+		} else {
+			transform.setRotation(0f);
+			transform.skew.setX(skewX);
+			transform.skew.setY(skewY);
+		}
+
+		transform.scale.setX(MathUtils.sqrt((a * a) + (b * b)));
+		transform.scale.setY(MathUtils.sqrt((c * c) + (d * d)));
+
+		transform.position.setX(this.tx + ((pivot.getX() * a) + (pivot.getY() * c)));
+		transform.position.setY(this.ty + ((pivot.getX() * b) + (pivot.getY() * d)));
+
+		return transform;
 	}
 
 	public Affine2f setToOrtho2D(float x, float y, float width, float height) {

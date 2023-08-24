@@ -116,6 +116,7 @@ public class Point extends Shape  {
 		this.y = y;
 	}
 
+	@Override
 	public Point setLocation(float x, float y) {
 		this.x = x;
 		this.y = y;
