@@ -296,6 +296,13 @@ public class Random {
 		return new LColor(nextFloat(min, max), nextFloat(min, max), nextFloat(min, max), alpha);
 	}
 
+	public char randomChar(CharSequence cs) {
+		if (cs == null || cs.length() == 0) {
+			return (char) -1;
+		}
+		return cs.charAt(nextInt(cs.length() - 1));
+	}
+
 	public PointF nextPoint() {
 		return nextPoint(LSystem.viewSize.getRect());
 	}

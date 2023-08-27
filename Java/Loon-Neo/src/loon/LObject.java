@@ -534,73 +534,73 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 	}
 
 	public void move_45D_up() {
-		move_45D_up(1);
+		move_45D_up(1f);
 	}
 
-	public void move_45D_up(int multiples) {
+	public void move_45D_up(float multiples) {
 		syncPreviousPos();
 		_objectLocation.move_multiples(Field2D.UP, multiples);
 	}
 
 	public void move_45D_left() {
-		move_45D_left(1);
+		move_45D_left(1f);
 	}
 
-	public void move_45D_left(int multiples) {
+	public void move_45D_left(float multiples) {
 		syncPreviousPos();
 		_objectLocation.move_multiples(Field2D.LEFT, multiples);
 	}
 
 	public void move_45D_right() {
-		move_45D_right(1);
+		move_45D_right(1f);
 	}
 
-	public void move_45D_right(int multiples) {
+	public void move_45D_right(float multiples) {
 		syncPreviousPos();
 		_objectLocation.move_multiples(Field2D.RIGHT, multiples);
 	}
 
 	public void move_45D_down() {
-		move_45D_down(1);
+		move_45D_down(1f);
 	}
 
-	public void move_45D_down(int multiples) {
+	public void move_45D_down(float multiples) {
 		syncPreviousPos();
 		_objectLocation.move_multiples(Field2D.DOWN, multiples);
 	}
 
 	public void move_up() {
-		move_up(1);
+		move_up(1f);
 	}
 
-	public void move_up(int multiples) {
+	public void move_up(float multiples) {
 		syncPreviousPos();
 		_objectLocation.move_multiples(Field2D.TUP, multiples);
 	}
 
 	public void move_left() {
-		move_left(1);
+		move_left(1f);
 	}
 
-	public void move_left(int multiples) {
+	public void move_left(float multiples) {
 		syncPreviousPos();
 		_objectLocation.move_multiples(Field2D.TLEFT, multiples);
 	}
 
 	public void move_right() {
-		move_right(1);
+		move_right(1f);
 	}
 
-	public void move_right(int multiples) {
+	public void move_right(float multiples) {
 		syncPreviousPos();
 		_objectLocation.move_multiples(Field2D.TRIGHT, multiples);
 	}
 
 	public void move_down() {
-		move_down(1);
+		move_down(1f);
 	}
 
-	public void move_down(int multiples) {
+	public void move_down(float multiples) {
 		syncPreviousPos();
 		_objectLocation.move_multiples(Field2D.TDOWN, multiples);
 	}

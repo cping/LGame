@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2009
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -22,6 +22,7 @@ package loon.utils;
 
 import java.io.IOException;
 import java.io.OutputStream;
+
 import java.util.Comparator;
 
 import loon.LRelease;
@@ -30,7 +31,7 @@ import loon.LSystem;
 
 /**
  * Loon的Byte[]操作用类
- *
+ * 
  * 它的作用在于针对二进制数据进行读取,写入以及处理,总之是字节层操作时才会用到的工具类.
  */
 public class ArrayByte implements IArray, LRelease {
@@ -70,7 +71,10 @@ public class ArrayByte implements IArray, LRelease {
 	private static final ByteArrayDataComparator BYTES_COMPARATOR = new ByteArrayDataComparator();
 
 	public static boolean checkHead(byte[] head, byte[] target) {
-		if (head == null || target == null || (target.length < head.length))
+		if (head == null || target == null) {
+			return false;
+		}
+		if (target.length < head.length)
 			return false;
 		return getDefaultByteArrayComparator().compare(head, 0, head.length, target, 0, head.length) == 0;
 	}
@@ -101,7 +105,7 @@ public class ArrayByte implements IArray, LRelease {
 
 	/**
 	 * 返回指定字符串符合UTF8编码的子符长度
-	 *
+	 * 
 	 * @param str
 	 * @return
 	 */
@@ -126,7 +130,7 @@ public class ArrayByte implements IArray, LRelease {
 
 	/**
 	 * 转化字符串为ArrayByte
-	 *
+	 * 
 	 * @param str
 	 * @return
 	 */
@@ -136,7 +140,7 @@ public class ArrayByte implements IArray, LRelease {
 
 	/**
 	 * 转化字符串为ArrayByte
-	 *
+	 * 
 	 * @param str
 	 * @param orderType
 	 * @return
@@ -197,26 +201,39 @@ public class ArrayByte implements IArray, LRelease {
 	}
 
 	public ArrayByte(String base64) {
+		this(base64, 0, BIG_ENDIAN);
+	}
+
+	public ArrayByte(String base64, int pos, int order) {
 		if (!Base64Coder.isBase64(base64)) {
 			throw new LSysException("it is not base64 :" + base64);
 		}
-		this.data = Base64Coder.decodeBase64(base64.toCharArray());
-		reset();
+		this.setBuffer(Base64Coder.decodeBase64(base64.toCharArray()), pos, order);
 	}
 
 	public ArrayByte(byte[] data) {
+		this(data, 0, BIG_ENDIAN);
+	}
+
+	public ArrayByte(byte[] data, int pos, int order) {
+		this.setBuffer(data, pos, order);
+	}
+	
+	protected void setBuffer(byte[] data, int pos, int order) {
 		this.data = data;
-		reset();
+		this.setOrder(order);
+		this.position = pos;
 	}
 
-	public void reset() {
-		setOrder(BIG_ENDIAN);
-	}
-
-	public void setOrder(int type) {
+	public ArrayByte setOrder(int type) {
 		expandArray = true;
 		position = 0;
 		byteOrder = type;
+		return this;
+	}
+	
+	public ArrayByte reset() {
+		return setOrder(byteOrder);
 	}
 
 	public byte get(int idx) {
@@ -231,8 +248,9 @@ public class ArrayByte implements IArray, LRelease {
 		return byteOrder;
 	}
 
-	public void setByteOrder(int byteOrder) {
+	public ArrayByte setByteOrder(int byteOrder) {
 		this.byteOrder = byteOrder;
+		return this;
 	}
 
 	public byte[] readByteArray(int readLength) throws Exception {
@@ -245,7 +263,7 @@ public class ArrayByte implements IArray, LRelease {
 		return data.length;
 	}
 
-	public void setLength(int length) {
+	public ArrayByte setLength(int length) {
 		if (length != data.length) {
 			byte[] oldData = data;
 			data = new byte[length];
@@ -254,17 +272,19 @@ public class ArrayByte implements IArray, LRelease {
 				position = length;
 			}
 		}
+		return this;
 	}
 
 	public int position() {
 		return position;
 	}
 
-	public void setPosition(int position) throws LSysException {
+	public ArrayByte setPosition(int position) throws LSysException {
 		if (position < 0 || position > data.length) {
 			throw new LSysException("ArrayByte Index Out Of Bounds !");
 		}
 		this.position = position;
+		return this;
 	}
 
 	public void truncate() {
@@ -323,9 +343,10 @@ public class ArrayByte implements IArray, LRelease {
 		return n - remaining;
 	}
 
-	public void read(OutputStream out) throws IOException {
+	public ArrayByte read(OutputStream out) throws IOException {
 		out.write(data, position, data.length - position);
 		position = data.length;
+		return this;
 	}
 
 	public boolean readBoolean() throws LSysException {
@@ -350,31 +371,31 @@ public class ArrayByte implements IArray, LRelease {
 	}
 
 	public long readUInt8() throws LSysException {
-		return (0x000000FF & readByte());
+		return (0x000000FF & (int) readByte());
 	}
 
 	public long readUInt16() throws LSysException {
-		int firstByte = (0x000000FF & readByte());
-		int secondByte = (0x000000FF & readByte());
+		int firstByte = (0x000000FF & (int) readByte());
+		int secondByte = (0x000000FF & (int) readByte());
 		long result = 0;
 		if (this.byteOrder == LITTLE_ENDIAN) {
-			result = (secondByte << 8 | firstByte) & 0xFFFFFFFFL;
+			result = (long) ((secondByte << 8 | firstByte) & 0xFFFFFFFFL);
 		} else {
-			result = (firstByte << 8 | secondByte) & 0xFFFFFFFFL;
+			result = (long) ((firstByte << 8 | secondByte) & 0xFFFFFFFFL);
 		}
 		return result;
 	}
 
 	public long readUInt32() throws LSysException {
-		int firstByte = (0x000000FF & readByte());
-		int secondByte = (0x000000FF & readByte());
-		int thirdByte = (0x000000FF & readByte());
-		int fourthByte = (0x000000FF & readByte());
+		int firstByte = (0x000000FF & (int) readByte());
+		int secondByte = (0x000000FF & (int) readByte());
+		int thirdByte = (0x000000FF & (int) readByte());
+		int fourthByte = (0x000000FF & (int) readByte());
 		long result = 0;
 		if (this.byteOrder == LITTLE_ENDIAN) {
-			result = (fourthByte << 24 | thirdByte << 16 | secondByte << 8 | firstByte) & 0xFFFFFFFFL;
+			result = ((long) (fourthByte << 24 | thirdByte << 16 | secondByte << 8 | firstByte)) & 0xFFFFFFFFL;
 		} else {
-			result = (firstByte << 24 | secondByte << 16 | thirdByte << 8 | fourthByte) & 0xFFFFFFFFL;
+			result = ((long) (firstByte << 24 | secondByte << 16 | thirdByte << 8 | fourthByte)) & 0xFFFFFFFFL;
 		}
 		return result;
 	}
@@ -633,9 +654,40 @@ public class ArrayByte implements IArray, LRelease {
 		this.data = new byte[length()];
 	}
 
+	public ArrayByte cpy() {
+		return new ArrayByte(CollectionUtils.copyOf(data), position, byteOrder);
+	}
+
 	@Override
 	public boolean isEmpty() {
 		return this.data == null || length() == 0;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof ArrayByte)) {
+			return false;
+		}
+		final ArrayByte o = (ArrayByte) obj;
+		final int size = size();
+		if (size != o.size()) {
+			return false;
+		}
+		final int order = this.byteOrder;
+		final int rOrder = o.byteOrder;
+		if (order != rOrder) {
+			return false;
+		}
+		final int mark = this.position;
+		final byte[] buf = this.data;
+		final int rMark = o.position;
+		final byte[] rBuf = o.data;
+		for (int i = 0; i < size; ++i) {
+			if (buf[i + mark] != rBuf[i + rMark]) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	@Override

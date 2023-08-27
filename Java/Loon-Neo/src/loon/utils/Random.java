@@ -39,9 +39,9 @@ public class Random {
 	private final static long LowerMask = 0x7fffffff;
 	private final static long UpperMask = 0x80000000;
 	private final static long Bitmask32 = 0xffffffff;
-	
+
 	private final static int N = 624;
-	
+
 	private final static long W = 32;
 	private final static long M = 397;
 	private final static long A = 0x9908b0df;
@@ -246,7 +246,7 @@ public class Random {
 	}
 
 	public float nextAngleRad() {
-		return nextFloat(0f,  MathUtils.TWO_PI);
+		return nextFloat(0f, MathUtils.TWO_PI);
 	}
 
 	public float nextAngleDeg() {
@@ -294,6 +294,13 @@ public class Random {
 			return new LColor(nextFloat(min, max), nextFloat(min, max), nextFloat(min, max), nextFloat(min, max));
 		}
 		return new LColor(nextFloat(min, max), nextFloat(min, max), nextFloat(min, max), alpha);
+	}
+
+	public char randomChar(CharSequence cs) {
+		if (cs == null || cs.length() == 0) {
+			return (char) -1;
+		}
+		return cs.charAt(nextInt(cs.length() - 1));
 	}
 
 	public PointF nextPoint() {

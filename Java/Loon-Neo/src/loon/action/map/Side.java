@@ -21,12 +21,18 @@
 package loon.action.map;
 
 import loon.LSystem;
+import loon.geom.RectBox;
 import loon.geom.Vector2f;
+import loon.utils.MathUtils;
 
 /**
  * 地图边界设定用类
  */
 public class Side implements Config {
+
+	public final static int TOP = TUP;
+
+	public final static int BOTTOM = TDOWN;
 
 	private int _direction = EMPTY;
 
@@ -148,6 +154,52 @@ public class Side implements Config {
 			return Side.LEFT;
 		}
 		return Side.EMPTY;
+	}
+
+	public static int getCollisionSide(final RectBox r0, final RectBox r1) {
+		int result = EMPTY;
+
+		final boolean isLeft = r0.x + r0.width / 2 < r1.x + r1.width / 2;
+		final boolean isAbove = r0.y + r0.height / 2 > r1.y + r1.height / 2;
+
+		float horizontalDir;
+		float verticalDir;
+
+		if (isLeft) {
+			horizontalDir = r0.x + r0.width - r1.x;
+		} else {
+			horizontalDir = r1.x + r1.width - r0.x;
+		}
+
+		if (isAbove) {
+			verticalDir = r1.y + r1.height - r0.y;
+		} else {
+			verticalDir = r0.y + r0.height - r1.y;
+		}
+
+		if (horizontalDir < verticalDir) {
+			if (isLeft) {
+				result = TLEFT;
+			} else {
+				result = TRIGHT;
+			}
+		} else if (isAbove) {
+			result = TUP;
+		} else {
+			result = TDOWN;
+		}
+
+		return result;
+	}
+
+	public static RectBox getOverlapRect(final RectBox a, final RectBox b) {
+		final float left = MathUtils.max(a.x, b.x);
+		final float right = MathUtils.min(a.x + a.width, b.x + b.width);
+
+		final float top = MathUtils.max(a.y, b.y);
+		final float bottom = MathUtils.min(a.y + a.height, b.y + b.height);
+
+		return new RectBox(left, top, right - left, bottom - top);
 	}
 
 	public static int getSideFromDirection(Vector2f direction) {

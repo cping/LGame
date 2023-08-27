@@ -40,9 +40,9 @@ public class BasicTimer {
 	protected boolean _finished = false;
 	protected boolean _paused = false;
 
-	private final float _initTimer;
+	private float _initTimer;
 
-	private final float _initDuration;
+	private float _initDuration;
 
 	private int _maxLoop;
 
@@ -246,6 +246,16 @@ public class BasicTimer {
 
 	public float getTimer() {
 		return this._timer;
+	}
+
+	public BasicTimer setInitTimer(float t) {
+		this._initTimer = t;
+		return this;
+	}
+
+	public BasicTimer setInitDuration(float d) {
+		this._initDuration = d;
+		return this;
 	}
 
 	public BasicTimer pause() {

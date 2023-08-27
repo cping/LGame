@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2012
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -23,37 +23,64 @@ package loon.action.sprite;
 import loon.LSystem;
 import loon.action.map.AStarFindHeuristic;
 import loon.action.map.AStarFinder;
+import loon.action.map.Config;
 import loon.action.map.Field2D;
+import loon.action.map.Side;
 import loon.action.map.TileMap;
 import loon.events.GameTouch;
 import loon.geom.ShapeUtils;
 import loon.geom.Vector2f;
-import loon.utils.TArray;
+import loon.geom.XY;
 import loon.utils.CollectionUtils;
+import loon.utils.Easing.EasingMode;
 import loon.utils.MathUtils;
-import loon.utils.timer.LTimer;
+import loon.utils.TArray;
+import loon.utils.timer.EaseTimer;
 
 public class MoveObject extends ActionObject {
 
-	private boolean allDirection;
+	public static interface CollisionListener {
+
+		public void onCollision(float dstX, float dstY, float srcX, float srcY);
+
+	}
+
+	public static interface DirectionListener {
+
+		public void onDirection(int dir);
+	}
+
+	private CollisionListener collisionListener;
+
+	private DirectionListener directionListener;
 
 	private TArray<Vector2f> findPath = new TArray<Vector2f>();
 
-	private int startX, startY, endX, endY, moveX, moveY;
+	private boolean moving;
 
-	private int speed, touchX, touchY;
+	private boolean allDirection;
+
+	private float startX, startY, endX, endY;
+
+	private float speed;
+
+	private float touchX, touchY;
+
+	private int movingLength;
 
 	private int direction = EMPTY;
 
-	protected final static int BLOCK_SIZE = 32;
+	private int lastDirection = EMPTY;
 
-	private boolean isComplete;
+	private boolean isClicked;
 
-	private LTimer timer;
+	private boolean isCompleted;
+
+	private boolean isCheckCollision;
+
+	private EaseTimer timer;
 
 	private AStarFindHeuristic heuristic;
-
-	private int movingLength;
 
 	public MoveObject(float x, float y, String path) {
 		this(x, y, 0, 0, Animation.getDefaultAnimation(path), null);
@@ -69,16 +96,19 @@ public class MoveObject extends ActionObject {
 
 	public MoveObject(float x, float y, float dw, float dh, Animation animation, TileMap map) {
 		super(x, y, dw, dh, animation, map);
-		this.timer = new LTimer(0);
-		this.isComplete = false;
+		if (map == null) {
+			this.tiles = new TileMap(LSystem.viewSize.newField2D());
+		}
+		this.timer = EaseTimer.at(1f, EasingMode.Linear);
+		this.isCheckCollision = true;
+		this.isCompleted = false;
 		this.allDirection = false;
-		this.speed = 4;
+		this.speed = 4f;
 	}
 
-	public void updateMove() {
+	public MoveObject updateMove() {
 		synchronized (MoveObject.class) {
 			if (!getCollisionArea().contains(touchX, touchY)) {
-
 				if (findPath != null) {
 					findPath.clear();
 				}
@@ -89,369 +119,518 @@ public class MoveObject extends ActionObject {
 				findPath.clear();
 			}
 		}
+		return this;
 	}
 
-	public void pressedLeft() {
+	public MoveObject pressedLeft() {
+		direction = TLEFT;
+		return this;
+	}
+
+	public MoveObject pressedRight() {
+		direction = TRIGHT;
+		return this;
+	}
+
+	public MoveObject pressedDown() {
+		direction = TDOWN;
+		return this;
+	}
+
+	public MoveObject pressedUp() {
+		direction = TUP;
+		return this;
+	}
+
+	public MoveObject pressedIsoLeft() {
 		direction = LEFT;
+		return this;
 	}
 
-	public void pressedRight() {
+	public MoveObject pressedIsoRight() {
 		direction = RIGHT;
+		return this;
 	}
 
-	public void pressedDown() {
+	public MoveObject pressedIsoDown() {
 		direction = DOWN;
+		return this;
 	}
 
-	public void pressedUp() {
+	public MoveObject pressedIsoUp() {
 		direction = UP;
+		return this;
 	}
 
-	public void releaseDirection() {
+	public MoveObject releaseDirection() {
 		this.direction = EMPTY;
+		return this;
+	}
+
+	private boolean isCollisionTile(int x, int y) {
+		return tiles.isHit(x, y);
 	}
 
 	private boolean moveState() {
-		movingLength = 0;
-		switch (direction) {
-		case LEFT:
-			if (moveLeft()) {
-				return true;
-			}
-			break;
-		case RIGHT:
-			if (moveRight()) {
-				return true;
-			}
-			break;
-		case UP:
-			if (moveUp()) {
-				return true;
-			}
-			break;
-		case DOWN:
-			if (moveDown()) {
-				return true;
-			}
-			break;
-		default:
-			break;
-		}
-		return false;
+		this.movingLength = 0;
+		return moveTo(direction);
 	}
 
-	private boolean moveLeft() {
-		int px = x();
-		int py = y();
-		int x = tiles.pixelsToTilesWidth(px);
-		int y = tiles.pixelsToTilesHeight(py);
-		int nextX = x - 1;
-		int nextY = y;
-		if (nextX < 0) {
-			nextX = 0;
-		}
-		if (tiles.isHit(nextX, nextY)) {
-			px -= speed;
-			if (px < 0) {
-				px = 0;
+	private void updateDirection(final int dir) {
+		if (lastDirection != dir) {
+			if (directionListener != null) {
+				directionListener.onDirection(dir);
 			}
-			movingLength += speed;
-			setLocation(px, py);
-			if (movingLength >= tiles.getTileWidth()) {
-				x--;
-				px = x * tiles.getTileWidth();
-				setLocation(px, py);
-				return true;
+			lastDirection = dir;
+		}
+	}
+
+	private boolean moveTo(int dir) {
+		if (isClicked) {
+			return false;
+		}
+		final float moveSpeed = getMoveSpeed();
+
+		float px = getX();
+		float py = getY();
+
+		boolean rMoved = false;
+		if (isCheckCollision) {
+			int x = tiles.pixelsToTilesWidth(px);
+			int y = tiles.pixelsToTilesHeight(py);
+			if (dir == TLEFT) {
+				int nextX = x - 1;
+				int nextY = y;
+				if (nextX < 0) {
+					nextX = 0;
+				}
+				if (isCollisionTile(nextX, nextY)) {
+					px -= moveSpeed;
+					if (px < 0) {
+						px = 0;
+						rMoved = true;
+					}
+					movingLength += moveSpeed;
+					moveObject(px, py);
+					if (movingLength >= tiles.getTileWidth()) {
+						x--;
+						px = x * tiles.getTileWidth();
+						moveObject(px, py);
+						rMoved = true;
+					}
+				}
+			} else if (dir == TRIGHT) {
+				int nextX = x + 1;
+				int nextY = y;
+				if (nextX > tiles.getRow() - 1) {
+					nextX = tiles.getRow() - 1;
+				}
+				if (isCollisionTile(nextX, nextY)) {
+					px += moveSpeed;
+					float width = tiles.getWidth() - getWidth() + moveSpeed;
+					if (px > width) {
+						px = width;
+						rMoved = true;
+					}
+					movingLength += moveSpeed;
+					moveObject(px, py);
+					if (movingLength >= tiles.getTileWidth()) {
+						x++;
+						px = x * tiles.getTileWidth();
+						moveObject(px, py);
+						rMoved = true;
+					}
+				}
+			} else if (dir == TUP) {
+				int nextX = x;
+				int nextY = y - 1;
+				if (nextY < 0) {
+					nextY = 0;
+				}
+				if (isCollisionTile(nextX, nextY)) {
+					py -= moveSpeed;
+					if (py < 0) {
+						py = 0;
+						rMoved = true;
+					}
+					movingLength += moveSpeed;
+					moveObject(px, py);
+					if (movingLength >= tiles.getTileHeight()) {
+						y--;
+						py = y * tiles.getTileHeight();
+						moveObject(px, py);
+						rMoved = true;
+					}
+				}
+			} else if (dir == TDOWN) {
+				int nextX = x;
+				int nextY = y + 1;
+				if (nextY > tiles.getCol() - 1) {
+					nextY = tiles.getCol() - 1;
+				}
+				if (isCollisionTile(nextX, nextY)) {
+					py += moveSpeed;
+					float width = tiles.getHeight() - getHeight() + moveSpeed;
+					if (py > width) {
+						py = width;
+						rMoved = true;
+					}
+					movingLength += moveSpeed;
+					moveObject(px, py);
+					if (movingLength >= tiles.getTileHeight()) {
+						y++;
+						py = y * tiles.getTileHeight();
+						moveObject(px, py);
+						rMoved = true;
+					}
+				}
+			} else if (dir == LEFT) {
+				int nextX = x - 1;
+				int nextY = y - 1;
+				if (nextX < 0) {
+					nextX = 0;
+				}
+				if (nextY < 0) {
+					nextY = 0;
+				}
+				if (isCollisionTile(nextX, nextY)) {
+					px -= moveSpeed;
+					py -= moveSpeed;
+					if (px < 0) {
+						px = 0;
+						rMoved = true;
+					}
+					if (py < 0) {
+						py = 0;
+						rMoved = true;
+					}
+					movingLength += moveSpeed;
+					moveObject(px, py);
+					if (movingLength >= tiles.getTileWidth()) {
+						x--;
+						y--;
+						px = x * tiles.getTileWidth();
+						py = y * tiles.getTileHeight();
+						moveObject(px, py);
+						rMoved = true;
+					}
+				}
+			} else if (dir == RIGHT) {
+				int nextX = x + 1;
+				int nextY = y + 1;
+				if (nextX > tiles.getRow() - 1) {
+					nextX = tiles.getRow() - 1;
+				}
+				if (nextY > tiles.getCol() - 1) {
+					nextY = tiles.getCol() - 1;
+				}
+				if (isCollisionTile(nextX, nextY)) {
+					px += moveSpeed;
+					py += moveSpeed;
+					float width = tiles.getWidth() - getWidth() + moveSpeed;
+					float height = tiles.getHeight() - getHeight() + moveSpeed;
+					if (px > width) {
+						px = width;
+						rMoved = true;
+					}
+					if (py > height) {
+						py = height;
+						rMoved = true;
+					}
+					movingLength += moveSpeed;
+					moveObject(px, py);
+					if (movingLength >= tiles.getTileWidth()) {
+						x++;
+						y++;
+						px = x * tiles.getTileWidth();
+						py = y * tiles.getTileHeight();
+						moveObject(px, py);
+						rMoved = true;
+					}
+				}
+			} else if (dir == UP) {
+				int nextX = x + 1;
+				int nextY = y - 1;
+				if (nextX > tiles.getRow() - 1) {
+					nextX = tiles.getRow() - 1;
+				}
+				if (nextY < 0) {
+					nextY = 0;
+				}
+				if (isCollisionTile(nextX, nextY)) {
+					px += moveSpeed;
+					py -= moveSpeed;
+					float width = tiles.getWidth() - getWidth() + moveSpeed;
+					if (px > width) {
+						px = width;
+						rMoved = true;
+					}
+					if (py < 0) {
+						py = 0;
+						rMoved = true;
+					}
+					movingLength += moveSpeed;
+					moveObject(px, py);
+					if (movingLength >= tiles.getTileHeight()) {
+						x++;
+						y--;
+						px = x * tiles.getTileWidth();
+						py = y * tiles.getTileHeight();
+						moveObject(px, py);
+						rMoved = true;
+					}
+				}
+			} else if (dir == DOWN) {
+				int nextX = x - 1;
+				int nextY = y + 1;
+				if (nextX < 0) {
+					nextX = 0;
+				}
+				if (nextY > tiles.getCol() - 1) {
+					nextY = tiles.getCol() - 1;
+				}
+				if (isCollisionTile(nextX, nextY)) {
+					px -= moveSpeed;
+					py += moveSpeed;
+					float height = tiles.getHeight() - getHeight() + moveSpeed;
+					if (px < 0) {
+						px = 0;
+						rMoved = true;
+					}
+					if (py > height) {
+						py = height;
+						rMoved = true;
+					}
+					movingLength += moveSpeed;
+					moveObject(px, py);
+					if (movingLength >= tiles.getTileHeight()) {
+						x++;
+						y++;
+						px = x * tiles.getTileWidth();
+						py = y * tiles.getTileHeight();
+						moveObject(px, py);
+						rMoved = true;
+					}
+				}
 			}
 		} else {
-			px = x * tiles.getTileWidth();
-			py = y * tiles.getTileHeight();
-			setLocation(px, py);
-		}
-
-		return false;
-	}
-
-	private boolean moveRight() {
-		int px = x();
-		int py = y();
-		int x = tiles.pixelsToTilesWidth(px);
-		int y = tiles.pixelsToTilesHeight(py);
-		int nextX = x + 1;
-		int nextY = y;
-
-		if (nextX > tiles.getRow() - 1) {
-			nextX = tiles.getRow() - 1;
-		}
-		if (tiles.isHit(nextX, nextY)) {
-			px += speed;
-			if (px > tiles.getWidth() - tiles.getTileWidth()) {
-				px = (int) (tiles.getWidth() - tiles.getTileWidth());
+			if (dir == TLEFT) {
+				move_left(moveSpeed);
+			} else if (dir == TRIGHT) {
+				move_right(moveSpeed);
+			} else if (dir == TUP) {
+				move_up(moveSpeed);
+			} else if (dir == TDOWN) {
+				move_down(moveSpeed);
+			} else if (dir == LEFT) {
+				move_45D_left(moveSpeed);
+			} else if (dir == RIGHT) {
+				move_45D_right(moveSpeed);
+			} else if (dir == UP) {
+				move_45D_up(moveSpeed);
+			} else if (dir == DOWN) {
+				move_45D_down(moveSpeed);
 			}
-			movingLength += speed;
-			setLocation(px, py);
-			if (movingLength >= tiles.getTileWidth()) {
-				x++;
-				px = x * tiles.getTileWidth();
-				setLocation(px, py);
-				return true;
+			if (collisionListener != null) {
+				collisionListener.onCollision(px, py, getX(), getY());
 			}
-		} else {
-			px = x * tiles.getTileWidth();
-			py = y * tiles.getTileHeight();
-			setLocation(px, py);
 		}
-
-		return false;
+		updateDirection(dir);
+		return rMoved;
 	}
 
-	private boolean moveUp() {
-		int px = x();
-		int py = y();
-		int x = tiles.pixelsToTilesWidth(px);
-		int y = tiles.pixelsToTilesHeight(py);
-		int nextX = x;
-		int nextY = y - 1;
-		if (nextY < 0) {
-			nextY = 0;
+	public MoveObject onTouch(GameTouch e) {
+		if (e == null) {
+			return this;
 		}
-		if (tiles.isHit(nextX, nextY)) {
-			py -= speed;
-			if (py < 0) {
-				py = 0;
-			}
-			movingLength += speed;
-			setLocation(px, py);
-			if (movingLength >= tiles.getTileHeight()) {
-				y--;
-				py = y * tiles.getTileHeight();
-				setLocation(px, py);
-				return true;
-			}
-		} else {
-			px = x * tiles.getTileWidth();
-			py = y * tiles.getTileHeight();
-			setLocation(px, py);
-		}
-
-		return false;
+		return this.onTouch(e.getX(), e.getY());
 	}
 
-	private boolean moveDown() {
-		int px = x();
-		int py = y();
-		int x = tiles.pixelsToTilesWidth(px);
-		int y = tiles.pixelsToTilesHeight(py);
-		int nextX = x;
-		int nextY = y + 1;
-		if (nextY > tiles.getCol() - 1) {
-			nextY = tiles.getCol() - 1;
+	public MoveObject onTouch(XY pos) {
+		if (pos == null) {
+			return this;
 		}
-		if (tiles.isHit(nextX, nextY)) {
-			py += speed;
-			if (py > tiles.getHeight() - tiles.getTileHeight()) {
-				py = (int) (tiles.getHeight() - tiles.getTileHeight());
-			}
-			movingLength += speed;
-			setLocation(px, py);
-			if (movingLength >= tiles.getTileHeight()) {
-				y++;
-				py = y * tiles.getTileHeight();
-				setLocation(px, py);
-				return true;
-			}
-		} else {
-			px = x * tiles.getTileWidth();
-			py = y * tiles.getTileHeight();
-			setLocation(px, py);
+		return this.onTouch(pos.getX(), pos.getY());
+	}
+
+	public MoveObject onTouch(float x, float y) {
+		if (!isClicked) {
+			this.touchX = x;
+			this.touchY = y;
+			this.isClicked = true;
+			this.timer.reset();
+			this.updateMove();
 		}
-		return false;
+		return this;
 	}
 
-	@Override
-	public int hashCode() {
-		if (tiles == null) {
-			return super.hashCode();
-		}
-		int hashCode = 1;
-		hashCode = LSystem.unite(hashCode, allDirection);
-		hashCode = LSystem.unite(hashCode, tiles.pixelsToTilesWidth(x()));
-		hashCode = LSystem.unite(hashCode, tiles.pixelsToTilesHeight(y()));
-		hashCode = LSystem.unite(hashCode, tiles.pixelsToTilesWidth(touchX - tiles.getOffset().x));
-		hashCode = LSystem.unite(hashCode, tiles.pixelsToTilesHeight(touchY - tiles.getOffset().y));
-		hashCode = LSystem.unite(hashCode, tiles.getWidth());
-		hashCode = LSystem.unite(hashCode, tiles.getHeight());
-		hashCode = LSystem.unite(hashCode, tiles.getTileWidth());
-		hashCode = LSystem.unite(hashCode, tiles.getTileHeight());
-		hashCode = LSystem.unite(hashCode, CollectionUtils.hashCode(tiles.getMap()));
-		return hashCode;
-	}
-
-	public void onTouch(GameTouch e) {
-		this.onTouch(e.x(), e.y());
-	}
-
-	public void onTouch(int x, int y) {
-		this.touchX = x;
-		this.touchY = y;
-		this.updateMove();
-	}
-
-	public int getTouchX() {
+	public float getTouchX() {
 		return touchX;
 	}
 
-	public int getTouchY() {
+	public float getTouchY() {
 		return touchY;
 	}
 
-	public void onPosition(GameTouch e) {
-		this.onPosition(e.getX(), e.getY());
+	public MoveObject onPosition(GameTouch e) {
+		return this.onPosition(e.getX(), e.getY());
 	}
 
-	public void onPosition(float x, float y) {
+	public MoveObject onPosition(float x, float y) {
 		if (findPath == null) {
-			return;
+			return this;
 		}
 		synchronized (findPath) {
 			if (findPath != null) {
 				findPath.clear();
 			}
 		}
-		this.setLocation(x, y);
+		this.moveObject(x, y);
+		this.isClicked = false;
+		return this;
 	}
 
-	private boolean isMoving;
+	private void moveObject(float x, float y) {
+		if (collisionListener != null) {
+			collisionListener.onCollision(getX(), getY(), x, y);
+		}
+		this.setLocation(x, y);
+	}
 
 	@Override
 	public void update(long elapsedTime) {
 		super.update(elapsedTime);
-		if (timer.action(elapsedTime)) {
+		timer.update(elapsedTime);
 
-			isMoving = moveState();
-
-			if (tiles == null || findPath == null) {
-				return;
-			}
-			if (isComplete()) {
-				return;
-			}
-
-			synchronized (findPath) {
-				if (endX == startX && endY == startY) {
-					if (findPath != null) {
-						if (findPath.size > 1) {
-							Vector2f moveStart = findPath.get(0);
-							Vector2f moveEnd = findPath.get(1);
-							startX = tiles.tilesToPixelsX(moveStart.x());
-							startY = tiles.tilesToPixelsY(moveStart.y());
-							endX = moveEnd.x() * tiles.getTileWidth();
-							endY = moveEnd.y() * tiles.getTileHeight();
-							moveX = moveEnd.x() - moveStart.x();
-							moveY = moveEnd.y() - moveStart.y();
-							direction = Field2D.getDirection(moveX, moveY);
-							findPath.removeIndex(0);
-						} else {
-							findPath.clear();
-						}
-					}
-				}
-				switch (direction) {
-				case Field2D.TUP:
-					startY -= speed;
-					if (startY < endY) {
-						startY = endY;
-					}
-					break;
-				case Field2D.TDOWN:
-					startY += speed;
-					if (startY > endY) {
-						startY = endY;
-					}
-					break;
-				case Field2D.TLEFT:
-					startX -= speed;
-					if (startX < endX) {
-						startX = endX;
-					}
-					break;
-				case Field2D.TRIGHT:
-					startX += speed;
-					if (startX > endX) {
-						startX = endX;
-					}
-					break;
-				case Field2D.UP:
-					startX += speed;
-					startY -= speed;
-					if (startX > endX) {
-						startX = endX;
-					}
-					if (startY < endY) {
-						startY = endY;
-					}
-					break;
-				case Field2D.DOWN:
-					startX -= speed;
-					startY += speed;
-					if (startX < endX) {
-						startX = endX;
-					}
-					if (startY > endY) {
-						startY = endY;
-					}
-					break;
-				case Field2D.LEFT:
-					startX -= speed;
-					startY -= speed;
-					if (startX < endX) {
-						startX = endX;
-					}
-					if (startY < endY) {
-						startY = endY;
-					}
-					break;
-				case Field2D.RIGHT:
-					startX += speed;
-					startY += speed;
-					if (startX > endX) {
-						startX = endX;
-					}
-					if (startY > endY) {
-						startY = endY;
-					}
-					break;
-				}
-
-				Vector2f tile = tiles.getTileCollision(this, startX, startY);
-
-				if (tile != null) {
-					int sx = tiles.tilesToPixelsX(tile.x);
-					int sy = tiles.tilesToPixelsY(tile.y);
-					if (sx > 0) {
-						sx = (int) (sx - getWidth());
-					} else if (sx < 0) {
-						sx = tiles.tilesToPixelsX(tile.x);
-					}
-					if (sy > 0) {
-						sy = (int) (sy - getHeight());
-					} else if (sy < 0) {
-						sy = tiles.tilesToPixelsY(tile.y);
-					}
-				} else {
-					setLocation(startX, startY);
-				}
-
-			}
+		if (!isClicked) {
+			this.moving = moveState();
 		}
+		if (tiles == null || findPath == null || isComplete()) {
+			if (isClicked) {
+				direction = EMPTY;
+			}
+			isClicked = false;
+			return;
+		}
+
+		synchronized (findPath) {
+			if (endX == startX && endY == startY) {
+				if (findPath != null) {
+					if (findPath.size > 1) {
+						Vector2f moveStart = findPath.get(0);
+						Vector2f moveEnd = findPath.get(1);
+						startX = tiles.tilesToPixelsX(moveStart.x());
+						startY = tiles.tilesToPixelsY(moveStart.y());
+						endX = moveEnd.x() * tiles.getTileWidth();
+						endY = moveEnd.y() * tiles.getTileHeight();
+						direction = Field2D.getDirection(startX, startY, endX, endY);
+						findPath.removeIndex(0);
+					} else {
+						findPath.clear();
+					}
+				}
+			}
+			switch (direction) {
+			case Config.TUP:
+				startY -= getMoveSpeed();
+				if (startY < endY) {
+					startY = endY;
+				}
+				break;
+			case Config.TDOWN:
+				startY += getMoveSpeed();
+				if (startY > endY) {
+					startY = endY;
+				}
+				break;
+			case Config.TLEFT:
+				startX -= getMoveSpeed();
+				if (startX < endX) {
+					startX = endX;
+				}
+				break;
+			case Config.TRIGHT:
+				startX += getMoveSpeed();
+				if (startX > endX) {
+					startX = endX;
+				}
+				break;
+			case Config.UP:
+				startX += getMoveSpeed();
+				startY -= getMoveSpeed();
+				if (startX > endX) {
+					startX = endX;
+				}
+				if (startY < endY) {
+					startY = endY;
+				}
+				break;
+			case Config.DOWN:
+				startX -= getMoveSpeed();
+				startY += getMoveSpeed();
+				if (startX < endX) {
+					startX = endX;
+				}
+				if (startY > endY) {
+					startY = endY;
+				}
+				break;
+			case Config.LEFT:
+				startX -= getMoveSpeed();
+				startY -= getMoveSpeed();
+				if (startX < endX) {
+					startX = endX;
+				}
+				if (startY < endY) {
+					startY = endY;
+				}
+				break;
+			case Config.RIGHT:
+				startX += getMoveSpeed();
+				startY += getMoveSpeed();
+				if (startX > endX) {
+					startX = endX;
+				}
+				if (startY > endY) {
+					startY = endY;
+				}
+				break;
+			}
+
+			Vector2f tile = isCheckCollision ? tiles.getTileCollision(this, startX, startY) : null;
+
+			if (tile != null) {
+				int sx = tiles.tilesToPixelsX(tile.x);
+				int sy = tiles.tilesToPixelsY(tile.y);
+				if (sx > 0) {
+					sx = (int) (sx - getWidth());
+				} else if (sx < 0) {
+					sx = tiles.tilesToPixelsX(tile.x);
+				}
+				if (sy > 0) {
+					sy = (int) (sy - getHeight());
+				} else if (sy < 0) {
+					sy = tiles.tilesToPixelsY(tile.y);
+				}
+			} else {
+				moveObject(startX, startY);
+			}
+
+		}
+		updateDirection(direction);
+
 	}
 
-	public long getDelay() {
-		return timer.getDelay();
+	protected float getMoveSpeed() {
+		return speed * timer.getProgress();
 	}
 
-	public MoveObject setDelay(long d) {
-		timer.setDelay(d);
+	public EaseTimer getTimer() {
+		return timer;
+	}
+
+	public MoveObject setEasingMode(EasingMode ease) {
+		timer.setEasingMode(ease);
 		return this;
 	}
 
@@ -459,8 +638,13 @@ public class MoveObject extends ActionObject {
 		return direction;
 	}
 
-	public int getSpeed() {
+	public float getSpeed() {
 		return speed;
+	}
+
+	public MoveObject setDirection(int d) {
+		this.direction = d;
+		return this;
 	}
 
 	public MoveObject setSpeed(int speed) {
@@ -469,11 +653,12 @@ public class MoveObject extends ActionObject {
 	}
 
 	public boolean isComplete() {
-		return findPath == null || findPath.size == 0 || isComplete;
+		return findPath == null || findPath.size == 0 || isCompleted;
 	}
 
-	public void setComplete(boolean c) {
-		this.isComplete = true;
+	public MoveObject setComplete(boolean c) {
+		this.isCompleted = true;
+		return this;
 	}
 
 	public float getRotationTo(float x, float y) {
@@ -499,8 +684,58 @@ public class MoveObject extends ActionObject {
 		return this;
 	}
 
+	public boolean isAllowCheckCollision() {
+		return isCheckCollision;
+	}
+
+	public MoveObject setAllowCheckCollision(boolean c) {
+		this.isCheckCollision = c;
+		return this;
+	}
+
 	public boolean isMoving() {
-		return isMoving;
+		return moving;
+	}
+
+	public CollisionListener getCollisionListener() {
+		return collisionListener;
+	}
+
+	public MoveObject setCollisionListener(CollisionListener c) {
+		this.collisionListener = c;
+		return this;
+	}
+
+	public DirectionListener getDirectionListener() {
+		return directionListener;
+	}
+
+	public MoveObject setDirectionListener(DirectionListener d) {
+		this.directionListener = d;
+		return this;
+	}
+
+	public String getDirectionString() {
+		return Side.getDirectionName(direction);
+	}
+
+	@Override
+	public int hashCode() {
+		if (tiles == null) {
+			return super.hashCode();
+		}
+		int hashCode = 1;
+		hashCode = LSystem.unite(hashCode, allDirection);
+		hashCode = LSystem.unite(hashCode, tiles.pixelsToTilesWidth(x()));
+		hashCode = LSystem.unite(hashCode, tiles.pixelsToTilesHeight(y()));
+		hashCode = LSystem.unite(hashCode, tiles.pixelsToTilesWidth(touchX - tiles.getOffset().x));
+		hashCode = LSystem.unite(hashCode, tiles.pixelsToTilesHeight(touchY - tiles.getOffset().y));
+		hashCode = LSystem.unite(hashCode, tiles.getWidth());
+		hashCode = LSystem.unite(hashCode, tiles.getHeight());
+		hashCode = LSystem.unite(hashCode, tiles.getTileWidth());
+		hashCode = LSystem.unite(hashCode, tiles.getTileHeight());
+		hashCode = LSystem.unite(hashCode, CollectionUtils.hashCode(tiles.getMap()));
+		return hashCode;
 	}
 
 	@Override

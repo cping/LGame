@@ -30,6 +30,18 @@ import loon.utils.Easing.EasingMode;
  */
 public class EaseTimer extends BasicTimer {
 
+	public final static EaseTimer at(final float timer, final EasingMode mode) {
+		return at(timer, mode, 0);
+	}
+
+	public final static EaseTimer at(final float timer, final EasingMode mode, final int loop) {
+		return at(timer,1f, mode, loop);
+	}
+
+	public final static EaseTimer at(final float timer, final float duration, final EasingMode mode, final int loop) {
+		return new EaseTimer(timer, duration, LSystem.DEFAULT_EASE_DELAY, mode, loop);
+	}
+
 	private float _ease_value_max = 1f;
 	private float _ease_value_min = 0f;
 
@@ -52,11 +64,11 @@ public class EaseTimer extends BasicTimer {
 	}
 
 	public EaseTimer(float duration, float delay, EasingMode mode) {
-		this(duration, LSystem.DEFAULT_EASE_DELAY, mode, 0);
+		this(0f, duration, LSystem.DEFAULT_EASE_DELAY, mode, 0);
 	}
 
-	public EaseTimer(float duration, float delay, EasingMode mode, int loop) {
-		super(0, duration, loop);
+	public EaseTimer(float timer, float duration, float delay, EasingMode mode, int loop) {
+		super(timer, duration, loop);
 		this._mode = mode;
 		this._delay = delay;
 		this._ease_value_max = 1f;

@@ -60,7 +60,7 @@ public class Vector2f implements Serializable, SetXY, XY {
 	}
 
 	public final static Vector2f ONE() {
-		return new Vector2f(1);
+		return new Vector2f(1f);
 	}
 
 	public final static Vector2f AXIS_X() {
@@ -701,66 +701,66 @@ public class Vector2f implements Serializable, SetXY, XY {
 	}
 
 	public Vector2f move_45D_up() {
-		return move_45D_up(1);
+		return move_45D_up(1f);
 	}
 
-	public Vector2f move_45D_up(int multiples) {
+	public Vector2f move_45D_up(float multiples) {
 		return move_multiples(Field2D.UP, multiples);
 	}
 
 	public Vector2f move_45D_left() {
-		return move_45D_left(1);
+		return move_45D_left(1f);
 	}
 
-	public Vector2f move_45D_left(int multiples) {
+	public Vector2f move_45D_left(float multiples) {
 		return move_multiples(Field2D.LEFT, multiples);
 	}
 
 	public Vector2f move_45D_right() {
-		return move_45D_right(1);
+		return move_45D_right(1f);
 	}
 
-	public Vector2f move_45D_right(int multiples) {
+	public Vector2f move_45D_right(float multiples) {
 		return move_multiples(Field2D.RIGHT, multiples);
 	}
 
 	public Vector2f move_45D_down() {
-		return move_45D_down(1);
+		return move_45D_down(1f);
 	}
 
-	public Vector2f move_45D_down(int multiples) {
+	public Vector2f move_45D_down(float multiples) {
 		return move_multiples(Field2D.DOWN, multiples);
 	}
 
 	public Vector2f move_up() {
-		return move_up(1);
+		return move_up(1f);
 	}
 
-	public Vector2f move_up(int multiples) {
+	public Vector2f move_up(float multiples) {
 		return move_multiples(Field2D.TUP, multiples);
 	}
 
 	public Vector2f move_left() {
-		return move_left(1);
+		return move_left(1f);
 	}
 
-	public Vector2f move_left(int multiples) {
+	public Vector2f move_left(float multiples) {
 		return move_multiples(Field2D.TLEFT, multiples);
 	}
 
 	public Vector2f move_right() {
-		return move_right(1);
+		return move_right(1f);
 	}
 
-	public Vector2f move_right(int multiples) {
+	public Vector2f move_right(float multiples) {
 		return move_multiples(Field2D.TRIGHT, multiples);
 	}
 
 	public Vector2f move_down() {
-		return move_down(1);
+		return move_down(1f);
 	}
 
-	public Vector2f move_down(int multiples) {
+	public Vector2f move_down(float multiples) {
 		return move_multiples(Field2D.TDOWN, multiples);
 	}
 
@@ -824,9 +824,9 @@ public class Vector2f implements Serializable, SetXY, XY {
 		return this;
 	}
 
-	public Vector2f move_multiples(int direction, int multiples) {
+	public Vector2f move_multiples(int direction, float multiples) {
 		if (multiples <= 0) {
-			multiples = 1;
+			multiples = 1f;
 		}
 		Vector2f v = Field2D.getDirection(direction);
 		return move(v.x() * multiples, v.y() * multiples);

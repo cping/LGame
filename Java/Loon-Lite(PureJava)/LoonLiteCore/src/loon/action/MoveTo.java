@@ -30,7 +30,9 @@ import loon.action.map.Field2D;
 import loon.geom.Vector2f;
 import loon.utils.IntMap;
 import loon.utils.TArray;
+import loon.utils.timer.EaseTimer;
 import loon.utils.CollectionUtils;
+import loon.utils.Easing.EasingMode;
 import loon.utils.MathUtils;
 import loon.utils.StringKeyValue;
 
@@ -68,6 +70,8 @@ public class MoveTo extends ActionEvent {
 	private AStarFindHeuristic heuristic;
 
 	private Vector2f pLocation = new Vector2f();
+
+	private EaseTimer easeTimer;
 
 	private boolean moveByMode = false;
 
@@ -116,6 +120,7 @@ public class MoveTo extends ActionEvent {
 
 	public MoveTo(final Field2D map, float sx, float sy, float ex, float ey, boolean all, float speed, boolean cache,
 			boolean synField, int delayTime) {
+		this.easeTimer = EaseTimer.at(1f, EasingMode.Linear);
 		this.startLocation = new Vector2f(sx, sy);
 		this.endLocation = new Vector2f(ex, ey);
 		this.layerMap = map;
@@ -138,7 +143,7 @@ public class MoveTo extends ActionEvent {
 		this(map, pos.x(), pos.y(), allDir, speed);
 	}
 
-	public void randomPathFinder() {
+	public MoveTo randomPathFinder() {
 		synchronized (MoveTo.class) {
 			AStarFindHeuristic afh = null;
 			int index = MathUtils.random(AStarFindHeuristic.MANHATTAN, AStarFindHeuristic.CLOSEST_SQUARED);
@@ -170,6 +175,11 @@ public class MoveTo extends ActionEvent {
 			}
 			setHeuristic(afh);
 		}
+		return this;
+	}
+
+	protected float getMoveSpeed() {
+		return speed * easeTimer.getProgress();
 	}
 
 	public float[] getBeginPath() {
@@ -180,7 +190,7 @@ public class MoveTo extends ActionEvent {
 		return new float[] { endX, endY };
 	}
 
-	public void setMoveByMode(boolean m) {
+	public MoveTo setMoveByMode(boolean m) {
 		this.moveByMode = m;
 		if (original != null) {
 			this.startX = original.x();
@@ -188,6 +198,7 @@ public class MoveTo extends ActionEvent {
 		}
 		this.endX = endLocation.x();
 		this.endY = endLocation.y();
+		return this;
 	}
 
 	@Override
@@ -195,20 +206,20 @@ public class MoveTo extends ActionEvent {
 		updatePath();
 	}
 
-	public void updatePath() {
+	public MoveTo updatePath() {
 		_process_delay = 0;
 		_processed = false;
 		if (!moveByMode && original != null && LSystem.getProcess() != null && LSystem.getProcess().getScreen() != null
 				&& !LSystem.getProcess().getScreen().getRectBox().contains(original.x(), original.y())
 				&& layerMap != null && !layerMap.inside(original.x(), original.y())) { // 处理越界出Field2D二维数组的移动
 			setMoveByMode(true);
-			return;
+			return this;
 		} else if (moveByMode) {
 			setMoveByMode(true);
-			return;
+			return this;
 		}
 		if (layerMap == null || original == null) {
-			return;
+			return this;
 		}
 		if (!(original.x() == endLocation.x() && original.y() == endLocation.y())) {
 			if (useCache) {
@@ -236,9 +247,10 @@ public class MoveTo extends ActionEvent {
 
 			}
 		}
+		return this;
 	}
 
-	public void clearPath() {
+	public MoveTo clearPath() {
 		if (pActorPath != null) {
 			synchronized (pActorPath) {
 				if (pActorPath != null) {
@@ -247,6 +259,7 @@ public class MoveTo extends ActionEvent {
 			}
 			clearPathCache();
 		}
+		return this;
 	}
 
 	public static void clearPathCache() {
@@ -301,10 +314,11 @@ public class MoveTo extends ActionEvent {
 		return direction;
 	}
 
-	public void setField2D(Field2D field) {
+	public MoveTo setField2D(Field2D field) {
 		if (field != null) {
 			this.layerMap = field;
 		}
+		return this;
 	}
 
 	public Field2D getField2D() {
@@ -313,6 +327,7 @@ public class MoveTo extends ActionEvent {
 
 	@Override
 	public void update(long elapsedTime) {
+		easeTimer.update(elapsedTime);
 		if (process_delay_time > 0) {
 			if (!this.moveByMode) {
 				if (!_processed && (this.pActorPath == null || this.original == null || this.pActorPath.size == 0)) {
@@ -331,6 +346,7 @@ public class MoveTo extends ActionEvent {
 				return;
 			}
 		}
+		final float moveSpeed = getMoveSpeed();
 		isMoved = true;
 		float newX = 0f;
 		float newY = 0f;
@@ -346,13 +362,13 @@ public class MoveTo extends ActionEvent {
 					if (newX >= endX) {
 						count++;
 					} else {
-						newX += speed;
+						newX += moveSpeed;
 					}
 				} else if (dirX < 0) {
 					if (newX <= endX) {
 						count++;
 					} else {
-						newX -= speed;
+						newX -= moveSpeed;
 					}
 				} else {
 					count++;
@@ -361,13 +377,13 @@ public class MoveTo extends ActionEvent {
 					if (newY >= endY) {
 						count++;
 					} else {
-						newY += speed;
+						newY += moveSpeed;
 					}
 				} else if (dirY < 0) {
 					if (newY <= endY) {
 						count++;
 					} else {
-						newY -= speed;
+						newY -= moveSpeed;
 					}
 				} else {
 					count++;
@@ -390,7 +406,7 @@ public class MoveTo extends ActionEvent {
 				switch (dir) {
 				case Config.TUP:
 				case Config.UP:
-					startY -= speed;
+					startY -= moveSpeed;
 					if (startY < endY) {
 						startY = endY;
 						isMoved = false;
@@ -398,7 +414,7 @@ public class MoveTo extends ActionEvent {
 					break;
 				case Config.TDOWN:
 				case Config.DOWN:
-					startY += speed;
+					startY += moveSpeed;
 					if (startY > endY) {
 						startY = endY;
 						isMoved = false;
@@ -406,7 +422,7 @@ public class MoveTo extends ActionEvent {
 					break;
 				case Config.TLEFT:
 				case Config.LEFT:
-					startX -= speed;
+					startX -= moveSpeed;
 					if (startX < endX) {
 						startX = endX;
 						isMoved = false;
@@ -414,7 +430,7 @@ public class MoveTo extends ActionEvent {
 					break;
 				case Config.TRIGHT:
 				case Config.RIGHT:
-					startX += speed;
+					startX += moveSpeed;
 					if (startX > endX) {
 						startX = endX;
 						isMoved = false;
@@ -494,8 +510,8 @@ public class MoveTo extends ActionEvent {
 				newY = original.getY() - offsetY;
 				switch (direction) {
 				case Config.TUP:
-					startY -= speed;
-					newY -= speed;
+					startY -= moveSpeed;
+					newY -= moveSpeed;
 					if (startY < endY) {
 						startY = endY;
 					}
@@ -505,8 +521,8 @@ public class MoveTo extends ActionEvent {
 					}
 					break;
 				case Config.TDOWN:
-					startY += speed;
-					newY += speed;
+					startY += moveSpeed;
+					newY += moveSpeed;
 					if (startY > endY) {
 						startY = endY;
 					}
@@ -516,8 +532,8 @@ public class MoveTo extends ActionEvent {
 					}
 					break;
 				case Config.TLEFT:
-					startX -= speed;
-					newX -= speed;
+					startX -= moveSpeed;
+					newX -= moveSpeed;
 					if (startX < endX) {
 						startX = endX;
 					}
@@ -527,8 +543,8 @@ public class MoveTo extends ActionEvent {
 					}
 					break;
 				case Config.TRIGHT:
-					startX += speed;
-					newX += speed;
+					startX += moveSpeed;
+					newX += moveSpeed;
 					if (startX > endX) {
 						startX = endX;
 					}
@@ -538,10 +554,10 @@ public class MoveTo extends ActionEvent {
 					}
 					break;
 				case Config.UP:
-					startX += speed;
-					startY -= speed;
-					newX += speed;
-					newY -= speed;
+					startX += moveSpeed;
+					startY -= moveSpeed;
+					newX += moveSpeed;
+					newY -= moveSpeed;
 					if (startX > endX) {
 						startX = endX;
 					}
@@ -558,10 +574,10 @@ public class MoveTo extends ActionEvent {
 					}
 					break;
 				case Config.DOWN:
-					startX -= speed;
-					startY += speed;
-					newX -= speed;
-					newY += speed;
+					startX -= moveSpeed;
+					startY += moveSpeed;
+					newX -= moveSpeed;
+					newY += moveSpeed;
 					if (startX < endX) {
 						startX = endX;
 					}
@@ -578,10 +594,10 @@ public class MoveTo extends ActionEvent {
 					}
 					break;
 				case Config.LEFT:
-					startX -= speed;
-					startY -= speed;
-					newX -= speed;
-					newY -= speed;
+					startX -= moveSpeed;
+					startY -= moveSpeed;
+					newX -= moveSpeed;
+					newY -= moveSpeed;
 					if (startX < endX) {
 						startX = endX;
 					}
@@ -598,10 +614,10 @@ public class MoveTo extends ActionEvent {
 					}
 					break;
 				case Config.RIGHT:
-					startX += speed;
-					startY += speed;
-					newX += speed;
-					newY += speed;
+					startX += moveSpeed;
+					startY += moveSpeed;
+					newX += moveSpeed;
+					newY += moveSpeed;
 					if (startX > endX) {
 						startX = endX;
 					}
@@ -720,34 +736,38 @@ public class MoveTo extends ActionEvent {
 		return isDirUpdate;
 	}
 
-	public void updateDirection(float x, float y) {
+	public MoveTo updateDirection(float x, float y) {
 		int oldDir = direction;
 		direction = Field2D.getDirection((int) x, (int) y, oldDir);
 		isDirUpdate = (oldDir != direction);
+		return this;
 	}
 
 	public boolean isUseCache() {
 		return useCache;
 	}
 
-	public void setUseCache(boolean useCache) {
+	public MoveTo setUseCache(boolean useCache) {
 		this.useCache = useCache;
+		return this;
 	}
 
 	public boolean isSynchroLayerField() {
 		return synchroLayerField;
 	}
 
-	public void setSynchroLayerField(boolean syn) {
+	public MoveTo setSynchroLayerField(boolean syn) {
 		this.synchroLayerField = syn;
+		return this;
 	}
 
 	public AStarFindHeuristic getHeuristic() {
 		return heuristic;
 	}
 
-	public void setHeuristic(AStarFindHeuristic heuristic) {
+	public MoveTo setHeuristic(AStarFindHeuristic heuristic) {
 		this.heuristic = heuristic;
+		return this;
 	}
 
 	public float getEndX() {
@@ -766,12 +786,14 @@ public class MoveTo extends ActionEvent {
 		return _process_delay;
 	}
 
-	public void setProcessDelay(int delay) {
+	public MoveTo setProcessDelay(int delay) {
 		this._process_delay = delay;
+		return this;
 	}
 
-	public void setProcessed(boolean processed) {
+	public MoveTo setProcessed(boolean processed) {
 		this._processed = processed;
+		return this;
 	}
 
 	public int getProcessDelayTime() {
@@ -783,8 +805,23 @@ public class MoveTo extends ActionEvent {
 	 * 
 	 * @param delayTime
 	 */
-	public void setProcessDelayTime(int delayTime) {
+	public MoveTo setProcessDelayTime(int delayTime) {
 		this.process_delay_time = delayTime;
+		return this;
+	}
+
+	public EaseTimer getEaseTimer() {
+		return easeTimer;
+	}
+
+	public MoveTo setEasingMode(EasingMode m) {
+		this.easeTimer.setEasingMode(m);
+		return this;
+	}
+
+	public MoveTo setEaseTimer(EaseTimer e) {
+		this.easeTimer = e;
+		return this;
 	}
 
 	@Override

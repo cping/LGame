@@ -2448,4 +2448,20 @@ final public class StringUtils extends CharUtils {
 		return str.toString();
 	}
 
+	public static String byteArrayToString(final byte[] array) {
+		return byteArrayToString(array, 0, array.length);
+	}
+
+	public static String byteArrayToString(final byte[] array, int off, int len) {
+		final StringBuilder builder = new StringBuilder();
+		for (int i = 0; i < len; ++i) {
+			final byte b = array[off + i];
+			int digit = (b >> 4) & 0xf;
+			builder.append((char) ((digit < 10) ? (digit + '0') : (digit - 10 + 'a')));
+			digit = b & 0xf;
+			builder.append((char) ((digit < 10) ? (digit + '0') : (digit - 10 + 'a')));
+		}
+		return builder.toString();
+	}
+
 }

@@ -471,6 +471,22 @@ public final class MathUtils {
 		return MathUtils.abs(value) <= 0.00000001;
 	}
 
+	public static boolean isBeside(double x, double y) {
+		return abs(x - y) == 1;
+	}
+
+	public static boolean isBeside(float x, float y) {
+		return abs(x - y) == 1;
+	}
+
+	public static boolean isBeside(long x, long y) {
+		return abs(x - y) == 1;
+	}
+
+	public static boolean isBeside(int x, int y) {
+		return abs(x - y) == 1;
+	}
+
 	public static int mul(int x, int y) {
 		long z = (long) x * (long) y;
 		return ((int) (z >> 16));
@@ -662,12 +678,20 @@ public final class MathUtils {
 		return result;
 	}
 
-	public static float trunc(float x) {
-		return x < 0f ? MathUtils.ceil(x) : MathUtils.floor(x);
+	public static float abs(float n) {
+		return (n < 0) ? -n : n;
 	}
 
-	public static float tan(float angle) {
-		return (float) Math.tan(angle);
+	public static double abs(double n) {
+		return (n < 0) ? -n : n;
+	}
+
+	public static int abs(int n) {
+		return (n < 0) ? -n : n;
+	}
+
+	public static long abs(long n) {
+		return (n < 0) ? -n : n;
 	}
 
 	public static float asin(float value) {
@@ -682,6 +706,30 @@ public final class MathUtils {
 		return (float) Math.atan(value);
 	}
 
+	public static float atan2(float y, float x) {
+		float add, mul;
+		if (x < 0) {
+			if (y < 0) {
+				y = -y;
+				mul = 1;
+			} else
+				mul = -1;
+			x = -x;
+			add = -3.141592653f;
+		} else {
+			if (y < 0) {
+				y = -y;
+				mul = -1;
+			} else
+				mul = 1;
+			add = 0;
+		}
+		float invDiv = 1 / ((x < y ? y : x) * INV_ATAN2_DIM_MINUS_1);
+		int xi = (int) (x * invDiv);
+		int yi = (int) (y * invDiv);
+		return (Atan2.TABLE[yi * ATAN2_DIM + xi] + add) * mul;
+	}
+
 	public static float mag(float a, float b) {
 		return sqrt(a * a + b * b);
 	}
@@ -692,6 +740,14 @@ public final class MathUtils {
 
 	public static float median(float a, float b, float c) {
 		return (a <= b) ? ((b <= c) ? b : ((a < c) ? c : a)) : ((a <= c) ? a : ((b < c) ? c : b));
+	}
+
+	public static float trunc(float x) {
+		return x < 0f ? MathUtils.ceil(x) : MathUtils.floor(x);
+	}
+
+	public static float tan(float angle) {
+		return (float) Math.tan(angle);
 	}
 
 	public static float distance(float x1, float x2) {
@@ -774,20 +830,8 @@ public final class MathUtils {
 		return dist(x1 + w1, y1 + h1, x2, y2);
 	}
 
-	public static float abs(float n) {
-		return (n < 0) ? -n : n;
-	}
-
-	public static double abs(double n) {
-		return (n < 0) ? -n : n;
-	}
-
-	public static int abs(int n) {
-		return (n < 0) ? -n : n;
-	}
-
-	public static long abs(long n) {
-		return (n < 0) ? -n : n;
+	public static float oscilliate(float x, float min, float max, float period) {
+		return max - (sin(x * 2f * PI / period) * ((max - min) / 2f) + ((max - min) / 2f));
 	}
 
 	public static float sq(float a) {
@@ -932,30 +976,6 @@ public final class MathUtils {
 
 	public static float cosDeg(float deg) {
 		return SinCos.COS_LIST[(int) (deg * DEG_TO_INDEX) & SIN_MASK];
-	}
-
-	public static float atan2(float y, float x) {
-		float add, mul;
-		if (x < 0) {
-			if (y < 0) {
-				y = -y;
-				mul = 1;
-			} else
-				mul = -1;
-			x = -x;
-			add = -3.141592653f;
-		} else {
-			if (y < 0) {
-				y = -y;
-				mul = -1;
-			} else
-				mul = 1;
-			add = 0;
-		}
-		float invDiv = 1 / ((x < y ? y : x) * INV_ATAN2_DIM_MINUS_1);
-		int xi = (int) (x * invDiv);
-		int yi = (int) (y * invDiv);
-		return (Atan2.TABLE[yi * ATAN2_DIM + xi] + add) * mul;
 	}
 
 	public static boolean between(float v, float min, float max) {

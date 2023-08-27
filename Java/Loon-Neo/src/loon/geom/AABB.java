@@ -121,6 +121,10 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 		return this;
 	}
 
+	public AABB scale(float sx, float sy) {
+		return new AABB(minX * sx, minY * sy, maxX * sx, maxY * sy);
+	}
+
 	public AABB move(float cx, float cy) {
 		this.minX += cx;
 		this.minY += cy;
@@ -246,6 +250,16 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 		return minY;
 	}
 
+	@Override
+	public float getZ() {
+		return maxX;
+	}
+
+	@Override
+	public float getW() {
+		return maxY;
+	}
+
 	public boolean contains(Circle circle) {
 		float xmin = circle.x - circle.getRadius();
 		float xmax = xmin + 2f * circle.getRadius();
@@ -279,18 +293,77 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 		return this.minY + this.maxY / 2f;
 	}
 
+	public RectBox getRectBox(RectBox rect) {
+		if (this.minX > this.maxX || this.minY > this.maxY) {
+			return new RectBox();
+		}
+
+		if (rect == null) {
+			rect = new RectBox();
+		}
+
+		rect.x = this.minX;
+		rect.y = this.minY;
+		rect.width = MathUtils.floor(this.maxX - this.minX);
+		rect.height = MathUtils.floor(this.maxY - this.minY);
+
+		return rect;
+	}
+
 	public RectBox toRectBox() {
-		return new RectBox(this.minX, this.minY, this.maxX, this.maxY);
+		return getRectBox(null);
 	}
 
-	@Override
-	public float getZ() {
-		return maxX;
+	public AABB add(XY pos) {
+		this.minX = MathUtils.min(this.minX, pos.getX());
+		this.maxX = MathUtils.max(this.maxX, pos.getX());
+		this.minY = MathUtils.min(this.minY, pos.getY());
+		this.maxY = MathUtils.max(this.maxY, pos.getY());
+		return this;
 	}
 
-	@Override
-	public float getW() {
-		return maxY;
+	public AABB add(AABB rect) {
+		final float minX = this.minX;
+		final float minY = this.minY;
+		final float maxX = this.maxX;
+		final float maxY = this.maxY;
+
+		this.minX = rect.minX < minX ? rect.minX : minX;
+		this.minY = rect.minY < minY ? rect.minY : minY;
+		this.maxX = rect.maxX > maxX ? rect.maxX : maxX;
+		this.maxY = rect.maxY > maxY ? rect.maxY : maxY;
+		return this;
+	}
+
+	public AABB add(Affine2f tx, XY pos) {
+		final float x = (tx.m00 * pos.getX()) + (tx.m10 * pos.getY()) + tx.tx;
+		final float y = (tx.m01 * pos.getX()) + (tx.m11 * pos.getY()) + tx.ty;
+
+		this.minX = MathUtils.min(this.minX, x);
+		this.maxX = MathUtils.max(this.maxX, x);
+		this.minY = MathUtils.min(this.minY, y);
+		this.maxY = MathUtils.max(this.maxY, y);
+		return this;
+	}
+
+	public AABB add(AABB aabb, RectBox area) {
+		final float _minX = aabb.minX > area.x ? aabb.minX : area.x;
+		final float _minY = aabb.minY > area.y ? aabb.minY : area.y;
+		final float _maxX = aabb.maxX < area.x + area.width ? aabb.maxX : (area.x + area.width);
+		final float _maxY = aabb.maxY < area.y + area.height ? aabb.maxY : (area.y + area.height);
+
+		if (_minX <= _maxX && _minY <= _maxY) {
+			final float minX = this.minX;
+			final float minY = this.minY;
+			final float maxX = this.maxX;
+			final float maxY = this.maxY;
+
+			this.minX = _minX < minX ? _minX : minX;
+			this.minY = _minY < minY ? _minY : minY;
+			this.maxX = _maxX > maxX ? _maxX : maxX;
+			this.maxY = _maxY > maxY ? _maxY : maxY;
+		}
+		return this;
 	}
 
 	@Override

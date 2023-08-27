@@ -452,11 +452,6 @@ public abstract class Stage extends Screen {
 		return this;
 	}
 
-	public Stage addTileObject(ActionObject o) {
-		add(o);
-		return this;
-	}
-
 	public JumpObject addJumpObject(float x, float y, float w, float h, Animation a) {
 		JumpObject o = null;
 		if (_currentTileMap != null) {
@@ -466,7 +461,7 @@ public abstract class Stage extends Screen {
 		} else {
 			return null;
 		}
-		add(o);
+		addTileObject(o);
 		return o;
 	}
 
@@ -479,21 +474,16 @@ public abstract class Stage extends Screen {
 		} else {
 			return null;
 		}
-		add(o);
+		addTileObject(o);
 		return o;
 	}
 
-	public Stage removeTileObject(ActionObject o) {
-		remove(o);
-		return this;
-	}
-
-	public ActionObject add(ActionObject o) {
+	public ActionObject addTileObject(ActionObject o) {
 		_pendingAdd.add(o);
 		return o;
 	}
 
-	public ActionObject remove(ActionObject o) {
+	public ActionObject removeTileObject(ActionObject o) {
 		_pendingRemove.add(o);
 		return o;
 	}

@@ -40,7 +40,7 @@ import loon.utils.timer.LTimerContext;
  */
 public class MoveControl implements LRelease {
 
-	private float _moveSpeed = 1;
+	private float _moveSpeed = 1f;
 
 	private float _offsetX = 0f;
 
@@ -98,52 +98,54 @@ public class MoveControl implements LRelease {
 		this._vagueHeightScale = hs;
 	}
 
-	public void upIso() {
-		this.setDirection(Config.UP);
+	public MoveControl upIso() {
+		return this.setDirection(Config.UP);
 	}
 
-	public void tup() {
-		this.setDirection(Config.TUP);
+	public MoveControl tup() {
+		return this.setDirection(Config.TUP);
 	}
 
-	public void downIso() {
-		this.setDirection(Config.DOWN);
+	public MoveControl downIso() {
+		return this.setDirection(Config.DOWN);
 	}
 
-	public void tdown() {
-		this.setDirection(Config.TDOWN);
+	public MoveControl tdown() {
+		return this.setDirection(Config.TDOWN);
 	}
 
-	public void leftIso() {
-		this.setDirection(Config.LEFT);
+	public MoveControl leftIso() {
+		return this.setDirection(Config.LEFT);
 	}
 
-	public void tleft() {
-		this.setDirection(Config.TLEFT);
+	public MoveControl tleft() {
+		return this.setDirection(Config.TLEFT);
 	}
 
-	public void rightIso() {
-		this.setDirection(Config.RIGHT);
+	public MoveControl rightIso() {
+		return this.setDirection(Config.RIGHT);
 	}
 
-	public void tright() {
-		this.setDirection(Config.TRIGHT);
+	public MoveControl tright() {
+		return this.setDirection(Config.TRIGHT);
 	}
 
-	public void setDirection(int d) {
+	public MoveControl setDirection(int d) {
 		this._direction = d;
+		return this;
 	}
 
-	public void resetDirection() {
-		setDirection(-1);
+	public MoveControl resetDirection() {
+		return setDirection(-1);
 	}
 
 	public int getDirection() {
 		return this._direction;
 	}
 
-	public final void call() {
+	public final MoveControl call() {
 		move(_bindObject, _currentArrayMap, _direction);
+		return this;
 	}
 
 	public MoveControl start() {
@@ -152,7 +154,7 @@ public class MoveControl implements LRelease {
 
 	public MoveControl submit() {
 		if (!_running) {
-			RealtimeProcess process = new RealtimeProcess() {
+			final RealtimeProcess process = new RealtimeProcess() {
 
 				@Override
 				public void run(LTimerContext time) {
@@ -273,13 +275,13 @@ public class MoveControl implements LRelease {
 		return true;
 	}
 
-	public void movePos(ActionBind bind, float x, float y, int dir) {
-		movePos(bind, x, y, -1f, -1f, dir);
+	public MoveControl movePos(ActionBind bind, float x, float y, int dir) {
+		return movePos(bind, x, y, -1f, -1f, dir);
 	}
 
-	public void movePos(ActionBind bind, float x, float y, float lastX, float lastY, int dir) {
+	public MoveControl movePos(ActionBind bind, float x, float y, float lastX, float lastY, int dir) {
 		if (bind == null) {
-			return;
+			return this;
 		}
 		if (_collisionWorld != null) {
 			if (_worldCollisionFilter == null) {
@@ -303,6 +305,7 @@ public class MoveControl implements LRelease {
 		_lastX = bind.getX() - _offsetX;
 		_lastY = bind.getY() - _offsetY;
 		_lastDirection = dir;
+		return this;
 	}
 
 	public boolean isMoving() {
@@ -326,8 +329,9 @@ public class MoveControl implements LRelease {
 		return _freeDir;
 	}
 
-	public void setFreeDir(boolean d) {
+	public MoveControl setFreeDir(boolean d) {
 		this._freeDir = d;
+		return this;
 	}
 
 	public boolean isWN() {
@@ -398,8 +402,9 @@ public class MoveControl implements LRelease {
 		return _delay;
 	}
 
-	public void setDelay(long delay) {
+	public MoveControl setDelay(long delay) {
 		this._delay = delay;
+		return this;
 	}
 
 	public float getLastX() {
@@ -414,57 +419,65 @@ public class MoveControl implements LRelease {
 		return _offsetX;
 	}
 
-	public void setOffsetX(float offsetX) {
+	public MoveControl setOffsetX(float offsetX) {
 		this._offsetX = offsetX;
+		return this;
 	}
 
 	public float getOffsetY() {
 		return _offsetY;
 	}
 
-	public void setOffsetY(float offsetY) {
+	public MoveControl setOffsetY(float offsetY) {
 		this._offsetY = offsetY;
+		return this;
 	}
 
 	public CollisionFilter getCollisionFilter() {
 		return _worldCollisionFilter;
 	}
 
-	public void setCollisionFilter(CollisionFilter filter) {
+	public MoveControl setCollisionFilter(CollisionFilter filter) {
 		this._worldCollisionFilter = filter;
+		return this;
 	}
 
 	public CollisionWorld getCollisionWorld() {
 		return _collisionWorld;
 	}
 
-	public void setCollisionWorld(CollisionWorld world) {
+	public MoveControl setCollisionWorld(CollisionWorld world) {
 		this._collisionWorld = world;
+		return this;
 	}
 
-	public void setVagueScale(float scale) {
+	public MoveControl setVagueScale(float scale) {
 		this.setVagueScale(scale, scale);
+		return this;
 	}
 
-	public void setVagueScale(float ws, float hs) {
+	public MoveControl setVagueScale(float ws, float hs) {
 		this.setVagueWidthScale(ws);
 		this.setVagueHeightScale(hs);
+		return this;
 	}
 
 	public float getVagueWidthScale() {
 		return _vagueWidthScale;
 	}
 
-	public void setVagueWidthScale(float ws) {
+	public MoveControl setVagueWidthScale(float ws) {
 		this._vagueWidthScale = ws;
+		return this;
 	}
 
 	public float getVagueHeightScale() {
 		return _vagueHeightScale;
 	}
 
-	public void setVagueHeightScale(float hs) {
+	public MoveControl setVagueHeightScale(float hs) {
 		this._vagueHeightScale = hs;
+		return this;
 	}
 
 	public boolean isClosed() {

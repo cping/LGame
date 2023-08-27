@@ -2883,6 +2883,13 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return label;
 	}
 
+	public Screen addSprites(ISprite... spr) {
+		for (int i = 0; i < spr.length; i++) {
+			add(spr[i]);
+		}
+		return this;
+	}
+
 	public Sprite addSprite(LTexture tex) {
 		return addSprite(tex, 0, 0);
 	}

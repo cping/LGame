@@ -79,13 +79,15 @@ public abstract class MoveDraw extends Draw {
 		return this;
 	}
 
-	public void setAttackState(int idx) {
+	public MoveDraw setAttackState(int idx) {
 		this.setActionIndex(idx);
 		this.setAction(1);
+		return this;
 	}
 
-	public void setActionIndex(int idx) {
+	public MoveDraw setActionIndex(int idx) {
 		this.actionIdx = idx;
+		return this;
 	}
 
 	public int getActionIndex() {
@@ -121,8 +123,9 @@ public abstract class MoveDraw extends Draw {
 		return y;
 	}
 
-	public void setMoveCount(int x, int y) {
+	public MoveDraw setMoveCount(int x, int y) {
 		movingList[x][y] = moveCount;
+		return this;
 	}
 
 	public abstract boolean allowSetMove(int x, int y);
@@ -131,24 +134,25 @@ public abstract class MoveDraw extends Draw {
 
 	public abstract int getMove(int idx);
 
-	public void setMoveCount(int x, int y, int count) {
+	public MoveDraw setMoveCount(int x, int y, int count) {
 		if (!allowSetMove(x, y)) {
-			return;
+			return this;
 		}
 		int cost = getMapCost(x, y);
 		// 指定位置无法进入
 		if (cost < 0) {
-			return;
+			return this;
 		}
 		count = count + cost;
 		// 移动步数超过移动能力
 		if (count > getMove(actionIdx)) {
-			return;
+			return this;
 		}
 		// 获得移动所需步数
 		if ((moveList[x][y] == -1) || (count < moveList[x][y])) {
 			moveList[x][y] = count;
 		}
+		return this;
 	}
 
 	public boolean isSelecting() {
@@ -188,7 +192,7 @@ public abstract class MoveDraw extends Draw {
 
 	public abstract Vector2f getRolePos(int idx);
 
-	public void setMoveRange() {
+	public MoveDraw setMoveRange() {
 		Vector2f role = getRolePos(actionIdx);
 		int x = gameMap.pixelsToTilesWidth(role.getX());
 		int y = gameMap.pixelsToTilesHeight(role.getY());
@@ -198,7 +202,8 @@ public abstract class MoveDraw extends Draw {
 
 		for (int count = 0; count <= area - 1; count++) {
 			for (int j = fixY(y - area); j < fixY(y + area); j++) {
-				for (int i = fixX(x - (area - MathUtils.abs(y - j))); i <= fixX(x + (area - MathUtils.abs(y - j))); i++) {
+				for (int i = fixX(x - (area - MathUtils.abs(y - j))); i <= fixX(
+						x + (area - MathUtils.abs(y - j))); i++) {
 					// 如果能够移动指定步数
 					if ((getMoveCount(i - 1, j) == count) || (getMoveCount(i, j - 1) == count)
 							|| (getMoveCount(i + 1, j) == count) || (getMoveCount(i, j + 1) == count)) {
@@ -219,10 +224,12 @@ public abstract class MoveDraw extends Draw {
 			}
 		}
 		moving = true;
+		return this;
 	}
 
-	public void setAttackPos(int x, int y) {
+	public MoveDraw setAttackPos(int x, int y) {
 		this.attackPos.set(x, y);
+		return this;
 	}
 
 	public float getAttackX() {
@@ -237,12 +244,12 @@ public abstract class MoveDraw extends Draw {
 	 * 设定移动路线
 	 * 
 	 */
-	public void setMoveCourse(int moveX, int moveY) {
+	public MoveDraw setMoveCourse(int moveX, int moveY) {
 		if (moveList[moveX][moveY] == -1) {
-			return;
+			return this;
 		}
 		if (movingList[moveX][moveY] == moveCount) {
-			return;
+			return this;
 		}
 		moveCourse.set(moveX, moveY);
 		// 选择可行的最短路径
@@ -282,7 +289,7 @@ public abstract class MoveDraw extends Draw {
 			}
 			moveCount = moveList[moveX][moveY];
 			movingList[x][y] = 0;
-			return;
+			return this;
 		}
 		// 获得矫正的移动步数
 		moveCount = moveCount + getMapCost(moveX, moveY);
@@ -299,6 +306,7 @@ public abstract class MoveDraw extends Draw {
 		}
 		movingList[moveX][moveY] = moveCount;
 		this.selecting = true;
+		return this;
 	}
 
 	/**
