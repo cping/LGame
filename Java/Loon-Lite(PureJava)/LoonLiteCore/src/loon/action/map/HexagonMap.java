@@ -288,7 +288,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 			rows = this.rows - n;
 		}
 		final CellIterator iterator = new CellIterator(this, m, n, cols, rows);
-		return new Iterable<>() {
+		return new Iterable<TileVisit<TileImpl>>() {
 
 			@Override
 			public LIterator<TileVisit<TileImpl>> iterator() {

@@ -60,16 +60,16 @@ public interface Json {
 				return Util.<String>toArray(data);
 			}
 
-			public static TypedArray<Json.Object> create(Json.Object... data) {
-				return Util.<Json.Object>toArray(data);
+			public static TypedArray<Object> create(Object... data) {
+				return Util.<Object>toArray(data);
 			}
 
-			public static TypedArray<Json.Array> create(Json.Array... data) {
-				return Util.<Json.Array>toArray(data);
+			public static TypedArray<Array> create(Array... data) {
+				return Util.<Array>toArray(data);
 			}
 
 			private static <T> TypedArray<T> toArray(final java.lang.Object[] data) {
-				return new TypedArray<>() {
+				return new TypedArray<T>() {
 					@Override
 					public int length() {
 						return data.length;

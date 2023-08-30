@@ -539,23 +539,23 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 	}
 
 	public MenuItem add(String label, MenuItemClick click) {
-		return add(new LMenu.MenuItem(this, SkinManager.get().getMenuSkin().getTabTexture(), label, click));
+		return add(new MenuItem(this, SkinManager.get().getMenuSkin().getTabTexture(), label, click));
 	}
 
 	public MenuItem add(String label, String file, MenuItemClick click) {
-		return add(new LMenu.MenuItem(this, LSystem.loadTexture(file), label, click));
+		return add(new MenuItem(this, LSystem.loadTexture(file), label, click));
 	}
 
 	public MenuItem add(String label, LTexture texture, MenuItemClick click) {
-		return add(new LMenu.MenuItem(this, texture, label, click));
+		return add(new MenuItem(this, texture, label, click));
 	}
 
 	public MenuItem add(String label, LTexture texture, float x, float y, MenuItemClick click) {
-		return add(new LMenu.MenuItem(this, texture, false, label, x, y, click));
+		return add(new MenuItem(this, texture, false, label, x, y, click));
 	}
 
 	public MenuItem add(String label, LTexture texture, float x, float y, float w, float h, MenuItemClick click) {
-		return add(new LMenu.MenuItem(font, this, texture, false, label, x, y, w, h, click));
+		return add(new MenuItem(font, this, texture, false, label, x, y, w, h, click));
 	}
 
 	public MenuItem add(MenuItem item) {

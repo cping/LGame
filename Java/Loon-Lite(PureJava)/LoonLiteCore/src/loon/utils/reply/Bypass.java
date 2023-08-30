@@ -35,7 +35,7 @@ public abstract class Bypass {
 
 	protected static abstract class Notifier<T> {
 
-		public abstract void notify(Bypass.GoListener listener, T a1, T a2, T a3);
+		public abstract void notify(GoListener listener, T a1, T a2, T a3);
 
 	}
 

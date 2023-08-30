@@ -367,7 +367,7 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 		}
 
 		public TArray<TreeElement> getChilds() {
-			return new TArray<LTextTree.TreeElement>(_childs);
+			return new TArray<TreeElement>(_childs);
 		}
 
 		public TreeElement getParent() {
@@ -521,7 +521,7 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 			this._lines.clear();
 		}
 		if (this._treeNodes == null) {
-			this._treeNodes = new TArray<LTextTree.TreeNode>(count);
+			this._treeNodes = new TArray<TreeNode>(count);
 		} else {
 			this._treeNodes.clear();
 		}

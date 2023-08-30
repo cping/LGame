@@ -141,7 +141,7 @@ public abstract class AbstractValue<T> extends Bypass implements VarView<T> {
 	protected final Notifier<T> CHANGE = new Notifier<T>() {
 		@SuppressWarnings("unchecked")
 		@Override
-		public void notify(Bypass.GoListener lner, T value, T oldValue, T ignored) {
+		public void notify(GoListener lner, T value, T oldValue, T ignored) {
 			((VarViewListener<T>) lner).onChange(value, oldValue);
 		}
 	};

@@ -452,7 +452,7 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 
 	private void initStrings(String[] messages, String typeFlag, IFont font, String face, LTexture box, int x, int y,
 			int width, int height, LColor color, boolean shadow) {
-		TArray<LMessageBox.Message> tempMessages = new TArray<>();
+		TArray<Message> tempMessages = new TArray<>();
 		if (messages != null) {
 			for (String text : messages) {
 				tempMessages.add(new Message(text, null, face, FontUtils.splitLines(text, font, width())));

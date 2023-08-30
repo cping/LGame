@@ -88,7 +88,7 @@ public class AbstractAct<T> extends Bypass implements ActView<T> {
 	protected final Notifier<T> EMIT = new Notifier<T>() {
 		@SuppressWarnings("unchecked")
 		@Override
-		public void notify(Bypass.GoListener port, T a1, T a2, T a3) {
+		public void notify(GoListener port, T a1, T a2, T a3) {
 			((ActViewListener<T>) port).onEmit(a1);
 		}
 	};

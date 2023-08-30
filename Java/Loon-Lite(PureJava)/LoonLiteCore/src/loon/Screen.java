@@ -839,7 +839,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @param touchX
 	 * @param touchY
 	 */
-	private final void updateTouchArea(final LTouchArea.Event e, final float touchX, final float touchY) {
+	private final void updateTouchArea(final Event e, final float touchX, final float touchY) {
 		if (this._touchAreas.size == 0) {
 			return;
 		}

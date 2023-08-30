@@ -85,7 +85,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	private final Array<Task> _currentTasks = new Array<>();
 
 	// 任务集合
-	private final ListMap<String, AVGScreen.Task> _tasks = new ListMap<>(20);
+	private final ListMap<String, Task> _tasks = new ListMap<>(20);
 
 	private IFont _font;
 
@@ -1812,7 +1812,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		return _currentTasks;
 	}
 
-	public ListMap<String, AVGScreen.Task> getTasks() {
+	public ListMap<String, Task> getTasks() {
 		return _tasks;
 	}
 

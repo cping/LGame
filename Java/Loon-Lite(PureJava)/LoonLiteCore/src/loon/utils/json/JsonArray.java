@@ -46,14 +46,14 @@ class JsonArray implements Json.Array, IArray {
 	}
 
 	@Override
-	public JsonArray add(java.lang.Object value) {
+	public JsonArray add(Object value) {
 		JsonImpl.checkJsonType(value);
 		_json_array_context.add(value);
 		return this;
 	}
 
 	@Override
-	public JsonArray add(int index, java.lang.Object value) {
+	public JsonArray add(int index, Object value) {
 		JsonImpl.checkJsonType(value);
 		while (_json_array_context.size < index) {
 			_json_array_context.add(null);
@@ -194,7 +194,7 @@ class JsonArray implements Json.Array, IArray {
 	}
 
 	@Override
-	public JsonArray set(int index, java.lang.Object value) {
+	public JsonArray set(int index, Object value) {
 		JsonImpl.checkJsonType(value);
 		while (_json_array_context.size <= index) {
 			_json_array_context.add(null);

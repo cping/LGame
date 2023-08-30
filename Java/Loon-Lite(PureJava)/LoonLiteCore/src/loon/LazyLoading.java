@@ -28,5 +28,5 @@ public interface LazyLoading {
 
 	}
 
-	public void register(LSetting setting, LazyLoading.Data lazy);
+	public void register(LSetting setting, Data lazy);
 }

@@ -149,7 +149,7 @@ public class LRadar extends LComponent {
 		} else {
 			this._drawMode = Mode.Circle;
 		}
-		this._drops = new TArray<LRadar.Drop>();
+		this._drops = new TArray<Drop>();
 		this._randomDrops = new TArray<Drop>();
 		this._circleCount = MathUtils.max(1, circleCount);
 		this._raindropCount = MathUtils.max(1, raindropCount);

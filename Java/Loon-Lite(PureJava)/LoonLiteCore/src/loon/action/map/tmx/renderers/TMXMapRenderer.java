@@ -102,7 +102,7 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 
 	protected TMXMap map;
 
-	protected IntMap<LTextureBatch.Cache> textureCaches;
+	protected IntMap<Cache> textureCaches;
 	protected ObjectMap<String, LTexture> textureMap;
 	protected ObjectMap<TMXTile, TileAnimator> tileAnimators;
 

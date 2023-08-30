@@ -40,7 +40,7 @@ public class LTextureBatch implements LRelease {
 
 	private TArray<Cache> _tempCaches = new TArray<Cache>();
 
-	private IntMap<LTextureBatch.Cache> _caches;
+	private IntMap<Cache> _caches;
 
 	private boolean isClosed;
 
@@ -594,26 +594,26 @@ public class LTextureBatch implements LRelease {
 		if (_caches == null) {
 			_caches = new IntMap<>();
 		}
-		LTextureBatch.Cache cache = newCache(false);
+		Cache cache = newCache(false);
 		if (cache != null) {
 			_caches.put(hashCodeValue, cache);
 		}
 		return hashCodeValue;
 	}
 
-	public LTextureBatch.Cache restoreCachePost(int hashCodeValue) {
+	public Cache restoreCachePost(int hashCodeValue) {
 		return restoreCachePost(hashCodeValue, _color == null ? LColor.white : _color, 0f, 0f);
 	}
 
-	public LTextureBatch.Cache restoreCachePost(int hashCodeValue, LColor color, float x, float y) {
-		LTextureBatch.Cache cache = restoreCache(hashCodeValue);
+	public Cache restoreCachePost(int hashCodeValue, LColor color, float x, float y) {
+		Cache cache = restoreCache(hashCodeValue);
 		if (cache != null) {
 			postCache(cache, color, x, y);
 		}
 		return cache;
 	}
 
-	public LTextureBatch.Cache restoreCache(int hashCodeValue) {
+	public Cache restoreCache(int hashCodeValue) {
 		if (_caches != null) {
 			return _caches.get(hashCodeValue);
 		}
@@ -696,7 +696,7 @@ public class LTextureBatch implements LRelease {
 			lastCache.close();
 		}
 		if (_caches != null) {
-			for (LTextureBatch.Cache cache : _caches) {
+			for (Cache cache : _caches) {
 				if (cache != null) {
 					cache.close();
 				}
@@ -704,7 +704,7 @@ public class LTextureBatch implements LRelease {
 			_caches.clear();
 		}
 		if (_tempCaches != null) {
-			for (LTextureBatch.Cache cache : _tempCaches) {
+			for (Cache cache : _tempCaches) {
 				if (cache != null) {
 					cache.close();
 				}

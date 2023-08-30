@@ -155,7 +155,7 @@ public abstract class LGame implements LRelease {
 
 	public LGame addStatus(Port<LGame> game) {
 		frame.connect(game);
-		status.connect(new Port<LGame.Status>() {
+		status.connect(new Port<Status>() {
 
 			@Override
 			public void onEmit(Status event) {

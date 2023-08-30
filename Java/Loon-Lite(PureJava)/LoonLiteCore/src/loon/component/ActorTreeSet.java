@@ -50,7 +50,7 @@ public class ActorTreeSet {
 	}
 
 	public LIterator<Actor> iterator() {
-		return new ActorTreeSet.TasIterator(this.subSets);
+		return new TasIterator(this.subSets);
 	}
 
 	public Actor getOnlyCollisionObjectsAt(float x, float y) {
