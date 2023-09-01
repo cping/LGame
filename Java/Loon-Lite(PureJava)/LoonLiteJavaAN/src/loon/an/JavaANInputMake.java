@@ -307,17 +307,17 @@ public class JavaANInputMake extends InputMake implements View.OnKeyListener, Vi
 
     @Override
     public boolean onKey(View view, int keyCode, KeyEvent keyEvent) {
-        if(keyCode == android.view.KeyEvent.KEYCODE_BACK && keyEvent.isAltPressed()){
+        if(keyCode == KeyEvent.KEYCODE_BACK && keyEvent.isAltPressed()){
             keyCode = 255;
         }
         if(keyEvent.getKeyCode() < 0){
             return false;
         }
         switch (keyEvent.getAction()) {
-            case android.view.KeyEvent.ACTION_DOWN:
+            case KeyEvent.ACTION_DOWN:
                 this.onKeyDown(keyCode, keyEvent);
                 break;
-            case android.view.KeyEvent.ACTION_UP:
+            case KeyEvent.ACTION_UP:
                 this.onKeyUp(keyCode, keyEvent);
                 break;
         }

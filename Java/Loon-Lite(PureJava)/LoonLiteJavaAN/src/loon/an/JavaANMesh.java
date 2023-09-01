@@ -1,15 +1,6 @@
 package loon.an;
 
-import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.ColorFilter;
-import android.graphics.Matrix;
-import android.graphics.Paint;
-import android.graphics.Path;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.Rect;
-import android.graphics.RectF;
+import android.graphics.*;
 
 import loon.LSysException;
 import loon.LTexture;
@@ -35,9 +26,6 @@ public class JavaANMesh implements Mesh {
      * 绘图环境
      */
     private JavaANCanvas _canvas;
-
-    private int lastTint = -1;
-
     private int mode = 0;
     private final Rect srcR = new Rect();
     private final RectF dstR = new RectF();
@@ -235,7 +223,7 @@ public class JavaANMesh implements Mesh {
     }
 
     void draw(android.graphics.Canvas context, Bitmap bitmap, float x, float y, float w, float h, float x1, float y1, float w1, float h1, Paint paint) {
-        srcR.set((int) x1, (int) y1, (int) w1, (int) h1);
+        srcR.set(MathUtils.floor(x1), MathUtils.floor(y1), MathUtils.floor(x1 + w1), MathUtils.floor(y1 + h1));
         dstR.set(x, y, x + w, y + h);
         context.drawBitmap(bitmap, srcR, dstR, paint);
     }
@@ -276,14 +264,12 @@ public class JavaANMesh implements Mesh {
     @Override
     public void transform(float m00, float m01, float m10, float m11, float tx, float ty) {
         matrix.setValues(setArrayTransform(m00, m01, m10, m11, tx, ty));
-        matrix.setValues(_transform);
         _canvas.context.concat(matrix);
     }
 
     @Override
     public void transform(Affine2f aff) {
         matrix.setValues(setArrayTransform(aff.m00, aff.m01, aff.m10, aff.m11, aff.tx, aff.ty));
-        matrix.setValues(_transform);
         _canvas.context.concat(matrix);
     }
 
@@ -313,9 +299,15 @@ public class JavaANMesh implements Mesh {
                 a = 255;
             }
 
+            final boolean isWhiteColor = (tint == -1 || (r == 255 && g == 255 && b == 255));
             final android.graphics.Canvas context = _canvas.context;
 
             paint.setColor(tint);
+            if (!isWhiteColor) {
+                paint.setColorFilter(new PorterDuffColorFilter(tint, PorterDuff.Mode.SRC_ATOP));
+            } else {
+                paint.setColorFilter(null);
+            }
             paint.setAlpha(a);
             if (mesh.blend == BlendMethod.MODE_ADD) {
                 paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.ADD));
@@ -324,22 +316,20 @@ public class JavaANMesh implements Mesh {
             }
 
             matrix.setValues(setArrayTransform(m00, m01, m10, m11, tx, ty));
-            matrix.setValues(_transform);
-
             context.setMatrix(matrix);
 
             Bitmap buffer = ((JavaANImage) img).buffer;
             if (!texture.isChild() && sl == 0f && st == 0f && sr == 1f && sb == 1f) {
                 draw(context, buffer, left, top, (right - left), (bottom - top), paint);
             } else {
-                float textureWidth = texture.getDisplayWidth();
-                float textureHeight = texture.getDisplayHeight();
-                float dstX = textureWidth * (sl);
-                float dstY = textureHeight * (st);
-                float dstWidth = textureWidth * (sr);
-                float dstHeight = textureHeight * (sb);
-                draw(context, buffer, dstX, dstY, dstWidth - dstX, dstHeight - dstY, left,
-                        top, (right - left), (bottom - top), paint);
+                final float textureWidth = texture.getDisplayWidth();
+                final float textureHeight = texture.getDisplayHeight();
+                final float dstX = textureWidth * (sl);
+                final float dstY = textureHeight * (st);
+                final float dstWidth = textureWidth * (sr);
+                final float dstHeight = textureHeight * (sb);
+                draw(context, buffer, left,
+                        top, (right - left), (bottom - top), dstX, dstY, dstWidth - dstX, dstHeight - dstY, paint);
             }
 
             paint.setXfermode(null);

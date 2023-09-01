@@ -45,7 +45,7 @@ public class AndroidCanvas extends Canvas {
 	private static RectF dstR = new RectF();
 
 	private final android.graphics.Canvas canvas;
-	private final LinkedList<AndroidCanvasState> paintStack = new LinkedList<>();
+	private final LinkedList<AndroidCanvasState> paintStack = new LinkedList<AndroidCanvasState>();
 
 	public AndroidCanvas(Graphics gfx, AndroidImage image) {
 		super(gfx, image);
@@ -56,7 +56,7 @@ public class AndroidCanvas extends Canvas {
 	}
 
 	void draw(Bitmap bitmap, float x, float y, float w, float h, float x1, float y1, float w1, float h1) {
-		srcR.set((int) x1, (int) y1, (int) w1, (int) h1);
+		srcR.set(MathUtils.floor(x1), MathUtils.floor(y1), MathUtils.floor(x1 + w1), MathUtils.floor(y1 + h1));
 		dstR.set(x, y, x + w, y + h);
 		canvas.drawBitmap(bitmap, srcR, dstR, currentState().prepareImage());
 		isDirty = true;
@@ -187,7 +187,7 @@ public class AndroidCanvas extends Canvas {
 		setFillColor(tmp);
 		return this;
 	}
-	
+
 	@Override
 	public Canvas drawLine(float x0, float y0, float x1, float y1) {
 		canvas.drawLine(x0, y0, x1, y1, currentState().prepareStroke());
@@ -404,6 +404,5 @@ public class AndroidCanvas extends Canvas {
 	private AndroidCanvasState currentState() {
 		return paintStack.peek();
 	}
-
 
 }

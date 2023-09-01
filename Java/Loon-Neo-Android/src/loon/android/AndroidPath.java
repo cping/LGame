@@ -23,12 +23,12 @@ package loon.android;
 import android.graphics.Path;
 
 class AndroidPath implements loon.canvas.Path {
-
+	private boolean setMoved = false;
 	Path path;
 
 	AndroidPath() {
-		path = new Path();
-	}
+        path = new Path();
+    }
 
 	@Override
 	public loon.canvas.Path bezierTo(float c1x, float c1y, float c2x, float c2y, float x, float y) {
@@ -39,18 +39,24 @@ class AndroidPath implements loon.canvas.Path {
 	@Override
 	public loon.canvas.Path close() {
 		path.close();
+		setMoved = false;
 		return this;
 	}
 
 	@Override
 	public loon.canvas.Path lineTo(float x, float y) {
-		path.lineTo(x, y);
+		if (setMoved) {
+			path.lineTo(x, y);
+		} else {
+			moveTo(x, y);
+		}
 		return this;
 	}
 
 	@Override
 	public loon.canvas.Path moveTo(float x, float y) {
 		path.moveTo(x, y);
+		setMoved = true;
 		return this;
 	}
 
@@ -63,6 +69,7 @@ class AndroidPath implements loon.canvas.Path {
 	@Override
 	public loon.canvas.Path reset() {
 		path.reset();
+		setMoved = false;
 		return this;
 	}
 }

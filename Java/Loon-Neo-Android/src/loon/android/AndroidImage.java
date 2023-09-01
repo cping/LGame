@@ -117,7 +117,7 @@ public class AndroidImage extends ImageImpl {
 
 	@Override
 	protected Object createErrorBitmap(int pixelWidth, int pixelHeight) {
-		Bitmap bitmap = Bitmap.createBitmap(pixelWidth, pixelHeight, Bitmap.Config.ARGB_4444);
+		Bitmap bitmap = Bitmap.createBitmap(pixelWidth, pixelHeight, Bitmap.Config.ARGB_8888);
 		android.graphics.Canvas c = new android.graphics.Canvas(bitmap);
 		android.graphics.Paint p = new android.graphics.Paint();
 		p.setColor(android.graphics.Color.RED);

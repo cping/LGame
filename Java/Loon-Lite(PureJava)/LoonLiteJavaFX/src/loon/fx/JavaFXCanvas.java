@@ -54,6 +54,7 @@ public class JavaFXCanvas extends Canvas {
 	protected LColor color;
 	protected GraphicsContext context;
 	private boolean graphicsMain;
+	private boolean saveClip;
 
 	protected JavaFXCanvas(Graphics gfx, JavaFXImage image) {
 		this(gfx, image, false);
@@ -225,24 +226,35 @@ public class JavaFXCanvas extends Canvas {
 
 	@Override
 	public Canvas clip(Path clipPath) {
+		context.save();
 		((JavaFXPath) clipPath).replay(context);
 		context.clip();
 		isDirty = true;
+		saveClip = true;
 		return null;
 	}
 
 	@Override
 	public Canvas clipRect(float x, float y, float width, float height) {
+		context.save();
 		context.beginPath();
 		context.rect(x, y, width, height);
 		context.clip();
 		isDirty = true;
+		saveClip = true;
 		return null;
 	}
 
 	@Override
 	public Canvas resetClip() {
-		return clipRect(0f, 0f, width, height);
+		context.beginPath();
+		context.rect(0, 0, width, height);
+		context.clip();
+		if (saveClip) {
+			context.restore();
+		}
+		isDirty = true;
+		return this;
 	}
 
 	@Override

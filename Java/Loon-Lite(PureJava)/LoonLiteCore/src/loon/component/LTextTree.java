@@ -532,7 +532,7 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 			CharSequence ch = treeList.get(i);
 			int size = ch.length();
 			if (size > 1) {
-				String mes = new StrBuilder(ch).substring(0, size - 1).toString();
+				String mes = new StrBuilder(ch).substring(0, size).toString();
 				_lines.add(mes);
 				TreeNode node = _treeNodes.get(i);
 				if (i > 0) {

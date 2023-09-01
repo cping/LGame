@@ -3,7 +3,6 @@ package loon.an;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Matrix;
-import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -16,12 +15,13 @@ import loon.canvas.Gradient;
 import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.canvas.Path;
-import loon.canvas.Pattern;
 import loon.font.LFont;
 import loon.font.TextLayout;
 import loon.geom.Affine2f;
+import loon.opengl.BlendMethod;
 import loon.opengl.TextureSource;
 import loon.utils.MathUtils;
+import loon.utils.Scale;
 
 public class JavaANCanvas extends Canvas {
 
@@ -32,10 +32,11 @@ public class JavaANCanvas extends Canvas {
 
     protected android.graphics.Canvas context;
     private final LinkedList<JavaANCanvasState> paintStack = new LinkedList<JavaANCanvasState>();
-    private boolean graphicsMain;
+    private final boolean graphicsMain;
+    private boolean saveClip;
 
     public JavaANCanvas(Graphics gfx, JavaANImage image) {
-        this(gfx,image,false);
+        this(gfx, image, false);
     }
 
     public JavaANCanvas(Graphics gfx, JavaANImage image, boolean gm) {
@@ -68,7 +69,7 @@ public class JavaANCanvas extends Canvas {
     }
 
     void draw(Bitmap bitmap, float x, float y, float w, float h, float x1, float y1, float w1, float h1) {
-        srcR.set((int) x1, (int) y1, (int) w1, (int) h1);
+        srcR.set(MathUtils.floor(x1), MathUtils.floor(y1), MathUtils.floor(x1 + w1), MathUtils.floor(y1 + h1));
         dstR.set(x, y, x + w, y + h);
         context.drawBitmap(bitmap, srcR, dstR, currentState().prepareImage());
         isDirty = true;
@@ -81,7 +82,7 @@ public class JavaANCanvas extends Canvas {
         return this;
     }
 
-    private int getLColorToAN(LColor c) {
+    protected int getLColorToAN(LColor c) {
         if (c == null) {
             return Color.WHITE;
         }
@@ -94,8 +95,7 @@ public class JavaANCanvas extends Canvas {
 
     @Override
     public LColor getStroketoLColor() {
-        LColor color = getANToLColor(currentState().strokeColor);
-        return color;
+        return getANToLColor(currentState().strokeColor);
     }
 
     @Override
@@ -164,14 +164,40 @@ public class JavaANCanvas extends Canvas {
     }
 
     @Override
+    public Canvas clearRect(float x, float y, float width, float height, LColor color) {
+        context.save();
+        context.clipRect(x, y, x + width, y + height);
+        context.drawColor(color == null ? 0 : color.getABGR(), PorterDuff.Mode.SRC);
+        context.restore();
+        isDirty = true;
+        return this;
+    }
+
+    @Override
     public Canvas clip(Path clipPath) {
+        context.save();
         context.clipPath(((JavaANPath) clipPath).path);
+        saveClip = true;
+        isDirty = true;
         return this;
     }
 
     @Override
     public Canvas clipRect(float x, float y, float width, float height) {
+        context.save();
         context.clipRect(x, y, x + width, y + height);
+        saveClip = true;
+        isDirty = true;
+        return this;
+    }
+
+    @Override
+    public Canvas resetClip() {
+        context.clipRect(0, 0, width, height);
+        if (saveClip) {
+            context.restore();
+        }
+        isDirty = true;
         return this;
     }
 
@@ -187,6 +213,30 @@ public class JavaANCanvas extends Canvas {
 
     @Override
     public Canvas setBlendMethod(int blend) {
+        Composite mode;
+        switch (blend) {
+            case BlendMethod.MODE_ADD:
+            case BlendMethod.MODE_ALPHA_ONE:
+                mode = Composite.ADD;
+                break;
+            case BlendMethod.MODE_MULTIPLY:
+            case BlendMethod.MODE_COLOR_MULTIPLY:
+                mode = Composite.MULTIPLY;
+                break;
+            case BlendMethod.MODE_ALPHA:
+            case BlendMethod.MODE_NORMAL:
+            default:
+                mode = Composite.SRC_OVER;
+                break;
+        }
+        currentState().setCompositeOperation(mode);
+        return this;
+    }
+
+    @Override
+    public Canvas drawOval(float x, float y, float w, float h) {
+        context.drawOval(x, y, w, h, currentState().prepareStroke());
+        isDirty = true;
         return this;
     }
 
@@ -213,7 +263,20 @@ public class JavaANCanvas extends Canvas {
 
     @Override
     public Canvas drawOval(float x, float y, float w, float h, LColor color) {
+        int tmp = getStrokeColor();
+        setStrokeColor(color);
         context.drawOval(x, y, x + w, y + h, currentState().prepareStroke());
+        setStrokeColor(tmp);
+        isDirty = true;
+        return this;
+    }
+
+    @Override
+    public Canvas fillOval(float x, float y, float w, float h, LColor c) {
+        int tmp = getFillColor();
+        setFillColor(c);
+        context.drawOval(x, y, x + w, y + h, currentState().prepareFill());
+        setFillColor(tmp);
         isDirty = true;
         return this;
     }
@@ -254,14 +317,14 @@ public class JavaANCanvas extends Canvas {
     public Canvas fillOval(float x, float y, float width, float height) {
         context.drawOval(x, y, x + width, y + width, currentState().prepareFill());
         isDirty = true;
-        return null;
+        return this;
     }
 
     @Override
     public Canvas fillArc(float x, float y, float w, float h, float startAngle, float endAngle) {
         context.drawArc(x, y, x + w, y + h, startAngle, endAngle, true, currentState().prepareFill());
         isDirty = true;
-        return null;
+        return this;
     }
 
     @Override
@@ -288,7 +351,7 @@ public class JavaANCanvas extends Canvas {
         setFillColor(c);
         fillRect(x, y, width, height);
         setFillColor(tmp);
-        return null;
+        return this;
     }
 
     @Override
@@ -353,7 +416,7 @@ public class JavaANCanvas extends Canvas {
         } else {
             currentState().fillColor = color.getARGB();
         }
-        return null;
+        return this;
     }
 
     @Override
@@ -423,21 +486,27 @@ public class JavaANCanvas extends Canvas {
 
     @Override
     public Image newSnapshot() {
-        Bitmap writeImage = toANImage().buffer;
-        return new JavaANImage(gfx, image.scale(), writeImage.copy(writeImage.getConfig(), false), TextureSource.RenderCanvas);
-    }
-
-    @Override
-    public Canvas resetClip() {
-        context.clipRect(0, 0, width, height);
-        return this;
+        Scale scale = null;
+        Bitmap newImage = null;
+        if (image != null) {
+            Bitmap img = ((JavaANImage) image).anImage();
+            scale = image.scale();
+            newImage = JavaANImageCachePool.get().find(img.getConfig(), MathUtils.floorInt(img.getWidth()),
+                    MathUtils.floorInt(img.getHeight()));
+        } else {
+            scale = Scale.ONE;
+            newImage = JavaANImageCachePool.get().find(null, MathUtils.floorInt(width), MathUtils.floorInt(height));
+        }
+        return new JavaANImage(gfx, scale, newImage, TextureSource.RenderCanvas);
     }
 
     @Override
     public Image snapshot() {
         if (image == null) {
-            Bitmap writeImage = toANImage().buffer;
-            image = new JavaANImage(gfx, image.scale(), writeImage.copy(writeImage.getConfig(), false), TextureSource.RenderCanvas);
+            Bitmap writeImage = JavaANImageCachePool.get().find(null, MathUtils.floorInt(width),
+                    MathUtils.floorInt(height));
+            image = new JavaANImage(gfx, image.scale(), writeImage.copy(writeImage.getConfig(), true),
+                    TextureSource.RenderCanvas);
             setANImage(image, writeImage);
             return image;
         }
@@ -469,7 +538,7 @@ public class JavaANCanvas extends Canvas {
         setStrokeColor(color);
         strokeRect(x, y, width, height);
         setStrokeColor(strokeColor);
-        return null;
+        return this;
     }
 
     @Override
@@ -496,6 +565,16 @@ public class JavaANCanvas extends Canvas {
     @Override
     public Canvas strokeText(TextLayout layout, float x, float y) {
         ((JavaANTextLayout) layout).draw(context, x, y, currentState().prepareStroke());
+        isDirty = true;
+        return this;
+    }
+
+    @Override
+    public Canvas drawRoundRect(float x, float y, float width, float height, float radius) {
+        context.translate(x, y);
+        dstR.set(0, 0, width, height);
+        context.drawRoundRect(dstR, radius, radius, currentState().prepareStroke());
+        context.translate(-x, -y);
         isDirty = true;
         return this;
     }

@@ -1,23 +1,16 @@
 package loon.an.window;
 
-import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.PixelFormat;
-import android.graphics.Rect;
-import android.graphics.RectF;
-import android.view.MotionEvent;
+import android.graphics.*;
+import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-
-import androidx.annotation.NonNull;
+import android.view.WindowManager;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import loon.LRelease;
-import loon.an.JavaANCanvas;
+import loon.LSystem;
 import loon.an.JavaANGame;
 import loon.an.JavaANImage;
 import loon.an.JavaANSetting;
@@ -39,16 +32,27 @@ public class JavaANAppSurfaceView extends SurfaceView implements JavaANHolderCal
 
     private boolean _pause;
 
+    private float _ppiX = 0f;
+
+    private float _ppiY = 0f;
+
+    private float _ppcX = 0f;
+
+    private float _ppcY = 0f;
+
+    private float _density = 1f;
+
     public JavaANAppSurfaceView(final Context context, final JavaANGame game) {
         super(context);
         getHolder().addCallback(this);
+        getHolder().setFormat(PixelFormat.TRANSLUCENT);
         this._game = game;
         this._setting = (JavaANSetting) _game.setting;
         this._doubleDraw = this._setting.doubleBuffer;
-        this._loop = new JavaANAppLoop(_game, this, _setting.fps);
         setOnKeyListener(_game.input());
         setOnTouchListener(_game.input());
         setBackgroundColor(Color.BLACK);
+        setZOrderOnTop(true);
         setFocusable(true);
         setFocusableInTouchMode(true);
         requestFocus();
@@ -71,12 +75,30 @@ public class JavaANAppSurfaceView extends SurfaceView implements JavaANHolderCal
         return this;
     }
 
+    protected void updatePpi() {
+        DisplayMetrics metrics = new DisplayMetrics();
+
+        WindowManager wm = _game.getMainPlatform().getResWindowManager();
+        if (wm != null) {
+            Display display = wm.getDefaultDisplay();
+            if (display != null) {
+                display.getMetrics(metrics);
+                _ppiX = metrics.xdpi;
+                _ppiY = metrics.ydpi;
+                _ppcX = metrics.xdpi / 2.54f;
+                _ppcY = metrics.ydpi / 2.54f;
+                _density = metrics.density;
+            }
+        }
+    }
+
     public JavaANAppSurfaceView start() {
         if (_running.get()) {
             return this;
         }
-        _running.set(true);
-        _loop.start();
+        this._loop = new JavaANAppLoop(_game, this, _setting.fps);
+        this._running.set(true);
+        this._loop.start();
         return this;
     }
 
@@ -85,7 +107,6 @@ public class JavaANAppSurfaceView extends SurfaceView implements JavaANHolderCal
             return this;
         }
         _running.set(false);
-        _loop.terminate();
         return this;
     }
 
@@ -104,23 +125,67 @@ public class JavaANAppSurfaceView extends SurfaceView implements JavaANHolderCal
     }
 
     @Override
-    public void surfaceCreated(@NonNull SurfaceHolder surfaceHolder) {
+    public void surfaceCreated(SurfaceHolder surfaceHolder) {
+        updatePpi();
         start();
+        if (_game != null) {
+            LSystem.resetTextureRes(_game);
+            if (_game.display() != null) {
+                _game.display().GL().update();
+            }
+            LSystem.d("Created Renderer View");
+        }
     }
 
     @Override
-    public void surfaceChanged(@NonNull SurfaceHolder surfaceHolder, int format, int width, int height) {
-        _game.graphics().onSizeChanged(width, height);
+    public void surfaceChanged(SurfaceHolder surfaceHolder, int format, int width, int height) {
+        updatePpi();
+        if (_game != null) {
+            _game.graphics().onSizeChanged(width, height);
+            if (!_running.get()) {
+                start();
+            }
+            _pause = false;
+            LSystem.d("Update Renderer View");
+        }
     }
 
-    @Override
-    public void surfaceDestroyed(@NonNull SurfaceHolder surfaceHolder) {
-        close();
+    public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
+        stop();
+    }
+
+    public Bitmap snap() {
+        Bitmap bmp = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bmp);
+        android.view.ViewGroup.LayoutParams layouts = getLayoutParams();
+        layout(0, 0, layouts.width, layouts.height);
+        draw(canvas);
+        return bmp;
     }
 
     @Override
     public boolean get() {
         return _running.get();
+    }
+
+    public float getPpiX() {
+        return _ppiX;
+    }
+
+    public float getPpiY() {
+        return _ppiY;
+    }
+
+    public float getPpcX() {
+        return _ppcX;
+    }
+
+    public float getPpcY() {
+        return _ppcY;
+    }
+
+    public float getDensity() {
+        return _density;
     }
 
     @Override

@@ -6,6 +6,7 @@ import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.view.Window;
+import android.view.WindowManager;
 
 import java.io.File;
 
@@ -27,6 +28,8 @@ public interface JavaANPlatform extends Platform {
     public File getDir();
 
     public AssetManager getResAssets();
+
+    public WindowManager getResWindowManager();
 
     public void runOnUI(Runnable runnable);
 

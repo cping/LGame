@@ -451,6 +451,9 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 		if (setting == null) {
 			setting = new AndroidSetting();
 		}
+	    if (this.setting.fixStatusHeight) {
+            this.setting.height = this.setting.height + getStatusHeight();
+        }
 		LMode mode = setting.showMode;
 		if (mode == null) {
 			mode = LMode.Fill;
@@ -1153,13 +1156,22 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 	 * @return
 	 */
 	public int getStatusHeight() {
-		int statusHeight = -1;
+		int statusHeight = 0;
 		try {
-			Class<?> clazz = Class.forName("com.android.internal.R$dimen");
-			Object object = clazz.newInstance();
-			int height = Integer.parseInt(clazz.getField("status_bar_height").get(object).toString());
-			statusHeight = this.getResources().getDimensionPixelSize(height);
+			int resourceId = getApplicationContext().getResources().getIdentifier("status_bar_height", "dimen",
+					"android");
+			if (resourceId > 0) {
+				statusHeight = getApplicationContext().getResources().getDimensionPixelSize(resourceId);
+			}
+			return statusHeight;
 		} catch (Exception e) {
+			try {
+				Class<?> clazz = Class.forName("com.android.internal.R$dimen");
+				Object object = clazz.newInstance();
+				int height = Integer.parseInt(clazz.getField("status_bar_height").get(object).toString());
+				statusHeight = this.getResources().getDimensionPixelSize(height);
+			} catch (Exception ex) {
+			}
 		}
 		return statusHeight;
 	}

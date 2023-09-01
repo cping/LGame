@@ -1,7 +1,5 @@
 package loon.an;
 
-import android.app.Activity;
-
 import loon.Asyn;
 import loon.LSystem;
 import loon.Log;

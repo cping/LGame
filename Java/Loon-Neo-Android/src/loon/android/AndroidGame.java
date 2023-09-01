@@ -45,6 +45,9 @@ public class AndroidGame extends LGame {
 		// 屏幕显示模式
 		public LMode showMode = LMode.Fill;
 
+		// 显示大小时修正显示栏高度
+		public boolean fixStatusHeight = true;
+
 		// 是否允许改变屏幕方向
 		public boolean useOrientation = true;
 

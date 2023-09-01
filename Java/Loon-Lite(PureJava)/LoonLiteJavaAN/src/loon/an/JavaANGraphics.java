@@ -1,10 +1,7 @@
 package loon.an;
 
-
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.WeakHashMap;
 
 import loon.Graphics;
 import loon.LSetting;
@@ -59,16 +56,21 @@ public class JavaANGraphics extends Graphics {
         this.createCanvas(game.setting, scale, resized);
     }
 
+    static Bitmap createBitmap(int width, int height, Bitmap.Config config) {
+        return JavaANImageCachePool.get().find(config, width, height);
+    }
+
     protected Canvas createCanvas(LSetting setting, Scale scale, boolean resized) {
         if (canvas == null) {
-            JavaANImage image = null;
+            Bitmap image= null;
             if (resized) {
-                image = new JavaANImage(this.game, scale.scaledFloor(setting.getShowWidth()),
-                        scale.scaledFloor(setting.getShowHeight()));
+                image = createBitmap(scale.scaledFloor(setting.getShowWidth()),
+                        scale.scaledFloor(setting.getShowHeight()), Bitmap.Config.ARGB_8888);
             } else {
-                image = new JavaANImage(this.game, scale.scaledFloor(setting.width), scale.scaledFloor(setting.height));
+                image = createBitmap(scale.scaledFloor(setting.width),
+                        scale.scaledFloor(setting.height), Bitmap.Config.ARGB_8888);
             }
-            canvas = new JavaANCanvas(this, image, true);
+            canvas = new JavaANCanvas(this, new JavaANImage(this, image), true);
         }
         return canvas;
     }
@@ -140,8 +142,9 @@ public class JavaANGraphics extends Graphics {
 
     @Override
     protected Canvas createCanvasImpl(Scale scale, int pixelWidth, int pixelHeight) {
-        Bitmap bitmap = Bitmap.createBitmap(pixelWidth, pixelHeight, preferredBitmapConfig);
-        return new JavaANCanvas(this, new JavaANImage(this, scale, bitmap, TextureSource.RenderCanvas),false);
+        Bitmap bitmap = JavaANImageCachePool.get().find(null, pixelWidth, pixelHeight);
+        JavaANImage image = new JavaANImage(this, scale, bitmap, TextureSource.RenderCanvas);
+        return new JavaANCanvas(this, image);
     }
 
     @Override

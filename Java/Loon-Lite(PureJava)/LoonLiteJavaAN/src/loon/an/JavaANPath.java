@@ -4,6 +4,7 @@ import android.graphics.Path;
 
 public class JavaANPath implements loon.canvas.Path {
 
+    private boolean setMoved = false;
     Path path;
 
     JavaANPath() {
@@ -19,18 +20,24 @@ public class JavaANPath implements loon.canvas.Path {
     @Override
     public loon.canvas.Path close() {
         path.close();
+        setMoved = false;
         return this;
     }
 
     @Override
     public loon.canvas.Path lineTo(float x, float y) {
-        path.lineTo(x, y);
+        if (setMoved) {
+            path.lineTo(x, y);
+        } else {
+            moveTo(x, y);
+        }
         return this;
     }
 
     @Override
     public loon.canvas.Path moveTo(float x, float y) {
         path.moveTo(x, y);
+        setMoved = true;
         return this;
     }
 
@@ -43,6 +50,7 @@ public class JavaANPath implements loon.canvas.Path {
     @Override
     public loon.canvas.Path reset() {
         path.reset();
+        setMoved = false;
         return this;
     }
 }

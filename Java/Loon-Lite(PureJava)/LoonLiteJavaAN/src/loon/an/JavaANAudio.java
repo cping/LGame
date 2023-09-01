@@ -10,7 +10,6 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnErrorListener;
 import android.util.Log;
-import loon.LGame;
 import loon.LSystem;
 import loon.SoundImpl;
 import loon.events.Updateable;

@@ -20,7 +20,7 @@ import loon.utils.timer.LTimerContext;
 public class JavaANAccelerometer implements Accelerometer {
 
     // 四方向手机朝向
-    private SensorDirection _direction = Accelerometer.SensorDirection.EMPTY;
+    private SensorDirection _direction = SensorDirection.EMPTY;
 
     // 八方向手机朝向
     private int _all_direction = Config.EMPTY;

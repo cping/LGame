@@ -58,8 +58,8 @@ public class LToast extends LComponent implements FontSet<LToast> {
 		return makeText(SkinManager.get().getMessageSkin().getFont(), null, text, LENGTH_SHORT, style);
 	}
 
-	public static LToast makeText(String text, int _duration) {
-		return makeText(SkinManager.get().getMessageSkin().getFont(), null, text, _duration, Style.NORMAL);
+	public static LToast makeText(String text, int d) {
+		return makeText(SkinManager.get().getMessageSkin().getFont(), null, text, d, Style.NORMAL);
 	}
 
 	public static LToast makeText(LComponent owner, String text) {
@@ -70,37 +70,37 @@ public class LToast extends LComponent implements FontSet<LToast> {
 		return makeText(SkinManager.get().getMessageSkin().getFont(), owner, text, LENGTH_SHORT, style);
 	}
 
-	public static LToast makeText(LComponent owner, String text, int _duration) {
-		return makeText(SkinManager.get().getMessageSkin().getFont(), owner, text, _duration, Style.NORMAL);
+	public static LToast makeText(LComponent owner, String text, int d) {
+		return makeText(SkinManager.get().getMessageSkin().getFont(), owner, text, d, Style.NORMAL);
 	}
 
-	public static LToast makeText(IFont _toastFont, LComponent owner, String text) {
-		return makeText(_toastFont, owner, text, LENGTH_SHORT);
+	public static LToast makeText(IFont f, LComponent owner, String text) {
+		return makeText(f, owner, text, LENGTH_SHORT);
 	}
 
-	public static LToast makeText(IFont _toastFont, LComponent owner, String text, Style style) {
-		return makeText(_toastFont, owner, text, LENGTH_SHORT, style);
+	public static LToast makeText(IFont f, LComponent owner, String text, Style style) {
+		return makeText(f, owner, text, LENGTH_SHORT, style);
 	}
 
-	public static LToast makeText(IFont _toastFont, LComponent owner, String text, int _duration) {
-		return makeText(_toastFont, owner, text, _duration, Style.NORMAL);
+	public static LToast makeText(IFont f, LComponent owner, String text, int d) {
+		return makeText(f, owner, text, d, Style.NORMAL);
 	}
 
-	public static LToast makeText(IFont _toastFont, LComponent owner, String text, int _duration, Style style) {
+	public static LToast makeText(IFont f, LComponent owner, String text, int d, Style style) {
 		LToast toast = null;
 		if (owner != null) {
 			if (owner instanceof LToast) {
 				return (LToast) owner;
 			} else if (owner instanceof LContainer) {
-				toast = new LToast(_toastFont, text, _duration, owner.x(), owner.y(), (int) owner.getWidth(),
+				toast = new LToast(f, text, d, owner.x(), owner.y(), (int) owner.getWidth(),
 						(int) owner.getHeight());
 				((LContainer) owner).add(toast);
 			} else {
-				toast = new LToast(_toastFont, text, _duration, owner.x(), owner.y(), (int) owner.getWidth(),
+				toast = new LToast(f, text, d, owner.x(), owner.y(), (int) owner.getWidth(),
 						(int) owner.getHeight());
 			}
 		} else {
-			toast = new LToast(_toastFont, text, _duration, 0, 0, LSystem.viewSize.getWidth(),
+			toast = new LToast(f, text, d, 0, 0, LSystem.viewSize.getWidth(),
 					LSystem.viewSize.getHeight());
 		}
 		if (style == Style.SUCCESS) {

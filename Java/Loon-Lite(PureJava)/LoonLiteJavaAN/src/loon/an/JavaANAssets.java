@@ -286,7 +286,7 @@ public class JavaANAssets extends Assets {
                     path = tmp + path;
                 }
             } else {
-                path = (((JavaANGame)LSystem.base())).mainPlatform.getDir().getAbsolutePath();
+                path = (((JavaANGame) LSystem.base())).mainPlatform.getDir().getAbsolutePath();
                 path = StringUtils.replaceIgnoreCase(path, "\\", "/");
                 if (StringUtils.startsWith(path, '/') || StringUtils.startsWith(path, '\\')) {
                     path = path.substring(1, path.length());
@@ -398,8 +398,8 @@ public class JavaANAssets extends Assets {
         }
         InputStream in = null;
         try {
-             in = filestream(path);
-        }catch (Exception ex){
+            in = filestream(path);
+        } catch (Exception ex) {
         }
         if (in != null) {
             return in;
@@ -628,16 +628,11 @@ public class JavaANAssets extends Assets {
         return LSystem.base() == null ? JavaANApplication.class : LSystem.base().setting.mainClass;
     }
 
-    private final byte[] bufferData = new byte[16 * 1024];
-
     protected BitmapOptions createOptions(String path, Scale scale) {
         BitmapOptions options = new BitmapOptions();
         options.inScaled = false;
         options.inMutable = true;
-        options.inPreferredConfig = ((JavaANGraphics)game.graphics()).preferredBitmapConfig;
-        options.inTempStorage = bufferData;
-        options.inSampleSize = 1;
-        options.inPremultiplied = false;
+        options.inPreferredConfig = ((JavaANGraphics) game.graphics()).preferredBitmapConfig;
         options.scale = scale;
         optionsAdjuster.adjustOptions(path, options);
         return options;

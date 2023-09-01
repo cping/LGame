@@ -1,23 +1,14 @@
 package loon.an;
 
-import android.app.Activity;
 import android.graphics.Bitmap;
 import android.os.Build;
 
-import loon.Accelerometer;
-import loon.Assets;
-import loon.Asyn;
-import loon.Clipboard;
-import loon.Graphics;
 import loon.LGame;
 import loon.LSetting;
-import loon.Log;
-import loon.Platform;
-import loon.Save;
+
 import loon.canvas.Canvas;
 import loon.canvas.Image;
-import loon.events.InputMake;
-import loon.opengl.Mesh;
+
 
 public class JavaANGame extends LGame {
 
@@ -39,7 +30,7 @@ public class JavaANGame extends LGame {
         BULIDM_PRODUCT = Build.PRODUCT.toLowerCase();
         BULIDM_RELEASE = Build.VERSION.RELEASE;
         try {
-            BULIDM_SDK = android.os.Build.VERSION.SDK_INT;
+            BULIDM_SDK = Build.VERSION.SDK_INT;
         } catch (Throwable cause) {
             try {
                 BULIDM_SDK = Build.VERSION.class.getDeclaredField("SDK_INT").getInt(null);
