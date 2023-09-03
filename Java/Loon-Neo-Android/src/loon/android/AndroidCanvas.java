@@ -56,7 +56,7 @@ public class AndroidCanvas extends Canvas {
 	}
 
 	void draw(Bitmap bitmap, float x, float y, float w, float h, float x1, float y1, float w1, float h1) {
-		srcR.set(MathUtils.floor(x1), MathUtils.floor(y1), MathUtils.floor(x1 + w1), MathUtils.floor(y1 + h1));
+		 srcR.set(MathUtils.floor(x1), MathUtils.floor(y1), MathUtils.floor(w1), MathUtils.floor(h1));
 		dstR.set(x, y, x + w, y + h);
 		canvas.drawBitmap(bitmap, srcR, dstR, currentState().prepareImage());
 		isDirty = true;
