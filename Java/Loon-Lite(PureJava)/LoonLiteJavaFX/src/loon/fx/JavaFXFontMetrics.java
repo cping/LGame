@@ -104,10 +104,12 @@ public class JavaFXFontMetrics {
 		return (int) getStringBounds(str).getHeight();
 	}
 
+
 	public int stringWidth(String str) {
 		if (str != null) {
 			fxtext.setFont(fxfont);
 			if (StringUtils.containsRegularSymbols(str)) {
+
 				fxtext.setText(str);
 				Bounds b = fxtext.getBoundsInLocal();
 				return (int) b.getWidth();

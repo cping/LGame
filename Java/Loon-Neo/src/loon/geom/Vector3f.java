@@ -1244,6 +1244,14 @@ public class Vector3f implements Serializable, XYZ, SetXYZ {
 		return ObservableXYZ.at(v, this, this);
 	}
 
+	public Vector2f toVector2() {
+		return new Vector2f(x, y);
+	}
+
+	public Vector4f toVector4() {
+		return new Vector4f(x, y, z, 0f);
+	}
+
 	@Override
 	public String toString() {
 		return "(" + x + ", " + y + ", " + z + ")";

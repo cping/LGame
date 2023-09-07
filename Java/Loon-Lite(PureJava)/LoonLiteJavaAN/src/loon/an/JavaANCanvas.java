@@ -176,7 +176,9 @@ public class JavaANCanvas extends Canvas {
 
     @Override
     public Canvas clip(Path clipPath) {
-        context.save();
+    	if (!saveClip) {
+			context.save();
+		}
         context.clipPath(((JavaANPath) clipPath).path);
         saveClip = true;
         isDirty = true;
@@ -185,7 +187,9 @@ public class JavaANCanvas extends Canvas {
 
     @Override
     public Canvas clipRect(float x, float y, float width, float height) {
-        context.save();
+    	if (!saveClip) {
+			context.save();
+		}
         context.clipRect(x, y, x + width, y + height);
         saveClip = true;
         isDirty = true;
@@ -195,9 +199,10 @@ public class JavaANCanvas extends Canvas {
     @Override
     public Canvas resetClip() {
         context.clipRect(0, 0, width, height);
-        if (saveClip) {
-            context.restore();
-        }
+		if (saveClip) {
+			context.restore();
+			saveClip = !saveClip;
+		}
         isDirty = true;
         return this;
     }

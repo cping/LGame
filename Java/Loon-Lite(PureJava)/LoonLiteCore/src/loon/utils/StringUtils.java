@@ -2092,7 +2092,8 @@ final public class StringUtils extends CharUtils {
 		}
 		for (int i = 0; i < cs.length(); i++) {
 			char ch = cs.charAt(i);
-			if (!isChinese(ch) && !isAlphaOrDigit(ch) && !isNumeric(ch) && !isSingle(ch) && !isReserved(ch)) {
+			if (!isChinese(ch) && !isAlphaOrDigit(ch) && !isNumeric(ch) && !isSingle(ch) && !isReserved(ch)
+					&& !isFullWidth(ch)) {
 				return false;
 			}
 		}
@@ -2120,6 +2121,35 @@ final public class StringUtils extends CharUtils {
 		default:
 			return false;
 		}
+	}
+
+	/**
+	 * 判定是否全角
+	 * 
+	 * @param ch
+	 * @return
+	 */
+	public static boolean isFullWidth(char ch) {
+		if (ch > 65280 && ch < 65375) {
+			return true;
+		}
+		if ((ch >= 8216 && ch <= 8223) || (ch >= 12288 && ch <= 12543)) {
+			return true;
+		}
+		if (isChinese(ch)) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * 判定是否半角
+	 * 
+	 * @param ch
+	 * @return
+	 */
+	public static boolean isHalfWidth(char ch) {
+		return !isFullWidth(ch);
 	}
 
 	/**

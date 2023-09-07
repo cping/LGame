@@ -29,6 +29,7 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.ArcType;
 import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.shape.StrokeLineJoin;
+
 import loon.Graphics;
 import loon.canvas.Canvas;
 import loon.canvas.Gradient;
@@ -226,7 +227,9 @@ public class JavaFXCanvas extends Canvas {
 
 	@Override
 	public Canvas clip(Path clipPath) {
-		context.save();
+		if (!saveClip) {
+			context.save();
+		}
 		((JavaFXPath) clipPath).replay(context);
 		context.clip();
 		isDirty = true;
@@ -236,7 +239,9 @@ public class JavaFXCanvas extends Canvas {
 
 	@Override
 	public Canvas clipRect(float x, float y, float width, float height) {
-		context.save();
+		if (!saveClip) {
+			context.save();
+		}
 		context.beginPath();
 		context.rect(x, y, width, height);
 		context.clip();
@@ -252,6 +257,7 @@ public class JavaFXCanvas extends Canvas {
 		context.clip();
 		if (saveClip) {
 			context.restore();
+			saveClip = !saveClip;
 		}
 		isDirty = true;
 		return this;

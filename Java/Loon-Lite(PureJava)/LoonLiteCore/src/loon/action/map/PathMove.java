@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2020 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -25,9 +25,11 @@ import loon.LSystem;
 import loon.geom.Vector2f;
 import loon.utils.MathUtils;
 import loon.utils.StringKeyValue;
+import loon.utils.Easing.EasingMode;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.timer.Duration;
+import loon.utils.timer.EaseTimer;
 import loon.utils.timer.LTimerContext;
 
 /**
@@ -38,6 +40,8 @@ public class PathMove extends RealtimeProcess implements LRelease {
 	public Vector2f origin = new Vector2f();
 
 	public Vector2f target = new Vector2f();
+
+	private EaseTimer easeTimer;
 
 	private float offsetX = 0f;
 	private float offsetY = 0f;
@@ -62,18 +66,24 @@ public class PathMove extends RealtimeProcess implements LRelease {
 
 	/**
 	 * 把当前位置向指定目标位置以指定速度移动
-	 *
+	 * 
 	 * @param origin 初始位置
 	 * @param target 指定位置
+	 * @param time   缓动模式管理
 	 * @param speed  移动速度
 	 * @param limit  是否限制移动方向
 	 */
-	public PathMove(Vector2f origin, Vector2f target, float speed, boolean limit) {
+	public PathMove(Vector2f origin, Vector2f target, EaseTimer time, float speed, boolean limit) {
 		this.setOrigin(origin);
 		this.setTarget(target);
+		this.easeTimer = time;
 		this.speed = MathUtils.max(0f, speed);
 		this.limitDirection = limit;
 		horizontal = origin.y == target.y;
+	}
+
+	public PathMove(Vector2f origin, Vector2f target, float speed, boolean limit) {
+		this(origin, target, EaseTimer.at(1f, EasingMode.Linear), speed, limit);
 	}
 
 	public PathMove(Vector2f origin, Vector2f target, float speed) {
@@ -88,14 +98,12 @@ public class PathMove extends RealtimeProcess implements LRelease {
 		this(srcX, srcY, destX, destY, speed, false);
 	}
 
-	public PathMove begin() {
-		this.running = true;
-		return this;
-	}
-
-	public PathMove end() {
-		this.running = false;
-		return this;
+	protected float getEaseSpeed(float dt) {
+		if (easeTimer != null) {
+			easeTimer.update(dt);
+			return dt + (speed * easeTimer.getProgress());
+		}
+		return dt + speed;
 	}
 
 	public boolean isRunning() {
@@ -112,7 +120,7 @@ public class PathMove extends RealtimeProcess implements LRelease {
 
 	public void update(float dt) {
 		if (this.running) {
-			float angle = (this.target.y - origin.y) / (this.target.x - origin.x);
+			final float angle = (this.target.y - origin.y) / (this.target.x - origin.x);
 			if (angle < 1f && angle > -1f) {
 				if (this.target.x < origin.x) {
 					onUp = false;
@@ -146,7 +154,7 @@ public class PathMove extends RealtimeProcess implements LRelease {
 					onRight = true;
 				}
 			}
-			float newSpeed = dt + speed;
+			final float newSpeed = getEaseSpeed(dt);
 			// only direction
 			if (limitDirection) {
 				if (this.horizontal) {
@@ -260,11 +268,27 @@ public class PathMove extends RealtimeProcess implements LRelease {
 		return this;
 	}
 
+	public PathMove begin() {
+		return submit();
+	}
+
+	public PathMove end() {
+		this.running = false;
+		return this;
+	}
+
 	public PathMove post() {
 		return submit();
 	}
 
+	public PathMove resume() {
+		this.running = true;
+		return this;
+	}
+
+	@Override
 	public PathMove pause() {
+		super.pause();
 		return end();
 	}
 
@@ -366,6 +390,15 @@ public class PathMove extends RealtimeProcess implements LRelease {
 
 	public PathMove setOffsetY(float offsetY) {
 		this.offsetY = offsetY;
+		return this;
+	}
+
+	public EaseTimer getEaseTimer() {
+		return easeTimer;
+	}
+
+	public PathMove setEaseTimer(EaseTimer easeTimer) {
+		this.easeTimer = easeTimer;
 		return this;
 	}
 

@@ -126,6 +126,10 @@ public class Vector2f implements Serializable, SetXY, XY {
 		return new Vector2f(MathUtils.cos(angle), MathUtils.sin(angle));
 	}
 
+	public final static Vector2f fromDegreesAngle(float degAngle) {
+		return fromAngle(MathUtils.toRadians(degAngle));
+	}
+
 	public final static Vector2f sum(Vector2f a, Vector2f b) {
 		Vector2f answer = new Vector2f(a);
 		return answer.add(b);
@@ -394,7 +398,17 @@ public class Vector2f implements Serializable, SetXY, XY {
 	}
 
 	public Vector2f(XY v) {
-		set(v);
+		if (v != null)
+			set(v);
+	}
+
+	public Vector2f(float value) {
+		this(value, value);
+	}
+
+	public Vector2f(float[] coords) {
+		if (coords != null)
+			set(coords[0], coords[1]);
 	}
 
 	public Vector2f cpy() {
@@ -403,6 +417,10 @@ public class Vector2f implements Serializable, SetXY, XY {
 
 	public final float length() {
 		return MathUtils.sqrt(x * x + y * y);
+	}
+
+	public Vector2f length(float length) {
+		return norZero().mulSelf(length);
 	}
 
 	public final float lengthSquared() {
@@ -439,6 +457,30 @@ public class Vector2f implements Serializable, SetXY, XY {
 
 	public Vector2f nor(float n) {
 		return new Vector2f(this.x == 0 ? 0 : this.x / n, this.y == 0 ? 0 : this.y / n);
+	}
+
+	public Vector2f norLeft() {
+		if (x != 0f || y != 0f) {
+			return nor();
+		} else {
+			return AXIS_Y();
+		}
+	}
+
+	public Vector2f norRight() {
+		if (x != 0f || y != 0f) {
+			return nor();
+		} else {
+			return AXIS_X();
+		}
+	}
+
+	public Vector2f norZero() {
+		if (x != 0f || y != 0f) {
+			return nor();
+		} else {
+			return ZERO();
+		}
 	}
 
 	public final Vector2f mul(float s) {
@@ -628,6 +670,14 @@ public class Vector2f implements Serializable, SetXY, XY {
 		return iwinkel;
 	}
 
+	public Vector2f angle(float angle) {
+		return fromAngle(angle).mulSelf(length());
+	}
+
+	public Vector2f angleDegrees(float degAngle) {
+		return fromDegreesAngle(degAngle).mulSelf(length());
+	}
+
 	public Vector2f rotate(float angle) {
 		return cpy().rotateSelf(angle);
 	}
@@ -691,13 +741,14 @@ public class Vector2f implements Serializable, SetXY, XY {
 		return this;
 	}
 
-	public Vector2f(float value) {
-		this(value, value);
-	}
-
-	public Vector2f(float[] coords) {
-		x = coords[0];
-		y = coords[1];
+	public Vector2f rotateRadians(float radians) {
+		if (x == 0f && y == 0f) {
+			return cpy();
+		} else {
+			float angle = getAngle();
+			float newAngle = angle + radians;
+			return fromAngle(newAngle).mul(length());
+		}
 	}
 
 	public Vector2f move_45D_up() {
@@ -1263,6 +1314,10 @@ public class Vector2f implements Serializable, SetXY, XY {
 
 	public int[] toInt() {
 		return new int[] { x(), y() };
+	}
+
+	public Vector3f toVector3() {
+		return new Vector3f(x, y, 0f);
 	}
 
 	public String toCSS() {
