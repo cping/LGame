@@ -7,11 +7,11 @@ public abstract class Variable {
 	protected String _name;
 
 	protected TArray<String> _parameters;
-	
-	public Variable(String name,String par){
-	     _parameters = new TArray<String>();
-         _parameters.add(par);
-         _name = name;
+
+	public Variable(String name, String par) {
+		_parameters = new TArray<String>();
+		_parameters.add(par);
+		_name = name;
 	}
 
 	public void setName(String name) {

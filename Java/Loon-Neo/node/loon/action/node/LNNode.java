@@ -48,6 +48,7 @@ import loon.utils.GLUtils;
 import loon.utils.InsertionSorter;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
+import loon.utils.timer.Duration;
 
 public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 
@@ -409,7 +410,7 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 		if (_isClose) {
 			return;
 		}
-		float dt = (float) elapsedTime / 1000f;
+		float dt = Duration.toS(elapsedTime);
 		synchronized (childs) {
 			if (_objectSuper != null) {
 				validatePosition();
@@ -666,7 +667,7 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 		this._offset.set(v);
 		return this;
 	}
-	
+
 	@Override
 	public float getOffsetX() {
 		return this._offset.x;
@@ -676,7 +677,7 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 	public float getOffsetY() {
 		return this._offset.y;
 	}
-	
+
 	public Vector2f getOffset() {
 		return this._offset;
 	}
@@ -1265,6 +1266,11 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 		return this._screenY;
 	}
 
+	@Override
+	public boolean showShadow() {
+		return false;
+	}
+
 	public void processTouchPressed() {
 		if (!_visible || !_enabled) {
 			return;
@@ -1396,11 +1402,12 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 	}
 
 	@Override
-	public void setSprites(Sprites ss) {
+	public ISprite setSprites(Sprites ss) {
 		if (this._sprites == ss) {
-			return;
+			return this;
 		}
 		this._sprites = ss;
+		return this;
 	}
 
 	@Override
@@ -1422,8 +1429,9 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 	}
 
 	@Override
-	public void setFixedWidthOffset(float fixedWidthOffset) {
+	public ISprite setFixedWidthOffset(float fixedWidthOffset) {
 		this._fixedWidthOffset = fixedWidthOffset;
+		return this;
 	}
 
 	@Override
@@ -1432,8 +1440,9 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 	}
 
 	@Override
-	public void setFixedHeightOffset(float fixedHeightOffset) {
+	public ISprite setFixedHeightOffset(float fixedHeightOffset) {
 		this._fixedHeightOffset = fixedHeightOffset;
+		return this;
 	}
 
 	@Override
@@ -1490,6 +1499,11 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 				}
 			}
 		}
+	}
+
+	@Override
+	public boolean autoXYSort() {
+		return false;
 	}
 
 	@Override

@@ -306,7 +306,7 @@ public class SysKey {
 		return SysInputFactory.finalKey.keyCode;
 	}
 
-	public static int getType() {
+	public static int getTypeCode() {
 		return SysInputFactory.finalKey.keyCode;
 	}
 

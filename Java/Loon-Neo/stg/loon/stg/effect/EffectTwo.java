@@ -59,8 +59,7 @@ public class EffectTwo extends EffectOne {
 		g.setColor(224, 255, 255);
 		for (int j = 0; j < number; j++) {
 			arrayR[j] += 8;
-			g.drawString(message, getShoutX(j) - mesWidth, getShoutY(j)
-					- mesHeight);
+			g.drawString(message, getShoutX(j) - mesWidth, getShoutY(j) - mesHeight);
 		}
 		g.resetColor();
 	}

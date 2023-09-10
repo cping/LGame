@@ -323,8 +323,9 @@ public class NaturalEffect extends Entity implements BaseEffect {
 		return kernels;
 	}
 
-	public void setKernels(IKernel[] kernels) {
+	public NaturalEffect setKernels(IKernel[] kernels) {
 		this.kernels = kernels;
+		return this;
 	}
 
 	@Override
@@ -332,8 +333,9 @@ public class NaturalEffect extends Entity implements BaseEffect {
 		return completed;
 	}
 
-	public void setStop(boolean stop) {
+	public NaturalEffect setStop(boolean stop) {
 		this.completed = stop;
+		return this;
 	}
 
 	@Override

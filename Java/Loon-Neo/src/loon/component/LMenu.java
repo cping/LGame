@@ -869,7 +869,7 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 		return tabHeight;
 	}
 
-	public int getType() {
+	public int getTypeCode() {
 		return type;
 	}
 
@@ -877,16 +877,17 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 		return supportScroll;
 	}
 
-	public void setSupportScroll(boolean s) {
+	public LMenu setSupportScroll(boolean s) {
 		this.supportScroll = s;
+		return this;
 	}
 
-	public LMenu setType(int t) {
+	public LMenu setTypeCode(int t) {
 		this.type = t;
 		return this;
 	}
 
-	public boolean isdefUI() {
+	public boolean isDefUI() {
 		return _defUI;
 	}
 

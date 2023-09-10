@@ -39,8 +39,7 @@ public class MonocroFunction extends Function {
 				if (_parameters.items[0].equals("off")) {
 					Drawing.TintColor = LColor.white;
 				} else {
-					Drawing.TintColor = ValuesParser
-							.getColor(_parameters.items[0]);
+					Drawing.TintColor = ValuesParser.getColor(_parameters.items[0]);
 				}
 
 				_parameters = null;

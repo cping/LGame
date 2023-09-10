@@ -4,7 +4,6 @@ import loon.stg.STGObject;
 import loon.stg.STGScreen;
 import loon.utils.MathUtils;
 
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -46,8 +45,7 @@ public abstract class EnemyRingShot extends STGObject {
 		this.fx += this.vx;
 		this.fy += this.vy;
 		setLocation((int) this.fx, (int) this.fy);
-		if (getY() > getScreenHeight() || getY() < -6 || getX() < -6
-				|| getX() > getScreenWidth()) {
+		if (getY() > getScreenHeight() || getY() < -6 || getX() < -6 || getX() > getScreenWidth()) {
 			delete();
 		}
 	}

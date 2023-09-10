@@ -14,12 +14,12 @@ public class QuakexFunction extends Function {
 
 	@Override
 	public String parse(String o) {
-		TArray<String> mask = new TArray<String>();
+		TArray<String> mask = new TArray<>();
 
-        mask.add("%VAR");
-        mask.add("%VAR");
-        mask.add("1");
-        
+		mask.add("%VAR");
+		mask.add("%VAR");
+		mask.add("1");
+
 		_parameters = ValuesParser.getParams(_parameters, mask);
 
 		if (_parameters != null) {
@@ -35,7 +35,7 @@ public class QuakexFunction extends Function {
 
 			@Override
 			public void run(LTimerContext time) {
-	            _parameters = null;
+				_parameters = null;
 			}
 		};
 		return process;

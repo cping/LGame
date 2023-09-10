@@ -41,8 +41,7 @@ public class LNAnimate extends LNAction {
 		return animate;
 	}
 
-	public static LNAnimate Action(LNAnimation anim,
-			boolean restoreOriginalFrame) {
+	public static LNAnimate Action(LNAnimation anim, boolean restoreOriginalFrame) {
 		LNAnimate animate = new LNAnimate();
 		animate._ans = anim;
 		animate._duration = anim.getDuration();
@@ -59,7 +58,7 @@ public class LNAnimate extends LNAction {
 			((LNSprite) super._target).setAnimation(_ans);
 		}
 	}
-	
+
 	@Override
 	public void update(float t) {
 		if (super._target instanceof LNSprite) {
@@ -73,7 +72,7 @@ public class LNAnimate extends LNAction {
 			}
 		}
 	}
-	
+
 	@Override
 	public LNAction cpy() {
 		return Action(_ans, _restoreOriginalFrame);

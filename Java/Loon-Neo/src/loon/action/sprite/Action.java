@@ -44,20 +44,22 @@ public abstract class Action {
 		return isCompleted;
 	}
 
-	public final void setComplete() {
+	public final Action setComplete() {
 		isCompleted = true;
+		return this;
 	}
 
 	public final boolean isCancelled() {
 		return isCancelled;
 	}
 
-	public final void cancel() {
+	public final Action cancel() {
 		if (isCancelled) {
-			return;
+			return this;
 		}
 		isCancelled = true;
 		onCancelled();
+		return this;
 	}
 
 	protected void onQueued() {
@@ -66,7 +68,7 @@ public abstract class Action {
 	protected void onStarted() {
 	}
 
-	protected abstract void onUpdate(double tpf);
+	protected abstract void onUpdate(float tpf);
 
 	protected void onCompleted() {
 	}

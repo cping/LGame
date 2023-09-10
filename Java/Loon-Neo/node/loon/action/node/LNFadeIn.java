@@ -38,7 +38,7 @@ public class LNFadeIn extends LNAction {
 		ins._duration = duration;
 		return ins;
 	}
-	
+
 	@Override
 	public void setTarget(LNNode node) {
 		super._firstTick = true;
@@ -47,18 +47,17 @@ public class LNFadeIn extends LNAction {
 		this._orgOpacity = node.getAlpha() * 255f;
 		this._diff = this._tarOpacity - this._orgOpacity;
 	}
-	
+
 	@Override
 	public void update(float t) {
 		if (t == 1f) {
 			super._isEnd = true;
 			super._target.setAlpha(1f);
 		} else {
-			super._target
-					.setAlpha(((t * this._diff) + this._orgOpacity) / 255f);
+			super._target.setAlpha(((t * this._diff) + this._orgOpacity) / 255f);
 		}
 	}
-	
+
 	@Override
 	public LNAction cpy() {
 		return Action(_duration);

@@ -35,7 +35,7 @@ public class Diagonal implements AStarFindHeuristic {
 	}
 
 	@Override
-	public int getType() {
+	public int getTypeCode() {
 		return DIAGONAL;
 	}
 

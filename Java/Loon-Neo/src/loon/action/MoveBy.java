@@ -72,6 +72,11 @@ public class MoveBy extends ActionEvent {
 		this.setDelay(0);
 	}
 
+	protected float getMoveSpeed(long elapsedTime) {
+		easeTimer.update(elapsedTime);
+		return _speed * easeTimer.getProgress();
+	}
+
 	@Override
 	public void update(long elapsedTime) {
 		synchronized (original) {
@@ -90,6 +95,7 @@ public class MoveBy extends ActionEvent {
 				updateDirection((int) (newX - lastX), (int) (newY - lastY));
 				movePos(newX, newY);
 			} else {
+				final float moveSpeed = getMoveSpeed(elapsedTime);
 				float x = original.getX();
 				float y = original.getY();
 				int dirX = (int) (_endX - _startX);
@@ -99,13 +105,13 @@ public class MoveBy extends ActionEvent {
 					if (x >= _endX) {
 						count++;
 					} else {
-						x += _speed;
+						x += moveSpeed;
 					}
 				} else if (dirX < 0) {
 					if (x <= _endX) {
 						count++;
 					} else {
-						x -= _speed;
+						x -= moveSpeed;
 					}
 				} else {
 					count++;
@@ -114,13 +120,13 @@ public class MoveBy extends ActionEvent {
 					if (y >= _endY) {
 						count++;
 					} else {
-						y += _speed;
+						y += moveSpeed;
 					}
 				} else if (dirY < 0) {
 					if (y <= _endY) {
 						count++;
 					} else {
-						y -= _speed;
+						y -= moveSpeed;
 					}
 				} else {
 					count++;

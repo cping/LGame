@@ -59,8 +59,12 @@ public class DefineMoveTest extends Stage {
 		final CustomPath path = new CustomPath();
 
 		// 构建一个默认的行走路径,并把所有坐标缩放32倍(实际上就是二维坐标转显示坐标)
-		path.add(Vector2f.at(0, 0), Vector2f.at(0, 4), Vector2f.at(0, 6), Vector2f.at(1, 0), Vector2f.at(7, 5),
-				Vector2f.at(5, 5), Vector2f.at(9, 5)).setScale(32);
+		// path.add(Vector2f.at(0, 0), Vector2f.at(0, 4), Vector2f.at(0, 6),
+		// Vector2f.at(1, 0), Vector2f.at(7, 5),
+		// Vector2f.at(5, 5), Vector2f.at(9, 5)).setScale(32);
+		path.add(0, 0, 0, 4, 0, 6, 1, 0, 7, 5, 5, 5, 9, 5).setScale(32);
+		// 绕一点旋转
+		// path.arcTo(150, 150, 60,64);
 
 		// 把上述路径循环操作3次
 		path.loop(3);

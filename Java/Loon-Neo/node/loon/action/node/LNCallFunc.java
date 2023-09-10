@@ -33,7 +33,7 @@ public class LNCallFunc extends LNAction {
 		func._c = c;
 		return func;
 	}
-	
+
 	@Override
 	public void step(float dt) {
 		this._c.invoke();
@@ -43,7 +43,7 @@ public class LNCallFunc extends LNAction {
 	public static interface Callback {
 		void invoke();
 	}
-	
+
 	@Override
 	public LNAction cpy() {
 		return Action(_c);

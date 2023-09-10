@@ -45,7 +45,7 @@ public class Row implements Comparable<Row> {
 		return rect;
 	}
 
-	public RowType getType() {
+	public RowType getTypeCode() {
 		return type;
 	}
 

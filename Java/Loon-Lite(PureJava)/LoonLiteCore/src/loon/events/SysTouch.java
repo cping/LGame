@@ -76,7 +76,7 @@ public class SysTouch {
 		return location;
 	}
 
-	public static int getType() {
+	public static int getTypeCode() {
 		return SysInputFactory.finalTouch.type;
 	}
 

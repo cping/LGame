@@ -20,7 +20,7 @@ public class STGPlane {
 	public float rotation = 0;
 
 	public LColor drawColor = new LColor(LColor.white);
-	
+
 	int animeNo;
 
 	int[] animeList;

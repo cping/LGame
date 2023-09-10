@@ -1,6 +1,5 @@
 package loon.stg;
 
-
 import loon.LSystem;
 import loon.LTexture;
 import loon.LTexture.Format;
@@ -149,8 +148,7 @@ public abstract class STGScreen extends Screen {
 		}
 
 		public int[] add(String res, int width, int height) {
-			LTexture[] textures = TextureUtils.getSplitTextures(res, width,
-					height);
+			LTexture[] textures = TextureUtils.getSplitTextures(res, width, height);
 			return add(textures, width, height);
 		}
 
@@ -300,8 +298,7 @@ public abstract class STGScreen extends Screen {
 			return false;
 		} else {
 			if (plane.animation = anime) {
-				if (plane.animeList == null
-						|| (plane.animeList.length != plane.images.size)) {
+				if (plane.animeList == null || (plane.animeList.length != plane.images.size)) {
 					plane.animeList = new int[plane.images.size];
 				}
 				Keys<Integer> enumeration = plane.images.keys();
@@ -348,7 +345,7 @@ public abstract class STGScreen extends Screen {
 			plane = new STGPlane();
 			this.planes.put(index, plane);
 		}
-		plane.font = LFont.getFont(LSystem.getSystemGameFontName(),  planeFontSize);
+		plane.font = LFont.getFont(LSystem.getSystemGameFontName(), planeFontSize);
 		plane.color = new LColor(0, 0, 0);
 		plane.str = mes;
 		plane.planeMode = CENTER_STR_MODE;
@@ -607,8 +604,7 @@ public abstract class STGScreen extends Screen {
 		addClass(clazz.getName(), x, y, tpno);
 	}
 
-	public void addScreenPackageClass(String className, float x, float y,
-			int tpno) {
+	public void addScreenPackageClass(String className, float x, float y, int tpno) {
 		addClass(getScreenPackName() + className, x, y, tpno);
 	}
 
@@ -648,7 +644,6 @@ public abstract class STGScreen extends Screen {
 	public int getHeroNo() {
 		return stgObjects.heroPlnNo;
 	}
-
 
 	public STGScreen(String path, String pack) {
 		this.commandName = path;
@@ -817,30 +812,24 @@ public abstract class STGScreen extends Screen {
 						if (commands.size > 0) {
 							String cmdName = (String) commands.get(0);
 							if (cmdName.equalsIgnoreCase("sleep")) {
-								this.sequenceCount = Integer
-										.parseInt((String) commands.get(1));
+								this.sequenceCount = Integer.parseInt((String) commands.get(1));
 							} else if (cmdName.equalsIgnoreCase("wait")) {
 								this.sequenceCount = -1;
 							} else if (cmdName.equalsIgnoreCase("enemy")) {
 								String enemy = (String) commands.get(1);
-								int x = Integer.parseInt((String) commands
-										.get(2));
-								int y = Integer.parseInt((String) commands
-										.get(3));
+								int x = Integer.parseInt((String) commands.get(2));
+								int y = Integer.parseInt((String) commands.get(3));
 								if (StringUtils.charCount(enemy, '.') > 0) {
 									addClass(enemy, x, y, cmd_enemy_no);
 								} else {
-									addClass(cmd_pack + "." + enemy, x, y,
-											cmd_enemy_no);
+									addClass(cmd_pack + "." + enemy, x, y, cmd_enemy_no);
 								}
 							} else if (cmdName.equalsIgnoreCase("package")) {
 								this.cmd_pack = (String) commands.get(1);
 							} else if (cmdName.equalsIgnoreCase("leader")) {
 								String hero = (String) commands.get(1);
-								int x = Integer.parseInt((String) commands
-										.get(2));
-								int y = Integer.parseInt((String) commands
-										.get(3));
+								int x = Integer.parseInt((String) commands.get(2));
+								int y = Integer.parseInt((String) commands.get(3));
 								if (StringUtils.charCount(hero, '.') > 0) {
 									addHeroClass(hero, x, y);
 								} else {
@@ -870,8 +859,7 @@ public abstract class STGScreen extends Screen {
 		if (scrollDelay.action(elapsedTime)) {
 			switch (backgroundMode) {
 			case BACK_STAR_MODE:
-				this.dot[this.count] = (int) (MathUtils.random() * this
-						.getWidth());
+				this.dot[this.count] = (int) (MathUtils.random() * this.getWidth());
 				++this.count;
 				this.count %= dot_size;
 				break;
@@ -914,8 +902,7 @@ public abstract class STGScreen extends Screen {
 			if (starColor != null) {
 				g.setColor(starColor);
 			}
-			for (int j = 0; j < dot_size; this.count = (this.count + 1)
-					% dot_size) {
+			for (int j = 0; j < dot_size; this.count = (this.count + 1) % dot_size) {
 				int index = this.dot[this.count] % 3;
 				g.drawPoint(dot[count] - index, getHeight() - j * 10);
 				g.drawPoint(dot[count] + index, getHeight() - j * 10);
@@ -1014,27 +1001,22 @@ public abstract class STGScreen extends Screen {
 							}
 						}
 						if (plane.scaleX == 1 && plane.scaleY == 1) {
-							bitmapPack.draw(plane.images.get(plane.animeNo),
-									plane.posX, plane.posY, plane.rotation,
+							bitmapPack.draw(plane.images.get(plane.animeNo), plane.posX, plane.posY, plane.rotation,
 									plane.drawColor);
 						} else {
-							bitmapPack.draw(plane.images.get(plane.animeNo),
-									plane.posX, plane.posY, plane.rect.width
-											* plane.scaleX, plane.rect.height
-											* plane.scaleY, plane.rotation,
+							bitmapPack.draw(plane.images.get(plane.animeNo), plane.posX, plane.posY,
+									plane.rect.width * plane.scaleX, plane.rect.height * plane.scaleY, plane.rotation,
 									plane.drawColor);
 						}
 					} else if (plane.planeMode == STR_MODE) {
 						g.setFont(plane.font);
 						g.setColor(plane.color);
-						g.drawString(plane.str, plane.posX, plane.posY
-								+ plane.font.getSize());
+						g.drawString(plane.str, plane.posX, plane.posY + plane.font.getSize());
 					} else if (plane.planeMode == CENTER_STR_MODE) {
 						g.setFont(plane.font);
 						g.setColor(plane.color);
-						g.drawString(plane.str,
-								plane.posX - plane.font.stringWidth(plane.str)
-										/ 2, plane.posY + plane.font.getSize());
+						g.drawString(plane.str, plane.posX - plane.font.stringWidth(plane.str) / 2,
+								plane.posY + plane.font.getSize());
 					} else if (plane.planeMode == DRW_MODE) {
 						plane.draw.paint(g, plane);
 					}

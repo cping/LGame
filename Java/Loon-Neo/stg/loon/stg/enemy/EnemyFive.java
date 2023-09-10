@@ -4,7 +4,6 @@ import loon.stg.STGObject;
 import loon.stg.STGScreen;
 import loon.utils.MathUtils;
 
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -66,8 +65,7 @@ public abstract class EnemyFive extends STGObject {
 		this.ix += this.direction;
 		this.iy += 2.0f * this.a * (this.ix - this.p) * this.direction;
 		setLocation((int) this.ix, (int) this.iy);
-		if (getY() > getScreenHeight() || getY() < -32 || getX() < -32
-				|| getX() > getScreenWidth()) {
+		if (getY() > getScreenHeight() || getY() < -32 || getX() < -32 || getX() > getScreenWidth()) {
 			delete();
 		}
 	}

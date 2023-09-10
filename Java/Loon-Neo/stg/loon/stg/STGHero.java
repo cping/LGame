@@ -11,7 +11,6 @@ import loon.geom.Vector2f;
 import loon.utils.TArray;
 import loon.utils.timer.LTimer;
 
-
 public abstract class STGHero extends STGObject {
 
 	private static boolean moveStop;
@@ -64,8 +63,7 @@ public abstract class STGHero extends STGObject {
 
 		private STGHero heroObject;
 
-		public HeroTouch(STGHero heroObject, int maxWidth, int maxHeight,
-				boolean all) {
+		public HeroTouch(STGHero heroObject, int maxWidth, int maxHeight, boolean all) {
 			this.direction = Config.EMPTY;
 			this.heroObject = heroObject;
 			this.readerWidth = maxWidth;
@@ -75,10 +73,8 @@ public abstract class STGHero extends STGObject {
 			this.isComplete = false;
 			this.allDirection = all;
 			if (heroObject != null) {
-				this.width = heroObject.getHitW() < BLOCK_SIZE ? BLOCK_SIZE
-						: heroObject.getHitW();
-				this.height = heroObject.getHitH() < BLOCK_SIZE ? BLOCK_SIZE
-						: heroObject.getHitH();
+				this.width = heroObject.getHitW() < BLOCK_SIZE ? BLOCK_SIZE : heroObject.getHitW();
+				this.height = heroObject.getHitH() < BLOCK_SIZE ? BLOCK_SIZE : heroObject.getHitH();
 			} else {
 				this.width = BLOCK_SIZE;
 				this.height = BLOCK_SIZE;
@@ -88,8 +84,7 @@ public abstract class STGHero extends STGObject {
 			this.tileHeight = height;
 			int w = maxWidth / this.tileWidth;
 			int h = maxHeight / this.tileHeight;
-			this.field2D = new Field2D(new int[h][w], this.tileWidth,
-					this.tileHeight);
+			this.field2D = new Field2D(new int[h][w], this.tileWidth, this.tileHeight);
 			this.speed = 4;
 		}
 
@@ -102,16 +97,14 @@ public abstract class STGHero extends STGObject {
 		}
 
 		public void updateMove() {
-		
+
 			if (!heroObject.contains(touchX, touchY)) {
 				if (findPath != null) {
 					findPath.clear();
 				}
-				
-				findPath = AStarFinder.find(heuristic, field2D,
-						field2D.pixelsToTilesWidth((int)heroObject.getX()),
-						field2D.pixelsToTilesHeight((int)heroObject.getY()),
-						field2D.pixelsToTilesWidth(touchX),
+
+				findPath = AStarFinder.find(heuristic, field2D, field2D.pixelsToTilesWidth((int) heroObject.getX()),
+						field2D.pixelsToTilesHeight((int) heroObject.getY()), field2D.pixelsToTilesWidth(touchX),
 						field2D.pixelsToTilesHeight(touchY), allDirection);
 
 			} else if (findPath != null) {

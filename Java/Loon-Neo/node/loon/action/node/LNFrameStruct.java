@@ -51,7 +51,7 @@ public class LNFrameStruct {
 		if (img.maskColor == null) {
 			struct2._texture = LTextures.loadTexture(img.fileName);
 		} else {
-			struct2._texture = TextureUtils.filterColor(img.fileName,img.maskColor);
+			struct2._texture = TextureUtils.filterColor(img.fileName, img.maskColor);
 		}
 		struct2._state = img.blend;
 		struct2._textCoords = img.pos;
@@ -70,8 +70,7 @@ public class LNFrameStruct {
 		if (image.maskColor == null) {
 			struct2._texture = LTextures.loadTexture(image.fileName);
 		} else {
-			struct2._texture = TextureUtils.filterColor(image.fileName,
-					image.maskColor);
+			struct2._texture = TextureUtils.filterColor(image.fileName, image.maskColor);
 		}
 		struct2._state = image.blend;
 		struct2._textCoords = image.pos;

@@ -197,7 +197,7 @@ public class TMXMapLayer {
 		return visible;
 	}
 
-	public TmxLayerType getType() {
+	public TmxLayerType getTypeCode() {
 		return type;
 	}
 

@@ -45,7 +45,7 @@ public class CustomPathMove {
 
 	public CustomPathMove setPath(CustomPath path, float speed) {
 		if (path != null) {
-			this.movePoints = path.steps;
+			this.movePoints = path._steps;
 		}
 		if (this.movePoints != null && this.movePoints.size > 0) {
 			this.currentPos = movePoints.get(0);

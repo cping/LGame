@@ -3746,7 +3746,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		if (isLock || isClose || !isLoad) {
 			return;
 		}
-		int type = e.getType();
+		int type = e.getTypeCode();
 		int code = e.getKeyCode();
 		try {
 			int keySize = _keyActions.size();
@@ -3785,7 +3785,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		if (isLock || isClose || !isLoad) {
 			return;
 		}
-		int type = e.getType();
+		int type = e.getTypeCode();
 		int code = e.getKeyCode();
 		try {
 			int keySize = _keyActions.size();
@@ -3845,7 +3845,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		if (isTranslate) {
 			e.offset(tx, ty);
 		}
-		int type = e.getType();
+		int type = e.getTypeCode();
 		int button = e.getButton();
 
 		try {
@@ -3876,7 +3876,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		if (isTranslate) {
 			e.offset(tx, ty);
 		}
-		int type = e.getType();
+		int type = e.getTypeCode();
 		int button = e.getButton();
 
 		try {

@@ -2,7 +2,6 @@ package loon.action.node;
 
 import loon.LSystem;
 import loon.Screen;
-import loon.events.SysInput;
 import loon.events.SysTouch;
 import loon.events.UpdateListener;
 import loon.opengl.GLEx;
@@ -122,7 +121,7 @@ public abstract class NodeScreen extends PyhsicsScreen {
 
 	private void processTouchEvent() {
 		int pressed = getTouchPressed(), released = getTouchReleased();
-		if (pressed > SysInput.NO_BUTTON) {
+		if (pressed > NO_BUTTON) {
 			if (!isClicked) {
 				this.hoverNode.processTouchPressed();
 			}
@@ -134,7 +133,7 @@ public abstract class NodeScreen extends PyhsicsScreen {
 				}
 			}
 		}
-		if (released > SysInput.NO_BUTTON) {
+		if (released > NO_BUTTON) {
 			if (!isClicked) {
 				this.hoverNode.processTouchReleased();
 			}
@@ -143,10 +142,10 @@ public abstract class NodeScreen extends PyhsicsScreen {
 	}
 
 	private void processKeyEvent() {
-		if (getKeyPressed() != SysInput.NO_KEY) {
+		if (getKeyPressed() != NO_KEY) {
 			this.selectedNode.keyPressed();
 		}
-		if (getKeyReleased() != SysInput.NO_KEY && this.selectedNode != null) {
+		if (getKeyReleased() != NO_KEY && this.selectedNode != null) {
 			this.selectedNode.processKeyReleased();
 		}
 	}

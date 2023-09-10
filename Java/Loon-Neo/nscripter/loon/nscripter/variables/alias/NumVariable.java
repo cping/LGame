@@ -1,7 +1,7 @@
 package loon.nscripter.variables.alias;
 
 public class NumVariable {
-	
+
 	public int _number;
 	public String _name;
 

@@ -4,7 +4,6 @@ import loon.stg.STGObject;
 import loon.stg.STGScreen;
 import loon.utils.MathUtils;
 
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -65,8 +64,7 @@ public abstract class EnemyMidle extends STGObject {
 			this.advent(40, 40);
 			if ((int) (MathUtils.random() * 2.0f) == 0) {
 				if (effectName2 != null) {
-					addClass(effectName2, getX() + 20, getY() + 32,
-							super.targetPlnNo);
+					addClass(effectName2, getX() + 20, getY() + 32, super.targetPlnNo);
 				} else {
 					onEffectTwo();
 				}
@@ -78,8 +76,7 @@ public abstract class EnemyMidle extends STGObject {
 		this.scrollMove();
 		if (this.count == 0) {
 			if (effectName1 != null) {
-				addClass(effectName1, getX() + x / 2, getY() + y / 2,
-						super.plnNo + 1);
+				addClass(effectName1, getX() + x / 2, getY() + y / 2, super.plnNo + 1);
 			} else {
 				onEffectOne();
 			}

@@ -38,7 +38,7 @@ public class LNRotateTo extends LNAction {
 		to._duration = duration;
 		return to;
 	}
-	
+
 	@Override
 	public void setTarget(LNNode node) {
 		super._firstTick = true;
@@ -47,7 +47,7 @@ public class LNRotateTo extends LNAction {
 		this._orgAngle = node.getRotation();
 		this._diff = this._tarAngle - this._orgAngle;
 	}
-	
+
 	@Override
 	public void update(float t) {
 		if (t == 1f) {
@@ -57,7 +57,7 @@ public class LNRotateTo extends LNAction {
 			super._target.setRotation((t * this._diff) + this._orgAngle);
 		}
 	}
-	
+
 	@Override
 	public LNAction cpy() {
 		return Action(_duration, _tarAngle);

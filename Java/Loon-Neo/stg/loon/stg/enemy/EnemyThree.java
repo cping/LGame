@@ -4,7 +4,6 @@ import loon.stg.STGObject;
 import loon.stg.STGScreen;
 import loon.utils.MathUtils;
 
-
 /**
  * Copyright 2008 - 2011
  * 

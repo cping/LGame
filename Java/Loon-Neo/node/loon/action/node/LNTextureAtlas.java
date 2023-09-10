@@ -49,41 +49,32 @@ public class LNTextureAtlas {
 		this._rectList.add(rect);
 	}
 
-	public void draw(int idx, SpriteBatch batch, Vector2f absPos,
-			float rotation, Vector2f scale, LColor color) {
+	public void draw(int idx, SpriteBatch batch, Vector2f absPos, float rotation, Vector2f scale, LColor color) {
 		RectBox rect = this._rectList.get(idx);
 		batch.setColor(color);
-		batch.draw(_texture, absPos.x, absPos.y, anchor.x, anchor.y,
-				rect.width, rect.height, scale.x, scale.y,
-				MathUtils.toDegrees(rotation), rect.x, rect.y, rect.width,
-				rect.height, false, false);
+		batch.draw(_texture, absPos.x, absPos.y, anchor.x, anchor.y, rect.width, rect.height, scale.x, scale.y,
+				MathUtils.toDegrees(rotation), rect.x, rect.y, rect.width, rect.height, false, false);
 		batch.resetColor();
 	}
 
-	public void draw(int idx, SpriteBatch batch, float x, float y,
-			float rotation, float sx, float sy, LColor color) {
+	public void draw(int idx, SpriteBatch batch, float x, float y, float rotation, float sx, float sy, LColor color) {
 		RectBox rect = this._rectList.get(idx);
 		batch.setColor(color);
-		batch.draw(_texture, x, y, anchor.x, anchor.y, rect.width, rect.height,
-				sx, sy, MathUtils.toDegrees(rotation), rect.x, rect.y,
-				rect.width, rect.height, false, false);
+		batch.draw(_texture, x, y, anchor.x, anchor.y, rect.width, rect.height, sx, sy, MathUtils.toDegrees(rotation),
+				rect.x, rect.y, rect.width, rect.height, false, false);
 		batch.resetColor();
 	}
 
-	public void draw(int idx, GLEx g, Vector2f absPos, float rotation,
-			Vector2f scale, LColor color) {
+	public void draw(int idx, GLEx g, Vector2f absPos, float rotation, Vector2f scale, LColor color) {
 		RectBox rect = this._rectList.get(idx);
-		g.draw(_texture, absPos.x, absPos.y, anchor, rect.width, rect.height,
-				scale.x, scale.y, MathUtils.toDegrees(rotation), rect.x,
-				rect.y, rect.width, rect.height, false, false, color);
+		g.draw(_texture, absPos.x, absPos.y, anchor, rect.width, rect.height, scale.x, scale.y,
+				MathUtils.toDegrees(rotation), rect.x, rect.y, rect.width, rect.height, false, false, color);
 	}
 
-	public void draw(int idx, GLEx g, float x, float y, float rotation,
-			float sx, float sy, LColor color) {
+	public void draw(int idx, GLEx g, float x, float y, float rotation, float sx, float sy, LColor color) {
 		RectBox rect = this._rectList.get(idx);
-		g.draw(_texture, x, y, anchor, rect.width, rect.height, sx, sy,
-				MathUtils.toDegrees(rotation), rect.x, rect.y, rect.width,
-				rect.height, false, false, color);
+		g.draw(_texture, x, y, anchor, rect.width, rect.height, sx, sy, MathUtils.toDegrees(rotation), rect.x, rect.y,
+				rect.width, rect.height, false, false, color);
 	}
 
 	public void resetRect() {

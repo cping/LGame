@@ -3,7 +3,6 @@ package loon.stg.enemy;
 import loon.stg.STGScreen;
 import loon.stg.shot.EnemyShot;
 
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -47,8 +46,7 @@ public abstract class EnemyMissile extends EnemyShot {
 			--this.vx;
 		}
 		move(this.vx, this.vy);
-		if (getY() > getScreenHeight() || getX() < 0
-				|| getX() > getScreenWidth() - 6) {
+		if (getY() > getScreenHeight() || getX() < 0 || getX() > getScreenWidth() - 6) {
 			delete();
 		}
 	}

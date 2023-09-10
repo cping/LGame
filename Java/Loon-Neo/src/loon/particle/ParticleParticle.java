@@ -145,7 +145,7 @@ public class ParticleParticle {
 		return this;
 	}
 
-	public ParticleParticle setType(int type) {
+	public ParticleParticle setEffectType(int type) {
 		this.type = type;
 		return this;
 	}
@@ -155,7 +155,7 @@ public class ParticleParticle {
 		return this;
 	}
 
-	public int getType() {
+	public int getEffectType() {
 		return type;
 	}
 

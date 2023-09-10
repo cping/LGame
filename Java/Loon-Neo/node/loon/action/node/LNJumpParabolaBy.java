@@ -42,15 +42,14 @@ public class LNJumpParabolaBy extends LNAction {
 
 	public Vector2f _startPosition;
 
-	public static LNJumpParabolaBy Action(float duration, Vector2f position,
-			Vector2f refPoint) {
+	public static LNJumpParabolaBy Action(float duration, Vector2f position, Vector2f refPoint) {
 		LNJumpParabolaBy by = new LNJumpParabolaBy();
 		by._delta = position;
 		by._duration = duration;
 		by._refPoint = refPoint;
 		return by;
 	}
-	
+
 	@Override
 	public void setTarget(LNNode node) {
 		super._firstTick = true;
@@ -59,12 +58,11 @@ public class LNJumpParabolaBy extends LNAction {
 		this._startPosition = super._target.getLocation();
 		this._a = ((this._refPoint.y / this._refPoint.x) - (this._delta.y / this._delta.x))
 				/ (this._refPoint.x - this._delta.x);
-		this._b = (this._delta.y / this._delta.x)
-				- ((this._delta.x + (2f * this._startPosition.x)) * this._a);
+		this._b = (this._delta.y / this._delta.x) - ((this._delta.x + (2f * this._startPosition.x)) * this._a);
 		this._c = (this._startPosition.y - ((this._a * this._startPosition.x) * this._startPosition.x))
 				- (this._b * this._startPosition.x);
 	}
-	
+
 	@Override
 	public void update(float t) {
 		float num = (t * this._delta.x) + this._startPosition.x;

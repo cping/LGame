@@ -27,7 +27,10 @@ import loon.action.map.CustomPath;
 import loon.action.map.Field2D;
 import loon.geom.Vector2f;
 import loon.utils.CollectionUtils;
+import loon.utils.Easing.EasingMode;
+import loon.utils.MathUtils;
 import loon.utils.StringKeyValue;
+import loon.utils.timer.EaseTimer;
 
 /**
  * 一个自定义移动路径使用的缓动效果类,它的实现需要CustomPath类配置配合
@@ -36,6 +39,8 @@ public class DefineMoveTo extends ActionEvent {
 
 	// 默认每帧的移动数值(象素)
 	private final static float _INIT_MOVE_SPEED = 4f;
+
+	private EaseTimer easeTimer;
 
 	private CustomPath initPath, layerPath;
 
@@ -93,6 +98,7 @@ public class DefineMoveTo extends ActionEvent {
 
 	public DefineMoveTo(final Field2D map, final CustomPath path, final boolean all, final float speed) {
 		this.layerMap = map;
+		this.easeTimer = EaseTimer.at(1f, EasingMode.Linear);
 		if (path != null) {
 			this.initPath = path;
 			this.layerPath = initPath.cpy();
@@ -113,7 +119,7 @@ public class DefineMoveTo extends ActionEvent {
 		return new float[] { endX, endY };
 	}
 
-	public void setMoveByMode(boolean m) {
+	public DefineMoveTo setMoveByMode(boolean m) {
 		this.moveByMode = m;
 		if (original != null && (startX == -1f && startY == -1f)) {
 			this.startX = original.x();
@@ -124,6 +130,12 @@ public class DefineMoveTo extends ActionEvent {
 			this.endX = end.x();
 			this.endY = end.y();
 		}
+		return this;
+	}
+
+	protected float getMoveSpeed(long elapsedTime) {
+		easeTimer.update(elapsedTime);
+		return speed * easeTimer.getProgress();
 	}
 
 	@Override
@@ -205,14 +217,15 @@ public class DefineMoveTo extends ActionEvent {
 
 	@Override
 	public void update(long elapsedTime) {
+		final float moveSpeed = getMoveSpeed(elapsedTime);
 		isMoved = true;
 		float newX = 0f;
 		float newY = 0f;
 		if (moveByMode) {
 			int count = 0;
-			int dirX = (int) (endX - startX);
-			int dirY = (int) (endY - startY);
-			int dir = Field2D.getDirection(dirX, dirY, direction);
+			float dirX = (endX - startX);
+			float dirY = (endY - startY);
+			int dir = Field2D.getDirection(startX, startY, endX, endY);
 			if (allDir) {
 				newX = original.getX();
 				newY = original.getY();
@@ -220,13 +233,13 @@ public class DefineMoveTo extends ActionEvent {
 					if (newX >= endX) {
 						count++;
 					} else {
-						newX += speed;
+						newX += moveSpeed;
 					}
 				} else if (dirX < 0) {
 					if (newX <= endX) {
 						count++;
 					} else {
-						newX -= speed;
+						newX -= moveSpeed;
 					}
 				} else {
 					count++;
@@ -235,13 +248,13 @@ public class DefineMoveTo extends ActionEvent {
 					if (newY >= endY) {
 						count++;
 					} else {
-						newY += speed;
+						newY += moveSpeed;
 					}
 				} else if (dirY < 0) {
 					if (newY <= endY) {
 						count++;
 					} else {
-						newY -= speed;
+						newY -= moveSpeed;
 					}
 				} else {
 					count++;
@@ -254,7 +267,7 @@ public class DefineMoveTo extends ActionEvent {
 					float lastY = original.getY();
 					newX += offsetX;
 					newY += offsetY;
-					updateDirection((int) (newX - lastX), (int) (newY - lastY));
+					updateDirection((newX - lastX), (newY - lastY));
 					movePos(newX, newY);
 				}
 				_isCompleted = (count == 2);
@@ -264,7 +277,7 @@ public class DefineMoveTo extends ActionEvent {
 				switch (dir) {
 				case Field2D.TUP:
 				case Field2D.UP:
-					startY -= speed;
+					startY -= moveSpeed;
 					if (startY < endY) {
 						startY = endY;
 						isMoved = false;
@@ -272,7 +285,7 @@ public class DefineMoveTo extends ActionEvent {
 					break;
 				case Field2D.TDOWN:
 				case Field2D.DOWN:
-					startY += speed;
+					startY += moveSpeed;
 					if (startY > endY) {
 						startY = endY;
 						isMoved = false;
@@ -280,7 +293,7 @@ public class DefineMoveTo extends ActionEvent {
 					break;
 				case Field2D.TLEFT:
 				case Field2D.LEFT:
-					startX -= speed;
+					startX -= moveSpeed;
 					if (startX < endX) {
 						startX = endX;
 						isMoved = false;
@@ -288,7 +301,7 @@ public class DefineMoveTo extends ActionEvent {
 					break;
 				case Field2D.TRIGHT:
 				case Field2D.RIGHT:
-					startX += speed;
+					startX += moveSpeed;
 					if (startX > endX) {
 						startX = endX;
 						isMoved = false;
@@ -301,7 +314,7 @@ public class DefineMoveTo extends ActionEvent {
 					newX = startX + offsetX;
 					newY = startY + offsetY;
 					if (isMoved) {
-						updateDirection((int) (newX - lastX), (int) (newY - lastY));
+						updateDirection((newX - lastX), (newY - lastY));
 					}
 					movePos(newX, newY);
 				}
@@ -322,7 +335,7 @@ public class DefineMoveTo extends ActionEvent {
 						}
 					}
 				}
-				if (endX == startX && endY == startY) {
+				if (MathUtils.equal(startX, endX) && MathUtils.equal(startY, endY)) {
 					if (layerPath.size() > 1) {
 						Vector2f moveStart = layerPath.get(0);
 						Vector2f moveEnd = layerPath.get(1);
@@ -337,8 +350,8 @@ public class DefineMoveTo extends ActionEvent {
 							endX = moveEnd.getX();
 							endY = moveEnd.getY();
 						}
-						moveX = moveEnd.x() - moveStart.x();
-						moveY = moveEnd.y() - moveStart.y();
+						moveX = moveEnd.getX() - moveStart.getX();
+						moveY = moveEnd.getY() - moveStart.getY();
 						updateDirection(moveX, moveY);
 					} else if (layerPath.size() == 1) {
 						Vector2f moveEnd = layerPath.pop();
@@ -369,8 +382,8 @@ public class DefineMoveTo extends ActionEvent {
 				if (allDir) {
 					switch (direction) {
 					case Field2D.TUP:
-						startY -= speed;
-						newY -= speed;
+						startY -= moveSpeed;
+						newY -= moveSpeed;
 						if (startY < endY) {
 							startY = endY;
 						}
@@ -380,8 +393,8 @@ public class DefineMoveTo extends ActionEvent {
 						}
 						break;
 					case Field2D.TDOWN:
-						startY += speed;
-						newY += speed;
+						startY += moveSpeed;
+						newY += moveSpeed;
 						if (startY > endY) {
 							startY = endY;
 						}
@@ -391,8 +404,8 @@ public class DefineMoveTo extends ActionEvent {
 						}
 						break;
 					case Field2D.TLEFT:
-						startX -= speed;
-						newX -= speed;
+						startX -= moveSpeed;
+						newX -= moveSpeed;
 						if (startX < endX) {
 							startX = endX;
 						}
@@ -402,8 +415,8 @@ public class DefineMoveTo extends ActionEvent {
 						}
 						break;
 					case Field2D.TRIGHT:
-						startX += speed;
-						newX += speed;
+						startX += moveSpeed;
+						newX += moveSpeed;
 						if (startX > endX) {
 							startX = endX;
 						}
@@ -413,10 +426,10 @@ public class DefineMoveTo extends ActionEvent {
 						}
 						break;
 					case Field2D.UP:
-						startX += speed;
-						startY -= speed;
-						newX += speed;
-						newY -= speed;
+						startX += moveSpeed;
+						startY -= moveSpeed;
+						newX += moveSpeed;
+						newY -= moveSpeed;
 						if (startX > endX) {
 							startX = endX;
 						}
@@ -433,10 +446,10 @@ public class DefineMoveTo extends ActionEvent {
 						}
 						break;
 					case Field2D.DOWN:
-						startX -= speed;
-						startY += speed;
-						newX -= speed;
-						newY += speed;
+						startX -= moveSpeed;
+						startY += moveSpeed;
+						newX -= moveSpeed;
+						newY += moveSpeed;
 						if (startX < endX) {
 							startX = endX;
 						}
@@ -453,10 +466,10 @@ public class DefineMoveTo extends ActionEvent {
 						}
 						break;
 					case Field2D.LEFT:
-						startX -= speed;
-						startY -= speed;
-						newX -= speed;
-						newY -= speed;
+						startX -= moveSpeed;
+						startY -= moveSpeed;
+						newX -= moveSpeed;
+						newY -= moveSpeed;
 						if (startX < endX) {
 							startX = endX;
 						}
@@ -473,10 +486,10 @@ public class DefineMoveTo extends ActionEvent {
 						}
 						break;
 					case Field2D.RIGHT:
-						startX += speed;
-						startY += speed;
-						newX += speed;
-						newY += speed;
+						startX += moveSpeed;
+						startY += moveSpeed;
+						newX += moveSpeed;
+						newY += moveSpeed;
 						if (startX > endX) {
 							startX = endX;
 						}
@@ -497,8 +510,8 @@ public class DefineMoveTo extends ActionEvent {
 					switch (direction) {
 					case Field2D.TUP:
 					case Field2D.UP:
-						startY -= speed;
-						newY -= speed;
+						startY -= moveSpeed;
+						newY -= moveSpeed;
 						if (startY < endY) {
 							startY = endY;
 						}
@@ -509,8 +522,8 @@ public class DefineMoveTo extends ActionEvent {
 						break;
 					case Field2D.TDOWN:
 					case Field2D.DOWN:
-						startY += speed;
-						newY += speed;
+						startY += moveSpeed;
+						newY += moveSpeed;
 						if (startY > endY) {
 							startY = endY;
 						}
@@ -521,8 +534,8 @@ public class DefineMoveTo extends ActionEvent {
 						break;
 					case Field2D.TLEFT:
 					case Field2D.LEFT:
-						startX -= speed;
-						newX -= speed;
+						startX -= moveSpeed;
+						newX -= moveSpeed;
 						if (startX < endX) {
 							startX = endX;
 						}
@@ -533,8 +546,8 @@ public class DefineMoveTo extends ActionEvent {
 						break;
 					case Field2D.TRIGHT:
 					case Field2D.RIGHT:
-						startX += speed;
-						newX += speed;
+						startX += moveSpeed;
+						newX += moveSpeed;
 						if (startX > endX) {
 							startX = endX;
 						}
@@ -591,7 +604,7 @@ public class DefineMoveTo extends ActionEvent {
 				bind.getHeight(), newX, newY);
 	}
 
-	public void movePathPos(float newX, float newY) {
+	public DefineMoveTo movePathPos(float newX, float newY) {
 		if (collisionWorld != null) {
 			if (worldCollisionFilter == null) {
 				worldCollisionFilter = CollisionFilter.getDefault();
@@ -607,6 +620,7 @@ public class DefineMoveTo extends ActionEvent {
 		} else {
 			original.setLocation(newX, newY);
 		}
+		return this;
 	}
 
 	public Vector2f nextPos() {
@@ -645,10 +659,11 @@ public class DefineMoveTo extends ActionEvent {
 		return isDirUpdate;
 	}
 
-	public void updateDirection(float x, float y) {
+	public DefineMoveTo updateDirection(float x, float y) {
 		int oldDir = direction;
 		direction = Field2D.getDirection((int) x, (int) y, oldDir);
 		isDirUpdate = (oldDir != direction);
+		return this;
 	}
 
 	public boolean isSynchroLayerField() {
@@ -685,6 +700,10 @@ public class DefineMoveTo extends ActionEvent {
 
 	public boolean isAllDirection() {
 		return allDir;
+	}
+
+	public EaseTimer getEaseTimer() {
+		return easeTimer;
 	}
 
 	@Override

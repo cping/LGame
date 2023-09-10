@@ -6,12 +6,12 @@ import loon.geom.RectBox;
 
 public class SpriteToNode extends LNNode {
 
-	private ISprite obj ;
-	
-	public SpriteToNode(ISprite spr){
+	private ISprite obj;
+
+	public SpriteToNode(ISprite spr) {
 		this.obj = spr;
 	}
-	
+
 	@Override
 	public float getWidth() {
 		return obj.getWidth();
@@ -31,7 +31,7 @@ public class SpriteToNode extends LNNode {
 	public float getY() {
 		return obj.getY();
 	}
-	
+
 	@Override
 	public int x() {
 		return obj.x();
@@ -61,7 +61,5 @@ public class SpriteToNode extends LNNode {
 	public Object getTag() {
 		return obj.getTag();
 	}
-
-
 
 }

@@ -37,10 +37,10 @@ public class DelayFunction extends Function {
 			@Override
 			public void run(LTimerContext time) {
 				Delay.TimeToSleep = (int) ValuesParser.getNumber(_parameters.items[0]);
-	            Delay.Sleeping = true;
-	            Delay.StartOnTouch = true;
-	            Parsing.Wait = true;
-	            _parameters = null;
+				Delay.Sleeping = true;
+				Delay.StartOnTouch = true;
+				Parsing.Wait = true;
+				_parameters = null;
 			}
 		};
 		return process;

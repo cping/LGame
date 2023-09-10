@@ -97,7 +97,7 @@ public class GameKey {
 		return keyCode;
 	}
 
-	public int getType() {
+	public int getTypeCode() {
 		return type;
 	}
 

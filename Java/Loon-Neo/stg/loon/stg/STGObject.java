@@ -172,8 +172,7 @@ public abstract class STGObject {
 	}
 
 	public STGObject newPlane(String className, float x, float y, int tpno) {
-		return stg.newPlane(stg.getScreenPackName() + "." + className, x, y,
-				tpno);
+		return stg.newPlane(stg.getScreenPackName() + "." + className, x, y, tpno);
 	}
 
 	public void addPlane(STGObject o) {
@@ -391,14 +390,12 @@ public abstract class STGObject {
 		if (o == null) {
 			return false;
 		}
-		return contains(o.getX() + hitX, o.getY() + hitY, o.getHitW(),
-				o.getHitH());
+		return contains(o.getX() + hitX, o.getY() + hitY, o.getHitW(), o.getHitH());
 	}
 
 	public boolean contains(float x, float y, float width, float height) {
-		return (x >= this.getX() && y >= this.getY()
-				&& ((x + width) <= (this.getX() + this.getHitW())) && ((y + height) <= (this
-				.getY() + this.getHitH())));
+		return (x >= this.getX() && y >= this.getY() && ((x + width) <= (this.getX() + this.getHitW()))
+				&& ((y + height) <= (this.getY() + this.getHitH())));
 	}
 
 	private RectBox rect() {

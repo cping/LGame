@@ -31,7 +31,7 @@ public class Manhattan implements AStarFindHeuristic {
 	}
 
 	@Override
-	public int getType() {
+	public int getTypeCode() {
 		return MANHATTAN;
 	}
 

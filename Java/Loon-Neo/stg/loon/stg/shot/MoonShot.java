@@ -3,7 +3,6 @@ package loon.stg.shot;
 import loon.stg.STGScreen;
 import loon.utils.MathUtils;
 
-
 /**
  * Copyright 2008 - 2011
  * 
@@ -64,8 +63,7 @@ public abstract class MoonShot extends EnemyShot {
 		this.ix += this.direction;
 		this.iy += 2.0f * this.a * (this.ix - this.p) * this.direction;
 		setLocation(this.ix, this.iy);
-		if (getY() > getScreenHeight() || getY() < -32 || getX() < -32
-				|| getX() > getScreenWidth()) {
+		if (getY() > getScreenHeight() || getY() < -32 || getX() < -32 || getX() > getScreenWidth()) {
 			delete();
 		}
 	}

@@ -45,7 +45,7 @@ public class LNBezierBy extends LNAction {
 		super._target = node;
 		_startPosition = node.getPosition();
 	}
-	
+
 	@Override
 	public void update(float t) {
 		float xa = 0;
@@ -70,10 +70,8 @@ public class LNBezierBy extends LNAction {
 	public LNAction reverse() {
 		LNBezierDef r = new LNBezierDef();
 		r.endPosition = _config.endPosition.negate();
-		r.controlPoint_1 = _config.controlPoint_2.add(_config.endPosition
-				.negate());
-		r.controlPoint_2 = _config.controlPoint_1.add(_config.endPosition
-				.negate());
+		r.controlPoint_1 = _config.controlPoint_2.add(_config.endPosition.negate());
+		r.controlPoint_2 = _config.controlPoint_1.add(_config.endPosition.negate());
 		return Action(_duration, r);
 	}
 }

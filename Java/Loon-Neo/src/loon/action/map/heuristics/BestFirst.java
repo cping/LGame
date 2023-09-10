@@ -31,7 +31,7 @@ public class BestFirst implements AStarFindHeuristic {
 	}
 
 	@Override
-	public int getType() {
+	public int getTypeCode() {
 		return BESTFIRST;
 	}
 

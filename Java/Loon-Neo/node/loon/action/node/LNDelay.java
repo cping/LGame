@@ -31,7 +31,7 @@ public class LNDelay extends LNAction {
 		delay._duration = duration;
 		return delay;
 	}
-	
+
 	@Override
 	public void update(float t) {
 		if (t == 1f) {

@@ -36,8 +36,7 @@ public class WaitFunction extends Function {
 
 			@Override
 			public void run(LTimerContext time) {
-				Delay.TimeToSleep = (int)ValuesParser
-						.getNumber(_parameters.items[0]);
+				Delay.TimeToSleep = (int) ValuesParser.getNumber(_parameters.items[0]);
 				Delay.Sleeping = true;
 				Delay.StartOnTouch = false;
 				Parsing.Wait = true;

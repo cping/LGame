@@ -70,16 +70,18 @@ public class SwipeEffect extends Entity implements BaseEffect {
 		return finished;
 	}
 
-	public void setStop(boolean finished) {
+	public SwipeEffect setStop(boolean finished) {
 		this.finished = finished;
+		return this;
 	}
 
-	public int getType() {
+	public int getEffectType() {
 		return type;
 	}
 
-	public void setType(int type) {
+	public SwipeEffect setEffectType(int type) {
 		this.type = type;
+		return this;
 	}
 
 	@Override

@@ -33,8 +33,7 @@ public class LNEaseSequence extends LNAction {
 
 	protected int _index;
 
-	public static LNEaseSequence Action(Easing easing,
-			TArray<LNAction> actions) {
+	public static LNEaseSequence Action(Easing easing, TArray<LNAction> actions) {
 		LNEaseSequence ease = new LNEaseSequence();
 		ease._actionList = actions;
 		ease._duration = 0f;
@@ -61,7 +60,7 @@ public class LNEaseSequence extends LNAction {
 		}
 		return ease;
 	}
-	
+
 	@Override
 	public void setTarget(LNNode node) {
 		super._firstTick = true;
@@ -72,7 +71,7 @@ public class LNEaseSequence extends LNAction {
 			this._actionList.get(0).setTarget(super._target);
 		}
 	}
-	
+
 	@Override
 	public void step(float dt) {
 		if (this._index < this._actionList.size) {

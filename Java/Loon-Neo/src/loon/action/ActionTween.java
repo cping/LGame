@@ -1335,7 +1335,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		return _target;
 	}
 
-	public int getType() {
+	public int getTypeCode() {
 		return type;
 	}
 

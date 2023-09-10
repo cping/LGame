@@ -26,6 +26,7 @@ import loon.action.map.heuristics.BestFirst;
 import loon.action.map.heuristics.Closest;
 import loon.action.map.heuristics.ClosestSquared;
 import loon.action.map.heuristics.Diagonal;
+import loon.action.map.heuristics.DiagonalMax;
 import loon.action.map.heuristics.DiagonalMin;
 import loon.action.map.heuristics.DiagonalShort;
 import loon.action.map.heuristics.Euclidean;
@@ -84,6 +85,8 @@ public class AStarFinder implements Updateable, LRelease {
 
 	public final static AStarFindHeuristic ASTAR_DIAGONAL_MIN = new DiagonalMin();
 
+	public final static AStarFindHeuristic ASTAR_DIAGONAL_MAX = new DiagonalMax();
+	
 	private final static IntMap<TArray<Vector2f>> FINDER_LAZY = new IntMap<TArray<Vector2f>>(128);
 
 	private final static int makeLazyKey(AStarFindHeuristic heuristic, int[][] map, int[] limits, int sx, int sy,
@@ -101,7 +104,7 @@ public class AStarFinder implements Updateable, LRelease {
 				hashCode = LSystem.unite(hashCode, limits[i]);
 			}
 		}
-		hashCode = LSystem.unite(hashCode, heuristic.getType());
+		hashCode = LSystem.unite(hashCode, heuristic.getTypeCode());
 		hashCode = LSystem.unite(hashCode, sx);
 		hashCode = LSystem.unite(hashCode, sy);
 		hashCode = LSystem.unite(hashCode, ex);

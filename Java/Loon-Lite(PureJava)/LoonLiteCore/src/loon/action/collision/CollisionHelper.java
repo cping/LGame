@@ -1045,11 +1045,12 @@ public final class CollisionHelper extends ShapeUtils {
 		return getRectCornersList(rect)[corner % 4];
 	}
 
-	public static Vector2f[] getRectCornersList(RectBox rect) {
+	public static final Vector2f[] getRectCornersList(RectBox rect) {
 		Vector2f tl = new Vector2f(rect.x, rect.y);
 		Vector2f tr = new Vector2f(rect.x + rect.width, rect.y);
 		Vector2f bl = new Vector2f(rect.x, rect.y + rect.height);
 		Vector2f br = new Vector2f(rect.x + rect.width, rect.y + rect.height);
 		return new Vector2f[] { tl, tr, br, bl };
 	}
+
 }

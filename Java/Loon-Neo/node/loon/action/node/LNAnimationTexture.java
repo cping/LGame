@@ -26,7 +26,7 @@ import loon.LTextures;
 import loon.action.sprite.Animation;
 import loon.utils.TArray;
 
-public class LNAnimationTexture implements LRelease{
+public class LNAnimationTexture implements LRelease {
 
 	protected float _duration;
 
@@ -48,20 +48,16 @@ public class LNAnimationTexture implements LRelease{
 		this(fileName, fileName, -1, width, height, 3f);
 	}
 
-	public LNAnimationTexture(String fileName, int maxFrame, int width,
-			int height) {
+	public LNAnimationTexture(String fileName, int maxFrame, int width, int height) {
 		this(fileName, fileName, maxFrame, width, height, 3f);
 	}
 
-	public LNAnimationTexture(String fileName, int maxFrame, int width,
-			int height, float duration) {
+	public LNAnimationTexture(String fileName, int maxFrame, int width, int height, float duration) {
 		this(fileName, fileName, maxFrame, width, height, duration);
 	}
 
-	public LNAnimationTexture(String aName, String fileName, int maxFrame,
-			int width, int height, float duration) {
-		this(aName, duration, Animation.getDefaultAnimation(fileName, maxFrame,
-				width, height, 0));
+	public LNAnimationTexture(String aName, String fileName, int maxFrame, int width, int height, float duration) {
+		this(aName, duration, Animation.getDefaultAnimation(fileName, maxFrame, width, height, 0));
 	}
 
 	public LNAnimationTexture(String aName, float duration, Animation as) {

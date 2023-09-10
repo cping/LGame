@@ -70,13 +70,11 @@ public class LNLabel extends LNNode {
 			pos = super.convertToWorldPos();
 			scale = super.convertToWorldScale();
 			rotation = super.convertToWorldRot();
-			batch.setColor(super._color.r, super._color.g, super._color.b,
-					super._objectAlpha);
+			batch.setColor(super._color.r, super._color.g, super._color.b, super._objectAlpha);
 			IFont font = batch.getFont();
 			batch.setFont(_spriteFont);
-			batch.drawString(this._text, pos[0], pos[1], scale[0], scale[1],
-					_anchor.x, _anchor.y, MathUtils.toDegrees(rotation),
-					batch.getColor());
+			batch.drawString(this._text, pos[0], pos[1], scale[0], scale[1], _anchor.x, _anchor.y,
+					MathUtils.toDegrees(rotation), batch.getColor());
 			batch.setFont(font);
 			batch.resetColor();
 		}
@@ -92,10 +90,9 @@ public class LNLabel extends LNNode {
 			rotation = super.convertToWorldRot();
 			IFont font = g.getFont();
 			g.setFont(_spriteFont);
-			g.drawString(this._text, pos[0], pos[1], scale[0], scale[1],
-					_anchor.x, _anchor.y, MathUtils.toDegrees(rotation),
-					tempColor.setColor(super._color.r, super._color.g,
-							super._color.b, super._objectAlpha));
+			g.drawString(this._text, pos[0], pos[1], scale[0], scale[1], _anchor.x, _anchor.y,
+					MathUtils.toDegrees(rotation),
+					tempColor.setColor(super._color.r, super._color.g, super._color.b, super._objectAlpha));
 			g.setFont(font);
 		}
 	}
@@ -107,15 +104,12 @@ public class LNLabel extends LNNode {
 	public void setString(String text) {
 		this._text = text;
 		if (this._type == LabelType.TEXT_ALIGNMENT_LEFT) {
-			super._anchor = new Vector2f(0f,
-					this._spriteFont.stringWidth(this._text) / 2f);
+			super._anchor = new Vector2f(0f, this._spriteFont.stringWidth(this._text) / 2f);
 		} else if (this._type == LabelType.TEXT_ALIGNMENT_RIGHT) {
-			super._anchor = new Vector2f(
-					this._spriteFont.stringWidth(this._text),
+			super._anchor = new Vector2f(this._spriteFont.stringWidth(this._text),
 					this._spriteFont.stringWidth(this._text) / 2f);
 		} else if (this._type == LabelType.TEXT_ALIGNMENT_CENTER) {
-			super._anchor = new Vector2f(
-					this._spriteFont.stringWidth(this._text) / 2f,
+			super._anchor = new Vector2f(this._spriteFont.stringWidth(this._text) / 2f,
 					this._spriteFont.getHeight() / 2f);
 		}
 	}

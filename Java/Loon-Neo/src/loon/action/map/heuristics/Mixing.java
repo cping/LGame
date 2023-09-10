@@ -35,7 +35,7 @@ public class Mixing implements AStarFindHeuristic {
 	}
 
 	@Override
-	public int getType() {
+	public int getTypeCode() {
 		return MIXING;
 	}
 

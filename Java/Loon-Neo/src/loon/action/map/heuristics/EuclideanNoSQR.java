@@ -31,7 +31,7 @@ public class EuclideanNoSQR implements AStarFindHeuristic {
 	}
 
 	@Override
-	public int getType() {
+	public int getTypeCode() {
 		return EUCLIDEAN_NOSQR;
 	}
 

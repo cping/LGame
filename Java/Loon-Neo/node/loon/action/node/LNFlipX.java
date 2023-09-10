@@ -33,7 +33,7 @@ public class LNFlipX extends LNAction {
 		flipx._flipX = fx;
 		return flipx;
 	}
-	
+
 	@Override
 	public void setTarget(LNNode node) {
 		super._firstTick = true;
@@ -43,7 +43,7 @@ public class LNFlipX extends LNAction {
 			((LNSprite) super._target).setFlipX(_flipX);
 		}
 	}
-	
+
 	@Override
 	public void update(float t) {
 		super._isEnd = true;

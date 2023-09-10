@@ -48,11 +48,9 @@ public class LNAtlasNode extends LNNode {
 			LTexture texture = LNDataCache.getFrameStruct(fsName)._texture;
 			this._itemsPerRow = texture.getWidth() / tileWidth;
 			this._itemsPerColumn = texture.getHeight() / tileHeight;
-			this._textureAtlas = new LNTextureAtlas(texture, this._itemsPerRow
-					* this._itemsPerColumn);
+			this._textureAtlas = new LNTextureAtlas(texture, this._itemsPerRow * this._itemsPerColumn);
 		} catch (Exception ex) {
-			throw new RuntimeException(
-					"LNAtlasNode Exception in the data load : " + fsName);
+			throw new RuntimeException("LNAtlasNode Exception in the data load : " + fsName);
 		}
 	}
 }

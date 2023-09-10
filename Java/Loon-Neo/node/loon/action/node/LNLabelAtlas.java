@@ -40,8 +40,8 @@ public class LNLabelAtlas extends LNAtlasNode {
 		this._type = LabelType.TEXT_ALIGNMENT_LEFT;
 	}
 
-	public LNLabelAtlas(String fsName, LabelType type, String text,
-			char startchar, int itemWidth, int itemHeight, int charWidth) {
+	public LNLabelAtlas(String fsName, LabelType type, String text, char startchar, int itemWidth, int itemHeight,
+			int charWidth) {
 		super(fsName, itemWidth, itemHeight);
 		this.fs = LNDataCache.getFrameStruct(fsName);
 		super._left = (int) this.fs._textCoords.x;
@@ -67,23 +67,18 @@ public class LNLabelAtlas extends LNAtlasNode {
 			int size = _text.length();
 			if (this._type == LabelType.TEXT_ALIGNMENT_LEFT) {
 				for (int i = 0; i < size; i++) {
-					super._textureAtlas.draw(i, batch, pos[0] + i
-							* this._charWidth, pos[1], rotation, scale[0],
+					super._textureAtlas.draw(i, batch, pos[0] + i * this._charWidth, pos[1], rotation, scale[0],
 							scale[1], batch.getColor());
 				}
 			} else if (this._type == LabelType.TEXT_ALIGNMENT_RIGHT) {
 				for (int j = 0; j < size; j++) {
-					super._textureAtlas.draw(j, batch, pos[0]
-							- (size * this._charWidth) + (j * this._charWidth),
-							pos[1], rotation, scale[0], scale[1],
-							batch.getColor());
+					super._textureAtlas.draw(j, batch, pos[0] - (size * this._charWidth) + (j * this._charWidth),
+							pos[1], rotation, scale[0], scale[1], batch.getColor());
 				}
 			} else {
 				for (int k = 0; k < size; k++) {
-					super._textureAtlas.draw(k, batch, pos[0]
-							- ((size * this._charWidth) / 2)
-							+ (k * this._charWidth), pos[1], rotation,
-							scale[0], scale[1], batch.getColor());
+					super._textureAtlas.draw(k, batch, pos[0] - ((size * this._charWidth) / 2) + (k * this._charWidth),
+							pos[1], rotation, scale[0], scale[1], batch.getColor());
 				}
 			}
 		}
@@ -98,22 +93,18 @@ public class LNLabelAtlas extends LNAtlasNode {
 			int size = _text.length();
 			if (this._type == LabelType.TEXT_ALIGNMENT_LEFT) {
 				for (int i = 0; i < size; i++) {
-					super._textureAtlas.draw(i, g,
-							pos[0] + i * this._charWidth, pos[1], rotation,
-							scale[0], scale[1], null);
+					super._textureAtlas.draw(i, g, pos[0] + i * this._charWidth, pos[1], rotation, scale[0], scale[1],
+							null);
 				}
 			} else if (this._type == LabelType.TEXT_ALIGNMENT_RIGHT) {
 				for (int j = 0; j < size; j++) {
-					super._textureAtlas.draw(j, g, pos[0]
-							- (size * this._charWidth) + (j * this._charWidth),
-							pos[1], rotation, scale[0], scale[1], null);
+					super._textureAtlas.draw(j, g, pos[0] - (size * this._charWidth) + (j * this._charWidth), pos[1],
+							rotation, scale[0], scale[1], null);
 				}
 			} else {
 				for (int k = 0; k < size; k++) {
-					super._textureAtlas.draw(k, g, pos[0]
-							- ((size * this._charWidth) / 2)
-							+ (k * this._charWidth), pos[1], rotation,
-							scale[0], scale[1], null);
+					super._textureAtlas.draw(k, g, pos[0] - ((size * this._charWidth) / 2) + (k * this._charWidth),
+							pos[1], rotation, scale[0], scale[1], null);
 				}
 			}
 		}
@@ -124,9 +115,8 @@ public class LNLabelAtlas extends LNAtlasNode {
 		super._textureAtlas.resetRect();
 		for (int i = 0; i < this._text.length(); i++) {
 			int num2 = this._text.charAt(i) - this._startchar;
-			super._textureAtlas.addRect(new RectBox((super._left)
-					+ (num2 * super._itemWidth), super._top, super._itemWidth,
-					super._itemHeight));
+			super._textureAtlas.addRect(new RectBox((super._left) + (num2 * super._itemWidth), super._top,
+					super._itemWidth, super._itemHeight));
 		}
 	}
 

@@ -47,13 +47,11 @@ public class DefImage extends DefinitionObject {
 	DefImage() {
 	}
 
-	public static DefImage put(String uid, String name, Vector2f p, Vector2f s,
-			Vector2f a, Vector2f pl) {
+	public static DefImage put(String uid, String name, Vector2f p, Vector2f s, Vector2f a, Vector2f pl) {
 		return new DefImage(uid, name, p, s, a, pl);
 	}
 
-	DefImage(String uid, String name, Vector2f p, Vector2f o, Vector2f a,
-			Vector2f pl) {
+	DefImage(String uid, String name, Vector2f p, Vector2f o, Vector2f a, Vector2f pl) {
 		this.uniqueID = uid;
 		this.pos = p;
 		this.orig = o;
@@ -97,29 +95,20 @@ public class DefImage extends DefinitionObject {
 				} else if ("mask".equalsIgnoreCase(name)) {
 					String[] colors = StringUtils.split(value, ',');
 					if (colors.length == 3) {
-						this.maskColor = new LColor(
-								Integer.parseInt(colors[0]),
-								Integer.parseInt(colors[1]),
+						this.maskColor = new LColor(Integer.parseInt(colors[0]), Integer.parseInt(colors[1]),
 								Integer.parseInt(colors[2]));
 					} else if (colors.length == 4) {
-						this.maskColor = new LColor(
-								Integer.parseInt(colors[0]),
-								Integer.parseInt(colors[1]),
-								Integer.parseInt(colors[2]),
-								Integer.parseInt(colors[4]));
+						this.maskColor = new LColor(Integer.parseInt(colors[0]), Integer.parseInt(colors[1]),
+								Integer.parseInt(colors[2]), Integer.parseInt(colors[4]));
 					}
 				} else if ("blend".equalsIgnoreCase(name)) {
-					if ("non".equalsIgnoreCase(value)
-							|| "NonPremultiplied".equalsIgnoreCase(value)) {
+					if ("non".equalsIgnoreCase(value) || "NonPremultiplied".equalsIgnoreCase(value)) {
 						blend = BlendState.NonPremultiplied;
-					} else if ("add".equalsIgnoreCase(value)
-							|| "Additive".equalsIgnoreCase(value)) {
+					} else if ("add".equalsIgnoreCase(value) || "Additive".equalsIgnoreCase(value)) {
 						blend = BlendState.Additive;
-					} else if ("alpha".equalsIgnoreCase(value)
-							|| "AlphaBlend".equalsIgnoreCase(value)) {
+					} else if ("alpha".equalsIgnoreCase(value) || "AlphaBlend".equalsIgnoreCase(value)) {
 						blend = BlendState.AlphaBlend;
-					} else if ("op".equalsIgnoreCase(value)
-							|| "Opaque".equalsIgnoreCase(value)) {
+					} else if ("op".equalsIgnoreCase(value) || "Opaque".equalsIgnoreCase(value)) {
 						blend = BlendState.Opaque;
 					}
 				}

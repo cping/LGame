@@ -34,7 +34,7 @@ public class DiagonalMax implements AStarFindHeuristic {
 	}
 
 	@Override
-	public int getType() {
+	public int getTypeCode() {
 		return DIAGONAL_MAX;
 	}
 

@@ -106,7 +106,7 @@ public class EffectOne implements LRelease {
 		}
 	}
 
-	public void setType(int type, int x, int y, int w, int h) {
+	public void setEffectType(int type, int x, int y, int w, int h) {
 		this.drawType = type;
 		this.setDrawLocation(x, y, w, h);
 		for (int j = 0; j < number; j++) {
@@ -148,22 +148,18 @@ public class EffectOne implements LRelease {
 
 	protected void drawBreak(GLEx g) {
 		int activeNum = randLocation();
-		arrayX[activeNum] = (int) (drawX
-				+ MathUtils.abs(MathUtils.random() % drawW));
-		arrayY[activeNum] = (int) (drawY
-				+ MathUtils.abs(MathUtils.random() % drawH));
+		arrayX[activeNum] = (int) (drawX + MathUtils.abs(MathUtils.random() % drawW));
+		arrayY[activeNum] = (int) (drawY + MathUtils.abs(MathUtils.random() % drawH));
 		for (int j = 0; j < activeNum; j++) {
 			int state = (j + number) - activeNum;
 			if (mageList[state] != imageLength) {
-				g.draw(images[mageList[state]], arrayX[j] - iBx,
-						arrayY[j] - iBy);
+				g.draw(images[mageList[state]], arrayX[j] - iBx, arrayY[j] - iBy);
 			}
 		}
 		for (int j = activeNum; j < number; j++) {
 			int state = j - activeNum;
 			if (mageList[state] != imageLength) {
-				g.draw(images[mageList[state]], arrayX[j] - iBx,
-						arrayY[j] - iBy);
+				g.draw(images[mageList[state]], arrayX[j] - iBx, arrayY[j] - iBy);
 			}
 		}
 
@@ -176,8 +172,7 @@ public class EffectOne implements LRelease {
 			arrayR[j] += 8;
 			g.setColor(255 - j * 10, 100 + j * 5, 0);
 			for (int l = 0; l < 20; l++) {
-				g.drawOval(getX(j, l) - arrayR[j] / 2, getY(j, l) - arrayR[j]
-						/ 2, arrayR[j], arrayR[j]);
+				g.drawOval(getX(j, l) - arrayR[j] / 2, getY(j, l) - arrayR[j] / 2, arrayR[j], arrayR[j]);
 			}
 		}
 		g.resetColor();
@@ -198,10 +193,8 @@ public class EffectOne implements LRelease {
 
 	protected int randLocation() {
 		int activeNum = getActiveNum();
-		arrayX[activeNum] = (int) (drawX
-				+ MathUtils.abs(MathUtils.random() % drawW));
-		arrayY[activeNum] = (int) (drawY
-				+ MathUtils.abs(MathUtils.random() % drawH));
+		arrayX[activeNum] = (int) (drawX + MathUtils.abs(MathUtils.random() % drawW));
+		arrayY[activeNum] = (int) (drawY + MathUtils.abs(MathUtils.random() % drawH));
 		return activeNum;
 	}
 
@@ -210,13 +203,11 @@ public class EffectOne implements LRelease {
 	}
 
 	protected int getX0(int index, int direct) {
-		return arrayX[index]
-				+ ((int) (arrayR[index] * cosX[direct]) >> 2);
+		return arrayX[index] + ((int) (arrayR[index] * cosX[direct]) >> 2);
 	}
 
 	protected int getY0(int index, int direct) {
-		return arrayY[index]
-				+ ((int) (arrayR[index] * sinX[direct]) >> 2);
+		return arrayY[index] + ((int) (arrayR[index] * sinX[direct]) >> 2);
 	}
 
 	protected int getX(int index, int direct) {
@@ -227,7 +218,7 @@ public class EffectOne implements LRelease {
 		return arrayY[index] + (int) (arrayR[index] * sinX[direct]);
 	}
 
-	public int getType() {
+	public int getTypeCode() {
 		return drawType;
 	}
 

@@ -36,7 +36,7 @@ public class LNCallFuncND extends LNAction {
 		cnd._data = data;
 		return cnd;
 	}
-	
+
 	@Override
 	public void step(float dt) {
 		_c.invoke(super._target, this._data);
@@ -46,7 +46,7 @@ public class LNCallFuncND extends LNAction {
 	public static interface Callback {
 		void invoke(LNNode node, Object data);
 	}
-	
+
 	@Override
 	public LNAction cpy() {
 		return Action(_c, _data);

@@ -10,7 +10,6 @@ import loon.utils.ObjectMap;
 
 class STGObjects extends ObjectMap<Integer, STGObject> implements LRelease {
 
-
 	private STGScreen stg;
 
 	private int count;
@@ -71,8 +70,7 @@ class STGObjects extends ObjectMap<Integer, STGObject> implements LRelease {
 		if (hero != null) {
 			final float x = hero.getX();
 			final float y = hero.getY();
-			int id = this.addPlane(packageName, x, y, this.heroPlnNo,
-					this.overCount);
+			int id = this.addPlane(packageName, x, y, this.heroPlnNo, this.overCount);
 			STGObject obj = get(id);
 			if (obj != null) {
 				obj.setX(x + (hero.getHitW() - obj.getHitW()) / 2);
@@ -134,10 +132,8 @@ class STGObjects extends ObjectMap<Integer, STGObject> implements LRelease {
 	@SuppressWarnings("rawtypes")
 	int addPlane(String packageName, float x, float y, int tpno, int no) {
 		try {
-			Class[] clazz = new Class[] { STGScreen.class, Integer.TYPE,
-					Float.TYPE, Float.TYPE, Integer.TYPE };
-			Constructor constructor = newClass(packageName).getConstructor(
-					clazz);
+			Class[] clazz = new Class[] { STGScreen.class, Integer.TYPE, Float.TYPE, Float.TYPE, Integer.TYPE };
+			Constructor constructor = newClass(packageName).getConstructor(clazz);
 			Object[] args = new Object[] { this.stg, no, x, y, tpno };
 			Object newObject = constructor.newInstance(args);
 			this.put(no, (STGObject) newObject);
@@ -151,10 +147,8 @@ class STGObjects extends ObjectMap<Integer, STGObject> implements LRelease {
 	STGObject newPlane(String packageName, float x, float y, int tpno, int no) {
 		STGObject newObject = null;
 		try {
-			Class[] clazz = new Class[] { STGScreen.class, Integer.TYPE,
-					Float.TYPE, Float.TYPE, Integer.TYPE };
-			Constructor constructor = newClass(packageName).getConstructor(
-					clazz);
+			Class[] clazz = new Class[] { STGScreen.class, Integer.TYPE, Float.TYPE, Float.TYPE, Integer.TYPE };
+			Constructor constructor = newClass(packageName).getConstructor(clazz);
 			Object[] args = new Object[] { this.stg, no, x, y, tpno };
 			newObject = (STGObject) constructor.newInstance(args);
 			this.put(no, newObject);
@@ -200,16 +194,12 @@ class STGObjects extends ObjectMap<Integer, STGObject> implements LRelease {
 				while (enumeration.hasNext()) {
 					shot = enumeration.next();
 					if (shot.attribute == STGScreen.ENEMY
-							&& MathUtils.abs(this.stg.getPlanePosX(o.plnNo)
-									+ o.hitX + o.getHitW() / 2
-									- this.stg.getPlanePosX(shot.plnNo)
-									- shot.hitX - shot.getHitW() / 2) < (o
-									.getHitW() + shot.getHitW()) / 2
-							&& MathUtils.abs(this.stg.getPlanePosY(o.plnNo)
-									+ o.hitY + o.getHitH() / 2
-									- this.stg.getPlanePosY(shot.plnNo)
-									- shot.hitY - shot.getHitH() / 2) < (o
-									.getHitH() + shot.getHitH()) / 2) {
+							&& MathUtils.abs(this.stg.getPlanePosX(o.plnNo) + o.hitX + o.getHitW() / 2
+									- this.stg.getPlanePosX(shot.plnNo) - shot.hitX
+									- shot.getHitW() / 2) < (o.getHitW() + shot.getHitW()) / 2
+							&& MathUtils.abs(this.stg.getPlanePosY(o.plnNo) + o.hitY + o.getHitH() / 2
+									- this.stg.getPlanePosY(shot.plnNo) - shot.hitY
+									- shot.getHitH() / 2) < (o.getHitH() + shot.getHitH()) / 2) {
 						--o.hitPoint;
 						if (o.hitPoint == 0) {
 							this.delObj(o.plnNo);
@@ -243,19 +233,14 @@ class STGObjects extends ObjectMap<Integer, STGObject> implements LRelease {
 			e = this.values();
 			for (; e.hasNext();) {
 				shot = e.next();
-				if ((shot.attribute == STGScreen.ENEMY
-						|| shot.attribute == STGScreen.ITEM
+				if ((shot.attribute == STGScreen.ENEMY || shot.attribute == STGScreen.ITEM
 						|| shot.attribute == STGScreen.ENEMY_SHOT || shot.attribute == STGScreen.ALL_HIT)
-						&& MathUtils.abs(this.stg.getPlanePosX(o.plnNo)
-								+ o.hitX + o.getHitW() / 2
+						&& MathUtils.abs(this.stg.getPlanePosX(o.plnNo) + o.hitX + o.getHitW() / 2
 								- this.stg.getPlanePosX(shot.plnNo) - shot.hitX
-								- shot.getHitW() / 2) < (o.getHitW() + shot
-								.getHitW()) / 2
-						&& MathUtils.abs(this.stg.getPlanePosY(o.plnNo)
-								+ o.hitY + o.getHitH() / 2
+								- shot.getHitW() / 2) < (o.getHitW() + shot.getHitW()) / 2
+						&& MathUtils.abs(this.stg.getPlanePosY(o.plnNo) + o.hitY + o.getHitH() / 2
 								- this.stg.getPlanePosY(shot.plnNo) - shot.hitY
-								- shot.getHitH() / 2) < (o.getHitH() + shot
-								.getHitH()) / 2) {
+								- shot.getHitH() / 2) < (o.getHitH() + shot.getHitH()) / 2) {
 					if (shot.attribute != STGScreen.ITEM) {
 						--shot.hitPoint;
 						shot.hitFlag = true;

@@ -34,15 +34,15 @@ public class PictureExplosion implements Picture {
 			this.x = this.y = 16;
 		}
 		g.setColor(LColor.yellow);
-		g.fillOval(p.posX + this.x - this.count % 4 * 4, p.posY + this.y
-				- this.count % 4 * 4, this.count % 4 * 8, this.count % 4 * 8);
+		g.fillOval(p.posX + this.x - this.count % 4 * 4, p.posY + this.y - this.count % 4 * 4, this.count % 4 * 8,
+				this.count % 4 * 8);
 		++this.count;
 		return true;
 	}
 
 	@Override
 	public void close() {
-	
+
 	}
 
 }

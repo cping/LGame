@@ -36,21 +36,17 @@ public class LNAnimateTexture extends LNAction {
 		return Action(new LNAnimationTexture(fileName, width, height));
 	}
 
-	public static LNAnimateTexture Action(String fileName, int maxFrame,
-			int width, int height) {
+	public static LNAnimateTexture Action(String fileName, int maxFrame, int width, int height) {
 		return Action(new LNAnimationTexture(fileName, maxFrame, width, height));
 	}
 
-	public static LNAnimateTexture Action(String fileName, int maxFrame,
-			int width, int height, float duration) {
-		return Action(new LNAnimationTexture(fileName, maxFrame, width, height,
-				duration));
+	public static LNAnimateTexture Action(String fileName, int maxFrame, int width, int height, float duration) {
+		return Action(new LNAnimationTexture(fileName, maxFrame, width, height, duration));
 	}
 
-	public static LNAnimateTexture Action(String aName, String fileName,
-			int maxFrame, int width, int height, float duration) {
-		return Action(new LNAnimationTexture(aName, fileName, maxFrame, width,
-				height, duration));
+	public static LNAnimateTexture Action(String aName, String fileName, int maxFrame, int width, int height,
+			float duration) {
+		return Action(new LNAnimationTexture(aName, fileName, maxFrame, width, height, duration));
 	}
 
 	public static LNAnimateTexture Action(LNAnimationTexture anim) {
@@ -62,8 +58,7 @@ public class LNAnimateTexture extends LNAction {
 		return animate;
 	}
 
-	public static LNAnimateTexture Action(LNAnimationTexture anim,
-			boolean restoreOriginalFrame) {
+	public static LNAnimateTexture Action(LNAnimationTexture anim, boolean restoreOriginalFrame) {
 		LNAnimateTexture animate = new LNAnimateTexture();
 		animate._ans = anim;
 		animate._duration = anim.getDuration();
@@ -84,16 +79,14 @@ public class LNAnimateTexture extends LNAction {
 			if (t == 1f) {
 				super.reset();
 				if (this._restoreOriginalFrame) {
-					((LNSprite) super._target)
-							.initWithTexture(_ans.getFrame(0));
+					((LNSprite) super._target).initWithTexture(_ans.getFrame(0));
 				}
 			} else {
-				((LNSprite) super._target).initWithTexture(_ans
-						.getFrameByTime(t));
+				((LNSprite) super._target).initWithTexture(_ans.getFrameByTime(t));
 			}
 		}
 	}
-	
+
 	@Override
 	public LNAction cpy() {
 		return Action(_ans, _restoreOriginalFrame);

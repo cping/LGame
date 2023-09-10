@@ -35,8 +35,7 @@ public class DefinitionObject {
 	public void childDefinitionObject(DefinitionObject childObject, String str) {
 	}
 
-	public void childDefinitionObjectDidFinishParsing(
-			DefinitionObject childObject) {
+	public void childDefinitionObjectDidFinishParsing(DefinitionObject childObject) {
 	}
 
 	public void childDefinitionObjectDidInit(DefinitionObject childObject) {

@@ -34,7 +34,7 @@ public class Closest implements AStarFindHeuristic {
 	}
 
 	@Override
-	public int getType() {
+	public int getTypeCode() {
 		return CLOSEST;
 	}
 

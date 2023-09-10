@@ -126,19 +126,14 @@ public class LNSprite extends LNNode implements Flip<LNSprite> {
 					scale[0] = _scale.x;
 					scale[1] = _scale.y;
 				}
-				batch.setColor(super._color.r, super._color.g, super._color.b,
-						super._objectAlpha);
+				batch.setColor(super._color.r, super._color.g, super._color.b, super._objectAlpha);
 				if (rotation == 0 && scale[0] == 1f && scale[1] == 1f) {
-					batch.draw(_texture, pos[0], pos[1], super._size_width,
-							super._size_height, super._left, super._top,
-							super._orig_width, super._orig_height, _flipX,
-							_flipY);
+					batch.draw(_texture, pos[0], pos[1], super._size_width, super._size_height, super._left, super._top,
+							super._orig_width, super._orig_height, _flipX, _flipY);
 				} else {
-					batch.draw(_texture, pos[0], pos[1], _anchor.x, _anchor.y,
-							super._size_width, super._size_height, scale[0],
-							scale[1], MathUtils.toDegrees(rotation),
-							super._left, super._top, super._orig_width,
-							super._orig_height, _flipX, _flipY);
+					batch.draw(_texture, pos[0], pos[1], _anchor.x, _anchor.y, super._size_width, super._size_height,
+							scale[0], scale[1], MathUtils.toDegrees(rotation), super._left, super._top,
+							super._orig_width, super._orig_height, _flipX, _flipY);
 				}
 				batch.resetColor();
 				BlendState oldState = batch.getBlendState();
@@ -171,12 +166,9 @@ public class LNSprite extends LNNode implements Flip<LNSprite> {
 					scale[0] = _scale.x;
 					scale[1] = _scale.y;
 				}
-				g.setColor(super._color.r, super._color.g, super._color.b,
-						super._objectAlpha);
-				g.draw(_texture, pos[0] - _anchor.x, pos[1] - _anchor.y,
-						_anchor, super._size_width, super._size_height,
-						scale[0], scale[1], MathUtils.toDegrees(rotation),
-						super._left, super._top, super._orig_width,
+				g.setColor(super._color.r, super._color.g, super._color.b, super._objectAlpha);
+				g.draw(_texture, pos[0] - _anchor.x, pos[1] - _anchor.y, _anchor, super._size_width, super._size_height,
+						scale[0], scale[1], MathUtils.toDegrees(rotation), super._left, super._top, super._orig_width,
 						super._orig_height, _flipX, _flipY, null);
 				g.setColor(color);
 			}

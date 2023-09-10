@@ -44,7 +44,7 @@ public class LNFrameAction extends LNAction {
 		action._fs = fs;
 		return action;
 	}
-	
+
 	@Override
 	public void step(float dt) {
 		if (this._fs == null) {
@@ -54,7 +54,7 @@ public class LNFrameAction extends LNAction {
 		}
 		super._isEnd = true;
 	}
-	
+
 	@Override
 	public LNAction cpy() {
 		return Action(_fs);

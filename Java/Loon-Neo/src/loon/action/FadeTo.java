@@ -36,12 +36,13 @@ public class FadeTo extends ActionEvent {
 		this.setSpeed(speed);
 	}
 
-	public int getIType() {
+	public int getEffectType() {
 		return type;
 	}
 
-	public void setIType(int type) {
+	public FadeTo setEffectType(int type) {
 		this.type = type;
+		return this;
 	}
 
 	@Override
@@ -53,13 +54,14 @@ public class FadeTo extends ActionEvent {
 		return time;
 	}
 
-	public void setSpeed(float delay) {
+	public FadeTo setSpeed(float delay) {
 		this.time = delay;
 		if (type == ISprite.TYPE_FADE_OUT) {
 			this.currentFrame = this.time;
 		} else {
 			this.currentFrame = 0f;
 		}
+		return this;
 	}
 
 	@Override
@@ -99,10 +101,6 @@ public class FadeTo extends ActionEvent {
 
 	public float getCurrentFrame() {
 		return currentFrame;
-	}
-
-	public int getType() {
-		return type;
 	}
 
 	@Override

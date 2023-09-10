@@ -168,7 +168,7 @@ public class GameTouch {
 		return pointer;
 	}
 
-	public int getType() {
+	public int getTypeCode() {
 		return type;
 	}
 

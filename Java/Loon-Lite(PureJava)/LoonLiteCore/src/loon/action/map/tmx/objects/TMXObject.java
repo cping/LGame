@@ -90,7 +90,7 @@ public class TMXObject {
 		return name;
 	}
 
-	public String getType() {
+	public String getTypeCode() {
 		return type;
 	}
 

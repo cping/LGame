@@ -48,6 +48,6 @@ public interface AStarFindHeuristic {
 	
 	public float getScore(float sx, float sy, float tx, float ty);
 
-	public int getType();
+	public int getTypeCode();
 
 }

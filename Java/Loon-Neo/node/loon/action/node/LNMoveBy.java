@@ -58,8 +58,7 @@ public class LNMoveBy extends LNMoveTo {
 			super._target.setPosition(super._pos);
 		} else {
 			Vector2f position = super._target.getPosition();
-			super._target.setPosition(super._diff.mul((t - this._lastTime))
-					.add(position));
+			super._target.setPosition(super._diff.mul((t - this._lastTime)).add(position));
 			this._lastTime = t;
 		}
 	}

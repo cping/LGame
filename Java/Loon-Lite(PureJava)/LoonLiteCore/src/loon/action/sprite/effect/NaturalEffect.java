@@ -332,8 +332,9 @@ public class NaturalEffect extends Entity implements BaseEffect {
 		return completed;
 	}
 
-	public void setStop(boolean stop) {
+	public NaturalEffect setStop(boolean stop) {
 		this.completed = stop;
+		return this;
 	}
 
 	@Override

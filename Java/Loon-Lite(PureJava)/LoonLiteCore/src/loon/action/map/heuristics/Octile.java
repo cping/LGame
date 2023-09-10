@@ -34,7 +34,7 @@ public class Octile implements AStarFindHeuristic {
 	}
 
 	@Override
-	public int getType() {
+	public int getTypeCode() {
 		return OCTILE;
 	}
 

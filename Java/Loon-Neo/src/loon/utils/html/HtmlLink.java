@@ -38,7 +38,7 @@ public class HtmlLink {
 		return real;
 	}
 
-	public String getType() {
+	public String getTypeCode() {
 		return typeData;
 	}
 

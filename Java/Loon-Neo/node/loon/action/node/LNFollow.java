@@ -67,8 +67,7 @@ public class LNFollow extends LNAction {
 
 		follow.winRect = LSystem.viewSize.getRect();
 
-		follow.fullScreenSize = new Vector2f(follow.winRect.width,
-				follow.winRect.height);
+		follow.fullScreenSize = new Vector2f(follow.winRect.width, follow.winRect.height);
 		follow.halfScreenSize = Vector2f.mul(follow.fullScreenSize, 0.5f);
 		return follow;
 	}
@@ -80,8 +79,7 @@ public class LNFollow extends LNAction {
 		follow._boundaryFullyCovered = false;
 
 		follow.winRect = LSystem.viewSize.getRect();
-		follow.fullScreenSize = new Vector2f(follow.winRect.width,
-				follow.winRect.height);
+		follow.fullScreenSize = new Vector2f(follow.winRect.width, follow.winRect.height);
 		follow.halfScreenSize = follow.fullScreenSize.mul(0.5f);
 
 		follow.leftBoundary = -((rect.x + rect.width) - follow.fullScreenSize.x);
@@ -96,13 +94,12 @@ public class LNFollow extends LNAction {
 		if (follow.topBoundary < follow.bottomBoundary) {
 			follow.topBoundary = follow.bottomBoundary = (follow.topBoundary + follow.bottomBoundary) / 2;
 		}
-		if ((follow.topBoundary == follow.bottomBoundary)
-				&& (follow.leftBoundary == follow.rightBoundary)) {
+		if ((follow.topBoundary == follow.bottomBoundary) && (follow.leftBoundary == follow.rightBoundary)) {
 			follow._boundaryFullyCovered = true;
 		}
 		return follow;
 	}
-	
+
 	@Override
 	public void step(float dt) {
 		if (_boundarySet) {
@@ -110,22 +107,20 @@ public class LNFollow extends LNAction {
 				return;
 			}
 			Vector2f pos = halfScreenSize.sub(_followedNode.getPosition());
-			super._target.setPosition(
-					MathUtils.clamp(pos.x, leftBoundary, rightBoundary),
+			super._target.setPosition(MathUtils.clamp(pos.x, leftBoundary, rightBoundary),
 					MathUtils.clamp(pos.y, bottomBoundary, topBoundary));
 		} else {
-			super._target.setPosition(halfScreenSize.sub(_followedNode
-					.getPosition()));
+			super._target.setPosition(halfScreenSize.sub(_followedNode.getPosition()));
 		}
 	}
-	
+
 	@Override
 	public void update(float time) {
 		if (_followedNode._isClose) {
 			super._isEnd = true;
 		}
 	}
-	
+
 	@Override
 	public LNAction cpy() {
 		return Action(_followedNode, winRect);

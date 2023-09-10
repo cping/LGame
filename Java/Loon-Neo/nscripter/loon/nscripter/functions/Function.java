@@ -8,10 +8,10 @@ public abstract class Function {
 	protected String _name;
 
 	protected TArray<String> _parameters;
-	
-	public Function(String name){
-	     _parameters = new TArray<String>();
-         _name = name;
+
+	public Function(String name) {
+		_parameters = new TArray<String>();
+		_name = name;
 	}
 
 	public void setName(String name) {
@@ -38,8 +38,8 @@ public abstract class Function {
 		_parameters.set(0, param);
 		return true;
 	}
-	
+
 	public abstract GameProcess run();
 
-    public abstract String parse(String param);
+	public abstract String parse(String param);
 }

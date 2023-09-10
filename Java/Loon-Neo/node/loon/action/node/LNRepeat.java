@@ -37,7 +37,7 @@ public class LNRepeat extends LNAction {
 		repeat._duration = t * action.getDuration();
 		return repeat;
 	}
-	
+
 	@Override
 	public void setTarget(LNNode node) {
 		super._firstTick = true;
@@ -45,7 +45,7 @@ public class LNRepeat extends LNAction {
 		super._target = node;
 		this._action.setTarget(super._target);
 	}
-	
+
 	@Override
 	public void step(float dt) {
 		if (super._firstTick) {
@@ -62,7 +62,7 @@ public class LNRepeat extends LNAction {
 			super._isEnd = true;
 		}
 	}
-	
+
 	@Override
 	public LNAction cpy() {
 		return Action(_action, time);

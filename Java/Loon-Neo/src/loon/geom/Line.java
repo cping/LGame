@@ -33,6 +33,58 @@ public class Line extends Shape {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	public static final Vector2f getIntersects(final Line lineA, final Line lineB) {
+		return getIntersects(lineA, lineB, 0.001f);
+	}
+
+	public static final Vector2f getIntersects(final Line lineA, final Line lineB, float tolerance) {
+		final float x1 = lineA.getX1(), y1 = lineA.getY1();
+		final float x2 = lineA.getX2(), y2 = lineA.getY2();
+		final float x3 = lineB.getX1(), y3 = lineB.getY1();
+		final float x4 = lineB.getX2(), y4 = lineB.getY2();
+		if (MathUtils.abs(x1 - x2) < tolerance && MathUtils.abs(x3 - x4) < tolerance
+				&& MathUtils.abs(x1 - x3) < tolerance) {
+			return null;
+		}
+		if (MathUtils.abs(y1 - y2) < tolerance && MathUtils.abs(y3 - y4) < tolerance
+				&& MathUtils.abs(y1 - y3) < tolerance) {
+			return null;
+		}
+		if (MathUtils.abs(x1 - x2) < tolerance && MathUtils.abs(x3 - x4) < tolerance) {
+			return null;
+		}
+		if (MathUtils.abs(y1 - y2) < tolerance && MathUtils.abs(y3 - y4) < tolerance) {
+			return null;
+		}
+		float x, y;
+		if (MathUtils.abs(x1 - x2) < tolerance) {
+			final float m2 = (y4 - y3) / (x4 - x3);
+			final float c2 = -m2 * x3 + y3;
+			x = x1;
+			y = c2 + m2 * x1;
+		}
+
+		else if (MathUtils.abs(x3 - x4) < tolerance) {
+			final float m1 = (y2 - y1) / (x2 - x1);
+			final float c1 = -m1 * x1 + y1;
+			x = x3;
+			y = c1 + m1 * x3;
+		} else {
+			final float m1 = (y2 - y1) / (x2 - x1);
+			final float c1 = -m1 * x1 + y1;
+			final float m2 = (y4 - y3) / (x4 - x3);
+			final float c2 = -m2 * x3 + y3;
+
+			x = (c1 - c2) / (m2 - m1);
+			y = c2 + m2 * x;
+
+			if (!(MathUtils.abs(-m1 * x + y - c1) < tolerance && MathUtils.abs(-m2 * x + y - c2) < tolerance)) {
+				return null;
+			}
+		}
+		return new Vector2f(x, y);
+	}
+
 	public static SetXY getRandom(Line line, SetXY out) {
 		if (out == null) {
 			out = new PointF();
@@ -433,6 +485,10 @@ public class Line extends Shape {
 		this.setX2(this.getX1() + unitVectorX * newDistance);
 		this.setY2(this.getY1() + unitVectorY * newDistance);
 		return this;
+	}
+
+	public Vector2f getIntersects(Line l) {
+		return getIntersects(this, l);
 	}
 
 	public float getLineAngle(boolean degrees) {

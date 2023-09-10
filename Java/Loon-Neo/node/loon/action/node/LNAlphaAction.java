@@ -42,7 +42,7 @@ public class LNAlphaAction extends LNAction {
 		super._isEnd = true;
 		oldAlpha = _target.getAlpha();
 	}
-	
+
 	@Override
 	public LNAction cpy() {
 		return Action(_alpha);

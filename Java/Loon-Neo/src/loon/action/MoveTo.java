@@ -146,7 +146,7 @@ public class MoveTo extends ActionEvent {
 	public MoveTo randomPathFinder() {
 		synchronized (MoveTo.class) {
 			AStarFindHeuristic afh = null;
-			int index = MathUtils.random(AStarFindHeuristic.MANHATTAN, AStarFindHeuristic.CLOSEST_SQUARED);
+			int index = MathUtils.random(AStarFindHeuristic.MANHATTAN, AStarFindHeuristic.DIAGONAL_MAX);
 			switch (index) {
 			case AStarFindHeuristic.MANHATTAN:
 				afh = AStarFinder.ASTAR_EUCLIDEAN;
@@ -172,13 +172,26 @@ public class MoveTo extends ActionEvent {
 			case AStarFindHeuristic.CLOSEST_SQUARED:
 				afh = AStarFinder.ASTAR_CLOSEST_SQUARED;
 				break;
+			case AStarFindHeuristic.BESTFIRST:
+				afh = AStarFinder.ASTAR_BEST_FIRST;
+				break;
+			case AStarFindHeuristic.OCTILE:
+				afh = AStarFinder.ASTAR_OCTILE;
+				break;
+			case AStarFindHeuristic.DIAGONAL_MIN:
+				afh = AStarFinder.ASTAR_DIAGONAL_MIN;
+				break;
+			case AStarFindHeuristic.DIAGONAL_MAX:
+				afh = AStarFinder.ASTAR_DIAGONAL_MAX;
+				break;
 			}
 			setHeuristic(afh);
 		}
 		return this;
 	}
 
-	protected float getMoveSpeed() {
+	protected float getMoveSpeed(long elapsedTime) {
+		easeTimer.update(elapsedTime);
 		return speed * easeTimer.getProgress();
 	}
 
@@ -327,7 +340,6 @@ public class MoveTo extends ActionEvent {
 
 	@Override
 	public void update(long elapsedTime) {
-		easeTimer.update(elapsedTime);
 		if (process_delay_time > 0) {
 			if (!this.moveByMode) {
 				if (!_processed && (this.pActorPath == null || this.original == null || this.pActorPath.size == 0)) {
@@ -346,7 +358,7 @@ public class MoveTo extends ActionEvent {
 				return;
 			}
 		}
-		final float moveSpeed = getMoveSpeed();
+		final float moveSpeed = getMoveSpeed(elapsedTime);
 		isMoved = true;
 		float newX = 0f;
 		float newY = 0f;

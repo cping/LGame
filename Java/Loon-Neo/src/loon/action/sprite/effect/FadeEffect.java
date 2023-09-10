@@ -68,21 +68,23 @@ public class FadeEffect extends Entity implements BaseEffect {
 		return time;
 	}
 
-	public void setDelay(float delay) {
+	public FadeEffect setDelay(float delay) {
 		this.time = delay;
 		if (type == TYPE_FADE_IN) {
 			this.currentFrame = this.time;
 		} else {
 			this.currentFrame = 0;
 		}
+		return this;
 	}
 
 	public float getCurrentFrame() {
 		return currentFrame;
 	}
 
-	public void setCurrentFrame(float currentFrame) {
+	public FadeEffect setCurrentFrame(float currentFrame) {
 		this.currentFrame = currentFrame;
+		return this;
 	}
 
 	@Override
@@ -90,16 +92,18 @@ public class FadeEffect extends Entity implements BaseEffect {
 		return finished;
 	}
 
-	public void setStop(boolean finished) {
+	public FadeEffect setStop(boolean finished) {
 		this.finished = finished;
+		return this;
 	}
 
-	public int getType() {
+	public int getEffectType() {
 		return type;
 	}
 
-	public void setType(int type) {
+	public FadeEffect setEffectType(int type) {
 		this.type = type;
+		return this;
 	}
 
 	@Override
