@@ -20,6 +20,7 @@
  */
 package loon.geom;
 
+import loon.LSystem;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 
@@ -50,7 +51,7 @@ public class Circle extends Ellipse {
 		if (StringUtils.isEmpty(v)) {
 			return new Circle();
 		}
-		String[] result = StringUtils.split(v, ',');
+		String[] result = StringUtils.split(v, LSystem.COMMA);
 		int len = result.length;
 		if (len > 2) {
 			try {

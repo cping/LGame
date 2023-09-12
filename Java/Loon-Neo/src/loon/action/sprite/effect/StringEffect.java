@@ -342,16 +342,13 @@ public class StringEffect extends Entity implements BaseEffect {
 		_font.paintString(g, drawX(offsetX), drawY(offsetY), _baseColor.multiply(this._objectAlpha));
 	}
 
-	public void setDelay(long d) {
+	public StringEffect setDelay(long d) {
 		delayTimer.setDelay(d);
+		return this;
 	}
 
 	public long getDelay() {
 		return delayTimer.getDelay();
-	}
-
-	public void setCompleted(boolean c) {
-		this._completed = c;
 	}
 
 	@Override
@@ -359,6 +356,12 @@ public class StringEffect extends Entity implements BaseEffect {
 		return _completed;
 	}
 
+	@Override
+	public StringEffect setStop(boolean c) {
+		this._completed = c;
+		return this;
+	}
+	
 	public boolean isAutoRemoved() {
 		return _autoRemoved;
 	}

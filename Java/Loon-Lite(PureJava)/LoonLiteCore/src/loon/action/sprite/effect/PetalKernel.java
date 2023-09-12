@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -32,15 +32,19 @@ public class PetalKernel implements IKernel {
 
 	private LTexture sakura;
 
-	private float offsetX, offsetY, speed, x, y, width, height, sakuraWidth, sakuraHeight;
+	private float offsetX, offsetY, speed;
+
+	private float x, y, width, height;
+
+	private float sakuraWidth, sakuraHeight;
 
 	private int id;
 
 	public PetalKernel(LTexturePack pack, int n, int w, int h) {
-		this(pack.getTexture(LSystem.getSystemImagePath() + "sakura_" + n), n, w, h);
+		this(pack.getTexture(LSystem.getSystemImagePath() + "sakura_" + n), n, w, h, -1f);
 	}
 
-	public PetalKernel(LTexture texture, int n, int w, int h) {
+	public PetalKernel(LTexture texture, int n, int w, int h, float r) {
 		this.id = n;
 		this.sakura = texture;
 		this.sakuraWidth = sakura.width();
@@ -48,7 +52,11 @@ public class PetalKernel implements IKernel {
 		this.width = w;
 		this.height = h;
 		this.offsetX = 0;
-		this.offsetY = n * 0.6f + 1.9f + MathUtils.random() * 0.2f;
+		if (r == -1f) {
+			this.offsetY = n * 0.6f + 1.9f + MathUtils.random() * 0.2f;
+		} else {
+			this.offsetY = r;
+		}
 		speed = MathUtils.random();
 	}
 

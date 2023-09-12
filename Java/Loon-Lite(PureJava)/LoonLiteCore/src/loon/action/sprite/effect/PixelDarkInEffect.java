@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -34,8 +34,7 @@ public class PixelDarkInEffect extends PixelBaseEffect {
 	private TriangleEffect[] ts;
 
 	public PixelDarkInEffect(LColor color) {
-		this(color, 0, 0, LSystem.viewSize.getWidth() / 2, LSystem.viewSize
-				.getHeight() / 2);
+		this(color, 0, 0, LSystem.viewSize.getWidth() / 2, LSystem.viewSize.getHeight() / 2);
 	}
 
 	public PixelDarkInEffect(LColor color, float x, float y, float w, float h) {
@@ -43,8 +42,7 @@ public class PixelDarkInEffect extends PixelBaseEffect {
 		viewX = x;
 		viewY = y;
 		float[][][] res = { { { 0.0f, 30f }, { 24f, -15f }, { -24f, -15f } },
-				{ { -120f, 30f }, { -96f, -15f }, { -144f, -15f } },
-				{ { 120f, 30f }, { 144f, -15f }, { 96f, -15f } },
+				{ { -120f, 30f }, { -96f, -15f }, { -144f, -15f } }, { { 120f, 30f }, { 144f, -15f }, { 96f, -15f } },
 				{ { 0.0f, -90f }, { 24f, -135f }, { -24f, -135f } },
 				{ { 0.0f, 150f }, { 24f, 105f }, { -24f, 105f } } };
 		ts = new TriangleEffect[5];

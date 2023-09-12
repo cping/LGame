@@ -151,7 +151,7 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 	}
 
 	public LMenuSelect(String labels, float x, float y) {
-		this(StringUtils.split(labels, ','), x, y);
+		this(StringUtils.split(labels, LSystem.COMMA), x, y);
 	}
 
 	public LMenuSelect(String[] labels, float x, float y) {
@@ -219,7 +219,7 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 	}
 
 	public LMenuSelect setLabels(String labels) {
-		return setLabels(StringUtils.split(labels, ','));
+		return setLabels(StringUtils.split(labels, LSystem.COMMA));
 	}
 
 	public LMenuSelect update(String[] labels) {

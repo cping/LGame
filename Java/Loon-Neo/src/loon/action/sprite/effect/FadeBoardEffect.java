@@ -195,11 +195,12 @@ public class FadeBoardEffect extends Entity implements BaseEffect {
 		_dirty = true;
 	}
 
-	public void pack() {
+	public FadeBoardEffect pack() {
 		if (_dirty || paintBlocks == null) {
 			paintBlocks = createBlocks(0, 0, width(), height());
 			_dirty = false;
 		}
+		return this;
 	}
 
 	protected TArray<Block> createBlocks(int newX, int newY, int boardWidth, int boardHeight) {
@@ -223,8 +224,9 @@ public class FadeBoardEffect extends Entity implements BaseEffect {
 		return blocks;
 	}
 
-	public void setDelay(long delay) {
+	public FadeBoardEffect setDelay(long delay) {
 		blockDelay = delay;
+		return this;
 	}
 
 	public long getDelay() {
@@ -234,6 +236,12 @@ public class FadeBoardEffect extends Entity implements BaseEffect {
 	@Override
 	public boolean isCompleted() {
 		return _completed;
+	}
+
+	@Override
+	public FadeBoardEffect setStop(boolean c) {
+		this._completed = c;
+		return this;
 	}
 
 	@Override

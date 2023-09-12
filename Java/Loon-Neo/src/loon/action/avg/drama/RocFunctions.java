@@ -1,5 +1,6 @@
 package loon.action.avg.drama;
 
+import loon.LSystem;
 import loon.utils.ArrayMap;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
@@ -73,7 +74,7 @@ public class RocFunctions {
 			}
 		} else if ("indexof".equals(key)) {
 			if (value.indexOf(",") != -1) {
-				String[] split = StringUtils.split(value, ',');
+				String[] split = StringUtils.split(value, LSystem.COMMA);
 				if (split.length == 2) {
 					return split[0].indexOf(split[1]) != -1;
 				}
@@ -83,7 +84,7 @@ public class RocFunctions {
 		}
 		IRocFunction roc = (IRocFunction) _rocFunctions.get(key);
 		if (roc != null) {
-			String[] args = StringUtils.split(value, ',');
+			String[] args = StringUtils.split(value, LSystem.COMMA);
 			Object o = roc.call(args);
 			if (o != null) {
 				return o;

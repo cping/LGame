@@ -315,8 +315,9 @@ public class NaturalEffect extends Entity implements BaseEffect {
 		return timer.getDelay();
 	}
 
-	public void setDelay(long delay) {
+	public NaturalEffect setDelay(long delay) {
 		timer.setDelay(delay);
+		return this;
 	}
 
 	public IKernel[] getKernels() {
@@ -333,6 +334,7 @@ public class NaturalEffect extends Entity implements BaseEffect {
 		return completed;
 	}
 
+	@Override
 	public NaturalEffect setStop(boolean stop) {
 		this.completed = stop;
 		return this;

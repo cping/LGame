@@ -70,15 +70,16 @@ public abstract class PixelBaseEffect extends Entity {
 		this.setDeform(false);
 	}
 
-	public void setDelay(long delay) {
+	public PixelBaseEffect setDelay(long delay) {
 		timer.setDelay(delay);
+		return this;
 	}
 
 	public long getDelay() {
 		return timer.getDelay();
 	}
 
-	public void setEffectDelay(long timer) {
+	public PixelBaseEffect setEffectDelay(long timer) {
 		for (TriangleEffect[] ts : triangleEffects) {
 			if (ts != null) {
 				int size = ts.length;
@@ -89,6 +90,7 @@ public abstract class PixelBaseEffect extends Entity {
 				}
 			}
 		}
+		return this;
 	}
 
 	@Override
@@ -100,11 +102,12 @@ public abstract class PixelBaseEffect extends Entity {
 		return this;
 	}
 
-	public void setEffectPosition(float x1, float y1, float x2, float y2) {
+	public PixelBaseEffect setEffectPosition(float x1, float y1, float x2, float y2) {
 		this.startLocation[0] = x1;
 		this.startLocation[1] = y1;
 		this.targetLocation[0] = x2;
 		this.targetLocation[1] = y2;
+		return this;
 	}
 
 	public float next() {
@@ -156,14 +159,20 @@ public abstract class PixelBaseEffect extends Entity {
 		return limit;
 	}
 
-	public void setLimit(int limit) {
+	public PixelBaseEffect setLimit(int limit) {
 		this.limit = limit;
+		return this;
 	}
 
 	public boolean isCompleted() {
 		return completed;
 	}
 
+	public PixelBaseEffect setStop(boolean c) {
+		this.completed = c;
+		return this;
+	}
+	
 	public boolean isAutoRemoved() {
 		return autoRemoved;
 	}

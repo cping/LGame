@@ -66,8 +66,9 @@ public class LightningBolt implements ILightning {
 		}
 	}
 
-	public void setDelay(long delay) {
+	public LightningBolt setDelay(long delay) {
 		timer.setDelay(delay);
+		return this;
 	}
 
 	public long getDelay() {

@@ -24,6 +24,7 @@ import java.util.Arrays;
 
 import loon.LRelease;
 import loon.LSysException;
+import loon.LSystem;
 import loon.events.QueryEvent;
 
 public class FloatArray implements IArray, LRelease {
@@ -672,7 +673,7 @@ public class FloatArray implements IArray, LRelease {
 
 	@Override
 	public String toString() {
-		return toString(',');
+		return toString(LSystem.COMMA);
 	}
 
 	@Override

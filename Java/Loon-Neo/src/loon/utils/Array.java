@@ -25,6 +25,7 @@ import java.util.Iterator;
 
 import loon.LRelease;
 import loon.LSysException;
+import loon.LSystem;
 import loon.events.QueryEvent;
 
 public class Array<T> implements Iterable<T>, IArray, LRelease {
@@ -445,7 +446,7 @@ public class Array<T> implements Iterable<T>, IArray, LRelease {
 
 	@Override
 	public String toString() {
-		return toString(',');
+		return toString(LSystem.COMMA);
 	}
 
 	public T next() {

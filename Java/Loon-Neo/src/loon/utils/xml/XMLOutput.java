@@ -24,6 +24,7 @@ import java.util.Iterator;
 
 import loon.LRelease;
 import loon.LSysException;
+import loon.LSystem;
 import loon.utils.MathUtils;
 import loon.utils.StrBuilder;
 import loon.utils.TArray;
@@ -57,7 +58,7 @@ public class XMLOutput implements LRelease {
 
 	public XMLOutput start_ele(String name) {
 		if (content()) {
-			_writer.append('\n');
+			_writer.append(LSystem.LF);
 		}
 		newline();
 		_writer.append('<');
@@ -102,12 +103,12 @@ public class XMLOutput implements LRelease {
 		String string = text == null ? "null" : text.toString();
 		_flag = string.length() > 64;
 		if (_flag) {
-			_writer.append('\n');
+			_writer.append(LSystem.LF);
 			newline();
 		}
 		_writer.append(string);
 		if (_flag) {
-			_writer.append('\n');
+			_writer.append(LSystem.LF);
 		}
 		return this;
 	}

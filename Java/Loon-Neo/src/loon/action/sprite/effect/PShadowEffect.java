@@ -101,10 +101,11 @@ public class PShadowEffect extends Entity {
 		return this;
 	}
 
-	public void resetEffect() {
+	public PShadowEffect resetEffect() {
 		this.indexD = 255;
 		this.indexW = 0;
 		this.block = 8;
+		return this;
 	}
 
 	@Override
@@ -147,24 +148,27 @@ public class PShadowEffect extends Entity {
 		return completed || (flag ? (indexW >= 255) : (indexD <= 0));
 	}
 
-	public void setDelay(long delay) {
+	public PShadowEffect setDelay(long delay) {
 		timer.setDelay(delay);
+		return this;
 	}
 
 	public boolean isBlackToWhite() {
 		return flag;
 	}
 
-	public void setBlackToWhite(boolean flag) {
+	public PShadowEffect setBlackToWhite(boolean flag) {
 		this.flag = flag;
+		return this;
 	}
 
 	public int getBlockSize() {
 		return block;
 	}
 
-	public void setBlockSize(int block) {
+	public PShadowEffect setBlockSize(int block) {
 		this.block = block;
+		return this;
 	}
 
 	public boolean isAutoRemoved() {

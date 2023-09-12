@@ -313,8 +313,8 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 					colorStr = pars[1];
 				} else if (pars.length == 1) {
 					transStr = pars[0];
-					if (transStr.indexOf(',') != -1) {
-						String[] list = StringUtils.split(transStr, ',');
+					if (transStr.indexOf(LSystem.COMMA) != -1) {
+						String[] list = StringUtils.split(transStr, LSystem.COMMA);
 						transStr = list[0];
 						colorStr = list[1];
 					} else {
@@ -388,7 +388,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 				if (start != -1 && end != -1 && end > start) {
 					scriptInfo = scriptInfo.substring(start + 1, end);
 				}
-				String[] list = StringUtils.split(scriptInfo, ',');
+				String[] list = StringUtils.split(scriptInfo, LSystem.COMMA);
 				if (list.length == 1) {
 					_scriptSource = list[0];
 				} else if (list.length == 2) {
@@ -608,7 +608,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		int endFlag = order.lastIndexOf('}');
 		if (startFlag != -1 && endFlag != -1 && endFlag > startFlag) {
 			String gotoMes = order.substring(startFlag + 1, endFlag).trim();
-			final String[] result = StringUtils.split(gotoMes, ',');
+			final String[] result = StringUtils.split(gotoMes, LSystem.COMMA);
 			if (result.length > 1) {
 				// 只有单图时,全部按钮为一张图片(索引0存放跳转点，非按钮图)
 				if (result.length == 2) {
@@ -1015,8 +1015,8 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 						} else {
 							String text = null;
 							LClickButton click = null;
-							if (mesFlag.indexOf(',') != -1) {
-								String[] optSize = StringUtils.split(mesFlag, ',');
+							if (mesFlag.indexOf(LSystem.COMMA) != -1) {
+								String[] optSize = StringUtils.split(mesFlag, LSystem.COMMA);
 								if (optSize.length == 4) {
 									click = new LClickButton(text, (int) Float.parseFloat(optSize[0].trim()),
 											(int) Float.parseFloat(optSize[1].trim()),
@@ -1030,7 +1030,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 							} else {
 								text = StringUtils.replace(mesFlag, "\"", LSystem.EMPTY);
 								if (orderFlag != null) {
-									String[] optSize = StringUtils.split(orderFlag, ',');
+									String[] optSize = StringUtils.split(orderFlag, LSystem.COMMA);
 									if (optSize.length == 4) {
 										click = new LClickButton(text, (int) Float.parseFloat(optSize[0].trim()),
 												(int) Float.parseFloat(optSize[1].trim()),
@@ -1074,12 +1074,12 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 								selectUI.setLocation(x, y);
 							}
 						} else {
-							if (mesFlag.indexOf(',') == -1 && MathUtils.isNan(mesFlag)) {
+							if (mesFlag.indexOf(LSystem.COMMA) == -1 && MathUtils.isNan(mesFlag)) {
 								float v = Float.parseFloat(mesFlag);
 								messageUI.setX(v);
 								selectUI.setX(v);
 							} else {
-								String[] res = StringUtils.split(mesFlag, ',');
+								String[] res = StringUtils.split(mesFlag, LSystem.COMMA);
 								String v1 = res[0].trim();
 								String v2 = res[1].trim();
 								if (res.length == 1 && MathUtils.isNan(v1)) {
@@ -1289,7 +1289,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 							scrFlag = true;
 							isSelectMessage = true;
 							_limitClickd = true;
-							String[] list = StringUtils.split(selectList, ',');
+							String[] list = StringUtils.split(selectList, LSystem.COMMA);
 							final int selectLength = list.length;
 							final int len = selectLength / 2;
 							final TArray<String> selects = new TArray<String>(len);

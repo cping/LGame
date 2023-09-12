@@ -205,8 +205,9 @@ public class TriangleEffect extends Entity implements BaseEffect {
 		}
 	}
 
-	public void setDelay(long delay) {
+	public TriangleEffect setDelay(long delay) {
 		timer.setDelay(delay);
+		return this;
 	}
 
 	public long getDelay() {
@@ -232,6 +233,12 @@ public class TriangleEffect extends Entity implements BaseEffect {
 		return completed;
 	}
 
+	@Override
+	public TriangleEffect setStop(boolean c) {
+		this.completed = c;
+		return this;
+	}
+	
 	@Override
 	public void close() {
 		super.close();

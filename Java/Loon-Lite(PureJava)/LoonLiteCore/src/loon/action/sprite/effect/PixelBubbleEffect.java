@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2019 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -119,16 +119,17 @@ public class PixelBubbleEffect extends Entity implements BaseEffect {
 		_dirty = true;
 	}
 
-	public void pack() {
+	public PixelBubbleEffect pack() {
 		if (_dirty || _bubbleBlocks == null) {
 			createFireBlocks();
 			_dirty = false;
 		}
+		return this;
 	}
 
 	protected void createFireBlocks() {
 		if (_bubbleBlocks == null) {
-			_bubbleBlocks = new TArray<>(_bubbleSize);
+			_bubbleBlocks = new TArray<Block>(_bubbleSize);
 		}
 		for (int i = 0; i < _bubbleSize; i++) {
 			float randomX = MathUtils.round(MathUtils.random() * getWidth());
@@ -185,7 +186,13 @@ public class PixelBubbleEffect extends Entity implements BaseEffect {
 	}
 
 	@Override
-	public void close(){
+	public PixelBubbleEffect setStop(boolean c) {
+		this._completed = c;
+		return this;
+	}
+
+	@Override
+	public void close() {
 		super.close();
 		_completed = true;
 		_bubbleBlocks.clear();

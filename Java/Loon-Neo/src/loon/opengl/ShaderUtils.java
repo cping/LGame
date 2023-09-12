@@ -17,7 +17,7 @@ public class ShaderUtils {
 
 	private static String process(String codeText, TArray<String> included) {
 		StrBuilder builder = new StrBuilder();
-		String[] lines = StringUtils.split(codeText, '\n');
+		String[] lines = StringUtils.split(codeText, LSystem.LF);
 		if (lines != null) {
 			for (int line = 0; line < lines.length; line++) {
 				if (lines[line].trim().startsWith("//@include once")) {

@@ -1121,7 +1121,7 @@ public class LColor implements Serializable {
 			int end = c.lastIndexOf(')');
 			if (start != -1 && end != -1 && end > start) {
 				String result = c.substring(start + 1, end).trim();
-				String[] list = StringUtils.split(result, ',');
+				String[] list = StringUtils.split(result, LSystem.COMMA);
 				if (list.length == 3) {
 					setColor(convertInt(list[0].trim()), convertInt(list[1].trim()), convertInt(list[2].trim()));
 				} else if (list.length == 4) {
@@ -1134,7 +1134,7 @@ public class LColor implements Serializable {
 			int end = c.lastIndexOf(')');
 			if (start != -1 && end != -1 && end > start) {
 				String result = c.substring(start + 1, end).trim();
-				String[] list = StringUtils.split(result, ',');
+				String[] list = StringUtils.split(result, LSystem.COMMA);
 				if (list.length == 3) {
 					setColor(convertInt(list[1].trim()), convertInt(list[2].trim()), convertInt(list[0].trim()));
 				} else if (list.length == 4) {

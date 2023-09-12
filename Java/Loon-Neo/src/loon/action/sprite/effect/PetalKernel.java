@@ -32,15 +32,19 @@ public class PetalKernel implements IKernel {
 
 	private LTexture sakura;
 
-	private float offsetX, offsetY, speed, x, y, width, height, sakuraWidth, sakuraHeight;
+	private float offsetX, offsetY, speed;
+
+	private float x, y, width, height;
+
+	private float sakuraWidth, sakuraHeight;
 
 	private int id;
 
 	public PetalKernel(LTexturePack pack, int n, int w, int h) {
-		this(pack.getTexture(LSystem.getSystemImagePath() + "sakura_" + n), n, w, h);
+		this(pack.getTexture(LSystem.getSystemImagePath() + "sakura_" + n), n, w, h, -1f);
 	}
 
-	public PetalKernel(LTexture texture, int n, int w, int h) {
+	public PetalKernel(LTexture texture, int n, int w, int h, float r) {
 		this.id = n;
 		this.sakura = texture;
 		this.sakuraWidth = sakura.width();
@@ -48,7 +52,11 @@ public class PetalKernel implements IKernel {
 		this.width = w;
 		this.height = h;
 		this.offsetX = 0;
-		this.offsetY = n * 0.6f + 1.9f + MathUtils.random() * 0.2f;
+		if (r == -1f) {
+			this.offsetY = n * 0.6f + 1.9f + MathUtils.random() * 0.2f;
+		} else {
+			this.offsetY = r;
+		}
 		speed = MathUtils.random();
 	}
 

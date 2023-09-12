@@ -95,6 +95,12 @@ public class OutEffect extends Entity implements BaseEffect {
 	}
 
 	@Override
+	public OutEffect setStop(boolean finished) {
+		this.completed = finished;
+		return this;
+	}
+	
+	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
 		if (!completed) {
 			g.draw(_image, drawX(offsetX), drawY(offsetY));

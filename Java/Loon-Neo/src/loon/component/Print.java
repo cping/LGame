@@ -350,7 +350,7 @@ public class Print implements FontSet<Print>, LRelease {
 					_leftsize = _textoffsetSize;
 					_offsettext++;
 					continue;
-				} else if (_textChar == '\n') {
+				} else if (_textChar == LSystem.LF) {
 					_index = 0;
 					_leftsize = _textoffsetSize;
 					_offsettext++;
@@ -481,7 +481,7 @@ public class Print implements FontSet<Print>, LRelease {
 					_leftsize = _textoffsetSize;
 					_offsettext++;
 					continue;
-				} else if (_textChar == '\n') {
+				} else if (_textChar == LSystem.LF) {
 					_index = 0;
 					_leftsize = _textoffsetSize;
 					_offsettext++;

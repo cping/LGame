@@ -23,6 +23,7 @@ package loon.utils;
 import java.util.Locale;
 
 import loon.LSysException;
+import loon.LSystem;
 
 public class Language {
 
@@ -34,7 +35,7 @@ public class Language {
 		}
 		String[] parameters = StringUtils.split(value, '_');
 		if (parameters.length == 0) {
-			parameters = StringUtils.split(value, ',');
+			parameters = StringUtils.split(value, LSystem.COMMA);
 		}
 		if (parameters.length == 0) {
 			parameters = StringUtils.split(value, '-');

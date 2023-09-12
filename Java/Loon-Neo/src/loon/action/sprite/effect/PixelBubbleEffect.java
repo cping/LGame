@@ -119,11 +119,12 @@ public class PixelBubbleEffect extends Entity implements BaseEffect {
 		_dirty = true;
 	}
 
-	public void pack() {
+	public PixelBubbleEffect pack() {
 		if (_dirty || _bubbleBlocks == null) {
 			createFireBlocks();
 			_dirty = false;
 		}
+		return this;
 	}
 
 	protected void createFireBlocks() {
@@ -182,6 +183,12 @@ public class PixelBubbleEffect extends Entity implements BaseEffect {
 	@Override
 	public boolean isCompleted() {
 		return _completed;
+	}
+
+	@Override
+	public PixelBubbleEffect setStop(boolean c) {
+		this._completed = c;
+		return this;
 	}
 
 	@Override

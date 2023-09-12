@@ -24,6 +24,7 @@ import java.util.Arrays;
 
 import loon.LRelease;
 import loon.LSysException;
+import loon.LSystem;
 
 public class UIntArray implements IArray, LRelease {
 
@@ -737,7 +738,7 @@ public class UIntArray implements IArray, LRelease {
 
 	@Override
 	public String toString() {
-		return toString(',');
+		return toString(LSystem.COMMA);
 	}
 
 	@Override

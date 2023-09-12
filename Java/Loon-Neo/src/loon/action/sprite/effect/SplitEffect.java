@@ -85,8 +85,9 @@ public class SplitEffect extends Entity implements BaseEffect {
 		}
 	}
 
-	public void setDelay(long delay) {
+	public SplitEffect setDelay(long delay) {
 		timer.setDelay(delay);
+		return this;
 	}
 
 	public long getDelay() {
@@ -166,12 +167,19 @@ public class SplitEffect extends Entity implements BaseEffect {
 		return completed;
 	}
 
+	@Override
+	public SplitEffect setStop(boolean c) {
+		this.completed = c;
+		return this;
+	}
+	
 	public int getMultiples() {
 		return multiples;
 	}
 
-	public void setMultiples(int multiples) {
+	public SplitEffect setMultiples(int multiples) {
 		this.multiples = multiples;
+		return this;
 	}
 
 	public boolean isAutoRemoved() {

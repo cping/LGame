@@ -66,8 +66,9 @@ public class ArcEffect extends Entity implements BaseEffect {
 		arcDiv = div;
 	}
 
-	public void setDelay(long delay) {
+	public ArcEffect setDelay(long delay) {
 		timer.setDelay(delay);
+		return this;
 	}
 
 	public long getDelay() {
@@ -77,6 +78,12 @@ public class ArcEffect extends Entity implements BaseEffect {
 	@Override
 	public boolean isCompleted() {
 		return completed;
+	}
+
+	@Override
+	public ArcEffect setStop(boolean c) {
+		this.completed = c;
+		return this;
 	}
 
 	@Override
@@ -143,8 +150,9 @@ public class ArcEffect extends Entity implements BaseEffect {
 		return curTurn;
 	}
 
-	public void setTurn(int turn) {
+	public ArcEffect setTurn(int turn) {
 		this.curTurn = turn;
+		return this;
 	}
 
 	public boolean isAutoRemoved() {

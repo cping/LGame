@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -40,7 +40,7 @@ public class LightningBolt implements ILightning {
 
 	private LTimer timer = new LTimer(0);
 
-	private TArray<LightningLine> segments = new TArray<>();
+	private TArray<LightningLine> segments = new TArray<LightningLine>();
 
 	private boolean closed;
 
@@ -66,8 +66,9 @@ public class LightningBolt implements ILightning {
 		}
 	}
 
-	public void setDelay(long delay) {
+	public LightningBolt setDelay(long delay) {
 		timer.setDelay(delay);
+		return this;
 	}
 
 	public long getDelay() {
@@ -95,7 +96,7 @@ public class LightningBolt implements ILightning {
 	}
 
 	protected static TArray<LightningLine> CreateBolt(Vector2f source, Vector2f dest, float thickness) {
-		TArray<LightningLine> results = new TArray<>();
+		TArray<LightningLine> results = new TArray<LightningLine>();
 		Vector2f tangent = dest.sub(source);
 		Vector2f normal = Vector2f.nor(new Vector2f(tangent.y, -tangent.x));
 		float length = tangent.length();

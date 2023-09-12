@@ -120,8 +120,9 @@ public class RippleEffect extends Entity implements LTouchArea, BaseEffect {
 		setRepaint(true);
 	}
 
-	public void setDelay(long delay) {
+	public RippleEffect setDelay(long delay) {
 		this.timer.setDelay(delay);
+		return this;
 	}
 
 	public long getDelay() {
@@ -189,12 +190,19 @@ public class RippleEffect extends Entity implements LTouchArea, BaseEffect {
 		return completed;
 	}
 
+	@Override
+	public RippleEffect setStop(boolean c) {
+		this.completed = c;
+		return this;
+	}
+	
 	public int getExistTime() {
 		return existTime;
 	}
 
-	public void setExistTime(int existTime) {
+	public RippleEffect setExistTime(int existTime) {
 		this.existTime = existTime;
+		return this;
 	}
 
 	@Override

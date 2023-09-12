@@ -70,6 +70,7 @@ public class SwipeEffect extends Entity implements BaseEffect {
 		return finished;
 	}
 
+	@Override
 	public SwipeEffect setStop(boolean finished) {
 		this.finished = finished;
 		return this;

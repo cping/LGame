@@ -92,6 +92,7 @@ public class FadeEffect extends Entity implements BaseEffect {
 		return finished;
 	}
 
+	@Override
 	public FadeEffect setStop(boolean finished) {
 		this.finished = finished;
 		return this;

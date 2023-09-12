@@ -22,6 +22,7 @@ package loon.utils;
 
 import loon.BaseIO;
 import loon.LSysException;
+import loon.LSystem;
 import loon.geom.PointF;
 
 public class GestureData {
@@ -201,11 +202,11 @@ public class GestureData {
 					curPoints = new TArray<PointF>();
 				} else {
 					if (curPoints != null) {
-						if (result.indexOf(' ') != -1) {
-							String[] ps = StringUtils.split(result, ' ');
+						if (result.indexOf(LSystem.SPACE) != -1) {
+							String[] ps = StringUtils.split(result, LSystem.SPACE);
 							curPoints.add(new PointF(Float.parseFloat(ps[0]), Float.parseFloat(ps[1])));
-						} else if (result.indexOf(',') != -1) {
-							String[] ps = StringUtils.split(result, ',');
+						} else if (result.indexOf(LSystem.COMMA) != -1) {
+							String[] ps = StringUtils.split(result, LSystem.COMMA);
 							curPoints.add(new PointF(Float.parseFloat(ps[0]), Float.parseFloat(ps[1])));
 						} else {
 							curPoints.add(new PointF(Float.parseFloat(result), Float.parseFloat(reader.readLine())));

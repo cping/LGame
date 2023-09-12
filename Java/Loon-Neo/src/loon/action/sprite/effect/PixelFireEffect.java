@@ -227,6 +227,12 @@ public class PixelFireEffect extends Entity implements BaseEffect {
 	}
 
 	@Override
+	public PixelFireEffect setStop(boolean c) {
+		this._completed = c;
+		return this;
+	}
+	
+	@Override
 	public void close() {
 		super.close();
 		_completed = true;

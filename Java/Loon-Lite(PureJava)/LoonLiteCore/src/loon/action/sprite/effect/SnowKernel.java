@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -37,7 +37,11 @@ public class SnowKernel implements IKernel {
 
 	private int id;
 
-	private float offsetX, offsetY, speed, x, y, width, height, snowWidth, snowHeight;
+	private float offsetX, offsetY, speed;
+	
+	private float x, y, width, height;
+	
+	private float snowWidth, snowHeight;
 
 	public SnowKernel(LTexturePack pack, int n, int w, int h) {
 		this(pack.getTexture(LSystem.getSystemImagePath() + "snow_" + n), n, w, h);
@@ -59,10 +63,11 @@ public class SnowKernel implements IKernel {
 		return id;
 	}
 
-	public void make() {
+	public SnowKernel make() {
 		exist = true;
 		x = MathUtils.random() * width;
 		y = -snowHeight;
+		return this;
 	}
 
 	@Override

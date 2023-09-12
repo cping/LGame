@@ -29,8 +29,9 @@ public class CharParser {
 
 	protected String context;
 
-	public void setText(String c) {
+	public CharParser setText(String c) {
 		this.context = c;
+		return this;
 	}
 
 	public String getText() {

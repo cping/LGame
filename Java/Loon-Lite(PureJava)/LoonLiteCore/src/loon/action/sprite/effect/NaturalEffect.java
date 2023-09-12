@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -54,7 +54,7 @@ public class NaturalEffect extends Entity implements BaseEffect {
 
 	/**
 	 * 返回默认数量的雷电
-	 *
+	 * 
 	 * @return
 	 */
 	public static NaturalEffect getThunderEffect() {
@@ -63,7 +63,7 @@ public class NaturalEffect extends Entity implements BaseEffect {
 
 	/**
 	 * 返回指定数量的雷电
-	 *
+	 * 
 	 * @param count
 	 * @return
 	 */
@@ -73,7 +73,7 @@ public class NaturalEffect extends Entity implements BaseEffect {
 
 	/**
 	 * 返回指定数量的雷电
-	 *
+	 * 
 	 * @param count
 	 * @param x
 	 * @param y
@@ -85,7 +85,7 @@ public class NaturalEffect extends Entity implements BaseEffect {
 
 	/**
 	 * 返回指定数量的雷电
-	 *
+	 * 
 	 * @param count
 	 * @param x
 	 * @param y
@@ -99,7 +99,7 @@ public class NaturalEffect extends Entity implements BaseEffect {
 
 	/**
 	 * 返回默认数量的飘雪
-	 *
+	 * 
 	 * @return
 	 */
 	public static NaturalEffect getSnowEffect() {
@@ -108,7 +108,7 @@ public class NaturalEffect extends Entity implements BaseEffect {
 
 	/**
 	 * 返回指定数量的飘雪
-	 *
+	 * 
 	 * @param count
 	 * @return
 	 */
@@ -118,7 +118,7 @@ public class NaturalEffect extends Entity implements BaseEffect {
 
 	/**
 	 * 返回指定数量的飘雪
-	 *
+	 * 
 	 * @param count
 	 * @param x
 	 * @param y
@@ -130,7 +130,7 @@ public class NaturalEffect extends Entity implements BaseEffect {
 
 	/**
 	 * 返回指定数量的飘雪
-	 *
+	 * 
 	 * @param count
 	 * @param x
 	 * @param y
@@ -144,7 +144,7 @@ public class NaturalEffect extends Entity implements BaseEffect {
 
 	/**
 	 * 返回默认数量的落雨
-	 *
+	 * 
 	 * @return
 	 */
 	public static NaturalEffect getRainEffect() {
@@ -153,7 +153,7 @@ public class NaturalEffect extends Entity implements BaseEffect {
 
 	/**
 	 * 返回指定数量的落雨
-	 *
+	 * 
 	 * @param count
 	 * @return
 	 */
@@ -163,7 +163,7 @@ public class NaturalEffect extends Entity implements BaseEffect {
 
 	/**
 	 * 返回指定数量的落雨
-	 *
+	 * 
 	 * @param count
 	 * @param x
 	 * @param y
@@ -175,7 +175,7 @@ public class NaturalEffect extends Entity implements BaseEffect {
 
 	/**
 	 * 返回指定数量的落雨
-	 *
+	 * 
 	 * @param count
 	 * @param x
 	 * @param y
@@ -189,7 +189,7 @@ public class NaturalEffect extends Entity implements BaseEffect {
 
 	/**
 	 * 返回指定数量的樱花
-	 *
+	 * 
 	 * @return
 	 */
 	public static NaturalEffect getPetalEffect() {
@@ -198,7 +198,7 @@ public class NaturalEffect extends Entity implements BaseEffect {
 
 	/**
 	 * 返回指定数量的樱花
-	 *
+	 * 
 	 * @param count
 	 * @return
 	 */
@@ -208,7 +208,7 @@ public class NaturalEffect extends Entity implements BaseEffect {
 
 	/**
 	 * 返回指定数量的樱花
-	 *
+	 * 
 	 * @param count
 	 * @param x
 	 * @param y
@@ -220,7 +220,7 @@ public class NaturalEffect extends Entity implements BaseEffect {
 
 	/**
 	 * 返回指定数量的樱花
-	 *
+	 * 
 	 * @param count
 	 * @param x
 	 * @param y
@@ -315,16 +315,18 @@ public class NaturalEffect extends Entity implements BaseEffect {
 		return timer.getDelay();
 	}
 
-	public void setDelay(long delay) {
+	public NaturalEffect setDelay(long delay) {
 		timer.setDelay(delay);
+		return this;
 	}
 
 	public IKernel[] getKernels() {
 		return kernels;
 	}
 
-	public void setKernels(IKernel[] kernels) {
+	public NaturalEffect setKernels(IKernel[] kernels) {
 		this.kernels = kernels;
+		return this;
 	}
 
 	@Override
@@ -332,6 +334,7 @@ public class NaturalEffect extends Entity implements BaseEffect {
 		return completed;
 	}
 
+	@Override
 	public NaturalEffect setStop(boolean stop) {
 		this.completed = stop;
 		return this;

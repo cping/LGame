@@ -597,7 +597,7 @@ public class Command extends Conversion implements LRelease {
 			String execute = doExecute();
 			if (execute != null) {
 				resString.append(execute);
-				resString.append('\n');
+				resString.append(LSystem.LF);
 			}
 		}
 		return resString.toString();

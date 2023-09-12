@@ -1176,7 +1176,7 @@ public class Field2D implements IArray, Config {
 
 	@Override
 	public String toString() {
-		return toString(',');
+		return toString(LSystem.COMMA);
 	}
 
 	public String toString(char split) {

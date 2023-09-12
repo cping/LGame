@@ -21,6 +21,7 @@
 package loon.action.sprite.effect.explosion;
 
 import loon.BaseIO;
+import loon.LSystem;
 import loon.LTexture;
 import loon.action.sprite.Entity;
 import loon.action.sprite.effect.BaseEffect;
@@ -454,20 +455,32 @@ public class ExplosionEffect extends Entity implements BaseEffect {
 		return timer.getProgress() >= 0.99f;
 	}
 
+	@Override
+	public ExplosionEffect setStop(boolean c) {
+		if (c) {
+			timer.add(LSystem.MINUTE);
+		} else {
+			timer.reset();
+		}
+		return this;
+	}
+
 	public Mode getMode() {
 		return mode;
 	}
 
-	public void setMode(Mode m) {
+	public ExplosionEffect setMode(Mode m) {
 		this.mode = m;
+		return this;
 	}
 
 	public EasingMode getEasingMode() {
 		return easingMode;
 	}
 
-	public void setEasingMode(EasingMode easingMode) {
+	public ExplosionEffect setEasingMode(EasingMode easingMode) {
 		this.easingMode = easingMode;
+		return this;
 	}
 
 	public boolean isAutoRemoved() {

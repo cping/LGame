@@ -173,6 +173,7 @@ public class ScrollEffect extends Entity implements BaseEffect {
 		return this;
 	}
 
+	@Override
 	public ScrollEffect setStop(boolean completed) {
 		this.completed = completed;
 		return this;

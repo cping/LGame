@@ -37,4 +37,5 @@ public interface BaseEffect {
 
 	public void setVisible(boolean v);
 
+	public BaseEffect setStop(boolean s);
 }

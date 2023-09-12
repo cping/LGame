@@ -289,6 +289,12 @@ public class TextEffect extends Entity implements BaseEffect {
 	}
 
 	@Override
+	public TextEffect setStop(boolean c) {
+		this.completed = c;
+		return this;
+	}
+	
+	@Override
 	public void close() {
 		super.close();
 		clear();

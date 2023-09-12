@@ -36,7 +36,7 @@ public class Point extends Shape  {
 		if (StringUtils.isEmpty(v)) {
 			return new Point();
 		}
-		String[] result = StringUtils.split(v, ',');
+		String[] result = StringUtils.split(v, LSystem.COMMA);
 		int len = result.length;
 		if (len > 1) {
 			try {

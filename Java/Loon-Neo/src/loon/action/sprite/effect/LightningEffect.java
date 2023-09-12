@@ -185,8 +185,9 @@ public class LightningEffect extends Entity {
 		return pixel;
 	}
 
-	public void loadLightning() {
+	public LightningEffect loadLightning() {
 		loadLightning(new LTexturePack(LSystem.getSystemImagePath() + "natural.txt"));
+		return this;
 	}
 
 	public boolean isAutoRemoved() {

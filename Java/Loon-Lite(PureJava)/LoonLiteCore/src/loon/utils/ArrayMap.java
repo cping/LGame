@@ -23,6 +23,7 @@ package loon.utils;
 
 import loon.LRelease;
 import loon.LSysException;
+import loon.LSystem;
 
 public class ArrayMap implements IArray, LRelease {
 
@@ -520,7 +521,7 @@ public class ArrayMap implements IArray, LRelease {
 
 	@Override
 	public String toString() {
-		return toString(',');
+		return toString(LSystem.COMMA);
 	}
 
 	public String toString(char split) {

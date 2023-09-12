@@ -103,8 +103,9 @@ public class FadeSpiralEffect extends Entity implements BaseEffect {
 		return timer.getDelay();
 	}
 
-	public void setDelay(int delay) {
+	public FadeSpiralEffect setDelay(int delay) {
 		timer.setDelay(delay);
+		return this;
 	}
 
 	public boolean finished() {
@@ -132,6 +133,12 @@ public class FadeSpiralEffect extends Entity implements BaseEffect {
 		return finished;
 	}
 
+	@Override
+	public FadeSpiralEffect setStop(boolean finished) {
+		this.finished = finished;
+		return this;
+	}
+	
 	@Override
 	public void onUpdate(long elapsedTime) {
 		if (finished) {

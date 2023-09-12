@@ -350,7 +350,7 @@ final public class StringUtils extends CharUtils {
 	 * @param o
 	 * @return
 	 */
-	public static String join(Character flag, float... o) {
+	public static String join(char flag, float... o) {
 		if (CollectionUtils.isEmpty(o)) {
 			return LSystem.EMPTY;
 		}
@@ -372,7 +372,7 @@ final public class StringUtils extends CharUtils {
 	 * @param o
 	 * @return
 	 */
-	public static String join(Character flag, int... o) {
+	public static String join(char flag, int... o) {
 		if (CollectionUtils.isEmpty(o)) {
 			return LSystem.EMPTY;
 		}
@@ -394,7 +394,7 @@ final public class StringUtils extends CharUtils {
 	 * @param o
 	 * @return
 	 */
-	public static String join(Character flag, long... o) {
+	public static String join(char flag, long... o) {
 		if (CollectionUtils.isEmpty(o)) {
 			return LSystem.EMPTY;
 		}
@@ -416,7 +416,7 @@ final public class StringUtils extends CharUtils {
 	 * @param o
 	 * @return
 	 */
-	public static String join(Character flag, boolean... o) {
+	public static String join(char flag, boolean... o) {
 		if (CollectionUtils.isEmpty(o)) {
 			return LSystem.EMPTY;
 		}
@@ -438,7 +438,7 @@ final public class StringUtils extends CharUtils {
 	 * @param o
 	 * @return
 	 */
-	public static String join(Character flag, CharSequence... o) {
+	public static String join(char flag, CharSequence... o) {
 		if (CollectionUtils.isEmpty(o)) {
 			return LSystem.EMPTY;
 		}
@@ -589,7 +589,7 @@ final public class StringUtils extends CharUtils {
 	 * @param flag
 	 * @return
 	 */
-	public static String[] split(String str, Character flag) {
+	public static String[] split(String str, char flag) {
 		if (isEmpty(str)) {
 			return new String[] { str };
 		}
@@ -757,7 +757,7 @@ final public class StringUtils extends CharUtils {
 				i++;
 			}
 
-			if (str.charAt(i) != ',') {
+			if (str.charAt(i) != LSystem.COMMA) {
 				sbr.append(str.charAt(i));
 			} else {
 				tempString = sbr.toString();
@@ -2062,6 +2062,26 @@ final public class StringUtils extends CharUtils {
 				dest[destoff++] = c.charAt(i);
 			}
 		}
+	}
+
+	/**
+	 * 获得换行符数量
+	 * 
+	 * @param chars
+	 * @return
+	 */
+	public static int getLineCount(final CharSequence chars) {
+		if (isNullOrEmpty(chars)) {
+			return 0;
+		}
+		int lines = 1;
+		for (int i = 0; i < chars.length(); i++) {
+			char ch = chars.charAt(i);
+			if (isEol(ch)) {
+				lines++;
+			}
+		}
+		return lines;
 	}
 
 	/**

@@ -179,13 +179,20 @@ public class FadeDotEffect extends Entity implements BaseEffect {
 		return timer.getDelay();
 	}
 
-	public void setDelay(long delay) {
+	public FadeDotEffect setDelay(long delay) {
 		timer.setDelay(delay);
+		return this;
 	}
 
 	@Override
 	public boolean isCompleted() {
 		return finished;
+	}
+
+	@Override
+	public FadeDotEffect setStop(boolean c) {
+		this.finished = c;
+		return this;
 	}
 
 	@Override

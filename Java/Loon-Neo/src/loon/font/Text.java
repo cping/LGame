@@ -151,7 +151,7 @@ public class Text implements LRelease {
 		}
 		this._width = this._lineAlignmentWidth;
 		if (_width <= 0) {
-			_width = _lineWidths.get(0) * StringUtils.countOccurrences(this._chars, '\n');
+			_width = _lineWidths.get(0) * StringUtils.countOccurrences(this._chars, LSystem.LF);
 		}
 		this._height = lineCount * font.getHeight() + (lineCount - 1) * this._textOptions._leading;
 		if (_height <= 0) {
@@ -236,7 +236,7 @@ public class Text implements LRelease {
 			if (_textOptions._autoWrap == AutoWrap.VERTICAL) {
 				char ch = mes.charAt(0);
 				float viewY = 0;
-				if (ch != '\n') {
+				if (ch != LSystem.LF) {
 					viewY = offsetY + idx * (_font.stringHeight(mes) + _textOptions.getLeading());
 					idx++;
 				} else {

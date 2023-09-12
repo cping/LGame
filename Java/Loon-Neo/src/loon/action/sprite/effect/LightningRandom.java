@@ -130,7 +130,7 @@ public class LightningRandom implements ILightning {
 					Vector2f nearestParticle = Vector2f.ZERO();
 					float nearestDist = Float.MAX_VALUE;
 					for (int i = 0; i < 50; i++) {
-						Vector2f other = particles.get(MathUtils.nextInt(particles.size));
+						Vector2f other = particles.get(MathUtils.nextInt(particles.size - 1));
 						float dist = Vector2f.dst(particle, other);
 						if (dist < nearestDist && dist > 10 * 10) {
 							nearestDist = dist;

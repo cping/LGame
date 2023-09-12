@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -66,20 +66,18 @@ public class FadeTileEffect extends Entity implements BaseEffect {
 		this(type, 1, 1, LColor.black, LColor.white);
 	}
 
-	public FadeTileEffect(int type, int count, int speed, LColor back,
-			LColor fore) {
+	public FadeTileEffect(int type, int count, int speed, LColor back, LColor fore) {
 		this(type, count, speed, back, fore, 64, 32);
 	}
 
-	public FadeTileEffect(int type, int count, int speed, LColor back,
-			LColor fore, int w, int h) {
+	public FadeTileEffect(int type, int count, int speed, LColor back, LColor fore, int w, int h) {
 		this.type = type;
 		this.count = count;
 		this.speed = speed;
 		this.setSize(w, h);
 		this.timer = new LTimer(60);
-		this.tileWidth = ((LSystem.viewSize.getWidth() / w)) + 1;
-		this.tileHeight = ((LSystem.viewSize.getHeight() / h)) + 1;
+		this.tileWidth = (int) (((LSystem.viewSize.getWidth() / w)) + 1);
+		this.tileHeight = (int) (((LSystem.viewSize.getHeight() / h)) + 1);
 		this.conversions = new boolean[tileWidth][tileHeight];
 		this.temp = new boolean[tileWidth][tileHeight];
 		this.back = back;
@@ -113,15 +111,21 @@ public class FadeTileEffect extends Entity implements BaseEffect {
 		return timer.getDelay();
 	}
 
-	public void setDelay(int delay) {
+	public FadeTileEffect setDelay(int delay) {
 		timer.setDelay(delay);
+		return this;
 	}
 
-	@Override
 	public boolean isCompleted() {
 		return completed;
 	}
 
+	@Override
+	public FadeTileEffect setStop(boolean finished) {
+		this.completed = finished;
+		return this;
+	}
+	
 	@Override
 	public void onUpdate(long elapsedTime) {
 		if (completed) {
@@ -146,8 +150,7 @@ public class FadeTileEffect extends Entity implements BaseEffect {
 										temp[x - 1][y] = true;
 									}
 								}
-								if (x < tileWidth - 1
-										&& !(MathUtils.random(1, 2) == 1)) {
+								if (x < tileWidth - 1 && !(MathUtils.random(1, 2) == 1)) {
 									if (!conversions[x + 1][y]) {
 										conversions[x + 1][y] = true;
 										temp[x + 1][y] = true;
@@ -159,8 +162,7 @@ public class FadeTileEffect extends Entity implements BaseEffect {
 										temp[x][y - 1] = true;
 									}
 								}
-								if (y < tileHeight - 1
-										&& !(MathUtils.random(1, 2) == 1)) {
+								if (y < tileHeight - 1 && !(MathUtils.random(1, 2) == 1)) {
 									if (!conversions[x][y + 1]) {
 										conversions[x][y + 1] = true;
 										temp[x][y + 1] = true;
@@ -200,8 +202,7 @@ public class FadeTileEffect extends Entity implements BaseEffect {
 										temp[x - 1][y] = false;
 									}
 								}
-								if (x < tileWidth - 1
-										&& !(MathUtils.random(1, 2) == 1)) {
+								if (x < tileWidth - 1 && !(MathUtils.random(1, 2) == 1)) {
 									if (conversions[x + 1][y]) {
 										conversions[x + 1][y] = false;
 										temp[x + 1][y] = false;
@@ -213,8 +214,7 @@ public class FadeTileEffect extends Entity implements BaseEffect {
 										temp[x][y - 1] = false;
 									}
 								}
-								if (y < tileHeight - 1
-										&& !(MathUtils.random(1, 2) == 1)) {
+								if (y < tileHeight - 1 && !(MathUtils.random(1, 2) == 1)) {
 									if (conversions[x][y + 1]) {
 										conversions[x][y + 1] = false;
 										temp[x][y + 1] = false;
@@ -261,17 +261,17 @@ public class FadeTileEffect extends Entity implements BaseEffect {
 				if (usefore) {
 					if (conversions[x][y]) {
 						g.setColor(back);
-						g.fillRect((x * _width) + offsetX + _offset.x, (y * _height)
-								+ offsetY + _offset.y, _width, _height);
+						g.fillRect((x * _width) + offsetX + _offset.x, (y * _height) + offsetY + _offset.y, _width,
+								_height);
 					} else if (!conversions[x][y] && filledObject(x, y)) {
 						g.setColor(fore);
-						g.fillRect((x * _width) + offsetX + _offset.x, (y * _height)
-								+ offsetY + _offset.y, _width, _height);
+						g.fillRect((x * _width) + offsetX + _offset.x, (y * _height) + offsetY + _offset.y, _width,
+								_height);
 					}
 				} else {
 					if (conversions[x][y]) {
-						g.fillRect((x * _width) + offsetX + _offset.x, (y * _height)
-								+ offsetY + _offset.y, _width, _height);
+						g.fillRect((x * _width) + offsetX + _offset.x, (y * _height) + offsetY + _offset.y, _width,
+								_height);
 					}
 				}
 			}
@@ -292,8 +292,7 @@ public class FadeTileEffect extends Entity implements BaseEffect {
 				}
 			}
 			for (int i = 0; i < count; i++) {
-				conversions[MathUtils.random(1, tileWidth) - 1][MathUtils
-						.random(1, tileHeight) - 1] = true;
+				conversions[MathUtils.random(1, tileWidth) - 1][MathUtils.random(1, tileHeight) - 1] = true;
 			}
 		} else {
 			for (int x = 0; x < tileWidth; x++) {
@@ -303,8 +302,7 @@ public class FadeTileEffect extends Entity implements BaseEffect {
 				}
 			}
 			for (int i = 0; i < count; i++) {
-				conversions[MathUtils.random(1, tileWidth) - 1][MathUtils
-						.random(1, tileHeight) - 1] = false;
+				conversions[MathUtils.random(1, tileWidth) - 1][MathUtils.random(1, tileHeight) - 1] = false;
 			}
 		}
 		return this;
@@ -334,6 +332,5 @@ public class FadeTileEffect extends Entity implements BaseEffect {
 		conversions = null;
 		temp = null;
 	}
-
 
 }

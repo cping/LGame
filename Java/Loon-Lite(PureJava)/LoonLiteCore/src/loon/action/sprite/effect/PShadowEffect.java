@@ -102,10 +102,11 @@ public class PShadowEffect extends Entity {
 		return this;
 	}
 
-	public void resetEffect() {
+	public PShadowEffect resetEffect() {
 		this.indexD = 255;
 		this.indexW = 0;
 		this.block = 8;
+		return this;
 	}
 
 	@Override

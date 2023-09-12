@@ -75,8 +75,9 @@ public class FadeOvalEffect extends Entity implements BaseEffect {
 		this.setRepaint(true);
 	}
 
-	public void setDelay(long delay) {
+	public FadeOvalEffect setDelay(long delay) {
 		timer.setDelay(delay);
+		return this;
 	}
 
 	public long getDelay() {
@@ -88,6 +89,12 @@ public class FadeOvalEffect extends Entity implements BaseEffect {
 		return finished;
 	}
 
+	@Override
+	public FadeOvalEffect setStop(boolean finished) {
+		this.finished = finished;
+		return this;
+	}
+	
 	@Override
 	public void onUpdate(long elapsedTime) {
 		if (finished) {

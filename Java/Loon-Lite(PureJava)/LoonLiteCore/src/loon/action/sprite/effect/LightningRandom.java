@@ -35,8 +35,8 @@ import loon.utils.timer.LTimer;
 public class LightningRandom implements ILightning {
 
 	private LTimer timer = new LTimer(0);
-	private TArray<Vector2f> particles = new TArray<>();
-	private TArray<LightningBranch> bolts = new TArray<>();
+	private TArray<Vector2f> particles = new TArray<Vector2f>();
+	private TArray<LightningBranch> bolts = new TArray<LightningBranch>();
 	private float hue = 4.5f;
 	private float[] noise = null;
 	private LColor color = null;
@@ -130,7 +130,7 @@ public class LightningRandom implements ILightning {
 					Vector2f nearestParticle = Vector2f.ZERO();
 					float nearestDist = Float.MAX_VALUE;
 					for (int i = 0; i < 50; i++) {
-						Vector2f other = particles.get(MathUtils.nextInt(particles.size));
+						Vector2f other = particles.get(MathUtils.nextInt(particles.size - 1));
 						float dist = Vector2f.dst(particle, other);
 						if (dist < nearestDist && dist > 10 * 10) {
 							nearestDist = dist;

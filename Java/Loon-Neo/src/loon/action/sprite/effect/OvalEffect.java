@@ -118,6 +118,12 @@ public class OvalEffect extends Entity implements BaseEffect {
 	}
 
 	@Override
+	public OvalEffect setStop(boolean c) {
+		this._completed = c;
+		return this;
+	}
+	
+	@Override
 	public void onUpdate(long elapsedTime) {
 		if (_completed) {
 			return;

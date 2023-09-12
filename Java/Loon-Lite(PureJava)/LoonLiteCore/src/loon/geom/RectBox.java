@@ -67,7 +67,7 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 		if (StringUtils.isEmpty(v)) {
 			return new RectBox();
 		}
-		String[] result = StringUtils.split(v, ',');
+		String[] result = StringUtils.split(v, LSystem.COMMA);
 		int len = result.length;
 		if (len > 3) {
 			try {

@@ -245,8 +245,9 @@ public class Cycle extends Entity {
 		this.stopped = true;
 	}
 
-	public void setDelay(long delay) {
+	public Cycle setDelay(long delay) {
 		timer.setDelay(delay);
+		return this;
 	}
 
 	public long getDelay() {

@@ -24,6 +24,7 @@ import java.util.Arrays;
 
 import loon.LRelease;
 import loon.LSysException;
+import loon.LSystem;
 import loon.events.QueryEvent;
 
 public class IntArray implements IArray, LRelease {
@@ -644,7 +645,7 @@ public class IntArray implements IArray, LRelease {
 
 	@Override
 	public String toString() {
-		return toString(',');
+		return toString(LSystem.COMMA);
 	}
 
 	@Override

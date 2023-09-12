@@ -389,6 +389,12 @@ public class PixelGossipEffect extends Draw implements BaseEffect {
 	}
 
 	@Override
+	public PixelGossipEffect setStop(boolean c) {
+		this.completed = c;
+		return this;
+	}
+	
+	@Override
 	public void draw(GLEx g, float offsetX, float offsetY) {
 		if (completed) {
 			return;
@@ -417,20 +423,18 @@ public class PixelGossipEffect extends Draw implements BaseEffect {
 		return trigramIndex;
 	}
 
-	public void setTrigramIndex(int trigramIndex) {
+	public PixelGossipEffect setTrigramIndex(int trigramIndex) {
 		this.trigramIndex = trigramIndex;
+		return this;
 	}
 
 	public boolean isFillTrigram() {
 		return fillTrigram;
 	}
 
-	public void setFillTrigram(boolean fillTrigram) {
+	public PixelGossipEffect setFillTrigram(boolean fillTrigram) {
 		this.fillTrigram = fillTrigram;
-	}
-
-	public void setCompleted(boolean completed) {
-		this.completed = completed;
+		return this;
 	}
 
 	public void close() {

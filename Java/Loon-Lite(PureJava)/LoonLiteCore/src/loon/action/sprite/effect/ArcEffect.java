@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -66,8 +66,9 @@ public class ArcEffect extends Entity implements BaseEffect {
 		arcDiv = div;
 	}
 
-	public void setDelay(long delay) {
+	public ArcEffect setDelay(long delay) {
 		timer.setDelay(delay);
+		return this;
 	}
 
 	public long getDelay() {
@@ -77,6 +78,12 @@ public class ArcEffect extends Entity implements BaseEffect {
 	@Override
 	public boolean isCompleted() {
 		return completed;
+	}
+
+	@Override
+	public ArcEffect setStop(boolean c) {
+		this.completed = c;
+		return this;
 	}
 
 	@Override
@@ -135,8 +142,9 @@ public class ArcEffect extends Entity implements BaseEffect {
 		return curTurn;
 	}
 
-	public void setTurn(int turn) {
+	public ArcEffect setTurn(int turn) {
 		this.curTurn = turn;
+		return this;
 	}
 
 	public boolean isAutoRemoved() {

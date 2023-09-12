@@ -28,6 +28,10 @@ import loon.LSystem;
  */
 public class CharUtils {
 
+	public enum CharType {
+		CharWhitespace, CharAlphaNumeric, CharJapanese, CharKorean, CharChinese, CharUnknown
+	}
+
 	public static final char MIN_HIGH_SURROGATE = '\uD800';
 
 	public static final char MAX_HIGH_SURROGATE = '\uDBFF';
@@ -65,7 +69,7 @@ public class CharUtils {
 		return result;
 	}
 
-	public static byte ToSByte(int b) {
+	public static byte toSByte(int b) {
 		return getUNByteToSByte(b);
 	}
 
@@ -358,6 +362,22 @@ public class CharUtils {
 		return -1;
 	}
 
+	public static boolean isJapanese(int c) {
+		return isJapaneseHiragana(c) || isJapaneseKatakana(c);
+	}
+
+	public static boolean isJapaneseHiragana(int c) {
+		return c >= 0x3040 && c <= 0x309f;
+	}
+
+	public static boolean isJapaneseKatakana(int c) {
+		return c >= 0x30a0 && c <= 0x30ff;
+	}
+
+	public static boolean isKorean(int c) {
+		return c >= 0x1100 && c <= 0x11ff;
+	}
+
 	public static boolean isChinese(int c) {
 		return c >= 0x4e00 && c <= 0x9fa5;
 	}
@@ -390,6 +410,10 @@ public class CharUtils {
 
 	public static boolean isWhitespace(int c) {
 		return c == ' ' || c == '\n' || c == '\r' || c == '\t';
+	}
+
+	public static boolean isEol(char c) {
+		return c == LSystem.LF || c == LSystem.CR;
 	}
 
 	public static boolean isAsciiLetter(int c) {
@@ -531,6 +555,48 @@ public class CharUtils {
 		return (char) c;
 	}
 
+	private static int lineBegin(CharSequence chars, int pos) {
+		while (pos > 0 && !isEol(chars.charAt(pos - 1))) {
+			pos--;
+		}
+		return pos;
+	}
+
+	private static int lineEnd(CharSequence chars, int cursor) {
+		return lineEnd(chars, cursor, false);
+	}
+
+	private static int lineEnd(CharSequence chars, int cursor, boolean include) {
+		while (cursor < chars.length() && !isEol(chars.charAt(cursor))) {
+			cursor++;
+		}
+		if (include && cursor < chars.length()) {
+			if (chars.charAt(cursor) == LSystem.CR && chars.charAt(cursor + 1) == LSystem.LF) {
+				cursor += 2;
+			} else {
+				cursor++;
+			}
+		}
+
+		return cursor;
+	}
+
+	public static CharType getCharType(char c) {
+		if (isWhitespace(c)) {
+			return CharType.CharWhitespace;
+		} else if (isLetterOrDigit(c)) {
+			return CharType.CharAlphaNumeric;
+		} else if (isJapanese(c)) {
+			return CharType.CharJapanese;
+		} else if (isKorean(c)) {
+			return CharType.CharKorean;
+		} else if (isChinese(c)) {
+			return CharType.CharChinese;
+		} else {
+			return CharType.CharUnknown;
+		}
+	}
+
 	public static int hex2int(char c) {
 		switch (c) {
 		case '0':
@@ -565,6 +631,78 @@ public class CharUtils {
 
 	public static char int2hex(int i) {
 		return HexChars.TABLE[i];
+	}
+
+	public static int previousWord(CharSequence chars, int cursor) {
+		if (chars == null || chars.length() == 0) {
+			return 0;
+		}
+		cursor = MathUtils.min(cursor, chars.length());
+		int begin;
+		int i;
+		int cr;
+		int lf;
+		lf = lineBegin(chars, cursor) - 1;
+		if (lf > 0 && chars.charAt(lf) == LSystem.LF && chars.charAt(lf - 1) == LSystem.CR) {
+			cr = lf - 1;
+		} else {
+			cr = lf;
+		}
+
+		if (cursor - 1 == lf) {
+			return (cr > 0) ? cr : 0;
+		}
+		CharType ct = getCharType(chars.charAt(cursor - 1));
+		begin = lf + 1;
+		i = cursor;
+
+		while (i > begin && getCharType(chars.charAt(i - 1)) == ct) {
+			i--;
+		}
+
+		if (ct == CharType.CharWhitespace && i > begin) {
+			ct = getCharType(chars.charAt(i - 1));
+			while (i > begin && getCharType(chars.charAt(i - 1)) == ct) {
+				i--;
+			}
+		}
+
+		return i;
+	}
+
+	public static int nextWord(CharSequence chars, int cursor) {
+		if (chars == null || chars.length() == 0) {
+			return 0;
+		}
+		int i, lf, cr;
+		cr = lineEnd(chars, cursor);
+		if (cursor >= chars.length()) {
+			return cursor;
+		}
+		if (cr < chars.length() && chars.charAt(cr) == LSystem.CR && cr + 1 < chars.length()
+				&& chars.charAt(cr + 1) == LSystem.LF) {
+			lf = cr + 1;
+		} else {
+			lf = cr;
+		}
+		if (cursor == cr || cursor == lf) {
+			if (lf < chars.length()) {
+				return lf + 1;
+			}
+			return cursor;
+		}
+		i = cursor;
+		while (i < cr && isWhitespace(chars.charAt(i))) {
+			i++;
+		}
+		if (i >= cr) {
+			return i;
+		}
+		CharType codeType = getCharType(chars.charAt(i));
+		while (i < cr && getCharType(chars.charAt(i)) == codeType) {
+			i++;
+		}
+		return i;
 	}
 
 }

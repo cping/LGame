@@ -77,7 +77,7 @@ public class ActionScript {
 
 						if (start != -1 && end != -1 && end > start) {
 							name = cmd.substring(0, start).trim().toLowerCase();
-							parameters = StringUtils.split(cmd.substring(start + 1, end), ',');
+							parameters = StringUtils.split(cmd.substring(start + 1, end), LSystem.COMMA);
 						} else {
 							name = cmd.trim().toLowerCase();
 						}

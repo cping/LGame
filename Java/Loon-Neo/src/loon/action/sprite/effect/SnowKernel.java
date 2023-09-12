@@ -37,7 +37,11 @@ public class SnowKernel implements IKernel {
 
 	private int id;
 
-	private float offsetX, offsetY, speed, x, y, width, height, snowWidth, snowHeight;
+	private float offsetX, offsetY, speed;
+	
+	private float x, y, width, height;
+	
+	private float snowWidth, snowHeight;
 
 	public SnowKernel(LTexturePack pack, int n, int w, int h) {
 		this(pack.getTexture(LSystem.getSystemImagePath() + "snow_" + n), n, w, h);
@@ -59,10 +63,11 @@ public class SnowKernel implements IKernel {
 		return id;
 	}
 
-	public void make() {
+	public SnowKernel make() {
 		exist = true;
 		x = MathUtils.random() * width;
 		y = -snowHeight;
+		return this;
 	}
 
 	@Override

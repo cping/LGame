@@ -111,14 +111,21 @@ public class FadeTileEffect extends Entity implements BaseEffect {
 		return timer.getDelay();
 	}
 
-	public void setDelay(int delay) {
+	public FadeTileEffect setDelay(int delay) {
 		timer.setDelay(delay);
+		return this;
 	}
 
 	public boolean isCompleted() {
 		return completed;
 	}
 
+	@Override
+	public FadeTileEffect setStop(boolean finished) {
+		this.completed = finished;
+		return this;
+	}
+	
 	@Override
 	public void onUpdate(long elapsedTime) {
 		if (completed) {

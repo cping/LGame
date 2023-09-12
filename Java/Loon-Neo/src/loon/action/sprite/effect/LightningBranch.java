@@ -52,18 +52,21 @@ public class LightningBranch implements ILightning {
 		this.create(s, e, c);
 	}
 
+	@Override
 	public boolean isComplete() {
 		return bolts.isEmpty();
 	}
 
-	public void setDelay(long delay) {
+	public LightningBranch setDelay(long delay) {
 		timer.setDelay(delay);
+		return this;
 	}
 
 	public long getDelay() {
 		return timer.getDelay();
 	}
 
+	@Override
 	public void update(long elapsedTime) {
 		if (timer.action(elapsedTime)) {
 			bolts = bolts.where(new QueryEvent<LightningBolt>() {
@@ -79,6 +82,7 @@ public class LightningBranch implements ILightning {
 		}
 	}
 
+	@Override
 	public void draw(GLEx g, float x, float y) {
 		for (LightningBolt bolt : bolts) {
 			bolt.draw(g, x, y);

@@ -78,8 +78,9 @@ public class CrossEffect extends Entity implements BaseEffect {
 		this.setRepaint(true);
 	}
 
-	public void setDelay(long delay) {
+	public CrossEffect setDelay(long delay) {
 		timer.setDelay(delay);
+		return this;
 	}
 
 	public long getDelay() {
@@ -89,6 +90,12 @@ public class CrossEffect extends Entity implements BaseEffect {
 	@Override
 	public boolean isCompleted() {
 		return completed;
+	}
+	
+	@Override
+	public CrossEffect setStop(boolean c) {
+		this.completed = c;
+		return this;
 	}
 
 	@Override
@@ -177,8 +184,9 @@ public class CrossEffect extends Entity implements BaseEffect {
 		return maxcount;
 	}
 
-	public void setMaxCount(int maxcount) {
+	public CrossEffect setMaxCount(int maxcount) {
 		this.maxcount = maxcount;
+		return this;
 	}
 
 	public boolean isAutoRemoved() {

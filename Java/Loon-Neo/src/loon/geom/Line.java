@@ -20,6 +20,7 @@
  */
 package loon.geom;
 
+import loon.LSystem;
 import loon.action.map.Config;
 import loon.action.map.Field2D;
 import loon.utils.MathUtils;
@@ -102,7 +103,7 @@ public class Line extends Shape {
 		if (StringUtils.isEmpty(v)) {
 			return new Line();
 		}
-		String[] result = StringUtils.split(v, ',');
+		String[] result = StringUtils.split(v, LSystem.COMMA);
 		int len = result.length;
 		if (len > 3) {
 			try {

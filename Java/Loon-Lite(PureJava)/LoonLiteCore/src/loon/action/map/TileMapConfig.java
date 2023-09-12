@@ -76,7 +76,7 @@ public class TileMapConfig {
 		for (; br.hasMoreTokens();) {
 			result = StringUtils.replace(br.nextToken().trim(), LSystem.LS, LSystem.EMPTY);
 			if (!StringUtils.isEmpty(result)) {
-				char flag = ',';
+				char flag = LSystem.COMMA;
 				if (result.indexOf(flag) != -1) {
 					String[] stringArray = StringUtils.split(result, flag);
 					int size = stringArray.length;
@@ -153,10 +153,10 @@ public class TileMapConfig {
 			return resArr;
 		}
 		try {
-			String[] strLns = StringUtils.split(srcStr, '\n');
+			String[] strLns = StringUtils.split(srcStr, LSystem.LF);
 			resArr = new int[strLns.length][];
 			for (int i = 0; i < strLns.length; i++) {
-				String[] strPrms = StringUtils.split(strLns[i], ',');
+				String[] strPrms = StringUtils.split(strLns[i], LSystem.COMMA);
 				resArr[i] = new int[strPrms.length];
 				for (int j = 0; j < strPrms.length; j++) {
 					resArr[i][j] = stringToInt(strPrms[j]);
@@ -199,10 +199,10 @@ public class TileMapConfig {
 		if ((srcStr == null) || (srcStr.length() == 0))
 			return resArr;
 		try {
-			String[] strLns = StringUtils.split(srcStr, '\n');
+			String[] strLns = StringUtils.split(srcStr, LSystem.LF);
 			resArr = new String[strLns.length][];
 			for (int i = 0; i < strLns.length; i++) {
-				String[] strPrms = StringUtils.split(strLns[i], ',');
+				String[] strPrms = StringUtils.split(strLns[i], LSystem.COMMA);
 				resArr[i] = new String[strPrms.length];
 				for (int j = 0; j < strPrms.length; j++) {
 					resArr[i][j] = strPrms[j];
