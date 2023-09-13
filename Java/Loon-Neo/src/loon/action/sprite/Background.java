@@ -20,14 +20,36 @@
  */
 package loon.action.sprite;
 
+import loon.geom.Sized;
+
 /**
  * 背景精灵的抽象类(全屏大小的精灵)
  */
-public abstract class Background extends Entity {
+public abstract class Background extends Entity implements Sized {
 
 	public Background(float x, float y, float w, float h) {
 		this.setLocation(x, y);
 		this.setSize(w, h);
+	}
+
+	@Override
+	public float left() {
+		return getX();
+	}
+
+	@Override
+	public float top() {
+		return getY();
+	}
+
+	@Override
+	public float right() {
+		return getWidth();
+	}
+
+	@Override
+	public float bottom() {
+		return getHeight();
 	}
 
 }

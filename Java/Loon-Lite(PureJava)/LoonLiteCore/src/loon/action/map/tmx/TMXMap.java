@@ -29,12 +29,13 @@ import loon.action.map.tmx.renderers.TMXMapRenderer;
 import loon.action.map.tmx.renderers.TMXOrthogonalMapRenderer;
 import loon.action.map.tmx.renderers.TMXStaggeredMapRenderer;
 import loon.canvas.LColor;
+import loon.geom.Sized;
 import loon.utils.TArray;
 import loon.utils.xml.XMLDocument;
 import loon.utils.xml.XMLElement;
 import loon.utils.xml.XMLParser;
 
-public class TMXMap {
+public class TMXMap implements Sized {
 
 	/**
 	 * 该TiledMap类的渲染（瓦片显示方向）模式
@@ -186,10 +187,12 @@ public class TMXMap {
 		return tiledversion;
 	}
 
+	@Override
 	public float getX() {
 		return getOffsetX();
 	}
 
+	@Override
 	public float getY() {
 		return getOffsetY();
 	}
@@ -202,14 +205,41 @@ public class TMXMap {
 		return offsetY;
 	}
 
-	public void setOffsetX(float offsetX) {
+	public TMXMap setOffsetX(float offsetX) {
 		this.offsetX = offsetX;
 		updateRenderOffset();
+		return this;
 	}
 
-	public void setOffsetY(float offsetY) {
+	public TMXMap setOffsetY(float offsetY) {
 		this.offsetY = offsetY;
 		updateRenderOffset();
+		return this;
+	}
+
+	@Override
+	public float left() {
+		return getX();
+	}
+
+	@Override
+	public float top() {
+		return getY();
+	}
+
+	@Override
+	public float right() {
+		return getWidth();
+	}
+
+	@Override
+	public float bottom() {
+		return getHeight();
+	}
+	
+	@Override
+	public int getZ() {
+		return 0;
 	}
 
 	public int getWidth() {

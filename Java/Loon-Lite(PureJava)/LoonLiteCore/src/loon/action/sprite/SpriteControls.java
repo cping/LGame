@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -34,11 +34,14 @@ import loon.events.QueryEvent;
 import loon.font.FontSet;
 import loon.font.IFont;
 import loon.geom.RectBox;
+import loon.geom.Sized;
+import loon.geom.Vector2f;
+import loon.geom.XY;
 import loon.utils.CollectionUtils;
-import loon.utils.Easing.EasingMode;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
 import loon.utils.TArray;
+import loon.utils.Easing.EasingMode;
 
 /**
  * Sprite组件的群组化操作控制器，可以同时改变一组精灵的参数或动画事件
@@ -48,8 +51,8 @@ public class SpriteControls {
 	public static float getChildrenHeight(Sprites s) {
 		float totalHeight = 0;
 		ISprite[] list = s._sprites;
-		for (ISprite element : list) {
-			totalHeight += element.getHeight();
+		for (int i = 0; i < list.length; i++) {
+			totalHeight += list[i].getHeight();
 		}
 		return totalHeight;
 	}
@@ -57,8 +60,8 @@ public class SpriteControls {
 	public static float getChildrenWidth(Sprites s) {
 		float totalWidth = 0;
 		ISprite[] list = s._sprites;
-		for (ISprite element : list) {
-			totalWidth += element.getWidth();
+		for (int i = 0; i < list.length; i++) {
+			totalWidth += list[i].getWidth();
 		}
 		return totalWidth;
 	}
@@ -66,8 +69,8 @@ public class SpriteControls {
 	public static float getMaxChildHeight(Sprites s) {
 		int maxHeight = 0;
 		ISprite[] list = s._sprites;
-		for (ISprite element : list) {
-			maxHeight = MathUtils.max(maxHeight, (int) element.getHeight());
+		for (int i = 0; i < list.length; i++) {
+			maxHeight = MathUtils.max(maxHeight, (int) list[i].getHeight());
 		}
 		return maxHeight;
 	}
@@ -75,13 +78,13 @@ public class SpriteControls {
 	public static int getMaxChildWidth(Sprites s) {
 		int maxWidth = 0;
 		ISprite[] list = s._sprites;
-		for (ISprite element : list) {
-			maxWidth = MathUtils.max(maxWidth, (int) element.getWidth());
+		for (int i = 0; i < list.length; i++) {
+			maxWidth = MathUtils.max(maxWidth, (int) list[i].getWidth());
 		}
 		return maxWidth;
 	}
 
-	private ObjectMap<ISprite, ActionTween> tweens = new ObjectMap<>(
+	private ObjectMap<ISprite, ActionTween> tweens = new ObjectMap<ISprite, ActionTween>(
 			CollectionUtils.INITIAL_CAPACITY);
 
 	private Margin _margin;
@@ -99,7 +102,7 @@ public class SpriteControls {
 	}
 
 	public SpriteControls() {
-		this._sprs = new TArray<>();
+		this._sprs = new TArray<ISprite>();
 	}
 
 	public ISprite random() {
@@ -143,7 +146,7 @@ public class SpriteControls {
 	}
 
 	public TArray<ISprite> intersects(RectBox rect) {
-		TArray<ISprite> sprites = new TArray<>();
+		TArray<ISprite> sprites = new TArray<ISprite>();
 		for (ISprite child : this._sprs) {
 			if (child != null) {
 				if (rect.intersects(child.getX(), child.getY(), child.getWidth(), child.getHeight())) {
@@ -155,7 +158,7 @@ public class SpriteControls {
 	}
 
 	public TArray<ISprite> intersects(float x, float y, float width, float height) {
-		TArray<ISprite> sprites = new TArray<>();
+		TArray<ISprite> sprites = new TArray<ISprite>();
 		for (ISprite child : this._sprs) {
 			if (child != null) {
 				if (CollisionHelper.intersects(x, y, width, height, child.getX(), child.getY(), child.getWidth(),
@@ -168,7 +171,7 @@ public class SpriteControls {
 	}
 
 	public TArray<ISprite> contains(RectBox rect) {
-		TArray<ISprite> sprites = new TArray<>();
+		TArray<ISprite> sprites = new TArray<ISprite>();
 		for (ISprite child : this._sprs) {
 			if (child != null) {
 				if (rect.contains(child.getX(), child.getY(), child.getWidth(), child.getHeight())) {
@@ -180,7 +183,7 @@ public class SpriteControls {
 	}
 
 	public TArray<ISprite> contains(float x, float y, float width, float height) {
-		TArray<ISprite> sprites = new TArray<>();
+		TArray<ISprite> sprites = new TArray<ISprite>();
 		for (ISprite child : this._sprs) {
 			if (child != null) {
 				if (CollisionHelper.contains(x, y, width, height, child.getX(), child.getY(), child.getWidth(),
@@ -220,8 +223,8 @@ public class SpriteControls {
 		if (comps == null) {
 			throw new LSysException("Sprites cannot be null.");
 		}
-		for (ISprite comp : comps) {
-			add(comp);
+		for (int i = 0, n = comps.length; i < n; i++) {
+			add(comps[i]);
 		}
 		return this;
 	}
@@ -230,8 +233,8 @@ public class SpriteControls {
 		if (comps == null) {
 			throw new LSysException("Sprites cannot be null.");
 		}
-		for (ISprite comp : comps) {
-			remove(comp);
+		for (int i = 0, n = comps.length; i < n; i++) {
+			remove(comps[i]);
 		}
 		return this;
 	}
@@ -595,13 +598,13 @@ public class SpriteControls {
 				ActionTween tween = tweens.get(spr);
 				if (spr.getAlpha() >= 255) {
 					if (tween == null) {
-						tween = PlayerUtils.set(spr).fadeIn(speed);
+						tween = PlayerUtils.set((ActionBind) spr).fadeIn(speed);
 					} else {
 						tween.fadeIn(speed);
 					}
 				} else {
 					if (tween == null) {
-						tween = PlayerUtils.set(spr).fadeOut(speed);
+						tween = PlayerUtils.set((ActionBind) spr).fadeOut(speed);
 					} else {
 						tween.fadeOut(speed);
 					}
@@ -621,13 +624,13 @@ public class SpriteControls {
 				ActionTween tween = tweens.get(spr);
 				if (spr.getAlpha() <= 0) {
 					if (tween == null) {
-						tween = PlayerUtils.set(spr).fadeOut(speed);
+						tween = PlayerUtils.set((ActionBind) spr).fadeOut(speed);
 					} else {
 						tween.fadeOut(speed);
 					}
 				} else {
 					if (tween == null) {
-						tween = PlayerUtils.set(spr).fadeIn(speed);
+						tween = PlayerUtils.set((ActionBind) spr).fadeIn(speed);
 					} else {
 						tween.fadeIn(speed);
 					}
@@ -646,7 +649,7 @@ public class SpriteControls {
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set(spr).moveBy(endX, endY, speed);
+					tween = PlayerUtils.set((ActionBind) spr).moveBy(endX, endY, speed);
 				} else {
 					tween.moveBy(endX, endY, speed);
 				}
@@ -664,7 +667,7 @@ public class SpriteControls {
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set(spr).moveBy(endX, endY);
+					tween = PlayerUtils.set((ActionBind) spr).moveBy(endX, endY);
 				} else {
 					tween.moveBy(endX, endY);
 				}
@@ -682,7 +685,7 @@ public class SpriteControls {
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set(spr).moveTo(endX, endY, speed);
+					tween = PlayerUtils.set((ActionBind) spr).moveTo(endX, endY, speed);
 				} else {
 					tween.moveTo(endX, endY, speed);
 				}
@@ -701,7 +704,7 @@ public class SpriteControls {
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set(spr).moveTo(endX, endY, flag, speed);
+					tween = PlayerUtils.set((ActionBind) spr).moveTo(endX, endY, flag, speed);
 				} else {
 					tween.moveTo(endX, endY, flag, speed);
 				}
@@ -720,7 +723,7 @@ public class SpriteControls {
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set(spr).moveTo(map, endX, endY, flag, speed);
+					tween = PlayerUtils.set((ActionBind) spr).moveTo(map, endX, endY, flag, speed);
 				} else {
 					tween.moveTo(map, endX, endY, flag, speed);
 				}
@@ -739,7 +742,7 @@ public class SpriteControls {
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set(spr).delay(d);
+					tween = PlayerUtils.set((ActionBind) spr).delay(d);
 				} else {
 					tween.delay(d);
 				}
@@ -758,7 +761,7 @@ public class SpriteControls {
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set(spr).rotateTo(angle);
+					tween = PlayerUtils.set((ActionBind) spr).rotateTo(angle);
 				} else {
 					tween.rotateTo(angle);
 				}
@@ -777,7 +780,7 @@ public class SpriteControls {
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set(spr).rotateTo(angle, speed);
+					tween = PlayerUtils.set((ActionBind) spr).rotateTo(angle, speed);
 				} else {
 					tween.rotateTo(angle, speed);
 				}
@@ -796,7 +799,7 @@ public class SpriteControls {
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set(spr).scaleTo(sx, sy);
+					tween = PlayerUtils.set((ActionBind) spr).scaleTo(sx, sy);
 				} else {
 					tween.scaleTo(sx, sy);
 				}
@@ -815,7 +818,7 @@ public class SpriteControls {
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set(spr).scaleTo(sx, sy, speed);
+					tween = PlayerUtils.set((ActionBind) spr).scaleTo(sx, sy, speed);
 				} else {
 					tween.scaleTo(sx, sy, speed);
 				}
@@ -834,7 +837,7 @@ public class SpriteControls {
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set(spr).showTo(v);
+					tween = PlayerUtils.set((ActionBind) spr).showTo(v);
 				} else {
 					tween.showTo(v);
 				}
@@ -853,7 +856,7 @@ public class SpriteControls {
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set(spr).colorTo(end);
+					tween = PlayerUtils.set((ActionBind) spr).colorTo(end);
 				} else {
 					tween.colorTo(end);
 				}
@@ -872,7 +875,7 @@ public class SpriteControls {
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set(spr).shakeTo(shakeX, shakeY);
+					tween = PlayerUtils.set((ActionBind) spr).shakeTo(shakeX, shakeY);
 				} else {
 					tween.shakeTo(shakeX, shakeY);
 				}
@@ -891,7 +894,7 @@ public class SpriteControls {
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set(spr).followTo(bind, follow, speed);
+					tween = PlayerUtils.set((ActionBind) spr).followTo(bind, follow, speed);
 				} else {
 					tween.followTo(bind, follow, speed);
 				}
@@ -910,7 +913,7 @@ public class SpriteControls {
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set(spr).flashTo(duration);
+					tween = PlayerUtils.set((ActionBind) spr).flashTo(duration);
 				} else {
 					tween.flashTo(duration);
 				}
@@ -930,7 +933,7 @@ public class SpriteControls {
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
 				if (tween == null) {
-					tween = PlayerUtils.set(spr).transferTo(startPos, endPos, duration, mode, controlX,
+					tween = PlayerUtils.set((ActionBind) spr).transferTo(startPos, endPos, duration, mode, controlX,
 							controlY);
 				} else {
 					tween.transferTo(startPos, endPos, duration, mode, controlX, controlY);
@@ -970,5 +973,190 @@ public class SpriteControls {
 			}
 		}
 		return _margin;
+	}
+
+	public Vector2f getMoveTarget(TArray<XY> targets, ISprite spr, Sized mapSize, float scrollWidth, float scrollHeight,
+			float orthogonalWidth, float orthogonalHeight, float paddingX, float paddingY) {
+		if (spr == null) {
+			return null;
+		}
+		ISprite parentSprite = spr.getParent() == null ? spr : spr.getParent();
+
+		Vector2f parentLocal = Vector2f.at(parentSprite.getX() + parentSprite.getOffsetX(),
+				parentSprite.getY() + parentSprite.getOffsetY());
+
+		return getMoveTarget(targets, spr, parentLocal, mapSize, scrollWidth, scrollHeight, orthogonalWidth,
+				orthogonalHeight, paddingX, paddingY);
+	}
+
+	public Vector2f getMoveTarget(XY pos, ISprite spr, Sized mapSize, float scrollWidth, float scrollHeight,
+			float orthogonalWidth, float orthogonalHeight) {
+		if (spr == null) {
+			return null;
+		}
+		ISprite parentSprite = spr.getParent() == null ? spr : spr.getParent();
+
+		Vector2f parentLocal = Vector2f.at(parentSprite.getX() + parentSprite.getOffsetX(),
+				parentSprite.getY() + parentSprite.getOffsetY());
+
+		return getMoveTarget(pos, spr, parentLocal, mapSize, scrollWidth, scrollHeight, orthogonalWidth,
+				orthogonalHeight);
+	}
+
+	public Vector2f getMoveTarget(XY pos, ISprite spr, Vector2f parentLocal, Sized mapSize, float scrollWidth,
+			float scrollHeight, float orthogonalWidth, float orthogonalHeight) {
+		if (spr == null) {
+			return null;
+		}
+		return getMoveTarget(new TArray<XY>(pos), spr, parentLocal, mapSize, scrollWidth, scrollHeight, orthogonalWidth,
+				orthogonalHeight, 0f, 0f);
+	}
+
+	public Vector2f getMoveTarget(TArray<XY> targets, ISprite spr, Vector2f parentLocal, Sized mapSize,
+			float scrollWidth, float scrollHeight, float orthogonalWidth, float orthogonalHeight) {
+		if (spr == null) {
+			return null;
+		}
+		return getMoveTarget(targets, spr, parentLocal, mapSize, scrollWidth, scrollHeight, orthogonalWidth,
+				orthogonalHeight, 0f, 0f);
+	}
+
+	public Vector2f getMoveTarget(TArray<XY> targets, ISprite spr, Vector2f parentLocal, Sized mapSize,
+			float scrollWidth, float scrollHeight, float orthogonalWidth, float orthogonalHeight, float paddingX,
+			float paddingY) {
+
+		if (spr == null) {
+			return null;
+		}
+
+		Vector2f center = Vector2f.at(spr.getX() + spr.getOffsetX(), spr.getY() + spr.getOffsetY());
+
+		if (targets.size > 0) {
+
+			XY first = targets.first();
+
+			float minX = first.getX();
+			float maxX = first.getX();
+
+			float minY = first.getY();
+			float maxY = first.getY();
+
+			if (mapSize != null) {
+				minX = MathUtils.max(minX, mapSize.left());
+				maxX = MathUtils.min(maxX, mapSize.left() + mapSize.right());
+
+				minY = MathUtils.max(minY, mapSize.top() - mapSize.bottom());
+				maxY = MathUtils.min(maxY, mapSize.top());
+			}
+
+			for (int i = 1; i < targets.size; i++) {
+
+				XY pos = targets.get(i);
+				Vector2f position = Vector2f.at(pos.getX(), pos.getY());
+
+				if (mapSize != null) {
+					position.x = MathUtils.max(position.x, mapSize.left());
+					position.x = MathUtils.min(position.x, mapSize.left() + mapSize.right());
+
+					position.y = MathUtils.max(position.y, mapSize.top() - mapSize.bottom());
+					position.y = MathUtils.min(position.y, mapSize.top());
+				}
+
+				if (position.x < minX) {
+					minX = position.x;
+				}
+				if (position.x > maxX) {
+					maxX = position.x;
+				}
+
+				if (position.y < minY) {
+					minY = position.y;
+				}
+				if (position.y > maxY) {
+					maxY = position.y;
+				}
+			}
+
+			center.x = (minX + maxX) / 2f;
+			center.y = (minY + maxY) / 2f;
+		}
+
+		Vector2f target = Vector2f.ZERO();
+
+		float widthHalf = scrollWidth / 2f;
+		float heightHalf = scrollHeight / 2f;
+
+		float left = parentLocal.x - widthHalf;
+		float right = parentLocal.x + widthHalf;
+		float top = parentLocal.y + heightHalf;
+		float bottom = parentLocal.y - heightHalf;
+
+		if (center.x < left) {
+			target.x = center.x + widthHalf;
+		} else if (center.x > right) {
+			target.x = center.x - widthHalf;
+		} else {
+			target.x = parentLocal.x;
+		}
+
+		if (center.y < bottom) {
+			target.y = center.y + heightHalf;
+		} else if (center.y > top) {
+			target.y = center.y - heightHalf;
+		} else {
+			target.y = parentLocal.y;
+		}
+
+		if (mapSize != null) {
+
+			float effectivePaddingX = paddingX;
+			float effectivePaddingY = paddingY;
+
+			float mapLeft = mapSize.left() + effectivePaddingX;
+			float mapRight = mapSize.left() + mapSize.right() - effectivePaddingX;
+
+			float mapBottom = mapSize.top() - mapSize.bottom() + effectivePaddingY;
+			float mapTop = mapSize.top() - effectivePaddingY;
+
+			if (orthogonalWidth > mapSize.right()) {
+				target.x = mapLeft + mapSize.right() / 2;
+			} else {
+				target.x = MathUtils.max(target.x, mapLeft + orthogonalWidth / 2);
+				target.x = MathUtils.min(target.x, mapRight - orthogonalWidth / 2);
+			}
+
+			if (orthogonalHeight > mapSize.bottom()) {
+				target.y = mapBottom + mapSize.bottom() / 2;
+			} else {
+				target.y = MathUtils.max(target.y, mapBottom + orthogonalHeight / 2);
+				target.y = MathUtils.min(target.y, mapTop - orthogonalHeight / 2);
+			}
+		}
+		return target;
+	}
+
+	public TArray<Vector2f> moveTargets(XY pos, Vector2f parentLocal, Sized mapSize, float scrollWidth,
+			float scrollHeight, float orthogonalWidth, float orthogonalHeight) {
+		return moveTargets(pos, parentLocal, mapSize, scrollWidth, scrollHeight, orthogonalWidth, orthogonalHeight, 0f,
+				0f);
+	}
+
+	public TArray<Vector2f> moveTargets(XY pos, Vector2f parentLocal, Sized mapSize, float scrollWidth,
+			float scrollHeight, float orthogonalWidth, float orthogonalHeight, float paddingX, float paddingY) {
+		return moveTargets(new TArray<XY>(pos), parentLocal, mapSize, scrollWidth, scrollHeight, orthogonalWidth,
+				orthogonalHeight, paddingX, paddingY);
+	}
+
+	public TArray<Vector2f> moveTargets(TArray<XY> targets, Vector2f parentLocal, Sized mapSize, float scrollWidth,
+			float scrollHeight, float orthogonalWidth, float orthogonalHeight, float paddingX, float paddingY) {
+		TArray<Vector2f> moveList = new TArray<Vector2f>();
+		for (int i = 0, n = _sprs.size; i < n; i++) {
+			ISprite spr = _sprs.get(i);
+			if (spr != null) {
+				moveList.add(getMoveTarget(targets, spr, parentLocal, mapSize, scrollWidth, scrollHeight,
+						orthogonalWidth, orthogonalHeight, paddingX, paddingY));
+			}
+		}
+		return moveList;
 	}
 }

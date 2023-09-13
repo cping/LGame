@@ -20,7 +20,9 @@
  */
 package loon.action.map.tmx;
 
-public class TMXMapLayer {
+import loon.geom.Sized;
+
+public class TMXMapLayer implements Sized {
 
 	protected TMXMap parent;
 	protected String name;
@@ -81,8 +83,9 @@ public class TMXMapLayer {
 		return parent != null ? parent.getTileHeight() : 0;
 	}
 
-	public void updateRenderOffset() {
+	public TMXMapLayer updateRenderOffset() {
 		renderOffsetDirty = true;
+		return this;
 	}
 
 	public boolean isDirty() {
@@ -117,30 +120,34 @@ public class TMXMapLayer {
 		return offsetY;
 	}
 
-	public void setOffsetX(float offsetX) {
+	public TMXMapLayer setOffsetX(float offsetX) {
 		this.offsetX = offsetX;
 		updateRenderOffset();
+		return this;
 	}
 
-	public void setOffsetY(float offsetY) {
+	public TMXMapLayer setOffsetY(float offsetY) {
 		this.offsetY = offsetY;
 		updateRenderOffset();
+		return this;
 	}
 
 	public float getParallaxX() {
 		return parallaxX;
 	}
 
-	public void setParallaxX(float parallaxX) {
+	public TMXMapLayer setParallaxX(float parallaxX) {
 		this.parallaxX = parallaxX;
+		return this;
 	}
 
 	public float getParallaxY() {
 		return parallaxY;
 	}
 
-	public void setParallaxY(float parallaxY) {
+	public TMXMapLayer setParallaxY(float parallaxY) {
 		this.parallaxY = parallaxY;
+		return this;
 	}
 
 	public float getRenderOffsetX() {
@@ -181,8 +188,9 @@ public class TMXMapLayer {
 		return zOrder;
 	}
 
-	public void setZOrder(int zOrder) {
+	public TMXMapLayer setZOrder(int zOrder) {
 		this.zOrder = zOrder;
+		return this;
 	}
 
 	public int getParseOrder() {
@@ -207,6 +215,31 @@ public class TMXMapLayer {
 
 	public enum TmxLayerType {
 		TILE, OBJECT, IMAGE
+	}
+
+	@Override
+	public int getZ() {
+		return getZOrder();
+	}
+
+	@Override
+	public float left() {
+		return getX();
+	}
+
+	@Override
+	public float top() {
+		return getY();
+	}
+
+	@Override
+	public float right() {
+		return getWidth();
+	}
+
+	@Override
+	public float bottom() {
+		return getHeight();
 	}
 
 }

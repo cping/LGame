@@ -47,6 +47,7 @@ import loon.geom.PointF;
 import loon.geom.PointI;
 import loon.geom.Polygon;
 import loon.geom.RectBox;
+import loon.geom.Sized;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.opengl.LTexturePack;
@@ -62,7 +63,7 @@ import loon.utils.TArray;
 /**
  * 一个简单(易于操作)的渲染六边形瓦片地图用的,二维数组地图构造以及显示类.复杂地图请使用tmx包
  */
-public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>, ISprite {
+public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>, Sized, ISprite {
 
 	// 默认的六边形参数
 	public static final int LEFT = -3;
@@ -2198,6 +2199,26 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	@Override
 	public float getOffsetY() {
 		return _offset.y;
+	}
+
+	@Override
+	public float left() {
+		return getX();
+	}
+
+	@Override
+	public float top() {
+		return getY();
+	}
+
+	@Override
+	public float right() {
+		return getWidth();
+	}
+
+	@Override
+	public float bottom() {
+		return getHeight();
 	}
 
 	@Override

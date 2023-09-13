@@ -24,9 +24,15 @@ public abstract class Action {
 
 	protected Entity entity;
 
-	private boolean isCompleted = false;
+	private boolean _actived = false;
 
-	private boolean isCancelled = false;
+	private boolean _started = false;
+
+	private boolean _stoped = false;
+
+	private boolean _completed = false;
+
+	private boolean _cancelled = false;
 
 	public final Entity getEntity() {
 		return entity;
@@ -40,39 +46,85 @@ public abstract class Action {
 		return this;
 	}
 
+	public final boolean isStarted() {
+		return _started;
+	}
+
+	public final boolean isStoped() {
+		return _stoped;
+	}
+
 	public final boolean isComplete() {
-		return isCompleted;
+		return _completed;
 	}
 
 	public final Action setComplete() {
-		isCompleted = true;
+		_completed = true;
 		return this;
 	}
 
 	public final boolean isCancelled() {
-		return isCancelled;
+		return _cancelled;
+	}
+
+	public final Action complete() {
+		if (_completed) {
+			return this;
+		}
+		_completed = true;
+		onStop();
+		onCompleted();
+		return this;
 	}
 
 	public final Action cancel() {
-		if (isCancelled) {
+		if (_cancelled) {
 			return this;
 		}
-		isCancelled = true;
+		_cancelled = true;
 		onCancelled();
 		return this;
 	}
 
-	protected void onQueued() {
+	public final Action start() {
+		if (_started) {
+			return this;
+		}
+		_started = true;
+		_actived = true;
+		onStart();
+		return this;
 	}
 
-	protected void onStarted() {
+	public final Action stop() {
+		if (_stoped) {
+			return this;
+		}
+		_stoped = true;
+		_actived = false;
+		onStop();
+		return this;
 	}
 
-	protected abstract void onUpdate(float tpf);
+	protected abstract void onQueued();
 
-	protected void onCompleted() {
+	protected abstract void onStart();
+
+	protected abstract void onStop();
+
+	protected abstract void onUpdate(float dt);
+
+	protected abstract void onCompleted();
+
+	protected abstract void onCancelled();
+
+	public boolean isActived() {
+		return _actived;
 	}
 
-	protected void onCancelled() {
+	public Action setActived(boolean a) {
+		this._actived = a;
+		return this;
 	}
+
 }

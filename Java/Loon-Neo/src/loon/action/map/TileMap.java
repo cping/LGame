@@ -43,6 +43,7 @@ import loon.geom.Affine2f;
 import loon.geom.PointF;
 import loon.geom.PointI;
 import loon.geom.RectBox;
+import loon.geom.Sized;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.opengl.LTexturePack;
@@ -53,7 +54,7 @@ import loon.utils.TArray;
 /**
  * 一个简单(易于操作)的二维数组地图构造以及显示类.复杂地图请使用tmx包
  */
-public class TileMap extends LObject<ISprite> implements ISprite {
+public class TileMap extends LObject<ISprite> implements Sized, ISprite {
 
 	private LTexture _background;
 
@@ -1436,6 +1437,26 @@ public class TileMap extends LObject<ISprite> implements ISprite {
 	@Override
 	public float getOffsetY() {
 		return offset.y;
+	}
+
+	@Override
+	public float left() {
+		return getX();
+	}
+
+	@Override
+	public float top() {
+		return getY();
+	}
+
+	@Override
+	public float right() {
+		return getWidth();
+	}
+
+	@Override
+	public float bottom() {
+		return getHeight();
 	}
 
 	@Override

@@ -42,6 +42,7 @@ import loon.action.sprite.Sprites;
 import loon.canvas.LColor;
 import loon.events.ResizeListener;
 import loon.geom.RectBox;
+import loon.geom.Sized;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.utils.IntMap;
@@ -51,7 +52,7 @@ import loon.utils.TimeUtils;
 /**
  * TMX地图渲染用基本抽象类,所有TMX地图文件的渲染皆由此类的子类负责具体实现
  */
-public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite {
+public abstract class TMXMapRenderer extends LObject<ISprite> implements Sized, ISprite {
 
 	protected LTexture _texCurrent;
 
@@ -159,13 +160,14 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 				"A TmxMapRenderer has not yet been implemented for " + map.getOrientation() + " orientation");
 	}
 
-	public void saveCache(LTextureBatch batch) {
+	public TMXMapRenderer saveCache(LTextureBatch batch) {
 		if (!allowCache) {
-			return;
+			return this;
 		}
 		if (batch != null) {
 			textureCaches.put(lastHashCode, batch.newCache());
 		}
+		return this;
 	}
 
 	public boolean postCache(LTextureBatch batch, int hashCode) {
@@ -196,12 +198,14 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 				map.getHeight() * map.getTileHeight(), map.getBackgroundColor());
 	}
 
-	public void setLocationToTilePosX(int x) {
+	public TMXMapRenderer setLocationToTilePosX(int x) {
 		setX(x / map.getTileWidth());
+		return this;
 	}
 
-	public void setLocationToTilePosY(int y) {
+	public TMXMapRenderer setLocationToTilePosY(int y) {
 		setY(y / map.getTileHeight());
+		return this;
 	}
 
 	@Override
@@ -493,6 +497,26 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements ISprite
 	@Override
 	public float getOffsetY() {
 		return _offset.y;
+	}
+
+	@Override
+	public float left() {
+		return getX();
+	}
+
+	@Override
+	public float top() {
+		return getY();
+	}
+
+	@Override
+	public float right() {
+		return getWidth();
+	}
+
+	@Override
+	public float bottom() {
+		return getHeight();
 	}
 
 	public boolean isClosed() {

@@ -34,6 +34,9 @@ import loon.events.QueryEvent;
 import loon.font.FontSet;
 import loon.font.IFont;
 import loon.geom.RectBox;
+import loon.geom.Sized;
+import loon.geom.Vector2f;
+import loon.geom.XY;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
@@ -978,5 +981,190 @@ public class SpriteControls {
 			}
 		}
 		return _margin;
+	}
+
+	public Vector2f getMoveTarget(TArray<XY> targets, ISprite spr, Sized mapSize, float scrollWidth, float scrollHeight,
+			float orthogonalWidth, float orthogonalHeight, float paddingX, float paddingY) {
+		if (spr == null) {
+			return null;
+		}
+		ISprite parentSprite = spr.getParent() == null ? spr : spr.getParent();
+
+		Vector2f parentLocal = Vector2f.at(parentSprite.getX() + parentSprite.getOffsetX(),
+				parentSprite.getY() + parentSprite.getOffsetY());
+
+		return getMoveTarget(targets, spr, parentLocal, mapSize, scrollWidth, scrollHeight, orthogonalWidth,
+				orthogonalHeight, paddingX, paddingY);
+	}
+
+	public Vector2f getMoveTarget(XY pos, ISprite spr, Sized mapSize, float scrollWidth, float scrollHeight,
+			float orthogonalWidth, float orthogonalHeight) {
+		if (spr == null) {
+			return null;
+		}
+		ISprite parentSprite = spr.getParent() == null ? spr : spr.getParent();
+
+		Vector2f parentLocal = Vector2f.at(parentSprite.getX() + parentSprite.getOffsetX(),
+				parentSprite.getY() + parentSprite.getOffsetY());
+
+		return getMoveTarget(pos, spr, parentLocal, mapSize, scrollWidth, scrollHeight, orthogonalWidth,
+				orthogonalHeight);
+	}
+
+	public Vector2f getMoveTarget(XY pos, ISprite spr, Vector2f parentLocal, Sized mapSize, float scrollWidth,
+			float scrollHeight, float orthogonalWidth, float orthogonalHeight) {
+		if (spr == null) {
+			return null;
+		}
+		return getMoveTarget(new TArray<XY>(pos), spr, parentLocal, mapSize, scrollWidth, scrollHeight, orthogonalWidth,
+				orthogonalHeight, 0f, 0f);
+	}
+
+	public Vector2f getMoveTarget(TArray<XY> targets, ISprite spr, Vector2f parentLocal, Sized mapSize,
+			float scrollWidth, float scrollHeight, float orthogonalWidth, float orthogonalHeight) {
+		if (spr == null) {
+			return null;
+		}
+		return getMoveTarget(targets, spr, parentLocal, mapSize, scrollWidth, scrollHeight, orthogonalWidth,
+				orthogonalHeight, 0f, 0f);
+	}
+
+	public Vector2f getMoveTarget(TArray<XY> targets, ISprite spr, Vector2f parentLocal, Sized mapSize,
+			float scrollWidth, float scrollHeight, float orthogonalWidth, float orthogonalHeight, float paddingX,
+			float paddingY) {
+
+		if (spr == null) {
+			return null;
+		}
+
+		Vector2f center = Vector2f.at(spr.getX() + spr.getOffsetX(), spr.getY() + spr.getOffsetY());
+
+		if (targets.size > 0) {
+
+			XY first = targets.first();
+
+			float minX = first.getX();
+			float maxX = first.getX();
+
+			float minY = first.getY();
+			float maxY = first.getY();
+
+			if (mapSize != null) {
+				minX = MathUtils.max(minX, mapSize.left());
+				maxX = MathUtils.min(maxX, mapSize.left() + mapSize.right());
+
+				minY = MathUtils.max(minY, mapSize.top() - mapSize.bottom());
+				maxY = MathUtils.min(maxY, mapSize.top());
+			}
+
+			for (int i = 1; i < targets.size; i++) {
+
+				XY pos = targets.get(i);
+				Vector2f position = Vector2f.at(pos.getX(), pos.getY());
+
+				if (mapSize != null) {
+					position.x = MathUtils.max(position.x, mapSize.left());
+					position.x = MathUtils.min(position.x, mapSize.left() + mapSize.right());
+
+					position.y = MathUtils.max(position.y, mapSize.top() - mapSize.bottom());
+					position.y = MathUtils.min(position.y, mapSize.top());
+				}
+
+				if (position.x < minX) {
+					minX = position.x;
+				}
+				if (position.x > maxX) {
+					maxX = position.x;
+				}
+
+				if (position.y < minY) {
+					minY = position.y;
+				}
+				if (position.y > maxY) {
+					maxY = position.y;
+				}
+			}
+
+			center.x = (minX + maxX) / 2f;
+			center.y = (minY + maxY) / 2f;
+		}
+
+		Vector2f target = Vector2f.ZERO();
+
+		float widthHalf = scrollWidth / 2f;
+		float heightHalf = scrollHeight / 2f;
+
+		float left = parentLocal.x - widthHalf;
+		float right = parentLocal.x + widthHalf;
+		float top = parentLocal.y + heightHalf;
+		float bottom = parentLocal.y - heightHalf;
+
+		if (center.x < left) {
+			target.x = center.x + widthHalf;
+		} else if (center.x > right) {
+			target.x = center.x - widthHalf;
+		} else {
+			target.x = parentLocal.x;
+		}
+
+		if (center.y < bottom) {
+			target.y = center.y + heightHalf;
+		} else if (center.y > top) {
+			target.y = center.y - heightHalf;
+		} else {
+			target.y = parentLocal.y;
+		}
+
+		if (mapSize != null) {
+
+			float effectivePaddingX = paddingX;
+			float effectivePaddingY = paddingY;
+
+			float mapLeft = mapSize.left() + effectivePaddingX;
+			float mapRight = mapSize.left() + mapSize.right() - effectivePaddingX;
+
+			float mapBottom = mapSize.top() - mapSize.bottom() + effectivePaddingY;
+			float mapTop = mapSize.top() - effectivePaddingY;
+
+			if (orthogonalWidth > mapSize.right()) {
+				target.x = mapLeft + mapSize.right() / 2;
+			} else {
+				target.x = MathUtils.max(target.x, mapLeft + orthogonalWidth / 2);
+				target.x = MathUtils.min(target.x, mapRight - orthogonalWidth / 2);
+			}
+
+			if (orthogonalHeight > mapSize.bottom()) {
+				target.y = mapBottom + mapSize.bottom() / 2;
+			} else {
+				target.y = MathUtils.max(target.y, mapBottom + orthogonalHeight / 2);
+				target.y = MathUtils.min(target.y, mapTop - orthogonalHeight / 2);
+			}
+		}
+		return target;
+	}
+
+	public TArray<Vector2f> moveTargets(XY pos, Vector2f parentLocal, Sized mapSize, float scrollWidth,
+			float scrollHeight, float orthogonalWidth, float orthogonalHeight) {
+		return moveTargets(pos, parentLocal, mapSize, scrollWidth, scrollHeight, orthogonalWidth, orthogonalHeight, 0f,
+				0f);
+	}
+
+	public TArray<Vector2f> moveTargets(XY pos, Vector2f parentLocal, Sized mapSize, float scrollWidth,
+			float scrollHeight, float orthogonalWidth, float orthogonalHeight, float paddingX, float paddingY) {
+		return moveTargets(new TArray<XY>(pos), parentLocal, mapSize, scrollWidth, scrollHeight, orthogonalWidth,
+				orthogonalHeight, paddingX, paddingY);
+	}
+
+	public TArray<Vector2f> moveTargets(TArray<XY> targets, Vector2f parentLocal, Sized mapSize, float scrollWidth,
+			float scrollHeight, float orthogonalWidth, float orthogonalHeight, float paddingX, float paddingY) {
+		TArray<Vector2f> moveList = new TArray<Vector2f>();
+		for (int i = 0, n = _sprs.size; i < n; i++) {
+			ISprite spr = _sprs.get(i);
+			if (spr != null) {
+				moveList.add(getMoveTarget(targets, spr, parentLocal, mapSize, scrollWidth, scrollHeight,
+						orthogonalWidth, orthogonalHeight, paddingX, paddingY));
+			}
+		}
+		return moveList;
 	}
 }
