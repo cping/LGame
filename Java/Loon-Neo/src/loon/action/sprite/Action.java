@@ -91,6 +91,7 @@ public abstract class Action {
 			return this;
 		}
 		_started = true;
+		_stoped = false;
 		_actived = true;
 		onStart();
 		return this;
@@ -101,6 +102,7 @@ public abstract class Action {
 			return this;
 		}
 		_stoped = true;
+		_started = false;
 		_actived = false;
 		onStop();
 		return this;

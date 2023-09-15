@@ -1189,6 +1189,10 @@ public class Vector2f implements Serializable, SetXY, XY {
 		return dot(vector) < 0;
 	}
 
+	public boolean hasDifferentValues(Vector2f vector) {
+		return this.x != vector.x || this.y != vector.y;
+	}
+
 	public static String pointToString(float x, float y) {
 		return MathUtils.toString(x) + "," + MathUtils.toString(y);
 	}

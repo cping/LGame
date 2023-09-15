@@ -964,6 +964,21 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 	}
 
 	/**
+	 * 删除alpha大于或小于指定范围的精灵
+	 * 
+	 * @param spr
+	 * @param more
+	 * @param limit
+	 * @return
+	 */
+	public boolean removeWhenAlpha(ISprite spr, boolean more, float limit) {
+		if (spr != null && (more ? spr.getAlpha() >= limit : spr.getAlpha() <= limit)) {
+			return remove(spr);
+		}
+		return false;
+	}
+
+	/**
 	 * 删除指定名称的精灵
 	 * 
 	 * @param name

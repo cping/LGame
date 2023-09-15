@@ -227,19 +227,21 @@ public class LProcess implements LRelease {
 		}
 	}
 
-	public void removeAllLoad() {
+	public LProcess removeAllLoad() {
 		synchronized (loads) {
 			loads.clear();
 		}
+		return this;
 	}
 
-	public void load() {
+	public LProcess load() {
 		if (_isInstance) {
 			final int count = loads.size;
 			if (count > 0) {
 				callUpdateable(loads);
 			}
 		}
+		return this;
 	}
 
 	// --- Load end ---//
@@ -273,19 +275,21 @@ public class LProcess implements LRelease {
 		}
 	}
 
-	public void removeAllUnLoad() {
+	public LProcess removeAllUnLoad() {
 		synchronized (unloads) {
 			unloads.clear();
 		}
+		return this;
 	}
 
-	public void unload() {
+	public LProcess unload() {
 		if (_isInstance) {
 			final int count = unloads.size;
 			if (count > 0) {
 				callUpdateable(unloads);
 			}
 		}
+		return this;
 	}
 
 	// --- UnLoad end ---//
@@ -431,16 +435,17 @@ public class LProcess implements LRelease {
 		}
 	}
 
-	public void start() {
+	public LProcess start() {
 		if (!_running) {
 			if (_loadingScreen != null) {
 				setScreen(_loadingScreen);
 			}
 			_running = true;
 		}
+		return this;
 	}
 
-	public void resize(int w, int h) {
+	public LProcess resize(int w, int h) {
 		if (_isInstance) {
 			if (_emulatorButtons != null) {
 				_emulatorButtons.updateSize(w, h);
@@ -448,9 +453,10 @@ public class LProcess implements LRelease {
 			_currentInput.reset();
 			_currentScreen.resetSize(w, h);
 		}
+		return this;
 	}
 
-	public void resume() {
+	public LProcess resume() {
 		if (_isInstance) {
 			final int count = resumes.size;
 			if (count > 0) {
@@ -459,20 +465,23 @@ public class LProcess implements LRelease {
 			_currentInput.reset();
 			_currentScreen.resume();
 		}
+		return this;
 	}
 
-	public void pause() {
+	public LProcess pause() {
 		if (_isInstance) {
 			_currentInput.reset();
 			_currentScreen.pause();
 		}
+		return this;
 	}
 
-	public void resetTouch() {
+	public LProcess resetTouch() {
 		_currentInput.resetSysTouch();
+		return this;
 	}
 
-	public void clearProcess() {
+	public LProcess clearProcess() {
 		if (resumes == null) {
 			resumes = new TArray<Updateable>();
 		} else {
@@ -489,6 +498,7 @@ public class LProcess implements LRelease {
 			unloads.clear();
 		}
 		clearScreens();
+		return this;
 	}
 
 	public boolean next() {
@@ -632,7 +642,7 @@ public class LProcess implements LRelease {
 	 * 
 	 * @param emulatorListener
 	 */
-	public void setEmulatorListener(EmulatorListener emulator) {
+	public LProcess setEmulatorListener(EmulatorListener emulator) {
 		this.emulatorListener = emulator;
 		if (emulatorListener != null) {
 			if (_emulatorButtons == null) {
@@ -644,6 +654,7 @@ public class LProcess implements LRelease {
 		} else {
 			_emulatorButtons = null;
 		}
+		return this;
 	}
 
 	/**
@@ -664,26 +675,29 @@ public class LProcess implements LRelease {
 		return _emulatorButtons;
 	}
 
-	public void setScreenID(int _curId) {
+	public LProcess setScreenID(int _curId) {
 		if (_isInstance) {
 			_currentScreen.setID(_curId);
 		}
+		return this;
 	}
 
 	public int getScreenID() {
 		return _isInstance ? -1 : _currentScreen.getID();
 	}
 
-	public void setID(int i) {
+	public LProcess setID(int i) {
 		this._curId = i;
+		return this;
 	}
 
 	public int getID() {
 		return _curId;
 	}
 
-	public final void setTransition(LTransition t) {
+	public final LProcess setTransition(LTransition t) {
 		this._transition = t;
+		return this;
 	}
 
 	public final boolean isTransitioning() {
@@ -894,7 +908,7 @@ public class LProcess implements LRelease {
 		return null;
 	}
 
-	public void runPopScreen() {
+	public LProcess runPopScreen() {
 		int size = _screenMap.size;
 		if (size > 0) {
 			Screen o = _screenMap.pop();
@@ -902,13 +916,14 @@ public class LProcess implements LRelease {
 				setScreen(o, false);
 			}
 		}
+		return this;
 	}
 
-	public void runPeekScreen() {
-		runLastScreen();
+	public LProcess runPeekScreen() {
+		return runLastScreen();
 	}
 
-	public void runFirstScreen() {
+	public LProcess runFirstScreen() {
 		int size = _screenMap.size;
 		if (size > 0) {
 			Screen o = _screenMap.first();
@@ -916,9 +931,10 @@ public class LProcess implements LRelease {
 				setScreen(o, false);
 			}
 		}
+		return this;
 	}
 
-	public void runLastScreen() {
+	public LProcess runLastScreen() {
 		int size = _screenMap.size;
 		if (size > 0) {
 			Screen o = _screenMap.last();
@@ -926,37 +942,40 @@ public class LProcess implements LRelease {
 				setScreen(o, false);
 			}
 		}
+		return this;
 	}
 
-	public void runPreviousScreen() {
+	public LProcess runPreviousScreen() {
 		int size = _screenMap.size;
 		if (size > 0) {
 			for (int i = 0; i < size; i++) {
 				if (_currentScreen == _screenMap.getValueAt(i)) {
 					if (i - 1 > -1) {
 						setScreen(_screenMap.getValueAt(i - 1), false);
-						return;
+						return this;
 					}
 				}
 			}
 		}
+		return this;
 	}
 
-	public void runNextScreen() {
+	public LProcess runNextScreen() {
 		int size = _screenMap.size;
 		if (size > 0) {
 			for (int i = 0; i < size; i++) {
 				if (_currentScreen == _screenMap.getValueAt(i)) {
 					if (i + 1 < size) {
 						setScreen(_screenMap.getValueAt(i + 1), false);
-						return;
+						return this;
 					}
 				}
 			}
 		}
+		return this;
 	}
 
-	public void runIndexScreen(int index) {
+	public LProcess runIndexScreen(int index) {
 		int size = _screenMap.size;
 		if (size > 0 && index > -1 && index < size) {
 			Object o = _screenMap.getValueAt(index);
@@ -964,6 +983,7 @@ public class LProcess implements LRelease {
 				setScreen(_screenMap.getValueAt(index), false);
 			}
 		}
+		return this;
 	}
 
 	public boolean containsScreen(final Screen screen) {
@@ -981,7 +1001,7 @@ public class LProcess implements LRelease {
 		return _screenMap.size;
 	}
 
-	public void setScreen(final Screen screen) {
+	public LProcess setScreen(final Screen screen) {
 		if (screen.handler == null) {
 			screen.resetOrder();
 			screen.resetSize();
@@ -991,6 +1011,7 @@ public class LProcess implements LRelease {
 		} else {
 			setScreen(screen, true);
 		}
+		return this;
 	}
 
 	public int getHeight() {
@@ -1007,11 +1028,11 @@ public class LProcess implements LRelease {
 		return 0;
 	}
 
-	public void setCurrentScreen(final Screen screen) {
-		setCurrentScreen(screen, true);
+	public LProcess setCurrentScreen(final Screen screen) {
+		return setCurrentScreen(screen, true);
 	}
 
-	public void setCurrentScreen(final Screen screen, boolean closed) {
+	public LProcess setCurrentScreen(final Screen screen, boolean closed) {
 		if (screen != null) {
 			this._isInstance = false;
 			if (closed && _currentScreen != null) {
@@ -1033,6 +1054,7 @@ public class LProcess implements LRelease {
 			}
 			addScreen(screen);
 		}
+		return this;
 	}
 
 	public void keyDown(GameKey e) {

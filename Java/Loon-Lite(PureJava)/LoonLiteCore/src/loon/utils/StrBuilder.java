@@ -179,7 +179,7 @@ public class StrBuilder implements CharSequence, Appendable {
 	public StrBuilder append(char[] src, int srcPos, int length) {
 		return insert(this._currentIndex, src, srcPos, length);
 	}
-	
+
 	@Override
 	public StrBuilder append(CharSequence cs) {
 		return insert(this._currentIndex, cs);
@@ -290,6 +290,9 @@ public class StrBuilder implements CharSequence, Appendable {
 	}
 
 	public StrBuilder getChars(int begin, int end, char[] dst, int dstBegin) {
+		if (CollectionUtils.isEmpty(dst)) {
+			return this;
+		}
 		if (begin < 0) {
 			begin = 0;
 		}
@@ -303,6 +306,195 @@ public class StrBuilder implements CharSequence, Appendable {
 		}
 		System.arraycopy(_values, begin, dst, dstBegin, end - begin);
 		return this;
+	}
+
+	public int indexOf(char value) {
+		return indexOf(value, 0, this._currentIndex);
+	}
+
+	public int indexOf(char value, int begin, int end) {
+		if (begin < 0) {
+			begin = 0;
+		}
+		if (end <= 0) {
+			end = 0;
+		} else if (end >= this._currentIndex) {
+			end = this._currentIndex;
+		}
+		if (begin > end) {
+			throw new LSysException("begin > end");
+		}
+		for (int i = begin; i < end; i++) {
+			if (_values[i] == value) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	public int indexOfAny(char[] src, int begin) {
+		if (CollectionUtils.isEmpty(src)) {
+			return -1;
+		}
+		if (begin < 0) {
+			begin = 0;
+		}
+		for (int i = begin; i < _values.length; i++) {
+			for (int valueIndex = 0; valueIndex < src.length; valueIndex++) {
+				if (_values[i] == src[valueIndex]) {
+					return i;
+				}
+			}
+		}
+		return -1;
+	}
+
+	public int indexOf(CharSequence value) {
+		return indexOf(value, false);
+	}
+
+	public int indexOf(CharSequence value, boolean identity) {
+		return indexOf(value, 0, identity);
+	}
+
+	public int indexOf(CharSequence value, int begin, boolean identity) {
+		return indexOf(value, begin, this._currentIndex, identity);
+	}
+
+	public int indexOf(CharSequence value, int begin, int end, boolean identity) {
+		if (StringUtils.isNullOrEmpty(value)) {
+			return -1;
+		}
+		if (begin < 0) {
+			begin = 0;
+		}
+		if (end <= 0) {
+			end = 0;
+		} else if (end >= this._currentIndex) {
+			end = this._currentIndex;
+		}
+		if (begin > end) {
+			throw new LSysException("begin > end");
+		}
+		int count = 0;
+		final int length = value.length();
+		final int size = (_values.length - length) + 1;
+		if (identity == false) {
+			for (int i = begin; i < size && i < end; i++) {
+				if (_values[i] == value.charAt(0)) {
+					count = 1;
+					while ((count < length) && (_values[i + count] == value.charAt(count))) {
+						count++;
+					}
+					if (count == length) {
+						return i;
+					}
+				}
+			}
+		} else {
+			for (int j = begin; j < size && j < end; j++) {
+				if (CharUtils.toLower(_values[j]) == CharUtils.toLower(value.charAt(0))) {
+					count = 1;
+					while ((count < length)
+							&& (CharUtils.toLower(_values[j + count]) == CharUtils.toLower(value.charAt(count)))) {
+						count++;
+					}
+					if (count == length) {
+						return j;
+					}
+				}
+			}
+		}
+		return -1;
+	}
+
+	public int lastIndexOf(char ch) {
+		return lastIndexOf(ch, 0);
+	}
+
+	public int lastIndexOf(char ch, int begin) {
+		return lastIndexOf(ch, begin, this._currentIndex);
+	}
+
+	public int lastIndexOf(char ch, int begin, int end) {
+		if (begin < 0) {
+			begin = 0;
+		}
+		if (end <= 0) {
+			end = 0;
+		} else if (end >= this._currentIndex) {
+			end = this._currentIndex;
+		}
+		if (begin > end) {
+			throw new LSysException("begin > end");
+		}
+		int index = MathUtils.min(end, this._currentIndex);
+		for (; index >= begin; index--) {
+			if (_values[index] == ch) {
+				return index;
+			}
+		}
+		return -1;
+	}
+
+	public int lastIndexOf(CharSequence value) {
+		return lastIndexOf(value, false);
+	}
+
+	public int lastIndexOf(CharSequence value, boolean identity) {
+		return lastIndexOf(value, 0, identity);
+	}
+
+	public int lastIndexOf(CharSequence value, int begin, boolean identity) {
+		return lastIndexOf(value, begin, this._currentIndex, identity);
+	}
+
+	public int lastIndexOf(CharSequence value, int begin, int end, boolean identity) {
+		if (StringUtils.isNullOrEmpty(value)) {
+			return -1;
+		}
+		if (begin < 0) {
+			begin = 0;
+		}
+		if (end <= 0) {
+			end = 0;
+		} else if (end >= this._currentIndex) {
+			end = this._currentIndex;
+		}
+		if (begin > end) {
+			throw new LSysException("begin > end");
+		}
+		final int size = value.length() - 1;
+		final int length = value.length();
+		int index = MathUtils.min(end, this._currentIndex);
+		int count = 0;
+		if (identity == false) {
+			for (; index >= begin; index--) {
+				if (_values[index] == value.charAt(size)) {
+					count = 1;
+					while ((count < length) && (_values[index - count] == value.charAt(size - count))) {
+						count++;
+					}
+					if (count == length) {
+						return index;
+					}
+				}
+			}
+		} else {
+			for (; index >= begin; index--) {
+				if (CharUtils.toLower(_values[index]) == CharUtils.toLower(value.charAt(size))) {
+					count = 1;
+					while ((count < length) && (CharUtils.toLower(_values[index - count]) == CharUtils
+							.toLower(value.charAt(size - count)))) {
+						count++;
+					}
+					if (count == length) {
+						return index;
+					}
+				}
+			}
+		}
+		return -1;
 	}
 
 	public boolean hasStart() {
@@ -484,11 +676,11 @@ public class StrBuilder implements CharSequence, Appendable {
 		return this;
 	}
 
-	//兼容java8不要有重载标记
+	// 兼容java8不要有重载标记
 	public boolean isEmpty() {
 		return _currentIndex == 0 || _values == null || _values.length == 0;
 	}
-	
+
 	@Override
 	public int length() {
 		if (_values == null || _values.length == 0) {

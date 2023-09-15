@@ -652,6 +652,10 @@ public class Vector3f implements Serializable, XYZ, SetXYZ {
 		return dot(v) < 0;
 	}
 
+	public boolean hasDifferentValues(Vector3f vector) {
+		return this.x != vector.x || this.y != vector.y || this.z != vector.z;
+	}
+
 	public Vector3f lerpSelf(float x, float y, float z, float alpha) {
 		this.x += alpha * (x - this.x);
 		this.y += alpha * (y - this.y);

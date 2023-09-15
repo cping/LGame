@@ -184,11 +184,11 @@ public class ArrayByte implements IArray, LRelease {
 	// 正序注入和读取字节数据,既多字节数字的[最低]有效字节位于字节序列的最前面,依次递增.
 	public static final int LITTLE_ENDIAN = 1;
 
-	private byte[] data;
+	private byte[] _buffer;
 
-	private int position;
+	private int _position;
 
-	private int byteOrder;
+	private int _byteOrder;
 
 	private boolean expandArray = true;
 
@@ -220,36 +220,36 @@ public class ArrayByte implements IArray, LRelease {
 	}
 	
 	protected void setBuffer(byte[] data, int pos, int order) {
-		this.data = data;
+		this._buffer = data;
 		this.setOrder(order);
-		this.position = pos;
+		this._position = pos;
 	}
 
 	public ArrayByte setOrder(int type) {
 		expandArray = true;
-		position = 0;
-		byteOrder = type;
+		_position = 0;
+		_byteOrder = type;
 		return this;
 	}
 	
 	public ArrayByte reset() {
-		return setOrder(byteOrder);
+		return setOrder(_byteOrder);
 	}
 
 	public byte get(int idx) {
-		return data[idx];
+		return _buffer[idx];
 	}
 
 	public byte get() {
-		return data[position++];
+		return _buffer[_position++];
 	}
 
 	public int getByteOrder() {
-		return byteOrder;
+		return _byteOrder;
 	}
 
 	public ArrayByte setByteOrder(int byteOrder) {
-		this.byteOrder = byteOrder;
+		this._byteOrder = byteOrder;
 		return this;
 	}
 
@@ -260,35 +260,35 @@ public class ArrayByte implements IArray, LRelease {
 	}
 
 	public int length() {
-		return data.length;
+		return _buffer.length;
 	}
 
 	public ArrayByte setLength(int length) {
-		if (length != data.length) {
-			byte[] oldData = data;
-			data = new byte[length];
-			System.arraycopy(oldData, 0, data, 0, MathUtils.min(oldData.length, length));
-			if (position > length) {
-				position = length;
+		if (length != _buffer.length) {
+			byte[] oldData = _buffer;
+			_buffer = new byte[length];
+			System.arraycopy(oldData, 0, _buffer, 0, MathUtils.min(oldData.length, length));
+			if (_position > length) {
+				_position = length;
 			}
 		}
 		return this;
 	}
 
 	public int position() {
-		return position;
+		return _position;
 	}
 
 	public ArrayByte setPosition(int position) throws LSysException {
-		if (position < 0 || position > data.length) {
+		if (position < 0 || position > _buffer.length) {
 			throw new LSysException("ArrayByte Index Out Of Bounds !");
 		}
-		this.position = position;
+		this._position = position;
 		return this;
 	}
 
 	public void truncate() {
-		setLength(position);
+		setLength(_position);
 	}
 
 	public int available() {
@@ -303,12 +303,12 @@ public class ArrayByte implements IArray, LRelease {
 
 	public int read() throws LSysException {
 		checkAvailable(1);
-		return data[position++] & 0xff;
+		return _buffer[_position++] & 0xff;
 	}
 
 	public byte readByte() throws LSysException {
 		checkAvailable(1);
-		return data[position++];
+		return _buffer[_position++];
 	}
 
 	public int read(byte[] buffer) throws LSysException {
@@ -320,8 +320,8 @@ public class ArrayByte implements IArray, LRelease {
 			return 0;
 		}
 		checkAvailable(length);
-		System.arraycopy(data, position, buffer, offset, length);
-		position += length;
+		System.arraycopy(_buffer, _position, buffer, offset, length);
+		_position += length;
 		return length;
 	}
 
@@ -344,8 +344,8 @@ public class ArrayByte implements IArray, LRelease {
 	}
 
 	public ArrayByte read(OutputStream out) throws IOException {
-		out.write(data, position, data.length - position);
-		position = data.length;
+		out.write(_buffer, _position, _buffer.length - _position);
+		_position = _buffer.length;
 		return this;
 	}
 
@@ -355,10 +355,10 @@ public class ArrayByte implements IArray, LRelease {
 
 	protected int read2Byte() throws LSysException {
 		checkAvailable(2);
-		if (byteOrder == LITTLE_ENDIAN) {
-			return ((data[position++] & 0xff) | ((data[position++] & 0xff) << 8));
+		if (_byteOrder == LITTLE_ENDIAN) {
+			return ((_buffer[_position++] & 0xff) | ((_buffer[_position++] & 0xff) << 8));
 		} else {
-			return (((data[position++] & 0xff) << 8) | (data[position++] & 0xff));
+			return (((_buffer[_position++] & 0xff) << 8) | (_buffer[_position++] & 0xff));
 		}
 	}
 
@@ -378,7 +378,7 @@ public class ArrayByte implements IArray, LRelease {
 		int firstByte = (0x000000FF & (int) readByte());
 		int secondByte = (0x000000FF & (int) readByte());
 		long result = 0;
-		if (this.byteOrder == LITTLE_ENDIAN) {
+		if (this._byteOrder == LITTLE_ENDIAN) {
 			result = (long) ((secondByte << 8 | firstByte) & 0xFFFFFFFFL);
 		} else {
 			result = (long) ((firstByte << 8 | secondByte) & 0xFFFFFFFFL);
@@ -392,7 +392,7 @@ public class ArrayByte implements IArray, LRelease {
 		int thirdByte = (0x000000FF & (int) readByte());
 		int fourthByte = (0x000000FF & (int) readByte());
 		long result = 0;
-		if (this.byteOrder == LITTLE_ENDIAN) {
+		if (this._byteOrder == LITTLE_ENDIAN) {
 			result = ((long) (fourthByte << 24 | thirdByte << 16 | secondByte << 8 | firstByte)) & 0xFFFFFFFFL;
 		} else {
 			result = ((long) (firstByte << 24 | secondByte << 16 | thirdByte << 8 | fourthByte)) & 0xFFFFFFFFL;
@@ -402,12 +402,12 @@ public class ArrayByte implements IArray, LRelease {
 
 	public int readInt() throws LSysException {
 		checkAvailable(4);
-		if (byteOrder == LITTLE_ENDIAN) {
-			return (data[position++] & 0xff) | ((data[position++] & 0xff) << 8) | ((data[position++] & 0xff) << 16)
-					| ((data[position++] & 0xff) << 24);
+		if (_byteOrder == LITTLE_ENDIAN) {
+			return (_buffer[_position++] & 0xff) | ((_buffer[_position++] & 0xff) << 8) | ((_buffer[_position++] & 0xff) << 16)
+					| ((_buffer[_position++] & 0xff) << 24);
 		} else {
-			return ((data[position++] & 0xff) << 24) | ((data[position++] & 0xff) << 16)
-					| ((data[position++] & 0xff) << 8) | (data[position++] & 0xff);
+			return ((_buffer[_position++] & 0xff) << 24) | ((_buffer[_position++] & 0xff) << 16)
+					| ((_buffer[_position++] & 0xff) << 8) | (_buffer[_position++] & 0xff);
 		}
 	}
 
@@ -417,7 +417,7 @@ public class ArrayByte implements IArray, LRelease {
 
 	public long readLong() throws LSysException {
 		checkAvailable(8);
-		if (byteOrder == LITTLE_ENDIAN) {
+		if (_byteOrder == LITTLE_ENDIAN) {
 			return (readInt() & 0xffffffffL) | ((readInt() & 0xffffffffL) << 32);
 		} else {
 			return ((readInt() & 0xffffffffL) << 32) | (readInt() & 0xffffffffL);
@@ -457,7 +457,7 @@ public class ArrayByte implements IArray, LRelease {
 					char ch = (char) (((a & 0x0f) << 12) | ((b & 0x3f) << 6) | (c & 0x3f));
 					strings.append(ch);
 				} else {
-					throw new LSysException("null");
+					throw new LSysException(LSystem.NULL);
 				}
 			}
 		}
@@ -465,96 +465,103 @@ public class ArrayByte implements IArray, LRelease {
 	}
 
 	private void ensureCapacity(int dataSize) {
-		if (position + dataSize > data.length) {
+		if (_position + dataSize > _buffer.length) {
 			if (expandArray) {
-				setLength((position + dataSize) * 2);
+				setLength((_position + dataSize) * 2);
 			} else {
-				setLength(position + dataSize);
+				setLength(_position + dataSize);
 			}
 		}
 	}
 
-	public void writeByte(byte v) {
+	public ArrayByte writeByte(byte v) {
 		ensureCapacity(1);
-		data[position++] = v;
+		_buffer[_position++] = v;
+		return this;
 	}
 
-	public void writeByte(int v) {
+	public ArrayByte writeByte(int v) {
 		ensureCapacity(1);
-		data[position++] = (byte) v;
+		_buffer[_position++] = (byte) v;
+		return this;
 	}
 
-	public void write(byte[] buffer) {
-		write(buffer, 0, buffer.length);
+	public ArrayByte write(byte[] data) {
+		write(data, 0, data.length);
+		return this;
 	}
 
-	public void write(byte[] buffer, int offset, int length) {
+	public ArrayByte write(byte[] data, int offset, int length) {
 		if (length == 0) {
-			return;
+			return this;
 		}
 		ensureCapacity(length);
-		System.arraycopy(buffer, offset, data, position, length);
-		position += length;
+		System.arraycopy(data, offset, _buffer, _position, length);
+		_position += length;
+		return this;
 	}
 
-	public void writeBoolean(boolean v) {
-		writeByte(v ? -1 : 0);
+	public ArrayByte writeBoolean(boolean v) {
+		return writeByte(v ? -1 : 0);
 	}
 
-	public void writeChar(char v) {
-		writeShort(v);
+	public ArrayByte writeChar(char v) {
+		return writeShort(v);
 	}
 
-	public void writeShort(int v) {
+	public ArrayByte writeShort(int v) {
 		ensureCapacity(2);
-		if (byteOrder == LITTLE_ENDIAN) {
-			data[position++] = (byte) (v & 0xff);
-			data[position++] = (byte) ((v >> 8) & 0xff);
+		if (_byteOrder == LITTLE_ENDIAN) {
+			_buffer[_position++] = (byte) (v & 0xff);
+			_buffer[_position++] = (byte) ((v >> 8) & 0xff);
 		} else {
-			data[position++] = (byte) ((v >> 8) & 0xff);
-			data[position++] = (byte) (v & 0xff);
+			_buffer[_position++] = (byte) ((v >> 8) & 0xff);
+			_buffer[_position++] = (byte) (v & 0xff);
 		}
+		return this;
 	}
 
-	public void writeInt(byte[] ba, int start, int len) {
+	public ArrayByte writeInt(byte[] ba, int start, int len) {
 		int end = start + len;
 		for (int i = start; i < end; i++) {
 			writeInt(ba[i]);
 		}
+		return this;
 	}
 
-	public void writeInt(int v) {
+	public ArrayByte writeInt(int v) {
 		ensureCapacity(4);
-		if (byteOrder == LITTLE_ENDIAN) {
-			data[position++] = (byte) (v & 0xff);
-			data[position++] = (byte) ((v >> 8) & 0xff);
-			data[position++] = (byte) ((v >> 16) & 0xff);
-			data[position++] = (byte) (v >>> 24);
+		if (_byteOrder == LITTLE_ENDIAN) {
+			_buffer[_position++] = (byte) (v & 0xff);
+			_buffer[_position++] = (byte) ((v >> 8) & 0xff);
+			_buffer[_position++] = (byte) ((v >> 16) & 0xff);
+			_buffer[_position++] = (byte) (v >>> 24);
 		} else {
-			data[position++] = (byte) (v >>> 24);
-			data[position++] = (byte) ((v >> 16) & 0xff);
-			data[position++] = (byte) ((v >> 8) & 0xff);
-			data[position++] = (byte) (v & 0xff);
+			_buffer[_position++] = (byte) (v >>> 24);
+			_buffer[_position++] = (byte) ((v >> 16) & 0xff);
+			_buffer[_position++] = (byte) ((v >> 8) & 0xff);
+			_buffer[_position++] = (byte) (v & 0xff);
 		}
+		return this;
 	}
 
-	public void writeLong(long v) {
+	public ArrayByte writeLong(long v) {
 		ensureCapacity(8);
-		if (byteOrder == LITTLE_ENDIAN) {
+		if (_byteOrder == LITTLE_ENDIAN) {
 			writeInt((int) (v & 0xffffffffL));
 			writeInt((int) (v >>> 32));
 		} else {
 			writeInt((int) (v >>> 32));
 			writeInt((int) (v & 0xffffffffL));
 		}
+		return this;
 	}
 
-	public void writeFloat(float v) {
-		writeInt(NumberUtils.floatToIntBits(v));
+	public ArrayByte writeFloat(float v) {
+		return writeInt(NumberUtils.floatToIntBits(v));
 	}
 
-	public void writeUTF(String s) throws LSysException {
-
+	public ArrayByte writeUTF(String s) throws LSysException {
 		int utfLength = 0;
 		for (int i = 0; i < s.length(); i++) {
 			char ch = s.charAt(i);
@@ -587,32 +594,34 @@ public class ArrayByte implements IArray, LRelease {
 				writeByte(0x80 | (0x3f & ch));
 			}
 		}
+		return this;
 	}
 
 	public byte[] getData() {
-		return data;
+		return _buffer;
 	}
 
 	public byte[] getBytes() {
 		truncate();
-		return data;
+		return _buffer;
 	}
 
 	public int limit() {
-		return data == null ? 0 : data.length;
+		return _buffer == null ? 0 : _buffer.length;
 	}
 
 	public boolean isExpandArray() {
 		return expandArray;
 	}
 
-	public void setExpandArray(boolean expandArray) {
+	public ArrayByte setExpandArray(boolean expandArray) {
 		this.expandArray = expandArray;
+		return this;
 	}
 
 	public ArrayByte setArray(ArrayByte uarr, int offset) {
 		int max = uarr.length() < (this.length() - offset) ? uarr.length() : (length() - offset);
-		this.write(uarr.data, offset, max);
+		this.write(uarr._buffer, offset, max);
 		return this;
 	}
 
@@ -622,7 +631,7 @@ public class ArrayByte implements IArray, LRelease {
 		}
 		int len = end - begin;
 		ArrayByte bytes = new ArrayByte(len);
-		bytes.write(this.data, begin, len);
+		bytes.write(this._buffer, begin, len);
 		return bytes;
 	}
 
@@ -651,16 +660,17 @@ public class ArrayByte implements IArray, LRelease {
 	@Override
 	public void clear() {
 		this.reset();
-		this.data = new byte[length()];
+		this._buffer = null;
+		this._buffer = new byte[length()];
 	}
 
 	public ArrayByte cpy() {
-		return new ArrayByte(CollectionUtils.copyOf(data), position, byteOrder);
+		return new ArrayByte(CollectionUtils.copyOf(_buffer), _position, _byteOrder);
 	}
 
 	@Override
 	public boolean isEmpty() {
-		return this.data == null || length() == 0;
+		return this._buffer == null || length() == 0;
 	}
 
 	@Override
@@ -673,15 +683,15 @@ public class ArrayByte implements IArray, LRelease {
 		if (size != o.size()) {
 			return false;
 		}
-		final int order = this.byteOrder;
-		final int rOrder = o.byteOrder;
+		final int order = this._byteOrder;
+		final int rOrder = o._byteOrder;
 		if (order != rOrder) {
 			return false;
 		}
-		final int mark = this.position;
-		final byte[] buf = this.data;
-		final int rMark = o.position;
-		final byte[] rBuf = o.data;
+		final int mark = this._position;
+		final byte[] buf = this._buffer;
+		final int rMark = o._position;
+		final byte[] rBuf = o._buffer;
 		for (int i = 0; i < size; ++i) {
 			if (buf[i + mark] != rBuf[i + rMark]) {
 				return false;
@@ -692,21 +702,21 @@ public class ArrayByte implements IArray, LRelease {
 
 	@Override
 	public String toString() {
-		return new String(Base64Coder.encode(data));
+		return new String(Base64Coder.encode(_buffer));
 	}
 
 	@Override
 	public int hashCode() {
 		int hashCode = 1;
-		for (int i = data.length - 1; i > -1; i--) {
-			hashCode = 31 * hashCode + data[i];
+		for (int i = _buffer.length - 1; i > -1; i--) {
+			hashCode = 31 * hashCode + _buffer[i];
 		}
 		return hashCode;
 	}
 
 	@Override
 	public void close() {
-		data = null;
+		_buffer = null;
 	}
 
 }

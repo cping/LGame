@@ -477,6 +477,21 @@ public abstract class LContainer extends LComponent implements IArray {
 		return -1;
 	}
 
+	/**
+	 * 删除alpha大于或小于指定范围的组件
+	 * 
+	 * @param comp
+	 * @param more
+	 * @param limit
+	 * @return
+	 */
+	public boolean removeWhenAlpha(LComponent comp, boolean more, float limit) {
+		if (comp != null && (more ? comp.getAlpha() >= limit : comp.getAlpha() <= limit)) {
+			return remove(comp) > 0;
+		}
+		return false;
+	}
+
 	public boolean removeTag(Object tag) {
 		if (_component_isClose) {
 			return false;
@@ -607,12 +622,13 @@ public abstract class LContainer extends LComponent implements IArray {
 		this.childCount = 0;
 	}
 
-	public void replace(LComponent oldComp, LComponent newComp) {
+	public LComponent replace(LComponent oldComp, LComponent newComp) {
 		if (_component_isClose) {
-			return;
+			return this;
 		}
 		int index = this.remove(oldComp);
 		this.add(newComp, index);
+		return this;
 	}
 
 	@Override
@@ -715,15 +731,15 @@ public abstract class LContainer extends LComponent implements IArray {
 		}
 	}
 
-	public void sendToFront(LComponent comp) {
+	public LComponent sendToFront(LComponent comp) {
 		if (_component_isClose) {
-			return;
+			return this;
 		}
 		if (this.childCount <= 1 || this._childs[0] == comp) {
-			return;
+			return this;
 		}
 		if (_childs[0] == comp) {
-			return;
+			return this;
 		}
 		for (int i = 0; i < this.childCount; i++) {
 			if (this._childs[i] == comp) {
@@ -736,17 +752,18 @@ public abstract class LContainer extends LComponent implements IArray {
 				break;
 			}
 		}
+		return this;
 	}
 
-	public void sendToBack(LComponent comp) {
+	public LComponent sendToBack(LComponent comp) {
 		if (_component_isClose) {
-			return;
+			return this;
 		}
 		if (this.childCount <= 1 || this._childs[this.childCount - 1] == comp) {
-			return;
+			return this;
 		}
 		if (_childs[this.childCount - 1] == comp) {
-			return;
+			return this;
 		}
 		for (int i = 0; i < this.childCount; i++) {
 			if (this._childs[i] == comp) {
@@ -759,16 +776,18 @@ public abstract class LContainer extends LComponent implements IArray {
 				break;
 			}
 		}
+		return this;
 	}
 
-	public void sortComponents() {
+	public LComponent sortComponents() {
 		if (this._component_isClose) {
-			return;
+			return this;
 		}
 		if (this.childCount <= 1) {
-			return;
+			return this;
 		}
 		compSorter.sort(this._childs);
+		return this;
 	}
 
 	protected void transferFocus(LComponent component) {

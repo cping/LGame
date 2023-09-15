@@ -248,6 +248,18 @@ public class Vector4f implements Serializable, XYZW, SetXYZW {
 		return x * v.x + y * v.y + z * v.z + w * v.w;
 	}
 
+	public boolean hasSameDirection(Vector4f v) {
+		return dot(v) > 0;
+	}
+
+	public boolean hasOppositeDirection(Vector4f v) {
+		return dot(v) < 0;
+	}
+
+	public boolean hasDifferentValues(Vector4f vector) {
+		return this.x != vector.x || this.y != vector.y || this.z != vector.z || this.w != vector.w;
+	}
+
 	public Vector4f normalize() {
 		return cpy().normalizeSelf();
 	}

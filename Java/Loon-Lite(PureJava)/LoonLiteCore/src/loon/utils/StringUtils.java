@@ -1136,6 +1136,18 @@ final public class StringUtils extends CharUtils {
 		return v == null || v.length() == 0;
 	}
 
+	public static boolean IsNullOrWhitespace(CharSequence v) {
+		if (v == null) {
+			return true;
+		}
+		for (int i = 0; i < v.length(); i++) {
+			if (!isWhitespace(v.charAt(i))) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	/**
 	 * 判断String是否非空
 	 * 

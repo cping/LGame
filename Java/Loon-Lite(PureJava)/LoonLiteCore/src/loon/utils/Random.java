@@ -39,9 +39,9 @@ public class Random {
 	private final static long LowerMask = 0x7fffffff;
 	private final static long UpperMask = 0x80000000;
 	private final static long Bitmask32 = 0xffffffff;
-	
+
 	private final static int N = 624;
-	
+
 	private final static long W = 32;
 	private final static long M = 397;
 	private final static long A = 0x9908b0df;
@@ -246,7 +246,7 @@ public class Random {
 	}
 
 	public float nextAngleRad() {
-		return nextFloat(0f,  MathUtils.TWO_PI);
+		return nextFloat(0f, MathUtils.TWO_PI);
 	}
 
 	public float nextAngleDeg() {
@@ -279,6 +279,14 @@ public class Random {
 
 	public Vector2f nextVec2(RectBox rect) {
 		return nextVec2(nextFloat(rect.x, rect.x + rect.width), nextFloat(rect.y, rect.y + rect.height));
+	}
+
+	public Vector2f nextCircleVec2(float radius) {
+		final float calRadius = MathUtils.sqrt(nextFloat(0f, 1f)) * radius;
+		final float angle = nextAngleRad();
+		final float x = (calRadius * MathUtils.cos(angle));
+		final float y = (calRadius * MathUtils.sin(angle));
+		return new Vector2f(MathUtils.abs(x), MathUtils.abs(y));
 	}
 
 	public LColor nextColor() {
@@ -324,4 +332,5 @@ public class Random {
 		point.setY(nextFloat(rect.y, rect.y + rect.height));
 		return point;
 	}
+
 }

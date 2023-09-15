@@ -281,6 +281,14 @@ public class Random {
 		return nextVec2(nextFloat(rect.x, rect.x + rect.width), nextFloat(rect.y, rect.y + rect.height));
 	}
 
+	public Vector2f nextCircleVec2(float radius) {
+		final float calRadius = MathUtils.sqrt(nextFloat(0f, 1f)) * radius;
+		final float angle = nextAngleRad();
+		final float x = (calRadius * MathUtils.cos(angle));
+		final float y = (calRadius * MathUtils.sin(angle));
+		return new Vector2f(MathUtils.abs(x), MathUtils.abs(y));
+	}
+
 	public LColor nextColor() {
 		return nextColor(0, 1f);
 	}
@@ -324,4 +332,5 @@ public class Random {
 		point.setY(nextFloat(rect.y, rect.y + rect.height));
 		return point;
 	}
+
 }
