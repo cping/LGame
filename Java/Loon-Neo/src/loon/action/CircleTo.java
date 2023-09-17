@@ -27,10 +27,10 @@ import loon.utils.timer.Duration;
 
 public class CircleTo extends ActionEvent {
 
-	private float x;
+	private float currentX;
 
-	private float y;
-
+	private float currentY;
+	
 	private float startX = -1;
 
 	private float startY = -1;
@@ -86,27 +86,27 @@ public class CircleTo extends ActionEvent {
 		if (startY == -1) {
 			this.startY = original.getY();
 		}
-		this.x = (startX + radius);
-		this.y = startY;
+		this.currentX = (startX + radius);
+		this.currentY = startY;
 	}
 
 	@Override
 	public void update(long elapsedTime) {
 		delta += MathUtils.max(Duration.toS(elapsedTime), speed);
 		final float angle = MathUtils.toRadians(this.velocity * delta);
-		this.x = (this.startX + this.radius * MathUtils.cos(angle));
-		this.y = (this.startY + this.radius * MathUtils.sin(angle));
+		this.currentX = (this.startX + this.radius * MathUtils.cos(angle));
+		this.currentY = (this.startY + this.radius * MathUtils.sin(angle));
 		synchronized (original) {
-			movePos(x + offsetX, y + offsetY);
+			movePos(currentX + offsetX, currentY + offsetY);
 		}
 	}
 
 	public float getX() {
-		return x;
+		return currentX;
 	}
 
 	public float getY() {
-		return y;
+		return currentY;
 	}
 
 	public float getStartX() {

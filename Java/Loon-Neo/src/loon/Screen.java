@@ -87,6 +87,7 @@ import loon.geom.Line;
 import loon.geom.PointF;
 import loon.geom.PointI;
 import loon.geom.RectBox;
+import loon.geom.SetXY;
 import loon.geom.Triangle2f;
 import loon.geom.Vector2f;
 import loon.geom.XY;
@@ -131,7 +132,7 @@ import loon.utils.timer.LTimerContext;
  * 之类函数改变默认组件显示顺序.精灵和组件的setZ函数只在同类排序时生效,不能改变整个Screen的默认显示顺序.
  * 
  */
-public abstract class Screen extends PlayerUtils implements SysInput, LRelease, XY {
+public abstract class Screen extends PlayerUtils implements SysInput, LRelease, SetXY, XY {
 
 	public final static int NO_BUTTON = -1;
 
@@ -224,16 +225,16 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	private DrawListener<Screen> _drawListener;
 
-	private boolean spriteRun, desktopRun, stageRun;
+	private boolean _curSpriteRun, _curDesktopRun, _curStageRun;
 
-	private boolean fristPaintFlag;
+	private boolean _curFristPaintFlag;
 
-	private boolean secondPaintFlag;
+	private boolean _curSecondPaintFlag;
 
-	private boolean lastPaintFlag;
+	private boolean _curLastPaintFlag;
 
 	// 0.3.2版新增的简易重力控制接口
-	private GravityHandler gravityHandler;
+	private GravityHandler _gravityHandler;
 
 	private Viewport _baseViewport;
 
@@ -267,22 +268,20 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	private boolean _isExistViewport = false;
 
-	private Accelerometer.SensorDirection direction = Accelerometer.SensorDirection.EMPTY;
+	private Accelerometer.SensorDirection _direction = Accelerometer.SensorDirection.EMPTY;
 
-	private int mode, frame;
+	private int _currentMode, _currentFrame;
 
-	private boolean processing = true;
+	private LTexture _currentScreenBackground;
 
-	private LTexture currentScreenBackground;
+	protected LProcess _processHandler;
 
-	protected LProcess handler;
-
-	private int width, height, halfWidth, halfHeight;
+	private int _currentWidth, _currentHeight, _halfWidth, _halfHeight;
 	// 精灵集合
-	private Sprites sprites;
+	private Sprites _currentSprites;
 
 	// 桌面集合
-	private Desktop desktop;
+	private Desktop _currentDesktop;
 
 	private final Disposes _disposes = new Disposes();
 
@@ -292,92 +291,98 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	private boolean _desktopPenetrate = false;
 
-	private boolean isLoad, isLock, isClose, isTranslate, isGravity;
+	private boolean _isLoad, _isLock, _isClose;
 
-	private float tx, ty;
+	private boolean _isTranslate, _isGravity;
 
-	private float lastTouchX, lastTouchY, touchDX, touchDY;
+	private boolean _isProcessing = true;
+
+	protected boolean _isNext;
+
+	private float _currentX, _currentY;
+
+	private float _lastTouchX, _lastTouchY, _touchDX, _touchDY;
 
 	public long elapsedTime;
 
-	private final IntMap<Boolean> keyType = new IntMap<Boolean>();
+	private final IntMap<Boolean> _keyTypes = new IntMap<Boolean>();
 
-	private final IntMap<Boolean> touchType = new IntMap<Boolean>();
+	private final IntMap<Boolean> _touchTypes = new IntMap<Boolean>();
 
-	private int touchButtonPressed = NO_BUTTON, touchButtonReleased = NO_BUTTON;
+	private int _touchButtonPressed = NO_BUTTON, _touchButtonReleased = NO_BUTTON;
 
-	private int keyButtonPressed = NO_KEY, keyButtonReleased = NO_KEY;
-
-	protected boolean isNext;
+	private int _keyButtonPressed = NO_KEY, _keyButtonReleased = NO_KEY;
 
 	// 首先绘制的对象
-	private PaintOrder fristOrder;
+	private PaintOrder _curFristOrder;
 
 	// 其次绘制的对象
-	private PaintOrder secondOrder;
+	private PaintOrder _curSecondOrder;
 
 	// 最后绘制的对象
-	private PaintOrder lastOrder;
+	private PaintOrder _curLastOrder;
 
-	private PaintOrder userOrder, spriteOrder, desktopOrder;
+	private PaintOrder _curUserOrder, _curSpriteOrder, _curDesktopOrder;
 
-	private boolean replaceLoading;
+	private boolean _replaceLoading;
 
-	private int replaceScreenSpeed = 8;
+	private int _replaceScreenSpeed = 8;
 
-	private final LTimer replaceDelay = new LTimer(0);
+	private final LTimer _replaceDelay = new LTimer(0);
 
-	private Screen replaceDstScreen;
+	private Screen _replaceDstScreen;
 
-	private ScreenSwitch screenSwitch;
+	private ScreenSwitch _screenSwitch;
 
-	private final EmptyObject dstPos = new EmptyObject();
+	private final EmptyObject _curDstPos = new EmptyObject();
 
-	private MoveMethod replaceMethod = MoveMethod.FROM_LEFT;
+	private MoveMethod _curReplaceMethod = MoveMethod.FROM_LEFT;
 
-	private boolean isScreenFrom = false;
+	private boolean _isScreenFrom = false;
 
 	// 每次screen处理事件循环的额外间隔时间
-	private final LTimer delayTimer = new LTimer(0);
+	private final LTimer _delayTimer = new LTimer(0);
 	// 希望Screen中所有组件的update暂停的时间
-	private final LTimer pauseTimer = new LTimer(LSystem.SECOND);
+	private final LTimer _pauseTimer = new LTimer(LSystem.SECOND);
 	// 是否已经暂停
-	private boolean isTimerPaused = false;
+	private boolean _isTimerPaused = false;
 
 	private int _screenIndex = 0;
 
 	public static final class PaintOrder {
 
-		private byte type;
+		private byte _orderType;
 
-		private Screen screen;
+		private Screen _orderScreen;
 
 		public PaintOrder(byte t, Screen s) {
-			this.type = t;
-			this.screen = s;
+			this._orderType = t;
+			this._orderScreen = s;
 		}
 
 		void paint(GLEx g) {
-			switch (type) {
+			switch (_orderType) {
 			case DRAW_USER:
-				DrawListener<Screen> drawing = screen._drawListener;
+				DrawListener<Screen> drawing = _orderScreen._drawListener;
 				if (drawing != null) {
-					drawing.draw(g, screen.getX(), screen.getY());
+					drawing.draw(g, _orderScreen.getX(), _orderScreen.getY());
 				}
-				screen.draw(g);
+				_orderScreen.draw(g);
 				break;
 			case DRAW_SPRITE:
-				if (screen.spriteRun) {
-					screen.sprites.createUI(g);
-				} else if (screen.spriteRun = (screen.sprites != null && screen.sprites.size() > 0)) {
-					screen.sprites.createUI(g);
+				if (_orderScreen._curSpriteRun) {
+					_orderScreen._currentSprites.createUI(g);
+				} else if (_orderScreen._curSpriteRun = (_orderScreen._currentSprites != null
+						&& _orderScreen._currentSprites.size() > 0)) {
+					_orderScreen._currentSprites.createUI(g);
 				}
 				break;
 			case DRAW_DESKTOP:
-				if (screen.desktopRun) {
-					screen.desktop.createUI(g);
-				} else if (screen.desktopRun = (screen.desktop != null && screen.desktop.size() > 0)) {
-					screen.desktop.createUI(g);
+				if (_orderScreen._curDesktopRun) {
+					_orderScreen._currentDesktop.createUI(g);
+				} else if (_orderScreen._curDesktopRun = (_orderScreen._currentDesktop != null
+						&& _orderScreen._currentDesktop.size() > 0)) {
+					_orderScreen._currentDesktop.createUI(g);
 				}
 				break;
 			case DRAW_EMPTY:
@@ -388,24 +393,24 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 		void update(LTimerContext c) {
 			try {
-				switch (type) {
+				switch (_orderType) {
 				case DRAW_USER:
-					DrawListener<Screen> drawing = screen._drawListener;
+					DrawListener<Screen> drawing = _orderScreen._drawListener;
 					if (drawing != null) {
 						drawing.update(c.timeSinceLastUpdate);
 					}
-					screen.alter(c);
+					_orderScreen.alter(c);
 					break;
 				case DRAW_SPRITE:
-					screen.spriteRun = (screen.sprites != null && screen.sprites.size() > 0);
-					if (screen.spriteRun) {
-						screen.sprites.update(c.timeSinceLastUpdate);
+					_orderScreen._curSpriteRun = (_orderScreen._currentSprites != null && _orderScreen._currentSprites.size() > 0);
+					if (_orderScreen._curSpriteRun) {
+						_orderScreen._currentSprites.update(c.timeSinceLastUpdate);
 					}
 					break;
 				case DRAW_DESKTOP:
-					screen.desktopRun = (screen.desktop != null && screen.desktop.size() > 0);
-					if (screen.desktopRun) {
-						screen.desktop.update(c.timeSinceLastUpdate);
+					_orderScreen._curDesktopRun = (_orderScreen._currentDesktop != null && _orderScreen._currentDesktop.size() > 0);
+					if (_orderScreen._curDesktopRun) {
+						_orderScreen._currentDesktop.update(c.timeSinceLastUpdate);
 					}
 					break;
 				case DRAW_EMPTY:
@@ -472,24 +477,24 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	protected final PaintOrder DRAW_USER_PAINT() {
-		if (userOrder == null) {
-			userOrder = new PaintOrder(DRAW_USER, this);
+		if (_curUserOrder == null) {
+			_curUserOrder = new PaintOrder(DRAW_USER, this);
 		}
-		return userOrder;
+		return _curUserOrder;
 	}
 
 	protected final PaintOrder DRAW_SPRITE_PAINT() {
-		if (spriteOrder == null) {
-			spriteOrder = new PaintOrder(DRAW_SPRITE, this);
+		if (_curSpriteOrder == null) {
+			_curSpriteOrder = new PaintOrder(DRAW_SPRITE, this);
 		}
-		return spriteOrder;
+		return _curSpriteOrder;
 	}
 
 	protected final PaintOrder DRAW_DESKTOP_PAINT() {
-		if (desktopOrder == null) {
-			desktopOrder = new PaintOrder(DRAW_DESKTOP, this);
+		if (_curDesktopOrder == null) {
+			_curDesktopOrder = new PaintOrder(DRAW_DESKTOP, this);
 		}
-		return desktopOrder;
+		return _curDesktopOrder;
 	}
 
 	/**
@@ -499,140 +504,155 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @param two
 	 * @param three
 	 */
-	public void setDrawOrder(DrawOrder one, DrawOrder two, DrawOrder three) {
+	public Screen setDrawOrder(DrawOrder one, DrawOrder two, DrawOrder three) {
 		this.setFristOrder(toPaintOrder(one));
 		this.setSecondOrder(toPaintOrder(two));
 		this.setLastOrder(toPaintOrder(three));
+		return this;
 	}
 
 	/**
 	 * 设置为默认渲染顺序
 	 */
-	public void defaultDraw() {
-		setDrawOrder(DrawOrder.SPRITE, DrawOrder.DESKTOP, DrawOrder.USER);
+	public Screen defaultDraw() {
+		return setDrawOrder(DrawOrder.SPRITE, DrawOrder.DESKTOP, DrawOrder.USER);
 	}
 
 	/**
 	 * 把精灵渲染置于桌面与桌面之间
 	 */
-	public void centerSpriteDraw() {
+	public Screen centerSpriteDraw() {
 		setFristOrder(DRAW_DESKTOP_PAINT());
 		setSecondOrder(DRAW_SPRITE_PAINT());
 		setLastOrder(DRAW_USER_PAINT());
+		return this;
 	}
 
 	/**
 	 * 最后绘制精灵
 	 */
-	public void lastSpriteDraw() {
+	public Screen lastSpriteDraw() {
 		setFristOrder(DRAW_USER_PAINT());
 		setSecondOrder(DRAW_DESKTOP_PAINT());
 		setLastOrder(DRAW_SPRITE_PAINT());
+		return this;
 	}
 
 	/**
 	 * 只绘制精灵
 	 */
-	public void onlySpriteDraw() {
+	public Screen onlySpriteDraw() {
 		setFristOrder(null);
 		setSecondOrder(null);
 		setLastOrder(DRAW_SPRITE_PAINT());
+		return this;
 	}
 
 	/**
 	 * 把桌面渲染置于精灵与桌面之间
 	 */
-	public void centerDesktopDraw() {
+	public Screen centerDesktopDraw() {
 		setFristOrder(DRAW_SPRITE_PAINT());
 		setSecondOrder(DRAW_DESKTOP_PAINT());
 		setLastOrder(DRAW_USER_PAINT());
+		return this;
 	}
 
 	/**
 	 * 最后绘制组件
 	 */
-	public void lastDesktopDraw() {
+	public Screen lastDesktopDraw() {
 		setFristOrder(DRAW_USER_PAINT());
 		setSecondOrder(DRAW_SPRITE_PAINT());
 		setLastOrder(DRAW_DESKTOP_PAINT());
+		return this;
 	}
 
 	/**
 	 * 只绘制组件
 	 */
-	public void onlyDesktopDraw() {
+	public Screen onlyDesktopDraw() {
 		setFristOrder(null);
 		setSecondOrder(null);
 		setLastOrder(DRAW_DESKTOP_PAINT());
+		return this;
 	}
 
 	/**
 	 * 最后绘制用户界面
 	 */
-	public void lastUserDraw() {
+	public Screen lastUserDraw() {
 		setFristOrder(DRAW_SPRITE_PAINT());
 		setSecondOrder(DRAW_DESKTOP_PAINT());
 		setLastOrder(DRAW_USER_PAINT());
+		return this;
 	}
 
 	/**
 	 * 优先绘制用户界面
 	 */
-	public void fristUserDraw() {
+	public Screen fristUserDraw() {
 		setFristOrder(DRAW_USER_PAINT());
 		setSecondOrder(DRAW_SPRITE_PAINT());
 		setLastOrder(DRAW_DESKTOP_PAINT());
+		return this;
 	}
 
 	/**
 	 * 把用户渲染置于精灵与桌面之间
 	 */
-	public void centerUserDraw() {
+	public Screen centerUserDraw() {
 		setFristOrder(DRAW_SPRITE_PAINT());
 		setSecondOrder(DRAW_USER_PAINT());
 		setLastOrder(DRAW_DESKTOP_PAINT());
+		return this;
 	}
 
 	/**
 	 * 只保留一个用户渲染接口（即无组件会被渲染出来）
 	 */
-	public void onlyUserDraw() {
+	public Screen onlyUserDraw() {
 		setFristOrder(null);
 		setSecondOrder(null);
 		setLastOrder(DRAW_USER_PAINT());
+		return this;
 	}
 
 	public boolean containsActionKey(int keyCode) {
 		return _keyActions.containsKey(keyCode);
 	}
 
-	public void addActionKey(int keyCode, ActionKey e) {
+	public Screen addActionKey(int keyCode, ActionKey e) {
 		_keyActions.put(keyCode, e);
+		return this;
 	}
 
-	public void removeActionKey(int keyCode) {
-		_keyActions.remove(keyCode);
+	public ActionKey removeActionKey(int keyCode) {
+		return _keyActions.remove(keyCode);
 	}
 
-	public void pressActionKey(int keyCode) {
+	public Screen pressActionKey(int keyCode) {
 		ActionKey key = _keyActions.get(keyCode);
 		if (key != null) {
 			key.press();
 		}
+		return this;
 	}
 
-	public void releaseActionKey(int keyCode) {
+	public Screen releaseActionKey(int keyCode) {
 		ActionKey key = _keyActions.get(keyCode);
 		if (key != null) {
 			key.release();
 		}
+		return this;
 	}
 
-	public void clearActionKey() {
+	public Screen clearActionKey() {
 		_keyActions.clear();
+		return this;
 	}
 
-	public void releaseActionKeys() {
+	public Screen releaseActionKeys() {
 		int keySize = _keyActions.size();
 		if (keySize > 0) {
 			for (Iterator<ActionKey> it = _keyActions.iterator(); it.hasNext();) {
@@ -642,6 +662,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 				}
 			}
 		}
+		return this;
 	}
 
 	public SkinManager skin() {
@@ -663,14 +684,14 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	public Screen clearTouched() {
-		this.touchButtonPressed = NO_BUTTON;
-		this.touchButtonReleased = NO_BUTTON;
-		this.touchDX = -1;
-		this.touchDY = -1;
-		this.lastTouchX = -1;
-		this.lastTouchY = -1;
-		if (touchType != null) {
-			touchType.clear();
+		this._touchButtonPressed = NO_BUTTON;
+		this._touchButtonReleased = NO_BUTTON;
+		this._touchDX = -1;
+		this._touchDY = -1;
+		this._lastTouchX = -1;
+		this._lastTouchY = -1;
+		if (_touchTypes != null) {
+			_touchTypes.clear();
 		}
 		if (_touchListener != null) {
 			_touchListener.clear();
@@ -686,10 +707,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return false;
 	}
 
-	public void setTouchedEnabled(boolean e) {
+	public Screen setTouchedEnabled(boolean e) {
 		if (_touchListener != null) {
 			_touchListener.setEnabled(e);
 		}
+		return this;
 	}
 
 	/**
@@ -770,56 +792,60 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	/** 受限函数结束 **/
 
 	public LayoutConstraints getRootConstraints() {
-		if (desktop != null) {
-			return desktop.getRootConstraints();
+		if (_currentDesktop != null) {
+			return _currentDesktop.getRootConstraints();
 		}
 		return null;
 	}
 
 	public LayoutPort getLayoutPort() {
-		if (desktop != null) {
-			return desktop.getLayoutPort();
+		if (_currentDesktop != null) {
+			return _currentDesktop.getLayoutPort();
 		}
 		return null;
 	}
 
 	public LayoutPort getLayoutPort(final RectBox newBox, final LayoutConstraints newBoxConstraints) {
-		if (desktop != null) {
-			return desktop.getLayoutPort(newBox, newBoxConstraints);
+		if (_currentDesktop != null) {
+			return _currentDesktop.getLayoutPort(newBox, newBoxConstraints);
 		}
 		return null;
 	}
 
 	public LayoutPort getLayoutPort(final LayoutPort src) {
-		if (desktop != null) {
-			return desktop.getLayoutPort(src);
+		if (_currentDesktop != null) {
+			return _currentDesktop.getLayoutPort(src);
 		}
 		return null;
 	}
 
-	public void layoutElements(final LayoutManager manager, final LComponent... comps) {
-		if (desktop != null) {
-			desktop.layoutElements(manager, comps);
+	public Screen layoutElements(final LayoutManager manager, final LComponent... comps) {
+		if (_currentDesktop != null) {
+			_currentDesktop.layoutElements(manager, comps);
 		}
+		return this;
 	}
 
-	public void layoutElements(final LayoutManager manager, final LayoutPort... ports) {
-		if (desktop != null) {
-			desktop.layoutElements(manager, ports);
+	public Screen layoutElements(final LayoutManager manager, final LayoutPort... ports) {
+		if (_currentDesktop != null) {
+			_currentDesktop.layoutElements(manager, ports);
 		}
+		return this;
 	}
 
-	public void packLayout(final LayoutManager manager) {
-		if (desktop != null) {
-			desktop.packLayout(manager);
+	public Screen packLayout(final LayoutManager manager) {
+		if (_currentDesktop != null) {
+			_currentDesktop.packLayout(manager);
 		}
+		return this;
 	}
 
-	public void packLayout(final LayoutManager manager, final float spacex, final float spacey, final float spaceWidth,
+	public Screen packLayout(final LayoutManager manager, final float spacex, final float spacey, final float spaceWidth,
 			final float spaceHeight) {
-		if (desktop != null) {
-			desktop.packLayout(manager, spacex, spacey, spaceHeight, spaceHeight);
+		if (_currentDesktop != null) {
+			_currentDesktop.packLayout(manager, spacex, spacey, spaceHeight, spaceHeight);
 		}
+		return this;
 	}
 
 	public Screen setCamera(BaseCamera came) {
@@ -838,32 +864,38 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return _baseCamera;
 	}
 
-	public void stopRepaint() {
+	public Screen stopRepaint() {
 		LSystem.stopRepaint();
+		return this;
 	}
 
-	public void startRepaint() {
+	public Screen startRepaint() {
 		LSystem.startRepaint();
+		return this;
 	}
 
-	public void stopProcess() {
-		this.processing = false;
+	public Screen stopProcess() {
+		this._isProcessing = false;
+		return this;
 	}
 
-	public void startProcess() {
-		this.processing = true;
+	public Screen startProcess() {
+		this._isProcessing = true;
+		return this;
 	}
 
-	public void registerTouchArea(final LTouchArea touchArea) {
+	public Screen registerTouchArea(final LTouchArea touchArea) {
 		this._touchAreas.add(touchArea);
+		return this;
 	}
 
 	public boolean unregisterTouchArea(final LTouchArea touchArea) {
 		return this._touchAreas.remove(touchArea);
 	}
 
-	public void clearTouchAreas() {
+	public Screen clearTouchAreas() {
 		this._touchAreas.clear();
+		return this;
 	}
 
 	public TArray<LTouchArea> getTouchAreas() {
@@ -1029,15 +1061,15 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	public final boolean isSpriteRunning() {
-		return spriteRun;
+		return _curSpriteRun;
 	}
 
 	public final boolean isDesktopRunning() {
-		return desktopRun;
+		return _curDesktopRun;
 	}
 
 	public final boolean isStageRunning() {
-		return stageRun;
+		return _curStageRun;
 	}
 
 	public abstract void draw(GLEx g);
@@ -1049,7 +1081,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public Screen replaceScreen(final Screen screen) {
-		if (replaceLoading) {
+		if (_replaceLoading) {
 			return this;
 		}
 		Screen tmp = null;
@@ -1135,20 +1167,20 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * 替换当前Screen为其它Screen,替换效果指定
 	 * 
 	 * @param screen
-	 * @param screenSwitch
+	 * @param _screenSwitch
 	 * @return
 	 */
-	public Screen replaceScreen(final Screen screen, ScreenSwitch screenSwitch) {
-		if (replaceLoading) {
+	public Screen replaceScreen(final Screen screen, ScreenSwitch _screenSwitch) {
+		if (_replaceLoading) {
 			return this;
 		}
 		if (screen != null && screen != this) {
-			replaceLoading = true;
+			_replaceLoading = true;
 			screen.setOnLoadState(false);
 			setLock(true);
 			screen.setLock(true);
-			this.replaceDstScreen = screen;
-			this.screenSwitch = screenSwitch;
+			this._replaceDstScreen = screen;
+			this._screenSwitch = _screenSwitch;
 			screen.setRepaintMode(SCREEN_NOT_REPAINT);
 
 			RealtimeProcessManager.get().addProcess(new RealtimeProcess() {
@@ -1186,53 +1218,53 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public Screen replaceScreen(final Screen screen, MoveMethod m) {
-		if (replaceLoading) {
+		if (_replaceLoading) {
 			return this;
 		}
 		if (screen != null && screen != this) {
-			replaceLoading = true;
+			_replaceLoading = true;
 			screen.setOnLoadState(false);
 			setLock(true);
 			screen.setLock(true);
-			this.replaceMethod = m;
-			this.replaceDstScreen = screen;
+			this._curReplaceMethod = m;
+			this._replaceDstScreen = screen;
 			screen.setRepaintMode(SCREEN_NOT_REPAINT);
 			switch (m) {
 			case FROM_LEFT:
-				dstPos.setLocation(-getWidth(), 0);
-				isScreenFrom = true;
+				_curDstPos.setLocation(-getWidth(), 0);
+				_isScreenFrom = true;
 				break;
 			case FROM_RIGHT:
-				dstPos.setLocation(getWidth(), 0);
-				isScreenFrom = true;
+				_curDstPos.setLocation(getWidth(), 0);
+				_isScreenFrom = true;
 				break;
 			case FROM_UP:
-				dstPos.setLocation(0, -getHeight());
-				isScreenFrom = true;
+				_curDstPos.setLocation(0, -getHeight());
+				_isScreenFrom = true;
 				break;
 			case FROM_DOWN:
-				dstPos.setLocation(0, getHeight());
-				isScreenFrom = true;
+				_curDstPos.setLocation(0, getHeight());
+				_isScreenFrom = true;
 				break;
 			case FROM_UPPER_LEFT:
-				dstPos.setLocation(-getWidth(), -getHeight());
-				isScreenFrom = true;
+				_curDstPos.setLocation(-getWidth(), -getHeight());
+				_isScreenFrom = true;
 				break;
 			case FROM_UPPER_RIGHT:
-				dstPos.setLocation(getWidth(), -getHeight());
-				isScreenFrom = true;
+				_curDstPos.setLocation(getWidth(), -getHeight());
+				_isScreenFrom = true;
 				break;
 			case FROM_LOWER_LEFT:
-				dstPos.setLocation(-getWidth(), getHeight());
-				isScreenFrom = true;
+				_curDstPos.setLocation(-getWidth(), getHeight());
+				_isScreenFrom = true;
 				break;
 			case FROM_LOWER_RIGHT:
-				dstPos.setLocation(getWidth(), getHeight());
-				isScreenFrom = true;
+				_curDstPos.setLocation(getWidth(), getHeight());
+				_isScreenFrom = true;
 				break;
 			default:
-				dstPos.setLocation(0, 0);
-				isScreenFrom = false;
+				_curDstPos.setLocation(0, 0);
+				_isScreenFrom = false;
 				break;
 			}
 
@@ -1261,27 +1293,27 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	public int getReplaceScreenSpeed() {
-		return replaceScreenSpeed;
+		return _replaceScreenSpeed;
 	}
 
 	public Screen setReplaceScreenSpeed(int s) {
-		this.replaceScreenSpeed = s;
+		this._replaceScreenSpeed = s;
 		return this;
 	}
 
 	public Screen setReplaceScreenDelay(long d) {
-		replaceDelay.setDelay(d);
+		_replaceDelay.setDelay(d);
 		return this;
 	}
 
 	public long getReplaceScreenDelay() {
-		return replaceDelay.getDelay();
+		return _replaceDelay.getDelay();
 	}
 
 	private void submitReplaceScreen() {
-		if (handler != null) {
-			handler.setCurrentScreen(replaceDstScreen, false);
-			replaceDstScreen._closeUpdate = new Updateable() {
+		if (_processHandler != null) {
+			_processHandler.setCurrentScreen(_replaceDstScreen, false);
+			_replaceDstScreen._closeUpdate = new Updateable() {
 
 				@Override
 				public void action(Object a) {
@@ -1289,7 +1321,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 				}
 			};
 		}
-		replaceLoading = false;
+		_replaceLoading = false;
 	}
 
 	/**
@@ -1403,37 +1435,37 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	final public void resetSize(int w, int h) {
-		this.handler = LSystem.getProcess();
-		this.width = (w <= 0 ? LSystem.viewSize.getWidth() : w);
-		this.height = (h <= 0 ? LSystem.viewSize.getHeight() : h);
-		this.halfWidth = width / 2;
-		this.halfHeight = height / 2;
-		this.setSize(width, height);
+		this._processHandler = LSystem.getProcess();
+		this._currentWidth = (w <= 0 ? LSystem.viewSize.getWidth() : w);
+		this._currentHeight = (h <= 0 ? LSystem.viewSize.getHeight() : h);
+		this._halfWidth = _currentWidth / 2;
+		this._halfHeight = _currentHeight / 2;
+		this.setSize(_currentWidth, _currentHeight);
 		if (_resizeListener != null) {
 			_resizeListener.onResize(this);
 		}
-		if (spriteRun && sprites != null) {
-			sprites.setSize(width, height);
+		if (_curSpriteRun && _currentSprites != null) {
+			_currentSprites.setSize(_currentWidth, _currentHeight);
 		}
-		if (desktopRun && desktop != null) {
-			desktop.setSize(width, height);
+		if (_curDesktopRun && _currentDesktop != null) {
+			_currentDesktop.setSize(_currentWidth, _currentHeight);
 		}
-		if (isGravity && gravityHandler != null) {
-			gravityHandler.setLimit(width, height);
+		if (_isGravity && _gravityHandler != null) {
+			_gravityHandler.setLimit(_currentWidth, _currentHeight);
 		}
-		this.resize(width, height);
+		this.resize(_currentWidth, _currentHeight);
 	}
 
 	final public void resetOrder() {
 		// 最先精灵
-		this.fristOrder = DRAW_SPRITE_PAINT();
+		this._curFristOrder = DRAW_SPRITE_PAINT();
 		// 其次桌面
-		this.secondOrder = DRAW_DESKTOP_PAINT();
+		this._curSecondOrder = DRAW_DESKTOP_PAINT();
 		// 最后用户
-		this.lastOrder = DRAW_USER_PAINT();
-		this.fristPaintFlag = true;
-		this.secondPaintFlag = true;
-		this.lastPaintFlag = true;
+		this._curLastOrder = DRAW_USER_PAINT();
+		this._curFristPaintFlag = true;
+		this._curSecondPaintFlag = true;
+		this._curLastPaintFlag = true;
 	}
 
 	public boolean contains(float x, float y) {
@@ -1459,29 +1491,31 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @param height
 	 */
 	public void onCreate(int width, int height) {
-		this.mode = SCREEN_NOT_REPAINT;
-		this.stageRun = true;
-		this.width = width;
-		this.height = height;
-		this.halfWidth = width / 2;
-		this.halfHeight = height / 2;
-		this.lastTouchX = lastTouchY = touchDX = touchDY = 0;
-		this.isLoad = isLock = isClose = isTranslate = isGravity = false;
-		if (sprites != null) {
-			sprites.close();
-			sprites.removeAll();
-			sprites = null;
+		this._currentMode = SCREEN_NOT_REPAINT;
+		this._curStageRun = true;
+		this._currentWidth = width;
+		this._currentHeight = height;
+		this._halfWidth = this._currentWidth / 2;
+		this._halfHeight = this._currentHeight / 2;
+		this._lastTouchX = _lastTouchY = _touchDX = _touchDY = 0;
+		this._isScreenFrom = _isTimerPaused = false;
+		this._isLoad = _isLock = _isClose = _isTranslate = _isGravity = false;
+		this._isProcessing = true;
+		if (_currentSprites != null) {
+			_currentSprites.close();
+			_currentSprites.removeAll();
+			_currentSprites = null;
 		}
-		this.sprites = new Sprites("ScreenSprites", this, width, height);
-		if (desktop != null) {
-			desktop.close();
-			desktop.clear();
-			desktop = null;
+		this._currentSprites = new Sprites("ScreenSprites", this, _currentWidth, _currentHeight);
+		if (_currentDesktop != null) {
+			_currentDesktop.close();
+			_currentDesktop.clear();
+			_currentDesktop = null;
 		}
-		this.desktop = new Desktop("ScreenDesktop", this, width, height);
-		this.isNext = true;
-		this.tx = ty = 0;
-		this.isTranslate = false;
+		this._currentDesktop = new Desktop("ScreenDesktop", this, _currentWidth, _currentHeight);
+		this._currentX = _currentY = 0;
+		this._isNext = true;
+		this._isTranslate = false;
 		this._screenIndex = 0;
 		this._lastTocuh.empty();
 		this._keyActions.clear();
@@ -1497,8 +1531,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		this._touchAreas.clear();
 		this._keyActions.clear();
 		this._conns.reset();
-		this.delayTimer.setDelay(0);
-		this.pauseTimer.setDelay(LSystem.SECOND);
+		this._delayTimer.setDelay(0);
+		this._pauseTimer.setDelay(LSystem.SECOND);
 	}
 
 	public Screen invokeAsync(Runnable runnable) {
@@ -1512,71 +1546,71 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	public Screen addResume(Updateable u) {
-		if (handler != null) {
-			handler.addResume(u);
+		if (_processHandler != null) {
+			_processHandler.addResume(u);
 		}
 		return this;
 	}
 
 	public Screen removeResume(Updateable u) {
-		if (handler != null) {
-			handler.removeResume(u);
+		if (_processHandler != null) {
+			_processHandler.removeResume(u);
 		}
 		return this;
 	}
 
 	public Screen addLoad(Updateable u) {
-		if (handler != null) {
-			handler.addLoad(u);
+		if (_processHandler != null) {
+			_processHandler.addLoad(u);
 		}
 		return this;
 	}
 
 	public boolean containsLoad(Updateable u) {
-		if (handler != null) {
-			return handler.containsLoad(u);
+		if (_processHandler != null) {
+			return _processHandler.containsLoad(u);
 		}
 		return false;
 	}
 
 	public Screen removeLoad(Updateable u) {
-		if (handler != null) {
-			handler.removeLoad(u);
+		if (_processHandler != null) {
+			_processHandler.removeLoad(u);
 		}
 		return this;
 	}
 
 	public Screen removeAllLoad() {
-		if (handler != null) {
-			handler.removeAllLoad();
+		if (_processHandler != null) {
+			_processHandler.removeAllLoad();
 		}
 		return this;
 	}
 
 	public Screen addUnLoad(Updateable u) {
-		if (handler != null) {
-			handler.addUnLoad(u);
+		if (_processHandler != null) {
+			_processHandler.addUnLoad(u);
 		}
 		return this;
 	}
 
 	public boolean containsUnLoad(Updateable u) {
-		if (handler != null) {
-			return handler.containsUnLoad(u);
+		if (_processHandler != null) {
+			return _processHandler.containsUnLoad(u);
 		}
 		return false;
 	}
 
 	public Screen removeUnLoad(Updateable u) {
-		if (handler != null) {
-			handler.removeUnLoad(u);
+		if (_processHandler != null) {
+			_processHandler.removeUnLoad(u);
 		}
 		return this;
 	}
 
 	public Screen removeAllUnLoad() {
-		if (handler != null) {
-			handler.removeAllUnLoad();
+		if (_processHandler != null) {
+			_processHandler.removeAllUnLoad();
 		}
 		return this;
 	}
@@ -1712,11 +1746,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public GravityHandler setGravity(int w, int h, EasingMode ease, float d, boolean g) {
-		if (g && (gravityHandler == null || gravityHandler.isClosed())) {
-			gravityHandler = new GravityHandler(w, h, ease, d);
+		if (g && (_gravityHandler == null || _gravityHandler.isClosed())) {
+			_gravityHandler = new GravityHandler(w, h, ease, d);
 		}
-		this.isGravity = g;
-		return gravityHandler;
+		this._isGravity = g;
+		return _gravityHandler;
 	}
 
 	/**
@@ -1726,7 +1760,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public GravityHandler getGravity() {
-		return gravityHandler;
+		return _gravityHandler;
 	}
 
 	/**
@@ -1736,8 +1770,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public GravityResult getCollisionBetweenObjects(Gravity g) {
-		if (isGravity) {
-			return gravityHandler.getCollisionBetweenObjects(g);
+		if (_isGravity) {
+			return _gravityHandler.getCollisionBetweenObjects(g);
 		}
 		return null;
 	}
@@ -1748,7 +1782,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public boolean isGravity() {
-		return this.isGravity;
+		return this._isGravity;
 	}
 
 	/**
@@ -1766,7 +1800,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public boolean isLock() {
-		return isLock;
+		return _isLock;
 	}
 
 	/**
@@ -1775,7 +1809,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @param lock
 	 */
 	public Screen setLock(boolean lock) {
-		this.isLock = lock;
+		this._isLock = lock;
 		return this;
 	}
 
@@ -1785,7 +1819,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @param close
 	 */
 	public Screen setClose(boolean close) {
-		this.isClose = close;
+		this._isClose = close;
 		return this;
 	}
 
@@ -1795,7 +1829,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public boolean isClosed() {
-		return isClose;
+		return _isClose;
 	}
 
 	/**
@@ -1804,7 +1838,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @param frame
 	 */
 	public Screen setFrame(int frame) {
-		this.frame = frame;
+		this._currentFrame = frame;
 		return this;
 	}
 
@@ -1814,7 +1848,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public int getFrame() {
-		return frame;
+		return _currentFrame;
 	}
 
 	/**
@@ -1823,8 +1857,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public synchronized boolean next() {
-		this.frame++;
-		return isNext;
+		this._currentFrame++;
+		return _isNext;
 	}
 
 	/**
@@ -1844,7 +1878,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * 改变资源加载状态
 	 */
 	public Screen setOnLoadState(boolean flag) {
-		this.isLoad = flag;
+		this._isLoad = flag;
 		return this;
 	}
 
@@ -1854,29 +1888,29 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public boolean isTransitioning() {
-		if (handler != null) {
-			return handler.isTransitioning();
+		if (_processHandler != null) {
+			return _processHandler.isTransitioning();
 		}
 		// 如果过渡效果不存在，则返回是否加载完毕
-		return isLoad;
+		return _isLoad;
 	}
 
 	/**
 	 * 过度是否完成
 	 */
 	public boolean isTransitionCompleted() {
-		if (handler != null) {
-			return handler.isTransitionCompleted();
+		if (_processHandler != null) {
+			return _processHandler.isTransitionCompleted();
 		}
 		// 如果过渡效果不存在，则返回是否加载完毕
-		return isLoad;
+		return _isLoad;
 	}
 
 	/**
 	 * 获得当前资源加载是否完成
 	 */
 	public boolean isOnLoadComplete() {
-		return isLoad;
+		return _isLoad;
 	}
 
 	private ReplaceEvent revent;
@@ -1919,7 +1953,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public boolean containsScreen(CharSequence name) {
-		return handler != null ? handler.containsScreen(name) : false;
+		return _processHandler != null ? _processHandler.containsScreen(name) : false;
 	}
 
 	/**
@@ -1928,8 +1962,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public Screen runPopScreen() {
-		if (handler != null) {
-			handler.runPopScreen();
+		if (_processHandler != null) {
+			_processHandler.runPopScreen();
 		}
 		return this;
 	}
@@ -1940,8 +1974,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public Screen runPeekScreen() {
-		if (handler != null) {
-			handler.runPeekScreen();
+		if (_processHandler != null) {
+			_processHandler.runPeekScreen();
 		}
 		return this;
 	}
@@ -1951,8 +1985,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * 
 	 */
 	public Screen runFirstScreen() {
-		if (handler != null) {
-			handler.runFirstScreen();
+		if (_processHandler != null) {
+			_processHandler.runFirstScreen();
 		}
 		return this;
 	}
@@ -1961,8 +1995,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * 取出最后一个Screen并执行
 	 */
 	public Screen runLastScreen() {
-		if (handler != null) {
-			handler.runLastScreen();
+		if (_processHandler != null) {
+			_processHandler.runLastScreen();
 		}
 		return this;
 	}
@@ -1973,8 +2007,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @param index
 	 */
 	public Screen runIndexScreen(int index) {
-		if (handler != null) {
-			handler.runIndexScreen(index);
+		if (_processHandler != null) {
+			_processHandler.runIndexScreen(index);
 		}
 		return this;
 	}
@@ -1983,8 +2017,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * 运行自当前Screen起的上一个Screen
 	 */
 	public Screen runPreviousScreen() {
-		if (handler != null) {
-			handler.runPreviousScreen();
+		if (_processHandler != null) {
+			_processHandler.runPreviousScreen();
 		}
 		return this;
 	}
@@ -1993,8 +2027,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * 运行自当前Screen起的下一个Screen
 	 */
 	public Screen runNextScreen() {
-		if (handler != null) {
-			handler.runNextScreen();
+		if (_processHandler != null) {
+			_processHandler.runNextScreen();
 		}
 		return this;
 	}
@@ -2007,8 +2041,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public Screen addScreen(CharSequence name, Screen screen) {
-		if (handler != null) {
-			handler.addScreen(name, screen);
+		if (_processHandler != null) {
+			_processHandler.addScreen(name, screen);
 		}
 		return this;
 	}
@@ -2020,8 +2054,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public Screen getScreen(CharSequence name) {
-		if (handler != null) {
-			return handler.getScreen(name);
+		if (_processHandler != null) {
+			return _processHandler.getScreen(name);
 		}
 		return this;
 	}
@@ -2034,8 +2068,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 */
 	public Screen runEventScreen(int idx) {
 		Screen screen = getReplaceScreen(idx);
-		if (screen != null && handler != null) {
-			handler.setScreen(screen);
+		if (screen != null && _processHandler != null) {
+			_processHandler.setScreen(screen);
 		}
 		return screen;
 	}
@@ -2047,15 +2081,15 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public Screen runScreen(CharSequence name) {
-		if (handler != null) {
-			return handler.runScreen(name);
+		if (_processHandler != null) {
+			return _processHandler.runScreen(name);
 		}
 		return this;
 	}
 
 	public Screen clearScreen() {
-		if (handler != null) {
-			handler.clearScreens();
+		if (_processHandler != null) {
+			_processHandler.clearScreens();
 		}
 		return this;
 	}
@@ -2066,8 +2100,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @param screen
 	 */
 	public Screen addScreen(Screen screen) {
-		if (handler != null) {
-			handler.addScreen(screen);
+		if (_processHandler != null) {
+			_processHandler.addScreen(screen);
 		}
 		return this;
 	}
@@ -2078,8 +2112,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public TArray<Screen> getScreens() {
-		if (handler != null) {
-			return handler.getScreens();
+		if (_processHandler != null) {
+			return _processHandler.getScreens();
 		}
 		return null;
 	}
@@ -2088,8 +2122,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * 获得缓存的Screen总数
 	 */
 	public int getScreenCount() {
-		if (handler != null) {
-			return handler.getScreenCount();
+		if (_processHandler != null) {
+			return _processHandler.getScreenCount();
 		}
 		return 0;
 	}
@@ -2119,10 +2153,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 */
 
 	public SpriteListener getSprListerner() {
-		if (sprites == null) {
+		if (_currentSprites == null) {
 			return null;
 		}
-		return sprites.getSprListerner();
+		return _currentSprites.getSprListerner();
 	}
 
 	/**
@@ -2132,10 +2166,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 */
 
 	public Screen setSprListerner(SpriteListener sprListerner) {
-		if (sprites == null) {
+		if (_currentSprites == null) {
 			return this;
 		}
-		sprites.setSprListerner(sprListerner);
+		_currentSprites.setSprListerner(sprListerner);
 		return this;
 	}
 
@@ -2195,7 +2229,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	public Screen setBackground(final LTexture background) {
 		if (background != null) {
 			setRepaintMode(SCREEN_TEXTURE_REPAINT);
-			currentScreenBackground = background;
+			_currentScreenBackground = background;
 		} else {
 			setRepaintMode(SCREEN_NOT_REPAINT);
 		}
@@ -2254,14 +2288,14 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public LTexture getBackground() {
-		return currentScreenBackground;
+		return _currentScreenBackground;
 	}
 
 	/**
 	 * 获得桌面组件（即UI）管理器
 	 */
 	public Desktop getDesktop() {
-		return desktop;
+		return _currentDesktop;
 	}
 
 	/**
@@ -2279,7 +2313,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public Sprites getSprites() {
-		return sprites;
+		return _currentSprites;
 	}
 
 	/**
@@ -2292,42 +2326,42 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	public Screen addSpriteGroup(LTexture tex, int count) {
-		if (sprites == null) {
+		if (_currentSprites == null) {
 			return this;
 		}
-		sprites.addSpriteGroup(tex, count);
+		_currentSprites.addSpriteGroup(tex, count);
 		return this;
 	}
 
 	public Screen addEntityGroup(LTexture tex, int count) {
-		if (sprites == null) {
+		if (_currentSprites == null) {
 			return this;
 		}
-		sprites.addEntityGroup(tex, count);
+		_currentSprites.addEntityGroup(tex, count);
 		return this;
 	}
 
 	public Screen addSpriteGroup(String path, int count) {
-		if (sprites == null) {
+		if (_currentSprites == null) {
 			return this;
 		}
-		sprites.addSpriteGroup(path, count);
+		_currentSprites.addSpriteGroup(path, count);
 		return this;
 	}
 
 	public Screen addEntityGroup(String path, int count) {
-		if (sprites == null) {
+		if (_currentSprites == null) {
 			return this;
 		}
-		sprites.addEntityGroup(path, count);
+		_currentSprites.addEntityGroup(path, count);
 		return this;
 	}
 
 	public Screen addEntityGroup(Created<? extends IEntity> e, int count) {
-		if (sprites == null) {
+		if (_currentSprites == null) {
 			return this;
 		}
-		sprites.addEntityGroup(e, count);
+		_currentSprites.addEntityGroup(e, count);
 		return this;
 	}
 
@@ -2338,8 +2372,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 */
 
 	public LComponent getTopComponent() {
-		if (desktop != null) {
-			return desktop.getTopComponent();
+		if (_currentDesktop != null) {
+			return _currentDesktop.getTopComponent();
 		}
 		return null;
 	}
@@ -2351,22 +2385,22 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 */
 
 	public LComponent getBottomComponent() {
-		if (desktop != null) {
-			return desktop.getBottomComponent();
+		if (_currentDesktop != null) {
+			return _currentDesktop.getBottomComponent();
 		}
 		return null;
 	}
 
 	public LLayer getTopLayer() {
-		if (desktop != null) {
-			return desktop.getTopLayer();
+		if (_currentDesktop != null) {
+			return _currentDesktop.getTopLayer();
 		}
 		return null;
 	}
 
 	public LLayer getBottomLayer() {
-		if (desktop != null) {
-			return desktop.getBottomLayer();
+		if (_currentDesktop != null) {
+			return _currentDesktop.getBottomLayer();
 		}
 		return null;
 	}
@@ -2377,8 +2411,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 */
 
 	public ISprite getTopSprite() {
-		if (sprites != null) {
-			return sprites.getTopSprite();
+		if (_currentSprites != null) {
+			return _currentSprites.getTopSprite();
 		}
 		return null;
 	}
@@ -2389,8 +2423,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 */
 
 	public ISprite getBottomSprite() {
-		if (sprites != null) {
-			return sprites.getBottomSprite();
+		if (_currentSprites != null) {
+			return _currentSprites.getBottomSprite();
 		}
 		return null;
 	}
@@ -2434,10 +2468,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public ISprite addPadding(ISprite spr, float offX, float offY) {
-		if (isClose || sprites == null) {
+		if (_isClose || _currentSprites == null) {
 			return spr;
 		}
-		return sprites.addPadding(spr, offX, offY);
+		return _currentSprites.addPadding(spr, offX, offY);
 	}
 
 	/**
@@ -2447,10 +2481,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public ISprite addCol(ISprite spr) {
-		if (isClose || sprites == null) {
+		if (_isClose || _currentSprites == null) {
 			return spr;
 		}
-		return sprites.addCol(spr);
+		return _currentSprites.addCol(spr);
 	}
 
 	/**
@@ -2461,10 +2495,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public ISprite addCol(ISprite spr, float offY) {
-		if (isClose || sprites == null) {
+		if (_isClose || _currentSprites == null) {
 			return spr;
 		}
-		return sprites.addCol(spr, offY);
+		return _currentSprites.addCol(spr, offY);
 	}
 
 	/**
@@ -2474,10 +2508,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public Screen addRow(ISprite spr) {
-		if (isClose || sprites == null) {
+		if (_isClose || _currentSprites == null) {
 			return this;
 		}
-		sprites.addRow(spr);
+		_currentSprites.addRow(spr);
 		return this;
 	}
 
@@ -2489,10 +2523,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public Screen addRow(ISprite spr, float offX) {
-		if (isClose || sprites == null) {
+		if (_isClose || _currentSprites == null) {
 			return this;
 		}
-		sprites.addRow(spr, offX);
+		_currentSprites.addRow(spr, offX);
 		return this;
 	}
 
@@ -2505,10 +2539,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public Screen addPadding(LComponent comp, float offX, float offY) {
-		if (isClose || desktop == null) {
+		if (_isClose || _currentDesktop == null) {
 			return this;
 		}
-		desktop.addPadding(comp, offX, offY);
+		_currentDesktop.addPadding(comp, offX, offY);
 		if (comp instanceof LTouchArea) {
 			registerTouchArea((LTouchArea) comp);
 		}
@@ -2525,10 +2559,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public Screen addCol(LComponent comp) {
-		if (isClose || desktop == null) {
+		if (_isClose || _currentDesktop == null) {
 			return this;
 		}
-		desktop.addCol(comp);
+		_currentDesktop.addCol(comp);
 		if (comp instanceof LTouchArea) {
 			registerTouchArea((LTouchArea) comp);
 		}
@@ -2546,10 +2580,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public Screen addCol(LComponent comp, float offY) {
-		if (isClose || desktop == null) {
+		if (_isClose || _currentDesktop == null) {
 			return this;
 		}
-		desktop.addCol(comp, offY);
+		_currentDesktop.addCol(comp, offY);
 		if (comp instanceof LTouchArea) {
 			registerTouchArea((LTouchArea) comp);
 		}
@@ -2566,10 +2600,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public Screen addRow(LComponent comp) {
-		if (isClose || desktop == null) {
+		if (_isClose || _currentDesktop == null) {
 			return this;
 		}
-		desktop.addRow(comp);
+		_currentDesktop.addRow(comp);
 		if (comp instanceof LTouchArea) {
 			registerTouchArea((LTouchArea) comp);
 		}
@@ -2587,10 +2621,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public Screen addRow(LComponent comp, float offX) {
-		if (isClose || desktop == null) {
+		if (_isClose || _currentDesktop == null) {
 			return this;
 		}
-		desktop.addRow(comp, offX);
+		_currentDesktop.addRow(comp, offX);
 		if (comp instanceof LTouchArea) {
 			registerTouchArea((LTouchArea) comp);
 		}
@@ -2637,8 +2671,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 */
 
 	public Screen add(ISprite sprite) {
-		if (sprites != null) {
-			sprites.add(sprite);
+		if (_currentSprites != null) {
+			_currentSprites.add(sprite);
 			if (sprite instanceof LTouchArea) {
 				registerTouchArea((LTouchArea) sprite);
 			}
@@ -2655,8 +2689,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public Screen addAt(ISprite sprite, float x, float y) {
-		if (sprites != null) {
-			sprites.addAt(sprite, x, y);
+		if (_currentSprites != null) {
+			_currentSprites.addAt(sprite, x, y);
 			if (sprite instanceof LTouchArea) {
 				registerTouchArea((LTouchArea) sprite);
 			}
@@ -2694,8 +2728,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 				}
 			}
 		} else {
-			if (desktop != null) {
-				final LComponent[] comps = desktop.getComponents();
+			if (_currentDesktop != null) {
+				final LComponent[] comps = _currentDesktop.getComponents();
 				if (comps != null) {
 					final int size = comps.length;
 					for (int i = 0; i < size; i++) {
@@ -2717,8 +2751,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 */
 
 	public Screen addSpriteToUI(ISprite s) {
-		if (desktop != null) {
-			LSpriteUI ui = desktop.addSprite(s);
+		if (_currentDesktop != null) {
+			LSpriteUI ui = _currentDesktop.addSprite(s);
 			if (s instanceof LTouchArea) {
 				registerTouchArea((LTouchArea) s);
 			}
@@ -2738,8 +2772,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public Screen addSpriteToUIAt(ISprite s, float x, float y) {
-		if (desktop != null) {
-			LSpriteUI ui = desktop.addSpriteAt(s, x, y);
+		if (_currentDesktop != null) {
+			LSpriteUI ui = _currentDesktop.addSpriteAt(s, x, y);
 			if (s instanceof LTouchArea) {
 				registerTouchArea((LTouchArea) s);
 			}
@@ -2756,8 +2790,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @param comp
 	 */
 	public Screen add(LComponent comp) {
-		if (desktop != null) {
-			desktop.add(comp);
+		if (_currentDesktop != null) {
+			_currentDesktop.add(comp);
 			if (comp instanceof LTouchArea) {
 				registerTouchArea((LTouchArea) comp);
 			}
@@ -2777,8 +2811,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public Screen addAt(LComponent comp, float x, float y) {
-		if (desktop != null) {
-			desktop.addAt(comp, x, y);
+		if (_currentDesktop != null) {
+			_currentDesktop.addAt(comp, x, y);
 			if (comp instanceof LTouchArea) {
 				registerTouchArea((LTouchArea) comp);
 			}
@@ -2819,20 +2853,20 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return menu;
 	}
 
-	public LClickButton addButton(IFont font, String text, int x, int y, int width, int height) {
-		LClickButton click = LClickButton.make(font, text, x, y, width, height);
+	public LClickButton addButton(IFont font, String text, int x, int y, int w, int h) {
+		LClickButton click = LClickButton.make(font, text, x, y, w, h);
 		add(click);
 		return click;
 	}
 
-	public LClickButton addButton(String text, int x, int y, int width, int height) {
-		LClickButton click = LClickButton.make(text, x, y, width, height);
+	public LClickButton addButton(String text, int x, int y, int w, int h) {
+		LClickButton click = LClickButton.make(text, x, y, w, h);
 		add(click);
 		return click;
 	}
 
-	public LClickButton addButton(String text, int x, int y, int width, int height, Touched touched) {
-		LClickButton click = LClickButton.make(text, x, y, width, height);
+	public LClickButton addButton(String text, int x, int y, int w, int h, Touched touched) {
+		LClickButton click = LClickButton.make(text, x, y, w, h);
 		add(click);
 		return (LClickButton) click.up(touched);
 	}
@@ -2960,8 +2994,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	public boolean contains(ISprite sprite, boolean canView) {
 		boolean can = false;
-		if (sprites != null) {
-			can = sprites.contains(sprite);
+		if (_currentSprites != null) {
+			can = _currentSprites.contains(sprite);
 		}
 		if (canView) {
 			return can && contains(sprite.x(), sprite.y(), sprite.getWidth(), sprite.getHeight());
@@ -2976,8 +3010,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	public boolean intersects(ISprite sprite, boolean canView) {
 		boolean can = false;
-		if (sprites != null) {
-			can = sprites.contains(sprite);
+		if (_currentSprites != null) {
+			can = _currentSprites.contains(sprite);
 		}
 		if (canView) {
 			return can && intersects(sprite.x(), sprite.y(), sprite.getWidth(), sprite.getHeight());
@@ -2987,8 +3021,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	public Screen remove(ISprite sprite) {
-		if (sprites != null) {
-			sprites.remove(sprite);
+		if (_currentSprites != null) {
+			_currentSprites.remove(sprite);
 			removeTouchLimit(sprite);
 			if (sprite instanceof LTouchArea) {
 				unregisterTouchArea((LTouchArea) sprite);
@@ -3003,8 +3037,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	public boolean contains(LComponent comp, boolean canView) {
 		boolean can = false;
-		if (desktop != null) {
-			can = desktop.contains(comp);
+		if (_currentDesktop != null) {
+			can = _currentDesktop.contains(comp);
 		}
 		if (canView) {
 			return can && getRectBox().contains(comp.getX(), comp.getY(), comp.getWidth(), comp.getHeight());
@@ -3019,8 +3053,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	public boolean intersects(LComponent comp, boolean canView) {
 		boolean can = false;
-		if (desktop != null) {
-			can = desktop.contains(comp);
+		if (_currentDesktop != null) {
+			can = _currentDesktop.contains(comp);
 		}
 		if (canView) {
 			return can && getRectBox().intersects(comp.getX(), comp.getY(), comp.getWidth(), comp.getHeight());
@@ -3030,9 +3064,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	public Screen remove(LTexture tex) {
-		if (desktop != null) {
+		if (_currentDesktop != null) {
 			LComponent textureObject = null;
-			LComponent[] components = desktop.getComponents();
+			LComponent[] components = _currentDesktop.getComponents();
 			for (int i = 0; i < components.length; i++) {
 				LComponent comp = components[i];
 				if (comp != null && comp.getBackground() != null && tex.equals(comp.getBackground())) {
@@ -3048,8 +3082,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	public Screen remove(LComponent comp) {
-		if (desktop != null) {
-			desktop.remove(comp);
+		if (_currentDesktop != null) {
+			_currentDesktop.remove(comp);
 			removeTouchLimit(comp);
 			if (comp instanceof LTouchArea) {
 				unregisterTouchArea((LTouchArea) comp);
@@ -3083,11 +3117,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	public Screen removeAll() {
-		if (sprites != null) {
-			sprites.removeAll();
+		if (_currentSprites != null) {
+			_currentSprites.removeAll();
 		}
-		if (desktop != null) {
-			desktop.removeAll();
+		if (_currentDesktop != null) {
+			_currentDesktop.removeAll();
 		}
 		ActionControl.get().clear();
 		removeAllLoad();
@@ -3215,8 +3249,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	/**
 	 * 获得背景显示模式
 	 */
+	@Override
 	public int getRepaintMode() {
-		return mode;
+		return _currentMode;
 	}
 
 	/**
@@ -3224,54 +3259,57 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * 
 	 * @param mode
 	 */
+	@Override
 	public void setRepaintMode(int mode) {
-		this.mode = mode;
+		this._currentMode = mode;
 	}
 
-	public void setLocation(float x, float y) {
-		pos(x, y);
+	public Screen setLocation(float x, float y) {
+		return pos(x, y);
 	}
 
 	public Screen pos(float x, float y) {
-		this.tx = x;
-		this.ty = y;
-		this.isTranslate = (tx != 0 || ty != 0);
+		this._currentX = x;
+		this._currentY = y;
+		this._isTranslate = (_currentX != 0 || _currentY != 0);
 		return this;
 	}
 
+	@Override
 	public void setX(float x) {
 		this.posX(x);
 	}
 
 	public Screen posX(float x) {
-		setLocation(x, ty);
+		setLocation(x, _currentY);
 		return this;
 	}
 
+	@Override
 	public void setY(float y) {
 		this.posY(y);
 	}
 
 	public Screen posY(float y) {
-		setLocation(tx, y);
+		setLocation(_currentX, y);
 		return this;
 	}
 
 	@Override
 	public float getX() {
-		return this.tx;
+		return this._currentX;
 	}
 
 	@Override
 	public float getY() {
-		return this.ty;
+		return this._currentY;
 	}
 
-	protected LTextureImage createTextureImage(float width, float height) {
+	protected LTextureImage createTextureImage(float w, float h) {
 		if (LSystem.base() == null) {
 			return null;
 		}
-		return new LTextureImage(LSystem.base().graphics(), LSystem.base().display().GL().batch(), width, height, true);
+		return new LTextureImage(LSystem.base().graphics(), LSystem.base().display().GL().batch(), w, h, true);
 	}
 
 	/**
@@ -3314,7 +3352,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		if (!_visible) {
 			return;
 		}
-		if (!isClose) {
+		if (!_isClose) {
 			try {
 				// 记录屏幕矩阵以及画笔
 				g.save();
@@ -3336,8 +3374,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 							getY() + (_pivotY == -1 ? getHalfHeight() : _pivotY));
 				}
 				// 偏移屏幕
-				if (isTranslate) {
-					g.translate(tx, ty);
+				if (_isTranslate) {
+					g.translate(_currentX, _currentY);
 				}
 				if (_isExistCamera) {
 					g.setCamera(_baseCamera);
@@ -3375,16 +3413,16 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 				afterUI(g);
 				// PS:下列项允许用户调整顺序
 				// 精灵
-				if (fristPaintFlag) {
-					fristOrder.paint(g);
+				if (_curFristPaintFlag) {
+					_curFristOrder.paint(g);
 				}
 				// 其次，桌面
-				if (secondPaintFlag) {
-					secondOrder.paint(g);
+				if (_curSecondPaintFlag) {
+					_curSecondOrder.paint(g);
 				}
 				// 最后，用户渲染
-				if (lastPaintFlag) {
-					lastOrder.paint(g);
+				if (_curLastPaintFlag) {
+					_curLastOrder.paint(g);
 				}
 				// 最前一层渲染，可重载
 				beforeUI(g);
@@ -3411,36 +3449,36 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	public synchronized void createUI(GLEx g) {
-		if (isClose) {
+		if (_isClose) {
 			return;
 		}
-		if (replaceLoading) {
-			if (replaceDstScreen == null || !replaceDstScreen.isOnLoadComplete()) {
+		if (_replaceLoading) {
+			if (_replaceDstScreen == null || !_replaceDstScreen.isOnLoadComplete()) {
 				repaint(g);
-			} else if (screenSwitch != null) {
-				replaceDstScreen.createUI(g);
+			} else if (_screenSwitch != null) {
+				_replaceDstScreen.createUI(g);
 				repaint(g);
-			} else if (replaceDstScreen.isOnLoadComplete()) {
-				if (isScreenFrom) {
+			} else if (_replaceDstScreen.isOnLoadComplete()) {
+				if (_isScreenFrom) {
 					repaint(g);
-					if (dstPos.x() != 0 || dstPos.y() != 0) {
-						g.setClip(dstPos.x(), dstPos.y(), getWidth(), getHeight());
-						g.translate(dstPos.x(), dstPos.y());
+					if (_curDstPos.x() != 0 || _curDstPos.y() != 0) {
+						g.setClip(_curDstPos.x(), _curDstPos.y(), getWidth(), getHeight());
+						g.translate(_curDstPos.x(), _curDstPos.y());
 					}
-					replaceDstScreen.createUI(g);
-					if (dstPos.x() != 0 || dstPos.y() != 0) {
-						g.translate(-dstPos.x(), -dstPos.y());
+					_replaceDstScreen.createUI(g);
+					if (_curDstPos.x() != 0 || _curDstPos.y() != 0) {
+						g.translate(-_curDstPos.x(), -_curDstPos.y());
 						g.clearClip();
 					}
 				} else {
-					replaceDstScreen.createUI(g);
-					if (dstPos.x() != 0 || dstPos.y() != 0) {
-						g.setClip(dstPos.x(), dstPos.y(), getWidth(), getHeight());
-						g.translate(dstPos.x(), dstPos.y());
+					_replaceDstScreen.createUI(g);
+					if (_curDstPos.x() != 0 || _curDstPos.y() != 0) {
+						g.setClip(_curDstPos.x(), _curDstPos.y(), getWidth(), getHeight());
+						g.translate(_curDstPos.x(), _curDstPos.y());
 					}
 					repaint(g);
-					if (dstPos.x() != 0 || dstPos.y() != 0) {
-						g.translate(-dstPos.x(), -dstPos.y());
+					if (_curDstPos.x() != 0 || _curDstPos.y() != 0) {
+						g.translate(-_curDstPos.x(), -_curDstPos.y());
 						g.clearClip();
 					}
 				}
@@ -3450,12 +3488,13 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		}
 	}
 
-	public void setScreenDelay(long delay) {
-		this.delayTimer.setDelay(delay);
+	public Screen setScreenDelay(long delay) {
+		this._delayTimer.setDelay(delay);
+		return this;
 	}
 
 	public long getScreenDelay() {
-		return this.delayTimer.getDelay();
+		return this._delayTimer.getDelay();
 	}
 
 	/**
@@ -3463,9 +3502,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * 
 	 * @param delay
 	 */
-	public void processSleep(long delay) {
-		pauseTimer.setDelay(delay);
-		isTimerPaused = true;
+	public Screen processSleep(long delay) {
+		_pauseTimer.setDelay(delay);
+		_isTimerPaused = true;
+		return this;
 	}
 
 	private void allocateLoopEvents() {
@@ -3474,48 +3514,54 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		}
 	}
 
-	public void loop(FrameLoopEvent event) {
+	public Screen loop(FrameLoopEvent event) {
 		addFrameLoop(event);
+		return this;
 	}
 
-	public void loop(float second, FrameLoopEvent event) {
-		addFrameLoop(second, event);
+	public Screen loop(float second, FrameLoopEvent event) {
+		return addFrameLoop(second, event);
 	}
 
-	public void addFrameLoop(TArray<FrameLoopEvent> events) {
+	public Screen addFrameLoop(TArray<FrameLoopEvent> events) {
 		allocateLoopEvents();
 		_loopEvents.addAll(events);
 		_initLoopEvents = true;
+		return this;
 	}
 
-	public void addFrameLoop(float second, FrameLoopEvent event) {
+	public Screen addFrameLoop(float second, FrameLoopEvent event) {
 		allocateLoopEvents();
 		if (event != null) {
 			event.setSecond(second);
 		}
 		_loopEvents.add(event);
 		_initLoopEvents = true;
+		return this;
 	}
 
-	public void addFrameLoop(FrameLoopEvent event) {
+	public Screen addFrameLoop(FrameLoopEvent event) {
 		allocateLoopEvents();
 		_loopEvents.add(event);
 		_initLoopEvents = true;
+		return this;
 	}
 
-	public void removeFrameLoop(FrameLoopEvent event) {
+	public Screen removeFrameLoop(FrameLoopEvent event) {
 		allocateLoopEvents();
 		_loopEvents.remove(event);
 		_initLoopEvents = (_loopEvents.size <= 0);
+		return this;
 	}
 
-	public void clearFrameLoop() {
+	public Screen clearFrameLoop() {
 		if (_loopEvents == null) {
 			_initLoopEvents = false;
-			return;
+			return this;
 		}
 		_loopEvents.clear();
 		_initLoopEvents = false;
+		return this;
 	}
 
 	public Screen disableFrameBuffer() {
@@ -3549,31 +3595,31 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 			}
 		}
 		// 如果Screen设置了计时器暂停
-		if (isTimerPaused) {
+		if (_isTimerPaused) {
 			// 开始累加时间
-			pauseTimer.addPercentage(timer);
+			_pauseTimer.addPercentage(timer);
 			// 当还在暂停中，则不处理所有update事件，直接退出此进程
-			if (!pauseTimer.isCompleted()) {
+			if (!_pauseTimer.isCompleted()) {
 				return;
 			} else {
 				// 还原计时器暂停
-				isTimerPaused = false;
-				pauseTimer.refresh();
+				_isTimerPaused = false;
+				_pauseTimer.refresh();
 			}
 		}
-		if (delayTimer.action(elapsedTime)) {
-			if (processing && !isClose) {
-				if (isGravity) {
-					gravityHandler.update(elapsedTime);
+		if (_delayTimer.action(elapsedTime)) {
+			if (_isProcessing && !_isClose) {
+				if (_isGravity) {
+					_gravityHandler.update(elapsedTime);
 				}
-				if (fristPaintFlag) {
-					fristOrder.update(timer);
+				if (_curFristPaintFlag) {
+					_curFristOrder.update(timer);
 				}
-				if (secondPaintFlag) {
-					secondOrder.update(timer);
+				if (_curSecondPaintFlag) {
+					_curSecondOrder.update(timer);
 				}
-				if (lastPaintFlag) {
-					lastOrder.update(timer);
+				if (_curLastPaintFlag) {
+					_curLastOrder.update(timer);
 				}
 			}
 		}
@@ -3605,11 +3651,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 				}
 			}
 		}
-		this.touchDX = SysTouch.getX() - lastTouchX;
-		this.touchDY = SysTouch.getY() - lastTouchY;
-		this.lastTouchX = SysTouch.getX();
-		this.lastTouchY = SysTouch.getY();
-		this.touchButtonReleased = NO_BUTTON;
+		this._touchDX = SysTouch.getX() - _lastTouchX;
+		this._touchDY = SysTouch.getY() - _lastTouchY;
+		this._lastTouchX = SysTouch.getX();
+		this._lastTouchY = SysTouch.getY();
+		this._touchButtonReleased = NO_BUTTON;
 	}
 
 	public PointF getLastTouch() {
@@ -3625,152 +3671,152 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	public void runTimer(final LTimerContext timer) {
-		if (isClose) {
+		if (_isClose) {
 			return;
 		}
 		_coroutineProcess.run(timer);
-		if (replaceLoading) {
+		if (_replaceLoading) {
 			// 无替换对象
-			if (replaceDstScreen == null || !replaceDstScreen.isOnLoadComplete()) {
+			if (_replaceDstScreen == null || !_replaceDstScreen.isOnLoadComplete()) {
 				process(timer);
 				// 渐进效果替换
-			} else if (screenSwitch != null) {
+			} else if (_screenSwitch != null) {
 				process(timer);
-				if (replaceDelay.action(timer)) {
-					screenSwitch.update(timer.timeSinceLastUpdate);
+				if (_replaceDelay.action(timer)) {
+					_screenSwitch.update(timer.timeSinceLastUpdate);
 				}
-				if (screenSwitch.isCompleted()) {
+				if (_screenSwitch.isCompleted()) {
 					submitReplaceScreen();
 				}
 				// 位移替换
-			} else if (replaceDstScreen.isOnLoadComplete()) {
+			} else if (_replaceDstScreen.isOnLoadComplete()) {
 				process(timer);
-				if (replaceDelay.action(timer)) {
-					switch (replaceMethod) {
+				if (_replaceDelay.action(timer)) {
+					switch (_curReplaceMethod) {
 					case FROM_LEFT:
-						dstPos.move_right(replaceScreenSpeed);
-						if (dstPos.x() >= 0) {
+						_curDstPos.move_right(_replaceScreenSpeed);
+						if (_curDstPos.x() >= 0) {
 							submitReplaceScreen();
 							return;
 						}
 						break;
 					case FROM_RIGHT:
-						dstPos.move_left(replaceScreenSpeed);
-						if (dstPos.x() <= 0) {
+						_curDstPos.move_left(_replaceScreenSpeed);
+						if (_curDstPos.x() <= 0) {
 							submitReplaceScreen();
 							return;
 						}
 						break;
 					case FROM_UP:
-						dstPos.move_down(replaceScreenSpeed);
-						if (dstPos.y() >= 0) {
+						_curDstPos.move_down(_replaceScreenSpeed);
+						if (_curDstPos.y() >= 0) {
 							submitReplaceScreen();
 							return;
 						}
 						break;
 					case FROM_DOWN:
-						dstPos.move_up(replaceScreenSpeed);
-						if (dstPos.y() <= 0) {
+						_curDstPos.move_up(_replaceScreenSpeed);
+						if (_curDstPos.y() <= 0) {
 							submitReplaceScreen();
 							return;
 						}
 						break;
 					case OUT_LEFT:
-						dstPos.move_left(replaceScreenSpeed);
-						if (dstPos.x() < -getWidth()) {
+						_curDstPos.move_left(_replaceScreenSpeed);
+						if (_curDstPos.x() < -getWidth()) {
 							submitReplaceScreen();
 							return;
 						}
 						break;
 					case OUT_RIGHT:
-						dstPos.move_right(replaceScreenSpeed);
-						if (dstPos.x() > getWidth()) {
+						_curDstPos.move_right(_replaceScreenSpeed);
+						if (_curDstPos.x() > getWidth()) {
 							submitReplaceScreen();
 							return;
 						}
 						break;
 					case OUT_UP:
-						dstPos.move_up(replaceScreenSpeed);
-						if (dstPos.y() < -getHeight()) {
+						_curDstPos.move_up(_replaceScreenSpeed);
+						if (_curDstPos.y() < -getHeight()) {
 							submitReplaceScreen();
 							return;
 						}
 						break;
 					case OUT_DOWN:
-						dstPos.move_down(replaceScreenSpeed);
-						if (dstPos.y() > getHeight()) {
+						_curDstPos.move_down(_replaceScreenSpeed);
+						if (_curDstPos.y() > getHeight()) {
 							submitReplaceScreen();
 							return;
 						}
 						break;
 					case FROM_UPPER_LEFT:
-						if (dstPos.y() < 0) {
-							dstPos.move_45D_right(replaceScreenSpeed);
+						if (_curDstPos.y() < 0) {
+							_curDstPos.move_45D_right(_replaceScreenSpeed);
 						} else {
-							dstPos.move_right(replaceScreenSpeed);
+							_curDstPos.move_right(_replaceScreenSpeed);
 						}
-						if (dstPos.y() >= 0 && dstPos.x() >= 0) {
+						if (_curDstPos.y() >= 0 && _curDstPos.x() >= 0) {
 							submitReplaceScreen();
 							return;
 						}
 						break;
 					case FROM_UPPER_RIGHT:
-						if (dstPos.y() < 0) {
-							dstPos.move_45D_down(replaceScreenSpeed);
+						if (_curDstPos.y() < 0) {
+							_curDstPos.move_45D_down(_replaceScreenSpeed);
 						} else {
-							dstPos.move_left(replaceScreenSpeed);
+							_curDstPos.move_left(_replaceScreenSpeed);
 						}
-						if (dstPos.y() >= 0 && dstPos.x() <= 0) {
+						if (_curDstPos.y() >= 0 && _curDstPos.x() <= 0) {
 							submitReplaceScreen();
 							return;
 						}
 						break;
 					case FROM_LOWER_LEFT:
-						if (dstPos.y() > 0) {
-							dstPos.move_45D_up(replaceScreenSpeed);
+						if (_curDstPos.y() > 0) {
+							_curDstPos.move_45D_up(_replaceScreenSpeed);
 						} else {
-							dstPos.move_right(replaceScreenSpeed);
+							_curDstPos.move_right(_replaceScreenSpeed);
 						}
-						if (dstPos.y() <= 0 && dstPos.x() >= 0) {
+						if (_curDstPos.y() <= 0 && _curDstPos.x() >= 0) {
 							submitReplaceScreen();
 							return;
 						}
 						break;
 					case FROM_LOWER_RIGHT:
-						if (dstPos.y() > 0) {
-							dstPos.move_45D_left(replaceScreenSpeed);
+						if (_curDstPos.y() > 0) {
+							_curDstPos.move_45D_left(_replaceScreenSpeed);
 						} else {
-							dstPos.move_left(replaceScreenSpeed);
+							_curDstPos.move_left(_replaceScreenSpeed);
 						}
-						if (dstPos.y() <= 0 && dstPos.x() <= 0) {
+						if (_curDstPos.y() <= 0 && _curDstPos.x() <= 0) {
 							submitReplaceScreen();
 							return;
 						}
 						break;
 					case OUT_UPPER_LEFT:
-						dstPos.move_45D_left(replaceScreenSpeed);
-						if (dstPos.x() < -getWidth() || dstPos.y() <= -getHeight()) {
+						_curDstPos.move_45D_left(_replaceScreenSpeed);
+						if (_curDstPos.x() < -getWidth() || _curDstPos.y() <= -getHeight()) {
 							submitReplaceScreen();
 							return;
 						}
 						break;
 					case OUT_UPPER_RIGHT:
-						dstPos.move_45D_up(replaceScreenSpeed);
-						if (dstPos.x() > getWidth() || dstPos.y() < -getHeight()) {
+						_curDstPos.move_45D_up(_replaceScreenSpeed);
+						if (_curDstPos.x() > getWidth() || _curDstPos.y() < -getHeight()) {
 							submitReplaceScreen();
 							return;
 						}
 						break;
 					case OUT_LOWER_LEFT:
-						dstPos.move_45D_down(replaceScreenSpeed);
-						if (dstPos.x() < -getWidth() || dstPos.y() > getHeight()) {
+						_curDstPos.move_45D_down(_replaceScreenSpeed);
+						if (_curDstPos.x() < -getWidth() || _curDstPos.y() > getHeight()) {
 							submitReplaceScreen();
 							return;
 						}
 						break;
 					case OUT_LOWER_RIGHT:
-						dstPos.move_45D_right(replaceScreenSpeed);
-						if (dstPos.x() > getWidth() || dstPos.y() > getHeight()) {
+						_curDstPos.move_45D_right(_replaceScreenSpeed);
+						if (_curDstPos.x() > getWidth() || _curDstPos.y() > getHeight()) {
 							submitReplaceScreen();
 							return;
 						}
@@ -3778,7 +3824,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 					default:
 						break;
 					}
-					replaceDstScreen.runTimer(timer);
+					_replaceDstScreen.runTimer(timer);
 				}
 			}
 		} else {
@@ -3791,7 +3837,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	public Screen setNext(boolean next) {
-		this.isNext = next;
+		this._isNext = next;
 		return this;
 	}
 
@@ -3801,28 +3847,28 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * 设定游戏窗体
 	 */
 	public Screen setScreen(Screen screen) {
-		if (handler != null) {
-			this.handler.setScreen(screen);
+		if (_processHandler != null) {
+			this._processHandler.setScreen(screen);
 		}
 		return this;
 	}
 
 	public int getScreenWidth() {
-		return (int) (width * this._scaleX);
+		return (int) (_currentWidth * this._scaleX);
 	}
 
 	public int getScreenHeight() {
-		return (int) (height * this._scaleY);
+		return (int) (_currentHeight * this._scaleY);
 	}
 
 	@Override
 	public int getWidth() {
-		return width;
+		return _currentWidth;
 	}
 
 	@Override
 	public int getHeight() {
-		return height;
+		return _currentHeight;
 	}
 
 	/**
@@ -3830,12 +3876,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 */
 	@Override
 	public void refresh() {
-		touchType.clear();
-		keyType.clear();
-		touchDX = touchDY = 0;
+		_touchTypes.clear();
+		_keyTypes.clear();
+		_touchDX = _touchDY = 0;
 	}
 
-	public abstract void resize(int width, int height);
+	public abstract void resize(int w, int h);
 
 	@Override
 	public PointI getTouch() {
@@ -3849,22 +3895,22 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	@Override
 	public int getTouchPressed() {
-		return touchButtonPressed > NO_BUTTON ? touchButtonPressed : NO_BUTTON;
+		return _touchButtonPressed > NO_BUTTON ? _touchButtonPressed : NO_BUTTON;
 	}
 
 	@Override
 	public int getTouchReleased() {
-		return touchButtonReleased > NO_BUTTON ? touchButtonReleased : NO_BUTTON;
+		return _touchButtonReleased > NO_BUTTON ? _touchButtonReleased : NO_BUTTON;
 	}
 
 	@Override
 	public boolean isTouchPressed(int button) {
-		return touchButtonPressed == button;
+		return _touchButtonPressed == button;
 	}
 
 	@Override
 	public boolean isTouchReleased(int button) {
-		return touchButtonReleased == button;
+		return _touchButtonReleased == button;
 	}
 
 	@Override
@@ -3879,17 +3925,17 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	@Override
 	public int getTouchDX() {
-		return (int) touchDX;
+		return (int) _touchDX;
 	}
 
 	@Override
 	public int getTouchDY() {
-		return (int) touchDY;
+		return (int) _touchDY;
 	}
 
 	@Override
 	public boolean isTouchType(int type) {
-		Boolean bn = touchType.get(type);
+		Boolean bn = _touchTypes.get(type);
 		if (bn == null) {
 			return false;
 		}
@@ -3898,35 +3944,43 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 
 	@Override
 	public int getKeyPressed() {
-		return keyButtonPressed > NO_KEY ? keyButtonPressed : NO_KEY;
+		return _keyButtonPressed > NO_KEY ? _keyButtonPressed : NO_KEY;
 	}
 
 	@Override
 	public boolean isKeyPressed(int keyCode) {
-		return keyButtonPressed == keyCode;
+		return _keyButtonPressed == keyCode;
 	}
 
 	@Override
 	public int getKeyReleased() {
-		return keyButtonReleased > NO_KEY ? keyButtonReleased : NO_KEY;
+		return _keyButtonReleased > NO_KEY ? _keyButtonReleased : NO_KEY;
 	}
 
 	@Override
 	public boolean isKeyReleased(int keyCode) {
-		return keyButtonReleased == keyCode;
+		return _keyButtonReleased == keyCode;
 	}
 
 	@Override
 	public boolean isKeyType(int type) {
-		Boolean bn = keyType.get(type);
+		Boolean bn = _keyTypes.get(type);
 		if (bn == null) {
 			return false;
 		}
 		return bn.booleanValue();
 	}
 
+	public boolean isNotAllowTouch() {
+		return _isLock || _isClose || !_isLoad;
+	}
+
+	public boolean isAllowTouch() {
+		return !isNotAllowTouch();
+	}
+
 	public final void keyPressed(GameKey e) {
-		if (isLock || isClose || !isLoad) {
+		if (isNotAllowTouch()) {
 			return;
 		}
 		int type = e.getTypeCode();
@@ -3941,15 +3995,15 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 				}
 			}
 			this.onKeyDown(e);
-			if (desktop != null) {
-				desktop.keyPressed(e);
+			if (_currentDesktop != null) {
+				_currentDesktop.keyPressed(e);
 			}
-			keyType.put(type, Boolean.valueOf(true));
-			keyButtonPressed = code;
-			keyButtonReleased = NO_KEY;
+			_keyTypes.put(type, Boolean.valueOf(true));
+			_keyButtonPressed = code;
+			_keyButtonReleased = NO_KEY;
 		} catch (Throwable ex) {
-			keyButtonPressed = NO_KEY;
-			keyButtonReleased = NO_KEY;
+			_keyButtonPressed = NO_KEY;
+			_keyButtonReleased = NO_KEY;
 			error("Screen keyPressed() exception", ex);
 		}
 	}
@@ -3960,12 +4014,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @param code
 	 */
 	public void setKeyDown(int button) {
-		keyButtonPressed = button;
-		keyButtonReleased = NO_KEY;
+		_keyButtonPressed = button;
+		_keyButtonReleased = NO_KEY;
 	}
 
 	public final void keyReleased(GameKey e) {
-		if (isLock || isClose || !isLoad) {
+		if (isNotAllowTouch()) {
 			return;
 		}
 		int type = e.getTypeCode();
@@ -3980,30 +4034,30 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 				}
 			}
 			this.onKeyUp(e);
-			if (desktop != null) {
-				desktop.keyReleased(e);
+			if (_currentDesktop != null) {
+				_currentDesktop.keyReleased(e);
 			}
 			this.releaseActionKeys();
-			keyType.put(type, Boolean.valueOf(false));
-			keyButtonReleased = code;
-			keyButtonPressed = NO_KEY;
+			_keyTypes.put(type, Boolean.valueOf(false));
+			_keyButtonReleased = code;
+			_keyButtonPressed = NO_KEY;
 		} catch (
 
 		Throwable ex) {
-			keyButtonPressed = NO_KEY;
-			keyButtonReleased = NO_KEY;
+			_keyButtonPressed = NO_KEY;
+			_keyButtonReleased = NO_KEY;
 			error("Screen keyReleased() exception", ex);
 		}
 	}
 
 	@Override
 	public void setKeyUp(int button) {
-		keyButtonReleased = button;
-		keyButtonPressed = NO_KEY;
+		_keyButtonReleased = button;
+		_keyButtonPressed = NO_KEY;
 	}
 
 	public void keyTyped(GameKey e) {
-		if (isLock || isClose || !isLoad) {
+		if (isNotAllowTouch()) {
 			return;
 		}
 		onKeyTyped(e);
@@ -4022,30 +4076,30 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	public final void mousePressed(GameTouch e) {
-		if (isLock || isClose || !isLoad) {
+		if (isNotAllowTouch()) {
 			return;
 		}
-		if (isTranslate) {
-			e.offset(tx, ty);
+		if (_isTranslate) {
+			e.offset(_currentX, _currentY);
 		}
 		int type = e.getTypeCode();
 		int button = e.getButton();
 
 		try {
-			touchType.put(type, Boolean.TRUE);
-			touchButtonPressed = button;
-			touchButtonReleased = NO_BUTTON;
+			_touchTypes.put(type, Boolean.TRUE);
+			_touchButtonPressed = button;
+			_touchButtonReleased = NO_BUTTON;
 			if (!isClickLimit(e)) {
 				updateTouchArea(Event.DOWN, e.getX(), e.getY());
 				touchDown(e);
-				if (_touchListener != null && desktop != null) {
-					_touchListener.DownClick(desktop.getSelectedComponent(), e.getX(), e.getY());
+				if (_touchListener != null && _currentDesktop != null) {
+					_touchListener.DownClick(_currentDesktop.getSelectedComponent(), e.getX(), e.getY());
 				}
 			}
 			_lastTocuh.set(e.getX(), e.getY());
 		} catch (Throwable ex) {
-			touchButtonPressed = NO_BUTTON;
-			touchButtonReleased = NO_BUTTON;
+			_touchButtonPressed = NO_BUTTON;
+			_touchButtonReleased = NO_BUTTON;
 			error("Screen mousePressed() exception", ex);
 		}
 	}
@@ -4053,30 +4107,30 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	public abstract void touchDown(GameTouch e);
 
 	public void mouseReleased(GameTouch e) {
-		if (isLock || isClose || !isLoad) {
+		if (isNotAllowTouch()) {
 			return;
 		}
-		if (isTranslate) {
-			e.offset(tx, ty);
+		if (_isTranslate) {
+			e.offset(_currentX, _currentY);
 		}
 		int type = e.getTypeCode();
 		int button = e.getButton();
 
 		try {
-			touchType.put(type, Boolean.FALSE);
-			touchButtonReleased = button;
-			touchButtonPressed = NO_BUTTON;
+			_touchTypes.put(type, Boolean.FALSE);
+			_touchButtonReleased = button;
+			_touchButtonPressed = NO_BUTTON;
 			if (!isClickLimit(e)) {
 				updateTouchArea(Event.UP, e.getX(), e.getY());
 				touchUp(e);
-				if (_touchListener != null && desktop != null) {
-					_touchListener.UpClick(desktop.getSelectedComponent(), e.getX(), e.getY());
+				if (_touchListener != null && _currentDesktop != null) {
+					_touchListener.UpClick(_currentDesktop.getSelectedComponent(), e.getX(), e.getY());
 				}
 			}
 			_lastTocuh.set(e.getX(), e.getY());
 		} catch (Throwable ex) {
-			touchButtonPressed = NO_BUTTON;
-			touchButtonReleased = NO_BUTTON;
+			_touchButtonPressed = NO_BUTTON;
+			_touchButtonReleased = NO_BUTTON;
 			error("Screen mouseReleased() exception", ex);
 		}
 	}
@@ -4084,11 +4138,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	public abstract void touchUp(GameTouch e);
 
 	public void mouseMoved(GameTouch e) {
-		if (isLock || isClose || !isLoad) {
+		if (isNotAllowTouch()) {
 			return;
 		}
-		if (isTranslate) {
-			e.offset(tx, ty);
+		if (_isTranslate) {
+			e.offset(_currentX, _currentY);
 		}
 		if (!isClickLimit(e)) {
 			updateTouchArea(Event.MOVE, e.getX(), e.getY());
@@ -4099,17 +4153,17 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	public abstract void touchMove(GameTouch e);
 
 	public void mouseDragged(GameTouch e) {
-		if (isLock || isClose || !isLoad) {
+		if (isNotAllowTouch()) {
 			return;
 		}
-		if (isTranslate) {
-			e.offset(tx, ty);
+		if (_isTranslate) {
+			e.offset(_currentX, _currentY);
 		}
 		if (!isClickLimit(e)) {
 			updateTouchArea(Event.DRAG, e.getX(), e.getY());
 			touchDrag(e);
-			if (_touchListener != null && desktop != null) {
-				_touchListener.DragClick(desktop.getSelectedComponent(), e.getX(), e.getY());
+			if (_touchListener != null && _currentDesktop != null) {
+				_touchListener.DragClick(_currentDesktop.getSelectedComponent(), e.getX(), e.getY());
 			}
 		}
 		_lastTocuh.set(e.getX(), e.getY());
@@ -4127,12 +4181,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @param event
 	 * @param x
 	 * @param y
-	 * @param width
-	 * @param height
+	 * @param w
+	 * @param h
 	 * @return
 	 */
-	public boolean inBounds(GameTouch event, float x, float y, float width, float height) {
-		return (event.x() > x && event.x() < x + width - 1 && event.y() > y && event.y() < y + height - 1);
+	public boolean inBounds(GameTouch event, float x, float y, float w, float h) {
+		return (event.x() > x && event.x() < x + w - 1 && event.y() > y && event.y() < y + h - 1);
 	}
 
 	/**
@@ -4141,12 +4195,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @param event
 	 * @param x
 	 * @param y
-	 * @param width
-	 * @param height
+	 * @param w
+	 * @param h
 	 * @return
 	 */
-	public boolean inBounds(LTouchLocation event, float x, float y, float width, float height) {
-		return (event.x() > x && event.x() < x + width - 1 && event.y() > y && event.y() < y + height - 1);
+	public boolean inBounds(LTouchLocation event, float x, float y, float w, float h) {
+		return (event.x() > x && event.x() < x + w - 1 && event.y() > y && event.y() < y + h - 1);
 	}
 
 	/**
@@ -4204,60 +4258,59 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	}
 
 	public int getHalfWidth() {
-		return halfWidth;
+		return _halfWidth;
 	}
 
 	public int getHalfHeight() {
-		return halfHeight;
+		return _halfHeight;
 	}
 
 	public Accelerometer.SensorDirection setSensorDirection(Accelerometer.SensorDirection dir) {
-		this.direction = dir;
-		return direction;
+		return (this._direction = dir);
 	}
 
 	public Accelerometer.SensorDirection getSensorDirection() {
-		return direction;
+		return this._direction;
 	}
 
 	public PaintOrder getFristOrder() {
-		return fristOrder;
+		return _curFristOrder;
 	}
 
 	public Screen setFristOrder(PaintOrder fristOrder) {
 		if (fristOrder == null) {
-			this.fristPaintFlag = false;
+			this._curFristPaintFlag = false;
 		} else {
-			this.fristPaintFlag = true;
-			this.fristOrder = fristOrder;
+			this._curFristPaintFlag = true;
+			this._curFristOrder = fristOrder;
 		}
 		return this;
 	}
 
 	public PaintOrder getSecondOrder() {
-		return secondOrder;
+		return _curSecondOrder;
 	}
 
 	public Screen setSecondOrder(PaintOrder secondOrder) {
 		if (secondOrder == null) {
-			this.secondPaintFlag = false;
+			this._curSecondPaintFlag = false;
 		} else {
-			this.secondPaintFlag = true;
-			this.secondOrder = secondOrder;
+			this._curSecondPaintFlag = true;
+			this._curSecondOrder = secondOrder;
 		}
 		return this;
 	}
 
 	public PaintOrder getLastOrder() {
-		return lastOrder;
+		return _curLastOrder;
 	}
 
 	public Screen setLastOrder(PaintOrder lastOrder) {
 		if (lastOrder == null) {
-			this.lastPaintFlag = false;
+			this._curLastPaintFlag = false;
 		} else {
-			this.lastPaintFlag = true;
-			this.lastOrder = lastOrder;
+			this._curLastPaintFlag = true;
+			this._curLastOrder = lastOrder;
 		}
 		return this;
 	}
@@ -4281,28 +4334,28 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public Screen setAutoDestory(final boolean a) {
-		if (desktop != null) {
-			desktop.setAutoDestory(a);
+		if (_currentDesktop != null) {
+			_currentDesktop.setAutoDestory(a);
 		}
 		return this;
 	}
 
 	public boolean isAutoDestory() {
-		if (desktop != null) {
-			return desktop.isAutoDestory();
+		if (_currentDesktop != null) {
+			return _currentDesktop.isAutoDestory();
 		}
 		return false;
 	}
 
 	/**
-	 * 检查指定组件是否显示于desktop当中
+	 * 检查指定组件是否显示于_currentDesktop当中
 	 * 
 	 * @param comp
 	 * @return
 	 */
 	public boolean isVisibleInParents(LComponent comp) {
-		if (desktop != null) {
-			return desktop.isVisibleInParents(comp);
+		if (_currentDesktop != null) {
+			return _currentDesktop.isVisibleInParents(comp);
 		}
 		return false;
 	}
@@ -4341,23 +4394,26 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * 
 	 * @param r
 	 */
-	public void setRotation(float r) {
+	public Screen setRotation(float r) {
 		this._rotation = r;
 		if (_rotation > 360f) {
 			_rotation = 0f;
 		}
+		return this;
 	}
 
 	public float getRotation() {
 		return _rotation;
 	}
 
-	public void setPivotX(float pX) {
+	public Screen setPivotX(float pX) {
 		this._pivotX = pX;
+		return this;
 	}
 
-	public void setPivotY(float pY) {
+	public Screen setPivotY(float pY) {
 		this._pivotY = pY;
+		return this;
 	}
 
 	public float getPivotX() {
@@ -4368,9 +4424,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return _pivotY;
 	}
 
-	public void setPivot(float pX, float pY) {
+	public Screen setPivot(float pX, float pY) {
 		setPivotX(pX);
 		setPivotY(pY);
+		return this;
 	}
 
 	public boolean isScaled() {
@@ -4385,46 +4442,51 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return this._scaleY;
 	}
 
-	public void setScaleX(final float sx) {
+	public Screen setScaleX(final float sx) {
 		this._scaleX = sx;
+		return this;
 	}
 
-	public void setScaleY(final float sy) {
+	public Screen setScaleY(final float sy) {
 		this._scaleY = sy;
+		return this;
 	}
 
-	public void setScale(final float pScale) {
-		this._scaleX = pScale;
-		this._scaleY = pScale;
+	public Screen setScale(final float pScale) {
+		return setScale(pScale, pScale);
 	}
 
-	public void setScale(final float sx, final float sy) {
+	public Screen setScale(final float sx, final float sy) {
 		this._scaleX = sx;
 		this._scaleY = sy;
+		return this;
 	}
 
 	public boolean isVisible() {
 		return this._visible;
 	}
 
-	public void setVisible(final boolean v) {
+	public Screen setVisible(final boolean v) {
 		this._visible = v;
+		return this;
 	}
 
 	public boolean isTxUpdate() {
-		return _scaleX != 1f || _scaleY != 1f || _rotation != 0 || _flipX || _flipY || tx != 0 || ty != 0;
+		return _scaleX != 1f || _scaleY != 1f || _rotation != 0 || _flipX || _flipY || _currentX != 0 || _currentY != 0;
 	}
 
-	public void setAlpha(float a) {
+	public Screen setAlpha(float a) {
 		this._alpha = a;
+		return this;
 	}
 
 	public float getAlpha() {
 		return this._alpha;
 	}
 
-	public void setColor(LColor color) {
+	public Screen setColor(LColor color) {
 		this._baseColor = color;
+		return this;
 	}
 
 	public LColor getColor() {
@@ -4526,22 +4588,22 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public UIControls createUIControls() {
-		if (desktop != null) {
-			return desktop.createUIControls();
+		if (_currentDesktop != null) {
+			return _currentDesktop.createUIControls();
 		}
 		return new UIControls();
 	}
 
 	public UIControls findUINames(String... uiName) {
-		if (desktop != null) {
-			return desktop.findUINamesToUIControls(uiName);
+		if (_currentDesktop != null) {
+			return _currentDesktop.findUINamesToUIControls(uiName);
 		}
 		return new UIControls();
 	}
 
 	public UIControls findNotUINames(String... uiName) {
-		if (desktop != null) {
-			return desktop.findNotUINamesToUIControls(uiName);
+		if (_currentDesktop != null) {
+			return _currentDesktop.findNotUINamesToUIControls(uiName);
 		}
 		return new UIControls();
 	}
@@ -4553,8 +4615,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public UIControls findNames(String... name) {
-		if (desktop != null) {
-			return desktop.findNamesToUIControls(name);
+		if (_currentDesktop != null) {
+			return _currentDesktop.findNamesToUIControls(name);
 		}
 		return new UIControls();
 	}
@@ -4566,8 +4628,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public UIControls findNameContains(String... name) {
-		if (desktop != null) {
-			return desktop.findNameContainsToUIControls(name);
+		if (_currentDesktop != null) {
+			return _currentDesktop.findNameContainsToUIControls(name);
 		}
 		return new UIControls();
 	}
@@ -4579,8 +4641,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public UIControls findNotNames(String... name) {
-		if (desktop != null) {
-			return desktop.findNotNamesToUIControls(name);
+		if (_currentDesktop != null) {
+			return _currentDesktop.findNotNamesToUIControls(name);
 		}
 		return new UIControls();
 	}
@@ -4592,8 +4654,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public UIControls findTags(Object... o) {
-		if (desktop != null) {
-			return desktop.findTagsToUIControls(o);
+		if (_currentDesktop != null) {
+			return _currentDesktop.findTagsToUIControls(o);
 		}
 		return new UIControls();
 	}
@@ -4605,8 +4667,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public UIControls findNotTags(Object... o) {
-		if (desktop != null) {
-			return desktop.findNotTagsToUIControls(o);
+		if (_currentDesktop != null) {
+			return _currentDesktop.findNotTagsToUIControls(o);
 		}
 		return new UIControls();
 	}
@@ -4617,8 +4679,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public SpriteControls createSpriteControls() {
-		if (sprites != null) {
-			return sprites.createSpriteControls();
+		if (_currentSprites != null) {
+			return _currentSprites.createSpriteControls();
 		}
 		return new SpriteControls();
 	}
@@ -4630,8 +4692,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public SpriteControls findSpriteNames(String... names) {
-		if (sprites != null) {
-			return sprites.findNamesToSpriteControls(names);
+		if (_currentSprites != null) {
+			return _currentSprites.findNamesToSpriteControls(names);
 		}
 		return new SpriteControls();
 	}
@@ -4643,8 +4705,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public SpriteControls findSpriteNameContains(String... names) {
-		if (sprites != null) {
-			return sprites.findNameContainsToSpriteControls(names);
+		if (_currentSprites != null) {
+			return _currentSprites.findNameContainsToSpriteControls(names);
 		}
 		return new SpriteControls();
 	}
@@ -4656,8 +4718,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public SpriteControls findSpriteNotNames(String... names) {
-		if (sprites != null) {
-			return sprites.findNotNamesToSpriteControls(names);
+		if (_currentSprites != null) {
+			return _currentSprites.findNotNamesToSpriteControls(names);
 		}
 		return new SpriteControls();
 	}
@@ -4669,8 +4731,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public SpriteControls findSpriteTags(Object... o) {
-		if (sprites != null) {
-			return sprites.findTagsToSpriteControls(o);
+		if (_currentSprites != null) {
+			return _currentSprites.findTagsToSpriteControls(o);
 		}
 		return new SpriteControls();
 	}
@@ -4682,8 +4744,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public SpriteControls findSpriteNotTags(Object... o) {
-		if (sprites != null) {
-			return sprites.findNotTagsToSpriteControls(o);
+		if (_currentSprites != null) {
+			return _currentSprites.findNotTagsToSpriteControls(o);
 		}
 		return new SpriteControls();
 	}
@@ -5486,8 +5548,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public TArray<ISprite> removeSprite(QueryEvent<ISprite> query) {
-		if (sprites != null) {
-			return sprites.remove(query);
+		if (_currentSprites != null) {
+			return _currentSprites.remove(query);
 		}
 		return new TArray<ISprite>();
 	}
@@ -5499,8 +5561,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public TArray<ISprite> findSprite(QueryEvent<ISprite> query) {
-		if (sprites != null) {
-			return sprites.find(query);
+		if (_currentSprites != null) {
+			return _currentSprites.find(query);
 		}
 		return new TArray<ISprite>();
 	}
@@ -5512,8 +5574,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public TArray<ISprite> deleteSprite(QueryEvent<ISprite> query) {
-		if (sprites != null) {
-			return sprites.delete(query);
+		if (_currentSprites != null) {
+			return _currentSprites.delete(query);
 		}
 		return new TArray<ISprite>();
 	}
@@ -5525,8 +5587,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public TArray<ISprite> selectSprite(QueryEvent<ISprite> query) {
-		if (sprites != null) {
-			return sprites.select(query);
+		if (_currentSprites != null) {
+			return _currentSprites.select(query);
 		}
 		return new TArray<ISprite>();
 	}
@@ -5538,10 +5600,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public TArray<LComponent> removeComponent(QueryEvent<LComponent> query) {
-		if (desktop == null) {
+		if (_currentDesktop == null) {
 			return new TArray<LComponent>();
 		}
-		return desktop.remove(query);
+		return _currentDesktop.remove(query);
 	}
 
 	/**
@@ -5551,10 +5613,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public TArray<LComponent> findComponent(QueryEvent<LComponent> query) {
-		if (desktop == null) {
+		if (_currentDesktop == null) {
 			return new TArray<LComponent>();
 		}
-		return desktop.find(query);
+		return _currentDesktop.find(query);
 	}
 
 	/**
@@ -5564,10 +5626,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public TArray<LComponent> deleteComponent(QueryEvent<LComponent> query) {
-		if (desktop == null) {
+		if (_currentDesktop == null) {
 			return new TArray<LComponent>();
 		}
-		return desktop.delete(query);
+		return _currentDesktop.delete(query);
 	}
 
 	/**
@@ -5577,10 +5639,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public TArray<LComponent> selectComponent(QueryEvent<LComponent> query) {
-		if (desktop == null) {
+		if (_currentDesktop == null) {
 			return new TArray<LComponent>();
 		}
-		return desktop.select(query);
+		return _currentDesktop.select(query);
 	}
 
 	/**
@@ -5608,8 +5670,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public Screen forSpriteChildren(Callback<ISprite> callback) {
-		if (this.sprites != null) {
-			this.sprites.forChildren(callback);
+		if (this._currentSprites != null) {
+			this._currentSprites.forChildren(callback);
 		}
 		return this;
 	}
@@ -5621,8 +5683,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public Screen forComponentChildren(Callback<LComponent> callback) {
-		if (this.desktop != null) {
-			this.desktop.forChildren(callback);
+		if (this._currentDesktop != null) {
+			this._currentDesktop.forChildren(callback);
 		}
 		return this;
 	}
@@ -5633,11 +5695,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public Screen sort() {
-		if (this.desktop != null) {
-			this.desktop.sortDesktop();
+		if (this._currentDesktop != null) {
+			this._currentDesktop.sortDesktop();
 		}
-		if (this.sprites != null) {
-			this.sprites.sortSprites();
+		if (this._currentSprites != null) {
+			this._currentSprites.sortSprites();
 		}
 		return this;
 	}
@@ -5649,27 +5711,27 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 	 * @return
 	 */
 	public Screen setSortableChildren(boolean v) {
-		if (this.sprites != null) {
-			this.sprites.setSortableChildren(v);
+		if (this._currentSprites != null) {
+			this._currentSprites.setSortableChildren(v);
 		}
-		if (this.desktop != null) {
-			this.desktop.setSortableChildren(v);
+		if (this._currentDesktop != null) {
+			this._currentDesktop.setSortableChildren(v);
 		}
 		return this;
 	}
 
 	public boolean isSpriteSortableChildren() {
-		return this.sprites != null ? this.sprites.isSortableChildren() : false;
+		return this._currentSprites != null ? this._currentSprites.isSortableChildren() : false;
 	}
 
 	public boolean isDesktopSortableChildren() {
-		return this.desktop != null ? this.desktop.isSortableChildren() : false;
+		return this._currentDesktop != null ? this._currentDesktop.isSortableChildren() : false;
 	}
 
 	@Override
 	public String toString() {
 		StringKeyValue sbr = new StringKeyValue(getClass().getName());
-		sbr.newLine().kv("Sprites", sprites).newLine().kv("Desktop", desktop).newLine();
+		sbr.newLine().kv("Sprites", _currentSprites).newLine().kv("Desktop", _currentDesktop).newLine();
 		return sbr.toString();
 	}
 
@@ -5737,36 +5799,38 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 				if (_touchAreas != null) {
 					_touchAreas.clear();
 				}
-				touchButtonPressed = NO_BUTTON;
-				touchButtonReleased = NO_BUTTON;
-				keyButtonPressed = NO_KEY;
-				keyButtonReleased = NO_KEY;
-				replaceLoading = false;
-				if (replaceDelay != null) {
-					replaceDelay.setDelay(10);
+				_touchButtonPressed = NO_BUTTON;
+				_touchButtonReleased = NO_BUTTON;
+				_keyButtonPressed = NO_KEY;
+				_keyButtonReleased = NO_KEY;
+				_replaceLoading = false;
+				if (_replaceDelay != null) {
+					_replaceDelay.setDelay(10);
 				}
-				tx = ty = 0;
-				isClose = true;
-				isTranslate = false;
-				isNext = false;
-				isGravity = false;
-				isLock = true;
+				_currentX = _currentY = _currentFrame = 0;
+				_isClose = true;
+				_isTranslate = false;
+				_isNext = false;
+				_isGravity = false;
+				_isLock = true;
+				_isTimerPaused = false;
+				_isProcessing = false;
 				_isExistCamera = false;
 				_isExistViewport = false;
 				_desktopPenetrate = false;
-				if (sprites != null) {
-					spriteRun = false;
-					sprites.close();
-					sprites = null;
+				if (_currentSprites != null) {
+					_curSpriteRun = false;
+					_currentSprites.close();
+					_currentSprites = null;
 				}
-				if (desktop != null) {
-					desktopRun = false;
-					desktop.close();
-					desktop = null;
+				if (_currentDesktop != null) {
+					_curDesktopRun = false;
+					_currentDesktop.close();
+					_currentDesktop = null;
 				}
-				if (gravityHandler != null) {
-					gravityHandler.close();
-					gravityHandler = null;
+				if (_gravityHandler != null) {
+					_gravityHandler.close();
+					_gravityHandler = null;
 				}
 				clearTouched();
 				clearFrameLoop();
@@ -5780,9 +5844,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 				if (_keyActions != null) {
 					_keyActions.clear();
 				}
-				if (currentScreenBackground != null) {
-					currentScreenBackground.close();
-					currentScreenBackground = null;
+				if (_currentScreenBackground != null) {
+					_currentScreenBackground.close();
+					_currentScreenBackground = null;
 				}
 				if (_closeUpdate != null) {
 					_closeUpdate.action(this);
@@ -5794,8 +5858,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 				}
 				_closeUpdate = null;
 				_resizeListener = null;
-				this.screenSwitch = null;
-				this.stageRun = false;
+				this._screenSwitch = null;
+				this._curStageRun = false;
 				LSystem.closeTemp();
 			} catch (Throwable cause) {
 				LSystem.error("Screen destroy() dispatch exception", cause);

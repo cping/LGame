@@ -25,23 +25,23 @@ import loon.utils.StringKeyValue;
 
 public class FadeTo extends ActionEvent {
 
-	public float time;
+	private float time;
 
-	public float currentFrame;
+	private float currentFrame;
 
-	public int type;
+	private int currentType;
 
 	public FadeTo(int type, float speed) {
-		this.type = type;
+		this.currentType = type;
 		this.setSpeed(speed);
 	}
 
 	public int getEffectType() {
-		return type;
+		return currentType;
 	}
 
 	public FadeTo setEffectType(int type) {
-		this.type = type;
+		this.currentType = type;
 		return this;
 	}
 
@@ -56,7 +56,7 @@ public class FadeTo extends ActionEvent {
 
 	public FadeTo setSpeed(float delay) {
 		this.time = delay;
-		if (type == ISprite.TYPE_FADE_OUT) {
+		if (currentType == ISprite.TYPE_FADE_OUT) {
 			this.currentFrame = this.time;
 		} else {
 			this.currentFrame = 0f;
@@ -70,7 +70,7 @@ public class FadeTo extends ActionEvent {
 
 	@Override
 	public void update(long elapsedTime) {
-		if (type == ISprite.TYPE_FADE_OUT) {
+		if (currentType == ISprite.TYPE_FADE_OUT) {
 			currentFrame--;
 			if (currentFrame <= 0) {
 				original.setAlpha(0f);
@@ -87,7 +87,7 @@ public class FadeTo extends ActionEvent {
 		}
 		original.setAlpha(currentFrame / time);
 		if (_isCompleted) {
-			if (type == ISprite.TYPE_FADE_OUT) {
+			if (currentType == ISprite.TYPE_FADE_OUT) {
 				original.setAlpha(0f);
 			} else {
 				original.setAlpha(1f);
@@ -105,7 +105,7 @@ public class FadeTo extends ActionEvent {
 
 	@Override
 	public ActionEvent cpy() {
-		FadeTo fade = new FadeTo(type, time);
+		FadeTo fade = new FadeTo(currentType, time);
 		fade.set(this);
 		return fade;
 	}
@@ -113,7 +113,7 @@ public class FadeTo extends ActionEvent {
 	@Override
 	public ActionEvent reverse() {
 		FadeTo fade = null;
-		if (type == ISprite.TYPE_FADE_IN) {
+		if (currentType == ISprite.TYPE_FADE_IN) {
 			fade = new FadeTo(ISprite.TYPE_FADE_OUT, time);
 		} else {
 			fade = new FadeTo(ISprite.TYPE_FADE_IN, time);

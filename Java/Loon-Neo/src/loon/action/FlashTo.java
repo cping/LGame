@@ -32,7 +32,7 @@ public class FlashTo extends ActionEvent {
 
 	private final EaseTimer easeTimer;
 
-	private float interval = 0;
+	private float interval = 0f;
 
 	public FlashTo() {
 		this(1f, LSystem.DEFAULT_EASE_DELAY, EasingMode.Linear);

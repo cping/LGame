@@ -54,6 +54,7 @@ import loon.utils.IArray;
 import loon.utils.LayerSorter;
 import loon.utils.MathUtils;
 import loon.utils.StrBuilder;
+import loon.utils.StringUtils;
 import loon.utils.TArray;
 
 /**
@@ -327,12 +328,12 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	@Override
 	public void setScaleX(final float pScaleX) {
-		this._scaleX = pScaleX;
+		this.setScale(pScaleX, this._scaleY);
 	}
 
 	@Override
 	public void setScaleY(final float pScaleY) {
-		this._scaleY = pScaleY;
+		this.setScale(this._scaleX, pScaleY);
 	}
 
 	protected void onScale() {
@@ -345,6 +346,9 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	@Override
 	public void setScale(final float pScaleX, final float pScaleY) {
+		if (pScaleX == this._scaleX && pScaleY == this._scaleY) {
+			return;
+		}
 		this._scaleX = pScaleX;
 		this._scaleY = pScaleY;
 		if (_childrens != null) {
@@ -356,6 +360,39 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 			}
 		}
 		this.onScale();
+	}
+
+	public Entity scaleTo(float width, float height) {
+		return scaleTo(width, height, "in-pad");
+	}
+
+	public Entity scaleTo(float width, float height, String mode) {
+		float scaleX = _scaleX;
+		float scaleY = _scaleY;
+		float curWidth = _width;
+		float curHeight = _height;
+		if (width > 0) {
+			scaleX = curWidth / width;
+			curWidth = width;
+		}
+		if (height > 0) {
+			scaleY = curHeight / height;
+			curHeight = height;
+		}
+		if (curWidth > 0 && curHeight > 0 && !StringUtils.isEmpty(mode)) {
+			if ("out".equals(mode) || "out-crop".equals(mode)) {
+				scaleX = scaleY = MathUtils.max(scaleX, scaleY);
+			} else if ("in".equals(mode) || "in-pad".equals(mode)) {
+				scaleX = scaleY = MathUtils.min(scaleX, scaleY);
+			}
+			setScale(scaleX, scaleY);
+			if ("out-crop".equals(mode) || "in-pad".equals(mode)) {
+				curWidth = curWidth / scaleX;
+				curHeight = curHeight / scaleY;
+				setSize(curWidth, curHeight);
+			}
+		}
+		return this;
 	}
 
 	@Override
@@ -812,6 +849,18 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	public float centerY() {
 		return getY() + (getHeight() / 2f);
+	}
+
+	public float getXdistance(Entity target) {
+		return MathUtils.abs(getCenterX() - target.getCenterX());
+	}
+
+	public float getYdistance(Entity target) {
+		return MathUtils.abs(getCenterY() - target.getCenterY());
+	}
+
+	public float getTileDistance(Entity target, int tileSize) {
+		return (getXdistance(target) + getYdistance(target)) / tileSize;
 	}
 
 	protected void prePaint(final GLEx g) {

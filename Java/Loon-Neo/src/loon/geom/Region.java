@@ -26,7 +26,7 @@ import loon.utils.StringKeyValue;
 /**
  * 用以保存两个数值的区间
  */
-public class Region {
+public class Region implements SetXY, XY {
 
 	private int start;
 	private int end;
@@ -52,6 +52,26 @@ public class Region {
 
 	public int getEnd() {
 		return end;
+	}
+
+	@Override
+	public float getX() {
+		return start;
+	}
+
+	@Override
+	public float getY() {
+		return end;
+	}
+
+	@Override
+	public void setX(float x) {
+		this.start = (int) x;
+	}
+
+	@Override
+	public void setY(float y) {
+		this.end = (int) y;
 	}
 
 	public int random() {
