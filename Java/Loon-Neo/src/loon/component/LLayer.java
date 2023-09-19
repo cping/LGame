@@ -42,10 +42,6 @@ public class LLayer extends ActorLayer {
 
 	private Sprites _layerSprites;
 
-	private float width;
-
-	private float height;
-
 	private float colorAlpha;
 
 	private float actorX;
@@ -279,9 +275,7 @@ public class LLayer extends ActorLayer {
 				if (!thing.visible) {
 					continue;
 				}
-
 				isListener = (thing.actorListener != null);
-
 				if (isVSync) {
 					if (isListener) {
 						thing.actorListener.update(elapsedTime);
@@ -297,12 +291,12 @@ public class LLayer extends ActorLayer {
 				if (actorX + actorWidth < minX || actorX > maxX || actorY + actorHeight < minY || actorY > maxY) {
 					continue;
 				}
-				int tint = g.color();
-				float alpha = g.alpha();
+				final int tint = g.color();
+				final float alpha = g.alpha();
 				LTexture actorImage = thing.getImage();
 				if (actorImage != null) {
-					width = actorImage.getWidth();
-					height = actorImage.getHeight();
+					final float width = thing.getWidth();
+					final float height = thing.getHeight();
 					thing.setLastPaintSeqNum(paintSeq++);
 					float oldAlpha = g.alpha();
 					colorAlpha = thing.getAlpha();

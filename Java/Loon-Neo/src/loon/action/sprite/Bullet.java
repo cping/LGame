@@ -322,6 +322,13 @@ public class Bullet extends LObject<Bullet> implements CollisionObject, ActionBi
 	}
 
 	@Override
+	public Bullet setSize(float w, float h) {
+		this.width = w;
+		this.height = h;
+		return this;
+	}
+
+	@Override
 	public boolean isBounded() {
 		return false;
 	}

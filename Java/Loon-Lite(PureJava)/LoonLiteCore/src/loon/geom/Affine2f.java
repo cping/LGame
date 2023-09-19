@@ -312,7 +312,7 @@ public class Affine2f implements LTrans, XY {
 	public float ty = 0.0f;
 	/* convert Affine to Matrix3 */
 	private float[] matrix3f = new float[9];
-
+	
 	protected Affine2f(Affine2f other) {
 		this(other.scaleX(), other.scaleY(), other.rotation(), other.tx(), other.ty());
 	}
@@ -373,6 +373,18 @@ public class Affine2f implements LTrans, XY {
 		this.m11 = 1;
 		this.ty = 0;
 		return this;
+	}
+
+	public float det() {
+		return m00 * m11 - m01 * m10;
+	}
+
+	public boolean isIdt() {
+		return (m00 == 1 && m01 == 0 && tx == 0 && m10 == 0 && m11 == 1 && ty == 0);
+	}
+
+	public boolean isTranslation() {
+		return (m00 == 1 && m11 == 1 && m01 == 0 && m10 == 0);
 	}
 
 	/**

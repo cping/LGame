@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2012
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -28,7 +28,13 @@ import loon.geom.RectBox;
 
 public class EmptyObject extends LObject<Object> implements ActionBind, LRelease {
 
-	private boolean visible;
+	private boolean _visible;
+
+	private float _scaleX = 1f, _scaleY = 1f;
+
+	private float _width = 0f, _height = 0f;
+
+	private LColor _color;
 
 	@Override
 	public void update(long elapsedTime) {
@@ -37,12 +43,12 @@ public class EmptyObject extends LObject<Object> implements ActionBind, LRelease
 
 	@Override
 	public float getWidth() {
-		return 0;
+		return _width;
 	}
 
 	@Override
 	public float getHeight() {
-		return 0;
+		return _height;
 	}
 
 	@Override
@@ -52,30 +58,33 @@ public class EmptyObject extends LObject<Object> implements ActionBind, LRelease
 
 	@Override
 	public void setVisible(boolean v) {
-		this.visible = v;
+		this._visible = v;
 	}
 
 	@Override
 	public boolean isVisible() {
-		return visible;
+		return _visible;
 	}
-
-	private float scaleX = 1f, scaleY = 1f;
 
 	@Override
 	public float getScaleX() {
-		return scaleX;
+		return _scaleX;
 	}
 
 	@Override
 	public float getScaleY() {
-		return scaleY;
+		return _scaleY;
+	}
+
+	public EmptyObject setScale(float scale) {
+		this.setScale(scale, scale);
+		return this;
 	}
 
 	@Override
 	public void setScale(float sx, float sy) {
-		this.scaleX = sx;
-		this.scaleY = sy;
+		this._scaleX = sx;
+		this._scaleY = sy;
 	}
 
 	@Override
@@ -100,14 +109,22 @@ public class EmptyObject extends LObject<Object> implements ActionBind, LRelease
 
 	@Override
 	public void setColor(LColor color) {
-
+		this._color = color;
 	}
 
 	@Override
 	public LColor getColor() {
-		return null;
+		return _color;
 	}
 
+	@Override
+	public ActionBind setSize(float w, float h) {
+		this._width = w;
+		this._height = h;
+		return this;
+	}
+
+//
 	@Override
 	public ActionTween selfAction() {
 		return PlayerUtils.set(this);
@@ -126,4 +143,5 @@ public class EmptyObject extends LObject<Object> implements ActionBind, LRelease
 	public void close() {
 		setState(State.DISPOSED);
 	}
+
 }

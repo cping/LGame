@@ -344,6 +344,12 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements Sized, 
 		this.scaleX = sx;
 		this.scaleY = sy;
 	}
+	
+	@Override
+	public TMXMapRenderer setSize(float w, float h) {
+		setScale(w / getWidth(), h / getHeight());
+		return this;
+	}
 
 	@Override
 	public boolean isBounded() {

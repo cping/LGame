@@ -46,8 +46,8 @@ public class Role extends RoleValue implements ActionBind {
 		}
 
 	}
-	
-	public final  static ActionPriorityComparator ActionPrioritySort = new ActionPriorityComparator();
+
+	public final static ActionPriorityComparator ActionPrioritySort = new ActionPriorityComparator();
 
 	private final TArray<Attribute> _attributes = new TArray<Attribute>();
 
@@ -279,6 +279,17 @@ public class Role extends RoleValue implements ActionBind {
 		if (_roleObject != null) {
 			_roleObject.setScale(sx, sy);
 		}
+	}
+
+	@Override
+	public Role setSize(float w, float h) {
+		if (isLocked()) {
+			return this;
+		}
+		if (_roleObject != null) {
+			_roleObject.setSize(w, h);
+		}
+		return this;
 	}
 
 	@Override

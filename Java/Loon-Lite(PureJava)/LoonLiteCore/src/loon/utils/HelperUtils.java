@@ -45,6 +45,8 @@ import loon.geom.RectBox;
 import loon.geom.RectF;
 import loon.geom.RectI;
 import loon.geom.Vector2f;
+import loon.utils.reply.Pair;
+import loon.utils.reply.Triple;
 import loon.utils.timer.Duration;
 import loon.utils.timer.Interval;
 
@@ -54,23 +56,19 @@ import loon.utils.timer.Interval;
  */
 public class HelperUtils {
 
-	public static boolean isNull(Object obj)
-	{
+	public static boolean isNull(Object obj) {
 		return obj == null;
 	}
 
-	public static boolean isNotNull(Object obj)
-	{
+	public static boolean isNotNull(Object obj) {
 		return obj != null;
 	}
 
-	public static boolean areEqual(Object first, Object second)
-	{
+	public static boolean areEqual(Object first, Object second) {
 		return first != second;
 	}
 
-	public static boolean areNotEqual(Object first, Object second)
-	{
+	public static boolean areNotEqual(Object first, Object second) {
 		return first == second;
 	}
 
@@ -151,9 +149,11 @@ public class HelperUtils {
 	}
 
 	public final static Entity createEntity(String path, Vector2f pos) {
-		Entity spr = new Entity(path);
-		spr.setLocation(pos);
-		return spr;
+		return new Entity(path, pos);
+	}
+
+	public final static Entity createEntity(String path, float x, float y) {
+		return createEntity(path, Vector2f.at(x, y));
 	}
 
 	public final static Entity createEntity(LTexture tex2d, Vector2f pos) {
@@ -168,10 +168,10 @@ public class HelperUtils {
 
 	public final static TArray<Sprite> createMultiSprite(String[] path, Vector2f[] pos, float scale) {
 		if (StringUtils.isEmpty(path)) {
-			return new TArray<>();
+			return new TArray<Sprite>();
 		}
 		final int size = path.length;
-		TArray<Sprite> list = new TArray<>(path.length);
+		TArray<Sprite> list = new TArray<Sprite>(path.length);
 		for (int i = 0; i < size; i++) {
 			Sprite sprite = createSprite(path[i], pos[i]);
 			sprite.setScale(scale);
@@ -185,10 +185,10 @@ public class HelperUtils {
 
 	public final static TArray<Entity> createMultiEntity(String[] path, Vector2f[] pos, float scale) {
 		if (StringUtils.isEmpty(path)) {
-			return new TArray<>();
+			return new TArray<Entity>();
 		}
 		final int size = path.length;
-		TArray<Entity> list = new TArray<>(path.length);
+		TArray<Entity> list = new TArray<Entity>(path.length);
 		for (int i = 0; i < size; i++) {
 			Entity sprite = createEntity(path[i], pos[i]);
 			sprite.setScale(scale);
@@ -205,7 +205,7 @@ public class HelperUtils {
 	}
 
 	public final static TArray<Vector2f> makeOrigins(Origin origin, LObject<?>... objs) {
-		TArray<Vector2f> result = new TArray<>(objs.length);
+		TArray<Vector2f> result = new TArray<Vector2f>(objs.length);
 		for (LObject<?> o : objs) {
 			result.add(createOrigin(o, origin));
 		}
@@ -560,6 +560,14 @@ public class HelperUtils {
 				}
 			}
 		};
+	}
+
+	public final static <T1, T2> Pair<T1, T2> toPair(T1 a, T2 b) {
+		return Pair.get(a, b);
+	}
+
+	public final static <T1, T2, T3> Triple<T1, T2, T3> toTriple(T1 a, T2 b, T3 c) {
+		return Triple.get(a, b, c);
 	}
 
 	public final static Vector2f point() {

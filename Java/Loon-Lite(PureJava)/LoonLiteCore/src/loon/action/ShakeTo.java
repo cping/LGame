@@ -98,7 +98,6 @@ public class ShakeTo extends ActionEvent {
 		return easeTimer.isLoop();
 	}
 	
-	
 	public float getShakeX() {
 		return shakeX;
 	}

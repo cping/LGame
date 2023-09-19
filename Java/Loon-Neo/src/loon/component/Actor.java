@@ -67,6 +67,8 @@ public class Actor extends LObject<Actor>
 
 	private int lastPaintSequenceNumber;
 
+	public boolean isConsumerDrawing = true;
+
 	boolean visible = true, draged = true, clicked = true;
 
 	private ActorLayer gameLayer;
@@ -75,9 +77,13 @@ public class Actor extends LObject<Actor>
 
 	private RectBox boundingRect;
 
-	private float[] xs = new float[4];
+	private float _actorWidth, _actorHeight;
 
-	private float[] ys = new float[4];
+	private float[] _currentPos = new float[2];
+	
+	private float[] _positionXs = new float[4];
+
+	private float[] _positionYs = new float[4];
 
 	private LTimer timer = new LTimer(0);
 
@@ -94,16 +100,22 @@ public class Actor extends LObject<Actor>
 	protected boolean flipX = false, flipY = false;
 
 	public Actor(Animation animation) {
-		this(animation, 0, 0);
+		this(animation, 0f, 0f);
 	}
 
-	public Actor(Animation animation, int x, int y) {
+	public Actor(Animation animation, float x, float y) {
+		this(animation, 0f, 0f, 0f, 0f);
+	}
+
+	public Actor(Animation animation, float x, float y, float w, float h) {
 		if (animation == null) {
 			throw new LSysException("Animation is null !");
 		}
 		this.noSequenceNumber = sequenceNumber++;
 		this.animation = animation;
 		this.isAnimation = true;
+		this._actorWidth = w;
+		this._actorHeight = h;
 		this._objectLocation.set(x, y);
 		this.setImage(animation.getSpriteImage());
 		this.setObjectFlag("Actor");
@@ -113,15 +125,12 @@ public class Actor extends LObject<Actor>
 		this((LTexture) null);
 	}
 
-	public Actor(LTexture image, int x, int y) {
-		this.noSequenceNumber = sequenceNumber++;
-		this._objectLocation.set(x, y);
-		this.setImage(image);
-		this.setObjectFlag("Actor");
+	public Actor(LTexture image) {
+		this(image, 0f, 0f, 0f, 0f);
 	}
 
-	public Actor(LTexture image) {
-		this(image, 0, 0);
+	public Actor(LTexture image, float x, float y) {
+		this(image, x, y, 0f, 0f);
 	}
 
 	public Actor(String fileName, int x, int y) {
@@ -132,20 +141,35 @@ public class Actor extends LObject<Actor>
 		this(fileName, 0, 0);
 	}
 
-	public void stopAnimation() {
-		this.isAnimation = false;
+	public Actor(LTexture image, float x, float y, float w, float h) {
+		this.noSequenceNumber = sequenceNumber++;
+		this._objectLocation.set(x, y);
+		this._actorWidth = w;
+		this._actorHeight = h;
+		this.setImage(image);
+		this.setObjectFlag("Actor");
 	}
 
-	public void startAnimation() {
+	public Actor startAnimation() {
 		this.isAnimation = true;
+		return this;
 	}
 
-	protected void setSize(int w, int h) {
+	public Actor stopAnimation() {
+		this.isAnimation = false;
+		return this;
+	}
+
+	@Override
+	public Actor setSize(float w, float h) {
 		if (boundingRect != null) {
 			boundingRect.setBounds(_objectLocation.x, _objectLocation.y, w, h);
 		} else {
 			boundingRect = new RectBox(_objectLocation.x, _objectLocation.y, w, h);
 		}
+		_actorWidth = w;
+		_actorHeight = h;
+		return this;
 	}
 
 	/**
@@ -375,9 +399,10 @@ public class Actor extends LObject<Actor>
 	 * 删除所有以当前Actor注册的动作事件
 	 * 
 	 */
-	public void removeActionEvents() {
+	public Actor removeActionEvents() {
 		failIfNotInLayer();
 		removeActionEvents(this);
+		return this;
 	}
 
 	/**
@@ -472,8 +497,9 @@ public class Actor extends LObject<Actor>
 	 * 
 	 * @param delay
 	 */
-	public void setDelay(long delay) {
+	public Actor setDelay(long delay) {
 		timer.setDelay(delay);
+		return this;
 	}
 
 	/**
@@ -547,27 +573,43 @@ public class Actor extends LObject<Actor>
 	}
 
 	public int width() {
-		if (image != null) {
-			return (int) (image.getWidth() * scaleX);
-		}
-		return (int) (getRectBox().width * scaleX);
+		return (int) getWidth();
 	}
 
 	public int height() {
-		if (image != null) {
-			return (int) (image.getHeight() * scaleY);
-		}
-		return (int) (getRectBox().height * scaleY);
+		return (int) getHeight();
 	}
 
 	@Override
 	public float getWidth() {
-		return width();
+		if (_actorWidth > 0) {
+			return _actorWidth;
+		}
+		if (image != null) {
+			return (image.getWidth());
+		}
+		return (getRectBox().width);
+	}
+
+	@Override
+	public void setWidth(float w) {
+		setSize(w, this._actorHeight);
 	}
 
 	@Override
 	public float getHeight() {
-		return height();
+		if (_actorHeight > 0) {
+			return (int) _actorHeight;
+		}
+		if (image != null) {
+			return (int) (image.getHeight());
+		}
+		return (int) (getRectBox().height);
+	}
+
+	@Override
+	public void setHeight(float h) {
+		setSize(this._actorWidth, h);
 	}
 
 	/**
@@ -651,8 +693,8 @@ public class Actor extends LObject<Actor>
 				this.boundingRect.setX(this.boundingRect.getX() + dx);
 				this.boundingRect.setY(this.boundingRect.getY() + dy);
 				for (int i = 0; i < 4; ++i) {
-					this.xs[i] += dx;
-					this.ys[i] += dy;
+					this._positionXs[i] += dx;
+					this._positionYs[i] += dy;
 				}
 			}
 			this.locationChanged(oldX, oldY);
@@ -680,11 +722,11 @@ public class Actor extends LObject<Actor>
 		return this.image;
 	}
 
-	public void setImage(String filename) {
-		this.setImage(LSystem.loadTexture(filename));
+	public Actor setImage(String filename) {
+		return this.setImage(LSystem.loadTexture(filename));
 	}
 
-	public void setImage(LTexture img) {
+	public Actor setImage(LTexture img) {
 		if (img != null || this.image != null) {
 			boolean sizeChanged = true;
 			if (img != null && this.image != null && img.getWidth() == this.image.getWidth()
@@ -703,14 +745,16 @@ public class Actor extends LObject<Actor>
 				this.sizeChanged();
 			}
 		}
+		return this;
 	}
 
-	public void setLocationInPixels(float x, float y) {
+	public Actor setLocationInPixels(float x, float y) {
 		float xCell = this.gameLayer.toCellFloor(x);
 		float yCell = this.gameLayer.toCellFloor(y);
 		if (xCell != _objectLocation.x || yCell != _objectLocation.y) {
 			this.setLocationDrag(xCell, yCell);
 		}
+		return this;
 	}
 
 	void setLayer(ActorLayer gameLayer) {
@@ -763,8 +807,6 @@ public class Actor extends LObject<Actor>
 
 	}
 
-	public boolean isConsumerDrawing = true;
-
 	/**
 	 * 矫正当前图像大小
 	 * 
@@ -781,8 +823,8 @@ public class Actor extends LObject<Actor>
 				height = _objectLocation.y() * cellSize + cellSize;
 				this.boundingRect = new RectBox(width, height, 0, 0);
 				for (minY = 0; minY < 4; ++minY) {
-					this.xs[minY] = width;
-					this.ys[minY] = height;
+					this._positionXs[minY] = width;
+					this._positionYs[minY] = height;
 				}
 			} else {
 				this.boundingRect = MathUtils.getBounds(_objectLocation.x, _objectLocation.y, this.image.getWidth(),
@@ -798,25 +840,26 @@ public class Actor extends LObject<Actor>
 		return null;
 	}
 
-	public void sendToFront() {
+	public Actor sendToFront() {
 		if (gameLayer != null) {
 			gameLayer.sendToFront(this);
 		}
+		return this;
 	}
 
-	public void sendToBack() {
+	public Actor sendToBack() {
 		if (gameLayer != null) {
 			gameLayer.sendToBack(this);
 		}
+		return this;
 	}
 
-	private float[] pos = new float[2];
 
 	public float[] toPixels() {
 		float size = gameLayer.cellSize / 2;
-		pos[0] = _objectLocation.x * gameLayer.cellSize + size;
-		pos[1] = _objectLocation.y * gameLayer.cellSize + size;
-		return pos;
+		_currentPos[0] = _objectLocation.x * gameLayer.cellSize + size;
+		_currentPos[1] = _objectLocation.y * gameLayer.cellSize + size;
+		return _currentPos;
 	}
 
 	private void sizeChanged() {
@@ -896,10 +939,10 @@ public class Actor extends LObject<Actor>
 			} else if (!thisBounds.intersects(otherBounds)) {
 				return false;
 			} else {
-				float[] myX = this.xs;
-				float[] myY = this.ys;
-				float[] otherX = other.xs;
-				float[] otherY = other.ys;
+				float[] myX = this._positionXs;
+				float[] myY = this._positionYs;
+				float[] otherX = other._positionXs;
+				float[] otherY = other._positionYs;
 				return checkOutside(myX, myY, otherX, otherY) ? false : !checkOutside(otherX, otherY, myX, myY);
 			}
 		}
@@ -969,11 +1012,11 @@ public class Actor extends LObject<Actor>
 			if (this._objectRotation != 0 && this._objectRotation != 90 && this._objectRotation != 270) {
 				for (int v = 0; v < 4; ++v) {
 					int v1 = v + 1 & 3;
-					float edgeX = this.xs[v] - this.xs[v1];
-					float edgeY = this.ys[v] - this.ys[v1];
+					float edgeX = this._positionXs[v] - this._positionXs[v1];
+					float edgeY = this._positionYs[v] - this._positionYs[v1];
 					float reX = -edgeY;
 					if (reX != 0 || edgeX != 0) {
-						float scalar = reX * (px - this.xs[v1]) + edgeX * (py - this.ys[v1]);
+						float scalar = reX * (px - this._positionXs[v1]) + edgeX * (py - this._positionYs[v1]);
 						if (scalar >= 0) {
 							return false;
 						}
@@ -1088,16 +1131,6 @@ public class Actor extends LObject<Actor>
 	public Actor setMirror(boolean m) {
 		this.setFlipX(m);
 		return this;
-	}
-
-	@Override
-	public void setWidth(float w) {
-		this.scaleX = w / getWidth();
-	}
-
-	@Override
-	public void setHeight(float h) {
-		this.scaleY = h / getHeight();
 	}
 
 	@Override

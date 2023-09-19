@@ -241,4 +241,10 @@ public class ActionBindRect implements ActionBind, BoxSize {
 		return this;
 	}
 
+	@Override
+	public ActionBind setSize(float w, float h) {
+		actionBind.setSize(w, h);
+		return actionBind;
+	}
+
 }

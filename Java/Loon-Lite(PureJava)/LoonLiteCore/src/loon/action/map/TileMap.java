@@ -1033,6 +1033,12 @@ public class TileMap extends LObject<ISprite> implements Sized, ISprite {
 	}
 
 	@Override
+	public TileMap setSize(float w, float h) {
+		setScale(w / getWidth(), h / getHeight());
+		return this;
+	}
+	
+	@Override
 	public boolean isBounded() {
 		return false;
 	}

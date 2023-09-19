@@ -1344,6 +1344,12 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	}
 
 	@Override
+	public HexagonMap setSize(float w, float h) {
+		setScale(w / getWidth(), h / getHeight());
+		return this;
+	}
+	
+	@Override
 	public boolean isBounded() {
 		return false;
 	}

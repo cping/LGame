@@ -138,6 +138,10 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		this(LSystem.loadTexture(path), x, y);
 	}
 
+	public Entity(final String path, final Vector2f v) {
+		this(path, v == null ? 0 : v.x, v == null ? 0 : v.y);
+	}
+
 	public Entity(final LTexture texture) {
 		this(texture, 0, 0, texture == null ? 0 : texture.getWidth(), texture == null ? 0 : texture.getHeight());
 	}
@@ -158,11 +162,15 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	}
 
 	public static Entity make(String path, final float x, final float y) {
-		return new Entity(LSystem.loadTexture(path), x, y);
+		return new Entity(path, x, y);
+	}
+
+	public static Entity make(String path, final Vector2f v) {
+		return new Entity(path, v);
 	}
 
 	public static Entity make(String path) {
-		return new Entity(LSystem.loadTexture(path), 0, 0);
+		return new Entity(path, 0, 0);
 	}
 
 	protected void onUpdateColor() {
@@ -1139,6 +1147,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		this._height = MathUtils.max(1f, h);
 	}
 
+	@Override
 	public IEntity setSize(float w, float h) {
 		if (this._width != w || this._height != h) {
 			this._width = MathUtils.max(1f, w);

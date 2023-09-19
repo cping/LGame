@@ -149,9 +149,11 @@ public class HelperUtils {
 	}
 
 	public final static Entity createEntity(String path, Vector2f pos) {
-		Entity spr = new Entity(path);
-		spr.setLocation(pos);
-		return spr;
+		return new Entity(path, pos);
+	}
+
+	public final static Entity createEntity(String path, float x, float y) {
+		return createEntity(path, Vector2f.at(x, y));
 	}
 
 	public final static Entity createEntity(LTexture tex2d, Vector2f pos) {

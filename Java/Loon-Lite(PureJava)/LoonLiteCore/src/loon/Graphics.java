@@ -88,8 +88,13 @@ public abstract class Graphics {
 		return screenSize().getHeight();
 	}
 
-	public void setFlip(boolean flip) {
+	public boolean isHidden(){
+        return width() < 2 || height() < 2;
+    }
+	
+	public Graphics setFlip(boolean flip) {
 		this.flipScreen = flip;
+		return this;
 	}
 
 	public boolean flip() {

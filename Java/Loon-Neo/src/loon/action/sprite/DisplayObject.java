@@ -291,6 +291,13 @@ public abstract class DisplayObject extends EventDispatcher implements Collision
 		return new LColor(_baseColor);
 	}
 
+	@Override
+	public DisplayObject setSize(float w, float h) {
+		this._width = w;
+		this._height = h;
+		return this;
+	}
+	
 	abstract protected void enterFrame(long time);
 
 	abstract protected void addedToStage();

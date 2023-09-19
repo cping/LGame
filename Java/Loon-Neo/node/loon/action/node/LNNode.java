@@ -1378,6 +1378,13 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 	}
 
 	@Override
+	public LNNode setSize(float w, float h) {
+		setWidth(w);
+		setHeight(h);
+		return this;
+	}
+
+	@Override
 	public LTexture getBitmap() {
 		return null;
 	}

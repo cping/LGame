@@ -20,6 +20,7 @@
  */
 package loon.action;
 
+import loon.LSystem;
 import loon.geom.IntValue;
 import loon.utils.Easing.EasingMode;
 import loon.utils.timer.EaseTimer;
@@ -41,7 +42,7 @@ public class IntAction extends ActionEvent {
 	}
 
 	public IntAction(int start, int end) {
-		this(start, end, 1f, 0f, EasingMode.Linear);
+		this(start, end, 1f, LSystem.DEFAULT_EASE_DELAY, EasingMode.Linear);
 	}
 
 	public IntAction(float duration, float delay, EasingMode easing) {
@@ -114,7 +115,7 @@ public class IntAction extends ActionEvent {
 
 	@Override
 	public boolean isComplete() {
-		return _value.get() >= _end;
+		return easeTimer.isCompleted();
 	}
 
 	@Override

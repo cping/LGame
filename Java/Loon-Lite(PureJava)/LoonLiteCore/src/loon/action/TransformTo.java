@@ -36,6 +36,10 @@ public class TransformTo extends ActionEvent {
 
 	private float newScaleY = -1f;
 
+	private float newWidth = -1f;
+
+	private float newHeight = -1f;
+
 	private float newRotation = -1f;
 
 	private float newAlpha = -1f;
@@ -50,6 +54,10 @@ public class TransformTo extends ActionEvent {
 
 	private float oldScaleY = 0f;
 
+	private float oldWidth = 0f;
+
+	private float oldHeight = 0f;
+
 	private float oldRotation = 0f;
 
 	private float oldAlpha = 0f;
@@ -61,30 +69,37 @@ public class TransformTo extends ActionEvent {
 	}
 
 	public static TransformTo scale(float scaleX, float scaleY) {
-		return new TransformTo(-1, -1, scaleX, scaleY, -1f, -1f, null);
+		return new TransformTo(-1, -1, scaleX, scaleY, -1f, -1f, -1f, -1f, null);
 	}
 
 	public static TransformTo alpha(float alpha) {
-		return new TransformTo(-1, -1, -1f, -1f, -1f, alpha, null);
+		return new TransformTo(-1, -1, -1f, -1f, -1f, -1f, -1f, alpha, null);
 	}
 
 	public static TransformTo rotation(float rotation) {
-		return new TransformTo(-1, -1, -1f, -1f, rotation, -1f, null);
+		return new TransformTo(-1, -1, -1f, -1f, -1f, -1f, rotation, -1f, null);
 	}
 
 	public static TransformTo color(LColor color) {
-		return new TransformTo(-1, -1, -1f, -1f, -1f, -1f, color);
+		return new TransformTo(-1, -1, -1f, -1f, -1f, -1f, -1f, -1f, color);
+	}
+
+	public static TransformTo size(float w, float h) {
+		return new TransformTo(-1f, -1f, -1f, -1f, w, h, -1f, -1f, null);
 	}
 
 	public TransformTo(float x, float y) {
-		this(x, y, -1f, -1f, -1f, -1f, null);
+		this(x, y, -1f, -1f, -1f, -1f, -1f, -1f, null);
 	}
 
-	public TransformTo(float x, float y, float scaleX, float scaleY, float rotation, float alpha, LColor color) {
+	public TransformTo(float x, float y, float scaleX, float scaleY, float width, float height, float rotation,
+			float alpha, LColor color) {
 		this.newX = x;
 		this.newY = y;
 		this.newScaleX = scaleX;
 		this.newScaleY = scaleY;
+		this.newWidth = width;
+		this.newHeight = height;
 		this.newRotation = rotation;
 		this.newAlpha = alpha;
 		this.newColor = color;
@@ -104,6 +119,13 @@ public class TransformTo extends ActionEvent {
 			original.setScale(newScaleX, original.getScaleY());
 		} else if (newScaleY != -1) {
 			original.setScale(original.getScaleY(), newScaleY);
+		}
+		if (newWidth != -1 && newHeight != -1) {
+			original.setSize(newWidth, newHeight);
+		} else if (newWidth != -1) {
+			original.setSize(newWidth, original.getHeight());
+		} else if (newHeight != -1) {
+			original.setSize(original.getWidth(), newHeight);
 		}
 		if (newRotation != -1) {
 			original.setRotation(newRotation);
@@ -185,14 +207,16 @@ public class TransformTo extends ActionEvent {
 
 	@Override
 	public ActionEvent cpy() {
-		TransformTo trans = new TransformTo(newX, newY, newScaleX, newScaleY, newRotation, newAlpha, newColor);
+		TransformTo trans = new TransformTo(newX, newY, newScaleX, newScaleY, newWidth, newHeight, newRotation,
+				newAlpha, newColor);
 		trans.set(this);
 		return trans;
 	}
 
 	@Override
 	public ActionEvent reverse() {
-		TransformTo trans = new TransformTo(oldX, oldY, oldScaleX, oldScaleY, oldRotation, oldAlpha, oldColor);
+		TransformTo trans = new TransformTo(oldX, oldY, oldScaleX, oldScaleY, oldWidth, oldHeight, oldRotation,
+				oldAlpha, oldColor);
 		trans.set(this);
 		return trans;
 	}

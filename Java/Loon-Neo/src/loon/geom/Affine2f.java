@@ -415,6 +415,18 @@ public class Affine2f implements LTrans, XY {
 		return this;
 	}
 
+	public float det() {
+		return m00 * m11 - m01 * m10;
+	}
+
+	public boolean isIdt() {
+		return (m00 == 1 && m01 == 0 && tx == 0 && m10 == 0 && m11 == 1 && ty == 0);
+	}
+
+	public boolean isTranslation() {
+		return (m00 == 1 && m11 == 1 && m01 == 0 && m10 == 0);
+	}
+
 	/**
 	 * 还原矩阵为默认基本数值
 	 * 

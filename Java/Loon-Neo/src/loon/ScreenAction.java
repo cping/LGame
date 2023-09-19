@@ -26,6 +26,7 @@ import loon.action.map.Field2D;
 import loon.canvas.LColor;
 import loon.geom.RectBox;
 import loon.utils.Flip;
+import loon.utils.MathUtils;
 
 public class ScreenAction implements Flip<Screen>, ActionBind {
 
@@ -228,6 +229,12 @@ public class ScreenAction implements Flip<Screen>, ActionBind {
 	@Override
 	public boolean isFlipY() {
 		return _tempScreen == null ? false : _tempScreen.isFlipY();
+	}
+
+	@Override
+	public ScreenAction setSize(float w, float h) {
+		_tempScreen.setSize(MathUtils.ifloor(w), MathUtils.ifloor(h));
+		return this;
 	}
 
 	@Override

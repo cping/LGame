@@ -533,6 +533,59 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		}
 	}
 
+	public ActionTween sizeTo(float endX, float endY) {
+		return sizeTo(endX, endY, EasingMode.Linear, null);
+	}
+
+	public ActionTween sizeTo(float endX, float endY, ActionListener l) {
+		return sizeTo(endX, endY, EasingMode.Linear, l);
+	}
+
+	public ActionTween sizeTo(float endX, float endY, EasingMode ease) {
+		return sizeTo(endX, endY, ease, null);
+	}
+
+	public ActionTween sizeTo(float endX, float endY, EasingMode ease, ActionListener l) {
+		return sizeTo(endX, endY, 1f, ease, l);
+	}
+
+	public ActionTween sizeTo(float endX, float endY, float duration) {
+		return sizeTo(endX, endY, duration, EasingMode.Linear, null);
+	}
+
+	public ActionTween sizeTo(float endX, float endY, float duration, EasingMode ease, ActionListener l) {
+		SizeTo size = new SizeTo(endX, endY, duration, ease);
+		size.setDelay(0);
+		return event(size, l);
+	}
+
+	public ActionTween sizeBy(float amountWidth, float amountHeight) {
+		return sizeBy(amountWidth, amountHeight, EasingMode.Linear, null);
+	}
+
+	public ActionTween sizeBy(float amountWidth, float amountHeight, ActionListener l) {
+		return sizeBy(amountWidth, amountHeight, EasingMode.Linear, l);
+	}
+
+	public ActionTween sizeBy(float amountWidth, float amountHeight, EasingMode ease) {
+		return sizeBy(amountWidth, amountHeight, ease, null);
+	}
+
+	public ActionTween sizeBy(float amountWidth, float amountHeight, EasingMode ease, ActionListener l) {
+		return sizeBy(amountWidth, amountHeight, 1f, ease, l);
+	}
+
+	public ActionTween sizeBy(float amountWidth, float amountHeight, float duration) {
+		return sizeBy(amountWidth, amountHeight, duration, EasingMode.Linear, null);
+	}
+
+	public ActionTween sizeBy(float amountWidth, float amountHeight, float duration, EasingMode ease,
+			ActionListener l) {
+		SizeBy size = new SizeBy(amountWidth, amountHeight, duration, ease);
+		size.setDelay(0);
+		return event(size, l);
+	}
+
 	public ActionTween followTo(ActionBind actorToFollow) {
 		return event(new FollowTo(actorToFollow));
 	}
@@ -750,17 +803,43 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	}
 
 	public ActionTween scaleTo(float s) {
-		return scaleTo(s, s, 0.1f);
+		return scaleTo(s, s, 0.1f, 1f, EasingMode.Linear);
+	}
+
+	public ActionTween scaleTo(float s, float duration, EasingMode mode) {
+		return scaleTo(s, s, 0.1f, duration, mode);
+	}
+
+	public ActionTween scaleTo(float sx, float sy, float duration) {
+		return scaleTo(sx, sy, 0.1f, duration, EasingMode.Linear);
+	}
+
+	public ActionTween scaleTo(float sx, float sy, float duration, EasingMode mode) {
+		return scaleTo(sx, sy, 0.1f, duration, mode);
 	}
 
 	public ActionTween scaleTo(float sx, float sy) {
-		return scaleTo(sx, sy, 0.1f);
+		return scaleTo(sx, sy, EasingMode.Linear);
 	}
 
-	public ActionTween scaleTo(float sx, float sy, float speed) {
-		ScaleTo scale = new ScaleTo(sx, sy);
+	public ActionTween scaleTo(float sx, float sy, float speed, float duration, EasingMode mode) {
+		ScaleTo scale = new ScaleTo(sx, sy, duration, mode);
 		scale.setDelay(0);
 		scale.setSpeed(speed);
+		return event(scale);
+	}
+
+	public ActionTween scaleBy(float sx, float sy) {
+		return scaleBy(sx, sy, 1f);
+	}
+
+	public ActionTween scaleBy(float sx, float sy, float duration) {
+		return scaleBy(sx, sy, duration, EasingMode.Linear);
+	}
+
+	public ActionTween scaleBy(float sx, float sy, float duration, EasingMode mode) {
+		ScaleBy scale = new ScaleBy(sx, sy, duration, mode);
+		scale.setDelay(0);
 		return event(scale);
 	}
 

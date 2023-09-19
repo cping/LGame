@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2019 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -41,7 +41,7 @@ import loon.utils.timer.LTimerContext;
  * 子弹渲染用类,支持动画播放,
  * 角色角度和方向的自动转换，但本身不是精灵,不能直接add到Screen,由精灵类BulletEntity管理和渲染到游戏中去<br>
  * 一个游戏中，可以存在多个甚至海量的Bullet, 如果子弹过多时,可以使用CacheManager管理子弹的生命周期.
- *
+ * 
  */
 public class Bullet extends LObject<Bullet> implements CollisionObject, ActionBind, LRelease {
 
@@ -150,8 +150,8 @@ public class Bullet extends LObject<Bullet> implements CollisionObject, ActionBi
 			LTexture texture = animation.getSpriteImage();
 			float tmp = baseColor.a;
 			if (texture != null) {
-				g.draw(texture, getX() + offsetX, getY() + offsetY, getWidth(), getHeight(), baseColor.setAlpha(_objectAlpha),
-						_objectRotation);
+				g.draw(texture, getX() + offsetX, getY() + offsetY, getWidth(), getHeight(),
+						baseColor.setAlpha(_objectAlpha), _objectRotation);
 				width = MathUtils.max(width, texture.width());
 				height = MathUtils.max(height, texture.height());
 			}
@@ -311,7 +311,7 @@ public class Bullet extends LObject<Bullet> implements CollisionObject, ActionBi
 	}
 
 	public Bullet setScale(float scale) {
-		setScale(scale,scale);
+		setScale(scale, scale);
 		return this;
 	}
 
@@ -319,6 +319,13 @@ public class Bullet extends LObject<Bullet> implements CollisionObject, ActionBi
 	public void setScale(float sx, float sy) {
 		this.scaleX = sx;
 		this.scaleY = sy;
+	}
+
+	@Override
+	public Bullet setSize(float w, float h) {
+		this.width = w;
+		this.height = h;
+		return this;
 	}
 
 	@Override

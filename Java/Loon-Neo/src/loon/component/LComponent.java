@@ -596,6 +596,7 @@ public abstract class LComponent extends LObject<LContainer>
 		return this;
 	}
 
+	@Override
 	public LComponent setSize(float w, float h) {
 		if (this._width != w || this._height != h) {
 			this._width = MathUtils.max(1f, w);

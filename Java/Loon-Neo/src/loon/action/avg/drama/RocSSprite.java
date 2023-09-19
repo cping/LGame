@@ -341,6 +341,11 @@ public class RocSSprite extends LObject<ISprite> implements ISprite {
 	}
 
 	@Override
+	public ISprite setSize(float w, float h) {
+		return this;
+	}
+
+	@Override
 	public boolean showShadow() {
 		return false;
 	}

@@ -23,48 +23,66 @@ package loon.action;
 import loon.LSystem;
 import loon.utils.MathUtils;
 import loon.utils.StringKeyValue;
+import loon.utils.Easing.EasingMode;
 import loon.utils.timer.Duration;
+import loon.utils.timer.EaseTimer;
 
 public class ScaleTo extends ActionEvent {
 
-	private float dt;
+	private EaseTimer _easeTimer;
 
-	private float deltaX, deltaY;
+	private float _delta;
 
-	private float startX = -1f, startY = -1f;
+	private float _deltaX, _deltaY;
 
-	private float endX, endY;
+	private float _startX = -1f, _startY = -1f;
 
-	private float speed;
+	private float _endX, _endY;
+
+	private float _speed;
 
 	public ScaleTo(float s) {
-		this(s, s);
+		this(-1, -1, s, s, LSystem.MIN_SECONE_SPEED_FIXED, 1f, EasingMode.Linear);
+	}
+
+	public ScaleTo(float s, float duration, EasingMode mode) {
+		this(s, s, duration, mode);
 	}
 
 	public ScaleTo(float sx, float sy) {
-		this(-1, -1, sx, sy, LSystem.MIN_SECONE_SPEED_FIXED);
+		this(-1, -1, sx, sy, LSystem.MIN_SECONE_SPEED_FIXED, 1f, EasingMode.Linear);
 	}
 
-	public ScaleTo(float sx, float sy, float sp) {
-		this(-1, -1, sx, sy, sp);
+	public ScaleTo(float sx, float sy, float duration, EasingMode mode) {
+		this(-1, -1, sx, sy, LSystem.MIN_SECONE_SPEED_FIXED, duration, mode);
 	}
 
-	public ScaleTo(float stx, float sty, float sx, float sy, float sp) {
-		this.startX = stx;
-		this.startY = sty;
-		this.endX = sx;
-		this.endY = sy;
-		this.speed = sp;
-		this.deltaX = endX - startX;
-		this.deltaY = endY - startY;
+	public ScaleTo(float sx, float sy, float sp, float duration, EasingMode mode) {
+		this(-1, -1, sx, sy, sp, duration, mode);
 	}
 
-	public void setSpeed(float s) {
-		this.speed = s;
+	public ScaleTo(float stx, float sty, float sx, float sy) {
+		this(-1, -1, sx, sy, LSystem.MIN_SECONE_SPEED_FIXED, 1f, EasingMode.Linear);
+	}
+
+	public ScaleTo(float stx, float sty, float sx, float sy, float sp, float duration, EasingMode mode) {
+		this._easeTimer = new EaseTimer(duration, mode);
+		this._startX = stx;
+		this._startY = sty;
+		this._endX = sx;
+		this._endY = sy;
+		this._speed = sp;
+		this._deltaX = _endX - _startX;
+		this._deltaY = _endY - _startY;
+	}
+
+	public ScaleTo setSpeed(float s) {
+		this._speed = s;
+		return this;
 	}
 
 	public float getSpeed() {
-		return speed;
+		return _speed;
 	}
 
 	@Override
@@ -75,70 +93,77 @@ public class ScaleTo extends ActionEvent {
 	@Override
 	public void onLoad() {
 		if (original != null) {
-			if (startX == -1) {
-				startX = original.getScaleX();
+			if (_startX == -1) {
+				_startX = original.getScaleX();
 			}
-			if (startY == -1) {
-				startY = original.getScaleY();
+			if (_startY == -1) {
+				_startY = original.getScaleY();
 			}
-			deltaX = endX - startX;
-			deltaY = endY - startY;
+			_deltaX = _endX - _startX;
+			_deltaY = _endY - _startY;
 		}
 	}
 
 	@Override
 	public void update(long elapsedTime) {
 		if (original != null) {
+			_easeTimer.update(elapsedTime);
 			synchronized (original) {
 				if (original != null) {
-					dt += MathUtils.max(Duration.toS(elapsedTime), speed);
-					original.setScale(startX + (deltaX * dt), startY + (deltaY * dt));
-					_isCompleted = (deltaX > 0 ? (original.getScaleX() >= endX) : (original.getScaleX() <= endX))
-							&& (deltaY > 0 ? (original.getScaleY() >= endY) : (original.getScaleY() <= endY));
+					_delta += (MathUtils.max(Duration.toS(elapsedTime), _speed) * _easeTimer.getProgress());
+					original.setScale(_startX + (_deltaX * _delta), _startY + (_deltaY * _delta));
+					_isCompleted = (_deltaX > 0 ? (original.getScaleX() >= _endX) : (original.getScaleX() <= _endX))
+							&& (_deltaY > 0 ? (original.getScaleY() >= _endY) : (original.getScaleY() <= _endY));
 				}
 			}
 		} else {
 			_isCompleted = true;
 		}
 		if (_isCompleted && original != null) {
-			original.setScale(endX, endY);
+			original.setScale(_endX, _endY);
 		}
 	}
 
 	public float getDeltaX() {
-		return deltaX;
+		return _deltaX;
 	}
 
 	public float getDeltaY() {
-		return deltaY;
+		return _deltaY;
 	}
 
 	public float getStartX() {
-		return startX;
+		return _startX;
 	}
 
 	public float getStartY() {
-		return startY;
+		return _startY;
 	}
 
 	public float getEndX() {
-		return endX;
+		return _endX;
 	}
 
 	public float getEndY() {
-		return endY;
+		return _endY;
+	}
+
+	public EaseTimer getEaseTimer() {
+		return _easeTimer;
 	}
 
 	@Override
 	public ActionEvent cpy() {
-		ScaleTo scale = new ScaleTo(startX, startY, endX, endY, speed);
+		ScaleTo scale = new ScaleTo(_startX, _startY, _endX, _endY, _speed, _easeTimer.getDuration(),
+				_easeTimer.getEasingMode());
 		scale.set(this);
 		return scale;
 	}
 
 	@Override
 	public ActionEvent reverse() {
-		ScaleTo scale = new ScaleTo(endX, endY, startX, startY, speed);
+		ScaleTo scale = new ScaleTo(_endX, _endY, _startX, _startY, _speed, _easeTimer.getDuration(),
+				_easeTimer.getEasingMode());
 		scale.set(this);
 		return scale;
 	}
@@ -151,9 +176,9 @@ public class ScaleTo extends ActionEvent {
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue(getName());
-		builder.kv("startX", startX).comma().kv("startY", startY).comma().kv("deltaX", deltaX).comma()
-				.kv("deltaY", deltaY).comma().kv("endX", endX).comma().kv("endY", endY).comma().kv("speed", speed)
-				.comma().kv("delta", dt);
+		builder.kv("startX", _startX).comma().kv("startY", _startY).comma().kv("deltaX", _deltaX).comma()
+				.kv("deltaY", _deltaY).comma().kv("endX", _endX).comma().kv("endY", _endY).comma().kv("speed", _speed)
+				.comma().kv("delta", _delta);
 		return builder.toString();
 	}
 

@@ -37,6 +37,8 @@ public class ActionBindData {
 	protected float oldRotation = 0f;
 	protected float oldScaleX = 0f;
 	protected float oldScaleY = 0f;
+	protected float oldWidth = 0f;
+	protected float oldHeight = 0f;
 
 	protected boolean oldVisible = false;
 
@@ -48,6 +50,8 @@ public class ActionBindData {
 	protected float newRotation = 0f;
 	protected float newScaleX = 0f;
 	protected float newScaleY = 0f;
+	protected float newWidth = 0f;
+	protected float newHeight = 0f;
 
 	protected float oldOffsetX;
 	protected float oldOffsetY;
@@ -70,6 +74,8 @@ public class ActionBindData {
 		this.oldRotation = bind.getRotation();
 		this.oldScaleX = bind.getScaleX();
 		this.oldScaleY = bind.getScaleY();
+		this.oldWidth = bind.getWidth();
+		this.oldHeight = bind.getHeight();
 		this.oldColor = bind.getColor();
 		this.oldVisible = bind.isVisible();
 		this.bindObject = bind;
@@ -100,6 +106,8 @@ public class ActionBindData {
 		this.newRotation = bindObject.getRotation();
 		this.newScaleX = bindObject.getScaleX();
 		this.newScaleY = bindObject.getScaleY();
+		this.newWidth = bindObject.getWidth();
+		this.newHeight = bindObject.getHeight();
 		this.newColor = bindObject.getColor();
 		this.newVisible = bindObject.isVisible();
 		this.newOffsetX = oldOffsetX;
@@ -114,6 +122,7 @@ public class ActionBindData {
 		bindObject.setAlpha(oldAlpha);
 		bindObject.setRotation(oldRotation);
 		bindObject.setScale(oldScaleX, oldScaleY);
+		bindObject.setSize(oldWidth, oldHeight);
 		bindObject.setColor(oldColor);
 		bindObject.setVisible(oldVisible);
 		offset(oldOffsetX, oldOffsetY);
@@ -127,6 +136,7 @@ public class ActionBindData {
 		bindObject.setAlpha(newAlpha);
 		bindObject.setRotation(newRotation);
 		bindObject.setScale(newScaleX, newScaleY);
+		bindObject.setSize(newWidth, newHeight);
 		bindObject.setColor(newColor);
 		bindObject.setVisible(newVisible);
 		offset(newOffsetX, newOffsetY);
@@ -162,6 +172,14 @@ public class ActionBindData {
 		return oldScaleY;
 	}
 
+	public float getOldWidth() {
+		return oldWidth;
+	}
+
+	public float getOldHeight() {
+		return oldHeight;
+	}
+
 	public boolean isOldVisible() {
 		return oldVisible;
 	}
@@ -192,6 +210,14 @@ public class ActionBindData {
 
 	public float getNewScaleY() {
 		return newScaleY;
+	}
+
+	public float getNewWidth() {
+		return newWidth;
+	}
+
+	public float getNewHeight() {
+		return newHeight;
 	}
 
 	public boolean isNewVisible() {

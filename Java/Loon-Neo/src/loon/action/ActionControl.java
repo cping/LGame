@@ -34,13 +34,13 @@ public class ActionControl implements LRelease {
 
 	private static ActionControl instanceAction;
 
-	private final Array<ActionBindData> bindDatas;
+	private final Array<ActionBindData> _currentBindDatas;
 
-	private final Actions actions;
+	private final Actions _currentActions;
 
-	private final LTimer delayTimer;
+	private final LTimer _delayTimer;
 
-	private boolean pause;
+	private boolean _pause;
 
 	public static void freeStatic() {
 		instanceAction = null;
@@ -73,11 +73,11 @@ public class ActionControl implements LRelease {
 	 * 调用缓动动画事件循环
 	 */
 	public final void call(long elapsedTime) {
-		if (pause || actions.getCount() == 0) {
+		if (_pause || _currentActions.getCount() == 0) {
 			return;
 		}
-		if (delayTimer.action(elapsedTime)) {
-			actions.update(elapsedTime);
+		if (_delayTimer.action(elapsedTime)) {
+			_currentActions.update(elapsedTime);
 		}
 	}
 
@@ -90,7 +90,7 @@ public class ActionControl implements LRelease {
 	public ActionBindData saveActionData(ActionBind bind) {
 		ActionBindData data = new ActionBindData(bind);
 		data.save();
-		bindDatas.add(data);
+		_currentBindDatas.add(data);
 		return data;
 	}
 
@@ -123,8 +123,8 @@ public class ActionControl implements LRelease {
 	 */
 	public TArray<ActionBindData> loadActionData(ActionBind bind, boolean resetData) {
 		TArray<ActionBindData> list = new TArray<ActionBindData>();
-		for (; bindDatas.hashNext();) {
-			ActionBindData data = bindDatas.next();
+		for (; _currentBindDatas.hashNext();) {
+			ActionBindData data = _currentBindDatas.next();
 			if (data != null && data.getObject().equals(bind)) {
 				if (resetData) {
 					data.resetInitData();
@@ -132,7 +132,7 @@ public class ActionControl implements LRelease {
 				list.add(data);
 			}
 		}
-		bindDatas.stopNext();
+		_currentBindDatas.stopNext();
 		return list;
 	}
 
@@ -142,7 +142,7 @@ public class ActionControl implements LRelease {
 	 * @return
 	 */
 	public ActionControl saveAllActionData() {
-		TArray<ActionBind> list = actions.keys();
+		TArray<ActionBind> list = _currentActions.keys();
 		for (int i = 0; i < list.size; i++) {
 			saveActionData(list.get(i));
 		}
@@ -155,41 +155,42 @@ public class ActionControl implements LRelease {
 	 * @return
 	 */
 	public ActionControl loadAllActionData() {
-		for (; bindDatas.hashNext();) {
-			ActionBindData data = bindDatas.next();
+		for (; _currentBindDatas.hashNext();) {
+			ActionBindData data = _currentBindDatas.next();
 			data.resetInitData();
 		}
-		bindDatas.stopNext();
+		_currentBindDatas.stopNext();
 		return this;
 	}
 
 	public ActionControl clearActionData() {
-		bindDatas.clear();
+		_currentBindDatas.clear();
 		return this;
 	}
 
 	public ActionBindData popActionData() {
-		return bindDatas.pop();
+		return _currentBindDatas.pop();
 	}
 
 	public ActionBindData peekActionData() {
-		return bindDatas.peek();
+		return _currentBindDatas.peek();
 	}
 
 	public ActionBindData lastActionData() {
-		return bindDatas.last();
+		return _currentBindDatas.last();
 	}
 
 	public ActionBindData firstActionData() {
-		return bindDatas.first();
+		return _currentBindDatas.first();
 	}
 
-	public final void delay(long d) {
-		delayTimer.setDelay(d);
+	public final ActionControl delay(long d) {
+		_delayTimer.setDelay(d);
+		return this;
 	}
 
 	public final LTimer getTimer() {
-		return delayTimer;
+		return _delayTimer;
 	}
 
 	public static final void setDelay(long delay) {
@@ -205,96 +206,108 @@ public class ActionControl implements LRelease {
 	}
 
 	private ActionControl() {
-		actions = new Actions();
-		delayTimer = new LTimer(0);
-		bindDatas = new Array<ActionBindData>();
-		pause = false;
+		_currentActions = new Actions();
+		_delayTimer = new LTimer(0);
+		_currentBindDatas = new Array<ActionBindData>();
+		_pause = false;
 	}
 
-	public void addAction(ActionEvent action, ActionBind obj, boolean paused) {
-		actions.addAction(action, obj, paused);
+	public ActionControl addAction(ActionEvent action, ActionBind obj, boolean paused) {
+		_currentActions.addAction(action, obj, paused);
+		return this;
 	}
 
-	public void addAction(ActionEvent action, ActionBind obj) {
+	public ActionControl addAction(ActionEvent action, ActionBind obj) {
 		addAction(action, obj, false);
+		return this;
 	}
 
-	public void removeAllActions(ActionBind actObject) {
-		actions.removeAllActions(actObject);
+	public ActionControl removeAllActions(ActionBind actObject) {
+		_currentActions.removeAllActions(actObject);
+		return this;
 	}
 
 	public boolean containsKey(ActionBind actObject) {
-		return actions.containsKey(actObject);
+		return _currentActions.containsKey(actObject);
 	}
 
 	public boolean isCompleted(ActionBind actObject) {
 		if (actObject == null) {
 			return true;
 		}
-		return actions.isCompleted(actObject);
+		return _currentActions.isCompleted(actObject);
 	}
 
 	public int getCount() {
-		return actions.getCount();
+		return _currentActions.getCount();
 	}
 
 	public boolean stopNames(ActionBind k, String name) {
-		return actions.stopNames(k, name);
+		return _currentActions.stopNames(k, name);
 	}
 
 	public boolean stopTags(ActionBind k, Object tag) {
-		return actions.stopTags(k, tag);
+		return _currentActions.stopTags(k, tag);
 	}
 
-	public void removeAction(Object tag, ActionBind actObject) {
-		actions.removeAction(tag, actObject);
+	public ActionControl removeAction(Object tag, ActionBind actObject) {
+		_currentActions.removeAction(tag, actObject);
+		return this;
 	}
 
-	public void removeAction(ActionEvent action) {
-		actions.removeAction(action);
+	public ActionControl removeAction(ActionEvent action) {
+		_currentActions.removeAction(action);
+		return this;
 	}
 
 	public ActionEvent getAction(Object tag, ActionBind actObject) {
-		return actions.getAction(tag, actObject);
+		return _currentActions.getAction(tag, actObject);
 	}
 
-	public void stop(ActionBind actObject) {
-		actions.stop(actObject);
+	public ActionControl stop(ActionBind actObject) {
+		_currentActions.stop(actObject);
+		return this;
 	}
 
-	public void start(ActionBind actObject) {
-		actions.start(actObject);
+	public ActionControl start(ActionBind actObject) {
+		_currentActions.start(actObject);
+		return this;
 	}
 
-	public void paused(boolean pause, ActionBind actObject) {
-		actions.paused(pause, actObject);
+	public ActionControl paused(boolean pause, ActionBind actObject) {
+		_currentActions.paused(pause, actObject);
+		return this;
 	}
 
 	public boolean isPause() {
-		return pause;
+		return _pause;
 	}
 
-	public void setPause(boolean pause) {
-		this.pause = pause;
+	public ActionControl setPause(boolean pause) {
+		this._pause = pause;
+		return this;
 	}
 
-	public void clear() {
-		actions.clear();
+	public ActionControl clear() {
+		_currentActions.clear();
+		return this;
 	}
 
-	public void stop() {
+	public ActionControl stop() {
 		clear();
 		pause();
+		return this;
 	}
 
-	public void pause() {
-		pause = true;
+	public ActionControl pause() {
+		_pause = true;
+		return this;
 	}
 
 	@Override
 	public void close() {
-		actions.clear();
-		bindDatas.clear();
+		_currentActions.clear();
+		_currentBindDatas.clear();
 	}
 
 }

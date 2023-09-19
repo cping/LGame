@@ -61,6 +61,8 @@ public interface ActionBind {
 
 	public float getHeight();
 
+	public ActionBind setSize(float w, float h);
+
 	public float getAlpha();
 
 	public void setAlpha(float alpha);
