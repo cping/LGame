@@ -26,8 +26,6 @@ import loon.utils.timer.EaseTimer;
 
 public class ScaleBy extends ActionEvent {
 
-	private EaseTimer _easeTimer;
-
 	private float _startScaleX, _startScaleY;
 
 	private float _amountScaleX, _amountScaleY;
@@ -108,10 +106,6 @@ public class ScaleBy extends ActionEvent {
 	public ScaleBy setAmountScaleY(float sy) {
 		_amountScaleY = sy;
 		return this;
-	}
-
-	public EaseTimer getEaseTimer() {
-		return _easeTimer;
 	}
 
 	@Override

@@ -30,8 +30,6 @@ import loon.utils.timer.EaseTimer;
  */
 public class FlashTo extends ActionEvent {
 
-	private final EaseTimer easeTimer;
-
 	private float interval = 0f;
 
 	public FlashTo() {
@@ -51,41 +49,29 @@ public class FlashTo extends ActionEvent {
 	}
 
 	public FlashTo(float duration, float delay, EasingMode easing) {
-		this.easeTimer = new EaseTimer(duration, delay, easing);
+		this._easeTimer = new EaseTimer(duration, delay, easing);
 		this.interval = delay;
 	}
 
 	@Override
 	public void update(long elapsedTime) {
-		easeTimer.update(elapsedTime);
-		if (_isCompleted = easeTimer.isCompleted()) {
+		_easeTimer.update(elapsedTime);
+		if (_isCompleted = _easeTimer.isCompleted()) {
 			original.setVisible(true);
 			return;
 		}
-		interval -= easeTimer.getProgress();
+		interval -= _easeTimer.getProgress();
 		if (this.interval <= 0) {
 			this.original.setVisible(!this.original.isVisible());
-			this.interval = easeTimer.getDelay();
+			this.interval = _easeTimer.getDelay();
 		}
 	}
 
-	public FlashTo loop(int count) {
-		easeTimer.setLoop(count);
-		return this;
-	}
-
-	public FlashTo loop(boolean l) {
-		easeTimer.setLoop(l);
-		return this;
-	}
-
+	@Override
 	public FlashTo reset() {
-		easeTimer.reset();
+		super.reset();
+		interval = _easeTimer.getDelay();
 		return this;
-	}
-
-	public boolean isLoop() {
-		return easeTimer.isLoop();
 	}
 
 	public float getInterval() {
@@ -107,7 +93,7 @@ public class FlashTo extends ActionEvent {
 
 	@Override
 	public ActionEvent cpy() {
-		FlashTo flash = new FlashTo(easeTimer.getDuration(), easeTimer.getDelay(), easeTimer.getEasingMode());
+		FlashTo flash = new FlashTo(_easeTimer.getDuration(), _easeTimer.getDelay(), _easeTimer.getEasingMode());
 		flash.set(this);
 		return flash;
 	}
@@ -128,7 +114,7 @@ public class FlashTo extends ActionEvent {
 		if (original != null) {
 			builder.kv("visible", original.isVisible()).comma();
 		}
-		builder.kv("interval", interval).comma().kv("EaseTimer", easeTimer);
+		builder.kv("interval", interval).comma().kv("EaseTimer", _easeTimer);
 		return builder.toString();
 	}
 }

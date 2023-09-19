@@ -20,25 +20,27 @@
  */
 package loon.action;
 
-import loon.LSystem;
 import loon.utils.StringKeyValue;
-import loon.utils.timer.LTimer;
+import loon.utils.timer.Duration;
 
 public class DelayTo extends ActionEvent {
-
-	private LTimer timer;
 
 	private float delay;
 
 	public DelayTo(float d) {
-		this.timer = new LTimer((long) ((this.delay = d) * LSystem.SECOND));
+		this.delay = d;
+	}
+
+	@Override
+	public DelayTo reset() {
+		super.reset();
+		setDelay(Duration.ofS(this.delay));
+		return this;
 	}
 
 	@Override
 	public void update(long elapsedTime) {
-		if (timer.action(elapsedTime)) {
-			_isCompleted = true;
-		}
+		_isCompleted = true;
 	}
 
 	public float getTimeDelay() {
@@ -47,7 +49,7 @@ public class DelayTo extends ActionEvent {
 
 	@Override
 	public void onLoad() {
-
+		setDelay(Duration.ofS(this.delay));
 	}
 
 	@Override
@@ -75,7 +77,7 @@ public class DelayTo extends ActionEvent {
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue(getName());
-		builder.kv("delay", timer);
+		builder.kv("delay", delay);
 		return builder.toString();
 	}
 

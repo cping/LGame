@@ -61,7 +61,7 @@ public class BezierTo extends BezierBy {
 
 	@Override
 	public ActionEvent cpy() {
-		BezierTo bto = new BezierTo(startX, startY, easeTimer.getDuration(), easeTimer.getEasingMode(), bezier.cpy());
+		BezierTo bto = new BezierTo(startX, startY, _easeTimer.getDuration(), _easeTimer.getEasingMode(), bezier.cpy());
 		bto.set(this);
 		return bto;
 	}
@@ -72,7 +72,7 @@ public class BezierTo extends BezierBy {
 		b.endPosition = bezier.endPosition.negate();
 		b.controlPoint1 = Vector2f.addNew(bezier.controlPoint2, bezier.endPosition.negate());
 		b.controlPoint2 = Vector2f.addNew(bezier.controlPoint1, bezier.endPosition.negate());
-		BezierTo bto = new BezierTo(startX, startY, easeTimer.getDuration(), easeTimer.getEasingMode(), b);
+		BezierTo bto = new BezierTo(startX, startY, _easeTimer.getDuration(), _easeTimer.getEasingMode(), b);
 		bto.set(this);
 		return bto;
 	}
@@ -86,7 +86,7 @@ public class BezierTo extends BezierBy {
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue(getName());
 		builder.kv("bezierOriginal", originalconfig).comma().kv("bezier", bezier).comma().kv("startX", startX).comma()
-				.kv("startY", startY).comma().kv("EaseTimer", easeTimer);
+				.kv("startY", startY).comma().kv("EaseTimer", _easeTimer);
 		return builder.toString();
 	}
 }

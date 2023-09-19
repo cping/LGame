@@ -701,6 +701,24 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		return event(new FadeTo(fadeMode, speed));
 	}
 
+	public ActionTween alphaTo(float end) {
+		return alphaTo(-1f, end);
+	}
+
+	public ActionTween alphaTo(float start, float end) {
+		return alphaTo(start, end, EasingMode.Linear);
+	}
+
+	public ActionTween alphaTo(float start, float end, EasingMode mode) {
+		return alphaTo(start, end, 1f, mode);
+	}
+
+	public ActionTween alphaTo(float start, float end, float duration, EasingMode mode) {
+		AlphaTo alpha = new AlphaTo(start, end, duration, mode);
+		alpha.setDelay(0);
+		return event(alpha);
+	}
+
 	public ActionTween rotateTo(float angle) {
 		return rotateTo(angle, 6f);
 	}

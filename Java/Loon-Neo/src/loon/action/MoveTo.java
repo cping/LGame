@@ -71,8 +71,6 @@ public class MoveTo extends ActionEvent {
 
 	private Vector2f pLocation = new Vector2f();
 
-	private EaseTimer easeTimer;
-
 	private boolean moveByMode = false;
 
 	private boolean isDirUpdate = false;
@@ -120,7 +118,7 @@ public class MoveTo extends ActionEvent {
 
 	public MoveTo(final Field2D map, float sx, float sy, float ex, float ey, boolean all, float speed, boolean cache,
 			boolean synField, int delayTime) {
-		this.easeTimer = EaseTimer.at(1f, EasingMode.Linear);
+		this._easeTimer = EaseTimer.at(1f, EasingMode.Linear);
 		this.startLocation = new Vector2f(sx, sy);
 		this.endLocation = new Vector2f(ex, ey);
 		this.layerMap = map;
@@ -191,8 +189,8 @@ public class MoveTo extends ActionEvent {
 	}
 
 	protected float getMoveSpeed(long elapsedTime) {
-		easeTimer.update(elapsedTime);
-		return speed * easeTimer.getProgress();
+		_easeTimer.update(elapsedTime);
+		return speed * _easeTimer.getProgress();
 	}
 
 	public float[] getBeginPath() {
@@ -822,17 +820,8 @@ public class MoveTo extends ActionEvent {
 		return this;
 	}
 
-	public EaseTimer getEaseTimer() {
-		return easeTimer;
-	}
-
 	public MoveTo setEasingMode(EasingMode m) {
-		this.easeTimer.setEasingMode(m);
-		return this;
-	}
-
-	public MoveTo setEaseTimer(EaseTimer e) {
-		this.easeTimer = e;
+		this._easeTimer.setEasingMode(m);
 		return this;
 	}
 

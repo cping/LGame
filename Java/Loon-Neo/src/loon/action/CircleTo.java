@@ -101,6 +101,13 @@ public class CircleTo extends ActionEvent {
 		}
 	}
 
+	@Override
+	public CircleTo reset() {
+		super.reset();
+		delta = 0f;
+		return this;
+	}
+
 	public float getX() {
 		return currentX;
 	}

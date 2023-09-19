@@ -35,7 +35,6 @@ public class RotateTo extends ActionEvent {
 	private float startRotation = -1f;
 	private float dstAngle = 0;
 	private float currentRotation = 0;
-	private final EaseTimer easeTimer;
 
 	public RotateTo(float dstAngle) {
 		this(dstAngle, 2f);
@@ -62,7 +61,7 @@ public class RotateTo extends ActionEvent {
 		this.startRotation = startRotation;
 		this.dstAngle = dstAngle;
 		this.diffAngle = diffAngle;
-		this.easeTimer = new EaseTimer(duration, delay, easing);
+		this._easeTimer = new EaseTimer(duration, delay, easing);
 		this._isCompleted = (startRotation - dstAngle == 0);
 	}
 
@@ -81,29 +80,11 @@ public class RotateTo extends ActionEvent {
 		}
 	}
 
-	public RotateTo reset() {
-		easeTimer.reset();
-		return this;
-	}
-
-	public RotateTo loop(int count) {
-		easeTimer.setLoop(count);
-		return this;
-	}
-
-	public RotateTo loop(boolean l) {
-		easeTimer.setLoop(l);
-		return this;
-	}
-
-	public boolean isLoop() {
-		return easeTimer.isLoop();
-	}
 
 	@Override
 	public void update(long elapsedTime) {
-		easeTimer.update(elapsedTime);
-		if (easeTimer.isCompleted()) {
+		_easeTimer.update(elapsedTime);
+		if (_easeTimer.isCompleted()) {
 			_isCompleted = true;
 			original.setRotation(dstAngle);
 			return;
@@ -115,7 +96,7 @@ public class RotateTo extends ActionEvent {
 			}
 		}
 		original.setRotation(
-				currentRotation = (startRotation + (dstAngle - startRotation) * easeTimer.getProgress() * diffAngle)
+				currentRotation = (startRotation + (dstAngle - startRotation) * _easeTimer.getProgress() * diffAngle)
 						+ speed);
 	}
 
@@ -143,16 +124,16 @@ public class RotateTo extends ActionEvent {
 
 	@Override
 	public ActionEvent cpy() {
-		RotateTo r = new RotateTo(startRotation, dstAngle, diffAngle, easeTimer.getDuration(), easeTimer.getDelay(),
-				easeTimer.getEasingMode());
+		RotateTo r = new RotateTo(startRotation, dstAngle, diffAngle, _easeTimer.getDuration(), _easeTimer.getDelay(),
+				_easeTimer.getEasingMode());
 		r.set(this);
 		return r;
 	}
 
 	@Override
 	public ActionEvent reverse() {
-		RotateTo r = new RotateTo(dstAngle, startRotation, diffAngle, easeTimer.getDuration(), easeTimer.getDelay(),
-				easeTimer.getEasingMode());
+		RotateTo r = new RotateTo(dstAngle, startRotation, diffAngle, _easeTimer.getDuration(), _easeTimer.getDelay(),
+				_easeTimer.getEasingMode());
 		r.set(this);
 		return r;
 	}
@@ -167,7 +148,7 @@ public class RotateTo extends ActionEvent {
 		StringKeyValue builder = new StringKeyValue(getName());
 		builder.kv("speed", speed).comma().kv("diffAngle", diffAngle).comma().kv("startRotation", startRotation).comma()
 				.kv("dstAngle", dstAngle).comma().kv("currentRotation", currentRotation).comma()
-				.kv("EaseTimer", easeTimer);
+				.kv("EaseTimer", _easeTimer);
 		return builder.toString();
 	}
 }

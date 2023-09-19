@@ -40,8 +40,6 @@ public class DefineMoveTo extends ActionEvent {
 	// 默认每帧的移动数值(象素)
 	private final static float _INIT_MOVE_SPEED = 4f;
 
-	private EaseTimer easeTimer;
-
 	private CustomPath initPath, layerPath;
 
 	private Field2D layerMap;
@@ -98,7 +96,7 @@ public class DefineMoveTo extends ActionEvent {
 
 	public DefineMoveTo(final Field2D map, final CustomPath path, final boolean all, final float speed) {
 		this.layerMap = map;
-		this.easeTimer = EaseTimer.at(1f, EasingMode.Linear);
+		this._easeTimer = EaseTimer.at(1f, EasingMode.Linear);
 		if (path != null) {
 			this.initPath = path;
 			this.layerPath = initPath.cpy();
@@ -134,8 +132,8 @@ public class DefineMoveTo extends ActionEvent {
 	}
 
 	protected float getMoveSpeed(long elapsedTime) {
-		easeTimer.update(elapsedTime);
-		return speed * easeTimer.getProgress();
+		_easeTimer.update(elapsedTime);
+		return speed * _easeTimer.getProgress();
 	}
 
 	@Override
@@ -700,10 +698,6 @@ public class DefineMoveTo extends ActionEvent {
 
 	public boolean isAllDirection() {
 		return allDir;
-	}
-
-	public EaseTimer getEaseTimer() {
-		return easeTimer;
 	}
 
 	@Override

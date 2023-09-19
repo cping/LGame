@@ -56,16 +56,18 @@ public class JumpTo extends ActionEvent {
 		return moveX;
 	}
 
-	public void setMoveX(float moveX) {
+	public JumpTo setMoveX(float moveX) {
 		this.moveX = moveX;
+		return this;
 	}
 
 	public float getMoveY() {
 		return moveY;
 	}
 
-	public void setMoveY(float moveY) {
+	public JumpTo setMoveY(float moveY) {
 		this.moveY = moveY;
+		return this;
 	}
 
 	@Override

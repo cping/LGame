@@ -32,8 +32,6 @@ public class BezierBy extends ActionEvent {
 
 	protected float startX = -1, startY = -1;
 
-	protected final EaseTimer easeTimer;
-
 	public BezierBy(float duration, Bezier b) {
 		this(-1, -1, duration, EasingMode.Linear, b);
 	}
@@ -43,7 +41,7 @@ public class BezierBy extends ActionEvent {
 	}
 
 	public BezierBy(float sx, float sy, float duration, EasingMode mode, Bezier b) {
-		this.easeTimer = new EaseTimer(duration, mode);
+		this._easeTimer = new EaseTimer(duration, mode);
 		this.bezier = b;
 		this.startX = sx;
 		this.startY = sy;
@@ -51,17 +49,17 @@ public class BezierBy extends ActionEvent {
 
 	@Override
 	public void update(long elapsedTime) {
-		easeTimer.update(elapsedTime);
-		if (easeTimer.isCompleted()) {
+		_easeTimer.update(elapsedTime);
+		if (_easeTimer.isCompleted()) {
 			_isCompleted = true;
 			return;
 		}
 
-		final float u = 1 - easeTimer.getProgress();
-		final float tt = easeTimer.getProgress() * easeTimer.getProgress();
+		final float u = 1 - _easeTimer.getProgress();
+		final float tt = _easeTimer.getProgress() * _easeTimer.getProgress();
 		final float uu = u * u;
 
-		final float ut2 = 2 * u * easeTimer.getProgress();
+		final float ut2 = 2 * u * _easeTimer.getProgress();
 
 		final float x = (uu * bezier.controlPoint1.x) + (ut2 * bezier.controlPoint2.x) + (tt * bezier.endPosition.x);
 		final float y = (uu * bezier.controlPoint1.y) + (ut2 * bezier.controlPoint2.x) + (tt * bezier.endPosition.y);
@@ -78,25 +76,6 @@ public class BezierBy extends ActionEvent {
 		}
 	}
 
-	public BezierBy reset() {
-		easeTimer.reset();
-		return this;
-	}
-	
-	public BezierBy loop(int count) {
-		easeTimer.setLoop(count);
-		return this;
-	}
-
-	public BezierBy loop(boolean l) {
-		easeTimer.setLoop(l);
-		return this;
-	}
-
-	public boolean isLoop() {
-		return easeTimer.isLoop();
-	}
-
 	@Override
 	public boolean isComplete() {
 		return _isCompleted;
@@ -104,7 +83,7 @@ public class BezierBy extends ActionEvent {
 
 	@Override
 	public ActionEvent cpy() {
-		BezierBy by = new BezierBy(startX, startY, easeTimer.getDuration(), easeTimer.getEasingMode(), bezier.cpy());
+		BezierBy by = new BezierBy(startX, startY, _easeTimer.getDuration(), _easeTimer.getEasingMode(), bezier.cpy());
 		by.set(this);
 		return this;
 	}
@@ -115,7 +94,7 @@ public class BezierBy extends ActionEvent {
 		b.endPosition = bezier.endPosition.negate();
 		b.controlPoint1 = Vector2f.addNew(bezier.controlPoint2, bezier.endPosition.negate());
 		b.controlPoint2 = Vector2f.addNew(bezier.controlPoint1, bezier.endPosition.negate());
-		BezierBy by = new BezierBy(startX, startY, easeTimer.getDuration(), easeTimer.getEasingMode(), b);
+		BezierBy by = new BezierBy(startX, startY, _easeTimer.getDuration(), _easeTimer.getEasingMode(), b);
 		by.set(this);
 		return this;
 	}
@@ -137,7 +116,7 @@ public class BezierBy extends ActionEvent {
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue(getName());
 		builder.kv("bezier", bezier).comma().kv("startX", startX).comma().kv("startY", startY).comma().kv("EaseTimer",
-				easeTimer);
+				_easeTimer);
 		return builder.toString();
 	}
 

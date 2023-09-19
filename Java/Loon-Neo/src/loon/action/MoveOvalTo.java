@@ -44,7 +44,6 @@ public class MoveOvalTo extends ActionEvent {
 	private Vector2f centerPoint, oldCenterPoint;
 	private int directionX = 1;
 	private int directionY = -1;
-	private final EaseTimer easeTimer;
 
 	public MoveOvalTo(float startAngle, float angle, float width, float height, Vector2f centerPoint, float duration) {
 		this(startAngle, angle, width, height, centerPoint, null, duration, LSystem.DEFAULT_EASE_DELAY,
@@ -84,7 +83,7 @@ public class MoveOvalTo extends ActionEvent {
 		this.centerPoint = centerPoint;
 		this.centerPoint.y += (this.directionY == 1 ? -startY : startY);
 		this.startPoint = startPoint;
-		this.easeTimer = new EaseTimer(duration, delay, easing);
+		this._easeTimer = new EaseTimer(duration, delay, easing);
 		this.oldStartPoint = startPoint;
 		this.oldCenterPoint = centerPoint;
 	}
@@ -115,8 +114,8 @@ public class MoveOvalTo extends ActionEvent {
 
 	@Override
 	public void update(long elapsedTime) {
-		easeTimer.update(elapsedTime);
-		if (easeTimer.isCompleted()) {
+		_easeTimer.update(elapsedTime);
+		if (_easeTimer.isCompleted()) {
 			_isCompleted = true;
 
 			float radian = MathUtils.toRadians((this.startAngle + this.angle - 90f) % 360f);
@@ -132,7 +131,7 @@ public class MoveOvalTo extends ActionEvent {
 			return;
 		}
 
-		this.currentPosX = ((float) (this.per * easeTimer.getProgress()));
+		this.currentPosX = ((float) (this.per * _easeTimer.getProgress()));
 		if (this.currentPosX > 1f) {
 			initDirection();
 			int cnt = (int) (this.startAngle / 90f);
@@ -167,25 +166,6 @@ public class MoveOvalTo extends ActionEvent {
 		movePos(this.startPoint.x + offsetX, this.startPoint.y + offsetY);
 	}
 
-	public MoveOvalTo reset() {
-		easeTimer.reset();
-		return this;
-	}
-	
-	public MoveOvalTo loop(int count) {
-		easeTimer.setLoop(count);
-		return this;
-	}
-
-	public MoveOvalTo loop(boolean l) {
-		easeTimer.setLoop(l);
-		return this;
-	}
-
-	public boolean isLoop() {
-		return easeTimer.isLoop();
-	}
-	
 	public float getAngle() {
 		return angle;
 	}
@@ -239,7 +219,7 @@ public class MoveOvalTo extends ActionEvent {
 	@Override
 	public ActionEvent cpy() {
 		MoveOvalTo moveoval = new MoveOvalTo(startAngle, angle, width, height, oldCenterPoint, oldStartPoint,
-				easeTimer.getDuration(), easeTimer.getDelay(), easeTimer.getEasingMode());
+				_easeTimer.getDuration(), _easeTimer.getDelay(), _easeTimer.getEasingMode());
 		moveoval.set(this);
 		return moveoval;
 	}
@@ -260,7 +240,7 @@ public class MoveOvalTo extends ActionEvent {
 		builder.kv("startAngle", startAngle).comma().kv("angle", angle).comma().kv("rotateScale", rotateScale).comma()
 				.kv("size", (width + " x " + height)).comma().kv("per", per).comma().kv("startPoint", startPoint)
 				.comma().kv("currentPosX", currentPosX).comma().kv("directionX", directionX).comma()
-				.kv("directionY", directionY).comma().kv("EaseTimer", easeTimer);
+				.kv("directionY", directionY).comma().kv("EaseTimer", _easeTimer);
 		return builder.toString();
 	}
 }

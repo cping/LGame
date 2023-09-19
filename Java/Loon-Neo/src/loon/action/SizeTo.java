@@ -27,8 +27,6 @@ import loon.utils.timer.EaseTimer;
 
 public class SizeTo extends ActionEvent {
 
-	private EaseTimer _easeTimer;
-
 	private float _startWidth, _startHeight;
 
 	private float _endWidth, _endHeight;
@@ -51,15 +49,17 @@ public class SizeTo extends ActionEvent {
 	public void update(long elapsedTime) {
 		_easeTimer.update(elapsedTime);
 		final float percent = _easeTimer.getProgress();
-		float width = _startWidth + (_endWidth - _startWidth) * percent;
-		float height = _startHeight + (_endHeight - _startHeight) * percent;
-		width = MathUtils.min(width, _endWidth);
-		height = MathUtils.min(height, _endHeight);
+		final float sizeW = _endWidth - _startWidth;
+		final float sizeH = _endHeight - _startHeight;
+		final float width = _startWidth + sizeW * percent;
+		final float height = _startHeight + sizeH * percent;
 		if (original != null) {
 			original.setSize(width, height);
-			if (width >= _endWidth && height >= _endHeight) {
+			if (_easeTimer.isCompleted() && MathUtils.equal(width, _endWidth) && MathUtils.equal(height, _endHeight)) {
+				original.setSize(_endWidth, _endHeight);
 				_isCompleted = true;
 			}
+
 		}
 	}
 
@@ -105,10 +105,6 @@ public class SizeTo extends ActionEvent {
 	public SizeTo setEndHeight(float h) {
 		this._endHeight = h;
 		return this;
-	}
-
-	public EaseTimer getEaseTimer() {
-		return _easeTimer;
 	}
 
 	@Override

@@ -65,6 +65,13 @@ public class FadeTo extends ActionEvent {
 	}
 
 	@Override
+	public FadeTo reset() {
+		super.reset();
+		setSpeed(time);
+		return this;
+	}
+
+	@Override
 	public void onLoad() {
 	}
 

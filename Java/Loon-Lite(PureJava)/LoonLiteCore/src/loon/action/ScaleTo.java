@@ -29,8 +29,6 @@ import loon.utils.timer.EaseTimer;
 
 public class ScaleTo extends ActionEvent {
 
-	private EaseTimer _easeTimer;
-
 	private float _delta;
 
 	private float _deltaX, _deltaY;
@@ -146,10 +144,6 @@ public class ScaleTo extends ActionEvent {
 
 	public float getEndY() {
 		return _endY;
-	}
-
-	public EaseTimer getEaseTimer() {
-		return _easeTimer;
 	}
 
 	@Override

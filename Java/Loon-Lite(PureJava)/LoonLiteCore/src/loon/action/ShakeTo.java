@@ -27,7 +27,6 @@ import loon.utils.timer.EaseTimer;
 
 public class ShakeTo extends ActionEvent {
 
-	private final EaseTimer easeTimer;
 	private float shakeTimer;
 	private float shakeX, oldShakeX;
 	private float shakeY, oldShakeY;
@@ -47,7 +46,7 @@ public class ShakeTo extends ActionEvent {
 	}
 
 	public ShakeTo(float shakeX, float shakeY, float duration, float delay, EasingMode easing) {
-		this.easeTimer = new EaseTimer(duration, delay, easing);
+		this._easeTimer = new EaseTimer(duration, delay, easing);
 		this.shakeX = oldShakeX = shakeX;
 		this.shakeY = oldShakeY = shakeY;
 		this.offsetX = shakeX;
@@ -57,14 +56,14 @@ public class ShakeTo extends ActionEvent {
 
 	@Override
 	public void update(long elapsedTime) {
-		easeTimer.update(elapsedTime);
-		if (easeTimer.isCompleted()) {
+		_easeTimer.update(elapsedTime);
+		if (_easeTimer.isCompleted()) {
 			_isCompleted = true;
 			original.setLocation(this.startOffsetX, this.startOffsetY);
 			return;
 		}
-		this.shakeX += easeTimer.getTimeInAfter() * easeTimer.getDelta();
-		this.shakeY += easeTimer.getTimeInAfter() * easeTimer.getDelta();
+		this.shakeX += _easeTimer.getTimeInAfter() * _easeTimer.getDelta();
+		this.shakeY += _easeTimer.getTimeInAfter() * _easeTimer.getDelta();
 
 		if (this.offsetX > 0.0f) {
 			this.offsetX = (-this.shakeX);
@@ -77,25 +76,6 @@ public class ShakeTo extends ActionEvent {
 		synchronized (original) {
 			original.setLocation(this.startOffsetX + this.offsetX, this.startOffsetY + this.offsetY);
 		}
-	}
-
-	public ShakeTo reset() {
-		easeTimer.reset();
-		return this;
-	}
-	
-	public ShakeTo loop(int count) {
-		easeTimer.setLoop(count);
-		return this;
-	}
-
-	public ShakeTo loop(boolean l) {
-		easeTimer.setLoop(l);
-		return this;
-	}
-
-	public boolean isLoop() {
-		return easeTimer.isLoop();
 	}
 	
 	public float getShakeX() {
@@ -137,7 +117,7 @@ public class ShakeTo extends ActionEvent {
 
 	@Override
 	public ActionEvent cpy() {
-		ShakeTo shake = new ShakeTo(easeTimer.getDuration(), shakeTimer, oldShakeX, oldShakeY);
+		ShakeTo shake = new ShakeTo(_easeTimer.getDuration(), shakeTimer, oldShakeX, oldShakeY);
 		shake.set(this);
 		return shake;
 	}
@@ -157,7 +137,7 @@ public class ShakeTo extends ActionEvent {
 		StringKeyValue builder = new StringKeyValue(getName());
 		builder.kv("shakeTimer", shakeTimer).comma().kv("shakeX", shakeX).comma().kv("shakeY", shakeY).comma()
 				.kv("startOffsetX", startOffsetX).comma().kv("startOffsetY", startOffsetY).comma()
-				.kv("EaseTimer", easeTimer);
+				.kv("EaseTimer", _easeTimer);
 		return builder.toString();
 	}
 

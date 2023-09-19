@@ -31,8 +31,6 @@ public class FloatAction extends ActionEvent {
 
 	private final FloatValue _value;
 
-	private final EaseTimer easeTimer;
-
 	public FloatAction() {
 		this(EasingMode.Linear);
 	}
@@ -50,7 +48,7 @@ public class FloatAction extends ActionEvent {
 	}
 
 	public FloatAction(float start, float end, float duration, float delay, EasingMode easing) {
-		easeTimer = new EaseTimer(duration, delay, easing);
+		_easeTimer = new EaseTimer(duration, delay, easing);
 		this._start = start;
 		this._end = end;
 		this._value = new FloatValue(_start);
@@ -58,27 +56,8 @@ public class FloatAction extends ActionEvent {
 
 	@Override
 	public void update(long elapsedTime) {
-		easeTimer.update(elapsedTime);
-		_value.set((_start + (_end - _start) * easeTimer.getProgress()));
-	}
-
-	public FloatAction loop(int count) {
-		easeTimer.setLoop(count);
-		return this;
-	}
-
-	public FloatAction loop(boolean l) {
-		easeTimer.setLoop(l);
-		return this;
-	}
-
-	public FloatAction reset() {
-		easeTimer.reset();
-		return this;
-	}
-
-	public boolean isLoop() {
-		return easeTimer.isLoop();
+		_easeTimer.update(elapsedTime);
+		_value.set((_start + (_end - _start) * _easeTimer.getProgress()));
 	}
 
 	@Override
@@ -115,17 +94,17 @@ public class FloatAction extends ActionEvent {
 
 	@Override
 	public boolean isComplete() {
-		return easeTimer.isCompleted();
+		return _easeTimer.isCompleted();
 	}
 
 	@Override
 	public ActionEvent cpy() {
-		return new FloatAction(_start, _end, easeTimer.getDuration(), easeTimer.getDelay(), easeTimer.getEasingMode());
+		return new FloatAction(_start, _end, _easeTimer.getDuration(), _easeTimer.getDelay(), _easeTimer.getEasingMode());
 	}
 
 	@Override
 	public ActionEvent reverse() {
-		return new FloatAction(_end, _start, easeTimer.getDuration(), easeTimer.getDelay(), easeTimer.getEasingMode());
+		return new FloatAction(_end, _start, _easeTimer.getDuration(), _easeTimer.getDelay(), _easeTimer.getEasingMode());
 	}
 
 	@Override

@@ -36,8 +36,6 @@ public class MoveBy extends ActionEvent {
 
 	private boolean isDirUpdate = false;
 
-	private final EaseTimer easeTimer;
-
 	public MoveBy(float endX, float endY, float duration, float delay, EasingMode easing) {
 		this(-1, -1, endX, endY, 0, duration, delay, easing, 0, 0);
 	}
@@ -68,28 +66,28 @@ public class MoveBy extends ActionEvent {
 		this._direction = Field2D.EMPTY;
 		this.offsetX = sx;
 		this.offsetY = sy;
-		this.easeTimer = new EaseTimer(duration, delay, easing);
+		this._easeTimer = new EaseTimer(duration, delay, easing);
 		this.setDelay(0);
 	}
 
 	protected float getMoveSpeed(long elapsedTime) {
-		easeTimer.update(elapsedTime);
-		return _speed * easeTimer.getProgress();
+		_easeTimer.update(elapsedTime);
+		return _speed * _easeTimer.getProgress();
 	}
 
 	@Override
 	public void update(long elapsedTime) {
 		synchronized (original) {
 			if (_speed == 0) {
-				easeTimer.update(elapsedTime);
-				if (easeTimer.isCompleted()) {
+				_easeTimer.update(elapsedTime);
+				if (_easeTimer.isCompleted()) {
 					_isCompleted = true;
 					return;
 				}
 				float dirX = (_endX - _startX);
 				float dirY = (_endY - _startY);
-				float newX = _startX + dirX * easeTimer.getProgress() + offsetX;
-				float newY = _startY + dirY * easeTimer.getProgress() + offsetY;
+				float newX = _startX + dirX * _easeTimer.getProgress() + offsetX;
+				float newY = _startY + dirY * _easeTimer.getProgress() + offsetY;
 				float lastX = original.getX();
 				float lastY = original.getY();
 				updateDirection((int) (newX - lastX), (int) (newY - lastY));
@@ -167,26 +165,7 @@ public class MoveBy extends ActionEvent {
 			}
 		}
 	}
-
-	public MoveBy reset() {
-		easeTimer.reset();
-		return this;
-	}
 	
-	public MoveBy loop(int count) {
-		easeTimer.setLoop(count);
-		return this;
-	}
-
-	public MoveBy loop(boolean l) {
-		easeTimer.setLoop(l);
-		return this;
-	}
-
-	public boolean isLoop() {
-		return easeTimer.isLoop();
-	}
-
 	public float getSpeed() {
 		return _speed;
 	}
@@ -219,16 +198,16 @@ public class MoveBy extends ActionEvent {
 
 	@Override
 	public ActionEvent cpy() {
-		MoveBy move = new MoveBy(_startX, _startY, _endX, _endY, _speed, easeTimer.getDuration(), easeTimer.getDelay(),
-				easeTimer.getEasingMode(), offsetX, offsetY);
+		MoveBy move = new MoveBy(_startX, _startY, _endX, _endY, _speed, _easeTimer.getDuration(), _easeTimer.getDelay(),
+				_easeTimer.getEasingMode(), offsetX, offsetY);
 		move.set(this);
 		return move;
 	}
 
 	@Override
 	public ActionEvent reverse() {
-		MoveBy move = new MoveBy(_endX, _endY, _startX, _startY, _speed, easeTimer.getDuration(), easeTimer.getDelay(),
-				easeTimer.getEasingMode(), offsetX, offsetY);
+		MoveBy move = new MoveBy(_endX, _endY, _startX, _startY, _speed, _easeTimer.getDuration(), _easeTimer.getDelay(),
+				_easeTimer.getEasingMode(), offsetX, offsetY);
 		move.set(this);
 		return move;
 	}
@@ -242,7 +221,7 @@ public class MoveBy extends ActionEvent {
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue(getName());
 		builder.kv("speed", _speed).comma().kv("startX", _startX).comma().kv("startY", _startY).comma()
-				.kv("endX", _endX).comma().kv("endY", _endY).comma().kv("EaseTimer", easeTimer);
+				.kv("endX", _endX).comma().kv("endY", _endY).comma().kv("EaseTimer", _easeTimer);
 		return builder.toString();
 	}
 

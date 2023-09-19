@@ -26,8 +26,6 @@ import loon.utils.timer.EaseTimer;
 
 public class SizeBy extends ActionEvent {
 
-	private EaseTimer _easeTimer;
-
 	private float _startWidth, _startHeight;
 
 	private float _amountWidth, _amountHeight;
@@ -108,10 +106,6 @@ public class SizeBy extends ActionEvent {
 	public SizeBy setAmountHeight(float height) {
 		_amountHeight = height;
 		return this;
-	}
-
-	public EaseTimer getEaseTimer() {
-		return _easeTimer;
 	}
 
 	@Override

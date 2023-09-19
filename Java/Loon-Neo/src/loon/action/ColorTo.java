@@ -108,25 +108,6 @@ public class ColorTo extends ActionEvent {
 		setColors(start, end);
 	}
 
-	public ColorTo loop(int count) {
-		easeTimer.setLoop(count);
-		return this;
-	}
-
-	public ColorTo loop(boolean l) {
-		easeTimer.setLoop(l);
-		return this;
-	}
-
-	public boolean isLoop() {
-		return easeTimer.isLoop();
-	}
-
-	public ColorTo reset() {
-		easeTimer.reset();
-		return this;
-	}
-
 	@Override
 	public void update(long elapsedTime) {
 		easeTimer.update(elapsedTime);

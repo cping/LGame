@@ -35,8 +35,6 @@ public class TransferTo extends ActionEvent {
 	private boolean controllingX;
 	private boolean controllingY;
 
-	private final EaseTimer easeTimer;
-
 	public TransferTo(float startPos, float endPos, float duration, EasingMode mode, boolean controlX,
 			boolean controlY) {
 		this(startPos, endPos, duration, LSystem.DEFAULT_EASE_DELAY, mode, controlX, controlY);
@@ -48,7 +46,7 @@ public class TransferTo extends ActionEvent {
 
 	public TransferTo(float startPos, float endPos, float duration, float delay, EasingMode mode, boolean controlX,
 			boolean controlY) {
-		this.easeTimer = new EaseTimer(duration, delay, mode);
+		this._easeTimer = new EaseTimer(duration, delay, mode);
 		this.startPos = startPos;
 		this.endPos = endPos;
 		this.travelDistance = endPos - startPos;
@@ -62,23 +60,10 @@ public class TransferTo extends ActionEvent {
 		this.controllingY = controlY;
 		return this;
 	}
-	
-	public TransferTo loop(int count) {
-		easeTimer.setLoop(count);
-		return this;
-	}
 
-	public TransferTo loop(boolean l) {
-		easeTimer.setLoop(l);
-		return this;
-	}
-
-	public boolean isLoop() {
-		return easeTimer.isLoop();
-	}
-	
+	@Override
 	public TransferTo reset() {
-		easeTimer.reset();
+		_easeTimer.reset();
 		currentPosition = startPos;
 		return this;
 	}
@@ -133,19 +118,23 @@ public class TransferTo extends ActionEvent {
 
 	@Override
 	public void update(long elapsedTime) {
-		easeTimer.update(elapsedTime);
-		if (easeTimer.isCompleted()) {
+		_easeTimer.update(elapsedTime);
+		if (_easeTimer.isCompleted()) {
 			this._isCompleted = true;
 			return;
 		}
-		currentPosition = easeTimer.getProgress() * travelDistance + startPos;
+		currentPosition = _easeTimer.getProgress() * travelDistance + startPos;
 		if (original != null) {
 			synchronized (original) {
+				if (this.controllingX && this.controllingY) {
+					movePos(getCurrentPos() + offsetX, getCurrentPos() + offsetY);
+					return;
+				}
 				if (this.controllingX) {
-					this.original.setX(getCurrentPos() + offsetX);
+					movePos(getCurrentPos() + offsetX, original.getY());
 				}
 				if (this.controllingY) {
-					this.original.setY(getCurrentPos() + offsetY);
+					movePos(original.getX(), getCurrentPos() + offsetY);
 				}
 			}
 		}
@@ -179,16 +168,16 @@ public class TransferTo extends ActionEvent {
 
 	@Override
 	public ActionEvent cpy() {
-		TransferTo t = new TransferTo(this.startPos, this.endPos, easeTimer.getDuration(), easeTimer.getDelay(),
-				easeTimer.getEasingMode(), this.controllingX, this.controllingY);
+		TransferTo t = new TransferTo(this.startPos, this.endPos, _easeTimer.getDuration(), _easeTimer.getDelay(),
+				_easeTimer.getEasingMode(), this.controllingX, this.controllingY);
 		t.set(this);
 		return t;
 	}
 
 	@Override
 	public ActionEvent reverse() {
-		TransferTo t = new TransferTo(this.endPos, this.startPos, easeTimer.getDuration(), easeTimer.getDelay(),
-				easeTimer.getEasingMode(), this.controllingX, this.controllingY);
+		TransferTo t = new TransferTo(this.endPos, this.startPos, _easeTimer.getDuration(), _easeTimer.getDelay(),
+				_easeTimer.getEasingMode(), this.controllingX, this.controllingY);
 		t.set(this);
 		return t;
 	}
@@ -203,7 +192,7 @@ public class TransferTo extends ActionEvent {
 		StringKeyValue builder = new StringKeyValue(getName());
 		builder.kv("startPos", startPos).comma().kv("endPos", endPos).comma().kv("travelDistance", travelDistance)
 				.comma().kv("currentPosition", currentPosition).comma().kv("controllingX", controllingX).comma()
-				.kv("controllingY", controllingY).comma().kv("EaseTimer", easeTimer);
+				.kv("controllingY", controllingY).comma().kv("EaseTimer", _easeTimer);
 		return builder.toString();
 	}
 

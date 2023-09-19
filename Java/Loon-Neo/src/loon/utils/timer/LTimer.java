@@ -271,6 +271,10 @@ public class LTimer implements LRelease {
 		return setDelay(d == null ? 0 : d.toMillisLong());
 	}
 
+	public LTimer setDelayS(float s) {
+		return setDelay(Duration.ofS(s));
+	}
+
 	public LTimer setDelay(long delay) {
 		return reset(delay, this._maxNumberOfRepeats, this._speedFactor, this._repeats);
 	}

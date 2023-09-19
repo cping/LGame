@@ -31,8 +31,6 @@ public class IntAction extends ActionEvent {
 
 	private final IntValue _value;
 
-	private final EaseTimer easeTimer;
-
 	public IntAction() {
 		this(EasingMode.Linear);
 	}
@@ -50,7 +48,7 @@ public class IntAction extends ActionEvent {
 	}
 
 	public IntAction(int start, int end, float duration, float delay, EasingMode easing) {
-		easeTimer = new EaseTimer(duration, delay, easing);
+		_easeTimer = new EaseTimer(duration, delay, easing);
 		this._start = start;
 		this._end = end;
 		this._value = new IntValue(_start);
@@ -58,27 +56,8 @@ public class IntAction extends ActionEvent {
 
 	@Override
 	public void update(long elapsedTime) {
-		easeTimer.update(elapsedTime);
-		_value.set((int) (_start + (_end - _start) * easeTimer.getValue()));
-	}
-
-	public IntAction loop(int count) {
-		easeTimer.setLoop(count);
-		return this;
-	}
-
-	public IntAction loop(boolean l) {
-		easeTimer.setLoop(l);
-		return this;
-	}
-
-	public IntAction reset() {
-		easeTimer.reset();
-		return this;
-	}
-
-	public boolean isLoop() {
-		return easeTimer.isLoop();
+		_easeTimer.update(elapsedTime);
+		_value.set((int) (_start + (_end - _start) * _easeTimer.getValue()));
 	}
 
 	@Override
@@ -115,17 +94,17 @@ public class IntAction extends ActionEvent {
 
 	@Override
 	public boolean isComplete() {
-		return easeTimer.isCompleted();
+		return _easeTimer.isCompleted();
 	}
 
 	@Override
 	public ActionEvent cpy() {
-		return new IntAction(_start, _end, easeTimer.getDuration(), easeTimer.getDelay(), easeTimer.getEasingMode());
+		return new IntAction(_start, _end, _easeTimer.getDuration(), _easeTimer.getDelay(), _easeTimer.getEasingMode());
 	}
 
 	@Override
 	public ActionEvent reverse() {
-		return new IntAction(_end, _start, easeTimer.getDuration(), easeTimer.getDelay(), easeTimer.getEasingMode());
+		return new IntAction(_end, _start, _easeTimer.getDuration(), _easeTimer.getDelay(), _easeTimer.getEasingMode());
 	}
 
 	@Override

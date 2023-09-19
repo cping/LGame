@@ -48,8 +48,6 @@ public class ArrowTo extends ActionEvent {
 
 	private int dir;
 
-	private final EaseTimer easeTimer;
-
 	public ArrowTo(float tx, float ty) {
 		this(tx, ty, 1f, 200f);
 	}
@@ -84,7 +82,7 @@ public class ArrowTo extends ActionEvent {
 		this.gravity = g;
 		this.currentX = startX;
 		this.currentY = startY;
-		this.easeTimer = new EaseTimer(duration, delay, mode);
+		this._easeTimer = new EaseTimer(duration, delay, mode);
 	}
 
 	@Override
@@ -111,14 +109,14 @@ public class ArrowTo extends ActionEvent {
 
 	@Override
 	public void update(long elapsedTime) {
-		easeTimer.update(elapsedTime);
-		if (easeTimer.isCompleted()) {
+		_easeTimer.update(elapsedTime);
+		if (_easeTimer.isCompleted()) {
 			_isCompleted = true;
 			return;
 		}
-		vy += gravity * easeTimer.getProgress();
-		currentX += vx * easeTimer.getProgress();
-		currentY += vy * easeTimer.getProgress();
+		vy += gravity * _easeTimer.getProgress();
+		currentX += vx * _easeTimer.getProgress();
+		currentY += vy * _easeTimer.getProgress();
 		if (original.isContainer() && original.isBounded()) {
 			if (currentX < -original.getWidth() || startY < -original.getHeight()
 					|| currentX > original.getContainerWidth() || currentY > original.getContainerHeight()) {
@@ -138,25 +136,6 @@ public class ArrowTo extends ActionEvent {
 			original.setRotation(MathUtils.toDegrees(theta));
 			movePos(currentX + offsetX, currentY + offsetY);
 		}
-	}
-
-	public ArrowTo loop(int count) {
-		easeTimer.setLoop(count);
-		return this;
-	}
-
-	public ArrowTo loop(boolean l) {
-		easeTimer.setLoop(l);
-		return this;
-	}
-
-	public ArrowTo reset() {
-		easeTimer.reset();
-		return this;
-	}
-
-	public boolean isLoop() {
-		return easeTimer.isLoop();
 	}
 	
 	public int getDirection() {
@@ -205,16 +184,16 @@ public class ArrowTo extends ActionEvent {
 
 	@Override
 	public ActionEvent cpy() {
-		ArrowTo arrow = new ArrowTo(startX, startY, endX, endY, speed, gravity, easeTimer.getDuration(),
-				easeTimer.getDelay(), easeTimer.getEasingMode());
+		ArrowTo arrow = new ArrowTo(startX, startY, endX, endY, speed, gravity, _easeTimer.getDuration(),
+				_easeTimer.getDelay(), _easeTimer.getEasingMode());
 		arrow.set(this);
 		return arrow;
 	}
 
 	@Override
 	public ActionEvent reverse() {
-		ArrowTo arrow = new ArrowTo(endX, endY, startX, startY, speed, gravity, easeTimer.getDuration(),
-				easeTimer.getDelay(), easeTimer.getEasingMode());
+		ArrowTo arrow = new ArrowTo(endX, endY, startX, startY, speed, gravity, _easeTimer.getDuration(),
+				_easeTimer.getDelay(), _easeTimer.getEasingMode());
 		arrow.set(this);
 		return arrow;
 	}
@@ -229,7 +208,7 @@ public class ArrowTo extends ActionEvent {
 		StringKeyValue builder = new StringKeyValue(getName());
 		builder.kv("gravity", gravity).comma().kv("startX", startX).comma().kv("startY", startY).comma()
 				.kv("currentX", currentX).comma().kv("currentY", currentY).comma().kv("direction", dir).comma()
-				.kv("EaseTimer", easeTimer);
+				.kv("EaseTimer", _easeTimer);
 		return builder.toString();
 	}
 

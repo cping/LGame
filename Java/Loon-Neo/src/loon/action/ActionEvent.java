@@ -24,11 +24,14 @@ import loon.action.collision.CollisionFilter;
 import loon.action.collision.CollisionResult;
 import loon.action.collision.CollisionWorld;
 import loon.utils.StringKeyValue;
+import loon.utils.timer.EaseTimer;
 import loon.utils.timer.LTimer;
 
 public abstract class ActionEvent {
 
-	private LTimer timer;
+	protected EaseTimer _easeTimer;
+
+	private LTimer _currentTimer;
 
 	private ActionListener actionListener;
 
@@ -47,15 +50,20 @@ public abstract class ActionEvent {
 	protected float oldX, oldY;
 
 	public ActionEvent() {
-		timer = new LTimer(0);
+		_currentTimer = new LTimer(0);
+	}
+
+	public LTimer getTimer() {
+		return _currentTimer;
 	}
 
 	public long getDelay() {
-		return timer.getDelay();
+		return _currentTimer.getDelay();
 	}
 
 	public ActionEvent setDelay(long d) {
-		timer.setDelay(d);
+		_currentTimer.setDelay(d);
+		_currentTimer.action(d);
 		return this;
 	}
 
@@ -68,10 +76,10 @@ public abstract class ActionEvent {
 		if (original == null) {
 			return this;
 		}
-		if (timer.action(elapsedTime)) {
+		if (_currentTimer.action(elapsedTime)) {
 			if (firstTick) {
 				this.firstTick = false;
-				this.timer.refresh();
+				this._currentTimer.refresh();
 			} else {
 				update(elapsedTime);
 			}
@@ -101,7 +109,7 @@ public abstract class ActionEvent {
 			oldX = original.getX();
 			oldY = original.getY();
 		}
-		this.timer.refresh();
+		this._currentTimer.refresh();
 		if (!this.isInit) {
 			this.initAction();
 		}
@@ -194,6 +202,45 @@ public abstract class ActionEvent {
 		return this;
 	}
 
+	public ActionEvent reset() {
+		_currentTimer.reset();
+		if (_easeTimer != null) {
+			_easeTimer.reset();
+		}
+		_isCompleted = false;
+		return this;
+	}
+
+	public ActionEvent loop(int count) {
+		if (_easeTimer != null) {
+			_easeTimer.setLoop(count);
+		}
+		return this;
+	}
+
+	public ActionEvent loop(boolean l) {
+		if (_easeTimer != null) {
+			_easeTimer.setLoop(l);
+		}
+		return this;
+	}
+
+	public boolean isLoop() {
+		if (_easeTimer != null) {
+			return _easeTimer.isLoop();
+		}
+		return false;
+	}
+
+	public ActionEvent setEaseTimer(EaseTimer e) {
+		this._easeTimer = e;
+		return this;
+	}
+
+	public EaseTimer getEaseTimer() {
+		return _easeTimer;
+	}
+
 	public ActionEvent kill() {
 		this._isCompleted = true;
 		return this;
@@ -230,16 +277,18 @@ public abstract class ActionEvent {
 		return worldCollisionFilter;
 	}
 
-	public void setCollisionFilter(CollisionFilter filter) {
+	public ActionEvent setCollisionFilter(CollisionFilter filter) {
 		this.worldCollisionFilter = filter;
+		return this;
 	}
 
 	public CollisionWorld getCollisionWorld() {
 		return collisionWorld;
 	}
 
-	public void setCollisionWorld(CollisionWorld world) {
+	public ActionEvent setCollisionWorld(CollisionWorld world) {
 		this.collisionWorld = world;
+		return this;
 	}
 
 	public boolean isFirstTick() {
