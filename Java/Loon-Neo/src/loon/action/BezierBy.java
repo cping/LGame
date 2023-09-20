@@ -77,11 +77,6 @@ public class BezierBy extends ActionEvent {
 	}
 
 	@Override
-	public boolean isComplete() {
-		return _isCompleted;
-	}
-
-	@Override
 	public ActionEvent cpy() {
 		BezierBy by = new BezierBy(startX, startY, _easeTimer.getDuration(), _easeTimer.getEasingMode(), bezier.cpy());
 		by.set(this);

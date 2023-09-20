@@ -60,11 +60,6 @@ public class RemoveActionsTo extends ActionEvent {
 	}
 
 	@Override
-	public boolean isComplete() {
-		return _isCompleted;
-	}
-
-	@Override
 	public ActionEvent cpy() {
 		RemoveActionsTo update = new RemoveActionsTo(_removeBind);
 		update.set(this);

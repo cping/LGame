@@ -53,11 +53,6 @@ public class DelayTo extends ActionEvent {
 	}
 
 	@Override
-	public boolean isComplete() {
-		return _isCompleted;
-	}
-
-	@Override
 	public ActionEvent cpy() {
 		DelayTo d = new DelayTo(delay);
 		d.set(this);

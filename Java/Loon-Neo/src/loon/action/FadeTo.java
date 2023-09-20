@@ -45,11 +45,6 @@ public class FadeTo extends ActionEvent {
 		return this;
 	}
 
-	@Override
-	public boolean isComplete() {
-		return _isCompleted;
-	}
-
 	public float getSpeed() {
 		return time;
 	}

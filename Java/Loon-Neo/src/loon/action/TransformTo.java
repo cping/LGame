@@ -201,11 +201,6 @@ public class TransformTo extends ActionEvent {
 	}
 
 	@Override
-	public boolean isComplete() {
-		return _isCompleted;
-	}
-
-	@Override
 	public ActionEvent cpy() {
 		TransformTo trans = new TransformTo(newX, newY, newScaleX, newScaleY, newWidth, newHeight, newRotation,
 				newAlpha, newColor);

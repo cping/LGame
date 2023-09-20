@@ -162,11 +162,6 @@ public class TransferTo extends ActionEvent {
 	}
 
 	@Override
-	public boolean isComplete() {
-		return _isCompleted;
-	}
-
-	@Override
 	public ActionEvent cpy() {
 		TransferTo t = new TransferTo(this.startPos, this.endPos, _easeTimer.getDuration(), _easeTimer.getDelay(),
 				_easeTimer.getEasingMode(), this.controllingX, this.controllingY);

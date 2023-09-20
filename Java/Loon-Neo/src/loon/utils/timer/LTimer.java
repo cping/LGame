@@ -314,6 +314,10 @@ public class LTimer implements LRelease {
 		return this;
 	}
 
+	public LTimer resume() {
+		return unpause();
+	}
+
 	public LTimer unpause() {
 		this._active = true;
 		return this;

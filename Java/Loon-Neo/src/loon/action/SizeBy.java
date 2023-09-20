@@ -109,11 +109,6 @@ public class SizeBy extends ActionEvent {
 	}
 
 	@Override
-	public boolean isComplete() {
-		return _isCompleted;
-	}
-
-	@Override
 	public ActionEvent cpy() {
 		SizeBy size = new SizeBy(_amountWidth, _amountHeight, _easeTimer.getDuration(), _easeTimer.getEasingMode());
 		size.set(this);

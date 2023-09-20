@@ -74,11 +74,6 @@ public class CircleTo extends ActionEvent {
 	}
 
 	@Override
-	public boolean isComplete() {
-		return _isCompleted;
-	}
-
-	@Override
 	public void onLoad() {
 		if (startX == -1) {
 			this.startX = original.getX();

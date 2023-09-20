@@ -42,11 +42,6 @@ public class FireTo extends ActionEvent {
 	}
 
 	@Override
-	public boolean isComplete() {
-		return _isCompleted;
-	}
-
-	@Override
 	public void onLoad() {
 		this.startX = original.getX();
 		this.startY = original.getY();

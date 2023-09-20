@@ -66,11 +66,6 @@ public class RotateTo extends ActionEvent {
 	}
 
 	@Override
-	public boolean isComplete() {
-		return _isCompleted;
-	}
-
-	@Override
 	public void onLoad() {
 		if (startRotation == -1f) {
 			startRotation = original.getRotation();

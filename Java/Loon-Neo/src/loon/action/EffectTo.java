@@ -42,11 +42,6 @@ public class EffectTo extends ActionEvent {
 	}
 
 	@Override
-	public boolean isComplete() {
-		return _isCompleted;
-	}
-
-	@Override
 	public ActionEvent cpy() {
 		EffectTo eff = new EffectTo(_effect);
 		eff.set(this);

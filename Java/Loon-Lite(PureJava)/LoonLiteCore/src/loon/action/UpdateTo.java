@@ -48,11 +48,6 @@ public class UpdateTo extends ActionEvent {
 	}
 
 	@Override
-	public boolean isComplete() {
-		return _isCompleted;
-	}
-
-	@Override
 	public ActionEvent cpy() {
 		UpdateTo update = new UpdateTo(updateable);
 		update.set(this);

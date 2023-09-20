@@ -212,11 +212,6 @@ public class MoveOvalTo extends ActionEvent {
 	}
 
 	@Override
-	public boolean isComplete() {
-		return _isCompleted;
-	}
-
-	@Override
 	public ActionEvent cpy() {
 		MoveOvalTo moveoval = new MoveOvalTo(startAngle, angle, width, height, oldCenterPoint, oldStartPoint,
 				_easeTimer.getDuration(), _easeTimer.getDelay(), _easeTimer.getEasingMode());

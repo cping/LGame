@@ -111,11 +111,6 @@ public class ShakeTo extends ActionEvent {
 	}
 
 	@Override
-	public boolean isComplete() {
-		return _isCompleted;
-	}
-
-	@Override
 	public ActionEvent cpy() {
 		ShakeTo shake = new ShakeTo(_easeTimer.getDuration(), shakeTimer, oldShakeX, oldShakeY);
 		shake.set(this);

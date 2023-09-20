@@ -109,11 +109,6 @@ public class ScaleBy extends ActionEvent {
 	}
 
 	@Override
-	public boolean isComplete() {
-		return _isCompleted;
-	}
-
-	@Override
 	public ActionEvent cpy() {
 		ScaleBy size = new ScaleBy(_amountScaleX, _amountScaleY, _easeTimer.getDuration(), _easeTimer.getEasingMode());
 		size.set(this);

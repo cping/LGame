@@ -66,11 +66,6 @@ public class AlphaTo extends ActionEvent {
 	}
 
 	@Override
-	public boolean isComplete() {
-		return _isCompleted;
-	}
-
-	@Override
 	public ActionEvent cpy() {
 		AlphaTo size = new AlphaTo(_startAlpha, _endAlpha, _easeTimer.getDuration(), _easeTimer.getEasingMode());
 		size.set(this);

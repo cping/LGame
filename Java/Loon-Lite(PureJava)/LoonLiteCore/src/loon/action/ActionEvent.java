@@ -131,8 +131,6 @@ public abstract class ActionEvent {
 		return this;
 	}
 
-	public abstract boolean isComplete();
-
 	public final Object getTag() {
 		return tag;
 	}
@@ -194,10 +192,34 @@ public abstract class ActionEvent {
 		if (!this._isCompleted && this.original != null) {
 			this._isCompleted = true;
 			String name = this.getName();
-			if ("flash".equals(name) || "fade".equals(name) || "show".equals(name)) {
+			if ("flash".equals(name) || "fade".equals(name) || "alpha".equals(name) || "show".equals(name)) {
 				original.setAlpha(1f);
 				original.setVisible(true);
 			}
+		}
+		return this;
+	}
+
+	public boolean isComplete() {
+		return this._isCompleted;
+	}
+
+	public boolean isPause() {
+		return _currentTimer.paused();
+	}
+
+	public ActionEvent pause() {
+		_currentTimer.pause();
+		if (_easeTimer != null) {
+			_easeTimer.pause();
+		}
+		return this;
+	}
+
+	public ActionEvent resume() {
+		_currentTimer.resume();
+		if (_easeTimer != null) {
+			_easeTimer.resume();
 		}
 		return this;
 	}

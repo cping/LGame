@@ -43,11 +43,6 @@ public class JumpTo extends ActionEvent {
 	}
 
 	@Override
-	public boolean isComplete() {
-		return _isCompleted;
-	}
-
-	@Override
 	public void onLoad() {
 		this.moveY = moveJump;
 	}

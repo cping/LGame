@@ -127,11 +127,6 @@ public class MoveRoundTo extends ActionEvent {
 	}
 
 	@Override
-	public boolean isComplete() {
-		return _isCompleted;
-	}
-
-	@Override
 	public ActionEvent cpy() {
 		MoveRoundTo mover = new MoveRoundTo(startAngle, angle, startRadius, radius, oldCenterPoint, oldStartPoint,
 				_easeTimer.getDuration(), _easeTimer.getDelay(), _easeTimer.getEasingMode());

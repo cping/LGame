@@ -218,11 +218,6 @@ public class FollowTo extends ActionEvent {
 	}
 
 	@Override
-	public boolean isComplete() {
-		return _isCompleted;
-	}
-
-	@Override
 	public ActionEvent cpy() {
 		FollowTo move = new FollowTo(_field2d, _actorToFollow, _velocityX, _velocityY, _followDistance, _speed);
 		move.set(this);

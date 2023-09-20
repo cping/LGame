@@ -40,11 +40,6 @@ public class TweenTo<T> extends ActionEvent {
 	}
 
 	@Override
-	public boolean isComplete() {
-		return _isCompleted;
-	}
-
-	@Override
 	public void onLoad() {
 
 	}

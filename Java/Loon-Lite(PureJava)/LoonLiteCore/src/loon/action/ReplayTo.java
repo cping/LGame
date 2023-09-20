@@ -107,11 +107,6 @@ public class ReplayTo extends ActionEvent {
 	}
 
 	@Override
-	public boolean isComplete() {
-		return _isCompleted;
-	}
-
-	@Override
 	public ActionEvent cpy() {
 		ReplayTo r = new ReplayTo(_cacheList, replay);
 		r.set(this);

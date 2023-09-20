@@ -48,12 +48,7 @@ public class FlipXTo extends ActionEvent {
 	public void onLoad() {
 
 	}
-
-	@Override
-	public boolean isComplete() {
-		return _isCompleted;
-	}
-
+	
 	@Override
 	public ActionEvent cpy() {
 		FlipXTo flip = new FlipXTo(flipX);

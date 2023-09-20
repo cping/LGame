@@ -50,11 +50,6 @@ public class FlipYTo extends ActionEvent {
 	}
 
 	@Override
-	public boolean isComplete() {
-		return _isCompleted;
-	}
-
-	@Override
 	public ActionEvent cpy() {
 		FlipYTo flip = new FlipYTo(flipY);
 		flip.set(this);

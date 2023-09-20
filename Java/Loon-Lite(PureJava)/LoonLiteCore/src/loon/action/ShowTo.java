@@ -48,11 +48,6 @@ public class ShowTo extends ActionEvent {
 	}
 
 	@Override
-	public boolean isComplete() {
-		return _isCompleted;
-	}
-
-	@Override
 	public ActionEvent cpy() {
 		ShowTo show = new ShowTo(visible);
 		show.set(this);

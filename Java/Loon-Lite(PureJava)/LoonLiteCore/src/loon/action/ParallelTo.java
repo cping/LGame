@@ -72,11 +72,6 @@ public class ParallelTo extends ActionEvent {
 	}
 
 	@Override
-	public boolean isComplete() {
-		return _isCompleted;
-	}
-
-	@Override
 	public ActionEvent cpy() {
 		TArray<ActionEvent> tmp = new TArray<ActionEvent>(events.size);
 		for (int i = 0, size = events.size; i < size; i++) {

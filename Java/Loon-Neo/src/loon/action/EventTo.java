@@ -67,11 +67,6 @@ public class EventTo extends ActionEvent {
 	}
 
 	@Override
-	public boolean isComplete() {
-		return _isCompleted;
-	}
-
-	@Override
 	public ActionEvent cpy() {
 		EventTo event = new EventTo(_event);
 		event.set(this);

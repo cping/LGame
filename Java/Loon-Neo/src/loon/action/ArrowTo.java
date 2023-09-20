@@ -86,11 +86,6 @@ public class ArrowTo extends ActionEvent {
 	}
 
 	@Override
-	public boolean isComplete() {
-		return _isCompleted;
-	}
-
-	@Override
 	public void onLoad() {
 		if (this.startX == -1) {
 			this.startX = original.getX();

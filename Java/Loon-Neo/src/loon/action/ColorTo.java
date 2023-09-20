@@ -83,11 +83,6 @@ public class ColorTo extends ActionEvent {
 	}
 
 	@Override
-	public boolean isComplete() {
-		return _isCompleted;
-	}
-
-	@Override
 	public void onLoad() {
 		if (startRed == -1 || startGreen == -1 || startBlue == -1 || startAlpha == -1) {
 			LColor color = original.getColor();

@@ -84,11 +84,6 @@ public class ScaleTo extends ActionEvent {
 	}
 
 	@Override
-	public boolean isComplete() {
-		return _isCompleted;
-	}
-
-	@Override
 	public void onLoad() {
 		if (original != null) {
 			if (_startX == -1) {

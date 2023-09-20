@@ -192,11 +192,6 @@ public class MoveBy extends ActionEvent {
 	}
 
 	@Override
-	public boolean isComplete() {
-		return _isCompleted;
-	}
-
-	@Override
 	public ActionEvent cpy() {
 		MoveBy move = new MoveBy(_startX, _startY, _endX, _endY, _speed, _easeTimer.getDuration(), _easeTimer.getDelay(),
 				_easeTimer.getEasingMode(), offsetX, offsetY);
