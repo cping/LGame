@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -38,6 +38,7 @@ import loon.utils.processes.GameProcess;
 import loon.utils.processes.GameProcessType;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
+import loon.utils.processes.TimeLineProcess;
 import loon.utils.processes.WaitProcess;
 import loon.utils.timer.LTimerContext;
 
@@ -49,7 +50,7 @@ public class PlayerUtils extends Director {
 
 	/**
 	 * 添加一个ActionUpdate进程到游戏,当completed为true时销毁
-	 *
+	 * 
 	 * @param update
 	 */
 	public final static GameProcess addProcess(final ActionUpdate update) {
@@ -58,7 +59,7 @@ public class PlayerUtils extends Director {
 
 	/**
 	 * 添加一个ActionUpdate进程到游戏,以指定延迟时间刷新,当completed为true时销毁
-	 *
+	 * 
 	 * @param update
 	 * @param delay
 	 */
@@ -83,7 +84,7 @@ public class PlayerUtils extends Director {
 
 	/**
 	 * 添加一个GameProcess进程到游戏,不kill(或者通过RealtimeProcessManager.get()注销)则一直存在
-	 *
+	 * 
 	 * @param process
 	 */
 	public final static GameProcess addProcess(GameProcess process) {
@@ -95,8 +96,29 @@ public class PlayerUtils extends Director {
 	}
 
 	/**
+	 * 创建一个TimeLine进程
+	 * 
+	 * @param loop
+	 * @return
+	 */
+	public final static TimeLineProcess createTimeLineProcess(int loop) {
+		TimeLineProcess process = new TimeLineProcess(loop);
+		addProcess(process);
+		return process;
+	}
+
+	/**
+	 * 创建一个TimeLine进程
+	 * 
+	 * @return
+	 */
+	public final static TimeLineProcess createTimeLineProcess() {
+		return createTimeLineProcess(-1);
+	}
+
+	/**
 	 * 查看GameProcess是否存在
-	 *
+	 * 
 	 * @param process
 	 * @return
 	 */
@@ -109,19 +131,19 @@ public class PlayerUtils extends Director {
 
 	/**
 	 * 删除一个GameProcess
-	 *
+	 * 
 	 * @param process
 	 */
 	public final static TArray<GameProcess> removeProcess(GameProcess process) {
 		if (process == null) {
-			return new TArray<>();
+			return new TArray<GameProcess>();
 		}
 		return removeProcess(process.getId());
 	}
 
 	/**
 	 * 删除一个指定id的GameProcess
-	 *
+	 * 
 	 * @param id
 	 */
 	public final static TArray<GameProcess> removeProcess(String id) {
@@ -130,7 +152,7 @@ public class PlayerUtils extends Director {
 
 	/**
 	 * 删除一个[包含]指定id(比如删1则100,1,11之类也会消失,有1就没)的GameProcess
-	 *
+	 * 
 	 * @param id
 	 */
 	public final static TArray<GameProcess> deleteIndex(String id) {
@@ -139,7 +161,7 @@ public class PlayerUtils extends Director {
 
 	/**
 	 * 获得指定id的GameProcess
-	 *
+	 * 
 	 * @param id
 	 * @return
 	 */
@@ -149,7 +171,7 @@ public class PlayerUtils extends Director {
 
 	/**
 	 * 获得指定type的GameProcess
-	 *
+	 * 
 	 * @param pt
 	 * @return
 	 */
@@ -159,7 +181,7 @@ public class PlayerUtils extends Director {
 
 	/**
 	 * 间隔指定时间后，异步执行Updateable中内容(默认仅执行一次)
-	 *
+	 * 
 	 * @param delay
 	 * @param update
 	 * @return
@@ -172,7 +194,7 @@ public class PlayerUtils extends Director {
 
 	/**
 	 * 异步执行Updateable中内容(默认仅执行一次)
-	 *
+	 * 
 	 * @param update
 	 * @return
 	 */
@@ -318,7 +340,7 @@ public class PlayerUtils extends Director {
 
 	/**
 	 * 求两个动作对象在X轴两点间距离
-	 *
+	 * 
 	 * @param src
 	 * @param dst
 	 * @return
@@ -329,7 +351,7 @@ public class PlayerUtils extends Director {
 
 	/**
 	 * 求指定动作对象与指定方形区域在X轴两点间距离
-	 *
+	 * 
 	 * @param src
 	 * @param dst
 	 * @return
@@ -340,7 +362,7 @@ public class PlayerUtils extends Director {
 
 	/**
 	 * 求两个动作对象在Y轴两点间距离
-	 *
+	 * 
 	 * @param src
 	 * @param dst
 	 * @return
@@ -351,7 +373,7 @@ public class PlayerUtils extends Director {
 
 	/**
 	 * 求指定动作对象与指定方形区域在Y轴两点间距离
-	 *
+	 * 
 	 * @param src
 	 * @param dst
 	 * @return
@@ -362,7 +384,7 @@ public class PlayerUtils extends Director {
 
 	/**
 	 * 求两个动作对象在指定范围内的X轴距离
-	 *
+	 * 
 	 * @param src
 	 * @param dst
 	 * @param allowDistance
@@ -374,7 +396,7 @@ public class PlayerUtils extends Director {
 
 	/**
 	 * 求两个动作对象在指定范围内的Y轴距离
-	 *
+	 * 
 	 * @param src
 	 * @param dst
 	 * @param allowDistance

@@ -73,7 +73,7 @@ public class Duration implements Comparable<Duration> {
     public final static boolean isBetween(long time, long from, long end) {
         return from <= time && time <= end;
     }
-    
+	
 	public final static long now() {
 		return TimeUtils.millis();
 	}

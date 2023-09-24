@@ -18,44 +18,24 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.utils.processes;
+package loon.events;
 
-/**
- * 默认可以标注的Loon进程类型
- *
- */
-public enum GameProcessType {
+public interface TimeLineListener {
 
-	Screen,
+	void onUpdate(float dt);
 
-	View,
+	void onStart();
 
-	Net,
+	void onPause();
 
-	Initialize,
+	void onResume();
 
-	Preload,
+	void onStop();
 
-	Progress,
+	void onExit();
 
-	Tween,
+	void onCompleted();
 
-	Sprite,
-
-	Component,
-
-	Texture,
-
-	Touch,
-
-	Orientation,
-
-	Motion,
-
-	Time,
-	
-	TimeLine,
-
-	Other;
+	void onCancelled();
 
 }

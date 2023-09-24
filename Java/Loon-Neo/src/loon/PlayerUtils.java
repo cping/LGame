@@ -43,6 +43,7 @@ import loon.utils.processes.GameProcess;
 import loon.utils.processes.GameProcessType;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
+import loon.utils.processes.TimeLineProcess;
 import loon.utils.processes.WaitProcess;
 import loon.utils.timer.LTimerContext;
 
@@ -97,6 +98,27 @@ public class PlayerUtils extends Director {
 		}
 		RealtimeProcessManager.get().addProcess(process);
 		return process;
+	}
+
+	/**
+	 * 创建一个TimeLine进程
+	 * 
+	 * @param loop
+	 * @return
+	 */
+	public final static TimeLineProcess createTimeLineProcess(int loop) {
+		TimeLineProcess process = new TimeLineProcess(loop);
+		addProcess(process);
+		return process;
+	}
+
+	/**
+	 * 创建一个TimeLine进程
+	 * 
+	 * @return
+	 */
+	public final static TimeLineProcess createTimeLineProcess() {
+		return createTimeLineProcess(-1);
 	}
 
 	/**

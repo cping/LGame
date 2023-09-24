@@ -145,8 +145,9 @@ public class WaitProcess implements GameProcess, LRelease {
 		return isAutoKill;
 	}
 
-	public void setAutoKill(boolean isAutoKill) {
-		this.isAutoKill = isAutoKill;
+	public WaitProcess setAutoKill(boolean k) {
+		this.isAutoKill = k;
+		return this;
 	}
 
 	@Override

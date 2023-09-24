@@ -53,6 +53,8 @@ public enum GameProcessType {
 	Motion,
 
 	Time,
+	
+	TimeLine,
 
 	Other;
 

@@ -18,44 +18,12 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.utils.processes;
+package loon.events;
 
-/**
- * 默认可以标注的Loon进程类型
- *
- */
-public enum GameProcessType {
+import loon.utils.processes.TimeLineEvent;
 
-	Screen,
+public interface TimeLineEnterListener {
 
-	View,
-
-	Net,
-
-	Initialize,
-
-	Preload,
-
-	Progress,
-
-	Tween,
-
-	Sprite,
-
-	Component,
-
-	Texture,
-
-	Touch,
-
-	Orientation,
-
-	Motion,
-
-	Time,
+	void onEnter(TimeLineEvent e);
 	
-	TimeLine,
-
-	Other;
-
 }

@@ -563,6 +563,10 @@ public class Vector2f implements Serializable, SetXY, XY {
 		return this;
 	}
 
+	public float dir() {
+		return atan2();
+	}
+
 	public float dot(Vector2f v) {
 		return x * v.x + y * v.y;
 	}
@@ -605,6 +609,10 @@ public class Vector2f implements Serializable, SetXY, XY {
 
 	public float getAngle() {
 		return angleTo(this);
+	}
+
+	public float atan2() {
+		return MathUtils.atan2(y, x);
 	}
 
 	public float angle() {
@@ -922,6 +930,18 @@ public class Vector2f implements Serializable, SetXY, XY {
 		return (new float[] { x, y });
 	}
 
+	public Vector2f getOrthogonal(boolean polarity) {
+		return polarity ? new Vector2f(-y, x) : new Vector2f(y, -x);
+	}
+
+	public Vector2f getOrthonormal(boolean polarity, boolean allowZero) {
+		float len = length();
+		if (len == 0) {
+			return polarity ? new Vector2f(0f, (!allowZero) ? 0 : 1) : new Vector2f(0f, -((!allowZero) ? 0 : 1));
+		}
+		return polarity ? new Vector2f(-y / len, x / len) : new Vector2f(y / len, -x / len);
+	}
+
 	public Vector2f setLocation(float x, float y) {
 		return set(x, y);
 	}
@@ -952,6 +972,10 @@ public class Vector2f implements Serializable, SetXY, XY {
 
 	public int y() {
 		return (int) y;
+	}
+
+	public Vector2f reset() {
+		return set(0f, 0f);
 	}
 
 	public Vector2f reverse() {
