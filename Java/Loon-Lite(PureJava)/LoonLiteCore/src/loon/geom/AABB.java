@@ -220,6 +220,124 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 		return this;
 	}
 
+	public AABB addQuad(Matrix3 mat) {
+		return addQuad(mat.val);
+	}
+
+	public AABB addQuad(float[] vertices) {
+		float minX = this.minX;
+		float minY = this.minY;
+		float maxX = this.maxX;
+		float maxY = this.maxY;
+
+		float x = vertices[0];
+		float y = vertices[1];
+
+		minX = x < minX ? x : minX;
+		minY = y < minY ? y : minY;
+		maxX = x > maxX ? x : maxX;
+		maxY = y > maxY ? y : maxY;
+
+		x = vertices[2];
+		y = vertices[3];
+		minX = x < minX ? x : minX;
+		minY = y < minY ? y : minY;
+		maxX = x > maxX ? x : maxX;
+		maxY = y > maxY ? y : maxY;
+
+		x = vertices[4];
+		y = vertices[5];
+		minX = x < minX ? x : minX;
+		minY = y < minY ? y : minY;
+		maxX = x > maxX ? x : maxX;
+		maxY = y > maxY ? y : maxY;
+
+		x = vertices[6];
+		y = vertices[7];
+		minX = x < minX ? x : minX;
+		minY = y < minY ? y : minY;
+		maxX = x > maxX ? x : maxX;
+		maxY = y > maxY ? y : maxY;
+
+		this.minX = minX;
+		this.minY = minY;
+		this.maxX = maxX;
+		this.maxY = maxY;
+		return this;
+	}
+
+	public AABB addFrame(Affine2f aff, float x0, float y0, float x1, float y1) {
+		float a = aff.m00;
+		float b = aff.m01;
+		float c = aff.m10;
+		float d = aff.m11;
+		float tx = aff.tx;
+		float ty = aff.ty;
+
+		float minX = this.minX;
+		float minY = this.minY;
+		float maxX = this.maxX;
+		float maxY = this.maxY;
+
+		float x = (a * x0) + (c * y0) + tx;
+		float y = (b * x0) + (d * y0) + ty;
+
+		minX = x < minX ? x : minX;
+		minY = y < minY ? y : minY;
+		maxX = x > maxX ? x : maxX;
+		maxY = y > maxY ? y : maxY;
+
+		x = (a * x1) + (c * y0) + tx;
+		y = (b * x1) + (d * y0) + ty;
+		minX = x < minX ? x : minX;
+		minY = y < minY ? y : minY;
+		maxX = x > maxX ? x : maxX;
+		maxY = y > maxY ? y : maxY;
+
+		x = (a * x0) + (c * y1) + tx;
+		y = (b * x0) + (d * y1) + ty;
+		minX = x < minX ? x : minX;
+		minY = y < minY ? y : minY;
+		maxX = x > maxX ? x : maxX;
+		maxY = y > maxY ? y : maxY;
+
+		x = (a * x1) + (c * y1) + tx;
+		y = (b * x1) + (d * y1) + ty;
+		minX = x < minX ? x : minX;
+		minY = y < minY ? y : minY;
+		maxX = x > maxX ? x : maxX;
+		maxY = y > maxY ? y : maxY;
+
+		this.minX = minX;
+		this.minY = minY;
+		this.maxX = maxX;
+		this.maxY = maxY;
+		return this;
+	}
+
+	public AABB addVertexData(float[] vertexData, int begin, int end) {
+		float minX = this.minX;
+		float minY = this.minY;
+		float maxX = this.maxX;
+		float maxY = this.maxY;
+
+		for (int i = begin; i < end; i += 2) {
+			float x = vertexData[i];
+			float y = vertexData[i + 1];
+
+			minX = x < minX ? x : minX;
+			minY = y < minY ? y : minY;
+			maxX = x > maxX ? x : maxX;
+			maxY = y > maxY ? y : maxY;
+		}
+
+		this.minX = minX;
+		this.minY = minY;
+		this.maxX = maxX;
+		this.maxY = maxY;
+		return this;
+	}
+
 	@Override
 	public void setX(float x) {
 		this.minX = x;

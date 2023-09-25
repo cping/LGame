@@ -23,7 +23,6 @@ package loon.geom;
 import loon.LSysException;
 import loon.LTrans;
 import loon.action.ActionBind;
-import loon.utils.HelperUtils;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 import loon.utils.StringKeyValue;

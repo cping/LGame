@@ -451,12 +451,18 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 		return getHeight();
 	}
 
+	public RectBox clip(XYZW rect) {
+		float right = this.x + this.width;
+		float bottom = this.y + this.height;
+		float newX = MathUtils.max(rect.getX(), this.x);
+		float newWidth = MathUtils.ifloor(MathUtils.min(rect.getX() + rect.getZ(), right) - this.x);
+		float newY = MathUtils.max(rect.getY(), this.y);
+		float newHeight = MathUtils.ifloor(MathUtils.min(rect.getY() + rect.getW(), bottom) - this.y);
+		return setBounds(newX, newY, newWidth, newHeight);
+	}
+
 	public RectBox copy(RectBox other) {
-		this.x = other.x;
-		this.y = other.y;
-		this.width = other.width;
-		this.height = other.height;
-		return this;
+		return setBounds(other);
 	}
 
 	public RectBox ceil() {
@@ -466,11 +472,11 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 	public RectBox ceil(float resolution, float eps) {
 		final float x2 = MathUtils.ceil((this.x + this.width - eps) * resolution) / resolution;
 		final float y2 = MathUtils.ceil((this.y + this.height - eps) * resolution) / resolution;
-		this.x = MathUtils.floor((this.x + eps) * resolution) / resolution;
-		this.y = MathUtils.floor((this.y + eps) * resolution) / resolution;
-		this.width = (int) (x2 - this.x);
-		this.height = (int) (y2 - this.y);
-		return this;
+		float newX = MathUtils.floor((this.x + eps) * resolution) / resolution;
+		float newY = MathUtils.floor((this.y + eps) * resolution) / resolution;
+		float newWidth = (x2 - this.x);
+		float newHeight = (y2 - this.y);
+		return setBounds(newX, newY, newWidth, newHeight);
 	}
 
 	@Override
@@ -547,6 +553,10 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 	public RectBox setBottom(float v) {
 		this.height = (int) (v - this.y);
 		return this;
+	}
+
+	public Vector2f getHalfSize() {
+		return new Vector2f(this.width / 2f, this.height / 2f);
 	}
 
 	public int Left() {
@@ -1185,8 +1195,11 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 		return this;
 	}
 
-	public RectBox add(Vector2f v) {
-		return add(v.x, v.y);
+	public RectBox add(XY pos) {
+		if (pos == null) {
+			return this;
+		}
+		return add(pos.getX(), pos.getY());
 	}
 
 	public RectBox add(RectBox r) {
@@ -1302,11 +1315,11 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 	public RectBox random() {
 		final int w = LSystem.viewSize.getWidth();
 		final int h = LSystem.viewSize.getHeight();
-		this.x = MathUtils.random(0f, w);
-		this.y = MathUtils.random(0f, h);
-		this.width = MathUtils.random(0, w);
-		this.height = MathUtils.random(0, h);
-		return this;
+		float newX = MathUtils.random(0f, w);
+		float newY = MathUtils.random(0f, h);
+		float newWidth = MathUtils.random(0, w);
+		float newHeight = MathUtils.random(0, h);
+		return setBounds(newX, newY, newWidth, newHeight);
 	}
 
 	public RectBox toPixels(XY point) {
@@ -1330,17 +1343,21 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 	}
 
 	public RectBox pad(float paddingX, float paddingY) {
-		this.x -= paddingX;
-		this.y -= paddingY;
-		this.width += paddingX * 2;
-		this.height += paddingY * 2;
-		return this;
+		float newX = x - paddingX;
+		float newY = y - paddingY;
+		float newWidth = width + paddingX * 2;
+		float newHeight = height + paddingY * 2;
+		return setBounds(newX, newY, newWidth, newHeight);
 	}
 
 	public ObservableXYZW<RectBox> observable(XYChange<RectBox> v) {
 		return ObservableXYZW.at(v, this, this);
 	}
-	
+
+	public boolean isValid() {
+		return this.width > 0 && this.height > 0;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

@@ -526,8 +526,8 @@ public abstract class Stage extends Screen {
 		return this;
 	}
 
-	public Stage setScrollBackground(ScrollEffect _scrollBackground) {
-		this._scrollBackground = _scrollBackground;
+	public Stage setScrollBackground(ScrollEffect scrollBackground) {
+		this._scrollBackground = scrollBackground;
 		return this;
 	}
 

@@ -168,4 +168,12 @@ public class Transform implements XYChange<Vector2f> {
 		return this;
 	}
 
+	public Affine2f getWorldTransform() {
+		return _worldTransform;
+	}
+
+	public Affine2f getLocalTransform() {
+		return _localTransform;
+	}
+
 }

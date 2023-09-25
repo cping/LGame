@@ -459,6 +459,10 @@ public class Vector2f implements Serializable, SetXY, XY {
 		return new Vector2f(this.x == 0 ? 0 : this.x / n, this.y == 0 ? 0 : this.y / n);
 	}
 
+	public Vector2f norNew(Vector2f v) {
+		return nor(v.cpy());
+	}
+
 	public Vector2f norLeft() {
 		if (x != 0f || y != 0f) {
 			return nor();
@@ -563,10 +567,6 @@ public class Vector2f implements Serializable, SetXY, XY {
 		return this;
 	}
 
-	public float dir() {
-		return atan2();
-	}
-
 	public float dot(Vector2f v) {
 		return x * v.x + y * v.y;
 	}
@@ -605,6 +605,19 @@ public class Vector2f implements Serializable, SetXY, XY {
 
 	public float crs(float x, float y) {
 		return this.x * y - this.y * x;
+	}
+
+	public float component(Vector2f src, Vector2f direction) {
+		float alpha = MathUtils.atan2(direction.y, direction.x);
+		float theta = MathUtils.atan2(this.y, this.x);
+		float mag = length();
+		float a = mag * MathUtils.cos(theta - alpha);
+		return a;
+	}
+
+	public Vector2f componentVector(Vector2f direction) {
+		Vector2f src = norNew(direction);
+		return scale(component(src, direction));
 	}
 
 	public float getAngle() {
@@ -686,6 +699,10 @@ public class Vector2f implements Serializable, SetXY, XY {
 		return fromDegreesAngle(degAngle).mulSelf(length());
 	}
 
+	public Vector2f round() {
+		return cpy().roundSelf();
+	}
+
 	public Vector2f rotate(float angle) {
 		return cpy().rotateSelf(angle);
 	}
@@ -700,6 +717,10 @@ public class Vector2f implements Serializable, SetXY, XY {
 
 	public Vector2f rotate(float cx, float cy, float angle) {
 		return cpy().rotateSelf(cx, cy, angle);
+	}
+
+	public Vector2f roundSelf() {
+		return set(MathUtils.round(this.x), MathUtils.round(this.y));
 	}
 
 	public Vector2f rotateSelf(float cx, float cy, float angle) {
@@ -1257,6 +1278,10 @@ public class Vector2f implements Serializable, SetXY, XY {
 
 	public float zcross(Vector2f v) {
 		return (this.x * v.y) - (this.y * v.x);
+	}
+
+	public float dir() {
+		return atan2();
 	}
 
 	public float dot(float x, float y) {
