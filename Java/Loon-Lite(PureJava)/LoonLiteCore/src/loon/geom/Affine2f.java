@@ -22,6 +22,8 @@ package loon.geom;
 
 import loon.LSysException;
 import loon.LTrans;
+import loon.action.ActionBind;
+import loon.utils.HelperUtils;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 import loon.utils.StringKeyValue;
@@ -312,7 +314,7 @@ public class Affine2f implements LTrans, XY {
 	public float ty = 0.0f;
 	/* convert Affine to Matrix3 */
 	private float[] matrix3f = new float[9];
-	
+
 	protected Affine2f(Affine2f other) {
 		this(other.scaleX(), other.scaleY(), other.rotation(), other.tx(), other.ty());
 	}
@@ -325,23 +327,25 @@ public class Affine2f implements LTrans, XY {
 		this(scale, scale, angle, tx, ty);
 	}
 
+	public Affine2f(float scaleX, float scaleY, float angle, float tx, float ty, float width, float height,
+			float originX, float originY) {
+		this.setTo(scaleX, scaleY, angle, tx, ty, width, height, originX, originY);
+	}
+
 	public Affine2f(float scaleX, float scaleY, float angle, float tx, float ty) {
-		float sina = MathUtils.sin(angle), cosa = MathUtils.cos(angle);
-		this.m00 = cosa * scaleX;
-		this.m01 = sina * scaleY;
-		this.m10 = -sina * scaleX;
-		this.m11 = cosa * scaleY;
-		this.tx = tx;
-		this.ty = ty;
+		this.setTo(scaleX, scaleY, angle, tx, ty);
 	}
 
 	public Affine2f(float m00, float m01, float m10, float m11, float tx, float ty) {
-		this.m00 = m00;
-		this.m01 = m01;
-		this.m10 = m10;
-		this.m11 = m11;
-		this.tx = tx;
-		this.ty = ty;
+		this.setTransform(m00, m01, m10, m11, tx, ty);
+	}
+
+	public Affine2f(ActionBind bind, float originX, float originY) {
+		this.setTo(bind, originX, originY);
+	}
+
+	public Affine2f(ActionBind bind) {
+		this.setTo(bind);
 	}
 
 	public Affine2f combined(Affine2f aff) {
@@ -705,6 +709,26 @@ public class Affine2f implements LTrans, XY {
 		return x * this.m10 + y * this.m11 + this.ty;
 	}
 
+	public RectBox getRect(float w, float h) {
+		float a = m00 * w, b = m01 * w;
+		float c = m10 * h, d = m11 * h;
+		float dx = tx, dy = ty;
+		Number[] xw = loon.utils.HelperUtils.sortIncrement(dx, dx + a, dx + c, dx + a + c);
+		Number[] yh = loon.utils.HelperUtils.sortIncrement(dy, dy + b, dy + d, dy + b + d);
+		float x = xw[0].floatValue();
+		float y = yh[0].floatValue();
+		float width = xw[3].floatValue();
+		float height = yh[3].floatValue();
+		return new RectBox(x, y, width - x, height - y);
+	}
+
+	public Bound getOrientedRect(float w, float h) {
+		float a = m00 * w, b = m01 * w;
+		float c = m10 * h, d = m11 * h;
+		float dx = tx, dy = ty;
+		return new Bound(dx, dy, dx + a, dy + b, dx + c, dy + d, dx + a + c, dy + b + d);
+	}
+
 	public Affine2f rotateDegrees(float degrees) {
 		float sina = MathUtils.sin(degrees), cosa = MathUtils.cos(degrees);
 		return multiply(this, cosa, sina, -sina, cosa, 0, 0, this);
@@ -832,6 +856,48 @@ public class Affine2f implements LTrans, XY {
 
 	public Affine2f setTy(float ty) {
 		this.ty = ty;
+		return this;
+	}
+
+	public Affine2f setTo(float scaleX, float scaleY, float angle, float tx, float ty) {
+		float sina = MathUtils.sin(angle), cosa = MathUtils.cos(angle);
+		this.m00 = cosa * scaleX;
+		this.m01 = sina * scaleY;
+		this.m10 = -sina * scaleX;
+		this.m11 = cosa * scaleY;
+		this.tx = tx;
+		this.ty = ty;
+		return this;
+	}
+
+	public Affine2f setTo(ActionBind bind, float originX, float originY) {
+		if (bind == null) {
+			return this;
+		}
+		return setTo(bind.getScaleX(), bind.getScaleY(), MathUtils.toRadians(bind.getRotation()), bind.getX(),
+				bind.getY(), bind.getWidth(), bind.getHeight(), originX, originY);
+	}
+
+	public Affine2f setTo(ActionBind bind) {
+		if (bind == null) {
+			return this;
+		}
+		return setTo(bind, bind.getWidth() / 2f, bind.getHeight() / 2f);
+	}
+
+	public Affine2f setTo(float scaleX, float scaleY, float angle, float tx, float ty, float width, float height,
+			float originX, float originY) {
+		float sina = MathUtils.sin(angle), cosa = MathUtils.cos(angle);
+		float a = scaleX * cosa;
+		float b = scaleX * sina;
+		float c = scaleY * sina;
+		float d = scaleY * cosa;
+		this.m00 = a;
+		this.m01 = b;
+		this.m10 = -c;
+		this.m11 = d;
+		this.tx = -a * originX + c * originY + tx + originX;
+		this.ty = -b * originX - d * originY + ty + originY;
 		return this;
 	}
 

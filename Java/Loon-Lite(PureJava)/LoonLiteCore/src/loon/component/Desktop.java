@@ -39,6 +39,7 @@ import loon.geom.DirtyRectList;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
+import loon.utils.IArray;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 import loon.utils.reply.Callback;
@@ -47,7 +48,7 @@ import loon.utils.reply.Callback;
  * 桌面组件总父类，用来注册，控制，以及渲染所有桌面组件（所有默认支持触屏的组件，被置于此）
  * 
  */
-public class Desktop implements Visible, LRelease {
+public class Desktop implements Visible, IArray, LRelease {
 
 	private final DirtyRectList _dirtyList = new DirtyRectList();
 
@@ -500,8 +501,7 @@ public class Desktop implements Visible, LRelease {
 	 * 
 	 */
 	private void processTouchMotionEvent() {
-		if (this.hoverComponent != null && hoverComponent.isAllowTouch()
-				&& this.input.isMoving()) {
+		if (this.hoverComponent != null && hoverComponent.isAllowTouch() && this.input.isMoving()) {
 			if (this.input.getTouchDX() != 0 || this.input.getTouchDY() != 0 || SysTouch.getDX() != 0
 					|| SysTouch.getDY() != 0) {
 				this.hoverComponent.processTouchDragged();
@@ -599,7 +599,8 @@ public class Desktop implements Visible, LRelease {
 				this.hoverComponent.processTouchPressed();
 			}
 			this.clickComponent[0] = this.hoverComponent;
-			if (this.hoverComponent != null && this.hoverComponent.isAllowTouch() && this.hoverComponent.isFocusable()) {
+			if (this.hoverComponent != null && this.hoverComponent.isAllowTouch()
+					&& this.hoverComponent.isFocusable()) {
 				if ((pressed == SysTouch.TOUCH_DOWN || pressed == SysTouch.TOUCH_UP)
 						&& this.hoverComponent != this.selectedComponent) {
 					this.selectComponent(this.hoverComponent);
@@ -983,14 +984,15 @@ public class Desktop implements Visible, LRelease {
 	}
 
 	public Desktop removeAll() {
-		return clear();
+		clear();
+		return this;
 	}
 
-	public Desktop clear() {
+	@Override
+	public void clear() {
 		if (contentPane != null) {
 			contentPane.clear();
 		}
-		return this;
 	}
 
 	public Desktop sortDesktop() {
@@ -1251,6 +1253,11 @@ public class Desktop implements Visible, LRelease {
 
 	public RectBox getBoundingBox() {
 		return this.contentPane == null ? input.getRectBox().cpy() : this.contentPane.getRectBox().cpy();
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return contentPane.isEmpty();
 	}
 
 	@Override

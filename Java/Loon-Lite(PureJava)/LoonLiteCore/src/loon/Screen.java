@@ -96,6 +96,7 @@ import loon.utils.ConfigReader;
 import loon.utils.Disposes;
 import loon.utils.Easing.EasingMode;
 import loon.utils.GLUtils;
+import loon.utils.IArray;
 import loon.utils.IntMap;
 import loon.utils.MathUtils;
 import loon.utils.ObjectBundle;
@@ -128,7 +129,7 @@ import loon.utils.timer.LTimerContext;
  * 之类函数改变默认组件显示顺序.精灵和组件的setZ函数只在同类排序时生效,不能改变整个Screen的默认显示顺序.
  * 
  */
-public abstract class Screen extends PlayerUtils implements SysInput, LRelease, SetXY, XY {
+public abstract class Screen extends PlayerUtils implements SysInput, IArray, LRelease, SetXY, XY {
 
 	public final static int NO_BUTTON = -1;
 
@@ -390,13 +391,15 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 					_orderScreen.alter(c);
 					break;
 				case DRAW_SPRITE:
-					_orderScreen._curSpriteRun = (_orderScreen._currentSprites != null && _orderScreen._currentSprites.size() > 0);
+					_orderScreen._curSpriteRun = (_orderScreen._currentSprites != null
+							&& _orderScreen._currentSprites.size() > 0);
 					if (_orderScreen._curSpriteRun) {
 						_orderScreen._currentSprites.update(c.timeSinceLastUpdate);
 					}
 					break;
 				case DRAW_DESKTOP:
-					_orderScreen._curDesktopRun = (_orderScreen._currentDesktop != null && _orderScreen._currentDesktop.size() > 0);
+					_orderScreen._curDesktopRun = (_orderScreen._currentDesktop != null
+							&& _orderScreen._currentDesktop.size() > 0);
 					if (_orderScreen._curDesktopRun) {
 						_orderScreen._currentDesktop.update(c.timeSinceLastUpdate);
 					}
@@ -828,8 +831,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return this;
 	}
 
-	public Screen packLayout(final LayoutManager manager, final float spacex, final float spacey, final float spaceWidth,
-			final float spaceHeight) {
+	public Screen packLayout(final LayoutManager manager, final float spacex, final float spacey,
+			final float spaceWidth, final float spaceHeight) {
 		if (_currentDesktop != null) {
 			_currentDesktop.packLayout(manager, spacex, spacey, spaceHeight, spaceHeight);
 		}
@@ -4688,7 +4691,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		}
 		return new SpriteControls();
 	}
-	
+
 	/**
 	 * 截屏并保存在texture
 	 * 
@@ -5683,9 +5686,49 @@ public abstract class Screen extends PlayerUtils implements SysInput, LRelease, 
 		return _resizeListener;
 	}
 
-	public void setResizeListener(ResizeListener<Screen> listener) {
+	public Screen setResizeListener(ResizeListener<Screen> listener) {
 		this._resizeListener = listener;
+		return this;
 	}
+
+	@Override
+	public int size() {
+		if (_currentSprites != null && _currentDesktop != null) {
+			return _currentSprites.size() + _currentDesktop.size();
+		}
+		if (_currentSprites != null) {
+			return _currentSprites.size();
+		}
+		if (_currentDesktop != null) {
+			return _currentDesktop.size();
+		}
+		return 0;
+	}
+
+	@Override
+	public void clear() {
+		if (_currentSprites != null) {
+			_currentSprites.clear();
+		}
+		if (_currentDesktop != null) {
+			_currentDesktop.clear();
+		}
+	}
+
+	@Override
+	public boolean isEmpty() {
+		if (_currentSprites != null && _currentDesktop != null) {
+			return _currentSprites.isEmpty() && _currentDesktop.isEmpty();
+		}
+		if (_currentSprites != null) {
+			return _currentSprites.isEmpty();
+		}
+		if (_currentDesktop != null) {
+			return _currentDesktop.isEmpty();
+		}
+		return true;
+	}
+
 	/**
 	 * 释放函数内资源
 	 * 

@@ -20,6 +20,8 @@
  */
 package loon.utils;
 
+import java.util.Comparator;
+
 import loon.ActionCounter;
 import loon.Counter;
 import loon.EmptyObject;
@@ -925,4 +927,31 @@ public class HelperUtils {
 		return o.toString();
 	}
 
+	public static Number[] sortIncrement(final Number... arrays) {
+		sort(arrays, new Comparator<Number>() {
+
+			@Override
+			public int compare(Number o1, Number o2) {
+				return MathUtils.ifloor(o1.floatValue() - o2.floatValue());
+			}
+
+		});
+		return arrays;
+	}
+
+	public static Number[] sortReduce(final Number... arrays) {
+		sort(arrays, new Comparator<Number>() {
+
+			@Override
+			public int compare(Number o1, Number o2) {
+				return MathUtils.ifloor(o2.floatValue() - o1.floatValue());
+			}
+
+		});
+		return arrays;
+	}
+
+	public static <T> void sort(final T[] arrays, final Comparator<T> comp) {
+		SortUtils.<T>quickSort(arrays, comp);
+	}
 }
