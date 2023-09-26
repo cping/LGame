@@ -586,6 +586,14 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		return event(size, l);
 	}
 
+	public ActionTween doWhile(ActionCondition condition) {
+		return event(new DoWhileTo(condition));
+	}
+
+	public ActionTween doWhen(ActionCondition... conditions) {
+		return event(new DoWhenTo(conditions));
+	}
+
 	public ActionTween followTo(ActionBind actorToFollow) {
 		return event(new FollowTo(actorToFollow));
 	}
@@ -1450,6 +1458,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 
 	@Override
 	public void free() {
+		super.free();
 		_POOLS.free(this);
 		ActionControl.get().removeAllActions(_target);
 	}

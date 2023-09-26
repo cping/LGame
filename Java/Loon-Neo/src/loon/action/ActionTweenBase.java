@@ -20,12 +20,17 @@
  */
 package loon.action;
 
+import loon.LRelease;
 import loon.utils.MathUtils;
 
 @SuppressWarnings("unchecked")
 public abstract class ActionTweenBase<T> {
 
 	protected ActionBind _target;
+
+	private TweenTo<T> _actionTween;
+	private LRelease _dispose;
+
 	private int step;
 	private boolean isIterationStep;
 	private boolean isBackward;
@@ -63,9 +68,20 @@ public abstract class ActionTweenBase<T> {
 		build();
 		currentTime = 0;
 		isStarted = true;
-		TweenTo<T> act = new TweenTo<T>(this);
-		ActionControl.get().addAction(act, _target);
-		return act;
+		_actionTween = new TweenTo<T>(this);
+		if (this._dispose != null) {
+			_actionTween.dispose(this._dispose);
+		}
+		ActionControl.get().addAction(_actionTween, _target);
+		return _actionTween;
+	}
+
+	public T dispose(LRelease dispose) {
+		this._dispose = dispose;
+		if (_actionTween != null) {
+			_actionTween.dispose(this._dispose);
+		}
+		return (T) this;
 	}
 
 	public T build() {
@@ -77,19 +93,23 @@ public abstract class ActionTweenBase<T> {
 		return (T) this;
 	}
 
-	public void kill() {
+	public T kill() {
 		isKilled = true;
+		return (T) this;
 	}
 
 	public void free() {
+		_dispose = null;
 	}
 
-	public void pause() {
+	public T pause() {
 		isPaused = true;
+		return (T) this;
 	}
 
-	public void resume() {
+	public T resume() {
 		isPaused = false;
+		return (T) this;
 	}
 
 	public T repeat(int count, float delay) {
@@ -357,14 +377,12 @@ public abstract class ActionTweenBase<T> {
 					callCallback(ActionMode.COMPLETE);
 				}
 				currentTime = 0;
-
 			} else if (isIterationStep) {
 				float delta = deltaTime;
 				deltaTime -= delta;
 				currentTime += delta;
 				update(step, step, isIterationStep, delta);
 				break;
-
 			} else {
 				float delta = deltaTime;
 				deltaTime -= delta;

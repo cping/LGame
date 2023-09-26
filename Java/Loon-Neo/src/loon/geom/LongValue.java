@@ -35,6 +35,11 @@ public class LongValue implements LRelease{
 		this.set(v);
 	}
 
+	public boolean update(long v) {
+		set(v);
+		return v != 0;
+	}
+	
 	public LongValue set(long v) {
 		this.value = v;
 		return this;

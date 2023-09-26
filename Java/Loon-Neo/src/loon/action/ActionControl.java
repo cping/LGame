@@ -40,6 +40,8 @@ public class ActionControl implements LRelease {
 
 	private final LTimer _delayTimer;
 
+	private LRelease _dispose;
+
 	private boolean _pause;
 
 	public static void freeStatic() {
@@ -73,7 +75,17 @@ public class ActionControl implements LRelease {
 	 * 调用缓动动画事件循环
 	 */
 	public final void call(long elapsedTime) {
-		if (_pause || _currentActions.getCount() == 0) {
+		if (_pause) {
+			return;
+		}
+		final boolean isEmpty = (_currentActions.getCount() == 0);
+		if (isEmpty) {
+			if (_currentActions.isStarted()) {
+				if (_dispose != null) {
+					_dispose.close();
+				}
+				_currentActions.resetAction();
+			}
 			return;
 		}
 		if (_delayTimer.action(elapsedTime)) {
@@ -301,6 +313,11 @@ public class ActionControl implements LRelease {
 
 	public ActionControl pause() {
 		_pause = true;
+		return this;
+	}
+
+	public ActionControl dispose(LRelease dispose) {
+		this._dispose = dispose;
 		return this;
 	}
 

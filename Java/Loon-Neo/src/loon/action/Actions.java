@@ -26,14 +26,39 @@ import loon.utils.TArray;
 
 public class Actions {
 
-	final private ArrayMap actions;
+	final static class ActionElement {
+
+		private ActionBind key;
+
+		private int actionIndex;
+
+		private boolean paused;
+
+		private TArray<ActionEvent> actions;
+
+		private ActionEvent currentAction;
+
+		public ActionElement(ActionBind k, boolean v) {
+			this.actions = new TArray<ActionEvent>(CollectionUtils.INITIAL_CAPACITY);
+			this.key = k;
+			this.paused = v;
+		}
+	}
+
+	private final ArrayMap actions;
+
+	private boolean _started = false;
+
+	private boolean _stoped = false;
 
 	Actions() {
 		this.actions = new ArrayMap(CollectionUtils.INITIAL_CAPACITY);
 	}
 
-	public void clear() {
+	public Actions clear() {
 		actions.clear();
+		resetAction();
+		return this;
 	}
 
 	public TArray<ActionBind> keys() {
@@ -129,7 +154,7 @@ public class Actions {
 		return actions.containsValue(v);
 	}
 
-	public void addAction(ActionEvent action, ActionBind actObject, boolean paused) {
+	public Actions addAction(ActionEvent action, ActionBind actObject, boolean paused) {
 		ActionElement element = (ActionElement) actions.get(actObject);
 		if (element == null) {
 			element = new ActionElement(actObject, paused);
@@ -137,6 +162,8 @@ public class Actions {
 		}
 		element.actions.add(action);
 		action.start(actObject);
+		_started = true;
+		return this;
 	}
 
 	private void deleteElement(ActionElement element) {
@@ -151,9 +178,9 @@ public class Actions {
 		}
 	}
 
-	public void removeAllActions(ActionBind actObject) {
+	public Actions removeAllActions(ActionBind actObject) {
 		if (actObject == null) {
-			return;
+			return this;
 		}
 		Object o = actions.get(actObject);
 		if (o != null) {
@@ -168,6 +195,8 @@ public class Actions {
 				deleteElement(element);
 			}
 		}
+		checkStoped();
+		return this;
 	}
 
 	private void removeAction(int index, ActionElement element) {
@@ -187,7 +216,13 @@ public class Actions {
 		return actions.size();
 	}
 
-	public void removeAction(Object tag, ActionBind actObject) {
+	private void checkStoped() {
+		if (_started && actions.size() == 0) {
+			_stoped = true;
+		}
+	}
+
+	public Actions removeAction(Object tag, ActionBind actObject) {
 		ActionElement element = (ActionElement) actions.get(actObject);
 		if (element != null) {
 			if (element.actions != null) {
@@ -200,11 +235,13 @@ public class Actions {
 				}
 			}
 		}
+		checkStoped();
+		return this;
 	}
 
-	public void removeAction(ActionEvent action) {
+	public Actions removeAction(ActionEvent action) {
 		if (action == null) {
-			return;
+			return this;
 		}
 		ActionElement element = (ActionElement) actions.get(action.getOriginal());
 		if (element != null) {
@@ -213,6 +250,8 @@ public class Actions {
 				removeAction(i, element);
 			}
 		}
+		checkStoped();
+		return this;
 	}
 
 	public ActionEvent getAction(Object tag, ActionBind actObject) {
@@ -231,9 +270,9 @@ public class Actions {
 	}
 
 	public void update(long elapsedTime) {
-		int size = actions.size();
+		final int size = actions.size();
 		for (int i = size - 1; i > -1; --i) {
-			ActionElement currentTarget = (ActionElement) actions.get(i);
+			final ActionElement currentTarget = (ActionElement) actions.get(i);
 			if (currentTarget == null) {
 				continue;
 			}
@@ -264,55 +303,66 @@ public class Actions {
 		}
 	}
 
-	public void paused(boolean pause, ActionBind actObject) {
+	public Actions paused(boolean pause, ActionBind actObject) {
 		ActionElement element = (ActionElement) actions.get(actObject);
 		if (element != null) {
 			element.paused = pause;
 		}
+		return this;
 	}
 
-	public void stop(ActionBind actObject) {
+	public Actions stop(ActionBind actObject) {
 		ActionElement element = (ActionElement) actions.get(actObject);
 		if (element != null) {
 			element.paused = true;
 		}
+		_stoped = true;
+		return this;
 	}
 
-	public void start(ActionBind actObject) {
+	public Actions start(ActionBind actObject) {
 		ActionElement element = (ActionElement) actions.get(actObject);
 		if (element != null) {
 			element.paused = false;
 		}
+		_started = true;
+		return this;
 	}
 
-	public void start() {
+	public Actions start() {
 		for (int i = 0; i < actions.size(); i++) {
 			((ActionElement) actions.get(i)).paused = false;
 		}
+		_started = true;
+		return this;
 	}
 
-	public void stop() {
+	public Actions stop() {
 		for (int i = 0; i < actions.size(); i++) {
 			((ActionElement) actions.get(i)).paused = true;
 		}
+		_stoped = true;
+		return this;
 	}
 
-	final static class ActionElement {
-
-		private ActionBind key;
-
-		private int actionIndex;
-
-		private boolean paused;
-
-		private TArray<ActionEvent> actions;
-
-		private ActionEvent currentAction;
-
-		public ActionElement(ActionBind k, boolean v) {
-			this.actions = new TArray<ActionEvent>(CollectionUtils.INITIAL_CAPACITY);
-			this.key = k;
-			this.paused = v;
-		}
+	protected void resetAction() {
+		_started = _stoped = false;
 	}
+
+	protected void stopAction() {
+		_stoped = true;
+	}
+
+	public boolean isInited() {
+		return _started && !_stoped;
+	}
+
+	public boolean isStarted() {
+		return _started;
+	}
+
+	public boolean isStoped() {
+		return _stoped;
+	}
+
 }

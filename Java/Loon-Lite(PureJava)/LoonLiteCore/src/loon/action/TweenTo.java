@@ -20,6 +20,7 @@
  */
 package loon.action;
 
+import loon.LRelease;
 import loon.utils.StringKeyValue;
 
 /**
@@ -31,12 +32,21 @@ public class TweenTo<T> extends ActionEvent {
 
 	private ActionTweenBase<T> _base;
 
+	private LRelease _dispose;
+
 	public TweenTo(ActionTweenBase<T> b) {
 		this._base = b;
 	}
 
 	public ActionTweenBase<T> get() {
 		return _base;
+	}
+
+	@Override
+	public TweenTo<T> reset() {
+		super.reset();
+		_dispose = null;
+		return this;
 	}
 
 	@Override
@@ -52,14 +62,23 @@ public class TweenTo<T> extends ActionEvent {
 		_base.update(elapsedTime);
 		if (_base.isFinished()) {
 			_isCompleted = _base.actionEventOver();
+			if (_isCompleted && _dispose != null) {
+				_dispose.close();
+			}
 		}
+	}
+
+	public TweenTo<T> dispose(LRelease dispose) {
+		this._dispose = dispose;
+		return this;
 	}
 
 	@Override
 	public ActionEvent cpy() {
-		TweenTo<T> t = new TweenTo<T>(_base);
-		t.set(this);
-		return t;
+		TweenTo<T> result = new TweenTo<T>(_base);
+		result.dispose(_dispose);
+		result.set(this);
+		return result;
 	}
 
 	@Override
@@ -80,4 +99,5 @@ public class TweenTo<T> extends ActionEvent {
 		}
 		return builder.toString();
 	}
+
 }

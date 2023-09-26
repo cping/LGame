@@ -34,13 +34,18 @@ public class BooleanValue implements LRelease{
 		this.set(v);
 	}
 
+	public boolean update(boolean v) {
+		set(v);
+		return v;
+	}
+
 	public BooleanValue set(boolean res) {
 		this.value = res;
 		return this;
 	}
 
 	public boolean get() {
-		return result();
+		return value;
 	}
 
 	public boolean result() {

@@ -1,5 +1,5 @@
 /**
- * Copyright 2008 - 2015 The Loon Game Engine Authors
+ * Copyright 2008 - 2019 The Loon Game Engine Authors
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -20,63 +20,55 @@
  */
 package loon.action;
 
-import loon.LRelease;
+import loon.geom.BooleanValue;
 import loon.utils.StringKeyValue;
 
-/**
- * 缓动事件,多个缓动事件组合嵌套
- * 
- * @param <T>
- */
-public class TweenTo<T> extends ActionEvent {
+public class DoWhenTo extends ActionEvent {
 
-	private ActionTweenBase<T> _base;
+	private final ActionCondition[] _conditions;
 
-	private LRelease _dispose;
+	private final BooleanValue _refValue;
 
-	public TweenTo(ActionTweenBase<T> b) {
-		this._base = b;
-	}
-
-	public ActionTweenBase<T> get() {
-		return _base;
+	public DoWhenTo(ActionCondition... conds) {
+		_conditions = conds;
+		_refValue = new BooleanValue();
 	}
 
 	@Override
-	public TweenTo<T> reset() {
+	public void update(long elapsedTime) {
+		if (_conditions != null) {
+			for (int i = 0; i < _conditions.length; i++) {
+				ActionCondition cond = _conditions[i];
+				if (cond != null) {
+					cond.update(_refValue);
+					if (_refValue.get()) {
+						_isCompleted = true;
+						return;
+					}
+				}
+			}
+		}
+	}
+
+	public BooleanValue result() {
+		return _refValue;
+	}
+
+	@Override
+	public DoWhenTo reset() {
 		super.reset();
-		_dispose = null;
+		_refValue.set(false);
 		return this;
 	}
 
 	@Override
 	public void onLoad() {
-
-	}
-
-	@Override
-	public void update(long elapsedTime) {
-		if (_isCompleted) {
-			return;
-		}
-		_base.update(elapsedTime);
-		if (_base.isFinished()) {
-			_isCompleted = _base.actionEventOver();
-			if (_isCompleted && _dispose != null) {
-				_dispose.close();
-			}
-		}
-	}
-
-	public TweenTo<T> dispose(LRelease dispose) {
-		this._dispose = dispose;
-		return this;
+		_refValue.set(false);
 	}
 
 	@Override
 	public ActionEvent cpy() {
-		TweenTo<T> result = new TweenTo<T>(_base);
-		result.dispose(_dispose);
+		DoWhenTo result = new DoWhenTo(_conditions);
 		result.set(this);
 		return result;
 	}
@@ -88,16 +80,15 @@ public class TweenTo<T> extends ActionEvent {
 
 	@Override
 	public String getName() {
-		return "tween";
+		return "when";
 	}
 
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue(getName());
-		if (_base != null) {
-			builder.kv("ActionTweenBase", _base);
+		if (_refValue != null) {
+			builder.kv("Boolean", _refValue.result());
 		}
 		return builder.toString();
 	}
-
 }

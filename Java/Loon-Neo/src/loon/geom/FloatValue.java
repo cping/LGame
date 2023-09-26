@@ -35,6 +35,11 @@ public class FloatValue implements LRelease {
 		this.set(v);
 	}
 
+	public boolean update(float v) {
+		set(v);
+		return v != 0;
+	}
+
 	public FloatValue set(float v) {
 		this.value = v;
 		return this;
@@ -63,7 +68,7 @@ public class FloatValue implements LRelease {
 	public FloatValue cpy() {
 		return new FloatValue(value);
 	}
-	
+
 	@Override
 	public String toString() {
 		return String.valueOf(value);

@@ -35,6 +35,11 @@ public class IntValue implements LRelease{
 		this.set(v);
 	}
 
+	public boolean update(int v) {
+		set(v);
+		return v != 0;
+	}
+	
 	public IntValue set(int v) {
 		this.value = v;
 		return this;

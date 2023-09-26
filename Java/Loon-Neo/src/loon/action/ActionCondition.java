@@ -1,5 +1,5 @@
 /**
- * Copyright 2008 - 2015 The Loon Game Engine Authors
+ * Copyright 2008 - 2019 The Loon Game Engine Authors
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -18,47 +18,12 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.geom;
+package loon.action;
 
-import loon.LRelease;
+import loon.geom.BooleanValue;
 
-public class BooleanValue implements LRelease {
+public interface ActionCondition {
 
-	private boolean value = false;
+	void update(BooleanValue refValue);
 
-	public BooleanValue() {
-		this(false);
-	}
-
-	public BooleanValue(boolean v) {
-		this.set(v);
-	}
-
-	public boolean update(boolean v) {
-		set(v);
-		return v;
-	}
-
-	public BooleanValue set(boolean res) {
-		this.value = res;
-		return this;
-	}
-
-	public boolean get() {
-		return value;
-	}
-
-	public boolean result() {
-		return value;
-	}
-
-	@Override
-	public String toString() {
-		return String.valueOf(value);
-	}
-
-	@Override
-	public void close() {
-		this.value = false;
-	}
 }
