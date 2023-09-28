@@ -86,8 +86,8 @@ public class WaitProcess implements GameProcess, LRelease {
 	}
 
 	@Override
-	public void setProcessHost(RealtimeProcessHost _processHost) {
-		this._processHost = _processHost;
+	public void setProcessHost(RealtimeProcessHost processHost) {
+		this._processHost = processHost;
 	}
 
 	@Override

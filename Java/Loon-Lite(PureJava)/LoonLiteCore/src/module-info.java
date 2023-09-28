@@ -30,6 +30,7 @@ module loon.core {
 	exports loon.utils.cache;
 	exports loon.utils.json;
 	exports loon.utils.processes;
+	exports loon.utils.processes.state;
 	exports loon.utils.reply;
 	exports loon.utils.res;
 	exports loon.utils.res.loaders;

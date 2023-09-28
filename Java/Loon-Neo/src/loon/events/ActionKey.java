@@ -20,9 +20,11 @@
  */
 package loon.events;
 
+import loon.utils.HelperUtils;
+
 public class ActionKey {
 
-	private Updateable _function;
+	private EventAction _function;
 
 	public static final int NORMAL = 0;
 
@@ -59,9 +61,7 @@ public class ActionKey {
 
 	public void act(long elapsed) {
 		this._elapsedTime = elapsed;
-		if (_function != null) {
-			_function.action(this);
-		}
+		HelperUtils.callEventAction(_function, this);
 	}
 
 	// user overload
@@ -125,11 +125,11 @@ public class ActionKey {
 		return false;
 	}
 
-	public Updateable getFunction() {
+	public EventAction getFunction() {
 		return _function;
 	}
 
-	public ActionKey setFunction(Updateable function) {
+	public ActionKey setFunction(EventAction function) {
 		this._function = function;
 		return this;
 	}

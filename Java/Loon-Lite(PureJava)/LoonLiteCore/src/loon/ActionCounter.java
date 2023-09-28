@@ -20,13 +20,14 @@
  */
 package loon;
 
-import loon.events.Updateable;
+import loon.events.EventAction;
+import loon.utils.HelperUtils;
 
 public class ActionCounter extends LimitedCounter {
 
-	private Updateable actListener;
+	private EventAction _actionListener;
 
-	public ActionCounter(int limit, Updateable actListener) {
+	public ActionCounter(int limit, EventAction actListener) {
 		super(limit);
 	}
 
@@ -34,21 +35,21 @@ public class ActionCounter extends LimitedCounter {
 		super(limit);
 	}
 
-	public ActionCounter setActionListener(Updateable u) {
-		this.actListener = u;
+	public ActionCounter setActionListener(EventAction u) {
+		this._actionListener = u;
 		return this;
 	}
 
-	public Updateable getActionListener() {
-		return this.actListener;
+	public EventAction getActionListener() {
+		return this._actionListener;
 	}
 
 	@Override
 	public int increment(int v) {
 		boolean isLimitReachedBefore = isLimitReached();
 		int result = super.increment(v);
-		if (actListener != null && isLimitReached() && !isLimitReachedBefore) {
-			actListener.action(this);
+		if (_actionListener != null && isLimitReached() && !isLimitReachedBefore) {
+			HelperUtils.callEventAction(_actionListener, this);
 		}
 		return result;
 	}
@@ -57,8 +58,8 @@ public class ActionCounter extends LimitedCounter {
 	public int increment() {
 		boolean isLimitReachedBefore = isLimitReached();
 		int result = super.increment();
-		if (actListener != null && isLimitReached() && !isLimitReachedBefore) {
-			actListener.action(this);
+		if (_actionListener != null && isLimitReached() && !isLimitReachedBefore) {
+			HelperUtils.callEventAction(_actionListener, this);
 		}
 		return result;
 	}
@@ -67,8 +68,8 @@ public class ActionCounter extends LimitedCounter {
 	public int reduction(int v) {
 		boolean isLimitReachedBefore = isLimitReached();
 		int result = super.reduction(v);
-		if (actListener != null && isLimitReached() && !isLimitReachedBefore) {
-			actListener.action(this);
+		if (_actionListener != null && isLimitReached() && !isLimitReachedBefore) {
+			HelperUtils.callEventAction(_actionListener, this);
 		}
 		return result;
 	}
@@ -77,8 +78,8 @@ public class ActionCounter extends LimitedCounter {
 	public int reduction() {
 		boolean isLimitReachedBefore = isLimitReached();
 		int result = super.reduction();
-		if (actListener != null && isLimitReached() && !isLimitReachedBefore) {
-			actListener.action(this);
+		if (_actionListener != null && isLimitReached() && !isLimitReachedBefore) {
+			HelperUtils.callEventAction(_actionListener, this);
 		}
 		return result;
 	}

@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -41,11 +41,14 @@ public class TouchedClick implements ClickListener {
 	private TArray<ClickListener> clicks;
 
 	public TouchedClick addClickListener(ClickListener c) {
-		if ((c == null) || (c == this)) {
+		if (c == null) {
+			return this;
+		}
+		if (c == this) {
 			return this;
 		}
 		if (clicks == null) {
-			clicks = new TArray<>(8);
+			clicks = new TArray<ClickListener>(8);
 		}
 		if (!clicks.contains(c)) {
 			clicks.add(c);
@@ -133,50 +136,56 @@ public class TouchedClick implements ClickListener {
 		return _downTouch;
 	}
 
-	public void setDownTouch(Touched downTouch) {
+	public TouchedClick setDownTouch(Touched downTouch) {
 		this._downTouch = downTouch;
+		return this;
 	}
 
 	public Touched getUpTouch() {
 		return _upTouch;
 	}
 
-	public void setUpTouch(Touched upTouch) {
+	public TouchedClick setUpTouch(Touched upTouch) {
 		this._upTouch = upTouch;
+		return this;
 	}
 
 	public Touched getDragTouch() {
 		return _dragTouch;
 	}
 
-	public void setDragTouch(Touched dragTouch) {
+	public TouchedClick setDragTouch(Touched dragTouch) {
 		this._dragTouch = dragTouch;
+		return this;
 	}
 
 	public Touched getAllTouch() {
 		return _allTouch;
 	}
 
-	public void setAllTouch(Touched allTouch) {
+	public TouchedClick setAllTouch(Touched allTouch) {
 		this._allTouch = allTouch;
+		return this;
 	}
 
 	public boolean isEnabled() {
 		return _enabled;
 	}
 
-	public void setEnabled(boolean e) {
+	public TouchedClick setEnabled(boolean e) {
 		_enabled = e;
+		return this;
 	}
 
 	public boolean isClicked() {
 		return _downClick;
 	}
 
-	public void clear() {
+	public TouchedClick clear() {
 		if (clicks != null) {
 			clicks.clear();
 		}
 		_downClick = false;
+		return this;
 	}
 }

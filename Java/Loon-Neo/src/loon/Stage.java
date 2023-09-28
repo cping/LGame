@@ -388,6 +388,10 @@ public abstract class Stage extends Screen {
 	}
 
 	public void update(LTimerContext timer) {
+		process(timer.timeSinceLastUpdate);
+	}
+
+	public void process(long elapsedTime) {
 	}
 
 	@Override

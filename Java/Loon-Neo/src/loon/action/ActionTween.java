@@ -28,8 +28,8 @@ import loon.action.sprite.ISprite;
 import loon.action.sprite.effect.BaseEffect;
 import loon.canvas.LColor;
 import loon.events.ActionUpdate;
+import loon.events.EventAction;
 import loon.events.FrameLoopEvent;
-import loon.events.Updateable;
 import loon.geom.Bezier;
 import loon.geom.BooleanValue;
 import loon.geom.Vector2f;
@@ -948,8 +948,8 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		return event(new ParallelTo(list));
 	}
 
-	public ActionTween updateTo(Updateable u) {
-		return event(new UpdateTo(u));
+	public ActionTween updateTo(EventAction e) {
+		return event(new UpdateTo(e));
 	}
 
 	public ActionTween waitTo(ActionUpdate au) {

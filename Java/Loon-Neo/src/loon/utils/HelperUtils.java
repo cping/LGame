@@ -36,6 +36,10 @@ import loon.Log.Level;
 import loon.action.sprite.Entity;
 import loon.action.sprite.Sprite;
 import loon.canvas.LColor;
+import loon.events.EventAction;
+import loon.events.EventActionN;
+import loon.events.EventActionT;
+import loon.events.EventActionTN;
 import loon.events.Updateable;
 import loon.geom.Affine2f;
 import loon.geom.BooleanValue;
@@ -953,5 +957,34 @@ public class HelperUtils {
 
 	public static <T> void sort(final T[] arrays, final Comparator<T> comp) {
 		SortUtils.<T>quickSort(arrays, comp);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> void callEventAction(EventAction e, T obj) {
+		if (e == null) {
+			return;
+		}
+		if (e instanceof EventActionT) {
+			((EventActionT<T>) e).update(obj);
+		} else if (e instanceof EventActionN) {
+			((EventActionN) e).update();
+		} else if (e instanceof Updateable) {
+			((Updateable) e).action(obj);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T, N> void callEventAction(EventAction e, T obj, N elapsedTime) {
+		if (e == null) {
+			return;
+		}
+		if (elapsedTime != null) {
+			if (e instanceof EventActionTN) {
+				((EventActionTN<T, N>) e).update(obj, elapsedTime);
+			}
+		} else {
+			callEventAction(e, obj);
+		}
+
 	}
 }

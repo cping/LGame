@@ -20,25 +20,24 @@
  */
 package loon.action;
 
-import loon.events.Updateable;
+import loon.events.EventAction;
+import loon.utils.HelperUtils;
 import loon.utils.StringKeyValue;
 
 /**
- * 缓动事件,单纯执行一次Updateable的action中内容
+ * 缓动事件,单纯执行一次EventAction的内容
  */
 public class UpdateTo extends ActionEvent {
 
-	private Updateable updateable;
+	private EventAction _eventAction;
 
-	public UpdateTo(Updateable u) {
-		this.updateable = u;
+	public UpdateTo(EventAction e) {
+		this._eventAction = e;
 	}
 
 	@Override
 	public void update(long elapsedTime) {
-		if (updateable != null) {
-			updateable.action(original);
-		}
+		HelperUtils.callEventAction(_eventAction, original);
 		this._isCompleted = true;
 	}
 
@@ -49,7 +48,7 @@ public class UpdateTo extends ActionEvent {
 
 	@Override
 	public ActionEvent cpy() {
-		UpdateTo update = new UpdateTo(updateable);
+		UpdateTo update = new UpdateTo(_eventAction);
 		update.set(this);
 		return update;
 	}
@@ -67,8 +66,8 @@ public class UpdateTo extends ActionEvent {
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue(getName());
-		if (updateable != null) {
-			builder.kv("Update", updateable);
+		if (_eventAction != null) {
+			builder.kv("EventAction", _eventAction);
 		}
 		return builder.toString();
 	}
