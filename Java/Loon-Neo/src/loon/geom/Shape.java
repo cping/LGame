@@ -650,6 +650,12 @@ public abstract class Shape implements Serializable, IArray, XY, SetXY {
 		return entity;
 	}
 
+	public Shape cpy() {
+		float[] copyPoints = new float[points.length];
+		System.arraycopy(points, 0, copyPoints, 0, copyPoints.length);
+		return new Polygon(copyPoints);
+	}
+	
 	@Override
 	public int size() {
 		return points == null ? 0 : points.length;

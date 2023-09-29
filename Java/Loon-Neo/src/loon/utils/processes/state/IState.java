@@ -21,6 +21,7 @@
 package loon.utils.processes.state;
 
 import loon.events.EventAction;
+import loon.utils.timer.LTimer;
 
 public interface IState {
 
@@ -30,6 +31,8 @@ public interface IState {
 
 	IState popState();
 
+	LTimer getTimer();
+	
 	IState setDelay(float s);
 
 	float getDelay();
@@ -49,6 +52,10 @@ public interface IState {
 	void callEvent(String name);
 
 	void callEvent(String name, EventAction eventAction);
+	
+	boolean isClosed();
+	
+	void close();
 
 	String getName();
 }

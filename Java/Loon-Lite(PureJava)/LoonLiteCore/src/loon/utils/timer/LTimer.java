@@ -22,8 +22,9 @@ package loon.utils.timer;
 
 import loon.LRelease;
 import loon.LSystem;
+import loon.events.EventAction;
 import loon.events.TimerEvent;
-import loon.events.Updateable;
+import loon.utils.HelperUtils;
 import loon.utils.MathUtils;
 import loon.utils.StringKeyValue;
 import loon.utils.processes.GameProcessType;
@@ -123,7 +124,7 @@ public class LTimer implements LRelease {
 	private long _currentTick = 0;
 	private boolean _active = true;
 
-	private Updateable _update;
+	private EventAction _eventAction;
 
 	private final String _name;
 
@@ -200,8 +201,8 @@ public class LTimer implements LRelease {
 				this._completed = true;
 			}
 			if (!this._completed && this._currentTick >= this._delay) {
-				if (this._update != null) {
-					this._update.action(this);
+				if (this._eventAction != null) {
+					HelperUtils.callEventAction(_eventAction, this, elapsedTime);
 				}
 				if (this._repeats) {
 					this._numberOfTicks++;
@@ -395,12 +396,12 @@ public class LTimer implements LRelease {
 		return this;
 	}
 
-	public Updateable getUpdateable() {
-		return _update;
+	public EventAction getUpdateable() {
+		return _eventAction;
 	}
 
-	public LTimer setUpdateable(Updateable u) {
-		this._update = u;
+	public LTimer setUpdateable(EventAction u) {
+		this._eventAction = u;
 		return this;
 	}
 

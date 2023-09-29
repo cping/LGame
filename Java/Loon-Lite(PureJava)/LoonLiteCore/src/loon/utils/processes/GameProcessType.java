@@ -37,6 +37,8 @@ public enum GameProcessType {
 	Preload,
 
 	Progress,
+	
+	State,
 
 	Tween,
 

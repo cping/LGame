@@ -529,6 +529,34 @@ public class Vector2f implements Serializable, SetXY, XY {
 		return MathUtils.min(this.x, this.y);
 	}
 
+	public Vector2f sign() {
+		return cpy().signSelf();
+	}
+
+	public Vector2f signSelf() {
+		return set(MathUtils.sign(x), MathUtils.sign(y));
+	}
+
+	public Vector2f slerp(Vector2f v, float weight) {
+		float startLengthSquared = lengthSquared();
+		float endLengthSquared = v.lengthSquared();
+		if (startLengthSquared == 0f || endLengthSquared == 0f) {
+			return lerp(v, weight);
+		}
+		float startLength = MathUtils.sqrt(startLengthSquared);
+		float resultLength = MathUtils.lerp(startLength, MathUtils.sqrt(endLengthSquared), weight);
+		float angle = angleRad(v);
+		return rotateDegrees((angle * weight) * (resultLength / startLength));
+	}
+
+	public Vector2f slerpSelf(Vector2f v, float weight) {
+		return set(slerp(v, weight));
+	}
+
+	public Vector2f slide(Vector2f normal) {
+		return sub(normal.mul(dot(normal)));
+	}
+
 	public Vector2f smoothStep(Vector2f v, float amount) {
 		return smoothStep(this, v, amount);
 	}
@@ -719,8 +747,22 @@ public class Vector2f implements Serializable, SetXY, XY {
 		return cpy().rotateSelf(cx, cy, angle);
 	}
 
+	public Vector2f rotateDegrees(float angle) {
+		return cpy().rotateDegrees(angle);
+	}
+
 	public Vector2f roundSelf() {
 		return set(MathUtils.round(this.x), MathUtils.round(this.y));
+	}
+
+	public Vector2f rotateDegreesSelf(float angle) {
+		float cos = MathUtils.cos(angle);
+		float sin = MathUtils.sin(angle);
+		float newX = this.x * cos - this.y * sin;
+		float newY = this.x * sin + this.y * cos;
+		this.x = newX;
+		this.y = newY;
+		return this;
 	}
 
 	public Vector2f rotateSelf(float cx, float cy, float angle) {

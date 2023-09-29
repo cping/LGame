@@ -595,6 +595,10 @@ public class Vector3f implements Serializable, XYZ, SetXYZ {
 		return quat.transformSelf(this);
 	}
 
+	public Vector3f round() {
+		return new Vector3f(MathUtils.round(x), MathUtils.round(y), MathUtils.round(z));
+	}
+
 	public boolean isUnit() {
 		return isUnit(0.000000001f);
 	}
@@ -698,6 +702,18 @@ public class Vector3f implements Serializable, XYZ, SetXYZ {
 		final float dl = st * ((l2 < 0.0001f) ? 1f : 1f / MathUtils.sqrt(l2));
 
 		return scaleSelf(MathUtils.cos(theta)).addSelf(tx * dl, ty * dl, tz * dl).norSelf();
+	}
+
+	public Vector3f sign() {
+		return set(MathUtils.sign(x), MathUtils.sign(y), MathUtils.sign(z));
+	}
+
+	public Vector3f signSelf() {
+		return new Vector3f(MathUtils.sign(x), MathUtils.sign(y), MathUtils.sign(z));
+	}
+
+	public Vector3f slide(Vector3f normal) {
+		return this.sub(normal.mul(dot(normal)));
 	}
 
 	public Vector3f limitSelf(float limit) {
@@ -1007,6 +1023,15 @@ public class Vector3f implements Serializable, XYZ, SetXYZ {
 		float rz = x * m.get(2, 0) + y * m.get(2, 1) + z * m.get(2, 2);
 
 		return set(rx, ry, rz);
+	}
+
+	public Vector3f moveToward(Vector3f v, float delta) {
+		Vector3f vd = v.sub(v);
+		float len = vd.length();
+		if (len <= delta || len < MathUtils.EPSILON) {
+			return v;
+		}
+		return v.add(vd.div(len).mul(delta));
 	}
 
 	public Vector3f set(float v) {

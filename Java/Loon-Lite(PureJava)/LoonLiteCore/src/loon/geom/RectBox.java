@@ -196,7 +196,7 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 	public int width;
 
 	public int height;
-	
+
 	public RectBox() {
 		setBounds(0, 0, 0, 0);
 	}
@@ -1053,6 +1053,10 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 		return contains(x1, y1) || contains(x2, y2);
 	}
 
+	public final boolean intersects(final Line line) {
+		return contains(line.getX1(), line.getY1()) || contains(line.getX2(), line.getY2());
+	}
+
 	/**
 	 * 判定指定坐标是否位于当前RectBox内部
 	 * 
@@ -1064,6 +1068,7 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 		return (x >= this.x) && ((x - this.x) < this.width) && (y >= this.y) && ((y - this.y) < this.height);
 	}
 
+	@Override
 	public RectBox cpy() {
 		return new RectBox(this.x, this.y, this.width, this.height);
 	}

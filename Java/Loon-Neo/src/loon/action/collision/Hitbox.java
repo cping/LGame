@@ -20,30 +20,79 @@
  */
 package loon.action.collision;
 
+import loon.LRelease;
 import loon.canvas.LColor;
+import loon.geom.Circle;
+import loon.geom.Curve;
+import loon.geom.Ellipse;
+import loon.geom.Line;
+import loon.geom.Point;
 import loon.geom.Polygon;
+import loon.geom.RectBox;
 import loon.geom.Shape;
+import loon.geom.Triangle2f;
+import loon.geom.XY;
 import loon.opengl.GLEx;
 import loon.utils.TArray;
 
 /**
  * 一个碰撞盒子,可以检测任意不规则(多边形)碰撞
  */
-public class Hitbox {
+public class Hitbox implements LRelease {
 
-	private TArray<Polygon> _shapes;
+	private final TArray<Shape> _shapes;
 
 	public Hitbox() {
-		_shapes = new TArray<Polygon>();
+		_shapes = new TArray<Shape>();
 	}
 
-	public Hitbox(Polygon shape) {
-		_shapes = new TArray<Polygon>();
+	public Hitbox(Shape shape) {
+		_shapes = new TArray<Shape>();
 		_shapes.add(shape);
 	}
 
-	public void addShape(Polygon shape) {
+	public Hitbox addShape(Shape shape) {
 		_shapes.add(shape);
+		return this;
+	}
+
+	private boolean checkContainsCollision(Shape src, XY pos) {
+		if (src instanceof Line) {
+			((Line) src).contains(pos);
+		} else if (src instanceof RectBox) {
+			((RectBox) src).contains(pos);
+		} else if (src instanceof Circle) {
+			((Circle) src).contains(pos);
+		} else if (src instanceof Ellipse) {
+			((Ellipse) src).contains(pos);
+		} else if (src instanceof Point) {
+			((Point) src).contains(pos);
+		} else if (src instanceof Polygon) {
+			((Polygon) src).contains(pos);
+		} else if (src instanceof Triangle2f) {
+			((Triangle2f) src).contains(pos);
+		} else if (src instanceof Curve) {
+			((Curve) src).intersects(pos);
+		}
+		return src.contains(pos);
+	}
+
+	public boolean contains(XY pos) {
+		for (Shape s : _shapes) {
+			if (checkContainsCollision(s, pos)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public Shape containsResult(XY pos) {
+		for (Shape s : _shapes) {
+			if (checkContainsCollision(s, pos)) {
+				return s;
+			}
+		}
+		return null;
 	}
 
 	public boolean contains(Hitbox other) {
@@ -57,6 +106,17 @@ public class Hitbox {
 		return false;
 	}
 
+	public Shape containsResult(Hitbox other) {
+		for (Shape s : _shapes) {
+			for (Shape o : other._shapes) {
+				if (s.contains(o)) {
+					return s;
+				}
+			}
+		}
+		return null;
+	}
+
 	public boolean intersects(Hitbox other) {
 		for (Shape s : _shapes) {
 			for (Shape o : other._shapes) {
@@ -68,61 +128,88 @@ public class Hitbox {
 		return false;
 	}
 
-	public void moveX(float d) {
+	public Shape intersectsResult(Hitbox other) {
 		for (Shape s : _shapes) {
-			s.setX((float) (s.getX() + d));
+			for (Shape o : other._shapes) {
+				if (s.intersects(o)) {
+					return s;
+				}
+			}
 		}
+		return null;
 	}
 
-	public void moveY(float d) {
+	public Hitbox moveX(float x) {
 		for (Shape s : _shapes) {
-			s.setY((float) (s.getY() + d));
+			s.setX(s.getX() + x);
 		}
+		return this;
 	}
 
-	public void draw(GLEx g, LColor color) {
-		int current = g.color();
-		g.setColor(color);
+	public Hitbox moveY(float y) {
 		for (Shape s : _shapes) {
+			s.setY(s.getY() + y);
+		}
+		return this;
+	}
+
+	public void draw(GLEx g, LColor c) {
+		this.draw(g, c);
+	}
+
+	public void draw(GLEx g, LColor fillColor, LColor drawColor) {
+		final int current = g.color();
+		for (Shape s : _shapes) {
+			g.setColor(fillColor);
 			g.fill(s);
+			g.setColor(drawColor);
 			g.draw(s);
 		}
 		g.setColor(current);
 	}
 
-	public void setX(float x) {
+	public Hitbox setX(float x) {
 		for (Shape s : _shapes) {
 			s.setX(x);
 		}
+		return this;
 	}
 
-	public void setY(float y) {
+	public Hitbox setY(float y) {
 		for (Shape s : _shapes) {
 			s.setY(y);
 		}
+		return this;
 	}
 
-	public void setCenterX(float x) {
+	public Hitbox setCenterX(float x) {
 		for (Shape s : _shapes) {
 			s.setCenterX(x);
 		}
+		return this;
 	}
 
-	public void setCenterY(float y) {
-		for (Polygon s : _shapes) {
+	public Hitbox setCenterY(float y) {
+		for (Shape s : _shapes) {
 			s.setCenterY(y);
 		}
+		return this;
 	}
 
 	public Hitbox copy(float dx, float dy) {
 		Hitbox copy = new Hitbox();
-		for (Polygon s : _shapes) {
-			Polygon shapeCopy = s.cpy();
+		for (Shape s : _shapes) {
+			Shape shapeCopy = s.cpy();
 			copy.addShape(shapeCopy);
 		}
 		copy.moveX(dx);
 		copy.moveY(dy);
 		return copy;
+	}
+
+	@Override
+	public void close() {
+		_shapes.clear();
 	}
 
 }

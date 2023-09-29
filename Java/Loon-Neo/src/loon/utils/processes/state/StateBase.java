@@ -147,6 +147,11 @@ public class StateBase implements IState, LRelease {
 	}
 
 	@Override
+	public LTimer getTimer() {
+		return _delayTimer;
+	}
+
+	@Override
 	public IState setDelay(float s) {
 		_delayTimer.setDelayS(s);
 		return this;
@@ -198,6 +203,7 @@ public class StateBase implements IState, LRelease {
 	@Override
 	public void onEnter() {
 		if (_currentEnter != null) {
+			_delayTimer.reset();
 			_stateType = StateType.Enter;
 			HelperUtils.callEventAction(_currentEnter, this);
 		}
@@ -264,6 +270,37 @@ public class StateBase implements IState, LRelease {
 		return _stateName;
 	}
 
+	public boolean equals(StateBase state) {
+		if (state == null) {
+			return false;
+		}
+		if (state == this) {
+			return true;
+		}
+		if (_stateType == state._stateType && _parent == state._parent && _stateName.equals(state._stateName)) {
+			if (_events.equals(state._events) && _conditions.equals(state._conditions)
+					&& _stateChildren.equals(state._stateChildren) && _activeChildren.equals(state._activeChildren)) {
+				if (_currentUpdate == state._currentUpdate && _currentEnter == state._currentEnter
+						&& _currentExit == state._currentExit) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (obj instanceof StateBase) {
+			return equals((StateBase) obj);
+		}
+		return false;
+	}
+
+	@Override
 	public boolean isClosed() {
 		return _closed;
 	}

@@ -20,6 +20,7 @@
  */
 package loon.utils.processes.state;
 
+import loon.utils.processes.GameProcessType;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.timer.LTimerContext;
 
@@ -38,7 +39,8 @@ public class StateMachineProcess<T> extends RealtimeProcess {
 
 	public StateMachineProcess(T obj, long delay) {
 		super(delay);
-		_stateMachineBuilder = StateMachineBuilder.build(obj);
+		this.setProcessType(GameProcessType.State);
+		this._stateMachineBuilder = StateMachineBuilder.build(obj);
 	}
 
 	public StateMachineBuilder<T> create() {

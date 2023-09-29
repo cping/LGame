@@ -718,6 +718,15 @@ public final class CollisionHelper extends ShapeUtils {
 		return distance <= radiusSumSq;
 	}
 
+	public static final boolean checkIntersectTwoRectangles(final XY p1Min, final XY p1Max, final XY p2Min,
+			final XY p2Max) {
+		final boolean par1 = p1Min.getX() > p2Max.getX();
+		final boolean par2 = p2Min.getX() > p1Max.getX();
+		final boolean par3 = p1Min.getY() > p2Max.getY();
+		final boolean par4 = p2Min.getY() > p1Max.getY();
+		return !(par1 || par2 || par3 || par4);
+	}
+
 	public static final boolean checkSegmentOnOneSide(Vector2f axisPos, Vector2f axisDir, Vector2f segmentPos,
 			Vector2f segmentEnd) {
 		Vector2f d1 = segmentPos.sub(axisPos);
@@ -740,6 +749,130 @@ public final class CollisionHelper extends ShapeUtils {
 
 		RangeF axisRange = getProjectSegment(axisStart, axisEnd, result);
 		return !checkOverlappingRange(axisRange, projection);
+	}
+
+	private static float[] cubicRoots(float a, float b, float c, float d) {
+		float A = b / a;
+		float B = c / a;
+		float C = d / a;
+
+		float Q, R, D, S, T, Im;
+
+		Q = (3f * B - MathUtils.pow(A, 2f)) / 9f;
+		R = (9f * A * B - 27f * C - 2f * MathUtils.pow(A, 3f)) / 54f;
+		D = MathUtils.pow(Q, 3f) + MathUtils.pow(R, 2f);
+
+		float[] t = new float[3];
+
+		if (D >= 0) {
+
+			float sqrtD = MathUtils.sqrt(D);
+			float TAD3 = -A / 3f;
+			float RAsqrtD = R + sqrtD;
+			float RSsqrtD = R - sqrtD;
+			float D13 = (1f / 3f);
+
+			S = MathUtils.sign(RAsqrtD) * MathUtils.pow(MathUtils.abs(RAsqrtD), D13);
+			T = MathUtils.sign(RSsqrtD) * MathUtils.pow(MathUtils.abs(RSsqrtD), D13);
+
+			float SST = (S + T);
+
+			t[0] = TAD3 + SST;
+			t[1] = TAD3 - SST / 2f;
+			t[2] = t[1];
+			Im = MathUtils.abs(MathUtils.sqrt(3f) * (S - T) / 2f);
+
+			if (Im != 0) {
+				t[1] = -1;
+				t[2] = -1;
+			}
+		} else {
+
+			float th = MathUtils.acos(R / MathUtils.sqrt(-MathUtils.pow(Q, 3f)));
+			float sqrt_QM2 = 2f * MathUtils.sqrt(-Q);
+			float AD3 = A / 3f;
+
+			float thD3 = (th / 3f);
+			float PIM2D3 = MathUtils.TWO_PI / 3f;
+
+			t[0] = sqrt_QM2 * MathUtils.cos(thD3) - AD3;
+			t[1] = sqrt_QM2 * MathUtils.cos(thD3 + PIM2D3) - AD3;
+			t[2] = sqrt_QM2 * MathUtils.cos(thD3 + 2f * PIM2D3) - AD3;
+		}
+
+		for (int i = 0; i < 3; i++) {
+			if (t[i] < 0 || t[i] > 1f) {
+				t[i] = -1;
+			}
+		}
+
+		return sortCubicRoots(t);
+	}
+
+	private static float[] sortCubicRoots(float[] array) {
+		boolean flip;
+		float temp;
+		do {
+			flip = false;
+			for (int i = 0; i < array.length - 1; i++) {
+				if ((array[i + 1] >= 0 && array[i] > array[i + 1]) || (array[i] < 0 && array[i + 1] >= 0)) {
+					flip = true;
+					temp = array[i];
+					array[i] = array[i + 1];
+					array[i + 1] = temp;
+
+				}
+			}
+		} while (flip);
+		return array;
+	}
+
+	public static boolean checkIntersectCubicBezierCurveAndLine(XY bezierStartPoint, XY bezierPoint1,
+			XY bezierPoint2, XY bezierEndPoint, XY lineStartPoint, XY lineEndPoint) {
+
+		final float A = lineEndPoint.getY() - lineStartPoint.getY();
+		final float B = lineStartPoint.getX() - lineEndPoint.getX();
+		final float C = -lineStartPoint.getX() * A - lineStartPoint.getY() * B;
+
+		final Vector2f[] coeffs = getBezierCoeffs(bezierStartPoint, bezierPoint1, bezierPoint2, bezierEndPoint);
+
+		final float[] P = new float[4];
+
+		P[0] = A * coeffs[0].getX() + B * coeffs[0].getY();
+		P[1] = A * coeffs[1].getX() + B * coeffs[1].getY();
+		P[2] = A * coeffs[2].getX() + B * coeffs[2].getY();
+		P[3] = A * coeffs[3].getX() + B * coeffs[3].getY() + C;
+
+		final float[] r = cubicRoots(P[0], P[1], P[2], P[3]);
+
+		final TArray<Vector2f> list = new TArray<Vector2f>();
+		float t;
+		Vector2f p;
+		float s;
+		float tMt;
+		float tMtMt;
+		for (int i = 0; i < 3; i++) {
+			t = r[i];
+
+			tMt = t * t;
+			tMtMt = tMt * t;
+
+			p = new Vector2f(
+					coeffs[0].getX() * tMtMt + coeffs[1].getX() * tMt + coeffs[2].getX() * t + coeffs[3].getX(),
+					coeffs[0].getY() * tMtMt + coeffs[1].getY() * tMt + coeffs[2].getY() * t + coeffs[3].getY());
+
+			if ((lineEndPoint.getX() - lineStartPoint.getX()) != 0) {
+				s = (p.getX() - lineStartPoint.getX()) / (lineEndPoint.getX() - lineStartPoint.getX());
+			} else {
+				s = (p.getY() - lineStartPoint.getY()) / (lineEndPoint.getY() - lineStartPoint.getY());
+			}
+			if (t < 0 || t > 1f || s < 0 || s > 1f) {
+				continue;
+			}
+
+			list.add(p);
+		}
+		return list.size > 0;
 	}
 
 	public static final RangeF getProjectSegment(Vector2f pos, Vector2f end, Vector2f onto) {
@@ -1051,6 +1184,38 @@ public final class CollisionHelper extends ShapeUtils {
 		Vector2f bl = new Vector2f(rect.x, rect.y + rect.height);
 		Vector2f br = new Vector2f(rect.x + rect.width, rect.y + rect.height);
 		return new Vector2f[] { tl, tr, br, bl };
+	}
+
+	public static final Vector2f getStartPointDiagonal(final XY p1, final XY p2) {
+		return new Vector2f(MathUtils.min(p1.getX(), p2.getX()), MathUtils.min(p1.getY(), p2.getY()));
+	}
+
+	public static final Vector2f getEndPointDiagonal(final XY p1, final XY p2) {
+		return new Vector2f(MathUtils.max(p1.getX(), p2.getX()), MathUtils.max(p1.getY(), p2.getY()));
+	}
+
+	private static final Vector2f[] getBezierCoeffs(XY bezierStartPoint, XY bezierPoint1, XY bezierPoint2,
+			XY bezierEndPoint) {
+		final Vector2f[] coeffs = new Vector2f[4];
+		final float bezierStartPointX_M_3 = bezierStartPoint.getX() * 3f;
+		final float bezierPoint1X_M_3 = bezierPoint1.getX() * 3f;
+		final float bezierPoint2X_M_3 = bezierPoint2.getX() * 3f;
+
+		coeffs[0].setX(-bezierStartPoint.getX() + bezierPoint1X_M_3 - bezierPoint2X_M_3 + bezierEndPoint.getX());
+		coeffs[1].setX(bezierStartPointX_M_3 - 6f * bezierPoint1.getX() + bezierPoint2X_M_3);
+		coeffs[2].setX(-bezierStartPointX_M_3 + bezierPoint1X_M_3);
+		coeffs[3].setX(bezierStartPoint.getX());
+
+		final float bezierStartPointY_M_3 = bezierStartPoint.getY() * 3f;
+		final float bezierPoint1Y_M_3 = bezierPoint1.getY() * 3f;
+		final float bezierPoint2Y_M_3 = bezierPoint2.getY() * 3f;
+
+		coeffs[0].setY(-bezierStartPoint.getY() + bezierPoint1Y_M_3 - bezierPoint2Y_M_3 + bezierEndPoint.getY());
+		coeffs[1].setY(bezierStartPointY_M_3 - 6f * bezierPoint1.getY() + bezierPoint2Y_M_3);
+		coeffs[2].setY(-bezierStartPointY_M_3 + bezierPoint1Y_M_3);
+		coeffs[3].setY(bezierStartPoint.getY());
+
+		return coeffs;
 	}
 
 }

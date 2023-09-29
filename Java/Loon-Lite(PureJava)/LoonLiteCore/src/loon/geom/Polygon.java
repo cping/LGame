@@ -348,12 +348,6 @@ public class Polygon extends Shape implements BoxSize {
 		return inside;
 	}
 
-	public Polygon cpy() {
-		float[] copyPoints = new float[points.length];
-		System.arraycopy(points, 0, copyPoints, 0, copyPoints.length);
-		return new Polygon(copyPoints);
-	}
-
 	@Override
 	public void setWidth(float w) {
 		this.maxX = w;
