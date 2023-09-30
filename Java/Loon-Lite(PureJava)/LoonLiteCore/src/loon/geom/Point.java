@@ -26,7 +26,7 @@ import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 import loon.utils.StringUtils;
 
-public class Point extends Shape  {
+public class Point extends Shape {
 	/**
 	 * 
 	 */
@@ -52,8 +52,6 @@ public class Point extends Shape  {
 	public final static Point at(float x, float y) {
 		return new Point(x, y);
 	}
-
-	public int clazz;
 
 	public static final int POINT_CONVEX = 1;
 
@@ -111,37 +109,48 @@ public class Point extends Shape  {
 		boundingCircleRadius = 0;
 	}
 
-	public final void set(int x, int y) {
+	public Point set(float x, float y) {
 		this.x = x;
 		this.y = y;
+		this.pointsDirty = true;
+		return this;
 	}
 
 	@Override
 	public Point setLocation(float x, float y) {
 		this.x = x;
 		this.y = y;
+		this.pointsDirty = true;
 		return this;
 	}
 
 	public Point setLocation(Point p) {
 		this.x = p.getX();
 		this.y = p.getY();
+		this.pointsDirty = true;
 		return this;
 	}
 
-	public void translate(float dx, float dy) {
+	@Override
+	public Point translate(float dx, float dy) {
 		this.x += dx;
 		this.y += dy;
+		this.pointsDirty = true;
+		return this;
 	}
 
-	public void translate(Point p) {
+	public Point translate(Point p) {
 		this.x += p.x;
 		this.y += p.y;
+		this.pointsDirty = true;
+		return this;
 	}
 
-	public void untranslate(Point p) {
+	public Point untranslate(Point p) {
 		this.x -= p.x;
 		this.y -= p.y;
+		this.pointsDirty = true;
+		return this;
 	}
 
 	public final int distanceTo(Point p) {
@@ -163,6 +172,7 @@ public class Point extends Shape  {
 	public Point random() {
 		this.x = MathUtils.random(0f, LSystem.viewSize.getWidth());
 		this.y = MathUtils.random(0f, LSystem.viewSize.getHeight());
+		this.pointsDirty = true;
 		return this;
 	}
 
@@ -178,7 +188,7 @@ public class Point extends Shape  {
 	@Override
 	public boolean equals(Object obj) {
 		Point p = (Point) obj;
-		return p.x == this.x && p.y == this.y && p.clazz == this.clazz;
+		return p.x == this.x && p.y == this.y;
 	}
 
 	@Override

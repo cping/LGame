@@ -139,6 +139,13 @@ public class Hitbox implements LRelease {
 		return null;
 	}
 
+	public Hitbox move(float x, float y) {
+		for (Shape s : _shapes) {
+			s.setLocation(s.getX() + x, s.getY() + y);
+		}
+		return this;
+	}
+
 	public Hitbox moveX(float x) {
 		for (Shape s : _shapes) {
 			s.setX(s.getX() + x);

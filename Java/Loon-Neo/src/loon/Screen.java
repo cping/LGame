@@ -5805,11 +5805,24 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return _baseViewport;
 	}
 
-	public void setViewport(Viewport v) {
+	public Screen setViewport(Viewport v) {
 		this._isExistViewport = (v != null);
 		if (this._isExistViewport) {
 			this._baseViewport = v;
 		}
+		return this;
+	}
+
+	public void println(String msg) {
+		LSystem.info(msg);
+	}
+
+	public void println(String msg, Object... args) {
+		LSystem.info(msg, args);
+	}
+
+	public void println(String msg, Throwable throwable) {
+		LSystem.info(msg, throwable);
 	}
 
 	/**

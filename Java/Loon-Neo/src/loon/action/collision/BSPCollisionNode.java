@@ -45,14 +45,14 @@ public final class BSPCollisionNode {
 
 	private boolean _areaRipple;
 
-	public BSPCollisionNode(RectBox _area, int _splitAxis, int _splitPos) {
-		this._area = _area;
-		this._splitAxis = _splitAxis;
-		this._splitPos = _splitPos;
+	public BSPCollisionNode(RectBox area, int splitAxis, int splitPos) {
+		this._area = area;
+		this._splitAxis = splitAxis;
+		this._splitPos = splitPos;
 		this._actors = new ObjectMap<CollisionObject, CollisionNode>();
 	}
 
-	public void setChild(int side, BSPCollisionNode child) {
+	public BSPCollisionNode setChild(int side, BSPCollisionNode child) {
 		if (side == 0) {
 			this._left = child;
 			if (child != null) {
@@ -64,9 +64,10 @@ public final class BSPCollisionNode {
 				child._parent = this;
 			}
 		}
+		return this;
 	}
 
-	public void clear() {
+	public BSPCollisionNode clear() {
 		for (CollisionNode node : _actors.values()) {
 			if (node != null) {
 				node.dispose();
@@ -74,26 +75,29 @@ public final class BSPCollisionNode {
 			}
 		}
 		_actors.clear();
+		return this;
 	}
 
-	public void setArea(RectBox _area) {
-		this._area = _area;
+	public BSPCollisionNode setArea(RectBox area) {
+		this._area = area;
 		this._areaRipple = true;
+		return this;
 	}
 
-	public void setSplitAxis(float axis) {
+	public BSPCollisionNode setSplitAxis(float axis) {
 		if (axis != this._splitAxis) {
 			this._splitAxis = axis;
 			this._areaRipple = true;
 		}
+		return this;
 	}
 
-	public void setSplitPos(float pos) {
+	public BSPCollisionNode setSplitPos(float pos) {
 		if (pos != this._splitPos) {
 			this._splitPos = pos;
 			this._areaRipple = true;
 		}
-
+		return this;
 	}
 
 	public float getSplitAxis() {
@@ -155,16 +159,18 @@ public final class BSPCollisionNode {
 		return this._parent;
 	}
 
-	public void setParent(BSPCollisionNode p) {
+	public BSPCollisionNode setParent(BSPCollisionNode p) {
 		this._parent = p;
+		return this;
 	}
 
 	public int getChildSide(BSPCollisionNode child) {
 		return this._left == child ? 0 : 1;
 	}
 
-	public void addActor(CollisionObject actor) {
+	public BSPCollisionNode addActor(CollisionObject actor) {
 		this._actors.put(actor, new CollisionNode(actor, this));
+		return this;
 	}
 
 	public boolean containsActor(CollisionObject actor) {
@@ -177,8 +183,9 @@ public final class BSPCollisionNode {
 		}
 	}
 
-	public void actorRemoved(CollisionObject actor) {
+	public BSPCollisionNode actorRemoved(CollisionObject actor) {
 		this._actors.remove(actor);
+		return this;
 	}
 
 	public int numberActors() {

@@ -84,7 +84,7 @@ public class Ellipse extends Shape {
 		this.segmentCount = segmentCount;
 		checkPoints();
 	}
-
+	
 	public float getRealX() {
 		return this.x + radius1;
 	}
@@ -99,31 +99,42 @@ public class Ellipse extends Shape {
 	 * @param radius1
 	 * @param radius2
 	 */
-	public void setRadii(float radius1, float radius2) {
+	public Ellipse setRadii(float radius1, float radius2) {
 		setRadius1(radius1);
 		setRadius2(radius2);
+		return this;
+	}
+
+	public float getDiameter1() {
+		return radius1 * 2f;
 	}
 
 	public float getRadius1() {
 		return radius1;
 	}
 
-	public void setRadius1(float radius1) {
+	public Ellipse setRadius1(float radius1) {
 		if (radius1 != this.radius1) {
 			this.radius1 = radius1;
 			pointsDirty = true;
 		}
+		return this;
+	}
+
+	public float getDiameter2() {
+		return radius2 * 2f;
 	}
 
 	public float getRadius2() {
 		return radius2;
 	}
 
-	public void setRadius2(float radius2) {
+	public Ellipse setRadius2(float radius2) {
 		if (radius2 != this.radius2) {
 			this.radius2 = radius2;
 			pointsDirty = true;
 		}
+		return this;
 	}
 
 	@Override

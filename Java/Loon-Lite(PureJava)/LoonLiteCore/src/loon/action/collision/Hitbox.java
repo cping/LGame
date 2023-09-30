@@ -38,7 +38,7 @@ import loon.utils.TArray;
 /**
  * 一个碰撞盒子,可以检测任意不规则(多边形)碰撞
  */
-public class Hitbox implements LRelease{
+public class Hitbox implements LRelease {
 
 	private final TArray<Shape> _shapes;
 
@@ -139,6 +139,13 @@ public class Hitbox implements LRelease{
 		return null;
 	}
 
+	public Hitbox move(float x, float y) {
+		for (Shape s : _shapes) {
+			s.setLocation(s.getX() + x, s.getY() + y);
+		}
+		return this;
+	}
+
 	public Hitbox moveX(float x) {
 		for (Shape s : _shapes) {
 			s.setX(s.getX() + x);
@@ -209,7 +216,7 @@ public class Hitbox implements LRelease{
 
 	@Override
 	public void close() {
-		_shapes.clear();	
+		_shapes.clear();
 	}
 
 }

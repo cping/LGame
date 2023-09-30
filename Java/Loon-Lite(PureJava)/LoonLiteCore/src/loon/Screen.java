@@ -5729,6 +5729,18 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return true;
 	}
 
+	public void println(String msg) {
+		LSystem.info(msg);
+	}
+
+	public void println(String msg, Object... args) {
+		LSystem.info(msg, args);
+	}
+
+	public void println(String msg, Throwable throwable) {
+		LSystem.info(msg, throwable);
+	}
+
 	/**
 	 * 释放函数内资源
 	 * 

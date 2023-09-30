@@ -23,10 +23,12 @@ package loon.geom;
 import java.io.Serializable;
 
 import loon.LSystem;
+import loon.action.collision.CollisionHelper;
 import loon.action.map.Field2D;
 import loon.utils.Array;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
+import loon.utils.TArray;
 
 public class Vector2f implements Serializable, SetXY, XY {
 
@@ -627,12 +629,20 @@ public class Vector2f implements Serializable, SetXY, XY {
 		return TMP().set(this);
 	}
 
+	public float cross(float x, float y) {
+		return (this.x * y) - (this.y * x);
+	}
+
+	public float cross(final Vector2f v) {
+		return this.cross(v.x, v.y);
+	}
+
 	public float crs(Vector2f v) {
-		return this.x * v.y - this.y * v.x;
+		return this.cross(v);
 	}
 
 	public float crs(float x, float y) {
-		return this.x * y - this.y * x;
+		return this.cross(x, y);
 	}
 
 	public float component(Vector2f src, Vector2f direction) {
@@ -658,6 +668,18 @@ public class Vector2f implements Serializable, SetXY, XY {
 
 	public float angle() {
 		return getAngle();
+	}
+
+	public float angleBetween(Vector2f v, boolean radians) {
+		if (null == v) {
+			return 0f;
+		}
+		final float magSqMult = this.lengthSquared() * v.lengthSquared();
+		if (magSqMult == 0) {
+			return 0f;
+		}
+		final float angle = MathUtils.atan2(this.crs(v), this.dot(v));
+		return radians ? MathUtils.toRadians(angle) : MathUtils.toDegrees(angle);
 	}
 
 	public float angleRad(Vector2f v) {
@@ -1315,11 +1337,19 @@ public class Vector2f implements Serializable, SetXY, XY {
 	}
 
 	public float zcross(float zx, float zy) {
-		return (this.x * zy) - (this.y * zx);
+		return (this.y * zx) - (this.x * zy);
 	}
 
 	public float zcross(Vector2f v) {
-		return (this.x * v.y) - (this.y * v.x);
+		return this.zcross(v.x, v.y);
+	}
+
+	public float zcrs(float zx, float zy) {
+		return this.zcross(zx, zy);
+	}
+
+	public float zcrs(Vector2f v) {
+		return this.zcross(v);
 	}
 
 	public float dir() {
@@ -1328,6 +1358,10 @@ public class Vector2f implements Serializable, SetXY, XY {
 
 	public float dot(float x, float y) {
 		return this.x * x + this.y * y;
+	}
+
+	public float dist(Vector2f v) {
+		return distance(v);
 	}
 
 	public float distance(Vector2f v) {
@@ -1395,12 +1429,84 @@ public class Vector2f implements Serializable, SetXY, XY {
 		return addSelf(-x, -y);
 	}
 
-	public float cross(final Vector2f v) {
-		return this.x * v.y - v.x * this.y;
-	}
-
 	public float lenManhattan() {
 		return MathUtils.abs(this.x) + MathUtils.abs(this.y);
+	}
+
+	public boolean inCircle(XYZ cir) {
+		return CollisionHelper.checkPointvsCircle(this.x, this.y, cir);
+	}
+
+	public boolean inCircle(Circle c) {
+		return CollisionHelper.checkPointvsCircle(this.x, this.y, c.getX(), c.getY(), c.getDiameter());
+	}
+
+	public boolean inCircle(float cx, float cy, float d) {
+		return CollisionHelper.checkPointvsCircle(this.x, this.y, cx, cy, d);
+	}
+
+	public boolean inEllipse(float ex, float ey, float ew, float eh) {
+		return CollisionHelper.checkPointvsEllipse(this.x, this.y, ex, ey, ew, eh);
+	}
+
+	public boolean inEllipse(Ellipse e) {
+		return CollisionHelper.checkPointvsEllipse(this.x, this.y, e.getRealX(), e.getRealY(), e.getDiameter1(),
+				e.getDiameter2());
+	}
+
+	public boolean inEllipse(XYZW rect) {
+		return CollisionHelper.checkPointvsEllipse(this.x, this.y, rect.getX(), rect.getY(), rect.getZ(), rect.getW());
+	}
+
+	public boolean inArc(float ax, float ay, float arcRadius, float arcHeading, float arcAngle) {
+		return CollisionHelper.checkPointvsArc(this.x, this.y, ax, ay, arcRadius, arcHeading, arcAngle);
+	}
+
+	public boolean inRect(XYZW rect) {
+		return CollisionHelper.checkPointvsAABB(this.x, this.y, rect);
+	}
+
+	public boolean inRect(RectBox rect) {
+		return CollisionHelper.checkPointvsAABB(this.x, this.y, rect.getX(), rect.getY(), rect.getWidth(),
+				rect.getHeight());
+	}
+
+	public boolean inRect(float rx, float ry, float rw, float rh) {
+		return CollisionHelper.checkPointvsAABB(this.x, this.y, rx, ry, rw, rh);
+	}
+
+	public boolean inLine(XYZW line) {
+		return CollisionHelper.checkPointvsLine(this.x, this.y, line.getX(), line.getY(), line.getZ(), line.getW());
+	}
+
+	public boolean inLine(Line line) {
+		return CollisionHelper.checkPointvsLine(this.x, this.y, line.getX1(), line.getY1(), line.getX2(), line.getY2());
+	}
+
+	public boolean inLine(Line line, float size) {
+		return CollisionHelper.checkPointvsLine(this.x, this.y, line.getX1(), line.getY1(), line.getX2(), line.getY2(),
+				size);
+	}
+
+	public boolean inLine(float x1, float y1, float x2, float y2, float size) {
+		return CollisionHelper.checkPointvsLine(this.x, this.y, x1, y1, x2, y2, size);
+	}
+
+	public boolean inTriangle(Triangle2f t) {
+		return CollisionHelper.checkPointvsTriangle(this.x, this.y, t.getX1(), t.getY1(), t.getX2(), t.getY2(),
+				t.getX3(), t.getY3());
+	}
+
+	public boolean inTriangle(float x1, float y1, float x2, float y2, float x3, float y3) {
+		return CollisionHelper.checkPointvsTriangle(this.x, this.y, x1, y1, x2, y2, x3, y3);
+	}
+
+	public boolean inPolygon(Polygon poly) {
+		return CollisionHelper.checkPointvsPolygon(this.x, this.y, poly.getVertices());
+	}
+
+	public <T extends XY> boolean inPolygon(TArray<T> poly) {
+		return CollisionHelper.checkPointvsPolygon(this.x, this.y, poly);
 	}
 
 	public float[] toFloat() {

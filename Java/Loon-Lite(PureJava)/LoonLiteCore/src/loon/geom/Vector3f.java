@@ -594,7 +594,7 @@ public class Vector3f implements Serializable, XYZ, SetXYZ {
 	public Vector3f mulSelf(final Quaternion quat) {
 		return quat.transformSelf(this);
 	}
-
+	
 	public Vector3f round() {
 		return new Vector3f(MathUtils.round(x), MathUtils.round(y), MathUtils.round(z));
 	}

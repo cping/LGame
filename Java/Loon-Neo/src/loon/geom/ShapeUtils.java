@@ -25,6 +25,58 @@ import loon.utils.TArray;
 
 public class ShapeUtils {
 
+	public static final int whichSide(XY p1, float theta, XY p2) {
+		theta += MathUtils.PI / 2;
+		float x = (int) (p1.getX() + MathUtils.round(1000 * MathUtils.cos(theta)));
+		float y = (int) (p1.getY() + MathUtils.round(1000 * MathUtils.sin(theta)));
+		return MathUtils.iceil(dotf(p1.getX(), p1.getY(), p2.getX(), p2.getY(), x, y));
+	}
+
+	public static final void shiftToContain(RectBox tainer, RectBox tained) {
+		if (tained.x < tainer.x) {
+			tainer.x = tained.x;
+		}
+		if (tained.y < tainer.y) {
+			tainer.y = tained.y;
+		}
+		if (tained.x + tained.width > tainer.x + tainer.width) {
+			tainer.x = tained.x - (tainer.width - tained.width);
+		}
+		if (tained.y + tained.height > tainer.y + tainer.height) {
+			tainer.y = tained.y - (tainer.height - tained.height);
+		}
+	}
+
+	/**
+	 * 将目标矩形添加到原始矩形的边界。
+	 * 
+	 * @param source
+	 * @param target
+	 * @return
+	 */
+	public static final RectBox add(RectBox source, RectBox target) {
+		if (target == null) {
+			return new RectBox(source);
+		} else if (source == null) {
+			source = new RectBox(target);
+		} else {
+			source.add(target);
+		}
+		return source;
+	}
+
+	public static final void confine(RectBox rect, RectBox field) {
+		int x = rect.Right() > field.Right() ? field.Right() - (int) rect.getWidth() : rect.Left();
+		if (x < field.Left()) {
+			x = field.Left();
+		}
+		int y = (int) (rect.Bottom() > field.Bottom() ? field.Bottom() - rect.getHeight() : rect.Top());
+		if (y < field.Top()) {
+			y = field.Top();
+		}
+		rect.offset(x, y);
+	}
+
 	public static final Vector2f calculateVector(float angle, float magnitude) {
 		Vector2f v = new Vector2f();
 		v.x = MathUtils.sin(MathUtils.toRadians(angle));
@@ -37,6 +89,15 @@ public class ShapeUtils {
 	public static final float calculateAngle(float x, float y, float x1, float y1) {
 		float angle = MathUtils.atan2(y - y1, x - x1);
 		return (MathUtils.toDegrees(angle) - 90);
+	}
+
+	public static final Vector2f nearestToLine(Vector2f p1, Vector2f p2, Vector2f p3, Vector2f n) {
+		int ax = (int) (p2.x - p1.x), ay = (int) (p2.y - p1.y);
+		float u = (p3.x - p1.x) * ax + (p3.y - p1.y) * ay;
+		u /= (ax * ax + ay * ay);
+		n.x = p1.x + MathUtils.round(ax * u);
+		n.y = p1.y + MathUtils.round(ay * u);
+		return n;
 	}
 
 	public static final float updateAngle(float currentAngle, float targetAngle, float step) {
@@ -196,6 +257,179 @@ public class ShapeUtils {
 		return x1 * y2 - y1 * x2 + x2 * y0 - y2 * x0 + x0 * y1 - y0 * x1;
 	}
 
+	/**
+	 * 计算并返回两个正方形之间的碰撞间距值
+	 * 
+	 * @param rect1
+	 * @param rect2
+	 * @return
+	 */
+	public static float squareRects(BoxSize rect1, BoxSize rect2) {
+		if (rect1 == null || rect2 == null) {
+			return 0f;
+		}
+		return squareRects(rect1.getX(), rect1.getY(), rect1.getWidth(), rect1.getHeight(), rect2.getX(), rect2.getY(),
+				rect2.getWidth(), rect2.getHeight());
+	}
+
+	/**
+	 * 计算并返回两个正方形之间的碰撞间距值
+	 * 
+	 * @param x1
+	 * @param y1
+	 * @param w1
+	 * @param h1
+	 * @param x2
+	 * @param y2
+	 * @param w2
+	 * @param h2
+	 * @return
+	 */
+	public static float squareRects(float x1, float y1, float w1, float h1, float x2, float y2, float w2, float h2) {
+		if (x1 < x2 + w2 && x2 < x1 + w1) {
+			if (y1 < y2 + h2 && y2 < y1 + h1) {
+				return 0f;
+			}
+			if (y1 > y2) {
+				return (y1 - (y2 + h2)) * (y1 - (y2 + h2));
+			}
+			return (y2 - (y1 + h1)) * (y2 - (y1 + h1));
+		}
+		if (y1 < y2 + h2 && y2 < y1 + h1) {
+			if (x1 > x2) {
+				return (x1 - (x2 + w2)) * (x1 - (x2 + w2));
+			}
+			return (x2 - (x1 + w1)) * (x2 - (x1 + w1));
+		}
+		if (x1 > x2) {
+			if (y1 > y2) {
+				return MathUtils.distSquared((x2 + w2), (y2 + h2), x1, y1);
+			}
+			return MathUtils.distSquared(x2 + w2, y2, x1, y1 + h1);
+		}
+		if (y1 > y2) {
+			return MathUtils.distSquared(x2, y2 + h2, x1 + w1, y1);
+		}
+		return MathUtils.distSquared(x2, y2, x1 + w1, y1 + h1);
+	}
+
+	/**
+	 * 计算并返回指定位置与指定正方形之间的碰撞间距值
+	 * 
+	 * @param xy
+	 * @param box
+	 * @return
+	 */
+	public static float squarePointRect(XY xy, BoxSize box) {
+		if (xy == null || box == null) {
+			return 0f;
+		}
+		return squarePointRect(xy.getX(), xy.getY(), box.getX(), box.getY(), box.getWidth(), box.getHeight());
+	}
+
+	/**
+	 * 计算并返回指定位置与指定正方形之间的碰撞间距值
+	 * 
+	 * @param px
+	 * @param py
+	 * @param rx
+	 * @param ry
+	 * @param rw
+	 * @param rh
+	 * @return
+	 */
+	public static float squarePointRect(float px, float py, float rx, float ry, float rw, float rh) {
+		if (px >= rx && px <= rx + rw) {
+			if (py >= ry && py <= ry + rh) {
+				return 0f;
+			}
+			if (py > ry) {
+				return (py - (ry + rh)) * (py - (ry + rh));
+			}
+			return (ry - py) * (ry - py);
+		}
+		if (py >= ry && py <= ry + rh) {
+			if (px > rx) {
+				return (px - (rx + rw)) * (px - (rx + rw));
+			}
+			return (rx - px) * (rx - px);
+		}
+		if (px > rx) {
+			if (py > ry) {
+				return MathUtils.distSquared(rx + rw, ry + rh, px, py);
+			}
+			return MathUtils.distSquared(rx + rw, ry, px, py);
+		}
+		if (py > ry) {
+			return MathUtils.distSquared(rx, ry + rh, px, py);
+		}
+		return MathUtils.distSquared(rx, ry, px, py);
+	}
+
+	/**
+	 * 获得指定线经过的点
+	 * 
+	 * @param line
+	 * @param stepRate
+	 * @return
+	 */
+	public static final TArray<Vector2f> getBresenhamPoints(Line line, float stepRate) {
+		if (stepRate < 1f) {
+			stepRate = 1f;
+		}
+		TArray<Vector2f> results = new TArray<Vector2f>();
+
+		float x1 = MathUtils.round(line.getX1());
+		float y1 = MathUtils.round(line.getY1());
+		float x2 = MathUtils.round(line.getX2());
+		float y2 = MathUtils.round(line.getY2());
+
+		float dx = MathUtils.abs(x2 - x1);
+		float dy = MathUtils.abs(y2 - y1);
+		float sx = (x1 < x2) ? 1 : -1;
+		float sy = (y1 < y2) ? 1 : -1;
+		int err = MathUtils.ceil(dx) - MathUtils.ceil(dy);
+
+		results.add(new Vector2f(x1, y1));
+
+		int i = 1;
+
+		while (!((x1 == x2) && (y1 == y2))) {
+			int e2 = err << 1;
+
+			if (e2 > -dy) {
+				err -= dy;
+				x1 += sx;
+			}
+
+			if (e2 < dx) {
+				err += dx;
+				y1 += sy;
+			}
+
+			if (i % stepRate == 0) {
+				results.add(new Vector2f(x1, y1));
+			}
+
+			i++;
+		}
+
+		return results;
+	}
+
+	public static final Line getLine(Shape shape, int s, int e) {
+		float[] start = shape.getPoint(s);
+		float[] end = shape.getPoint(e);
+		Line line = new Line(start[0], start[1], end[0], end[1]);
+		return line;
+	}
+
+	public static final Line getLine(Shape shape, float sx, float sy, int e) {
+		float[] end = shape.getPoint(e);
+		Line line = new Line(sx, sy, end[0], end[1]);
+		return line;
+	}
+
 	public static final float getScaleFactor(float srcSize, float dstSize) {
 		float dScale = 1;
 		if (srcSize > dstSize) {
@@ -210,6 +444,101 @@ public class ShapeUtils {
 		float dScaleWidth = getScaleFactor(ox, nx);
 		float dScaleHeight = getScaleFactor(oy, ny);
 		return MathUtils.min(dScaleHeight, dScaleWidth);
+	}
+
+	/**
+	 * 获得两个三维体间初始XYZ位置的距离
+	 * 
+	 * @param target
+	 * @param beforePlace
+	 * @param distance
+	 * @return
+	 */
+	public static Vector3f getDistantPoint(XYZ target, XYZ source, float distance) {
+
+		float deltaX = target.getX() - source.getX();
+		float deltaY = target.getY() - source.getY();
+		float deltaZ = target.getZ() - source.getZ();
+
+		float dist = MathUtils.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
+
+		deltaX /= dist;
+		deltaY /= dist;
+		deltaZ /= dist;
+
+		return new Vector3f(target.getX() - distance * deltaX, target.getY() - distance * deltaY,
+				target.getZ() - distance * deltaZ);
+	}
+
+	/**
+	 * 获得两个三维体间初始XYZ位置的距离
+	 * 
+	 * @param target
+	 * @param source
+	 * @param distance
+	 * @return
+	 */
+	public static Vector2f distantPoint(XY target, XY source, float distance) {
+
+		float deltaX = target.getX() - source.getX();
+		float deltaY = target.getY() - source.getY();
+
+		float dist = MathUtils.sqrt(deltaX * deltaX + deltaY * deltaY);
+
+		deltaX /= dist;
+		deltaY /= dist;
+
+		return new Vector2f(target.getX() - distance * deltaX, target.getY() - distance * deltaY);
+	}
+
+	/**
+	 * 获得两个矩形间初始XY位置的距离
+	 * 
+	 * @param target
+	 * @param beforePlace
+	 * @return
+	 */
+	public static float getDistance(final BoxSize target, final BoxSize beforePlace) {
+		if (target == null || beforePlace == null) {
+			return 0f;
+		}
+		final float xdiff = target.getX() - beforePlace.getX();
+		final float ydiff = target.getY() - beforePlace.getY();
+		return MathUtils.sqrt(xdiff * xdiff + ydiff * ydiff);
+	}
+
+	/**
+	 * 获得多个点间距离
+	 * 
+	 * @param target
+	 * @param beforePlace
+	 * @param afterPlace
+	 * @param distance
+	 * @return
+	 */
+	public static final float getDistance(XY target, XY beforePlace, XY afterPlace, float distance) {
+		return getDistance(target, beforePlace, afterPlace, distance, false);
+	}
+
+	/**
+	 * 获得多个点间距离
+	 * 
+	 * @param target
+	 * @param beforePlace
+	 * @param afterPlace
+	 * @param distance
+	 * @param limit
+	 * @return
+	 */
+	public static final float getDistance(XY target, XY beforePlace, XY afterPlace, float distance, boolean limit) {
+		float before = MathUtils.abs(target.getX() - beforePlace.getX())
+				+ MathUtils.abs(target.getY() - beforePlace.getY());
+		float after = MathUtils.abs(target.getX() - afterPlace.getX())
+				+ MathUtils.abs(target.getY() - afterPlace.getY());
+		if (limit && before > distance) {
+			return 0;
+		}
+		return 1f * (before - after) / after;
 	}
 
 	public static final float snapToNearest(float number, float interval) {

@@ -23,6 +23,7 @@ package loon.geom;
 import loon.LObject;
 import loon.LSystem;
 import loon.action.ActionBind;
+import loon.action.collision.CollisionHelper;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 import loon.utils.StringKeyValue;
@@ -1361,6 +1362,64 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 
 	public boolean isValid() {
 		return this.width > 0 && this.height > 0;
+	}
+
+	public boolean inPoint(XY pos) {
+		return CollisionHelper.checkPointvsAABB(pos.getX(), pos.getY(), this.x, this.y, this.width, this.height);
+	}
+
+	public boolean inPoint(float x, float y) {
+		return CollisionHelper.checkPointvsAABB(x, y, this.x, this.y, this.width, this.height);
+	}
+
+	public boolean inCircle(XYZ cir) {
+		return CollisionHelper.checkAABBvsCircle(this.x, this.y, this.width, this.height, cir.getX(), cir.getY(),
+				cir.getZ());
+	}
+
+	public boolean inCircle(Circle c) {
+		return CollisionHelper.checkAABBvsCircle(this.x, this.y, this.width, this.height, c.getX(), c.getY(),
+				c.getDiameter());
+	}
+
+	public boolean inCircle(float cx, float cy, float d) {
+		return CollisionHelper.checkAABBvsCircle(this.x, this.y, this.width, this.height, cx, cy, d);
+	}
+
+	public boolean inRect(XYZW rect) {
+		return CollisionHelper.checkAABBvsAABB(this.x, this.y, this.width, this.height, rect.getX(), rect.getY(),
+				rect.getZ(), rect.getW());
+	}
+
+	public boolean inRect(RectBox rect) {
+		return CollisionHelper.checkAABBvsAABB(this.x, this.y, this.width, this.height, rect.getX(), rect.getY(),
+				rect.getWidth(), rect.getHeight());
+	}
+
+	public boolean inRect(float rx, float ry, float rw, float rh) {
+		return CollisionHelper.checkAABBvsAABB(this.x, this.y, this.width, this.height, rx, ry, rw, rh);
+	}
+
+	public boolean inLine(XYZW line) {
+		return CollisionHelper.checkLinevsAABB(line.getX(), line.getY(), line.getZ(), line.getW(), this.x, this.y,
+				this.width, this.height);
+	}
+
+	public boolean inLine(Line line) {
+		return CollisionHelper.checkLinevsAABB(line.getX1(), line.getY1(), line.getX2(), line.getY2(), this.x, this.y,
+				this.width, this.height);
+	}
+
+	public boolean inLine(float x1, float y1, float x2, float y2) {
+		return CollisionHelper.checkLinevsAABB(x1, y1, x2, y2, this.x, this.y, this.width, this.height);
+	}
+
+	public boolean inPolygon(Polygon poly) {
+		return CollisionHelper.checkAABBvsPolygon(this.x, this.y, this.width, this.height, poly.getVertices(), true);
+	}
+
+	public <T extends XY> boolean inPolygon(TArray<T> poly) {
+		return CollisionHelper.checkAABBvsPolygon(this.x, this.y, this.width, this.height, poly, true);
 	}
 
 	@Override

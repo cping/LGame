@@ -22,6 +22,7 @@
 package loon.geom;
 
 import loon.LSysException;
+import loon.events.QueryEvent;
 import loon.utils.MathUtils;
 import loon.utils.StringKeyValue;
 import loon.utils.StringUtils;
@@ -119,45 +120,15 @@ public class Polygon extends Shape implements BoxSize {
 
 	private TArray<Vector2f> _vertices;
 
-	public Polygon(float[] points) {
-		int length = points.length;
-
-		this.points = new float[length];
-		maxX = -Float.MIN_VALUE;
-		maxY = -Float.MIN_VALUE;
-		minX = Float.MAX_VALUE;
-		minY = Float.MAX_VALUE;
-		x = Float.MAX_VALUE;
-		y = Float.MAX_VALUE;
-
-		for (int i = 0; i < length; i++) {
-			this.points[i] = points[i];
-			if (i % 2 == 0) {
-				if (points[i] > maxX) {
-					maxX = points[i];
-				}
-				if (points[i] < minX) {
-					minX = points[i];
-				}
-				if (points[i] < x) {
-					x = points[i];
-				}
-			} else {
-				if (points[i] > maxY) {
-					maxY = points[i];
-				}
-				if (points[i] < minY) {
-					minY = points[i];
-				}
-				if (points[i] < y) {
-					y = points[i];
-				}
-			}
+	public Polygon(TArray<Vector2f> vectors) {
+		if (vectors == null || vectors.size < 0) {
+			throw new LSysException("points < 0");
 		}
+		setPolygon(syncPoints(vectors, false));
+	}
 
-		findCenter();
-		calculateRadius();
-		pointsDirty = true;
+	public Polygon(float[] points) {
+		setPolygon(points);
 	}
 
 	public Polygon() {
@@ -202,19 +173,43 @@ public class Polygon extends Shape implements BoxSize {
 		}
 	}
 
-	public Polygon(TArray<Vector2f> vectors) {
-		if (vectors == null || vectors.size < 0) {
-			throw new LSysException("points < 0");
+	protected void setPolygon(float[] points) {
+		this.points = points;
+		this.maxX = -Float.MIN_VALUE;
+		this.maxY = -Float.MIN_VALUE;
+		this.minX = Float.MAX_VALUE;
+		this.minY = Float.MAX_VALUE;
+		this.x = Float.MAX_VALUE;
+		this.y = Float.MAX_VALUE;
+		int length = points.length;
+		for (int i = 0; i < length; i++) {
+			this.points[i] = points[i];
+			if (i % 2 == 0) {
+				if (points[i] > maxX) {
+					maxX = points[i];
+				}
+				if (points[i] < minX) {
+					minX = points[i];
+				}
+				if (points[i] < x) {
+					x = points[i];
+				}
+			} else {
+				if (points[i] > maxY) {
+					maxY = points[i];
+				}
+				if (points[i] < minY) {
+					minY = points[i];
+				}
+				if (points[i] < y) {
+					y = points[i];
+				}
+			}
 		}
-		points = new float[0];
-		maxX = -Float.MIN_VALUE;
-		maxY = -Float.MIN_VALUE;
-		minX = Float.MAX_VALUE;
-		minY = Float.MAX_VALUE;
-		for (int i = 0; i < vectors.size; i++) {
-			Vector2f pos = vectors.get(i);
-			addPoint(pos.x, pos.y);
-		}
+
+		findCenter();
+		calculateRadius();
+		pointsDirty = true;
 	}
 
 	public Polygon setAllowDuplicatePoints(boolean allowDups) {
@@ -226,8 +221,8 @@ public class Polygon extends Shape implements BoxSize {
 		if (hasVertex(x, y) && (!allowDups)) {
 			return this;
 		}
-		int size = points.length;
-		TArray<Float> tempPoints = new TArray<Float>();
+		final int size = points.length;
+		final TArray<Float> tempPoints = new TArray<Float>();
 		for (int i = 0; i < size; i++) {
 			tempPoints.add(points[i]);
 		}
@@ -254,6 +249,72 @@ public class Polygon extends Shape implements BoxSize {
 		calculateRadius();
 
 		pointsDirty = true;
+		return this;
+	}
+
+	public float[] syncPoints(TArray<Vector2f> list) {
+		return syncPoints(list, true);
+	}
+
+	public float[] syncPoints(TArray<Vector2f> list, boolean dirty) {
+		this.points = new float[list.size * 2];
+		for (int i = 0, j = 0; i < points.length; i += 2, j++) {
+			Vector2f v = list.get(j);
+			points[i] = v.x;
+			points[i + 1] = v.y;
+		}
+		if (dirty) {
+			this.pointsDirty = true;
+			checkPoints();
+		}
+		return this.points;
+	}
+
+	public boolean query(QueryEvent<Vector2f> query) {
+		final TArray<Vector2f> result = getVertices();
+		final int len = result.size;
+		for (int i = 0; i < len; i++) {
+			Vector2f v = result.get(i);
+			if (query.hit(v)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public Polygon update(QueryEvent<Vector2f> query) {
+		final TArray<Vector2f> result = getVertices();
+		final int len = result.size;
+		int updated = 0;
+		for (int i = 0; i < len; i++) {
+			Vector2f v = result.get(i);
+			if (query.hit(v)) {
+				updated++;
+			}
+		}
+		if (updated > 0) {
+			syncPoints(result);
+		}
+		return this;
+	}
+
+	public Polygon rotate(float angle) {
+		final TArray<Vector2f> result = getVertices();
+		final int len = result.size;
+		for (int i = 0; i < len; i++) {
+			result.get(i).rotateSelf(angle);
+		}
+		syncPoints(result);
+		return this;
+	}
+
+	public Polygon mul(float v) {
+		final TArray<Vector2f> result = getVertices();
+		final int len = result.size;
+		for (int i = 0; i < len; i++) {
+			result.get(i).mulSelf(v);
+		}
+		syncPoints(result);
 		return this;
 	}
 
@@ -297,12 +358,19 @@ public class Polygon extends Shape implements BoxSize {
 			_vertices = new TArray<Vector2f>();
 		}
 		if (pointsDirty) {
+			checkPoints();
 			_vertices.clear();
 			int size = points.length;
 			for (int i = 0; i < size; i += 2) {
 				_vertices.add(new Vector2f(points[i], points[i + 1]));
 			}
-			pointsDirty = false;
+		}
+		if (_vertices.size == 0) {
+			checkPoints();
+			int size = points.length;
+			for (int i = 0; i < size; i += 2) {
+				_vertices.add(new Vector2f(points[i], points[i + 1]));
+			}
 		}
 		return _vertices;
 	}
@@ -317,8 +385,9 @@ public class Polygon extends Shape implements BoxSize {
 		return closed;
 	}
 
-	public void setClosed(boolean closed) {
+	public Polygon setClosed(boolean closed) {
 		this.closed = closed;
+		return this;
 	}
 
 	@Override
@@ -366,6 +435,30 @@ public class Polygon extends Shape implements BoxSize {
 
 	public Polygon getOffsetPolygon(float offset) {
 		return new Polygon(offsetPolygon(getPoints(), offset));
+	}
+
+	@Override
+	public float[] getCenter() {
+		final TArray<Vector2f> v = getVertices();
+		final int len = v.size;
+
+		float cx = 0f;
+		float cy = 0f;
+		float ar = 0f;
+
+		for (int i = 0; i < len; i++) {
+			Vector2f p1 = v.get(i);
+			Vector2f p2 = (i == len - 1) ? v.get(0) : v.get(i + 1);
+			final float a = p1.x * p2.y - p2.x * p1.y;
+			cx += (p1.x + p2.x) * a;
+			cy += (p1.y + p2.y) * a;
+			ar += a;
+		}
+		ar = ar * 3f;
+		cx = cx / ar;
+		cy = cy / ar;
+
+		return new float[] { cx, cy };
 	}
 
 	public RectBox getBox() {

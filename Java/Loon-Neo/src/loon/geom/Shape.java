@@ -25,6 +25,7 @@ import java.io.Serializable;
 
 import loon.action.sprite.ShapeEntity;
 import loon.canvas.LColor;
+import loon.utils.CollectionUtils;
 import loon.utils.IArray;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
@@ -84,12 +85,14 @@ public abstract class Shape implements Serializable, IArray, XY, SetXY {
 
 	protected abstract void createPoints();
 
-	public void translate(int deltaX, int deltaY) {
+	public Shape translate(float deltaX, float deltaY) {
 		setX(x + deltaX);
 		setY(y + deltaY);
+		return this;
 	}
 
 	public int vertexCount() {
+		checkPoints();
 		return points.length / 2;
 	}
 
@@ -103,6 +106,7 @@ public abstract class Shape implements Serializable, IArray, XY, SetXY {
 
 	@Override
 	public float getX() {
+		checkPoints();
 		return x;
 	}
 
@@ -144,14 +148,17 @@ public abstract class Shape implements Serializable, IArray, XY, SetXY {
 
 	@Override
 	public float getY() {
+		checkPoints();
 		return y;
 	}
 
 	public float length() {
+		checkPoints();
 		return MathUtils.sqrt(x * x + y * y);
 	}
 
 	public void setLocation(Vector2f loc) {
+		checkPoints();
 		setX(loc.x);
 		setY(loc.y);
 	}
@@ -210,9 +217,29 @@ public abstract class Shape implements Serializable, IArray, XY, SetXY {
 		return minY;
 	}
 
+	public float getLeft() {
+		return this.getMinX();
+	}
+
+	public float getRight() {
+		return getMaxX();
+	}
+
+	public float getTop() {
+		return getMinY();
+	}
+
+	public float getBottom() {
+		return getMaxY();
+	}
+
 	public float getBoundingCircleRadius() {
 		checkPoints();
 		return boundingCircleRadius;
+	}
+
+	public float getDiameter() {
+		return getBoundingCircleRadius() * 2f;
 	}
 
 	public float perimeter() {
@@ -612,14 +639,17 @@ public abstract class Shape implements Serializable, IArray, XY, SetXY {
 	}
 
 	public float getWidth() {
+		checkPoints();
 		return maxX - minX;
 	}
 
 	public float getHeight() {
+		checkPoints();
 		return maxY - minY;
 	}
 
 	public RectBox getRect() {
+		checkPoints();
 		if (rect == null) {
 			rect = new RectBox(x, y, getWidth(), getHeight());
 		} else {
@@ -629,6 +659,7 @@ public abstract class Shape implements Serializable, IArray, XY, SetXY {
 	}
 
 	public AABB getAABB() {
+		checkPoints();
 		if (aabb == null) {
 			aabb = new AABB(minX, minY, maxX, maxY);
 		} else {
@@ -655,7 +686,40 @@ public abstract class Shape implements Serializable, IArray, XY, SetXY {
 		System.arraycopy(points, 0, copyPoints, 0, copyPoints.length);
 		return new Polygon(copyPoints);
 	}
-	
+
+	public Shape copy(Shape shape) {
+		if (shape == null) {
+			return this;
+		}
+		this.pointsDirty = true;
+		this.checkPoints();
+		this.x = shape.x;
+		this.y = shape.y;
+		this.rotation = shape.rotation;
+		this.points = CollectionUtils.copyOf(shape.points);
+		this.center = CollectionUtils.copyOf(shape.center);
+		this.scaleX = shape.scaleX;
+		this.scaleY = shape.scaleY;
+		this.minX = shape.minX;
+		this.minY = shape.minY;
+		this.maxX = shape.maxX;
+		this.maxY = shape.maxY;
+		this.boundingCircleRadius = shape.boundingCircleRadius;
+		this.pointsDirty = shape.pointsDirty;
+		this.triangle = shape.triangle;
+		this.trianglesDirty = shape.trianglesDirty;
+		if (shape.aabb != null) {
+			this.aabb = shape.aabb.cpy();
+		}
+		if (shape.rect != null) {
+			this.rect = shape.rect.cpy();
+		}
+		if (shape.entity != null) {
+			this.entity = shape.entity;
+		}
+		return this;
+	}
+
 	@Override
 	public int size() {
 		return points == null ? 0 : points.length;
