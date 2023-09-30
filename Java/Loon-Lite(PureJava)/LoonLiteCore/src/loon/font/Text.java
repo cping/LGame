@@ -26,6 +26,7 @@ import loon.LSystem;
 import loon.canvas.LColor;
 import loon.component.layout.HorizontalAlign;
 import loon.opengl.GLEx;
+import loon.opengl.LSTRFont;
 import loon.utils.FloatArray;
 import loon.utils.MathUtils;
 import loon.utils.StrBuilder;
@@ -87,30 +88,30 @@ public class Text implements LRelease {
 		return this._chars;
 	}
 
-	public void setFont(final IFont font) {
-		this.setText(font, this._chars);
+	public Text setFont(final IFont font) {
+		return this.setText(font, this._chars);
 	}
 
-	public void setText(final IFont font, final CharSequence chars) {
+	public Text setText(final IFont font, final CharSequence chars) {
 		if (font == null) {
 			throw new LSysException("IFont is null!");
 		}
 		this._font = font;
-		this.setText(chars);
+		return this.setText(chars);
 	}
 
-	public void setText(final CharSequence chars) {
+	public Text setText(final CharSequence chars) {
 		if (LSystem.base() == null || chars == null) {
-			return;
+			return this;
 		}
 		if (_closed) {
-			return;
+			return this;
 		}
 		if (_lastCharSequence == chars) {
-			return;
+			return this;
 		}
 		if (chars.equals(_lastCharSequence)) {
-			return;
+			return this;
 		}
 		this._chars = chars != null ? chars : LSystem.EMPTY;
 		final IFont font = this._font;
@@ -156,6 +157,7 @@ public class Text implements LRelease {
 			_height = _font.getHeight();
 		}
 		this._lastCharSequence = chars;
+		return this;
 	}
 
 	private String toString(CharSequence ch) {
@@ -185,7 +187,6 @@ public class Text implements LRelease {
 		if (_closed) {
 			return;
 		}
-
 		if (_textOptions._autoWrap != AutoWrap.VERTICAL) {
 			switch (_textOptions._horizontalAlign) {
 			case CENTER:
@@ -375,35 +376,40 @@ public class Text implements LRelease {
 		return this._textOptions._leading;
 	}
 
-	public void setLeading(final float leading) {
+	public Text setLeading(final float leading) {
 		this._textOptions._leading = leading;
 		this.initText();
+		return this;
 	}
 
-	public void setSpace(final float space) {
+	public Text setSpace(final float space) {
 		setLeading(space);
+		return this;
 	}
 
 	public HorizontalAlign getHorizontalAlign() {
 		return this._textOptions._horizontalAlign;
 	}
 
-	public void setHorizontalAlign(final HorizontalAlign horizontalAlign) {
+	public Text setHorizontalAlign(final HorizontalAlign horizontalAlign) {
 		this._textOptions._horizontalAlign = horizontalAlign;
 		this.initText();
+		return this;
 	}
 
 	public AutoWrap getAutoWrap() {
 		return this._textOptions._autoWrap;
 	}
 
-	public void setAutoWrap(final AutoWrap autoWrap) {
+	public Text setAutoWrap(final AutoWrap autoWrap) {
 		this._textOptions._autoWrap = autoWrap;
 		this.initText();
+		return this;
 	}
 
-	public void initText() {
+	public Text initText() {
 		this.setText(this._chars);
+		return this;
 	}
 
 	public float getAutoWrapWidth() {
@@ -419,8 +425,9 @@ public class Text implements LRelease {
 		return this._textOptions;
 	}
 
-	public void setTextOptions(final TextOptions opt) {
+	public Text setTextOptions(final TextOptions opt) {
 		this._textOptions = opt;
+		return this;
 	}
 
 	@Override

@@ -87,25 +87,27 @@ public class TextOptions {
 		return this._autoWrap;
 	}
 
-	public void setAutoWrap(final AutoWrap autoWrap) {
+	public TextOptions setAutoWrap(final AutoWrap autoWrap) {
 		this._autoWrap = autoWrap;
-		return;
+		return this;
 	}
 
 	public float getAutoWrapWidth() {
 		return this._autoWrapWidth;
 	}
 
-	public void setAutoWrapWidth(final float autoWrapWidth) {
+	public TextOptions setAutoWrapWidth(final float autoWrapWidth) {
 		this._autoWrapWidth = autoWrapWidth;
+		return this;
 	}
 
 	public float getLeading() {
 		return this._leading;
 	}
 
-	public void setLeading(final float leading) {
+	public TextOptions setLeading(final float leading) {
 		this._leading = leading;
+		return this;
 	}
 
 	public HorizontalAlign getHorizontalAlign() {

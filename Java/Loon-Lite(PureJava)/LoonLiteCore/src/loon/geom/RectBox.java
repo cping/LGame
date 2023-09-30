@@ -1409,6 +1409,21 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 		return CollisionHelper.checkAABBvsPolygon(this.x, this.y, this.width, this.height, poly.getVertices(), true);
 	}
 
+	public boolean collided(Shape shape) {
+		if (shape instanceof Polygon) {
+			return inPolygon((Polygon) shape);
+		} else if (shape instanceof Line) {
+			return inLine((Line) shape);
+		} else if (shape instanceof RectBox) {
+			return inRect((RectBox) shape);
+		} else if (shape instanceof Point) {
+			return inPoint((Point) shape);
+		} else if (shape instanceof Circle) {
+			return inCircle((Circle) shape);
+		}
+		return CollisionHelper.contains(this, shape) || CollisionHelper.intersects(this, shape);
+	}
+
 	public <T extends XY> boolean inPolygon(TArray<T> poly) {
 		return CollisionHelper.checkAABBvsPolygon(this.x, this.y, this.width, this.height, poly, true);
 	}

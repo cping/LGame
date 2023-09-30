@@ -417,6 +417,13 @@ public class Vector2f implements Serializable, SetXY, XY {
 		return new Vector2f(this);
 	}
 
+	public Vector2f limit(float max) {
+		if (lengthSquared() > max * max) {
+			return nor().mulSelf(max);
+		}
+		return this;
+	}
+
 	public final float length() {
 		return MathUtils.sqrt(x * x + y * y);
 	}
@@ -1503,6 +1510,24 @@ public class Vector2f implements Serializable, SetXY, XY {
 
 	public boolean inPolygon(Polygon poly) {
 		return CollisionHelper.checkPointvsPolygon(this.x, this.y, poly.getVertices());
+	}
+
+	public boolean collided(Shape shape) {
+		if (shape instanceof Polygon) {
+			return inPolygon((Polygon) shape);
+		} else if (shape instanceof Line) {
+			return inLine((Line) shape);
+		} else if (shape instanceof RectBox) {
+			return inRect((RectBox) shape);
+		} else if (shape instanceof Triangle2f) {
+			return inTriangle((Triangle2f) shape);
+		} else if (shape instanceof Circle) {
+			return inCircle((Circle) shape);
+		} else if (shape instanceof Ellipse) {
+			return inEllipse((Ellipse) shape);
+		}
+		return CollisionHelper.contains(shape, new Point(this.x, this.y))
+				|| CollisionHelper.intersects(shape, new Point(this.x, this.y));
 	}
 
 	public <T extends XY> boolean inPolygon(TArray<T> poly) {

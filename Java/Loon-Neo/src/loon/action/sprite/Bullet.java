@@ -189,8 +189,9 @@ public class Bullet extends LObject<Bullet> implements CollisionObject, ActionBi
 		return dirToAngle;
 	}
 
-	public void setDirToAngle(boolean dta) {
+	public Bullet setDirToAngle(boolean dta) {
 		this.dirToAngle = dta;
+		return this;
 	}
 
 	public Vector2f getInitSpeed() {

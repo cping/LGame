@@ -217,8 +217,9 @@ public class Gravity implements LRelease {
 		return bounce;
 	}
 
-	public void setBounce(float bounce) {
+	public Gravity setBounce(float bounce) {
 		this.bounce = bounce;
+		return this;
 	}
 
 	public Gravity setBounds(float x, float y, float w, float h) {
@@ -237,7 +238,7 @@ public class Gravity implements LRelease {
 		return _hitRect;
 	}
 
-	public void reset() {
+	public Gravity reset() {
 		this.accelerationX = 0;
 		this.accelerationY = 0;
 		this.gadd = 0;
@@ -247,6 +248,7 @@ public class Gravity implements LRelease {
 		this.velocityY = 0;
 		this.angularVelocity = 0;
 		this.limitX = this.limitY = false;
+		return this;
 	}
 
 	public Gravity dispose() {

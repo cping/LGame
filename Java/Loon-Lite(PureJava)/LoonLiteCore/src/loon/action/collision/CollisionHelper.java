@@ -74,8 +74,8 @@ public final class CollisionHelper extends ShapeUtils {
 		if (rect1 == null || rect2 == null) {
 			return false;
 		}
-		return checkAABBvsAABB(rect1.getX(), rect1.getY(), rect1.getWidth(), rect1.getHeight(), rect2.getX(), rect2.getY(),
-				rect2.getWidth(), rect2.getHeight());
+		return checkAABBvsAABB(rect1.getX(), rect1.getY(), rect1.getWidth(), rect1.getHeight(), rect2.getX(),
+				rect2.getY(), rect2.getWidth(), rect2.getHeight());
 	}
 
 	/**
@@ -89,11 +89,11 @@ public final class CollisionHelper extends ShapeUtils {
 		if (rect1 == null || rect2 == null) {
 			return false;
 		}
-		PointF middle1 = getMiddlePoint(rect1);
-		PointF middle2 = getMiddlePoint(rect2);
-		float distance = middle1.distanceTo(middle2);
-		float radius1 = rect1.getWidth() / 2;
-		float radius2 = rect2.getWidth() / 2;
+		final PointF middle1 = getMiddlePoint(rect1);
+		final PointF middle2 = getMiddlePoint(rect2);
+		final float distance = middle1.distanceTo(middle2);
+		final float radius1 = rect1.getWidth() / 2;
+		final float radius2 = rect2.getWidth() / 2;
 		return (distance - radius2) < radius1;
 	}
 
@@ -102,8 +102,13 @@ public final class CollisionHelper extends ShapeUtils {
 	}
 
 	private static boolean isPointToLine(XY point1, XY point2, XY middle, float radius) {
-		float distance = ptLineDist(point1.getX(), point1.getY(), point2.getX(), point2.getY(), middle.getX(),
-				middle.getY());
+		return isPointToLine(point1.getX(), point1.getY(), point2.getX(), point2.getY(), middle.getX(), middle.getY(),
+				radius);
+	}
+
+	private static boolean isPointToLine(float px1, float py1, float px2, float py2, float middleX, float middleY,
+			float radius) {
+		float distance = ptLineDist(px1, py1, px2, py2, middleX, middleY);
 		return distance < radius;
 	}
 
@@ -118,16 +123,16 @@ public final class CollisionHelper extends ShapeUtils {
 		if (rect1 == null || rect2 == null) {
 			return false;
 		}
-		float radius = rect2.getWidth() / 2;
-		float minX = rect1.getX();
-		float minY = rect1.getY();
-		float maxX = rect1.getX() + rect1.getWidth();
-		float maxY = rect1.getY() + rect1.getHeight();
-		PointF middle = getMiddlePoint(rect2);
-		PointF upperLeft = new PointF(minX, minY);
-		PointF upperRight = new PointF(maxX, minY);
-		PointF downLeft = new PointF(minX, maxY);
-		PointF downRight = new PointF(maxX, maxY);
+		final float radius = rect2.getWidth() / 2;
+		final float minX = rect1.getX();
+		final float minY = rect1.getY();
+		final float maxX = rect1.getX() + rect1.getWidth();
+		final float maxY = rect1.getY() + rect1.getHeight();
+		final PointF middle = getMiddlePoint(rect2);
+		final PointF upperLeft = new PointF(minX, minY);
+		final PointF upperRight = new PointF(maxX, minY);
+		final PointF downLeft = new PointF(minX, maxY);
+		final PointF downRight = new PointF(maxX, maxY);
 		boolean collided = true;
 		if (!isPointToLine(upperLeft, upperRight, middle, radius)) {
 			if (!isPointToLine(upperRight, downRight, middle, radius)) {
@@ -651,8 +656,8 @@ public final class CollisionHelper extends ShapeUtils {
 
 	public static final boolean checkPointvsLine(float px, float py, float x1, float y1, float x2, float y2,
 			float size) {
-		final float mpx = px - x1 / 2f;
-		final float mpy = py - y1 / 2f;
+		final float mpx = px - x1;
+		final float mpy = py - y1;
 		final float d1 = MathUtils.dist(mpx, mpy, x1, y1);
 		final float d2 = MathUtils.dist(mpx, mpy, x2, y2);
 		final float lineLen = MathUtils.dist(x1, y1, x2, y2);

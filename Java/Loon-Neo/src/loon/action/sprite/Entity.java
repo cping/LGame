@@ -33,6 +33,7 @@ import loon.action.ActionBind;
 import loon.action.ActionListener;
 import loon.action.ActionTween;
 import loon.action.PlaceActions;
+import loon.action.collision.CollisionHelper;
 import loon.action.collision.CollisionObject;
 import loon.action.collision.Gravity;
 import loon.action.map.Field2D;
@@ -46,6 +47,7 @@ import loon.geom.Dimension;
 import loon.geom.Ellipse;
 import loon.geom.Line;
 import loon.geom.RectBox;
+import loon.geom.Shape;
 import loon.geom.Triangle2f;
 import loon.geom.Vector2f;
 import loon.geom.XY;
@@ -1066,13 +1068,17 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		}
 	}
 
+	public boolean collided(Shape shape) {
+		return getCollisionArea().collided(shape);
+	}
+
 	public boolean isCollision(Entity o) {
+		if (o == null) {
+			return false;
+		}
 		RectBox src = getCollisionArea();
 		RectBox dst = o.getCollisionArea();
-		if (src.intersects(dst) || src.contains(dst)) {
-			return true;
-		}
-		return false;
+		return src.intersects(dst) || src.contains(dst);
 	}
 
 	public int width() {
@@ -1288,10 +1294,9 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 			return false;
 		}
 		RectBox rectSelf = getRectBox();
-		RectBox a = new RectBox(rectSelf.getX(), 0, rectSelf.getWidth(), rectSelf.getHeight());
 		RectBox rectDst = getRectBox();
-		RectBox b = new RectBox(rectDst.getX(), 0, rectDst.getWidth(), rectDst.getHeight());
-		return a.intersects(b);
+		return CollisionHelper.checkAABBvsAABB(rectSelf.getX(), 0, rectSelf.getWidth(), rectSelf.getHeight(),
+				rectDst.getX(), 0, rectDst.getWidth(), rectDst.getHeight());
 	}
 
 	@Override
@@ -1300,10 +1305,9 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 			return false;
 		}
 		RectBox rectSelf = getRectBox();
-		RectBox a = new RectBox(0, rectSelf.getY(), rectSelf.getWidth(), rectSelf.getHeight());
 		RectBox rectDst = getRectBox();
-		RectBox b = new RectBox(0, rectDst.getY(), rectDst.getWidth(), rectDst.getHeight());
-		return a.intersects(b);
+		return CollisionHelper.checkAABBvsAABB(0, rectSelf.getY(), rectSelf.getWidth(), rectSelf.getHeight(), 0,
+				rectDst.getY(), rectDst.getWidth(), rectDst.getHeight());
 	}
 
 	@Override
