@@ -32,31 +32,31 @@ public class ActorTreeSet {
 
 	protected boolean isDirty;
 
-	private SortedList<ActorSet> subSets = new SortedList<>();
+	private final SortedList<ActorSet> _subSets = new SortedList<>();
 
-	private ActorSet generalSet = new ActorSet();
+	private final ActorSet _generalSet = new ActorSet();
 
 	public ActorTreeSet() {
-		this.subSets.add(this.generalSet);
+		this._subSets.add(this._generalSet);
 	}
 
 	public void clear() {
-		if (subSets != null) {
-			subSets.clear();
+		if (_subSets != null) {
+			_subSets.clear();
 		}
-		if (generalSet != null) {
-			generalSet.clear();
+		if (_generalSet != null) {
+			_generalSet.clear();
 		}
 	}
 
 	public LIterator<Actor> iterator() {
-		return new TasIterator(this.subSets);
+		return new TasIterator(this._subSets);
 	}
 
 	public Actor getOnlyCollisionObjectsAt(float x, float y) {
 		for (LIterator<Actor> it = iterator(); it.hasNext();) {
 			Actor a = it.next();
-			if (a.getRectBox().contains(x, y)) {
+			if (a.getRectBox().intersects(x, y)) {
 				return a;
 			}
 		}
@@ -66,7 +66,7 @@ public class ActorTreeSet {
 	public Actor getOnlyCollisionObjectsAt(float x, float y, Object tag) {
 		for (LIterator<Actor> it = iterator(); it.hasNext();) {
 			Actor a = it.next();
-			if (a.getRectBox().contains(x, y) && a.getTag() == tag) {
+			if (a.getRectBox().intersects(x, y) && a.getTag() == tag) {
 				return a;
 			}
 		}
@@ -83,7 +83,7 @@ public class ActorTreeSet {
 		int idx = 0;
 		for (; iter.hasNext();) {
 			Actor actor = iter.next();
-			if (actor.getRectBox().contains(x, y)) {
+			if (actor.getRectBox().intersects(x, y)) {
 				int actorSeq = actor.getLastPaintSeqNum();
 				if (actorSeq > seq) {
 					tmp = actor;
@@ -93,7 +93,7 @@ public class ActorTreeSet {
 			}
 		}
 		if (idx == 0) {
-			if (tmp.getRectBox().contains(x, y)) {
+			if (tmp.getRectBox().intersects(x, y)) {
 				return tmp;
 			} else {
 				return null;
@@ -104,7 +104,7 @@ public class ActorTreeSet {
 
 	public int size() {
 		int size = 0;
-		for (LIterator<ActorSet> i = this.subSets.listIterator(); i.hasNext(); size += (i
+		for (LIterator<ActorSet> i = this._subSets.listIterator(); i.hasNext(); size += (i
 				.next()).size()) {
 		}
 		return size;
@@ -114,26 +114,26 @@ public class ActorTreeSet {
 		if (o == null) {
 			throw new LSysException("Null actor !");
 		} else {
-			return this.generalSet.add(o);
+			return this._generalSet.add(o);
 		}
 	}
 
 	public boolean remove(Actor o) {
-		return this.generalSet.remove(o);
+		return this._generalSet.remove(o);
 	}
 
 	public boolean contains(Actor o) {
-		return this.generalSet.contains(o);
+		return this._generalSet.contains(o);
 	}
 
 	public Object[] toActors() {
-		return generalSet.toArray();
+		return _generalSet.toArray();
 	}
 
 	public void sendToFront(Actor actor) {
-		if (generalSet != null) {
-			synchronized (generalSet) {
-				Actor[] o = generalSet.toArray();
+		if (_generalSet != null) {
+			synchronized (_generalSet) {
+				Actor[] o = _generalSet.toArray();
 				int size = o.length;
 				if (o == null || size <= 0 || (o[size - 1] == actor)) {
 					return;
@@ -147,16 +147,16 @@ public class ActorTreeSet {
 						break;
 					}
 				}
-				generalSet.clear();
-				generalSet.addAll(o);
+				_generalSet.clear();
+				_generalSet.addAll(o);
 			}
 		}
 	}
 
 	public void sendToBack(Actor actor) {
-		if (generalSet != null) {
-			synchronized (generalSet) {
-				Actor[] o = generalSet.toArray();
+		if (_generalSet != null) {
+			synchronized (_generalSet) {
+				Actor[] o = _generalSet.toArray();
 				int size = o.length;
 				if (o == null || size <= 0 || (o[0] == actor)) {
 					return;
@@ -170,8 +170,8 @@ public class ActorTreeSet {
 						break;
 					}
 				}
-				generalSet.clear();
-				generalSet.addAll(o);
+				_generalSet.clear();
+				_generalSet.addAll(o);
 			}
 		}
 	}

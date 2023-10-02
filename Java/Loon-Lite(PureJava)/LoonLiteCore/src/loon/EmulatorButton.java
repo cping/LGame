@@ -103,7 +103,7 @@ public class EmulatorButton {
 		}
 		if (flag) {
 			if (nid == id) {
-				onClick = bounds.contains(x, y);
+				onClick = bounds.intersects(x, y);
 				if (_monitor != null) {
 					if (onClick) {
 						_monitor.call();
@@ -112,7 +112,7 @@ public class EmulatorButton {
 			}
 		} else {
 			if (!onClick) {
-				onClick = bounds.contains(x, y);
+				onClick = bounds.intersects(x, y);
 				id = nid;
 				if (onClick && _monitor != null) {
 					_monitor.call();
@@ -127,7 +127,7 @@ public class EmulatorButton {
 			return this;
 		}
 		if (!onClick) {
-			onClick = bounds.contains(x, y);
+			onClick = bounds.intersects(x, y);
 			id = 0;
 			if (onClick && _monitor != null) {
 				try {

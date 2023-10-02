@@ -1560,8 +1560,7 @@ public class Vector2f implements Serializable, SetXY, XY {
 		} else if (shape instanceof Ellipse) {
 			return inEllipse((Ellipse) shape);
 		}
-		return CollisionHelper.contains(shape, new Point(this.x, this.y))
-				|| CollisionHelper.intersects(shape, new Point(this.x, this.y));
+		return CollisionHelper.checkPointvsPolygon(this.x, this.y, shape.getPoints(), 1f);
 	}
 
 	public float[] toFloat() {

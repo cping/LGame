@@ -160,7 +160,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 			RectBox treeArea1 = this.bspTree.getArea();
 			RectBox result1 = new RectBox();
 			RectBox result2 = new RectBox();
-			for (; !treeArea1.contains(bounds) && idx < MAX_SIZE;) {
+			for (; !treeArea1.intersects(bounds) && idx < MAX_SIZE;) {
 				RectBox newArea;
 				BSPCollisionNode newTop;
 				if (bounds.getX() < treeArea1.getX()) {
@@ -346,7 +346,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 		if (node != null) {
 			RectBox newBounds = this.getActorBounds(obj);
 			BSPCollisionNode bspNode;
-			if (!this.bspTree.getArea().contains(newBounds)) {
+			if (!this.bspTree.getArea().intersects(newBounds)) {
 				for (; node != null;) {
 					bspNode = node.getBSPNode();
 					node.remove();
@@ -361,7 +361,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 				while (node != null) {
 					bspNode = node.getBSPNode();
 					bspArea = bspNode.getArea();
-					if (bspArea.contains(newBounds)) {
+					if (bspArea.intersects(newBounds)) {
 						for (CollisionNode rNode2 = getNodeForActor(obj); rNode2 != null; rNode2 = rNode2.getNext()) {
 							if (rNode2 != node) {
 								BSPCollisionNode rNode1 = rNode2.getBSPNode();
@@ -371,7 +371,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 						}
 						return;
 					}
-					if (!bspArea.intersects(newBounds)) {
+					if (!bspArea.contains(newBounds)) {
 						BSPCollisionNode rNode = node.getBSPNode();
 						node.remove();
 						this.checkRemoveNode(rNode);
@@ -382,7 +382,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 				node = getNodeForActor(obj);
 				if (node != null) {
 					for (bspNode = node.getBSPNode(); bspNode != null
-							&& !bspNode.getArea().contains(newBounds); bspNode = bspNode.getParent()) {
+							&& !bspNode.getArea().intersects(newBounds); bspNode = bspNode.getParent()) {
 
 					}
 					if (bspNode == null) {
@@ -452,7 +452,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 				for (; cacheNodeStack.size() != 0 && idx < MAX_SIZE;) {
 					BSPCollisionNode node = (BSPCollisionNode) cacheNodeStack.removeLast();
 					synchronized (node) {
-						if (node.getArea().intersects(r[0], r[1], r[2], r[3])) {
+						if (node.getArea().contains(r[0], r[1], r[2], r[3])) {
 							LIterator<CollisionObject> i = node.getActorsIterator();
 							for (; i.hasNext();) {
 								CollisionObject left = i.next();
@@ -504,7 +504,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 				}
 				while (cacheNodeStack.size() != 0) {
 					BSPCollisionNode node = (BSPCollisionNode) cacheNodeStack.removeLast();
-					if (node.getArea().intersects(r)) {
+					if (node.getArea().contains(r)) {
 						CollisionObject res = this.checkForOnlyCollision(ignore, node, query);
 						if (res != null) {
 							return res;
@@ -534,7 +534,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 				int idx = 0;
 				for (; cacheNodeStack.size() != 0 && idx < MAX_SIZE;) {
 					BSPCollisionNode node = (BSPCollisionNode) cacheNodeStack.removeLast();
-					if (node.getArea().contains(r)) {
+					if (node.getArea().intersects(r)) {
 						CollisionObject res = this.checkForOnlyCollision(actor, node, query);
 						if (res != null) {
 							return res;
@@ -557,7 +557,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 
 	private CollisionObject getOnlyIntersectingUp(RectBox r, CollisionQuery query, CollisionObject actor,
 			BSPCollisionNode start) {
-		for (; start != null && !start.getArea().contains(r);) {
+		for (; start != null && !start.getArea().intersects(r);) {
 			CollisionObject res = this.checkForOnlyCollision(actor, start, query);
 			if (res != null) {
 				return res;

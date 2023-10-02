@@ -33,6 +33,7 @@ import loon.geom.Vector2f;
 import loon.geom.XY;
 import loon.geom.XYZ;
 import loon.geom.XYZW;
+import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
 
@@ -856,6 +857,47 @@ public final class CollisionHelper extends ShapeUtils {
 		return collision;
 	}
 
+	public static final boolean checkPointvsPolygon(XY pos, float[] vertices) {
+		return checkPointvsPolygon(pos, vertices, 1f);
+	}
+
+	public static final boolean checkPointvsPolygon(XY pos, float[] vertices, float size) {
+		return checkPointvsPolygon(pos.getX(), pos.getY(), vertices, size);
+	}
+
+	public static final boolean checkPointvsPolygon(float px, float py, float[] vertices, float size) {
+		final int length = vertices.length;
+		boolean collision = false;
+		int i, j;
+		for (i = 0, j = length - 2; i < length; i += 2) {
+			if (((vertices[i + 1] > py) != (vertices[j + 1] > py))
+					&& (px < (vertices[j] - vertices[i]) * (py - vertices[i + 1]) / (vertices[j + 1] - vertices[i + 1])
+							+ vertices[i])) {
+				collision = !collision;
+			}
+			j = i;
+		}
+		if (collision) {
+			return true;
+		}
+		for (i = 0; i < length; i += 2) {
+			float p1x = vertices[i];
+			float p1y = vertices[i + 1];
+			float p2x, p2y;
+			if (i == length - 2) {
+				p2x = vertices[0];
+				p2y = vertices[1];
+			} else {
+				p2x = vertices[i + 2];
+				p2y = vertices[i + 3];
+			}
+			if (checkPointvsLine(px, py, p1x, p1y, p2x, p2y, size)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public static final boolean checkPointvsArc(float px, float py, float ax, float ay, float arcRadius,
 			float arcHeading, float arcAngle) {
 		return checkPointvsArc(px, py, ax, ay, arcRadius, arcHeading, arcAngle, 0f);
@@ -1011,7 +1053,7 @@ public final class CollisionHelper extends ShapeUtils {
 	}
 
 	public static final <T extends XY> boolean checkPolygonvsPolygon(TArray<T> p1, TArray<T> p2) {
-		return checkPolygonvsPolygon(p1, p2, false);
+		return checkPolygonvsPolygon(p1, p2, true);
 	}
 
 	public static final <T extends XY> boolean checkPolygonvsPolygon(TArray<T> p1, TArray<T> p2, boolean inside) {
@@ -1038,6 +1080,46 @@ public final class CollisionHelper extends ShapeUtils {
 			}
 		}
 		return false;
+	}
+
+	public static final boolean checkPolygonvsPolygon(final float[] points1, final float[] points2) {
+		final Vector2f normal = Vector2f.ZERO();
+		final float[] poly1 = CollectionUtils.copyOf(points1);
+		final float[] poly2 = CollectionUtils.copyOf(points2);
+		final float[][] polygons = { poly1, poly2 };
+		float minA, maxA, projected, minB, maxB;
+		int j;
+		for (int i = 0; i < polygons.length; i++) {
+			float[] polygon = polygons[i];
+			for (int i1 = 0; i1 < polygon.length; i1 += 2) {
+				int i2 = (i1 + 2) % polygon.length;
+				normal.set(polygon[i2 + 1] - polygon[i1 + 1], polygon[i1] - polygon[i2]);
+				minA = maxA = -1;
+				for (j = 0; j < poly1.length; j += 2) {
+					projected = normal.x * poly1[j] + normal.y * poly1[j + 1];
+					if (minA == -1 || projected < minA) {
+						minA = projected;
+					}
+					if (maxA == -1 || projected > maxA) {
+						maxA = projected;
+					}
+				}
+				minB = maxB = -1;
+				for (j = 0; j < poly2.length; j += 2) {
+					projected = normal.x * poly2[j] + normal.y * poly2[j + 1];
+					if (minB == -1 || projected < minB) {
+						minB = projected;
+					}
+					if (maxB == -1 || projected > maxB) {
+						maxB = projected;
+					}
+				}
+				if (maxA < minB || maxB < minA) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 
 	public final static boolean checkAngle(float angle, float actual, float offset) {

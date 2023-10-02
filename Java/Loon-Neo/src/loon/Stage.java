@@ -505,7 +505,7 @@ public abstract class Stage extends Screen {
 
 	public ActionObject findObject(float x, float y) {
 		for (ActionObject o : _objects) {
-			if ((o.getX() == x && o.getY() == y) || o.getRectBox().contains(x, y)) {
+			if ((o.getX() == x && o.getY() == y) || o.getRectBox().intersects(x, y)) {
 				return o;
 			}
 		}

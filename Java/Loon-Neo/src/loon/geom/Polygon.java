@@ -114,6 +114,8 @@ public class Polygon extends Shape implements BoxSize {
 		return new Vector2f(x1 + (uA * (x2 - x1)), y1 + (uA * (y2 - y1)));
 	}
 
+	private final TArray<Float> _tempPoints = new TArray<Float>();
+
 	private boolean allowDups = false;
 
 	private boolean closed = true;
@@ -221,17 +223,17 @@ public class Polygon extends Shape implements BoxSize {
 		if (hasVertex(x, y) && (!allowDups)) {
 			return this;
 		}
+		_tempPoints.clear();
 		final int size = points.length;
-		final TArray<Float> tempPoints = new TArray<Float>();
 		for (int i = 0; i < size; i++) {
-			tempPoints.add(points[i]);
+			_tempPoints.add(points[i]);
 		}
-		tempPoints.add(x);
-		tempPoints.add(y);
-		int length = tempPoints.size;
+		_tempPoints.add(x + getX());
+		_tempPoints.add(y + getY());
+		int length = _tempPoints.size;
 		this.points = new float[length];
 		for (int i = 0; i < length; i++) {
-			points[i] = tempPoints.get(i);
+			points[i] = _tempPoints.get(i);
 		}
 		if (x > maxX) {
 			maxX = x;
@@ -247,7 +249,6 @@ public class Polygon extends Shape implements BoxSize {
 		}
 		findCenter();
 		calculateRadius();
-
 		pointsDirty = true;
 		return this;
 	}

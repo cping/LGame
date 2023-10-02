@@ -75,7 +75,7 @@ public class CollisionMask {
 			int limitY, int interval) {
 		Polygon split = null;
 		Polygon result = null;
-		TArray<PointF[]> points = new TArray<>();
+		TArray<PointF[]> points = new TArray<PointF[]>();
 		PointF[] tmpPoint;
 		int x1, y1, x2, y2;
 		boolean secondPoint;
@@ -109,7 +109,7 @@ public class CollisionMask {
 		}
 		split = makePolygon(points);
 		if (split != null) {
-			points = new TArray<>();
+			points = new TArray<PointF[]>();
 
 			for (int x = startX; x < limitX - interval; x += interval) {
 				secondPoint = false;
@@ -173,7 +173,7 @@ public class CollisionMask {
 	 * @return
 	 */
 	public TArray<Vector2f> convertPoints(float[] vertices) {
-		TArray<Vector2f> vectores = new TArray<>();
+		TArray<Vector2f> vectores = new TArray<Vector2f>();
 		for (int i = 0; i < vertices.length; i = i + 2) {
 			vectores.add(new Vector2f(vertices[i], vertices[i + 1]));
 		}
@@ -188,9 +188,8 @@ public class CollisionMask {
 	 */
 	public static float[] getRectVertices(RectBox rect) {
 		FloatArray vertices = new FloatArray();
-		float x1 = rect.x, y1 = rect.y, x2 = rect.x + rect.width, y2 = rect.y,
-				x3 = rect.x + rect.width, y3 = rect.y + rect.height, x4 = rect.x,
-				y4 = rect.y + rect.height;
+		float x1 = rect.x, y1 = rect.y, x2 = rect.x + rect.width, y2 = rect.y, x3 = rect.x + rect.width,
+				y3 = rect.y + rect.height, x4 = rect.x, y4 = rect.y + rect.height;
 		vertices.add(x1);
 		vertices.add(y1);
 		vertices.add(x2);

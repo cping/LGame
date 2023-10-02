@@ -23,6 +23,7 @@ package loon.geom;
 
 import java.io.Serializable;
 
+import loon.action.collision.CollisionHelper;
 import loon.action.sprite.ShapeEntity;
 import loon.canvas.LColor;
 import loon.utils.CollectionUtils;
@@ -113,6 +114,25 @@ public abstract class Shape implements Serializable, IArray, XY, SetXY {
 
 	public Vector2f getCenterPos() {
 		return new Vector2f(getCenterX(), getCenterY());
+	}
+
+	public boolean inPoint(XY pos) {
+		return inPoint(pos.getX(), pos.getY(), 1f);
+	}
+
+	public boolean inPoint(XY pos, float size) {
+		return inPoint(pos.getX(), pos.getY(), size);
+	}
+
+	public boolean inPoint(float px, float py, float size) {
+		return CollisionHelper.checkPointvsPolygon(px, py, this.getPoints(), size);
+	}
+
+	public boolean inShape(Shape shape) {
+		if (shape == null) {
+			return false;
+		}
+		return CollisionHelper.checkPolygonvsPolygon(this.getPoints(), shape.getPoints());
 	}
 
 	@Override
@@ -371,20 +391,21 @@ public abstract class Shape implements Serializable, IArray, XY, SetXY {
 		return -1;
 	}
 
-	public boolean contains(float x, float y) {
+	public boolean contains(float x, float y, float size) {
+		return inPoint(x, y, size);
+	}
 
+	public boolean contains(float x, float y) {
 		checkPoints();
 		if (points.length == 0) {
 			return false;
 		}
-
 		boolean result = false;
 		float xnew, ynew;
 		float xold, yold;
 		float x1, y1;
 		float x2, y2;
-		int npoints = points.length;
-
+		final int npoints = points.length;
 		xold = points[npoints - 2];
 		yold = points[npoints - 1];
 		for (int i = 0; i < npoints; i += 2) {
@@ -407,7 +428,6 @@ public abstract class Shape implements Serializable, IArray, XY, SetXY {
 			xold = xnew;
 			yold = ynew;
 		}
-
 		return result;
 	}
 
@@ -415,45 +435,38 @@ public abstract class Shape implements Serializable, IArray, XY, SetXY {
 		if (shape == null) {
 			return false;
 		}
-
 		checkPoints();
-
 		boolean result = false;
-		float points[] = getPoints();
-		float thatPoints[] = shape.getPoints();
+		final float points[] = getPoints();
+		final float thatPoints[] = shape.getPoints();
 		int length = points.length;
 		int thatLength = thatPoints.length;
 		float unknownA;
 		float unknownB;
-
 		if (!closed()) {
 			length -= 2;
 		}
 		if (!shape.closed()) {
 			thatLength -= 2;
 		}
-
 		for (int i = 0; i < length; i += 2) {
 			int iNext = i + 2;
 			if (iNext >= points.length) {
 				iNext = 0;
 			}
-
 			for (int j = 0; j < thatLength; j += 2) {
 				int jNext = j + 2;
 				if (jNext >= thatPoints.length) {
 					jNext = 0;
 				}
-
-				unknownA = (((points[iNext] - points[i]) * (float) (thatPoints[j + 1] - points[i + 1]))
+				unknownA = (((points[iNext] - points[i]) * (thatPoints[j + 1] - points[i + 1]))
 						- ((points[iNext + 1] - points[i + 1]) * (thatPoints[j] - points[i])))
 						/ (((points[iNext + 1] - points[i + 1]) * (thatPoints[jNext] - thatPoints[j]))
 								- ((points[iNext] - points[i]) * (thatPoints[jNext + 1] - thatPoints[j + 1])));
-				unknownB = (((thatPoints[jNext] - thatPoints[j]) * (float) (thatPoints[j + 1] - points[i + 1]))
+				unknownB = (((thatPoints[jNext] - thatPoints[j]) * (thatPoints[j + 1] - points[i + 1]))
 						- ((thatPoints[jNext + 1] - thatPoints[j + 1]) * (thatPoints[j] - points[i])))
 						/ (((points[iNext + 1] - points[i + 1]) * (thatPoints[jNext] - thatPoints[j]))
 								- ((points[iNext] - points[i]) * (thatPoints[jNext + 1] - thatPoints[j + 1])));
-
 				if (unknownA >= 0 && unknownA <= 1 && unknownB >= 0 && unknownB <= 1) {
 					result = true;
 					break;
