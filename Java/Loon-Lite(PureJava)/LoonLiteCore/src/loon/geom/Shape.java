@@ -75,7 +75,17 @@ public abstract class Shape implements Serializable, IArray, XY, SetXY {
 		scaleX = scaleY = 1f;
 	}
 
+	public Shape setLocation(XY pos) {
+		if (pos == null) {
+			return this;
+		}
+		return setLocation(pos.getX(), pos.getY());
+	}
+
 	public Shape setLocation(float x, float y) {
+		if (this.x != x || this.y != y) {
+			this.pointsDirty = true;
+		}
 		setX(x);
 		setY(y);
 		return this;
@@ -86,6 +96,7 @@ public abstract class Shape implements Serializable, IArray, XY, SetXY {
 	protected abstract void createPoints();
 
 	public Shape translate(float deltaX, float deltaY) {
+		this.pointsDirty = true;
 		setX(x + deltaX);
 		setY(y + deltaY);
 		return this;
@@ -113,6 +124,7 @@ public abstract class Shape implements Serializable, IArray, XY, SetXY {
 	@Override
 	public void setX(float x) {
 		if (x != this.x || x == 0) {
+			this.pointsDirty = true;
 			float dx = x - this.x;
 			this.x = x;
 			if ((points == null) || (center == null)) {
@@ -131,6 +143,7 @@ public abstract class Shape implements Serializable, IArray, XY, SetXY {
 	@Override
 	public void setY(float y) {
 		if (y != this.y || y == 0) {
+			this.pointsDirty = true;
 			float dy = y - this.y;
 			this.y = y;
 			if ((points == null) || (center == null)) {
@@ -155,12 +168,6 @@ public abstract class Shape implements Serializable, IArray, XY, SetXY {
 	public float length() {
 		checkPoints();
 		return MathUtils.sqrt(x * x + y * y);
-	}
-
-	public void setLocation(Vector2f loc) {
-		checkPoints();
-		setX(loc.x);
-		setY(loc.y);
 	}
 
 	public float getCenterX() {

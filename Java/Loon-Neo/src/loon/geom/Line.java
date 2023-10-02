@@ -21,6 +21,7 @@
 package loon.geom;
 
 import loon.LSystem;
+import loon.action.collision.CollisionHelper;
 import loon.action.map.Config;
 import loon.action.map.Field2D;
 import loon.utils.MathUtils;
@@ -166,8 +167,14 @@ public class Line extends Shape {
 		set(start, end);
 	}
 
-	public void set(float[] start, float[] end) {
+	@Override
+	public Line setLocation(float x, float y) {
+		return set(x, y, end.x, end.y);
+	}
+
+	public Line set(float[] start, float[] end) {
 		set(start[0], start[1], end[0], end[1]);
+		return this;
 	}
 
 	public Vector2f getStart() {
@@ -218,7 +225,7 @@ public class Line extends Shape {
 		return points;
 	}
 
-	public void set(Vector2f start, Vector2f end) {
+	public Line set(Vector2f start, Vector2f end) {
 		super.pointsDirty = true;
 		if (this.start == null) {
 			this.start = new Vector2f();
@@ -232,17 +239,21 @@ public class Line extends Shape {
 
 		vec = new Vector2f(end);
 		vec.sub(start);
-
-		this.setLocation(start.x, start.y);
+		setX(start.x);
+		setY(start.y);
+		return this;
 	}
 
-	public void set(float sx, float sy, float ex, float ey) {
+	public Line set(float sx, float sy, float ex, float ey) {
 		super.pointsDirty = true;
 		start.set(sx, sy);
 		end.set(ex, ey);
 		float dx = (ex - sx);
 		float dy = (ey - sy);
 		vec.set(dx, dy);
+		setX(start.x);
+		setY(start.y);
+		return this;
 	}
 
 	public float getDX() {
@@ -341,6 +352,24 @@ public class Line extends Shape {
 			count++;
 		}
 		return points;
+	}
+
+	@Override
+	public boolean contains(XY xy) {
+		if (xy == null) {
+			return false;
+		}
+		return contains(xy.getX(), xy.getY());
+	}
+
+	@Override
+	public boolean contains(float x, float y) {
+		return CollisionHelper.checkPointvsLine(x, y, this.getX1(), this.getY1(), this.getX2(), this.getY2());
+	}
+
+	public boolean inEllipse(Ellipse e) {
+		return CollisionHelper.checkLinevsEllipse(getX1(), getY1(), getX2(), getY2(), e.getRealX(), e.getRealY(),
+				e.getRadius1(), e.getRadius2());
 	}
 
 	public float distance(Vector2f point) {

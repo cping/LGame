@@ -41,6 +41,21 @@ import loon.utils.TArray;
  */
 public final class CollisionHelper extends ShapeUtils {
 
+	final private static int MAX_ITERATIONS = 12;
+
+	final private static float[] innerPolygonCoef, outerPolygonCoef;
+
+	static {
+		innerPolygonCoef = new float[MAX_ITERATIONS + 1];
+		outerPolygonCoef = new float[MAX_ITERATIONS + 1];
+		for (int t = 0; t <= MAX_ITERATIONS; t++) {
+			int numNodes = 4 << t;
+			innerPolygonCoef[t] = 0.5f / MathUtils.cos(4f * MathUtils.acos(0f) / numNodes);
+			outerPolygonCoef[t] = 0.5f / (MathUtils.cos(2f * MathUtils.acos(0f) / numNodes)
+					* MathUtils.cos(2f * MathUtils.acos(0f) / numNodes));
+		}
+	}
+
 	private static final RectBox rectTemp1 = new RectBox();
 
 	private static final RectBox rectTemp2 = new RectBox();
@@ -575,6 +590,147 @@ public final class CollisionHelper extends ShapeUtils {
 		return false;
 	}
 
+	public static final boolean checkEllipsevsLine(XYZW ellipse, XYZW line) {
+		return checkLinevsEllipse(line.getX(), line.getY(), line.getZ(), line.getW(), ellipse.getX(), ellipse.getY(),
+				ellipse.getZ(), ellipse.getW());
+	}
+
+	public static boolean checkEllipsevsLine(float x1, float y1, float x2, float y2, float cx, float cy, float dx,
+			float dy) {
+		return checkLinevsEllipse(x1, y1, x2, y2, cx, cy, dx, dy);
+	}
+
+	public static final boolean checkEllipsevsAABB(XYZW ellipse, XYZW rect) {
+		return checkEllipsevsAABB(ellipse.getX(), ellipse.getY(), ellipse.getZ(), ellipse.getW(), rect.getX(),
+				rect.getY(), rect.getZ(), rect.getW());
+	}
+
+	public static final boolean checkEllipsevsAABB(XYZW ellipse, XY p1, XY p2) {
+		return checkEllipsevsAABB(ellipse.getX(), ellipse.getY(), ellipse.getZ(), ellipse.getW(), p1.getX(), p1.getY(),
+				p2.getX(), p2.getY());
+	}
+
+	public static final boolean checkEllipsevsAABB(float cx, float cy, float dx, float dy, float ax, float ay, float aw,
+			float ah) {
+		final boolean pointed = checkPointvsAABB(cx, cy, ax, ay, aw, ah);
+		final boolean right = checkLinevsEllipse(ax, ay, ax + aw, ay, cx, cy, dx, dy);
+		final boolean bottom = checkLinevsEllipse(ax, ay + ah, ax + aw, ay + ah, cx, cy, dx, dy);
+		final boolean left = checkLinevsEllipse(ax, ay, ax, ay + ah, cx, cy, dx, dy);
+		final boolean top = checkLinevsEllipse(ax + aw, ay, ax + aw, ay + ah, cx, cy, dx, dy);
+		return pointed || right || bottom || left || top;
+	}
+
+	public static final boolean checkEllipsevsPoint(float cx, float cy, float dx, float dy, float px, float py) {
+		return checkPointvsEllipse(px, py, cx, cy, dx, dy);
+	}
+
+	private static boolean iterate(float x, float y, float c0x, float c0y, float c2x, float c2y, float rr) {
+		for (int t = 1; t <= MAX_ITERATIONS; t++) {
+			float c1x = (c0x + c2x) * innerPolygonCoef[t];
+			float c1y = (c0y + c2y) * innerPolygonCoef[t];
+			float tx = x - c1x;
+			float ty = y - c1y;
+			if (tx * tx + ty * ty <= rr) {
+				return true;
+			}
+			float t2x = c2x - c1x;
+			float t2y = c2y - c1y;
+			if (tx * t2x + ty * t2y >= 0 && tx * t2x + ty * t2y <= t2x * t2x + t2y * t2y && (ty * t2x - tx * t2y >= 0
+					|| rr * (t2x * t2x + t2y * t2y) >= (ty * t2x - tx * t2y) * (ty * t2x - tx * t2y))) {
+				return true;
+			}
+			float t0x = c0x - c1x;
+			float t0y = c0y - c1y;
+			if (tx * t0x + ty * t0y >= 0 && tx * t0x + ty * t0y <= t0x * t0x + t0y * t0y && (ty * t0x - tx * t0y <= 0
+					|| rr * (t0x * t0x + t0y * t0y) >= (ty * t0x - tx * t0y) * (ty * t0x - tx * t0y))) {
+				return true;
+			}
+			float c3x = (c0x + c1x) * outerPolygonCoef[t];
+			float c3y = (c0y + c1y) * outerPolygonCoef[t];
+			if ((c3x - x) * (c3x - x) + (c3y - y) * (c3y - y) < rr) {
+				c2x = c1x;
+				c2y = c1y;
+				continue;
+			}
+			float c4x = c1x - c3x + c1x;
+			float c4y = c1y - c3y + c1y;
+			if ((c4x - x) * (c4x - x) + (c4y - y) * (c4y - y) < rr) {
+				c0x = c1x;
+				c0y = c1y;
+				continue;
+			}
+			float t3x = c3x - c1x;
+			float t3y = c3y - c1y;
+			if (ty * t3x - tx * t3y <= 0
+					|| rr * (t3x * t3x + t3y * t3y) > (ty * t3x - tx * t3y) * (ty * t3x - tx * t3y)) {
+				if (tx * t3x + ty * t3y > 0) {
+					if (MathUtils.abs(tx * t3x + ty * t3y) <= t3x * t3x + t3y * t3y
+							|| (x - c3x) * (c0x - c3x) + (y - c3y) * (c0y - c3y) >= 0) {
+						c2x = c1x;
+						c2y = c1y;
+						continue;
+					}
+				} else if (-(tx * t3x + ty * t3y) <= t3x * t3x + t3y * t3y
+						|| (x - c4x) * (c2x - c4x) + (y - c4y) * (c2y - c4y) >= 0) {
+					c0x = c1x;
+					c0y = c1y;
+					continue;
+				}
+			}
+			return false;
+		}
+		return false;
+	}
+
+	public static final boolean checkEllipsevsEllipse(XYZW e1, XYZW e2) {
+		return checkEllipsevsEllipse(e1.getX(), e1.getY(), e1.getZ(), e1.getW(), e2.getX(), e2.getY(), e2.getZ(),
+				e2.getW());
+	}
+
+	public static final boolean checkEllipsevsEllipse(float x0, float y0, float w0, float h0, float x1, float y1,
+			float w1, float h1) {
+		final float x = MathUtils.abs(x1 - x0) * h1;
+		final float y = MathUtils.abs(y1 - y0) * w1;
+		w0 *= h1;
+		h0 *= w1;
+		final float r = w1 * h1;
+		if (x * x + (h0 - y) * (h0 - y) <= r * r || (w0 - x) * (w0 - x) + y * y <= r * r || x * h0 + y * w0 <= w0 * h0
+				|| ((x * h0 + y * w0 - w0 * h0) * (x * h0 + y * w0 - w0 * h0) <= r * r * (w0 * w0 + h0 * h0)
+						&& x * w0 - y * h0 >= -h0 * h0 && x * w0 - y * h0 <= w0 * w0)) {
+			return true;
+		} else {
+			if ((x - w0) * (x - w0) + (y - h0) * (y - h0) <= r * r || (x <= w0 && y - r <= h0)
+					|| (y <= h0 && x - r <= w0)) {
+				return iterate(x, y, w0, 0, 0, h0, r * r);
+			}
+			return false;
+		}
+	}
+
+	public static final boolean checkEllipsevsCircle(XYZW e, XY pos, float r) {
+		return checkEllipsevsCircle(e, pos.getX(), pos.getY(), r);
+	}
+
+	public static final boolean checkEllipsevsCircle(XYZW e, float x1, float y1, float r) {
+		return checkEllipsevsCircle(e.getX(), e.getY(), e.getZ(), e.getW(), x1, y1, r);
+	}
+
+	public static final boolean checkEllipsevsCircle(float x0, float y0, float w, float h, float rx, float ry,
+			float r) {
+		final float x = MathUtils.abs(rx - x0);
+		final float y = MathUtils.abs(ry - y0);
+		if (x * x + (h - y) * (h - y) <= r * r || (w - x) * (w - x) + y * y <= r * r || x * h + y * w <= w * h
+				|| ((x * h + y * w - w * h) * (x * h + y * w - w * h) <= r * r * (w * w + h * h)
+						&& x * w - y * h >= -h * h && x * w - y * h <= w * w)) {
+			return true;
+		} else {
+			if ((x - w) * (x - w) + (y - h) * (y - h) <= r * r || (x <= w && y - r <= h) || (y <= h && x - r <= w)) {
+				return iterate(x, y, w, 0, 0, h, r * r);
+			}
+			return false;
+		}
+	}
+
 	public static final boolean checkSpherevsSphere(XYZ p1, float r1, XYZ p2, float r2) {
 		return checkSpherevsSphere(p1.getX(), p1.getY(), p1.getZ(), r1, p2.getX(), p2.getY(), p2.getZ(), r2);
 	}
@@ -758,6 +914,38 @@ public final class CollisionHelper extends ShapeUtils {
 		distY = closestY - cy;
 		final float distance = MathUtils.sqrt((distX * distX) + (distY * distY));
 		return distance <= diameter / 2f;
+	}
+
+	public static boolean checkLinevsEllipse(XYZW line, XYZW ellipse) {
+		return checkLinevsEllipse(line.getX(), line.getY(), line.getZ(), line.getW(), ellipse.getX(), ellipse.getY(),
+				ellipse.getZ(), ellipse.getW());
+	}
+
+	public static boolean checkLinevsEllipse(float x1, float y1, float x2, float y2, XYZW ellipse) {
+		return checkLinevsEllipse(x1, y1, x2, y2, ellipse.getX(), ellipse.getY(), ellipse.getZ(), ellipse.getW());
+	}
+
+	public static boolean checkLinevsEllipse(float x1, float y1, float x2, float y2, float cx, float cy, float dx,
+			float dy) {
+		final float nx1 = x1 - cx;
+		final float nx2 = x2 - cx;
+		final float ny1 = y1 - cy;
+		final float ny2 = y2 - cy;
+		final float len = MathUtils.pow(nx2 - nx1, 2f) / dx / dx + MathUtils.pow(ny2 - ny1, 2f) / dy / dy;
+		final float uB = nx1 * 2f * (nx2 - nx1) / dx / dx + 2f * ny1 * (ny2 - ny1) / dy / dy;
+		final float uC = nx1 * nx1 / dx / dx + ny1 * ny1 / dy / dy - 1f;
+		final float distance = uB * uB - 4f * len * uC;
+		if (distance == 0f) {
+			final float t = -uB / 2f / len;
+			return t >= 0 && t <= 1;
+		} else if (distance > 0f) {
+			final float sqrt = MathUtils.sqrt(distance);
+			final float t1 = (-uB + sqrt) / 2f / len;
+			final float t2 = (-uB - sqrt) / 2f / len;
+			return (t1 >= 0 && t1 <= 1f) || (t2 >= 0 && t2 <= 1f);
+		} else {
+			return false;
+		}
 	}
 
 	public static final boolean checkLinevsLine(XYZW l1, XYZW l2) {

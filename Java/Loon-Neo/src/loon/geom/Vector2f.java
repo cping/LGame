@@ -1445,7 +1445,7 @@ public class Vector2f implements Serializable, SetXY, XY {
 	}
 
 	public boolean inCircle(Circle c) {
-		return CollisionHelper.checkPointvsCircle(this.x, this.y, c.getX(), c.getY(), c.getDiameter());
+		return CollisionHelper.checkPointvsCircle(this.x, this.y, c.getRealX(), c.getRealY(), c.getDiameter());
 	}
 
 	public boolean inCircle(float cx, float cy, float d) {
@@ -1457,11 +1457,17 @@ public class Vector2f implements Serializable, SetXY, XY {
 	}
 
 	public boolean inEllipse(Ellipse e) {
+		if (e == null) {
+			return false;
+		}
 		return CollisionHelper.checkPointvsEllipse(this.x, this.y, e.getRealX(), e.getRealY(), e.getDiameter1(),
 				e.getDiameter2());
 	}
 
 	public boolean inEllipse(XYZW rect) {
+		if (rect == null) {
+			return false;
+		}
 		return CollisionHelper.checkPointvsEllipse(this.x, this.y, rect.getX(), rect.getY(), rect.getZ(), rect.getW());
 	}
 
@@ -1470,10 +1476,16 @@ public class Vector2f implements Serializable, SetXY, XY {
 	}
 
 	public boolean inRect(XYZW rect) {
+		if (rect == null) {
+			return false;
+		}
 		return CollisionHelper.checkPointvsAABB(this.x, this.y, rect);
 	}
 
 	public boolean inRect(RectBox rect) {
+		if (rect == null) {
+			return false;
+		}
 		return CollisionHelper.checkPointvsAABB(this.x, this.y, rect.getX(), rect.getY(), rect.getWidth(),
 				rect.getHeight());
 	}
@@ -1483,14 +1495,23 @@ public class Vector2f implements Serializable, SetXY, XY {
 	}
 
 	public boolean inLine(XYZW line) {
+		if (line == null) {
+			return false;
+		}
 		return CollisionHelper.checkPointvsLine(this.x, this.y, line.getX(), line.getY(), line.getZ(), line.getW());
 	}
 
 	public boolean inLine(Line line) {
+		if (line == null) {
+			return false;
+		}
 		return CollisionHelper.checkPointvsLine(this.x, this.y, line.getX1(), line.getY1(), line.getX2(), line.getY2());
 	}
 
 	public boolean inLine(Line line, float size) {
+		if (line == null) {
+			return false;
+		}
 		return CollisionHelper.checkPointvsLine(this.x, this.y, line.getX1(), line.getY1(), line.getX2(), line.getY2(),
 				size);
 	}
@@ -1500,6 +1521,9 @@ public class Vector2f implements Serializable, SetXY, XY {
 	}
 
 	public boolean inTriangle(Triangle2f t) {
+		if (t == null) {
+			return false;
+		}
 		return CollisionHelper.checkPointvsTriangle(this.x, this.y, t.getX1(), t.getY1(), t.getX2(), t.getY2(),
 				t.getX3(), t.getY3());
 	}
@@ -1509,7 +1533,17 @@ public class Vector2f implements Serializable, SetXY, XY {
 	}
 
 	public boolean inPolygon(Polygon poly) {
+		if (poly == null) {
+			return false;
+		}
 		return CollisionHelper.checkPointvsPolygon(this.x, this.y, poly.getVertices());
+	}
+
+	public <T extends XY> boolean inPolygon(TArray<T> poly) {
+		if (poly == null) {
+			return false;
+		}
+		return CollisionHelper.checkPointvsPolygon(this.x, this.y, poly);
 	}
 
 	public boolean collided(Shape shape) {
@@ -1528,10 +1562,6 @@ public class Vector2f implements Serializable, SetXY, XY {
 		}
 		return CollisionHelper.contains(shape, new Point(this.x, this.y))
 				|| CollisionHelper.intersects(shape, new Point(this.x, this.y));
-	}
-
-	public <T extends XY> boolean inPolygon(TArray<T> poly) {
-		return CollisionHelper.checkPointvsPolygon(this.x, this.y, poly);
 	}
 
 	public float[] toFloat() {

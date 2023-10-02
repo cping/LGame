@@ -45,32 +45,36 @@ public class GravityResult implements Poolable {
 		return normal;
 	}
 
-	public void setNormal(Vector2f normal) {
-		this.normal = normal;
+	public GravityResult setNormal(Vector2f n) {
+		this.normal = n;
+		return this;
 	}
 
 	public Vector2f getPosition() {
 		return position;
 	}
 
-	public void setPosition(Vector2f position) {
-		this.position = position;
+	public GravityResult setPosition(Vector2f p) {
+		this.position = p;
+		return this;
 	}
 
 	public boolean isCollide() {
 		return isCollided;
 	}
 
-	public void setCollide(boolean isCollide) {
-		this.isCollided = isCollide;
+	public GravityResult setCollide(boolean c) {
+		this.isCollided = c;
+		return this;
 	}
 
 	public int getSteps() {
 		return steps;
 	}
 
-	public void setSteps(int stepsTaken) {
-		this.steps = stepsTaken;
+	public GravityResult setSteps(int s) {
+		this.steps = s;
+		return this;
 	}
 
 	@Override

@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a cpy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -34,7 +34,7 @@ import loon.utils.TArray;
 public class Matrix3 implements Serializable, XY {
 
 	/**
-	 *
+	 * 
 	 */
 	private static final long serialVersionUID = 3501619461925966551L;
 
@@ -557,10 +557,6 @@ public class Matrix3 implements Serializable, XY {
 		mata[M22] = v22;
 	}
 
-	public FloatBuffer getAsFloatBuffer() {
-		return BufferUtils.newFloatBuffer(val, 0, val.length);
-	}
-
 	public void set(float x1, float y1, float x2, float y2) {
 		set(x1, y1, 1, x2, y2, 1);
 	}
@@ -1009,6 +1005,10 @@ public class Matrix3 implements Serializable, XY {
 		result[0] = a;
 		result[1] = b;
 		result[2] = c;
+	}
+
+	public FloatBuffer getAsFloatBuffer() {
+		return BufferUtils.newFloatBuffer(val, 0, val.length);
 	}
 
 	public static Matrix3 getRotationMatrixExact(float ax, float ay, float az) {

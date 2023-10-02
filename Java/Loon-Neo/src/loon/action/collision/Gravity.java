@@ -24,6 +24,7 @@ import loon.LRelease;
 import loon.LSystem;
 import loon.action.ActionBind;
 import loon.geom.RectBox;
+import loon.geom.Shape;
 
 /**
  * 自0.3.2版起新增类，用以绑定任意一个LGame对象进行简单的重力牵引操作。
@@ -225,6 +226,10 @@ public class Gravity implements LRelease {
 	public Gravity setBounds(float x, float y, float w, float h) {
 		bounds.setBounds(x, y, w, h);
 		return this;
+	}
+	
+	public boolean collided(Shape shape) {
+		return _hitRect.collided(shape);
 	}
 
 	public boolean hitInPath(float scale, Gravity other) {

@@ -22,6 +22,7 @@
 package loon.geom;
 
 import loon.LSystem;
+import loon.action.collision.CollisionHelper;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 import loon.utils.StringUtils;
@@ -69,6 +70,19 @@ public class Point extends Shape {
 	public Point(Point p) {
 		this.checkPoints();
 		this.setLocation(p);
+	}
+
+	@Override
+	public boolean contains(XY xy) {
+		if (xy == null) {
+			return false;
+		}
+		return contains(xy.getX(), xy.getY());
+	}
+
+	@Override
+	public boolean contains(float px, float py) {
+		return CollisionHelper.checkPointvsAABB(px, py, x, y, 1f, 1f);
 	}
 
 	@Override

@@ -56,23 +56,27 @@ public class Hitbox implements LRelease {
 		return this;
 	}
 
+	private boolean checkCollision(Shape src, Shape dst) {
+		return src.contains(dst) || src.intersects(dst);
+	}
+
 	private boolean checkContainsCollision(Shape src, XY pos) {
 		if (src instanceof Line) {
-			((Line) src).contains(pos);
+			return ((Line) src).contains(pos);
 		} else if (src instanceof RectBox) {
-			((RectBox) src).contains(pos);
+			return ((RectBox) src).contains(pos);
 		} else if (src instanceof Circle) {
-			((Circle) src).contains(pos);
+			return ((Circle) src).contains(pos);
 		} else if (src instanceof Ellipse) {
-			((Ellipse) src).contains(pos);
+			return ((Ellipse) src).contains(pos);
 		} else if (src instanceof Point) {
-			((Point) src).contains(pos);
+			return ((Point) src).contains(pos);
 		} else if (src instanceof Polygon) {
-			((Polygon) src).contains(pos);
+			return ((Polygon) src).contains(pos);
 		} else if (src instanceof Triangle2f) {
-			((Triangle2f) src).contains(pos);
+			return ((Triangle2f) src).contains(pos);
 		} else if (src instanceof Curve) {
-			((Curve) src).intersects(pos);
+			return ((Curve) src).intersects(pos);
 		}
 		return src.contains(pos);
 	}
@@ -104,6 +108,24 @@ public class Hitbox implements LRelease {
 			}
 		}
 		return false;
+	}
+
+	public boolean collided(Shape shape) {
+		for (Shape s : _shapes) {
+			if (checkCollision(s, shape)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public Shape collidedResult(Shape shape) {
+		for (Shape s : _shapes) {
+			if (checkCollision(s, shape)) {
+				return s;
+			}
+		}
+		return null;
 	}
 
 	public Shape containsResult(Hitbox other) {

@@ -661,6 +661,11 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 		return lines;
 	}
 
+	@Override
+	public boolean contains(XY xy) {
+		return contains(xy.getX(), xy.getY());
+	}
+
 	/**
 	 * 检查是否包含指定坐标
 	 * 
@@ -683,8 +688,7 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 	 * @return
 	 */
 	public boolean contains(float x, float y, float width, float height) {
-		return (x >= this.x && y >= this.y && ((x + width) <= (this.x + this.width))
-				&& ((y + height) <= (this.y + this.height)));
+		return this.x < x && this.x + this.width > x && this.y < y && this.y + this.height > y;
 	}
 
 	/**
@@ -697,15 +701,24 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 		return contains(rect.x, rect.y, rect.width, rect.height);
 	}
 
-	public boolean contains(LObject<?> rect) {
+	public <T> boolean contains(LObject<T> rect) {
 		return contains(rect.getCollisionArea());
 	}
 
 	public boolean contains(Circle circle) {
-		float xmin = circle.x - circle.boundingCircleRadius;
-		float xmax = xmin + 2f * circle.boundingCircleRadius;
-		float ymin = circle.y - circle.boundingCircleRadius;
-		float ymax = ymin + 2f * circle.boundingCircleRadius;
+		final float xmin = circle.getX();
+		final float xmax = xmin + circle.getDiameter();
+		final float ymin = circle.getY();
+		final float ymax = ymin + circle.getDiameter();
+		return ((xmin > x && xmin < x + width) && (xmax > x && xmax < x + width))
+				&& ((ymin > y && ymin < y + height) && (ymax > y && ymax < y + height));
+	}
+
+	public boolean contains(Ellipse ellipse) {
+		final float xmin = ellipse.getX();
+		final float xmax = xmin + ellipse.getDiameter1();
+		final float ymin = ellipse.getY();
+		final float ymax = ymin + ellipse.getDiameter2();
 		return ((xmin > x && xmin < x + width) && (xmax > x && xmax < x + width))
 				&& ((ymin > y && ymin < y + height) && (ymax > y && ymax < y + height));
 	}
@@ -720,27 +733,6 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 
 	public boolean contains(Vector4f v) {
 		return contains(v.x, v.y);
-	}
-
-	public boolean contains(Point point) {
-		if (this.x < point.x && this.x + this.width > point.x && this.y < point.y && this.y + this.height > point.y) {
-			return true;
-		}
-		return false;
-	}
-
-	public boolean contains(PointF point) {
-		if (this.x < point.x && this.x + this.width > point.x && this.y < point.y && this.y + this.height > point.y) {
-			return true;
-		}
-		return false;
-	}
-
-	public boolean contains(PointI point) {
-		if (this.x < point.x && this.x + this.width > point.x && this.y < point.y && this.y + this.height > point.y) {
-			return true;
-		}
-		return false;
 	}
 
 	/**
@@ -787,7 +779,8 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 	 * @return
 	 */
 	public boolean intersects(float x, float y, float width, float height) {
-		return x + width > this.x && x < this.x + this.width && y + height > this.y && y < this.y + this.height;
+		return (x >= this.x && y >= this.y && ((x + width) <= (this.x + this.width))
+				&& ((y + height) <= (this.y + this.height)));
 	}
 
 	/**
@@ -1051,11 +1044,11 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 	 * @return
 	 */
 	public final boolean intersectsLine(final float x1, final float y1, final float x2, final float y2) {
-		return contains(x1, y1) || contains(x2, y2);
+		return inLine(x1, y1, x2, y2);
 	}
 
 	public final boolean intersects(final Line line) {
-		return contains(line.getX1(), line.getY1()) || contains(line.getX2(), line.getY2());
+		return inLine(line);
 	}
 
 	/**
@@ -1356,6 +1349,9 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 	}
 
 	public boolean inPoint(XY pos) {
+		if (pos == null) {
+			return false;
+		}
 		return CollisionHelper.checkPointvsAABB(pos.getX(), pos.getY(), this.x, this.y, this.width, this.height);
 	}
 
@@ -1364,12 +1360,18 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 	}
 
 	public boolean inCircle(XYZ cir) {
+		if (cir == null) {
+			return false;
+		}
 		return CollisionHelper.checkAABBvsCircle(this.x, this.y, this.width, this.height, cir.getX(), cir.getY(),
 				cir.getZ());
 	}
 
 	public boolean inCircle(Circle c) {
-		return CollisionHelper.checkAABBvsCircle(this.x, this.y, this.width, this.height, c.getX(), c.getY(),
+		if (c == null) {
+			return false;
+		}
+		return CollisionHelper.checkAABBvsCircle(this.x, this.y, this.width, this.height, c.getRealX(), c.getRealY(),
 				c.getDiameter());
 	}
 
@@ -1377,12 +1379,30 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 		return CollisionHelper.checkAABBvsCircle(this.x, this.y, this.width, this.height, cx, cy, d);
 	}
 
+	public boolean inEllipse(float cx, float cy, float dx, float dy) {
+		return CollisionHelper.checkEllipsevsAABB(cx, cy, dx, dy, this.x, this.y, this.width, this.height);
+	}
+
+	public boolean inEllipse(Ellipse e) {
+		if (e == null) {
+			return false;
+		}
+		return CollisionHelper.checkEllipsevsAABB(e.getRealX(), e.getRealY(), e.getRadius1(), e.getRadius2(), this.x,
+				this.y, this.width, this.height);
+	}
+
 	public boolean inRect(XYZW rect) {
+		if (rect == null) {
+			return false;
+		}
 		return CollisionHelper.checkAABBvsAABB(this.x, this.y, this.width, this.height, rect.getX(), rect.getY(),
 				rect.getZ(), rect.getW());
 	}
 
 	public boolean inRect(RectBox rect) {
+		if (rect == null) {
+			return false;
+		}
 		return CollisionHelper.checkAABBvsAABB(this.x, this.y, this.width, this.height, rect.getX(), rect.getY(),
 				rect.getWidth(), rect.getHeight());
 	}
@@ -1392,11 +1412,17 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 	}
 
 	public boolean inLine(XYZW line) {
+		if (line == null) {
+			return false;
+		}
 		return CollisionHelper.checkLinevsAABB(line.getX(), line.getY(), line.getZ(), line.getW(), this.x, this.y,
 				this.width, this.height);
 	}
 
 	public boolean inLine(Line line) {
+		if (line == null) {
+			return false;
+		}
 		return CollisionHelper.checkLinevsAABB(line.getX1(), line.getY1(), line.getX2(), line.getY2(), this.x, this.y,
 				this.width, this.height);
 	}
@@ -1406,7 +1432,17 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 	}
 
 	public boolean inPolygon(Polygon poly) {
+		if (poly == null) {
+			return false;
+		}
 		return CollisionHelper.checkAABBvsPolygon(this.x, this.y, this.width, this.height, poly.getVertices(), true);
+	}
+
+	public <T extends XY> boolean inPolygon(TArray<T> poly) {
+		if (poly == null) {
+			return false;
+		}
+		return CollisionHelper.checkAABBvsPolygon(this.x, this.y, this.width, this.height, poly, true);
 	}
 
 	public boolean collided(Shape shape) {
@@ -1420,12 +1456,10 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 			return inPoint((Point) shape);
 		} else if (shape instanceof Circle) {
 			return inCircle((Circle) shape);
+		} else if (shape instanceof Ellipse) {
+			return inEllipse((Ellipse) shape);
 		}
 		return CollisionHelper.contains(this, shape) || CollisionHelper.intersects(this, shape);
-	}
-
-	public <T extends XY> boolean inPolygon(TArray<T> poly) {
-		return CollisionHelper.checkAABBvsPolygon(this.x, this.y, this.width, this.height, poly, true);
 	}
 
 	@Override

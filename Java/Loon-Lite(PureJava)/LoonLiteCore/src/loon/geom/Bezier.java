@@ -90,11 +90,8 @@ public class Bezier {
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("Bezier");
-		builder.kv("controlPoint1", controlPoint1)
-		.comma()
-		.kv("controlPoint2", controlPoint2)
-		.comma()
-		.kv("endPosition", endPosition);
+		builder.kv("controlPoint1", controlPoint1).comma().kv("controlPoint2", controlPoint2).comma().kv("endPosition",
+				endPosition);
 		return builder.toString();
 	}
 }

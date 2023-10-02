@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -25,15 +25,15 @@ import loon.utils.TArray;
 
 public class TriangleBasic implements Triangle {
 	/**
-	 *
+	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
 	private static final float EPSILON = 0.0000000001f;
 
-	private final TArray<PointF> poly = new TArray<>();
+	private final TArray<PointF> poly = new TArray<PointF>();
 
-	private final TArray<PointF> tris = new TArray<>();
+	private final TArray<PointF> tris = new TArray<PointF>();
 
 	private boolean tried;
 
@@ -90,14 +90,12 @@ public class TriangleBasic implements Triangle {
 			PointF contourP = contour.get(p);
 			PointF contourQ = contour.get(q);
 
-			sA += contourP.getX() * contourQ.getY() - contourQ.getX()
-					* contourP.getY();
+			sA += contourP.getX() * contourQ.getY() - contourQ.getX() * contourP.getY();
 		}
 		return sA * 0.5f;
 	}
 
-	private boolean insideTriangle(float Ax, float Ay, float Bx, float By,
-			float Cx, float Cy, float Px, float Py) {
+	private boolean insideTriangle(float Ax, float Ay, float Bx, float By, float Cx, float Cy, float Px, float Py) {
 		float ax, ay, bx, by, cx, cy, apx, apy, bpx, bpy, cpx, cpy;
 		float cCROSSap, bCROSScp, aCROSSbp;
 
@@ -217,7 +215,6 @@ public class TriangleBasic implements Triangle {
 
 		return true;
 	}
-
 
 	@Override
 	public void startHole() {

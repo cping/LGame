@@ -21,8 +21,11 @@
  */
 package loon.geom;
 
+import loon.LSystem;
+import loon.action.collision.CollisionHelper;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
+import loon.utils.StringUtils;
 import loon.utils.TArray;
 
 public class Ellipse extends Shape {
@@ -45,6 +48,53 @@ public class Ellipse extends Shape {
 		return out;
 	}
 
+	public static Ellipse at(String v) {
+		if (StringUtils.isEmpty(v)) {
+			return new Ellipse();
+		}
+		String[] result = StringUtils.split(v, LSystem.COMMA);
+		int len = result.length;
+		if (len > 3) {
+			try {
+				float cx = Float.parseFloat(result[0].trim());
+				float cy = Float.parseFloat(result[1].trim());
+				float r1 = Float.parseFloat(result[2].trim());
+				float r2 = Float.parseFloat(result[2].trim());
+				return new Ellipse(cx, cy, r1, r2);
+			} catch (Exception ex) {
+			}
+		}
+		return new Ellipse();
+	}
+
+	/**
+	 * 构建一个椭圆形,以中心圆点x与坐标y开始构建,radius1与radius2为半径
+	 * 
+	 * @param centerX
+	 * @param centerY
+	 * @param radius1
+	 * @param radius2
+	 * @return
+	 */
+	public static Ellipse oval(float centerX, float centerY, float radius1, float radius2) {
+		return new Ellipse(centerX, centerY, radius1, radius2);
+	}
+
+	/**
+	 * 构建一个椭圆形,以矩形坐标为基础构建,以x为左上角起始点,以y为右上角起始点,width与height为最大直径
+	 * 
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
+	 * @return
+	 */
+	public static Ellipse rect(float x, float y, float width, float height) {
+		final float r1 = width / 2f;
+		final float r2 = height / 2f;
+		return new Ellipse(x + r1, y + r2, r1, r2);
+	}
+
 	protected static final int DEFAULT_SEGMENT_MAX_COUNT = 50;
 
 	private int segmentCount;
@@ -57,14 +107,49 @@ public class Ellipse extends Shape {
 
 	private float _end = 359;
 
+	/**
+	 * 构建一个椭圆
+	 */
+	private Ellipse() {
+		this(0f, 0f, 0f, 0f);
+	}
+
+	/**
+	 * loon的ellipse默认使用中心原点与半径模式构建,以矩形为基础构建请使用ellipse.rect函数
+	 * 
+	 * @param centerPointX
+	 * @param centerPointY
+	 * @param radius1
+	 * @param radius2
+	 */
 	public Ellipse(float centerPointX, float centerPointY, float radius1, float radius2) {
 		this.set(centerPointX, centerPointY, radius1, radius2);
 	}
 
+	/**
+	 * loon的ellipse默认使用中心原点与半径模式构建,以矩形为基础构建请使用ellipse.rect函数
+	 * 
+	 * @param centerPointX
+	 * @param centerPointY
+	 * @param radius1
+	 * @param radius2
+	 * @param segmentCount
+	 */
 	public Ellipse(float centerPointX, float centerPointY, float radius1, float radius2, int segmentCount) {
 		this.set(centerPointX, centerPointY, radius1, radius2, segmentCount);
 	}
 
+	/**
+	 * loon的ellipse默认使用中心原点与半径模式构建,以矩形为基础构建请使用ellipse.rect函数
+	 * 
+	 * @param centerPointX
+	 * @param centerPointY
+	 * @param radius1
+	 * @param radius2
+	 * @param start
+	 * @param end
+	 * @param segmentCount
+	 */
 	public Ellipse(float centerPointX, float centerPointY, float radius1, float radius2, float start, float end,
 			int segmentCount) {
 		_start = start;
@@ -72,19 +157,108 @@ public class Ellipse extends Shape {
 		set(centerPointX, centerPointY, radius1, radius2, segmentCount);
 	}
 
-	public void set(float centerPointX, float centerPointY, float radius1, float radius2) {
-		set(centerPointX, centerPointY, radius1, radius2, DEFAULT_SEGMENT_MAX_COUNT);
+	public Ellipse set(float centerPointX, float centerPointY, float radius1, float radius2) {
+		return set(centerPointX, centerPointY, radius1, radius2, DEFAULT_SEGMENT_MAX_COUNT);
 	}
 
-	public void set(float centerPointX, float centerPointY, float radius1, float radius2, int segmentCount) {
+	public Ellipse set(float centerPointX, float centerPointY, float radius1, float radius2, int segmentCount) {
 		this.x = centerPointX - radius1;
 		this.y = centerPointY - radius2;
 		this.radius1 = radius1;
 		this.radius2 = radius2;
 		this.segmentCount = segmentCount;
 		checkPoints();
+		return this;
 	}
-	
+
+	public boolean inEllipse(Ellipse ellipse) {
+		if (ellipse == null) {
+			return false;
+		}
+		return CollisionHelper.checkEllipsevsEllipse(getRealX(), getRealY(), getRadius1(), getRadius2(),
+				ellipse.getRealX(), ellipse.getRealY(), ellipse.getRadius1(), ellipse.getRadius2());
+	}
+
+	public boolean inRect(RectBox rect) {
+		if (rect == null) {
+			return false;
+		}
+		return CollisionHelper.checkEllipsevsAABB(getRealX(), getRealY(), getRadius1(), getRadius2(), rect.x, rect.y,
+				rect.width, rect.height);
+	}
+
+	public boolean inCircle(Circle circle) {
+		if (circle == null) {
+			return false;
+		}
+		return CollisionHelper.checkEllipsevsCircle(getRealX(), getRealY(), getRadius1(), getRadius2(),
+				circle.getRealX(), circle.getRealY(), circle.getRadius());
+	}
+
+	public boolean inLine(Line line) {
+		if (line == null) {
+			return false;
+		}
+		return CollisionHelper.checkLinevsEllipse(line.getX1(), line.getY1(), line.getX2(), line.getY2(), getRealX(),
+				getRealY(), getRadius1(), getRadius2());
+	}
+
+	public boolean inPoint(XY pos) {
+		if (pos == null) {
+			return false;
+		}
+		return CollisionHelper.checkPointvsEllipse(pos.getX(), pos.getY(), getRealX(), getRealY(), getRadius1(),
+				getRadius2());
+	}
+
+	/**
+	 * 检查当前圆形与指定形状是否相交
+	 */
+	@Override
+	public boolean intersects(Shape shape) {
+		if (shape instanceof Circle) {
+			return inCircle((Circle) shape);
+		} else if (shape instanceof RectBox) {
+			return inRect((RectBox) shape);
+		}else if (shape instanceof Line) {
+			return inLine((Line) shape);
+		} else if (shape instanceof Ellipse) {
+			return inEllipse((Ellipse) shape);
+		} else {
+			return super.intersects(shape);
+		}
+	}
+
+	@Override
+	public boolean contains(XY xy) {
+		if (xy == null) {
+			return false;
+		}
+		return contains(xy.getX(), xy.getY());
+	}
+
+	@Override
+	public boolean contains(float x, float y) {
+		return CollisionHelper.checkPointvsEllipse(x, y, getRealX(), getRealY(), getDiameter1(), getDiameter2());
+	}
+
+	/**
+	 * 返回当前圆形的中心X点
+	 * 
+	 */
+	@Override
+	public float getCenterX() {
+		return getRealX();
+	}
+
+	/**
+	 * 返回当前圆形的中心Y点
+	 */
+	@Override
+	public float getCenterY() {
+		return getRealY();
+	}
+
 	public float getRealX() {
 		return this.x + radius1;
 	}
@@ -210,16 +384,18 @@ public class Ellipse extends Shape {
 		return _start;
 	}
 
-	public void setStart(float start) {
+	public Ellipse setStart(float start) {
 		this._start = start;
+		return this;
 	}
 
 	public float getEnd() {
 		return _end;
 	}
 
-	public void setEnd(float end) {
+	public Ellipse setEnd(float end) {
 		this._end = end;
+		return this;
 	}
 
 	public float getMinorRadius() {

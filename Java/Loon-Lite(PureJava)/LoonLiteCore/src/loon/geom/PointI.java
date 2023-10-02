@@ -182,11 +182,11 @@ public class PointI implements XY, SetXY {
 	public String toCSS() {
 		return this.x + "px " + this.y + "px";
 	}
-	
+
 	public ObservableXY<PointI> observable(XYChange<PointI> v) {
 		return ObservableXY.at(v, this, this);
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

@@ -61,31 +61,31 @@ public class GravityHandler implements LRelease {
 
 	};
 
-	private EaseTimer easeTimer;
+	private EaseTimer _easeTimer;
 
-	private EasingMode easingMode;
+	private EasingMode _easingMode;
 
-	private CollisionWorld collisionWorld;
+	private CollisionWorld _collisionWorld;
 
 	protected CollisionFilter worldCollisionFilter;
 
-	private ObjectMap<ActionBind, Gravity> gravityMap;
+	private ObjectMap<ActionBind, Gravity> _gravityMap;
 
-	private GravityUpdate listener;
+	private GravityUpdate _listener;
 
-	private boolean closed;
+	private boolean _closed;
 
-	private int width, height;
+	private int _width, _height;
 
-	private float bindWidth;
+	private float _bindWidth;
 
-	private float bindHeight;
+	private float _bindHeight;
 
-	private float bindX;
+	private float _bindX;
 
-	private float bindY;
+	private float _bindY;
 
-	private float velocityX, velocityY;
+	private float _velocityX, _velocityY;
 
 	boolean isBounded;
 
@@ -129,9 +129,9 @@ public class GravityHandler implements LRelease {
 
 	public GravityHandler(int w, int h, EasingMode ease, float duration) {
 		this.setLimit(w, h);
-		this.easingMode = ease;
-		this.easeTimer = new EaseTimer(duration, easingMode);
-		this.gravityMap = new ObjectMap<ActionBind, Gravity>();
+		this._easingMode = ease;
+		this._easeTimer = new EaseTimer(duration, _easingMode);
+		this._gravityMap = new ObjectMap<ActionBind, Gravity>();
 		this.objects = new TArray<Gravity>(10);
 		this.pendingAdd = new TArray<Gravity>(10);
 		this.pendingRemove = new TArray<Gravity>(10);
@@ -158,8 +158,8 @@ public class GravityHandler implements LRelease {
 		} else {
 			return this;
 		}
-		this.width = w;
-		this.height = h;
+		this._width = w;
+		this._height = h;
 		if (rectLimit == null) {
 			this.rectLimit = new RectBox(0, 0, w, h);
 		} else {
@@ -169,7 +169,7 @@ public class GravityHandler implements LRelease {
 	}
 
 	public void update(long elapsedTime) {
-		if (closed || !isEnabled) {
+		if (_closed || !isEnabled) {
 			return;
 		}
 		commits();
@@ -177,10 +177,10 @@ public class GravityHandler implements LRelease {
 			return;
 		}
 
-		easeTimer.action(elapsedTime);
+		_easeTimer.action(elapsedTime);
 
 		final float delta = MathUtils.max(Duration.toS(elapsedTime), LSystem.MIN_SECONE_SPEED_FIXED)
-				* easeTimer.getProgress();
+				* _easeTimer.getProgress();
 
 		for (Gravity g : objects) {
 
@@ -192,25 +192,25 @@ public class GravityHandler implements LRelease {
 				final float gravity = g.g;
 
 				if (syncActionBind) {
-					bindX = g.bind.getX();
-					bindY = g.bind.getY();
-					bindWidth = g.bind.getWidth();
-					bindHeight = g.bind.getHeight();
-					g.bounds.setBounds(bindX, bindY, bindWidth, bindHeight);
+					_bindX = g.bind.getX();
+					_bindY = g.bind.getY();
+					_bindWidth = g.bind.getWidth();
+					_bindHeight = g.bind.getHeight();
+					g.bounds.setBounds(_bindX, _bindY, _bindWidth, _bindHeight);
 				} else {
-					bindX = g.bounds.getX();
-					bindY = g.bounds.getY();
-					bindWidth = g.bounds.getWidth();
-					bindHeight = g.bounds.getHeight();
+					_bindX = g.bounds.getX();
+					_bindY = g.bounds.getY();
+					_bindWidth = g.bounds.getWidth();
+					_bindHeight = g.bounds.getHeight();
 				}
 
 				if (angularVelocity != 0) {
 
 					final float rotate = g.bind.getRotation() + angularVelocity * delta;
-					int[] newObjectRect = MathUtils.getLimit(bindX, bindY, bindWidth, bindHeight, rotate);
+					int[] newObjectRect = MathUtils.getLimit(_bindX, _bindY, _bindWidth, _bindHeight, rotate);
 
-					bindWidth = newObjectRect[2];
-					bindHeight = newObjectRect[3];
+					_bindWidth = newObjectRect[2];
+					_bindHeight = newObjectRect[3];
 
 					newObjectRect = null;
 
@@ -222,18 +222,18 @@ public class GravityHandler implements LRelease {
 					g.velocityY += accelerationY * delta;
 				}
 
-				velocityX = g.velocityX;
-				velocityY = g.velocityY;
-				if (velocityX != 0 || velocityY != 0) {
+				_velocityX = g.velocityX;
+				_velocityY = g.velocityY;
+				if (_velocityX != 0 || _velocityY != 0) {
 
-					velocityX = bindX + (velocityX * delta);
-					velocityY = bindY + (velocityY * delta);
+					_velocityX = _bindX + (_velocityX * delta);
+					_velocityY = _bindY + (_velocityY * delta);
 
 					if (gravity != 0 && g.velocityX != 0) {
-						velocityX += g.gadd;
+						_velocityX += g.gadd;
 					}
 					if (gravity != 0 && g.velocityY != 0) {
-						velocityY += g.gadd;
+						_velocityY += g.gadd;
 					}
 					if (gravity != 0) {
 						g.gadd += gravity;
@@ -241,46 +241,46 @@ public class GravityHandler implements LRelease {
 
 					if (isBounded) {
 						if (g.bounce != 0f) {
-							final float limitWidth = width - bindWidth;
-							final float limitHeight = height - bindHeight;
-							final boolean chageWidth = bindX >= limitWidth;
-							final boolean chageHeight = bindY >= limitHeight;
+							final float limitWidth = _width - _bindWidth;
+							final float limitHeight = _height - _bindHeight;
+							final boolean chageWidth = _bindX >= limitWidth;
+							final boolean chageHeight = _bindY >= limitHeight;
 							if (chageWidth) {
-								bindX -= g.bounce + gravity;
+								_bindX -= g.bounce + gravity;
 								if (g.bounce > 0) {
 									g.bounce -= (g.bounce + delta) + MathUtils.random(0f, 5f);
 								} else if (g.bounce < 0) {
 									g.bounce = 0;
-									bindX = limitWidth;
+									_bindX = limitWidth;
 									g.limitX = true;
 								}
 							}
 							if (chageHeight) {
-								bindY -= g.bounce + gravity;
+								_bindY -= g.bounce + gravity;
 								if (g.bounce > 0) {
 									g.bounce -= (g.bounce + delta) + MathUtils.random(0f, 5f);
 								} else if (g.bounce < 0) {
 									g.bounce = 0;
-									bindY = limitHeight;
+									_bindY = limitHeight;
 									g.limitY = true;
 								}
 							}
 							if (chageWidth || chageHeight) {
-								movePos(g, bindX, bindY);
+								movePos(g, _bindX, _bindY);
 								if (isListener) {
-									listener.action(g, bindX, bindY);
+									_listener.action(g, _bindX, _bindY);
 								}
 								return;
 							}
 						}
-						float limitWidth = width - bindWidth;
-						float limitHeight = height - bindHeight;
-						velocityX = limitValue(g, velocityX, limitWidth);
-						velocityY = limitValue(g, velocityY, limitHeight);
+						final float limitWidth = _width - _bindWidth;
+						final float limitHeight = _height - _bindHeight;
+						_velocityX = limitValue(g, _velocityX, limitWidth);
+						_velocityY = limitValue(g, _velocityY, limitHeight);
 					}
-					movePos(g, velocityX, velocityY);
+					movePos(g, _velocityX, _velocityY);
 					if (isListener) {
-						listener.action(g, velocityX, velocityY);
+						_listener.action(g, _velocityX, _velocityY);
 					}
 				}
 			}
@@ -304,7 +304,7 @@ public class GravityHandler implements LRelease {
 	}
 
 	protected void commits() {
-		if (closed || !isEnabled) {
+		if (_closed || !isEnabled) {
 			return;
 		}
 		final int additionCount = pendingAdd.size;
@@ -353,13 +353,13 @@ public class GravityHandler implements LRelease {
 	}
 
 	public boolean contains(ActionBind o) {
-		if (closed) {
+		if (_closed) {
 			return false;
 		}
 		if (o == null) {
 			return false;
 		}
-		return gravityMap.containsKey(o);
+		return _gravityMap.containsKey(o);
 	}
 
 	public boolean contains(Gravity g) {
@@ -522,9 +522,9 @@ public class GravityHandler implements LRelease {
 	}
 
 	public Gravity add(ActionBind o, float vx, float vy, float ax, float ay, float ave) {
-		Gravity g = gravityMap.get(o);
+		Gravity g = _gravityMap.get(o);
 		if (g == null) {
-			gravityMap.put(o, (g = new Gravity(o)));
+			_gravityMap.put(o, (g = new Gravity(o)));
 		}
 		g.velocityX = vx;
 		g.velocityY = vy;
@@ -536,15 +536,15 @@ public class GravityHandler implements LRelease {
 	}
 
 	public Gravity add(ActionBind o) {
-		Gravity g = gravityMap.get(o);
+		Gravity g = _gravityMap.get(o);
 		if (g == null) {
-			gravityMap.put(o, (g = new Gravity(o)));
+			_gravityMap.put(o, (g = new Gravity(o)));
 		}
 		return add(g);
 	}
 
 	public Gravity get(ActionBind o) {
-		return gravityMap.get(o);
+		return _gravityMap.get(o);
 	}
 
 	public Gravity add(Gravity o) {
@@ -816,11 +816,11 @@ public class GravityHandler implements LRelease {
 		if (bind == null) {
 			return this;
 		}
-		if (collisionWorld != null) {
+		if (_collisionWorld != null) {
 			if (worldCollisionFilter == null) {
 				worldCollisionFilter = CollisionFilter.getDefault();
 			}
-			CollisionResult.Result result = collisionWorld.move(bind, x, y, worldCollisionFilter);
+			CollisionResult.Result result = _collisionWorld.move(bind, x, y, worldCollisionFilter);
 			if (lastX != -1 && lastY != -1) {
 				if (result.goalX != x || result.goalY != y) {
 					bind.setLocation(lastX, lastY);
@@ -861,8 +861,8 @@ public class GravityHandler implements LRelease {
 	}
 
 	public GravityHandler onUpdate(GravityUpdate listener) {
-		this.listener = listener;
-		this.isListener = listener != null;
+		this._listener = listener;
+		this.isListener = _listener != null;
 		return this;
 	}
 
@@ -875,19 +875,20 @@ public class GravityHandler implements LRelease {
 	}
 
 	public CollisionWorld getCollisionWorld() {
-		return collisionWorld;
+		return _collisionWorld;
 	}
 
-	public void setCollisionWorld(CollisionWorld world) {
-		this.collisionWorld = world;
+	public GravityHandler setCollisionWorld(CollisionWorld world) {
+		this._collisionWorld = world;
+		return this;
 	}
 
 	public EasingMode getEasingMode() {
-		return easingMode;
+		return _easingMode;
 	}
 
 	public GravityHandler setEasingMode(EasingMode ease) {
-		easeTimer.setEasingMode(ease);
+		_easeTimer.setEasingMode(ease);
 		return this;
 	}
 
@@ -900,7 +901,7 @@ public class GravityHandler implements LRelease {
 	}
 
 	public boolean isClosed() {
-		return closed;
+		return _closed;
 	}
 
 	@Override
@@ -918,12 +919,12 @@ public class GravityHandler implements LRelease {
 			pendingAdd.clear();
 			pendingAdd = null;
 		}
-		if (gravityMap != null) {
-			gravityMap.clear();
-			gravityMap = null;
+		if (_gravityMap != null) {
+			_gravityMap.clear();
+			_gravityMap = null;
 		}
 		lazyObjects = null;
-		closed = true;
+		_closed = true;
 	}
 
 }

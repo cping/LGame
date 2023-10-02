@@ -21,6 +21,7 @@
 package loon.geom;
 
 import loon.LSystem;
+import loon.action.collision.CollisionHelper;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 
@@ -29,6 +30,33 @@ public class Circle extends Ellipse {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+
+	/**
+	 * 构建一个圆形,以中心圆点x与坐标y开始构建,radius为半径
+	 * 
+	 * @param centerX
+	 * @param centerY
+	 * @param radius1
+	 * @param radius2
+	 * @return
+	 */
+	public static Circle oval(float centerX, float centerY, float radius) {
+		return new Circle(centerX, centerY, radius);
+	}
+
+	/**
+	 * 构建一个圆形,以矩形坐标为基础构建,以x为左上角起始点,以y为右上角起始点,width与height为最大直径
+	 * 
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
+	 * @return
+	 */
+	public static Circle rect(float x, float y, float width, float height) {
+		final float radius = MathUtils.min(width / 2f, height / 2f);
+		return new Circle(x + radius, y + radius, radius);
+	}
 
 	public static SetXY getRandom(Circle c, SetXY out) {
 		if (out == null) {
@@ -41,8 +69,8 @@ public class Circle extends Ellipse {
 		float x = r * MathUtils.cos(t);
 		float y = r * MathUtils.sin(t);
 
-		out.setX(c.getX() + (x * c.getRadius()));
-		out.setY(c.getY() + (y * c.getRadius()));
+		out.setX(c.getRealX() + (x * c.getRadius()));
+		out.setY(c.getRealY() + (y * c.getRadius()));
 
 		return out;
 	}
@@ -70,14 +98,14 @@ public class Circle extends Ellipse {
 	}
 
 	public static Circle at(float centerPointX, float centerPointY, float w, float h) {
-		float radius = MathUtils.max(w, h);
-		return new Circle(centerPointX, centerPointY, radius);
+		float radius = MathUtils.min(w, h);
+		return new Circle(centerPointX, centerPointY, radius / 2f);
 	}
 
 	/**
 	 * 构建一个圆形
 	 */
-	public Circle() {
+	private Circle() {
 		this(0f, 0f, 0f);
 	}
 
@@ -102,28 +130,9 @@ public class Circle extends Ellipse {
 	 */
 	public Circle(float centerPointX, float centerPointY, float boundingCircleRadius, int segment) {
 		super(centerPointX, centerPointY, boundingCircleRadius, boundingCircleRadius, segment);
-		this.x = centerPointX;
-		this.y = centerPointY;
 		this.boundingCircleRadius = boundingCircleRadius;
 		this.setLocation(x, y);
 		this.checkPoints();
-	}
-
-	/**
-	 * 返回当前圆形的中心X点
-	 * 
-	 */
-	@Override
-	public float getCenterX() {
-		return getX() + boundingCircleRadius;
-	}
-
-	/**
-	 * 返回当前圆形的中心Y点
-	 */
-	@Override
-	public float getCenterY() {
-		return getY() + boundingCircleRadius;
 	}
 
 	/**
@@ -131,12 +140,13 @@ public class Circle extends Ellipse {
 	 * 
 	 * @param boundingCircleRadius
 	 */
-	public void setRadius(float boundingCircleRadius) {
+	public Circle setRadius(float boundingCircleRadius) {
 		if (boundingCircleRadius != this.boundingCircleRadius) {
 			pointsDirty = true;
 			this.boundingCircleRadius = boundingCircleRadius;
 			setRadii(boundingCircleRadius, boundingCircleRadius);
 		}
+		return this;
 	}
 
 	/**
@@ -148,26 +158,8 @@ public class Circle extends Ellipse {
 		return boundingCircleRadius;
 	}
 
-	/**
-	 * 检查当前圆形与指定形状是否相交
-	 */
-	@Override
-	public boolean intersects(Shape shape) {
-		if (shape instanceof Circle) {
-			return collideCircle((Circle) shape);
-		} else if (shape instanceof RectBox) {
-			return intersects((RectBox) shape);
-		} else {
-			return super.intersects(shape);
-		}
-	}
-
 	public boolean intersects(RectBox other) {
-		RectBox box = other;
-		if (box.contains(x + boundingCircleRadius, y + boundingCircleRadius)) {
-			return true;
-		}
-		return collideBounds(other);
+		return inRect(other);
 	}
 
 	@Override
@@ -190,14 +182,14 @@ public class Circle extends Ellipse {
 		return boundingCircleRadius * boundingCircleRadius - (dx * dx + dy * dy);
 	}
 
-	public boolean collideCircle(Circle c) {
+	public boolean containCircle(Circle c) {
 		float dx = x - c.x;
 		float dy = y - c.y;
 		return dx * dx + dy * dy < (boundingCircleRadius + c.boundingCircleRadius)
 				* (boundingCircleRadius + c.boundingCircleRadius);
 	}
 
-	public boolean collideBounds(RectBox size) {
+	public boolean containBounds(RectBox size) {
 		float radiusDouble = boundingCircleRadius * boundingCircleRadius;
 		if (x < size.getX() - boundingCircleRadius) {
 			return false;
@@ -229,41 +221,31 @@ public class Circle extends Ellipse {
 		return true;
 	}
 
-	public boolean intersects(Line other) {
-		Vector2f lineSegmentStart = new Vector2f(other.getX1(), other.getY1());
-		Vector2f lineSegmentEnd = new Vector2f(other.getX2(), other.getY2());
-		Vector2f circleCenter = new Vector2f(getCenterX(), getCenterY());
-		Vector2f closest;
-		Vector2f segv = lineSegmentEnd.sub(lineSegmentStart);
-		Vector2f ptv = circleCenter.sub(lineSegmentStart);
-		float segvLength = segv.len();
-		float projvl = ptv.dot(segv) / segvLength;
-		if (projvl < 0) {
-			closest = lineSegmentStart;
-		} else if (projvl > segvLength) {
-			closest = lineSegmentEnd;
-		} else {
-			Vector2f projv = segv.mul(projvl / segvLength);
-			closest = lineSegmentStart.add(projv);
+	@Override
+	public boolean inEllipse(Ellipse e) {
+		return CollisionHelper.checkEllipsevsCircle(e.getRealX(), e.getRealY(), e.getRadius1(), e.getRadius2(),
+				this.getRealX(), this.getRealY(), this.getDiameter());
+	}
+
+	@Override
+	public boolean inLine(Line other) {
+		return CollisionHelper.checkLinevsCircle(other.getX1(), other.getY1(), other.getX2(), other.getY2(),
+				this.getRealX(), this.getRealY(), this.getDiameter());
+
+	}
+
+	/**
+	 * 检查当前圆形是否包含指定点
+	 * 
+	 * @param xy
+	 * @return
+	 */
+	@Override
+	public boolean contains(XY xy) {
+		if (xy == null) {
+			return false;
 		}
-		boolean intersects = circleCenter.sub(closest).lengthSquared() <= getRadius() * getRadius();
-		return intersects;
-	}
-
-	public float getLeft() {
-		return this.x - this.boundingCircleRadius;
-	}
-
-	public float getRight() {
-		return this.x + this.boundingCircleRadius;
-	}
-
-	public float getTop() {
-		return this.y - this.boundingCircleRadius;
-	}
-
-	public float getBottom() {
-		return this.y + this.boundingCircleRadius;
+		return contains(xy.getX(), xy.getY());
 	}
 
 	@Override
@@ -289,19 +271,6 @@ public class Circle extends Ellipse {
 		final float dst = dx * dx + dy * dy;
 		final float radiusSum = boundingCircleRadius + c.boundingCircleRadius;
 		return (!(radiusDiff * radiusDiff < dst) && (dst < radiusSum * radiusSum));
-	}
-
-	/**
-	 * 检查当前圆形是否包含指定点
-	 * 
-	 * @param xy
-	 * @return
-	 */
-	public boolean contains(XY xy) {
-		if (xy == null) {
-			return false;
-		}
-		return contains(xy.getX(), xy.getY());
 	}
 
 	/**

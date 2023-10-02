@@ -35,6 +35,11 @@ public class StrValue implements LRelease {
 		this.set(v);
 	}
 
+	public boolean update(String v) {
+		set(v);
+		return v != null;
+	}
+
 	public StrValue set(String v) {
 		this.value = v;
 		return this;

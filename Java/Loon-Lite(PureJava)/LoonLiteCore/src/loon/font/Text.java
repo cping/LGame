@@ -26,7 +26,6 @@ import loon.LSystem;
 import loon.canvas.LColor;
 import loon.component.layout.HorizontalAlign;
 import loon.opengl.GLEx;
-import loon.opengl.LSTRFont;
 import loon.utils.FloatArray;
 import loon.utils.MathUtils;
 import loon.utils.StrBuilder;

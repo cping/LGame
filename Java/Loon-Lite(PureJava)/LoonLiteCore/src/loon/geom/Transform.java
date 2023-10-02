@@ -175,5 +175,5 @@ public class Transform implements XYChange<Vector2f> {
 	public Affine2f getLocalTransform() {
 		return _localTransform;
 	}
-	
+
 }

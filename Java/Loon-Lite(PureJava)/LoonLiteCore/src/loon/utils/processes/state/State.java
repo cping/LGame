@@ -59,7 +59,11 @@ public class State<T> extends StateBase {
 		this._tagret = obj;
 	}
 
+	@SuppressWarnings("unchecked")
 	public T getTagret() {
+		if (this._tagret == null && this.getParent() != null && this.getParent() instanceof State) {
+			return (T) ((State<T>) this.getParent()).getTagret();
+		}
 		return this._tagret;
 	}
 

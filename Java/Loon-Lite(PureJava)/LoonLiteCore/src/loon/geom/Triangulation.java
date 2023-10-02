@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2020 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -30,11 +30,11 @@ public class Triangulation {
 	private boolean isCw;
 
 	public Triangulation(TArray<XY> points) {
-		this.points = new TArray<>();
+		this.points = new TArray<Vector2f>();
 		for (int i = 0; i < points.size(); i++) {
 			this.points.add(new Vector2f(points.get(i)));
 		}
-		this.nonconvexPoints = new TArray<>();
+		this.nonconvexPoints = new TArray<Vector2f>();
 		calcPolyOrientation();
 		calcNonConvexPoints();
 	}
@@ -142,7 +142,7 @@ public class Triangulation {
 	}
 
 	public TArray<Triangle2f> createTriangulates() {
-		TArray<Triangle2f> triangles = new TArray<>();
+		TArray<Triangle2f> triangles = new TArray<Triangle2f>();
 
 		if (points.size() <= 3) {
 			return triangles;
@@ -150,7 +150,7 @@ public class Triangulation {
 
 		int index = 1;
 
-		for (;points.size() > 3;) {
+		for (; points.size() > 3;) {
 			if (isEar(points.get(getIndex(index, -1)), points.get(index), points.get(getIndex(index, 1)))) {
 				triangles.add(new Triangle2f(points.get(getIndex(index, -1)), points.get(index),
 						points.get(getIndex(index, 1))));

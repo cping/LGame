@@ -26,11 +26,12 @@ public class TMXEllipse {
 	private int radiusX;
 	private int radiusY;
 
-	public void set(int x, int y, int width, int height) {
+	public TMXEllipse set(int x, int y, int width, int height) {
 		this.x = x + (width / 2);
 		this.y = y + (height / 2);
 		this.radiusX = width / 2;
 		this.radiusY = height / 2;
+		return this;
 	}
 
 	public int getCenterX() {

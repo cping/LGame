@@ -50,7 +50,7 @@ public class StateBuilder<T extends StateBase, TParent> extends StateBase implem
 	@Override
 	public IStateBuilder<State<T>, IStateBuilder<T, TParent>> state(String stateName) {
 		return new StateBuilder<State<T>, IStateBuilder<T, TParent>>(this, this._state, stateName,
-				State.create(_counter));
+				State.create(_counter, stateName));
 	}
 
 	@Override

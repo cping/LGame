@@ -179,13 +179,13 @@ public abstract class LayoutManager {
 	 *
 	 * @param root
 	 * @param objs
-	 * @param x
-	 * @param y
+	 * @param cx
+	 * @param cy
 	 * @param radius
 	 */
-	public final static void elementsCircle(final Screen root, final TArray<ActionBind> objs, float x, float y,
+	public final static void elementsCircle(final Screen root, final TArray<ActionBind> objs, float cx, float cy,
 			float radius) {
-		elementsCircle(root, objs, Circle.at(x, y, radius), -1f, -1f, 0f, 0f);
+		elementsCircle(root, objs, Circle.at(cx, cy, radius), -1f, -1f, 0f, 0f);
 	}
 
 	/**
