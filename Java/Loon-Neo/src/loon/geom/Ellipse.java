@@ -24,7 +24,6 @@ package loon.geom;
 import loon.LSystem;
 import loon.action.collision.CollisionHelper;
 import loon.utils.MathUtils;
-import loon.utils.NumberUtils;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
@@ -407,15 +406,6 @@ public class Ellipse extends Shape {
 		boundingCircleRadius = MathUtils.max(radius1, radius2);
 	}
 
-	@Override
-	public int hashCode() {
-		int bits = NumberUtils.floatToIntBits(getX());
-		bits += NumberUtils.floatToIntBits(getY()) * 37;
-		bits += NumberUtils.floatToIntBits(getWidth()) * 43;
-		bits += NumberUtils.floatToIntBits(getHeight()) * 47;
-		return bits ^ ((bits >> 32));
-	}
-
 	public float getStart() {
 		return _start;
 	}
@@ -456,4 +446,15 @@ public class Ellipse extends Shape {
 		return resultPolygon;
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 53;
+		int hashCode = 1;
+		hashCode = prime * LSystem.unite(hashCode, x);
+		hashCode = prime * LSystem.unite(hashCode, y);
+		hashCode = prime * LSystem.unite(hashCode, boundingCircleRadius);
+		hashCode = prime * LSystem.unite(hashCode, radius1);
+		hashCode = prime * LSystem.unite(hashCode, radius2);
+		return hashCode;
+	}
 }

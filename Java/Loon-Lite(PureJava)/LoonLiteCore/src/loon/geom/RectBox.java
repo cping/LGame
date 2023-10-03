@@ -25,7 +25,6 @@ import loon.LSystem;
 import loon.action.ActionBind;
 import loon.action.collision.CollisionHelper;
 import loon.utils.MathUtils;
-import loon.utils.NumberUtils;
 import loon.utils.StringKeyValue;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
@@ -197,7 +196,7 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 	public int width;
 
 	public int height;
-
+	
 	public RectBox() {
 		setBounds(0, 0, 0, 0);
 	}
@@ -688,7 +687,7 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 	 * @return
 	 */
 	public boolean contains(float x, float y, float width, float height) {
-		return this.x < x && this.x + this.width > x && this.y < y && this.y + this.height > y;
+		return x >= this.x && x < this.x + this.width && y >= this.y && y < this.y + this.height;
 	}
 
 	/**
@@ -1466,12 +1465,12 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = 1;
-		result = prime * result + NumberUtils.floatToIntBits(x);
-		result = prime * result + NumberUtils.floatToIntBits(y);
-		result = prime * result + NumberUtils.floatToIntBits(width);
-		result = prime * result + NumberUtils.floatToIntBits(height);
-		return result;
+		int hashCode = 1;
+		hashCode = prime * LSystem.unite(hashCode, x);
+		hashCode = prime * LSystem.unite(hashCode, y);
+		hashCode = prime * LSystem.unite(hashCode, width);
+		hashCode = prime * LSystem.unite(hashCode, height);
+		return hashCode;
 	}
 
 	@Override

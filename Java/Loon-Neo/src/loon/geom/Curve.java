@@ -20,6 +20,7 @@
  */
 package loon.geom;
 
+import loon.LSystem;
 import loon.action.collision.CollisionHelper;
 
 public class Curve extends Shape {
@@ -109,4 +110,23 @@ public class Curve extends Shape {
 	public boolean closed() {
 		return false;
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 37;
+		int hashCode = 1;
+		hashCode = prime * LSystem.unite(hashCode, x);
+		hashCode = prime * LSystem.unite(hashCode, y);
+		hashCode = prime * LSystem.unite(hashCode, p1.getX());
+		hashCode = prime * LSystem.unite(hashCode, p1.getY());
+		hashCode = prime * LSystem.unite(hashCode, c1.getX());
+		hashCode = prime * LSystem.unite(hashCode, c1.getY());
+		hashCode = prime * LSystem.unite(hashCode, p2.getX());
+		hashCode = prime * LSystem.unite(hashCode, p2.getY());
+		hashCode = prime * LSystem.unite(hashCode, c2.getX());
+		hashCode = prime * LSystem.unite(hashCode, c2.getY());
+		hashCode = prime * LSystem.unite(hashCode, segments);
+		return hashCode;
+	}
+
 }

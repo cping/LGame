@@ -24,7 +24,6 @@ package loon.geom;
 import loon.LSystem;
 import loon.action.collision.CollisionHelper;
 import loon.utils.MathUtils;
-import loon.utils.NumberUtils;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
@@ -211,6 +210,22 @@ public class Ellipse extends Shape {
 				getRadius2());
 	}
 
+	public boolean intersects(Line other) {
+		return inLine(other);
+	}
+
+	public boolean intersects(Circle other) {
+		return inCircle(other);
+	}
+
+	public boolean intersects(RectBox other) {
+		return inRect(other);
+	}
+
+	public boolean intersects(Ellipse other) {
+		return inEllipse(other);
+	}
+
 	/**
 	 * 检查当前圆形与指定形状是否相交
 	 */
@@ -220,7 +235,7 @@ public class Ellipse extends Shape {
 			return inCircle((Circle) shape);
 		} else if (shape instanceof RectBox) {
 			return inRect((RectBox) shape);
-		}else if (shape instanceof Line) {
+		} else if (shape instanceof Line) {
 			return inLine((Line) shape);
 		} else if (shape instanceof Ellipse) {
 			return inEllipse((Ellipse) shape);
@@ -240,6 +255,26 @@ public class Ellipse extends Shape {
 	@Override
 	public boolean contains(float x, float y) {
 		return CollisionHelper.checkPointvsEllipse(x, y, getRealX(), getRealY(), getDiameter1(), getDiameter2());
+	}
+
+	@Override
+	public float getLeft() {
+		return this.x;
+	}
+
+	@Override
+	public float getRight() {
+		return this.x + this.getDiameter1();
+	}
+
+	@Override
+	public float getTop() {
+		return this.y;
+	}
+
+	@Override
+	public float getBottom() {
+		return this.y + this.getDiameter2();
 	}
 
 	/**
@@ -371,15 +406,6 @@ public class Ellipse extends Shape {
 		boundingCircleRadius = MathUtils.max(radius1, radius2);
 	}
 
-	@Override
-	public int hashCode() {
-		int bits = NumberUtils.floatToIntBits(getX());
-		bits += NumberUtils.floatToIntBits(getY()) * 37;
-		bits += NumberUtils.floatToIntBits(getWidth()) * 43;
-		bits += NumberUtils.floatToIntBits(getHeight()) * 47;
-		return bits ^ ((bits >> 32));
-	}
-
 	public float getStart() {
 		return _start;
 	}
@@ -420,4 +446,15 @@ public class Ellipse extends Shape {
 		return resultPolygon;
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 53;
+		int hashCode = 1;
+		hashCode = prime * LSystem.unite(hashCode, x);
+		hashCode = prime * LSystem.unite(hashCode, y);
+		hashCode = prime * LSystem.unite(hashCode, boundingCircleRadius);
+		hashCode = prime * LSystem.unite(hashCode, radius1);
+		hashCode = prime * LSystem.unite(hashCode, radius2);
+		return hashCode;
+	}
 }

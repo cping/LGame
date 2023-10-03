@@ -273,6 +273,10 @@ public class Circle extends Ellipse {
 		return (!(radiusDiff * radiusDiff < dst) && (dst < radiusSum * radiusSum));
 	}
 
+	public boolean overlaps(Circle c) {
+		return contains(c);
+	}
+
 	/**
 	 * 检查当前圆形是否包含指定直线
 	 * 
@@ -312,7 +316,7 @@ public class Circle extends Ellipse {
 	}
 
 	public float circumferenceFloat() {
-		return 2f * (MathUtils.PI * this.boundingCircleRadius);
+		return MathUtils.TWO_PI * this.boundingCircleRadius;
 	}
 
 	public Vector2f circumferencePoint(float angle, boolean asDegrees) {
@@ -342,6 +346,16 @@ public class Circle extends Ellipse {
 		return new Vector2f(nx, ny);
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 41;
+		int hashCode = 1;
+		hashCode = prime * LSystem.unite(hashCode, x);
+		hashCode = prime * LSystem.unite(hashCode, y);
+		hashCode = prime * LSystem.unite(hashCode, boundingCircleRadius);
+		return hashCode;
+	}
+
 	public boolean equals(Circle other) {
 		if (other == null) {
 			return false;
@@ -354,4 +368,5 @@ public class Circle extends Ellipse {
 		}
 		return false;
 	}
+
 }

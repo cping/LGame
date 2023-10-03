@@ -25,7 +25,6 @@ import loon.action.collision.CollisionHelper;
 import loon.action.map.Config;
 import loon.action.map.Field2D;
 import loon.utils.MathUtils;
-import loon.utils.NumberUtils;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
@@ -685,11 +684,13 @@ public class Line extends Shape {
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + NumberUtils.floatToIntBits(start.hashCode());
-		result = prime * result + NumberUtils.floatToIntBits(end.hashCode());
-		return result;
+		final int prime = 39;
+		int hashCode = 1;
+		hashCode = prime * LSystem.unite(hashCode, getX1());
+		hashCode = prime * LSystem.unite(hashCode, getY1());
+		hashCode = prime * LSystem.unite(hashCode, getX2());
+		hashCode = prime * LSystem.unite(hashCode, getY2());
+		return hashCode;
 	}
 
 	@Override

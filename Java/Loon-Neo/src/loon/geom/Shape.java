@@ -23,6 +23,7 @@ package loon.geom;
 
 import java.io.Serializable;
 
+import loon.LSystem;
 import loon.action.collision.CollisionHelper;
 import loon.action.sprite.ShapeEntity;
 import loon.canvas.LColor;
@@ -42,7 +43,7 @@ public abstract class Shape implements Serializable, IArray, XY, SetXY {
 	private static final long serialVersionUID = 1L;
 
 	private TArray<Vector2f> _vertices;
-	
+
 	public float x;
 
 	public float y;
@@ -800,17 +801,26 @@ public abstract class Shape implements Serializable, IArray, XY, SetXY {
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 17;
-		result = prime * result + NumberUtils.floatToIntBits(x);
-		result = prime * result + NumberUtils.floatToIntBits(y);
-		result = prime * result + NumberUtils.floatToIntBits(scaleX);
-		result = prime * result + NumberUtils.floatToIntBits(scaleY);
+		final int prime = 67;
+		int hashCode = 17;
+		hashCode = prime * LSystem.unite(hashCode, x);
+		hashCode = prime * LSystem.unite(hashCode, y);
+		hashCode = prime * LSystem.unite(hashCode, minX);
+		hashCode = prime * LSystem.unite(hashCode, minY);
+		hashCode = prime * LSystem.unite(hashCode, maxX);
+		hashCode = prime * LSystem.unite(hashCode, maxY);
+		hashCode = prime * LSystem.unite(hashCode, scaleX);
+		hashCode = prime * LSystem.unite(hashCode, scaleY);
 		for (int j = 0; j < points.length; j++) {
 			final long val = NumberUtils.floatToIntBits(this.points[j]);
-			result += 31 * result + (int) (val ^ (val >>> 32));
+			hashCode += prime * hashCode + (int) (val ^ (val >>> 32));
 		}
-		return result;
+		if (center != null) {
+			for (int i = 0; i < center.length; i++) {
+				hashCode = prime * LSystem.unite(hashCode, center[i]);
+			}
+		}
+		return hashCode;
 	}
 
 	@Override
@@ -818,8 +828,9 @@ public abstract class Shape implements Serializable, IArray, XY, SetXY {
 		StringKeyValue builder = new StringKeyValue("Shape");
 		builder.kv("pos", x + "," + y).comma().kv("scale", scaleX + "," + scaleY).comma()
 				.kv("points", "[" + StringUtils.join(',', points) + "]").comma()
-				.kv("center", "[" + StringUtils.join(',', center) + "]").comma().kv("rotation", rotation).comma()
-				.kv("minX", minX).comma().kv("minY", minY).comma().kv("maxX", maxX).comma().kv("maxY", maxY);
+				.kv("center", "[" + StringUtils.join(',', center) + "]").comma()
+				.kv("circleRadius", boundingCircleRadius).comma().kv("rotation", rotation).comma().kv("minX", minX)
+				.comma().kv("minY", minY).comma().kv("maxX", maxX).comma().kv("maxY", maxY);
 		return builder.toString();
 	}
 }

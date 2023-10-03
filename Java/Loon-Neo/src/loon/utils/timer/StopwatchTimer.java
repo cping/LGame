@@ -20,7 +20,9 @@
  */
 package loon.utils.timer;
 
-import loon.events.Updateable;
+import loon.LSystem;
+import loon.events.EventAction;
+import loon.utils.HelperUtils;
 import loon.utils.StringKeyValue;
 import loon.utils.TimeUtils;
 
@@ -40,7 +42,7 @@ public class StopwatchTimer {
 	private long _target;
 
 	public StopwatchTimer() {
-		this("");
+		this(LSystem.EMPTY);
 	}
 
 	public StopwatchTimer(String name) {
@@ -48,7 +50,7 @@ public class StopwatchTimer {
 	}
 
 	public StopwatchTimer(long target) {
-		this("", target);
+		this(LSystem.EMPTY, target);
 	}
 
 	public StopwatchTimer(String name, long target) {
@@ -67,11 +69,15 @@ public class StopwatchTimer {
 		return new StopwatchTimer();
 	}
 
-	public static StopwatchTimer run(Updateable u) {
+	public static StopwatchTimer run(EventAction a) {
 		StopwatchTimer sw = begin();
-		u.action(null);
+		HelperUtils.callEventAction(a, sw);
 		sw.stop();
 		return sw;
+	}
+
+	public boolean isWaiting() {
+		return !isDone();
 	}
 
 	public boolean isDoneAndReset() {

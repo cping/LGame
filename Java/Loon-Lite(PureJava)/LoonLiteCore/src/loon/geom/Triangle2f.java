@@ -20,6 +20,7 @@
  */
 package loon.geom;
 
+import loon.LSystem;
 import loon.utils.MathUtils;
 import loon.utils.StringKeyValue;
 import loon.utils.StringUtils;
@@ -29,7 +30,7 @@ public class Triangle2f extends Shape implements Triangle {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	private static final int EDGE_VALUE = 6;
 
 	public static boolean isInside(XY x, XY y, XY z, XY p) {
@@ -366,6 +367,25 @@ public class Triangle2f extends Shape implements Triangle {
 		resultTriangle.findCenter();
 		resultTriangle.convertPoints(points);
 		return resultTriangle;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 34;
+		int hashCode = 1;
+		hashCode = prime * LSystem.unite(hashCode, x);
+		hashCode = prime * LSystem.unite(hashCode, y);
+		if (xpoints != null) {
+			for (int i = 0; i < xpoints.length; i++) {
+				hashCode = prime * LSystem.unite(hashCode, xpoints[i]);
+			}
+		}
+		if (ypoints != null) {
+			for (int i = 0; i < ypoints.length; i++) {
+				hashCode = prime * LSystem.unite(hashCode, ypoints[i]);
+			}
+		}
+		return hashCode;
 	}
 
 	@Override
