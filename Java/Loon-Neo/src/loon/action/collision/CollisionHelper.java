@@ -511,12 +511,12 @@ public final class CollisionHelper extends ShapeUtils {
 	}
 
 	public static final <T extends XY> boolean checkAABBvsPolygon(XYZW rect, TArray<T> vertices) {
-		return checkAABBvsPolygon(rect.getX(), rect.getY(), rect.getZ(), rect.getW(), vertices, false);
+		return checkAABBvsPolygon(rect.getX(), rect.getY(), rect.getZ(), rect.getW(), vertices, true);
 	}
 
 	public static final <T extends XY> boolean checkAABBvsPolygon(float rx, float ry, float rw, float rh,
 			TArray<T> vertices) {
-		return checkAABBvsPolygon(rx, ry, rw, rh, vertices, false);
+		return checkAABBvsPolygon(rx, ry, rw, rh, vertices, true);
 	}
 
 	public static final <T extends XY> boolean checkAABBvsPolygon(float rx, float ry, float rw, float rh,
@@ -942,20 +942,17 @@ public final class CollisionHelper extends ShapeUtils {
 		if (result1 || result2) {
 			return true;
 		}
-		float distX = x1 - x2;
-		float distY = y1 - y2;
-		final float len = MathUtils.sqrt((distX * distX) + (distY * distY));
-		final float dot = (((cx - x1) * (x2 - x1)) + ((cy - y1) * (y2 - y1))) / MathUtils.pow(len, 2);
-		final float closestX = x1 + (dot * (x2 - x1));
-		final float closestY = y1 + (dot * (y2 - y1));
-		final boolean onSegment = checkPointvsLine(closestX, closestY, x1, y1, x2, y2);
-		if (!onSegment) {
-			return false;
-		}
-		distX = closestX - cx;
-		distY = closestY - cy;
-		final float distance = MathUtils.sqrt((distX * distX) + (distY * distY));
-		return distance <= diameter / 2f;
+		final Vector2f distX = Vector2f.at(cx - x1, cy - y1);
+		final Vector2f distY = Vector2f.at(x2 - x1, y2 - y1);
+		final float dota = distY.dot(distY);
+		final float dotb = distX.dot(distY);
+		float t = dotb / dota;
+		t = (t < 0) ? 0 : t;
+		t = (t > 1) ? 1 : t;
+		final Vector2f dist = Vector2f.at((distY.x * t + x1) - cx, (distY.y * t + y1) - cy);
+		final float len = dist.dot(dist);
+		final float r = diameter / 2f;
+		return len <= r * r;
 	}
 
 	public static boolean checkLinevsEllipse(XYZW line, XYZW ellipse) {
@@ -967,8 +964,10 @@ public final class CollisionHelper extends ShapeUtils {
 		return checkLinevsEllipse(x1, y1, x2, y2, ellipse.getX(), ellipse.getY(), ellipse.getZ(), ellipse.getW());
 	}
 
-	public static boolean checkLinevsEllipse(float x1, float y1, float x2, float y2, float cx, float cy, float dx,
-			float dy) {
+	public static boolean checkLinevsEllipse(float x1, float y1, float x2, float y2, float cx, float cy, float d1,
+			float d2) {
+		final float dx = d1 / 2f;
+		final float dy = d1 / 2f;
 		final float nx1 = x1 - cx;
 		final float nx2 = x2 - cx;
 		final float ny1 = y1 - cy;

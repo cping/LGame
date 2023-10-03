@@ -103,11 +103,15 @@ public class WaitProcess implements GameProcess, LRelease {
 		return this;
 	}
 
+	public boolean isDeffered() {
+		return _waitProcess != null && !_waitProcess.isDead;
+	}
+
 	@Override
 	public void tick(LTimerContext time) {
 		if (_timer.action(time)) {
 			if (_update != null) {
-				final boolean existWait = (_waitProcess != null && !_waitProcess.isDead);
+				final boolean existWait = isDeffered();
 				if (!existWait) {
 					if (_update instanceof ActionUpdate) {
 						ActionUpdate update = (ActionUpdate) _update;

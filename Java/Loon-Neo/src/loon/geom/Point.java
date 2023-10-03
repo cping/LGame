@@ -26,6 +26,7 @@ import loon.action.collision.CollisionHelper;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 import loon.utils.StringUtils;
+import loon.utils.TArray;
 
 public class Point extends Shape {
 	/**
@@ -179,8 +180,9 @@ public class Point extends Shape {
 		return (int) MathUtils.sqrt(MathUtils.mul(tx, tx) + MathUtils.mul(ty, ty));
 	}
 
-	public void getLocation(Point dest) {
+	public Point getLocation(Point dest) {
 		dest.setLocation(this.x, this.y);
+		return this;
 	}
 
 	public Point random() {
@@ -188,6 +190,129 @@ public class Point extends Shape {
 		this.y = MathUtils.random(0f, LSystem.viewSize.getHeight());
 		this.pointsDirty = true;
 		return this;
+	}
+
+	public boolean inCircle(XYZ cir) {
+		return CollisionHelper.checkPointvsCircle(this.x, this.y, cir);
+	}
+
+	public boolean inCircle(Circle c) {
+		return CollisionHelper.checkPointvsCircle(this.x, this.y, c.getRealX(), c.getRealY(), c.getDiameter());
+	}
+
+	public boolean inCircle(float cx, float cy, float d) {
+		return CollisionHelper.checkPointvsCircle(this.x, this.y, cx, cy, d);
+	}
+
+	public boolean inEllipse(float ex, float ey, float ew, float eh) {
+		return CollisionHelper.checkPointvsEllipse(this.x, this.y, ex, ey, ew, eh);
+	}
+
+	public boolean inEllipse(Ellipse e) {
+		if (e == null) {
+			return false;
+		}
+		return CollisionHelper.checkPointvsEllipse(this.x, this.y, e.getRealX(), e.getRealY(), e.getDiameter1(),
+				e.getDiameter2());
+	}
+
+	public boolean inEllipse(XYZW rect) {
+		if (rect == null) {
+			return false;
+		}
+		return CollisionHelper.checkPointvsEllipse(this.x, this.y, rect.getX(), rect.getY(), rect.getZ(), rect.getW());
+	}
+
+	public boolean inArc(float ax, float ay, float arcRadius, float arcHeading, float arcAngle) {
+		return CollisionHelper.checkPointvsArc(this.x, this.y, ax, ay, arcRadius, arcHeading, arcAngle);
+	}
+
+	public boolean inRect(XYZW rect) {
+		if (rect == null) {
+			return false;
+		}
+		return CollisionHelper.checkPointvsAABB(this.x, this.y, rect);
+	}
+
+	public boolean inRect(RectBox rect) {
+		if (rect == null) {
+			return false;
+		}
+		return CollisionHelper.checkPointvsAABB(this.x, this.y, rect.getX(), rect.getY(), rect.getWidth(),
+				rect.getHeight());
+	}
+
+	public boolean inRect(float rx, float ry, float rw, float rh) {
+		return CollisionHelper.checkPointvsAABB(this.x, this.y, rx, ry, rw, rh);
+	}
+
+	public boolean inLine(XYZW line) {
+		if (line == null) {
+			return false;
+		}
+		return CollisionHelper.checkPointvsLine(this.x, this.y, line.getX(), line.getY(), line.getZ(), line.getW());
+	}
+
+	public boolean inLine(Line line) {
+		if (line == null) {
+			return false;
+		}
+		return CollisionHelper.checkPointvsLine(this.x, this.y, line.getX1(), line.getY1(), line.getX2(), line.getY2());
+	}
+
+	public boolean inLine(Line line, float size) {
+		if (line == null) {
+			return false;
+		}
+		return CollisionHelper.checkPointvsLine(this.x, this.y, line.getX1(), line.getY1(), line.getX2(), line.getY2(),
+				size);
+	}
+
+	public boolean inLine(float x1, float y1, float x2, float y2, float size) {
+		return CollisionHelper.checkPointvsLine(this.x, this.y, x1, y1, x2, y2, size);
+	}
+
+	public boolean inTriangle(Triangle2f t) {
+		if (t == null) {
+			return false;
+		}
+		return CollisionHelper.checkPointvsTriangle(this.x, this.y, t.getX1(), t.getY1(), t.getX2(), t.getY2(),
+				t.getX3(), t.getY3());
+	}
+
+	public boolean inTriangle(float x1, float y1, float x2, float y2, float x3, float y3) {
+		return CollisionHelper.checkPointvsTriangle(this.x, this.y, x1, y1, x2, y2, x3, y3);
+	}
+
+	public boolean inPolygon(Polygon poly) {
+		if (poly == null) {
+			return false;
+		}
+		return CollisionHelper.checkPointvsPolygon(this.x, this.y, poly.getVertices());
+	}
+
+	public <T extends XY> boolean inPolygon(TArray<T> poly) {
+		if (poly == null) {
+			return false;
+		}
+		return CollisionHelper.checkPointvsPolygon(this.x, this.y, poly);
+	}
+
+	public boolean collided(Shape shape) {
+		if (shape instanceof Polygon) {
+			return inPolygon((Polygon) shape);
+		} else if (shape instanceof Line) {
+			return inLine((Line) shape);
+		} else if (shape instanceof RectBox) {
+			return inRect((RectBox) shape);
+		} else if (shape instanceof Triangle2f) {
+			return inTriangle((Triangle2f) shape);
+		} else if (shape instanceof Circle) {
+			return inCircle((Circle) shape);
+		} else if (shape instanceof Ellipse) {
+			return inEllipse((Ellipse) shape);
+		}
+		return CollisionHelper.checkPointvsPolygon(this.x, this.y, shape.getPoints(), 1f);
 	}
 
 	@Override

@@ -120,8 +120,6 @@ public class Polygon extends Shape implements BoxSize {
 
 	private boolean closed = true;
 
-	private TArray<Vector2f> _vertices;
-
 	public Polygon(TArray<Vector2f> vectors) {
 		if (vectors == null || vectors.size < 0) {
 			throw new LSysException("points < 0");
@@ -352,28 +350,6 @@ public class Polygon extends Shape implements BoxSize {
 
 	public Polygon addVertex(Vector2f v) {
 		return addVertex(v.x, v.y);
-	}
-
-	public TArray<Vector2f> getVertices() {
-		if (_vertices == null) {
-			_vertices = new TArray<Vector2f>();
-		}
-		if (pointsDirty) {
-			checkPoints();
-			_vertices.clear();
-			int size = points.length;
-			for (int i = 0; i < size; i += 2) {
-				_vertices.add(new Vector2f(points[i], points[i + 1]));
-			}
-		}
-		if (_vertices.size == 0) {
-			checkPoints();
-			int size = points.length;
-			for (int i = 0; i < size; i += 2) {
-				_vertices.add(new Vector2f(points[i], points[i + 1]));
-			}
-		}
-		return _vertices;
 	}
 
 	@Override

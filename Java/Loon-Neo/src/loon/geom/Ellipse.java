@@ -200,7 +200,7 @@ public class Ellipse extends Shape {
 			return false;
 		}
 		return CollisionHelper.checkLinevsEllipse(line.getX1(), line.getY1(), line.getX2(), line.getY2(), getRealX(),
-				getRealY(), getRadius1(), getRadius2());
+				getRealY(), getDiameter1(), getDiameter2());
 	}
 
 	public boolean inPoint(XY pos) {

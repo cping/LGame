@@ -41,6 +41,8 @@ public abstract class Shape implements Serializable, IArray, XY, SetXY {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	private TArray<Vector2f> _vertices;
+	
 	public float x;
 
 	public float y;
@@ -128,6 +130,13 @@ public abstract class Shape implements Serializable, IArray, XY, SetXY {
 		return CollisionHelper.checkPointvsPolygon(px, py, this.getPoints(), size);
 	}
 
+	public boolean inShape(float[] points) {
+		if (points == null) {
+			return false;
+		}
+		return CollisionHelper.checkPolygonvsPolygon(this.getPoints(), points);
+	}
+
 	public boolean inShape(Shape shape) {
 		if (shape == null) {
 			return false;
@@ -195,13 +204,14 @@ public abstract class Shape implements Serializable, IArray, XY, SetXY {
 		return center[0];
 	}
 
-	public void setCenterX(float centerX) {
+	public Shape setCenterX(float centerX) {
 		if ((points == null) || (center == null)) {
 			checkPoints();
 		}
 
 		float xDiff = centerX - getCenterX();
 		setX(x + xDiff);
+		return this;
 	}
 
 	public float getCenterY() {
@@ -210,18 +220,20 @@ public abstract class Shape implements Serializable, IArray, XY, SetXY {
 		return center[1];
 	}
 
-	public void setCenterY(float centerY) {
+	public Shape setCenterY(float centerY) {
 		if ((points == null) || (center == null)) {
 			checkPoints();
 		}
 
 		float yDiff = centerY - getCenterY();
 		setY(y + yDiff);
+		return this;
 	}
 
-	public void setCenter(Vector2f pos) {
+	public Shape setCenter(Vector2f pos) {
 		setCenterX(pos.x);
 		setCenterY(pos.y);
+		return this;
 	}
 
 	public float getMaxX() {
@@ -294,6 +306,28 @@ public abstract class Shape implements Serializable, IArray, XY, SetXY {
 	public float[] getPoints() {
 		checkPoints();
 		return points;
+	}
+
+	public TArray<Vector2f> getVertices() {
+		if (_vertices == null) {
+			_vertices = new TArray<Vector2f>();
+		}
+		if (pointsDirty) {
+			checkPoints();
+			_vertices.clear();
+			int size = points.length;
+			for (int i = 0; i < size; i += 2) {
+				_vertices.add(new Vector2f(points[i], points[i + 1]));
+			}
+		}
+		if (_vertices.size == 0) {
+			checkPoints();
+			int size = points.length;
+			for (int i = 0; i < size; i += 2) {
+				_vertices.add(new Vector2f(points[i], points[i + 1]));
+			}
+		}
+		return _vertices;
 	}
 
 	public int getPointCount() {

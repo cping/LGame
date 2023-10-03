@@ -31,9 +31,9 @@ public class CollisionClassQuery implements CollisionQuery {
 
 	private Vector2f _offsetLocation;
 
-	public CollisionClassQuery(String _flag, CollisionQuery _subQuery, Vector2f offset) {
-		this._flag = _flag;
-		this._subQuery = _subQuery;
+	public CollisionClassQuery(String flag, CollisionQuery subQuery, Vector2f offset) {
+		this._flag = flag;
+		this._subQuery = subQuery;
 		this._offsetLocation = offset;
 	}
 

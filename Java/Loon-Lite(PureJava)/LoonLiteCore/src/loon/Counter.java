@@ -29,6 +29,8 @@ import loon.utils.MathUtils;
  */
 public class Counter {
 
+	private final int _def_value;
+
 	private final int _min;
 
 	private final int _max;
@@ -44,6 +46,11 @@ public class Counter {
 	}
 
 	public Counter(int v, int min, int max) {
+		this(1, v, min, max);
+	}
+
+	public Counter(int defv, int v, int min, int max) {
+		this._def_value = defv;
 		if (min != -1 || max != -1) {
 			this._value = MathUtils.clamp(v, min, max);
 		} else {
@@ -51,6 +58,46 @@ public class Counter {
 		}
 		this._min = min;
 		this._max = max;
+	}
+
+	public int next(int v) {
+		return increment(v);
+	}
+
+	public int next() {
+		return increment(_def_value);
+	}
+
+	public int plus(int v) {
+		return increment(v);
+	}
+
+	public int plus() {
+		return increment(_def_value);
+	}
+
+	public int add(int v) {
+		return increment(v);
+	}
+
+	public int add() {
+		return increment(_def_value);
+	}
+
+	public int sub(int v) {
+		return reduction(v);
+	}
+
+	public int sub() {
+		return reduction(_def_value);
+	}
+
+	public int back(int v) {
+		return reduction(v);
+	}
+
+	public int back() {
+		return reduction(_def_value);
 	}
 
 	public int increment(int val) {
@@ -102,24 +149,32 @@ public class Counter {
 		return this;
 	}
 
+	public int N() {
+		return this._value;
+	}
+
+	public int get() {
+		return this._value;
+	}
+
 	public int getValue() {
 		return this._value;
 	}
 
 	public int increment() {
-		return increment(1);
+		return increment(_def_value);
 	}
 
 	public int incId(int i) {
 		return increment(i) - i;
 	}
-	
+
 	public int incId() {
-		return incId(1);
+		return incId(_def_value);
 	}
 
 	public int reduction() {
-		return reduction(1);
+		return reduction(_def_value);
 	}
 
 	public Counter clear() {

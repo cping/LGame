@@ -1348,6 +1348,7 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 		return this.width > 0 && this.height > 0;
 	}
 
+	@Override
 	public boolean inPoint(XY pos) {
 		if (pos == null) {
 			return false;

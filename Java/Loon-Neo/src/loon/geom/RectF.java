@@ -22,9 +22,11 @@
 package loon.geom;
 
 import loon.LSystem;
+import loon.action.collision.CollisionHelper;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 import loon.utils.StringKeyValue;
+import loon.utils.TArray;
 
 /*最简化的浮点体积处理类,以减少对象大小*/
 public class RectF implements XY, SetXY {
@@ -578,6 +580,120 @@ public class RectF implements XY, SetXY {
 		this.width = MathUtils.random(0f, LSystem.viewSize.getWidth());
 		this.height = MathUtils.random(0f, LSystem.viewSize.getHeight());
 		return this;
+	}
+
+	public boolean inPoint(XY pos) {
+		if (pos == null) {
+			return false;
+		}
+		return CollisionHelper.checkPointvsAABB(pos.getX(), pos.getY(), this.x, this.y, this.width, this.height);
+	}
+
+	public boolean inPoint(float x, float y) {
+		return CollisionHelper.checkPointvsAABB(x, y, this.x, this.y, this.width, this.height);
+	}
+
+	public boolean inCircle(XYZ cir) {
+		if (cir == null) {
+			return false;
+		}
+		return CollisionHelper.checkAABBvsCircle(this.x, this.y, this.width, this.height, cir.getX(), cir.getY(),
+				cir.getZ());
+	}
+
+	public boolean inCircle(Circle c) {
+		if (c == null) {
+			return false;
+		}
+		return CollisionHelper.checkAABBvsCircle(this.x, this.y, this.width, this.height, c.getRealX(), c.getRealY(),
+				c.getDiameter());
+	}
+
+	public boolean inCircle(float cx, float cy, float d) {
+		return CollisionHelper.checkAABBvsCircle(this.x, this.y, this.width, this.height, cx, cy, d);
+	}
+
+	public boolean inEllipse(float cx, float cy, float dx, float dy) {
+		return CollisionHelper.checkEllipsevsAABB(cx, cy, dx, dy, this.x, this.y, this.width, this.height);
+	}
+
+	public boolean inEllipse(Ellipse e) {
+		if (e == null) {
+			return false;
+		}
+		return CollisionHelper.checkEllipsevsAABB(e.getRealX(), e.getRealY(), e.getRadius1(), e.getRadius2(), this.x,
+				this.y, this.width, this.height);
+	}
+
+	public boolean inRect(XYZW rect) {
+		if (rect == null) {
+			return false;
+		}
+		return CollisionHelper.checkAABBvsAABB(this.x, this.y, this.width, this.height, rect.getX(), rect.getY(),
+				rect.getZ(), rect.getW());
+	}
+
+	public boolean inRect(RectBox rect) {
+		if (rect == null) {
+			return false;
+		}
+		return CollisionHelper.checkAABBvsAABB(this.x, this.y, this.width, this.height, rect.getX(), rect.getY(),
+				rect.getWidth(), rect.getHeight());
+	}
+
+	public boolean inRect(float rx, float ry, float rw, float rh) {
+		return CollisionHelper.checkAABBvsAABB(this.x, this.y, this.width, this.height, rx, ry, rw, rh);
+	}
+
+	public boolean inLine(XYZW line) {
+		if (line == null) {
+			return false;
+		}
+		return CollisionHelper.checkLinevsAABB(line.getX(), line.getY(), line.getZ(), line.getW(), this.x, this.y,
+				this.width, this.height);
+	}
+
+	public boolean inLine(Line line) {
+		if (line == null) {
+			return false;
+		}
+		return CollisionHelper.checkLinevsAABB(line.getX1(), line.getY1(), line.getX2(), line.getY2(), this.x, this.y,
+				this.width, this.height);
+	}
+
+	public boolean inLine(float x1, float y1, float x2, float y2) {
+		return CollisionHelper.checkLinevsAABB(x1, y1, x2, y2, this.x, this.y, this.width, this.height);
+	}
+
+	public boolean inPolygon(Polygon poly) {
+		if (poly == null) {
+			return false;
+		}
+		return CollisionHelper.checkAABBvsPolygon(this.x, this.y, this.width, this.height, poly.getVertices(), true);
+	}
+
+	public <T extends XY> boolean inPolygon(TArray<T> poly) {
+		if (poly == null) {
+			return false;
+		}
+		return CollisionHelper.checkAABBvsPolygon(this.x, this.y, this.width, this.height, poly, true);
+	}
+
+	public boolean collided(Shape shape) {
+		if (shape instanceof Polygon) {
+			return inPolygon((Polygon) shape);
+		} else if (shape instanceof Line) {
+			return inLine((Line) shape);
+		} else if (shape instanceof RectBox) {
+			return inRect((RectBox) shape);
+		} else if (shape instanceof Point) {
+			return inPoint((Point) shape);
+		} else if (shape instanceof Circle) {
+			return inCircle((Circle) shape);
+		} else if (shape instanceof Ellipse) {
+			return inEllipse((Ellipse) shape);
+		}
+		return CollisionHelper.checkAABBvsPolygon(x, y, width, height, shape.getVertices(), true);
 	}
 
 	@Override

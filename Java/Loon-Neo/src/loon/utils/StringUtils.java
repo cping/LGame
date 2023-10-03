@@ -1345,7 +1345,41 @@ final public class StringUtils extends CharUtils {
 	}
 
 	/**
-	 * 检查是否为纯字母
+	 * 检测最后一个字符是否为数字
+	 * 
+	 * @param v
+	 * @return
+	 */
+	public static boolean hasNumberAtEnd(CharSequence v) {
+		int letterChecking = v.length();
+		do {
+			letterChecking--;
+		} while (letterChecking > -1 && isDigit(v.charAt(letterChecking)));
+		if (letterChecking == v.length() - 1 && !isDigit(v.charAt(letterChecking))) {
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * 检测最后一个字符是否为英文
+	 * 
+	 * @param v
+	 * @return
+	 */
+	public static boolean hasEnglishAtEnd(CharSequence v) {
+		int letterChecking = v.length();
+		do {
+			letterChecking--;
+		} while (letterChecking > -1 && isAsciiLetter(v.charAt(letterChecking)));
+		if (letterChecking == v.length() - 1 && !isAsciiLetter(v.charAt(letterChecking))) {
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * /** 检查是否为纯字母
 	 * 
 	 * @param v
 	 * @return

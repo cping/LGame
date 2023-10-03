@@ -367,9 +367,51 @@ public class Line extends Shape {
 		return CollisionHelper.checkPointvsLine(x, y, this.getX1(), this.getY1(), this.getX2(), this.getY2());
 	}
 
+	@Override
+	public boolean inPoint(XY pos) {
+		if (pos == null) {
+			return false;
+		}
+		return inPoint(pos.getX(), pos.getY());
+	}
+
+	public boolean inPoint(float x, float y) {
+		return CollisionHelper.checkPointvsLine(x, y, getX1(), getY1(), getX2(), getY2());
+	}
+
+	public boolean inRect(XYZW rect) {
+		if (rect == null) {
+			return false;
+		}
+		return inRect(rect.getX(), rect.getY(), rect.getZ(), rect.getW());
+	}
+
+	public boolean inRect(float x, float y, float w, float h) {
+		return CollisionHelper.checkLinevsAABB(getX1(), getY1(), getX2(), getY2(), x, y, w, h);
+	}
+
+	public boolean inLine(Line e) {
+		if (e == null) {
+			return false;
+		}
+		return CollisionHelper.checkLinevsLine(getX1(), getY1(), getX2(), getY2(), e.getX1(), e.getY1(), e.getX2(),
+				e.getY2());
+	}
+
+	public boolean inCircle(Circle e) {
+		if (e == null) {
+			return false;
+		}
+		return CollisionHelper.checkLinevsCircle(getX1(), getY1(), getX2(), getY2(), e.getRealX(), e.getRealY(),
+				e.getDiameter());
+	}
+
 	public boolean inEllipse(Ellipse e) {
+		if (e == null) {
+			return false;
+		}
 		return CollisionHelper.checkLinevsEllipse(getX1(), getY1(), getX2(), getY2(), e.getRealX(), e.getRealY(),
-				e.getRadius1(), e.getRadius2());
+				e.getDiameter1(), e.getDiameter2());
 	}
 
 	public float distance(Vector2f point) {
