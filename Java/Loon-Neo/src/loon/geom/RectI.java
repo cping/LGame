@@ -64,12 +64,12 @@ public class RectI implements XY, SetXY {
 		@Override
 		public int hashCode() {
 			final int prime = 31;
-			int result = 1;
-			result = prime * result + NumberUtils.floatToIntBits(left);
-			result = prime * result + NumberUtils.floatToIntBits(top);
-			result = prime * result + NumberUtils.floatToIntBits(right);
-			result = prime * result + NumberUtils.floatToIntBits(bottom);
-			return result;
+			int hashCode = 1;
+			hashCode = prime * LSystem.unite(hashCode, left);
+			hashCode = prime * LSystem.unite(hashCode, top);
+			hashCode = prime * LSystem.unite(hashCode, right);
+			hashCode = prime * LSystem.unite(hashCode, bottom);
+			return hashCode;
 		}
 
 		@Override

@@ -1102,14 +1102,34 @@ public class Vector4f implements Serializable, XYZW, SetXYZW {
 	}
 
 	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Vector4f other = (Vector4f) obj;
+		if (NumberUtils.floatToIntBits(x) != NumberUtils.floatToIntBits(other.x))
+			return false;
+		if (NumberUtils.floatToIntBits(y) != NumberUtils.floatToIntBits(other.y))
+			return false;
+		if (NumberUtils.floatToIntBits(z) != NumberUtils.floatToIntBits(other.z))
+			return false;
+		if (NumberUtils.floatToIntBits(w) != NumberUtils.floatToIntBits(other.w))
+			return false;
+		return true;
+	}
+	
+	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = 1;
-		result = prime * result + NumberUtils.floatToIntBits(x);
-		result = prime * result + NumberUtils.floatToIntBits(y);
-		result = prime * result + NumberUtils.floatToIntBits(z);
-		result = prime * result + NumberUtils.floatToIntBits(w);
-		return result;
+		int hashCode = 1;
+		hashCode = prime * LSystem.unite(hashCode, x);
+		hashCode = prime * LSystem.unite(hashCode, y);
+		hashCode = prime * LSystem.unite(hashCode, z);
+		hashCode = prime * LSystem.unite(hashCode, w);
+		return hashCode;
 	}
 
 	@Override

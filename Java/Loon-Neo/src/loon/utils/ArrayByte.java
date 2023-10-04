@@ -218,7 +218,7 @@ public class ArrayByte implements IArray, LRelease {
 	public ArrayByte(byte[] data, int pos, int order) {
 		this.setBuffer(data, pos, order);
 	}
-	
+
 	protected void setBuffer(byte[] data, int pos, int order) {
 		this._buffer = data;
 		this.setOrder(order);
@@ -231,7 +231,7 @@ public class ArrayByte implements IArray, LRelease {
 		_byteOrder = type;
 		return this;
 	}
-	
+
 	public ArrayByte reset() {
 		return setOrder(_byteOrder);
 	}
@@ -403,8 +403,8 @@ public class ArrayByte implements IArray, LRelease {
 	public int readInt() throws LSysException {
 		checkAvailable(4);
 		if (_byteOrder == LITTLE_ENDIAN) {
-			return (_buffer[_position++] & 0xff) | ((_buffer[_position++] & 0xff) << 8) | ((_buffer[_position++] & 0xff) << 16)
-					| ((_buffer[_position++] & 0xff) << 24);
+			return (_buffer[_position++] & 0xff) | ((_buffer[_position++] & 0xff) << 8)
+					| ((_buffer[_position++] & 0xff) << 16) | ((_buffer[_position++] & 0xff) << 24);
 		} else {
 			return ((_buffer[_position++] & 0xff) << 24) | ((_buffer[_position++] & 0xff) << 16)
 					| ((_buffer[_position++] & 0xff) << 8) | (_buffer[_position++] & 0xff);
@@ -707,9 +707,10 @@ public class ArrayByte implements IArray, LRelease {
 
 	@Override
 	public int hashCode() {
+		final int prime = 66;
 		int hashCode = 1;
 		for (int i = _buffer.length - 1; i > -1; i--) {
-			hashCode = 31 * hashCode + _buffer[i];
+			hashCode = prime * LSystem.unite(hashCode, _buffer[i]);
 		}
 		return hashCode;
 	}

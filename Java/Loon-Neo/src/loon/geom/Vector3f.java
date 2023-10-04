@@ -821,11 +821,11 @@ public class Vector3f implements Serializable, XYZ, SetXYZ {
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = 1;
-		result = prime * result + NumberUtils.floatToIntBits(x);
-		result = prime * result + NumberUtils.floatToIntBits(y);
-		result = prime * result + NumberUtils.floatToIntBits(z);
-		return result;
+		int hashCode = 1;
+		hashCode = prime * LSystem.unite(hashCode, x);
+		hashCode = prime * LSystem.unite(hashCode, y);
+		hashCode = prime * LSystem.unite(hashCode, z);
+		return hashCode;
 	}
 
 	@Override

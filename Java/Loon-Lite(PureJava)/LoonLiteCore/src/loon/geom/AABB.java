@@ -24,7 +24,6 @@ import loon.LRelease;
 import loon.LSystem;
 import loon.action.ActionBind;
 import loon.utils.MathUtils;
-import loon.utils.NumberUtils;
 import loon.utils.StringKeyValue;
 import loon.utils.StringUtils;
 
@@ -487,12 +486,12 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = 1;
-		result = prime * result + NumberUtils.floatToIntBits(minX);
-		result = prime * result + NumberUtils.floatToIntBits(minY);
-		result = prime * result + NumberUtils.floatToIntBits(maxX);
-		result = prime * result + NumberUtils.floatToIntBits(maxY);
-		return result;
+		int hashCode = 1;
+		hashCode = prime * LSystem.unite(hashCode, minX);
+		hashCode = prime * LSystem.unite(hashCode, minY);
+		hashCode = prime * LSystem.unite(hashCode, maxX);
+		hashCode = prime * LSystem.unite(hashCode, maxY);
+		return hashCode;
 	}
 
 	@Override

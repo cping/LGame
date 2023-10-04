@@ -21,10 +21,10 @@
 package loon.geom;
 
 import loon.LSysException;
+import loon.LSystem;
 import loon.LTrans;
 import loon.action.ActionBind;
 import loon.utils.MathUtils;
-import loon.utils.NumberUtils;
 import loon.utils.StringKeyValue;
 
 /**
@@ -1605,15 +1605,15 @@ public class Affine2f implements LTrans, XY {
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 17;
-		result = prime * result + NumberUtils.floatToIntBits(m00);
-		result = prime * result + NumberUtils.floatToIntBits(m11);
-		result = prime * result + NumberUtils.floatToIntBits(m01);
-		result = prime * result + NumberUtils.floatToIntBits(m10);
-		result = prime * result + NumberUtils.floatToIntBits(tx);
-		result = prime * result + NumberUtils.floatToIntBits(ty);
-		return result;
+		final int prime = 86;
+		int hashCode = 17;
+		hashCode = prime * LSystem.unite(hashCode, m00);
+		hashCode = prime * LSystem.unite(hashCode, m01);
+		hashCode = prime * LSystem.unite(hashCode, m10);
+		hashCode = prime * LSystem.unite(hashCode, m11);
+		hashCode = prime * LSystem.unite(hashCode, tx);
+		hashCode = prime * LSystem.unite(hashCode, ty);
+		return hashCode;
 	}
 
 	@Override

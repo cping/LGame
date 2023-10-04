@@ -707,9 +707,10 @@ public class ArrayByte implements IArray, LRelease {
 
 	@Override
 	public int hashCode() {
+		final int prime = 66;
 		int hashCode = 1;
 		for (int i = _buffer.length - 1; i > -1; i--) {
-			hashCode = 31 * hashCode + _buffer[i];
+			hashCode = prime * LSystem.unite(hashCode, _buffer[i]);
 		}
 		return hashCode;
 	}

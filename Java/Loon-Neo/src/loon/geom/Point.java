@@ -24,7 +24,6 @@ package loon.geom;
 import loon.LSystem;
 import loon.action.collision.CollisionHelper;
 import loon.utils.MathUtils;
-import loon.utils.NumberUtils;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
@@ -318,10 +317,10 @@ public class Point extends Shape {
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = 1;
-		result = prime * result + NumberUtils.floatToIntBits(x);
-		result = prime * result + NumberUtils.floatToIntBits(y);
-		return result;
+		int hashCode = 1;
+		hashCode = prime * LSystem.unite(hashCode,x);
+		hashCode = prime * LSystem.unite(hashCode,y);
+		return hashCode;
 	}
 
 	@Override

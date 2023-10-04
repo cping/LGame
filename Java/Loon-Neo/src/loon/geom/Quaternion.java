@@ -22,6 +22,7 @@ package loon.geom;
 
 import java.io.Serializable;
 
+import loon.LSystem;
 import loon.utils.Array;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
@@ -498,13 +499,13 @@ public class Quaternion implements XY, Serializable {
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + NumberUtils.floatToRawIntBits(w);
-		result = prime * result + NumberUtils.floatToRawIntBits(x);
-		result = prime * result + NumberUtils.floatToRawIntBits(y);
-		result = prime * result + NumberUtils.floatToRawIntBits(z);
-		return result;
+		final int prime = 32;
+		int hashCode = 1;
+		hashCode = prime * LSystem.unite(hashCode, x);
+		hashCode = prime * LSystem.unite(hashCode, y);
+		hashCode = prime * LSystem.unite(hashCode, z);
+		hashCode = prime * LSystem.unite(hashCode, w);
+		return hashCode;
 	}
 
 	@Override
